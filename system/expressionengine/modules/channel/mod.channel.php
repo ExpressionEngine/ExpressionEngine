@@ -5350,31 +5350,21 @@ class Channel {
 
 	public function form()
 	{
-		ee()->load->library('channel_form_lib');
+		ee()->load->library('channel_form/channel_form_lib');
 
 		if ( ! empty(ee()->TMPL))
 		{
-			require_once PATH_MOD.'channel/mod.channel_form.php';
-			return ee()->channel_form_lib->entry_form();
+			try
+			{
+				return ee()->channel_form_lib->entry_form();
+			}
+			catch (Channel_form_exception $e)
+			{
+				return $e->show_user_error();
+			}
 		}
 
 		return '';
-	}
-
-	// ------------------------------------------------------------------------
-	
-	/**
-	 * ACT method for Stand Alone Entry Form Javascript
-	 */
-	public function saef_filebrowser()
-	{
-		if ( ! class_exists('Channel_standalone'))
-		{
-			require PATH_MOD.'channel/mod.channel_standalone.php';
-		}
-		
-		$channel_js = new Channel_standalone();
-		return $channel_js->saef_javascript();
 	}
 
 	// --------------------------------------------------------------------
@@ -5392,7 +5382,16 @@ class Channel {
 			return '';
 		}
 		
-		ee()->safecracker->submit_entry();
+		ee()->load->library('channel_form/channel_form_lib');
+
+		try
+		{
+			ee()->channel_form_lib->submit_entry();
+		}
+		catch (Channel_form_exception $e)
+		{
+			return $e->show_user_error();
+		}
 	}
 
 	// --------------------------------------------------------------------	
@@ -5404,8 +5403,8 @@ class Channel {
 	 */
 	public function combo_loader()
 	{
-		ee()->load->library('channel_form_lib');
-		ee()->load->library('channel_form_javascript');
+		ee()->load->library('channel_form/channel_form_lib');
+		ee()->load->library('channel_form/channel_form_javascript');
 		return ee()->channel_form_javascript->combo_load();
 	}
 }
