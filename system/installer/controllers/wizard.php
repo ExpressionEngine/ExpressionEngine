@@ -1803,11 +1803,12 @@ PAPAYA;
 	{						
 		$themes = array();
 
-		if ($fp = opendir($this->theme_path)) 
+		// Check for directory
+		if (is_dir($this->theme_path) && ($fp = opendir($this->theme_path))) 
 		{ 
 			while (false !== ($folder = readdir($fp))) 
 			{ 
-				if (@is_dir($this->theme_path.$folder) && substr($folder, 0, 1) != '.') 
+				if (is_dir($this->theme_path.$folder) && substr($folder, 0, 1) != '.') 
 				{       		
 					$themes[$folder] = $folder;
 				}

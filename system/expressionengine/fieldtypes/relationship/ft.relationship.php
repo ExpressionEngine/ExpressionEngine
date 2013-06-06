@@ -127,6 +127,12 @@ class Relationship_ft extends EE_Fieldtype {
 
 		$post = ee()->session->cache(__CLASS__, $cache_name);
 
+		if ($post === FALSE)
+		{
+			// this is a safecracker edit - save() was not called. Don't do anything.
+			return;
+		}
+
 		$order = array_values($post['sort']);
 		$data = $post['data'];
 
@@ -245,7 +251,7 @@ class Relationship_ft extends EE_Fieldtype {
 					'relationships_display_field',
 					$entry_id,
 					$this->field_id,
-					ee()->db->_compile_select()
+					ee()->db->_compile_select(FALSE, FALSE)
 				);
 			}
 			else
@@ -281,7 +287,7 @@ class Relationship_ft extends EE_Fieldtype {
 
 		ee()->db
 			->select('channel_titles.entry_id, channel_titles.title')
-			->order_by($this->settings['order_field'], $this->settings['order_dir']);
+			->order_by($order_field, $this->settings['order_dir']);
 
 		if ($limit)
 		{

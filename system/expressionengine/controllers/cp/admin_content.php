@@ -1926,9 +1926,7 @@ class Admin_content extends CP_Controller {
 			'cat_image'
 		);
 		
-		$_POST['cat_image'] = $this->file_field->format_data(
-			$cat_image['value']
-		);
+		$_POST['cat_image'] = $cat_image['value'];
 		
 		// Finish data prep for insertion
 		if ($this->config->item('auto_convert_high_ascii') == 'y')

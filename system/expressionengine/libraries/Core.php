@@ -41,12 +41,6 @@ class EE_Core {
 		// for core to the super object quickly enough.
 		// Breaks access to core in the menu lib.
 		ee()->core = $this;
-
-		// Set a liberal script execution time limit, making it shorter for front-end requests than CI's default
-		if (function_exists("set_time_limit") == TRUE AND @ini_get("safe_mode") == 0)
-		{
-			@set_time_limit((REQ == 'CP') ? 300 : 90);
-		}
 	}
 
 	// --------------------------------------------------------------------
@@ -64,6 +58,12 @@ class EE_Core {
 			define('REQ', ((ee()->input->get_post('ACT') !== FALSE) ? 'ACTION' : 'PAGE')); 
 		}
 		
+		// Set a liberal script execution time limit, making it shorter for front-end requests than CI's default
+		if (function_exists("set_time_limit") == TRUE AND @ini_get("safe_mode") == 0)
+		{
+			@set_time_limit((REQ == 'CP') ? 300 : 90);
+		}
+
 		// some path constants to simplify things
 		define('PATH_MOD',		APPPATH.'modules/');
 		define('PATH_PI',		APPPATH.'plugins/');
@@ -405,7 +405,7 @@ class EE_Core {
 		if (ee()->router->fetch_class() == '' OR
 			! isset($_GET['S']))
 		{
-			ee()->functions->redirect(BASE.'C=homepage');
+			ee()->functions->redirect(BASE.AMP.'C=homepage');
 		}
 
 

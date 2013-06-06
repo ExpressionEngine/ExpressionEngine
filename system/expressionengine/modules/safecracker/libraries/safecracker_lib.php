@@ -1209,6 +1209,13 @@ class Safecracker_lib
 			
 			$this->fetch_entry($this->_meta['entry_id']);
 			
+			// Check for author_only setting
+			if 	((isset($this->_meta['author_only']) && $this->_meta['author_only'] != FALSE) &&
+				$this->entry('author_id') != ee()->session->userdata('member_id'))
+			{
+				ee()->output->show_user_error(FALSE, lang('safecracker_author_only'));
+			}
+
 			if (ee()->input->post('category') === FALSE && $this->entry('categories'))
 			{
 				$_POST['category'] = $this->entry('categories');
@@ -2438,22 +2445,6 @@ class Safecracker_lib
 			$this->_meta['entry_id'] = $this->_meta['require_entry'];
 		}
 		
-
-		// Check for author_only setting
-		if ($this->_meta['entry_id'] != FALSE && 
-				(isset($this->_meta['author_only']) && $this->_meta['author_only'] != FALSE) &&
-				($this->entry('author_id') != ee()->session->userdata('member_id'))
-			)
-			
-		{
-			ee()->output->show_user_error(FALSE, lang('safecracker_author_only'));
-		}
-		
-		// Debates- not necessary, but might be good to have in post?  IDK.
-		foreach ($this->_meta as $k => $v)
-		{
-			//$_POST[$k] = $v;
-		}
 	}
 
 
