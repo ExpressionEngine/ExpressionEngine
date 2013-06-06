@@ -262,11 +262,117 @@ class Grid_ft extends EE_Fieldtype {
 	// --------------------------------------------------------------------
 
 	/**
+	 * :sum modifier
+	 */
+	public function replace_sum($data, $params = array(), $tagdata = '')
+	{
+		return $this->_get_column_stats($params, 'sum');
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * :average modifier
+	 */
+	public function replace_average($data, $params = array(), $tagdata = '')
+	{
+		return $this->_get_column_stats($params, 'average');
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * :lowest modifier
+	 */
+	public function replace_lowest($data, $params = array(), $tagdata = '')
+	{
+		return $this->_get_column_stats($params, 'lowest');
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * :highest modifier
+	 */
+	public function replace_highest($data, $params = array(), $tagdata = '')
+	{
+		return $this->_get_column_stats($params, 'highest');
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Used in the math modifiers to return stats about numeric columns
+	 *
+	 * @param	array	Tag parameters
+	 * @param	string	Column metric to return
+	 * @param	int		Return data for tag
+	 */
+	private function _get_column_stats($params, $metric)
+	{
+		$entry_id = $this->row['entry_id'];
+
+		ee()->load->model('grid_model');
+		$entry_data = ee()->grid_model->get_entry_rows($entry_id, $this->field_id, $params);
+
+		// Bail out if no entry data
+		if ($entry_data === FALSE OR
+			! isset($entry_data[$entry_id]) OR 
+			! isset($params['column']))
+		{
+			return '';
+		}
+
+		$columns = ee()->grid_model->get_columns_for_field($this->field_id);
+
+		// Find the column that matches the passed column name
+		foreach ($columns as $column)
+		{
+			if ($column['col_name'] == $params['column'])
+			{
+				break;
+			}
+		}
+
+		// Gather the numbers needed to make the calculations
+		$numbers = array();
+		foreach ($entry_data[$entry_id] as $row)
+		{
+			if (is_numeric($row['col_id_'.$column['col_id']]))
+			{
+				$numbers[] = $row['col_id_'.$column['col_id']];
+			}
+		}
+
+		if (empty($numbers))
+		{
+			return '';
+		}
+
+		// These are our supported operations
+		switch ($metric)
+		{
+			case 'sum':
+				return array_sum($numbers);
+			case 'average':
+				return array_sum($numbers) / count($numbers);
+			case 'lowest':
+				return min($numbers);
+			case 'highest':
+				return max($numbers);
+			default:
+				return '';
+		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * :next_row modifier
 	 */
 	public function replace_next_row($data, $params = '', $tagdata = '')
 	{
-		return $this->_parse_prev_next_row($this->row, $this->field_id, $params, $tagdata, TRUE);
+		return $this->_parse_prev_next_row($params, $tagdata, TRUE);
 	}
 
 	// --------------------------------------------------------------------
@@ -276,12 +382,20 @@ class Grid_ft extends EE_Fieldtype {
 	 */
 	public function replace_prev_row($data, $params = '', $tagdata = '')
 	{
-		return $this->_parse_prev_next_row($this->row, $this->field_id, $params, $tagdata);
+		return $this->_parse_prev_next_row($params, $tagdata);
 	}
 
 	// --------------------------------------------------------------------
 	
-	private function _parse_prev_next_row($row, $field_id, $params, $tagdata, $next = FALSE)
+	/**
+	 * Handles parsing of :next_row and :prev_row modifiers
+	 *
+	 * @param	array	Tag parameters
+	 * @param	string	Tag pair tag data
+	 * @param	boolean	TRUE for next row, FALSE for previous row
+	 * @param	string	Return data for tag
+	 */
+	private function _parse_prev_next_row($params, $tagdata, $next = FALSE)
 	{
 		if ( ! isset($params['row_id']))
 		{
@@ -293,7 +407,7 @@ class Grid_ft extends EE_Fieldtype {
 
 		ee()->load->library('grid_parser');
 
-		return ee()->grid_parser->parse($row, $field_id, $params, $tagdata);
+		return ee()->grid_parser->parse($this->row, $this->field_id, $params, $tagdata);
 	}
 	
 	// --------------------------------------------------------------------

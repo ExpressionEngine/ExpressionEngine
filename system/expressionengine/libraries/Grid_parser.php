@@ -31,7 +31,8 @@ class Grid_parser {
 
 	public function __construct()
 	{
-		$this->modifiers = array('next_row', 'prev_row', 'total_rows', 'table');
+		$this->modifiers = array('next_row', 'prev_row', 'total_rows', 'table',
+			'sum', 'average', 'lowest', 'highest');
 	}
 
 	// --------------------------------------------------------------------
