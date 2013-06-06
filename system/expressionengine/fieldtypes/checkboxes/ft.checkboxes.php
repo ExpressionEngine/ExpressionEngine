@@ -202,10 +202,13 @@ class Checkboxes_ft extends EE_Fieldtype {
 			return ee()->functions->encode_ee_tags($entry);
 		}
 
+		$text_format = (isset($this->row['field_ft_'.$this->field_id]))
+			? $this->row['field_ft_'.$this->field_id] : 'none';
+
 		return ee()->typography->parse_type(
 				ee()->functions->encode_ee_tags($entry),
 				array(
-						'text_format'	=> 'none',
+						'text_format'	=> $text_format,
 						'html_format'	=> $this->row['channel_html_formatting'],
 						'auto_links'	=> $this->row['channel_auto_link_urls'],
 						'allow_img_url' => $this->row['channel_allow_img_urls']

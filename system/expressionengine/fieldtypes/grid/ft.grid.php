@@ -166,6 +166,102 @@ class Grid_ft extends EE_Fieldtype {
 	// --------------------------------------------------------------------
 
 	/**
+	 * :table modifier
+	 */
+	public function replace_table($data, $params = array(), $tagdata = '')
+	{
+		ee()->load->library('table');
+		ee()->load->library('grid_parser');
+		ee()->load->model('grid_model');
+		ee()->load->helper('array_helper');
+
+		$columns = ee()->grid_model->get_columns_for_field($this->field_id);
+		$prefix = ee()->grid_parser->grid_field_names[$this->field_id].':';
+
+		// Parameters
+		$set_classes = element('set_classes', $params, 'no');
+		$set_widths = element('set_widths', $params, 'no');
+
+		// Gather information we need from each column to build the table
+		$column_headings = array();
+		$column_cells = array();
+		foreach ($columns as $column)
+		{
+			$column_heading = array('data' => $column['col_label']);
+			$column_cell = array('data' => LD.$prefix.$column['col_name'].RD);
+
+			// set_classes parameter; if yes, adds column name as a class
+			// to heading cells and data cells
+			if ($set_classes == 'yes' || $set_classes == 'y')
+			{
+				$column_heading['class'] = $column['col_name'];
+				$column_cell['class'] = $column['col_name'];
+			}
+
+			// set_widths parameter; if yes, sets column widths to those
+			// defined in the field's settings
+			if (($set_widths == 'yes' || $set_widths == 'y') && $column['col_width'] != 0)
+			{
+				$column_heading['width'] = $column['col_width'].'%';
+			}
+
+			$column_headings[] = $column_heading;
+			$column_cells[] = $column_cell;
+		}
+
+		// We need a marker to separate the table rows portion from the
+		// rest of the table markup so that we only send the row template
+		// to the Grid parser for looping; otherwise, the entire table
+		// markup will loop
+		$row_data_marker = '{!--GRIDTABLEROWS--}';
+
+		$table_attributes = '';
+
+		// Table element attributes that can be set via tag parameters
+		foreach (array('border', 'cellspacing', 'cellpadding', 'class', 'id', 'width') as $attribute)
+		{
+			// Concatenate a string of them together for the table template
+			if (isset($params[$attribute]))
+			{
+				$table_attributes .= ' '.$attribute.'="'.$params[$attribute].'"';
+			}
+		}
+
+		ee()->table->set_template(array(
+			'table_open'	=> '<table'.$table_attributes.'>',
+			'tbody_open'	=> '<tbody>'.$row_data_marker,
+			'tbody_close'	=> $row_data_marker.'</tbody>'
+		));
+
+		ee()->table->set_heading($column_headings);
+		ee()->table->add_row($column_cells);
+
+		$tagdata = ee()->table->generate();
+
+		// Match the row data section only
+		if (preg_match(
+			'/'.preg_quote($row_data_marker).'(.*)'.preg_quote($row_data_marker).'/s',
+			$tagdata,
+			$match))
+		{
+			// Parse the loopable portion of the table
+			$row_data = ee()->grid_parser->parse(
+				$this->row,
+				$this->field_id,
+				$params,
+				$match[1]
+			);
+
+			// Replace the marker section with the parsed data
+			$tagdata = str_replace($match[0], $row_data, $tagdata);
+		}
+
+		return $tagdata;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * :next_row modifier
 	 */
 	public function replace_next_row($data, $params = '', $tagdata = '')

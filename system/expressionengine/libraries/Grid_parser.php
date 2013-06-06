@@ -27,12 +27,11 @@
 class Grid_parser {
 
 	public $modifiers = array();
-
-	protected $_grid_field_names = array();
+	public $grid_field_names = array();
 
 	public function __construct()
 	{
-		$this->modifiers = array('next_row', 'prev_row', 'total_rows');
+		$this->modifiers = array('next_row', 'prev_row', 'total_rows', 'table');
 	}
 
 	// --------------------------------------------------------------------
@@ -100,7 +99,7 @@ class Grid_parser {
 			$field_name = rtrim(str_replace($pre_parser->prefix(), '', $match[1]), ':');
 			$params = $match[2];
 			$field_id = $grid_fields[$field_name];
-			$this->_grid_field_names[$field_id] = rtrim($match[1], ':');
+			$this->grid_field_names[$field_id] = rtrim($match[1], ':');
 
 			ee()->grid_model->get_entry_rows($pre_parser->entry_ids(), $field_id, $params);
 		}
@@ -140,7 +139,7 @@ class Grid_parser {
 
 		$params = $entry_data['params'];
 		$entry_data = $entry_data[$entry_id];
-		$field_name = $this->_grid_field_names[$field_id];
+		$field_name = $this->grid_field_names[$field_id];
 
 		// :field_total_rows single variable
 		// Currently does not work well with fixed_order and search params
@@ -308,7 +307,7 @@ class Grid_parser {
 	private function _parse_row($channel_row, $field_id, $tagdata, $row)
 	{
 		$grid_row = $tagdata;
-		$field_name = $this->_grid_field_names[$field_id];
+		$field_name = $this->grid_field_names[$field_id];
 		$entry_id = $channel_row['entry_id'];
 
 		// Gather the variables to parse
