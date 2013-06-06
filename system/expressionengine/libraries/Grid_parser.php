@@ -27,12 +27,21 @@
 class Grid_parser {
 
 	public $modifiers = array();
+	public $reserved_names = array();
 	public $grid_field_names = array();
 
 	public function __construct()
 	{
+		// The pre processor will accept these modifiers as fields that need querying
 		$this->modifiers = array('next_row', 'prev_row', 'total_rows', 'table',
 			'sum', 'average', 'lowest', 'highest');
+
+		// These names cannot be used for column names because they serve
+		// other front-end functions as tag modifiers
+		$this->reserved_names = array_merge(
+			$this->modifiers,
+			array('switch', 'count', 'index', 'field_total_rows')
+		);
 	}
 
 	// --------------------------------------------------------------------

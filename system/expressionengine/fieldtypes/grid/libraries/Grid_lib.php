@@ -490,6 +490,8 @@ class Grid_lib {
 
 		$col_name_count = array_count_values($col_names);
 
+		ee()->load->library('grid_parser');
+
 		foreach ($settings['grid']['cols'] as $col_field => $column)
 		{
 			// Column labels are required
@@ -502,6 +504,11 @@ class Grid_lib {
 			if (empty($column['col_name']))
 			{
 				$errors[$col_field]['col_name'] = 'grid_col_name_required';
+			}
+			// Columns cannot be the same name as our protected modifiers
+			elseif (in_array($column['col_name'], ee()->grid_parser->reserved_names))
+			{
+				$errors[$col_field]['col_name'] = 'grid_col_name_reserved';
 			}
 			// There cannot be duplicate column names
 			elseif ($col_name_count[$column['col_name']] > 1)
