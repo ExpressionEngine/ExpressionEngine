@@ -714,7 +714,21 @@ class EE_Schema {
 			KEY `field_type` (`field_type`),
 			KEY `site_id` (`site_id`)
 		)";
-		
+
+		// Frontend Channel Form Settings
+
+		$Q[] = "CREATE TABLE `exp_channel_form_settings` (
+			`channel_form_settings_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+			`site_id` int(4) unsigned NOT NULL DEFAULT '0',
+			`channel_id` int(6) unsigned NOT NULL DEFAULT '0',
+			`default_status` varchar(50) NOT NULL DEFAULT 'open',
+			`require_captcha` char(1) NOT NULL DEFAULT 'n',
+			`allow_guest_posts` char(1) NOT NULL DEFAULT 'n',
+			`default_author` int(11) NOT NULL DEFAULT '0',
+			PRIMARY KEY `channel_form_settings_id` (`channel_form_settings_id`),
+			KEY `site_id` (`site_id`),
+			KEY `channel_id` (`channel_id`)
+		);";
 		
 		// Relationships table
 		

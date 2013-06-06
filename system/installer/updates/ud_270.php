@@ -160,8 +160,8 @@ class Updater {
 		ee()->dbforge->add_field(
 			array(
 				'channel_form_settings_id' => array('type' => 'int','constraint' => 10,	'unsigned' => TRUE,	'null' => FALSE,	'auto_increment' => TRUE),
-				'channel_id'		=> array('type' => 'int',		'constraint' => 6,	'unsigned' => TRUE,	'null' => FALSE,	'default' => 0),
 				'site_id'			=> array('type' => 'int',		'constraint' => 4,	'unsigned' => TRUE,	'null' => FALSE,	'default' => 0),
+				'channel_id'		=> array('type' => 'int',		'constraint' => 6,	'unsigned' => TRUE,	'null' => FALSE,	'default' => 0),
 				'default_status'	=> array('type' => 'varchar',	'constraint' => 50,	'null' => FALSE, 	'default' => 'open'),
 				'require_captcha'	=> array('type' => 'char',		'constraint' => 1,	'null' => FALSE,	'default' => 'n'),
 				'allow_guest_posts'	=> array('type' => 'char',		'constraint' => 1,	'null' => FALSE,	'default' => 'n'),
