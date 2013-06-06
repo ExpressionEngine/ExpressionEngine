@@ -214,6 +214,8 @@ class Grid_parser {
 		// :count single variable
 		$count = 1;
 
+		$prefix = $field_name.':';
+
 		$columns = ee()->grid_model->get_columns_for_field($field_id);
 		
 		foreach ($display_entry_data as $row)
@@ -227,6 +229,9 @@ class Grid_parser {
 			$row['index'] = $count - 1;
 			$row['total_rows'] = $total_rows;
 			$row['field_total_rows'] = $field_total_rows;
+
+			$grid_row = ee()->TMPL->parse_switch($grid_row, $count, $prefix);
+
 			$count++;
 
 			// Compile conditional vars
@@ -237,13 +242,13 @@ class Grid_parser {
 			{
 				$value = (isset($row['col_id_'.$col_id])) ? $row['col_id_'.$col_id] : '';
 				
-				$cond[$field_name.':'.$col['col_name']] = $value;
+				$cond[$prefix.$col['col_name']] = $value;
 			}
 
 			// Anything in the $row array can be checked in a conditional
 			foreach ($row as $key => $value)
 			{
-				$cond[$field_name.':'.$key] = $value;
+				$cond[$prefix.$key] = $value;
 			}
 
 			$grid_row = ee()->functions->prep_conditionals($grid_row, $cond);
@@ -255,7 +260,7 @@ class Grid_parser {
 				$pchunks = ee()->api_channel_fields->get_pair_field(
 					$grid_row,
 					$modifier,
-					$field_name.':'
+					$prefix
 				);
 
 				foreach ($pchunks as $chk_data)
