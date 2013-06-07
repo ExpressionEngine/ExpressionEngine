@@ -684,7 +684,7 @@ class Channel_form_lib
 		//set group-based return url
 		$this->form_hidden('return', (ee()->TMPL->fetch_param('return_'.ee()->session->userdata['group_id'])) ? ee()->TMPL->fetch_param('return_'.ee()->session->userdata['group_id']) : ee()->TMPL->fetch_param('return'));
 		
-		//temporarily set the site_id for cross-site saef
+		//temporarily set the site_id for cross-site channel:form
 		$current_site_id = ee()->config->item('site_id');
 		
 		ee()->config->set_item('site_id', $this->site_id);		

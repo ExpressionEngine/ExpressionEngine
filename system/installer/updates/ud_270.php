@@ -300,6 +300,13 @@ class Updater {
 				$template->template_data
 			);
 
+			// Rename the css path
+			$template->template_data = str_replace(
+				'css/_ee_saef_css',
+				'css/_ee_channel_form_css',
+				$template->template_data
+			);
+
 			// save the template
 			// if saving to file, save the file
 			if ($template->loaded_from_file)

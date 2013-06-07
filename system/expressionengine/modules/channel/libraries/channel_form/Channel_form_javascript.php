@@ -77,7 +77,7 @@ class Channel_form_javascript
 		
 		ee()->output->append_output(((ee()->config->item('use_compressed_js') != 'n') ? str_replace(array("\n", "\t"), '', smiley_js('', '', FALSE)) : smiley_js('', '', FALSE))."\n\n");
 
-		ee()->output->append_output(file_get_contents($this->js_path.'saef.js'));
+		ee()->output->append_output(file_get_contents($this->js_path.'channel_form.js'));
 		
 		ee()->output->set_header('Content-Length: '.strlen(ee()->output->get_output()));
 	}
