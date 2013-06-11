@@ -210,9 +210,6 @@ Grid.Publish.prototype = {
 		// Enable inputs
 		el.find(':input').removeAttr('disabled');
 
-		// TODO: Put row ID in data attribute, come up with a way
-		// to tell developers this is a new row
-
 		// Append the row to the end of the row container
 		this.rowContainer.append(el);
 

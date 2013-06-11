@@ -426,6 +426,23 @@ class EE_Fieldtype {
 	// --------------------------------------------------------------------
 	
 	/**
+	 * Creates a generic settings row in Grid
+	 *
+	 * @return string
+	 */
+	public function grid_settings_row($label, $content, $wide = FALSE)
+	{
+		$label_class = ($wide)
+			? 'grid_col_setting_label_small_width' : 'grid_col_setting_label_fixed_width';
+
+		return form_label($label, NULL,
+				array('class' => $label_class)
+			).$content;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Creates a dropdown formatted for a Grid columns settings field
 	 *
 	 * @return string
@@ -439,18 +456,16 @@ class EE_Fieldtype {
 		$attributes .= 'class="'.$classes.'"';
 		$attributes .= ($multiple) ? ' multiple' : '';
 
-		$label_class = ($wide)
-			? 'grid_col_setting_label_small_width' : 'grid_col_setting_label_fixed_width';
-
-		return form_label($label, NULL,
-				array('class' => $label_class)
-			).
+		return $this->grid_settings_row(
+			$label,
 			form_dropdown(
 				$name,
 				$data,
 				$selected,
 				$attributes
-			);
+			),
+			$wide
+		);
 	}
 
 	// --------------------------------------------------------------------

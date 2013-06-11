@@ -1489,7 +1489,7 @@ class Api_channel_fields extends Api {
 		
 		$this->set_settings($native_settings['field_id'], $_final_settings);
 		$this->setup_handler($native_settings['field_id']);
-		$this->apply('post_save_settings', array($_posted));
+		$this->apply('post_save_settings', array($_final_settings));
 
 		ee()->functions->clear_caching('all', '');
 		

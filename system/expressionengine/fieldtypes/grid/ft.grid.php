@@ -65,7 +65,6 @@ class Grid_ft extends EE_Fieldtype {
 	// --------------------------------------------------------------------
 
 	// Actual saving takes place in post_save so we have an entry_id
-	// TODO: what to do about autosave and revisions?
 	public function save($data)
 	{
 		ee()->session->set_cache(__CLASS__, $this->field_name, $data);
@@ -111,8 +110,19 @@ class Grid_ft extends EE_Fieldtype {
 	{
 		if ( ! ee()->session->cache(__CLASS__, 'grid_assets_loaded'))
 		{
-			ee()->cp->add_to_head(ee()->view->head_link('css/grid.css'));
+			if (REQ == 'CP')
+			{
+				$css_link = ee()->view->head_link('css/grid.css');
+			}
+			// Channel Form
+			else
+			{
+				$css_link = '<link rel="stylesheet" href="'.ee()->config->slash_item('theme_folder_url').'cp_themes/default/css/grid.css" type="text/css" media="screen" />'.PHP_EOL;
+			}
 
+			ee()->cp->add_to_head($css_link);
+
+			ee()->cp->add_js_script('ui', 'sortable');
 			ee()->cp->add_js_script('file', 'cp/sort_helper');
 			ee()->cp->add_js_script('file', 'cp/grid');
 			
@@ -512,6 +522,7 @@ class Grid_ft extends EE_Fieldtype {
 
 		ee()->cp->add_to_head(ee()->view->head_link('css/grid.css'));
 
+		ee()->cp->add_js_script('ui', 'sortable');
 		ee()->cp->add_js_script('file', 'cp/sort_helper');
 		ee()->cp->add_js_script('file', 'cp/grid');
 
