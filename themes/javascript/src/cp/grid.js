@@ -350,6 +350,15 @@ Grid.Settings.prototype = {
 				that._resizeSettingsContainer();
 			});
 
+			// Resize when Grid is selected from field type dropdown
+			$('#field_type').change(function()
+			{
+				if ($(this).val() == 'grid')
+				{
+					that._resizeSettingsContainer();
+				}
+			});
+
 			// Now, resize the inner container to fit the number of columns
 			// we have ready on page load
 			that._resizeColContainer();
@@ -370,7 +379,7 @@ Grid.Settings.prototype = {
 
 		this.settingsScroller.width(
 			this.root.width() - this.root.find('#grid_col_settings_labels').width()
-		)
+		);
 	},
 
 	/**
