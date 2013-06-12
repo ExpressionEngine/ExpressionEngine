@@ -744,6 +744,10 @@ class Admin_content extends CP_Controller {
 
 			if ( ! is_null($old_field))
 			{
+				$this->db->select('field_id');
+				$this->db->where('group_id', $old_field);
+				$query = $this->db->get('channel_fields');
+
 				if ($query->num_rows() > 0)
 				{
 					foreach($query->result() as $row)
