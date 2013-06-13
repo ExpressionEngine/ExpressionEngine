@@ -516,6 +516,18 @@ class Grid_model extends CI_Model {
  	// ------------------------------------------------------------------------
  	
  	/**
+ 	 * Public getter for $_grid_data property
+ 	 *
+ 	 * @return	array
+ 	 */
+ 	public function get_grid_data()
+ 	{
+ 		return $this->_grid_data;
+ 	}
+
+ 	// ------------------------------------------------------------------------
+ 	
+ 	/**
  	 * Gets array of all columns and settings for a given field ID
  	 *
  	 * @param	int		Field ID to get columns for

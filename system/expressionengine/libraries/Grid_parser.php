@@ -100,7 +100,7 @@ class Grid_parser {
 		ee()->load->model('grid_model');
 
 		// Cache column data for all fields used in the Channel loop
-		ee()->grid_model->get_columns_for_field(array_unique($field_ids));
+		$columns = ee()->grid_model->get_columns_for_field(array_unique($field_ids));
 		
 		// Attempt to gather all data needed for the entries loop before
 		// the loop runs
@@ -113,6 +113,9 @@ class Grid_parser {
 
 			ee()->grid_model->get_entry_rows($pre_parser->entry_ids(), $field_id, $params);
 		}
+
+		// Handle EE_Fieldtype::pre_loop()
+		$this->_pre_loop($columns);
 
 		return TRUE;
 	}
@@ -410,6 +413,76 @@ class Grid_parser {
 		}
 
 		return $grid_row;
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Handle EE_Fieldtype::pre_loop() so fieldtypes can query more efficiently
+	 *
+	 * @param string $entries_data 
+	 * @return void
+	 */
+	protected function _pre_loop($cols)
+	{
+		$grid_data = ee()->grid_model->get_grid_data();
+
+		$columns = array();
+
+		// Get an array of unique columns not segmented by field ID
+		foreach ($cols as $field_id => $column)
+		{
+			foreach ($column as $col_id => $value)
+			{
+				if ( ! isset($columns[$col_id]))
+				{
+					$columns[$col_id] = $value;
+				}
+			}
+		}
+
+		$col_data = array();
+
+		// Gather data by column TYPE so multiple columns of the same type
+		// get data passed to the fieldtype in one go
+		foreach ($columns as $column)
+		{
+			if ( ! isset($grid_data[$column['field_id']]))
+			{
+				continue;
+			}
+
+			foreach ($grid_data[$column['field_id']] as $marker)
+			{
+				foreach ($marker as $row)
+				{
+					foreach ($row as $row_id => $data)
+					{
+						if ( ! is_array($data) || ! isset($data['col_id_'.$column['col_id']]))
+						{
+							continue;
+						}
+
+						// Group data by column type
+						$col_data[$column['col_type']][] = $data['col_id_'.$column['col_id']];
+					}
+				}
+			}
+		}
+
+		// Send data for entire channel entires loop to fieldtype only once
+		foreach ($columns as $column)
+		{
+			if (isset($col_data[$column['col_type']]))
+			{
+				$this->instantiate_fieldtype($column, NULL, $column['field_id']);
+				$this->call('pre_loop', $col_data[$column['col_type']]);
+			}
+
+			// Unset this column type to make sure we don't send it again if
+			// other columns exist with the same type
+			unset($col_data[$column['col_type']]);
+		}
 	}
 
 	// ------------------------------------------------------------------------
