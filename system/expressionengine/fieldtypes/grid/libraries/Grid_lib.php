@@ -122,7 +122,7 @@ class Grid_lib {
 	 * @param	array	Data for current row
 	 * @return	string	HTML for specified cell's publish field
 	 */
-	protected function _publish_field_cell($column, $row_data = NULL)
+	protected function _publish_field_cell($column, $row = NULL)
 	{
 		ee()->grid_parser->instantiate_fieldtype(
 			$column,
@@ -131,21 +131,21 @@ class Grid_lib {
 			$this->entry_id
 		);
 
+		$row_data = (isset($row['col_id_'.$column['col_id']]))
+			? $row['col_id_'.$column['col_id']] : '';
+
 		// Call the fieldtype's field display method and capture the output
-		$display_field = ee()->grid_parser->call(
-			'display_field',
-			form_prep($row_data['col_id_'.$column['col_id']])
-		);
+		$display_field = ee()->grid_parser->call('display_field', form_prep($row_data));
 
 		// Default name for new rows
 		$row_id = 'new_row_0';
 
 		// If row_id is set, perform an extra check before assigning it in case
 		// we are coming back from a validation error
-		if (isset($row_data['row_id']))
+		if (isset($row['row_id']))
 		{
-			$row_id = (is_numeric($row_data['row_id']))
-				? 'row_id_'.$row_data['row_id'] : $row_data['row_id'];
+			$row_id = (is_numeric($row['row_id']))
+				? 'row_id_'.$row['row_id'] : $row['row_id'];
 		}
 
 		// Return the publish field HTML with namespaced form field names
