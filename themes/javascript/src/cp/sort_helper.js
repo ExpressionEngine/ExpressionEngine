@@ -15,7 +15,7 @@ EE.sortable_sort_helper = function(e, ui)
 		helperPos	= (axis == 'y') ? ui.position.top : ui.position.left,
 		helperEnd	= helperPos + helperSize;
 
-	container.children().each(function ()
+	container.children(':visible').each(function ()
 	{
 		var item = $(this);
 
@@ -24,12 +24,12 @@ EE.sortable_sort_helper = function(e, ui)
 		{
 			var itemSize = (axis == 'y') ? item.outerHeight() : item.outerWidth(),
 				itemPos	 = (axis == 'y') ? item.position().top : item.position().left,
-				itemEnd	 = itemPos + itemSize;
+				itemEnd	 = itemPos + itemSize,
+				tolerance = Math.min(helperSize, itemSize) / 2;
 
 			if (helperPos > itemPos && helperPos < itemEnd)
 			{
-				var tolerance = Math.min(helperSize, itemSize) / 2,
-					distance  = helperPos - itemPos;
+				var distance  = helperPos - itemPos;
 
 				if (distance < tolerance)
 				{
@@ -37,12 +37,10 @@ EE.sortable_sort_helper = function(e, ui)
 					container.sortable('refreshPositions');
 					return false;
 				}
-
 			}
 			else if (helperEnd < itemEnd && helperEnd > itemPos)
 			{
-				var tolerance = Math.min(helperSize, itemSize) / 2,
-					distance  = itemEnd - helperEnd;
+				var distance  = itemEnd - helperEnd;
 
 				if (distance < tolerance)
 				{
