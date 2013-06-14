@@ -407,20 +407,38 @@ class EE_Fieldtype {
 	
 	// --------------------------------------------------------------------
 	
-	function _yes_no_row($data, $lang, $data_key, $prefix = FALSE)
+	function _yes_no_row($data, $lang, $data_key, $prefix = FALSE, $grid = FALSE)
 	{
 		$prefix = ($prefix) ? $prefix.'_' : '';
+
+		$data = (isset($data[$data_key])) ? $data[$data_key] : '';
 		
-		$val_is_y = set_value($prefix.$data_key, $data[$data_key]);
+		$val_is_y = set_value($prefix.$data_key, $data);
 		$val_is_y = ($val_is_y == 'y' OR $val_is_y === TRUE);
+
+		$yes_no_string = form_radio($prefix.$data_key, 'y', $val_is_y, 'id="'.$prefix.$data_key.'_y"').NBS.
+			lang('yes', $prefix.$data_key.'_y').NBS.NBS.NBS.NBS.NBS.
+			form_radio($prefix.$data_key, 'n', ( ! $val_is_y), 'id="'.$prefix.$data_key.'_n"').NBS.
+			lang('no', $prefix.$data_key.'_n');
+
+		if ($grid)
+		{
+			return $this->grid_settings_row(lang($lang), $yes_no_string);
+		}
 		
-		ee()->table->add_row(
-			'<strong>'.lang($lang).'</strong>',
-				form_radio($prefix.$data_key, 'y', $val_is_y, 'id="'.$prefix.$data_key.'_y"').NBS.
-				lang('yes', $prefix.$data_key.'_y').NBS.NBS.NBS.NBS.NBS.
-				form_radio($prefix.$data_key, 'n', ( ! $val_is_y), 'id="'.$prefix.$data_key.'_n"').NBS.
-				lang('no', $prefix.$data_key.'_n')
-		);
+		ee()->table->add_row('<strong>'.lang($lang).'</strong>', $yes_no_string);
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Creates a generic settings row in Grid
+	 *
+	 * @return string
+	 */
+	public function grid_yes_no_row($label, $name, $data)
+	{
+		return $this->_yes_no_row($data, $label, $name, FALSE, TRUE);
 	}
 
 	// --------------------------------------------------------------------
