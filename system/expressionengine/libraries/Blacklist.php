@@ -43,7 +43,7 @@ class EE_Blacklist {
 	 * @return	bool
 	 */
 	function _check_blacklist()
-	{		
+	{
 		// Check the Referrer Too				
 		if (isset($_SERVER['HTTP_REFERER']) && $_SERVER['HTTP_REFERER'] != '')
 		{
@@ -58,9 +58,17 @@ class EE_Blacklist {
 			}
 					
 			$_POST['HTTP_REFERER'] = $test_ref;
-		}	
-		
-		if (count($_POST) == 0 OR ! ee()->db->table_exists('exp_blacklisted'))
+		}
+
+		if (count($_POST) == 0)
+		{
+			return TRUE;
+		}
+
+		ee()->load->model('addons_model');
+		$installed = ee()->addons_model->module_installed('blacklist');
+
+		if ( ! $installed)
 		{
 			unset($_POST['HTTP_REFERER']);
 			return TRUE;
@@ -71,27 +79,24 @@ class EE_Blacklist {
 		$whitelisted_url	= array();
 		$whitelisted_agent	= array();
 		
-		if (ee()->db->table_exists('exp_whitelisted'))
-		{
-			$results = ee()->db->query("SELECT whitelisted_type, whitelisted_value FROM exp_whitelisted 
-											 WHERE whitelisted_value != ''");
-		
-			if ($results->num_rows() > 0)
-			{		
-				foreach($results->result_array() as $row)
+		$results = ee()->db->query("SELECT whitelisted_type, whitelisted_value FROM exp_whitelisted 
+										 WHERE whitelisted_value != ''");
+	
+		if ($results->num_rows() > 0)
+		{		
+			foreach($results->result_array() as $row)
+			{
+				if ($row['whitelisted_type'] == 'url')
 				{
-					if ($row['whitelisted_type'] == 'url')
-					{
-						$whitelisted_url = explode('|', $row['whitelisted_value']);
-					}
-					elseif($row['whitelisted_type'] == 'ip')
-					{
-						$whitelisted_ip = explode('|', $row['whitelisted_value']);
-					}
-					elseif($row['whitelisted_type'] == 'agent')
-					{
-						$whitelisted_agent = explode('|', $row['whitelisted_value']);
-					}
+					$whitelisted_url = explode('|', $row['whitelisted_value']);
+				}
+				elseif($row['whitelisted_type'] == 'ip')
+				{
+					$whitelisted_ip = explode('|', $row['whitelisted_value']);
+				}
+				elseif($row['whitelisted_type'] == 'agent')
+				{
+					$whitelisted_agent = explode('|', $row['whitelisted_value']);
 				}
 			}
 		}
