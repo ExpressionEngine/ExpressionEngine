@@ -1403,7 +1403,15 @@ class Channel_form_lib
 		
 		foreach ($this->custom_fields as $i => $field)
 		{
-			$isset = (isset($_POST['field_id_'.$field['field_id']]) || isset($_POST[$field['field_name']]) || (((isset($_FILES['field_id_'.$field['field_id']]) && $_FILES['field_id_'.$field['field_id']]['error'] != 4) || (isset($_FILES[$field['field_name']]) && $_FILES[$field['field_name']]['error'] != 4)) && in_array($field['field_type'], $this->file_fields)));
+			$isset = (
+				isset($_POST['field_id_'.$field['field_id']]) ||
+				isset($_POST[$field['field_name']]) ||
+				(
+					((isset($_FILES['field_id_'.$field['field_id']]) && $_FILES['field_id_'.$field['field_id']]['error'] != 4) ||
+					(isset($_FILES[$field['field_name']]) && $_FILES[$field['field_name']]['error'] != 4)) &&
+					in_array($field['field_type'], $this->file_fields)
+				)
+			);
 			
 			// If file exists, add it to the POST array for validation
 			if (isset($_FILES[$field['field_name']]['name']))
@@ -1421,6 +1429,39 @@ class Channel_form_lib
 				else
 				{
 					$_POST[$field['field_name']] = $_FILES[$field['field_name']]['name'];
+				}
+			}
+
+			if (in_array($field['field_type'], $this->file_fields))
+			{
+				// Need to do a few more checks to see if the file was selected
+				// in another way.
+				foreach ($_FILES as $key => $value)
+				{
+					if ($key == $field['field_name'])
+					{
+						$_FILES['field_id_'.$field['field_id']] = $value;
+
+						// Check to see if a file was actually selected
+						if ($_POST[$field['field_name']] === '')
+						{
+							if ( ! empty($_POST[$field['field_name'].'_existing']))
+							{
+								$_POST[$field['field_name']] = $_POST[$field['field_name'].'_existing'];
+								$isset = TRUE;
+							}
+							elseif ( ! empty($_POST[$field['field_name'].'_hidden']))
+							{
+								$_POST[$field['field_name']] = $_POST[$field['field_name'].'_hidden'];
+								$isset = TRUE;
+							}
+						}
+					}
+					elseif (preg_match('/^'.$field['field_name'].'_(.+)/', $key, $match))
+					{
+						$_FILES['field_id_'.$field['field_id'].'_'.$match[1]] = $value;
+						unset($_FILES[$key]);
+					}
 				}
 			}
 			
@@ -1461,7 +1502,6 @@ class Channel_form_lib
 				}
 			}
 
-			//ee()->form_validation->set_rules($field['field_name'], $field['field_label'], implode('|', $field_rules));
 			
 			foreach ($_POST as $key => $value)
 			{
@@ -1494,41 +1534,6 @@ class Channel_form_lib
 				{
 					//also change utility POST fields, ie my_field_field_directory to field_id_X_directory
 					$_POST['field_id_'.$field['field_id'].'_'.$match[1]] = ee()->input->post($key, TRUE);
-				}
-			}
-			
-			if (in_array($field['field_type'], $this->file_fields))
-			{
-				//change field_name'd POSTed files to field_id's
-				foreach ($_FILES as $key => $value)
-				{
-					if ($key == $field['field_name'])
-					{
-						$_FILES['field_id_'.$field['field_id']] = $value;
-						unset($_FILES[$key]);
-
-						// Check to see if a file was actually selected
-						if ($_POST[$field['field_name']] === 'NULL')
-						{
-							if ( ! empty($_POST[$field['field_name'].'_existing']))
-							{
-								$_POST[$field['field_name']] = $_POST[$field['field_name'].'_existing'];
-							}
-							elseif ( ! empty($_POST[$field['field_name'].'_hidden']))
-							{
-								$_POST[$field['field_name']] = $_POST[$field['field_name'].'_hidden'];
-							}
-							else
-							{
-								$_POST[$field['field_name']] = '';
-							}
-						}
-					}
-					elseif (preg_match('/^'.$field['field_name'].'_(.+)/', $key, $match))
-					{
-						$_FILES['field_id_'.$field['field_id'].'_'.$match[1]] = $value;
-						unset($_FILES[$key]);
-					}
 				}
 			}
 		}
@@ -1647,7 +1652,7 @@ class Channel_form_lib
 				$_POST[$field_id] = $_POST[$field_name];
 			}
 		}
-		
+
 		if ( ! ee()->security->check_xid(ee()->input->post('XID')))
 		{
 			ee()->functions->redirect(stripslashes(ee()->input->post('RET')));		

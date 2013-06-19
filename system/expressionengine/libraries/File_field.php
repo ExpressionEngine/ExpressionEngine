@@ -54,7 +54,7 @@ class File_field {
 	 * 		Either 'all' or 'image'
 	 * @return string Fully rendered file field
 	 */
-	public function field($field_name, $data = '', $allowed_file_dirs = 'all', $content_type = 'all', $filebrowser = TRUE)
+	public function field($field_name, $data = '', $allowed_file_dirs = 'all', $content_type = 'all', $filebrowser = TRUE, $existing_limit = NULL)
 	{
 		// Load necessary library, helper, model and langfile
 		ee()->load->library('filemanager');
@@ -85,6 +85,11 @@ class File_field {
 			$allowed_file_dirs,
 			$upload_dirs
 		);
+
+		if ($specified_directory != 'all')
+		{
+			$vars['upload_location_id'] = $specified_directory;
+		}
 		
 		// Get the thumbnail
 		$thumb_info = ee()->filemanager->get_thumb($vars['filename'], $vars['upload_location_id']);
@@ -103,6 +108,8 @@ class File_field {
 			'data-content-type'	=> $content_type,
 			'data-directory'	=> $specified_directory
 		));
+
+		$vars['allowed_file_dirs'] = $allowed_file_dirs;
 		$vars['dropdown'] = form_dropdown($field_name.'_directory', $upload_dirs, $vars['upload_location_id']);
 
 		// Check to see if they have access to any directories to create an upload link
@@ -112,6 +119,50 @@ class File_field {
 		// If we have a file, show the thumbnail, filename and remove link
 		$vars['set_class'] = $vars['filename'] ? '' : 'js_hide';
 		$vars['filebrowser'] = $filebrowser;
+
+		$existing_files = NULL;
+
+		if ( ! $filebrowser && isset($existing_limit) && $specified_directory != 'all')
+		{
+			/*
+			if ($specified_directory == 'all')
+			{
+				$specified_directory = array();
+			}
+			*/
+
+			$options = array(
+				'order' => array('file_name' => 'asc')
+			);
+
+			if ($existing_limit) // 0 == all files
+			{
+				$options['limit'] = $existing_limit;
+			}
+
+			// Load files in from database
+			$files_from_db = ee()->file_model->get_files(
+				$specified_directory,
+				$options
+			);
+
+			$files = array(
+				'' => lang('select_existing')
+			);
+
+			// Put database files into list
+			if ($files_from_db['results'] !== FALSE)
+			{
+				foreach ($files_from_db['results']->result() as $file)
+				{
+					$files[$file->file_name] = $file->file_name;
+				}
+			}
+
+			$existing_files = form_dropdown($field_name.'_existing', $files);
+		}
+
+		$vars['existing_files'] = $existing_files;
 
 		return ee()->load->ee_view('_shared/file/field', $vars, TRUE);
 	}
@@ -185,6 +236,7 @@ class File_field {
 	public function validate($data, $field_name, $required = 'n')
 	{
 		$dir_field		= $field_name.'_directory';
+		$existing_field = $field_name.'_existing';
 		$hidden_field	= $field_name.'_hidden';
 		$hidden_dir		= (ee()->input->post($field_name.'_hidden_dir')) ? ee()->input->post($field_name.'_hidden_dir') : ee()->input->post($field_name.'_directory');
 		$allowed_dirs	= array();
@@ -197,6 +249,11 @@ class File_field {
 		
 		// Directory selected - switch
 		$filedir = (ee()->input->post($dir_field)) ? ee()->input->post($dir_field) : '';
+
+		if ( ! $filedir)
+		{
+			$filedir = $hidden_dir;
+		}
 		
 		foreach($upload_directories as $row)
 		{
@@ -218,11 +275,15 @@ class File_field {
 				$_POST[$field_name] = $data['file_name'];
 			}
 		}
+		elseif (ee()->input->post($existing_field))
+		{
+			$_POST[$field_name] = $_POST[$existing_field];
+		}
 		elseif (ee()->input->post($hidden_field))
 		{
 			$_POST[$field_name] = $_POST[$hidden_field];
 		}
-		
+
 		$_POST[$dir_field] = $filedir;
 		
 		unset($_POST[$hidden_field]);

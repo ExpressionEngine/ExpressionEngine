@@ -18,15 +18,14 @@
 		
 		<div class="no_file <?=($filebrowser || $filename) ? 'js_hide' : ''?>">
 			<p class='sub_filename'><?=$upload?></p>
-			<p><?=$dropdown?></p>
+			
+			<?php if ($allowed_file_dirs == 'all'):?>
+				<p><?=$dropdown?></p>
+			<?php endif; ?>
+			
+			<?php if ( ! empty($existing_files)) : ?>
+				<p class="file_existing"><?=$existing_files?></p>
+			<?php endif; ?>
 		</div>
 	</div>
 </div>
-
-<!--
-
-SC: placeholder input (null)
-
-- upload
-- SC: existing files | Native: upload dirs
--->

@@ -82,6 +82,8 @@ class File_ft extends EE_Fieldtype {
 	{
 		$allowed_file_dirs		= (isset($this->settings['allowed_directories']) && $this->settings['allowed_directories'] != 'all') ? $this->settings['allowed_directories'] : '';
 		$content_type			= (isset($this->settings['field_content_type'])) ? $this->settings['field_content_type'] : 'all';
+		$existing_limit			= (isset($this->settings['num_existing'])) ? $this->settings['num_existing'] : 0;
+		$show_existing			= (isset($this->settings['show_existing'])) ? $this->settings['show_existing'] : 'n';
 		$filebrowser			= (REQ == 'CP');
 
 		if (REQ != 'CP')
@@ -95,7 +97,8 @@ class File_ft extends EE_Fieldtype {
 			$data,
 			$allowed_file_dirs,
 			$content_type,
-			$filebrowser
+			$filebrowser,
+			($show_existing == 'y') ? $existing_limit : NULL
 		);
 	}
 
@@ -121,7 +124,7 @@ class File_ft extends EE_Fieldtype {
 						last_value = [],
 						fileselector = container.find('.no_file'),
 						hidden_name = container.find('[name$="_hidden"]').prop('name'),
-						remove;
+						placeholder;
 
 					remove = $('<input/>', {
 						'type': 'hidden',
