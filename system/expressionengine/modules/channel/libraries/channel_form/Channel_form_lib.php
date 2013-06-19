@@ -1460,7 +1460,7 @@ class Channel_form_lib
 					$_POST['field_id_'.$field['field_id']] = '1';
 				}
 			}
-			
+
 			//ee()->form_validation->set_rules($field['field_name'], $field['field_label'], implode('|', $field_rules));
 			
 			foreach ($_POST as $key => $value)
@@ -1579,7 +1579,7 @@ class Channel_form_lib
 				}
 			}
 		}
-		
+
 		//don't override status on edit, only on publish
 		if ( ! $this->edit && ! empty($this->settings['override_status'][ee()->config->item('site_id')][ee()->input->post('channel_id')]))
 		{
@@ -1631,6 +1631,21 @@ class Channel_form_lib
 		if ( ! ee()->form_validation->run())
 		{
 			$this->field_errors = ee()->form_validation->_error_array;
+		}
+
+		// CI's form validation rules can either throw an error, or be used as
+		// prepping functions. This is also the case for custom fields. Since our
+		// rules were set on the field short name and the channel entries api uses
+		// the field_id_# value, we need to sync up our data.
+		foreach ($this->custom_fields as $i => $field)
+		{
+			$field_id = 'field_id_'.$field['field_id'];
+			$field_name = $field['field_name'];
+
+			if (isset($_POST[$field_id]) && isset($_POST[$field_name]))
+			{
+				$_POST[$field_id] = $_POST[$field_name];
+			}
 		}
 		
 		if ( ! ee()->security->check_xid(ee()->input->post('XID')))
@@ -2602,12 +2617,6 @@ class Channel_form_lib
 		{
 			throw new Channel_form_exception(lang('safecracker_author_only'));
 		}
-		
-		// Debates- not necessary, but might be good to have in post?  IDK.
-		foreach ($this->_meta as $k => $v)
-		{
-			//$_POST[$k] = $v;
-		}
 	}
 
 
@@ -3029,9 +3038,7 @@ class Channel_form_lib
 		$this->field_errors = array();
 		$this->file = FALSE;
 		$this->file_fields = array(
-			// @todo: As of EE 2.2 (or earlier), SafeCracker doesn't fully work with standard file fields, only SafeCracker File
-			//'file',
-			'safecracker_file'
+			'file'
 		);
 		$this->form_validation_methods = array(
 			'valid_ee_date'
