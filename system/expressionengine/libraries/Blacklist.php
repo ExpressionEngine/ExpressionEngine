@@ -39,12 +39,18 @@ class EE_Blacklist {
 	/**
 	 * Blacklist Checker
 	 *
+	 * This function checks all of the available blacklists, such as urls,
+	 * IP addresses, and user agents. URLs are checked as both referrers and
+	 * in all $_POST'ed contents (such as comments).
+	 *
 	 * @access	private
 	 * @return	bool
 	 */
 	function _check_blacklist()
-	{		
-		// Check the Referrer Too				
+	{
+		// Check the referrer
+		// Since we already need to check all post values for illegal urls
+		// below, we'll temporarily write our referrer to $_POST.
 		if (isset($_SERVER['HTTP_REFERER']) && $_SERVER['HTTP_REFERER'] != '')
 		{
 			$test_ref = ee()->security->xss_clean($_SERVER['HTTP_REFERER']);
@@ -58,9 +64,20 @@ class EE_Blacklist {
 			}
 					
 			$_POST['HTTP_REFERER'] = $test_ref;
-		}	
-		
-		if (count($_POST) == 0 OR ! ee()->db->table_exists('exp_blacklisted'))
+		}
+
+		// No referrer, and no posted data - no need to blacklist.
+		// In other words, if your ip is blacklisted you can still see the
+		// site, but you can not contribute content.
+		if (count($_POST) == 0)
+		{
+			return TRUE;
+		}
+
+		ee()->load->model('addons_model');
+		$installed = ee()->addons_model->module_installed('blacklist');
+
+		if ( ! $installed)
 		{
 			unset($_POST['HTTP_REFERER']);
 			return TRUE;
@@ -71,27 +88,24 @@ class EE_Blacklist {
 		$whitelisted_url	= array();
 		$whitelisted_agent	= array();
 		
-		if (ee()->db->table_exists('exp_whitelisted'))
-		{
-			$results = ee()->db->query("SELECT whitelisted_type, whitelisted_value FROM exp_whitelisted 
-											 WHERE whitelisted_value != ''");
-		
-			if ($results->num_rows() > 0)
-			{		
-				foreach($results->result_array() as $row)
+		$results = ee()->db->query("SELECT whitelisted_type, whitelisted_value FROM exp_whitelisted 
+										 WHERE whitelisted_value != ''");
+	
+		if ($results->num_rows() > 0)
+		{		
+			foreach($results->result_array() as $row)
+			{
+				if ($row['whitelisted_type'] == 'url')
 				{
-					if ($row['whitelisted_type'] == 'url')
-					{
-						$whitelisted_url = explode('|', $row['whitelisted_value']);
-					}
-					elseif($row['whitelisted_type'] == 'ip')
-					{
-						$whitelisted_ip = explode('|', $row['whitelisted_value']);
-					}
-					elseif($row['whitelisted_type'] == 'agent')
-					{
-						$whitelisted_agent = explode('|', $row['whitelisted_value']);
-					}
+					$whitelisted_url = explode('|', $row['whitelisted_value']);
+				}
+				elseif($row['whitelisted_type'] == 'ip')
+				{
+					$whitelisted_ip = explode('|', $row['whitelisted_value']);
+				}
+				elseif($row['whitelisted_type'] == 'agent')
+				{
+					$whitelisted_agent = explode('|', $row['whitelisted_value']);
 				}
 			}
 		}
@@ -155,12 +169,16 @@ class EE_Blacklist {
 					// Clear period from the end of URLs
 					$value = preg_replace("#(^|\s|\()((http://|http(s?)://|www\.)\w+[^\s\)]+)\.([\s\)])#i", "\\1\\2{{PERIOD}}\\4", $value);
 				
+					// Sometimes user content such as comments contain multiple
+					// urls, so we need to check them individually.
 					if (preg_match_all("/([f|ht]+tp(s?):\/\/[a-z0-9@%_.~#\/\-\?&=]+.)".
 										"|(www.[a-z0-9@%_.~#\-\?&]+.)".
 										"|([a-z0-9@%_~#\-\?&]*\.(".implode('|', $domains)."))/si", $value, $matches))
 					{							
 						for($i = 0; $i < count($matches['0']); $i++)
 						{
+							// If this is a referrer or the comment module's
+							// url field we know that it's just a single match.
 							if ($key == 'HTTP_REFERER' OR $key == 'url')
 							{
 								$matches['0'][$i] = $value;
@@ -205,6 +223,9 @@ class EE_Blacklist {
 									
 									if ($bad == 'y')
 									{
+										// Referer mismatches get a access denied error
+										// since the url error doesn't make sense for a
+										// user who didn't take any actions.
 										if ($key == 'HTTP_REFERER')
 										{
 											$this->blacklisted = 'y';
