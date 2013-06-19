@@ -1599,9 +1599,9 @@ class Channel_form_lib
 			ee()->form_validation->set_message($method, lang('safecracker_'.$method));
 		}
 		
-		if (ee()->input->post('dynamic_title'))
+		if ($this->_meta['dynamic_title'])
 		{
-			$dynamic_title = base64_decode(ee()->input->post('dynamic_title'));
+			$dynamic_title = $this->_meta['dynamic_title'];
 			
 			foreach ($_POST as $key => $value)
 			{
