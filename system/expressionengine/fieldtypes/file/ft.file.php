@@ -87,6 +87,7 @@ class File_ft extends EE_Fieldtype {
 		if (REQ != 'CP')
 		{
 			$this->_frontend_js();
+			$this->_frontend_css();
 		}
 
 		return ee()->file_field->field(
@@ -99,7 +100,12 @@ class File_ft extends EE_Fieldtype {
 	}
 
 	// --------------------------------------------------------------------
-
+	
+	/**
+	 * Basic javascript interaction on the frontend
+	 *
+	 * @access	public
+	 */
 	protected function _frontend_js()
 	{	
 		ee()->load->library('javascript');
@@ -145,68 +151,66 @@ JSC;
 	}
 
 	// --------------------------------------------------------------------
-/*
-	function frontend_display_field($data)
+	
+	/**
+	 * Basic styles on the frontend
+	 *
+	 * @access	public
+	 */
+	protected function _frontend_css()
 	{
-		if ( ! $this->settings['allowed_directories'])
+		if (empty(ee()->session->cache['file_field']['css']))
 		{
-			return lang('no_upload_dir');
+			ee()->session->cache['file_field']['css'] = TRUE;
+			
+			$styles = <<<CSS
+			<style type="text/css">
+			.file_set {
+				color: #5F6C74;
+				font-family: Helvetica, Arial, sans-serif;
+				font-size: 12px;
+				position: relative;
+			}
+			.filename {
+				border: 1px solid #B6C0C2;
+				position: relative;
+				padding: 5px;
+				text-align: center;
+				float: left;
+				margin: 0 0 5px;
+			}
+			.undo_remove {
+				color: #5F6C74;
+				font-family: Helvetica, Arial, sans-serif;
+				font-size: 12px;
+				text-decoration: underline;
+				display: block;
+				padding: 0;
+				margin: 0 0 8px;
+			}
+			.filename img {
+				display: block;
+			}
+			.filename p {
+				padding: 0;
+				margin: 4px 0 0;
+			}
+			.remove_file {
+				position: absolute;
+				top: -6px;
+				left: -6px;
+				z-index: 5;
+			}
+			.clear {
+				clear: both;
+			}
+			</style>
+CSS;
+			$styles = preg_replace('/\s+/is', ' ', $styles);
+			ee()->cp->add_to_head($styles);
 		}
-		
-		ee()->load->library('filemanager');
-		
-		//$this->add_js();
-		
-		$data = preg_replace('/{filedir_([0-9]+)}/', '', $data);
-		
-		$hidden_data = set_value($this->field_name.'_hidden', '');
-		
-		$placeholder_data = set_value($this->field_name, '');
-		
-		$thumb_info = ee()->filemanager->get_thumb($data, $this->settings['allowed_directories'], TRUE);
-		$thumb_src = $thumb_info['thumb'];
-		
-	//	$this->add_css();
-		
-		$form_upload = array('name' => $this->field_name);
-		
-		if ($data)
-		{
-			$form_upload['disabled'] = 'disabled';
-		}
-
-		$allowed_file_dirs		= (isset($this->settings['allowed_directories']) && $this->settings['allowed_directories'] != 'all') ? $this->settings['allowed_directories'] : '';
-		$content_type			= (isset($this->settings['field_content_type'])) ? $this->settings['field_content_type'] : 'all';
-
-		$tmp = ee()->file_field->frontend_field(
-			$this->field_name,
-			$data,
-			$allowed_file_dirs,
-			$content_type
-		);
-
-		$vars = array(
-			'data' => $data,
-			'hidden' => form_hidden($this->field_name.'_hidden', $data),
-			'upload' => form_upload($form_upload),
-			'placeholder_input' => form_hidden($this->field_name, 'NULL'),
-			'remove' => form_label(form_checkbox($this->field_name.'_remove', 1).' '.lang('remove_file')),
-			'existing_input_name' => $this->field_name.'_existing',
-//			'existing_files' => $this->existing_files($this->settings['allowed_directories']),
-			'settings' => $this->settings,
-			'default' => FALSE,
-			'thumb_src' => $thumb_src
-		);
-		
-		ee()->load->add_package_path(PATH_THIRD.'safecracker_file');
-
-		$display_field = ee()->load->view('display_field', $vars, TRUE);
-		
-		ee()->load->remove_package_path(PATH_THIRD.'safecracker_file');
-
-		return $display_field;
 	}
-*/
+
 	// --------------------------------------------------------------------
 	
 	/**
