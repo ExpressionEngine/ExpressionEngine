@@ -158,13 +158,15 @@ EE.namespace('EE.publish.file_browser');
 	 * @param {Object} field jQuery object of the field
 	 */
 	function file_field_changed(file, field) {
-		var container = $("input[name="+field+"]").parent().parent().parent();
+		var container = $("input[name="+field+"]").closest('.file_wrapper');
 
 		if (file.is_image == false) {
 			container.find(".file_set").show().find(".filename").html("<img src=\""+EE.PATH_CP_GBL_IMG+"default.png\" alt=\""+EE.PATH_CP_GBL_IMG+"default.png\" /><br />"+file.file_name);
 		} else {
 			container.find(".file_set").show().find(".filename").html("<img src=\""+file.thumb+"\" /><br />"+file.file_name);
 		}
+
+		container.find('.choose_file').hide();
 
 		$("input[name="+field+"_hidden]").val(file.file_name);
 		$("input[name="+field+"_hidden_dir], select[name="+field+"_directory]").val(file.upload_location_id);
@@ -178,24 +180,45 @@ EE.namespace('EE.publish.file_browser');
 	 * @param {String} selector The jQuery selector representing the context in
 	 *		which to search for the selector
 	 */
-	function add_trigger (selector, context) {
+	function add_trigger(selector, context) {
 		// Look for every file input on the publish form and establish the 
 		// file browser trigger. Also establishes the remove file handler.
 		$(selector, context).each(function() {
-			var container = $(this).parent().parent().parent(),
+			var container = $(this).closest('.file_wrapper'),
 				trigger = container.find(".choose_file"),
+				no_filemanager = container.find('.no_file'),
 				content_type = $(this).data('content-type'),
 				directory = $(this).data('directory'),
+				last_value = [], // used for undo
 				settings = {
 					"content_type": content_type,
 					"directory": directory
 				};
-		
+
 			$.ee_filebrowser.add_trigger(trigger, $(this).attr("name"), settings, file_field_changed);
 
+			fileselector = trigger.length ? trigger : no_filemanager;
+
 			container.find(".remove_file").click(function() {
-				container.find("input[type=hidden]").val("");
+				container.find("input[type=hidden]").val(function(i, current_value) {
+					last_value[i] = current_value;
+					return '';
+				});
 				container.find(".file_set").hide();
+				container.find('.undo_remove').show();
+				fileselector.show();
+
+				return false;
+			});
+
+			container.find('.undo_remove').click(function() {
+				container.find("input[type=hidden]").val(function(i) {
+					return last_value.length ? last_value[i] : '';
+				});
+				container.find(".file_set").show();
+				container.find('.undo_remove').hide();
+				fileselector.hide();
+
 				return false;
 			});
 		});

@@ -8,6 +8,9 @@ $lang = array(
 'remove_file' =>
 'Remove File',
 
+'file_undo_remove' =>
+'Undo Remove',
+
 'directory_no_access' =>
 'You do not have access to the directory specified for this field',
 
@@ -35,6 +38,17 @@ $lang = array(
 'rel_ft_order_desc'			=> 'Descending Order',
 'rel_ft_allow_multi'		=> 'Allow multiple relations?',
 'rel_ft_allow_multi_subtext'=> 'authors will be able to select more than one entry to relate',
+
+'file_ft_options'				=> 'File Field Options',
+'file_ft_configure'				=> 'Configure File Upload',
+'file_ft_configure_subtext'		=> 'Further configure how the file field should behave.',
+'file_ft_content_type'			=> 'Allowed File Type',
+'file_ft_allowed_dirs'			=> 'Allowed Directory',
+'file_ft_show_files'			=> 'Show Existing Files?',
+'file_ft_show_files_subtext'	=> 'authors will be able to select an existing file',
+'file_ft_limit_left'			=> 'Limit recent files to',
+'file_ft_limit_right'			=> 'returned',
+'file_ft_limit_files_subtext'	=> 'leave blank to show ALL files',
 
 // IGNORE
 ''=>'');

@@ -309,11 +309,6 @@ class Channel_form_lib
 				if (strpos($temp, LD.'display_field'.RD) !== FALSE)
 				{
 					$custom_field_variables_row['display_field'] = $this->display_field($field_name);
-					
-					if ($custom_field_variables_row['field_type'] == 'file')
-					{
-						$custom_field_variables_row['display_field'] = '<div class="publish_field">'.$custom_field_variables_row['display_field'].'</div>';
-					}
 				}
 				
 				foreach ($custom_field_variables_row as $key => $value)
@@ -1502,7 +1497,7 @@ class Channel_form_lib
 				}
 			}
 			
-			if (in_array($field['field_type'], $this->file_fields) || $field['field_type'] == 'matrix')
+			if (in_array($field['field_type'], $this->file_fields))
 			{
 				//change field_name'd POSTed files to field_id's
 				foreach ($_FILES as $key => $value)

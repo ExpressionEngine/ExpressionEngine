@@ -41,7 +41,7 @@ class File_field {
 	}
 	
 	// ------------------------------------------------------------------------
-	
+
 	/**
 	 * Creates a file field
 	 * 
@@ -54,7 +54,7 @@ class File_field {
 	 * 		Either 'all' or 'image'
 	 * @return string Fully rendered file field
 	 */
-	public function field($field_name, $data = '', $allowed_file_dirs = 'all', $content_type = 'all', $view_type = 'list')
+	public function field($field_name, $data = '', $allowed_file_dirs = 'all', $content_type = 'all', $filebrowser = TRUE)
 	{
 		// Load necessary library, helper, model and langfile
 		ee()->load->library('filemanager');
@@ -106,10 +106,12 @@ class File_field {
 		$vars['dropdown'] = form_dropdown($field_name.'_directory', $upload_dirs, $vars['upload_location_id']);
 
 		// Check to see if they have access to any directories to create an upload link
-		$vars['upload_link'] = (count($upload_dirs) > 0) ? '<a href="#" class="choose_file" data-directory="'.$specified_directory.'">'.lang('add_file').'</a>' : lang('directory_no_access');
+		$vars['upload_link'] = (count($upload_dirs) > 0) ? '<a href="#" class="choose_file'.($vars['filename'] ? ' js_hide' : '').'" data-directory="'.$specified_directory.'">'.lang('add_file').'</a>' : lang('directory_no_access');
+		$vars['undo_link'] = '<a href="#" class="undo_remove js_hide">'.lang('file_undo_remove').'</a>';
 
 		// If we have a file, show the thumbnail, filename and remove link
 		$vars['set_class'] = $vars['filename'] ? '' : 'js_hide';
+		$vars['filebrowser'] = $filebrowser;
 
 		return ee()->load->ee_view('_shared/file/field', $vars, TRUE);
 	}
@@ -184,9 +186,9 @@ class File_field {
 	{
 		$dir_field		= $field_name.'_directory';
 		$hidden_field	= $field_name.'_hidden';
-		$hidden_dir		= (ee()->input->post($field_name.'_hidden_dir')) ? ee()->input->post($field_name.'_hidden_dir') : '';
+		$hidden_dir		= (ee()->input->post($field_name.'_hidden_dir')) ? ee()->input->post($field_name.'_hidden_dir') : ee()->input->post($field_name.'_directory');
 		$allowed_dirs	= array();
-		
+
 		// Default to blank - allows us to remove files
 		$_POST[$field_name] = '';
 		

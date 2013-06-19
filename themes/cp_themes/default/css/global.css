@@ -2663,9 +2663,19 @@ a#refresh_categories {
 	text-align: 		center;
 }
 
+.file_set {
+	position: relative;
+}
+
 .file_set .sub_filename {
 	clear:				left;
 	padding-top:		7px;
+}
+
+.file_set .remove_file {
+	position: absolute;
+	left: 5px;
+	top: 0;
 }
 
 #custom_date_picker input[type="text"] {

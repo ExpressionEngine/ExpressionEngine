@@ -378,9 +378,6 @@ class Safecracker_file_ft extends File_ft
 					$(file_set).find(".safecracker_file_thumb, .safecracker_file_input").toggle();
 					$(file_set).find(".safecracker_file_input input").attr("disabled","disabled");
 					$(file_set).find(".safecracker_file_remove input").click();
-					// var hidden = $(file_set).find(".safecracker_file_hidden input").val();
-					// var placeholder = (hidden && $(this).is(":checked")) ? hidden : "NULL";
-					// $(file_set).find(".safecracker_file_placeholder_input input").val(placeholder);
 					return false;
 				});
 			*/

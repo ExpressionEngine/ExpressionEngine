@@ -1,14 +1,32 @@
-<div class="file_set <?=$set_class?>">
-	<p class='filename'><img src="<?=$thumb?>" alt="<?=$alt?>"/><br /><?=$filename?></p>
-	<p class='sub_filename'><a href="#" class="remove_file"><?=lang('remove_file')?></a></p>
-	<p><?=$hidden?></p>
+<div class="file_wrapper">
+	<div class="file_set <?=$set_class?>">
+		<a href="#" class="remove_file" title="<?=lang('remove_file')?>"><img src="<?= $this->config->item('theme_folder_url'); ?>cp_themes/default/images/write_mode_close.png" alt="" /></a>
+
+		<p class="filename">
+			<img src="<?=$thumb?>" alt="<?=$alt?>"/>
+			<br />
+			<?=$filename?>
+		</p>
+		<p><?=$hidden?></p>
+	</div>
+
+	<div class='file_upload'>
+		<p class="sub_filename">
+			<?=$undo_link?>
+			<?=$filebrowser ? $upload_link : ''?>
+		</p>
+		
+		<div class="no_file <?=($filebrowser || $filename) ? 'js_hide' : ''?>">
+			<p class='sub_filename'><?=$upload?></p>
+			<p><?=$dropdown?></p>
+		</div>
+	</div>
 </div>
 
-<div class="no_file js_hide">
-	<p class='sub_filename'><?=$upload?></p>
-	<p><?=$dropdown?></p>
-</div>
+<!--
 
-<div class="modifiers js_show">
-	<p class='sub_filename'><?=$upload_link?></p>
-</div>
+SC: placeholder input (null)
+
+- upload
+- SC: existing files | Native: upload dirs
+-->

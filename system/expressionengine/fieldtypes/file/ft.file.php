@@ -43,19 +43,6 @@ class File_ft extends EE_Fieldtype {
 	}
 	
 	// --------------------------------------------------------------------
-	
-	/**
-	 * Save the correct value {fieldir_\d}filename.ext
-	 *
-	 * @access	public
-	 */
-	function save($data)
-	{
-		$directory = ee()->input->post($this->field_name.'_hidden_dir');
-		return ee()->file_field->format_data(urldecode($data), $directory);
-	}
-	
-	// --------------------------------------------------------------------
 
 	/**
 	 * Validate the upload
@@ -70,6 +57,19 @@ class File_ft extends EE_Fieldtype {
 			$this->settings['field_required']
 		);
 	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Save the correct value {fieldir_\d}filename.ext
+	 *
+	 * @access	public
+	 */
+	function save($data)
+	{
+		// validate does all of the work.
+		return $data;
+	}
 	
 	// --------------------------------------------------------------------
 	
@@ -82,15 +82,131 @@ class File_ft extends EE_Fieldtype {
 	{
 		$allowed_file_dirs		= (isset($this->settings['allowed_directories']) && $this->settings['allowed_directories'] != 'all') ? $this->settings['allowed_directories'] : '';
 		$content_type			= (isset($this->settings['field_content_type'])) ? $this->settings['field_content_type'] : 'all';
+		$filebrowser			= (REQ == 'CP');
+
+		if (REQ != 'CP')
+		{
+			$this->_frontend_js();
+		}
 
 		return ee()->file_field->field(
 			$this->field_name,
 			$data,
 			$allowed_file_dirs,
-			$content_type
+			$content_type,
+			$filebrowser
 		);
 	}
 
+	// --------------------------------------------------------------------
+
+	protected function _frontend_js()
+	{	
+		ee()->load->library('javascript');
+		
+		if (empty(ee()->session->cache['file_field']['js']))
+		{
+			ee()->session->cache['file_field']['js'] = TRUE;
+			
+			$script = <<<JSC
+			$(document).ready(function() {
+				$('.file_wrapper').each(function() {
+					var container = $(this),
+						last_value = [],
+						fileselector = container.find('.no_file');
+
+					container.find(".remove_file").click(function() {
+						container.find("input[type=hidden]").val(function(i, current_value) {
+							last_value[i] = current_value;
+							return '';
+						});
+						container.find(".file_set").hide();
+						container.find('.undo_remove').show();
+						fileselector.show();
+
+						return false;
+					});
+
+					container.find('.undo_remove').click(function() {
+						container.find("input[type=hidden]").val(function(i) {
+							return last_value.length ? last_value[i] : '';
+						});
+						container.find(".file_set").show();
+						container.find('.undo_remove').hide();
+						fileselector.hide();
+
+						return false;
+					});
+				});
+			});
+JSC;
+			ee()->javascript->output($script);
+		}
+	}
+
+	// --------------------------------------------------------------------
+/*
+	function frontend_display_field($data)
+	{
+		if ( ! $this->settings['allowed_directories'])
+		{
+			return lang('no_upload_dir');
+		}
+		
+		ee()->load->library('filemanager');
+		
+		//$this->add_js();
+		
+		$data = preg_replace('/{filedir_([0-9]+)}/', '', $data);
+		
+		$hidden_data = set_value($this->field_name.'_hidden', '');
+		
+		$placeholder_data = set_value($this->field_name, '');
+		
+		$thumb_info = ee()->filemanager->get_thumb($data, $this->settings['allowed_directories'], TRUE);
+		$thumb_src = $thumb_info['thumb'];
+		
+	//	$this->add_css();
+		
+		$form_upload = array('name' => $this->field_name);
+		
+		if ($data)
+		{
+			$form_upload['disabled'] = 'disabled';
+		}
+
+		$allowed_file_dirs		= (isset($this->settings['allowed_directories']) && $this->settings['allowed_directories'] != 'all') ? $this->settings['allowed_directories'] : '';
+		$content_type			= (isset($this->settings['field_content_type'])) ? $this->settings['field_content_type'] : 'all';
+
+		$tmp = ee()->file_field->frontend_field(
+			$this->field_name,
+			$data,
+			$allowed_file_dirs,
+			$content_type
+		);
+
+		$vars = array(
+			'data' => $data,
+			'hidden' => form_hidden($this->field_name.'_hidden', $data),
+			'upload' => form_upload($form_upload),
+			'placeholder_input' => form_hidden($this->field_name, 'NULL'),
+			'remove' => form_label(form_checkbox($this->field_name.'_remove', 1).' '.lang('remove_file')),
+			'existing_input_name' => $this->field_name.'_existing',
+//			'existing_files' => $this->existing_files($this->settings['allowed_directories']),
+			'settings' => $this->settings,
+			'default' => FALSE,
+			'thumb_src' => $thumb_src
+		);
+		
+		ee()->load->add_package_path(PATH_THIRD.'safecracker_file');
+
+		$display_field = ee()->load->view('display_field', $vars, TRUE);
+		
+		ee()->load->remove_package_path(PATH_THIRD.'safecracker_file');
+
+		return $display_field;
+	}
+*/
 	// --------------------------------------------------------------------
 	
 	/**
@@ -316,15 +432,13 @@ class File_ft extends EE_Fieldtype {
 	{
 		$prefix = 'file';
 
+		ee()->lang->loadfile('fieldtypes');
 		ee()->load->model('file_upload_preferences_model');
 		
+		// Allowed upload file type
 		$field_content_options = array('all' => lang('all'), 'image' => lang('type_image'));
-
-		ee()->table->add_row(
-			lang('field_content_file', $prefix.'field_content_type'),
-			form_dropdown('file_field_content_type', $field_content_options, $data['field_content_type'], 'id="'.$prefix.'field_content_type"')
-		);
 		
+		// And now the directory
 		$directory_options['all'] = lang('all');
 		
 		$dirs = ee()->file_upload_preferences_model->get_file_upload_preferences(1);
@@ -336,13 +450,78 @@ class File_ft extends EE_Fieldtype {
 		
 		$allowed_directories = ( ! isset($data['allowed_directories'])) ? 'all' : $data['allowed_directories'];
 
-		ee()->table->add_row(
-			lang('allowed_dirs_file', $prefix.'field_allowed_dirs'),
+		// Show existing files? checkbox, default to yes
+		$show_existing = ( ! isset($data['show_existing'])) ? 'y' :$data['show_existing'];
+
+		// Number of existing files to show? 0 means all
+		$num_existing = ( ! isset($data['num_existing'])) ? 0 : $data['num_existing'];
+
+
+		ee()->table->set_heading(array(
+			'data' => lang('file_ft_options'),
+			'colspan' => 2
+		));
+
+		$this->_row(
+			'<strong>'.lang('file_ft_configure').'</strong><br><i class="instruction_text">'.lang('file_ft_configure_subtext').'</i>'
+		);
+
+		$this->_row(
+			lang('file_ft_content_type', $prefix.'field_content_type'),
+			form_dropdown('file_field_content_type', $field_content_options, $data['field_content_type'], 'id="'.$prefix.'field_content_type"')
+		);
+
+		$this->_row(
+			lang('file_ft_allowed_dirs', $prefix.'field_allowed_dirs'),
 			form_dropdown('file_allowed_directories', $directory_options, $allowed_directories, 'id="'.$prefix.'field_allowed_dirs"')
-		);		
-		
+		);
+
+		$this->_row(
+			lang('file_ft_show_files'),
+			'<label>'.form_checkbox('file_show_existing', 'y', $show_existing).' '.lang('yes').' </label> <i class="instruction_text">('.lang('file_ft_show_files_subtext').')</i>'
+		);
+
+		$this->_row(
+			lang('file_ft_limit_left'),
+			form_input('file_num_existing', $num_existing, 'class="center" id="'.$prefix.'num_existing" style="width: 55px;"').
+			NBS.' <strong>'.lang('file_ft_limit_right').'</strong> <i class="instruction_text">('.lang('file_ft_limit_files_subtext').')</i>'
+		);
+
+		return ee()->table->generate();
+
 	}
-	
+
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Table row helper
+	 *
+	 * Help simplify the form building and enforces a strict layout. If
+	 * you think this table needs to look different, go bug James.
+	 *
+	 * @param	left cell content
+	 * @param	right cell content
+	 * @param	vertical alignment of left column
+	 *
+	 * @return	void - adds a row to the EE table class
+	 */	
+	protected function _row($cell1, $cell2 = '', $valign = 'center')
+	{
+		if ( ! $cell2)
+		{
+			ee()->table->add_row(
+				array('data' => $cell1, 'colspan' => 2)
+			);
+		}
+		else
+		{
+			ee()->table->add_row(
+				array('data' => '<strong>'.$cell1.'</strong>', 'width' => '170px', 'valign' => $valign),
+				array('data' => $cell2, 'class' => 'id')
+			);
+		}
+	}
 	
 	
 	// --------------------------------------------------------------------
@@ -352,6 +531,8 @@ class File_ft extends EE_Fieldtype {
 		return array(
 			'field_content_type'	=> ee()->input->post('file_field_content_type'),
 			'allowed_directories'	=> ee()->input->post('file_allowed_directories'),
+			'show_existing'			=> (ee()->input->post('file_show_existing') == 'y') ? 'y': 'n',
+			'num_existing'			=> ee()->input->post('file_num_existing'),
 			'field_fmt' 			=> 'none'
 		);
 	}	

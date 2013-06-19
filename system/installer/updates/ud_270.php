@@ -42,7 +42,8 @@ class Updater {
 				'_drop_updated_sites',
 				'_update_localization_preferences',
 				'_rename_safecracker_db',
-				'_rename_safecracker_tags'
+				'_rename_safecracker_tags',
+				'_consolidate_file_fields'
 			)
 		);
 
@@ -307,6 +308,13 @@ class Updater {
 				$template->template_data
 			);
 
+			// Fix the custom_field loop conditional
+			$template->template_data = str_replace(
+				LD.'if safecracker_file'.RD,
+				LD.'if file'.RD,
+				$template->template_data
+			);
+
 			// save the template
 			// if saving to file, save the file
 			if ($template->loaded_from_file)
@@ -320,6 +328,68 @@ class Updater {
 		}
 
 		ee()->config = $installer_config;
+	}
+
+
+	// -------------------------------------------------------------------
+
+	/**
+	 * Combine the native file field with the safecracker file field.
+	 *
+	 * Merges the settings of both to create a unified file experience
+	 * using the safecracker approach on the frontend and a variation
+	 * of the native field on the backend (depending on settings).
+	 *
+	 * @return void 
+	 */
+	protected function _consolidate_file_fields()
+	{
+		$sc_fields = ee()->db
+			->select('field_id, field_type, field_settings')
+			->where('field_type', 'safecracker_file')
+			->get('channel_fields')
+			->result_array();
+
+		if (count($sc_fields))
+		{
+			foreach ($sc_fields as &$field)
+			{
+				$field['field_type'] = 'file';
+
+				$settings = unserialize(base64_decode($field['field_settings']));
+
+				if ( ! $settings)
+				{
+					$settings = array();
+				}
+
+				foreach (array_keys($settings) as $key)
+				{
+					$new_key = str_replace(
+						array('file_field_', 'safecracker_'),
+						'',
+						$key
+					);
+
+					switch ($new_key)
+					{
+						case 'show_existing': $settings[$key] = ((bool) $settings[$key]) ? 'y': 'n';
+							break;
+						case 'upload_dir':    $new_key = 'allowed_directories';
+							break;
+					}
+
+					$settings[$new_key] = $settings[$key];
+					unset($settings[$key]);
+				}
+
+				$field['field_settings'] = base64_encode(serialize($settings));
+			}
+
+			ee()->db->update_batch('channel_fields', $sc_fields, 'field_id');
+		}
+
+		ee()->db->delete('fieldtypes', array('name' => 'safecracker_file'));
 	}
 }	
 /* END CLASS */
