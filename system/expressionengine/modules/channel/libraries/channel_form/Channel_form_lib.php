@@ -694,7 +694,7 @@ class Channel_form_lib
 
 		// build the form
 
-		$RET = (isset($_POST['RET'])) ? $_POST['RET'] : ee()->functions->fetch_current_uri();
+		$RET = ee()->functions->fetch_current_uri();
 		$XID = ( ! isset($_POST['XID'])) ? '' : $_POST['XID'];
 
 		$hidden_fields = array(
