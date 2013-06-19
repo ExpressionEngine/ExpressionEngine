@@ -119,7 +119,15 @@ class File_ft extends EE_Fieldtype {
 				$('.file_wrapper').each(function() {
 					var container = $(this),
 						last_value = [],
-						fileselector = container.find('.no_file');
+						fileselector = container.find('.no_file'),
+						hidden_name = container.find('[name$="_hidden"]').prop('name'),
+						remove;
+
+					remove = $('<input/>', {
+						'type': 'hidden',
+						'value': '',
+						'name': hidden_name.replace('_hidden', '')
+					});
 
 					container.find(".remove_file").click(function() {
 						container.find("input[type=hidden]").val(function(i, current_value) {
@@ -129,6 +137,7 @@ class File_ft extends EE_Fieldtype {
 						container.find(".file_set").hide();
 						container.find('.undo_remove').show();
 						fileselector.show();
+						container.append(remove);
 
 						return false;
 					});
@@ -140,6 +149,7 @@ class File_ft extends EE_Fieldtype {
 						container.find(".file_set").show();
 						container.find('.undo_remove').hide();
 						fileselector.hide();
+						remove.remove();
 
 						return false;
 					});
