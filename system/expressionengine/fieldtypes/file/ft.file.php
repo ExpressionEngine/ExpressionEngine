@@ -462,9 +462,9 @@ JSC;
 			'colspan' => 2
 		));
 
-		$this->_row(
-			'<strong>'.lang('file_ft_configure').'</strong><br><i class="instruction_text">'.lang('file_ft_configure_subtext').'</i>'
-		);
+	//	$this->_row(
+	//		'<strong>'.lang('file_ft_configure').'</strong><br><i class="instruction_text">'.lang('file_ft_configure_subtext').'</i>'
+	//	);
 
 		$this->_row(
 			lang('file_ft_content_type', $prefix.'field_content_type'),
@@ -474,6 +474,10 @@ JSC;
 		$this->_row(
 			lang('file_ft_allowed_dirs', $prefix.'field_allowed_dirs'),
 			form_dropdown('file_allowed_directories', $directory_options, $allowed_directories, 'id="'.$prefix.'field_allowed_dirs"')
+		);
+
+		$this->_row(
+			'<strong>'.lang('file_ft_configure_frontend').'</strong><br><i class="instruction_text">'.lang('file_ft_configure_frontend_subtext').'</i>'
 		);
 
 		$this->_row(
