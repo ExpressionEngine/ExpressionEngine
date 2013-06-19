@@ -508,8 +508,19 @@ CSS;
 			NBS.' <strong>'.lang('file_ft_limit_right').'</strong> <i class="instruction_text">('.lang('file_ft_limit_files_subtext').')</i>'
 		);
 
-		return ee()->table->generate();
+		$script = <<<JSC
+		$(document).ready(function() {
+			$('[name="file_allowed_directories"]').change(function() {
+				var disabled = (this.value == 'all');
 
+				$('[name="file_show_existing"]').attr('disabled', disabled);
+				$('[name="file_num_existing"]').attr('disabled', disabled);
+			}).trigger('change');
+		});
+JSC;
+		ee()->javascript->output($script);
+
+		return ee()->table->generate();
 	}
 
 
