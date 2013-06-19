@@ -40,6 +40,7 @@ class Updater {
 			array(
 				'_drop_pings',
 				'_drop_updated_sites',
+				'_move_member_fields',
 				'_update_localization_preferences'
 			)
 		);
@@ -86,10 +87,33 @@ class Updater {
 			ee()->db->delete('actions', array('class' => 'Updated_sites'));
 
 			ee()->dbforge->drop_table('updated_sites');
-			ee()->dbforge->drop_table('updated_site_pings');			
+			ee()->dbforge->drop_table('updated_site_pings');
 		}
 
 		return TRUE;
+	}
+
+	// --------------------------------------------------------------------
+
+	private function _move_member_fields()
+	{
+		$fields = array(
+			'url',
+			'location',
+			'occupation',
+			'interests',
+			'aol_im',
+			'yahoo_im',
+			'msn_im',
+			'icq',
+			'bio'
+		);
+
+		// Add fields to member_fields and _data
+
+		// Move data from members to member_data
+
+		// Kill old columns from members
 	}
 
 	// --------------------------------------------------------------------
