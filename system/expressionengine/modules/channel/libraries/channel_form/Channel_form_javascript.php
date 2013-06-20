@@ -83,5 +83,5 @@ class Channel_form_javascript
 	}
 }
 
-/* End of file SC_Javascript.php */
-/* Location: ./system/expressionengine/modules/safecracker/libraries/SC_Javascript.php */
+/* End of file Channel_form_Javascript.php */
+/* Location: ./system/expressionengine/modules/channel/libraries/Channel_form_Javascript.php */

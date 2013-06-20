@@ -30,5 +30,5 @@ $lang = array(
 );
 
 
-/* End of file lang.safecracker.php */
-/* Location: ./system/expressionengine/third_party/safecracker/language/english/lang.safecracker.php */
+/* End of file channel_form_lang.php */
+/* Location: ./system/expressionengine/language/english/channel_form_lang.php */
