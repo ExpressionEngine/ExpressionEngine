@@ -62,7 +62,6 @@ class Api_channel_form_channel_entries extends Api_channel_entries
 			return;
 		}
 
-		$rel_ids = array();
 		$checkbox_fields = isset($data['checkbox_fields']) ? explode('|', $data['checkbox_fields']) : array();
 		
 		foreach(ee()->channel_form->custom_fields as $field)
@@ -92,30 +91,6 @@ class Api_channel_form_channel_entries extends Api_channel_entries
 			{
 				$data['field_id_'.$field['field_id']] = (ee()->channel_form->entry($field['field_name']) !== FALSE)
 					? ee()->channel_form->entry($field['field_name']) : '';
-
-
-				// The entry API expects the child_id from the exp_relationships field 
-				// rather than the rel_id stored in channel_data
-				if ($field['field_type'] == 'rel' && ee()->channel_form->entry($field['field_name']) !== FALSE)
-				{
-					$rel_ids[ee()->channel_form->entry($field['field_name'])] = 'field_id_'.$field['field_id'];
-				}
-
-			}
-		}
-
-		if ( ! empty($rel_ids))
-		{
-			$relationships = ee()->channel_form->api_safe_rel_ids(array_keys($rel_ids));
-			
-			if ($relationships->num_rows() > 0)
-			{
-				foreach ($relationships->result_array() as $row)
-				{
-					 $data[$rel_ids[$row['relationship_id']]] = $row['child_id'];
-					
-				}
-				
 			}
 		}
 	}
