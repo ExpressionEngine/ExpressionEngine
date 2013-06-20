@@ -131,13 +131,13 @@ class File_ft extends EE_Fieldtype {
 					var container = $(this),
 						last_value = [],
 						fileselector = container.find('.no_file'),
-						hidden_name = container.find('[name$="_hidden"]').prop('name'),
+						hidden_name = container.find('[name$="_hidden_file"]').prop('name'),
 						placeholder;
 
 					remove = $('<input/>', {
 						'type': 'hidden',
 						'value': '',
-						'name': hidden_name.replace('_hidden', '')
+						'name': hidden_name.replace('_hidden_file', '')
 					});
 
 					container.find(".remove_file").click(function() {
