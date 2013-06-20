@@ -25,6 +25,7 @@
 class EE_Security extends CI_Security {
 
 	private $_xid_ttl = 7200;
+	private $_checked_xids = array();
 	
 	// Small note, if you feel the urge to add a constructor,
 	// do not call get_instance(). The CI Security library
@@ -93,23 +94,23 @@ class EE_Security extends CI_Security {
 			return TRUE;
 		}
 
-		ee()->db->update(
-			'security_hashes',
-			array('used' => 1),
-			array(
-				'used'			=> 0,
-				'hash' 			=> $xid,
-				'session_id' 	=> ee()->session->userdata('session_id'),
-				'date >' 		=> ee()->localize->now - $this->_xid_ttl
-			)
-		);
-
-		if (ee()->db->affected_rows() == 0)
+		if ( ! array_key_exists($xid, $this->_checked_xids))
 		{
-			return FALSE;
+			ee()->db->update(
+				'security_hashes',
+				array('used' => 1),
+				array(
+					'used'			=> 0,
+					'hash' 			=> $xid,
+					'session_id' 	=> ee()->session->userdata('session_id'),
+					'date >' 		=> ee()->localize->now - $this->_xid_ttl
+				)
+			);
+
+			$this->_checked_xids[$xid] = (ee()->db->affected_rows() != 0);
 		}
-		
-		return TRUE;
+
+		return $this->_checked_xids[$xid];
 	}
 	
 	// --------------------------------------------------------------------
