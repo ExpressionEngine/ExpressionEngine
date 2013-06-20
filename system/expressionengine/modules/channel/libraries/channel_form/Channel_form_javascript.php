@@ -70,7 +70,7 @@ class Channel_form_javascript
 				
 		if (ee()->input->get('use_live_url') == 'y')
 		{
-			ee()->output->append_output(ee()->safecracker->_url_title_js()."\n\n");
+			ee()->output->append_output(ee()->channel_form->_url_title_js()."\n\n");
 		}
 		
 		ee()->load->helper('smiley');

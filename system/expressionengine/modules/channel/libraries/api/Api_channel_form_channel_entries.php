@@ -2,7 +2,7 @@
 
 require_once APPPATH.'libraries/api/Api_channel_entries.php';
 
-class Api_sc_channel_entries extends Api_channel_entries
+class Api_channel_form_channel_entries extends Api_channel_entries
 {
 	/**
 	 * Why? because I want to preserve fields that haven't been POSTed
@@ -22,12 +22,12 @@ class Api_sc_channel_entries extends Api_channel_entries
 	 */
 	public function _pre_prepare_data(&$data)
 	{
-		if ( ! ee()->safecracker->edit)
+		if ( ! ee()->channel_form->edit)
 		{
 			return;
 		}
 		
-		foreach(ee()->safecracker->custom_fields as $field)
+		foreach(ee()->channel_form->custom_fields as $field)
 		{
 			if (empty($field['isset']))
 			{
@@ -57,7 +57,7 @@ class Api_sc_channel_entries extends Api_channel_entries
 			}
 		}
 		
-		if ( ! ee()->safecracker->edit)
+		if ( ! ee()->channel_form->edit)
 		{
 			return;
 		}
@@ -65,12 +65,12 @@ class Api_sc_channel_entries extends Api_channel_entries
 		$rel_ids = array();
 		$checkbox_fields = isset($data['checkbox_fields']) ? explode('|', $data['checkbox_fields']) : array();
 		
-		foreach(ee()->safecracker->custom_fields as $field)
+		foreach(ee()->channel_form->custom_fields as $field)
 		{
 			// Preserve off-screen checkboxes
 			if ($field['field_type'] == 'checkboxes')
 			{
-				if (ee()->safecracker->preserve_checkboxes)
+				if (ee()->channel_form->preserve_checkboxes)
 				{
 					// If a checkbox field was present on screen but has no value,
 					// assign a blank value to it so the database is updated
@@ -90,15 +90,15 @@ class Api_sc_channel_entries extends Api_channel_entries
 			// Preserve the original value if this field wasn't POSTed
 			if (empty($field['isset']))
 			{
-				$data['field_id_'.$field['field_id']] = (ee()->safecracker->entry($field['field_name']) !== FALSE)
-					? ee()->safecracker->entry($field['field_name']) : '';
+				$data['field_id_'.$field['field_id']] = (ee()->channel_form->entry($field['field_name']) !== FALSE)
+					? ee()->channel_form->entry($field['field_name']) : '';
 
 
 				// The entry API expects the child_id from the exp_relationships field 
 				// rather than the rel_id stored in channel_data
-				if ($field['field_type'] == 'rel' && ee()->safecracker->entry($field['field_name']) !== FALSE)
+				if ($field['field_type'] == 'rel' && ee()->channel_form->entry($field['field_name']) !== FALSE)
 				{
-					$rel_ids[ee()->safecracker->entry($field['field_name'])] = 'field_id_'.$field['field_id'];
+					$rel_ids[ee()->channel_form->entry($field['field_name'])] = 'field_id_'.$field['field_id'];
 				}
 
 			}
@@ -106,7 +106,7 @@ class Api_sc_channel_entries extends Api_channel_entries
 
 		if ( ! empty($rel_ids))
 		{
-			$relationships = ee()->safecracker->api_safe_rel_ids(array_keys($rel_ids));
+			$relationships = ee()->channel_form->api_safe_rel_ids(array_keys($rel_ids));
 			
 			if ($relationships->num_rows() > 0)
 			{

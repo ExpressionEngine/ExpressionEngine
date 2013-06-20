@@ -1654,7 +1654,7 @@ class Channel_form_lib
 		
 		//added for EE2.1.2
 		ee()->api->instantiate('channel_categories');
-		ee()->load->library('api/api_sc_channel_entries');
+		ee()->load->library('api/api_channel_form_channel_entries');
 				
 		foreach ($this->form_validation_methods as $method)
 		{
@@ -1727,16 +1727,16 @@ class Channel_form_lib
 			{
 				if ($this->entry('entry_id'))
 				{
-					$submit = ee()->api_sc_channel_entries->save_entry($_POST, NULL, $this->entry('entry_id'));
+					$submit = ee()->api_channel_form_channel_entries->save_entry($_POST, NULL, $this->entry('entry_id'));
 				}
 				else
 				{
-					$submit = ee()->api_sc_channel_entries->save_entry($_POST, $this->channel('channel_id'));
+					$submit = ee()->api_channel_form_channel_entries->save_entry($_POST, $this->channel('channel_id'));
 				}
 				
 				if ( ! $submit)
 				{
-					$this->errors = ee()->api_sc_channel_entries->errors;
+					$this->errors = ee()->api_channel_form_channel_entries->errors;
 				}
 			}
 			else
@@ -1750,7 +1750,7 @@ class Channel_form_lib
 			$this->clear_entry();
 			
 			//load the just created entry into memory
-			$this->fetch_entry(ee()->api_sc_channel_entries->entry_id);
+			$this->fetch_entry(ee()->api_channel_form_channel_entries->entry_id);
 		}
 		
 		$this->unload_session_override();
@@ -1869,7 +1869,7 @@ class Channel_form_lib
 			$return = str_replace('URL_TITLE', $this->entry('url_title'), $return);
 		}
 		
-		if ($hook_return = ee()->api_sc_channel_entries->trigger_hook('entry_submission_redirect', $return))
+		if ($hook_return = ee()->api_channel_form_channel_entries->trigger_hook('entry_submission_redirect', $return))
 		{
 			$return = $hook_return;
 		}
