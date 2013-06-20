@@ -576,20 +576,20 @@ class Updater {
 echo "Starting Large Database Conversion"
 
 echo "UTF-8 Conversion (Step 1: Dumping database with current charset)"
-mysqldump -h ".ee()->db->hostname." -u ".ee()->db->username." \
+mysqldump -h {$this->EE->db->hostname} -u {$this->EE->db->username} \
 	{$password_parameter} --opt --quote-names --skip-set-charset \
-	--default-character-set=latin1 ".ee()->db->database." \
+	--default-character-set=latin1 {$this->EE->db->database} \
 	{$tables} \
-	> ".ee()->db->database."-pre-upgrade-dump.sql
+	> {$this->EE->db->database}-pre-upgrade-dump.sql
 
 echo "UTF-8 Conversion (Step 2: Importing database with UTF-8 charset)"
-mysql -h ".ee()->db->hostname." -u ".ee()->db->username." \
+mysql -h {$this->EE->db->hostname} -u {$this->EE->db->username} \
 	{$password_parameter} --default-character-set=utf8 \
-	".ee()->db->database." < ".ee()->db->database."-pre-upgrade-dump.sql
+	{$this->EE->db->database} < {$this->EE->db->database}-pre-upgrade-dump.sql
 
 
 echo "UTF-8 Conversion (Step 3: Removing database dump)"
-rm ".ee()->db->database."-pre-upgrade-dump.sql
+rm {$this->EE->db->database}-pre-upgrade-dump.sql
 
 
 ##
@@ -608,8 +608,8 @@ echo "DST Conversion (Step 2: Writing temporary SQL file)"
 echo "\${Queries}" > temp.sql
 
 echo "DST Conversion (Step 3: Importing temp file, this may take several minutes)"
-mysql -h ".ee()->db->hostname." -u ".ee()->db->username." \
-	{$password_parameter} ".ee()->db->database." < temp.sql
+mysql -h {$this->EE->db->hostname} -u {$this->EE->db->username} \
+	{$password_parameter} {$this->EE->db->database} < temp.sql
 
 echo "DST Conversion (Step 4: Removing temp file)"
 rm temp.sql

@@ -151,7 +151,7 @@ class Relationship_model extends CI_Model {
 					$node->field_name(),
 					$entry_ids,
 					$depths,
-					$db->_compile_select()
+					$db->_compile_select(FALSE, FALSE)
 				);
 			}
 			else

@@ -1508,8 +1508,8 @@ class Channel {
 				$eday = $day;
 			}
 
-			$stime = gmmktime(0, 0, 0, $smonth, $sday, $year);
-			$etime = gmmktime(23, 59, 59, $emonth, $eday, $year);
+			$stime = ee()->localize->string_to_timestamp($year.'-'.$smonth.'-'.$sday.' 00:00');
+			$etime = ee()->localize->string_to_timestamp($year.'-'.$emonth.'-'.$eday.' 23:59');
 
 			$sql .= " AND t.entry_date >= ".$stime." AND t.entry_date <= ".$etime." ";
 		}

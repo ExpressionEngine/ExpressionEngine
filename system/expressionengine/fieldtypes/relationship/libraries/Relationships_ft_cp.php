@@ -155,12 +155,16 @@ class Relationships_ft_cp {
 		}
 
 		// Then all authors who are in those groups or who have author access
-		$members = ee()->db
-			->select('member_id, group_id, username, screen_name')
-			->where('in_authorlist', 'y')
-			->or_where_in('group_id', $group_ids)
-			->order_by('screen_name, username', 'ASC')
-			->get('members')->result();
+		ee()->db->select('member_id, group_id, username, screen_name');
+		ee()->db->where('in_authorlist', 'y');
+
+        if (count($groups))
+        {
+            ee()->db->or_where_in('group_id', $group_ids);
+        }
+
+		ee()->db->order_by('screen_name, username', 'ASC');
+		$members = ee()->db->get('members')->result();
 
 		$group_to_member = array_fill_keys($group_ids, array());
 

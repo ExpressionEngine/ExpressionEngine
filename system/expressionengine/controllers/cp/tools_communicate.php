@@ -192,6 +192,8 @@ class Tools_communicate extends CP_Controller {
 			$vars[$key] = (isset($_POST[$key])) ? $this->input->post($key) : $val;
 		}
 		
+		$vars['accept_admin_email']	= TRUE;
+
 		$vars['mailtype_options'] = array(
 					'text'  => lang('plain_text'),
 					'html'  => lang('html')

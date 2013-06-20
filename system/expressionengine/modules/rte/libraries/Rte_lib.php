@@ -419,9 +419,10 @@ class Rte_lib {
 		// these must happen before the decode or we won't know which are ours
 		$data = preg_replace('/>\s+</is', '><', $data);
 		$data = preg_replace('/<br( *\/)?>\n*/is', '<br>', $data);
-		$data = str_replace(array('<br>', '</p>', '<p>'), array("\n", "\n\n", ''), $data);
+		$data = str_replace(array('<br>', '</p>', '<p>'), array("\n", "\n\n", "\n\n"), $data);
+		$data = preg_replace('/\n\n+/', "\n\n", $data);
 
-		$data = htmlspecialchars_decode($data, ENT_QUOTES);
+		$data = htmlspecialchars_decode(trim($data), ENT_QUOTES);
 
 		// decode double encoded code chunks
 		if (preg_match_all("/\[code\](.+?)\[\/code\]/si", $data, $matches))
@@ -477,11 +478,9 @@ class Rte_lib {
 			$data = trim($data);
 
 			// Collapse tags and undo any existing newline formatting. Typography
-			// will change it anyways and the rtf will add its own. Having this here
-			// prevents growing-newline syndrome in the rtf and lets us switch
-			// between rtf and non-rtf.
-
-			$data = preg_replace('/>\s+</is', '><', $data);
+			// will change it anyways and the rte will add its own. Having this here
+			// prevents growing-newline syndrome in the rte and lets us switch
+			// between rte and non-rte.
 			$data = preg_replace('/<br( *\/)?>\n*/is', "<br>\n", $data);
 
 			$data = preg_replace("/<\/p>\n*<p>/is", "\n\n", $data);

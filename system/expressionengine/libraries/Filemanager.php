@@ -1761,15 +1761,17 @@ class Filemanager {
 	 * @access	private
 	 * @return	mixed	directory list
 	 */
-	function _directories()
+	function _directories($params = array())
 	{
 		$dirs = array();
+		$ignore_site_id = (isset($params['ignore_site_id']) && $params['ignore_site_id'] == FALSE) ? FALSE : TRUE;
+				
 		ee()->load->model('file_upload_preferences_model');
 		
 		$directories = ee()->file_upload_preferences_model->get_file_upload_preferences(
 			ee()->session->userdata('group_id'),
 			NULL,
-			TRUE
+			$ignore_site_id
 		);
 		
 		foreach($directories as $dir)
@@ -2607,14 +2609,14 @@ class Filemanager {
 	 *
 	 * @return array
 	 */
-	public function fetch_upload_dirs()
+	public function fetch_upload_dirs($params = array())
 	{
 		if ( ! empty($this->_upload_dirs))
 		{
 			return $this->_upload_dirs;
 		}
 		
-		return $this->_directories();
+		return $this->_directories($params);
 	}
 
 	// --------------------------------------------------------------------	

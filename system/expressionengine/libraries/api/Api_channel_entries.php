@@ -60,7 +60,8 @@ class Api_channel_entries extends Api {
 	protected function initialize($params = array())
 	{
 		$this->c_prefs = array();
-		$this->_cache = array();
+		$this->_cache = (isset($this->_cache['orig_author_id'])) ? 
+			array('orig_author_id' => $this->_cache['orig_author_id']) : array();
 
 		parent::initialize($params);
 	}
