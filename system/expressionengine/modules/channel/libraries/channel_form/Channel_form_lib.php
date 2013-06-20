@@ -58,7 +58,6 @@ class Channel_form_lib
 	public $native_variables;
 	public $option_fields;
 	public $parse_variables;
-	public $pre_save;
 	public $preserve_checkboxes;
 	public $post_error_callbacks;
 	public $require_save_call;
@@ -164,7 +163,7 @@ class Channel_form_lib
 		
 		if ( ! $this->channel)
 		{
-			throw new Channel_form_exception(lang('safecracker_no_channel'));
+			throw new Channel_form_exception(lang('channel_form_no_channel'));
 		}
 
 
@@ -199,7 +198,7 @@ class Channel_form_lib
 				return ee()->TMPL->no_results();
 			}
 			
-			throw new Channel_form_exception(lang('safecracker_require_entry'));
+			throw new Channel_form_exception(lang('channel_form_require_entry'));
 		}
 		
 		if ($this->entry('entry_id') && ! $this->form_error)
@@ -210,7 +209,7 @@ class Channel_form_lib
 		// @added rev 57
 		if ($this->edit && $this->bool_string(ee()->TMPL->fetch_param('author_only')) && $this->entry('author_id') != ee()->session->userdata('member_id'))
 		{
-			throw new Channel_form_exception(lang('safecracker_author_only'));
+			throw new Channel_form_exception(lang('channel_form_author_only'));
 		}
 		
 		if (is_array($this->entry('category')))
@@ -1659,7 +1658,7 @@ class Channel_form_lib
 				
 		foreach ($this->form_validation_methods as $method)
 		{
-			ee()->form_validation->set_message($method, lang('safecracker_'.$method));
+			ee()->form_validation->set_message($method, lang('channel_form_'.$method));
 		}
 		
 		if ($this->_meta['dynamic_title'])
@@ -2373,7 +2372,7 @@ class Channel_form_lib
 			if ($query->num_rows() == 0)
 			{
 				// Invalid guest member id was specified
-				throw new Channel_form_exception(lang('safecracker_invalid_guest_member_id'), 'general');
+				throw new Channel_form_exception(lang('channel_form_invalid_guest_member_id'), 'general');
 			}
 
 			$this->logged_out_member_id = $query->row('member_id');
@@ -2601,7 +2600,7 @@ class Channel_form_lib
 				return ee()->TMPL->no_results();
 			}
 			
-			throw new Channel_form_exception(lang('safecracker_require_entry'));
+			throw new Channel_form_exception(lang('channel_form_require_entry'));
 		}
 	}
 
@@ -2729,7 +2728,7 @@ class Channel_form_lib
 			)
 			
 		{
-			throw new Channel_form_exception(lang('safecracker_author_only'));
+			throw new Channel_form_exception(lang('channel_form_author_only'));
 		}
 	}
 
@@ -3130,7 +3129,7 @@ class Channel_form_lib
 				'field_name' => 'entry_date',
 				'field_label' => 'lang:entry_date',
 				'field_type' => 'date',
-				'rules' => 'required|call_field_validation[entry_date]|callback_valid_ee_date'
+				'rules' => 'required|call_field_validation[entry_date]|valid_date'
 			),
 			'expiration_date' => array(
 				'field_name' => 'expiration_date',
@@ -3154,9 +3153,7 @@ class Channel_form_lib
 		$this->file_fields = array(
 			'file'
 		);
-		$this->form_validation_methods = array(
-			'valid_ee_date'
-		);
+		$this->form_validation_methods = array();
 		$this->head = '';
 		$this->json = FALSE;	
 		$this->logged_out_member_id = FALSE;	
@@ -3178,9 +3175,6 @@ class Channel_form_lib
 		);
 		$this->option_fields = array();	
 		$this->parse_variables = array();
-		$this->pre_save = array(
-			'matrix'
-		);
 
 		$this->post_error_callbacks = array();
 		$this->require_save_call = array();
