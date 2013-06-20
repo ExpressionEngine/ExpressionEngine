@@ -3129,7 +3129,7 @@ class Channel_form_lib
 				'field_name' => 'entry_date',
 				'field_label' => 'lang:entry_date',
 				'field_type' => 'date',
-				'rules' => 'required|call_field_validation[entry_date]|valid_date'
+				'rules' => 'required|valid_date|call_field_validation[entry_date]'
 			),
 			'expiration_date' => array(
 				'field_name' => 'expiration_date',

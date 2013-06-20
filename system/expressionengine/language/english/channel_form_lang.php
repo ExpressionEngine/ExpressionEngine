@@ -26,7 +26,7 @@ $lang = array(
 	'matches' => 'The %s field does not match the %s field.',
 	'is_natural' => 'The %s field must contain only positive numbers.',
 	'is_natural_no_zero' => 'The %s field must contain a number greater than zero.',
-	'valid_ee_date' => 'The %s you submitted was not formatted correctly (year-month-day hour:minute)',
+	'valid_date' => 'The %s you submitted was not formatted correctly (year-month-day hour:minute)',
 );
 
 
