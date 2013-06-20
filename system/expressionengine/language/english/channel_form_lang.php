@@ -1,28 +1,10 @@
 <?php 
 
 $lang = array( 
-	'channel_form_module_name' => 'SafeCracker',
-	'channel_form_settings' => 'Settings',
-	'channel_form_extension_not_installed' => 'The SafeCracker extension is not installed.',
-	'channel_form_extensions_disabled' => 'Please enable extensions before installing.',
-	'channel_form_ee_version' => 'Your ExpressionEngine version is not compatible with SafeCracker. You must have at least Version 2.1.2.',
-	'channel_form_weblog_settings' => 'Weblog Settings',
-	'channel_form_module_description' => 'A better way to create Stand-Alone Entry Forms.',
-	'channel_form_module_channel' => 'Channel',
-	'channel_form_require_captcha' => 'Require captcha for guests?',
-	'channel_form_allow_guests' => 'Allow guests to post entries?',
-	'channel_form_logged_out_member_id' => 'Set the member_id to use for guests.',
-	'channel_form_logged_out_member_id_note' => 'Enter a member_id here to activate. Leave blank to de-activate. If activated, logged out users will be able to post to this weblog. Their entries will be saved with this member_id as the author id. Remember to set up any permissions you need for this member_id&apos;s member group.',
-	'channel_form_override_status' => 'Default Status',
-	'channel_form_override_status_note' => 'Select a status to default to. This setting will override any status submitted via the entry form.',
-	'channel_form_more_members' => 'More members...',
 	'channel_form_no_channel' => 'No channel was specified.',
-	'channel_form_invalid_channel' => 'The specified channel is invalid.',
 	'channel_form_invalid_guest_member_id' => 'The provided member id to use for guest submissions is invalid.',
 	'channel_form_require_entry' => 'You must specify a valid entry to edit.',
 	'channel_form_author_only' => 'You are not the author of this entry.',
-	'yes' => 'Yes',
-	'no' => 'No',
 	
 	/* rules */
 	'form_decryption_failed' => 'Decryption of form settings failed.',
