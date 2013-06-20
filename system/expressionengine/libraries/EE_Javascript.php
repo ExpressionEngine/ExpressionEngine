@@ -107,7 +107,7 @@ class EE_Javascript extends CI_Javascript {
 			document.documentElement.className += "js";
 
 			var EE = '.json_encode($this->global_vars).';
-			
+
 			if (typeof console === "undefined" || ! console.log) {
 				console = { log: function() { return false; }};
 			}
@@ -128,6 +128,7 @@ class EE_Javascript extends CI_Javascript {
 					}
 				};
 			})();
+
 		');
 
 		$this->CI->view->cp_global_js = $global_js;
