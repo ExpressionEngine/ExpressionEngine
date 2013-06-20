@@ -162,7 +162,8 @@ class File_field {
 		// No? Make sure we at least have a trigger and a callback
 		elseif (isset($config['trigger'], $config['callback']))
 		{
-			$field_name = (isset($config['field_name'])) ? $config['field_name'].', ' : '';
+			 $field_name = (isset($config['field_name'])) ? "'{$config['field_name']}'," : '';  
+			
 			$settings = (isset($config['settings'])) ? $config['settings'].', ' : '';
 			
 			ee()->javascript->ready("

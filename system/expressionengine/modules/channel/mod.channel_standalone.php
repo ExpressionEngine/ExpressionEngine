@@ -480,27 +480,27 @@ class Channel_standalone extends Channel {
 		/**  Compile form declaration and hidden fields
 		/** ----------------------------------------*/
 
-		$RET = (isset($_POST['RET'])) ? $_POST['RET'] : ee()->functions->fetch_current_uri();
+		$RET = ee()->functions->fetch_current_uri();
 		$XID = ( ! isset($_POST['XID'])) ? '' : $_POST['XID'];
-		$PRV = (isset($_POST['PRV'])) ? $_POST['PRV'] : '{PREVIEW_TEMPLATE}';
+		$PRV = '{PREVIEW_TEMPLATE}';
 
 		$hidden_fields = array(
-								'ACT'	  				=> $insert_action,
-								'RET'	  				=> $RET,
-								'PRV'	  				=> $PRV,
-								'URI'	  				=> (ee()->uri->uri_string == '') ? 'index' : ee()->uri->uri_string,
-								'XID'	  				=> $XID,
-								'return_url'			=> (isset($_POST['return_url'])) ? $_POST['return_url'] : ee()->TMPL->fetch_param('return'),
-								'author_id'				=> ee()->session->userdata('member_id'),
-								'channel_id'			=> $channel_id,
-								'entry_id'				=> 0
-							  );
+			'ACT'			=> $insert_action,
+			'RET'			=> $RET,
+			'PRV'			=> $PRV,
+			'URI'			=> (ee()->uri->uri_string == '') ? 'index' : ee()->uri->uri_string,
+			'XID'			=> $XID,
+			'return_url'	=> ee()->TMPL->fetch_param('return'),
+			'author_id'		=> ee()->session->userdata('member_id'),
+			'channel_id'	=> $channel_id,
+			'entry_id'		=> 0
+		);
 		
 		$status_id = ( ! isset($_POST['status_id'])) ? ee()->TMPL->fetch_param('status') : $_POST['status_id'];
 
 		if ($status_id == 'Open' OR $status_id == 'Closed')
 		{
-			$status_id = strtolower($status_id);			
+			$status_id = strtolower($status_id);
 		}
 
 		ee()->db->where('group_id', $channel_q->row('status_group'));
