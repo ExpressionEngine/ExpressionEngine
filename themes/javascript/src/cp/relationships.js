@@ -617,8 +617,10 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 			);
 		}
 		
-		Grid.bind('relationship', 'display', function(cell) {
-			new RelationshipField(cell);
+		EE.on('grid_loaded', function() {
+			Grid.bind('relationship', 'display', function(cell) {
+				new RelationshipField(cell);
+			});
 		});
 	};
 

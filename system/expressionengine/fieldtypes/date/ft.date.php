@@ -177,6 +177,8 @@ class Date_ft extends EE_Fieldtype {
 		{
 			ee()->javascript->output('
 				
+			EE.on("grid_loaded", function()
+			{
 				Grid.bind("date", "display", function(cell)
 				{
 					var d = new Date();
@@ -192,6 +194,8 @@ class Date_ft extends EE_Fieldtype {
 						defaultDate: new Date(adjustedDefault)
 					});
 				});
+			
+			});
 			');
 
 			ee()->session->set_cache(__CLASS__, 'grid_js_loaded', TRUE);

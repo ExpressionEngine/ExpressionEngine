@@ -34,7 +34,7 @@ var Grid = window.Grid = {
 		// Each fieldtype gets one method per handler
 		this._eventHandlers[action][fieldtypeName] = func;
 	}
-}
+};
 
 /**
  * Grid Publish class
@@ -784,5 +784,8 @@ EE.grid_settings = function(settings)
 {
 	return new Grid.Settings(settings);
 };
+
+// Fire any delayed grid bindings
+EE.trigger('grid_loaded');
 
 })(jQuery);

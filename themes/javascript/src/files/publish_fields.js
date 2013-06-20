@@ -231,10 +231,13 @@ EE.namespace('EE.publish.file_browser');
 	EE.publish.file_browser.file_field = function() {
 		add_trigger("input[type=file]", "#publishForm, .pageContents");
 
-		// Bind a new trigger when a new Grid row is added
-		Grid.bind('file', 'display', function(cell)
+		EE.on('grid_loaded', function()
 		{
-			add_trigger('input[type=file]', cell);
+			// Bind a new trigger when a new Grid row is added
+			Grid.bind('file', 'display', function(cell)
+			{
+				add_trigger('input[type=file]', cell);
+			});
 		});
 	};
 
