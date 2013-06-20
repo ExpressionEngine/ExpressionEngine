@@ -262,7 +262,7 @@ class EE_Core {
 			'blacklist', 'channel', 'comment', 'commerce', 'email', 'emoticon',
 			'file', 'forum', 'ip_to_nation', 'jquery', 'mailinglist', 'member',
 			'metaweblog_api', 'moblog', 'pages', 'query', 'referrer', 'rss', 'rte',
-			'safecracker', 'search', 'simple_commerce', 'stats', 'wiki'
+			'search', 'simple_commerce', 'stats', 'wiki'
 		);
 		$this->standard_modules = array(
 			'blacklist', 'email', 'forum', 'ip_to_nation', 'mailinglist',

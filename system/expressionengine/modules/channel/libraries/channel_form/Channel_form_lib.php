@@ -110,7 +110,6 @@ class Channel_form_lib
 	 */
 	public function entry_form()
 	{
-
 		// -------------------------------------------
 		// 'safecracker_entry_form_tagdata_start' hook.
 		//  - Developers, if you want to modify the $this object remember
@@ -119,7 +118,22 @@ class Channel_form_lib
 
 		if (ee()->extensions->active_hook('safecracker_entry_form_absolute_start') === TRUE)
 		{
+			ee()->load->library('logger');
+			ee()->logger->deprecated('2.7', 'Renamed to: channel_form_entry_form_absolute_start');
+
 			ee()->extensions->call('safecracker_entry_form_absolute_start');
+			if (ee()->extensions->end_script === TRUE) return;
+		}
+
+		// -------------------------------------------
+		// 'channel_form_entry_form_tagdata_start' hook.
+		//  - Developers, if you want to modify the $this object remember
+		//	to use a reference on func call.
+		// -------------------------------------------
+
+		if (ee()->extensions->active_hook('channel_form_entry_form_absolute_start') === TRUE)
+		{
+			ee()->extensions->call('channel_form_entry_form_absolute_start');
 			if (ee()->extensions->end_script === TRUE) return;
 		}
 		
@@ -151,6 +165,11 @@ class Channel_form_lib
 		{
 			throw new Channel_form_exception(lang('safecracker_no_channel'));
 		}
+
+
+		//load member data for logged out member
+		$this->fetch_logged_out_member(ee()->TMPL->fetch_param('logged_out_member_id'));
+		$this->load_session_override();
 
 		// Can they post?
 		$assigned_channels = ee()->functions->fetch_assigned_channels();
@@ -270,7 +289,22 @@ class Channel_form_lib
 
 		if (ee()->extensions->active_hook('safecracker_entry_form_tagdata_start') === TRUE)
 		{
+			ee()->load->library('logger');
+			ee()->logger->deprecated('2.7', 'Renamed to: channel_form_entry_form_tagdata_start');
+
 			ee()->TMPL->tagdata = ee()->extensions->call('safecracker_entry_form_tagdata_start', ee()->TMPL->tagdata, $this);
+			if (ee()->extensions->end_script === TRUE) return;
+		}
+
+		// -------------------------------------------
+		// 'channel_form_entry_form_tagdata_start' hook.
+		//  - Developers, if you want to modify the $this object remember
+		//	to use a reference on func call.
+		// -------------------------------------------
+
+		if (ee()->extensions->active_hook('channel_form_entry_form_tagdata_start') === TRUE)
+		{
+			ee()->TMPL->tagdata = ee()->extensions->call('channel_form_entry_form_tagdata_start', ee()->TMPL->tagdata, $this);
 			if (ee()->extensions->end_script === TRUE) return;
 		}
 		
@@ -635,10 +669,6 @@ class Channel_form_lib
 		$conditional_errors = $this->_add_errors();
 
 
-		
-		//load member data for logged out member
-		$this->fetch_logged_out_member(ee()->TMPL->fetch_param('logged_out_member_id'));
-
 		// Parse captcha conditional
 		$captcha_conditional = array(
 			'captcha' => ($this->channel('channel_id') && $this->logged_out_member_id && ! empty($this->settings['require_captcha'][ee()->config->item('site_id')][$this->channel('channel_id')]))
@@ -673,9 +703,7 @@ class Channel_form_lib
 		{
 			ee()->TMPL->tagparams['form_class'] = ee()->TMPL->fetch_param('class');
 		}
-		
-		$this->load_session_override();
-		
+				
 		//set group-based return url
 		$this->form_hidden('return', (ee()->TMPL->fetch_param('return_'.ee()->session->userdata['group_id'])) ? ee()->TMPL->fetch_param('return_'.ee()->session->userdata['group_id']) : ee()->TMPL->fetch_param('return'));
 		
@@ -772,7 +800,22 @@ class Channel_form_lib
 
 		if (ee()->extensions->active_hook('safecracker_entry_form_tagdata_end') === TRUE)
 		{
+			ee()->load->library('logger');
+			ee()->logger->deprecated('2.7', 'Renamed to: channel_form_entry_form_tagdata_end');
+
 			$return = ee()->extensions->call('safecracker_entry_form_tagdata_end', $return, $this);
+			if (ee()->extensions->end_script === TRUE) return;
+		}
+
+		// -------------------------------------------
+		// 'channel_form_entry_form_tagdata_end' hook.
+		//  - Developers, if you want to modify the $this object remember
+		//	to use a reference on func call.
+		// -------------------------------------------
+
+		if (ee()->extensions->active_hook('channel_form_entry_form_tagdata_end') === TRUE)
+		{
+			$return = ee()->extensions->call('channel_form_entry_form_tagdata_end', $return, $this);
 			if (ee()->extensions->end_script === TRUE) return;
 		}
 
@@ -1303,10 +1346,25 @@ class Channel_form_lib
 
 		if (ee()->extensions->active_hook('safecracker_submit_entry_start') === TRUE)
 		{
+			ee()->load->library('logger');
+			ee()->logger->deprecated('2.7', 'Renamed to: channel_form_submit_entry_start');
+
 			ee()->extensions->call('safecracker_submit_entry_start', $this);
 			if (ee()->extensions->end_script === TRUE) return;
 		}
 		
+		// -------------------------------------------
+		// 'channel_form_submit_entry_start' hook.
+		//  - Developers, if you want to modify the $this object remember
+		//	to use a reference on func call.
+		// -------------------------------------------
+
+		if (ee()->extensions->active_hook('channel_form_submit_entry_start') === TRUE)
+		{
+			ee()->extensions->call('channel_form_submit_entry_start', $this);
+			if (ee()->extensions->end_script === TRUE) return;
+		}
+
 		$logged_out_member_id = FALSE;
 		
 		if ( ! ee()->session->userdata('member_id') && $this->_meta['logged_out_member_id'])
@@ -1706,7 +1764,22 @@ class Channel_form_lib
 
 		if (ee()->extensions->active_hook('safecracker_submit_entry_end') === TRUE)
 		{
+			ee()->load->library('logger');
+			ee()->logger->deprecated('2.7', 'Renamed to: channel_form_submit_entry_end');
+
 			ee()->extensions->call('safecracker_submit_entry_end', $this);
+			if (ee()->extensions->end_script === TRUE) return;
+		}
+
+		// -------------------------------------------
+		// 'channel_form_submit_entry_end' hook.
+		//  - Developers, if you want to modify the $this object remember
+		//	to use a reference on func call.
+		// -------------------------------------------
+
+		if (ee()->extensions->active_hook('channel_form_submit_entry_end') === TRUE)
+		{
+			ee()->extensions->call('channel_form_submit_entry_end', $this);
 			if (ee()->extensions->end_script === TRUE) return;
 		}
 		
@@ -2319,14 +2392,50 @@ class Channel_form_lib
 	{
 		if ($this->settings === NULL)
 		{
-			ee()->db->select('settings');
-			ee()->db->where('class', 'Safecracker_ext');
-			ee()->db->limit(1);
-			
-			$query = ee()->db->get('extensions');
-			
-			$this->settings = ($query->row('settings')) ?
-				$this->unserialize($query->row('settings')) : FALSE;
+			$rows = ee()->db->get('channel_form_settings')->result_array();
+
+			$this->settings = array();
+
+			// and now into safecracker legacy format. Good grief, why does it
+			// group them by column name?
+			foreach ($rows as $row)
+			{
+				$site_id = $row['site_id'];
+				$channel_id = $row['channel_id'];
+
+				unset(
+					$row['site_id'],
+					$row['channel_id'],
+					$row['channel_form_settings_id']
+				);
+
+				foreach ($row as $column => $value)
+				{
+					if ( ! isset($this->settings[$column]))
+					{
+						$this->settings[$column] = array();
+					}
+
+					if ( ! isset($this->settings[$column][$site_id]))
+					{
+						$this->settings[$column][$site_id] = array();
+					}
+
+					if ($column == 'require_captcha' || $column == 'allow_guest_posts')
+					{
+						$value = $this->bool_string($value);
+					}
+
+					$this->settings[$column][$site_id][$channel_id] = $value;
+				}
+			}
+
+			// safecracker legacy setting names for extensions that might
+			// be trying to access them.
+
+			$this->settings['logged_out_member_id'] =& $this->settings['default_author'];
+			$this->settings['override_status'] =& $this->settings['default_status'];
+			$this->settings['allow_guests'] =& $this->settings['allow_guest_posts'];
 		}
 	}
 

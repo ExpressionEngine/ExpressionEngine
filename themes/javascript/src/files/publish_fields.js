@@ -167,6 +167,7 @@ EE.namespace('EE.publish.file_browser');
 		}
 
 		container.find('.choose_file').hide();
+		container.find('.undo_remove').hide();
 
 		$("input[name="+field+"_hidden]").val(file.file_name);
 		$("input[name="+field+"_hidden_dir], select[name="+field+"_directory]").val(file.upload_location_id);

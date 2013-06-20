@@ -114,7 +114,7 @@ class Relationship_ft extends EE_Fieldtype {
 
 		if ($post === FALSE)
 		{
-			// this is a safecracker edit - save() was not called. Don't do anything.
+			// this is a channel:form edit - save() was not called. Don't do anything.
 			return;
 		}
 

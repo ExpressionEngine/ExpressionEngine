@@ -471,7 +471,7 @@ CSS;
 		$show_existing = ( ! isset($data['show_existing'])) ? 'y' :$data['show_existing'];
 
 		// Number of existing files to show? 0 means all
-		$num_existing = ( ! isset($data['num_existing'])) ? 0 : $data['num_existing'];
+		$num_existing = ( ! isset($data['num_existing'])) ? 50 : $data['num_existing'];
 
 
 		ee()->table->set_heading(array(
@@ -559,7 +559,7 @@ JSC;
 	// --------------------------------------------------------------------
 
 	function save_settings($data)
-	{		
+	{
 		return array(
 			'field_content_type'	=> ee()->input->post('file_field_content_type'),
 			'allowed_directories'	=> ee()->input->post('file_allowed_directories'),
