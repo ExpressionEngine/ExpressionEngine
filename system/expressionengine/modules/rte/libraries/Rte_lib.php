@@ -330,25 +330,31 @@ class Rte_lib {
 		
 		ee()->load->library('javascript');
 
-		// kick off the JS
-		$js = '
-		(function(){
-			var EE = ' . json_encode(ee()->javascript->global_vars) . ';' .
-			'
-			// make sure we have jQuery
-			var interval = null;
-			if (typeof jQuery === "undefined") {';
-			
-		if ($include['jquery'])
+		$js = '(function() {'."\n";
+
+		if ($cp_only === FALSE)
 		{
+			// kick off the JS
 			$js .= '
-				var j = document.createElement("script");
-				j.setAttribute("src","' . $jquery . '");
-				document.getElementsByTagName("head")[0].appendChild(j);';
+				var EE = ' . json_encode(ee()->javascript->global_vars) . ';' .
+				'
+				// make sure we have jQuery
+				var interval = null;';
+				
+			if ($include['jquery'])
+			{
+				$js .= '
+					var j = document.createElement("script");
+					j.setAttribute("src","' . $jquery . '");
+					document.getElementsByTagName("head")[0].appendChild(j);';
+			}
 		}
+
 
 		// Even if we don't load jQuery above, we still need to wait for it
 		$js .= '
+			if (typeof jQuery === "undefined")
+			{
 				interval = setInterval(loadRTE, 100);
 			}
 			else
@@ -469,6 +475,15 @@ class Rte_lib {
 	 */
 	public function display_field($data, $field_name, $settings, $container = NULL)
 	{
+		if ( ! ee()->session->cache('rte', 'loaded'))
+		{
+			ee()->javascript->output(
+				ee()->rte_lib->build_js(0, '.WysiHat-field', NULL, TRUE)
+			);
+
+			ee()->session->set_cache('rte', 'loaded', TRUE);
+		}
+
 		ee()->load->helper('form');
 		
 		$field = array(
