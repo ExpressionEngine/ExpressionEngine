@@ -41,6 +41,7 @@ class Updater {
 				'_drop_pings',
 				'_drop_updated_sites',
 				'_update_localization_preferences',
+				'_add_xid_used_flag'
 				'_rename_safecracker_db',
 				'_rename_safecracker_tags',
 				'_consolidate_file_fields'
@@ -135,6 +136,28 @@ class Updater {
 		ee()->smartforge->drop_column('members', 'localization_is_site_default');
 
 		return TRUE;
+	}
+
+	// -------------------------------------------------------------------
+
+	/**
+	 * Add a used flag to xids to allow for back button usage without
+	 * sacrificing existing cross site request forgery security.
+	 */
+	private function _add_xid_used_flag()
+	{
+		ee()->smartforge->add_column(
+			'security_hashes',
+			array(
+				'used' => array(
+					'type'			=> 'tinyint',
+					'constraint'	=> 1,
+					'unsigned'		=> TRUE,
+					'default'		=> 0,
+					'null'			=> FALSE
+				)
+			)
+		);
 	}
 
 	// --------------------------------------------------------------------

@@ -9630,13 +9630,17 @@ class Forum_Core extends Forum {
 		
 		$search_id = $this->_cache_search_result($topic_ids, $post_ids, $words, $order);
 						
-		$data = array(	'title' 	=> lang('search'),
-						'heading'	=> lang('thank_you'),
-						'content'	=> lang('search_redirect_msg'),
-						'redirect'	=> $this->forum_path('search_results/'.$search_id),
-						'link'		=> array($this->forum_path('search_results/'.$search_id), $this->fetch_pref('forum_name'))
-					 );
-			
+		$data = array(
+			'title' 	=> lang('search'),
+			'heading'	=> lang('thank_you'),
+			'content'	=> lang('search_redirect_msg'),
+			'redirect'	=> $this->forum_path('search_results/'.$search_id),
+			'link'		=> array($this->forum_path('search_results/'.$search_id), $this->fetch_pref('forum_name'))
+		 );
+		
+		// Allow back button use for searches
+		ee()->security->restore_xid();
+
 		return ee()->output->show_message($data);	
 	}
 
