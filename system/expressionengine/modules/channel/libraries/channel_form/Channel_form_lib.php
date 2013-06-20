@@ -97,8 +97,9 @@ class Channel_form_lib
 	public function __construct()
 	{
 		//set a global object
-		ee()->safecracker = $this;
-		ee()->lang->loadfile('safecracker');
+		ee()->safecracker = $this; // deprecated
+		ee()->channel_form = $this;
+		ee()->lang->loadfile('channel_form');
 	}
 	
 	// --------------------------------------------------------------------
@@ -153,7 +154,7 @@ class Channel_form_lib
 		ee()->lang->loadfile('content');
 		ee()->lang->loadfile('upload');
 		
-		ee()->javascript->output('if (typeof SafeCracker == "undefined" || ! SafeCracker) { var SafeCracker = {markItUpFields:{}};}');
+		ee()->javascript->output('var SafeCracker = {}; SafeCracker.markItUpFields = EE.markItUpFields = {};');
 
 		// Figure out what channel we're working with
 		$this->fetch_channel(
@@ -330,7 +331,7 @@ class Channel_form_lib
 				if ($formatting_buttons && $custom_field_variables_row['field_show_formatting_btns'])
 				{
 					$this->markitup = TRUE;
-					ee()->javascript->output('SafeCracker.markItUpFields["'.$field_name.'"] = '.$custom_field_variables_row['field_id'].';');
+					ee()->javascript->output('EE.markItUpFields["'.$field_name.'"] = '.$custom_field_variables_row['field_id'].';');
 				}
 				
 				$temp = $tagdata;
@@ -371,7 +372,7 @@ class Channel_form_lib
 		
 		if ( ! empty($this->markitup))
 		{
-			ee()->javascript->output('$.each(SafeCracker.markItUpFields,function(a){$("#"+a).markItUp(mySettings);});');
+			ee()->javascript->output('$.each(EE.markItUpFields,function(a){$("#"+a).markItUp(mySettings);});');
 		}
 		
 		// We'll store all checkbox fieldnames in here, so that in case one
@@ -1320,7 +1321,6 @@ class Channel_form_lib
 		ee()->filemanager->_initialize(array());
 				
 		ee()->lang->loadfile('content');
-		ee()->lang->loadfile('safecracker');
 		
 		ee()->router->set_class('cp');
 		ee()->load->library('cp');
@@ -1686,7 +1686,7 @@ class Channel_form_lib
 				$settings = array_merge($settings, $this->unserialize($settings['field_settings'], TRUE));
 			}
 			
-			ee()->api_channel_fields->settings[$field_id] = ee()->session->cache['safecracker']['field_settings'][$field_id] = $settings;
+			ee()->api_channel_fields->settings[$field_id] = $settings;
 		}
 		
 		//moved to before custom field processing,
