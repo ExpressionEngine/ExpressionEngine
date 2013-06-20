@@ -61,10 +61,10 @@ $lang = array(
 'enable_rte_for_field' => 'Enable Rich Text Editor',
 'rte_image_caption'	=> 'Image Caption:',
 'rte_center_error' => 'You can’t center an element that is being wrapped',
-'url' => 'URL',
-'title' => 'Title',
-'relationship' => 'Relationship',
-'selection_error' => 'Please select some text or images first.',
+'rte_url' => 'URL',
+'rte_title' => 'Title',
+'rte_relationship' => 'Relationship',
+'rte_selection_error' => 'Please select some text or images first.',
 
 // Tool names (based on class name)
 'blockquote_rte' 	=> 'Quote',

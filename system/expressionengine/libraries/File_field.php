@@ -74,7 +74,12 @@ class File_field {
 		if ( ! empty($data) AND ($parsed_field = $this->parse_field($data)) !== FALSE)
 		{
 			$vars = $parsed_field;
-			$vars['filename'] = $vars['filename'].'.'.$vars['extension'];
+			
+			// Old format will not have extension broken out
+			if ( ! empty($vars['extension']))
+			{
+				$vars['filename'] = $vars['filename'].'.'.$vars['extension'];				
+			}
 		}
 		
 		// Retrieve all directories that are both allowed for this user and
@@ -96,6 +101,13 @@ class File_field {
 		$vars['thumb'] = $thumb_info['thumb'];
 		$vars['alt'] = $vars['filename'];
 		
+		//  Legacy paths will not have a filename but DO have a file_name
+		// Show it
+		if (empty($vars['filename']) && ! empty($vars['file_name']))
+		{
+			$vars['filename'] = $vars['file_name'];
+		}
+
 		// Create the hidden fields for the file and directory
 		$vars['hidden']	  = form_hidden($field_name.'_hidden', $vars['filename']);
 		$vars['hidden']	 .= form_hidden($field_name.'_hidden_dir', $vars['upload_location_id']);
@@ -203,7 +215,8 @@ class File_field {
 		// No? Make sure we at least have a trigger and a callback
 		elseif (isset($config['trigger'], $config['callback']))
 		{
-			$field_name = (isset($config['field_name'])) ? $config['field_name'].', ' : '';
+			 $field_name = (isset($config['field_name'])) ? "'{$config['field_name']}'," : '';  
+			
 			$settings = (isset($config['settings'])) ? $config['settings'].', ' : '';
 			
 			ee()->javascript->ready("
@@ -231,7 +244,7 @@ class File_field {
 	 * @param string $field_name The name of the field we're validating
 	 * @param string $required Set to 'y' if the field is required
 	 * @return array Associative array containing ONLY the name of the 
-	 * 		file uploaded
+	 * 		file uploaded or an empty value and an error if not valid
 	 */
 	public function validate($data, $field_name, $required = 'n')
 	{
@@ -259,7 +272,7 @@ class File_field {
 		{
 			$allowed_dirs[] = $row['id'];
 		}
-		
+
 		// Upload or maybe just a path in the hidden field?
 		if (isset($_FILES[$field_name]) && $_FILES[$field_name]['size'] > 0 AND in_array($filedir, $allowed_dirs))
 		{
@@ -290,14 +303,20 @@ class File_field {
 		
 		// If the current file directory is not one the user has access to
 		// make sure it is an edit and value hasn't changed
-		
 		if ($_POST[$field_name] && ! in_array($filedir, $allowed_dirs))
 		{
-			if ($filedir != '' OR ( ! ee()->input->post('entry_id') OR ee()->input->post('entry_id') == ''))
+			// Some legacy fields will have only a full path specified
+			if ($filedir == '')
 			{
-				return lang('directory_no_access');
+				unset($_POST[$field_name.'_hidden_dir']);
+				return array('value' => $_POST[$field_name]);			
 			}
-			
+
+			if ( ! ee()->input->post('entry_id') OR ee()->input->post('entry_id') == '')
+			{
+				return array('value' => '', 'error' => lang('directory_no_access'));
+			}
+
 			// The existing directory couldn't be selected because they didn't have permission to upload
 			// Let's make sure that the existing file in that directory is the one that's going back in
 			
@@ -308,12 +327,12 @@ class File_field {
 
 			if ($query->num_rows() == 0)
 			{
-				return lang('directory_no_access');
+				return array('value' => '', 'error' => lang('directory_no_access'));
 			}
 			
 			if ('{filedir_'.$hidden_dir.'}'.$_POST[$field_name] != $query->row($field_name))
 			{
-				return lang('directory_no_access');
+				return array('value' => '', 'error' => lang('directory_no_access'));
 			}
 			
 			// Replace the empty directory with the existing directory
@@ -322,7 +341,7 @@ class File_field {
 		
 		if ($required == 'y' && ! $_POST[$field_name])
 		{
-			return lang('required');
+			return array('value' => '', 'error' => lang('required'));
 		}
 		
 		unset($_POST[$field_name.'_hidden_dir']);
@@ -520,6 +539,7 @@ class File_field {
 			$file = array(
 				'url'					=> $data,
 				'file_name'				=> $data,
+				'filename'				=> '',
 				'extension'				=> '',
 				'path'					=> '',
 				'upload_location_id'	=> '',

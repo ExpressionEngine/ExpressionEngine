@@ -732,28 +732,30 @@ class Admin_content extends CP_Controller {
 			$old_field = $query->row('field_group');
 		}
 
-		if ($old_field != $data['field_group'] && ! is_null($old_field))
+		if ($old_field != $data['field_group'])
 		{
 			$update_fields = TRUE;
-			
-			$this->db->select('field_id');
-			$this->db->where('group_id', $old_field); 
-			$query = $this->db->get('channel_fields');
-		
-			if ($query->num_rows() > 0)
-			{
-				foreach($query->result() as $row)
-				{
-					$tabs[] = $row->field_id;
-				}
 
+			if ( ! is_null($old_field))
+			{
+				$this->db->select('field_id');
+				$this->db->where('group_id', $old_field);
+				$query = $this->db->get('channel_fields');
+
+				if ($query->num_rows() > 0)
+				{
+					foreach($query->result() as $row)
+					{
+						$tabs[] = $row->field_id;
+					}
 					
-				$this->load->library('layout');
-				$this->layout->delete_layout_fields($tabs, $channel_id);
-				unset($tabs);
+					$this->load->library('layout');
+					$this->layout->delete_layout_fields($tabs, $channel_id);
+					unset($tabs);
+				}
 			}
 		}
-		
+
 		$this->db->where('channel_id', $channel_id);
 		$this->db->update('channels', $data); 
 
@@ -2062,9 +2064,7 @@ class Admin_content extends CP_Controller {
 			'cat_image'
 		);
 		
-		$_POST['cat_image'] = $this->file_field->format_data(
-			$cat_image['value']
-		);
+		$_POST['cat_image'] = $cat_image['value'];
 		
 		// Finish data prep for insertion
 		if ($this->config->item('auto_convert_high_ascii') == 'y')

@@ -2606,14 +2606,15 @@ WysiHat.Formatting = {
 				.replace( /<\/?[A-Z]+/g, function(tag) {
 					return tag.toLowerCase();
 				})
-				// cleanup whitespace and emtpy tags
+				// // cleanup whitespace and emtpy tags
 				.replace(/(\t|\n| )+/g, ' ')		// reduce whitespace to spaces
-				.replace(/[ ]*(<|>)[ ]*/g, '$1')	// reomve whitespace next to tags
+				.replace(/>\s+</g, '> <')			// reduce whitespace next to tags
 				.replace('<p>&nbsp;</p>', '')		// remove empty paragraphs
-				.replace(/<br\/?><\/p>/, '</p>')	// remove brs at ends of paragraphs
+				.replace(/<br\/?>\s?<\/p>/, '</p>')	// remove brs at ends of paragraphs
 				.replace(/<p>\n+<\/p>/, '')			// remove paragraphs full of newlines
 				.replace(that.reBlocks, '$1\n\n')	// line between blocks
 				.replace(/<br\/?>/g, '<br>\n')		// newlines after brs
+				.replace(/&nbsp;/g, ' ')			// nbps to spaces
 
 				// prettify lists
 				.replace(/><li>/g, '>\n<li>')
