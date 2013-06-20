@@ -3094,6 +3094,7 @@ class Channel_form_lib
 			'sticky',
 			'allow_comments'
 		);
+
 		$this->custom_field_conditional_names = array(
 			'rel' => 'relationship',
 			'text' => 'textinput',
@@ -3101,6 +3102,7 @@ class Channel_form_lib
 			'checkboxes' => 'checkbox',
 			'multi_select' => 'multiselect'
 		);
+
 		$this->custom_fields = array();
 		$this->custom_option_fields = array();
 		$this->date_fields = array(
@@ -3111,7 +3113,9 @@ class Channel_form_lib
 			'recent_comment_date',
 			'recent_trackback_date'
 		);
+
 		$this->datepicker = TRUE;
+
 		$this->default_fields = array(
 			'title' => array(
 				'field_name' => 'title',
@@ -3144,6 +3148,7 @@ class Channel_form_lib
 				'rules' => 'call_field_validation[comment_expiration_date]'
 			)
 		);
+
 		$this->edit = FALSE;
 		$this->entry = array();
 		$this->error_handling = 'message';
@@ -3153,6 +3158,7 @@ class Channel_form_lib
 		$this->file_fields = array(
 			'file'
 		);
+
 		$this->form_validation_methods = array();
 		$this->head = '';
 		$this->json = FALSE;	
@@ -3164,6 +3170,7 @@ class Channel_form_lib
 			'radio',
 			'checkboxes'
 		);
+
 		$this->native_variables = array(
 			'comment_expiration_date' => 'date',
 			'expiration_date' => 'date',
@@ -3173,6 +3180,7 @@ class Channel_form_lib
 			'allow_comments' => FALSE,
 			'title' => 'text'
 		);
+
 		$this->option_fields = array();	
 		$this->parse_variables = array();
 
@@ -3209,6 +3217,7 @@ class Channel_form_lib
 			'recent_comment_date',
 			'comment_total',
 		);
+
 		$this->valid_callbacks = array(
 			'html_entity_decode',
 			'htmlentities'
@@ -3350,11 +3359,10 @@ class Channel_form_lib
 			
 			ee()->load->library('user_agent', array(), 'user_agent');
 			
-			//many browsers do not consistently like this content type
-			//array('Firefox', 'Mozilla', 'Netscape', 'Camino', 'Firebird')
+			// many browsers do not consistently like this content type
 			if (is_array($msg) && in_array(ee()->user_agent->browser(), array('Safari', 'Chrome')))
 			{
-				@header('Content-Type: application/json');
+				@header('Content-Type: application/json; charset=UTF-8');
 			}
 			else
 			{
@@ -3469,23 +3477,6 @@ class Channel_form_lib
 		$data = @unserialize($data);
 		
 		return (is_array($data)) ? $data : array();
-	}
-
-	// --------------------------------------------------------------------
-	
-	/**
-	 * Get relationship data
-	 * 
-	 * @param	array $rel_ids
-	 * @return	object
-	 */
-	public function api_safe_rel_ids($rel_ids)
-	{
-		ee()->db->select('relationship_id, parent_id, child_id');
-		ee()->db->where_in('relationship_id', $rel_ids);
-		$query = ee()->db->get('relationships');
-
-		return $query;
 	}
 
 	// --------------------------------------------------------------------	
