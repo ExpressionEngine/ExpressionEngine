@@ -3893,6 +3893,36 @@ class EE_Template {
 
 	// --------------------------------------------------------------------
 	
+	/**
+	 * Parses {switch=} variables in a row of tag data
+	 *
+	 * @param	string	Tag data for current row being parsed
+	 * @param	int		Count of current row to determine which value to
+	 *                  replace the switch tag with
+	 * @param	string	Optional tag prefix
+	 * @return	string	Tag data with parsed switch variables
+	 */
+	public function parse_switch($tagdata, $count, $prefix = '')
+	{
+		if (preg_match_all(
+			'/'.LD.$prefix.'switch\s*=([\'"])([^\1].+)\1'.RD.'/iU',
+			$tagdata,
+			$matches, 
+			PREG_SET_ORDER))
+		{
+			foreach ($matches as $match)
+			{
+				// Captured parameter
+				$options = explode("|", $match[2]);
+
+				$value = $options[($count + count($options)) % count($options)];
+
+				$tagdata = str_replace($match[0], $value, $tagdata);
+			}
+		}
+
+		return $tagdata;
+	}
 }
 // END CLASS
 

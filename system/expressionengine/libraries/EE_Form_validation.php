@@ -25,6 +25,7 @@
 class EE_Form_validation extends CI_Form_validation {
 
 	var $old_values = array();
+	var $_fieldtype = NULL;
 
 	/**
 	 * Constructor
@@ -474,6 +475,50 @@ class EE_Form_validation extends CI_Form_validation {
 	{
 		return (isset($this->old_values[$key])) ? $this->old_values[$key] : '';
 	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Sets additional object to check callbacks against such as fieldtypes
+	 * to allow third-party fieldtypes to validate their settings forms
+	 *
+	 * @param	object 	Fieldtype to check callbacks against
+	 * @return	void
+	 */
+	public function set_fieldtype($fieldtype)
+	{
+		$this->_fieldtype = $fieldtype;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Get the value from a form
+	 *
+	 * Permits you to repopulate a form field with the value it was submitted
+	 * with, or, if that value doesn't exist, with the default
+	 *
+	 * Overrides parent to also check POST
+	 *
+	 * @access	public
+	 * @param	string	the field name
+	 * @param	string
+	 * @return	void
+	 */
+	function set_value($field = '', $default = '')
+	{
+		if ( ! isset($this->_field_data[$field]))
+		{
+			if (isset($_POST[$field]))
+			{
+				return form_prep($_POST[$field], $field);
+			}
+
+			return $default;
+		}
+
+		return $this->_field_data[$field]['postdata'];
+	}
 	
 	// --------------------------------------------------------------------
 
@@ -665,13 +710,23 @@ class EE_Form_validation extends CI_Form_validation {
 			// Call the function that corresponds to the rule
 			if ($callback === TRUE)
 			{
-				if ( ! method_exists($this->CI, $rule))
-				{ 		
+				// Check the controller for the callback first
+				if (method_exists($this->CI, $rule))
+				{
+					$object = $this->CI;
+				}
+				// Check fieldtype for the callback
+				elseif (method_exists($this->_fieldtype, $rule))
+				{ 
+					$object = $this->_fieldtype;
+				}
+				else
+				{
 					continue;
 				}
 				
 				// Run the function and grab the result
-				$result = $this->CI->$rule($postdata, $param);
+				$result = $object->$rule($postdata, $param);
 
 				// Re-assign the result to the master data array
 				if ($_in_array == TRUE)

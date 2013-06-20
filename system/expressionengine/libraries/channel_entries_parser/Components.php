@@ -20,6 +20,7 @@ require_once APPPATH.'libraries/channel_entries_parser/components/Custom_field.p
 require_once APPPATH.'libraries/channel_entries_parser/components/Custom_field_pair.php';
 require_once APPPATH.'libraries/channel_entries_parser/components/Custom_member_field.php';
 require_once APPPATH.'libraries/channel_entries_parser/components/Date.php';
+require_once APPPATH.'libraries/channel_entries_parser/components/Grid.php';
 require_once APPPATH.'libraries/channel_entries_parser/components/Header_and_footer.php';
 require_once APPPATH.'libraries/channel_entries_parser/components/Relationship.php';
 require_once APPPATH.'libraries/channel_entries_parser/components/Simple_conditional.php';
@@ -63,10 +64,11 @@ class EE_Channel_parser_components {
 
 		$this->register_once('EE_Channel_category_parser');
 		$this->register_once('EE_Channel_custom_field_pair_parser');
+		$this->register_once('EE_Channel_grid_parser');
 		$this->register_once('EE_Channel_relationship_parser');
+		$this->register_once('EE_Channel_switch_parser');
 
 		$this->register_single('EE_Channel_simple_conditional_parser');
-		$this->register_single('EE_Channel_switch_parser');
 		$this->register_single('EE_Channel_date_parser');
 		$this->register_single('EE_Channel_simple_variable_parser');
 		$this->register_single('EE_Channel_custom_date_parser');

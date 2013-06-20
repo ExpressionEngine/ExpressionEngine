@@ -72,11 +72,12 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 	 * The constructor does most of the precaching before handing
 	 * off to the class methods for interaction related things.
 	 */
-	function RelationshipField(field) {
+	function RelationshipField(container) {
+
 		// three main components per field
-		this.root = $(field);
-		this.active = $(field+'-active');
-		this.searchField = $(field+'-filter');
+		this.root = $(container).find('.multiselect');
+		this.active = $(container).find('.multiselect-active');
+		this.searchField = $(container).find('.multiselect-filter input');
 
 		// cache a few things for search and query-less access
 		this.activeMap = {};
@@ -609,8 +610,18 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 	/**
 	 * Public method to instantiate
 	 */
-	EE.setup_relationship_field = function(el) {
-		return new RelationshipField(el);
+	EE.setup_relationship_field = function(field_name) {
+		if (field_name[0] == 'f') { // field_id_x vs col_id_x for grid
+			return new RelationshipField(
+				$('#sub_hold_'+field_name.replace('id_', ''))
+			);
+		}
+		
+		Grid.bind('relationship', 'display', function(cell) {
+			new RelationshipField(cell);
+		});
 	};
+
+
 
 })(jQuery);

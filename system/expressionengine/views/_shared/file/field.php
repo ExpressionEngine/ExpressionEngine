@@ -1,4 +1,4 @@
-<div class="file_wrapper">
+<div class="file_field">
 	<div class="file_set <?=$set_class?>">
 		<a href="#" class="remove_file" title="<?=lang('remove_file')?>"><img src="<?= $this->config->item('theme_folder_url'); ?>cp_themes/default/images/write_mode_close.png" alt="" /></a>
 

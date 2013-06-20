@@ -15,7 +15,7 @@
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Channel Parser Component (Switch)
+ * ExpressionEngine Channel Parser Component (Grid)
  *
  * @package		ExpressionEngine
  * @subpackage	Core
@@ -23,37 +23,49 @@
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class EE_Channel_switch_parser implements EE_Channel_parser_component {
+class EE_Channel_grid_parser implements EE_Channel_parser_component {
 
 	/**
-	 * Quick check if they're using switch
+	 * Check if Grid is enabled
 	 *
 	 * @param array		A list of "disabled" features
 	 * @return Boolean	Is disabled?
 	 */
 	public function disabled(array $disabled, EE_Channel_preparser $pre)
 	{
-		return ! $pre->has_tag('switch');
+		return empty($pre->channel()->gfields) OR in_array('grid', $disabled);
 	}
 	
-	// ------------------------------------------------------------------------
+	// --------------------------------------------------------------------
 
 	/**
-	 * No preprocessing required.
+	 * Gather the data needed to process all Grid field
+	 *
+	 * The returned object will be passed to replace() as a third parameter.
 	 *
 	 * @param String	The tagdata to be parsed
 	 * @param Object	The preparser object.
-	 * @return void
+	 * @return Object	EE_Grid_field_parser object	
 	 */
 	public function pre_process($tagdata, EE_Channel_preparser $pre)
 	{
-		return NULL;
+		$site_id = config_item('site_id');
+		$gfields = $pre->channel()->gfields;
+
+		if ( ! isset($gfields[$site_id]) OR empty($gfields[$site_id]))
+		{
+			return NULL;
+		}
+
+		ee()->load->library('grid_parser');
+
+		return ee()->grid_parser->pre_process($tagdata, $pre, $gfields[$site_id]);
 	}
 
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Replace the switch tag based on what step of the loop we're in.
+	 * Replace all of the Grid fields in one fell swoop.
 	 *
 	 * @param String	The tagdata to be parsed
 	 * @param Object	The channel parser object
@@ -61,8 +73,8 @@ class EE_Channel_switch_parser implements EE_Channel_parser_component {
 	 *
 	 * @return String	The processed tagdata
 	 */
-	public function replace($tagdata, EE_Channel_data_parser $obj, $pre)
+	public function replace($tagdata, EE_Channel_data_parser $obj, $grid_parser)
 	{
-		return ee()->TMPL->parse_switch($tagdata, $obj->count(), $obj->prefix());
+		return $tagdata;
 	}
 }

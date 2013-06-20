@@ -6,10 +6,26 @@ class Api_channel_fields extends Api {
 	var $field_types		= array();
 	var $ft_paths			= array();
 	var $settings			= array();
+	var $native				= array();
 
 	var $ee_base_ft			= FALSE;
 	var $global_settings;
 	
+	public function __construct()
+	{
+		parent::__construct();
+
+		$this->native = array(
+			'field_id', 'site_id', 'group_id',
+			'field_name', 'field_label', 'field_instructions',
+			'field_type', 'field_list_items', 'field_pre_populate',
+			'field_pre_channel_id', 'field_pre_field_id',
+			'field_ta_rows', 'field_maxl', 'field_required',
+			'field_text_direction', 'field_search', 'field_is_hidden', 'field_fmt', 'field_show_fmt',
+			'field_order'
+		);
+	}
+
 	// --------------------------------------------------------------------
 	
 	/**
@@ -136,6 +152,7 @@ class Api_channel_fields extends Api {
 		$cfields = array();
 		$dfields = array();
 		$rfields = array();
+		$gfields = array();
 		$pfields = array();
 		
 		foreach ($query->result_array() as $row)
@@ -177,6 +194,11 @@ class Api_channel_fields extends Api {
 				
 				$this->set_settings($row['field_id'], $settings);
 			}
+
+			if ($row['field_type'] == 'grid')
+			{
+				$gfields[$row['site_id']][$row['field_name']] = $row['field_id'];
+			}
 			
 			
 			$cfields[$row['site_id']][$row['field_name']] = $row['field_id'];
@@ -186,6 +208,7 @@ class Api_channel_fields extends Api {
 			'custom_channel_fields'	=> $cfields,
 			'date_fields'			=> $dfields,
 			'relationship_fields'	=> $rfields,
+			'grid_fields'			=> $gfields,
 			'pair_custom_fields'	=> $pfields
 		);
 	}
@@ -421,22 +444,39 @@ class Api_channel_fields extends Api {
 	 * @param	array	
 	 * @return	void
 	 */
-	function delete_datatype($field_id, $data)
+	function delete_datatype($field_id, $data, $overrides = array())
 	{
+		$defaults = array(
+			'id_field'				=> 'field_id',
+			'col_settings_method'	=> 'settings_modify_column',
+			'col_prefix'			=> 'field',
+			'data_table'			=> 'channel_data'
+		);
+
+		foreach ($overrides as $key => $value)
+		{
+			$defaults[$key] = $value;
+		}
+
+		extract($defaults);
+
+		$id_field_name = $col_prefix.'_id_'.$field_id;
+		$ft_field_name = $col_prefix.'_ft_'.$field_id;
+
 		// merge in a few variables to the data array
-		$data['field_id'] = $field_id;
+		$data[$id_field] = $field_id;
 		$data['ee_action'] = 'delete';
 		
-		$fields = $this->apply('settings_modify_column', array($data));
+		$fields = $this->apply($col_settings_method, array($data));
 		
-		if ( ! isset($fields['field_id_'.$field_id]))
+		if ( ! isset($fields[$id_field_name]))
 		{
-			$fields['field_id_'.$field_id] = '';
+			$fields[$id_field_name] = '';
 		}
 		
-		if ( ! isset($fields['field_ft_'.$field_id]))
+		if ( ! isset($fields[$ft_field_name]) && $id_field != 'col_id')
 		{
-			$fields['field_ft_'.$field_id] = '';
+			$fields[$ft_field_name] = '';
 		}		
 
 		ee()->load->dbforge();
@@ -444,7 +484,7 @@ class Api_channel_fields extends Api {
 				
 		foreach ($delete_fields as $col)
 		{
-			ee()->dbforge->drop_column('channel_data', $col);
+			ee()->dbforge->drop_column($data_table, $col);
 		}
 	}	
 	
@@ -460,42 +500,61 @@ class Api_channel_fields extends Api {
 	 * @access	public
 	 * @param	mixed (field_id)
 	 * @param	string (field_type)	
-	 * @param	array	
+	 * @param	array
 	 * @return	void
 	 */
-	function edit_datatype($field_id, $field_type, $data)
+	function edit_datatype($field_id, $field_type, $data, $overrides = array())
 	{
+		$defaults = array(
+			'id_field'				=> 'field_id',
+			'type_field'			=> 'field_type',
+			'col_settings_method'	=> 'settings_modify_column',
+			'col_prefix'			=> 'field',
+			'fields_table'			=> 'channel_fields',
+			'data_table'			=> 'channel_data'
+		);
+
+		foreach ($overrides as $key => $value)
+		{
+			$defaults[$key] = $value;
+		}
+
+		extract($defaults);
+
+		$id_field_name = $col_prefix.'_id_'.$field_id;
+		$ft_field_name = $col_prefix.'_ft_'.$field_id;
+
 		$old_fields = array();
 		
 		// First we get the data
-		$query = ee()->db->get_where('channel_fields', array('field_id' => $field_id));
+		$query = ee()->db->get_where($fields_table, array($id_field => $field_id));
 		
-		$this->setup_handler($query->row('field_type'));
+		$this->setup_handler($query->row($type_field));
 		
 		// Field type changed ?
-		$type = ($query->row('field_type') == $field_type) ? 'get_data' : 'delete';
+		$type = ($query->row($type_field) == $field_type) ? 'get_data' : 'delete';
 
 		$old_data = $query->row_array();
 		
 		// merge in a few variables to the data array
-		$old_data['field_id'] = $field_id;
+		$old_data[$id_field] = $field_id;
 		$old_data['ee_action'] = $type;
 
-		$old_fields = $this->apply('settings_modify_column', array($old_data));
+		$old_fields = $this->apply($col_settings_method, array($old_data));
 
 		// Switch handler back to the new field type
 		$this->setup_handler($field_type);
 
-		if ( ! isset($old_fields['field_id_'.$field_id]))
+		if ( ! isset($old_fields[$id_field_name]))
 		{
-			$old_fields['field_id_'.$field_id]['type'] = 'text';
-			$old_fields['field_id_'.$field_id]['null'] = TRUE;
+			$old_fields[$id_field_name]['type'] = 'text';
+			$old_fields[$id_field_name]['null'] = TRUE;
 		}
 		
-		if ( ! isset($old_fields['field_ft_'.$field_id]))
+		if ( ! isset($old_fields[$ft_field_name]) && $id_field != 'col_id')
 		{
-			$old_fields['field_ft_'.$field_id]['type'] = 'tinytext';
-			$old_fields['field_ft_'.$field_id]['null'] = TRUE;
+			$old_fields[$ft_field_name]['type'] = 'tinytext';
+			$old_fields[$ft_field_name]['null'] = TRUE;
 		}
 
 		// Delete extra fields
@@ -506,19 +565,19 @@ class Api_channel_fields extends Api {
 				
 			foreach ($delete_fields as $col)
 			{
-				if ($col == 'field_id_'.$field_id OR $col == 'field_ft_'.$field_id)
+				if ($col == $id_field_name OR $col == $ft_field_name)
 				{
 					continue;
 				}
 
-				ee()->dbforge->drop_column('channel_data', $col);
+				ee()->dbforge->drop_column($data_table, $col);
 			}
 			
 		}
 		
 		$type_change = ($type == 'delete') ? TRUE : FALSE;
 		
-		$this->set_datatype($field_id, $data, $old_fields, FALSE, $type_change);
+		$this->set_datatype($field_id, $data, $old_fields, FALSE, $type_change, $overrides);
 	}	
 	
 	// --------------------------------------------------------------------
@@ -538,27 +597,44 @@ class Api_channel_fields extends Api {
 	 * @param	bool (TRUE if the field type changed)
 	 * @return	void
 	 */
-	function set_datatype($field_id, $data, $old_fields = array(), $new = TRUE, $type_change = FALSE)
-	{		
+	function set_datatype($field_id, $data, $old_fields = array(), $new = TRUE, $type_change = FALSE, $overrides = array())
+	{
+		$defaults = array(
+			'id_field'				=> 'field_id',
+			'col_settings_method'	=> 'settings_modify_column',
+			'col_prefix'			=> 'field',
+			'data_table'			=> 'channel_data'
+		);
+
+		foreach ($overrides as $key => $value)
+		{
+			$defaults[$key] = $value;
+		}
+
+		extract($defaults);
+
+		$id_field_name = $col_prefix.'_id_'.$field_id;
+		$ft_field_name = $col_prefix.'_ft_'.$field_id;
+
 		ee()->load->dbforge();
 		
 		// merge in a few variables to the data array
-		$data['field_id'] = $field_id;
+		$data[$id_field] = $field_id;
 		$data['ee_action'] = 'add';
 		
 		// We have to get the new fields regardless to check whether they were modified
-		$fields = $this->apply('settings_modify_column', array($data));
+		$fields = $this->apply($col_settings_method, array($data));
 		
-		if ( ! isset($fields['field_id_'.$field_id]))
+		if ( ! isset($fields[$id_field_name]))
 		{
-			$fields['field_id_'.$field_id]['type'] = 'text';
-			$fields['field_id_'.$field_id]['null'] = TRUE;
+			$fields[$id_field_name]['type'] = 'text';
+			$fields[$id_field_name]['null'] = TRUE;
 		}
 		
-		if ( ! isset($fields['field_ft_'.$field_id]))
+		if ( ! isset($fields[$col_prefix.'_ft_'.$field_id]) && $id_field != 'col_id')
 		{
-			$fields['field_ft_'.$field_id]['type'] = 'tinytext';
-			$fields['field_ft_'.$field_id]['null'] = TRUE;
+			$fields[$ft_field_name]['type'] = 'tinytext';
+			$fields[$ft_field_name]['null'] = TRUE;
 		}
 		
 		// Do we need to modify the field_id
@@ -566,8 +642,8 @@ class Api_channel_fields extends Api {
 
 		if ( ! $new)
 		{
-			$diff1 = array_diff_assoc($old_fields['field_id_'.$field_id], $fields['field_id_'.$field_id]);
-			$diff2 = array_diff_assoc($fields['field_id_'.$field_id], $old_fields['field_id_'.$field_id]);
+			$diff1 = array_diff_assoc($old_fields[$id_field_name], $fields[$id_field_name]);
+			$diff2 = array_diff_assoc($fields[$id_field_name], $old_fields[$id_field_name]);
 		
 			if ( ! empty($diff1) OR ! empty($diff2))
 			{
@@ -582,17 +658,17 @@ class Api_channel_fields extends Api {
 			{
 				if ( ! $new)
 				{
-					if ($field == 'field_id_'.$field_id OR $field == 'field_ft_'.$field_id)
+					if ($field == $id_field_name OR $field == $ft_field_name)
 					{
 						continue;
 					}
 				}
 				
-				ee()->dbforge->add_column('channel_data', array($field => $prefs));
+				ee()->dbforge->add_column($data_table, array($field => $prefs));
 				
 				// Make sure the value is an empty string
 				ee()->db->update(
-					'channel_data',
+					$data_table,
 					array(
 						$field => (isset($prefs['default'])) ? $prefs['default'] : ''
 					)
@@ -603,10 +679,10 @@ class Api_channel_fields extends Api {
 		// And modify any necessary fields
 		if ($modify == TRUE)
 		{
-			$mod['field_id_'.$field_id] = $fields['field_id_'.$field_id];
-			$mod['field_id_'.$field_id]['name'] = 'field_id_'.$field_id;
+			$mod[$id_field_name] = $fields[$id_field_name];
+			$mod[$id_field_name]['name'] = $id_field_name;
 			
-			ee()->dbforge->modify_column('channel_data', $mod);
+			ee()->dbforge->modify_column($data_table, $mod);
 		}
 	}
 
@@ -1195,33 +1271,11 @@ class Api_channel_fields extends Api {
 		{
 			return FALSE;
 		}
-		
-		$native = array(
-			'field_id', 'site_id', 'group_id',
-			'field_name', 'field_label', 'field_instructions',
-			'field_type', 'field_list_items', 'field_pre_populate',
-			'field_pre_channel_id', 'field_pre_field_id',
-			'field_ta_rows', 'field_maxl', 'field_required',
-			'field_text_direction', 'field_search', 'field_is_hidden', 'field_fmt', 'field_show_fmt',
-			'field_order'
-		);
-		
-		$_posted = array();
-		$_field_posted = preg_grep('/^'.$field_type.'_.*/', array_keys($field_data));
-		$_keys = array_merge($native,  $_field_posted);
-
-		foreach($_keys as $key)
-		{
-			if (isset($field_data[$key]))
-			{
-				$_posted[$key] = $field_data[$key];
-			}
-		}
 
 		// Get the field type settings
 		$this->fetch_all_fieldtypes();
 		$this->setup_handler($field_type);
-		$ft_settings = $this->apply('save_settings', array($_posted));
+		$ft_settings = $this->apply('save_settings', array($this->get_posted_field_settings($field_type)));
 		
 		// Default display options
 		foreach(array('smileys', 'glossary', 'spellcheck', 'formatting_btns', 'file_selector', 'writemode') as $key)
@@ -1232,7 +1286,7 @@ class Api_channel_fields extends Api {
 		
 		// Now that they've had a chance to mess with the POST array,
 		// grab post values for the native fields (and check namespaced fields)
-		foreach($native as $key)
+		foreach($this->native as $key)
 		{
 			$native_settings[$key] = $this->_get_ft_data($field_type, $key, $field_data);
 		}
@@ -1263,7 +1317,7 @@ class Api_channel_fields extends Api {
 		
 		foreach($ft_settings as $key => $val)
 		{
-			if (in_array($key, $native))
+			if (in_array($key, $this->native))
 			{
 				unset($ft_settings[$key]);
 				$native_settings[$key] = $val;
@@ -1435,11 +1489,36 @@ class Api_channel_fields extends Api {
 		
 		$this->set_settings($native_settings['field_id'], $_final_settings);
 		$this->setup_handler($native_settings['field_id']);
-		$this->apply('post_save_settings', array($_posted));
+		$this->apply('post_save_settings', array($_final_settings));
 
 		ee()->functions->clear_caching('all', '');
 		
 		return $native_settings['field_id'];
+	}
+
+	/**
+	 * Creates an array of field settings to pass to a fieldtype's validate_settings
+	 * and save_settings methods
+	 * 
+	 * @return mixed the fieldtype setting requested
+	 */
+	public function get_posted_field_settings($field_type)
+	{
+		$keys = array_merge(
+			$this->native,
+			preg_grep('/^'.$field_type.'_.*/', array_keys($_POST))
+		);
+
+		$posted = array();
+		foreach($keys as $key)
+		{
+			if (isset($_POST[$key]))
+			{
+				$posted[$key] = $_POST[$key];
+			}
+		}
+
+		return $posted;
 	}
 	
 	/**
@@ -1645,18 +1724,18 @@ class Api_channel_fields extends Api {
 		
 		$default_values = array(
 			'field_type'					=> isset($fts['text']) ? 'text' : key($fts),
-			'field_show_fmt'				=> 'n',
-			'field_required'				=> 'n',
-			'field_search'					=> 'n',
-			'field_is_hidden'				=> 'n',
-			'field_pre_populate'			=> 'n',
-			'field_show_spellcheck'			=> 'n',
-			'field_show_smileys'			=> 'n',
-			'field_show_glossary'			=> 'n',
-			'field_show_formatting_btns'	=> 'n',
-			'field_show_writemode'			=> 'n',
-			'field_show_file_selector'		=> 'n',
-			'field_text_direction'			=> 'ltr'
+			'field_show_fmt'				=> set_value('field_show_fmt', 'n'),
+			'field_required'				=> set_value('field_required', 'n'),
+			'field_search'					=> set_value('field_search', 'n'),
+			'field_is_hidden'				=> set_value('field_is_hidden', 'n'),
+			'field_pre_populate'			=> set_value('field_pre_populate', 'n'),
+			'field_show_spellcheck'			=> set_value('field_show_spellcheck', 'n'),
+			'field_show_smileys'			=> set_value('field_show_smileys', 'n'),
+			'field_show_glossary'			=> set_value('field_show_glossary', 'n'),
+			'field_show_formatting_btns'	=> set_value('field_show_formatting_btns', 'n'),
+			'field_show_writemode'			=> set_value('field_show_writemode', 'n'),
+			'field_show_file_selector'		=> set_value('field_show_file_selector', 'n'),
+			'field_text_direction'			=> set_value('field_text_direction', 'ltr')
 		);
 
 		foreach($default_values as $key => $val)
@@ -1726,6 +1805,102 @@ class Api_channel_fields extends Api {
 		$vars['ft_selector'] = "#ft_".implode(", #ft_", array_keys($fts));
 		
 		return $vars;
+	}
+
+	/**
+	 * Gets field pair template tags for a specified field name in specified
+	 * tag data with an optional prefix
+	 *
+	 * @param	string	Tag data
+	 * @param	string	Field name to get variables for
+	 * @param	string	Optional tag prefix, i.e. for Relationships or Grid
+	 * @return	array	Structured tag pair template tags
+	 */
+	public function get_pair_field($tagdata, $field_name, $prefix = '')
+	{
+		$pfield_chunk = array();
+		$offset = 0;
+		$field_name = $prefix.$field_name;
+		
+		while (($end = strpos($tagdata, LD.'/'.$field_name, $offset)) !== FALSE)
+		{
+			// This hurts soo much. Using custom fields as pair and single vars in the same
+			// channel tags could lead to something like this: {field}...{field}inner{/field}
+			// There's no efficient regex to match this case, so we'll find the last nested
+			// opening tag and re-cut the chunk.
+
+			if (preg_match("/".LD."{$field_name}((?::\S+)?)(\s.*?)?".RD."(.*?)".LD.'\/'."{$field_name}\\1".RD."/s", $tagdata, $matches, 0, $offset))
+			{
+				$chunk = $matches[0];
+				$modifier = $matches[1];
+				$params = $matches[2];
+				$content = $matches[3];
+
+				// We might've sandwiched a single tag - no good, check again (:sigh:)
+				if ((strpos($chunk, LD.$field_name.$modifier, 1) !== FALSE) && preg_match_all("/".LD."{$field_name}{$modifier}(\s.*?)?".RD."/s", $chunk, $match))
+				{
+					// Let's start at the end
+					$idx = count($match[0]) - 1;
+					$tag = $match[0][$idx];
+					
+					// Reassign the parameter
+					$params = $match[1][$idx];
+
+					// Cut the chunk at the last opening tag
+					$offset = strrpos($chunk, $tag);
+					$chunk = substr($chunk, $offset);
+					$chunk = strstr($chunk, LD.$field_name);
+					$content = substr($chunk, strlen($tag), -strlen(LD.'/'.$field_name.RD));
+				}
+
+				$params = ee()->functions->assign_parameters($params);
+				$params = $params ? $params : array();
+
+				$chunk_array = array(
+					ltrim($modifier, ':'),
+					$content,
+					$params,
+					$chunk
+				);
+
+				$pfield_chunk[] = $chunk_array;
+			}
+			
+			$offset = $end + 1;
+		}
+
+		return $pfield_chunk;
+	}
+
+	/**
+	 * Gets information for a single variable field in a template
+	 *
+	 * @param	string	Tag to get field name, modifier and params from
+	 * @param	string	Optional prefix
+	 * @return	array	Field name, modifier and params for field
+	 */
+	public function get_single_field($tag, $prefix = '')
+	{
+		$field_info = array();
+
+		$unprefixed_tag	= preg_replace('/^'.$prefix.'/', '', $tag);
+		$field_name 	= substr($unprefixed_tag.' ', 0, strpos($unprefixed_tag.' ', ' '));
+		$param_string	= substr($unprefixed_tag.' ', strlen($field_name));
+
+		$modifier = '';
+		$modifier_loc = strpos($field_name, ':');
+
+		if ($modifier_loc !== FALSE)
+		{
+			$modifier = substr($field_name, $modifier_loc + 1);
+			$field_name = substr($field_name, 0, $modifier_loc);
+		}
+
+		$field_info['field_name'] = $field_name;
+		$field_info['params'] = ($param_string) ? ee()->functions->assign_parameters($param_string) : array();
+		$field_info['modifier'] = $modifier;
+
+		return $field_info;
 	}
 }
 

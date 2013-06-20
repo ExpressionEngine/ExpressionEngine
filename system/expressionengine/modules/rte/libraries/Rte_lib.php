@@ -380,10 +380,20 @@ class Rte_lib {
 
 				// RTE editor setup for this page
 				$("' . $selector . '")
+					.not(".grid_field ' . $selector . '")
 					.addClass("WysiHat-field")
 					.wysihat({
 						buttons: '.json_encode($bits['buttons']).'
 					});
+				
+				Grid.bind("rte", "display", function(cell)
+				{
+					$("' . $selector . '", cell)
+						.addClass("WysiHat-field")
+						.wysihat({
+							buttons: '.json_encode($bits['buttons']).'
+						});
+				});
 			}
 		})();';
 
@@ -454,7 +464,7 @@ class Rte_lib {
 	 * 
 	 * @return string	
 	 */
-	public function display_field($data, $field_name, $settings)
+	public function display_field($data, $field_name, $settings, $container = NULL)
 	{
 		ee()->load->helper('form');
 		
@@ -513,7 +523,7 @@ class Rte_lib {
 			}
 
 			// xhtml vs br
-			if ($settings['field_fmt'] == 'xhtml')
+			if (isset($settings['field_fmt']) && $settings['field_fmt'] == 'xhtml')
 			{
 				ee()->load->library('typography');
 
@@ -546,8 +556,15 @@ class Rte_lib {
 		$data = htmlspecialchars($data, ENT_QUOTES);
 
 		$field['value'] = $data;
+
+		$return_data = form_textarea($field);
+
+		if ($container = 'grid')
+		{
+			$return_data = '<div class="grid_full_cell_container">'.$return_data.'</div>';
+		}
 		
-		return form_textarea($field);
+		return $return_data;
 	}
 	
 	// ------------------------------------------------------------------------

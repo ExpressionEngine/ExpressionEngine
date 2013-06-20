@@ -385,7 +385,7 @@ class Api_channel_entries extends Api {
 		
 		foreach($fquery->result_array() as $row)
 		{
-			$group_fields[$row['group_id']][] = $row['field_type'];
+			$group_fields[$row['group_id']][] = $row['field_id'];
 		}
 		
 
@@ -489,7 +489,7 @@ class Api_channel_entries extends Api {
 			$entries[] = $val;
 		}
 		
-		$fts = ee()->api_channel_fields->fetch_installed_fieldtypes();
+		$fts = ee()->api_channel_fields->fetch_custom_channel_fields();
 		
 		// Pass to custom fields
 		foreach($ft_to_ids as $fieldtype => $ids)
@@ -1361,23 +1361,12 @@ class Api_channel_entries extends Api {
 					{
 						$data[$field_name] = ee()->api_channel_fields->apply('save', array($data[$field_name]));
 					}
-					
-					if (isset($data['revision_post'][$field_name]))
-					{
-						$data['revision_post'][$field_name] = $data[$field_name];
-					}
-					
 				}
 				elseif (isset($mod_data[$field_name]))
 				{
 					if ( ! $autosave)
 					{
 						$mod_data[$field_name] = ee()->api_channel_fields->apply('save', array($mod_data[$field_name]));
-					}
-
-					if (isset($data['revision_post'][$field_name]))
-					{
-						$data['revision_post'][$field_name] = $mod_data[$field_name];
 					}
 				}
 			}				

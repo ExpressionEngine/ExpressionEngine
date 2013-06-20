@@ -30,6 +30,8 @@ class File_ft extends EE_Fieldtype {
 	);
 
 	var $has_array_data = TRUE;
+
+	var $_dirs = array();
 	
 	/**
 	 * Constructor
@@ -54,7 +56,13 @@ class File_ft extends EE_Fieldtype {
 		return ee()->file_field->validate(
 			$data, 
 			$this->field_name,
-			$this->settings['field_required']
+			$this->settings['field_required'],
+			array(
+				'grid_row_id' => isset($this->settings['grid_row_id'])
+					? $this->settings['grid_row_id'] : NULL,
+				'grid_field_id' => isset($this->settings['grid_field_id'])
+					? $this->settings['grid_field_id'] : NULL
+			)
 		);
 	}
 
@@ -119,7 +127,7 @@ class File_ft extends EE_Fieldtype {
 			
 			$script = <<<JSC
 			$(document).ready(function() {
-				$('.file_wrapper').each(function() {
+				$('.file_field').each(function() {
 					var container = $(this),
 						last_value = [],
 						fileselector = container.find('.no_file'),
@@ -451,20 +459,8 @@ CSS;
 
 		ee()->lang->loadfile('fieldtypes');
 		ee()->load->model('file_upload_preferences_model');
-		
-		// Allowed upload file type
-		$field_content_options = array('all' => lang('all'), 'image' => lang('type_image'));
-		
+				
 		// And now the directory
-		$directory_options['all'] = lang('all');
-		
-		$dirs = ee()->file_upload_preferences_model->get_file_upload_preferences(1);
-
-		foreach($dirs as $dir)
-		{
-			$directory_options[$dir['id']] = $dir['name'];
-		}
-		
 		$allowed_directories = ( ! isset($data['allowed_directories'])) ? 'all' : $data['allowed_directories'];
 
 		// Show existing files? checkbox, default to yes
@@ -485,12 +481,12 @@ CSS;
 
 		$this->_row(
 			lang('file_ft_content_type', $prefix.'field_content_type'),
-			form_dropdown('file_field_content_type', $field_content_options, $data['field_content_type'], 'id="'.$prefix.'field_content_type"')
+			form_dropdown('file_field_content_type', $this->_field_content_options(), $data['field_content_type'], 'id="'.$prefix.'field_content_type"')
 		);
 
 		$this->_row(
 			lang('file_ft_allowed_dirs', $prefix.'field_allowed_dirs'),
-			form_dropdown('file_allowed_directories', $directory_options, $allowed_directories, 'id="'.$prefix.'field_allowed_dirs"')
+			form_dropdown('file_allowed_directories', $this->_allowed_directories_options(), $allowed_directories, 'id="'.$prefix.'field_allowed_dirs"')
 		);
 
 		$this->_row(
@@ -523,6 +519,37 @@ JSC;
 		return ee()->table->generate();
 	}
 
+	// --------------------------------------------------------------------
+	
+	public function grid_display_settings($data)
+	{
+		$allowed_directories = ( ! isset($data['allowed_directories'])) ? 'all' : $data['allowed_directories'];
+
+		return array(
+			$this->grid_dropdown_row(
+				lang('field_content_file'),
+				'field_content_type',
+				$this->_field_content_options(),
+				isset($data['field_content_type']) ? $data['field_content_type'] : 'all'
+			),
+			$this->grid_dropdown_row(
+				lang('allowed_dirs_file'),
+				'allowed_directories',
+				$this->_allowed_directories_options(),
+				$allowed_directories
+			)
+		);
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Returns dropdown-ready array of allowed file types for upload
+	 */
+	private function _field_content_options()
+	{
+		return array('all' => lang('all'), 'image' => lang('type_image'));
+	}
 
 	// --------------------------------------------------------------------
 
@@ -554,8 +581,62 @@ JSC;
 			);
 		}
 	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Returns dropdown-ready array of allowed upload directories
+	 */
+	private function _allowed_directories_options()
+	{
+		ee()->load->model('file_upload_preferences_model');
+
+		$directory_options['all'] = lang('all');
+		
+		if (empty($this->_dirs))
+		{
+			$this->_dirs = ee()->file_upload_preferences_model->get_file_upload_preferences(1);
+		}
+
+		foreach($this->_dirs as $dir)
+		{
+			$directory_options[$dir['id']] = $dir['name'];
+		}
+
+		return $directory_options;
+	}
 	
+	// --------------------------------------------------------------------
 	
+	function validate_settings($data)
+	{
+		ee()->form_validation->set_rules(
+			'file_allowed_directories',
+			'lang:allowed_dirs_file',
+			'required|callback__check_directories'
+		);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Grid settings validation callback; makes sure there are file upload
+	 * directories available before allowing a new file field to be saved
+	 *
+	 * @param	array	Grid settings
+	 * @return	mixed	Validation error or TRUE if passed
+	 */
+	function grid_validate_settings($data)
+	{
+		if ( ! $this->_check_directories())
+		{
+			ee()->lang->loadfile('filemanager');
+			return lang('please_add_upload');
+		}
+
+		return TRUE;
+	}
+
 	// --------------------------------------------------------------------
 
 	function save_settings($data)
@@ -567,7 +648,52 @@ JSC;
 			'num_existing'			=> ee()->input->post('file_num_existing'),
 			'field_fmt' 			=> 'none'
 		);
-	}	
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Form Validation callback; makes sure there are file upload
+	 * directories available before allowing a new file field to be saved
+	 *
+	 * @param	string	Selected file dir
+	 * @return	boolean	Whether or not to pass validation
+	 */
+	public function _validate_file_settings($file_dir)
+	{
+		// count upload dirs
+		if ( ! $this->_check_directories())
+		{
+			ee()->lang->loadfile('filemanager');
+			ee()->form_validation->set_message('_check_directories', lang('please_add_upload'));
+			return FALSE;
+		}
+
+		return TRUE;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Tells us whether or not upload destinations exist
+	 *
+	 * @return	boolean	Whether or not upload destinations exist
+	 */
+	private function _check_directories()
+	{
+		ee()->load->model('file_upload_preferences_model');
+		$upload_dir_prefs = ee()->file_upload_preferences_model->get_file_upload_preferences();
+		
+		// count upload dirs
+		return (count($upload_dir_prefs) !== 0);
+	}
+
+	// --------------------------------------------------------------------
+
+	function grid_save_settings($data)
+	{
+		return $data;
+	}
 }
 
 // END File_ft class

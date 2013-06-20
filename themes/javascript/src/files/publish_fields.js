@@ -158,7 +158,7 @@ EE.namespace('EE.publish.file_browser');
 	 * @param {Object} field jQuery object of the field
 	 */
 	function file_field_changed(file, field) {
-		var container = $("input[name="+field+"]").closest('.file_wrapper');
+		var container = $("input[name='"+field+"']").closest('.file_field');
 
 		if (file.is_image == false) {
 			container.find(".file_set").show().find(".filename").html("<img src=\""+EE.PATH_CP_GBL_IMG+"default.png\" alt=\""+EE.PATH_CP_GBL_IMG+"default.png\" /><br />"+file.file_name);
@@ -169,8 +169,8 @@ EE.namespace('EE.publish.file_browser');
 		container.find('.choose_file').hide();
 		container.find('.undo_remove').hide();
 
-		$("input[name="+field+"_hidden]").val(file.file_name);
-		$("input[name="+field+"_hidden_dir], select[name="+field+"_directory]").val(file.upload_location_id);
+		container.find("input[name="+field+"_hidden_file]").val(file.file_name);
+		container.find("input[name="+field+"_hidden_dir], select[name="+field+"_directory]").val(file.upload_location_id);
 	}
 	
 	/**
@@ -185,7 +185,7 @@ EE.namespace('EE.publish.file_browser');
 		// Look for every file input on the publish form and establish the 
 		// file browser trigger. Also establishes the remove file handler.
 		$(selector, context).each(function() {
-			var container = $(this).closest('.file_wrapper'),
+			var container = $(this).closest('.file_field'),
 				trigger = container.find(".choose_file"),
 				no_filemanager = container.find('.no_file'),
 				content_type = $(this).data('content-type'),
@@ -230,6 +230,12 @@ EE.namespace('EE.publish.file_browser');
 	 */
 	EE.publish.file_browser.file_field = function() {
 		add_trigger("input[type=file]", "#publishForm, .pageContents");
+
+		// Bind a new trigger when a new Grid row is added
+		Grid.bind('file', 'display', function(cell)
+		{
+			add_trigger('input[type=file]', cell);
+		});
 	};
 
 	/**

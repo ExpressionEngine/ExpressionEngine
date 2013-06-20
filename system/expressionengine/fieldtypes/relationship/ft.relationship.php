@@ -86,7 +86,14 @@ class Relationship_ft extends EE_Fieldtype {
 
 		$sort = array_filter($sort);
 
-		ee()->session->set_cache(__CLASS__, $this->field_name, array(
+		$cache_name = $this->field_name;
+
+		if (isset($this->settings['grid_row_name']))
+		{
+			$cache_name .= $this->settings['grid_row_name'];
+		}
+
+		ee()->session->set_cache(__CLASS__, $cache_name, array(
 			'data' => $data,
 			'sort' => $sort
 		));
@@ -110,7 +117,15 @@ class Relationship_ft extends EE_Fieldtype {
 	{
 		$field_id = $this->field_id;
 		$entry_id = $this->settings['entry_id'];
-		$post = ee()->session->cache(__CLASS__, $this->field_name);
+
+		$cache_name = $this->field_name;
+		
+		if (isset($this->settings['grid_row_name']))
+		{
+			$cache_name .= $this->settings['grid_row_name'];
+		}
+
+		$post = ee()->session->cache(__CLASS__, $cache_name);
 
 		if ($post === FALSE)
 		{
@@ -195,6 +210,7 @@ class Relationship_ft extends EE_Fieldtype {
 	public function display_field($data)
 	{
 		$field_name = $this->field_name;
+
 		$entry_id = ee()->input->get('entry_id');
 
 		$order = array();
@@ -376,99 +392,13 @@ class Relationship_ft extends EE_Fieldtype {
 			return form_dropdown($field_name.'[data][]', $options, current($selected));
 		}
 
-
-// Performance debug
-//		$entries = array_merge($entries, $entries, $entries, $entries, $entries); // 5n
-//		$entries = array_merge($entries, $entries, $entries, $entries, $entries); // 25n
-//		$entries = array_merge($entries, $entries, $entries, $entries, $entries); // 125n
-
-		$str = '';
-		$str .= $this->_active_div($field_name);
-		$str .= $this->_multi_div($entries, $selected, $order, $field_name);
-
-		// The active section
-
 		if (REQ == 'CP' && count($entries))
 		{
 			ee()->cp->add_js_script('file', 'cp/relationships');
-			ee()->javascript->output("EE.setup_relationship_field('#${field_name}');");
+			ee()->javascript->output("EE.setup_relationship_field('".$this->field_name."');");
 		}
 
-		return $str;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Draw the active/sortable half of the field
-	 *
-	 * @param
-	 *		entries - [ [title, entry_id], [...] ]
-	 *		selected - array of entry ids
-	 *		field_name - custom field name
-	 * @return	interface string
-	 */
-	public function _multi_div($entries, $selected, $order, $field_name)
-	{
-		$input_sort = $field_name.'[sort]';
-		$input_field = $field_name.'[data]';
-
-		$class = 'class="multiselect ';
-		$class .= count($entries) ? 'force-scroll' : 'empty';
-		$class .= '"';
-
-		$str = '<div class="multiselect-filter js_show">';
-		$str .= form_input('', '', 'id="'.$field_name.'-filter"');
-		$str .= '</div>';
-
-		$str .= '<div id="'.$field_name.'" '.$class.'>';
-
-		$str .= '<ul>';
-
-		foreach ($entries as $row)
-		{
-			$checked = in_array($row['entry_id'], $selected);
-			$sort = $checked ? $order[$row['entry_id']] : 0;
-
-			$str .= '<li'.($checked ? ' class="selected"' : '').'><label>';
-			$str .= form_input($input_sort.'[]', $sort, 'class="js_hide"');
-			$str .= form_checkbox($input_field.'[]', $row['entry_id'], $checked, 'class="js_hide"');
-			$str .= $row['title'].'</label></li>';
-		}
-
-		if ( ! count($entries))
-		{
-			$str .= '<li>'.lang('rel_ft_no_entries').'</li>';
-		}
-
-		$str .= '</ul>';
-		$str .= '</div>';
-
-		return $str;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Draw the active/sortable half of the field
-	 *
-	 * @param   custom field name
-	 * @return	interface string
-	 */
-	public function _active_div($field_name)
-	{
-		$class = 'class="multiselect-active force-scroll"';
-
-		// underscore.js template string
-		$active_template = '<li><span class="reorder-handle">&nbsp;</span>';
-		$active_template .= '<%= title %>';
-		$active_template .= '<span class="remove-item">&times;</span></li>';
-
-		$str = '<div id="'.$field_name.'-active" '.$class.' data-template="'.form_prep($active_template).'">';
-		$str .= '<ul></ul>';
-		$str .= '</div>';
-
-		return $str;
+		return ee()->load->view('publish', compact('field_name', 'entries', 'selected', 'order'), TRUE);
 	}
 
 	// --------------------------------------------------------------------
@@ -563,6 +493,95 @@ class Relationship_ft extends EE_Fieldtype {
 
 	// --------------------------------------------------------------------
 
+	public function grid_display_settings($data)
+	{
+		ee()->load->library('Relationships_ft_cp');
+		$util = ee()->relationships_ft_cp;
+
+		return array(
+			$this->grid_checkbox_row(
+				lang('rel_ft_include_expired'),
+				'expired',
+				1,
+				(isset($data['expired']) && $data['expired'] == 1)
+			),
+			$this->grid_checkbox_row(
+				lang('rel_ft_include_future'),
+				'future',
+				1,
+				(isset($data['future']) && $data['future'] == 1)
+			),
+			$this->grid_dropdown_row(
+				lang('channels'),
+				'channels[]',
+				$util->all_channels(),
+				isset($data['channels']) ? $data['channels'] : NULL,
+				TRUE, // Multiselect
+				TRUE, // Wide select box
+				'style="height: 140px"'
+			),
+			$this->grid_dropdown_row(
+				lang('categories'),
+				'categories[]',
+				$util->all_categories(),
+				isset($data['categories']) ? $data['categories'] : NULL,
+				TRUE,
+				TRUE,
+				'style="height: 140px"'
+			),
+			$this->grid_dropdown_row(
+				lang('authors'),
+				'authors[]',
+				$util->all_authors(),
+				isset($data['authors']) ? $data['authors'] : NULL,
+				TRUE,
+				TRUE,
+				'style="height: 57px"'
+			),
+			$this->grid_dropdown_row(
+				lang('statuses'),
+				'statuses[]',
+				$util->all_statuses(),
+				isset($data['statuses']) ? $data['statuses'] : NULL,
+				TRUE,
+				TRUE,
+				'style="height: 43px"'
+			),
+			form_label(lang('grid_show')).NBS.NBS.NBS.
+			form_input(array(
+				'name'	=> 'limit',
+				'size'	=> 4,
+				'value'	=> isset($data['limit']) ? $data['limit'] : 100,
+				'class'	=> 'grid_input_text_small'
+			)).NBS.NBS.NBS.
+			form_label(lang('entries')),
+
+			// Order by row
+			form_label(lang('grid_order_by')).NBS.NBS.
+			form_dropdown(
+				'order_field',
+				$util->all_order_options(),
+				isset($data['order_field']) ? $data['order_field'] : NULL
+			).NBS.NBS.
+			form_label(lang('in')).NBS.NBS.
+			form_dropdown(
+				'order_dir',
+				$util->all_order_directions(),
+				isset($data['order_dir']) ? $data['order_dir'] : NULL
+			),
+
+			// Allow multiple
+			$this->grid_checkbox_row(
+				lang('rel_ft_allow_multi'),
+				'allow_multiple',
+				1,
+				(isset($data['allow_multiple']) && $data['allow_multiple'] == 1)
+			)
+		);
+	}
+
+	// --------------------------------------------------------------------
+
 	/**
 	 * Table row helper
 	 *
@@ -591,7 +610,6 @@ class Relationship_ft extends EE_Fieldtype {
 			);
 		}
 	}
-
 
 	// --------------------------------------------------------------------
 

@@ -109,7 +109,7 @@ class File_field {
 		}
 
 		// Create the hidden fields for the file and directory
-		$vars['hidden']	  = form_hidden($field_name.'_hidden', $vars['filename']);
+		$vars['hidden']	  = form_hidden($field_name.'_hidden_file', $vars['filename']);
 		$vars['hidden']	 .= form_hidden($field_name.'_hidden_dir', $vars['upload_location_id']);
 		
 		// Create a standard file upload field and dropdown for folks 
@@ -243,14 +243,15 @@ class File_field {
 	 * @param string $data The data in the field we're validating
 	 * @param string $field_name The name of the field we're validating
 	 * @param string $required Set to 'y' if the field is required
+	 * @param array  $grid Array of data needed to validate a Grid field
 	 * @return array Associative array containing ONLY the name of the 
 	 * 		file uploaded or an empty value and an error if not valid
 	 */
-	public function validate($data, $field_name, $required = 'n')
+	public function validate($data, $field_name, $required = 'n', $grid = array())
 	{
 		$dir_field		= $field_name.'_directory';
 		$existing_field = $field_name.'_existing';
-		$hidden_field	= $field_name.'_hidden';
+		$hidden_field	= $field_name.'_hidden_file';
 		$hidden_dir		= (ee()->input->post($field_name.'_hidden_dir')) ? ee()->input->post($field_name.'_hidden_dir') : ee()->input->post($field_name.'_directory');
 		$allowed_dirs	= array();
 
@@ -323,7 +324,20 @@ class File_field {
 			$eid = (int) ee()->input->post('entry_id');
 			
 			ee()->db->select($field_name);
-			$query = ee()->db->get_where('channel_data', array('entry_id'=>$eid));	
+			$table = 'channel_data';
+
+			// Different DB selection criteria for Grid
+			if ( ! empty($grid['grid_row_id']))
+			{
+				ee()->db->where('row_id', $grid['grid_row_id']);
+				$table = 'grid_field_'.$grid['grid_field_id'];
+			}
+			else
+			{
+				ee()->db->where('entry_id', $eid);
+			}
+
+			$query = ee()->db->get($table);	
 
 			if ($query->num_rows() == 0)
 			{
