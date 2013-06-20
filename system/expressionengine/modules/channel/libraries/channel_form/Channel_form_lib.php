@@ -84,7 +84,7 @@ class Channel_form_lib
 		'allow_comments', 'author_only', 'channel', 'class', 'datepicker',
 		'dynamic_title', 'entry_id', 'error_handling', 'id', 'include_jquery', 
 		'json', 'logged_out_member_id', 'preserve_checkboxes', 'require_entry',
-		'return', 'return_X', 'rules', 'rte_selector', 'rte_toolset_id', 'safecracker_head', 
+		'return', 'return_X', 'rules', 'rte_selector', 'rte_toolset_id', 'include_assets', 
 		'secure_action', 'secure_return', 'site', 'url_title', 'use_live_url'
 	);
 	
@@ -770,13 +770,13 @@ class Channel_form_lib
 
 
 		//make head appear by default
-		if (preg_match('/'.LD.'safecracker_head'.RD.'/', $return))
+		if (preg_match('/'.LD.'channel_form_assets'.RD.'/', $return))
 		{
-			$return = ee()->TMPL->swap_var_single('safecracker_head', $this->head, $return);
+			$return = ee()->TMPL->swap_var_single('channel_form_assets', $this->head, $return);
 		}
 		// Head should only be there if the param is there and there is a valid member_id
 		elseif (
-			$this->bool_string(ee()->TMPL->fetch_param('safecracker_head'), TRUE) AND
+			$this->bool_string(ee()->TMPL->fetch_param('include_assets'), TRUE) AND
 			($this->logged_out_member_id OR ee()->session->userdata('member_id'))
 		)
 		{
@@ -1147,23 +1147,23 @@ class Channel_form_lib
 		{
 			// standard vars/conditionals
 			$custom_field_variables_row = array(
-				'required' => ($field['field_required'] == 'n') ? 0 : 1,
-				'text_direction' => $field['field_text_direction'],
-				'field_data' => $this->entry($field_name),
-				'rows' => $field['field_ta_rows'],
-				'maxlength' => $field['field_maxl'],
-				'formatting_buttons' => '',
-				'field_show_formatting_btns' => (isset($field['field_show_formatting_btns']) && $field['field_show_formatting_btns'] == 'y') ? 1 : 0,
-				'textinput' => 0,
-				'pulldown' => 0,
-				'checkbox' => 0,
-				'relationship' => 0,
-				'multiselect' => 0,
-				'date' => 0,
-				'radio' => 0,
-				'display_field' => '',
-				'options' => $this->get_field_options($field_name),
-				'error' => ( ! empty($this->field_errors[$field['field_name']])) ? lang($this->field_errors[$field['field_name']]) : ''
+				'required'		=> ($field['field_required'] == 'n') ? 0 : 1,
+				'text_direction'=> $field['field_text_direction'],
+				'field_data'	=> $this->entry($field_name),
+				'rows'			=> $field['field_ta_rows'],
+				'maxlength'		=> $field['field_maxl'],
+				'formatting_buttons'			=> '',
+				'field_show_formatting_btns'	=> (isset($field['field_show_formatting_btns']) && $field['field_show_formatting_btns'] == 'y') ? 1 : 0,
+				'textinput'		=> 0,
+				'pulldown'		=> 0,
+				'checkbox'		=> 0,
+				'relationship'	=> 0,
+				'multiselect'	=> 0,
+				'date'			=> 0,
+				'radio'			=> 0,
+				'display_field'	=> '',
+				'options'		=> $this->get_field_options($field_name),
+				'error'			=> ( ! empty($this->field_errors[$field['field_name']])) ? lang($this->field_errors[$field['field_name']]) : ''
 			);
 			
 			$custom_field_variables_row = array_merge($field, $custom_field_variables_row);

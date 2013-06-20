@@ -315,6 +315,20 @@ class Updater {
 				$template->template_data
 			);
 
+			// Replace {safecracker_head}
+			$template->template_data = str_replace(
+				LD.'safecracker_head'.RD,
+				LD.'channel_form_assets'.RD,
+				$template->template_data
+			);
+
+			// Replace safecracker_head= parameter
+			$template->template_data = preg_replace(
+				'/safecracker_head(\s*)=/is',
+				'include_assets$1=',
+				$template->template_data
+			);
+
 			// save the template
 			// if saving to file, save the file
 			if ($template->loaded_from_file)
