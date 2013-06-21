@@ -116,83 +116,6 @@ jQuery(document).ready(function() {
 			obj.setFocus(current_li[direction]().children("a"));
 		}
 	};
-
-	EE.navigation.keyboard_listen = function() {
-		nav.ee_focus("a."+TICTAC, {
-			removeTabs: "a",	
-			onEnter: function(event) {
-				var target = $(event.target),
-					li = target.parent();
-
-				if (li.hasClass(PARENT)) {
-					li.addClass(ACTIVE);
-					this.setFocus(li.find("ul>li>a").eq(0));
-				}
-			},
-			onRight: function(event) {
-				var target = $(event.target),
-					li = target.parent();
-
-				if (li.hasClass(PARENT) && ! target.hasClass(TICTAC)) {
-					li.addClass(ACTIVE);
-					this.setFocus(li.find("ul>li>a").eq(0));
-				}
-				else {
-					EE.navigation.move_top_level(this, li, "next");
-				}
-			},
-			onLeft: function(event) {
-				var target = $(event.target),
-					li = target.parent();
-
-				if (target.hasClass(TICTAC) && li.prev().length) {
-					this.setFocus(li.prev().children("a"));
-				}
-				else {
-					li = li.parent().closest("."+PARENT);
-					li.removeClass(ACTIVE);
-
-					if (li.children("a."+TICTAC).length) {
-						EE.navigation.move_top_level(this, li, "prev");
-					}
-					else {
-						this.setFocus(li.children("a").eq(0));
-					}
-				}
-			},
-			onUp: function(event) {
-				var target = $(event.target),
-					li = target.parent(),
-					prev = li.prevAll(":not(.nav_divider)");
-
-				if ( ! target.hasClass(TICTAC) && li.prev.length) {
-					this.setFocus(prev.eq(0).children("a"));
-				}
-			},
-			onDown: function(event) {
-				var target = $(event.target),
-					li = target.parent(),
-					next = li.nextAll(":not(.nav_divider)");
-
-				if ( ! target.hasClass(TICTAC) && next.length) {
-					this.setFocus(next.eq(0).children("a"));
-				}
-				else if (li.hasClass(PARENT)) {
-					li.addClass(ACTIVE);
-					this.setFocus(li.find("ul>li>a").eq(0));
-				}
-			},
-			onEscape: function(event) {
-				var target = $(event.target),
-					li = target.parent();
-
-				EE.navigation.move_top_level(this, li);
-			},
-			onBlur: function(event) {
-				this.getElements().parent.find('.'+ACTIVE).removeClass(ACTIVE);
-			}
-		});
-	};
 	
 	// Menu Truncation
 	// -----------------------------------------------
@@ -242,5 +165,4 @@ jQuery(document).ready(function() {
 	};
 
 	EE.navigation.mouse_listen();
-	EE.navigation.keyboard_listen();
 });
