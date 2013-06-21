@@ -391,17 +391,14 @@ class Rte_lib {
 					.wysihat({
 						buttons: '.json_encode($bits['buttons']).'
 					});
-				
-				EE.on("grid_loaded", function()
+
+				Grid.bind("rte", "display", function(cell)
 				{
-					Grid.bind("rte", "display", function(cell)
-					{
-						$("' . $selector . '", cell)
-							.addClass("WysiHat-field")
-							.wysihat({
-								buttons: '.json_encode($bits['buttons']).'
-							});
-					});
+					$("' . $selector . '", cell)
+						.addClass("WysiHat-field")
+						.wysihat({
+							buttons: '.json_encode($bits['buttons']).'
+						});
 				});
 			}
 		})();';

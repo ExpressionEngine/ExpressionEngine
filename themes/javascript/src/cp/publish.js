@@ -289,6 +289,22 @@ EE.publish.get_percentage_width = function($element) {
 };
 
 
+// Grid has become a dependency for a few fieldtypes. However, sometimes it's not
+// on the page or loaded after the fieldtype. So instead of tryin to always load
+// grid or doing weird dependency juggling, we're just going to cache any calls
+// to grid.bind for now. Grid will override this definition and replay them if/when
+// it becomes available on the page. Long term we need a better solution for js
+// dependencies.
+EE.publish.grid_cache = [];
+
+var Grid = {
+	bind: function() {
+		EE.publish.grid_cache.push(arguments);
+	}
+}
+
+
+
 EE.publish.save_layout = function() {
 	
 	var tab_count = 0,

@@ -111,24 +111,6 @@ class EE_Javascript extends CI_Javascript {
 			if (typeof console === "undefined" || ! console.log) {
 				console = { log: function() { return false; }};
 			}
-
-			(function() {
-				var event_cache = {};
-
-				EE.on = function(name, callback) {
-					event_cache[name] = event_cache[name] || [];
-					event_cache[name].push(callback);
-				};
-
-				EE.trigger = function(name) {
-					if (event_cache[name]) {
-						while (event_cache[name].length) {
-							(event_cache[name].pop())();
-						}
-					}
-				};
-			})();
-
 		');
 
 		$this->CI->view->cp_global_js = $global_js;

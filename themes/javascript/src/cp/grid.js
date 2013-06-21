@@ -786,6 +786,8 @@ EE.grid_settings = function(settings)
 };
 
 // Fire any delayed grid bindings
-EE.trigger('grid_loaded');
+_.each(EE.publish.grid_cache, function(args) {
+	Grid.bind.apply(Grid, args);
+});
 
 })(jQuery);
