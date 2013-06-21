@@ -942,7 +942,7 @@ class Channel_form_lib
 		
 		$js_defaults = array(
 			'ui' => array('core', 'widget', 'button', 'dialog'),
-			'plugin' => array('scrollable', 'scrollable.navigator', 'markitup'),
+			'plugin' => array('markitup'),
 		);
 		
 		$js_defaults['plugin'][] = 'toolbox.expose';

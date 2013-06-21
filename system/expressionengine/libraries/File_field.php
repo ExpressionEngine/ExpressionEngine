@@ -732,8 +732,6 @@ class File_field {
 				'files/publish_fields'
 			),
 			'plugin'	=> array(
-				'scrollable',
-				'scrollable.navigator',
 				'ee_filebrowser',
 				'ee_fileuploader',
 				'tmpl'
