@@ -21,6 +21,36 @@
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
+var open = false,
+	mouseOnMenu = false,
+	timeOffMenu = 0,
+	lastMouseCoordinates = {},		// coordinates at last check
+	currentMouseCoordinates = {};	// ~current coordinates
+
+
+$(document).mousemove(function() {
+	currentMouseCoordinates = { x: evt.target.PageX, y: evt.target.pageY };
+})
+
+setTimeout(function() {
+	// compare new mouse position to old mouse position
+	// is not moving right and not on menu? close
+	// otherwise, check time not on menu, if too big - close
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 jQuery(document).ready(function() {
 
