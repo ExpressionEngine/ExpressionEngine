@@ -224,7 +224,7 @@ class Cp {
 
 		$js_scripts = array(
 			'ui'		=> array('core', 'widget', 'mouse', 'position', 'sortable', 'dialog'),
-			'plugin'	=> array('ee_focus', 'ee_interact.event', 'ee_notice', 'ee_txtarea', 'tablesorter', 'ee_toggle_all'),
+			'plugin'	=> array('ee_interact.event', 'ee_notice', 'ee_txtarea', 'tablesorter', 'ee_toggle_all'),
 			'file'		=> array('json2', 'underscore', 'cp/global_start')
 		);
 
