@@ -14,7 +14,7 @@
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Newrelic Class
+ * ExpressionEngine New Relic Class
  *
  * @package		ExpressionEngine
  * @subpackage	Core
@@ -26,7 +26,7 @@
 class Newrelic {
 
 	/**
-	 * Give Newrelic a name for this transaction
+	 * Give New Relic a name for this transaction
 	 *
 	 * @access	public
 	 * @return	void
