@@ -29,7 +29,7 @@ class Member_field_model extends CI_Model {
 
 	/**
 	 * Save (Create/Edit) a Member Field
-	 * @param  array  $data Associative array of data matching columns in 
+	 * @param  array  $data Associative array of data matching columns in
 	 *                      exp_member_fields
 	 * @return Void
 	 */
@@ -53,18 +53,19 @@ class Member_field_model extends CI_Model {
 			);
 
 			// Create the row in member_data
-			$column_data = array(
-				'name'	=> 'm_field_id_'.ee()->db->insert_id(),
-				'type'	=> ('m_field_type' == 'textarea') ? 'text' : 'varchar'
-			);
+			$name = 'm_field_id_'.ee()->db->insert_id();
+			$column_data[$name]['type'] = ('m_field_type' == 'textarea') ? 'text' : 'varchar';
 
 			if ($data['m_field_type'] != 'textarea')
 			{
-				$column_data['constraint'] = $data['m_field_maxl'];
+				$column_data[$name]['constraint'] = $data['m_field_maxl'];
 			}
-			
+
 			ee()->load->dbforge();
-			ee()->dbforge()->add_column($this->table_data, $column_data);
+			ee()->dbforge->add_column(
+				$this->table_data,
+				$column_data
+			);
 		}
 		// Edit existing field
 		else

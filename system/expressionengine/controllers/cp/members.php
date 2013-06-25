@@ -2898,102 +2898,81 @@ class Members extends CP_Controller {
 
 		// If the $field_id variable is present we are editing an
 		// existing field, otherwise we are creating a new one
-		
-		$edit = (isset($_POST['m_field_id']) AND $_POST['m_field_id'] != '') ? TRUE : FALSE;
+		$edit = ( ! empty($_POST['m_field_id'])) ? TRUE : FALSE;
 
+		// Validate the member field
 		$this->_validate_custom_field($edit);
-
 		if ($this->form_validation->run() === FALSE)
 		{
 			return $this->edit_profile_field();
-		}			
+		}
 
 		$this->lang->loadfile('admin_content');
-		$this->load->model('member_model');
+		$this->load->model('member_field_model');
 
-		unset($_POST['cur_field_name']);		
-
-		if ($this->input->post('m_field_list_items') != '')
+		// First, fetch everything
+		$field_settings = array(
+			'm_field_name' => '',
+			'm_field_label' => '',
+			'm_field_description' => '',
+			'm_field_type' => '',
+			'm_field_list_items' => '',
+			'm_field_ta_rows' => '',
+			// 'm_field_maxl' => '', // This is set later
+			'm_field_width' => '',
+			'm_field_search' => '',
+			'm_field_required' => '',
+			'm_field_public' => '',
+			'm_field_reg' => '',
+			'm_field_cp_reg' => '',
+			'm_field_fmt' => '',
+			'm_field_order' => ''
+		);
+		$no_defaults = array(
+			'm_field_list_items',
+			'm_field_description'
+		);
+		foreach ($field_settings as $index => $value)
 		{
-			$_POST['m_field_list_items'] = quotes_to_entities($_POST['m_field_list_items']);
+			$value = ee()->input->post($index);
+
+			if (empty($value) && ! in_array($index, $no_defaults))
+			{
+				unset($field_settings[$index]);
+				continue;
+			}
+
+			$field_settings[$index] = $value;
 		}
 
-		// Construct the query based on whether we are updating or inserting
-		if ($edit === TRUE)
+		// Clean up field list items
+		if (isset($field_settings['m_field_list_items'])
+			&& $field_settings['m_field_list_items'] != '')
 		{
-			$n = $_POST['m_field_maxl'];
-		
-			if ($_POST['m_field_type'] == 'text')
-			{
-				if ( ! is_numeric($n) OR $n == '' OR $n == 0)
-				{
-					$n = '100';
-				}
-			
-				$f_type = 'varchar('.$n.') NULL DEFAULT NULL';
-			}
-			else
-			{
-				$f_type = 'text NULL DEFAULT NULL';
-			}
-		
-			$this->db->query("ALTER table exp_member_data CHANGE m_field_id_".$_POST['m_field_id']." m_field_id_".$_POST['m_field_id']." $f_type");			
-					
-			$id = $_POST['m_field_id'];
-			unset($_POST['m_field_id']);
-
-			$this->db->query($this->db->update_string('exp_member_fields', $_POST, 'm_field_id='.$id));
+			$field_settings['m_field_list_items'] = quotes_to_entities($field_settings['m_field_list_items']);
 		}
-		else
+
+		// Determine the field length
+		$m_field_maxl = ee()->input->post('m_field_max_l', 100);
+		$field_settings['m_field_maxl'] = ( ! is_numeric($m_field_maxl)) ? 100 : $m_field_maxl;
+
+		// Determine field order
+		if (empty($field_settings['m_field_order'])
+			OR ! is_numeric($field_settings['m_field_order']))
 		{
-			if ($_POST['m_field_order'] == 0 OR $_POST['m_field_order'] == '')
-			{
-				$query = $this->member_model->count_records('member_fields');
-			
-				$total = $query->row('count')  + 1;
-			
-				$_POST['m_field_order'] = $total;
-			}
-
-			$n = $_POST['m_field_maxl'];
-		
-			if ($_POST['m_field_type'] == 'text')
-			{
-				if ( ! is_numeric($n) OR $n == '' OR $n == 0)
-				{
-					$n = '100';
-				}
-			
-				$f_type = 'varchar('.$n.') NULL DEFAULT NULL';
-			}
-			else
-			{
-				$f_type = 'text NULL DEFAULT NULL';
-			}
-			
-			unset($_POST['m_field_id']);
-
-			$this->db->query($this->db->insert_string('exp_member_fields', $_POST));
-									
-			$this->db->query('ALTER table exp_member_data add column m_field_id_'.$this->db->insert_id().' '.$f_type);
-			
-			$sql = "SELECT exp_members.member_id
-					FROM exp_members
-					LEFT JOIN exp_member_data ON exp_members.member_id = exp_member_data.member_id
-					WHERE exp_member_data.member_id IS NULL
-					ORDER BY exp_members.member_id";
-			
-			$query = $this->db->query($sql);
-			
-			if ($query->num_rows() > 0)
-			{
-				foreach ($query->result_array() as $row)
-				{
-					$this->db->query("INSERT INTO exp_member_data (member_id) values ('{$row['member_id']}')");
-				}
-			}
+			$this->load->model('member_model');
+			$count = $this->member_model->count_records('member_fields');
+			$field_settings['m_field_order'] = $count + 1;
 		}
-	
+
+		// If we're editing, set the field_id
+		if ($edit)
+		{
+			$field_settings['m_field_id'] = ee()->input->post('m_field_id');
+		}
+
+		ee()->member_field_model->save_field($field_settings);
+
 		$cp_message = ($edit) ? lang('field_updated') : lang('field_created');
 		$this->session->set_flashdata('message_success', $cp_message);
 		$this->functions->redirect(BASE.AMP.'C=members'.AMP.'M=custom_profile_fields');
@@ -3054,15 +3033,21 @@ class Members extends CP_Controller {
 		{
 			return false;
 		}
-		
-		$query = $this->db->query("SELECT m_field_label FROM exp_member_fields WHERE m_field_id = '$m_field_id'");
+
+		// Get the field name for later
+		$query = ee()->db->select('m_field_label')
+			->get_where('member_fields', array(
+				'm_field_id' => $m_field_id
+			));
 		$m_field_label = $query->row('m_field_label') ;
-				
-		$this->db->query("ALTER TABLE exp_member_data DROP COLUMN m_field_id_".$m_field_id);
-		$this->db->query("DELETE FROM exp_member_fields WHERE m_field_id = '$m_field_id'");
-		
+
+		// Delete the field
+		ee()->load->model('member_field_model');
+		ee()->member_field_model->delete_field($m_field_id);
+
+		// Log the deletion
 		$cp_message = lang('profile_field_deleted').NBS.NBS.$m_field_label;
-		$this->logger->log_action($cp_message);		
+		$this->logger->log_action($cp_message);
 
 		$this->session->set_flashdata('message_success', $cp_message);
 		$this->functions->redirect(BASE.AMP.'C=members'.AMP.'M=custom_profile_fields');
