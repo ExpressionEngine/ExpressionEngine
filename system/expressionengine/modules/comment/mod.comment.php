@@ -543,8 +543,10 @@ class Comment {
 		// ignore the check if we're not paginating.
 		if ($enabled['pagination'])
 		{	
+			$p = ( ! $dynamic) ? 'N' : 'P';
+			
 			// Figure out of we need a pagination offset
-			if (preg_match('/P(\d+)(?:\/|$)/', ee()->uri->uri_string, $matches))
+			if (preg_match('/'.$p.'(\d+)(?:\/|$)/', ee()->uri->uri_string, $matches))
 			{
 				$pagination->offset = $matches[1];
 			}
