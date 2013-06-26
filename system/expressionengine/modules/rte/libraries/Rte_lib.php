@@ -411,7 +411,7 @@ class Rte_lib {
 		
 		// If the editor was saved empty, save nothing to database
 		// so it behaves as expected with conditional tags
-		if ($this->is_empty($data))
+		if ($this->is_empty(trim($data)))
 		{
 			return NULL;
 		}

@@ -4654,7 +4654,7 @@ class Channel {
 		/** ---------------------------------------*/
 
 		ee()->load->library('typography');
-		$comment_path = ($query->row('comment_url') == '') ? $query->row('comment_url') : $query->row('channel_url');
+		$comment_path = ($query->row('comment_url') != '') ? $query->row('comment_url') : $query->row('channel_url');
 		$title = ee()->typography->format_characters($query->row('title'));
 		
 		$vars['0'] = array(
