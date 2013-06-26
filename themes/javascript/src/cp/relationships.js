@@ -119,6 +119,7 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 			this._bindAddActiveOnSelect();
 			this._bindScrollToActiveClick();
 			this._bindSortable();
+			this._bindSubmitClear();
 
 			// filtering
 			this._setupFilter();
@@ -157,7 +158,7 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 				evt.preventDefault();
 
 				var box = $(this).find(':checkbox');
-					wasChecked = box.is(':checked');
+				wasChecked = box.is(':checked');
 
 				$(this).toggleClass('selected', ! wasChecked);
 				box.attr('checked', ! wasChecked);
@@ -308,6 +309,25 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 		},
 
 		/**
+	 	 * Clear unused sorting data from post before submit so that we don't
+	 	 * overwhelm the POST array with too many variables.
+	 	 */
+		_bindSubmitClear: function() {
+			var that = this;
+
+			this.root.parents('form').on('submit', function(evt) {
+
+				that.root.find('input:text').each(function() {
+					if($(this).val() == "0") {
+						$(this).remove();
+					}
+				});
+				return true;
+			});
+
+		},
+
+		/**
 		 * Sorting the right list should update the hidden textareas in the
 		 * left list so that they display the relative sort.
 		 */
@@ -315,6 +335,7 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 			var that = this,
 				previousPosition,
 				getOrder, start, update;
+
 
 			getOrder = function(el) {
 				return +that.defaultList[ that._index(el) ].find('input:text').val();
