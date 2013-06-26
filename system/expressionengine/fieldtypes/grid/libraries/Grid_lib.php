@@ -15,7 +15,7 @@
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Grid Field Library 
+ * ExpressionEngine Grid Field Library
  *
  * @package		ExpressionEngine
  * @subpackage	Libraries
@@ -82,7 +82,7 @@ class Grid_lib {
 			{
 				$row['row_id'] = $row_id;
 			}
-			
+
 			foreach ($vars['columns'] as $column)
 			{
 				// Construct the HTML for this particular row and column
@@ -114,7 +114,7 @@ class Grid_lib {
 	}
 
 	// ------------------------------------------------------------------------
-	
+
 	/**
 	 * Returns publish field HTML for a given cell
 	 *
@@ -124,7 +124,7 @@ class Grid_lib {
 	 */
 	protected function _publish_field_cell($column, $row = NULL)
 	{
-		ee()->grid_parser->instantiate_fieldtype(
+		$fieldtype = ee()->grid_parser->instantiate_fieldtype(
 			$column,
 			NULL,
 			$this->field_id,
@@ -133,6 +133,11 @@ class Grid_lib {
 
 		$row_data = (isset($row['col_id_'.$column['col_id']]))
 			? $row['col_id_'.$column['col_id']] : '';
+
+		if (isset($row['row_id']))
+		{
+			$fieldtype->settings['grid_row_id'] = $row['row_id'];
+		}
 
 		// Call the fieldtype's field display method and capture the output
 		$display_field = ee()->grid_parser->call('display_field', form_prep($row_data));
@@ -159,7 +164,7 @@ class Grid_lib {
 
 	/**
 	 * Interface for Grid fieldtype validation
-	 * 
+	 *
 	 * @param	array	POST data from publish form
 	 * @return	array	Validated field data
 	 */
@@ -187,7 +192,7 @@ class Grid_lib {
 
 	/**
 	 * Interface for Grid fieldtype saving
-	 * 
+	 *
 	 * @param	array	Validated Grid publish form data
 	 * @return	boolean
 	 */
@@ -271,7 +276,7 @@ class Grid_lib {
 	/**
 	 * Notifies fieldtypes of impending deletion of their Grid rows, and then
 	 * deletes those rows
-	 * 
+	 *
 	 * @param	array	Validated Grid publish form data
 	 * @return	boolean
 	 */
@@ -310,7 +315,7 @@ class Grid_lib {
 	 * The save method takes the validated data and gives it to the fieldtype's
 	 * save method for further processing, in which the fieldtype can specify
 	 * other columns that need to be filled.
-	 * 
+	 *
 	 * @param	string	Method to process, 'save' or 'validate'
 	 * @param	array	Grid publish form data
 	 * @param	int		Field ID of field being saved
@@ -355,7 +360,7 @@ class Grid_lib {
 						$final_values[$row_id][$key] = $value;
 					}
 				}
-				
+
 				$fieldtype = ee()->grid_parser->instantiate_fieldtype(
 					$column,
 					$row_id,
@@ -416,7 +421,7 @@ class Grid_lib {
 					{
 						$result = encode_multi_field($result);
 					}
-					
+
 					$final_values[$row_id][$col_id] = $result;
 				}
 
@@ -469,7 +474,7 @@ class Grid_lib {
 	}
 
 	// ------------------------------------------------------------------------
-	
+
 	/**
 	 * Validates settings before form is saved
 	 *
@@ -551,7 +556,7 @@ class Grid_lib {
 	}
 
 	// ------------------------------------------------------------------------
-	
+
 	/**
 	 * Given POSTed column settings, adds new columns to the database and
 	 * figures out if any columns need deleting
@@ -655,7 +660,7 @@ class Grid_lib {
 	}
 
 	// ------------------------------------------------------------------------
-	
+
 	/**
 	 * Returns rendered HTML for a column on the field settings page
 	 *
@@ -749,7 +754,7 @@ class Grid_lib {
 			),
 			TRUE
 		);
-		
+
 		$col_id = (empty($col_id)) ? 'new_0' : 'col_id_'.$col_id;
 
 		// Namespace form field names

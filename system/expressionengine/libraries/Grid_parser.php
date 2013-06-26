@@ -86,7 +86,7 @@ class Grid_parser {
 			}
 
 			$field_name = rtrim($field_name, ':');
-			
+
 			// Make sure the supposed field name is an actual Grid field
 			if ( ! isset($grid_fields[$field_name]))
 			{
@@ -101,7 +101,7 @@ class Grid_parser {
 
 		// Cache column data for all fields used in the Channel loop
 		$columns = ee()->grid_model->get_columns_for_field(array_unique($field_ids));
-		
+
 		// Attempt to gather all data needed for the entries loop before
 		// the loop runs
 		foreach ($matches as $match)
@@ -229,12 +229,54 @@ class Grid_parser {
 		$prefix = $field_name.':';
 
 		$columns = ee()->grid_model->get_columns_for_field($field_id);
-		
+
+		// Prepare the relationship data
+		$relationships = array();
+
+		foreach ($columns as $col)
+		{
+			if ($col['col_type'] == 'relationship')
+			{
+				$relationships[$prefix.$col['col_name']] = $col['col_id'];
+			}
+		}
+
+		ee()->load->library('relationships_parser');
+		$channel = ee()->session->cache('mod_channel', 'active');
+
+		try
+		{
+			$relationship_parser = ee()->relationships_parser->create(
+				$channel->rfields[config_item('site_id')],
+				$row_ids, // array(#, #, #)
+				$tagdata,
+				$relationships, // field_name => field_id
+				$field_id
+			);
+		}
+		catch (EE_Relationship_exception $e)
+		{
+			$relationship_parser = NULL;
+		}
+
 		foreach ($display_entry_data as $row)
 		{
 			$grid_row = $tagdata;
 
 			$position = array_search($row['row_id'], $row_ids);
+
+			if ($relationship_parser)
+			{
+				try
+				{
+					$grid_row = $relationship_parser->parse($row['row_id'], $grid_row, $channel);
+				}
+				catch (EE_Relationship_exception $e)
+				{
+					ee()->TMPL->log_item($e->getMessage());
+				}
+			}
+
 
 			// Extra single vars
 			$row['count'] = $count;
@@ -253,7 +295,7 @@ class Grid_parser {
 			foreach ($columns as $col_id => $col)
 			{
 				$value = (isset($row['col_id_'.$col_id])) ? $row['col_id_'.$col_id] : '';
-				
+
 				$cond[$prefix.$col['col_name']] = $value;
 			}
 
@@ -339,9 +381,16 @@ class Grid_parser {
 		// Create an easily-traversible array of columns by field ID
 		// and column name
 		$column_names = array();
+		$relationships = array();
+
 		foreach ($columns as $col)
 		{
 			$column_names[$col['col_name']] = $col;
+
+			if ($col['col_type'] == 'relationship')
+			{
+				$relationships[$col['col_name']] = $col['col_id'];
+			}
 		}
 
 		foreach ($matches as $match)
@@ -420,7 +469,7 @@ class Grid_parser {
 	/**
 	 * Handle EE_Fieldtype::pre_loop() so fieldtypes can query more efficiently
 	 *
-	 * @param string $entries_data 
+	 * @param string $entries_data
 	 * @return void
 	 */
 	protected function _pre_loop($cols)

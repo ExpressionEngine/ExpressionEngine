@@ -28,7 +28,7 @@ class Relationship_ft extends EE_Fieldtype {
 		'name'		=> 'Relationships',
 		'version'	=> '1.0'
 	);
-	
+
 	public $has_array_data = FALSE;
 
 	private $_table = 'relationships';
@@ -69,7 +69,7 @@ class Relationship_ft extends EE_Fieldtype {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Save Field
 	 *
@@ -104,7 +104,7 @@ class Relationship_ft extends EE_Fieldtype {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Post field save is where we do the actual works since we store
 	 * data in our own table based on the entry_id, which does not exist
@@ -119,7 +119,7 @@ class Relationship_ft extends EE_Fieldtype {
 		$entry_id = $this->settings['entry_id'];
 
 		$cache_name = $this->field_name;
-		
+
 		if (isset($this->settings['grid_row_name']))
 		{
 			$cache_name .= $this->settings['grid_row_name'];
@@ -136,10 +136,22 @@ class Relationship_ft extends EE_Fieldtype {
 		$order = array_values($post['sort']);
 		$data = $post['data'];
 
+		$all_rows_where = array(
+			'parent_id' => $entry_id,
+			'field_id' => $field_id
+		);
+
+		if (isset($this->settings['grid_field_id']))
+		{
+			// grid takes the parent grid's field id and sticks it into "grid_field_id"
+			$all_rows_where['grid_col_id'] = $this->settings['col_id'];
+			$all_rows_where['grid_field_id'] = $this->settings['grid_field_id'];
+			$all_rows_where['grid_row_id'] = $this->settings['grid_row_id'];
+		}
+
 		// clear old stuff
 		ee()->db
-			->where('parent_id', $entry_id)
-			->where('field_id', $field_id)
+			->where($all_rows_where)
 			->delete($this->_table);
 
 		// insert new stuff
@@ -152,12 +164,12 @@ class Relationship_ft extends EE_Fieldtype {
 				continue;
 			}
 
-			$ships[] = array(
-				'parent_id'	=> $entry_id,
-				'child_id'	=> $child_id,
-				'field_id'	=> $field_id,
-				'order'		=> isset($order[$i]) ? $order[$i] : 0
-			);
+			// the old data array
+			$new_row = $all_rows_where;
+			$new_row['child_id'] = $child_id;
+			$new_row['order'] = isset($order[$i]) ? $order[$i] : 0;
+
+			$ships[] = $new_row;
 		}
 
 		// -------------------------------------------
@@ -171,7 +183,7 @@ class Relationship_ft extends EE_Fieldtype {
 		//
 		// -------------------------------------------
 
-		
+
 		// If child_id is empty, they are deleting a single relationship
 		if (count($ships))
 		{
@@ -228,21 +240,32 @@ class Relationship_ft extends EE_Fieldtype {
 
 		if ($entry_id)
 		{
+			$wheres = array(
+				'parent_id' => $entry_id,
+				'field_id' => $this->field_id,
+			);
+
+			if (isset($this->settings['grid_row_id']))
+			{
+				$wheres['grid_col_id'] = $this->settings['col_id'];
+				$wheres['grid_field_id'] = $this->settings['grid_field_id'];
+				$wheres['grid_row_id'] = $this->settings['grid_row_id'];
+			}
+
 			ee()->db
 				->select('child_id, order')
 				->from($this->_table)
-				->where('parent_id', $entry_id)
-				->where('field_id', $this->field_id);
+				->where($wheres);
 
 			// -------------------------------------------
 			// 'relationships_display_field' hook.
 			// - Allow developers to perform their own queries to modify which entries are retrieved
-			// 
+			//
 			// 	There are 3 ways to use this hook:
 			// 	 	1) Add to the existing Active Record call, e.g. ee()->db->where('foo', 'bar');
 			// 	 	2) Call ee()->db->_reset_select(); to terminate this AR call and start a new one
 			// 	 	3) Call ee()->db->_reset_select(); and modify the currently compiled SQL string
-			//   
+			//
 			//   All 3 require a returned query result array.
 			//
 			if (ee()->extensions->active_hook('relationships_display_field') === TRUE)
@@ -273,7 +296,7 @@ class Relationship_ft extends EE_Fieldtype {
 		$limit_statuses = $this->settings['statuses'];
 		$limit_authors = $this->settings['authors'];
 		$limit = $this->settings['limit'];
-		
+
 		$show_expired = (bool) $this->settings['expired'];
 		$show_future = (bool) $this->settings['future'];
 
@@ -379,11 +402,11 @@ class Relationship_ft extends EE_Fieldtype {
 
 		ee()->db->distinct();
 		$entries = ee()->db->get('channel_titles')->result_array();
-		
+
 		if ($this->settings['allow_multiple'] == 0)
 		{
 			$options[''] = '--';
-			
+
 			foreach ($entries as $entry)
 			{
 				$options[$entry['entry_id']] = $entry['title'];
@@ -410,7 +433,7 @@ class Relationship_ft extends EE_Fieldtype {
 	 * @param	tag parameters
 	 * @param	tag pair contents
 	 * @return	parsed output
-	 */	
+	 */
 	public function replace_tag($data, $params = '', $tagdata = '')
 	{
 		if ($tagdata)
@@ -420,7 +443,7 @@ class Relationship_ft extends EE_Fieldtype {
 
 		return $data;
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -430,7 +453,7 @@ class Relationship_ft extends EE_Fieldtype {
 	 *
 	 * @param	array of previously saved settings
 	 * @return	string
-	 */	
+	 */
 	public function display_settings($data)
 	{
 		ee()->lang->loadfile('fieldtypes');
@@ -452,7 +475,7 @@ class Relationship_ft extends EE_Fieldtype {
 			$form->multiselect('channels', 'style="min-width: 225px; height: 140px;"'),
 			'top'
 		);
-		
+
 		$this->_row(
 			lang('rel_ft_include'),
 			'<label>'.$form->checkbox('expired').' '.lang('rel_ft_include_expired').'</label>'.
@@ -463,7 +486,7 @@ class Relationship_ft extends EE_Fieldtype {
 			$form->multiselect('categories', 'style="min-width: 225px; height: 140px;"'),
 			'top'
 		);
-		
+
 		$this->_row(
 			lang('rel_ft_authors'),
 			$form->multiselect('authors', 'style="min-width: 225px; height: 57px;"'),
@@ -593,7 +616,7 @@ class Relationship_ft extends EE_Fieldtype {
 	 * @param	vertical alignment of left column
 	 *
 	 * @return	void - adds a row to the EE table class
-	 */	
+	 */
 	protected function _row($cell1, $cell2 = '', $valign = 'center')
 	{
 		if ( ! $cell2)
@@ -620,7 +643,7 @@ class Relationship_ft extends EE_Fieldtype {
 	 * settings and sends that off to be serialized.
 	 *
 	 * @return	array	settings
-	 */	
+	 */
 	public function save_settings($data)
 	{
 		$form = $this->_form();
@@ -651,7 +674,7 @@ class Relationship_ft extends EE_Fieldtype {
 	 *
 	 * @param	form prefix
 	 * @return	Object<Relationship_settings_form>
-	 */	
+	 */
 	protected function _form($prefix = 'relationship')
 	{
 		ee()->load->library('Relationships_ft_cp');
@@ -697,14 +720,14 @@ class Relationship_ft extends EE_Fieldtype {
 	 * Create our table on install
 	 *
 	 * @return	void
-	 */	
+	 */
 	public function install()
 	{
 		if (ee()->db->table_exists($this->_table))
 		{
 			return;
 		}
-		
+
 		ee()->load->dbforge();
 
 		$fields = array(
@@ -759,7 +782,7 @@ class Relationship_ft extends EE_Fieldtype {
 	 * Drop the table
 	 *
 	 * @return	void
-	 */	
+	 */
 	public function uninstall()
 	{
 		ee()->load->dbforge();
@@ -767,7 +790,7 @@ class Relationship_ft extends EE_Fieldtype {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Settings Modify Column
 	 *

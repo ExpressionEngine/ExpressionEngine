@@ -11,7 +11,7 @@
  * @since		Version 2.7.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -24,9 +24,9 @@
  * @link		http://ellislab.com
  */
 class Updater {
-	
+
 	var $version_suffix = '';
-	
+
 	/**
 	 * Do Update
 	 *
@@ -44,7 +44,8 @@ class Updater {
 				'_add_xid_used_flag'
 				'_rename_safecracker_db',
 				'_rename_safecracker_tags',
-				'_consolidate_file_fields'
+				'_consolidate_file_fields',
+				'_update_relationships_for_grid'
 			)
 		);
 
@@ -90,7 +91,7 @@ class Updater {
 			ee()->db->delete('actions', array('class' => 'Updated_sites'));
 
 			ee()->dbforge->drop_table('updated_sites');
-			ee()->dbforge->drop_table('updated_site_pings');			
+			ee()->dbforge->drop_table('updated_site_pings');
 		}
 
 		return TRUE;
@@ -192,7 +193,7 @@ class Updater {
 				'default_author'	=> array('type' => 'int',		'constraint' => 11,	'unsigned' => TRUE,	'null' => FALSE,	'default' => 0),
 			)
 		);
-		
+
 		ee()->dbforge->add_key('channel_form_settings_id', TRUE);
 		ee()->dbforge->add_key('site_id');
 		ee()->dbforge->add_key('channel_id');
@@ -283,7 +284,7 @@ class Updater {
 	 * instances of 'safecracker' and 'entry_form' replacing them with the new
 	 * {channel:form} tag.
 	 *
-	 * @return void 
+	 * @return void
 	 */
 	protected function _rename_safecracker_tags()
 	{
@@ -291,7 +292,7 @@ class Updater {
 		if ( ! defined('RD')) define('RD', '}');
 
 		// We're gonna need this to be already loaded.
-		require_once(APPPATH . 'libraries/Functions.php');	
+		require_once(APPPATH . 'libraries/Functions.php');
 		ee()->functions = new Installer_Functions();
 
 		require_once(APPPATH . 'libraries/Extensions.php');
@@ -311,7 +312,7 @@ class Updater {
 		foreach($templates as $template)
 		{
 			// If there aren't any old tags, then we don't need to continue.
-			if (strpos($template->template_data, LD.'exp:channel:entry_form') === FALSE 
+			if (strpos($template->template_data, LD.'exp:channel:entry_form') === FALSE
 				&& strpos($template->template_data, LD.'safecracker') === FALSE)
 			{
 				continue;
@@ -377,7 +378,7 @@ class Updater {
 	 * using the safecracker approach on the frontend and a variation
 	 * of the native field on the backend (depending on settings).
 	 *
-	 * @return void 
+	 * @return void
 	 */
 	protected function _consolidate_file_fields()
 	{
@@ -428,7 +429,47 @@ class Updater {
 
 		ee()->db->delete('fieldtypes', array('name' => 'safecracker_file'));
 	}
-}	
+
+
+	// -------------------------------------------------------------------
+
+	/**
+	 * Add the new columns for relationships in a grid
+	 *
+	 * @return void
+	 */
+	protected function _update_relationships_for_grid()
+	{
+		ee()->smartforge->add_column(
+			'relationships',
+			array(
+				'grid_field_id' => array(
+					'type'			=> 'int',
+					'constraint'	=> 10,
+					'unsigned'		=> TRUE,
+					'default'		=> 0,
+					'null'			=> FALSE
+				),
+				'grid_col_id' => array(
+					'type'			=> 'int',
+					'constraint'	=> 10,
+					'unsigned'		=> TRUE,
+					'default'		=> 0,
+					'null'			=> FALSE
+				),
+				'grid_row_id' => array(
+					'type'			=> 'int',
+					'constraint'	=> 10,
+					'unsigned'		=> TRUE,
+					'default'		=> 0,
+					'null'			=> FALSE
+				)
+			)
+		);
+
+		ee()->smartforge->add_key('relationships', 'grid_row_id');
+	}
+}
 /* END CLASS */
 
 /* End of file ud_270.php */
