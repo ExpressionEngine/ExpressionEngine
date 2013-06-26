@@ -18,7 +18,7 @@ var Grid = window.Grid = {
 	 * 'beforeSort' - Before sort starts
 	 * 'afterSort' - After sort ends
 	 * 'displaySettings' - When settings form is displayed
-	 * 
+	 *
 	 * @param	{string}	fieldtypeName	Class name of fieldtype so the
 	 *				correct cell object can be passed to the handler
 	 * @param	{string}	action			Name of action
@@ -38,7 +38,7 @@ var Grid = window.Grid = {
 
 /**
  * Grid Publish class
- * 
+ *
  * @param	{string}	field		Field ID of table to instantiate as a Grid
  * @param	{string}	settings	JSON string of field settings
  */
@@ -268,7 +268,7 @@ Grid.Publish.prototype = {
 
 	/**
 	 * Fires event to fieldtype callbacks
-	 * 
+	 *
 	 * @param	{string}		action	Action name
 	 * @param	{jQuery object}	row		jQuery object of affected row
 	 */
@@ -279,7 +279,7 @@ Grid.Publish.prototype = {
 		{
 			return;
 		}
-		
+
 		// For each fieldtype binded to this action
 		for (var fieldtype in Grid._eventHandlers[action])
 		{
@@ -453,7 +453,7 @@ Grid.Settings.prototype = {
 			event.preventDefault();
 
 			var parentCol = $(this).parents('.grid_col_settings');
-			
+
 			that._insertColumn(
 				// Build new column based on current column
 				that._buildNewColumn(parentCol),
@@ -521,7 +521,7 @@ Grid.Settings.prototype = {
 
 	/**
 	 * Inserts a new column after a specified element
-	 * 
+	 *
 	 * @param	{jQuery Object}	column		Column to insert
 	 * @param	{jQuery Object}	insertAfter	Element to insert the column
 	 *				after; if left blank, defaults to last column
@@ -568,7 +568,7 @@ Grid.Settings.prototype = {
 
 	/**
 	 * Builts new column from scratch or based on an existing column
-	 * 
+	 *
 	 * @param	{jQuery Object}	el	Column to base new column off of, when
 	 *				copying an existing column for example; if left blank,
 	 *				defaults to blank column
@@ -668,7 +668,7 @@ Grid.Settings.prototype = {
 	/**
 	 * Clones an element and copies over any form input values because
 	 * normal cloning won't handle that
-	 * 
+	 *
 	 * @param	{jQuery Object}	el	Element to clone
 	 * @return	{jQuery Object}	Cloned element with form fields populated
 	 */
@@ -715,7 +715,7 @@ Grid.Settings.prototype = {
 				new_input.attr('value', $(this).val());
 			}
 		});
-		
+
 		return cloned;
 	},
 
@@ -735,7 +735,7 @@ Grid.Settings.prototype = {
 
 	/**
 	 * Fires event to fieldtype callbacks
-	 * 
+	 *
 	 * @param	{string}		action	Action name
 	 * @param	{jQuery object}	el		jQuery object of affected element
 	 */
@@ -785,9 +785,10 @@ EE.grid_settings = function(settings)
 	return new Grid.Settings(settings);
 };
 
-// Fire any delayed grid bindings
-_.each(EE.publish.grid_cache, function(args) {
+_.each(EE.publish.grid_cache, function(args)
+{
 	Grid.bind.apply(Grid, args);
 });
+
 
 })(jQuery);
