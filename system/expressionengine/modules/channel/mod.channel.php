@@ -3203,7 +3203,6 @@ class Channel {
 		}
 
 		$entry_date = array();
-
 		preg_match_all("/".LD."entry_date\s+format\s*=\s*(\042|\047)([^\\1]*?)\\1".RD."/s", $title_chunk, $matches);
 		{
 			$j = count($matches[0]);
@@ -3221,7 +3220,8 @@ class Channel {
 		{
 			if ($result->num_rows() > 0 && $title_chunk != '')
 			{
-					$i = 0;
+				$i = 0;
+
 				foreach($result->result_array() as $row)
 				{
 					$chunk = "<li>".str_replace(LD.'category_name'.RD, '', $title_chunk)."</li>";
@@ -3244,6 +3244,15 @@ class Channel {
 							$chunk = ee()->TMPL->swap_var_single($key, $val, $chunk);
 						}
 
+						if ($key == 'entry_id')
+						{
+							$chunk = ee()->TMPL->swap_var_single($key, $row['entry_id'], $chunk);
+						}
+
+						if ($key == 'url_title')
+						{
+							$chunk = ee()->TMPL->swap_var_single($key, $row['url_title'], $chunk);
+						}
 					}
 
 					$channel_array[$i.'_'.$row['cat_id']] = str_replace(LD.'title'.RD, $row['title'], $chunk);
@@ -3492,6 +3501,15 @@ class Channel {
 									$chunk = ee()->TMPL->swap_var_single($key, $val, $chunk);
 								}
 
+								if ($key == 'entry_id')
+								{
+									$chunk = ee()->TMPL->swap_var_single($key, $trow['entry_id'], $chunk);
+								}
+
+								if ($key == 'url_title')
+								{
+									$chunk = ee()->TMPL->swap_var_single($key, $trow['url_title'], $chunk);
+								}
 							}
 
 							$titles_parsed .= $chunk;
