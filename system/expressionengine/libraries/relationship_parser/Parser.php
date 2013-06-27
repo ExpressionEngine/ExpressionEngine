@@ -489,9 +489,49 @@ class EE_Relationship_data_parser {
 
 			$rows[$entry_id] = $data;
 
+			// categories
 			if (isset($this->_categories[$entry_id]))
 			{
 				$categories[$entry_id] = $this->category($entry_id);
+			}
+
+			$requested_cats = $node->param('category');
+
+			if ($requested_cats)
+			{
+				if ( ! isset($categories[$entry_id]))
+				{
+					continue;
+				}
+
+				$not = FALSE;
+				$cat_match = FALSE;
+
+				if (strpos($requested_cats, 'not ') === 0)
+				{
+					$requested_cats = substr($requested_cats, 4);
+					$not = TRUE;
+				}
+
+				$requested_cats = explode('|', $requested_cats);
+
+				foreach ($categories[$entry_id] as $cat)
+				{
+					if (in_array($cat['cat_id'], $requested_cats))
+					{
+						if ($not)
+						{
+							continue 2;
+						}
+
+						$cat_match = TRUE;
+					}
+				}
+
+				if ( ! $cat_match)
+				{
+					continue;
+				}
 			}
 		}
 
