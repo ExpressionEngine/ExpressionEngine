@@ -425,11 +425,11 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 
 			// We take the element off the dom temporarily for processing.
 			// This vastly improves performance at > 500 items.
-			// Normally that makes perfect sense, but I must admit
-			// in this case it's a little strange, since we move them off-dom
+			// Normally that makes perfect sense, but I must admit in
+			// this case it's a little strange, since we move them off-dom
 			// individually to reorder them. Something about not forcing
-			// repaints every time? Not 100% sure, but this this works, so
-			// it's staying.
+			// repaints every time? Not 100% sure, but this works, so it's
+			// staying.
 			ul.find('li').detach();
 
 
@@ -624,6 +624,10 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 
 	/**
 	 * Public method to instantiate
+	 *
+	 * If it's a relationship field we need to find the cells for existing
+	 * fields and also setup the grid binding for new rows. Otherwise we
+	 * simply bind on the field name we were given.
 	 */
 	EE.setup_relationship_field = function(field_name) {
 		if (field_name[0] == 'f') { // field_id_x vs col_id_x for grid
