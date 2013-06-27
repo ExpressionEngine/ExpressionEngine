@@ -34,7 +34,7 @@ class Grid_ft extends EE_Fieldtype {
 	public function __construct()
 	{
 		parent::__construct();
-		
+
 		ee()->lang->loadfile('fieldtypes');
 		ee()->load->model('grid_model');
 	}
@@ -47,12 +47,12 @@ class Grid_ft extends EE_Fieldtype {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	public function uninstall()
 	{
 		ee()->grid_model->uninstall();
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	public function validate($data)
@@ -125,7 +125,7 @@ class Grid_ft extends EE_Fieldtype {
 			ee()->cp->add_js_script('ui', 'sortable');
 			ee()->cp->add_js_script('file', 'cp/sort_helper');
 			ee()->cp->add_js_script('file', 'cp/grid');
-			
+
 			ee()->session->set_cache(__CLASS__, 'grid_assets_loaded', TRUE);
 		}
 
@@ -327,7 +327,7 @@ class Grid_ft extends EE_Fieldtype {
 
 		// Bail out if no entry data
 		if ($entry_data === FALSE OR
-			! isset($entry_data[$entry_id]) OR 
+			! isset($entry_data[$entry_id]) OR
 			! isset($params['column']))
 		{
 			return '';
@@ -396,7 +396,7 @@ class Grid_ft extends EE_Fieldtype {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Handles parsing of :next_row and :prev_row modifiers
 	 *
@@ -419,9 +419,9 @@ class Grid_ft extends EE_Fieldtype {
 
 		return ee()->grid_parser->parse($this->row, $this->field_id, $params, $tagdata);
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	public function display_settings($data)
 	{
 		$field_id = isset($data['field_id']) ? $data['field_id'] : 0;
@@ -430,7 +430,7 @@ class Grid_ft extends EE_Fieldtype {
 			'data' => lang('grid_options'),
 			'colspan' => 2
 		));
-		
+
 		// Minimum rows field
 		ee()->table->add_row(
 			form_input(array(
@@ -495,7 +495,7 @@ class Grid_ft extends EE_Fieldtype {
 
 			// Gather columns for current field
 			$vars['columns'] = array();
-			
+
 			if ( ! empty($field_id))
 			{
 				$columns = ee()->grid_model->get_columns_for_field($field_id);
@@ -527,7 +527,7 @@ class Grid_ft extends EE_Fieldtype {
 		ee()->cp->add_js_script('file', 'cp/grid');
 
 		ee()->javascript->output('EE.grid_settings('.json_encode($settings).');');
-		
+
 		return ee()->table->generate();
 	}
 
@@ -607,10 +607,10 @@ class Grid_ft extends EE_Fieldtype {
 
 			return FALSE;
 		}
-		
+
 		return TRUE;
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	public function save_settings($data)
@@ -620,7 +620,7 @@ class Grid_ft extends EE_Fieldtype {
 		{
 			$data['grid_min_rows'] = 0;
 		}
-		
+
 		return $data;
 	}
 
