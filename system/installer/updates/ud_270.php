@@ -11,7 +11,7 @@
  * @since		Version 2.7.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -24,9 +24,9 @@
  * @link		http://ellislab.com
  */
 class Updater {
-	
+
 	var $version_suffix = '';
-	
+
 	/**
 	 * Do Update
 	 *
@@ -86,7 +86,7 @@ class Updater {
 			ee()->db->delete('actions', array('class' => 'Updated_sites'));
 
 			ee()->dbforge->drop_table('updated_sites');
-			ee()->dbforge->drop_table('updated_site_pings');			
+			ee()->dbforge->drop_table('updated_site_pings');
 		}
 
 		return TRUE;
@@ -133,7 +133,7 @@ class Updater {
 
 		return TRUE;
 	}
-}	
+}
 /* END CLASS */
 
 /* End of file ud_270.php */
