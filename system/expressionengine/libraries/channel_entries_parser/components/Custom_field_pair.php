@@ -11,7 +11,7 @@
  * @since		Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -114,15 +114,22 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
 			$field_name = substr($field_name, strpos($field_name, ' '));
 			$field_id = $cfields[$field_name];
 
-			$obj = $ft_api->setup_handler($field_id, TRUE);
+			$ft = $ft_api->setup_handler($field_id, TRUE);
 
-			if ($obj)
+			if ($ft)
 			{
 				$_ft_path = $ft_api->ft_paths[$ft_api->field_type];
 				ee()->load->add_package_path($_ft_path, FALSE);
 
-				$obj->_init(array('row' => $data));
-				$pre_processed = $obj->pre_process($data['field_id_'.$field_id]);
+				$ft->_init(array('row' => $data));
+
+				$pre_processed = $ft->pre_process(
+					$ft_api->custom_field_data_hook(
+						$ft,
+						'pre_process',
+						$data['field_id_'.$field_id]
+					)
+				);
 
 				foreach($chunks as $chk_data)
 				{
@@ -133,14 +140,45 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
 					// we have a modifier
 					$parse_fnc = ($modifier) ? 'replace_'.$modifier : 'replace_tag';
 
-					if (method_exists($obj, $parse_fnc))
+
+					// -------------------------------------------
+					// 'custom_field_modify_parameter' hook.
+					// - Allow developers to modify the parameters array
+					//
+					// 	There are 3 ways to use this hook:
+					// 	 	1) Add to the existing Active Record call, e.g. ee()->db->where('foo', 'bar');
+					// 	 	2) Call ee()->db->_reset_select(); to terminate this AR call and start a new one
+					// 	 	3) Call ee()->db->_reset_select(); and modify the currently compiled SQL string
+					//
+					//   All 3 require a returned query result array.
+					//
+					if (ee()->extensions->active_hook('custom_field_modify_parameter') === TRUE)
 					{
-						$tpl_chunk = $obj->$parse_fnc($pre_processed, $params, $content);
+						$related = ee()->extensions->call(
+							'custom_field_modify_parameter',
+							$entry_id,
+							$this->field_id,
+							ee()->db->_compile_select(FALSE, FALSE)
+						);
+					}
+
+					if (method_exists($ft, $parse_fnc))
+					{
+						$tpl_chunk = $ft->$parse_fnc(
+							$ft_api->custom_field_data_hook($ft, $parse_fnc, $pre_processed),
+							$params,
+							$content
+						);
 					}
 					// Go to catchall and include modifier
-					elseif (method_exists($obj, 'replace_tag_catchall') AND $modifier !== '')
+					elseif (method_exists($ft, 'replace_tag_catchall') AND $modifier !== '')
 					{
-						$tpl_chunk = $obj->replace_tag_catchall($pre_processed, $params, $content, $modifier);
+						$tpl_chunk = $ft->replace_tag_catchall(
+							$ft_api->custom_field_data_hook($ft, 'replace_tag_catchall', $pre_processed),
+							$params,
+							$content,
+							$modifier
+						);
 					}
 
 					$tagdata = str_replace($chunk, $tpl_chunk, $tagdata);

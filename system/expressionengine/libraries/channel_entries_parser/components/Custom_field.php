@@ -11,7 +11,7 @@
  * @since		Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -91,7 +91,7 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component {
 			if (isset($data['field_id_'.$field_id]) && $data['field_id_'.$field_id] != '')
 			{
 				$modifier = $field['modifier'];
-				
+
 				$parse_fnc = ($modifier) ? 'replace_'.$modifier : 'replace_tag';
 
 				$obj = $ft_api->setup_handler($field_id, TRUE);
@@ -103,15 +103,30 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component {
 
 					$obj->_init(array('row' => $data));
 
-					$data = $obj->pre_process($data['field_id_'.$field_id]);
+					$data = $obj->pre_process(
+						$ft_api->custom_field_data_hook(
+							$obj,
+							'pre_process',
+							$data['field_id_'.$field_id]
+						)
+					);
 
 					if (method_exists($obj, $parse_fnc))
 					{
-						$entry = $obj->$parse_fnc($data, $field['params'], FALSE);
+						$entry = $obj->$parse_fnc(
+							$ft_api->custom_field_data_hook($obj, $parse_fnc, $data),
+							$field['params'],
+							FALSE
+						);
 					}
 					elseif (method_exists($obj, 'replace_tag_catchall'))
 					{
-						$entry = $obj->replace_tag_catchall($data, $field['params'], FALSE, $modifier);
+						$entry = $obj->replace_tag_catchall(
+							$ft_api->custom_field_data_hook($obj, 'replace_tag_catchall', $data),
+							$field['params'],
+							FALSE,
+							$modifier
+						);
 					}
 
 					ee()->load->remove_package_path($_ft_path);
