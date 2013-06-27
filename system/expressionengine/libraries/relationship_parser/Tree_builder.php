@@ -503,7 +503,6 @@ class EE_relationship_tree_builder {
 
 				if ($i == 0 && $leaf['L0_grid_col_id'])
 				{
-					$parent_id = $leaf['L0_grid_row_id'];
 					$field_name = $this->grid_relationship_names[$field_id];
 				}
 				else

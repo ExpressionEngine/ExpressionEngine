@@ -85,6 +85,7 @@ class Relationship_model extends CI_Model {
 		if ( ! $node->is_root() && $node->in_grid)
 		{
 			$type = self::GRID;
+			$relative_parent = 'L0.grid_row_id';
 		}
 
 		$db = $this->db;
@@ -137,8 +138,6 @@ class Relationship_model extends CI_Model {
 
 			if ($level > 0)
 			{
-				$db->where('L' . $level . '.grid_field_id', 0);
-
 				$db->order_by('L' . $level . '.order', 'asc');
 				$db->select('L' . $level . '.field_id as L' . $level . '_field');
 				$db->select('L' . $level . '.parent_id AS L' . $level . '_parent');
@@ -151,14 +150,7 @@ class Relationship_model extends CI_Model {
 			$db->join($this->_table.' as S', 'L0.parent_id = S.parent_id');
 		}
 
-		if ($type == self::GRID)
-		{
-			$db->where_in('L0.grid_row_id', $entry_ids);
-		}
-		else
-		{
-			$db->where_in($relative_parent, $entry_ids);
-		}
+		$db->where_in($relative_parent, $entry_ids);
 
 		// -------------------------------------------
 		// 'relationships_query' hook.
