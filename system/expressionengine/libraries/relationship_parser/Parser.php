@@ -521,7 +521,7 @@ class EE_Relationship_data_parser {
 					{
 						if ($not)
 						{
-							continue 2;
+						continue 2;
 						}
 
 						$cat_match = TRUE;

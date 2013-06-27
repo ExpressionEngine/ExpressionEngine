@@ -32,7 +32,7 @@ class File_ft extends EE_Fieldtype {
 	var $has_array_data = TRUE;
 
 	var $_dirs = array();
-	
+
 	/**
 	 * Constructor
 	 *
@@ -43,7 +43,7 @@ class File_ft extends EE_Fieldtype {
 		parent::__construct();
 		ee()->load->library('file_field');
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -54,7 +54,7 @@ class File_ft extends EE_Fieldtype {
 	function validate($data)
 	{
 		return ee()->file_field->validate(
-			$data, 
+			$data,
 			$this->field_name,
 			$this->settings['field_required'],
 			array(
@@ -67,7 +67,7 @@ class File_ft extends EE_Fieldtype {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Save the correct value {fieldir_\d}filename.ext
 	 *
@@ -78,9 +78,9 @@ class File_ft extends EE_Fieldtype {
 		// validate does all of the work.
 		return $data;
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Show the publish field
 	 *
@@ -111,20 +111,20 @@ class File_ft extends EE_Fieldtype {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Basic javascript interaction on the frontend
 	 *
 	 * @access	public
 	 */
 	protected function _frontend_js()
-	{	
+	{
 		ee()->load->library('javascript');
-		
+
 		if (empty(ee()->session->cache['file_field']['js']))
 		{
 			ee()->session->cache['file_field']['js'] = TRUE;
-			
+
 			$script = <<<JSC
 			$(document).ready(function() {
 				$('.file_field').each(function() {
@@ -172,7 +172,7 @@ JSC;
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Basic styles on the frontend
 	 *
@@ -183,7 +183,7 @@ JSC;
 		if (empty(ee()->session->cache['file_field']['css']))
 		{
 			ee()->session->cache['file_field']['css'] = TRUE;
-			
+
 			$styles = <<<CSS
 			<style type="text/css">
 			.file_set {
@@ -233,7 +233,7 @@ CSS;
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Prep the publish data
 	 *
@@ -243,9 +243,9 @@ CSS;
 	{
 		return ee()->file_field->parse_field($data);
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Runs before the channel entries loop on the front end
 	 *
@@ -256,9 +256,9 @@ CSS;
 	{
 		ee()->file_field->cache_data($data);
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Replace frontend tag
 	 *
@@ -271,12 +271,12 @@ CSS;
 		{
 			return $file_info['raw_output'];
 		}
-		
+
 		// Let's allow our default thumbs to be used inside the tag pair
 		if (isset($file_info['path']) && isset($file_info['filename']) && isset($file_info['extension']))
 		{
 			$file_info['url:thumbs'] = $file_info['path'].'_thumbs/'.$file_info['filename'].'.'.$file_info['extension'];
-		}	
+		}
 
 		// Make sure we have file_info to work with
 		if ($tagdata !== FALSE AND $file_info === FALSE)
@@ -325,7 +325,7 @@ CSS;
 					$tagdata = ee()->TMPL->swap_var_single(
 						$key,
 						ee()->localize->format_date(
-							$upload_date[$key], 
+							$upload_date[$key],
 							$file_info['upload_date']
 						),
 						$tagdata
@@ -338,7 +338,7 @@ CSS;
 					$tagdata = ee()->TMPL->swap_var_single(
 						$key,
 						ee()->localize->format_date(
-							$modified_date[$key], 
+							$modified_date[$key],
 							$file_info['modified_date']
 						),
 						$tagdata
@@ -350,7 +350,7 @@ CSS;
 			// Parse the rest!
 			// ---------------
 			$tagdata = ee()->functions->var_swap($tagdata, $file_info);
-			
+
 			// More an example than anything else - not particularly useful in this context
 			if (isset($params['backspace']))
 			{
@@ -375,7 +375,7 @@ CSS;
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Replace frontend tag (with a modifier catchall)
 	 *
@@ -390,13 +390,13 @@ CSS;
 		if ($modifier)
 		{
 			$key = 'url:'.$modifier;
-			
+
 			if ($modifier == 'thumbs')
 			{
 				if (isset($file_info['path']) && isset($file_info['filename']) && isset($file_info['extension']))
 				{
-			 		$data = $file_info['path'].'_thumbs/'.$file_info['filename'].'.'.$file_info['extension'];	
-				}				
+			 		$data = $file_info['path'].'_thumbs/'.$file_info['filename'].'.'.$file_info['extension'];
+				}
 			}
 			elseif (isset($file_info[$key]))
 			{
@@ -407,18 +407,18 @@ CSS;
 			{
 				return $tagdata;
 			}
-			
+
 			if (isset($params['wrap']))
 			{
 				return $this->_wrap_it($file_info, $params['wrap'], $data);
 			}
-			
+
 			return $data;
 		}
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Wrap it helper function
 	 *
@@ -429,7 +429,7 @@ CSS;
 		if ($type == 'link')
 		{
 			ee()->load->helper('url_helper');
-					
+
 			return $file_info['file_pre_format']
 				.anchor($full_path, $file_info['filename'], $file_info['file_properties'])
 				.$file_info['file_post_format'];
@@ -437,17 +437,17 @@ CSS;
 		elseif ($type == 'image')
 		{
 			$properties = ( ! empty($file_info['image_properties'])) ? ' '.$file_info['image_properties'] : '';
-					
+
 			return $file_info['image_pre_format']
 				.'<img src="'.$full_path.'"'.$properties.' alt="'.$file_info['filename'].'" />'
 				.$file_info['image_post_format'];
 		}
-		
+
 		return $full_path;
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Display settings screen
 	 *
@@ -459,7 +459,7 @@ CSS;
 
 		ee()->lang->loadfile('fieldtypes');
 		ee()->load->model('file_upload_preferences_model');
-				
+
 		// And now the directory
 		$allowed_directories = ( ! isset($data['allowed_directories'])) ? 'all' : $data['allowed_directories'];
 
@@ -474,10 +474,6 @@ CSS;
 			'data' => lang('file_ft_options'),
 			'colspan' => 2
 		));
-
-	//	$this->_row(
-	//		'<strong>'.lang('file_ft_configure').'</strong><br><i class="instruction_text">'.lang('file_ft_configure_subtext').'</i>'
-	//	);
 
 		$this->_row(
 			lang('file_ft_content_type', $prefix.'field_content_type'),
@@ -495,7 +491,7 @@ CSS;
 
 		$this->_row(
 			lang('file_ft_show_files'),
-			'<label>'.form_checkbox('file_show_existing', 'y', $show_existing).' '.lang('yes').' </label> <i class="instruction_text">('.lang('file_ft_show_files_subtext').')</i>'
+			'<label>'.form_checkbox('file_show_existing', 'y', ($show_existing == 'y')).' '.lang('yes').' </label> <i class="instruction_text">('.lang('file_ft_show_files_subtext').')</i>'
 		);
 
 		$this->_row(
@@ -520,29 +516,49 @@ JSC;
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	public function grid_display_settings($data)
 	{
 		$allowed_directories = ( ! isset($data['allowed_directories'])) ? 'all' : $data['allowed_directories'];
 
+		// Show existing files? checkbox, default to yes
+		$show_existing = ( ! isset($data['show_existing'])) ? 'y' : $data['show_existing'];
+
+		// Number of existing files to show? 0 means all
+		$num_existing = ( ! isset($data['num_existing'])) ? 50 : $data['num_existing'];
+
 		return array(
 			$this->grid_dropdown_row(
-				lang('field_content_file'),
+				lang('file_ft_content_type'),
 				'field_content_type',
 				$this->_field_content_options(),
 				isset($data['field_content_type']) ? $data['field_content_type'] : 'all'
 			),
 			$this->grid_dropdown_row(
-				lang('allowed_dirs_file'),
+				lang('file_ft_allowed_dirs'),
 				'allowed_directories',
 				$this->_allowed_directories_options(),
 				$allowed_directories
-			)
+			),
+			$this->grid_padding_container('<strong>'.lang('file_ft_configure_frontend').'</strong><br><i class="instruction_text">'.lang('file_ft_configure_frontend_subtext').'</i>'),
+			$this->grid_checkbox_row(
+				lang('file_ft_show_files'),
+				'show_existing',
+				'y',
+				($show_existing == 'y')
+			),
+			form_label(lang('file_ft_limit_left')).NBS.NBS.NBS.
+				form_input(array(
+					'name'	=> 'num_existing',
+					'value'	=> $num_existing,
+					'class'	=> 'grid_input_text_small'
+				)).NBS.NBS.NBS.
+				'<strong>'.lang('file_ft_limit_right').'</strong>'
 		);
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Returns dropdown-ready array of allowed file types for upload
 	 */
@@ -564,7 +580,7 @@ JSC;
 	 * @param	vertical alignment of left column
 	 *
 	 * @return	void - adds a row to the EE table class
-	 */	
+	 */
 	protected function _row($cell1, $cell2 = '', $valign = 'center')
 	{
 		if ( ! $cell2)
@@ -592,7 +608,7 @@ JSC;
 		ee()->load->model('file_upload_preferences_model');
 
 		$directory_options['all'] = lang('all');
-		
+
 		if (empty($this->_dirs))
 		{
 			$this->_dirs = ee()->file_upload_preferences_model->get_file_upload_preferences(1);
@@ -605,9 +621,9 @@ JSC;
 
 		return $directory_options;
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	function validate_settings($data)
 	{
 		ee()->form_validation->set_rules(
@@ -677,13 +693,16 @@ JSC;
 	/**
 	 * Tells us whether or not upload destinations exist
 	 *
+	 * This is public to allow for access from Form_validation, which
+	 * triggers the callbacks.
+	 *
 	 * @return	boolean	Whether or not upload destinations exist
 	 */
-	private function _check_directories()
+	public function _check_directories()
 	{
 		ee()->load->model('file_upload_preferences_model');
 		$upload_dir_prefs = ee()->file_upload_preferences_model->get_file_upload_preferences();
-		
+
 		// count upload dirs
 		return (count($upload_dir_prefs) !== 0);
 	}
@@ -692,6 +711,11 @@ JSC;
 
 	function grid_save_settings($data)
 	{
+		if ( ! isset($data['show_existing']))
+		{
+			$data['show_existing'] = 'n';
+		}
+
 		return $data;
 	}
 }
