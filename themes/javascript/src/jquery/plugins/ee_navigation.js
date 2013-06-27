@@ -21,36 +21,6 @@
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-var open = false,
-	mouseOnMenu = false,
-	timeOffMenu = 0,
-	lastMouseCoordinates = {},		// coordinates at last check
-	currentMouseCoordinates = {};	// ~current coordinates
-
-
-$(document).mousemove(function() {
-	currentMouseCoordinates = { x: evt.target.PageX, y: evt.target.pageY };
-})
-
-setTimeout(function() {
-	// compare new mouse position to old mouse position
-	// is not moving right and not on menu? close
-	// otherwise, check time not on menu, if too big - close
-});
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 jQuery(document).ready(function() {
 
@@ -66,8 +36,8 @@ jQuery(document).ready(function() {
 
 		nav = $(NAV),
 		top_level = $(NAV+">li."+PARENT),
-		t, 
-		current_hovered, 
+		t,
+		current_hovered,
 		moving = false;
 
 	// Mouse navigation
@@ -80,12 +50,12 @@ jQuery(document).ready(function() {
 			var el = $(current_hovered);
 			el.parent().find('.'+ACTIVE+', .'+HOVER).removeClass(ACTIVE).removeClass(HOVER);
 			el.addClass(ACTIVE).addClass(HOVER);
-		
+
 			// do not truncate channels
 			if ( ! el.closest('#navigationTabs > li').is( top_level.first() )) {
 				EE.navigation.truncate_menus(el.children('ul'));
 			}
-			
+
 			moving = false;
 		}, 100);	// remember, IE timeouts step in 15ms
 	};
@@ -126,7 +96,7 @@ jQuery(document).ready(function() {
 			}
 		}, function() {
 			$(this).removeClass(HOVER);
-			
+
 			if ( ! moving) {
 				EE.navigation.untruncate_menus($(this).children('ul'));
 			};
@@ -135,18 +105,6 @@ jQuery(document).ready(function() {
 		});
 	};
 
-	// Keyboard navigation
-	// -----------------------------------------------
-	EE.navigation.move_top_level = function(obj, current_li, direction) {
-	
-		current_li.parents("."+ACTIVE).removeClass(ACTIVE);
-		current_li = current_li.closest(NAV+">li");
-	
-		if (direction && current_li[direction]().length) {
-			obj.setFocus(current_li[direction]().children("a"));
-		}
-	};
-	
 	// Menu Truncation
 	// -----------------------------------------------
 	/**
@@ -155,7 +113,7 @@ jQuery(document).ready(function() {
 	 */
 	EE.navigation.truncate_menus = function($menus) {
 		var window_height = $(window).height();
-		
+
 		$.each($menus, function(index, val) {
 			var $menu         = $(this),
 				offset        = $menu.offset().top,
@@ -163,18 +121,18 @@ jQuery(document).ready(function() {
 				link_height   = $menu.find('li:first').height(),
 				difference    = (offset + menu_height) - window_height,
 				$more         = $menu.find('> li:has(> a[href*=tgpref]):first:visible');
-			
+
 			if (difference > 0) {
 				var quantity_to_remove = Math.ceil(difference / link_height) + 2, // Add more to lift it off the bottom
 					last_index         = $menu.find('> li.nav_divider:first:visible').prev().index();
-				
+
 				$menu.find('> li:visible').slice(last_index - quantity_to_remove, last_index).hide();
 			} else {
 				$more.hide();
 			};
 		});
 	};
-	
+
 	/**
 	 * Reveal the hidden menu items so truncate_menus continues to work normally
 	 * @param {jQuery Object} $menus jQuery collection of unordered lists representing submenus of the current hover
@@ -182,7 +140,7 @@ jQuery(document).ready(function() {
 	EE.navigation.untruncate_menus = function($menus) {
 		$.each($menus, function(index, val) {
 			var $menu = $(this);
-			
+
 			// Check to see if the menu is visible, if it is, wait 15ms and try again
 			if ($menu.is(':visible')) {
 				setTimeout(function() {
