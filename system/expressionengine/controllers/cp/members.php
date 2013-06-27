@@ -2912,7 +2912,7 @@ class Members extends CP_Controller {
 			'm_field_type' => '',
 			'm_field_list_items' => '',
 			'm_field_ta_rows' => '',
-			// 'm_field_maxl' => '', // This is set later
+			'm_field_maxl' => '',
 			'm_field_width' => '',
 			'm_field_search' => '',
 			'm_field_required' => '',
@@ -2922,41 +2922,17 @@ class Members extends CP_Controller {
 			'm_field_fmt' => '',
 			'm_field_order' => ''
 		);
-		$no_defaults = array(
-			'm_field_list_items',
-			'm_field_description'
-		);
 		foreach ($field_settings as $index => $value)
 		{
 			$value = ee()->input->post($index);
 
-			if (empty($value) && ! in_array($index, $no_defaults))
+			if (empty($value))
 			{
 				unset($field_settings[$index]);
 				continue;
 			}
 
 			$field_settings[$index] = $value;
-		}
-
-		// Clean up field list items
-		if (isset($field_settings['m_field_list_items'])
-			&& $field_settings['m_field_list_items'] != '')
-		{
-			$field_settings['m_field_list_items'] = quotes_to_entities($field_settings['m_field_list_items']);
-		}
-
-		// Determine the field length
-		$m_field_maxl = ee()->input->post('m_field_max_l', 100);
-		$field_settings['m_field_maxl'] = ( ! is_numeric($m_field_maxl)) ? 100 : $m_field_maxl;
-
-		// Determine field order
-		if (empty($field_settings['m_field_order'])
-			OR ! is_numeric($field_settings['m_field_order']))
-		{
-			$this->load->model('member_model');
-			$count = $this->member_model->count_records('member_fields');
-			$field_settings['m_field_order'] = $count + 1;
 		}
 
 		// If we're editing, set the field_id
