@@ -11,7 +11,7 @@
  * @since		Version 2.7.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -24,9 +24,9 @@
  * @link		http://ellislab.com
  */
 class Updater {
-	
+
 	var $version_suffix = '';
-	
+
 	/**
 	 * Do Update
 	 *
@@ -40,7 +40,6 @@ class Updater {
 			array(
 				'_drop_pings',
 				'_drop_updated_sites',
-				'_move_member_fields',
 				'_update_localization_preferences'
 			)
 		);
@@ -95,29 +94,6 @@ class Updater {
 
 	// --------------------------------------------------------------------
 
-	private function _move_member_fields()
-	{
-		$fields = array(
-			'url',
-			'location',
-			'occupation',
-			'interests',
-			'aol_im',
-			'yahoo_im',
-			'msn_im',
-			'icq',
-			'bio'
-		);
-
-		// Add fields to member_fields and _data
-
-		// Move data from members to member_data
-
-		// Kill old columns from members
-	}
-
-	// --------------------------------------------------------------------
-
 	/**
 	 * Remove the default localization member in favor or a site setting
 	 * under global localization prefs.
@@ -157,7 +133,7 @@ class Updater {
 
 		return TRUE;
 	}
-}	
+}
 /* END CLASS */
 
 /* End of file ud_270.php */
