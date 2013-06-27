@@ -243,6 +243,12 @@ class EE_Core {
 		{
 			define('PATH_CP_THEME', PATH_THEMES.'cp_themes/');	// theme path
 		}
+
+		if (extension_loaded('newrelic'))
+		{
+			ee()->load->library('newrelic');
+			ee()->newrelic->name_transaction();
+		}
 	}
 
 	// --------------------------------------------------------------------
