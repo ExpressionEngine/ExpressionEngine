@@ -72,7 +72,8 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 	 * The constructor does most of the precaching before handing
 	 * off to the class methods for interaction related things.
 	 */
-	function RelationshipField(container) {
+	function RelationshipField(container, empty) {
+		this.force_empty = !! empty;
 
 		// three main components per field
 		this.root = $(container).find('.multiselect');
@@ -263,26 +264,40 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 			// overflowing. Silly browsers.
 			that.active.addClass('force-scroll');
 
-			// find existing checked items
-			var checked = _.map(this.root.find(':checked'), function(el, i) {
-				var li = $(el).closest('li'),
-					text = li.find('input:text');
+			if ( ! that.force_empty)
+			{
+				// find existing checked items
+				var checked = _.map(this.root.find(':checked'), function(el, i) {
+					var li = $(el).closest('li'),
+						text = li.find('input:text');
 
-				return [li, +text.val()]; // (cons item int_text) 
-			});
+					return [li, +text.val()]; // (cons item int_text)
+				});
 
-			// sort them by their order field
-			checked = _.sortBy(checked, function(el) {
-				return el[1];
-			});
+				// sort them by their order field
+				checked = _.sortBy(checked, function(el) {
+					return el[1];
+				});
 
-			// move them over in the correct order
-			_.each(checked, function(el, i) {
-				var li = el[0],
-					idx = that.listItems.index(li);
+				// move them over in the correct order
+				_.each(checked, function(el, i) {
+					var li = el[0],
+						idx = that.listItems.index(li);
 
-				util.moveOver(idx);
-			});
+					util.moveOver(idx);
+				});
+			}
+			else
+			{
+				_.each(this.root.find(':checked'), function(el, i) {
+					var parent = $(el).closest('li');
+
+					parent.removeClass('selected');
+					parent.find('input:text').val(0);
+					el.removeAttribute('checked');
+
+				});
+			}
 
 			that._checkScrollBars();
 
@@ -294,7 +309,7 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 				// adding the class. So we add the class and remove it if it's not
 				// overflowing. Silly browsers.
 				that.active.addClass('force-scroll');
-				
+
 				var box = $(this).find(':checkbox'),
 					idx = that.listItems.index(this);
 
@@ -616,9 +631,18 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 				$('#sub_hold_'+field_name.replace('id_', ''))
 			);
 		}
-		
+
+		var parts = field_name.split('_'); // [field_id, col_id, row_id]
+
+		new RelationshipField(
+			$('#sub_hold_field_'+parts[0])
+				.find('.multiselect.col_id_'+parts[1])
+				.closest('.grid_row > td')
+				.filter('[data-row-id="'+parts[2]+'"]')
+		);
+
 		Grid.bind('relationship', 'display', function(cell) {
-			new RelationshipField(cell);
+			new RelationshipField(cell, true);
 		});
 	};
 

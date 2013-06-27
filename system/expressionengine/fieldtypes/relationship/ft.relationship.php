@@ -207,6 +207,23 @@ class Relationship_ft extends EE_Fieldtype {
 			->delete($this->_table);
 	}
 
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Called when grid entries are deleted
+	 *
+	 * @access	public
+	 * @param	array of entry ids to delete
+	 */
+	public function grid_delete($ids)
+	{
+		ee()->db
+			->where('field_id', $this->field_id)
+			->where_in('grid_row_id', $ids)
+			->delete($this->_table);
+	}
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -418,7 +435,16 @@ class Relationship_ft extends EE_Fieldtype {
 		if (REQ == 'CP' && count($entries))
 		{
 			ee()->cp->add_js_script('file', 'cp/relationships');
-			ee()->javascript->output("EE.setup_relationship_field('".$this->field_name."');");
+
+			if (isset($this->settings['grid_row_id']))
+			{
+				$field_ident = $this->settings['grid_field_id'].'_'.$this->settings['col_id'].'_'.$this->settings['grid_row_id'];
+				ee()->javascript->output("EE.setup_relationship_field('".$field_ident."');");
+			}
+			else
+			{
+				ee()->javascript->output("EE.setup_relationship_field('".$this->field_name."');");
+			}
 		}
 
 		return ee()->load->view('publish', compact('field_name', 'entries', 'selected', 'order'), TRUE);
