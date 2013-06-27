@@ -41,7 +41,7 @@ class Updater {
 				'_drop_pings',
 				'_drop_updated_sites',
 				'_update_localization_preferences',
-				'_add_xid_used_flag'
+				'_add_xid_used_flag',
 				'_rename_safecracker_db',
 				'_rename_safecracker_tags',
 				'_consolidate_file_fields',
