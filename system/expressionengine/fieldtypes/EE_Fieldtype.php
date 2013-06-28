@@ -36,7 +36,7 @@ class EE_Fieldtype {
 	{
 		$this->EE =& get_instance();
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -44,18 +44,18 @@ class EE_Fieldtype {
 	 *
 	 * @access	public
 	 * @deprecated This is only here to maintain backwards compatibility
-	 * for people using parent::EE_Fieldtype() and will be removed in a 
+	 * for people using parent::EE_Fieldtype() and will be removed in a
 	 * later version.  Deprecated as of version 2.6
 	 */
 	function EE_Fieldtype()
 	{
 		$this->EE =& get_instance();
-		
+
 		// Log the deprecation.
 		ee()->load->library('logger');
-		ee()->logger->deprecated('2.6', 'EE_Fieldtype::__construct()');	
+		ee()->logger->deprecated('2.6', 'EE_Fieldtype::__construct()');
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	function _init($config = array())
@@ -65,28 +65,28 @@ class EE_Fieldtype {
 			$this->$key = $val;
 		}
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	function replace_tag($data, $params = array(), $tagdata = FALSE)
 	{
 		if ($tagdata)
 		{
 			return $tagdata;
 		}
-		
+
 		return $data;
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	function pre_process($data)
 	{
 		return $data;
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	function validate($data)
 	{
 		return TRUE;
@@ -98,9 +98,9 @@ class EE_Fieldtype {
 	{
 		return array();
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Display Field Settings
 	 *
@@ -112,9 +112,9 @@ class EE_Fieldtype {
 	{
 		return '';
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Save Field
 	 *
@@ -126,11 +126,11 @@ class EE_Fieldtype {
 	{
 		return $data;
 	}
-	
+
 
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Called after field is saved
 	 *
@@ -142,9 +142,9 @@ class EE_Fieldtype {
 		// $this->settings['entry_id'];
 		return array();
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Called when entries are deleted
 	 *
@@ -155,9 +155,9 @@ class EE_Fieldtype {
 	{
 		return array();
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Save Settings
 	 *
@@ -169,9 +169,9 @@ class EE_Fieldtype {
 	{
 		return array();
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Settings Modify Column
 	 *
@@ -190,14 +190,14 @@ class EE_Fieldtype {
 		$fields['field_ft_'.$data['field_id']] = array(
 			'type' 			=> 'tinytext',
 			'null'			=> TRUE,
-			);			
-		
+			);
+
 		return $fields;
 	}
-	
-	
+
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Save Settings
 	 *
@@ -209,7 +209,7 @@ class EE_Fieldtype {
 	{
 		return;
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -222,9 +222,9 @@ class EE_Fieldtype {
 	{
 		return array();
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Uninstall
 	 *
@@ -237,7 +237,7 @@ class EE_Fieldtype {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	function display_publish_field($data)
 	{
 		$vars['glossary_items'] = ee()->load->ee_view('content/_assets/glossary_items', '', TRUE);
@@ -245,16 +245,16 @@ class EE_Fieldtype {
 		ee()->load->vars($vars);
 		return $this->display_field($data);
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	function field_formatting_row($data, $prefix = FALSE)
 	{
 		$edit_format_link = $data['edit_format_link'];
 		$prefix = ($prefix) ? $prefix.'_' : '';
-		
+
 		$extra = '';
-		
+
 		if ($data['field_id'] != '')
 		{
 			$extra .= '<div class="notice update_formatting js_hide">';
@@ -279,23 +279,23 @@ class EE_Fieldtype {
 				lang('no', $prefix.'field_show_fmt_n').
 				$extra
 		);
-		
+
 		ee()->javascript->output('
 		$("#'.$prefix.'field_fmt").change(function() {
 			$(this).nextAll(".update_formatting").show();
 		});
 		');
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	function text_direction_row($data, $prefix = FALSE)
 	{
 		$prefix = ($prefix) ? $prefix.'_' : '';
 
 		// Data from Form Validation
 		$ltr_checked = set_value($prefix.'field_text_direction', $data['field_text_direction_ltr']);
-		$ltr_checked = ($ltr_checked == 'ltr' OR $ltr_checked === TRUE);
+		$ltr_checked = ($ltr_checked == 'ltr' OR $ltr_checked === TRUE OR $ltr_checked === '1');
 
 		ee()->table->add_row(
 			'<strong>'.lang('text_direction').'</strong>',
@@ -303,11 +303,11 @@ class EE_Fieldtype {
 				lang('ltr', $prefix.'field_text_direction_ltr').NBS.NBS.NBS.NBS.NBS.
 				form_radio($prefix.'field_text_direction', 'rtl', ! $ltr_checked, 'id="'.$prefix.'field_text_direction_rtl"').NBS.
 				lang('rtl', $prefix.'field_text_direction_rtl')
-		);		
+		);
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	function field_content_type_row($data, $prefix = FALSE)
 	{
 		$suf = $prefix;
@@ -319,25 +319,25 @@ class EE_Fieldtype {
 		{
 			$extra .= '<div class="notice update_content_type js_hide">';
 			$extra .= '<p>'.sprintf(
-								lang('content_type_changed'), 
+								lang('content_type_changed'),
 								$data['field_content_'.$suf]).'</p></div>';
 		}
-		
+
 		ee()->table->add_row(
 			lang('field_content_'.$suf, 'field_content_'.$suf),
 			form_dropdown($prefix.'field_content_type', $data['field_content_options_'.$suf], set_value($prefix.'field_content_type', $data['field_content_'.$suf]), 'id="'.$prefix.'field_content_type"').$extra
-		);	
-		
+		);
+
 		ee()->javascript->output('
 		$("#'.$prefix.'field_content_type").change(function() {
 			$(this).nextAll(".update_content_type").show();
 		});
 		');
-					
+
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	function multi_item_row($data, $prefix = FALSE)
 	{
 		$prefix = ($prefix) ? $prefix.'_' : '';
@@ -361,10 +361,10 @@ class EE_Fieldtype {
 				form_dropdown($prefix.'field_pre_populate_id', $data['field_pre_populate_id_options'], set_value($prefix.'field_pre_populate_id', $data['field_pre_populate_id_select']), 'id="'.$prefix.'field_pre_populate_id"').
 			'</p>'
 		);
-	
+
 		ee()->javascript->click('#'.$prefix.'field_pre_populate_n', '$(".select_format_n").show();$(".select_format_y").hide();', FALSE);
 		ee()->javascript->click('#'.$prefix.'field_pre_populate_y', '$(".select_format_y").show();$(".select_format_n").hide();', FALSE);
-		
+
 		// When this field becomes active for the first time - hit the option we need
 		ee()->javascript->output('
 			$("#ft_'.rtrim($prefix, '_').'").one("activate", function() {
@@ -372,47 +372,47 @@ class EE_Fieldtype {
 			});
 		');
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	function field_show_smileys_row($data, $prefix = FALSE)
 	{
 		$this->_yes_no_row($data, 'show_smileys', 'field_show_smileys', $prefix);
 	}
-		
+
 	function field_show_spellcheck_row($data, $prefix = FALSE)
 	{
 		$this->_yes_no_row($data, 'show_spellcheck', 'field_show_spellcheck', $prefix);
 	}
-		
+
 	function field_show_glossary_row($data, $prefix = FALSE)
 	{
 		$this->_yes_no_row($data, 'show_glossary', 'field_show_glossary', $prefix);
 	}
-		
+
 	function field_show_file_selector_row($data, $prefix = FALSE)
 	{
 		$this->_yes_no_row($data, 'show_file_selector', 'field_show_file_selector', $prefix);
 	}
-		
+
 	function field_show_formatting_btns_row($data, $prefix = FALSE)
 	{
 		$this->_yes_no_row($data, 'show_formatting_btns', 'field_show_formatting_btns', $prefix);
 	}
-		
+
 	function field_show_writemode_row($data, $prefix = FALSE)
 	{
 		$this->_yes_no_row($data, 'show_writemode', 'field_show_writemode', $prefix);
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	function _yes_no_row($data, $lang, $data_key, $prefix = FALSE, $grid = FALSE)
 	{
 		$prefix = ($prefix) ? $prefix.'_' : '';
 
 		$data = (isset($data[$data_key])) ? $data[$data_key] : '';
-		
+
 		$val_is_y = set_value($prefix.$data_key, $data);
 		$val_is_y = ($val_is_y == 'y' OR $val_is_y === TRUE);
 
@@ -425,12 +425,12 @@ class EE_Fieldtype {
 		{
 			return $this->grid_settings_row(lang($lang), $yes_no_string);
 		}
-		
+
 		ee()->table->add_row('<strong>'.lang($lang).'</strong>', $yes_no_string);
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Creates a generic settings row in Grid
 	 *
@@ -442,7 +442,7 @@ class EE_Fieldtype {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Creates a generic settings row in Grid
 	 *
@@ -487,7 +487,7 @@ class EE_Fieldtype {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Creates a checkbox row in a Grid column settings field
 	 *
@@ -503,9 +503,9 @@ class EE_Fieldtype {
 			).$label
 		);
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Field formatting row for Grid column settings
 	 *
@@ -525,7 +525,7 @@ class EE_Fieldtype {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Text direction row for Grid column settings
 	 *
@@ -583,7 +583,7 @@ class EE_Fieldtype {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Max textarea rows for Grid column settings
 	 *
@@ -603,7 +603,7 @@ class EE_Fieldtype {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Wraps a field in a DIV with a little extra padding rather than a
 	 * Grid cell's default 5px
@@ -616,7 +616,7 @@ class EE_Fieldtype {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Wraps a field in a DIV that will ignore default Grid cell padding
 	 * settings
