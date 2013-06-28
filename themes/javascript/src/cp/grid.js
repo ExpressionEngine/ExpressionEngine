@@ -785,10 +785,12 @@ EE.grid_settings = function(settings)
 	return new Grid.Settings(settings);
 };
 
-_.each(EE.publish.grid_cache, function(args)
+if (typeof _ !== 'undefined')
 {
-	Grid.bind.apply(Grid, args);
-});
-
+	_.each(EE.publish.grid_cache, function(args)
+	{
+		Grid.bind.apply(Grid, args);
+	});
+}
 
 })(jQuery);
