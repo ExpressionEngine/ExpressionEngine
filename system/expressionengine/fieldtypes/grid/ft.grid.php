@@ -643,6 +643,25 @@ class Grid_ft extends EE_Fieldtype {
 	{
 		if (isset($data['ee_action']) && $data['ee_action'] == 'delete')
 		{
+			$columns = ee()->grid_model->get_columns_for_field($settings['field_id'], FALSE);
+
+			$col_types = array();
+			foreach ($columns as $column)
+			{
+				$col_types[$column['col_id']] = $column['col_type'];
+			}
+
+			// Give fieldtypes a chance to clean up when its parent Grid
+			// field is deleted
+			if ( ! empty($col_types))
+			{
+				ee()->grid_model->delete_columns(
+					array_keys($col_types),
+					$col_types,
+					$this->settings['field_id']
+				);
+			}
+
 			ee()->grid_model->delete_field($data['field_id']);
 		}
 	}

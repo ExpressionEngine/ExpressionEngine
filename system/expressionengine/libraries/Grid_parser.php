@@ -548,10 +548,19 @@ class Grid_parser {
 		// Instantiate fieldtype
 		$fieldtype = ee()->api_channel_fields->setup_handler($column['col_type'], TRUE);
 
+		if ( ! $fieldtype)
+		{
+			return NULL;
+		}
+
 		// Assign settings to fieldtype manually so they're available like
 		// normal field settings
-		$fieldtype->field_id = $column['col_id'];
-		$fieldtype->field_name = 'col_id_'.$column['col_id'];
+		$fieldtype->_init(
+			array(
+				'field_id'	=> $column['col_id'],
+				'field_name'	=> 'col_id_'.$column['col_id']
+			)
+		);
 
 		// Assign fieldtype column settings and any other information that will
 		// be helpful to be accessible by fieldtypes
