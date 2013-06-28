@@ -15,7 +15,7 @@
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine RTE Module Library 
+ * ExpressionEngine RTE Module Library
  *
  * @package		ExpressionEngine
  * @subpackage	Libraries
@@ -25,7 +25,7 @@
  */
 
 class Rte_lib {
-	
+
 	// We consider the editor empty in these cases
 	public $_empty = array(
 		'',
@@ -35,7 +35,7 @@ class Rte_lib {
 		'<p></p>',
 		'<p>​</p>' // Zero-width character
 	);
-	
+
 	public function __construct()
 	{
 		$this->EE =& get_instance();
@@ -62,7 +62,7 @@ class Rte_lib {
 		{
 			exit();
 		}
-		
+
 		ee()->output->enable_profiler(FALSE);
 
 		ee()->load->library(array('table','javascript'));
@@ -113,7 +113,7 @@ class Rte_lib {
 
 		// sort used tools by custom order
 		ksort($used_tools, SORT_NUMERIC);
-		
+
 		// set up the form
 		$vars = array(
 			'action'			=> $this->form_url.AMP.'method=save_toolset'.( !! $toolset_id ? AMP.'toolset_id='.$toolset_id : ''),
@@ -123,16 +123,16 @@ class Rte_lib {
 			'unused_tools'		=> $unused_tools,
 			'used_tools'		=> $used_tools
 		);
-		
+
 		// JS
 		ee()->cp->add_js_script(array(
 			'ui' 	=> 'sortable',
 			'file'	=> 'cp/rte'
 		));
-		
+
 		// CSS
 		ee()->cp->add_to_head(ee()->view->head_link('css/rte.css'));
-		
+
 		// return the form
 		ee()->output->send_ajax_response(array(
 			'success' => ee()->load->view('edit_toolset', $vars, TRUE)
@@ -140,7 +140,7 @@ class Rte_lib {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Saves a toolset
 	 *
@@ -150,7 +150,7 @@ class Rte_lib {
 	public function save_toolset()
 	{
 		ee()->output->enable_profiler(FALSE);
-		
+
 		ee()->load->model('rte_toolset_model');
 
 		// get the toolset
@@ -186,7 +186,7 @@ class Rte_lib {
 		if ($toolset_id)
 		{
 			$orig = ee()->rte_toolset_model->get($toolset_id);
-			
+
 			if ( ! $orig || $is_members && $orig['member_id'] != ee()->session->userdata('member_id'))
 			{
 				ee()->output->send_ajax_response(array(
@@ -194,7 +194,7 @@ class Rte_lib {
 				));
 			}
 		}
-		
+
 		// save it
 		if (ee()->rte_toolset_model->save_toolset($toolset, $toolset_id) === FALSE)
 		{
@@ -208,7 +208,7 @@ class Rte_lib {
 		{
 			$toolset_id = ee()->db->insert_id();
 		}
-		
+
 		// If the default toolset was deleted
 		if (ee()->config->item('rte_default_toolset_id') == 0)
 		{
@@ -235,7 +235,7 @@ class Rte_lib {
 
 	/**
 	 * Build RTE JS
-	 * 
+	 *
 	 * @access	private
 	 * @param	int 	The ID of the toolset you want to load
 	 * @param	string 	The selector that will match the elements to turn into an RTE
@@ -246,7 +246,7 @@ class Rte_lib {
 	public function build_js($toolset_id, $selector, $include = array(), $cp_only = FALSE)
 	{
 		ee()->load->model(array('rte_toolset_model','rte_tool_model'));
-		
+
 		// no toolset specified?
 		if ( ! $toolset_id)
 		{
@@ -283,7 +283,7 @@ class Rte_lib {
 		if ($include['jquery_ui'])
 		{
 			$bits['libraries']['ui'] = array('core', 'widget');
-		}	
+		}
 
 		foreach ($tools as $tool)
 		{
@@ -292,20 +292,20 @@ class Rte_lib {
 			{
 				continue;
 			}
-			
+
 			// load the globals
 			if (count($tool['globals']))
 			{
 				$tool['globals'] = $this->_prep_globals($tool['globals']);
 				$bits['globals'] = array_merge_recursive($bits['globals'], $tool['globals']);
 			}
-			
+
 			// load any libraries we need
 			if ($tool['libraries'] && count($tool['libraries']))
 			{
 				$bits['libraries'] = array_merge_recursive($bits['libraries'], $tool['libraries']);
 			}
-			
+
 			// add any styles we need
 			if ( ! empty($tool['styles']))
 			{
@@ -327,20 +327,19 @@ class Rte_lib {
 				  (ee()->config->item('use_compressed_js') == 'n' ? 'src' : 'compressed') .
 				  '/jquery/jquery.js';
 		$rtecss	= ee()->config->item('theme_folder_url') . 'cp_themes/default/css/rte.css';
-		
+
 		ee()->load->library('javascript');
 
 		$js = '(function() {'."\n";
+		$js .= 	'// make sure we have jQuery
+				var interval = null;'."\n";
 
 		if ($cp_only === FALSE)
 		{
 			// kick off the JS
 			$js .= '
-				var EE = ' . json_encode(ee()->javascript->global_vars) . ';' .
-				'
-				// make sure we have jQuery
-				var interval = null;';
-				
+				var EE = ' . json_encode(ee()->javascript->global_vars) . ';';
+
 			if ($include['jquery'])
 			{
 				$js .= '
@@ -361,15 +360,15 @@ class Rte_lib {
 			{
 				loadRTE();
 			}
-			
+
 			function loadRTE()
 			{
 				// make sure jQuery is loaded
 				if ( typeof jQuery === "undefined" ){ return; }
 				clearInterval( interval );
-				
+
 				var $ = jQuery;
-				
+
 				// RTE library
 				' . $this->_load_js_files($bits['libraries']) . '
 
@@ -407,24 +406,24 @@ class Rte_lib {
 	}
 
 	// ------------------------------------------------------------------------
-	
+
 	/**
 	 * Save RTE field
 	 *
 	 * Use to clean up RTE content prior to DB insertion
-	 * 
+	 *
 	 * @param string $data the RTE html content
-	 * 
+	 *
 	 * @return string   the cleaned up RTE html content
 	 */
 	public function save_field($data)
 	{
-		if (ee()->session->userdata('rte_enabled') != 'y' 
+		if (ee()->session->userdata('rte_enabled') != 'y'
 			OR ee()->config->item('rte_enabled') != 'y')
 		{
 			return $data;
 		}
-		
+
 		// If the editor was saved empty, save nothing to database
 		// so it behaves as expected with conditional tags
 		if ($this->is_empty(trim($data)))
@@ -455,20 +454,20 @@ class Rte_lib {
 
 		return $data;
 	}
-	
+
 	// ------------------------------------------------------------------------
 
 	/**
 	 * Display an RTE field
-	 * 
+	 *
 	 * @param string $data       the RTE html content
 	 * @param string $field_name the field name for the RTE field
 	 * @param array $settings   field settings:
 	 * 					field_ta_rows - the number of textarea rows
 	 * 					field_text_direction - ltr or rtl
 	 * 					field_fmt - xhtml, br or none
-	 * 
-	 * @return string	
+	 *
+	 * @return string
 	 */
 	public function display_field($data, $field_name, $settings, $container = NULL)
 	{
@@ -482,7 +481,7 @@ class Rte_lib {
 		}
 
 		ee()->load->helper('form');
-		
+
 		$field = array(
 			'name'	=> $field_name,
 			'id'	=> $field_name,
@@ -526,7 +525,7 @@ class Rte_lib {
 		}
 
 		// Check the RTE module and user's preferences
-		if (ee()->session->userdata('rte_enabled') == 'y' 
+		if (ee()->session->userdata('rte_enabled') == 'y'
 			AND ee()->config->item('rte_enabled') == 'y')
 		{
 			$field['class']	= 'WysiHat-field';
@@ -554,12 +553,12 @@ class Rte_lib {
 		{
 			$data = str_replace($code_marker.$i, '[code]'.$chunk.'[/code]', $data);
 		}
-		
+
 		// Swap {filedir_x} with the real URL. It will be converted back
 		// upon submit by the RTE Image tool.
 		ee()->load->model('file_upload_preferences_model');
 		$dirs = ee()->file_upload_preferences_model->get_file_upload_preferences(ee()->session->userdata('group_id'));
-		
+
 		foreach($dirs as $d)
 		{
 			// tag to replace
@@ -567,7 +566,7 @@ class Rte_lib {
 
 			$data = str_replace($filedir, $d['url'], $data);
 		}
-	
+
 		$data = htmlspecialchars($data, ENT_QUOTES);
 
 		$field['value'] = $data;
@@ -578,31 +577,31 @@ class Rte_lib {
 		{
 			$return_data = '<div class="grid_full_cell_container">'.$return_data.'</div>';
 		}
-		
+
 		return $return_data;
 	}
-	
+
 	// ------------------------------------------------------------------------
 
 	/**
 	 * Check whether the specified data is empty html
-	 * 
+	 *
 	 * @param string $data the RTE html content
-	 * 
+	 *
 	 * @return bool
 	 */
 	public function is_empty($data)
 	{
 		return in_array($data, $this->_empty);
 	}
-	
+
 	// ------------------------------------------------------------------------
 
 	/**
 	 * Loads JS library files
-	 * 
+	 *
 	 * Note: This is partially borrowed from the combo loader
-	 * 
+	 *
 	 * @access	private
 	 * @param	array $load A collection of JS libraries to load
 	 * @return	string The libraries
@@ -623,11 +622,11 @@ class Rte_lib {
 			'package'	=> PATH_THIRD,
 			'fp_module'	=> PATH_MOD
 		);
-		
+
 		$contents = '';
-		
+
 		foreach ($types as $type => $path)
-		{			
+		{
 			if (isset($load[$type]))
 			{
 				// Don't load the same library twice
@@ -639,7 +638,7 @@ class Rte_lib {
 				{
 					$files = array( $files );
 				}
-				
+
 				foreach ($files as $file)
 				{
 					if ($type == 'package' OR $type == 'fp_module')
@@ -683,7 +682,7 @@ class Rte_lib {
 
 	/**
 	 * Prep global variables for JS
-	 * 
+	 *
 	 * @access	private
 	 * @param	array $globals The globals to load into JS
 	 * @return	array the revised $globals array
@@ -716,7 +715,7 @@ class Rte_lib {
 
 	/**
 	 * Manage the assignment of global JS
-	 * 
+	 *
 	 * @access	private
 	 * @param	array $globals The globals to load into JS
 	 * @return	string The JavaScript
@@ -724,14 +723,14 @@ class Rte_lib {
 	private function _set_globals($globals = array())
 	{
 		ee()->load->library('javascript');
-		
+
 		$js = '';
-		
+
 		if (count($globals))
 		{
 			$js .= 'var EE = ' . json_encode($globals) . ';';
 		}
-		
+
 		return $js;
 	}
 }
