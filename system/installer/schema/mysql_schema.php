@@ -729,7 +729,7 @@ class EE_Schema {
 			PRIMARY KEY `channel_form_settings_id` (`channel_form_settings_id`),
 			KEY `site_id` (`site_id`),
 			KEY `channel_id` (`channel_id`)
-		);";
+		)";
 
 		// Relationships table
 
@@ -745,7 +745,7 @@ class EE_Schema {
 			PRIMARY KEY `relationship_id` (`relationship_id`),
 			KEY `parent_id` (`parent_id`),
 			KEY `child_id` (`child_id`),
-			KEY `field_id` (`field_id`)
+			KEY `field_id` (`field_id`),
 			KEY `grid_row_id` (`grid_row_id`)
 		)";
 
