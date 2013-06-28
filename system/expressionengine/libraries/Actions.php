@@ -66,10 +66,9 @@ class EE_Actions {
 		// These are actions that are triggered manually
 		// rather than doing a lookup in the actions table.
 		$specials = array(
-							'jquery'			=> array('Jquery', 'output_javascript'),
-							'comment_editor'	=> array('Comment', 'comment_editor'),
-							'saef'				=> array('Channel', 'saef_filebrowser')
-						 );
+			'jquery'			=> array('Jquery', 'output_javascript'),
+			'comment_editor'	=> array('Comment', 'comment_editor')
+		 );
 		
 		// Make sure the ACT variable is set		
 		if ( ! $action_id = $EE->input->get_post('ACT'))

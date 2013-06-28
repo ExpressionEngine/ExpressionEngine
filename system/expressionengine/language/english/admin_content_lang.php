@@ -885,12 +885,6 @@ $lang = array(
 'field_content_text' =>
 'Field Content',
 
-'field_content_file' =>
-'File Type',
-
-'allowed_dirs_file' =>
-'Allowed Directory',
-
 'type_numeric' =>
 'Number',
 
@@ -1024,6 +1018,31 @@ $lang = array(
 
 'field_name_too_lrg' =>
 'Your field name exceeds the maximum length and has been truncated.  Please review.',
+
+//----------------------------
+// Channel Form Settings
+//----------------------------
+
+'channel_form_settings' =>
+'Channel Form Settings',
+
+'channel_form_settings_updated' =>
+'Channel Form Settings Saved',
+
+'channel_form_default_status' =>
+'Default Status',
+
+'channel_form_allow_guest_posts' =>
+'Allow Guest Posts?',
+
+'channel_form_guest_captcha' =>
+'Guest Captcha?',
+
+'channel_form_guest_author' =>
+'Guest Author',
+
+'channel_form_default_status' =>
+'-- Use Channel Default --',
 
 //----------------------------
 // Channel Entries API

@@ -39,6 +39,28 @@ class Date_ft extends EE_Fieldtype {
 			$data = ee()->localize->string_to_timestamp($data);
 		}
 
+		if (empty($data))
+		{
+			$data = 0;
+		}
+
+		return $data;
+	}
+
+	// --------------------------------------------------------------------
+
+	function grid_save($data)
+	{
+		if ( ! is_numeric($data))
+		{
+			$data = ee()->localize->string_to_timestamp($data);
+		}
+
+		if ($this->settings['localize'] !== TRUE)
+		{
+			$data = array($data, ee()->session->userdata('timezone'));
+		}
+
 		return $data;
 	}
 	
@@ -62,7 +84,7 @@ class Date_ft extends EE_Fieldtype {
 			return lang('invalid_date');
 		}
 
-		return TRUE;
+		return array('value' => $data);
 	}
 	
 	// --------------------------------------------------------------------
@@ -76,6 +98,22 @@ class Date_ft extends EE_Fieldtype {
 	{
 		$special = array('entry_date', 'expiration_date', 'comment_expiration_date');
 
+		$is_grid = isset($this->settings['grid_field_id']);
+
+		if ( ! is_numeric($field_data))
+		{
+			ee()->load->helper('custom_field_helper');
+
+			$data = decode_multi_field($field_data);
+
+			// Grid field stores timestamp and timezone in one field
+			if ( ! empty($data))
+			{
+				$field_data = $data[0];
+				$this->settings['field_dt'] = $data[1];
+			}
+		}
+
 		$date_field = $this->field_name;
 		$date_local = 'field_offset_'.$this->field_id;
 
@@ -83,10 +121,11 @@ class Date_ft extends EE_Fieldtype {
 		$custom_date = '';
 		$localize = TRUE;
 
-		if (isset($_POST[$date_field]) && ! is_numeric($_POST[$date_field]))
+		if ((isset($_POST[$date_field]) && ! is_numeric($_POST[$date_field]))
+			OR ( ! is_numeric($field_data) && ! empty($field_data)))
 		{
 			// probably had a validation error so repopulate as-is
-			$custom_date = ee()->input->post($date_field, TRUE);
+			$custom_date = $field_data;
 		}
 		else
 		{
@@ -127,31 +166,71 @@ class Date_ft extends EE_Fieldtype {
 			var jsCurrentUTC = d.getTimezoneOffset()*60;
 			var adjustedDefault = 1000*('.$date.'+jsCurrentUTC);
 		
-			$("#'.$this->field_name.'").datepicker({
+			$("#'.$this->field_name.'").not(".grid_field_container #'.$this->field_name.'").datepicker({
 				constrainInput: false,
 				dateFormat: $.datepicker.W3C + EE.date_obj_time,
 				defaultDate: new Date(adjustedDefault)
 			});
 		');
 
+		if ( ! ee()->session->cache(__CLASS__, 'grid_js_loaded'))
+		{
+			ee()->javascript->output('
+				
+			Grid.bind("date", "display", function(cell)
+			{
+				var d = new Date();
+				var jsCurrentUTC = d.getTimezoneOffset()*60;
+				var adjustedDefault = 1000*('.$date.'+jsCurrentUTC);
+
+				field = cell.find(".ee_datepicker");
+				field.removeAttr("id");
+				
+				cell.find(".ee_datepicker").datepicker({
+					constrainInput: false,
+					dateFormat: $.datepicker.W3C + EE.date_obj_time,
+					defaultDate: new Date(adjustedDefault)
+				});
+			});
+			
+			');
+
+			ee()->session->set_cache(__CLASS__, 'grid_js_loaded', TRUE);
+		}
+
+		$input_class = 'ee_datepicker text';
+
+		if ( ! $is_grid)
+		{
+			$input_class .= ' field';
+		}
+
 		$r = form_input(array(
 			'name'	=> $this->field_name,
 			'id'	=> $this->field_name,
 			'value'	=> $custom_date,
-			'class'	=> 'field'
+			'class'	=> $input_class
 		));
 
 		if ( ! in_array($this->field_name, $special))
 		{
-			$localized = ( ! isset($_POST[$date_local])) ? (($localize === TRUE) ? 'y' : 'n') : ee()->input->post($date_local, TRUE);
+			$text_direction = (isset($this->settings['field_text_direction']))
+				? $this->settings['field_text_direction'] : 'ltr';
 
-			$localized_opts	= array(
-				'y' => ee()->lang->line('localized_date'),
-				'n' => ee()->lang->line('fixed_date')
-			);
+			// We hide the dropdown in Grid because the localization setting is
+			// effectively global for that field
+			if ( ! $is_grid)
+			{
+				$localized = ( ! isset($_POST[$date_local])) ? (($localize === TRUE) ? 'y' : 'n') : ee()->input->post($date_local, TRUE);
 
-			$r .= NBS.NBS.NBS.NBS;
-			$r .= form_dropdown($date_local, $localized_opts, $localized, 'dir="'.$this->settings['field_text_direction'].'" id="'.$date_local.'"');
+				$localized_opts	= array(
+					'y' => ee()->lang->line('localized_date'),
+					'n' => ee()->lang->line('fixed_date')
+				);
+
+				$r .= NBS.NBS.NBS.NBS;
+				$r .= form_dropdown($date_local, $localized_opts, $localized, 'dir="'.$text_direction.'" id="'.$date_local.'"');
+			}
 		}
 
 		return $r;
@@ -172,6 +251,53 @@ class Date_ft extends EE_Fieldtype {
 		return $date;
 	}
 
+	// --------------------------------------------------------------------
+
+	public function grid_replace_tag($data, $params = array(), $tagdata = FALSE)
+	{
+		ee()->load->helper('custom_field_helper');
+		$date = decode_multi_field($data);
+
+		if ( ! isset($date[0]))
+		{
+			return '';
+		}
+
+		if (isset($params['format']))
+		{
+			$localize = TRUE;
+
+			if ($this->settings['localize'] !== TRUE && isset($date[1]))
+			{
+				$localize = $date[1];
+			}
+
+			return ee()->localize->format_date(
+				$params['format'],
+				$date[0], 
+				$localize
+			);
+		}
+
+		return $date[0];
+	}
+
+	// --------------------------------------------------------------------
+
+	public function grid_display_settings($data)
+	{
+		return array(
+			$this->grid_checkbox_row(
+				lang('grid_date_localized'),
+				'localize',
+				'localize',
+				isset($data['localize']) ? $data['localize'] : TRUE
+			)
+		);
+	}
+
+	// --------------------------------------------------------------------
+
 	function save_settings($data)
 	{
 		// Date or relationship types don't need formatting.
@@ -183,6 +309,15 @@ class Date_ft extends EE_Fieldtype {
 	}
 
 	// --------------------------------------------------------------------
+
+	function grid_save_settings($data)
+	{
+		return array(
+			'localize' => isset($data['localize'])
+		);
+	}
+
+	// --------------------------------------------------------------------
 	
 	function settings_modify_column($data)
 	{
@@ -190,15 +325,28 @@ class Date_ft extends EE_Fieldtype {
 			'type' 			=> 'INT',
 			'constraint'	=> 10,
 			'default'		=> 0
-			);
+		);
 
 		$fields['field_dt_'.$data['field_id']] = array(
 			'type' 			=> 'VARCHAR',
 			'constraint'	=> 50
-			);			
+		);		
 		
 		return $fields;
-	}	
+	}
+
+	// --------------------------------------------------------------------
+
+	public function grid_settings_modify_column($data)
+	{
+		return array('col_id_'.$data['col_id'] =>
+			array(
+				'type' 			=> 'VARCHAR',
+				'constraint'	=> 60,
+				'default'		=> NULL
+			)
+		);
+	}
 }
 
 // END Date_ft class

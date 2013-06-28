@@ -675,7 +675,11 @@ class CI_Email {
 	 */
 	public function subject($subject)
 	{
-		$subject = $this->_prep_q_encoding($subject);
+		if (preg_match('/[^\x20-\x7E]/', $subject))
+		{
+			$subject = $this->_prep_q_encoding($subject);			
+		}
+
 		$this->set_header('Subject', $subject);
 		return $this;
 	}

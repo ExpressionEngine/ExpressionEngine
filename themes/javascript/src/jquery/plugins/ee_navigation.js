@@ -36,8 +36,8 @@ jQuery(document).ready(function() {
 
 		nav = $(NAV),
 		top_level = $(NAV+">li."+PARENT),
-		t, 
-		current_hovered, 
+		t,
+		current_hovered,
 		moving = false;
 
 	// Mouse navigation
@@ -50,12 +50,12 @@ jQuery(document).ready(function() {
 			var el = $(current_hovered);
 			el.parent().find('.'+ACTIVE+', .'+HOVER).removeClass(ACTIVE).removeClass(HOVER);
 			el.addClass(ACTIVE).addClass(HOVER);
-		
+
 			// do not truncate channels
 			if ( ! el.closest('#navigationTabs > li').is( top_level.first() )) {
 				EE.navigation.truncate_menus(el.children('ul'));
 			}
-			
+
 			moving = false;
 		}, 100);	// remember, IE timeouts step in 15ms
 	};
@@ -96,7 +96,7 @@ jQuery(document).ready(function() {
 			}
 		}, function() {
 			$(this).removeClass(HOVER);
-			
+
 			if ( ! moving) {
 				EE.navigation.untruncate_menus($(this).children('ul'));
 			};
@@ -105,95 +105,6 @@ jQuery(document).ready(function() {
 		});
 	};
 
-	// Keyboard navigation
-	// -----------------------------------------------
-	EE.navigation.move_top_level = function(obj, current_li, direction) {
-	
-		current_li.parents("."+ACTIVE).removeClass(ACTIVE);
-		current_li = current_li.closest(NAV+">li");
-	
-		if (direction && current_li[direction]().length) {
-			obj.setFocus(current_li[direction]().children("a"));
-		}
-	};
-
-	EE.navigation.keyboard_listen = function() {
-		nav.ee_focus("a."+TICTAC, {
-			removeTabs: "a",	
-			onEnter: function(event) {
-				var target = $(event.target),
-					li = target.parent();
-
-				if (li.hasClass(PARENT)) {
-					li.addClass(ACTIVE);
-					this.setFocus(li.find("ul>li>a").eq(0));
-				}
-			},
-			onRight: function(event) {
-				var target = $(event.target),
-					li = target.parent();
-
-				if (li.hasClass(PARENT) && ! target.hasClass(TICTAC)) {
-					li.addClass(ACTIVE);
-					this.setFocus(li.find("ul>li>a").eq(0));
-				}
-				else {
-					EE.navigation.move_top_level(this, li, "next");
-				}
-			},
-			onLeft: function(event) {
-				var target = $(event.target),
-					li = target.parent();
-
-				if (target.hasClass(TICTAC) && li.prev().length) {
-					this.setFocus(li.prev().children("a"));
-				}
-				else {
-					li = li.parent().closest("."+PARENT);
-					li.removeClass(ACTIVE);
-
-					if (li.children("a."+TICTAC).length) {
-						EE.navigation.move_top_level(this, li, "prev");
-					}
-					else {
-						this.setFocus(li.children("a").eq(0));
-					}
-				}
-			},
-			onUp: function(event) {
-				var target = $(event.target),
-					li = target.parent(),
-					prev = li.prevAll(":not(.nav_divider)");
-
-				if ( ! target.hasClass(TICTAC) && li.prev.length) {
-					this.setFocus(prev.eq(0).children("a"));
-				}
-			},
-			onDown: function(event) {
-				var target = $(event.target),
-					li = target.parent(),
-					next = li.nextAll(":not(.nav_divider)");
-
-				if ( ! target.hasClass(TICTAC) && next.length) {
-					this.setFocus(next.eq(0).children("a"));
-				}
-				else if (li.hasClass(PARENT)) {
-					li.addClass(ACTIVE);
-					this.setFocus(li.find("ul>li>a").eq(0));
-				}
-			},
-			onEscape: function(event) {
-				var target = $(event.target),
-					li = target.parent();
-
-				EE.navigation.move_top_level(this, li);
-			},
-			onBlur: function(event) {
-				this.getElements().parent.find('.'+ACTIVE).removeClass(ACTIVE);
-			}
-		});
-	};
-	
 	// Menu Truncation
 	// -----------------------------------------------
 	/**
@@ -202,7 +113,7 @@ jQuery(document).ready(function() {
 	 */
 	EE.navigation.truncate_menus = function($menus) {
 		var window_height = $(window).height();
-		
+
 		$.each($menus, function(index, val) {
 			var $menu         = $(this),
 				offset        = $menu.offset().top,
@@ -210,18 +121,18 @@ jQuery(document).ready(function() {
 				link_height   = $menu.find('li:first').height(),
 				difference    = (offset + menu_height) - window_height,
 				$more         = $menu.find('> li:has(> a[href*=tgpref]):first:visible');
-			
+
 			if (difference > 0) {
 				var quantity_to_remove = Math.ceil(difference / link_height) + 2, // Add more to lift it off the bottom
 					last_index         = $menu.find('> li.nav_divider:first:visible').prev().index();
-				
+
 				$menu.find('> li:visible').slice(last_index - quantity_to_remove, last_index).hide();
 			} else {
 				$more.hide();
 			};
 		});
 	};
-	
+
 	/**
 	 * Reveal the hidden menu items so truncate_menus continues to work normally
 	 * @param {jQuery Object} $menus jQuery collection of unordered lists representing submenus of the current hover
@@ -229,7 +140,7 @@ jQuery(document).ready(function() {
 	EE.navigation.untruncate_menus = function($menus) {
 		$.each($menus, function(index, val) {
 			var $menu = $(this);
-			
+
 			// Check to see if the menu is visible, if it is, wait 15ms and try again
 			if ($menu.is(':visible')) {
 				setTimeout(function() {
@@ -242,5 +153,4 @@ jQuery(document).ready(function() {
 	};
 
 	EE.navigation.mouse_listen();
-	EE.navigation.keyboard_listen();
 });

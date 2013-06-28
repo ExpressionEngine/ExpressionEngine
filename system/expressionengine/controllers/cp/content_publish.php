@@ -262,6 +262,8 @@ class Content_publish extends CP_Controller {
 		// they contain. Then work through the details of how
 		// they are show.
 
+		$this->cp->add_js_script('file', 'cp/publish');
+
 		$tab_hierarchy	= $this->_setup_tab_hierarchy($field_data, $layout_info);
 		$layout_styles	= $this->_setup_layout_styles($field_data, $layout_info);
 		$field_list		= $this->_sort_field_list($field_data);		// @todo admin only? or use as master list? skip sorting for non admins, but still compile?
@@ -282,7 +284,7 @@ class Content_publish extends CP_Controller {
 		$this->cp->add_js_script(array(
 			'ui'	 => array('datepicker', 'resizable', 'draggable', 'droppable'),
 			'plugin' => array('markitup', 'toolbox.expose', 'overlay', 'tmpl', 'ee_url_title'),
-			'file'	=> array('json2', 'cp/publish', 'cp/publish_tabs')
+			'file'	=> array('json2', 'cp/publish_tabs')
 		));
 
 		if ($this->session->userdata('group_id') == 1)

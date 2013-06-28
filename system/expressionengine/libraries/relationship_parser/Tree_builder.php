@@ -11,7 +11,7 @@
  * @since		Version 2.6
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
  require_once APPPATH.'libraries/datastructures/Tree.php';
@@ -36,33 +36,41 @@ class EE_relationship_tree_builder {
 	protected $relationship_field_ids = array();		// field_name => field_id
 	protected $relationship_field_names = array();		// field_id => field_name
 
+	protected $grid_relationship_ids = NULL;				// gridprefix:field_name => grid_field_id
+	protected $grid_relationship_names = NULL;			// grid_field_id => gridprefix:field_name
+	protected $grid_field_id = NULL;
+
 	/**
 	 * Create a tree builder for the given relationship fields
 	 */
-	public function __construct(array $relationship_fields)
+	public function __construct(array $relationship_fields, array $grid_relationships = array(), $grid_field_id = NULL)
 	{
 		$this->relationship_field_ids = $relationship_fields;
 		$this->relationship_field_names = array_flip($relationship_fields);
+
+		$this->grid_relationship_ids = $grid_relationships;
+		$this->grid_relationship_names = array_flip($grid_relationships);
+		$this->grid_field_id = $grid_field_id;
 	}
 
 	// --------------------------------------------------------------------
 
 	/**
-	 * Find All Relationships of the Given Entries in the Template 
+	 * Find All Relationships of the Given Entries in the Template
 	 *
 	 * Searches the template the parser was constructed with for relationship
 	 * tags and then builds a tree of all the requested related entries for
 	 * each of the entries passed in the array.
-	 * 
+	 *
 	 * For space savings and subtree querying each node is pushed
 	 * its own set of entry ids per parent ids:
 	 *
 	 *						 {[6, 7]}
-	 *						/		\	
+	 *						/		\
 	 *		 {6:[2,4], 7:[8,9]}    	{6:[], 7:[2,5]}
 	 *				/					\
 	 *	  		...				  		 ...
-	 * 
+	 *
 	 * By pushing them down like this the subtree query is very simple.
 	 * And when we parse we simply go through all of them and make that
 	 * many copies of the node's tagdata.
@@ -71,10 +79,10 @@ class EE_relationship_tree_builder {
 	 *					to find.
 	 * @return	object	The tree root node
 	 */
-	public function build_tree(array $entry_ids)
+	public function build_tree(array $entry_ids, $tagdata)
 	{
 		// first, we need a tag tree
-		$root = $this->_build_tree();
+		$root = $this->_build_tree($tagdata);
 
 		if ($root === NULL)
 		{
@@ -91,6 +99,11 @@ class EE_relationship_tree_builder {
 
 		$all_entry_ids = array($entry_ids);
 
+		if (isset($this->grid_field_id))
+		{
+			$all_entry_ids = array(array());
+		}
+
 		$query_node_iterator = new RecursiveIteratorIterator(
 			new QueryNodeIterator(array($root)),
 			RecursiveIteratorIterator::SELF_FIRST
@@ -103,7 +116,7 @@ class EE_relationship_tree_builder {
 			// the root uses the main entry ids, all others use all
 			// of the parent's child ids. These form all of their potential
 			// parents, and thus the where_in for our query.
-			if ( ! $node->is_root())
+			if ( ! $node->is_root() && ! $node->in_grid)
 			{
 				$entry_ids = $node->parent()->entry_ids();
 				$entry_ids = call_user_func_array('array_merge', $entry_ids);
@@ -112,7 +125,7 @@ class EE_relationship_tree_builder {
 			// Store flattened ids for the big entry query
 			$all_entry_ids[] = $this->_propagate_ids(
 				$node,
-				ee()->relationship_model->node_query($node, $entry_ids)
+				ee()->relationship_model->node_query($node, $entry_ids, $this->grid_field_id)
 			);
 		}
 
@@ -151,7 +164,7 @@ class EE_relationship_tree_builder {
 
 			// ready set, main query.
 			ee()->load->model('channel_entries_model');
-			$entries_result = ee()->channel_entries_model->get_entry_data($unique_entry_ids);			
+			$entries_result = ee()->channel_entries_model->get_entry_data($unique_entry_ids);
 		}
 
 		// Build an id => data map for quick retrieval during parsing
@@ -181,12 +194,8 @@ class EE_relationship_tree_builder {
 	 * @param	array	Entry ids
 	 * @return	object	Root node of the final tree
 	 */
-	protected function _build_tree()
+	protected function _build_tree($str)
 	{
-		// extract the relationship tags straight from the channel
-		// tagdata so that we can process it all in one fell swoop.
-		$str = ee()->TMPL->tagdata;
-
 		// No variables?  No reason to continue...
 		if (strpos($str, '{') === FALSE)
 		{
@@ -201,12 +210,22 @@ class EE_relationship_tree_builder {
 		// 0 => full_match
 		// 1 => rel:pre:fix:
 		// 2 => tag:modified param="value"
+		$is_grid = ( ! empty($this->grid_relationship_names));
 
-		if ( ! preg_match_all("/".LD.'\/?((?:(?:'.$all_fields.'):?)+)\b([^}{]*)?'.RD."/", $str, $matches, PREG_SET_ORDER))
+		if ( ! $is_grid)
+		{
+			$regex = "/".LD.'\/?((?:(?:'.$all_fields.'):?)+)\b([^}{]*)?'.RD."/";
+		}
+		else
+		{
+			$force_parent = implode('|', $this->grid_relationship_names);
+			$regex = "/".LD.'\/?('.$force_parent.'(?:[:](?:(?:'.$all_fields.'):?)+)?)\b([^}{]*)?'.RD."/";
+		}
+
+		if ( ! preg_match_all($regex, $str, $matches, PREG_SET_ORDER))
 		{
 			return NULL;
 		}
-
 
 		$root = new QueryNode('__root__');
 
@@ -223,6 +242,13 @@ class EE_relationship_tree_builder {
 			$is_only_relationship	= (substr($relationship_prefix, -1) != ':');
 
 			$tag_name = rtrim($relationship_prefix, ':');
+			$in_grid = array_key_exists($relationship_prefix, $this->grid_relationship_ids);
+
+			if ($in_grid && $match[2])
+			{
+				$is_only_relationship = ($match[2][0] != ':');
+			}
+
 
 			// catch closing tags right away, we don't need them
 			if ($is_closing)
@@ -249,8 +275,9 @@ class EE_relationship_tree_builder {
 
 			// extract the full name and determining relationship
 			$last_colon = strrpos($tag_name, ':');
+			$in_grid = array_key_exists($relationship_prefix, $this->grid_relationship_ids);
 
-			if ($last_colon === FALSE)
+			if ($last_colon === FALSE || $in_grid)
 			{
 				$parent_node = $open_nodes['__root__'];
 				$determinant_relationship = $tag_name;
@@ -272,7 +299,7 @@ class EE_relationship_tree_builder {
 			// is parents then we need to do a new query for them
 			$node_class = 'ParseNode';
 
-			if ($determinant_relationship == 'parents' OR $tag_name == 'siblings')
+			if ($determinant_relationship == 'parents' OR $tag_name == 'siblings' OR $in_grid)
 			{
 				$node_class = 'QueryNode';
 			}
@@ -284,7 +311,8 @@ class EE_relationship_tree_builder {
 				'entry_ids'	=> array(),
 				'params'	=> $params,
 				'shortcut'	=> $is_only_relationship ? FALSE : $tag,
-				'open_tag'	=> $match[0]
+				'open_tag'	=> $match[0],
+				'in_grid'	=> $in_grid
 			));
 
 			if ($is_only_relationship)
@@ -315,10 +343,10 @@ class EE_relationship_tree_builder {
 	 * for all of the descendent parse nodes.
 	 *
 	 * @param	object	Root query node whose subtree to process
-	 * @param	array	Leave path array as created by _parse_leaves
+	 * @param	array	Raw unstructured database result from exp_relationships
 	 * @return	array	All unique entry ids processed.
 	 */
-	protected function _propagate_ids(QueryNode $root, array $leave_paths)
+	protected function _propagate_ids(QueryNode $root, array $db_result)
 	{
 		$parse_node_iterator = new RecursiveIteratorIterator(
 			new ParseNodeIterator(array($root)),
@@ -328,7 +356,7 @@ class EE_relationship_tree_builder {
 		$root_offset = 0;
 
 		$all_entry_ids = array();
-		$leaves = $this->_parse_leaves($leave_paths);
+		$leaves = $this->_parse_leaves($db_result);
 
 		foreach ($parse_node_iterator as $node)
 		{
@@ -390,6 +418,12 @@ class EE_relationship_tree_builder {
 					// no parameter, everything is fair game
 					$field_ids = array_keys($leaves[$depth]);
 				}
+			}
+			elseif ($node->in_grid)
+			{
+				$field_ids = array(
+					$this->grid_relationship_ids[$node->field_name]
+				);
 			}
 			else
 			{
@@ -467,7 +501,14 @@ class EE_relationship_tree_builder {
 					break;
 				}
 
-				$field_name = $this->relationship_field_names[$field_id];
+				if ($i == 0 && $leaf['L0_grid_col_id'])
+				{
+					$field_name = $this->grid_relationship_names[$field_id];
+				}
+				else
+				{
+					$field_name = $this->relationship_field_names[$field_id];
+				}
 
 				if ( ! isset($parsed_leaves[$i]))
 				{

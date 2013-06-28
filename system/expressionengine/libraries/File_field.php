@@ -41,7 +41,7 @@ class File_field {
 	}
 	
 	// ------------------------------------------------------------------------
-	
+
 	/**
 	 * Creates a file field
 	 * 
@@ -54,7 +54,7 @@ class File_field {
 	 * 		Either 'all' or 'image'
 	 * @return string Fully rendered file field
 	 */
-	public function field($field_name, $data = '', $allowed_file_dirs = 'all', $content_type = 'all', $view_type = 'list')
+	public function field($field_name, $data = '', $allowed_file_dirs = 'all', $content_type = 'all', $filebrowser = TRUE, $existing_limit = NULL)
 	{
 		// Load necessary library, helper, model and langfile
 		ee()->load->library('filemanager');
@@ -74,7 +74,12 @@ class File_field {
 		if ( ! empty($data) AND ($parsed_field = $this->parse_field($data)) !== FALSE)
 		{
 			$vars = $parsed_field;
-			$vars['filename'] = $vars['filename'].'.'.$vars['extension'];
+			
+			// Old format will not have extension broken out
+			if ( ! empty($vars['extension']))
+			{
+				$vars['filename'] = $vars['filename'].'.'.$vars['extension'];				
+			}
 		}
 		
 		// Retrieve all directories that are both allowed for this user and
@@ -85,14 +90,26 @@ class File_field {
 			$allowed_file_dirs,
 			$upload_dirs
 		);
+
+		if ($specified_directory != 'all')
+		{
+			$vars['upload_location_id'] = $specified_directory;
+		}
 		
 		// Get the thumbnail
 		$thumb_info = ee()->filemanager->get_thumb($vars['filename'], $vars['upload_location_id']);
 		$vars['thumb'] = $thumb_info['thumb'];
 		$vars['alt'] = $vars['filename'];
 		
+		//  Legacy paths will not have a filename but DO have a file_name
+		// Show it
+		if (empty($vars['filename']) && ! empty($vars['file_name']))
+		{
+			$vars['filename'] = $vars['file_name'];
+		}
+
 		// Create the hidden fields for the file and directory
-		$vars['hidden']	  = form_hidden($field_name.'_hidden', $vars['filename']);
+		$vars['hidden']	  = form_hidden($field_name.'_hidden_file', $vars['filename']);
 		$vars['hidden']	 .= form_hidden($field_name.'_hidden_dir', $vars['upload_location_id']);
 		
 		// Create a standard file upload field and dropdown for folks 
@@ -103,13 +120,61 @@ class File_field {
 			'data-content-type'	=> $content_type,
 			'data-directory'	=> $specified_directory
 		));
+
+		$vars['allowed_file_dirs'] = $allowed_file_dirs;
 		$vars['dropdown'] = form_dropdown($field_name.'_directory', $upload_dirs, $vars['upload_location_id']);
 
 		// Check to see if they have access to any directories to create an upload link
-		$vars['upload_link'] = (count($upload_dirs) > 0) ? '<a href="#" class="choose_file" data-directory="'.$specified_directory.'">'.lang('add_file').'</a>' : lang('directory_no_access');
+		$vars['upload_link'] = (count($upload_dirs) > 0) ? '<a href="#" class="choose_file'.($vars['filename'] ? ' js_hide' : '').'" data-directory="'.$specified_directory.'">'.lang('add_file').'</a>' : lang('directory_no_access');
+		$vars['undo_link'] = '<a href="#" class="undo_remove js_hide">'.lang('file_undo_remove').'</a>';
 
 		// If we have a file, show the thumbnail, filename and remove link
 		$vars['set_class'] = $vars['filename'] ? '' : 'js_hide';
+		$vars['filebrowser'] = $filebrowser;
+
+		$existing_files = NULL;
+
+		if ( ! $filebrowser && isset($existing_limit) && $specified_directory != 'all')
+		{
+			/*
+			if ($specified_directory == 'all')
+			{
+				$specified_directory = array();
+			}
+			*/
+
+			$options = array(
+				'order' => array('file_name' => 'asc')
+			);
+
+			if ($existing_limit) // 0 == all files
+			{
+				$options['limit'] = $existing_limit;
+			}
+
+			// Load files in from database
+			$files_from_db = ee()->file_model->get_files(
+				$specified_directory,
+				$options
+			);
+
+			$files = array(
+				'' => lang('select_existing')
+			);
+
+			// Put database files into list
+			if ($files_from_db['results'] !== FALSE)
+			{
+				foreach ($files_from_db['results']->result() as $file)
+				{
+					$files[$file->file_name] = $file->file_name;
+				}
+			}
+
+			$existing_files = form_dropdown($field_name.'_existing', $files);
+		}
+
+		$vars['existing_files'] = $existing_files;
 
 		return ee()->load->ee_view('_shared/file/field', $vars, TRUE);
 	}
@@ -150,7 +215,8 @@ class File_field {
 		// No? Make sure we at least have a trigger and a callback
 		elseif (isset($config['trigger'], $config['callback']))
 		{
-			$field_name = (isset($config['field_name'])) ? $config['field_name'].', ' : '';
+			 $field_name = (isset($config['field_name'])) ? "'{$config['field_name']}'," : '';  
+			
 			$settings = (isset($config['settings'])) ? $config['settings'].', ' : '';
 			
 			ee()->javascript->ready("
@@ -177,16 +243,18 @@ class File_field {
 	 * @param string $data The data in the field we're validating
 	 * @param string $field_name The name of the field we're validating
 	 * @param string $required Set to 'y' if the field is required
+	 * @param array  $grid Array of data needed to validate a Grid field
 	 * @return array Associative array containing ONLY the name of the 
-	 * 		file uploaded
+	 * 		file uploaded or an empty value and an error if not valid
 	 */
-	public function validate($data, $field_name, $required = 'n')
+	public function validate($data, $field_name, $required = 'n', $grid = array())
 	{
 		$dir_field		= $field_name.'_directory';
-		$hidden_field	= $field_name.'_hidden';
-		$hidden_dir		= (ee()->input->post($field_name.'_hidden_dir')) ? ee()->input->post($field_name.'_hidden_dir') : '';
+		$existing_field = $field_name.'_existing';
+		$hidden_field	= $field_name.'_hidden_file';
+		$hidden_dir		= (ee()->input->post($field_name.'_hidden_dir')) ? ee()->input->post($field_name.'_hidden_dir') : ee()->input->post($field_name.'_directory');
 		$allowed_dirs	= array();
-		
+
 		// Default to blank - allows us to remove files
 		$_POST[$field_name] = '';
 		
@@ -195,12 +263,17 @@ class File_field {
 		
 		// Directory selected - switch
 		$filedir = (ee()->input->post($dir_field)) ? ee()->input->post($dir_field) : '';
+
+		if ( ! $filedir)
+		{
+			$filedir = $hidden_dir;
+		}
 		
 		foreach($upload_directories as $row)
 		{
 			$allowed_dirs[] = $row['id'];
 		}
-		
+
 		// Upload or maybe just a path in the hidden field?
 		if (isset($_FILES[$field_name]) && $_FILES[$field_name]['size'] > 0 AND in_array($filedir, $allowed_dirs))
 		{
@@ -216,41 +289,64 @@ class File_field {
 				$_POST[$field_name] = $data['file_name'];
 			}
 		}
+		elseif (ee()->input->post($existing_field))
+		{
+			$_POST[$field_name] = $_POST[$existing_field];
+		}
 		elseif (ee()->input->post($hidden_field))
 		{
 			$_POST[$field_name] = $_POST[$hidden_field];
 		}
-		
+
 		$_POST[$dir_field] = $filedir;
 		
 		unset($_POST[$hidden_field]);
 		
 		// If the current file directory is not one the user has access to
 		// make sure it is an edit and value hasn't changed
-		
 		if ($_POST[$field_name] && ! in_array($filedir, $allowed_dirs))
 		{
-			if ($filedir != '' OR ( ! ee()->input->post('entry_id') OR ee()->input->post('entry_id') == ''))
+			// Some legacy fields will have only a full path specified
+			if ($filedir == '')
 			{
-				return lang('directory_no_access');
+				unset($_POST[$field_name.'_hidden_dir']);
+				return array('value' => $_POST[$field_name]);			
 			}
-			
+
+			if ( ! ee()->input->post('entry_id') OR ee()->input->post('entry_id') == '')
+			{
+				return array('value' => '', 'error' => lang('directory_no_access'));
+			}
+
 			// The existing directory couldn't be selected because they didn't have permission to upload
 			// Let's make sure that the existing file in that directory is the one that's going back in
 			
 			$eid = (int) ee()->input->post('entry_id');
 			
 			ee()->db->select($field_name);
-			$query = ee()->db->get_where('channel_data', array('entry_id'=>$eid));	
+			$table = 'channel_data';
+
+			// Different DB selection criteria for Grid
+			if ( ! empty($grid['grid_row_id']))
+			{
+				ee()->db->where('row_id', $grid['grid_row_id']);
+				$table = 'grid_field_'.$grid['grid_field_id'];
+			}
+			else
+			{
+				ee()->db->where('entry_id', $eid);
+			}
+
+			$query = ee()->db->get($table);	
 
 			if ($query->num_rows() == 0)
 			{
-				return lang('directory_no_access');
+				return array('value' => '', 'error' => lang('directory_no_access'));
 			}
 			
 			if ('{filedir_'.$hidden_dir.'}'.$_POST[$field_name] != $query->row($field_name))
 			{
-				return lang('directory_no_access');
+				return array('value' => '', 'error' => lang('directory_no_access'));
 			}
 			
 			// Replace the empty directory with the existing directory
@@ -259,7 +355,7 @@ class File_field {
 		
 		if ($required == 'y' && ! $_POST[$field_name])
 		{
-			return lang('required');
+			return array('value' => '', 'error' => lang('required'));
 		}
 		
 		unset($_POST[$field_name.'_hidden_dir']);
@@ -457,6 +553,7 @@ class File_field {
 			$file = array(
 				'url'					=> $data,
 				'file_name'				=> $data,
+				'filename'				=> '',
 				'extension'				=> '',
 				'path'					=> '',
 				'upload_location_id'	=> '',
@@ -635,8 +732,6 @@ class File_field {
 				'files/publish_fields'
 			),
 			'plugin'	=> array(
-				'scrollable',
-				'scrollable.navigator',
 				'ee_filebrowser',
 				'ee_fileuploader',
 				'tmpl'

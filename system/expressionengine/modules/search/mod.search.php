@@ -310,6 +310,7 @@ class Search {
 			).'/'.$hash.'/'
 		);
 		
+		ee()->security->restore_xid();
 		return ee()->functions->redirect($path);
 	}
 	

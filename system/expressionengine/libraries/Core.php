@@ -243,6 +243,12 @@ class EE_Core {
 		{
 			define('PATH_CP_THEME', PATH_THEMES.'cp_themes/');	// theme path
 		}
+
+		if (extension_loaded('newrelic'))
+		{
+			ee()->load->library('newrelic');
+			ee()->newrelic->name_transaction();
+		}
 	}
 
 	// --------------------------------------------------------------------
@@ -262,7 +268,7 @@ class EE_Core {
 			'blacklist', 'channel', 'comment', 'commerce', 'email', 'emoticon',
 			'file', 'forum', 'ip_to_nation', 'jquery', 'mailinglist', 'member',
 			'metaweblog_api', 'moblog', 'pages', 'query', 'referrer', 'rss', 'rte',
-			'safecracker', 'search', 'simple_commerce', 'stats', 'wiki'
+			'search', 'simple_commerce', 'stats', 'wiki'
 		);
 		$this->standard_modules = array(
 			'blacklist', 'email', 'forum', 'ip_to_nation', 'mailinglist',
@@ -327,6 +333,20 @@ class EE_Core {
 		 */
 
 		ee()->input->filter_get_data(REQ);
+
+		// Secure forms stuff
+		if( ! ee()->security->have_valid_xid())
+		{
+			if (REQ == 'CP')
+			{
+				ee()->session->set_flashdata('message_failure', lang('invalid_action'));
+				ee()->functions->redirect(SELF);
+			}
+			else
+			{
+				ee()->output->show_user_error('general', array(lang('invalid_action')));
+			}
+		}
 		
 		// Update system stats
 		ee()->load->library('stats');
@@ -478,12 +498,6 @@ class EE_Core {
 		// Load common helper files
 		ee()->load->helper(array('url', 'form', 'quicktab'));
 
-		// Secure forms stuff
-		if( ! ee()->security->have_valid_xid())
-		{
-			return ee()->functions->redirect(BASE);
-		}
-		
 		// Certain variables will be included in every page, so we make sure they are set here
 		// Prevents possible PHP errors, if a developer forgets to set it explicitly.
 		ee()->cp->set_default_view_variables();
