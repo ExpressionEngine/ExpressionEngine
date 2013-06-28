@@ -2126,19 +2126,19 @@ class Admin_content extends CP_Controller {
 
 		$_POST['site_id'] = $this->config->item('site_id');
 
+		$category_data = array(
+			'group_id'			=> $group_id,
+			'cat_name'			=> $this->input->post('cat_name'),
+			'cat_url_title'		=> $this->input->post('cat_url_title'),
+			'cat_description'	=> $this->input->post('cat_description'),
+			'cat_image'			=> $this->input->post('cat_image'),
+			'parent_id'			=> $this->input->post('parent_id'),
+			'cat_order'			=> 1, // Default to the new category appearing first
+			'site_id'			=> $this->input->post('site_id')
+		);
+
 		if ($edit == FALSE)
 		{
-			$category_data = array(
-							'group_id'			=> $group_id,
-							'cat_name'			=> $this->input->post('cat_name'),
-							'cat_url_title'		=> $this->input->post('cat_url_title'),
-							'cat_description'	=> $this->input->post('cat_description'),
-							'cat_image'			=> $this->input->post('cat_image'),
-							'parent_id'			=> $this->input->post('parent_id'),
-							'cat_order'			=> 1, // Default to the new category appearing first
-							'site_id'			=> $this->input->post('site_id')
-			);
-
 			$this->db->insert('categories', $category_data);
 			$cat_id = $this->db->insert_id();
 
@@ -2278,6 +2278,16 @@ class Admin_content extends CP_Controller {
 		{
 			$this->db->query($this->db->update_string('exp_category_field_data', $fields, array('cat_id' => $cat_id)));
 		}
+
+		// -------------------------------------------
+		// 'category_save' hook.
+		//
+		if (ee()->extensions->active_hook('category_save') === TRUE)
+		{
+			ee()->extensions->call('category_save', $cat_id, $category_data);
+		}
+		//
+		// -------------------------------------------
 
 		$this->session->set_flashdata('message_success', lang('preference_updated'));
 		$this->functions->redirect(BASE.AMP.'C=admin_content'.AMP.'M=category_editor'.AMP."group_id={$group_id}");
