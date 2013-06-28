@@ -133,7 +133,7 @@ class Channel_form_lib
 
 		if (ee()->extensions->active_hook('channel_form_entry_form_absolute_start') === TRUE)
 		{
-			ee()->extensions->call('channel_form_entry_form_absolute_start');
+			ee()->extensions->call('channel_form_entry_form_absolute_start', $this);
 			if (ee()->extensions->end_script === TRUE) return;
 		}
 
