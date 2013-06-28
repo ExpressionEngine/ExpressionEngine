@@ -535,6 +535,8 @@ class Grid_ft extends EE_Fieldtype {
 
 	public function validate_settings($data)
 	{
+		$this->_load_grid_lib();
+
 		ee()->form_validation->set_rules(
 			array(
 				array(
@@ -570,8 +572,6 @@ class Grid_ft extends EE_Fieldtype {
 	 */
 	public function _validate_grid($data)
 	{
-		$this->_load_grid_lib();
-
 		$validate = ee()->grid_lib->validate_settings(array('grid' => ee()->input->post('grid')));
 
 		if ($validate !== TRUE)
