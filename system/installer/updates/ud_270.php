@@ -268,7 +268,7 @@ class Updater {
 			}
 
 			// and put them into the new table
-			ee()->insert_batch('channel_form_settings', $db_settings);
+			ee()->db->insert_batch('channel_form_settings', $db_settings);
 		}
 
 		// drop the extension

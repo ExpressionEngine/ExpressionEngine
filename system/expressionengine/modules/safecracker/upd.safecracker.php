@@ -4,7 +4,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		EllisLab Dev Team, 
+ * @author		EllisLab Dev Team,
  * 		- Original Development by Barrett Newton -- http://barrettnewton.com
  * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
@@ -16,7 +16,7 @@
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine SafeCracker Module Update File 
+ * ExpressionEngine SafeCracker Module Update File
  *
  * @package		ExpressionEngine
  * @subpackage	Modules
@@ -28,10 +28,10 @@
 class Safecracker_upd
 {
 	public $version = '2.1';
-	
+
 	/**
 	 * Safecracker_upd
-	 * 
+	 *
 	 * @access	public
 	 * @return	void
 	 */
@@ -41,10 +41,10 @@ class Safecracker_upd
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * install
-	 * 
+	 *
 	 * @return	void
 	 */
 	public function install()
@@ -53,12 +53,12 @@ class Safecracker_upd
 			'exp_modules',
 			array(
 				'module_name' => 'Safecracker',
-				'module_version' => $this->version, 
+				'module_version' => $this->version,
 				'has_cp_backend' => 'y',
 				'has_publish_fields' => 'n'
 			)
 		);
-		
+
 		ee()->db->insert(
 			'exp_actions',
 			array(
@@ -66,7 +66,7 @@ class Safecracker_upd
 				'method' => 'submit_entry',
 			)
 		);
-		
+
 		ee()->db->insert(
 			'exp_actions',
 			array(
@@ -74,7 +74,7 @@ class Safecracker_upd
 				'method' => 'combo_loader',
 			)
 		);
-		
+
 
 		// Add Extension Hook
 		ee()->db->insert('extensions', array(
@@ -92,36 +92,34 @@ class Safecracker_upd
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * validate
-	 * 
+	 *
 	 * @return	void
 	 */
 	public function validate()
 	{
-		ee()->lang->loadfile('safecracker');
-		
 		if (ee()->config->item('allow_extensions') != 'y')
 		{
 			//ee()->output->show_user_error('general', lang('safecracker_extensions_disabled'));
 		}
-		
+
 		//  Added to core with 2.1.5
 
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * uninstall
-	 * 
+	 *
 	 * @return	void
 	 */
 	public function uninstall()
 	{
 		$query = ee()->db->get_where('modules', array('module_name' => 'Safecracker'));
-		
+
 		if ($query->row('module_id'))
 		{
 			ee()->db->where('module_id', $query->row('module_id'));
@@ -133,7 +131,7 @@ class Safecracker_upd
 
 		ee()->db->where('class', 'Safecracker');
 		ee()->db->delete('actions');
-		
+
 		// Disable extension
 		ee()->db->delete('extensions', array('class' => 'Safecracker_ext'));
 
@@ -141,10 +139,10 @@ class Safecracker_upd
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * update
-	 * 
+	 *
 	 * @param	mixed $current = ''
 	 * @return	void
 	 */
@@ -154,7 +152,7 @@ class Safecracker_upd
 		{
 			return FALSE;
 		}
-		
+
 		if (version_compare($current, '1.0.3', '<'))
 		{
 			ee()->db->insert(
@@ -165,13 +163,13 @@ class Safecracker_upd
 				)
 			);
 		}
-		
+
 		if (version_compare($current, '2.1', '<'))
 		{
 			// Update extension version number
 			ee()->db->update('extensions', array('version' => $this->version), array('class' => 'Safecracker_ext'));
 		}
-		
+
 		return TRUE;
 	}
 }
