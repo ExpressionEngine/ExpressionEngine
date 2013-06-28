@@ -1315,6 +1315,22 @@ class EE_Schema {
 			KEY `member_id` (`member_id`)
 		)";
 
+		$Q[] = "CREATE TABLE `exp_grid_columns` (
+			`col_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+			`field_id` int(10) unsigned DEFAULT NULL,
+			`col_order` int(3) unsigned DEFAULT NULL,
+			`col_type` varchar(50) DEFAULT NULL,
+			`col_label` varchar(50) DEFAULT NULL,
+			`col_name` varchar(32) DEFAULT NULL,
+			`col_instructions` text,
+			`col_required` char(1) DEFAULT NULL,
+			`col_search` char(1) DEFAULT NULL,
+			`col_width` int(3) unsigned DEFAULT NULL,
+			`col_settings` text,
+			PRIMARY KEY (`col_id`),
+			KEY `field_id` (`field_id`)
+		)";
+
 		// --------------------------------------------------------------------
 		// --------------------------------------------------------------------
 		//  Specialty Templates
@@ -1406,7 +1422,7 @@ class EE_Schema {
 		}
 
 		// Default field types
-		$default_fts = array('select', 'text', 'textarea', 'date', 'file', 'multi_select', 'checkboxes', 'radio', 'relationship', 'rte');
+		$default_fts = array('select', 'text', 'textarea', 'date', 'file', 'grid', 'multi_select', 'checkboxes', 'radio', 'relationship', 'rte');
 
 		foreach($default_fts as $name)
 		{

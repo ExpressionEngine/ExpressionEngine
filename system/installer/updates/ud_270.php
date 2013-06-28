@@ -45,7 +45,8 @@ class Updater {
 				'_rename_safecracker_db',
 				'_rename_safecracker_tags',
 				'_consolidate_file_fields',
-				'_update_relationships_for_grid'
+				'_update_relationships_for_grid',
+				'_install_grid'
 			)
 		);
 
@@ -468,6 +469,86 @@ class Updater {
 		);
 
 		ee()->smartforge->add_key('relationships', 'grid_row_id');
+	}
+
+	// -------------------------------------------------------------------
+
+	/**
+	 * Add the new columns for relationships in a grid
+	 *
+	 * @return void
+	 */
+	protected function _install_grid()
+	{
+		$grid_installed = ee()->db->get_where('fieldtypes', array('name' => 'grid'));
+
+		if ($grid_installed->num_rows() == 0)
+		{
+			ee()->db->insert('fieldtypes',
+				array(
+					'name'					=> 'grid',
+					'version'				=> '1.0',
+					'settings'				=> 'YTowOnt9',
+					'has_global_settings'	=> 'n',
+				)
+			);
+		}
+
+		$columns = array(
+			'col_id' => array(
+				'type'				=> 'int',
+				'constraint'		=> 10,
+				'unsigned'			=> TRUE,
+				'auto_increment'	=> TRUE
+			),
+			'field_id' => array(
+				'type'				=> 'int',
+				'constraint'		=> 10,
+				'unsigned'			=> TRUE
+			),
+			'col_order' => array(
+				'type'				=> 'int',
+				'constraint'		=> 3,
+				'unsigned'			=> TRUE
+			),
+			'col_type' => array(
+				'type'				=> 'varchar',
+				'constraint'		=> 50
+			),
+			'col_label' => array(
+				'type'				=> 'varchar',
+				'constraint'		=> 50
+			),
+			'col_name' => array(
+				'type'				=> 'varchar',
+				'constraint'		=> 32
+			),
+			'col_instructions' => array(
+				'type'				=> 'text'
+			),
+			'col_required' => array(
+				'type'				=> 'char',
+				'constraint'		=> 1
+			),
+			'col_search' => array(
+				'type'				=> 'char',
+				'constraint'		=> 1
+			),
+			'col_width' => array(
+				'type'				=> 'int',
+				'constraint'		=> 3,
+				'unsigned'			=> TRUE
+			),
+			'col_settings' => array(
+				'type'				=> 'text'
+			)
+		);
+
+		ee()->load->dbforge();
+		ee()->dbforge->add_field($columns);
+		ee()->dbforge->add_key('col_id', TRUE);
+		ee()->dbforge->add_key('field_id');
+		ee()->smartforge->create_table('grid_columns');
 	}
 }
 /* END CLASS */
