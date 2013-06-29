@@ -389,9 +389,9 @@ class Api_channel_fields extends Api {
 		$ft =& $this->field_types[$this->field_type];
 
 		// Data is universally the first parameter
-		if (count($parameters))
+		if (count($parameters) && $first = key($parameters))
 		{
-			$parameters[0] = $this->custom_field_data_hook($ft, $method, $parameters[0]);
+			$parameters[$first] = $this->custom_field_data_hook($ft, $method, $parameters[$first]);
 		}
 
 		$res = call_user_func_array(array(&$ft, $method), $parameters);
