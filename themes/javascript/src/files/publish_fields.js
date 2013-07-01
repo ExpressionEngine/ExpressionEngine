@@ -169,8 +169,8 @@ EE.namespace('EE.publish.file_browser');
 		container.find('.choose_file').hide();
 		container.find('.undo_remove').hide();
 
-		container.find("input[name="+field+"_hidden_file]").val(file.file_name);
-		container.find("input[name="+field+"_hidden_dir], select[name="+field+"_directory]").val(file.upload_location_id);
+		container.find('input[name*="_hidden_file"]').val(file.file_name);
+		container.find('input[name*="_hidden_dir"], select[name*="_directory"]').val(file.upload_location_id);
 	}
 
 	/**
