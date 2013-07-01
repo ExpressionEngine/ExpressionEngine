@@ -148,7 +148,7 @@ p.grid_error {
 
 #grid_col_settings_container {
 	margin-right: 97px;
-	overflow: scroll;
+	overflow-x: scroll;
 	padding-bottom: 15px;
 	width: 800px
 }

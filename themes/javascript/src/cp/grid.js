@@ -63,9 +63,7 @@ Grid.Publish.prototype = {
 		this._bindAddButton();
 		this._bindDeleteButton();
 		this._toggleRowManipulationButtons();
-
-		// Fire display event after a short delay to allow scripts to catch up
-		window.setTimeout(this._fieldDisplay(), 500);
+		this._fieldDisplay();
 
 		// Disable input elements in our blank template container so they
 		// don't get submitted on form submission
@@ -785,9 +783,9 @@ EE.grid_settings = function(settings)
 	return new Grid.Settings(settings);
 };
 
-if (typeof _ !== 'undefined')
+if (typeof _ !== 'undefined' && EE.grid_cache !== 'undefined')
 {
-	_.each(EE.publish.grid_cache, function(args)
+	_.each(EE.grid_cache, function(args)
 	{
 		Grid.bind.apply(Grid, args);
 	});
