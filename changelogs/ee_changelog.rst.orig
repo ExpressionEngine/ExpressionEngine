@@ -1,0 +1,115 @@
+#-------------------------------------------------------------------------#
+# Changes to ExpressionEngine since the last Build / Version release
+#-------------------------------------------------------------------------#
+#             THIS IS A NON-PUBLIC FILE
+#       Move all changes to User Guide upon public release
+#               /changelog.html
+#-------------------------------------------------------------------------#
+# Format (ReST):
+#   - Brief public description of change
+#
+# Remember to wrap your lines at < 75 characters (that's right, here-> |)
+# Please keep bug fixes separate from features and modifications.
+#-------------------------------------------------------------------------#
+
+
+#-------------------------------------------------------------------------#
+# MAJOR RELEASE
+#-------------------------------------------------------------------------#
+
+
+PASCAL:
+
+
+ROBIN:
+
+
+WES:
+
+- Added Markdown as a plugin and text formatting option
+
+
+DEREK:
+
+
+KEVIN:
+
+
+KSMITH:
+
+
+DDECKER:
+
+
+DANIEL:
+
+
+REACTOR:
+
+
+
+#-------------------------------------------------------------------------#
+# STABILITY RELEASE
+#-------------------------------------------------------------------------#
+
+
+PASCAL:
+
+
+ROBIN:
+
+<<<<<<< HEAD
+- Fixed a bug (#19353) where a PHP error could occur when switch database
+  debug settings in the control panel.
+- Fixed a bug (#19352) where new sites had incorrect forgotten password
+  instructions added to their specialty templates.
+- Fixed a bug (#19363) where a JavaScript error occurred on SafeCracker forms.
+- Fixed a bug (#19360) where BBCode could create bad links when rank denial
+  was on and all HTML was allowed.
+- Fixed a bug (#19367) where a MySQL error could occur when adding a new field
+  if no member groups were included in the publish author list.
+- Fixed a bug (#19374) where a PHP error could occur using parent relationship
+  tags.
+- Fixed a bug (#19378) where control panel redirects to the homepage could be
+  missing an ampersand.
+- Added a second file type match to the mime configuration for docx files.
+- Fixed a bug (#19375) where the File Manager directory dropdown was not
+  limited to the current site.
+- Fixed a bug (#19371) where removing the site themes directory would cause a
+  PHP error during installation.
+- Fixed a bug (#19398) where a MySQL error could occur when editing an entry
+  with a relationship field sorted by date.
+- Fixed a bug (#19382) where the 'Can change the author name' member group
+  permission was not properly implemented when editing entries by others.
+- Fixed a bug (#19401) where a PHP notice of an undefined constant REQ in
+  Core.php could occur.
+- Fixed a bug (#19410) where an error was falsely triggered when editing in
+  SafeCracker with the author_only parameter on.
+- Fixed a bug (#19406) where a PHP error could occur when viewing someone
+  else's member profile on the frontend.
+
+=======
+>>>>>>> develop
+
+WES:
+
+
+DEREK:
+
+
+KEVIN:
+
+
+KSMITH:
+
+
+DDECKER:
+
+
+DANIEL:
+
+
+REACTOR:
+
+
+EOF MARKER: This line helps prevent merge conflicts when things are added on the bottoms of lists

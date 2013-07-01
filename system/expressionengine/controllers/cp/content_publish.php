@@ -669,14 +669,16 @@ class Content_publish extends CP_Controller {
 				}
 				else
 				{
-					$r .= $this->typography->parse_type($resrow[$key],
-											 array(
-														'text_format'	=> $resrow['field_ft_'.$expl['1']],
-														'html_format'	=> $channel_info->channel_html_formatting,
-														'auto_links'	=> $channel_info->channel_auto_link_urls,
-														'allow_img_url' => $channel_info->channel_allow_img_urls,
-													)
-											);
+					ee()->load->library('api');
+					ee()->api->instantiate('channel_fields');
+					ee()->api_channel_fields->fetch_custom_channel_fields();
+					ee()->api_channel_fields->setup_handler($val);
+					ee()->api_channel_fields->set_settings($expl['1'], array(
+						'field_type' => $val
+					));
+					ee()->api_channel_fields->apply('_init', array(array('field_id' =>$expl['1'], 'row' => $resrow)));
+					$data = ee()->api_channel_fields->apply('pre_process', array($resrow[$key]));
+					$r .= ee()->api_channel_fields->apply('replace_tag', array('data' => $data));
 				}
 			}
 		}
