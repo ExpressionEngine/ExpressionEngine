@@ -491,7 +491,7 @@ var Grid = {
 	bind: function() {
 		EE.grid_cache.push(arguments);
 	}
-}
+};
 
 // First step in deprecating scripts in add_to_head().
 // Next release the message will be more visible/annoying.
