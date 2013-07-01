@@ -16,7 +16,7 @@ $.ee_filebrowser();
 // Make sure we can create these methods without issues
 EE.namespace('EE.publish.file_browser');
 
-(function($) {	
+(function($) {
 	/**
 	 * Fires up the filebrowser for text areas
 	 */
@@ -28,13 +28,13 @@ EE.namespace('EE.publish.file_browser');
 				props = '',
 				open = '',
 				close = '';
-				
+
 			button_id = $(this).parent().attr('class').match(/id(\d+)/);
 			if (button_id != null)
 			{
 				button_id = button_id[1];
 			}
-			
+
 			// A bit of working around various textareas, text inputs, tec
 			if ($(this).closest("#markItUpWrite_mode_textarea").length) {
 				textareaId = "write_mode_textarea";
@@ -44,11 +44,11 @@ EE.namespace('EE.publish.file_browser');
 
 			if (textareaId != undefined) {
 				textarea = $("#"+textareaId);
-				textarea.focus();		
+				textarea.focus();
 			}
 
 			// We also need to allow file insertion into text inputs (vs textareas) but markitup
-			// will not accommodate this, so we need to detect if this request is coming from a 
+			// will not accommodate this, so we need to detect if this request is coming from a
 			// markitup button or another field type.
 
 			// Fact is - markitup is actually pretty crappy for anything that doesn't specifically
@@ -67,9 +67,9 @@ EE.namespace('EE.publish.file_browser');
 
 				open = EE.upload_directories[file.upload_location_id].pre_format;
 				close = EE.upload_directories[file.upload_location_id].post_format;
-				
+
 				image_tag = (button_id == null) ? EE.filebrowser.image_tag : EE.filebrowser['image_tag_'+button_id];
-				
+
 				// Include any user additions before or after the image link
 				replace = image_tag.replace(/src="(.*)\[!\[Link:!:http:\/\/\]!\](.*)"/, 'src="$1{filedir_'+file.upload_location_id+'}'+file.file_name+'$2"');
 
@@ -115,11 +115,11 @@ EE.namespace('EE.publish.file_browser');
 			}
 		});
 	};
-	
+
 	// @todo rewrite dependencies and remove
 	function magicMarkups(string) {
 		var abort = false;
-		
+
 		if (string) {
 			string = string.toString();
 			string = string.replace(/\(\!\(([\s\S]*?)\)\!\)/g,
@@ -150,7 +150,7 @@ EE.namespace('EE.publish.file_browser');
 		}
 		return "";
 	}
-	
+
 	/**
 	 * Changes the hidden inputs, thumbnail and file name when a file is selected
 	 * @private
@@ -169,20 +169,20 @@ EE.namespace('EE.publish.file_browser');
 		container.find('.choose_file').hide();
 		container.find('.undo_remove').hide();
 
-		container.find("input[name="+field+"_hidden_file]").val(file.file_name);
-		container.find("input[name="+field+"_hidden_dir], select[name="+field+"_directory]").val(file.upload_location_id);
+		container.find('input[name*="_hidden_file"]').val(file.file_name);
+		container.find('input[name*="_hidden_dir"], select[name*="_directory"]').val(file.upload_location_id);
 	}
-	
+
 	/**
 	 * Given a selector and context, creates file browser triggers for multiple elements
 	 * @private
-	 * @param {String} selector The jQuery selector you're looking for, 
+	 * @param {String} selector The jQuery selector you're looking for,
 	 *		representing the link to open the file browser
 	 * @param {String} selector The jQuery selector representing the context in
 	 *		which to search for the selector
 	 */
 	function add_trigger(selector, context) {
-		// Look for every file input on the publish form and establish the 
+		// Look for every file input on the publish form and establish the
 		// file browser trigger. Also establishes the remove file handler.
 		$(selector, context).each(function() {
 			var container = $(this).closest('.file_field'),
