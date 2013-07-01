@@ -146,7 +146,7 @@ class File_ft extends EE_Fieldtype {
 							return '';
 						});
 						container.find(".file_set").hide();
-						container.find('.undo_remove').show();
+						container.find('.sub_filename a').show();
 						fileselector.show();
 						container.append(remove);
 
@@ -158,7 +158,7 @@ class File_ft extends EE_Fieldtype {
 							return last_value.length ? last_value[i] : '';
 						});
 						container.find(".file_set").show();
-						container.find('.undo_remove').hide();
+						container.find('.sub_filename a').hide();
 						fileselector.hide();
 						remove.remove();
 
