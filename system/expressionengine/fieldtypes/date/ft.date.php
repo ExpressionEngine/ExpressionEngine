@@ -31,7 +31,7 @@ class Date_ft extends EE_Fieldtype {
 
 	var $has_array_data = FALSE;
 
-	
+
 	function save($data)
 	{
 		if ( ! is_numeric($data))
@@ -63,7 +63,7 @@ class Date_ft extends EE_Fieldtype {
 
 		return $data;
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -86,9 +86,9 @@ class Date_ft extends EE_Fieldtype {
 
 		return array('value' => $data);
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Display Field
 	 *
@@ -107,7 +107,7 @@ class Date_ft extends EE_Fieldtype {
 			$data = decode_multi_field($field_data);
 
 			// Grid field stores timestamp and timezone in one field
-			if ( ! empty($data))
+			if ( ! empty($data) && isset($data[1]))
 			{
 				$field_data = $data[0];
 				$this->settings['field_dt'] = $data[1];
@@ -156,16 +156,16 @@ class Date_ft extends EE_Fieldtype {
 
 			$date = $field_data;
 		}
-		
+
 		ee()->javascript->set_global('date.include_seconds', ee()->config->item('include_seconds'));
-		
+
 		// Note- the JS will automatically localize the default date- but not necessarily in a way we want
 		// Hence we adjust default date to compensate for the coming localization
 		ee()->javascript->output('
 			var d = new Date();
 			var jsCurrentUTC = d.getTimezoneOffset()*60;
 			var adjustedDefault = 1000*('.$date.'+jsCurrentUTC);
-		
+
 			$("#'.$this->field_name.'").not(".grid_field_container #'.$this->field_name.'").datepicker({
 				constrainInput: false,
 				dateFormat: $.datepicker.W3C + EE.date_obj_time,
@@ -176,7 +176,7 @@ class Date_ft extends EE_Fieldtype {
 		if ( ! ee()->session->cache(__CLASS__, 'grid_js_loaded'))
 		{
 			ee()->javascript->output('
-				
+
 			Grid.bind("date", "display", function(cell)
 			{
 				var d = new Date();
@@ -185,14 +185,14 @@ class Date_ft extends EE_Fieldtype {
 
 				field = cell.find(".ee_datepicker");
 				field.removeAttr("id");
-				
+
 				cell.find(".ee_datepicker").datepicker({
 					constrainInput: false,
 					dateFormat: $.datepicker.W3C + EE.date_obj_time,
 					defaultDate: new Date(adjustedDefault)
 				});
 			});
-			
+
 			');
 
 			ee()->session->set_cache(__CLASS__, 'grid_js_loaded', TRUE);
@@ -235,14 +235,14 @@ class Date_ft extends EE_Fieldtype {
 
 		return $r;
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	function pre_process($data)
 	{
 		return $data;
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	function replace_tag($date, $params = array(), $tagdata = FALSE)
@@ -274,7 +274,7 @@ class Date_ft extends EE_Fieldtype {
 
 			return ee()->localize->format_date(
 				$params['format'],
-				$date[0], 
+				$date[0],
 				$localize
 			);
 		}
@@ -304,7 +304,7 @@ class Date_ft extends EE_Fieldtype {
 		$data['field_fmt'] = 'none';
 		$data['field_show_fmt'] = 'n';
 		$_POST['update_formatting'] = 'y';
-		
+
 		return $data;
 	}
 
@@ -318,7 +318,7 @@ class Date_ft extends EE_Fieldtype {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	function settings_modify_column($data)
 	{
 		$fields['field_id_'.$data['field_id']] = array(
@@ -330,8 +330,8 @@ class Date_ft extends EE_Fieldtype {
 		$fields['field_dt_'.$data['field_id']] = array(
 			'type' 			=> 'VARCHAR',
 			'constraint'	=> 50
-		);		
-		
+		);
+
 		return $fields;
 	}
 
