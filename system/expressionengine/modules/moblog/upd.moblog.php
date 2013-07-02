@@ -276,12 +276,9 @@ class Moblog_upd {
 		ee()->load->dbforge();
 		
 		// Delete old fields
-		foreach($existing_fields AS $existing_field)
+		foreach($columns AS $column)
 		{
-			if (array_key_exists($existing_field, $deleted_fields))
-			{
-				ee()->dbforge->drop_column('moblogs', $existing_field);
-			}
+			ee()->dbforge->drop_column('moblogs', $column);
 		}
 	}	
 
