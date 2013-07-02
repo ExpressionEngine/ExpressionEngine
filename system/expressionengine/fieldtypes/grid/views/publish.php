@@ -25,13 +25,15 @@
 									data-column-id="<?=$column['col_id']?>"
 									data-row-id="<?=$row['row_id']?>">
 
-									<?php if ($column == end($columns)):?>
-										<a href="#" class="grid_button_delete" title="<?=lang('grid_delete_row')?>"><?=lang('grid_delete_row')?></a>
-									<?php endif ?>
-									<?=$row['col_id_'.$column['col_id']]?>
-									<?php if (isset($row['col_id_'.$column['col_id'].'_error'])): ?>
-										<p class="grid_error"><?=$row['col_id_'.$column['col_id'].'_error']?></p>
-									<?php endif ?>
+									<div class="grid_cell">
+										<?php if ($column == end($columns)):?>
+											<a href="#" class="grid_button_delete" title="<?=lang('grid_delete_row')?>"><?=lang('grid_delete_row')?></a>
+										<?php endif ?>
+										<?=$row['col_id_'.$column['col_id']]?>
+										<?php if (isset($row['col_id_'.$column['col_id'].'_error'])): ?>
+											<p class="grid_error"><?=$row['col_id_'.$column['col_id'].'_error']?></p>
+										<?php endif ?>
+									</div>
 
 								</td>
 							<?php endforeach ?>
@@ -44,11 +46,13 @@
 								data-fieldtype="<?=$column['col_type']?>"
 								data-column-id="<?=$column['col_id']?>">
 
-								<?php if ($column == end($columns)):?>
-									<a href="#" class="grid_button_delete" title="<?=lang('grid_delete_row')?>"><?=lang('grid_delete_row')?></a>
-								<?php endif ?>
-								<?=$blank_row['col_id_'.$column['col_id']]?>
-								
+								<div class="grid_cell">
+									<?php if ($column == end($columns)):?>
+										<a href="#" class="grid_button_delete" title="<?=lang('grid_delete_row')?>"><?=lang('grid_delete_row')?></a>
+									<?php endif ?>
+									<?=$blank_row['col_id_'.$column['col_id']]?>
+								</div>
+
 							</td>
 						<?php endforeach ?>
 					</tr>

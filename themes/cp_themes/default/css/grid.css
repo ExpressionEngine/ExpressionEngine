@@ -38,9 +38,12 @@ table.grid_field td {
 table.grid_field td {
 	border-top: 1px solid #c9cfd4;
 	font-size: 12px;
+	vertical-align: top;
+}
+
+table.grid_field td div.grid_cell {
 	padding: 5px;
 	position: relative;
-	vertical-align: top;
 }
 
 table.grid_field tr.ui-sortable-helper td {
