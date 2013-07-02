@@ -567,6 +567,7 @@ class Grid_parser {
 		$fieldtype->settings = array_merge(
 			$column['col_settings'],
 			array(
+				'field_label'		=> $column['col_label'],
 				'field_required'	=> $column['col_required'],
 				'col_id'			=> $column['col_id'],
 				'col_name'			=> $column['col_name'],
