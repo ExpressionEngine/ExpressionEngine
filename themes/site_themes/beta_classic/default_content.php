@@ -48,8 +48,8 @@ if (@realpath(str_replace('../', './', $this->userdata['image_path'])) !== FALSE
 }
 
 $props = 'style="border: 0;" alt="image"';
-$Q[] = "INSERT INTO exp_upload_prefs (name, server_path, url, allowed_types, properties) 
-		VALUES ('Main Upload Directory', '".$this->userdata['image_path'].$this->userdata['upload_folder']."', '".$this->userdata['site_url'].'images/'.$this->userdata['upload_folder']."', 'all', '$props')";		
+$Q[] = "INSERT INTO exp_upload_prefs (name, server_path, url, allowed_types, properties)
+		VALUES ('Main Upload Directory', '".$this->userdata['image_path'].$this->userdata['upload_folder']."', '".$this->userdata['site_url'].'images/'.$this->userdata['upload_folder']."', 'all', '$props')";
 
 foreach ($Q as $sql)
 {
