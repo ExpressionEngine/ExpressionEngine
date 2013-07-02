@@ -10,7 +10,7 @@
  * @since		Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -22,8 +22,21 @@
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
- 
+
 class Newrelic {
+
+	/**
+	 * Set the application name
+	 *
+	 * @access	public
+	 * @return	void
+	 */
+	public function set_appname()
+	{
+		newrelic_set_appname(APP_NAME.' v'.APP_VER);
+	}
+
+	// --------------------------------------------------------------------
 
 	/**
 	 * Give New Relic a name for this transaction
@@ -31,7 +44,7 @@ class Newrelic {
 	 * @access	public
 	 * @return	void
 	 */
-	function name_transaction()
+	public function name_transaction()
 	{
 		$transaction_name = (string) ee()->uri->segment(1);
 
@@ -44,6 +57,7 @@ class Newrelic {
 	}
 
 	// --------------------------------------------------------------------
+
 }
 // END CLASS
 

@@ -247,6 +247,7 @@ class EE_Core {
 		if (extension_loaded('newrelic'))
 		{
 			ee()->load->library('newrelic');
+			ee()->newrelic->set_appname();
 			ee()->newrelic->name_transaction();
 		}
 	}
