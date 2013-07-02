@@ -41,6 +41,7 @@ class Updater {
 				'_drop_pings',
 				'_drop_updated_sites',
 				'_update_localization_preferences',
+				'_field_formatting_additions',
 				'_add_xid_used_flag',
 				'_rename_safecracker_db',
 				'_rename_safecracker_tags',
@@ -139,6 +140,59 @@ class Updater {
 
 		return TRUE;
 	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Insert markdown as a formatting option
+	 * @return boolean TRUE if successful
+	 */
+	private function _field_formatting_additions()
+	{
+		$fields = $this->_get_field_formatting_ids(
+			'xhtml',
+			$this->_get_field_formatting_ids('markdown')
+		);
+
+		$data = array();
+		foreach ($fields as $field_id)
+		{
+			$data[] = array(
+				'field_id'	=> $field_id,
+				'field_fmt'	=> 'markdown'
+			);
+		}
+
+		ee()->db->insert_batch('field_formatting', $data);
+
+		return TRUE;
+	}
+
+	/**
+	 * Retrieve field_ids that match the $field_fmt
+	 * @param  string $field_fmt The name of the field format
+	 * @param  array  $exclude   Optional array of field ids to exclude
+	 * @return array             Array containing field ids
+	 */
+	private function _get_field_formatting_ids($field_fmt, $exclude = array())
+	{
+		$ids = array();
+		$fields = ee()->db->select('field_id')
+			->get_where(
+				'field_formatting',
+				array('field_fmt' => $field_fmt)
+			)
+			->result_array();
+
+		foreach ($fields as $row)
+		{
+			if (empty($exlude) OR ! in_array($row['field_id'], $exclude))
+			{
+				$ids[] = $row['field_id'];
+			}
+		}
+
+		return $ids;
 
 	// -------------------------------------------------------------------
 
