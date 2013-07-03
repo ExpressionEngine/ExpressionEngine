@@ -635,20 +635,11 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 				$('#sub_hold_'+field_name.replace('id_', ''))
 			);
 		}
-
-		var parts = field_name.split('_'); // [field_id, col_id, row_id]
-
-		new RelationshipField(
-			$('#sub_hold_field_'+parts[0])
-				.find('.multiselect.col_id_'+parts[1])
-				.closest('.grid_row > td')
-				.filter('[data-row-id="'+parts[2]+'"]')
-		);
-
-		Grid.bind('relationship', 'display', function(cell) {
-			new RelationshipField(cell, true);
-		});
 	};
+
+	Grid.bind('relationship', 'display', function(cell) {
+		new RelationshipField(cell, ! cell.data('row-id'));
+	});
 
 
 
