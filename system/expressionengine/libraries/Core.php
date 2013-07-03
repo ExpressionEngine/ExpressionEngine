@@ -349,13 +349,6 @@ class EE_Core {
 			}
 		}
 
-		// An old workaround for ajax. We need to globally hook up XIDs to refresh
-		// before we can make this switch.
-		if (REQ == 'CP' && AJAX_REQUEST)
-		{
-			ee()->security->restore_xid();
-		}
-
 		// Update system stats
 		ee()->load->library('stats');
 
