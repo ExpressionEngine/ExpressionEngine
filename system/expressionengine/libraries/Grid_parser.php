@@ -246,13 +246,20 @@ class Grid_parser {
 
 		try
 		{
-			$relationship_parser = ee()->relationships_parser->create(
-				$channel->rfields[config_item('site_id')],
-				$row_ids, // array(#, #, #)
-				$tagdata,
-				$relationships, // field_name => field_id
-				$field_id
-			);
+			if (isset($channel->rfields[config_item('site_id')]))
+			{
+				$relationship_parser = ee()->relationships_parser->create(
+					$channel->rfields[config_item('site_id')],
+					$row_ids, // array(#, #, #)
+					$tagdata,
+					$relationships, // field_name => field_id
+					$field_id
+				);
+			}
+			else
+			{
+				$relationship_parser = NULL;
+			}
 		}
 		catch (EE_Relationship_exception $e)
 		{
