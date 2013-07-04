@@ -345,6 +345,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 						switch ($setting_name)
 						{
 							case 'allow_guests':
+								$setting_name = 'allow_guest_posts';
 							case 'require_captcha':
 								$value = $value ? 'y' : 'n';
 								break;
