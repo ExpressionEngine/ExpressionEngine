@@ -424,14 +424,14 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		{
 			// If there aren't any old tags, then we don't need to continue.
 			if (strpos($template->template_data, LD.'exp:channel:entry_form') === FALSE
-				&& strpos($template->template_data, LD.'safecracker') === FALSE)
+				&& strpos($template->template_data, LD.'exp:safecracker') === FALSE)
 			{
 				continue;
 			}
 
 			// Find and replace the pairs
 			$template->template_data = str_replace(
-				array(LD.'exp:channel:entry_form', LD.'/exp:channel:entry_form', LD.'safecracker',      LD.'/safecracker'),
+				array(LD.'exp:channel:entry_form', LD.'/exp:channel:entry_form', LD.'exp:safecracker',      LD.'/exp:safecracker'),
 				array(LD.'exp:channel:form',       LD.'/exp:channel:form',       LD.'exp:channel:form', LD.'/exp:channel:form'),
 				$template->template_data
 			);
