@@ -552,6 +552,11 @@ class Grid_parser {
 	 */
 	public function instantiate_fieldtype($column, $row_name = NULL, $field_id = 0, $entry_id = 0)
 	{
+		if ( ! isset(ee()->api_channel_fields->field_types[$column['col_type']]))
+		{
+			ee()->api_channel_fields->fetch_installed_fieldtypes();
+		}
+
 		// Instantiate fieldtype
 		$fieldtype = ee()->api_channel_fields->setup_handler($column['col_type'], TRUE);
 
