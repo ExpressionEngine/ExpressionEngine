@@ -1037,8 +1037,12 @@ class Admin_content extends CP_Controller {
 
 			foreach ($statuses as $status)
 			{
+				$name = ($status->status == 'open' OR 
+						$status->status == 'closed') 
+						? lang($status->status) : $status->status;
+
 				$channel_id = $all_statuses[$status->group_id];
-				$all_channels[$channel_id]['statuses'][$status->status] = $status->status;
+				$all_channels[$channel_id]->statuses[$status->status] = $name;
 			}
 		}
 
