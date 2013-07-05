@@ -49,8 +49,8 @@ class EE_Fieldtype {
 	// be the entry_id. There is no provision for channel_id as that is a level
 	// up in abstraction. If you need that information your fieldtype may not
 	// work with alternate entity types.
-	protected $entity_id;
-	protected $entity_name;
+	protected $entity_id = NULL;
+	protected $entity_name = 'channel';
 
 	/**
 	 * Constructor
@@ -87,6 +87,16 @@ class EE_Fieldtype {
 	 */
 	public function _init($config = array())
 	{
+		if (isset($config['field_id']) && ! isset($config['id']))
+		{
+			$config['id'] = $config['field_id'];
+		}
+
+		if (isset($config['field_name']) && ! isset($config['name']))
+		{
+			$config['name'] = $config['field_name'];
+		}
+
 		foreach($config as $key => $val)
 		{
 			$this->$key = $val;
@@ -107,7 +117,7 @@ class EE_Fieldtype {
 	 */
 	public function id()
 	{
-		return $this->id ? $this->id : $this->field_id;
+		return $this->id;
 	}
 
 	// --------------------------------------------------------------------
@@ -122,7 +132,7 @@ class EE_Fieldtype {
 	 */
 	public function name()
 	{
-		return $this->name ? $this->name : $this->field_name;
+		return $this->name;
 	}
 
 	// --------------------------------------------------------------------
@@ -152,7 +162,7 @@ class EE_Fieldtype {
 	 */
 	public function entity_name()
 	{
-		return $this->entity_name ? $this->entity_name : 'channel';
+		return $this->entity_name;
 	}
 
 	// --------------------------------------------------------------------
