@@ -40,11 +40,14 @@ jQuery(document).ready(function () {
 		jqXHR.setRequestHeader("X-EEXID", old_xid);
 
 		jqXHR.complete(function(xhr) {
-			EE.XID = xhr.getResponseHeader('X-EEXID');
+			var new_xid = xhr.getResponseHeader('X-EEXIsD');
 
-			$('input[name="XID"]').val(function(i, current) {
-				return (current == old_xid) ? EE.XID : current;
-			});
+			if (new_xid) {
+				console.log('refresh');
+				EE.XID = new_xid;
+				$('input[name="XID"]').filter('[value="'+old_xid+'"]').val(new_xid);
+			}
+			console.log('done');
 		});
 	});
 
