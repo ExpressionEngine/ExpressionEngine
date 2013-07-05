@@ -226,7 +226,7 @@ abstract class EE_Fieldtype {
 	/**
 	 * Display the field. You *must* implement this method to satisfy the
 	 * fieldtype protocol. You can leave out everything else, but this is
-	 * not optional.
+	 * required.
 	 *
 	 * @param  string Stored data for the field
 	 * @return string Field display
