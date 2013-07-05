@@ -22,7 +22,7 @@
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class EE_Fieldtype {
+abstract class EE_Fieldtype {
 
 	// Old identifiers for backwards compatibility.
 	// @deprecated
@@ -220,6 +220,18 @@ class EE_Fieldtype {
 	{
 		return TRUE;
 	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Display the field. You *must* implement this method to satisfy the
+	 * fieldtype protocol. You can leave out everything else, but this is
+	 * not optional.
+	 *
+	 * @param  string Stored data for the field
+	 * @return string Field display
+	 */
+	abstract public function display_field($data);
 
 	// --------------------------------------------------------------------
 
