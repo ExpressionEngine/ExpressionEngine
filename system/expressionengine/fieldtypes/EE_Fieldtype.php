@@ -24,11 +24,33 @@
  */
 class EE_Fieldtype {
 
+	// Old identifiers for backwards compatibility.
+	// @deprecated
 	public $field_id;
 	public $field_name;
+
+	// EE super object
+	// @deprecated - use ee()
+	protected $EE;
+
+	// Field settings as decided by the user.
 	public $settings = array();
 
-	protected $EE;
+	// Field identifiers, new names to differentiate. Also sometimes the field
+	// can actually act as an independent entity with no distinct parent. In
+	// those cases it's up to the entity implementer to make sure that an entity
+	// id (see below) exists. It would probably simply be the field_id.
+	protected $id;
+	protected $name;
+
+	// Entity identifiers. The entity_name will uniquely identify the type of
+	// parent entity, such as 'channel' (channel_entry, really). The entity_id
+	// will be id of the parent after it has been saved. For channels that would
+	// be the entry_id. There is no provision for channel_id as that is a level
+	// up in abstraction. If you need that information your fieldtype may not
+	// work with alternate entity types.
+	protected $entity_id;
+	protected $entity_name;
 
 	/**
 	 * Constructor
@@ -69,6 +91,68 @@ class EE_Fieldtype {
 		{
 			$this->$key = $val;
 		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Field id getter
+	 *
+	 * The id of the field in the content of this entity type. For
+	 * channels that would be field_id. Usually this is a good name,
+	 * but sometimes each field actually presents a type of your entity
+	 * so we call it id.
+	 *
+	 * @return int  primary key
+	 */
+	public function id()
+	{
+		return $this->id ? $this->id : $this->field_id;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Name getter
+	 *
+	 * This is the field's short name, which you will want to prefix
+	 * your form data and to parse your data.
+	 *
+	 * @return string  The field short name
+	 */
+	public function name()
+	{
+		return $this->name ? $this->name : $this->field_name;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Grab the entity id
+	 *
+	 * The entity id only exists after the field is saved. It will return
+	 * NULL if it has not been set. For channel, this would be the entry_id.
+	 *
+	 * @return int  The id of the parent entity if it exists, else NULL
+	 */
+	public function entity_id()
+	{
+		return $this->entity_id;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Grab the entity name
+	 *
+	 * By default, the entity name is channel since that is historically
+	 * correct. Your fieldtype must delineate data between entity types.
+	 *
+	 * @return string  The type of the field's parent entity.
+	 */
+	public function entity_name()
+	{
+		return $this->entity_name ? $this->entity_name : 'channel';
 	}
 
 	// --------------------------------------------------------------------
@@ -173,7 +257,7 @@ class EE_Fieldtype {
 	 * Called after field is saved
 	 *
 	 * This will have access to the parent entity_id, so if you use your
-	 * own tables, please use the entity_id and entity_type to store the
+	 * own tables, please use the entity_id and entity_name to store the
 	 * data in a uniquely identifiable way ($this->entity_id()).
 	 *
 	 * @param string  Data returned from save(). You can use session->cache() for other data.
