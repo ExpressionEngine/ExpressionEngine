@@ -95,11 +95,11 @@ abstract class EE_Fieldtype {
 		// Prefer unprefixed over prefixed
 		foreach (array('id', 'field_id', 'name', 'field_name') as $key)
 		{
-			$name = 'conf_'.str_replace('field', '', $key);
+			$name = 'conf_'.str_replace('field_', '', $key);
 
-			if ( ! isset($name) && isset($config[$key]))
+			if ( ! isset($$name) && isset($config[$key]))
 			{
-				$name = $config[$key];
+				$$name = $config[$key];
 			}
 		}
 
