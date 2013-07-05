@@ -89,15 +89,32 @@ abstract class EE_Fieldtype {
 	{
 		// At first our implementers will probably still have
 		// field_id and field_name set, so we'll copy those over.
-		if (isset($config['field_id']) && ! isset($config['id']))
+		$conf_id = NULL;
+		$conf_name = NULL;
+
+		// Prefer unprefixed over prefixed
+		foreach (array('id', 'field_id', 'name', 'field_name') as $key)
 		{
-			$config['id'] = $config['field_id'];
+			$name = 'conf_'.str_replace('field', '', $key);
+
+			if ( ! isset($name) && isset($config[$key]))
+			{
+				$name = $config[$key];
+			}
 		}
 
-		if (isset($config['field_name']) && ! isset($config['name']))
+		// Only set if the _init call changed it. Otherwise consecutive
+		// _init calls might clear it.
+		if (isset($conf_id) && $this->id != $conf_id)
 		{
-			$config['name'] = $config['field_name'];
+			$config['id'] = $conf_id;
 		}
+
+		if (isset($conf_name) && $this->name != $conf_name)
+		{
+			$config['name'] = $conf_name;
+		}
+
 
 		foreach($config as $key => $val)
 		{
