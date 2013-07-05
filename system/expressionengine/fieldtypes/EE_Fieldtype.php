@@ -87,6 +87,8 @@ abstract class EE_Fieldtype {
 	 */
 	public function _init($config = array())
 	{
+		// At first our implementers will probably still have
+		// field_id and field_name set, so we'll copy those over.
 		if (isset($config['field_id']) && ! isset($config['id']))
 		{
 			$config['id'] = $config['field_id'];
@@ -101,6 +103,13 @@ abstract class EE_Fieldtype {
 		{
 			$this->$key = $val;
 		}
+
+		// Since this is pretty new, I think the entity types will beat
+		// the fieldtypes in conversion. Certainly channel will. So we need to
+		// support fieldtypes that use the old conventions for a while. Move
+		// to __set and __get when we're ready for full deprecation.
+		$this->field_id = $this->id;
+		$this->field_name = $this->field_name;
 	}
 
 	// --------------------------------------------------------------------
