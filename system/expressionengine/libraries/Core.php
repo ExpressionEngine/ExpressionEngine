@@ -335,18 +335,9 @@ class EE_Core {
 
 		ee()->input->filter_get_data(REQ);
 
-		// Secure forms stuff
-		if( ! ee()->security->have_valid_xid())
+		if ( ! (REQ == 'ACT' && AJAX_REQUEST))
 		{
-			if (REQ == 'CP')
-			{
-				ee()->session->set_flashdata('message_failure', lang('invalid_action'));
-				ee()->functions->redirect(SELF);
-			}
-			else
-			{
-				ee()->output->show_user_error('general', array(lang('invalid_action')));
-			}
+			$this->process_secure_forms();
 		}
 
 		// Update system stats
@@ -726,6 +717,35 @@ class EE_Core {
 
 			ee()->functions->clear_spam_hashes();
 			ee()->functions->clear_caching('all');
+		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Process Secure Forms
+	 *
+	 * Run the secure forms check. Needs to be run once per request.
+	 * For ajax requests to actions, this happens a little later so
+	 * we can check for the Strict_XID interface.
+	 *
+	 * @access	public
+	 * @return	void
+	 */
+	final public function process_secure_forms(stdClass $class = NULL)
+	{
+		// Secure forms stuff
+		if( ! ee()->security->have_valid_xid($class))
+		{
+			if (REQ == 'CP')
+			{
+				ee()->session->set_flashdata('message_failure', lang('invalid_action'));
+				ee()->functions->redirect(SELF);
+			}
+			else
+			{
+				ee()->output->show_user_error('general', array(lang('invalid_action')));
+			}
 		}
 	}
 }
