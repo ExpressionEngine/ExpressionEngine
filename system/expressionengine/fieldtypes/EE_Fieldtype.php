@@ -195,6 +195,24 @@ class EE_Fieldtype {
 		return $fields;
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Grid Settings Modify Column
+	 *
+	 * @access	public
+	 * @param	array
+	 * @return	array
+	 */
+	function grid_settings_modify_column($data)
+	{
+		$fields['col_id_'.$data['col_id']] = array(
+			'type' => 'text',
+			'null' => TRUE
+		);
+
+		return $fields;
+	}
 
 	// --------------------------------------------------------------------
 
