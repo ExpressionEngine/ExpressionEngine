@@ -95,9 +95,12 @@ class EE_Security extends CI_Security {
 					$request_xid = ee()->input->post('XID');
 				}
 
-				if ( ! $request_xid OR ! $this->secure_forms_check($request_xid))
+				if ($run_check)
 				{
-					return FALSE;
+					if ( ! $request_xid OR ! $this->secure_forms_check($request_xid))
+					{
+						return FALSE;
+					}
 				}
 
 				// @deprecated since 2.7
