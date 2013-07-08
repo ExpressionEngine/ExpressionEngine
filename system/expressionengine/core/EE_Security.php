@@ -14,6 +14,23 @@
 // ------------------------------------------------------------------------
 
 /**
+ * ExpressionEngine XID Marker Interface
+ *
+ * Implementing this will enforce strict XID checks on all requests to
+ * the class (if secure forms are enabled). Without it, the security model
+ * is a little more lax until third parties have time to adapt.
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Core
+ * @category	Core
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
+ */
+interface Strict_XID {}
+
+// ------------------------------------------------------------------------
+
+/**
  * ExpressionEngine Core Security Class
  *
  * @package		ExpressionEngine
@@ -47,7 +64,7 @@ class EE_Security extends CI_Security {
 	 * @access public
 	 * @return boolean FALSE if there is an invalid XID, TRUE if valid or no XID
 	 */
-	public function have_valid_xid()
+	public function have_valid_xid(stdClass $class = NULL)
 	{
 		$hash = '';
 		$request_xid = '';
@@ -56,7 +73,14 @@ class EE_Security extends CI_Security {
 		{
 			if (count($_POST) > 0)
 			{
+				$run_check = TRUE;
 				$request_xid = FALSE;
+
+				// A class is only passed when the check is optional (currently, ajax actions)
+				if (isset($class) && ! ($class instanceOf Strict_XID))
+				{
+					$run_check = FALSE;
+				}
 
 				// ajax requests use a header
 				if (AJAX_REQUEST)
