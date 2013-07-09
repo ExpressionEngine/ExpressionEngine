@@ -27,7 +27,7 @@
 
 									<div class="grid_cell">
 										<?php if ($column == end($columns)):?>
-											<a href="#" class="grid_button_delete" title="<?=lang('grid_delete_row')?>"><?=lang('grid_delete_row')?></a>
+											<a href="#" class="grid_button_delete" tabindex="-1" title="<?=lang('grid_delete_row')?>"><?=lang('grid_delete_row')?></a>
 										<?php endif ?>
 										<?=$row['col_id_'.$column['col_id']]?>
 										<?php if (isset($row['col_id_'.$column['col_id'].'_error'])): ?>
@@ -48,7 +48,7 @@
 
 								<div class="grid_cell">
 									<?php if ($column == end($columns)):?>
-										<a href="#" class="grid_button_delete" title="<?=lang('grid_delete_row')?>"><?=lang('grid_delete_row')?></a>
+										<a href="#" class="grid_button_delete" tabindex="-1" title="<?=lang('grid_delete_row')?>"><?=lang('grid_delete_row')?></a>
 									<?php endif ?>
 									<?=$blank_row['col_id_'.$column['col_id']]?>
 								</div>
