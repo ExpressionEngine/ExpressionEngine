@@ -40,7 +40,7 @@ jQuery(document).ready(function () {
 		jqXHR.setRequestHeader("X-EEXID", old_xid);
 
 		jqXHR.complete(function(xhr) {
-			var new_xid = xhr.getResponseHeader('X-EEXIsD');
+			var new_xid = xhr.getResponseHeader('X-EEXID');
 
 			if (new_xid) {
 				EE.XID = new_xid;
