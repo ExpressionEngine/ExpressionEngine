@@ -77,7 +77,7 @@ class EE_Actions {
 		// If the ID is numeric we need to do an SQL lookup
 		if (is_numeric($action_id))
 		{
-			ee()->db->select('class, method');
+			ee()->db->select('class, method, csrf_exempt');
 			ee()->db->where('action_id', $action_id);
 			$query = ee()->db->get('actions');
 
@@ -95,6 +95,7 @@ class EE_Actions {
 
 			$class  = ucfirst($query->row('class'));
 			$method = strtolower($query->row('method'));
+			$csrf_exempt = (bool) $query->row('csrf_exempt');
 		}
 		else
 		{
@@ -106,6 +107,7 @@ class EE_Actions {
 
 			$class  = $specials[$action_id]['0'];
 			$method = $specials[$action_id]['1'];
+			$csrf_exempt = FALSE;
 
 			// Double check that the module is actually installed
 			ee()->db->select('module_version');
@@ -180,7 +182,19 @@ class EE_Actions {
 		// Instantiate the class/method
 		$ACT = new $class(0);
 
-		ee()->core->process_secure_forms($ACT);
+		$flags = 0;
+
+		if ( ! AJAX_REQUEST || $class instanceOf Strict_XID)
+		{
+			$flags |= EE_Security::CSRF_STRICT;
+		}
+
+		if ($csrf_exempt)
+		{
+			$flags |= EE_Security::CSRF_EXEMPT;
+		}
+
+		ee()->core->process_secure_forms($flags);
 
 		if ($method != '')
 		{

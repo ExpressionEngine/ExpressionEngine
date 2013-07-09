@@ -335,7 +335,7 @@ class EE_Core {
 
 		ee()->input->filter_get_data(REQ);
 
-		if ( ! (REQ == 'ACT' && AJAX_REQUEST))
+		if (REQ != 'ACT')
 		{
 			$this->process_secure_forms();
 		}
@@ -726,16 +726,16 @@ class EE_Core {
 	 * Process Secure Forms
 	 *
 	 * Run the secure forms check. Needs to be run once per request.
-	 * For ajax requests to actions, this happens a little later so
-	 * we can check for the Strict_XID interface.
+	 * For actions, this happens from within the actions table so that
+	 * we can check for the Strict_XID interface and csrf_exempt field.
 	 *
 	 * @access	public
 	 * @return	void
 	 */
-	final public function process_secure_forms(stdClass $class = NULL)
+	final public function process_secure_forms($flags = EE_Security::CSRF_STRICT)
 	{
 		// Secure forms stuff
-		if( ! ee()->security->have_valid_xid($class))
+		if( ! ee()->security->have_valid_xid($flags))
 		{
 			if (REQ == 'CP')
 			{

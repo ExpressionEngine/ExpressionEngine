@@ -41,6 +41,10 @@ interface Strict_XID {}
  */
 class EE_Security extends CI_Security {
 
+	// Flags for have_valid_xid()
+	const CSRF_STRICT = 1;	// require single-use token for ajax requests
+	const CSRF_EXEMPT = 2;	// opt-out of xid checks
+
 	private $_xid_ttl = 7200;
 	private $_checked_xids = array();
 
@@ -64,7 +68,7 @@ class EE_Security extends CI_Security {
 	 * @access public
 	 * @return boolean FALSE if there is an invalid XID, TRUE if valid or no XID
 	 */
-	public function have_valid_xid(stdClass $class = NULL)
+	public function have_valid_xid($flags = self::CSRF_STRICT)
 	{
 		$hash = '';
 		$request_xid = '';
@@ -76,7 +80,19 @@ class EE_Security extends CI_Security {
 				$run_check = TRUE;
 				$request_xid = FALSE;
 
+				// exempt trumps all
+				if ($flags & self::CSRF_EXEMPT)
+				{
+					$run_check = FALSE;
+				}
+				// only check ajax in strict mode
+				elseif (AJAX_REQUEST && ! ($flags & self::CSRF_STRICT))
+				{
+					$run_check = FALSE;
+				}
+
 				// A class is only passed when the check is optional (currently, ajax actions)
+
 				if (isset($class) && ! ($class instanceOf Strict_XID))
 				{
 					$run_check = FALSE;

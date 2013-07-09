@@ -111,6 +111,20 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		// to be renamed to the new processing method.
 		ee()->db->where('method', 'reset_password')
 			->update('actions', array('method'=>'process_reset_password'));
+
+		// Add the csrf_exempt field
+		ee()->smartforge->add_column(
+			'actions',
+			array(
+				'csrf_exempt' => array(
+					'type'			=> 'tinyint',
+					'constraint'	=> 1,
+					'unsigned'		=> TRUE,
+					'default'		=> 0,
+					'null'			=> FALSE
+				)
+			)
+		);
 	}
 
 	// --------------------------------------------------------------------

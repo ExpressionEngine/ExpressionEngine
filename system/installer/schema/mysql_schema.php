@@ -137,6 +137,7 @@ class EE_Schema {
 			action_id int(4) unsigned NOT NULL auto_increment,
 			class varchar(50) NOT NULL,
 			method varchar(50) NOT NULL,
+			csrf_exempt tinyint(1) UNSIGNED NOT NULL default 0,
 			PRIMARY KEY `action_id` (`action_id`)
 		)";
 
