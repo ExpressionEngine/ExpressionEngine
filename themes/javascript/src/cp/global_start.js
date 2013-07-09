@@ -43,11 +43,9 @@ jQuery(document).ready(function () {
 			var new_xid = xhr.getResponseHeader('X-EEXIsD');
 
 			if (new_xid) {
-				console.log('refresh');
 				EE.XID = new_xid;
 				$('input[name="XID"]').filter('[value="'+old_xid+'"]').val(new_xid);
 			}
-			console.log('done');
 		});
 	});
 
