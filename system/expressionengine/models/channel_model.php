@@ -476,6 +476,175 @@ class Channel_model extends CI_Model {
 
 	// --------------------------------------------------------------------
 	
+	/**
+	 * Generates SQL for a field search
+	 * 
+	 * @param	string	Search terms from search parameter
+	 * @param	string	Database column name to search
+	 * @param	int		Site ID
+	 * @return	string	SQL to include in an existing query's WHERE clause
+	 */
+	public function field_search_sql($terms, $col_name, $site_id = FALSE)
+	{
+		$search_method = '_field_search';
+
+		if (strncmp($terms, '=', 1) ==  0)
+		{
+			// Remove the '=' sign that specified exact match.
+			$terms = substr($terms, 1);
+
+			$search_method = '_exact_field_search';
+		}
+		elseif (strncmp($terms, '<', 1) == 0 ||
+				strncmp($terms, '>', 1) == 0)
+		{
+			$search_method = '_numeric_comparison_search';
+		}
+
+		return $this->$search_method($terms, $col_name, $site_id);
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Generate the SQL for a numeric comparison search
+	 * <, >, <=, >= operators
+	 *
+	 * search:field=">=20"
+	 */
+	private function _numeric_comparison_search($terms, $col_name, $site_id)
+	{
+		if ( ! preg_match('/^([<>]=?)(\d+)/', $terms, $match))
+		{
+			return $this->_field_search($terms, $col_name, $site_id);
+		}
+
+		$site_id = ($site_id !== FALSE) ? 'wd.site_id=' . $site_id . ' AND ' : '';
+
+		// col_name >= 20
+		return '(' . $site_id . ' ' . $col_name . ' ' . $match[1] . ' ' . $match[2] . ')';
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Generate the SQL for an exact query in field search.
+	 *
+	 * search:field="=words|other words"
+	 */
+	private function _exact_field_search($terms, $col_name, $site_id = FALSE)
+	{
+		// Trivial case, we don't have special IS_EMPTY handling.
+		if(strpos($terms, 'IS_EMPTY') === FALSE) 
+		{
+			return substr(ee()->functions->sql_andor_string($terms, $col_name), 3).' ';
+		}
+
+		// Did this because I don't like repeatedly checking
+		// the beginning of the string with strncmp for that
+		// 'not', much prefer to do it once and then set a 
+		// boolean.  But.. [cont:1]
+		$not = false;
+		if (strncmp($terms, 'not ', 4) == 0)
+		{
+			$not = true;
+			$terms = substr($terms, 4);
+		}
+
+		if (strpos($terms, '|') !== false)
+		{  
+			$terms = str_replace('IS_EMPTY|', '', $terms);
+		}
+		else 
+		{
+			$terms = str_replace('IS_EMPTY', '', $terms);
+		}
+		   
+		$add_search = '';
+		$conj = ''; 
+
+		$site_id = ($site_id !== FALSE) ? 'wd.site_id=' . $site_id . ' AND ' : '';
+		
+		// If we have search terms, then we need to build the search.
+		if ( ! empty($terms)) 
+		{
+			// [cont:1]...it makes this a little hacky.  Gonna leave it for the moment,
+			// but may come back to it.
+			$add_search = ee()->functions->sql_andor_string(($not ? 'not ' . $terms : $terms), $col_name);
+			// remove the first AND output by ee()->functions->sql_andor_string() so we can parenthesize this clause
+			$add_search = '('.$site_id . substr($add_search, 3) . ')';
+											
+			$conj = ($add_search != '' && ! $not) ? 'OR' : 'AND';
+		}
+
+		// If we reach here, we have an IS_EMPTY in addition to possible search terms.
+		// Add the empty check condition.
+		if ($not)
+		{
+			return $add_search . ' ' . $conj . ' (' . $site_id . $col_name . ' != "")';
+		}
+
+		return $add_search.' '.$conj.' (' . $site_id . $col_name . ' = "")';
+	}
+	
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Generate the SQL for a LIKE query in field search.
+	 *
+	 * 		search:field="words|other words|IS_EMPTY"
+	 */
+	private function _field_search($terms, $col_name, $site_id = FALSE)
+	{
+		$not = '';
+		if (strncmp($terms, 'not ', 4) == 0)
+		{
+			$terms = substr($terms, 4);
+			$not = 'NOT';
+		}
+
+		if (strpos($terms, '&&') !== FALSE)
+		{
+			$terms = explode('&&', $terms);
+			$andor = $not == 'NOT' ? 'OR' : 'AND';
+		}
+		else
+		{
+			$terms = explode('|', $terms);
+			$andor = $not == 'NOT' ? 'AND' : 'OR';
+		}
+
+		$site_id = ($site_id !== FALSE) ? 'wd.site_id=' . $site_id . ' AND ' : '';
+
+		$search_sql = '';
+		foreach ($terms as $term)
+		{
+			if($search_sql !== '') 
+			{
+				$search_sql .= $andor;
+			}
+			if ($term == 'IS_EMPTY')
+			{
+				$search_sql .= ' (' . $site_id
+					. $col_name . ($not=='NOT' ? '!' : '') . '="") ';
+			}
+			elseif (strpos($term, '\W') !== FALSE) // full word only, no partial matches
+			{
+				// Note: MySQL's nutty POSIX regex word boundary is [[:>:]]
+				$term = '([[:<:]]|^)'.preg_quote(str_replace('\W', '', $term)).'([[:>:]]|$)';
+
+				$search_sql .= ' (' . $site_id 
+					. $col_name . ' ' . $not . ' REGEXP "' . ee()->db->escape_str($term).'") ';
+			}
+			else
+			{	
+				$search_sql .= ' (' . $site_id 
+					. $col_name . ' ' . $not . ' LIKE "%' . ee()->db->escape_like_str($term) . '%") ';
+			}
+		}
+
+		return $search_sql;
+	}
 }
 // END CLASS
 

@@ -199,11 +199,6 @@ class Api_channel_entries extends Api {
 			return TRUE;
 		}
 		
-		if (isset($data['ping_servers']) && count($data['ping_servers']) > 0)
-		{
-			$this->send_pings($data['ping_servers'], $this->channel_id, $entry_id);
-		}
-
 		ee()->stats->update_channel_stats($this->channel_id);
 
 		if (isset($data['old_channel']))
@@ -390,7 +385,7 @@ class Api_channel_entries extends Api {
 		
 		foreach($fquery->result_array() as $row)
 		{
-			$group_fields[$row['group_id']][] = $row['field_type'];
+			$group_fields[$row['group_id']][] = $row['field_id'];
 		}
 		
 
@@ -494,7 +489,7 @@ class Api_channel_entries extends Api {
 			$entries[] = $val;
 		}
 		
-		$fts = ee()->api_channel_fields->fetch_installed_fieldtypes();
+		$fts = ee()->api_channel_fields->fetch_custom_channel_fields();
 		
 		// Pass to custom fields
 		foreach($ft_to_ids as $fieldtype => $ids)
@@ -554,7 +549,7 @@ class Api_channel_entries extends Api {
 		
 		return TRUE;
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -570,44 +565,12 @@ class Api_channel_entries extends Api {
 	 */
 	function send_pings($ping_servers, $channel_id, $entry_id, $send_now = TRUE)
 	{
-		if ( ! $ping_servers)
-		{
-			return FALSE;
-		}
-		
-		$result = TRUE;
-		
-		if ( ! isset($this->c_prefs['rss_url']))
-		{
-			$this->_fetch_channel_preferences($channel_id);
-		}
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.7');
 
-		// We only ping entries that are posted now, not in the future
-		if ($send_now == TRUE)
-		{
-			$ping_result = $this->_process_pings($ping_servers, $this->c_prefs['channel_title'], $this->c_prefs['ping_url'], $this->c_prefs['rss_url']);
-
-			if (is_array($ping_result) AND count($ping_result) > 0)
-			{
-				$this->_set_error($ping_result, 'pings');
-				$result = FALSE;
-			}
-		}
-			
-		//	Save ping button state
-		ee()->db->delete('entry_ping_status', array('entry_id' => $entry_id));
-
-		foreach ($ping_servers as $val)
-		{
-			$ping_data['entry_id'] = $entry_id;
-			$ping_data['ping_id'] = $val;
-
-			ee()->db->insert('entry_ping_status', $ping_data); 
-		}
-
-		return $result;
+		return FALSE;
 	}
-	
+
 	// --------------------------------------------------------------------
 	
 	/**
@@ -829,7 +792,6 @@ class Api_channel_entries extends Api {
 		}
 		
 		$this->c_prefs['channel_title']		= ascii_to_entities($query->row('channel_title'));
-		$this->c_prefs['ping_url']			= ($query->row('ping_return_url') == '') ? $query->row('channel_url')	: $query->row('ping_return_url') ;
 		$this->c_prefs['notify_address']	= ($query->row('channel_notify')  == 'y' AND $query->row('channel_notify_emails')  != '') ? $query->row('channel_notify_emails')  : '';
 	}
 	
@@ -1042,15 +1004,6 @@ class Api_channel_entries extends Api {
 			elseif ($row['field_type'] == 'multi_select' OR $row['field_type'] == 'checkboxes')
 			{
 				$this->_prep_multi_field($data, $row);
-			}
-		}
-
-		// Channel data present for pings?
-		if (isset($data['ping_servers']) && count($data['ping_servers']) > 0)
-		{
-			if ($this->c_prefs['channel_title'] == '')
-			{
-				$this->_set_error('missing_channel_data_for_pings');
 			}
 		}
 		
@@ -1408,23 +1361,12 @@ class Api_channel_entries extends Api {
 					{
 						$data[$field_name] = ee()->api_channel_fields->apply('save', array($data[$field_name]));
 					}
-					
-					if (isset($data['revision_post'][$field_name]))
-					{
-						$data['revision_post'][$field_name] = $data[$field_name];
-					}
-					
 				}
 				elseif (isset($mod_data[$field_name]))
 				{
 					if ( ! $autosave)
 					{
 						$mod_data[$field_name] = ee()->api_channel_fields->apply('save', array($mod_data[$field_name]));
-					}
-
-					if (isset($data['revision_post'][$field_name]))
-					{
-						$data['revision_post'][$field_name] = $mod_data[$field_name];
 					}
 				}
 			}				
@@ -1854,44 +1796,6 @@ class Api_channel_entries extends Api {
 		
 		$module_data = ee()->api_channel_fields->get_module_methods($methods, $params);
 
-	}
-	
-	// --------------------------------------------------------------------
-	
-	/**
-	 * Process Pings
-	 *
-	 * Send pings
-	 *
-	 * @access	private
-	 * @param	mixed
-	 * @param	mixed
-	 * @return	mixed
-	 */
-	function _process_pings($ping_servers, $channel_title, $ping_url, $rss_url)
-	{
-		ee()->db->select('server_name, server_url, port');
-		ee()->db->where_in('id', $ping_servers);
-		$query = ee()->db->get('ping_servers');
-
-		if ($query->num_rows() == 0)
-		{
-			return FALSE;
-		}
-
-		ee()->load->library('xmlrpc');
-
-		$result = array();
-
-		foreach ($query->result_array() as $row)
-		{
-			if (($response = ee()->xmlrpc->weblogs_com_ping($row['server_url'], $row['port'], $channel_title, $ping_url, $rss_url)) !== TRUE)
-			{
-				$result[] = array($row['server_name'], $response);
-			}
-		}
-
-		return $result;
 	}
 
 	// --------------------------------------------------------------------

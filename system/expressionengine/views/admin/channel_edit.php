@@ -44,10 +44,6 @@
 	$controls = form_input(array('id'=>'search_results_url','name'=>'search_results_url','class'=>'fullfield', 'value'=>$search_results_url));
 	$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 
-	$preference = lang('ping_return_url', 'ping_return_url').'<br />'.lang('ping_return_url_exp');
-	$controls = form_input(array('id'=>'ping_return_url','name'=>'ping_return_url','class'=>'fullfield', 'value'=>$ping_return_url));
-	$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
-
 	$preference = lang('rss_url', 'rss_url').'<br />'.lang('rss_url_exp');
 	$controls = form_input(array('id'=>'rss_url','name'=>'rss_url','class'=>'fullfield', 'value'=>$rss_url));
 	$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));

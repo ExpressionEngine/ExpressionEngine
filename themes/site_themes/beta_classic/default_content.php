@@ -3,7 +3,7 @@
 
 // Default channel preference data
 
-$Q[] = "INSERT INTO exp_channels (cat_group, channel_name, channel_title, channel_url, comment_url, search_results_url, ping_return_url, channel_lang, total_entries, last_entry_date, status_group, deft_status, field_group, deft_comments, comment_max_chars, comment_require_email, comment_require_membership, channel_require_membership, comment_text_formatting, search_excerpt)  values ('1', 'default_site', 'Default Site Channel', '".$this->userdata['site_url'].$this->userdata['site_index']."/site/index/', '".$this->userdata['site_url'].$this->userdata['site_index']."/site/comments/', '".$this->userdata['site_url'].$this->userdata['site_index']."/site/comments/', '".$this->userdata['site_url'].$this->userdata['site_index']."', 'en', '1', '$this->now', '1', 'open', '1', 'y', '5000', 'y', 'n', 'y', 'xhtml', '2')";
+$Q[] = "INSERT INTO exp_channels (cat_group, channel_name, channel_title, channel_url, comment_url, search_results_url, channel_lang, total_entries, last_entry_date, status_group, deft_status, field_group, deft_comments, comment_max_chars, comment_require_email, comment_require_membership, channel_require_membership, comment_text_formatting, search_excerpt)  values ('1', 'default_site', 'Default Site Channel', '".$this->userdata['site_url'].$this->userdata['site_index']."/site/index/', '".$this->userdata['site_url'].$this->userdata['site_index']."/site/comments/', '".$this->userdata['site_url'].$this->userdata['site_index']."/site/comments/', 'en', '1', '$this->now', '1', 'open', '1', 'y', '5000', 'y', 'n', 'y', 'xhtml', '2')";
 
 // Custom field and field group data
 
@@ -21,6 +21,7 @@ foreach (array(1,2,3) as $id)
 	$Q[] = "INSERT INTO exp_field_formatting (field_id, field_fmt) VALUES ({$id}, 'none')";
 	$Q[] = "INSERT INTO exp_field_formatting (field_id, field_fmt) VALUES ({$id}, 'br')";
 	$Q[] = "INSERT INTO exp_field_formatting (field_id, field_fmt) VALUES ({$id}, 'xhtml')";
+	$Q[] = "INSERT INTO exp_field_formatting (field_id, field_fmt) VALUES ({$id}, 'markdown')";
 }
 
 // categories
@@ -47,8 +48,8 @@ if (@realpath(str_replace('../', './', $this->userdata['image_path'])) !== FALSE
 }
 
 $props = 'style="border: 0;" alt="image"';
-$Q[] = "INSERT INTO exp_upload_prefs (name, server_path, url, allowed_types, properties) 
-		VALUES ('Main Upload Directory', '".$this->userdata['image_path'].$this->userdata['upload_folder']."', '".$this->userdata['site_url'].'images/'.$this->userdata['upload_folder']."', 'all', '$props')";		
+$Q[] = "INSERT INTO exp_upload_prefs (name, server_path, url, allowed_types, properties)
+		VALUES ('Main Upload Directory', '".$this->userdata['image_path'].$this->userdata['upload_folder']."', '".$this->userdata['site_url'].'images/'.$this->userdata['upload_folder']."', 'all', '$props')";
 
 foreach ($Q as $sql)
 {

@@ -72,11 +72,13 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 	 * The constructor does most of the precaching before handing
 	 * off to the class methods for interaction related things.
 	 */
-	function RelationshipField(field) {
+	function RelationshipField(container, empty) {
+		this.force_empty = !! empty;
+
 		// three main components per field
-		this.root = $(field);
-		this.active = $(field+'-active');
-		this.searchField = $(field+'-filter');
+		this.root = $(container).find('.multiselect');
+		this.active = $(container).find('.multiselect-active');
+		this.searchField = $(container).find('.multiselect-filter input');
 
 		// cache a few things for search and query-less access
 		this.activeMap = {};
@@ -263,26 +265,40 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 			// overflowing. Silly browsers.
 			that.active.addClass('force-scroll');
 
-			// find existing checked items
-			var checked = _.map(this.root.find(':checked'), function(el, i) {
-				var li = $(el).closest('li'),
-					text = li.find('input:text');
+			if ( ! that.force_empty)
+			{
+				// find existing checked items
+				var checked = _.map(this.root.find(':checked'), function(el, i) {
+					var li = $(el).closest('li'),
+						text = li.find('input:text');
 
-				return [li, +text.val()]; // (cons item int_text) 
-			});
+					return [li, +text.val()]; // (cons item int_text)
+				});
 
-			// sort them by their order field
-			checked = _.sortBy(checked, function(el) {
-				return el[1];
-			});
+				// sort them by their order field
+				checked = _.sortBy(checked, function(el) {
+					return el[1];
+				});
 
-			// move them over in the correct order
-			_.each(checked, function(el, i) {
-				var li = el[0],
-					idx = that.listItems.index(li);
+				// move them over in the correct order
+				_.each(checked, function(el, i) {
+					var li = el[0],
+						idx = that.listItems.index(li);
 
-				util.moveOver(idx);
-			});
+					util.moveOver(idx);
+				});
+			}
+			else
+			{
+				_.each(this.root.find(':checked'), function(el, i) {
+					var parent = $(el).closest('li');
+
+					parent.removeClass('selected');
+					parent.find('input:text').val(0);
+					el.removeAttribute('checked');
+
+				});
+			}
 
 			that._checkScrollBars();
 
@@ -294,7 +310,7 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 				// adding the class. So we add the class and remove it if it's not
 				// overflowing. Silly browsers.
 				that.active.addClass('force-scroll');
-				
+
 				var box = $(this).find(':checkbox'),
 					idx = that.listItems.index(this);
 
@@ -430,11 +446,11 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 
 			// We take the element off the dom temporarily for processing.
 			// This vastly improves performance at > 500 items.
-			// Normally that makes perfect sense, but I must admit
-			// in this case it's a little strange, since we move them off-dom
+			// Normally that makes perfect sense, but I must admit in
+			// this case it's a little strange, since we move them off-dom
 			// individually to reorder them. Something about not forcing
-			// repaints every time? Not 100% sure, but this this works, so
-			// it's staying.
+			// repaints every time? Not 100% sure, but this works, so it's
+			// staying.
 			ul.find('li').detach();
 
 
@@ -629,9 +645,21 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 
 	/**
 	 * Public method to instantiate
+	 *
+	 * If it's a relationship field we need to find the cells for existing
+	 * fields and also setup the grid binding for new rows. Otherwise we
+	 * simply bind on the field name we were given.
 	 */
-	EE.setup_relationship_field = function(el) {
-		return new RelationshipField(el);
+	EE.setup_relationship_field = function(field_name) {
+		if (field_name[0] == 'f') { // field_id_x vs col_id_x for grid
+			return new RelationshipField(
+				$('#sub_hold_'+field_name.replace('id_', ''))
+			);
+		}
 	};
+
+	Grid.bind('relationship', 'display', function(cell) {
+		new RelationshipField(cell, ! cell.data('row-id'));
+	});
 
 })(jQuery);

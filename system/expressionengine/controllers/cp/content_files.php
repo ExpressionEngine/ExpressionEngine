@@ -216,7 +216,7 @@ class Content_files extends CP_Controller {
 		// fileuploader depends on filebrowser's methods
 		$this->cp->add_js_script(array(
 			'plugin'	=> array(
-				'overlay', 'overlay.apple', 'ee_filebrowser', 'ee_fileuploader'
+				'overlay', 'ee_filebrowser', 'ee_fileuploader'
 			),
 			'file'		=> 'cp/files/file_manager_home',
 			'ui' 		=> array('datepicker', 'dialog')

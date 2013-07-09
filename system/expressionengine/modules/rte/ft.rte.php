@@ -56,6 +56,15 @@ class Rte_ft extends EE_Fieldtype {
 
 	// --------------------------------------------------------------------
 
+	function grid_display_field($data)
+	{
+		ee()->load->library('rte_lib');
+		
+		return ee()->rte_lib->display_field($data, $this->field_name, $this->settings, 'grid');
+	}
+
+	// --------------------------------------------------------------------
+
 	function save($data)
 	{
 		ee()->load->library('rte_lib');
@@ -104,9 +113,19 @@ class Rte_ft extends EE_Fieldtype {
 				'id'	=> $prefix.'_ta_rows',
 				'name'	=> $prefix.'_ta_rows',
 				'size'	=> 4,
-				'value'	=> $field_rows
+				'value'	=> set_value($prefix.'_ta_rows', $field_rows)
 				)
 			)
+		);
+	}
+
+	// --------------------------------------------------------------------
+	
+	public function grid_display_settings($data)
+	{
+		return array(
+			$this->grid_textarea_max_rows_row($data, 10),
+			$this->grid_text_direction_row($data)
 		);
 	}
 	
@@ -119,7 +138,14 @@ class Rte_ft extends EE_Fieldtype {
 		$data['field_ta_rows'] = ee()->input->post('rte_ta_rows');
 
 		return $data;
-	}	
+	}
+
+	// --------------------------------------------------------------------
+
+	function grid_save_settings($data)
+	{
+		return $data;
+	}
 }
 
 // END Rte_ft class

@@ -2663,9 +2663,19 @@ a#refresh_categories {
 	text-align: 		center;
 }
 
+.file_set {
+	position: relative;
+}
+
 .file_set .sub_filename {
 	clear:				left;
 	padding-top:		7px;
+}
+
+.file_set .remove_file {
+	position: absolute;
+	left: 5px;
+	top: 0;
 }
 
 #custom_date_picker input[type="text"] {
@@ -4175,8 +4185,27 @@ div.pageContents,
 	width: 10px;
 }
 
+
+/* Some grid size tweaks */
+
+.grid_field .multiselect {
+	height: 151px;
+}
+
+.grid_field .multiselect-active {
+	height: 190px;
+}
+
+.grid_field .multiselect-active,
+.grid_field .multiselect-filter {
+	margin-top: 0px;
+}
+
+
 .multiselect-filter input,
-.multiselect-filter input:focus {
+.multiselect-filter input:focus,
+.grid_field .multiselect-filter input[type=text],
+.grid_field .multiselect-filter input[type=text]:focus {
 	border-radius: 13px;
 	border: 1px solid rgb(182, 192, 194);
 	padding: 5px 10px 4px 8px;

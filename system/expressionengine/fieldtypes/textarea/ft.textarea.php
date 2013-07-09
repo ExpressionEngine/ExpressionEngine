@@ -60,11 +60,20 @@ class Textarea_ft extends EE_Fieldtype {
 		{
 			return ee()->functions->encode_ee_tags($data);
 		}
+
+		// Run markdown parsing before typography parsing
+		if ($this->row['field_ft_'.$this->field_id] == 'markdown')
+		{
+			$data = ee()->typography->markdown($data, array('encode_ee_tags' => 'no'));
+		}
 		
+		$field_fmt = (isset($this->settings['field_fmt']))
+			? $this->settings['field_fmt'] : $this->row['field_ft_'.$this->field_id];
+
 		return ee()->typography->parse_type(
 			ee()->functions->encode_ee_tags($data),
 			array(
-				'text_format'	=> $this->row['field_ft_'.$this->field_id],
+				'text_format'	=> $field_fmt,
 				'html_format'	=> $this->row['channel_html_formatting'],
 				'auto_links'	=> $this->row['channel_auto_link_urls'],
 				'allow_img_url' => $this->row['channel_allow_img_urls']
@@ -82,7 +91,7 @@ class Textarea_ft extends EE_Fieldtype {
 		
 		ee()->table->add_row(
 			lang('textarea_rows', 'field_ta_rows'),
-			form_input(array('id'=>'field_ta_rows','name'=>'field_ta_rows', 'size'=>4,'value'=>$field_rows))
+			form_input(array('id'=>'field_ta_rows','name'=>'field_ta_rows', 'size'=>4,'value'=>set_value('field_ta_rows', $field_rows)))
 		);
 		
 		$this->field_formatting_row($data, $prefix);
@@ -93,6 +102,17 @@ class Textarea_ft extends EE_Fieldtype {
 		$this->field_show_spellcheck_row($data, $prefix);
 		$this->field_show_writemode_row($data, $prefix);
 		$this->field_show_file_selector_row($data, $prefix);
+	}
+
+	// --------------------------------------------------------------------
+	
+	public function grid_display_settings($data)
+	{
+		return array(
+			$this->grid_field_formatting_row($data),
+			$this->grid_text_direction_row($data),
+			$this->grid_textarea_max_rows_row($data)
+		);
 	}
 }
 

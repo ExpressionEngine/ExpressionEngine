@@ -33,20 +33,11 @@ $lang = array(
 'channel' =>
 'Channel',
 
-'ping_sites' =>
-'Sites To Ping',
-
-'ping_servers' =>
-'Ping Servers',
-
 'invalid_upload_directory' =>
 'Invalid Upload Directory',
 
 'upload_directory_unwriteable' =>
 'Unable to Write File to Upload Directory',
-
-'pings_sent' =>
-'Pings Sent:',
 
 'moblog_entry_settings' =>
 'Channel Entry Settings',

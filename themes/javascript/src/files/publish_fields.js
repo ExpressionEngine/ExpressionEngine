@@ -16,7 +16,7 @@ $.ee_filebrowser();
 // Make sure we can create these methods without issues
 EE.namespace('EE.publish.file_browser');
 
-(function($) {	
+(function($) {
 	/**
 	 * Fires up the filebrowser for text areas
 	 */
@@ -28,13 +28,13 @@ EE.namespace('EE.publish.file_browser');
 				props = '',
 				open = '',
 				close = '';
-				
+
 			button_id = $(this).parent().attr('class').match(/id(\d+)/);
 			if (button_id != null)
 			{
 				button_id = button_id[1];
 			}
-			
+
 			// A bit of working around various textareas, text inputs, tec
 			if ($(this).closest("#markItUpWrite_mode_textarea").length) {
 				textareaId = "write_mode_textarea";
@@ -44,11 +44,11 @@ EE.namespace('EE.publish.file_browser');
 
 			if (textareaId != undefined) {
 				textarea = $("#"+textareaId);
-				textarea.focus();		
+				textarea.focus();
 			}
 
 			// We also need to allow file insertion into text inputs (vs textareas) but markitup
-			// will not accommodate this, so we need to detect if this request is coming from a 
+			// will not accommodate this, so we need to detect if this request is coming from a
 			// markitup button or another field type.
 
 			// Fact is - markitup is actually pretty crappy for anything that doesn't specifically
@@ -67,9 +67,9 @@ EE.namespace('EE.publish.file_browser');
 
 				open = EE.upload_directories[file.upload_location_id].pre_format;
 				close = EE.upload_directories[file.upload_location_id].post_format;
-				
+
 				image_tag = (button_id == null) ? EE.filebrowser.image_tag : EE.filebrowser['image_tag_'+button_id];
-				
+
 				// Include any user additions before or after the image link
 				replace = image_tag.replace(/src="(.*)\[!\[Link:!:http:\/\/\]!\](.*)"/, 'src="$1{filedir_'+file.upload_location_id+'}'+file.file_name+'$2"');
 
@@ -115,11 +115,11 @@ EE.namespace('EE.publish.file_browser');
 			}
 		});
 	};
-	
+
 	// @todo rewrite dependencies and remove
 	function magicMarkups(string) {
 		var abort = false;
-		
+
 		if (string) {
 			string = string.toString();
 			string = string.replace(/\(\!\(([\s\S]*?)\)\!\)/g,
@@ -150,7 +150,7 @@ EE.namespace('EE.publish.file_browser');
 		}
 		return "";
 	}
-	
+
 	/**
 	 * Changes the hidden inputs, thumbnail and file name when a file is selected
 	 * @private
@@ -158,7 +158,7 @@ EE.namespace('EE.publish.file_browser');
 	 * @param {Object} field jQuery object of the field
 	 */
 	function file_field_changed(file, field) {
-		var container = $("input[name="+field+"]").parent().parent().parent();
+		var container = $("input[name='"+field+"']").closest('.file_field');
 
 		if (file.is_image == false) {
 			container.find(".file_set").show().find(".filename").html("<img src=\""+EE.PATH_CP_GBL_IMG+"default.png\" alt=\""+EE.PATH_CP_GBL_IMG+"default.png\" /><br />"+file.file_name);
@@ -166,36 +166,60 @@ EE.namespace('EE.publish.file_browser');
 			container.find(".file_set").show().find(".filename").html("<img src=\""+file.thumb+"\" /><br />"+file.file_name);
 		}
 
-		$("input[name="+field+"_hidden]").val(file.file_name);
-		$("input[name="+field+"_hidden_dir], select[name="+field+"_directory]").val(file.upload_location_id);
+		container.find('.choose_file').hide();
+		container.find('.undo_remove').hide();
+
+		container.find('input[name*="_hidden_file"]').val(file.file_name);
+		container.find('input[name*="_hidden_dir"], select[name*="_directory"]').val(file.upload_location_id);
 	}
-	
+
 	/**
 	 * Given a selector and context, creates file browser triggers for multiple elements
 	 * @private
-	 * @param {String} selector The jQuery selector you're looking for, 
+	 * @param {String} selector The jQuery selector you're looking for,
 	 *		representing the link to open the file browser
 	 * @param {String} selector The jQuery selector representing the context in
 	 *		which to search for the selector
 	 */
-	function add_trigger (selector, context) {
-		// Look for every file input on the publish form and establish the 
+	function add_trigger(selector, context) {
+		// Look for every file input on the publish form and establish the
 		// file browser trigger. Also establishes the remove file handler.
 		$(selector, context).each(function() {
-			var container = $(this).parent().parent().parent(),
+			var container = $(this).closest('.file_field'),
 				trigger = container.find(".choose_file"),
+				no_filemanager = container.find('.no_file'),
 				content_type = $(this).data('content-type'),
 				directory = $(this).data('directory'),
+				last_value = [], // used for undo
 				settings = {
 					"content_type": content_type,
 					"directory": directory
 				};
-		
+
 			$.ee_filebrowser.add_trigger(trigger, $(this).attr("name"), settings, file_field_changed);
 
+			fileselector = trigger.length ? trigger : no_filemanager;
+
 			container.find(".remove_file").click(function() {
-				container.find("input[type=hidden]").val("");
+				container.find("input[type=hidden]").val(function(i, current_value) {
+					last_value[i] = current_value;
+					return '';
+				});
 				container.find(".file_set").hide();
+				container.find('.sub_filename a').show();
+				fileselector.show();
+
+				return false;
+			});
+
+			container.find('.undo_remove').click(function() {
+				container.find("input[type=hidden]").val(function(i) {
+					return last_value.length ? last_value[i] : '';
+				});
+				container.find(".file_set").show();
+				container.find('.sub_filename a').hide();
+				fileselector.hide();
+
 				return false;
 			});
 		});
@@ -206,6 +230,12 @@ EE.namespace('EE.publish.file_browser');
 	 */
 	EE.publish.file_browser.file_field = function() {
 		add_trigger("input[type=file]", "#publishForm, .pageContents");
+
+		// Bind a new trigger when a new Grid row is added
+		Grid.bind('file', 'display', function(cell)
+		{
+			add_trigger('input[type=file]', cell);
+		});
 	};
 
 	/**

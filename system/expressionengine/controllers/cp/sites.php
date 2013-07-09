@@ -2056,7 +2056,6 @@ class Sites extends CP_Controller {
 			'exp_member_groups',
 			'exp_member_search',
 			'exp_online_users',
-			'exp_ping_servers',
 			'exp_referrers',
 			'exp_search',
 			'exp_search_log',

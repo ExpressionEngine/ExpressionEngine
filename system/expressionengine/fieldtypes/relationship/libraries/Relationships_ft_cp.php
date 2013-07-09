@@ -406,7 +406,7 @@ class Relationship_settings_form {
 			$params = array(
 				$full_name,
 				$this->_options[$name],
-				$this->_selected[$name],
+				set_value($prefix.$name, $this->_selected[$name]),
 				$extras
 			);
 		}
@@ -415,7 +415,7 @@ class Relationship_settings_form {
 			$params = array(
 				$prefix.$name,
 				1,
-				$this->_selected[$name],
+				set_value($prefix.$name, $this->_selected[$name]),
 				$extras
 			);
 		}
@@ -423,7 +423,7 @@ class Relationship_settings_form {
 		{
 			$params = array(
 				$prefix.$name,
-				$this->_selected[$name],
+				set_value($prefix.$name, $this->_selected[$name]),
 				$extras
 			);
 		}

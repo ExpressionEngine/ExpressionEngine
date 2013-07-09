@@ -82,36 +82,15 @@ class EE_Javascript extends CI_Javascript {
 	 */
 	function compile($view_var = 'script_foot', $script_tags = TRUE)
 	{
-		// Experimental reduction of inline js
-		/*
-		foreach($this->js->jquery_code_for_compile as $k => $v)
-		{
-			// Remove Comments
-			$v = preg_replace('/\/\/[^\n\r\'";{}]*[\n\r]/', ' ', $v);
-			$v = preg_replace('/\/\*[^*]*\*+([^\/\'";{}][^*]*\*+)*\//', ' ', $v);
-			
-			// Safe Whitespace Replacements
-			$v = preg_replace('/[\t ]+/', ' ', $v);
-			$v = preg_replace('/(\s*?\n+\s*?)+/', "\n", $v);
-			
-			// Common Ones
-			$v = preg_replace('/([;]\n|\) \{|\{\n)/', '', $v);
-			
-			$this->js->jquery_code_for_compile[$k] = $v;
-		}
-		*/
-		
 		parent::compile($view_var, $script_tags);
 		
 		$global_js = $this->inline('
 			document.documentElement.className += "js";
 
+			var EE = '.json_encode($this->global_vars).';
+
 			if (typeof console === "undefined" || ! console.log) {
 				console = { log: function() { return false; }};
-			}
-			
-			if (typeof EE === "undefined" || ! EE) {
-				var EE = '.json_encode($this->global_vars).';
 			}
 		');
 

@@ -1,0 +1,667 @@
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 2.7.0
+ * @filesource
+ */
+
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine Update Class
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Core
+ * @category	Core
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
+ */
+class Updater {
+
+	var $version_suffix = '';
+
+	/**
+	 * Do Update
+	 *
+	 * @return TRUE
+	 */
+	public function do_update()
+	{
+		ee()->load->dbforge();
+
+		$steps = new ProgressIterator(
+			array(
+				'_update_specialty_templates',
+				'_update_actions_table',
+				'_drop_pings',
+				'_drop_updated_sites',
+				'_update_localization_preferences',
+				'_field_formatting_additions',
+				'_add_xid_used_flag',
+				'_rename_safecracker_db',
+				'_rename_safecracker_tags',
+				'_consolidate_file_fields',
+				'_update_relationships_for_grid',
+				'_install_grid'
+			)
+		);
+
+		foreach ($steps as $k => $v)
+		{
+			$this->$v();
+		}
+
+		return TRUE;
+	}
+
+	// -------------------------------------------------------------------
+
+	/**
+	 * Update Specialty Templates
+	 *
+	 * Was updated in 2.6, but new installs got the old template
+	 */
+	private function _update_specialty_templates()
+	{
+		ee()->db->where('template_name', 'reset_password_notification');
+		ee()->db->delete('specialty_templates');
+
+		$data = array(
+			'template_data'=>'{name},
+
+To reset your password, please go to the following page:
+
+{reset_url}
+
+If you do not wish to reset your password, ignore this message. It will expire in 24 hours.
+
+{site_name}
+{site_url}');
+
+		ee()->db->where('template_name', 'forgot_password_instructions')
+			->update('specialty_templates', $data);
+
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Update the Actions Table
+	 *
+	 * Required for the changes to the reset password flow.  Removed
+	 * one old action and added two new ones.
+	 */
+	private function _update_actions_table()
+	{
+		// Update two old actions that we no longer need to be actions
+		// with the names of the new methods.
+
+		// For this one, the method was renamed.  It still mostly does
+		// the same thing and needs to be an action.
+		ee()->db->where('method', 'retrieve_password')
+			->update('actions', array('method'=>'send_reset_token'));
+		// For this one the method still exists, but is now a form.  It needs
+		// to be renamed to the new processing method.
+		ee()->db->where('method', 'reset_password')
+			->update('actions', array('method'=>'process_reset_password'));
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Drop ping data and columns
+	 */
+	private function _drop_pings()
+	{
+		ee()->dbforge->drop_table('entry_ping_status');
+		ee()->dbforge->drop_table('ping_servers');
+
+		ee()->smartforge->drop_column('channels', 'ping_return_url');
+
+		ee()->load->library('layout');
+		ee()->layout->delete_layout_fields('ping');
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Drop updated sites module data
+	 */
+	private function _drop_updated_sites()
+	{
+		$query = ee()->db
+			->select('module_id')
+			->get_where('modules', array('module_name' => 'Updated_sites'));
+
+		if ($query->num_rows())
+		{
+			ee()->db->delete('module_member_groups', array('module_id' => $query->row('module_id')));
+			ee()->db->delete('modules', array('module_name' => 'Updated_sites'));
+			ee()->db->delete('actions', array('class' => 'Updated_sites'));
+
+			ee()->dbforge->drop_table('updated_sites');
+			ee()->dbforge->drop_table('updated_site_pings');
+		}
+
+		return TRUE;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Remove the default localization member in favor or a site setting
+	 * under global localization prefs.
+	 */
+	private function _update_localization_preferences()
+	{
+		$query = ee()->db->query("SELECT * FROM exp_sites");
+
+		foreach ($query->result_array() as $row)
+		{
+			$conf = $row['site_system_preferences'];
+			$data = unserialize(base64_decode($conf));
+
+			if (isset($data['server_timezone']))
+			{
+				if ( ! isset($data['default_site_timezone']) ||
+					$data['default_site_timezone'] == '')
+				{
+					$data['default_site_timezone'] = $data['server_timezone'];
+				}
+
+				unset(
+					$data['server_timezone'],
+					$data['default_site_dst'],
+					$data['honor_entry_dst']
+				);
+			}
+
+			ee()->db->update(
+				'sites',
+				array('site_system_preferences' => base64_encode(serialize($data))),
+				array('site_id' => $row['site_id'])
+			);
+		}
+
+		ee()->smartforge->drop_column('members', 'localization_is_site_default');
+
+		return TRUE;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Insert markdown as a formatting option
+	 * @return boolean TRUE if successful
+	 */
+	private function _field_formatting_additions()
+	{
+		$fields = $this->_get_field_formatting_ids(
+			'xhtml',
+			$this->_get_field_formatting_ids('markdown')
+		);
+
+		$data = array();
+		foreach ($fields as $field_id)
+		{
+			$data[] = array(
+				'field_id'	=> $field_id,
+				'field_fmt'	=> 'markdown'
+			);
+		}
+
+		ee()->db->insert_batch('field_formatting', $data);
+
+		return TRUE;
+	}
+
+	/**
+	 * Retrieve field_ids that match the $field_fmt
+	 * @param  string $field_fmt The name of the field format
+	 * @param  array  $exclude   Optional array of field ids to exclude
+	 * @return array             Array containing field ids
+	 */
+	private function _get_field_formatting_ids($field_fmt, $exclude = array())
+	{
+		$ids = array();
+		$fields = ee()->db->select('field_id')
+			->get_where(
+				'field_formatting',
+				array('field_fmt' => $field_fmt)
+			)
+			->result_array();
+
+		foreach ($fields as $row)
+		{
+			if (empty($exlude) OR ! in_array($row['field_id'], $exclude))
+			{
+				$ids[] = $row['field_id'];
+			}
+		}
+
+		return $ids;
+	}
+
+	// -------------------------------------------------------------------
+
+	/**
+	 * Add a used flag to xids to allow for back button usage without
+	 * sacrificing existing cross site request forgery security.
+	 */
+	private function _add_xid_used_flag()
+	{
+		ee()->smartforge->add_column(
+			'security_hashes',
+			array(
+				'used' => array(
+					'type'			=> 'tinyint',
+					'constraint'	=> 1,
+					'unsigned'		=> TRUE,
+					'default'		=> 0,
+					'null'			=> FALSE
+				)
+			)
+		);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Update safecracker to channel:form and convert old saef's while we're
+	 * at it - just in case they upgrade from below 2.0
+	 */
+	private function _rename_safecracker_db()
+	{
+		ee()->db->update(
+			'actions',
+			array('class' => 'Channel'), // set
+			array('class' => 'Safecracker') // where
+		);
+
+		ee()->db->update(
+			'actions',
+			array('method' => 'submit_entry'), // set
+			array('class' => 'Channel', 'method' => 'insert_new_entry') // where
+		);
+
+		// Add the new settings table
+		ee()->dbforge->add_field(
+			array(
+				'channel_form_settings_id' => array('type' => 'int','constraint' => 10,	'unsigned' => TRUE,	'null' => FALSE,	'auto_increment' => TRUE),
+				'site_id'			=> array('type' => 'int',		'constraint' => 4,	'unsigned' => TRUE,	'null' => FALSE,	'default' => 0),
+				'channel_id'		=> array('type' => 'int',		'constraint' => 6,	'unsigned' => TRUE,	'null' => FALSE,	'default' => 0),
+				'default_status'	=> array('type' => 'varchar',	'constraint' => 50,	'null' => FALSE, 	'default' => 'open'),
+				'require_captcha'	=> array('type' => 'char',		'constraint' => 1,	'null' => FALSE,	'default' => 'n'),
+				'allow_guest_posts'	=> array('type' => 'char',		'constraint' => 1,	'null' => FALSE,	'default' => 'n'),
+				'default_author'	=> array('type' => 'int',		'constraint' => 11,	'unsigned' => TRUE,	'null' => FALSE,	'default' => 0),
+			)
+		);
+
+		ee()->dbforge->add_key('channel_form_settings_id', TRUE);
+		ee()->dbforge->add_key('site_id');
+		ee()->dbforge->add_key('channel_id');
+		ee()->smartforge->create_table('channel_form_settings');
+
+		// Grab the settings
+		$settings_q = ee()->db
+			->select('settings')
+			->where('class', 'Safecracker_ext')
+			->limit(1)
+			->get('extensions');
+
+		if ($settings_q->num_rows() && $settings_q->row('settings'))
+		{
+			$settings = $settings_q->row('settings');
+			$settings = strip_slashes(unserialize($settings));
+
+			// Settings all have their separate arrays, so we need to invert the
+			// grouping to group by site_id and channel_id rather than by setting
+			// name.
+			$grouped_settings = array();
+
+			foreach ($settings as $setting_name => $sites)
+			{
+				foreach ($sites as $site_id => $channels)
+				{
+					if ( ! isset($grouped_settings[$site_id]))
+					{
+						$grouped_settings[$site_id] = array();
+					}
+
+					foreach ($channels as $channel_id => $value)
+					{
+						if ( ! isset($grouped_settings[$site_id][$channel_id]))
+						{
+							$grouped_settings[$site_id][$channel_id] = array();
+						}
+
+						switch ($setting_name)
+						{
+							case 'allow_guests':
+								$setting_name = 'allow_guest_posts';
+							case 'require_captcha':
+								$value = $value ? 'y' : 'n';
+								break;
+							case 'override_status':
+								$setting_name = 'default_status';
+								break;
+							case 'logged_out_member_id':
+								$setting_name = 'default_author';
+								break;
+							default:
+								continue; // unknown setting name
+						}
+
+						$grouped_settings[$site_id][$channel_id][$setting_name] = $value;
+					}
+				}
+			}
+
+			// Now flatten that into a usable set of db rows
+			$db_settings = array();
+
+			foreach ($grouped_settings as $site_id => $channels)
+			{
+				foreach ($channels as $channel_id => $settings)
+				{
+					$db_settings[] = array_merge(
+						$settings,
+						compact('site_id', 'channel_id')
+					);
+				}
+			}
+
+			// and put them into the new table
+			ee()->db->insert_batch('channel_form_settings', $db_settings);
+		}
+
+		// drop the extension
+		ee()->db->delete('extensions', array('class' => 'Safecracker_ext'));
+	}
+
+	// -------------------------------------------------------------------
+
+	/**
+	 * Update all Safecracker Tags in All Templates
+	 *
+	 * Examine the templates saved in the database and in file.  Search for all
+	 * instances of 'safecracker' and 'entry_form' replacing them with the new
+	 * {channel:form} tag.
+	 *
+	 * @return void
+	 */
+	protected function _rename_safecracker_tags()
+	{
+		if ( ! defined('LD')) define('LD', '{');
+		if ( ! defined('RD')) define('RD', '}');
+
+		// We're gonna need this to be already loaded.
+		require_once(APPPATH . 'libraries/Functions.php');
+		ee()->functions = new Installer_Functions();
+
+		require_once(APPPATH . 'libraries/Extensions.php');
+		ee()->extensions = new Installer_Extensions();
+
+		require_once(APPPATH . 'libraries/Addons.php');
+		ee()->addons = new Installer_Addons();
+
+		$installer_config = ee()->config;
+		ee()->config = new MSM_Config();
+
+		// We need to figure out which template to load.
+		// Need to check the edit date.
+		ee()->load->model('template_model');
+		$templates = ee()->template_model->fetch_last_edit(array(), TRUE);
+
+		foreach($templates as $template)
+		{
+			// If there aren't any old tags, then we don't need to continue.
+			if (strpos($template->template_data, LD.'exp:channel:entry_form') === FALSE
+				&& strpos($template->template_data, LD.'exp:safecracker') === FALSE)
+			{
+				continue;
+			}
+
+			// Find and replace the pairs
+			$template->template_data = str_replace(
+				array(LD.'exp:channel:entry_form', LD.'/exp:channel:entry_form', LD.'exp:safecracker',      LD.'/exp:safecracker'),
+				array(LD.'exp:channel:form',       LD.'/exp:channel:form',       LD.'exp:channel:form', LD.'/exp:channel:form'),
+				$template->template_data
+			);
+
+			// Rename the css path
+			$template->template_data = str_replace(
+				'css/_ee_saef_css',
+				'css/_ee_channel_form_css',
+				$template->template_data
+			);
+
+			// Fix the custom_field loop conditional
+			$template->template_data = str_replace(
+				LD.'if safecracker_file'.RD,
+				LD.'if file'.RD,
+				$template->template_data
+			);
+
+			// Replace {safecracker_head}
+			$template->template_data = str_replace(
+				LD.'safecracker_head'.RD,
+				LD.'channel_form_assets'.RD,
+				$template->template_data
+			);
+
+			// Replace safecracker_head= parameter
+			$template->template_data = preg_replace(
+				'/safecracker_head(\s*)=/is',
+				'include_assets$1=',
+				$template->template_data
+			);
+
+			// save the template
+			// if saving to file, save the file
+			if ($template->loaded_from_file)
+			{
+				ee()->template_model->save_to_file($template);
+			}
+			else
+			{
+				ee()->template_model->save_to_database($template);
+			}
+		}
+
+		ee()->config = $installer_config;
+	}
+
+
+	// -------------------------------------------------------------------
+
+	/**
+	 * Combine the native file field with the safecracker file field.
+	 *
+	 * Merges the settings of both to create a unified file experience
+	 * using the safecracker approach on the frontend and a variation
+	 * of the native field on the backend (depending on settings).
+	 *
+	 * @return void
+	 */
+	protected function _consolidate_file_fields()
+	{
+		$sc_fields = ee()->db
+			->select('field_id, field_type, field_settings')
+			->where('field_type', 'safecracker_file')
+			->get('channel_fields')
+			->result_array();
+
+		if (count($sc_fields))
+		{
+			foreach ($sc_fields as &$field)
+			{
+				$field['field_type'] = 'file';
+
+				$settings = unserialize(base64_decode($field['field_settings']));
+
+				if ( ! $settings)
+				{
+					$settings = array();
+				}
+
+				foreach (array_keys($settings) as $key)
+				{
+					$new_key = str_replace(
+						array('file_field_', 'safecracker_'),
+						'',
+						$key
+					);
+
+					switch ($new_key)
+					{
+						case 'show_existing': $settings[$key] = ((bool) $settings[$key]) ? 'y': 'n';
+							break;
+						case 'upload_dir':    $new_key = 'allowed_directories';
+							break;
+					}
+
+					$settings[$new_key] = $settings[$key];
+					unset($settings[$key]);
+				}
+
+				$field['field_settings'] = base64_encode(serialize($settings));
+			}
+
+			ee()->db->update_batch('channel_fields', $sc_fields, 'field_id');
+		}
+
+		ee()->db->delete('fieldtypes', array('name' => 'safecracker_file'));
+	}
+
+
+	// -------------------------------------------------------------------
+
+	/**
+	 * Add the new columns for relationships in a grid
+	 *
+	 * @return void
+	 */
+	protected function _update_relationships_for_grid()
+	{
+		ee()->smartforge->add_column(
+			'relationships',
+			array(
+				'grid_field_id' => array(
+					'type'			=> 'int',
+					'constraint'	=> 10,
+					'unsigned'		=> TRUE,
+					'default'		=> 0,
+					'null'			=> FALSE
+				),
+				'grid_col_id' => array(
+					'type'			=> 'int',
+					'constraint'	=> 10,
+					'unsigned'		=> TRUE,
+					'default'		=> 0,
+					'null'			=> FALSE
+				),
+				'grid_row_id' => array(
+					'type'			=> 'int',
+					'constraint'	=> 10,
+					'unsigned'		=> TRUE,
+					'default'		=> 0,
+					'null'			=> FALSE
+				)
+			)
+		);
+
+		ee()->smartforge->add_key('relationships', 'grid_row_id');
+	}
+
+	// -------------------------------------------------------------------
+
+	/**
+	 * Add the new columns for relationships in a grid
+	 *
+	 * @return void
+	 */
+	protected function _install_grid()
+	{
+		$grid_installed = ee()->db->get_where('fieldtypes', array('name' => 'grid'));
+
+		if ($grid_installed->num_rows() == 0)
+		{
+			ee()->db->insert('fieldtypes',
+				array(
+					'name'					=> 'grid',
+					'version'				=> '1.0',
+					'settings'				=> 'YTowOnt9',
+					'has_global_settings'	=> 'n',
+				)
+			);
+		}
+
+		$columns = array(
+			'col_id' => array(
+				'type'				=> 'int',
+				'constraint'		=> 10,
+				'unsigned'			=> TRUE,
+				'auto_increment'	=> TRUE
+			),
+			'field_id' => array(
+				'type'				=> 'int',
+				'constraint'		=> 10,
+				'unsigned'			=> TRUE
+			),
+			'col_order' => array(
+				'type'				=> 'int',
+				'constraint'		=> 3,
+				'unsigned'			=> TRUE
+			),
+			'col_type' => array(
+				'type'				=> 'varchar',
+				'constraint'		=> 50
+			),
+			'col_label' => array(
+				'type'				=> 'varchar',
+				'constraint'		=> 50
+			),
+			'col_name' => array(
+				'type'				=> 'varchar',
+				'constraint'		=> 32
+			),
+			'col_instructions' => array(
+				'type'				=> 'text'
+			),
+			'col_required' => array(
+				'type'				=> 'char',
+				'constraint'		=> 1
+			),
+			'col_search' => array(
+				'type'				=> 'char',
+				'constraint'		=> 1
+			),
+			'col_width' => array(
+				'type'				=> 'int',
+				'constraint'		=> 3,
+				'unsigned'			=> TRUE
+			),
+			'col_settings' => array(
+				'type'				=> 'text'
+			)
+		);
+
+		ee()->load->dbforge();
+		ee()->dbforge->add_field($columns);
+		ee()->dbforge->add_key('col_id', TRUE);
+		ee()->dbforge->add_key('field_id');
+		ee()->smartforge->create_table('grid_columns');
+	}
+}
+/* END CLASS */
+
+/* End of file ud_270.php */
+/* Location: ./system/expressionengine/installer/updates/ud_270.php */

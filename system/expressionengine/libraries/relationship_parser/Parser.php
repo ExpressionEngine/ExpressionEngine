@@ -10,7 +10,7 @@
  * @since		Version 2.6
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -38,7 +38,7 @@ class EE_Relationship_data_parser {
 	}
 
  	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Entry data accessor.
 	 *
@@ -53,7 +53,7 @@ class EE_Relationship_data_parser {
 	}
 
  	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Category data accessor.
 	 *
@@ -68,7 +68,7 @@ class EE_Relationship_data_parser {
 	}
 
  	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Take the tagdata from a single entry, and the entry's id
 	 * and parse any and all relationship variables in the tag data.
@@ -105,7 +105,7 @@ class EE_Relationship_data_parser {
 	}
 
  	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Parse an individual tree node. Will loop through each chunk that
 	 * applies to this node and call the channel entries parser on it.
@@ -135,7 +135,9 @@ class EE_Relationship_data_parser {
 			$entry_ids = array_unique($entry_ids[$parent_id]);
 			$entry_id = reset($entry_ids);
 
-			if (preg_match_all('/'.$open_tag.'(.+?){\/'.$tag.':'.$node->shortcut.'}/is', $tagdata, $matches, PREG_SET_ORDER))
+			$shortcut = preg_quote($node->shortcut, '/');
+
+			if (preg_match_all('/'.$open_tag.'(.+?){\/'.$tag.':'.$shortcut.'}/is', $tagdata, $matches, PREG_SET_ORDER))
 			{
 				foreach ($matches as &$match)
 				{
@@ -221,7 +223,7 @@ class EE_Relationship_data_parser {
 	}
 
  	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Assign no results data to the node.
 	 *
@@ -247,6 +249,12 @@ class EE_Relationship_data_parser {
 
 		if ($has_no_results && preg_match("/".LD."if {$tag}:no_results".RD."(.*?)".LD.'\/'."if".RD."/s", $tagdata, $match))
 		{
+			if (stristr($match[1], LD.'if'))
+			{
+				$match[0] = ee()->functions->full_tag($match[0], $tagdata, LD.'if', LD.'\/'."if".RD);
+				$match[1] = substr($match[0], strlen(LD."if {$tag}:no_results".RD), -strlen(LD.'/'."if".RD));
+			}
+
 			$node->no_results = $match;
 			return;
 		}
@@ -255,7 +263,7 @@ class EE_Relationship_data_parser {
 	}
 
  	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Call the channel entries parser for this node and its tagchunk.
 	 *
@@ -273,7 +281,7 @@ class EE_Relationship_data_parser {
 		// Load the parser
 		ee()->load->library('channel_entries_parser');
 		$parser = ee()->channel_entries_parser->create($tagdata, $prefix);
-		
+
 		$config = array(
 			'callbacks' => array(
 				'tagdata_loop_end' => array($node, 'callback_tagdata_loop_end')
@@ -362,7 +370,7 @@ class EE_Relationship_data_parser {
 	}
 
  	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Process the parameters of this tag pair to figure out what data
 	 * we need, and in what order.
@@ -481,9 +489,49 @@ class EE_Relationship_data_parser {
 
 			$rows[$entry_id] = $data;
 
+			// categories
 			if (isset($this->_categories[$entry_id]))
 			{
 				$categories[$entry_id] = $this->category($entry_id);
+			}
+
+			$requested_cats = $node->param('category');
+
+			if ($requested_cats)
+			{
+				if ( ! isset($categories[$entry_id]))
+				{
+					continue;
+				}
+
+				$not = FALSE;
+				$cat_match = FALSE;
+
+				if (strpos($requested_cats, 'not ') === 0)
+				{
+					$requested_cats = substr($requested_cats, 4);
+					$not = TRUE;
+				}
+
+				$requested_cats = explode('|', $requested_cats);
+
+				foreach ($categories[$entry_id] as $cat)
+				{
+					if (in_array($cat['cat_id'], $requested_cats))
+					{
+						if ($not)
+						{
+						continue 2;
+						}
+
+						$cat_match = TRUE;
+					}
+				}
+
+				if ( ! $cat_match)
+				{
+					continue;
+				}
 			}
 		}
 
@@ -515,7 +563,7 @@ class EE_Relationship_data_parser {
 	}
 
  	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Utility method to do the row sorting in PHP.
 	 *

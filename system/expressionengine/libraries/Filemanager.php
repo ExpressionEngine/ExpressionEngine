@@ -632,6 +632,9 @@ class Filemanager {
 	 */
 	function frontend_filebrowser($endpoint_url, $include_jquery_base = TRUE)
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.7');
+
 		ee()->lang->loadfile('filebrowser');
 
 		$ret = array();
@@ -665,9 +668,9 @@ class Filemanager {
 			$ret['str'] .= '<script type="text/javascript" charset="utf-8" src="'.$script_base.'"></script>';
 		}
 
-		$live_url =  (ee()->TMPL->fetch_param('use_live_url') != 'no') ? AMP.'use_live_url=y' : '';
+	//	$live_url =  (ee()->TMPL->fetch_param('use_live_url') != 'no') ? AMP.'use_live_url=y' : '';
 
-		$ret['str'] .= '<script type="text/javascript" charset="utf-8" src="'.ee()->functions->fetch_site_index(0,0).QUERY_MARKER.'ACT=saef'.$live_url.'"></script>';
+	//	$ret['str'] .= '<script type="text/javascript" charset="utf-8" src="'.ee()->functions->fetch_site_index(0,0).QUERY_MARKER.'ACT=saef'.$live_url.'"></script>';
 
 		return $ret;
 	}
