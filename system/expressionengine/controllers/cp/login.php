@@ -442,7 +442,7 @@ class Login extends CP_Controller {
 		$address = strip_tags($address);
 		
 		// Fetch user data
-		$this->db->select('member_id, username');
+		$this->db->select('member_id, username, screen_name');
 		$this->db->where('email', $address);
 		$query = $this->db->get('members');
 
@@ -454,9 +454,9 @@ class Login extends CP_Controller {
 			return $this->load->view('account/request_new_password', $vars);
 		}
 		
-		$member_id = $query->row('member_id') ;
-		$username  = $query->row('username') ;
-	
+		$member_id = $query->row('member_id');
+		$name  = ($query->row('screen_name') == '') ? $query->row('username') : $query->row('screen_name');
+			
 		// Clean out any old reset codes.	
 		$a_day_ago = time() - (60*60*24);
 		$this->db->where('date <', $a_day_ago);
@@ -470,8 +470,8 @@ class Login extends CP_Controller {
 		
 		// Buid the email message
 		$swap = array(
-			'name'		=> $username,
-			'reset_url'	=> $this->config->item('cp_url')."?S=0&D=cp&C=login&M=reset_password&resetcode=".$rand,
+			'name'		=> $name,
+			'reset_url'	=> reduce_double_slashes($this->config->item('cp_url')."?S=0&D=cp&C=login&M=reset_password&resetcode=".$rand),
 			'site_name'	=> stripslashes($this->config->item('site_name')),
 			'site_url'	=> $this->config->item('site_url')
 		);
@@ -479,7 +479,6 @@ class Login extends CP_Controller {
 		$template = $this->functions->fetch_email_template('forgot_password_instructions');
 		$message_title = $this->_var_swap($template['title'], $swap);
 		$message = $this->_var_swap($template['data'], $swap);
-
 
 		// Instantiate the email class
 		$this->load->library('email');
