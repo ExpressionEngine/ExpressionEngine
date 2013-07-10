@@ -1094,8 +1094,8 @@ class Simple_commerce_mcp {
 				$vars['purchases'][$id]['purchase_id'] =  0;
 
 			ee()->javascript->output('
-			$("#purchase_date_'.$id.'").datepicker({dateFormat: $.datepicker.W3C + date_obj_time, defaultDate: new Date('.$this->localize->format_date('%D %M %d %Y').')});
-			$("#subscription_end_date_'.$id.'").datepicker({dateFormat: $.datepicker.W3C + date_obj_time, defaultDate: new Date('.$this->localize->format_date('%D %M %d %Y').')});
+			$("#purchase_date_'.$id.'").datepicker({dateFormat: $.datepicker.W3C + date_obj_time, defaultDate: new Date('.ee()->localize->format_date('%D %M %d %Y').')});
+			$("#subscription_end_date_'.$id.'").datepicker({dateFormat: $.datepicker.W3C + date_obj_time, defaultDate: new Date('.ee()->localize->format_date('%D %M %d %Y').')});
 		');
 
 			}
