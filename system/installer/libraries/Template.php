@@ -33,6 +33,23 @@ class Installer_Template {
 	private $related_markers = array();
 
 	/**
+	 * Build the installer's Template library and load all the 
+	 * libraries it will need.
+	 */
+	public function __construct()
+	{
+		// We're gonna need this to be already loaded.
+		require_once(APPPATH . 'libraries/Functions.php');	
+		ee()->functions = new Installer_Functions();
+
+		require_once(APPPATH . 'libraries/Extensions.php');
+		ee()->extensions = new Installer_Extensions();
+
+		require_once(APPPATH . 'libraries/Addons.php');
+		ee()->addons = new Installer_Addons();
+	}
+
+	/**
 	 * Find all {related_entries} tags in the passed Template
 	 *
 	 * Takes a passed Template_Entity and searches the template for instances

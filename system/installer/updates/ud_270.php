@@ -49,7 +49,8 @@ class Updater {
 				'_rename_safecracker_tags',
 				'_consolidate_file_fields',
 				'_update_relationships_for_grid',
-				'_install_grid'
+				'_install_grid',
+				'_update_relationship_tags_in_snippets'
 			)
 		);
 
@@ -660,6 +661,40 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		ee()->dbforge->add_key('field_id');
 		ee()->smartforge->create_table('grid_columns');
 	}
+
+	// -------------------------------------------------------------------
+
+	/**
+	 * Update Relationship Tags in Snippets, Missed in Previous Update
+	 *
+	 * 	Pulls snippets from the database, examines them for any relationship tags,
+	 * updates them and then saves them back to the database.
+	 *
+	 * @return void
+	 */
+	protected function _update_relationship_tags_in_snippets()
+	{
+		require_once(APPPATH . 'libraries/Template.php');
+		ee()->template = new Installer_Template();
+
+		ee()->load->model('snippet_model');
+		$snippets = ee()->snippet_model->fetch();
+
+		foreach($snippets as $snippet) 
+		{
+			// If there aren't any related entries tags, then we don't need to continue.
+			if (strpos($snippet->snippet_content, 'related_entries') === FALSE 
+				&& strpos($snippet->snippet_content, 'reverse_related_entries') === FALSE)
+			{
+				continue;
+			}
+
+			$snippet->snippet_content = ee()->template->replace_related_entries_tags($snippet->snippet_content);
+			ee()->snippet_model->save($snippet);
+		}
+
+
+	}	
 }
 /* END CLASS */
 

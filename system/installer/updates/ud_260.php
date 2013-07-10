@@ -452,19 +452,11 @@ If you do not wish to reset your password, ignore this message. It will expire i
 	 */
 	private function _update_relationship_tags()
 	{
-		// We're gonna need this to be already loaded.
-		require_once(APPPATH . 'libraries/Functions.php');	
-		ee()->functions = new Installer_Functions();
-
-		require_once(APPPATH . 'libraries/Extensions.php');
-		ee()->extensions = new Installer_Extensions();
-
-		require_once(APPPATH . 'libraries/Addons.php');
-		ee()->addons = new Installer_Addons();
-
 		require_once(APPPATH . 'libraries/Template.php');
 		ee()->template = new Installer_Template();
 
+		// Since we don't have consistent destructors,
+		// we'll keep this here.
 		$installer_config = ee()->config;
 		ee()->config = new MSM_Config();
 
