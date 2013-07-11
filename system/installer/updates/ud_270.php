@@ -673,7 +673,10 @@ If you do not wish to reset your password, ignore this message. It will expire i
 	 */
 	protected function _update_relationship_tags_in_snippets()
 	{
-		require_once(APPPATH . 'libraries/Template.php');
+		if ( ! class_exists('Installer_Template'))
+		{
+			require_once(APPPATH . 'libraries/Template.php');
+		}
 		ee()->template = new Installer_Template();
 
 		ee()->load->model('snippet_model');

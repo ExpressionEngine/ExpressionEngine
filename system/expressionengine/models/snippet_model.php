@@ -40,7 +40,7 @@ class Snippet_model extends CI_Model {
 	public function fetch(array $fields=array())
 	{
 		$this->db->select();
-		$this->db->from('templates');
+		$this->db->from('snippets');
 
 		foreach ($fields as $field=>$value)
 		{
