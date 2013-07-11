@@ -58,7 +58,6 @@ class Updater {
 		{
 			$this->$v();
 		}
-
 		return TRUE;
 	}
 
@@ -683,18 +682,17 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		foreach($snippets as $snippet) 
 		{
 			// If there aren't any related entries tags, then we don't need to continue.
-			if (strpos($snippet->snippet_content, 'related_entries') === FALSE 
-				&& strpos($snippet->snippet_content, 'reverse_related_entries') === FALSE)
+			if (strpos($snippet->snippet_contents, 'related_entries') === FALSE 
+				&& strpos($snippet->snippet_contents, 'reverse_related_entries') === FALSE)
 			{
 				continue;
 			}
 
-			$snippet->snippet_content = ee()->template->replace_related_entries_tags($snippet->snippet_content);
+			$snippet->snippet_contents = ee()->template->replace_related_entries_tags($snippet->snippet_contents);
 			ee()->snippet_model->save($snippet);
 		}
-
-
 	}	
+
 }
 /* END CLASS */
 

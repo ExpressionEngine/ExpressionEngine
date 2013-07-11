@@ -47,7 +47,7 @@ class Snippet_model extends CI_Model {
 			$this->db->where($field, $value);
 		}
 
-		return $this->entities_from_db_result($this->db->get(), $load_groups);
+		return $this->entities_from_db_result($this->db->get());
 	}
 
 	// -----------------------------------------------------------------
@@ -55,7 +55,7 @@ class Snippet_model extends CI_Model {
 	/**
 	 *
 	 */
-	public function entities_from_db_result(array $result)
+	public function entities_from_db_result($result)
 	{
 		$entities = array();
 		foreach($result->result_array() as $row)
