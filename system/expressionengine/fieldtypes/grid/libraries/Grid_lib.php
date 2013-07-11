@@ -333,8 +333,15 @@ class Grid_lib {
 		$final_values = array();
 		$errors = FALSE;
 
+		if ( ! is_array($data))
+		{
+			$data = array();
+		}
 		// Rows key may not be set if we're at the saving stage
-		$data = (isset($data['rows'])) ? $data['rows'] : $data;
+		elseif (isset($data['rows']))
+		{
+			$data = $data['rows'];
+		}
 
 		foreach ($data as $row_id => $row)
 		{

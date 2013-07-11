@@ -10,7 +10,24 @@
  * @since		Version 2.0
  * @filesource
  */
- 
+
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine XID Marker Interface
+ *
+ * Implementing this will enforce strict XID checks on all requests to
+ * the class (if secure forms are enabled). Without it, the security model
+ * is a little more lax until third parties have time to adapt.
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Core
+ * @category	Core
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
+ */
+interface Strict_XID {}
+
 // ------------------------------------------------------------------------
 
 /**
@@ -24,9 +41,13 @@
  */
 class EE_Security extends CI_Security {
 
+	// Flags for have_valid_xid()
+	const CSRF_STRICT = 1;	// require single-use token for ajax requests
+	const CSRF_EXEMPT = 2;	// opt-out of xid checks
+
 	private $_xid_ttl = 7200;
 	private $_checked_xids = array();
-	
+
 	// Small note, if you feel the urge to add a constructor,
 	// do not call get_instance(). The CI Security library
 	// is sometimes instantiated before the controller is loaded.
@@ -43,26 +64,60 @@ class EE_Security extends CI_Security {
 	 * -- will then be deleted and a new one generated.  If the validation
 	 * check fails, we'll return false and the caller should then show
 	 * an appropriate error.
-	 * 
+	 *
 	 * @access public
-	 * @return boolean FALSE if there is an invalid XID, TRUE if valid or no XID 
+	 * @return boolean FALSE if there is an invalid XID, TRUE if valid or no XID
 	 */
-	public function have_valid_xid()
+	public function have_valid_xid($flags = self::CSRF_STRICT)
 	{
 		$hash = '';
 		$request_xid = '';
-			
+
 		if (ee()->config->item('secure_forms') == 'y')
 		{
 			if (count($_POST) > 0)
 			{
-				if ( ! isset($_POST['XID'])
-					OR ! $this->secure_forms_check($_POST['XID']))
+				$run_check = TRUE;
+				$request_xid = FALSE;
+
+				// exempt trumps all
+				if ($flags & self::CSRF_EXEMPT)
 				{
-					return FALSE;
+					$run_check = FALSE;
 				}
-				
-				$request_xid = $_POST['XID'];
+				// only check ajax in strict mode
+				elseif (AJAX_REQUEST && ! ($flags & self::CSRF_STRICT))
+				{
+					$run_check = FALSE;
+				}
+
+				// A class is only passed when the check is optional (currently, ajax actions)
+
+				if (isset($class) && ! ($class instanceOf Strict_XID))
+				{
+					$run_check = FALSE;
+				}
+
+				// ajax requests use a header
+				if (AJAX_REQUEST)
+				{
+					$request_xid = ee()->input->server('HTTP_X_EEXID');
+				}
+
+				// the ajax header trumps post, but for backwards compat we will
+				// fall back to post. Also here for non-ajax, obviously.
+				if ( ! $request_xid)
+				{
+					$request_xid = ee()->input->post('XID');
+				}
+
+				if ($run_check)
+				{
+					if ( ! $request_xid OR ! $this->secure_forms_check($request_xid))
+					{
+						return FALSE;
+					}
+				}
 
 				// @deprecated since 2.7
 				if (REQ == 'CP')
@@ -70,12 +125,18 @@ class EE_Security extends CI_Security {
 					unset($_POST['XID']);
 				}
 			}
-			
+
 			$hash = $this->generate_xid();
 		}
-		
+
 		define('REQUEST_XID', $request_xid);
 		define('XID_SECURE_HASH', $hash);
+
+		if (AJAX_REQUEST && count($_POST))
+		{
+			header('X-EEXID: '.XID_SECURE_HASH);
+		}
+
 		return TRUE;
 	}
 
@@ -88,7 +149,7 @@ class EE_Security extends CI_Security {
 	 * @return	bool
 	 */
 	public function secure_forms_check($xid)
-	{	
+	{
 		if (ee()->config->item('secure_forms') != 'y' OR $xid === FALSE)
 		{
 			return TRUE;
@@ -112,7 +173,7 @@ class EE_Security extends CI_Security {
 
 		return $this->_checked_xids[$xid];
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -139,15 +200,15 @@ class EE_Security extends CI_Security {
 			))
 			->from('security_hashes')
 			->count_all_results();
-		
+
 		if ($total === 0)
 		{
 			return FALSE;
 		}
-		
-		return TRUE;		
+
+		return TRUE;
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -170,9 +231,9 @@ class EE_Security extends CI_Security {
 				'session_id'	=> ee()->session->userdata('session_id'),
 				'hash' 			=> $hash
 			);
-			$hashes[] = $hash;	
+			$hashes[] = $hash;
 		}
-		
+
 		ee()->db->insert_batch('security_hashes', $inserts);
 
 		return (count($hashes) > 1 OR $array) ? $hashes : $hashes[0];
@@ -187,7 +248,7 @@ class EE_Security extends CI_Security {
 	 * @return	void
 	 */
 	public function delete_xid($xid = REQUEST_XID)
-	{		
+	{
 		if (ee()->config->item('secure_forms') != 'y' OR $xid === FALSE)
 		{
 			return;

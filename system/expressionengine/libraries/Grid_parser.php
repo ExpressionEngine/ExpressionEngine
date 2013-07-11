@@ -246,13 +246,20 @@ class Grid_parser {
 
 		try
 		{
-			$relationship_parser = ee()->relationships_parser->create(
-				$channel->rfields[config_item('site_id')],
-				$row_ids, // array(#, #, #)
-				$tagdata,
-				$relationships, // field_name => field_id
-				$field_id
-			);
+			if (isset($channel->rfields[config_item('site_id')]))
+			{
+				$relationship_parser = ee()->relationships_parser->create(
+					$channel->rfields[config_item('site_id')],
+					$row_ids, // array(#, #, #)
+					$tagdata,
+					$relationships, // field_name => field_id
+					$field_id
+				);
+			}
+			else
+			{
+				$relationship_parser = NULL;
+			}
 		}
 		catch (EE_Relationship_exception $e)
 		{
@@ -545,6 +552,11 @@ class Grid_parser {
 	 */
 	public function instantiate_fieldtype($column, $row_name = NULL, $field_id = 0, $entry_id = 0)
 	{
+		if ( ! isset(ee()->api_channel_fields->field_types[$column['col_type']]))
+		{
+			ee()->api_channel_fields->fetch_installed_fieldtypes();
+		}
+
 		// Instantiate fieldtype
 		$fieldtype = ee()->api_channel_fields->setup_handler($column['col_type'], TRUE);
 
@@ -567,6 +579,7 @@ class Grid_parser {
 		$fieldtype->settings = array_merge(
 			$column['col_settings'],
 			array(
+				'field_label'		=> $column['col_label'],
 				'field_required'	=> $column['col_required'],
 				'col_id'			=> $column['col_id'],
 				'col_name'			=> $column['col_name'],

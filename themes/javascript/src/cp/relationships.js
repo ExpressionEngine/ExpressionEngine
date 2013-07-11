@@ -121,6 +121,7 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 			this._bindAddActiveOnSelect();
 			this._bindScrollToActiveClick();
 			this._bindSortable();
+			this._bindSubmitClear();
 
 			// filtering
 			this._setupFilter();
@@ -159,7 +160,7 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 				evt.preventDefault();
 
 				var box = $(this).find(':checkbox');
-					wasChecked = box.is(':checked');
+				wasChecked = box.is(':checked');
 
 				$(this).toggleClass('selected', ! wasChecked);
 				box.attr('checked', ! wasChecked);
@@ -324,6 +325,25 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 		},
 
 		/**
+	 	 * Clear unused sorting data from post before submit so that we don't
+	 	 * overwhelm the POST array with too many variables.
+	 	 */
+		_bindSubmitClear: function() {
+			var that = this;
+
+			this.root.parents('form').on('submit', function(evt) {
+
+				that.root.find('input:text').each(function() {
+					if($(this).val() == "0") {
+						$(this).remove();
+					}
+				});
+				return true;
+			});
+
+		},
+
+		/**
 		 * Sorting the right list should update the hidden textareas in the
 		 * left list so that they display the relative sort.
 		 */
@@ -331,6 +351,7 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 			var that = this,
 				previousPosition,
 				getOrder, start, update;
+
 
 			getOrder = function(el) {
 				return +that.defaultList[ that._index(el) ].find('input:text').val();
@@ -635,21 +656,10 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 				$('#sub_hold_'+field_name.replace('id_', ''))
 			);
 		}
-
-		var parts = field_name.split('_'); // [field_id, col_id, row_id]
-
-		new RelationshipField(
-			$('#sub_hold_field_'+parts[0])
-				.find('.multiselect.col_id_'+parts[1])
-				.closest('.grid_row > td')
-				.filter('[data-row-id="'+parts[2]+'"]')
-		);
-
-		Grid.bind('relationship', 'display', function(cell) {
-			new RelationshipField(cell, true);
-		});
 	};
 
-
+	Grid.bind('relationship', 'display', function(cell) {
+		new RelationshipField(cell, ! cell.data('row-id'));
+	});
 
 })(jQuery);

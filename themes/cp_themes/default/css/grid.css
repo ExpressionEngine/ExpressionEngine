@@ -17,7 +17,6 @@ table.grid_field {
 	border: 1px solid #c9cfd4;
 	box-shadow: #dbdee2 2px 2px 0;
 	margin: 9px 0 11px;
-	table-layout: fixed;
 	width: 100%;
 }
 

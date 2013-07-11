@@ -135,14 +135,14 @@ class Channel {
 		{
 			foreach (explode('|', ee()->TMPL->fetch_param('dynamic_parameters')) as $var)
 			{
-				if (isset($_POST[$var]) && in_array($var, $this->_dynamic_parameters))
+				if ($this->EE->input->get_post($var) && in_array($var, $this->_dynamic_parameters))
 				{
-					$tag .= $var.'="'.$_POST[$var].'"';
+					$tag .= $var.'="'.$this->EE->input->get_post($var).'"';
 				}
 
-				if (isset($_POST[$var]) && strncmp($var, 'search:', 7) == 0)
+				if (strncmp($var, 'search:', 7) == 0 && $this->EE->input->get_post($var))
 				{
-					$tag .= $var.'="'.substr($_POST[$var], 7).'"';
+					$tag .= $var.'="'.substr($this->EE->input->get_post($var), 7).'"';
 				}
 			}
 		}
@@ -684,14 +684,14 @@ class Channel {
 		{
 			foreach (explode('|', ee()->TMPL->fetch_param('dynamic_parameters')) as $var)
 			{
-				if (isset($_POST[$var]) AND in_array($var, $this->_dynamic_parameters))
+				if ($this->EE->input->get_post($var) && in_array($var, $this->_dynamic_parameters))
 				{
-					ee()->TMPL->tagparams[$var] = $_POST[$var];
+					ee()->TMPL->tagparams[$var] = $this->EE->input->get_post($var);
 				}
 
-				if (isset($_POST[$var]) && strncmp($var, 'search:', 7) == 0)
+				if (strncmp($var, 'search:', 7) == 0 && $this->EE->input->get_post($var))
 				{
-					ee()->TMPL->search_fields[substr($var, 7)] = $_POST[$var];
+					ee()->TMPL->search_fields[substr($var, 7)] = $this->EE->input->get_post($var);
 				}
 			}
 		}

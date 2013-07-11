@@ -432,16 +432,11 @@ class Relationship_ft extends EE_Fieldtype {
 			return form_dropdown($field_name.'[data][]', $options, current($selected));
 		}
 
-		if (REQ == 'CP' && count($entries))
+		if (REQ == 'CP')
 		{
 			ee()->cp->add_js_script('file', 'cp/relationships');
 
-			if (isset($this->settings['grid_row_id']))
-			{
-				$field_ident = $this->settings['grid_field_id'].'_'.$this->settings['col_id'].'_'.$this->settings['grid_row_id'];
-				ee()->javascript->output("EE.setup_relationship_field('".$field_ident."');");
-			}
-			else
+			if ( ! isset($this->settings['grid_row_id']) && count($entries))
 			{
 				ee()->javascript->output("EE.setup_relationship_field('".$this->field_name."');");
 			}

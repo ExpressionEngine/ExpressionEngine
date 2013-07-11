@@ -363,6 +363,16 @@ class Member_settings extends Member {
 								"{lang:unignore_member}</a></div></form>";
 		}
 
+		$timezone = $row['timezone'];
+				
+		if ($timezone == '')
+		{
+			$timezone = ($this->config->item('default_site_timezone')
+				 && $this->config->item('default_site_timezone') != '') ? 
+				 $this->config->item('default_site_timezone') : 'UTC';					
+		}
+
+
 		$content = $this->_var_swap($content,
 										array(
 												'aim_console'			=> "onclick=\"window.open('".$this->_member_path('aim_console/'.$this->cur_id)."', '_blank', 'width=240,height=360,scrollbars=yes,resizable=yes,status=yes,screenx=5,screeny=5');\"",
@@ -613,9 +623,7 @@ class Member_settings extends Member {
 
 			if ($key == "timezone")
 			{
-				$timezone = ($row['timezone']  != '') ? ee()->lang->line($row['timezone'] ) : '';
-
-				$content = $this->_var_swap_single($val, $timezone, $content);
+				$content = $this->_var_swap_single($val, lang($timezone), $content);
 			}
 
 			/** ----------------------
@@ -624,17 +632,9 @@ class Member_settings extends Member {
 
 			if (strncmp($key, 'local_time', 10) == 0)
 			{
-				$locale = FALSE;
-
-				if (ee()->session->userdata('member_id') != $this->cur_id)
-				{  
-					// Default is UTC?
-					$locale = ($row['timezone'] == '') ? 'UTC' : $row['timezone'];
-				}
-
 				$content = $this->_var_swap_single(
 					$key,
-					ee()->localize->format_date($val, NULL, $locale),
+					ee()->localize->format_date($val, NULL, $timezone),
 					$content
 				);
 			}

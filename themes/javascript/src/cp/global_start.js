@@ -26,6 +26,7 @@ jQuery(document).ready(function () {
 	// Ajax Errors can be hard to debug so we'll always add a simple
 	// error handler if none were specified.
 	$.ajaxPrefilter(function(options, originalOptions, jqXHR) {
+		var old_xid = EE.XID;
 
 		if ( ! _.has(options, 'error'))
 		{
@@ -35,6 +36,17 @@ jQuery(document).ready(function () {
 				});
 			});
 		}
+
+		jqXHR.setRequestHeader("X-EEXID", old_xid);
+
+		jqXHR.complete(function(xhr) {
+			var new_xid = xhr.getResponseHeader('X-EEXID');
+
+			if (new_xid) {
+				EE.XID = new_xid;
+				$('input[name="XID"]').filter('[value="'+old_xid+'"]').val(new_xid);
+			}
+		});
 	});
 
 	// A 401 in combination with a url indicates a redirect, we use this
@@ -225,8 +237,7 @@ EE.cp.control_panel_search = function() {
 	submit_handler = function () {
 		var url = $(this).attr('action'),
 			data = {
-				'cp_search_keywords': $('#cp_search_keywords').val(),
-				'XID': EE.XID
+				'cp_search_keywords': $('#cp_search_keywords').val()
 			};
 
 		$.ajax({

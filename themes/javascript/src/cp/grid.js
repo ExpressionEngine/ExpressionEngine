@@ -258,10 +258,12 @@ Grid.Publish.prototype = {
 	{
 		var that = this;
 
-		this._getRows().each(function()
-		{
-			that._fireEvent('display', $(this));
-		});
+		setTimeout(function(){
+			that._getRows().each(function()
+			{
+				that._fireEvent('display', $(this));
+			});
+		}, 500);
 	},
 
 	/**

@@ -247,8 +247,16 @@ class EE_Core {
 		if (extension_loaded('newrelic'))
 		{
 			ee()->load->library('newrelic');
-			ee()->newrelic->set_appname();
-			ee()->newrelic->name_transaction();
+
+			if (ee()->config->item('use_newrelic') == 'n')
+			{
+				ee()->newrelic->disable_autorum();
+			}
+			else
+			{
+				ee()->newrelic->set_appname();
+				ee()->newrelic->name_transaction();
+			}
 		}
 	}
 
@@ -335,25 +343,9 @@ class EE_Core {
 
 		ee()->input->filter_get_data(REQ);
 
-		// Secure forms stuff
-		if( ! ee()->security->have_valid_xid())
+		if (REQ != 'ACT')
 		{
-			if (REQ == 'CP')
-			{
-				ee()->session->set_flashdata('message_failure', lang('invalid_action'));
-				ee()->functions->redirect(SELF);
-			}
-			else
-			{
-				ee()->output->show_user_error('general', array(lang('invalid_action')));
-			}
-		}
-
-		// An old workaround for ajax. We need to globally hook up XIDs to refresh
-		// before we can make this switch.
-		if (REQ == 'CP' && AJAX_REQUEST)
-		{
-			ee()->security->restore_xid();
+			$this->process_secure_forms();
 		}
 
 		// Update system stats
@@ -733,6 +725,35 @@ class EE_Core {
 
 			ee()->functions->clear_spam_hashes();
 			ee()->functions->clear_caching('all');
+		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Process Secure Forms
+	 *
+	 * Run the secure forms check. Needs to be run once per request.
+	 * For actions, this happens from within the actions table so that
+	 * we can check for the Strict_XID interface and csrf_exempt field.
+	 *
+	 * @access	public
+	 * @return	void
+	 */
+	final public function process_secure_forms($flags = EE_Security::CSRF_STRICT)
+	{
+		// Secure forms stuff
+		if( ! ee()->security->have_valid_xid($flags))
+		{
+			if (REQ == 'CP')
+			{
+				ee()->session->set_flashdata('message_failure', lang('invalid_action'));
+				ee()->functions->redirect(SELF);
+			}
+			else
+			{
+				ee()->output->show_user_error('general', array(lang('invalid_action')));
+			}
 		}
 	}
 }
