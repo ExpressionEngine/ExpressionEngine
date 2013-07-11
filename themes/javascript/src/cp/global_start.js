@@ -385,26 +385,32 @@ EE.cp.logout_confirm = function() {
 		var logout_modal = $('<div id="logOutConfirm">' + EE.lang.logout_confirm + ' </div>'),
 			ttl = 30,
 			orig_ttl = ttl,
-			countdown_timer, buttons,
-			log_me_out, delay_logout;
+			countdown_timer,
+			buttons,
+			log_out,
+			log_out_unload,
+			delay_logout;
 
-		log_me_out = function () {
-			// Won't redirect on unload
-			$.ajax({
-				url: EE.BASE + "&C=login&M=logout",
-				async: (! $.browser.safari)
-			});
+		log_out = function () {
+			$(window).unbind("unload.logout");
 
 			// Redirect
 			window.location = EE.BASE + "&C=login&M=logout";
 		};
 
+		log_out_unload = function() {
+			$.ajax({
+				url: EE.BASE + "&C=login&M=logout",
+				async: ( ! $.browser.safari)
+			});
+		};
+
 		delay_logout = function () {
 			if (ttl < 1) {
-				return setTimeout(log_me_out, 0);
+				return setTimeout(log_out, 0);
 			}
 			else if (ttl === orig_ttl) {
-				$(window).bind("unload.logout", log_me_out);
+				$(window).bind("unload.logout", log_out_unload);
 			}
 
 			logout_modal.dialog("option", "title", EE.lang.logout + " (" +  (ttl-- || "...")  + ")");
@@ -423,7 +429,7 @@ EE.cp.logout_confirm = function() {
 			}
 		};
 
-		buttons[EE.lang.logout] = log_me_out;
+		buttons[EE.lang.logout] = log_out;
 
 		logout_modal.dialog({
 			autoOpen: false,
