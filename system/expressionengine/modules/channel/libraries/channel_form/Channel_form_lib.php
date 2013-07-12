@@ -1119,6 +1119,11 @@ class Channel_form_lib
 							}
 						}
 
+						if (hours == 0)
+						{
+							hours = 12;
+						}
+
 						if (hours < 10)
 						{
 							hours = "0" + hours;
