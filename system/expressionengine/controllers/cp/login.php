@@ -451,7 +451,7 @@ class Login extends CP_Controller {
 		if ($query->num_rows() == 0)
 		{
 			$vars['message_success'] = lang('forgotten_email_sent');
-			return $this->load->view('account/request_new_password', $vars);
+			return $this->load->view('account/show_reset_password_message', $vars);
 		}
 
 		$member_id = $query->row('member_id');
