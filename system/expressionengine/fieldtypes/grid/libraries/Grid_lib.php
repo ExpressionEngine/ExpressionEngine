@@ -28,6 +28,7 @@ class Grid_lib {
 
 	public $field_id;
 	public $field_name;
+	public $entity_name;
 	public $entry_id;
 
 	protected $_fieldtypes = array();
@@ -52,7 +53,7 @@ class Grid_lib {
 		ee()->load->helper('form_helper');
 
 		// Get columns just for this field
-		$vars['columns'] = ee()->grid_model->get_columns_for_field($this->field_id);
+		$vars['columns'] = ee()->grid_model->get_columns_for_field($this->field_id, $this->entity_name);
 
 		// If validation data is set, we're likely coming back to the form on a
 		// validation error
@@ -68,7 +69,7 @@ class Grid_lib {
 		// Otherwise, we're editing or creating a new entry
 		else
 		{
-			$rows = ee()->grid_model->get_entry_rows($this->entry_id, $this->field_id);
+			$rows = ee()->grid_model->get_entry_rows($this->entry_id, $this->field_id, $this->entity_name);
 			$rows = (isset($rows[$this->entry_id])) ? $rows[$this->entry_id] : array();
 		}
 
@@ -203,16 +204,17 @@ class Grid_lib {
 		$deleted_rows = ee()->grid_model->save_field_data(
 			$field_data['value'],
 			$this->field_id,
+			$this->entity_name,
 			$this->entry_id
 		);
 
-		$columns = ee()->grid_model->get_columns_for_field($this->field_id);
+		$columns = ee()->grid_model->get_columns_for_field($this->field_id, $this->entity_name);
 
 		// We'll keep track of searchable data for columns marked as searchable here
 		$searchable_data = array();
 
 		// Get row data to send back to fieldtypes with new row IDs
-		$rows = ee()->grid_model->get_entry_rows($this->entry_id, $this->field_id);
+		$rows = ee()->grid_model->get_entry_rows($this->entry_id, $this->field_id, $this->entity_name);
 		$rows = $rows[$this->entry_id];
 
 		$i = 0;
@@ -287,7 +289,7 @@ class Grid_lib {
 			return;
 		}
 
-		$columns = ee()->grid_model->get_columns_for_field($this->field_id);
+		$columns = ee()->grid_model->get_columns_for_field($this->field_id, $this->entity_name);
 
 		// Call delete/grid_delete on each affected fieldtype and send along
 		// the row IDs
@@ -297,7 +299,7 @@ class Grid_lib {
 			ee()->grid_parser->call('delete', $row_ids);
 		}
 
-		ee()->grid_model->delete_rows($row_ids, $this->field_id);
+		ee()->grid_model->delete_rows($row_ids, $this->field_id, $this->entity_name);
 	}
 
 	// ------------------------------------------------------------------------
@@ -327,7 +329,7 @@ class Grid_lib {
 		ee()->load->helper('custom_field_helper');
 
 		// Get column data for the current field
-		$columns = ee()->grid_model->get_columns_for_field($this->field_id);
+		$columns = ee()->grid_model->get_columns_for_field($this->field_id, $this->entity_name);
 
 		// We'll store our final values and errors here
 		$final_values = array();
@@ -451,6 +453,9 @@ class Grid_lib {
 			return $this->_fieldtypes;
 		}
 
+		ee()->load->library('api');
+		ee()->api->instantiate('channel_fields');
+
 		// Shorten some line lengths
 		$ft_api = ee()->api_channel_fields;
 
@@ -566,7 +571,7 @@ class Grid_lib {
 	 */
 	public function apply_settings($settings)
 	{
-		$new_field = ee()->grid_model->create_field($settings['field_id']);
+		$new_field = ee()->grid_model->create_field($settings['field_id'], $this->entity_name);
 
 		// We'll use the order of the posted fields to determine the column order
 		$count = 0;
@@ -595,6 +600,7 @@ class Grid_lib {
 
 			$column_data = array(
 				'field_id'			=> $settings['field_id'],
+				'entity_name'		=> $this->entity_name,
 				'col_order'			=> $count,
 				'col_type'			=> $column['col_type'],
 				'col_label'			=> $column['col_label'],
@@ -606,7 +612,7 @@ class Grid_lib {
 				'col_settings'		=> json_encode($column['col_settings'])
 			);
 
-			$col_ids[] = ee()->grid_model->save_col_settings($column_data, $column['col_id']);
+			$col_ids[] = ee()->grid_model->save_col_settings($column_data, $column['col_id'], $this->entity_name);
 
 			$count++;
 		}
@@ -614,7 +620,7 @@ class Grid_lib {
 		// Delete columns that were not including in new field settings
 		if ( ! $new_field)
 		{
-			$columns = ee()->grid_model->get_columns_for_field($settings['field_id'], FALSE);
+			$columns = ee()->grid_model->get_columns_for_field($settings['field_id'], $this->entity_name, FALSE);
 
 			$old_cols = array();
 			foreach ($columns as $column)

@@ -115,7 +115,6 @@ abstract class EE_Fieldtype {
 			$config['name'] = $conf_name;
 		}
 
-
 		foreach($config as $key => $val)
 		{
 			$this->$key = $val;
@@ -126,7 +125,7 @@ abstract class EE_Fieldtype {
 		// support fieldtypes that use the old conventions for a while. Move
 		// to __set and __get when we're ready for full deprecation.
 		$this->field_id = $this->id;
-		$this->field_name = $this->field_name;
+		$this->field_name = $this->name;
 	}
 
 	// --------------------------------------------------------------------
@@ -189,6 +188,37 @@ abstract class EE_Fieldtype {
 	public function entity_name()
 	{
 		return $this->entity_name;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Register a new Entity
+	 *
+	 * The developer may need to add tables or columns to support multiple
+	 * entities, so we must be able to hook into that event.
+	 *
+	 * @param string  The name of the new entity type
+	 */
+	public function register_entity($name)
+	{
+		return;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Unregister an Entity
+	 *
+	 * The developer of the fieldtype is responsible for completely
+	 * clearing the data stored by the fieldtype's custom tables. This
+	 * method is available to clear everyting of a certain entity.
+	 *
+	 * @param string  The name of the entity type being removed
+	 */
+	public function unregister_entity($name)
+	{
+		return;
 	}
 
 	// --------------------------------------------------------------------
