@@ -18,7 +18,7 @@
 			foreach ($members_accounts->result() as $member)
 			{
 				$this->table->add_row(
-					array('style'=>'width:40%;', 'data'=>'<a href="'.BASE.AMP.'C=myaccount'.AMP.'member_id='.$member->member_id.'">'.$member->username.'</a>'),
+					array('style'=>'width:40%;', 'data'=>'<a href="'.BASE.AMP.'C=myaccount'.AMP.'id='.$member->member_id.'">'.$member->username.'</a>'),
 					array('style'=>'width:20%;', 'data'=>$member->screen_name),
 					array('style'=>'width:20%;', 'data'=>'<a href="mailto:'.$member->email.'">'.$member->email.'</a>'),
 					array('style'=>'width:20%;', 'data'=>$member->ip_address)
