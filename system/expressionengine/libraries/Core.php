@@ -305,15 +305,15 @@ class EE_Core {
 			ee()->file_integrity->create_bootstrap_checksum();
 		}
 
-		if (function_exists('date_default_timezone_set'))
-		{
-			date_default_timezone_set(date_default_timezone_get());
-		}
-
 		ee()->load->library('remember');
 		ee()->load->library('localize');
 		ee()->load->library('session');
 		ee()->load->library('user_agent');
+
+		// Set a timezone for any native PHP date functions being used
+		date_default_timezone_set(
+			ee()->localize->get_php_timezone(ee()->session->userdata('timezone'))
+		);
 
 		// Load the "core" language file - must happen after the session is loaded
 		ee()->lang->loadfile('core');
