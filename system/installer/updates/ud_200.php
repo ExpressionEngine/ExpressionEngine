@@ -109,6 +109,14 @@ class Updater {
 	{		
 		// Load the string helper
 		ee()->load->helper('string');
+		
+		// Change site_preferences column to medium text
+		// We do this in 2.5.3 already.  Adding here to prevent truncating the
+		// site_preferences data and subsequently generating an unserialize
+		// error.  base64 encoding takes about 33% more space, so this should
+		// eliminate that possibility
+		
+		$this->_change_site_preferences_column_type();
 
 		$query = ee()->db->query("SELECT es.* FROM exp_sites AS es");
 
@@ -2116,6 +2124,26 @@ BSH;
 		
 		return round($totsize / 1048576);
 	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Changes column type for the `site_system_preferences` column in
+	 * `sites` from TEXT to MEDIUMTEXT
+	 */
+	private function _change_site_preferences_column_type()
+	{
+		ee()->smartforge->modify_column(
+			'sites',
+			array(
+				'site_system_preferences' => array(
+					'name' => 'site_system_preferences',
+					'type' => 'mediumtext'
+				)
+			)
+		);
+	}
+
 
 	// --------------------------------------------------------------------
 
