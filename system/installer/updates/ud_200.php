@@ -546,7 +546,7 @@ class Updater {
 		// Add utf-8 conversion queries
 		foreach (ee()->db->list_tables(TRUE) as $table)
 		{
-			$queries[] = "ALTER TABLE `{$table}` CHARACTER SET utf8 COLLATE utf8_general_ci;";
+			$queries[] = "ALTER TABLE `{$table}` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;";
 		}
 		
 		$queries[] = "ALTER DATABASE `".ee()->db->database."` CHARACTER SET utf8 COLLATE utf8_general_ci;";
