@@ -631,6 +631,10 @@ If you do not wish to reset your password, ignore this message. It will expire i
 				'constraint'		=> 10,
 				'unsigned'			=> TRUE
 			),
+			'entity_name' => array(
+				'type'				=> 'varchar',
+				'constraint'		=> 50
+			),
 			'col_order' => array(
 				'type'				=> 'int',
 				'constraint'		=> 3,
@@ -673,6 +677,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		ee()->dbforge->add_field($columns);
 		ee()->dbforge->add_key('col_id', TRUE);
 		ee()->dbforge->add_key('field_id');
+		ee()->dbforge->add_key('entity_name');
 		ee()->smartforge->create_table('grid_columns');
 	}
 

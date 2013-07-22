@@ -94,6 +94,7 @@ class Grid_model extends CI_Model {
  		ee()->dbforge->add_field($columns);
  		ee()->dbforge->add_key('col_id', TRUE);
  		ee()->dbforge->add_key('field_id');
+ 		ee()->dbforge->add_key('entity_name');
  		ee()->dbforge->create_table($this->_table);
  	}
 
