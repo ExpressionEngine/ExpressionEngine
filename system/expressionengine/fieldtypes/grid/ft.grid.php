@@ -81,6 +81,21 @@ class Grid_ft extends EE_Fieldtype {
 
 	// --------------------------------------------------------------------
 
+	// This fieldtypes has been converted, so it accepts all entities
+	public function accepts_entity($name)
+	{
+		return TRUE;
+	}
+
+
+	// When an entity type is removed, we need to clean up our data
+	public function unregister_entity($name)
+	{
+		ee()->grid_model->delete_entity($name);
+	}
+
+	// --------------------------------------------------------------------
+
 	/**
 	 * Called when entries are deleted
 	 *

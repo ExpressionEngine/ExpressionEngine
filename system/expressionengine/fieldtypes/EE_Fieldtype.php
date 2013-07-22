@@ -193,6 +193,23 @@ abstract class EE_Fieldtype {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Row accessor
+	 *
+	 * Provides access to the row variable for an entry. Since not all
+	 * entity types provide a concrete row, and most don't agree on what
+	 * fields are always available, this method is useful to provide defaults
+	 * to row data.
+	 *
+	 * @return string  The type of the field's parent entity.
+	 */
+	public function row($key, $default = NULL)
+	{
+		return array_key_exists($key, $this->row) ? $this->row[$key] : $default;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Register a new Entity
 	 *
 	 * The developer may need to add tables or columns to support multiple
@@ -219,6 +236,22 @@ abstract class EE_Fieldtype {
 	public function unregister_entity($name)
 	{
 		return;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Check if the fieldtype will accept a certain entity
+	 *
+	 * For backward compatiblity, all fieldtypes will initially only
+	 * support the channel entity type. Override this method for more
+	 * control.
+	 *
+	 * @param string  The name of the entity type
+	 */
+	public function accepts_entity($name)
+	{
+		return ($name == 'channel');
 	}
 
 	// --------------------------------------------------------------------

@@ -195,6 +195,29 @@ class Grid_model extends CI_Model {
  	// ------------------------------------------------------------------------
 
  	/**
+ 	 * Performs cleanup on our end if a grid field's parent entity is deleted.
+ 	 * Removes all associated tables and drops all entry rows.
+ 	 *
+ 	 * @param	string  Name of the entity type that was removed
+ 	 * @return	void
+ 	 */
+ 	public function delete_entity($entity_name)
+ 	{
+ 		$tables = ee()->db->list_tables($entity_name . $this->_table_prefix);
+
+ 		ee()->load->dbforge();
+
+ 		foreach ($tables as $table_name)
+ 		{
+ 			ee()->dbforge->drop_table($table_name);
+ 		}
+
+ 		ee()->db->delete($this->_table, array('entity_name' => $entity_name));
+ 	}
+
+ 	// ------------------------------------------------------------------------
+
+ 	/**
  	 * Adds a new column to the columns table or updates an existing one; also
  	 * manages columns in the field's respective data table
  	 *
