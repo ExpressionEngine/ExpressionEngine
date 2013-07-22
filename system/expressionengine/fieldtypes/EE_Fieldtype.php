@@ -504,20 +504,6 @@ abstract class EE_Fieldtype {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Save Settings
-	 *
-	 * @access	public
-	 * @param	array
-	 * @return	void
-	 */
-	function post_save_settings($data)
-	{
-		return;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Install
 	 *
 	 * Do any processing you may need to do to install the fieldtype. You can
