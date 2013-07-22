@@ -49,7 +49,8 @@ class Updater {
 				'_rename_safecracker_tags',
 				'_consolidate_file_fields',
 				'_update_relationships_for_grid',
-				'_install_grid'
+				'_install_grid',
+				'_create_entity_table'
 			)
 		);
 
@@ -673,6 +674,31 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		ee()->dbforge->add_key('col_id', TRUE);
 		ee()->dbforge->add_key('field_id');
 		ee()->smartforge->create_table('grid_columns');
+	}
+
+	protected function _create_entity_table()
+	{
+		$columns = array(
+			'entity_type_id' => array(
+				'type'				=> 'int',
+				'constraint'		=> 10,
+				'unsigned'			=> TRUE,
+				'auto_increment'	=> TRUE
+			),
+			'name' => array(
+				'type'				=> 'varchar',
+				'constraint'		=> 50
+			)
+		);
+
+		ee()->load->dbforge();
+		ee()->dbforge->add_field($columns);
+		ee()->dbforge->add_key('entity_type_id', TRUE);
+		ee()->dbforge->add_key('name');
+		ee()->smartforge->create_table('entity_types');
+
+		// we always need to have this one
+		ee()->db->insert('entity_types', array('name' => 'channel'));
 	}
 }
 /* END CLASS */

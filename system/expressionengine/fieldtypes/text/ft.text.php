@@ -133,6 +133,8 @@ class Text_ft extends EE_Fieldtype {
 		$field_fmt = (isset($this->settings['field_fmt']))
 			? $this->settings['field_fmt'] : $this->row['field_ft_'.$this->field_id];
 
+		ee()->load->library('typography');
+
 		return ee()->typography->parse_type(
 			ee()->functions->encode_ee_tags($data),
 			array(

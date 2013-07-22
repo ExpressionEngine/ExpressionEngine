@@ -22,12 +22,35 @@
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class EE_Fieldtype {
+abstract class EE_Fieldtype {
 
-	var $EE;
-	var $field_id;
-	var $field_name;
-	var $settings = array();
+	// Old identifiers for backwards compatibility.
+	// @deprecated
+	public $field_id;
+	public $field_name;
+
+	// EE super object
+	// @deprecated - use ee()
+	protected $EE;
+
+	// Field settings as decided by the user.
+	public $settings = array();
+
+	// Field identifiers, new names to differentiate. Also sometimes the field
+	// can actually act as an independent entity with no distinct parent. In
+	// those cases it's up to the entity implementer to make sure that an entity
+	// id (see below) exists. It would probably simply be the field_id.
+	protected $id;
+	protected $name;
+
+	// Entity identifiers. The entity_name will uniquely identify the type of
+	// parent entity, such as 'channel' (channel_entry, really). The entity_id
+	// will be id of the parent after it has been saved. For channels that would
+	// be the entry_id. There is no provision for channel_id as that is a level
+	// up in abstraction. If you need that information your fieldtype may not
+	// work with alternate entity types.
+	protected $entity_id = NULL;
+	protected $entity_name = 'channel';
 
 	/**
 	 * Constructor
@@ -42,12 +65,11 @@ class EE_Fieldtype {
 	/**
 	 * Constructor
 	 *
-	 * @access	public
 	 * @deprecated This is only here to maintain backwards compatibility
 	 * for people using parent::EE_Fieldtype() and will be removed in a
 	 * later version.  Deprecated as of version 2.6
 	 */
-	function EE_Fieldtype()
+	public function EE_Fieldtype()
 	{
 		$this->EE =& get_instance();
 
@@ -58,17 +80,191 @@ class EE_Fieldtype {
 
 	// --------------------------------------------------------------------
 
-	function _init($config = array())
+	/**
+	 * Re-initialize the class.
+	 *
+	 * Friend <Api_channel_fields>
+	 */
+	public function _init($config = array())
 	{
+		// At first our implementers will probably still have
+		// field_id and field_name set, so we'll copy those over.
+		$conf_id = NULL;
+		$conf_name = NULL;
+
+		// Prefer unprefixed over prefixed
+		foreach (array('id', 'field_id', 'name', 'field_name') as $key)
+		{
+			$name = 'conf_'.str_replace('field_', '', $key);
+
+			if ( ! isset($$name) && isset($config[$key]))
+			{
+				$$name = $config[$key];
+			}
+		}
+
+		// Only set if the _init call changed it. Otherwise consecutive
+		// _init calls might clear it.
+		if (isset($conf_id) && $this->id != $conf_id)
+		{
+			$config['id'] = $conf_id;
+		}
+
+		if (isset($conf_name) && $this->name != $conf_name)
+		{
+			$config['name'] = $conf_name;
+		}
+
 		foreach($config as $key => $val)
 		{
 			$this->$key = $val;
 		}
+
+		// Since this is pretty new, I think the entity types will beat
+		// the fieldtypes in conversion. Certainly channel will. So we need to
+		// support fieldtypes that use the old conventions for a while. Move
+		// to __set and __get when we're ready for full deprecation.
+		$this->field_id = $this->id;
+		$this->field_name = $this->name;
 	}
 
 	// --------------------------------------------------------------------
 
-	function replace_tag($data, $params = array(), $tagdata = FALSE)
+	/**
+	 * Field id getter
+	 *
+	 * The id of the field in the content of this entity type. For
+	 * channels that would be field_id. Usually this is a good name,
+	 * but sometimes each field actually presents a type of your entity
+	 * so we call it id.
+	 *
+	 * @return int  primary key
+	 */
+	public function id()
+	{
+		return $this->id;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Name getter
+	 *
+	 * This is the field's short name, which you will want to prefix
+	 * your form data and to parse your data.
+	 *
+	 * @return string  The field short name
+	 */
+	public function name()
+	{
+		return $this->name;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Grab the entity id
+	 *
+	 * The entity id only exists after the field is saved. It will return
+	 * NULL if it has not been set. For channel, this would be the entry_id.
+	 *
+	 * @return int  The id of the parent entity if it exists, else NULL
+	 */
+	public function entity_id()
+	{
+		return $this->entity_id;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Grab the entity name
+	 *
+	 * By default, the entity name is channel since that is historically
+	 * correct. Your fieldtype must delineate data between entity types.
+	 *
+	 * @return string  The type of the field's parent entity.
+	 */
+	public function entity_name()
+	{
+		return $this->entity_name;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Row accessor
+	 *
+	 * Provides access to the row variable for an entry. Since not all
+	 * entity types provide a concrete row, and most don't agree on what
+	 * fields are always available, this method is useful to provide defaults
+	 * to row data.
+	 *
+	 * @return string  The type of the field's parent entity.
+	 */
+	public function row($key, $default = NULL)
+	{
+		return array_key_exists($key, $this->row) ? $this->row[$key] : $default;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Register a new Entity
+	 *
+	 * The developer may need to add tables or columns to support multiple
+	 * entities, so we must be able to hook into that event.
+	 *
+	 * @param string  The name of the new entity type
+	 */
+	public function register_entity($name)
+	{
+		return;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Unregister an Entity
+	 *
+	 * The developer of the fieldtype is responsible for completely
+	 * clearing the data stored by the fieldtype's custom tables. This
+	 * method is available to clear everyting of a certain entity.
+	 *
+	 * @param string  The name of the entity type being removed
+	 */
+	public function unregister_entity($name)
+	{
+		return;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Check if the fieldtype will accept a certain entity
+	 *
+	 * For backward compatiblity, all fieldtypes will initially only
+	 * support the channel entity type. Override this method for more
+	 * control.
+	 *
+	 * @param string  The name of the entity type
+	 */
+	public function accepts_entity($name)
+	{
+		return ($name == 'channel');
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Replace the field tag on the frontend.
+	 *
+	 * @param string  Stored data for the field
+	 * @param array   The tag's parameters
+	 * @param mixed   If the tag is a pair, the tagdata. Otherwise FALSE.
+	 * @return string Parsed tagdata
+	 */
+	public function replace_tag($data, $params = array(), $tagdata = FALSE)
 	{
 		if ($tagdata)
 		{
@@ -80,23 +276,123 @@ class EE_Fieldtype {
 
 	// --------------------------------------------------------------------
 
-	function pre_process($data)
+	/**
+	 * Pre process the stored data.
+	 *
+	 * This is called before the field is displayed. It's return will
+	 * be passed to the display method as the data parameter.
+	 *
+	 * @param mixed   stored data
+	 * @return mixed  processed data
+	 */
+	public function pre_process($data)
 	{
 		return $data;
 	}
 
 	// --------------------------------------------------------------------
 
-	function validate($data)
+	/**
+	 * Validate the field data
+	 *
+	 * This is called before the field is stored, so you can sanity check
+	 * your data.
+	 *
+	 * @param mixed   stored data
+	 * @return mixed  several options:
+	 *		return TRUE			      - no error, continue
+	 *		return $string		      - error message
+	 *		array('value' => $mixed)  - override the value
+	 *		array('error' => $string) - same as the error options, but can be combined with the value override.
+	 */
+	public function validate($data)
 	{
 		return TRUE;
 	}
 
 	// --------------------------------------------------------------------
 
-	function save_global_settings()
+	/**
+	 * Display the field. You *must* implement this method to satisfy the
+	 * fieldtype protocol. You can leave out everything else, but this is
+	 * required.
+	 *
+	 * @param  string Stored data for the field
+	 * @return string Field display
+	 */
+	abstract public function display_field($data);
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Display the publish field. This is publish specific, it will add
+	 * the glossary items for the fieldtypes that want them. Could be better?
+	 *
+	 * You probably don't want to override this, instead your display_field
+	 * method should handle this.
+	 *
+	 * @param string  Stored data for the field
+	 * @return string Final field display
+	 */
+	public function display_publish_field($data)
 	{
-		return array();
+		$vars['glossary_items'] = ee()->load->ee_view('content/_assets/glossary_items', '', TRUE);
+
+		ee()->load->vars($vars);
+		return $this->display_field($data);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Save the field
+	 *
+	 * The data you return will be saved and returned to your field on
+	 * display on the frontend and when editing the field. This is the
+	 * field that is processed on search.
+	 *
+	 * If you want to store data in your own table, please use post_save
+	 * when the entry/entity id is available.
+	 *
+	 * @param	mixed  data submitted with the field_name, arrays allowed
+	 * @return	string data to store
+	 */
+	public function save($data)
+	{
+		return $data;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Called after field is saved
+	 *
+	 * This will have access to the parent entity_id, so if you use your
+	 * own tables, please use the entity_id and entity_name to store the
+	 * data in a uniquely identifiable way ($this->entity_id()).
+	 *
+	 * @param string  Data returned from save(). You can use session->cache() for other data.
+	 * @return void
+	 */
+	public function post_save($data)
+	{
+		// $this->settings['entry_id'];
+		return;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Called when entries are deleted.
+	 *
+	 * Please be sure to check the entity_name when you delete.
+	 *
+	 * @param	array  array of id's
+	 * @return  void
+	 */
+	public function delete($ids)
+	{
+		return;
 	}
 
 	// --------------------------------------------------------------------
@@ -104,11 +400,10 @@ class EE_Fieldtype {
 	/**
 	 * Display Field Settings
 	 *
-	 * @access	public
-	 * @param	array
-	 * @return	string
+	 * @param	array   Currently saved settings for this field
+	 * @return	string  Settings form display
 	 */
-	function display_settings($data)
+	public function display_settings($data)
 	{
 		return '';
 	}
@@ -116,58 +411,46 @@ class EE_Fieldtype {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Save Field
-	 *
-	 * @access	public
-	 * @param	string
-	 * @return	string
-	 */
-	function save($data)
-	{
-		return $data;
-	}
-
-
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Called after field is saved
-	 *
-	 * @access	public
-	 * @param	string
-	 */
-	function post_save($data)
-	{
-		// $this->settings['entry_id'];
-		return array();
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Called when entries are deleted
-	 *
-	 * @access	public
-	 * @param	mixed
-	 */
-	function delete($ids)
-	{
-		return array();
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Save Settings
 	 *
-	 * @access	public
-	 * @param	array
-	 * @return	void
+	 * @param	array  Any settings $_POST'ed with the $field_name.'_' prefix
+	 * @return	mixed  Settings to store
 	 */
-	function save_settings($data)
+	public function save_settings($data)
 	{
 		return array();
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Save Global Settings
+	 *
+	 * Same as settings(), but saved settings are used as defaults for
+	 * the settings page.
+	 *
+	 * @param	array  Any settings $_POST'ed with the $field_name.'_' prefix
+	 * @return	mixed  Settings to store
+	 */
+	public function save_global_settings()
+	{
+		return array();
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Post Save Settings
+	 *
+	 * Called after the settings are saved. Gives you access to the id
+	 * for this field.
+	 *
+	 * @param	array  Full settings array, including the id()
+	 * @return	void
+	 */
+	public function post_save_settings($data)
+	{
+		return;
 	}
 
 	// --------------------------------------------------------------------
@@ -175,11 +458,15 @@ class EE_Fieldtype {
 	/**
 	 * Settings Modify Column
 	 *
-	 * @access	public
+	 * Specify the type of columns you need for the field data and formatting.
+	 *
 	 * @param	array
+	 *		- field_id: id of the current field
+	 *		- ee_action: add, delete, get_data (asks for information)
 	 * @return	array
+	 *		- column_name's => array('type' => 'db_type', 'null' => TRUE/FALSE)
 	 */
-	function settings_modify_column($data)
+	public function settings_modify_column($data)
 	{
 		// Default custom field additions to channel_data
 		$fields['field_id_'.$data['field_id']] = array(
@@ -233,10 +520,14 @@ class EE_Fieldtype {
 	/**
 	 * Install
 	 *
-	 * @access	public
+	 * Do any processing you may need to do to install the fieldtype. You can
+	 * return an array of global settings to use as setting defaults.
+	 *
+	 * Note: The fieldtype table is populated automatically.
+	 *
 	 * @return	array	global settings
 	 */
-	function install()
+	public function install()
 	{
 		return array();
 	}
@@ -246,27 +537,28 @@ class EE_Fieldtype {
 	/**
 	 * Uninstall
 	 *
-	 * @access	public
+	 * Do any processing you need to remove the fieldtype. The fieldtype
+	 * table is cleaned up automatically.
+	 *
 	 * @return	void
 	 */
-	function uninstall()
+	public function uninstall()
 	{
 		return;
 	}
 
 	// --------------------------------------------------------------------
 
-	function display_publish_field($data)
-	{
-		$vars['glossary_items'] = ee()->load->ee_view('content/_assets/glossary_items', '', TRUE);
-
-		ee()->load->vars($vars);
-		return $this->display_field($data);
-	}
-
-	// --------------------------------------------------------------------
-
-	function field_formatting_row($data, $prefix = FALSE)
+	/**
+	 * Helper method to show the field formatting row
+	 *
+	 * The row is added to the currently active table instance.
+	 *
+	 * @param   array   data array passed to display_settings()
+	 * @param   string  A prefix to use, typically the field name
+	 * @return	void
+	 */
+	public function field_formatting_row($data, $prefix = FALSE)
 	{
 		$edit_format_link = $data['edit_format_link'];
 		$prefix = ($prefix) ? $prefix.'_' : '';
@@ -307,7 +599,16 @@ class EE_Fieldtype {
 
 	// --------------------------------------------------------------------
 
-	function text_direction_row($data, $prefix = FALSE)
+	/**
+	 * Helper method to show the text direction row
+	 *
+	 * The row is added to the currently active table instance.
+	 *
+	 * @param   array   data array passed to display_settings()
+	 * @param   string  A prefix to use, typically the field name
+	 * @return	void
+	 */
+	public function text_direction_row($data, $prefix = FALSE)
 	{
 		$prefix = ($prefix) ? $prefix.'_' : '';
 
@@ -326,7 +627,16 @@ class EE_Fieldtype {
 
 	// --------------------------------------------------------------------
 
-	function field_content_type_row($data, $prefix = FALSE)
+	/**
+	 * Helper method to show the content type row
+	 *
+	 * The row is added to the currently active table instance.
+	 *
+	 * @param   array   data array passed to display_settings()
+	 * @param   string  A prefix to use, typically the field name
+	 * @return	void
+	 */
+	public function field_content_type_row($data, $prefix = FALSE)
 	{
 		$suf = $prefix;
 		$prefix = ($prefix) ? $prefix.'_' : '';
@@ -356,7 +666,17 @@ class EE_Fieldtype {
 
 	// --------------------------------------------------------------------
 
-	function multi_item_row($data, $prefix = FALSE)
+	/**
+	 * Helper method for fields that request a custom list of options.
+	 *
+	 * The row is added to the currently active table instance. The data
+	 * entered is sent in a field called field_pre_populate.
+	 *
+	 * @param   array   data array passed to display_settings()
+	 * @param   string  A prefix to use, typically the field name
+	 * @return	void
+	 */
+	public function multi_item_row($data, $prefix = FALSE)
 	{
 		$prefix = ($prefix) ? $prefix.'_' : '';
 
@@ -393,39 +713,60 @@ class EE_Fieldtype {
 
 	// --------------------------------------------------------------------
 
-	function field_show_smileys_row($data, $prefix = FALSE)
+	/**
+	 * Helper methods for our yes/no checkbox rows
+	 *
+	 * The row is added to the currently active table instance.
+	 *
+	 * @param   array   data array passed to display_settings()
+	 * @param   string  A prefix to use, typically the field name
+	 * @return	void
+	 */
+	public function field_show_smileys_row($data, $prefix = FALSE)
 	{
 		$this->_yes_no_row($data, 'show_smileys', 'field_show_smileys', $prefix);
 	}
 
-	function field_show_spellcheck_row($data, $prefix = FALSE)
+	public function field_show_spellcheck_row($data, $prefix = FALSE)
 	{
 		$this->_yes_no_row($data, 'show_spellcheck', 'field_show_spellcheck', $prefix);
 	}
 
-	function field_show_glossary_row($data, $prefix = FALSE)
+	public function field_show_glossary_row($data, $prefix = FALSE)
 	{
 		$this->_yes_no_row($data, 'show_glossary', 'field_show_glossary', $prefix);
 	}
 
-	function field_show_file_selector_row($data, $prefix = FALSE)
+	public function field_show_file_selector_row($data, $prefix = FALSE)
 	{
 		$this->_yes_no_row($data, 'show_file_selector', 'field_show_file_selector', $prefix);
 	}
 
-	function field_show_formatting_btns_row($data, $prefix = FALSE)
+	public function field_show_formatting_btns_row($data, $prefix = FALSE)
 	{
 		$this->_yes_no_row($data, 'show_formatting_btns', 'field_show_formatting_btns', $prefix);
 	}
 
-	function field_show_writemode_row($data, $prefix = FALSE)
+	public function field_show_writemode_row($data, $prefix = FALSE)
 	{
 		$this->_yes_no_row($data, 'show_writemode', 'field_show_writemode', $prefix);
 	}
 
 	// --------------------------------------------------------------------
 
-	function _yes_no_row($data, $lang, $data_key, $prefix = FALSE, $grid = FALSE)
+	/**
+	 * Helper method to create a yes/no row.
+	 *
+	 * The row is added to the currently active table instance.
+	 *
+	 * @param   array   data array passed to display_settings()
+	 * @param   string  Language key to use for the field label
+	 * @param   string  Name of the setting in the form
+	 * @param   string  A prefix to use, typically the field name
+	 * @param   bool    In a grid field? [internal - use grid_yes_no_row()]
+	 * @return	void
+	 */
+	public function _yes_no_row($data, $lang, $data_key, $prefix = FALSE, $grid = FALSE)
 	{
 		$prefix = ($prefix) ? $prefix.'_' : '';
 
@@ -452,7 +793,13 @@ class EE_Fieldtype {
 	/**
 	 * Creates a generic settings row in Grid
 	 *
-	 * @return string
+	 * Same as yes_no_row, but automatically fills in the prefix and grid
+	 * parameters.
+	 *
+	 * @param   string  Language key to use for the field label
+	 * @param   string  Name of the setting in the form
+	 * @param   array   data array passed to display_settings()
+	 * @return  string  Parsed grid row
 	 */
 	public function grid_yes_no_row($label, $name, $data)
 	{
@@ -464,7 +811,10 @@ class EE_Fieldtype {
 	/**
 	 * Creates a generic settings row in Grid
 	 *
-	 * @return string
+	 * @param   string  Left hand label for the row
+	 * @param   string  Content of the row
+	 * @param   bool    Wide row?
+	 * @return  string
 	 */
 	public function grid_settings_row($label, $content, $wide = FALSE)
 	{
@@ -547,6 +897,7 @@ class EE_Fieldtype {
 	/**
 	 * Text direction row for Grid column settings
 	 *
+	 * @param  array  current settings data
 	 * @return string
 	 */
 	public function grid_text_direction_row($data)
@@ -567,6 +918,7 @@ class EE_Fieldtype {
 	/**
 	 * Field max length row for Grid column settings
 	 *
+	 * @param  array  current settings data
 	 * @return string
 	 */
 	public function grid_max_length_row($data)
@@ -585,6 +937,7 @@ class EE_Fieldtype {
 	/**
 	 * Multiitem row for Grid column settings
 	 *
+	 * @param  array  current settings data
 	 * @return string
 	 */
 	public function grid_multi_item_row($data)
@@ -605,6 +958,8 @@ class EE_Fieldtype {
 	/**
 	 * Max textarea rows for Grid column settings
 	 *
+	 * @param  array  current settings data
+	 * @param  int    textarea row count [optional]
 	 * @return string
 	 */
 	public function grid_textarea_max_rows_row($data, $default = 6)

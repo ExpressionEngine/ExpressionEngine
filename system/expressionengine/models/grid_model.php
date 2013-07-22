@@ -48,6 +48,10 @@ class Grid_model extends CI_Model {
  				'constraint'		=> 10,
  				'unsigned'			=> TRUE
  			),
+ 			'entity_name' => array(
+ 				'type'				=> 'varchar',
+ 				'constraint'		=> 50
+ 			),
  			'col_order' => array(
  				'type'				=> 'int',
  				'constraint'		=> 3,
@@ -126,9 +130,9 @@ class Grid_model extends CI_Model {
  	 * @param	int		Field ID of field to create a data table for
  	 * @return	boolean	Whether or not a table was created
  	 */
- 	public function create_field($field_id)
+ 	public function create_field($field_id, $entity_name)
  	{
- 		$table_name = $this->_table_prefix . $field_id;
+ 		$table_name = $this->_data_table($entity_name, $field_id);
 
  		if ( ! ee()->db->table_exists($table_name))
  		{
@@ -191,6 +195,29 @@ class Grid_model extends CI_Model {
  	// ------------------------------------------------------------------------
 
  	/**
+ 	 * Performs cleanup on our end if a grid field's parent entity is deleted.
+ 	 * Removes all associated tables and drops all entry rows.
+ 	 *
+ 	 * @param	string  Name of the entity type that was removed
+ 	 * @return	void
+ 	 */
+ 	public function delete_entity($entity_name)
+ 	{
+ 		$tables = ee()->db->list_tables($entity_name . $this->_table_prefix);
+
+ 		ee()->load->dbforge();
+
+ 		foreach ($tables as $table_name)
+ 		{
+ 			ee()->dbforge->drop_table($table_name);
+ 		}
+
+ 		ee()->db->delete($this->_table, array('entity_name' => $entity_name));
+ 	}
+
+ 	// ------------------------------------------------------------------------
+
+ 	/**
  	 * Adds a new column to the columns table or updates an existing one; also
  	 * manages columns in the field's respective data table
  	 *
@@ -198,7 +225,7 @@ class Grid_model extends CI_Model {
  	 * @param	int		Column ID to update, or FALSE if new column
  	 * @return	int		Column ID
  	 */
- 	public function save_col_settings($column, $col_id = FALSE)
+ 	public function save_col_settings($column, $col_id = FALSE, $entity_name = 'channel')
  	{
  		// Existing column
  		if ($col_id)
@@ -211,7 +238,7 @@ class Grid_model extends CI_Model {
  				$col_id,
  				$column['col_type'],
  				json_decode($column['col_settings'], TRUE),
- 				$this->_get_ft_api_settings($column['field_id'])
+ 				$this->_get_ft_api_settings($column['field_id'], $entity_name)
  			);
  		}
  		// New column
@@ -228,7 +255,7 @@ class Grid_model extends CI_Model {
  				array(),
  				TRUE,
  				FALSE,
- 				$this->_get_ft_api_settings($column['field_id'])
+ 				$this->_get_ft_api_settings($column['field_id'], $entity_name)
  			);
  		}
 
@@ -278,7 +305,7 @@ class Grid_model extends CI_Model {
  	 * @param	array	Options for the query, often filled by tag parameters
  	 * @return	array	Row data
  	 */
- 	public function get_entry_rows($entry_ids, $field_id, $options = array())
+ 	public function get_entry_rows($entry_ids, $field_id, $entity_name, $options = array())
  	{
  		if ( ! is_array($entry_ids))
  		{
@@ -287,7 +314,7 @@ class Grid_model extends CI_Model {
 
  		// Validate the passed parameters and create a unique marker for these
  		// specific parameters so we know not to query for them again
- 		$options = $this->_validate_params($options, $field_id);
+ 		$options = $this->_validate_params($options, $field_id, $entity_name);
  		$marker = $this->_get_tag_marker($options);
 
  		foreach ($entry_ids as $key => $entry_id)
@@ -336,7 +363,7 @@ class Grid_model extends CI_Model {
  					element('orderby', $options, 'row_order'),
  					element('sort', $options, 'asc')
  				)
- 				->get($this->_table_prefix . $field_id)
+ 				->get($this->_data_table($entity_name, $field_id))
  				->result_array();
 
  			// Add these rows to the cache
@@ -360,7 +387,7 @@ class Grid_model extends CI_Model {
  	 * 					the orderby parameter is ordering via a real column
  	 * @return	array	Array of validated and default parameters to use for parsing
  	 */
- 	protected function _validate_params($params, $field_id)
+ 	protected function _validate_params($params, $field_id, $entity_name)
  	{
  		ee()->load->helper('array_helper');
 
@@ -397,7 +424,7 @@ class Grid_model extends CI_Model {
  			$sort = 'asc';
  		}
 
- 		$columns = $this->get_columns_for_field($field_id);
+ 		$columns = $this->get_columns_for_field($field_id, $entity_name);
 
  		$sortable_columns = array();
  		foreach ($columns as $col)
@@ -474,7 +501,7 @@ class Grid_model extends CI_Model {
  	 * @param	array	Array of field names mapped to search terms
  	 * @param	int		Field ID to get column data for
  	 */
- 	protected function _field_search($search_terms, $field_id)
+ 	protected function _field_search($search_terms, $field_id, $entity_name = 'channel')
  	{
  		if (empty($search_terms))
  		{
@@ -483,7 +510,7 @@ class Grid_model extends CI_Model {
 
  		ee()->load->model('channel_model');
 
- 		$columns = $this->get_columns_for_field($field_id);
+ 		$columns = $this->get_columns_for_field($field_id, $entity_name);
 
  		// We'll need to map column names to field IDs so we know which column
  		// to search
@@ -534,7 +561,7 @@ class Grid_model extends CI_Model {
  	 * @param	boolean	Skip the cache and get a fresh set of columns
  	 * @return	array	Settings from grid_columns table
  	 */
- 	public function get_columns_for_field($field_ids, $cache = TRUE)
+ 	public function get_columns_for_field($field_ids, $entity_name, $cache = TRUE)
  	{
  		$multi_column = is_array($field_ids);
 
@@ -545,9 +572,9 @@ class Grid_model extends CI_Model {
  			// Only get the colums for the field IDs we don't already have
  			foreach ($field_ids as $key => $field_id)
  			{
- 				if (isset($this->_columns[$field_id]) && $cache)
+ 				if (isset($this->_columns[$entity_name][$field_id]) && $cache)
  				{
- 					$cached[$field_id] = $this->_columns[$field_id];
+ 					$cached[$field_id] = $this->_columns[$entity_name][$field_id];
  					unset($field_ids[$key]);
  				}
  			}
@@ -561,15 +588,16 @@ class Grid_model extends CI_Model {
  		else
  		{
  			// Return fron cache if exists and allowed
- 			if (isset($this->_columns[$field_ids]) && $cache)
+ 			if (isset($this->_columns[$entity_name][$field_ids]) && $cache)
  			{
- 				return $this->_columns[$field_ids];
+ 				return $this->_columns[$entity_name][$field_ids];
  			}
 
  			$field_ids = array($field_ids);
  		}
 
  		$columns = ee()->db->where_in('field_id', $field_ids)
+ 			->where('entity_name', $entity_name)
  			->order_by('col_order')
  			->get($this->_table)
  			->result_array();
@@ -577,18 +605,18 @@ class Grid_model extends CI_Model {
  		foreach ($columns as &$column)
  		{
  			$column['col_settings'] = json_decode($column['col_settings'], TRUE);
- 			$this->_columns[$column['field_id']][$column['col_id']] = $column;
+ 			$this->_columns[$entity_name][$column['field_id']][$column['col_id']] = $column;
  		}
 
  		foreach ($field_ids as $field_id)
  		{
- 			if ( ! isset($this->_columns[$field_id]))
+ 			if ( ! isset($this->_columns[$entity_name][$field_id]))
  			{
- 				$this->_columns[$field_id] = array();
+ 				$this->_columns[$entity_name][$field_id] = array();
  			}
  		}
 
- 		return ($multi_column) ? $this->_columns : $this->_columns[$field_id];
+ 		return ($multi_column) ? $this->_columns[$entity_name] : $this->_columns[$entity_name][$field_id];
  	}
 
  	// ------------------------------------------------------------------------
@@ -600,7 +628,7 @@ class Grid_model extends CI_Model {
  	 * @param	int 	Current field ID
  	 * @return	array
  	 */
- 	protected function _get_ft_api_settings($field_id)
+ 	protected function _get_ft_api_settings($field_id, $entity_name = 'channel')
  	{
  		return array(
  			'id_field'				=> 'col_id',
@@ -608,7 +636,7 @@ class Grid_model extends CI_Model {
  			'col_settings_method'	=> 'grid_settings_modify_column',
  			'col_prefix'			=> 'col',
  			'fields_table'			=> $this->_table,
- 			'data_table'			=> $this->_table_prefix . $field_id,
+ 			'data_table'			=> $this->_data_table($entity_name, $field_id),
  		);
  	}
 
@@ -623,7 +651,7 @@ class Grid_model extends CI_Model {
  	 * @param	int 	Entry ID to assign the row to
  	 * @return	array 	IDs of rows to be deleted
  	 */
- 	public function save_field_data($data, $field_id, $entry_id)
+ 	public function save_field_data($data, $field_id, $entity_name, $entry_id)
  	{
  		// Keep track of which rows are updated and which are new, and the
  		// order they are received
@@ -658,7 +686,7 @@ class Grid_model extends CI_Model {
  			$order++;
  		}
 
- 		$table_name = $this->_table_prefix . $field_id;
+ 		$table_name = $this->_data_table($entity_name, $field_id);
 
  		// If there are other existing rows for this entry that weren't in
  		// the data array, they are to be deleted
@@ -690,12 +718,26 @@ class Grid_model extends CI_Model {
  	 *
  	 * @param	array	Row IDs to delete data for
  	 */
- 	public function delete_rows($row_ids, $field_id)
+ 	public function delete_rows($row_ids, $field_id, $entity_name)
  	{
  		if ( ! empty($row_ids))
  		{
  			ee()->db->where_in('row_id', $row_ids)
- 				->delete($this->_table_prefix . $field_id);
+ 				->delete($this->_data_table($entity_name, $field_id));
  		}
+ 	}
+
+ 	// ------------------------------------------------------------------------
+
+ 	/**
+ 	 * Create the data table name given the entity type and field id.
+ 	 *
+ 	 * @param string	Entity type (typically 'channel')
+ 	 * @param string	Field id
+ 	 * @return string   Table name of format <entity>_grid_field_<id>
+ 	 */
+ 	protected function _data_table($entity_name, $field_id)
+ 	{
+ 		return $entity_name .'_'. $this->_table_prefix . $field_id;
  	}
 }

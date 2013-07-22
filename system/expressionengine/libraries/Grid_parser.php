@@ -54,7 +54,7 @@ class Grid_parser {
 	 * @param	object	Channel preparser object
 	 * @param	array	Array of known Grid fields in this channel
 	 */
-	public function pre_process($tagdata, $pre_parser, $grid_fields)
+	public function pre_process($tagdata, $pre_parser, $grid_fields, $entity_name = 'channel')
 	{
 		// Bail out if there are no grid fields present to parse
 		if ( ! preg_match_all(
@@ -100,7 +100,7 @@ class Grid_parser {
 		ee()->load->model('grid_model');
 
 		// Cache column data for all fields used in the Channel loop
-		$columns = ee()->grid_model->get_columns_for_field(array_unique($field_ids));
+		$columns = ee()->grid_model->get_columns_for_field(array_unique($field_ids), $entity_name);
 
 		// Attempt to gather all data needed for the entries loop before
 		// the loop runs
@@ -111,7 +111,7 @@ class Grid_parser {
 			$field_id = $grid_fields[$field_name];
 			$this->grid_field_names[$field_id] = rtrim($match[1], ':');
 
-			ee()->grid_model->get_entry_rows($pre_parser->entry_ids(), $field_id, $params);
+			ee()->grid_model->get_entry_rows($pre_parser->entry_ids(), $field_id, $entity_name, $params);
 		}
 
 		// Handle EE_Fieldtype::pre_loop()
@@ -132,7 +132,7 @@ class Grid_parser {
 	 * @param	string	Tag data of our field pair
 	 * @return	string	Parsed field data
 	 */
-	public function parse($channel_row, $field_id, $params, $tagdata)
+	public function parse($channel_row, $field_id, $params, $tagdata, $entity_name = 'channel')
 	{
 		if (empty($tagdata))
 		{
@@ -142,7 +142,7 @@ class Grid_parser {
 		$entry_id = $channel_row['entry_id'];
 
 		ee()->load->model('grid_model');
-		$entry_data = ee()->grid_model->get_entry_rows($entry_id, $field_id, $params);
+		$entry_data = ee()->grid_model->get_entry_rows($entry_id, $field_id, $entity_name, $params);
 
 		// Bail out if no entry data
 		if ($entry_data === FALSE OR ! isset($entry_data[$entry_id]))
@@ -228,7 +228,7 @@ class Grid_parser {
 
 		$prefix = $field_name.':';
 
-		$columns = ee()->grid_model->get_columns_for_field($field_id);
+		$columns = ee()->grid_model->get_columns_for_field($field_id, $entity_name);
 
 		// Prepare the relationship data
 		$relationships = array();
@@ -342,14 +342,14 @@ class Grid_parser {
 
 					// Send the next or previous row to _parse_row for parsing
 					$replace_data = ( ! empty($next_prev_row))
-						? $this->_parse_row($channel_row, $field_id, $content, $next_prev_row) : '';
+						? $this->_parse_row($channel_row, $field_id, $content, $next_prev_row, $entity_name) : '';
 
 					// Replace tag pair
 					$grid_row = str_replace($chunk, $replace_data, $grid_row);
 				}
 			}
 
-			$grid_tagdata .= $this->_parse_row($channel_row, $field_id, $grid_row, $row);
+			$grid_tagdata .= $this->_parse_row($channel_row, $field_id, $grid_row, $row, $entity_name);
 		}
 
 		return $grid_tagdata;
@@ -366,7 +366,7 @@ class Grid_parser {
 	 * @param	array	Grid single row data
 	 * @return	string	Parsed field data
 	 */
-	private function _parse_row($channel_row, $field_id, $tagdata, $row)
+	private function _parse_row($channel_row, $field_id, $tagdata, $row, $entity_name = 'channel')
 	{
 		$grid_row = $tagdata;
 		$field_name = $this->grid_field_names[$field_id];
@@ -383,7 +383,7 @@ class Grid_parser {
 			return $tagdata;
 		}
 
-		$columns = ee()->grid_model->get_columns_for_field($field_id);
+		$columns = ee()->grid_model->get_columns_for_field($field_id, $entity_name);
 
 		// Create an easily-traversible array of columns by field ID
 		// and column name
@@ -554,6 +554,8 @@ class Grid_parser {
 	{
 		if ( ! isset(ee()->api_channel_fields->field_types[$column['col_type']]))
 		{
+			ee()->load->library('api');
+			ee()->api->instantiate('channel_fields');
 			ee()->api_channel_fields->fetch_installed_fieldtypes();
 		}
 
