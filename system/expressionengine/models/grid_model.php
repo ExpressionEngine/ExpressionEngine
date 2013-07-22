@@ -32,6 +32,8 @@ class Grid_model extends CI_Model {
  	/**
  	 * Performs fieldtype install
  	 *
+ 	 * Beware! Changes here also need to be made in mysql_schema.
+ 	 *
  	 * @return	void
  	 */
  	public function install()
