@@ -239,13 +239,13 @@ class Addons_installer {
 				'has_global_settings'	=> method_exists($FT, 'display_global_settings') ? 'y' : 'n'
 			));
 
-			ee()->load->library('entity_types');
+			ee()->load->library('content_types');
 
-			foreach (ee()->entity_types->all() as $entity_name)
+			foreach (ee()->content_types->all() as $content_type)
 			{
-				if ($FT->accepts_entity($entity_name))
+				if ($FT->accepts_content_type($content_type))
 				{
-					ee()->api_channel_fields->apply('register_entity', array($entity_name));
+					ee()->api_channel_fields->apply('register_content_type', array($content_type));
 				}
 			}
 		}

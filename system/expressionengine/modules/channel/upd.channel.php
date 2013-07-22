@@ -80,7 +80,7 @@ class Channel_upd {
 
 		ee()->db->insert('actions', $data);
 
-		ee()->db->insert('entity_types', array('name' => 'channel'));
+		ee()->db->insert('content_types', array('name' => 'channel'));
 
 		return TRUE;
 	}

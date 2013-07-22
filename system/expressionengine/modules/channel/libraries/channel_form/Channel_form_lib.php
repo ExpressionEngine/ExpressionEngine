@@ -3322,7 +3322,10 @@ class Channel_form_lib
 
 		$_GET['entry_id'] = $this->entry('entry_id');
 
-		ee()->api_channel_fields->apply('_init', array(array('row' => $this->entry)));
+		ee()->api_channel_fields->apply('_init', array(array(
+			'row' => $this->entry,
+			'content_id' => $this->entry('entry_id')
+		)));
 
 		$data = ee()->api_channel_fields->apply('pre_process', array($data));
 

@@ -81,17 +81,17 @@ class Grid_ft extends EE_Fieldtype {
 
 	// --------------------------------------------------------------------
 
-	// This fieldtypes has been converted, so it accepts all entities
-	public function accepts_entity($name)
+	// This fieldtypes has been converted, so it accepts all content types
+	public function accepts_content_type($name)
 	{
 		return TRUE;
 	}
 
 
-	// When an entity type is removed, we need to clean up our data
-	public function unregister_entity($name)
+	// When a content type is removed, we need to clean up our data
+	public function unregister_content_type($name)
 	{
-		ee()->grid_model->delete_entity($name);
+		ee()->grid_model->delete_content_of_type($name);
 	}
 
 	// --------------------------------------------------------------------
@@ -103,7 +103,7 @@ class Grid_ft extends EE_Fieldtype {
 	 */
 	public function delete($entry_ids)
 	{
-		$entries = ee()->grid_model->get_entry_rows($entry_ids, $this->id(), $this->entity_name());
+		$entries = ee()->grid_model->get_entry_rows($entry_ids, $this->id(), $this->content_type());
 
 		$row_ids = array();
 		foreach ($entries as $rows)
@@ -166,14 +166,14 @@ class Grid_ft extends EE_Fieldtype {
 		ee()->load->library('grid_parser');
 
 		// not in a channel scope? pre-process may not have been run.
-		if ($this->entity_name() != 'channel')
+		if ($this->content_type() != 'channel')
 		{
 			ee()->load->library('api');
 			ee()->api->instantiate('channel_fields');
 			ee()->grid_parser->grid_field_names[$this->id()] = $this->name();
 		}
 
-		return ee()->grid_parser->parse($this->row, $this->id(), $params, $tagdata, $this->entity_name());
+		return ee()->grid_parser->parse($this->row, $this->id(), $params, $tagdata, $this->content_type());
 	}
 
 	// --------------------------------------------------------------------
@@ -186,7 +186,7 @@ class Grid_ft extends EE_Fieldtype {
 		$entry_id = $this->row['entry_id'];
 
 		ee()->load->model('grid_model');
-		$entry_data = ee()->grid_model->get_entry_rows($entry_id, $this->id(), $this->entity_name(), $params);
+		$entry_data = ee()->grid_model->get_entry_rows($entry_id, $this->id(), $this->content_type(), $params);
 
 		if ($entry_data !== FALSE && isset($entry_data[$entry_id]))
 		{
@@ -208,7 +208,7 @@ class Grid_ft extends EE_Fieldtype {
 		ee()->load->model('grid_model');
 		ee()->load->helper('array_helper');
 
-		$columns = ee()->grid_model->get_columns_for_field($this->id(), $this->entity_name());
+		$columns = ee()->grid_model->get_columns_for_field($this->id(), $this->content_type());
 		$prefix = ee()->grid_parser->grid_field_names[$this->id()].':';
 
 		// Parameters
@@ -346,7 +346,7 @@ class Grid_ft extends EE_Fieldtype {
 		$entry_id = $this->row['entry_id'];
 
 		ee()->load->model('grid_model');
-		$entry_data = ee()->grid_model->get_entry_rows($entry_id, $this->id(), $this->entity_name(), $params);
+		$entry_data = ee()->grid_model->get_entry_rows($entry_id, $this->id(), $this->content_type(), $params);
 
 		// Bail out if no entry data
 		if ($entry_data === FALSE OR
@@ -356,7 +356,7 @@ class Grid_ft extends EE_Fieldtype {
 			return '';
 		}
 
-		$columns = ee()->grid_model->get_columns_for_field($this->id(), $this->entity_name());
+		$columns = ee()->grid_model->get_columns_for_field($this->id(), $this->content_type());
 
 		// Find the column that matches the passed column name
 		foreach ($columns as $column)
@@ -521,7 +521,7 @@ class Grid_ft extends EE_Fieldtype {
 
 			if ( ! empty($field_id))
 			{
-				$columns = ee()->grid_model->get_columns_for_field($field_id, $this->entity_name());
+				$columns = ee()->grid_model->get_columns_for_field($field_id, $this->content_type());
 
 				foreach ($columns as $column)
 				{
@@ -664,7 +664,7 @@ class Grid_ft extends EE_Fieldtype {
 	{
 		if (isset($data['ee_action']) && $data['ee_action'] == 'delete')
 		{
-			$columns = ee()->grid_model->get_columns_for_field($settings['field_id'], $this->entity_name(), FALSE);
+			$columns = ee()->grid_model->get_columns_for_field($settings['field_id'], $this->content_type(), FALSE);
 
 			$col_types = array();
 			foreach ($columns as $column)
@@ -700,7 +700,7 @@ class Grid_ft extends EE_Fieldtype {
 			? $this->settings['entry_id'] : ee()->input->get_post('entry_id');
 		ee()->grid_lib->field_id = $this->id();
 		ee()->grid_lib->field_name = $this->name();
-		ee()->grid_lib->entity_name = $this->entity_name();
+		ee()->grid_lib->content_type = $this->content_type();
 	}
 }
 

@@ -37,20 +37,20 @@ abstract class EE_Fieldtype {
 	public $settings = array();
 
 	// Field identifiers, new names to differentiate. Also sometimes the field
-	// can actually act as an independent entity with no distinct parent. In
-	// those cases it's up to the entity implementer to make sure that an entity
-	// id (see below) exists. It would probably simply be the field_id.
+	// can actually act as an independent content container with no distinct parent.
+	// In those cases it's up to the content type implementer to make sure that an
+	// content id (see below) exists. It would probably simply be the field_id.
 	protected $id;
 	protected $name;
 
-	// Entity identifiers. The entity_name will uniquely identify the type of
-	// parent entity, such as 'channel' (channel_entry, really). The entity_id
+	// Content identifiers. The content_type will uniquely identify the type of
+	// parent row, such as 'channel' (channel_entry, really). The content_id
 	// will be id of the parent after it has been saved. For channels that would
 	// be the entry_id. There is no provision for channel_id as that is a level
-	// up in abstraction. If you need that information your fieldtype may not
-	// work with alternate entity types.
-	protected $entity_id = NULL;
-	protected $entity_name = 'channel';
+	// up in abstraction. If you need to manipulate that information your fieldtype
+	// may not work with alternate content types.
+	protected $content_id = NULL;
+	protected $content_type = 'channel';
 
 	/**
 	 * Constructor
@@ -120,7 +120,7 @@ abstract class EE_Fieldtype {
 			$this->$key = $val;
 		}
 
-		// Since this is pretty new, I think the entity types will beat
+		// Since this is pretty new, I think the content types will beat
 		// the fieldtypes in conversion. Certainly channel will. So we need to
 		// support fieldtypes that use the old conventions for a while. Move
 		// to __set and __get when we're ready for full deprecation.
@@ -133,9 +133,9 @@ abstract class EE_Fieldtype {
 	/**
 	 * Field id getter
 	 *
-	 * The id of the field in the content of this entity type. For
+	 * The id of the field in the content of this content type. For
 	 * channels that would be field_id. Usually this is a good name,
-	 * but sometimes each field actually presents a type of your entity
+	 * but sometimes each field actually presents a type of your content
 	 * so we call it id.
 	 *
 	 * @return int  primary key
@@ -163,31 +163,31 @@ abstract class EE_Fieldtype {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Grab the entity id
+	 * Grab the content id
 	 *
-	 * The entity id only exists after the field is saved. It will return
+	 * The content id only exists after the field is saved. It will return
 	 * NULL if it has not been set. For channel, this would be the entry_id.
 	 *
-	 * @return int  The id of the parent entity if it exists, else NULL
+	 * @return int  The id of the parent content if it exists, else NULL
 	 */
-	public function entity_id()
+	public function content_id()
 	{
-		return $this->entity_id;
+		return $this->content_id;
 	}
 
 	// --------------------------------------------------------------------
 
 	/**
-	 * Grab the entity name
+	 * Grab the content type
 	 *
-	 * By default, the entity name is channel since that is historically
-	 * correct. Your fieldtype must delineate data between entity types.
+	 * By default, the content type is 'channel' since that is historically
+	 * correct. Your fieldtype must delineate data between content types.
 	 *
-	 * @return string  The type of the field's parent entity.
+	 * @return string  The type of the field's parent content.
 	 */
-	public function entity_name()
+	public function content_type()
 	{
-		return $this->entity_name;
+		return $this->content_type;
 	}
 
 	// --------------------------------------------------------------------
@@ -196,11 +196,13 @@ abstract class EE_Fieldtype {
 	 * Row accessor
 	 *
 	 * Provides access to the row variable for an entry. Since not all
-	 * entity types provide a concrete row, and most don't agree on what
+	 * content types provide a concrete row, and most don't agree on what
 	 * fields are always available, this method is useful to provide defaults
 	 * to row data.
 	 *
-	 * @return string  The type of the field's parent entity.
+	 * @param  string  Name of the index to look for
+	 * @param  string  Value to return of the index doesn't exist
+	 * @return string  The retrieved content element
 	 */
 	public function row($key, $default = NULL)
 	{
@@ -210,14 +212,14 @@ abstract class EE_Fieldtype {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Register a new Entity
+	 * Register a new content type
 	 *
 	 * The developer may need to add tables or columns to support multiple
-	 * entities, so we must be able to hook into that event.
+	 * content types, so we must be able to hook into that event.
 	 *
-	 * @param string  The name of the new entity type
+	 * @param string  The name of the new content type
 	 */
-	public function register_entity($name)
+	public function register_content_type($name)
 	{
 		return;
 	}
@@ -225,15 +227,15 @@ abstract class EE_Fieldtype {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Unregister an Entity
+	 * Unregister a content type
 	 *
 	 * The developer of the fieldtype is responsible for completely
 	 * clearing the data stored by the fieldtype's custom tables. This
-	 * method is available to clear everyting of a certain entity.
+	 * method is available to clear everyting of a certain content type.
 	 *
-	 * @param string  The name of the entity type being removed
+	 * @param string  The name of the content type being removed
 	 */
-	public function unregister_entity($name)
+	public function unregister_content_type($name)
 	{
 		return;
 	}
@@ -241,15 +243,16 @@ abstract class EE_Fieldtype {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Check if the fieldtype will accept a certain entity
+	 * Check if the fieldtype will accept a certain content type
 	 *
 	 * For backward compatiblity, all fieldtypes will initially only
-	 * support the channel entity type. Override this method for more
+	 * support the channel content type. Override this method for more
 	 * control.
 	 *
-	 * @param string  The name of the entity type
+	 * @param string  The name of the content type
+	 * @return bool   Supports content type?
 	 */
-	public function accepts_entity($name)
+	public function accepts_content_type($name)
 	{
 		return ($name == 'channel');
 	}
@@ -352,7 +355,7 @@ abstract class EE_Fieldtype {
 	 * field that is processed on search.
 	 *
 	 * If you want to store data in your own table, please use post_save
-	 * when the entry/entity id is available.
+	 * when the entry/content id is available.
 	 *
 	 * @param	mixed  data submitted with the field_name, arrays allowed
 	 * @return	string data to store
@@ -367,9 +370,9 @@ abstract class EE_Fieldtype {
 	/**
 	 * Called after field is saved
 	 *
-	 * This will have access to the parent entity_id, so if you use your
-	 * own tables, please use the entity_id and entity_name to store the
-	 * data in a uniquely identifiable way ($this->entity_id()).
+	 * This will have access to the parent content_id, so if you use your
+	 * own tables, please use the content_id and content_type to store the
+	 * data in a uniquely identifiable way ($this->content_id()).
 	 *
 	 * @param string  Data returned from save(). You can use session->cache() for other data.
 	 * @return void
@@ -385,7 +388,7 @@ abstract class EE_Fieldtype {
 	/**
 	 * Called when entries are deleted.
 	 *
-	 * Please be sure to check the entity_name when you delete.
+	 * Please be sure to check the content_type when you delete.
 	 *
 	 * @param	array  array of id's
 	 * @return  void
@@ -499,20 +502,6 @@ abstract class EE_Fieldtype {
 		);
 
 		return $fields;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Save Settings
-	 *
-	 * @access	public
-	 * @param	array
-	 * @return	void
-	 */
-	function post_save_settings($data)
-	{
-		return;
 	}
 
 	// --------------------------------------------------------------------

@@ -813,6 +813,22 @@ class Relationship_ft extends EE_Fieldtype {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Make sure that we only accept data for grid and channels.
+	 *
+	 * Long term this should support all content types, but currently that
+	 * is not the case.
+	 *
+	 * @param string  The name of the content type
+	 * @return bool    Allows content type?
+	 */
+	public function accepts_content_type($name)
+	{
+		return ($name == 'channel' || $name == 'grid');
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Settings Modify Column
 	 *
 	 * @param	array

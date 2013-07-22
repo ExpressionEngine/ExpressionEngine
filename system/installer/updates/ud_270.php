@@ -50,7 +50,7 @@ class Updater {
 				'_consolidate_file_fields',
 				'_update_relationships_for_grid',
 				'_install_grid',
-				'_create_entity_table'
+				'_create_content_types_table'
 			)
 		);
 
@@ -631,7 +631,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 				'constraint'		=> 10,
 				'unsigned'			=> TRUE
 			),
-			'entity_name' => array(
+			'content_type' => array(
 				'type'				=> 'varchar',
 				'constraint'		=> 50
 			),
@@ -677,14 +677,14 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		ee()->dbforge->add_field($columns);
 		ee()->dbforge->add_key('col_id', TRUE);
 		ee()->dbforge->add_key('field_id');
-		ee()->dbforge->add_key('entity_name');
+		ee()->dbforge->add_key('content_type');
 		ee()->smartforge->create_table('grid_columns');
 	}
 
-	protected function _create_entity_table()
+	protected function _create_content_types_table()
 	{
 		$columns = array(
-			'entity_type_id' => array(
+			'content_type_id' => array(
 				'type'				=> 'int',
 				'constraint'		=> 10,
 				'unsigned'			=> TRUE,
@@ -698,12 +698,12 @@ If you do not wish to reset your password, ignore this message. It will expire i
 
 		ee()->load->dbforge();
 		ee()->dbforge->add_field($columns);
-		ee()->dbforge->add_key('entity_type_id', TRUE);
+		ee()->dbforge->add_key('content_type_id', TRUE);
 		ee()->dbforge->add_key('name');
-		ee()->smartforge->create_table('entity_types');
+		ee()->smartforge->create_table('content_types');
 
 		// we always need to have this one
-		ee()->db->insert('entity_types', array('name' => 'channel'));
+		ee()->db->insert('content_types', array('name' => 'channel'));
 	}
 }
 /* END CLASS */

@@ -14,7 +14,7 @@
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Core Entity Types Class
+ * ExpressionEngine Core Content Types Class
  *
  * @package		ExpressionEngine
  * @subpackage	Core
@@ -22,22 +22,22 @@
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class EE_Entity_types {
+class EE_content_types {
 
-	private $_table = 'entity_types';
+	private $_table = 'content_types';
 
 	// --------------------------------------------------------------------
 
 	/**
-	 * Add an entity
+	 * Add a content types
 	 *
 	 * Gives the fieldtypes an opportunity to do one-time prep work for
-	 * new entity types.
+	 * new content types.
 	 *
 	 * Third parties are responsible for calling this when their module
 	 * is installed.
 	 *
-	 * @param	string	Name of the entity being removed
+	 * @param	string	Name of the content type being removed
 	 * @return	void
 	 */
 	public function register($name)
@@ -51,20 +51,20 @@ class EE_Entity_types {
 
 		ee()->db->insert($this->_table, $param);
 
-		$this->_notify_fieldtypes('unregister_entity', $param);
+		$this->_notify_fieldtypes('unregister_content_type', $param);
 	}
 
 	// --------------------------------------------------------------------
 
 	/**
-	 * Remove an entity
+	 * Remove a content type
 	 *
 	 * Tells all fieldtypes that they need to potentially do some
 	 * cleanup work. The fieldtype is responsible for correctly interpreting
 	 * this signal. The module is responsible for calling this method when
 	 * it is uninstalled.
 	 *
-	 * @param	string	Name of the entity being removed
+	 * @param	string	Name of the content type being removed
 	 * @return	void
 	 */
 	public function unregister($name)
@@ -80,14 +80,15 @@ class EE_Entity_types {
 
 		if (ee()->db->affected_rows())
 		{
-			$this->_notify_fieldtypes('register_entity', $param);
+			$this->_notify_fieldtypes('register_content_type', $param);
 		}
+
 	}
 
 	// --------------------------------------------------------------------
 
 	/**
-	 * Retrieve a list of all entity types
+	 * Retrieve a list of all content types
 	 */
 	public function all()
 	{
@@ -100,10 +101,10 @@ class EE_Entity_types {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Notify all fieldtypes of the entity change.
+	 * Notify all fieldtypes of the content type change.
 	 *
-	 * @param	string	Name of the function to call ([un]register_entity)
-	 * @param	string	Name of the entity being modified
+	 * @param	string	Name of the function to call ([un]register_content_type)
+	 * @param	string	Name of the content type being modified
 	 * @return	void
 	 */
 	private function _notify_fieldtypes($fn, $param)
@@ -118,7 +119,7 @@ class EE_Entity_types {
 		{
 			if ($ft_api->setup_handler($key))
 			{
-				if ($ft_api->apply('accepts_entity', $param))
+				if ($ft_api->apply('accepts_content_type', $param))
 				{
 					$ft_api->apply($fn, $param);
 				}

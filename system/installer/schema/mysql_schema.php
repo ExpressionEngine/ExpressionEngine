@@ -1200,10 +1200,10 @@ class EE_Schema {
 		)";
 
 		// Entity type table
-		$Q[] = "CREATE TABLE `exp_entity_types` (
-			`entity_type_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+		$Q[] = "CREATE TABLE `exp_content_types` (
+			`content_type_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 			`name` varchar(50) NOT NULL DEFAULT '',
-			PRIMARY KEY (`entity_type_id`),
+			PRIMARY KEY (`content_type_id`),
 			KEY `name` (`name`)
 		)";
 
