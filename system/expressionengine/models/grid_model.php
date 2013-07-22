@@ -366,7 +366,7 @@ class Grid_model extends CI_Model {
  				);
 
  			// -------------------------------------------
- 			// 'relationships_query' hook.
+ 			// 'grid_query' hook.
  			// - Allows developers to modify and run the query for Grid data
  			//
  				if (ee()->extensions->active_hook('grid_query') === TRUE)
@@ -727,7 +727,7 @@ class Grid_model extends CI_Model {
  		);
 
  		// -------------------------------------------
- 		// 'relationships_post_save' hook.
+ 		// 'grid_save' hook.
  		//  - Allow developers to modify or add to the Grid data array before saving
  		//
  			if (ee()->extensions->active_hook('grid_save') === TRUE)
