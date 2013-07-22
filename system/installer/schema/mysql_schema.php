@@ -1198,6 +1198,14 @@ class EE_Schema {
 			KEY `hash` (`hash`)
 		)";
 
+		// Entity type table
+		$Q[] = "CREATE TABLE `exp_entity_types` (
+			`entity_type_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+			`name` varchar(50) NOT NULL DEFAULT '',
+			PRIMARY KEY (`entity_type_id`),
+			KEY `name` (`name`)
+		)";
+
 		// Fieldtype table
 		$Q[] = "CREATE TABLE exp_fieldtypes (
 			fieldtype_id int(4) unsigned NOT NULL auto_increment,
