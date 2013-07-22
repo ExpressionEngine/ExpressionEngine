@@ -736,7 +736,7 @@ class Grid_model extends CI_Model {
  					'grid_save',
  					$entry_id,
  					$field_id,
- 					$entity_name,
+ 					$content_type,
  					$table_name,
  					$data
  				);
