@@ -359,13 +359,35 @@ class Grid_model extends CI_Model {
 
  			ee()->load->helper('array_helper');
 
- 			$rows = ee()->db->where_in('entry_id', $entry_ids)
+ 			ee()->db->where_in('entry_id', $entry_ids)
  				->order_by(
  					element('orderby', $options, 'row_order'),
  					element('sort', $options, 'asc')
- 				)
- 				->get($this->_data_table($content_type, $field_id))
- 				->result_array();
+ 				);
+
+ 			// -------------------------------------------
+ 			// 'grid_query' hook.
+ 			// - Allows developers to modify and run the query for Grid data
+ 			//
+ 				if (ee()->extensions->active_hook('grid_query') === TRUE)
+ 				{
+ 					$rows = ee()->extensions->call(
+ 						'grid_query',
+ 						$entry_ids,
+ 						$field_id,
+ 						$content_type,
+ 						$this->_data_table($content_type, $field_id),
+ 						ee()->db->_compile_select(FALSE, FALSE)
+ 					);
+ 				}
+ 				else
+ 				{
+ 					$rows = ee()->db->get(
+ 						$this->_data_table($content_type, $field_id)
+ 					)->result_array();
+ 				}
+ 			//
+ 			// -------------------------------------------
 
  			// Add these rows to the cache
  			foreach ($rows as $row)
@@ -697,19 +719,44 @@ class Grid_model extends CI_Model {
  			->get($table_name)
  			->result_array();
 
+ 		// Put rows into an array for easy passing and returning for the hook
+ 		$data = array(
+ 			'new_rows' => $new_rows,
+ 			'updated_rows' => $updated_rows,
+ 			'deleted_rows' => $deleted_rows
+ 		);
+
+ 		// -------------------------------------------
+ 		// 'grid_save' hook.
+ 		//  - Allow developers to modify or add to the Grid data array before saving
+ 		//
+ 			if (ee()->extensions->active_hook('grid_save') === TRUE)
+ 			{
+ 				$data = ee()->extensions->call(
+ 					'grid_save',
+ 					$entry_id,
+ 					$field_id,
+ 					$entity_name,
+ 					$table_name,
+ 					$data
+ 				);
+ 			}
+ 		//
+ 		// -------------------------------------------
+
  		// Batch update and insert rows to save queries
- 		if ( ! empty($updated_rows))
+ 		if ( ! empty($data['updated_rows']))
  		{
- 			ee()->db->update_batch($table_name, $updated_rows, 'row_id');
+ 			ee()->db->update_batch($table_name, $data['updated_rows'], 'row_id');
  		}
 
- 		if ( ! empty($new_rows))
+ 		if ( ! empty($data['new_rows']))
  		{
- 			ee()->db->insert_batch($table_name, $new_rows);
+ 			ee()->db->insert_batch($table_name, $data['new_rows']);
  		}
 
  		// Return deleted row IDs
- 		return $deleted_rows;
+ 		return $data['deleted_rows'];
  	}
 
  	// ------------------------------------------------------------------------
