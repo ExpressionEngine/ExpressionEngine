@@ -732,7 +732,14 @@ class Grid_model extends CI_Model {
  		//
  			if (ee()->extensions->active_hook('grid_save') === TRUE)
  			{
- 				$data = ee()->extensions->call('grid_save', $entry_id, $field_id, $entity_name, $data);
+ 				$data = ee()->extensions->call(
+ 					'grid_save',
+ 					$entry_id,
+ 					$field_id,
+ 					$entity_name,
+ 					$table_name,
+ 					$data
+ 				);
  			}
  		//
  		// -------------------------------------------
