@@ -192,11 +192,11 @@ class EE_Security extends CI_Security {
 			return TRUE;
 		}
 
-		$total = $EE->db->where(array(
+		$total = ee()->db->where(array(
 				'used'			=> 0,
 				'hash' 			=> $xid,
-				'session_id' 	=> $EE->session->userdata('session_id'),
-				'date >' 		=> $EE->localize->now - $this->_xid_ttl
+				'session_id' 	=> ee()->session->userdata('session_id'),
+				'date >' 		=> ee()->localize->now - $this->_xid_ttl
 			))
 			->from('security_hashes')
 			->count_all_results();
