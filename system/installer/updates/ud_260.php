@@ -227,13 +227,13 @@ class Updater {
 		// For this one, the method was renamed.  It still mostly does
 		// the same thing and needs to be an action.
 		ee()->db->where('method', 'retrieve_password')
+			->where('class', 'Member')
 			->update('actions', array('method'=>'send_reset_token'));
 		// For this one the method still exists, but is now a form.  It needs
 		// to be renamed to the new processing method.
 		ee()->db->where('method', 'reset_password')
+			->where('class', 'Member')
 			->update('actions', array('method'=>'process_reset_password'));
-
-
 	} 
 
 	// -------------------------------------------------------------------
