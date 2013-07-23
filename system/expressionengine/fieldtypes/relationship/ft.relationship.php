@@ -795,6 +795,15 @@ class Relationship_ft extends EE_Fieldtype {
 		ee()->dbforge->add_key('field_id');
 
 		ee()->dbforge->create_table($this->_table);
+
+		$field['field_id_'.$data['field_id']] = array(
+			'type' 			=> 'INT',
+			'constraint'	=> 10,
+			'null' 			=> FALSE,
+			'default'		=> 0
+			);
+
+		return $field;
 	}
 
 	// --------------------------------------------------------------------
