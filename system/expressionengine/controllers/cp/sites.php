@@ -1282,7 +1282,7 @@ class Sites extends CP_Controller {
 										$columns = array(
 											'field_id_'.$field_id => array(
 												'type' 			=> 'text',
-												'null' 			=> FALSE,
+												'null' 			=> TRUE,
 											),
 											'field_ft_'.$field_id => array(
 												'type'			=> 'tinytext',
@@ -1459,12 +1459,12 @@ class Sites extends CP_Controller {
 									$columns = array(
 										'field_id_'.$field_id => array(
 											'type' 			=> 'text',
-											'null' 			=> FALSE,
+											'null' 			=> TRUE,
 										),
 										'field_ft_'.$field_id => array(
 											'type'			=> 'varchar',
 											'constraint'	=> 40,
-											'null'			=> FALSE,
+											'null'			=> TRUE,
 											'default'		=> 'none'
 										)
 									);
@@ -1671,7 +1671,9 @@ class Sites extends CP_Controller {
 										'`field_id_'.$row['field_id'].'`', 
 										FALSE
 									);
-									$this->db->set('field_id_'.$row['field_id'], NULL);
+									
+									$null_type = ($row['field_type'] == 'date' OR $row['field_type'] == 'relationship') ? 0 : NULL;
+									$this->db->set('field_id_'.$row['field_id'], $null_type);
 									$this->db->where('channel_id', $channel_id)
 										->update('channel_data');
 								}								
