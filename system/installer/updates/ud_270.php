@@ -232,7 +232,10 @@ If you do not wish to reset your password, ignore this message. It will expire i
 			);
 		}
 
-		ee()->db->insert_batch('field_formatting', $data);
+		if ( ! empty($data))
+		{
+			ee()->db->insert_batch('field_formatting', $data);
+		}
 
 		return TRUE;
 	}
@@ -393,8 +396,11 @@ If you do not wish to reset your password, ignore this message. It will expire i
 				}
 			}
 
-			// and put them into the new table
-			ee()->db->insert_batch('channel_form_settings', $db_settings);
+			if ( ! empty($db_settings))
+			{
+				// and put them into the new table
+				ee()->db->insert_batch('channel_form_settings', $db_settings);
+			}
 		}
 
 		// drop the extension
