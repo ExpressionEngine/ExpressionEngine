@@ -1327,6 +1327,7 @@ class EE_Schema {
 		$Q[] = "CREATE TABLE `exp_grid_columns` (
 			`col_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 			`field_id` int(10) unsigned DEFAULT NULL,
+			`content_type` varchar(50) DEFAULT NULL,
 			`col_order` int(3) unsigned DEFAULT NULL,
 			`col_type` varchar(50) DEFAULT NULL,
 			`col_label` varchar(50) DEFAULT NULL,
