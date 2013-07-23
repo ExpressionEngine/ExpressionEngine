@@ -410,7 +410,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 				}
 			}
 
-			if (count($db_settings))
+			if ( ! empty($db_settings))
 			{
 				// and put them into the new table
 				ee()->db->insert_batch('channel_form_settings', $db_settings);
