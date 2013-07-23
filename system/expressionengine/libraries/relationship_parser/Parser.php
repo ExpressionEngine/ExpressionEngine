@@ -264,17 +264,24 @@ class EE_Relationship_data_parser {
  	// --------------------------------------------------------------------
 	
 	/**
-	 * Assign no results data to the node.
+	 * Find a node's no_results Tag
 	 *
-	 * Find the no_results tag once per node. This is more future proofing
-	 * than anything, currently it makes very little difference where we
-	 * pull it out.
+	 * Find the no_results tag belonging to a node, given that node's contents.
+	 * Where the contents of a node is everything contained inside of its opening
+	 * and closing tag. {node_opening} Contents. {/node_closing}  Returns
+	 * either the contents of the no_results block, or the whole no_results tag.
 	 *
-	 * @param	object	The tree node of this tag pair.
-	 * @param	string	The tagdata of the specific node we're examining (not
-	 * 					the channel:entries tag, but the child/parent/sibling
-	 * 					tag.
-	 * @return	string	Contents of the no_results tag or an empty string.
+	 * @param	object	$node			The tree node of this tag pair.
+	 * @param	string	$node_tagdata	The tagdata of the specific node we're
+	 *									examining (not the channel:entries tag, 
+	 *									but the child/parent/sibling tag.
+	 * @param	boolean	$whole_tag	(Optional) If True, then the whole no_results
+	 *								tag rather than just its contents, will be 
+	 * 								returned.
+	 *
+	 * @return	string	Contents of the no_results tag or an empty string. If
+	 *					$whole_tag is TRUE, then whole {if no_results} {/if}
+	 *					tag block will be returned.	
 	 */
 	public function find_no_results($node, $node_tagdata, $whole_tag=FALSE)
 	{
