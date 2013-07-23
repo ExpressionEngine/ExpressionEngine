@@ -119,7 +119,6 @@ class EE_Relationship_data_parser {
 	 */
 	public function parse_node($node, $parent_id, $tagdata)
 	{
-		$this->find_no_results($node, $tagdata);
 
 		if ( ! isset($node->entry_ids[$parent_id]))
 		{
@@ -223,40 +222,6 @@ class EE_Relationship_data_parser {
  	// --------------------------------------------------------------------
 	
 	/**
-	 * Assign no results data to the node.
-	 *
-	 * Find the no_results tag once per node. This is more future proofing
-	 * than anything, currently it makes very little difference where we
-	 * pull it out.
-	 *
-	 * @param	object	The tree node of this tag pair
-	 * @param	string	The tagdata to delete the tags from.
-	 * @return 	void
-	 */
-	public function find_no_results($node, $tagdata)
-	{
-		if (isset($node->no_results))
-		{
-			return;
-		}
-
-		$tag = preg_quote($node->name(), '/');
-
-		// Find no results chunks
-		$has_no_results = strpos($tagdata, 'if '.$node->name().':no_results') !== FALSE;
-
-		if ($has_no_results && preg_match("/".LD."if {$tag}:no_results".RD."(.*?)".LD.'\/'."if".RD."/s", $tagdata, $match))
-		{
-			$node->no_results = $match;
-			return;
-		}
-
-		$node->no_results = FALSE;
-	}
-
- 	// --------------------------------------------------------------------
-	
-	/**
 	 * Call the channel entries parser for this node and its tagchunk.
 	 *
 	 * @param	object	The tree node of this tag pair
@@ -296,6 +261,37 @@ class EE_Relationship_data_parser {
 		return $this->cleanup_no_results_tag($node, $result);
 	}
 
+ 	// --------------------------------------------------------------------
+	
+	/**
+	 * Assign no results data to the node.
+	 *
+	 * Find the no_results tag once per node. This is more future proofing
+	 * than anything, currently it makes very little difference where we
+	 * pull it out.
+	 *
+	 * @param	object	The tree node of this tag pair.
+	 * @param	string	The tagdata of the specific node we're examining (not
+	 * 					the channel:entries tag, but the child/parent/sibling
+	 * 					tag.
+	 * @return	string	Contents of the no_results tag or an empty string.
+	 */
+	public function find_no_results($node, $node_tagdata, $whole_tag=FALSE)
+	{
+		$tag = preg_quote($node->name(), '/');
+
+		// Find no results chunks
+		$has_no_results = strpos($node_tagdata, 'if '.$node->name().':no_results') !== FALSE;
+
+		if ($has_no_results && preg_match("/".LD."if {$tag}:no_results".RD."(.*?)".LD.'\/'."if".RD."/s", $node_tagdata, $match))
+		{
+			return ($whole_tag ? $match[0] : $match[1]);
+		}
+		
+		return '';
+	}
+
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -306,12 +302,14 @@ class EE_Relationship_data_parser {
 	 * all over the place.
 	 *
 	 * @param	object	The tree node of this tag pair
-	 * @param	string	The tagdata to delete the tags from.
+	 * @param	string	The tagdata to delete the tags from.  This the 
+	 * 					channel:entries tag's contents, not the node's
+	 * 					contents.
 	 * @return 	string	The cleaned tagdata
 	 */
 	public function clear_node_tagdata($node, $tagdata)
 	{
-		$tag = preg_quote($node->name(), '/');
+		$tag_name = preg_quote($node->name(), '/');
 		$open_tag = preg_quote($node->open_tag, '/');
 
 		if ($node->shortcut)
@@ -319,43 +317,34 @@ class EE_Relationship_data_parser {
 			$tagdata = str_replace($node->open_tag, '', $tagdata);
 		}
 
-		if ( ! preg_match_all('/'.$open_tag.'(.+?){\/'.$tag.'}/is', $tagdata, $matches, PREG_SET_ORDER))
+		while ( preg_match('/'.$open_tag.'(.+?){\/'.$tag_name.'}/is', $tagdata, $match))
 		{
-			return $tagdata;
-		}
-
-		$no_results = $node->no_results;
-		$no_results = empty($no_results) ? '' : $node->no_results[1];
-
-		foreach ($matches as $match)
-		{
+			$no_results = $this->find_no_results($node, $match[1]);
 			$tagdata = substr_replace($tagdata, $no_results, strpos($tagdata, $match[0]), strlen($match[0]));
 		}
 
-		$tagdata = preg_replace('/'.$open_tag.'(.+?){\/'.$tag.'}/is', '', $tagdata);
-		return str_replace($node->open_tag, '', $tagdata);
+		return $tagdata;
 	}
 
 	// --------------------------------------------------------------------
 
 	/**
-	 * Deletes the node tags from the given template and replace it with
-	 * the no_results tag if it exists.
-	 *
-	 * Used for empty nodes so that we don't end up with unparsed tags
-	 * all over the place.
+	 * Removes leftover no_results tags from the node's template
+	 * after we've successfully parsed the node.
 	 *
 	 * @param	object	The tree node of this tag pair
-	 * @param	string	The tagdata to delete the tags from.
+	 * @param	string	The tagdata to delete the tags from. In this
+	 * 					case this is the node's contents, not the 
+	 * 					channel:entries tag's contents.
 	 * @return 	string	The cleaned tagdata
 	 */
 	public function cleanup_no_results_tag($node, $tagdata)
 	{
-		$no_results = $node->no_results;
+		$no_results = $this->find_no_results($node, $tagdata, TRUE);
 
 		if ( ! empty($no_results))
 		{
-			$tagdata = str_replace($no_results[0], '', $tagdata);
+			$tagdata = str_replace($no_results, '', $tagdata);
 		}
 
 		return $tagdata;

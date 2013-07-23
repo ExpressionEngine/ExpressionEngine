@@ -195,7 +195,7 @@ class EE_TreeNode {
 	 */
 	public function __get($key)
 	{
-		if (is_array($this->data))
+		if (is_array($this->data) && isset($this->data[$key]))
 		{
 			return $this->data[$key];
 		}
