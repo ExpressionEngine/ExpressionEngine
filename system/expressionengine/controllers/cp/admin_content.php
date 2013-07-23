@@ -1037,8 +1037,8 @@ class Admin_content extends CP_Controller {
 
 			foreach ($statuses as $status)
 			{
-				$name = ($status->status == 'open' OR 
-						$status->status == 'closed') 
+				$name = ($status->status == 'open' OR
+						$status->status == 'closed')
 						? lang($status->status) : $status->status;
 
 				$channel_id = $all_statuses[$status->group_id];
@@ -3623,6 +3623,10 @@ class Admin_content extends CP_Controller {
 
 			$ft_api->fetch_all_fieldtypes();
 			$obj = $ft_api->setup_handler($field_type, TRUE);
+			$ft_api->apply(
+				'_init',
+				array(array('id' => $field_id))
+			);
 
 			if ($ft_api->check_method_exists('validate_settings'))
 			{

@@ -235,7 +235,10 @@ If you do not wish to reset your password, ignore this message. It will expire i
 			);
 		}
 
-		ee()->db->insert_batch('field_formatting', $data);
+		if ( ! empty($data))
+		{
+			ee()->db->insert_batch('field_formatting', $data);
+		}
 
 		return TRUE;
 	}
@@ -339,6 +342,13 @@ If you do not wish to reset your password, ignore this message. It will expire i
 			$settings = $settings_q->row('settings');
 			$settings = strip_slashes(unserialize($settings));
 
+			$valid_keys = array(
+				'override_status',
+				'allow_guests',
+				'logged_out_member_id',
+				'require_captcha'
+			);
+
 			// Settings all have their separate arrays, so we need to invert the
 			// grouping to group by site_id and channel_id rather than by setting
 			// name.
@@ -346,6 +356,13 @@ If you do not wish to reset your password, ignore this message. It will expire i
 
 			foreach ($settings as $setting_name => $sites)
 			{
+				// Old versions of safecracker have other keys such as license_key.
+				// We aren't interested in those.
+				if ( ! in_array($setting_name, $valid_keys))
+				{
+					continue;
+				}
+
 				foreach ($sites as $site_id => $channels)
 				{
 					if ( ! isset($grouped_settings[$site_id]))
@@ -396,8 +413,11 @@ If you do not wish to reset your password, ignore this message. It will expire i
 				}
 			}
 
-			// and put them into the new table
-			ee()->db->insert_batch('channel_form_settings', $db_settings);
+			if ( ! empty($db_settings))
+			{
+				// and put them into the new table
+				ee()->db->insert_batch('channel_form_settings', $db_settings);
+			}
 		}
 
 		// drop the extension

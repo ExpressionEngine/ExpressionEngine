@@ -1722,11 +1722,6 @@ class Channel_form_lib
 			}
 		}
 
-		if ( ! ee()->security->check_xid(ee()->input->post('XID')))
-		{
-			ee()->functions->redirect(stripslashes(ee()->input->post('RET')));
-		}
-
 		if (empty($this->field_errors) && empty($this->errors))
 		{
 			//temporarily change site_id for cross-site forms
@@ -1862,11 +1857,6 @@ class Channel_form_lib
 			throw new Channel_form_exception(
 				array_merge($this->errors, $this->field_errors)
 			);
-		}
-
-		if ( ! AJAX_REQUEST)
-		{
-			ee()->security->delete_xid(ee()->input->post('XID'));
 		}
 
 		$return = ($this->_meta['return']) ? ee()->functions->create_url($this->_meta['return']) : ee()->functions->fetch_site_index();
