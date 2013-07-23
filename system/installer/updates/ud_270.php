@@ -51,7 +51,9 @@ class Updater {
 				'_update_relationships_for_grid',
 				'_install_grid',
 				'_create_content_types_table',
-				'_modify_channel_data_relationship_fields'
+				'_modify_channel_data_relationship_fields',
+				'_modify_channel_data_default_fields',
+				'_modify_category_data_fields'
 			)
 		);
 
@@ -734,6 +736,96 @@ If you do not wish to reset your password, ignore this message. It will expire i
 						'constraint' 	=> 10,
 						'null' 			=> FALSE,
 						'default'	 	=> 0
+					)
+				)
+			);
+		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Modify custom fields in exp_channel_data
+	 *
+	 * Possible mix of column types with regard to allowing NULL due to a bug
+	 * in MSM.  Modifying to make sure the core EE default text type fields 
+	 * all allow NULL for consistency.
+	 */
+	protected function _modify_channel_data_default_fields()
+	{	
+		// Get text type fields
+		ee()->db->where_in('field_type', array('text', 'textarea', 'checkboxes', 'multi_select', 'radio', 'select', 'file'));
+		
+			
+		$channel_fields = ee()->db->get('channel_fields');
+
+		foreach ($channel_fields->result_array() as $field)
+		{
+			if ($field['field_type'] == 'text')
+			{
+				$is_text = $this->_text_field_check($field['field_settings']);
+	
+				if ( ! $is_text)
+				{
+					continue;
+				}
+			}
+
+			$field_name = 'field_id_'.$field['field_id'];
+
+			ee()->smartforge->modify_column(
+				'channel_data',
+				array(
+					$field_name => array(
+						'name' 			=> $field_name,
+						'type' 			=> 'text',
+						'null' 			=> TRUE
+					)
+				)
+			);
+		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Helper to check field setting content type for text fields
+	 */
+	protected function _text_field_check($data)
+	{
+		$settings = unserialize(base64_decode($data));
+
+		$is_text =  ($settings['field_content_type'] == 'all') ? TRUE : FALSE;
+		
+		return $is_text;
+	}
+
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Modify custom fields in exp_category_data
+	 *
+	 * Possible mix of column types with regard to allowing NULL due to a bug
+	 * in MSM.  Modifying to make sure the all allow NULL for consistency.
+	 */
+	protected function _modify_category_data_fields()
+	{	
+		// Get all fields
+
+		$cat_fields = ee()->db->get('category_fields');
+
+		foreach ($cat_fields->result_array() as $field)
+		{
+			$field_name = 'field_id_'.$field['field_id'];
+
+			ee()->smartforge->modify_column(
+				'category_data',
+				array(
+					$field_name => array(
+						'name' 			=> $field_name,
+						'type' 			=> 'text',
+						'null' 			=> TRUE
 					)
 				)
 			);
