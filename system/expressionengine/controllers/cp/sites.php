@@ -1973,6 +1973,7 @@ class Sites extends CP_Controller {
 		// Delete Channel Custom Field Columns for Site		
 		// Save the field ids in an array so we can delete the associated field formats
 		$this->load->dbforge();
+		$this->load->library('smartforge');
 		$nuked_field_ids = array();
 		
 		$query = $this->db->select('field_id, field_type')
@@ -1985,18 +1986,18 @@ class Sites extends CP_Controller {
 		{
 			foreach($query->result_array() as $row)
 			{
-				$this->dbforge->drop_column('channel_data', 'field_id_'.$row['field_id']);
-				$this->dbforge->drop_column('channel_data', 'field_ft_'.$row['field_id']);
+				$this->smartforge->drop_column('channel_data', 'field_id_'.$row['field_id']);
+				$this->smartforge->drop_column('channel_data', 'field_ft_'.$row['field_id']);
 
 				$nuked_field_ids[] = $row['field_id'];
                 
 				if ($row['field_type'] == 'date')
 				{
-					$this->dbforge->drop_column('channel_data', 'field_dt_'.$row['field_id']);
+					$this->smartforge->drop_column('channel_data', 'field_dt_'.$row['field_id']);
 				}
 			}
 		}
-		
+
 		// Delete any related field formatting options
 		if ( ! empty($nuked_field_ids))
 		{
@@ -2016,8 +2017,8 @@ class Sites extends CP_Controller {
 			foreach($query->result_array() as $row)
 			{
 				$field_id = $row['field_id'];
-				$this->dbforge->drop_column('category_field_data', 'field_id_'.$field_id);
-				$this->dbforge->drop_column('category_field_data', 'field_ft_'.$field_id);
+				$this->smartforge->drop_column('category_field_data', 'field_id_'.$field_id);
+				$this->smartforge->drop_column('category_field_data', 'field_ft_'.$field_id);
 			}
 		}
 		
