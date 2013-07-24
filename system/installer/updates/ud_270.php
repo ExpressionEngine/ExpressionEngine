@@ -50,7 +50,8 @@ class Updater {
 				'_consolidate_file_fields',
 				'_update_relationships_for_grid',
 				'_install_grid',
-				'_create_content_types_table'
+				'_create_content_types_table',
+				'_clear_dev_log'
 			)
 		);
 
@@ -701,6 +702,13 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		ee()->smartforge->create_table('grid_columns');
 	}
 
+	// -------------------------------------------------------------------
+
+	/**
+	 * Add the new content types table
+	 *
+	 * @return void
+	 */
 	protected function _create_content_types_table()
 	{
 		$columns = array(
@@ -724,6 +732,29 @@ If you do not wish to reset your password, ignore this message. It will expire i
 
 		// we always need to have this one
 		ee()->db->insert('content_types', array('name' => 'channel'));
+	}
+
+	// -------------------------------------------------------------------
+
+	/**
+	 * Clear the developer log and add a hash column
+	 *
+	 * @return void
+	 */
+	protected function _clear_dev_log()
+	{
+		ee()->db->truncate('developer_log');
+
+		ee()->smartforge->add_column(
+			'developer_log',
+			array(
+				'hash' => array(
+					'type'			=> 'char',
+					'constraint'	=> 32,
+					'null'			=> FALSE
+				)
+			)
+		);
 	}
 }
 /* END CLASS */
