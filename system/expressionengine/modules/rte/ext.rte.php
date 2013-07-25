@@ -281,9 +281,9 @@ class Rte_ext {
 	function publish_form_entry_data($results)
 	{
 		// Build toolset JS and include CP-only tools
-		ee()->javascript->output(
-			ee()->rte_lib->build_js(0, '.WysiHat-field', NULL, TRUE)
-		);
+//		ee()->javascript->output(
+//			ee()->rte_lib->build_js(0, '.WysiHat-field', NULL, TRUE)
+//		);
 		
 		return $results;
 	}

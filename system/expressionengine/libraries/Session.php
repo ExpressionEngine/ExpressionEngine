@@ -605,8 +605,8 @@ class EE_Session {
 		//  Are users allowed to localize?
 		if (ee()->config->item('allow_member_localization') == 'n')
 		{
-			$this->userdata['timezone'] = (ee()->config->item('default_site_timezone') && ee()->config->item('default_site_timezone') != '') ? ee()->config->item('default_site_timezone') : ee()->config->item('server_timezone');
-			$this->userdata['time_format'] = (ee()->config->item('time_format') && ee()->config->item('time_format') != '') ? ee()->config->item('time_format') : 'us';
+			$this->userdata['timezone'] = ee()->config->item('default_site_timezone');
+			$this->userdata['time_format'] = ee()->config->item('time_format') ? ee()->config->item('time_format') : 'us';
  		}
 						
 		// Assign Sites, Channel, Template, and Module Access Privs	
@@ -1158,8 +1158,8 @@ class EE_Session {
 			'url'				=> ee()->input->cookie('my_url'),
 			'location'			=> ee()->input->cookie('my_location'),
 			'language'			=> '',
-			'timezone'			=> (ee()->config->item('default_site_timezone') && ee()->config->item('default_site_timezone') != '') ? ee()->config->item('default_site_timezone') : ee()->config->item('server_timezone'),
-			'time_format'		=> (ee()->config->item('time_format') && ee()->config->item('time_format') != '') ? ee()->config->item('time_format') : 'us',
+			'timezone'			=> ee()->config->item('default_site_timezone'),
+			'time_format'		=> ee()->config->item('time_format') ? ee()->config->item('time_format') : 'us',
 			'group_id'			=> '3',
 			'access_cp'			=>  0,
 			'last_visit'		=>  0,

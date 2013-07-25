@@ -23,7 +23,7 @@
  * @link		http://expressionengine.com
  */
 class Smartforge {
-	
+
 	function __construct()
 	{
 		$this->EE =& get_instance();
@@ -34,7 +34,7 @@ class Smartforge {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Create table
 	 *
@@ -50,6 +50,8 @@ class Smartforge {
 		{
 			ee()->logger->updater("Could not create table '".ee()->db->dbprefix."$table'. Table already exists.", TRUE);
 
+			ee()->dbforge->_reset();
+
 			return FALSE;
 		}
 
@@ -57,7 +59,7 @@ class Smartforge {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Rename table
 	 *
@@ -89,12 +91,12 @@ class Smartforge {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Column Add
 	 *
-	 * Run through each column in the array to be added. For each, check 
-	 * to see if column already exists in the DB. If so, skip adding that 
+	 * Run through each column in the array to be added. For each, check
+	 * to see if column already exists in the DB. If so, skip adding that
 	 * column.
 	 *
 	 * @access	public
@@ -134,7 +136,7 @@ class Smartforge {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Column Drop
 	 *
@@ -166,18 +168,18 @@ class Smartforge {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Column Modify
 	 *
-	 * Modify a database column (if it exists) with the added check that 
-	 * if the column is being renamed and both current column (A) and 
+	 * Modify a database column (if it exists) with the added check that
+	 * if the column is being renamed and both current column (A) and
 	 * proposed column (B) names exist, drop column A and leave column B.
-	 * 
-	 * If both columns exist, it's likely this update is being run again 
-	 * from a version further back than the point the DB is actually at 
-	 * (an overlay, if you will). Therefore, column B is probably the one 
-	 * with all the data in it, and column A has only very recently 
+	 *
+	 * If both columns exist, it's likely this update is being run again
+	 * from a version further back than the point the DB is actually at
+	 * (an overlay, if you will). Therefore, column B is probably the one
+	 * with all the data in it, and column A has only very recently
 	 * (as in, within seconds) been created.
 	 *
 	 * @access	public
@@ -242,7 +244,7 @@ class Smartforge {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Insert Set
 	 *
@@ -291,16 +293,16 @@ class Smartforge {
 				return FALSE;
 			}
 		}
-		
-		ee()->db->set($values);			
-		ee()->db->insert($table);			
+
+		ee()->db->set($values);
+		ee()->db->insert($table);
 
 		return FALSE;
 
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Add Key
 	 *
@@ -346,7 +348,7 @@ class Smartforge {
 			else
 			{
 				$sql = "ALTER TABLE `".ee()->db->dbprefix."$table` ADD INDEX {$key_name} (`{$col_name}`)";
-			}			
+			}
 
 			if (ee()->db->query($sql) === TRUE)
 			{
@@ -360,7 +362,7 @@ class Smartforge {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Drop Key
 	 *

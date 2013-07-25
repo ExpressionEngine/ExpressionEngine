@@ -54,9 +54,9 @@ class EE_Stylesheet {
 			$stylesheet = $_GET['css'];			
 		}
 
-		if (rtrim($stylesheet, '/') == '_ee_saef_css')
+		if (rtrim($stylesheet, '/') == '_ee_channel_form_css')
 		{
-			return $this->_ee_saef_css();
+			return $this->_ee_channel_form_css();
 		}
 		
 		$stylesheet = preg_replace("/\.v\.[0-9]{10}/", '', $stylesheet);  // Remove version info
@@ -117,19 +117,16 @@ class EE_Stylesheet {
 	// --------------------------------------------------------------------
 	
 	/**
-	 * EE SAEF CSS
+	 * EE Channel:form CSS
 	 *
-	 * Provides CSS for the SAEF file upload utility on the front end
+	 * Provides basic CSS for channel:form functionality on the frontend
 	 *
-	 * @access	private
 	 * @return	void
 	 */
-	function _ee_saef_css()
+	private function _ee_channel_form_css()
 	{
-		// $files[] = PATH_THEMES.'jquery_ui/default/min_filebrowser.css';
-        // $files[] = PATH_THEMES.'cp_themes/default/css/file_browser.css';
 		$files[] = PATH_THEMES.'cp_themes/default/css/jquery-ui-1.8.16.custom.css';
-		$files[] = PATH_THEMES.'cp_themes/default/css/saef.css';
+		$files[] = PATH_THEMES.'cp_themes/default/css/channel_form.css';
 		
 		$out = '';
 		

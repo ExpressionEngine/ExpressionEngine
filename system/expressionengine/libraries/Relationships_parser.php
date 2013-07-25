@@ -11,7 +11,7 @@
  * @since		Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 require_once APPPATH.'libraries/relationship_parser/Exceptions.php';
@@ -27,13 +27,13 @@ require_once APPPATH.'libraries/relationship_parser/Tree_builder.php';
  * relationship fields that we need to pull entries from in the
  * relationship query. This array comes directly from the tag data. For
  * example, if we have a channel set up like the following:
- * 
+ *
  * Seasons
  * 	title
  * 	url_title
  * 	games		RELATIONSHIP (Games)
  * 	teams		RELATIONSHIP (Teams)
- * 
+ *
  * Games
  * 	title
  * 	url_title
@@ -44,7 +44,7 @@ require_once APPPATH.'libraries/relationship_parser/Tree_builder.php';
  * 	title
  * 	url_title
  * 	players		RELATIONSHIP (Players)
- * 
+ *
  * Players
  * 	title
  * 	url_title
@@ -53,7 +53,7 @@ require_once APPPATH.'libraries/relationship_parser/Tree_builder.php';
  * 	number
  *
  * Then we might see tag data that looked like the following:
- * 	
+ *
  * 	{exp:channel:entries channel="Seasons"}
  * 		{games}
  * 			{games:home:title} vs {games:away:title}
@@ -65,8 +65,8 @@ require_once APPPATH.'libraries/relationship_parser/Tree_builder.php';
  * 			{games:away:players}
  * 		{/games}
  * 	{/exp:channel:entires}
- * 
- * 
+ *
+ *
  * We're only interested in the relationship fields, but we want to maintain
  * the parent child relationships of the tags, so we turn it into a tree
  * hierachy such as this:
@@ -74,27 +74,27 @@ require_once APPPATH.'libraries/relationship_parser/Tree_builder.php';
  *					{games}
  *		{games:home}		{games:away}
  * {games:home:players}	{games:away:players}
- * 
- * 
+ *
+ *
  * Using the branch depth of that structure, we can construct a join that will
  * return all of the potential entry ids from our adjecency list table. More
  * importantly, we can overlay this parent sibling information on our tree so
  * that we end up with a set of ids for each parent at any given tag:
- * 
+ *
  * 				 {[6, 7]}
- * 				/		\	
+ * 				/		\
  *  {6:[2,4], 7:[8,9]}    	{6:[], 7:[2,5]}
  * 		/					\
  * 	...				  		 ...
- * 
- * 
+ *
+ *
  * This also means that we can query for most of the required data before the
  * channel entries loop runs. There are a few edge cases that we need to
  * consider in this approach. Since an entry can have multiple parents, some
  * of which may not be on the current tree, we cannot rely on the tree to
  * provide us with parent information. Instead we add a query with an inverted
  * tree at those edge-case locations.
- * 
+ *
  *
  * @package		ExpressionEngine
  * @subpackage	Core
@@ -120,11 +120,16 @@ class EE_Relationships_parser {
 	 * @return Relationship_Parser	The parser object with the parsed out
 	 *								hierarchy and all of the entry data.
 	 */
-	public function create(array $relationship_fields, array $entry_ids)
+	public function create(array $relationship_fields, array $entry_ids, $tagdata = NULL, array $grid_relationships = array(), $grid_field_id = NULL)
 	{
-		$builder = new EE_relationship_tree_builder($relationship_fields);
+		if ( ! isset($tagdata))
+		{
+			$tagdata = ee()->TMPL->tagdata;
+		}
 
-		$tree = $builder->build_tree($entry_ids);
+		$builder = new EE_relationship_tree_builder($relationship_fields, $grid_relationships, $grid_field_id);
+
+		$tree = $builder->build_tree($entry_ids, $tagdata);
 
 		if ($tree)
 		{

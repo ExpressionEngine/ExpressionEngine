@@ -23,7 +23,7 @@
  * @link		http://ellislab.com
  */
 class Admin_model extends CI_Model {
-	
+
 	/**
 	 * Get Config Fields
 	 *
@@ -43,12 +43,12 @@ class Admin_model extends CI_Model {
 			$debug_options['0'] = 'debug_zero';
 			ksort($debug_options);
 		}
-		
+
 		$f_data = array(
 			'general_cfg'		=>	array(
 				'multiple_sites_enabled'	=> array('r', array('y' => 'yes', 'n' => 'no')),
 				'is_system_on'				=> array('r', array('y' => 'yes', 'n' => 'no')),
-				'is_site_on'				=> array('r', array('y' => 'yes', 'n' => 'no')),											
+				'is_site_on'				=> array('r', array('y' => 'yes', 'n' => 'no')),
 				'license_number'			=> array('i', ''),
 				'site_name'					=> array('i', '', 'required'),
 				'site_index'				=> array('i', ''),
@@ -57,7 +57,7 @@ class Admin_model extends CI_Model {
 				'theme_folder_url'			=> array('i', '', 'required'),
 				'theme_folder_path'			=> array('i', '', 'required'),
 				'cp_theme'					=> array('f', 'theme_menu'),
-				'deft_lang'					=> array('f', 'language_menu'),											
+				'deft_lang'					=> array('f', 'language_menu'),
 				'xml_lang'					=> array('f', 'fetch_encoding'),
 				'max_caches'				=> array('i', ''),
 				'new_version_check'			=> array('r', array('y' => 'yes', 'n' => 'no')),
@@ -71,7 +71,7 @@ class Admin_model extends CI_Model {
 				// 'cache_on'					=> array('r', array('y' => 'yes', 'n' => 'no')),
 				// 'enable_db_caching'			=> array('r', array('y' => 'yes', 'n' => 'no')),
 			),
-											
+
 			'output_cfg'		=>	array(
 				'send_headers'				=> array('r', array('y' => 'yes', 'n' => 'no')),
 				'gzip_output'				=> array('r', array('y' => 'yes', 'n' => 'no')),
@@ -81,7 +81,7 @@ class Admin_model extends CI_Model {
 				'show_profiler'				=> array('r', array('y' => 'yes', 'n' => 'no')),
 				'template_debugging'		=> array('r', array('y' => 'yes', 'n' => 'no'))
 			),
-											
+
 			'channel_cfg'		=>	array(
 				'use_category_name'			=> array('r', array('y' => 'yes', 'n' => 'no')),
 				'reserved_category_word'	=> array('i', ''),
@@ -98,7 +98,7 @@ class Admin_model extends CI_Model {
 				'thumbnail_prefix'			=> array('i', '')
 			),
 
-			'security_cfg'		=>	array(												
+			'security_cfg'		=>	array(
 				'admin_session_type'		=> array('s', array('cs' => 'cs_session', 'c' => 'c_session', 's' => 's_session')),
 				'user_session_type'			=> array('s', array('cs' => 'cs_session', 'c' => 'c_session', 's' => 's_session')),
 				'secure_forms'				=> array('r', array('y' => 'yes', 'n' => 'no')),
@@ -108,7 +108,7 @@ class Admin_model extends CI_Model {
 				'allow_multi_logins'		=> array('r', array('y' => 'yes', 'n' => 'no')),
 				'require_ip_for_login'		=> array('r', array('y' => 'yes', 'n' => 'no')),
 				'require_ip_for_posting'	=> array('r', array('y' => 'yes', 'n' => 'no')),
-				'xss_clean_uploads'			=> array('r', array('y' => 'yes', 'n' => 'no')),											
+				'xss_clean_uploads'			=> array('r', array('y' => 'yes', 'n' => 'no')),
 				'password_lockout'			=> array('r', array('y' => 'yes', 'n' => 'no')),
 				'password_lockout_interval' => array('i', ''),
 				'require_secure_passwords'	=> array('r', array('y' => 'yes', 'n' => 'no')),
@@ -117,8 +117,8 @@ class Admin_model extends CI_Model {
 				'un_min_len'				=> array('i', ''),
 				'pw_min_len'				=> array('i', '')
 			),
-											
-			'throttling_cfg'	=>	array(	
+
+			'throttling_cfg'	=>	array(
 				'enable_throttling'			=> array('r', array('y' => 'yes', 'n' => 'no')),
 				'banish_masked_ips'			=> array('r', array('y' => 'yes', 'n' => 'no')),
 				'max_page_loads'			=> array('i', ''),
@@ -129,8 +129,8 @@ class Admin_model extends CI_Model {
 				'banishment_message'		=> array('i', '')
 			),
 
-			'localization_cfg'	=>	array(	 
-				'server_timezone'			=> array('f', 'timezone'),
+			'localization_cfg'	=>	array(
+				'default_site_timezone'		=> array('f', 'timezone'),
 				'time_format'				=> array('s', array('us' => 'united_states', 'eu' => 'european'))
 			),
 
@@ -153,13 +153,13 @@ class Admin_model extends CI_Model {
 				'email_module_captchas'		=> array('r', array('y' => 'yes', 'n' => 'no'))
 			),
 
-			'cookie_cfg'		=>	array(												
+			'cookie_cfg'		=>	array(
 				'cookie_domain'				=> array('i', ''),
 				'cookie_path'				=> array('i', ''),
 				'cookie_prefix'				=> array('i', '')
 			),
-																				 
-			'captcha_cfg'		=>	array(												
+
+			'captcha_cfg'		=>	array(
 				'captcha_path'				=> array('i', ''),
 				'captcha_url'				=> array('i', ''),
 				'captcha_font'				=> array('r', array('y' => 'yes', 'n' => 'no')),
@@ -167,7 +167,7 @@ class Admin_model extends CI_Model {
 				'captcha_require_members'	=> array('r', array('y' => 'yes', 'n' => 'no'))
 			),
 
-			'search_log_cfg'	=>	array(												
+			'search_log_cfg'	=>	array(
 				'enable_search_log'			=> array('r', array('y' => 'yes', 'n' => 'no')),
 				'max_logged_searches'		=> array('i', '')
 			),
@@ -180,23 +180,23 @@ class Admin_model extends CI_Model {
 				'save_tmpl_files'			=> array('r', array('y' => 'yes', 'n' => 'no')),
 				'tmpl_file_basepath'		=> array('i', '')
 			),
-									
-			'censoring_cfg'		=>	array(												
+
+			'censoring_cfg'		=>	array(
 				'enable_censoring'			=> array('r', array('y' => 'yes', 'n' => 'no')),
 				'censor_replacement'		=> array('i', ''),
 				'censored_words'			=> array('t', array('rows' => '20', 'kill_pipes' => TRUE)),
 			),
-									
-			'mailinglist_cfg'	=>	array(												
+
+			'mailinglist_cfg'	=>	array(
 				'mailinglist_enabled'		=> array('r', array('y' => 'yes', 'n' => 'no')),
 				'mailinglist_notify'		=> array('r', array('y' => 'yes', 'n' => 'no')),
 				'mailinglist_notify_emails' => array('i', '')
 			),
-			
-			'emoticon_cfg'		=>	array(												
+
+			'emoticon_cfg'		=>	array(
 				'enable_emoticons'			=> array('r', array('y' => 'yes', 'n' => 'no')),
 				'emoticon_url'				=> array('i', '')
-			),									
+			),
 
 			'tracking_cfg'		=>	array(
 				'enable_online_user_tracking'	=> array('r', array('y' => 'yes', 'n' => 'no'), 'y'),
@@ -211,7 +211,7 @@ class Admin_model extends CI_Model {
 				'recount_batch_total'			=> array('i', array('1000')),
 			)
 		);
-		
+
 		// don't show or edit the CP URL from masked CPs
 		if (defined('MASKED_CP') && MASKED_CP === TRUE)
 		{
@@ -220,7 +220,7 @@ class Admin_model extends CI_Model {
 
 		if ( ! file_exists(APPPATH.'libraries/Sites.php') OR IS_CORE)
 		{
-			unset($f_data['general_cfg']['multiple_sites_enabled']);	
+			unset($f_data['general_cfg']['multiple_sites_enabled']);
 		}
 
 		if ($this->config->item('multiple_sites_enabled') == 'y')
@@ -237,11 +237,18 @@ class Admin_model extends CI_Model {
 			unset($f_data['tracking_cfg']['log_referrers']);
 		}
 
+		// add New Relic if the extension is installed
+		if (extension_loaded('newrelic'))
+		{
+			$new_relic_cfg = array('use_newrelic' => array('r', array('y' => 'yes', 'n' => 'no'), 'y'));
+			$f_data['output_cfg'] = array_merge($new_relic_cfg, $f_data['output_cfg']);
+		}
+
 		return $f_data[$type];
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Get Configuration Subtext
 	 *
@@ -252,8 +259,8 @@ class Admin_model extends CI_Model {
 	 * @return	array
 	 */
 	function get_config_field_subtext()
-	{		
-		return array(	
+	{
+		return array(
 			'site_url'					=> array('url_explanation'),
 			'is_site_on'				=> array('is_site_on_explanation'),
 			'is_system_on'				=> array('is_system_on_explanation'),
@@ -261,6 +268,7 @@ class Admin_model extends CI_Model {
 			'show_profiler'				=> array('show_profiler_explanation'),
 			'template_debugging'		=> array('template_debugging_explanation'),
 			'max_caches'				=> array('max_caches_explanation'),
+			'use_newrelic'				=> array('use_newrelic_explanation'),
 			'gzip_output'				=> array('gzip_output_explanation'),
 			'server_offset'				=> array('server_offset_explain'),
 			'default_member_group'		=> array('group_assignment_defaults_to_two'),
@@ -321,7 +329,7 @@ class Admin_model extends CI_Model {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Get XML Encodings
 	 *
@@ -336,24 +344,24 @@ class Admin_model extends CI_Model {
 
 		if ( ! isset($encodings))
 		{
-			$file = APPPATH.'config/languages.php'; 
+			$file = APPPATH.'config/languages.php';
 
-			if ( ! file_exists($file)) 
+			if ( ! file_exists($file))
 			{
 				return FALSE;
-			}	
+			}
 
-			require_once $file;			
-			
+			require_once $file;
+
 			$encodings = array_flip($languages);
 			unset($languages);
-		}	
+		}
 
 		return $encodings;
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Get Installed Language Packs
 	 *
@@ -365,13 +373,13 @@ class Admin_model extends CI_Model {
 	function get_installed_language_packs()
 	{
 		static $languages;
-		
+
 		if ( ! isset($languages))
 		{
 			$this->load->helper('directory');
-			
+
 			$source_dir = APPPATH.'language/';
-			
+
 			if (($list = directory_map($source_dir, TRUE)) !== FALSE)
 			{
 				foreach ($list as $file)
@@ -381,7 +389,7 @@ class Admin_model extends CI_Model {
 						$languages[$file] = ucfirst($file);
 					}
 				}
-			
+
 				ksort($languages);
 			}
 		}
@@ -398,17 +406,17 @@ class Admin_model extends CI_Model {
 	 *
 	 * @access	public
 	 * @return	array
-	 */ 
+	 */
 	function get_cp_theme_list()
 	{
 		$this->load->library('user_agent');
-		
+
 		static $themes;
-		
+
 		if ( ! isset($themes))
 		{
 			$this->load->helper('directory');
-			
+
 			if (($list = directory_map(PATH_CP_THEME, TRUE)) !== FALSE)
 			{
 				foreach ($list as $file)
@@ -422,19 +430,19 @@ class Admin_model extends CI_Model {
 						else
 						{
 							$themes[$file] = ucfirst(str_replace('_', ' ', $file));
-							
+
 						}
 					}
 				}
 				ksort($themes);
-			}			
+			}
 		}
 
 		return $themes;
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Template List
 	 *
@@ -447,7 +455,7 @@ class Admin_model extends CI_Model {
 	function get_template_list()
 	{
 		static $templates;
-		
+
 		if ( ! isset($templates))
 		{
 			$sql = "SELECT exp_template_groups.group_name, exp_templates.template_name
@@ -455,7 +463,7 @@ class Admin_model extends CI_Model {
 					WHERE  exp_template_groups.group_id =  exp_templates.group_id
 					AND exp_template_groups.site_id = '".$this->db->escape_str($this->config->item('site_id'))."' ";
 
-			$sql .= " ORDER BY exp_template_groups.group_name, exp_templates.template_name";		 
+			$sql .= " ORDER BY exp_template_groups.group_name, exp_templates.template_name";
 
 			$query = $this->db->query($sql);
 
@@ -545,65 +553,6 @@ class Admin_model extends CI_Model {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Get Ping Servers
-	 *
-	 * @access	public
-	 * @return	object
-	 */
-	function get_ping_servers($member_id = 0)
-	{
-		$this->db->where('site_id', $this->config->item('site_id'));
-		$this->db->where('member_id', $member_id);
-		$this->db->order_by('server_order');
-		return $this->db->get('ping_servers');
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Delete Ping Server
-	 *
-	 * @access	public
-	 * @return	NULL
-	 */
-	function delete_ping_server($id)
-	{
-		$this->db->from('ping_servers');
-		$this->db->where('site_id', $this->config->item('site_id'));
-		$this->db->where('id', $id);
-		$this->db->delete();
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Update Ping Servers
-	 *
-	 * @access	public
-	 * @return	object
-	 */
-	function update_ping_servers($member_id, $servers, $remove_servers = TRUE)
-	{
-		if ($remove_servers != FALSE)
-		{
-			// remove all ping servers for this member
-			$this->db->from('ping_servers');
-			$this->db->where('site_id', $this->config->item('site_id'));
-			$this->db->where('member_id', $member_id);
-			$this->db->delete();
-		}
-
-		// now add in the new buttons
-		foreach ($servers as $server)
-		{
-			$this->db->insert('ping_servers', $server);
-		}
-
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Unique Upload Name
 	 *
 	 * @access	public
@@ -616,7 +565,7 @@ class Admin_model extends CI_Model {
 		$this->db->from('upload_prefs');
 
 		$count = $this->db->count_all_results();
-		
+
 		if (($edit == FALSE OR ($edit == TRUE && $name != $cur_name)) && $count > 0)
 		{
 			return TRUE;

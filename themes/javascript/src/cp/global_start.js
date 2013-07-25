@@ -26,6 +26,7 @@ jQuery(document).ready(function () {
 	// Ajax Errors can be hard to debug so we'll always add a simple
 	// error handler if none were specified.
 	$.ajaxPrefilter(function(options, originalOptions, jqXHR) {
+		var old_xid = EE.XID;
 
 		if ( ! _.has(options, 'error'))
 		{
@@ -35,6 +36,17 @@ jQuery(document).ready(function () {
 				});
 			});
 		}
+
+		jqXHR.setRequestHeader("X-EEXID", old_xid);
+
+		jqXHR.complete(function(xhr) {
+			var new_xid = xhr.getResponseHeader('X-EEXID');
+
+			if (new_xid) {
+				EE.XID = new_xid;
+				$('input[name="XID"]').filter('[value="'+old_xid+'"]').val(new_xid);
+			}
+		});
 	});
 
 	// A 401 in combination with a url indicates a redirect, we use this
@@ -48,12 +60,12 @@ jQuery(document).ready(function () {
 
 	// call the input placeholder polyfill early so that we don't get
 	// weird flashes of content
-	if ( ! 'placeholder' in document.createElement('input')) 
+	if ( ! 'placeholder' in document.createElement('input'))
 	{
 		EE.insert_placeholders();
 	}
 
-	
+
 	// External links open in new window
 
 	$('a[rel="external"]').click(function () {
@@ -65,11 +77,11 @@ jQuery(document).ready(function () {
 	EE.cp.show_hide_sidebar();
 	EE.cp.display_notices();
 	EE.cp.deprecation_meaning();
-	
+
 
 	// Setup Notepad
 	EE.notepad = (function () {
-	
+
 		var notepad = $('#notePad'),
 			notepad_form = $("#notepad_form"),
 			notepad_txtarea = $('#notePadTextEdit'),
@@ -77,22 +89,22 @@ jQuery(document).ready(function () {
 			notepad_text = $('#notePadText');
 			notepad_empty = notepad_text.text(),
 			current_content = notepad_txtarea.val();
-	
+
 		return {
 			init: function () {
 				if (current_content) {
 					notepad_text.html(current_content.replace(/</ig, '&lt;').replace(/>/ig, '&gt;').replace(/\n/ig, '<br />'));
 				}
-			
+
 				notepad.click(EE.notepad.show);
 				notepad_controls.find('a.cancel').click(EE.notepad.hide);
-			
+
 				notepad_form.submit(EE.notepad.submit);
 				notepad_controls.find('input.submit').click(EE.notepad.submit);
-			
+
 				notepad_txtarea.autoResize();
 			},
-		
+
 			submit: function () {
 				current_content = $.trim(notepad_txtarea.val());
 
@@ -108,7 +120,7 @@ jQuery(document).ready(function () {
 				}, 'json');
 				return false;
 			},
-		
+
 			show: function () {
 				// Already showing?
 				if (notepad_controls.is(':visible')) {
@@ -126,7 +138,7 @@ jQuery(document).ready(function () {
 								.height(0).focus()
 								.trigger('keypress');
 			},
-		
+
 			hide: function () {
 				notepad_text.show();
 				notepad_txtarea.hide();
@@ -137,7 +149,7 @@ jQuery(document).ready(function () {
 	}());
 
 	EE.notepad.init();
-	
+
 	EE.cp.accessory_toggle();
 
 	EE.cp.control_panel_search();
@@ -154,7 +166,7 @@ jQuery(document).ready(function () {
 	})
 	.css('cursor', 'pointer');
 
-	EE.cp.logout_confirm();	
+	EE.cp.logout_confirm();
 }); // ready
 
 /**
@@ -162,28 +174,28 @@ jQuery(document).ready(function () {
  * @param {String} namespace_string The namespace string (e.g. EE.publish.example)
  * @returns The object to create
  */
-EE.namespace = function(namespace_string) 
+EE.namespace = function(namespace_string)
 {
 	var parts = namespace_string.split('.'),
 		parent = EE;
-	
-	// strip redundant leading global 
+
+	// strip redundant leading global
 	if (parts[0] === "EE")
 	{
 		parts = parts.slice(1);
 	}
-	
+
 	// @todo disallow 'prototype', duh
 	// create a property if it doesn't exist if (typeof parent[parts[i]] === "undefined") {
-	for (var i = 0, max = parts.length; i < max; i += 1) 
+	for (var i = 0, max = parts.length; i < max; i += 1)
 	{
 		if (typeof parent[parts[i]] === "undefined") {
 			parent[parts[i]] = {};
 		};
-		
+
 		parent = parent[parts[i]];
 	}
-	
+
 	return parent;
 };
 
@@ -193,7 +205,7 @@ EE.namespace('EE.cp');
 EE.cp.accessory_toggle = function() {
 	$('#accessoryTabs li a').click(function (event) {
 		event.preventDefault();
-		
+
 		var $parent = $(this).parent("li"),
 			$accessory = $("#" + this.className);
 
@@ -201,7 +213,7 @@ EE.cp.accessory_toggle = function() {
 			$accessory.slideUp('fast');
 			$parent.removeClass("current");
 		}
-		else 
+		else
 		{
 			if ($parent.siblings().hasClass("current")) {
 				$accessory.show().siblings(":not(#accessoryTabs)").hide();
@@ -225,8 +237,7 @@ EE.cp.control_panel_search = function() {
 	submit_handler = function () {
 		var url = $(this).attr('action'),
 			data = {
-				'cp_search_keywords': $('#cp_search_keywords').val(),
-				'XID': EE.XID
+				'cp_search_keywords': $('#cp_search_keywords').val()
 			};
 
 		$.ajax({
@@ -266,14 +277,14 @@ EE.cp.show_hide_sidebar = function() {
 		main_height = main_content.height(),
 		sidebar_height = sidebar.height(),
 		larger_height;
-	
+
 	// Sidebar state
 
 	if (EE.CP_SIDEBAR_STATE === "n") {
 		main_content.css("width", "100%");
 		$("#revealSidebarLink").css('display', 'block');
 		$("#hideSidebarLink").hide();
-	
+
 		sidebar.show();
 		sidebar_height = sidebar.height();
 		sidebar.hide();
@@ -285,11 +296,11 @@ EE.cp.show_hide_sidebar = function() {
 	}
 
 	larger_height = sidebar_height > main_height ? sidebar_height : main_height;
-	
+
 	$('#revealSidebarLink, #hideSidebarLink').click(function () {
 		var that = $(this),
 			other = that.siblings('a'),
-			show = (this.id === 'revealSidebarLink');		
+			show = (this.id === 'revealSidebarLink');
 
 		$.ajax({
 			type: "POST",
@@ -301,18 +312,18 @@ EE.cp.show_hide_sidebar = function() {
 					// log?
 				}
 			}
-		});	
+		});
 
 		$("#sideBar").css({
 			'position': 'absolute',
 			'float': '',
 			'right': '0'
 		});
-	
-	
+
+
 		that.hide();
 		other.css('display', 'block');
-	
+
 		sidebar.slideToggle();
 		main_content.animate({
 			"width": w[this.id],
@@ -324,7 +335,7 @@ EE.cp.show_hide_sidebar = function() {
 				'float': 'right'
 			});
 		});
-		
+
 		return false;
 	});
 };
@@ -332,7 +343,7 @@ EE.cp.show_hide_sidebar = function() {
 // Move notices to notification bar for consistency
 EE.cp.display_notices = function() {
 
-	var types = ["success", "notice", "error"]; 
+	var types = ["success", "notice", "error"];
 
 	$(".message.js_hide").each(function() {
 		for (i in types) {
@@ -350,7 +361,7 @@ EE.insert_placeholders = function () {
 		if ( ! this.placeholder) {
 			return;
 		}
-						
+
 		var jqEl = $(this),
 			placeholder = this.placeholder,
 			orig_color = jqEl.css('color');
@@ -385,26 +396,32 @@ EE.cp.logout_confirm = function() {
 		var logout_modal = $('<div id="logOutConfirm">' + EE.lang.logout_confirm + ' </div>'),
 			ttl = 30,
 			orig_ttl = ttl,
-			countdown_timer, buttons,
-			log_me_out, delay_logout;
+			countdown_timer,
+			buttons,
+			log_out,
+			log_out_unload,
+			delay_logout;
 
-		log_me_out = function () {
-			// Won't redirect on unload
-			$.ajax({
-				url: EE.BASE + "&C=login&M=logout",
-				async: (! $.browser.safari)
-			});
+		log_out = function () {
+			$(window).unbind("unload.logout");
 
 			// Redirect
 			window.location = EE.BASE + "&C=login&M=logout";
 		};
 
+		log_out_unload = function() {
+			$.ajax({
+				url: EE.BASE + "&C=login&M=logout",
+				async: ( ! $.browser.safari)
+			});
+		};
+
 		delay_logout = function () {
 			if (ttl < 1) {
-				return setTimeout(log_me_out, 0);
+				return setTimeout(log_out, 0);
 			}
 			else if (ttl === orig_ttl) {
-				$(window).bind("unload.logout", log_me_out);
+				$(window).bind("unload.logout", log_out_unload);
 			}
 
 			logout_modal.dialog("option", "title", EE.lang.logout + " (" +  (ttl-- || "...")  + ")");
@@ -417,13 +434,13 @@ EE.cp.logout_confirm = function() {
 			ttl = orig_ttl;
 		}
 
-		buttons = { 
-			Cancel: function () { 
-				$(this).dialog("close"); 
+		buttons = {
+			Cancel: function () {
+				$(this).dialog("close");
 			}
 		};
 
-		buttons[EE.lang.logout] = log_me_out;
+		buttons[EE.lang.logout] = log_out;
 
 		logout_modal.dialog({
 			autoOpen: false,
@@ -452,9 +469,9 @@ EE.cp.deprecation_meaning = function()
 	$('.deprecation_meaning').click(function(event)
 	{
 		event.preventDefault();
-		
+
 		var deprecation_meaning_modal = $('<div class="alert">' + EE.developer_log.deprecation_meaning + ' </div>');
-		
+
 		deprecation_meaning_modal.dialog({
 			height: 300,
 			modal: true,
@@ -466,11 +483,11 @@ EE.cp.deprecation_meaning = function()
 
 EE.cp.zebra_tables = function(table) {
 	table = table || $('table');
-	
+
 	if ( ! table.jquery) {
 		table = $(table);
 	}
-		
+
 	$(table)
 		.find('tr')
 		.removeClass('even odd')
@@ -479,7 +496,19 @@ EE.cp.zebra_tables = function(table) {
 		.filter(':odd').addClass('odd');
 };
 
+// Grid has become a dependency for a few fieldtypes. However, sometimes it's not
+// on the page or loaded after the fieldtype. So instead of tryin to always load
+// grid or doing weird dependency juggling, we're just going to cache any calls
+// to grid.bind for now. Grid will override this definition and replay them if/when
+// it becomes available on the page. Long term we need a better solution for js
+// dependencies.
+EE.grid_cache = [];
 
+var Grid = {
+	bind: function() {
+		EE.grid_cache.push(arguments);
+	}
+};
 
 // First step in deprecating scripts in add_to_head().
 // Next release the message will be more visible/annoying.

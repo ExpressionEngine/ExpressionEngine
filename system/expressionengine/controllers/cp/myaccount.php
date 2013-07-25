@@ -829,181 +829,6 @@ class MyAccount extends CP_Controller {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Ping servers
-	 */
-	function ping_servers()
-	{
-		// Is the user authorized to access the publish page? If not, show the no access message
-		if ( ! $this->cp->allowed_group('can_access_publish'))
-		{
-			show_error(lang('unauthorized_access'));
-		}
-
-		$this->load->library('table');
-		$this->lang->loadfile('admin_content');
-		$this->load->model('admin_model');
-
-		$vars['cp_page_title'] = lang('ping_servers');
-		$vars['form_hidden'] = array();
-
-		$ping_servers = $this->admin_model->get_ping_servers($this->id);
-
-		// This user have any ping servers? If not, grab the defaults
-		if ($ping_servers->num_rows() == 0)
-		{
-			$ping_servers = $this->admin_model->get_ping_servers(0);
-		}
-
-		// ping protocols supported (currently only xmlrpc)
-		$vars['protocols'] = array('xmlrpc'=>'xmlrpc');
-
-		$vars['is_default_options'] = array('y'=>lang('yes'), 'n'=>lang('no'));
-
-		$i = 1;
-
-		$vars['ping_servers'] = array();
-
-		if ($ping_servers->num_rows() > 0)
-		{
-			foreach ($ping_servers->result_array() as $row)
-			{
-				$vars['ping_servers'][$i]['server_id'] = $row['id'];
-				$vars['ping_servers'][$i]['server_name'] = $row['server_name'];
-				$vars['ping_servers'][$i]['server_url'] = $row['server_url'];
-				$vars['ping_servers'][$i]['port'] = $row['port'];
-				$vars['ping_servers'][$i]['ping_protocol'] = $row['ping_protocol'];
-				$vars['ping_servers'][$i]['server_order'] = $row['server_order'];
-				$vars['ping_servers'][$i]['is_default'] = $row['is_default'];
-				$i++;
-			}
-		}
-
-		$vars['blank_count'] = $i;
-
-		$this->javascript->output('
-
-			function setup_js_page() {
-				$(".mainTable").tablesorter({widgets: ["zebra"]});
-				
-				$(".del_row, .order_arrows").show();
-				$(".del_instructions").hide();
-
-				$(".tag_order").css("cursor", "move");
-
-				$(".del_row a").click(function(){
-					$(this).parent().parent().remove();
-					update_ping_servers("false");
-					return false;
-				});
-
-				$(".mainTable .tag_order input").hide();
-				
-				$(".mainTable tbody").sortable({
-					axis:"y",
-					containment:"parent",
-					placeholder:"tablesize",
-					update: function() {
-
-						$("input[name^=server_order]").each(function(i) {
-							$(this).val(i+1);
-						});
-
-						update_ping_servers("false");
-						$(".mainTable").trigger("applyWidgets");
-					}
-				});
-
-				$("#ping_server_form").submit(function() {
-					update_ping_servers("true");
-					return false;
-				});
-			}
-
-			function update_ping_servers(refresh) {
-				$.post(
-					"'.str_replace('&amp;', '&', BASE).'&C=myaccount&M=save_ping_servers&refresh="+refresh,
-					$("#ping_server_form").serializeArray(),
-					function(res) {
-						if ($(res).find("#ping_server_form").length > 0) {
-							$("#ping_server_form").replaceWith($(res).find("#ping_server_form"));
-							setup_js_page();
-
-							$.ee_notice("'.lang('preferences_updated').'");
-						}
-						else {
-							res = eval(\'(\' + res + \')\');
-							$.ee_notice(res.message);
-						}
-
-					});
-			}
-
-			setup_js_page();
-		');
-
-		$this->cp->add_to_head('<style type="text/css">.tablesize{height:45px!important;}</style>');
-
-		$vars = array_merge($this->_account_menu_setup(), $vars);
-
-		$this->cp->render('account/ping_servers', $vars);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 *	Save ping servers
-	 */
-	function save_ping_servers()
-	{
-		// validate for unallowed blank values
-		if (empty($_POST)) {
-			show_error(lang('unauthorized_access'));
-		}
-
-		$this->load->model('admin_model');
-
-		$data = array();
-
-		foreach ($_POST as $key => $val)
-		{
-			if (strncmp($key, 'server_name_', 12) == 0 && $val != '')
-			{
-				$n = substr($key, 12);
-
-				$data[] = array(
-								 'member_id'	 => $this->id,
-								 'server_name'	=> $this->input->post('server_name_'.$n),
-								 'server_url'	=> $this->input->post('server_url_'.$n),
-								 'port'		  => $this->input->post('server_port_'.$n),
-								 'ping_protocol' => $this->input->post('ping_protocol_'.$n),
-								 'is_default'	=> $this->input->post('is_default_'.$n),
-								 'server_order'	 => $this->input->post('server_order_'.$n),
-								 'site_id'		 => $this->config->item('site_id')
-								);
-			}
-		}
-
-		if (count($_POST) > 0)
-		{
-			$this->admin_model->update_ping_servers($this->id, $data);
-		}
-
-		if ($this->input->get_post('refresh') == "true")
-		{
-			// Ajax refresh - only show the minimal view
-			$this->load->vars(array('EE_view_disable' => TRUE));
-			$this->ping_servers();
-		}
-		else
-		{
-			$this->session->set_flashdata('message_success', lang('preferences_updated'));
-			$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=ping_servers');
-		}
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	  *	 HTML buttons
 	  */
 	function html_buttons()
@@ -1387,7 +1212,7 @@ class MyAccount extends CP_Controller {
 
 		if ($vars['timezone'] == '')
 		{
-			$vars['timezone'] = ($this->config->item('default_site_timezone') && $this->config->item('default_site_timezone') != '') ? $this->config->item('default_site_timezone') : 'UTC';
+			$vars['timezone'] = $this->config->item('default_site_timezone') ? $this->config->item('default_site_timezone') : 'UTC';
 		}
 		
 		if ($vars['time_format'] == '')
@@ -1440,18 +1265,7 @@ class MyAccount extends CP_Controller {
 
 		$this->member_model->update_member($this->id, $data);
 
-		$config = $this->member_model->get_localization_default(TRUE);
-
-		//	Update Config Values
-		if ($config['member_id'] == $this->id)
-		{
-			unset($config['member_id']);
-			$config_update = $this->config->update_site_prefs($config);
-		}
-
 		$this->session->set_flashdata('message_success', lang('settings_updated'));
-
-
 		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=localization'.AMP.'id='.$this->id.AMP.'U=1');
 	}
 
@@ -1951,7 +1765,7 @@ class MyAccount extends CP_Controller {
 
 		$vars = array_merge($this->_account_menu_setup(), $vars);
 
-		$query = $this->member_model->get_member_data($this->id, array('ip_address', 'in_authorlist', 'group_id', 'localization_is_site_default'));
+		$query = $this->member_model->get_member_data($this->id, array('ip_address', 'in_authorlist', 'group_id'));
 
 		foreach ($query->row_array() as $key => $val)
 		{
@@ -2009,7 +1823,6 @@ class MyAccount extends CP_Controller {
 		$this->load->model('site_model');
 
 		$data['in_authorlist'] = ($this->input->post('in_authorlist') == 'y') ? 'y' : 'n';
-		$data['localization_is_site_default'] = ($this->input->post('localization_is_site_default') == 'y') ? 'y' : 'n';
 
 		if ($this->input->post('group_id'))
 		{
@@ -2050,29 +1863,7 @@ class MyAccount extends CP_Controller {
 			}			
 		}
 		
-		// If this member is set to be the default localization, wipe 'em all
-		if ($data['localization_is_site_default'] == 'y') 
-		{
-			$this->db->where('localization_is_site_default', 'y');
-			$this->db->update('members', array('localization_is_site_default' => 'n'));
-		}
-		
 		$this->member_model->update_member($this->id, $data);
-
-		$config = $this->member_model->get_localization_default();
-
-		//	Update Config Values
-
-		$query = $this->site_model->get_site_system_preferences($this->config->item('site_id'));
-
-		$prefs = unserialize(base64_decode($query->row('site_system_preferences')));
-
-		foreach($config as $key => $value)
-		{
-			$prefs[$key] = $value;
-		}
-
-		$this->site_model->update_site_system_preferences($prefs, $this->config->item('site_id'));
 
 		$this->session->set_flashdata('message_success', lang('administrative_options_updated'));
 		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=member_preferences'.AMP.'id='.$this->id);

@@ -2660,12 +2660,24 @@ class EE_Functions {
 			//
 			// So here, we make sure the value we're replacing doesn't ALSO happen to appear in the
 			// middle of something that looks like a date field with a format parameter
+			//
+			// It also failed on conditionals with similar prefixes, which tends to happen with
+			// relationship fields, e.g:
+			//
+			//     {if parent:count == 1}one{/if}
+			//     {if parent:parent:count == 1}one{/if}
+			//
+			// In the second parent loop, this would evaluate as:
+			//
+			//     {if "2" == 1}one{/if}
+			//     {if parent:"2" == 1}one{/if}
+			//
 			foreach ($matches[3] as &$match)
 			{
 				foreach ($protect as $key => $value)
 				{
-					// Make sure $key doesn't appear as "{$key "
-					if ( ! strstr($match, LD.$key.' '))
+					// Make sure $key doesn't appear as "{$key " or ":$key "
+					if (strpos($match, LD.$key.' ') === FALSE AND strpos($match, ':'.$key) === FALSE)
 					{
 						$match = str_replace($key, $value, $match);
 					}

@@ -10,36 +10,36 @@
  * @since		Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
  * ExpressionEngine Action Handler Class
  *
- * Actions are events that require processing. Normally when you use ExpressionEngine, 
- * either a web page (template), or the control panel is displayed. There are times, 
+ * Actions are events that require processing. Normally when you use ExpressionEngine,
+ * either a web page (template), or the control panel is displayed. There are times,
  * however, when we need to process user-submitted data. Examples of these include:
- * 
+ *
  * - Logging in
  * - Logging out
  * - New member registration
  *	etc...
- * 
+ *
  * In these examples, information submitted from a user needs to be received and processed.  Since
  * ExpressionEngine uses only one execution file (index.php) we need a way to know that an
  * action is being requested.
- * 
- * The way actions work is this: 
- * 
- * Anytime a GET or POST request contains the ACT variable, ExpressionEngine will run the Actions class and 
+ *
+ * The way actions work is this:
+ *
+ * Anytime a GET or POST request contains the ACT variable, ExpressionEngine will run the Actions class and
  * process the requested action.
- * 
+ *
  * Note: The database contains a table called "exp_actions".  This table contains a list
  * of every available action (and the associated class and method).  When an action is requested,
  * the database is queried to get the information needed to process the action.
- * 
+ *
  * When a new module is installed, ExpressionEngine will update the action table.  When a module
- * is de-installed, the actions are deleted. 
+ * is de-installed, the actions are deleted.
  *
  * @package		ExpressionEngine
  * @subpackage	Core
@@ -52,27 +52,23 @@ class EE_Actions {
 	/**
 	 * Constructor
 	 *
-	 * Loads the class and calls the method associated with 
+	 * Loads the class and calls the method associated with
 	 * a particular action request
 	 *
-	 */	
-		
+	 */
+
 	public function __construct($can_view_system = FALSE)
-	{  		
-		// Set the EE super object to a local variable
-		$EE =& get_instance();
-  
+	{
 		// Define special actions
 		// These are actions that are triggered manually
 		// rather than doing a lookup in the actions table.
 		$specials = array(
-							'jquery'			=> array('Jquery', 'output_javascript'),
-							'comment_editor'	=> array('Comment', 'comment_editor'),
-							'saef'				=> array('Channel', 'saef_filebrowser')
-						 );
-		
-		// Make sure the ACT variable is set		
-		if ( ! $action_id = $EE->input->get_post('ACT'))
+			'jquery'			=> array('Jquery', 'output_javascript'),
+			'comment_editor'	=> array('Comment', 'comment_editor')
+		 );
+
+		// Make sure the ACT variable is set
+		if ( ! $action_id = ee()->input->get_post('ACT'))
 		{
 			return FALSE;
 		}
@@ -81,50 +77,52 @@ class EE_Actions {
 		// If the ID is numeric we need to do an SQL lookup
 		if (is_numeric($action_id))
 		{
-			$EE->db->select('class, method');
-			$EE->db->where('action_id', $action_id);
-			$query = $EE->db->get('actions');			
+			ee()->db->select('class, method, csrf_exempt');
+			ee()->db->where('action_id', $action_id);
+			$query = ee()->db->get('actions');
 
 			if ($query->num_rows() == 0)
 			{
-				if ($EE->config->item('debug') >= 1)
+				if (ee()->config->item('debug') >= 1)
 				{
-					$EE->output->fatal_error($EE->lang->line('invalid_action'));
+					ee()->output->fatal_error(ee()->lang->line('invalid_action'));
 				}
 				else
 				{
-					return FALSE;					
+					return FALSE;
 				}
 			}
-			
+
 			$class  = ucfirst($query->row('class'));
 			$method = strtolower($query->row('method'));
+			$csrf_exempt = (bool) $query->row('csrf_exempt');
 		}
 		else
 		{
-			// If the ID is not numeric we'll invoke the class/method manually	
+			// If the ID is not numeric we'll invoke the class/method manually
 			if ( ! isset($specials[$action_id]))
 			{
 				return FALSE;
 			}
-		
+
 			$class  = $specials[$action_id]['0'];
 			$method = $specials[$action_id]['1'];
+			$csrf_exempt = FALSE;
 
-			// Double check that the module is actually installed			
-			$EE->db->select('module_version');
-			$EE->db->where('module_name', ucfirst($class));
-			$query = $EE->db->get('modules');
+			// Double check that the module is actually installed
+			ee()->db->select('module_version');
+			ee()->db->where('module_name', ucfirst($class));
+			$query = ee()->db->get('modules');
 
 			if ($query->num_rows() == 0)
 			{
-				if ($EE->config->item('debug') >= 1)
+				if (ee()->config->item('debug') >= 1)
 				{
-					$EE->output->fatal_error($EE->lang->line('invalid_action'));
+					ee()->output->fatal_error(ee()->lang->line('invalid_action'));
 				}
 				else
 				{
-					return FALSE;					
+					return FALSE;
 				}
 			}
 		}
@@ -132,77 +130,91 @@ class EE_Actions {
 		// What type of module is being requested?
 		if (substr($class, -4) == '_mcp')
 		{
-			$type = 'mcp'; 
-			
+			$type = 'mcp';
+
 			$base_class = strtolower(substr($class, 0, -4));
 		}
 		else
 		{
 			if ($can_view_system === FALSE)
 			{
-				$EE->output->system_off_msg();
+				ee()->output->system_off_msg();
 				exit;
 			}
 
 			$type = 'mod';
-		
+
 			$base_class = strtolower($class);
 		}
-		
+
 		// Assign the path
 		$package_path = PATH_MOD.$base_class.'/';
-		
+
 		// Third parties have a different package and view path
-		if ( ! in_array($base_class, $EE->core->native_modules))
+		if ( ! in_array($base_class, ee()->core->native_modules))
 		{
 			$package_path = PATH_THIRD.$base_class.'/';
 		}
-				
-		$EE->load->add_package_path($package_path, FALSE);
-		
+
+		ee()->load->add_package_path($package_path, FALSE);
+
 		$path = $package_path.$type.'.'.$base_class.'.php';
 
-		// Does the path exist?		
+		// Does the path exist?
 		if ( ! file_exists($path))
 		{
-			if ($EE->config->item('debug') >= 1)
-			{						
-				$EE->output->fatal_error($EE->lang->line('invalid_action'));
+			if (ee()->config->item('debug') >= 1)
+			{
+				ee()->output->fatal_error(ee()->lang->line('invalid_action'));
 			}
 			else
 			{
-				return FALSE;				
+				return FALSE;
 			}
 		}
-		
+
 		// Require the class file
 		if ( ! class_exists($class))
 		{
 			require $path;
 		}
-		
-		// Instantiate the class/method		
+
+		// Instantiate the class/method
 		$ACT = new $class(0);
-		
+
+		$flags = 0;
+
+		if ( ! AJAX_REQUEST || $class instanceOf Strict_XID)
+		{
+			$flags |= EE_Security::CSRF_STRICT;
+		}
+
+		if ($csrf_exempt)
+		{
+			$flags |= EE_Security::CSRF_EXEMPT;
+		}
+
+		ee()->core->process_secure_forms($flags);
+
 		if ($method != '')
 		{
 			if ( ! method_exists($ACT, $method))
 			{
-				if ($EE->config->item('debug') >= 1)
-				{						
-					$EE->output->fatal_error($EE->lang->line('invalid_action'));
+				if (ee()->config->item('debug') >= 1)
+				{
+					ee()->output->fatal_error(ee()->lang->line('invalid_action'));
 				}
 				else
 				{
 					return FALSE;
 				}
 			}
-		
+
 			$ACT->$method();
 		}
-		
+
 		// remove the temporarily added path for local libraries, models, etc.
-		$EE->load->remove_package_path($package_path);
+		ee()->load->remove_package_path($package_path);
 	}
 
 }

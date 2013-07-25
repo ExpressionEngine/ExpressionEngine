@@ -17,11 +17,6 @@
 		<strong><?=lang('include_in_multiauthor_list')?></strong>
 	</p>
 
-	<p>
-		<?=form_checkbox(array('id'=>'localization_is_site_default','name'=>'localization_is_site_default','value'=>'y', 'checked'=>($localization_is_site_default=='y') ? TRUE : FALSE))?>
-		<strong><?=lang('localization_is_site_default')?></strong>
-	</p>
-
 	<p class="submit"><?=form_submit('member_preferences', lang('update'), 'class="submit"')?></p>
 
 	<?=form_close()?>

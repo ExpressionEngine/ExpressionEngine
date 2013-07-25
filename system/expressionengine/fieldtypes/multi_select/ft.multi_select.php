@@ -34,11 +34,14 @@ class Multi_select_ft extends EE_Fieldtype {
 	function display_field($data)
 	{
 		ee()->load->helper('custom_field');
-		
+
 		$values = decode_multi_field($data);
 		$field_options = $this->_get_field_options($data);
+		
+		$text_direction = (isset($this->settings['field_text_direction']))
+			? $this->settings['field_text_direction'] : 'ltr';
 
-		return form_multiselect($this->field_name.'[]', $field_options, $values, 'dir="'.$this->settings['field_text_direction'].'" id="field_id_'.$this->field_id.'"');
+		return form_multiselect($this->field_name.'[]', $field_options, $values, 'dir="'.$text_direction.'" class="multiselect_input" id="field_id_'.$this->field_id.'"');
 	}
 	
 	// --------------------------------------------------------------------
@@ -96,10 +99,13 @@ class Multi_select_ft extends EE_Fieldtype {
 			return ee()->functions->encode_ee_tags($entry);
 		}
 
+		$text_format = (isset($this->row['field_ft_'.$this->field_id]))
+			? $this->row['field_ft_'.$this->field_id] : 'none';
+
 		return ee()->typography->parse_type(
 				ee()->functions->encode_ee_tags($entry),
 				array(
-						'text_format'	=> $this->row['field_ft_'.$this->field_id],
+						'text_format'	=> $text_format,
 						'html_format'	=> $this->row['channel_html_formatting'],
 						'auto_links'	=> $this->row['channel_auto_link_urls'],
 						'allow_img_url' => $this->row['channel_allow_img_urls']
@@ -166,11 +172,20 @@ class Multi_select_ft extends EE_Fieldtype {
 		$this->multi_item_row($data, 'multi_select');
 	}
 
+	function grid_display_settings($data)
+	{
+		return array(
+			$this->grid_field_formatting_row($data),
+			$this->grid_multi_item_row($data)
+		);
+	}
+
 	function _get_field_options($data)
 	{
 		$field_options = array();
 
-		if ($this->settings['field_pre_populate'] == 'n')
+		if ((isset($this->settings['field_pre_populate']) && $this->settings['field_pre_populate'] == 'n')
+			OR ! isset($this->settings['field_pre_populate']))
 		{
 			if ( ! is_array($this->settings['field_list_items']))
 			{

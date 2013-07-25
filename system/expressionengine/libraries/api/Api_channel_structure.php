@@ -351,7 +351,6 @@ class Api_channel_structure extends Api {
 							case 'blog_url':
 							case 'comment_url':
 							case 'search_results_url':
-							case 'ping_return_url':
 							case 'rss_url':
 								if ($create_templates != 'no')
 								{
