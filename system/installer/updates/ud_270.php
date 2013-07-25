@@ -703,6 +703,8 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		ee()->dbforge->add_key('field_id');
 		ee()->dbforge->add_key('content_type');
 		ee()->smartforge->create_table('grid_columns');
+
+		ee()->db->insert('content_types', array('name' => 'grid'));
 	}
 
 	// -------------------------------------------------------------------

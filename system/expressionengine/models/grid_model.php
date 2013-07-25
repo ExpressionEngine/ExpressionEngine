@@ -98,6 +98,8 @@ class Grid_model extends CI_Model {
  		ee()->dbforge->add_key('field_id');
  		ee()->dbforge->add_key('content_type');
  		ee()->dbforge->create_table($this->_table);
+
+ 		ee()->db->insert('content_types', array('name' => 'grid'));
  	}
 
  	// ------------------------------------------------------------------------
@@ -123,6 +125,8 @@ class Grid_model extends CI_Model {
  		// Drop grid_columns table
  		ee()->load->dbforge();
  		ee()->dbforge->drop_table($this->_table);
+
+ 		ee()->db->delete('content_types', array('name' => 'grid'));
  	}
 
  	// ------------------------------------------------------------------------

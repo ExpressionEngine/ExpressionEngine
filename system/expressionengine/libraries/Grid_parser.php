@@ -571,9 +571,10 @@ class Grid_parser {
 		// normal field settings
 		$fieldtype->_init(
 			array(
-				'field_id'	=> $column['col_id'],
+				'field_id'		=> $column['col_id'],
 				'field_name'	=> 'col_id_'.$column['col_id'],
-				'content_id' => $entry_id
+				'content_id'	=> $entry_id,
+				'content_type'	=> 'grid'
 			)
 		);
 

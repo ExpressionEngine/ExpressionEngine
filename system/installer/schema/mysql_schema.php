@@ -1440,6 +1440,9 @@ class EE_Schema {
 			$Q[] = "INSERT INTO `exp_fieldtypes` (`name`,`version`,`settings`,`has_global_settings`) VALUES ('".$name."','1.0','YTowOnt9','n')";
 		}
 
+		// Add Grid as a content type
+		$Q[] = "INSERT INTO `exp_content_types` (`name`) VALUES ('grid')";
+
 		// --------------------------------------------------------------------
 		// --------------------------------------------------------------------
 		//  Create DB tables and insert data
