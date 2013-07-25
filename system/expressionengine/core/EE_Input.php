@@ -114,9 +114,8 @@ class EE_Input extends CI_Input {
 
 		if ($data['domain'] !== '' || $data['path'] !== '/' || $data['prefix'] !== '')
 		{
-			$EE = get_instance();
-			$EE->load->library('logger');
-			$EE->logger->developer('Warning: domain, path and prefix must be set in EE\'s configuration files and cannot be overriden in set_cookie.');
+			ee()->load->library('logger');
+			ee()->logger->developer('Warning: domain, path and prefix must be set in EE\'s configuration files and cannot be overriden in set_cookie.');
 		}
 
 
@@ -126,10 +125,8 @@ class EE_Input extends CI_Input {
 		// Handle expiration dates.  
 		if ( ! is_numeric($data['expire']))
 		{
-			
-			$EE = get_instance();
-			$EE->load->library('logger');
-			$EE->logger->deprecated('2.6', 'EE_Input::delete_cookie()');
+			ee()->load->library('logger');
+			ee()->logger->deprecated('2.6', 'EE_Input::delete_cookie()');
 			$data['expire'] = time() - 86500;
 		}
 		else if ($data['expire'] > 0)
@@ -163,35 +160,33 @@ class EE_Input extends CI_Input {
 	 */
 	protected function _set_cookie(array $data)
 	{
-		$EE = get_instance();
-
 		// Always assume we'll forget and catch ourselves.  The earlier you catch this sort of screw up the better.
-		if(!isset($data['name']) || !isset($data['value']) || !isset($data['expire']))
+		if( ! isset($data['name']) || ! isset($data['value']) || ! isset($data['expire']))
 		{
 			throw new RuntimeException('EE_Input::_set_cookie() is missing key data.');
 		}
 
 		// Set previx, path and domain. We'll pull em out of config.
-		if (REQ == 'CP' && $EE->config->item('multiple_sites_enabled') == 'y')
+		if (REQ == 'CP' && ee()->config->item('multiple_sites_enabled') == 'y')
 		{
-			$data['prefix'] = ( ! $EE->config->cp_cookie_prefix) ? 'exp_' : $EE->config->cp_cookie_prefix;
-			$data['path']	= ( ! $EE->config->cp_cookie_path) ? '/' : $EE->config->cp_cookie_path;
-			$data['domain'] = ( ! $EE->config->cp_cookie_domain) ? '' : $EE->config->cp_cookie_domain;
-			$data['httponly'] = ( ! $EE->config->cp_cookie_httponly) ? 'y' : $EE->config->cp_cookie_httponly;
+			$data['prefix'] = ( ! ee()->config->cp_cookie_prefix) ? 'exp_' : ee()->config->cp_cookie_prefix;
+			$data['path']	= ( ! ee()->config->cp_cookie_path) ? '/' : ee()->config->cp_cookie_path;
+			$data['domain'] = ( ! ee()->config->cp_cookie_domain) ? '' : ee()->config->cp_cookie_domain;
+			$data['httponly'] = ( ! ee()->config->cp_cookie_httponly) ? 'y' : ee()->config->cp_cookie_httponly;
 		}
 		else
 		{
-			$data['prefix'] = ( ! $EE->config->item('cookie_prefix')) ? 'exp_' : $EE->config->item('cookie_prefix').'_';
-			$data['path']	= ( ! $EE->config->item('cookie_path'))	? '/'	: $EE->config->item('cookie_path');
-			$data['domain'] = ( ! $EE->config->item('cookie_domain')) ? '' : $EE->config->item('cookie_domain');
-			$data['httponly'] = ( ! $EE->config->item('cookie_httponly')) ? 'y' : $EE->config->item('cookie_httponly');
+			$data['prefix'] = ( ! ee()->config->item('cookie_prefix')) ? 'exp_' : ee()->config->item('cookie_prefix').'_';
+			$data['path']	= ( ! ee()->config->item('cookie_path'))	? '/'	: ee()->config->item('cookie_path');
+			$data['domain'] = ( ! ee()->config->item('cookie_domain')) ? '' : ee()->config->item('cookie_domain');
+			$data['httponly'] = ( ! ee()->config->item('cookie_httponly')) ? 'y' : ee()->config->item('cookie_httponly');
 		}
 		
 		//  Turn httponly into a true boolean.
 		$data['httponly'] = ($data['httponly'] == 'y' ? TRUE : FALSE);
 	
 		// Deal with secure cookies.	
-		$data['secure_cookie'] = ($EE->config->item('cookie_secure') === TRUE) ? 1 : 0;
+		$data['secure_cookie'] = (ee()->config->item('cookie_secure') === TRUE) ? 1 : 0;
 		if ($data['secure_cookie'])
 		{
 			$req = isset($_SERVER['HTTPS']) ? $_SERVER['HTTPS'] : FALSE;
@@ -206,8 +201,8 @@ class EE_Input extends CI_Input {
 		/*  - Take control of Cookie setting routine
 		/*  - Added EE 2.5.0
 		*/
-			$EE->extensions->call('set_cookie_end', $data);
-			if ($EE->extensions->end_script === TRUE) return;
+			ee()->extensions->call('set_cookie_end', $data);
+			if (ee()->extensions->end_script === TRUE) return;
 		/*
 		/* -------------------------------------------*/
 
