@@ -73,6 +73,35 @@ jQuery(document).ready(function () {
 		return false;
 	});
 
+	// Notice banners
+	if (EE.importantMessage) {
+		msgBoxOpen = EE.importantMessage.state;
+		msgContainer = $("#ee_important_message");
+
+		save_state = function () {
+			msgBoxOpen = ! msgBoxOpen;
+			document.cookie = "exp_home_msg_state=" + (msgBoxOpen ? "open" : "closed");
+		};
+
+		setup_hidden = function () {
+			$.ee_notice.show_info(function () {
+				$.ee_notice.hide_info();
+				msgContainer.removeClass("closed").show();
+				save_state();
+			});
+		};
+
+		msgContainer.find(".msg_open_close").click(function () {
+			msgContainer.hide();
+			setup_hidden();
+			save_state();
+		});
+
+		if (! msgBoxOpen) {
+			setup_hidden();
+		}
+	}
+
 	EE.cp.zebra_tables();
 	EE.cp.show_hide_sidebar();
 	EE.cp.display_notices();

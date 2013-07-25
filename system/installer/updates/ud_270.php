@@ -55,6 +55,7 @@ class Updater {
 				'_modify_channel_data_relationship_fields',
 				'_modify_channel_data_default_fields',
 				'_modify_category_data_fields'
+				'_clear_dev_log'
 			)
 		);
 
@@ -725,10 +726,10 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		ee()->load->model('snippet_model');
 		$snippets = ee()->snippet_model->fetch();
 
-		foreach($snippets as $snippet) 
+		foreach($snippets as $snippet)
 		{
 			// If there aren't any related entries tags, then we don't need to continue.
-			if (strpos($snippet->snippet_contents, 'related_entries') === FALSE 
+			if (strpos($snippet->snippet_contents, 'related_entries') === FALSE
 				&& strpos($snippet->snippet_contents, 'reverse_related_entries') === FALSE)
 			{
 				continue;
@@ -737,8 +738,13 @@ If you do not wish to reset your password, ignore this message. It will expire i
 			$snippet->snippet_contents = ee()->template->replace_related_entries_tags($snippet->snippet_contents);
 			ee()->snippet_model->save($snippet);
 		}
-	}	
+	}
 
+	/**
+	 * Add the new content types table
+	 *
+	 * @return void
+	 */
 	protected function _create_content_types_table()
 	{
 		$columns = array(
@@ -773,9 +779,9 @@ If you do not wish to reset your password, ignore this message. It will expire i
 	 * to make sure they are all now consistently integer.
 	 */
 	protected function _modify_channel_data_relationship_fields()
-	{	
+	{
 		// Get all relationship fields
-		ee()->db->where('field_type', 'relationship');	
+		ee()->db->where('field_type', 'relationship');
 		$channel_fields = ee()->db->get('channel_fields');
 
 		foreach ($channel_fields->result_array() as $field)
@@ -803,15 +809,15 @@ If you do not wish to reset your password, ignore this message. It will expire i
 	 * Modify custom fields in exp_channel_data
 	 *
 	 * Possible mix of column types with regard to allowing NULL due to a bug
-	 * in MSM.  Modifying to make sure the core EE default text type fields 
+	 * in MSM.  Modifying to make sure the core EE default text type fields
 	 * all allow NULL for consistency.
 	 */
 	protected function _modify_channel_data_default_fields()
-	{	
+	{
 		// Get text type fields
 		ee()->db->where_in('field_type', array('text', 'textarea', 'checkboxes', 'multi_select', 'radio', 'select', 'file'));
-		
-			
+
+
 		$channel_fields = ee()->db->get('channel_fields');
 
 		foreach ($channel_fields->result_array() as $field)
@@ -819,7 +825,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 			if ($field['field_type'] == 'text')
 			{
 				$is_text = $this->_text_field_check($field['field_settings']);
-	
+
 				if ( ! $is_text)
 				{
 					continue;
@@ -851,7 +857,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		$settings = unserialize(base64_decode($data));
 
 		$is_text =  ($settings['field_content_type'] == 'all') ? TRUE : FALSE;
-		
+
 		return $is_text;
 	}
 
@@ -865,7 +871,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 	 * in MSM.  Modifying to make sure the all allow NULL for consistency.
 	 */
 	protected function _modify_category_data_fields()
-	{	
+	{
 		// Get all fields
 
 		$cat_fields = ee()->db->get('category_fields');
@@ -886,7 +892,29 @@ If you do not wish to reset your password, ignore this message. It will expire i
 			);
 		}
 	}
-	
+
+	// -------------------------------------------------------------------
+
+	/**
+	 * Clear the developer log and add a hash column
+	 *
+	 * @return void
+	 */
+	protected function _clear_dev_log()
+	{
+		ee()->db->truncate('developer_log');
+
+		ee()->smartforge->add_column(
+			'developer_log',
+			array(
+				'hash' => array(
+					'type'			=> 'char',
+					'constraint'	=> 32,
+					'null'			=> FALSE
+				)
+			)
+		);
+	}
 }
 /* END CLASS */
 

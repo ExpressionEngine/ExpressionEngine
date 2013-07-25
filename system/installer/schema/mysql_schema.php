@@ -1307,6 +1307,7 @@ class EE_Schema {
 			`addon_module` varchar(100) NULL,
 			`addon_method` varchar(100) NULL,
 			`snippets` text NULL,
+			`hash` char(32) NOT NULL,
 			PRIMARY KEY (`log_id`)
 		)";
 
