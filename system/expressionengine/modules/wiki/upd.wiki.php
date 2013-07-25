@@ -137,11 +137,11 @@ class Wiki_upd {
 					
 		foreach ($sql as $query)
 		{
-			$this->EE->db->query($query);
+			ee()->db->query($query);
 		}
 		
 		// Add Extension Hook
-		$this->EE->db->insert('extensions', array(
+		ee()->db->insert('extensions', array(
 			'class'    => 'Wiki_ext',
 			'hook'     => 'files_after_delete',
 			'method'   => 'files_after_delete',
@@ -165,7 +165,7 @@ class Wiki_upd {
 	 */
 	function uninstall()
 	{
-		$query = $this->EE->db->query("SELECT module_id FROM exp_modules WHERE module_name = 'Wiki'"); 
+		$query = ee()->db->query("SELECT module_id FROM exp_modules WHERE module_name = 'Wiki'"); 
 				
 		$sql[] = "DELETE FROM exp_module_member_groups WHERE module_id = '".$query->row('module_id') ."'";
 		$sql[] = "DELETE FROM exp_modules WHERE module_name = 'Wiki'";
@@ -181,11 +181,11 @@ class Wiki_upd {
 	
 		foreach ($sql as $query)
 		{
-			$this->EE->db->query($query);
+			ee()->db->query($query);
 		}
 		
 		// Disable extension
-		$this->EE->db->delete('extensions', array('class' => 'Wiki_ext'));
+		ee()->db->delete('extensions', array('class' => 'Wiki_ext'));
 
 		return TRUE;
 	}
@@ -205,9 +205,9 @@ class Wiki_upd {
 	{
 		if (version_compare($current, '1.1', '<'))
     	{
-			$this->EE->load->dbforge();
-			$this->EE->dbforge->drop_column('wikis', 'wiki_namespaces_list');
-			$this->EE->dbforge->add_field(array(
+			ee()->load->dbforge();
+			ee()->dbforge->drop_column('wikis', 'wiki_namespaces_list');
+			ee()->dbforge->add_field(array(
 				'namespace_id' => array(
 					'type'				=> 'int',
 					'constraint'		=> 6,
@@ -235,9 +235,9 @@ class Wiki_upd {
 					'null'				=> TRUE
 				),
 			));
-			$this->EE->dbforge->add_key('namespace_id', TRUE);
-			$this->EE->dbforge->add_key('wiki_id');
-			$this->EE->dbforge->create_table('wiki_namespaces');
+			ee()->dbforge->add_key('namespace_id', TRUE);
+			ee()->dbforge->add_key('wiki_id');
+			ee()->dbforge->create_table('wiki_namespaces');
     	
     		/* -------------------------------
     		/*  The Category NS needs a non-changing short name, so we use 
@@ -246,17 +246,17 @@ class Wiki_upd {
     		/*  exp_wiki_page database table.
     		/* -------------------------------*/
     		
-			$this->EE->db->where('page_namespace', lang('category_ns'));
-			$this->EE->db->update('wiki_page', array(
+			ee()->db->where('page_namespace', lang('category_ns'));
+			ee()->db->update('wiki_page', array(
 				'page_namespace' => 'category'
 			));
     	}
 
 		if (version_compare($current, '1.2', '<'))
 		{
-			$this->EE->load->dbforge();
+			ee()->load->dbforge();
 			
-			$this->EE->dbforge->add_column(
+			ee()->dbforge->add_column(
 				'wiki_page', 
 				array(
 					'last_revision_id' => array(
@@ -267,7 +267,7 @@ class Wiki_upd {
 				'last_updated'
 			);
 			
-			$this->EE->db->query("
+			ee()->db->query("
 				UPDATE exp_wiki_page, exp_wiki_revisions
 				SET exp_wiki_page.last_revision_id = 
 					(
@@ -281,29 +281,29 @@ class Wiki_upd {
 		
 		if (version_compare($current, '2.0', '<'))
 		{
-			$this->EE->db->query("ALTER TABLE `exp_wiki_category_articles` DROP KEY `page_id`");
-			$this->EE->db->query("ALTER TABLE `exp_wiki_category_articles` DROP KEY `cat_id`");
-			$this->EE->db->query("ALTER TABLE `exp_wiki_category_articles` ADD PRIMARY KEY `page_id_cat_id` (`page_id`, `cat_id`)");
+			ee()->db->query("ALTER TABLE `exp_wiki_category_articles` DROP KEY `page_id`");
+			ee()->db->query("ALTER TABLE `exp_wiki_category_articles` DROP KEY `cat_id`");
+			ee()->db->query("ALTER TABLE `exp_wiki_category_articles` ADD PRIMARY KEY `page_id_cat_id` (`page_id`, `cat_id`)");
 
-			$this->EE->db->query("ALTER TABLE `exp_wiki_page` CHANGE `page_namespace` `page_namespace` VARCHAR(125) NULL DEFAULT NULL");
-			$this->EE->db->query("ALTER TABLE `exp_wiki_page` CHANGE `page_redirect` `page_redirect` VARCHAR(125) NULL DEFAULT NULL");
-			$this->EE->db->query("ALTER TABLE `exp_wiki_page` CHANGE `last_revision_id` `last_revision_id` INT(10) NULL DEFAULT NULL");
+			ee()->db->query("ALTER TABLE `exp_wiki_page` CHANGE `page_namespace` `page_namespace` VARCHAR(125) NULL DEFAULT NULL");
+			ee()->db->query("ALTER TABLE `exp_wiki_page` CHANGE `page_redirect` `page_redirect` VARCHAR(125) NULL DEFAULT NULL");
+			ee()->db->query("ALTER TABLE `exp_wiki_page` CHANGE `last_revision_id` `last_revision_id` INT(10) NULL DEFAULT NULL");
 		}
 		
 		if (version_compare($current, '2.1', '<'))
 		{
-			$this->EE->db->query("ALTER TABLE `exp_wiki_page` CHANGE `page_namespace` `page_namespace` VARCHAR(125) NOT NULL DEFAULT ''");
+			ee()->db->query("ALTER TABLE `exp_wiki_page` CHANGE `page_namespace` `page_namespace` VARCHAR(125) NOT NULL DEFAULT ''");
 		}
 		
 		if (version_compare($current, '2.2', '<'))
 		{
-			$this->EE->db->query("ALTER TABLE `exp_wiki_search` ADD COLUMN search_date int(10) NOT NULL AFTER wiki_search_id");
+			ee()->db->query("ALTER TABLE `exp_wiki_search` ADD COLUMN search_date int(10) NOT NULL AFTER wiki_search_id");
 		}
 		
 		if (version_compare($current, '2.3', '<'))
 		{
 			// Add Extension Hook
-			$this->EE->db->insert('extensions', array(
+			ee()->db->insert('extensions', array(
 				'class'    => 'Wiki_ext',
 				'hook'     => 'files_after_delete',
 				'method'   => 'files_after_delete',

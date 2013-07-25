@@ -202,3 +202,5 @@
 					?>
 				</div>
 			</div>
+
+			<div class="clear_left">&nbsp;</div>

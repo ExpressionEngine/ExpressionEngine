@@ -1,6 +1,7 @@
 <?php
 
-require_once 'vfsStream/vfsStream.php';
+use org\bovigo\vfs;
+
 require_once BASEPATH.'/core/Loader.php';
 
 class Extended_Loader extends CI_Loader {
@@ -16,19 +17,19 @@ class Extended_Loader extends CI_Loader {
 	 */
 	public function __construct()
 	{
-		vfsStreamWrapper::register();
-		vfsStreamWrapper::setRoot(new vfsStreamDirectory('application'));
+		vfs\vfsStreamWrapper::register();
+		vfs\vfsStreamWrapper::setRoot(new vfs\vfsStreamDirectory('application'));
 
-		$this->models_dir 	= vfsStream::newDirectory('models')->at(vfsStreamWrapper::getRoot());
-		$this->libs_dir 	= vfsStream::newDirectory('libraries')->at(vfsStreamWrapper::getRoot());
-		$this->helpers_dir 	= vfsStream::newDirectory('helpers')->at(vfsStreamWrapper::getRoot());
-		$this->views_dir 	= vfsStream::newDirectory('views')->at(vfsStreamWrapper::getRoot());
+		$this->models_dir 	= vfs\vfsStream::newDirectory('models')->at(vfs\vfsStreamWrapper::getRoot());
+		$this->libs_dir 	= vfs\vfsStream::newDirectory('libraries')->at(vfs\vfsStreamWrapper::getRoot());
+		$this->helpers_dir 	= vfs\vfsStream::newDirectory('helpers')->at(vfs\vfsStreamWrapper::getRoot());
+		$this->views_dir 	= vfs\vfsStream::newDirectory('views')->at(vfs\vfsStreamWrapper::getRoot());
 
 		$this->_ci_ob_level  		= ob_get_level();
-		$this->_ci_library_paths	= array(vfsStream::url('application').'/', BASEPATH);
-		$this->_ci_helper_paths 	= array(vfsStream::url('application').'/', BASEPATH);
-		$this->_ci_model_paths 		= array(vfsStream::url('application').'/');
-		$this->_ci_view_paths 		= array(vfsStream::url('application').'/views/' => TRUE);
+		$this->_ci_library_paths	= array(vfs\vfsStream::url('application').'/', BASEPATH);
+		$this->_ci_helper_paths 	= array(vfs\vfsStream::url('application').'/', BASEPATH);
+		$this->_ci_model_paths 		= array(vfs\vfsStream::url('application').'/');
+		$this->_ci_view_paths 		= array(vfs\vfsStream::url('application').'/views/' => TRUE);
 	}
 }
 
@@ -75,7 +76,7 @@ class Loader_test extends CI_TestCase {
 
 		$content = '<?php class Super_test_library {} ';
 
-		$model = vfsStream::newFile('Super_test_library.php')->withContent($content)
+		$model = vfs\vfsStream::newFile('Super_test_library.php')->withContent($content)
 														->at($this->load->libs_dir);
 
 		$this->assertNull($this->load->library('super_test_library'));
@@ -137,7 +138,7 @@ class Loader_test extends CI_TestCase {
 
 		$content = '<?php class Unit_test_model extends CI_Model {} ';
 
-		$model = vfsStream::newFile('unit_test_model.php')->withContent($content)
+		$model = vfs\vfsStream::newFile('unit_test_model.php')->withContent($content)
 														->at($this->load->models_dir);
 
 		$this->assertNull($this->load->model('unit_test_model'));
@@ -167,7 +168,7 @@ class Loader_test extends CI_TestCase {
 		$this->ci_set_core_class('output', 'CI_Output');
 
 		$content = 'This is my test page.  <?php echo $hello; ?>';
-		$view = vfsStream::newFile('unit_test_view.php')->withContent($content)
+		$view = vfs\vfsStream::newFile('unit_test_view.php')->withContent($content)
 														->at($this->load->views_dir);
 
 		// Use the optional return parameter in this test, so the view is not
@@ -205,11 +206,11 @@ class Loader_test extends CI_TestCase {
 	public function test_file()
 	{
 		$content = 'Here is a test file, which we will load now.';
-		$file = vfsStream::newFile('ci_test_mock_file.php')->withContent($content)
+		$file = vfs\vfsStream::newFile('ci_test_mock_file.php')->withContent($content)
 														   ->at($this->load->views_dir);
 
 		// Just like load->view(), take the output class out of the mix here.
-		$load = $this->load->file(vfsStream::url('application').'/views/ci_test_mock_file.php',
+		$load = $this->load->file(vfs\vfsStream::url('application').'/views/ci_test_mock_file.php',
 								TRUE);
 
 		$this->assertEquals($content, $load);

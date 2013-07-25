@@ -1357,7 +1357,7 @@ class CI_DB_active_record extends CI_DB_driver {
 		{
 			if ($this->db_debug)
 			{
-				return $this->display_error('db_myst_use_index');
+				return $this->display_error('db_must_use_index');
 			}
 
 			return FALSE;
@@ -1434,10 +1434,6 @@ class CI_DB_active_record extends CI_DB_driver {
 				if ($k2 == $index)
 				{
 					$index_set = TRUE;
-				}
-				else
-				{
-					$not[] = $k.'-'.$v;
 				}
 
 				if ($escape === FALSE)
@@ -1694,7 +1690,7 @@ class CI_DB_active_record extends CI_DB_driver {
 	 * @access	private
 	 * @return	string
 	 */
-	function _compile_select($select_override = FALSE)
+	function _compile_select($select_override = FALSE, $protect_identifiers = TRUE)
 	{
 		// Combine any cached components with the current statements
 		$this->_merge_cache();
@@ -1720,9 +1716,12 @@ class CI_DB_active_record extends CI_DB_driver {
 				// Cycle through the "select" portion of the query and prep each column name.
 				// The reason we protect identifiers here rather then in the select() function
 				// is because until the user calls the from() function we don't know if there are aliases
-				foreach ($this->ar_select as $key => $val)
+				if ($protect_identifiers)
 				{
-					$this->ar_select[$key] = $this->_protect_identifiers($val, FALSE, $this->ar_no_escape[$key]);
+					foreach ($this->ar_select as $key => $val)
+					{
+						$this->ar_select[$key] = $this->_protect_identifiers($val, FALSE, $this->ar_no_escape[$key]);
+					}
 				}
 
 				$sql .= implode(', ', $this->ar_select);

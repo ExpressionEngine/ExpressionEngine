@@ -50,7 +50,7 @@ class File_upd {
 					'has_cp_backend' => 'n'
 					);
 
-		$this->EE->db->insert('modules', $data);
+		ee()->db->insert('modules', $data);
 
 		return TRUE;
 	}
@@ -65,13 +65,13 @@ class File_upd {
 	 */
 	function uninstall()
 	{
-		$this->EE->db->select('module_id');
-		$this->EE->db->from('modules');
-		$this->EE->db->where('module_name', 'File');
-		$query = $this->EE->db->get();
+		ee()->db->select('module_id');
+		ee()->db->from('modules');
+		ee()->db->where('module_name', 'File');
+		$query = ee()->db->get();
 
-		$this->EE->db->delete('module_member_groups', array('module_id' => $query->row('module_id')));
-		$this->EE->db->delete('modules', array('module_name' => 'File'));
+		ee()->db->delete('module_member_groups', array('module_id' => $query->row('module_id')));
+		ee()->db->delete('modules', array('module_name' => 'File'));
 
 		return TRUE;
 	}

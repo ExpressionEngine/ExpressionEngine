@@ -49,7 +49,7 @@ class Jquery_upd {
 			'has_cp_backend' => 'n'
 		);
 
-		$this->EE->db->insert('modules', $data);
+		ee()->db->insert('modules', $data);
 
 		return TRUE;
 	}
@@ -65,21 +65,21 @@ class Jquery_upd {
 
 	function uninstall()
 	{
-		$this->EE->db->select('module_id');
-		$query = $this->EE->db->get_where('modules', array('module_name' => 'Jquery'));
+		ee()->db->select('module_id');
+		$query = ee()->db->get_where('modules', array('module_name' => 'Jquery'));
 		$module_id = $query->row('module_id');
 
-		$this->EE->db->where('module_id', $module_id);
-		$this->EE->db->delete('module_member_groups');
+		ee()->db->where('module_id', $module_id);
+		ee()->db->delete('module_member_groups');
 
-		$this->EE->db->where('module_name', 'Jquery');
-		$this->EE->db->delete('modules');
+		ee()->db->where('module_name', 'Jquery');
+		ee()->db->delete('modules');
 
-		$this->EE->db->where('class', 'Jquery');
-		$this->EE->db->delete('actions');
+		ee()->db->where('class', 'Jquery');
+		ee()->db->delete('actions');
 
-		$this->EE->db->where('class', 'Jquery_mcp');
-		$this->EE->db->delete('actions');
+		ee()->db->where('class', 'Jquery_mcp');
+		ee()->db->delete('actions');
 
 		return TRUE;
 	}

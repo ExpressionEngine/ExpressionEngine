@@ -24,8 +24,8 @@
  */
 class Sites extends CP_Controller {
 
-	var $version 			= '2.1.4';
-	var $build_number		= '20120911';
+	var $version 			= '2.1.5';
+	var $build_number		= '20130410';
 	var $allow_new_sites 	= FALSE;
 
 	/**
@@ -598,7 +598,6 @@ class Sites extends CP_Controller {
 			$Q[] = "insert into exp_specialty_templates(site_id, template_name, data_title, template_data) values ('".$this->db->escape_str($site_id)."', 'admin_notify_comment', '".addslashes(trim(admin_notify_comment_title()))."', '".addslashes(admin_notify_comment())."')";
 			$Q[] = "insert into exp_specialty_templates(site_id, template_name, data_title, template_data) values ('".$this->db->escape_str($site_id)."', 'mbr_activation_instructions', '".addslashes(trim(mbr_activation_instructions_title()))."', '".addslashes(mbr_activation_instructions())."')";
 			$Q[] = "insert into exp_specialty_templates(site_id, template_name, data_title, template_data) values ('".$this->db->escape_str($site_id)."', 'forgot_password_instructions', '".addslashes(trim(forgot_password_instructions_title()))."', '".addslashes(forgot_password_instructions())."')";
-			$Q[] = "insert into exp_specialty_templates(site_id, template_name, data_title, template_data) values ('".$this->db->escape_str($site_id)."', 'reset_password_notification', '".addslashes(trim(reset_password_notification_title()))."', '".addslashes(reset_password_notification())."')";
 			$Q[] = "insert into exp_specialty_templates(site_id, template_name, data_title, template_data) values ('".$this->db->escape_str($site_id)."', 'validated_member_notify', '".addslashes(trim(validated_member_notify_title()))."', '".addslashes(validated_member_notify())."')";
 			$Q[] = "insert into exp_specialty_templates(site_id, template_name, data_title, template_data) values ('".$this->db->escape_str($site_id)."', 'decline_member_validation', '".addslashes(trim(decline_member_validation_title()))."', '".addslashes(decline_member_validation())."')";
 			$Q[] = "insert into exp_specialty_templates(site_id, template_name, data_title, template_data) values ('".$this->db->escape_str($site_id)."', 'mailinglist_activation_instructions', '".addslashes(trim(mailinglist_activation_instructions_title()))."', '".addslashes(mailinglist_activation_instructions())."')";
@@ -1253,7 +1252,7 @@ class Sites extends CP_Controller {
 									$field_match[$old_field_id] = $field_id;
 									
 									// Channel Data Field Creation, Whee!
-									if ($row['field_type'] == 'date' OR $row['field_type'] == 'rel')
+									if ($row['field_type'] == 'date' OR $row['field_type'] == 'relationship')
 									{
 										$columns = array(
 											'field_id_'.$field_id => array(
@@ -1283,7 +1282,7 @@ class Sites extends CP_Controller {
 										$columns = array(
 											'field_id_'.$field_id => array(
 												'type' 			=> 'text',
-												'null' 			=> FALSE,
+												'null' 			=> TRUE,
 											),
 											'field_ft_'.$field_id => array(
 												'type'			=> 'tinytext',
@@ -1460,12 +1459,12 @@ class Sites extends CP_Controller {
 									$columns = array(
 										'field_id_'.$field_id => array(
 											'type' 			=> 'text',
-											'null' 			=> FALSE,
+											'null' 			=> TRUE,
 										),
 										'field_ft_'.$field_id => array(
 											'type'			=> 'varchar',
 											'constraint'	=> 40,
-											'null'			=> FALSE,
+											'null'			=> TRUE,
 											'default'		=> 'none'
 										)
 									);
@@ -1584,7 +1583,7 @@ class Sites extends CP_Controller {
 						// Find Relationships for Old Entry IDs That Have Been Moveed
 						if ($rel_check)
 						{
-							$query = $this->db->where_in('rel_parent_id', array_flip($complete_entries))
+							$query = $this->db->where_in('parent_id', array_flip($complete_entries))
 								->get('relationships');
 						
 							if ($query->num_rows() > 0)
@@ -1593,12 +1592,12 @@ class Sites extends CP_Controller {
 								{
 									// Only If Child Moveed As Well...
 								
-									if (isset($complete_entries[$row['rel_child_id']]))
+									if (isset($complete_entries[$row['child_id']]))
 									{
-										$old_rel_id 		  = $row['rel_id'];
-										unset($row['rel_id']);
-										$row['rel_child_id']  = $complete_entries[$row['rel_child_id']];
-										$row['rel_parent_id'] = $complete_entries[$row['rel_parent_id']];
+										$old_rel_id = $row['relationship_id'];
+										unset($row['relationship_id']);
+										$row['child_id'] = $complete_entries[$row['child_id']];
+										$row['parent_id'] = $complete_entries[$row['parent_id']];
 									
 										$this->db->insert('relationships', $row);
 									
@@ -1633,7 +1632,7 @@ class Sites extends CP_Controller {
 				
 					foreach($moved as $channel_id => $field_group)
 					{
-						$query = $this->db->select('field_id, field_type, field_related_to')
+						$query = $this->db->select('field_id, field_type')
 							->get_where(
 								'channel_fields',
 								array('group_id' => $field_group)
@@ -1672,7 +1671,9 @@ class Sites extends CP_Controller {
 										'`field_id_'.$row['field_id'].'`', 
 										FALSE
 									);
-									$this->db->set('field_id_'.$row['field_id'], NULL);
+									
+									$null_type = ($row['field_type'] == 'date' OR $row['field_type'] == 'relationship') ? 0 : NULL;
+									$this->db->set('field_id_'.$row['field_id'], $null_type);
 									$this->db->where('channel_id', $channel_id)
 										->update('channel_data');
 								}								
@@ -1699,7 +1700,7 @@ class Sites extends CP_Controller {
 										->update('channel_data');
 								}
 								
-								if ($row['field_type'] == 'rel' && $row['field_related_to'] == 'channel')
+								if ($row['field_type'] == 'relationship')
 								{
 									$related_fields[] = 'field_ft_'.$field_match[$row['field_id']];  // We used this for moved relationships, see above
 								}
@@ -1935,19 +1936,19 @@ class Sites extends CP_Controller {
 			$this->db->delete('category_posts');
 
 			// delete parents
-			$this->db->where_in('rel_parent_id', $entries);
+			$this->db->where_in('parent_id', $entries);
 			$this->db->delete('relationships');
 			
 			// are there children?
-			$this->db->select('rel_id');
-			$this->db->where_in('rel_child_id', $entries);
+			$this->db->select('relationship_id');
+			$this->db->where_in('child_id', $entries);
 			$child_results = $this->db->get('relationships');
 
 			if ($child_results->num_rows() > 0)
 			{
 				// gather related fields
 				$this->db->select('field_id');
-				$this->db->where('field_type', 'rel');
+				$this->db->where('field_type', 'relationship');
 				$fquery = $this->db->get('channel_fields');
 
 				// We have children, so we need to do a bit of housekeeping
@@ -1956,7 +1957,7 @@ class Sites extends CP_Controller {
 
 				foreach ($child_results->result_array() as $row)
 				{
-					$cids[] = $row['rel_id'];
+					$cids[] = $row['relationship_id'];
 				}
 
 				foreach($fquery->result_array() as $row)
@@ -1967,13 +1968,14 @@ class Sites extends CP_Controller {
 			}
 
 			// aaaand delete
-			$this->db->where_in('rel_child_id', $entries);
+			$this->db->where_in('child_id', $entries);
 			$this->db->delete('relationships');
 		}
 
 		// Delete Channel Custom Field Columns for Site		
 		// Save the field ids in an array so we can delete the associated field formats
 		$this->load->dbforge();
+		$this->load->library('smartforge');
 		$nuked_field_ids = array();
 		
 		$query = $this->db->select('field_id, field_type')
@@ -1986,18 +1988,18 @@ class Sites extends CP_Controller {
 		{
 			foreach($query->result_array() as $row)
 			{
-				$this->dbforge->drop_column('channel_data', 'field_id_'.$row['field_id']);
-				$this->dbforge->drop_column('channel_data', 'field_ft_'.$row['field_id']);
+				$this->smartforge->drop_column('channel_data', 'field_id_'.$row['field_id']);
+				$this->smartforge->drop_column('channel_data', 'field_ft_'.$row['field_id']);
 
 				$nuked_field_ids[] = $row['field_id'];
                 
 				if ($row['field_type'] == 'date')
 				{
-					$this->dbforge->drop_column('channel_data', 'field_dt_'.$row['field_id']);
+					$this->smartforge->drop_column('channel_data', 'field_dt_'.$row['field_id']);
 				}
 			}
 		}
-		
+
 		// Delete any related field formatting options
 		if ( ! empty($nuked_field_ids))
 		{
@@ -2017,8 +2019,8 @@ class Sites extends CP_Controller {
 			foreach($query->result_array() as $row)
 			{
 				$field_id = $row['field_id'];
-				$this->dbforge->drop_column('category_field_data', 'field_id_'.$field_id);
-				$this->dbforge->drop_column('category_field_data', 'field_ft_'.$field_id);
+				$this->smartforge->drop_column('category_field_data', 'field_id_'.$field_id);
+				$this->smartforge->drop_column('category_field_data', 'field_ft_'.$field_id);
 			}
 		}
 		
@@ -2057,7 +2059,6 @@ class Sites extends CP_Controller {
 			'exp_member_groups',
 			'exp_member_search',
 			'exp_online_users',
-			'exp_ping_servers',
 			'exp_referrers',
 			'exp_search',
 			'exp_search_log',

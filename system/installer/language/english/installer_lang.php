@@ -149,7 +149,10 @@ $lang['what_server_data_is_sent'] = '<p>What data is sent?  Answering yes to thi
 										<li>PHP version and available extensions</li>
 										<li>MySQL version, server operating system</li>
 										<li>Server software name</li>
-										<li>...and whether or not you are using forced query strings on your server</li>
+										<li>Whether or not you are using forced query strings on your server</li>
+										<li>A list of the add-ons in your third party directory</li>
+										<li>Whether or not you have Discussion Forums installed</li>
+										<li>Whether or not you have Multiple Site Manager installed</li>
 									</ul>
 									<p>All data is transmitted anonymously and cannot be associated with your local machine, ExpressionEngine user
 									account, your site, or your host.</p>';

@@ -75,7 +75,7 @@ class Query {
 	{
 		// Extract the query from the tag chunk
 		
-		if (($sql = $this->EE->TMPL->fetch_param('sql')) === FALSE)
+		if (($sql = ee()->TMPL->fetch_param('sql')) === FALSE)
 		{
 			return FALSE;			
 		}
@@ -89,24 +89,24 @@ class Query {
 		/**  Pagination checkeroo!
 		/** --------------------------------------*/
 
-		if (preg_match("/".LD."paginate".RD."(.+?)".LD.'\/'."paginate".RD."/s", $this->EE->TMPL->tagdata, $match))
+		if (preg_match("/".LD."paginate".RD."(.+?)".LD.'\/'."paginate".RD."/s", ee()->TMPL->tagdata, $match))
 		{ 
 			// Run the query
 						
-			$query = $this->EE->db->query("SELECT COUNT(*) AS count FROM ({$sql}) AS query");
+			$query = ee()->db->query("SELECT COUNT(*) AS count FROM ({$sql}) AS query");
 
 			if ($query->row('count')  == 0)
 			{
-				return $this->return_data = $this->EE->TMPL->no_results();
+				return $this->return_data = ee()->TMPL->no_results();
 			}
 		
 			$this->paginate		 = TRUE;
 			$this->paginate_data = $match['1'];
-			$this->basepath		 = $this->EE->functions->create_url($this->EE->uri->uri_string, 1);
+			$this->basepath		 = ee()->functions->create_url(ee()->uri->uri_string, 1);
 						
-			$this->EE->TMPL->tagdata = preg_replace("/".LD."paginate".RD.".+?".LD.'\/'."paginate".RD."/s", "", $this->EE->TMPL->tagdata);
+			ee()->TMPL->tagdata = preg_replace("/".LD."paginate".RD.".+?".LD.'\/'."paginate".RD."/s", "", ee()->TMPL->tagdata);
 			
-			if ($this->EE->uri->query_string != '' && preg_match("#^P(\d+)|/P(\d+)#", $this->EE->uri->query_string, $match))
+			if (ee()->uri->query_string != '' && preg_match("#^P(\d+)|/P(\d+)#", ee()->uri->query_string, $match))
 			{					
 				$this->p_page = (isset($match['2'])) ? $match['2'] : $match['1'];	
 					
@@ -114,7 +114,7 @@ class Query {
 			}
 			
 			$this->total_rows = $query->row('count') ;
-			$this->p_limit  = ( ! $this->EE->TMPL->fetch_param('limit'))  ? 50 : $this->EE->TMPL->fetch_param('limit');
+			$this->p_limit  = ( ! ee()->TMPL->fetch_param('limit'))  ? 50 : ee()->TMPL->fetch_param('limit');
 			$this->p_page = ($this->p_page == '' OR ($this->p_limit > 1 AND $this->p_page == 1)) ? 0 : $this->p_page;
 				
 			if ($this->p_page > $this->total_rows)
@@ -137,9 +137,9 @@ class Query {
 			
 			if ($this->total_rows > $this->p_limit)
 			{
-				$this->EE->load->library('pagination');
+				ee()->load->library('pagination');
 				
-				if (strpos($this->basepath, SELF) === FALSE && $this->EE->config->item('site_index') != '')
+				if (strpos($this->basepath, SELF) === FALSE && ee()->config->item('site_index') != '')
 				{
 					$this->basepath .= SELF;
 				}
@@ -151,14 +151,14 @@ class Query {
 				$config['total_rows'] 	= $this->total_rows;
 				$config['per_page']		= $this->p_limit;
 				$config['cur_page']		= $this->p_page;
-				$config['first_link'] 	= $this->EE->lang->line('pag_first_link');
-				$config['last_link'] 	= $this->EE->lang->line('pag_last_link');
+				$config['first_link'] 	= ee()->lang->line('pag_first_link');
+				$config['last_link'] 	= ee()->lang->line('pag_last_link');
 				
 				// Allows $config['cur_page'] to override
 				$config['uri_segment'] = 0;
 
-				$this->EE->pagination->initialize($config);
-				$this->pagination_links = $this->EE->pagination->create_links();
+				ee()->pagination->initialize($config);
+				$this->pagination_links = ee()->pagination->create_links();
 				
 				if ((($this->total_pages * $this->p_limit) - $this->p_limit) > $this->p_page)
 				{
@@ -178,11 +178,11 @@ class Query {
 			}
 		}
 		
-		$query = $this->EE->db->query($sql);
+		$query = ee()->db->query($sql);
 		
 		if ($query->num_rows() == 0)
 		{
-			return $this->return_data = $this->EE->TMPL->no_results();
+			return $this->return_data = ee()->TMPL->no_results();
 		}
 
 		$variables = array();
@@ -192,7 +192,7 @@ class Query {
 			$variables[] = $row;
 		}
 		
-		$this->return_data = $this->EE->TMPL->parse_variables($this->EE->TMPL->tagdata, $variables);
+		$this->return_data = ee()->TMPL->parse_variables(ee()->TMPL->tagdata, $variables);
 
 		
 		if ($this->paginate == TRUE)
@@ -232,7 +232,7 @@ class Query {
 				}
 			}
 				
-			$position = ( ! $this->EE->TMPL->fetch_param('paginate')) ? '' : $this->EE->TMPL->fetch_param('paginate');
+			$position = ( ! ee()->TMPL->fetch_param('paginate')) ? '' : ee()->TMPL->fetch_param('paginate');
 			
 			switch ($position)
 			{

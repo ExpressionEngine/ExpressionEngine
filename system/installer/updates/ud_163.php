@@ -30,7 +30,7 @@ class Updater {
 		$this->EE =& get_instance();
 	
 		// Grab the config file
-		if ( ! @include($this->EE->config->config_path))
+		if ( ! @include(ee()->config->config_path))
 		{
 			show_error('Your config'.EXT.' file is unreadable. Please make sure the file exists and that the file permissions to 666 on the following file: expressionengine/config/config.php');
 		}
@@ -55,9 +55,9 @@ class Updater {
 		/**  Update the Config File
 		/** ---------------------------------------*/
 		
-		$data['cookie_prefix'] =  $this->EE->config->item('cookie_prefix');
+		$data['cookie_prefix'] =  ee()->config->item('cookie_prefix');
 		
-		$this->EE->config->_append_config_1x($data);
+		ee()->config->_append_config_1x($data);
 
 		return TRUE;
 	}

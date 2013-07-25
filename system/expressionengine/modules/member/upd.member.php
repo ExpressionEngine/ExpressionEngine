@@ -48,8 +48,8 @@ class Member_upd {
 		$sql[] = "INSERT INTO exp_actions (class, method) VALUES ('Member', 'activate_member')";
 		$sql[] = "INSERT INTO exp_actions (class, method) VALUES ('Member', 'member_login')";
 		$sql[] = "INSERT INTO exp_actions (class, method) VALUES ('Member', 'member_logout')";
-		$sql[] = "INSERT INTO exp_actions (class, method) VALUES ('Member', 'retrieve_password')";
-		$sql[] = "INSERT INTO exp_actions (class, method) VALUES ('Member', 'reset_password')";
+		$sql[] = "INSERT INTO exp_actions (class, method) VALUES ('Member', 'send_reset_token')";
+		$sql[] = "INSERT INTO exp_actions (class, method) VALUES ('Member', 'process_reset_password')";
 		$sql[] = "INSERT INTO exp_actions (class, method) VALUES ('Member', 'send_member_email')";
 		$sql[] = "INSERT INTO exp_actions (class, method) VALUES ('Member', 'update_un_pw')";
 		$sql[] = "INSERT INTO exp_actions (class, method) VALUES ('Member', 'member_search')";
@@ -57,7 +57,7 @@ class Member_upd {
 
 		foreach ($sql as $query)
 		{
-			$this->EE->db->query($query);
+			ee()->db->query($query);
 		}
 
 		return TRUE;
@@ -73,7 +73,7 @@ class Member_upd {
 	 */
 	public function uninstall()
 	{
-		$query = $this->EE->db->query("SELECT module_id FROM exp_modules WHERE module_name = 'Member'");
+		$query = ee()->db->query("SELECT module_id FROM exp_modules WHERE module_name = 'Member'");
 
 		$sql[] = "DELETE FROM exp_module_member_groups WHERE module_id = '".$query->row('module_id') ."'";
 		$sql[] = "DELETE FROM exp_modules WHERE module_name = 'Member'";
@@ -82,7 +82,7 @@ class Member_upd {
 
 		foreach ($sql as $query)
 		{
-			$this->EE->db->query($query);
+			ee()->db->query($query);
 		}
 
 		return TRUE;

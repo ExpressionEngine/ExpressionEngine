@@ -488,6 +488,7 @@ class Tools_utilities extends CP_Controller {
 		$xml_file   = ( ! $this->input->post('xml_file'))  ? '' : $this->input->post('xml_file');
 
 		//  Read XML file contents
+		$this->load->helper('file');
 		$contents = read_file($xml_file);
 		
 		if ($contents === FALSE)
@@ -575,6 +576,7 @@ class Tools_utilities extends CP_Controller {
 		}
 
 		//  Read XML file contents
+		$this->load->helper('file');
 		$contents = read_file($xml_file);
 		$new_custom_fields = array();
 		
@@ -669,7 +671,6 @@ class Tools_utilities extends CP_Controller {
 			
 		$this->lang->loadfile('member_import');
 		$this->load->library('validate');
-		$this->load->helper('security');
 		
 		$this->validate->member_id			= '';
 		$this->validate->val_type			= 'new';
@@ -823,7 +824,7 @@ class Tools_utilities extends CP_Controller {
 								}
 
 								// encode password if it is type="text"
-								$this->members[$i][$tag->tag] = ($tag->attributes['type'] == 'text') ? do_hash($tag->value) : $tag->value;
+								$this->members[$i][$tag->tag] = ($tag->attributes['type'] == 'text') ? sha1($tag->value) : $tag->value;
 								break;
 						}
 					}
@@ -879,7 +880,7 @@ class Tools_utilities extends CP_Controller {
 					
 					if ( ! isset($this->members[$i]['password']))
 					{
-						$this->members[$i]['password'] = do_hash(mt_rand());
+						$this->members[$i]['password'] = sha1(mt_rand());
 					}
 					$i++;
 				}
@@ -922,7 +923,7 @@ class Tools_utilities extends CP_Controller {
 		//  Set our optional default values
 		$this->default_fields['group_id']			= $this->input->post('group_id');
 		$this->default_fields['language']			= ($this->input->post('language') == lang('none') OR $this->input->post('language') == '') ? 'english' : strtolower($this->input->post('language'));
-		$this->default_fields['timezone']			= ($this->input->post('timezones') && $this->input->post('timezones') != '') ? $this->input->post('timezones') : $this->config->item('server_timezone');
+		$this->default_fields['timezone']			= $this->input->post('timezones') ? $this->input->post('timezones') : $this->config->item('default_site_timezone');
 		$this->default_fields['time_format']		= $this->input->post('time_format');
 		$this->default_fields['ip_address']			= '0.0.0.0';
 		$this->default_fields['join_date']			= $this->localize->now;

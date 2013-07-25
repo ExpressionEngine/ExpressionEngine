@@ -41,7 +41,7 @@ class File_field {
 	}
 	
 	// ------------------------------------------------------------------------
-	
+
 	/**
 	 * Creates a file field
 	 * 
@@ -54,13 +54,13 @@ class File_field {
 	 * 		Either 'all' or 'image'
 	 * @return string Fully rendered file field
 	 */
-	public function field($field_name, $data = '', $allowed_file_dirs = 'all', $content_type = 'all', $view_type = 'list')
+	public function field($field_name, $data = '', $allowed_file_dirs = 'all', $content_type = 'all', $filebrowser = TRUE, $existing_limit = NULL)
 	{
 		// Load necessary library, helper, model and langfile
-		$this->EE->load->library('filemanager');
-		$this->EE->load->helper(array('html', 'form'));
-		$this->EE->load->model(array('file_model', 'file_upload_preferences_model'));
-		$this->EE->lang->loadfile('fieldtypes');
+		ee()->load->library('filemanager');
+		ee()->load->helper(array('html', 'form'));
+		ee()->load->model(array('file_model', 'file_upload_preferences_model'));
+		ee()->lang->loadfile('fieldtypes');
 		
 		$vars = array(
 			'filedir'				=> '',
@@ -74,25 +74,42 @@ class File_field {
 		if ( ! empty($data) AND ($parsed_field = $this->parse_field($data)) !== FALSE)
 		{
 			$vars = $parsed_field;
-			$vars['filename'] = $vars['filename'].'.'.$vars['extension'];
+			
+			// Old format will not have extension broken out
+			if ( ! empty($vars['extension']))
+			{
+				$vars['filename'] = $vars['filename'].'.'.$vars['extension'];				
+			}
 		}
 		
 		// Retrieve all directories that are both allowed for this user and
 		// for this field
 		$upload_dirs[''] = lang('directory');
-		$upload_dirs = $this->EE->file_upload_preferences_model->get_dropdown_array(
-			$this->EE->session->userdata('group_id'),
+		$upload_dirs = ee()->file_upload_preferences_model->get_dropdown_array(
+			ee()->session->userdata('group_id'),
 			$allowed_file_dirs,
 			$upload_dirs
 		);
+
+		if ($specified_directory != 'all')
+		{
+			$vars['upload_location_id'] = $specified_directory;
+		}
 		
 		// Get the thumbnail
-		$thumb_info = $this->EE->filemanager->get_thumb($vars['filename'], $vars['upload_location_id']);
+		$thumb_info = ee()->filemanager->get_thumb($vars['filename'], $vars['upload_location_id']);
 		$vars['thumb'] = $thumb_info['thumb'];
 		$vars['alt'] = $vars['filename'];
 		
+		//  Legacy paths will not have a filename but DO have a file_name
+		// Show it
+		if (empty($vars['filename']) && ! empty($vars['file_name']))
+		{
+			$vars['filename'] = $vars['file_name'];
+		}
+
 		// Create the hidden fields for the file and directory
-		$vars['hidden']	  = form_hidden($field_name.'_hidden', $vars['filename']);
+		$vars['hidden']	  = form_hidden($field_name.'_hidden_file', $vars['filename']);
 		$vars['hidden']	 .= form_hidden($field_name.'_hidden_dir', $vars['upload_location_id']);
 		
 		// Create a standard file upload field and dropdown for folks 
@@ -103,15 +120,63 @@ class File_field {
 			'data-content-type'	=> $content_type,
 			'data-directory'	=> $specified_directory
 		));
+
+		$vars['allowed_file_dirs'] = $allowed_file_dirs;
 		$vars['dropdown'] = form_dropdown($field_name.'_directory', $upload_dirs, $vars['upload_location_id']);
 
 		// Check to see if they have access to any directories to create an upload link
-		$vars['upload_link'] = (count($upload_dirs) > 0) ? '<a href="#" class="choose_file" data-directory="'.$specified_directory.'">'.lang('add_file').'</a>' : lang('directory_no_access');
+		$vars['upload_link'] = (count($upload_dirs) > 0) ? '<a href="#" class="choose_file'.($vars['filename'] ? ' js_hide' : '').'" data-directory="'.$specified_directory.'">'.lang('add_file').'</a>' : lang('directory_no_access');
+		$vars['undo_link'] = '<a href="#" class="undo_remove js_hide">'.lang('file_undo_remove').'</a>';
 
 		// If we have a file, show the thumbnail, filename and remove link
 		$vars['set_class'] = $vars['filename'] ? '' : 'js_hide';
+		$vars['filebrowser'] = $filebrowser;
 
-		return $this->EE->load->ee_view('_shared/file/field', $vars, TRUE);
+		$existing_files = NULL;
+
+		if ( ! $filebrowser && isset($existing_limit) && $specified_directory != 'all')
+		{
+			/*
+			if ($specified_directory == 'all')
+			{
+				$specified_directory = array();
+			}
+			*/
+
+			$options = array(
+				'order' => array('file_name' => 'asc')
+			);
+
+			if ($existing_limit) // 0 == all files
+			{
+				$options['limit'] = $existing_limit;
+			}
+
+			// Load files in from database
+			$files_from_db = ee()->file_model->get_files(
+				$specified_directory,
+				$options
+			);
+
+			$files = array(
+				'' => lang('select_existing')
+			);
+
+			// Put database files into list
+			if ($files_from_db['results'] !== FALSE)
+			{
+				foreach ($files_from_db['results']->result() as $file)
+				{
+					$files[$file->file_name] = $file->file_name;
+				}
+			}
+
+			$existing_files = form_dropdown($field_name.'_existing', $files);
+		}
+
+		$vars['existing_files'] = $existing_files;
+
+		return ee()->load->ee_view('_shared/file/field', $vars, TRUE);
 	}
 	
 	// ------------------------------------------------------------------------
@@ -135,13 +200,13 @@ class File_field {
 	 */
 	public function browser($config = array(), $endpoint_url = 'C=content_publish&M=filemanager_actions')
 	{
-		$this->EE->lang->loadfile('content');
+		ee()->lang->loadfile('content');
 
 		// Are we on the publish page? If so, go ahead and load up the publish
 		// page javascript files
 		if (empty($config) OR (isset($config['publish']) AND $config['publish'] === TRUE))
 		{
-			$this->EE->javascript->set_global(array(
+			ee()->javascript->set_global(array(
 				'filebrowser' => array(
 					'publish' => TRUE
 				)
@@ -150,10 +215,11 @@ class File_field {
 		// No? Make sure we at least have a trigger and a callback
 		elseif (isset($config['trigger'], $config['callback']))
 		{
-			$field_name = (isset($config['field_name'])) ? $config['field_name'].', ' : '';
+			 $field_name = (isset($config['field_name'])) ? "'{$config['field_name']}'," : '';  
+			
 			$settings = (isset($config['settings'])) ? $config['settings'].', ' : '';
 			
-			$this->EE->javascript->ready("
+			ee()->javascript->ready("
 				$.ee_filebrowser.add_trigger('{$config['trigger']}', {$field_name}{$settings}{$config['callback']});
 			");
 		}
@@ -177,16 +243,18 @@ class File_field {
 	 * @param string $data The data in the field we're validating
 	 * @param string $field_name The name of the field we're validating
 	 * @param string $required Set to 'y' if the field is required
+	 * @param array  $grid Array of data needed to validate a Grid field
 	 * @return array Associative array containing ONLY the name of the 
-	 * 		file uploaded
+	 * 		file uploaded or an empty value and an error if not valid
 	 */
-	public function validate($data, $field_name, $required = 'n')
+	public function validate($data, $field_name, $required = 'n', $grid = array())
 	{
 		$dir_field		= $field_name.'_directory';
-		$hidden_field	= $field_name.'_hidden';
-		$hidden_dir		= ($this->EE->input->post($field_name.'_hidden_dir')) ? $this->EE->input->post($field_name.'_hidden_dir') : '';
+		$existing_field = $field_name.'_existing';
+		$hidden_field	= $field_name.'_hidden_file';
+		$hidden_dir		= (ee()->input->post($field_name.'_hidden_dir')) ? ee()->input->post($field_name.'_hidden_dir') : ee()->input->post($field_name.'_directory');
 		$allowed_dirs	= array();
-		
+
 		// Default to blank - allows us to remove files
 		$_POST[$field_name] = '';
 		
@@ -194,18 +262,23 @@ class File_field {
 		$upload_directories = $this->_get_upload_prefs();
 		
 		// Directory selected - switch
-		$filedir = ($this->EE->input->post($dir_field)) ? $this->EE->input->post($dir_field) : '';
+		$filedir = (ee()->input->post($dir_field)) ? ee()->input->post($dir_field) : '';
+
+		if ( ! $filedir)
+		{
+			$filedir = $hidden_dir;
+		}
 		
 		foreach($upload_directories as $row)
 		{
 			$allowed_dirs[] = $row['id'];
 		}
-		
+
 		// Upload or maybe just a path in the hidden field?
 		if (isset($_FILES[$field_name]) && $_FILES[$field_name]['size'] > 0 AND in_array($filedir, $allowed_dirs))
 		{
-			$this->EE->load->library('filemanager');
-			$data = $this->EE->filemanager->upload_file($filedir, $field_name);
+			ee()->load->library('filemanager');
+			$data = ee()->filemanager->upload_file($filedir, $field_name);
 			
 			if (array_key_exists('error', $data))
 			{
@@ -216,41 +289,64 @@ class File_field {
 				$_POST[$field_name] = $data['file_name'];
 			}
 		}
-		elseif ($this->EE->input->post($hidden_field))
+		elseif (ee()->input->post($existing_field))
+		{
+			$_POST[$field_name] = $_POST[$existing_field];
+		}
+		elseif (ee()->input->post($hidden_field))
 		{
 			$_POST[$field_name] = $_POST[$hidden_field];
 		}
-		
+
 		$_POST[$dir_field] = $filedir;
 		
 		unset($_POST[$hidden_field]);
 		
 		// If the current file directory is not one the user has access to
 		// make sure it is an edit and value hasn't changed
-		
 		if ($_POST[$field_name] && ! in_array($filedir, $allowed_dirs))
 		{
-			if ($filedir != '' OR ( ! $this->EE->input->post('entry_id') OR $this->EE->input->post('entry_id') == ''))
+			// Some legacy fields will have only a full path specified
+			if ($filedir == '')
 			{
-				return lang('directory_no_access');
+				unset($_POST[$field_name.'_hidden_dir']);
+				return array('value' => $_POST[$field_name]);			
 			}
-			
+
+			if ( ! ee()->input->post('entry_id') OR ee()->input->post('entry_id') == '')
+			{
+				return array('value' => '', 'error' => lang('directory_no_access'));
+			}
+
 			// The existing directory couldn't be selected because they didn't have permission to upload
 			// Let's make sure that the existing file in that directory is the one that's going back in
 			
-			$eid = (int) $this->EE->input->post('entry_id');
+			$eid = (int) ee()->input->post('entry_id');
 			
-			$this->EE->db->select($field_name);
-			$query = $this->EE->db->get_where('channel_data', array('entry_id'=>$eid));	
+			ee()->db->select($field_name);
+			$table = 'channel_data';
+
+			// Different DB selection criteria for Grid
+			if ( ! empty($grid['grid_row_id']))
+			{
+				ee()->db->where('row_id', $grid['grid_row_id']);
+				$table = 'grid_field_'.$grid['grid_field_id'];
+			}
+			else
+			{
+				ee()->db->where('entry_id', $eid);
+			}
+
+			$query = ee()->db->get($table);	
 
 			if ($query->num_rows() == 0)
 			{
-				return lang('directory_no_access');
+				return array('value' => '', 'error' => lang('directory_no_access'));
 			}
 			
 			if ('{filedir_'.$hidden_dir.'}'.$_POST[$field_name] != $query->row($field_name))
 			{
-				return lang('directory_no_access');
+				return array('value' => '', 'error' => lang('directory_no_access'));
 			}
 			
 			// Replace the empty directory with the existing directory
@@ -259,7 +355,7 @@ class File_field {
 		
 		if ($required == 'y' && ! $_POST[$field_name])
 		{
-			return lang('required');
+			return array('value' => '', 'error' => lang('required'));
 		}
 		
 		unset($_POST[$field_name.'_hidden_dir']);
@@ -306,7 +402,7 @@ class File_field {
 			return FALSE;
 		}
 		
-		$this->EE->load->model('file_model');
+		ee()->load->model('file_model');
 		
 		// We'll keep track of file names and file IDs collected
 		$file_names = array();
@@ -339,7 +435,7 @@ class File_field {
 		// Query for files based on file names and directory ID
 		if ( ! empty($file_names))
 		{
-			$file_names = $this->EE->file_model->get_files_by_name($file_names, $dir_ids)->result_array();
+			$file_names = ee()->file_model->get_files_by_name($file_names, $dir_ids)->result_array();
 		}
 		
 		$file_ids = array_diff($file_ids, $this->_file_ids);
@@ -348,7 +444,7 @@ class File_field {
 		// Query for files based on file ID
 		if ( ! empty($file_ids))
 		{
-			$file_ids = $this->EE->file_model->get_files_by_id($data)->result_array();
+			$file_ids = ee()->file_model->get_files_by_id($data)->result_array();
 		}
 		
 		// Merge our results into our cached array
@@ -400,17 +496,17 @@ class File_field {
 			}
 			
 			// If we got here, we need to query for the file
-			$this->EE->load->model('file_model');
+			ee()->load->model('file_model');
 			
 			// Query based on file ID
 			if (is_numeric($file_reference))
 			{
-				$file = $this->EE->file_model->get_files_by_id($file_reference)->row_array();
+				$file = ee()->file_model->get_files_by_id($file_reference)->row_array();
 			}
 			// Query based on file name and directory ID
 			else
 			{
-				$file = $this->EE->file_model->get_files_by_name($file_reference, $dir_id)->row_array();
+				$file = ee()->file_model->get_files_by_name($file_reference, $dir_id)->row_array();
 			}
 			
 			$this->_files[] = $file;
@@ -457,6 +553,7 @@ class File_field {
 			$file = array(
 				'url'					=> $data,
 				'file_name'				=> $data,
+				'filename'				=> '',
 				'extension'				=> '',
 				'path'					=> '',
 				'upload_location_id'	=> '',
@@ -553,16 +650,16 @@ class File_field {
 	 */
 	private function _file_dirs()
 	{
-		if ( ! $this->EE->session->cache(__CLASS__, 'file_dirs'))
+		if ( ! ee()->session->cache(__CLASS__, 'file_dirs'))
 		{
-			$this->EE->session->set_cache(
+			ee()->session->set_cache(
 				__CLASS__,
 				'file_dirs',
-				$this->EE->functions->fetch_file_paths()
+				ee()->functions->fetch_file_paths()
 			);
 		}
 		
-		return $this->EE->session->cache(__CLASS__, 'file_dirs');
+		return ee()->session->cache(__CLASS__, 'file_dirs');
 	}
 	
 	// ------------------------------------------------------------------------
@@ -576,9 +673,9 @@ class File_field {
 	{
 		if (empty($this->_upload_prefs))
 		{
-			$this->EE->load->model('file_upload_preferences_model');
+			ee()->load->model('file_upload_preferences_model');
 			
-			$this->_upload_prefs = $this->EE->file_upload_preferences_model->get_file_upload_preferences(
+			$this->_upload_prefs = ee()->file_upload_preferences_model->get_file_upload_preferences(
 				NULL,
 				NULL,
 				TRUE
@@ -600,9 +697,9 @@ class File_field {
 	{
 		if ( ! isset($this->_manipulations[$dir_id]))
 		{
-			$this->EE->load->model('file_model');
+			ee()->load->model('file_model');
 			
-			$this->_manipulations[$dir_id] = $this->EE->file_model->get_dimensions_by_dir_id($dir_id)->result_array();
+			$this->_manipulations[$dir_id] = ee()->file_model->get_dimensions_by_dir_id($dir_id)->result_array();
 		}
 		
 		return $this->_manipulations[$dir_id];
@@ -615,7 +712,7 @@ class File_field {
 	 */
 	private function _browser_css()
 	{
-		$this->EE->cp->add_to_head($this->EE->view->head_link('css/file_browser.css'));
+		ee()->cp->add_to_head(ee()->view->head_link('css/file_browser.css'));
 	}
 	
 	// ------------------------------------------------------------------------
@@ -626,26 +723,24 @@ class File_field {
 	 */
 	private function _browser_javascript($endpoint_url)
 	{
-		$this->EE->cp->add_js_script('plugin', array('tmpl', 'ee_table'));
+		ee()->cp->add_js_script('plugin', array('tmpl', 'ee_table'));
 		
 		// Include dependencies
-		$this->EE->cp->add_js_script(array(
+		ee()->cp->add_js_script(array(
 			'file'		=> array(
 				'underscore',
 				'files/publish_fields'
 			),
 			'plugin'	=> array(
-				'scrollable',
-				'scrollable.navigator',
 				'ee_filebrowser',
 				'ee_fileuploader',
 				'tmpl'
 			)
 		));
 		
-		$this->EE->load->helper('html');
+		ee()->load->helper('html');
 		
-		$this->EE->javascript->set_global(array(
+		ee()->javascript->set_global(array(
 			'lang' => array(
 				'resize_image'		=> lang('resize_image'),
 				'or'				=> lang('or'),
@@ -657,7 +752,7 @@ class File_field {
 				'next'				=> anchor(
 					'#', 
 					img(
-						$this->EE->cp->cp_theme_url . 'images/pagination_next_button.gif',
+						ee()->cp->cp_theme_url . 'images/pagination_next_button.gif',
 						array(
 							'alt' => lang('next'),
 							'width' => 13,
@@ -671,7 +766,7 @@ class File_field {
 				'previous'			=> anchor(
 					'#', 
 					img(
-						$this->EE->cp->cp_theme_url . 'images/pagination_prev_button.gif',
+						ee()->cp->cp_theme_url . 'images/pagination_prev_button.gif',
 						array(
 							'alt' => lang('previous'),
 							'width' => 13,

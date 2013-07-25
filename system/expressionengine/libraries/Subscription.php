@@ -89,18 +89,18 @@ class EE_Subscription {
 
 		if (count($member_ids))
 		{
-			$this->EE->db->where_in('member_id', $member_ids);
+			ee()->db->where_in('member_id', $member_ids);
 			$func = 'or_where_in';
 		}
 
 		if (count($emails))
 		{
-			$this->EE->db->$func('email', $emails);
+			ee()->db->$func('email', $emails);
 		}
 		
-		$this->EE->db->select('member_id');
-		$this->EE->db->where($this->publisher);
-		$query = $this->EE->db->get($this->table);
+		ee()->db->select('member_id');
+		ee()->db->where($this->publisher);
+		$query = ee()->db->get($this->table);
 
 		if ($query->num_rows() > 0)
 		{
@@ -186,31 +186,31 @@ class EE_Subscription {
 			// Add member ids
 			foreach($new_member_ids as $id)
 			{
-				$rand = $id.$this->EE->functions->random('alnum', 8);
+				$rand = $id.ee()->functions->random('alnum', 8);
 				
 				$data[] = array_merge($default, array(
 					'hash'				=> $rand,
 					'member_id'			=> $id,
 					'email'				=> '',
-					'subscription_date'	=> $this->EE->localize->now
+					'subscription_date'	=> ee()->localize->now
 				));
 			}
 			
 			// Add emails
 			foreach($new_emails as $email)
 			{
-				$rand = $this->EE->functions->random('alnum', 15);
+				$rand = ee()->functions->random('alnum', 15);
 				
 				$data[] = array_merge($default, array(
 					'hash'				=> $rand,
 					'member_id'			=> 0,
 					'email'				=> $email,
-					'subscription_date'	=> $this->EE->localize->now
+					'subscription_date'	=> ee()->localize->now
 				));
 			}
 			
 			// Batch it in case there are lots of them
-            $this->EE->db->insert_batch($this->table, $data);
+            ee()->db->insert_batch($this->table, $data);
 		}
 		
 		// Refresh existing subscriptions if there were any
@@ -237,7 +237,7 @@ class EE_Subscription {
 	{
 		if ($hash != '')
 		{
-			$this->EE->db->where('hash', $hash);
+			ee()->db->where('hash', $hash);
 		}
 		else
 		{
@@ -260,18 +260,18 @@ class EE_Subscription {
 
 			if (count($member_ids))
 			{
-				$this->EE->db->where_in('member_id', $member_ids);
+				ee()->db->where_in('member_id', $member_ids);
 				$func = 'or_where_in';
 			}
 
 			if (count($emails))
 			{
-				$this->EE->db->$func('email', $emails);
+				ee()->db->$func('email', $emails);
 			}
 		}
 		
-		$this->EE->db->where($this->publisher);
-		$this->EE->db->delete($this->table);
+		ee()->db->where($this->publisher);
+		ee()->db->delete($this->table);
 	}
 	
 	// --------------------------------------------------------------------
@@ -286,20 +286,54 @@ class EE_Subscription {
 	 */
 	function delete_subscriptions()
 	{
-		$this->EE->db->where($this->publisher);
-		$this->EE->db->delete($this->table);
+		ee()->db->where($this->publisher);
+		ee()->db->delete($this->table);
 	}
 	
 	// --------------------------------------------------------------------
-		
+
+	/**
+	 * Get subscription totals
+	 *
+	 * @access	public
+	 * @param	string	The db field identifier
+	 * @param	array	Array of identifier values
+	 * @return	Array	Total unique subscribers per publisher identifier
+	 */
+	public function get_subscription_totals($identifier, $identifier_ids)
+	{
+		$subscriber_query = ee()->db->select("COUNT(*) AS total")
+			->select($identifier)
+			->where_in($identifier, $identifier_ids)
+			->group_by($identifier)
+			->get($this->table);
+
+		if ($subscriber_query->num_rows() == 0)
+		{
+			return array();
+		}
+
+		$return = array();
+
+		foreach ($subscriber_query->result_array() as $subscription_total)
+		{
+			$return[$subscription_total['entry_id']] = $subscription_total['total'];
+		}
+
+		return $return;
+	}
+
+	// --------------------------------------------------------------------
+
 	/**
 	 * Get subscribers
 	 *
 	 * @access	public
 	 * @param	bool	Return array with member ids instead of looking up their emails (used internally)
+	 * @param	bool	Whether or not to join the member table and fetch screen names
 	 * @return	mixed	Array of email addresses
 	 */
-	function get_subscriptions($ignore = FALSE)
+	function get_subscriptions($ignore = FALSE, $include_screen_names = FALSE)
 	{
 		$emails		= array();
 		$member_ids	= array();
@@ -307,25 +341,33 @@ class EE_Subscription {
 		// Grab them all
 		if ($this->anonymous)
 		{
-			$this->EE->db->select('email');
+			ee()->db->select($this->table.'.email');
 		}
 		
 		if ($ignore)
 		{
 			if (is_numeric($ignore) && $ignore != 0)
 			{
-				$this->EE->db->where('member_id !=', $ignore);
+				ee()->db->where($this->table.'.member_id !=', $ignore);
 			}
 			elseif ($this->anonymous)
 			{
-				$this->EE->db->where('email !=', $ignore);
+				ee()->db->where($this->table.'.email !=', $ignore);
 			}
 		}
 		
-		$this->EE->db->select('subscription_id, member_id, notification_sent, hash');
-		$this->EE->db->where($this->publisher);
-		$query = $this->EE->db->get($this->table);
-		
+		ee()->db->select("{$this->table}.subscription_id, {$this->table}.member_id, {$this->table}.notification_sent, {$this->table}.hash");
+		ee()->db->from($this->table);
+
+		if ($include_screen_names)
+		{
+			ee()->db->select('m.screen_name');
+			ee()->db->join('members AS m', "m.member_id = {$this->table}.member_id", 'left');
+		}
+
+		ee()->db->where($this->publisher);
+		$query = ee()->db->get();
+
 		if ( ! $query->num_rows())
 		{
 			return array();
@@ -444,19 +486,19 @@ class EE_Subscription {
 		
 		if (count($member_ids))
 		{
-			$this->EE->db->where_in('member_id', $member_ids);
+			ee()->db->where_in('member_id', $member_ids);
 			$func = 'or_where_in';
 		}
 		
 		if (count($emails))
 		{
-			$this->EE->db->$func('email', $emails);
+			ee()->db->$func('email', $emails);
 		}
 		
-		$this->EE->db->set('notification_sent', $new_state);
+		ee()->db->set('notification_sent', $new_state);
 		
-		$this->EE->db->where($this->publisher);
-		$this->EE->db->update($this->table);
+		ee()->db->where($this->publisher);
+		ee()->db->update($this->table);
 	}
 	
 	// --------------------------------------------------------------------
@@ -470,14 +512,14 @@ class EE_Subscription {
 	function _get_current_user()
 	{
 		// They're logged in!
-		if ($this->EE->session->userdata('member_id') != 0)
+		if (ee()->session->userdata('member_id') != 0)
 		{
-			return array('member_id' => $this->EE->session->userdata('member_id'));
+			return array('member_id' => ee()->session->userdata('member_id'));
 		}
 		// my_email cookie is set
-		elseif ($this->EE->session->userdata('email'))
+		elseif (ee()->session->userdata('email'))
 		{
-			return array('email' => $this->EE->session->userdata('email'));
+			return array('email' => ee()->session->userdata('email'));
 		}
 		
 		// anonymous

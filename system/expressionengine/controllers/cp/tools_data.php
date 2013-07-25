@@ -104,7 +104,7 @@ class Tools_data extends CP_Controller {
 
 		if (isset($_POST['type']))
 		{
-			$this->functions->clear_caching($_POST['type'], '', TRUE);
+			$this->functions->clear_caching($_POST['type'], '');
 			$this->session->set_flashdata('message_success', lang('cache_deleted'));
 			$this->functions->redirect(BASE.AMP.'C=tools_data'.AMP.'M=clear_caching');
 		}
@@ -611,33 +611,42 @@ class Tools_data extends CP_Controller {
 			/**  Site Preferences in Certain Tables/Fields
 			/** -------------------------------------------*/
 
-			$preferences = array('exp_channels'			=> array('channel_title',
-																 'channel_url',
-																 'comment_url',
-																 'channel_description',
-																 'comment_notify_emails',
-																 'channel_notify_emails',
-																 'search_results_url',
-																 'ping_return_url',
-																 'rss_url'),
-								 'exp_upload_prefs'		=> array('server_path',
-								 								 'properties',
-								 								 'file_properties',
-								 								 'url'),
-								 'exp_member_groups'	=> array('group_title',
-								 								 'group_description',
-								 								 'mbr_delete_notify_emails'),
-								 'exp_global_variables'	=> array('variable_data'),
-								 'exp_categories'		=> array('cat_image'),
-								 'exp_forums'			=> array('forum_name',
-								 								 'forum_notify_emails',
-								 								 'forum_notify_emails_topics'),
-								 'exp_forum_boards'		=> array('board_label',
-								 								 'board_forum_url',
-								 								 'board_upload_path',
-								 								 'board_notify_emails',
-								 								 'board_notify_emails_topics')
-								 								 );
+			$preferences = array(
+				'exp_channels' => array(
+					'channel_title',
+					'channel_url',
+					'comment_url',
+					'channel_description',
+					'comment_notify_emails',
+					'channel_notify_emails',
+					'search_results_url',
+					'rss_url'
+				),
+				'exp_upload_prefs' => array(
+					'server_path',
+					'properties',
+					'file_properties',
+					'url'
+				),
+				'exp_member_groups' => array(
+					'group_title',
+					'group_description',
+					'mbr_delete_notify_emails'
+				),
+				'exp_global_variables'	=> array('variable_data'),
+				'exp_categories'		=> array('cat_image'),
+				'exp_forums'			=> array(
+					'forum_name',
+					'forum_notify_emails',
+					'forum_notify_emails_topics'),
+				'exp_forum_boards'		=> array(
+					'board_label',
+					'board_forum_url',
+					'board_upload_path',
+					'board_notify_emails',
+					'board_notify_emails_topics'
+				)
+			);
 
 			foreach($preferences as $table => $fields)
 			{

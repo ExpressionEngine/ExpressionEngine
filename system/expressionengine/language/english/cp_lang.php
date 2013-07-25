@@ -97,6 +97,8 @@ $lang = array(
 	'nav_category_management_short_desc'	=> 'Create, edit, and delete Categories',
 	'nav_field_group_management'			=> 'Channel Fields',
 	'nav_field_group_management_short_desc'	=> 'Create, edit, and delete Channel Fields',
+	'nav_channel_form_settings'			=> 'Channel Form',
+	'nav_channel_form_settings_short_desc'	=> 'Manage Frontend Channel Form Preferences',
 	'nav_status_group_management'		=> 'Statuses',
 	'nav_status_group_management_short_desc'	=> 'Create, edit, and delete Statuses',
 	'nav_global_channel_preferences'	=> 'Global Preferences',
@@ -108,8 +110,6 @@ $lang = array(
 	'nav_file_upload_preferences_short_desc'	=> 'Create, edit, and delete File Upload Preferences',
 	'nav_file_watermark_preferences'			=> 'Watermark Preferences',
 	'nav_file_watermark_preferences_short_desc' => 'Create, edit, and delete File Watermark Preferences',
-	'nav_default_ping_servers'					=> 'Default Ping Servers',
-	'nav_default_ping_servers_short_desc'		=> 'Create, edit, and delete  Default Ping Servers',
 	'nav_default_html_buttons'					=> 'Default HTML Buttons',
 	'nav_default_html_buttons_short_desc'		=> 'Create, edit, and delete Default HTML Buttons',
 
@@ -299,9 +299,6 @@ $lang = array(
 
 'any' =>
 'Any',
-
-'mobile_not_supported' => 
-'This feature is not supported in the mobile browser',
 
 'required_fields' =>
 'Indicates required fields',

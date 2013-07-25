@@ -35,7 +35,7 @@ class Hidden_ft extends EE_Fieldtype {
 	
 	function display_field($data)
 	{
-		$this->EE->javascript->set_global('publish.hidden_fields', array($this->field_id => $this->field_name));
+		ee()->javascript->set_global('publish.hidden_fields', array($this->field_id => $this->field_name));
 		return form_hidden($this->field_name, $data);
 	}
 }

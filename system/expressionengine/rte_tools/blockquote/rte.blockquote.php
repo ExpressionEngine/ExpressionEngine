@@ -54,7 +54,7 @@ class Blockquote_rte {
 	 */
 	function globals()
 	{
-		$this->EE->lang->loadfile('rte');
+		ee()->lang->loadfile('rte');
 		return array(
 			'rte.blockquote'	=> array(
 				'add'		=> lang('make_blockquote'),

@@ -54,16 +54,16 @@ class Link_rte {
 	 */
 	function globals()
 	{
-		$this->EE->lang->loadfile('rte');
+		ee()->lang->loadfile('rte');
 		return array(
 			'rte.link'	=> array(
 				'add'		=> lang('link'),
 				'dialog'	=> array(
 						'title'				=> lang('link'),
-						'url_field_label'	=> lang('url'),
-						'title_field_label'	=> lang('title'),
-						'rel_field_label'	=> lang('relationship'),
-						'selection_error'	=> lang('selection_error'),
+						'url_field_label'	=> lang('rte_url'),
+						'title_field_label'	=> lang('rte_title'),
+						'rel_field_label'	=> lang('rte_relationship'),
+						'selection_error'	=> lang('rte_selection_error'),
 						'url_required'		=> lang('valid_url_required'),
 						'add_link'			=> lang('add_link'),
 						'update_link'		=> lang('update_link'),

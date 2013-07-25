@@ -337,29 +337,26 @@ class EE_Output extends CI_Output {
 	 */
 	function show_user_error($type = 'submission', $errors, $heading = '')
 	{
-		$EE =& get_instance();
-
 		if (defined('REQ') && REQ == 'CP')
 		{		
-			$EE->load->library('logger');
-			$EE->logger->deprecate('2.6', 'show_error()');
+			ee()->load->library('logger');
+			ee()->logger->deprecated('2.6', 'show_error()');
 		}
 
-		$this->set_header("Content-Type: text/html; charset=".$EE->config->item('charset'));
+		$this->set_header("Content-Type: text/html; charset=".ee()->config->item('charset'));
 		
 		if ($type != 'off')
-		{	  
-			switch($type)
+		{
+			if ($type == 'general')
 			{
-				case 'submission' : $heading = $EE->lang->line('submission_error');
-					break;
-				case 'general'	: $heading = $EE->lang->line('general_error');
-					break;
-				default			: $heading = $EE->lang->line('submission_error');
-					break;
+				$heading = ee()->lang->line('general_error');
+			}
+			else
+			{
+				$heading = ee()->lang->line('submission_error');
 			}
 		}
-		
+
 		$content  = '<ul>';
 		
 		if ( ! is_array($errors))
@@ -376,15 +373,51 @@ class EE_Output extends CI_Output {
 		
 		$content .= "</ul>";
 		
-		$data = array(	'title' 	=> $EE->lang->line('error'),
-						'heading'	=> $heading,
-						'content'	=> $content,
-						'redirect'	=> '',
-						'link'		=> array('JavaScript:history.go(-1)', $EE->lang->line('return_to_previous'))
-					 );
-				
+		$data = array(
+			'title' 	=> ee()->lang->line('error'),
+			'heading'	=> $heading,
+			'content'	=> $content,
+			'redirect'	=> '',
+			'link'		=> array('JavaScript:history.go(-1)', ee()->lang->line('return_to_previous'))
+		);
+
+		$this->_restore_xid($content);				
 		$this->show_message($data, 0);
-	} 
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Restore XID
+	 *
+	 * By default our error output provides a back link for the user. In
+	 * a lot of cases these errors indicate that a form was not filled in
+	 * correctly, so we want to allow XID reuse.
+	 *
+	 * Exceptions to this rule are authorization errors and invalid actions.
+	 *
+	 * @access	public
+	 * @param	string	error response that will be shown to the user
+	 * @return	void
+	 */
+	protected function _restore_xid($str)
+	{
+		$xid_reuse_exceptions = array(
+			lang('not_authorized'),
+			lang('unauthorized_access'),
+			lang('invalid_action')
+		);
+
+		foreach ($xid_reuse_exceptions as $exception)
+		{
+			if (strpos($str, $exception) !== FALSE)
+			{
+				return;
+			}
+		}
+
+		ee()->security->restore_xid();
+	}
 
 	// --------------------------------------------------------------------
 
@@ -423,7 +456,7 @@ class EE_Output extends CI_Output {
 		}
 		
 		$EE->load->library('javascript');
-		exit($EE->javascript->generate_json($msg, TRUE));
+		exit(json_encode($msg));
 	}
 
 	// --------------------------------------------------------------------

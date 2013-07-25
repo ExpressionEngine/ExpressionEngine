@@ -30,7 +30,7 @@ class Mailinglist_upd {
 	function Mailinglist_upd()
 	{
 		$this->EE =& get_instance();
-		$this->EE->load->dbforge();
+		ee()->load->dbforge();
 	}
 
 	// --------------------------------------------------------------------
@@ -68,10 +68,10 @@ class Mailinglist_upd {
 												)
 		);
 
-		$this->EE->dbforge->add_field($fields);
-		$this->EE->dbforge->add_key('list_id', TRUE);
-		$this->EE->dbforge->add_key('list_name');
-		$this->EE->dbforge->create_table('mailing_lists', TRUE);
+		ee()->dbforge->add_field($fields);
+		ee()->dbforge->add_key('list_id', TRUE);
+		ee()->dbforge->add_key('list_name');
+		ee()->dbforge->create_table('mailing_lists', TRUE);
 
 		$fields = array(
 						'user_id'	=> array(
@@ -104,10 +104,10 @@ class Mailinglist_upd {
 												),
 		);
 
-		$this->EE->dbforge->add_field($fields);
-		$this->EE->dbforge->add_key('user_id', TRUE);
-		$this->EE->dbforge->add_key('list_id');
-		$this->EE->dbforge->create_table('mailing_list', TRUE);
+		ee()->dbforge->add_field($fields);
+		ee()->dbforge->add_key('user_id', TRUE);
+		ee()->dbforge->add_key('list_id');
+		ee()->dbforge->create_table('mailing_list', TRUE);
 
 		$fields = array(
 						'queue_id'	=> array(
@@ -141,18 +141,18 @@ class Mailinglist_upd {
 												),
 		);
 
-		$this->EE->dbforge->add_field($fields);
-		$this->EE->dbforge->add_key('queue_id', TRUE);
-		$this->EE->dbforge->create_table('mailing_list_queue', TRUE);
+		ee()->dbforge->add_field($fields);
+		ee()->dbforge->add_key('queue_id', TRUE);
+		ee()->dbforge->create_table('mailing_list_queue', TRUE);
 
 		if ( ! function_exists('mailinglist_template'))
 		{
-			if ( ! file_exists(APPPATH.'language/'.$this->EE->config->item('deft_lang').'/email_data.php'))
+			if ( ! file_exists(APPPATH.'language/'.ee()->config->item('deft_lang').'/email_data.php'))
 			{
 				return FALSE;
 			}
 
-			require APPPATH.'language/'.$this->EE->config->item('deft_lang').'/email_data.php';
+			require APPPATH.'language/'.ee()->config->item('deft_lang').'/email_data.php';
 		}
 
 		$data = array(
@@ -160,32 +160,32 @@ class Mailinglist_upd {
 			'list_title' 	=> 'Default Mailing List',
 			'list_template' 	=> addslashes(mailinglist_template())
 		);
-		$this->EE->db->insert('mailing_lists', $data);
+		ee()->db->insert('mailing_lists', $data);
 
 		$data = array(
 			'module_name' 	=> 'Mailinglist',
 			'module_version' 	=> $this->version,
 			'has_cp_backend' 	=> 'y'
 		);
-		$this->EE->db->insert('modules', $data);
+		ee()->db->insert('modules', $data);
 
 		$data = array(
 			'class' 	=> 'Mailinglist',
 			'method' 	=> 'insert_new_email'
 		);
-		$this->EE->db->insert('actions', $data);
+		ee()->db->insert('actions', $data);
 
 		$data = array(
 			'class' 	=> 'Mailinglist',
 			'method' 	=> 'authorize_email'
 		);
-		$this->EE->db->insert('actions', $data);
+		ee()->db->insert('actions', $data);
 
 		$data = array(
 			'class' 	=> 'Mailinglist',
 			'method' 	=> 'unsubscribe'
 		);
-		$this->EE->db->insert('actions', $data);
+		ee()->db->insert('actions', $data);
 
 		return TRUE;
 	}
@@ -202,24 +202,24 @@ class Mailinglist_upd {
 	 */
 	function uninstall()
 	{
-		$this->EE->db->select('module_id');
-		$query = $this->EE->db->get_where('modules', array('module_name' => 'Mailinglist'));
+		ee()->db->select('module_id');
+		$query = ee()->db->get_where('modules', array('module_name' => 'Mailinglist'));
 
-		$this->EE->db->where('module_id', $query->row('module_id'));
-		$this->EE->db->delete('module_member_groups');
+		ee()->db->where('module_id', $query->row('module_id'));
+		ee()->db->delete('module_member_groups');
 
-		$this->EE->db->where('module_name', 'Mailinglist');
-		$this->EE->db->delete('modules');
+		ee()->db->where('module_name', 'Mailinglist');
+		ee()->db->delete('modules');
 
-		$this->EE->db->where('class', 'Mailinglist');
-		$this->EE->db->delete('actions');
+		ee()->db->where('class', 'Mailinglist');
+		ee()->db->delete('actions');
 
-		$this->EE->db->where('class', 'Mailinglist_mcp');
-		$this->EE->db->delete('actions');
+		ee()->db->where('class', 'Mailinglist_mcp');
+		ee()->db->delete('actions');
 
-		$this->EE->dbforge->drop_table('mailing_lists');
-		$this->EE->dbforge->drop_table('mailing_list');
-		$this->EE->dbforge->drop_table('mailing_list_queue');
+		ee()->dbforge->drop_table('mailing_lists');
+		ee()->dbforge->drop_table('mailing_list');
+		ee()->dbforge->drop_table('mailing_list_queue');
 
 		return TRUE;
 	}
@@ -236,15 +236,15 @@ class Mailinglist_upd {
 	{
 		if (version_compare($current, '3.0', '<'))
 		{
-			$this->EE->db->query("ALTER TABLE `exp_mailing_list` MODIFY COLUMN `user_id` int(10) unsigned NOT NULL PRIMARY KEY auto_increment");
-			$this->EE->db->query("ALTER TABLE `exp_mailing_list` DROP KEY `user_id`");
-			$this->EE->db->query("ALTER TABLE `exp_mailing_list_queue` ADD COLUMN `queue_id` int(10) UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY FIRST");
+			ee()->db->query("ALTER TABLE `exp_mailing_list` MODIFY COLUMN `user_id` int(10) unsigned NOT NULL PRIMARY KEY auto_increment");
+			ee()->db->query("ALTER TABLE `exp_mailing_list` DROP KEY `user_id`");
+			ee()->db->query("ALTER TABLE `exp_mailing_list_queue` ADD COLUMN `queue_id` int(10) UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY FIRST");
 		}
 
 		if (version_compare($current, '3.1', '<'))
 		{
 			// Update ip_address column
-			$this->EE->dbforge->modify_column(
+			ee()->dbforge->modify_column(
 				'mailing_list',
 				array(
 					'ip_address' => array(

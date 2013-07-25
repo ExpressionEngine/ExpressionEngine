@@ -30,7 +30,7 @@ class Updater {
 		$this->EE =& get_instance();
 	
 		// Grab the config file
-		if ( ! @include($this->EE->config->config_path))
+		if ( ! @include(ee()->config->config_path))
 		{
 			show_error('Your config'.EXT.' file is unreadable. Please make sure the file exists and that the file permissions to 666 on the following file: expressionengine/config/config.php');
 		}
@@ -181,7 +181,7 @@ class Updater {
 		
 		if (@realpath(PATH) !== FALSE)
 		{
-			$prefs['theme_folder_path'] = preg_replace("#/+#", "/", substr(str_replace("\\", "/", realpath(PATH)), 0, - strlen($this->EE->config->item('system_folder').'/')).'/themes/');
+			$prefs['theme_folder_path'] = preg_replace("#/+#", "/", substr(str_replace("\\", "/", realpath(PATH)), 0, - strlen(ee()->config->item('system_folder').'/')).'/themes/');
 		}
 		else
 		{
@@ -190,7 +190,7 @@ class Updater {
 		
 		foreach($admin_default as $value)
 		{
-			$prefs[$value] = str_replace('\\', '\\\\', $this->EE->config->item($value));
+			$prefs[$value] = str_replace('\\', '\\\\', ee()->config->item($value));
 		}
 		
 		unset($prefs['site_name']);  // In exp_sites now
@@ -207,7 +207,7 @@ class Updater {
 		
 		foreach($mailinglist_default as $value)
 		{
-			$prefs[$value] = str_replace('\\', '\\\\', $this->EE->config->item($value));
+			$prefs[$value] = str_replace('\\', '\\\\', ee()->config->item($value));
 		}
 		
 		$Q[] = $DB->update_string('exp_sites', array('site_mailinglist_preferences' => addslashes(serialize($prefs))), "site_id = 1");
@@ -265,7 +265,7 @@ class Updater {
 		
 		foreach($member_default as $value)
 		{
-			$prefs[$value] = str_replace('\\', '\\\\', $this->EE->config->item($value));
+			$prefs[$value] = str_replace('\\', '\\\\', ee()->config->item($value));
 		}
 		
 		$Q[] = $DB->update_string('exp_sites', array('site_member_preferences' => addslashes(serialize($prefs))), "site_id = 1");
@@ -283,7 +283,7 @@ class Updater {
 		
 		foreach($template_default as $value)
 		{
-			$prefs[$value] = str_replace('\\', '\\\\', $this->EE->config->item($value));
+			$prefs[$value] = str_replace('\\', '\\\\', ee()->config->item($value));
 		}
 		
 		$Q[] = $DB->update_string('exp_sites', array('site_template_preferences' => addslashes(serialize($prefs))), "site_id = 1");
@@ -307,7 +307,7 @@ class Updater {
 		
 		foreach($weblog_default as $value)
 		{
-			$prefs[$value] = str_replace('\\', '\\\\', $this->EE->config->item($value));
+			$prefs[$value] = str_replace('\\', '\\\\', ee()->config->item($value));
 		}
 		
 		$Q[] = $DB->update_string('exp_sites', array('site_weblog_preferences' => addslashes(serialize($prefs))), "site_id = 1");
@@ -438,7 +438,7 @@ class Updater {
 		/**  Is the Gallery module installed?
 		/** -------------------------------*/
 		
-        $query = $this->EE->db->query("SELECT COUNT(*) AS count FROM exp_modules WHERE module_name = 'Gallery'");
+        $query = ee()->db->query("SELECT COUNT(*) AS count FROM exp_modules WHERE module_name = 'Gallery'");
         
         if ($query->row('count') > 0)
         {
@@ -456,14 +456,14 @@ class Updater {
 		
 		foreach ($Q as $sql)
 		{
-			$this->EE->db->query($sql);
+			ee()->db->query($sql);
 		}
 		
 		/** ---------------------------------------
 		/**  Insert field data rows for existing categories
 		/** ---------------------------------------*/
 		
-		$query = $this->EE->db->query("SELECT cat_id, group_id FROM exp_categories");
+		$query = ee()->db->query("SELECT cat_id, group_id FROM exp_categories");
 		
 		if ($query->num_rows() > 0)
 		{
@@ -476,7 +476,7 @@ class Updater {
 			
 			foreach ($cat_ids as $cat)
 			{
-				$this->EE->db->query($this->EE->db->insert_string('exp_category_field_data', $cat));
+				ee()->db->query(ee()->db->insert_string('exp_category_field_data', $cat));
 			}
 		}
 		
@@ -486,12 +486,12 @@ class Updater {
 
 		$data['multiple_sites_enabled'] = "n";
 		
-		$this->EE->config->_append_config_1x($data);
+		ee()->config->_append_config_1x($data);
 		
 		unset($config);
 		unset($conf);
 
-		include($this->EE->config->config_path);
+		include(ee()->config->config_path);
 		
 		if (isset($conf))
 		{
@@ -505,7 +505,7 @@ class Updater {
 		
 		$config['doc_url'] = str_replace('eedocs.pmachine.com', 'expressionengine.com/docs', $config['doc_url']);
 		
-		$this->EE->config->_update_config_1x(array(), $config);
+		ee()->config->_update_config_1x(array(), $config);
 
 		return TRUE;
 	}
@@ -522,7 +522,7 @@ class Updater {
 		{
 			$str = mb_convert_encoding($str, strtoupper('ISO-8859-1'), 'auto');
 		}
-		elseif(function_exists('iconv') AND ($iconvstr = @iconv('', strtoupper($this->EE->config->item('charset')), $str)) !== FALSE)
+		elseif(function_exists('iconv') AND ($iconvstr = @iconv('', strtoupper(ee()->config->item('charset')), $str)) !== FALSE)
 		{
 			$str = $iconvstr;
 		}
@@ -538,7 +538,7 @@ class Updater {
 		
 		// Use dash as separator		
 
-		if ($this->EE->config->item('word_separator') == 'dash')
+		if (ee()->config->item('word_separator') == 'dash')
 		{
 			$trans = array(
 							"_"									=> '-',

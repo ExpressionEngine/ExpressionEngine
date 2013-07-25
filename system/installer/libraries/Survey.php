@@ -25,6 +25,8 @@
 
 class Survey {
 	
+	private $_survey_url = 'survey-collector.ellislab.com';
+
 	function __construct()
 	{
 		// nothing to see here
@@ -55,15 +57,21 @@ class Survey {
 			$path_info_support = ($prefs['force_query_string'] == 'n') ? 'y' : 'n';
 		}
 
+		// Get a list of add-ons in their third_party folder
+		$CI->load->helper('directory');
+
 		return array(
-							'anon_id'			=> md5($site_url),
-							'os'				=> preg_replace("/.*?\((.*?)\).*/", '\\1', $_SERVER['SERVER_SOFTWARE']),
-							'server_software'	=> preg_replace("/(.*?)\(.*/", '\\1', $_SERVER['SERVER_SOFTWARE']),
-							'php_version'		=> phpversion(),
-							'php_extensions'	=> serialize(get_loaded_extensions()),
-							'mysql_version'		=> preg_replace("/(.*?)\-.*/", "\\1", mysql_get_server_info()),
-							'path_info_support'	=> $path_info_support
-					);
+			'anon_id'			=> md5($site_url),
+			'os'				=> preg_replace("/.*?\((.*?)\).*/", '\\1', $_SERVER['SERVER_SOFTWARE']),
+			'server_software'	=> preg_replace("/(.*?)\(.*/", '\\1', $_SERVER['SERVER_SOFTWARE']),
+			'php_version'		=> phpversion(),
+			'php_extensions'	=> json_encode(get_loaded_extensions()),
+			'mysql_version'		=> preg_replace("/(.*?)\-.*/", "\\1", mysql_get_server_info()),
+			'path_info_support'	=> $path_info_support,
+			'addons'			=> json_encode(directory_map(PATH_THIRD, 1)),
+			'forums'			=> ($CI->config->item('forum_is_installed') == "y") ? 'y' : 'n',
+			'msm'				=> ($CI->config->item('multiple_sites_enabled') == "y") ? 'y' : 'n',
+		);
 	}
 
 	// --------------------------------------------------------------------
@@ -110,7 +118,7 @@ class Survey {
 			$ch = curl_init();
 			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
 			curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
-			curl_setopt($ch, CURLOPT_URL, 'http://expressionengine.com/index.php?ACT=25');
+			curl_setopt($ch, CURLOPT_URL, "http://{$this->_survey_url}/");
 			curl_setopt($ch, CURLOPT_POST, 1); 
 			curl_setopt($ch, CURLOPT_POSTFIELDS, $postdata);
 			
@@ -122,12 +130,12 @@ class Survey {
 		}
 		else
 		{
-			$fp = @fsockopen('expressionengine.com', 80, $error_num, $error_str, 5);
+			$fp = @fsockopen($this->_survey_url, 80, $error_num, $error_str, 5);
 
 			if (is_resource($fp))
 			{
-				fputs($fp, "POST /index.php?ACT=25 HTTP/1.0\r\n");
-				fputs($fp, "Host: expressionengine.com\r\n");
+				fputs($fp, "POST / HTTP/1.0\r\n");
+				fputs($fp, "Host: {$this->_survey_url}\r\n");
 				fputs($fp, "Content-Length: ".strlen($postdata)."\r\n");
 				fputs($fp, "Content-Type: application/x-www-form-urlencoded\r\n");
 				fputs($fp, "Connection: close\r\n\r\n");

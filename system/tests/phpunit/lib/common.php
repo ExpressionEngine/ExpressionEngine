@@ -9,6 +9,11 @@ function &get_instance()
 	return $instance;
 }
 
+function ee()
+{
+	return get_instance();
+}
+
 // --------------------------------------------------------------------
 
 function &get_config() {

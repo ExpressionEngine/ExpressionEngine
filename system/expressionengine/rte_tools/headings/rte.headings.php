@@ -54,7 +54,7 @@ class Headings_rte {
 	 */
 	function globals()
 	{
-		$this->EE->lang->loadfile('rte');
+		ee()->lang->loadfile('rte');
 		return array(
 			'rte.headings'	=> array(
 				'paragraph'		=> lang('paragraph'),
@@ -123,7 +123,7 @@ class Headings_rte {
 				{
 					this.$element.val(el.nodeName.toLowerCase());
 				}
-				else if ( $parent.length )
+				else if ( $parent.length && ! $parent.hasClass('WysiHat-Editor'))
 				{
 					this.$element.val($parent.get(0).nodeName.toLowerCase());
 				}

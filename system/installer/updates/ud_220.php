@@ -45,21 +45,22 @@ class Updater {
 	 */
 	public function do_update()
 	{
-		$this->EE->load->dbforge();
-		
-		$this->_update_session_table();
+		$steps = new ProgressIterator(
+			array(
+				'_update_session_table',
+				'_update_password_lockout_table',
+				'_update_members_table',
+				'_update_files_table',
+				'_update_comments_table',
+				'_update_template_groups',
+				'_alter_sidebar_deft',
+			)
+		);
 
-		$this->_update_password_lockout_table();
-		
-		$this->_update_members_table();
-		
-		$this->_update_files_table();
-
-		$this->_update_comments_table();
-
-		$this->_update_template_groups();
-
-		$this->_alter_sidebar_deft();
+		foreach ($steps as $k => $v)
+		{
+			$this->$v();
+		}
 
 		return TRUE;
 	}
@@ -79,7 +80,7 @@ class Updater {
 	private function _update_session_table()
 	{
 		// Add an index on last_activity
-		$this->EE->db->query("CREATE INDEX last_activity_idx on exp_sessions(last_activity)");
+		ee()->smartforge->add_key('sessions', 'last_activity', 'last_activity_idx');
 
 		$field = array(
 			'user_agent'	=> array(
@@ -89,7 +90,7 @@ class Updater {
 			)
 		);
 
-		$this->EE->dbforge->modify_column('sessions', $field);
+		ee()->smartforge->modify_column('sessions', $field);
 	}
 
 	// --------------------------------------------------------------------
@@ -113,7 +114,7 @@ class Updater {
 			)
 		);
 
-		$this->EE->dbforge->modify_column('password_lockout', $field);
+		ee()->smartforge->modify_column('password_lockout', $field);
 	}
 	// --------------------------------------------------------------------
 
@@ -137,7 +138,7 @@ class Updater {
 			)
 		);
 
-		$this->EE->dbforge->modify_column('members', $field);
+		ee()->smartforge->modify_column('members', $field);
 
 
 		// Add a salt column VARCHAR(128)
@@ -150,7 +151,7 @@ class Updater {
 			)
 		);
 
-		$this->EE->dbforge->add_column('members', $field);
+		ee()->smartforge->add_column('members', $field);
 		
 		
 		// Add a remember_me column VARCHAR(32)
@@ -163,7 +164,7 @@ class Updater {
 			)
 		);
 
-		$this->EE->dbforge->add_column('members', $field);
+		ee()->smartforge->add_column('members', $field);
 	}
 
 	// --------------------------------------------------------------------
@@ -179,7 +180,7 @@ class Updater {
 			)
 		);
 
-		$this->EE->dbforge->add_column('files', $field);
+		ee()->smartforge->add_column('files', $field);
 	}
 	
 	// --------------------------------------------------------------------
@@ -189,11 +190,7 @@ class Updater {
 	 */
 	private function _update_comments_table()
 	{
-		if ($this->EE->db->table_exists('exp_comments'))
-		{
-			// Add an index on comment_date
-			$this->EE->db->query("CREATE INDEX comment_date_idx on exp_comments(comment_date)");
-		}
+		ee()->smartforge->add_key('comments', 'comment_date', 'comment_date_idx');
 	}
 
 	// --------------------------------------------------------------------
@@ -203,8 +200,8 @@ class Updater {
 	 */
 	private function _update_template_groups()
 	{
-		$this->EE->db->query("CREATE INDEX group_name_idx on exp_template_groups(group_name)");
-		$this->EE->db->query("CREATE INDEX group_order_idx on exp_template_groups(group_order)");
+		ee()->smartforge->add_key('template_groups', 'group_name', 'group_name_idx');
+		ee()->smartforge->add_key('template_groups', 'group_order', 'group_order_idx');
 	}
 
 	// --------------------------------------------------------------------	
@@ -214,7 +211,7 @@ class Updater {
 	 */
 	private function _alter_sidebar_deft()
 	{
-		$this->EE->db->query("ALTER TABLE exp_members ALTER COLUMN show_sidebar SET DEFAULT 'n'");
+		ee()->db->query("ALTER TABLE exp_members ALTER COLUMN show_sidebar SET DEFAULT 'n'");
 	}
 
 	// --------------------------------------------------------------------	

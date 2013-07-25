@@ -44,7 +44,7 @@ class Blacklist_upd {
 
 	function install()
 	{
-		$this->EE->load->dbforge();
+		ee()->load->dbforge();
 
 		$data = array(
 			'module_name' 	 => 'Blacklist',
@@ -52,7 +52,7 @@ class Blacklist_upd {
 			'has_cp_backend' => 'y'
 		);
 
-		$this->EE->db->insert('modules', $data);
+		ee()->db->insert('modules', $data);
 
 		$fields = array(
 			'blacklisted_id'	=> array(
@@ -70,9 +70,9 @@ class Blacklist_upd {
 			)
 		);
 
-		$this->EE->dbforge->add_field($fields);
-		$this->EE->dbforge->add_key('blacklisted_id', TRUE);
-		$this->EE->dbforge->create_table('blacklisted');
+		ee()->dbforge->add_field($fields);
+		ee()->dbforge->add_key('blacklisted_id', TRUE);
+		ee()->dbforge->create_table('blacklisted');
 
 		$fields = array(
 			'whitelisted_id'	=> array(
@@ -90,9 +90,9 @@ class Blacklist_upd {
 			)
 		);
 
-		$this->EE->dbforge->add_field($fields);
-		$this->EE->dbforge->add_key('whitelisted_id', TRUE);
-		$this->EE->dbforge->create_table('whitelisted');
+		ee()->dbforge->add_field($fields);
+		ee()->dbforge->add_key('whitelisted_id', TRUE);
+		ee()->dbforge->create_table('whitelisted');
 
 		return TRUE;
 	}
@@ -107,27 +107,27 @@ class Blacklist_upd {
 	 */
 	function uninstall()
 	{
-		$this->EE->load->dbforge();
+		ee()->load->dbforge();
 
-		$this->EE->db->select('module_id');
-		$query = $this->EE->db->get_where('modules', array('module_name' => 'Blacklist'));
+		ee()->db->select('module_id');
+		$query = ee()->db->get_where('modules', array('module_name' => 'Blacklist'));
 		$module_id_row = $query->row();
 		$module_id = $module_id_row->module_id;
 
-		$this->EE->db->where('module_id', $module_id);
-		$this->EE->db->delete('module_member_groups');
+		ee()->db->where('module_id', $module_id);
+		ee()->db->delete('module_member_groups');
 
-		$this->EE->db->where('module_name', 'Blacklist');
-		$this->EE->db->delete('modules');
+		ee()->db->where('module_name', 'Blacklist');
+		ee()->db->delete('modules');
 
-		$this->EE->db->where('class', 'Blacklist');
-		$this->EE->db->delete('actions');
+		ee()->db->where('class', 'Blacklist');
+		ee()->db->delete('actions');
 
-		$this->EE->db->where('class', 'Blacklist_mcp');
-		$this->EE->db->delete('actions');
+		ee()->db->where('class', 'Blacklist_mcp');
+		ee()->db->delete('actions');
 
-		$this->EE->dbforge->drop_table('blacklisted');
-		$this->EE->dbforge->drop_table('whitelisted');
+		ee()->dbforge->drop_table('blacklisted');
+		ee()->dbforge->drop_table('whitelisted');
 
 		return TRUE;
 	}
@@ -144,11 +144,11 @@ class Blacklist_upd {
 	{
 		if (version_compare($current, '3.0.1', '<'))
 		{
-			$this->EE->load->dbforge();
+			ee()->load->dbforge();
 			
 			foreach (array('blacklisted', 'whitelisted') as $table_name)
 			{
-				if ($this->EE->db->table_exists($table_name))
+				if (ee()->db->table_exists($table_name))
 				{
 					$fields = array(
 						$table_name.'_value' => array(
@@ -157,19 +157,19 @@ class Blacklist_upd {
 						)
 					);
 					
-					$this->EE->dbforge->modify_column($table_name, $fields);
+					ee()->dbforge->modify_column($table_name, $fields);
 				}
 			}
 		}
 		
 		if (version_compare($current, '3.0', '<'))
 		{
-			$this->EE->load->dbforge();
+			ee()->load->dbforge();
 
 			$sql = array();
 
 			//if the are using a very old version this table won't exist at all
-			if ( ! $this->EE->db->table_exists('whitelisted'))
+			if ( ! ee()->db->table_exists('whitelisted'))
 			{
 				$fields = array(
 					'whitelisted_id'	=> array(
@@ -187,9 +187,9 @@ class Blacklist_upd {
 					)
 				);
 
-				$this->EE->dbforge->add_field($fields);
-				$this->EE->dbforge->add_key('whitelisted_id', TRUE);
-				$this->EE->dbforge->create_table('whitelisted');
+				ee()->dbforge->add_field($fields);
+				ee()->dbforge->add_key('whitelisted_id', TRUE);
+				ee()->dbforge->create_table('whitelisted');
 			}
 			else
 			{
@@ -199,7 +199,7 @@ class Blacklist_upd {
 
 			foreach($sql as $query)
 			{
-				$this->EE->db->query($query);
+				ee()->db->query($query);
 			}
 		}
 

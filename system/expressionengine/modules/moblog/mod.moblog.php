@@ -110,8 +110,8 @@ class Moblog {
 	 */
 	function check()
 	{
-		$which 	= $this->EE->TMPL->fetch_param('which', '');
-		$silent	= $this->EE->TMPL->fetch_param('silent', 'yes');
+		$which 	= ee()->TMPL->fetch_param('which', '');
+		$silent	= ee()->TMPL->fetch_param('silent', 'yes');
 
 		// Backwards compatible with previously documented "true/false" parameters (now "yes/no")
 		$this->silent = ($silent == 'true' OR $silent == 'yes') ? 'yes' : 'no'; 
@@ -122,11 +122,11 @@ class Moblog {
 			return $this->return_data ;
 		}
 
-		$this->EE->lang->loadfile('moblog');
+		ee()->lang->loadfile('moblog');
 
 		$sql = "SELECT * FROM exp_moblogs WHERE moblog_enabled = 'y'";
-		$sql .= ($which == 'all') ? '' : $this->EE->functions->sql_andor_string($which, 'moblog_short_name', 'exp_moblogs');
-		$query = $this->EE->db->query($sql);
+		$sql .= ($which == 'all') ? '' : ee()->functions->sql_andor_string($which, 'moblog_short_name', 'exp_moblogs');
+		$query = ee()->db->query($sql);
 
 		if ($query->num_rows() == 0)
 		{
@@ -147,7 +147,7 @@ class Moblog {
 
 		@chmod(APPPATH.'cache/'.$this->cache_name, DIR_WRITE_MODE);
 
-		//$this->EE->functions->delete_expired_files(APPPATH.'cache/'.$this->cache_name);
+		//ee()->functions->delete_expired_files(APPPATH.'cache/'.$this->cache_name);
 
 		$expired = array();
 
@@ -565,17 +565,17 @@ class Moblog {
 					// must be used to decode the subject, not the charset used by the email
 					if (function_exists('mb_convert_encoding'))
 					{
-						$this->post_data['subject'] = mb_convert_encoding($this->post_data['subject'], strtoupper($this->EE->config->item('charset')), mb_internal_encoding());
+						$this->post_data['subject'] = mb_convert_encoding($this->post_data['subject'], strtoupper(ee()->config->item('charset')), mb_internal_encoding());
 					}
 					elseif(function_exists('iconv'))
 					{
-						$this->post_data['subject'] = iconv(iconv_get_encoding('internal_encoding'), strtoupper($this->EE->config->item('charset')), $this->post_data['subject']);
+						$this->post_data['subject'] = iconv(iconv_get_encoding('internal_encoding'), strtoupper(ee()->config->item('charset')), $this->post_data['subject']);
 					}
-					elseif(strtolower($this->EE->config->item('charset')) == 'utf-8' && strtolower($this->charset) == 'iso-8859-1')
+					elseif(strtolower(ee()->config->item('charset')) == 'utf-8' && strtolower($this->charset) == 'iso-8859-1')
 					{
 						$this->post_data['subject'] = utf8_encode($this->post_data['subject']);
 					}
-					elseif(strtolower($this->EE->config->item('charset')) == 'iso-8859-1' && strtolower($this->charset) == 'utf-8')
+					elseif(strtolower(ee()->config->item('charset')) == 'iso-8859-1' && strtolower($this->charset) == 'utf-8')
 					{
 						$this->post_data['subject'] = utf8_decode($this->post_data['subject']);
 					}
@@ -588,7 +588,7 @@ class Moblog {
 
 			if (preg_match("/Received:\s*from\s*(.*)\[+(.*)\]+/", $email_data, $subject))
 			{
-				if (isset($subject['2']) && $this->EE->input->valid_ip(trim($subject['2'])))
+				if (isset($subject['2']) && ee()->input->valid_ip(trim($subject['2'])))
 				{
 					$this->post_data['ip'] = trim($subject['2']);
 				}
@@ -659,21 +659,21 @@ class Moblog {
 					}
 				}
 
-				if ($this->charset != $this->EE->config->item('charset'))
+				if ($this->charset != ee()->config->item('charset'))
             	{
             		if (function_exists('mb_convert_encoding'))
             		{
-            			$this->body = mb_convert_encoding($this->body, strtoupper($this->EE->config->item('charset')), strtoupper($this->charset));
+            			$this->body = mb_convert_encoding($this->body, strtoupper(ee()->config->item('charset')), strtoupper($this->charset));
             		}
-            		elseif(function_exists('iconv') AND ($iconvstr = @iconv(strtoupper($this->charset), strtoupper($this->EE->config->item('charset')), $this->body)) !== FALSE)
+            		elseif(function_exists('iconv') AND ($iconvstr = @iconv(strtoupper($this->charset), strtoupper(ee()->config->item('charset')), $this->body)) !== FALSE)
             		{
             			$this->body = $iconvstr;
             		}
-            		elseif(strtolower($this->EE->config->item('charset')) == 'utf-8' && strtolower($this->charset) == 'iso-8859-1')
+            		elseif(strtolower(ee()->config->item('charset')) == 'utf-8' && strtolower($this->charset) == 'iso-8859-1')
             		{
             			$this->body = utf8_encode($this->body);
             		}
-            		elseif(strtolower($this->EE->config->item('charset')) == 'iso-8859-1' && strtolower($this->charset) == 'utf-8')
+            		elseif(strtolower(ee()->config->item('charset')) == 'iso-8859-1' && strtolower($this->charset) == 'utf-8')
             		{
             			$this->body = utf8_decode($this->body);
             		}
@@ -853,24 +853,24 @@ class Moblog {
 			{
 				$matches[1] = trim($matches[1]);
 
-				$this->EE->db->select('field_id');
-				$this->EE->db->from('channel_fields, channels');
-				$this->EE->db->where('channels.field_group', 'channel_fields.group_id');
-				$this->EE->db->where('channels.channel_id', $this->moblog_array['moblog_channel_id']);
-				$this->EE->db->where('channel_fields.group_id', $query->row('field_group'));
-				$this->EE->db->where('(channel_fields.field_name = "'.$matches[1].'" OR '.$this->EE->db->dbprefix('channel_fields').'.field_label = "'.$matches[1].'")', NULL, FALSE);
+				ee()->db->select('field_id');
+				ee()->db->from('channel_fields, channels');
+				ee()->db->where('channels.field_group', 'channel_fields.group_id');
+				ee()->db->where('channels.channel_id', $this->moblog_array['moblog_channel_id']);
+				ee()->db->where('channel_fields.group_id', $query->row('field_group'));
+				ee()->db->where('(channel_fields.field_name = "'.$matches[1].'" OR '.ee()->db->dbprefix('channel_fields').'.field_label = "'.$matches[1].'")', NULL, FALSE);
 
 				/* -------------------------------------
 				/*  Hidden Configuration Variable
 				/*  - moblog_allow_nontextareas => Removes the textarea only restriction
 				/*	for custom fields in the moblog module (y/n)
 				/* -------------------------------------*/
-				if ($this->EE->config->item('moblog_allow_nontextareas') != 'y')
+				if (ee()->config->item('moblog_allow_nontextareas') != 'y')
 				{
-					$this->EE->db->where('channel_fields.field_type', 'textarea');
+					ee()->db->where('channel_fields.field_type', 'textarea');
 				}
 				
-				$results = $this->EE->db->get();
+				$results = ee()->db->get();
 
 				if ($results->num_rows() > 0)
 				{
@@ -948,13 +948,13 @@ class Moblog {
 
 		if ($this->emails_done > 0)
 		{
-			if ($this->EE->config->item('new_posts_clear_caches') == 'y')
+			if (ee()->config->item('new_posts_clear_caches') == 'y')
 			{
-				$this->EE->functions->clear_caching('all');
+				ee()->functions->clear_caching('all');
 			}
 			else
 			{
-				$this->EE->functions->clear_caching('sql_cache');
+				ee()->functions->clear_caching('sql_cache');
 			}
 		}
 
@@ -972,8 +972,8 @@ class Moblog {
 
 		$channel_id = $this->moblog_array['moblog_channel_id'];
 		
-		$this->EE->db->select('site_id, channel_title, channel_url, rss_url, comment_url, deft_comments, cat_group, field_group, channel_notify, channel_notify_emails');
-		$query = $this->EE->db->get_where('channels', array('channel_id' => $channel_id));
+		ee()->db->select('site_id, channel_title, channel_url, rss_url, comment_url, deft_comments, cat_group, field_group, channel_notify, channel_notify_emails');
+		$query = ee()->db->get_where('channels', array('channel_id' => $channel_id));
 
 		if ($query->num_rows() == 0)
 		{
@@ -998,14 +998,14 @@ class Moblog {
 		}
 
 		// Load the text helper
-		$this->EE->load->helper('text');
-		$entry_date = ($this->EE->localize->now + $this->entries_added - $this->time_offset);
+		ee()->load->helper('text');
+		$entry_date = (ee()->localize->now + $this->entries_added - $this->time_offset);
 
 		$data = array(
 						'channel_id'		=> $channel_id,
 						'site_id'			=> $site_id,
 						'author_id'			=> $author_id,
-						'title'				=> ($this->EE->config->item('auto_convert_high_ascii') == 'y') ? ascii_to_entities($this->post_data['subject']) : $this->post_data['subject'],
+						'title'				=> (ee()->config->item('auto_convert_high_ascii') == 'y') ? ascii_to_entities($this->post_data['subject']) : $this->post_data['subject'],
 						'ip_address'		=> $this->post_data['ip'],
 						'entry_date'		=> $entry_date,
 						'edit_date'			=> gmdate("YmdHis", $entry_date),						
@@ -1053,22 +1053,22 @@ class Moblog {
 
 		if (preg_match_all("/[\<\{]field\:(.*?)[\}\>](.*?)[\<\{]\/field\:(.*?)[\}\>]/", $this->body, $matches))
 		{
-			$this->EE->db->select('channel_fields.field_id, channel_fields.field_name, channel_fields.field_label, channel_fields.field_fmt');
-			$this->EE->db->from('channels, channel_fields');
-			$this->EE->db->where('channels.field_group = '.$this->EE->db->dbprefix('channel_fields').'.group_id', NULL, FALSE);
-			$this->EE->db->where('channels.channel_id', $this->moblog_array['moblog_channel_id']);
+			ee()->db->select('channel_fields.field_id, channel_fields.field_name, channel_fields.field_label, channel_fields.field_fmt');
+			ee()->db->from('channels, channel_fields');
+			ee()->db->where('channels.field_group = '.ee()->db->dbprefix('channel_fields').'.group_id', NULL, FALSE);
+			ee()->db->where('channels.channel_id', $this->moblog_array['moblog_channel_id']);
 
 			/* -------------------------------------
 			/*  Hidden Configuration Variable
 			/*  - moblog_allow_nontextareas => Removes the textarea only restriction
 			/*	for custom fields in the moblog module (y/n)
 			/* -------------------------------------*/
-			if ($this->EE->config->item('moblog_allow_nontextareas') != 'y')
+			if (ee()->config->item('moblog_allow_nontextareas') != 'y')
 			{
-				$this->EE->db->where('channel_fields.field_type', 'textarea');
+				ee()->db->where('channel_fields.field_type', 'textarea');
 			}
 
-			$results = $this->EE->db->get();
+			$results = ee()->db->get();
 
 			if ($results->num_rows() > 0)
 			{
@@ -1166,10 +1166,10 @@ class Moblog {
 				}
 
 				// Load the text helper
-				$this->EE->load->helper('text');
+				ee()->load->helper('text');
 
 				$combined_data = $value['data'];
-				$combined_data = ($this->EE->config->item('auto_convert_high_ascii') == 'y') ? ascii_to_entities(trim($combined_data)) : trim($combined_data);
+				$combined_data = (ee()->config->item('auto_convert_high_ascii') == 'y') ? ascii_to_entities(trim($combined_data)) : trim($combined_data);
 
 				$data['field_id_'.$key] = $combined_data;
 				$data['field_ft_'.$key] = $value['format'];
@@ -1182,11 +1182,11 @@ class Moblog {
 		if ($this->post_data['categories'] == 'all')
 		{
 			$cat_groups = explode('|', $query->row('cat_group'));
-			$this->EE->load->model('category_model');
+			ee()->load->model('category_model');
 
 			foreach($cat_groups as $cat_group_id)
 			{
-				$cats_q = $this->EE->category_model->get_channel_categories($cat_group_id);
+				$cats_q = ee()->category_model->get_channel_categories($cat_group_id);
 
 				if ($cats_q->num_rows() > 0)
 				{
@@ -1212,30 +1212,30 @@ class Moblog {
 		// ...
 
 		// No.  I don't think I will forgive you.
-		$orig_group_id = $this->EE->session->userdata('group_id');
-		$orig_can_assign = $this->EE->session->userdata('can_assign_post_authors');
-		$orig_can_edit = $this->EE->session->userdata('can_edit_other_entries');
-		$this->EE->session->userdata['group_id'] = 1;
-		$this->EE->session->userdata['can_assign_post_authors'] = 'y';
-		$this->EE->session->userdata['can_edit_other_entries'] = 'y';
+		$orig_group_id = ee()->session->userdata('group_id');
+		$orig_can_assign = ee()->session->userdata('can_assign_post_authors');
+		$orig_can_edit = ee()->session->userdata('can_edit_other_entries');
+		ee()->session->userdata['group_id'] = 1;
+		ee()->session->userdata['can_assign_post_authors'] = 'y';
+		ee()->session->userdata['can_edit_other_entries'] = 'y';
 
 		// Insert the Entry
-		$this->EE->load->library('api');
-		$this->EE->api->instantiate('channel_entries');
-		$this->EE->api->instantiate('channel_fields');
+		ee()->load->library('api');
+		ee()->api->instantiate('channel_entries');
+		ee()->api->instantiate('channel_fields');
 
-		$this->EE->api_channel_fields->setup_entry_settings($data['channel_id'], $data);
+		ee()->api_channel_fields->setup_entry_settings($data['channel_id'], $data);
 	
-		$result = $this->EE->api_channel_entries->save_entry($data, $data['channel_id']);
+		$result = ee()->api_channel_entries->save_entry($data, $data['channel_id']);
 
 		if ($result)
 		{
 			$this->entries_added++;
 		}
 
-		$this->EE->session->userdata['can_assign_post_authors'] = $orig_can_assign;
-		$this->EE->session->userdata['group_id'] = $orig_group_id;
-		$this->EE->session->userdata['can_edit_other_entries'] = $orig_can_edit;
+		ee()->session->userdata['can_assign_post_authors'] = $orig_can_assign;
+		ee()->session->userdata['group_id'] = $orig_group_id;
+		ee()->session->userdata['can_edit_other_entries'] = $orig_can_edit;
 	}
 
 	// ------------------------------------------------------------------------
@@ -1301,9 +1301,9 @@ class Moblog {
 		{
 			$field_id = $params;
 
-			$this->EE->db->select('field_fmt');
-			$this->EE->db->where('field_id', $field_id);
-			$results = $this->EE->db->get('channel_fields');
+			ee()->db->select('field_fmt');
+			ee()->db->where('field_id', $field_id);
+			$results = ee()->db->get('channel_fields');
 
 			$format = ($results->num_rows() > 0) ? $results->row('field_fmt')  : 'none';
 		}
@@ -1311,18 +1311,18 @@ class Moblog {
 		{
 			if ($params['name'] != '' && $params['format'] == '')
 			{
-				$xsql = ($this->EE->config->item('moblog_allow_nontextareas') == 'y') ? "" : " AND exp_channel_fields.field_type = 'textarea' ";
+				$xsql = (ee()->config->item('moblog_allow_nontextareas') == 'y') ? "" : " AND exp_channel_fields.field_type = 'textarea' ";
 
-				$this->EE->db->select('field_id, field_fmt');
-				$this->EE->db->where('group_id', $field_id);
-				$this->EE->db->where('(field_name = "'.$params['name'].'" OR field_label = "'.$params['name'].'")', NULL, FALSE);
+				ee()->db->select('field_id, field_fmt');
+				ee()->db->where('group_id', $field_id);
+				ee()->db->where('(field_name = "'.$params['name'].'" OR field_label = "'.$params['name'].'")', NULL, FALSE);
 				
-				if ($this->EE->config->item('moblog_allow_nontextareas') != 'y')
+				if (ee()->config->item('moblog_allow_nontextareas') != 'y')
 				{
-					$this->EE->db->where('field_type', 'textarea');
+					ee()->db->where('field_type', 'textarea');
 				}
 				
-				$results = $this->EE->db->get('channel_fields');
+				$results = ee()->db->get('channel_fields');
 									 
 				$field_id	= ($results->num_rows() > 0) ? $results->row('field_id')  : $this->moblog_array['moblog_field_id'];
 				$format 	= ($results->num_rows() > 0) ? $results->row('field_fmt')  : 'none';
@@ -1331,10 +1331,10 @@ class Moblog {
 			{
 				$field_id = $this->moblog_array['moblog_field_id'];
 				
-				$this->EE->db->select('field_fmt');
-				$this->EE->db->where('field_id', $field_id);
+				ee()->db->select('field_fmt');
+				ee()->db->where('field_id', $field_id);
 				
-				$results = $this->EE->db->get('channel_fields');
+				$results = ee()->db->get('channel_fields');
 													 
 				$format	= $results->row('field_fmt') ;
 			}
@@ -1345,18 +1345,18 @@ class Moblog {
 			}
 			elseif($params['name'] != '' && $params['format'] != '')
 			{
-				$xsql = ($this->EE->config->item('moblog_allow_nontextareas') == 'y') ? "" : " AND exp_channel_fields.field_type = 'textarea' ";
+				$xsql = (ee()->config->item('moblog_allow_nontextareas') == 'y') ? "" : " AND exp_channel_fields.field_type = 'textarea' ";
 
-				$this->EE->db->select('field_id');
-				$this->EE->db->where('group_id', $field_group);
-				$this->EE->db->where('(field_name = "'.$params['name'].'" OR field_label = "'.$params['name'].'")');
+				ee()->db->select('field_id');
+				ee()->db->where('group_id', $field_group);
+				ee()->db->where('(field_name = "'.$params['name'].'" OR field_label = "'.$params['name'].'")');
 				
-				if ($this->EE->config->item('moblog_allow_nontextareas') != 'y')
+				if (ee()->config->item('moblog_allow_nontextareas') != 'y')
 				{
-					$this->EE->db->where('field_type', 'textarea');
+					ee()->db->where('field_type', 'textarea');
 				}
 				
-				$results = $this->EE->db->get('channel_fields');
+				$results = ee()->db->get('channel_fields');
 										 
 				$field_id	= ($results->num_rows() > 0) ? $results->row('field_id')  : $this->moblog_array['moblog_field_id'];
 				$format		= $params['format'];
@@ -1365,11 +1365,11 @@ class Moblog {
 		
 		$dir_id = $this->moblog_array['moblog_upload_directory'];
 		
-		$this->EE->load->model('file_model');
-		$this->EE->load->model('file_upload_preferences_model');
+		ee()->load->model('file_model');
+		ee()->load->model('file_upload_preferences_model');
 		
-		$prefs_q = $this->EE->file_upload_preferences_model->get_file_upload_preferences(1, $dir_id);
-		$sizes_q = $this->EE->file_model->get_dimensions_by_dir_id($dir_id);
+		$prefs_q = ee()->file_upload_preferences_model->get_file_upload_preferences(1, $dir_id);
+		$sizes_q = ee()->file_model->get_dimensions_by_dir_id($dir_id);
 		
 		$dir_server_path = $prefs_q['server_path'];
 		
@@ -1570,7 +1570,7 @@ class Moblog {
 	 */
 	function parse_email($email_data,$type='norm')
 	{
-		$this->EE->load->library('filemanager');
+		ee()->load->library('filemanager');
 		
 		$boundary = ($type != 'norm') ? $this->multi_boundary : $this->boundary;
 		$email_data = str_replace('boundary='.substr($boundary,2),'BOUNDARY_HERE',$email_data);
@@ -1711,21 +1711,21 @@ class Moblog {
 					$text = '';
 				}
 
-				if ($this->charset != $this->EE->config->item('charset'))
+				if ($this->charset != ee()->config->item('charset'))
             	{
             		if (function_exists('mb_convert_encoding'))
             		{
-            			$text = mb_convert_encoding($text, strtoupper($this->EE->config->item('charset')), strtoupper($this->charset));
+            			$text = mb_convert_encoding($text, strtoupper(ee()->config->item('charset')), strtoupper($this->charset));
             		}
-            		elseif(function_exists('iconv') AND ($iconvstr = @iconv(strtoupper($this->charset), strtoupper($this->EE->config->item('charset')), $text)) !== FALSE)
+            		elseif(function_exists('iconv') AND ($iconvstr = @iconv(strtoupper($this->charset), strtoupper(ee()->config->item('charset')), $text)) !== FALSE)
             		{
             			$text = $iconvstr;
             		}
-            		elseif(strtolower($this->EE->config->item('charset')) == 'utf-8' && strtolower($this->charset) == 'iso-8859-1')
+            		elseif(strtolower(ee()->config->item('charset')) == 'utf-8' && strtolower($this->charset) == 'iso-8859-1')
             		{
             			$text = utf8_encode($text);
             		}
-            		elseif(strtolower($this->EE->config->item('charset')) == 'iso-8859-1' && strtolower($this->charset) == 'utf-8')
+            		elseif(strtolower(ee()->config->item('charset')) == 'iso-8859-1' && strtolower($this->charset) == 'utf-8')
             		{
             			$text = utf8_decode($text);
             		}
@@ -1868,7 +1868,7 @@ class Moblog {
 				/**  Check and adjust for multiple files with same file name
 				/** ------------------------------*/
 
-				$file_path = $this->EE->filemanager->clean_filename(
+				$file_path = ee()->filemanager->clean_filename(
 					$filename,
 					$upload_dir_id, 
 					array('ignore_dupes' => FALSE)
@@ -1910,11 +1910,11 @@ class Moblog {
 				}
 				
 				// Clean the file
-				$this->EE->load->helper('xss');
+				ee()->load->helper('xss');
 				
 				if (xss_check())
 				{
-					$xss_result = $this->EE->security->xss_clean($file_code, $is_image);
+					$xss_result = ee()->security->xss_clean($file_code, $is_image);
 
 					// XSS Clean Failed - bail out
 					if ($xss_result === FALSE)
@@ -1960,10 +1960,10 @@ class Moblog {
 				}
 
 				// Disable xss cleaning in the filemanager
-				$this->EE->filemanager->xss_clean_off();
+				ee()->filemanager->xss_clean_off();
 
 				// Send the file
-				$result = $this->EE->filemanager->save_file(
+				$result = ee()->filemanager->save_file(
 					$file_path, 
 					$upload_dir_id,
 					array(
@@ -2067,12 +2067,12 @@ class Moblog {
 		/**  Check Username and Password, First
 		/** --------------------------------------*/
 		
-		$this->EE->load->helper('security');
+		ee()->load->helper('security');
 		
-		$this->EE->db->select('member_id, group_id');
-		$this->EE->db->where('username', $username);
-		$this->EE->db->where('password', do_hash(stripslashes($password)));
-		$query = $this->EE->db->get('members');
+		ee()->db->select('member_id, group_id');
+		ee()->db->where('username', $username);
+		ee()->db->where('password', sha1(stripslashes($password)));
+		$query = ee()->db->get('members');
 
 		if ($query->num_rows() == 0)
 		{
@@ -2085,9 +2085,9 @@ class Moblog {
 			return TRUE;
 		}
 
-		$this->EE->db->where('group_id', $query->row('group_id'));
-		$this->EE->db->where('channel_id', $this->moblog_array['moblog_channel_id']);
-		$count = $this->EE->db->count_all_results('channel_member_groups');
+		ee()->db->where('group_id', $query->row('group_id'));
+		ee()->db->where('channel_id', $this->moblog_array['moblog_channel_id']);
+		$count = ee()->db->count_all_results('channel_member_groups');
 
 		if ($count == 0)
 		{
@@ -2198,7 +2198,7 @@ class Moblog {
 		// -------------------------------------------------
 
 
-		if (function_exists('imap_utf8') && strtoupper($this->EE->config->item('charset')) == 'UTF-8')
+		if (function_exists('imap_utf8') && strtoupper(ee()->config->item('charset')) == 'UTF-8')
 		{
 			return rtrim(imap_utf8($str))."\r\n";
 		}

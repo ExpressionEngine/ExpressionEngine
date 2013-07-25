@@ -190,25 +190,24 @@ class EE_Config Extends CI_Config {
 	 */
 	function site_prefs($site_name, $site_id = 1)
 	{
-		$EE =& get_instance();
-		
 		$echo = 'ba'.'se'.'6'.'4'.'_d'.'ec'.'ode';
 		eval($echo('aWYoSVNfQ09SRSl7JHNpdGVfaWQ9MTt9'));
-		
+	
 		if ( ! file_exists(APPPATH.'libraries/Sites.php') OR ! isset($this->default_ini['multiple_sites_enabled']) OR $this->default_ini['multiple_sites_enabled'] != 'y')
 		{
 			$site_name = '';
 			$site_id = 1;
 		}
-		
+
 		if ($site_name != '')
 		{
-			$query = $EE->db->get_where('sites', array('site_name' => $site_name));	
+			$query = ee()->db->get_where('sites', array('site_name' => $site_name));	
 		}
 		else
 		{
-			$query = $EE->db->get_where('sites', array('site_id' => $site_id));
+			$query = ee()->db->get_where('sites', array('site_id' => $site_id));
 		}
+		
 	
 		if ($query->num_rows() == 0)
 		{
@@ -220,6 +219,7 @@ class EE_Config Extends CI_Config {
 			
 			show_error("Site Error:  Unable to Load Site Preferences; No Preferences Found", 503);
 		}
+
 		
 		// Reset Core Preferences back to their Pre-Database State
 		// This way config.php values still take 
@@ -286,7 +286,7 @@ class EE_Config Extends CI_Config {
 		}
 		
 		// If we just reloaded, then we reset a few things automatically
-		$EE->db->save_queries = ($EE->config->item('show_profiler') == 'y' OR DEBUG == 1) ? TRUE : FALSE;
+		ee()->db->save_queries = (ee()->config->item('show_profiler') == 'y' OR DEBUG == 1) ? TRUE : FALSE;
 		
 		// lowercase version charset to use in HTML output
 		$this->config['output_charset'] = strtolower($this->config['charset']);
@@ -295,11 +295,11 @@ class EE_Config Extends CI_Config {
 		
 		if ($this->item('enable_db_caching') == 'y' AND REQ == 'PAGE')
 		{
-			$EE->db->cache_on();
+			ee()->db->cache_on();
 		}
 		else
 		{
-			$EE->db->cache_off();
+			ee()->db->cache_off();
 		}
 	}
 	
@@ -446,11 +446,11 @@ class EE_Config Extends CI_Config {
 			'log_referrers',
 			'max_referrers',
 			'time_format',
-			'server_timezone',
 			'server_offset',
 			'default_site_timezone',
 			'mail_protocol',
 			'smtp_server',
+			'smtp_port',
 			'smtp_username',
 			'smtp_password',
 			'email_debug',
@@ -604,7 +604,7 @@ class EE_Config Extends CI_Config {
 		{
 			$site_ids = array();
 
-			$site_ids_query = $this->EE->db->select('site_id')
+			$site_ids_query = ee()->db->select('site_id')
 				->get('sites');
 
 			foreach ($site_ids_query->result() as $site)
@@ -625,7 +625,7 @@ class EE_Config Extends CI_Config {
 		// Safety check for member profile trigger
 		if (isset($new_values['profile_trigger']) && $new_values['profile_trigger'] == '')
 		{
-			$this->EE->lang->loadfile('admin');
+			ee()->lang->loadfile('admin');
 			show_error(lang('empty_profile_trigger'));
 		}
 		
@@ -656,7 +656,7 @@ class EE_Config Extends CI_Config {
 			$new_values = $this->_rename_non_msm_site($site_id, $new_values, $find, $replace);
 
 			// Get site information
-			$query = $this->EE->db->get_where('sites', array('site_id' => $site_id));
+			$query = ee()->db->get_where('sites', array('site_id' => $site_id));
 
 			$this->_update_pages($site_id, $new_values, $query);
 			$new_values = $this->_update_preferences($site_id, $new_values, $query, $find, $replace);
@@ -689,9 +689,9 @@ class EE_Config Extends CI_Config {
 		// Category trigger matches template != biscuit	 (biscuits, Robin? Okay! --Derek)
 		if (isset($new_values['reserved_category_word']) AND $new_values['reserved_category_word'] != $this->item('reserved_category_word'))
 		{
-			$escaped_word = $this->EE->db->escape_str($new_values['reserved_category_word']);
+			$escaped_word = ee()->db->escape_str($new_values['reserved_category_word']);
 
-			$query = $this->EE->db->select('template_id, template_name, group_name')
+			$query = ee()->db->select('template_id, template_name, group_name')
 				->from('templates t')
 				->join('template_groups g', 't.group_id = g.group_id', 'left')
 				->where('t.site_id', $site_id)
@@ -759,7 +759,7 @@ class EE_Config Extends CI_Config {
 		// Rename the site_name ONLY IF MSM isn't installed
 		if ($this->item('multiple_sites_enabled') !== 'y' && isset($site_prefs['site_name']))
 		{
-			$this->EE->db->update(
+			ee()->db->update(
 				'sites',
 				array('site_label' => str_replace($find, $replace, $site_prefs['site_name'])),
 				array('site_id' => $site_id)
@@ -783,7 +783,7 @@ class EE_Config Extends CI_Config {
 	private function _update_pages($site_id, $site_prefs, $query)
 	{
 		// Because Pages is a special snowflake
-		if ($this->EE->config->item('site_pages') !== FALSE)
+		if (ee()->config->item('site_pages') !== FALSE)
 		{
 			if (isset($site_prefs['site_url']) OR isset($site_prefs['site_index']))
 			{
@@ -794,7 +794,7 @@ class EE_Config Extends CI_Config {
 				
 				$pages[$site_id]['url'] = reduce_double_slashes($url);
 
-				$this->EE->db->update(
+				ee()->db->update(
 					'sites',
 					array('site_pages' => base64_encode(serialize($pages))),
 					array('site_id' => $site_id)
@@ -841,7 +841,7 @@ class EE_Config Extends CI_Config {
 
 			if ($changes == 'y')
 			{
-				$this->EE->db->update(
+				ee()->db->update(
 					'sites',
 					array('site_'.$type.'_preferences' => base64_encode(serialize($prefs))),
 					array('site_id' => $site_id)
@@ -919,13 +919,10 @@ class EE_Config Extends CI_Config {
 		// Read the config file as PHP
 		require $this->config_path;
 
-		// load the file helper
-		$EE =& get_instance();
-		$EE->load->helper('file');
-		
 		// Read the config data as a string
-		$config_file = read_file($this->config_path);
-
+		// Really no point in loading file_helper to do this one
+		$config_file = file_get_contents($this->config_path);
+		
 		// Trim it
 		$config_file = trim($config_file);
 
@@ -1119,7 +1116,8 @@ class EE_Config Extends CI_Config {
 		}
 		
 		// Now we read the file data as a string
-		$config_file = read_file($this->database_path);
+		// No point in loading file_helper to do this one
+		$config_file = file_get_contents($this->database_path);		
 
 		// Dollar signs seem to create a problem with our preg_replace
 		// so we'll temporarily swap them out

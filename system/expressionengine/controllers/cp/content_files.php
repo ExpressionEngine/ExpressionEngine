@@ -57,7 +57,7 @@ class Content_files extends CP_Controller {
 		$this->cp->add_to_head($this->view->head_link('css/file_browser.css'));
 
 		// Get upload dirs
-		$upload_dirs = $this->filemanager->fetch_upload_dirs();
+		$upload_dirs = $this->filemanager->fetch_upload_dirs(array('ignore_site_id' => FALSE));
 
 		foreach ($upload_dirs as $row)
 		{
@@ -216,7 +216,7 @@ class Content_files extends CP_Controller {
 		// fileuploader depends on filebrowser's methods
 		$this->cp->add_js_script(array(
 			'plugin'	=> array(
-				'overlay', 'overlay.apple', 'ee_filebrowser', 'ee_fileuploader'
+				'overlay', 'ee_filebrowser', 'ee_fileuploader'
 			),
 			'file'		=> 'cp/files/file_manager_home',
 			'ui' 		=> array('datepicker', 'dialog')
@@ -371,12 +371,27 @@ class Content_files extends CP_Controller {
 				if (strncmp($file['mime_type'], 'image', 5) === 0)
 				{
 					$is_image = $this->filemanager->is_editable_image($file_path, $file['mime_type']);
-					
-					$r['file_name'] = '<a class="less_important_link overlay" id="img_'.str_replace(array(".", ' '), '', $file['file_name']).'" href="'.$file_location.'" title="'.$file['file_name'].'" rel="#overlay">'.$file['file_name'].'</a>';
+
+					$r['file_name'] = anchor(
+						$file_location,
+						$file['file_name'],
+						array(
+							'class'	=> 'less_important_link overlay',
+							'id'	=> 'img_'.str_replace(array(".", ' '), '', $file['file_name']),
+							'rel'	=> '#overlay'
+						)
+					);
 				}
 				else
 				{
-					$r['file_name'] = $file['file_name'];
+					$r['file_name'] = anchor(
+						$file_location,
+						$file['file_name'],
+						array(
+							'class'		=> 'less_important_link',
+							'target'	=> '_blank'
+						)
+					);
 				}
 
 				$r['mime_type'] = $file['mime_type'];

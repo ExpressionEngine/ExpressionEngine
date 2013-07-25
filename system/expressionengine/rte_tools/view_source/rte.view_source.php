@@ -54,7 +54,7 @@ class View_source_rte {
 	 */
 	function globals()
 	{
-		$this->EE->lang->loadfile('rte');
+		ee()->lang->loadfile('rte');
 		return array(
 			'rte.view_source'	=> array(
 				'code'		=> lang('view_code'),

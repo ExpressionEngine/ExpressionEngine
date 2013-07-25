@@ -64,24 +64,24 @@ class EE_Functions {
 			return $this->cached_index[$add_slash.$sess_id.$this->template_type];
 		}
 				
-		$url = $this->EE->config->slash_item('site_url');
+		$url = ee()->config->slash_item('site_url');
 		
-		$url .= $this->EE->config->item('site_index');
+		$url .= ee()->config->item('site_index');
 		
-		if ($this->EE->config->item('force_query_string') == 'y')
+		if (ee()->config->item('force_query_string') == 'y')
 		{
 			$url .= '?';
 		}
 		
-		if ($this->EE->config->item('user_session_type') != 'c' && is_object($this->EE->session) && REQ != 'CP' && $sess_id == TRUE && $this->template_type == 'webpage')
+		if (ee()->config->item('user_session_type') != 'c' && is_object(ee()->session) && REQ != 'CP' && $sess_id == TRUE && $this->template_type == 'webpage')
 		{
-			switch ($this->EE->config->item('user_session_type'))
+			switch (ee()->config->item('user_session_type'))
 			{
 				case 's'	:
-					$url .= "/S=".$this->EE->session->userdata('session_id', 0)."/";
+					$url .= "/S=".ee()->session->userdata('session_id', 0)."/";
 					break;
 				case 'cs'	:
-					$url .= "/S=".$this->EE->session->userdata('fingerprint', 0)."/";
+					$url .= "/S=".ee()->session->userdata('fingerprint', 0)."/";
 					break;
 			}
 		}
@@ -138,14 +138,14 @@ class EE_Functions {
 		
 		if (strtolower($segment) == 'logout')
 		{
-			$qs = ($this->EE->config->item('force_query_string') == 'y') ? '' : '?';		
+			$qs = (ee()->config->item('force_query_string') == 'y') ? '' : '?';		
 			return $this->fetch_site_index(0, 0).$qs.'ACT='.$this->fetch_action_id('Member', 'member_logout');
 		}	
 		// END Specials
  
 		$base = $this->fetch_site_index(0, $sess_id).'/'.trim_slashes($segment);
 		
-		$out = $this->remove_double_slashes($base);			
+		$out = reduce_double_slashes($base);			
 						
 		$this->cached_url[$full_segment] = $out;
 						
@@ -162,9 +162,9 @@ class EE_Functions {
 	 */
 	function create_page_url($base_url, $segment, $trailing_slash = FALSE)
 	{
-		if ($this->EE->config->item('force_query_string') == 'y')
+		if (ee()->config->item('force_query_string') == 'y')
 		{
-			if (strpos($base_url, $this->EE->config->item('index_page') . '/') !== FALSE)
+			if (strpos($base_url, ee()->config->item('index_page') . '/') !== FALSE)
 			{
 				$base_url = rtrim($base_url, '/');
 			}
@@ -179,7 +179,7 @@ class EE_Functions {
            $base .= '/';
        }
        
-       $out = $this->remove_double_slashes($base);
+       $out = reduce_double_slashes($base);
                
        return $out;          
 	}
@@ -195,7 +195,7 @@ class EE_Functions {
 	 */
 	function fetch_current_uri()
 	{ 
-		return rtrim($this->remove_double_slashes($this->fetch_site_index(1).$this->EE->uri->uri_string), '/');
+		return rtrim(reduce_double_slashes($this->fetch_site_index(1).ee()->uri->uri_string), '/');
 	}
 
 	// --------------------------------------------------------------------
@@ -217,7 +217,7 @@ class EE_Functions {
 			$str = substr($str, 0, -6);
 		}
 		
-		if (strpos($str, '?') === FALSE && $this->EE->config->item('force_query_string') == 'y')
+		if (strpos($str, '?') === FALSE && ee()->config->item('force_query_string') == 'y')
 		{
 			if (stristr($str, '.php'))
 			{
@@ -257,6 +257,7 @@ class EE_Functions {
 				$str = preg_replace("/\{embed=(.+?)\}/", "&#123;embed=\\1&#125;", $str);
 				$str = preg_replace("/\{path:(.+?)\}/", "&#123;path:\\1&#125;", $str);
 				$str = preg_replace("/\{redirect=(.+?)\}/", "&#123;redirect=\\1&#125;", $str);
+				$str = str_replace(array('{if', '{/if'), array('&#123;if', '&#123;/if'), $str);
 			}
 		}
 		
@@ -279,8 +280,8 @@ class EE_Functions {
 	 */
 	function remove_double_slashes($str)
 	{
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.6');
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.6', 'reduce_double_slashes()');
 
 		return reduce_double_slashes($str);
 	}
@@ -377,25 +378,24 @@ class EE_Functions {
 
 		$location = str_replace('&amp;', '&', $this->insert_action_ids($location));
 
-		if (count($this->EE->session->flashdata))
+		if (count(ee()->session->flashdata))
 		{			
 			// Ajax requests don't redirect - serve the flashdata
 			
-			if ($this->EE->input->is_ajax_request())
+			if (ee()->input->is_ajax_request())
 			{
 				// We want the data that would be available for the next request
-				$this->EE->session->_age_flashdata();
+				ee()->session->_age_flashdata();
 
-				$this->EE->load->library('javascript');
+				ee()->load->library('javascript');
 
-					die($this->EE->javascript->generate_json(
-								$this->EE->session->flashdata));
+					die(json_encode(ee()->session->flashdata));
 			}
 		}
 
 		if ($method === FALSE)
 		{
-			$method = $this->EE->config->item('redirect_method');
+			$method = ee()->config->item('redirect_method');
 		}	
 
 		switch($method)
@@ -446,7 +446,7 @@ class EE_Functions {
 	function form_declaration($data)
 	{
 		// Load the form helper
-		$this->EE->load->helper('form');
+		ee()->load->helper('form');
 		
 		$deft = array(
 						'hidden_fields'	=> array(),
@@ -469,14 +469,14 @@ class EE_Functions {
 		
 		if (is_array($data['hidden_fields']) && ! isset($data['hidden_fields']['site_id']))
 		{
-			$data['hidden_fields']['site_id'] = $this->EE->config->item('site_id');
+			$data['hidden_fields']['site_id'] = ee()->config->item('site_id');
 		}
 
 
 		// Add the CSRF Protection Hash
-		if ($this->EE->config->item('csrf_protection') == TRUE )
+		if (ee()->config->item('csrf_protection') == TRUE )
 		{
-			$data['hidden_fields'][$this->EE->security->get_csrf_token_name()] = $this->EE->security->get_csrf_hash();
+			$data['hidden_fields'][ee()->security->get_csrf_token_name()] = ee()->security->get_csrf_hash();
 		}
 
 		// -------------------------------------------
@@ -484,9 +484,9 @@ class EE_Functions {
 		//  - Modify the $data parameters before they are processed
 		//  - Added EE 1.4.0
 		//
-		if ($this->EE->extensions->active_hook('form_declaration_modify_data') === TRUE)
+		if (ee()->extensions->active_hook('form_declaration_modify_data') === TRUE)
 		{
-			$data = $this->EE->extensions->call('form_declaration_modify_data', $data);
+			$data = ee()->extensions->call('form_declaration_modify_data', $data);
 		}
 		//
 		// -------------------------------------------
@@ -496,10 +496,10 @@ class EE_Functions {
 		//  - Take control of the form_declaration function
 		//  - Added EE 1.4.0
 		//
-		if ($this->EE->extensions->active_hook('form_declaration_return') === TRUE)
+		if (ee()->extensions->active_hook('form_declaration_return') === TRUE)
 		{
-			$form = $this->EE->extensions->call('form_declaration_return', $data);
-			if ($this->EE->extensions->end_script === TRUE) return $form;
+			$form = ee()->extensions->call('form_declaration_return', $data);
+			if (ee()->extensions->end_script === TRUE) return $form;
 		}
 		//
 		// -------------------------------------------		
@@ -533,7 +533,7 @@ class EE_Functions {
 		
 		if ($data['secure'] == TRUE)
 		{
-			if ($this->EE->config->item('secure_forms') == 'y')
+			if (ee()->config->item('secure_forms') == 'y')
 			{
 				if ( ! isset($data['hidden_fields']['XID']))
 				{
@@ -582,11 +582,11 @@ class EE_Functions {
 
 		if ($offset != '')
 		{
-			if (isset($this->EE->session->tracker[$offset]))
+			if (isset(ee()->session->tracker[$offset]))
 			{
-				if ($this->EE->session->tracker[$offset] != 'index')
+				if (ee()->session->tracker[$offset] != 'index')
 				{
-					return $this->remove_double_slashes($this->fetch_site_index().'/'.$this->EE->session->tracker[$offset]);
+					return reduce_double_slashes($this->fetch_site_index().'/'.ee()->session->tracker[$offset]);
 				}
 			}
 		}
@@ -597,11 +597,11 @@ class EE_Functions {
 			{
 				$return = str_replace("-", "", $_POST['RET']);
 				
-				if (isset($this->EE->session->tracker[$return]))
+				if (isset(ee()->session->tracker[$return]))
 				{
-					if ($this->EE->session->tracker[$return] != 'index')
+					if (ee()->session->tracker[$return] != 'index')
 					{
-						$ret = $this->fetch_site_index().'/'.$this->EE->session->tracker[$return];
+						$ret = $this->fetch_site_index().'/'.ee()->session->tracker[$return];
 					}
 				}
 			}
@@ -627,28 +627,28 @@ class EE_Functions {
 			}
 		
 			// We need to slug in the session ID if the admin is running
-			// their site using sessions only.  Normally the $this->EE->functions->fetch_site_index()
+			// their site using sessions only.  Normally the ee()->functions->fetch_site_index()
 			// function adds the session ID automatically, except in cases when the 
 			// $_POST['RET'] variable is set. Since the login routine relies on the RET
 			// info to know where to redirect back to we need to sandwich in the session ID.
-			if ($this->EE->config->item('user_session_type') != 'c')
+			if (ee()->config->item('user_session_type') != 'c')
 			{
-				if ($this->EE->config->item('user_session_type') == 's')
+				if (ee()->config->item('user_session_type') == 's')
 				{
-					$id = $this->EE->session->userdata['session_id'];
+					$id = ee()->session->userdata['session_id'];
 				}
 				else
 				{
-					$id = $this->EE->session->userdata['fingerprint'];
+					$id = ee()->session->userdata['fingerprint'];
 				}
 				
 				if ($id != '' && ! stristr($ret, $id))
 				{
-					$url = $this->EE->config->slash_item('site_url');
+					$url = ee()->config->slash_item('site_url');
 					
-					$url .= $this->EE->config->item('site_index');
+					$url .= ee()->config->item('site_index');
 			
-					if ($this->EE->config->item('force_query_string') == 'y')
+					if (ee()->config->item('force_query_string') == 'y')
 					{
 						$url .= '?';
 					}		
@@ -660,7 +660,7 @@ class EE_Functions {
 			}			
 		} 
 		
-		return $this->remove_double_slashes($ret);
+		return reduce_double_slashes($ret);
 	}
 	
 	// --------------------------------------------------------------------
@@ -690,9 +690,9 @@ class EE_Functions {
 	 */
 	function encode_email($str)
 	{
-		if (isset($this->EE->session->cache['functions']['emails'][$str]))
+		if (isset(ee()->session->cache['functions']['emails'][$str]))
 		{
-			return preg_replace("/(eeEncEmail_)\w+/", '\\1'.$this->EE->functions->random('alpha', 10), $this->EE->session->cache['functions']['emails'][$str]);
+			return preg_replace("/(eeEncEmail_)\w+/", '\\1'.ee()->functions->random('alpha', 10), ee()->session->cache['functions']['emails'][$str]);
 		}
 	
 		$email = (is_array($str)) ? trim($str[1]) : trim($str);
@@ -706,12 +706,12 @@ class EE_Functions {
 			$email = trim(substr($email, 0, $p));
 		}
 	
-		$this->EE->load->library('typography');
-		$this->EE->typography->initialize();
+		ee()->load->library('typography');
+		ee()->typography->initialize();
 		
-		$encoded = $this->EE->typography->encode_email($email, $title, TRUE);
+		$encoded = ee()->typography->encode_email($email, $title, TRUE);
 		
-		$this->EE->session->cache['functions']['emails'][$str] = $encoded;
+		ee()->session->cache['functions']['emails'][$str] = $encoded;
 
 		return $encoded;
 	}
@@ -726,9 +726,9 @@ class EE_Functions {
 	 */
 	function clear_spam_hashes()
 	{	 
-		if ($this->EE->config->item('secure_forms') == 'y')
+		if (ee()->config->item('secure_forms') == 'y')
 		{
-			$this->EE->security->garbage_collect_xids();
+			ee()->security->garbage_collect_xids();
 		}	
 	}
 	
@@ -738,7 +738,7 @@ class EE_Functions {
 	 * Set Cookie
 	 *
 	 * @access	public
-	 * @deprecated 2.6
+	 * @deprecated 2.7
 	 * @param	string
 	 * @param	string
 	 * @param	string
@@ -747,10 +747,10 @@ class EE_Functions {
 	function set_cookie($name = '', $value = '', $expire = '')
 	{
 
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecate('2.6', 'EE_Input::set_cookie()');
+		ee()->load->library('logger');
+		ee()->logger->deprecate('2.7', 'EE_Input::set_cookie()');
 
-		return $this->EE->input->set_cookie($name, $value, $expire);
+		return ee()->input->set_cookie($name, $value, $expire);
 	}
 
 	// --------------------------------------------------------------------
@@ -846,7 +846,7 @@ class EE_Functions {
 	 */
 	function fetch_email_template($name)
 	{
-		$query = $this->EE->db->query("SELECT template_name, data_title, template_data, enable_template FROM exp_specialty_templates WHERE site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."' AND template_name = '".$this->EE->db->escape_str($name)."'");
+		$query = ee()->db->query("SELECT template_name, data_title, template_data, enable_template FROM exp_specialty_templates WHERE site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."' AND template_name = '".ee()->db->escape_str($name)."'");
 
 		// Unlikely that this is necessary but it's possible a bad template request could
 		// happen if a user hasn't run the update script.
@@ -860,19 +860,19 @@ class EE_Functions {
 			return array('title' => $query->row('data_title') , 'data' => $query->row('template_data') );
 		}
 		
-		if ($this->EE->session->userdata['language'] != '')
+		if (ee()->session->userdata['language'] != '')
 		{
-			$user_lang = $this->EE->session->userdata['language'];
+			$user_lang = ee()->session->userdata['language'];
 		}
 		else
 		{
-			if ($this->EE->input->cookie('language'))
+			if (ee()->input->cookie('language'))
 			{
-				$user_lang = $this->EE->input->cookie('language');
+				$user_lang = ee()->input->cookie('language');
 			}
-			elseif ($this->EE->config->item('deft_lang') != '')
+			elseif (ee()->config->item('deft_lang') != '')
 			{
-				$user_lang = $this->EE->config->item('deft_lang');
+				$user_lang = ee()->config->item('deft_lang');
 			}
 			else
 			{
@@ -880,7 +880,7 @@ class EE_Functions {
 			}
 		}
 
-		$user_lang = $this->EE->security->sanitize_filename($user_lang);
+		$user_lang = ee()->security->sanitize_filename($user_lang);
 
 		if ( function_exists($name))
 		{
@@ -1004,9 +1004,9 @@ class EE_Functions {
 	 * @param	string
 	 * @return	string
 	 */
-	function clear_caching($which, $sub_dir = '', $relationships=FALSE)
+	function clear_caching($which, $sub_dir = '')
 	{
-		$actions = array('page', 'tag', 'db', 'sql', 'relationships', 'all');
+		$actions = array('page', 'tag', 'db', 'sql', 'all');
 		
 		if ( ! in_array($which, $actions))
 		{
@@ -1025,7 +1025,7 @@ class EE_Functions {
 		/*  - disable_tag_caching => Disable tag caching? (y/n)
 		/* -------------------------------------*/
 
-		if ($which == 'tag' && $this->EE->config->item('disable_tag_caching') == 'y')
+		if ($which == 'tag' && ee()->config->item('disable_tag_caching') == 'y')
 		{
 			return;
 		}
@@ -1051,27 +1051,20 @@ class EE_Functions {
 		{
 			case 'page' : $this->delete_directory(APPPATH.'cache/page_cache'.$sub_dir);
 				break;
-			case 'db'	: $this->delete_directory(APPPATH.'cache/db_cache_'.$this->EE->config->item('site_id').$db_path);
+			case 'db'	: $this->delete_directory(APPPATH.'cache/db_cache_'.ee()->config->item('site_id').$db_path);
 				break;
 			case 'tag'  : $this->delete_directory(APPPATH.'cache/tag_cache'.$sub_dir);
 				break;
 			case 'sql'  : $this->delete_directory(APPPATH.'cache/sql_cache'.$sub_dir);
 				break;
-			case 'relationships' : $this->EE->db->query("UPDATE exp_relationships SET rel_data = '', reverse_rel_data = ''");
-				break;
 			case 'all'  : 
 						$this->delete_directory(APPPATH.'cache/page_cache'.$sub_dir);
-						$this->delete_directory(APPPATH.'cache/db_cache_'.$this->EE->config->item('site_id').$db_path);
+						$this->delete_directory(APPPATH.'cache/db_cache_'.ee()->config->item('site_id').$db_path);
 						$this->delete_directory(APPPATH.'cache/sql_cache'.$sub_dir);
 
-						if ($this->EE->config->item('disable_tag_caching') != 'y')
+						if (ee()->config->item('disable_tag_caching') != 'y')
 						{
 							$this->delete_directory(APPPATH.'cache/tag_cache'.$sub_dir);
-						}
-												  
-						if ($relationships === TRUE)
-						{
-							$this->EE->db->query("UPDATE exp_relationships SET rel_data = '', reverse_rel_data = ''");
 						}
 				break;
 		}			
@@ -1169,22 +1162,22 @@ class EE_Functions {
 	{
 		$allowed_channels = array();
 		
-		if (REQ == 'CP' AND isset($this->EE->session->userdata['assigned_channels']) && $all_sites === FALSE)
+		if (REQ == 'CP' AND isset(ee()->session->userdata['assigned_channels']) && $all_sites === FALSE)
 		{
-			$allowed_channels = array_keys($this->EE->session->userdata['assigned_channels']);
+			$allowed_channels = array_keys(ee()->session->userdata['assigned_channels']);
 		}
-		elseif ($this->EE->session->userdata['group_id'] == 1)
+		elseif (ee()->session->userdata['group_id'] == 1)
 		{
 			if ($all_sites === TRUE)
 			{
-				$this->EE->db->select('channel_id');
-				$query = $this->EE->db->get('channels');
+				ee()->db->select('channel_id');
+				$query = ee()->db->get('channels');
 			}
 			else
 			{
-				$this->EE->db->select('channel_id');
-				$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
-				$query = $this->EE->db->get('channels');
+				ee()->db->select('channel_id');
+				ee()->db->where('site_id', ee()->config->item('site_id'));
+				$query = ee()->db->get('channels');
 			}
 			
 			if ($query->num_rows() > 0)
@@ -1199,15 +1192,15 @@ class EE_Functions {
 		{
 			if ($all_sites === TRUE)
 			{
-				$result = $this->EE->db->query("SELECT exp_channel_member_groups.channel_id FROM exp_channel_member_groups 
-									  WHERE exp_channel_member_groups.group_id = '".$this->EE->db->escape_str($this->EE->session->userdata['group_id'])."'");
+				$result = ee()->db->query("SELECT exp_channel_member_groups.channel_id FROM exp_channel_member_groups 
+									  WHERE exp_channel_member_groups.group_id = '".ee()->db->escape_str(ee()->session->userdata['group_id'])."'");
 			}
 			else
 			{
-				$result = $this->EE->db->query("SELECT exp_channels.channel_id FROM exp_channels, exp_channel_member_groups 
+				$result = ee()->db->query("SELECT exp_channels.channel_id FROM exp_channels, exp_channel_member_groups 
 									  WHERE exp_channels.channel_id = exp_channel_member_groups.channel_id
-									  AND exp_channels.site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."'
-									  AND exp_channel_member_groups.group_id = '".$this->EE->db->escape_str($this->EE->session->userdata['group_id'])."'");
+									  AND exp_channels.site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."'
+									  AND exp_channel_member_groups.group_id = '".ee()->db->escape_str(ee()->session->userdata['group_id'])."'");
 			}
 			
 			if ($result->num_rows() > 0)
@@ -1234,39 +1227,39 @@ class EE_Functions {
 	 */  
 	function log_search_terms($terms = '', $type = 'site')
 	{
-		if ($terms == '' OR $this->EE->db->table_exists('exp_search_log') === FALSE)
+		if ($terms == '' OR ee()->db->table_exists('exp_search_log') === FALSE)
 			return;
 			
-		if ($this->EE->config->item('enable_search_log') == 'n')
+		if (ee()->config->item('enable_search_log') == 'n')
 			return;
 			
-		$this->EE->load->helper('xml');			
+		ee()->load->helper('xml');			
 			
 		$search_log = array(
-								'member_id'		=> $this->EE->session->userdata('member_id'),
-								'screen_name'	=> $this->EE->session->userdata('screen_name'),
-								'ip_address'	=> $this->EE->input->ip_address(),
-								'search_date'	=> $this->EE->localize->now,
+								'member_id'		=> ee()->session->userdata('member_id'),
+								'screen_name'	=> ee()->session->userdata('screen_name'),
+								'ip_address'	=> ee()->input->ip_address(),
+								'search_date'	=> ee()->localize->now,
 								'search_type'	=> $type,
-								'search_terms'	=> xml_convert($this->EE->functions->encode_ee_tags($this->EE->security->xss_clean($terms), TRUE)),
-								'site_id'		=> $this->EE->config->item('site_id')
+								'search_terms'	=> xml_convert(ee()->functions->encode_ee_tags(ee()->security->xss_clean($terms), TRUE)),
+								'site_id'		=> ee()->config->item('site_id')
 							);
 								
-		$this->EE->db->query($this->EE->db->insert_string('exp_search_log', $search_log));
+		ee()->db->query(ee()->db->insert_string('exp_search_log', $search_log));
 		
 		// Prune Database
 		srand(time());
 		if ((rand() % 100) < 5) 
 		{ 
-			$max = ( ! is_numeric($this->EE->config->item('max_logged_searches'))) ? 500 : $this->EE->config->item('max_logged_searches');
+			$max = ( ! is_numeric(ee()->config->item('max_logged_searches'))) ? 500 : ee()->config->item('max_logged_searches');
 		
-			$query = $this->EE->db->query("SELECT MAX(id) as search_id FROM exp_search_log WHERE site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."'");
+			$query = ee()->db->query("SELECT MAX(id) as search_id FROM exp_search_log WHERE site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."'");
 			
 			$row = $query->row_array();
 			
 			if (isset($row['search_id'] ) && $row['search_id'] > $max)
 			{
-				$this->EE->db->query("DELETE FROM exp_search_log WHERE site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."' AND id < ".($row['search_id'] -$max)."");
+				ee()->db->query("DELETE FROM exp_search_log WHERE site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."' AND id < ".($row['search_id'] -$max)."");
 			}
 		}
 	}
@@ -1315,11 +1308,11 @@ class EE_Functions {
 		{
 			foreach($value as $k => $v)
 			{
-				$sql .= " (class= '".$this->EE->db->escape_str($key)."' AND method = '".$this->EE->db->escape_str($v)."') OR";
+				$sql .= " (class= '".ee()->db->escape_str($key)."' AND method = '".ee()->db->escape_str($v)."') OR";
 			}
 		}
 		
-		$query = $this->EE->db->query(substr($sql, 0, -3));
+		$query = ee()->db->query(substr($sql, 0, -3));
 		
 		if ($query->num_rows() > 0)
 		{
@@ -1350,58 +1343,8 @@ class EE_Functions {
 	 */
 	function compile_relationship($data, $parent_entry = TRUE, $reverse = FALSE)
 	{
-		if ($data['type'] == 'channel' OR ($reverse === TRUE && $parent_entry === FALSE))
-		{
-			$sql = "SELECT t.entry_id, t.channel_id, t.forum_topic_id, t.author_id, t.ip_address, t.title, t.url_title, t.status, t.view_count_one, t.view_count_two, t.view_count_three, t.view_count_four, t.allow_comments, t.comment_expiration_date, t.sticky, t.entry_date, t.year, t.month, t.day, t.entry_date, t.edit_date, t.expiration_date, t.recent_comment_date, t.comment_total, t.site_id as entry_site_id,
-					w.channel_title, w.channel_name, w.channel_url, w.comment_url, w.comment_moderate, w.channel_html_formatting, w.channel_allow_img_urls, w.channel_auto_link_urls, 
-					m.username, m.email, m.url, m.screen_name, m.location, m.occupation, m.interests, m.aol_im, m.yahoo_im, m.msn_im, m.icq, m.signature, m.sig_img_filename, m.sig_img_width, m.sig_img_height, m.avatar_filename, m.avatar_width, m.avatar_height, m.photo_filename, m.photo_width, m.photo_height, m.group_id, m.member_id, m.bday_d, m.bday_m, m.bday_y, m.bio,
-					md.*,
-					wd.*
-			FROM exp_channel_titles		AS t
-			LEFT JOIN exp_channels 		AS w  ON t.channel_id = w.channel_id 
-			LEFT JOIN exp_channel_data	AS wd ON t.entry_id = wd.entry_id 
-			LEFT JOIN exp_members		AS m  ON m.member_id = t.author_id 
-			LEFT JOIN exp_member_data	AS md ON md.member_id = m.member_id 
-			WHERE t.entry_id = '".(($reverse === TRUE && $parent_entry === FALSE) ? $data['parent_id'] : $data['child_id'])."'";
-			
-			$entry_query = $this->EE->db->query($sql);
-	
-			// Is there a category group associated with this channel?
-			$query = $this->EE->db->query("SELECT cat_group FROM  exp_channels WHERE channel_id = '".$entry_query->row('channel_id') ."'");	 
-			$cat_group = (trim($query->row('cat_group')) == '') ? FALSE : $query->row('cat_group');
-
-			$this->cat_array = array();
-			$cat_array = array();
-	
-			if ($cat_group !== FALSE)
-			{
-				$this->get_categories($cat_group, ($reverse === TRUE && $parent_entry === FALSE) ? $data['parent_id'] : $data['child_id']);
-			}
-			$cat_array = $this->cat_array;
-			
-			if ($parent_entry == TRUE)
-			{
-				$this->EE->db->query("INSERT INTO exp_relationships (rel_parent_id, rel_child_id, rel_type, rel_data, reverse_rel_data) 
-							VALUES ('".$data['parent_id']."', '".$data['child_id']."', '".$data['type']."',
-									'".addslashes(serialize(array('query' => $entry_query, 'cats_fixed' => '1', 'categories' => $cat_array)))."', '')");
-				return $this->EE->db->insert_id();
-			}
-			else
-			{
-				if ($reverse === TRUE)
-				{
-					$this->EE->db->query("UPDATE exp_relationships 
-								SET reverse_rel_data = '".addslashes(serialize(array('query' => $entry_query, 'cats_fixed' => '1', 'categories' => $cat_array)))."' 
-								WHERE rel_type = '".$this->EE->db->escape_str($data['type'])."' AND rel_parent_id = '".$data['parent_id']."'");
-				}
-				else
-				{
-					$this->EE->db->query("UPDATE exp_relationships 
-								SET rel_data = '".addslashes(serialize(array('query' => $entry_query, 'cats_fixed' => '1', 'categories' => $cat_array)))."' 
-								WHERE rel_type = 'channel' AND rel_child_id = '".$data['child_id']."'");
-				}
-			}		
-		}
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.6');
 	}
 	
 	// --------------------------------------------------------------------
@@ -1420,7 +1363,7 @@ class EE_Functions {
 		$field_sqla = '';
 		$field_sqlb = '';
 		
-		$query = $this->EE->db->query("SELECT field_id, field_name FROM exp_category_fields WHERE group_id IN ('".str_replace('|', "','", $this->EE->db->escape_str($cat_group))."')");
+		$query = ee()->db->query("SELECT field_id, field_name FROM exp_category_fields WHERE group_id IN ('".str_replace('|', "','", ee()->db->escape_str($cat_group))."')");
 			
 		if ($query->num_rows() > 0)
 		{
@@ -1439,13 +1382,13 @@ class EE_Functions {
 				{$field_sqla}
 				FROM		(exp_categories AS c, exp_category_posts AS p)
 				{$field_sqlb}
-				WHERE		c.group_id	IN ('".str_replace('|', "','", $this->EE->db->escape_str($cat_group))."')
+				WHERE		c.group_id	IN ('".str_replace('|', "','", ee()->db->escape_str($cat_group))."')
 				AND			p.entry_id	= '".$entry_id."'
 				AND			c.cat_id 	= p.cat_id
 				ORDER BY	c.parent_id, c.cat_order";
 	
 		$sql = str_replace("\t", " ", $sql);
-		$query = $this->EE->db->query($sql);
+		$query = ee()->db->query($sql);
 		
 		$this->cat_array = array();
 		$parents = array();
@@ -1520,7 +1463,7 @@ class EE_Functions {
 	 */
 	function add_form_security_hash($str)
 	{
-		if ($this->EE->config->item('secure_forms') == 'y')
+		if (ee()->config->item('secure_forms') == 'y')
 		{
 			if (preg_match_all("/({XID_HASH})/", $str, $matches))
 			{
@@ -1528,14 +1471,14 @@ class EE_Functions {
 				
 				// Disable DB caching if it's currently set
 				
-				if ($this->EE->db->cache_on == TRUE)
+				if (ee()->db->cache_on == TRUE)
 				{
-					$this->EE->db->cache_off();
+					ee()->db->cache_off();
 					$db_reset = TRUE;
 				}
 			
 				// Add security hashes
-				$hashes = $this->EE->security->generate_xid(count($matches[1]), TRUE);
+				$hashes = ee()->security->generate_xid(count($matches[1]), TRUE);
 				
 				foreach ($hashes as $hash)
 				{
@@ -1545,7 +1488,7 @@ class EE_Functions {
 				// Re-enable DB caching
 				if ($db_reset == TRUE)
 				{
-					$this->EE->db->cache_on();			
+					ee()->db->cache_on();			
 				}
 			}
 		}
@@ -1564,7 +1507,7 @@ class EE_Functions {
 	 */
 	function create_captcha($old_word = '')
 	{
-		if ($this->EE->config->item('captcha_require_members') == 'n' AND $this->EE->session->userdata['member_id'] != 0)
+		if (ee()->config->item('captcha_require_members') == 'n' AND ee()->session->userdata['member_id'] != 0)
 		{
 			return '';
 		}
@@ -1573,16 +1516,16 @@ class EE_Functions {
 		// 'create_captcha_start' hook.
 		//  - Allows rewrite of how CAPTCHAs are created
 		//
-			if ($this->EE->extensions->active_hook('create_captcha_start') === TRUE)
+			if (ee()->extensions->active_hook('create_captcha_start') === TRUE)
 			{
-				$edata = $this->EE->extensions->call('create_captcha_start', $old_word);
-				if ($this->EE->extensions->end_script === TRUE) return $edata;
+				$edata = ee()->extensions->call('create_captcha_start', $old_word);
+				if (ee()->extensions->end_script === TRUE) return $edata;
 			}	
 		// -------------------------------------------
 			
-		$img_path	= $this->EE->config->slash_item('captcha_path', 1);
-		$img_url	= $this->EE->config->slash_item('captcha_url');
-		$use_font	= ($this->EE->config->item('captcha_font') == 'y') ? TRUE : FALSE;
+		$img_path	= ee()->config->slash_item('captcha_path', 1);
+		$img_url	= ee()->config->slash_item('captcha_url');
+		$use_font	= (ee()->config->item('captcha_font') == 'y') ? TRUE : FALSE;
 				
 		$font_face	= "texb.ttf";
 		$font_size	= 16;
@@ -1623,9 +1566,9 @@ class EE_Functions {
 		// Disable DB caching if it's currently set
 		
 		$db_reset = FALSE;
-		if ($this->EE->db->cache_on == TRUE)
+		if (ee()->db->cache_on == TRUE)
 		{
-			$this->EE->db->cache_off();
+			ee()->db->cache_off();
 			$db_reset = TRUE;
 		}
 		
@@ -1634,10 +1577,10 @@ class EE_Functions {
 		list($usec, $sec) = explode(" ", microtime());
 		$now = ((float)$usec + (float)$sec);
 		
-		if ((mt_rand() % 100) < $this->EE->session->gc_probability)
+		if ((mt_rand() % 100) < ee()->session->gc_probability)
 		{
 			$old = time() - $expiration;
-			$this->EE->db->query("DELETE FROM exp_captcha WHERE date < ".$old);		
+			ee()->db->query("DELETE FROM exp_captcha WHERE date < ".$old);		
 
 			$current_dir = @opendir($img_path);
 
@@ -1663,12 +1606,12 @@ class EE_Functions {
 			require APPPATH.'config/captcha.php';
 			$word = $words[array_rand($words)];
 			
-			if ($this->EE->config->item('captcha_rand') == 'y')
+			if (ee()->config->item('captcha_rand') == 'y')
 			{
 				$word .= $this->random('nozero', 2);
 			}
 
-			$this->EE->db->query("INSERT INTO exp_captcha (date, ip_address, word) VALUES (UNIX_TIMESTAMP(), '".$this->EE->input->ip_address()."', '".$this->EE->db->escape_str($word)."')");		
+			ee()->db->query("INSERT INTO exp_captcha (date, ip_address, word) VALUES (UNIX_TIMESTAMP(), '".ee()->input->ip_address()."', '".ee()->db->escape_str($word)."')");		
 		}
 		else
 		{
@@ -1755,7 +1698,7 @@ class EE_Functions {
 		// Re-enable DB caching
 		if ($db_reset == TRUE)
 		{
-			$this->EE->db->cache_on();			
+			ee()->db->cache_on();			
 		}
 		
 		return $img;
@@ -1807,7 +1750,7 @@ class EE_Functions {
 		if (strpos($str, '|') !== FALSE)
 		{
 			$parts = preg_split('/\|/', $str, -1, PREG_SPLIT_NO_EMPTY);
-			$parts = array_map('trim', array_map(array($this->EE->db, 'escape_str'), $parts));
+			$parts = array_map('trim', array_map(array(ee()->db, 'escape_str'), $parts));
 			
 			if (count($parts) > 0)
 			{
@@ -1837,11 +1780,11 @@ class EE_Functions {
 			
 			if ($null === TRUE)
 			{
-				$sql .= "AND ({$prefix}{$field} {$not}= '".$this->EE->db->escape_str($str)."' OR {$prefix}{$field} IS NULL)";
+				$sql .= "AND ({$prefix}{$field} {$not}= '".ee()->db->escape_str($str)."' OR {$prefix}{$field} IS NULL)";
 			}
 			else
 			{
-				$sql .= "AND {$prefix}{$field} {$not}= '".$this->EE->db->escape_str($str)."'";
+				$sql .= "AND {$prefix}{$field} {$not}= '".ee()->db->escape_str($str)."'";
 			}
 		}
 
@@ -1890,7 +1833,7 @@ class EE_Functions {
 		if (strpos($str, '|') !== FALSE)
 		{
 			$parts = preg_split('/\|/', $str, -1, PREG_SPLIT_NO_EMPTY);
-			$parts = array_map('trim', array_map(array($this->EE->db, 'escape_str'), $parts));
+			$parts = array_map('trim', array_map(array(ee()->db, 'escape_str'), $parts));
 						
 			if (count($parts) > 0)
 			{
@@ -1907,7 +1850,7 @@ class EE_Functions {
 						$sql = "({$prefix}{$field} IN ('".implode("','", $parts)."') OR {$prefix}{$field} IS NULL)";
 					}
 					
-					$this->EE->db->where($sql);
+					ee()->db->where($sql);
 					// END MySQL Only
 				}
 				else
@@ -1915,11 +1858,11 @@ class EE_Functions {
 					if (strncasecmp($parts[0], 'not ', 4) == 0)
 					{
 						$parts[0] = substr($parts[0], 4);
-						$this->EE->db->where_not_in($prefix.$field, $parts);
+						ee()->db->where_not_in($prefix.$field, $parts);
 					}
 					else
 					{
-						$this->EE->db->where_in($prefix.$field, $parts);
+						ee()->db->where_in($prefix.$field, $parts);
 					}
 				}
 			}
@@ -1932,14 +1875,14 @@ class EE_Functions {
 				if (strncasecmp($str, 'not ', 4) == 0)
 				{
 					$str = trim(substr($str, 3));
-					$sql = "({$prefix}{$field} != '".$this->EE->db->escape_str($str)."' OR {$prefix}{$field} IS NULL)";
+					$sql = "({$prefix}{$field} != '".ee()->db->escape_str($str)."' OR {$prefix}{$field} IS NULL)";
 				}
 				else
 				{
-					$sql = "({$prefix}{$field} = '".$this->EE->db->escape_str($str)."' OR {$prefix}{$field} IS NULL)";
+					$sql = "({$prefix}{$field} = '".ee()->db->escape_str($str)."' OR {$prefix}{$field} IS NULL)";
 				}
 				
-				$this->EE->db->where($sql);
+				ee()->db->where($sql);
 				// END MySQL Only
 			}
 			else
@@ -1948,11 +1891,11 @@ class EE_Functions {
 				{
 					$str = trim(substr($str, 3));
 
-					$this->EE->db->where($prefix.$field.' !=', $str);
+					ee()->db->where($prefix.$field.' !=', $str);
 				}
 				else
 				{
-					$this->EE->db->where($prefix.$field, $str);
+					ee()->db->where($prefix.$field, $str);
 				}
 			}
 		}
@@ -2228,16 +2171,23 @@ class EE_Functions {
 
 		$open_stack = array();
 
-		foreach($temp_misc as $key => $item)
+		foreach($temp_misc as $open_key => $open_tag)
 		{
-			foreach($temp_close as $idx => $row)
+			
+			if (preg_match("#(.+?)(\s+|=)(.+?)#", $open_tag, $matches))
 			{
+				$open_tag = $matches[1];
+			}
+
+			foreach($temp_close as $close_key => $close_tag)
+			{
+				
 				// Find the closest (potential) closing tag following it
-				if (($idx > $key) && substr($item, 0, strlen($row)) == $row)
+				if (($close_key > $open_key) && $open_tag == $close_tag)
 				{
 					// There could be another opening tag between these
 					// so we create a stack of opening tag values
-					$open_stack[$idx][] = $key;
+					$open_stack[$close_key][] = $open_key;
 					continue;
 				}
 			}
@@ -2261,6 +2211,7 @@ class EE_Functions {
 		// Weed out the duplicatess
 		$temp_single	= array_unique($temp_single);
 		$temp_pair		= array_unique($temp_pair);
+
 
 		// Assign Single Variables
 		$var_single = array();
@@ -2312,7 +2263,7 @@ class EE_Functions {
 	 */
 	function full_tag($str, $chunk='', $open='', $close='')
 	{	
-		if ($chunk == '') $chunk = (isset($this->EE->TMPL) && is_object($this->EE->TMPL)) ? $this->EE->TMPL->fl_tmpl : '';
+		if ($chunk == '') $chunk = (isset(ee()->TMPL) && is_object(ee()->TMPL)) ? ee()->TMPL->fl_tmpl : '';
 		if ($open == '')  $open  = LD;
 		if ($close == '') $close = RD;
 
@@ -2485,13 +2436,13 @@ class EE_Functions {
 	 */
 	function prep_conditionals($str, $vars, $safety='n', $prefix='')
 	{
-		if (isset($this->EE->TMPL->embed_vars))
+		if (isset(ee()->TMPL->embed_vars))
 		{
 			// If this is being called from a module tag, embedded variables
 			// aren't going to be available yet.  So this is a quick workaround
 			// to ensure advanced conditionals using embedded variables can do
 			// their thing in mod tags.
-			$vars = array_merge($vars, $this->EE->TMPL->embed_vars);
+			$vars = array_merge($vars, ee()->TMPL->embed_vars);
 		}
 		
 		if (count($vars) == 0) return $str;
@@ -2612,33 +2563,33 @@ class EE_Functions {
 		
 			// Prep the data array to remove characters we do not want
 			// And also just add the quotes around the value for good measure.
-			while (list($key) = each($data))
+			foreach ($data as $key => &$value)
 			{
-				if ( is_array($data[$key])) continue;
+				if ( is_array($value)) continue;
 			
 				// TRUE AND FALSE values are for short hand conditionals,
 				// like {if logged_in} and so we have no need to remove
 				// unwanted characters and we do not quote it.
 				
-				if ($data[$key] != 'TRUE' && $data[$key] != 'FALSE' && ($key != $data[$key] OR $embedded_tags !== TRUE))
+				if ($value != 'TRUE' && $value != 'FALSE' && ($key != $value OR $embedded_tags !== TRUE))
 				{
-					$data[$key] = '"'.
+					$value = '"'.
 								  str_replace(array("'", '"', '(', ')', '$', '{', '}', "\n", "\r", '\\'), 
 											  array('&#39;', '&#34;', '&#40;', '&#41;', '&#36;', '', '', '', '', '&#92;'), 
-											  (strlen($data[$key]) > 100) ? substr(htmlspecialchars($data[$key]), 0, 100) : $data[$key]
+											  (strlen($value) > 100) ? substr(htmlspecialchars($value), 0, 100) : $value
 											  ).
 								  '"';
 				}
 				
 				$md5_key = (string) hexdec($prep_id.md5($key));
 				$protect[$key] = $md5_key;
-				$switch[$md5_key] = $data[$key];
+				$switch[$md5_key] = $value;
 				
 				if ($prefix != '')
 				{
 					$md5_key = (string) hexdec($prep_id.md5($prefix.$key));
 					$protect[$prefix.$key] = $md5_key;
-					$switch[$md5_key] = $data[$key];
+					$switch[$md5_key] = $value;
 				}
 			}
 			
@@ -2653,12 +2604,24 @@ class EE_Functions {
 			//
 			// So here, we make sure the value we're replacing doesn't ALSO happen to appear in the
 			// middle of something that looks like a date field with a format parameter
+			//
+			// It also failed on conditionals with similar prefixes, which tends to happen with
+			// relationship fields, e.g:
+			//
+			//     {if parent:count == 1}one{/if}
+			//     {if parent:parent:count == 1}one{/if}
+			//
+			// In the second parent loop, this would evaluate as:
+			//
+			//     {if "2" == 1}one{/if}
+			//     {if parent:"2" == 1}one{/if}
+			//
 			foreach ($matches[3] as &$match)
 			{
 				foreach ($protect as $key => $value)
 				{
-					// Make sure $key doesn't appear as "{$key "
-					if ( ! strstr($match, LD.$key.' '))
+					// Make sure $key doesn't appear as "{$key " or ":$key "
+					if (strpos($match, LD.$key.' ') === FALSE AND strpos($match, ':'.$key) === FALSE)
 					{
 						$match = str_replace($key, $value, $match);
 					}
@@ -2788,8 +2751,8 @@ class EE_Functions {
 			return array();	
 		}
 
-		$this->EE->load->model('file_upload_preferences_model');
-		$upload_prefs = $this->EE->file_upload_preferences_model->get_file_upload_preferences(NULL, NULL, TRUE);
+		ee()->load->model('file_upload_preferences_model');
+		$upload_prefs = ee()->file_upload_preferences_model->get_file_upload_preferences(NULL, NULL, TRUE);
 
 		if (count($upload_prefs) == 0)
 		{

@@ -755,6 +755,9 @@ username and password to view the template.',
 'registration_form' =>
 'Registration Form',
 
+'reset_password_form' =>
+'Password Reset Form',
+
 'stylesheet' =>
 'CSS Stylesheet',
 

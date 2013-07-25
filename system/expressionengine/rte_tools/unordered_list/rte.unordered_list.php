@@ -55,7 +55,7 @@ class Unordered_list_rte {
 	 */
 	function globals()
 	{
-		$this->EE->lang->loadfile('rte');
+		ee()->lang->loadfile('rte');
 		return array(
 			'rte.unordered_list'	=> array(
 				'add'		=> lang('make_ul'),

@@ -514,6 +514,7 @@ class Addons_extensions extends CP_Controller {
 		/** -----------------------------*/
 		
 		$name = strtolower($vars['file']);
+		$this->addons->get_files('extensions');
 		$ext_path = $this->addons->_packages[$name]['extension']['path'];
 		
 

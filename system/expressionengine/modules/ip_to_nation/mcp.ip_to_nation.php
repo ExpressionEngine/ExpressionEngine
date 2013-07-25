@@ -428,7 +428,7 @@ class Ip_to_nation_mcp {
 	 */
 	function __get($key)
 	{
-		return get_instance()->$key;
+		return ee()->$key;
 	}
 }
 // END CLASS

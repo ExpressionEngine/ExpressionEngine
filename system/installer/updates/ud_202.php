@@ -36,54 +36,71 @@ class Updater {
     {
 
 		// Modules now have a tab setting
-        $Q[] = "UPDATE `exp_relationships` SET rel_type = 'channel' WHERE rel_type = 'blog'";
-        $Q[] = "ALTER TABLE `exp_channels` DROP COLUMN `show_url_title`";
-        $Q[] = "ALTER TABLE `exp_channels` DROP COLUMN `show_ping_cluster`";
-        $Q[] = "ALTER TABLE `exp_channels` DROP COLUMN `show_options_cluster`";
-        $Q[] = "ALTER TABLE `exp_channels` DROP COLUMN `show_forum_cluster`";
-        $Q[] = "ALTER TABLE `exp_channels` DROP COLUMN `show_show_all_cluster`";
-        $Q[] = "ALTER TABLE `exp_channels` DROP COLUMN `show_status_menu`";
-        $Q[] = "ALTER TABLE `exp_channels` DROP COLUMN `show_categories_menu`";
-        $Q[] = "ALTER TABLE `exp_channels` DROP COLUMN `show_date_menu`";
-        $Q[] = "ALTER TABLE `exp_channels` DROP COLUMN `show_pages_cluster`";
-        $Q[] = "ALTER TABLE `exp_channels` DROP COLUMN `show_author_menu`";
+		if (ee()->db->table_exists('relationships')
+			AND ee()->db->field_exists('rel_type', 'relationships'))
+		{
+			ee()->db->set('rel_type', 'channel');
+			ee()->db->where('rel_type', 'blog');
+			ee()->db->update('relationships');
+		}
+
+		ee()->smartforge->drop_column('channels', 'show_url_title');
+		ee()->smartforge->drop_column('channels', 'show_ping_cluster');
+		ee()->smartforge->drop_column('channels', 'show_options_cluster');
+		ee()->smartforge->drop_column('channels', 'show_forum_cluster');
+		ee()->smartforge->drop_column('channels', 'show_show_all_cluster');
+		ee()->smartforge->drop_column('channels', 'show_status_menu');
+		ee()->smartforge->drop_column('channels', 'show_categories_menu');
+		ee()->smartforge->drop_column('channels', 'show_date_menu');
+		ee()->smartforge->drop_column('channels', 'show_pages_cluster');
+		ee()->smartforge->drop_column('channels', 'show_author_menu');
 
 		// Leftover trackback indication can go
-		 $Q[] = "DELETE FROM `exp_modules` WHERE `module_name` = 'Trackback'";
+		ee()->db->where('module_name', 'Trackback');
+		ee()->db->delete('modules');
 
 		// Email field size consistent with RFC2822 recommended header line limit of 78 (minus "from: ")
-        $Q[] = "ALTER TABLE `exp_members` CHANGE `email` `email` varchar(72) NOT NULL";
-		$count = count($Q);
+		ee()->smartforge->modify_column(
+			'members',
+			array(
+				'email' => array(
+					'name'			=> 'email',
+					'type'			=> 'varchar',
+					'constraint'	=> 72,
+					'null'			=> FALSE
+				),
+			)
+		);
 		
 		// If there is no action id, add it
-        $this->EE->db->where('class', 'channel');
-        $this->EE->db->where('method', 'smiley_pop');
-        $query = $this->EE->db->get('actions');
+		$values = array(
+			'class'		=> 'channel',
+			'method'	=> 'smiley_pop'
+		);
 
-        if ($query->num_rows() == 0)
-        {
-			$Q[] = "INSERT INTO exp_actions (class,method) VALUES ('channel','smiley_pop')";
-        }
+		ee()->smartforge->insert_set('actions', $values, $values);
 
-        $this->EE->db->where('class', 'channel');
-        $this->EE->db->where('method', 'filemanager_endpoint');
-        $query = $this->EE->db->get('actions');
 
-        if ($query->num_rows() == 0)
-        {
-			$Q[] = "INSERT INTO exp_actions (class,method) VALUES ('channel','filemanager_endpoint')";
-        }
+		$values	= array(
+			'class'		=> 'channel',
+			'method'	=> 'filemanager_endpoint'
+		);
+
+		ee()->smartforge->insert_set('actions', $values, $values);
+
 
 		// If the action id is for the Weblog class, change it
-		$Q[] = "UPDATE exp_actions SET class = 'Channel' WHERE class = 'Weblog'";
+		ee()->db->set('class', 'Channel');
+		ee()->db->where('class', 'Weblog');	
+		ee()->db->update('actions');
 		
 
 		// If they have existing Pages, saved array needs to be updated to new format
-        if ($this->EE->db->field_exists('site_pages', 'sites'))
+        if (ee()->db->field_exists('site_pages', 'sites'))
 		{
-			$this->EE->db->select('site_id, site_pages, site_system_preferences');
-        	$this->EE->db->where('site_pages !=', '');
-        	$query = $this->EE->db->get('sites');
+			ee()->db->select('site_id, site_pages, site_system_preferences');
+        	ee()->db->where('site_pages !=', '');
+        	$query = ee()->db->get('sites');
 
         	if ($query->num_rows() > 0)
         	{
@@ -146,7 +163,7 @@ class Updater {
 						}
 					}
 					
-					$Q[] = "UPDATE exp_sites SET site_pages = '".base64_encode(serialize($new_pages))."' WHERE site_id = '".$row['site_id']."'";
+					ee()->db->query("UPDATE exp_sites SET site_pages = '".base64_encode(serialize($new_pages))."' WHERE site_id = '".$row['site_id']."'");
 					
 					unset($new_pages);
 
@@ -154,21 +171,22 @@ class Updater {
 			}
 		}
 
-		if ( ! $this->EE->db->field_exists('username', 'password_lockout'))
-		{
-			$Q[] = "ALTER TABLE `exp_password_lockout` ADD `username` VARCHAR(50) NOT NULL AFTER `user_agent`";
-		}
-
-		foreach ($Q as $num => $sql)
-		{
-			$this->EE->progress->update_state("Running Query $num of $count");
-	        $this->EE->db->query($sql);
-		}
+		ee()->smartforge->add_column(
+			'password_lockout',
+			array(
+				'username' => array(
+					'type'			=> 'varchar',
+					'constraint'	=> 50,
+					'null'			=> FALSE
+				)
+			),
+			'user_agent'
+		);
 
 
 		// Drop enable image resize configuration option
-		$this->EE->db->select('site_channel_preferences');
-		$query = $this->EE->db->get('sites');
+		ee()->db->select('site_channel_preferences');
+		$query = ee()->db->get('sites');
 
 		foreach ($query->result() as $row)
 		{
@@ -179,8 +197,8 @@ class Updater {
 				unset($settings['enable_image_resizing']);
 			}
 
-			$this->EE->db->set('site_channel_preferences', base64_encode(serialize($settings)));
-			$this->EE->db->update('sites');
+			ee()->db->set('site_channel_preferences', base64_encode(serialize($settings)));
+			ee()->db->update('sites');
 		}
 		
 		// Unlink files on the ee_version/ and ee_info accessory because they have

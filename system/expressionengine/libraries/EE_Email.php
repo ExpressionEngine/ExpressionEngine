@@ -52,35 +52,45 @@ class EE_Email extends CI_Email {
 	function EE_initialize()
 	{	
 		$config = array(
-						'protocol'		=> ( ! in_array( $this->EE->config->item('mail_protocol'), $this->_protocols)) ? 'mail' : $this->EE->config->item('mail_protocol'),
-						'charset'		=> ($this->EE->config->item('email_charset') == '') ? 'utf-8' : $this->EE->config->item('email_charset'),
-						'smtp_host'		=> $this->EE->config->item('smtp_server'),
-						'smtp_user'		=> $this->EE->config->item('smtp_username'),
-						'smtp_pass'		=> $this->EE->config->item('smtp_password')
-						);
+			'protocol'		=> ( ! in_array( ee()->config->item('mail_protocol'), $this->_protocols)) ? 'mail' : ee()->config->item('mail_protocol'),
+			'charset'		=> (ee()->config->item('email_charset') == '') ? 'utf-8' : ee()->config->item('email_charset'),
+			'smtp_host'		=> ee()->config->item('smtp_server'),
+			'smtp_port'		=> ee()->config->item('smtp_port'),
+			'smtp_user'		=> ee()->config->item('smtp_username'),
+			'smtp_pass'		=> ee()->config->item('smtp_password')
+		);
 		
 		/* -------------------------------------------
 		/*	Hidden Configuration Variables
 		/*	- email_newline => Default newline.
 		/*  - email_crlf => CRLF used in quoted-printable encoding
 		/*  - email_smtp_port => SMTP Port
+		/*  - email_smtp_crypto => Cryptographic protocol (Secure Sockets Layer or Transport Layer Security allowed) 
         /* -------------------------------------------*/
 		
-		if ($this->EE->config->item('email_newline') !== FALSE)
+		if (ee()->config->item('email_newline') !== FALSE)
 		{
-			$config['newline'] = $this->EE->config->item('email_newline');
+			$config['newline'] = ee()->config->item('email_newline');
 		}
 		
-		if ($this->EE->config->item('email_crlf') !== FALSE)
+		if (ee()->config->item('email_crlf') !== FALSE)
 		{
-			$config['crlf'] = $this->EE->config->item('email_crlf');
+			$config['crlf'] = ee()->config->item('email_crlf');
 		}
 
-		if ($this->EE->config->item('email_smtp_port') !== FALSE)
+		if (ee()->config->item('email_smtp_port') !== FALSE)
 		{
-			$config['smtp_port'] = $this->EE->config->item('smtp_port');
+			ee()->load->library('logger');
+			ee()->logger->deprecated('2.6', '$config["smtp_port"] = "'.ee()->config->item('email_smtp_port').'";');
+
+			$config['smtp_port'] = ee()->config->item('email_smtp_port');
 		}
 				
+		if (ee()->config->item('email_smtp_crypto') == 'tls' OR ee()->config->item('email_smtp_crypto') == 'ssl')
+		{
+			$config['smtp_crypto'] = ee()->config->item('email_smtp_crypto');
+		}
+		
 		$this->useragent = APP_NAME.' '.APP_VER;		
 
 		$this->initialize($config);
@@ -98,11 +108,11 @@ class EE_Email extends CI_Email {
 	 */	 
 	function message($body, $alt = '')
 	{
-		$body = $this->EE->functions->insert_action_ids($body);
+		$body = ee()->functions->insert_action_ids($body);
 	
 		if ($alt != '')
 		{
-			$this->set_alt_message($this->EE->functions->insert_action_ids($alt));
+			$this->set_alt_message(ee()->functions->insert_action_ids($alt));
 		}
 				
 		$this->_body = stripslashes(rtrim(str_replace("\r", "", $body)));
@@ -120,9 +130,9 @@ class EE_Email extends CI_Email {
 		// 'email_send' hook.
 		//  - Optionally modifies and overrides sending of email.
 		//
-		if ($this->EE->extensions->active_hook('email_send') === TRUE)
+		if (ee()->extensions->active_hook('email_send') === TRUE)
 		{
-			$ret = $this->EE->extensions->call(
+			$ret = ee()->extensions->call(
 				'email_send',
 				array(
 					'headers'		=> &$this->_headers,
@@ -135,8 +145,9 @@ class EE_Email extends CI_Email {
 				)
 			);
 			
-			if ($this->EE->extensions->end_script === TRUE)
+			if (ee()->extensions->end_script === TRUE)
 			{
+				ee()->extensions->end_script = FALSE;
 				return $ret;
 			}
 		}
@@ -144,6 +155,62 @@ class EE_Email extends CI_Email {
 		// ------------------------------------------------------
 		
 		return parent::_spool_email();
+	}
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Mime Types
+	 *
+	 * @param	string
+	 * @return	string
+	 */
+	protected function _mime_types($ext = '')
+	{
+		static $mimes;
+
+		$ext = strtolower($ext);
+
+		if ( ! is_array($mimes))
+		{
+			include(APPPATH.'config/mimes.php');			
+		}
+
+		if (isset($mimes[$ext]))
+		{
+			return is_array($mimes[$ext])
+				? current($mimes[$ext])
+				: $mimes[$ext];
+		}
+
+		return 'application/x-unknown-content-type';
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Removed from CI, here temporarily during deprecation period
+	 */
+	function _get_ip()
+	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.6', 'Input::ip_address()');
+
+		// Why was this ever here?
+		return ee()->input->ip_address();
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Removed from CI, here temporarily during deprecation period
+	 */
+	function _set_header($header, $value)
+	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.6', 'Email::set_header()');
+
+		$this->set_header($header, $value);
 	}
 }
 // END CLASS

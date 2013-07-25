@@ -14,6 +14,8 @@ themes/solspace_themes/
 themes/third_party/
 *.swp
 code_coverage/
+system/tests/phpunit/vendor/
+system/tests/phpunit/composer.lock
 
 images/test1/
 
