@@ -1722,6 +1722,9 @@ $lang = array(
 'illegal_characters' =>
 'The name you submitted may only contain alpha-numeric characters, underscores, and dashes',
 
+'developer_logs' =>
+'You have %d unviewed items in the <a href="%s">Developer Log</a>.',
+
 ''=>''
 );
 
