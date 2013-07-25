@@ -28,7 +28,7 @@ class Textarea_ft extends EE_Fieldtype {
 		'name'		=> 'Textarea',
 		'version'	=> '1.0'
 	);
-	
+
 	var $has_array_data = FALSE;
 
 	// --------------------------------------------------------------------
@@ -41,7 +41,7 @@ class Textarea_ft extends EE_Fieldtype {
 	// --------------------------------------------------------------------
 
 	function display_field($data)
-	{		
+	{
 		return form_textarea(array(
 			'name'	=> $this->field_name,
 			'id'	=> $this->field_name,
@@ -62,38 +62,51 @@ class Textarea_ft extends EE_Fieldtype {
 		}
 
 		// Run markdown parsing before typography parsing
-		if ($this->row['field_ft_'.$this->field_id] == 'markdown')
+		if ($this->row('field_ft_'.$this->field_id) == 'markdown')
 		{
 			$data = ee()->typography->markdown($data, array('encode_ee_tags' => 'no'));
 		}
-		
+
 		$field_fmt = (isset($this->settings['field_fmt']))
-			? $this->settings['field_fmt'] : $this->row['field_ft_'.$this->field_id];
+			? $this->settings['field_fmt'] : $this->row('field_ft_'.$this->field_id);
 
 		return ee()->typography->parse_type(
 			ee()->functions->encode_ee_tags($data),
 			array(
 				'text_format'	=> $field_fmt,
-				'html_format'	=> $this->row['channel_html_formatting'],
-				'auto_links'	=> $this->row['channel_auto_link_urls'],
-				'allow_img_url' => $this->row['channel_allow_img_urls']
+				'html_format'	=> $this->row('channel_html_formatting', 'all'),
+				'auto_links'	=> $this->row('channel_auto_link_urls', 'n'),
+				'allow_img_url' => $this->row('channel_allow_img_urls', 'y')
 			)
 		);
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
+	/**
+	 * Accept all content types.
+	 *
+	 * @param string  The name of the content type
+	 * @param bool    Accepts all content types
+	 */
+	public function accepts_content_type($name)
+	{
+		return TRUE;
+	}
+
+	// --------------------------------------------------------------------
+
 	function display_settings($data)
 	{
 		$prefix = 'textarea';
 
 		$field_rows	= ($data['field_ta_rows'] == '') ? 6 : $data['field_ta_rows'];
-		
+
 		ee()->table->add_row(
 			lang('textarea_rows', 'field_ta_rows'),
 			form_input(array('id'=>'field_ta_rows','name'=>'field_ta_rows', 'size'=>4,'value'=>set_value('field_ta_rows', $field_rows)))
 		);
-		
+
 		$this->field_formatting_row($data, $prefix);
 		$this->text_direction_row($data, $prefix);
 		$this->field_show_formatting_btns_row($data, $prefix);
@@ -105,7 +118,7 @@ class Textarea_ft extends EE_Fieldtype {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	public function grid_display_settings($data)
 	{
 		return array(

@@ -596,7 +596,8 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 			// the others piecemeal in steps of 100.
 
 			(function batch() {
-				parent.append(children.slice(i++, 100));
+				parent.append(children.slice(i, 100 + i));
+				i += 100;
 
 				if (i < childLength) {
 					_.defer(batch);

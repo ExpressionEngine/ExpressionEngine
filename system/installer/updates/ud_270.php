@@ -51,6 +51,10 @@ class Updater {
 				'_update_relationships_for_grid',
 				'_install_grid',
 				'_update_relationship_tags_in_snippets'
+				'_create_content_types_table',
+				'_modify_channel_data_relationship_fields',
+				'_modify_channel_data_default_fields',
+				'_modify_category_data_fields'
 			)
 		);
 
@@ -111,6 +115,20 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		// to be renamed to the new processing method.
 		ee()->db->where('method', 'reset_password')
 			->update('actions', array('method'=>'process_reset_password'));
+
+		// Add the csrf_exempt field
+		ee()->smartforge->add_column(
+			'actions',
+			array(
+				'csrf_exempt' => array(
+					'type'			=> 'tinyint',
+					'constraint'	=> 1,
+					'unsigned'		=> TRUE,
+					'default'		=> 0,
+					'null'			=> FALSE
+				)
+			)
+		);
 	}
 
 	// --------------------------------------------------------------------
@@ -217,7 +235,10 @@ If you do not wish to reset your password, ignore this message. It will expire i
 			);
 		}
 
-		ee()->db->insert_batch('field_formatting', $data);
+		if ( ! empty($data))
+		{
+			ee()->db->insert_batch('field_formatting', $data);
+		}
 
 		return TRUE;
 	}
@@ -321,6 +342,13 @@ If you do not wish to reset your password, ignore this message. It will expire i
 			$settings = $settings_q->row('settings');
 			$settings = strip_slashes(unserialize($settings));
 
+			$valid_keys = array(
+				'override_status',
+				'allow_guests',
+				'logged_out_member_id',
+				'require_captcha'
+			);
+
 			// Settings all have their separate arrays, so we need to invert the
 			// grouping to group by site_id and channel_id rather than by setting
 			// name.
@@ -328,6 +356,13 @@ If you do not wish to reset your password, ignore this message. It will expire i
 
 			foreach ($settings as $setting_name => $sites)
 			{
+				// Old versions of safecracker have other keys such as license_key.
+				// We aren't interested in those.
+				if ( ! in_array($setting_name, $valid_keys))
+				{
+					continue;
+				}
+
 				foreach ($sites as $site_id => $channels)
 				{
 					if ( ! isset($grouped_settings[$site_id]))
@@ -378,8 +413,11 @@ If you do not wish to reset your password, ignore this message. It will expire i
 				}
 			}
 
-			// and put them into the new table
-			ee()->db->insert_batch('channel_form_settings', $db_settings);
+			if ( ! empty($db_settings))
+			{
+				// and put them into the new table
+				ee()->db->insert_batch('channel_form_settings', $db_settings);
+			}
 		}
 
 		// drop the extension
@@ -616,6 +654,10 @@ If you do not wish to reset your password, ignore this message. It will expire i
 				'constraint'		=> 10,
 				'unsigned'			=> TRUE
 			),
+			'content_type' => array(
+				'type'				=> 'varchar',
+				'constraint'		=> 50
+			),
 			'col_order' => array(
 				'type'				=> 'int',
 				'constraint'		=> 3,
@@ -658,6 +700,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		ee()->dbforge->add_field($columns);
 		ee()->dbforge->add_key('col_id', TRUE);
 		ee()->dbforge->add_key('field_id');
+		ee()->dbforge->add_key('content_type');
 		ee()->smartforge->create_table('grid_columns');
 	}
 
@@ -696,6 +739,154 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		}
 	}	
 
+	protected function _create_content_types_table()
+	{
+		$columns = array(
+			'content_type_id' => array(
+				'type'				=> 'int',
+				'constraint'		=> 10,
+				'unsigned'			=> TRUE,
+				'auto_increment'	=> TRUE
+			),
+			'name' => array(
+				'type'				=> 'varchar',
+				'constraint'		=> 50
+			)
+		);
+
+		ee()->load->dbforge();
+		ee()->dbforge->add_field($columns);
+		ee()->dbforge->add_key('content_type_id', TRUE);
+		ee()->dbforge->add_key('name');
+		ee()->smartforge->create_table('content_types');
+
+		// we always need to have this one
+		ee()->db->insert('content_types', array('name' => 'channel'));
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Modify relationship type fields in exp_channel_data
+	 *
+	 * Possible mix of varchar and integer types.  Modifying
+	 * to make sure they are all now consistently integer.
+	 */
+	protected function _modify_channel_data_relationship_fields()
+	{	
+		// Get all relationship fields
+		ee()->db->where('field_type', 'relationship');	
+		$channel_fields = ee()->db->get('channel_fields');
+
+		foreach ($channel_fields->result_array() as $field)
+		{
+			$field_name = 'field_id_'.$field['field_id'];
+
+			ee()->smartforge->modify_column(
+				'channel_data',
+				array(
+					$field_name => array(
+						'name' 			=> $field_name,
+						'type' 			=> 'INT',
+						'constraint' 	=> 10,
+						'null' 			=> FALSE,
+						'default'	 	=> 0
+					)
+				)
+			);
+		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Modify custom fields in exp_channel_data
+	 *
+	 * Possible mix of column types with regard to allowing NULL due to a bug
+	 * in MSM.  Modifying to make sure the core EE default text type fields 
+	 * all allow NULL for consistency.
+	 */
+	protected function _modify_channel_data_default_fields()
+	{	
+		// Get text type fields
+		ee()->db->where_in('field_type', array('text', 'textarea', 'checkboxes', 'multi_select', 'radio', 'select', 'file'));
+		
+			
+		$channel_fields = ee()->db->get('channel_fields');
+
+		foreach ($channel_fields->result_array() as $field)
+		{
+			if ($field['field_type'] == 'text')
+			{
+				$is_text = $this->_text_field_check($field['field_settings']);
+	
+				if ( ! $is_text)
+				{
+					continue;
+				}
+			}
+
+			$field_name = 'field_id_'.$field['field_id'];
+
+			ee()->smartforge->modify_column(
+				'channel_data',
+				array(
+					$field_name => array(
+						'name' 			=> $field_name,
+						'type' 			=> 'text',
+						'null' 			=> TRUE
+					)
+				)
+			);
+		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Helper to check field setting content type for text fields
+	 */
+	protected function _text_field_check($data)
+	{
+		$settings = unserialize(base64_decode($data));
+
+		$is_text =  ($settings['field_content_type'] == 'all') ? TRUE : FALSE;
+		
+		return $is_text;
+	}
+
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Modify custom fields in exp_category_data
+	 *
+	 * Possible mix of column types with regard to allowing NULL due to a bug
+	 * in MSM.  Modifying to make sure the all allow NULL for consistency.
+	 */
+	protected function _modify_category_data_fields()
+	{	
+		// Get all fields
+
+		$cat_fields = ee()->db->get('category_fields');
+
+		foreach ($cat_fields->result_array() as $field)
+		{
+			$field_name = 'field_id_'.$field['field_id'];
+
+			ee()->smartforge->modify_column(
+				'category_data',
+				array(
+					$field_name => array(
+						'name' 			=> $field_name,
+						'type' 			=> 'text',
+						'null' 			=> TRUE
+					)
+				)
+			);
+		}
+	}
+	
 }
 /* END CLASS */
 

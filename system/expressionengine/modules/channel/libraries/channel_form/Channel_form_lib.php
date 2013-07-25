@@ -1119,6 +1119,11 @@ class Channel_form_lib
 							}
 						}
 
+						if (hours == 0)
+						{
+							hours = 12;
+						}
+
 						if (hours < 10)
 						{
 							hours = "0" + hours;
@@ -1717,11 +1722,6 @@ class Channel_form_lib
 			}
 		}
 
-		if ( ! ee()->security->check_xid(ee()->input->post('XID')))
-		{
-			ee()->functions->redirect(stripslashes(ee()->input->post('RET')));
-		}
-
 		if (empty($this->field_errors) && empty($this->errors))
 		{
 			//temporarily change site_id for cross-site forms
@@ -1857,11 +1857,6 @@ class Channel_form_lib
 			throw new Channel_form_exception(
 				array_merge($this->errors, $this->field_errors)
 			);
-		}
-
-		if ( ! AJAX_REQUEST)
-		{
-			ee()->security->delete_xid(ee()->input->post('XID'));
 		}
 
 		$return = ($this->_meta['return']) ? ee()->functions->create_url($this->_meta['return']) : ee()->functions->fetch_site_index();
@@ -3317,7 +3312,10 @@ class Channel_form_lib
 
 		$_GET['entry_id'] = $this->entry('entry_id');
 
-		ee()->api_channel_fields->apply('_init', array(array('row' => $this->entry)));
+		ee()->api_channel_fields->apply('_init', array(array(
+			'row' => $this->entry,
+			'content_id' => $this->entry('entry_id')
+		)));
 
 		$data = ee()->api_channel_fields->apply('pre_process', array($data));
 

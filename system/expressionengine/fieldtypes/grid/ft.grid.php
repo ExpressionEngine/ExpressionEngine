@@ -67,7 +67,7 @@ class Grid_ft extends EE_Fieldtype {
 	// Actual saving takes place in post_save so we have an entry_id
 	public function save($data)
 	{
-		ee()->session->set_cache(__CLASS__, $this->field_name, $data);
+		ee()->session->set_cache(__CLASS__, $this->name(), $data);
 
 		return NULL;
 	}
@@ -76,7 +76,22 @@ class Grid_ft extends EE_Fieldtype {
 	{
 		$this->_load_grid_lib();
 
-		ee()->grid_lib->save(ee()->session->cache(__CLASS__, $this->field_name));
+		ee()->grid_lib->save(ee()->session->cache(__CLASS__, $this->name()));
+	}
+
+	// --------------------------------------------------------------------
+
+	// This fieldtypes has been converted, so it accepts all content types
+	public function accepts_content_type($name)
+	{
+		return TRUE;
+	}
+
+
+	// When a content type is removed, we need to clean up our data
+	public function unregister_content_type($name)
+	{
+		ee()->grid_model->delete_content_of_type($name);
 	}
 
 	// --------------------------------------------------------------------
@@ -88,7 +103,7 @@ class Grid_ft extends EE_Fieldtype {
 	 */
 	public function delete($entry_ids)
 	{
-		$entries = ee()->grid_model->get_entry_rows($entry_ids, $this->field_id);
+		$entries = ee()->grid_model->get_entry_rows($entry_ids, $this->id(), $this->content_type());
 
 		$row_ids = array();
 		foreach ($entries as $rows)
@@ -134,7 +149,7 @@ class Grid_ft extends EE_Fieldtype {
 			'grid_max_rows' => $this->settings['grid_max_rows']
 		);
 
-		ee()->javascript->output('EE.grid("#'.$this->field_name.'", '.json_encode($settings).');');
+		ee()->javascript->output('EE.grid(document.getElementById("'.$this->name().'"), '.json_encode($settings).');');
 
 		$this->_load_grid_lib();
 
@@ -150,7 +165,15 @@ class Grid_ft extends EE_Fieldtype {
 	{
 		ee()->load->library('grid_parser');
 
-		return ee()->grid_parser->parse($this->row, $this->field_id, $params, $tagdata);
+		// not in a channel scope? pre-process may not have been run.
+		if ($this->content_type() != 'channel')
+		{
+			ee()->load->library('api');
+			ee()->api->instantiate('channel_fields');
+			ee()->grid_parser->grid_field_names[$this->id()] = $this->name();
+		}
+
+		return ee()->grid_parser->parse($this->row, $this->id(), $params, $tagdata, $this->content_type());
 	}
 
 	// --------------------------------------------------------------------
@@ -163,7 +186,7 @@ class Grid_ft extends EE_Fieldtype {
 		$entry_id = $this->row['entry_id'];
 
 		ee()->load->model('grid_model');
-		$entry_data = ee()->grid_model->get_entry_rows($entry_id, $this->field_id, $params);
+		$entry_data = ee()->grid_model->get_entry_rows($entry_id, $this->id(), $this->content_type(), $params);
 
 		if ($entry_data !== FALSE && isset($entry_data[$entry_id]))
 		{
@@ -185,8 +208,8 @@ class Grid_ft extends EE_Fieldtype {
 		ee()->load->model('grid_model');
 		ee()->load->helper('array_helper');
 
-		$columns = ee()->grid_model->get_columns_for_field($this->field_id);
-		$prefix = ee()->grid_parser->grid_field_names[$this->field_id].':';
+		$columns = ee()->grid_model->get_columns_for_field($this->id(), $this->content_type());
+		$prefix = ee()->grid_parser->grid_field_names[$this->id()].':';
 
 		// Parameters
 		$set_classes = element('set_classes', $params, 'no');
@@ -257,7 +280,7 @@ class Grid_ft extends EE_Fieldtype {
 			// Parse the loopable portion of the table
 			$row_data = ee()->grid_parser->parse(
 				$this->row,
-				$this->field_id,
+				$this->id(),
 				$params,
 				$match[1]
 			);
@@ -323,7 +346,7 @@ class Grid_ft extends EE_Fieldtype {
 		$entry_id = $this->row['entry_id'];
 
 		ee()->load->model('grid_model');
-		$entry_data = ee()->grid_model->get_entry_rows($entry_id, $this->field_id, $params);
+		$entry_data = ee()->grid_model->get_entry_rows($entry_id, $this->id(), $this->content_type(), $params);
 
 		// Bail out if no entry data
 		if ($entry_data === FALSE OR
@@ -333,7 +356,7 @@ class Grid_ft extends EE_Fieldtype {
 			return '';
 		}
 
-		$columns = ee()->grid_model->get_columns_for_field($this->field_id);
+		$columns = ee()->grid_model->get_columns_for_field($this->id(), $this->content_type());
 
 		// Find the column that matches the passed column name
 		foreach ($columns as $column)
@@ -417,14 +440,14 @@ class Grid_ft extends EE_Fieldtype {
 
 		ee()->load->library('grid_parser');
 
-		return ee()->grid_parser->parse($this->row, $this->field_id, $params, $tagdata);
+		return ee()->grid_parser->parse($this->row, $this->id(), $params, $tagdata);
 	}
 
 	// --------------------------------------------------------------------
 
 	public function display_settings($data)
 	{
-		$field_id = isset($data['field_id']) ? $data['field_id'] : 0;
+		$field_id = (int) $this->id();
 
 		ee()->table->set_heading(array(
 			'data' => lang('grid_options'),
@@ -498,7 +521,7 @@ class Grid_ft extends EE_Fieldtype {
 
 			if ( ! empty($field_id))
 			{
-				$columns = ee()->grid_model->get_columns_for_field($field_id);
+				$columns = ee()->grid_model->get_columns_for_field($field_id, $this->content_type());
 
 				foreach ($columns as $column)
 				{
@@ -628,7 +651,7 @@ class Grid_ft extends EE_Fieldtype {
 	{
 		// Need to get the field ID of the possibly newly-created field, so
 		// we'll actually re-save the field settings in the Grid library
-		$data['field_id'] = $this->settings['field_id'];
+		$data['field_id'] = $this->id();
 		$data['grid'] = ee()->input->post('grid');
 
 		$this->_load_grid_lib();
@@ -641,7 +664,7 @@ class Grid_ft extends EE_Fieldtype {
 	{
 		if (isset($data['ee_action']) && $data['ee_action'] == 'delete')
 		{
-			$columns = ee()->grid_model->get_columns_for_field($settings['field_id'], FALSE);
+			$columns = ee()->grid_model->get_columns_for_field($settings['field_id'], $this->content_type(), FALSE);
 
 			$col_types = array();
 			foreach ($columns as $column)
@@ -675,8 +698,9 @@ class Grid_ft extends EE_Fieldtype {
 
 		ee()->grid_lib->entry_id = (isset($this->settings['entry_id']))
 			? $this->settings['entry_id'] : ee()->input->get_post('entry_id');
-		ee()->grid_lib->field_id = $this->field_id;
-		ee()->grid_lib->field_name = $this->field_name;
+		ee()->grid_lib->field_id = $this->id();
+		ee()->grid_lib->field_name = $this->name();
+		ee()->grid_lib->content_type = $this->content_type();
 	}
 }
 

@@ -795,6 +795,15 @@ class Relationship_ft extends EE_Fieldtype {
 		ee()->dbforge->add_key('field_id');
 
 		ee()->dbforge->create_table($this->_table);
+
+		$field['field_id_'.$data['field_id']] = array(
+			'type' 			=> 'INT',
+			'constraint'	=> 10,
+			'null' 			=> FALSE,
+			'default'		=> 0
+			);
+
+		return $field;
 	}
 
 	// --------------------------------------------------------------------
@@ -808,6 +817,22 @@ class Relationship_ft extends EE_Fieldtype {
 	{
 		ee()->load->dbforge();
 		ee()->dbforge->drop_table($this->_table);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Make sure that we only accept data for grid and channels.
+	 *
+	 * Long term this should support all content types, but currently that
+	 * is not the case.
+	 *
+	 * @param string  The name of the content type
+	 * @return bool    Allows content type?
+	 */
+	public function accepts_content_type($name)
+	{
+		return ($name == 'channel' || $name == 'grid');
 	}
 
 	// --------------------------------------------------------------------

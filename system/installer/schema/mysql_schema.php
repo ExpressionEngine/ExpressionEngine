@@ -137,6 +137,7 @@ class EE_Schema {
 			action_id int(4) unsigned NOT NULL auto_increment,
 			class varchar(50) NOT NULL,
 			method varchar(50) NOT NULL,
+			csrf_exempt tinyint(1) UNSIGNED NOT NULL default 0,
 			PRIMARY KEY `action_id` (`action_id`)
 		)";
 
@@ -1198,6 +1199,14 @@ class EE_Schema {
 			KEY `hash` (`hash`)
 		)";
 
+		// Entity type table
+		$Q[] = "CREATE TABLE `exp_content_types` (
+			`content_type_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+			`name` varchar(50) NOT NULL DEFAULT '',
+			PRIMARY KEY (`content_type_id`),
+			KEY `name` (`name`)
+		)";
+
 		// Fieldtype table
 		$Q[] = "CREATE TABLE exp_fieldtypes (
 			fieldtype_id int(4) unsigned NOT NULL auto_increment,
@@ -1318,6 +1327,7 @@ class EE_Schema {
 		$Q[] = "CREATE TABLE `exp_grid_columns` (
 			`col_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 			`field_id` int(10) unsigned DEFAULT NULL,
+			`content_type` varchar(50) DEFAULT NULL,
 			`col_order` int(3) unsigned DEFAULT NULL,
 			`col_type` varchar(50) DEFAULT NULL,
 			`col_label` varchar(50) DEFAULT NULL,

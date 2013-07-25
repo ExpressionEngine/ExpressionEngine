@@ -498,6 +498,10 @@ EE.date_obj_time = (function() {
 		if (date_obj_hours != 0) {
 		    date_obj_hours = ((date_obj_hours + 11) % 12) + 1;
 		}
+		else
+		{
+			date_obj_hours = 12;
+		}
 	}
 
 	if (date_obj_hours < 10) {

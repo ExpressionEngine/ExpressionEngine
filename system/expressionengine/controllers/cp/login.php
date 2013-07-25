@@ -10,7 +10,7 @@
  * @since		Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -21,9 +21,9 @@
  * @category	Control Panel
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
- */ 
+ */
 class Login extends CP_Controller {
-	
+
 	var $username = '';		// stores username on login failure
 
 	/**
@@ -36,7 +36,7 @@ class Login extends CP_Controller {
 		$this->load->library('auth');
 		$this->lang->loadfile('login');
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -44,7 +44,7 @@ class Login extends CP_Controller {
 	 *
 	 * @access	public
 	 * @return	void
-	 */	
+	 */
 	public function index()
 	{
 		// We don't want to allow access to the login screen to someone
@@ -60,14 +60,14 @@ class Login extends CP_Controller {
 			$this->output->set_status_header(401);
 			die('C=login');
 		}
-		
+
 		$username = $this->session->flashdata('username');
 
 		$this->view->return_path = '';
 		$this->view->focus_field = ($username) ? 'password' : 'username';
 		$this->view->username = ($username) ? form_prep($username) : '';
 		$this->view->message = ($this->input->get('auto_expire')) ? lang('session_auto_timeout') : $this->session->flashdata('message');
-		
+
 		if ($this->input->get('BK'))
 		{
 			$this->view->return_path = base64_encode($this->input->get('BK'));
@@ -76,22 +76,22 @@ class Login extends CP_Controller {
 		{
 			$this->view->return_path = $this->input->get('return');
 		}
-		
+
 		$this->view->cp_page_title = lang('login');
 
 		$this->view->render('account/login');
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
 	 * Authenticate user
 	 *
 	 * @return	mixed
-	 */	
+	 */
 	public function authenticate()
 	{
-		// Run through basic verifications: authenticate, username and 
+		// Run through basic verifications: authenticate, username and
 		// password both exist, not banned, IP checking is okay, run hook
 		if ( ! ($verify_result = $this->auth->verify()))
 		{
@@ -100,49 +100,49 @@ class Login extends CP_Controller {
 		}
 		list($username, $password, $incoming) = $verify_result;
 		$member_id = $incoming->member('member_id');
-		
-		
+
+
 		// Is the UN/PW the correct length?
 		// ----------------------------------------------------------------
-		
+
 		// If the admin has specfified a minimum username or password length that
 		// is longer than the current users's data we'll have them update their info.
 		// This will only be an issue if the admin has changed the un/password requiremements
 		// after member accounts already exist.
-		
+
 		$uml = $this->config->item('un_min_len');
 		$pml = $this->config->item('pw_min_len');
-		
+
 		$ulen = strlen($username);
 		$plen = strlen($password);
-		
+
 		if ($ulen < $uml OR $plen < $pml)
 		{
 			return $this->_un_pw_update_form();
 		}
-		
-		
+
+
 		// Set cookies and start session
 		// ----------------------------------------------------------------
-		
+
 		// Kill existing flash cookie
 		$this->functions->set_cookie('flash');
-		
+
 		if (isset($_POST['remember_me']))
 		{
 			$incoming->remember_me();
 		}
-		
+
 		if (is_numeric($this->input->post('site_id')))
 		{
 			$this->functions->set_cookie('cp_last_site_id', $this->input->post('site_id'), 0);
 		}
-		
+
 		$incoming->start_session(TRUE);
 
 		// Redirect the user to the CP home page
 		// ----------------------------------------------------------------
-		
+
 		$base = BASE;
 
 		if ($this->config->item('admin_session_type') == 's')
@@ -155,12 +155,12 @@ class Login extends CP_Controller {
 		}
 
 		$return_path = $base.AMP.'C=homepage';
-		
+
 		if ($this->input->post('return_path'))
 		{
 			$return_path = $base.AMP.base64_decode($this->input->post('return_path'));
 		}
-		
+
 		if (AJAX_REQUEST)
 		{
 			$this->output->send_ajax_response(array(
@@ -173,7 +173,7 @@ class Login extends CP_Controller {
 
 		$this->functions->redirect($return_path);
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -195,10 +195,10 @@ class Login extends CP_Controller {
 
 		$uml = $this->config->item('un_min_len');
 		$pml = $this->config->item('pw_min_len');
-		
+
 		$ulen = strlen($this->input->post('username'));
 		$plen = strlen($this->input->post('password'));
-		
+
 		$new_un = ($this->input->get_post('new_username') !== FALSE) ? $this->input->get_post('new_username') : '';
 		$new_pw = ($this->input->get_post('new_password') !== FALSE) ? $this->input->get_post('new_password') : '';
 
@@ -218,25 +218,25 @@ class Login extends CP_Controller {
 				'username'	=> $this->input->post('username'),
 				'password'	=> base64_encode($this->input->post('password'))
 			)
-		);	
-					
+		);
+
 		if ($ulen < $uml)
 		{
 			$data['new_username_required'] = TRUE;
 			$data['notices']['un_len'] = sprintf(lang('un_len'), $uml);
 			$data['notices']['yun_len'] = sprintf(lang('yun_len'), $ulen);
 		}
-		
+
 		if ($plen < $pml)
 		{
 			$data['new_password_required'] = TRUE;
 			$data['notices']['pw_len'] = sprintf(lang('pw_len'), $pml);
 			$data['notices']['ypw_len'] = sprintf(lang('ypw_len'), $plen);
 		}
-		
+
 		$this->load->view('account/update_un_pw', $data);
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -250,15 +250,15 @@ class Login extends CP_Controller {
 	public function update_un_pw()
 	{
 		$this->lang->loadfile('member');
-		
+
 		$missing = FALSE;
-		
+
 		if ( ! isset($_POST['new_username']) AND  ! isset($_POST['new_password']))
 		{
 			return $this->_un_pw_update_form(lang('all_fields_required'));
 		}
-		
-		// Run through basic verifications: authenticate, username and 
+
+		// Run through basic verifications: authenticate, username and
 		// password both exist, not banned, IP checking is okay
 		if ( ! ($verify_result = $this->auth->verify()))
 		{
@@ -267,22 +267,22 @@ class Login extends CP_Controller {
 		}
 		list($username, $password, $incoming) = $verify_result;
 		$member_id = $incoming->member('member_id');
-		
+
 		$new_un  = (string) $this->input->post('new_username');
 		$new_pw  = (string) $this->input->post('new_password');
 		$new_pwc = (string) $this->input->post('new_password_confirm');
-		
+
 		// Make sure validation library is available
 		if ( ! class_exists('EE_Validate'))
 		{
 			require APPPATH.'libraries/Validate.php';
 		}
-		
+
 		// Load it up with the information needed
 		$VAL = new EE_Validate(
-			array( 
+			array(
 				'val_type'			=> 'new',
-				'fetch_lang' 		=> TRUE, 
+				'fetch_lang' 		=> TRUE,
 				'require_cpw' 		=> FALSE,
 				'enable_log'		=> FALSE,
 				'username'			=> $new_un,
@@ -291,16 +291,16 @@ class Login extends CP_Controller {
 				'cur_password'		=> $this->input->post('password')
 			)
 		);
-		
+
 		$un_exists = FALSE;
-		
+
 		if ($new_un !== '')
 		{
 			$un_exists = ($this->input->post('username') === $new_un) ? FALSE : TRUE;
 		}
-		
+
 		$pw_exists = ($new_pw !== '' AND $new_pwc !== '') ? TRUE : FALSE;
-		
+
 		if ($un_exists)
 		{
 			$VAL->validate_username();
@@ -310,7 +310,7 @@ class Login extends CP_Controller {
 		{
 			$VAL->validate_password();
 		}
-		
+
 		// Display error is there are any
 		if (count($VAL->errors) > 0)
 		{
@@ -323,22 +323,22 @@ class Login extends CP_Controller {
 
 			return $this->_un_pw_update_form($er);
 		}
-		 
+
 		if ($un_exists)
 		{
 			$this->auth->update_username($member_id, $new_un);
 		}
-		
+
 		if ($pw_exists)
 		{
 			$this->auth->update_password($member_id, $new_pw);
 		}
-		
+
 		// Send them back to login with updated username and password
 		$this->session->set_flashdata('message', lang('unpw_updated'));
 		$this->functions->redirect(BASE.AMP.'C=login');
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -349,9 +349,9 @@ class Login extends CP_Controller {
 	 */
 	public function logout()
 	{
-		if ($this->session->userdata('group_id') == 3) 
+		if ($this->session->userdata('group_id') == 3)
 		{
-			$this->functions->redirect(SELF);
+			$this->functions->redirect(BASE.AMP.'C=login');
 		}
 
 		$this->db->where('ip_address', $this->input->ip_address());
@@ -359,8 +359,8 @@ class Login extends CP_Controller {
 		$this->db->delete('online_users');
 
 		$this->session->destroy();
-		
-		$this->functions->set_cookie('read_topics');  
+
+		$this->functions->set_cookie('read_topics');
 
 		$this->logger->log_action(lang('member_logged_out'));
 
@@ -380,21 +380,21 @@ class Login extends CP_Controller {
 		/*
 		/* -------------------------------------------*/
 
-		$this->functions->redirect(SELF);
+		$this->functions->redirect(BASE.AMP.'C=login');
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
 	 * Forgotten password form
-	 * 
+	 *
 	 * Present a form to the user asking them for the e-mail address associated
 	 * with the account they are attempting to log in to.  If an e-mail address
 	 * is found in post, then the form will be populated with said e-mail.  Loads
 	 * the account/forgot_password view.
 	 *
 	 * @access	public
-	 * @return	null	
+	 * @return	null
 	 */
 	public function forgotten_password_form()
 	{
@@ -404,16 +404,16 @@ class Login extends CP_Controller {
 		}
 
 		$message = $this->session->flashdata('message');
-		
+
 		$variables = array(
 			'email'			=> ( ! $this->input->post('email')) ? '' : $this->input->get_post('email'),
 			'message' 		=> $message,
 			'cp_page_title'	=> lang('forgotten_password')
 		);
-		
+
 		$this->load->view('account/forgot_password', $variables);
-	}  
-	
+	}
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -438,56 +438,55 @@ class Login extends CP_Controller {
 		{
 			$this->functions->redirect(BASE.AMP.'C=login'.AMP.'M=forgotten_password_form');
 		}
-		
+
 		$address = strip_tags($address);
-		
+
 		// Fetch user data
-		$this->db->select('member_id, username');
+		$this->db->select('member_id, username, screen_name');
 		$this->db->where('email', $address);
 		$query = $this->db->get('members');
 
 		// Show a success email even if the email doesn't exist so spammers
-		// don't know if an email exists or not		
+		// don't know if an email exists or not
 		if ($query->num_rows() == 0)
 		{
 			$vars['message_success'] = lang('forgotten_email_sent');
-			return $this->load->view('account/request_new_password', $vars);
+			return $this->load->view('account/show_reset_password_message', $vars);
 		}
-		
-		$member_id = $query->row('member_id') ;
-		$username  = $query->row('username') ;
-	
-		// Clean out any old reset codes.	
+
+		$member_id = $query->row('member_id');
+		$name  = ($query->row('screen_name') == '') ? $query->row('username') : $query->row('screen_name');
+
+		// Clean out any old reset codes.
 		$a_day_ago = time() - (60*60*24);
 		$this->db->where('date <', $a_day_ago);
 		$this->db->or_where('member_id', $member_id);
 		$this->db->delete('reset_password');
-		
+
 		// Create a new DB record with the temporary reset code
 		$rand = $this->functions->random('alnum', 8);
 		$data = array('member_id' => $member_id, 'resetcode' => $rand, 'date' => time());
 		$this->db->query($this->db->insert_string('exp_reset_password', $data));
-		
+
 		// Buid the email message
 		$swap = array(
-			'name'		=> $username,
-			'reset_url'	=> $this->config->item('cp_url')."?S=0&D=cp&C=login&M=reset_password&resetcode=".$rand,
+			'name'		=> $name,
+			'reset_url'	=> reduce_double_slashes($this->config->item('cp_url')."?S=0&D=cp&C=login&M=reset_password&resetcode=".$rand),
 			'site_name'	=> stripslashes($this->config->item('site_name')),
 			'site_url'	=> $this->config->item('site_url')
 		);
-					
+
 		$template = $this->functions->fetch_email_template('forgot_password_instructions');
 		$message_title = $this->_var_swap($template['title'], $swap);
 		$message = $this->_var_swap($template['data'], $swap);
 
-
 		// Instantiate the email class
 		$this->load->library('email');
 		$this->email->wordwrap = true;
-		$this->email->from($this->config->item('webmaster_email'), $this->config->item('webmaster_name'));	
-		$this->email->to($address); 
-		$this->email->subject($message_title);	
-		$this->email->message($message);	
+		$this->email->from($this->config->item('webmaster_email'), $this->config->item('webmaster_name'));
+		$this->email->to($address);
+		$this->email->subject($message_title);
+		$this->email->message($message);
 
 		$vars['message_success'] = '';
 		$vars['message_error'] = '';
@@ -495,28 +494,28 @@ class Login extends CP_Controller {
 		if ( ! $this->email->send())
 		{
 			$vars['message_error'] = lang('error_sending_email');
-		} 
-		else 
-		{	
+		}
+		else
+		{
 			$vars['message_success'] = lang('forgotten_email_sent');
 		}
 
 		$vars['cp_page_title'] = lang('forgotten_password');
 		$this->load->view('account/show_reset_password_message', $vars);
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
-	 * Reset Password 
+	 * Reset Password
 	 *
 	 * This function is called when a user clicks the confirmation link
 	 * in the email they are sent when they request a new password.  Needs
 	 * to have the resetcode in the $_GET array, otherwise it will redirect
-	 * the user to the login page. 
-	 * 	It presents the user with a form to enter and confirm a new password in. 
-	 * Submission of the form takes the user back here, where the $_POST data 
-	 * is validated and, if valid, the user's password is reset.  They are then 
+	 * the user to the login page.
+	 * 	It presents the user with a form to enter and confirm a new password in.
+	 * Submission of the form takes the user back here, where the $_POST data
+	 * is validated and, if valid, the user's password is reset.  They are then
 	 * presented with a success page and a link back to login.
 	 *
 	 * @access	public
@@ -529,13 +528,13 @@ class Login extends CP_Controller {
 		{
 			return $this->functions->redirect(BASE);
 		}
-		
+
 		if ($this->session->userdata('is_banned') === TRUE)
 		{
 			return show_error(lang('unauthorized_request'));
 		}
 
-		// Side note 'get_post' actually means 'fetch from post or get'.  It 
+		// Side note 'get_post' actually means 'fetch from post or get'.  It
 		// will check both.  Yes, that's a terribly obfuscating method name.
 		// In any case, the resetcode could be in either post or get, so
 		// check both.  If we don't find it, send them away, quietly.
@@ -545,7 +544,7 @@ class Login extends CP_Controller {
 		}
 
 		// Validate their reset code.  Make sure it matches a valid
-		// member.  
+		// member.
 		$a_day_ago = time() - (60*60*24);
 		$member_id_query = $this->db->select('member_id')
 			->where('resetcode', $resetcode)
@@ -572,7 +571,7 @@ class Login extends CP_Controller {
 				->where('member_id', $member_id)
 				->get('members')
 				->row('username');
-			
+
 			$this->form_validation->set_rules('password', 'lang:new_password', 'valid_password|required');
 			$this->form_validation->set_rules('password_confirm', 'lang:new_password_confirm', 'matches[password]|required');
 
@@ -598,7 +597,7 @@ class Login extends CP_Controller {
 					'cp_page_title' => lang('password_changed')
 				);
 
-				return $this->load->view('account/show_reset_password_message', $vars);	
+				return $this->load->view('account/show_reset_password_message', $vars);
 			}
 		}
 
@@ -612,11 +611,11 @@ class Login extends CP_Controller {
 			'password'			=> '',
 			'password_confirm'  => '',
 			'message' 		=> $message,
-			'cp_page_title'	=> lang('enter_new_password') 
+			'cp_page_title'	=> lang('enter_new_password')
 		);
 		$this->load->view('account/reset_password', $variables);
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -638,7 +637,7 @@ class Login extends CP_Controller {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 *	Refresh XID
 	 *
@@ -646,9 +645,9 @@ class Login extends CP_Controller {
 	 *	As their session type.  we'll silently refresh their XIDs in the background
 	 *	Instead of forcing them to log back in each time.
 	 *	This method will keep the user logged in indefinitely, as the session type is
-	 *	already set to cookies.  If we didn't do this, they would simply be redirected to 
+	 *	already set to cookies.  If we didn't do this, they would simply be redirected to
 	 *	the control panel home page.
-	 *			
+	 *
 	 */
 	public function refresh_xid()
 	{
@@ -658,14 +657,14 @@ class Login extends CP_Controller {
 		{
 			show_error(lang('unauthorized_access'));
 		}
-		
+
 		$this->output->send_ajax_response(array(
 			'xid'	=> XID_SECURE_HASH
 		));
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 *	Return to login
 	 *
@@ -680,7 +679,7 @@ class Login extends CP_Controller {
 				'message'		=> lang($lang_key)
 			));
 		}
-		
+
 		$this->session->set_flashdata('message', lang($lang_key));
 		$this->functions->redirect(BASE.AMP.'C=login');
 	}

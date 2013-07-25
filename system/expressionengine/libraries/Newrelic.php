@@ -58,6 +58,19 @@ class Newrelic {
 
 	// --------------------------------------------------------------------
 
+	/**
+	 * Prevent the New Relic PHP extension from inserting its JavaScript
+	 * for this transaction
+	 *
+	 * @access	public
+	 * @return	void
+	 */
+	public function disable_autorum()
+	{
+		newrelic_disable_autorum();
+	}
+
+	// --------------------------------------------------------------------
 }
 // END CLASS
 

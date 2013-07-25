@@ -101,7 +101,10 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component {
 					$_ft_path = $ft_api->ft_paths[$ft_api->field_type];
 					ee()->load->add_package_path($_ft_path, FALSE);
 
-					$obj->_init(array('row' => $data));
+					$obj->_init(array(
+						'row' => $data,
+						'content_id' => $data['entry_id']
+					));
 
 					$data = $obj->pre_process(
 						$ft_api->custom_field_data_hook(

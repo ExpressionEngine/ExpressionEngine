@@ -10,7 +10,7 @@
  * @since		Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -35,7 +35,7 @@ class Addons_installer {
 		ee()->load->library('api');
 		ee()->load->library('addons');
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -50,7 +50,7 @@ class Addons_installer {
 		$this->_update_addon($addon, $type, 'install', $show_package);
 		return TRUE;
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -67,7 +67,7 @@ class Addons_installer {
 		$this->_update_addon($addon, $type, 'uninstall', $show_package);
 		return TRUE;
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -89,7 +89,7 @@ class Addons_installer {
 			show_error(lang('module_can_not_be_found'));
 		}
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -111,7 +111,7 @@ class Addons_installer {
 			show_error(lang('module_can_not_be_found'));
 		}
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -125,7 +125,7 @@ class Addons_installer {
 	{
 		$class = $this->_accessory_install_setup($accessory);
 		$ACC = new $class();
-		
+
 		if (method_exists($ACC, 'install'))
 		{
 			$ACC->install();
@@ -152,15 +152,15 @@ class Addons_installer {
 	{
 		$class = $this->_accessory_install_setup($accessory, FALSE);
 		$ACC = new $class();
-		
+
 		if (method_exists($ACC, 'uninstall'))
 		{
 			$ACC->uninstall();
 		}
 
-		ee()->db->delete('accessories', array('class' => $class)); 
+		ee()->db->delete('accessories', array('class' => $class));
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -173,11 +173,11 @@ class Addons_installer {
 	function install_extension($extension, $enable = FALSE)
 	{
 		ee()->load->model('addons_model');
-		
+
 		if ( ! ee()->addons_model->extension_installed($extension))
 		{
 			$EXT = $this->_extension_install_setup($extension);
-			
+
 			if (method_exists($EXT, 'activate_extension') === TRUE)
 			{
 				$activate = $EXT->activate_extension();
@@ -203,7 +203,7 @@ class Addons_installer {
 	{
 		ee()->load->model('addons_model');
 		$EXT = $this->_extension_install_setup($extension);
-		
+
 		ee()->addons_model->update_extension(ucfirst(get_class($EXT)), array('enabled' => 'n'));
 
 		if (method_exists($EXT, 'disable_extension') === TRUE)
@@ -211,7 +211,7 @@ class Addons_installer {
 			$disable = $EXT->disable_extension();
 		}
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -224,23 +224,33 @@ class Addons_installer {
 	function install_fieldtype($fieldtype)
 	{
 		ee()->api->instantiate('channel_fields');
-		
+
 		if (ee()->api_channel_fields->include_handler($fieldtype))
 		{
 			$default_settings = array();
 			$FT = ee()->api_channel_fields->setup_handler($fieldtype, TRUE);
-			
+
 			$default_settings = $FT->install();
-			
+
 			ee()->db->insert('fieldtypes', array(
 				'name'					=> $fieldtype,
 				'version'				=> $FT->info['version'],
 				'settings'				=> base64_encode(serialize((array)$default_settings)),
 				'has_global_settings'	=> method_exists($FT, 'display_global_settings') ? 'y' : 'n'
 			));
+
+			ee()->load->library('content_types');
+
+			foreach (ee()->content_types->all() as $content_type)
+			{
+				if ($FT->accepts_content_type($content_type))
+				{
+					ee()->api_channel_fields->apply('register_content_type', array($content_type));
+				}
+			}
 		}
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -253,11 +263,11 @@ class Addons_installer {
 	function uninstall_fieldtype($fieldtype)
 	{
 		ee()->api->instantiate('channel_fields');
-		
+
 		if (ee()->api_channel_fields->include_handler($fieldtype))
 		{
 			ee()->load->dbforge();
-			
+
 			// Drop columns
 			ee()->db->select('channel_fields.field_id, channels.channel_id');
 			ee()->db->from('channel_fields');
@@ -267,7 +277,7 @@ class Addons_installer {
 
 			$ids = array();
 			$channel_ids = array();
-			
+
 			if ($query->num_rows() > 0)
 			{
 				foreach($query->result() as $row)
@@ -276,7 +286,7 @@ class Addons_installer {
 					$channel_ids[] = $row->channel_id;
 				}
 			}
-			
+
 			$ids = array_unique($ids);
 
 			if (count($ids))
@@ -286,10 +296,10 @@ class Addons_installer {
 					ee()->dbforge->drop_column('channel_data', 'field_id_'.$id);
 					ee()->dbforge->drop_column('channel_data', 'field_ft_'.$id);
 				}
-				
+
 				// Remove from layouts
 				$c_ids = array_unique($channel_ids);
-				
+
 				ee()->load->library('layout');
 				ee()->layout->delete_layout_fields($ids, $c_ids);
 
@@ -300,17 +310,17 @@ class Addons_installer {
 			// Uninstall
 			$FT = ee()->api_channel_fields->setup_handler($fieldtype, TRUE);
 			$FT->uninstall();
-			
-			ee()->db->delete('fieldtypes', array('name' => $fieldtype)); 
+
+			ee()->db->delete('fieldtypes', array('name' => $fieldtype));
 		}
-	}	
+	}
 	// --------------------------------------------------------------------
 
 	/**
 	 * RTE Tool Installer
 	 *
 	 * @access	private
-	 * @param String $tool The name of the tool, with or without spaces, but 
+	 * @param String $tool The name of the tool, with or without spaces, but
 	 *     without _rte at the end
 	 */
 	function install_rte_tool($tool)
@@ -319,7 +329,7 @@ class Addons_installer {
 		ee()->load->model('rte_tool_model');
 		ee()->rte_tool_model->add($tool);
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -382,9 +392,9 @@ class Addons_installer {
 
 		return $class;
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Accessory Install Setup
 	 *
@@ -400,7 +410,7 @@ class Addons_installer {
 		{
 			show_error(lang('unauthorized_access'));
 		}
-		
+
 		if ($accessory == '')
 		{
 			show_error(lang('unauthorized_access'));
@@ -413,13 +423,13 @@ class Addons_installer {
 		{
 			show_error(lang('unauthorized_access'));
 		}
-		
+
 		ee()->load->library('accessories');
 		return ee()->accessories->_get_accessory_class($accessory);
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Extension Install Setup
 	 *
@@ -435,14 +445,14 @@ class Addons_installer {
 		{
 			show_error(lang('unauthorized_access'));
 		}
-		
+
 		if ($extension == '')
 		{
 			show_error(lang('no_extension_id'));
 		}
-		
+
 		$class = ucfirst($extension).'_ext';
-		
+
 		if ( ! $instantiate)
 		{
 			return $class;
@@ -454,9 +464,9 @@ class Addons_installer {
 		}
 		return new $class();
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Universal Addon (Un)Installer
 	 *
@@ -473,10 +483,10 @@ class Addons_installer {
 			{
 				$this->_update_addon($addon, $component, $action, $show_package);
 			}
-			
+
 			return;
 		}
-		
+
 		// first party
 		if ( ! ee()->addons->is_package($addon))
 		{
@@ -484,9 +494,9 @@ class Addons_installer {
 		}
 
 		ee()->load->model('addons_model');
-		
+
 		// third party - do entire package
-		if ($show_package && count(ee()->addons->_packages[$addon]) > 1) 
+		if ($show_package && count(ee()->addons->_packages[$addon]) > 1)
 		{
 			ee()->functions->redirect(BASE.AMP.'C=addons'.AMP.'M=package_settings'.AMP.'package='.$addon.AMP.'return='.$_GET['C']);
 		}
@@ -517,9 +527,9 @@ class Addons_installer {
 				else
 				{
 					ee()->load->add_package_path(ee()->addons->_packages[$addon][$type]['path'], FALSE);
-					
+
 					$this->$method($addon);
-					
+
 					ee()->load->remove_package_path(ee()->addons->_packages[$addon][$type]['path']);
 				}
 			}

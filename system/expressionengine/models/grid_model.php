@@ -32,6 +32,8 @@ class Grid_model extends CI_Model {
  	/**
  	 * Performs fieldtype install
  	 *
+ 	 * Beware! Changes here also need to be made in mysql_schema.
+ 	 *
  	 * @return	void
  	 */
  	public function install()
@@ -47,6 +49,10 @@ class Grid_model extends CI_Model {
  				'type'				=> 'int',
  				'constraint'		=> 10,
  				'unsigned'			=> TRUE
+ 			),
+ 			'content_type' => array(
+ 				'type'				=> 'varchar',
+ 				'constraint'		=> 50
  			),
  			'col_order' => array(
  				'type'				=> 'int',
@@ -90,6 +96,7 @@ class Grid_model extends CI_Model {
  		ee()->dbforge->add_field($columns);
  		ee()->dbforge->add_key('col_id', TRUE);
  		ee()->dbforge->add_key('field_id');
+ 		ee()->dbforge->add_key('content_type');
  		ee()->dbforge->create_table($this->_table);
  	}
 
@@ -126,9 +133,9 @@ class Grid_model extends CI_Model {
  	 * @param	int		Field ID of field to create a data table for
  	 * @return	boolean	Whether or not a table was created
  	 */
- 	public function create_field($field_id)
+ 	public function create_field($field_id, $content_type)
  	{
- 		$table_name = $this->_table_prefix . $field_id;
+ 		$table_name = $this->_data_table($content_type, $field_id);
 
  		if ( ! ee()->db->table_exists($table_name))
  		{
@@ -191,6 +198,29 @@ class Grid_model extends CI_Model {
  	// ------------------------------------------------------------------------
 
  	/**
+ 	 * Performs cleanup on our end if a grid field's parent content type is deleted.
+ 	 * Removes all associated tables and drops all entry rows.
+ 	 *
+ 	 * @param	string  Name of the content type that was removed
+ 	 * @return	void
+ 	 */
+ 	public function delete_content_of_type($content_type)
+ 	{
+ 		$tables = ee()->db->list_tables($content_type . $this->_table_prefix);
+
+ 		ee()->load->dbforge();
+
+ 		foreach ($tables as $table_name)
+ 		{
+ 			ee()->dbforge->drop_table($table_name);
+ 		}
+
+ 		ee()->db->delete($this->_table, array('content_type' => $content_type));
+ 	}
+
+ 	// ------------------------------------------------------------------------
+
+ 	/**
  	 * Adds a new column to the columns table or updates an existing one; also
  	 * manages columns in the field's respective data table
  	 *
@@ -198,7 +228,7 @@ class Grid_model extends CI_Model {
  	 * @param	int		Column ID to update, or FALSE if new column
  	 * @return	int		Column ID
  	 */
- 	public function save_col_settings($column, $col_id = FALSE)
+ 	public function save_col_settings($column, $col_id = FALSE, $content_type = 'channel')
  	{
  		// Existing column
  		if ($col_id)
@@ -211,7 +241,7 @@ class Grid_model extends CI_Model {
  				$col_id,
  				$column['col_type'],
  				json_decode($column['col_settings'], TRUE),
- 				$this->_get_ft_api_settings($column['field_id'])
+ 				$this->_get_ft_api_settings($column['field_id'], $content_type)
  			);
  		}
  		// New column
@@ -228,7 +258,7 @@ class Grid_model extends CI_Model {
  				array(),
  				TRUE,
  				FALSE,
- 				$this->_get_ft_api_settings($column['field_id'])
+ 				$this->_get_ft_api_settings($column['field_id'], $content_type)
  			);
  		}
 
@@ -278,7 +308,7 @@ class Grid_model extends CI_Model {
  	 * @param	array	Options for the query, often filled by tag parameters
  	 * @return	array	Row data
  	 */
- 	public function get_entry_rows($entry_ids, $field_id, $options = array())
+ 	public function get_entry_rows($entry_ids, $field_id, $content_type, $options = array())
  	{
  		if ( ! is_array($entry_ids))
  		{
@@ -287,7 +317,7 @@ class Grid_model extends CI_Model {
 
  		// Validate the passed parameters and create a unique marker for these
  		// specific parameters so we know not to query for them again
- 		$options = $this->_validate_params($options, $field_id);
+ 		$options = $this->_validate_params($options, $field_id, $content_type);
  		$marker = $this->_get_tag_marker($options);
 
  		foreach ($entry_ids as $key => $entry_id)
@@ -331,13 +361,35 @@ class Grid_model extends CI_Model {
 
  			ee()->load->helper('array_helper');
 
- 			$rows = ee()->db->where_in('entry_id', $entry_ids)
+ 			ee()->db->where_in('entry_id', $entry_ids)
  				->order_by(
  					element('orderby', $options, 'row_order'),
  					element('sort', $options, 'asc')
- 				)
- 				->get($this->_table_prefix . $field_id)
- 				->result_array();
+ 				);
+
+ 			// -------------------------------------------
+ 			// 'grid_query' hook.
+ 			// - Allows developers to modify and run the query for Grid data
+ 			//
+ 				if (ee()->extensions->active_hook('grid_query') === TRUE)
+ 				{
+ 					$rows = ee()->extensions->call(
+ 						'grid_query',
+ 						$entry_ids,
+ 						$field_id,
+ 						$content_type,
+ 						$this->_data_table($content_type, $field_id),
+ 						ee()->db->_compile_select(FALSE, FALSE)
+ 					);
+ 				}
+ 				else
+ 				{
+ 					$rows = ee()->db->get(
+ 						$this->_data_table($content_type, $field_id)
+ 					)->result_array();
+ 				}
+ 			//
+ 			// -------------------------------------------
 
  			// Add these rows to the cache
  			foreach ($rows as $row)
@@ -360,7 +412,7 @@ class Grid_model extends CI_Model {
  	 * 					the orderby parameter is ordering via a real column
  	 * @return	array	Array of validated and default parameters to use for parsing
  	 */
- 	protected function _validate_params($params, $field_id)
+ 	protected function _validate_params($params, $field_id, $content_type)
  	{
  		ee()->load->helper('array_helper');
 
@@ -397,7 +449,7 @@ class Grid_model extends CI_Model {
  			$sort = 'asc';
  		}
 
- 		$columns = $this->get_columns_for_field($field_id);
+ 		$columns = $this->get_columns_for_field($field_id, $content_type);
 
  		$sortable_columns = array();
  		foreach ($columns as $col)
@@ -474,7 +526,7 @@ class Grid_model extends CI_Model {
  	 * @param	array	Array of field names mapped to search terms
  	 * @param	int		Field ID to get column data for
  	 */
- 	protected function _field_search($search_terms, $field_id)
+ 	protected function _field_search($search_terms, $field_id, $content_type = 'channel')
  	{
  		if (empty($search_terms))
  		{
@@ -483,7 +535,7 @@ class Grid_model extends CI_Model {
 
  		ee()->load->model('channel_model');
 
- 		$columns = $this->get_columns_for_field($field_id);
+ 		$columns = $this->get_columns_for_field($field_id, $content_type);
 
  		// We'll need to map column names to field IDs so we know which column
  		// to search
@@ -534,7 +586,7 @@ class Grid_model extends CI_Model {
  	 * @param	boolean	Skip the cache and get a fresh set of columns
  	 * @return	array	Settings from grid_columns table
  	 */
- 	public function get_columns_for_field($field_ids, $cache = TRUE)
+ 	public function get_columns_for_field($field_ids, $content_type, $cache = TRUE)
  	{
  		$multi_column = is_array($field_ids);
 
@@ -545,9 +597,9 @@ class Grid_model extends CI_Model {
  			// Only get the colums for the field IDs we don't already have
  			foreach ($field_ids as $key => $field_id)
  			{
- 				if (isset($this->_columns[$field_id]) && $cache)
+ 				if (isset($this->_columns[$content_type][$field_id]) && $cache)
  				{
- 					$cached[$field_id] = $this->_columns[$field_id];
+ 					$cached[$field_id] = $this->_columns[$content_type][$field_id];
  					unset($field_ids[$key]);
  				}
  			}
@@ -561,15 +613,16 @@ class Grid_model extends CI_Model {
  		else
  		{
  			// Return fron cache if exists and allowed
- 			if (isset($this->_columns[$field_ids]) && $cache)
+ 			if (isset($this->_columns[$content_type][$field_ids]) && $cache)
  			{
- 				return $this->_columns[$field_ids];
+ 				return $this->_columns[$content_type][$field_ids];
  			}
 
  			$field_ids = array($field_ids);
  		}
 
  		$columns = ee()->db->where_in('field_id', $field_ids)
+ 			->where('content_type', $content_type)
  			->order_by('col_order')
  			->get($this->_table)
  			->result_array();
@@ -577,18 +630,18 @@ class Grid_model extends CI_Model {
  		foreach ($columns as &$column)
  		{
  			$column['col_settings'] = json_decode($column['col_settings'], TRUE);
- 			$this->_columns[$column['field_id']][$column['col_id']] = $column;
+ 			$this->_columns[$content_type][$column['field_id']][$column['col_id']] = $column;
  		}
 
  		foreach ($field_ids as $field_id)
  		{
- 			if ( ! isset($this->_columns[$field_id]))
+ 			if ( ! isset($this->_columns[$content_type][$field_id]))
  			{
- 				$this->_columns[$field_id] = array();
+ 				$this->_columns[$content_type][$field_id] = array();
  			}
  		}
 
- 		return ($multi_column) ? $this->_columns : $this->_columns[$field_id];
+ 		return ($multi_column) ? $this->_columns[$content_type] : $this->_columns[$content_type][$field_id];
  	}
 
  	// ------------------------------------------------------------------------
@@ -600,7 +653,7 @@ class Grid_model extends CI_Model {
  	 * @param	int 	Current field ID
  	 * @return	array
  	 */
- 	protected function _get_ft_api_settings($field_id)
+ 	protected function _get_ft_api_settings($field_id, $content_type = 'channel')
  	{
  		return array(
  			'id_field'				=> 'col_id',
@@ -608,7 +661,7 @@ class Grid_model extends CI_Model {
  			'col_settings_method'	=> 'grid_settings_modify_column',
  			'col_prefix'			=> 'col',
  			'fields_table'			=> $this->_table,
- 			'data_table'			=> $this->_table_prefix . $field_id,
+ 			'data_table'			=> $this->_data_table($content_type, $field_id),
  		);
  	}
 
@@ -623,7 +676,7 @@ class Grid_model extends CI_Model {
  	 * @param	int 	Entry ID to assign the row to
  	 * @return	array 	IDs of rows to be deleted
  	 */
- 	public function save_field_data($data, $field_id, $entry_id)
+ 	public function save_field_data($data, $field_id, $content_type, $entry_id)
  	{
  		// Keep track of which rows are updated and which are new, and the
  		// order they are received
@@ -658,7 +711,7 @@ class Grid_model extends CI_Model {
  			$order++;
  		}
 
- 		$table_name = $this->_table_prefix . $field_id;
+ 		$table_name = $this->_data_table($content_type, $field_id);
 
  		// If there are other existing rows for this entry that weren't in
  		// the data array, they are to be deleted
@@ -668,19 +721,44 @@ class Grid_model extends CI_Model {
  			->get($table_name)
  			->result_array();
 
+ 		// Put rows into an array for easy passing and returning for the hook
+ 		$data = array(
+ 			'new_rows' => $new_rows,
+ 			'updated_rows' => $updated_rows,
+ 			'deleted_rows' => $deleted_rows
+ 		);
+
+ 		// -------------------------------------------
+ 		// 'grid_save' hook.
+ 		//  - Allow developers to modify or add to the Grid data array before saving
+ 		//
+ 			if (ee()->extensions->active_hook('grid_save') === TRUE)
+ 			{
+ 				$data = ee()->extensions->call(
+ 					'grid_save',
+ 					$entry_id,
+ 					$field_id,
+ 					$content_type,
+ 					$table_name,
+ 					$data
+ 				);
+ 			}
+ 		//
+ 		// -------------------------------------------
+
  		// Batch update and insert rows to save queries
- 		if ( ! empty($updated_rows))
+ 		if ( ! empty($data['updated_rows']))
  		{
- 			ee()->db->update_batch($table_name, $updated_rows, 'row_id');
+ 			ee()->db->update_batch($table_name, $data['updated_rows'], 'row_id');
  		}
 
- 		if ( ! empty($new_rows))
+ 		if ( ! empty($data['new_rows']))
  		{
- 			ee()->db->insert_batch($table_name, $new_rows);
+ 			ee()->db->insert_batch($table_name, $data['new_rows']);
  		}
 
  		// Return deleted row IDs
- 		return $deleted_rows;
+ 		return $data['deleted_rows'];
  	}
 
  	// ------------------------------------------------------------------------
@@ -690,12 +768,26 @@ class Grid_model extends CI_Model {
  	 *
  	 * @param	array	Row IDs to delete data for
  	 */
- 	public function delete_rows($row_ids, $field_id)
+ 	public function delete_rows($row_ids, $field_id, $content_type)
  	{
  		if ( ! empty($row_ids))
  		{
  			ee()->db->where_in('row_id', $row_ids)
- 				->delete($this->_table_prefix . $field_id);
+ 				->delete($this->_data_table($content_type, $field_id));
  		}
+ 	}
+
+ 	// ------------------------------------------------------------------------
+
+ 	/**
+ 	 * Create the data table name given the content type and field id.
+ 	 *
+ 	 * @param string	Content type (typically 'channel')
+ 	 * @param string	Field id
+ 	 * @return string   Table name of format <content_type>_grid_field_<id>
+ 	 */
+ 	protected function _data_table($content_type, $field_id)
+ 	{
+ 		return $content_type .'_'. $this->_table_prefix . $field_id;
  	}
 }

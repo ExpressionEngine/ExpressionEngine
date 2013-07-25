@@ -1453,10 +1453,10 @@ class Api_channel_fields extends Api {
 
 			ee()->db->update('channel_data', array('field_ft_'.$insert_id => $native_settings['field_fmt']));
 
-			ee()->db->update('channel_data', array('field_ft_'.$insert_id => $native_settings['field_fmt'])); 
+			ee()->db->update('channel_data', array('field_ft_'.$insert_id => $native_settings['field_fmt']));
 
 			$field_formatting = array('none', 'br', 'markdown', 'xhtml');
-			
+
 			//if the selected field formatting is not one of the native formats, make sure it gets added to exp_field_formatting for this field
 			if ( ! in_array($native_settings['field_fmt'], $field_formatting))
 			{
@@ -1798,6 +1798,9 @@ class Api_channel_fields extends Api {
 
 			$this->set_settings($key, $settings);
 			$this->setup_handler($key);
+			$this->apply('_init', array(
+				array('id' => $field_id)
+			));
 
 			$str = $this->apply('display_settings', array($vars));
 

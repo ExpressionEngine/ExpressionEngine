@@ -131,15 +131,17 @@ class Text_ft extends EE_Fieldtype {
 		$data = $this->_format_number($data, $type, $decimals);
 
 		$field_fmt = (isset($this->settings['field_fmt']))
-			? $this->settings['field_fmt'] : $this->row['field_ft_'.$this->field_id];
+			? $this->settings['field_fmt'] : $this->row('field_ft_'.$this->field_id);
+
+		ee()->load->library('typography');
 
 		return ee()->typography->parse_type(
 			ee()->functions->encode_ee_tags($data),
 			array(
 				'text_format'	=> $field_fmt,
-				'html_format'	=> $this->row['channel_html_formatting'],
-				'auto_links'	=> $this->row['channel_auto_link_urls'],
-				'allow_img_url' => $this->row['channel_allow_img_urls']
+				'html_format'	=> $this->row('channel_html_formatting', 'all'),
+				'auto_links'	=> $this->row('channel_auto_link_urls', 'n'),
+				'allow_img_url' => $this->row('channel_allow_img_urls', 'y')
 			)
 		);
 	}
@@ -256,6 +258,19 @@ class Text_ft extends EE_Fieldtype {
 			isset($data['field_content_type']) ? $data['field_content_type'] : '',
 			$data['col_id'],
 			TRUE);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Accept all content types.
+	 *
+	 * @param string  The name of the content type
+	 * @return bool   Accepts all content types
+	 */
+	public function accepts_content_type($name)
+	{
+		return TRUE;
 	}
 
 	// --------------------------------------------------------------------
