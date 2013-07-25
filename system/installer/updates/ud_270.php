@@ -50,7 +50,7 @@ class Updater {
 				'_consolidate_file_fields',
 				'_update_relationships_for_grid',
 				'_install_grid',
-				'_update_relationship_tags_in_snippets'
+				'_update_relationship_tags_in_snippets',
 				'_create_content_types_table',
 				'_modify_channel_data_relationship_fields',
 				'_modify_channel_data_default_fields',
