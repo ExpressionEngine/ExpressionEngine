@@ -54,7 +54,7 @@ class Updater {
 				'_create_content_types_table',
 				'_modify_channel_data_relationship_fields',
 				'_modify_channel_data_default_fields',
-				'_modify_category_data_fields'
+				'_modify_category_data_fields',
 				'_clear_dev_log'
 			)
 		);
