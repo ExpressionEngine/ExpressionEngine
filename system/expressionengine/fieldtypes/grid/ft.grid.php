@@ -84,7 +84,7 @@ class Grid_ft extends EE_Fieldtype {
 	// This fieldtypes has been converted, so it accepts all content types
 	public function accepts_content_type($name)
 	{
-		return TRUE;
+		return ($name != 'grid');
 	}
 
 
