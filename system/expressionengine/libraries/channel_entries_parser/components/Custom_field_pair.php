@@ -126,13 +126,9 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
 					'content_id' => $data['entry_id']
 				));
 
-				$pre_processed = $ft->pre_process(
-					$ft_api->custom_field_data_hook(
-						$ft,
-						'pre_process',
-						$data['field_id_'.$field_id]
-					)
-				);
+				$pre_processed = $ft_api->apply('pre_process', array(
+					$data['field_id_'.$field_id]
+				));
 
 				foreach($chunks as $chk_data)
 				{
@@ -167,21 +163,21 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
 
 					if (method_exists($ft, $parse_fnc))
 					{
-						$tpl_chunk = $ft->$parse_fnc(
-							$ft_api->custom_field_data_hook($ft, $parse_fnc, $pre_processed),
+						$tpl_chunk = $ft_api->apply($parse_fnc, array(
+							$pre_processed,
 							$params,
 							$content
-						);
+						));
 					}
 					// Go to catchall and include modifier
 					elseif (method_exists($ft, 'replace_tag_catchall') AND $modifier !== '')
 					{
-						$tpl_chunk = $ft->replace_tag_catchall(
-							$ft_api->custom_field_data_hook($ft, 'replace_tag_catchall', $pre_processed),
+						$tpl_chunk = $ft_api->apply('replace_tag_catchall', array(
+							$pre_processed,
 							$params,
 							$content,
 							$modifier
-						);
+						));
 					}
 
 					$tagdata = str_replace($chunk, $tpl_chunk, $tagdata);
