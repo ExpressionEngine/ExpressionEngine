@@ -246,7 +246,7 @@ class Grid_parser {
 
 		try
 		{
-			if (isset($channel->rfields[config_item('site_id')]))
+			if (isset($channel->rfields[config_item('site_id')]) && ! empty($relationships))
 			{
 				$relationship_parser = ee()->relationships_parser->create(
 					$channel->rfields[config_item('site_id')],
