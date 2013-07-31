@@ -8,10 +8,10 @@
  * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
- * @since		Version 2.0
+ * @since		Version 2.6
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -193,7 +193,7 @@ class EE_Channel_parser {
 		$parser = $this->data_parser(
 			$this->pre_parser($channel, array_keys($data['entries']), $config)
 		);
-		
+
 		return $parser->parse($data, $config);
 	}
 

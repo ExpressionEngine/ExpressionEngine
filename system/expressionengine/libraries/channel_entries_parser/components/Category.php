@@ -8,10 +8,10 @@
  * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
- * @since		Version 2.0
+ * @since		Version 2.6
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -52,7 +52,7 @@ class EE_Channel_category_parser implements EE_Channel_parser_component {
 	{
 		$cat_chunk = array();
 		$prefix = $pre->prefix();
-		
+
 		if (preg_match_all("/".LD.$prefix."categories(.*?)".RD."(.*?)".LD.'\/'.$prefix.'categories'.RD."/s", $tagdata, $matches))
 		{
 			for ($j = 0; $j < count($matches[0]); $j++)
@@ -93,7 +93,7 @@ class EE_Channel_category_parser implements EE_Channel_parser_component {
 			// Get category ID from URL for {if active} conditional
 			ee()->load->helper('segment');
 			$active_cat = ($obj->channel()->pagination->dynamic_sql && $obj->channel()->cat_request) ? parse_category($obj->channel()->query_string) : FALSE;
-			
+
 			foreach ($cat_chunk as $catkey => $catval)
 			{
 				$cats = '';
@@ -160,10 +160,10 @@ class EE_Channel_category_parser implements EE_Channel_parser_component {
 					{
 						$temp = preg_replace("#".LD."path=.+?".RD."#", ee()->functions->create_url("SITE_INDEX"), $temp);
 					}
-					
+
 					ee()->load->library('file_field');
 					$cat_image = ee()->file_field->parse_field($v[3]);
-					
+
 					$cat_vars = array(
 						'category_name'			=> $v[2],
 						'category_url_title'	=> $v[6],
@@ -217,7 +217,7 @@ class EE_Channel_category_parser implements EE_Channel_parser_component {
 									'allow_img_url'	=> 'y'
 								)
 							);
-							
+
 							$temp = str_replace(LD.$cv2['field_name'].RD, $field_content, $temp);
 						}
 						else
