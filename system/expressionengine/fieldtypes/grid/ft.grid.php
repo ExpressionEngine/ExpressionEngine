@@ -153,6 +153,8 @@ class Grid_ft extends EE_Fieldtype {
 		// by third parties
 		ee()->javascript->set_global('grid_field_settings.'.$this->name(), $settings);
 
+		// getElementById instead of $('#...') for field names that have
+		// brackets in them
 		ee()->javascript->output('EE.grid(document.getElementById("'.$this->name().'"));');
 
 		$this->_load_grid_lib();
