@@ -28,20 +28,33 @@ class Rte_ft extends EE_Fieldtype {
 		'name'		=> 'Textarea (Rich Text)',
 		'version'	=> '1.0'
 	);
-	
+
 	var $has_array_data = FALSE;
-	
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Accept all content types.
+	 *
+	 * @param string  The name of the content type
+	 * @return bool   Accepts all content types
+	 */
+	public function accepts_content_type($name)
+	{
+		return TRUE;
+	}
+
 	// --------------------------------------------------------------------
 
 	function validate($data)
 	{
 		ee()->load->library('rte_lib');
-		
+
 		if ($this->settings['field_required'] === 'y' && ee()->rte_lib->is_empty($data))
 		{
 			return lang('required');
 		}
-		
+
 		return TRUE;
 	}
 
@@ -50,7 +63,7 @@ class Rte_ft extends EE_Fieldtype {
 	function display_field($data)
 	{
 		ee()->load->library('rte_lib');
-		
+
 		return ee()->rte_lib->display_field($data, $this->field_name, $this->settings);
 	}
 
@@ -59,7 +72,7 @@ class Rte_ft extends EE_Fieldtype {
 	function grid_display_field($data)
 	{
 		ee()->load->library('rte_lib');
-		
+
 		return ee()->rte_lib->display_field($data, $this->field_name, $this->settings, 'grid');
 	}
 
@@ -68,7 +81,7 @@ class Rte_ft extends EE_Fieldtype {
 	function save($data)
 	{
 		ee()->load->library('rte_lib');
-		
+
 		return ee()->rte_lib->save_field($data);
 	}
 
@@ -81,7 +94,7 @@ class Rte_ft extends EE_Fieldtype {
 		{
 			return ee()->functions->encode_ee_tags($data);
 		}
-		
+
 		return ee()->typography->parse_type(
 			ee()->functions->encode_ee_tags(
 				ee()->typography->parse_file_paths($data)
@@ -94,9 +107,9 @@ class Rte_ft extends EE_Fieldtype {
 			)
 		);
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	function display_settings($data)
 	{
 		$prefix = 'rte';
@@ -120,7 +133,7 @@ class Rte_ft extends EE_Fieldtype {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	public function grid_display_settings($data)
 	{
 		return array(
@@ -128,11 +141,11 @@ class Rte_ft extends EE_Fieldtype {
 			$this->grid_text_direction_row($data)
 		);
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	function save_settings($data)
-	{		
+	{
 		$data['field_type'] = 'rte';
 		$data['field_show_fmt'] = 'n';
 		$data['field_ta_rows'] = ee()->input->post('rte_ta_rows');

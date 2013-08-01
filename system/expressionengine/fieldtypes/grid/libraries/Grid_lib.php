@@ -8,7 +8,7 @@
  * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
- * @since		Version 2.0
+ * @since		Version 2.7
  * @filesource
  */
 
@@ -470,11 +470,13 @@ class Grid_lib {
 
 		foreach ($this->_fieldtypes as $field_name => $data)
 		{
-			$ft_api->setup_handler($field_name);
+			$fieldtype = $ft_api->setup_handler($field_name, TRUE);
 
-			// We'll check the existence of certain methods to determine whether
-			// or not this fieldtype is ready for Grid
-			if ( ! $ft_api->check_method_exists('grid_display_settings'))
+			// Check to see if the fieldtype accepts Grid as a content type;
+			// also, temporarily exlcude Relationships for content types
+			// other than channel
+			if ( ! $fieldtype->accepts_content_type('grid') ||
+				($this->content_type != 'channel' && $field_name == 'relationship'))
 			{
 				unset($this->_fieldtypes[$field_name]);
 			}
@@ -724,25 +726,31 @@ class Grid_lib {
 	 */
 	public function get_settings_form($type, $column = NULL)
 	{
+		$ft_api = ee()->api_channel_fields;
+		$settings = NULL;
+
 		// Returns blank settings form for a specific fieldtype
 		if (empty($column))
 		{
-			ee()->api_channel_fields->setup_handler($type);
+			$ft_api->setup_handler($type);
 
-			return $this->_view_for_col_settings(
-				$type,
-				ee()->api_channel_fields->apply('grid_display_settings', array(array()))
-			);
+			if ($ft_api->check_method_exists('grid_display_settings'))
+			{
+				$settings = $ft_api->apply('grid_display_settings', array(array()));
+			}
+
+			return $this->_view_for_col_settings($type, $settings);
 		}
 
 		ee()->grid_parser->instantiate_fieldtype($column, NULL, $this->field_id, 0);
 
+		if ($ft_api->check_method_exists('grid_display_settings'))
+		{
+			$settings = $ft_api->apply('grid_display_settings', array($column['col_settings']));
+		}
+
 		// Otherwise, return the prepopulated settings form based on column settings
-		return $this->_view_for_col_settings(
-			$type,
-			ee()->api_channel_fields->apply('grid_display_settings', array($column['col_settings'])),
-			$column['col_id']
-		);
+		return $this->_view_for_col_settings($type, $settings, $column['col_id']);
 	}
 
 	// ------------------------------------------------------------------------

@@ -31,9 +31,9 @@ class Radio_ft extends EE_Fieldtype {
 
 	var $has_array_data = FALSE;
 
-	// used in display_field() below to set 
+	// used in display_field() below to set
 	// some defaults for third party usage
-	var $settings_vars = array(	
+	var $settings_vars = array(
 		'field_text_direction'	=> 'rtl',
 		'field_pre_populate'	=> 'n',
 		'field_list_items'		=> array(),
@@ -45,12 +45,12 @@ class Radio_ft extends EE_Fieldtype {
 	{
 		$valid			= FALSE;
 		$field_options	= $this->_get_field_options($data);
-		
+
 		if ($data === FALSE OR $data == '')
 		{
 			return TRUE;
 		}
-		
+
 		$data = form_prep($data);
 
 		foreach($field_options as $key => $val)
@@ -69,13 +69,13 @@ class Radio_ft extends EE_Fieldtype {
 				break;
 			}
 		}
-		
+
 		if ( ! $valid)
 		{
 			return ee()->lang->line('invalid_selection');
 		}
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	function display_field($data)
@@ -116,17 +116,17 @@ class Radio_ft extends EE_Fieldtype {
 			case 'grid':
 				$r = $this->grid_padding_container($r);
 				break;
-			
+
 			default:
 				$r = form_fieldset('').$r.form_fieldset_close();
 				break;
 		}
-		
+
 		return $r;
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	function replace_tag($data, $params = '', $tagdata = '')
 	{
 		// Experimental parameter, do not use
@@ -148,7 +148,7 @@ class Radio_ft extends EE_Fieldtype {
 			)
 		);
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	function display_settings($data)
@@ -164,11 +164,11 @@ class Radio_ft extends EE_Fieldtype {
 			$this->grid_multi_item_row($data)
 		);
 	}
-	
+
 	function _get_field_options($data)
 	{
 		$field_options = array();
-		
+
 		if ((isset($this->settings['field_pre_populate']) && $this->settings['field_pre_populate'] == 'n')
 			OR ! isset($this->settings['field_pre_populate']))
 		{
@@ -208,8 +208,21 @@ class Radio_ft extends EE_Fieldtype {
 				}
 			}
 		}
-		
+
 		return $field_options;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Accept all content types.
+	 *
+	 * @param string  The name of the content type
+	 * @return bool   Accepts all content types
+	 */
+	public function accepts_content_type($name)
+	{
+		return TRUE;
 	}
 }
 

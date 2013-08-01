@@ -8,10 +8,10 @@
  * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
- * @since		Version 2.0
+ * @since		Version 2.6
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -79,7 +79,7 @@ class EE_Channel_preparser {
 		$this->_parser = $parser;
 		$this->_channel = $channel;
 		$this->_entry_ids = $entry_ids;
-		
+
 		$this->_prefix	= $parser->prefix();
 		$this->_tagdata = $parser->tagdata();
 
@@ -287,7 +287,7 @@ class EE_Channel_preparser {
 		{
 			return $data;
 		}
-   
+
 		$filtered = array();
 		$tagdata  = $this->_tagdata;
 		$regex_prefix = '/^'.preg_quote($this->_prefix, '/').'.*+( |$)/';
@@ -313,7 +313,7 @@ class EE_Channel_preparser {
 	protected function _subscriber_totals()
 	{
 		$subscribers = array();
-		
+
 		if (strpos($this->_tagdata, LD.'comment_subscriber_total'.RD) !== FALSE
 			&& isset(ee()->session->cache['channel']['entry_ids'])
 			)
@@ -362,7 +362,7 @@ class EE_Channel_preparser {
 				$modified_conditionals[$field_name][] = $matches[6][$match_key];
 			}
 		}
-		
+
 		return array_map('array_unique', $modified_conditionals);
 	}
 }

@@ -8,7 +8,7 @@
  * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
- * @since		Version 2.0
+ * @since		Version 2.7
  * @filesource
  */
 
@@ -246,7 +246,7 @@ class Grid_parser {
 
 		try
 		{
-			if (isset($channel->rfields[config_item('site_id')]))
+			if (isset($channel->rfields[config_item('site_id')]) && ! empty($relationships))
 			{
 				$relationship_parser = ee()->relationships_parser->create(
 					$channel->rfields[config_item('site_id')],

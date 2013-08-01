@@ -343,7 +343,7 @@ class EE_Core {
 
 		ee()->input->filter_get_data(REQ);
 
-		if (REQ != 'ACT')
+		if (REQ != 'ACTION')
 		{
 			$this->process_secure_forms();
 		}

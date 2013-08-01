@@ -28,10 +28,10 @@ class Checkboxes_ft extends EE_Fieldtype {
 		'name'		=> 'Checkboxes',
 		'version'	=> '1.0'
 	);
-	
+
 	var $has_array_data = TRUE;
 
-	// used in display_field() below to set 
+	// used in display_field() below to set
 	// some defaults for third party usage
 	var $settings_vars = array(
 		'field_text_direction'	=> 'rtl',
@@ -51,9 +51,9 @@ class Checkboxes_ft extends EE_Fieldtype {
 		parent::__construct();
 		ee()->load->helper('custom_field');
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	function validate($data)
 	{
 		$this->settings['selected'] = $data;
@@ -63,14 +63,14 @@ class Checkboxes_ft extends EE_Fieldtype {
 
 		// If they've selected something we'll make sure that it's a valid choice
 		$selected = ee()->input->post($this->field_name);
-	
+
 		if ($selected)
 		{
 			if ( ! is_array($selected))
 			{
 				$selected = array($selected);
 			}
-		
+
 			$selected = form_prep($selected);
 			$unknown = array_diff($selected, array_keys($field_options));
 
@@ -88,23 +88,23 @@ class Checkboxes_ft extends EE_Fieldtype {
 			unset($unknown);
 		}
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	function display_field($data)
 	{
 		return $this->_display_field($data);
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	function grid_display_field($data)
 	{
 		return $this->_display_field($data, 'grid');
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	private function _display_field($data, $container = 'fieldset')
 	{
 		array_merge($this->settings, $this->settings_vars);
@@ -115,12 +115,12 @@ class Checkboxes_ft extends EE_Fieldtype {
 		{
 			return $data;
 		}
-				
+
 		if (isset($this->settings['string_override']) && $this->settings['string_override'] != '')
 		{
 			return $this->settings['string_override'];
 		}
-		
+
 		$field_options	= $this->_get_field_options($data);
 
 		$values = decode_multi_field($data);
@@ -138,7 +138,7 @@ class Checkboxes_ft extends EE_Fieldtype {
 			case 'grid':
 				$r = $this->grid_padding_container($r);
 				break;
-			
+
 			default:
 				$r = form_fieldset('').$r.form_fieldset_close();
 				break;
@@ -146,14 +146,14 @@ class Checkboxes_ft extends EE_Fieldtype {
 
 		return $r;
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	function replace_tag($data, $params = array(), $tagdata = FALSE)
 	{
 		ee()->load->helper('custom_field');
 		$data = decode_multi_field($data);
-		
+
 		if ($tagdata)
 		{
 			return $this->_parse_multi($data, $params, $tagdata);
@@ -163,9 +163,9 @@ class Checkboxes_ft extends EE_Fieldtype {
 			return $this->_parse_single($data, $params);
 		}
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	function _parse_single($data, $params)
 	{
 		if (isset($params['limit']))
@@ -215,14 +215,14 @@ class Checkboxes_ft extends EE_Fieldtype {
 					  )
 		);
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	function _parse_multi($data, $params, $tagdata)
 	{
 		$chunk = '';
 		$limit = FALSE;
-		
+
 		// Limit Parameter
 		if (is_array($params) AND isset($params['limit']))
 		{
@@ -250,7 +250,7 @@ class Checkboxes_ft extends EE_Fieldtype {
 		{
 			$chunk = substr($chunk, 0, - $params['backspace']);
 		}
-		
+
 		// Experimental parameter, do not use
 		if (isset($params['raw_output']) && $params['raw_output'] == 'yes')
 		{
@@ -268,7 +268,7 @@ class Checkboxes_ft extends EE_Fieldtype {
 							  )
 		);
 	}
-	
+
 	function display_settings($data)
 	{
 		$this->field_formatting_row($data, 'checkboxes');
@@ -282,7 +282,7 @@ class Checkboxes_ft extends EE_Fieldtype {
 			$this->grid_multi_item_row($data)
 		);
 	}
-	
+
 	function _get_field_options($data)
 	{
 		$field_options = array();
@@ -319,7 +319,7 @@ class Checkboxes_ft extends EE_Fieldtype {
 					{
 					 	continue;
 					}
-					
+
 					$selected = ($prow['field_id_'.$this->settings['field_pre_field_id']] == $data) ? 1 : '';
 					$pretitle = substr($prow['field_id_'.$this->settings['field_pre_field_id']], 0, 110);
 					$pretitle = str_replace(array("\r\n", "\r", "\n", "\t"), " ", $pretitle);
@@ -329,8 +329,21 @@ class Checkboxes_ft extends EE_Fieldtype {
 				}
 			}
 		}
-		
+
 		return $field_options;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Accept all content types.
+	 *
+	 * @param string  The name of the content type
+	 * @return bool   Accepts all content types
+	 */
+	public function accepts_content_type($name)
+	{
+		return TRUE;
 	}
 }
 

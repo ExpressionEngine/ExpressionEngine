@@ -7,7 +7,7 @@
  * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
- * @since		Version 2.0
+ * @since		Version 2.7
  * @filesource
  */
 
@@ -84,7 +84,7 @@ class Grid_ft extends EE_Fieldtype {
 	// This fieldtypes has been converted, so it accepts all content types
 	public function accepts_content_type($name)
 	{
-		return TRUE;
+		return ($name != 'grid');
 	}
 
 
@@ -149,7 +149,13 @@ class Grid_ft extends EE_Fieldtype {
 			'grid_max_rows' => $this->settings['grid_max_rows']
 		);
 
-		ee()->javascript->output('EE.grid(document.getElementById("'.$this->name().'"), '.json_encode($settings).');');
+		// Set settings as a global for easy reinstantiation of field
+		// by third parties
+		ee()->javascript->set_global('grid_field_settings.'.$this->name(), $settings);
+
+		// getElementById instead of $('#...') for field names that have
+		// brackets in them
+		ee()->javascript->output('EE.grid(document.getElementById("'.$this->name().'"));');
 
 		$this->_load_grid_lib();
 

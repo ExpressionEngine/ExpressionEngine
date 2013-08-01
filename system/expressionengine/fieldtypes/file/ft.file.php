@@ -718,6 +718,19 @@ JSC;
 
 		return $data;
 	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Accept all content types.
+	 *
+	 * @param string  The name of the content type
+	 * @return bool   Accepts all content types
+	 */
+	public function accepts_content_type($name)
+	{
+		return TRUE;
+	}
 }
 
 // END File_ft class

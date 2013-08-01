@@ -31,7 +31,6 @@ class Date_ft extends EE_Fieldtype {
 
 	var $has_array_data = FALSE;
 
-
 	function save($data)
 	{
 		if ( ! is_numeric($data))
@@ -346,6 +345,19 @@ class Date_ft extends EE_Fieldtype {
 				'default'		=> NULL
 			)
 		);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Accept all content types.
+	 *
+	 * @param string  The name of the content type
+	 * @return bool   Accepts all content types
+	 */
+	public function accepts_content_type($name)
+	{
+		return TRUE;
 	}
 }
 
