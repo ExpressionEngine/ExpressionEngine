@@ -983,8 +983,7 @@ class Filemanager {
 		
 		if ( ! is_array($dirs))
 		{
-			$dirs = call_user_func($this->config['directories_callback']);
-
+			$dirs = call_user_func($this->config['directories_callback'], array('ignore_site_id' => FALSE));
 		}
 		
 		

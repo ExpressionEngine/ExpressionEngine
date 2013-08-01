@@ -126,7 +126,7 @@ class Channel_calendar extends Channel {
 
 		$start_day = (isset($start_days[ee()->TMPL->fetch_param('start_day')])) ? $start_days[ee()->TMPL->fetch_param('start_day')]: 0;
 
-		$day  = $start_day + 1 - ee()->localize->format_date('%w', $date);
+		$day  = $start_day + 1 - ee()->localize->format_date('%w', $date, FALSE);
 
 		while ($day > 1)
 		{
