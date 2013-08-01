@@ -120,7 +120,6 @@ class Member_field_model extends CI_Model {
 
 		// Create the row in member_data
 		$name = 'm_field_id_'.$id;
-		$column_data[$name]['name'] = $name;
 		$column_data[$name]['type'] = ($type == 'textarea') ? 'text' : 'varchar';
 
 		if ($type != 'textarea')
