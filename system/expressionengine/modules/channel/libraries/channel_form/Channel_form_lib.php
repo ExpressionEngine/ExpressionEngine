@@ -750,7 +750,7 @@ class Channel_form_lib
 		$form_attributes = array(
 			'hidden_fields' => $hidden_fields,
 			'action'		=> $RET,
-			'id'			=> 'publishForm',
+			'id'			=> ee()->TMPL->fetch_param('id', 'publishForm'),
 			'class'			=> ee()->TMPL->form_class,
 			'enctype' 		=> $this->_file_enctype ? 'enctype="multipart/form-data"' : 'multi'
 		);
