@@ -115,6 +115,7 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
 			$field_id = $cfields[$field_name];
 
 			$ft = $ft_api->setup_handler($field_id, TRUE);
+			$ft_name = $ft_api->field_type;
 
 			if ($ft)
 			{
@@ -122,8 +123,9 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
 				ee()->load->add_package_path($_ft_path, FALSE);
 
 				$ft->_init(array(
-					'row' => $data,
-					'content_id' => $data['entry_id']
+					'row'			=> $data,
+					'content_id'	=> $data['entry_id'],
+					'content_type'	=> 'channel'
 				));
 
 				$pre_processed = $ft_api->apply('pre_process', array(
@@ -132,6 +134,15 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
 
 				foreach($chunks as $chk_data)
 				{
+					// If some how the fieldtype that the channel fields
+					// API is referencing changed to another fieldtype
+					// (Grid may cause this), get it back on track to
+					// parse the next chunk
+					if ($ft_name != $ft_api->field_type)
+					{
+						$ft_api->setup_handler($field_id);
+					}
+
 					list($modifier, $content, $params, $chunk) = $chk_data;
 
 					$tpl_chunk = '';
