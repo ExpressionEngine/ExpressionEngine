@@ -353,6 +353,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		{
 			$settings = $settings_q->row('settings');
 			$settings = strip_slashes(unserialize($settings));
+			$settings = array_filter($settings);
 
 			$valid_keys = array(
 				'override_status',
@@ -381,6 +382,8 @@ If you do not wish to reset your password, ignore this message. It will expire i
 					{
 						$grouped_settings[$site_id] = array();
 					}
+
+					$channels = array_filter($channels);
 
 					foreach ($channels as $channel_id => $value)
 					{
