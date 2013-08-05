@@ -1349,50 +1349,50 @@ PAPAYA;
 			}
 		}
 
-		// is there a survey for this version?
-		if (file_exists(APPPATH.'views/surveys/survey_'.$this->next_update.EXT))
-		{
-			$this->load->library('survey');
+		// // is there a survey for this version?
+		// if (file_exists(APPPATH.'views/surveys/survey_'.$this->next_update.EXT))
+		// {
+		// 	$this->load->library('survey');
 
-			// if we have data, send it on to the updater, otherwise, ask permission and show the survey
-			if ( ! $this->input->get_post('participate_in_survey'))
-			{
-				$this->load->helper('language');
-				$data = array(
-					'action_url'			=> $this->set_qstr('do_update&agree=yes'),
-					'participate_in_survey'	=> array(
-						'name'		=> 'participate_in_survey',
-						'id'		=> 'participate_in_survey',
-						'value'		=> 'y',
-						'checked'	=> TRUE
-					),
-					'ee_version'			=> $this->next_update
-				);
+		// 	// if we have data, send it on to the updater, otherwise, ask permission and show the survey
+		// 	if ( ! $this->input->get_post('participate_in_survey'))
+		// 	{
+		// 		$this->load->helper('language');
+		// 		$data = array(
+		// 			'action_url'			=> $this->set_qstr('do_update&agree=yes'),
+		// 			'participate_in_survey'	=> array(
+		// 				'name'		=> 'participate_in_survey',
+		// 				'id'		=> 'participate_in_survey',
+		// 				'value'		=> 'y',
+		// 				'checked'	=> TRUE
+		// 			),
+		// 			'ee_version'			=> $this->next_update
+		// 		);
 
-				foreach ($this->survey->fetch_anon_server_data() as $key => $val)
-				{
-					if (in_array($key, array('php_extensions', 'addons')))
-					{
-						$val = implode(', ', json_decode($val));
-					}
+		// 		foreach ($this->survey->fetch_anon_server_data() as $key => $val)
+		// 		{
+		// 			if (in_array($key, array('php_extensions', 'addons')))
+		// 			{
+		// 				$val = implode(', ', json_decode($val));
+		// 			}
 
-					$data['anonymous_server_data'][$key] = $val;
-				}
+		// 			$data['anonymous_server_data'][$key] = $val;
+		// 		}
 
-				$this->_set_output('surveys/survey_'.$this->next_update, $data);
-				return FALSE;
-			}
-			elseif ($this->input->get_post('participate_in_survey') == 'y')
-			{
-				// if any preprocessing needs to be done on the POST data, we do it here
-				if (method_exists($UD, 'pre_process_survey'))
-				{
-					$UD->pre_process_survey();
-				}
+		// 		$this->_set_output('surveys/survey_'.$this->next_update, $data);
+		// 		return FALSE;
+		// 	}
+		// 	elseif ($this->input->get_post('participate_in_survey') == 'y')
+		// 	{
+		// 		// if any preprocessing needs to be done on the POST data, we do it here
+		// 		if (method_exists($UD, 'pre_process_survey'))
+		// 		{
+		// 			$UD->pre_process_survey();
+		// 		}
 
-				$this->survey->send_survey($this->next_update);
-			}
-		}
+		// 		$this->survey->send_survey($this->next_update);
+		// 	}
+		// }
 
 		if (($status = $UD->{$method}()) === FALSE)
 		{
