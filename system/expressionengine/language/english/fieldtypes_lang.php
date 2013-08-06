@@ -31,6 +31,7 @@ $lang = array(
 'rel_ft_limit_left'			=> 'Limit entries to',
 'rel_ft_limit_right'		=> 'returned',
 'rel_ft_limit_subtext'		=> 'leave blank to allow ALL entries',
+'rel_ft_authors'			=> 'Authors',
 'rel_ft_order'				=> 'Order entries by',
 'rel_ft_order_title'		=> 'Entry Title',
 'rel_ft_order_date'			=> 'Entry Date',
