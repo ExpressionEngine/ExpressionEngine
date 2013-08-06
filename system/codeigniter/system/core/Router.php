@@ -275,6 +275,12 @@ class CI_Router {
 			{
 				$x = explode('/', $this->routes['404_override']);
 
+				// If we're in the CP we need to set the directory
+				if (defined('REQ') && REQ == 'CP')
+				{
+					$this->set_directory(array_shift($x));
+				}
+
 				$this->set_class($x[0]);
 				$this->set_method($x[1]);
 
