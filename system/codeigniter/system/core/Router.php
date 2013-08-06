@@ -274,8 +274,11 @@ class CI_Router {
 			if (strpos($this->routes['404_override'], '/') !== FALSE)
 			{
 				$x = $this->_validate_request(explode('/', $this->routes['404_override']), FALSE);
+				$x[1] = (empty($x[1])) ? 'index' : $x[1];
+
 				$this->set_class($x[0]);
 				$this->set_method($x[1]);
+
 				return $x;
 			}
 		}
