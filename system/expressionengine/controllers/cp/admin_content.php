@@ -1014,7 +1014,7 @@ class Admin_content extends CP_Controller {
 		$channels = $this->channel_model->get_channels()->result();
 
 		$default_statuses = array(
-			''		 => lang('channel_form_default_status'),
+			''		 => lang('channel_form_default_status_empty'),
 			'open'	 => lang('open'),
 			'closed' => lang('closed')
 		);
