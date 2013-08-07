@@ -138,7 +138,7 @@ WysiHat.Editor = function($field, options) {
 	this.Element = WysiHat.Element;
 	this.Commands = WysiHat.Commands;
 	this.Formatting = WysiHat.Formatting;
-	
+
 	this.init(options);
 }
 
@@ -277,7 +277,7 @@ WysiHat.Editor.prototype = {
 			r = document.createRange();
 			s.removeAllRanges();
 			r.selectNodeContents($el.find('p').get(0));
-			
+
 			// Get Firefox's cursor behaving naturally by clearing out the
 			// zero-width character; if we run this for webkit too, then it
 			// breaks Webkit's cursor behavior
@@ -568,7 +568,7 @@ WysiHat.Paster = (function() {
 					}
 
 					var $parentBlock = $(startC).closest(WysiHat.Element.getBlocks().join(','));
-					
+
 					if ($parentBlock.length)
 					{
 						Editor.Formatting.cleanupPaste($paster, $parentBlock.get(0).tagName);
@@ -607,7 +607,7 @@ WysiHat.Paster = (function() {
 						// otherwise the first paragraph gets munged
 						Editor.selectEmptyParagraph();
 					}
-					
+
 					Editor.Commands.insertHTML($paster.html());
 
 					// The final cleanup pass will inevitably lose the selection
@@ -1234,7 +1234,7 @@ WysiHat.Undo.prototype = {
 		var delta = this.saved[this.index],
 			diff = delta.changes,
 			length = diff.length;
-		
+
 		for (var i = 0; i < length; i++) {
 			change = diff[i];
 			S = S.substring(0, change[0]) + change[1] + S.substring(change[0] + change[2].length);
@@ -1310,7 +1310,7 @@ WysiHat.Undo.prototype = {
 			{
 				break;
 			}
-			
+
 			trim_before++;
 		}
 
@@ -1796,7 +1796,7 @@ $.extend(WysiHat.Commands, {
 		{
 			return this.is[state]();
 		}
-		
+
 		try {
 			return document.queryCommandState(state);
 		}
@@ -2324,7 +2324,7 @@ $.extend(WysiHat.Commands.make, {
  * this.is('italic');
  * this.make('italic');
  * this.toggle('blockquote');
- * 
+ *
  * this.Commands.advancedStuff();
  */
 
@@ -2607,18 +2607,20 @@ WysiHat.Formatting = {
 					return tag.toLowerCase();
 				})
 				// // cleanup whitespace and emtpy tags
-				.replace(/(\t|\n| )+/g, ' ')		// reduce whitespace to spaces
-				.replace(/>\s+</g, '> <')			// reduce whitespace next to tags
-				.replace('<p>&nbsp;</p>', '')		// remove empty paragraphs
-				.replace(/<br\/?>\s?<\/p>/, '</p>')	// remove brs at ends of paragraphs
-				.replace(/<p>\n+<\/p>/, '')			// remove paragraphs full of newlines
-				.replace(that.reBlocks, '$1\n\n')	// line between blocks
-				.replace(/<br\/?>/g, '<br>\n')		// newlines after brs
-				.replace(/&nbsp;/g, ' ')			// nbps to spaces
+				.replace(/(\t|\n| )+/g, ' ')			// reduce whitespace to spaces
+				.replace(/>\s+</g, '> <')				// reduce whitespace next to tags
+				.replace('/&nbsp;/g', ' ')				// remove non-breaking spaces
+				.replace('/<p>[ ]+</p>/g', '')			// remove empty paragraphs
+				.replace(/<br ?\/?>\s?<\/p>/g, '</p>')	// remove brs at ends of paragraphs
+				.replace(/<p>\n+<\/p>/g, '')			// remove paragraphs full of newlines
+				.replace(that.reBlocks, '$1\n\n')		// line between blocks
+				.replace(/<br ?\/?>/g, '<br>\n')		// newlines after brs
 
 				// prettify lists
+				.replace(/(ul|ol|li)>\s+<(\/)?(ul|ol|li)>/g, '$1>\n<$2$3>')
 				.replace(/><li>/g, '>\n<li>')
 				.replace(/<\/li>\n+</g, '</li>\n<')
+				.replace(/^\s+(<li>|<\/?ul>|<\/?ol>)/gm, '$1')
 				.replace(/<li>/g, '    <li>')
 
 				// prettify tables
@@ -2630,10 +2632,10 @@ WysiHat.Formatting = {
 		});
 
 	},
-	
+
 	getBrowserMarkupFrom: function( $el )
 	{
-		var $container = $('<div>' + $el.val().replace(/\n/, '') + '</div>'),
+		var $container = $('<div>' + $el.val()+ '</div>'),
 			html;
 
 		this.cleanup($container);
@@ -2667,7 +2669,9 @@ WysiHat.Formatting = {
 		}
 
 		this.cleanup( $container );
+		console.log($container.html());
 		this.format( $container );
+		console.log($container.html());
 
 		return $container
 				.html()

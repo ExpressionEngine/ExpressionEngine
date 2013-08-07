@@ -95,7 +95,7 @@ class Rte_ft extends EE_Fieldtype {
 			return ee()->functions->encode_ee_tags($data);
 		}
 
-		return ee()->typography->parse_type(
+		$str = ee()->typography->parse_type(
 			ee()->functions->encode_ee_tags(
 				ee()->typography->parse_file_paths($data)
 			),
@@ -106,6 +106,10 @@ class Rte_ft extends EE_Fieldtype {
 				'allow_img_url' => $this->row['channel_allow_img_urls']
 			)
 		);
+
+		// remove non breaking spaces. typography likes to throw those
+		// in when a list is indented.
+		return str_replace('&nbsp;', ' ', $str);
 	}
 
 	// --------------------------------------------------------------------
