@@ -69,7 +69,7 @@ class Grid_ft extends EE_Fieldtype {
 	{
 		ee()->session->set_cache(__CLASS__, $this->name(), $data);
 
-		return NULL;
+		return ' ';
 	}
 
 	public function post_save($data)

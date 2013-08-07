@@ -88,7 +88,7 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component {
 			$entry = '';
 			$field_id = $cfields[$field['field_name']];
 
-			if (isset($data['field_id_'.$field_id]) && $data['field_id_'.$field_id] != '')
+			if (isset($data['field_id_'.$field_id]) && $data['field_id_'.$field_id] !== '')
 			{
 				$modifier = $field['modifier'];
 
