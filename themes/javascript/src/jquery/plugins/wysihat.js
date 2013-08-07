@@ -2669,9 +2669,7 @@ WysiHat.Formatting = {
 		}
 
 		this.cleanup( $container );
-		console.log($container.html());
 		this.format( $container );
-		console.log($container.html());
 
 		return $container
 				.html()
