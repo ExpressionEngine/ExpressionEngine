@@ -1014,7 +1014,7 @@ class Admin_content extends CP_Controller {
 		$channels = $this->channel_model->get_channels()->result();
 
 		$default_statuses = array(
-			''		 => lang('channel_form_default_status'),
+			''		 => lang('channel_form_default_status_empty'),
 			'open'	 => lang('open'),
 			'closed' => lang('closed')
 		);
@@ -1062,14 +1062,17 @@ class Admin_content extends CP_Controller {
 			'allow_guest_posts'	=> 'n'
 		);
 
-		$settings = $this->db
-			->where_in('channel_id', array_keys($all_channels))
-			->get('channel_form_settings')
-			->result();
-
-		foreach ($settings as &$row)
+		if (count($all_channels))
 		{
-			$all_settings[$row->channel_id] = $row;
+			$settings = $this->db
+				->where_in('channel_id', array_keys($all_channels))
+				->get('channel_form_settings')
+				->result();
+
+			foreach ($settings as &$row)
+			{
+				$all_settings[$row->channel_id] = $row;
+			}
 		}
 
 		foreach ($all_channels as $id => $channel)

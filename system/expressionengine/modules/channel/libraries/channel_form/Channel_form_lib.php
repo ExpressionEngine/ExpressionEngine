@@ -750,7 +750,7 @@ class Channel_form_lib
 		$form_attributes = array(
 			'hidden_fields' => $hidden_fields,
 			'action'		=> $RET,
-			'id'			=> 'publishForm',
+			'id'			=> ee()->TMPL->fetch_param('id', 'publishForm'),
 			'class'			=> ee()->TMPL->form_class,
 			'enctype' 		=> $this->_file_enctype ? 'enctype="multipart/form-data"' : 'multi'
 		);
@@ -1163,6 +1163,7 @@ class Channel_form_lib
 				'pulldown'		=> 0,
 				'checkbox'		=> 0,
 				'relationship'	=> 0,
+				'relationships'	=> 0,
 				'multiselect'	=> 0,
 				'date'			=> 0,
 				'radio'			=> 0,
@@ -1216,6 +1217,10 @@ class Channel_form_lib
 				{
 					$custom_field_variables_row['allow_multiple'] = ($settings['allow_multiple'] == 0) ? 0 : 1;
 				}
+
+				// Also listen for plural form of relationship in conditionals
+				// because the field is called "Relationships"
+				$custom_field_variables_row['relationships'] = 1;
 			}
 
 			$custom_field_variables[$field_name] = $custom_field_variables_row;

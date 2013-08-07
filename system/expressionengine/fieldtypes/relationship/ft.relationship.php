@@ -574,7 +574,7 @@ class Relationship_ft extends EE_Fieldtype {
 				'style="height: 140px"'
 			),
 			$this->grid_dropdown_row(
-				lang('authors'),
+				lang('rel_ft_authors'),
 				'authors[]',
 				$util->all_authors(),
 				isset($data['authors']) ? $data['authors'] : NULL,

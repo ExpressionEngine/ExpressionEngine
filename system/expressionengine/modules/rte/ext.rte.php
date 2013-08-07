@@ -34,7 +34,7 @@ class Rte_ext {
 
 	private $EE;
 	private $module = 'rte';
-	
+
 	/**
 	 * Constructor
 	 */
@@ -49,13 +49,13 @@ class Rte_ext {
 
 	/**
 	 * Loads My RTE Prefs into the My Account page
-	 * 
+	 *
 	 * @return	array	Hash of new items to add to the MyAccount Nav
 	 */
 	function myaccount_nav_setup()
 	{
 		// Check for the last_call
-		$additional_nav = (ee()->extensions->last_call) ? 
+		$additional_nav = (ee()->extensions->last_call) ?
 			ee()->extensions->last_call :
 			array();
 
@@ -72,7 +72,7 @@ class Rte_ext {
 			)
 		);
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -94,9 +94,9 @@ class Rte_ext {
 
 		// assume we don't have a custom toolset to begin with
 		$my_toolset_id = 0;
-		
+
 		$options = array();
-		
+
 		// build the dropdown
 		foreach ($toolsets as $t)
 		{
@@ -116,12 +116,12 @@ class Rte_ext {
 			$options = array($my_toolset_id => lang('my_toolset')) + $options;
 		}
 
-		// Check the rte_toolset_id, if it's not defined, opt for the 
+		// Check the rte_toolset_id, if it's not defined, opt for the
 		// install default
-		$selected_toolset_id = ($prefs['rte_toolset_id'] == 0) ?  
+		$selected_toolset_id = ($prefs['rte_toolset_id'] == 0) ?
 			ee()->config->item('rte_default_toolset_id'):
 			$prefs['rte_toolset_id'];
-		
+
 		// setup the page
 		$vars = array(
 			'cp_page_title'		=> lang('rte_prefs'),
@@ -129,7 +129,7 @@ class Rte_ext {
 			'toolset_id'		=> $selected_toolset_id,
 			'toolset_id_opts'	=> $options
 		);
-		
+
 		// JS stuff
 		ee()->javascript->set_global(array(
 			'rte'	=> array(
@@ -149,14 +149,14 @@ class Rte_ext {
 		));
 
 		ee()->javascript->compile();
-		
+
 		// add the CSS
 		ee()->cp->add_to_head(ee()->view->head_link('css/rte.css'));
-		
+
 		// return the page
 		return ee()->load->view('myaccount_settings', $vars, TRUE);
 	}
-	
+
 	// -------------------------------------------------------------------------
 
 	/**
@@ -180,7 +180,7 @@ class Rte_ext {
 			lang('default_toolset'),
 			'required|is_numeric'
 		);
-		
+
 		// success
 		if (ee()->form_validation->run())
 		{
@@ -193,7 +193,7 @@ class Rte_ext {
 				),
 				array('member_id' => $member_id)
 			);
-			
+
 			ee()->session->set_flashdata('message_success', lang('settings_saved'));
 		}
 		else
@@ -231,7 +231,7 @@ class Rte_ext {
 
 	/**
 	 * Add RTE prefs to the CP Menu
-	 * 
+	 *
 	 * @param	array $menu The CP menu array
 	 * @return	array The updated CP menu array
 	 */
@@ -242,7 +242,7 @@ class Rte_ext {
 			$menu = ee()->extensions->last_call;
 		}
 
-		// If this isn't a Super Admin, let's check to see if they can modify 
+		// If this isn't a Super Admin, let's check to see if they can modify
 		// the RTE module
 		if (ee()->session->userdata('group_id') != 1)
 		{
@@ -256,38 +256,20 @@ class Rte_ext {
 				->get()
 				->row('count');
 
-			$has_access = $access 
-				AND ee()->cp->allowed_group('can_access_addons') 
+			$has_access = $access
+				AND ee()->cp->allowed_group('can_access_addons')
 				AND ee()->cp->allowed_group('can_access_modules');
 		}
-		
+
 		if (ee()->session->userdata('group_id') == 1 OR $has_access)
 		{
 			ee()->lang->loadfile($this->module);
-			$menu['admin']['admin_content']['rte_settings'] = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module='.$this->module;	
+			$menu['admin']['admin_content']['rte_settings'] = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module='.$this->module;
 		}
-		
+
 		return $menu;
 	}
-	
-	// --------------------------------------------------------------------
 
-	/**
-	 * Add RTE JS to the Publish/Edit page
-	 * 
-	 * @param	array $results The row_array for the entry
-	 * @return	array Modified result array
-	 */
-	function publish_form_entry_data($results)
-	{
-		// Build toolset JS and include CP-only tools
-//		ee()->javascript->output(
-//			ee()->rte_lib->build_js(0, '.WysiHat-field', NULL, TRUE)
-//		);
-		
-		return $results;
-	}
-	
 	// --------------------------------------------------------------------
 
 	/**
@@ -320,7 +302,7 @@ class Rte_ext {
 	{
 		return TRUE;
 	}
-	
+
 		// --------------------------------------------------------------------
 
 	/**
@@ -331,7 +313,7 @@ class Rte_ext {
 	{
 		return TRUE;
 	}
-	
+
 }
 
 /* End of file ext.rte.php */

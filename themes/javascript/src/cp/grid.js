@@ -41,13 +41,13 @@ var Grid = window.Grid = {
  *
  * @param	{string}	field		Field ID of table to instantiate as a Grid
  */
-Grid.Publish = function(field)
+Grid.Publish = function(field, settings)
 {
 	this.root = $(field);
 	this.blankRow = this.root.find('tr.blank_row');
 	this.emptyField = this.root.find('tr.empty_field');
 	this.rowContainer = this.root.find('.grid_row_container');
-	this.settings = EE.grid_field_settings[field.id];
+	this.settings = (settings !== undefined) ? settings : EE.grid_field_settings[field.id];
 	this.init();
 
 	this.eventHandlers = [];
@@ -771,9 +771,9 @@ Grid.Settings.prototype = {
 /**
  * Public method to instantiate Grid field
  */
-EE.grid = function(field)
+EE.grid = function(field, settings)
 {
-	return new Grid.Publish(field);
+	return new Grid.Publish(field, settings);
 };
 
 /**

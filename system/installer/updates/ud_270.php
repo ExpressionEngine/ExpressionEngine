@@ -50,8 +50,8 @@ class Updater {
 				'_rename_safecracker_tags',
 				'_consolidate_file_fields',
 				'_update_relationships_for_grid',
-				'_install_grid',
 				'_create_content_types_table',
+				'_install_grid',
 				'_modify_channel_data_relationship_fields',
 				'_modify_channel_data_default_fields',
 				'_modify_category_data_fields',
@@ -353,6 +353,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		{
 			$settings = $settings_q->row('settings');
 			$settings = strip_slashes(unserialize($settings));
+			$settings = array_filter($settings);
 
 			$valid_keys = array(
 				'override_status',
@@ -381,6 +382,8 @@ If you do not wish to reset your password, ignore this message. It will expire i
 					{
 						$grouped_settings[$site_id] = array();
 					}
+
+					$channels = array_filter($channels);
 
 					foreach ($channels as $channel_id => $value)
 					{

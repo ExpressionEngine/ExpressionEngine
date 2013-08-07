@@ -69,7 +69,7 @@ class Grid_ft extends EE_Fieldtype {
 	{
 		ee()->session->set_cache(__CLASS__, $this->name(), $data);
 
-		return NULL;
+		return ' ';
 	}
 
 	public function post_save($data)
@@ -149,13 +149,21 @@ class Grid_ft extends EE_Fieldtype {
 			'grid_max_rows' => $this->settings['grid_max_rows']
 		);
 
-		// Set settings as a global for easy reinstantiation of field
-		// by third parties
-		ee()->javascript->set_global('grid_field_settings.'.$this->name(), $settings);
+		if (REQ == 'CP')
+		{
+			// Set settings as a global for easy reinstantiation of field
+			// by third parties
+			ee()->javascript->set_global('grid_field_settings.'.$this->name(), $settings);
 
-		// getElementById instead of $('#...') for field names that have
-		// brackets in them
-		ee()->javascript->output('EE.grid(document.getElementById("'.$this->name().'"));');
+			// getElementById instead of $('#...') for field names that have
+			// brackets in them
+			ee()->javascript->output('EE.grid(document.getElementById("'.$this->name().'"));');
+		}
+		// Channel Form
+		else
+		{
+			ee()->javascript->output('EE.grid(document.getElementById("'.$this->name().'"), '.json_encode($settings).');');
+		}
 
 		$this->_load_grid_lib();
 

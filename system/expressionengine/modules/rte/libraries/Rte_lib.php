@@ -431,10 +431,22 @@ class Rte_lib {
 			return NULL;
 		}
 
-		// these must happen before the decode or we won't know which are ours
-		$data = preg_replace('/>\s+</is', '><', $data);
-		$data = preg_replace('/<br( *\/)?>\n*/is', '<br>', $data);
-		$data = str_replace(array('<br>', '</p>', '<p>'), array("\n", "\n\n", "\n\n"), $data);
+		// The rte tries to create pretty html for its source view, but we want
+		// to store our data with minimal html, allowing EE's auto typography to
+		// do the bulk work and letting us switch back and forth. So first up, we
+		// remove a bunch of newline formatting.
+
+		// Strip newlines around <br>s
+		$data = preg_replace("#\n?(<br>|<br />)\n?#i", "\n", $data);
+
+		// Strip <br>s
+		$data = preg_replace("#<br>|<br />#i", "\n", $data);
+
+		// Strip paragraph tags
+		$data = preg_replace("#<(/)?pre[^>]*?>#i", "<$1pre>", $data);
+		$data = preg_replace("#<p>|<p(?!re)[^>]*?".">|</p>#i", "",  preg_replace("#<\/p><p(?!re)[^>]*?".">#i", "\n", $data));
+
+		// Reduce newlines
 		$data = preg_replace('/\n\n+/', "\n\n", $data);
 
 		$data = htmlspecialchars_decode(trim($data), ENT_QUOTES);
@@ -495,24 +507,19 @@ class Rte_lib {
 		$code_marker = unique_marker('code');
 		$code_chunks = array();
 
-		$field_ft = isset($settings['field_fmt']) ? $settings['field_fmt'] : '';
+		$data = trim($data);
 
-		if ($field_ft == 'xhtml')
-		{
-			$data = trim($data);
+		// Collapse tags and undo any existing newline formatting. Typography
+		// will change it anyways and the rte will add its own. Having this here
+		// prevents growing-newline syndrome in the rte and lets us switch
+		// between rte and non-rte.
+		$data = preg_replace('/<br( *\/)?>\n*/is', "<br>\n", $data);
 
-			// Collapse tags and undo any existing newline formatting. Typography
-			// will change it anyways and the rte will add its own. Having this here
-			// prevents growing-newline syndrome in the rte and lets us switch
-			// between rte and non-rte.
-			$data = preg_replace('/<br( *\/)?>\n*/is', "<br>\n", $data);
+		$data = preg_replace("/<\/p>\n*<p>/is", "\n\n", $data);
+		$data = preg_replace("/<br>\n/is", "\n", $data);
 
-			$data = preg_replace("/<\/p>\n*<p>/is", "\n\n", $data);
-			$data = preg_replace("/<br>\n/is", "\n", $data);
-
-			// most newlines we should ever have is 2
-			$data = preg_replace('/\n\n+/', "\n\n", $data);
-		}
+		// most newlines we should ever have is 2
+		$data = preg_replace('/\n\n+/', "\n\n", $data);
 
 		// remove code chunks
 		if (preg_match_all("/\[code\](.+?)\[\/code\]/si", $data, $matches))
@@ -537,15 +544,13 @@ class Rte_lib {
 			}
 
 			// xhtml vs br
-			if (isset($settings['field_fmt']) && $settings['field_fmt'] == 'xhtml')
-			{
-				ee()->load->library('typography');
+			ee()->load->library('typography');
 
-				$data = ee()->typography->_format_newlines($data."\n");
+			$data = ee()->typography->auto_typography($data, TRUE);
 
-				// Remove double paragraph tags
-				$data = preg_replace("/(<\/?p>)\\1/is", "\\1", $data);
-			}
+			// remove non breaking spaces. typography likes to throw those
+			// in when a list is indented.
+			$data = str_replace('&nbsp;', ' ', $data);
 		}
 
 		// put code chunks back
