@@ -1866,7 +1866,8 @@ class Sites extends CP_Controller {
 		
 		$vars['site_id'] = $site_id;
 		$vars['message'] = lang('delete_site_confirmation');
-		
+		$vars['site_label'] = $query->row()->site_label;
+				
 		$this->cp->render('sites/delete_confirm', $vars);
 	}
 	
