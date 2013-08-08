@@ -1237,7 +1237,7 @@ class Channel {
 		/**  We only select entries that have not expired
 		/**------*/
 
-		$timestamp = (ee()->TMPL->cache_timestamp != '') ? ee()->TMPL->cache_timestamp : ee()->localize->now;
+		$timestamp = ee()->localize->now;
 
 		if (ee()->TMPL->fetch_param('show_future_entries') != 'yes')
 		{
