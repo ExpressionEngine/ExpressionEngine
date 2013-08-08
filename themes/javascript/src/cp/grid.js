@@ -597,7 +597,7 @@ Grid.Settings.prototype = {
 		);
 
 		// Make sure inputs are enabled if creating blank column
-		el.find(':input').removeAttr('disabled');
+		el.find(':input').removeAttr('disabled').removeClass('grid_settings_error');
 
 		return el;
 	},
@@ -675,10 +675,10 @@ Grid.Settings.prototype = {
 	{
 		var cloned = el.clone();
 
-		el.find(":input").each(function()
+		el.find(":input:enabled").each(function()
 		{
 			// Find the new input in the cloned column for editing
-			var new_input = cloned.find(":input[name='"+$(this).attr('name')+"']");
+			var new_input = cloned.find(":input[name='"+$(this).attr('name')+"']:enabled");
 
 			if ($(this).is("select"))
 			{
