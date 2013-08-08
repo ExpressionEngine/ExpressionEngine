@@ -326,7 +326,7 @@ class EE_relationship_tree_builder {
 		// Doing our own parsing let's us do error checking
 		if (count($open_nodes) > 1)
 		{
-			$open = $open_nodes[1];
+			$open = array_pop($open_nodes);
 			throw new EE_Relationship_exception('Unmatched Relationship Tag: "{'.$open->name().'}"');
 		}
 
