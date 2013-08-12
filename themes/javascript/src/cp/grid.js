@@ -57,7 +57,6 @@ Grid.Publish.prototype = {
 
 	init: function()
 	{
-		this._addMinimumRows();
 		this._bindSortable();
 		this._bindAddButton();
 		this._bindDeleteButton();
@@ -262,6 +261,8 @@ Grid.Publish.prototype = {
 			{
 				that._fireEvent('display', $(this));
 			});
+
+			that._addMinimumRows();
 		}, 500);
 	},
 
