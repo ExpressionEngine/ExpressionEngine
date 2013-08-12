@@ -436,7 +436,7 @@ class Relationship_ft extends EE_Fieldtype {
 		{
 			ee()->cp->add_js_script('file', 'cp/relationships');
 
-			if ( ! isset($this->settings['grid_row_id']) && count($entries))
+			if ( ! isset($this->settings['grid_row_id']) && substr($field_name, 7) != 'col_id_' && count($entries))
 			{
 				ee()->javascript->output("EE.setup_relationship_field('".$this->field_name."');");
 			}
