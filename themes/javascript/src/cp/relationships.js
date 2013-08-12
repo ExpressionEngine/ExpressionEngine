@@ -80,6 +80,12 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 		this.active = $(container).find('.multiselect-active');
 		this.searchField = $(container).find('.multiselect-filter input');
 
+		// not a multi field - we could catch this in the php, but this works
+		// and we may want a prettier single relationship interface at some point
+		if ( ! this.root.length) {
+			return;
+		}
+
 		// cache a few things for search and query-less access
 		this.activeMap = {};
 		this.listItems = this.root.find('li');
