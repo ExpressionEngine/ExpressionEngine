@@ -105,9 +105,18 @@ class Grid_ft extends EE_Fieldtype {
 	{
 		$entries = ee()->grid_model->get_entry_rows($entry_ids, $this->id(), $this->content_type());
 
+		// Skip params in the loop
+		unset($entries['params']);
+
 		$row_ids = array();
 		foreach ($entries as $rows)
 		{
+			// Continue if entry has no rows
+			if (empty($rows))
+			{
+				continue;
+			}
+
 			foreach ($rows as $row)
 			{
 				$row_ids[] = $row['row_id'];
