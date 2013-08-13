@@ -417,12 +417,19 @@ If you do not wish to reset your password, ignore this message. It will expire i
 
 			// Now flatten that into a usable set of db rows
 			$db_settings = array();
+			$default_settings = array(
+				'default_status'	=> 'closed',
+				'require_captcha'	=> 'n',
+				'allow_guest_posts'	=> 'n',
+				'default_author'	=> 0,
+			);
 
 			foreach ($grouped_settings as $site_id => $channels)
 			{
 				foreach ($channels as $channel_id => $settings)
 				{
 					$db_settings[] = array_merge(
+						$default_settings,
 						$settings,
 						compact('site_id', 'channel_id')
 					);
@@ -953,12 +960,15 @@ If you do not wish to reset your password, ignore this message. It will expire i
 			->get('members')
 			->result_array();
 
-		foreach ($members as $index => $member)
+		if ( ! empty($members))
 		{
-			$members[$index]['quick_tabs'] = $this->_clean_quick_tab_links($member['quick_tabs']);
-		}
+			foreach ($members as $index => $member)
+			{
+				$members[$index]['quick_tabs'] = $this->_clean_quick_tab_links($member['quick_tabs']);
+			}
 
-		ee()->db->update_batch('members', $members, 'member_id');
+			ee()->db->update_batch('members', $members, 'member_id');
+		}
 	}
 
 	// -------------------------------------------------------------------
