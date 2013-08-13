@@ -11,7 +11,7 @@
  * @since		Version 2.5.4
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -24,9 +24,9 @@
  * @link		http://ellislab.com
  */
 class Updater {
-	
+
 	var $version_suffix = '';
-	
+
 	/**
 	 * Constructor
 	 */
@@ -34,9 +34,9 @@ class Updater {
 	{
 		$this->EE =& get_instance();
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Do Update
 	 *
@@ -57,12 +57,12 @@ class Updater {
 		{
 			$this->$v();
 		}
-		
+
 		return TRUE;
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Changes column type for `total_entries` and `total_comments` in the
 	 * members table from smallint to mediumint to match the columns in the
@@ -97,8 +97,8 @@ class Updater {
 			->or_where('quick_tabs IS NOT NULL')
 			->get('members')
 			->result_array();
-		
-		// Sanitize quick_links and quick_tabs		
+
+		// Sanitize quick_links and quick_tabs
 		foreach ($members as $index => $data)
 		{
 			// Sanitize quick_links and quick_tabs
@@ -110,12 +110,12 @@ class Updater {
 	}
 
 	/**
-	 * Clean up custom links given a string containing multiple links broken up 
-	 * by newlines, with links broken up by pipes. 
+	 * Clean up custom links given a string containing multiple links broken up
+	 * by newlines, with links broken up by pipes.
 	 *
 	 * This does not remove the [removed] replacements.
-	 * 
-	 * @param  String $string String containing multiple custom links separated 
+	 *
+	 * @param  String $string String containing multiple custom links separated
 	 *                        by newlines with links broken up by pipes
 	 * @return String         Sanitized string containing custom links
 	 */
@@ -123,16 +123,16 @@ class Updater {
 	{
 		// Each string is comprised of multiple links broken up by newlines
 		$lines = explode("\n", $string);
-		
+
 		foreach ($lines as $index => $line)
 		{
-			// Each link is three parts, the first being the name (which is 
+			// Each link is three parts, the first being the name (which is
 			// where we're concerned about XSS cleaning), the link, the order
 			$links = explode('|', $line);
-			$links[0] = ee()->security->xss_clean($links[0]);	
+			$links[0] = ee()->security->xss_clean($links[0]);
 			$lines[$index] = implode('|', $links);
 		}
-		
+
 		return implode("\n", $lines);
 	}
 
@@ -162,7 +162,7 @@ class Updater {
 			),
 			'user_agent'
 		);
-		
+
 		return TRUE;
 	}
 
@@ -185,7 +185,7 @@ class Updater {
 		);
 
 		ee()->db->truncate('security_hashes');
-		
+
 		return TRUE;
 	}
 
@@ -205,8 +205,8 @@ class Updater {
 			);
 		}
 	}
-	
-}	
+
+}
 /* END CLASS */
 
 /* End of file ud_254.php */
