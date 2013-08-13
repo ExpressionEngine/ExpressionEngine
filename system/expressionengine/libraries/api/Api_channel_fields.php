@@ -286,6 +286,7 @@ class Api_channel_fields extends Api {
 		// Quite frequently all you have convenient access to
 		// is a field_id. We can do a lookup based on some of the
 		// other data we have.
+
 		if (isset($this->custom_fields[$field_type]))
 		{
 			$frontend = TRUE;

@@ -424,6 +424,24 @@ class Api_channel_entries extends Api {
 				}
 			}
 
+			// Check for relationships in other channels
+			$relationship_fields = ee()->db->select('field_id, field_settings')
+				->get_where(
+					'channel_fields',
+					array('field_type' => 'relationship')
+				)
+				->result_array();
+
+			foreach ($relationship_fields as $field)
+			{
+				$settings = unserialize(base64_decode($field['field_settings']));
+
+				if (in_array($channel_id, $settings['channels'])
+					&& ! isset($ft_to_ids[$field['field_id']]))
+				{
+					$ft_to_ids[$field['field_id']][] = $val;
+				}
+			}
 
 			// Correct member post count
 			ee()->db->select('total_entries');
@@ -497,7 +515,6 @@ class Api_channel_entries extends Api {
 			ee()->api_channel_fields->setup_handler($fieldtype);
 			ee()->api_channel_fields->apply('delete', array($ids));
 		}
-
 
 		// Pass to module defined fields
 		$methods = array('publish_data_delete_db');
