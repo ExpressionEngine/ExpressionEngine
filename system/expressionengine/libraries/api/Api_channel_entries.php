@@ -393,6 +393,15 @@ class Api_channel_entries extends Api {
 		ee()->db->where_in('entry_id', $entry_ids);
 		ee()->db->delete(array('channel_titles', 'channel_data', 'category_posts'));
 
+		// Get a listing of relationship fields and their settings so we can
+		// correctly run the relationship cleanup for entries that are related
+		// to other channels
+		$relationship_fields = ee()->db->select('field_id, field_settings')
+			->get_where(
+				'channel_fields',
+				array('field_type' => 'relationship')
+			)
+			->result_array();
 
 		$entries = array();
 		$ft_to_ids = array();
@@ -425,13 +434,6 @@ class Api_channel_entries extends Api {
 			}
 
 			// Check for relationships in other channels
-			$relationship_fields = ee()->db->select('field_id, field_settings')
-				->get_where(
-					'channel_fields',
-					array('field_type' => 'relationship')
-				)
-				->result_array();
-
 			foreach ($relationship_fields as $field)
 			{
 				$settings = unserialize(base64_decode($field['field_settings']));
