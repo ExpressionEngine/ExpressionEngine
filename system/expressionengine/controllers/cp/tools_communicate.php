@@ -700,9 +700,9 @@ class Tools_communicate extends CP_Controller {
 				if ( ! $this->email->send(FALSE))
 				{
 					// Let's adjust the recipient array up to this point
-					reset($recipient_array);
-					$recipient_array = array_slice($recipient_array, $total_sent);
-					$this->communicate_model->update_email_cache($total_sent, $recipient_array, $id);
+					reset($emails);
+					$emails = array_slice($emails, $total_sent);
+					$this->communicate_model->update_email_cache($total_sent, $emails, $id);
 					
 					$debug_msg = $this->email->print_debugger(array());
 
