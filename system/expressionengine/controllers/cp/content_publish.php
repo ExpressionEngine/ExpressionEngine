@@ -651,6 +651,8 @@ class Content_publish extends CP_Controller {
 
 		$entry_title = $this->typography->format_characters($resrow['title']);
 
+		ee()->load->library('template', NULL, 'TMPL');
+
 		foreach ($fields as $key => $val)
 		{
 			if (isset($resrow[$key]) AND $val != 'relationship' and $resrow[$key] != '')
@@ -672,10 +674,7 @@ class Content_publish extends CP_Controller {
 					ee()->load->library('api');
 					ee()->api->instantiate('channel_fields');
 					ee()->api_channel_fields->fetch_custom_channel_fields();
-					ee()->api_channel_fields->setup_handler($val);
-					ee()->api_channel_fields->set_settings($expl['1'], array(
-						'field_type' => $val
-					));
+					ee()->api_channel_fields->setup_handler($expl['1']);
 					ee()->api_channel_fields->apply('_init', array(array(
 						'field_id' => $expl['1'],
 						'row' => $resrow,
