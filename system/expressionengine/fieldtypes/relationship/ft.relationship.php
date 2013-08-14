@@ -905,7 +905,7 @@ class Relationship_ft extends EE_Fieldtype {
 
 		// pretty much a dummy field. Here just for consistency's sake
 		// and in case we decide to store something in it.
-		$field_name = ($grid ? 'col_id_' . $data['field_id'] : 'field_id_' . $data['field_id']);
+		$field_name = ($grid ? 'col_id_' . $data['col_id'] : 'field_id_' . $data['field_id']);
 
 		$fields[$field_name] = array(
 			'type' => 'VARCHAR',
@@ -920,7 +920,7 @@ class Relationship_ft extends EE_Fieldtype {
 	 * This code is called from multiple places.
 	 *
 	 * @param	int	$field_id	The id of the deleted field.
-	 * 
+	 *
 	 * @return void
 	 */
 	protected function _clear_defunct_relationships($field_id)
