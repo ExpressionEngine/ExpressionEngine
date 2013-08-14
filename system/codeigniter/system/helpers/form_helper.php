@@ -628,10 +628,8 @@ if ( ! function_exists('form_prep'))
 		}
 
 		// we've already prepped a field with this name
-		// @todo need to figure out a way to namespace this so
-		// that we know the *exact* field and not just one with
-		// the same name
-		if (isset($prepped_fields[$field_name]))
+		$hash = md5($str.$field_name);
+		if (isset($prepped_fields[$hash]))
 		{
 			return $str;
 		}
@@ -643,7 +641,7 @@ if ( ! function_exists('form_prep'))
 
 		if ($field_name != '')
 		{
-			$prepped_fields[$field_name] = $field_name;
+			$prepped_fields[$hash] = $field_name;
 		}
 
 		return $str;
@@ -1026,17 +1024,17 @@ if ( ! function_exists('_get_validation_object'))
 
 		// We set this as a variable since we're returning by reference.
 		$return = FALSE;
-		
+
 		if (FALSE !== ($object = $CI->load->is_loaded('form_validation')))
 		{
 			if ( ! isset($CI->$object) OR ! is_object($CI->$object))
 			{
 				return $return;
 			}
-			
+
 			return $CI->$object;
 		}
-		
+
 		return $return;
 	}
 }

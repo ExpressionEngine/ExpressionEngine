@@ -127,12 +127,15 @@ class File_ft extends EE_Fieldtype {
 
 			$script = <<<JSC
 			$(document).ready(function() {
-				$('.file_field').each(function() {
-					var container = $(this),
-						last_value = [],
+				function setupFileField(container) {
+					var last_value = [],
 						fileselector = container.find('.no_file'),
-						hidden_name = container.find('[name$="_hidden_file"]').prop('name'),
+						hidden_name = container.find('input[name*="_hidden_file"]').prop('name'),
 						placeholder;
+
+					if ( ! hidden_name) {
+						return;
+					}
 
 					remove = $('<input/>', {
 						'type': 'hidden',
@@ -164,7 +167,16 @@ class File_ft extends EE_Fieldtype {
 
 						return false;
 					});
+				}
+				// most of them
+				$('.file_field').each(function() {
+					setupFileField($(this));
 				});
+
+				// in grid
+				Grid.bind('file', 'display', function(cell) {
+					setupFileField(cell);
+				})
 			});
 JSC;
 			ee()->javascript->output($script);

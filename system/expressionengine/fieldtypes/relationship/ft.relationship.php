@@ -432,15 +432,27 @@ class Relationship_ft extends EE_Fieldtype {
 			return form_dropdown($field_name.'[data][]', $options, current($selected));
 		}
 
+		ee()->cp->add_js_script(array(
+			'plugin' => 'ee_interact.event',
+			'file' => 'cp/relationships'
+		));
+
+		if ( ! isset($this->settings['grid_row_id']) && substr($field_name, 7) != 'col_id_' && count($entries))
+		{
+			ee()->javascript->output("EE.setup_relationship_field('".$this->field_name."');");
+		}
+
 		if (REQ == 'CP')
 		{
-			ee()->cp->add_js_script('file', 'cp/relationships');
-
-			if ( ! isset($this->settings['grid_row_id']) && substr($field_name, 7) != 'col_id_' && count($entries))
-			{
-				ee()->javascript->output("EE.setup_relationship_field('".$this->field_name."');");
-			}
+			$css_link = ee()->view->head_link('css/relationship.css');
 		}
+		// Channel Form
+		else
+		{
+			$css_link = '<link rel="stylesheet" href="'.ee()->config->slash_item('theme_folder_url').'cp_themes/default/css/relationship.css" type="text/css" media="screen" />'.PHP_EOL;
+		}
+
+		ee()->cp->add_to_head($css_link);
 
 		return ee()->load->view('publish', compact('field_name', 'entries', 'selected', 'order'), TRUE);
 	}
@@ -893,7 +905,7 @@ class Relationship_ft extends EE_Fieldtype {
 
 		// pretty much a dummy field. Here just for consistency's sake
 		// and in case we decide to store something in it.
-		$field_name = ($grid ? 'col_id_' . $data['field_id'] : 'field_id_' . $data['field_id']);
+		$field_name = ($grid ? 'col_id_' . $data['col_id'] : 'field_id_' . $data['field_id']);
 
 		$fields[$field_name] = array(
 			'type' => 'VARCHAR',
@@ -908,7 +920,7 @@ class Relationship_ft extends EE_Fieldtype {
 	 * This code is called from multiple places.
 	 *
 	 * @param	int	$field_id	The id of the deleted field.
-	 * 
+	 *
 	 * @return void
 	 */
 	protected function _clear_defunct_relationships($field_id)

@@ -1,7 +1,7 @@
 /* @override http://expressionengine2/themes/cp_themes/default/css/global.css */
 
 /**
- * ExpressionEngine Default Theme 
+ * ExpressionEngine Default Theme
  */
 
 /* For modern browsers */
@@ -67,7 +67,7 @@ input[type="password"] {
 	outline:				0;
   	padding:				4px;
 	width:					100%;
-	
+
   	-webkit-border-radius:	3px;
 	border-radius:			3px;
 }
@@ -87,7 +87,7 @@ input[type="password"] {
 	-webkit-box-sizing:		border-box;
 	-moz-box-sizing:		border-box; /* firefox never does 100% textareas without this */
 	-ms-box-sizing: 		border-box;
-	box-sizing:				border-box; 
+	box-sizing:				border-box;
 }
 
 textarea {
@@ -224,7 +224,7 @@ table a:hover {
 /* -------------------------------------*/
 
 .ui-widget-content ul {
-	margin:					5px;	
+	margin:					5px;
 }
 
 .ui-datepicker {
@@ -375,7 +375,7 @@ button.submit,
 .disabled-btn,
 input.disabled-btn {
 	font: 12px/12px Arial, 'Hevlvetica Neue', sans-serif;
-	
+
 	-webkit-border-radius: 3px;
 	border-radius: 3px;
 }
@@ -391,7 +391,7 @@ input.disabled-btn{
 
 /* Removes extra padding from FF */
 input[type="submit"]::-moz-focus-inner,
-button::-moz-focus-inner { 
+button::-moz-focus-inner {
     border: 0;
     padding: 0;
 }
@@ -559,7 +559,7 @@ select.select {
 	text-decoration:	none;
 }
 
-#navigationTabs li, 
+#navigationTabs li,
 #navigationTabs li li {
 	float:				left;
 }
@@ -598,7 +598,7 @@ select.select {
 
 	-webkit-box-shadow: rgba(0, 0, 0, 0.3) 1px 2px 4px;
     -moz-box-shadow:    rgba(0, 0, 0, 0.3) 1px 2px 4px;
-	box-shadow:			rgba(0, 0, 0, 0.3) 1px 2px 4px;	
+	box-shadow:			rgba(0, 0, 0, 0.3) 1px 2px 4px;
 }
 
 
@@ -620,7 +620,7 @@ select.select {
 	background:			#F81A53
 }
 
-#navigationTabs li li.parent:focus, 
+#navigationTabs li li.parent:focus,
 #navigationTabs li li.parent.active {
 	color:				#fff;
 	background:			#F81A53;
@@ -644,13 +644,13 @@ select.select {
 #navigationTabs li li.parent.active > a:after {
 	top:				0px;
 	right:				-20px;
-	
+
 	content:			' ';
 	position:			absolute;
 	display:			block;
 	width:				0;
 	height:				0;
-	
+
 	border:				10px solid transparent;
 	border-left:		10px solid #F81A53;
 }
@@ -682,11 +682,11 @@ select.select {
 	letter-spacing:		.1em;
 	margin-right:		25px;
 	line-height:		22px; /* logOut button image plus padding */
-	
+
 	float: right;
 }
 
-#activeSite a:link, 
+#activeSite a:link,
 #activeSite a:visited {
 	color:				#fff;
 }
@@ -984,7 +984,7 @@ a#revealSidebarLink:link, a#revealSidebarLink:visited  {
 	font-size:			11px;
 	color:				#e11842;
 }
-		
+
 /* let labels be super easy to click on */
 .pageContents li label {
 	display:			block;
@@ -1057,7 +1057,7 @@ a#revealSidebarLink:link, a#revealSidebarLink:visited  {
 }
 
 .contentMenu li.item a {
-	background: 		#ECF1F4 url('../images/contentmenu_icons.gif') no-repeat 17px -120px; 
+	background: 		#ECF1F4 url('../images/contentmenu_icons.gif') no-repeat 17px -120px;
 }
 
 .contentMenu li.item a:hover {
@@ -1078,7 +1078,7 @@ a#revealSidebarLink:link, a#revealSidebarLink:visited  {
 }
 
 .contentMenu li.submission a:hover {
-	background-position:17px -179px; 
+	background-position:17px -179px;
 }
 
 .contentMenu li span {
@@ -1152,9 +1152,9 @@ a#revealSidebarLink:link, a#revealSidebarLink:visited  {
 #action_nav li a:visited {
 	background: 		#546875;
 	color: 				#fff;
-	
+
 	-webkit-transition: all .2s linear;
-	
+
 	-webkit-box-shadow: 0px 1px 1px rgba(255, 255, 255, 0.2);
 	-moz-box-shadow: 0px 1px 1px rgba(255, 255, 255, 0.2);
 	-o-box-shadow: 0px 1px 1px rgba(255, 255, 255, 0.2);
@@ -1163,7 +1163,7 @@ a#revealSidebarLink:link, a#revealSidebarLink:visited  {
 
 #action_nav li a:hover {
 	background: 		#3b4f5b;
-	
+
 	-webkit-box-shadow: 0px 1px 1px rgba(255, 255, 255, 0.8);
 	-moz-box-shadow: 0px 1px 1px rgba(255, 255, 255, 0.8);
 	-o-box-shadow: 0px 1px 1px rgba(255, 255, 255, 0.8);
@@ -1229,7 +1229,7 @@ a#revealSidebarLink:link, a#revealSidebarLink:visited  {
 	clear:				left;
 }
 
-#mainContent #registerUser label, 
+#mainContent #registerUser label,
 #mainContent #registerUser span {
 	font-weight:		bold;
 	display: 			block;
@@ -1243,7 +1243,7 @@ a#revealSidebarLink:link, a#revealSidebarLink:visited  {
 	width: auto;
 }
 
-#mainContent #registerUser table label, 
+#mainContent #registerUser table label,
 #mainContent #registerUser table span {
 	display:			none;
 }
@@ -1275,9 +1275,9 @@ input.submit {
 
 #registerUser form fieldset td {
 	padding-bottom:		.2em
-}	
+}
 
-#mainContent #filterMenu, 
+#mainContent #filterMenu,
 #mainContent #registerUser {
 	background-color:	#ECF1F4;
 	color:				#5f6c74;
@@ -1297,7 +1297,7 @@ input.submit {
 	padding-top:		5px; /* IE stupidity */
 }
 
-#filterMenu a, #filterMenu a:link, 
+#filterMenu a, #filterMenu a:link,
 #filterMenu a:visited {
 	color:#E11842;
 }
@@ -1418,7 +1418,7 @@ td.expand img:hover{ cursor: pointer; }
 }
 
 #mainContent .tableSubmit {
-	float:	right; 
+	float:	right;
 	margin-top: 0;
 }
 
@@ -1431,9 +1431,9 @@ td.expand img:hover{ cursor: pointer; }
 }
 
 #mainContent .paginationLinks a:link, #mainContent .paginationLinks a:visited {
-	color:				#5f6c74;	
+	color:				#5f6c74;
 }
- 
+
 #mainContent .paginationLinks .current_page {
 	color:				#000000;
 	text-decoration:	none;
@@ -1482,7 +1482,7 @@ td.expand img:hover{ cursor: pointer; }
 }
 
 #custom_html_button {
-	width:			450px; 	
+	width:			450px;
 	clear: 			left;
 	padding-top: 	15px;
 }
@@ -1504,7 +1504,7 @@ td.expand img:hover{ cursor: pointer; }
 }
 #menu.side_navigation li li {
 	padding:			.2em 0
-}	
+}
 
 #menu span, #myAccount h3 {
 	display:			block;
@@ -1560,12 +1560,12 @@ h2 a:hover {
 }
 
 .bad_path_error_list li {
-	font-weight:		bold; 
+	font-weight:		bold;
 	margin-bottom:		5px;color:#F72A58;
 }
 
 .bad_path_error_list li ul li {
-	font-weight:		normal; 
+	font-weight:		normal;
 	margin-left:		15px;
 	margin-bottom:		0;
 	color:				#5F6C74;
@@ -1708,7 +1708,7 @@ span.ee_notice_icon {
 	padding:			1%;
 	width:				98%;
 	overflow: 			auto;
-	font-family: 		Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;	
+	font-family: 		Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
 	box-sizing: 		content-box;
 	-moz-box-sizing: 	content-box;
 }
@@ -1742,15 +1742,15 @@ span.ee_notice_icon {
 
 select#site_list_pulldown { margin-bottom:10px; }
 
-.menu_list, 
+.menu_list,
 .member_profile_themes, .wiki_themes {
 	list-style:			none;
 	overflow:			hidden;
 
 }
 
-.menu_list li a, 
-.member_profile_themes li a, .wiki_themes li a, 
+.menu_list li a,
+.member_profile_themes li a, .wiki_themes li a,
 .forum_themes li a, .translation_files li a {
 	display:			block;
 	padding:			5px 0 5px 40px;
@@ -1760,14 +1760,14 @@ select#site_list_pulldown { margin-bottom:10px; }
 	border-bottom:		1px solid #d0d7df;
 }
 
-.menu_list li.odd a, 
-.member_profile_themes li.odd a, .wiki_themes li.odd a, 
+.menu_list li.odd a,
+.member_profile_themes li.odd a, .wiki_themes li.odd a,
 .forum_themes li.odd a, .translation_files li.odd a {
 	background-color:	#f4f6f6;
 }
 
 .menu_list li a:hover,
-.member_profile_themes li a:hover, .wiki_themes li a:hover, 
+.member_profile_themes li a:hover, .wiki_themes li a:hover,
 .forum_themes li a:hover, .translation_files li a:hover {
 	background:			#fff url('../images/list_item_group_hover.gif') 17px center no-repeat;
 	color:				#e11842;
@@ -1849,7 +1849,7 @@ div#templates {
 	line-height:		25px;
 }
 
-#templateGroups .groupList li a.templateGroupName:link, 
+#templateGroups .groupList li a.templateGroupName:link,
 #templateGroups .groupList li a.templateGroupName:visited {
 	display:			block;
 	background:			#ecf1f3 url('../images/design_sprite.png') 0 -42px no-repeat;
@@ -1867,7 +1867,7 @@ div#templates {
 	text-decoration:	none;
 }
 
-#templateGroups .groupList li.selected a.templateGroupName:link, 
+#templateGroups .groupList li.selected a.templateGroupName:link,
 #templateGroups .groupList li.selected a.templateGroupName:visited {
 	background: #a9bac3	url('../images/design_sprite.png') 0 3px no-repeat;
 	border-bottom:		1px solid #d2d7db;
@@ -2003,7 +2003,7 @@ a.less_important_link:hover {
 .templateTable td.hiddenTemplate a:hover {
 	filter:				alpha(opacity=100);
 	-moz-opacity:		1.0;
-	opacity: 			1.0;	
+	opacity: 			1.0;
 }
 
 .templateTable td.templateName,
@@ -2184,7 +2184,7 @@ div.search {
 
 #template_keywords {
 	float: 				left;
-	width:				200px;	
+	width:				200px;
 }
 
 div#template_keywords_reset {
@@ -2237,7 +2237,7 @@ div#template_keywords_reset span {
 .templateEditorTable th {
 	background-color:	#E8EDF0;
 	border:				1px solid #d0d7df;
-	
+
 	color:				#34424B;
 	font-size:			11px;
 }
@@ -2366,7 +2366,7 @@ div#template_keywords_reset span {
 #mainContent .tab_menu li.current {
 	background:			#ECF1F4;
 	margin-bottom: 		-3px; /* needed to pull the current tab down over the 1px white border of the toolbar */
-	
+
 	border-left: 		4px solid #ECF1F4;
 	border-bottom: 		2px solid #ECF1F4;
 	border-right: 		1px solid #ECF1F4;
@@ -2427,8 +2427,8 @@ div#template_keywords_reset span {
 	z-index: 		3;
 }
 
-.publish_field p, 
-.publish_field h3, 
+.publish_field p,
+.publish_field h3,
 .publish_field .notice {
 	margin: 		5px 17px 0px 12px;
 }
@@ -2448,7 +2448,7 @@ label.hide_field {
 
 .publish_field a:hover {
 	color:			#e11842;
-}	
+}
 
 .publish_field fieldset.holder {
 	margin: 		0;
@@ -2482,8 +2482,8 @@ label.hide_field {
 }
 
 #dates_tab p {
-	border-top: 1px solid #b6c0c2; 
-	margin-top: 12px; 
+	border-top: 1px solid #b6c0c2;
+	margin-top: 12px;
 	padding-top: 12px;
 }
 
@@ -2508,7 +2508,7 @@ label.hide_field {
 	padding-left:		0;
 	font-size:			15px;
 	text-shadow:		0 1px 0 #888;
-	
+
 	-webkit-font-smoothing: antialiased;
 }
 
@@ -2598,7 +2598,7 @@ label.hide_field {
 }
 
 #mainContent #tools li a.delete {
-	position: 			absolute; 
+	position: 			absolute;
 	margin-top: 		-18px;
 	margin-left: 		164px;
 	padding: 			0;
@@ -2606,7 +2606,7 @@ label.hide_field {
 	width: 				23px;
 }
 
-.publish_field label, 
+.publish_field label,
 #publish_tab .publish_checkbox legend {
 	display: 			block;
 	color: 				#5f6c74;
@@ -2622,7 +2622,7 @@ div.cat_group_container {
 	margin-bottom: 		15px;
 }
 
-#sub_hold_field_category label { 
+#sub_hold_field_category label {
 	font-weight:		normal!important;
 }
 
@@ -2805,8 +2805,8 @@ html.js .publish_hidden {
 }
 
 .wordSuggestion {
-	background-color: 	#ECF1F4; 
-	border: 			1px solid #B6C0C2; 
+	background-color: 	#ECF1F4;
+	border: 			1px solid #B6C0C2;
 	padding: 			4px;
 	position: 			absolute;
 	z-index: 			99;
@@ -2823,7 +2823,7 @@ html.js .publish_hidden {
 	width: 				97%;
 }
 
-.glossary_content, 
+.glossary_content,
 .spellcheck_content {
 	margin-top: 		15px;
 }
@@ -2900,18 +2900,18 @@ html.js .publish_hidden {
 	font-weight:			bold;
 	padding:				2px 13px 3px 13px;
 	text-shadow:			0 -1px 0 #000;
-	
+
 	background:				#444;
 	background:				-webkit-gradient(linear, 0 0, 0 100%, from(#666), to(#000));
 	background:				-moz-linear-gradient(#666, #000);
-	
+
 	-webkit-border-radius:	10px;
 	border-radius:			10px;
-	
+
 	-webkit-box-shadow:		0 1px 0 #000;
 	-moz-box-shadow:		0 1px 0 #000;
 	box-shadow:				0 1px 0 #000;
-	
+
 	-webkit-font-smoothing:	antialiased;
 }
 
@@ -2969,7 +2969,7 @@ html.js .publish_hidden {
 	vertical-align:		top;
 }
 
-#paginationLinks a, 
+#paginationLinks a,
 #paginationLinks strong {
 	margin-right:		5px;
 }
@@ -3046,7 +3046,7 @@ html.js .publish_hidden {
 	color:				#a0aaa4;
 	background-color:	#243038;
 	font-size:			11px;
-	padding:			22px 25px;	
+	padding:			22px 25px;
 }
 
 #accessoriesDiv .accessorySection {
@@ -3154,7 +3154,7 @@ html.js .publish_hidden {
 input#ip_address {
 	margin:7px 0 0 0;
 }
-	
+
 .ban_box_l {
 	width: 				50%;
 	float: 				left;
@@ -3280,7 +3280,7 @@ input#ip_address {
 
 .toolsMenu h2 {
 	background:			transparent url('../images/tools_watermark.gif') bottom right no-repeat;
-	
+
 }
 
 .phpinfo_display table {
@@ -3318,7 +3318,7 @@ input#ip_address {
 
 	-webkit-border-radius: 	8px;
 	border-radius: 			8px;
-	
+
 	-webkit-box-shadow: 	rgba(0, 0, 0, 0.347656) 0px 8px 8px;
     -moz-box-shadow:    	rgba(0, 0, 0, 0.347656) 0px 8px 8px;
 	box-shadow:				rgba(0, 0, 0, 0.347656) 0px 8px 8px;
@@ -3480,7 +3480,7 @@ table.mainTable tr.comment-row-expanded td {
 
 table.mainTable tr.comment-row-expanded td:last-child
 {
-	border-left: 0px; 
+	border-left: 0px;
 }
 
 table.mainTable a.less_important_link:link {
@@ -3530,7 +3530,7 @@ table.mainTable a.less_important_link:link {
 	margin-right: 		266px;
 }
 
-#communicate_compose ul label, 
+#communicate_compose ul label,
 #communicate_compose ul li span {
 	float: 				left;
 	display: 			block;
@@ -3544,7 +3544,7 @@ table.mainTable a.less_important_link:link {
 	padding: 			7px 0 7px 7px;
 }
 
-#communicate_info ul, 
+#communicate_info ul,
 #communicate_compose ul {
 	border-left:		1px solid #d0d7df;
 	border-top:			1px solid #d0d7df;
@@ -3560,12 +3560,12 @@ table.mainTable a.less_important_link:link {
 	border-bottom:		1px solid #d0d7df;
 }
 
-#communicate_info li.even, 
+#communicate_info li.even,
 #communicate_compose li.even {
 	background-color:	#dee6e9;
 }
 
-#communicate_info li.odd, 
+#communicate_info li.odd,
 #communicate_compose li.odd {
 	background-color:	#ECF1F4;
 }
@@ -3612,7 +3612,7 @@ table.mainTable a.less_important_link:link {
 	clear:				both;
 	text-align:			center;
 	font-size:			11px;
-	color:				#8F9A9C; 
+	color:				#8F9A9C;
 	background-color:	#3E4C54;
 	padding:			20px 0 15px 0;
 }
@@ -3761,7 +3761,7 @@ html.js .js_show {
 .markItUpHeader ul ul {
 	display:none;
 	position:absolute;
-	top:18px; left:0px;	
+	top:18px; left:0px;
 	background:#F5F5F5;
 	border:1px solid #3C769D;
 	height:inherit;
@@ -3793,7 +3793,7 @@ html.js .js_show {
 	display:block;
 	padding-left:0px;
 	text-indent:0;
-	width:120px; 
+	width:120px;
 	padding:5px 5px 5px 25px;
 	background-position:2px 50%;
 }
@@ -3810,7 +3810,7 @@ html.js .js_show {
 	list-style: 		none;
 	margin: 			7px 0 0 0;
 	padding: 			3px 2px 3px 4px;
-	
+
 	-webkit-border-radius: 	4px;
 	border-radius: 			4px;
 }
@@ -3976,26 +3976,26 @@ html.js .js_show {
 	position: relative;
 	top: 15px;
 	left: 77%;
-	
+
 	display: none;
 	background: #1F2B33;
-	
+
 	padding: 17px 10px 8px 10px;
 	color: #fff;
 
 	border: 1px solid #303F4A;
 	border-top: none;
-	
+
 	-webkit-border-bottom-left-radius: 10px;
 	-webkit-border-bottom-right-radius: 10px;
-	
+
 	border-bottom-left-radius: 10px;
 	border-bottom-right-radius: 10px;
 }
 
 #notice_container {
 	opacity: 0.96;
-	
+
 	width: 100%;
 	position: fixed;
 	top: 0;
@@ -4032,7 +4032,7 @@ html.js .js_show {
 #notice_counts span img {
 	margin-bottom: -3px;
 }
-	
+
 .notice_texts {
 	padding: 10px 30px;
 	margin: 0;
@@ -4140,208 +4140,3 @@ div.pageContents,
 
 	.nanner img{ margin-right: 5px; position: relative; top: 2px; }
 
-
-.multiselect,
-.multiselect-active,
-.multiselect-filter {
-	width: 49%;
-
-	/* we don't support IE 6 or 7 */
-	-moz-box-sizing: border-box;
-	-webkit-box-sizing: border-box;
-	box-sizing: border-box;
-}
-
-.multiselect,
-.multiselect-active {
-	background: #DDE2E5;
-	border: 1px solid #B6C0C2;
-	height: 240px;
-	overflow: auto;
-}
-
-.multiselect-active {
-	float: right;
-	height: 279px;		/* multiselect + filter box */
-	line-height: 160%;
-}
-
-.multiselect-filter {
-	background: rgb(229, 233, 235);
-	border: 1px solid #B6C0C2;
-	border-bottom: none;
-	margin: 7px 0 0 0;
-	padding: 6px 4px;
-	position: relative;
-}
-
-.multiselect-filter:after {
-	background: transparent url('../images/relationship-sprite.png') no-repeat -20px 0;
-	content: '';
-	height: 10px;
-	position: absolute;
-	right: 15px;
-	top: 14px;
-	width: 10px;
-}
-
-
-/* Some grid size tweaks */
-
-.grid_field .multiselect {
-	height: 151px;
-}
-
-.grid_field .multiselect-active {
-	height: 190px;
-}
-
-.grid_field .multiselect-active,
-.grid_field .multiselect-filter {
-	margin-top: 0px;
-}
-
-
-.multiselect-filter input,
-.multiselect-filter input:focus,
-.grid_field .multiselect-filter input[type=text],
-.grid_field .multiselect-filter input[type=text]:focus {
-	border-radius: 13px;
-	border: 1px solid rgb(182, 192, 194);
-	padding: 5px 10px 4px 8px;
-	width: 100%;
-}
-
-.multiselect li,
-.multiselect-active li {
-	background: #fff;
-	border-bottom: 1px solid #B6C0C2;
-	padding: 5px 10px;
-	position: relative;
-	z-index: 0;
-}
-
-.multiselect li:nth-child(even),
-.multiselect-active li:nth-child(even) {
-	background: #F7FBFE;
-}
-
-.multiselect-active li {
-	padding-left: 30px;
-}
-
-.multiselect-active .remove-item {
-	color: #E67174;
-	display: none;
-	font-size: 20px;
-	height: 100%;
-	padding: 5px;
-	position: absolute;
-	right: 0;
-	top: 0;
-}
-
-.multiselect-active li:hover .remove-item {
-	display: inline-block;
-	cursor: pointer;
-}
-
-.multiselect-active .reorder-handle {
-	background: transparent url('../images/relationship-sprite.png') no-repeat -12px 10px;
-	height: 100%;
-	width: 8px;
-	position: absolute;
-	left: 6px;
-	top: 0;
-}
-
-.multiselect-active li {
-	vertical-align: baseline;
-	color: #2a7c10;
-	font-weight: bold;
-	cursor: move;
-}
-
-.multiselect.empty li,
-.multiselect-active.empty li {
-	background: transparent;
-	border-bottom: none;
-	color: #aaa;
-	font-size: 14px;
-	font-weight: bold;
-	margin: 0;
-	padding: 24% 0 0 0;
-	text-align: center;
-	text-shadow: 0 1px 1px #EDF2F5;
-}
-
-.multiselect li label {
-	-webkit-transition: padding .1s linear;
-	-moz-transition: padding .1s linear;
-}
-
-.multiselect li label:before {
-  content: '';
-  position: absolute;
-  left: 10px;
-  width: 12px;
-  height: 20px;
-  background: transparent url('../images/relationship-sprite.png') no-repeat 0 5px;
-  opacity: 0;
-
-  -moz-transition: opacity .1s linear; /* firefox is the only browser that can animate :before */
-}
-
-.multiselect li.selected {
-	background-color: #FFFADD;
-}
-
-.multiselect li.selected label {
-	color: #2a7c10;
-	font-weight: bold;
-	padding-left: 20px;
-}
-
-.multiselect li.selected label:before {
-	opacity: 1;
-}
-
-.force-scroll {
-	overflow: scroll;
-	overflow-y: scroll;
-	overflow-x: hidden;
-}
-
-/* aggravating safari bug where position:ing or float:ing an element
-   will reduce the scrollbar box-shadow to a z-index of 0, never to
-   be seen again underneath element's the children..
-*/
-.force-scroll > *,
-.force-scroll > * {
-	border-right: 1px solid #B6C0C2;
-	box-sizing: border-box;
-	width: 100%;
-}
-
-.force-scroll::-webkit-scrollbar,
-.force-scroll::-moz-scrollbar {
-	-webkit-appearance: none;
-	margin: 2px;
-	padding: 2px;
-	width: 9px;
-}
-
-.force-scroll::-webkit-scrollbar-track {
-    background-color: #fff;
-    /* See comment on .force-scroll ul ... border-left does *not* work here either
-	box-shadow: 1px 0 1px #B6C0C2;
-	*/
-}
-
-.force-scroll::-webkit-scrollbar-thumb {
-	background-clip: padding-box;
-	background-color: rgba(0,0,0,.3);
-	border-radius: 4px;
-	border-width: 0 2px 0 2px;
-	box-shadow: inset 0 0 0 2px #fff;
-}

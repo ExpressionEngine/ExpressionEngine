@@ -651,6 +651,22 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 	};
 
 	/**
+	 * Cache the relationship object on the associated dom element
+	 *
+	 * Makes sure that we only ever instantiate a relationship of a
+	 * given name once.
+	 */
+	function cached_relationship_object(element, creation_callback) {
+		var el = $(element);
+
+		if ( ! el.data('relationship-object')) {
+			el.data('relationship-object', creation_callback(el));
+		}
+
+		return el.data('relationship-object');
+	}
+
+	/**
 	 * Public method to instantiate
 	 *
 	 * If it's a relationship field we need to find the cells for existing
@@ -658,15 +674,19 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 	 * simply bind on the field name we were given.
 	 */
 	EE.setup_relationship_field = function(field_name) {
-		if (field_name[0] == 'f') { // field_id_x vs col_id_x for grid
-			return new RelationshipField(
-				$('#sub_hold_'+field_name.replace('id_', ''))
-			);
-		}
+		var element = document.getElementById('relationship-' + field_name);
+
+		return cached_relationship_object(element, function(el) {
+			return new RelationshipField(el);
+		});
 	};
 
 	Grid.bind('relationship', 'display', function(cell) {
-		new RelationshipField(cell, ! cell.data('row-id'));
+		var element = cell.find('.relationship');
+
+		return cached_relationship_object(element, function(el) {
+			return new RelationshipField(cell, ! cell.data('row-id'));
+		});
 	});
 
 })(jQuery);
