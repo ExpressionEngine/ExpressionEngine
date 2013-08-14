@@ -402,6 +402,7 @@ class Grid_parser {
 
 		foreach ($matches as $match)
 		{
+
 			// Get tag name, modifier and params for this tag
 			$field = ee()->api_channel_fields->get_single_field($match[2], $field_name);
 
@@ -417,7 +418,14 @@ class Grid_parser {
 			{
 				list($modifier, $content, $params, $chunk) = $chk_data;
 
+				if ( ! isset($column_names[$field['field_name']]))
+				{
+					$grid_row = str_replace($chunk, '', $grid_row);
+					continue;
+				}
+
 				$column = $column_names[$field['field_name']];
+
 				$channel_row['col_id_'.$column['col_id']] = $row['col_id_'.$column['col_id']];
 				$replace_data = $this->_replace_tag(
 					$column,
