@@ -433,16 +433,10 @@ class Api_channel_entries extends Api {
 				}
 			}
 
-			// Check for relationships in other channels
+			// Add all relationship fields
 			foreach ($relationship_fields as $field)
 			{
-				$settings = unserialize(base64_decode($field['field_settings']));
-
-				if (in_array($channel_id, $settings['channels'])
-					&& ! isset($ft_to_ids[$field['field_id']]))
-				{
-					$ft_to_ids[$field['field_id']][] = $val;
-				}
+				$ft_to_ids[$field['field_id']][] = $val;
 			}
 
 			// Correct member post count
