@@ -406,19 +406,7 @@ class EE_Core {
 	 */
 	public function run_cp()
 	{
-		$s = 0;
-
-		switch (ee()->config->item('admin_session_type'))
-		{
-			case 's'	:
-				$s = ee()->session->userdata('session_id', 0);
-				break;
-			case 'cs'	:
-				$s = ee()->session->userdata('fingerprint', 0);
-				break;
-		}
-
-		define('BASE', SELF.'?S='.$s.'&amp;D=cp'); // cp url
+		$this->_somebody_set_us_up_the_base();
 
 		// Show the control panel home page in the event that a
 		// controller class isn't found in the URL
@@ -511,6 +499,29 @@ class EE_Core {
 		{
 			ee()->config->update_site_prefs(array('doc_url' => 'http://ellislab.com/expressionengine/user-guide/'));
 		}
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Define the BASE constant
+	 * @return void
+	 */
+	private function _somebody_set_us_up_the_base()
+	{
+		$s = 0;
+
+		switch (ee()->config->item('admin_session_type'))
+		{
+			case 's'	:
+				$s = ee()->session->userdata('session_id', 0);
+				break;
+			case 'cs'	:
+				$s = ee()->session->userdata('fingerprint', 0);
+				break;
+		}
+
+		define('BASE', SELF.'?S='.$s.'&amp;D=cp'); // cp url
 	}
 
 	// ------------------------------------------------------------------------
@@ -747,8 +758,9 @@ class EE_Core {
 		{
 			if (REQ == 'CP')
 			{
+				$this->_somebody_set_us_up_the_base();
 				ee()->session->set_flashdata('message_failure', lang('invalid_action'));
-				ee()->functions->redirect(SELF);
+				ee()->functions->redirect(BASE);
 			}
 			else
 			{
