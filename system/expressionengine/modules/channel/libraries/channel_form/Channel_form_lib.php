@@ -929,6 +929,15 @@ class Channel_form_lib
 				$value['XID'] = '{XID_HASH}';
 
 				$this->head .= 'if (typeof EE == "undefined" || ! EE) { '."\n".'var EE = '.json_encode($value).';}'."\n";
+				$this->head .= <<<GRID_FALLBACK
+EE.grid_cache = [];
+
+window.Grid = {
+	bind: function() {
+		EE.grid_cache.push(arguments);
+	}
+};
+GRID_FALLBACK;
 			}
 			else
 			{
@@ -941,6 +950,7 @@ class Channel_form_lib
 		$this->head .= "\n".' // ]]>'."\n".'</script>';
 
 		$js_defaults = array(
+			'file' => array('underscore'),
 			'ui' => array('core', 'widget', 'button', 'dialog'),
 			'plugin' => array('markitup'),
 		);
@@ -2038,13 +2048,22 @@ class Channel_form_lib
 
 		ee()->api->instantiate('channel_fields');
 
-		ee()->api_channel_fields->field_type = $this->get_field_type($field_name);
+		$fieldtype = ee()->api_channel_fields->setup_handler( $this->get_field_type($field_name), TRUE);
 
-		ee()->api_channel_fields->field_types[ee()->api_channel_fields->field_type]->field_name = $field_name;
+		$fieldtype->_init(
+			array(
+				'field_id'		=> $this->get_field_id($field_name),
+				'field_name'	=> $field_name,
+				'content_id'	=> $this->entry('entry_id'),
+				'content_type'	=> 'channel'
+			)
+		);
 
-		ee()->api_channel_fields->field_types[ee()->api_channel_fields->field_type]->field_id = $this->get_field_id($field_name);
-
-		ee()->api_channel_fields->field_types[ee()->api_channel_fields->field_type]->settings = array_merge($this->get_field_settings($field_name), $this->get_field_data($field_name), ee()->api_channel_fields->get_global_settings(ee()->api_channel_fields->field_type));
+		$fieldtype->settings = array_merge(
+			$this->get_field_settings($field_name),
+			$this->get_field_data($field_name),
+			ee()->api_channel_fields->get_global_settings(ee()->api_channel_fields->field_type)
+		);
 
 		$_GET['entry_id'] = $this->entry('entry_id');
 		$_GET['channel_id'] = $this->entry('channel_id');
