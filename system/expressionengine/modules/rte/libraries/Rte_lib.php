@@ -449,7 +449,7 @@ class Rte_lib {
 		// Reduce newlines
 		$data = preg_replace('/\n\n+/', "\n\n", $data);
 
-		$data = htmlspecialchars_decode(trim($data), ENT_QUOTES);
+		$data = htmlspecialchars(trim($data), ENT_QUOTES);
 
 		// decode double encoded code chunks
 		if (preg_match_all("/\[code\](.+?)\[\/code\]/si", $data, $matches))
@@ -503,7 +503,7 @@ class Rte_lib {
 
 
 		// form prepped nonsense
-		$data = htmlspecialchars_decode($data, ENT_QUOTES);
+		$data = htmlspecialchars($data, ENT_QUOTES);
 		$code_marker = unique_marker('code');
 		$code_chunks = array();
 
@@ -572,7 +572,7 @@ class Rte_lib {
 			$data = str_replace($filedir, $d['url'], $data);
 		}
 
-		$data = htmlspecialchars($data, ENT_QUOTES);
+		$data = htmlspecialchars_decode($data, ENT_QUOTES);
 
 		$field['value'] = $data;
 
