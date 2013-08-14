@@ -658,11 +658,11 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 	 * simply bind on the field name we were given.
 	 */
 	EE.setup_relationship_field = function(field_name) {
-		if (field_name[0] == 'f') { // field_id_x vs col_id_x for grid
-			return new RelationshipField(
-				$('#sub_hold_'+field_name.replace('id_', ''))
-			);
-		}
+		return new RelationshipField(
+			// doc.gEBI for field names with brackets or other css
+			// selectors in them.
+			$(document.getElementById('relationship-'+field_name))
+		);
 	};
 
 	Grid.bind('relationship', 'display', function(cell) {
