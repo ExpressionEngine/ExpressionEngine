@@ -838,6 +838,23 @@ class Relationship_ft extends EE_Fieldtype {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Modify column settings for a Relationship field in a grid.
+	 *
+	 * @param	array	$data	An array of data with the structure:
+	 *								field_id - The id of the field to modify.
+	 * 								ee_action - delete or add (action we're
+	 *									taking)
+	 *
+	 * @return	array	The SQL definition of the modified field.
+	 */
+	public function grid_settings_modify_column($data)
+	{
+		return $this->_settings_modify_column($data, TRUE);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Settings Modify Column
 	 *
 	 * @param	array
@@ -847,23 +864,59 @@ class Relationship_ft extends EE_Fieldtype {
 	 */
 	public function settings_modify_column($data)
 	{
+		return $this->_settings_modify_column($data);
+	}
+
+	/**
+	 * Modify column settings for a Relationship field
+	 *
+	 * Handles cases both in and out of Grids, since they're mostly the
+	 * same except for a minor tweak (col_id_ vs field_id_).  If you need
+	 * to add something to both add it here.  Make sure it's valid for
+	 * both and you account for the change in field name.
+	 *
+	 * @param	array	$data	An array of data with the structure:
+	 *								field_id - The id of the field to modify.
+	 * 								ee_action - delete or add (action we're
+	 *									taking)
+	 * @param	boolean	$grid	Are we working with a grid field? If TRUE, we
+	 * 							are otherwise, it's a normal Relationship field.
+	 *
+	 * @return	array	The SQL definition of the modified field.
+	 */
+	protected function _settings_modify_column($data, $grid=FALSE)
+	{
 		if ($data['ee_action'] == 'delete')
 		{
-			// remove relationships
-			ee()->db
-				->where('field_id', $data['field_id'])
-				->delete($this->_table);
+			$this->_clear_defunct_relationships($data['field_id']);
 		}
 
 		// pretty much a dummy field. Here just for consistency's sake
 		// and in case we decide to store something in it.
+		$field_name = ($grid ? 'col_id_' . $data['field_id'] : 'field_id_' . $data['field_id']);
 
-		$fields['field_id_'.$data['field_id']] = array(
+		$fields[$field_name] = array(
 			'type' => 'VARCHAR',
 			'constraint' => 8
 		);
 
 		return $fields;
+	}
+
+	/**
+	 * Delete the relationship rows belonging to a field that has been deleted.
+	 * This code is called from multiple places.
+	 *
+	 * @param	int	$field_id	The id of the deleted field.
+	 * 
+	 * @return void
+	 */
+	protected function _clear_defunct_relationships($field_id)
+	{
+		// remove relationships
+		ee()->db
+			->where('field_id', $field_id)
+			->delete($this->_table);
 	}
 }
 
