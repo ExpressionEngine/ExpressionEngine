@@ -486,7 +486,7 @@ class Rte_lib {
 		if ( ! ee()->session->cache('rte', 'loaded'))
 		{
 			ee()->javascript->output(
-				ee()->rte_lib->build_js(0, '.WysiHat-field', NULL, TRUE)
+				ee()->rte_lib->build_js(0, '.WysiHat-field', NULL, (REQ == 'CP'))
 			);
 
 			ee()->session->set_cache('rte', 'loaded', TRUE);
