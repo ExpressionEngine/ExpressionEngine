@@ -651,6 +651,7 @@ class Content_publish extends CP_Controller {
 
 		$entry_title = $this->typography->format_characters($resrow['title']);
 
+		// Load this in case third-party fieldtypes access TMPL in replace_tag
 		ee()->load->library('template', NULL, 'TMPL');
 
 		foreach ($fields as $key => $val)
