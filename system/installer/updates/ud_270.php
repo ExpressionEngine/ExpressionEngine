@@ -57,6 +57,7 @@ class Updater {
 				'_modify_category_data_fields',
 				'_clear_dev_log',
 				'_clean_quick_tabs',
+				'_decode_rte_specialchars',
 			)
 		);
 
@@ -993,6 +994,50 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		}
 
 		return implode("\n", $lines);
+	}
+
+	// -------------------------------------------------------------------
+
+	/**
+	 * Fix how RTE contents were stored by running htmlspecialcharacters_decode
+	 * on all RTE fields
+	 * @return void
+	 */
+	private function _decode_rte_specialchars()
+	{
+		// Get list of all RTE fields
+		$fields = ee()->db->select('field_id')
+			->get_where(
+				'channel_fields',
+				array('field_type' => 'rte')
+			)
+			->result_array();
+
+		// Get the actual channel data
+		foreach ($fields as $field)
+		{
+			$column = 'field_id_'.$field['field_id'];
+			ee()->db->select($column);
+			ee()->db->or_where("({$column} IS NOT NULL AND {$column} != '')");
+		}
+		$data = ee()->db->select('entry_id')
+			->get('channel_data')
+			->result_array();
+
+		// Clean it up
+		foreach ($data as &$row)
+		{
+			foreach ($row as &$column)
+			{
+				if ( ! empty($column))
+				{
+					$column = htmlspecialchars_decode($column, ENT_QUOTES);
+				}
+			}
+		}
+
+		// Put it all back
+		ee()->db->update_batch('channel_data', $data, 'entry_id');
 	}
 }
 /* END CLASS */
