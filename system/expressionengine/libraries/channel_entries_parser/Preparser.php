@@ -36,6 +36,7 @@ class EE_Channel_preparser {
 
 	protected $_parser;
 	protected $_channel;
+	protected $_site_ids;
 	protected $_entry_ids;
 
 	protected $_components;
@@ -62,7 +63,10 @@ class EE_Channel_preparser {
 	 * @param parser	- A channel parser object which gives us access to the
 	 *					  tagdata, prefix information, and parser components.
 	 *
-	 * @param entry_ids - An array of entry ids. This can be used to retrieve
+	 * @param site_ids  - An array of site IDs that the entries for this
+	 *                    preparser belong to.
+	 *
+	 * @param entry_ids - An array of entry IDs. This can be used to retrieve
 	 *					  additional data ahead of time. A good example of that
 	 *					  would be the relationship parser.
 	 *
@@ -72,12 +76,13 @@ class EE_Channel_preparser {
 	 *				Takes the same values as the channel module's disable
 	 *				parameter, which is one of its uses.
 	 */
-	public function __construct(Channel $channel, EE_Channel_parser $parser, $entry_ids, $config)
+	public function __construct(Channel $channel, EE_Channel_parser $parser, $site_ids, $entry_ids, $config)
 	{
 		// Setup object state
 
 		$this->_parser = $parser;
 		$this->_channel = $channel;
+		$this->_site_ids = $site_ids;
 		$this->_entry_ids = $entry_ids;
 
 		$this->_prefix	= $parser->prefix();
@@ -115,11 +120,25 @@ class EE_Channel_preparser {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Entry ids getter
+	 * Site IDs getter
+	 *
+	 * Returns the site IDs that this pre-parser has entry IDs for.
+	 *
+	 * @return array	site IDs
+	 */
+	public function site_ids()
+	{
+		return $this->_site_ids;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Entry IDs getter
 	 *
 	 * Returns the entry ids that this pre-parser is capable of processing.
 	 *
-	 * @return array	entry ids
+	 * @return array	entry IDs
 	 */
 	public function entry_ids()
 	{
