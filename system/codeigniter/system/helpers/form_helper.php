@@ -627,21 +627,13 @@ if ( ! function_exists('form_prep'))
 			return '';
 		}
 
-		// we've already prepped a field with this name
-		$hash = md5($str.$field_name);
-		if (isset($prepped_fields[$hash]))
+		$hash = md5($field_name.$str);
+
+		if ( ! isset($prepped_fields[$hash]))
 		{
-			return $str;
-		}
-
-		$str = htmlspecialchars($str);
-
-		// In case htmlspecialchars misses these.
-		$str = str_replace(array("'", '"'), array("&#39;", "&quot;"), $str);
-
-		if ($field_name != '')
-		{
-			$prepped_fields[$hash] = $field_name;
+			$str = htmlspecialchars($str, ENT_QUOTES);
+			$hash = md5($field_name.$str);
+			$prepped_fields[$hash] = $str;
 		}
 
 		return $str;

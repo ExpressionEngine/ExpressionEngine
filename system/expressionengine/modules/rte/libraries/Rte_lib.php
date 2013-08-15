@@ -449,8 +449,6 @@ class Rte_lib {
 		// Reduce newlines
 		$data = preg_replace('/\n\n+/', "\n\n", $data);
 
-		$data = htmlspecialchars(trim($data), ENT_QUOTES);
-
 		// decode double encoded code chunks
 		if (preg_match_all("/\[code\](.+?)\[\/code\]/si", $data, $matches))
 		{
@@ -503,7 +501,6 @@ class Rte_lib {
 
 
 		// form prepped nonsense
-		$data = htmlspecialchars($data, ENT_QUOTES);
 		$code_marker = unique_marker('code');
 		$code_chunks = array();
 
