@@ -633,7 +633,7 @@ if ( ! function_exists('form_prep'))
 		{
 			$str = htmlspecialchars($str, ENT_QUOTES);
 			$hash = md5($field_name.$str);
-			$prepped_fields[$hash] = $str;
+			$prepped_fields[$hash] = TRUE;
 		}
 
 		return $str;
