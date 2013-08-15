@@ -618,9 +618,9 @@ if ( ! function_exists('form_prep'))
 
 		if (is_array($str))
 		{
-			foreach ($str as &$string)
+			foreach (array_keys($str) as $key)
 			{
-				$string = form_prep($string, $is_textarea);
+				$str[$key] = form_prep($str[$key], $is_textarea);
 			}
 
 			return $str;
