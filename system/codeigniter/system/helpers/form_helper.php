@@ -601,37 +601,50 @@ if ( ! function_exists('form_close'))
  *
  * Formats text so that it can be safely placed in a form field in the event it has HTML tags.
  *
- * @param	string|string[]	$str		Value to escape
- * @param	bool		$is_textarea	Whether we're escaping for a textarea element
- * @return	string|string[]	Escaped values
+ * @access	public
+ * @param	string
+ * @return	string
  */
 if ( ! function_exists('form_prep'))
 {
-	function form_prep($str = '', $is_textarea = FALSE)
+	function form_prep($str = '', $field_name = '')
 	{
-		// Correct the old usage of form_prep which is now deprecated, this will
-		// provoke a deprecation notice with the next point release
-		if ( ! is_bool($is_textarea))
-		{
-			$is_textarea = FALSE;
-		}
+		static $prepped_fields = array();
 
+		// if the field name is an array we do this recursively
 		if (is_array($str))
 		{
-			foreach (array_keys($str) as $key)
+			foreach ($str as $key => $val)
 			{
-				$str[$key] = form_prep($str[$key], $is_textarea);
+				$str[$key] = form_prep($val);
 			}
 
 			return $str;
 		}
 
-		if ($is_textarea === TRUE)
+		if ($str === '')
 		{
-			return str_replace(array('<', '>'), array('&lt;', '&gt;'), stripslashes($str));
+			return '';
 		}
 
-		return str_replace(array("'", '"'), array('&#39;', '&quot;'), stripslashes($str));
+		// we've already prepped a field with this name
+		$hash = md5($str.$field_name);
+		if (isset($prepped_fields[$hash]))
+		{
+			return $str;
+		}
+
+		$str = htmlspecialchars($str);
+
+		// In case htmlspecialchars misses these.
+		$str = str_replace(array("'", '"'), array("&#39;", "&quot;"), $str);
+
+		if ($field_name != '')
+		{
+			$prepped_fields[$hash] = $field_name;
+		}
+
+		return $str;
 	}
 }
 
