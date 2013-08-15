@@ -249,6 +249,7 @@ class File_field {
 	 */
 	public function validate($data, $field_name, $required = 'n', $grid = array())
 	{
+		$entry_id			= (int) ee()->input->post('entry_id');
 		$dir_field_name		= $field_name.'_directory';
 		$hidden_field_name	= $field_name.'_hidden_file';
 		$hidden_dir_name	= $field_name.'_hidden_dir';
@@ -330,7 +331,7 @@ class File_field {
 				return array('value' => $this->_get_post($field_name, $grid));
 			}
 
-			if (empty(ee()->input->post('entry_id')))
+			if (empty($entry_id))
 			{
 				return array(
 					'value' => '',
@@ -351,8 +352,7 @@ class File_field {
 			}
 			else
 			{
-				$eid = (int) ee()->input->post('entry_id');
-				ee()->db->where('entry_id', $eid);
+				ee()->db->where('entry_id', $entry_id);
 				$table = 'channel_data';
 			}
 
