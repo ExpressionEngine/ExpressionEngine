@@ -1,4 +1,4 @@
-<?php 
+<?php
 if ($errors != '')
 {
 	echo '<div class="shade">';
@@ -16,11 +16,15 @@ else
 
 <form method='post' action='<?php echo $action; ?>' id="installForm">
 
-<div class="shade">
-<h5><?php echo $this->lang->line('license_number'); ?></h5>
-<p><input type='text' name='license_number' value='<?php echo $license_number; ?>' size='40' <?php if (IS_CORE) { echo 'disabled="disabled"';} ?>/></p>
-<p><?php echo $this->lang->line('locate_license_number'); ?></p>
-</div>
+<?php if (IS_CORE): ?>
+	<input type="hidden" value="<?php echo $license_number; ?>" />
+<?php else: ?>
+	<div class="shade">
+	<h5><?php echo $this->lang->line('license_number'); ?></h5>
+	<p><input type='text' name='license_number' value='<?php echo $license_number; ?>' size='40' /></p>
+	<p><?php echo $this->lang->line('locate_license_number'); ?></p>
+	</div>
+<?php endif; ?>
 
 <div class="shade">
 <h2><?php echo $this->lang->line('server_settings'); ?></h2>
@@ -209,6 +213,6 @@ else
 
 <p><?php echo form_submit('', $this->lang->line('install_ee'), 'class="submit"'); ?></p>
 
-<?php echo form_close(); 
+<?php echo form_close();
 /* End of file install_form.php */
 /* Location: ./system/expressionengine/installer/views/install_form.php */
