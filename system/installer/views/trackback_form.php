@@ -1,4 +1,4 @@
-<?php 
+<?php
 if ($not_readable === TRUE)
 {
 	echo '<div class="shade">';
@@ -14,19 +14,19 @@ if ($not_readable === TRUE)
 	<h2><?php echo $this->lang->line('trackback_removal_options'); ?></h2>
 	<p><?php echo $this->lang->line('trackback_gone_in_200'); ?></p>
 	<p class="important"><?php echo $this->lang->line('trackbacks_not_recoverable'); ?></p>
-	
+
 	<h5><?php echo $this->lang->line('convert_to_comments'); ?></h5>
 	<p>
 		<input type="radio" class='radio' name="convert_to_comments" value="n" id="convert_to_comments_n" <?php echo $convert_to_comments == 'n' ? 'checked="checked"' : ''; ?> /> <label for="convert_to_comments_n"><?php echo $this->lang->line('no'); ?></label>
 		<input type="radio" class='radio' name="convert_to_comments" value="y" id="convert_to_comments_y" <?php echo $convert_to_comments == 'y' ? 'checked="checked"' : ''; ?> /> <label for="convert_to_comments_y"><?php echo $this->lang->line('yes'); ?></label><br />
 	</p>
-	
+
 	<h5><?php echo $this->lang->line('archive_trackbacks'); ?></h5>
 	<p>
 		<input type="radio" class='radio' name="archive_trackbacks" value="n" id="archive_trackbacks_n" <?php echo $archive_trackbacks == 'n' ? 'checked="checked"' : ''; ?> /> <label for="archive_trackbacks_n"><?php echo $this->lang->line('no'); ?></label>
 		<input type="radio" class='radio' name="archive_trackbacks" value="y" id="archive_trackbacks_y" <?php echo $archive_trackbacks == 'y' ? 'checked="checked"' : ''; ?> /> <label for="archive_trackbacks_y"><?php echo $this->lang->line('yes'); ?></label><br />
 	</p>
-	
+
 	<div id="zip_path_container">
 	<h5><?php echo $this->lang->line('trackback_zip_path'); ?></h5>
 	<p><?php echo $this->lang->line('path_must_be_writable'); ?></p>
@@ -36,7 +36,7 @@ if ($not_readable === TRUE)
 
 <p><?php echo form_submit('', $this->lang->line('update_ee'), 'class="submit"'); ?></p>
 
-<?php echo form_close(); 
+<?php echo form_close();
 
 /* End of file trackback_form.php */
 /* Location: ./system/expressionengine/installer/views/trackback_form.php */

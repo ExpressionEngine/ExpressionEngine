@@ -6,7 +6,7 @@
 		echo '<p class="important">'.$this->lang->line('must_accept_license').'</p>';
 	}
 ?>
-	
+
 <form method='post' action='<?php echo $action; ?>'>
 
 <p><textarea class="textarea" cols="50" rows="20" style="width:100%;" readonly="readonly">

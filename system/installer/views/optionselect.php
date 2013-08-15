@@ -14,6 +14,6 @@
 
 <p><?php echo $link; ?></p>
 
-<?php endif; 
+<?php endif;
 /* End of file optionselect.php */
 /* Location: ./system/expressionengine/installer/views/optionselect.php */

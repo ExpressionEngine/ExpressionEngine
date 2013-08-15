@@ -32,31 +32,31 @@ if (isset($refresh) && $refresh === TRUE)
 <body>
 
 	<div id="outer">
-	
+
 		<div id="header">
-		
+
 			<a href="<?php echo SELF; ?>"><img src="<?php echo $image_path; ?>logo.gif" width="241" height="88" border="0" alt="ExpressionEngine Installation Wizard" /></a>
-		
+
 		</div>
-	
-		<div id="inner">		
-		
+
+		<div id="inner">
+
 			<h1><?php echo $heading; ?></h1>
-			
+
 			<div id="content">
-			
+
 				<?php echo $content; ?>
-			
+
 			</div>
-			
+
 			<div id="footer">
-				
+
 				ExpressionEngine <?php echo $is_core.$version; ?> - &#169; <?php echo $copyright; ?>
-				
+
 			</div>
 
 		</div>
-				
+
 	</div>
 
 </body>
