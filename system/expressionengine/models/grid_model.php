@@ -186,9 +186,9 @@ class Grid_model extends CI_Model {
  	 * @param	int		Field ID of field to delete
  	 * @return	void
  	 */
- 	public function delete_field($field_id)
+ 	public function delete_field($field_id, $content_type)
  	{
- 		$table_name = $this->_table_prefix . $field_id;
+ 		$table_name = $this->_data_table($content_type, $field_id);
 
  		if (ee()->db->table_exists($table_name))
  		{
