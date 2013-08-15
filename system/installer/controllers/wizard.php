@@ -1630,6 +1630,8 @@ PAPAYA;
 
 		$data = array_merge($array, $data);
 
+		$this->load->helper('language');
+
 		if ($content != '')
 		{
 			$content = $this->load->view($content, $data, TRUE);

@@ -1,8 +1,8 @@
-<p>Welcome to the ExpressionEngine <?php echo $is_core; ?>Installation and Update wizard.</p>
+<p>Welcome to the ExpressionEngine <?=$is_core?>Installation and Update wizard.</p>
 
-<p>This utility enables ExpressionEngine <?php echo $is_core; ?>to be installed for the first time or updated from an older version.</p>
+<p>This utility enables ExpressionEngine <?=$is_core?>to be installed for the first time or updated from an older version.</p>
 
-<form method='post' action='<?php echo $action; ?>'>
+<form method='post' action='<?=$action?>'>
 
 
 <?php if (count($languages) == 1):?>
