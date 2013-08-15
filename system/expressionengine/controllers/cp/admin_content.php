@@ -1054,6 +1054,15 @@ class Admin_content extends CP_Controller {
 			$all_authors[$author->member_id] = $author->username;
 		}
 
+		// No authors? Add member ID 1
+		if (empty($all_authors))
+		{
+			foreach ($this->member_model->get_members(1)->result_array() as $member)
+			{
+				$all_authors[$member['member_id']] = $member['username'];
+			}
+		}
+
 		$channels = array();
 		$default = array(
 			'default_author'	=> 0,
