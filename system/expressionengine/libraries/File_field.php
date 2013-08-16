@@ -261,7 +261,6 @@ class File_field {
 			$dir_field		= (isset($data[$dir_field_name])) ? $data[$dir_field_name] : $data[$hidden_dir_name];
 			$hidden_field	= $data[$hidden_field_name];
 			$existing_field	= $data[$field_name.'_existing'];
-			var_dump($data, $hidden_dir_name, isset($data[$hidden_dir_name]));
 			$hidden_dir		= (isset($data[$hidden_dir_name]) ? $data[$hidden_dir_name] : $data[$dir_field_name]);
 		}
 		else

@@ -345,6 +345,10 @@ class Grid_lib {
 			$data = $data['rows'];
 		}
 
+		// Make a copy of the files array so we can spoof it per field below
+		$grid_field_name = $this->field_name;
+		$files_backup = $_FILES;
+
 		foreach ($data as $row_id => $row)
 		{
 			foreach ($columns as $column)
@@ -382,6 +386,27 @@ class Grid_lib {
 				{
 					$fieldtype->settings['grid_row_id'] = str_replace('row_id_', '', $row_id);
 				}
+
+				// Inside grid our files arrays end up being deeply nested. Since
+				// the fields access these arrays directly, we set the FILES array
+				// to what is expected by the field for each iteration.
+				$_FILES = array();
+
+				if (isset($files_backup[$grid_field_name]))
+				{
+					$newfiles = array();
+
+					foreach ($files_backup[$grid_field_name] as $files_key => $value)
+					{
+						if (isset($value['rows'][$row_id][$col_id]))
+						{
+							$newfiles[$files_key] = $value['rows'][$row_id][$col_id];
+						}
+					}
+
+					$_FILES[$col_id] = $newfiles;
+				}
+
 
 				// Call the fieldtype's validate/save method and capture the output
 				$result = ee()->grid_parser->call($method, $row[$col_id]);
@@ -441,6 +466,9 @@ class Grid_lib {
 				}
 			}
 		}
+
+		// reset $_FILES in case it's used in other code
+		$_FILES = $files_backup;
 
 		return array('value' => $final_values, 'error' => $errors);
 	}

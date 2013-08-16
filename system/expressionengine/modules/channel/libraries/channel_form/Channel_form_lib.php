@@ -1705,7 +1705,7 @@ GRID_FALLBACK;
 
 		foreach (ee()->api_channel_fields->settings as $field_id => $settings)
 		{
-			$settings['field_name'] = 'field_id_'.$field_id;
+		//	$settings['field_name'] = 'field_id_'.$field_id;
 
 			if (isset($settings['field_settings']))
 			{
