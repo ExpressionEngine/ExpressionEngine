@@ -1013,6 +1013,12 @@ If you do not wish to reset your password, ignore this message. It will expire i
 			)
 			->result_array();
 
+		// Bail if there are no RTE fields to decode
+		if (empty($fields))
+		{
+			return;
+		}
+
 		// Get the actual channel data
 		foreach ($fields as $field)
 		{
