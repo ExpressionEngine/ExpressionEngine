@@ -364,7 +364,7 @@ class Api_channel_fields extends Api {
 
 		$obj = new $class();
 
-		ee()->load->remove_package_path($_ft_path);
+		ee()->load->remove_package_path();
 
 		return $obj;
 	}
