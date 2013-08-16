@@ -178,8 +178,6 @@ Overlay.prototype = {
 	_button_actions: function() {
 		var that = this;
 
-		console.log(that);
-
 		return {
 			align_left: $.proxy(that, '_align_figure', 'left'),
 			align_right: $.proxy(that, '_align_figure', 'right'),
