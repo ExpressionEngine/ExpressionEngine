@@ -495,6 +495,7 @@ class Grid_lib {
 		$ft_api = ee()->api_channel_fields;
 
 		$this->_fieldtypes = $ft_api->fetch_installed_fieldtypes();
+		unset($this->_fieldtypes['grid']);
 
 		foreach ($this->_fieldtypes as $field_name => $data)
 		{
