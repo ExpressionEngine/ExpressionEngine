@@ -79,6 +79,7 @@ Grid.Publish.prototype = {
 			axis: 'y',						// Only allow vertical dragging
 			containment: 'parent',			// Contain to parent
 			handle: 'td.grid_handle',		// Set drag handle
+			cancel: 'td.grid_sort_cancel',	// Do not allow sort on this handle
 			items: 'tr.grid_row',			// Only allow these to be sortable
 			sort: EE.sortable_sort_helper,	// Custom sort handler
 			helper: function(event, row)	// Fix issue where cell widths collapse on drag
@@ -155,6 +156,11 @@ Grid.Publish.prototype = {
 			// Show delete buttons if the row count is above the min rows setting
 			deleteButtons.toggle(rowCount > this.settings.grid_min_rows);
 		}
+
+		// Do not allow sortable to run when there is only one row, otherwise
+		// the row becomes detached from the table and column headers change
+		// width in a fluid-column-width table
+		this.rowContainer.find('td.grid_handle').toggleClass('grid_sort_cancel', rowCount == 1);
 	},
 
 	/**
