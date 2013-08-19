@@ -687,7 +687,7 @@ class Grid_ft extends EE_Fieldtype {
 	{
 		if (isset($data['ee_action']) && $data['ee_action'] == 'delete')
 		{
-			$columns = ee()->grid_model->get_columns_for_field($settings['field_id'], $this->content_type(), FALSE);
+			$columns = ee()->grid_model->get_columns_for_field($data['field_id'], $this->content_type(), FALSE);
 
 			$col_types = array();
 			foreach ($columns as $column)
@@ -702,7 +702,7 @@ class Grid_ft extends EE_Fieldtype {
 				ee()->grid_model->delete_columns(
 					array_keys($col_types),
 					$col_types,
-					$this->settings['field_id']
+					$data['field_id']
 				);
 			}
 
