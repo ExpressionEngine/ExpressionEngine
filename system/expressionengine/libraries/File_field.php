@@ -249,37 +249,20 @@ class File_field {
 	 */
 	public function validate($data, $field_name, $required = 'n', $grid = array())
 	{
-		$entry_id			= (int) ee()->input->post('entry_id');
-		$dir_field_name		= $field_name.'_directory';
-		$hidden_field_name	= $field_name.'_hidden_file';
-		$hidden_dir_name	= $field_name.'_hidden_dir';
-
-		if ( ! empty($grid))
-		{
-			$data			= ee()->input->post('field_id_'.$grid['grid_field_id']);
-			$data			= $data['rows']['row_id_'.$grid['grid_row_id']];
-			$dir_field		= (isset($data[$dir_field_name])) ? $data[$dir_field_name] : $data[$hidden_dir_name];
-			$hidden_field	= $data[$hidden_field_name];
-			$existing_field	= $data[$field_name.'_existing'];
-			$hidden_dir		= (isset($data[$hidden_dir_name]) ? $data[$hidden_dir_name] : $data[$dir_field_name]);
-		}
-		else
-		{
-			$dir_field		= ee()->input->post($dir_field_name);
-			$hidden_field	= ee()->input->post($hidden_field_name);
-			$existing_field = ee()->input->post($field_name.'_existing');
-			$hidden_dir		= (ee()->input->post($hidden_dir_name)) ? ee()->input->post($hidden_dir_name) : ee()->input->post($dir_field_name);
-		}
-		$allowed_dirs = array();
+		$dir_field		= $field_name.'_directory';
+		$existing_field = $field_name.'_existing';
+		$hidden_field	= $field_name.'_hidden_file';
+		$hidden_dir		= (ee()->input->post($field_name.'_hidden_dir')) ? ee()->input->post($field_name.'_hidden_dir') : ee()->input->post($field_name.'_directory');
+		$allowed_dirs	= array();
 
 		// Default to blank - allows us to remove files
-		$this->_set_post($field_name, '', $grid);
+		$_POST[$field_name] = '';
 
 		// Default directory
 		$upload_directories = $this->_get_upload_prefs();
 
 		// Directory selected - switch
-		$filedir = ( ! empty($dir_field)) ? $dir_field : '';
+		$filedir = (ee()->input->post($dir_field)) ? ee()->input->post($dir_field) : '';
 
 		if ( ! $filedir)
 		{
@@ -292,7 +275,6 @@ class File_field {
 		}
 
 		// Upload or maybe just a path in the hidden field?
-		// TODO-WB: $_FILES needs to change, how do we go about this?
 		if (isset($_FILES[$field_name]) && $_FILES[$field_name]['size'] > 0 AND in_array($filedir, $allowed_dirs))
 		{
 			ee()->load->library('filemanager');
@@ -304,44 +286,45 @@ class File_field {
 			}
 			else
 			{
-				$this->_set_post($field_name, $data['file_name'], $grid);
+				$_POST[$field_name] = $data['file_name'];
 			}
 		}
-		elseif ( ! empty($existing_field))
+		elseif (ee()->input->post($existing_field))
 		{
-			$this->_set_post($field_name, $existing_field, $grid);
+			$_POST[$field_name] = $_POST[$existing_field];
 		}
-		elseif ( ! empty($hidden_field))
+		elseif (ee()->input->post($hidden_field))
 		{
-			$this->_set_post($field_name, $hidden_field, $grid);
+			$_POST[$field_name] = $_POST[$hidden_field];
 		}
 
-		$this->_set_post($dir_field_name, $filedir, $grid);
-		$this->_set_post($hidden_field_name, NULL, $grid);
+		$_POST[$dir_field] = $filedir;
+
+		unset($_POST[$hidden_field]);
 
 		// If the current file directory is not one the user has access to
 		// make sure it is an edit and value hasn't changed
-		if ($this->_get_post($field_name, $grid) && ! in_array($filedir, $allowed_dirs))
+		if ($_POST[$field_name] && ! in_array($filedir, $allowed_dirs))
 		{
 			// Some legacy fields will have only a full path specified
 			if ($filedir == '')
 			{
-				$this->_set_post($hidden_dir_name, NULL, $grid);
-				return array('value' => $this->_get_post($field_name, $grid));
+				unset($_POST[$field_name.'_hidden_dir']);
+				return array('value' => $_POST[$field_name]);
 			}
 
-			if (empty($entry_id))
+			if ( ! ee()->input->post('entry_id') OR ee()->input->post('entry_id') == '')
 			{
-				return array(
-					'value' => '',
-					'error' => lang('directory_no_access')
-				);
+				return array('value' => '', 'error' => lang('directory_no_access'));
 			}
 
 			// The existing directory couldn't be selected because they didn't have permission to upload
 			// Let's make sure that the existing file in that directory is the one that's going back in
 
+			$eid = (int) ee()->input->post('entry_id');
+
 			ee()->db->select($field_name);
+			$table = 'channel_data';
 
 			// Different DB selection criteria for Grid
 			if ( ! empty($grid['grid_row_id']))
@@ -351,7 +334,7 @@ class File_field {
 			}
 			else
 			{
-				ee()->db->where('entry_id', $entry_id);
+				ee()->db->where('entry_id', $eid);
 				$table = 'channel_data';
 			}
 
@@ -359,88 +342,25 @@ class File_field {
 
 			if ($query->num_rows() == 0)
 			{
-				return array(
-					'value' => '',
-					'error' => lang('directory_no_access')
-				);
+				return array('value' => '', 'error' => lang('directory_no_access'));
 			}
 
-			if ('{filedir_'.$hidden_dir.'}'.$this->_get_post($field_name, $grid) != $query->row($field_name))
+			if ('{filedir_'.$hidden_dir.'}'.$_POST[$field_name] != $query->row($field_name))
 			{
-				return array(
-					'value' => '',
-					'error' => lang('directory_no_access')
-				);
+				return array('value' => '', 'error' => lang('directory_no_access'));
 			}
 
 			// Replace the empty directory with the existing directory
-			$this->_set_post($dir_field_name, $hidden_dir, $grid);
+			$_POST[$field_name.'_directory'] = $hidden_dir;
 		}
 
-		if ($required == 'y' && ! $this->_get_post($field_name, $grid))
+		if ($required == 'y' && ! $_POST[$field_name])
 		{
 			return array('value' => '', 'error' => lang('required'));
 		}
 
-		$this->_set_post($hidden_dir_name, NULL, $grid);
-		return array(
-			'value' => $this->format_data(
-				$this->_get_post($field_name, $grid),
-				$hidden_dir
-			)
-		);
-	}
-
-	// ------------------------------------------------------------------------
-
-	/**
-	 * Set the POST value for a normal field or grid field
-	 * @param String $name  name of the value
-	 * @param String $value the value itself
-	 * @param Array  $grid  Grid settings from validate()
-	 */
-	private function _set_post($name, $value, $grid = array())
-	{
-		if ( ! empty($grid))
-		{
-			$field =& $_POST['field_id_'.$grid['grid_field_id']]['rows']['row_id_'.$grid['grid_row_id']][$name];
-		}
-		else
-		{
-			$field =& $_POST[$name];
-		}
-
-		if ($value === NULL)
-		{
-			unset($field);
-		}
-		else
-		{
-			$field = $value;
-		}
-	}
-
-	// ------------------------------------------------------------------------
-
-	/**
-	 * Get the POST data for a normal or grid field
-	 * @param  String $name name of the value
-	 * @param  Array  $grid Grid settings from validate()
-	 * @return Mixed        Value related to the name
-	 */
-	private function _get_post($name, $grid = array())
-	{
-		if ( ! empty($grid))
-		{
-			$data = ee()->input->post('field_id_'.$grid['grid_field_id']);
-			$data = $data['rows']['row_id_'.$grid['grid_row_id']][$name];
-		}
-		else
-		{
-			$data = ee()->input->post($name);
-		}
-
-		return $data;
+		unset($_POST[$field_name.'_hidden_dir']);
+		return array('value' => $this->format_data($_POST[$field_name], $hidden_dir));
 	}
 
 	// ------------------------------------------------------------------------
