@@ -1277,6 +1277,24 @@ class Sites extends CP_Controller {
 
 										$this->dbforge->add_column('channel_data', $columns);
 									}
+									elseif($row['field_type'] == 'grid')
+									{
+										$this->load->library('api');
+										$this->api->instantiate('channel_fields');
+										$this->api_channel_fields->fetch_installed_fieldtypes();
+
+										$this->load->model('grid_model');
+										$this->grid_model->create_field($field_id, 'channel');
+										
+										$columns = $this->grid_model->get_columns_for_field($old_field_id, 'channel');	
+										foreach($columns as $column) 
+										{
+											unset($column['col_id']);
+											$column['field_id'] = $field_id;
+											$column['col_settings'] = json_encode($column['col_settings']);
+											$this->grid_model->save_col_settings($column);
+										}
+									}
 									else
 									{
 										$columns = array(
@@ -1672,7 +1690,7 @@ class Sites extends CP_Controller {
 										FALSE
 									);
 									
-									$null_type = ($row['field_type'] == 'date' OR $row['field_type'] == 'relationship') ? 0 : NULL;
+									$null_type = ($row['field_type'] == 'date' OR $row['field_type'] == 'relationship' OR $row['field_type'] == 'grid') ? 0 : NULL;
 									$this->db->set('field_id_'.$row['field_id'], $null_type);
 									$this->db->where('channel_id', $channel_id)
 										->update('channel_data');
