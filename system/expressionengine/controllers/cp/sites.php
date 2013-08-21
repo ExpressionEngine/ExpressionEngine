@@ -1284,6 +1284,21 @@ class Sites extends CP_Controller {
 										$this->api_channel_fields->fetch_installed_fieldtypes();
 
 										$this->load->model('grid_model');
+										
+										$this->load->dbforge();
+										ee()->dbforge->add_column(
+											'channel_data', 
+											array(
+												'field_id_' . $field_id => array(
+													'type'			=> 'int',
+													'constraint'	=> 10
+												),
+												'field_ft_' . $field_id => array(
+													'type'			=> 'tinytext'
+												)	
+											) 
+										);
+										
 										$this->grid_model->create_field($field_id, 'channel');
 										
 										$columns = $this->grid_model->get_columns_for_field($old_field_id, 'channel');	
