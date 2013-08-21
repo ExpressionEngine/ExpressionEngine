@@ -264,7 +264,7 @@ class EE_Relationship_data_parser {
 	}
 
  	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Find a node's no_results Tag
 	 *
@@ -275,15 +275,15 @@ class EE_Relationship_data_parser {
 	 *
 	 * @param	object	$node			The tree node of this tag pair.
 	 * @param	string	$node_tagdata	The tagdata of the specific node we're
-	 *									examining (not the channel:entries tag, 
+	 *									examining (not the channel:entries tag,
 	 *									but the child/parent/sibling tag.
 	 * @param	boolean	$whole_tag	(Optional) If True, then the whole no_results
-	 *								tag rather than just its contents, will be 
+	 *								tag rather than just its contents, will be
 	 * 								returned.
 	 *
 	 * @return	string	Contents of the no_results tag or an empty string. If
 	 *					$whole_tag is TRUE, then whole {if no_results} {/if}
-	 *					tag block will be returned.	
+	 *					tag block will be returned.
 	 */
 	public function find_no_results($node, $node_tagdata, $whole_tag=FALSE)
 	{
@@ -296,7 +296,7 @@ class EE_Relationship_data_parser {
 		{
 			return ($whole_tag ? $match[0] : $match[1]);
 		}
-		
+
 		return '';
 	}
 
@@ -311,7 +311,7 @@ class EE_Relationship_data_parser {
 	 * all over the place.
 	 *
 	 * @param	object	The tree node of this tag pair
-	 * @param	string	The tagdata to delete the tags from.  This the 
+	 * @param	string	The tagdata to delete the tags from.  This the
 	 * 					channel:entries tag's contents, not the node's
 	 * 					contents.
 	 * @return 	string	The cleaned tagdata
@@ -343,7 +343,7 @@ class EE_Relationship_data_parser {
 	 *
 	 * @param	object	The tree node of this tag pair
 	 * @param	string	The tagdata to delete the tags from. In this
-	 * 					case this is the node's contents, not the 
+	 * 					case this is the node's contents, not the
 	 * 					channel:entries tag's contents.
 	 * @return 	string	The cleaned tagdata
 	 */
@@ -387,11 +387,6 @@ class EE_Relationship_data_parser {
 		// enforce offset and limit
 		$offset = $node->param('offset');
 		$limit = $node->param('limit');
-
-		if ($limit)
-		{
-			$entry_ids = array_slice($entry_ids, $offset, $limit);
-		}
 
 		// make sure defaults are set
 		if ( ! $node->param('status'))
@@ -544,6 +539,11 @@ class EE_Relationship_data_parser {
 					);
 				}
 			}
+		}
+
+		if ($limit)
+		{
+			$rows = array_slice($rows, $offset, $limit, TRUE);
 		}
 
 		return array(
