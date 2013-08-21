@@ -351,7 +351,7 @@ class File_field {
 		}
 
 		return array(
-			'value' => $this->format_data($filename, $hidden_dir)
+			'value' => (string) $this->format_data($filename, $hidden_dir)
 		);
 	}
 
