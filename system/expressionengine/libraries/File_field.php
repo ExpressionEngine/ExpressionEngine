@@ -249,25 +249,26 @@ class File_field {
 	 */
 	public function validate($data, $field_name, $required = 'n', $grid = array())
 	{
-		$dir_field		= $field_name.'_directory';
-		$existing_field = $field_name.'_existing';
-		$hidden_field	= $field_name.'_hidden_file';
-		$hidden_dir		= (ee()->input->post($field_name.'_hidden_dir')) ? ee()->input->post($field_name.'_hidden_dir') : ee()->input->post($field_name.'_directory');
-		$allowed_dirs	= array();
+		$entry_id		 = (int) ee()->input->post('entry_id');
+
+		$dir_field		 = $field_name.'_directory';
+		$existing_field  = $field_name.'_existing';
+		$hidden_field	 = $field_name.'_hidden_file';
+		$hidden_dir		 = (ee()->input->post($field_name.'_hidden_dir')) ? ee()->input->post($field_name.'_hidden_dir') : ee()->input->post($field_name.'_directory');
+		$allowed_dirs	 = array();
+
+		$directory_input = ee()->input->post($dir_field);
+		$existing_input	 = ee()->input->post($existing_field);
+		$hidden_input    = ee()->input->post($hidden_field);
 
 		// Default to blank - allows us to remove files
-		$_POST[$field_name] = '';
+		$filename = '';
 
 		// Default directory
 		$upload_directories = $this->_get_upload_prefs();
 
-		// Directory selected - switch
-		$filedir = (ee()->input->post($dir_field)) ? ee()->input->post($dir_field) : '';
-
-		if ( ! $filedir)
-		{
-			$filedir = $hidden_dir;
-		}
+		// Directory selected?
+		$filedir = $directory_input ? $directory_input : $hidden_dir;
 
 		foreach($upload_directories as $row)
 		{
@@ -286,42 +287,35 @@ class File_field {
 			}
 			else
 			{
-				$_POST[$field_name] = $data['file_name'];
+				$filename = $data['file_name'];
 			}
 		}
-		elseif (ee()->input->post($existing_field))
+		elseif ($existing_input)
 		{
-			$_POST[$field_name] = $_POST[$existing_field];
+			$filename = $existing_input;
 		}
-		elseif (ee()->input->post($hidden_field))
+		elseif ($hidden_input)
 		{
-			$_POST[$field_name] = $_POST[$hidden_field];
+			$filename = $hidden_input;
 		}
-
-		$_POST[$dir_field] = $filedir;
-
-		unset($_POST[$hidden_field]);
 
 		// If the current file directory is not one the user has access to
 		// make sure it is an edit and value hasn't changed
-		if ($_POST[$field_name] && ! in_array($filedir, $allowed_dirs))
+		if ($filename && ! in_array($filedir, $allowed_dirs))
 		{
 			// Some legacy fields will have only a full path specified
 			if ($filedir == '')
 			{
-				unset($_POST[$field_name.'_hidden_dir']);
-				return array('value' => $_POST[$field_name]);
+				return array('value' => $filename);
 			}
 
-			if ( ! ee()->input->post('entry_id') OR ee()->input->post('entry_id') == '')
+			if ( ! $entry_id)
 			{
 				return array('value' => '', 'error' => lang('directory_no_access'));
 			}
 
 			// The existing directory couldn't be selected because they didn't have permission to upload
 			// Let's make sure that the existing file in that directory is the one that's going back in
-
-			$eid = (int) ee()->input->post('entry_id');
 
 			ee()->db->select($field_name);
 			$table = 'channel_data';
@@ -334,7 +328,7 @@ class File_field {
 			}
 			else
 			{
-				ee()->db->where('entry_id', $eid);
+				ee()->db->where('entry_id', $entry_id);
 				$table = 'channel_data';
 			}
 
@@ -345,22 +339,20 @@ class File_field {
 				return array('value' => '', 'error' => lang('directory_no_access'));
 			}
 
-			if ('{filedir_'.$hidden_dir.'}'.$_POST[$field_name] != $query->row($field_name))
+			if ('{filedir_'.$hidden_dir.'}'.$filename != $query->row($field_name))
 			{
 				return array('value' => '', 'error' => lang('directory_no_access'));
 			}
-
-			// Replace the empty directory with the existing directory
-			$_POST[$field_name.'_directory'] = $hidden_dir;
 		}
 
-		if ($required == 'y' && ! $_POST[$field_name])
+		if ($required == 'y' && ! $filename)
 		{
 			return array('value' => '', 'error' => lang('required'));
 		}
 
-		unset($_POST[$field_name.'_hidden_dir']);
-		return array('value' => $this->format_data($_POST[$field_name], $hidden_dir));
+		return array(
+			'value' => $this->format_data($filename, $hidden_dir)
+		);
 	}
 
 	// ------------------------------------------------------------------------
