@@ -1490,62 +1490,15 @@ GRID_FALLBACK;
 			$isset = (
 				isset($_POST['field_id_'.$field['field_id']]) ||
 				isset($_POST[$field['field_name']]) ||
-				(
-					((isset($_FILES['field_id_'.$field['field_id']]) && $_FILES['field_id_'.$field['field_id']]['error'] != 4) ||
-					(isset($_FILES[$field['field_name']]) && $_FILES[$field['field_name']]['error'] != 4)) &&
-					in_array($field['field_type'], $this->file_fields)
-				)
+				isset($_POST[$field['field_name'].'_hidden_file']) // always call the fieldtype if a file field was on the page
 			);
-
-			// If file exists, add it to the POST array for validation
-			if (isset($_FILES[$field['field_name']]['name']))
-			{
-				// Allow multi-dimensional arrays that contain files
-				if (is_array($_FILES[$field['field_name']]['name'])
-					&& isset($_POST[$field['field_name']])
-					&& is_array($_POST[$field['field_name']]))
-				{
-					$_POST[$field['field_name']] = array_merge_recursive(
-						$_POST[$field['field_name']],
-						$_FILES[$field['field_name']]['name']
-					);
-				}
-				else
-				{
-					$_POST[$field['field_name']] = $_FILES[$field['field_name']]['name'];
-				}
-			}
 
 			if (in_array($field['field_type'], $this->file_fields))
 			{
-				// Need to do a few more checks to see if the file was selected
-				// in another way.
-				foreach ($_FILES as $key => $value)
+				// trick validation into calling the file fieldtype
+				if (isset($_FILES[$field['field_name']]['name']))
 				{
-					if ($key == $field['field_name'])
-					{
-						$_FILES['field_id_'.$field['field_id']] = $value;
-
-						// Check to see if a file was actually selected
-						if ($_POST[$field['field_name']] === '')
-						{
-							if ( ! empty($_POST[$field['field_name'].'_existing']))
-							{
-								$_POST[$field['field_name']] = $_POST[$field['field_name'].'_existing'];
-								$isset = TRUE;
-							}
-							elseif ( ! empty($_POST[$field['field_name'].'_hidden']))
-							{
-								$_POST[$field['field_name']] = $_POST[$field['field_name'].'_hidden'];
-								$isset = TRUE;
-							}
-						}
-					}
-					elseif (preg_match('/^'.$field['field_name'].'_(.+)/', $key, $match))
-					{
-						$_FILES['field_id_'.$field['field_id'].'_'.$match[1]] = $value;
-						unset($_FILES[$key]);
-					}
+					$_POST[$field['field_name']] = $_FILES[$field['field_name']]['name'];
 				}
 			}
 
@@ -1568,6 +1521,13 @@ GRID_FALLBACK;
 				if ($field['field_required'] == 'y' && ! in_array('required', $field_rules))
 				{
 					array_unshift($field_rules, 'required');
+				}
+
+				// the file field does not always populate the $_POST[$field] value and does its own
+				// check for required
+				if ($field['field_type'] == 'file')
+				{
+					$field_rules = array_diff($field_rules, array('required'));
 				}
 
 				ee()->form_validation->set_rules($field['field_name'], $field['field_label'], implode('|', $field_rules));
