@@ -261,8 +261,8 @@ class File_field {
 		$existing_input	 = ee()->input->post($existing_field);
 		$hidden_input    = ee()->input->post($hidden_field);
 
-		// Default to blank - allows us to remove files
-		$filename = '';
+		// Default to blank, set POST to allow form validation to modify the value
+		$filename = $_POST[$field_name] = '';
 
 		// Default directory
 		$upload_directories = $this->_get_upload_prefs();
