@@ -141,7 +141,7 @@ class Grid_lib {
 		}
 
 		// Call the fieldtype's field display method and capture the output
-		$display_field = ee()->grid_parser->call('display_field', form_prep($row_data));
+		$display_field = ee()->grid_parser->call('display_field', $row_data);
 
 		// Default name for new rows
 		$row_id = 'new_row_0';
