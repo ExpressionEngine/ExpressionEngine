@@ -33,7 +33,7 @@
 				</td>
 			</tr>
 			
-			<?php if($values['site_id'] == ''): ?>
+			<?php if($values['site_id'] == '' && config_item('allow_msm_site_duplication') === TRUE): ?>
 			
 			<tr>
 				<th colspan="2"><strong><?=lang('move_data')?></strong></th>
