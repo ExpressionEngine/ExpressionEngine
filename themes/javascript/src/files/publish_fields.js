@@ -223,7 +223,7 @@ EE.namespace('EE.publish.file_browser');
 				return false;
 			});
 		});
-	}
+	};
 
 	/**
 	 * Fire up the file browser for file fields
@@ -246,7 +246,7 @@ EE.namespace('EE.publish.file_browser');
 	};
 
 	$(function() {
-		if (EE.filebrowser.publish == true) {
+		if (EE.filebrowser.publish) {
 			// Give Markitup time to activate
 			setTimeout(function() {
 				EE.publish.file_browser.file_field();
