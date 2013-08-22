@@ -156,7 +156,18 @@ class Date_ft extends EE_Fieldtype {
 			$date = $field_data;
 		}
 
-		ee()->javascript->set_global('date.include_seconds', ee()->config->item('include_seconds'));
+		$date_fmt = ee()->session->userdata('time_format');
+		$date_fmt = $date_fmt ? $date_fmt : ee()->config->item('time_format');
+
+		ee()->javascript->set_global(array(
+			'date.format' => $date_fmt,
+			'date.include_seconds' => ee()->config->item('include_seconds')
+		));
+
+		ee()->cp->add_js_script(array(
+			'ui' => 'datepicker',
+			'file' => 'cp/date'
+		));
 
 		// Note- the JS will automatically localize the default date- but not necessarily in a way we want
 		// Hence we adjust default date to compensate for the coming localization

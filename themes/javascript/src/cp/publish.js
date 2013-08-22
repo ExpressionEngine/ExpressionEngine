@@ -467,51 +467,6 @@ EE.publish.change_preview_link = function() {
 
 };
 
-EE.date_obj_time = (function() {
-	var date_obj = new Date(),
-		date_obj_hours = date_obj.getHours(),
-		date_obj_mins = date_obj.getMinutes(),
-		date_obj_secs = "",
-		date_obj_am_pm = "";
-
-	if (date_obj_mins < 10) {
-		date_obj_mins = "0" + date_obj_mins;
-	}
-
-	if (EE.date.include_seconds == 'y')
-	{
-		date_obj_secs = date_obj.getSeconds();
-
-		if (date_obj_secs < 10)
-		{
-			date_obj_secs = "0" + date_obj_secs;
-		}
-
-		date_obj_secs = ":" + date_obj_secs;
-	}
-
-	if (EE.date.format == "us") {
-
-		date_obj_am_pm = (date_obj_hours < 12) ? ' AM': ' PM';
-
-		// This turns midnight into 12 AM, so ignore if it's already 0
-		if (date_obj_hours != 0) {
-		    date_obj_hours = ((date_obj_hours + 11) % 12) + 1;
-		}
-		else
-		{
-			date_obj_hours = 12;
-		}
-	}
-
-	if (date_obj_hours < 10) {
-		date_obj_hours = "0" + date_obj_hours;
-	}
-
-	return " '" + date_obj_hours + ":" + date_obj_mins + date_obj_secs + date_obj_am_pm + "'";
-}());
-
-
 file_manager_context = "";	// @todo - yuck, should be on the EE global
 
 
