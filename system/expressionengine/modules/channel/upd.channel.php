@@ -45,33 +45,42 @@ class Channel_upd {
 	function install()
 	{
 		$data = array(
-					'module_name' => 'Channel',
-					'module_version' => $this->version,
-					'has_cp_backend' => 'n'
-					);
+			'module_name' => 'Channel',
+			'module_version' => $this->version,
+			'has_cp_backend' => 'n'
+		);
 
 		ee()->db->insert('modules', $data);
 
 		$data = array(
-					'class' => 'Channel',
-					'method' => 'insert_new_entry'
-					);
-					
-		ee()->db->insert('actions', $data);			
-					
-		$data = array(
-					'class' => 'Channel',
-					'method' => 'filemanager_endpoint'
-					);
-					
+			'class' => 'Channel',
+			'method' => 'submit_entry'
+		);
+
 		ee()->db->insert('actions', $data);
-		
+
 		$data = array(
-					'class' => 'Channel',
-					'method' => 'smiley_pop'
-					);
-					
+			'class' => 'Channel',
+			'method' => 'filemanager_endpoint'
+		);
+
 		ee()->db->insert('actions', $data);
+
+		$data = array(
+			'class' => 'Channel',
+			'method' => 'smiley_pop'
+		);
+
+		ee()->db->insert('actions', $data);
+
+		$data = array(
+			'class' => 'Channel',
+			'method' => 'combo_loader'
+		);
+
+		ee()->db->insert('actions', $data);
+
+		ee()->db->insert('content_types', array('name' => 'channel'));
 
 		return TRUE;
 	}

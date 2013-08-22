@@ -80,6 +80,12 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 		this.active = $(container).find('.multiselect-active');
 		this.searchField = $(container).find('.multiselect-filter input');
 
+		// not a multi field - we could catch this in the php, but this works
+		// and we may want a prettier single relationship interface at some point
+		if ( ! this.root.length) {
+			return;
+		}
+
 		// cache a few things for search and query-less access
 		this.activeMap = {};
 		this.listItems = this.root.find('li');
@@ -121,6 +127,7 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 			this._bindAddActiveOnSelect();
 			this._bindScrollToActiveClick();
 			this._bindSortable();
+			this._bindSubmitClear();
 
 			// filtering
 			this._setupFilter();
@@ -159,7 +166,7 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 				evt.preventDefault();
 
 				var box = $(this).find(':checkbox');
-					wasChecked = box.is(':checked');
+				wasChecked = box.is(':checked');
 
 				$(this).toggleClass('selected', ! wasChecked);
 				box.attr('checked', ! wasChecked);
@@ -324,6 +331,25 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 		},
 
 		/**
+	 	 * Clear unused sorting data from post before submit so that we don't
+	 	 * overwhelm the POST array with too many variables.
+	 	 */
+		_bindSubmitClear: function() {
+			var that = this;
+
+			this.root.parents('form').on('submit', function(evt) {
+
+				that.root.find('input:text').each(function() {
+					if($(this).val() == "0") {
+						$(this).remove();
+					}
+				});
+				return true;
+			});
+
+		},
+
+		/**
 		 * Sorting the right list should update the hidden textareas in the
 		 * left list so that they display the relative sort.
 		 */
@@ -331,6 +357,7 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 			var that = this,
 				previousPosition,
 				getOrder, start, update;
+
 
 			getOrder = function(el) {
 				return +that.defaultList[ that._index(el) ].find('input:text').val();
@@ -575,7 +602,8 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 			// the others piecemeal in steps of 100.
 
 			(function batch() {
-				parent.append(children.slice(i++, 100));
+				parent.append(children.slice(i, 100 + i));
+				i += 100;
 
 				if (i < childLength) {
 					_.defer(batch);
@@ -623,6 +651,22 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 	};
 
 	/**
+	 * Cache the relationship object on the associated dom element
+	 *
+	 * Makes sure that we only ever instantiate a relationship of a
+	 * given name once.
+	 */
+	function cached_relationship_object(element, creation_callback) {
+		var el = $(element);
+
+		if ( ! el.data('relationship-object')) {
+			el.data('relationship-object', creation_callback(el));
+		}
+
+		return el.data('relationship-object');
+	}
+
+	/**
 	 * Public method to instantiate
 	 *
 	 * If it's a relationship field we need to find the cells for existing
@@ -630,26 +674,19 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 	 * simply bind on the field name we were given.
 	 */
 	EE.setup_relationship_field = function(field_name) {
-		if (field_name[0] == 'f') { // field_id_x vs col_id_x for grid
-			return new RelationshipField(
-				$('#sub_hold_'+field_name.replace('id_', ''))
-			);
-		}
+		var element = document.getElementById('relationship-' + field_name);
 
-		var parts = field_name.split('_'); // [field_id, col_id, row_id]
-
-		new RelationshipField(
-			$('#sub_hold_field_'+parts[0])
-				.find('.multiselect.col_id_'+parts[1])
-				.closest('.grid_row > td')
-				.filter('[data-row-id="'+parts[2]+'"]')
-		);
-
-		Grid.bind('relationship', 'display', function(cell) {
-			new RelationshipField(cell, true);
+		return cached_relationship_object(element, function(el) {
+			return new RelationshipField(el);
 		});
 	};
 
+	Grid.bind('relationship', 'display', function(cell) {
+		var element = cell.find('.relationship');
 
+		return cached_relationship_object(element, function(el) {
+			return new RelationshipField(cell, ! cell.data('row-id'));
+		});
+	});
 
 })(jQuery);

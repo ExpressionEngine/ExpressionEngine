@@ -137,6 +137,7 @@ class EE_Schema {
 			action_id int(4) unsigned NOT NULL auto_increment,
 			class varchar(50) NOT NULL,
 			method varchar(50) NOT NULL,
+			csrf_exempt tinyint(1) UNSIGNED NOT NULL default 0,
 			PRIMARY KEY `action_id` (`action_id`)
 		)";
 
@@ -729,7 +730,7 @@ class EE_Schema {
 			PRIMARY KEY `channel_form_settings_id` (`channel_form_settings_id`),
 			KEY `site_id` (`site_id`),
 			KEY `channel_id` (`channel_id`)
-		);";
+		)";
 
 		// Relationships table
 
@@ -745,7 +746,7 @@ class EE_Schema {
 			PRIMARY KEY `relationship_id` (`relationship_id`),
 			KEY `parent_id` (`parent_id`),
 			KEY `child_id` (`child_id`),
-			KEY `field_id` (`field_id`)
+			KEY `field_id` (`field_id`),
 			KEY `grid_row_id` (`grid_row_id`)
 		)";
 
@@ -1198,6 +1199,14 @@ class EE_Schema {
 			KEY `hash` (`hash`)
 		)";
 
+		// Entity type table
+		$Q[] = "CREATE TABLE `exp_content_types` (
+			`content_type_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+			`name` varchar(50) NOT NULL DEFAULT '',
+			PRIMARY KEY (`content_type_id`),
+			KEY `name` (`name`)
+		)";
+
 		// Fieldtype table
 		$Q[] = "CREATE TABLE exp_fieldtypes (
 			fieldtype_id int(4) unsigned NOT NULL auto_increment,
@@ -1298,6 +1307,7 @@ class EE_Schema {
 			`addon_module` varchar(100) NULL,
 			`addon_method` varchar(100) NULL,
 			`snippets` text NULL,
+			`hash` char(32) NOT NULL,
 			PRIMARY KEY (`log_id`)
 		)";
 
@@ -1313,6 +1323,23 @@ class EE_Schema {
 			`last_refresh` int(10) DEFAULT '0',
 			PRIMARY KEY (`remember_me_id`),
 			KEY `member_id` (`member_id`)
+		)";
+
+		$Q[] = "CREATE TABLE `exp_grid_columns` (
+			`col_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+			`field_id` int(10) unsigned DEFAULT NULL,
+			`content_type` varchar(50) DEFAULT NULL,
+			`col_order` int(3) unsigned DEFAULT NULL,
+			`col_type` varchar(50) DEFAULT NULL,
+			`col_label` varchar(50) DEFAULT NULL,
+			`col_name` varchar(32) DEFAULT NULL,
+			`col_instructions` text,
+			`col_required` char(1) DEFAULT NULL,
+			`col_search` char(1) DEFAULT NULL,
+			`col_width` int(3) unsigned DEFAULT NULL,
+			`col_settings` text,
+			PRIMARY KEY (`col_id`),
+			KEY `field_id` (`field_id`)
 		)";
 
 		// --------------------------------------------------------------------
@@ -1406,12 +1433,15 @@ class EE_Schema {
 		}
 
 		// Default field types
-		$default_fts = array('select', 'text', 'textarea', 'date', 'file', 'multi_select', 'checkboxes', 'radio', 'relationship', 'rte');
+		$default_fts = array('select', 'text', 'textarea', 'date', 'file', 'grid', 'multi_select', 'checkboxes', 'radio', 'relationship', 'rte');
 
 		foreach($default_fts as $name)
 		{
 			$Q[] = "INSERT INTO `exp_fieldtypes` (`name`,`version`,`settings`,`has_global_settings`) VALUES ('".$name."','1.0','YTowOnt9','n')";
 		}
+
+		// Add Grid as a content type
+		$Q[] = "INSERT INTO `exp_content_types` (`name`) VALUES ('grid')";
 
 		// --------------------------------------------------------------------
 		// --------------------------------------------------------------------

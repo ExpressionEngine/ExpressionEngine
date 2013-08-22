@@ -1014,7 +1014,7 @@ class Admin_content extends CP_Controller {
 		$channels = $this->channel_model->get_channels()->result();
 
 		$default_statuses = array(
-			''		 => lang('channel_form_default_status'),
+			''		 => lang('channel_form_default_status_empty'),
 			'open'	 => lang('open'),
 			'closed' => lang('closed')
 		);
@@ -1037,8 +1037,12 @@ class Admin_content extends CP_Controller {
 
 			foreach ($statuses as $status)
 			{
+				$name = ($status->status == 'open' OR
+						$status->status == 'closed')
+						? lang($status->status) : $status->status;
+
 				$channel_id = $all_statuses[$status->group_id];
-				$all_channels[$channel_id]['statuses'][$status->status] = $status->status;
+				$all_channels[$channel_id]->statuses[$status->status] = $name;
 			}
 		}
 
@@ -1050,6 +1054,15 @@ class Admin_content extends CP_Controller {
 			$all_authors[$author->member_id] = $author->username;
 		}
 
+		// No authors? Add member ID 1
+		if (empty($all_authors))
+		{
+			foreach ($this->member_model->get_members(1)->result_array() as $member)
+			{
+				$all_authors[$member['member_id']] = $member['username'];
+			}
+		}
+
 		$channels = array();
 		$default = array(
 			'default_author'	=> 0,
@@ -1058,14 +1071,17 @@ class Admin_content extends CP_Controller {
 			'allow_guest_posts'	=> 'n'
 		);
 
-		$settings = $this->db
-			->where_in('channel_id', array_keys($all_channels))
-			->get('channel_form_settings')
-			->result();
-
-		foreach ($settings as &$row)
+		if (count($all_channels))
 		{
-			$all_settings[$row->channel_id] = $row;
+			$settings = $this->db
+				->where_in('channel_id', array_keys($all_channels))
+				->get('channel_form_settings')
+				->result();
+
+			foreach ($settings as &$row)
+			{
+				$all_settings[$row->channel_id] = $row;
+			}
 		}
 
 		foreach ($all_channels as $id => $channel)
@@ -2126,19 +2142,19 @@ class Admin_content extends CP_Controller {
 
 		$_POST['site_id'] = $this->config->item('site_id');
 
+		$category_data = array(
+			'group_id'			=> $group_id,
+			'cat_name'			=> $this->input->post('cat_name'),
+			'cat_url_title'		=> $this->input->post('cat_url_title'),
+			'cat_description'	=> $this->input->post('cat_description'),
+			'cat_image'			=> $this->input->post('cat_image'),
+			'parent_id'			=> $this->input->post('parent_id'),
+			'cat_order'			=> 1, // Default to the new category appearing first
+			'site_id'			=> $this->input->post('site_id')
+		);
+
 		if ($edit == FALSE)
 		{
-			$category_data = array(
-							'group_id'			=> $group_id,
-							'cat_name'			=> $this->input->post('cat_name'),
-							'cat_url_title'		=> $this->input->post('cat_url_title'),
-							'cat_description'	=> $this->input->post('cat_description'),
-							'cat_image'			=> $this->input->post('cat_image'),
-							'parent_id'			=> $this->input->post('parent_id'),
-							'cat_order'			=> 1, // Default to the new category appearing first
-							'site_id'			=> $this->input->post('site_id')
-			);
-
 			$this->db->insert('categories', $category_data);
 			$cat_id = $this->db->insert_id();
 
@@ -2278,6 +2294,16 @@ class Admin_content extends CP_Controller {
 		{
 			$this->db->query($this->db->update_string('exp_category_field_data', $fields, array('cat_id' => $cat_id)));
 		}
+
+		// -------------------------------------------
+		// 'category_save' hook.
+		//
+		if (ee()->extensions->active_hook('category_save') === TRUE)
+		{
+			ee()->extensions->call('category_save', $cat_id, $category_data);
+		}
+		//
+		// -------------------------------------------
 
 		$this->session->set_flashdata('message_success', lang('preference_updated'));
 		$this->functions->redirect(BASE.AMP.'C=admin_content'.AMP.'M=category_editor'.AMP."group_id={$group_id}");
@@ -3609,6 +3635,10 @@ class Admin_content extends CP_Controller {
 
 			$ft_api->fetch_all_fieldtypes();
 			$obj = $ft_api->setup_handler($field_type, TRUE);
+			$ft_api->apply(
+				'_init',
+				array(array('id' => $field_id))
+			);
 
 			if ($ft_api->check_method_exists('validate_settings'))
 			{

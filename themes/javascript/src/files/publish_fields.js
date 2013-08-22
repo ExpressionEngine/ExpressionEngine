@@ -206,7 +206,7 @@ EE.namespace('EE.publish.file_browser');
 					return '';
 				});
 				container.find(".file_set").hide();
-				container.find('.undo_remove').show();
+				container.find('.sub_filename a').show();
 				fileselector.show();
 
 				return false;
@@ -217,7 +217,7 @@ EE.namespace('EE.publish.file_browser');
 					return last_value.length ? last_value[i] : '';
 				});
 				container.find(".file_set").show();
-				container.find('.undo_remove').hide();
+				container.find('.sub_filename a').hide();
 				fileselector.hide();
 
 				return false;

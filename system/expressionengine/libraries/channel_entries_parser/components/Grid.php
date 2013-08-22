@@ -8,10 +8,10 @@
  * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
- * @since		Version 2.0
+ * @since		Version 2.7
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -35,7 +35,7 @@ class EE_Channel_grid_parser implements EE_Channel_parser_component {
 	{
 		return empty($pre->channel()->gfields) OR in_array('grid', $disabled);
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -45,21 +45,27 @@ class EE_Channel_grid_parser implements EE_Channel_parser_component {
 	 *
 	 * @param String	The tagdata to be parsed
 	 * @param Object	The preparser object.
-	 * @return Object	EE_Grid_field_parser object	
+	 * @return Object	EE_Grid_field_parser object
 	 */
 	public function pre_process($tagdata, EE_Channel_preparser $pre)
 	{
-		$site_id = config_item('site_id');
-		$gfields = $pre->channel()->gfields;
-
-		if ( ! isset($gfields[$site_id]) OR empty($gfields[$site_id]))
+		// Run the preprocessor for each site
+		foreach ($pre->site_ids() as $site_id)
 		{
-			return NULL;
+			$gfields = $pre->channel()->gfields;
+
+			// Skip a site if it has no Grid fields
+			if ( ! isset($gfields[$site_id]) OR empty($gfields[$site_id]))
+			{
+				continue;
+			}
+
+			ee()->load->library('grid_parser');
+
+			ee()->grid_parser->pre_process($tagdata, $pre, $gfields[$site_id]);
 		}
 
-		ee()->load->library('grid_parser');
-
-		return ee()->grid_parser->pre_process($tagdata, $pre, $gfields[$site_id]);
+		return TRUE;
 	}
 
 	// ------------------------------------------------------------------------

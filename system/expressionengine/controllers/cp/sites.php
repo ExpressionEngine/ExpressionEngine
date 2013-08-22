@@ -1277,12 +1277,45 @@ class Sites extends CP_Controller {
 
 										$this->dbforge->add_column('channel_data', $columns);
 									}
+									elseif($row['field_type'] == 'grid')
+									{
+										$this->load->library('api');
+										$this->api->instantiate('channel_fields');
+										$this->api_channel_fields->fetch_installed_fieldtypes();
+
+										$this->load->model('grid_model');
+										
+										$this->load->dbforge();
+										ee()->dbforge->add_column(
+											'channel_data', 
+											array(
+												'field_id_' . $field_id => array(
+													'type'			=> 'int',
+													'constraint'	=> 10
+												),
+												'field_ft_' . $field_id => array(
+													'type'			=> 'tinytext'
+												)	
+											) 
+										);
+										
+										$this->grid_model->create_field($field_id, 'channel');
+										
+										$columns = $this->grid_model->get_columns_for_field($old_field_id, 'channel');	
+										foreach($columns as $column) 
+										{
+											unset($column['col_id']);
+											$column['field_id'] = $field_id;
+											$column['col_settings'] = json_encode($column['col_settings']);
+											$this->grid_model->save_col_settings($column);
+										}
+									}
 									else
 									{
 										$columns = array(
 											'field_id_'.$field_id => array(
 												'type' 			=> 'text',
-												'null' 			=> FALSE,
+												'null' 			=> TRUE,
 											),
 											'field_ft_'.$field_id => array(
 												'type'			=> 'tinytext',
@@ -1459,12 +1492,12 @@ class Sites extends CP_Controller {
 									$columns = array(
 										'field_id_'.$field_id => array(
 											'type' 			=> 'text',
-											'null' 			=> FALSE,
+											'null' 			=> TRUE,
 										),
 										'field_ft_'.$field_id => array(
 											'type'			=> 'varchar',
 											'constraint'	=> 40,
-											'null'			=> FALSE,
+											'null'			=> TRUE,
 											'default'		=> 'none'
 										)
 									);
@@ -1671,7 +1704,9 @@ class Sites extends CP_Controller {
 										'`field_id_'.$row['field_id'].'`', 
 										FALSE
 									);
-									$this->db->set('field_id_'.$row['field_id'], NULL);
+									
+									$null_type = ($row['field_type'] == 'date' OR $row['field_type'] == 'relationship' OR $row['field_type'] == 'grid') ? 0 : NULL;
+									$this->db->set('field_id_'.$row['field_id'], $null_type);
 									$this->db->where('channel_id', $channel_id)
 										->update('channel_data');
 								}								
@@ -1864,7 +1899,8 @@ class Sites extends CP_Controller {
 		
 		$vars['site_id'] = $site_id;
 		$vars['message'] = lang('delete_site_confirmation');
-		
+		$vars['site_label'] = $query->row()->site_label;
+				
 		$this->cp->render('sites/delete_confirm', $vars);
 	}
 	
@@ -1973,6 +2009,7 @@ class Sites extends CP_Controller {
 		// Delete Channel Custom Field Columns for Site		
 		// Save the field ids in an array so we can delete the associated field formats
 		$this->load->dbforge();
+		$this->load->library('smartforge');
 		$nuked_field_ids = array();
 		
 		$query = $this->db->select('field_id, field_type')
@@ -1985,18 +2022,18 @@ class Sites extends CP_Controller {
 		{
 			foreach($query->result_array() as $row)
 			{
-				$this->dbforge->drop_column('channel_data', 'field_id_'.$row['field_id']);
-				$this->dbforge->drop_column('channel_data', 'field_ft_'.$row['field_id']);
+				$this->smartforge->drop_column('channel_data', 'field_id_'.$row['field_id']);
+				$this->smartforge->drop_column('channel_data', 'field_ft_'.$row['field_id']);
 
 				$nuked_field_ids[] = $row['field_id'];
                 
 				if ($row['field_type'] == 'date')
 				{
-					$this->dbforge->drop_column('channel_data', 'field_dt_'.$row['field_id']);
+					$this->smartforge->drop_column('channel_data', 'field_dt_'.$row['field_id']);
 				}
 			}
 		}
-		
+
 		// Delete any related field formatting options
 		if ( ! empty($nuked_field_ids))
 		{
@@ -2016,8 +2053,8 @@ class Sites extends CP_Controller {
 			foreach($query->result_array() as $row)
 			{
 				$field_id = $row['field_id'];
-				$this->dbforge->drop_column('category_field_data', 'field_id_'.$field_id);
-				$this->dbforge->drop_column('category_field_data', 'field_ft_'.$field_id);
+				$this->smartforge->drop_column('category_field_data', 'field_id_'.$field_id);
+				$this->smartforge->drop_column('category_field_data', 'field_ft_'.$field_id);
 			}
 		}
 		

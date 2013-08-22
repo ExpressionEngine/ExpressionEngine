@@ -55,7 +55,7 @@ class File_ft extends EE_Fieldtype {
 	{
 		return ee()->file_field->validate(
 			$data,
-			$this->field_name,
+			$this->name(),
 			$this->settings['field_required'],
 			array(
 				'grid_row_id' => isset($this->settings['grid_row_id'])
@@ -127,12 +127,15 @@ class File_ft extends EE_Fieldtype {
 
 			$script = <<<JSC
 			$(document).ready(function() {
-				$('.file_field').each(function() {
-					var container = $(this),
-						last_value = [],
+				function setupFileField(container) {
+					var last_value = [],
 						fileselector = container.find('.no_file'),
-						hidden_name = container.find('[name$="_hidden_file"]').prop('name'),
+						hidden_name = container.find('input[name*="_hidden_file"]').prop('name'),
 						placeholder;
+
+					if ( ! hidden_name) {
+						return;
+					}
 
 					remove = $('<input/>', {
 						'type': 'hidden',
@@ -146,7 +149,7 @@ class File_ft extends EE_Fieldtype {
 							return '';
 						});
 						container.find(".file_set").hide();
-						container.find('.undo_remove').show();
+						container.find('.sub_filename a').show();
 						fileselector.show();
 						container.append(remove);
 
@@ -158,13 +161,22 @@ class File_ft extends EE_Fieldtype {
 							return last_value.length ? last_value[i] : '';
 						});
 						container.find(".file_set").show();
-						container.find('.undo_remove').hide();
+						container.find('.sub_filename a').hide();
 						fileselector.hide();
 						remove.remove();
 
 						return false;
 					});
+				}
+				// most of them
+				$('.file_field').each(function() {
+					setupFileField($(this));
 				});
+
+				// in grid
+				Grid.bind('file', 'display', function(cell) {
+					setupFileField(cell);
+				})
 			});
 JSC;
 			ee()->javascript->output($script);
@@ -717,6 +729,19 @@ JSC;
 		}
 
 		return $data;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Accept all content types.
+	 *
+	 * @param string  The name of the content type
+	 * @return bool   Accepts all content types
+	 */
+	public function accepts_content_type($name)
+	{
+		return TRUE;
 	}
 }
 

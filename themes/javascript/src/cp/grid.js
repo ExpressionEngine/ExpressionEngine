@@ -40,7 +40,6 @@ var Grid = window.Grid = {
  * Grid Publish class
  *
  * @param	{string}	field		Field ID of table to instantiate as a Grid
- * @param	{string}	settings	JSON string of field settings
  */
 Grid.Publish = function(field, settings)
 {
@@ -48,7 +47,7 @@ Grid.Publish = function(field, settings)
 	this.blankRow = this.root.find('tr.blank_row');
 	this.emptyField = this.root.find('tr.empty_field');
 	this.rowContainer = this.root.find('.grid_row_container');
-	this.settings = settings;
+	this.settings = (settings !== undefined) ? settings : EE.grid_field_settings[field.id];
 	this.init();
 
 	this.eventHandlers = [];
@@ -58,14 +57,11 @@ Grid.Publish.prototype = {
 
 	init: function()
 	{
-		this._addMinimumRows();
 		this._bindSortable();
 		this._bindAddButton();
 		this._bindDeleteButton();
 		this._toggleRowManipulationButtons();
-
-		// Fire display event after a short delay to allow scripts to catch up
-		window.setTimeout(this._fieldDisplay(), 500);
+		this._fieldDisplay();
 
 		// Disable input elements in our blank template container so they
 		// don't get submitted on form submission
@@ -83,6 +79,7 @@ Grid.Publish.prototype = {
 			axis: 'y',						// Only allow vertical dragging
 			containment: 'parent',			// Contain to parent
 			handle: 'td.grid_handle',		// Set drag handle
+			cancel: 'td.grid_sort_cancel',	// Do not allow sort on this handle
 			items: 'tr.grid_row',			// Only allow these to be sortable
 			sort: EE.sortable_sort_helper,	// Custom sort handler
 			helper: function(event, row)	// Fix issue where cell widths collapse on drag
@@ -159,6 +156,11 @@ Grid.Publish.prototype = {
 			// Show delete buttons if the row count is above the min rows setting
 			deleteButtons.toggle(rowCount > this.settings.grid_min_rows);
 		}
+
+		// Do not allow sortable to run when there is only one row, otherwise
+		// the row becomes detached from the table and column headers change
+		// width in a fluid-column-width table
+		this.rowContainer.find('td.grid_handle').toggleClass('grid_sort_cancel', rowCount == 1);
 	},
 
 	/**
@@ -260,10 +262,14 @@ Grid.Publish.prototype = {
 	{
 		var that = this;
 
-		this._getRows().each(function()
-		{
-			that._fireEvent('display', $(this));
-		});
+		setTimeout(function(){
+			that._getRows().each(function()
+			{
+				that._fireEvent('display', $(this));
+			});
+
+			that._addMinimumRows();
+		}, 500);
 	},
 
 	/**
@@ -598,7 +604,7 @@ Grid.Settings.prototype = {
 		);
 
 		// Make sure inputs are enabled if creating blank column
-		el.find(':input').removeAttr('disabled');
+		el.find(':input').removeAttr('disabled').removeClass('grid_settings_error');
 
 		return el;
 	},
@@ -676,10 +682,10 @@ Grid.Settings.prototype = {
 	{
 		var cloned = el.clone();
 
-		el.find(":input").each(function()
+		el.find(":input:enabled").each(function()
 		{
 			// Find the new input in the cloned column for editing
-			var new_input = cloned.find(":input[name='"+$(this).attr('name')+"']");
+			var new_input = cloned.find(":input[name='"+$(this).attr('name')+"']:enabled");
 
 			if ($(this).is("select"))
 			{
@@ -785,10 +791,12 @@ EE.grid_settings = function(settings)
 	return new Grid.Settings(settings);
 };
 
-_.each(EE.publish.grid_cache, function(args)
+if (typeof _ !== 'undefined' && EE.grid_cache !== 'undefined')
 {
-	Grid.bind.apply(Grid, args);
-});
-
+	_.each(EE.grid_cache, function(args)
+	{
+		Grid.bind.apply(Grid, args);
+	});
+}
 
 })(jQuery);

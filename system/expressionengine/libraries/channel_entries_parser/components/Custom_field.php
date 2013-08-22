@@ -8,7 +8,7 @@
  * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
- * @since		Version 2.0
+ * @since		Version 2.6
  * @filesource
  */
 
@@ -88,7 +88,7 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component {
 			$entry = '';
 			$field_id = $cfields[$field['field_name']];
 
-			if (isset($data['field_id_'.$field_id]) && $data['field_id_'.$field_id] != '')
+			if (isset($data['field_id_'.$field_id]) && $data['field_id_'.$field_id] !== '')
 			{
 				$modifier = $field['modifier'];
 
@@ -101,32 +101,32 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component {
 					$_ft_path = $ft_api->ft_paths[$ft_api->field_type];
 					ee()->load->add_package_path($_ft_path, FALSE);
 
-					$obj->_init(array('row' => $data));
+					$obj->_init(array(
+						'row'			=> $data,
+						'content_id'	=> $data['entry_id'],
+						'content_type'	=> 'channel'
+					));
 
-					$data = $obj->pre_process(
-						$ft_api->custom_field_data_hook(
-							$obj,
-							'pre_process',
-							$data['field_id_'.$field_id]
-						)
-					);
+					$data = $ft_api->apply('pre_process', array(
+						$data['field_id_'.$field_id]
+					));
 
 					if (method_exists($obj, $parse_fnc))
 					{
-						$entry = $obj->$parse_fnc(
-							$ft_api->custom_field_data_hook($obj, $parse_fnc, $data),
+						$entry = $ft_api->apply($parse_fnc, array(
+							$data,
 							$field['params'],
 							FALSE
-						);
+						));
 					}
 					elseif (method_exists($obj, 'replace_tag_catchall'))
 					{
-						$entry = $obj->replace_tag_catchall(
-							$ft_api->custom_field_data_hook($obj, 'replace_tag_catchall', $data),
+						$entry = $ft_api->apply('replace_tag_catchall', array(
+							$data,
 							$field['params'],
 							FALSE,
 							$modifier
-						);
+						));
 					}
 
 					ee()->load->remove_package_path($_ft_path);

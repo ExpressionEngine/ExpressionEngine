@@ -133,7 +133,7 @@ class Channel_form_lib
 
 		if (ee()->extensions->active_hook('channel_form_entry_form_absolute_start') === TRUE)
 		{
-			ee()->extensions->call('channel_form_entry_form_absolute_start');
+			ee()->extensions->call('channel_form_entry_form_absolute_start', $this);
 			if (ee()->extensions->end_script === TRUE) return;
 		}
 
@@ -750,7 +750,7 @@ class Channel_form_lib
 		$form_attributes = array(
 			'hidden_fields' => $hidden_fields,
 			'action'		=> $RET,
-			'id'			=> 'publishForm',
+			'id'			=> ee()->TMPL->fetch_param('id', 'publishForm'),
 			'class'			=> ee()->TMPL->form_class,
 			'enctype' 		=> $this->_file_enctype ? 'enctype="multipart/form-data"' : 'multi'
 		);
@@ -929,6 +929,15 @@ class Channel_form_lib
 				$value['XID'] = '{XID_HASH}';
 
 				$this->head .= 'if (typeof EE == "undefined" || ! EE) { '."\n".'var EE = '.json_encode($value).';}'."\n";
+				$this->head .= <<<GRID_FALLBACK
+EE.grid_cache = [];
+
+window.Grid = {
+	bind: function() {
+		EE.grid_cache.push(arguments);
+	}
+};
+GRID_FALLBACK;
 			}
 			else
 			{
@@ -941,6 +950,7 @@ class Channel_form_lib
 		$this->head .= "\n".' // ]]>'."\n".'</script>';
 
 		$js_defaults = array(
+			'file' => array('underscore'),
 			'ui' => array('core', 'widget', 'button', 'dialog'),
 			'plugin' => array('markitup'),
 		);
@@ -1119,6 +1129,11 @@ class Channel_form_lib
 							}
 						}
 
+						if (hours == 0)
+						{
+							hours = 12;
+						}
+
 						if (hours < 10)
 						{
 							hours = "0" + hours;
@@ -1158,6 +1173,7 @@ class Channel_form_lib
 				'pulldown'		=> 0,
 				'checkbox'		=> 0,
 				'relationship'	=> 0,
+				'relationships'	=> 0,
 				'multiselect'	=> 0,
 				'date'			=> 0,
 				'radio'			=> 0,
@@ -1211,6 +1227,10 @@ class Channel_form_lib
 				{
 					$custom_field_variables_row['allow_multiple'] = ($settings['allow_multiple'] == 0) ? 0 : 1;
 				}
+
+				// Also listen for plural form of relationship in conditionals
+				// because the field is called "Relationships"
+				$custom_field_variables_row['relationships'] = 1;
 			}
 
 			$custom_field_variables[$field_name] = $custom_field_variables_row;
@@ -1470,62 +1490,15 @@ class Channel_form_lib
 			$isset = (
 				isset($_POST['field_id_'.$field['field_id']]) ||
 				isset($_POST[$field['field_name']]) ||
-				(
-					((isset($_FILES['field_id_'.$field['field_id']]) && $_FILES['field_id_'.$field['field_id']]['error'] != 4) ||
-					(isset($_FILES[$field['field_name']]) && $_FILES[$field['field_name']]['error'] != 4)) &&
-					in_array($field['field_type'], $this->file_fields)
-				)
+				isset($_POST[$field['field_name'].'_hidden_file']) // always call the fieldtype if a file field was on the page
 			);
-
-			// If file exists, add it to the POST array for validation
-			if (isset($_FILES[$field['field_name']]['name']))
-			{
-				// Allow multi-dimensional arrays that contain files
-				if (is_array($_FILES[$field['field_name']]['name'])
-					&& isset($_POST[$field['field_name']])
-					&& is_array($_POST[$field['field_name']]))
-				{
-					$_POST[$field['field_name']] = array_merge_recursive(
-						$_POST[$field['field_name']],
-						$_FILES[$field['field_name']]['name']
-					);
-				}
-				else
-				{
-					$_POST[$field['field_name']] = $_FILES[$field['field_name']]['name'];
-				}
-			}
 
 			if (in_array($field['field_type'], $this->file_fields))
 			{
-				// Need to do a few more checks to see if the file was selected
-				// in another way.
-				foreach ($_FILES as $key => $value)
+				// trick validation into calling the file fieldtype
+				if (isset($_FILES[$field['field_name']]['name']))
 				{
-					if ($key == $field['field_name'])
-					{
-						$_FILES['field_id_'.$field['field_id']] = $value;
-
-						// Check to see if a file was actually selected
-						if ($_POST[$field['field_name']] === '')
-						{
-							if ( ! empty($_POST[$field['field_name'].'_existing']))
-							{
-								$_POST[$field['field_name']] = $_POST[$field['field_name'].'_existing'];
-								$isset = TRUE;
-							}
-							elseif ( ! empty($_POST[$field['field_name'].'_hidden']))
-							{
-								$_POST[$field['field_name']] = $_POST[$field['field_name'].'_hidden'];
-								$isset = TRUE;
-							}
-						}
-					}
-					elseif (preg_match('/^'.$field['field_name'].'_(.+)/', $key, $match))
-					{
-						$_FILES['field_id_'.$field['field_id'].'_'.$match[1]] = $value;
-						unset($_FILES[$key]);
-					}
+					$_POST[$field['field_name']] = $_FILES[$field['field_name']]['name'];
 				}
 			}
 
@@ -1548,6 +1521,13 @@ class Channel_form_lib
 				if ($field['field_required'] == 'y' && ! in_array('required', $field_rules))
 				{
 					array_unshift($field_rules, 'required');
+				}
+
+				// the file field does not always populate the $_POST[$field] value and does its own
+				// check for required
+				if ($field['field_type'] == 'file')
+				{
+					$field_rules = array_diff($field_rules, array('required'));
 				}
 
 				ee()->form_validation->set_rules($field['field_name'], $field['field_label'], implode('|', $field_rules));
@@ -1685,7 +1665,7 @@ class Channel_form_lib
 
 		foreach (ee()->api_channel_fields->settings as $field_id => $settings)
 		{
-			$settings['field_name'] = 'field_id_'.$field_id;
+		//	$settings['field_name'] = 'field_id_'.$field_id;
 
 			if (isset($settings['field_settings']))
 			{
@@ -1715,11 +1695,6 @@ class Channel_form_lib
 			{
 				$_POST[$field_id] = $_POST[$field_name];
 			}
-		}
-
-		if ( ! ee()->security->check_xid(ee()->input->post('XID')))
-		{
-			ee()->functions->redirect(stripslashes(ee()->input->post('RET')));
 		}
 
 		if (empty($this->field_errors) && empty($this->errors))
@@ -1857,11 +1832,6 @@ class Channel_form_lib
 			throw new Channel_form_exception(
 				array_merge($this->errors, $this->field_errors)
 			);
-		}
-
-		if ( ! AJAX_REQUEST)
-		{
-			ee()->security->delete_xid(ee()->input->post('XID'));
 		}
 
 		$return = ($this->_meta['return']) ? ee()->functions->create_url($this->_meta['return']) : ee()->functions->fetch_site_index();
@@ -2038,13 +2008,22 @@ class Channel_form_lib
 
 		ee()->api->instantiate('channel_fields');
 
-		ee()->api_channel_fields->field_type = $this->get_field_type($field_name);
+		$fieldtype = ee()->api_channel_fields->setup_handler( $this->get_field_type($field_name), TRUE);
 
-		ee()->api_channel_fields->field_types[ee()->api_channel_fields->field_type]->field_name = $field_name;
+		$fieldtype->_init(
+			array(
+				'field_id'		=> $this->get_field_id($field_name),
+				'field_name'	=> $field_name,
+				'content_id'	=> $this->entry('entry_id'),
+				'content_type'	=> 'channel'
+			)
+		);
 
-		ee()->api_channel_fields->field_types[ee()->api_channel_fields->field_type]->field_id = $this->get_field_id($field_name);
-
-		ee()->api_channel_fields->field_types[ee()->api_channel_fields->field_type]->settings = array_merge($this->get_field_settings($field_name), $this->get_field_data($field_name), ee()->api_channel_fields->get_global_settings(ee()->api_channel_fields->field_type));
+		$fieldtype->settings = array_merge(
+			$this->get_field_settings($field_name),
+			$this->get_field_data($field_name),
+			ee()->api_channel_fields->get_global_settings(ee()->api_channel_fields->field_type)
+		);
 
 		$_GET['entry_id'] = $this->entry('entry_id');
 		$_GET['channel_id'] = $this->entry('channel_id');
@@ -3317,7 +3296,10 @@ class Channel_form_lib
 
 		$_GET['entry_id'] = $this->entry('entry_id');
 
-		ee()->api_channel_fields->apply('_init', array(array('row' => $this->entry)));
+		ee()->api_channel_fields->apply('_init', array(array(
+			'row' => $this->entry,
+			'content_id' => $this->entry('entry_id')
+		)));
 
 		$data = ee()->api_channel_fields->apply('pre_process', array($data));
 

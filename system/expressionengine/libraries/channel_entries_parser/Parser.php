@@ -8,10 +8,10 @@
  * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
- * @since		Version 2.0
+ * @since		Version 2.6
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -92,7 +92,7 @@ class EE_Channel_data_parser {
 	 * 'absolute_count', or 'absolute_results'.
 	 *
 	 * @param	string	The data element to retrieve
-	 * @param	string	The value to return if the key does not exist	
+	 * @param	string	The value to return if the key does not exist
 	 * @return	mixed	The requested data element
 	 */
 	public function data($key, $default = NULL)
@@ -159,7 +159,7 @@ class EE_Channel_data_parser {
 	 *
 	 * @param	array	The data row.
  	 * @param	array	Config items
- 	 *		
+ 	 *
  	 *		disable:   array of components to turn off
  	 *		callbacks: array of callbacks to register
  	 *
@@ -184,7 +184,7 @@ class EE_Channel_data_parser {
 
 		$prefix	 = $this->_prefix;
 		$channel = $this->_channel;
-		
+
 		$subscriber_totals = $pre->subscriber_totals;
 
 		$total_results = count($entries);
@@ -371,7 +371,7 @@ class EE_Channel_data_parser {
 	 * potentially a single query to gather needed data instead of a query for
 	 * each row.
 	 *
-	 * @param string $entries_data 
+	 * @param string $entries_data
 	 * @return void
 	 */
 	protected function _send_custom_field_data_to_fieldtypes($entries_data)
@@ -381,13 +381,13 @@ class EE_Channel_data_parser {
 		// We'll stick custom field data into this array in the form of:
 		// field_id => array('data1', 'data2', ...);
 		$custom_field_data = array();
-		
+
 		// Loop through channel entry data
 		foreach ($entries_data as $row)
 		{
 			// Get array of custom fields for the row's current site
 			$custom_fields = (isset($channel->cfields[$row['site_id']])) ? $channel->cfields[$row['site_id']] : array();
-			
+
 			foreach ($custom_fields as $field_name => $field_id)
 			{
 				// If the field exists and isn't empty
@@ -401,13 +401,13 @@ class EE_Channel_data_parser {
 				}
 			}
 		}
-		
+
 		if ( ! empty($custom_field_data))
 		{
 			ee()->load->library('api');
 			ee()->api->instantiate('channel_fields');
 			$ft_api = ee()->api_channel_fields;
-			
+
 			// For each custom field, notify its fieldtype class of the data we collected
 			foreach ($custom_field_data as $field_id => $data)
 			{
@@ -484,7 +484,7 @@ class EE_Channel_data_parser {
 			foreach($channel->cfields[$row['site_id']] as $key => $value)
 			{
 				$cond[$key] = ( ! isset($row['field_id_'.$value])) ? '' : $row['field_id_'.$value];
-				
+
 				// Is this field used with a modifier anywhere?
 				if (isset($pre->modified_conditionals[$key]) && count($pre->modified_conditionals[$key]))
 				{
@@ -495,14 +495,17 @@ class EE_Channel_data_parser {
 					{
 						foreach($pre->modified_conditionals[$key] as $modifier)
 						{
-							ee()->api_channel_fields->apply('_init', array(array('row' => $row)));
+							ee()->api_channel_fields->apply('_init', array(array(
+								'row' => $row,
+								'content_id' => $row['entry_id']
+							)));
 							$data = ee()->api_channel_fields->apply('pre_process', array($cond[$key]));
 							if (ee()->api_channel_fields->check_method_exists('replace_'.$modifier))
 							{
 								$cond[$key.':'.$modifier] = ee()->api_channel_fields->apply('replace_'.$modifier, array($data, array(), FALSE));
 							}
 							else
-							{							
+							{
 								$cond[$key.':'.$modifier] = FALSE;
 								ee()->TMPL->log_item('Unable to find parse type for custom field conditional: '.$key.':'.$modifier);
 							}

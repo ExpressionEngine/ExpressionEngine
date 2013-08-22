@@ -11,7 +11,7 @@
  * @since		Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -24,18 +24,18 @@
  * @link		http://ellislab.com
  */
 class EE_Core {
-	
+
 	var $native_modules		= array();		// List of native modules with EE
 	var $native_plugins		= array();		// List of native plugins with EE
 
 	/**
 	 * Constructor
-	 */	
+	 */
 	public function __construct()
 	{
 		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
-		
+
 		// Yes, this is silly. No it won't work without it.
 		// For some reason PHP won't bind the reference
 		// for core to the super object quickly enough.
@@ -46,7 +46,7 @@ class EE_Core {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Sets constants, sets paths contants to appropriate directories, loads 
+	 * Sets constants, sets paths contants to appropriate directories, loads
 	 * the database and generally prepares the system to run.
 	 */
 	public function bootstrap()
@@ -55,9 +55,9 @@ class EE_Core {
 		// Note: admin.php defines REQ=CP
 		if ( ! defined('REQ'))
 		{
-			define('REQ', ((ee()->input->get_post('ACT') !== FALSE) ? 'ACTION' : 'PAGE')); 
+			define('REQ', ((ee()->input->get_post('ACT') !== FALSE) ? 'ACTION' : 'PAGE'));
 		}
-		
+
 		// Set a liberal script execution time limit, making it shorter for front-end requests than CI's default
 		if (function_exists("set_time_limit") == TRUE AND @ini_get("safe_mode") == 0)
 		{
@@ -82,7 +82,7 @@ class EE_Core {
 		{
 			define('PATH_THIRD',	APPPATH.'third_party/');
 		}
-		
+
 		// application constants
 		define('IS_CORE',		FALSE);
 		define('APP_NAME',		'ExpressionEngine'.(IS_CORE ? ' Core' : ''));
@@ -97,33 +97,33 @@ class EE_Core {
 		define('NL',			"\n");
 		define('PATH_DICT', 	APPPATH.'config/');
 		define('AJAX_REQUEST',	ee()->input->is_ajax_request());
-		
+
 		// Load DB and set DB preferences
 		ee()->load->database();
 		ee()->db->swap_pre = 'exp_';
 		ee()->db->db_debug = FALSE;
-	
+
 		// Note enable_db_caching is a per site setting specified in EE_Config.php
 		// If debug is on we enable the profiler and DB debug
 		if (DEBUG == 1 OR ee()->config->item('debug') == 2)
 		{
 			$this->_enable_debugging();
 		}
-		
+
 		// Assign Site prefs now that the DB is fully loaded
 		if (ee()->config->item('site_name') != '')
 		{
 			ee()->config->set_item('site_name', preg_replace('/[^a-z0-9\-\_]/i', '', ee()->config->item('site_name')));
 		}
-							
+
 		ee()->config->site_prefs(ee()->config->item('site_name'));
-		
+
 		// force EE's db cache path - do this AFTER site prefs have been assigned
 		// Due to CI's DB_cache handling- suffix with site id
 		ee()->db->cache_set_path(APPPATH.'cache/db_cache_'.ee()->config->item('site_id'));
 
 		// make sure the DB cache folder exists if we're caching!
-		if (ee()->db->cache_on === TRUE && 
+		if (ee()->db->cache_on === TRUE &&
 			! @is_dir(APPPATH.'cache/db_cache_'.ee()->config->item('site_id')))
 		{
 			@mkdir(APPPATH.'cache/db_cache_'.ee()->config->item('site_id'), DIR_WRITE_MODE);
@@ -135,36 +135,36 @@ class EE_Core {
 
 			@chmod(APPPATH.'cache/db_cache_'.ee()->config->item('site_id'), DIR_WRITE_MODE);
 		}
-		
-		// this look backwards, but QUERY_MARKER is only used where we MUST 
+
+		// this look backwards, but QUERY_MARKER is only used where we MUST
 		// have a ?, and do not want to double up
 		// question marks on sites who are forcing query strings
 		define('QUERY_MARKER', (ee()->config->item('force_query_string') == 'y') ? '' : '?');
-		
-		// Load the settings of the site you're logged into, however use the 
+
+		// Load the settings of the site you're logged into, however use the
 		// cookie settings from the site that corresponds to the URL
 		// e.g. site1.com/system/ viewing site2
 		// $last_site_id = the site that you're viewing
 		// config->item('site_id') = the site who's URL is being used
-		
+
 		$last_site_id = ee()->input->cookie('cp_last_site_id');
-		
+
 		if (REQ == 'CP' && ee()->config->item('multiple_sites_enabled') == 'y')
 		{
 			$cookie_prefix = ee()->config->item('cookie_prefix');
 			$cookie_path  = ee()->config->item('cookie_path');
-			$cookie_domain =  ee()->config->item('cookie_domain');		
+			$cookie_domain =  ee()->config->item('cookie_domain');
 
 			if (! empty($last_site_id) && is_numeric($last_site_id) && $last_site_id != ee()->config->item('site_id'))
 			{
 				ee()->config->site_prefs('', $last_site_id);
 			}
-			
+
 			ee()->config->cp_cookie_prefix = $cookie_prefix;
 			ee()->config->cp_cookie_path  = $cookie_path;
-			ee()->config->cp_cookie_domain =  $cookie_domain;	
+			ee()->config->cp_cookie_domain =  $cookie_domain;
 		}
-		
+
 		// This allows CI compatibility
 		if (ee()->config->item('base_url') == FALSE)
 		{
@@ -177,7 +177,7 @@ class EE_Core {
 		}
 
 		// Set the path to the "themes" folder
-		if (ee()->config->item('theme_folder_path') !== FALSE && 
+		if (ee()->config->item('theme_folder_path') !== FALSE &&
 			ee()->config->item('theme_folder_path') != '')
 		{
 			$theme_path = preg_replace("#/+#", "/", ee()->config->item('theme_folder_path').'/');
@@ -188,9 +188,9 @@ class EE_Core {
 			$theme_path = preg_replace("#/+#", "/", $theme_path);
 		}
 
-		// Maybe the site has been moved.  
+		// Maybe the site has been moved.
 		// Let's try some basic autodiscovery if config items are set
-		// But the directory does not exist.  
+		// But the directory does not exist.
 		if ( ! is_dir($theme_path))
 		{
 			if (is_dir(FCPATH.'../themes/')) // We're in the system directory
@@ -202,12 +202,12 @@ class EE_Core {
 				$theme_path = FCPATH.'themes/';
 			}
 		}
-		
-		define('PATH_THEMES', 		$theme_path);	
-		define('PATH_MBR_THEMES',	PATH_THEMES.'profile_themes/'); 
+
+		define('PATH_THEMES', 		$theme_path);
+		define('PATH_MBR_THEMES',	PATH_THEMES.'profile_themes/');
 		define('PATH_CP_GBL_IMG', 	ee()->config->slash_item('theme_folder_url').'cp_global_images/');
 		unset($theme_path);
-		
+
 		// Define Third Party Theme Path and URL
 		if (ee()->config->item('path_third_themes'))
 		{
@@ -220,7 +220,7 @@ class EE_Core {
 		{
 			define('PATH_THIRD_THEMES',	PATH_THEMES.'third_party/');
 		}
-		
+
 		if (ee()->config->item('url_third_themes'))
 		{
 			define(
@@ -247,7 +247,16 @@ class EE_Core {
 		if (extension_loaded('newrelic'))
 		{
 			ee()->load->library('newrelic');
-			ee()->newrelic->name_transaction();
+
+			if (ee()->config->item('use_newrelic') == 'n')
+			{
+				ee()->newrelic->disable_autorum();
+			}
+			else
+			{
+				ee()->newrelic->set_appname();
+				ee()->newrelic->name_transaction();
+			}
 		}
 	}
 
@@ -255,7 +264,7 @@ class EE_Core {
 
 	/**
 	 * Initialize EE
-	 * 
+	 *
 	 * Called from EE_Controller to run EE's front end.
 	 *
 	 * @access	public
@@ -274,9 +283,9 @@ class EE_Core {
 			'blacklist', 'email', 'forum', 'ip_to_nation', 'mailinglist',
 			'member', 'moblog', 'query', 'simple_commerce', 'wiki'
 		);
-		
+
 		// Is this a stylesheet request?  If so, we're done.
-		if (isset($_GET['css']) OR (isset($_GET['ACT']) && $_GET['ACT'] == 'css')) 
+		if (isset($_GET['css']) OR (isset($_GET['ACT']) && $_GET['ACT'] == 'css'))
 		{
 			ee()->load->library('stylesheet');
 			ee()->stylesheet->request_css_template();
@@ -295,16 +304,16 @@ class EE_Core {
 			ee()->load->library('file_integrity');
 			ee()->file_integrity->create_bootstrap_checksum();
 		}
-		
-		if (function_exists('date_default_timezone_set'))
-		{
-			date_default_timezone_set(date_default_timezone_get());
-		}
-		
+
 		ee()->load->library('remember');
 		ee()->load->library('localize');
 		ee()->load->library('session');
 		ee()->load->library('user_agent');
+
+		// Set a timezone for any native PHP date functions being used
+		date_default_timezone_set(
+			ee()->localize->get_php_timezone(ee()->session->userdata('timezone'))
+		);
 
 		// Load the "core" language file - must happen after the session is loaded
 		ee()->lang->loadfile('core');
@@ -317,7 +326,7 @@ class EE_Core {
 		{
 			$this->_enable_debugging();
 		}
-		
+
 		if (ee()->session->userdata('group_id') == 1 && ee()->config->item('show_profiler') == 'y')
 		{
 			ee()->output->enable_profiler(TRUE);
@@ -334,28 +343,19 @@ class EE_Core {
 
 		ee()->input->filter_get_data(REQ);
 
-		// Secure forms stuff
-		if( ! ee()->security->have_valid_xid())
+		if (REQ != 'ACTION')
 		{
-			if (REQ == 'CP')
-			{
-				ee()->session->set_flashdata('message_failure', lang('invalid_action'));
-				ee()->functions->redirect(SELF);
-			}
-			else
-			{
-				ee()->output->show_user_error('general', array(lang('invalid_action')));
-			}
+			$this->process_secure_forms();
 		}
-		
+
 		// Update system stats
 		ee()->load->library('stats');
-	 	
+
 		if (REQ == 'PAGE' && ee()->config->item('enable_online_user_tracking') != 'n')
 		{
 			ee()->stats->update_stats();
 		}
-		
+
 		// Load up any Snippets
 		if (REQ == 'ACTION' OR REQ == 'PAGE')
 		{
@@ -373,7 +373,7 @@ class EE_Core {
 					$snippets[$var->snippet_name] = $var->snippet_contents;
 				}
 
-				// Thanks to @litzinger for the code suggestion to parse 
+				// Thanks to @litzinger for the code suggestion to parse
 				// global vars in snippets...here we go.
 
 				$var_keys = array();
@@ -385,40 +385,28 @@ class EE_Core {
 
 				$snippets = str_replace($var_keys, ee()->config->_global_vars, $snippets);
 
-				ee()->config->_global_vars = ee()->config->_global_vars + $snippets; 
+				ee()->config->_global_vars = ee()->config->_global_vars + $snippets;
 
 				unset($snippets);
 				unset($fresh);
 				unset($var_keys);
 			}
 		}
-	}	
+	}
 
 	// ------------------------------------------------------------------------
-	
+
 	/**
 	 * Generate Control Panel Request
 	 *
 	 * Called from the EE_Controller to run EE's backend.
 	 *
-	 * @access public	
+	 * @access public
 	 * @return	void
-	 */	
+	 */
 	public function run_cp()
 	{
-		$s = 0;
-
-		switch (ee()->config->item('admin_session_type'))
-		{
-			case 's'	:
-				$s = ee()->session->userdata('session_id', 0);
-				break;
-			case 'cs'	:
-				$s = ee()->session->userdata('fingerprint', 0);
-				break;
-		}
-
-		define('BASE', SELF.'?S='.$s.'&amp;D=cp'); // cp url
+		$this->_somebody_set_us_up_the_base();
 
 		// Show the control panel home page in the event that a
 		// controller class isn't found in the URL
@@ -455,18 +443,18 @@ class EE_Core {
 				break;
 			}
 		}
-		
+
 		// Load our view library
 		ee()->load->library('view');
 		ee()->view->set_cp_theme($cp_theme);
 
 		// Fetch control panel language file
 		ee()->lang->loadfile('cp');
-		
+
 		// Prevent CodeIgniter Pseudo Output variables from being parsed
 		ee()->output->parse_exec_vars = FALSE;
 
-		/** ------------------------------------ 
+		/** ------------------------------------
 		/**  Instantiate Admin Log Class
 		/** ------------------------------------*/
 
@@ -483,10 +471,10 @@ class EE_Core {
 			// Grab the URL, base64_encode it and send them to the login screen.
 			$safe_refresh = ee()->cp->get_safe_refresh();
 			$return_url = ($safe_refresh == 'C=homepage') ? '' : AMP.'return='.base64_encode($safe_refresh);
-			
+
 			ee()->functions->redirect(BASE.AMP.'C=login'.$return_url);
 		}
-		
+
 		// Is the user banned?
 		// Before rendering the full control panel we'll make sure the user isn't banned
 		// But only if they are not a Super Admin, as they can not be banned
@@ -494,17 +482,17 @@ class EE_Core {
 		{
 			return ee()->output->fatal_error(lang('not_authorized'));
 		}
-		
+
 		// Load common helper files
 		ee()->load->helper(array('url', 'form', 'quicktab'));
 
 		// Certain variables will be included in every page, so we make sure they are set here
 		// Prevents possible PHP errors, if a developer forgets to set it explicitly.
 		ee()->cp->set_default_view_variables();
-		
+
 		// Load the Super Model
 		ee()->load->model('super_model');
-		
+
 		// update documentation URL if site was running the beta and had the old location
 		// @todo remove after 2.1.1's release, move to the update script
 		if (strncmp(ee()->config->item('doc_url'), 'http://expressionengine.com/docs', 32) == 0)
@@ -512,44 +500,67 @@ class EE_Core {
 			ee()->config->update_site_prefs(array('doc_url' => 'http://ellislab.com/expressionengine/user-guide/'));
 		}
 	}
-	
+
 	// ------------------------------------------------------------------------
-	
+
+	/**
+	 * Define the BASE constant
+	 * @return void
+	 */
+	private function _somebody_set_us_up_the_base()
+	{
+		$s = 0;
+
+		switch (ee()->config->item('admin_session_type'))
+		{
+			case 's'	:
+				$s = ee()->session->userdata('session_id', 0);
+				break;
+			case 'cs'	:
+				$s = ee()->session->userdata('fingerprint', 0);
+				break;
+		}
+
+		define('BASE', SELF.'?S='.$s.'&amp;D=cp'); // cp url
+	}
+
+	// ------------------------------------------------------------------------
+
 	/**
 	 * Enable Debugging
 	 *
 	 * @access	private
 	 * @return	void
-	 */	
+	 */
 	function _enable_debugging()
 	{
 		ee()->db->db_debug = TRUE;
 		error_reporting(E_ALL);
 		@ini_set('display_errors', 1);
 	}
-	
+
 	// ------------------------------------------------------------------------
-	
-	/**
-	 * Generate Page Request
-	 *
-	 * @access	public 
-	 * @return	void
-	 */	
-	final public function generate_action($can_view_system = FALSE)
-	{
-		require APPPATH.'libraries/Actions.php';
-		$ACT = new EE_Actions($can_view_system);
-	}	
-	
-	// ------------------------------------------------------------------------
-	
+
 	/**
 	 * Generate Page Request
 	 *
 	 * @access	public
 	 * @return	void
-	 */	
+	 */
+	final public function generate_action($can_view_system = FALSE)
+	{
+		require APPPATH.'libraries/Actions.php';
+		$ACT = new EE_Actions($can_view_system);
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Generate Page Request
+	 *
+	 * @access	public
+	 * @return	void
+	 */
 	final public function generate_page()
 	{
 		// Legacy, unsupported, but still more or less functional
@@ -557,48 +568,48 @@ class EE_Core {
 		// in $assign_to_config in the bootstrap file
 		$template = '';
 		$template_group = '';
-		
+
 		if (ee()->uri->uri_string == '' OR ee()->uri->uri_string == '/')
 		{
 			$template = (string) ee()->config->item('template');
 			$template_group = (string) ee()->config->item('template_group');
 		}
-		
-		
+
+
 		// If the forum module is installed and the URI contains the "triggering" word
 		// we will override the template parsing class and call the forum class directly.
-		// This permits the forum to be more light-weight as the template engine is 
+		// This permits the forum to be more light-weight as the template engine is
 		// not needed under normal circumstances.
 		$forum_trigger = (ee()->config->item('forum_is_installed') == "y") ? ee()->config->item('forum_trigger') : '';
 		$profile_trigger = ee()->config->item('profile_trigger');
-		
-		
-		if ( ! IS_CORE && $forum_trigger && 
+
+
+		if ( ! IS_CORE && $forum_trigger &&
 			in_array(ee()->uri->segment(1), preg_split('/\|/', $forum_trigger, -1, PREG_SPLIT_NO_EMPTY)))
 		{
 			require PATH_MOD.'forum/mod.forum.php';
 			$FRM = new Forum();
 			return;
 		}
-		
+
 		if ( ! IS_CORE && $profile_trigger && $profile_trigger == ee()->uri->segment(1))
 		{
-			// We do the same thing with the member profile area.  
-		
+			// We do the same thing with the member profile area.
+
 			if ( ! file_exists(PATH_MOD.'member/mod.member.php'))
 			{
 				exit();
 			}
-			
+
 			require PATH_MOD.'member/mod.member.php';
-			
+
 			$member = new Member();
 			$member->_set_properties(array('trigger' => $profile_trigger));
-			
+
 			ee()->output->set_output($member->manager());
 			return;
 		}
-		
+
 		// -------------------------------------------
 		// 'core_template_route' hook.
 		//  - Reassign the template group and template loaded for parsing
@@ -620,13 +631,13 @@ class EE_Core {
 			$pages		= ee()->config->item('site_pages');
 			$site_id	= ee()->config->item('site_id');
 			$entry_id	= FALSE;
-			
+
 			// If we have pages, we'll look for an entry id
 			if ($pages && isset($pages[$site_id]['uris']))
 			{
 				$match_uri = '/'.trim(ee()->uri->uri_string, '/');	// will result in '/' if uri_string is blank
 				$page_uris = $pages[$site_id]['uris'];
-				
+
 				// trim page uris in case there's a trailing slash on any of them
 				foreach ($page_uris as $index => $value)
 				{
@@ -635,13 +646,13 @@ class EE_Core {
 
 				// case insensitive URI comparison
 				$entry_id = array_search(strtolower($match_uri), array_map('strtolower', $page_uris));
-				
+
 				if ( ! $entry_id AND $match_uri != '/')
 				{
 					$entry_id = array_search($match_uri.'/', $page_uris);
 				}
 			}
-			
+
 			// Found an entry - grab related template
 			if ($entry_id)
 			{
@@ -650,15 +661,15 @@ class EE_Core {
 					->where('t.group_id', 'tg.group_id', FALSE)
 					->where('t.template_id', $pages[$site_id]['templates'][$entry_id])
 					->get();
-				
+
 				if ($qry->num_rows() > 0)
 				{
-					/* 
-						We do it this way so that we are not messing with 
-						any of the segment variables, which should reflect 
+					/*
+						We do it this way so that we are not messing with
+						any of the segment variables, which should reflect
 						the actual URL and not our Pages redirect. We also
-						set a new QSTR variable so that we are not 
-						interfering with other module's besides the Channel 
+						set a new QSTR variable so that we are not
+						interfering with other module's besides the Channel
 						module (which will use the new Pages_QSTR when available).
 					*/
 					$template = $qry->row('template_name');
@@ -673,9 +684,9 @@ class EE_Core {
 		// Parse the template
 		ee()->TMPL->run_template_engine($template_group, $template);
 	}
-	
+
 	// ------------------------------------------------------------------------
-	
+
 	/**
 	 * Garbage Collection
 	 *
@@ -683,20 +694,20 @@ class EE_Core {
 	 *
 	 * @access	private
 	 * @return	void
-	 */	
+	 */
 	function _garbage_collection()
-	{	
+	{
 		ee()->db->cache_off();
-	
+
 		if (class_exists('Stats'))
 		{
-			if (ee()->stats->statdata('last_cache_clear') 
+			if (ee()->stats->statdata('last_cache_clear')
 				&& ee()->stats->statdata('last_cache_clear') > 1)
 			{
 				$last_clear = ee()->stats->statdata('last_cache_clear');
 			}
 		}
-	
+
 		if ( ! isset($last_clear))
 		{
 			ee()->db->select('last_cache_clear');
@@ -705,7 +716,7 @@ class EE_Core {
 
 			$last_clear = $query->row('last_cache_clear') ;
 		}
-		
+
 		if (isset($last_clear) && ee()->localize->now > $last_clear)
 		{
 			$data = array(
@@ -714,19 +725,49 @@ class EE_Core {
 
 			ee()->db->where('site_id', ee()->config->item('site_id'));
 			ee()->db->update('stats', $data);
-			
+
 			if (ee()->config->item('enable_throttling') == 'y')
 			{
 				$expire = time() - 180;
-				
+
 				ee()->db->where('last_activity <', $expire);
 				ee()->db->delete('throttle');
 			}
-	
+
 			ee()->functions->clear_spam_hashes();
 			ee()->functions->clear_caching('all');
 		}
-	}	
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Process Secure Forms
+	 *
+	 * Run the secure forms check. Needs to be run once per request.
+	 * For actions, this happens from within the actions table so that
+	 * we can check for the Strict_XID interface and csrf_exempt field.
+	 *
+	 * @access	public
+	 * @return	void
+	 */
+	final public function process_secure_forms($flags = EE_Security::CSRF_STRICT)
+	{
+		// Secure forms stuff
+		if( ! ee()->security->have_valid_xid($flags))
+		{
+			if (REQ == 'CP')
+			{
+				$this->_somebody_set_us_up_the_base();
+				ee()->session->set_flashdata('message_failure', lang('invalid_action'));
+				ee()->functions->redirect(BASE);
+			}
+			else
+			{
+				ee()->output->show_user_error('general', array(lang('invalid_action')));
+			}
+		}
+	}
 }
 
 /* End of file Core.php */

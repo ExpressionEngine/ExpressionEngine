@@ -286,6 +286,7 @@ class Api_channel_fields extends Api {
 		// Quite frequently all you have convenient access to
 		// is a field_id. We can do a lookup based on some of the
 		// other data we have.
+
 		if (isset($this->custom_fields[$field_type]))
 		{
 			$frontend = TRUE;
@@ -363,7 +364,7 @@ class Api_channel_fields extends Api {
 
 		$obj = new $class();
 
-		ee()->load->remove_package_path($_ft_path);
+		ee()->load->remove_package_path();
 
 		return $obj;
 	}
@@ -388,10 +389,9 @@ class Api_channel_fields extends Api {
 
 		$ft =& $this->field_types[$this->field_type];
 
-		// Data is universally the first parameter
 		if (count($parameters))
 		{
-			$parameters[0] = $this->custom_field_data_hook($ft, $method, $parameters[0]);
+			$parameters = $this->custom_field_data_hook($ft, $method, $parameters);
 		}
 
 		$res = call_user_func_array(array(&$ft, $method), $parameters);
@@ -1453,10 +1453,10 @@ class Api_channel_fields extends Api {
 
 			ee()->db->update('channel_data', array('field_ft_'.$insert_id => $native_settings['field_fmt']));
 
-			ee()->db->update('channel_data', array('field_ft_'.$insert_id => $native_settings['field_fmt'])); 
+			ee()->db->update('channel_data', array('field_ft_'.$insert_id => $native_settings['field_fmt']));
 
 			$field_formatting = array('none', 'br', 'markdown', 'xhtml');
-			
+
 			//if the selected field formatting is not one of the native formats, make sure it gets added to exp_field_formatting for this field
 			if ( ! in_array($native_settings['field_fmt'], $field_formatting))
 			{
@@ -1798,6 +1798,9 @@ class Api_channel_fields extends Api {
 
 			$this->set_settings($key, $settings);
 			$this->setup_handler($key);
+			$this->apply('_init', array(
+				array('id' => $field_id)
+			));
 
 			$str = $this->apply('display_settings', array($vars));
 
@@ -1930,25 +1933,25 @@ class Api_channel_fields extends Api {
 	 *
 	 * @param	object	Fieldtype that will be called
 	 * @param	string	Method that will be called on the fieldtype
-	 * @param	mixed	Fieldtype data
+	 * @param	mixed	Fieldtype parameters
 	 * @return	mixed	Modified fieldtype data
 	 */
-	public function custom_field_data_hook(EE_Fieldtype $obj, $method, $data)
+	public function custom_field_data_hook(EE_Fieldtype $obj, $method, $parameters)
 	{
 		// -------------------------------------------
 		// 'custom_field_modify_data' hook.
-		//  - Modify the data passed to the fieldtype
+		//  - Modify the parameters passed to the fieldtype
 		//  - Can be used to modify the fieldtype prior to most fieldtype functions
 		//  - Please be careful with that second option.
 		//
 			if (ee()->extensions->active_hook('custom_field_modify_data') === TRUE)
 			{
-				return ee()->extensions->universal_call('custom_field_modify_data', $obj, $method, $data);
+				return ee()->extensions->universal_call('custom_field_modify_data', $obj, $method, $parameters);
 			}
 		//
 		// -------------------------------------------
 
-		return $data;
+		return $parameters;
 	}
 }
 
