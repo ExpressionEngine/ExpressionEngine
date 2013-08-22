@@ -282,7 +282,7 @@ class Content_publish extends CP_Controller {
 		$this->file_field->browser();
 
 		$this->cp->add_js_script(array(
-			'ui'	 => array('datepicker', 'resizable', 'draggable', 'droppable'),
+			'ui'	 => array('resizable', 'draggable', 'droppable'),
 			'plugin' => array('markitup', 'toolbox.expose', 'overlay', 'tmpl', 'ee_url_title'),
 			'file'	=> array('json2', 'cp/publish_tabs')
 		));
@@ -1328,11 +1328,7 @@ class Content_publish extends CP_Controller {
 		/*
 		/* -------------------------------------*/
 
-		$date_fmt = ($this->session->userdata('time_format') != '')
-					? $this->session->userdata('time_format') : $this->config->item('time_format');
-
 		$this->javascript->set_global(array(
-			'date.format'						=> $date_fmt,
 			'lang.add_new_html_button'			=> lang('add_new_html_button'),
 			'lang.add_tab' 						=> lang('add_tab'),
 			'lang.close' 						=> lang('close'),

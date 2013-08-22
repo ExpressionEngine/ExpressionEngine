@@ -702,7 +702,8 @@ class Grid_ft extends EE_Fieldtype {
 				ee()->grid_model->delete_columns(
 					array_keys($col_types),
 					$col_types,
-					$data['field_id']
+					$data['field_id'],
+					$this->content_type()
 				);
 			}
 

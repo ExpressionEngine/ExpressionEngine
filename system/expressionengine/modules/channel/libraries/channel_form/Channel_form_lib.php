@@ -1098,52 +1098,10 @@ GRID_FALLBACK;
 			ee()->jquery->jquery_code_for_compile = array();
 		}
 
-		//add datepicker class
+		// add datepicker css
 		if ($this->datepicker)
 		{
-			$date_fmt = ee()->session->userdata('time_format');
-			$date_fmt = $date_fmt ? $date_fmt : ee()->config->item('time_format');
-
 			$this->head .= '<style type="text/css">.hasDatepicker{background:#fff url('.ee()->config->item('theme_folder_url').'cp_themes/default/images/calendar_bg.gif) no-repeat 98% 2px;background-repeat:no-repeat;background-position:99%;}</style>';
-			$this->head .= trim('
-				<script type="text/javascript">
-					$.createDatepickerTime=function(){
-						date = new Date();
-						hours = date.getHours();
-						minutes = date.getMinutes();
-						suffix = "";
-						format = "'.$date_fmt.'";
-
-						if (minutes < 10) {
-							minutes = "0" + minutes;
-						}
-
-						if (format == "us") {
-							if (hours > 12) {
-								hours -= 12;
-								suffix = " PM";
-							} else if (hours == 12) {
-								suffix = " PM";
-							} else {
-								suffix = " AM";
-							}
-						}
-
-						if (hours == 0)
-						{
-							hours = 12;
-						}
-
-						if (hours < 10)
-						{
-							hours = "0" + hours;
-						}
-
-						return " \'" + hours + ":" + minutes + suffix + "\'";
-					}
-
-					EE.date_obj_time = $.createDatepickerTime();
-				</script>');
 		}
 	}
 
