@@ -672,7 +672,12 @@ class Grid_lib {
 			// If any columns are missing from the new settings, delete them
 			if ( ! empty($cols_to_delete))
 			{
-				ee()->grid_model->delete_columns($cols_to_delete, $old_cols, $settings['field_id']);
+				ee()->grid_model->delete_columns(
+					$cols_to_delete,
+					$old_cols,
+					$settings['field_id'],
+					$this->content_type
+				);
 			}
 		}
 	}

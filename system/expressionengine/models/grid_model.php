@@ -279,7 +279,7 @@ class Grid_model extends CI_Model {
  	 * @param	array	Column types
  	 * @param	int		Field ID
  	 */
- 	public function delete_columns($column_ids, $column_types, $field_id)
+ 	public function delete_columns($column_ids, $column_types, $field_id, $content_type)
  	{
  		if ( ! is_array($column_ids))
  		{
@@ -296,7 +296,7 @@ class Grid_model extends CI_Model {
  			ee()->api_channel_fields->delete_datatype(
  				$col_id,
  				array(),
- 				$this->_get_ft_api_settings($field_id)
+ 				$this->_get_ft_api_settings($field_id, $content_type)
  			);
  		}
  	}
