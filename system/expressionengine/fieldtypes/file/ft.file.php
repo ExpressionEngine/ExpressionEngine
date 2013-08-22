@@ -55,7 +55,7 @@ class File_ft extends EE_Fieldtype {
 	{
 		return ee()->file_field->validate(
 			$data,
-			$this->field_name,
+			$this->name(),
 			$this->settings['field_required'],
 			array(
 				'grid_row_id' => isset($this->settings['grid_row_id'])

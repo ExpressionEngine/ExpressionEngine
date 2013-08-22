@@ -1003,10 +1003,11 @@ class Api_channel_entries extends Api {
 				{
 					$directory = $data['field_id_'.$row['field_id'].'_directory'];
 					$data['field_id_'.$row['field_id']] =  '{filedir_'.$directory.'}'.$data['field_id_'.$row['field_id'].'_hidden'];
-					unset($data['field_id_'.$row['field_id'].'_hidden']);
 
 				}
 
+				unset($data['field_id_'.$row['field_id'].'_hidden_file']);
+				unset($data['field_id_'.$row['field_id'].'_hidden_dir']);
 				unset($data['field_id_'.$row['field_id'].'_directory']);
 			}
 			elseif ($row['field_type'] == 'date')
