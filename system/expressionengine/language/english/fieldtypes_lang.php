@@ -54,6 +54,7 @@ $lang = array(
 'file_ft_limit_left'			=> 'Limit existing files to',
 'file_ft_limit_right'			=> 'returned',
 'file_ft_limit_files_subtext'	=> 'leave blank to show ALL files',
+'file_ft_select_existing'		=> 'Select an existing file',
 
 // Grid
 'grid_options'				=> 'Grid Field Options',
