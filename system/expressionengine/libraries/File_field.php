@@ -136,13 +136,6 @@ class File_field {
 
 		if ( ! $filebrowser && isset($existing_limit) && $specified_directory != 'all')
 		{
-			/*
-			if ($specified_directory == 'all')
-			{
-				$specified_directory = array();
-			}
-			*/
-
 			$options = array(
 				'order' => array('file_name' => 'asc')
 			);
@@ -159,7 +152,7 @@ class File_field {
 			);
 
 			$files = array(
-				'' => lang('select_existing')
+				'' => lang('file_ft_select_existing')
 			);
 
 			// Put database files into list
