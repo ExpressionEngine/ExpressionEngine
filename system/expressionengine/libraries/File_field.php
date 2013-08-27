@@ -457,6 +457,9 @@ class File_field {
 		// the function if all goes well
 		$file = FALSE;
 
+		// URL-decode the reference bfore searching or querying
+		$file_reference = rawurldecode($file_reference);
+
 		if ($file_reference != NULL)
 		{
 			// Assign the key (field) and value we'll be searching by
