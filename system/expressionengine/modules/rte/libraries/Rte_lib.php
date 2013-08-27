@@ -505,6 +505,7 @@ class Rte_lib {
 		$code_chunks = array();
 
 		$data = trim($data);
+		$data = htmlspecialchars_decode($data, ENT_QUOTES);
 
 		// Collapse tags and undo any existing newline formatting. Typography
 		// will change it anyways and the rte will add its own. Having this here
@@ -517,6 +518,7 @@ class Rte_lib {
 
 		// most newlines we should ever have is 2
 		$data = preg_replace('/\n\n+/', "\n\n", $data);
+
 
 		// remove code chunks
 		if (preg_match_all("/\[code\](.+?)\[\/code\]/si", $data, $matches))
@@ -568,8 +570,6 @@ class Rte_lib {
 
 			$data = str_replace($filedir, $d['url'], $data);
 		}
-
-		$data = htmlspecialchars_decode($data, ENT_QUOTES);
 
 		$field['value'] = $data;
 
