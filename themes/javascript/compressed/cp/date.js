@@ -1,0 +1,2 @@
+
+(function(g){function e(a){a=a.toString();return 2>a.length?"0"+a:a}EE.formatDate=function(a,b){a=a||new Date;b=g.extend({format:"us",include_seconds:"n"},b);var c=a.getHours(),h=e(a.getMinutes()),k=e(a.getSeconds()),d=[],f="";"us"==b.format&&(f=12>c?" AM":" PM",c=c%12||12);d.push(c);d.push(h);"y"==b.include_seconds&&d.push(k);return" '"+d.join(":")+f+"'"};EE.date_obj_time=EE.formatDate(new Date,EE.date)})(jQuery);

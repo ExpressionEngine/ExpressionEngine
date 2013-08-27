@@ -885,8 +885,13 @@ If you do not wish to reset your password, ignore this message. It will expire i
 	protected function _text_field_check($data)
 	{
 		$settings = unserialize(base64_decode($data));
+		
+		$is_text = TRUE;
 
-		$is_text =  ($settings['field_content_type'] == 'all') ? TRUE : FALSE;
+		if (isset($settings['field_content_type']) && $settings['field_content_type'] !== 'all')
+		{
+			$is_text = FALSE;
+		}
 
 		return $is_text;
 	}

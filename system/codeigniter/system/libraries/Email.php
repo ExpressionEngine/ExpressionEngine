@@ -1513,7 +1513,7 @@ class CI_Email {
 	{
 		$str = str_replace(array("\r", "\n"), '', $str);
 
-		if ($this->charset === 'UTF-8')
+		if (strtoupper($this->charset) === 'UTF-8')
 		{
 			if (MB_ENABLED === TRUE)
 			{

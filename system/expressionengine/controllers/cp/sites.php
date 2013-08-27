@@ -2031,6 +2031,12 @@ class Sites extends CP_Controller {
 				{
 					$this->smartforge->drop_column('channel_data', 'field_dt_'.$row['field_id']);
 				}
+				elseif ($row['field_type'] == 'grid')
+				{
+					$this->db->where('field_id', $row['field_id'])
+								->delete('grid_columns');	
+					$this->dbforge->drop_table('channel_grid_field_' . $row['field_id']);
+				}
 			}
 		}
 
