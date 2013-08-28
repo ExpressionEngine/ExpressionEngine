@@ -541,7 +541,7 @@ class EE_Relationship_data_parser {
 			}
 		}
 
-		if ($limit)
+		if ($limit OR $offset)
 		{
 			$rows = array_slice($rows, $offset, $limit, TRUE);
 		}
