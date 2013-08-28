@@ -131,7 +131,7 @@ class Channel {
 	{
 		$tag = ($identifier == '') ? ee()->TMPL->tagproper : ee()->TMPL->tagproper.$identifier;
 
-		if (ee()->TMPL->fetch_param('dynamic_parameters') !== FALSE && isset($_POST) && count($_POST) > 0)
+		if (ee()->TMPL->fetch_param('dynamic_parameters') !== FALSE && (! empty($_POST) OR ! empty($_GET)))
 		{
 			foreach (explode('|', ee()->TMPL->fetch_param('dynamic_parameters')) as $var)
 			{
@@ -680,7 +680,7 @@ class Channel {
 		/**------
 		/**  Do we allow dynamic POST variables to set parameters?
 		/**------*/
-		if (ee()->TMPL->fetch_param('dynamic_parameters') !== FALSE AND isset($_POST) AND count($_POST) > 0)
+		if (ee()->TMPL->fetch_param('dynamic_parameters') !== FALSE && (! empty($_POST) OR ! empty($_GET)))
 		{
 			foreach (explode('|', ee()->TMPL->fetch_param('dynamic_parameters')) as $var)
 			{
