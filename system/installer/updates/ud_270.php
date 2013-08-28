@@ -885,7 +885,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 	protected function _text_field_check($data)
 	{
 		$settings = unserialize(base64_decode($data));
-		
+
 		$is_text = TRUE;
 
 		if (isset($settings['field_content_type']) && $settings['field_content_type'] !== 'all')
@@ -1035,20 +1035,23 @@ If you do not wish to reset your password, ignore this message. It will expire i
 			->get('channel_data')
 			->result_array();
 
-		// Clean it up
-		foreach ($data as &$row)
+		if ( ! empty($data))
 		{
-			foreach ($row as &$column)
+			// Clean it up
+			foreach ($data as &$row)
 			{
-				if ( ! empty($column))
+				foreach ($row as &$column)
 				{
-					$column = htmlspecialchars_decode($column, ENT_QUOTES);
+					if ( ! empty($column))
+					{
+						$column = htmlspecialchars_decode($column, ENT_QUOTES);
+					}
 				}
 			}
-		}
 
-		// Put it all back
-		ee()->db->update_batch('channel_data', $data, 'entry_id');
+			// Put it all back
+			ee()->db->update_batch('channel_data', $data, 'entry_id');
+		}
 	}
 }
 /* END CLASS */
