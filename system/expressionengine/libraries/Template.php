@@ -40,6 +40,7 @@ class EE_Template {
 	var $php_parse_location =  'output';	// Where in the chain the PHP gets parsed
 	var $template_edit_date	=	'';			// Template edit date
 	var $templates_sofar	=   '';			// Templates processed so far, subtemplate tracker
+	var $attempted_fetch	=  array();		// Templates attempted to fetch but may have bailed due to recursive embeds
 	var $encode_email		=  TRUE;		// Whether to use the email encoder.  This is set automatically
 	var $hit_lock_override	=  FALSE;		// Set to TRUE if you want hits tracked on sub-templates
 	var $hit_lock			=  FALSE;		// Lets us lock the hit counter if sub-templates are contained in a template
@@ -616,10 +617,35 @@ class EE_Template {
 				Whether or not loop prevention is enabled - y/n
 			/* -------------------------------------------*/
 
-			if (substr_count($this->templates_sofar, '|'.$site_id.':'.$ex['0'].'/'.$ex['1'].'|') > 1 && ee()->config->item('template_loop_prevention') != 'n')
+			$this->attempted_fetch[] = $ex['0'].'/'.$ex['1'];
+
+			// Tell user if a template has been recursively loaded
+			if (substr_count($this->templates_sofar, '|'.$site_id.':'.$ex['0'].'/'.$ex['1'].'|') > 1 &&
+				ee()->config->item('template_loop_prevention') != 'n')
 			{
-				$this->final_template = (ee()->config->item('debug') >= 1) ? str_replace('%s', $ex['0'].'/'.$ex['1'], ee()->lang->line('template_loop')) : "";
-				return;
+				// Set 503 status code, mainly so caching proxies do not cache this
+				ee()->output->set_status_header(503, 'Service Temporarily Unavailable');
+
+				// Tell user which template was loaded recursively and in what order
+				// so they can easily fix the error
+				if (ee()->config->item('debug') >= 1)
+				{
+					ee()->load->helper(array('html_helper', 'language_helper'));
+
+					$message = '<p>'.sprintf(lang('template_loop'), $ex['0'].'/'.$ex['1']).'</p>'
+						.'<p>'.lang('template_load_order').':</p>'
+						.ol($this->attempted_fetch);
+
+					ee()->output->show_message(array(
+						'heading' => 'Error',
+						'content' => $message
+					), FALSE);
+				}
+				// Show nothing if debug is off
+				else
+				{
+					exit;
+				}
 			}
 
 			// Process Subtemplate
