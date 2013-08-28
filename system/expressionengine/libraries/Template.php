@@ -319,10 +319,7 @@ class EE_Template {
 			'current_query_string' => http_build_query($_GET) // GET has been sanitized!
 		);
 		
-		foreach ($added_globals as $name => $value)
-		{
-			ee()->config->_global_vars[$name] = $value;	
-		}		
+		ee()->config->_global_vars = array_merge(ee()->config->_global_vars, $added_globals);
 
 		// Parse manual variables and Snippets
 		// These are variables that can be set in the path.php file
