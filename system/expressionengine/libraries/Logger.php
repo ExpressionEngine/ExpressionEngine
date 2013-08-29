@@ -128,6 +128,10 @@ class EE_Logger {
 		// Get a hash of the data to see if we've aleady logged this
 		$hash = md5(serialize($log_data));
 
+		// Load Localize in case this is being called via the Javascript
+		// controller where full EE bootstrapping hasn't run
+		ee()->load->library('localize');
+
 		// If this log is not to be duplicated and it already exists in the DB
 		if ($update && isset($this->_dev_log_hashes[$hash]))
 		{
