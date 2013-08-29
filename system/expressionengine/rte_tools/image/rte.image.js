@@ -164,8 +164,6 @@ Overlay.prototype = {
 	 */
 	_align_figure: function(direction) {
 
-		var error = new Error();
-		console.log(error.stack);
 		var css = { 'text-align': direction };
 
 		if (this.$current.data('floating')) {
