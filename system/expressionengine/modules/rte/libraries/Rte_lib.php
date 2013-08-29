@@ -452,13 +452,11 @@ class Rte_lib {
 		// decode double encoded code chunks
 		if (preg_match_all("#\[code\](.+?)\[/code\]#si", $data, $matches))
 		{
-			$i = 0;
-			foreach ($matches[1] as $chunk)
+			foreach ($matches[1] as $i => $chunk)
 			{
 				$chunk = trim($chunk);
 				$chunk = html_entity_decode($chunk, ENT_QUOTES, 'UTF-8');
 				$data = str_replace($matches[0][$i], '[code]'.$chunk.'[/code]', $data);
-				$i++;
 			}
 		}
 
