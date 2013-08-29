@@ -450,7 +450,7 @@ class Rte_lib {
 		$data = preg_replace('/\n\n+/', "\n\n", $data);
 
 		// decode double encoded code chunks
-		if (preg_match_all("/\[code\](.+?)\[\/code\]/si", $data, $matches))
+		if (preg_match_all("#\[code\](.+?)\[/code\]#si", $data, $matches))
 		{
 			$i = 0;
 			foreach ($matches[1] as $chunk)
