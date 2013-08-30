@@ -2849,7 +2849,7 @@ WysiHat.Toolbar.prototype = {
 		}
 		else
 		{
-			$btn = $('<button aria-pressed="false" tabindex="-1"></button>');
+			$btn = $('<button aria-pressed="false" tabindex="-1" type="button"></button>');
 
 			$btn.append('<b>' + button.label + '</b>')
 				.addClass( 'button ' + button.name)
@@ -2885,7 +2885,6 @@ WysiHat.Toolbar.prototype = {
 
 	observeButtonClick: function(button)
 	{
-
 		var evt = (button.type && button.type == 'select') ? 'change' : 'click',
 			that = this;
 

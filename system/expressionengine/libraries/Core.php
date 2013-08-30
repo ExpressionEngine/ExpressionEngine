@@ -475,10 +475,11 @@ class EE_Core {
 			ee()->functions->redirect(BASE.AMP.'C=login'.$return_url);
 		}
 
-		// Is the user banned?
+		// Is the user banned or not allowed CP access?
 		// Before rendering the full control panel we'll make sure the user isn't banned
 		// But only if they are not a Super Admin, as they can not be banned
-		if (ee()->session->userdata('group_id') != 1 AND ee()->session->ban_check('ip'))
+		if ((ee()->session->userdata('group_id') != 1 && ee()->session->ban_check('ip')) OR
+			(ee()->session->userdata('member_id') !== 0 && ! ee()->cp->allowed_group('can_access_cp')))
 		{
 			return ee()->output->fatal_error(lang('not_authorized'));
 		}
