@@ -677,6 +677,20 @@ class File_field {
 	// ------------------------------------------------------------------------
 
 	/**
+	 * Get file upload size limit 
+	 *
+	 * @return int Upload size limit in bytes
+	 */
+	private function _get_max_filesize()
+	{
+		$post_limit = $this->_get_bytes(ini_get('post_max_size'));
+		$upload_limit = $this->_get_bytes(ini_get('upload_max_filesize'));
+		return min($post_limit, $upload_limit);
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
 	 * Parse INI style size into bytes 
 	 *
 	 * @param string $setting   INI formatted size
