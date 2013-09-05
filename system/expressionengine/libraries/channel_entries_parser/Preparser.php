@@ -42,9 +42,16 @@ class EE_Channel_preparser {
 	protected $_components;
 	protected $_disabled;
 
-	protected $_pair_data;
-	protected $_single_data;
-	protected $_once_data;
+	/**
+	 * The original tagdata, useful for hooks
+	 * @var array
+	 */
+	protected $_original_data;
+	/**
+	 * The current tagdata, what will be displayed
+	 * @var array
+	 */
+	protected $_current_data;
 
 	/**
 	 * The Preparser
@@ -105,9 +112,9 @@ class EE_Channel_preparser {
 				$skip	 = (bool) $component->disabled($disabled, $this);
 				$obj_key = spl_object_hash($component);
 
-				$var = '_'.$fn.'_data';
-				$this->_disabled[$obj_key]  = $skip;
-				$this->{$var}[$obj_key] = $skip ? NULL : $component->pre_process($tagdata, $this);
+				$this->_disabled[$obj_key] = $skip;
+				$this->_original_data[$obj_key] = $skip ? NULL : $component->pre_process($tagdata, $this);
+				$this->_current_data[$obj_key] = $this->_original_data[$obj_key];
 			}
 
 		}
@@ -148,43 +155,38 @@ class EE_Channel_preparser {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Pair tag data getter
-	 *
-	 * Returns the data of the preprocessing step of a given component.
-	 *
-	 * @return mixed	Pair tag preprocessing results
+	 * Retrieve the original pre_process data for a given object
+	 * @param  Object $obj Object to get the data from
+	 * @return Mixed       Single tag pre_process results
 	 */
-	public function pair_data($obj)
+	public function original_data($obj)
 	{
-		return $this->_pair_data[spl_object_hash($obj)];
+		return $this->_original_data[spl_object_hash($obj)];
 	}
 
 	// --------------------------------------------------------------------
 
 	/**
-	 * Single tag data getter
-	 *
-	 * Returns the data of the preprocessing step of a given component.
-	 *
-	 * @return mixed	Single tag preprocessing results
+	 * Retrieve the current (changed) pre_process data for a given object
+	 * @param  Object $obj Object to get the data from
+	 * @return Mixed       Single tag pre_process results
 	 */
-	public function single_data($obj)
+	public function current_data($obj)
 	{
-		return $this->_single_data[spl_object_hash($obj)];
+		return $this->_current_data[spl_object_hash($obj)];
 	}
 
 	// --------------------------------------------------------------------
 
 	/**
-	 * Single tag data getter
-	 *
-	 * Returns the data of the preprocessing step of a given component.
-	 *
-	 * @return mixed	Single tag preprocessing results
+	 * Update the current pre_process data for a given object
+	 * @param  Object $obj Object to get the data from
+	 * @param  Mixed $data Data to set
+	 * @return Mixed       Single tag pre_process results
 	 */
-	public function once_data($obj)
+	public function set_current_data($obj, $data)
 	{
-		return $this->_once_data[spl_object_hash($obj)];
+		return $this->_current_data[spl_object_hash($obj)] = $data;
 	}
 
 	// --------------------------------------------------------------------

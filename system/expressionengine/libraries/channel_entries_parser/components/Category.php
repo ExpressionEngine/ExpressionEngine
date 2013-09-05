@@ -63,7 +63,7 @@ class EE_Channel_category_parser implements EE_Channel_parser_component {
 					$matches[0][$j]
 				);
 			}
-  		}
+		}
 
 		return $cat_chunk;
 	}
@@ -258,5 +258,27 @@ class EE_Channel_category_parser implements EE_Channel_parser_component {
 		}
 
 		return $tagdata;
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Modify the tagdata for a compnonent, used in conjunction with the
+	 * channel_entries_tagdata hook
+	 *
+	 * @param  Array $callback       Callback data in an array to pass to
+	 *                               call_user_func
+	 * @param  Mixed $data           Data pulled out by preprocess
+	 * @param  Array $row            Row of data from the Parser::parse() method
+	 * @return String                Modified $data (mostly modified $tagdata)
+	 */
+	public function modify_tagdata($callback, $data, $row)
+	{
+		foreach ($data as $index => $category_pair)
+		{
+			$data[$index][2] = call_user_func($callback, $category_pair[2], $row);
+		}
+
+		return $data;
 	}
 }

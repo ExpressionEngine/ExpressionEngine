@@ -200,4 +200,31 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
 
 		return $tagdata;
 	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Modify the tagdata for a compnonent, used in conjunction with the
+	 * channel_entries_tagdata hook
+	 *
+	 * @param  Array $callback       Callback data in an array to pass to
+	 *                               call_user_func
+	 * @param  Mixed $data           Data pulled out by preprocess
+	 * @param  Array $row            Row of data from the Parser::parse() method
+	 * @return String                Modified $data (mostly modified $tagdata)
+	 */
+	public function modify_tagdata($callback, $data, $row)
+	{
+		$site_id = $row['entry_site_id'];
+
+		foreach ($data[$site_id] as $field_type => $instances)
+		{
+			foreach ($instances as $index => $instance)
+			{
+				$data[$site_id][$field_type][$index][3] = call_user_func($callback, $instance[3], $row);
+			}
+		}
+
+		return $data;
+	}
 }
