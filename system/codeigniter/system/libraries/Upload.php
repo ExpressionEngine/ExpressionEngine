@@ -678,6 +678,32 @@ class CI_Upload {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Validate Post Data
+	 *
+	 * Validates that the POST data did not get dropped, this happens when
+	 * the content-length of the request is larger than PHP's post_max_size
+	 *
+	 *
+	 * @return	bool
+	 */
+	public function validate_post_data()
+	{
+		$post_limit = $this->_get_bytes(ini_get('post_max_size'));
+
+		if ($_SERVER['CONTENT_LENGTH'] > $post_limit)
+		{
+			$this->set_error('upload_file_exceeds_limit');
+			return FALSE;
+		}
+		else
+		{
+			return TRUE;
+		}
+	}
+		
+	// --------------------------------------------------------------------
+
+	/**
 	 * Validate Upload Path
 	 *
 	 * Verifies that it is a valid upload path with proper permissions.
@@ -985,6 +1011,28 @@ class CI_Upload {
 		$filename .= '.'.$ext;
 
 		return $filename;
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Parse INI style size into bytes 
+	 *
+	 * @param string $setting	INI formatted size
+	 * @return int				Size in bytes 
+	 */
+	private function _get_bytes($setting)
+	{
+		$setting = strtolower($setting);
+		switch (substr($setting, -1))
+		{
+			case 'k':
+				return (int)$setting * 1024;
+			case 'm':
+				return (int)$setting * 1048576;
+			case 'g':
+				return (int)$setting * 1073741824;
+		}
 	}
 
 	// --------------------------------------------------------------------
