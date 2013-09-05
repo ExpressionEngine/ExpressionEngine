@@ -268,8 +268,17 @@ class File_field {
 			$allowed_dirs[] = $row['id'];
 		}
 
-		// Upload or maybe just a path in the hidden field?
-		if (isset($_FILES[$field_name]) && $_FILES[$field_name]['size'] > 0 AND in_array($filedir, $allowed_dirs))
+        // Check we're not exceeding PHP's post_max_size
+        if (empty($_POST) && empty($_FILES))
+        {
+            ee()->load->library('upload');
+            if(!ee()->upload->validate_post_data()) {
+                return array('value' => '', 'error' => ee()->upload->error_msg[0]);
+            }
+        }
+
+        // Upload or maybe just a path in the hidden field?
+        if (isset($_FILES[$field_name]) && in_array($filedir, $allowed_dirs))
 		{
 			ee()->load->library('filemanager');
 			$data = ee()->filemanager->upload_file($filedir, $field_name);
@@ -672,42 +681,6 @@ class File_field {
 		}
 
 		return $this->_upload_prefs;
-	}
-
-	// ------------------------------------------------------------------------
-
-	/**
-	 * Get file upload size limit 
-	 *
-	 * @return int Upload size limit in bytes
-	 */
-	private function _get_max_filesize()
-	{
-		$post_limit = $this->_get_bytes(ini_get('post_max_size'));
-		$upload_limit = $this->_get_bytes(ini_get('upload_max_filesize'));
-		return min($post_limit, $upload_limit);
-	}
-
-	// ------------------------------------------------------------------------
-
-	/**
-	 * Parse INI style size into bytes 
-	 *
-	 * @param string $setting   INI formatted size
-	 * @return int              Size in bytes 
-	 */
-	private function _get_bytes($setting)
-	{
-        $setting = strtolower($setting);
-        switch (substr($setting, -1))
-        {
-            case 'k':
-                return (int)$setting * 1024;
-            case 'm':
-                return (int)$setting * 1048576;
-            case 'g':
-                return (int)$setting * 1073741824;
-        }
 	}
 
 	// ------------------------------------------------------------------------
