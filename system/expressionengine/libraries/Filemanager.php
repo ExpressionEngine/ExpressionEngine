@@ -1955,8 +1955,8 @@ class Filemanager {
 				return (int) $setting * 1048576;
 			case 'g':
 				return (int) $setting * 1073741824;
-            default:
-                return (int) $setting;
+			default:
+				return (int) $setting;
 		}
 	}
 
