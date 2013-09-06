@@ -101,8 +101,7 @@ class EE_Channel_preparser {
 		// Run through component pre_processing steps, skipping any that
 		// were specified as being disabled.
 
-		$tagdata  = $this->_tagdata;
-		$components  = $parser->components();
+		$components = $parser->components();
 		$disabled = isset($config['disable']) ? $config['disable'] : array();
 
 		foreach (array('pair', 'once', 'single') as $fn)
@@ -113,7 +112,7 @@ class EE_Channel_preparser {
 				$obj_key = spl_object_hash($component);
 
 				$this->_disabled[$obj_key] = $skip;
-				$this->_original_data[$obj_key] = $skip ? NULL : $component->pre_process($tagdata, $this);
+				$this->_original_data[$obj_key] = $skip ? NULL : $component->pre_process($parser->tagdata(), $this);
 				$this->_current_data[$obj_key] = $this->_original_data[$obj_key];
 			}
 

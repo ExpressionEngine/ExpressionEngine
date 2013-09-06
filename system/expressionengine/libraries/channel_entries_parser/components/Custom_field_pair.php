@@ -53,6 +53,7 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
 		$pfield_chunk = array();
 
 		$prefix = $pre->prefix();
+		$parser = $pre->parser();
 		$channel = $pre->channel();
 
 		foreach ($channel->pfields as $site_id => $pfields)
@@ -68,11 +69,22 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
 					continue;
 				}
 
-				$pfield_chunk[$site_id][$field_name] = ee()->api_channel_fields->get_pair_field(
-					$tagdata,
-					$field_name,
-					$prefix
-				);
+				$pfield_chunk[$site_id][$field_name] =
+					ee()->api_channel_fields->get_pair_field(
+						$tagdata,
+						$field_name,
+						$prefix
+					);
+
+				// Update the tagdata with hashes
+				foreach ($pfield_chunk[$site_id][$field_name] as $chunk_data)
+				{
+					$parser->set_tagdata(str_replace(
+						$chunk_data[3], // the original tag
+						$chunk_data[4], // the hash
+						$tagdata
+					));
+				}
 			}
 		}
 
@@ -143,7 +155,7 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
 						$ft_api->setup_handler($field_id);
 					}
 
-					list($modifier, $content, $params, $chunk) = $chk_data;
+					list($modifier, $content, $params, $chunk, $hash) = $chk_data;
 
 					$tpl_chunk = '';
 					// Set up parse function name based on whether or not
@@ -191,7 +203,7 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
 						));
 					}
 
-					$tagdata = str_replace($chunk, $tpl_chunk, $tagdata);
+					$tagdata = str_replace($hash, $tpl_chunk, $tagdata);
 				}
 
 				ee()->load->remove_package_path($_ft_path);
