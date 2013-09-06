@@ -1290,7 +1290,7 @@ GRID_FALLBACK;
 		// Get hidden meta vars
 		if ( ! isset($_POST['meta']))
 		{
-			if( isset($_GET['meta']))
+			if (isset($_GET['meta']))
 			{
 				// If $_POST is empty that means we exceeded PHP's post_max_size
 				$_POST['meta'] = $_GET['meta'];

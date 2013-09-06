@@ -1925,17 +1925,9 @@ class Filemanager {
 	public function validate_post_data()
 	{
 		$post_limit = $this->_get_bytes(ini_get('post_max_size'));
-
-		if ($_SERVER['CONTENT_LENGTH'] > $post_limit)
-		{
-			return FALSE;
-		}
-		else
-		{
-			return TRUE;
-		}
+		return $_SERVER['CONTENT_LENGTH'] <= $post_limit;
 	}
-    
+
 	// ------------------------------------------------------------------------
 
 	/**

@@ -297,7 +297,7 @@ class File_field {
 			// Check we're not exceeding PHP's post_max_size
 			ee()->load->library('filemanager');
 
-			if (!ee()->filemanager->validate_post_data())
+			if ( ! ee()->filemanager->validate_post_data())
 			{
 				ee()->lang->load('upload');
 				return array('value' => '', 'error' => lang('upload_file_exceeds_limit'));
