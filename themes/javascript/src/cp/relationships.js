@@ -245,8 +245,7 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 				moveBack: function(i) {
 					var old_value = that.defaultList[i].find('input:text').val();
 
-					if (old_value < this.activeLength)
-					{
+					if (old_value < this.activeLength) {
 						var li = that.activeMap[i],
 							idx = li.index() + 1,
 							reSort = li.nextAll();
@@ -271,8 +270,7 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 			// overflowing. Silly browsers.
 			that.active.addClass('force-scroll');
 
-			if ( ! that.force_empty)
-			{
+			if ( ! that.force_empty) {
 				// find existing checked items
 				var checked = _.map(this.root.find(':checked'), function(el, i) {
 					var li = $(el).closest('li'),
@@ -293,9 +291,8 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 
 					util.moveOver(idx);
 				});
-			}
-			else
-			{
+
+			} else {
 				_.each(this.root.find(':checked'), function(el, i) {
 					var parent = $(el).closest('li');
 
@@ -340,7 +337,7 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 			this.root.parents('form').on('submit', function(evt) {
 
 				that.root.find('input:text').each(function() {
-					if($(this).val() == "0") {
+					if ($(this).val() == "0") {
 						$(this).remove();
 					}
 				});
@@ -520,8 +517,7 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 				score += 1;
 			}
 
-			for (var i = 0; i < searchLength; i++)
-			{
+			for (var i = 0; i < searchLength; i++) {
 				var charLoc = item.indexOf(
 					search.charAt(i).toLowerCase()
 				);
