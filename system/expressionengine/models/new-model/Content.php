@@ -46,5 +46,12 @@ interface Content {
 	 * 						ContentInvalidException will be thrown with errors.
 	 */
 	public function validate();
+
+	/**
+	 * Deletes a piece of content, removing it from the db.
+	 *
+	 * @return	void 
+	 */
+	public function delete();
 	
 }
