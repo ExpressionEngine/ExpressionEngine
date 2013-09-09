@@ -6,6 +6,7 @@
  * For example, Channel is the structural element for ChannelEntries.
  */
 interface Structure {
+
 	/**
 	 * Display the settings form
 	 *
@@ -37,5 +38,12 @@ interface Structure {
 	 * @return String   HTML for the entry / edit form
 	 */
 	public function form($content);
+
+	/**
+	 * Delete settings and all content
+	 *
+	 * @return void
+	 */
+	public function delete();
 
 }
