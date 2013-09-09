@@ -33,7 +33,7 @@ interface Structure {
 	/**
 	 * Display the CP form form
 	 *
-	 * @param $content  An object implementing the Content interface
+	 * @param Content $content  An object implementing the Content interface
 	 * @return String   HTML for the entry / edit form
 	 */
 	public function form($content);
