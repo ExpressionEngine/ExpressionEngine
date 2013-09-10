@@ -737,6 +737,19 @@ class Channel_form_lib
 
 		$hidden_fields = array_merge($hidden_fields, $this->_hidden_fields);
 
+		// If uploading a file keep a copy of all hidden vars in the query string
+		// This way we can check if POST data is dropped because of size limits
+		if ($this->file)
+		{
+			$action = $hidden_fields;
+			$action_url = $action['RET'];
+			$action['ACT'] = ee()->functions->insert_action_ids($action['ACT']);
+			$action = $action_url . '?' . http_build_query($action);
+		}
+		else
+		{
+			$action = $hidden_fields['RET'];
+		}
 
 		$this->form_attribute(
 			array(
@@ -749,7 +762,7 @@ class Channel_form_lib
 
 		$form_attributes = array(
 			'hidden_fields' => $hidden_fields,
-			'action'		=> $RET,
+			'action'		=> $action,
 			'id'			=> ee()->TMPL->fetch_param('id', 'publishForm'),
 			'class'			=> ee()->TMPL->form_class,
 			'enctype' 		=> $this->_file_enctype ? 'enctype="multipart/form-data"' : 'multi'
@@ -1277,8 +1290,19 @@ GRID_FALLBACK;
 		// Get hidden meta vars
 		if ( ! isset($_POST['meta']))
 		{
-			// This should never be valid
-			return;
+			if (isset($_GET['meta']))
+			{
+				// If $_POST is empty that means we exceeded PHP's post_max_size
+				$_POST['meta'] = $_GET['meta'];
+				$dropped = TRUE;
+			}
+			else
+			{
+				// This should never be valid
+				return;
+			}
+		} else {
+			$dropped = FALSE;
 		}
 
 		$this->_get_meta_vars();
@@ -1542,7 +1566,9 @@ GRID_FALLBACK;
 
 		foreach ($this->title_fields as $field)
 		{
-			if (isset($this->default_fields[$field]))
+			// Disable default checks if $_POST was dropped
+			// The only thing we can validate is filesize
+			if (isset($this->default_fields[$field]) && ! $dropped)
 			{
 				ee()->api_channel_fields->set_settings($field, $this->default_fields[$field]);
 

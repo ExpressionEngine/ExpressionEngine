@@ -119,7 +119,7 @@ class Grid_model extends CI_Model {
  		// Drop grid_field_n tables
  		foreach ($grid_fields as $row)
  		{
- 			$this->delete_field($row['field_id']);
+ 			$this->delete_field($row['field_id'], $row['content_type']);
  		}
 
  		// Drop grid_columns table

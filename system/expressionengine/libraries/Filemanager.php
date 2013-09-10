@@ -1910,6 +1910,25 @@ class Filemanager {
 		return form_dropdown('category', $category_dropdown_array);
 	}
 
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Validate Post Data
+	 *
+	 * Validates that the POST data did not get dropped, this happens when
+	 * the content-length of the request is larger than PHP's post_max_size
+	 *
+	 *
+	 * @return	bool
+	 */
+	public function validate_post_data()
+	{
+		ee()->load->helper('number_helper');
+		$post_limit = get_bytes(ini_get('post_max_size'));
+		return $_SERVER['CONTENT_LENGTH'] <= $post_limit;
+	}
+
 	
 	// --------------------------------------------------------------------
 	

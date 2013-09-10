@@ -33,7 +33,17 @@ class Newrelic {
 	 */
 	public function set_appname()
 	{
-		newrelic_set_appname(APP_NAME.' v'.APP_VER);
+		// -------------------------------------------
+		//	Hidden Configuration Variable
+		//	- newrelic_app_name => Change application name from site label
+		//	  that appears in the New Relic dashboard
+		// -------------------------------------------*/
+		if (($appname = ee()->config->item('newrelic_app_name')) == FALSE)
+		{
+			$appname = ee()->config->item('site_label');
+		}
+
+		newrelic_set_appname($appname.' - '.APP_NAME.' v'.APP_VER);
 	}
 
 	// --------------------------------------------------------------------
