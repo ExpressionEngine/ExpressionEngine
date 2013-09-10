@@ -1924,32 +1924,9 @@ class Filemanager {
 	 */
 	public function validate_post_data()
 	{
-		$post_limit = $this->_get_bytes(ini_get('post_max_size'));
+		ee()->load->helper('number_helper');
+		$post_limit = get_bytes(ini_get('post_max_size'));
 		return $_SERVER['CONTENT_LENGTH'] <= $post_limit;
-	}
-
-	// ------------------------------------------------------------------------
-
-	/**
-	 * Parse INI style size into bytes 
-	 *
-	 * @param string $setting	INI formatted size
-	 * @return int				Size in bytes 
-	 */
-	private function _get_bytes($setting)
-	{
-		$setting = strtolower($setting);
-		switch (substr($setting, -1))
-		{
-			case 'k':
-				return (int) $setting * 1024;
-			case 'm':
-				return (int) $setting * 1048576;
-			case 'g':
-				return (int) $setting * 1073741824;
-			default:
-				return (int) $setting;
-		}
 	}
 
 	
