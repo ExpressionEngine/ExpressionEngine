@@ -26,7 +26,8 @@ jQuery(document).ready(function () {
 	// Ajax Errors can be hard to debug so we'll always add a simple
 	// error handler if none were specified.
 	$.ajaxPrefilter(function(options, originalOptions, jqXHR) {
-		var old_xid = EE.XID;
+		var old_xid = EE.XID,
+			type = options.type.toUpperCase();
 
 		if ( ! _.has(options, 'error'))
 		{
@@ -37,12 +38,16 @@ jQuery(document).ready(function () {
 			});
 		}
 
-		jqXHR.setRequestHeader("X-EEXID", old_xid);
+		if (type == 'POST' && options.crossDomain === false)
+		{
+			jqXHR.setRequestHeader("X-EEXID", old_xid);
+		}
 
 		jqXHR.complete(function(xhr) {
 			var new_xid = xhr.getResponseHeader('X-EEXID');
 
-			if (new_xid) {
+			// non-post can return a new xid, but never trust xids from other domains
+			if (new_xid && options.crossDomain === false) {
 				EE.XID = new_xid;
 				$('input[name="XID"]').filter('[value="'+old_xid+'"]').val(new_xid);
 			}
