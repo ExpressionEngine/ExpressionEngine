@@ -1830,6 +1830,11 @@ GRID_FALLBACK;
 			$return = str_replace('URL_TITLE', $this->entry('url_title'), $return);
 		}
 
+		if (strpos($return, 'AUTHOR_ID') !== FALSE)
+		{
+			$return = str_replace('AUTHOR_ID', $this->entry('author-id'), $return);
+		}
+
 		if ($hook_return = ee()->api_channel_form_channel_entries->trigger_hook('entry_submission_redirect', $return))
 		{
 			$return = $hook_return;
