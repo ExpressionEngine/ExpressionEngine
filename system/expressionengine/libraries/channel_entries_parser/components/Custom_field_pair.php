@@ -58,8 +58,10 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
 
 		foreach ($channel->pfields as $site_id => $pfields)
 		{
-			$pfield_names = array_intersect($channel->cfields[$site_id], array_keys($pfields));
-
+			$pfield_names = array_intersect(
+				$channel->cfields[$site_id],
+				array_keys($pfields)
+			);
 			$pfield_chunk[$site_id] = array();
 
 			foreach($pfield_names as $field_name => $field_id)
@@ -82,7 +84,7 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
 					$parser->set_tagdata(str_replace(
 						$chunk_data[3], // the original tag
 						$chunk_data[4], // the hash
-						$tagdata
+						$parser->tagdata()
 					));
 				}
 			}

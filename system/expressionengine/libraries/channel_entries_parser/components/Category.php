@@ -59,7 +59,7 @@ class EE_Channel_category_parser implements EE_Channel_parser_component {
 			for ($j = 0; $j < count($matches[0]); $j++)
 			{
 				$hash = md5($matches[0][$j]);
-				$parser->set_tagdata(str_replace($matches[0][$j], $hash, $tagdata));
+				$parser->set_tagdata(str_replace($matches[0][$j], $hash, $parser->tagdata()));
 
 				$cat_chunk[] = array(
 					$matches[2][$j],
