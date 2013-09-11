@@ -58,11 +58,8 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
 
 		foreach ($channel->pfields as $site_id => $pfields)
 		{
-			$tagdata_replaced = FALSE;
-			$pfield_names = array_intersect(
-				$channel->cfields[$site_id],
-				array_keys($pfields)
-			);
+			$pfield_names = array_intersect($channel->cfields[$site_id], array_keys($pfields));
+
 			$pfield_chunk[$site_id] = array();
 
 			foreach($pfield_names as $field_name => $field_id)
@@ -80,18 +77,13 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
 					);
 
 				// Update the tagdata with hashes
-				if ( ! $tagdata_replaced)
+				foreach ($pfield_chunk[$site_id][$field_name] as $chunk_data)
 				{
-					foreach ($pfield_chunk[$site_id][$field_name] as $chunk_data)
-					{
-						$parser->set_tagdata(str_replace(
-							$chunk_data[3], // the original tag
-							$chunk_data[4], // the hash
-							$tagdata
-						));
-					}
-
-					$tagdata_replaced = TRUE;
+					$parser->set_tagdata(str_replace(
+						$chunk_data[3], // the original tag
+						$chunk_data[4], // the hash
+						$tagdata
+					));
 				}
 			}
 		}
