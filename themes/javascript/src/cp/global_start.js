@@ -27,8 +27,7 @@ jQuery(document).ready(function () {
 	// error handler if none were specified.
 	$.ajaxPrefilter(function(options, originalOptions, jqXHR) {
 		var old_xid = EE.XID,
-			type = options.type.toUpperCase(),
-			eeResponseHeaders = originalOptions.eeResponseHeaders || {};
+			type = options.type.toUpperCase();
 
 		// Throw all errors
 		if ( ! _.has(options, 'error')) {
@@ -44,28 +43,30 @@ jQuery(document).ready(function () {
 			jqXHR.setRequestHeader("X-EEXID", old_xid);
 		}
 
-		// Set EE response header defaults
-		eeResponseHeaders = $.merge({
-
+		var defaultHeaderResponses = {
 			// Refresh xids
-			XID: function(new_xid) {
+			xid: function(new_xid) {
 				EE.XID = new_xid;
 				$('input[name="XID"]').filter('[value="'+old_xid+'"]').val(new_xid);
 			},
 
-			// Forced redirects (e.g. logout)
+			// Force redirects (e.g. logout)
 			redirect: function(url) {
 				window.location = EE.BASE + '&' + url.replace('//', '/'); // replace to prevent //example.com
 			}
-		}, eeResponseHeaders);
+		};
+
+		// Set EE response header defaults
+		eeResponseHeaders = $.merge(
+			defaultHeaderResponses,
+			originalOptions.eeResponseHeaders || {}
+		);
 
 		jqXHR.complete(function(xhr) {
 
 			if (options.crossDomain === false) {
 				_.each(eeResponseHeaders, function(callback, name) {
-					name = name.charAt(0).toUpperCase() + name.slice(1);
-
-					var headerValue = xhr.getResponseHeader('X-EE'+name.toUpperCase());
+					var headerValue = xhr.getResponseHeader('X-EE'+name);
 
 					if (headerValue) {
 						callback(headerValue);
