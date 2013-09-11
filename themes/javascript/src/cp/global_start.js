@@ -170,7 +170,7 @@ jQuery(document).ready(function () {
 				notepad_txtarea.attr('readonly', 'readonly').css('opacity', 0.5);
 				notepad_controls.find('#notePadSaveIndicator').show();
 
-				$.post(notepad_form.attr('action'), {'notepad': current_content, 'XID': EE.XID }, function (ret) {
+				$.post(notepad_form.attr('action'), {'notepad': current_content }, function (ret) {
 					notepad_text.html(newval || notepad_empty).show();
 					notepad_txtarea.attr('readonly', false).css('opacity', 1).hide();
 					notepad_controls.hide().find('#notePadSaveIndicator').hide();
@@ -231,21 +231,18 @@ jQuery(document).ready(function () {
  * @param {String} namespace_string The namespace string (e.g. EE.publish.example)
  * @returns The object to create
  */
-EE.namespace = function(namespace_string)
-{
+EE.namespace = function(namespace_string) {
 	var parts = namespace_string.split('.'),
 		parent = EE;
 
 	// strip redundant leading global
-	if (parts[0] === "EE")
-	{
+	if (parts[0] === "EE") {
 		parts = parts.slice(1);
 	}
 
 	// @todo disallow 'prototype', duh
 	// create a property if it doesn't exist if (typeof parent[parts[i]] === "undefined") {
-	for (var i = 0, max = parts.length; i < max; i += 1)
-	{
+	for (var i = 0, max = parts.length; i < max; i += 1) {
 		if (typeof parent[parts[i]] === "undefined") {
 			parent[parts[i]] = {};
 		};
@@ -363,7 +360,7 @@ EE.cp.show_hide_sidebar = function() {
 			type: "POST",
 			dataType: 'json',
 			url: EE.BASE + '&C=myaccount&M=update_sidebar_status',
-			data: {'XID' : EE.XID, 'show' : show},
+			data: {'show' : show},
 			success: function(result){
 				if (result.messageType === 'success') {
 					// log?
@@ -521,10 +518,8 @@ EE.cp.logout_confirm = function() {
 };
 
 // Modal for "What does this mean?" link on deprecation notices
-EE.cp.deprecation_meaning = function()
-{
-	$('.deprecation_meaning').click(function(event)
-	{
+EE.cp.deprecation_meaning = function() {
+	$('.deprecation_meaning').click(function(event) {
 		event.preventDefault();
 
 		var deprecation_meaning_modal = $('<div class="alert">' + EE.developer_log.deprecation_meaning + ' </div>');
