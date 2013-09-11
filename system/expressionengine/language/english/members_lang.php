@@ -2,25 +2,25 @@
 
 $lang = array(
 
-"register_member" => 
+"register_member" =>
 "Register a New Member",
 
-"view_members" => 
+"view_members" =>
 "View Members",
 
-"view_search_members" => 
+"view_search_members" =>
 "View / Search Members",
 
 "member_validation" =>
 "Activate Pending Members",
 
-"member_search" => 
+"member_search" =>
 "Member Search",
 
-"user_banning" => 
+"user_banning" =>
 "User Banning",
 
-"custom_profile_fields" => 
+"custom_profile_fields" =>
 "Member Fields",
 
 "member_cfg_existing" =>
@@ -41,7 +41,7 @@ $lang = array(
 "ip_search" =>
 "IP Address Search",
 
-"member_groups" => 
+"member_groups" =>
 "Member Groups",
 
 "keywords" =>
@@ -101,10 +101,10 @@ $lang = array(
 "The member you are attempting to delete has channel entries assigned",
 
 'heir_to_member_entries' =>
-"This member has entries assigned to their account.  Choose the member to which you would like the entries reassigned.",
+"This member has entries assigned to their account. What would you like to do with those entries?",
 
 'heir_to_members_entries' =>
-"Some of these members have entries assigned to their accounts.  Choose the member to which you would like the entries reassigned.",
+"Some of these members have entries assigned to their accounts.  What would you like to do with those entries?",
 
 "forum_topics" =>
 "Forum Topics",
@@ -328,7 +328,7 @@ $lang = array(
 "username_desc" =>
 "Username - descending",
 
-"screen_name" => 
+"screen_name" =>
 "Screen Name",
 
 "screen_name_asc" =>
@@ -337,7 +337,7 @@ $lang = array(
 "screen_name_desc" =>
 "Screen Name - descending",
 
-"mbr_email_address" => 
+"mbr_email_address" =>
 "Email Address",
 
 'email_address' =>
@@ -376,10 +376,10 @@ $lang = array(
 "register_member" =>
 "Register a New Member",
 
-"edit_group" => 
+"edit_group" =>
 "Edit Group",
 
-"group_title" => 
+"group_title" =>
 "Group Title",
 
 "security_lock" =>
@@ -406,28 +406,28 @@ $lang = array(
 "member_has_cp_access" =>
 "Can access the control panel",
 
-"edit_member_group" => 
+"edit_member_group" =>
 "Edit Member Group",
 
-"create_member_group" => 
+"create_member_group" =>
 "Create a Member Group",
 
-"delete_member_group" => 
+"delete_member_group" =>
 "Delete Member Group",
 
 "member_group_deleted" =>
 "Member Group Deleted",
 
-"delete_member_group_confirm" => 
+"delete_member_group_confirm" =>
 "Are you sure you want to delete this member group?",
 
 "delete_member" =>
 "Delete Member",
 
-"delete_member_confirm" => 
+"delete_member_confirm" =>
 "Are you sure you want to delete this member?",
 
-"delete_members_confirm" => 
+"delete_members_confirm" =>
 "Are you sure you want to delete these members?",
 
 "can_not_delete_superadmin" =>
@@ -457,13 +457,13 @@ $lang = array(
 
 "ip_banning_instructions_cont" =>
 "Use wildcards for partial IP addresses. Example:  123.345.*",
-  
+
 "email_address_banning" =>
 "Banned Email Address",
 
 "email_banning_instructions" =>
 "Place each email address on a separate line",
- 
+
 "email_banning_instructions_cont" =>
 "Use wildcards for partial email addresses. Example:  *@domain.com",
 
@@ -472,7 +472,7 @@ $lang = array(
 
 "restrict_to_viewing" =>
 "Restrict them to viewing only",
-	
+
 "show_this_message" =>
 "Show this message",
 
@@ -627,7 +627,7 @@ $lang = array(
 
 'can_access_publish' =>
 'Can access CONTENT: Publish',
-					
+
 'can_access_files' =>
 'Can access CONTENT: File Manager',
 
@@ -917,7 +917,10 @@ $lang = array(
 "Allow Members in Site's Mailing Lists and Related Abilities? (i.e. Group Available in Communicate section)",
 
 'member_delete_dont_reassign_entries' =>
-"Don't reassign this member's entries, just delete them ALL",
+"Delete the member's entries",
+
+'member_delete_reassign_entries' =>
+"Reassign the member's entries to ",
 
 ''=>''
 );
