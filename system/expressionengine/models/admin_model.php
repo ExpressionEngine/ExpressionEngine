@@ -240,7 +240,10 @@ class Admin_model extends CI_Model {
 		// add New Relic if the extension is installed
 		if (extension_loaded('newrelic'))
 		{
-			$new_relic_cfg = array('use_newrelic' => array('r', array('y' => 'yes', 'n' => 'no'), 'y'));
+			$new_relic_cfg = array(
+				'newrelic_app_name' => array('i', ''),
+				'use_newrelic' => array('r', array('y' => 'yes', 'n' => 'no'), 'y')
+			);
 			$f_data['output_cfg'] = array_merge($new_relic_cfg, $f_data['output_cfg']);
 		}
 
@@ -269,6 +272,7 @@ class Admin_model extends CI_Model {
 			'template_debugging'		=> array('template_debugging_explanation'),
 			'max_caches'				=> array('max_caches_explanation'),
 			'use_newrelic'				=> array('use_newrelic_explanation'),
+			'newrelic_app_name'			=> array('newrelic_app_name_explanation'),
 			'gzip_output'				=> array('gzip_output_explanation'),
 			'server_offset'				=> array('server_offset_explain'),
 			'default_member_group'		=> array('group_assignment_defaults_to_two'),

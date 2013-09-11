@@ -33,17 +33,19 @@ class Newrelic {
 	 */
 	public function set_appname()
 	{
+		$appname = (string) ee()->config->item('newrelic_app_name');
+
 		// -------------------------------------------
 		//	Hidden Configuration Variable
-		//	- newrelic_app_name => Change application name from site label
-		//	  that appears in the New Relic dashboard
+		//	- newrelic_app_name => Change application name that appears in
+		//	  the New Relic dashboard
 		// -------------------------------------------*/
-		if (($appname = ee()->config->item('newrelic_app_name')) == FALSE)
+		if ( ! empty($appname))
 		{
-			$appname = ee()->config->item('site_label');
+			$appname .= ' - ';
 		}
 
-		newrelic_set_appname($appname.' - '.APP_NAME.' v'.APP_VER);
+		newrelic_set_appname($appname.APP_NAME.' v'.APP_VER);
 	}
 
 	// --------------------------------------------------------------------
@@ -61,6 +63,13 @@ class Newrelic {
 		if (ee()->uri->segment(2) !== FALSE)
 		{
 			$transaction_name .= '/'.ee()->uri->segment(2);
+		}
+
+		// Append site label if MSM is enabled to easily differentiate
+		// between similar requests
+		if (ee()->config->item('multiple_sites_enabled') == 'y')
+		{
+			$transaction_name .= ' - ' . ee()->config->item('site_label');
 		}
 
 		newrelic_name_transaction($transaction_name);
