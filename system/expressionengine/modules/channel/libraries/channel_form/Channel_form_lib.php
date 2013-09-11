@@ -1832,7 +1832,7 @@ GRID_FALLBACK;
 
 		if (strpos($return, 'AUTHOR_ID') !== FALSE)
 		{
-			$return = str_replace('AUTHOR_ID', $this->entry('author-id'), $return);
+			$return = str_replace('AUTHOR_ID', $this->entry('author_id'), $return);
 		}
 
 		if ($hook_return = ee()->api_channel_form_channel_entries->trigger_hook('entry_submission_redirect', $return))
