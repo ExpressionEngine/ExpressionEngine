@@ -27,10 +27,11 @@ jQuery(document).ready(function () {
 	// error handler if none were specified.
 	$.ajaxPrefilter(function(options, originalOptions, jqXHR) {
 		var old_xid = EE.XID,
-			type = options.type.toUpperCase();
+			type = options.type.toUpperCase(),
+			eeResponseHeaders = originalOptions.eeResponseHeaders || {};
 
-		if ( ! _.has(options, 'error'))
-		{
+		// Throw all errors
+		if ( ! _.has(options, 'error')) {
 			jqXHR.error(function(data) {
 				_.defer(function() {
 					throw [data.statusText, data.responseText];
@@ -38,18 +39,38 @@ jQuery(document).ready(function () {
 			});
 		}
 
-		if (type == 'POST' && options.crossDomain === false)
-		{
+		// Add XID to EE POST requests
+		if (type == 'POST' && options.crossDomain === false) {
 			jqXHR.setRequestHeader("X-EEXID", old_xid);
 		}
 
-		jqXHR.complete(function(xhr) {
-			var new_xid = xhr.getResponseHeader('X-EEXID');
+		// Set EE response header defaults
+		eeResponseHeaders = $.merge({
 
-			// non-post can return a new xid, but never trust xids from other domains
-			if (new_xid && options.crossDomain === false) {
+			// Refresh xids
+			XID: function(new_xid) {
 				EE.XID = new_xid;
 				$('input[name="XID"]').filter('[value="'+old_xid+'"]').val(new_xid);
+			},
+
+			// Forced redirects (e.g. logout)
+			redirect: function(url) {
+				window.location = EE.BASE + '&' + url.replace('//', '/'); // replace to prevent //example.com
+			}
+		}, eeResponseHeaders);
+
+		jqXHR.complete(function(xhr) {
+
+			if (options.crossDomain === false) {
+				_.each(eeResponseHeaders, function(callback, name) {
+					name = name.charAt(0).toUpperCase() + name.slice(1);
+
+					var headerValue = xhr.getResponseHeader('X-EE'+name.toUpperCase());
+
+					if (headerValue) {
+						callback(headerValue);
+					}
+				});
 			}
 		});
 	});
@@ -57,6 +78,7 @@ jQuery(document).ready(function () {
 	// A 401 in combination with a url indicates a redirect, we use this
 	// on the login page to catch periodic ajax requests (e.g. autosave)
 
+	// Deprecated! Use X-EERedirect
 	$(document).bind('ajaxComplete', function (evt, xhr) {
 		if (xhr.status && (+ xhr.status) === 401) {
 			window.location = EE.BASE + '&' + xhr.responseText;

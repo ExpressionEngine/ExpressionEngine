@@ -57,6 +57,7 @@ class Login extends CP_Controller {
 		// If an ajax request ends up here the user is probably logged out
 		if (AJAX_REQUEST)
 		{
+			header('X-EERedirect: C=login');
 			$this->output->set_status_header(401);
 			die('C=login');
 		}
