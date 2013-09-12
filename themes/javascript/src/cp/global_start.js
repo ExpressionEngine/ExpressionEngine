@@ -351,7 +351,7 @@ EE.cp.show_hide_sidebar = function() {
 
 	larger_height = sidebar_height > main_height ? sidebar_height : main_height;
 
-	$('#revealSidebarLink, #hideSidebarLink').click(function () {
+	$('#revealSidebarLink, #hideSidebarLink').click(function (evt) {
 		var that = $(this),
 			other = that.siblings('a'),
 			show = (this.id === 'revealSidebarLink');
@@ -361,12 +361,16 @@ EE.cp.show_hide_sidebar = function() {
 			dataType: 'json',
 			url: EE.BASE + '&C=myaccount&M=update_sidebar_status',
 			data: {'show' : show},
-			success: function(result){
+			success: function(result) {
 				if (result.messageType === 'success') {
 					// log?
 				}
 			}
 		});
+
+		if ( ! evt.isTrigger) {
+			$(window).trigger('broadcast.sidebar', show);
+		}
 
 		$("#sideBar").css({
 			'position': 'absolute',
@@ -391,6 +395,15 @@ EE.cp.show_hide_sidebar = function() {
 		});
 
 		return false;
+	});
+
+	$(window).bind('broadcast.sidebar', function(event, sidebarIsOpen) {
+		var selectors = {
+			true: "#revealSidebarLink",
+			false: "#hideSidebarLink"
+		};
+
+		$(selectors[sidebarIsOpen]).filter(':visible').trigger('click');
 	});
 };
 
@@ -442,6 +455,7 @@ EE.insert_placeholders = function () {
 		.trigger('blur');
 	});
 };
+
 
 // Logout button confirmation
 EE.cp.logout_confirm = function() {
