@@ -222,8 +222,6 @@ jQuery(document).ready(function () {
 		$('.sidebar_hover_desc', this).hide();
 	})
 	.css('cursor', 'pointer');
-
-	EE.cp.logout_confirm();
 }); // ready
 
 /**
@@ -453,81 +451,6 @@ EE.insert_placeholders = function () {
 			}
 		})
 		.trigger('blur');
-	});
-};
-
-
-// Logout button confirmation
-EE.cp.logout_confirm = function() {
-	$("#activeUser").one("mouseover", function () {
-
-		var logout_modal = $('<div id="logOutConfirm">' + EE.lang.logout_confirm + ' </div>'),
-			ttl = 30,
-			orig_ttl = ttl,
-			countdown_timer,
-			buttons,
-			log_out,
-			log_out_unload,
-			delay_logout;
-
-		log_out = function () {
-			$(window).unbind("unload.logout");
-
-			// Redirect
-			window.location = EE.BASE + "&C=login&M=logout";
-		};
-
-		log_out_unload = function() {
-			$.ajax({
-				url: EE.BASE + "&C=login&M=logout",
-				async: ( ! $.browser.safari)
-			});
-		};
-
-		delay_logout = function () {
-			if (ttl < 1) {
-				return setTimeout(log_out, 0);
-			}
-			else if (ttl === orig_ttl) {
-				$(window).bind("unload.logout", log_out_unload);
-			}
-
-			logout_modal.dialog("option", "title", EE.lang.logout + " (" +  (ttl-- || "...")  + ")");
-			countdown_timer = setTimeout(delay_logout, 1000);
-		};
-
-		function cancel_logout() {
-			clearTimeout(countdown_timer);
-			$(window).unbind("unload.logout");
-			ttl = orig_ttl;
-		}
-
-		buttons = {
-			Cancel: function () {
-				$(this).dialog("close");
-			}
-		};
-
-		buttons[EE.lang.logout] = log_out;
-
-		logout_modal.dialog({
-			autoOpen: false,
-			resizable: false,
-			modal: true,
-			title: EE.lang.logout,
-			position: "center",
-			minHeight: "0",
-			buttons: buttons,
-			beforeClose: cancel_logout
-		});
-
-		$("a.logOutButton", this).click(function () {
-			$("#logOutConfirm").dialog("open");
-			$(".ui-dialog-buttonpane button:eq(2)").focus(); //focus on Log-out so pressing return logs out
-
-			delay_logout();
-			return false;
-		});
 	});
 };
 
