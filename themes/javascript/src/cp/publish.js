@@ -412,7 +412,7 @@ EE.publish.save_layout = function() {
 			type: "POST",
 			dataType: 	'json',
 			url: EE.BASE+"&C=content_publish&M=save_layout",
-			data: "XID="+EE.XID+"&json_tab_layout="+encodeURIComponent(JSON.stringify(layout_object))+"&"+$("#layout_groups_holder input").serialize()+"&channel_id="+EE.publish.channel_id,
+			data: "json_tab_layout="+encodeURIComponent(JSON.stringify(layout_object))+"&"+$("#layout_groups_holder input").serialize()+"&channel_id="+EE.publish.channel_id,
 			success: function(result){
 				if (result.messageType === 'success') {
 					$.ee_notice(result.message, {type: "success"});
@@ -435,7 +435,7 @@ EE.publish.remove_layout = function() {
 	$.ajax({
 		type: "POST",
 		url: EE.BASE+"&C=content_publish&M=save_layout",
-		data: "XID="+EE.XID+"&json_tab_layout="+json_tab_layout+"&"+$("#layout_groups_holder input").serialize()+"&channel_id="+EE.publish.channel_id+"&field_group="+EE.publish.field_group,
+		data: "json_tab_layout="+json_tab_layout+"&"+$("#layout_groups_holder input").serialize()+"&channel_id="+EE.publish.channel_id+"&field_group="+EE.publish.field_group,
 		success: function(msg){
 			$.ee_notice(EE.publish.lang.layout_removed + " <a href=\"javascript:location=location\">"+EE.publish.lang.refresh_layout+"</a>", {duration:0, type:"success"});
 			return true;
@@ -460,7 +460,6 @@ EE.publish.change_preview_link = function() {
 		type: 'POST',
 		dataType: 'json',
 		data: {
-			XID: EE.XID,
 			member_group: $select.find('option:selected').text()
 		}
 	});
