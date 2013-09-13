@@ -26,10 +26,11 @@ jQuery(document).ready(function () {
 	// Ajax Errors can be hard to debug so we'll always add a simple
 	// error handler if none were specified.
 	$.ajaxPrefilter(function(options, originalOptions, jqXHR) {
-		var old_xid = EE.XID;
+		var old_xid = EE.XID,
+			type = options.type.toUpperCase();
 
-		if ( ! _.has(options, 'error'))
-		{
+		// Throw all errors
+		if ( ! _.has(options, 'error')) {
 			jqXHR.error(function(data) {
 				_.defer(function() {
 					throw [data.statusText, data.responseText];
@@ -37,14 +38,40 @@ jQuery(document).ready(function () {
 			});
 		}
 
-		jqXHR.setRequestHeader("X-EEXID", old_xid);
+		// Add XID to EE POST requests
+		if (type == 'POST' && options.crossDomain === false) {
+			jqXHR.setRequestHeader("X-EEXID", old_xid);
+		}
 
-		jqXHR.complete(function(xhr) {
-			var new_xid = xhr.getResponseHeader('X-EEXID');
-
-			if (new_xid) {
+		var defaultHeaderResponses = {
+			// Refresh xids
+			xid: function(new_xid) {
 				EE.XID = new_xid;
 				$('input[name="XID"]').filter('[value="'+old_xid+'"]').val(new_xid);
+			},
+
+			// Force redirects (e.g. logout)
+			redirect: function(url) {
+				window.location = EE.BASE + '&' + url.replace('//', '/'); // replace to prevent //example.com
+			}
+		};
+
+		// Set EE response header defaults
+		eeResponseHeaders = $.merge(
+			defaultHeaderResponses,
+			originalOptions.eeResponseHeaders || {}
+		);
+
+		jqXHR.complete(function(xhr) {
+
+			if (options.crossDomain === false) {
+				_.each(eeResponseHeaders, function(callback, name) {
+					var headerValue = xhr.getResponseHeader('X-EE'+name);
+
+					if (headerValue) {
+						callback(headerValue);
+					}
+				});
 			}
 		});
 	});
@@ -52,6 +79,7 @@ jQuery(document).ready(function () {
 	// A 401 in combination with a url indicates a redirect, we use this
 	// on the login page to catch periodic ajax requests (e.g. autosave)
 
+	// Deprecated! Use X-EERedirect
 	$(document).bind('ajaxComplete', function (evt, xhr) {
 		if (xhr.status && (+ xhr.status) === 401) {
 			window.location = EE.BASE + '&' + xhr.responseText;
@@ -142,7 +170,7 @@ jQuery(document).ready(function () {
 				notepad_txtarea.attr('readonly', 'readonly').css('opacity', 0.5);
 				notepad_controls.find('#notePadSaveIndicator').show();
 
-				$.post(notepad_form.attr('action'), {'notepad': current_content, 'XID': EE.XID }, function (ret) {
+				$.post(notepad_form.attr('action'), {'notepad': current_content }, function (ret) {
 					notepad_text.html(newval || notepad_empty).show();
 					notepad_txtarea.attr('readonly', false).css('opacity', 1).hide();
 					notepad_controls.hide().find('#notePadSaveIndicator').hide();
@@ -203,21 +231,18 @@ jQuery(document).ready(function () {
  * @param {String} namespace_string The namespace string (e.g. EE.publish.example)
  * @returns The object to create
  */
-EE.namespace = function(namespace_string)
-{
+EE.namespace = function(namespace_string) {
 	var parts = namespace_string.split('.'),
 		parent = EE;
 
 	// strip redundant leading global
-	if (parts[0] === "EE")
-	{
+	if (parts[0] === "EE") {
 		parts = parts.slice(1);
 	}
 
 	// @todo disallow 'prototype', duh
 	// create a property if it doesn't exist if (typeof parent[parts[i]] === "undefined") {
-	for (var i = 0, max = parts.length; i < max; i += 1)
-	{
+	for (var i = 0, max = parts.length; i < max; i += 1) {
 		if (typeof parent[parts[i]] === "undefined") {
 			parent[parts[i]] = {};
 		};
@@ -335,7 +360,7 @@ EE.cp.show_hide_sidebar = function() {
 			type: "POST",
 			dataType: 'json',
 			url: EE.BASE + '&C=myaccount&M=update_sidebar_status',
-			data: {'XID' : EE.XID, 'show' : show},
+			data: {'show' : show},
 			success: function(result){
 				if (result.messageType === 'success') {
 					// log?
@@ -493,10 +518,8 @@ EE.cp.logout_confirm = function() {
 };
 
 // Modal for "What does this mean?" link on deprecation notices
-EE.cp.deprecation_meaning = function()
-{
-	$('.deprecation_meaning').click(function(event)
-	{
+EE.cp.deprecation_meaning = function() {
+	$('.deprecation_meaning').click(function(event) {
 		event.preventDefault();
 
 		var deprecation_meaning_modal = $('<div class="alert">' + EE.developer_log.deprecation_meaning + ' </div>');
