@@ -698,12 +698,6 @@ class Channel_form_lib
 			$this->_file_enctype = TRUE;
 		}
 
-		//add class to form
-		if (ee()->TMPL->fetch_param('class'))
-		{
-			ee()->TMPL->tagparams['form_class'] = ee()->TMPL->fetch_param('class');
-		}
-
 		//set group-based return url
 		$this->form_hidden('return', (ee()->TMPL->fetch_param('return_'.ee()->session->userdata['group_id'])) ? ee()->TMPL->fetch_param('return_'.ee()->session->userdata['group_id']) : ee()->TMPL->fetch_param('return'));
 
@@ -755,8 +749,8 @@ class Channel_form_lib
 			array(
 				'onsubmit' => ee()->TMPL->fetch_param('onsubmit'),
 				'name' => ee()->TMPL->fetch_param('name'),
-				'class' => ee()->TMPL->fetch_param('class'),
-				'id' => ee()->TMPL->fetch_param('id')
+				'id' => ee()->TMPL->fetch_param('id'),
+				'class' => ee()->TMPL->fetch_param('class')
 			)
 		);
 
@@ -764,7 +758,6 @@ class Channel_form_lib
 			'hidden_fields' => $hidden_fields,
 			'action'		=> $action,
 			'id'			=> ee()->TMPL->fetch_param('id', 'publishForm'),
-			'class'			=> ee()->TMPL->form_class,
 			'enctype' 		=> $this->_file_enctype ? 'enctype="multipart/form-data"' : 'multi'
 		);
 
@@ -2518,7 +2511,7 @@ GRID_FALLBACK;
 			return;
 		}
 
-		$this->_form_attribute[$name] = $value;
+		$this->_form_attributes[$name] = $value;
 	}
 
 	// --------------------------------------------------------------------
