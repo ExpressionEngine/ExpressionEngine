@@ -44,6 +44,41 @@ class Member implements User {
 	}
 
 	/**
+	 * The name we will be displaying on both front end and backend.
+	 *
+	 * @return	string	The user's display name.
+	 */
+	public function displayName() 
+	{
+		return $this->entity->screen_name;
+	}
+
+	/**
+	 * An email to be used to contact that user.  If we have one.
+	 * When parameter is provided acts as a setter, otherwise acts
+	 * as a getter.
+	 *
+	 * @param	string	$email	This user's email.  If provided methods acts as
+	 * 						A setter and returns $this.
+	 *
+	 * @return	string|$this	If parameter is provided, returns $this to
+	 * 						allow setter chaining.  Otherwise, acts as a getter
+	 * 						and returns the email.
+	 */ 
+	public function email($email=NULL) 
+	{
+		if ($email !== NULL)
+		{
+			$this->entity->email = $email;
+			return $this;
+		}
+		else
+		{
+			return $this->entity->email;
+		}
+	}
+
+	/**
 	 * Authenticate the member using EE's authentication
 	 *
 	 * Needs to have username/email
