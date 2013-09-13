@@ -685,7 +685,7 @@ class Channel_form_lib
 		ee()->TMPL->tagdata = ee()->TMPL->swap_var_single('captcha_word', '', ee()->TMPL->tagdata);
 
 		// Replace {captcha} with actual captcha
-		ee()->TMPL->tagdata = ee()->TMPL->swap_var_single('captcha', ee()->functions->create_captcha(), ee()->TMPL->tagdata);
+		ee()->TMPL->tagdata = ee()->TMPL->swap_var_single('captcha', ee()->functions->create_captcha('', $captcha_conditional['captcha']), ee()->TMPL->tagdata);
 
 		// Parse the variables
 		if ($this->parse_variables)
