@@ -52,18 +52,23 @@ class EE_Channel_category_parser implements EE_Channel_parser_component {
 	{
 		$cat_chunk = array();
 		$prefix = $pre->prefix();
+		$parser = $pre->parser();
 
 		if (preg_match_all("/".LD.$prefix."categories(.*?)".RD."(.*?)".LD.'\/'.$prefix.'categories'.RD."/s", $tagdata, $matches))
 		{
 			for ($j = 0; $j < count($matches[0]); $j++)
 			{
+				$hash = md5($matches[0][$j]);
+				$parser->set_tagdata(str_replace($matches[0][$j], $hash, $parser->tagdata()));
+
 				$cat_chunk[] = array(
 					$matches[2][$j],
 					ee()->functions->assign_parameters($matches[1][$j]),
-					$matches[0][$j]
+					$matches[0][$j],
+					$hash
 				);
 			}
-  		}
+		}
 
 		return $cat_chunk;
 	}
@@ -249,7 +254,7 @@ class EE_Channel_category_parser implements EE_Channel_parser_component {
 					$cats = ee()->file_field->parse_string($cats);
 				}
 
-				$tagdata = str_replace($catval[2], $cats, $tagdata);
+				$tagdata = str_replace($catval[3], $cats, $tagdata);
 			}
 		}
 		else
@@ -258,5 +263,27 @@ class EE_Channel_category_parser implements EE_Channel_parser_component {
 		}
 
 		return $tagdata;
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Modify the tagdata for a compnonent, used in conjunction with the
+	 * channel_entries_tagdata hook
+	 *
+	 * @param  Array $callback       Callback data in an array to pass to
+	 *                               call_user_func
+	 * @param  Mixed $data           Data pulled out by preprocess
+	 * @param  Array $row            Row of data from the Parser::parse() method
+	 * @return String                Modified $data (mostly modified $tagdata)
+	 */
+	public function modify_tagdata($callback, $data, $row)
+	{
+		foreach ($data as $index => $category_pair)
+		{
+			$data[$index][2] = call_user_func($callback, $category_pair[2], $row);
+		}
+
+		return $data;
 	}
 }

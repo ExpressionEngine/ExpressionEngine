@@ -53,12 +53,15 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
 		$pfield_chunk = array();
 
 		$prefix = $pre->prefix();
+		$parser = $pre->parser();
 		$channel = $pre->channel();
 
 		foreach ($channel->pfields as $site_id => $pfields)
 		{
-			$pfield_names = array_intersect($channel->cfields[$site_id], array_keys($pfields));
-
+			$pfield_names = array_intersect(
+				$channel->cfields[$site_id],
+				array_keys($pfields)
+			);
 			$pfield_chunk[$site_id] = array();
 
 			foreach($pfield_names as $field_name => $field_id)
@@ -68,11 +71,22 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
 					continue;
 				}
 
-				$pfield_chunk[$site_id][$field_name] = ee()->api_channel_fields->get_pair_field(
-					$tagdata,
-					$field_name,
-					$prefix
-				);
+				$pfield_chunk[$site_id][$field_name] =
+					ee()->api_channel_fields->get_pair_field(
+						$tagdata,
+						$field_name,
+						$prefix
+					);
+
+				// Update the tagdata with hashes
+				foreach ($pfield_chunk[$site_id][$field_name] as $chunk_data)
+				{
+					$parser->set_tagdata(str_replace(
+						$chunk_data[3], // the original tag
+						$chunk_data[4], // the hash
+						$parser->tagdata()
+					));
+				}
 			}
 		}
 
@@ -143,7 +157,7 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
 						$ft_api->setup_handler($field_id);
 					}
 
-					list($modifier, $content, $params, $chunk) = $chk_data;
+					list($modifier, $content, $params, $chunk, $hash) = $chk_data;
 
 					$tpl_chunk = '';
 					// Set up parse function name based on whether or not
@@ -191,7 +205,7 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
 						));
 					}
 
-					$tagdata = str_replace($chunk, $tpl_chunk, $tagdata);
+					$tagdata = str_replace($hash, $tpl_chunk, $tagdata);
 				}
 
 				ee()->load->remove_package_path($_ft_path);
@@ -199,5 +213,32 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
 		}
 
 		return $tagdata;
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Modify the tagdata for a compnonent, used in conjunction with the
+	 * channel_entries_tagdata hook
+	 *
+	 * @param  Array $callback       Callback data in an array to pass to
+	 *                               call_user_func
+	 * @param  Mixed $data           Data pulled out by preprocess
+	 * @param  Array $row            Row of data from the Parser::parse() method
+	 * @return String                Modified $data (mostly modified $tagdata)
+	 */
+	public function modify_tagdata($callback, $data, $row)
+	{
+		$site_id = $row['entry_site_id'];
+
+		foreach ($data[$site_id] as $field_type => $instances)
+		{
+			foreach ($instances as $index => $instance)
+			{
+				$data[$site_id][$field_type][$index][3] = call_user_func($callback, $instance[3], $row);
+			}
+		}
+
+		return $data;
 	}
 }
