@@ -44,13 +44,20 @@
 
 		// Handle shift+clicks for multiple checkbox selection
 		var shiftClick = {
+			$table: '',
+			rowCache: '',
+			column: 0,
 			tableCells: [],
 			shift: false,
 
-			init: function(tableCells){
-				this.tableCells = tableCells;
+			init: function($table, rowCache, column){
+				this.$table = $table;
+				this.rowCache = rowCache;
+				this.column = column;
+				this.tableCells = this.rowCache.getColumn(this.column);
+				this.checkboxListen();
+				this.tableListen();
 				this.shiftListen();
-				this.checkboxListen(tableCells);
 			},
 
 			/**
@@ -60,14 +67,26 @@
 				var that = this;
 
 				$(this.tableCells).each(function(index, el) {
-					$(this).find('input[type=checkbox]').click(function(event) {
+					$(this).find('input[type=checkbox]').unbind('click').click(function(event) {
 						currentlyChecked = that.checkboxChecked(index);
 						if (that.shift && currentlyChecked !== false) {
-							var low  = (currentlyChecked > index) ? index : currentlyChecked;
+							var low  = (currentlyChecked > index) ? index : currentlyChecked,
 								high = (currentlyChecked > index) ? currentlyChecked : index;
 							$(that.tableCells).slice(low, high).find('input[type=checkbox]').attr('checked', true);
 						}
 					});
+				});
+			},
+
+			/**
+			 * Listen for changes to the table, recache the tableCells and
+			 * rebind the checkboxes
+			 */
+			tableListen: function(){
+				var that = this;
+				this.$table.bind('tableupdate', function() {
+					that.tableCells = that.rowCache.getColumn(that.column);
+					that.checkboxListen();
 				});
 			},
 
@@ -145,7 +164,7 @@
 				// remember the headers
 				header_checkboxes[column] = $header_checkbox;
 
-				shiftClick.init(row_cache.getColumn(column));
+				shiftClick.init($table, row_cache, column);
 			});
 
 
