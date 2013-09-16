@@ -1,9 +1,15 @@
-<?PHP
+<?php
 
 /**
- * The content for a single field instance.
+ * An implementation of a custom field's content.
+ * 
+ * TODO-MODEL Need to think about implementation details.  This is just a
+ * 	stub of the interface right now.
  */
-interface FieldContent {
+class CustomFieldContent 
+	extends Model 
+		implements FieldContent {
+
 
 	/**
 	 * Renders this field's content by replacing tags in a template.
@@ -15,7 +21,10 @@ interface FieldContent {
 	 * @return	ParsedTemplate|string	The ParsedTemplate or tagdata string
 	 *						with the relevant tags replaced.
 	 */	
-	public function render($template);
+	public function render($template) 
+	{
+	
+	}
 
 	/**
 	 * A link back to the FieldStructure that describes the structure of this
@@ -24,7 +33,10 @@ interface FieldContent {
 	 * @return	FieldStructure	The FieldStructure object that describes this
 	 *						FieldContent's structure (and stores its settings.)
 	 */
-	public function structure();
+	public function getStructure() 
+	{
+	
+	}
 
 	/**
 	 * Save this piece of field content to the database.
@@ -35,7 +47,10 @@ interface FieldContent {
 	 * 						FieldContentInvalidException will be thrown with
 	 * 						errors.
 	 */
-	public function save();
+	public function save() 
+	{
+	
+	}
 
 	/**
 	 * Validate this piece of field content to ensure that it is valid for
@@ -48,12 +63,19 @@ interface FieldContent {
 	 * 						FieldContentInvalidException will be thrown with 
 	 * 						all relevant errors.
 	 */
-	public function validate();
+	public function validate() 
+	{
+
+	}
 
 	/**
 	 * Delete this piece of FieldContent from the database.
 	 * 
 	 * @return void
   	 */
-	public function delete();
+	public function delete() 
+	{
+
+	}
+
 }

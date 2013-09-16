@@ -10,21 +10,17 @@ interface User {
 	 *
 	 * @return	string	The user's display name.
 	 */
-    public function displayName();
+    public function getDisplayName();
    
 	/**
 	 * An email to be used to contact that user.  If we have one.
 	 * When parameter is provided acts as a setter, otherwise acts
 	 * as a getter.
 	 *
-	 * @param	string	$email	This user's email.  If provided methods acts as
-	 * 						A setter and returns $this.
-	 *
-	 * @return	string|$this	If parameter is provided, returns $this to
-	 * 						allow setter chaining.  Otherwise, acts as a getter
-	 * 						and returns the email.
+	 * @return	string		Return the e-mail that we may use to contact this
+	 * 						user.	
 	 */ 
-    public function email($email=NULL);
+    public function getEmail();
    
 	/**
 	 * A method that attempts to authenticate a user and log them in.
