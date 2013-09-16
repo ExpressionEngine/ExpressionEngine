@@ -1561,9 +1561,9 @@ class EE_Functions {
 	 * @param	string
 	 * @return	string
 	 */
-	function create_captcha($old_word = '')
+	function create_captcha($old_word = '', $force_word = FALSE)
 	{
-		if (ee()->config->item('captcha_require_members') == 'n' AND ee()->session->userdata['member_id'] != 0)
+		if (ee()->config->item('captcha_require_members') == 'n' && ee()->session->userdata['member_id'] != 0 && $force_word == FALSE)
 		{
 			return '';
 		}

@@ -225,15 +225,15 @@ class EE_Channel_data_parser {
 				$row['page_url'] = ee()->functions->create_page_url($site_pages[$row['site_id']]['url'], $site_pages[$row['site_id']]['uris'][$row['entry_id']]);
 			}
 
+
 			// -------------------------------------------------------
 			// Loop start callback. Do what you want.
 			// Currently in use in the channel module for the
 			// channel_entries_tagdata hook.
 			// -------------------------------------------------------
-
 			if (isset($callbacks['tagdata_loop_start']))
 			{
-				$tagdata = call_user_func($callbacks['tagdata_loop_start'], $tagdata, $row);
+				$tagdata = $this->_tagdata_loop_start($callbacks['tagdata_loop_start'], $tagdata, $row);
 			}
 
 			// -------------------------------------------------------
@@ -241,7 +241,6 @@ class EE_Channel_data_parser {
 			// Currently in use in the channel module for the
 			// channel_entries_row hook.
 			// -------------------------------------------------------
-
 			if (isset($callbacks['entry_row_data']))
 			{
 				$row = call_user_func($callbacks['entry_row_data'], $tagdata, $row);
@@ -288,7 +287,7 @@ class EE_Channel_data_parser {
 						$tagdata = $component->replace(
 							$tagdata,
 							$this,
-							$pre->pair_data($component)
+							$pre->current_data($component)
 						);
 					}
 				}
@@ -303,7 +302,7 @@ class EE_Channel_data_parser {
 					$tagdata = $component->replace(
 						$tagdata,
 						$this,
-						$pre->once_data($component)
+						$pre->current_data($component)
 					);
 				}
 			}
@@ -327,7 +326,7 @@ class EE_Channel_data_parser {
 						$tagdata = $component->replace(
 							$tagdata,
 							$this,
-							$pre->single_data($component)
+							$pre->current_data($component)
 						);
 					}
 				}
@@ -420,6 +419,42 @@ class EE_Channel_data_parser {
 				}
 			}
 		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Handles all of the tagdata extension hook calling
+	 * @param  Array  $callback Callback to fire off, should lead to the hook
+	 * @param  String $tagdata  The tagdata for the loop
+	 * @param  Array  $row      The row of data being parsed
+	 * @return String           The modified $tagdata
+	 */
+	protected function _tagdata_loop_start($callback, $tagdata, $row)
+	{
+		$pre = $this->_preparser;
+		$parser_components = $this->_parser->components();
+
+		$tagdata = call_user_func($callback, $tagdata, $row);
+
+		// Run the extension hook for each "once" component
+		foreach ($parser_components->once() as $k => $component)
+		{
+			if ( ! $pre->is_disabled($component)
+				&& method_exists($component, 'modify_tagdata'))
+			{
+				$pre->set_current_data(
+					$component,
+					$component->modify_tagdata(
+						$callback,
+						$pre->original_data($component),
+						$row
+					)
+				);
+			}
+		}
+
+		return $tagdata;
 	}
 
 	// --------------------------------------------------------------------
