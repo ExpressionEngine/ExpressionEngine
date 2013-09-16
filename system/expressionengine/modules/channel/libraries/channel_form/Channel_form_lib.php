@@ -171,6 +171,11 @@ class Channel_form_lib
 		$this->fetch_logged_out_member(ee()->TMPL->fetch_param('logged_out_member_id'));
 		$this->load_session_override();
 
+		//temporarily set the site_id for cross-site channel:form
+		$current_site_id = ee()->config->item('site_id');
+
+		ee()->config->set_item('site_id', $this->site_id);
+
 		// Can they post?
 		$assigned_channels = ee()->functions->fetch_assigned_channels();
 
@@ -685,7 +690,7 @@ class Channel_form_lib
 		ee()->TMPL->tagdata = ee()->TMPL->swap_var_single('captcha_word', '', ee()->TMPL->tagdata);
 
 		// Replace {captcha} with actual captcha
-		ee()->TMPL->tagdata = ee()->TMPL->swap_var_single('captcha', ee()->functions->create_captcha(), ee()->TMPL->tagdata);
+		ee()->TMPL->tagdata = ee()->TMPL->swap_var_single('captcha', ee()->functions->create_captcha('', $captcha_conditional['captcha']), ee()->TMPL->tagdata);
 
 		// Parse the variables
 		if ($this->parse_variables)
@@ -700,11 +705,6 @@ class Channel_form_lib
 
 		//set group-based return url
 		$this->form_hidden('return', (ee()->TMPL->fetch_param('return_'.ee()->session->userdata['group_id'])) ? ee()->TMPL->fetch_param('return_'.ee()->session->userdata['group_id']) : ee()->TMPL->fetch_param('return'));
-
-		//temporarily set the site_id for cross-site channel:form
-		$current_site_id = ee()->config->item('site_id');
-
-		ee()->config->set_item('site_id', $this->site_id);
 
 		// Nothin'
 		if (ee()->session->userdata('member_id') == 0)

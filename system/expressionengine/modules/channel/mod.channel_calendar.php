@@ -346,7 +346,7 @@ class Channel_calendar extends Channel {
 					$if_entries = trim($val['2']);
 
 					$row_chunk = str_replace ($val['1'], $if_entries_m, $row_chunk);
-					
+
 					unset(ee()->TMPL->var_cond[$key]);
 				}
 
@@ -413,6 +413,8 @@ class Channel_calendar extends Channel {
 
 		$this->initialize();
 
+		$this->fetch_custom_channel_fields();
+
 		$this->build_sql_query('/'.$year.'/'.$month.'/');
 
 		if ($this->sql != '')
@@ -422,7 +424,7 @@ class Channel_calendar extends Channel {
 			$data = array();
 
 			if ($query->num_rows() > 0)
-			{  
+			{
 				// We'll need this later
 
 				ee()->load->library('typography');
@@ -469,7 +471,7 @@ class Channel_calendar extends Channel {
 						if (isset($entry_dates[$key]))
 						{
 							$entry_date[$key] = ee()->localize->format_date(
-								$entry_date[$key], 
+								$entry_date[$key],
 								$row['entry_date']
 							);
 						}
@@ -556,7 +558,7 @@ class Channel_calendar extends Channel {
 						}
 
 						/** ----------------------------------------
-						/**  parse comment_path 
+						/**  parse comment_path
 						/** ----------------------------------------*/
 
 						if (strncmp($key, 'comment_path', 12) == 0 OR strncmp($key, 'entry_id_path', 13) == 0)
@@ -600,12 +602,12 @@ class Channel_calendar extends Channel {
 					/** ----------------------------------------*/
 
 					$d = ee()->localize->format_date('%d', $row['entry_date']);
-					
+
 					if (substr($d, 0, 1) == '0')
 					{
 						$d = substr($d, 1);
 					}
-					
+
 					$data[$d][] = array(
 						ee()->typography->parse_type($row['title'], array('text_format' => 'lite', 'html_format' => 'none', 'auto_links' => 'n', 'allow_img_url' => 'no')),
 						$row['url_title'],
@@ -645,7 +647,7 @@ class Channel_calendar extends Channel {
 			for ($i = 0; $i < 7; $i++)
 			{
 				if ($day > 0 AND $day <= $total_days)
-				{ 
+				{
 					if ($if_entries != '' AND isset($data[$day]))
 					{
 						$out .= str_replace($if_entries_m, $this->var_replace($if_entries, $data[$day], $entries), $row_chunk);
@@ -678,7 +680,7 @@ class Channel_calendar extends Channel {
 
 					$out = str_replace(LD.'day_number'.RD, ($day <= 0) ? sprintf($day_num_fmt, $prev_total_days + $day) : sprintf($day_num_fmt, $day - $total_days), $out);
 				}
-					  
+
 				$day++;
 			}
 
@@ -697,7 +699,7 @@ class Channel_calendar extends Channel {
 			'',
 			$out
 		);
-		
+
 		return str_replace ($row_chunk_m, $out, ee()->TMPL->tagdata);
 	}
 
@@ -765,7 +767,7 @@ class Channel_calendar extends Channel {
 				{
 					$str = str_replace(LD.$k.RD, $v, $str);
 				}
-				
+
 				// Day path
 				foreach ($val['9'] as $k => $v)
 				{
