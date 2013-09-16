@@ -1,13 +1,15 @@
 <?php
 
-class ChannelFieldGroup extends Model implements Settings {
+class ChannelFieldGroup extends Model {
 
 	/**
-	 * Display the settings form for this channel field group.
+	 * Display the field group form
+	 *
+	 * This is only the required fields.
 	 *
 	 * @return String   HTML Settings form
 	 */
-	public function displaySettings()
+	public function getForm()
 	{
 
 	}
@@ -19,7 +21,7 @@ class ChannelFieldGroup extends Model implements Settings {
 	 *
 	 * @return void
 	 */
-	public function saveSettings()
+	public function save()
 	{
 
 	}
@@ -30,7 +32,7 @@ class ChannelFieldGroup extends Model implements Settings {
 	 * @throws StructureInvalidException if missing / invalid data
 	 * @return void
 	 */
-	public function validateSettings()
+	public function validate()
 	{
 
 	}

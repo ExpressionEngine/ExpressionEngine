@@ -23,7 +23,7 @@ class ChannelEntry extends Model implements Content {
 	 * @return	Structure	A link to the Structure objects that defines this
 	 * 						Content's structure.
 	 */
-	public function structure()
+	public function getStructure()
 	{
 		// something
 	}

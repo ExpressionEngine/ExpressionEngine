@@ -3,13 +3,24 @@
 class Channel extends Model implements ContentStructure {
 
 	/**
-	 * Display the Channel settings form
+	 * Display the specified settings section
 	 *
 	 * @return String   HTML Settings form
 	 */
-	public function displaySettings()
+	public function getSettings($name = NULL)
 	{
+		$set = new SettingsSet($this, array(
+			'path'           => 'ChannelPathSettings',
+			'commentPosting' => 'ChannelCommentPostingSettings',
+			// ... more settings
+		));
 
+		if (isset($name))
+		{
+			return $set->getSetting($name);
+		}
+
+		return $set->getSettings();
 	}
 
 	/**
@@ -21,7 +32,7 @@ class Channel extends Model implements ContentStructure {
 	 *									and validation fails on save.
 	 * @return void
 	 */
-	public function saveSettings()
+	public function save()
 	{
 		$valid = $this->validateSettings();
 
@@ -38,7 +49,7 @@ class Channel extends Model implements ContentStructure {
 	 *
 	 * @return Errors
 	 */
-	public function validateSettings()
+	public function validate()
 	{
 
 	}
@@ -49,7 +60,7 @@ class Channel extends Model implements ContentStructure {
 	 * @param Content $content  An object implementing the Content interface
 	 * @return Array of HTML field elements for the entry / edit form
 	 */
-	public function form($content)
+	public function getPublishForm($content)
 	{
 		$form_elements = array();
 		// populate from custom fields

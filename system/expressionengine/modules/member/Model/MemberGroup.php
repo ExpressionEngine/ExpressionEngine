@@ -1,16 +1,41 @@
 <?php
 
-class MemberGroup implements Settings {
+class MemberGroup extends Model {
 
 	/**
 	 * Display the member group form
 	 *
+	 * This is only the required field (name and description).
+	 * Everything else are settings.
+	 *
 	 * @return String   HTML Settings form
 	 */
-	public function displaySettings()
+	public function getForm()
 	{
 
 	}
+
+	/**
+	 * Display the specified settings section
+	 *
+	 * @return String   HTML Settings form
+	 */
+	public function getSettings($name = NULL)
+	{
+		$set = new SettingsSet($this, array(
+			'channelAccess'  => 'MemberGroupChannelAccessSettings',
+			'templateAccess' => 'MemberGroupTemplateAccessSettings',
+			// ... more settings
+		));
+
+		if (isset($name))
+		{
+			return $set->getSetting($name);
+		}
+
+		return $set->getSettings();
+	}
+
 
 	/**
 	 * Save the member group form.
@@ -19,7 +44,7 @@ class MemberGroup implements Settings {
 	 *
 	 * @return void
 	 */
-	public function saveSettings()
+	public function save()
 	{
 
 	}
@@ -30,7 +55,7 @@ class MemberGroup implements Settings {
 	 * @throws StructureInvalidException if missing / invalid data
 	 * @return void
 	 */
-	public function validateSettings()
+	public function validate()
 	{
 
 	}

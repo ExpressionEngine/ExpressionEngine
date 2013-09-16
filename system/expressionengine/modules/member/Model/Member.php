@@ -43,7 +43,7 @@ class Member extends Model implements Content, User {
 	 * @return	MemberStructure   A link to the Structure objects that defines this
 	 *                            Content's structure.
 	 */
-	public function structure()
+	public function getStructure()
 	{
 
 	}
@@ -65,7 +65,7 @@ class Member extends Model implements Content, User {
 	 *
 	 * @return	string	The user's display name.
 	 */
-	public function displayName()
+	public function getDisplayName()
 	{
 		return $this->entity->screen_name;
 	}
@@ -82,17 +82,9 @@ class Member extends Model implements Content, User {
 	 * 						allow setter chaining.  Otherwise, acts as a getter
 	 * 						and returns the email.
 	 */
-	public function email($email=NULL)
+	public function getEmail()
 	{
-		if ($email !== NULL)
-		{
-			$this->entity->email = $email;
-			return $this;
-		}
-		else
-		{
-			return $this->entity->email;
-		}
+		return $this->entity->email;
 	}
 
 	/**
@@ -104,24 +96,6 @@ class Member extends Model implements Content, User {
 	{
 		$result = ee()->auth->verify_username(/* ... */);
 		// generate error / session?
-	}
-
-	/**
-	 * Implement password setter directly to disable the getter on the password.
-	 */
-	public function password($password)
-	{
-		if ($this->salt()) // we're already logged in
-		{
-			$this->password = hash($password, $this->salt);
-		}
-		else
-		{
-			// New user, or authenticating:
-			// Set password, but flag for hashing so the raw password
-			// cannot be saved. Need to set raw password in case authenticate
-			// gets called.
-		}
 	}
 
 	// Implement methods shared by the interaces

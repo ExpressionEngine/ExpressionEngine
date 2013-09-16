@@ -1,49 +1,63 @@
 <?php
 
-class MemberStructure extends Model implements Structure {
+/**
+ * Deals with most of what is displayed in the MyAccount area
+ */
+class MemberStructure extends Model implements ContentStructure {
 
 	/**
-	 * Display the settings forms
-	 *
-	 * @return String   HTML Settings form
-	 */
-	public function displaySettings()
-	{
-		// TODO figure out how to display different groups of settings
-	}
-
-	/**
-	 * Save the setting forms
-	 *
-	 * Should call validateSettings() before saving
-	 *
-	 * @return void
-	 */
-	public function saveSettings()
-	{
-
-	}
-
-	/**
-	 * Validate the setting data
-	 *
-	 * @throws StructureInvalidException if missing / invalid data
-	 * @return void
-	 */
-	public function validateSettings()
-	{
-
-	}
-
-	/**
-	 * Display the member entry form
+	 * Display the main member entry form
 	 *
 	 * @param Content $content  An object implementing the Content interface
 	 * @return Array  Arroy of HTML fields for the entry / edit form
 	 */
-	public function form($content)
+	public function getPublishForm($content)
 	{
 		return $fields;
+	}
+
+	/**
+	 * Display the specified settings section
+	 *
+	 * @return String   HTML Settings form
+	 */
+	public function getSettings($name = NULL)
+	{
+		$set = new SettingsSet($this, array(
+			'member'       => 'MemberAvatarSettings',
+			'localization' => 'MemberLocalizationSettings',
+			// ... more settings
+		));
+
+		if (isset($name))
+		{
+			return $set->getSetting($name);
+		}
+
+		return $set->getSettings();
+	}
+
+	/**
+	 * Save the member settings
+	 *
+	 * Should call validate() before saving
+	 *
+	 * @return void
+	 */
+	public function save()
+	{
+
+	}
+
+	/**
+	 * Validate the member settings
+	 *
+	 * @throws StructureInvalidException if missing / invalid data
+	 * @return void
+	 */
+	public function validate()
+	{
+
 	}
 
 	/**
