@@ -3006,34 +3006,7 @@ class Comment {
 			return;
 		}
 		
-		$entry_id = FALSE;
-		$qstring = ee()->uri->query_string;
-		
-		if (preg_match("#(^|/)P(\d+)(/|$)#", $qstring, $match))
-		{
-			$qstring = trim(reduce_double_slashes(str_replace($match['0'], '/', $qstring)), '/');
-		}
-
-		// Figure out the right entry ID
-		// If there is a slash in the entry ID we'll kill everything after it.
-		$entry_seg = trim($qstring); 
-		$entry_seg= preg_replace("#/.+#", "", $entry_seg);
-
-		if (is_numeric($entry_seg))
-		{
-			$entry_id = $entry_seg;
-		}
-		else
-		{
-			ee()->db->select('entry_id');
-			$query = ee()->db->get_where('channel_titles', array('url_title' => $entry_seg));
-			
-			if ($query->num_rows() == 1)
-			{
-   				$row = $query->row();
-  				$entry_id = $row->entry_id;
-			}
-		}
+		$entry_id = $this->_divine_entry_id();
 
 		// entry_id is required
 		if ( ! $entry_id)
@@ -3041,7 +3014,6 @@ class Comment {
 			return;
 		}
 		
-				
 		ee()->load->library('subscription');
 		ee()->subscription->init('comment', array('entry_id' => $entry_id), TRUE);
 		$subscribed = ee()->subscription->is_subscribed(FALSE);
@@ -3071,10 +3043,7 @@ class Comment {
 	 */
 	public function subscriber_list()
 	{
-		if (($entry_id = ee()->TMPL->fetch_param('entry_id')) === FALSE)
-		{
-			$entry_id = $this->_divine_entry_id();
-		}
+		$entry_id = $this->_divine_entry_id();
 
 		// entry is required, and this is not the same as "no results for a valid entry"
 		// so return nada
@@ -3539,15 +3508,25 @@ CMT_EDIT_SCR;
 			return ee()->session->cache['comment']['entry_id'][$qstring_hash];
 		}
 
-		if (preg_match("#(^|/)P(\d+)(/|$)#", $qstring, $match))
+		if ($entry_id = ee()->TMPL->fetch_param('entry_id'))
 		{
-			$qstring = trim(ee()->functions->remove_double_slashes(str_replace($match['0'], '/', $qstring)), '/');
+			return $entry_id;
 		}
+		elseif ($entry_seg = ee()->TMPL->fetch_param('url_title'))
+		{
+		}
+		else
+		{
+			if (preg_match("#(^|/)P(\d+)(/|$)#", $qstring, $match))
+			{
+				$qstring = trim(ee()->functions->remove_double_slashes(str_replace($match['0'], '/', $qstring)), '/');
+			}
 
-		// Figure out the right entry ID
-		// If there is a slash in the entry ID we'll kill everything after it.
-		$entry_seg = trim($qstring); 
-		$entry_seg= preg_replace("#/.+#", "", $entry_seg);
+			// Figure out the right entry ID
+			// If there is a slash in the entry ID we'll kill everything after it.
+			$entry_seg = trim($qstring); 
+			$entry_seg= preg_replace("#/.+#", "", $entry_seg);
+		}
 
 		if (is_numeric($entry_seg))
 		{
