@@ -654,39 +654,6 @@ class Content_publish extends CP_Controller {
 		// Load this in case third-party fieldtypes access TMPL in replace_tag
 		ee()->load->library('template', NULL, 'TMPL');
 
-		foreach ($fields as $key => $val)
-		{
-			if (isset($resrow[$key]) AND $val != 'relationship' and $resrow[$key] != '')
-			{
-				$expl = explode('field_id_', $key);
-
-				if (isset($resrow['field_dt_'.$expl['1']]))
-				{
-					if ($resrow[$key] != 0)
-					{
-						$localize = ($resrow['field_dt_'.$expl['1']] != '')
-							? $resrow['field_dt_'.$expl['1']] : TRUE;
-
-						$r .= $this->localize->human_time($resrow[$key], $localize);
-					}
-				}
-				else
-				{
-					ee()->load->library('api');
-					ee()->api->instantiate('channel_fields');
-					ee()->api_channel_fields->fetch_custom_channel_fields();
-					ee()->api_channel_fields->setup_handler($expl['1']);
-					ee()->api_channel_fields->apply('_init', array(array(
-						'field_id' => $expl['1'],
-						'row' => $resrow,
-						'content_id' => $entry_id
-					)));
-					$data = ee()->api_channel_fields->apply('pre_process', array($resrow[$key]));
-					$r .= ee()->api_channel_fields->apply('replace_tag', array('data' => $data));
-				}
-			}
-		}
-
 		$publish_another_link = BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$channel_id;
 
 		// Ugh, we just overwrite? Strong typing please!!
