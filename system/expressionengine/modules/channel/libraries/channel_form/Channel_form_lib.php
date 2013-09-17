@@ -166,14 +166,13 @@ class Channel_form_lib
 			throw new Channel_form_exception(lang('channel_form_no_channel'));
 		}
 
-		//load member data for logged out member
-		$this->fetch_logged_out_member(ee()->TMPL->fetch_param('logged_out_member_id'));
-		$this->load_session_override();
-
 		//temporarily set the site_id for cross-site channel:form
 		$current_site_id = ee()->config->item('site_id');
 
 		ee()->config->set_item('site_id', $this->site_id);
+
+		$this->fetch_logged_out_member(ee()->TMPL->fetch_param('logged_out_member_id'));
+		$this->load_session_override();
 
 		// Can they post?
 		$assigned_channels = ee()->functions->fetch_assigned_channels();
