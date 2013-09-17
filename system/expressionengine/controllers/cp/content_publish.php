@@ -457,9 +457,9 @@ class Content_publish extends CP_Controller {
 
 		$clean_layout = array();
 
-		foreach($layout_info as $tab => $field)
+		foreach($layout_info as $tab)
 		{
-			foreach ($field as $name => $info)
+			foreach ($tab['fields'] as $name => $info)
 			{
 				if (count($required) > 0)
 				{
@@ -481,7 +481,7 @@ class Content_publish extends CP_Controller {
 				}
 			}
 
-			$clean_layout[strtolower($tab)] = $layout_info[$tab];
+			$clean_layout[strtolower($tab['name'])] = $tab['fields'];
 		}
 
 		if (count($error) > 0 OR count($valid_name_error) > 0)
