@@ -108,6 +108,26 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
 		$pfield_chunk = $pfield_chunks[$site_id];
 		$ft_api = ee()->api_channel_fields;
 
+		// Check to see if the pair field chunks still exist; if not, check
+		// the tagdata in case they've been modified since pre-processing.
+		// This check appears before the main loop below in case any custom
+		// fields were removed from the tagdata.
+		foreach ($pfield_chunk as $tag_name => $chunks)
+		{
+			foreach($chunks as $chk_data)
+			{
+				if (strpos($tagdata, $chk_data[3]) === FALSE)
+				{
+					$pfield_chunk[$tag_name] = ee()->api_channel_fields->get_pair_field(
+						$tagdata,
+						$tag_name,
+						$prefix
+					);
+					break;
+				}
+			}
+		}
+
 		foreach ($pfield_chunk as $tag_name => $chunks)
 		{
 			$field_name = preg_replace('/^'.$prefix.'/', '', $tag_name);
