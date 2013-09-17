@@ -109,6 +109,8 @@ class EE_Channel_category_parser implements EE_Channel_parser_component {
 			if (strpos($tagdata, $chunk[2]) === FALSE)
 			{
 				$cat_chunk = $this->_get_cat_chunks($tagdata, $prefix);
+
+				$obj->preparsed()->set_once_data($this, $cat_chunk);
 				break;
 			}
 		}
