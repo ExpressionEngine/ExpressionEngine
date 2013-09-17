@@ -306,7 +306,7 @@ EE.publish.save_layout = function() {
 	// for width() to work, the element cannot be in a parent div that is display:none
 	$(".main_tab").show();
 
-	$("#tab_menu_tabs a:not(.add_tab_link)").each(function(index) {
+	$("#tab_menu_tabs a:not(.add_tab_link)").each(function() {
 
 		// skip list items with no id (ie: new tab)
 		if ($(this).parent('li').attr('id') && $(this).parent('li').attr('id').substring(0,5) == "menu_")
@@ -320,8 +320,8 @@ EE.publish.save_layout = function() {
 			if( $(this).parent('li').is(':visible') )
 			{
 				lay_name = tab_name;
-				layout_object[index] = {name: lay_name, fields: {}};
-				layout_object[index][mypre] = tab_label;
+				layout_object[tab_count] = {name: lay_name, fields: {}};
+				layout_object[tab_count][mypre] = tab_label;
 			} else {
 				merge = true;
 				visible = false;
@@ -355,7 +355,7 @@ EE.publish.save_layout = function() {
 
 				if (visible === true) {
 					layout_settings['index'] = field_index;
-					layout_object[index]['fields'][id] = layout_settings;
+					layout_object[tab_count]['fields'][id] = layout_settings;
 					field_index += 1;
 				} else {
 					layout_hidden[id] = layout_settings;
