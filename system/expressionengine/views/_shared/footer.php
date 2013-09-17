@@ -18,12 +18,14 @@
 
 	<p class="idle-fourth"><strong>User:</strong></p>
 
+	<?=form_open('C=login&M=authenticate')?>
 	<div class="idle-three-fourths shun">
 		<p class="idle-fourth">
 			<img src="<?=$cp_avatar_path ? $cp_avatar_path : $cp_theme_url.'images/site_logo.gif'?>" width="50" alt="User Avatar" />
 		</p>
 		<p class="idle-three-fourths">
 			<p id="idle-screen-name"><?=$cp_screen_name?></p>
+			<input type="hidden" name="username" value="<?=form_prep($this->session->userdata('username'))?>" />
 			<span class="idle-member-group"><?=$this->session->userdata('group_title')?></span>
 		</p>
 	</div>
@@ -32,8 +34,10 @@
 		<p><label for="logout-confirm-password">Password:</label></p>
 	</div>
 	<div class="idle-three-fourths shun">
-		<p><input type="password" class="field" id="logout-confirm-password"/></p>
+		<p><input type="password" name="password" class="field" id="logout-confirm-password"/></p>
 	</div>
+	<?=form_close()?>
+
 
 	<p id="idle-button-group">
 		<a href="<?=BASE.AMP.'C=login&M=logout'?>"><?=sprintf(lang('session_idle_not_name'), $cp_screen_name)?></a> &nbsp;
