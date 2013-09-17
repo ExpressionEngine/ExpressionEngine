@@ -36,6 +36,12 @@
  * is changed, the "storage" event is fired on all tabs/windows
  * using the same item.
  *
+ * We send along a unique ID for this window as well as the event
+ * namespace if it exists. The message is sent through storage as
+ * a json encoded string. This gives us a 44 byte overhead that
+ * will be taken from the 4kb cookie limit. It is generally not
+ * wise to send large messages.
+ *
  * Usage:
  *
  * $(window).bind('broadcast', function(evt, message) {...});
@@ -49,7 +55,7 @@
  *
  * Some browsers will throw a quota exceeded exception if you
  * try to write to local storage while in "private browsing" mode,
- * so we attempt to set a dummy item.
+ * so we attempt to set a tiny dummy item to detect this case.
  *
  * @return bool LocalStorage available?
  */
@@ -77,7 +83,9 @@ function localStorageSupported() {
 var store = localStorageSupported() ? localStorage : {
 
 	setItem: function(k, v) {
-		document.cookie = k + '=' + escape(v) + '; path=/';
+		var time = new Date();
+		time.setTime(time.getTime() + 5 * 1000); // expire in 5 seconds
+		document.cookie = k + '=' + escape(v) + '; expires='+ time.toGMTString() +'; path=/';
 	},
 
 	removeItem: function(k) {
@@ -93,6 +101,16 @@ var store = localStorageSupported() ? localStorage : {
 	}
 };
 
+/**
+ * Generate a unique-ish id by combining the current microtime with
+ * an rfc4122 version 4 random field.
+ *
+ * @return String 17 character unique id
+ */
+function uniqueId() {
+	return $.now() + (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
+}
+
 
 /**
  * Setup a few constants
@@ -104,10 +122,12 @@ var store = localStorageSupported() ? localStorage : {
  * cookie store must poll the cookie (1000ms) rather than using an event,
  * so the delay waiting for others to read is significantly larger.
  */
-var BROADCAST_KEY = 'ee_broadcast',
+var WINDOW_UID = uniqueId(),
+	BROADCAST_KEY = 'ee_broadcast',
 	READ_DELAY = localStorageSupported() ? 20 : 1500,
 	$window = $(window);
 
+EE.BROADCAST_UID = WINDOW_UID;
 
 /**
  * Conflict resolution
@@ -141,18 +161,24 @@ var Arbiter = {
 	},
 
 	/**
-	 * Receive the messages. If a message is identical to the one we just posted
+	 * Receive the messages. If the message was posted by this window
 	 * we will ignore it. Otherwise pass it on to the correct event handlers.
 	 */
 	receiveMessage: function(message) {
-		if (message == this._lastMessage) {
+
+		var value = JSON.parse(message),
+			ns = value.ns ? '.' + value.ns : '',
+			uid = value.uid;
+
+		if (uid == WINDOW_UID) {
 			return;
 		}
 
-		var value = JSON.parse(message),
-			ns = value.ns ? '.' + value.ns : '';
-
-		$window.trigger('_broadcastMessage'+ns, value.data);
+		$window.trigger({
+			type: '_broadcastMessage'+ns,
+			sender: uid,
+			receiver: WINDOW_UID
+		}, value.data);
 	},
 
 	/**
@@ -275,6 +301,7 @@ $.event.special.broadcast = {
 		// This may be stored in a cookie, so we keep the keys small
 		var message = JSON.stringify({
 			ns: event.namespace,
+			uid: WINDOW_UID,
 			data: $.makeArray(arguments).slice(1)
 		});
 
