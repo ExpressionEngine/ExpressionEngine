@@ -183,10 +183,9 @@ class Cp {
 		// Good: EE.unique_foo = "bar"; EE.unique = { foo : "bar"};
 
 		$js_lang_keys = array(
-			'logout_confirm'	=> lang('logout_confirm'),
 			'logout'			=> lang('logout'),
 			'search'			=> lang('search'),
-			'session_timeout'	=> lang('session_timeout')
+			'session_idle'		=> lang('session_idle')
 		);
 
 		/* -------------------------------------------

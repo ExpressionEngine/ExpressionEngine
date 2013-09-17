@@ -240,8 +240,14 @@ $lang = array(
 'logout' =>
 'Log-out',
 
-'session_timeout' =>
-'Your session is about to expire due to inactivity',
+'session_idle' =>
+'Idle session detected',
+
+'session_idle_description' =>
+'You\'ve gone idle, please enter your password to continue.',
+
+'session_idle_not_name' =>
+'Not %s?',
 
 'login' =>
 'Log-in',
