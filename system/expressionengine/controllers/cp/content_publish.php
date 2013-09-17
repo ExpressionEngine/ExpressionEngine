@@ -651,9 +651,6 @@ class Content_publish extends CP_Controller {
 
 		$entry_title = $this->typography->format_characters($resrow['title']);
 
-		// Load this in case third-party fieldtypes access TMPL in replace_tag
-		ee()->load->library('template', NULL, 'TMPL');
-
 		$publish_another_link = BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$channel_id;
 
 		// Ugh, we just overwrite? Strong typing please!!
