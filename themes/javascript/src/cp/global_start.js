@@ -568,6 +568,7 @@ EE.cp.broadcastEvents = (function() {
 		},
 
 		resolve: function() {
+
 			if (this.logoutThresholdReached()) {
 				Events.logout();
 				$(window).trigger('broadcast.idleState', 'logout');
@@ -585,8 +586,7 @@ EE.cp.broadcastEvents = (function() {
 			}
 
 			// Reset
-			State.pingReceived = false;
-			this.eventsRecorded = [];
+			this.pingReceived = false;
 		}
 	};
 
@@ -689,6 +689,8 @@ EE.cp.broadcastEvents = (function() {
 
 			State.resolve();
 
+			this.eventsRecorded = [];
+
 			setTimeout($.proxy(this, 'tick'), TICK_TIME);
 		},
 
@@ -732,7 +734,7 @@ EE.cp.broadcastEvents = (function() {
 				_.throttle(_.partial(track, 'interact'), 2000)  // throttle event firing
 			);
 
-			// Clicking the logout button fires "modal"
+			// Clicking the logout button fires "modal" on all the others
 			$('.logOutButton').click(function() {
 				$(window).trigger('broadcast.idleState', 'modal');
 			});
