@@ -46,8 +46,7 @@ jQuery(document).ready(function () {
 		var defaultHeaderResponses = {
 			// Refresh xids
 			xid: function(new_xid) {
-				EE.XID = new_xid;
-				$('input[name="XID"]').filter('[value="'+old_xid+'"]').val(new_xid);
+				EE.cp.xid.set(new_xid);
 			},
 
 			// Force redirects (e.g. logout)
@@ -639,15 +638,7 @@ EE.cp.broadcastEvents = (function() {
 
 		// received another window's login event, check and hide modal
 		login: function() {
-			$.get(EE.BASE + '&C=login&M=refresh_xid', function(result) {
-				if (result.message != 'refresh') {
-					return;
-				}
-
-				// refresh xid
-				$('input[name="XID"]').filter('[value="'+EE.XID+'"]').val(result.xid);
-				EE.XID = result.xid;
-
+			EE.cp.xid.refresh(function() {
 				// lose the modal
 				logoutModal.off('dialogbeforeclose');
 				logoutModal.dialog('close');
@@ -659,7 +650,7 @@ EE.cp.broadcastEvents = (function() {
 
 		// received another window's logout event, leave page
 		logout: function() {
-			document.location = EE.BASE + '&C=login&M=logout';
+			window.location = EE.BASE + '&C=login&M=logout';
 		}
 	};
 
@@ -755,6 +746,96 @@ EE.cp.broadcastEvents = (function() {
 
 })();
 
+
+EE.cp.xid = (function() {
+
+	var loadWasFromBFCache = false,
+		submission = false,
+		lastRefresh = new Date;
+
+	function setXid(new_xid) {
+		$('input[name="XID"]').val(new_xid);
+		EE.XID = new_xid;
+	}
+
+	function refreshXID(callback) {
+		$.get(EE.BASE + '&C=login&M=refresh_xid', function(result) {
+			if (result.message != 'refresh') {
+				return;
+			}
+
+			lastRefresh = new Date;
+
+			// refresh xid
+			setXid(result.xid);
+
+			if (callback) {
+				callback(result);
+			}
+		});
+	}
+
+	var Events = {
+
+		// A submission spells certain death to this xid so don't
+		// bother holding on to it.
+		submit: function() {
+			submission = true;
+			localStorage.removeItem('EE_XID', EE.XID);
+		},
+
+		pagehide: function(event) {
+			if ( ! loadWasFromBFCache && ! submission) {
+				localStorage.setItem('EE_XID', EE.XID);
+			}
+		},
+
+		pageshow: function(event) {
+			loadWasFromBFCache = event.persisted;
+
+			if ( ! event.persisted) {
+				return;
+			}
+
+			var xid = localStorage.getItem('EE_XID');
+
+			if (xid) {
+				// refresh xid
+				EE.cp.xid.set(xid);
+			} else {
+				EE.cp.xid.refresh();
+			}
+		}
+	};
+
+	// modern browsers only
+	if ('onpagehide' in window) {
+		window.addEventListener('submit', Events.submit, false);
+		window.addEventListener('pagehide', Events.pagehide, false);
+		window.addEventListener('pageshow', Events.pageshow, false);
+	}
+
+	// Everyone else just gets a periodic refresh
+	// We check every minute and refresh every 30
+	setTimeout(function() {
+		var now = new Date;
+		if ((now - lastRefresh) > 30 * 60 * 1000) {
+			refreshXID();
+		}
+	}, 60000);
+
+	// expose set and refresh
+	return {
+		set: function(new_xid) {
+			setXid(new_xid);
+		},
+
+		refresh: function(callback) {
+			refreshXID(callback);
+		}
+	};
+
+})();
 
 // Modal for "What does this mean?" link on deprecation notices
 EE.cp.deprecation_meaning = function() {
