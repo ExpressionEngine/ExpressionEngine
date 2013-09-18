@@ -129,6 +129,7 @@ var WysiHat = window.WysiHat = {
 // ---------------------------------------------------------------------
 
 WysiHat.Editor = function($field, options) {
+
 	this.$field = $field.hide();
 	this.$editor = this.create();
 
@@ -140,6 +141,7 @@ WysiHat.Editor = function($field, options) {
 	this.Formatting = WysiHat.Formatting;
 
 	this.init(options);
+
 }
 
 WysiHat.Editor.prototype = {
@@ -2621,7 +2623,7 @@ WysiHat.Formatting = {
 				.replace( /<\/?[A-Z]+/g, function(tag) {
 					return tag.toLowerCase();
 				})
-				// // cleanup whitespace and emtpy tags
+				// cleanup whitespace and empty tags
 				.replace(/(\t|\n| )+/g, ' ')			// reduce whitespace to spaces
 				.replace(/>\s+</g, '> <')				// reduce whitespace next to tags
 				.replace('/&nbsp;/g', ' ')				// remove non-breaking spaces
@@ -2645,6 +2647,12 @@ WysiHat.Formatting = {
 				.replace(/<\/tr>/g, '<\/tr>\n')
 				.replace(/<tr>/g, '    <tr>');
 		});
+
+		// Remove the extra white space that gets added after the
+		// last block in the .replace(that.reBlocks, '$1\n\n') line.	
+		// If we don't remove it, then it sticks around and eventually
+		// becomes a new paragraph.  Which is just annoying.
+		$el.html($el.html().trim());
 
 	},
 
