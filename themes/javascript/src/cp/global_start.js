@@ -784,12 +784,17 @@ EE.cp.xid = (function() {
 			localStorage.removeItem('EE_XID', EE.XID);
 		},
 
+		// If they unload a page that was not loaded from the bfcache
+		// and the unload was not triggered by a submission then this
+		// is an unused xid and we can hold on to it in the hopes that
+		// they will not spend hours in a form after navigation.
 		pagehide: function(event) {
 			if ( ! loadWasFromBFCache && ! submission) {
 				localStorage.setItem('EE_XID', EE.XID);
 			}
 		},
 
+		// Showing a page from the bfcache? Do our best to use a valid xid.
 		pageshow: function(event) {
 			loadWasFromBFCache = event.persisted;
 
