@@ -410,15 +410,15 @@ class Filemanager {
 		}
 		
 		$prefs['mime_type'] = $mime;
-
-		// Check to see if we have GD and can resize images
-		if ( ! (extension_loaded('gd') && function_exists('gd_info'))) {
-			return $this->_save_file_response(FALSE, lang('gd_not_installed'));
-		}
 		
 		// Check to see if its an editable image, if it is, try and create the thumbnail
 		if ($this->is_editable_image($file_path, $mime))
 		{
+			// Check to see if we have GD and can resize images
+			if ( ! (extension_loaded('gd') && function_exists('gd_info'))) {
+				return $this->_save_file_response(FALSE, lang('gd_not_installed'));
+			}
+
 		 	$prefs = $this->max_hw_check($file_path, $prefs);
 		
 			if ( ! $prefs)
