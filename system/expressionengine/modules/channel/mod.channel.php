@@ -5003,7 +5003,12 @@ class Channel {
 		$this->entry_id 	= '';
 		$qstring 			= '';
 
-		if ($this->enable['custom_fields'] == TRUE && ee()->TMPL->fetch_param('custom_fields') == 'yes')
+		if (ee()->TMPL->fetch_param('custom_fields') != 'yes')
+		{
+			$this->enable['custom_fields'] = FALSE;
+		}
+
+		if ($this->enable['custom_fields'])
 		{
 			$this->fetch_custom_channel_fields();
 		}

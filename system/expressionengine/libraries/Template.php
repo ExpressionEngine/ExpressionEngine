@@ -3223,7 +3223,7 @@ class EE_Template {
 				if ( ! preg_match('/^segment_\d+$/i', $val['3']) OR
 				strpos($val[2], 'if:else') !== FALSE OR
 				strpos($val[0], 'if:else') !== FALSE OR
-				count(preg_split("/(\!=|==|<=|>=|<>|<|>|AND|XOR|OR|&&|\|\|)/", $val[0])) > 2)
+				count(preg_split("/(\!=|==|<=|>=|<>|<|>|%|AND|XOR|OR|&&|\|\|)/", $val[0])) > 2)
 			{
 				continue;
 			}
@@ -3319,7 +3319,7 @@ class EE_Template {
 			if ( ! isset($vars[$val[3]]) OR
 				strpos($val[2], 'if:else') !== FALSE OR
 				strpos($val[0], 'if:else') !== FALSE OR
-				count(preg_split("/(\!=|==|<=|>=|<>|<|>|AND|XOR|OR|&&|\|\|)/", $val[0])) > 2)
+				count(preg_split("/(\!=|==|<=|>=|<>|<|>|%|AND|XOR|OR|&&|\|\|)/", $val[0])) > 2)
 			{
 				continue;
 			}

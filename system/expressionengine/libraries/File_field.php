@@ -270,7 +270,15 @@ class File_field {
 
 
 		// Upload or maybe just a path in the hidden field?
-		if (isset($_FILES[$field_name]) && in_array($filedir, $allowed_dirs))
+		if ($existing_input)
+		{
+			$filename = $existing_input;
+		}
+		elseif ($hidden_input)
+		{
+			$filename = $hidden_input;
+		} 
+		elseif (isset($_FILES[$field_name]) && empty($filename) && in_array($filedir, $allowed_dirs))
 		{
 			ee()->load->library('filemanager');
 			$data = ee()->filemanager->upload_file($filedir, $field_name);
@@ -284,14 +292,6 @@ class File_field {
 				$filename = $data['file_name'];
 			}
 		}
-		elseif ($existing_input)
-		{
-			$filename = $existing_input;
-		}
-		elseif ($hidden_input)
-		{
-			$filename = $hidden_input;
-		} 
 		else
 		{
 			// Check we're not exceeding PHP's post_max_size
