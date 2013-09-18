@@ -35,7 +35,7 @@ class Comment {
 	// Determines whether to show the <a name> anchor above each comment
 
 	var $show_anchor = FALSE;
-	
+
 	// Comment Expiration Mode
 	// 0 -	Comments only expire if the comment expiration field in the PUBLISH page contains a value.
 	// 1 -	If the comment expiration field is blank, comments will still expire if the global preference
@@ -72,9 +72,9 @@ class Comment {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
-	 * Retrieve the disable parameter from the template and parse it 
+	 * Retrieve the disable parameter from the template and parse it
 	 * out into the $enabled_features array.  Return that array. The
 	 * $enabled_features array is an array of boolean values keyed to
 	 * certain features of tag that can be disabled.  In the case of
@@ -85,7 +85,7 @@ class Comment {
 	 * does not make this easy and putting it in a random cache of common
 	 * functions does not make sense.
 	 *
-	 * FIXME Commonlize this code in a logical way.  
+	 * FIXME Commonlize this code in a logical way.
 	 *
 	 * @return array An array of enabled features of the form feature_key=>boolean
 	 */
@@ -138,7 +138,7 @@ class Comment {
 		$time_limit_sec = 60 * ee()->config->item('comment_edit_time_limit');
 		return ee()->localize->now - $time_limit_sec;
 	}
-	
+
 	/**
 	 * Comment Entries
 	 *
@@ -159,7 +159,7 @@ class Comment {
 			ee()->load->library('pagination');
 			$pagination = new Pagination_object(__CLASS__);
 		}
-		
+
 		if (ee()->TMPL->fetch_param('dynamic') == 'no')
 		{
 			$dynamic = FALSE;
@@ -168,12 +168,12 @@ class Comment {
 		{
 			$dynamic = TRUE;
 		}
-	
-		// 	
+
+		//
 		$force_entry = FALSE;
-		if (ee()->TMPL->fetch_param('author_id') !== FALSE 
-			OR ee()->TMPL->fetch_param('entry_id') !== FALSE 
-			OR ee()->TMPL->fetch_param('url_title') !== FALSE 
+		if (ee()->TMPL->fetch_param('author_id') !== FALSE
+			OR ee()->TMPL->fetch_param('entry_id') !== FALSE
+			OR ee()->TMPL->fetch_param('url_title') !== FALSE
 			OR ee()->TMPL->fetch_param('comment_id') !== FALSE)
 		{
 			$force_entry = TRUE;
@@ -231,7 +231,7 @@ class Comment {
 				$qstring = trim(reduce_double_slashes(str_replace($match['0'], '/', $qstring)), '/');
 			}
 		}
-		
+
 		// Fetch channel_ids if appropriate
 		$channel_ids = array();
 		if ($channel = ee()->TMPL->fetch_param('channel') OR ee()->TMPL->fetch_param('site'))
@@ -294,9 +294,9 @@ class Comment {
 			else
 			{
 				// If there is a slash in the entry ID we'll kill everything after it.
-				$entry_id = trim($qstring); 
+				$entry_id = trim($qstring);
 				$entry_id = preg_replace("#/.+#", "", $entry_id);
-				
+
 				// Have to choose between id or url title
 				if ( ! is_numeric($entry_id))
 				{
@@ -321,7 +321,7 @@ class Comment {
 				.ee()->db->protect_identifiers('expiration_date')." > {$timestamp})";
 				ee()->db->where($date_where);
 			}
-			
+
 			if ($e_status = ee()->TMPL->fetch_param('entry_status'))
 			{
 				$e_status = str_replace('Open',	'open',	$e_status);
@@ -339,7 +339,7 @@ class Comment {
 			{
 				ee()->db->where('status !=', 'closed');
 			}
-			
+
 			//  Limit to/exclude specific channels
 			if (count($channel_ids) == 1)
 			{
@@ -433,7 +433,7 @@ class Comment {
 
 		ee()->db->select('comment_date, comment_id');
 		ee()->db->from('comments c');
-		
+
 		if ($status = ee()->TMPL->fetch_param('status'))
 		{
 			$status = strtolower($status);
@@ -458,10 +458,10 @@ class Comment {
 		{
 			ee()->db->where('c.author_id', $author_id);
 		}
-		
+
 		// Note if it's not dynamic and the entry isn't forced?  We don't check on the entry criteria,
 		// so this point, dynamic and forced entry will have 'valid' entry ids, dynamic off may not
-		
+
 		if ( ! $dynamic && ! $force_entry)
 		{
 			//  Limit to/exclude specific channels
@@ -473,7 +473,7 @@ class Comment {
 			{
 				ee()->db->where_in('c.channel_id', $channel_ids);
 			}
-			
+
 			ee()->db->join('channel_titles ct', 'ct.entry_id = c.entry_id');
 
 			if ($e_status = ee()->TMPL->fetch_param('entry_status'))
@@ -493,7 +493,7 @@ class Comment {
 			{
 				ee()->db->where('ct.status !=', 'closed');
 			}
-			
+
 			// seems redundant given channels
 			ee()->db->where_in('c.site_id', ee()->TMPL->site_ids, FALSE);
 
@@ -517,34 +517,34 @@ class Comment {
 			{
 				ee()->db->where('c.entry_id', $entry_id);
 			}
-			
+
 			if ($comment_id_param)
 			{
 				ee()->functions->ar_andor_string($comment_id_param, 'comment_id');
 			}
 		}
-	
+
 		if ($enabled['pagination'])
-		{	
+		{
 			$total_rows = ee()->db->count_all_results();
 			if ($pagination->paginate === TRUE)
 			{
-				// When we are only showing comments and it is 
+				// When we are only showing comments and it is
 				// not based on an entry id or url title
-				// in the URL, we can make the query much 
+				// in the URL, we can make the query much
 				// more efficient and save some work.
 				$pagination->total_rows = $total_rows;
 			}
-		} 
-		
+		}
+
 		$this_sort = ($random) ? 'random' : strtolower($sort);
 
 		// We're not stripping it out this time, so we can just
 		// ignore the check if we're not paginating.
 		if ($enabled['pagination'])
-		{	
+		{
 			$p = ( ! $dynamic) ? 'N' : 'P';
-			
+
 			// Figure out of we need a pagination offset
 			if (preg_match('/'.$p.'(\d+)(?:\/|$)/', ee()->uri->uri_string, $matches))
 			{
@@ -555,9 +555,9 @@ class Comment {
 				$pagination->offset = 0;
 			}
 		}
-		
+
 		ee()->db->order_by($order_by, $this_sort);
-		
+
 		if ($enabled['pagination'])
 		{
 			ee()->db->limit($pagination->per_page, $pagination->offset);
@@ -566,12 +566,12 @@ class Comment {
 		{
 			ee()->db->limit($limit, 0);
 		}
-		
+
 		ee()->db->stop_cache();
 		$query = ee()->db->get();
 		ee()->db->flush_cache();
 		$result_ids = array();
-		
+
 		if ($query->num_rows() > 0)
 		{
 			foreach ($query->result() as $row)
@@ -579,19 +579,19 @@ class Comment {
 				$result_ids[] = $row->comment_id;
 			}
 		}
-		
+
 		//  No results?  No reason to continue...
 		if (count($result_ids) == 0)
 		{
 			return ee()->TMPL->no_results();
 		}
-	
-		if ($enabled['pagination']) 
-		{	
+
+		if ($enabled['pagination'])
+		{
 			// Build pagination
 			$pagination->build($pagination->per_page);
 		}
-		
+
 		/** -----------------------------------
 		/**  Fetch Comments if necessary
 		/** -----------------------------------*/
@@ -616,23 +616,23 @@ class Comment {
 			channel_titles.title, channel_titles.url_title, channel_titles.author_id AS entry_author_id,
 			channels.comment_text_formatting, channels.comment_html_formatting, channels.comment_allow_img_urls, channels.comment_auto_link_urls, channels.channel_url, channels.comment_url, channels.channel_title, channels.channel_name AS channel_short_name'
 		);
-		
+
 		ee()->db->join('channels',			'comments.channel_id = channels.channel_id',	'left');
 		ee()->db->join('channel_titles',	'comments.entry_id = channel_titles.entry_id',	'left');
 		ee()->db->join('members',			'members.member_id = comments.author_id',		'left');
 		ee()->db->join('member_data',		'member_data.member_id = members.member_id',	'left');
-		
+
 		ee()->db->where_in('comments.comment_id', $result_ids);
 		ee()->db->order_by($order_by, $this_sort);
-				
+
 		$query = ee()->db->get('comments');
-		
+
 		$total_results = $query->num_rows();
-		
+
 		if ($query->num_rows() > 0)
 		{
 			$results = $query->result_array();
-			
+
 			// Potentially a lot of information
 			$query->free_result();
 		}
@@ -734,8 +734,8 @@ class Comment {
 		{
 			$absolute_count = ($pagination->current_page == '') ? 0 : ($pagination->current_page - 1) * $pagination->per_page;
 		}
-		else 
-		{	
+		else
+		{
 			$absolute_count = 0;
 		}
 
@@ -793,19 +793,19 @@ class Comment {
 			$cond['avatar']				= ( ! isset($row['avatar_filename']) OR $row['avatar_filename'] == '' OR ee()->config->item('enable_avatars') == 'n' OR ee()->session->userdata('display_avatars') == 'n') ? 'FALSE' : 'TRUE';
 			$cond['photo']				= ( ! isset($row['photo_filename']) OR $row['photo_filename'] == '' OR ee()->config->item('enable_photos') == 'n' OR ee()->session->userdata('display_photos') == 'n') ? 'FALSE' : 'TRUE';
 			$cond['is_ignored']			= ( ! isset($row['member_id']) OR ! in_array($row['member_id'], ee()->session->userdata['ignore_list'])) ? 'FALSE' : 'TRUE';
-			
+
 			$cond['editable'] = FALSE;
 			$cond['can_moderate_comment'] = FALSE;
-		
-			if (ee()->session->userdata['group_id'] == 1 
-				OR ee()->session->userdata['can_edit_all_comments'] == 'y' 
+
+			if (ee()->session->userdata['group_id'] == 1
+				OR ee()->session->userdata['can_edit_all_comments'] == 'y'
 				OR (ee()->session->userdata['can_edit_own_comments'] == 'y' && $row['entry_author_id'] == ee()->session->userdata['member_id'])
 				)
 			{
 				$cond['editable'] = TRUE;
 				$cond['can_moderate_comment'] = TRUE;
 			}
-			elseif (ee()->session->userdata['member_id'] != '0'  
+			elseif (ee()->session->userdata['member_id'] != '0'
 				&& $row['author_id'] == ee()->session->userdata['member_id']
 				&& $row['comment_date'] > $this->_comment_edit_time_limit())
 			{
@@ -955,7 +955,7 @@ class Comment {
 					$tagdata = ee()->TMPL->swap_var_single($key, $search_link.$row['author_id'], $tagdata);
 				}
 
-				
+
 				// {member_group_id}
 				if ($key == 'member_group_id')
 				{
@@ -1125,7 +1125,7 @@ class Comment {
 						if (ee()->extensions->active_hook('comment_entries_comment_format') === TRUE)
 						{
 							$comment = ee()->extensions->call('comment_entries_comment_format', $row);
-				
+
 							if (ee()->extensions->end_script === TRUE) return;
 						}
 						else
@@ -1167,14 +1167,14 @@ class Comment {
 						$tagdata = ee()->TMPL->swap_var_single(
 							$key,
 							ee()->typography->parse_type(
-								$row['signature'], 
+								$row['signature'],
 								array(
 									'text_format'	=> 'xhtml',
 									'html_format'	=> 'safe',
 									'auto_links'	=> 'y',
 									'allow_img_url' => ee()->config->item('sig_allow_img_hotlink')
 								)
-							), 
+							),
 							$tagdata
 						);
 					}
@@ -1308,10 +1308,10 @@ class Comment {
 		}
 	}
 
-	
+
 	// --------------------------------------------------------------------
 
-	
+
 	/**
 	 * Fetch comment ids associated entry ids
 	 *
@@ -1321,7 +1321,7 @@ class Comment {
 	function fetch_comment_ids_param($comment_id_param)
 	{
 		$entry_ids = array();
-		
+
 		ee()->db->distinct();
 		ee()->db->select('entry_id');
 		ee()->functions->ar_andor_string($comment_id_param, 'comment_id');
@@ -1334,11 +1334,11 @@ class Comment {
 				$entry_ids[] = $row['entry_id'];
 			}
 		}
-		
+
 		return $entry_ids;
 	}
 
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -1356,7 +1356,7 @@ class Comment {
 		/** --------------------------------------
 		/**  Remove page number
 		/** --------------------------------------*/
-		
+
 		if (preg_match("#(^|/)P(\d+)(/|$)#", $qstring, $match))
 		{
 			$qstring = trim(reduce_double_slashes(str_replace($match['0'], '/', $qstring)), '/');
@@ -1379,7 +1379,7 @@ class Comment {
 		else
 		{
 			// If there is a slash in the entry ID we'll kill everything after it.
-			$entry_id = trim($qstring); 
+			$entry_id = trim($qstring);
 			$entry_id = preg_replace("#/.+#", "", $entry_id);
 
 			if ( ! is_numeric($entry_id))
@@ -1391,7 +1391,7 @@ class Comment {
 				$entry_where = array('entry_id' => $entry_id);
 			}
 		}
-		
+
 
 		/** ----------------------------------------
 		/**  Are comments allowed?
@@ -1408,7 +1408,7 @@ class Comment {
 			{
 				return FALSE;
 			}
-			
+
 			if ($query->num_rows() == 1)
 			{
 				ee()->db->where('channel_titles.channel_id', $query->row('channel_id'));
@@ -1416,12 +1416,12 @@ class Comment {
 			else
 			{
 				$ids = array();
-				
+
 				foreach ($query->result_array() as $row)
 				{
 					$ids[] = $row['channel_id'];
 				}
-				
+
 				ee()->db->where_in('channel_titles.channel_id', $ids);
 			}
 		}
@@ -1431,10 +1431,10 @@ class Comment {
 
 		ee()->db->select('channel_titles.entry_id, channel_titles.entry_date, channel_titles.comment_expiration_date, channel_titles.allow_comments, channels.comment_system_enabled, channels.comment_use_captcha, channels.comment_expiration');
 		ee()->db->from(array('channel_titles', 'channels'));
-		
+
 		ee()->db->where_in('channel_titles.site_id', ee()->TMPL->site_ids);
 		ee()->db->where('channel_titles.channel_id = '.ee()->db->dbprefix('channels').'.channel_id');
-		
+
 		if ($e_status = ee()->TMPL->fetch_param('entry_status'))
 		{
 			$e_status = str_replace('Open',	'open',	$e_status);
@@ -1451,10 +1451,10 @@ class Comment {
 		{
 			ee()->db->where('status !=', 'closed');
 		}
-		
-		
+
+
 		ee()->db->where($entry_where);
-	
+
 		$query = ee()->db->get();
 
 		if ($query->num_rows() == 0)
@@ -1466,11 +1466,11 @@ class Comment {
 		{
 			$halt_processing = 'disabled';
 		}
-		
+
 		/** ----------------------------------------
 		/**  Smart Notifications? Mark comments as read.
 		/** ----------------------------------------*/
-		
+
 		if (ee()->session->userdata('smart_notifications') == 'y')
 		{
 			ee()->load->library('subscription');
@@ -1508,7 +1508,7 @@ class Comment {
 					}
 				}
 			}
-			
+
 			return '{NOCACHE_COMMENT_FORM="'.$nc.'"}'.ee()->TMPL->tagdata.'{/NOCACHE_FORM}';
 		}
 
@@ -1549,7 +1549,7 @@ class Comment {
 
 		if ($halt_processing != FALSE)
 		{
-			foreach (ee()->TMPL->var_cond as $key => $val) 
+			foreach (ee()->TMPL->var_cond as $key => $val)
 			{
 				if ($halt_processing == 'expired')
 				{
@@ -1733,9 +1733,9 @@ class Comment {
 		/** ----------------------------------------
 		/**  Create form
 		/** ----------------------------------------*/
-		
+
 		$RET = ee()->functions->fetch_current_uri();
-		
+
 		if (isset($_POST['RET']))
 		{
 			$RET = ee()->input->post('RET');
@@ -1744,7 +1744,7 @@ class Comment {
 		{
 			$RET =  ee()->TMPL->fetch_param('return');
 		}
-		
+
 		$PRV = (isset($_POST['PRV'])) ? $_POST['PRV'] : ee()->TMPL->fetch_param('preview');
 		$XID = (isset($_POST['XID'])) ? $_POST['XID'] : '';
 
@@ -1813,7 +1813,7 @@ class Comment {
 
 		return $res;
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -1847,7 +1847,7 @@ class Comment {
 		ee()->db->where('channel_titles.channel_id = '.ee()->db->dbprefix('channels').'.channel_id');
 		ee()->db->where('channel_titles.entry_id', $entry_id);
 		ee()->db->from(array('channels', 'channel_titles'));
-		
+
 		$query = ee()->db->get();
 
 		if ($query->num_rows() == 0)
@@ -1912,12 +1912,12 @@ class Comment {
         /** ----------------------------------------
         /**  Set defaults based on member data as needed
         /** ----------------------------------------*/
-		
+
 		$name		= ee()->input->post('name', TRUE);
 		$email		= ee()->input->post('email', TRUE); // this is just for preview, actual submission will validate the email address
 	 	$url		= ee()->input->post('url', TRUE);
 	 	$location	= ee()->input->post('location', TRUE);
-		
+
 		if (ee()->session->userdata('member_id') != 0)
 		{
 			 $name		= ee()->session->userdata('screen_name') ? ee()->session->userdata('screen_name') : ee()->session->userdata('username');
@@ -1925,7 +1925,7 @@ class Comment {
 			 $url		= (string) ee()->session->userdata('url');
 			 $location	= (string) ee()->session->userdata('location');
 		}
-		
+
 		/** ----------------------------------------
 		/**  Conditionals
 		/** ----------------------------------------*/
@@ -1937,7 +1937,7 @@ class Comment {
 		$cond['email']		= $email;
 		$cond['url']		= ($url == 'http://') ? '' : $url;
 		$cond['location']	= $location;
-		
+
 		$tagdata = ee()->functions->prep_conditionals($tagdata, $cond);
 
 
@@ -2104,7 +2104,7 @@ class Comment {
 		{
 			exit('Preview template not specified in your comment form tag');
 		}
-		
+
 		// Clean return value- segments only
 		$clean_return = str_replace(ee()->functions->fetch_site_index(), '', $_POST['RET']);
 
@@ -2135,8 +2135,8 @@ class Comment {
 
 		$group = ($preview = '') ? 'channel' : $ex[0];
 		$templ = ($preview = '') ? 'preview' : $ex[1];
-		
-		
+
+
 		// this makes sure the query string is seen correctly by tags on the template
 		ee()->TMPL->parse_template_uri();
 		ee()->TMPL->run_template_engine($group, $templ);
@@ -2173,7 +2173,7 @@ class Comment {
 		/** ----------------------------------------*/
 
 		ee()->lang->loadfile('comment');
-		
+
 		//  No comment- let's end it here
 		if (trim($_POST['comment']) == '')
 		{
@@ -2235,7 +2235,7 @@ class Comment {
 		{
 			return $this->preview_handler();
 		}
-		
+
 		// -------------------------------------------
 		// 'insert_comment_start' hook.
 		//  - Allows complete rewrite of comment submission routine.
@@ -2258,7 +2258,7 @@ class Comment {
 						channels.comment_timelock, channels.comment_require_membership, channels.comment_moderate, channels.comment_require_email,
 						channels.comment_notify, channels.comment_notify_authors, channels.comment_notify_emails, channels.comment_expiration'
 		);
-		
+
 		ee()->db->from(array('channel_titles', 'channels'));
 		ee()->db->where('channel_titles.channel_id = channels.channel_id');
 		ee()->db->where('channel_titles.entry_id', $_POST['entry_id']);
@@ -2284,14 +2284,14 @@ class Comment {
 				exp_channels.comment_notify,
 				exp_channels.comment_notify_authors,
 				exp_channels.comment_notify_emails,
-				exp_channels.comment_expiration, 
-				exp_channels.channel_url, 
+				exp_channels.comment_expiration,
+				exp_channels.channel_url,
 				exp_channels.comment_url,
-				exp_channels.site_id  
+				exp_channels.site_id
 			FROM	exp_channel_titles, exp_channels
 			WHERE	exp_channel_titles.channel_id = exp_channels.channel_id
 			AND	exp_channel_titles.entry_id = '".ee()->db->escape_str($_POST['entry_id'])."'";
-				
+
 				//  Added entry_status param, so it is possible to post to closed title
 				//AND	exp_channel_titles.status != 'closed' ";
 
@@ -2381,7 +2381,7 @@ class Comment {
 
 				ee()->db->where('comment_date >', $time);
 				ee()->db->where('ip_address', ee()->input->ip_address());
-				
+
 				$result = ee()->db->count_all_results('comments');
 
 				if ($result  > 0)
@@ -2429,7 +2429,7 @@ class Comment {
 
 
 		$notify_address = ($query->row('comment_notify')  == 'y' AND $query->row('comment_notify_emails')  != '') ? $query->row('comment_notify_emails')  : '';
-	
+
 
 		/** ----------------------------------------
 		/**  Start error trapping
@@ -2487,7 +2487,7 @@ class Comment {
 			{
 				$error[] = ee()->lang->line('cmt_name_not_allowed');
 			}
-			
+
 			// Let's make sure they aren't putting in funky html to bork our screens
 			$_POST['name'] = str_replace(array('<', '>'), array('&lt;', '&gt;'), $_POST['name']);
 
@@ -2564,7 +2564,7 @@ class Comment {
 					ee()->db->where('word', $_POST['captcha']);
 					ee()->db->where('ip_address', ee()->input->ip_address());
 					ee()->db->where('date > UNIX_TIMESTAMP()-7200', NULL, FALSE);
-					
+
 					$result = ee()->db->count_all_results('captcha');
 
 					if ($result == 0)
@@ -2632,7 +2632,7 @@ class Comment {
 		$sql = ee()->db->insert_string('exp_comments', $data);
 		ee()->db->query($sql);
 		$comment_id = ee()->db->insert_id();
-		
+
 		if ($notify == 'y')
 		{
 			ee()->load->library('subscription');
@@ -2647,7 +2647,7 @@ class Comment {
 				ee()->subscription->subscribe($cmtr_email);
 			}
 		}
-		
+
 
 		if ($comment_moderate == 'n')
 		{
@@ -2658,7 +2658,7 @@ class Comment {
 			ee()->db->set('comment_total', $comment_total);
 			ee()->db->set('recent_comment_date', ee()->localize->now);
 			ee()->db->where('entry_id', $_POST['entry_id']);
-			
+
 			ee()->db->update('channel_titles');
 
 			/** ----------------------------------------
@@ -2669,32 +2669,32 @@ class Comment {
 			{
 				ee()->db->select('total_comments');
 				ee()->db->where('member_id', ee()->session->userdata('member_id'));
-				
+
 				$query = ee()->db->get('members');
-				
+
 				ee()->db->set('total_comments', $query->row('total_comments') + 1);
 				ee()->db->set('last_comment_date', ee()->localize->now);
 				ee()->db->where('member_id', ee()->session->userdata('member_id'));
-				
+
 				ee()->db->update('members');
 			}
 
 			/** ----------------------------------------
 			/**  Update comment stats
 			/** ----------------------------------------*/
-		
+
 			ee()->stats->update_comment_stats($channel_id, ee()->localize->now);
 
 			/** ----------------------------------------
 			/**  Fetch email notification addresses
 			/** ----------------------------------------*/
-			
+
 			ee()->load->library('subscription');
 			ee()->subscription->init('comment', array('entry_id' => $entry_id), TRUE);
-			
+
 			// Remove the current user
 			$ignore = (ee()->session->userdata('member_id') != 0) ? ee()->session->userdata('member_id') : ee()->input->post('email');
-			
+
 			// Grab them all
 			$subscriptions = ee()->subscription->get_subscriptions($ignore);
 			ee()->load->model('comment_model');
@@ -2739,7 +2739,7 @@ class Comment {
 		);
 
 		$path = ($comment_url == '') ? $channel_url : $comment_url;
-		
+
 		$comment_url_title_auto_path = reduce_double_slashes($path.'/'.$url_title);
 
 		/** ----------------------------
@@ -2749,7 +2749,7 @@ class Comment {
 		if ($notify_address != '')
 		{
 			$cp_url = ee()->config->item('cp_url').'?S=0&D=cp&C=addons_modules&M=show_module_cp&module=comment';
-			
+
 			$swap = array(
 				'name'				=> $cmtr_name,
 				'name_of_commenter'	=> $cmtr_name,
@@ -2761,9 +2761,9 @@ class Comment {
 				'comment_id'		=> $comment_id,
 				'comment'			=> $comment,
 				'comment_url'		=> reduce_double_slashes(ee()->input->remove_session_id(ee()->functions->fetch_site_index().'/'.$_POST['URI'])),
-				'delete_link'		=> $cp_url.'&method=delete_comment_confirm&comment_id='.$comment_id, 
-				'approve_link'		=> $cp_url.'&method=change_comment_status&comment_id='.$comment_id.'&status=o', 
-				'close_link'		=> $cp_url.'&method=change_comment_status&comment_id='.$comment_id.'&status=c', 
+				'delete_link'		=> $cp_url.'&method=delete_comment_confirm&comment_id='.$comment_id,
+				'approve_link'		=> $cp_url.'&method=change_comment_status&comment_id='.$comment_id.'&status=o',
+				'close_link'		=> $cp_url.'&method=change_comment_status&comment_id='.$comment_id.'&status=c',
 				'channel_id'		=> $channel_id,
 				'entry_id'			=> $entry_id,
 				'url_title'			=> $url_title,
@@ -2800,7 +2800,7 @@ class Comment {
 				ee()->load->library('email');
 
 				$replyto = ($data['email'] == '') ? ee()->config->item('webmaster_email') : $data['email'];
-					 
+
 				$sent = array();
 
 				// Load the text helper
@@ -2835,7 +2835,7 @@ class Comment {
 		if ($comment_moderate == 'n')
 		{
 			$email_msg = '';
-			
+
 			if (count($recipients) > 0)
 			{
 				$action_id  = ee()->functions->fetch_action_id('Comment_mcp', 'delete_comment_notification');
@@ -2852,7 +2852,7 @@ class Comment {
 					'channel_id'		=> $channel_id,
 					'entry_id'			=> $entry_id,
 					'url_title'			=> $url_title,
-					'comment_url_title_auto_path' => $comment_url_title_auto_path 
+					'comment_url_title_auto_path' => $comment_url_title_auto_path
 				);
 
 
@@ -2882,7 +2882,7 @@ class Comment {
 					{
 						$title	 = $email_tit;
 						$message = $email_msg;
-						
+
 						$sub	= $subscriptions[$val['1']];
 						$sub_qs	= 'id='.$sub['subscription_id'].'&hash='.$sub['hash'];
 
@@ -3005,7 +3005,7 @@ class Comment {
 		{
 			return;
 		}
-		
+
 		$entry_id = $this->_divine_entry_id();
 
 		// entry_id is required
@@ -3013,7 +3013,7 @@ class Comment {
 		{
 			return;
 		}
-		
+
 		ee()->load->library('subscription');
 		ee()->subscription->init('comment', array('entry_id' => $entry_id), TRUE);
 		$subscribed = ee()->subscription->is_subscribed(FALSE);
@@ -3025,9 +3025,9 @@ class Comment {
 
 		$sub_link = ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$action_id.'&entry_id='.$entry_id.'&ret='.ee()->uri->uri_string();
 		$unsub_link = ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$action_id.'&entry_id='.$entry_id.'&type=unsubscribe'.'&ret='. ee()->uri->uri_string();
- 		
+
 		$data[] = array('subscribe_link' => $sub_link, 'unsubscribe_link' => $unsub_link, 'subscribed' => $subscribed);
-		
+
 		$tagdata = ee()->TMPL->tagdata;
 		return ee()->TMPL->parse_variables($tagdata, $data);
 	}
@@ -3135,12 +3135,12 @@ class Comment {
 		}
 
 		ee()->lang->loadfile('comment');
-		
+
 		// Does entry exist?
-		
+
 		ee()->db->select('title');
 		$query = ee()->db->get_where('channel_titles', array('entry_id' => $id));
-			
+
 		if ($query->num_rows() != 1)
 		{
  			return ee()->output->show_user_error('submission', 'invalid_subscription');
@@ -3150,16 +3150,16 @@ class Comment {
   		$entry_title = $row->title;
 
 		// Are they currently subscribed
-		
+
 		ee()->load->library('subscription');
 		ee()->subscription->init('comment', array('entry_id' => $id), TRUE);
 		$subscribed = ee()->subscription->is_subscribed(FALSE);
-		
+
 		if ($type == 'subscribe' && $subscribed == TRUE)
 		{
 			return ee()->output->show_user_error('submission', ee()->lang->line('already_subscribed'));
 		}
-		
+
 		if ($type == 'unsubscribe' && $subscribed == FALSE)
 		{
 			return ee()->output->show_user_error('submission', ee()->lang->line('not_currently_subscribed'));
@@ -3169,14 +3169,14 @@ class Comment {
 		ee()->subscription->$type();
 
 		// Show success message
-		
+
 		ee()->lang->loadfile('comment');
-		
+
 		$title = ($type == 'unsubscribe') ? 'cmt_unsubscribe' : 'cmt_subscribe';
 		$content = ($type == 'unsubscribe') ? 'you_have_been_unsubscribed' : 'you_have_been_subscribed';
-		
+
 		$return_link = ee()->functions->create_url($ret);
-		
+
 		$data = array(
 			'title' 	=> ee()->lang->line($title),
 			'heading'	=> ee()->lang->line('thank_you'),
@@ -3188,7 +3188,7 @@ class Comment {
 
 		ee()->output->show_message($data);
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -3202,34 +3202,34 @@ class Comment {
 	function edit_comment($ajax_request = TRUE)
 	{
 		@header("Content-type: text/html; charset=UTF-8");
-		
+
 		$unauthorized = ee()->lang->line('not_authorized');
 
 		if (ee()->input->get_post('comment_id') === FALSE OR ((ee()->input->get_post('comment') === FALSE OR ee()->input->get_post('comment') == '') && ee()->input->get_post('status') != 'close'))
 		{
 			ee()->output->send_ajax_response(array('error' => $unauthorized));
 		}
-		
+
 		// Not logged in member- eject
 		if (ee()->session->userdata['member_id'] == '0')
 		{
 			ee()->output->send_ajax_response(array('error' => $unauthorized));
 		}
-		
+
 		$xid = ee()->input->get_post('XID');
-		
-		
+
+
 		// Secure Forms check - do it early due to amount of further data manipulation before insert
-		if (ee()->security->secure_forms_check($xid) == FALSE) 
+		if (ee()->security->secure_forms_check($xid) == FALSE)
 		{
 		 	ee()->output->send_ajax_response(array('error' => $unauthorized));
 		}
-		
+
 		$edited_status = (ee()->input->get_post('status') != 'close') ? FALSE : 'c';
 		$edited_comment = ee()->input->get_post('comment');
 		$can_edit = FALSE;
 		$can_moderate = FALSE;
-				
+
 		ee()->db->from('comments');
 		ee()->db->from('channels');
 		ee()->db->from('channel_titles');
@@ -3242,16 +3242,16 @@ class Comment {
 		if ($query->num_rows() > 0)
 		{
 			// User is logged in and in a member group that can edit this comment.
-			if (ee()->session->userdata['group_id'] == 1 
-				OR ee()->session->userdata['can_edit_all_comments'] == 'y' 
-				OR (ee()->session->userdata['can_edit_own_comments'] == 'y' 
+			if (ee()->session->userdata['group_id'] == 1
+				OR ee()->session->userdata['can_edit_all_comments'] == 'y'
+				OR (ee()->session->userdata['can_edit_own_comments'] == 'y'
 					&& $query->row('entry_author_id') == ee()->session->userdata['member_id']))
 			{
 				$can_edit = TRUE;
 				$can_moderate = TRUE;
 			}
 			// User is logged in and can still edit this comment.
-			elseif (ee()->session->userdata['member_id'] != '0'  
+			elseif (ee()->session->userdata['member_id'] != '0'
 				&& $query->row('author_id') == ee()->session->userdata['member_id']
 				&& $query->row('comment_date') > $this->_comment_edit_time_limit())
 			{
@@ -3267,32 +3267,32 @@ class Comment {
 			{
 				$data['status'] = 'c';
 			}
-			
+
 			if ($edited_comment != FALSE & $can_edit != FALSE)
 			{
 				$data['comment'] = $edited_comment;
 			}
-			
+
 			if (count($data) > 0)
 			{
 				$data['edit_date'] = ee()->localize->now;
-				
+
 				ee()->db->where('comment_id', ee()->input->get_post('comment_id'));
-				ee()->db->update('comments', $data); 
-			
+				ee()->db->update('comments', $data);
+
 				if ($edited_status != FALSE & $can_moderate != FALSE)
 				{
 					// We closed an entry, update our stats
 					$this->_update_comment_stats($entry_id, $channel_id, $author_id);
-					
+
 					// create new security hash and send it back with updated comment.
-				
+
 					$new_hash = $this->_new_hash();
 					ee()->output->send_ajax_response(array('moderated' => ee()->lang->line('closed'), 'XID' => $new_hash));
 				}
 
-				ee()->load->library('typography'); 
-				
+				ee()->load->library('typography');
+
 				$f_comment = ee()->typography->parse_type(
 					stripslashes(ee()->input->get_post('comment')),
 					array(
@@ -3302,9 +3302,9 @@ class Comment {
 						'allow_img_url' => $query->row('comment_allow_img_urls')
 					)
 				);
-				
+
 				// create new security hash and send it back with updated comment.
-				
+
 				$new_hash = $this->_new_hash();
 
 				ee()->output->send_ajax_response(array('comment' => $f_comment, 'XID' => $new_hash));
@@ -3331,7 +3331,7 @@ class Comment {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Comment Editor
 	 *
@@ -3349,7 +3349,7 @@ $script = <<<CMT_EDIT_SCR
 $.fn.CommentEditor = function(options) {
 
 	var OPT;
-		
+
 	OPT = $.extend({
 		url: "{$ajax_url}",
 		comment_body: '.comment_body',
@@ -3358,15 +3358,15 @@ $.fn.CommentEditor = function(options) {
 		saveComment: '.submit_edit',
 		closeComment: '.mod_link'
 	}, options);
-		
+
 	var view_elements = [OPT.comment_body, OPT.showEditor, OPT.closeComment].join(','),
-		edit_elements = '.editCommentBox', 
+		edit_elements = '.editCommentBox',
 		hash = '{XID_HASH}';
-		
+
 	return this.each(function() {
 		var id = this.id.replace('comment_', ''),
 		parent = $(this);
-			
+
 		parent.find(OPT.showEditor).click(function() { showEditor(id); return false; });
 		parent.find(OPT.hideEditor).click(function() { hideEditor(id); return false; });
 		parent.find(OPT.saveComment).click(function() { saveComment(id); return false; });
@@ -3392,7 +3392,7 @@ $.fn.CommentEditor = function(options) {
 			if (res.error) {
 				return $.error('Could not moderate comment.');
 			}
-			
+
 			hash = res.XID;
 			$('input[name=XID]').val(hash);
 			$('#comment_' + id).hide();
@@ -3402,7 +3402,7 @@ $.fn.CommentEditor = function(options) {
 	function saveComment(id) {
 		var content = $("#comment_"+id).find('.editCommentBox'+' textarea').val(),
 			data = {comment: content, comment_id: id, XID: hash};
-		
+
 		$.post(OPT.url, data, function (res) {
 			if (res.error) {
 				hideEditor(id);
@@ -3416,14 +3416,14 @@ $.fn.CommentEditor = function(options) {
    		});
 	}
 };
-	
+
 
 $(function() { $('.comment').CommentEditor(); });
 CMT_EDIT_SCR;
 
 		$script = ee()->functions->add_form_security_hash($script);
 		$script = ee()->functions->insert_action_ids($script);
-		
+
 		ee()->output->enable_profiler(FALSE);
 		ee()->output->set_header("Content-Type: text/javascript");
 
@@ -3437,10 +3437,10 @@ CMT_EDIT_SCR;
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * New Hash
-	 * 
+	 *
 	 * Generates a new secure forms CSRF hash for the current user
 	 *
 	 * @access	public
@@ -3453,7 +3453,7 @@ CMT_EDIT_SCR;
 		{
 			return FALSE;
 		}
-		
+
 		$db_reset = FALSE;
 
 		if (ee()->db->cache_on == TRUE)
@@ -3469,12 +3469,12 @@ CMT_EDIT_SCR;
 		{
 			ee()->db->cache_on();
 		}
-		
+
 		return $hash;
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * AJAX Edit URL
 	 *
@@ -3484,10 +3484,10 @@ CMT_EDIT_SCR;
 	function ajax_edit_url()
 	{
 		$url = ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.ee()->functions->fetch_action_id('Comment', 'edit_comment');
-		
+
 		return $url;
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -3508,12 +3508,13 @@ CMT_EDIT_SCR;
 			return ee()->session->cache['comment']['entry_id'][$qstring_hash];
 		}
 
-		if ($entry_id = ee()->TMPL->fetch_param('entry_id'))
+		if (ee()->TMPL->fetch_param('entry_id'))
 		{
-			return $entry_id;
+			return ee()->TMPL->fetch_param('entry_id');
 		}
-		elseif ($entry_seg = ee()->TMPL->fetch_param('url_title'))
+		elseif (ee()->TMPL->fetch_param('url_title'))
 		{
+			$entry_seg = ee()->TMPL->fetch_param('url_title');
 		}
 		else
 		{
@@ -3524,7 +3525,7 @@ CMT_EDIT_SCR;
 
 			// Figure out the right entry ID
 			// If there is a slash in the entry ID we'll kill everything after it.
-			$entry_seg = trim($qstring); 
+			$entry_seg = trim($qstring);
 			$entry_seg= preg_replace("#/.+#", "", $entry_seg);
 		}
 
@@ -3536,7 +3537,7 @@ CMT_EDIT_SCR;
 		{
 			ee()->db->select('entry_id');
 			$query = ee()->db->get_where('channel_titles', array('url_title' => $entry_seg));
-			
+
 			if ($query->num_rows() == 1)
 			{
    				$row = $query->row();
@@ -3546,7 +3547,7 @@ CMT_EDIT_SCR;
 
 		return ee()->session->cache['comment']['entry_id'][$qstring_hash] = $entry_id;
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**

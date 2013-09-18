@@ -153,6 +153,24 @@ WysiHat.Editor.prototype = {
 	    return '<p>'+this._emptyChar+'</p>';
 	},
 
+	isEmpty: function() {
+		html = this.$editor.html();
+
+		if ( html == '' ||
+			 html == '\0' ||
+			 html == '<br>' ||
+			 html == '<br/>' ||
+			 html == '<p></p>' ||
+			 html == '<p><br></p>' ||
+			 html == '<p>\0</p>' ||
+			 html == this._empty() )
+		{
+			return true;
+		}
+
+		return false;
+	},
+
 	/**
 	 * Create the main editor html
 	 */
@@ -266,11 +284,7 @@ WysiHat.Editor.prototype = {
 			s = window.getSelection(),
 			r;
 
-		if ( val == '' ||
-			 val == '<br>' ||
-			 val == '<br/>' ||
-			 val == '<p></p>' ||
-			 val == '<p>\0</p>')
+		if (this.isEmpty())
 		{
 			$el.html(this._empty());
 
@@ -592,16 +606,7 @@ WysiHat.Paster = (function() {
 						Editor.Commands.insertHTML(''); // IE 8 can't do deleteContents
 					}
 
-					html = Editor.$editor.html();
-
-					if ( html == '' ||
-						 html == '\0' ||
-						 html == '<br>' ||
-						 html == '<br/>' ||
-						 html == '<p></p>' ||
-						 html == '<p><br></p>' ||
-						 html == '<p>\0</p>' ||
-						 html == Editor._empty())
+					if (Editor.isEmpty())
 					{
 						// on an empty editor we want to completely replace
 						// otherwise the first paragraph gets munged
@@ -1013,11 +1018,21 @@ WysiHat.Event.prototype = {
 			// 'focusout change': $.proxy(this._blurEvent, this),
 			'selectionchange focusin mousedown': $.proxy(this._rangeEvent, this),
 			'keydown keyup keypress': $.proxy(this._keyEvent, this),
-			'cut undo redo paste input contextmenu': $.proxy(this._menuEvent, this)
+			'cut undo redo paste input contextmenu': $.proxy(this._menuEvent, this),
+			'focus': $.proxy(this._focusEvent, this)
 		//	'click doubleclick mousedown mouseup': $.proxy(this._mouseEvent, this)
 		};
 
 		this.$editor.on(event_map);
+	},
+
+	_focusEvent: function() {
+		if (this.Editor.isEmpty())
+		{
+			// on an empty editor we want to completely replace
+			// otherwise the first paragraph gets munged
+			this.Editor.selectEmptyParagraph();
+		}
 	},
 
 	/**

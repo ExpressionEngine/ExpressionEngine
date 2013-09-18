@@ -413,7 +413,11 @@ class Channel_calendar extends Channel {
 
 		$this->initialize();
 
-		$this->fetch_custom_channel_fields();
+		// Fetch custom channel fields if we have search fields
+		if ( ! empty(ee()->TMPL->search_fields))
+		{
+			$this->fetch_custom_channel_fields();
+		}
 
 		$this->build_sql_query('/'.$year.'/'.$month.'/');
 

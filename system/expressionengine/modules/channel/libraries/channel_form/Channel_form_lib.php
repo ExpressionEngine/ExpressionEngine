@@ -166,15 +166,13 @@ class Channel_form_lib
 			throw new Channel_form_exception(lang('channel_form_no_channel'));
 		}
 
-
-		//load member data for logged out member
-		$this->fetch_logged_out_member(ee()->TMPL->fetch_param('logged_out_member_id'));
-		$this->load_session_override();
-
 		//temporarily set the site_id for cross-site channel:form
 		$current_site_id = ee()->config->item('site_id');
 
 		ee()->config->set_item('site_id', $this->site_id);
+
+		$this->fetch_logged_out_member(ee()->TMPL->fetch_param('logged_out_member_id'));
+		$this->load_session_override();
 
 		// Can they post?
 		$assigned_channels = ee()->functions->fetch_assigned_channels();
@@ -1374,27 +1372,33 @@ GRID_FALLBACK;
 		}
 
 		//captcha check
+		$captcha_required = FALSE;
+
 		if ($this->channel('channel_id') && ! empty($this->logged_out_member_id) && ! empty($this->settings['require_captcha'][ee()->config->item('site_id')][$this->_meta['channel_id']]))
 		{
+			$captcha_required = TRUE;
+
 			if ( ! ee()->input->post('captcha'))
 			{
-				$this->errors[] = lang('captcha_required');
+				$this->field_errors['captcha_word'] = lang('captcha_required');
 			}
-
-			ee()->db->where('word', ee()->input->post('captcha', TRUE));
-			ee()->db->where('ip_address', ee()->input->ip_address());
-			ee()->db->where('date > ', '(UNIX_TIMESTAMP()-7200)', FALSE);
-
-			if ( ! ee()->db->count_all_results('captcha'))
+			else
 			{
-				$this->errors[] = lang('captcha_incorrect');
+				ee()->db->where('word', ee()->input->post('captcha', TRUE));
+				ee()->db->where('ip_address', ee()->input->ip_address());
+				ee()->db->where('date > ', '(UNIX_TIMESTAMP()-7200)', FALSE);
+
+				if ( ! ee()->db->count_all_results('captcha'))
+				{
+					$this->field_errors['captcha_word'] = lang('captcha_incorrect');
+				}
+
+				ee()->db->where('word', ee()->input->post('captcha', TRUE));
+				ee()->db->where('ip_address', ee()->input->ip_address());
+				ee()->db->where('date < ', '(UNIX_TIMESTAMP()-7200)', FALSE);
+
+				ee()->db->delete('captcha');
 			}
-
-			ee()->db->where('word', ee()->input->post('captcha', TRUE));
-			ee()->db->where('ip_address', ee()->input->ip_address());
-			ee()->db->where('date < ', '(UNIX_TIMESTAMP()-7200)', FALSE);
-
-			ee()->db->delete('captcha');
 		}
 
 		// Status Check to prevent post overrides
@@ -1656,7 +1660,7 @@ GRID_FALLBACK;
 		//since we are now using the call_field_validation rule
 		if ( ! ee()->form_validation->run())
 		{
-			$this->field_errors = ee()->form_validation->_error_array;
+			$this->field_errors = (is_array($this->field_errors)) ? array_merge($this->field_errors, ee()->form_validation->_error_array) : ee()->form_validation->_error_array;
 		}
 
 		// CI's form validation rules can either throw an error, or be used as
@@ -1710,6 +1714,10 @@ GRID_FALLBACK;
 
 			//load the just created entry into memory
 			$this->fetch_entry(ee()->api_channel_form_channel_entries->entry_id);
+		}
+		elseif ($captcha_required && $this->error_handling == 'inline')
+		{
+			$this->field_errors = array_merge($this->field_errors, array('captcha_word' => lang('captcha_required')));
 		}
 
 		$this->unload_session_override();
@@ -3169,6 +3177,7 @@ GRID_FALLBACK;
 			'comment_expiration_date',
 			'recent_comment_date',
 			'comment_total',
+			'captcha_word'
 		);
 
 		$this->valid_callbacks = array(
