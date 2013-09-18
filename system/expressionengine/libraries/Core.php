@@ -345,7 +345,14 @@ class EE_Core {
 
 		if (REQ != 'ACTION')
 		{
-			$this->process_secure_forms();
+			if (AJAX_REQUEST && ee()->router->fetch_class() == 'login')
+			{
+				$this->process_secure_forms(EE_Security::CSRF_EXEMPT);
+			}
+			else
+			{
+				$this->process_secure_forms();
+			}
 		}
 
 		// Update system stats

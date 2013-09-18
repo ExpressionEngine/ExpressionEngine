@@ -46,13 +46,17 @@ jQuery(document).ready(function () {
 		var defaultHeaderResponses = {
 			// Refresh xids
 			xid: function(new_xid) {
-				EE.XID = new_xid;
-				$('input[name="XID"]').filter('[value="'+old_xid+'"]').val(new_xid);
+				EE.cp.xid.set(new_xid);
 			},
 
 			// Force redirects (e.g. logout)
 			redirect: function(url) {
 				window.location = EE.BASE + '&' + url.replace('//', '/'); // replace to prevent //example.com
+			},
+
+			broadcast: function(event) {
+				EE.cp.broadcastEvents[event]();
+				$(window).trigger('broadcast', event);
 			}
 		};
 
@@ -222,8 +226,6 @@ jQuery(document).ready(function () {
 		$('.sidebar_hover_desc', this).hide();
 	})
 	.css('cursor', 'pointer');
-
-	EE.cp.logout_confirm();
 }); // ready
 
 /**
@@ -351,7 +353,7 @@ EE.cp.show_hide_sidebar = function() {
 
 	larger_height = sidebar_height > main_height ? sidebar_height : main_height;
 
-	$('#revealSidebarLink, #hideSidebarLink').click(function () {
+	$('#revealSidebarLink, #hideSidebarLink').click(function (evt) {
 		var that = $(this),
 			other = that.siblings('a'),
 			show = (this.id === 'revealSidebarLink');
@@ -361,12 +363,16 @@ EE.cp.show_hide_sidebar = function() {
 			dataType: 'json',
 			url: EE.BASE + '&C=myaccount&M=update_sidebar_status',
 			data: {'show' : show},
-			success: function(result){
+			success: function(result) {
 				if (result.messageType === 'success') {
 					// log?
 				}
 			}
 		});
+
+		if ( ! evt.isTrigger) {
+			$(window).trigger('broadcast.sidebar', show);
+		}
 
 		$("#sideBar").css({
 			'position': 'absolute',
@@ -391,6 +397,15 @@ EE.cp.show_hide_sidebar = function() {
 		});
 
 		return false;
+	});
+
+	$(window).bind('broadcast.sidebar', function(event, sidebarIsOpen) {
+		var selectors = {
+			true: "#revealSidebarLink",
+			false: "#hideSidebarLink"
+		};
+
+		$(selectors[sidebarIsOpen]).filter(':visible').trigger('click');
 	});
 };
 
@@ -443,79 +458,389 @@ EE.insert_placeholders = function () {
 	});
 };
 
-// Logout button confirmation
-EE.cp.logout_confirm = function() {
-	$("#activeUser").one("mouseover", function () {
 
-		var logout_modal = $('<div id="logOutConfirm">' + EE.lang.logout_confirm + ' </div>'),
-			ttl = 30,
-			orig_ttl = ttl,
-			countdown_timer,
-			buttons,
-			log_out,
-			log_out_unload,
-			delay_logout;
+EE.cp.broadcastEvents = (function() {
 
-		log_out = function () {
-			$(window).unbind("unload.logout");
+	/**
+	 * Handle idle / inaction between windows
+	 *
+	 * This code relies heavily on timing. In order to reduce complexity everything is
+	 * handled in steps (ticks) of 15 seconds. We count for how many ticks we have been
+	 * in a given state and act accordingly. This gives us reasonable timing information
+	 * without having to set, cancel, and track multiple timeouts.
+	 *
+	 * The conditions currently are as follows:
+	 *
+	 * - If an ee tab has focus we call it idle after 20 minutes of no interaction
+	 * - If no ee tab has focus, we call it idle after 40 minutes of no activity
+	 * - If the modal receive no interaction for more than 30 minutes, we show the login page.
+	 * - If they work around the modal (inspector), all request will land on the login page.
+	 * - Logging out of one tab will show the modal on all other tabs.
+	 * - Logging into the modal on one tab, will show it on all other tabs.
+	 */
+		// - Config toggle to turn it off?
 
-			// Redirect
-			window.location = EE.BASE + "&C=login&M=logout";
-		};
+	// Define our time limits:
+	var TICK_TIME          = 15 * 1000, // 15 seconds between ticks, 4 per minute
+		FOCUSED_TICK_LIMIT = 4 * 20,    // 20 minutes: time before modal if window focused
+		BLURRED_TICK_LIMIT = 4 * 40,    // 40 minutes: time before modal if no focus
+		LOGOUT_TICK_LIMIT  = 4 * 30;    // 30 minutes: time before logout if no modal interaction
 
-		log_out_unload = function() {
-			$.ajax({
-				url: EE.BASE + "&C=login&M=logout",
-				async: ( ! $.browser.safari)
-			});
-		};
-
-		delay_logout = function () {
-			if (ttl < 1) {
-				return setTimeout(log_out, 0);
-			}
-			else if (ttl === orig_ttl) {
-				$(window).bind("unload.logout", log_out_unload);
-			}
-
-			logout_modal.dialog("option", "title", EE.lang.logout + " (" +  (ttl-- || "...")  + ")");
-			countdown_timer = setTimeout(delay_logout, 1000);
-		};
-
-		function cancel_logout() {
-			clearTimeout(countdown_timer);
-			$(window).unbind("unload.logout");
-			ttl = orig_ttl;
-		}
-
-		buttons = {
-			Cancel: function () {
-				$(this).dialog("close");
-			}
-		};
-
-		buttons[EE.lang.logout] = log_out;
-
-		logout_modal.dialog({
-			autoOpen: false,
-			resizable: false,
-			modal: true,
-			title: EE.lang.logout,
-			position: "center",
-			minHeight: "0",
-			buttons: buttons,
-			beforeClose: cancel_logout
-		});
-
-		$("a.logOutButton", this).click(function () {
-			$("#logOutConfirm").dialog("open");
-			$(".ui-dialog-buttonpane button:eq(2)").focus(); //focus on Log-out so pressing return logs out
-
-			delay_logout();
-			return false;
-		});
+	// Make sure we have our modal available when we need it
+	var logoutModal = $('#idle-modal').dialog({
+		autoOpen: false,
+		resizable: false,
+		title: EE.lang.session_idle,
+		modal: true,
+		closeOnEscape: false,
+		position: "center",
+		height: 'auto',
+		width: 354
 	});
-};
+
+	// This modal is required, remove the close button in the titlebar.
+	logoutModal.closest('.ui-dialog').find('.ui-dialog-titlebar-close').remove();
+
+	// Bind on the modal submission
+	logoutModal.find('form').on('submit', function() {
+
+		var oldBase = EE.BASE;
+
+		$.ajax({
+			type: 'POST',
+			url: this.action,
+			data: $(this).serialize(),
+			dataType: 'json',
+
+			success: function(result) {
+				if (result.messageType != 'success') {
+					alert(result.message);
+					return;
+				}
+
+				// Hide the dialog
+				logoutModal.off('dialogbeforeclose');
+				logoutModal.dialog('close');
+
+				// Fix the EE.BASE variable
+				EE.BASE = result.base.replace(/&amp;/g, '&');
+
+				var replaceBase = function(i, value) {
+					return value.replace(oldBase, EE.BASE);
+				};
+
+				$('a').prop('href', replaceBase);
+				$('form').prop('action', replaceBase);
+
+				$(window).trigger('broadcast.idleState', 'login');
+			},
+
+			error: function(data) {
+				alert(data.message);
+			}
+		});
+
+		return false;
+	});
+
+	/**
+	 * This object tracks the current state of the page.
+	 *
+	 * The resolve function is called once per tick. The individual events will
+	 * set hasFocus and increment idleCount.
+	 */
+	var State = {
+
+		hasFocus: true,
+		modalActive: false,
+		idleCount: 0,
+		pingReceived: false,
+
+		modalThresholdReached: function() {
+			var mustShowModal = (this.hasFocus && this.idleCount > FOCUSED_TICK_LIMIT) ||
+								( ! this.hasFocus && this.idleCount > BLURRED_TICK_LIMIT);
+			return (this.modalActive === false && mustShowModal === true);
+		},
+
+		logoutThresholdReached: function() {
+			return (this.modalActive && this.idleCount > LOGOUT_TICK_LIMIT);
+		},
+
+		resolve: function() {
+
+			if (this.logoutThresholdReached()) {
+				Events.logout();
+				$(window).trigger('broadcast.idleState', 'logout');
+			}
+
+			if (State.modalThresholdReached()) {
+				Events.modal();
+				$(window).trigger('broadcast.idleState', 'modal');
+				$.get(EE.BASE + '&C=login&M=logout'); // log them out in the background to prevent tampering
+			}
+
+			// ping other windows if we've been reset
+			if (this.idleCount == 0 && this.pingReceived === false) {
+				$(window).trigger('broadcast.idleState', 'active');
+			}
+
+			// Reset
+			this.pingReceived = false;
+		}
+	};
+
+	/**
+	 * List of events that might happen during our 15 second interval
+	 */
+	var Events = {
+
+		// nothing has happened - we were idle
+		_default: function() {
+			State.idleCount += 1;
+		},
+
+		// received another window's active event, user active
+		active: function() {
+			State.idleCount = 0;
+			State.hasFocus = false;
+		},
+
+		// user focused, they are active
+		focus: function() {
+			State.idleCount = 0;
+			State.hasFocus = true;
+		},
+
+		// user left, they are idle
+		blur: function() {
+			State.idleCount = 1;
+			State.hasFocus = false;
+		},
+
+		// user typing / mousing, possibly active
+		interact: function() {
+			if (State.hasFocus) {
+				State.idleCount = 0;
+			}
+		},
+
+		// received another window's modal event, open it
+		modal: function() {
+			if ( ! State.modalActive) {
+				logoutModal.dialog('open');
+				logoutModal.on('dialogbeforeclose', $.proxy(this, 'logout')); // prevent tampering
+
+				State.modalActive = true;
+			}
+
+			State.idleCount += 1;
+		},
+
+		// received another window's login event, check and hide modal
+		login: function() {
+			EE.cp.xid.refresh(function() {
+				// lose the modal
+				logoutModal.off('dialogbeforeclose');
+				logoutModal.dialog('close');
+
+				State.modalActive = false;
+				State.idleCount = 0;
+			});
+		},
+
+		// received another window's logout event, leave page
+		logout: function() {
+			window.location = EE.BASE + '&C=login&M=logout';
+		}
+	};
+
+	/**
+	 * The event tracker spools up all events that happened during this tick
+	 * and replays them when the timer fires.
+	 */
+	var EventTracker = {
+
+		eventsRecorded: [],
+
+		init: function() {
+			this._bindEvents();
+			this.tick();
+		},
+
+		tick: function() {
+			// no events? run default
+			if ( ! this.eventsRecorded.length) {
+				this.eventsRecorded = ['_default'];
+			}
+
+			// replay events that happened during this tick
+			_.each(this.eventsRecorded, function(evt) {
+				Events[evt]();
+			});
+
+			State.resolve();
+
+			this.eventsRecorded = [];
+
+			setTimeout($.proxy(this, 'tick'), TICK_TIME);
+		},
+
+		/**
+		 * Bind our events
+		 *
+		 * We keep track of focus, blur, scrolling, clicking, etc.
+		 * Some broadcast events can be fired immediately as nothing will stop
+		 * them once the tick fires anyways.
+		 * We have an extra throttle on interactions to keep the browser happy
+		 * and not fill up the queue uselessly.
+		 */
+		_bindEvents: function() {
+			var track = $.proxy(this, '_track'),
+				that = this;
+
+			// Bind on the broadcast event
+			$(window).on('broadcast.idleState', function(event, idleState) {
+
+				switch (idleState) {
+					case 'active':
+						track(idleState);
+						State.pingReceived = true;
+						break;
+					case 'modal':
+					case 'login':
+					case 'logout':
+						Events[idleState]();
+						break;
+				}
+			});
+
+			// Bind on window focus and blur
+			$(window).bind('blur', _.partial(track, 'blur'));
+			$(window).bind('focus', _.partial(track, 'focus'));
+
+			// Bind on interactions
+			var interaction = 'DOMMouseScroll keydown mousedown mousemove mousewheel touchmove touchstart';
+			$(document).on(
+				interaction.split(' ').join('.idleState '),     // namespace the events
+				_.throttle(_.partial(track, 'interact'), 2000)  // throttle event firing
+			);
+
+			// Clicking the logout button fires "modal" on all the others
+			$('.logOutButton').click(function() {
+				$(window).trigger('broadcast.idleState', 'modal');
+			});
+		},
+
+		/**
+		 * Helper method to record an event
+		 */
+		_track: function(name) {
+			this.eventsRecorded.push(name);
+		}
+	};
+
+	// Go go go!
+	EventTracker.init();
+
+	return Events;
+
+})();
+
+
+EE.cp.xid = (function() {
+
+	var loadWasFromBFCache = false,
+		submission = false,
+		lastRefresh = new Date;
+
+	function setXid(new_xid) {
+		$('input[name="XID"]').val(new_xid);
+		EE.XID = new_xid;
+	}
+
+	function refreshXID(callback) {
+		$.get(EE.BASE + '&C=login&M=refresh_xid', function(result) {
+			if (result.message != 'refresh') {
+				return;
+			}
+
+			lastRefresh = new Date;
+
+			// refresh xid
+			setXid(result.xid);
+
+			if (callback) {
+				callback(result);
+			}
+		});
+	}
+
+	var Events = {
+
+		// A submission spells certain death to this xid so don't
+		// bother holding on to it.
+		submit: function() {
+			submission = true;
+			localStorage.removeItem('EE_XID', EE.XID);
+		},
+
+		// If they unload a page that was not loaded from the bfcache
+		// and the unload was not triggered by a submission then this
+		// is an unused xid and we can hold on to it in the hopes that
+		// they will not spend hours in a form after navigation.
+		pagehide: function(event) {
+			if ( ! loadWasFromBFCache && ! submission) {
+				localStorage.setItem('EE_XID', EE.XID);
+			}
+		},
+
+		// Showing a page from the bfcache? Do our best to use a valid xid.
+		pageshow: function(event) {
+			loadWasFromBFCache = event.persisted;
+
+			if ( ! event.persisted) {
+				return;
+			}
+
+			var xid = localStorage.getItem('EE_XID');
+
+			if (xid) {
+				// refresh xid
+				EE.cp.xid.set(xid);
+			} else {
+				EE.cp.xid.refresh();
+			}
+		}
+	};
+
+	// modern browsers only
+	if ('onpagehide' in window) {
+		window.addEventListener('submit', Events.submit, false);
+		window.addEventListener('pagehide', Events.pagehide, false);
+		window.addEventListener('pageshow', Events.pageshow, false);
+	}
+
+	// Everyone else just gets a periodic refresh
+	// We check every minute and refresh every 30
+	setTimeout(function() {
+		var now = new Date;
+		if ((now - lastRefresh) > 30 * 60 * 1000) {
+			refreshXID();
+		}
+	}, 60000);
+
+	// expose set and refresh
+	return {
+		set: function(new_xid) {
+			setXid(new_xid);
+		},
+
+		refresh: function(callback) {
+			refreshXID(callback);
+		}
+	};
+
+})();
 
 // Modal for "What does this mean?" link on deprecation notices
 EE.cp.deprecation_meaning = function() {
