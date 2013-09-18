@@ -415,7 +415,8 @@ class Filemanager {
 		if ($this->is_editable_image($file_path, $mime))
 		{
 			// Check to see if we have GD and can resize images
-			if ( ! (extension_loaded('gd') && function_exists('gd_info'))) {
+			if ( ! (extension_loaded('gd') && function_exists('gd_info')))
+			{
 				return $this->_save_file_response(FALSE, lang('gd_not_installed'));
 			}
 
