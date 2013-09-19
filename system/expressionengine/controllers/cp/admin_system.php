@@ -222,10 +222,8 @@ class Admin_system extends CP_Controller {
 			$this->form_validation->set_message('_smtp_required_field', lang('empty_stmp_fields'));
 			return FALSE;
 		}
-		else
-		{
-			return TRUE;
-		}
+
+		return TRUE;
 	}
 
 	// --------------------------------------------------------------------
