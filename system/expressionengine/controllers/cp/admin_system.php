@@ -213,9 +213,10 @@ class Admin_system extends CP_Controller {
 	 * if SMTP is the selected protocol method
 	 *
 	 * @access	public
-	 * @return	boolean
+	 * @param	string	$str	the string being validated
+	 * @return	boolean	Whether or not the string passed validation
 	 **/
-	function _smtp_required_field($str)
+	public function _smtp_required_field($str)
 	{
 		if ($this->input->post('mail_protocol') == 'smtp' && trim($str) == '')
 		{
