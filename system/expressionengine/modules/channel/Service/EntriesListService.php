@@ -1,6 +1,6 @@
 <?PHP
 
-class ListEntries extends ListService {
+class EntriesListService extends ListService {
 
 	/**
 	 * Page all Available Entries
@@ -15,9 +15,9 @@ class ListEntries extends ListService {
 	{
 		$page = ee()->input->get_post('page');
 		$query = ee()->query_builder->get('ChannelEntry')
-						->with('Channel', array('Member'=>'MemberGroup'), array('Category'=>'CategoryGroup'))
-						->limit($this->getItemsPerPage())
-						->offset($this->getOffsetForPage($page));	
+			->with('Channel', array('Member'=>'MemberGroup'), array('Category'=>'CategoryGroup'))
+			->limit($this->getItemsPerPage())
+			->offset($this->getOffsetForPage($page));	
 		$entries = $query->execute();
 		return $this->getEntryListView($entries);
 	}
@@ -29,9 +29,9 @@ class ListEntries extends ListService {
 	{
 		$page = ee()->input->get_post('page');
 		$query = ee()->query_builder->get('ChannelEntry')
-						->with('Channel', array('Member'=>'MemberGroup'), array('Category'=>'CategoryGroup'))
-						->limit($this->getItemsPerPage())
-						->offset($this->getOffsetForPage($page));	
+			->with('Channel', array('Member'=>'MemberGroup'), array('Category'=>'CategoryGroup'))
+			->limit($this->getItemsPerPage())
+			->offset($this->getOffsetForPage($page));	
 		
 		if (($channel_id = ee()->input->get_post('channel_id')) !== NULL)
 		{

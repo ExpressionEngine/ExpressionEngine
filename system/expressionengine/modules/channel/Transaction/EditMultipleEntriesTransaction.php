@@ -19,8 +19,13 @@ class EditMultipleEntriesTransaction extends Transaction {
 		$entry_views = array();
 		foreach ($this->entries as $entry)
 		{
-			$entry_views[] = ee()->view->make('Edit/Multiple/Entry', 
-								array('entry'=>$entry, 'errors'=>(isset($errors[$entry->entry_id]) ? $errors[$entry->entry_id] : NULL)));
+			$entry_views[] = ee()->view->make(
+				'Edit/Multiple/Entry', 
+				array(
+					'entry'  => $entry, 
+					'errors' => (isset($errors[$entry->entry_id]) ? $errors[$entry->entry_id] : NULL)
+				)
+			);
 		}
 		return ee()->view->make('Edit/Multiple/Form', array('views'=>$entry_views));
 	}
@@ -31,9 +36,9 @@ class EditMultipleEntriesTransaction extends Transaction {
 		$ids = array_keys($entry_data);
 		
 		$query = ee()->query_builder->get('ChannelEntry')
-						->with('Channel', array('Member'=>'MemberGroup'), array('Category'='CategoryGroup'))
-						->where('ChannelEntry.entry_id IN :entry_ids', array('entry_ids'=>$ids))
-						->orderBy('entry_id');
+			->with('Channel', array('Member'=>'MemberGroup'), array('Category'='CategoryGroup'))
+			->where('ChannelEntry.entry_id IN :entry_ids', array('entry_ids'=>$ids))
+			->orderBy('entry_id');
 		$entries = $query->execute();
 
 		foreach($entry_data as $id => $entry)
@@ -53,6 +58,7 @@ class EditMultipleEntriesTransaction extends Transaction {
 				$validation_errors[$entry->entry_id] = $errors;	
 			}
 		}
+
 		if ( ! empty($validation_errors))
 		{
 			$this->entries = $entries;
