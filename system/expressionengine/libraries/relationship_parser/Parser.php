@@ -557,6 +557,9 @@ class EE_Relationship_data_parser {
 		// -------------------------------------------
 
 
+		// BEWARE:
+		// If $end_script is TRUE, we should do no more processing after the hook!
+
 		if ($end_script === FALSE && ($limit OR $offset))
 		{
 			$rows = array_slice($rows, $offset, $limit, TRUE);
