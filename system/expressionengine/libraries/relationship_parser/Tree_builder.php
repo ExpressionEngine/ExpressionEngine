@@ -194,7 +194,7 @@ class EE_relationship_tree_builder {
 			if (ee()->extensions->active_hook('relationships_query_result') === TRUE)
 			{
 				$entry_lookup = ee()->extensions->call('relationships_query_result', $entry_lookup);
-				if (ee()->extensions->end_script === TRUE) return ee()->TMPL->tagdata;
+				if (ee()->extensions->end_script === TRUE) return NULL;
 			}
 		//
 		// -------------------------------------------
