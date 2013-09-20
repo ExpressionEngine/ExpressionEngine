@@ -1885,7 +1885,7 @@ GRID_FALLBACK;
 	{
 		$this->fetch_categories();
 
-		ee()->load->library('channel_form/channel_form_data_sorter');
+		ee()->load->library('channel_form/channel_form_data_sorter','','data_sorter');
 
 		if ( ! $categories = $this->categories)
 		{
