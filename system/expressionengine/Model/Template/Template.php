@@ -10,7 +10,7 @@ class Template extends Model {
 	 */
 	public function __construct(array $data=array())
 	{
-		parent::__construct($data);
+		parent::__construct('TemplateEntity', $data);
 	}
 
 	/**
@@ -29,22 +29,7 @@ class Template extends Model {
 	 */
 	public function validate()
 	{
-
+		return new Errors();
 	}
 
-	/**
-	 *
-	 */
-	public function save()
-	{
-
-	}
-
-	/**
-	 *
-	 */
-	public function delete()
-	{
-
-	}
 }
