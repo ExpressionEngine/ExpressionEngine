@@ -35,12 +35,12 @@ class EntriesListService extends ListService {
 		
 		if (($channel_id = ee()->input->get_post('channel_id')) !== NULL)
 		{
-			$query->where('ChannelEntry.channel_id == :channel_id', array('channel_id'=>$channel_id));
+			$query->where('ChannelEntry.channel_id', $channel_id);
 		}
 
 		if (($cat_id = ee()->input->get_post('cat_id')) !== NULL)
 		{
-			$query->where('Category.cat_id == :cat_id', array('cat_id'=>$cat_id));
+			$query->where('Category.cat_id', $cat_id));
 		}
 		
 		$entries = $query->execute();

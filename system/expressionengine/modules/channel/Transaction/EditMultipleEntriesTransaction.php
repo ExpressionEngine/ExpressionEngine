@@ -1,20 +1,27 @@
 <?PHP
 
 class EditMultipleEntriesTransaction extends Transaction {
-	protected $entries = array();
+	public $entry_ids = NULL;
 
-	public function setEntries(array $entries)
+	public function handleStep()
 	{
-		$this->entries = $entries;
-		return $this;
+		if (  ($entry_ids = ee()->input->post('toggle'))) 
+		{
+			return $this->form(ee()->query_builder->get('ChannelEntries', $entry_ids));
+				
+		}
+		elseif (($entry_data = ee()->input->post('entries')))
+		{
+			return $this->process($entry_data);
+		}
+		elseif ($this->entry_ids !== NULL)
+		{
+			return $this->form(ee()->query_builder->get('ChannelEntries', $this->entry_ids));	
+		}
+		throw new TransactionException('Unknown state!');
 	}
 
-	public function handleStep() 
-	{
-
-	}
-
-	protected function form(array $errors = array())
+	protected function form(array $entries, array $errors = array())
 	{
 		$entry_views = array();
 		foreach ($this->entries as $entry)
@@ -30,9 +37,8 @@ class EditMultipleEntriesTransaction extends Transaction {
 		return ee()->view->make('Edit/Multiple/Form', array('views'=>$entry_views));
 	}
 
-	protected function process()
+	protected function process($entry_data)
 	{
-		$entry_data = ee()->input->post('entries');
 		$ids = array_keys($entry_data);
 		
 		$query = ee()->query_builder->get('ChannelEntry')
