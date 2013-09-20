@@ -1,5 +1,8 @@
 <?PHP
 
+/**
+ *
+ */
 abstract class Entity {
 	public $table_name = NULL;
 	public $id_name = NULL;

@@ -26,7 +26,7 @@ abstract class Model {
 		$this->entity = new $entity_name();
 		foreach ($data as $key => $value) 
 		{
-			$this->{$key} = $value;
+			$this->entity->{$key} = $value;
 		}
 	}	
 
