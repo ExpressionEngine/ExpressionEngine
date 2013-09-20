@@ -57,9 +57,9 @@ class Login extends CP_Controller {
 		// If an ajax request ends up here the user is probably logged out
 		if (AJAX_REQUEST)
 		{
-			header('X-EERedirect: C=login');
-			$this->output->set_status_header(401);
-			die('C=login');
+			//header('X-EERedirect: C=login');
+			header('X-EEBroadcast: modal');
+			die('Logged out');
 		}
 
 		$username = $this->session->flashdata('username');
@@ -165,8 +165,7 @@ class Login extends CP_Controller {
 		if (AJAX_REQUEST)
 		{
 			$this->output->send_ajax_response(array(
-				'xid'			=> XID_SECURE_HASH,
-				'session_id'	=> $incoming->session_id(),
+				'base'			=> $base,
 				'messageType'	=> 'success',
 				'message'		=> lang('logged_back_in')
 			));
@@ -660,7 +659,8 @@ class Login extends CP_Controller {
 		}
 
 		$this->output->send_ajax_response(array(
-			'xid'	=> XID_SECURE_HASH
+			'xid'	  => XID_SECURE_HASH,
+			'message' => 'refresh'
 		));
 	}
 

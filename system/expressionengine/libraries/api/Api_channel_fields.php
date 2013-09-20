@@ -1881,8 +1881,7 @@ class Api_channel_fields extends Api {
 					ltrim($modifier, ':'),
 					$content,
 					$params,
-					$chunk,
-					md5($chunk)
+					$chunk
 				);
 
 				$pfield_chunk[] = $chunk_array;

@@ -3,7 +3,7 @@
 $lang = array(
 
 /* no Javascript Warning */
-'no_js_warning'	=> 
+'no_js_warning'	=>
 'Javascript must be enabled in order for this theme to function properly.  Please check your browser settings.',
 
 
@@ -26,7 +26,7 @@ $lang = array(
 'nav_design'	   				=> 'Design',
 	'nav_create_group'				=> 'Create Group',
 	'nav_create_template'			=> 'Create Template',
-	'nav_edit_template_group' 		=> 'Edit Template Group', 
+	'nav_edit_template_group' 		=> 'Edit Template Group',
 	'nav_edit_template_group_more'  => '...see more',
 'nav_templates'					=> 'Templates',
 	'nav_edit_templates'		 	=> 'Edit',
@@ -210,55 +210,58 @@ $lang = array(
 'powered_by' =>
 'Powered By',
 
-'control_panel' => 
+'control_panel' =>
 'Control Panel',
 
-'main_menu' => 
+'main_menu' =>
 'CP Home',
 
-'username' => 
+'username' =>
 'Username',
 
-'password' => 
+'password' =>
 'Password',
 
 'logged_back_in'	=>
 'You are now logged back in!',
 
-'my_account' => 
+'my_account' =>
 'My Account',
 
-'myaccount' => 
+'myaccount' =>
 'My Account',
 
-'user_account' => 
+'user_account' =>
 'Member Account',
 
-'user_guide' => 
+'user_guide' =>
 'User Guide',
 
-'logout_confirm' =>
-'Are you sure you want to log-out?',
-
-'logout' => 
+'logout' =>
 'Log-out',
 
-'session_timeout' => 
-'Your session is about to expire due to inactivity',
+'session_idle' =>
+'Idle session detected',
 
-'login' => 
+'session_idle_description' =>
+'You\'ve gone idle, please enter your password to continue.',
+
+'session_idle_not_name' =>
+'Not %s?',
+
+'login' =>
 'Log-in',
 
-'copyright' => 
+'copyright' =>
 'Copyright',
 
-'rights_reserved' => 
+'rights_reserved' =>
 'All Rights Reserved',
 
-'page_rendered' => 
+'page_rendered' =>
 'Script executed in %x seconds',
 
-'queries_executed' => 
+'queries_executed' =>
 '%x SQL queries used',
 
 'build' =>
@@ -267,13 +270,13 @@ $lang = array(
 'forgot_password' =>
 'Forgot your password?',
 
-'e_no_css' => 
+'e_no_css' =>
 'The requested CSS file could not be opened.',
 
-'unauthorized' => 
+'unauthorized' =>
 'Unauthorized',
 
-'unauthorized_access' => 
+'unauthorized_access' =>
 'You are not authorized to access this page',
 
 'be_careful' =>
@@ -303,13 +306,13 @@ $lang = array(
 'required_fields' =>
 'Indicates required fields',
 
-'login' => 
+'login' =>
 'Login',
 
-'forgotten_password' => 
+'forgotten_password' =>
 'Forgotten password',
 
-'submit_email_address' => 
+'submit_email_address' =>
 'Submit your email address',
 
 'click_to_edit' =>
@@ -340,22 +343,22 @@ $lang = array(
 // Buttons
 //----------------------------
 
-'submit' => 
+'submit' =>
 'Submit',
 
-'preview' => 
+'preview' =>
 'Preview',
 
-'update' => 
+'update' =>
 'Update',
 
-'edit' => 
+'edit' =>
 'Edit',
 
-'delete' => 
+'delete' =>
 'Delete',
 
-'save_changes' => 
+'save_changes' =>
 'Save changes',
 
 'save' =>

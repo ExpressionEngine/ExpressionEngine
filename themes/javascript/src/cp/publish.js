@@ -306,28 +306,27 @@ EE.publish.save_layout = function() {
 	// for width() to work, the element cannot be in a parent div that is display:none
 	$(".main_tab").show();
 
-	//$("li:visible", "#tab_menu_tabs").each(function() {
 	$("#tab_menu_tabs a:not(.add_tab_link)").each(function() {
 
 		// skip list items with no id (ie: new tab)
 		if ($(this).parent('li').attr('id') && $(this).parent('li').attr('id').substring(0,5) == "menu_")
 		{
-			var tab_name =  $(this).parent('li').attr('id').substring(5), //$(this).text(),
-				tab_id	 = $(this).parent('li').attr('id').substring(5), //$(this).text().replace(/ /g, '_').toLowerCase();
-				tab_label = $(this).parent('li').attr('title'); //$(this).text();
+			var tab_name =  $(this).parent('li').attr('id').substring(5),
+				tab_id	 = $(this).parent('li').attr('id').substring(5),
+				tab_label = $(this).parent('li').attr('title');
 			field_index = 0;
 			visible = true;
 
 			if( $(this).parent('li').is(':visible') )
 			{
 				lay_name = tab_name;
-				layout_object[lay_name] = {};
-				layout_object[lay_name][mypre] = tab_label;
+				layout_object[tab_count] = {name: lay_name, fields: {}};
+				layout_object[tab_count][mypre] = tab_label;
 			} else {
 				merge = true;
 				visible = false;
 			}
-
+	
 			$("#"+tab_id).find(".publish_field").each(function() {
 
 				var that = $(this),
@@ -356,8 +355,7 @@ EE.publish.save_layout = function() {
 
 				if (visible === true) {
 					layout_settings['index'] = field_index;
-					layout_object[lay_name][id] = layout_settings;
-
+					layout_object[tab_count]['fields'][id] = layout_settings;
 					field_index += 1;
 				} else {
 					layout_hidden[id] = layout_settings;
@@ -366,7 +364,7 @@ EE.publish.save_layout = function() {
 			});
 
 			if (visible === true) {
-				tab_count++; // add one to the tab count
+				tab_count++;
 			}
 		}
 	});
@@ -375,28 +373,20 @@ EE.publish.save_layout = function() {
 	{
 		// Add hidden fields to first tab
 
-		var darn1, darn2, first_tab, last_index = 0;
-
-		for (darn in layout_object) {
-			first_tab = darn;
-			for (darn2 in layout_object[first_tab]) {
-				if (layout_object[first_tab][darn2]['index'] > last_index) {
-					last_index = layout_object[first_tab][darn2]['index'];
-				}
+		var last_index = 0;
+		for (field in layout_object[0]['fields']) {
+			if (field['index'] > last_index) {
+				last_index = field['index'];
 			}
-			break;
 		}
-
 
 		// Reindex first tab
 		$.each(layout_hidden, function() {
 			this['index'] = ++last_index;
 		});
 
-		jQuery.extend(layout_object[first_tab], layout_hidden);
+		jQuery.extend(layout_object[0]['fields'], layout_hidden);
 	}
-
-	//alert(JSON.stringify(layout_object, null, '\t'));
 
 	// @todo not a great solution
 	EE.tab_focus(cur_tab.replace(/menu_/, ""));
@@ -412,7 +402,7 @@ EE.publish.save_layout = function() {
 			type: "POST",
 			dataType: 	'json',
 			url: EE.BASE+"&C=content_publish&M=save_layout",
-			data: "XID="+EE.XID+"&json_tab_layout="+encodeURIComponent(JSON.stringify(layout_object))+"&"+$("#layout_groups_holder input").serialize()+"&channel_id="+EE.publish.channel_id,
+			data: "json_tab_layout="+encodeURIComponent(JSON.stringify(layout_object))+"&"+$("#layout_groups_holder input").serialize()+"&channel_id="+EE.publish.channel_id,
 			success: function(result){
 				if (result.messageType === 'success') {
 					$.ee_notice(result.message, {type: "success"});
@@ -435,7 +425,7 @@ EE.publish.remove_layout = function() {
 	$.ajax({
 		type: "POST",
 		url: EE.BASE+"&C=content_publish&M=save_layout",
-		data: "XID="+EE.XID+"&json_tab_layout="+json_tab_layout+"&"+$("#layout_groups_holder input").serialize()+"&channel_id="+EE.publish.channel_id+"&field_group="+EE.publish.field_group,
+		data: "json_tab_layout="+json_tab_layout+"&"+$("#layout_groups_holder input").serialize()+"&channel_id="+EE.publish.channel_id+"&field_group="+EE.publish.field_group,
 		success: function(msg){
 			$.ee_notice(EE.publish.lang.layout_removed + " <a href=\"javascript:location=location\">"+EE.publish.lang.refresh_layout+"</a>", {duration:0, type:"success"});
 			return true;
@@ -460,7 +450,6 @@ EE.publish.change_preview_link = function() {
 		type: 'POST',
 		dataType: 'json',
 		data: {
-			XID: EE.XID,
 			member_group: $select.find('option:selected').text()
 		}
 	});

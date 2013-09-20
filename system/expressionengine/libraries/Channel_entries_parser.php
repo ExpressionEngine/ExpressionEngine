@@ -133,20 +133,6 @@ class EE_Channel_parser {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Tagdata setter
-	 *
-	 * Sets the tag chunk that the parser should process
-	 *
-	 * @param String $tagdata The tagdata to save
-	 */
-	public function set_tagdata($tagdata)
-	{
-		return $this->_tagdata = $tagdata;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Prefix getter
 	 *
 	 * Returns a prefix if one was specified in the constructor.

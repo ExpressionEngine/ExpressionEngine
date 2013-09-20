@@ -416,6 +416,9 @@ $lang = array(
 'security_failure' =>
 'The file type you are attempting to upload is not allowed.',
 
+'gd_not_installed' =>
+'Thumbnail could not be created for the image. GD is required for creating thumbnails.',
+
 'thumb_not_created' =>
 'Thumbnail could not be created for the image. Please make sure the thumbnail directory is writable.',
 
