@@ -180,11 +180,26 @@ class EE_Channel_preparser {
 	 *
 	 * Returns the data of the preprocessing step of a given component.
 	 *
-	 * @return mixed	Single tag preprocessing results
+	 * @return mixed	Once tag preprocessing results
 	 */
 	public function once_data($obj)
 	{
 		return $this->_once_data[spl_object_hash($obj)];
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Single tag data setter
+	 *
+	 * Sets the data passed to the replace method of a given component.
+	 *
+	 * @return EE_Channel_parser_component	Component object to set data for
+	 * @return mixed	Data to set for component
+	 */
+	public function set_once_data($obj, $data)
+	{
+		return $this->_once_data[spl_object_hash($obj)] = $data;
 	}
 
 	// --------------------------------------------------------------------
