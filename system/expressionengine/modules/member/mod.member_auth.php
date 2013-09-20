@@ -732,7 +732,7 @@ class Member_auth extends Member {
 
 		$swap = array(
 			'name'		=> $name,
-			'reset_url'	=> reduce_double_slashes(ee()->functions->fetch_site_index(0, 0) . '/' . ee()->config->item('profile_trigger') . '/reset_password' .QUERY_MARKER.'&id='.$rand.$forum_id),
+			'reset_url'	=> reduce_double_slashes(ee()->functions->fetch_site_index(0, 0) . '/' . ee()->config->item('profile_trigger') . '/reset_password?&id='.$rand.$forum_id),
 			'site_name'	=> $site_name,
 			'site_url'	=> $return
 		);
