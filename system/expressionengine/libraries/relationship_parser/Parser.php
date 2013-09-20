@@ -541,6 +541,20 @@ class EE_Relationship_data_parser {
 			}
 		}
 
+		// -------------------------------------------
+		// 'relationships_modify_rows' hook.
+		//  - Take the relationship result and modify it right before starting to parse.
+		//  - added 2.7.1
+		//
+			if (ee()->extensions->active_hook('relationships_modify_rows') === TRUE)
+			{
+				$rows = ee()->extensions->call('relationships_modify_rows', $rows, $node);
+				if (ee()->extensions->end_script === TRUE) return ee()->TMPL->tagdata;
+			}
+		//
+		// -------------------------------------------
+
+
 		if ($limit OR $offset)
 		{
 			$rows = array_slice($rows, $offset, $limit, TRUE);
