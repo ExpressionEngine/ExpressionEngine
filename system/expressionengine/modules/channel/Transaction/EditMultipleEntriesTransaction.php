@@ -3,11 +3,13 @@
 class EditMultipleEntriesTransaction extends Transaction {
 	public $entry_ids = NULL;
 
-	public function handleStep()
+	public function step()
 	{
-		if (  ($entry_ids = ee()->input->post('toggle'))) 
+		if (($entry_ids = ee()->input->post('toggle'))) 
 		{
-			return $this->form(ee()->query_builder->get('ChannelEntries', $entry_ids));
+			return $this->form(
+				ee()->query_builder->get('ChannelEntries', $entry_ids)
+			);
 				
 		}
 		elseif (($entry_data = ee()->input->post('entries')))
@@ -16,7 +18,9 @@ class EditMultipleEntriesTransaction extends Transaction {
 		}
 		elseif ($this->entry_ids !== NULL)
 		{
-			return $this->form(ee()->query_builder->get('ChannelEntries', $this->entry_ids));	
+			return $this->form(
+				ee()->query_builder->get('ChannelEntries', $this->entry_ids)
+			);	
 		}
 		throw new TransactionException('Unknown state!');
 	}
@@ -45,7 +49,7 @@ class EditMultipleEntriesTransaction extends Transaction {
 			->with('Channel', array('Member'=>'MemberGroup'), array('Category'='CategoryGroup'))
 			->where('ChannelEntry.entry_id IN :entry_ids', array('entry_ids'=>$ids))
 			->orderBy('entry_id');
-		$entries = $query->execute();
+		$entries = $query->run();
 
 		foreach($entry_data as $id => $entry)
 		{

@@ -18,7 +18,7 @@ class EntriesListService extends ListService {
 			->with('Channel', array('Member'=>'MemberGroup'), array('Category'=>'CategoryGroup'))
 			->limit($this->getItemsPerPage())
 			->offset($this->getOffsetForPage($page));	
-		$entries = $query->execute();
+		$entries = $query->run();
 		return $this->getEntryListView($entries);
 	}
 
@@ -43,7 +43,7 @@ class EntriesListService extends ListService {
 			$query->where('Category.cat_id', $cat_id));
 		}
 		
-		$entries = $query->execute();
+		$entries = $query->run();
 		return $this->getEntryListView($entries);		
 	}
 
