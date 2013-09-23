@@ -1206,6 +1206,9 @@ $lang = array(
 "smtp_port" =>
 "SMTP Server Port",
 
+'empty_stmp_fields' =>
+'The %s field is required for SMTP.',
+
 "smtp_username" =>
 "SMTP Username",
 
