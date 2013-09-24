@@ -641,7 +641,7 @@ JSC;
 		ee()->form_validation->set_rules(
 			'file_allowed_directories',
 			'lang:allowed_dirs_file',
-			'required|callback__check_directories'
+			'required|callback__validate_file_settings'
 		);
 	}
 
@@ -693,7 +693,7 @@ JSC;
 		if ( ! $this->_check_directories())
 		{
 			ee()->lang->loadfile('filemanager');
-			ee()->form_validation->set_message('_check_directories', lang('please_add_upload'));
+			ee()->form_validation->set_message('_validate_file_settings', lang('please_add_upload'));
 			return FALSE;
 		}
 
