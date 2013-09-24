@@ -40,6 +40,7 @@ class EE_Template {
 	var $php_parse_location =  'output';	// Where in the chain the PHP gets parsed
 	var $template_edit_date	=	'';			// Template edit date
 	var $templates_sofar	=   '';			// Templates processed so far, subtemplate tracker
+	var $attempted_fetch	=  array();		// Templates attempted to fetch but may have bailed due to recursive embeds
 	var $encode_email		=  TRUE;		// Whether to use the email encoder.  This is set automatically
 	var $hit_lock_override	=  FALSE;		// Set to TRUE if you want hits tracked on sub-templates
 	var $hit_lock			=  FALSE;		// Lets us lock the hit counter if sub-templates are contained in a template
@@ -309,9 +310,17 @@ class EE_Template {
 			ee()->config->_global_vars[$site_var] = stripslashes(ee()->config->item($site_var));
 		}
 
-		// Parse {last_segment} variable
 		$seg_array = ee()->uri->segment_array();
-		ee()->config->_global_vars['last_segment'] = end($seg_array);
+
+		// Define some path related global variables
+		$added_globals = array(
+			'last_segment' => end($seg_array),
+			'current_url' => ee()->functions->fetch_current_uri(),
+			'current_path' => (ee()->uri->uri_string) ? ee()->uri->uri_string : '/',
+			'current_query_string' => http_build_query($_GET) // GET has been sanitized!
+		);
+
+		ee()->config->_global_vars = array_merge(ee()->config->_global_vars, $added_globals);
 
 		// Parse manual variables and Snippets
 		// These are variables that can be set in the path.php file
@@ -608,10 +617,35 @@ class EE_Template {
 				Whether or not loop prevention is enabled - y/n
 			/* -------------------------------------------*/
 
-			if (substr_count($this->templates_sofar, '|'.$site_id.':'.$ex['0'].'/'.$ex['1'].'|') > 1 && ee()->config->item('template_loop_prevention') != 'n')
+			$this->attempted_fetch[] = $ex['0'].'/'.$ex['1'];
+
+			// Tell user if a template has been recursively loaded
+			if (substr_count($this->templates_sofar, '|'.$site_id.':'.$ex['0'].'/'.$ex['1'].'|') > 1 &&
+				ee()->config->item('template_loop_prevention') != 'n')
 			{
-				$this->final_template = (ee()->config->item('debug') >= 1) ? str_replace('%s', $ex['0'].'/'.$ex['1'], ee()->lang->line('template_loop')) : "";
-				return;
+				// Set 503 status code, mainly so caching proxies do not cache this
+				ee()->output->set_status_header(503, 'Service Temporarily Unavailable');
+
+				// Tell user which template was loaded recursively and in what order
+				// so they can easily fix the error
+				if (ee()->config->item('debug') >= 1)
+				{
+					ee()->load->helper(array('html_helper', 'language_helper'));
+
+					$message = '<p>'.sprintf(lang('template_loop'), $ex['0'].'/'.$ex['1']).'</p>'
+						.'<p>'.lang('template_load_order').':</p>'
+						.ol($this->attempted_fetch);
+
+					ee()->output->show_message(array(
+						'heading' => 'Error',
+						'content' => $message
+					), FALSE);
+				}
+				// Show nothing if debug is off
+				else
+				{
+					exit;
+				}
 			}
 
 			// Process Subtemplate
@@ -809,9 +843,19 @@ class EE_Template {
 
 				// Strip the "chunk" from the template, replacing it with a unique marker.
 
-				if (stristr($raw_tag, 'random'))
+				// If part of the tag name is 'random', we treat it as a unique tag and only
+				// replace the first occurence so they are all processed individually. This
+				// means that tags with parameters such as orderby="random" behave as expected
+				// even if they are identical to other tags on the page.
+
+				if (stripos($raw_tag, 'random') !== FALSE)
 				{
-					$this->template = preg_replace("|".preg_quote($chunk)."|s", 'M'.$this->loop_count.$this->marker, $this->template, 1);
+					$chunk_offset = strpos($this->template, $chunk);
+
+					if ($chunk_offset !== FALSE)
+					{
+						$this->template = substr_replace($this->template, 'M'.$this->loop_count.$this->marker, $chunk_offset, strlen($chunk));
+					}
 				}
 				else
 				{
@@ -2923,15 +2967,6 @@ class EE_Template {
 			$str = preg_replace_callback("/".LD."\s*path=(.*?)".RD."/", array(&ee()->functions, 'create_url'), $str);
 		}
 
-		// {current_url}
-		$str = str_replace(LD.'current_url'.RD, ee()->functions->fetch_current_uri(), $str);
-
-		// {current_path}
-		$str = str_replace(LD.'current_path'.RD, ((ee()->uri->uri_string) ? ee()->uri->uri_string : '/'), $str);
-
-		// {current_query_string} - we use $_GET because it's been sanitized
-		$str = str_replace(LD.'current_query_string'.RD, http_build_query($_GET), $str);
-
 		// Add Action IDs form forms and links
 		$str = ee()->functions->insert_action_ids($str);
 
@@ -3188,7 +3223,7 @@ class EE_Template {
 				if ( ! preg_match('/^segment_\d+$/i', $val['3']) OR
 				strpos($val[2], 'if:else') !== FALSE OR
 				strpos($val[0], 'if:else') !== FALSE OR
-				count(preg_split("/(\!=|==|<=|>=|<>|<|>|AND|XOR|OR|&&|\|\|)/", $val[0])) > 2)
+				count(preg_split("/(\!=|==|<=|>=|<>|<|>|%|AND|XOR|OR|&&|\|\|)/", $val[0])) > 2)
 			{
 				continue;
 			}
@@ -3284,7 +3319,7 @@ class EE_Template {
 			if ( ! isset($vars[$val[3]]) OR
 				strpos($val[2], 'if:else') !== FALSE OR
 				strpos($val[0], 'if:else') !== FALSE OR
-				count(preg_split("/(\!=|==|<=|>=|<>|<|>|AND|XOR|OR|&&|\|\|)/", $val[0])) > 2)
+				count(preg_split("/(\!=|==|<=|>=|<>|<|>|%|AND|XOR|OR|&&|\|\|)/", $val[0])) > 2)
 			{
 				continue;
 			}

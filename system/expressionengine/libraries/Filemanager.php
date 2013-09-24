@@ -414,6 +414,12 @@ class Filemanager {
 		// Check to see if its an editable image, if it is, try and create the thumbnail
 		if ($this->is_editable_image($file_path, $mime))
 		{
+			// Check to see if we have GD and can resize images
+			if ( ! (extension_loaded('gd') && function_exists('gd_info')))
+			{
+				return $this->_save_file_response(FALSE, lang('gd_not_installed'));
+			}
+
 		 	$prefs = $this->max_hw_check($file_path, $prefs);
 		
 			if ( ! $prefs)
@@ -1908,6 +1914,25 @@ class Filemanager {
 		}
 
 		return form_dropdown('category', $category_dropdown_array);
+	}
+
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Validate Post Data
+	 *
+	 * Validates that the POST data did not get dropped, this happens when
+	 * the content-length of the request is larger than PHP's post_max_size
+	 *
+	 *
+	 * @return	bool
+	 */
+	public function validate_post_data()
+	{
+		ee()->load->helper('number_helper');
+		$post_limit = get_bytes(ini_get('post_max_size'));
+		return $_SERVER['CONTENT_LENGTH'] <= $post_limit;
 	}
 
 	

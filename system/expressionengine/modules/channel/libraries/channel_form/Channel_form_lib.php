@@ -166,8 +166,11 @@ class Channel_form_lib
 			throw new Channel_form_exception(lang('channel_form_no_channel'));
 		}
 
+		//temporarily set the site_id for cross-site channel:form
+		$current_site_id = ee()->config->item('site_id');
 
-		//load member data for logged out member
+		ee()->config->set_item('site_id', $this->site_id);
+
 		$this->fetch_logged_out_member(ee()->TMPL->fetch_param('logged_out_member_id'));
 		$this->load_session_override();
 
@@ -685,7 +688,7 @@ class Channel_form_lib
 		ee()->TMPL->tagdata = ee()->TMPL->swap_var_single('captcha_word', '', ee()->TMPL->tagdata);
 
 		// Replace {captcha} with actual captcha
-		ee()->TMPL->tagdata = ee()->TMPL->swap_var_single('captcha', ee()->functions->create_captcha(), ee()->TMPL->tagdata);
+		ee()->TMPL->tagdata = ee()->TMPL->swap_var_single('captcha', ee()->functions->create_captcha('', $captcha_conditional['captcha']), ee()->TMPL->tagdata);
 
 		// Parse the variables
 		if ($this->parse_variables)
@@ -698,19 +701,8 @@ class Channel_form_lib
 			$this->_file_enctype = TRUE;
 		}
 
-		//add class to form
-		if (ee()->TMPL->fetch_param('class'))
-		{
-			ee()->TMPL->tagparams['form_class'] = ee()->TMPL->fetch_param('class');
-		}
-
 		//set group-based return url
 		$this->form_hidden('return', (ee()->TMPL->fetch_param('return_'.ee()->session->userdata['group_id'])) ? ee()->TMPL->fetch_param('return_'.ee()->session->userdata['group_id']) : ee()->TMPL->fetch_param('return'));
-
-		//temporarily set the site_id for cross-site channel:form
-		$current_site_id = ee()->config->item('site_id');
-
-		ee()->config->set_item('site_id', $this->site_id);
 
 		// Nothin'
 		if (ee()->session->userdata('member_id') == 0)
@@ -737,21 +729,33 @@ class Channel_form_lib
 
 		$hidden_fields = array_merge($hidden_fields, $this->_hidden_fields);
 
+		// If uploading a file keep a copy of all hidden vars in the query string
+		// This way we can check if POST data is dropped because of size limits
+		if ($this->file)
+		{
+			$action = $hidden_fields;
+			$action_url = $action['RET'];
+			$action['ACT'] = ee()->functions->insert_action_ids($action['ACT']);
+			$action = $action_url . '?' . http_build_query($action);
+		}
+		else
+		{
+			$action = $hidden_fields['RET'];
+		}
 
 		$this->form_attribute(
 			array(
 				'onsubmit' => ee()->TMPL->fetch_param('onsubmit'),
 				'name' => ee()->TMPL->fetch_param('name'),
-				'class' => ee()->TMPL->fetch_param('class'),
-				'id' => ee()->TMPL->fetch_param('id')
+				'id' => ee()->TMPL->fetch_param('id'),
+				'class' => ee()->TMPL->fetch_param('class')
 			)
 		);
 
 		$form_attributes = array(
 			'hidden_fields' => $hidden_fields,
-			'action'		=> $RET,
+			'action'		=> $action,
 			'id'			=> ee()->TMPL->fetch_param('id', 'publishForm'),
-			'class'			=> ee()->TMPL->form_class,
 			'enctype' 		=> $this->_file_enctype ? 'enctype="multipart/form-data"' : 'multi'
 		);
 
@@ -1277,8 +1281,19 @@ GRID_FALLBACK;
 		// Get hidden meta vars
 		if ( ! isset($_POST['meta']))
 		{
-			// This should never be valid
-			return;
+			if (isset($_GET['meta']))
+			{
+				// If $_POST is empty that means we exceeded PHP's post_max_size
+				$_POST['meta'] = $_GET['meta'];
+				$dropped = TRUE;
+			}
+			else
+			{
+				// This should never be valid
+				return;
+			}
+		} else {
+			$dropped = FALSE;
 		}
 
 		$this->_get_meta_vars();
@@ -1357,27 +1372,33 @@ GRID_FALLBACK;
 		}
 
 		//captcha check
+		$captcha_required = FALSE;
+
 		if ($this->channel('channel_id') && ! empty($this->logged_out_member_id) && ! empty($this->settings['require_captcha'][ee()->config->item('site_id')][$this->_meta['channel_id']]))
 		{
+			$captcha_required = TRUE;
+
 			if ( ! ee()->input->post('captcha'))
 			{
-				$this->errors[] = lang('captcha_required');
+				$this->field_errors['captcha_word'] = lang('captcha_required');
 			}
-
-			ee()->db->where('word', ee()->input->post('captcha', TRUE));
-			ee()->db->where('ip_address', ee()->input->ip_address());
-			ee()->db->where('date > ', '(UNIX_TIMESTAMP()-7200)', FALSE);
-
-			if ( ! ee()->db->count_all_results('captcha'))
+			else
 			{
-				$this->errors[] = lang('captcha_incorrect');
+				ee()->db->where('word', ee()->input->post('captcha', TRUE));
+				ee()->db->where('ip_address', ee()->input->ip_address());
+				ee()->db->where('date > ', '(UNIX_TIMESTAMP()-7200)', FALSE);
+
+				if ( ! ee()->db->count_all_results('captcha'))
+				{
+					$this->field_errors['captcha_word'] = lang('captcha_incorrect');
+				}
+
+				ee()->db->where('word', ee()->input->post('captcha', TRUE));
+				ee()->db->where('ip_address', ee()->input->ip_address());
+				ee()->db->where('date < ', '(UNIX_TIMESTAMP()-7200)', FALSE);
+
+				ee()->db->delete('captcha');
 			}
-
-			ee()->db->where('word', ee()->input->post('captcha', TRUE));
-			ee()->db->where('ip_address', ee()->input->ip_address());
-			ee()->db->where('date < ', '(UNIX_TIMESTAMP()-7200)', FALSE);
-
-			ee()->db->delete('captcha');
 		}
 
 		// Status Check to prevent post overrides
@@ -1542,7 +1563,9 @@ GRID_FALLBACK;
 
 		foreach ($this->title_fields as $field)
 		{
-			if (isset($this->default_fields[$field]))
+			// Disable default checks if $_POST was dropped
+			// The only thing we can validate is filesize
+			if (isset($this->default_fields[$field]) && ! $dropped)
 			{
 				ee()->api_channel_fields->set_settings($field, $this->default_fields[$field]);
 
@@ -1637,7 +1660,7 @@ GRID_FALLBACK;
 		//since we are now using the call_field_validation rule
 		if ( ! ee()->form_validation->run())
 		{
-			$this->field_errors = ee()->form_validation->_error_array;
+			$this->field_errors = (is_array($this->field_errors)) ? array_merge($this->field_errors, ee()->form_validation->_error_array) : ee()->form_validation->_error_array;
 		}
 
 		// CI's form validation rules can either throw an error, or be used as
@@ -1691,6 +1714,10 @@ GRID_FALLBACK;
 
 			//load the just created entry into memory
 			$this->fetch_entry(ee()->api_channel_form_channel_entries->entry_id);
+		}
+		elseif ($captcha_required && $this->error_handling == 'inline')
+		{
+			$this->field_errors = array_merge($this->field_errors, array('captcha_word' => lang('captcha_required')));
 		}
 
 		$this->unload_session_override();
@@ -1804,6 +1831,11 @@ GRID_FALLBACK;
 			$return = str_replace('URL_TITLE', $this->entry('url_title'), $return);
 		}
 
+		if (strpos($return, 'AUTHOR_ID') !== FALSE)
+		{
+			$return = str_replace('AUTHOR_ID', $this->entry('author_id'), $return);
+		}
+
 		if ($hook_return = ee()->api_channel_form_channel_entries->trigger_hook('entry_submission_redirect', $return))
 		{
 			$return = $hook_return;
@@ -1867,12 +1899,12 @@ GRID_FALLBACK;
 
 		if ( ! empty($params['group_id']))
 		{
-			ee()->data_sorter->filter($categories, 'category_group_id', $params['group_id'], 'in_array');
+			ee()->channel_form_data_sorter->filter($categories, 'category_group_id', $params['group_id'], 'in_array');
 		}
 
 		if ( ! empty($params['order_by']))
 		{
-			ee()->data_sorter->sort($categories, $params['order_by'], @$params['sort']);
+			ee()->channel_form_data_sorter->sort($categories, $params['order_by'], @$params['sort']);
 		}
 
 		//reset array indices
@@ -2492,7 +2524,7 @@ GRID_FALLBACK;
 			return;
 		}
 
-		$this->_form_attribute[$name] = $value;
+		$this->_form_attributes[$name] = $value;
 	}
 
 	// --------------------------------------------------------------------
@@ -3150,6 +3182,7 @@ GRID_FALLBACK;
 			'comment_expiration_date',
 			'recent_comment_date',
 			'comment_total',
+			'captcha_word'
 		);
 
 		$this->valid_callbacks = array(

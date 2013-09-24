@@ -268,8 +268,17 @@ class File_field {
 			$allowed_dirs[] = $row['id'];
 		}
 
+
 		// Upload or maybe just a path in the hidden field?
-		if (isset($_FILES[$field_name]) && $_FILES[$field_name]['size'] > 0 AND in_array($filedir, $allowed_dirs))
+		if ($existing_input)
+		{
+			$filename = $existing_input;
+		}
+		elseif ($hidden_input)
+		{
+			$filename = $hidden_input;
+		} 
+		elseif (isset($_FILES[$field_name]) && empty($filename) && in_array($filedir, $allowed_dirs))
 		{
 			ee()->load->library('filemanager');
 			$data = ee()->filemanager->upload_file($filedir, $field_name);
@@ -283,13 +292,16 @@ class File_field {
 				$filename = $data['file_name'];
 			}
 		}
-		elseif ($existing_input)
+		else
 		{
-			$filename = $existing_input;
-		}
-		elseif ($hidden_input)
-		{
-			$filename = $hidden_input;
+			// Check we're not exceeding PHP's post_max_size
+			ee()->load->library('filemanager');
+
+			if ( ! ee()->filemanager->validate_post_data())
+			{
+				ee()->lang->load('upload');
+				return array('value' => '', 'error' => lang('upload_file_exceeds_limit'));
+			}
 		}
 
 		// If the current file directory is not one the user has access to

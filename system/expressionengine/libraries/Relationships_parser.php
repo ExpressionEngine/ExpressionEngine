@@ -122,6 +122,11 @@ class EE_Relationships_parser {
 	 */
 	public function create(array $relationship_fields, array $entry_ids, $tagdata = NULL, array $grid_relationships = array(), $grid_field_id = NULL)
 	{
+		if ( ! empty($relationship_fields) && ! is_array(current($relationship_fields)))
+		{
+			$relationship_fields = array($relationship_fields);
+		}
+
 		if ( ! isset($tagdata))
 		{
 			$tagdata = ee()->TMPL->tagdata;

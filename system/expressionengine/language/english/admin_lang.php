@@ -1095,6 +1095,12 @@ $lang = array(
 "use_newrelic_explanation" =>
 'When enabled, New Relic will add <a href="https://newrelic.com/docs/features/real-user-monitoring" rel="external">Real User Monitoring JavaScript</a> to all of your web pages.',
 
+"newrelic_app_name" =>
+"New Relic Application Name",
+
+"newrelic_app_name_explanation" =>
+"Changes the name of the application that appears in the New Relic dashboard for this installation of ExpressionEngine.",
+
 "gzip_output" =>
 "Enable GZIP Output?",
 
