@@ -1899,12 +1899,12 @@ GRID_FALLBACK;
 
 		if ( ! empty($params['group_id']))
 		{
-			ee()->data_sorter->filter($categories, 'category_group_id', $params['group_id'], 'in_array');
+			ee()->channel_form_data_sorter->filter($categories, 'category_group_id', $params['group_id'], 'in_array');
 		}
 
 		if ( ! empty($params['order_by']))
 		{
-			ee()->data_sorter->sort($categories, $params['order_by'], @$params['sort']);
+			ee()->channel_form_data_sorter->sort($categories, $params['order_by'], @$params['sort']);
 		}
 
 		//reset array indices
