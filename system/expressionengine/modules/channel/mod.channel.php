@@ -4813,48 +4813,6 @@ class Channel {
 		return $return;
 	}
 
-	// ------------------------------------------------------------------------
-
-	// The old relationship functions. No longer needed, stop calling them.
-
-	public function parse_reverse_related_entries()
-	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('2.6');
-	}
-
-	public function parse_related_entries()
-	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('2.6');
-	}
-
-	// ------------------------------------------------------------------------
-
-	/**
-	  *  Related Categories Mode
-	  *
-	  * This function shows entries that are in the same category as
-	  * the primary entry being shown.  It calls the main "channel entries"
-	  * function after setting some variables to control the content.
-	  *
-	  * Note:  We have deprecated the calling of this tag directly via its own tag.
-	  * Related entries are now shown using the standard {exp:channel:entries} tag.
-	  * The reason we're deprecating it is to avoid confusion since the channel tag
-	  * now supports relational capability via a pair of {related_entries} tags.
-	  *
-	  * To show "related entries" the following parameter is added to the {exp:channel:entries} tag:
-	  *
-	  * related_categories_mode="on"
-	  */
-	public function related_entries()
-	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('2.6', 'Channel::related_category_entries()');
-
-		return $this->related_category_entries();
-	}
-
 	public function related_category_entries()
 	{
 		if ($this->query_string == '')

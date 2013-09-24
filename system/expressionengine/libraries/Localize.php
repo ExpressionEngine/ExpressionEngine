@@ -115,12 +115,12 @@ class Localize {
 		{
 			$format = str_replace($var, $this->_date_string_for_variable($var, $dt), $format);
 		}
-		
+
 		return $format;
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Given an date variable and a DateTime object, returns the associated
 	 * formatting for the date variable and DateTime object
@@ -138,7 +138,7 @@ class Localize {
 			'j', 'l', 'L', 'm', 'M', 'n', 'O', 'P', 'Q', 'r', 's', 'S',
 			't', 'T', 'U', 'w', 'W', 'y', 'Y', 'z', 'Z'
 		);
-		
+
 		// These date variables have month or day names and need to be ran
 		// through the language library
 		$translatable_date_vars = array(
@@ -148,12 +148,12 @@ class Localize {
 		// If TRUE, the translatable date variables will be run through the
 		// language library; this check has been brought over from legacy code
 		$translate = ! (isset(ee()->TMPL)
-			&& is_object(ee()->TMPL) 
+			&& is_object(ee()->TMPL)
 			&& ee()->TMPL->template_type == 'feed');
-		
+
 		// Remove percent sign for easy comparing and passing to DateTime::format
 		$date_var = str_replace('%', '', $var);
-		
+
 		if (in_array($date_var, $allowed_date_vars))
 		{
 			// Special cases
@@ -186,7 +186,7 @@ class Localize {
 					$date_var = 'P';
 					break;
 			}
-			
+
 			// If it's translatable, return the value for the lang key,
 			// otherwise send it straight to DateTime::format
 			if ($translate && in_array($date_var, $translatable_date_vars))
@@ -198,7 +198,7 @@ class Localize {
 				return $dt->format($date_var);
 			}
 		}
-		
+
 		return $var;
 	}
 
@@ -251,7 +251,7 @@ class Localize {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Returns a DateTime object for the current time and member timezone
 	 * OR a specified time and timezone
@@ -276,7 +276,7 @@ class Localize {
 		{
 			$timezone = $this->get_php_timezone($timezone);
 		}
-		
+
 		try
 		{
 			$timezone = new DateTimeZone($timezone);
@@ -350,7 +350,7 @@ class Localize {
 
 			// We'll store timezones for the current country here
 			$local_zones = array();
-			
+
 			foreach ($zones_by_country[$code] as $zone)
 			{
 				// Explode ID by slashes while replacing underscores with spaces
@@ -381,7 +381,7 @@ class Localize {
 
 			$timezones[$code] = $local_zones;
 		}
-		
+
 		// Convert to JSON for fast switching of timezone dropdown
 		$timezone_json = json_encode($timezones);
 
@@ -420,7 +420,7 @@ class Localize {
 
 			</script>
 EOF;
-		
+
 		// Prepend to the top of countries dropdown with common country selections
 		$countries = array_merge(
 			array(
@@ -445,13 +445,13 @@ EOF;
 		if ( ! empty($default))
 		{
 			$timezone_ids = DateTimeZone::listIdentifiers();
-				
+
 			// If default selection isn't valid, it may be our legacy timezone format
 			if ( ! in_array($default, $timezone_ids))
 			{
 				$default = $this->get_php_timezone($default);
 			}
-			
+
 			$selected_country = $this->_get_country_for_php_timezone($default);
 
 			// Preselect timezone if we got a valid country back
@@ -669,489 +669,6 @@ EOF;
 			return $months[$month];
 		}
 	}
-
-	// --------------------------------------------------------------------
-	// Everything below this line has been deprecated.
-	// --------------------------------------------------------------------
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Convert a MySQL timestamp to GMT
-	 *
-	 * @access	public
-	 * @param	string
-	 * @return	string
-	 */
-	public function timestamp_to_gmt($str = '')
-	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('2.6', 'Date helper\'s mysql_to_unix()');
-
-		ee()->load->helper('date');
-		return mysql_to_unix($str);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 *   Set localized time
-	 *
-	 * Converts GMT time to the localized values of the current logged-in user
-	 *
-	 * @access	public
-	 * @param	string
-	 * @param	string
-	 * @param	string
-	 * @return	string
-	 */
-	function set_localized_time($now = '', $timezone = '', $dst = '')
-	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('2.6');
-
-		ee()->load->helper('date');
-		$zones = timezones();
-
-		if ($now == '')
-		{
-			$now = $this->now;
-		}
-
-		// This lets us use a different timezone then the logged in user to calculate a time.
-		// Right now we only use this to show the local time of other users
-		if ($timezone == '')
-		{
-			$timezone = ee()->session->userdata['timezone'];
-		}
-
-		// If the current user has not set localization preferences
-		// we'll instead use the master server settings
-		if ($timezone == '')
-		{
-			return $this->set_server_time($now);
-		}
-
-		$now += $zones[$timezone] * 3600;
-
-		if ($dst == '')
-		{
-			$dst = ee()->session->userdata('daylight_savings');
-		}
-
-		if ($dst == 'y')
-		{
-			$now += 3600;
-		}
-
-		return $this->set_server_offset($now);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Set localized server time
-	 *
-	 * Converts GMT time to the localized server timezone
-	 *
-	 * @access	public
-	 * @param	string
-	 * @return	string
-	 */
-	function set_server_time($now = '')
-	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('2.6');
-
-		ee()->load->helper('date');
-		$zones = timezones();
-
-		if ($now == '')
-		{
-			$now = $this->now;
-		}
-
-		if ($tz = ee()->config->item('default_site_timezone'))
-		{
-			$now += $zones[$tz] * 3600;
-		}
-
-		if (ee()->config->item('daylight_savings') == 'y')
-		{
-			$now += 3600;
-		}
-
-		$now = $this->set_server_offset($now);
-
-		return $now;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 *   Set server offset
-	 *
-	 * Takes a Unix timestamp as input and adds/subtracts the number of
-	 * minutes specified in the master server time offset preference
-	 *
-	 * The optional second parameter lets us reverse the offset (positive number becomes negative)
-	 * We use the second parameter with set_localized_offset()
-	 *
-	 * @access	public
-	 * @param	string
-	 * @return	string
-	 */
-	function set_server_offset($time, $reverse = 0)
-	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('2.6');
-
-		$offset = ( ! ee()->config->item('server_offset')) ? 0 : ee()->config->item('server_offset') * 60;
-
-		if ($offset == 0)
-		{
-			return $time;
-		}
-
-		if ($reverse == 1)
-		{
-			$offset = $offset * -1;
-		}
-
-		$time += $offset;
-
-		return $time;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 *   Set localized offset
-	 *
-	 * This function lets us calculate the time difference between the
-	 * timezone of the current user and the timezone of the server hosting
-	 * the site.  It solves a dilemma we face when using functions like mktime()
-	 * which base their output on the server's timezone.  When a channel entry is
-	 * submitted, the entry date is converted to a Unix timestamp.  But since
-	 * the user submitting the entry might not be in the same timezone as the
-	 * server we need to offset the timestamp to reflect this difference.
-	 *
-	 * @access	public
-	 * @return	void
-	 */
-	function set_localized_offset()
-	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('2.6');
-		
-		$offset = 0;
-
-		ee()->load->helper('date');
-		$zones = timezones();
-
-		if (ee()->session->userdata['timezone'] == '')
-		{
-			if ($tz = ee()->config->item('default_site_timezone'))
-			{
-				$offset += $zones[$tz];
-			}
-
-			if (ee()->config->item('daylight_savings') == 'y')
-			{
-				$offset += 1;
-			}
-		}
-		else
-		{
-			$offset += $zones[ee()->session->userdata['timezone']];
-
-			if (ee()->session->userdata['daylight_savings'] == 'y')
-			{
-				$offset += 1;
-			}
-		}
-
-		// Offset this number based on the server offset (if it exists)
-		$time = $this->set_server_offset(0, 1);
-
-		// Divide by 3600, making our offset into hours
-		$time = $time/3600;
-
-		// add or subtract it from our timezone offset
-		$offset -= $time;
-
-		// Multiply by -1 to invert the value (positive becomes negative and vice versa)
-		$offset = $offset * -1;
-
-		// Convert it to seconds
-		if ($offset != 0)
-		{
-			$offset = $offset * (60 * 60);
-		}
-
-		return $offset;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Human-readable time
-	 *
-	 * Formats Unix/GMT timestamp to the following format: 2003-08-21 11:35 PM
-	 *
-	 * Will also switch to Euro time based on the user preference
-	 *
-	 * @access	public
-	 * @param	string
-	 * @param	bool
-	 * @param	bool
-	 * @return	string
-	 */
-	function set_human_time($now = '', $localize = TRUE, $seconds = FALSE)
-	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('2.6', 'Localize::human_time');
-		
-		return $this->human_time($now, $localize, $seconds);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Convert "human" date to GMT
-	 *
-	 * Converts the human-readable date used in the channel entry
-	 * submission page back to Unix/GMT
-	 *
-	 * @access	public
-	 * @param	string
-	 * @return	int
-	 */
-	function convert_human_date_to_gmt($datestr = '')
-	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('2.6', 'Localize::string_to_timestamp');
-		
-		return $this->string_to_timestamp($datestr);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 *   Simple Offset
-	 *
-	 * This allows a timestamp to be offset by the submitted timezone.
-	 * Currently this is only used in the PUBLISH page
-	 *
-	 * @access	public
-	 * @param	string
-	 * @param	string
-	 * @return	int
-	 */
-	function simpl_offset($time = '', $timezone = '')
-	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('2.6');
-
-		return $time;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Format timespan
-	 *
-	 * Returns a span of seconds in this format: 10 days 14 hours 36 minutes 47 seconds
-	 *
-	 * @access	public
-	 * @param	string
-	 * @return	string
-	 */
-	function format_timespan($seconds = '')
-	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('2.6', 'Date helper\'s timespan()');
-
-		ee()->load->helper('date');
-		return timespan($seconds);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 *   Fetch Date Params (via template parser)
-	 *
-	 * @access	public
-	 * @param	string
-	 * @return	string
-	 */
-	function fetch_date_params($datestr = '')
-	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('2.6');
-
-		if ($datestr == '')
-			return;
-
-		if ( ! preg_match_all("/(%\S)/", $datestr, $matches))
-				return;
-
-		return $matches[1];
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 *   Decode date string (via template parser)
-	 *
-	 * This function takes a string containing text and
-	 * date codes and extracts only the codes.  Then,
-	 * the codes are converted to their actual timestamp
-	 * values and the string is reassembled.
-	 *
-	 * @access	public
-	 * @param	string
-	 * @param	string
-	 * @param	bool
-	 * @return	string
-	 */
-	function decode_date($datestr = '', $unixtime = '', $localize = TRUE)
-	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('2.6', 'Localize::format_date');
-		
-		return $this->format_date($datestr, $unixtime, $localize);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Convert timestamp codes
-	 *
-	 * All text codes are converted to the user-specified language.
-	 *
-	 * @access	public
-	 * @param	string
-	 * @param	string
-	 * @param	bool
-	 * @return	mixed
-	 */
-	function convert_timestamp($format = '', $time = '', $localize = TRUE, $prelocalized = FALSE)
-	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('2.6', 'Localize::format_date');
-		
-		$return_array = FALSE;
-
-		if (is_array($format) && isset($format[0]))
-		{
-			$return_array = TRUE;
-			$format = $format[0];
-		}
-
-		$format = $this->format_date($format, $time, $localize);
-
-		return ($return_array) ? array($format) : $format;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 *  GMT Offset - Ouputs:  +01:00
-	 *
-	 * @access	public
-	 * @param	string
-	 * @return	int
-	 */
-	function zone_offset($tz = '')
-	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('2.6');
-
-		return $tz;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Timezones
-	 *
-	 * This array is used to render the localization pull-down menu
-	 *
-	 * @access	public
-	 * @return	array
-	 */
-	function zones()
-	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('2.6', 'Date helper\'s timezones()');
-
-		ee()->load->helper('date');
-		return timezones();
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Set localized timezone
-	 *
-	 * @access	public
-	 * @return	string
-	 */
-	function set_localized_timezone()
-	{
-        ee()->load->library('logger');
-        ee()->logger->deprecated('2.6');
-
-		return 'GMT';
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Fetch Days in Month
-	 *
-	 * Returns the number of days for the given month/year
-	 * Takes leap years into consideration
-	 *
-	 * @access	public
-	 * @param	string
-	 * @param	string
-	 * @return	int
-	 */
-	function fetch_days_in_month($month, $year)
-	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('2.6', 'Date helper\'s days_in_month()');
-
-		ee()->load->helper('date');
-		return days_in_month($month, $year);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Adjust Date
-	 *
-	 * This function is used by the calendar.  It verifies that
-	 * the month/day are within the correct range and adjusts
-	 * if necessary.  For example:  Day 34 in Feburary would
-	 * be adjusted to March 6th.
-	 *
-	 * @access	public
-	 * @param	string
-	 * @param	string
-	 * @param	bool
-	 * @return	array
-	 */
-	function adjust_date($month, $year, $pad = FALSE)
-	{
-		ee()->load->library(array('logger', 'calendar'));
-		ee()->logger->deprecated('2.6', 'Calendar::adjust_date');
-		
-		return ee()->calendar->adjust_date($month, $year, $pad);
-	}
-
 }
 // END CLASS
 

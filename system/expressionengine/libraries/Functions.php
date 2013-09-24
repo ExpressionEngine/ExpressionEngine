@@ -267,28 +267,6 @@ class EE_Functions {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Remove duplicate slashes from URL
-	 *
-	 * With all the URL/URI parsing/building, there is the potential
-	 * to end up with double slashes.  This is a clean-up function.
-	 *
-	 * Will likely be deprecated in 2.6, use string helper instead
-	 *
-	 * @access	public
-	 * @param	string
-	 * @return	string
-	 */
-	function remove_double_slashes($str)
-	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('2.6', 'reduce_double_slashes()');
-
-		return reduce_double_slashes($str);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Extract path info
 	 *
 	 * We use this to extract the template group/template name
@@ -1379,28 +1357,6 @@ class EE_Functions {
 		}
 
 		return $str;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Compile and cache relationship data
-	 *
-	 * This is used when submitting new channel entries or gallery posts.
-	 * It serializes the related entry data.  The reason it's in this
-	 * file is because it gets called from the publish class and the
-	 * gallery class so we need it somewhere that is accessible to both.
-	 *
-	 * @access	public
-	 * @param	string
-	 * @param	bool
-	 * @param	bool
-	 * @return	void
-	 */
-	function compile_relationship($data, $parent_entry = TRUE, $reverse = FALSE)
-	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('2.6');
 	}
 
 	// --------------------------------------------------------------------
