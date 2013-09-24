@@ -400,12 +400,10 @@ EE.cp.show_hide_sidebar = function() {
 	});
 
 	$(window).bind('broadcast.sidebar', function(event, sidebarIsOpen) {
-		var selectors = {
-			true: "#revealSidebarLink",
-			false: "#hideSidebarLink"
-		};
 
-		$(selectors[sidebarIsOpen]).filter(':visible').trigger('click');
+		var selector = (sidebarIsOpen) ? "#revealSidebarLink" : "#hideSidebarLink";
+
+		$(selector).filter(':visible').trigger('click');
 	});
 };
 

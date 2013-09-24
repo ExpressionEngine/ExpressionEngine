@@ -186,6 +186,20 @@ class EE_relationship_tree_builder {
 			$entry_lookup[$entry['entry_id']] = $entry;
 		}
 
+		// -------------------------------------------
+		// 'relationships_query_result' hook.
+		//  - Take the whole relationship result array, do what you wish
+		//  - added 2.7.1
+		//
+			if (ee()->extensions->active_hook('relationships_query_result') === TRUE)
+			{
+				$entry_lookup = ee()->extensions->call('relationships_query_result', $entry_lookup);
+				if (ee()->extensions->end_script === TRUE) return NULL;
+			}
+		//
+		// -------------------------------------------
+
+
 		if ( ! class_exists('EE_Relationship_data_parser'))
 		{
 			require_once APPPATH.'libraries/relationship_parser/Parser.php';
