@@ -342,7 +342,7 @@ class File_model extends CI_Model {
 		$name_func = $this->_where_function($file_name);
 
 		return $this->db->$dir_func('upload_location_id', $dir_id)
-						->$name_func('file_name', $file_name)
+						->$name_func('file_name', $file_name . ' COLLATE utf8_bin', TRUE)
 						->get('files');
 	}
 
