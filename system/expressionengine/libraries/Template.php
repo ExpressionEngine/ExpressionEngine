@@ -1506,49 +1506,35 @@ class EE_Template {
 		$status = ($cache_type == 'tag') ? 'tag_cache_status' : 'cache_status';
 		$status =& $this->$status;
 
+		// Bail out if this tag/template isn't set to cache
 		if ( ! isset($args['cache']) OR $args['cache'] != 'yes')
 		{
 			$status = 'NO_CACHE';
 			return FALSE;
 		}
 
-		$cache_dir = ($cache_type == 'tag') ? APPPATH.'cache/'.$this->t_cache_path : $cache_dir = APPPATH.'cache/'.$this->p_cache_path;
-		$file = $cache_dir.$cfile;
-
-		if ( ! file_exists($file) OR ! ($fp = @fopen($file, FOPEN_READ)))
-		{
-			$status = 'EXPIRED';
-			return FALSE;
-		}
-
-		$cache = '';
+		// Get refresh setting in minutes, convert to seconds
 		$refresh = ( ! isset($args['refresh'])) ? 0 : $args['refresh'];
+		$refresh *= 60;
 
-		flock($fp, LOCK_SH);
+		// Get metadata for this cache key to see if it's expired, because even
+		// though we can set a TTL for auto-expiration, the refresh setting
+		// can change and needs to invalidate the cache if necessary
+		$cache_info = ee()->cache->get_metadata($cfile);
 
-		// Read the first line (left a small buffer - just in case)
-		$timestamp	= trim(fgets($fp, 30));
-
-		if ((strlen($timestamp) != 10) OR ($timestamp !== ((string)(int) $timestamp))) // Integer check
+		// If expiration date plus refresh time is greater than now and there is
+		// something in the cache, return cached copy
+		if (isset($cache_info['expire']) &&
+			$cache_info['expire'] + $refresh > ee()->localize->now &&
+			$cache = ee()->cache->get($cfile))
 		{
-			// Should never happen - so we'll log it
-			$this->log_item("Invalid Cache File Format: ".$file);
-			$status = 'EXPIRED';
-		}
-		elseif (time() > ($timestamp + ($refresh * 60)))
-		{
-			$status = 'EXPIRED';
+			$status = 'CURRENT';
 		}
 		else
 		{
-			// Timestamp valid - read rest of file
-			$this->cache_timestamp = (int) $timestamp;
-			$status = 'CURRENT';
-			$cache = @fread($fp, filesize($file));
+			$cache = '';
+			$status = 'EXPIRED';
 		}
-
-		flock($fp, LOCK_UN);
-		fclose($fp);
 
 		return $cache;
 	}
@@ -1589,46 +1575,10 @@ class EE_Template {
 			return;
 		}
 
-		$cache_dir  = ($cache_type == 'tag') ? APPPATH.'cache/'.$this->t_cache_path : $cache_dir = APPPATH.'cache/'.$this->p_cache_path;
-		$cache_base = ($cache_type == 'tag') ? APPPATH.'cache/tag_cache' : APPPATH.'cache/page_cache';
-
-		$cache_file = $cache_dir.$cfile;
-
-		$dirs = array($cache_base, $cache_dir);
-
-		foreach ($dirs as $dir)
-		{
-			if ( ! @is_dir($dir))
-			{
-				if ( ! @mkdir($dir, DIR_WRITE_MODE))
-				{
-					return;
-				}
-
-				if ($dir == $cache_base && $fp = @fopen($dir.'/index.html', FOPEN_WRITE_CREATE_DESTRUCTIVE))
-				{
-					fclose($fp);
-				}
-
-				@chmod($dir, DIR_WRITE_MODE);
-			}
-		}
-
-		if ( ! $fp = @fopen($cache_file, FOPEN_WRITE_CREATE_DESTRUCTIVE))
+		if ( ! ee()->cache->save($cfile, $data, 0))
 		{
 			$this->log_item("Could not create/write to cache file: ".$cache_file);
-			return;
 		}
-
-		flock($fp, LOCK_EX);
-		if (fwrite($fp, time()."\n".$data) === FALSE)
-		{
-			$this->log_item("Could not write to cache file: ".$cache_file);
-		}
-		flock($fp, LOCK_UN);
-		fclose($fp);
-
-		@chmod($cache_file, FILE_WRITE_MODE);
 	}
 
 	// --------------------------------------------------------------------
