@@ -136,6 +136,10 @@ class EE_Core {
 			@chmod(APPPATH.'cache/db_cache_'.ee()->config->item('site_id'), DIR_WRITE_MODE);
 		}
 
+		// Load the default caching driver
+		// TODO: Might want to specify this via hidden config
+		ee()->load->driver('cache', array('adapter' => 'file'));
+
 		// this look backwards, but QUERY_MARKER is only used where we MUST
 		// have a ?, and do not want to double up
 		// question marks on sites who are forcing query strings
