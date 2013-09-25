@@ -53,6 +53,7 @@ $lang = array(
 'email_sent' => "Your message has been successfully sent using the following protocol: %s",
 'email_no_socket' => "Unable to open a socket to Sendmail. Please check settings.",
 'email_no_hostname' => "You did not specify a SMTP hostname.",
+'email_no_port' => "You did not specify a SMTP port.",
 'email_smtp_error' => "The following SMTP error was encountered: %s",
 'email_no_smtp_unpw' => "Error: You must assign a SMTP username and password.",
 'email_failed_smtp_login' => "Failed to send AUTH LOGIN command. Error: %s",

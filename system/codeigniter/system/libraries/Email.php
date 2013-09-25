@@ -1801,6 +1801,12 @@ class CI_Email {
 			$this->_set_error_message('lang:email_no_hostname');
 			return FALSE;
 		}
+		
+		if ( ! is_numeric($this->smtp_port) OR $this->smtp_port < 0)
+		{
+			$this->_set_error_message('lang:email_no_port');
+			return FALSE;
+		}
 
 		if ( ! $this->_smtp_connect() OR ! $this->_smtp_authenticate())
 		{
