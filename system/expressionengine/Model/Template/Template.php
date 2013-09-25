@@ -1,16 +1,18 @@
 <?PHP
 
+
 /**
  *
  */
 class Template extends Model {
-	
+	protected static $entity_name = 'TemplateEntity';
+
 	/**
-	 * 
+	 *
 	 */
-	public function __construct(array $data=array())
+	public function getId()
 	{
-		parent::__construct('TemplateEntity', $data);
+		return $this->entity->template_id;
 	}
 
 	/**
@@ -33,3 +35,4 @@ class Template extends Model {
 	}
 
 }
+

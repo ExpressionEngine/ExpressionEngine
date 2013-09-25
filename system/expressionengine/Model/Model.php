@@ -4,6 +4,9 @@
  * The base Model class 
  */
 abstract class Model {
+
+	protected static $entity_name = NULL;
+
 	/**
 	 * The database entity object for the related database table.
 	 */
@@ -21,14 +24,25 @@ abstract class Model {
 	 * 						set on this model.  The array indexes must
 	 * 						be valid properties on this model's entity.
 	 */	
-	public function __construct($entity_name, array $data=array()) 
+	public function __construct(array $data=array()) 
 	{
-		$this->entity = new $entity_name();
-		foreach ($data as $key => $value) 
-		{
-			$this->entity->{$key} = $value;
-		}
+		$class = static::$entity_name;
+		$this->entity = new $class($data);
 	}	
+
+	/**
+	 * Must be defined by Model classes to link * the model's primary key to
+	 * its primary entity's * primary key.
+	 */
+	public abstract function getId();
+
+	/**
+	 *
+	 */
+	public static function getEntities()
+	{
+		return array(static::$entity_name);
+	}
 
 	/**
 	 * Pass through getter that allows properties to be gotten from this model
@@ -46,6 +60,10 @@ abstract class Model {
 		if (property_exists($name, $this->entity))
 		{
 			return $this->entity->{$name};
+		}
+		else if (method_exists($name))
+		{
+			return $this->$name();
 		}
 		throw new NonExistentPropertyException('Attempt to access a non-existent property on ' . __CLASS__);
 	}
@@ -74,6 +92,7 @@ abstract class Model {
 	
 		throw new NonExistentPropertyException('Attempt to access a non-existent property on ' . __CLASS__); 
 	}
+
 
 	/**
 	 * Validate this model's data for saving.

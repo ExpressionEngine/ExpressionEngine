@@ -2,6 +2,10 @@
 
 class ChannelEntry extends Model implements Content {
 
+	protected static $entity_name = 'ChannelTitleEntity';	
+	
+
+
 	/**
 	 * Renders the piece of content for the front end, parses the tag data
 	 * called by the module when rendering tagdata.

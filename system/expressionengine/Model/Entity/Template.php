@@ -1,10 +1,20 @@
 <?PHP
+namespace EllisLab\ExpressionEngine\Model\Entity;
+
+use EllisLab\ExpressionEngine\Model\Entity\Entity as Entity;
 
 class TemplateEntity extends Entity {
+	// Structural definition stuff
 	protected $id_name = 'template_id';
 	protected $table_name = 'exp_templates';
+	protected $relations = array(
+		'site_id' => 'SiteEntity',
+		'group_id' => 'TemplateGroupEntity',
+		'last_author_id' => 'MemberEntity'
+	);
 
-	public $template_id;
+	// Properties
+	public $template_id; 
 	public $site_id;
 	public $group_id; 
 	public $template_name;
