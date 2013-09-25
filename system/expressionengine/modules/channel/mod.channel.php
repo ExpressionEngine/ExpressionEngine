@@ -159,7 +159,7 @@ class Channel {
 	{
 		$tag = ($identifier == '') ? ee()->TMPL->tagproper : ee()->TMPL->tagproper.$identifier;
 
-		return ee()->cache->save(md5($tag.$this->uri), $sql, 300);
+		return ee()->cache->save(md5($tag.$this->uri), $sql, 0);
 	}
 
 	// ------------------------------------------------------------------------
