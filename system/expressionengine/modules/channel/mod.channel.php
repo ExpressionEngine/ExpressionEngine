@@ -147,19 +147,7 @@ class Channel {
 			}
 		}
 
-		$cache_file = APPPATH.'cache/'.$this->sql_cache_dir.md5($tag.$this->uri);
-
-		if ( ! $fp = @fopen($cache_file, FOPEN_READ))
-		{
-			return FALSE;
-		}
-
-		flock($fp, LOCK_SH);
-		$sql = @fread($fp, filesize($cache_file));
-		flock($fp, LOCK_UN);
-		fclose($fp);
-
-		return $sql;
+		return ee()->cache->get(md5($tag.$this->uri));
 	}
 
 	// ------------------------------------------------------------------------
@@ -171,36 +159,7 @@ class Channel {
 	{
 		$tag = ($identifier == '') ? ee()->TMPL->tagproper : ee()->TMPL->tagproper.$identifier;
 
-		$cache_dir  = APPPATH.'cache/'.$this->sql_cache_dir;
-		$cache_file = $cache_dir.md5($tag.$this->uri);
-
-		if ( ! @is_dir($cache_dir))
-		{
-			if ( ! @mkdir($cache_dir, DIR_WRITE_MODE))
-			{
-				return FALSE;
-			}
-
-			if ($fp = @fopen($cache_dir.'/index.html', FOPEN_WRITE_CREATE_DESTRUCTIVE))
-			{
-				fclose($fp);
-			}
-
-			@chmod($cache_dir, DIR_WRITE_MODE);
-		}
-
-		if ( ! $fp = @fopen($cache_file, FOPEN_WRITE_CREATE_DESTRUCTIVE))
-		{
-			return FALSE;
-		}
-
-		flock($fp, LOCK_EX);
-		fwrite($fp, $sql);
-		flock($fp, LOCK_UN);
-		fclose($fp);
-		@chmod($cache_file, FILE_WRITE_MODE);
-
-		return TRUE;
+		return ee()->cache->save(md5($tag.$this->uri), $sql, 300);
 	}
 
 	// ------------------------------------------------------------------------
