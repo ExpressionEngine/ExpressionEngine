@@ -12,11 +12,11 @@ class QueryBuilder {
 		{
 			if (is_array($ids))
 			{
-				$this->filter($model_name, 'IN', $ids);
+				$query->filter($model_name, 'IN', $ids);
 			}
 			else
 			{
-				$this->filter($model_name, $ids);
+				$query->filter($model_name, $ids);
 			}
 		}
 
@@ -123,14 +123,14 @@ class Query {
 	 */
 	private function find_related_path($from_model, $to_model)
 	{
-		$from_related = $from_model::getRelations();
+		$from_related = $from_model::getRelationshipInfo();
 		$from_relation = $from_related[$to_model];
 
 		$from_entities = $from_model::getEntities();
 		$to_entities = $to_model::getEntities();
 
 		$from_entity = $from_entities[$from_relation['entity']];
-		$from_entity_relations = $from_entity::getRelations();
+		$from_entity_relations = $from_entity::getRelationshipInfo();
 
 		// [key, entity]
 		$to_entity_relations = $to_entities[$from_entity_relations[$from_relation[$key]]];

@@ -1,4 +1,5 @@
 <?php
+namespace EllisLab\ExpressionEngine\Model;
 
 /**
  * The base Model class 
@@ -13,9 +14,16 @@ abstract class Model {
 	protected $entity;
 
 	/**
+	 *
+	 */
+	protected static $relations = array();
+
+	/**
 	 * An array storing the names of modified properties. Used in validation.
 	 */	
 	private $dirty = array();
+
+
 	
 	/**
 	 * Initialize this model with a set of data to set on the entity.
@@ -31,8 +39,8 @@ abstract class Model {
 	}	
 
 	/**
-	 * Must be defined by Model classes to link * the model's primary key to
-	 * its primary entity's * primary key.
+	 * Must be defined by Model classes to link the model's primary key to
+	 * its primary entity's primary key.
 	 */
 	public abstract function getId();
 
@@ -43,6 +51,15 @@ abstract class Model {
 	{
 		return array(static::$entity_name);
 	}
+
+	/**
+	 *
+	 */
+	public static function getRelationshipInfo()
+	{
+		return static::$relationship_info;
+	}
+
 
 	/**
 	 * Pass through getter that allows properties to be gotten from this model
@@ -61,7 +78,7 @@ abstract class Model {
 		{
 			return $this->entity->{$name};
 		}
-		else if (method_exists($name))
+		elseif (method_exists($name))
 		{
 			return $this->$name();
 		}
