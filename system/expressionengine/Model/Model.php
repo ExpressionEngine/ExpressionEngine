@@ -16,12 +16,13 @@ abstract class Model {
 	/**
 	 *
 	 */
-	protected static $relations = array();
+	protected $related_models;
 
 	/**
 	 * An array storing the names of modified properties. Used in validation.
 	 */	
 	private $dirty = array();
+
 
 
 	
@@ -52,14 +53,32 @@ abstract class Model {
 		return array(static::$entity_name);
 	}
 
-	/**
-	 *
-	 */
-	public static function getRelationshipInfo()
+	public function belongsTo($model, $entity, $key)
 	{
-		return static::$relationship_info;
-	}
+		$has_id = $this->getId() !== NULL;
+		$has_data = isset($this->related_models[$model]);
 
+		if ( ! $has_id && ! $has_data)
+		{
+			return array(
+				'entity' => $entity,
+				'key' => $key,
+				'type' => 'belongsTo'
+			);
+		}
+
+		if ( $has_id && ! $has_data)
+		{
+			return ee()->query_builder->get($model, $this->{$key})->run();
+		}
+
+		if ( $has_data)
+		{
+			return $this->related_models[$model];
+		}
+		
+		throw new UndefinedStateException();
+	} 
 
 	/**
 	 * Pass through getter that allows properties to be gotten from this model
