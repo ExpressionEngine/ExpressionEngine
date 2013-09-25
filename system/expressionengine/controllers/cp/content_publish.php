@@ -481,7 +481,7 @@ class Content_publish extends CP_Controller {
 				}
 			}
 
-			$clean_layout[strtolower($tab['name'])] = $tab['fields'];
+			$clean_layout[$tab['_tab_label']] = $tab['fields'];
 		}
 
 		if (count($error) > 0 OR count($valid_name_error) > 0)
