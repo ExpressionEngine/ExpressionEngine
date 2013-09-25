@@ -6,25 +6,37 @@ namespace EllisLab\ExpressionEngine\Model;
  */
 abstract class Model {
 
-	protected static $entity_name = NULL;
+	protected static $meta = array();
 
 	/**
 	 * The database entity object for the related database table.
 	 */
-	protected $entity;
+	protected $entities = array();
 
 	/**
 	 *
 	 */
-	protected $related_models;
+	protected $related_models = array();
 
 	/**
 	 * An array storing the names of modified properties. Used in validation.
 	 */	
 	private $dirty = array();
 
+	public static function getMetaData($key=NULL)
+	{
+		if (empty(static::$meta)) 
+		{
+			throw new UnderflowException('No meta data set for this class!');
+		}
 
+		if ( ! isset($key))
+		{
+			return static::$meta;
+		}
 
+		return static::$meta[$key];
+	}
 	
 	/**
 	 * Initialize this model with a set of data to set on the entity.
@@ -35,35 +47,54 @@ abstract class Model {
 	 */	
 	public function __construct(array $data=array()) 
 	{
-		$class = static::$entity_name;
-		$this->entity = new $class($data);
+		foreach (static::getEntityNames() as $entity_name)
+		{
+			$this->entities[$entity_name] = new $entity_name($data);		
+		}
 	}	
 
-	/**
-	 * Must be defined by Model classes to link the model's primary key to
-	 * its primary entity's primary key.
-	 */
-	public abstract function getId();
-
-	/**
-	 *
-	 */
-	public static function getEntities()
-	{
-		return array(static::$entity_name);
-	}
-
-	public function belongsTo($model, $entity, $key)
+	public function oneToOne($model, $entity, $key)
 	{
 		$has_id = $this->getId() !== NULL;
 		$has_data = isset($this->related_models[$model]);
 
 		if ( ! $has_id && ! $has_data)
 		{
+			$keys = $model::getKeys();
+			
 			return array(
-				'entity' => $entity,
-				'key' => $key,
-				'type' => 'belongsTo'
+				'entity' => $keys[$that_key],
+				'key' => $this_key,
+				'type' => 'one-to-one'
+			);
+		}
+
+		if ( $has_id && ! $has_data)
+		{
+			return ee()->query_builder->get($model, $this->{$key})->run();
+		}
+
+		if ( $has_data)
+		{
+			return $this->related_models[$model];
+		}
+		
+		throw new ModelUndefinedStateException();
+	}
+
+	public function manyToOne($model, $this_key, $that_key)
+	{
+		$has_id = $this->getId() !== NULL;
+		$has_data = isset($this->related_models[$model]);
+
+		if ( ! $has_id && ! $has_data)
+		{
+			$keys = $model::getKeys();
+			
+			return array(
+				'entity' => $keys[$that_key],
+				'key' => $this_key,
+				'type' => 'many-to-one'
 			);
 		}
 
@@ -80,6 +111,12 @@ abstract class Model {
 		throw new UndefinedStateException();
 	} 
 
+	public function oneToMany($model, $entity, $key)
+	{}
+
+	public function manyToMany($model, $entity, $key)
+	{}
+
 	/**
 	 * Pass through getter that allows properties to be gotten from this model
 	 * but stored in the wrapped entity.
@@ -93,14 +130,21 @@ abstract class Model {
 	 */
 	public function __get($name)
 	{
-		if (property_exists($name, $this->entity))
+		$method = 'get' . ucfirst($name);
+		if (method_exists($method))
 		{
-			return $this->entity->{$name};
+			return $this->$method();
 		}
-		elseif (method_exists($name))
+
+		foreach ($this->entities as $entity)
 		{
-			return $this->$name();
+			if (property_exists($name, $entity))
+			{
+				return $entity->{$name};
+			}
 		}
+
+
 		throw new NonExistentPropertyException('Attempt to access a non-existent property on ' . __CLASS__);
 	}
 
@@ -119,16 +163,32 @@ abstract class Model {
 	 */
 	public function __set($name, $value)
 	{
-		if (property_exists($name, $this->entity))
+		$method = 'set' . ucfirst($name);
+		if (method_exists($this, $method))
 		{
-			$this->entity->{$name} = $value;
-			$this->entity->dirty[$name] = TRUE;
-			return;
+			return $this->$method($value);
+		}
+
+		foreach($this->entities as $entity)
+		{
+			if (property_exists($name, $entity))
+			{
+				$entity->{$name} = $value;
+				$entity->dirty[$name] = TRUE;
+				return;
+			}
 		}
 	
 		throw new NonExistentPropertyException('Attempt to access a non-existent property on ' . __CLASS__); 
 	}
 
+	public function getId()
+	{
+		$primary_key = static::getMetaData('primary_key');
+		$key_map = static::getMetaData('key_map');
+		$entity_name = $key_map[$primary_key];
+		return $this->entities[$entity_name]->{$primary_key};
+	}
 
 	/**
 	 * Validate this model's data for saving.
@@ -158,8 +218,11 @@ abstract class Model {
 		{
 			throw new ModelException('Model failed to validate on save call!');
 		}
-			
-		$this->entity->save();
+
+		foreach($this->entities as $entity)
+		{
+			$entity->save();
+		}
 	}
 
 
@@ -170,6 +233,9 @@ abstract class Model {
 	 */
 	public function delete()
 	{
-		$this->entity->delete();
+		foreach($this->entities as $entity)
+		{
+			$entity->delete();
+		}
 	}
 }

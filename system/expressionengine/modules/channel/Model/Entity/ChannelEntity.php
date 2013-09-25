@@ -1,4 +1,4 @@
-<?PHP
+<?php
 namespace EllisLab\ExpressionEngine\Module\Channel\Model\Entity;
 
 use EllisLab\ExpressionEngine\Model\Entity\Entity as Entity;
@@ -12,5 +12,16 @@ class ChannelEntity extends Entity {
 	);
 	
 
+	public $channel_id;
+	public $site_id;
+	public $channel_name;
+	public $channel_title;
+	public $channel_url;
+	public $channel_description;
+	public $channel_lang;
+	public $total_entries;
+	public $total_comments;
+	public $last_entry_date;
+	public $last_comment_date;
 
 }

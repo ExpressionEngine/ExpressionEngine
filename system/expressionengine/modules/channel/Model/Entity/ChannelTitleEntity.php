@@ -1,12 +1,14 @@
 <?PHP
-namespace EllisLab\ExpressionEngine\Module\Channel\
+namespace EllisLab\ExpressionEngine\Module\Channel\Model\Entity;
 
 class ChannelTitleEntity extends Entity {
 	// Structural definition stuff
 	protected $id_name = 'entry_id';
 	protected $table_name = 'exp_channel_titles';
 	protected $relations = array(
-
+		'ChannelDataEntity' => array('this.entry_id' => 'ChannelDataEntity.entry_id'),
+		'ChannelEntity' => array('this.channel_id' => 'ChannelEntity.channel_id'),
+		'SiteEntity' => array('this.site_id' => 'SiteEntity.site_id')
 	);
 
 	public $entry_id;

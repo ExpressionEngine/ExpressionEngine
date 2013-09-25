@@ -7,22 +7,31 @@ use EllisLab\ExpressionEngine\Model\Model as Model;
  *
  */
 class Template extends Model {
-	protected static $entity_name = 'TemplateEntity';
+	
+	public static function getEntityNames()
+	{
+		return array('TemplateEntity');
+	}
+
+	public static function getKeyMap()
+	{
+		return array(
+			'template_id' => 'TemplateEntity',
+			'group_id' => 'TemplateEntity'
+		);
+	}
+
+	public static function getPrimaryKeyName()
+	{
+		return 'template_id';
+	}
 
 	/**
 	 *
 	 */
 	public function getTemplateGroup()
 	{
-		return $this->belongsTo('TemplateGroup', 'TemplateEntity', 'group_id');
-	}
-
-	/**
-	 *
-	 */
-	public function getId()
-	{
-		return $this->entity->template_id;
+		return $this->manyToOne('TemplateGroup', 'group_id', 'group_id');
 	}
 	
 	/**
