@@ -58,9 +58,13 @@ class Homepage extends CP_Controller {
 		$loader = new Autoloader();
 		$loader->register();
 
-		$qb = \EllisLab\ExpressionEngine\Model\QueryBuilder::getInstance();
+		$qb = new \EllisLab\ExpressionEngine\Model\QueryBuilder();
 
-		$template = $qb->get('Template', 1)->with('TemplateGroup')->run();
+		$template = $qb
+			->get('Template')
+			->with('TemplateGroup')
+			->filter('Template.template_name', 'grid')
+			->run();
 
 		var_dump($template);
 		exit;
