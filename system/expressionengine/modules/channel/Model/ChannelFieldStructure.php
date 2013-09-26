@@ -54,7 +54,7 @@ class ChannelFieldStructure
      * @return String   HTML for the entry / edit form
      */
     public function getPublishForm($field_content)
-	{]
+	{}
 
 	
 }

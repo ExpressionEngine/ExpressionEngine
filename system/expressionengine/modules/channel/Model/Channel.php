@@ -12,10 +12,22 @@ class Channel extends Model implements ContentStructure {
 		)	
 	);
 
-	public function getChannelFieldSturctures()
+	/**
+	 * Relationship to the FieldGroup for this Channel.
+	 */
+	public function getChannelFieldGroup()
 	{
 		return $this->manyToOne(
 			'ChannelFieldGroup', 'field_group', 'group_id');	
+	}
+
+	/**
+	 * Relationship to ChannelEntries for this Channel.
+	 */
+	public function getChannelEntries()
+	{
+		return $this->oneToMany(
+			'ChannelEntry', 'channel_id', 'channel_id');
 	}
 
 	/**

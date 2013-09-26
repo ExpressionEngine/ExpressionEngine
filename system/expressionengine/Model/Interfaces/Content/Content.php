@@ -24,7 +24,7 @@ interface Content {
 	 * @return	Structure	A link to the Structure objects that defines this
 	 * 						Content's structure.
 	 */
-	public function getStructure();
+	public function getContentStructure();
 
 	/**
 	 * Saves this piece of content after being populated from a form.

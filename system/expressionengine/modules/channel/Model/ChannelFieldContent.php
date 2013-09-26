@@ -36,7 +36,7 @@ class ChannelFieldContent implements FieldContent {
 	 * @return	FieldStructure	The FieldStructure object that describes this
 	 *						FieldContent's structure (and stores its settings.)
 	 */
-	public function getStructure() 
+	public function getFieldStructure() 
 	{
 		return $this->structure;
 	}
@@ -50,7 +50,8 @@ class ChannelFieldContent implements FieldContent {
 	 * 						FieldContentInvalidException will be thrown with
 	 * 						errors.
 	 */
-	public function save() {
+	public function save() 
+	{
 		$this->entity->save();
 	}
 
@@ -65,7 +66,8 @@ class ChannelFieldContent implements FieldContent {
 	 * 						FieldContentInvalidException will be thrown with 
 	 * 						all relevant errors.
 	 */
-	public function validate() {
+	public function validate() 
+	{
 		// TODO	
 	}
 
@@ -74,7 +76,8 @@ class ChannelFieldContent implements FieldContent {
 	 * 
 	 * @return void
   	 */
-	public function delete() {
+	public function delete() 
+	{
 		throw new Exception('Cannot delete Channel Field Content, must delete Entry.');
 	}
 

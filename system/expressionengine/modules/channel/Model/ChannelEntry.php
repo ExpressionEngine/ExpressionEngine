@@ -12,6 +12,7 @@ class ChannelEntry extends Model implements Content {
 			'entry_id' => 'ChannelTitleEntity',
 			'channel_id' => 'ChannelTitleEntity',
 			'site_id' => 'ChannelTitleEntity',
+			'author_id' => 'ChannelTitleEntity'
 		)
 	);
 
@@ -38,6 +39,27 @@ class ChannelEntry extends Model implements Content {
 	}
 
 	/**
+	 * A link back to the owning channel object.
+	 *
+	 * @return	Structure	A link to the Structure objects that defines this
+	 * 						Content's structure.
+	 */
+	public function getContentStructure()
+	{
+		return $this->getChannel();
+	}
+
+	public function getChannel()
+	{
+		return $this->manyToOne('Channel', 'channel_id', 'channel_id');
+	}
+
+	public function getMember()
+	{
+		return $this->manyToOne('Member', 'author_id', 'member_id');
+	}
+
+	/**
 	 * Renders the piece of content for the front end, parses the tag data
 	 * called by the module when rendering tagdata.
 	 *
@@ -52,18 +74,6 @@ class ChannelEntry extends Model implements Content {
 		// call render on all custom fields
 	}
 
-	/**
-	 * A link back to the owning channel object.
-	 *
-	 * @return	Structure	A link to the Structure objects that defines this
-	 * 						Content's structure.
-	 */
-	public function getStructure()
-	{
-		return $this->manyToOne('Channel', 'channel_id', 'channel_id');
-	}
-
-	
 
 	/**
 	 * Validates the channel entry before saving

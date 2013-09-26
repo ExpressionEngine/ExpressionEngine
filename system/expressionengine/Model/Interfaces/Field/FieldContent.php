@@ -24,7 +24,7 @@ interface FieldContent {
 	 * @return	FieldStructure	The FieldStructure object that describes this
 	 *						FieldContent's structure (and stores its settings.)
 	 */
-	public function getStructure();
+	public function getFieldStructure();
 
 	/**
 	 * Save this piece of field content to the database.
