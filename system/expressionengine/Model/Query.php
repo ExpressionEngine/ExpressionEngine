@@ -33,6 +33,11 @@ class Query {
 			$operator = '';
 		}
 
+		if ($operator == '==')
+		{
+			$operator = ''; // CI's query builder defaults to equals
+		}
+
 		list($table, $key) = $this->resolveAlias($key);
 
 		if ($operator == 'IN')
