@@ -119,7 +119,6 @@ class Query {
 		$relationship_method = 'get'.$to_model_name;
 
 		$from_model = QueryBuilder::getQualifiedClassName($from_model_name);
-		$to_model = QueryBuilder::getQualifiedClassName($to_model_name);
 
 		if ( ! method_exists($from_model, $relationship_method))
 		{
