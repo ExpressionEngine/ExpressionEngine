@@ -5,6 +5,7 @@ namespace EllisLab\ExpressionEngine\Model\Entity;
  *
  */
 abstract class Entity {
+	protected static $meta = array();
 
 	private $dirty = array();
 

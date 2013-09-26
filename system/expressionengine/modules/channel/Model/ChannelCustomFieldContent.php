@@ -1,16 +1,19 @@
 <?php
+namespace EllisLab\ExpressionEngine\Module\Channel\Model;
 
-/**
- * An implementation of a custom field's content.
- * 
- * TODO-MODEL Need to think about implementation details.  This is just a
- * 	stub of the interface right now.
- */
-abstract class CustomFieldContent 
-	extends Model 
-		implements FieldContent {
+use EllisLab\ExpressionEngine\Model\CustomFields\CustomFieldContent as CustomFieldContent;
 
-				
+class ChannelCustomFieldContent implements FieldContent {
+	protected $field_id = NULL;
+	protected $channel_data_entity = NULL;
+	protected $structure = NULL;
+
+	public function __construct($field_id, $channel_data_entity)
+	{
+		$this->channel_data_entity = $channel_data_entity;
+	}
+
+	public function __get($name)
 	/**
 	 * Renders this field's content by replacing tags in a template.
 	 *
@@ -23,7 +26,7 @@ abstract class CustomFieldContent
 	 */	
 	public function render($template) 
 	{
-	
+
 	}
 
 	/**
@@ -33,9 +36,7 @@ abstract class CustomFieldContent
 	 * @return	FieldStructure	The FieldStructure object that describes this
 	 *						FieldContent's structure (and stores its settings.)
 	 */
-	public function getStructure() 
-	{
-	}
+	public function getStructure();
 
 	/**
 	 * Save this piece of field content to the database.
@@ -46,10 +47,7 @@ abstract class CustomFieldContent
 	 * 						FieldContentInvalidException will be thrown with
 	 * 						errors.
 	 */
-	public function save() 
-	{
-	
-	}
+	public function save();
 
 	/**
 	 * Validate this piece of field content to ensure that it is valid for
@@ -62,19 +60,13 @@ abstract class CustomFieldContent
 	 * 						FieldContentInvalidException will be thrown with 
 	 * 						all relevant errors.
 	 */
-	public function validate() 
-	{
-
-	}
+	public function validate();
 
 	/**
 	 * Delete this piece of FieldContent from the database.
 	 * 
 	 * @return void
   	 */
-	public function delete() 
-	{
-
-	}
+	public function delete();
 
 }

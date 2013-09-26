@@ -1,10 +1,20 @@
 <?php
 
 class ChannelEntry extends Model implements Content {
+	protected static $meta = array(
+		'primary_key' => 'entry_id',
+		'entity_names' => array('ChannelTitleEntity', 'ChannelDataEntity'),
+		'key_map' => array(
+			'entry_id' => 'ChannelTitleEntity',
+			'channel_id' => 'ChannelTitleEntity',
+			'site_id' => 'ChannelTitleEntity',
+		)
+	);
 
-	protected static $entity_name = 'ChannelTitleEntity';	
-	
+	public function getFields()
+	{
 
+	}
 
 	/**
 	 * Renders the piece of content for the front end, parses the tag data
@@ -29,21 +39,7 @@ class ChannelEntry extends Model implements Content {
 	 */
 	public function getStructure()
 	{
-		// something
-	}
-
-	/**
-	 * Saves this channel entry.
-	 *
-	 * @return	void
-	 *
-	 * @throws	ContentInvalidException	If content fails to validate a
-	 *						ContentInvalidException will be thrown with errors
-	 *						on the exception object.
-	 */
-	public function save()
-	{
-
+		$this->manyToOne('Channel', 'channel_id', 'channel_id');
 	}
 
 	/**
@@ -55,16 +51,6 @@ class ChannelEntry extends Model implements Content {
 	 * 						ContentInvalidException will be thrown with errors.
 	 */
 	public function validate()
-	{
-
-	}
-
-	/**
-	 * Deletes this channel entry.
-	 *
-	 * @return	void
-	 */
-	public function delete()
 	{
 
 	}
