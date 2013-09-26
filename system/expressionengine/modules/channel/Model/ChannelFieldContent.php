@@ -4,15 +4,10 @@ namespace EllisLab\ExpressionEngine\Module\Channel\Model;
 use EllisLab\ExpressionEngine\Model\Interfaces\Field\FieldContent 
 	as FieldContent;
 
-class ChannelFieldContent implements FieldContent {
-	protected $entity = NULL;
-	protected $structure = NULL;
+class ChannelFieldContent
+	extends DataTableFieldContent
+		 implements FieldContent {
 
-	public function __construct($structure, $entity)
-	{
-		$this->structure = $structure;
-		$this->entity = $entity;
-	}
 
 	/**
 	 * Renders this field's content by replacing tags in a template.
@@ -26,34 +21,9 @@ class ChannelFieldContent implements FieldContent {
 	 */	
 	public function render($template) 
 	{
-
+		// TODO
 	}
 
-	/**
-	 * A link back to the FieldStructure that describes the structure of this
-	 * piece of FieldContent.
-	 *
-	 * @return	FieldStructure	The FieldStructure object that describes this
-	 *						FieldContent's structure (and stores its settings.)
-	 */
-	public function getFieldStructure() 
-	{
-		return $this->structure;
-	}
-
-	/**
-	 * Save this piece of field content to the database.
-	 *
-	 * @return	void
-	 *
-	 * @throws	FieldContentInvalidException	If validation fails, then a 
-	 * 						FieldContentInvalidException will be thrown with
-	 * 						errors.
-	 */
-	public function save() 
-	{
-		$this->entity->save();
-	}
 
 	/**
 	 * Validate this piece of field content to ensure that it is valid for
@@ -71,14 +41,5 @@ class ChannelFieldContent implements FieldContent {
 		// TODO	
 	}
 
-	/**
-	 * Delete this piece of FieldContent from the database.
-	 * 
-	 * @return void
-  	 */
-	public function delete() 
-	{
-		throw new Exception('Cannot delete Channel Field Content, must delete Entry.');
-	}
 
 }

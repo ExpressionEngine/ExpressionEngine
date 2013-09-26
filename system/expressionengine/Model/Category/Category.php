@@ -1,21 +1,16 @@
 <?php
-namespace EllisLab\ExpressionEngine\Module\Channel\Model;
+namespace EllisLab\ExpressionEngine\Model\Category;
 
 use EllisLab\ExpressionEngine\Model\Model as Model;
-use EllisLab\ExpressionEngine\Model\Interfaces\Content\Content as Content;
 
-class ChannelEntry extends Model implements Content {
+class Category extends Model implements Content {
 	protected static $meta = array(
-		'primary_key' => 'entry_id',
-		'entity_names' => array('ChannelTitleEntity', 'ChannelDataEntity'),
+		'primary_key' => 'cat_id',
+		'entity_names' => array('CategoryEntity', 'CategoryFieldDataEntity'),
 		'key_map' => array(
-			'entry_id' => 'ChannelTitleEntity',
-			'channel_id' => 'ChannelTitleEntity',
-			'site_id' => 'ChannelTitleEntity',
-			'author_id' => 'ChannelTitleEntity'
 		)
 	);
-
+	
 	protected $fields = array();
 
 	/**
@@ -25,12 +20,14 @@ class ChannelEntry extends Model implements Content {
 	{
 		if ( empty($this->fields) && $this->getId() !== NULL)
 		{
-			$field_structures = $this->getContentStructure()->getFieldStructures();
+			$field_structures = $this->getContentStructure()
+				->getFieldStructures();
+
 			foreach ($field_structures as $field_structure)
 			{
-				$fields[$field_structure->field_id] = new ChannelFieldContent(
+				$fields[$field_structure->field_id] = new CategoryFieldContent(
 					$field_sturcture
-					$this->entities['ChannelDataEntity'],
+					$this->entities['CategoryFieldDataEntity'],
 				);
 			}
 		}
@@ -46,17 +43,12 @@ class ChannelEntry extends Model implements Content {
 	 */
 	public function getContentStructure()
 	{
-		return $this->getChannel();
+		return $this->getCategoryStructure();
 	}
 
-	public function getChannel()
+	public function getCategoryStructure()
 	{
-		return $this->manyToOne('Channel', 'channel_id', 'channel_id');
-	}
-
-	public function getMember()
-	{
-		return $this->manyToOne('Member', 'author_id', 'member_id');
+		return $this->manyToOne('CategoryStructure', 'cat_id', 'cat_id');
 	}
 
 	/**
@@ -87,4 +79,5 @@ class ChannelEntry extends Model implements Content {
 	{
 
 	}
+
 }

@@ -7,8 +7,23 @@ class ChannelDataEntity extends Entity {
 	protected static $meta = array(
 		'table_name' => 'channel_data',
 		'primary_key' => 'entry_id',
+		'related_entities' => array(
+			'entry_id' => array(
+				'entity' => 'ChannelTitleEntity',
+				'key'	 => 'entry_id'
+			),
+			'channel_id' => array(
+				'entity' => 'ChannelEntity',
+				'key'	 => 'channel_id'
+			),
+			'site_id' => array(
+				'entity' => 'SiteEntity',
+				'key'	 => 'site_id'
+			)
+		)
 	);
 
+	// Properties
 	public $entry_id;
 	public $channel_id;
 	public $site_id;
@@ -39,6 +54,7 @@ class ChannelDataEntity extends Entity {
 				$this->fields[$id] = new ChannelFieldData($id);
 			}
 			$this->fields[$id]->data = $value;
+			$this->dirty[$name] = TRUE;
 		}
 		elseif(strpos($name, 'field_fmt_') === 0)
 		{
@@ -48,14 +64,10 @@ class ChannelDataEntity extends Entity {
 				$this->fields[$id] = new ChannelFieldData($id);
 			}
 			$this->fields[$id]->format = $value;
+			$this->dirty[$name] = TRUE;
 		}
+		
 	}
-
-	public function save()
-	{
-
-	}
-
 }
 
 class ChannelFieldData {

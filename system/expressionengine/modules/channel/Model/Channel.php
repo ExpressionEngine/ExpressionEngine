@@ -1,7 +1,12 @@
 <?php
+namespace EllisLab\ExpressionEngine\Module\Channel\Model;
+
+use EllisLab\ExpressionEngine\Model\Model as Model;
+use EllisLab\ExpressionEngine\Model\Interfaces\Content\ContentStructure
+	as ContentStructure;
+
 
 class Channel extends Model implements ContentStructure {
-
 	protected static $meta = array(
 		'primary_key' => 'channel_id',
 		'entity_names' => array('ChannelEntity'),
@@ -52,27 +57,6 @@ class Channel extends Model implements ContentStructure {
 	}
 
 	/**
-	 * Save the channel settings data.
-	 *
-	 * Should call validateSettings() before saving
-	 *
-	 * @throws SettingsInvalidException if object was not validated before saving
-	 *									and validation fails on save.
-	 * @return void
-	 */
-	public function save()
-	{
-		$valid = $this->validateSettings();
-
-		if ( ! $valid)
-		{
-			throw new SettingsInvalidException();
-		}
-
-		// save
-	}
-
-	/**
 	 * Validate the setting data
 	 *
 	 * @return Errors
@@ -96,13 +80,4 @@ class Channel extends Model implements ContentStructure {
 		return $form_elements;
 	}
 
-	/**
-	 * Delete this channel and all of its content
-	 *
-	 * @return void
-	 */
-	public function delete()
-	{
-
-	}
 }
