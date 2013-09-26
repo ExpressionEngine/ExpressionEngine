@@ -59,7 +59,7 @@ class Homepage extends CP_Controller {
 		$loader->register();
 
 		$qb = new \EllisLab\ExpressionEngine\Model\QueryBuilder();
-
+/* */
 		$template = $qb
 			->get('Template')
 			->with('TemplateGroup')
@@ -67,12 +67,16 @@ class Homepage extends CP_Controller {
 			->run();
 
 		var_dump($template);
+/* * /
+		$template_group = $qb
+			->get('TemplateGroup', 1)
+			->with('Templates')
+			->filter('Template.template_name', 'grid')
+			->run();
+
+		var_dump($template_group);
 		exit;
-
-
-
-
-
+/* */
 
 		$this->cp->get_installed_modules();
 		$this->view->cp_page_title = lang('main_menu');
