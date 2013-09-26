@@ -295,10 +295,12 @@ class Channel {
 
 		$this->query = ee()->db->query($this->sql);
 
-		if ($this->query->num_rows() == 0)
+		if ($this->enable['categories'] == TRUE)
 		{
-			return ee()->TMPL->no_results();
+			$this->fetch_categories();
 		}
+
+		$this->parse_channel_entries();
 
 		// -------------------------------------
 		//  "Relaxed" View Tracking
@@ -318,18 +320,6 @@ class Channel {
 		}
 
 		$this->track_views();
-
-		ee()->load->library('typography');
-		ee()->typography->initialize(array(
-			'convert_curly'	=> FALSE
-		));
-
-		if ($this->enable['categories'] == TRUE)
-		{
-			$this->fetch_categories();
-		}
-
-		$this->parse_channel_entries();
 
 		if ($this->enable['pagination'] == TRUE)
 		{
@@ -2325,6 +2315,11 @@ class Channel {
 		//
 		// -------------------------------------------
 
+		if (empty($query_result))
+		{
+			return ee()->TMPL->no_results();
+		}
+
 		ee()->load->library('channel_entries_parser');
 		$parser = ee()->channel_entries_parser->create(ee()->TMPL->tagdata/*, $prefix=''*/);
 
@@ -2900,11 +2895,6 @@ class Channel {
 
 			unset($this->temp_array);
 
-			ee()->load->library('typography');
-			ee()->typography->initialize(array(
-				'convert_curly'	=> FALSE
-			));
-
 			$this->category_count = 0;
 			$total_results = count($this->cat_array);
 
@@ -2978,6 +2968,11 @@ class Channel {
 				{
 					if (isset($val['field_id_'.$cv['field_id']]) AND $val['field_id_'.$cv['field_id']] != '')
 					{
+						ee()->load->library('typography');
+						ee()->typography->initialize(array(
+							'convert_curly'	=> FALSE
+						));
+
 						$field_content = ee()->typography->parse_type(
 							$val['field_id_'.$cv['field_id']],
 							array(
@@ -3378,11 +3373,6 @@ class Channel {
 
 			if ($query->num_rows() > 0)
 			{
-				ee()->load->library('typography');
-				ee()->typography->initialize(array(
-								'convert_curly'	=> FALSE)
-								);
-
 				$used = array();
 
 				// Get category ID from URL for {if active} conditional
@@ -3454,6 +3444,11 @@ class Channel {
 																				  'allow_img_url'	=> 'y'
 																				)
 																		);
+								ee()->load->library('typography');
+								ee()->typography->initialize(array(
+									'convert_curly'	=> FALSE
+								));
+
 								$chunk = str_replace(LD.$cfv['field_name'].RD, $field_content, $chunk);
 							}
 							else
@@ -3799,11 +3794,6 @@ class Channel {
 
 		$open = 0;
 
-		ee()->load->library('typography');
-		ee()->typography->initialize(array(
-				'convert_curly'	=> FALSE)
-				);
-
 		$this->category_count = 0;
 		$total_results = count($this->cat_array);
 
@@ -3921,6 +3911,11 @@ class Channel {
 																		  'allow_img_url'	=> 'y'
 																		)
 																);
+						ee()->load->library('typography');
+						ee()->typography->initialize(array(
+							'convert_curly'	=> FALSE
+						));
+
 						$chunk = str_replace(LD.$ccv['field_name'].RD, $field_content, $chunk);
 					}
 					else
@@ -4247,11 +4242,6 @@ class Channel {
 			ee()->TMPL->tagdata = ee()->file_field->parse_string(ee()->TMPL->tagdata);
 		}
 
-		// parse custom fields
-		ee()->load->library('typography');
-		ee()->typography->initialize(array(
-				'convert_curly'	=> FALSE)
-				);
 
 		// parse custom fields
 		foreach($this->catfields as $ccv)
@@ -4266,6 +4256,12 @@ class Channel {
 																  'allow_img_url'	=> 'y'
 																)
 														);
+				// parse custom fields
+				ee()->load->library('typography');
+				ee()->typography->initialize(array(
+					'convert_curly'	=> FALSE
+				));
+
 				ee()->TMPL->tagdata = str_replace(LD.$ccv['field_name'].RD, $field_content, ee()->TMPL->tagdata);
 			}
 			else
@@ -4979,16 +4975,6 @@ class Channel {
 		}
 
 		$this->query = ee()->db->query($this->sql);
-
-		if ($this->query->num_rows() == 0)
-		{
-			return ee()->TMPL->no_results();
-		}
-
-		ee()->load->library('typography');
-		ee()->typography->initialize(array(
-				'convert_curly'	=> FALSE)
-				);
 
 		if (ee()->TMPL->fetch_param('member_data') !== FALSE && ee()->TMPL->fetch_param('member_data') == 'yes')
 		{

@@ -205,6 +205,11 @@ class EE_Channel_data_parser {
 
 		$dt = 0;
 
+		ee()->load->library('typography');
+		ee()->typography->initialize(array(
+			'convert_curly'	=> FALSE
+		));
+
 		foreach ($entries as $row)
 		{
 			$tagdata = $orig_tagdata;
