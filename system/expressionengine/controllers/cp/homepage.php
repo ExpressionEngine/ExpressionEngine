@@ -32,6 +32,44 @@ class Homepage extends CP_Controller {
 	 */
 	function index()
 	{
+		/*
+		$file_iterator = new RecursiveDirectoryIterator(APPPATH.'Model');
+		$files = new RecursiveIteratorIterator(
+			$file_iterator,
+			RecursiveIteratorIterator::SELF_FIRST
+		);
+
+		require APPPATH.'Model/Entity/Entity.php';
+		require APPPATH.'Model/Model.php';
+		require APPPATH.'Model/QueryBuilder.php';
+
+		require APPPATH.'Model/Template/Template.php';
+
+		foreach ($files as $file)
+		{
+			if ( ! $file->isDir())
+			{
+		//		var_dump($file.'');
+			}
+		}
+		*/
+
+		require APPPATH.'Model/Autoloader.php';
+		$loader = new Autoloader();
+		$loader->register();
+
+		$qb = \EllisLab\ExpressionEngine\Model\QueryBuilder::getInstance();
+
+		$template = $qb->get('Template', 1)->with('TemplateGroup')->run();
+
+		var_dump($template);
+		exit;
+
+
+
+
+
+
 		$this->cp->get_installed_modules();
 		$this->view->cp_page_title = lang('main_menu');
 
