@@ -4,6 +4,7 @@ class Query {
 
 	private $db;
 	private $model_name;
+	private $tables = array();
 	private $selected = array();
 
 	public function __construct($model)
@@ -11,6 +12,7 @@ class Query {
 		$this->model_name = $model;
 
 		$this->db = ee()->db; // TODO clone and reset?
+		$this->addTable($this->getTableName($model));
 	}
 
 	/**
@@ -42,7 +44,7 @@ class Query {
 			$this->db->where($table.'.'.$key.' '.$operator, $value);
 		}
 
-		$this->db->from($table);
+		$this->addTable($table);
 		return $this;
 	}
 
@@ -188,6 +190,20 @@ class Query {
 	}
 
 	/**
+	 * Add a table to the FROM statement
+	 *
+	 * @param String $table_name Name of the table to add.
+	 */
+	private function addTable($table_name)
+	{
+		if ( ! in_array($table_name, $this->tables))
+		{
+			$this->db->from($table_name);
+			$this->tables[] = $table_name;
+		}
+	}
+
+	/**
 	 * Prefix a column name if it belongs to another model. This lets us
 	 * correclty populate everything at the end.
 	 *
@@ -207,41 +223,20 @@ class Query {
 	 * @param String $name Model specific accessor
 	 * @return array [table, key]
 	 */
-	private function resolveAlias($name)
+	private function resolveAlias($alias)
 	{
-		if (strpos($name, '.') !== FALSE)
+		// If we only have a model name, then we use the primary key
+		if (strpos($alias, '.') === FALSE)
 		{
-			list($model_name, $key) = explode('.', $name);
-			$model = QueryBuilder::getQualifiedClassName($model);
+			$model_name = $alias;
+			$key = $this->getPrimaryKey($model_name);
 		}
 		else
 		{
-			$model_name = $name;
-			$model = QueryBuilder::getQualifiedClassName($name);
-			$key = $model::getMetaData('primary_key');
+			list($model_name, $key) = explode('.', $alias);
 		}
 
-		$table = '';
-		$known_keys = $model::getMetaData('key_map');
-
-		if (isset($known_keys[$key]))
-		{
-			$key_entity = QueryBuilder::getQualifiedClassName($known_keys[$key]);
-			$table = $key_entity::getMetaData('table_name');
-		}
-		else
-		{
-			$entities = $model::getEntities();
-
-			// find the right table
-			foreach ($entities as $entity)
-			{
-				if (property_exists($entity, $key))
-				{
-					$table = $entity::getMetaData('table_name');
-				}
-			}
-		}
+		$table = $this->getTableName($model_name, $key);
 
 		if ($table == '')
 		{
@@ -249,5 +244,59 @@ class Query {
 		}
 
 		return array($table, $key);
+	}
+
+	/**
+	 * Retreive the primary key for a given model.
+	 *
+	 * @param String $model_name The name of the model
+	 * @return array [table, key_name]
+	 */
+	private function getPrimaryKey($model_name)
+	{
+		$model = QueryBuilder::getQualifiedClassName($model_name);
+		return $model::getMetaData('primary_key');
+	}
+
+	/**
+	 * Retreive the table name for a given Model and key. If more than one entity
+	 * has the key, it will return the first.
+	 *
+	 * @param String $model_name The name of the model
+	 * @param String $key The name of the property [optional, defaults to primary key]
+	 * @return String Table name
+	 */
+	private function getTableName($model_name, $key = NULL)
+	{
+		if ( ! isset($key))
+		{
+			$key = $this->getPrimaryKey($model_name);
+		}
+
+		$model = QueryBuilder::getQualifiedClassName($model_name);
+
+		$table = '';
+		$known_keys = $model::getMetaData('key_map');
+
+		if (isset($known_keys[$key]))
+		{
+			$key_entity = QueryBuilder::getQualifiedClassName($known_keys[$key]);
+			return $key_entity::getMetaData('table_name');
+		}
+
+		// If it's not a key, we need to loop. Technically it could be on more
+		// than one entity - we only return the first one.
+		$entity_names = $model::getMetadata('entity_names');
+
+		foreach ($entity_names as $entity)
+		{
+			$entity = QueryBuilder::getQualifiedClassName($entity);
+			if (property_exists($entity, $key))
+			{
+				return $entity::getMetaData('table_name');
+			}
+		}
+
+		return NULL;
 	}
 }
