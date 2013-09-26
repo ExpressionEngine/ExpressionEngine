@@ -374,7 +374,7 @@ EE.publish.save_layout = function() {
 		// Add hidden fields to first tab
 
 		var last_index = 0;
-        var fields = layout_object[0]['fields'];
+		var fields = layout_object[0]['fields'];
 		for (i in fields) {
 			if (fields[i]['index'] > last_index) {
 				last_index = fields[i]['index'];
