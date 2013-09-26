@@ -565,7 +565,7 @@ abstract class EE_Fieldtype {
 
 		// Data from Form Validation
 		$show_fmt = set_value($prefix.'field_show_fmt', $data['field_show_fmt_y']);
-		$show_fmt = ($show_fmt == 'y' OR $show_fmt === TRUE);
+		$show_fmt = ($show_fmt == 'y' OR $show_fmt === TRUE OR $show_fmt === '1');
 
 		ee()->table->add_row(
 			lang('deft_field_formatting', $prefix.'field_fmt'),
