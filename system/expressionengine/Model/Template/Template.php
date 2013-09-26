@@ -1,5 +1,5 @@
-<?PHP
-namespace EllisLab\ExpressionEngine\Model;
+<?php
+namespace EllisLab\ExpressionEngine\Model\Template;
 
 use EllisLab\ExpressionEngine\Model\Model as Model;
 
@@ -7,24 +7,15 @@ use EllisLab\ExpressionEngine\Model\Model as Model;
  *
  */
 class Template extends Model {
-	
-	public static function getEntityNames()
-	{
-		return array('TemplateEntity');
-	}
 
-	public static function getKeyMap()
-	{
-		return array(
+	protected static $meta = array(
+		'primary_key'	=> 'template_id',
+		'entity_names'	=> array('TemplateEntity'),
+		'key_map'		=> array(
 			'template_id' => 'TemplateEntity',
-			'group_id' => 'TemplateEntity'
-		);
-	}
-
-	public static function getPrimaryKeyName()
-	{
-		return 'template_id';
-	}
+			'group_id'    => 'TemplateEntity'
+		)
+	);
 
 	/**
 	 *
@@ -33,7 +24,7 @@ class Template extends Model {
 	{
 		return $this->manyToOne('TemplateGroup', 'group_id', 'group_id');
 	}
-	
+
 	/**
 	 *
 	 */

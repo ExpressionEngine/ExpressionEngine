@@ -4,12 +4,13 @@ namespace EllisLab\ExpressionEngine\Model\Template;
 use EllisLab\ExpressionEngine\Model\Model as Model;
 
 class TemplateGroup extends Model {
+
 	protected static $meta = array(
-		'entity_names' => array('TemplateGroupEntity'),
-		'key_map' => array(
+		'primary_key'	=> 'group_id',
+		'entity_names'	=> array('TemplateGroupEntity'),
+		'key_map'		=> array(
 			'group_id' => 'TemplateGroupEntity'
-		),
-		'primary_key' => 'group_id'
+		)
 	);
 
 	/**
@@ -19,7 +20,7 @@ class TemplateGroup extends Model {
 	{
 		return $this->oneToMany('Template', 'group_id', 'group_id');
 	}
-	
+
 	/**
 	 *
 	 */
@@ -27,7 +28,4 @@ class TemplateGroup extends Model {
 	{
 		return new Errors();
 	}
-
-
-
 }

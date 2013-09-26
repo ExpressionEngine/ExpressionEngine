@@ -5,8 +5,8 @@ namespace EllisLab\ExpressionEngine\Model\Entity;
  *
  */
 abstract class Entity {
-	public $dirty = array();
-	
+
+	private $dirty = array();
 
 	public function __construct(array $data = array())
 	{
@@ -21,9 +21,9 @@ abstract class Entity {
 
 	public static function getMetaData($key=NULL)
 	{
-		if (empty(static::$meta)) 
+		if (empty(static::$meta))
 		{
-			throw new UnderflowException('No meta data set for this entity!');
+			throw new \UnderflowException('No meta data set for this entity!');
 		}
 
 		if ( ! isset($key))
@@ -56,7 +56,7 @@ abstract class Entity {
 		{
 			ee()->db->where($id_name, $this->{$id_name});
 			ee()->db->update(static::getMetaData('table_name'), $save_array);
-		}	
+		}
 		else
 		{
 			ee()->db->insert(static::getMetaData('table_name'), $save_array);
