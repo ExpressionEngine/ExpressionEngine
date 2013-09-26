@@ -1,4 +1,8 @@
 <?php
+namespace EllisLab\ExpressionEngine\Module\Channel\Model;
+
+use EllisLab\ExpressionEngine\Model\Model as Model;
+use EllisLab\ExpressionEngine\Model\Interfaces\Content\Content as Content;
 
 class ChannelEntry extends Model implements Content {
 	protected static $meta = array(
@@ -11,9 +15,26 @@ class ChannelEntry extends Model implements Content {
 		)
 	);
 
+	protected $fields = array();
+
+	/**
+	 *
+	 */
 	public function getFields()
 	{
+		if ( empty($this->fields) && $this->getId() !== NULL)
+		{
+			$field_structures = $this->getStructure()->getFieldStructures();
+			foreach ($field_structures as $field_structure)
+			{
+				$fields[$field_structure->field_id] = new ChannelFieldContent(
+					$field_sturcture
+					$this->entities['ChannelDataEntity'],
+				);
+			}
+		}
 
+		return $this->fields;	
 	}
 
 	/**
@@ -39,8 +60,10 @@ class ChannelEntry extends Model implements Content {
 	 */
 	public function getStructure()
 	{
-		$this->manyToOne('Channel', 'channel_id', 'channel_id');
+		return $this->manyToOne('Channel', 'channel_id', 'channel_id');
 	}
+
+	
 
 	/**
 	 * Validates the channel entry before saving

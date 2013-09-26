@@ -11,7 +11,7 @@ class TemplateEntity extends Entity {
 		'related_entities' 	=> array(
 			'site_id' => array(
 				'entity' => 'SiteEntity',
-				'key'    => 'site_id'
+				'key'	 => 'site_id'
 			),
 			'group_id' => array(
 				'entity' => 'TemplateGroupEntity',

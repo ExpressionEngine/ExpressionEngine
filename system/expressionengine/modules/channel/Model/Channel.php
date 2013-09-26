@@ -2,6 +2,22 @@
 
 class Channel extends Model implements ContentStructure {
 
+	protected static $meta = array(
+		'primary_key' => 'channel_id',
+		'entity_names' => array('ChannelEntity'),
+		'key_map' => array(
+			'channel_id' => 'ChannelEntity',
+			'site_id' => 'ChannelEntity',
+			'field_group' => 'ChannelEntity'
+		)	
+	);
+
+	public function getChannelFieldSturctures()
+	{
+		return $this->manyToOne(
+			'ChannelFieldGroup', 'field_group', 'group_id');	
+	}
+
 	/**
 	 * Display the specified settings section
 	 *

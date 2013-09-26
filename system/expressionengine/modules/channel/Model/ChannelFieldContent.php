@@ -1,19 +1,19 @@
 <?php
 namespace EllisLab\ExpressionEngine\Module\Channel\Model;
 
-use EllisLab\ExpressionEngine\Model\CustomFields\CustomFieldContent as CustomFieldContent;
+use EllisLab\ExpressionEngine\Model\Interfaces\Field\FieldContent 
+	as FieldContent;
 
-class ChannelCustomFieldContent implements FieldContent {
-	protected $field_id = NULL;
-	protected $channel_data_entity = NULL;
+class ChannelFieldContent implements FieldContent {
+	protected $entity = NULL;
 	protected $structure = NULL;
 
-	public function __construct($field_id, $channel_data_entity)
+	public function __construct($structure, $entity)
 	{
-		$this->channel_data_entity = $channel_data_entity;
+		$this->structure = $structure;
+		$this->entity = $entity;
 	}
 
-	public function __get($name)
 	/**
 	 * Renders this field's content by replacing tags in a template.
 	 *
@@ -36,7 +36,10 @@ class ChannelCustomFieldContent implements FieldContent {
 	 * @return	FieldStructure	The FieldStructure object that describes this
 	 *						FieldContent's structure (and stores its settings.)
 	 */
-	public function getStructure();
+	public function getStructure() 
+	{
+		return $this->structure;
+	}
 
 	/**
 	 * Save this piece of field content to the database.
@@ -47,7 +50,9 @@ class ChannelCustomFieldContent implements FieldContent {
 	 * 						FieldContentInvalidException will be thrown with
 	 * 						errors.
 	 */
-	public function save();
+	public function save() {
+		$this->entity->save();
+	}
 
 	/**
 	 * Validate this piece of field content to ensure that it is valid for
@@ -60,13 +65,17 @@ class ChannelCustomFieldContent implements FieldContent {
 	 * 						FieldContentInvalidException will be thrown with 
 	 * 						all relevant errors.
 	 */
-	public function validate();
+	public function validate() {
+		// TODO	
+	}
 
 	/**
 	 * Delete this piece of FieldContent from the database.
 	 * 
 	 * @return void
   	 */
-	public function delete();
+	public function delete() {
+		throw new Exception('Cannot delete Channel Field Content, must delete Entry.');
+	}
 
 }

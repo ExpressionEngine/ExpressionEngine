@@ -1,29 +1,18 @@
 <?php
 
 class ChannelFieldGroup extends Model {
+	protected static $meta = array(
+		'primary_key' 	=> 'group_id',
+		'entity_names' 	=> array('FieldGroupEntity'),
+		'key_map'		=> array(
+			'group_id' => 'FieldGroupEntity',
+			'site_id' => 'FieldGroupEntity'
+		)
+	);
 
-	/**
-	 * Display the field group form
-	 *
-	 * This is only the required fields.
-	 *
-	 * @return String   HTML Settings form
-	 */
-	public function getForm()
+	public function getChannelFieldStructures()
 	{
-
-	}
-
-	/**
-	 * Save the field group.
-	 *
-	 * Should call validateSettings() before saving
-	 *
-	 * @return void
-	 */
-	public function save()
-	{
-
+		return $this->oneToMany('ChannelFieldStructure', 'group_id', 'group_id');
 	}
 
 	/**
