@@ -6,6 +6,7 @@ class Query {
 	private $model_name;
 	private $tables = array();
 	private $selected = array();
+	private $relationships = array();
 
 	public function __construct($model)
 	{
@@ -21,6 +22,7 @@ class Query {
 	 * @param String $key		Modelname.columnname to filter on
 	 * @param String $operator	Comparison to perform [==, !=, <, >, <=, >=, IN]
 	 * @param Mixed  $value		Value to compare to
+	 * @return Query $this
 	 *
 	 * The third parameter is optional. If it is not given, the == operator is
 	 * assumed and the second parameter becomes the value.
@@ -53,6 +55,16 @@ class Query {
 		return $this;
 	}
 
+	/**
+	 * Apply a relation
+	 *
+	 * @param Mixed
+	 * @param String $operator	Comparison to perform [==, !=, <, >, <=, >=, IN]
+	 * @param Mixed  $value		Value to compare to
+	 *
+	 * The third parameter is optional. If it is not given, the == operator is
+	 * assumed and the second parameter becomes the value.
+	 */
 	// qb->with('Channel', array('Member' => ))
 	public function with()
 	{
@@ -66,45 +78,59 @@ class Query {
 		return $this;
 	}
 
-	public function run()
+
+	/**
+	 * Run the query, hydrate the models, and reassemble the relationships
+	 *
+	 * @return Collection
+	 */
+	public function all()
 	{
-		$this->selectFields($this->model_name);
+		$model_name = $this->model_name;
+
+		$this->selectFields($model_name);
 
 		$result = $this->db->get()->result_array();
+		$collection = new Collection;
 
+		foreach ($result as $row)
+		{
+			$collection[] = new $model_name($row);
+		}
 
-
-		var_dump($result);
+		return $result;
 	}
+
+	public function first()
+	{
+		// @todo add limit
+	}
+
 
 	/**
 	 *
 	 */
-	private function queryRelation($from_model, $to_model)
+	private function queryRelation($from_model, $to_relation_name)
 	{
 		// recurse for arrays
-		if (is_array($to_model))
+		if (is_array($to_relation_name))
 		{
-			foreach ($to_model as $from => $to)
+			foreach ($to_relation_name as $from => $to)
 			{
 				return $this->queryRelation($from, $to);
 			}
 		}
 
-		// find a path to the model
-		$paths = $this->findRelatedPath($from_model, $to_model);
-
 		// TODO select the values on each table
 		$this->selectFields($from_model);
-		$this->selectFields($to_model);
+
+		// find a path to the model
+		$relationships = $this->getRelationships($from_model, $to_relation_name);
 
 		// Add a join to the query
-		foreach ($paths as $path)
+		foreach ($relationships as $resolve_relationship)
 		{
-			$this->db->join(
-				$path['to_table'],
-				$path['from_table'].'.'.$path['from_key'].'='.$path['to_table'].'.'.$path['to_key']
-			);
+			$resolve_relationship();
 		}
 	}
 
@@ -121,7 +147,7 @@ class Query {
 	 *     to_key:     Key name to join to
 	 * ]
 	 */
-	private function findRelatedPath($from_model_name, $to_model_name)
+	private function getRelationships($from_model_name, $to_model_name)
 	{
 		$relationship_method = 'get'.$to_model_name;
 
@@ -148,23 +174,47 @@ class Query {
 			$to_entity_relations = array($to_entity_relations);
 		}
 
-		$related_paths = array();
+		$relationships = array();
 
 		foreach ($to_entity_relations as $to_relation)
 		{
 			$to_entity = $to_relation['entity'];
 			$to_entity = QueryBuilder::getQualifiedClassName($to_entity);
+			$type = $from_relation['type'];
 
-			$related_paths[] = array(
+
+			$relationships[] = $this->manyToOneRelationship(array(
+				'to_model'	 => $from_relation['model_name'],
 				'from_table' => $from_entity::getMetaData('table_name'),
-				'from_key' => $from_relation['key'],
-				'to_table' => $to_entity::getMetaData('table_name'),
-				'to_key' => $to_relation['key'],
-			);
+				'from_key'	 => $from_relation['key'],
+				'to_table'	 => $to_entity::getMetaData('table_name'),
+				'to_key'	 => $to_relation['key'],
+			));
 		}
 
-		return $related_paths;
+		return $relationships;
 	}
+
+	/**
+	 * Adds the proper query and then returns a function that can resolve the
+	 * relationship.
+	 */
+	private function manyToOneRelationship($info)
+	{
+		$to_model = $info['to_model'];
+		$this->selectFields($to_model);
+
+		$this->db->join(
+			$info['to_table'],
+			$info['from_table'].'.'.$info['from_key'].'='.$info['to_table'].'.'.$info['to_key']
+		);
+
+		return function($result_model, $query_result_row) use ($to_model) {
+			return new $to_model($query_result);
+		};
+	}
+
+
 
 	/**
 	 * Add selects for all fields to the query.

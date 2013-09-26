@@ -23,7 +23,7 @@ abstract class Model {
 	 */
 	private $dirty = array();
 
-	public static function getMetaData($key=NULL)
+	public static function getMetaData($key = NULL)
 	{
 		if (empty(static::$meta))
 		{
@@ -45,7 +45,7 @@ abstract class Model {
 	 * 						set on this model.  The array indexes must
 	 * 						be valid properties on this model's entity.
 	 */
-	public function __construct(array $data=array())
+	public function __construct(array $data = array())
 	{
 		foreach (static::getMetaData('entity_names') as $entity_name)
 		{
@@ -85,19 +85,20 @@ abstract class Model {
 
 	public function manyToOne($model_name, $this_key, $that_key)
 	{
-		$model = QueryBuilder::getQualifiedClassName($model_name);
-
 		$has_id = $this->getId() !== NULL;
 		$has_data = isset($this->related_models[$model_name]);
 
 		if ( ! $has_id && ! $has_data)
 		{
+			$model = QueryBuilder::getQualifiedClassName($model_name);
+
 			$keys = $model::getMetaData('key_map');
 
 			return array(
 				'entity' => $keys[$that_key],
 				'key' => $this_key,
-				'type' => 'many-to-one'
+				'type' => 'many-to-one',
+				'model_name' => $model_name
 			);
 		}
 
@@ -114,8 +115,37 @@ abstract class Model {
 		throw new UndefinedStateException();
 	}
 
-	public function oneToMany($model, $entity, $key)
-	{}
+	public function oneToMany($model_name, $this_key, $that_key)
+	{
+		$has_id = $this->getId() !== NULL;
+		$has_data = isset($this->related_models[$model_name]);
+
+		if ( ! $has_id && ! $has_data)
+		{
+			$model = QueryBuilder::getQualifiedClassName($model_name);
+
+			$keys = $model::getMetaData('key_map');
+
+			return array(
+				'entity' => $keys[$that_key],
+				'key' => $this_key,
+				'type' => 'one-to-many',
+				'model_name' => $model_name
+			);
+		}
+
+		if ( $has_id && ! $has_data)
+		{
+			return ee()->query_builder->get($model_name, $this->{$key})->run();
+		}
+
+		if ( $has_data)
+		{
+			return $this->related_models[$model_name];
+		}
+
+		throw new UndefinedStateException();
+	}
 
 	public function manyToMany($model, $entity, $key)
 	{}
