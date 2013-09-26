@@ -321,7 +321,7 @@ EE.publish.save_layout = function() {
 			{
 				lay_name = tab_name;
 				layout_object[tab_count] = {name: lay_name, fields: {}};
-				layout_object[tab_count][mypre] = tab_label;
+				layout_object[tab_count]['fields'][mypre] = tab_label;
 			} else {
 				merge = true;
 				visible = false;
