@@ -189,12 +189,12 @@ abstract class Model {
 	 * Create a one-to-one relationship
 	 *
 	 * @param String $to_model_name	Name of the model to relate to
-	 * @param String $this_key		Name of the related key
+	 * @param String $this_key		Name of the relating key
 	 * @param String $that_key		Name of the key on the related model
 	 *
 	 * @return Relationship object or related data
 	 */
-	public function oneToOne($to_model_name, $this_key, $that_key)
+	public function oneToOne($to_model_name, $this_key, $that_key = NULL)
 	{
 		return $this->related(
 			'one-to-one',
@@ -208,12 +208,12 @@ abstract class Model {
 	 * Create a many-to-one relationship
 	 *
 	 * @param String $to_model_name	Name of the model to relate to
-	 * @param String $this_key		Name of the related key
+	 * @param String $this_key		Name of the relating key
 	 * @param String $that_key		Name of the key on the related model
 	 *
 	 * @return Relationship object or related data
 	 */
-	public function manyToOne($to_model_name, $this_key, $that_key)
+	public function manyToOne($to_model_name, $this_key, $that_key = NULL)
 	{
 		return $this->related(
 			'many-to-one',
@@ -227,12 +227,12 @@ abstract class Model {
 	 * Create a one-to-many relationship
 	 *
 	 * @param String $to_model_name	Name of the model to relate to
-	 * @param String $this_key		Name of the related key
+	 * @param String $this_key		Name of the relating key
 	 * @param String $that_key		Name of the key on the related model
 	 *
 	 * @return Relationship object or related data
 	 */
-	public function oneToMany($to_model_name, $this_key, $that_key)
+	public function oneToMany($to_model_name, $this_key, $that_key = NULL)
 	{
 		return $this->related(
 			'one-to-many',
@@ -246,12 +246,12 @@ abstract class Model {
 	 * Create a many-to-many relationship
 	 *
 	 * @param String $to_model_name	Name of the model to relate to
-	 * @param String $this_key		Name of the related key
+	 * @param String $this_key		Name of the relating key
 	 * @param String $that_key		Name of the key on the related model
 	 *
 	 * @return Relationship object or related data
 	 */
-	public function manyToMany($to_model_name, $this_key, $that_key)
+	public function manyToMany($to_model_name, $this_key, $that_key = NULL)
 	{}
 
 	/**
@@ -294,12 +294,12 @@ abstract class Model {
 	 *
 	 * @param String $type			Relationship type (dash-words)
 	 * @param String $to_model_name	Name of the model to relate to
-	 * @param String $this_key		Key on the current model to use
-	 * @param String $that_key		Key on the to_model to use
+	 * @param String $this_key		Name of the relating key
+	 * @param String $to_key		Name of the key on the related model
 	 *
 	 * @return Relationship object or related data
 	 */
-	private function related($type, $to_model_name, $this_key, $that_key)
+	private function related($type, $to_model_name, $this_key, $that_key = NULL)
 	{
 		// If we already have data, return it
 		if (array_key_exists($to_model_name, $this->related_models))

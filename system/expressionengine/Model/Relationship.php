@@ -24,10 +24,19 @@ class Relationship {
 	/**
 	 * Set up an eager loading relationship
 	 *
+	 * @param String $from_key	Name of the relating key
+	 * @param String $to_key	Name of the key on the related model
+	 *							Will default to the primary key if not set
 	 * @return $this
 	 */
 	public function eagerLoad($from_key, $to_key)
 	{
+		if ( ! isset($to_key))
+		{
+			$to_name = $this->to_model_class;
+			$to_key = $to_name::getMetaData('primary_key');
+		}
+
 		$from_entity = $this->findEntityForFromKey($from_key);
 
 		$this->link = array(
@@ -40,13 +49,22 @@ class Relationship {
 	}
 
 	/**
-	 * Setup and run a lazy loading relationship
+	 * Set up and run a lazy loading relationship
 	 *
-	 * @return Model|Collection Related data
+	 * @param String $from_key	Name of the relating key
+	 * @param String $to_key	Name of the key on the related model
+	 *							Will default to the primary key if not set
+	 * @return Model|Collection
 	 */
 	public function lazyLoad($from_key, $to_key)
 	{
 		$to_name = $this->to_model_name;
+
+		if ( ! isset($to_key))
+		{
+			$to_name = $this->to_model_class;
+			$to_key = $to_name::getMetaData('primary_key');
+		}
 
 		$query = new Query($to_name);
 		$query->filter($to_name.'.'.$to_key, $this->from_model->$from_key);
