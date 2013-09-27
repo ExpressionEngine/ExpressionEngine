@@ -32,51 +32,58 @@ class Homepage extends CP_Controller {
 	 */
 	function index()
 	{
-		/*
-		$file_iterator = new RecursiveDirectoryIterator(APPPATH.'Model');
-		$files = new RecursiveIteratorIterator(
-			$file_iterator,
-			RecursiveIteratorIterator::SELF_FIRST
-		);
-
-		require APPPATH.'Model/Entity/Entity.php';
-		require APPPATH.'Model/Model.php';
-		require APPPATH.'Model/QueryBuilder.php';
-
-		require APPPATH.'Model/Template/Template.php';
-
-		foreach ($files as $file)
-		{
-			if ( ! $file->isDir())
-			{
-		//		var_dump($file.'');
-			}
-		}
-		
-
 		require APPPATH.'Model/Autoloader.php';
 		$loader = new Autoloader();
 		$loader->register();
 
 		$qb = new \EllisLab\ExpressionEngine\Model\QueryBuilder();
-/* *
-		$template = $qb
+
+/* * /
+		$templates = $qb
 			->get('Template')
 			->with('TemplateGroup')
-			->filter('Template.template_name', 'grid')
-			->run();
+			->filter('Template.template_name', 'index')
+			->filter('Template.site_id', 1)
+			->all();
 
-		var_dump($template);
-/* * /
-		$template_group = $qb
-			->get('TemplateGroup', 1)
-			->with('Templates')
-			->filter('Template.template_name', 'grid')
-			->run();
+		$t1 = microtime(TRUE);
 
-		var_dump($template_group);
-		exit;
+		$templates = $qb
+			->get('Template')
+			->with('TemplateGroup')
+			->filter('Template.template_name', 'index')
+			->filter('Template.site_id', 1)
+			->all();
+
+		$t2 = microtime(TRUE);
+		var_dump($t2 - $t1);
+
+		foreach ($templates as $template)
+		{
+			var_dump($template->getTemplateGroup()->group_name.' --- '.$template->template_name);
+		}
+
+
 /* */
+		$template_groups = $qb
+			->get('TemplateGroup')
+			->with('Templates')
+			->filter('TemplateGroup.site_id', 1)
+			->filter('Template.template_name', 'index')
+			->all();
+
+
+		foreach ($template_groups as $template_group)
+		{
+			var_dump('Group: '.$template_group->group_name);
+			foreach ($template_group->getTemplates() as $template)
+			{
+				var_dump($template->template_name);
+			}
+		}
+
+/* */
+		exit;
 
 		$this->cp->get_installed_modules();
 		$this->view->cp_page_title = lang('main_menu');
