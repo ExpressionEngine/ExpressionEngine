@@ -700,7 +700,6 @@ class EE_Typography extends CI_Typography {
 		// Edit: Added a check for the trailing 6 characters for an edgecase
 		// where the inner url was valid, but did not exactly match the other:
 		// [url=http://www.iblamepaul.com]www.iblamepaul.com[/url] ;) -pk
-
 		$str = preg_replace_callback("#(^|\s|\(|..\])((http(s?)://)|(www\.))(\w+[^\s\)\<\[]+)(.{0,6})#im", array(&$this, 'auto_linker_callback'), $str);
 
 		// Auto link email
@@ -763,8 +762,8 @@ class EE_Typography extends CI_Typography {
 				$matches['4'].'://'.
 				$matches['5'].
 				$matches['6'].'[/url]'.
-				$matches['7'].
-				$end;
+				$end.
+				$matches['7'];
 	}
 
 	// --------------------------------------------------------------------
