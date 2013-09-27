@@ -5,6 +5,7 @@ class Query {
 	private $db;
 	private $model_name;
 	private $tables = array();
+	private $filters = array();
 	private $selected = array();
 	private $relationships = array();
 
@@ -12,7 +13,9 @@ class Query {
 	{
 		$this->model_name = $model;
 
-		$this->db = ee()->db; // TODO clone and reset?
+		$this->db = clone ee()->db; // TODO reset?
+
+		$this->selectFields($model);
 		$this->addTable($this->getTableName($model));
 	}
 
@@ -28,6 +31,91 @@ class Query {
 	 * assumed and the second parameter becomes the value.
 	 */
 	public function filter($key, $operator, $value = NULL)
+	{
+		$model_name = strtok($key, '.');
+
+		if ($model_name == $this->model_name)
+		{
+			$this->applyFilter($key, $operator, $value);
+		}
+		else
+		{
+			$this->filters[$model_name][] = array($key, $operator, $value);
+		}
+
+		return $this;
+	}
+
+	/**
+	 * Eager load a relationship
+	 *
+	 * @param Mixed Any combination of either a direct relationship name or
+	 * an array of (parent > child).
+	 *
+	 * For example:
+	 * get('ChannelEntry')->with('Categories', array('Member' => 'MemberGroup'))
+	 *
+	 */
+	public function with()
+	{
+		$related_models = func_get_args();
+
+		foreach ($related_models as $to_model)
+		{
+			$this->buildRelated($this->model_name, $to_model);
+		}
+
+		return $this;
+	}
+
+	/**
+	 * Run the query, hydrate the models, and reassemble the relationships
+	 *
+	 * @return Collection
+	 */
+	public function all()
+	{
+		// Run the query
+		$result = $this->db->get()->result_array();
+
+		// Build a collection
+		$collection = new Collection();
+		$model_class = QueryBuilder::getQualifiedClassName($this->model_name);
+
+		// Fill it while also populating the main model
+		foreach ($result as $i => $row)
+		{
+			$collection[] = new $model_class($row);
+		}
+
+		// And resolve any eager loaded relationships
+		foreach ($this->relationships as $resolver)
+		{
+			$resolver($collection, $result);
+		}
+
+		return $collection;
+	}
+
+	public function first()
+	{
+		$this->limit(1);
+		$collection = $this->all();
+
+		if (count($collection))
+		{
+			return $collection->first();
+		}
+
+		return NULL;
+	}
+
+	public function limit($n)
+	{
+		$this->db->limit($n);
+	}
+
+	private function applyFilter($key, $operator, $value)
 	{
 		if ( ! isset($value))
 		{
@@ -50,108 +138,52 @@ class Query {
 		{
 			$this->db->where($table.'.'.$key.' '.$operator, $value);
 		}
-
-		$this->addTable($table);
-		return $this;
 	}
 
-	/**
-	 * Apply a relation
-	 *
-	 * @param Mixed
-	 * @param String $operator	Comparison to perform [==, !=, <, >, <=, >=, IN]
-	 * @param Mixed  $value		Value to compare to
-	 *
-	 * The third parameter is optional. If it is not given, the == operator is
-	 * assumed and the second parameter becomes the value.
-	 */
-	// qb->with('Channel', array('Member' => ))
-	public function with()
+	public function getFilters($model)
 	{
-		$related_models = func_get_args();
-
-		foreach ($related_models as $to_model)
+		if (array_key_exists($model, $this->filters))
 		{
-			$this->queryRelation($this->model_name, $to_model);
+			return $this->filters[$model];
 		}
 
-		return $this;
+		return array();
 	}
-
-
-	/**
-	 * Run the query, hydrate the models, and reassemble the relationships
-	 *
-	 * @return Collection
-	 */
-	public function all()
-	{
-		$model_name = $this->model_name;
-
-		$this->selectFields($model_name);
-
-		$result = $this->db->get()->result_array();
-		$collection = new Collection;
-
-		foreach ($result as $row)
-		{
-			$collection[] = new $model_name($row);
-		}
-
-		return $result;
-	}
-
-	public function first()
-	{
-		// @todo add limit
-	}
-
 
 	/**
 	 *
 	 */
-	private function queryRelation($from_model, $to_relation_name)
+	private function buildRelated($from_model, $to_relation_name)
 	{
 		// recurse for arrays
 		if (is_array($to_relation_name))
 		{
 			foreach ($to_relation_name as $from => $to)
 			{
-				return $this->queryRelation($from, $to);
+				return $this->buildRelated($from, $to);
 			}
 		}
 
-		// TODO select the values on each table
+		// Select the fields from all associated entities
 		$this->selectFields($from_model);
 
-		// find a path to the model
-		$relationships = $this->getRelationships($from_model, $to_relation_name);
-
-		// Add a join to the query
-		foreach ($relationships as $resolve_relationship)
-		{
-			$resolve_relationship();
-		}
+		// Set up the relationships
+		$this->populateRelationships($from_model, $to_relation_name);
 	}
 
 	/**
-	 * Find a path from one model to another model through their entity
-	 * relationships.
+	 * Force an eager load on all of the relationships that were specified
+	 * in the with clause.
 	 *
 	 * @param String $from_model Model name of the model that defines the relationship
 	 * @param String $to_model   Model name of the model to relate to
-	 * @return Array [
-	 *     from_table: Table name to join on
-	 *     from_key:   Key name to join on
-	 *     to_table:   Table name to join to
-	 *     to_key:     Key name to join to
-	 * ]
+	 * @return void
 	 */
-	private function getRelationships($from_model_name, $to_model_name)
+	private function populateRelationships($from_model_name, $to_model_name)
 	{
-		$relationship_method = 'get'.$to_model_name;
-
 		$from_model = QueryBuilder::getQualifiedClassName($from_model_name);
+
+		$relationship_method = 'get'.$to_model_name;
 
 		if ( ! method_exists($from_model, $relationship_method))
 		{
@@ -159,69 +191,22 @@ class Query {
 		}
 
 		$from_model_obj = new $from_model();
-		$from_relation = $from_model_obj->$relationship_method();
+		$relationship = $from_model_obj->$relationship_method();
 
-		$from_entities = $from_model::getMetaData('key_map');
-
-		$from_entity = $from_entities[$from_relation['key']];
-		$from_entity = QueryBuilder::getQualifiedClassName($from_entity);
-
-		$from_entity_relations = $from_entity::getMetaData('related_entities');
-		$to_entity_relations = $from_entity_relations[$from_relation['key']];
-
-		if ( ! is_array(current($to_entity_relations)))
+		foreach ($relationship->buildRelationships($this, $this->db) as $relationship_resolver)
 		{
-			$to_entity_relations = array($to_entity_relations);
+			$this->relationships[] = $relationship_resolver;
 		}
-
-		$relationships = array();
-
-		foreach ($to_entity_relations as $to_relation)
-		{
-			$to_entity = $to_relation['entity'];
-			$to_entity = QueryBuilder::getQualifiedClassName($to_entity);
-			$type = $from_relation['type'];
-
-
-			$relationships[] = $this->manyToOneRelationship(array(
-				'to_model'	 => $from_relation['model_name'],
-				'from_table' => $from_entity::getMetaData('table_name'),
-				'from_key'	 => $from_relation['key'],
-				'to_table'	 => $to_entity::getMetaData('table_name'),
-				'to_key'	 => $to_relation['key'],
-			));
-		}
-
-		return $relationships;
 	}
-
-	/**
-	 * Adds the proper query and then returns a function that can resolve the
-	 * relationship.
-	 */
-	private function manyToOneRelationship($info)
-	{
-		$to_model = $info['to_model'];
-		$this->selectFields($to_model);
-
-		$this->db->join(
-			$info['to_table'],
-			$info['from_table'].'.'.$info['from_key'].'='.$info['to_table'].'.'.$info['to_key']
-		);
-
-		return function($result_model, $query_result_row) use ($to_model) {
-			return new $to_model($query_result);
-		};
-	}
-
-
 
 	/**
 	 * Add selects for all fields to the query.
 	 *
 	 * @param String $model Model name to select.
+	 *
+	 * FRIEND of Relationships. Do not use!
 	 */
-	private function selectFields($model_name)
+	public function selectFields($model_name)
 	{
 		if (in_array($model_name, $this->selected))
 		{
@@ -236,11 +221,7 @@ class Query {
 		{
 			$entity = QueryBuilder::getQualifiedClassName($entity);
 			$table = $entity::getMetaData('table_name');
-
-			foreach (array_keys(get_class_vars($entity)) as $property)
-			{
-				$this->db->select($table.'.'.$property.' AS '.$this->prefixField($property, $model_name));
-			}
+			$this->db->select($table.'.*');
 		}
 	}
 
@@ -259,19 +240,6 @@ class Query {
 	}
 
 	/**
-	 * Prefix a column name if it belongs to another model. This lets us
-	 * correclty populate everything at the end.
-	 *
-	 * @param String $key   Name of the column
-	 * @param String $model Name of the model that owns the key
-	 * @return String Prefixed key
-	 */
-	private function prefixField($key, $model)
-	{
-		return $model.'__'.$key;
-	}
-
-	/**
 	 * Take a string such as ModelName.field and resolve it to its
 	 * proper tablename and key for where queries.
 	 *
@@ -280,15 +248,12 @@ class Query {
 	 */
 	private function resolveAlias($alias)
 	{
-		// If we only have a model name, then we use the primary key
-		if (strpos($alias, '.') === FALSE)
+		$model_name = strtok($alias, '.');
+		$key		= strtok('.');
+
+		if ($key == FALSE)
 		{
-			$model_name = $alias;
 			$key = $this->getPrimaryKey($model_name);
-		}
-		else
-		{
-			list($model_name, $key) = explode('.', $alias);
 		}
 
 		$table = $this->getTableName($model_name, $key);
@@ -314,7 +279,7 @@ class Query {
 	}
 
 	/**
-	 * Retreive the table name for a given Model and key. If more than one entity
+	 * Retrieve the table name for a given Model and key. If more than one entity
 	 * has the key, it will return the first.
 	 *
 	 * @param String $model_name The name of the model

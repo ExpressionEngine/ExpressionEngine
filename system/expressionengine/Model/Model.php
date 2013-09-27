@@ -23,21 +23,6 @@ abstract class Model {
 	 */
 	private $dirty = array();
 
-	public static function getMetaData($key = NULL)
-	{
-		if (empty(static::$meta))
-		{
-			throw new \UnderflowException('No meta data set for this class!');
-		}
-
-		if ( ! isset($key))
-		{
-			return static::$meta;
-		}
-
-		return static::$meta[$key];
-	}
-
 	/**
 	 * Initialize this model with a set of data to set on the entity.
 	 *
@@ -53,6 +38,22 @@ abstract class Model {
 			$this->entities[$entity_name] = new $entity($data);
 		}
 	}
+
+	public static function getMetaData($key = NULL)
+	{
+		if (empty(static::$meta))
+		{
+			throw new \UnderflowException('No meta data set for this class!');
+		}
+
+		if ( ! isset($key))
+		{
+			return static::$meta;
+		}
+
+		return static::$meta[$key];
+	}
+
 
 	public function oneToOne($model, $entity, $key)
 	{
@@ -72,6 +73,7 @@ abstract class Model {
 
 		if ( $has_id && ! $has_data)
 		{
+			die('lazy');
 			return ee()->query_builder->get($model, $this->{$key})->run();
 		}
 
@@ -83,65 +85,56 @@ abstract class Model {
 		throw new ModelUndefinedStateException();
 	}
 
-	public function manyToOne($model_name, $this_key, $that_key)
+	public function manyToOne($to_model_name, $this_key, $that_key)
 	{
 		$has_id = $this->getId() !== NULL;
-		$has_data = isset($this->related_models[$model_name]);
+		$has_data = isset($this->related_models[$to_model_name]);
+
+		$relationship = new Relationship($this, $to_model_name, 'many-to-one');
 
 		if ( ! $has_id && ! $has_data)
 		{
-			$model = QueryBuilder::getQualifiedClassName($model_name);
-
-			$keys = $model::getMetaData('key_map');
-
-			return array(
-				'entity' => $keys[$that_key],
-				'key' => $this_key,
-				'type' => 'many-to-one',
-				'model_name' => $model_name
-			);
+			return $relationship->eagerLoad($this_key, $that_key);
 		}
 
 		if ( $has_id && ! $has_data)
 		{
-			return ee()->query_builder->get($model_name, $this->{$key})->run();
+			return array();
+			die('lazy');
+			return ee()->query_builder->get($to_model_name, $this->{$key})->run();
 		}
 
 		if ( $has_data)
 		{
-			return $this->related_models[$model_name];
+			return $this->related_models[$to_model_name];
 		}
 
 		throw new UndefinedStateException();
 	}
 
-	public function oneToMany($model_name, $this_key, $that_key)
+	public function oneToMany($to_model_name, $this_key, $that_key)
 	{
 		$has_id = $this->getId() !== NULL;
-		$has_data = isset($this->related_models[$model_name]);
+		$has_data = isset($this->related_models[$to_model_name]);
+
+		$relationship = new Relationship($this, $to_model_name, 'one-to-many');
 
 		if ( ! $has_id && ! $has_data)
 		{
-			$model = QueryBuilder::getQualifiedClassName($model_name);
-
-			$keys = $model::getMetaData('key_map');
-
-			return array(
-				'entity' => $keys[$that_key],
-				'key' => $this_key,
-				'type' => 'one-to-many',
-				'model_name' => $model_name
-			);
+			return $relationship->eagerLoad($this_key, $that_key);
 		}
+
 
 		if ( $has_id && ! $has_data)
 		{
-			return ee()->query_builder->get($model_name, $this->{$key})->run();
+			return array();
+			die('lazy');
+			return ee()->query_builder->get($to_model_name, $this->{$key})->run();
 		}
 
 		if ( $has_data)
 		{
-			return $this->related_models[$model_name];
+			return $this->related_models[$to_model_name];
 		}
 
 		throw new UndefinedStateException();
@@ -149,6 +142,11 @@ abstract class Model {
 
 	public function manyToMany($model, $entity, $key)
 	{}
+
+	public function setRelationship($name, $value)
+	{
+		$this->related_models[$name] = $value;
+	}
 
 	/**
 	 * Pass through getter that allows properties to be gotten from this model
@@ -164,14 +162,14 @@ abstract class Model {
 	public function __get($name)
 	{
 		$method = 'get' . ucfirst($name);
-		if (method_exists($method))
+		if (method_exists($this, $method))
 		{
 			return $this->$method();
 		}
 
 		foreach ($this->entities as $entity)
 		{
-			if (property_exists($name, $entity))
+			if (property_exists($entity, $name))
 			{
 				return $entity->{$name};
 			}
@@ -204,7 +202,7 @@ abstract class Model {
 
 		foreach($this->entities as $entity)
 		{
-			if (property_exists($name, $entity))
+			if (property_exists($entity, $name))
 			{
 				$entity->{$name} = $value;
 				$entity->dirty[$name] = TRUE;
@@ -270,5 +268,27 @@ abstract class Model {
 		{
 			$entity->delete();
 		}
+	}
+
+	/**
+	 * Retrieve the model as an array
+	 *
+	 * @return Array Merged values of all entities.
+	 */
+	public function toArray()
+	{
+		// extract all public vars from our entities and flatten them
+		$keys = array_keys(call_user_func_array(
+			'array_merge',
+			array_map('get_object_vars', $this->entities)
+		));
+
+		// Combine the keys with their value as controlled by __get
+		// Without array_keys the above gives us our values, but we
+		// need to be consistent with any potential getters.
+		return array_combine(
+			$keys,
+			array_map(array($this, '__get'), $keys)
+		);
 	}
 }
