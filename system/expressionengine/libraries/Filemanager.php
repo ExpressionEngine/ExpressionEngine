@@ -1643,8 +1643,15 @@ class Filemanager {
 		return array_values($files);
 	}
 	
+	// --------------------------------------------------------------------
 
-
+	/**
+	 * sync_database
+	 * 
+	 * @param mixed $dir_id 
+	 * @access public
+	 * @return void
+	 */
 	function sync_database($dir_id)
 	{
 		$db_files = array();
@@ -1680,7 +1687,16 @@ class Filemanager {
 		}
 	}
 	
+	// --------------------------------------------------------------------
 
+	/**
+	 * set_image_config
+	 * 
+	 * @param mixed $data 
+	 * @param string $type 
+	 * @access public
+	 * @return void
+	 */
 	function set_image_config($data, $type = 'watermark')
 	{
 		$config = array();
@@ -1753,7 +1769,6 @@ class Filemanager {
 		
 		return $config;
 	}
-
 
 	// --------------------------------------------------------------------
 	
