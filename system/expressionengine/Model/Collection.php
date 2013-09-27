@@ -17,6 +17,29 @@ class Collection implements \ArrayAccess, \Countable, \IteratorAggregate {
 	}
 
 	/**
+	 * Retrieve a list of all ids in this collection
+	 *
+	 * @return Array Ids
+	 */
+	public function getIds()
+	{
+		return array_map(function($model)
+		{
+			return $model->getId();
+		}, $this->elements);
+	}
+
+	/**
+	 * Retrieve the first model
+	 *
+	 * @return Mixed First model object
+	 */
+	public function first()
+	{
+		return $this->elements[0];
+	}
+
+	/**
 	 * Save all elements in the collection
 	 *
 	 * @return void
@@ -40,6 +63,19 @@ class Collection implements \ArrayAccess, \Countable, \IteratorAggregate {
 		{
 			$model->delete();
 		}
+	}
+
+	/**
+	 * Turn the entire collection into an array
+	 *
+	 * @return Array of data
+	 */
+	public function toArray()
+	{
+		return array_map(function($model)
+		{
+			return $model->toArray();
+		}, $this->elements);
 	}
 
 	// Implement Array Access
@@ -75,7 +111,15 @@ class Collection implements \ArrayAccess, \Countable, \IteratorAggregate {
 	 */
 	public function offsetSet($offset, $value)
 	{
-		$this->elements[$offset] = $value;
+		// If you push `$collection[] = $value`, the key is null
+		if ($offset === NULL)
+		{
+			$this->elements[] = $value;
+		}
+		else
+		{
+			$this->elements[$offset] = $value;
+		}
 	}
 
 	/**
