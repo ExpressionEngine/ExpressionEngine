@@ -159,9 +159,10 @@ abstract class Model {
 	 */
 	public function save()
 	{
-		if ( ! $this->validate())
+		$validation= $this->validate();
+		if (  $validation->hasErrors())
 		{
-			throw new ModelException('Model failed to validate on save call!');
+			throw new Exception('Model failed to validate on save call!');
 		}
 
 		foreach($this->entities as $entity)
