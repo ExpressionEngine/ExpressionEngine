@@ -1,38 +1,37 @@
 <?php
 namespace EllisLab\ExpressionEngine\Model\Category;
 
-use EllisLab\ExpressionEngine\Model\Model as Model;
+use EllisLab\ExpressionEngine\Model\FieldDataContentModel 
+	as FieldDataContentModel;
 
-class Category extends Model implements Content {
+class Category extends FieldDataContentModel {
 	protected static $meta = array(
 		'primary_key' => 'cat_id',
 		'entity_names' => array('CategoryEntity', 'CategoryFieldDataEntity'),
 		'key_map' => array(
-		)
+			'cat_id' => 'CategoryEntity',
+			'site_id' => 'CategoryEntity',
+			'group_id' => 'CategoryEntity',
+			'parent_id' => 'CategoryEntity'
+		),
+		'field_content_class' => 'CategoryFieldContent',
+		'field_content_entity' => 'CategoryFieldDataEntity'
 	);
 	
-	protected $fields = array();
+	/**
+	 *
+	 */
+	public function getCategoryGroup()
+	{
+		return $this->manyToOne('CategoryGroup', 'group_id', 'group_id');
+	}
 
 	/**
 	 *
 	 */
-	public function getFields()
+	public function getParent()
 	{
-		if ( empty($this->fields) && $this->getId() !== NULL)
-		{
-			$field_structures = $this->getContentStructure()
-				->getFieldStructures();
-
-			foreach ($field_structures as $field_structure)
-			{
-				$fields[$field_structure->field_id] = new CategoryFieldContent(
-					$field_sturcture
-					$this->entities['CategoryFieldDataEntity'],
-				);
-			}
-		}
-
-		return $this->fields;	
+		return $this->manyToOne('Category', 'parent_id', 'cat_id');
 	}
 
 	/**
@@ -43,13 +42,9 @@ class Category extends Model implements Content {
 	 */
 	public function getContentStructure()
 	{
-		return $this->getCategoryStructure();
+		return $this->getCategoryGroup();
 	}
 
-	public function getCategoryStructure()
-	{
-		return $this->manyToOne('CategoryStructure', 'cat_id', 'cat_id');
-	}
 
 	/**
 	 * Renders the piece of content for the front end, parses the tag data

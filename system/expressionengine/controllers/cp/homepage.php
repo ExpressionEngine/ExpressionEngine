@@ -52,14 +52,14 @@ class Homepage extends CP_Controller {
 		//		var_dump($file.'');
 			}
 		}
-		*/
+		
 
 		require APPPATH.'Model/Autoloader.php';
 		$loader = new Autoloader();
 		$loader->register();
 
 		$qb = new \EllisLab\ExpressionEngine\Model\QueryBuilder();
-/* */
+/* *
 		$template = $qb
 			->get('Template')
 			->with('TemplateGroup')

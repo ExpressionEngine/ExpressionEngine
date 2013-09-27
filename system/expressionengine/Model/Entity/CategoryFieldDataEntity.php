@@ -1,15 +1,15 @@
 <?php
-namespace Ellislab\ExpressionEngine\Model\Entity;
+namespace EllisLab\ExpressionEngine\Model\Entity;
 
 use EllisLab\ExpressionEngine\Model\Entity\Entity as Entity;
 
-class CategoryEntity extends Entity {
+class CategoryFieldDataEntity extends FieldDataEntity {
 	protected static $meta = array(
-		'table_name' => 'categories',
-		'primary_key' => 'cat_id',
+		'table_name' => 'category_field_data',
+		'primary_key' => 'entry_id',
 		'related_entities' => array(
 			'cat_id' => array(
-				'entity' => 'CategoryFieldDataEntity',
+				'entity' => 'CategoryEntity',
 				'key'	 => 'cat_id'
 			),
 			'site_id' => array(
@@ -20,10 +20,6 @@ class CategoryEntity extends Entity {
 				'entity' => 'CategoryGroupEntity',
 				'key'	 => 'group_id'
 			),
-			'parent_id' => array(
-				'entity' => 'CategoryEntity',
-				'key'	 => 'cat_id'
-			)
 		)
 	);
 
@@ -31,10 +27,5 @@ class CategoryEntity extends Entity {
 	public $cat_id;
 	public $site_id;
 	public $group_id;
-	public $parent_id;
-	public $cat_name;
-	public $cat_url_title;
-	public $cat_description;
-	public $cat_image;
-	public $cat_order;
+
 }

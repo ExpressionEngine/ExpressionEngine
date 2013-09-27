@@ -1,10 +1,9 @@
 <?php
 namespace EllisLab\ExpressionEngine\Module\Channel\Model;
 
-use EllisLab\ExpressionEngine\Model\Model as Model;
-use EllisLab\ExpressionEngine\Model\Interfaces\Content\Content as Content;
+use EllisLab\ExpressionEngine\Model\FieldDataContentModel as Model;
 
-class ChannelEntry extends Model implements Content {
+class ChannelEntry extends FieldDataContentModel {
 	protected static $meta = array(
 		'primary_key' => 'entry_id',
 		'entity_names' => array('ChannelTitleEntity', 'ChannelDataEntity'),
@@ -14,28 +13,18 @@ class ChannelEntry extends Model implements Content {
 			'site_id' => 'ChannelTitleEntity',
 			'author_id' => 'ChannelTitleEntity'
 		)
+		'field_content_class' => 'ChannelFieldContent',
+		'field_content_entity' => 'ChannelDataEntity'		
 	);
 
-	protected $fields = array();
-
-	/**
-	 *
-	 */
-	public function getFields()
+	public function getChannel()
 	{
-		if ( empty($this->fields) && $this->getId() !== NULL)
-		{
-			$field_structures = $this->getContentStructure()->getFieldStructures();
-			foreach ($field_structures as $field_structure)
-			{
-				$fields[$field_structure->field_id] = new ChannelFieldContent(
-					$field_sturcture
-					$this->entities['ChannelDataEntity'],
-				);
-			}
-		}
+		return $this->manyToOne('Channel', 'channel_id', 'channel_id');
+	}
 
-		return $this->fields;	
+	public function getMember()
+	{
+		return $this->manyToOne('Member', 'author_id', 'member_id');
 	}
 
 	/**
@@ -49,15 +38,6 @@ class ChannelEntry extends Model implements Content {
 		return $this->getChannel();
 	}
 
-	public function getChannel()
-	{
-		return $this->manyToOne('Channel', 'channel_id', 'channel_id');
-	}
-
-	public function getMember()
-	{
-		return $this->manyToOne('Member', 'author_id', 'member_id');
-	}
 
 	/**
 	 * Renders the piece of content for the front end, parses the tag data
