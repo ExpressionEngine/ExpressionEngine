@@ -4,13 +4,45 @@ namespace EllisLab\ExpressionEngine\Model;
 
 class Relationship {
 
+	/**
+	 * Type of relationship in dash-words
+	 */
 	private $type;
-	private $from_model;
-	private $to_model_name;
-	private $to_model_class;
 
+	/**
+	 * Defines the link for eagerly loaded relationships. The information we
+	 * we need to link our $from_model to our $to_model is:
+	 *	$from_entity The correct entity on this model
+	 *	$from_key	 The key we're using from this model
+	 *	$to_key		 The key we're relating to
+	 *
+	 * We do not store a to-entity. It can happen that one key relates
+	 * to multiple entities, so we need to set up a relationship for each.
+	 */
 	private $link = array();
 
+	/**
+	 * Model instance that called the relationship
+	 */
+	private $from_model;
+
+	/**
+	 * Name of the related model
+	 */
+	private $to_model_name;
+
+	/**
+	 * Fully qualified class name of the related model
+	 */
+	private $to_model_class;
+
+	/**
+	 * Initialize this relationship with its base information
+	 *
+	 * @param <Model> $from_model  		Object of the initiating model
+	 * @param String  $to_model_name	Name of the model to relate
+	 * @param String  $type				Type of relationship (e.g. one-to-one)
+	 */
 	public function __construct($from_model, $to_model_name, $type)
 	{
 		$this->from_model = $from_model;
@@ -160,19 +192,16 @@ class Relationship {
 	 */
 	private function buildManyToOne($relation, $query, $db)
 	{
+		$that = $this;
 		$to_model_name = $this->to_model_name;
-		$to_model_class = $this->to_model_class;
 
 		$query->selectFields($to_model_name);
 		$this->joinEntity($relation['entity'], $db);
 
 		// Return a function that resolves the relationship
-		return function($collection, $query_result) use ($to_model_name, $to_model_class)
+		return function($collection, $query_result) use ($that)
 		{
-			foreach ($collection as $i => $model)
-			{
-				$model->setRelated($to_model_name, new $to_model_class($query_result[$i]));
-			}
+			$that->resolveManyToOne($collection, $query_result);
 		};
 	}
 
@@ -190,58 +219,89 @@ class Relationship {
 	 */
 	private function buildOneToMany($relation, $query, $db)
 	{
-		$link = $this->link;
-		$to_model = $this->to_model_name;
+		$that = $this;
 
 		// Return a function that resolves the relationship
-		return function($collection, $query_result) use ($query, $link, $to_model)
+		return function($collection, $query_result) use ($that, $query)
 		{
-			$from_key = $link['from_key'];
-			$to_key = $link['to_key'];
-
-			// run a subquery on the ids we've received
-			$new_query = new Query($to_model);
-			$new_query->filter($to_model.'.'.$to_key, 'IN', $collection->getIds());
-
-			foreach ($query->getFilters() as $filter)
-			{
-				call_user_func_array(array($new_query, 'filter'), $filter);
-			}
-
-			$related_models = $new_query->all();
-
-			// Create a map of the foreign key id => related objects
-			$result_map = array();
-
-			foreach ($related_models as $model)
-			{
-				if ( ! array_key_exists($model->$to_key, $result_map))
-				{
-					$result_map[$model->$to_key] = new Collection();
-				}
-
-				$result_map[$model->$to_key][] = $model;
-			}
-
-			// Add the relationships to the result collection
-			foreach ($collection as $i => $model)
-			{
-				// If our result map does not include this collection element,
-				// it means that they applied a restricting filter onto the
-				// children, so we will remove empty parents.
-				// There is room for optimization here, but it depends on the
-				// specific filters they are applying.
-
-				if (array_key_exists($model->$from_key, $result_map))
-				{
-					$model->setRelated($to_model, $result_map[$model->$from_key]);
-				}
-				else
-				{
-					unset($collection[$i]);
-				}
-			}
+			$that->resolveOneToMany($collection, $query_result, $query);
 		};
+	}
+
+
+	public function resolveManyToOne($collection, $query_result)
+	{
+		$to_model_name = $this->to_model_name;
+		$to_model_class = $this->to_model_class;
+
+		foreach ($collection as $i => $model)
+		{
+			$model->setRelated($to_model_name, new $to_model_class($query_result[$i]));
+		}
+	}
+
+
+	public function resolveOneToMany($collection, $query_result, $originalQuery)
+	{
+		$to_key = $this->link['to_key'];
+
+		$to_model = $this->to_model_name;
+
+		// Reapply the filters for our subquery
+		$new_query = new Query($to_model);
+		$new_query->filter($to_model.'.'.$to_key, 'IN', $collection->getIds());
+
+		foreach ($originalQuery->getFilters() as $filter)
+		{
+			call_user_func_array(array($new_query, 'filter'), $filter);
+		}
+
+		$related_models = $new_query->all();
+
+		$this->mergeCollections($collection, $related_models);
+	}
+
+
+	/**
+	 *
+	 */
+	private function mergeCollections(Collection $parents, Collection $children)
+	{
+		$from_key = $this->link['from_key'];
+		$to_key = $this->link['to_key'];
+
+		// Create a map of the foreign key id => related objects
+		$result_map = array();
+
+		foreach ($children as $model)
+		{
+			if ( ! array_key_exists($model->$to_key, $result_map))
+			{
+				$result_map[$model->$to_key] = new Collection();
+			}
+
+			$result_map[$model->$to_key][] = $model;
+		}
+
+		// Add the relationships to the result collection
+		// If our result map does not include this collection element,
+		// it means that they applied a restricting filter onto the
+		// children, so we will remove empty parents.
+		// There is room for optimization here, but it depends on the
+		// specific filters they are applying.
+		$to_model = $this->to_model_name;
+
+		foreach ($parents as $i => $model)
+		{
+			if (array_key_exists($model->$from_key, $result_map))
+			{
+				$model->setRelated($to_model, $result_map[$model->$from_key]);
+			}
+			else
+			{
+				unset($parents[$i]);
+			}
+		}
 	}
 
 	/**
