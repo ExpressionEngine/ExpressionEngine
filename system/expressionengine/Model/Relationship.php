@@ -21,6 +21,11 @@ class Relationship {
 		$this->type = str_replace(' ', '', ucwords(str_replace('-', ' ', $type)));
 	}
 
+	/**
+	 * Set up an eager loading relationship
+	 *
+	 * @return $this
+	 */
 	public function eagerLoad($from_key, $to_key)
 	{
 		$from_entity = $this->findEntityForFromKey($from_key);
@@ -34,6 +39,13 @@ class Relationship {
 		return $this;
 	}
 
+	/**
+	 * Build the relationship resolution methods
+	 *
+	 * @param Query $query query object
+	 * @param DB $db database object
+	 * @return Array<Closure> List of closures that will each resolve a relationship
+	 */
 	public function buildRelationships($query, $db)
 	{
 		if (empty($this->link))
@@ -42,9 +54,8 @@ class Relationship {
 		}
 
 		$resolvers = array();
-		$relations = $this->findRelatedEntities();
 
-		foreach ($relations as $relation)
+		foreach ($this->findRelatedEntities() as $relation)
 		{
 			$buildRelationship = 'build'.$this->type;
 
@@ -54,22 +65,45 @@ class Relationship {
 		return $resolvers;
 	}
 
-	private function buildManyToOne($relation, $query, $db)
+	/**
+	 * Join an given entity onto the main entity for this model.
+	 *
+	 * @param String $to_entity Fully qualified name of the entity to join
+	 * @param DB $db database object
+	 * @return void
+	 */
+	private function joinEntity($to_entity, $db)
 	{
 		$from_entity = $this->link['from_entity'];
-		$to_entity = $relation['entity'];
 
 		$to_table = $to_entity::getMetaData('table_name');
 		$from_table = $from_entity::getMetaData('table_name');
 
-		$to_model_name = $this->to_model_name;
-		$to_model_class = $this->to_model_class;
-
-		$query->selectFields($to_model_name);
 		$db->join(
 			$to_table,
 			$from_table.'.'.$this->link['from_key'].'='.$to_table.'.'.$this->link['to_key']
 		);
+	}
+
+	/**
+	 * Create a many-to-one relationship
+	 *
+	 * Sets up the relationship in the context of the current query and then
+	 * returns a resolving function that will be called after the query has
+	 * been run.
+	 *
+	 * @param Array $relation Related entity information [entity => ..., key => ...]
+	 * @param Query $query query object
+	 * @param DB $db database object
+	 * @return Closure
+	 */
+	private function buildManyToOne($relation, $query, $db)
+	{
+		$to_model_name = $this->to_model_name;
+		$to_model_class = $this->to_model_class;
+
+		$query->selectFields($to_model_name);
+		$this->joinEntity($relation['entity'], $db);
 
 		// Return a function that resolves the relationship
 		return function($collection, $query_result) use ($to_model_name, $to_model_class)
@@ -81,6 +115,18 @@ class Relationship {
 		};
 	}
 
+	/**
+	 * Create a one-to-many relationship
+	 *
+	 * Sets up the relationship in the context of the current query and then
+	 * returns a resolving function that will be called after the query has
+	 * been run.
+	 *
+	 * @param Array $relation Related entity information [entity => ..., key => ...]
+	 * @param Query $query query object
+	 * @param DB $db database object
+	 * @return Closure
+	 */
 	private function buildOneToMany($relation, $query, $db)
 	{
 		$link = $this->link;
@@ -92,17 +138,18 @@ class Relationship {
 			$from_key = $link['from_key'];
 			$to_key = $link['to_key'];
 
+			// run a subquery on the ids we've received
 			$new_query = new Query($to_model);
 			$new_query->filter($to_model.'.'.$to_key, 'IN', $collection->getIds());
 
-			foreach ($query->getFilters($to_model) as $filter)
+			foreach ($query->getFilters() as $filter)
 			{
 				call_user_func_array(array($new_query, 'filter'), $filter);
 			}
 
-			// run the query and build a map to our parent foreign keys
 			$related_models = $new_query->all();
 
+			// Create a map of the foreign key id => related objects
 			$result_map = array();
 
 			foreach ($related_models as $model)
@@ -115,6 +162,7 @@ class Relationship {
 				$result_map[$model->$to_key][] = $model;
 			}
 
+			// Add the relationships to the result collection
 			foreach ($collection as $i => $model)
 			{
 				// If our result map does not include this collection element,
@@ -137,6 +185,8 @@ class Relationship {
 
 	/**
 	 * Find the entity that holds this model's from key
+	 *
+	 * @return String Fully qualified class name of the entity
 	 */
 	private function findEntityForFromKey($from_key)
 	{
@@ -146,23 +196,29 @@ class Relationship {
 		return QueryBuilder::getQualifiedClassName($from_entity);
 	}
 
+	/**
+	 * Grab the related_entities information from the current entity
+	 * and namespace the qualified class names.
+	 *
+	 * @return Array List of related entities [entity => '...', key => '...']
+	 */
 	private function findRelatedEntities()
 	{
 		$from_entity = $this->link['from_entity'];
 
-		$from_entity_relations = $from_entity::getMetaData('related_entities');
-		$to_entity_relations = $from_entity_relations[$this->link['from_key']];
+		$from_related = $from_entity::getMetaData('related_entities');
+		$to_related = $from_related[$this->link['from_key']];
 
-		if ( ! is_array(current($to_entity_relations)))
+		if ( ! is_array(current($to_related)))
 		{
-			$to_entity_relations = array($to_entity_relations);
+			$to_related = array($to_related);
 		}
 
-		foreach ($to_entity_relations as &$relation)
+		foreach ($to_related as &$relation)
 		{
 			$relation['entity'] = QueryBuilder::getQualifiedClassName($relation['entity']);
 		}
 
-		return $to_entity_relations;
+		return $to_related;
 	}
 }
