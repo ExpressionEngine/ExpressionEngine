@@ -749,7 +749,7 @@ class EE_Typography extends CI_Typography {
 
 		$end = '';
 
-		if (preg_match("/^(.+?)([\.\,]+)$/",$matches['6'], $punc_match))
+		if (preg_match("/^(.+?)([\.\,\?\!\:\;]+)$/",$matches['6'], $punc_match))
 		{
 			$end = $punc_match[2];
 			$matches[6] = $punc_match[1];
