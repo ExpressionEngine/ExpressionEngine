@@ -126,6 +126,8 @@ abstract class Model {
 
 	/**
 	 * Get the primary id for this model
+	 *
+	 * @return int	Primary key value of the model
 	 */
 	public function getId()
 	{
@@ -185,6 +187,12 @@ abstract class Model {
 
 	/**
 	 * Create a one-to-one relationship
+	 *
+	 * @param String $to_model_name	Name of the model to relate to
+	 * @param String $this_key		Name of the related key
+	 * @param String $that_key		Name of the key on the related model
+	 *
+	 * @return Relationship object or related data
 	 */
 	public function oneToOne($to_model_name, $this_key, $that_key)
 	{
@@ -198,6 +206,12 @@ abstract class Model {
 
 	/**
 	 * Create a many-to-one relationship
+	 *
+	 * @param String $to_model_name	Name of the model to relate to
+	 * @param String $this_key		Name of the related key
+	 * @param String $that_key		Name of the key on the related model
+	 *
+	 * @return Relationship object or related data
 	 */
 	public function manyToOne($to_model_name, $this_key, $that_key)
 	{
@@ -211,6 +225,12 @@ abstract class Model {
 
 	/**
 	 * Create a one-to-many relationship
+	 *
+	 * @param String $to_model_name	Name of the model to relate to
+	 * @param String $this_key		Name of the related key
+	 * @param String $that_key		Name of the key on the related model
+	 *
+	 * @return Relationship object or related data
 	 */
 	public function oneToMany($to_model_name, $this_key, $that_key)
 	{
@@ -224,8 +244,14 @@ abstract class Model {
 
 	/**
 	 * Create a many-to-many relationship
+	 *
+	 * @param String $to_model_name	Name of the model to relate to
+	 * @param String $this_key		Name of the related key
+	 * @param String $that_key		Name of the key on the related model
+	 *
+	 * @return Relationship object or related data
 	 */
-	public function manyToMany($model, $entity, $key)
+	public function manyToMany($to_model_name, $this_key, $that_key)
 	{}
 
 	/**
@@ -252,14 +278,26 @@ abstract class Model {
 
 	/**
 	 * Set related data for a given relationship.
+	 *
+	 * @param String $model_name Name of the related model
+	 * @param Mixed  $value      Collection or single Model
+	 *
+	 * @return void
 	 */
-	public function setRelated($name, $value)
+	public function setRelated($model_name, $value)
 	{
-		$this->related_models[$name] = $value;
+		$this->related_models[$model_name] = $value;
 	}
 
 	/**
 	 * Helper method used when setting up a relationship
+	 *
+	 * @param String $type			Relationship type (dash-words)
+	 * @param String $to_model_name	Name of the model to relate to
+	 * @param String $this_key		Key on the current model to use
+	 * @param String $that_key		Key on the to_model to use
+	 *
+	 * @return Relationship object or related data
 	 */
 	private function related($type, $to_model_name, $this_key, $that_key)
 	{
