@@ -130,7 +130,7 @@ class Text_ft extends EE_Fieldtype {
 
 		$data = $this->_format_number($data, $type, $decimals);
 
-		$field_fmt = (isset($this->settings['field_fmt']))
+		$field_fmt = ($this->content_type() == 'grid')
 			? $this->settings['field_fmt'] : $this->row('field_ft_'.$this->field_id);
 
 		ee()->load->library('typography');
