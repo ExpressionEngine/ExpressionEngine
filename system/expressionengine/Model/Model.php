@@ -39,115 +39,6 @@ abstract class Model {
 		}
 	}
 
-	public static function getMetaData($key = NULL)
-	{
-		if (empty(static::$meta))
-		{
-			throw new \UnderflowException('No meta data set for this class!');
-		}
-
-		if ( ! isset($key))
-		{
-			return static::$meta;
-		}
-
-		return static::$meta[$key];
-	}
-
-
-	public function oneToOne($model, $entity, $key)
-	{
-		$has_id = $this->getId() !== NULL;
-		$has_data = isset($this->related_models[$model]);
-
-		if ( ! $has_id && ! $has_data)
-		{
-			$keys = $model::getKeys();
-
-			return array(
-				'entity' => $keys[$that_key],
-				'key' => $this_key,
-				'type' => 'one-to-one'
-			);
-		}
-
-		if ( $has_id && ! $has_data)
-		{
-			die('lazy');
-			return ee()->query_builder->get($model, $this->{$key})->run();
-		}
-
-		if ( $has_data)
-		{
-			return $this->related_models[$model];
-		}
-
-		throw new ModelUndefinedStateException();
-	}
-
-	public function manyToOne($to_model_name, $this_key, $that_key)
-	{
-		$has_id = $this->getId() !== NULL;
-		$has_data = isset($this->related_models[$to_model_name]);
-
-		$relationship = new Relationship($this, $to_model_name, 'many-to-one');
-
-		if ( ! $has_id && ! $has_data)
-		{
-			return $relationship->eagerLoad($this_key, $that_key);
-		}
-
-		if ( $has_id && ! $has_data)
-		{
-			return array();
-			die('lazy');
-			return ee()->query_builder->get($to_model_name, $this->{$key})->run();
-		}
-
-		if ( $has_data)
-		{
-			return $this->related_models[$to_model_name];
-		}
-
-		throw new UndefinedStateException();
-	}
-
-	public function oneToMany($to_model_name, $this_key, $that_key)
-	{
-		$has_id = $this->getId() !== NULL;
-		$has_data = isset($this->related_models[$to_model_name]);
-
-		$relationship = new Relationship($this, $to_model_name, 'one-to-many');
-
-		if ( ! $has_id && ! $has_data)
-		{
-			return $relationship->eagerLoad($this_key, $that_key);
-		}
-
-
-		if ( $has_id && ! $has_data)
-		{
-			return array();
-			die('lazy');
-			return ee()->query_builder->get($to_model_name, $this->{$key})->run();
-		}
-
-		if ( $has_data)
-		{
-			return $this->related_models[$to_model_name];
-		}
-
-		throw new UndefinedStateException();
-	}
-
-	public function manyToMany($model, $entity, $key)
-	{}
-
-	public function setRelationship($name, $value)
-	{
-		$this->related_models[$name] = $value;
-	}
-
 	/**
 	 * Pass through getter that allows properties to be gotten from this model
 	 * but stored in the wrapped entity.
@@ -174,7 +65,6 @@ abstract class Model {
 				return $entity->{$name};
 			}
 		}
-
 
 		throw new NonExistentPropertyException('Attempt to access a non-existent property on ' . __CLASS__);
 	}
@@ -213,6 +103,30 @@ abstract class Model {
 		throw new NonExistentPropertyException('Attempt to access a non-existent property on ' . __CLASS__);
 	}
 
+	/**
+	 * Get the model metadata
+	 *
+	 * @param String $key Metadata key name [optional]
+	 * @return Mixed Value for $key or full metadata array
+	 */
+	public static function getMetaData($key = NULL)
+	{
+		if (empty(static::$meta))
+		{
+			throw new \UnderflowException('No meta data set for this class!');
+		}
+
+		if ( ! isset($key))
+		{
+			return static::$meta;
+		}
+
+		return static::$meta[$key];
+	}
+
+	/**
+	 * Get the primary id for this model
+	 */
 	public function getId()
 	{
 		$primary_key = static::getMetaData('primary_key');
@@ -256,7 +170,6 @@ abstract class Model {
 		}
 	}
 
-
 	/**
 	 * Delete this model.
 	 *
@@ -269,6 +182,51 @@ abstract class Model {
 			$entity->delete();
 		}
 	}
+
+	/**
+	 * Create a one-to-one relationship
+	 */
+	public function oneToOne($model, $entity, $key)
+	{
+		return $this->related(
+			'one-to-one',
+			$to_model_name,
+			$this_key,
+			$that_key
+		);
+	}
+
+	/**
+	 * Create a many-to-one relationship
+	 */
+	public function manyToOne($to_model_name, $this_key, $that_key)
+	{
+		return $this->related(
+			'many-to-one',
+			$to_model_name,
+			$this_key,
+			$that_key
+		);
+	}
+
+	/**
+	 * Create a one-to-many relationship
+	 */
+	public function oneToMany($to_model_name, $this_key, $that_key)
+	{
+		return $this->related(
+			'one-to-many',
+			$to_model_name,
+			$this_key,
+			$that_key
+		);
+	}
+
+	/**
+	 * Create a many-to-many relationship
+	 */
+	public function manyToMany($model, $entity, $key)
+	{}
 
 	/**
 	 * Retrieve the model as an array
@@ -290,5 +248,35 @@ abstract class Model {
 			$keys,
 			array_map(array($this, '__get'), $keys)
 		);
+	}
+
+	/**
+	 * Set related data for a given relationship.
+	 */
+	public function setRelationship($name, $value)
+	{
+		$this->related_models[$name] = $value;
+	}
+
+	/**
+	 * Helper method used when setting up a relationship
+	 */
+	private function related($type, $to_model_name, $this_key, $that_key)
+	{
+		// If we already have data, return it
+		if (array_key_exists($to_model_name, $this->related_models))
+		{
+			return $this->related_models[$to_model_name];
+		}
+
+		$relationship = new Relationship($this, $to_model_name, $type);
+
+		// No id, we must be querying
+		if ($this->getId() === NULL)
+		{
+			return $relationship->eagerLoad($this_key, $that_key);
+		}
+
+		return $relationship->lazyLoad($this_key, $that_key);
 	}
 }
