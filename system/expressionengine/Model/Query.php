@@ -40,7 +40,7 @@ class Query {
 		}
 		else
 		{
-			$this->filters[$model_name][] = array($key, $operator, $value);
+			$this->filters[] = array($key, $operator, $value);
 		}
 
 		return $this;
@@ -97,6 +97,12 @@ class Query {
 		return $collection;
 	}
 
+	/**
+	 * Run the query, hydrate the models, and reassemble the relationships, but
+	 * limit it to just one.
+	 *
+	 * @return Model Instance
+	 */
 	public function first()
 	{
 		$this->limit(1);
@@ -113,6 +119,16 @@ class Query {
 	public function limit($n)
 	{
 		$this->db->limit($n);
+	}
+
+	public function offset($n)
+	{
+		$this->db->offset($n);
+	}
+
+	public function getFilters()
+	{
+		return $this->filters;
 	}
 
 	private function applyFilter($key, $operator, $value)
@@ -140,25 +156,15 @@ class Query {
 		}
 	}
 
-	public function getFilters($model)
-	{
-		if (array_key_exists($model, $this->filters))
-		{
-			return $this->filters[$model];
-		}
-
-		return array();
-	}
-
 	/**
 	 *
 	 */
-	private function buildRelated($from_model, $to_relation_name)
+	private function buildRelated($from_model, $related_name)
 	{
 		// recurse for arrays
-		if (is_array($to_relation_name))
+		if (is_array($related_name))
 		{
-			foreach ($to_relation_name as $from => $to)
+			foreach ($related_name as $from => $to)
 			{
 				return $this->buildRelated($from, $to);
 			}
@@ -168,7 +174,7 @@ class Query {
 		$this->selectFields($from_model);
 
 		// Set up the relationships
-		$this->populateRelationships($from_model, $to_relation_name);
+		$this->populateRelationships($from_model, $related_name);
 	}
 
 	/**
@@ -179,11 +185,11 @@ class Query {
 	 * @param String $to_model   Model name of the model to relate to
 	 * @return void
 	 */
-	private function populateRelationships($from_model_name, $to_model_name)
+	private function populateRelationships($from_model_name, $related_name)
 	{
 		$from_model = QueryBuilder::getQualifiedClassName($from_model_name);
 
-		$relationship_method = 'get'.$to_model_name;
+		$relationship_method = 'get'.$related_name;
 
 		if ( ! method_exists($from_model, $relationship_method))
 		{
@@ -295,7 +301,6 @@ class Query {
 
 		$model = QueryBuilder::getQualifiedClassName($model_name);
 
-		$table = '';
 		$known_keys = $model::getMetaData('key_map');
 
 		if (isset($known_keys[$key]))
