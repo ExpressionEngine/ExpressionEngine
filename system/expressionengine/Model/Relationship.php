@@ -40,6 +40,32 @@ class Relationship {
 	}
 
 	/**
+	 * Setup and run a lazy loading relationship
+	 *
+	 * @return Model|Collection Related data
+	 */
+	public function lazyLoad($from_key, $to_key)
+	{
+		$to_name = $this->to_model_name;
+
+		$query = new Query($to_name);
+		$query->filter($to_name.'.'.$to_key, $this->from_model->$from_key);
+
+		if (substr($this->type, -3) == 'One')
+		{
+			$result = $query->first();
+		}
+		else
+		{
+			$result = $query->all();
+		}
+
+		// Remember it for future access
+		$this->from_model->setRelated($to_name, $result);
+		return $result;
+	}
+
+	/**
 	 * Build the relationship resolution methods
 	 *
 	 * @param Query $query query object
@@ -86,6 +112,23 @@ class Relationship {
 	}
 
 	/**
+	 * Create a one-to-one relationship
+	 *
+	 * Sets up the relationship in the context of the current query and then
+	 * returns a resolving function that will be called after the query has
+	 * been run.
+	 *
+	 * @param Array $relation Related entity information [entity => ..., key => ...]
+	 * @param Query $query query object
+	 * @param DB $db database object
+	 * @return Closure
+	 */
+	private function buildOneToOne($relation, $query, $db)
+	{
+		return $this->buildManyToOne($relation, $query, $db);
+	}
+
+	/**
 	 * Create a many-to-one relationship
 	 *
 	 * Sets up the relationship in the context of the current query and then
@@ -110,7 +153,7 @@ class Relationship {
 		{
 			foreach ($collection as $i => $model)
 			{
-				$model->setRelationship($to_model_name, new $to_model_class($query_result[$i]));
+				$model->setRelated($to_model_name, new $to_model_class($query_result[$i]));
 			}
 		};
 	}
@@ -173,7 +216,7 @@ class Relationship {
 
 				if (array_key_exists($model->$from_key, $result_map))
 				{
-					$model->setRelationship($to_model, $result_map[$model->$from_key]);
+					$model->setRelated($to_model, $result_map[$model->$from_key]);
 				}
 				else
 				{

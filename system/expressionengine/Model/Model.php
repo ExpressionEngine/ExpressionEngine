@@ -186,7 +186,7 @@ abstract class Model {
 	/**
 	 * Create a one-to-one relationship
 	 */
-	public function oneToOne($model, $entity, $key)
+	public function oneToOne($to_model_name, $this_key, $that_key)
 	{
 		return $this->related(
 			'one-to-one',
@@ -253,7 +253,7 @@ abstract class Model {
 	/**
 	 * Set related data for a given relationship.
 	 */
-	public function setRelationship($name, $value)
+	public function setRelated($name, $value)
 	{
 		$this->related_models[$name] = $value;
 	}
