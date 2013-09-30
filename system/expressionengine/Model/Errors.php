@@ -1,4 +1,6 @@
 <?PHP
+namespace EllisLab\ExpressionEngine\Model;
+
 
 /**
  * Wrapper class for multiple errors, to be returned from validation.
