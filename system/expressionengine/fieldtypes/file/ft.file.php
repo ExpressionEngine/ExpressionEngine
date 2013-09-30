@@ -659,7 +659,10 @@ JSC;
 		if ( ! $this->_check_directories())
 		{
 			ee()->lang->loadfile('filemanager');
-			return lang('please_add_upload');
+			return sprintf(
+				lang('no_upload_directories'),
+				BASE.AMP.'C=content_files'.AMP.'M=file_upload_preferences'
+			);
 		}
 
 		return TRUE;
@@ -693,7 +696,13 @@ JSC;
 		if ( ! $this->_check_directories())
 		{
 			ee()->lang->loadfile('filemanager');
-			ee()->form_validation->set_message('_validate_file_settings', lang('please_add_upload'));
+			ee()->form_validation->set_message(
+				'_validate_file_settings',
+				sprintf(
+					lang('no_upload_directories'),
+					BASE.AMP.'C=content_files'.AMP.'M=file_upload_preferences'
+				)
+			);
 			return FALSE;
 		}
 
