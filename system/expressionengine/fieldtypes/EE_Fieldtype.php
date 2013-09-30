@@ -565,7 +565,7 @@ abstract class EE_Fieldtype {
 
 		// Data from Form Validation
 		$show_fmt = set_value($prefix.'field_show_fmt', $data['field_show_fmt_y']);
-		$show_fmt = ($show_fmt == 'y' OR $show_fmt === TRUE);
+		$show_fmt = ($show_fmt == 'y' OR $show_fmt == '1');
 
 		ee()->table->add_row(
 			lang('deft_field_formatting', $prefix.'field_fmt'),
@@ -603,7 +603,7 @@ abstract class EE_Fieldtype {
 
 		// Data from Form Validation
 		$ltr_checked = set_value($prefix.'field_text_direction', $data['field_text_direction_ltr']);
-		$ltr_checked = ($ltr_checked == 'ltr' OR $ltr_checked === TRUE OR $ltr_checked === '1');
+		$ltr_checked = ($ltr_checked == 'ltr' OR $ltr_checked == '1');
 
 		ee()->table->add_row(
 			'<strong>'.lang('text_direction').'</strong>',
@@ -762,7 +762,7 @@ abstract class EE_Fieldtype {
 		$data = (isset($data[$data_key])) ? $data[$data_key] : '';
 
 		$val_is_y = set_value($prefix.$data_key, $data);
-		$val_is_y = ($val_is_y == 'y' OR $val_is_y === TRUE);
+		$val_is_y = ($val_is_y == 'y' OR $val_is_y == '1');
 
 		$yes_no_string = form_radio($prefix.$data_key, 'y', $val_is_y, 'id="'.$prefix.$data_key.'_y"').NBS.
 			lang('yes', $prefix.$data_key.'_y').NBS.NBS.NBS.NBS.NBS.
