@@ -66,6 +66,20 @@ class Collection implements \ArrayAccess, \Countable, \IteratorAggregate {
 	}
 
 	/**
+	 * Get a given value for all elements
+	 *
+	 * @param String $key The key to get from each element
+	 * @return Array of values
+	 */
+	public function pluck($key)
+	{
+		return array_map(function($model) use($key)
+		{
+			return $model->$key;
+		}, $this->elements);
+	}
+
+	/**
 	 * Turn the entire collection into an array
 	 *
 	 * @return Array of data

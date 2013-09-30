@@ -243,6 +243,13 @@ class Relationship {
 
 	public function resolveOneToMany($collection, $query_result, $originalQuery)
 	{
+		// empty parent - no query
+		if (count($collection) === 0)
+		{
+			$this->mergeCollections($collection, new Collection);
+			return;
+		}
+
 		$to_key = $this->link['to_key'];
 
 		$to_model = $this->to_model_name;

@@ -2,6 +2,7 @@
 namespace EllisLab\ExpressionEngine\Model\Template;
 
 use EllisLab\ExpressionEngine\Model\Model as Model;
+use EllisLab\ExpressionEngine\Model\Errors as Errors;
 
 /**
  *
@@ -22,7 +23,7 @@ class Template extends Model {
 	 */
 	public function getTemplateGroup()
 	{
-		return $this->manyToOne('TemplateGroup', 'group_id', 'group_id');
+		return $this->manyToOne('TemplateGroup', 'group_id');
 	}
 
 	/**

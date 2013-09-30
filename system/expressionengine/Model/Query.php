@@ -4,6 +4,10 @@ class Query {
 
 	private $db;
 	private $model_name;
+
+	private $limit = '18446744073709551615'; // 2^64
+	private $offset = 0;
+
 	private $tables = array();
 	private $filters = array();
 	private $selected = array();
@@ -116,15 +120,40 @@ class Query {
 		return NULL;
 	}
 
+	/**
+	 * Count the number of objects that would be returned by this query if it
+	 * was run right now.
+	 *
+	 * @return int Row count
+	 */
+	public function count()
+	{
+		return $this->db->count_all_results();
+	}
+
+	/**
+	 * Limit the result set.
+	 *
+	 * @param int Number of elements to limit to
+	 * @return $this
+	 */
 	public function limit($n = NULL)
 	{
-		$this->db->limit($n);
+		$this->db->limit($n, $this->offset);
+		$this->limit = $n;
 		return $this;
 	}
 
+	/**
+	 * Offset the result set.
+	 *
+	 * @param int Number of elements to offset to
+	 * @return $this
+	 */
 	public function offset($n)
 	{
-		$this->db->offset($n);
+		$this->db->limit($this->limit, $n);
+		$this->offset = $n;
 		return $this;
 	}
 
