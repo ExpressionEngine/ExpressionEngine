@@ -277,8 +277,8 @@ class File_field {
 		elseif ($hidden_input)
 		{
 			$filename = $hidden_input;
-		} 
-		elseif (isset($_FILES[$field_name]) && empty($filename) && in_array($filedir, $allowed_dirs))
+		}
+		elseif (isset($_FILES[$field_name]) && ( ! empty($_FILES[$field_name]['name'])) && in_array($filedir, $allowed_dirs))
 		{
 			ee()->load->library('filemanager');
 			$data = ee()->filemanager->upload_file($filedir, $field_name);
