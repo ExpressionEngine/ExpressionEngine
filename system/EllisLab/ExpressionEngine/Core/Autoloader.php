@@ -8,9 +8,13 @@
  */
 class Autoloader {
 
-	protected $prefixes = array(
-		'EllisLab\ExpressionEngine' => APPPATH
-	);
+	protected $prefixes = array();
+
+
+	public function __construct()
+	{
+		$this->prefixes['EllisLab'] = APPPATH . '../EllisLab/';
+	}
 
 	/**
 	 * Register the autoloader with PHP
@@ -52,9 +56,11 @@ class Autoloader {
 		{
 			if (strpos($class, $prefix) === 0)
 			{
-				$class_path = substr($class, strlen($prefix));
+				// From inside to out: Strip off the prefix from the namespace, turn the namespace into 
+				// a path, prepend the path prefix, append .php.  
+				$class_path = $path . str_replace('\\', '/', substr($class, strlen($prefix))) . '.php';
 
-				require $base_dir.str_replace('\\', '/', $class_path).'.php';
+				require $class_path;
 				return;
 			}
 		}

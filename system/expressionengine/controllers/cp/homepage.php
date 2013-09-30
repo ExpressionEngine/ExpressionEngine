@@ -32,7 +32,7 @@ class Homepage extends CP_Controller {
 	 */
 	function index()
 	{
-		require APPPATH.'Model/Autoloader.php';
+		require APPPATH . '../EllisLab/ExpressionEngine/Core/Autoloader.php';
 		$loader = new Autoloader();
 		$loader->register();
 
