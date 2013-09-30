@@ -116,14 +116,16 @@ class Query {
 		return NULL;
 	}
 
-	public function limit($n)
+	public function limit($n = NULL)
 	{
 		$this->db->limit($n);
+		return $this;
 	}
 
 	public function offset($n)
 	{
 		$this->db->offset($n);
+		return $this;
 	}
 
 	public function getFilters()
