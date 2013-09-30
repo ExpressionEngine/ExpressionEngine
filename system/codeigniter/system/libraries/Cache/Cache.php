@@ -35,8 +35,7 @@ class CI_Cache extends CI_Driver_Library {
 		'dummy',
 		'file',
 		'memcached',
-		'redis',
-		'wincache'
+		'redis'
 	);
 
 	/**
