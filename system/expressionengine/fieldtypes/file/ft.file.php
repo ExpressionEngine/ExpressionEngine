@@ -493,7 +493,7 @@ CSS;
 		);
 
 		$this->_row(
-			lang('file_ft_allowed_dirs', $prefix.'field_allowed_dirs'),
+			lang('file_ft_allowed_dirs', $prefix.'field_allowed_dirs').form_error('file_allowed_directories'),
 			form_dropdown('file_allowed_directories', $this->_allowed_directories_options(), $allowed_directories, 'id="'.$prefix.'field_allowed_dirs"')
 		);
 

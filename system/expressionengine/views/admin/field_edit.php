@@ -23,7 +23,6 @@
 					set_value('field_type', $field_type),
 					'id="field_type"'
 				)?>
-				<?=form_error('file_allowed_directories')?>
 			</td>
 		</tr>
 		<tr>
