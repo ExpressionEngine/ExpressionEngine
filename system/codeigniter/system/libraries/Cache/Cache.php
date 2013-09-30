@@ -170,6 +170,19 @@ class CI_Cache extends CI_Driver_Library {
 	// ------------------------------------------------------------------------
 
 	/**
+	 * Delete keys from cache with a specified prefix
+	 *
+	 * @param	mixed	Prefix of group of cache keys to delete
+	 * @return	bool
+	 */
+	public function delete_with_prefix($prefix)
+	{
+		return $this->{$this->_adapter}->delete_with_prefix($prefix);
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
 	 * Clean the cache
 	 *
 	 * @return	bool	TRUE on success, FALSE on failure
@@ -225,6 +238,17 @@ class CI_Cache extends CI_Driver_Library {
 		return $support[$driver];
 	}
 
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Returns the name of the adapter currently in use
+	 *
+	 * @return	string	Name of adapter
+	 */
+	public function get_adapter()
+	{
+		return $this->_adapter;
+	}
 }
 
 /* End of file Cache.php */

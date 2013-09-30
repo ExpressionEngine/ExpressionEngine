@@ -84,8 +84,9 @@ class EE_Template {
 
 	var $reverse_related_data = array();	//  A multi-dimensional array containing any reverse related tags
 
-	var $t_cache_path		= 'tag_cache/';	 // Location of the tag cache file
-	var $p_cache_path		= 'page_cache/'; // Location of the page cache file
+	protected $_tag_cache_prefix	= 'tag';	// Tag cache key prefix
+	protected $_page_cache_prefix	= 'page'; 	// Page cache key prefix
+
 	var $disable_caching	= FALSE;
 
 	var $debugging			= FALSE;		// Template parser debugging on?
@@ -143,39 +144,10 @@ class EE_Template {
 	{
 		$this->log_item(" - Begin Template Processing - ");
 
-		// Set the name of the cache folder for both tag and page caching
-
-		if (ee()->uri->uri_string != '')
+		// Run garbage collection about 10% of the time
+		if (rand(1, 10) == 1)
 		{
-			$this->t_cache_path .= md5(ee()->functions->fetch_site_index().ee()->uri->uri_string).'/';
-			$this->p_cache_path .= md5(ee()->functions->fetch_site_index().ee()->uri->uri_string).'/';
-		}
-		else
-		{
-			$this->t_cache_path .= md5(ee()->config->item('site_url').'index'.ee()->uri->query_string).'/';
-			$this->p_cache_path .= md5(ee()->config->item('site_url').'index'.ee()->uri->query_string).'/';
-		}
-
-		// We limit the total number of cache files in order to
-		// keep some sanity with large sites or ones that get
-		// hit by over-ambitious crawlers.
-		if ($this->disable_caching == FALSE)
-		{
-			if ($dh = @opendir(APPPATH.'cache/page_cache'))
-			{
-				$i = 0;
-				while (FALSE !== (readdir($dh)))
-				{
-					$i++;
-				}
-
-				$max = ( ! ee()->config->item('max_caches') OR ! is_numeric(ee()->config->item('max_caches')) OR ee()->config->item('max_caches') > 1000) ? 1000 : ee()->config->item('max_caches');
-
-				if ($i > $max)
-				{
-					ee()->functions->clear_caching('page');
-				}
-			}
+			$this->_garbage_collect_cache();
 		}
 
 		$this->log_item("URI: ".ee()->uri->uri_string);
@@ -1517,6 +1489,9 @@ class EE_Template {
 		$refresh = ( ! isset($args['refresh'])) ? 0 : $args['refresh'];
 		$refresh *= 60;
 
+		$prefix = ($cache_type == 'tag') ? $this->_tag_cache_prefix : $this->_page_cache_prefix;
+		$cfile = $prefix.'-'.$cfile;
+
 		// Get metadata for this cache key to see if it's expired, because even
 		// though we can set a TTL for auto-expiration, the refresh setting
 		// can change and needs to invalidate the cache if necessary
@@ -1575,9 +1550,65 @@ class EE_Template {
 			return;
 		}
 
-		if ( ! ee()->cache->save($cfile, $data, 0))
+		$prefix = ($cache_type == 'tag') ? $this->_tag_cache_prefix : $this->_page_cache_prefix;
+
+		if ( ! ee()->cache->save($prefix.'-'.$cfile, $data, 0))
 		{
-			$this->log_item("Could not create/write to cache file: ".$cache_file);
+			$this->log_item("Could not create/write to cache file: ".$prefix.'-'.$cfile);
+		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Page cache garbage collection
+	 *
+	 * We limit the total number of cache files in order to keep some
+	 * sanity with large sites or ones that get hit by over-ambitious
+	 * crawlers. This will check the cache directory and make sure there
+	 * are no more than 1000 page cache files, or the value set by the
+	 * 'max_caches' config value;
+	 *
+	 * @return	void
+	 */
+	protected function _garbage_collect_cache()
+	{
+		if ($this->disable_caching == FALSE && ee()->cache->get_adapter() == 'file')
+		{
+			// Determine cache path
+			if ( ! $path = ee()->config->item('cache_path'))
+			{
+				$path = APPPATH.'cache/';
+			}
+
+			// Get an array of files in the cache path
+			$files = get_filenames($path);
+			$i = 0;
+
+			// Loop through files and count the ones with a prefix of 'page'
+			foreach ($files as $file)
+			{
+				if (strncmp($file, 'page', 4) == 0)
+				{
+					$i++;
+				}
+			}
+
+			$max = 1000;
+
+			// Figure out what our max number of page cache files should be
+			if ( ! ee()->config->item('max_caches') OR
+				! is_numeric(ee()->config->item('max_caches')) OR
+				ee()->config->item('max_caches') > 1000)
+			{
+				$max = ee()->config->item('max_caches');
+			}
+
+			// Clear page cache if we have too many
+			if ($i > $max)
+			{
+				ee()->cache->delete_with_prefix('page');
+			}
 		}
 	}
 

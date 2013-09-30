@@ -115,6 +115,30 @@ class CI_Cache_file extends CI_Driver {
 	// ------------------------------------------------------------------------
 
 	/**
+	 * Delete keys from cache with a specified prefix
+	 *
+	 * @param	mixed	Prefix of group of cache files to delete
+	 * @return	bool
+	 */
+	public function delete_with_prefix($prefix)
+	{
+		$files = get_filenames($this->_cache_path);
+
+		foreach ($files as $file)
+		{
+			if (strncmp($file, $prefix, strlen($prefix)) == 0 &&
+				file_exists($this->_cache_path.$file))
+			{
+				@unlink($this->_cache_path.$file);
+			}
+		}
+
+		return TRUE;
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
 	 * Clean the Cache
 	 *
 	 * @return	bool	false on failure/true on success
