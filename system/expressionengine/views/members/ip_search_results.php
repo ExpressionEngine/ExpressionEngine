@@ -3,7 +3,7 @@
 <?php if ($grand_total == 0):?>
 	<p class="notice"><?=lang('no_members_matching_that_criteria')?></p>
 <?php else:?>
-	
+
 	<?php
 		//  Find Member Accounts with IP
 		if ($members_accounts->num_rows() > 0):
@@ -101,7 +101,7 @@
 			$this->table->set_heading(
 				array('style'=>'width:40%;', 'data'=>lang('comment')),
 				array('style'=>'width:20%;', 'data'=>lang('author')),
-				array('style'=>'width:20%;', 'data'=>lang('ip')),
+				array('style'=>'width:20%;', 'data'=>lang('mbr_email_address')),
 				array('style'=>'width:20%;', 'data'=>lang('ip_address'))
 			);
 
@@ -132,7 +132,7 @@
 		<?=$comments_table?><br />
 		<?=$comments_pagination?>
 	</div>
-	
+
 	<?php endif; /*end comments*/?>
 
 
