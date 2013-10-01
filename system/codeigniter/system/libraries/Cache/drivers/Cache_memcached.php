@@ -154,20 +154,15 @@ class CI_Cache_memcached extends CI_Driver {
 	 */
 	protected function _setup_memcached()
 	{
-		// Try to load memcached server info from the config file.
-		$CI =& get_instance();
+		$defaults = $this->_memcache_conf['default'];
 
-		if ($CI->config->load('memcached', TRUE, TRUE))
+		if (is_array(ee()->config->item('memcached')))
 		{
-			if (is_array($CI->config->config['memcached']))
-			{
-				$defaults = $this->_memcache_conf['default'];
-				$this->_memcache_conf = array();
+			$this->_memcache_conf = array();
 
-				foreach ($CI->config->config['memcached'] as $name => $conf)
-				{
-					$this->_memcache_conf[$name] = $conf;
-				}
+			foreach (ee()->config->item('memcached') as $name => $conf)
+			{
+				$this->_memcache_conf[$name] = $conf;
 			}
 		}
 
@@ -187,15 +182,15 @@ class CI_Cache_memcached extends CI_Driver {
 
 		foreach ($this->_memcache_conf as $cache_server)
 		{
-			isset($cache_server['hostname']) OR $cache_server['hostname'] = $defaults['host'];
-			isset($cache_server['port']) OR $cache_server['port'] = $defaults['host'];
+			isset($cache_server['host']) OR $cache_server['host'] = $defaults['host'];
+			isset($cache_server['port']) OR $cache_server['port'] = $defaults['port'];
 			isset($cache_server['weight']) OR $cache_server['weight'] = $defaults['weight'];
 
 			if (get_class($this->_memcached) === 'Memcache')
 			{
 				// Third parameter is persistance and defaults to TRUE.
 				$this->_memcached->addServer(
-					$cache_server['hostname'],
+					$cache_server['host'],
 					$cache_server['port'],
 					TRUE,
 					$cache_server['weight']
@@ -204,7 +199,7 @@ class CI_Cache_memcached extends CI_Driver {
 			else
 			{
 				$this->_memcached->addServer(
-					$cache_server['hostname'],
+					$cache_server['host'],
 					$cache_server['port'],
 					$cache_server['weight']
 				);
