@@ -76,6 +76,24 @@ class CI_Cache_apc extends CI_Driver {
 	// ------------------------------------------------------------------------
 
 	/**
+	 * Delete keys from cache with a specified prefix
+	 *
+	 * @param	mixed	Prefix of group of cache keys to delete
+	 * @return	bool
+	 */
+	public function delete_with_prefix($prefix)
+	{
+		$cached = new APCIterator('user', '/^'.$prefix.'/');
+
+		foreach ($cached as $item)
+		{
+			apc_delete($item['key']);
+		}
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
 	 * Clean the cache
 	 *
 	 * @return	bool	false on failure/true on success
