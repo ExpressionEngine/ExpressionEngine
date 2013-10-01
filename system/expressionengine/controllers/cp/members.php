@@ -3239,9 +3239,8 @@ class Members extends CP_Controller {
 		if ($comment_installed == 1)
 		{
 			$sql = "SELECT COUNT(*) AS count
-					FROM exp_comments c, exp_members m
-					WHERE c.ip_address LIKE '%".$this->db->escape_like_str($ip)."%'
-					AND c.author_id = m.member_id";
+					FROM exp_comments c
+					WHERE c.ip_address LIKE '%".$this->db->escape_like_str($ip)."%'";
 
 			$query = $this->db->query($sql);
 			$total = $query->row('count');
@@ -3251,12 +3250,10 @@ class Members extends CP_Controller {
 			$config['total_rows'] = $total;
 			$this->pagination->initialize($config);
 
-			$sql = "SELECT s.site_label, c.entry_id, c.channel_id, c.comment, c.ip_address, c.author_id, c.name, c.comment_id, m.username, m.screen_name, m.email
-					FROM exp_comments c, exp_members m, exp_sites s
+			$sql = "SELECT c.entry_id, c.channel_id, c.comment, c.ip_address, c.author_id, c.name, c.comment_id, c.email
+					FROM exp_comments c
 					WHERE c.ip_address LIKE '%".$this->db->escape_like_str($ip)."%'
-					AND c.site_id = s.site_id
-					AND c.author_id = m.member_id
-					ORDER BY entry_id desc
+					ORDER BY entry_id, comment_id desc
 					LIMIT {$per_page}, 10";
 
 			$vars['comments_pagination'] = $this->pagination->create_links();
