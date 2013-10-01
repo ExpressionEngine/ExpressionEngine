@@ -195,13 +195,15 @@ abstract class Model {
 	 *
 	 * @return Relationship object or related data
 	 */
-	public function oneToOne($to_model_name, $this_key, $that_key = NULL)
+	public function oneToOne(
+		$to_model_name, $this_key, $that_key = NULL, $name=NULL)
 	{
 		return $this->related(
 			'one-to-one',
 			$to_model_name,
 			$this_key,
-			$that_key
+			$that_key,
+			$name
 		);
 	}
 
@@ -214,13 +216,15 @@ abstract class Model {
 	 *
 	 * @return Relationship object or related data
 	 */
-	public function manyToOne($to_model_name, $this_key, $that_key = NULL)
+	public function manyToOne(
+		$to_model_name, $this_key, $that_key = NULL, $name=NULL)
 	{
 		return $this->related(
 			'many-to-one',
 			$to_model_name,
 			$this_key,
-			$that_key
+			$that_key,
+			$name
 		);
 	}
 
@@ -233,13 +237,15 @@ abstract class Model {
 	 *
 	 * @return Relationship object or related data
 	 */
-	public function oneToMany($to_model_name, $this_key, $that_key = NULL)
+	public function oneToMany(
+		$to_model_name, $this_key, $that_key = NULL, $name=NULL)
 	{
 		return $this->related(
 			'one-to-many',
 			$to_model_name,
 			$this_key,
-			$that_key
+			$that_key,
+			$name
 		);
 	}
 
@@ -252,7 +258,8 @@ abstract class Model {
 	 *
 	 * @return Relationship object or related data
 	 */
-	public function manyToMany($to_model_name, $this_key, $that_key = NULL)
+	public function manyToMany(
+		$to_model_name, $this_key, $that_key = NULL, $name=NULL)
 	{}
 
 	/**
@@ -280,30 +287,40 @@ abstract class Model {
 	/**
 	 * Set related data for a given relationship.
 	 *
-	 * @param String $model_name Name of the related model
+	 * @param String $model_name The name by which this relationship is
+	 * 		identified.  In most cases this will be the name of the Model, but
+	 * 		sometimes it will be specific to the relationship.  For example,
+	 * 		ChannelEntry has an Author relationship (getAuthor(), setAuthor()).
 	 * @param Mixed  $value      Collection or single Model
 	 *
 	 * @return void
 	 */
-	public function setRelated($model_name, $value)
+	public function setRelated($relationship_key, $value)
 	{
-		$this->related_models[$model_name] = $value;
+		$this->related_models[$relationship_key] = $value;
 	}
 
 	/**
 	 * Helper method used when setting up a relationship
 	 *
 	 * @param String $type			Relationship type (dash-words)
-	 * @param String $to_model_name	Name of the model to relate to
+	 * @param String $to_model_name	Name of the model to relate to in
+	 * 		StudlyCaps (as you would use it in code). This will be used as
+	 * 		the relationship name if no other name is given.
 	 * @param String $this_key		Name of the relating key
 	 * @param String $to_key		Name of the key on the related model
+	 * @param String $name			The name of the Relationship, when
+	 * 		different from the name of the model.  For example ChannelEntry has
+	 * 		an Author (getAuthor(), setAuthor()). 
 	 *
 	 * @return Relationship object or related data
 	 */
-	private function related($type, $to_model_name, $this_key, $that_key = NULL)
+	private function related(
+		$type, $to_model_name, $this_key, $that_key = NULL, $name=NULL)
 	{
 		// If we already have data, return it
-		if (array_key_exists($to_model_name, $this->related_models))
+		$relationship_key = (isset($name) ? $name : $to_model_name);
+		if (array_key_exists($relationship_key, $this->related_models))
 		{
 			return $this->related_models[$to_model_name];
 		}

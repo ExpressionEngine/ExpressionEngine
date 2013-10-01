@@ -17,6 +17,7 @@ class Query {
 	{
 		$this->model_name = $model;
 
+		// @todo Need to be able to inject this for testing.  -Bingham
 		$this->db = clone ee()->db; // TODO reset?
 
 		$this->selectFields($model);

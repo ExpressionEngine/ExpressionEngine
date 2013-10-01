@@ -16,6 +16,10 @@ class TemplateEntity extends Entity {
 			'group_id' => array(
 				'entity' => 'TemplateGroupEntity',
 				'key'    => 'group_id'
+			),
+			'last_author_id' => array(
+				'entity' => 'MemberEntity',
+				'key'	 => 'member_id'
 			)
 		)
 	);
