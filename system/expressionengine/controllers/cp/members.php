@@ -3237,13 +3237,13 @@ class Members extends CP_Controller {
 		$this->db->where('module_name', 'Comment');
 		$comment_installed = $this->db->count_all_results();
 
-		if ($comment_installed  == 1)
+		if ($comment_installed == 1)
 		{
 			$sql = "SELECT COUNT(*) AS count
-					FROM exp_channel_titles t, exp_members m, exp_sites s
-					WHERE t.ip_address LIKE '%".$this->db->escape_like_str($ip)."%'
-					AND t.site_id = s.site_id
-					AND t.author_id = m.member_id
+					FROM exp_comments c, exp_members m, exp_sites s
+					WHERE c.ip_address LIKE '%".$this->db->escape_like_str($ip)."%'
+					AND c.site_id = s.site_id
+					AND c.author_id = m.member_id
 					ORDER BY entry_id desc ";
 
 			$query = $this->db->query($sql);
@@ -3254,16 +3254,16 @@ class Members extends CP_Controller {
 			$config['total_rows'] = $total;
 			$this->pagination->initialize($config);
 
-			$sql = "SELECT s.site_label, t.entry_id, t.channel_id, t.title, t.ip_address, m.member_id, m.username, m.screen_name, m.email
-					FROM exp_channel_titles t, exp_members m, exp_sites s
-					WHERE t.ip_address LIKE '%".$this->db->escape_like_str($ip)."%'
-					AND t.site_id = s.site_id
-					AND t.author_id = m.member_id
+			$sql = "SELECT s.site_label, c.entry_id, c.channel_id, c.comment, c.ip_address, c.author_id, c.name, c.comment_id, m.username, m.screen_name, m.email
+					FROM exp_comments c, exp_members m, exp_sites s
+					WHERE c.ip_address LIKE '%".$this->db->escape_like_str($ip)."%'
+					AND c.site_id = s.site_id
+					AND c.author_id = m.member_id
 					ORDER BY entry_id desc
 					LIMIT {$per_page}, 10";
 
-			$vars['channel_entries_pagination'] = $this->pagination->create_links();
-			$vars['channel_entries'] = $this->db->query($sql);
+			$vars['comments_pagination'] = $this->pagination->create_links();
+			$vars['comments'] = $this->db->query($sql);
 		}
 
 		// Find Forum Topics with IP
