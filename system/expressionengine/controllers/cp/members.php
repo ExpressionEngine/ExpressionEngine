@@ -3208,8 +3208,7 @@ class Members extends CP_Controller {
 				FROM exp_channel_titles t, exp_members m, exp_sites s
 				WHERE t.ip_address LIKE '%".$this->db->escape_like_str($ip)."%'
 				AND t.site_id = s.site_id
-				AND t.author_id = m.member_id
-				ORDER BY entry_id desc ";
+				AND t.author_id = m.member_id";
 
 		$query = $this->db->query($sql);
 		$total = $query->row('count');
@@ -3242,8 +3241,7 @@ class Members extends CP_Controller {
 			$sql = "SELECT COUNT(*) AS count
 					FROM exp_comments c, exp_members m
 					WHERE c.ip_address LIKE '%".$this->db->escape_like_str($ip)."%'
-					AND c.author_id = m.member_id
-					ORDER BY entry_id desc ";
+					AND c.author_id = m.member_id";
 
 			$query = $this->db->query($sql);
 			$total = $query->row('count');
@@ -3278,8 +3276,7 @@ class Members extends CP_Controller {
 					FROM exp_forum_topics f, exp_members m, exp_forum_boards b
 					WHERE f.ip_address LIKE '%".$this->db->escape_like_str($ip)."%'
 					AND f.board_id = b.board_id
-					AND f.author_id = m.member_id
-					ORDER BY f.topic_id desc";
+					AND f.author_id = m.member_id";
 
 			$query = $this->db->query($sql);
 			$total = $query->row('count');
@@ -3305,8 +3302,7 @@ class Members extends CP_Controller {
 			$sql = "SELECT COUNT(*) AS count
 					FROM exp_forum_posts p, exp_members m
 					WHERE p.ip_address LIKE '%".$this->db->escape_like_str($ip)."%'
-					AND p.author_id = m.member_id
-					ORDER BY p.topic_id desc";
+					AND p.author_id = m.member_id";
 
 			$query = $this->db->query($sql);
 			$total = $query->row('count');
