@@ -1627,12 +1627,7 @@ class Member_model extends CI_Model {
 		}
 		elseif ($search_value != '')
 		{
-			if (in_array($search_in, $no_search))
-			{
-				$search_in = 'all';
-			}
-
-			if ($search_in == 'all')
+			if (in_array($search_in, $no_search) OR $search_in == 'all')
 			{
 				$this->db->where("(`exp_members`.`screen_name` LIKE '%".$this->db->escape_like_str($search_value)."%' OR `exp_members`.`username` LIKE '%".$this->db->escape_like_str($search_value)."%' OR `exp_members`.`email` LIKE '%".$this->db->escape_like_str($search_value)."%' OR `exp_members`.`member_id` LIKE '%".$this->db->escape_like_str($search_value)."%')", NULL, TRUE);
 			}
