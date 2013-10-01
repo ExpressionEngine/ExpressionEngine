@@ -3240,9 +3240,8 @@ class Members extends CP_Controller {
 		if ($comment_installed == 1)
 		{
 			$sql = "SELECT COUNT(*) AS count
-					FROM exp_comments c, exp_members m, exp_sites s
+					FROM exp_comments c, exp_members m
 					WHERE c.ip_address LIKE '%".$this->db->escape_like_str($ip)."%'
-					AND c.site_id = s.site_id
 					AND c.author_id = m.member_id
 					ORDER BY entry_id desc ";
 
