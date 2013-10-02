@@ -128,7 +128,7 @@
 			$this->table->clear(); // get out of the way for the next table
 	?>
 	<div id="filterMenu">
-		<h3><?=lang('channel_entries')?></h3>
+		<h3><?=lang('comments')?></h3>
 		<?=$comments_table?><br />
 		<?=$comments_pagination?>
 	</div>
