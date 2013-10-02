@@ -10,7 +10,7 @@
  * @since		Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -25,7 +25,7 @@
 
 class Mailinglist_upd {
 
-	var $version = '3.1';
+	var $version = '3.2';
 
 	function Mailinglist_upd()
 	{
@@ -94,7 +94,7 @@ class Mailinglist_upd {
 												),
 						'email'  => array(
 													'type' 				=> 'varchar',
-													'constraint'		=> '50',
+													'constraint'		=> '75',
 													'null'				=> FALSE
 												),
 						'ip_address'  => array(
@@ -119,7 +119,7 @@ class Mailinglist_upd {
 												),
 						'email'  => array(
 													'type' 				=> 'varchar',
-													'constraint'		=> '50',
+													'constraint'		=> '75',
 													'null'				=> FALSE
 												),
 						'list_id'	=> array(
@@ -254,6 +254,12 @@ class Mailinglist_upd {
 					)
 				)
 			);
+		}
+
+		if (version_compare($current, '3.2', '<'))
+		{
+			ee()->db->query("ALTER TABLE `exp_mailing_list` MODIFY COLUMN `email` varchar(75) NOT NULL");
+			ee()->db->query("ALTER TABLE `exp_mailing_list_queue` MODIFY COLUMN `email` varchar(75) NOT NULL");
 		}
 
 		return TRUE;
