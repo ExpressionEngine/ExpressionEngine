@@ -120,7 +120,7 @@
 					'<a href="'.BASE.AMP.'C=publish'.AMP.'M=edit_comment'.AMP.'channel_id='.$comment->channel_id.AMP.'entry_id='.$comment->entry_id.AMP.'comment_id='.$comment->comment_id.AMP.'current_page=0"><b>'.substr(strip_tags($comment->comment), 0, 45).'...</b></a>',
 					$author,
 					'<a href="mailto:'.$comment->email.'">'.$comment->email.'</a>',
-					$channel->ip_address
+					$comment->ip_address
 				);
 			}
 
