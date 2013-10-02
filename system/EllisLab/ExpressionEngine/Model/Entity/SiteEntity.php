@@ -4,34 +4,22 @@ namespace EllisLab\ExpressionEngine\Model\Entity;
 use EllisLab\ExpressionEngine\Model\Entity\Entity as Entity;
 
 class SiteEntity extends Entity {
+	protected static $meta = array(
+		'table_name' => 'sites',
+		'primary_key' => 'site_id'
+	);
 
-	public static function getTableName()
-	{
-		return 'exp_sites';
-	}
 
-	public static function getIdName() 
-	{
-		return 'site_id';
-	}
+	// Properties
+	public $site_id;
+	public $site_label;
+	public $site_name;
+	public $site_description;
+	public $site_system_preferences;
+	public $site_mailinglist_preferences;
+	public $site_member_preferences;
+	public $site_template_preferences;
+	public $site_channel_preferences;
+	public $site_bootstrap_checksums;
 
-	public static function getRelationshipInfo()
-	{
-		return array(
-			'site_id' => array(
-				array(
-					'entity' => 'TemplateEntity',
-					'key' => 'site_id',
-				),
-				array(
-					'entity' => 'TemplateGroupEntity',
-					'key' => 'site_id'
-				),
-				array(
-					'entity' => 'SnippetEntity',
-					'key' => 'site_id'
-				)
-			),
-		);
-	}
 }
