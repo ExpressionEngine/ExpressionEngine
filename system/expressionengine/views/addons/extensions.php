@@ -1,6 +1,12 @@
 <?php extend_template('default') ?>
 
 <?php
+if (isset($extensions_disabled))
+{
+	echo '<p>'.$extensions_disabled.'</p>';
+}
+else
+{
 	$this->table->set_heading(
 		lang('extension_name'),
 		lang('settings'),
@@ -30,4 +36,5 @@
 	}
 
 	echo $this->table->generate();
+}
 ?>

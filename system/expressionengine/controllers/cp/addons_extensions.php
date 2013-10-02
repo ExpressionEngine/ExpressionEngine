@@ -60,118 +60,119 @@ class Addons_extensions extends CP_Controller {
 
 		$installed_ext = array();
 		$extension_files = ee()->addons->get_files('extensions');
+		$extensions_enabled = (ee()->config->item('allow_extensions') == 'y');
 
-		$installed_ext_q = ee()->addons_model->get_installed_extensions(FALSE);
-
-		foreach ($installed_ext_q->result_array() as $row)
+		if ($extensions_enabled)
 		{
-			// Check the meta data
-			$installed_ext[$row['class']] = $row;
-		}
-
-		$installed_ext_q->free_result();
-		$extcount = 1;
-
-		foreach($extension_files as $ext_name => &$ext)
-		{
-			// Add the package path so things don't hork in the constructor
-			ee()->load->add_package_path($ext['path']);
-
-			// Include the file so we can grab its meta data
-			$class_name = $ext['class'];
-
-			if ( ! class_exists($class_name))
+			$installed_ext_q = ee()->addons_model->get_installed_extensions(FALSE);
+			foreach ($installed_ext_q->result_array() as $row)
 			{
-				if (ee()->config->item('debug') == 2
-					OR (ee()->config->item('debug') == 1
-						AND ee()->session->userdata('group_id') == 1))
-				{
-					include($ext['path'].$ext['file']);
-				}
-				else
-				{
-					@include($ext['path'].$ext['file']);
-				}
+				// Check the meta data
+				$installed_ext[$row['class']] = $row;
+			}
+			$installed_ext_q->free_result();
+
+			foreach($extension_files as $ext_name => &$ext)
+			{
+				// Add the package path so things don't hork in the constructor
+				ee()->load->add_package_path($ext['path']);
+
+				// Include the file so we can grab its meta data
+				$class_name = $ext['class'];
 
 				if ( ! class_exists($class_name))
 				{
-					trigger_error(str_replace(array('%c', '%f'), array(htmlentities($class_name), htmlentities($ext['path'].$ext['file'])), lang('extension_class_does_not_exist')));
-					unset($extension_files[$ext_name]);
-					continue;
+					if (ee()->config->item('debug') == 2
+						OR (ee()->config->item('debug') == 1
+							AND ee()->session->userdata('group_id') == 1))
+					{
+						include($ext['path'].$ext['file']);
+					}
+					else
+					{
+						@include($ext['path'].$ext['file']);
+					}
+
+					if ( ! class_exists($class_name))
+					{
+						trigger_error(str_replace(array('%c', '%f'), array(htmlentities($class_name), htmlentities($ext['path'].$ext['file'])), lang('extension_class_does_not_exist')));
+						unset($extension_files[$ext_name]);
+						continue;
+					}
 				}
-			}
 
-			$Extension = new $class_name();
+				// Get some details on the extension
+				$Extension = new $class_name();
+				$installed = (isset($installed_ext[$class_name]));
+				$enabled = ($installed && $installed_ext[$class_name]['enabled'] == 'y');
 
-			foreach(array('version', 'name', 'docs_url', 'settings_exist', 'description') as $meta)
-			{
-				if ( ! isset($Extension->$meta))
+				// Run updates if necessary
+				if ($installed)
 				{
-					$Extension->meta = '';
+					if (version_compare($Extension->version, $installed_ext[$class_name]['version'], '>') && method_exists($Extension, 'update_extension') === TRUE)
+					{
+						$Extension->update_extension($installed_ext[$class_name]['version']);
+						ee()->extensions->version_numbers[$class_name] = $Extension->version;
+					}
 				}
-			}
 
-			// Compare Versions
-			if (ee()->config->item('allow_extensions') == 'y' && isset($installed_ext[$class_name]))
-			{
-				if (version_compare($Extension->version, $installed_ext[$class_name]['version'], '>') && method_exists($Extension, 'update_extension') === TRUE)
+				// Basics
+				$ext['name'] = (isset($Extension->name)) ? $Extension->name : $ext['name'];
+				$ext['version'] = $Extension->version;
+
+				// Status & Actions
+				$toggle_install_url = BASE.AMP.'C=addons_extensions'.AMP.'M=toggle_install'.AMP."which={$ext['class']}";
+				$toggle_enabled_url = BASE.AMP.'C=addons_extensions'.AMP.'M=toggle_enabled'.AMP."which={$ext['class']}";
+				if ($installed)
 				{
-					$Extension->update_extension($installed_ext[$class_name]['version']);
-					ee()->extensions->version_numbers[$class_name] = $Extension->version;
+					$ext['actions'] = anchor($toggle_install_url, lang('uninstall')).' &#9670; ';
+
+					if ($enabled)
+					{
+						$ext['actions'] .= anchor($toggle_enabled_url, lang('disable_extension'));
+						$ext['status'] = '<span class="go_notice">'.lang('installed').' ('.lang('enabled').')</span>';
+					}
+					else
+					{
+						$ext['actions'] .= anchor($toggle_enabled_url, lang('enable_extension'));
+						$ext['status'] = '<span class="warning">'.lang('installed').' ('.lang('disabled').')</span>';
+					}
 				}
+				else
+				{
+					$ext['actions'] = anchor($toggle_install_url, lang('install'));
+					$ext['status'] = '<span class="notice">'.lang('uninstalled').'</span>';
+				}
+
+				// Settings
+				$settings_enabled = ($installed && $Extension->settings_exist == 'y');
+				$no_settings = $Extension->settings_exist == 'y' ? lang('settings') : '--';
+				$settings_link = anchor(BASE.AMP.'C=addons_extensions'.AMP.'M=extension_settings'.AMP.'file='.$ext_name, lang('settings'));
+				$ext['settings'] = ($settings_enabled) ? $settings_link : $no_settings;
+
+				// Documentation
+				$documentation_link = anchor(ee()->config->item('base_url').ee()->config->item('index_page').'?URL='.urlencode($Extension->docs_url), lang('documentation'));
+				$ext['documentation'] = ($Extension->docs_url) ? $documentation_link : '--';
+
+				ee()->load->remove_package_path($ext['path']);
 			}
 
-			// View Table Columns
-			$ext['name'] = (isset($Extension->name)) ? $Extension->name : $ext['name'];
-
-			// Actions
-			$ext['actions'] = '';
-
-			// Status
-			$installed = (isset($installed_ext[$ext['class']]));
-			$enabled = (isset($installed_ext[$ext['class']]) && $installed_ext[$ext['class']]['enabled'] == 'y');
-			if ($installed && $enabled)
-			{
-				$ext['status'] = '<span class="go_notice">'.lang('installed').' ('.lang('enabled').')</span>';
-			}
-			else if ($installed && ! $enabled)
-			{
-				$ext['status'] = '<span class="warning">'.lang('installed').' ('.lang('disabled').')</span>';
-			}
-			else {
-				$ext['status'] = '<span class="notice">'.lang('uninstalled').'</span>';
-			}
-
-			// Settings
-			$settings_enabled = (isset($installed_ext[$ext['class']]) AND ee()->config->item('allow_extensions') == 'y' AND $Extension->settings_exist == 'y');
-			$no_settings = $Extension->settings_exist == 'y' ? lang('settings') : '--';
-			$settings_link = anchor(BASE.AMP.'C=addons_extensions'.AMP.'M=extension_settings'.AMP.'file='.$ext_name, lang('settings'));
-			$ext['settings'] = ($settings_enabled) ? $settings_link : $no_settings;
-
-			// Documentation
-			$documentation_link = anchor(ee()->config->item('base_url').ee()->config->item('index_page').'?URL='.urlencode($Extension->docs_url), lang('documentation'));
-			$ext['documentation'] = ($Extension->docs_url) ? $documentation_link : '--';
-
-			$ext['version'] = $Extension->version;
-
-			if (ee()->config->item('allow_extensions') != 'y')
-			{
-				$ext['status'] = 'extension_disabled';
-			}
-
-			ee()->load->remove_package_path($ext['path']);
+			// Let's order by name just in case
+			ksort($extension_files);
+			$vars['extension_info'] = $extension_files;
+		}
+		else
+		{
+			$vars['extensions_disabled'] = sprintf(
+				lang('extensions_disabled_manage'),
+				BASE.AMP.'C=addons_extensions'.AMP.'M=toggle_all'
+			);
 		}
 
-		$vars['extensions_enabled'] = (ee()->config->item('allow_extensions') == 'y');
-		$vars['extensions_toggle'] = (ee()->config->item('allow_extensions') == 'y') ? 'disable_extensions' : 'enable_extensions';
-
-		// Let's order by name just in case
-		// asort
-		$vars['extension_info'] = $extension_files;
-
-		$extensions_toggle = (ee()->config->item('allow_extensions') == 'y') ? 'disable_extensions' : 'enable_extensions';
+		// Create the toggle button
+		$extensions_toggle = ($extensions_enabled) ? 'disable_extensions' : 'enable_extensions';
 		ee()->cp->set_right_nav(array(
-			$extensions_toggle => BASE.AMP.'C=addons_extensions'.AMP.'M=toggle_extension_confirm'
+			$extensions_toggle => BASE.AMP.'C=addons_extensions'.AMP.'M=toggle_all'
 		));
 
 		ee()->cp->render('addons/extensions', $vars);
@@ -180,32 +181,62 @@ class Addons_extensions extends CP_Controller {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Toggle Extension Confirmation
-	 *
-	 * Shows a confirmation screen when toggling _all_ extensions
+	 * Toggle an individual extension's hooks
+	 * @return void
+	 */
+	public function toggle_enabled()
+	{
+		$file = ee()->input->get('which');
+
+		// Get the list of hooks and the existing state
+		$hooks = ee()->db->select('extension_id, enabled')
+			->where('class', $file)
+			->get('extensions')
+			->result_array();
+
+		// Toggle the status of all hooks using the status of the first
+		$status = ($hooks[0]['enabled'] == 'y') ? 'n' : 'y';
+		foreach ($hooks as $index => $data)
+		{
+			$hooks[$index]['enabled'] = $status;
+		}
+		ee()->db->update_batch('extensions', $hooks, 'extension_id');
+
+		// Redirect and notify
+		$cp_message = (isset($installed[$file]))
+			? lang('extension_disabled') : lang('extension_enabled');
+		ee()->session->set_flashdata('message_success', $cp_message);
+		ee()->functions->redirect(BASE.AMP.'C=addons_extensions');
+
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Toggle all extensions, shows a confirmation screen when toggling _all_
+	 * extensions
 	 *
 	 * @access	public
 	 * @return	mixed
 	 */
-	function toggle_extension_confirm()
+	function toggle_all()
 	{
-		$this->lang->loadfile('admin');
+		ee()->lang->loadfile('admin');
 
-		$message = ($this->config->item('allow_extensions') == 'y') ? 'disable_extensions_conf' : 'enable_extensions_conf';
+		$message = (ee()->config->item('allow_extensions') == 'y')
+			? 'disable_extensions_conf' : 'enable_extensions_conf';
 
-		$vars = array();
-		$vars['form_action'] = 'C=addons_extensions'.AMP.'M=toggle_extension';
-		$vars['form_hidden'] = array('which' => 'all');
-		$vars['message'] = lang($message);
-
-		$this->view->cp_page_title = lang($message);
-
-		$this->view->cp_breadcrumbs = array(
+		ee()->view->cp_page_title = lang($message);
+		ee()->view->cp_breadcrumbs = array(
 			BASE.AMP.'C=addons' => lang('addons'),
 			BASE.AMP.'C=addons_extensions'=> lang('extensions')
 		);
 
-		$this->cp->render('addons/toggle_confirm', $vars);
+		ee()->cp->render('addons/toggle_confirm', array(
+			'form_action'	=> 'C=addons_extensions'.AMP.'M=toggle_install',
+			'form_hidden'	=> array('which' => 'all'),
+			'message'		=> lang($message),
+		));
 	}
 
 	// --------------------------------------------------------------------
@@ -218,44 +249,44 @@ class Addons_extensions extends CP_Controller {
 	 * @access	public
 	 * @return	mixed
 	 */
-	function toggle_extension()
+	function toggle_install()
 	{
-		if ($this->input->post('which') == 'all')
+		if (ee()->input->post('which') == 'all')
 		{
-			$new_val = ($this->config->item('allow_extensions') == 'y') ? 'n' : 'y';
-			$this->config->_update_config(array('allow_extensions' => $new_val));
+			$new_val = (ee()->config->item('allow_extensions') == 'y') ? 'n' : 'y';
+			ee()->config->_update_config(array('allow_extensions' => $new_val));
 			$cp_message = ($new_val == 'y') ? lang('extensions_enabled'): lang('extensions_disabled');
 		}
 		else
 		{
-			$file = $this->input->get('which');
+			$file = ee()->input->get('which');
 
-			$this->load->library('addons');
+			ee()->load->library('addons');
 
-			$installed = $this->addons->get_installed('extensions');
-			$extension_files = $this->addons->get_files('extensions');
+			$installed = ee()->addons->get_installed('extensions');
+			$extension_files = ee()->addons->get_files('extensions');
 
 			// It needs to exist and pass the basic security check
 			if (isset($extension_files[$file]) AND preg_match("/^[a-z0-9][\w.-]*$/i", $file))
 			{
-				$this->load->library('addons/addons_installer');
+				ee()->load->library('addons/addons_installer');
 
 				// Which way?
 				if (isset($installed[$file]))
 				{
-					$this->addons_installer->uninstall($file, 'extension');
+					ee()->addons_installer->uninstall($file, 'extension');
 					$cp_message = lang('extension_disabled');
 				}
 				else
 				{
-					$this->addons_installer->install($file, 'extension');
+					ee()->addons_installer->install($file, 'extension');
 					$cp_message = lang('extension_enabled');
 				}
 			}
 		}
 
-		$this->session->set_flashdata('message_success', $cp_message);
-		$this->functions->redirect(BASE.AMP.'C=addons_extensions');
+		ee()->session->set_flashdata('message_success', $cp_message);
+		ee()->functions->redirect(BASE.AMP.'C=addons_extensions');
 	}
 
 	// --------------------------------------------------------------------
