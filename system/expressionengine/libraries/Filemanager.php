@@ -1643,8 +1643,15 @@ class Filemanager {
 		return array_values($files);
 	}
 	
+	// --------------------------------------------------------------------
 
-
+	/**
+	 * Delete files from the database that do not exist in the upload folder.
+	 * 
+	 * @param mixed $dir_id 
+	 * @access public
+	 * @return void
+	 */
 	function sync_database($dir_id)
 	{
 		$db_files = array();
@@ -1680,7 +1687,16 @@ class Filemanager {
 		}
 	}
 	
+	// --------------------------------------------------------------------
 
+	/**
+	 * set_image_config
+	 * 
+	 * @param  mixed  $data Image configuration array 
+	 * @param  string $type Setting type (e.g. watermark)
+	 * @access public
+	 * @return array  Final configuration array 
+	 */
 	function set_image_config($data, $type = 'watermark')
 	{
 		$config = array();
@@ -1753,7 +1769,6 @@ class Filemanager {
 		
 		return $config;
 	}
-
 
 	// --------------------------------------------------------------------
 	
