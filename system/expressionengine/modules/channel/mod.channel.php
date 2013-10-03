@@ -947,10 +947,8 @@ class Channel {
 							{
 								return '';
 							}
-
-							$qtitle = '';
 						}
-						else
+						elseif ($entry_id == '')
 						{
 							$qtitle = $qstring;
 						}
@@ -1712,7 +1710,6 @@ class Channel {
 				}
 			}
 		}
-
 
 		/**------
 		/**  Limit query "URL title"

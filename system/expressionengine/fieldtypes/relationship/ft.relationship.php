@@ -308,6 +308,7 @@ class Relationship_ft extends EE_Fieldtype {
 			}
 		}
 
+
 		$limit_channels = $this->settings['channels'];
 		$limit_categories = $this->settings['categories'];
 		$limit_statuses = $this->settings['statuses'];
@@ -319,6 +320,13 @@ class Relationship_ft extends EE_Fieldtype {
 
 		$order_field = $this->settings['order_field'];
 
+		$separate_query_for_selected = (count($selected) && $limit);
+
+		if ($separate_query_for_selected)
+		{
+			ee()->db->start_cache();
+		}
+
 		// Bug 19321, old fields use date
 		if ($order_field == 'date')
 		{
@@ -326,13 +334,10 @@ class Relationship_ft extends EE_Fieldtype {
 		}
 
 		ee()->db
+			->distinct()
+			->from('channel_titles')
 			->select('channel_titles.entry_id, channel_titles.title')
 			->order_by($order_field, $this->settings['order_dir']);
-
-		if ($limit)
-		{
-			ee()->db->limit($limit);
-		}
 
 		if (count($limit_channels))
 		{
@@ -412,13 +417,34 @@ class Relationship_ft extends EE_Fieldtype {
 			ee()->db->where('channel_titles.entry_id !=', $entry_id);
 		}
 
-		if (count($selected))
+		if ($limit)
 		{
-			ee()->db->or_where_in('channel_titles.entry_id', $selected);
+			ee()->db->limit($limit);
 		}
 
-		ee()->db->distinct();
-		$entries = ee()->db->get('channel_titles')->result_array();
+		// If we've got a limit and selected entries, we need to run the query
+		// twice. Once without those entries and then separately with only those
+		// entries.
+
+		if ($separate_query_for_selected)
+		{
+			ee()->db->stop_cache();
+			ee()->db->where_not_in('channel_titles.entry_id', $selected);
+		}
+
+		$entries = ee()->db->get()->result_array();
+
+		if ($separate_query_for_selected)
+		{
+			ee()->db->limit(count($selected));
+			ee()->db->where_in('channel_titles.entry_id', $selected);
+			$entries = array_merge(
+				$entries,
+				ee()->db->get()->result_array()
+			);
+		}
+
+		ee()->db->flush_cache();
 
 		if ($this->settings['allow_multiple'] == 0)
 		{

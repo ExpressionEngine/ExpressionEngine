@@ -58,7 +58,7 @@ class CI_DB_active_record extends CI_DB_driver {
 	var $ar_cache_having		= array();
 	var $ar_cache_orderby		= array();
 	var $ar_cache_set			= array();
-	
+
 	var $ar_no_escape 			= array();
 	var $ar_cache_no_escape		= array();
 
@@ -441,7 +441,7 @@ class CI_DB_active_record extends CI_DB_driver {
 
 					$v = ' '.$this->escape($v);
 				}
-				
+
 				if ( ! $this->_has_operator($k))
 				{
 					$k .= ' = ';
@@ -570,11 +570,12 @@ class CI_DB_active_record extends CI_DB_driver {
 			$this->ar_wherein[] = $this->escape($value);
 		}
 
-		$prefix = (count($this->ar_where) == 0) ? '' : $type;
+		$prefix = (count($this->ar_where) == 0 AND count($this->ar_cache_where) == 0) ? '' : $type;
 
 		$where_in = $prefix . $this->_protect_identifiers($key) . $not . " IN (" . implode(", ", $this->ar_wherein) . ") ";
 
 		$this->ar_where[] = $where_in;
+
 		if ($this->ar_caching === TRUE)
 		{
 			$this->ar_cache_where[] = $where_in;
@@ -998,7 +999,7 @@ class CI_DB_active_record extends CI_DB_driver {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * "Count All Results" query
 	 *
@@ -1160,7 +1161,7 @@ class CI_DB_active_record extends CI_DB_driver {
 				$this->ar_set[] = array();
 				return;
 			}
-		
+
 			ksort($row); // puts $row in the same order as our keys
 
 			if ($escape === FALSE)
@@ -1991,7 +1992,7 @@ class CI_DB_active_record extends CI_DB_driver {
 		{
 			$this->_track_aliases($this->ar_from);
 		}
-		
+
 		$this->ar_no_escape = $this->ar_cache_no_escape;
 	}
 

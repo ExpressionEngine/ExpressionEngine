@@ -4052,7 +4052,9 @@ class Admin_content extends CP_Controller {
 				 $this->db->query("INSERT INTO exp_field_formatting (field_id, field_fmt) VALUES ('$id', '$key')");
 		}
 
-		return $this->field_edit();
+		$group_id = $this->input->get_post('group_id');
+		$field_id = $this->input->get_post('field_id');
+		$this->functions->redirect(BASE.AMP.'C=admin_content'.AMP.'M=field_edit'.AMP.'field_id='.$field_id.AMP.'group_id='.$group_id);
 	}
 
 
