@@ -274,7 +274,6 @@ class Checkboxes_ft extends EE_Fieldtype {
 			return ee()->functions->encode_ee_tags($raw_chunk);
 		}
 
-		// Typography!
 		return $chunk;
 	}
 
