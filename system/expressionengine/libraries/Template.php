@@ -311,7 +311,7 @@ class EE_Template {
 		}
 
 		$seg_array = ee()->uri->segment_array();
-		
+
 		// Define some path related global variables
 		$added_globals = array(
 			'last_segment' => end($seg_array),
@@ -319,7 +319,7 @@ class EE_Template {
 			'current_path' => (ee()->uri->uri_string) ? ee()->uri->uri_string : '/',
 			'current_query_string' => http_build_query($_GET) // GET has been sanitized!
 		);
-		
+
 		ee()->config->_global_vars = array_merge(ee()->config->_global_vars, $added_globals);
 
 		// Parse manual variables and Snippets
@@ -843,9 +843,19 @@ class EE_Template {
 
 				// Strip the "chunk" from the template, replacing it with a unique marker.
 
-				if (stristr($raw_tag, 'random'))
+				// If part of the tag name is 'random', we treat it as a unique tag and only
+				// replace the first occurence so they are all processed individually. This
+				// means that tags with parameters such as orderby="random" behave as expected
+				// even if they are identical to other tags on the page.
+
+				if (stripos($raw_tag, 'random') !== FALSE)
 				{
-					$this->template = preg_replace("|".preg_quote($chunk)."|s", 'M'.$this->loop_count.$this->marker, $this->template, 1);
+					$chunk_offset = strpos($this->template, $chunk);
+
+					if ($chunk_offset !== FALSE)
+					{
+						$this->template = substr_replace($this->template, 'M'.$this->loop_count.$this->marker, $chunk_offset, strlen($chunk));
+					}
 				}
 				else
 				{
@@ -3213,7 +3223,7 @@ class EE_Template {
 				if ( ! preg_match('/^segment_\d+$/i', $val['3']) OR
 				strpos($val[2], 'if:else') !== FALSE OR
 				strpos($val[0], 'if:else') !== FALSE OR
-				count(preg_split("/(\!=|==|<=|>=|<>|<|>|AND|XOR|OR|&&|\|\|)/", $val[0])) > 2)
+				count(preg_split("/(\!=|==|<=|>=|<>|<|>|%|AND|XOR|OR|&&|\|\|)/", $val[0])) > 2)
 			{
 				continue;
 			}
@@ -3309,7 +3319,7 @@ class EE_Template {
 			if ( ! isset($vars[$val[3]]) OR
 				strpos($val[2], 'if:else') !== FALSE OR
 				strpos($val[0], 'if:else') !== FALSE OR
-				count(preg_split("/(\!=|==|<=|>=|<>|<|>|AND|XOR|OR|&&|\|\|)/", $val[0])) > 2)
+				count(preg_split("/(\!=|==|<=|>=|<>|<|>|%|AND|XOR|OR|&&|\|\|)/", $val[0])) > 2)
 			{
 				continue;
 			}

@@ -541,7 +541,26 @@ class EE_Relationship_data_parser {
 			}
 		}
 
-		if ($limit OR $offset)
+		$end_script = FALSE;
+
+		// -------------------------------------------
+		// 'relationships_modify_rows' hook.
+		//  - Take the relationship result and modify it right before starting to parse.
+		//  - added 2.7.1
+		//
+			if (ee()->extensions->active_hook('relationships_modify_rows') === TRUE)
+			{
+				$rows = ee()->extensions->call('relationships_modify_rows', $rows, $node);
+				if (ee()->extensions->end_script === TRUE) $end_script = TRUE;
+			}
+		//
+		// -------------------------------------------
+
+
+		// BEWARE:
+		// If $end_script is TRUE, we should do no more processing after the hook!
+
+		if ($end_script === FALSE && ($limit OR $offset))
 		{
 			$rows = array_slice($rows, $offset, $limit, TRUE);
 		}

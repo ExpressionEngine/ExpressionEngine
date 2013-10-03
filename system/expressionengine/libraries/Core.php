@@ -86,8 +86,8 @@ class EE_Core {
 		// application constants
 		define('IS_CORE',		FALSE);
 		define('APP_NAME',		'ExpressionEngine'.(IS_CORE ? ' Core' : ''));
-		define('APP_BUILD',		'20130827');
-		define('APP_VER',		'2.7.0');
+		define('APP_BUILD',		'20131008');
+		define('APP_VER',		'2.7.2');
 		define('SLASH',			'&#47;');
 		define('LD',			'{');
 		define('RD',			'}');
@@ -345,7 +345,14 @@ class EE_Core {
 
 		if (REQ != 'ACTION')
 		{
-			$this->process_secure_forms();
+			if (AJAX_REQUEST && ee()->router->fetch_class() == 'login')
+			{
+				$this->process_secure_forms(EE_Security::CSRF_EXEMPT);
+			}
+			else
+			{
+				$this->process_secure_forms();
+			}
 		}
 
 		// Update system stats

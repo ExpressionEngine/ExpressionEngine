@@ -36,7 +36,7 @@ class EE_relationship_tree_builder {
 	protected $relationship_field_ids = array();		// field_name => field_id
 	protected $relationship_field_names = array();		// field_id => field_name
 
-	protected $grid_relationship_ids = NULL;				// gridprefix:field_name => grid_field_id
+	protected $grid_relationship_ids = NULL;			// gridprefix:field_name => grid_field_id
 	protected $grid_relationship_names = NULL;			// grid_field_id => gridprefix:field_name
 	protected $grid_field_id = NULL;
 
@@ -45,8 +45,19 @@ class EE_relationship_tree_builder {
 	 */
 	public function __construct(array $relationship_fields, array $grid_relationships = array(), $grid_field_id = NULL)
 	{
-		$this->relationship_field_ids = $relationship_fields;
-		$this->relationship_field_names = array_flip($relationship_fields);
+		foreach ($relationship_fields as $site_id => $fields)
+		{
+			foreach ($fields as $name => $id)
+			{
+				if ( ! isset($this->relationship_field_ids[$name]))
+				{
+					$this->relationship_field_ids[$name] = array();
+				}
+
+				$this->relationship_field_ids[$name][] = $id;
+				$this->relationship_field_names[$id] = $name;
+			}
+		}
 
 		$this->grid_relationship_ids = $grid_relationships;
 		$this->grid_relationship_names = array_flip($grid_relationships);
@@ -174,6 +185,20 @@ class EE_relationship_tree_builder {
 		{
 			$entry_lookup[$entry['entry_id']] = $entry;
 		}
+
+		// -------------------------------------------
+		// 'relationships_query_result' hook.
+		//  - Take the whole relationship result array, do what you wish
+		//  - added 2.7.1
+		//
+			if (ee()->extensions->active_hook('relationships_query_result') === TRUE)
+			{
+				$entry_lookup = ee()->extensions->call('relationships_query_result', $entry_lookup);
+				if (ee()->extensions->end_script === TRUE) return NULL;
+			}
+		//
+		// -------------------------------------------
+
 
 		if ( ! class_exists('EE_Relationship_data_parser'))
 		{
@@ -410,7 +435,10 @@ class EE_relationship_tree_builder {
 				{
 					foreach (explode('|', $field_name) as $name)
 					{
-						$field_ids[] = $this->relationship_field_ids[$name];
+						foreach ($this->relationship_field_ids[$name] as $rel_field_id)
+						{
+							$field_ids[] = $rel_field_id;
+						}
 					}
 				}
 				elseif (isset($leaves[$depth]))
@@ -427,9 +455,7 @@ class EE_relationship_tree_builder {
 			}
 			else
 			{
-				$field_ids = array(
-					$this->relationship_field_ids[$node->field_name]
-				);
+				$field_ids = $this->relationship_field_ids[$node->field_name];
 			}
 
 			// propogate the ids

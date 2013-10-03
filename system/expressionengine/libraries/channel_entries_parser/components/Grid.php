@@ -49,6 +49,8 @@ class EE_Channel_grid_parser implements EE_Channel_parser_component {
 	 */
 	public function pre_process($tagdata, EE_Channel_preparser $pre)
 	{
+		$grid_field_names = array();
+
 		// Run the preprocessor for each site
 		foreach ($pre->site_ids() as $site_id)
 		{
@@ -60,12 +62,31 @@ class EE_Channel_grid_parser implements EE_Channel_parser_component {
 				continue;
 			}
 
-			ee()->load->library('grid_parser');
+			$grid_field_names = array_merge($grid_field_names, array_values(array_flip($gfields[$site_id])));
 
+			ee()->load->library('grid_parser');
 			ee()->grid_parser->pre_process($tagdata, $pre, $gfields[$site_id]);
 		}
 
-		return TRUE;
+		$grid_field_names = $pre->prefix().implode('|'.$pre->prefix(), $grid_field_names);
+
+		// Match all conditionals with these Grid field names so we can
+		// make {if grid_field} work
+		preg_match_all("/".preg_quote(LD)."((if:(else))*if)\s+($grid_field_names)(?!:)(\s+|".preg_quote(RD).")/s", $tagdata, $matches);
+
+		// For each field found in a conditional, add it to the modified
+		// conditionals array to make the conditional evaluate with the
+		// :total_rows modifier, otherwise it will evaluate based on what's
+		// in channel_data, and only data from searchable fields is there
+		if (isset($matches[4]) && ! empty($matches[4]))
+		{
+			foreach ($matches[4] as $value)
+			{
+				$pre->modified_conditionals[$value][] = 'total_rows';
+			}
+		}
+
+		return NULL;
 	}
 
 	// ------------------------------------------------------------------------

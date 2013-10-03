@@ -167,7 +167,7 @@ class MyAccount extends CP_Controller {
 			$vars['login_as_member'] = ($this->session->userdata('group_id') == 1 && $this->id != $this->session->userdata('member_id')) ? TRUE : FALSE;
 			$vars['can_delete_members'] = ($this->cp->allowed_group('can_delete_members') AND $this->id != $this->session->userdata('member_id')) ? TRUE : FALSE;
 		}
-		
+
 		// default additional_nav lists are empty
 		$vars['additional_nav'] = array(
 			'personal_settings' => array(),
@@ -177,7 +177,7 @@ class MyAccount extends CP_Controller {
 			'channel_preferences' => array(),
 			'administrative_options' => array()
 		);
-		
+
 		// -------------------------------------------
 		// 'myaccount_nav_setup' hook.
 		//  - Add items to the My Account nav
@@ -186,7 +186,7 @@ class MyAccount extends CP_Controller {
 		if ($this->extensions->active_hook('myaccount_nav_setup') === TRUE)
 		{
 			$vars['additional_nav'] = array_merge_recursive(
-				$vars['additional_nav'], 
+				$vars['additional_nav'],
 				$this->extensions->call('myaccount_nav_setup')
 			);
 		}
@@ -293,7 +293,7 @@ class MyAccount extends CP_Controller {
 		$vars['bday_d_options'] = array();
 
 		$vars['bday_y_options'][''] = lang('year');
-		
+
 		for ($i = date('Y', $this->localize->now); $i > 1904; $i--)
 		{
 		  $vars['bday_y_options'][$i] = $i;
@@ -316,7 +316,7 @@ class MyAccount extends CP_Controller {
 		);
 
 		$vars['bday_d_options'][''] = lang('day');
-		
+
 		for ($i = 1; $i <= 31; $i++)
 		{
 		  $vars['bday_d_options'][$i] = $i;
@@ -392,19 +392,19 @@ class MyAccount extends CP_Controller {
 	function update_profile()
 	{
 		// validate for unallowed blank values
-		if (empty($_POST)) 
+		if (empty($_POST))
 		{
 			show_error(lang('unauthorized_access'));
 		}
-		
+
 		$id = $_POST['id'];
 
 		unset($_POST['id']);
 		unset($_POST['edit_profile']);
 
 		$_POST['url'] = ($_POST['url'] == 'http://') ? '' : $_POST['url'];
-		
-		$fields = array(	
+
+		$fields = array(
 			'bday_y',
 			'bday_m',
 			'bday_d',
@@ -442,7 +442,7 @@ class MyAccount extends CP_Controller {
 				$data['bday_d'] = $mdays;
 			}
 		}
-		
+
 		if (count($data) > 0)
 		{
 			$this->member_model->update_member($this->id, $data);
@@ -461,16 +461,16 @@ class MyAccount extends CP_Controller {
 					'location'	=> $data['location'],
 					'url'		=> $data['url']
 				);
-				
+
 				$this->db->where('author_id', $this->id);
 				$this->db->update('comments', $d);
 			}
 		}
-		
+
 		$id = ($id == '') ? '' : AMP.'id='.$id;
 
 		$this->session->set_flashdata('message_success', lang('profile_updated'));
-		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=edit_profile'.$id);			
+		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=edit_profile'.$id);
 	}
 
 	// --------------------------------------------------------------------
@@ -509,20 +509,14 @@ class MyAccount extends CP_Controller {
 	function update_email()
 	{
 		// validate for unallowed blank values
-		if (empty($_POST)) 
+		if (empty($_POST))
 		{
 			show_error(lang('unauthorized_access'));
 		}
 
-		// if this is a super admin changing stuff, don't worry
-		// about this db call since it won't be used anyhow
-		$current_email = '';
-		if ($this->session->userdata('group_id') != 1)
-		{
-			// what's this users current email?
-			$query = $this->member_model->get_member_data($this->id, array('email'));
-			$current_email = $query->row('email');
-		}
+		// what's this users current email?
+		$query = $this->member_model->get_member_data($this->id, array('email'));
+		$current_email = $query->row('email');
 
 		$this->VAL = $this->_validate_user(array(
 			'require_cpw'	=> ($current_email != $this->input->post('email')) ? TRUE : FALSE,
@@ -551,7 +545,7 @@ class MyAccount extends CP_Controller {
 		$this->member_model->update_member($this->id, $data);
 
 		$this->cp->get_installed_modules();
-		
+
 		if (isset($this->cp->installed_modules['comment']))
 		{
 			//	Update comments and log email change
@@ -561,7 +555,7 @@ class MyAccount extends CP_Controller {
 				$this->db->update('comments', array('email' => $this->input->post('email')));
 
 				$this->logger->log_action($this->VAL->log_msg);
-			}			
+			}
 		}
 
 		$id = ($this->id != $this->session->userdata('member_id')) ? AMP.'id='.$this->id : '';
@@ -606,7 +600,7 @@ class MyAccount extends CP_Controller {
 	function update_preferences()
 	{
 		// validate for unallowed blank values
-		if (empty($_POST)) 
+		if (empty($_POST))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -657,7 +651,7 @@ class MyAccount extends CP_Controller {
 	  */
 	function update_username_password()
 	{
-		if ($this->config->item('allow_username_change') != 'y' && 
+		if ($this->config->item('allow_username_change') != 'y' &&
 			$this->session->userdata('group_id') != 1)
 		{
 			if ($_POST['current_password'] == '')
@@ -669,7 +663,7 @@ class MyAccount extends CP_Controller {
 		}
 
 		// validate for unallowed blank values
-		if (empty($_POST)) 
+		if (empty($_POST))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -695,7 +689,7 @@ class MyAccount extends CP_Controller {
 
 		$this->VAL->validate_screen_name();
 
-		if ($this->config->item('allow_username_change') == 'y' OR 
+		if ($this->config->item('allow_username_change') == 'y' OR
 			$this->session->userdata('group_id') == 1)
 		{
 			$this->VAL->validate_username();
@@ -713,7 +707,7 @@ class MyAccount extends CP_Controller {
 		}
 
 		// Update "last post" forum info if needed
-		if ($query->row('screen_name') != $_POST['screen_name'] && 
+		if ($query->row('screen_name') != $_POST['screen_name'] &&
 			$this->config->item('forum_is_installed') == "y")
 		{
 			$this->db->where('forum_last_post_author_id', $this->id);
@@ -721,7 +715,7 @@ class MyAccount extends CP_Controller {
 				'forums',
 				array('forum_last_post_author' => $this->input->post('screen_name'))
 			);
-			
+
 			$this->db->where('mod_member_id', $this->id);
 			$this->db->update(
 				'forum_moderators',
@@ -755,7 +749,7 @@ class MyAccount extends CP_Controller {
 		$this->member_model->update_member($this->id, $data);
 
 		$this->cp->get_installed_modules();
-		
+
 		if (isset($this->cp->installed_modules['comment']))
 		{
 			if ($query->row('screen_name') != $_POST['screen_name'])
@@ -769,9 +763,9 @@ class MyAccount extends CP_Controller {
 
 				$this->db->where('author_id', $this->id);
 				$this->db->update('comments', $data);
-			}			
+			}
 		}
-		
+
 		// Write log file
 		$this->logger->log_action($this->VAL->log_msg);
 
@@ -839,7 +833,7 @@ class MyAccount extends CP_Controller {
 		{
 			show_error(lang('unauthorized_access'));
 		}
-		
+
 		$this->load->library('table');
 		$this->lang->loadfile('admin');
 		$this->lang->loadfile('admin_content');
@@ -852,7 +846,7 @@ class MyAccount extends CP_Controller {
 								'id'			=>	$this->id);
 
 		$vars = array_merge($this->_account_menu_setup(), $vars);
-		
+
 		$this->cp->add_js_script(array('file' => 'cp/account_html_buttons'));
 
 		$this->cp->add_to_head('<style type="text/css">.cp_button{display:none;}</style>');
@@ -876,7 +870,7 @@ class MyAccount extends CP_Controller {
 			if ($button_count == 0)
 			{
 				$buttons = $this->admin_model->get_html_buttons();
-				
+
 				foreach ($buttons->result_array() as $data)
 				{
 					unset($data['id']); // unsetting from default id for insertion
@@ -897,13 +891,13 @@ class MyAccount extends CP_Controller {
 						'tag_row'		=> 1,
 						'classname'		=> stripslashes($predefined_buttons[$button]['classname']),
 				);
-			
+
 			$this->admin_model->update_html_buttons($this->id, array($predefined_buttons[$button]), FALSE);
 
 			$id = ($this->input->get('id')) ? AMP.'id='.$this->input->get('id') : '';
-			
+
 			// Redirect to remove the button name from the query string.  Reloading the page can lead to
-			// adding buttons you don't want, and that's just ugliness.  
+			// adding buttons you don't want, and that's just ugliness.
 			$this->session->set_flashdata('message_success', lang('html_buttons_updated'));
 			$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=html_buttons'.$id);
 		}
@@ -959,8 +953,8 @@ class MyAccount extends CP_Controller {
 	function delete_html_button()
 	{
 		// validate for unallowed blank values
-		if ( ! $this->input->get_post('button_id') OR 
-			 ! $this->cp->allowed_group('can_edit_html_buttons')) 
+		if ( ! $this->input->get_post('button_id') OR
+			 ! $this->cp->allowed_group('can_edit_html_buttons'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -1014,7 +1008,7 @@ class MyAccount extends CP_Controller {
 		$vars = array_merge($this->_account_menu_setup(), $vars);
 
 		$vars['form_hidden']['id'] = $this->id;
-		
+
 		if ($this->id != $this->session->userdata('member_id'))
 		{
 			$member_data = $this->member_model->get_member_data($this->id);
@@ -1039,7 +1033,7 @@ class MyAccount extends CP_Controller {
 	function save_theme()
 	{
 		// validate for unallowed blank values
-		if (empty($_POST)) 
+		if (empty($_POST))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -1111,7 +1105,7 @@ class MyAccount extends CP_Controller {
 		$vars['subscriptions'] = $subscription_data['result_array'];
 
 		$id = ($this->id != $this->session->userdata('member_id')) ? AMP.'id='.$this->id : '';
-		
+
 		// Pagination stuff
 		$config['base_url'] = BASE.AMP.'C=myaccount'.AMP.'M=subscriptions'.$id;
 		$config['total_rows'] = $subscription_data['total_results'];
@@ -1155,7 +1149,7 @@ class MyAccount extends CP_Controller {
 		}
 
 		$email = $query->row('email');
-		
+
 		$this->load->library('subscription');
 
 		foreach ($_POST['toggle'] as $key => $val)
@@ -1167,7 +1161,7 @@ class MyAccount extends CP_Controller {
 					$this->subscription->unsubscribe($this->id);
 					break;
 				case "f":
-					$this->db->delete('forum_subscriptions', array('topic_id' => substr($val, 1))); 
+					$this->db->delete('forum_subscriptions', array('topic_id' => substr($val, 1)));
 					break;
 			}
 		}
@@ -1201,10 +1195,10 @@ class MyAccount extends CP_Controller {
 		$vars['form_hidden']['id'] = $this->id;
 
 		$fields = array('timezone', 'language', 'time_format');
-		
+
 		// Fetch profile data
 		$query = $this->member_model->get_member_data($this->id, $fields);
-		
+
 		foreach ($fields as $val)
 		{
 			$vars[$val] = $query->row($val);
@@ -1214,11 +1208,11 @@ class MyAccount extends CP_Controller {
 		{
 			$vars['timezone'] = $this->config->item('default_site_timezone') ? $this->config->item('default_site_timezone') : 'UTC';
 		}
-		
+
 		if ($vars['time_format'] == '')
 		{
 			$vars['time_format'] = ($this->config->item('time_format') && $this->config->item('time_format') != '') ? $this->config->item('time_format') : 'us';
-		}		
+		}
 
 		$vars['time_format_options']['us'] = lang('united_states');
 		$vars['time_format_options']['eu'] = lang('european');
@@ -1337,7 +1331,7 @@ class MyAccount extends CP_Controller {
 		{
 			return $this->upload_signature_image();
 		}
-		
+
 		$id = ($this->input->get_post('id')) ? AMP.'id='.$this->input->get_post('id') : '';
 
 		$this->session->set_flashdata('message_success', lang('signature_updated'));
@@ -1360,20 +1354,20 @@ class MyAccount extends CP_Controller {
 		$this->load->language('number');
 
 		$vars['cp_page_title'] = lang('edit_avatar');
-		
+
 		$vars = array_merge($this->_account_menu_setup(), $vars);
 
 		$vars['form_hidden']['id'] = $this->id;
-		
+
 		// Are we a superadmin & looking at our profile, or another users?
 		if ($this->id != $this->session->userdata('member_id'))
 		{
 			$member_avatar = $this->member_model->get_member_data($this->id, array('avatar_filename', 'avatar_width', 'avatar_height', 'screen_name'));
-			
+
 			$cur_avatar_url = '';
 			$avatar_width	= '';
 			$avatar_height	= '';
-			
+
 			if ($member_avatar->row('avatar_filename') == '')
 			{
 				// there ain't no avatar
@@ -1381,7 +1375,7 @@ class MyAccount extends CP_Controller {
 					lang('no_user_avatar'),
 					$member_avatar->row('screen_name')
 				);
-				
+
 			}
 			else
 			{
@@ -1398,7 +1392,7 @@ class MyAccount extends CP_Controller {
 			$cur_avatar_url = $this->session->cache('cp_sidebar', 'cp_avatar_path');
 			$avatar_width	= $this->session->cache('cp_sidebar', 'cp_avatar_width');
 			$avatar_height	= $this->session->cache('cp_sidebar', 'cp_avatar_height');
-			
+
 			if ( ! $cur_avatar_url)
 			{
 				$vars['avatar'] = lang('no_avatar');
@@ -1406,7 +1400,7 @@ class MyAccount extends CP_Controller {
 			else
 			{
 				$vars['avatar'] = '<img src="'.$cur_avatar_url.'" border="0" width="'.$avatar_width.'" height="'.$avatar_height.'" alt="'.lang('my_avatar').'" title="'.lang('my_avatar').'" />';
-			}			
+			}
 		}
 
 		// Are there pre-installed avatars? We'll make a list of all folders in the "avatar" folder,
@@ -1415,9 +1409,9 @@ class MyAccount extends CP_Controller {
 		$vars['i'] = 0;
 
 		$this->load->helper('directory');
-		
+
 		$vars['avatar_dirs'] = directory_map($this->config->slash_item('avatar_path'), 2);
-		
+
 		if (is_array($vars['avatar_dirs']))
 		{
 			$vars['avatar_dirs'] = array_filter($vars['avatar_dirs'], 'is_array');	// only grab subfolders
@@ -1598,7 +1592,7 @@ class MyAccount extends CP_Controller {
 		{
 			return $this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=browse_avatars'.AMP.'folder='.$this->input->get_post('folder'));
 		}
-		
+
 		$folder = $this->security->sanitize_filename($this->input->get_post('folder'));
 		$file	= $this->security->sanitize_filename($this->input->get_post('avatar'));
 
@@ -1722,7 +1716,7 @@ class MyAccount extends CP_Controller {
 				case 'page':
 					$args = (isset($upload[2])) ? $upload[2] : array();
 					return call_user_func_array(array($this, $upload[1]), $args);
-			}			
+			}
 		}
 
 		// Success message
@@ -1738,13 +1732,13 @@ class MyAccount extends CP_Controller {
 	function notepad_update()
 	{
 		// validate for unallowed blank values
-		if (empty($_POST)) 
+		if (empty($_POST))
 		{
 			show_error(lang('unauthorized_access'));
 		}
 
 		$this->member_model->update_member($this->session->userdata('member_id'), array('notepad'=>$this->input->get_post('notepad')));
-		
+
 		$this->session->set_flashdata('notepad_message', lang('mbr_notepad_updated'));
 		$this->functions->redirect(BASE.AMP.$this->input->post('redirect_to'));
 	}
@@ -1777,7 +1771,7 @@ class MyAccount extends CP_Controller {
 		// Member groups assignment
 		if ($this->cp->allowed_group('can_admin_mbr_groups'))
 		{
-			$vars['group_id_options'] = array();			
+			$vars['group_id_options'] = array();
 
 			$query = $this->member_model->get_member_groups('is_locked');
 
@@ -1844,10 +1838,10 @@ class MyAccount extends CP_Controller {
 			{
 				// Get unlocked groups
 				$query = $this->member_model->get_member_groups('', array('is_locked'=>'n'));
-				
+
 				foreach ($query->result() as $row)
 				{
-					$unlocked_groups[] = $row->group_id;			
+					$unlocked_groups[] = $row->group_id;
 				}
 
 				$query = $this->member_model->get_member_data($this->id, array('group_id'));
@@ -1860,9 +1854,9 @@ class MyAccount extends CP_Controller {
 				{
 					show_error(lang('unauthorized_access'));
 				}
-			}			
+			}
 		}
-		
+
 		$this->member_model->update_member($this->id, $data);
 
 		$this->session->set_flashdata('message_success', lang('administrative_options_updated'));
@@ -1871,7 +1865,7 @@ class MyAccount extends CP_Controller {
 
 	// --------------------------------------------------------------------
 
-	/** 
+	/**
 	  * Quick links
 	  */
 	function quicklinks()
@@ -2010,7 +2004,7 @@ class MyAccount extends CP_Controller {
 
 		$vars['form_hidden'] = array();
 
-		if ($this->session->userdata('group_id') != 1 && 
+		if ($this->session->userdata('group_id') != 1 &&
 			$this->id != $this->session->userdata('member_id'))
 		{
 			show_error(lang('only_self_main_menu_manager_access'));
@@ -2058,7 +2052,7 @@ class MyAccount extends CP_Controller {
 	  */
 	function main_menu_manager_add()
 	{
-		if ($this->session->userdata('group_id') != 1 && 
+		if ($this->session->userdata('group_id') != 1 &&
 			$this->id != $this->session->userdata('member_id'))
 		{
 			show_error(lang('only_self_main_menu_manager_access'));
@@ -2116,14 +2110,14 @@ class MyAccount extends CP_Controller {
 	  */
 	function main_menu_update()
 	{
-		if ($this->session->userdata['group_id'] != 1 && 
+		if ($this->session->userdata['group_id'] != 1 &&
 		   ($this->id != $this->session->userdata('member_id')))
 		{
 			show_error(lang('unauthorized_access'));
 		}
 
 		// validate for unallowed blank values
-		if (empty($_POST)) 
+		if (empty($_POST))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -2199,7 +2193,7 @@ class MyAccount extends CP_Controller {
 
 		$this->member_model->update_member($this->id, array('quick_tabs' => trim($str)));
 
-		$this->session->set_flashdata('message_success', 
+		$this->session->set_flashdata('message_success',
 										lang('main_menu_manager_updated'));
 		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=main_menu_manager'.AMP.'id='.$this->id);
 	}
@@ -2281,7 +2275,7 @@ class MyAccount extends CP_Controller {
 
             $s = ($this->config->item('admin_session_type') != 'c') ? $this->session->userdata('session_id') : 0;
 			$path = $this->config->item('cp_url')."?S={$s}".AMP.'D=cp&C=content_publish&M=entry_form&Z=1&BK=1&channel_id='.$channel_id.'&';
-						
+
 			$type = (isset($_POST['safari'])) ? "window.getSelection()" : "document.selection?document.selection.createRange().text:document.getSelection()";
 
 			$vars['bm_link'] = "javascript:bm=$type;void(bmentry=window.open('".$path."title='+encodeURI(document.title)+'&tb_url='+encodeURI(window.location.href)+'&".$field_id."='+encodeURI(bm),'bmentry',''))";
@@ -2425,7 +2419,7 @@ class MyAccount extends CP_Controller {
 		{
 			foreach ($query->result() as $row)
 			{
-				
+
 				$member_name = (TRUE === ($this->id = $this->auth_id())) ? '<a href="'.BASE.AMP.'C=myaccount'.AMP.'M=ignore_list'.'">'.$row->screen_name.'</a>' : $row->screen_name;
 
 				$vars['ignored_members'][$row->member_id]['member_id'] = $row->member_id;
@@ -2435,7 +2429,7 @@ class MyAccount extends CP_Controller {
 
 		$this->cp->render('account/ignore_list', $vars);
 	}
-	
+
 	/**
 	  *	 Update Sidebar
 	  */
@@ -2445,17 +2439,17 @@ class MyAccount extends CP_Controller {
 		{
 			show_error(lang('unauthorized_access'));
 		}
-	
+
 		$this->output->enable_profiler(FALSE);
 
 		$show['show_sidebar'] = ($this->input->get_post('show') == 'false') ? 'n' : 'y';
 
 		$this->db->where('member_id', $this->session->userdata['member_id'] );
-		$this->db->update('members', $show); 
-		
+		$this->db->update('members', $show);
+
 		$resp['messageType'] = 'success';
 		$resp['message'] = lang('sidebar_updated');
-		$this->output->send_ajax_response($resp); 
+		$this->output->send_ajax_response($resp);
 
 	}
 
@@ -2478,7 +2472,7 @@ class MyAccount extends CP_Controller {
 	// -------------------------------------------------------------------------
 
 	/**
-	 * Method called when a custom screen added with the myaccount_nav_setup 
+	 * Method called when a custom screen added with the myaccount_nav_setup
 	 * hook is called
 	 */
 	public function custom_screen_save()
@@ -2511,10 +2505,10 @@ class MyAccount extends CP_Controller {
 	 * Abstraction of the custom screen page that takes care of figuring out the
 	 * name of the extension, the methods that should be called, what files to
 	 * load, and what method to call
-	 * 
-	 * @param  string $method_choice The method to call, 
+	 *
+	 * @param  string $method_choice The method to call,
 	 *		either 'method' or 'method_save'
-	 * @return Array containing four items: 
+	 * @return Array containing four items:
 	 *		$vars: Variables to pass to view
 	 *		$extension: Extension name (should not include '_ext' or 'ext.')
 	 *		$method: Extension's method called to display settings
@@ -2529,9 +2523,9 @@ class MyAccount extends CP_Controller {
 		$extension 	= strtolower($this->input->get_post('extension'));
 		$method 	= strtolower($this->input->get_post('method'));
 
-		// Check for a method_save get variable, if it doesn't exist, assume 
+		// Check for a method_save get variable, if it doesn't exist, assume
 		// it's the method name with _save at the end (e.g. method_save)
-		$method_save	= ($this->input->get_post('method_save')) ? 
+		$method_save	= ($this->input->get_post('method_save')) ?
 			strtolower($this->input->get_post('method_save')) :
 			$method.'_save';
 
@@ -2539,10 +2533,10 @@ class MyAccount extends CP_Controller {
 		$file_name	= 'ext.'.$extension.'.php';
 
 		$this->_load_extension_paths($extension);
-	
+
 		// Include the Extension
 		include_once($this->extension_paths[$extension].$file_name);
-		
+
 		$this->load->add_package_path($this->extension_paths[$extension], FALSE);
 
 		// Validate method choice parameter
@@ -2571,7 +2565,7 @@ class MyAccount extends CP_Controller {
 
 	/**
 	 * Make sure the extension paths have been cached
-	 * 
+	 *
 	 * @param  string $extension The name of the extension to load the path of
 	 * @return void
 	 */

@@ -163,7 +163,7 @@ class EE_Security extends CI_Security {
 				array(
 					'used'			=> 0,
 					'hash' 			=> $xid,
-					'session_id' 	=> ee()->session->userdata('session_id'),
+					'session_id' 	=> (string) ee()->session->userdata('session_id'),
 					'date >' 		=> ee()->localize->now - $this->_xid_ttl
 				)
 			);

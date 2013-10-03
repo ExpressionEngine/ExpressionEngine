@@ -35,29 +35,29 @@ replace(
 # wizard.php
 replace(
   'system/installer/controllers/wizard.php',
-  Hash[/$version(\s+)= '.*?';/ => "$version\\1 = '#{ee_version}'"]
+  Hash[/\$version(\s+)= '.*?';/ => "$version\\1 = '#{ee_version}';"]
 )
 
 # mod.forum.php
 replace(
   'system/expressionengine/modules/forum/mod.forum.php',
   Hash[
-    /$version(\s+)= '.*?';/ => "$version\\1= '#{df_version}';",
-    /$build(\s+)= '.*?';/ => "$build\\1= '#{df_build}';"
+    /\$version(\s+)= '.*?';/ => "$version\\1= '#{df_version}';",
+    /\$build(\s+)= '.*?';/ => "$build\\1= '#{df_build}';"
   ]
 )
 
 # upd.forum.php
 replace(
   'system/expressionengine/modules/forum/upd.forum.php',
-  Hash[/$version(\s+)= '.*?';/ => "$version\\1= '#{df_version}';"]
+  Hash[/\$version(\s+)= '.*?';/ => "$version\\1= '#{df_version}';"]
 )
 
 # sites.php (controllers)
 replace(
   'system/expressionengine/controllers/cp/sites.php',
   Hash[
-    /$version(\s+)= '.*?';/ => "$version\\1= '#{msm_version}';",
-    /$build_number(\s+)= '.*?';/ => "$build_number\\1= '#{msm_build}';"
+    /\$version(\s+)= '.*?';/ => "$version\\1= '#{msm_version}';",
+    /\$build_number(\s+)= '.*?';/ => "$build_number\\1= '#{msm_build}';"
   ]
 )
