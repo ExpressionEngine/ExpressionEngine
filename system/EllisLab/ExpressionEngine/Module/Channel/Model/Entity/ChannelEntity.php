@@ -16,6 +16,10 @@ class ChannelEntity extends Entity {
 			'field_group' => array(
 				'entity' => 'FieldGroupEntity',
 				'key'	 => 'group_id'
+			),
+			'status_group' => array(
+				'entity' => 'StatusGroupEntity',
+				'key' => 'group_id'
 			)
 		)
 	);	

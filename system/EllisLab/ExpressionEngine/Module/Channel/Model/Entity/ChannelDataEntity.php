@@ -1,7 +1,7 @@
 <?php
 namespace EllisLab\ExpressionEngine\Module\Channel\Model\Entity;
 
-use EllisLab\ExpressionEngine\Model\Entity\Entity as Entity;
+use EllisLab\ExpressionEngine\Model\Entity\FieldDataEntity as Entity;
 
 class ChannelDataEntity extends FieldDataEntity {
 	protected static $meta = array(
