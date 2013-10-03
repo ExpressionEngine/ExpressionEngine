@@ -121,8 +121,8 @@ class Addons_extensions extends CP_Controller {
 				$ext['version'] = $Extension->version;
 
 				// Status & Actions
-				$toggle_install_url = BASE.AMP.'C=addons_extensions'.AMP.'M=toggle_install'.AMP."which={$ext['class']}";
-				$toggle_enabled_url = BASE.AMP.'C=addons_extensions'.AMP.'M=toggle_enabled'.AMP."which={$ext['class']}";
+				$toggle_install_url = BASE.AMP.'C=addons_extensions'.AMP.'M=toggle_install'.AMP."which={$ext_name}";
+				$toggle_enabled_url = BASE.AMP.'C=addons_extensions'.AMP.'M=toggle_enabled'.AMP."which={$ext_name}";
 				if ($installed)
 				{
 					$ext['actions'] = anchor($toggle_install_url, lang('uninstall')).' &#9670; ';
