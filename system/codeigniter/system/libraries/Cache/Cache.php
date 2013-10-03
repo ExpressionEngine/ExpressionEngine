@@ -132,11 +132,12 @@ class CI_Cache extends CI_Driver_Library {
 	 * if not, return FALSE
 	 *
 	 * @param	string	$id
+	 * @param	string	$namespace	Namespace name
 	 * @return	mixed	value matching $id or FALSE on failure
 	 */
-	public function get($id)
+	public function get($id, $namespace = '')
 	{
-		return $this->{$this->_adapter}->get($this->key_prefix.$id);
+		return $this->{$this->_adapter}->get($this->key_prefix.$id, $namespace);
 	}
 
 	// ------------------------------------------------------------------------
@@ -147,11 +148,12 @@ class CI_Cache extends CI_Driver_Library {
 	 * @param	string	$id		Cache ID
 	 * @param	mixed	$data		Data to store
 	 * @param	int	$ttl = 60	Cache TTL (in seconds)
+	 * @param	string	$namespace	Namespace name
 	 * @return	bool	TRUE on success, FALSE on failure
 	 */
-	public function save($id, $data, $ttl = 60)
+	public function save($id, $data, $ttl = 60, $namespace = '')
 	{
-		return $this->{$this->_adapter}->save($this->key_prefix.$id, $data, $ttl);
+		return $this->{$this->_adapter}->save($this->key_prefix.$id, $data, $ttl, $namespace);
 	}
 
 	// ------------------------------------------------------------------------
@@ -160,11 +162,12 @@ class CI_Cache extends CI_Driver_Library {
 	 * Delete from Cache
 	 *
 	 * @param	string	$id	Cache ID
+	 * @param	string	$namespace	Namespace name
 	 * @return	bool	TRUE on success, FALSE on failure
 	 */
-	public function delete($id)
+	public function delete($id, $namespace = '')
 	{
-		return $this->{$this->_adapter}->delete($this->key_prefix.$id);
+		return $this->{$this->_adapter}->delete($this->key_prefix.$id, $namespace);
 	}
 
 	// ------------------------------------------------------------------------
@@ -175,9 +178,9 @@ class CI_Cache extends CI_Driver_Library {
 	 * @param	mixed	Prefix of group of cache keys to delete
 	 * @return	bool
 	 */
-	public function delete_with_prefix($prefix)
+	public function delete_namespace($namespace)
 	{
-		return $this->{$this->_adapter}->delete_with_prefix($prefix);
+		return $this->{$this->_adapter}->delete_namespace($namespace);
 	}
 
 	// ------------------------------------------------------------------------
@@ -211,11 +214,12 @@ class CI_Cache extends CI_Driver_Library {
 	 * Get Cache Metadata
 	 *
 	 * @param	string	$id	key to get cache metadata on
+	 * @param	string	$namespace	Namespace name
 	 * @return	mixed	cache item metadata
 	 */
-	public function get_metadata($id)
+	public function get_metadata($id, $namespace = '')
 	{
-		return $this->{$this->_adapter}->get_metadata($this->key_prefix.$id);
+		return $this->{$this->_adapter}->get_metadata($this->key_prefix.$id, $namespace);
 	}
 
 	// ------------------------------------------------------------------------
@@ -248,6 +252,21 @@ class CI_Cache extends CI_Driver_Library {
 	public function get_adapter()
 	{
 		return $this->_adapter;
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * For storage drivers that can store keys for many sites, we want to make
+	 * sure keys are kept unique to the current site, so we'll prefix the key
+	 * name with the site URL
+	 *
+	 * @param	string	$key	Key to make unique
+	 * @return	string	Key made unique to this site
+	 */
+	public function unique_key($key)
+	{
+		return ee()->config->item('site_url').':'.$key;
 	}
 }
 

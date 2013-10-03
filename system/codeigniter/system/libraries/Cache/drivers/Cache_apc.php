@@ -31,13 +31,14 @@ class CI_Cache_apc extends CI_Driver {
 	 * Look for a value in the cache. If it exists, return the data
 	 * if not, return FALSE
 	 *
-	 * @param	string
+	 * @param	string	$key	Key name
+	 * @param	string	$namespace	Namespace name
 	 * @return	mixed	value that is stored/FALSE on failure
 	 */
-	public function get($id)
+	public function get($id, $namespace = '')
 	{
 		$success = FALSE;
-		$data = apc_fetch($id, $success);
+		$data = apc_fetch($this->_namespaced_key($id, $namespace), $success);
 
 		return ($success === TRUE && is_array($data))
 			? unserialize($data[0]) : FALSE;
@@ -51,13 +52,18 @@ class CI_Cache_apc extends CI_Driver {
 	 * @param	string	Unique Key
 	 * @param	mixed	Data to store
 	 * @param	int	Length of time (in seconds) to cache the data
+	 * @param	string	$namespace	Namespace name
 	 *
 	 * @return	bool	true on success/false on failure
 	 */
-	public function save($id, $data, $ttl = 60)
+	public function save($id, $data, $ttl = 60, $namespace = '')
 	{
 		$ttl = (int) $ttl;
-		return apc_store($id, array(serialize($data), time(), $ttl), $ttl);
+		return apc_store(
+			$this->_namespaced_key($id, $namespace),
+			array(serialize($data), time(), $ttl),
+			$ttl
+		);
 	}
 
 	// ------------------------------------------------------------------------
@@ -66,11 +72,12 @@ class CI_Cache_apc extends CI_Driver {
 	 * Delete from Cache
 	 *
 	 * @param	mixed	unique identifier of the item in the cache
+	 * @param	string	$namespace	Namespace name
 	 * @return	bool	true on success/false on failure
 	 */
-	public function delete($id)
+	public function delete($id, $namespace = '')
 	{
-		return apc_delete($id);
+		return apc_delete($this->_namespaced_key($id, $namespace));
 	}
 
 	// ------------------------------------------------------------------------
@@ -78,12 +85,12 @@ class CI_Cache_apc extends CI_Driver {
 	/**
 	 * Delete keys from cache with a specified prefix
 	 *
-	 * @param	mixed	Prefix of group of cache keys to delete
+	 * @param	string	Namepace of group of cache keys to delete
 	 * @return	bool
 	 */
-	public function delete_with_prefix($prefix)
+	public function delete_namespace($namespace)
 	{
-		$cached = new APCIterator('user', '/^'.$prefix.'/');
+		$cached = new APCIterator('user', '/^'.preg_quote($this->_namespaced_key('', $namespace), '/').'/');
 
 		foreach ($cached as $item)
 		{
@@ -122,12 +129,13 @@ class CI_Cache_apc extends CI_Driver {
 	 * Get Cache Metadata
 	 *
 	 * @param	mixed	key to get cache metadata on
+	 * @param	string	$namespace	Namespace name
 	 * @return	mixed	array on success/false on failure
 	 */
-	public function get_metadata($id)
+	public function get_metadata($id, $namespace = '')
 	{
 		$success = FALSE;
-		$stored = apc_fetch($id, $success);
+		$stored = apc_fetch($this->_namespaced_key($id, $namespace), $success);
 
 		if ($success === FALSE OR count($stored) !== 3)
 		{
@@ -163,6 +171,24 @@ class CI_Cache_apc extends CI_Driver {
 		return TRUE;
 	}
 
+	// ------------------------------------------------------------------------
+
+	/**
+	 * If a namespace was specified, prefixes the key with it
+	 *
+	 * @param	string	$key	Key name
+	 * @param	string	$namespace	Namespace name
+	 * @return	string	Key prefixed with namespace
+	 */
+	protected function _namespaced_key($key, $namespace)
+	{
+		if ( ! empty($namespace))
+		{
+			$namespace .= ':';
+		}
+
+		return $this->unique_key($namespace.$key);
+	}
 }
 
 /* End of file Cache_apc.php */

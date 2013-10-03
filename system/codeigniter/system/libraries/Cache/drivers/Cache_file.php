@@ -51,10 +51,13 @@ class CI_Cache_file extends CI_Driver {
 	 * Fetch from cache
 	 *
 	 * @param	mixed	unique key id
+	 * @param	string	$namespace	Namespace name
 	 * @return	mixed	data on success/false on failure
 	 */
-	public function get($id)
+	public function get($id, $namespace = '')
 	{
+		$id = $this->_namespaced_key($id, $namespace);
+
 		if ( ! file_exists($this->_cache_path.$id))
 		{
 			return FALSE;
@@ -80,15 +83,18 @@ class CI_Cache_file extends CI_Driver {
 	 * @param	mixed	data to store
 	 * @param	int	length of time (in seconds) the cache is valid
 	 *				- Default is 60 seconds
+	 * @param	string	$namespace	Namespace name
 	 * @return	bool	true on success/false on failure
 	 */
-	public function save($id, $data, $ttl = 60)
+	public function save($id, $data, $ttl = 60, $namespace = '')
 	{
 		$contents = array(
 			'time'		=> time(),
 			'ttl'		=> $ttl,
 			'data'		=> $data
 		);
+
+		$id = $this->_namespaced_key($id, $namespace);
 
 		if (write_file($this->_cache_path.$id, serialize($contents)))
 		{
@@ -105,10 +111,13 @@ class CI_Cache_file extends CI_Driver {
 	 * Delete from Cache
 	 *
 	 * @param	mixed	unique identifier of item in cache
+	 * @param	string	$namespace	Namespace name
 	 * @return	bool	true on success/false on failure
 	 */
-	public function delete($id)
+	public function delete($id, $namespace = '')
 	{
+		$id = $this->_namespaced_key($id, $namespace);
+
 		return file_exists($this->_cache_path.$id) ? unlink($this->_cache_path.$id) : FALSE;
 	}
 
@@ -120,13 +129,13 @@ class CI_Cache_file extends CI_Driver {
 	 * @param	mixed	Prefix of group of cache files to delete
 	 * @return	bool
 	 */
-	public function delete_with_prefix($prefix)
+	public function delete_namespace($namespace)
 	{
 		$files = get_filenames($this->_cache_path);
 
 		foreach ($files as $file)
 		{
-			if (strncmp($file, $prefix, strlen($prefix)) == 0 &&
+			if (strncmp($file, $namespace, strlen($namespace)) == 0 &&
 				file_exists($this->_cache_path.$file))
 			{
 				@unlink($this->_cache_path.$file);
@@ -169,10 +178,13 @@ class CI_Cache_file extends CI_Driver {
 	 * Get Cache Metadata
 	 *
 	 * @param	mixed	key to get cache metadata on
+	 * @param	string	$namespace	Namespace name
 	 * @return	mixed	FALSE on failure, array on success.
 	 */
-	public function get_metadata($id)
+	public function get_metadata($id, $namespace = '')
 	{
+		$id = $this->_namespaced_key($id, $namespace);
+
 		if ( ! file_exists($this->_cache_path.$id))
 		{
 			return FALSE;
@@ -212,6 +224,24 @@ class CI_Cache_file extends CI_Driver {
 		return is_really_writable($this->_cache_path);
 	}
 
+	// ------------------------------------------------------------------------
+
+	/**
+	 * If a namespace was specified, prefixes the key with it
+	 *
+	 * @param	string	$key	Key name
+	 * @param	string	$namespace	Namespace name
+	 * @return	string	Key prefixed with namespace
+	 */
+	protected function _namespaced_key($key, $namespace)
+	{
+		if ( ! empty($namespace))
+		{
+			$namespace .= '-';
+		}
+
+		return $namespace.$key;
+	}
 }
 
 /* End of file Cache_file.php */

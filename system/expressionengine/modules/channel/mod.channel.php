@@ -147,7 +147,7 @@ class Channel {
 			}
 		}
 
-		return ee()->cache->get($this->_sql_cache_prefix.'-'.md5($tag.$this->uri));
+		return ee()->cache->get(md5($tag.$this->uri), $this->_sql_cache_prefix);
 	}
 
 	// ------------------------------------------------------------------------
@@ -160,9 +160,10 @@ class Channel {
 		$tag = ($identifier == '') ? ee()->TMPL->tagproper : ee()->TMPL->tagproper.$identifier;
 
 		return ee()->cache->save(
-			$this->_sql_cache_prefix.'-'.md5($tag.$this->uri),
+			md5($tag.$this->uri),
 			$sql,
-			0	// No TTL, cache lives on till cleared
+			0,	// No TTL, cache lives on till cleared
+			$this->_sql_cache_prefix
 		);
 	}
 

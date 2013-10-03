@@ -1489,19 +1489,18 @@ class EE_Template {
 		$refresh = ( ! isset($args['refresh'])) ? 0 : $args['refresh'];
 		$refresh *= 60;
 
-		$prefix = ($cache_type == 'tag') ? $this->_tag_cache_prefix : $this->_page_cache_prefix;
-		$cfile = $prefix.'-'.$cfile;
+		$namespace = ($cache_type == 'tag') ? $this->_tag_cache_prefix : $this->_page_cache_prefix;
 
 		// Get metadata for this cache key to see if it's expired, because even
 		// though we can set a TTL for auto-expiration, the refresh setting
 		// can change and needs to invalidate the cache if necessary
-		$cache_info = ee()->cache->get_metadata($cfile);
+		$cache_info = ee()->cache->get_metadata($cfile, $namespace);
 
 		// If expiration date plus refresh time is greater than now and there is
 		// something in the cache, return cached copy
 		if (isset($cache_info['expire']) &&
 			$cache_info['expire'] + $refresh > ee()->localize->now &&
-			$cache = ee()->cache->get($cfile))
+			$cache = ee()->cache->get($cfile, $namespace))
 		{
 			$status = 'CURRENT';
 		}
@@ -1552,7 +1551,7 @@ class EE_Template {
 
 		$prefix = ($cache_type == 'tag') ? $this->_tag_cache_prefix : $this->_page_cache_prefix;
 
-		if ( ! ee()->cache->save($prefix.'-'.$cfile, $data, 0))
+		if ( ! ee()->cache->save($cfile, $data, 0, $prefix))
 		{
 			$this->log_item("Could not create/write to cache file: ".$prefix.'-'.$cfile);
 		}
@@ -1607,7 +1606,7 @@ class EE_Template {
 			// Clear page cache if we have too many
 			if ($i > $max)
 			{
-				ee()->cache->delete_with_prefix('page');
+				ee()->cache->delete_namespace('page');
 			}
 		}
 	}
