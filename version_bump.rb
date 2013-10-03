@@ -35,7 +35,7 @@ replace(
 # wizard.php
 replace(
   'system/installer/controllers/wizard.php',
-  Hash[/\$version(\s+)= '.*?';/ => "$version\\1 = '#{ee_version}'"]
+  Hash[/\$version(\s+)= '.*?';/ => "$version\\1 = '#{ee_version}';"]
 )
 
 # mod.forum.php
