@@ -219,12 +219,12 @@ class Simple_commerce_upd {
 
 		if (version_compare($current, '2.2', '<'))
 		{
-			$sql = "SELECT t.title, i.admin_email_address
-					FROM exp_simple_commerce_items i, exp_channel_titles t
-					WHERE LENGTH(i.admin_email_address) > 75
-					AND t.entry_id = i.entry_id";
+			$query = ee()->db->select('t.title, i.admin_email_address')
+				->from('simple_commerce_items i')
+				->join('channel_titles t', 't.entry_id = i.entry_id')
+				->where('LENGTH(i.admin_email_address) >', 75)
+				->get();
 
-			$query = ee()->db->query($sql);
 			if ($query->row('count') > 0)
 			{
 				ee()->load->library('logger');
