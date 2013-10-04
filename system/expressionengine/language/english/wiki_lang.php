@@ -88,7 +88,7 @@ $lang = array(
 
 'namespaces_list_subtext' =>
 'Namespaces are used to separate a wiki\'s content into separate divisions.  For example, you might
-want to create a division of the wiki for articles only in Spanish. For each namespace, create a Label, 
+want to create a division of the wiki for articles only in Spanish. For each namespace, create a Label,
 which will be displayed on the wiki pages, and a short name, which will be used internally and in certain forms for
 referencing the namespace.  Your short name should only contain word characters like letters, numbers, and underscores.',
 
@@ -137,10 +137,10 @@ referencing the namespace.  Your short name should only contain word characters 
 'duplicate_short_name' =>
 'Another Wiki with that Short Name already exists.',
 
-'default_index_note' => 
+'default_index_note' =>
 'Creating the first page',
 
-'default_index_content' => 
+'default_index_content' =>
 'Welcome to the opening page of your EE Wiki!',
 
 'namespace_label' =>
@@ -229,6 +229,131 @@ referencing the namespace.  Your short name should only contain word characters 
 
 'file_writing_instructions' =>
 'You will not be able to save changes to this template until it is given write permissions for this server.',
+
+//----------------------------------------
+
+'login' =>
+'Login',
+
+'register' =>
+'Register',
+
+'member_list' =>
+'Member List',
+
+'logged_in_as' =>
+'Logged in as',
+
+'your_profile' =>
+'Your Profile',
+
+'your_control_panel' =>
+'Your Control Panel',
+
+'logout' =>
+'Log-Out',
+
+'wiki_home' =>
+'Wiki Home',
+
+'editing' =>
+'Editing',
+
+'source' =>
+'Source',
+
+'history' =>
+'History',
+
+'revision' =>
+'Revision',
+
+'navigation' =>
+'Navigation',
+
+'wiki_help' =>
+'Wiki Help',
+
+'categories' =>
+'Categories',
+
+'title_list' =>
+'Title List',
+
+'uncategorized_pages' =>
+'Uncategorized Pages',
+
+'random_page' =>
+'Random Page',
+
+'file_upload' =>
+'File Upload',
+
+'uploaded_files' =>
+'Uploaded Files',
+
+'recent_changes' =>
+'Recent Changes',
+
+'rss' =>
+'RSS',
+
+'atom' =>
+'Atom',
+
+'what_links_here' =>
+'What Links Here',
+
+'active_members' =>
+'Active Members',
+
+'search' =>
+'Search',
+
+'special_page' =>
+'Special Page',
+
+'file_page' =>
+'File Page',
+
+'create_or_find_page' =>
+'Create or Find Page',
+
+'view' =>
+'View',
+
+'edit' =>
+'Edit',
+
+'view_source' =>
+'View Source',
+
+'viewing_history' =>
+'Viewing History',
+
+'revision' =>
+'Revision',
+
+'redirected_from' =>
+'Redirected from',
+
+'page_redirects_to' =>
+'Page Redirects To',
+
+'no_article' =>
+'This Article Does Not Exist Yet',
+
+'click_edit_to_create' =>
+'Click Edit to Create!',
+
+'cannot_add' =>
+'You are unable to add articles to the wiki. Sorry!',
+
+'revision_from' =>
+'Revision from',
+
+'subcategories' =>
+'Subcategories',
 
 ''=>''
 );
