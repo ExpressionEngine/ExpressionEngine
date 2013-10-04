@@ -1,5 +1,5 @@
 {if revision}
-<span class="lighttext">Revision from: {revision_date format="%H:%i, %j %M %Y"}</span><br /><br />
+<span class="lighttext">{lang:revision_from}: {revision_date format="%H:%i, %j %M %Y"}</span><br /><br />
 {/if}
 
 {article}
@@ -12,7 +12,7 @@
 {wiki:category_subcategories style="nested"}
 
 {header}
-<h3>Subcategories:</h3>
+<h3>{lang:subcategories}:</h3>
 There {if subcategory_total == '1'}is 1 subcategory{if:else}are {subcategory_total} subcategories{/if} for this category
 {/header}
 
@@ -48,7 +48,7 @@ There {if subcategory_total == '1'}is 1 subcategory{if:else}are {subcategory_tot
 <!-- BEGIN Categories for Page -->
 
 {if categories}
-<h3>Categories:</h3>
+<h3>{lang:categories}:</h3>
 {wiki:categories style="nested"}
 <a href="{path:view_category}">{category_name}</a>
 {/wiki:categories}
@@ -56,4 +56,3 @@ There {if subcategory_total == '1'}is 1 subcategory{if:else}are {subcategory_tot
 
 <!-- END Categories for Page -->
 
-	
