@@ -234,7 +234,18 @@ class Simple_commerce_upd {
 				}
 			}
 
-			ee()->db->query("ALTER TABLE `exp_simple_commerce_items` CHANGE `admin_email_address` `admin_email_address` varchar(75) NULL DEFAULT NULL");
+			ee()->dbforge->modify_column(
+				'simple_commerce_items',
+				array(
+					'admin_email_address' => array(
+						'name' 			=> 'admin_email_address',
+						'type' 			=> 'varchar',
+						'constraint'	=> '75',
+						'null'			=> TRUE,
+						'default'		=> NULL
+					)
+				)
+			);
 		}
 
 		return TRUE;

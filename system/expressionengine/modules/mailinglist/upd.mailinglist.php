@@ -258,8 +258,29 @@ class Mailinglist_upd {
 
 		if (version_compare($current, '3.2', '<'))
 		{
-			ee()->db->query("ALTER TABLE `exp_mailing_list` MODIFY COLUMN `email` varchar(75) NOT NULL");
-			ee()->db->query("ALTER TABLE `exp_mailing_list_queue` MODIFY COLUMN `email` varchar(75) NOT NULL");
+			ee()->dbforge->modify_column(
+				'mailing_list',
+				array(
+					'email' => array(
+						'name' 			=> 'email',
+						'type' 			=> 'varchar',
+						'constraint'	=> '75',
+						'null'			=> FALSE
+					)
+				)
+			);
+
+			ee()->dbforge->modify_column(
+				'mailing_list_queue',
+				array(
+					'email' => array(
+						'name' 			=> 'email',
+						'type' 			=> 'varchar',
+						'constraint'	=> '75',
+						'null'			=> FALSE
+					)
+				)
+			);
 		}
 
 		return TRUE;
