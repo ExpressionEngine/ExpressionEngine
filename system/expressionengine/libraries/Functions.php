@@ -1137,7 +1137,7 @@ class EE_Functions {
 		{
 			if ($del_root === FALSE)
 			{
-				@mkdir($path, 0777);
+				@mkdir($path, DIR_WRITE_MODE);
 
 				if ($fp = @fopen($path.'/index.html', FOPEN_WRITE_CREATE_DESTRUCTIVE))
 				{
