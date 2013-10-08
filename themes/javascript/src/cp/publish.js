@@ -321,7 +321,7 @@ EE.publish.save_layout = function() {
 			{
 				lay_name = tab_name;
 				layout_object[tab_count] = {name: lay_name, fields: {}};
-				layout_object[tab_count][mypre] = tab_label;
+				layout_object[tab_count]['fields'][mypre] = tab_label;
 			} else {
 				merge = true;
 				visible = false;
@@ -374,9 +374,10 @@ EE.publish.save_layout = function() {
 		// Add hidden fields to first tab
 
 		var last_index = 0;
-		for (field in layout_object[0]['fields']) {
-			if (field['index'] > last_index) {
-				last_index = field['index'];
+		var fields = layout_object[0]['fields'];
+		for (i in fields) {
+			if (fields[i]['index'] > last_index) {
+				last_index = fields[i]['index'];
 			}
 		}
 

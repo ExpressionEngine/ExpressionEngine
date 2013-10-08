@@ -25,11 +25,11 @@
  * @link		http://ellislab.com
  */
 class EE_Loader extends CI_Loader {
-	
+
 	public $_ci_view_path = ''; // deprecated, do not change, was private in 2.1.5 and will be private again in the near future
 	private $ee_view_depth = 0;
-	
-	
+
+
 	/**
 	 * Load CI View
 	 *
@@ -50,27 +50,27 @@ class EE_Loader extends CI_Loader {
 			$this->_ci_view_paths = array($this->_ci_view_path => FALSE) + $this->_ci_view_paths;
 		}
 
-		if (isset($vars['cp_page_title']))
+		if (is_array($vars) && isset($vars['cp_page_title']))
 		{
 			ee()->view->cp_page_title = $vars['cp_page_title'];
 		}
-		
+
 		$this->ee_view_depth++;
-		
+
 		$ret = parent::view($view, $vars, $return);
-		
-		$this->ee_view_depth--;		
-		
+
+		$this->ee_view_depth--;
+
 		if ($this->ee_view_depth === 0 && $this->_ci_view_path != '')
 		{
 			array_shift($this->_ci_view_paths);
 		}
-		
+
 		return $ret;
 	}
-	
+
 	// ------------------------------------------------------------------------
-	
+
 	/**
 	 * Load EE View
 	 *
@@ -79,7 +79,7 @@ class EE_Loader extends CI_Loader {
 	 * for doing this are layout things, like the glossary. Most developers
 	 * will not need this. -pk
 	 *
-	 * @param	string		
+	 * @param	string
 	 * @param	array 	variables to be loaded into the view
 	 * @param	bool 	return or not
 	 * @return	void
@@ -88,41 +88,41 @@ class EE_Loader extends CI_Loader {
 	{
 		$ee_only = array();
 		$orig_paths = $this->_ci_view_paths;
-		
+
 		// Regular themes cascade down to the first
 		// path (APPPATH.'views'), so we copy them over
 		// until we hit a third party or non_cascading path.
-		
+
 		foreach (array_reverse($orig_paths, TRUE) as $path => $cascade)
 		{
 			if (strpos($path, PATH_THIRD) !== FALSE OR $cascade === FALSE)
 			{
 				break;
 			}
-			
+
 			$ee_only[$path] = TRUE;
 		}
-		
+
 		// Temporarily replace them, load the view, and back again
 		$this->_ci_view_paths = array_reverse($ee_only, TRUE);
-		
+
 		$ret = $this->view($view, $vars, $return);
-		
+
 		$this->_ci_view_paths = $orig_paths;
-		
+
 		return $ret;
 	}
-	
+
 	// ------------------------------------------------------------------------
-	
+
 	/**
 	 * $this->load->library('security') is deprecated as the CI_Security
 	 * class has been moved to Core, so it is always loaded.  In order to ease
 	 * the transition for third-party developers, we are extending the CI
 	 * loader function to return NULL in the event a load function to Security
-	 * is called.  
+	 * is called.
 	 *
-	 * $this->load->library('security') is @deprecated, and this temporary 
+	 * $this->load->library('security') is @deprecated, and this temporary
 	 * workaround will be removed in a future version
 	 */
 	public function library($library = '', $params = NULL, $object_name = NULL)
@@ -131,24 +131,24 @@ class EE_Loader extends CI_Loader {
 		{
 			foreach($library as $read)
 			{
-				$this->library($read);	
+				$this->library($read);
 			}
-			
+
 			return;
 		}
-		
+
 		if (strtolower($library) == 'security')
 		{
 			ee()->load->library('logger');
 			ee()->logger->deprecated('2.6', 'The security library is always loaded.');
 			return NULL;
 		}
-		
+
 		return parent::library($library, $params, $object_name);
 	}
-	
-	// ------------------------------------------------------------------------	
-	
+
+	// ------------------------------------------------------------------------
+
 	/**
 	 * Add to the theme cascading
 	 *
@@ -159,9 +159,9 @@ class EE_Loader extends CI_Loader {
 	{
 		$this->_ci_view_paths = array($theme_path => TRUE) + $this->_ci_view_paths;
 	}
-	
-	// ------------------------------------------------------------------------	
-	
+
+	// ------------------------------------------------------------------------
+
 	/**
 	 * Get top of package path
 	 *
