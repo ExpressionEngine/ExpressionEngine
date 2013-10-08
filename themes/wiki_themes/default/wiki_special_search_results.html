@@ -1,18 +1,18 @@
 
 <div class="marginpad">
 {if no_results}
-<strong>No Results for Your Search:</strong>  {keywords}
+<strong>{lang:no_results}:</strong>  {keywords}
 {/if}
 
 {if results}
-<strong>Keywords:</strong> {keywords}
+<strong>{lang:keywords}:</strong> {keywords}
 {/if}
 </div>
 
 <div class="marginpad">
 {wiki:search_results limit="20"}
 
-<a href="{path:view_article}">{title}</a> - Last Updated: {revision_date format="%j %M %Y"} by <a href="{path:author_profile}">{author}</a> {if notes}({notes}){/if}<br />
+<a href="{path:view_article}">{title}</a> - {lang:last_updated}: {revision_date format="%j %M %Y"} {lang:by} <a href="{path:author_profile}">{author}</a> {if notes}({notes}){/if}<br />
 ({excerpt})<br /><br />
 
 {paginate}
@@ -22,4 +22,3 @@
 {/wiki:search_results}
 </div>
 
-	
