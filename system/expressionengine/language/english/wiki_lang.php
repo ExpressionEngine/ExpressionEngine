@@ -427,6 +427,15 @@ referencing the namespace.  Your short name should only contain word characters 
 'no_file' =>
 'No file by this name exists.',
 
+'no_history' =>
+'There is no history for this page.',
+
+'open' =>
+'Open',
+
+'closed' =>
+'Closed',
+
 ''=>''
 );
 
