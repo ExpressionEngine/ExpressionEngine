@@ -457,6 +457,9 @@ referencing the namespace.  Your short name should only contain word characters 
 'no_namespace_results',
 'Sorry, there seem to be no articles for this namespace.',
 
+'no_uncategorized_results',
+'Sorry, there seem to be no uncategorized articles for this namespace.',
+
 ''=>''
 );
 
