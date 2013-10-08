@@ -3,10 +3,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -19,13 +19,13 @@
  * @package		ExpressionEngine
  * @subpackage	Control Panel
  * @category	Control Panel
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
-class Sites extends CI_Controller {
+class Sites extends CP_Controller {
 
-	var $version 			= '2.1.2';
-	var $build_number		= '20120123';
+	var $version 			= '2.1.6';
+	var $build_number		= '20130827';
 	var $allow_new_sites 	= FALSE;
 
 	/**
@@ -85,22 +85,18 @@ class Sites extends CI_Controller {
 		$this->load->library('table');
 		$this->lang->loadfile('sites_cp');
 		
-		$this->javascript->compile();
-		
 		$vars['sites'] = $this->session->userdata('assigned_sites');
 
-		$this->cp->set_variable('cp_page_title', lang('switch_site'));
+		$this->view->cp_page_title = lang('switch_site');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=sites', lang('site_management'));
 				
 		$vars['can_admin_sites'] = $this->cp->allowed_group('can_admin_sites');
 
 		$vars['message'] = $message;
 
-		$this->javascript->compile();
-
 		$this->cp->set_right_nav(array('edit_sites' => BASE.AMP.'C=sites'.AMP.'M=manage_sites'));
 		
-		$this->load->view('sites/switch', $vars);
+		$this->cp->render('sites/switch', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -159,18 +155,11 @@ class Sites extends CI_Controller {
 		// }
 		
 		// This is just way too simple.
-		
-		// If they are already setting cookies with a specified domain, keep using it in this backend
-		$current_cookie_domain = $this->config->item('cookie_domain');
-		
+
+		// We set the cookie before switching prefs to ensure it uses current settings
+		$this->functions->set_cookie('cp_last_site_id', $site_id, 0);		
+
 		$this->config->site_prefs('', $site_id);
-		
-		if ($current_cookie_domain != FALSE && $current_cookie_domain != '')
-		{
-			$this->config->cp_cookie_domain = $current_cookie_domain;
-		}
-		
-		$this->functions->set_cookie('cp_last_site_id', $site_id, 0);
 		
 		$this->functions->redirect($page);
 	}
@@ -201,7 +190,7 @@ class Sites extends CI_Controller {
 		$this->load->library('table');
 		$this->load->model('site_model');
 
-		$this->cp->set_variable('cp_page_title', lang('site_management'));
+		$this->view->cp_page_title = lang('site_management');
 
 		$vars['msm_version'] = $this->version;
 		$vars['msm_build_number'] = $this->build_number;
@@ -209,8 +198,6 @@ class Sites extends CI_Controller {
 		$this->jquery->tablesorter('.mainTable', '{
 			widgets: ["zebra"]
 		}');
-
-		$this->javascript->compile();
 
 		if ($created_id = $this->input->get('created_id'))
 		{
@@ -232,11 +219,9 @@ class Sites extends CI_Controller {
 		$vars['site_data'] = $this->site_model->get_site();
 		$vars['message'] = $message;
 		
-		$this->javascript->compile();
-		
 		$this->cp->set_right_nav(array('create_new_site' => BASE.AMP.'C=sites'.AMP.'M=add_edit_site'));
 		
-		$this->load->view('sites/list_sites', $vars);
+		$this->cp->render('sites/list_sites', $vars);
 	}
 	
 	// --------------------------------------------------------------------
@@ -259,17 +244,23 @@ class Sites extends CI_Controller {
 		$site_id = $this->input->get('site_id');
 		
 		$title = ($site_id) ? lang('edit_site') : lang('create_new_site');
-		$this->cp->set_variable('cp_page_title', $title);
+		$this->view->cp_page_title = $title;
 		
-		$this->load->model('site_model');
-		$this->load->model('file_upload_preferences_model');
+		$this->load->model(array(
+			'site_model', 
+			'file_upload_preferences_model',
+			'channel_model',
+			'template_model'
+		));
 		$this->load->helper(array('form', 'snippets'));
 		$this->lang->loadfile('filemanager');
 		
-		$values = array('site_id'					=> '',
-						'site_label'				=> '',
-						'site_name'					=> '',
-						'site_description'			=> '');
+		$values = array(
+			'site_id'			=> '',
+			'site_label'		=> '',
+			'site_name'			=> '',
+			'site_description'	=> ''
+		);
 
 		if ($site_id)
 		{
@@ -285,53 +276,55 @@ class Sites extends CI_Controller {
 		
 		if ($values['site_id'] == '')
 		{
-				$this->lang->loadfile('content');
-				$this->lang->loadfile('design');
-				
-				$vars['channels'] = $this->db->query("SELECT channel_title, channel_id, site_label FROM exp_channels, exp_sites
-									 				WHERE exp_sites.site_id = exp_channels.site_id
-									 				ORDER by site_label, channel_title");
-									
-				$vars['channel_options'] = array(
-												'nothing'		=> lang('do_nothing'),
-												'move'			=> lang('move_channel_move_data'),
-												'duplicate'		=> lang('duplicate_channel_no_data'),
-												'duplicate_all'	=> lang('duplicate_channel_all_data')
-												);
+			$this->lang->loadfile('content');
+			$this->lang->loadfile('design');
+			
+			// Get channels from the model
+			$vars['channels'] = $this->channel_model->get_channels(
+				'all', 
+				array('channel_title, channel_id', 'site_id')
+			);
 
+			$vars['channel_options'] = array(
+				'nothing'		=> lang('do_nothing'),
+				'move'			=> lang('move_channel_move_data'),
+				'duplicate'		=> lang('duplicate_channel_no_data'),
+				'duplicate_all'	=> lang('duplicate_channel_all_data')
+			);
+			
+			// Get upload directories
+			$vars['upload_directories'] = $this->file_upload_preferences_model->get_file_upload_preferences(1, NULL, TRUE, array('order_by' => array('site_id' => 'asc')));
 
-				$vars['upload_directories'] = 	$this->db->query("SELECT name, id, site_label FROM exp_upload_prefs, exp_sites
-										 						WHERE exp_sites.site_id = exp_upload_prefs.site_id
-										 						ORDER by site_label, exp_upload_prefs.name");
-				
-				// Bring in overridden upload directory values to show on Add Site screen
-				$vars['upload_directories_override'] = $this->file_upload_preferences_model->get_file_upload_preferences(1, NULL, TRUE);
+			$vars['upload_directory_options'] = array(
+				'nothing'		=> lang('do_nothing'),
+				'move'			=> lang('move_upload_destination'),
+				'duplicate'		=> lang('duplicate_upload_destination')
+			);
 
-				$vars['upload_directory_options'] = array(
-												'nothing'		=> lang('do_nothing'),
-												'move'			=> lang('move_upload_destination'),
-												'duplicate'		=> lang('duplicate_upload_destination')
-												);
+			// Get Template Groups
+			$vars['template_groups'] = $this->template_model->get_template_groups('all');
 
+			$vars['template_group_options'] = array(
+				'nothing'		=> lang('do_nothing'),
+				'move'			=> lang('move_template_group'),
+				'duplicate'		=> lang('duplicate_template_group')
+			);
 
-				$vars['template_groups'] = $this->db->query("SELECT group_name, group_id, site_label FROM exp_template_groups, exp_sites
-									 						WHERE exp_sites.site_id = exp_template_groups.site_id
-									 						ORDER by site_label, group_name");
+			// Get Global Variables (site information)
+			$sites = $this->site_model->get_site();
+			$sites_map = array();
+			foreach ($sites->result_array() as $site_info)
+			{
+				$sites_map[$site_info['site_id']] = $site_info;
+			}
+			ksort($sites_map);
+			$vars['sites'] = $sites_map;
 
-				$vars['template_group_options'] = array(
-												'nothing'		=> lang('do_nothing'),
-												'move'			=> lang('move_template_group'),
-												'duplicate'		=> lang('duplicate_template_group')
-												);
-
-				$vars['global_variables'] = $this->db->query("SELECT site_id, site_label FROM exp_sites ORDER by site_label");
-				
-				
-				$vars['global_variable_options'] = array(
-												'nothing'		=> lang('do_nothing'),
-												'move'			=> lang('move_global_variables'),
-												'duplicate'		=> lang('duplicate_global_variables')
-												);
+			$vars['global_variable_options'] = array(
+				'nothing'		=> lang('do_nothing'),
+				'move'			=> lang('move_global_variables'),
+				'duplicate'		=> lang('duplicate_global_variables')
+			);
 		}
 		
 		$vars['values'] = $values;
@@ -340,11 +333,10 @@ class Sites extends CI_Controller {
 		
 		if ($site_id)
 		{
-				$vars['form_url'] .= AMP.'site_id='.$site_id;
+			$vars['form_url'] .= AMP.'site_id='.$site_id;
 		}
 
-		$this->javascript->compile();
-		$this->load->view('sites/edit_form', $vars);		
+		$this->cp->render('sites/edit_form', $vars);		
 	}
 	
 
@@ -466,11 +458,12 @@ class Sites extends CI_Controller {
 		}
   
 		// Create/Update Site	
-		$data = array('site_name'			=> $_POST['site_name'],
-					  'site_label'			=> $_POST['site_label'],
-					  'site_description'	=> $_POST['site_description'],
-					  'site_bootstrap_checksums'	=> ''
-					);
+		$data = array(
+			'site_name'					=> $this->input->post('site_name'),
+			'site_label'				=> $this->input->post('site_label'),
+			'site_description'			=> $this->input->post('site_description'),
+			'site_bootstrap_checksums'	=> ''
+		);
 
 		if ($edit == FALSE)
 		{
@@ -484,13 +477,12 @@ class Sites extends CI_Controller {
 				$others[] = 'pages';
 			}
 			
-			
 			foreach($others as $field)
 			{
 				$data['site_'.$field] = '';
 			}
 			
-			$this->db->query($this->db->insert_string('exp_sites', $data));
+			$this->db->insert('sites', $data);
 			
 			$insert_id = $this->db->insert_id();
 			$site_id = $insert_id;
@@ -500,10 +492,13 @@ class Sites extends CI_Controller {
 		else
 		{			
 			// Grab old data
-			$old = $this->db->get_where('sites', array('site_id' => $this->input->post('site_id')));
+			$old = $this->db->get_where(
+				'sites', 
+				array('site_id' => $this->input->post('site_id'))
+			);
 			
 			// Short name change, possibly need to update the template file folder
-			if ($old->row('site_name') == $this->input->post('site_name'))
+			if ($old->row('site_name') != $this->input->post('site_name'))
 			{
 				$prefs = $old->row('site_template_preferences');
 				$prefs = unserialize(base64_decode($prefs));
@@ -519,7 +514,11 @@ class Sites extends CI_Controller {
 				}
 			}
 			
-			$this->db->query($this->db->update_string('exp_sites', $data, 'site_id='.$this->db->escape_str($_POST['site_id'])));
+			$this->db->update(
+				'sites',
+				$data,
+				array('site_id' => $this->input->post('site_id'))
+			);
 			
 			$site_id = $_POST['site_id'];
 
@@ -542,7 +541,7 @@ class Sites extends CI_Controller {
 				
 				unset($data['stat_id']);
 				
-				$this->db->query($this->db->insert_string('exp_stats', $data));
+				$this->db->insert('stats', $data);
 			}
 		}
 		
@@ -568,7 +567,13 @@ class Sites extends CI_Controller {
 		// Create HTML Buttons for New Site
 		if ($edit == FALSE)
 		{
-			$query = $this->db->get_where('html_buttons', array('site_id' => $this->config->item('site_id'), 'member_id' => 0));
+			$query = $this->db->get_where(
+				'html_buttons', 
+				array(
+					'site_id' => $this->config->item('site_id'),
+					'member_id' => 0
+				)
+			);
 			
 			if ($query->num_rows() > 0)
 			{
@@ -576,7 +581,7 @@ class Sites extends CI_Controller {
 				{
 					unset($row['id']);
 					$row['site_id'] = $site_id;
-					$this->db->query($this->db->insert_string('exp_html_buttons', $row));
+					$this->db->insert('html_buttons', $row);
 				}
 			}
 		}
@@ -593,7 +598,6 @@ class Sites extends CI_Controller {
 			$Q[] = "insert into exp_specialty_templates(site_id, template_name, data_title, template_data) values ('".$this->db->escape_str($site_id)."', 'admin_notify_comment', '".addslashes(trim(admin_notify_comment_title()))."', '".addslashes(admin_notify_comment())."')";
 			$Q[] = "insert into exp_specialty_templates(site_id, template_name, data_title, template_data) values ('".$this->db->escape_str($site_id)."', 'mbr_activation_instructions', '".addslashes(trim(mbr_activation_instructions_title()))."', '".addslashes(mbr_activation_instructions())."')";
 			$Q[] = "insert into exp_specialty_templates(site_id, template_name, data_title, template_data) values ('".$this->db->escape_str($site_id)."', 'forgot_password_instructions', '".addslashes(trim(forgot_password_instructions_title()))."', '".addslashes(forgot_password_instructions())."')";
-			$Q[] = "insert into exp_specialty_templates(site_id, template_name, data_title, template_data) values ('".$this->db->escape_str($site_id)."', 'reset_password_notification', '".addslashes(trim(reset_password_notification_title()))."', '".addslashes(reset_password_notification())."')";
 			$Q[] = "insert into exp_specialty_templates(site_id, template_name, data_title, template_data) values ('".$this->db->escape_str($site_id)."', 'validated_member_notify', '".addslashes(trim(validated_member_notify_title()))."', '".addslashes(validated_member_notify())."')";
 			$Q[] = "insert into exp_specialty_templates(site_id, template_name, data_title, template_data) values ('".$this->db->escape_str($site_id)."', 'decline_member_validation', '".addslashes(trim(decline_member_validation_title()))."', '".addslashes(decline_member_validation())."')";
 			$Q[] = "insert into exp_specialty_templates(site_id, template_name, data_title, template_data) values ('".$this->db->escape_str($site_id)."', 'mailinglist_activation_instructions', '".addslashes(trim(mailinglist_activation_instructions_title()))."', '".addslashes(mailinglist_activation_instructions())."')";
@@ -611,14 +615,17 @@ class Sites extends CI_Controller {
 		// New Member Groups
 		if ($edit == FALSE)
 		{
-			$query = $this->db->get_where('member_groups', array('site_id' => $this->config->item('site_id')));
+			$query = $this->db->get_where(
+				'member_groups',
+				array('site_id' => $this->config->item('site_id'))
+			);
 		
 			foreach ($query->result_array() as $row)
 			{				
 				$data = $row;
 				$data['site_id'] = $site_id;
 				
-				$this->db->query($this->db->insert_string('exp_member_groups', $data, TRUE));
+				$this->db->insert('member_groups', $data);
 			}
 		}
 		
@@ -642,31 +649,32 @@ class Sites extends CI_Controller {
 					{
 						$moved[$old_channel_id] = '';
 
-						$this->db->query($this->db->update_string('exp_channels', 
-													  array('site_id' => $site_id), 
-													  "channel_id = '".$this->db->escape_str($old_channel_id)."'"));
-													  
-						$this->db->query($this->db->update_string('exp_channel_titles', 
-													  array('site_id' => $site_id), 
-													  "channel_id = '".$this->db->escape_str($old_channel_id)."'"));
-													  
-						$this->db->query($this->db->update_string('exp_channel_data', 
-													  array('site_id' => $site_id), 
-													  "channel_id = '".$this->db->escape_str($old_channel_id)."'"));
+						// Update the channels tables
+						$tables = array('channels', 'channel_titles', 'channel_data');
 
+						// Are we updating comments?
 						if ($do_comments == TRUE)
 						{
-							$this->db->query($this->db->update_string('exp_comments',
-													  array('site_id' => $site_id), 
-													  "channel_id = '".$this->db->escape_str($old_channel_id)."'"));
+							$tables[] = 'comments';
+						}
 
+						foreach ($tables as $table)
+						{
+							$this->db->update(
+								$table,
+								array('site_id' => $site_id), 
+								array('channel_id' => $old_channel_id)
+							);
 						}
 
 						$channel_ids[$old_channel_id] = $old_channel_id; // Stats, Groups, For Later
 					}
 					elseif($value == 'duplicate' OR $value == 'duplicate_all')
 					{
-						$query = $this->db->query("SELECT * FROM exp_channels WHERE channel_id = '".$this->db->escape_str($old_channel_id)."'");
+						$query = $this->db->get_where(
+							'channels',
+							array('channel_id' => $old_channel_id)
+						);
 						
 						if ($query->num_rows() == 0)
 						{
@@ -679,34 +687,41 @@ class Sites extends CI_Controller {
 						
 						foreach(array('channel_name', 'channel_title') AS $check)
 						{
-							$count_query = $this->db->query("SELECT COUNT(*) AS count FROM exp_channels 
-														WHERE site_id = '".$this->db->escape_str($site_id)."' 
-														AND `".$check."` LIKE '".$this->db->escape_like_str($row[$check])."%'");
-														
-							if ($count_query->row('count')  > 0)
+							$count = $this->db->where('site_id', $site_id)
+									->like($check, $row[$check], 'after')
+									->count_all_results('channels');
+								
+							if ($count  > 0)
 							{
-								$row[$check] = $row[$check].'-'.($count_query->row('count')  + 1);
+								$row[$check] = $row[$check].'-'.($count + 1);
 							}
 						}
 						
 						$row['site_id']   = $site_id;
 						unset($row['channel_id']);
 					
-						$this->db->query($this->db->insert_string('exp_channels', $row, TRUE));
+						$this->db->insert('channels', $row);
 						$channel_ids[$old_channel_id] = $this->db->insert_id();
 						
 						// exp_channel_member_groups
 						
-						$query = $this->db->query("SELECT group_id FROM exp_channel_member_groups WHERE channel_id = '".$this->db->escape_str($old_channel_id)."'");
+						$query = $this->db->select('group_id')
+							->get_where(
+								'channel_member_groups',
+								array('channel_id' => $old_channel_id)
+							);
 						
 						if ($query->num_rows() > 0)
 						{
 							foreach($query->result_array() as $row)
 							{
-								$this->db->query($this->db->insert_string('exp_channel_member_groups', 
-															  array('channel_id' => $channel_ids[$old_channel_id],
-															  		'group_id'	=> $row['group_id']),
-															  TRUE));
+								$this->db->insert(
+									'channel_member_groups',
+									array(
+										'channel_id' => $channel_ids[$old_channel_id],
+								  		'group_id'	=> $row['group_id']
+								  	)
+								);
 							}
 						}
 						
@@ -721,7 +736,10 @@ class Sites extends CI_Controller {
 						{
 							$moved[$old_channel_id] = '';
 							
-							$query = $this->db->query("SELECT * FROM exp_channel_titles WHERE channel_id = '".$this->db->escape_str($old_channel_id)."'");
+							$query = $this->db->get_where(
+								'channel_titles',
+								array('channel_id' => $old_channel_id)
+							);
 							
 							$entries[$old_channel_id] = array();
 							
@@ -732,11 +750,14 @@ class Sites extends CI_Controller {
 								unset($row['entry_id']);
 								$row['channel_id']	= $channel_ids[$old_channel_id];
 								
-								$this->db->query($this->db->insert_string('exp_channel_titles', $row, TRUE));
+								$this->db->insert('channel_titles', $row);
 								$entries[$old_channel_id][$old_entry_id] = $this->db->insert_id();
 							}
 							
-							$query = $this->db->query("SELECT * FROM exp_channel_data WHERE channel_id = '".$this->db->escape_str($old_channel_id)."'");
+							$query = $this->db->get_where(
+								'channel_data',
+								array('channel_id' => $old_channel_id)
+							);
 							
 							foreach($query->result_array() as $row)
 							{
@@ -744,17 +765,20 @@ class Sites extends CI_Controller {
 								$row['entry_id']	= $entries[$old_channel_id][$row['entry_id']];
 								$row['channel_id']	= $channel_ids[$old_channel_id];
 								
-								$this->db->query($this->db->insert_string('exp_channel_data', $row, TRUE));
+								$this->db->insert('channel_data', $row);
 							}
 							
 							if ($do_comments == TRUE)
 							{
-								$query = $this->db->query("SELECT * FROM exp_comments WHERE channel_id = '".$this->db->escape_str($old_channel_id)."'");
+								$query = $this->db->get_where(
+									'comments',
+									array('channel_id' => $old_channel_id)
+								);
 							}
 							
 							if ($do_comments == TRUE && $query->num_rows() > 0)
 							{
-								$comment_queries = array();
+								$comments = array();
 								unset($query->result[0]['comment_id']);
 								$fields = array_keys($query->row_array(0));
 								unset($fields['0']);
@@ -767,25 +791,31 @@ class Sites extends CI_Controller {
 									$row['channel_id']	= $channel_ids[$old_channel_id];
 									$row['edit_date']	= ($row['edit_date'] == '') ? 0 : $row['edit_date'];
 
-									$comment_queries[] = '("'.implode('","', $this->db->escape_str($row)).'")';
+									$comments[] = $row;
 								}
 								
 								// do inserts in batches so the data movement isn't _completely_ insane...
-								for ($i = 0, $total = count($comment_queries); $i < $total; $i = $i + 100)
+								for ($i = 0, $total = count($comments); $i < $total; $i = $i + 100)
 								{
-									$this->db->query("INSERT INTO exp_comments (`".implode('`, `', $fields)."`) VALUES ".implode(', ', array_slice($comment_queries, $i, 100)));
+									$this->db->insert_batch(
+										'comments', 
+										array_slice($comments, $i, 100)
+									);
 								}
 								
-								unset($comment_queries);						
+								unset($comments);						
 							}
 							
-							$query = $this->db->query("SELECT * FROM exp_category_posts WHERE entry_id IN ('".implode("','", $this->db->escape_str(array_flip($entries[$old_channel_id])))."')");
-							
-							foreach($query->result_array() as $row)
+							if ( ! empty($entries[$old_channel_id]))
 							{
-								$row['entry_id']	= $entries[$old_channel_id][$row['entry_id']];
-								
-								$this->db->query($this->db->insert_string('exp_category_posts', $row, TRUE));
+								$query = $this->db->where_in('entry_id', array_flip($entries[$old_channel_id]))
+									->get('category_posts');
+							
+								foreach($query->result_array() as $row)
+								{
+									$row['entry_id'] = $entries[$old_channel_id][$row['entry_id']];
+									$this->db->insert('category_posts', $row);
+								}
 							}
 						}
 					}
@@ -809,7 +839,10 @@ class Sites extends CI_Controller {
 					}
 					else
 					{
-						$query = $this->db->query("SELECT * FROM exp_upload_prefs WHERE id = '".$this->db->escape_str($upload_id)."'");
+						$query = $this->db->get_where(
+							'upload_prefs',
+							array('id' => $upload_id)
+						);
 						
 						if ($query->num_rows() == 0)
 						{
@@ -822,32 +855,43 @@ class Sites extends CI_Controller {
 						
 						foreach(array('name') AS $check)
 						{
-							$count_query = $this->db->query("SELECT COUNT(*) AS count FROM exp_upload_prefs 
-														WHERE site_id = '".$this->db->escape_str($site_id)."' 
-														AND `".$check."` LIKE '".$this->db->escape_like_str($row[$check])."%'");
-														
-							if ($count_query->row('count')  > 0)
+							$count = $this->db->where('site_id', $site_id)
+								->like($check, $row[$check], 'after')
+								->count_all_results('upload_prefs');
+
+							if ($count > 0)
 							{
-								$row[$check] = $row[$check].'-'.($count_query->row('count')  + 1);
+								$row[$check] = $row[$check].'-'.($count + 1);
 							}
 						}
 						
 						$row['site_id']  = $site_id;
 						unset($row['id']);
 					
-						$this->db->query($this->db->insert_string('exp_upload_prefs', $row, TRUE));
+						$this->db->insert('upload_prefs', $row);
 						
 						$new_upload_id = $this->db->insert_id();	
 						
 						$upload_updates[$upload_id] = $new_upload_id;					
 						
-						$disallowed_query = $this->db->query("SELECT member_group, upload_loc FROM exp_upload_no_access WHERE upload_id = '".$this->db->escape_str($upload_id)."'");
+						$disallowed_query = $this->db->select('member_group, upload_loc')
+							->get_where(
+								'upload_no_access',
+								array('upload_id' => $upload_id)
+							);
 						
 						if ($disallowed_query->num_rows() > 0)
 						{
 							foreach($disallowed_query->result_array() as $row)
 							{
-								$this->db->query($this->db->insert_string('exp_upload_no_access', array('upload_id' => $new_upload_id, 'upload_loc' => $row['upload_loc'], 'member_group' => $row['member_group'])));
+								$this->db->insert(
+									'upload_no_access',
+									array(
+										'upload_id' 	=> $new_upload_id, 
+										'upload_loc' 	=> $row['upload_loc'], 
+										'member_group' 	=> $row['member_group']
+									)
+								);
 							}
 						}
 						
@@ -877,13 +921,18 @@ class Sites extends CI_Controller {
 					
 					if ($value == 'move')
 					{
-						$this->db->query($this->db->update_string('exp_global_variables', 
-													  array('site_id' => $site_id), 
-													  "site_id = '".$this->db->escape_str($move_site_id)."'"));
+						$this->db->update(
+							'global_variables',
+							array('site_id' => $site_id),
+							array('site_id' => $move_site_id)
+						);
 					}
 					else
 					{
-						$query = $this->db->query("SELECT * FROM exp_global_variables WHERE site_id = '".$this->db->escape_str($move_site_id)."'");
+						$query = $this->db->get_where(
+							'global_variables',
+							array('site_id' => $move_site_id)
+						);
 						
 						if ($query->num_rows() == 0)
 						{
@@ -898,20 +947,20 @@ class Sites extends CI_Controller {
 						
 							foreach(array('variable_name') AS $check)
 							{
-								$count_query = $this->db->query("SELECT COUNT(*) AS count FROM exp_global_variables 
-															WHERE site_id = '".$this->db->escape_str($site_id)."' 
-															AND `".$check."` LIKE '".$this->db->escape_like_str($row[$check])."%'");
-															
-								if ($count_query->row('count')  > 0)
+								$count = $this->db->where('site_id', $site_id)
+									->like($check, $row[$check], 'after')
+									->count_all_results('global_variables');
+
+								if ($count > 0)
 								{
-									$row[$check] = $row[$check].'-'.($count_query->row('count')  + 1);
+									$row[$check] = $row[$check].'-'.($count + 1);
 								}
 							}
 						
 							$row['site_id']		= $site_id;
 							unset($row['variable_id']);
 						
-							$this->db->query($this->db->insert_string('exp_global_variables', $row, TRUE));
+							$this->db->insert('global_variables', $row);
 						}
 					}
 				}
@@ -924,18 +973,21 @@ class Sites extends CI_Controller {
 					
 					if ($value == 'move')
 					{
-						$this->db->query($this->db->update_string('exp_template_groups', 
-													  array('site_id' => $site_id), 
-													  "group_id = '".$this->db->escape_str($group_id)."'"));
-													  
-						$this->db->query($this->db->update_string('exp_templates', 
-													  array('site_id' => $site_id), 
-												  "group_id = '".$this->db->escape_str($group_id)."'"));
-
+						foreach (array('templates', 'template_groups') as $table)
+						{
+							$this->db->update(
+								$table,
+								array('site_id' => $site_id),
+								array('group_id' => $group_id)
+							);	
+						}
 					}
 					else
 					{
-						$query = $this->db->query("SELECT * FROM exp_template_groups WHERE group_id = '".$this->db->escape_str($group_id)."'");
+						$query = $this->db->get_where(
+							'template_groups',
+							array('group_id' => $group_id)
+						);
 						
 						if ($query->num_rows() == 0)
 						{
@@ -945,16 +997,15 @@ class Sites extends CI_Controller {
 						$row = $query->row_array();
 						
 						// Uniqueness checks
-						
 						foreach(array('group_name') AS $check)
 						{
-							$count_query = $this->db->query("SELECT COUNT(*) AS count FROM exp_template_groups 
-														WHERE site_id = '".$this->db->escape_str($site_id)."' 
-														AND `".$check."` LIKE '".$this->db->escape_like_str($row[$check])."%'");
-														
-							if ($count_query->row('count')  > 0)
+							$count = $this->db->where('site_id', $site_id)
+								->like($check, $row[$check], 'after')
+								->count_all_results('template_groups');
+							
+							if ($count > 0)
 							{
-								$row[$check] = $row[$check].'-'.($count_query->row('count')  + 1);
+								$row[$check] = $row[$check].'-'.($count + 1);
 							}
 						}
 						
@@ -962,26 +1013,35 @@ class Sites extends CI_Controller {
 						$row['site_id'] = $site_id;
 						unset($row['group_id']);
 					
-						$this->db->query($this->db->insert_string('exp_template_groups', $row, TRUE));
+						$this->db->insert('template_groups', $row);
 						
 						$new_group_id = $this->db->insert_id();
 						
 						// Member Group Access to Template Groups
-						$query = $this->db->query("SELECT * FROM exp_template_member_groups WHERE template_group_id = '".$this->db->escape_str($query->row('group_id') )."'");
+						$query = $this->db->get_where(
+							'template_member_groups',
+							array('template_group_id' => $query->row('group_id'))
+						);
 						
 						if ($query->num_rows() > 0)
 						{
 							foreach($query->result_array() as $row)
 							{
-								$this->db->query($this->db->insert_string('exp_template_member_groups', 
-															  array('template_group_id'	=> $new_group_id, 
-															  		'group_id' 			=> $row['group_id']), 
-															  TRUE));
+								$this->db->insert(
+									'template_member_groups', 
+									array(
+										'template_group_id'	=> $new_group_id, 
+										'group_id' 			=> $row['group_id']
+									)
+								);
 							}
 						}
 
 						// Create Templates for New Template Group
-						$query = $this->db->query("SELECT * FROM exp_templates WHERE group_id = '".$this->db->escape_str($group_id)."'");
+						$query = $this->db->get_where(
+							'templates',
+							array('group_id' => $group_id)
+						);
 						
 						if ($query->num_rows() == 0)
 						{
@@ -995,21 +1055,27 @@ class Sites extends CI_Controller {
 							$row['group_id']	= $new_group_id;
 							unset($row['template_id']);
 						
-							$this->db->query($this->db->insert_string('exp_templates', $row, TRUE));
+							$this->db->insert('templates', $row);
 							
 							$new_template_id = $this->db->insert_id();
 							
 							// Template/Page Access							
-							$access_query = $this->db->query("SELECT * FROM exp_template_no_access WHERE template_id = '".$this->db->escape_str($original_id)."'");
+							$access_query = $this->db->get_where(
+								'template_no_access', 
+								array('template_id' => $original_id)
+							);
 							
 							if ($query->num_rows() > 0)
 							{
 								foreach($access_query->result_array() as $access_row)
 								{
-									$this->db->query($this->db->insert_string('exp_template_no_access', 
-																  array('template_id'	=> $new_template_id, 
-																		'member_group' 	=> $access_row['member_group']), 
-																  TRUE));
+									$this->db->insert(
+										'exp_template_no_access', 
+										array(
+											'template_id'	=> $new_template_id, 
+											'member_group' 	=> $access_row['member_group']
+										)
+									);
 								}
 							}
 						}
@@ -1024,13 +1090,19 @@ class Sites extends CI_Controller {
 				$fields			 = array();
 				$categories		 = array();
 				$category_groups = array();
-				
 				$field_match	 = array();
-				$cat_field_match	 = array();
+				$cat_field_match = array();
+
+				// Load DB Forge, we'll need this for some alters later on
+				$this->load->dbforge();
 
 				foreach($channel_ids as $old_channel => $new_channel)
 				{
-					$query = $this->db->query("SELECT cat_group, status_group, field_group FROM exp_channels WHERE channel_id = '".$this->db->escape_str($new_channel)."'");
+					$query = $this->db->select('cat_group, status_group, field_group')
+						->get_where(
+							'channels',
+							array('channel_id' => $new_channel)
+						);
 
 					$row = $query->row_array();
 					
@@ -1039,37 +1111,43 @@ class Sites extends CI_Controller {
 					
 					if ( ! empty($status_group))
 					{					
-						if ( ! isset($status[$query->row('status_group') ]))
+						if ( ! isset($status[$status_group]))
 						{
-							$this->db->select('group_name');
-							$squery = $this->db->get_where('status_groups', array('group_id' => $query->row('status_group')));
+							$squery = $this->db->select('group_name')
+								->get_where(
+									'status_groups', 
+									array('group_id' => $status_group)
+								);
 			
 							$row = $squery->row_array();
 							
 							// Uniqueness checks
 							foreach(array('group_name') AS $check)
 							{
-								$count_query = $this->db->query("SELECT COUNT(*) AS count FROM exp_status_groups 
-															WHERE site_id = '".$this->db->escape_str($site_id)."' 
-															AND `".$check."` LIKE '".$this->db->escape_like_str($row[$check])."%'");
-															
-															
-															
-								if ($count_query->row('count')  > 0)
-								{
-									$row[$check] = $row[$check].'-'.($count_query->row('count')  + 1);
+								$count = $this->db->where('site_id', $site_id)
+									->like($check, $row[$check], 'after')
+									->count_all_results('status_groups');
 
+								if ($count  > 0)
+								{
+									$row[$check] = $row[$check].'-'.($count + 1);
 								}
 							}
+
+							$this->db->insert(
+								'status_groups', 
+								array(
+									'site_id'		=> $site_id, 
+									'group_name' 	=> $row['group_name']
+								)
+							);
 							
-							$this->db->query($this->db->insert_string('exp_status_groups', 
-														  array('site_id'		=> $site_id, 
-																'group_name' 	=> $row['group_name']), 
-														  TRUE));
+							$status[$status_group ] = $this->db->insert_id();
 							
-							$status[$query->row('status_group') ] = $this->db->insert_id();
-							
-							$squery = $this->db->query("SELECT * FROM exp_statuses WHERE group_id = '".$this->db->escape_str($query->row('status_group') )."'");
+							$squery = $this->db->get_where(
+								'statuses',
+								array('group_id' => $status_group)
+							);
 							
 							if ($squery->num_rows() > 0)
 							{
@@ -1077,17 +1155,19 @@ class Sites extends CI_Controller {
 								{
 									$row['site_id'] 	= $site_id;
 									unset($row['status_id']);
-									$row['group_id']	= $status[$query->row('status_group') ];
+									$row['group_id']	= $status[$status_group];
 								
-									$this->db->query($this->db->insert_string('exp_statuses', $row, TRUE));
+									$this->db->insert('statuses', $row);
 								}
 							}
 						}
 						
 						// Update Channel With New Group ID						
-						$this->db->query($this->db->update_string(	'exp_channels', 
-														array('status_group' => $status[$query->row('status_group') ]), 
-														"channel_id = '".$this->db->escape_str($new_channel)."'"));
+						$this->db->update(
+							'exp_channels', 
+							array('status_group' => $status[$status_group]), 
+							array('channel_id' => $new_channel)
+						);
 					}
 					
 					// Duplicate Field Group
@@ -1095,103 +1175,175 @@ class Sites extends CI_Controller {
 					
 					if ( ! empty($field_group))
 					{					
-						if ( ! isset($fields[$query->row('field_group') ]))
+						if ( ! isset($fields[$field_group]))
 						{
-							$fquery = $this->db->query("SELECT group_name FROM exp_field_groups WHERE group_id = '".$this->db->escape_str($query->row('field_group') )."'");
+							$fquery = $this->db->select('group_name')
+								->get_where(
+									'field_groups',
+									array('group_id' => $field_group)
+								);
 							
 							$fq_group_name = $fquery->row('group_name');
 							
 							// Uniqueness checks
 							foreach(array('group_name') AS $check)
 							{
-								$count_query = $this->db->query("SELECT COUNT(*) AS count FROM exp_field_groups 
-															WHERE site_id = '".$this->db->escape_str($site_id)."' 
-															AND `".$check."` LIKE '".$this->db->escape_like_str($fquery->row($check))."%'");
-															
-								if ($count_query->row('count')  > 0)
+								$count = $this->db->where('site_id', $site_id)
+									->like($check, $fquery->row($check), 'after')
+									->count_all_results('field_groups');
+
+								if ($count > 0)
 								{
-									$fq_group_name = $fquery->row($check).'-'.($count_query->row('count')  + 1);
+									$fq_group_name = $fquery->row($check).'-'.($count + 1);
 								}
 							}
 							
-							$this->db->query($this->db->insert_string('exp_field_groups', 
-														  array('site_id'		=> $site_id, 
-																'group_name' 	=> $fq_group_name ), 
-														  TRUE));
+							$this->db->insert(
+								'field_groups',
+								array(
+									'site_id'		=> $site_id, 
+									'group_name' 	=> $fq_group_name
+								)
+							);
 							
-							$fields[$query->row('field_group') ] = $this->db->insert_id();
+							$fields[$field_group] = $this->db->insert_id();
 							
 							// New Fields Created for New Field Group
-							$fquery = $this->db->query("SELECT * FROM exp_channel_fields WHERE group_id = '".$this->db->escape_str($query->row('field_group') )."'");
+							$fquery = $this->db->get_where(
+								'channel_fields',
+								array('group_id' => $field_group)
+							);
 							
 							if ($fquery->num_rows() > 0)
 							{
 								foreach($fquery->result_array() as $row)
 								{
-									$format_query = $this->db->query("SELECT field_fmt FROM exp_field_formatting 
-																WHERE field_id = '".$this->db->escape_str($row['field_id'])."'");
+									$format_query = $this->db->select('field_fmt')
+										->get_where(
+											'field_formatting',
+											array('field_id' => $row['field_id'])
+										);
 																
 									$old_field_id 		= $row['field_id'];
-								
 									$row['site_id'] 	= $site_id;
 									unset($row['field_id']);
-									$row['group_id']	= $fields[$query->row('field_group') ];
+									$row['group_id']	= $fields[$field_group];
 									
 									// Uniqueness checks
-						
 									foreach(array('field_name', 'field_label') AS $check)
 									{
-										$count_query = $this->db->query("SELECT COUNT(*) AS count FROM exp_channel_fields 
-											WHERE site_id = '".$this->db->escape_str($site_id)."'
-											AND `".$check."` LIKE '".$this->db->escape_like_str($row[$check])."%' ".
-											"AND group_id = '".$this->db->escape_str($query->row('field_group'))."'"
-										);
+										$count = $this->db->where(array(
+												'site_id'	=> $site_id,
+												'group_id'	=> $field_group
+											))
+											->like($check, $row[$check], 'after')
+											->count_all_results('channel_fields');
 										
-										if ($count_query->row('count')  > 0)
+										if ($count > 0)
 										{
-											$row[$check] = $row[$check].'-'.($count_query->row('count')  + 1);
+											$row[$check] = $row[$check].'-'.($count + 1);
 										}
 									}
 								
-									$this->db->query($this->db->insert_string('exp_channel_fields', $row, TRUE));
+									$this->db->insert('channel_fields', $row);
 									
 									$field_id = $this->db->insert_id();
 									
 									$field_match[$old_field_id] = $field_id;
 									
-									// Channel Data Field Creation, Whee!									
-									if ($row['field_type'] == 'date' OR $row['field_type'] == 'rel')
+									// Channel Data Field Creation, Whee!
+									if ($row['field_type'] == 'date' OR $row['field_type'] == 'relationship')
 									{
-										$this->db->query("ALTER TABLE exp_channel_data ADD COLUMN field_id_".$this->db->escape_str($field_id)." int(10) NOT NULL DEFAULT 0");
-										$this->db->query("ALTER TABLE exp_channel_data ADD COLUMN field_ft_".$this->db->escape_str($field_id)." tinytext NULL");
-
+										$columns = array(
+											'field_id_'.$field_id => array(
+												'type' 			=> 'int',
+												'constraint' 	=> 10,
+												'null' 			=> FALSE,
+												'default' 		=> 0
+											),
+											'field_ft_'.$field_id => array(
+												'type'			=> 'tinytext',
+												'null'			=> TRUE
+											)
+										);
+										
 										if ($row['field_type'] == 'date')
 										{
-											$this->db->query("ALTER TABLE exp_channel_data ADD COLUMN field_dt_".$this->db->escape_str($field_id)." varchar(8) AFTER field_ft_".$this->db->escape_str($field_id));
+											$columns['field_dt_'.$field_id] = array(
+												'type'			=> 'varchar',
+												'constraint'	=> 8
+											);
+										}
+
+										$this->dbforge->add_column('channel_data', $columns);
+									}
+									elseif($row['field_type'] == 'grid')
+									{
+										$this->load->library('api');
+										$this->api->instantiate('channel_fields');
+										$this->api_channel_fields->fetch_installed_fieldtypes();
+
+										$this->load->model('grid_model');
+										
+										$this->load->dbforge();
+										ee()->dbforge->add_column(
+											'channel_data', 
+											array(
+												'field_id_' . $field_id => array(
+													'type'			=> 'int',
+													'constraint'	=> 10
+												),
+												'field_ft_' . $field_id => array(
+													'type'			=> 'tinytext'
+												)	
+											) 
+										);
+										
+										$this->grid_model->create_field($field_id, 'channel');
+										
+										$columns = $this->grid_model->get_columns_for_field($old_field_id, 'channel');	
+										foreach($columns as $column) 
+										{
+											unset($column['col_id']);
+											$column['field_id'] = $field_id;
+											$column['col_settings'] = json_encode($column['col_settings']);
+											$this->grid_model->save_col_settings($column);
 										}
 									}
 									else
 									{
+										$columns = array(
+											'field_id_'.$field_id => array(
+												'type' 			=> 'text',
+												'null' 			=> TRUE,
+											),
+											'field_ft_'.$field_id => array(
+												'type'			=> 'tinytext',
+												'null'			=> TRUE
+											)
+										);
+
 										switch ($row['field_content_type'])
 										{
 											case 'numeric':
-												$type = 'FLOAT DEFAULT 0';
+												$columns['field_id_'.$field_id]['type'] = 'float';
+												$columns['field_id_'.$field_id]['default'] = 0;
 												break;
 											case 'integer':
-												$type = 'INT DEFAULT 0';
+												$columns['field_id_'.$field_id]['type'] = 'int';
+												$columns['field_id_'.$field_id]['default'] = 0;
 												break;
-											default:
-												$type = 'text';
 										}
-				
-										$this->db->query("ALTER TABLE exp_channel_data ADD COLUMN field_id_".$this->db->escape_str($field_id).' '.$type);
-										$this->db->query("ALTER TABLE exp_channel_data ADD COLUMN field_ft_".$this->db->escape_str($field_id)." tinytext NULL");
 
+										$this->dbforge->add_column('channel_data', $columns);
 										
 										// Replace NULL values
 										if ($type == 'text')
 										{
-											$this->db->query("UPDATE exp_channel_data SET field_id_".$this->db->escape_str($field_id)." = ''");
+											$this->db->update(
+												'channel_data',
+												array("field_id_{$field_id}" => '')
+											);
 										}
 									}
 									
@@ -1200,10 +1352,13 @@ class Sites extends CI_Controller {
 									{
 										foreach($format_query->result_array() as $format_row)
 										{
-											$this->db->query($this->db->insert_string('exp_field_formatting', 
-																		  array('field_id'  => $field_id,
-																		  		'field_fmt' => $format_row['field_fmt']),
-																		  TRUE));
+											$this->db->insert(
+												'field_formatting',
+												array(
+													'field_id'  => $field_id,
+											  		'field_fmt' => $format_row['field_fmt']
+												)
+											);
 										}
 									}
 								}
@@ -1212,7 +1367,11 @@ class Sites extends CI_Controller {
 						
 						// Update Channel With New Group ID						
 						//  Synce up a few new fields in the channel table
-						$channel_results = $this->db->query("SELECT search_excerpt FROM exp_channels WHERE channel_id = '". $this->db->escape_str($old_channel)."'");
+						$channel_results = $this->db->select('search_excerpt')
+							->get_where(
+								'channels',
+								array('channel_id' => $old_channel)
+							);
 
 						$channel_data['search_excerpt'] = '';
 
@@ -1226,15 +1385,19 @@ class Sites extends CI_Controller {
 							}
 						}
 						
-						$this->db->query($this->db->update_string('exp_channels', 
-														array('field_group' => $fields[$query->row('field_group') ], 
-														 'search_excerpt' => (int) $channel_data['search_excerpt']), 
-														"channel_id = '".$this->db->escape_str($new_channel)."'"));
+						$this->db->update(
+							'channels', 
+							array(
+								'field_group' => $fields[$field_group], 
+								'search_excerpt' => (int) $channel_data['search_excerpt']
+							), 
+							array('channel_id' => $new_channel)
+						);
 														
 						// Moved Channel?  Need Old Field Group
 						if (isset($moved[$old_channel]))
 						{
-							$moved[$old_channel] = $query->row('field_group') ;
+							$moved[$old_channel] = $field_group ;
 						}
 					}
 					
@@ -1254,7 +1417,11 @@ class Sites extends CI_Controller {
 								continue;
 							}
 						
-							$gquery = $this->db->query("SELECT group_name FROM exp_category_groups WHERE group_id = '".$this->db->escape_str($cat_group)."'");
+							$gquery = $this->db->select('group_name')
+								->get_where(
+									'category_groups',
+									array('group_id' => $cat_group)
+								);
 							
 							if ($gquery->num_rows() == 0)
 							{
@@ -1264,30 +1431,32 @@ class Sites extends CI_Controller {
 							$gquery_row = $gquery->row();
 							
 							// Uniqueness checks
-						
 							foreach(array('group_name') AS $check)
 							{
-								$count_query = $this->db->query("SELECT COUNT(*) AS count FROM exp_category_groups 
-															WHERE site_id = '".$this->db->escape_str($site_id)."' 
-															AND `".$check."` LIKE '".$this->db->escape_like_str($gquery->row($check))."%'");
-															
-								if ($count_query->row('count')  > 0)
+								$count = $this->db->where('site_id', $site_id)
+									->like($check, $gquery->row($check), 'after')
+									->count_all_results('category_groups');
+
+								if ($count > 0)
 								{
-									$gquery_row->$check = $gquery->row($check).'-'.($count_query->row('count')  + 1);
+									$gquery_row->$check = $gquery->row($check).'-'.($count + 1);
 								}
 							}
 							
 							$gquery_row->site_id   = $site_id;
 							unset($gquery_row->group_id);
 							
-							$this->db->query($this->db->insert_string('exp_category_groups', $gquery_row, TRUE));
+							$this->db->insert('category_groups', $gquery_row);
 							
 							$category_groups[$cat_group] = $this->db->insert_id();
 							
 							$new_insert_group[] = $category_groups[$cat_group];
 							
 							// Custom Category Fields							
-							$fquery = $this->db->query("SELECT * FROM exp_category_fields WHERE group_id = '".$this->db->escape_str($cat_group)."'");
+							$fquery = $this->db->get_where(
+								'category_fields',
+								array('group_id' => $cat_group)
+							);
 							
 							if ($fquery->num_rows() > 0)
 							{
@@ -1297,13 +1466,13 @@ class Sites extends CI_Controller {
 						
 									foreach(array('field_name') AS $check)
 									{
-										$count_query = $this->db->query("SELECT COUNT(*) AS count FROM exp_category_fields 
-																	WHERE site_id = '".$this->db->escape_str($site_id)."' 
-																	AND `".$check."` LIKE '".$this->db->escape_like_str($row[$check])."%'");
-																	
-										if ($count_query->row('count')  > 0)
+										$count = $this->db->where('site_id', $site_id)
+											->like($check, $row[$check], 'after')
+											->count_all_results('category_fields');
+
+										if ($count > 0)
 										{
-											$row[$check] = $row[$check].'-'.($count_query->row('count')  + 1);
+											$row[$check] = $row[$check].'-'.($count + 1);
 										}
 									}
 
@@ -1313,40 +1482,59 @@ class Sites extends CI_Controller {
 									unset($row['field_id']);
 									$row['group_id']	= $category_groups[$cat_group];
 
-									$this->db->query($this->db->insert_string('exp_category_fields', $row, TRUE));
+									$this->db->insert('category_fields', $row);
 
 									$field_id = $this->db->insert_id();
 
 									$cat_field_match[$old_field_id] = $field_id;
 
 									// Custom Catagory Field Data Creation, Whee!
-									$this->db->query("ALTER TABLE `exp_category_field_data` ADD COLUMN `field_id_{$field_id}` text NOT NULL");
-									$this->db->query("ALTER TABLE `exp_category_field_data` ADD COLUMN `field_ft_{$field_id}` varchar(40) NOT NULL default 'none'");
-									$this->db->query("UPDATE `exp_category_field_data` SET `field_ft_{$field_id}` = '".$this->db->escape_str($row['field_default_fmt'])."'");
+									$columns = array(
+										'field_id_'.$field_id => array(
+											'type' 			=> 'text',
+											'null' 			=> TRUE,
+										),
+										'field_ft_'.$field_id => array(
+											'type'			=> 'varchar',
+											'constraint'	=> 40,
+											'null'			=> TRUE,
+											'default'		=> 'none'
+										)
+									);
+									$this->dbforge->add_column('category_field_data', $columns);
+
+									$this->db->update(
+										'category_field_data',
+										array("field_ft_{$field_id}" => $row['field_default_fmt'])
+									);
 								}
 							}
 							
 							// New Categories Created for New Category Group							
-							$cquery = $this->db->query("SELECT * FROM exp_categories WHERE group_id = '".$this->db->escape_str($cat_group)."' ORDER BY parent_id");
+							$cquery = $this->db->get_where(
+								'categories',
+								array('group_id' => $cat_group)
+							);
 							
 							if ($cquery->num_rows() > 0)
 							{
 								foreach($cquery->result_array() as $row)
 								{
-									$fields_query = $this->db->query("SELECT * FROM exp_category_field_data 
-																WHERE cat_id = '".$this->db->escape_str($row['cat_id'])."'");
-																
+									$fields_query = $this->db->get_where(
+										'category_field_data',
+										array('cat_id' => $row['cat_id'])
+									);
+
 									// Uniqueness checks
-						
 									foreach(array('cat_url_title') AS $check)
 									{
-										$count_query = $this->db->query("SELECT COUNT(*) AS count FROM exp_categories 
-																	WHERE site_id = '".$this->db->escape_str($site_id)."' 
-																	AND `".$check."` LIKE '".$this->db->escape_like_str($row[$check])."%'");
-																	
-										if ($count_query->row('count')  > 0)
+										$count = $this->db->where('site_id', $site_id)
+											->like($check, $row[$check], 'after')
+											->count_all_results('categories');
+
+										if ($count > 0)
 										{
-											$row[$check] = $row[$check].'-'.($count_query->row('count')  + 1);
+											$row[$check] = $row[$check].'-'.($count + 1);
 										}
 									}
 																
@@ -1357,7 +1545,7 @@ class Sites extends CI_Controller {
 									$row['group_id']	= $category_groups[$cat_group];
 									$row['parent_id']	= ($row['parent_id'] == '0' OR ! isset($categories[$row['parent_id']])) ? '0' : $categories[$row['parent_id']];
 								
-									$this->db->query($this->db->insert_string('exp_categories', $row, TRUE));
+									$this->db->insert('categories', $row);
 									
 									$cat_id = $this->db->insert_id();
 									
@@ -1381,7 +1569,7 @@ class Sites extends CI_Controller {
 											}
 										}
 										
-										$this->db->query($this->db->insert_string('exp_category_field_data', $fields_query_row, TRUE));
+										$this->db->insert('category_field_data', $fields_query_row);
 									}
 								}
 							}
@@ -1395,7 +1583,11 @@ class Sites extends CI_Controller {
 					}
 						
 					// Update Channel With New Group ID				
-					$this->db->query($this->db->update_string( 'exp_channels', array('cat_group' => $new_insert_group), "channel_id = '".$this->db->escape_str($new_channel)."'"));
+					$this->db->update(
+						'channels',
+						array('cat_group' => $new_insert_group), 
+						array('channel_id' => $new_channel)
+					);
 				}
 				
 				
@@ -1419,25 +1611,31 @@ class Sites extends CI_Controller {
 							$complete_entries = array_merge($complete_entries, $its_entries);
 						}
 						
-						// Find Relationships for Old Entry IDs That Have Been Moveed
-						$query = $this->db->query("SELECT * FROM exp_relationships WHERE rel_parent_id IN ('".implode("','", $this->db->escape_str(array_flip($complete_entries)))."')");
+						$rel_check = (empty($complete_entries)) ? FALSE : TRUE;
 						
-						if ($query->num_rows() > 0)
+						// Find Relationships for Old Entry IDs That Have Been Moveed
+						if ($rel_check)
 						{
-							foreach($query->result_array() as $row)
+							$query = $this->db->where_in('parent_id', array_flip($complete_entries))
+								->get('relationships');
+						
+							if ($query->num_rows() > 0)
 							{
-								// Only If Child Moveed As Well...
-								
-								if (isset($complete_entries[$row['rel_child_id']]))
+								foreach($query->result_array() as $row)
 								{
-									$old_rel_id 		  = $row['rel_id'];
-									unset($row['rel_id']);
-									$row['rel_child_id']  = $complete_entries[$row['rel_child_id']];
-									$row['rel_parent_id'] = $complete_entries[$row['rel_parent_id']];
+									// Only If Child Moveed As Well...
+								
+									if (isset($complete_entries[$row['child_id']]))
+									{
+										$old_rel_id = $row['relationship_id'];
+										unset($row['relationship_id']);
+										$row['child_id'] = $complete_entries[$row['child_id']];
+										$row['parent_id'] = $complete_entries[$row['parent_id']];
 									
-									$this->db->query($this->db->insert_string('exp_relationships', $row, TRUE));
+										$this->db->insert('relationships', $row);
 									
-									$moved_relationships[$old_rel_id] = $this->db->insert_id();
+										$moved_relationships[$old_rel_id] = $this->db->insert_id();
+									}
 								}
 							}
 						}
@@ -1467,7 +1665,11 @@ class Sites extends CI_Controller {
 				
 					foreach($moved as $channel_id => $field_group)
 					{
-						$query = $this->db->query("SELECT field_id, field_type, field_related_to FROM exp_channel_fields WHERE group_id = '".$this->db->escape_str($field_group)."'");
+						$query = $this->db->select('field_id, field_type')
+							->get_where(
+								'channel_fields',
+								array('group_id' => $field_group)
+							);
 						
 						if (isset($entries[$channel_id]))
 						{
@@ -1490,26 +1692,48 @@ class Sites extends CI_Controller {
 										str_replace('a8bxdee', $row['field_id'], $file_string).
 											"WHERE channel_id = '".$this->db->escape_str($channel_id)."'");
 
+									$this->db->set('field_id_'.$row['field_id'], NULL);
+									$this->db->where('channel_id', $channel_id)
+										->update('channel_data');
 								}
 								else
 								{
-									$this->db->query("UPDATE exp_channel_data 
-											SET `field_id_".$this->db->escape_str($field_match[$row['field_id']])."` = `field_id_".$this->db->escape_str($row['field_id'])."` 
-											WHERE channel_id = '".$this->db->escape_str($channel_id)."'");									
+									// Set the new field to be the same as the old field
+									$this->db->set(
+										"field_id_{$field_match[$row['field_id']]}", 
+										'`field_id_'.$row['field_id'].'`', 
+										FALSE
+									);
+									
+									$null_type = ($row['field_type'] == 'date' OR $row['field_type'] == 'relationship' OR $row['field_type'] == 'grid') ? 0 : NULL;
+									$this->db->set('field_id_'.$row['field_id'], $null_type);
+									$this->db->where('channel_id', $channel_id)
+										->update('channel_data');
 								}								
 								
-								$this->db->query("UPDATE exp_channel_data 
-											SET `field_ft_".$this->db->escape_str($field_match[$row['field_id']])."` = `field_ft_".$this->db->escape_str($row['field_id'])."` 
-											WHERE channel_id = '".$this->db->escape_str($channel_id)."'");
-											
+								$this->db->set(
+									"field_ft_{$field_match[$row['field_id']]}", 
+									'`field_ft_'.$row['field_id'].'`', 
+									FALSE
+								);
+								$this->db->set('field_ft_'.$row['field_id'], NULL);
+								$this->db->where('channel_id', $channel_id)
+									->update('channel_data');
+
 								if ($row['field_type'] == 'date')
 								{
-									$this->db->query("UPDATE exp_channel_data 
-												SET `field_dt_".$this->db->escape_str($field_match[$row['field_id']])."` = `field_dt_".$this->db->escape_str($row['field_id'])."` 
-												WHERE channel_id = '".$this->db->escape_str($channel_id)."'");
+									// Set the new field to be the same as the old field
+									$this->db->set(
+										"field_dt_{$field_match[$row['field_id']]}", 
+										'`field_dt_'.$row['field_id'].'`', 
+										FALSE
+									);
+									$this->db->set('field_dt_'.$row['field_id'], NULL);
+									$this->db->where('channel_id', $channel_id)
+										->update('channel_data');
 								}
 								
-								if ($row['field_type'] == 'rel' && $row['field_related_to'] == 'channel')
+								if ($row['field_type'] == 'relationship')
 								{
 									$related_fields[] = 'field_ft_'.$field_match[$row['field_id']];  // We used this for moved relationships, see above
 								}
@@ -1519,7 +1743,7 @@ class Sites extends CI_Controller {
 							if (count($related_fields) > 0 && count($moved_relationships) > 0)
 							{
 								$query = $this->db->query('SELECT '.implode(',', $related_fields).' FROM exp_channel_data
-													 WHERE ('.implode(" != 0 OR ", $related_fields).')');
+									 WHERE ('.implode(" != 0 OR ", $related_fields).')');
 								
 								if ($query->num_rows() > 0)
 								{
@@ -1529,9 +1753,11 @@ class Sites extends CI_Controller {
 										{
 											if ($value != '0' && isset($moved_relationships[$value]))
 											{
-												$this->db->query("UPDATE exp_channel_data 
-															SET `{$key}` = '".$this->db->escape_str($moved_relationships[$value])."'
-															WHERE `{$key}` = '".$this->db->escape_str($value)."'");
+												$this->db->update(
+													'channel_data',
+													array($key => $moved_relationships[$value]),
+													array($key => $value)
+												);
 											}
 										}
 									}
@@ -1540,9 +1766,11 @@ class Sites extends CI_Controller {
 						}
 						
 						// Category Reassignment
-						$query = $this->db->query("SELECT cp.entry_id FROM exp_category_posts cp, exp_channel_titles wt 
-											 WHERE wt.channel_id = '".$this->db->escape_str($channel_id)."' 
-											 AND wt.entry_id = cp.entry_id");
+						$query = $this->db->select('cp.entry_id')
+							->from('category_posts cp')
+							->join('channel_titles wt', 'wt.entry_id = cp.entry_id')
+							->where('wt.channel_id', $channel_id)
+							->get();
 											 
 						if ($query->num_rows() > 0)
 						{
@@ -1555,15 +1783,29 @@ class Sites extends CI_Controller {
 							
 							foreach($categories as $old_cat => $new_cat)
 							{
-								$this->db->query("UPDATE exp_category_posts SET cat_id = '".$this->db->escape_str($new_cat)."'
-											WHERE cat_id = '".$this->db->escape_str($old_cat)."'
-											AND entry_id IN (".implode(',', $entry_ids).")");
+								$this->db->where_in('entry_id', $entry_ids)
+									->update(
+										'category_posts',
+										array('cat_id' => $new_cat),
+										array('cat_id' => $old_cat)
+									);
 							}
 						}
 					}
 				}
 			}
-			
+		}
+
+		// Check to see if there's a status group
+		if ($edit === FALSE)
+		{
+			$this->load->model('status_model');
+			$count = $this->status_model->get_status_groups($site_id)->row('count');
+
+			if ($count > 0)
+			{
+				$this->status_model->insert_statuses('Statuses', $site_id);
+			}
 		}
 		
 		// Refresh Sites List	
@@ -1571,16 +1813,16 @@ class Sites extends CI_Controller {
 		
 		if ($this->session->userdata['group_id'] == 1)
 		{
-			$result = $this->db->query("SELECT site_id, site_label FROM exp_sites ORDER BY site_label");
+			$result = $this->db->select('site_id, site_label')
+				->order_by('site_label')
+				->get('sites');
 		}
 		elseif ($this->session->userdata['assigned_sites'] != '')
 		{
-			$this->db->select('site_id, site_label');
-			$this->db->where_in('site_id', explode('|', $this->session->userdata['assigned_sites']));
-			$this->db->order_by('site_label');
-			$result = $this->db->get('sites');
-			
-		//	$result = $this->db->query("SELECT site_id, site_label FROM exp_sites WHERE site_id IN (".$this->db->escape_str(explode('|', $this->session->userdata['assigned_sites'])).") ORDER BY site_label");
+			$result = $this->db->select('site_id, site_label')
+				->where_in('site_id', explode('|', $this->session->userdata['assigned_sites']))
+				->order_by('site_label')
+				->get('sites');
 		}
 		
 		if (($this->session->userdata['group_id'] == 1 OR $this->session->userdata['assigned_sites'] != '') && $result->num_rows() > 0)
@@ -1653,13 +1895,13 @@ class Sites extends CI_Controller {
 			return FALSE;
 		}
 		
-		$this->cp->set_variable('cp_page_title', lang('delete_site'));
+		$this->view->cp_page_title = lang('delete_site');
 		
 		$vars['site_id'] = $site_id;
 		$vars['message'] = lang('delete_site_confirmation');
-		
-		$this->javascript->compile();
-		$this->load->view('sites/delete_confirm', $vars);
+		$vars['site_label'] = $query->row()->site_label;
+				
+		$this->cp->render('sites/delete_confirm', $vars);
 	}
 	
 	// --------------------------------------------------------------------
@@ -1693,7 +1935,11 @@ class Sites extends CI_Controller {
 			return FALSE;
 		}
 		
-		$query = $this->db->query("SELECT site_label FROM exp_sites WHERE site_id = '".$this->db->escape_str($site_id)."'");
+		$query = $this->db->select('site_label')
+			->get_where(
+				'sites',
+				array('site_id' => $site_id)
+			);
 		
 		if ($query->num_rows() == 0)
 		{
@@ -1724,19 +1970,19 @@ class Sites extends CI_Controller {
 			$this->db->delete('category_posts');
 
 			// delete parents
-			$this->db->where_in('rel_parent_id', $entries);
+			$this->db->where_in('parent_id', $entries);
 			$this->db->delete('relationships');
 			
 			// are there children?
-			$this->db->select('rel_id');
-			$this->db->where_in('rel_child_id', $entries);
+			$this->db->select('relationship_id');
+			$this->db->where_in('child_id', $entries);
 			$child_results = $this->db->get('relationships');
 
 			if ($child_results->num_rows() > 0)
 			{
 				// gather related fields
 				$this->db->select('field_id');
-				$this->db->where('field_type', 'rel');
+				$this->db->where('field_type', 'relationship');
 				$fquery = $this->db->get('channel_fields');
 
 				// We have children, so we need to do a bit of housekeeping
@@ -1745,7 +1991,7 @@ class Sites extends CI_Controller {
 
 				foreach ($child_results->result_array() as $row)
 				{
-					$cids[] = $row['rel_id'];
+					$cids[] = $row['relationship_id'];
 				}
 
 				foreach($fquery->result_array() as $row)
@@ -1756,33 +2002,44 @@ class Sites extends CI_Controller {
 			}
 
 			// aaaand delete
-			$this->db->where_in('rel_child_id', $entries);
+			$this->db->where_in('child_id', $entries);
 			$this->db->delete('relationships');
 		}
 
 		// Delete Channel Custom Field Columns for Site		
 		// Save the field ids in an array so we can delete the associated field formats
+		$this->load->dbforge();
+		$this->load->library('smartforge');
 		$nuked_field_ids = array();
 		
-		$query = $this->db->query("SELECT field_id, field_type FROM exp_channel_fields 
-							 WHERE site_id = '".$this->db->escape_str($site_id)."'");
+		$query = $this->db->select('field_id, field_type')
+			->get_where(
+				'channel_fields',
+				array('site_id' => $site_id)
+			);
 		
 		if ($query->num_rows() > 0)
 		{
 			foreach($query->result_array() as $row)
 			{
-				$this->db->query("ALTER TABLE exp_channel_data DROP COLUMN field_id_".$row['field_id']);
-				$this->db->query("ALTER TABLE exp_channel_data DROP COLUMN field_ft_".$row['field_id']);
+				$this->smartforge->drop_column('channel_data', 'field_id_'.$row['field_id']);
+				$this->smartforge->drop_column('channel_data', 'field_ft_'.$row['field_id']);
 
 				$nuked_field_ids[] = $row['field_id'];
                 
 				if ($row['field_type'] == 'date')
 				{
-					$this->db->query("ALTER TABLE exp_channel_data DROP COLUMN field_dt_".$row['field_id']);
+					$this->smartforge->drop_column('channel_data', 'field_dt_'.$row['field_id']);
+				}
+				elseif ($row['field_type'] == 'grid')
+				{
+					$this->db->where('field_id', $row['field_id'])
+								->delete('grid_columns');	
+					$this->dbforge->drop_table('channel_grid_field_' . $row['field_id']);
 				}
 			}
 		}
-		
+
 		// Delete any related field formatting options
 		if ( ! empty($nuked_field_ids))
 		{
@@ -1791,21 +2048,29 @@ class Sites extends CI_Controller {
 		}
 		
 		// Delete Category Custom Field Columns for Site		
-		$query = $this->db->query("SELECT field_id FROM exp_category_fields 
-							 WHERE site_id = '".$this->db->escape_str($site_id)."'");
+		$query = $this->db->select('field_id')
+			->get_where(
+				'category_fields',
+				array('site_id' => $site_id)
+			);
 		
 		if ($query->num_rows() > 0)
 		{
 			foreach($query->result_array() as $row)
 			{
 				$field_id = $row['field_id'];
-				$this->db->query("ALTER TABLE exp_category_field_data DROP COLUMN field_id_{$field_id}");
-        		$this->db->query("ALTER TABLE exp_category_field_data DROP COLUMN field_ft_{$field_id}");
+				$this->smartforge->drop_column('category_field_data', 'field_id_'.$field_id);
+				$this->smartforge->drop_column('category_field_data', 'field_ft_'.$field_id);
 			}
 		}
 		
 		// Delete Upload Permissions for Site
-		$query = $this->db->query("SELECT id FROM `exp_upload_prefs` WHERE site_id = '".$this->db->escape_str($site_id)."'");
+		$query = $this->db->select('id')
+			->get_where(
+				'upload_prefs',
+				array('site_id' => $site_id)
+			);
+
 		$upload_ids = array();
 
 		if ($query->num_rows() > 0)
@@ -1815,46 +2080,48 @@ class Sites extends CI_Controller {
 				$upload_ids[] = $row['id'];
 			}
 
-			$this->db->query("DELETE FROM `exp_upload_no_access` WHERE upload_id IN (".implode(',', $upload_ids).")");
+			$this->db->where_in('upload_id', $upload_ids)
+				->delete('upload_no_access');
 		}
 		
 		// Delete Everything Having to Do with the Site
-		$tables = array('exp_categories',
-						'exp_category_fields',
-						'exp_category_field_data',
-						'exp_category_groups',
-						'exp_comments',
-						'exp_cp_log',
-						'exp_field_groups',
-						'exp_file_dimensions',
-						'exp_global_variables',
-						'exp_html_buttons',
-						'exp_member_groups',
-						'exp_member_search',
-						'exp_online_users',
-						'exp_ping_servers',
-						'exp_referrers',
-						'exp_search',
-						'exp_search_log',
-						'exp_sites',
-						'exp_specialty_templates',
-						'exp_stats',
-						'exp_statuses',
-						'exp_status_groups',
-						'exp_templates',
-						'exp_template_groups',
-						'exp_upload_prefs',
-						'exp_channels',
-						'exp_channel_data',
-						'exp_channel_fields',
-						'exp_channel_titles',
-						);
+		$tables = array(
+			'exp_categories',
+			'exp_category_fields',
+			'exp_category_field_data',
+			'exp_category_groups',
+			'exp_comments',
+			'exp_cp_log',
+			'exp_field_groups',
+			'exp_file_dimensions',
+			'exp_global_variables',
+			'exp_html_buttons',
+			'exp_member_groups',
+			'exp_member_search',
+			'exp_online_users',
+			'exp_referrers',
+			'exp_search',
+			'exp_search_log',
+			'exp_sites',
+			'exp_snippets',
+			'exp_specialty_templates',
+			'exp_stats',
+			'exp_statuses',
+			'exp_status_groups',
+			'exp_templates',
+			'exp_template_groups',
+			'exp_upload_prefs',
+			'exp_channels',
+			'exp_channel_data',
+			'exp_channel_fields',
+			'exp_channel_titles',
+		);
 		
 		foreach($tables as $table)
 		{
 			if ($this->db->table_exists($table) === FALSE) continue;  // For a few modules that can be uninstalled
 		
-			$this->db->query("DELETE FROM `$table` WHERE site_id = {$site_id}");
+			$this->db->delete($table, array('site_id' => $site_id));
 		}
 
 		// Refresh Sites List
@@ -1862,7 +2129,9 @@ class Sites extends CI_Controller {
 		
 		if ($this->session->userdata['group_id'] == 1)
 		{
-			$result = $this->db->query("SELECT site_id, site_label FROM exp_sites ORDER BY site_label");
+			$result = $this->db->select('site_id, site_label')
+				->order_by('site_label')
+				->get('sites');
 		}
 		elseif ($this->session->userdata['assigned_sites'] != '')
 		{

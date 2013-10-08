@@ -3,10 +3,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -19,8 +19,8 @@
  * @package		ExpressionEngine
  * @subpackage	Core
  * @category	Libraries
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 class Members {
 	
@@ -58,12 +58,12 @@ class Members {
 			}
 			else
 			{
-				$this->EE->output->show_user_error('submission', lang('not_authorized'));
+				ee()->output->show_user_error('submission', lang('not_authorized'));
 			}
 		}
 		
 		// Load the member model!
-		$this->EE->load->model('member_model');
+		ee()->load->model('member_model');
 
 		switch ($type)
 		{
@@ -98,7 +98,7 @@ class Members {
 
 		if ( ! isset($_POST['remove']))
 		{
-			if ($this->EE->config->item($enable_pref) == 'n')
+			if (ee()->config->item($enable_pref) == 'n')
 			{
 				if (REQ == 'CP')
 				{
@@ -112,9 +112,7 @@ class Members {
 		{
 			if ($type == 'avatar')
 			{
-				$this->EE->db->select('avatar_filename');
-				$this->EE->db->where('member_id', $id);
-				$query = $this->EE->db->get('members');
+				$query = ee()->member_model->get_member_data($id, array('avatar_filename'));
 
 				if ($query->row('avatar_filename')	== '')
 				{
@@ -127,79 +125,56 @@ class Members {
 					return array('redirect', array($edit_image));
 				}
 
-				$this->EE->db->where('member_id', $id);
-				$this->EE->db->set('avatar_filename', '');
-				$this->EE->db->update('members');
+				ee()->member_model->update_member($id, array('avatar_filename' => ''));
 
 				if (strncmp($query->row('avatar_filename'), 'uploads/', 8) == 0)
 				{
-					@unlink($this->EE->config->slash_item('avatar_path').$query->row('avatar_filename') );
-				}
-
-				if (REQ == 'CP')
-				{
-					$this->EE->session->set_flashdata('message_success', lang($removed));
-					$this->EE->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=edit_avatar'.AMP.'id='.$id);
+					@unlink(ee()->config->slash_item('avatar_path').$query->row('avatar_filename') );
 				}
 			}
 			elseif ($type == 'photo')
 			{
-				$this->EE->db->select('photo_filename');
-				$this->EE->db->where('member_id', $id);
-				$query = $this->EE->db->get('members');
+				$query = ee()->member_model->get_member_data($id, array('photo_filename'));
 
 				if ($query->row('photo_filename')  == '')
 				{
 					if (REQ == 'CP')
 					{
-						$this->EE->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=edit_photo'.AMP.'id='.$id);
+						ee()->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=edit_photo'.AMP.'id='.$id);
 					}
 
 					return array('redirect', array($edit_image));
 				}
 				
-				$this->EE->db->set('photo_filename', '');
-				$this->EE->db->where('member_id', $id);
-				$this->EE->db->update('members');
+				ee()->member_model->update_member($id, array('photo_filename' => ''));
 
-				@unlink($this->EE->config->slash_item('photo_path').$query->row('photo_filename') );
-
-				if (REQ == 'CP')
-				{
-					// Returning type, method to call + args.
-					return array('page', 'edit_avatar', array(lang($removed)));
-				}
+				@unlink(ee()->config->slash_item('photo_path').$query->row('photo_filename') );
 			}
 			else
 			{
-				$this->EE->db->select('sig_img_filename');
-				$this->EE->db->where('member_id', $id);
-				$query = $this->EE->db->get('members');
+				$query = ee()->member_model->get_member_data($id, array('sig_img_filename'));
 				
 				if ($query->row('sig_img_filename')	 == '')
 				{
 					if (REQ == 'CP')
 					{
-						return $this->EE->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=edit_signature'.AMP.'id='.$id);
+						return ee()->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=edit_signature'.AMP.'id='.$id);
 					}
 
 					return array('redirect', array($edit_image));
 				}
 				
-				$this->EE->db->set('sig_img_filename', '');
-				$this->EE->db->where('member_id', $id);
-				$this->EE->db->update('members');
+				ee()->member_model->update_member($id, array('sig_img_filename' => ''));
 
-				@unlink($this->EE->config->slash_item('sig_img_path').$query->row('sig_img_filename') );
-
-				if (REQ == 'CP')
-				{
-					$this->EE->session->set_flashdata('message_success', lang($removed));
-					$this->EE->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=edit_signature'.AMP.'id='.$id);
-				}
+				@unlink(ee()->config->slash_item('sig_img_path').$query->row('sig_img_filename') );
 			}
 			
-			if (REQ == 'PAGE')
+			if (REQ == 'CP')
+			{
+				ee()->session->set_flashdata('message_success', lang($removed));
+				ee()->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M='.$edit_image.AMP.'id='.$id);
+			}
+			else if (REQ == 'PAGE')
 			{
 				return array('var_swap',
 							array('success',
@@ -228,7 +203,7 @@ class Members {
 		{
 			if (REQ == 'CP')
 			{
-				$this->EE->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=edit_'.$type.AMP.'id='.$id);
+				ee()->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=edit_'.$type.AMP.'id='.$id);
 			}
 
 			return array('redirect', $edit_image);
@@ -239,15 +214,15 @@ class Members {
 
 		if ($type == 'avatar')
 		{
-			$max_size = ($this->EE->config->item('avatar_max_kb') == '' OR $this->EE->config->item('avatar_max_kb') == 0) ? 50 : $this->EE->config->item('avatar_max_kb');
+			$max_size = (ee()->config->item('avatar_max_kb') == '' OR ee()->config->item('avatar_max_kb') == 0) ? 50 : ee()->config->item('avatar_max_kb');
 		}
 		elseif ($type == 'photo')
 		{
-			$max_size = ($this->EE->config->item('photo_max_kb') == '' OR $this->EE->config->item('photo_max_kb') == 0) ? 50 : $this->EE->config->item('photo_max_kb');
+			$max_size = (ee()->config->item('photo_max_kb') == '' OR ee()->config->item('photo_max_kb') == 0) ? 50 : ee()->config->item('photo_max_kb');
 		}
 		else
 		{
-			$max_size = ($this->EE->config->item('sig_img_max_kb') == '' OR $this->EE->config->item('sig_img_max_kb') == 0) ? 50 : $this->EE->config->item('sig_img_max_kb');
+			$max_size = (ee()->config->item('sig_img_max_kb') == '' OR ee()->config->item('sig_img_max_kb') == 0) ? 50 : ee()->config->item('sig_img_max_kb');
 		}
 
 		$max_size = preg_replace("/(\D+)/", "", $max_size);
@@ -259,7 +234,7 @@ class Members {
 				show_error(sprintf(lang('image_max_size_exceeded'), $max_size));				
 			}
 
-			$this->EE->output->show_user_error('submission',
+			ee()->output->show_user_error('submission',
 											sprintf(
 												lang('image_max_size_exceeded'), 
 												$max_size)
@@ -270,15 +245,15 @@ class Members {
 
 		if ($type == 'avatar')
 		{
-			$upload_path = $this->EE->config->slash_item('avatar_path').'uploads/';
+			$upload_path = ee()->config->slash_item('avatar_path').'uploads/';
 		}
 		elseif ($type == 'photo')
 		{
-			$upload_path = $this->EE->config->slash_item('photo_path');
+			$upload_path = ee()->config->slash_item('photo_path');
 		}
 		else
 		{
-			$upload_path = $this->EE->config->slash_item('sig_img_path');
+			$upload_path = ee()->config->slash_item('sig_img_path');
 		}
 
 		if ( ! @is_dir($upload_path) OR ! is_really_writable($upload_path))
@@ -296,21 +271,21 @@ class Members {
 
 		if ($type == 'avatar')
 		{
-			$max_width	= ($this->EE->config->item('avatar_max_width') == '' OR $this->EE->config->item('avatar_max_width') == 0) ? 100 : $this->EE->config->item('avatar_max_width');
-			$max_height = ($this->EE->config->item('avatar_max_height') == '' OR $this->EE->config->item('avatar_max_height') == 0) ? 100 : $this->EE->config->item('avatar_max_height');
-			$max_kb		= ($this->EE->config->item('avatar_max_kb') == '' OR $this->EE->config->item('avatar_max_kb') == 0) ? 50 : $this->EE->config->item('avatar_max_kb');
+			$max_width	= (ee()->config->item('avatar_max_width') == '' OR ee()->config->item('avatar_max_width') == 0) ? 100 : ee()->config->item('avatar_max_width');
+			$max_height = (ee()->config->item('avatar_max_height') == '' OR ee()->config->item('avatar_max_height') == 0) ? 100 : ee()->config->item('avatar_max_height');
+			$max_kb		= (ee()->config->item('avatar_max_kb') == '' OR ee()->config->item('avatar_max_kb') == 0) ? 50 : ee()->config->item('avatar_max_kb');
 		}
 		elseif ($type == 'photo')
 		{
-			$max_width	= ($this->EE->config->item('photo_max_width') == '' OR $this->EE->config->item('photo_max_width') == 0) ? 100 : $this->EE->config->item('photo_max_width');
-			$max_height = ($this->EE->config->item('photo_max_height') == '' OR $this->EE->config->item('photo_max_height') == 0) ? 100 : $this->EE->config->item('photo_max_height');
-			$max_kb		= ($this->EE->config->item('photo_max_kb') == '' OR $this->EE->config->item('photo_max_kb') == 0) ? 50 : $this->EE->config->item('photo_max_kb');
+			$max_width	= (ee()->config->item('photo_max_width') == '' OR ee()->config->item('photo_max_width') == 0) ? 100 : ee()->config->item('photo_max_width');
+			$max_height = (ee()->config->item('photo_max_height') == '' OR ee()->config->item('photo_max_height') == 0) ? 100 : ee()->config->item('photo_max_height');
+			$max_kb		= (ee()->config->item('photo_max_kb') == '' OR ee()->config->item('photo_max_kb') == 0) ? 50 : ee()->config->item('photo_max_kb');
 		}
 		else
 		{
-			$max_width	= ($this->EE->config->item('sig_img_max_width') == '' OR $this->EE->config->item('sig_img_max_width') == 0) ? 100 : $this->EE->config->item('sig_img_max_width');
-			$max_height = ($this->EE->config->item('sig_img_max_height') == '' OR $this->EE->config->item('sig_img_max_height') == 0) ? 100 : $this->EE->config->item('sig_img_max_height');
-			$max_kb		= ($this->EE->config->item('sig_img_max_kb') == '' OR $this->EE->config->item('sig_img_max_kb') == 0) ? 50 : $this->EE->config->item('sig_img_max_kb');
+			$max_width	= (ee()->config->item('sig_img_max_width') == '' OR ee()->config->item('sig_img_max_width') == 0) ? 100 : ee()->config->item('sig_img_max_width');
+			$max_height = (ee()->config->item('sig_img_max_height') == '' OR ee()->config->item('sig_img_max_height') == 0) ? 100 : ee()->config->item('sig_img_max_height');
+			$max_kb		= (ee()->config->item('sig_img_max_kb') == '' OR ee()->config->item('sig_img_max_kb') == 0) ? 50 : ee()->config->item('sig_img_max_kb');
 		}
 
 		// Does the image have a file extension?
@@ -321,7 +296,7 @@ class Members {
 				show_error(lang('invalid_image_type'));				
 			}
 
-			$this->EE->output->show_user_error('submission', lang('invalid_image_type'));
+			ee()->output->show_user_error('submission', lang('invalid_image_type'));
 		}
 
 		// Is it an allowed image type?
@@ -341,7 +316,7 @@ class Members {
 				show_error(lang('invalid_image_type'));
 			}
 
-			return $this->EE->output->show_user_error('submission', lang('invalid_image_type'));
+			return ee()->output->show_user_error('submission', lang('invalid_image_type'));
 		}
 
 		// Assign the name of the image
@@ -350,7 +325,7 @@ class Members {
 		// Do they currently have an avatar or photo?
 		if ($type == 'avatar')
 		{
-			$query = $this->EE->member_model->get_member_data($id, array('avatar_filename'));
+			$query = ee()->member_model->get_member_data($id, array('avatar_filename'));
 			$old_filename = ($query->row('avatar_filename')	 == '') ? '' : $query->row('avatar_filename') ;
 
 			if (strpos($old_filename, '/') !== FALSE)
@@ -361,12 +336,12 @@ class Members {
 		}
 		elseif ($type == 'photo')
 		{
-			$query = $this->EE->member_model->get_member_data($id, array('photo_filename'));
+			$query = ee()->member_model->get_member_data($id, array('photo_filename'));
 			$old_filename = ($query->row('photo_filename')	== '') ? '' : $query->row('photo_filename') ;
 		}
 		else
 		{
-			$query = $this->EE->member_model->get_member_data($id, array('sig_img_filename'));
+			$query = ee()->member_model->get_member_data($id, array('sig_img_filename'));
 			$old_filename = ($query->row('sig_img_filename')  == '') ? '' : $query->row('sig_img_filename') ;
 		}
 
@@ -379,32 +354,32 @@ class Members {
 		$config['max_height']  = $max_height;
 		$config['overwrite'] = TRUE;
 
-		if ($this->EE->config->item('xss_clean_uploads') == 'n')
+		if (ee()->config->item('xss_clean_uploads') == 'n')
 		{
 			$config['xss_clean'] = FALSE;
 		}
 		else
 		{
-			$config['xss_clean'] = ($this->EE->session->userdata('group_id') == 1) ? FALSE : TRUE;
+			$config['xss_clean'] = (ee()->session->userdata('group_id') == 1) ? FALSE : TRUE;
 		}
 
-		$this->EE->load->library('upload', $config);
+		ee()->load->library('upload', $config);
 		
-		if ($this->EE->upload->do_upload() === FALSE)
+		if (ee()->upload->do_upload() === FALSE)
 		{
 			if (REQ == 'CP')
 			{
-				$this->EE->session->set_flashdata('message_failure', $this->EE->upload->display_errors());
-				$this->EE->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M='.$edit_image.AMP.'id='.$id);
+				ee()->session->set_flashdata('message_failure', ee()->upload->display_errors());
+				ee()->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M='.$edit_image.AMP.'id='.$id);
 			}
 
-			return $this->EE->output->show_user_error(
+			return ee()->output->show_user_error(
 											'submission',
-				 							lang($this->EE->upload->display_errors())
+				 							lang(ee()->upload->display_errors())
 										);
 		}
 
-		$file_info = $this->EE->upload->data();
+		$file_info = ee()->upload->data();
 		
 		@chmod($file_info['full_path'], DIR_WRITE_MODE);
 		
@@ -445,7 +420,7 @@ class Members {
 			);
 		}
 
-		$this->EE->member_model->update_member($id, $data);
+		ee()->member_model->update_member($id, $data);
 
 		return array('success', $edit_image, $updated);	
 	}
@@ -463,7 +438,7 @@ class Members {
 	 */
 	public function image_resize($filename, $type = 'avatar', $axis = 'width')
 	{
-		$this->EE->load->library('image_lib');
+		ee()->load->library('image_lib');
 
 		if ($type == 'avatar')
 		{
@@ -489,11 +464,11 @@ class Members {
 				'height'			=> $max_height				
 			);
 			
-		$this->EE->image_lib->clear();
+		ee()->image_lib->clear();
 		
-		$this->EE->image_lib->initialize($config);
+		ee()->image_lib->initialize($config);
 
-		return ( ! $this->EE->image_lib->resize()) ? FALSE : TRUE;
+		return ( ! ee()->image_lib->resize()) ? FALSE : TRUE;
 	}
 
 	// ------------------------------------------------------------------------
@@ -509,25 +484,25 @@ class Members {
 	 */
 	public function get_member_subscriptions($member_id, $rownum = 0, $perpage = 50)
 	{
-		$this->EE->load->helper(array('url', 'string'));
+		ee()->load->helper('url');
 		
 		// Set some base values
 		$channel_subscriptions	= FALSE;
 		$forum_subscriptions	= FALSE;
 		$result_ids				= array();
 		$total_count			= 0;
-		$qm						= ($this->EE->config->item('force_query_string') == 'y') ? '' : '?';
+		$qm						= (ee()->config->item('force_query_string') == 'y') ? '' : '?';
 		
-		if ($this->EE->db->table_exists('exp_comment_subscriptions'))
+		if (ee()->db->table_exists('exp_comment_subscriptions'))
 		{
 			// Fetch Comment Subscriptions
-			$this->EE->db->distinct();
-			$this->EE->db->select('comment_subscriptions.entry_id, recent_comment_date, subscription_date');
-			$this->EE->db->from('comment_subscriptions');
-			$this->EE->db->join('channel_titles', 'comment_subscriptions.entry_id = channel_titles.entry_id', 'left');
-			$this->EE->db->where('member_id', $member_id);
-			$this->EE->db->order_by("recent_comment_date", "desc"); 
-			$query = $this->EE->db->get();
+			ee()->db->distinct();
+			ee()->db->select('comment_subscriptions.entry_id, recent_comment_date, subscription_date');
+			ee()->db->from('comment_subscriptions');
+			ee()->db->join('channel_titles', 'comment_subscriptions.entry_id = channel_titles.entry_id', 'left');
+			ee()->db->where('member_id', $member_id);
+			ee()->db->order_by("recent_comment_date", "desc"); 
+			$query = ee()->db->get();
 			
 			if ($query->num_rows() > 0)
 			{
@@ -548,15 +523,15 @@ class Members {
 		// Fetch Forum Topic Subscriptions
 		// Since the forum module might not be installed we'll test for it first.
 
-		if ($this->EE->db->table_exists('exp_forum_subscriptions'))
+		if (ee()->db->table_exists('exp_forum_subscriptions'))
 		{
 			// Fetch Forum Subscriptions
-			$this->EE->db->select('forum_subscriptions.topic_id, last_post_date, subscription_date');
-			$this->EE->db->from('forum_subscriptions');
-			$this->EE->db->join('forum_topics', 'forum_subscriptions.topic_id = forum_topics.topic_id', 'left');
-			$this->EE->db->where('member_id', $member_id);
-			$this->EE->db->order_by("last_post_date", "desc"); 
-			$query = $this->EE->db->get();
+			ee()->db->select('forum_subscriptions.topic_id, last_post_date, subscription_date');
+			ee()->db->from('forum_subscriptions');
+			ee()->db->join('forum_topics', 'forum_subscriptions.topic_id = forum_topics.topic_id', 'left');
+			ee()->db->where('member_id', $member_id);
+			ee()->db->order_by("last_post_date", "desc"); 
+			$query = ee()->db->get();
 
 			if ($query->num_rows() > 0)
 			{
@@ -605,7 +580,7 @@ class Members {
 
 			if ($idx != '')
 			{
-				$query = $this->EE->db->query($sql.$idx.') ');
+				$query = ee()->db->query($sql.$idx.') ');
 
 				if ($query->num_rows() > 0)
 				{
@@ -613,13 +588,13 @@ class Members {
 					{
 						$row['title'] = str_replace(array('<', '>', '{', '}', '\'', '"', '?'), array('&lt;', '&gt;', '&#123;', '&#125;', '&#146;', '&quot;', '&#63;'), $row['title']);
 
-						$path = reduce_double_slashes($this->EE->functions->prep_query_string(($row['comment_url'] != '') ? $row['comment_url'] : $row['channel_url']).'/'.$row['url_title'].'/');
+						$path = reduce_double_slashes(ee()->functions->prep_query_string(($row['comment_url'] != '') ? $row['comment_url'] : $row['channel_url']).'/'.$row['url_title'].'/');
 
 						$result_ids[$channel_keys[$row['entry_id']]] = array(
 												'title' => $row['title'],
 												'active_date' => $row['recent_comment_date'],
 												'url_title' => url_title($row['title']),
-												'path' => $this->EE->functions->fetch_site_index().$qm.'URL='.$path,
+												'path' => ee()->functions->fetch_site_index().$qm.'URL='.$path,
 												'id'	=> 'b'.$row['entry_id'],
 												'type'	=> lang('comment')
 												);
@@ -651,7 +626,7 @@ class Members {
 
 			if ($idx != '')
 			{
-				$query = $this->EE->db->query($sql.$idx.') ');
+				$query = ee()->db->query($sql.$idx.') ');
 
 				if ($query->num_rows() > 0)
 				{
@@ -659,13 +634,13 @@ class Members {
 					{
 						$row['title'] = str_replace(array('<', '>', '{', '}', '\'', '"', '?'), array('&lt;', '&gt;', '&#123;', '&#125;', '&#146;', '&quot;', '&#63;'), $row['title']);
 
-						$path = reduce_double_slashes($this->EE->functions->prep_query_string($row['board_forum_url'] ).'/viewthread/'.$row['topic_id'].'/');
+						$path = reduce_double_slashes(ee()->functions->prep_query_string($row['board_forum_url'] ).'/viewthread/'.$row['topic_id'].'/');
 
 						$result_ids[$forum_keys[$row['topic_id']]] = array(
 												'title' => $row['title'],
 												'active_date' => $row['last_post_date'],
 												'url_title' => url_title($row['title']),
-												'path' => $this->EE->functions->fetch_site_index().$qm.'URL='.$path,
+												'path' => ee()->functions->fetch_site_index().$qm.'URL='.$path,
 												'id'	=> 'f'.$row['topic_id'],
 												'type'	=> lang('forum_post')
 												);

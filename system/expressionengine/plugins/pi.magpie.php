@@ -4,13 +4,13 @@
 =====================================================
  ExpressionEngine - by EllisLab
 -----------------------------------------------------
- http://expressionengine.com/
+ http://ellislab.com/
 -----------------------------------------------------
- Copyright (c) 2004 - 2012 EllisLab, Inc.
+ Copyright (c) 2004 - 2013 EllisLab, Inc.
 =====================================================
  THIS IS COPYRIGHTED SOFTWARE
  PLEASE READ THE LICENSE AGREEMENT
- http://expressionengine.com/user_guide/license.html
+ http://ellislab.com/expressionengine/user-guide/license.html
 =====================================================
  File: pi.magpie.php
 -----------------------------------------------------
@@ -23,7 +23,7 @@ $plugin_info = array(
 	'pi_name'			=> 'Magpie RSS Parser',
 	'pi_version'		=> '1.3.5',
 	'pi_author'			=> 'Paul Burdick',
-	'pi_author_url'		=> 'http://expressionengine.com/',
+	'pi_author_url'		=> 'http://ellislab.com/',
 	'pi_description'	=> 'Retrieves and Parses RSS/Atom Feeds',
 	'pi_usage'			=> Magpie::usage()
 );
@@ -56,11 +56,11 @@ Class Magpie {
 	 	/**  Set Parameters 
 	 	/** -------------------------------*/
 	 	
-	 	$this->cache_refresh 	= ( ! $this->EE->TMPL->fetch_param('refresh')) ? $this->cache_refresh : $this->EE->TMPL->fetch_param('refresh');
-	 	$this->page_url 		= ( ! $this->EE->TMPL->fetch_param('url')) ? '' : trim($this->EE->TMPL->fetch_param('url'));
-	 	$limit					= ( ! $this->EE->TMPL->fetch_param('limit')) ? 20 : $this->EE->TMPL->fetch_param('limit');
-	 	$offset					= ( ! $this->EE->TMPL->fetch_param('offset')) ? 0 : $this->EE->TMPL->fetch_param('offset');
-	 	$template				= $this->EE->TMPL->tagdata;
+	 	$this->cache_refresh 	= ( ! ee()->TMPL->fetch_param('refresh')) ? $this->cache_refresh : ee()->TMPL->fetch_param('refresh');
+	 	$this->page_url 		= ( ! ee()->TMPL->fetch_param('url')) ? '' : trim(ee()->TMPL->fetch_param('url'));
+	 	$limit					= ( ! ee()->TMPL->fetch_param('limit')) ? 20 : ee()->TMPL->fetch_param('limit');
+	 	$offset					= ( ! ee()->TMPL->fetch_param('offset')) ? 0 : ee()->TMPL->fetch_param('offset');
+	 	$template				= ee()->TMPL->tagdata;
 	 	
 	 	
 	 	if ($this->page_url == '')
@@ -68,7 +68,7 @@ Class Magpie {
 	 		return $this->return_data;
 	 	}	 	
 	 	
-	 	if ($this->EE->config->item('debug') == 2 OR ($this->EE->config->item('debug') == 1 && $this->EE->session->userdata['group_id'] == 1))
+	 	if (ee()->config->item('debug') == 2 OR (ee()->config->item('debug') == 1 && ee()->session->userdata['group_id'] == 1))
 		{
 			if ( ! defined('MAGPIE_DEBUG'))
 			{
@@ -130,7 +130,7 @@ Class Magpie {
 					
 					if (stristr($temp_data, LD.'if'))
 					{
-						$tagdata = $this->EE->functions->prep_conditionals($temp_data, $item, '', 'magpie:');
+						$tagdata = ee()->functions->prep_conditionals($temp_data, $item, '', 'magpie:');
 		  			}
 		  			
 		  			/** ----------------------------------------
@@ -203,7 +203,7 @@ Class Magpie {
 		$image_variables = array('title','url', 'link','description', 'width', 'height');
 		
 		
-		foreach ($this->EE->TMPL->var_single as $key => $val)
+		foreach (ee()->TMPL->var_single as $key => $val)
 		{		  			
 			
 			/** ----------------------------------------
@@ -214,7 +214,7 @@ Class Magpie {
 			{
 				if ( ! isset($this->RSS->feed_version)) $this->RSS->feed_version = '';
 				
-				$template = $this->EE->TMPL->swap_var_single($val, $this->RSS->feed_version, $template);
+				$template = ee()->TMPL->swap_var_single($val, $this->RSS->feed_version, $template);
 			}
 			
 			/** ----------------------------------------
@@ -225,7 +225,7 @@ Class Magpie {
 			{
 				if ( ! isset($this->RSS->feed_type)) $this->RSS->feed_type = '';
 				
-				$template = $this->EE->TMPL->swap_var_single($val, $this->RSS->feed_type, $template);
+				$template = ee()->TMPL->swap_var_single($val, $this->RSS->feed_type, $template);
 			}
 			
 			/** ----------------------------------------
@@ -238,7 +238,7 @@ Class Magpie {
 				{
 					if ( ! isset($this->RSS->image[$variable])) $this->RSS->image[$variable] = '';
 				
-					$template = $this->EE->TMPL->swap_var_single($val, $this->RSS->image[$variable], $template);
+					$template = ee()->TMPL->swap_var_single($val, $this->RSS->image[$variable], $template);
 				}
 			}
 			
@@ -256,7 +256,7 @@ Class Magpie {
 						$this->RSS->channel[$variable] = ( ! isset($this->RSS->channel['dc'][$variable])) ? '' : $this->RSS->channel['dc'][$variable];
 					}
 				
-					$template = $this->EE->TMPL->swap_var_single($val, $this->RSS->channel[$variable], $template);
+					$template = ee()->TMPL->swap_var_single($val, $this->RSS->channel[$variable], $template);
 				}
 			}			
 			
@@ -266,7 +266,7 @@ Class Magpie {
 			
 			if ($key == 'page_url' OR $key == 'magpie:page_url')
 			{
-				$template = $this->EE->TMPL->swap_var_single($val, $this->page_url, $template);
+				$template = ee()->TMPL->swap_var_single($val, $this->page_url, $template);
 			}	
 		}
 		
@@ -1089,7 +1089,7 @@ class MagpieRSS {
 			list($parser, $source) = $this->php4_create_parser($source, $in_enc, $detect);
 		}
 		  
-		$this->encoding = $this->EE->config->item('charset');
+		$this->encoding = ee()->config->item('charset');
 		  
 		  
 		if (in_array(strtolower($this->encoding), array('iso-8859-1', 'us-ascii', 'utf-8')))
@@ -1956,7 +1956,7 @@ class RSSCache {
 	function file_name ($url)
 	{		
 		$filename = md5( $url );
-		return $this->EE->functions->remove_double_slashes(join( DIRECTORY_SEPARATOR, array( $this->BASE_CACHE, $filename)));
+		return reduce_double_slashes(join( DIRECTORY_SEPARATOR, array( $this->BASE_CACHE, $filename)));
 	}
 
 /*=======================================================================*\

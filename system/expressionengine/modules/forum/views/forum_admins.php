@@ -1,5 +1,7 @@
+<?php extend_view('_wrapper') ?>
+
 <?php if (count($admins)): ?>
-	
+
 	<?php
 	$this->table->set_heading(
 		lang('forum_admins'),
@@ -22,7 +24,7 @@
 	echo $this->table->generate();
 	$this->table->clear();
 	?>
-	
+
 <?php else: ?>
 	<p class="notice"><?=lang('forum_no_admins')?></p>
 <?php endif; ?>
@@ -46,7 +48,7 @@
 			'member'	=> lang('forum_type_member'),
 			'group'		=> lang('forum_type_group')
 		))?></td>
-		
+
 		<td><?=form_input(array(
 			'name'		=> 'admin_name',
 			'id'		=> 'admin_name',
@@ -57,12 +59,12 @@
 			<a id="forum_user_lookup" href="<?=$_id_base.AMP.'method=forum_user_lookup'.AMP.'from=admin'?>"><?=lang('forum_find_user')?></a><br />
 			<p class="notice"><?=lang('forum_mod_name_inst')?></p>
 		</td>
-		
+
 		<td><?=form_dropdown('admin_group_id', $member_groups); ?></td>
 	</tr>
 </table>
 
-<p><?=form_submit('submit', 'submit', 'class="submit"')?></p>
+<p><?=form_submit('submit', lang('submit'), 'class="submit"')?></p>
 <?=form_close(); ?>
 
 <?php $this->load->view('username_modal'); ?>

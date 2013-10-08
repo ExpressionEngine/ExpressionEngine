@@ -3,10 +3,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -19,23 +19,60 @@
  * @package		ExpressionEngine
  * @subpackage	Core
  * @category	Model
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 class Category_model extends CI_Model {
+
+
+	public function get_entry_categories($entry_ids)
+	{
+		$result = array();
+		$entry_ids = (array) $entry_ids;
+
+		if ( ! count($entry_ids))
+		{
+			return $result;
+		}
+
+		$sql = "SELECT c.*, cp.entry_id, cg.field_html_formatting, fd.*
+				FROM exp_categories AS c
+				LEFT JOIN exp_category_posts AS cp ON c.cat_id = cp.cat_id
+				LEFT JOIN exp_category_field_data AS fd ON fd.cat_id = c.cat_id
+				LEFT JOIN exp_category_groups AS cg ON cg.group_id = c.group_id
+				WHERE cp.entry_id IN (".implode(', ', $entry_ids).")
+				ORDER BY c.group_id, c.parent_id, c.cat_order";
+
+		$category_query = $this->db->query($sql);
+
+		foreach ($category_query->result_array() as $row)
+		{
+			if ( ! isset($result[$row['entry_id']]))
+			{
+				$result[$row['entry_id']] = array();
+			}
+
+			$result[$row['entry_id']][] = $row;
+		}
+
+		return $result;
+	}
 
 	/**
 	 * Get Categories
 	 *
 	 * This is actually completely misnamed, as it returns category_groups
 	 * and not all categories, or something like the name suggests
-	 * So, deprecating this function as of 2.2.0, and aliasing 
+	 * So, deprecating this function as of 2.2.0, and aliasing
 	 * get_category_groups() -- ga
 	 *
 	 * @deprecated 	2.2.0
 	 */
 	public function get_categories($group_id = '', $site_id = TRUE)
 	{
+		$EE = get_instance();
+		$EE->load->library('logger');
+		$EE->logger->deprecated('2.2.0', 'Category_model::get_category_groups()');
 		return $this->get_category_groups($group_id, $site_id);
 	}
 
@@ -45,13 +82,13 @@ class Category_model extends CI_Model {
 	 * Get category groups
 	 *
 	 * This function returns the db object of category groups.
-	 * 
+	 *
 	 * @param 	int			group id to fetch
 	 * @param 	Boolean		whether or not to limit by site_id
 	 * @param 	int			whether or not to include the returned category
 	 * 						groups in publish or files category assignment lists.
 	 *
-	 * Valid options are:  
+	 * Valid options are:
 	 * $options = array(
 	 *		(int) 0 => ALL Categories,
 	 *		(int) 1 => Excluded from publish,
@@ -60,7 +97,7 @@ class Category_model extends CI_Model {
 	 *
 	 * So in the file upload preferences, we use:
 	 *			WHERE exclude_group = 0
-	 *			OR exclude_group != 1
+	 *			OR exclude_group = 1
 	 *
 	 * And basically the opposite on channel group assignment preferences.
 	 *
@@ -82,11 +119,10 @@ class Category_model extends CI_Model {
 		{
 			$this->db->where('site_id', $this->config->item('site_id'));
 		}
-		
+
 		if ($include !== 0)
 		{
-			$this->db->where('exclude_group', 0)
-					 ->or_where('exclude_group', (int) $include);
+			$this->db->where('(exclude_group = "0" OR exclude_group = "' . (int) $include . '")', NULL, FALSE);
 		}
 
 		return $this->db->select('group_id, group_name, sort_order')
@@ -162,6 +198,16 @@ class Category_model extends CI_Model {
 		$category_group = $this->get_category_name_group($cat_id);
 		$group_id = $category_group->row('group_id');
 
+		// -------------------------------------------
+		// 'category_delete' hook.
+		//
+		if (ee()->extensions->active_hook('category_delete') === TRUE)
+		{
+			ee()->extensions->call('category_delete', array($cat_id));
+		}
+		//
+		// -------------------------------------------
+
 		$this->db->where('cat_id', $cat_id);
 		$this->db->delete('category_posts');
 
@@ -195,13 +241,13 @@ class Category_model extends CI_Model {
 
 		if (is_array($group_id))
 		{
-			$this->db->where_in('group_id', $group_id);			
+			$this->db->where_in('group_id', $group_id);
 		}
 		else
 		{
 			$this->db->where('group_id', $group_id);
 		}
-		
+
 		return $this->db->get('category_groups');
 	}
 
@@ -212,7 +258,7 @@ class Category_model extends CI_Model {
 	 *
 	 * @access	public
 	 * @param integer $cat_id The category ID you need the parent ID for
-	 * @return integer The parent_id of the supplied category, 0 if no 
+	 * @return integer The parent_id of the supplied category, 0 if no
 	 * 		parent exists
 	 */
 	function get_category_parent_id($cat_id)
@@ -222,7 +268,7 @@ class Category_model extends CI_Model {
 		$query = $this->db->get('categories');
 		return $query->row('parent_id');
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -303,72 +349,82 @@ class Category_model extends CI_Model {
 		if ($query->num_rows() > 0)
 		{
 			$cat_ids = array();
-		
+
 			foreach ($query->result() as $row)
 			{
 				$cat_ids[] = $row->cat_id;
 			}
-		
+
 			$this->db->where_in('cat_id', $cat_ids);
 			$this->db->delete('category_posts');
 		}
-		
+
+		// -------------------------------------------
+		// 'category_delete' hook.
+		//
+		if (ee()->extensions->active_hook('category_delete') === TRUE)
+		{
+			ee()->extensions->call('category_delete', $cat_ids);
+		}
+		//
+		// -------------------------------------------
+
 		$this->db->delete('category_groups', array('group_id' => $group_id));
 		$this->db->delete('categories', array('group_id' => $group_id));
-		
+
 		$this->db->select('field_id');
 		$this->db->where('group_id', $group_id);
 		$query = $this->db->get('category_fields');
-		
+
 		if ($query->num_rows() > 0)
 		{
 			// load dbforge for column dropping
 			$this->load->dbforge();
-		
+
 			$field_ids = array();
-		
+
 			foreach ($query->result() as $row)
 			{
 				$field_ids[] = $row->field_id;
 			}
-		
+
 			foreach ($field_ids as $field_id)
 			{
 				$this->dbforge->drop_column('category_field_data', 'field_id_'.$field_id);
 				$this->dbforge->drop_column('category_field_data', 'field_ft_'.$field_id);
 			}
 		}
-		
+
 		$this->db->delete('category_fields', array('group_id' => $group_id));
 		$this->db->delete('category_field_data', array('group_id' => $group_id));
-		
+
 		// grab me some channels
 		$qry = $this->db->select('channel_id, cat_group')
-						->get_where('channels', 
+						->get_where('channels',
 										array(
 											'site_id' => $this->config->item('site_id')
 										)
 									);
-		
+
 		$channels = array();
 
 		foreach ($qry->result() as $row)
 		{
 			$categories = explode('|', $row->cat_group);
-			
+
 			foreach ($categories as $num => $cat_group)
 			{
 				$channels[$row->channel_id][] = ($cat_group != $group_id) ? $cat_group : '';
 			}
-			
+
 		}
-		
+
 		foreach ($channels as $k => $v)
 		{
 			$this->db->set('cat_group', implode('|', $v))
 					 ->where('channel_id', $k)
-					 ->update('channels');	
-						
+					 ->update('channels');
+
 		}
 	}
 

@@ -1,46 +1,36 @@
-<?php
-if ($EE_view_disable !== TRUE)
-{
-	$this->load->view('_shared/header');
-	$this->load->view('_shared/main_menu');
-	$this->load->view('_shared/sidebar');
-	$this->load->view('_shared/breadcrumbs');
-}
-?>
-<div class="shun" id="mainContent"<?=$maincontent_state?>>
-	<?php $this->load->view('_shared/right_nav')?>
+<?php extend_template('wrapper'); ?>
 
-	<?php if ($message OR isset($new_checksums)):?>
-		<div id="ee_important_message" class="<?=( ! $info_message_open) ? 'closed' : 'open'?>">
-			<div class="contents" id="ee_homepage_notice">
-				<div class="heading">
-		            <h2><span class="ee_notice_icon"></span><?=lang('important_messages')?><span class="msg_open_close">Ignore Button</span></h2>
-		        </div>
-				<div class="pageContents open" id="noticeContents">
-					<?php // New Version Notice
-					if ($message):?>
-					<p id="newVersionNotice"><?=$message?></p>
+<?php if ($message OR isset($new_checksums)):?>
+	<div id="ee_important_message" class="<?=( ! $info_message_open) ? 'closed' : 'open'?>">
+		<div class="contents" id="ee_homepage_notice">
+			<div class="heading">
+				<h2><span class="ee_notice_icon"></span><?=lang('important_messages')?><span class="msg_open_close">Ignore Button</span></h2>
+			</div>
+			<div class="pageContents open" id="noticeContents">
+				<?php // New Version Notice
+				if ($message):?>
+				<p id="newVersionNotice"><?=$message?></p>
+				<?php endif; ?>
+				<?php // Bootstrap Checksum Failure Notice?>
+				<?php if (isset($new_checksums)):?>
+					<ul id="checksumFailure">
+						<li><?=lang('checksum_changed_warning')?>
+							<ul>
+								<?php foreach($new_checksums as $path): ?>
+								<li><?=$path; ?></li>
+								<?php endforeach; ?>
+							</ul>
+					<?php if ($this->session->userdata('group_id') == 1): ?>
+						</li>
+					</ul>
+					<a class="submit" href="<?=BASE.AMP.'C=homepage'.AMP.'M=accept_checksums'?>"><?=lang('checksum_changed_accept')?></a>
 					<?php endif; ?>
-					<?php // Bootstrap Checksum Failure Notice?>
-					<?php if (isset($new_checksums)):?>
-						<ul id="checksumFailure">
-							<li><?=lang('checksum_changed_warning')?>
-								<ul>
-									<?php foreach($new_checksums as $path): ?>
-									<li><?=$path; ?></li>
-									<?php endforeach; ?>
-								</ul>
-						<?php if ($this->session->userdata('group_id') == 1): ?>
-							</li>
-						</ul>
-						<a class="submit" href="<?=BASE.AMP.'C=homepage'.AMP.'M=accept_checksums'?>"><?=lang('checksum_changed_accept')?></a>
-						<?php endif; ?>
-					<?php endif; ?>
-					<div class="clear"></div>
-				</div>
+				<?php endif; ?>
+				<div class="clear"></div>
 			</div>
 		</div>
-	<?php endif;?>
+	</div>
+<?php endif;?>
 
 <?php if ($can_access_content == TRUE): ?>
 
@@ -136,22 +126,12 @@ if ($EE_view_disable !== TRUE)
 			</li>
 			
 			<li class="resource"><a rel="external" href="<?=config_item('doc_url')?>"><?=lang('user_guide')?></a></li>
-			<li class="resource"><a rel="external" href="http://expressionengine.com/wiki/"><?=lang('ee_wiki')?></a></li>
 		</ul>
 	</div>
 
 	<div class="clear_left"></div>
 
-</div> <!-- mainContent -->
-
-<div class="shun">&nbsp;</div>
-
 <?php
-if ($EE_view_disable !== TRUE)
-{
-	$this->load->view('_shared/accessories');
-	$this->load->view('_shared/footer');
-}
 
 /* End of file homepage.php */
 /* Location: ./themes/cp_themes/default/homepage.php */

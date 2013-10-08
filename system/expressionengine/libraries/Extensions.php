@@ -3,10 +3,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -19,8 +19,8 @@
  * @package		ExpressionEngine
  * @subpackage	Core
  * @category	Core
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 class EE_Extensions {  
 	
@@ -42,9 +42,9 @@ class EE_Extensions {
 		$this->EE =& get_instance();
   		
   		// We only execute this if extensions are allowed
-  		if ($this->EE->config->item('allow_extensions') == 'y')
+  		if (ee()->config->item('allow_extensions') == 'y')
   		{
-  			$query = $this->EE->db->query("SELECT DISTINCT ee.* FROM exp_extensions ee WHERE enabled = 'y' ORDER BY hook, priority ASC, class");
+  			$query = ee()->db->query("SELECT DISTINCT ee.* FROM exp_extensions ee WHERE enabled = 'y' ORDER BY hook, priority ASC, class");
   			
   			if ($query->num_rows() > 0)
   			{
@@ -97,7 +97,7 @@ class EE_Extensions {
 		
 		// A Few Checks
 		if ( ! isset($this->extensions[$which])) return;
-		if ($this->EE->config->item('allow_extensions') != 'y') return;
+		if (ee()->config->item('allow_extensions') != 'y') return;
 		if ($this->in_progress == $which) return;
 		
 		// Get Arguments, Call the New Universal Method
@@ -147,12 +147,12 @@ class EE_Extensions {
 		
 		// Anything to Do Here?
 		if ( ! isset($this->extensions[$which])) return;
-		if ($this->EE->config->item('allow_extensions') != 'y') return;
+		if (ee()->config->item('allow_extensions') != 'y') return;
 		if ($this->in_progress == $which) return;
 		
 		$this->in_progress = $which;
-		$this->EE->load->library('addons');
-		$this->EE->addons->is_package('');
+		ee()->load->library('addons');
+		ee()->addons->is_package('');
 		
 		// Retrieve arguments for function
 		if (is_object($parameter_one) && is_php('5.0.0') == TRUE)
@@ -175,6 +175,12 @@ class EE_Extensions {
 		}
 		
 		
+		// Give arguments by reference
+		foreach($args as $k => $v)
+		{
+			$args[$k] =& $args[$k];
+		}
+		
 		// Go through all the calls for this hook
 		foreach($this->extensions[$which] as $priority => $calls)
 		{
@@ -182,20 +188,20 @@ class EE_Extensions {
 			{
 				// Determine Path of Extension
 				$class_name = ucfirst($class);
-				$name = $this->EE->security->sanitize_filename(strtolower(substr($class, 0, -4))); // remove '_ext' suffix
+				$name = ee()->security->sanitize_filename(strtolower(substr($class, 0, -4))); // remove '_ext' suffix
 				
-				$path = $this->EE->addons->_packages[$name]['extension']['path'];
-				$extension_path = $this->EE->functions->remove_double_slashes($path.'/ext.'.$name.'.php');
+				$path = ee()->addons->_packages[$name]['extension']['path'];
+				$extension_path = reduce_double_slashes($path.'/ext.'.$name.'.php');
 
 				if (file_exists($extension_path))
 				{
-					$this->EE->load->add_package_path($path, FALSE);
+					ee()->load->add_package_path($path, FALSE);
 				}
 				
 				else
 				{
 					$error = 'Unable to load the following extension file:<br /><br />'.'ext.'.$name.'.php';
-					return $this->EE->output->fatal_error($error);
+					return ee()->output->fatal_error($error);
 				}
 				
 				// Include File
@@ -217,9 +223,6 @@ class EE_Extensions {
 				}
 				else
 				{
-					// Load the string helper
-					$this->EE->load->helper('string');
-
 					$settings = ($metadata['1'] == '') ? '' : strip_slashes(unserialize($metadata['1']));
 					$this->s_cache[$class_name] = $settings;
 				}
@@ -245,9 +248,9 @@ class EE_Extensions {
 				//  called after this one can retrieve the returned data from
 				//  previous methods and view/maniuplate that returned data
 				//  opposed to any original arguments the hook sent. In theory...
-				if (isset($this->EE->TMPL) && is_object($this->EE->TMPL) && method_exists($this->EE->TMPL, 'log_item'))
+				if (isset(ee()->TMPL) && is_object(ee()->TMPL) && method_exists(ee()->TMPL, 'log_item'))
 				{
-					$this->EE->TMPL->log_item('Calling Extension Class/Method: '.$class_name.'/'.$method);
+					ee()->TMPL->log_item('Calling Extension Class/Method: '.$class_name.'/'.$method);
 				}
 
 				if ($php4_object === TRUE)
@@ -266,9 +269,9 @@ class EE_Extensions {
 				$this->in_progress = '';
 				
 
-				$this->EE->load->remove_package_path($path);
+				ee()->load->remove_package_path($path);
 
-				//  A $this->EE->extensions->end_script value of TRUE means that the called 
+				//  A ee()->extensions->end_script value of TRUE means that the called 
 				//	method wishes us to stop the calling of the main script.
 				//  In this case, even if there are methods after this one for
 				//  the hook we still stop the script now because extensions with

@@ -2,10 +2,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -30,7 +30,8 @@ EE.publish.category_editor = function() {
 		cat_groups_buttons = {},
 		cat_list_url = EE.BASE+'&C=admin_content&M=category_editor&group_id=',
 		refresh_cats, setup_page, reload, i,
-		selected_cats = {};
+		selected_cats = {},
+		$editor_container = $('<div />');
 
 	// categories with a lot of custom fields need to scroll
 	cat_modal_container.css({
@@ -43,7 +44,7 @@ EE.publish.category_editor = function() {
 	function now() {
 		return +new Date();
 	}
-	
+
 	cat_modal.dialog({
 		autoOpen: false,
 		height: 475,
@@ -54,8 +55,8 @@ EE.publish.category_editor = function() {
 		open: function(event, ui) {
 			$('.ui-dialog-content').css('overflow', 'hidden');
 			$('.ui-dialog-titlebar').focus(); // doing this first to fix IE7 scrolling past the dialog's close button
-			$('#cat_name').focus();	
-			
+			$('#cat_name').focus();
+
 			// Create listener for file field
 			EE.publish.file_browser.category_edit_modal();
 		}
@@ -73,7 +74,7 @@ EE.publish.category_editor = function() {
 		cat_groups_containers[cat_groups[i]].data("gid", cat_groups[i]);
 		cat_groups_buttons[cat_groups[i]] = $("#cat_group_container_"+[cat_groups[i]]).find(".cat_action_buttons").remove();
 	}
-	
+
 	refresh_cats = function(gid) {
 		cat_groups_containers[gid].text("loading...").load(cat_list_url+gid+"&timestamp="+now()+" .pageContents table", function() {
 			setup_page.call(cat_groups_containers[gid], cat_groups_containers[gid].html(), false);
@@ -84,7 +85,7 @@ EE.publish.category_editor = function() {
 	setup_page = function(response, require_valid_response) {
 		var container = $(this),
 			gid = container.data("gid");
-		
+
 		response = $.trim(response);
 
 		if (container.hasClass('edit_categories_link')) {
@@ -94,26 +95,26 @@ EE.publish.category_editor = function() {
 		if (response.charAt(0) !== '<' && require_valid_response) {
 			return refresh_cats(gid);
 		}
-		
+
 		container.closest(".cat_group_container").find("#refresh_categories").show();
-		
+
 		var res = $(response),
 			form = res.find("form"),
 			submit_button, container_form,
 			$category_name, $category_url_title;
-				
+
 		if (form.length) {
 			cat_modal_container.html(res);
-			
+
 			submit_button = cat_modal_container.find("input[type=submit]");
 			container_form = cat_modal_container.find("form");
 			$category_name = container_form.find('#cat_name');
 			$category_url_title = container_form.find('#cat_url_title');
-			
+
 			$category_name.keyup(function(event) {
 				$category_name.ee_url_title($category_url_title);
 			});
-			
+
 			var handle_submit = function(form) {
 				var that = form || $(this),
 					values = that.serialize(),
@@ -125,20 +126,20 @@ EE.publish.category_editor = function() {
 					data: values,
 					dataType: "html",
 					beforeSend: function() {
-						container.html(EE.lang.loading);
+						$editor_container.html(EE.lang.loading);
 					},
 					success: function(res) {
 						res = $.trim(res);
 						cat_modal.dialog("close");
-						
+
 						if (res[0] == '<') {
 							var response = $(res).find(".pageContents"),
 								form = response.find("form");
 
 							if (form.length == 0) {
-								container.html(response);
+								$editor_container.html(response);
 							}
-							
+
 							response = response.wrap('<div />').parent(); // outer html hack
 							setup_page.call(container, response.html(), true);
 						}
@@ -153,12 +154,12 @@ EE.publish.category_editor = function() {
 						// setup_page.call(container, res.error, true);
 					}
 				});
-				
+
 				return false;
 			};
-			
+
 			container_form.submit(handle_submit);
-			
+
 			var buttons = {};
 			buttons[submit_button.remove().attr('value')] = {
 				text: EE.publish.lang.update,
@@ -166,10 +167,10 @@ EE.publish.category_editor = function() {
 					handle_submit(container_form);
 				}
 			};
-			
+
 			cat_modal.dialog("open");
 			cat_modal.dialog("option", "buttons", buttons);
-			
+
 			cat_modal.one('dialogclose', function() {
 				refresh_cats(gid);
 			});
@@ -177,7 +178,7 @@ EE.publish.category_editor = function() {
 		else {
 			cat_groups_buttons[gid].clone().appendTo(container).show();
 		}
-		
+
 		return false;
 	};
 
@@ -188,7 +189,7 @@ EE.publish.category_editor = function() {
 		var link = $(this).hide(),
 			gid = $(this).data("gid"),
 			resp_filter = ".pageContents";
-		
+
 		if ($(this).hasClass("edit_cat_order_trigger") || $(this).hasClass("edit_categories_link")) {
 			resp_filter += " table";
 		}
@@ -196,7 +197,7 @@ EE.publish.category_editor = function() {
 		if ( ! gid) {
 			gid = $(this).closest(".cat_group_container").data("gid");
 		}
-		
+
 		// Grab selection if checkboxes are available
 		if ($(this).hasClass("edit_categories_link"))
 		{
@@ -204,8 +205,12 @@ EE.publish.category_editor = function() {
 				return this.value;
 			}).toArray();
 		}
-		
-		cat_groups_containers[gid].text(EE.lang.loading);
+
+		// Hide the checkboxes instead of destroying them in case publish form is
+		// submitted while the category editor is still showing
+		cat_groups_containers[gid].find('label').hide();
+
+		cat_groups_containers[gid].append($editor_container.html(EE.lang.loading));
 
 		$.ajax({
 			url: $(this).attr('href') + "&timestamp="+now() + resp_filter,
@@ -213,15 +218,15 @@ EE.publish.category_editor = function() {
 			success: function(response) {
 				var res,
 					filtered_res = '';
-			
+
 				response = $.trim(response);
-				
+
 				if (response.charAt(0) == '<') {
 					res = $(response).find(resp_filter);
-					
+
 					filtered_res = $('<div />').append(res).html();
 					if (res.find('form').length == 0) {
-						cat_groups_containers[gid].html(filtered_res);
+						$editor_container.html(filtered_res);
 					}
 				}
 
@@ -229,7 +234,7 @@ EE.publish.category_editor = function() {
 			},
 			error: function(response) {
 				response = $.parseJSON(response.responseText);
-				cat_groups_containers[gid].html(response.error);
+				$editor_container.text(response.error);
 				setup_page.call(cat_groups_containers[gid], response.error, true);
 			}
 		});
@@ -237,10 +242,10 @@ EE.publish.category_editor = function() {
 
 	// Hijack edit category links to get it off the ground
 	$(".edit_categories_link").click(reload);
-	
+
 	// Hijack internal links (except for done and adding filename)
 	$('.cat_group_container a:not(.cats_done, .choose_file)').live('click', reload);
-	
+
 	// Last but not least - update the checkboxes
 	$(".cats_done").live("click", function() {
 		var that = $(this).closest(".cat_group_container"),
@@ -251,32 +256,17 @@ EE.publish.category_editor = function() {
 				$(this).show();
 			}
 		});
-		
+
 		that.text("loading...").load(EE.BASE+"&C=content_publish&M=category_actions&group_id="+that.data("gid")+"&timestamp="+now(), function(response) {
 			that.html( $(response).html() );
-			
+
 			$.each(selected_cats[gid], function(k, v) {
 				that.find('input[value='+v+']').attr('checked', 'checked');
 			});
 		});
-				
+
 		return false;
 	});
-};
-
-/**
- * Check to see if a number or string is an integer
- *
- * @returns True if the value is an integer, false otherwise
- * @type Boolean
- */
-Number.prototype.is_integer = String.prototype.is_integer = function() {
-	var unparsed = this;
-	var parsed = parseInt(unparsed, 10);
-	
-	if (isNaN(parsed)) { return false; }
-	
-	return unparsed == parsed && unparsed.toString() == parsed.toString();
 };
 
 /**
@@ -287,18 +277,21 @@ Number.prototype.is_integer = String.prototype.is_integer = function() {
  * @type Number
  */
 EE.publish.get_percentage_width = function($element) {
-	var width = 0;
-	
-	if ($element.attr('data-width') && $element.attr('data-width').slice(0, -1).is_integer()) {
-		return parseInt($element.attr('data-width'), 10);
+	var width = 0,
+		isInteger = /[0-9]+/ig,
+		dataWidth = $element.attr('data-width');
+
+	if (dataWidth && isInteger.test(dataWidth.slice(0, -1))) {
+		return parseInt(dataWidth, 10);
 	};
-	
+
 	return Math.round(($element.width() / $element.parent().width()) * 10) * 10;
 };
 
 
+
 EE.publish.save_layout = function() {
-	
+
 	var tab_count = 0,
 		layout_object = {},
 		layout_hidden = {},
@@ -313,28 +306,27 @@ EE.publish.save_layout = function() {
 	// for width() to work, the element cannot be in a parent div that is display:none
 	$(".main_tab").show();
 
-	//$("li:visible", "#tab_menu_tabs").each(function() {
 	$("#tab_menu_tabs a:not(.add_tab_link)").each(function() {
 
 		// skip list items with no id (ie: new tab)
 		if ($(this).parent('li').attr('id') && $(this).parent('li').attr('id').substring(0,5) == "menu_")
 		{
-			var tab_name =  $(this).parent('li').attr('id').substring(5), //$(this).text(),
-				tab_id	 = $(this).parent('li').attr('id').substring(5), //$(this).text().replace(/ /g, '_').toLowerCase();
-				tab_label = $(this).parent('li').attr('title'); //$(this).text();
+			var tab_name =  $(this).parent('li').attr('id').substring(5),
+				tab_id	 = $(this).parent('li').attr('id').substring(5),
+				tab_label = $(this).parent('li').attr('title');
 			field_index = 0;
 			visible = true;
-			
+
 			if( $(this).parent('li').is(':visible') )
 			{
 				lay_name = tab_name;
-				layout_object[lay_name] = {};
-				layout_object[lay_name][mypre] = tab_label;
+				layout_object[tab_count] = {name: lay_name, fields: {}};
+				layout_object[tab_count]['fields'][mypre] = tab_label;
 			} else {
 				merge = true;
 				visible = false;
 			}
-			
+	
 			$("#"+tab_id).find(".publish_field").each(function() {
 
 				var that = $(this),
@@ -342,38 +334,37 @@ EE.publish.save_layout = function() {
 					percent_width = EE.publish.get_percentage_width(that),
 					temp_buttons = $("#sub_hold_field_"+id+" .markItUp ul li:eq(2)"),
 					layout_settings;
-				
+
 				if (percent_width > 100) {
 					percent_width = 100;
 				};
-					
+
 				if (temp_buttons.html() !== "undefined" && temp_buttons.css("display") !== "none") {
 					temp_buttons = true;
 				}
 				else {
 					temp_buttons = false;
 				}
-				
+
 				layout_settings = {
 					visible		: ($(this).css("display") === "none" || visible === false) ? false : true,
 					collapse	: ($("#sub_hold_field_"+id).css("display") === "none") ? true : false,
 					htmlbuttons	: temp_buttons,
 					width		: percent_width+'%'
 				};
-				
+
 				if (visible === true) {
 					layout_settings['index'] = field_index;
-					layout_object[lay_name][id] = layout_settings;
-
-					field_index += 1;				
+					layout_object[tab_count]['fields'][id] = layout_settings;
+					field_index += 1;
 				} else {
 					layout_hidden[id] = layout_settings;
 				}
-				
+
 			});
-			
+
 			if (visible === true) {
-				tab_count++; // add one to the tab count
+				tab_count++;
 			}
 		}
 	});
@@ -381,29 +372,22 @@ EE.publish.save_layout = function() {
 	if (merge == true)
 	{
 		// Add hidden fields to first tab
-		
-		var darn1, darn2, first_tab, last_index = 0;
-		
-		for (darn in layout_object) {
-			first_tab = darn;
-			for (darn2 in layout_object[first_tab]) {
-				if (layout_object[first_tab][darn2]['index'] > last_index) {
-					last_index = layout_object[first_tab][darn2]['index'];
-				}
+
+		var last_index = 0;
+		var fields = layout_object[0]['fields'];
+		for (i in fields) {
+			if (fields[i]['index'] > last_index) {
+				last_index = fields[i]['index'];
 			}
-			break;
 		}
 
-		
 		// Reindex first tab
 		$.each(layout_hidden, function() {
 			this['index'] = ++last_index;
 		});
-		
-		jQuery.extend(layout_object[first_tab], layout_hidden);
-	} 
-	
-	//alert(JSON.stringify(layout_object, null, '\t'));
+
+		jQuery.extend(layout_object[0]['fields'], layout_hidden);
+	}
 
 	// @todo not a great solution
 	EE.tab_focus(cur_tab.replace(/menu_/, ""));
@@ -419,7 +403,7 @@ EE.publish.save_layout = function() {
 			type: "POST",
 			dataType: 	'json',
 			url: EE.BASE+"&C=content_publish&M=save_layout",
-			data: "XID="+EE.XID+"&json_tab_layout="+encodeURIComponent(JSON.stringify(layout_object))+"&"+$("#layout_groups_holder input").serialize()+"&channel_id="+EE.publish.channel_id,
+			data: "json_tab_layout="+encodeURIComponent(JSON.stringify(layout_object))+"&"+$("#layout_groups_holder input").serialize()+"&channel_id="+EE.publish.channel_id,
 			success: function(result){
 				if (result.messageType === 'success') {
 					$.ee_notice(result.message, {type: "success"});
@@ -442,13 +426,13 @@ EE.publish.remove_layout = function() {
 	$.ajax({
 		type: "POST",
 		url: EE.BASE+"&C=content_publish&M=save_layout",
-		data: "XID="+EE.XID+"&json_tab_layout="+json_tab_layout+"&"+$("#layout_groups_holder input").serialize()+"&channel_id="+EE.publish.channel_id+"&field_group="+EE.publish.field_group,
+		data: "json_tab_layout="+json_tab_layout+"&"+$("#layout_groups_holder input").serialize()+"&channel_id="+EE.publish.channel_id+"&field_group="+EE.publish.field_group,
 		success: function(msg){
 			$.ee_notice(EE.publish.lang.layout_removed + " <a href=\"javascript:location=location\">"+EE.publish.lang.refresh_layout+"</a>", {duration:0, type:"success"});
 			return true;
 		}
 	});
-	
+
 	return false;
 };
 
@@ -461,63 +445,34 @@ EE.publish.change_preview_link = function() {
 	$link = $('#layout_group_preview');
 	base = $link.attr('href').split('layout_preview')[0];
 	$link.attr('href', base + 'layout_preview=' + $select.val());
-	
+
 	$.ajax({
 		url: EE.BASE + "&C=content_publish&M=preview_layout",
 		type: 'POST',
 		dataType: 'json',
 		data: {
-			XID: EE.XID,
 			member_group: $select.find('option:selected').text()
 		}
 	});
-	
+
 };
-
-EE.date_obj_time = (function() {
-	var date_obj = new Date(),
-		date_obj_hours = date_obj.getHours(),
-		date_obj_mins = date_obj.getMinutes(),
-		date_obj_am_pm = "";
-
-	if (date_obj_mins < 10) {
-		date_obj_mins = "0" + date_obj_mins;
-	}
-
-	if (EE.date.format == "us") {
-		
-		date_obj_am_pm = (date_obj_hours < 12) ? ' AM': ' PM';
-
-		// This turns midnight into 12 AM, so ignore if it's already 0
-		if (date_obj_hours != 0) {
-		    date_obj_hours = ((date_obj_hours + 11) % 12) + 1;
-		}
-	}
-	
-	if (date_obj_hours < 10) {
-		date_obj_hours = "0" + date_obj_hours;
-	}
-	
-	return " '" + date_obj_hours + ":" + date_obj_mins + date_obj_am_pm + "'";
-}());
-
 
 file_manager_context = "";	// @todo - yuck, should be on the EE global
 
 
 function disable_fields(state) {
-	
+
 	var fields = $(".main_tab input, .main_tab textarea, .main_tab select, #submit_button"),
 		submit = $("#submit_button"),
 		admin_link = $("#holder").find('a');
-		
+
 	if (state) {
 		disabled_fields = fields.filter(':disabled');
 		fields.attr("disabled", true);
 		submit.addClass("disabled_field");
 		admin_link.addClass("admin_mode");
 		$("#holder div.markItUp, #holder p.spellcheck").each(function() {
-			$(this).before("<div class=\"cover\" style=\"position:absolute;width:100%;height:50px;z-index:9999;\"></div>").css({});
+			$(this).before("<div class=\"cover\" style=\"position:absolute;width:98%;height:50px;z-index:9999;\"></div>").css({});
 		});
 
 		$('.contents, .publish_field input, .publish_field textarea').css('-webkit-user-select', 'none');
@@ -534,7 +489,7 @@ function disable_fields(state) {
 }
 
 $(document).ready(function() {
-		
+
 	var autosave_entry,
 		start_autosave;
 
@@ -547,7 +502,7 @@ $(document).ready(function() {
 		EE.publish.remove_layout();
 		return false;
 	});
-	
+
 	$('#layout_preview select').change(function(){
 		EE.publish.change_preview_link();
 	});
@@ -578,36 +533,36 @@ $(document).ready(function() {
 			var parent_div = $(this).closest('.publish_field'),
 				field_id = parent_div.attr('id').replace('hold_field_', 'field_id_');
 			parent_div.find('#'+field_id).insertAtCursor( $(this).attr('title') );
-			
+
 			return false;
 		});
 	}
 
 	if (EE.publish.autosave && EE.publish.autosave.interval) {
-		
+
 		var autosaving = false;
-		
+
 		start_autosave = function() {
 			if (autosaving) {
 				return;
 			}
-			
+
 			autosaving = true;
 			setTimeout(autosave_entry, 1000 * EE.publish.autosave.interval); // 1000 milliseconds per second
 		};
-		
+
 		autosave_entry = function() {
 			var tools = $("#tools:visible"),
 				form_data;
-			
+
 			// If the sidebar is showing, then form fields are disabled. Skip it.
 			if (tools.length === 1) {
 				start_autosave();
 				return;
 			}
-			
+
 			form_data = $("#publishForm").serialize();
-			
+
 			$.ajax({
 				type: "POST",
 				dataType: 'json',
@@ -626,16 +581,16 @@ $(document).ready(function() {
 					else {
 						console.log('Autosave Failed');
 					}
-					
+
 					autosaving = false;
 				}
 			});
 		};
-		
+
 		// Start autosave when something changes
 		var writeable = $('textarea, input').not(':password,:checkbox,:radio,:submit,:button,:hidden'),
 			changeable = $('select, :checkbox, :radio, :file');
-		
+
 		writeable.bind('keypress change', start_autosave);
 		changeable.bind('change', start_autosave);
 	}
@@ -650,52 +605,52 @@ $(document).ready(function() {
 			pagesUri.val(placeholderText);
 		}
 
-		pagesUri.focus(function() {					
+		pagesUri.focus(function() {
 			if (this.value === placeholderText) {
 				$(this).val("");
-			}	
+			}
 		}).blur(function() {
 			if (this.value === "") {
 				$(this).val(placeholderText);
 			}
-		});		
+		});
 	}
 
-	
+
 	if (EE.publish.markitup.fields !== undefined)
 	{
-		$.each(EE.publish.markitup.fields, function(key, value) { 
+		$.each(EE.publish.markitup.fields, function(key, value) {
 			$("#"+key).markItUp(mySettings);
-		});	
+		});
 	}
-	
+
 	EE.publish.setup_writemode = function() {
 		var wm_inner = $('#write_mode_writer'),
 			wm_txt = $('#write_mode_textarea'),
 			source_sel, wm_sel,
 			source_txt, triggers;
-		
+
 		wm_txt.markItUp(myWritemodeSettings);
-		
+
 		// the height of this modal depends on the height of the viewport
 		// we'll dynamically resize as a user may want proper fullscreen
 		// by changing their browser window once it's open.
-		
+
 		$(window).resize(function() {
 			var wm_height = $(this).height() - (33 + 59 + 25);	// header + footer + 25px just to be safe
-			
+
 			wm_inner
 				.css("height", wm_height + "px")
 				.find("textarea").css("height", (wm_height - 67 - 17) + "px");	// for formatting buttons + 17px for appearance
-			
+
 		}).triggerHandler('resize');
-		
+
 		$(".write_mode_trigger").overlay({
 
 			// only exit by clicking an action
 			closeOnEsc: false,
 			closeOnClick: false,
-			
+
 			top: 'center',
 			target: '#write_mode_container',
 
@@ -716,16 +671,16 @@ $(document).ready(function() {
 				} else {
 					source_txt = $('#' + trigger_id.replace(/id_/, ''));
 				}
-				
+
 				source_sel = source_txt.getSelectedRange();
 				wm_txt.val( source_txt.val() );
 			},
-			
+
 			onLoad: function(evt) {
 				// recreate the old cursor position
 				wm_txt.focus();
 				wm_txt.createSelection(source_sel.start, source_sel.end);
-				
+
  				// monkey patching the closers so that we can
 				// standardize srcElement for all browsers
 				// (looking at you FireFox)
@@ -735,7 +690,7 @@ $(document).ready(function() {
 					that.close(e);
 				});
 			},
-			
+
 			onBeforeClose: function(evt) {
 				var closer = $(evt.srcElement).closest('.close'),	// evt.target is overriden by the custom event trigger =(
 					isSave = closer.hasClass('publish_to_field');
@@ -750,22 +705,22 @@ $(document).ready(function() {
 			}
 		});
 	}
-	
-	
-	if (EE.publish.show_write_mode === true) { 
+
+
+	if (EE.publish.show_write_mode === true) {
 		EE.publish.setup_writemode();
 	}
 
 	// toggle can not be used here, since it may or may not be visible
 	// depending on admin customization
 	$(".hide_field span").click(function() {
-		
+
 		var holder_id = $(this).parent().parent().attr("id"),
 			field_id = holder_id.substr(11),
-		
+
 			hold_field = $("#hold_field_"+field_id),
-			sub_hold_field = $("#sub_hold_field_"+field_id);		
-		
+			sub_hold_field = $("#sub_hold_field_"+field_id);
+
 		if (sub_hold_field.css("display") == "block") {
 			sub_hold_field.slideUp();
 			hold_field.find(".ui-resizable-handle").hide();
@@ -776,7 +731,7 @@ $(document).ready(function() {
 			hold_field.find(".ui-resizable-handle").show();
 			hold_field.find(".field_collapse").attr("src", EE.THEME_URL+"images/field_expand.png");
 		}
-		
+
 		// We dont want datepicker getting triggered when a field is collapsed/expanded
 		return false;
 	});
@@ -802,10 +757,10 @@ $(document).ready(function() {
 			});
 		}
 	);
-	
+
 	if (EE.user.can_edit_html_buttons) {
 		$(".markItUp ul").append("<li class=\"btn_plus\"><a title=\""+EE.lang.add_new_html_button+"\" href=\""+EE.BASE+"&C=myaccount&M=html_buttons&id="+EE.user_id+"\">+</a></li>");
-	
+
 		$(".btn_plus a").click(function(){
 			return confirm(EE.lang.confirm_exit, "");
 		});
@@ -813,7 +768,7 @@ $(document).ready(function() {
 
 	// inject the collapse button into the formatting buttons list
 	$(".markItUpHeader ul").prepend("<li class=\"close_formatting_buttons\"><a href=\"#\"><img width=\"10\" height=\"10\" src=\""+EE.THEME_URL+"images/publish_minus.gif\" alt=\"Close Formatting Buttons\"/></a></li>");
-	
+
 	$(".close_formatting_buttons a").toggle(
 		function() {
 			$(this).parent().parent().children(":not(.close_formatting_buttons)").hide();
@@ -828,42 +783,42 @@ $(document).ready(function() {
 
 	// Apply a class to its companion tab fitting of its position
 	$(".tab_menu li:first").addClass("current");
-	
+
 	if (EE.publish.title_focus == true) {
 		$("#title").focus();
 	}
-	
-	if (EE.publish.which == 'new') { 
+
+	if (EE.publish.which == 'new') {
 		$("#title").bind("keyup blur", function() {
 			$('#title').ee_url_title($('#url_title'));
-		});	
+		});
 	}
-	
-	if (EE.publish.versioning_enabled == 'n') { 
+
+	if (EE.publish.versioning_enabled == 'n') {
 		$("#revision_button").hide();
 	} else {
 		$("#versioning_enabled").click(function() {
 			if($(this).attr("checked")) {
-				$("#revision_button").show(); 
+				$("#revision_button").show();
 			} else {
-				$("#revision_button").hide(); 
-			}  
+				$("#revision_button").hide();
+			}
 		});
 	}
-	
+
 	EE.publish.category_editor();
-	
+
 	// @todo if admin bridge
 	if (EE.publish.hidden_fields) {
 		EE._hidden_fields = [];
-		
+
 		var inputs = $("input");
-					
+
 		$.each(EE.publish.hidden_fields, function(k) {
 			EE._hidden_fields.push(inputs.filter("[name="+k+"]")[0]);
 		});
-		
+
 		$(EE._hidden_fields).after('<p class="hidden_blurb">This module field only shows in certain circumstances. This is a placeholder to let you define it in your layout.</p>');
 	}
-	
+
 });

@@ -3,10 +3,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -19,14 +19,14 @@
  * @package		ExpressionEngine
  * @subpackage	Core
  * @category	Core
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 class EE_Sites { 
 
-	public $num_sites_allowed = 'A04EMwBnXgRRFwBbAmZQDQAj';
-	public $the_sites_allowed = 'BjhfMFdCUxUBWQ9CVgUANFMx';
-	public $sites_allowed_num = 'UVwNWVcbUggHYwl3VjVTbA';
+	public $num_sites_allowed = '0DA1QdCTwARlIJVDBXClowVkMN';
+	public $the_sites_allowed = 'AjwOYQUQB29XAwRJDF9UYFQ2AU';
+	public $sites_allowed_num = 'YwVdVw0NagBBVzFVBAIGDFVdCF';
 }
 // END CLASS
 

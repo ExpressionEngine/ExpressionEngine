@@ -3,10 +3,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -19,8 +19,8 @@
  * @package		ExpressionEngine
  * @subpackage	Core
  * @category	Core
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 class EE_Throttling {
 
@@ -41,26 +41,26 @@ class EE_Throttling {
 
 	function run()
 	{
-		if ($this->EE->config->item('enable_throttling') != 'y')
+		if (ee()->config->item('enable_throttling') != 'y')
 		{
 			return;
 		}
 		
-		if ( ! is_numeric($this->EE->config->item('max_page_loads')))
+		if ( ! is_numeric(ee()->config->item('max_page_loads')))
 		{
 			return;
 		}
 		
-		$this->max_page_loads = $this->EE->config->item('max_page_loads');
+		$this->max_page_loads = ee()->config->item('max_page_loads');
 
-		if (is_numeric($this->EE->config->item('time_interval')))
+		if (is_numeric(ee()->config->item('time_interval')))
 		{
-			$this->time_interval = $this->EE->config->item('time_interval');
+			$this->time_interval = ee()->config->item('time_interval');
 		}
 
-		if (is_numeric($this->EE->config->item('lockout_time')))
+		if (is_numeric(ee()->config->item('lockout_time')))
 		{
-			$this->lockout_time = $this->EE->config->item('lockout_time');
+			$this->lockout_time = ee()->config->item('lockout_time');
 		}
 	
 		$this->throttle_ip_check();
@@ -74,7 +74,7 @@ class EE_Throttling {
  
  	function throttle_ip_check()
  	{
-		if ($this->EE->config->item('banish_masked_ips') == 'y' AND $this->EE->input->ip_address() == '0.0.0.0' OR $this->EE->input->ip_address() == '')
+		if (ee()->config->item('banish_masked_ips') == 'y' AND ee()->input->ip_address() == '0.0.0.0' OR ee()->input->ip_address() == '')
 		{
 			$this->banish();
 		}
@@ -88,7 +88,7 @@ class EE_Throttling {
 	{
 		$expire = time() - $this->time_interval;
 		
-		$query = $this->EE->db->query("SELECT hits, locked_out, last_activity FROM exp_throttle WHERE ip_address= '".$this->EE->db->escape_str($this->EE->input->ip_address())."'");
+		$query = ee()->db->query("SELECT hits, locked_out, last_activity FROM exp_throttle WHERE ip_address= '".ee()->db->escape_str(ee()->input->ip_address())."'");
 
 		if ($query->num_rows() == 0) $this->current_data = array();
   
@@ -109,7 +109,7 @@ class EE_Throttling {
   				if ($query->row('hits') >= $this->max_page_loads)
   				{
   					// Lock them out and banish them...
-					$this->EE->db->query("UPDATE exp_throttle SET locked_out = 'y', last_activity = '".time()."' WHERE ip_address= '".$this->EE->db->escape_str($this->EE->input->ip_address())."'");
+					ee()->db->query("UPDATE exp_throttle SET locked_out = 'y', last_activity = '".time()."' WHERE ip_address= '".ee()->db->escape_str(ee()->input->ip_address())."'");
 					$this->banish();
 					exit;
   				}
@@ -125,7 +125,7 @@ class EE_Throttling {
 	{		
 		if ($this->current_data === FALSE)
 		{
-			$query = $this->EE->db->query("SELECT hits, last_activity FROM exp_throttle WHERE ip_address= '".$this->EE->db->escape_str($this->EE->input->ip_address())."'");
+			$query = ee()->db->query("SELECT hits, last_activity FROM exp_throttle WHERE ip_address= '".ee()->db->escape_str(ee()->input->ip_address())."'");
 			$this->current_data = ($query->num_rows() == 1) ? $query->row_array() : array();
 		}
 		
@@ -142,11 +142,11 @@ class EE_Throttling {
 				$hits = 1;
 			}
 							
-			$this->EE->db->query("UPDATE exp_throttle SET hits = '{$hits}', last_activity = '".time()."', locked_out = 'n' WHERE ip_address= '".$this->EE->db->escape_str($this->EE->input->ip_address())."'");
+			ee()->db->query("UPDATE exp_throttle SET hits = '{$hits}', last_activity = '".time()."', locked_out = 'n' WHERE ip_address= '".ee()->db->escape_str(ee()->input->ip_address())."'");
 		}
 		else
 		{
-			$this->EE->db->query("INSERT INTO exp_throttle (ip_address, last_activity, hits) VALUES ('".$this->EE->db->escape_str($this->EE->input->ip_address())."', '".time()."', '1')");
+			ee()->db->query("INSERT INTO exp_throttle (ip_address, last_activity, hits) VALUES ('".ee()->db->escape_str(ee()->input->ip_address())."', '".time()."', '1')");
 		}
 	}
 
@@ -157,14 +157,14 @@ class EE_Throttling {
 		
 	function banish()
 	{
-		$type = (($this->EE->config->item('banishment_type') == 'redirect' AND $this->EE->config->item('banishment_url') == '')  OR ($this->EE->config->item('banishment_type') == 'message' AND $this->EE->config->item('banishment_message') == '')) ?  '404' : $this->EE->config->item('banishment_type');
+		$type = ((ee()->config->item('banishment_type') == 'redirect' AND ee()->config->item('banishment_url') == '')  OR (ee()->config->item('banishment_type') == 'message' AND ee()->config->item('banishment_message') == '')) ?  '404' : ee()->config->item('banishment_type');
 		
 		switch ($type)
 		{
-			case 'redirect' :	$loc = (strncasecmp($this->EE->config->item('banishment_url'), 'http://', 7) != 0) ? 'http://'.$this->EE->config->item('banishment_url') : $this->EE->config->item('banishment_url');
+			case 'redirect' :	$loc = (strncasecmp(ee()->config->item('banishment_url'), 'http://', 7) != 0) ? 'http://'.ee()->config->item('banishment_url') : ee()->config->item('banishment_url');
 								header("location:$loc");
 				break;
-			case 'message'	:	echo $this->EE->config->item('banishment_message');
+			case 'message'	:	echo ee()->config->item('banishment_message');
 				break;
 			default			:	header("Status: 404 Not Found"); echo "Status: 404 Not Found";
 				break;

@@ -1,61 +1,35 @@
-<?php
-if ($EE_view_disable !== TRUE)
-{
-	$this->load->view('_shared/header');
-	$this->load->view('_shared/main_menu');
-	$this->load->view('_shared/sidebar');
-	$this->load->view('_shared/breadcrumbs');
-}
-?>
+<?php extend_template('default') ?>
 
-<div id="mainContent"<?=$maincontent_state?>>
-	<?php $this->load->view('_shared/right_nav')?>
-		<div class="contents">
+<?=form_open('C=members'.AMP.'M=do_login_as_member', '', $form_hidden)?>
 
-        <div class="heading"><h2><?=$cp_page_title?></h2></div>
+	<p class="notice"><?=$this->lang->line('action_can_not_be_undone')?></p>
 
-		<div class="pageContents">
+	<p><?=$message?></p>
 
-			<?=form_open('C=members'.AMP.'M=do_login_as_member', '', $form_hidden)?>
-
-			<p class="notice"><?=$this->lang->line('action_can_not_be_undone')?></p>
-
-			<p><?=$message?></p>
-
-			<div>
-				<?=form_radio(array('name'=>'return_destination','id'=>'site_homepage', 'value'=>'site'))?>
-				<?=lang('site_homepage', 'site_homepage')?>
-			</div>
-			<?php if ($can_access_cp):?>
-				<div>
-					<?=form_radio(array('name'=>'return_destination','id'=>'cp', 'value'=>'cp'))?>
-					<?=lang('control_panel', 'cp')?>
-				</div>
-			<?php endif;?>
-			<div>
-				<?=form_radio(array('name'=>'return_destination','id'=>'other', 'value'=>'other'))?>
-				<?=lang('other', 'other')?> 
-				<?=form_input(array('id'=>'other_url','name'=>'other_url','size'=>50,'value'=>$this->functions->fetch_site_index()))?>
-			</div>
-
-			<p>
-				<?=form_submit('login_as_member', lang('submit'), 'class="submit"')?>
-			</p>
-
-			<?=form_close()?>
-
-
+	<div>
+		<?=form_radio(array('name'=>'return_destination','id'=>'site_homepage', 'value'=>'site'))?>
+		<?=lang('site_homepage', 'site_homepage')?>
+	</div>
+	<?php if ($can_access_cp):?>
+		<div>
+			<?=form_radio(array('name'=>'return_destination','id'=>'cp', 'value'=>'cp'))?>
+			<?=lang('control_panel', 'cp')?>
 		</div>
+	<?php endif;?>
+	<div>
+		<?=form_radio(array('name'=>'return_destination','id'=>'other', 'value'=>'other'))?>
+		<?=lang('other', 'other')?> 
+		<?=form_input(array('id'=>'other_url','name'=>'other_url','size'=>50,'value'=>$this->functions->fetch_site_index()))?>
+	</div>
 
-	</div> <!-- contents -->
-</div> <!-- mainContent -->
+	<br />
+	<p>
+		<span class="notice"><?=lang('password_auth', 'password_auth')?></span>
+		<?=form_password(array('id' => 'password_auth', 'name' => 'password_auth', 'maxlength' => 40, 'autofocus' => 'autofocus'))?>
+	</p>
 
-<?php
-if ($EE_view_disable !== TRUE)
-{
-	$this->load->view('_shared/accessories');
-	$this->load->view('_shared/footer');
-}
+	<p>
+		<?=form_submit('login_as_member', lang('submit'), 'class="submit"')?>
+	</p>
 
-/* End of file login_as_member.php */
-/* Location: ./themes/cp_themes/default/members/login_as_member.php */
+<?=form_close()?>

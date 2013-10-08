@@ -1,6 +1,28 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 2.0
+ * @filesource
+ */
 
-class Addons_fieldtypes extends CI_Controller {
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine Fieldtype Administration Class
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Control Panel
+ * @category	Control Panel
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
+ */
+class Addons_fieldtypes extends CP_Controller {
 
 
 	/**
@@ -14,22 +36,21 @@ class Addons_fieldtypes extends CI_Controller {
 		{
 			show_error(lang('unauthorized_access'));
 		}
-		
+
 		$this->load->library('api');
 		$this->load->library('table');
 		$this->api->instantiate('channel_fields');
-		
-		$this->cp->set_variable('cp_page_title', lang('addons_fieldtypes'));
-		
+
+		$this->view->cp_page_title = lang('addons_fieldtypes');
+
 		$this->jquery->tablesorter('.mainTable', '{
-			headers: {0: {sorter: false}},
-        	textExtraction: "complex",			
+        	textExtraction: "complex",
 			widgets: ["zebra"]
 		}');
-		
+
 		$fieldtypes = $this->api_channel_fields->fetch_all_fieldtypes();
 		$installed_fts = array();
-		
+
 		// Get installed field types
 		$this->load->library('addons');
 		$installed_fts = $this->addons->get_installed('fieldtypes');
@@ -40,13 +61,12 @@ class Addons_fieldtypes extends CI_Controller {
 		}
 
 		$vars['table_headings'] = array(
-										'',
 										lang('fieldtype_name'),
 										lang('version'),
 										lang('status'),
 										lang('action')
 										);
-		
+
 		$vars['fieldtypes'] = array();
 		$names = array();
 		$data = array();
@@ -58,15 +78,15 @@ class Addons_fieldtypes extends CI_Controller {
 			{
 				continue;
 			}
-			
+
 			// Name and Version
 			$name = $ft_info['name'];
 			$names[$ftcount] = strtolower($name);
 			$version = $ft_info['version'];
-			
+
 			// Installed
 			$installed = (isset($installed_fts[$fieldtype]));
-			
+
 			if ($installed && $installed_fts[$fieldtype] == 'y')
 			{
 				$name = '<a href="'.BASE.AMP.'C=addons_fieldtypes'.AMP.'M=global_settings'.AMP.'ft='.strtolower($fieldtype).'"><strong>'.$name.'</strong></a>';
@@ -84,31 +104,28 @@ class Addons_fieldtypes extends CI_Controller {
 
 			// Add to the view array
 			$data[$ftcount] = array(
-				$ftcount,
 				$name,
 				$version,
 				$show_status,
 				$show_action
 			);
-			
+
 			$ftcount++;
 		}
-		
+
 		// Let's order by name just in case
 		asort($names);
-		
+
 		$id = 0;
 		foreach ($names as $k => $v)
 		{
 			$vars['fieldtypes'][$id] = $data[$k];
-			$vars['fieldtypes'][$id][0] = $k;
 			$id++;
 		}
 
-		$this->javascript->compile();
 		$this->cp->set_breadcrumb(BASE.AMP.'C=addons', lang('addons'));
-		
-		$this->load->view('addons/fieldtypes', $vars);
+
+		$this->cp->render('addons/fieldtypes', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -124,12 +141,12 @@ class Addons_fieldtypes extends CI_Controller {
 		{
 			show_error(lang('unauthorized_access'));
 		}
-		
+
 		if ( ! $ft = $this->input->get('ft'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
-		
+
 		$ft = $this->security->sanitize_filename(strtolower($ft));
 
 		$this->load->library('addons/addons_installer');
@@ -137,14 +154,14 @@ class Addons_fieldtypes extends CI_Controller {
 		if ($this->addons_installer->install($ft, 'fieldtype'))
 		{
 			$cp_message = 'Fieldtype installed: '.$ft;
-			
+
 			$this->session->set_flashdata('message_success', $cp_message);
 			$this->functions->redirect(BASE.AMP.'C=addons_fieldtypes');
 		}
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Uninstall a Fieldtype
 	 *
@@ -156,14 +173,14 @@ class Addons_fieldtypes extends CI_Controller {
 		{
 			show_error(lang('unauthorized_access'));
 		}
-		
+
 		if ( ! $ft = $this->input->get('ft'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
-		
+
 		$ft = $this->security->sanitize_filename(strtolower($ft));
-		
+
 		if ($this->input->post('doit') == 'y')
 		{
 			$this->load->library('addons/addons_installer');
@@ -176,14 +193,14 @@ class Addons_fieldtypes extends CI_Controller {
 				$this->functions->redirect(BASE.AMP.'C=addons_fieldtypes');
 			}
 		}
-		
-		$this->cp->set_variable('cp_page_title', lang('delete_fieldtype'));
-		
-		return $this->load->view('addons/fieldtype_delete_confirm', array('form_action' => 'C=addons_fieldtypes'.AMP.'M=uninstall'.AMP.'ft='.$ft));
+
+		$this->view->cp_page_title = lang('delete_fieldtype');
+
+		return $this->cp->render('addons/fieldtype_delete_confirm', array('form_action' => 'C=addons_fieldtypes'.AMP.'M=uninstall'.AMP.'ft='.$ft));
 	}
-		
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Fieldtype Settings Page
 	 *
@@ -195,19 +212,19 @@ class Addons_fieldtypes extends CI_Controller {
 		{
 			show_error(lang('unauthorized_access'));
 		}
-		
+
 		if ( ! $ft = $this->input->get('ft'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
-		
+
 		$this->load->library('api');
 		$this->load->library('addons');
-		
+
 		$this->api->instantiate('channel_fields');
-		
+
 		$installed = $this->addons->get_installed('fieldtypes');
-		
+
 		if ( ! isset($installed[$ft]) OR ! $this->api_channel_fields->include_handler($ft))
 		{
 			show_error(lang('unauthorized_access'));
@@ -223,36 +240,37 @@ class Addons_fieldtypes extends CI_Controller {
 
 		// Instantiate class
 		$FT = $this->api_channel_fields->setup_handler($ft, TRUE);
-		
+
 		// Update if version changed
 		$version = $installed[$ft]['version'];
-		
+
 		if ($FT->info['version'] > $version && method_exists($FT, 'update') && $FT->update($version) !== FALSE)
 		{
-			$this->db->update('fieldtypes', array('version' => $FT->info['version']), array('name' => $ft));
+			if ($this->api_channel_fields->apply('update', array($version)) !== FALSE)
+			{
+				$this->db->update('fieldtypes', array('version' => $FT->info['version']), array('name' => $ft));
+			}
 		}
-		
+
 		$FT->settings = $settings;
-		
+
 		// Saving!
 		if (count($_POST))
 		{
 			$settings = $this->api_channel_fields->apply('save_global_settings');
 			$settings = base64_encode(serialize($settings));
 			$this->db->update('fieldtypes', array('settings' => $settings), array('name' => $ft));
-			
+
 			$this->session->set_flashdata('message_success', lang('global_settings_saved'));
 			$this->functions->redirect(BASE.AMP.'C=addons_fieldtypes');
 		}
-		
+
 		$vars = array(
 			'_ft_settings_body'	=> $this->api_channel_fields->apply('display_global_settings'),
 			'_ft_name'			=> $ft
 		);
-		$this->cp->set_variable('cp_page_title', $FT->info['name']);
-		
-		$this->javascript->compile();
-		$this->load->view('addons/fieldtype_global_settings', $vars);
+		$this->view->cp_page_title = $FT->info['name'];
+		$this->cp->render('addons/fieldtype_global_settings', $vars);
 	}
 }
 

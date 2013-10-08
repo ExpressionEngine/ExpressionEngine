@@ -3,10 +3,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -19,8 +19,8 @@
  * @package		ExpressionEngine
  * @subpackage	Core
  * @category	Model
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 class Channel_model extends CI_Model {
 
@@ -36,6 +36,10 @@ class Channel_model extends CI_Model {
 		if (( $site_id === NULL OR ! is_numeric($site_id)) && $site_id != 'all')
 		{
 			$site_id = $this->config->item('site_id');
+		}
+		elseif ($site_id === 'all')
+		{
+			$this->db->order_by('site_id');
 		}
 
 		// If the user is restricted to specific channels, add that to the query
@@ -143,6 +147,7 @@ class Channel_model extends CI_Model {
 	function get_channel_statuses($status_group)
 	{
 		$this->db->where('group_id', $status_group);
+		$this->db->order_by('status_order');
 		return $this->db->get('statuses');
 	}
 
@@ -184,34 +189,11 @@ class Channel_model extends CI_Model {
 	 */
 	function get_required_fields($field_group)
 	{
-
 		$this->db->from('channel_fields');
 		$this->db->where('group_id', $field_group);
 		$this->db->where('field_required', 'y');		
 		$this->db->order_by('field_order');
 		return $this->db->get();
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Get Channel Categories
-	 *
-	 * Gets category information for a given category group, by default only fetches cat_id and cat_name
-	 * 
-	 * @deprecated 2.3, Use category_model->get_channel_categories instead
-	 *
-	 * @access	public
-	 * @param	int
-	 * @return	mixed
-	 */
-	function get_channel_categories($cat_group, $additional_fields = array(), $additional_where = array())
-	{
-		$this->load->library('logger');
-		$this->logger->deprecated('2.3', 'Category_model::get_channel_categories()');
-		
-		$this->load->model('category_model');
-		return $this->category_model->get_channel_categories($cat_group, $additional_fields, $additional_where);
 	}
 	
 	// --------------------------------------------------------------------
@@ -225,6 +207,11 @@ class Channel_model extends CI_Model {
 	 */
 	function get_most_recent_id($type = 'entry')
 	{
+		if ( ! $allowed_channels = $this->session->userdata('assigned_channels'))
+		{
+			return FALSE;
+		}
+
 		// By default we only grab the primary id
 		$fields = array($type.'_id');
 		$sort = $type.'_date';
@@ -235,31 +222,23 @@ class Channel_model extends CI_Model {
 				break;
 			case 'entry':
 			default:
-				$table = 'channel_titles';
-				$fields[] = 'channel_id';
+				$table 		= 'channel_titles';
+				$fields[] 	= 'channel_id';
 		}
 		
-		$this->db->select($fields);
-		$this->db->order_by($sort, 'DESC');
-		$this->db->where('site_id', $this->config->item('site_id'));
+		$this->db->select($fields)
+			->order_by($sort, 'DESC')
+			->where('site_id', $this->config->item('site_id'));
 		
 		if ($this->session->userdata['can_edit_other_entries'] != 'y')
 		{
-			$this->db->where('author_id', $this->session->userdata['member_id']);
+			$this->db->where('author_id', $this->session->userdata('member_id'));
 		}
-		
-		if ($allowed_channels = $this->session->userdata('assigned_channels'))
-		{
-			// Only return an entry from a channel the user has access to
-			$this->db->where_in('channel_id', array_keys($allowed_channels));
-		}
-		// Return FALSE if user does not have access to any channels
-		else
-		{
-			return FALSE;
-		}
-		
-		$entry = $this->db->get($table, 1);
+
+		// Only return an entry from a channel the user has access to
+		$entry = $this->db
+			->where_in('channel_id', array_keys($allowed_channels))
+			->get($table, 1);
 		
 		// Return the result if we found anything
 		if ($entry->num_rows() > 0)
@@ -362,12 +341,12 @@ class Channel_model extends CI_Model {
 			$this->db->delete('category_posts');
 
 			// delete parents
-			$this->db->where_in('rel_parent_id', $entries);
+			$this->db->where_in('parent_id', $entries);
 			$this->db->delete('relationships');
 			
 			// are there children?
-			$this->db->select('rel_id');
-			$this->db->where_in('rel_child_id', $entries);
+			$this->db->select('relationship_id');
+			$this->db->where_in('child_id', $entries);
 			$child_results = $this->db->get('relationships');
 
 			if ($child_results->num_rows() > 0)
@@ -383,7 +362,7 @@ class Channel_model extends CI_Model {
 
 				foreach ($child_results->result_array() as $row)
 				{
-					$cids[] = $row['rel_id'];
+					$cids[] = $row['relationship_id'];
 				}
 
 				foreach($fquery->result_array() as $row)
@@ -394,7 +373,7 @@ class Channel_model extends CI_Model {
 			}
 
 			// aaaand delete
-			$this->db->where_in('rel_child_id', $entries);
+			$this->db->where_in('child_id', $entries);
 			$this->db->delete('relationships');
 		}
 
@@ -497,6 +476,175 @@ class Channel_model extends CI_Model {
 
 	// --------------------------------------------------------------------
 	
+	/**
+	 * Generates SQL for a field search
+	 * 
+	 * @param	string	Search terms from search parameter
+	 * @param	string	Database column name to search
+	 * @param	int		Site ID
+	 * @return	string	SQL to include in an existing query's WHERE clause
+	 */
+	public function field_search_sql($terms, $col_name, $site_id = FALSE)
+	{
+		$search_method = '_field_search';
+
+		if (strncmp($terms, '=', 1) ==  0)
+		{
+			// Remove the '=' sign that specified exact match.
+			$terms = substr($terms, 1);
+
+			$search_method = '_exact_field_search';
+		}
+		elseif (strncmp($terms, '<', 1) == 0 ||
+				strncmp($terms, '>', 1) == 0)
+		{
+			$search_method = '_numeric_comparison_search';
+		}
+
+		return $this->$search_method($terms, $col_name, $site_id);
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Generate the SQL for a numeric comparison search
+	 * <, >, <=, >= operators
+	 *
+	 * search:field=">=20"
+	 */
+	private function _numeric_comparison_search($terms, $col_name, $site_id)
+	{
+		if ( ! preg_match('/^([<>]=?)(\d+)/', $terms, $match))
+		{
+			return $this->_field_search($terms, $col_name, $site_id);
+		}
+
+		$site_id = ($site_id !== FALSE) ? 'wd.site_id=' . $site_id . ' AND ' : '';
+
+		// col_name >= 20
+		return '(' . $site_id . ' ' . $col_name . ' ' . $match[1] . ' ' . $match[2] . ')';
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Generate the SQL for an exact query in field search.
+	 *
+	 * search:field="=words|other words"
+	 */
+	private function _exact_field_search($terms, $col_name, $site_id = FALSE)
+	{
+		// Trivial case, we don't have special IS_EMPTY handling.
+		if(strpos($terms, 'IS_EMPTY') === FALSE) 
+		{
+			return substr(ee()->functions->sql_andor_string($terms, $col_name), 3).' ';
+		}
+
+		// Did this because I don't like repeatedly checking
+		// the beginning of the string with strncmp for that
+		// 'not', much prefer to do it once and then set a 
+		// boolean.  But.. [cont:1]
+		$not = false;
+		if (strncmp($terms, 'not ', 4) == 0)
+		{
+			$not = true;
+			$terms = substr($terms, 4);
+		}
+
+		if (strpos($terms, '|') !== false)
+		{  
+			$terms = str_replace('IS_EMPTY|', '', $terms);
+		}
+		else 
+		{
+			$terms = str_replace('IS_EMPTY', '', $terms);
+		}
+		   
+		$add_search = '';
+		$conj = ''; 
+
+		$site_id = ($site_id !== FALSE) ? 'wd.site_id=' . $site_id . ' AND ' : '';
+		
+		// If we have search terms, then we need to build the search.
+		if ( ! empty($terms)) 
+		{
+			// [cont:1]...it makes this a little hacky.  Gonna leave it for the moment,
+			// but may come back to it.
+			$add_search = ee()->functions->sql_andor_string(($not ? 'not ' . $terms : $terms), $col_name);
+			// remove the first AND output by ee()->functions->sql_andor_string() so we can parenthesize this clause
+			$add_search = '('.$site_id . substr($add_search, 3) . ')';
+											
+			$conj = ($add_search != '' && ! $not) ? 'OR' : 'AND';
+		}
+
+		// If we reach here, we have an IS_EMPTY in addition to possible search terms.
+		// Add the empty check condition.
+		if ($not)
+		{
+			return $add_search . ' ' . $conj . ' (' . $site_id . $col_name . ' != "")';
+		}
+
+		return $add_search.' '.$conj.' (' . $site_id . $col_name . ' = "")';
+	}
+	
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Generate the SQL for a LIKE query in field search.
+	 *
+	 * 		search:field="words|other words|IS_EMPTY"
+	 */
+	private function _field_search($terms, $col_name, $site_id = FALSE)
+	{
+		$not = '';
+		if (strncmp($terms, 'not ', 4) == 0)
+		{
+			$terms = substr($terms, 4);
+			$not = 'NOT';
+		}
+
+		if (strpos($terms, '&&') !== FALSE)
+		{
+			$terms = explode('&&', $terms);
+			$andor = $not == 'NOT' ? 'OR' : 'AND';
+		}
+		else
+		{
+			$terms = explode('|', $terms);
+			$andor = $not == 'NOT' ? 'AND' : 'OR';
+		}
+
+		$site_id = ($site_id !== FALSE) ? 'wd.site_id=' . $site_id . ' AND ' : '';
+
+		$search_sql = '';
+		foreach ($terms as $term)
+		{
+			if($search_sql !== '') 
+			{
+				$search_sql .= $andor;
+			}
+			if ($term == 'IS_EMPTY')
+			{
+				$search_sql .= ' (' . $site_id
+					. $col_name . ($not=='NOT' ? '!' : '') . '="") ';
+			}
+			elseif (strpos($term, '\W') !== FALSE) // full word only, no partial matches
+			{
+				// Note: MySQL's nutty POSIX regex word boundary is [[:>:]]
+				$term = '([[:<:]]|^)'.preg_quote(str_replace('\W', '', $term)).'([[:>:]]|$)';
+
+				$search_sql .= ' (' . $site_id 
+					. $col_name . ' ' . $not . ' REGEXP "' . ee()->db->escape_str($term).'") ';
+			}
+			else
+			{	
+				$search_sql .= ' (' . $site_id 
+					. $col_name . ' ' . $not . ' LIKE "%' . ee()->db->escape_like_str($term) . '%") ';
+			}
+		}
+
+		return $search_sql;
+	}
 }
 // END CLASS
 

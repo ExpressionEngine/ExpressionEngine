@@ -4,10 +4,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,8 +20,8 @@
  * @package		ExpressionEngine
  * @subpackage	Modules
  * @category	Modules
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 class Pages_upd {
 
@@ -69,7 +69,7 @@ class Pages_upd {
 	{
 		$sql[] = "INSERT INTO exp_modules (module_name, module_version, has_cp_backend, has_publish_fields) VALUES ('Pages', '$this->version', 'y', 'y')";
 
-		if ( ! $this->EE->db->field_exists('site_pages', 'exp_sites'))
+		if ( ! ee()->db->field_exists('site_pages', 'exp_sites'))
 		{
 			$sql[] = "ALTER TABLE `exp_sites` ADD `site_pages` TEXT NOT NULL";
 		}
@@ -83,11 +83,11 @@ class Pages_upd {
 
 		foreach ($sql as $query)
 		{
-			$this->EE->db->query($query);
+			ee()->db->query($query);
 		}
 		
-		$this->EE->load->library('layout');
-		$this->EE->layout->add_layout_tabs($this->tabs(), 'pages');
+		ee()->load->library('layout');
+		ee()->layout->add_layout_tabs($this->tabs(), 'pages');
 
 		return TRUE;
 	}
@@ -103,7 +103,7 @@ class Pages_upd {
 	 */
 	function uninstall()
 	{
-		$query = $this->EE->db->query("SELECT module_id FROM exp_modules WHERE module_name = 'Pages'");
+		$query = ee()->db->query("SELECT module_id FROM exp_modules WHERE module_name = 'Pages'");
 
 		$sql[] = "DELETE FROM exp_module_member_groups WHERE module_id = '".$query->row('module_id') ."'";
 		$sql[] = "DELETE FROM exp_modules WHERE module_name = 'Pages'";
@@ -114,11 +114,11 @@ class Pages_upd {
 
 		foreach ($sql as $query)
 		{
-			$this->EE->db->query($query);
+			ee()->db->query($query);
 		}
 		
-		$this->EE->load->library('layout');
-		$this->EE->layout->delete_layout_tabs($this->tabs());
+		ee()->load->library('layout');
+		ee()->layout->delete_layout_tabs($this->tabs());
 
 		return TRUE;
 	}
@@ -143,8 +143,8 @@ class Pages_upd {
 		
 		if (version_compare($current, '2.1', '<'))
 		{
-			$this->EE->db->where('module_name', 'Pages');
-			$this->EE->db->update('modules', array('has_publish_fields' => 'y'));
+			ee()->db->where('module_name', 'Pages');
+			ee()->db->update('modules', array('has_publish_fields' => 'y'));
 		}
 		
 		if (version_compare($current, '2.2', '<'))
@@ -162,9 +162,9 @@ class Pages_upd {
 	 */
 	private function _do_22_update()
 	{
-		$this->EE->load->library('layout');
+		ee()->load->library('layout');
 		
-		$layouts = $this->EE->db->get('layout_publish');
+		$layouts = ee()->db->get('layout_publish');
 		
 		if ($layouts->num_rows() === 0)
 		{
@@ -201,7 +201,7 @@ class Pages_upd {
 
 		}
 		
-		$this->EE->db->update_batch('layout_publish', $layouts, 'layout_id');
+		ee()->db->update_batch('layout_publish', $layouts, 'layout_id');
 		
 		return TRUE;
 	}

@@ -3,10 +3,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -19,8 +19,8 @@
  * @package		ExpressionEngine
  * @subpackage	Core
  * @category	Model
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 class Search_model extends CI_Model {
 
@@ -365,8 +365,8 @@ class Search_model extends CI_Model {
 				// Custom range
 				$ranges = explode('to', $data['date_range']);
 				
-				$start = $this->localize->convert_human_date_to_gmt(trim($ranges[0]).' 00:00');
-				$end = $this->localize->convert_human_date_to_gmt(trim($ranges[1]).' 23:59');
+				$start = $this->localize->string_to_timestamp(trim($ranges[0]).' 00:00');
+				$end = $this->localize->string_to_timestamp(trim($ranges[1]).' 23:59');
 			
 				if (ctype_digit($start) && ctype_digit($end))
 				{
@@ -401,7 +401,7 @@ class Search_model extends CI_Model {
 		
 		
 		// Process hook data
-		if (is_array($data['_hook_wheres']) && is_array($data['_hook_wheres']))
+		if (isset($data['_hook_wheres']) && is_array($data['_hook_wheres']))
 		{
 			foreach($data['_hook_wheres'] as $field => $value)
 			{
@@ -485,7 +485,6 @@ class Search_model extends CI_Model {
 				exp_channel_titles.author_id, 
 				exp_channel_titles.status, 
 				exp_channel_titles.entry_date, 
-				exp_channel_titles.dst_enabled,
 				exp_channel_titles.comment_total, 
 				exp_channels.live_look_template,
 				exp_members.username,

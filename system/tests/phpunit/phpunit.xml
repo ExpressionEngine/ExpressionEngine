@@ -6,7 +6,7 @@
 >
 	<testsuites>
 		<testsuite name="CodeIgniter Core Test Suite">
-			<file>codeigniter/Setup_test.php</file>
+			<!-- <file>codeigniter/Setup_test.php</file> -->
 			<directory suffix="test.php">codeigniter/core</directory>
 			<!-- Need to pull CI Reactor in to run these
 			<directory suffix="test.php">codeigniter/helpers</directory>

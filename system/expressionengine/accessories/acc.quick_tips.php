@@ -3,10 +3,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -22,8 +22,8 @@
  * @package		ExpressionEngine
  * @subpackage	Control Panel
  * @category	Accessories
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 class Quick_tips_acc {
 
@@ -43,7 +43,7 @@ class Quick_tips_acc {
 								'Did you know… that you can view previously sent email from the Communicate tool?',
 								'Did you know… that Accessories can be assigned to member groups?  Or even sections of the control panel?',
 								'You can use the "disable" parameter to eliminate unneeded queries and improve performance.',
-								'Need help? Want to network? Visit the <a rel="external" href="http://expressionengine.com/forums/">forums</a>.',
+								'Need help? Want to network? Visit the <a rel="external" href="http://ellislab.com/forums/">forums</a>.',
 								'To hide EE tags in your templates you can use the EE comment feature {!—EE Comment—} as opposed to typical HTML comments <!—HTML Comment—>',
 								'"Display SQL Queries & Template debugging" is a great way to see under the hood of EE during development.',
 								);
@@ -55,7 +55,7 @@ class Quick_tips_acc {
 	{
 		
 		$this->EE =& get_instance();
-		$this->EE->load->helper('array');
+		ee()->load->helper('array');
 	}
 
 	function update()

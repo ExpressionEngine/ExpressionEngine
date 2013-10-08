@@ -4,10 +4,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,8 +20,8 @@
  * @package		ExpressionEngine
  * @subpackage	Helpers
  * @category	Helpers
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 
 // ------------------------------------------------------------------------
@@ -61,6 +61,21 @@ function unique_marker($ident)
 function trim_nbs($string)
 {
 	return trim($string, " \t\n\r\0\xB\xA0".chr(0xC2).chr(0xA0));
+}
+
+// ----------------------------------------------------------------------------
+
+/**
+ * Returns the surrounding character of a string, if it exists
+ * 
+ * @param	string	$string		The string to check
+ * @return	mixed	The surrounding character, or FALSE if there isn't one
+ */
+function surrounding_character($string)
+{
+	$first_char = substr($string, 0, 1);
+	
+	return ($first_char == substr($string, -1, 1)) ? $first_char : FALSE;
 }
 
 /* End of file EE_string_helper.php */

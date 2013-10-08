@@ -6,12 +6,7 @@
 	
 	<title><?=$cp_page_title?> | ExpressionEngine</title>
 
-	<link rel="stylesheet" href="<?=BASE.AMP.'C=css'?>" type="text/css" media="screen" title="Global Styles" charset="utf-8" />
-    
-	<link rel="stylesheet" href="<?=BASE.AMP.'C=css'.AMP.'M=datepicker'?>" type="text/css" media="screen" />
-	<!--[if lte IE 7]>
-	<link rel="stylesheet" href="<?=BASE.AMP.'C=css'.AMP.'M=iefix'?>" type="text/css" media="screen" charset="utf-8" />
-	<![endif]-->
+	<?=$this->view->head_link('css/global.css'); ?>
 
 	<?php 
     if (isset($library_src))
@@ -36,7 +31,7 @@
 
 <body onload="<?=$cp_page_onload?>">
 
-<div id="branding"><a href="http://expressionengine.com/"><img src="<?=PATH_CP_GBL_IMG?>ee_logo_branding.gif" width="250" height="28" alt="<?=lang('powered_by')?> ExpressionEngine" /></a></div>
+<div id="branding"><a href="http://ellislab.com/"><img src="<?=PATH_CP_GBL_IMG?>ee_logo_branding.gif" width="250" height="28" alt="<?=lang('powered_by')?> ExpressionEngine" /></a></div>
 
 <?php
 if ($EE_view_disable !== TRUE)

@@ -4,7 +4,7 @@ $plugin_info = array(
 						'pi_name'			=> 'XML Encode',
 						'pi_version'		=> '1.3',
 						'pi_author'			=> 'Rick Ellis',
-						'pi_author_url'		=> 'http://expressionengine.com/',
+						'pi_author_url'		=> 'http://ellislab.com/',
 						'pi_description'	=> 'XML Encoding plugin.',
 						'pi_usage'			=> Xml_encode::usage()
 					);
@@ -15,9 +15,9 @@ $plugin_info = array(
  *
  * @package			ExpressionEngine
  * @category		Plugin
- * @author			ExpressionEngine Dev Team
- * @copyright		Copyright (c) 2004 - 2012, EllisLab, Inc.
- * @link			http://expressionengine.com/downloads/details/xml_encode/
+ * @author			EllisLab Dev Team
+ * @copyright		Copyright (c) 2004 - 2013, EllisLab, Inc.
+ * @link			http://ellislab.com
  */
 
 
@@ -33,14 +33,19 @@ class Xml_encode {
 	{
 		$this->EE =& get_instance();
 		
-		$protect_all = ($this->EE->TMPL->fetch_param('protect_entities') === 'yes') ? TRUE : FALSE;
+		$protect_all = (ee()->TMPL->fetch_param('protect_entities') === 'yes') ? TRUE : FALSE;
 		
-		$str = ($str == '') ? $this->EE->TMPL->tagdata : $str;
-
+		$str = ($str == '') ? ee()->TMPL->tagdata : $str;
+		
 		// Load the XML Helper
-		$this->EE->load->helper('xml');
+		ee()->load->helper('xml');
 		
 		$str = xml_convert(strip_tags($str), $protect_all);
+		
+		// Strip [email] tags
+		$str = preg_replace("/\[email=(.*?)\](.*?)\[\/email\]/i", '\\2', $str);
+		$str = preg_replace("/\[email\](.*?)\[\/email\]/i", '\\1', $str);
+		
 		$this->return_data = trim(str_replace('&nbsp;', '&#160;', $str));
 	}
 

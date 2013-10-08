@@ -4,10 +4,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package     ExpressionEngine
- * @author      ExpressionEngine Dev Team
- * @copyright   Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license     http://expressionengine.com/user_guide/license.html
- * @link        http://expressionengine.com
+ * @author      EllisLab Dev Team
+ * @copyright   Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license     http://ellislab.com/expressionengine/user-guide/license.html
+ * @link        http://ellislab.com
  * @since       Version 2.0
  * @filesource
  */
@@ -20,8 +20,8 @@
  * @package     ExpressionEngine
  * @subpackage  Core
  * @category    Core
- * @author      ExpressionEngine Dev Team
- * @link        http://expressionengine.com
+ * @author      EllisLab Dev Team
+ * @link        http://ellislab.com
  */
 class Updater {
 
@@ -35,26 +35,31 @@ class Updater {
     function do_update()
     {
 		// update docs location
-		if ($this->EE->config->item('doc_url') == 'http://expressionengine.com/public_beta/docs/')
+		if (ee()->config->item('doc_url') == 'http://expressionengine.com/public_beta/docs/')
 		{
-			$this->EE->config->update_site_prefs(array('doc_url' => 'http://expressionengine.com/user_guide/'), 1);
+			ee()->config->update_site_prefs(array('doc_url' => 'http://ellislab.com/expressionengine/user-guide/'), 1);
 		}
-		
-		if ( ! $this->EE->db->field_exists('can_access_fieldtypes', 'member_groups'))
-		{
-			$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_fieldtypes` char(1) NOT NULL DEFAULT 'n' AFTER `can_access_files`";            
-		}
-		
-		$Q[] = 'UPDATE exp_member_groups SET can_access_fieldtypes = "y" WHERE group_id = 1';
-		$Q[] = 'UPDATE exp_actions SET class = "Channel" WHERE class = "channel"';
-		
-		$count = count($Q);
-		
-		foreach ($Q as $num => $sql)
-		{
-			$this->EE->progress->update_state("Running Query $num of $count");
-	        $this->EE->db->query($sql);
-		}
+
+		ee()->smartforge->add_column(
+			'member_groups',
+			array(
+				'can_access_fieldtypes' => array(
+					'type'			=> 'char',
+					'constraint'	=> 1,
+					'default'		=> 'n',
+					'null'			=> FALSE
+				)
+			),
+			'can_access_files'
+		);
+
+		ee()->db->set('can_access_fieldtypes', 'y');
+		ee()->db->where('group_id', '1');
+		ee()->db->update('member_groups');
+
+		ee()->db->set('class', 'Channel');
+		ee()->db->where('class', 'channel');
+		ee()->db->update('actions');
 		
 		return TRUE;
 	}

@@ -3,10 +3,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -19,8 +19,8 @@
  * @package		ExpressionEngine
  * @subpackage	Modules
  * @category	Modules
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 
 class Search {
@@ -53,7 +53,7 @@ class Search {
 	 */
 	function do_search()
 	{
-		$this->EE->lang->loadfile('search');
+		ee()->lang->loadfile('search');
 		
 		// Get hidden meta vars 
 		if (isset($_POST['meta']))
@@ -70,9 +70,9 @@ class Search {
 		// We look for the "mbr" $_GET variable.  If it exsists it will
 		// trigger our exception
 		
-		if ($this->EE->input->get_post('mbr'))
+		if (ee()->input->get_post('mbr'))
 		{
-			$this->_meta['result_page']	= ($this->EE->input->get_post('result_path') != '') ? $this->EE->input->get_post('result_path') : 'search/results';
+			$this->_meta['result_page']	= (ee()->input->get_post('result_path') != '') ? ee()->input->get_post('result_path') : 'search/results';
 			$_POST['keywords']		= '';
 			$_POST['exact_match'] 	= 'y';
 			$_POST['exact_keyword'] = 'n';
@@ -102,43 +102,43 @@ class Search {
 		
 		if ( ! isset($this->_meta['result_page']) OR $this->_meta['result_page'] == '')
 		{
-			return $this->EE->output->show_user_error('general', array(lang('search_path_error')));
+			return ee()->output->show_user_error('general', array(lang('search_path_error')));
 		}
 		
 		/** ----------------------------------------
 		/**  Is the current user allowed to search?
 		/** ----------------------------------------*/
-		if ($this->EE->session->userdata('can_search') == 'n' AND $this->EE->session->userdata('group_id') != 1)
+		if (ee()->session->userdata('can_search') == 'n' AND ee()->session->userdata('group_id') != 1)
 		{			
-			return $this->EE->output->show_user_error('general', array(lang('search_not_allowed')));
+			return ee()->output->show_user_error('general', array(lang('search_not_allowed')));
 		}
 		
 		/** ----------------------------------------
 		/**  Flood control
 		/** ----------------------------------------*/
 		
-		if ($this->EE->session->userdata['search_flood_control'] > 0 AND $this->EE->session->userdata['group_id'] != 1)
+		if (ee()->session->userdata['search_flood_control'] > 0 AND ee()->session->userdata['group_id'] != 1)
 		{
-			$cutoff = time() - $this->EE->session->userdata['search_flood_control'];
+			$cutoff = time() - ee()->session->userdata['search_flood_control'];
 
-			$sql = "SELECT search_id FROM exp_search WHERE site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."' AND search_date > '{$cutoff}' AND ";
+			$sql = "SELECT search_id FROM exp_search WHERE site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."' AND search_date > '{$cutoff}' AND ";
 			
-			if ($this->EE->session->userdata['member_id'] != 0)
+			if (ee()->session->userdata['member_id'] != 0)
 			{
-				$sql .= "(member_id='".$this->EE->db->escape_str($this->EE->session->userdata('member_id'))."' OR ip_address='".$this->EE->db->escape_str($this->EE->input->ip_address())."')";
+				$sql .= "(member_id='".ee()->db->escape_str(ee()->session->userdata('member_id'))."' OR ip_address='".ee()->db->escape_str(ee()->input->ip_address())."')";
 			}
 			else
 			{
-				$sql .= "ip_address='".$this->EE->db->escape_str($this->EE->input->ip_address())."'";
+				$sql .= "ip_address='".ee()->db->escape_str(ee()->input->ip_address())."'";
 			}
 			
-			$query = $this->EE->db->query($sql);
+			$query = ee()->db->query($sql);
 					
-			$text = str_replace("%x", $this->EE->session->userdata['search_flood_control'], lang('search_time_not_expired'));
+			$text = str_replace("%x", ee()->session->userdata['search_flood_control'], lang('search_time_not_expired'));
 				
 			if ($query->num_rows() > 0)
 			{
-				return $this->EE->output->show_user_error('general', array($text));
+				return ee()->output->show_user_error('general', array($text));
 			}
 		}
 		
@@ -154,7 +154,7 @@ class Search {
 			{		
 				if ( ! isset($_POST['keywords']) OR $_POST['keywords'] == "")
 				{			
-					return $this->EE->output->show_user_error('general', array(lang('search_no_keywords')));
+					return ee()->output->show_user_error('general', array(lang('search_no_keywords')));
 				}
 			}
 		}
@@ -165,7 +165,7 @@ class Search {
 		if ($_POST['keywords'] != "")		
 		{
 			// Load the search helper so we can filter the keywords
-			$this->EE->load->helper('search');
+			ee()->load->helper('search');
 
 			$this->keywords = sanitize_search_terms($_POST['keywords']);
 			
@@ -179,13 +179,13 @@ class Search {
 				
 				$text = str_replace("%x", $this->min_length, $text);
 							
-				return $this->EE->output->show_user_error('general', array($text));
+				return ee()->output->show_user_error('general', array($text));
 			}
 
 			// Load the text helper
-			$this->EE->load->helper('text');
+			ee()->load->helper('text');
 
-			$this->keywords = ($this->EE->config->item('auto_convert_high_ascii') == 'y') ? ascii_to_entities($this->keywords) : $this->keywords;
+			$this->keywords = (ee()->config->item('auto_convert_high_ascii') == 'y') ? ascii_to_entities($this->keywords) : $this->keywords;
 			
 			/** ----------------------------------------
 			/**  Remove "ignored" words
@@ -213,7 +213,7 @@ class Search {
 								
 				if (trim($this->keywords) == '')
 				{
-					return $this->EE->output->show_user_error('general', array(lang('search_no_stopwords')));
+					return ee()->output->show_user_error('general', array(lang('search_no_stopwords')));
 				}
 			}
 			
@@ -221,12 +221,12 @@ class Search {
 			/**  Log Search Terms
 			/** ----------------------------------------*/
 			
-			$this->EE->functions->log_search_terms($this->keywords);
+			ee()->functions->log_search_terms($this->keywords);
 		}
 		
 		if (isset($_POST['member_name']) AND $_POST['member_name'] != "")
 		{
-			$_POST['member_name'] = $this->EE->security->xss_clean($_POST['member_name']);
+			$_POST['member_name'] = ee()->security->xss_clean($_POST['member_name']);
 		}
 		
 		/** ----------------------------------------
@@ -246,29 +246,29 @@ class Search {
 		{	
 			if (isset($this->_meta['no_results_page']) AND $this->_meta['no_results_page'] != '')
 			{
-				$hash = $this->EE->functions->random('md5');
+				$hash = ee()->functions->random('md5');
 				
 				$data = array(
 					'search_id'		=> $hash,
 					'search_date'	=> time(),
-					'member_id'		=> $this->EE->session->userdata('member_id'),
+					'member_id'		=> ee()->session->userdata('member_id'),
 					'keywords'		=> ($original_keywords != '') ? $original_keywords : $mbr,
-					'ip_address'	=> $this->EE->input->ip_address(),
+					'ip_address'	=> ee()->input->ip_address(),
 					'total_results'	=> 0,
 					'per_page'		=> 0,
 					'query'			=> '',
 					'custom_fields'	=> '',
 					'result_page'	=> '',
-					'site_id'		=> $this->EE->config->item('site_id')
+					'site_id'		=> ee()->config->item('site_id')
 				);
 		
-				$this->EE->db->query($this->EE->db->insert_string('exp_search', $data));
+				ee()->db->query(ee()->db->insert_string('exp_search', $data));
 				
-				return $this->EE->functions->redirect($this->EE->functions->create_url($this->EE->functions->extract_path("='".$this->_meta['no_results_page']."'")).'/'.$hash.'/');
+				return ee()->functions->redirect(ee()->functions->create_url(ee()->functions->extract_path("='".$this->_meta['no_results_page']."'")).'/'.$hash.'/');
 			}
 			else
 			{
-				return $this->EE->output->show_user_error('off', array(lang('search_no_result')), lang('search_result_heading'));
+				return ee()->output->show_user_error('off', array(lang('search_no_result')), lang('search_result_heading'));
 			}
 		}
 		
@@ -276,7 +276,7 @@ class Search {
 		/**  If we have a result, cache it
 		/** ----------------------------------------*/
 		
-		$hash = $this->EE->functions->random('md5');
+		$hash = ee()->functions->random('md5');
 		
 		$sql = str_replace("\\", "\\\\", $sql);
 		
@@ -287,33 +287,31 @@ class Search {
 		$data = array(
 			'search_id'		=> $hash,
 			'search_date'	=> time(),
-			'member_id'		=> $this->EE->session->userdata('member_id'),
+			'member_id'		=> ee()->session->userdata('member_id'),
 			'keywords'		=> ($original_keywords != '') ? $original_keywords : $mbr,
-			'ip_address'	=> $this->EE->input->ip_address(),
+			'ip_address'	=> ee()->input->ip_address(),
 			'total_results'	=> $this->num_rows,
 			'per_page'		=> (isset($_POST['RES']) AND is_numeric($_POST['RES']) AND $_POST['RES'] < 999 ) ? $_POST['RES'] : 50,
 			'query'			=> addslashes(serialize($sql)),
 			'custom_fields'	=> addslashes(serialize($this->fields)),
 			'result_page'	=> $this->_meta['result_page'],
-			'site_id'		=> $this->EE->config->item('site_id')
+			'site_id'		=> ee()->config->item('site_id')
 		);
 		
-		$this->EE->db->query($this->EE->db->insert_string('exp_search', $data));
+		ee()->db->query(ee()->db->insert_string('exp_search', $data));
 		
 		/** ----------------------------------------
 		/**  Redirect to search results page
 		/** ----------------------------------------*/
-
-		// Load the string helper
-		$this->EE->load->helper('string');
 			
-		$path = $this->EE->functions->remove_double_slashes(
-			$this->EE->functions->create_url(
+		$path = reduce_double_slashes(
+			ee()->functions->create_url(
 				trim_slashes($this->_meta['result_page'])
 			).'/'.$hash.'/'
 		);
 		
-		return $this->EE->functions->redirect($path);
+		ee()->security->restore_xid();
+		return ee()->functions->redirect($path);
 	}
 	
 	// ------------------------------------------------------------------------
@@ -327,17 +325,17 @@ class Search {
 	protected function _build_meta_array()
 	{
 		$meta = array(
-			'status'				=> $this->EE->TMPL->fetch_param('status', ''),
-			'channel'				=> $this->EE->TMPL->fetch_param('channel', ''),
-			'category'				=> $this->EE->TMPL->fetch_param('category', ''),
-			'search_in'				=> $this->EE->TMPL->fetch_param('search_in', ''),
-			'where'					=> $this->EE->TMPL->fetch_param('where', 'all'),
-			'show_expired'			=> $this->EE->TMPL->fetch_param('show_expired', ''),
-			'show_future_entries'	=> $this->EE->TMPL->fetch_param('show_future_entries'),
-			'result_page'			=> $this->EE->TMPL->fetch_param('result_page', 'search/results'),
-			'no_results_page'		=> $this->EE->TMPL->fetch_param('no_result_page', '')
+			'status'				=> ee()->TMPL->fetch_param('status', ''),
+			'channel'				=> ee()->TMPL->fetch_param('channel', ''),
+			'category'				=> ee()->TMPL->fetch_param('category', ''),
+			'search_in'				=> ee()->TMPL->fetch_param('search_in', ''),
+			'where'					=> ee()->TMPL->fetch_param('where', ''),
+			'show_expired'			=> ee()->TMPL->fetch_param('show_expired', ''),
+			'show_future_entries'	=> ee()->TMPL->fetch_param('show_future_entries'),
+			'result_page'			=> ee()->TMPL->fetch_param('result_page', 'search/results'),
+			'no_results_page'		=> ee()->TMPL->fetch_param('no_result_page', '')
 		);
-		
+
 		$meta = serialize($meta);
 
 		if ( function_exists('mcrypt_encrypt') )
@@ -345,13 +343,18 @@ class Search {
 			$init_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB);
 			$init_vect = mcrypt_create_iv($init_size, MCRYPT_RAND);
 
-			$meta = mcrypt_encrypt(MCRYPT_RIJNDAEL_256, md5($this->EE->db->username.$this->EE->db->password), $meta, MCRYPT_MODE_ECB, $init_vect);
+			$meta = mcrypt_encrypt(
+				MCRYPT_RIJNDAEL_256,
+				md5(ee()->db->username.ee()->db->password),
+				$meta,
+				MCRYPT_MODE_ECB,
+				$init_vect
+			);
 		}
 		else
 		{
-			$meta = $meta.md5($this->EE->db->username.$this->EE->db->password.$meta);
+			$meta = $meta.md5(ee()->db->username.ee()->db->password.$meta);
 		}
-		
 		
 		return base64_encode($meta);
 	}
@@ -376,7 +379,7 @@ class Search {
 			$meta_array = rtrim(
 				mcrypt_decrypt(
 					MCRYPT_RIJNDAEL_256, 
-					md5($this->EE->db->username.$this->EE->db->password), 
+					md5(ee()->db->username.ee()->db->password), 
 					base64_decode($_POST['meta']), 
 					MCRYPT_MODE_ECB, 
 					$init_vect
@@ -391,7 +394,7 @@ class Search {
 			$hash = substr($raw, -32);
 			$meta_array = substr($raw, 0, -32);
 
-			if ($hash != md5($this->EE->db->username.$this->EE->db->password.$meta_array))
+			if ($hash != md5(ee()->db->username.ee()->db->password.$meta_array))
 			{
 				$meta_array = '';
 			}
@@ -405,12 +408,18 @@ class Search {
 		{
 			if (
 				( ! isset($this->_meta[$current_input]) OR $this->_meta[$current_input] === '') &&
-				$this->EE->input->post($current_input)
+				ee()->input->post($current_input)
 			)
 			{
-				$this->_meta[$current_input] = $this->EE->input->post($current_input);
+				$this->_meta[$current_input] = ee()->input->post($current_input);
 			}
 		}
+
+		// Default 'where' to 'all' if it hasn't been specified
+		if ( ! isset($this->_meta['where']) OR $this->_meta['where'] === '')
+		{
+				$this->_meta['where'] = 'all';
+		}		
 	}
 	
 	// ------------------------------------------------------------------------
@@ -420,7 +429,7 @@ class Search {
 	/** ---------------------------------------*/
 	function build_standard_query()
 	{
-		$this->EE->load->model('addons_model');
+		ee()->load->model('addons_model');
 
 		$channel_array	= array();
 
@@ -444,14 +453,14 @@ class Search {
 		// Which channels we are or are not supposed to search for, when
 		// "Any Channel" is chosen
 		
-		$sql = "SELECT channel_id FROM exp_channels WHERE site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."'";
+		$sql = "SELECT channel_id FROM exp_channels WHERE site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."'";
 		
 		if (isset($this->_meta['channel']) AND $this->_meta['channel'] != '')
 		{
-			$sql .= $this->EE->functions->sql_andor_string($this->_meta['channel'], 'channel_name');
+			$sql .= ee()->functions->sql_andor_string($this->_meta['channel'], 'channel_name');
 		}
 		
-		$query = $this->EE->db->query($sql);
+		$query = ee()->db->query($sql);
 		
 		// If channel's are specified and there NO valid channels returned?  There can be no results!
 		if ($query->num_rows() == 0)
@@ -487,7 +496,7 @@ class Search {
 			{
 				if ($val != 'null' AND $val != '')
 				{
-					$id_query .= " exp_channel_titles.channel_id = '".$this->EE->db->escape_str($val)."' OR";
+					$id_query .= " exp_channel_titles.channel_id = '".ee()->db->escape_str($val)."' OR";
 				}
 			} 
 			
@@ -509,7 +518,7 @@ class Search {
 		
         if (isset($_GET['mbr']) AND is_numeric($_GET['mbr']))
         {
-			$query = $this->EE->db->select('member_id')->get_where('members', array(
+			$query = ee()->db->select('member_id')->get_where('members', array(
 				'member_id' => $_GET['mbr']
 			));
 			
@@ -524,20 +533,20 @@ class Search {
         }
         else
         {
-			if ($this->EE->input->post('member_name') != '')
+			if (ee()->input->post('member_name') != '')
 			{
-				$this->EE->db->select('member_id');
+				ee()->db->select('member_id');
 				
-				if ($this->EE->input->post('exact_match') == 'y')
+				if (ee()->input->post('exact_match') == 'y')
 				{
-					$this->EE->db->where('screen_name', $this->EE->input->post('member_name'));
+					ee()->db->where('screen_name', ee()->input->post('member_name'));
 				}
 				else
 				{
-					$this->EE->db->like('screen_name', $this->EE->input->post('member_name'));
+					ee()->db->like('screen_name', ee()->input->post('member_name'));
 				}
 				
-				$query = $this->EE->db->get('members');
+				$query = ee()->db->get('members');
 			
 				if ($query->num_rows() == 0)
 				{
@@ -571,7 +580,7 @@ class Search {
 		// no need to do this unless there are keywords to search
 		if (trim($this->keywords) != '')
 		{
-			$xql = "SELECT DISTINCT(field_group) FROM exp_channels WHERE site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."'";
+			$xql = "SELECT DISTINCT(field_group) FROM exp_channels WHERE site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."'";
 
 			if ($id_query != '')
 			{
@@ -579,11 +588,11 @@ class Search {
 				$xql = str_replace('exp_channel_titles.', '', $xql);
 			}
 
-			$query = $this->EE->db->query($xql);
+			$query = ee()->db->query($xql);
 
 			if ($query->num_rows() > 0)
 			{
-				$this->EE->db->select('field_id, field_name, field_search');
+				ee()->db->select('field_id, field_name, field_search');
 			
 				// Build array of field groups
 				$field_groups = array();
@@ -594,10 +603,10 @@ class Search {
 				
 				if (count($field_groups) > 0)
 				{
-					$this->EE->db->where_in('group_id', $field_groups);
+					ee()->db->where_in('group_id', $field_groups);
 				}
 
-				$field_query = $this->EE->db->get('channel_fields');
+				$field_query = ee()->db->get('channel_fields');
 
 				if ($field_query->num_rows() > 0)
 				{
@@ -627,14 +636,14 @@ class Search {
 			LEFT JOIN exp_channel_data ON exp_channel_titles.entry_id = exp_channel_data.entry_id ";
 
 		// is the comment module installed?
-		if ($this->EE->addons_model->module_installed('comment'))
+		if (ee()->addons_model->module_installed('comment'))
 		{
 			$sql .= "LEFT JOIN exp_comments ON exp_channel_titles.entry_id = exp_comments.entry_id ";
 		}
 
 		$sql .= "LEFT JOIN exp_category_posts ON exp_channel_titles.entry_id = exp_category_posts.entry_id
 			LEFT JOIN exp_categories ON exp_category_posts.cat_id = exp_categories.cat_id
-			WHERE exp_channels.site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."' ";
+			WHERE exp_channels.site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."' ";
 		
 		/** ----------------------------------------------
 		/**  We only select entries that have not expired 
@@ -642,26 +651,24 @@ class Search {
 	
 		if ( ! isset($this->_meta['show_future_entries']) OR $this->_meta['show_future_entries'] != 'yes')
 		{
-			$sql .= "\nAND exp_channel_titles.entry_date < ".$this->EE->localize->now." ";
+			$sql .= "\nAND exp_channel_titles.entry_date < ".ee()->localize->now." ";
 		}
 		
 		if ( ! isset($this->_meta['show_expired']) OR $this->_meta['show_expired'] != 'yes')
 		{
-			$sql .= "\nAND (exp_channel_titles.expiration_date = 0 OR exp_channel_titles.expiration_date > ".$this->EE->localize->now.") ";
+			$sql .= "\nAND (exp_channel_titles.expiration_date = 0 OR exp_channel_titles.expiration_date > ".ee()->localize->now.") ";
 		}
 
 		/** ----------------------------------------------
 		/**  Add status declaration to the query
 		/** ----------------------------------------------*/
 		
-		$sql .= "\nAND exp_channel_titles.status != 'closed' ";
-		
 		if (isset($this->_meta['status']) AND ($status = $this->_meta['status']) != '')
 		{
 			$status = str_replace('Open',	'open',	$status);
 			$status = str_replace('Closed', 'closed', $status);
 		
-			$sql .= $this->EE->functions->sql_andor_string($status, 'exp_channel_titles.status');
+			$sql .= ee()->functions->sql_andor_string($status, 'exp_channel_titles.status');
 			
 			// add exclusion for closed unless it was explicitly used
 			if (strncasecmp($status, 'not ', 4) == 0)
@@ -673,7 +680,7 @@ class Search {
 			
 			if ( ! in_array('closed', $stati))
 			{
-				$sql .= "\nAND exp_channel_titles.status != 'closed' ";				
+				$sql .= "\nAND exp_channel_titles.status != 'closed' ";
 			}
 		}
 		else
@@ -687,7 +694,7 @@ class Search {
 		
 		if (isset($_POST['date']) AND $_POST['date'] != 0)
 		{
-			$cutoff = $this->EE->localize->now - (60*60*24*$_POST['date']);
+			$cutoff = ee()->localize->now - (60*60*24*$_POST['date']);
 			
 			if (isset($_POST['date_order']) AND $_POST['date_order'] == 'older')
 			{
@@ -732,8 +739,8 @@ class Search {
   			
   			$not_and = (count($terms) > 2) ? ') AND (' : 'AND';
   			rsort($terms);
-			$terms_like = $this->EE->db->escape_like_str($terms);
-			$terms = $this->EE->db->escape_str($terms);  			
+			$terms_like = ee()->db->escape_like_str($terms);
+			$terms = ee()->db->escape_str($terms);  			
   			
   			/** ----------------------------------
 			/**  Search in Title Field
@@ -785,7 +792,7 @@ class Search {
 			}
 			else // exact phrase match
 			{	
-				$search_term = (count($terms) == 1) ? $terms_like[0] : $this->EE->db->escape_str($this->keywords);
+				$search_term = (count($terms) == 1) ? $terms_like[0] : ee()->db->escape_str($this->keywords);
 				$sql .= "(exp_channel_titles.title LIKE '%".$search_term."%' ";
 				
 				// and close up the member clause
@@ -890,7 +897,7 @@ class Search {
 						}
 						else
 						{
-							$search_term = (count($terms) == 1) ? $terms_like[0] : $this->EE->db->escape_str($this->keywords);
+							$search_term = (count($terms) == 1) ? $terms_like[0] : ee()->db->escape_str($this->keywords);
 							$sql .= "\nOR (exp_channel_data.field_id_".$val." LIKE '%".$search_term."%' ";
 
 							// and close up the member clause
@@ -912,7 +919,7 @@ class Search {
 			/**  Search in Comments
 			/** ----------------------------------*/
 
-			if (isset($this->_meta['search_in']) AND $this->_meta['search_in'] == 'everywhere' AND $this->EE->addons_model->module_installed('comment'))
+			if (isset($this->_meta['search_in']) AND $this->_meta['search_in'] == 'everywhere' AND ee()->addons_model->module_installed('comment'))
 			{
 				if (count($terms) == 1 && isset($this->_meta['where']) && $this->_meta['where'] == 'word')
 				{
@@ -962,7 +969,7 @@ class Search {
 				}
 				else
 				{
-					$search_term = (count($terms) == 1) ? $terms_like[0] : $this->EE->db->escape_str($this->keywords);
+					$search_term = (count($terms) == 1) ? $terms_like[0] : ee()->db->escape_str($this->keywords);
 					$sql .= " OR ((exp_comments.comment LIKE '%".$search_term."%') ";
 
 					// and close up the member clause
@@ -990,7 +997,7 @@ class Search {
 				$sql .= "AND (exp_channel_titles.author_id {$member_ids} ";
 
 				// searching comments too?
-				if (isset($this->_meta['search_in']) AND $this->_meta['search_in'] == 'everywhere' AND $this->EE->addons_model->module_installed('comment'))
+				if (isset($this->_meta['search_in']) AND $this->_meta['search_in'] == 'everywhere' AND ee()->addons_model->module_installed('comment'))
 				{
 					$sql .= " OR exp_comments.author_id {$member_ids}";
 				}
@@ -1039,7 +1046,7 @@ class Search {
 			{
 				if ($val != 'all' AND $val != '')
 				{
-					$temp .= " exp_categories.cat_id = '".$this->EE->db->escape_str($val)."' OR";
+					$temp .= " exp_categories.cat_id = '".ee()->db->escape_str($val)."' OR";
 				}
 			} 
 			
@@ -1055,7 +1062,7 @@ class Search {
 		/**  Are there results?
 		/** ----------------------------------------------*/
 		
-		$query = $this->EE->db->query($sql);
+		$query = ee()->db->query($sql);
 					
 		if ($query->num_rows() == 0)
 		{
@@ -1098,7 +1105,7 @@ class Search {
 		
 		$end .= " ".$order;
 			
-		$sql = "SELECT DISTINCT(t.entry_id), t.entry_id, t.channel_id, t.forum_topic_id, t.author_id, t.ip_address, t.title, t.url_title, t.status, t.dst_enabled, t.view_count_one, t.view_count_two, t.view_count_three, t.view_count_four, t.allow_comments, t.comment_expiration_date, t.sticky, t.entry_date, t.year, t.month, t.day, t.entry_date, t.edit_date, t.expiration_date, t.recent_comment_date, t.comment_total, t.site_id as entry_site_id,
+		$sql = "SELECT DISTINCT(t.entry_id), t.entry_id, t.channel_id, t.forum_topic_id, t.author_id, t.ip_address, t.title, t.url_title, t.status, t.view_count_one, t.view_count_two, t.view_count_three, t.view_count_four, t.allow_comments, t.comment_expiration_date, t.sticky, t.entry_date, t.year, t.month, t.day, t.entry_date, t.edit_date, t.expiration_date, t.recent_comment_date, t.comment_total, t.site_id as entry_site_id,
 				w.channel_title, w.channel_name, w.search_results_url, w.search_excerpt, w.channel_url, w.comment_url, w.comment_moderate, w.channel_html_formatting, w.channel_allow_img_urls, w.channel_auto_link_urls, w.comment_system_enabled, 
 				m.username, m.email, m.url, m.screen_name, m.location, m.occupation, m.interests, m.aol_im, m.yahoo_im, m.msn_im, m.icq, m.signature, m.sig_img_filename, m.sig_img_width, m.sig_img_height, m.avatar_filename, m.avatar_width, m.avatar_height, m.photo_filename, m.photo_width, m.photo_height, m.group_id, m.member_id, m.bday_d, m.bday_m, m.bday_y, m.bio,
 				md.*,
@@ -1135,7 +1142,7 @@ class Search {
 		// If the QSTR variable is less than 32 characters long we
 		// don't have a valid search ID number
 		
-		if (strlen($this->EE->uri->query_string) < 32)
+		if (strlen(ee()->uri->query_string) < 32)
 		{
 			return '';
 		}
@@ -1144,13 +1151,13 @@ class Search {
 		/**  Fetch ID number and page number
 		/** ----------------------------------------*/
 		
-		$search_id = substr($this->EE->uri->query_string, 0, 32);
+		$search_id = substr(ee()->uri->query_string, 0, 32);
 
 		/** ----------------------------------------
 		/**  Fetch the cached search query
 		/** ----------------------------------------*/
 		
-		$query = $this->EE->db->query("SELECT total_results FROM exp_search WHERE search_id = '".$this->EE->db->escape_str($search_id)."'");
+		$query = ee()->db->query("SELECT total_results FROM exp_search WHERE search_id = '".ee()->db->escape_str($search_id)."'");
 
 		if ($query->num_rows() == 1)
 		{
@@ -1175,7 +1182,7 @@ class Search {
 		// If the QSTR variable is less than 32 characters long we
 		// don't have a valid search ID number
 		
-		if (strlen($this->EE->uri->query_string) < 32)
+		if (strlen(ee()->uri->query_string) < 32)
 		{
 			return '';
 		}
@@ -1184,20 +1191,20 @@ class Search {
 		/**  Fetch ID number and page number
 		/** ----------------------------------------*/
 		
-		$search_id = substr($this->EE->uri->query_string, 0, 32);
+		$search_id = substr(ee()->uri->query_string, 0, 32);
 
 		/** ----------------------------------------
 		/**  Fetch the cached search query
 		/** ----------------------------------------*/
 		
-		$query = $this->EE->db->query("SELECT keywords FROM exp_search WHERE search_id = '".$this->EE->db->escape_str($search_id)."'");
+		$query = ee()->db->query("SELECT keywords FROM exp_search WHERE search_id = '".ee()->db->escape_str($search_id)."'");
 
 		if ($query->num_rows() == 1)
 		{
 			// Load the XML Helper
-			$this->EE->load->helper('xml');
+			ee()->load->helper('xml');
 	
-			return $this->EE->functions->encode_ee_tags(xml_convert($query->row('keywords')));
+			return ee()->functions->encode_ee_tags(xml_convert($query->row('keywords')));
 		}
 		else
 		{
@@ -1214,10 +1221,10 @@ class Search {
 	function search_results()
 	{
 		// Fetch the search language file
-		$this->EE->lang->loadfile('search');
+		ee()->lang->loadfile('search');
 		
 		// Load Pagination Object
-		$this->EE->load->library('pagination');
+		ee()->load->library('pagination');
 		$pagination = new Pagination_object(__CLASS__);
 		
 		// Capture Pagination Template
@@ -1225,23 +1232,23 @@ class Search {
 		
 		// Check to see if we're using old style pagination
 		// TODO: Remove once old pagination is phased out
-		$old_pagination = (strpos($this->EE->TMPL->template, LD.'if paginate'.RD) !== FALSE) ? TRUE : FALSE;
+		$old_pagination = (strpos(ee()->TMPL->template, LD.'if paginate'.RD) !== FALSE) ? TRUE : FALSE;
 		
 		// If we are using old pagination, log it as deprecated
 		// TODO: Remove once old pagination is phased out
 		if ($old_pagination)
 		{
-			$this->EE->load->library('logger');
-			$this->EE->logger->developer('Deprecated template tag {if paginate}. Old style pagination in the Search Module has been deprecated in 2.4 and will be removed soon. Switch to the new Channel style pagination.', TRUE);
+			ee()->load->library('logger');
+			ee()->logger->developer('Deprecated template tag {if paginate}. Old style pagination in the Search Module has been deprecated in 2.4 and will be removed soon. Switch to the new Channel style pagination.', TRUE);
 		}
 		
 		// Check search ID number
 		// If the QSTR variable is less than 32 characters long we
 		// don't have a valid search ID number
 		
-		if (strlen($this->EE->uri->query_string) < 32)
+		if (strlen(ee()->uri->query_string) < 32)
 		{
-			return $this->EE->output->show_user_error(
+			return ee()->output->show_user_error(
 				'off', 
 				array(lang('search_no_result')),
 				lang('search_result_heading')
@@ -1249,17 +1256,17 @@ class Search {
 		}
 		
 		// Clear old search results
-		$this->EE->db->delete(
+		ee()->db->delete(
 			'search',
 			array(
-				'site_id' => $this->EE->config->item('site_id'),
-				'search_date <' => $this->EE->localize->now - ($this->cache_expire * 3600)
+				'site_id' => ee()->config->item('site_id'),
+				'search_date <' => ee()->localize->now - ($this->cache_expire * 3600)
 			)
 		);
 		
 		// Fetch ID number and page number
 		$pagination->offset = 0;
-		$qstring = $this->EE->uri->query_string;
+		$qstring = ee()->uri->query_string;
 
 		// Parse page number
 		if (preg_match("#^P(\d+)|/P(\d+)#", $qstring, $match))
@@ -1278,11 +1285,11 @@ class Search {
 		$search_id = preg_replace("#/.+#", "", $search_id);
 		
 		// Fetch the cached search query
-		$query = $this->EE->db->get_where('search', array('search_id' => $search_id));
+		$query = ee()->db->get_where('search', array('search_id' => $search_id));
 		
 		if ($query->num_rows() == 0 OR $query->row('total_results')  == 0)
 		{
-			return $this->EE->output->show_user_error('off', array(lang('search_no_result')), lang('search_result_heading'));
+			return ee()->output->show_user_error('off', array(lang('search_no_result')), lang('search_result_heading'));
 		}
 		
 		$fields = ($query->row('custom_fields') == '') ? array() : unserialize(stripslashes($query->row('custom_fields') ));
@@ -1293,11 +1300,11 @@ class Search {
 		$res_page = $query->row('result_page');
 		
 		// Run the search query
-		$query = $this->EE->db->query(preg_replace("/SELECT(.*?)\s+FROM\s+/is", 'SELECT COUNT(*) AS count FROM ', $sql));
+		$query = ee()->db->query(preg_replace("/SELECT(.*?)\s+FROM\s+/is", 'SELECT COUNT(*) AS count FROM ', $sql));
 		
 		if ($query->row('count')  == 0)
 		{
-			return $this->EE->output->show_user_error('off', array(lang('search_no_result')), lang('search_result_heading'));
+			return ee()->output->show_user_error('off', array(lang('search_no_result')), lang('search_result_heading'));
 		}
 		
 		// Calculate total number of pages and add total rows
@@ -1321,10 +1328,10 @@ class Search {
 			
 			if ($pagination->total_rows > $pagination->per_page)
 			{
-				$this->EE->load->library('pagination');
+				ee()->load->library('pagination');
 
 				$config = array(
-					'base_url' 		=> $this->EE->functions->create_url($res_page.'/'.$search_id, 0, 0),
+					'base_url' 		=> ee()->functions->create_url($res_page.'/'.$search_id, 0, 0),
 					'prefix'		=> 'P',
 					'total_rows'	=> $pagination->total_rows,
 					'per_page'		=> $pagination->per_page,
@@ -1334,8 +1341,8 @@ class Search {
 					'uri_segment'	=> 0 // Allows $config['cur_page'] to override
 				);
 
-				$this->EE->pagination->initialize($config);
-				$pager = $this->EE->pagination->create_links();
+				ee()->pagination->initialize($config);
+				$pager = ee()->pagination->create_links();
 			}
 		}
 		
@@ -1359,7 +1366,7 @@ class Search {
 			$sql .= " LIMIT 0, 100";
 		}
 		
-		$query = $this->EE->db->query($sql);
+		$query = ee()->db->query($sql);
 		
 		$output = '';
 		
@@ -1368,69 +1375,54 @@ class Search {
 			require PATH_MOD.'channel/mod.channel.php';
 		}
 		
-		unset($this->EE->TMPL->var_single['auto_path']);
-		unset($this->EE->TMPL->var_single['excerpt']);
-		unset($this->EE->TMPL->var_single['id_auto_path']);
-		unset($this->EE->TMPL->var_single['full_text']);
-		unset($this->EE->TMPL->var_single['switch']);
+		unset(ee()->TMPL->var_single['auto_path']);
+		unset(ee()->TMPL->var_single['excerpt']);
+		unset(ee()->TMPL->var_single['id_auto_path']);
+		unset(ee()->TMPL->var_single['full_text']);
+		unset(ee()->TMPL->var_single['switch']);
 		
-		foreach($this->EE->TMPL->var_single as $key => $value)
+		foreach(ee()->TMPL->var_single as $key => $value)
 		{
 			if (substr($key, 0, strlen('member_path')) == 'member_path')
 			{
-				unset($this->EE->TMPL->var_single[$key]);
+				unset(ee()->TMPL->var_single[$key]);
 			}
 		}
 
 		$channel = new Channel;
 
 		// This allows the channel {absolute_count} variable to work
-		$channel->p_page = ($pagination->per_page * $pagination->current_page) - $pagination->per_page;
+		$channel->pagination->offset = ($pagination->per_page * $pagination->current_page) - $pagination->per_page;
 
 		$channel->fetch_custom_channel_fields();
 		$channel->fetch_custom_member_fields();
-		$channel->query = $this->EE->db->query($sql);
+		$channel->query = ee()->db->query($sql);
 		
 		if ($channel->query->num_rows() == 0)
 		{
-			return $this->EE->TMPL->no_results();
+			return ee()->TMPL->no_results();
 		}
 		
-		$this->EE->load->library('typography');
-		$this->EE->typography->initialize(array(
+		ee()->load->library('typography');
+		ee()->typography->initialize(array(
 			'convert_curly'	=> FALSE,
 			'encode_email'	=> FALSE
 		));
 		
 		$channel->fetch_categories();
 		$channel->parse_channel_entries();
-		
-		$tagdata = $this->EE->TMPL->tagdata;
 
-		// Does the tag contain "related entries" that we need to parse out?
-		if (count($this->EE->TMPL->related_data) > 0 AND count($channel->related_entries) > 0)
-		{
-			$channel->parse_related_entries();
-		}
-		
-		if (count($this->EE->TMPL->reverse_related_data) > 0 AND count($channel->reverse_related_entries) > 0)
-		{
-			$channel->parse_reverse_related_entries();
-		}
-				
 		$output = $channel->return_data;
-		
-		$this->EE->TMPL->tagdata = $tagdata;
 		
 		// Fetch member path variable
 		// We do it here in case it's used in multiple places.		
 		$m_paths = array();
 		
-		if (preg_match_all("/".LD."member_path(\s*=.*?)".RD."/s", $this->EE->TMPL->tagdata, $matches))
+		if (preg_match_all("/".LD."member_path(\s*=.*?)".RD."/s", ee()->TMPL->tagdata, $matches))
 		{ 
 			for ($j = 0; $j < count($matches['0']); $j++)
 			{
-				$m_paths[] = array($matches['0'][$j], $this->EE->functions->extract_path($matches['1'][$j]));
+				$m_paths[] = array($matches['0'][$j], ee()->functions->extract_path($matches['1'][$j]));
 			}
 		}
 		
@@ -1438,7 +1430,7 @@ class Search {
 		$switch1 = '';
 		$switch2 = '';
 		
-		if ($switch = $this->EE->TMPL->fetch_param('switch'))
+		if ($switch = ee()->TMPL->fetch_param('switch'))
 		{
 			if (strpos($switch, '|') !== FALSE)
 			{
@@ -1465,8 +1457,14 @@ class Search {
 			{
 				$format = ( ! isset($row['field_ft_'.$row['search_excerpt']])) ? 'xhtml' : $row['field_ft_'.$row['search_excerpt']];
 			
-				$full_text = $this->EE->typography->parse_type(
-					strip_tags($row['field_id_'.$row['search_excerpt']]),
+				$full_text = ee()->typography->parse_type(
+					// Replace block HTML tags with spaces so words don't run together in case
+					// they're saved with no spaces in between the markup
+					strip_tags(
+						preg_replace('/\s+/', ' ',
+							preg_replace('/<[\/?][p|br|div|h1|h2]*>/', ' ', $row['field_id_'.$row['search_excerpt']])
+						)
+					),
 					array(
 						'text_format'	=> $format,
 						'html_format'	=> 'safe',
@@ -1482,7 +1480,7 @@ class Search {
 					$excerpt = str_replace(array("\r\n", "\r", "\n"), " ", $excerpt);
 				}
 
-				$excerpt = $this->EE->functions->word_limiter($excerpt, 50);
+				$excerpt = ee()->functions->word_limiter($excerpt, 50);
 			}
 			else
 			{
@@ -1493,15 +1491,15 @@ class Search {
 			// Parse permalink path
 			$url = ($row['search_results_url'] != '') ? $row['search_results_url'] : $row['channel_url'];		
 			
-			$path = $this->EE->functions->remove_double_slashes($this->EE->functions->prep_query_string($url).'/'.$row['url_title']);
-			$idpath = $this->EE->functions->remove_double_slashes($this->EE->functions->prep_query_string($url).'/'.$row['entry_id']);
+			$path = reduce_double_slashes(ee()->functions->prep_query_string($url).'/'.$row['url_title']);
+			$idpath = reduce_double_slashes(ee()->functions->prep_query_string($url).'/'.$row['entry_id']);
 			
 			$switch = ($i++ % 2) ? $switch1 : $switch2;
-			$output = preg_replace("/".LD.'switch'.RD."/", $switch, $output, count(explode(LD.'switch'.RD, $this->EE->TMPL->tagdata)) - 1);
-			$output = preg_replace("/".LD.'auto_path'.RD."/", $path, $output, count(explode(LD.'auto_path'.RD, $this->EE->TMPL->tagdata)) - 1);
-			$output = preg_replace("/".LD.'id_auto_path'.RD."/", $idpath, $output, count(explode(LD.'id_auto_path'.RD, $this->EE->TMPL->tagdata)) - 1);
-			$output = preg_replace("/".LD.'excerpt'.RD."/", preg_quote($excerpt), $output, count(explode(LD.'excerpt'.RD, $this->EE->TMPL->tagdata)) - 1);
-			$output = preg_replace("/".LD.'full_text'.RD."/", preg_quote($full_text), $output, count(explode(LD.'full_text'.RD, $this->EE->TMPL->tagdata)) - 1);
+			$output = preg_replace("/".LD.'switch'.RD."/", $switch, $output, count(explode(LD.'switch'.RD, ee()->TMPL->tagdata)) - 1);
+			$output = preg_replace("/".LD.'auto_path'.RD."/", $path, $output, count(explode(LD.'auto_path'.RD, ee()->TMPL->tagdata)) - 1);
+			$output = preg_replace("/".LD.'id_auto_path'.RD."/", $idpath, $output, count(explode(LD.'id_auto_path'.RD, ee()->TMPL->tagdata)) - 1);
+			$output = preg_replace("/".LD.'excerpt'.RD."/", $this->_escape_replacement_pattern($excerpt), $output, count(explode(LD.'excerpt'.RD, ee()->TMPL->tagdata)) - 1);
+			$output = preg_replace("/".LD.'full_text'.RD."/", $this->_escape_replacement_pattern($full_text), $output, count(explode(LD.'full_text'.RD, ee()->TMPL->tagdata)) - 1);
 		
 			// Parse member_path
 			
@@ -1511,7 +1509,7 @@ class Search {
 				{
 					$output = preg_replace(
 						"/".preg_quote($val['0'], '/')."/",
-						$this->EE->functions->create_url($val['1'].'/'.$row['member_id']),
+						ee()->functions->create_url($val['1'].'/'.$row['member_id']),
 						$output,
 						1
 					);
@@ -1520,10 +1518,10 @@ class Search {
 		
 		}
 		
-		$this->EE->TMPL->tagdata = $output;
+		ee()->TMPL->tagdata = $output;
 		
 		// Add new pagination
-		$this->EE->TMPL->tagdata = $pagination->render($this->EE->TMPL->tagdata);
+		ee()->TMPL->tagdata = $pagination->render(ee()->TMPL->tagdata);
 		
 		// Parse lang variables
 		$swap = array(
@@ -1540,7 +1538,7 @@ class Search {
 			'lang:recent_comments'		=>	lang('search_recent_comment_date'),
 			'lang:keywords'				=>	lang('search_keywords')
 		);
-		$this->EE->TMPL->template = $this->EE->functions->var_swap($this->EE->TMPL->template, $swap);
+		ee()->TMPL->template = ee()->functions->var_swap(ee()->TMPL->template, $swap);
 
 		// Add Old Style Pagination
 		// TODO: Remove once old pagination is phased out
@@ -1548,35 +1546,47 @@ class Search {
 		{
 			if ($pager == '')
 			{
-				$this->EE->TMPL->template = preg_replace(
+				ee()->TMPL->template = preg_replace(
 					"#".LD."if paginate".RD.".*?".LD."/if".RD."#s",
 					'',
-					$this->EE->TMPL->template
+					ee()->TMPL->template
 				);
 			}
 			else
 			{
-				$this->EE->TMPL->template = preg_replace(
+				ee()->TMPL->template = preg_replace(
 					"#".LD."if paginate".RD."(.*?)".LD."/if".RD."#s",
 					"\\1",
-					$this->EE->TMPL->template
+					ee()->TMPL->template
 				);
 			}
 
-			$this->EE->TMPL->template = str_replace(
+			ee()->TMPL->template = str_replace(
 				LD.'paginate'.RD,
 				$pager,
-				$this->EE->TMPL->template
+				ee()->TMPL->template
 			);
 
-			$this->EE->TMPL->template = str_replace(
+			ee()->TMPL->template = str_replace(
 				LD.'page_count'.RD,
 				$page_count,
-				$this->EE->TMPL->template
+				ee()->TMPL->template
 			);
 		}
 		
-		return stripslashes($this->EE->TMPL->tagdata);
+		return ee()->TMPL->tagdata;
+	}
+
+	// --------------------------------------------------------------------------
+	
+	/**
+	 * For when preg_quote is too much, we just need to escape replacement patterns
+	 * @param  string	String to escape
+	 * @return string	Escaped string
+	 */
+	private function _escape_replacement_pattern($string)
+	{
+		return strtr($string, array('\\' => '\\\\', '$' => '\$'));
 	}
 	
 	// --------------------------------------------------------------------------
@@ -1591,34 +1601,34 @@ class Search {
 		$meta = $this->_build_meta_array();
 
 		$data['hidden_fields'] = array(
-			'ACT'	=> $this->EE->functions->fetch_action_id('Search', 'do_search'),
+			'ACT'	=> ee()->functions->fetch_action_id('Search', 'do_search'),
 			'XID'	=> '',
-			'RES'	=> $this->EE->TMPL->fetch_param('results'),
+			'RES'	=> ee()->TMPL->fetch_param('results'),
 			'meta'	=> $meta
 		);
 		
-		if ($this->EE->TMPL->fetch_param('name') !== FALSE && 
-			preg_match("#^[a-zA-Z0-9_\-]+$#i", $this->EE->TMPL->fetch_param('name')))
+		if (ee()->TMPL->fetch_param('name') !== FALSE && 
+			preg_match("#^[a-zA-Z0-9_\-]+$#i", ee()->TMPL->fetch_param('name')))
 		{
-			$data['name'] = $this->EE->TMPL->fetch_param('name');
+			$data['name'] = ee()->TMPL->fetch_param('name');
 		} 
 		
-		if ($this->EE->TMPL->fetch_param('id') !== FALSE && 
-			preg_match("#^[a-zA-Z0-9_\-]+$#i", $this->EE->TMPL->fetch_param('id')))
+		if (ee()->TMPL->fetch_param('id') !== FALSE && 
+			preg_match("#^[a-zA-Z0-9_\-]+$#i", ee()->TMPL->fetch_param('id')))
 		{
-			$data['id'] = $this->EE->TMPL->fetch_param('id');
-			$this->EE->TMPL->log_item('Simple Search Form:  The \'id\' parameter has been deprecated.  Please use form_id');
+			$data['id'] = ee()->TMPL->fetch_param('id');
+			ee()->TMPL->log_item('Simple Search Form:  The \'id\' parameter has been deprecated.  Please use form_id');
 		}
 		else
 		{
-			$data['id'] = $this->EE->TMPL->form_id;
+			$data['id'] = ee()->TMPL->form_id;
 		}
 		
-		$data['class'] = $this->EE->TMPL->form_class;
+		$data['class'] = ee()->TMPL->form_class;
 		
-		$res  = $this->EE->functions->form_declaration($data);
+		$res  = ee()->functions->form_declaration($data);
 		
-		$res .= stripslashes($this->EE->TMPL->tagdata);
+		$res .= stripslashes(ee()->TMPL->tagdata);
 		
 		$res .= "</form>";
 		
@@ -1631,9 +1641,9 @@ class Search {
 	/** ----------------------------------------*/
 	function advanced_form()
 	{
-		$this->EE->lang->loadfile('search');
-		$this->EE->load->library('api');
-		$this->EE->api->instantiate('channel_categories');
+		ee()->lang->loadfile('search');
+		ee()->load->library('api');
+		ee()->api->instantiate('channel_categories');
 		
 		/** ----------------------------------------
 		/**  Fetch channels and categories
@@ -1643,15 +1653,15 @@ class Search {
 		
 		$sql = "SELECT channel_title, channel_id, cat_group FROM exp_channels WHERE ";
 		
-		$sql .= "site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."' ";
+		$sql .= "site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."' ";
 	
-		if ($channel = $this->EE->TMPL->fetch_param('channel'))
+		if ($channel = ee()->TMPL->fetch_param('channel'))
 		{
-			$xql = "SELECT channel_id FROM exp_channels WHERE site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."' ";
+			$xql = "SELECT channel_id FROM exp_channels WHERE site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."' ";
 		
-			$xql .= $this->EE->functions->sql_andor_string($channel, 'channel_name');
+			$xql .= ee()->functions->sql_andor_string($channel, 'channel_name');
 				
-			$query = $this->EE->db->query($xql);
+			$query = ee()->db->query($xql);
 			
 			if ($query->num_rows() > 0)
 			{
@@ -1677,14 +1687,14 @@ class Search {
 		
 		$sql .= " ORDER BY channel_title";
 		
-		$query = $this->EE->db->query($sql);
+		$query = ee()->db->query($sql);
 		
 		foreach ($query->result_array() as $row)
 		{
 			$this->channel_array[$row['channel_id']] = array($row['channel_title'], $row['cat_group']);
 		}
 
-		$nested = ($this->EE->TMPL->fetch_param('cat_style') !== FALSE && $this->EE->TMPL->fetch_param('cat_style') == 'nested') ? 'y' : 'n';
+		$nested = (ee()->TMPL->fetch_param('cat_style') !== FALSE && ee()->TMPL->fetch_param('cat_style') == 'nested') ? 'y' : 'n';
 		
 
 		/** ----------------------------------------
@@ -1694,7 +1704,7 @@ class Search {
 		$channel_names = "<option value=\"null\" selected=\"selected\">".lang('search_any_channel')."</option>\n";
 
 		// Load the form helper
-		$this->EE->load->helper('form');
+		ee()->load->helper('form');
 
 		foreach ($this->channel_array as $key => $val)
 		{
@@ -1702,7 +1712,7 @@ class Search {
 		}
 		
 	
-		$tagdata = $this->EE->TMPL->tagdata; 
+		$tagdata = ee()->TMPL->tagdata; 
 		
 		/** ----------------------------------------
 		/**  Parse variables
@@ -1747,9 +1757,9 @@ class Search {
 		);
 	
 		
-		$tagdata = $this->EE->functions->var_swap($tagdata, $swap);
+		$tagdata = ee()->functions->var_swap($tagdata, $swap);
 		
-		$this->EE->TMPL->template = $this->EE->functions->var_swap($this->EE->TMPL->template, $swap);
+		ee()->TMPL->template = ee()->functions->var_swap(ee()->TMPL->template, $swap);
 		
 		/** ----------------------------------------
 		/**  Create form
@@ -1757,36 +1767,36 @@ class Search {
 		
 		$meta = $this->_build_meta_array();
 		 
-		$data['class'] = $this->EE->TMPL->form_class;
+		$data['class'] = ee()->TMPL->form_class;
 		$data['hidden_fields'] = array(
-			'ACT'	=> $this->EE->functions->fetch_action_id('Search', 'do_search'),
+			'ACT'	=> ee()->functions->fetch_action_id('Search', 'do_search'),
 			'XID'	=> '',
-			'RES'	=> $this->EE->TMPL->fetch_param('results'),
+			'RES'	=> ee()->TMPL->fetch_param('results'),
 			'meta'	=> $meta
 		);
 		
-		if ($this->EE->TMPL->fetch_param('name') !== FALSE && 
-			preg_match("#^[a-zA-Z0-9_\-]+$#i", $this->EE->TMPL->fetch_param('name')))
+		if (ee()->TMPL->fetch_param('name') !== FALSE && 
+			preg_match("#^[a-zA-Z0-9_\-]+$#i", ee()->TMPL->fetch_param('name')))
 		{
-			$data['name'] = $this->EE->TMPL->fetch_param('name');
+			$data['name'] = ee()->TMPL->fetch_param('name');
 		} 
 		
-		if ($this->EE->TMPL->fetch_param('id') !== FALSE && 
-			preg_match("#^[a-zA-Z0-9_\-]+$#i", $this->EE->TMPL->fetch_param('id')))
+		if (ee()->TMPL->fetch_param('id') !== FALSE && 
+			preg_match("#^[a-zA-Z0-9_\-]+$#i", ee()->TMPL->fetch_param('id')))
 		{
-			$data['id'] = $this->EE->TMPL->fetch_param('id');
-			$this->EE->TMPL->log_item('Advanced Search Form:  The \'id\' parameter has been deprecated.  Please use form_id');
+			$data['id'] = ee()->TMPL->fetch_param('id');
+			ee()->TMPL->log_item('Advanced Search Form:  The \'id\' parameter has been deprecated.  Please use form_id');
 		}
-		elseif ($this->EE->TMPL->form_id != '')
+		elseif (ee()->TMPL->form_id != '')
 		{
-			$data['id'] = $this->EE->TMPL->form_id;
+			$data['id'] = ee()->TMPL->form_id;
 		}
 		else
 		{
 			$data['id'] = 'searchform';
 		}
 		
-		$res  = $this->EE->functions->form_declaration($data);
+		$res  = ee()->functions->form_declaration($data);
 		
 		$res .= $this->search_js_switcher($nested, $data['id']);
 		
@@ -1802,12 +1812,12 @@ class Search {
 	 */
 	function search_js_switcher($nested='n',$id='searchform')
 	{
-		$this->EE->load->library('api');
-		$this->EE->api->instantiate('channel_categories');
+		ee()->load->library('api');
+		ee()->api->instantiate('channel_categories');
 		
-		 $cat_array = $this->EE->api_channel_categories->category_form_tree(
+		 $cat_array = ee()->api_channel_categories->category_form_tree(
 			$nested, 
-			$this->EE->TMPL->fetch_param('category')
+			ee()->TMPL->fetch_param('category')
 		);
 		
 		ob_start();

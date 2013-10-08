@@ -2,10 +2,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -101,6 +101,9 @@ $.ee_filemanager.file_uploader = function() {
 
 			// If there were no files previously, the table might be hidden
 			$('.mainTable').show();
+
+			// Ensure new file appears on subsequent filtering
+			$(".mainTable").table('clear_cache');
 		},
 		trigger: '#action_nav a.upload_file'
 	});
@@ -190,7 +193,10 @@ $.ee_filemanager.date_range = function() {
 
 			// hide custom date picker again
 			$("#custom_date_picker").slideUp("fast");
-
+			
+			// Trigger change to update filter
+			$("#date_range").change();
+			
 			// redraw table
 			oTable.fnDraw();
 		}

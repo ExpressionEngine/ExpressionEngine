@@ -42,7 +42,7 @@ $lang = array(
 'This is the name that will appear in the PUBLISH page',
 
 'deft_field_formatting' =>
-'Default Text Formatting for This Field',
+'Default Text Formatting',
 
 'formatting_no_available' =>
 'Text formatting is not available for your chosen field type',
@@ -191,7 +191,7 @@ $lang = array(
 'use_a_theme' =>
 'Use one of the default themes',
 
-'myaccount_cp_theme' => 
+'myaccount_cp_theme' =>
 'Control Panel Theme',
 
 'duplicate_group' =>
@@ -210,7 +210,7 @@ $lang = array(
 'Publish Page Customization',
 
 'show_button_cluster' =>
-'Display Rich Formatting Buttons',
+'Display Formatting Buttons',
 
 'paths' =>
 'Path Settings',
@@ -223,12 +223,6 @@ $lang = array(
 
 'search_results_url_exp' =>
 'The URL where the search results from this channel should be pointed to.',
-
-'ping_return_url' =>
-'Ping Return URL',
-
-'ping_return_url_exp' =>
-'The URL where you want people to visit when they see your link on sites that you ping.',
 
 'comment_expiration' =>
 'Comment Expiration',
@@ -254,13 +248,13 @@ $lang = array(
 'search_excerpt' =>
 'Which field should be used for search excerpt?',
 
-'channel_prefs' => 
+'channel_prefs' =>
 'Channel Preferences',
 
 'channel_settings' =>
 'Channel Posting Preferences',
 
-'comment_prefs' => 
+'comment_prefs' =>
 'Comment Posting Preferences',
 
 'comment_use_captcha' =>
@@ -275,13 +269,13 @@ $lang = array(
 'comment_system_enabled' =>
 'Allow comments in this channel?',
 
-'edit_channel_prefs' => 
+'edit_channel_prefs' =>
 'Edit Channel Preferences',
 
-'edit_group_prefs' => 
+'edit_group_prefs' =>
 'Edit Group Preferences',
 
-'edit_group_assignments' => 
+'edit_group_assignments' =>
 'Group Assignments',
 
 'duplicate_channel_prefs' =>
@@ -290,10 +284,10 @@ $lang = array(
 'do_not_duplicate' =>
 'Do Not Duplicate',
 
-'no_channels_exist' => 
+'no_channels_exist' =>
 'There are currently no channels',
 
-'create_new_channel' => 
+'create_new_channel' =>
 'Create a New Channel',
 
 'channel_base_setup' =>
@@ -302,7 +296,7 @@ $lang = array(
 'default_settings' =>
 'Administrative Preferences',
 
-'channel_name' => 
+'channel_name' =>
 'Short Name',
 
 'channel_url' =>
@@ -380,43 +374,43 @@ $lang = array(
 'auto_link_urls' =>
 'Automatically turn URLs and email addresses into links?',
 
-'single_word_no_spaces' => 
+'single_word_no_spaces' =>
 'single word, no spaces',
 
-'channel_title' => 
+'channel_title' =>
 'Full Channel Name',
 
-'edit_channel' => 
+'edit_channel' =>
 'Edit Channel',
 
-'channel_full_name' => 
+'channel_full_name' =>
 'Full Name',
 
-'new_channel' => 
+'new_channel' =>
 'New Channel',
 
-'channel_created' => 
+'channel_created' =>
 'Channel Created:',
 
-'channel_updated' => 
+'channel_updated' =>
 'Channel Updated:',
 
-'taken_channel_name' => 
+'taken_channel_name' =>
 'This channel name is already taken.',
 
-'no_channel_name' => 
+'no_channel_name' =>
 'You must give your channel a \'short\' name.',
 
 'no_channel_title' =>
 'You must give your channel  a \'full\' name.',
 
-'invalid_short_name' => 
+'invalid_short_name' =>
 'Your channel name must contain only alpha-numeric characters and no spaces.',
 
-'delete_channel' => 
+'delete_channel' =>
 'Delete Channel',
 
-'channel_deleted' => 
+'channel_deleted' =>
 'Channel Deleted:',
 
 'delete_channel_confirmation' =>
@@ -455,13 +449,10 @@ $lang = array(
 'invalid_field_group_selected' =>
 'Invalid field group',
 
-'missing_channel_data_for_pings' =>
-'In order to send pings, your channel needs a title and URL.  Please update your channel preferences.',
-
-'open' => 
+'open' =>
 'Open',
 
-'closed' => 
+'closed' =>
 'Closed',
 
 'none' =>
@@ -470,7 +461,7 @@ $lang = array(
 'define_html_buttons' =>
 'HTML Formatting Button Definitions',
 
-'no_buttons' => 
+'no_buttons' =>
 'No HTML buttons defined.',
 
 'htmlbutton_delete_instructions' =>
@@ -493,34 +484,6 @@ $lang = array(
 
 'row' =>
 'Row',
-
-'server_name' =>
-'Server Name',
-
-'server_url' =>
-'Server URL/Path',
-
-'port' =>
-'Port',
-
-'protocol' =>
-'Protocol',
-
-'is_default' =>
-'Default',
-
-'server_order' =>
-'Order',
-
-'define_ping_servers' =>
-'This form allows you to define a list of servers that can be pinged when you submit channel entries',
-
-'pingserver_delete_instructions' =>
-'To delete an item submit the form with the server name blank',
-
-'assign_channels' =>
-'Choose which channel(s) you want this group assigned to',
-
 
 //----------------------------
 // Generic Phrases
@@ -577,25 +540,25 @@ $lang = array(
 'name_of_category_group' =>
 'Name of category group',
 
-'taken_category_group_name' => 
+'taken_category_group_name' =>
 'This group name is already taken.',
 
-'add_edit_categories' => 
+'add_edit_categories' =>
 'Add/Edit Categories',
 
-'edit_group_name' => 
+'edit_group_name' =>
 'Edit Group',
 
-'category_group_created' => 
+'category_group_created' =>
 'Category Group Created:',
 
-'category_group_updated' => 
+'category_group_updated' =>
 'Group Updated:',
 
 'delete_cat_group_confirmation' =>
 'Are you sure you want to permanently delete this category group?',
 
-'category_group_deleted' => 
+'category_group_deleted' =>
 'Category Group Deleted:',
 
 'create_new_category' =>
@@ -630,6 +593,9 @@ $lang = array(
 
 'category_name' =>
 'Category Name',
+
+'category_url_title' =>
+'Category URL Title',
 
 'category_image' =>
 'Category Image',
@@ -702,10 +668,10 @@ $lang = array(
 'no_member_groups_available' =>
 'There are no member groups allowed to %x categories.  You may assign these privileges using the member group editor: ',
 
-'member_group' => 
+'member_group' =>
 'Member Group',
 
-'member_groups' => 
+'member_groups' =>
 'Member Groups',
 
 'missing_required_fields' =>
@@ -739,7 +705,7 @@ $lang = array(
 'new_field_group' =>
 'New Field Group',
 
-'add_edit_fields' => 
+'add_edit_fields' =>
 'Add/Edit Fields',
 
 'edit_field_group_name' =>
@@ -892,6 +858,9 @@ $lang = array(
 'duplicate_field_name' =>
 'The field name you chose is already taken',
 
+'duplicate_truncated_field_name' =>
+'The field name you chose is too long and the truncated name is already taken.',
+
 'taken_field_group_name' =>
 'The name you have chosen is already taken',
 
@@ -915,12 +884,6 @@ $lang = array(
 
 'field_content_text' =>
 'Field Content',
-
-'field_content_file' =>
-'File Type',
-
-'allowed_dirs_file' =>
-'Allowed Directory',
 
 'type_numeric' =>
 'Number',
@@ -950,43 +913,43 @@ $lang = array(
 'create_new_status_group' =>
 'Create New Status Group',
 
-'taken_status_group_name' => 
+'taken_status_group_name' =>
 'This status group name is already taken.',
 
-'invalid_status_name' => 
+'invalid_status_name' =>
 'Status names can only have alpha-numeric characters, as well as spaces, underscores and hyphens.',
 
 'duplicate_status_name' =>
 'A status already exists with the same name.',
 
-'status_group_created' => 
+'status_group_created' =>
 'Status Group Created:',
 
-'new_status' => 
+'new_status' =>
 'New Status',
 
-'status_group_updated' => 
+'status_group_updated' =>
 'Status Group Updated:',
 
-'add_edit_statuses' => 
+'add_edit_statuses' =>
 'Add/Edit Statuses',
 
-'edit_status_group_name' => 
+'edit_status_group_name' =>
 'Rename',
 
-'delete_status_group' => 
+'delete_status_group' =>
 'Delete Status Group',
 
 'delete_status_group_confirmation' =>
 'Are you sure you want to permanently delete this Status Group?',
 
-'status_group_deleted' => 
+'status_group_deleted' =>
 'Status Group Deleted:',
 
-'create_new_status' => 
+'create_new_status' =>
 'Create a New Status',
 
-'status_name' => 
+'status_name' =>
 'Status Name',
 
 'status_order' =>
@@ -998,7 +961,7 @@ $lang = array(
 'highlight' =>
 'Highlight Color (optional)',
 
-'statuses' => 
+'statuses' =>
 'Statuses',
 
 'edit_status' =>
@@ -1057,13 +1020,38 @@ $lang = array(
 'Your field name exceeds the maximum length and has been truncated.  Please review.',
 
 //----------------------------
+// Channel Form Settings
+//----------------------------
+
+'channel_form_settings' =>
+'Channel Form Settings',
+
+'channel_form_settings_updated' =>
+'Channel Form Settings Saved',
+
+'channel_form_default_status' =>
+'Default Status',
+
+'channel_form_allow_guest_posts' =>
+'Allow Guest Posts?',
+
+'channel_form_guest_captcha' =>
+'Guest Captcha?',
+
+'channel_form_guest_author' =>
+'Guest Author',
+
+'channel_form_default_status_empty' =>
+'-- Use Channel Default --',
+
+//----------------------------
 // Channel Entries API
 //----------------------------
 
 'invalid_api_parameter' =>
 'Could not create/update entry. Missing api parameter.',
 
-'unauthorized_for_this_channel' => 
+'unauthorized_for_this_channel' =>
 'You are not authorized to post in this channel',  // Allard says he rules
 
 ''=>''

@@ -53,9 +53,6 @@ $lang = array(
 'existing_un' =>
 'Your existing username',
 
-'existing_pw' =>
-'Your existing password',
-
 'un_len' =>
 'Usernames must be at least %s characters in length',
 
@@ -72,7 +69,7 @@ $lang = array(
 'Your Existing Username',
 
 'existing_password' =>
-'Your Existing Password',
+'Your Current Password',
 
 'all_fields_required' =>
 'You must submit all fields',
@@ -381,6 +378,9 @@ $lang = array(
 'login_required' =>
 'Login Required',
 
+'sign_in' =>
+'Sign into your account', 
+
 'must_be_logged_in' =>
 'This page is only accessible to logged-in users with proper access privileges',
 
@@ -424,7 +424,7 @@ $lang = array(
 'Member Registration',
 
 'mbr_forgotten_password' =>
-'Forgotten Password',
+'Request password reset',
 
 'mbr_memberlist' =>
 'Member List',
@@ -477,6 +477,7 @@ content associated with your account will also be deleted.',
 
 'mbr_passwd_email_sent' => 
 'Password Reset Email Sent',
+
 
 'mbr_form_empty' =>
 'You must submit your username and password',
@@ -907,6 +908,27 @@ We reserve the right to remove, edit, or move any messages for any reason.',
 
 'powered_by_ee' =>
 'Powered by ExpressionEngine',
+
+// Used Primarily in the Member_auth::forgot_password() 
+// through Member_auth::process_reset_password() call chain
+
+'mbr_reset_password' =>
+'Please enter a new password',
+
+'mbr_missing_password' =>
+'Please enter a new password.',
+
+'mbr_missing_confirm' =>
+'You must confirm your new password.',
+
+'mbr_password_changed' =>
+'Password Successfully Changed',
+
+'mbr_successfully_changed_password' =>
+'You have successfully changed your password.  Please login using your new password.',
+
+
+
 
 ''=>''
 );

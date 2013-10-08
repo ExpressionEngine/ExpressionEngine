@@ -3,10 +3,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -19,8 +19,8 @@
  * @package		ExpressionEngine
  * @subpackage	Modules
  * @category	Update File
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 
 class Email_upd {
@@ -48,16 +48,16 @@ class Email_upd {
 		$sql[] = "CREATE TABLE IF NOT EXISTS exp_email_tracker (
 		email_id int(10) unsigned NOT NULL auto_increment,
 		email_date int(10) unsigned default '0' NOT NULL,
-		sender_ip varchar(16) NOT NULL,
+		sender_ip varchar(45) NOT NULL,
 		sender_email varchar(75) NOT NULL ,
 		sender_username varchar(50) NOT NULL ,
 		number_recipients int(4) unsigned default '1' NOT NULL,
 		PRIMARY KEY `email_id` (`email_id`) 
-		) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
+		) ENGINE=MyISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 		
 		foreach ($sql as $query)
 		{
-			$this->EE->db->query($query);
+			ee()->db->query($query);
 		}
 		
 		return TRUE;
@@ -75,7 +75,7 @@ class Email_upd {
 	 */	
 	function uninstall()
 	{
-		$query = $this->EE->db->query("SELECT module_id FROM exp_modules WHERE module_name = 'Email'"); 
+		$query = ee()->db->query("SELECT module_id FROM exp_modules WHERE module_name = 'Email'"); 
 				
 		$sql[] = "DELETE FROM exp_module_member_groups WHERE module_id = '".$query->row('module_id') ."'";
 		$sql[] = "DELETE FROM exp_modules WHERE module_name = 'Email'";
@@ -84,7 +84,7 @@ class Email_upd {
 	
 		foreach ($sql as $query)
 		{
-			$this->EE->db->query($query);
+			ee()->db->query($query);
 		}
 
 		return TRUE;

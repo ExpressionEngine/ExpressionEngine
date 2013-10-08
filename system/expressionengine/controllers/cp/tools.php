@@ -3,10 +3,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -19,10 +19,10 @@
  * @package		ExpressionEngine
  * @subpackage	Control Panel
  * @category	Control Panel
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
-class Tools extends CI_Controller {
+class Tools extends CP_Controller {
 
 	/**
 	 * Constructor
@@ -51,13 +51,10 @@ class Tools extends CI_Controller {
 	 */	
 	function index()
 	{
-		$this->cp->set_variable('cp_page_title', lang('tools'));
+		$this->view->cp_page_title = lang('tools');
+		$this->view->controller = 'tools';
 
-		$this->javascript->compile();
-
-		$this->load->vars(array('controller' => 'tools'));
-
-		$this->load->view('_shared/overview');
+		$this->cp->render('_shared/overview');
 	}
 	
 }

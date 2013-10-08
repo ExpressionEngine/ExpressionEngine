@@ -3,10 +3,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -19,8 +19,8 @@
  * @package		ExpressionEngine
  * @subpackage	Core
  * @category	Core
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 class EE_Blacklist {
 
@@ -39,15 +39,21 @@ class EE_Blacklist {
 	/**
 	 * Blacklist Checker
 	 *
+	 * This function checks all of the available blacklists, such as urls,
+	 * IP addresses, and user agents. URLs are checked as both referrers and
+	 * in all $_POST'ed contents (such as comments).
+	 *
 	 * @access	private
 	 * @return	bool
 	 */
 	function _check_blacklist()
-	{		
-		// Check the Referrer Too				
+	{
+		// Check the referrer
+		// Since we already need to check all post values for illegal urls
+		// below, we'll temporarily write our referrer to $_POST.
 		if (isset($_SERVER['HTTP_REFERER']) && $_SERVER['HTTP_REFERER'] != '')
 		{
-			$test_ref = $this->EE->security->xss_clean($_SERVER['HTTP_REFERER']);
+			$test_ref = ee()->security->xss_clean($_SERVER['HTTP_REFERER']);
 					
 			if ( ! preg_match("#^http://\w+\.\w+\.\w*#", $test_ref))
 			{
@@ -58,9 +64,20 @@ class EE_Blacklist {
 			}
 					
 			$_POST['HTTP_REFERER'] = $test_ref;
-		}	
-		
-		if (count($_POST) == 0 OR ! $this->EE->db->table_exists('exp_blacklisted'))
+		}
+
+		// No referrer, and no posted data - no need to blacklist.
+		// In other words, if your ip is blacklisted you can still see the
+		// site, but you can not contribute content.
+		if (count($_POST) == 0)
+		{
+			return TRUE;
+		}
+
+		ee()->load->model('addons_model');
+		$installed = ee()->addons_model->module_installed('blacklist');
+
+		if ( ! $installed)
 		{
 			unset($_POST['HTTP_REFERER']);
 			return TRUE;
@@ -71,37 +88,34 @@ class EE_Blacklist {
 		$whitelisted_url	= array();
 		$whitelisted_agent	= array();
 		
-		if ($this->EE->db->table_exists('exp_whitelisted'))
-		{
-			$results = $this->EE->db->query("SELECT whitelisted_type, whitelisted_value FROM exp_whitelisted 
-											 WHERE whitelisted_value != ''");
-		
-			if ($results->num_rows() > 0)
-			{		
-				foreach($results->result_array() as $row)
+		$results = ee()->db->query("SELECT whitelisted_type, whitelisted_value FROM exp_whitelisted 
+										 WHERE whitelisted_value != ''");
+	
+		if ($results->num_rows() > 0)
+		{		
+			foreach($results->result_array() as $row)
+			{
+				if ($row['whitelisted_type'] == 'url')
 				{
-					if ($row['whitelisted_type'] == 'url')
-					{
-						$whitelisted_url = explode('|', $row['whitelisted_value']);
-					}
-					elseif($row['whitelisted_type'] == 'ip')
-					{
-						$whitelisted_ip = explode('|', $row['whitelisted_value']);
-					}
-					elseif($row['whitelisted_type'] == 'agent')
-					{
-						$whitelisted_agent = explode('|', $row['whitelisted_value']);
-					}
+					$whitelisted_url = explode('|', $row['whitelisted_value']);
+				}
+				elseif($row['whitelisted_type'] == 'ip')
+				{
+					$whitelisted_ip = explode('|', $row['whitelisted_value']);
+				}
+				elseif($row['whitelisted_type'] == 'agent')
+				{
+					$whitelisted_agent = explode('|', $row['whitelisted_value']);
 				}
 			}
 		}
 		
-		if ($this->EE->config->item('cookie_domain') !== FALSE && $this->EE->config->item('cookie_domain') != '')
+		if (ee()->config->item('cookie_domain') !== FALSE && ee()->config->item('cookie_domain') != '')
 		{
-			$whitelisted_url[] = $this->EE->config->item('cookie_domain');
+			$whitelisted_url[] = ee()->config->item('cookie_domain');
 		}
 		
-		$site_url = $this->EE->config->item('site_url');
+		$site_url = ee()->config->item('site_url');
 		
 		$whitelisted_url[] = $site_url;
 		
@@ -117,7 +131,7 @@ class EE_Blacklist {
 		$domains = array('net','com','org','info', 'name','biz','us','de', 'uk');		
 		
 		// Blacklisted Checking		
-		$query	= $this->EE->db->query("SELECT blacklisted_type, blacklisted_value FROM exp_blacklisted");
+		$query	= ee()->db->query("SELECT blacklisted_type, blacklisted_value FROM exp_blacklisted");
 		
 		if ($query->num_rows() == 0)
 		{
@@ -126,7 +140,7 @@ class EE_Blacklist {
 		}
 
 		// Load the typography helper so we can do entity_decode()
-		$this->EE->load->helper('typography');
+		ee()->load->helper('typography');
 		
 		foreach($query->result_array() as $row)
 		{
@@ -155,12 +169,16 @@ class EE_Blacklist {
 					// Clear period from the end of URLs
 					$value = preg_replace("#(^|\s|\()((http://|http(s?)://|www\.)\w+[^\s\)]+)\.([\s\)])#i", "\\1\\2{{PERIOD}}\\4", $value);
 				
+					// Sometimes user content such as comments contain multiple
+					// urls, so we need to check them individually.
 					if (preg_match_all("/([f|ht]+tp(s?):\/\/[a-z0-9@%_.~#\/\-\?&=]+.)".
 										"|(www.[a-z0-9@%_.~#\-\?&]+.)".
 										"|([a-z0-9@%_~#\-\?&]*\.(".implode('|', $domains)."))/si", $value, $matches))
 					{							
 						for($i = 0; $i < count($matches['0']); $i++)
 						{
+							// If this is a referrer or the comment module's
+							// url field we know that it's just a single match.
 							if ($key == 'HTTP_REFERER' OR $key == 'url')
 							{
 								$matches['0'][$i] = $value;
@@ -194,7 +212,7 @@ class EE_Blacklist {
 									{
 										foreach($whitelisted_ip as $pure)
 										{
-											if ($pure != '' && strpos($this->EE->input->ip_address(), $pure) !== FALSE)
+											if ($pure != '' && strpos(ee()->input->ip_address(), $pure) !== FALSE)
 											{
 												$bad = 'n';												
 												$this->whitelisted = 'y';												
@@ -205,6 +223,9 @@ class EE_Blacklist {
 									
 									if ($bad == 'y')
 									{
+										// Referer mismatches get a access denied error
+										// since the url error doesn't make sense for a
+										// user who didn't take any actions.
 										if ($key == 'HTTP_REFERER')
 										{
 											$this->blacklisted = 'y';
@@ -235,7 +256,7 @@ class EE_Blacklist {
 				
 				foreach($blacklist_values as $bad_ip)
 				{
-					if ($bad_ip != '' && strpos($this->EE->input->ip_address(), $bad_ip) === 0) 
+					if ($bad_ip != '' && strpos(ee()->input->ip_address(), $bad_ip) === 0) 
 					{
 						$bad = 'y';
 						
@@ -243,7 +264,7 @@ class EE_Blacklist {
 						{
 							foreach($whitelisted_ip as $pure)
 							{
-								if ($pure != '' && strpos($this->EE->input->ip_address(), $pure) !== FALSE)
+								if ($pure != '' && strpos(ee()->input->ip_address(), $pure) !== FALSE)
 								{
 									$bad = 'n';
 									$this->whitelisted = 'y';
@@ -265,7 +286,7 @@ class EE_Blacklist {
 					}
 				}				
 			}
-			elseif($row['blacklisted_type'] == 'agent' && $row['blacklisted_value'] != '' && $this->EE->input->user_agent() != '' && $this->whitelisted != 'y')
+			elseif($row['blacklisted_type'] == 'agent' && $row['blacklisted_value'] != '' && ee()->input->user_agent() != '' && $this->whitelisted != 'y')
 			{
 				$blacklist_values = explode('|', $row['blacklisted_value']);
 				
@@ -276,7 +297,7 @@ class EE_Blacklist {
 				
 				foreach($blacklist_values as $bad_agent)
 				{
-					if ($bad_agent != '' && stristr($this->EE->input->user_agent(), $bad_agent) !== FALSE)
+					if ($bad_agent != '' && stristr(ee()->input->user_agent(), $bad_agent) !== FALSE)
 					{
 						$bad = 'y';
 						
@@ -284,7 +305,7 @@ class EE_Blacklist {
 						{
 							foreach($whitelisted_ip as $pure)
 							{
-								if ($pure != '' && strpos($this->EE->input->user_agent(), $pure) !== FALSE)
+								if ($pure != '' && strpos(ee()->input->user_agent(), $pure) !== FALSE)
 								{
 									$bad = 'n';
 									$this->whitelisted = 'y';
@@ -297,7 +318,7 @@ class EE_Blacklist {
 						{
 							foreach($whitelisted_agent as $pure)
 							{
-								if ($pure != '' && strpos($this->EE->input->agent, $pure) !== FALSE)
+								if ($pure != '' && strpos(ee()->input->agent, $pure) !== FALSE)
 								{
 									$bad = 'n';
 									$this->whitelisted = 'y';

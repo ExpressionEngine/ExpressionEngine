@@ -4,10 +4,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,8 +20,8 @@
  * @package		ExpressionEngine
  * @subpackage	Modules
  * @category	Modules
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 
 class Channel_upd {
@@ -45,33 +45,42 @@ class Channel_upd {
 	function install()
 	{
 		$data = array(
-					'module_name' => 'Channel',
-					'module_version' => $this->version,
-					'has_cp_backend' => 'n'
-					);
+			'module_name' => 'Channel',
+			'module_version' => $this->version,
+			'has_cp_backend' => 'n'
+		);
 
-		$this->EE->db->insert('modules', $data);
+		ee()->db->insert('modules', $data);
 
 		$data = array(
-					'class' => 'Channel',
-					'method' => 'insert_new_entry'
-					);
-					
-		$this->EE->db->insert('actions', $data);			
-					
+			'class' => 'Channel',
+			'method' => 'submit_entry'
+		);
+
+		ee()->db->insert('actions', $data);
+
 		$data = array(
-					'class' => 'Channel',
-					'method' => 'filemanager_endpoint'
-					);
-					
-		$this->EE->db->insert('actions', $data);
-		
+			'class' => 'Channel',
+			'method' => 'filemanager_endpoint'
+		);
+
+		ee()->db->insert('actions', $data);
+
 		$data = array(
-					'class' => 'Channel',
-					'method' => 'smiley_pop'
-					);
-					
-		$this->EE->db->insert('actions', $data);
+			'class' => 'Channel',
+			'method' => 'smiley_pop'
+		);
+
+		ee()->db->insert('actions', $data);
+
+		$data = array(
+			'class' => 'Channel',
+			'method' => 'combo_loader'
+		);
+
+		ee()->db->insert('actions', $data);
+
+		ee()->db->insert('content_types', array('name' => 'channel'));
 
 		return TRUE;
 	}
@@ -86,15 +95,15 @@ class Channel_upd {
 	 */
 	function uninstall()
 	{
-		$this->EE->db->select('module_id');
-		$this->EE->db->from('modules');
-		$this->EE->db->where('module_name', 'Channel');
-		$query = $this->EE->db->get();
+		ee()->db->select('module_id');
+		ee()->db->from('modules');
+		ee()->db->where('module_name', 'Channel');
+		$query = ee()->db->get();
 
-		$this->EE->db->delete('module_member_groups', array('module_id' => $query->row('module_id')));
-		$this->EE->db->delete('modules', array('module_name' => 'Channel'));
-		$this->EE->db->delete('actions', array('class' => 'Channel'));
-		$this->EE->db->delete('actions', array('class' => 'Channel_mcp'));
+		ee()->db->delete('module_member_groups', array('module_id' => $query->row('module_id')));
+		ee()->db->delete('modules', array('module_name' => 'Channel'));
+		ee()->db->delete('actions', array('class' => 'Channel'));
+		ee()->db->delete('actions', array('class' => 'Channel_mcp'));
 
 		return TRUE;
 	}

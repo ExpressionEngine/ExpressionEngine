@@ -3,10 +3,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -19,8 +19,8 @@
  * @package		ExpressionEngine
  * @subpackage	Core
  * @category	Core
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 class Updater {
 
@@ -29,7 +29,7 @@ class Updater {
 		$this->EE =& get_instance();
 	
 		// Grab the config file
-		if ( ! @include($this->EE->config->config_path))
+		if ( ! @include(ee()->config->config_path))
 		{
 			show_error('Your config'.EXT.' file is unreadable. Please make sure the file exists and that the file permissions to 666 on the following file: expressionengine/config/config.php');
 		}
@@ -89,19 +89,19 @@ class Updater {
 		// Run the queries
 		foreach ($Q as $sql)
 		{
-			$this->EE->db->query($sql);
+			ee()->db->query($sql);
 		}
 
-		$query = $this->EE->db->query("SELECT field_id FROM exp_weblog_fields");
+		$query = ee()->db->query("SELECT field_id FROM exp_weblog_fields");
 
 		foreach ($query->result_array() as $row)
 		{
-			$this->EE->db->query("insert into exp_field_formatting (field_id, field_fmt) values ('".$row['field_id']."', 'none')");
-			$this->EE->db->query("insert into exp_field_formatting (field_id, field_fmt) values ('".$row['field_id']."', 'br')");
-			$this->EE->db->query("insert into exp_field_formatting (field_id, field_fmt) values ('".$row['field_id']."', 'xhtml')");
+			ee()->db->query("insert into exp_field_formatting (field_id, field_fmt) values ('".$row['field_id']."', 'none')");
+			ee()->db->query("insert into exp_field_formatting (field_id, field_fmt) values ('".$row['field_id']."', 'br')");
+			ee()->db->query("insert into exp_field_formatting (field_id, field_fmt) values ('".$row['field_id']."', 'xhtml')");
 		}
 
-		$query = $this->EE->db->query("SELECT * FROM exp_weblog_data");
+		$query = ee()->db->query("SELECT * FROM exp_weblog_data");
 
 		foreach ($query->result_array() as $key => $val)
 		{
@@ -109,7 +109,7 @@ class Updater {
 			{
 				$id = substr($key, 9);
 			
-				$this->EE->db->query("ALTER TABLE exp_weblog_data CHANGE COLUMN field_ft_".$id." field_ft_".$id." varchar(40) NOT NULL default 'xhtml'");
+				ee()->db->query("ALTER TABLE exp_weblog_data CHANGE COLUMN field_ft_".$id." field_ft_".$id." varchar(40) NOT NULL default 'xhtml'");
 			}
 		}
 	
@@ -135,7 +135,7 @@ class Updater {
 						
 					);
 								
-		$this->EE->config->_append_config_1x($data);
+		ee()->config->_append_config_1x($data);
 
 		return TRUE;
 	}

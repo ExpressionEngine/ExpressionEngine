@@ -3,10 +3,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -19,8 +19,8 @@
  * @package		ExpressionEngine
  * @subpackage	Core
  * @category	Core
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 class Updater {
 
@@ -30,7 +30,7 @@ class Updater {
 		$this->EE =& get_instance();
 	
 		// Grab the config file
-		if ( ! @include($this->EE->config->config_path))
+		if ( ! @include(ee()->config->config_path))
 		{
 			show_error('Your config'.EXT.' file is unreadable. Please make sure the file exists and that the file permissions to 666 on the following file: expressionengine/config/config.php');
 		}
@@ -97,7 +97,7 @@ class Updater {
 		
 		foreach ($Q as $sql)
 		{
-			$this->EE->db->query($sql);
+			ee()->db->query($sql);
 		}
 
 
@@ -115,14 +115,14 @@ class Updater {
                    		'enable_js_calendar'		=>	'y',
 						'save_tmpl_files'   		=>  'n',
 						'tmpl_file_basepath'   		=>  '',
-						'calendar_thumb_path'		=>	$this->EE->config->slash_item('site_url').'images/cp_images/calendar.gif',
-						'cp_image_path'				=>	$this->EE->config->slash_item('site_url').'images/cp_images/',
+						'calendar_thumb_path'		=>	ee()->config->slash_item('site_url').'images/cp_images/calendar.gif',
+						'cp_image_path'				=>	ee()->config->slash_item('site_url').'images/cp_images/',
 						'redirect_submitted_links'	=>	'n',
 						'site_404'					=>	'',
 						'weblog_nomenclature'		=> 'weblog'
 					);
 													
-		$this->EE->config->_append_config_1x($data);
+		ee()->config->_append_config_1x($data);
 		
 		
 		/** -----------------------------
@@ -168,7 +168,7 @@ class Category_Order {
     
     function add_category_orders()
     {    	
-    	$query = $this->EE->db->query("SELECT group_id FROM exp_category_groups");
+    	$query = ee()->db->query("SELECT group_id FROM exp_category_groups");
     	
     	if ($query->num_rows() == 0)
     	{
@@ -201,7 +201,7 @@ class Category_Order {
     	{
     		foreach($group_data as $cat_id => $cat_data)
     		{
-    			$this->EE->db->query("UPDATE exp_categories
+    			ee()->db->query("UPDATE exp_categories
     						SET cat_order = '{$cat_data['1']}'
     						WHERE cat_id = '{$cat_id}'");
     		}
@@ -221,7 +221,7 @@ class Category_Order {
     {          
         $sql = "SELECT cat_name, cat_id, parent_id FROM exp_categories WHERE group_id ='$group_id' ORDER BY parent_id, cat_name";
         
-        $query = $this->EE->db->query($sql);
+        $query = ee()->db->query($sql);
               
         if ($query->num_rows() == 0)
         {
@@ -316,13 +316,13 @@ class Category_Order {
 		$str .= '====================================================='."\n";
 		$str .= ' ExpressionEngine - by EllisLab'."\n";
 		$str .= '-----------------------------------------------------'."\n";
-		$str .= ' http://expressionengine.com/'."\n";
+		$str .= ' http://ellislab.com/'."\n";
 		$str .= '-----------------------------------------------------'."\n";
-		$str .= ' Copyright (c) 2003 - 2012, EllisLab, Inc.'."\n";
+		$str .= ' Copyright (c) 2003 - 2013, EllisLab, Inc.'."\n";
 		$str .= '====================================================='."\n";
 		$str .= ' THIS IS COPYRIGHTED SOFTWARE'."\n";
 		$str .= ' PLEASE READ THE LICENSE AGREEMENT'."\n";
-		$str .= ' http://expressionengine.com/user_guide/license.html'."\n";
+		$str .= ' http://ellislab.com/expressionengine/user-guide/license.html'."\n";
 		$str .= '====================================================='."\n";
 		$str .= ' Purpose: Member Profile Skin Elements'."\n";
 		$str .= '====================================================='."\n";

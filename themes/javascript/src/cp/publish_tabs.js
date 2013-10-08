@@ -2,10 +2,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -45,21 +45,6 @@ function setup_tabs() {
 		focused_tab = "menu_publish_tab",
 		field_dropped = false,
 		spring = "";
-
-	// allow sorting of publish fields
-	$(".main_tab").sortable({
-		connectWith: '.main_tab',
-		appendTo: '#holder',
-		helper: 'clone',
-		forceHelperSize: true,
-		handle: ".handle",
-		start: function(event, ui) {
-			ui.item.css("width", $(this).parent().css("width"));
-		},
-		stop: function(event, ui) {
-			ui.item.css("width", "100%");
-		}
-	});
 
 	$(".tab_menu li a").droppable({
 		accept: ".field_selector, .publish_field",
@@ -107,7 +92,7 @@ function setup_tabs() {
 						tab_id = $(this).attr("id");
 
 			// store the field we are moving, then remove it from the DOM
-			$("#hold_field_"+field_id).prependTo("#"+tab_id);// + " div.insertpoint");
+			$("#hold_field_"+field_id).prependTo("#"+tab_id);
 
 			$("#hold_field_"+field_id).hide().slideDown();
 		}
@@ -121,7 +106,24 @@ function setup_tabs() {
 			e.preventDefault();
 		}).bind("click.publish_tabs", function() {
 			return false;
+	});
+
+	setTimeout(function() {
+		// allow sorting of publish fields
+		$(".main_tab").sortable({
+			connectWith: '.main_tab',
+			appendTo: '#holder',
+			helper: 'clone',
+			forceHelperSize: true,
+			handle: ".handle",
+			start: function(event, ui) {
+				ui.item.css("width", $(this).parent().css("width"));
+			},
+			stop: function(event, ui) {
+				ui.item.css("width", "100%");
+			}
 		});
+	}, 1500); // I know this seems excessive, but for some reason this setup code takes almost half a second, so we want it to run dead last!
 }
 
 $(".tab_menu li:first").addClass("current");

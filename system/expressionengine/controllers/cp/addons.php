@@ -3,10 +3,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -19,10 +19,10 @@
  * @package		ExpressionEngine
  * @subpackage	Control Panel
  * @category	Control Panel
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
-class Addons extends CI_Controller {
+class Addons extends CP_Controller {
 
 	/**
 	 * Constructor
@@ -51,12 +51,10 @@ class Addons extends CI_Controller {
 	 */	
 	function index()
 	{
-		$this->cp->set_variable('cp_page_title', lang('addons'));
+		$this->view->cp_page_title = lang('addons');
+		$this->view->controller = 'addons';
 
-		$this->load->vars(array('controller' => 'addons'));
-
-		$this->javascript->compile();
-		$this->load->view('_shared/overview');
+		$this->cp->render('_shared/overview');
 	}
 	
 	// --------------------------------------------------------------------
@@ -86,9 +84,16 @@ class Addons extends CI_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 		
-		$this->cp->set_variable('cp_page_title', lang('package_settings'));
+		$this->view->cp_page_title = lang('package_settings');
 		
 		$components = $this->addons->_packages[$package];
+
+		// Ignore RTE Tools if the module is not installed
+		$this->db->from('modules')->where('module_name', 'Rte');
+		if ($this->db->count_all_results() <= 0)
+		{
+			unset($components['rte_tool']);
+		}
 		
 		if (isset($components['plugin']))
 		{
@@ -104,6 +109,23 @@ class Addons extends CI_Controller {
 			{
 				if ($new_state = $this->input->get_post('install_'.$type))
 				{
+					// Addon_installer does it's own "is installed" check when
+					// installing/uninstalling fieldtypes, so we can safely add
+					// FTs at this point without checking the installation status
+					if ($type === 'fieldtype')
+					{
+						if ($new_state === 'uninstall')
+						{
+							$uninstall[] = $type;
+						}
+						elseif ($new_state === 'install')
+						{
+							$install[] = $type;
+						}
+						
+						continue;
+					}
+					
 					$installed_f = $type.'_installed';
 					
 					if (method_exists($this->addons_model, $installed_f))
@@ -132,10 +154,21 @@ class Addons extends CI_Controller {
 
 		$vars = array();
 		
+		//whether or not this is an installation or an uninstallation
+		$is_package_installed = FALSE;
+		
 		foreach($components as $type => $info)
 		{
+			//fieldtypes are given the install status of the whole package
+			//so don't bother checking install status of fieldtypes
+			if ($type === 'fieldtype')
+			{
+				continue;
+			}
+			
 			$inst_func = $type.'_installed';
-			$components[$type]['installed'] = $this->addons_model->$inst_func($package);
+			
+			$is_package_installed = $components[$type]['installed'] = $this->addons_model->$inst_func($package);
 
 			if ($type == 'extension')
 			{
@@ -155,14 +188,19 @@ class Addons extends CI_Controller {
 			}
 		}
 		
+		//since fieldtypes can be uninstalled one-by-one without uninstalling the whole package
+		//set the "installed" status to whether the other components (ext, mod, acc) are installed
+		if (isset($components['fieldtype']))
+		{
+			$components['fieldtype']['installed'] = $is_package_installed;
+		}
+		
 		$vars['form_action'] = 'C=addons'.AMP.'M=package_settings'.AMP.'package='.$package.AMP.'return='.$return;
 		$vars['package'] = ucfirst(str_replace('_', ' ', $package));
 		$vars['components'] = $components;
 		$vars['required'] = $required;
-		
-		$this->javascript->compile();
-		
-		$this->load->view('addons/package_settings', $vars);
+				
+		$this->cp->render('addons/package_settings', $vars);
 	}
 }
 // END CLASS

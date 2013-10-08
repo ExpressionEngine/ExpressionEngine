@@ -3,10 +3,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -19,8 +19,8 @@
  * @package		ExpressionEngine
  * @subpackage	Fieldtypes
  * @category	Fieldtypes
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 class Radio_ft extends EE_Fieldtype {
 
@@ -31,9 +31,9 @@ class Radio_ft extends EE_Fieldtype {
 
 	var $has_array_data = FALSE;
 
-	// used in display_field() below to set 
+	// used in display_field() below to set
 	// some defaults for third party usage
-	var $settings_vars = array(	
+	var $settings_vars = array(
 		'field_text_direction'	=> 'rtl',
 		'field_pre_populate'	=> 'n',
 		'field_list_items'		=> array(),
@@ -45,12 +45,12 @@ class Radio_ft extends EE_Fieldtype {
 	{
 		$valid			= FALSE;
 		$field_options	= $this->_get_field_options($data);
-		
+
 		if ($data === FALSE OR $data == '')
 		{
 			return TRUE;
 		}
-		
+
 		$data = form_prep($data);
 
 		foreach($field_options as $key => $val)
@@ -69,53 +69,86 @@ class Radio_ft extends EE_Fieldtype {
 				break;
 			}
 		}
-		
+
 		if ( ! $valid)
 		{
-			return $this->EE->lang->line('invalid_selection');
+			return ee()->lang->line('invalid_selection');
 		}
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	function display_field($data)
 	{
+		return $this->_display_field($data);
+	}
+
+	// --------------------------------------------------------------------
+
+	function grid_display_field($data)
+	{
+		return $this->_display_field($data, 'grid');
+	}
+
+	// --------------------------------------------------------------------
+
+	private function _display_field($data, $container = 'fieldset')
+	{
 		array_merge($this->settings, $this->settings_vars);
 
-		$text_direction = ($this->settings['field_text_direction'] == 'rtl') ? 'rtl' : 'ltr';
+		$text_direction = (isset($this->settings['field_text_direction']))
+			? $this->settings['field_text_direction'] : 'ltr';
 
 		$field_options = $this->_get_field_options($data);
-		
-		// If they've selected something we'll make sure that it's a valid choice
+
 		$selected = $data;
-//$this->EE->input->post($this->field_name);
-		
-		$r = form_fieldset('');
+
+		$r = '';
 
 		foreach($field_options as $option)
 		{
 			$selected = ($option == $data);
 			$r .= '<label>'.form_radio($this->field_name, $option, $selected).NBS.$option.'</label>';
 		}
-		
-		return $r.form_fieldset_close();
+
+		switch ($container)
+		{
+			case 'grid':
+				$r = $this->grid_padding_container($r);
+				break;
+
+			default:
+				$r = form_fieldset('').$r.form_fieldset_close();
+				break;
+		}
+
+		return $r;
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	function replace_tag($data, $params = '', $tagdata = '')
 	{
-		return $this->EE->typography->parse_type(
-			$this->EE->functions->encode_ee_tags($data),
+		// Experimental parameter, do not use
+		if (isset($params['raw_output']) && $params['raw_output'] == 'yes')
+		{
+			return ee()->functions->encode_ee_tags($data);
+		}
+
+		$text_format = (isset($this->row['field_ft_'.$this->field_id]))
+			? $this->row['field_ft_'.$this->field_id] : 'none';
+
+		return ee()->typography->parse_type(
+			ee()->functions->encode_ee_tags($data),
 			array(
-				'text_format'	=> $this->row['field_ft_'.$this->field_id],
+				'text_format'	=> $text_format,
 				'html_format'	=> $this->row['channel_html_formatting'],
 				'auto_links'	=> $this->row['channel_auto_link_urls'],
 				'allow_img_url' => $this->row['channel_allow_img_urls']
 			)
 		);
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	function display_settings($data)
@@ -123,12 +156,21 @@ class Radio_ft extends EE_Fieldtype {
 		$this->field_formatting_row($data, 'radio');
 		$this->multi_item_row($data, 'radio');
 	}
-	
+
+	public function grid_display_settings($data)
+	{
+		return array(
+			$this->grid_field_formatting_row($data),
+			$this->grid_multi_item_row($data)
+		);
+	}
+
 	function _get_field_options($data)
 	{
 		$field_options = array();
-		
-		if ($this->settings['field_pre_populate'] == 'n')
+
+		if ((isset($this->settings['field_pre_populate']) && $this->settings['field_pre_populate'] == 'n')
+			OR ! isset($this->settings['field_pre_populate']))
 		{
 			if ( ! is_array($this->settings['field_list_items']))
 			{
@@ -147,9 +189,9 @@ class Radio_ft extends EE_Fieldtype {
 		{
 			// We need to pre-populate this menu from an another channel custom field
 
-			$this->EE->db->select('field_id_'.$this->settings['field_pre_field_id']);
-			$this->EE->db->where('channel_id', $this->settings['field_pre_channel_id']);
-			$pop_query = $this->EE->db->get('channel_data');
+			ee()->db->select('field_id_'.$this->settings['field_pre_field_id']);
+			ee()->db->where('channel_id', $this->settings['field_pre_channel_id']);
+			$pop_query = ee()->db->get('channel_data');
 
 			$field_options[''] = '--';
 
@@ -166,8 +208,21 @@ class Radio_ft extends EE_Fieldtype {
 				}
 			}
 		}
-		
+
 		return $field_options;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Accept all content types.
+	 *
+	 * @param string  The name of the content type
+	 * @return bool   Accepts all content types
+	 */
+	public function accepts_content_type($name)
+	{
+		return TRUE;
 	}
 }
 

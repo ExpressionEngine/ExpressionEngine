@@ -1,16 +1,30 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 2.0
+ * @filesource
+ */
+ 
+// ------------------------------------------------------------------------
 
+/**
+ * ExpressionEngine Segment Helper
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Helpers
+ * @category	Helpers
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
+ */
 
-	
-	function parse_segment($qstring)
-	{
-		
-		
-	}
-
-
-	// ------------------------------------------------------------------------
+// ------------------------------------------------------------------------
 
 	/**
 	  *  Parse Day
@@ -93,9 +107,9 @@
 		{
 			$p_page = (isset($match[2])) ? $match[2] : $match[1];
 
-			$basepath = $EE->functions->remove_double_slashes(str_replace($match[0], '', $basepath));
+			$basepath = reduce_double_slashes(str_replace($match[0], '', $basepath));
 
-			$uristr  = $EE->functions->remove_double_slashes(str_replace($match[0], '', $uristr));
+			$uristr  = reduce_double_slashes(str_replace($match[0], '', $uristr));
 
 			$qstring = trim_slashes(str_replace($match[0], '', $qstring));
 
@@ -117,7 +131,7 @@
 		
 		if (preg_match("#^N(\d+)|/N(\d+)#", $qstring, $match))
 		{
-			$uristr  = $this->EE->functions->remove_double_slashes(str_replace($match[0], '', $uristr));
+			$uristr  = reduce_double_slashes(str_replace($match[0], '', $uristr));
 
 			$qstring = trim_slashes(str_replace($match[0], '', $qstring));
 		}
@@ -135,12 +149,12 @@
 	{
 		$EE =& get_instance();
 		
-		$reserved_category_word = $EE->config->item("reserved_category_word");
+		$reserved_category_word = (string) $EE->config->item("reserved_category_word");
 		
 		// Parse out URL title from query string
-		if (strpos($qstring, $reserved_category_word) !== FALSE 
-			&& $EE->config->item("use_category_name") == 'y' 
+		if ($EE->config->item("use_category_name") == 'y' 
 			&& $reserved_category_word != ''
+			&& strpos($qstring, $reserved_category_word) !== FALSE 
 		)
 		{
 			return preg_replace("/(.*?)\/".preg_quote($reserved_category_word)."\//i", '', '/'.$qstring);

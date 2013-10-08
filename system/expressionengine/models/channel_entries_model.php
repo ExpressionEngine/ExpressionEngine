@@ -3,10 +3,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -19,10 +19,39 @@
  * @package		ExpressionEngine
  * @subpackage	Core
  * @category	Model
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 class Channel_entries_model extends CI_Model {
+
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 *
+	 */
+	public function get_entry_data(array $entries)
+	{
+		$sql = 'SELECT t.entry_id, t.channel_id, t.forum_topic_id, t.author_id, t.ip_address, t.title, t.url_title, t.status, t.view_count_one, t.view_count_two, t.view_count_three, t.view_count_four, t.allow_comments, t.comment_expiration_date, t.sticky, t.entry_date, t.year, t.month, t.day, t.edit_date, t.expiration_date, t.recent_comment_date, t.comment_total, t.site_id as entry_site_id,
+				  w.channel_title, w.channel_name, w.channel_url, w.comment_url, w.comment_moderate, w.channel_html_formatting, w.channel_allow_img_urls, w.channel_auto_link_urls, w.comment_system_enabled, 
+				  m.group_id, m.username, m.email, m.url, m.screen_name, m.location, m.occupation, m.interests, m.aol_im, m.yahoo_im, m.msn_im, m.icq, m.signature, m.sig_img_filename, m.sig_img_width, m.sig_img_height, m.avatar_filename, m.avatar_width, m.avatar_height, m.photo_filename, m.photo_width, m.photo_height, m.group_id, m.member_id, m.bday_d, m.bday_m, m.bday_y, m.bio,
+				  md.*,
+				  wd.*
+				FROM exp_channel_titles		AS t
+				LEFT JOIN exp_channels 		AS w  ON t.channel_id = w.channel_id
+				LEFT JOIN exp_channel_data	AS wd ON t.entry_id = wd.entry_id
+				LEFT JOIN exp_members		AS m  ON m.member_id = t.author_id
+				LEFT JOIN exp_member_data	AS md ON md.member_id = m.member_id ';
+
+		$sql .= 'WHERE t.entry_id IN ('.implode(',', $entries).')';
+
+		$query_result = ee()->db->query($sql);
+		$entries = $query_result->result_array();
+		$query_result->free_result();
+		return $entries;
+	}
+
+	// --------------------------------------------------------------------
 
 	/**
 	 * Get Entries
@@ -258,111 +287,6 @@ class Channel_entries_model extends CI_Model {
 			unset($ids);
 		}
 	}
-
-	// --------------------------------------------------------------------	
-
-	/**
-	 * Fetch ping servers
-	 *
-	 * This needs to be moved somewhere else, as similar code is used in a few places
-	 *
-	 * @param 	integer
-	 * @param 	integer
-	 * @param 	string
-	 * @param 	boolean
-	 */
-	public function fetch_ping_servers($entry_id = '', $show = TRUE)
-	{
-		$sent_pings = array();
-
-		if ($entry_id != '')
-		{
-			$qry = $this->db->select('ping_id')
-							->get_where('entry_ping_status', 
-										array('entry_id' => (int) $entry_id)
-									);
-			
-			if ($qry->num_rows() > 0)
-			{
-				foreach ($qry->result_array() as $row)
-				{
-					$sent_pings[$row['ping_id']] = TRUE;
-				}
-			}
-		}
-
-		$qry = $this->db->select('COUNT(*) as count')
-						->where('site_id', $this->config->item('site_id'))
-						->where('member_id', $this->session->userdata('member_id'))
-						->get('ping_servers');
-
-		$member_id = ($qry->row('count') === 0) ? 0 : $this->session->userdata('member_id');
-
-		$qry = $this->db->select('id, server_name, is_default')
-						->where('site_id', $this->config->item('site_id'))
-						->where('member_id', $member_id)
-						->order_by('server_order')
-						->get('ping_servers');
-
-		if ($qry->num_rows() == 0)
-		{
-			return FALSE;
-		}
-
-		$r = '';
-
-		foreach($qry->result_array() as $row)
-		{
-			$selected = '';
-
-			if ( ! empty($_POST))
-			{
-				if ($this->input->post('ping') !== FALSE && in_array($row['id'], $this->input->post('ping')))
-				{
-					$selected = 1; 
-				}
-			}
-			else
-			{
-				if ($entry_id != '')
-				{
-					$selected = (isset($sent_pings[$row['id']])) ? 1 : '';
-				}
-				else
-				{
-					$selected = ($row['is_default'] == 'y') ? 1 : '';
-				}
-			}
-
-			if ($entry_id != '')
-			{
-				$selected = '';
-			}
-
-			if ($show == TRUE)
-			{
-				$r .= '<label>'.form_checkbox('ping[]', $row['id'], $selected, 'class="ping_toggle"').' '.$row['server_name'].'</label>';
-			}
-			else
-			{
-				if ($entry_id != '')
-				{
-					$r .= form_hidden('ping[]', $row['id']);
-				}
-			}
-		}
-
-		if ($show == TRUE)
-		{
-			$r .= '<label>'.form_checkbox('toggle_pings', 'toggle_pings', FALSE, 'class="ping_toggle_all"').' '.lang('select_all').'</label>';
-
-		}
-
-		return $r;
-	}
-	
-	
-	
 }
 // END CLASS
 

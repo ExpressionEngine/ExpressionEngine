@@ -4,10 +4,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package     ExpressionEngine
- * @author      ExpressionEngine Dev Team
- * @copyright   Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license     http://expressionengine.com/user_guide/license.html
- * @link        http://expressionengine.com
+ * @author      EllisLab Dev Team
+ * @copyright   Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license     http://ellislab.com/expressionengine/user-guide/license.html
+ * @link        http://ellislab.com
  * @since       Version 2.0
  * @filesource
  */
@@ -20,8 +20,8 @@
  * @package     ExpressionEngine
  * @subpackage  Core
  * @category    Core
- * @author      ExpressionEngine Dev Team
- * @link        http://expressionengine.com
+ * @author      EllisLab Dev Team
+ * @link        http://ellislab.com
  */
 class Updater {
 
@@ -35,29 +35,85 @@ class Updater {
     function do_update()
     {
         // Modules now have a tab setting
-        $Q[] = "ALTER TABLE `exp_modules` ADD COLUMN `has_publish_fields` char(1) NOT NULL default 'n'";
+		ee()->smartforge->add_column(
+			'modules',
+			array(
+				'has_publish_fields' => array(
+					'type'				=> 'char',
+					'constraint'		=> 1,
+					'null'				=> FALSE,
+					'default'			=> 'n'
+				)
+			)
+		);
 
 		// Everything else is the custom field conversion
 
 		// Rename option groups to checkboxes
-		$Q[] = "UPDATE exp_channel_fields SET field_type = 'checkboxes' WHERE field_type = 'option_group'";
+		ee()->db->set('field_type', 'checkboxes');
+		ee()->db->where('field_type', 'option_group');	
+		ee()->db->update('channel_fields');
 
 		// Add missing column
-		$Q[] = "ALTER TABLE `exp_channel_fields` ADD `field_settings` TEXT NULL";
+		ee()->smartforge->add_column(
+			'channel_fields',
+			array(
+				'field_settings' => array(
+					'type'			=> 'text',
+					'null'			=> TRUE
+				)
+			)
+		);
 	    
 		// Increase fieldtype name length
-		$Q[] = "ALTER TABLE `exp_channel_fields` CHANGE `field_type` `field_type` VARCHAR(50) NOT NULL default 'text'";         
+		ee()->smartforge->modify_column(
+			'channel_fields',
+			array(
+				'field_type' => array(
+					'name'			=> 'field_type',
+					'type'			=> 'varchar',
+					'constraint'	=> 50,
+					'null'			=> FALSE,
+					'default'		=> 'text',
+				),
+			)
+		);        
 		
 		// Add fieldtype table
-		$Q[] = "CREATE TABLE exp_fieldtypes (
-				fieldtype_id int(4) unsigned NOT NULL auto_increment, 
-				name varchar(50) NOT NULL, 
-				version varchar(12) NOT NULL, 
-				settings text NULL, 
-				has_global_settings char(1) default 'n', 
-        		PRIMARY KEY `fieldtype_id` (`fieldtype_id`)
-		)";
+
+		ee()->dbforge->add_field(
+			array(
+				'fieldtype_id' => array(
+					'type'				=> 'int',
+					'constraint'		=> 4,
+					'unsigned'			=> TRUE,
+					'null'				=> FALSE,
+					'auto_increment'	=> TRUE
+				),
+				'name' => array(
+					'type'				=> 'varchar',
+					'constraint'		=> 50,
+					'null'				=> FALSE
+				),
+				'version' => array(
+					'type'				=> 'varchar',
+					'constraint'		=> 12,
+					'null'				=> FALSE
+				),
+				'settings' => array(
+					'type'				=> 'text',
+					'null'				=> TRUE
+				),
+				'has_global_settings' => array(
+					'type'				=> 'char',
+					'constraint'		=> 1,
+					'default'			=> 'n'
+				)
+			)
+		);
 		
+		ee()->dbforge->add_key('fieldtype_id', TRUE);
+		ee()->smartforge->create_table('fieldtypes');
 		
 		// Install default field types
 		
@@ -65,21 +121,32 @@ class Updater {
 		
 		foreach($default_fts as $name)
 		{
-			$Q[] = "INSERT INTO `exp_fieldtypes` (`name`,`version`,`settings`,`has_global_settings`) VALUES ('".$name."','1.0','YTowOnt9','n')";
+			$values = array(
+				'name'					=> $name,
+				'version'				=> '1.0',
+				'settings'				=> 'YTowOnt9',
+				'has_global_settings'	=> 'n'
+			);
+
+			ee()->smartforge->insert_set('fieldtypes', $values, $values);
 		}
 		
-		// Remove weblog from specialty_templates 
-		$Q[] = "UPDATE `exp_specialty_templates` SET `template_data` = REPLACE(`template_data`, 'weblog_name', 'channel_name')";
+		// Remove weblog from specialty_templates
+		ee()->db->set('data_title', "REPLACE(`data_title`, 'weblog', 'channel')", FALSE);
+		ee()->db->update('specialty_templates');
+		
+		ee()->db->set('template_data', "REPLACE(`template_data`, 'weblog_name', 'channel_name')", FALSE);
+		ee()->db->update('specialty_templates');
 		
 		// Ditch 
-		$Q[] = "DELETE FROM `exp_specialty_templates` WHERE `template_name` = 'admin_notify_trackback'";
-		$Q[] = "DELETE FROM `exp_specialty_templates` WHERE `template_name` = 'admin_notify_gallery_comment'";
-		$Q[] = "DELETE FROM `exp_specialty_templates` WHERE `template_name` = 'gallery_comment_notification'";
-		
-		foreach ($Q as $num => $sql)
-		{
-	        $this->EE->db->query($sql);
-		}
+		ee()->db->where('template_name', 'admin_notify_trackback');
+		ee()->db->delete('specialty_templates');
+
+		ee()->db->where('template_name', 'admin_notify_gallery_comment');
+		ee()->db->delete('specialty_templates');
+
+		ee()->db->where('template_name', 'gallery_comment_notification');
+		ee()->db->delete('specialty_templates');
 		
 		
 		// Set settings to yes so nothing disappears
@@ -98,9 +165,9 @@ class Updater {
 				$final_settings['field_'.$name] = 'y';
 			}
 			
-			$this->EE->db->set('field_settings', base64_encode(serialize($final_settings)));
-			$this->EE->db->where('field_type', $fieldtype);
-			$this->EE->db->update('channel_fields');
+			ee()->db->set('field_settings', base64_encode(serialize($final_settings)));
+			ee()->db->where('field_type', $fieldtype);
+			ee()->db->update('channel_fields');
 		}
 
 		// Finished!

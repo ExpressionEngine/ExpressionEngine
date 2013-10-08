@@ -4,10 +4,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -15,13 +15,13 @@
 // --------------------------------------------------------------------
 
 /**
- * ExpressionEngine Channel Module
+ * ExpressionEngine File Module
  *
  * @package		ExpressionEngine
  * @subpackage	Modules
  * @category	Modules
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 
 class File_upd {
@@ -50,7 +50,7 @@ class File_upd {
 					'has_cp_backend' => 'n'
 					);
 
-		$this->EE->db->insert('modules', $data);
+		ee()->db->insert('modules', $data);
 
 		return TRUE;
 	}
@@ -65,13 +65,13 @@ class File_upd {
 	 */
 	function uninstall()
 	{
-		$this->EE->db->select('module_id');
-		$this->EE->db->from('modules');
-		$this->EE->db->where('module_name', 'File');
-		$query = $this->EE->db->get();
+		ee()->db->select('module_id');
+		ee()->db->from('modules');
+		ee()->db->where('module_name', 'File');
+		$query = ee()->db->get();
 
-		$this->EE->db->delete('module_member_groups', array('module_id' => $query->row('module_id')));
-		$this->EE->db->delete('modules', array('module_name' => 'File'));
+		ee()->db->delete('module_member_groups', array('module_id' => $query->row('module_id')));
+		ee()->db->delete('modules', array('module_name' => 'File'));
 
 		return TRUE;
 	}

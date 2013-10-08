@@ -28,7 +28,7 @@ $lang = array(
 'Return to login',
 
 'password_lockout_in_effect' =>
-'You are only permitted to make four login attempts every %x minute(s)',
+'You are only permitted to make four login attempts every %d minute(s)',
 
 'unauthorized_request' =>
 'You are not authorized to perform this action',
@@ -38,6 +38,34 @@ $lang = array(
 
 'session_auto_timeout' => 
 'Your session has timed out due to inactivity',
+
+//-----------------------------------
+// Reset Password
+//-----------------------------------
+
+'forgotten_password' =>
+'Reset Password',
+
+'no_reset_id' => 
+'The ID number you submitted does not appear to be valid.  Please check the link you followed.',
+
+'id_not_found' =>
+'The code number you submitted was not found in the database.',
+
+'password_changed' =>
+'Password Successfully Changed',
+
+'successfully_changed_password' =>
+'You have successfully changed your password.  Please login using your new password.',
+
+'new_password' =>
+'New Password',
+
+'new_password_confirm' =>
+'Confirm New Password',
+
+'enter_new_password' =>
+'Enter a New Password',
 
 ''=>''
 );

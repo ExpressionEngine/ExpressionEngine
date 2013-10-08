@@ -3,10 +3,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -19,10 +19,10 @@
  * @package		ExpressionEngine
  * @subpackage	Control Panel
  * @category	Control Panel
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
-class Admin_system extends CI_Controller {
+class Admin_system extends CP_Controller {
 
 	/**
 	 * Constructor
@@ -45,9 +45,10 @@ class Admin_system extends CI_Controller {
 	{
 		$this->_restrict_prefs_access();
 
-		$this->cp->set_variable('cp_page_title', lang('admin_system'));
-		
-		$this->load->view('_shared/overview', array('controller' => 'admin'));
+		$this->view->controller = 'admin';
+		$this->view->cp_page_title = lang('admin_system');
+
+		$this->cp->render('_shared/overview');
 	}
 
 	// --------------------------------------------------------------------
@@ -99,7 +100,7 @@ class Admin_system extends CI_Controller {
 			},
 			textExtraction: function(node) {
 				var c = $(node).children();
-				
+
 				if (c.length) {
 					return c.text();
 				}
@@ -109,55 +110,34 @@ class Admin_system extends CI_Controller {
 			}
 		}');
 
-		$this->javascript->compile();
-
-		$this->cp->set_variable('cp_page_title', lang($type));
+		$this->view->cp_page_title = lang($type);
 
 		$this->load->library('table');
 		$this->load->library('form_validation');
 		$this->load->model('admin_model');
 
-		if ( ! in_array($type, array(
-									'general_cfg',
-									'cp_cfg',
-									'channel_cfg',
-									'member_cfg',
-									'output_cfg',
-									'debug_cfg',
-									'db_cfg',
-									'security_cfg',
-									'throttling_cfg',
-									'localization_cfg',
-									'email_cfg',
-									'cookie_cfg',
-									'image_cfg',
-									'captcha_cfg',
-									'template_cfg',
-									'censoring_cfg',
-									'mailinglist_cfg',
-									'emoticon_cfg',
-									'tracking_cfg',
-									'avatar_cfg',
-									'search_log_cfg',
-									'recount_prefs'
-									)
-						)
-		)
+		$config_pages = array('general_cfg', 'cp_cfg', 'channel_cfg',
+			'member_cfg', 'output_cfg', 'debug_cfg', 'db_cfg', 'security_cfg',
+			'throttling_cfg', 'localization_cfg', 'email_cfg', 'cookie_cfg',
+			'image_cfg', 'captcha_cfg', 'template_cfg', 'censoring_cfg',
+			'mailinglist_cfg', 'emoticon_cfg', 'tracking_cfg', 'avatar_cfg',
+			'search_log_cfg', 'recount_prefs'
+		);
+		if ( ! in_array($type, $config_pages))
 		{
 			show_error(lang('unauthorized_access'));
 		}
 
-
 		if (count($_POST))
 		{
 			$this->load->helper('html');
-	
+
 			// Grab the field definitions for the settings of this type
 			$field_defs = $this->admin_model->get_config_fields($type);
-	
+
 			// Set validation rules
 			$rules = array();
-	
+
 			foreach($_POST as $key => $val)
 			{
 				$rules[] = array(
@@ -177,7 +157,7 @@ class Admin_system extends CI_Controller {
 			if ($validated)
 			{
 				$config_update = $this->config->update_site_prefs($_POST);
-		
+
 				if ( ! empty($config_update))
 				{
 					$this->session->set_flashdata('message_failure', ul($config_update, array('class' => 'bad_path_error_list')));
@@ -192,9 +172,9 @@ class Admin_system extends CI_Controller {
 			else
 			{
 				$vars['cp_messages']['error'] = $this->form_validation->error_string('', '');
-	
-				$this->load->view('admin/config_pages', $vars);
-	
+
+				$this->cp->render('admin/config_pages', $vars);
+
 				return;
 			}
 		}
@@ -204,7 +184,47 @@ class Admin_system extends CI_Controller {
 		$vars = $this->_prep_view_vars($type);
 		$vars['form_action'] = 'C=admin_system'.AMP.'M='.$return_loc;
 
-		$this->load->view('admin/config_pages', $vars);
+		$vars['cp_notice'] = FALSE;
+		$vars['info_message_open'] = ($this->input->cookie('home_msg_state') != 'closed');
+
+		// Check to see if there are any items in the developer log
+		ee()->load->model('tools_model');
+		$unviewed_developer_logs = ee()->tools_model->count_unviewed_developer_logs();
+
+		if ($unviewed_developer_logs > 0)
+		{
+			$vars['cp_notice'] = sprintf(
+				lang('developer_logs'),
+				$unviewed_developer_logs,
+				BASE.AMP.'C=tools_logs'.AMP.'M=view_developer_log'
+			);
+
+			ee()->javascript->set_global('importantMessage.state', $vars['info_message_open']);
+		}
+
+
+		$this->cp->render('admin/config_pages', $vars);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * A validation callback for required email configuration strings only
+	 * if SMTP is the selected protocol method
+	 *
+	 * @access	public
+	 * @param	string	$str	the string being validated
+	 * @return	boolean	Whether or not the string passed validation
+	 **/
+	public function _smtp_required_field($str)
+	{
+		if ($this->input->post('mail_protocol') == 'smtp' && trim($str) == '')
+		{
+			$this->form_validation->set_message('_smtp_required_field', lang('empty_stmp_fields'));
+			return FALSE;
+		}
+
+		return TRUE;
 	}
 
 	// --------------------------------------------------------------------
@@ -248,6 +268,8 @@ class Admin_system extends CI_Controller {
 			}
 		}
 
+		$this->load->helper('date');
+		$timezones = timezones();
 
 		foreach ($f_data as $name => $options)
 		{
@@ -290,7 +312,7 @@ class Admin_system extends CI_Controller {
 							// MSM override
 							// The key 'multiple_sites_enabled' is listed in admin_model->get_config_fields() as it must be,
 							// but its possible that this install doesn't have it available as a config option. In these cases
-							// the below code will cause neither "yes" or "no" to be preselected, but instead we want 
+							// the below code will cause neither "yes" or "no" to be preselected, but instead we want
 							// "enable multiple site manager" in General Configuration to be "no".
 							if ($name == 'multiple_sites_enabled' AND $k == 'n')
 							{
@@ -353,20 +375,18 @@ class Admin_system extends CI_Controller {
 							$selected = $value;
 							break;
 						case 'timezone'			:
-							$options[0] = 's';
-							foreach ($this->localize->zones as $k => $v)
-							{
-								$details[$k] = lang($k);
-							}
-							$selected = $value;
+							$options[0] = 'c';
+							$details = $this->localize->timezone_menu($value);
 							break;
 					}
 					break;
+				case 'p': // Fall through intended.
 				case 'i':
 					// Input fields
 					$details = array('name' => $name, 'value' => $this->form_validation->set_value($name, $value), 'id' => $name);
 
 					break;
+
 			}
 
 			$vars['fields'][$name] = array('type' => $options[0], 'value' => $details, 'subtext' => $sub, 'selected' => $selected);
@@ -374,10 +394,8 @@ class Admin_system extends CI_Controller {
 
 		$vars['type'] = $type;
 
-		return $vars;	
+		return $vars;
 	}
-
-
 
 	// --------------------------------------------------------------------
 
@@ -448,7 +466,7 @@ class Admin_system extends CI_Controller {
 		$this->_restrict_prefs_access();
 		$this->_config_manager('db_cfg', __FUNCTION__);
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -475,22 +493,19 @@ class Admin_system extends CI_Controller {
 	{
 		// this page is only linked to from the mailinglist module
 		// change the breadcrumb for better navigation
-		
+
 		$modules = $this->cp->get_installed_modules();
-		
+
 		if (isset($modules['mailinglist']))
 		{
 			$this->lang->loadfile('mailinglist');
-			$this->cp->set_variable(
-				'cp_breadcrumbs',
-				array(
-					BASE.AMP.'C=addons_modules' => lang('nav_modules'),
-					BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist' => lang('mailinglist_module_name')
-				)
+			$this->view->cp_breadcrumbs = array(
+				BASE.AMP.'C=addons_modules' => lang('nav_modules'),
+				BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist' => lang('mailinglist_module_name')
 			);
 		}
 
-		
+
 		$this->_restrict_prefs_access();
 		$this->_config_manager('mailinglist_cfg', __FUNCTION__);
 	}
@@ -548,7 +563,7 @@ class Admin_system extends CI_Controller {
 	function cookie_settings()
 	{
 		$this->_restrict_prefs_access();
-		
+
 		$this->lang->loadfile('email');
 		$this->_config_manager('cookie_cfg', __FUNCTION__);
 	}
@@ -608,8 +623,8 @@ class Admin_system extends CI_Controller {
 		$this->_restrict_prefs_access();
 		$this->_config_manager('emoticon_cfg', __FUNCTION__);
 	}
-	
-	
+
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -624,8 +639,7 @@ class Admin_system extends CI_Controller {
 	{
 		$this->_restrict_prefs_access();
 
-		$this->load->helper('string');
-		$this->cp->set_variable('cp_page_title', lang('config_editor'));
+		$this->view->cp_page_title = lang('config_editor');
 
 		$vars['config_items'] = $this->config->default_ini;
 		ksort($vars['config_items']);
@@ -657,9 +671,7 @@ class Admin_system extends CI_Controller {
 			$("table tbody tr:visible:odd").addClass("odd");
 		');
 
-		$this->javascript->compile();
-
-		$this->load->view('admin/config_editor', $vars);
+		$this->cp->render('admin/config_editor', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -711,7 +723,7 @@ class Admin_system extends CI_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 	}
-	
+
 
 }
 

@@ -3,10 +3,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -19,11 +19,11 @@
  * @package		ExpressionEngine
  * @subpackage	Core
  * @category	Model
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 class Member_model extends CI_Model {
-	
+
 	/**
 	 * Get Username
 	 *
@@ -99,7 +99,7 @@ class Member_model extends CI_Model {
 	 */
 	function get_members($group_id = '', $limit = '', $offset = '', $search_value = '', $order = array(), $column = 'all')
 	{
-		$this->db->select("members.username, members.member_id, members.screen_name, members.email, members.join_date, members.last_visit, members.group_id, members.member_id, members.in_authorlist");
+		$this->db->select("members.username, members.member_id, members.screen_name, members.email, members.join_date, members.last_visit, members.group_id, members.in_authorlist");
 
 		$this->_prep_search_query($group_id, $search_value, $column);
 
@@ -190,7 +190,7 @@ class Member_model extends CI_Model {
 	 * Get All Member Fields
 	 *
 	 * @access	public
-	 * @param	array	// associative array of where 	
+	 * @param	array	// associative array of where
 	 * @param	bool	// restricts to public fields for non-superadmins
 	 * @return	object
 	 */
@@ -203,7 +203,7 @@ class Member_model extends CI_Model {
 		{
 			$this->db->where('m_field_public', 'y');
 		}
-		
+
 		foreach ($additional_where as $where)
 		{
 			foreach ($where as $field => $value)
@@ -217,7 +217,7 @@ class Member_model extends CI_Model {
 					$this->db->where($field, $value);
 				}
 			}
-		}		
+		}
 
 		$this->db->order_by('m_field_order');
 
@@ -392,6 +392,19 @@ class Member_model extends CI_Model {
 	 */
 	function create_member($data = array(), $cdata = FALSE)
 	{
+		// ---------------------------------------------------------------
+		// 'member_create_start' hook.
+		// - Provides an opportunity for extra code to be executed upon
+		// member creation, and also gives the opportunity to modify the
+		// member data by altering the arrays of data that we pass to the
+		// hook.
+		if ($this->extensions->active_hook('member_create_start'))
+		{
+			list($data, $cdata) = $this->extensions->call('member_create_start', $member_id, $data, $cdata);
+		}
+		//
+		// ---------------------------------------------------------------
+
 		// Insert into the main table
 		$this->db->insert('members', $data);
 
@@ -411,6 +424,17 @@ class Member_model extends CI_Model {
 		// Create a record in the member homepage table
 		$this->db->insert('member_homepage', array('member_id' => $member_id));
 
+		// ---------------------------------------------------------------
+		// 'member_create_end' hook.
+		// - Provides an opportunity for extra code to be executed after
+		// member creation.
+		if ($this->extensions->active_hook('member_create_end'))
+		{
+			$this->extensions->call('member_create_end', $member_id, $data, $cdata);
+		}
+		//
+		// ---------------------------------------------------------------
+
 		return $member_id;
 	}
 
@@ -428,8 +452,22 @@ class Member_model extends CI_Model {
 	 */
 	function update_member($member_id = '', $data = array(), $additional_where = array())
 	{
+		// ---------------------------------------------------------------
+		// 'member_update_start' hook.
+		// - Provides an opportunity for extra code to be executed upon
+		// member update, and also gives the opportunity to modify the
+		// update for member data by altering the array of data that we
+		// pass to the hook.
+		//
+		if ($this->extensions->active_hook('member_update_start'))
+		{
+			$data = $this->extensions->call('member_update_start', $member_id, $data);
+		}
+		//
+		// ---------------------------------------------------------------
+
 		$default_null = array('bday_y',	'bday_m', 'bday_d');
-		
+
 		foreach($default_null as $val)
 		{
 			if (isset($data[$val]) && $data[$val] == '')
@@ -457,6 +495,18 @@ class Member_model extends CI_Model {
 				}
 			}
 		}
+
+		// ---------------------------------------------------------------
+		// 'member_update_end' hook.
+		// - Provides an opportunity for extra code to be executed after
+		// member update.
+		//
+		if ($this->extensions->active_hook('member_update_end'))
+		{
+			$this->extensions->call('member_update_end', $member_id, $data);
+		}
+		//
+		// ---------------------------------------------------------------
 
 		$this->db->where('member_id', $member_id);
 		$this->db->update('members', $data);
@@ -536,9 +586,9 @@ class Member_model extends CI_Model {
 		// Make sure $member_ids is an array
 		if ( ! is_array($member_ids))
 		{
-			$member_id = array((int) $member_ids);
+			$member_ids = array((int) $member_ids);
 		}
-		
+
 		// ---------------------------------------------------------------
 		// 'member_delete' hook.
 		// - Provides an opportunity for extra code to be executed upon
@@ -552,18 +602,17 @@ class Member_model extends CI_Model {
 		}
 		//
 		// ---------------------------------------------------------------
-		
+
 		// No member IDs? Bail out
 		if ($member_ids == NULL OR ! count($member_ids))
 		{
 			return FALSE;
 		}
-		
+
 		// ---------------------------------------------------------------
 		// Remove traces of member from base member tables
 		// ---------------------------------------------------------------
 		$tables_fields = array(
-			'comment_subscriptions' => 'member_id',
 			'members'				=> 'member_id',
 			'member_data'			=> 'member_id',
 			'member_homepage'		=> 'member_id',
@@ -575,29 +624,35 @@ class Member_model extends CI_Model {
 			'remember_me'			=> 'member_id',
 			'sessions'				=> 'member_id'
 		);
-		
+
+		// If comment module is installed
+		if ($this->db->table_exists('comment_subscriptions'))
+		{
+			$tables_fields['comment_subscriptions'] = 'member_id';
+		}
+
 		// Loop through tables array and clear out based on member ID
 		foreach ($tables_fields as $table => $field)
 		{
 			$this->db->where_in($field, $member_ids)->delete($table);
 		}
-		
+
 		// ---------------------------------------------------------------
 		// Delete private messages and update members' unread count
 		// ---------------------------------------------------------------
-		
+
 		// First, we need to get a list of recipient IDs who will be affected
 		// by deleting the members we are deleting so that we can update the
 		// unread PM count for those users only
-		$this->db->select('count(*) as count, recipient_id');
+		$this->db->distinct('recipient_id');
 		$this->db->where('message_read', 'n');
 		$this->db->where_in('sender_id', $member_ids);
 		$messages = $this->db->get('message_copies');
-		
+
 		// Now that we know which recipients are affected, we can delete the
 		// member-to-be-deleted's messages...
 		$this->db->where_in('sender_id', $member_ids)->delete('message_copies');
-		
+
 		if ($messages->num_rows())
 		{
 			// Build recipient IDs array
@@ -605,19 +660,19 @@ class Member_model extends CI_Model {
 			{
 				$recipient_ids[] = $message['recipient_id'];
 			}
-			
+
 			// ...and get the new unread count for the affected users
 			$this->db->select('count(*) as count, recipient_id');
 			$this->db->where('message_read', 'n');
 			$this->db->where_in('recipient_id', $recipient_ids);
 			$this->db->group_by('recipient_id');
 			$unread_messages = $this->db->get('message_copies');
-			
+
 			// Set everyone's unread message count to zero first, because if a user
 			// has zero messages now, they won't have shown up in the above query
 			$this->db->where_in('member_id', $recipient_ids);
 			$this->db->update('members', array('private_messages' => 0));
-			
+
 			// For each user, update their private messages unread count with
 			// what we gathered above
 			foreach ($unread_messages->result_array() as $message)
@@ -626,19 +681,19 @@ class Member_model extends CI_Model {
 				$this->db->update('members', array('private_messages' => $message['count']));
 			}
 		}
-		
+
 		// ---------------------------------------------------------------
 		// Get member's channel entries, reassign them to the entries heir
 		// or delete them all together if heir isn't specified
 		// ---------------------------------------------------------------
-		
+
 		// Get member's entries
 		$this->db->select('entry_id, channel_id');
 		$this->db->where_in('author_id', $member_ids);
 		$entries = $this->db->get('channel_titles');
-		
+
 		$channel_ids = array();
-		
+
 		if ($entries->num_rows())
 		{
 			// Reassign entries if heir ID is present
@@ -646,18 +701,8 @@ class Member_model extends CI_Model {
 			{
 				$this->db->where_in('author_id', $member_ids);
 				$this->db->update('channel_titles', array('author_id' => $heir_id));
-				
-				// Get new member stats for updating
-				$this->db->select('count(entry_id) AS count, MAX(entry_date) as entry_date');
-				$this->db->where('author_id', $heir_id);
-				$new_stats = $this->db->get('channel_titles')->row_array();
-				
-				// Update member stats
-				$this->db->where('member_id', $heir_id);
-				$this->db->update('members', array(
-					'total_entries' => $new_stats['count'],
-					'last_entry_date' => $new_stats['entry_date']
-				));
+
+				$this->update_member_entry_stats($heir_id);
 			}
 			// Otherwise, delete them, likely happens when member deletes own account
 			else
@@ -666,42 +711,49 @@ class Member_model extends CI_Model {
 				{
 					// Entries to delete
 					$entry_ids[] = $entry['entry_id'];
-					
+
 					// Gather channel IDs to update stats later
 					$channel_ids[]  = $entry['channel_id'];
 				}
-				
+
 				$this->db->where_in('author_id', $member_ids)->delete('channel_titles');
 				$this->db->where_in('entry_id', $entry_ids)->delete('channel_data');
-				$this->db->where_in('entry_id', $entry_ids)->delete('comments');
+
+				if ($this->db->table_exists('comments'))
+				{
+					$this->db->where_in('entry_id', $entry_ids)->delete('comments');
+				}
 			}
 		}
-		
+
 		// ---------------------------------------------------------------
 		// Find affected entries for members's comments and update totals
 		// ---------------------------------------------------------------
-		
-		$this->db->select('DISTINCT(entry_id), channel_id');
-		$this->db->where_in('author_id', $member_ids);
-		$entries = $this->db->get('comments');
-		
-		$entry_ids = array();
-		foreach ($entries->result_array() as $row)
+
+		if ($this->db->table_exists('comments'))
 		{
-			// Entries to update
-			$entry_ids[] = $row['entry_id'];
-			
-			// Gather channel IDs to update stats later
-			$channel_ids[]  = $row['channel_id'];
+			$this->db->select('DISTINCT(entry_id), channel_id');
+			$this->db->where_in('author_id', $member_ids);
+			$entries = $this->db->get('comments');
+
+			$entry_ids = array();
+			foreach ($entries->result_array() as $row)
+			{
+				// Entries to update
+				$entry_ids[] = $row['entry_id'];
+
+				// Gather channel IDs to update stats later
+				$channel_ids[]  = $row['channel_id'];
+			}
+
+			// Delete comments
+			$this->db->where_in('author_id', $member_ids)->delete('comments');
+
+			// Update individual entry comment counts
+			$this->load->model('comment_model');
+			$this->comment_model->recount_entry_comments($entry_ids);
 		}
-		
-		// Delete comments
-		$this->db->where_in('author_id', $member_ids)->delete('comments');
-		
-		// Update individual entry comment counts
-		$this->load->model('comment_model');
-		$this->comment_model->recount_entry_comments($entry_ids);
-		
+
 		// Update channel and comment stats
 		$channel_ids = array_unique($channel_ids);
 		foreach ($channel_ids as $channel_id)
@@ -709,11 +761,11 @@ class Member_model extends CI_Model {
 			$this->stats->update_channel_stats($channel_id);
 			$this->stats->update_comment_stats($channel_id);
 		}
-		
+
 		// ---------------------------------------------------------------
 		// Forum Clean-Up
 		// ---------------------------------------------------------------
-		
+
 		if ($this->config->item('forum_is_installed') == "y")
 		{
 			// Forum tables to clean up
@@ -725,22 +777,22 @@ class Member_model extends CI_Model {
 				'forum_moderators'		=> 'mod_member_id',
 				'forum_polls'			=> 'author_id'
 			);
-			
+
 			// Clean out mentions of member in forum tables
 			foreach ($forum_tables_fields as $table => $field)
 			{
 				$this->db->where_in($field, $member_ids)->delete($table);
 			}
-			
+
 			// Load forum class
 			if ( ! class_exists('Forum'))
 			{
 				require PATH_MOD.'forum/mod.forum.php';
 				require PATH_MOD.'forum/mod.forum_core.php';
 			}
-			
+
 			$forum_core = new Forum_Core;
-			
+
 			// -----------------------------------------------------------
 			// Grab affected topic IDs before deleting the member so we can
 			// update stats
@@ -748,46 +800,78 @@ class Member_model extends CI_Model {
 			$this->db->distinct();
 			$this->db->where_in('author_id', $member_ids);
 			$topics = $this->db->get('forum_posts');
-			
+
 			// Now delete those posts
 			$this->db->where_in('author_id', $member_ids)->delete('forum_posts');
-			
+
 			// Update topic stats
 			foreach ($topics->result_array() as $row)
 			{
 				$forum_core->_update_topic_stats($row['topic_id']);
 			}
-			
+
 			// -----------------------------------------------------------
 			// Update forum stats
 			$this->db->select('forum_id');
 			$this->db->where('forum_is_cat', 'n');
 			$forums = $this->db->get('exp_forums');
-			
+
 			foreach ($forums->result_array() as $row)
 			{
 				$forum_core->_update_post_stats($row['forum_id']);
 			}
-			
+
 			$forum_core->_update_global_stats();
-			
+
 			// -----------------------------------------------------------
 			// Delete from Online Users
 			$this->db->where_in('member_id', $member_ids)->delete('online_users');
-			
+
 			// -----------------------------------------------------------
 			// Remove attachments
 			$this->db->select('attachment_id, board_id');
 			$this->db->where_in('member_id', $member_ids);
 			$attachments = $this->db->get('forum_attachments');
-			
+
 			foreach ($attachments->result_array() as $attachment)
 			{
 				$forum_core->_remove_attachment($attachment['attachment_id'], $attachment['board_id'], TRUE);
 			}
 		}
-		
+
 		$this->stats->update_member_stats();
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Update entry stats for members, specifically total_entries and last_entry_date
+	 *
+	 * @param array	Array of member IDs to update stats for
+	 * @return	void
+	 */
+	public function update_member_entry_stats($member_ids = array())
+	{
+		// Make $member_ids an array if we need to
+		if ( ! is_array($member_ids))
+		{
+			$member_ids = array($member_ids);
+		}
+
+		foreach ($member_ids as $member_id)
+		{
+			// Get the number of entries and latest entry date for the member
+			$this->db->select('count(entry_id) AS count, MAX(entry_date) as entry_date');
+			$this->db->where('author_id', $member_id);
+			$new_stats = $this->db->get('channel_titles')->row_array();
+
+			// Update member stats
+			$this->db->where('member_id', $member_id);
+			$this->db->update('members', array(
+				'total_entries' => $new_stats['count'],
+				'last_entry_date' => $new_stats['entry_date']
+			));
+		}
 	}
 
 	// --------------------------------------------------------------------
@@ -809,7 +893,7 @@ class Member_model extends CI_Model {
 		}
 
 		$this->db->where_in('member_id', $member_ids);
-		$this->db->set('in_authorlist', 'n'); 
+		$this->db->set('in_authorlist', 'n');
 		$this->db->update('members');
 	}
 
@@ -832,7 +916,7 @@ class Member_model extends CI_Model {
 		}
 
 		$this->db->where_in('member_id', $member_ids);
-		$this->db->set('in_authorlist', 'y'); 
+		$this->db->set('in_authorlist', 'y');
 		$this->db->update('members');
 	}
 
@@ -880,59 +964,51 @@ class Member_model extends CI_Model {
 	 */
 	function get_authors($author_id = FALSE, $limit = FALSE, $offset = FALSE)
 	{
-		$this->db->select('members.member_id, members.group_id, 
-						members.username, members.screen_name, members.in_authorlist');
-		$this->db->from('members');
-		$this->db->join('member_groups', 'member_groups.group_id = members.group_id');
-		
+		// Please don't combine these two queries. Mysql won't hit an index
+		// on any combination that I've tried; except with a subquery which
+		// is close enough to what we have here. -pk
+		$groups = $this->db
+			->select('group_id')
+			->where('include_in_authorlist', 'y')
+			->where('site_id', $this->config->item('site_id'))
+			->get('member_groups')
+			->result_array();
+
+		$groups = array_map('array_pop', $groups);
+
+
+		$this->db->select('member_id, group_id, username, screen_name, in_authorlist');
+
 		if ($author_id)
 		{
-			$this->db->where('members.member_id !=', $author_id);
+			$this->db->where('member_id !=', $author_id);
 		}
-		
-		$this->db->where('('.$this->db->dbprefix('members').'.in_authorlist = "y" OR
-		 						'.$this->db->dbprefix('member_groups').'.include_in_authorlist = "y")');
-		$this->db->where('members.group_id = '.$this->db->dbprefix('member_groups').'.group_id');
-		$this->db->where('member_groups.site_id', $this->config->item('site_id'));
-	
-		$this->db->order_by('members.screen_name', 'ASC');
-		$this->db->order_by('members.username', 'ASC');
-		
+
+		$this->db->where('in_authorlist', 'y');
+
+		if (count($groups))
+		{
+			$this->db->or_where_in('group_id', $groups);
+		}
+
+		$this->db->order_by('screen_name', 'ASC');
+		$this->db->order_by('username', 'ASC');
+
 		if ($limit)
 		{
 			$this->db->limit($limit, $offset);
 		}
-		
-		return $this->db->get();
+
+		return $this->db->get('members');
 	}
-	
-	// --------------------------------------------------------------------
-	
-	/**
-	 * Get Authors Simple
-	 *
-	 * This function returns a set of members who are authors in a set channel- member group data is omitted
-	 *
-	 * @deprecated	2.4, Use member_model->get_authors instead
-	 * @access	public
-	 * @param	integer
-	 * @return	mixed
-	 */
-	function get_authors_simple($author_id = FALSE, $limit = FALSE, $offset = FALSE)
-	{
-		$this->load->library('logger');
-		$this->logger->deprecated('2.4', 'Member_model::get_authors()');
-		
-		return $this->get_authors($author_id, $limit, $offset);
-	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
 	 * Get Member Groups
 	 *
 	 * Returns only the title and id by default, but additional fields can be passed
-	 * and automatically added to the query either as a string, or as an array.	 
+	 * and automatically added to the query either as a string, or as an array.
 	 * This allows the same function to be used for "lean" and for larger queries.
 	 *
 	 * @access	public
@@ -1077,7 +1153,7 @@ class Member_model extends CI_Model {
 	/**
 	 * Get Members Group Ids
 	 *
-	 * Provided a string or an array of member ids, returns an array 
+	 * Provided a string or an array of member ids, returns an array
 	 * of unique group ids that they belong to
 	 *
 	 * @access	public
@@ -1189,7 +1265,7 @@ class Member_model extends CI_Model {
 	 * @access	public
 	 * @param	string
 	 * @return	mixed
-	 */ 
+	 */
 	function get_group_members($group_id, $order_by = 'join_date')
 	{
 
@@ -1242,7 +1318,7 @@ class Member_model extends CI_Model {
 	 * @param	string
 	 * @param	string
 	 * @return	string
-	 */ 
+	 */
 	function get_theme_list($path = '')
 	{
 		if ($path == '')
@@ -1253,7 +1329,7 @@ class Member_model extends CI_Model {
 		$themes = array();
 
 		if ($fp = @opendir($path))
-		{ 
+		{
 
 			while (false !== ($file = readdir($fp)))
 			{
@@ -1263,8 +1339,8 @@ class Member_model extends CI_Model {
 				}
 			}
 
-			closedir($fp); 
-		} 
+			closedir($fp);
+		}
 
 		return $themes;
 	}
@@ -1280,7 +1356,7 @@ class Member_model extends CI_Model {
 	 * @access	public
 	 * @param	string	The path to the themes
 	 * @return	array
-	 */ 
+	 */
 	function get_profile_templates($path = PATH_MBR_THEMES)
 	{
 		$themes = array();
@@ -1293,7 +1369,7 @@ class Member_model extends CI_Model {
 				$themes[$file] = ucfirst(str_replace("_", " ", $file));
 			}
 		}
-		
+
 		return $themes;
 	}
 
@@ -1339,7 +1415,7 @@ class Member_model extends CI_Model {
 				}
 			}
 		}
-		
+
 		if ($error_count > 0)
 		{
 			return FALSE;
@@ -1362,12 +1438,12 @@ class Member_model extends CI_Model {
 	{
 		$this->db->where("site_id", $this->config->item('site_id'));
 		$this->db->where("channel_id", $channel_id);
-		
+
 		if ($member_group != '')
 		{
 			$this->db->where("member_group", $member_group);
 		}
-		
+
 		$this->db->delete('layout_publish');
 	}
 
@@ -1386,7 +1462,7 @@ class Member_model extends CI_Model {
 	function get_group_layout($member_group = '', $channel_id = '')
 	{
 		$this->load->model('layout_model');
-		
+
 		return $this->layout_model->get_layout_settings(array(
 			'site_id' => $this->config->item('site_id'),
 			'channel_id' => $channel_id,
@@ -1415,7 +1491,7 @@ class Member_model extends CI_Model {
 
 		if ( ! empty($channel_id))
 		{
-			$this->db->where_in("channel_id", $channel_id);	
+			$this->db->where_in("channel_id", $channel_id);
 		}
 
 		$layout_data = $this->db->get('layout_publish');
@@ -1445,37 +1521,21 @@ class Member_model extends CI_Model {
 	 */
 	function get_localization_default($get_id = FALSE)
 	{
-		$this->db->select('member_id, timezone, daylight_savings, time_format');
-		$this->db->where('localization_is_site_default', 'y');
-		$query = $this->db->get('members');
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.7');
 
-		if ($query->num_rows() == 1)
+		$config = array(
+			'default_site_timezone' => ee()->config->item('default_site_timezone')
+		);
+
+		if ($get_id)
 		{
-			$config = array(
-							'default_site_timezone' => $query->row('timezone'),
-							'default_site_dst'		=> $query->row('daylight_savings')
-							);
-							
-			if ($get_id)
-			{
-				$config['member_id'] = $query->row('member_id');
-			}				
-		}
-		else
-		{
-			$config = array(
-							'default_site_timezone' => '',
-							'default_site_dst'		=> ''
-							);
-			if ($get_id)
-			{
-				$config['member_id'] = '';
-			}
+			$config['member_id'] = 1; // basically? ick. but probably a super admin
 		}
 
 		return $config;
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -1489,7 +1549,7 @@ class Member_model extends CI_Model {
 	function get_notepad_content($id = '')
 	{
 		$id = $id ? $id : $this->session->userdata('member_id');
-		
+
 		$this->db->select('notepad');
 		$this->db->from('members');
 		$this->db->where('member_id', (int) $id);
@@ -1513,13 +1573,13 @@ class Member_model extends CI_Model {
 	 * @return	boolean
 	 */
 	function can_access_module($module, $group_id = '')
-	{	
-		// Superadmin sees all		
+	{
+		// Superadmin sees all
 		if ($this->session->userdata('group_id') == 1)
 		{
 			return TRUE;
 		}
-		
+
 		if ( ! $group_id)
 		{
 			$group_id = $this->session->userdata('group_id');
@@ -1529,13 +1589,13 @@ class Member_model extends CI_Model {
 		$this->db->where('LOWER('.$this->db->dbprefix.'modules.module_name)', strtolower($module));
 		$this->db->join('module_member_groups', 'module_member_groups.module_id = modules.module_id');
 		$this->db->where('module_member_groups.group_id', $group_id);
-		
+
 		$query = $this->db->get('modules');
 
 		return ($query->num_rows() === 0) ? FALSE : TRUE;
 	}
-	
-	
+
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -1567,19 +1627,12 @@ class Member_model extends CI_Model {
 		}
 		elseif ($search_value != '')
 		{
-			$search_field = 'all';
-
-			if ( ! in_array($search_in, $no_search))
+			if (in_array($search_in, $no_search) OR $search_in == 'all')
 			{
-				$search_in = $search_field;
-			}
-
-			if ($search_in == 'all')
-			{
-				$this->db->where("(`exp_members`.`screen_name` LIKE '%".$this->db->escape_like_str($search_value)."%' OR `exp_members`.`username` LIKE '%".$this->db->escape_like_str($search_value)."%' OR `exp_members`.`email` LIKE '%".$this->db->escape_like_str($search_value)."%')", NULL, TRUE);			
+				$this->db->where("(`exp_members`.`screen_name` LIKE '%".$this->db->escape_like_str($search_value)."%' OR `exp_members`.`username` LIKE '%".$this->db->escape_like_str($search_value)."%' OR `exp_members`.`email` LIKE '%".$this->db->escape_like_str($search_value)."%' OR `exp_members`.`member_id` LIKE '%".$this->db->escape_like_str($search_value)."%')", NULL, TRUE);
 			}
 			else
-			{			
+			{
 				$this->db->like('members.'.$search_in, $search_value);
 			}
 		}

@@ -3,10 +3,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -19,8 +19,8 @@
  * @package		ExpressionEngine
  * @subpackage	Modules
  * @category	Update File
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 
 class Query_upd {
@@ -49,7 +49,7 @@ class Query_upd {
 			'has_cp_backend' => 'n'
 		);
 
-		$this->EE->db->insert('modules', $data);
+		ee()->db->insert('modules', $data);
 		
 		return TRUE;
 	}
@@ -64,21 +64,21 @@ class Query_upd {
 	 */	
 	function uninstall()
 	{
-		$this->EE->db->select('module_id');		
-		$query = $this->EE->db->get_where('modules', array('module_name' => 'Query'));
+		ee()->db->select('module_id');		
+		$query = ee()->db->get_where('modules', array('module_name' => 'Query'));
 		$module_id = $query->row('module_id');
 				
-		$this->EE->db->where('module_id', $module_id);
-		$this->EE->db->delete('module_member_groups');
+		ee()->db->where('module_id', $module_id);
+		ee()->db->delete('module_member_groups');
 
-		$this->EE->db->where('module_name', 'Query');
-		$this->EE->db->delete('modules');
+		ee()->db->where('module_name', 'Query');
+		ee()->db->delete('modules');
 
-		$this->EE->db->where('class', 'Query');
-		$this->EE->db->delete('actions');
+		ee()->db->where('class', 'Query');
+		ee()->db->delete('actions');
 
-		$this->EE->db->where('class', 'Query_mcp');
-		$this->EE->db->delete('actions');
+		ee()->db->where('class', 'Query_mcp');
+		ee()->db->delete('actions');
 
 		return TRUE;
 	}

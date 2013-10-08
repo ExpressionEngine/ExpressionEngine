@@ -3,10 +3,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -19,14 +19,16 @@
  * @package		ExpressionEngine
  * @subpackage	Control Panel
  * @category	Control Panel
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
-class MyAccount extends CI_Controller {
+class MyAccount extends CP_Controller {
 
 	var $id			= '';
 	var $username	= '';
+	var $self_edit	= TRUE;
 	var $unique_dates = array();
+	var $extension_paths = array();
 
 	/**
 	 * Constructor
@@ -60,11 +62,14 @@ class MyAccount extends CI_Controller {
 			');
 		}
 
-		$this->cp->set_variable('message', '');
-		$this->cp->set_variable('id', $this->id);
+		$this->view->message = '';
+		$this->view->id = $this->id;
 
 		$this->username = ($query->row('screen_name')  == '') ? $query->row('username') : $query->row('screen_name');
-		$this->cp->set_variable('member_username', $this->username);
+		$this->view->member_username = $this->username;
+
+		// Set self_edit to determine whether or not someone else is editing
+		$this->self_edit = ((int) $this->id === (int) $this->session->userdata('member_id')) ? TRUE : FALSE;
 	}
 
 	// --------------------------------------------------------------------
@@ -79,10 +84,6 @@ class MyAccount extends CI_Controller {
 	{
 		$vars['cp_page_title'] = lang('my_account');
 
-		$this->javascript->output('');
-
-		$this->javascript->compile();
-
 		$vars = array_merge($this->_account_menu_setup(), $vars);
 
 		$query = $this->member_model->get_member_data($this->id, array('email', 'ip_address', 'join_date', 'last_visit', 'total_entries', 'total_comments', 'last_entry_date', 'last_comment_date', 'last_forum_post_date', 'total_forum_topics', 'total_forum_posts'));
@@ -92,26 +93,26 @@ class MyAccount extends CI_Controller {
 			$vars['username'] = $this->username;
 
 			$vars['fields'] = array(
-								'email'				=> mailto($query->row('email'), $query->row('email')),
-								'join_date'			=> $this->localize->set_human_time($query->row('join_date')),
-								'last_visit'		=> ($query->row('last_visit') == 0 OR $query->row('last_visit') == '') ? '--' : $this->localize->set_human_time($query->row('last_visit')),
-								'total_entries'		=> $query->row('total_entries'),
-								'total_comments'	=> $query->row('total_comments'),
-								'last_entry_date'	=> ($query->row('last_entry_date') == 0 OR $query->row('last_entry_date') == '') ? '--' : $this->localize->set_human_time($query->row('last_entry_date')),
-								'last_comment_date' => ($query->row('last_comment_date') == 0 OR $query->row('last_comment_date') == '') ? '--' : $this->localize->set_human_time($query->row('last_comment_date')),
-								'user_ip_address'	=> $query->row('ip_address')
-							);
+				'email'				=> mailto($query->row('email'), $query->row('email')),
+				'join_date'			=> $this->localize->human_time($query->row('join_date')),
+				'last_visit'		=> ($query->row('last_visit') == 0 OR $query->row('last_visit') == '') ? '--' : $this->localize->human_time($query->row('last_visit')),
+				'total_entries'		=> $query->row('total_entries'),
+				'total_comments'	=> $query->row('total_comments'),
+				'last_entry_date'	=> ($query->row('last_entry_date') == 0 OR $query->row('last_entry_date') == '') ? '--' : $this->localize->human_time($query->row('last_entry_date')),
+				'last_comment_date' => ($query->row('last_comment_date') == 0 OR $query->row('last_comment_date') == '') ? '--' : $this->localize->human_time($query->row('last_comment_date')),
+				'user_ip_address'	=> $query->row('ip_address')
+			);
 
 			if ($this->config->item('forum_is_installed') == "y")
 			{
-				$fields['last_forum_post_date'] = ($query->row('last_forum_post_date') == 0) ? '--' : $this->localize->set_human_time($query->row('last_forum_post_date'));
+				$fields['last_forum_post_date'] = ($query->row('last_forum_post_date') == 0) ? '--' : $this->localize->human_time($query->row('last_forum_post_date'));
 				$fields['total_forum_topics']	= $query->row('total_forum_topics');
 				$fields['total_forum_replies']	= $query->row('total_forum_posts');
 				$fields['total_forum_posts']	= $query->row('total_forum_posts') + $query->row('total_forum_topics');
 			}
 		}
 
-		$this->load->view('account/index', $vars);
+		$this->cp->render('account/index', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -128,7 +129,7 @@ class MyAccount extends CI_Controller {
 	{
 		//	Private Messaging
 		$vars['private_messaging_menu'] = array();
-		if ($this->id == $this->session->userdata['member_id'])
+		if ($this->self_edit)
 		{
 			if ( ! class_exists('EE_Messages'))
 			{
@@ -166,7 +167,57 @@ class MyAccount extends CI_Controller {
 			$vars['login_as_member'] = ($this->session->userdata('group_id') == 1 && $this->id != $this->session->userdata('member_id')) ? TRUE : FALSE;
 			$vars['can_delete_members'] = ($this->cp->allowed_group('can_delete_members') AND $this->id != $this->session->userdata('member_id')) ? TRUE : FALSE;
 		}
-		
+
+		// default additional_nav lists are empty
+		$vars['additional_nav'] = array(
+			'personal_settings' => array(),
+			'utilities' => array(),
+			'private_messages' => array(),
+			'customize_cp' => array(),
+			'channel_preferences' => array(),
+			'administrative_options' => array()
+		);
+
+		// -------------------------------------------
+		// 'myaccount_nav_setup' hook.
+		//  - Add items to the My Account nav
+		//  - return must be an associative array using a pre-defined key
+		//
+		if ($this->extensions->active_hook('myaccount_nav_setup') === TRUE)
+		{
+			$vars['additional_nav'] = array_merge_recursive(
+				$vars['additional_nav'],
+				$this->extensions->call('myaccount_nav_setup')
+			);
+		}
+		//
+		// -------------------------------------------
+
+		// make sure we have usable URLs in additional_nav
+		$this->load->model('addons_model');
+		foreach ($vars['additional_nav'] as $additional_nav_key => $additional_nav_links)
+		{
+			if (count($additional_nav_links))
+			{
+				foreach ($additional_nav_links as $additional_nav_link_text => $additional_nav_link_link)
+				{
+					if (is_array($additional_nav_link_link))
+					{
+						// create the link
+						if ($this->addons_model->extension_installed($additional_nav_link_link['extension']))
+						{
+							$vars['additional_nav'][$additional_nav_key][$additional_nav_link_text] = BASE.AMP.'C=myaccount'.AMP.'M=custom_screen'.AMP.'extension='.$additional_nav_link_link['extension'].AMP.'method='.$additional_nav_link_link['method'];
+						}
+						// don’t create the link if the extension doesn't exist
+						else
+						{
+							unset($vars['additional_nav'][$additional_nav_key][$additional_nav_link_text]);
+						}
+					}
+				}
+			}
+		}
+
 		return $vars;
 	}
 
@@ -221,10 +272,6 @@ class MyAccount extends CI_Controller {
 
 		$vars['cp_page_title'] = lang('edit_profile');
 
-		$this->javascript->output('');
-
-		$this->javascript->compile();
-
 		$vars = array_merge($this->_account_menu_setup(), $vars);
 
 		$vars['screen_name']	= '';
@@ -246,30 +293,30 @@ class MyAccount extends CI_Controller {
 		$vars['bday_d_options'] = array();
 
 		$vars['bday_y_options'][''] = lang('year');
-		
+
 		for ($i = date('Y', $this->localize->now); $i > 1904; $i--)
 		{
 		  $vars['bday_y_options'][$i] = $i;
 		}
 
 		$vars['bday_m_options'] = array(
-							''	 => lang('month'),
-							'01' => lang('cal_january'),
-							'02' => lang('cal_february'),
-							'03' => lang('cal_march'),
-							'04' => lang('cal_april'),
-							'05' => lang('cal_mayl'),
-							'06' => lang('cal_june'),
-							'07' => lang('cal_july'),
-							'08' => lang('cal_august'),
-							'09' => lang('cal_september'),
-							'10' => lang('cal_october'),
-							'11' => lang('cal_november'),
-							'12' => lang('cal_december')
-						);
+			''	 => lang('month'),
+			'01' => lang('cal_january'),
+			'02' => lang('cal_february'),
+			'03' => lang('cal_march'),
+			'04' => lang('cal_april'),
+			'05' => lang('cal_mayl'),
+			'06' => lang('cal_june'),
+			'07' => lang('cal_july'),
+			'08' => lang('cal_august'),
+			'09' => lang('cal_september'),
+			'10' => lang('cal_october'),
+			'11' => lang('cal_november'),
+			'12' => lang('cal_december')
+		);
 
 		$vars['bday_d_options'][''] = lang('day');
-		
+
 		for ($i = 1; $i <= 31; $i++)
 		{
 		  $vars['bday_d_options'][$i] = $i;
@@ -334,7 +381,7 @@ class MyAccount extends CI_Controller {
 			}
 		}
 
-		$this->load->view('account/edit_profile', $vars);
+		$this->cp->render('account/edit_profile', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -345,31 +392,32 @@ class MyAccount extends CI_Controller {
 	function update_profile()
 	{
 		// validate for unallowed blank values
-		if (empty($_POST)) 
+		if (empty($_POST))
 		{
 			show_error(lang('unauthorized_access'));
 		}
-		
+
 		$id = $_POST['id'];
 
 		unset($_POST['id']);
 		unset($_POST['edit_profile']);
 
 		$_POST['url'] = ($_POST['url'] == 'http://') ? '' : $_POST['url'];
-		
-		$fields = array(	'bday_y',
-							'bday_m',
-							'bday_d',
-							'url',
-							'location',
-							'occupation',
-							'interests',
-							'aol_im',
-							'icq',
-							'yahoo_im',
-							'msn_im',
-							'bio'
-						);
+
+		$fields = array(
+			'bday_y',
+			'bday_m',
+			'bday_d',
+			'url',
+			'location',
+			'occupation',
+			'interests',
+			'aol_im',
+			'icq',
+			'yahoo_im',
+			'msn_im',
+			'bio'
+		);
 
 		$data = array();
 
@@ -385,15 +433,16 @@ class MyAccount extends CI_Controller {
 
 		if (is_numeric($data['bday_d']) && is_numeric($data['bday_m']))
 		{
+			$this->load->helper('date');
 			$year = ($data['bday_y'] != '') ? $data['bday_y'] : date('Y');
-			$mdays = $this->localize->fetch_days_in_month($data['bday_m'], $year);
+			$mdays = days_in_month($data['bday_m'], $year);
 
 			if ($data['bday_d'] > $mdays)
 			{
 				$data['bday_d'] = $mdays;
 			}
 		}
-		
+
 		if (count($data) > 0)
 		{
 			$this->member_model->update_member($this->id, $data);
@@ -409,19 +458,19 @@ class MyAccount extends CI_Controller {
 			if ($this->db->table_exists('comments'))
 			{
 				$d = array(
-						'location'	=> $data['location'],
-						'url'		=> $data['url']
-					);
-				
+					'location'	=> $data['location'],
+					'url'		=> $data['url']
+				);
+
 				$this->db->where('author_id', $this->id);
 				$this->db->update('comments', $d);
 			}
 		}
-		
+
 		$id = ($id == '') ? '' : AMP.'id='.$id;
 
 		$this->session->set_flashdata('message_success', lang('profile_updated'));
-		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=edit_profile'.$id);			
+		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=edit_profile'.$id);
 	}
 
 	// --------------------------------------------------------------------
@@ -434,10 +483,6 @@ class MyAccount extends CI_Controller {
 		$this->load->helper('snippets');
 
 		$vars['cp_page_title'] = lang('email_settings');
-
-		$this->javascript->output('');
-
-		$this->javascript->compile();
 
 		$vars = array_merge($this->_account_menu_setup(), $vars);
 
@@ -453,7 +498,7 @@ class MyAccount extends CI_Controller {
 
 		$vars['checkboxes'] = array('accept_admin_email', 'accept_user_email', 'notify_by_default', 'notify_of_pm', 'smart_notifications');
 
-		$this->load->view('account/email_settings', $vars);
+		$this->cp->render('account/email_settings', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -464,39 +509,21 @@ class MyAccount extends CI_Controller {
 	function update_email()
 	{
 		// validate for unallowed blank values
-		if (empty($_POST)) 
+		if (empty($_POST))
 		{
 			show_error(lang('unauthorized_access'));
 		}
 
-		// if this is a super admin changing stuff, don't worry
-		// about this db call since it won't be used anyhow
-		$current_email = '';
-		if ($this->session->userdata('group_id') != 1)
-		{
-			// what's this users current email?
-			$query = $this->member_model->get_member_data($this->id, array('email'));
-			$current_email = $query->row('email');
-		}
+		// what's this users current email?
+		$query = $this->member_model->get_member_data($this->id, array('email'));
+		$current_email = $query->row('email');
 
-		//	Validate submitted data
-		if ( ! class_exists('EE_Validate'))
-		{
-			require APPPATH.'libraries/Validate.php';
-		}
-
-		$this->VAL = new EE_Validate(
-								array(
-										'member_id'			=> $this->id,
-										'val_type'			=> 'update', // new or update
-										'fetch_lang'		=> FALSE,
-										'require_cpw'		=> ($current_email != $_POST['email']) ? TRUE :FALSE,
-										'enable_log'		=> TRUE,
-										'email'				=> $this->input->post('email'),
-										'cur_email'			=> $current_email,
-										'cur_password'		=> $this->input->post('password')
-									 )
-							);
+		$this->VAL = $this->_validate_user(array(
+			'require_cpw'	=> ($current_email != $this->input->post('email')) ? TRUE : FALSE,
+			'email'			=> $this->input->post('email'),
+			'cur_email'		=> $current_email,
+			'cur_password'	=> $this->input->post('current_password')
+		));
 
 		$this->VAL->validate_email();
 
@@ -507,18 +534,18 @@ class MyAccount extends CI_Controller {
 
 		// Assign the query data
 		$data = array(
-						'email'				 =>	 $this->input->post('email'),
-						'accept_admin_email'	=> (isset($_POST['accept_admin_email'])) ? 'y' : 'n',
-						'accept_user_email'	 => (isset($_POST['accept_user_email']))  ? 'y' : 'n',
-						'notify_by_default'	 => (isset($_POST['notify_by_default']))  ? 'y' : 'n',
-						'notify_of_pm'			=> (isset($_POST['notify_of_pm']))	? 'y' : 'n',
-						'smart_notifications'	=> (isset($_POST['smart_notifications']))  ? 'y' : 'n'
-					  );
+			'email'				 	=> $this->input->post('email'),
+			'accept_admin_email' 	=> (isset($_POST['accept_admin_email'])) ? 'y' : 'n',
+			'accept_user_email'	 	=> (isset($_POST['accept_user_email']))  ? 'y' : 'n',
+			'notify_by_default'	 	=> (isset($_POST['notify_by_default']))  ? 'y' : 'n',
+			'notify_of_pm'			=> (isset($_POST['notify_of_pm']))	? 'y' : 'n',
+			'smart_notifications'	=> (isset($_POST['smart_notifications']))  ? 'y' : 'n'
+		);
 
 		$this->member_model->update_member($this->id, $data);
 
 		$this->cp->get_installed_modules();
-		
+
 		if (isset($this->cp->installed_modules['comment']))
 		{
 			//	Update comments and log email change
@@ -528,7 +555,7 @@ class MyAccount extends CI_Controller {
 				$this->db->update('comments', array('email' => $this->input->post('email')));
 
 				$this->logger->log_action($this->VAL->log_msg);
-			}			
+			}
 		}
 
 		$id = ($this->id != $this->session->userdata('member_id')) ? AMP.'id='.$this->id : '';
@@ -548,10 +575,6 @@ class MyAccount extends CI_Controller {
 
 		$vars['cp_page_title'] = lang('edit_preferences');
 
-		$this->javascript->output('');
-
-		$this->javascript->compile();
-
 		$vars = array_merge($this->_account_menu_setup(), $vars);
 
 		// Fetch member data
@@ -566,7 +589,7 @@ class MyAccount extends CI_Controller {
 
 		$vars['checkboxes'] = array('accept_messages', 'display_avatars', 'display_signatures', 'parse_smileys');
 
-		$this->load->view('account/edit_preferences', $vars);
+		$this->cp->render('account/edit_preferences', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -577,17 +600,17 @@ class MyAccount extends CI_Controller {
 	function update_preferences()
 	{
 		// validate for unallowed blank values
-		if (empty($_POST)) 
+		if (empty($_POST))
 		{
 			show_error(lang('unauthorized_access'));
 		}
 
 		$data = array(
-						'accept_messages'		=> (isset($_POST['accept_messages'])) ? 'y' : 'n',
-						'display_avatars'		=> (isset($_POST['display_avatars'])) ? 'y' : 'n',
-						'display_signatures'	=> (isset($_POST['display_signatures']))  ? 'y' : 'n',
-						'parse_smileys'			=> (isset($_POST['parse_smileys']))  ? 'y' : 'n'
-					  );
+			'accept_messages'		=> (isset($_POST['accept_messages'])) ? 'y' : 'n',
+			'display_avatars'		=> (isset($_POST['display_avatars'])) ? 'y' : 'n',
+			'display_signatures'	=> (isset($_POST['display_signatures']))  ? 'y' : 'n',
+			'parse_smileys'			=> (isset($_POST['parse_smileys']))  ? 'y' : 'n'
+		);
 
 		$this->member_model->update_member($this->id, $data);
 
@@ -604,10 +627,6 @@ class MyAccount extends CI_Controller {
 	{
 		$vars['cp_page_title'] = lang('username_and_password');
 
-		$this->javascript->output('');
-
-		$this->javascript->compile();
-
 		$vars = array_merge($this->_account_menu_setup(), $vars);
 
 		// Fetch member data
@@ -620,7 +639,9 @@ class MyAccount extends CI_Controller {
 
 		$vars['allow_username_change'] = ($this->session->userdata['group_id'] != '1' AND $this->config->item('allow_username_change') == 'n') ? FALSE : TRUE;
 
-		$this->load->view('account/username_password', $vars);
+		$vars['self_edit'] = $this->self_edit;
+
+		$this->cp->render('account/username_password', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -630,7 +651,7 @@ class MyAccount extends CI_Controller {
 	  */
 	function update_username_password()
 	{
-		if ($this->config->item('allow_username_change') != 'y' && 
+		if ($this->config->item('allow_username_change') != 'y' &&
 			$this->session->userdata('group_id') != 1)
 		{
 			if ($_POST['current_password'] == '')
@@ -642,7 +663,7 @@ class MyAccount extends CI_Controller {
 		}
 
 		// validate for unallowed blank values
-		if (empty($_POST)) 
+		if (empty($_POST))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -653,34 +674,22 @@ class MyAccount extends CI_Controller {
 			$_POST['screen_name'] = $_POST['username'];
 		}
 
-		// Validate submitted data
-
-		if ( ! class_exists('EE_Validate'))
-		{
-			require APPPATH.'libraries/Validate.php';
-		}
-
 		// Fetch member data
 		$query = $this->member_model->get_member_data($this->id, array('username', 'screen_name'));
 
-		$this->VAL = new EE_Validate(array(
-			'member_id'			=> $this->id,
-			'val_type'			=> 'update', // new or update
-			'fetch_lang'		=> FALSE,
-			'require_cpw'		=> TRUE,
-			'enable_log'		=> TRUE,
-			'username'			=> $_POST['username'],
+		$this->VAL = $this->_validate_user(array(
+			'username'			=> $this->input->post('username'),
 			'cur_username'		=> $query->row('username'),
-			'screen_name'		=> $_POST['screen_name'],
+			'screen_name'		=> $this->input->post('screen_name'),
 			'cur_screen_name'	=> $query->row('screen_name'),
-			'password'			=> $_POST['password'],
-			'password_confirm'	=> $_POST['password_confirm'],
+			'password'			=> $this->input->post('password'),
+			'password_confirm'	=> $this->input->post('password_confirm'),
 			'cur_password'		=> $this->input->post('current_password')
 		));
 
 		$this->VAL->validate_screen_name();
 
-		if ($this->config->item('allow_username_change') == 'y' OR 
+		if ($this->config->item('allow_username_change') == 'y' OR
 			$this->session->userdata('group_id') == 1)
 		{
 			$this->VAL->validate_username();
@@ -692,24 +701,26 @@ class MyAccount extends CI_Controller {
 		}
 
 		// Display errors if there are any
-
 		if (count($this->VAL->errors) > 0)
 		{
 			show_error($this->VAL->show_errors());
 		}
 
 		// Update "last post" forum info if needed
-
-		if ($query->row('screen_name') != $_POST['screen_name'] && 
+		if ($query->row('screen_name') != $_POST['screen_name'] &&
 			$this->config->item('forum_is_installed') == "y")
 		{
 			$this->db->where('forum_last_post_author_id', $this->id);
-			$this->db->update('forums', array('forum_last_post_author' => 
-												$this->input->post('screen_name')));
-			
+			$this->db->update(
+				'forums',
+				array('forum_last_post_author' => $this->input->post('screen_name'))
+			);
+
 			$this->db->where('mod_member_id', $this->id);
-			$this->db->update('forum_moderators', array('mod_member_name' => 
-													$this->input->post('screen_name')));
+			$this->db->update(
+				'forum_moderators',
+				array('mod_member_name' => $this->input->post('screen_name'))
+			);
 		}
 
 		// Assign the query data
@@ -721,7 +732,6 @@ class MyAccount extends CI_Controller {
 		}
 
 		// Was a password submitted?
-
 		$pw_change = FALSE;
 
 		if ($_POST['password'] != '')
@@ -730,7 +740,7 @@ class MyAccount extends CI_Controller {
 
 			$this->auth->update_password($this->id, $this->input->post('password'));
 
-			if ($this->id == $this->session->userdata('member_id'))
+			if ($this->self_edit)
 			{
 				$pw_change = TRUE;
 			}
@@ -739,7 +749,7 @@ class MyAccount extends CI_Controller {
 		$this->member_model->update_member($this->id, $data);
 
 		$this->cp->get_installed_modules();
-		
+
 		if (isset($this->cp->installed_modules['comment']))
 		{
 			if ($query->row('screen_name') != $_POST['screen_name'])
@@ -753,9 +763,9 @@ class MyAccount extends CI_Controller {
 
 				$this->db->where('author_id', $this->id);
 				$this->db->update('comments', $data);
-			}			
+			}
 		}
-		
+
 		// Write log file
 		$this->logger->log_action($this->VAL->log_msg);
 
@@ -766,178 +776,48 @@ class MyAccount extends CI_Controller {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Ping servers
+	 * Validate either a user, or a Super Admin editing the user
+	 * @param  array $validation_data Validation data to be sent to EE_Validate
+	 * @return EE_Validate	Validation object returned from EE_Validate
 	 */
-	function ping_servers()
+	private function _validate_user($validation_data)
 	{
-		// Is the user authorized to access the publish page? If not, show the no access message
-		if ( ! $this->cp->allowed_group('can_access_publish'))
+		//	Validate submitted data
+		if ( ! class_exists('EE_Validate'))
 		{
-			show_error(lang('unauthorized_access'));
+			require APPPATH.'libraries/Validate.php';
 		}
 
-		$this->load->library('table');
-		$this->lang->loadfile('admin_content');
-		$this->load->model('admin_model');
+		$defaults = array(
+			'member_id'		=> $this->id,
+			'val_type'		=> 'update', // new or update
+			'fetch_lang'	=> FALSE,
+			'require_cpw'	=> TRUE,
+			'enable_log'	=> TRUE,
+		);
 
-		$vars['cp_page_title'] = lang('ping_servers');
-		$vars['form_hidden'] = array();
+		$validation_data = array_merge($defaults, $validation_data);
 
-		$ping_servers = $this->admin_model->get_ping_servers($this->id);
-
-		// This user have any ping servers? If not, grab the defaults
-		if ($ping_servers->num_rows() == 0)
+		// Are we dealing with a Super Admin editing someone else's account?
+		if ( ! $this->self_edit AND $this->session->userdata('group_id') == 1)
 		{
-			$ping_servers = $this->admin_model->get_ping_servers(0);
-		}
+			// Validate Super Admin's password
+			$this->load->library('auth');
+			$auth = $this->auth->authenticate_id(
+				$this->session->userdata('member_id'),
+				$this->input->post('current_password')
+			);
 
-		// ping protocols supported (currently only xmlrpc)
-		$vars['protocols'] = array('xmlrpc'=>'xmlrpc');
-
-		$vars['is_default_options'] = array('y'=>lang('yes'), 'n'=>lang('no'));
-
-		$i = 1;
-
-		$vars['ping_servers'] = array();
-
-		if ($ping_servers->num_rows() > 0)
-		{
-			foreach ($ping_servers->result_array() as $row)
+			if ($auth === FALSE)
 			{
-				$vars['ping_servers'][$i]['server_id'] = $row['id'];
-				$vars['ping_servers'][$i]['server_name'] = $row['server_name'];
-				$vars['ping_servers'][$i]['server_url'] = $row['server_url'];
-				$vars['ping_servers'][$i]['port'] = $row['port'];
-				$vars['ping_servers'][$i]['ping_protocol'] = $row['ping_protocol'];
-				$vars['ping_servers'][$i]['server_order'] = $row['server_order'];
-				$vars['ping_servers'][$i]['is_default'] = $row['is_default'];
-				$i++;
-			}
-		}
-
-		$vars['blank_count'] = $i;
-
-		$this->javascript->output('
-
-			function setup_js_page() {
-				$(".mainTable").tablesorter({widgets: ["zebra"]});
-				
-				$(".del_row, .order_arrows").show();
-				$(".del_instructions").hide();
-
-				$(".tag_order").css("cursor", "move");
-
-				$(".del_row a").click(function(){
-					$(this).parent().parent().remove();
-					update_ping_servers("false");
-					return false;
-				});
-
-				$(".mainTable .tag_order input").hide();
-				
-				$(".mainTable tbody").sortable({
-					axis:"y",
-					containment:"parent",
-					placeholder:"tablesize",
-					update: function() {
-
-						$("input[name^=server_order]").each(function(i) {
-							$(this).val(i+1);
-						});
-
-						update_ping_servers("false");
-						$(".mainTable").trigger("applyWidgets");
-					}
-				});
-
-				$("#ping_server_form").submit(function() {
-					update_ping_servers("true");
-					return false;
-				});
+				show_error(lang('invalid_password'));
 			}
 
-			function update_ping_servers(refresh) {
-				$.post(
-					"'.str_replace('&amp;', '&', BASE).'&C=myaccount&M=save_ping_servers&refresh="+refresh,
-					$("#ping_server_form").serializeArray(),
-					function(res) {
-						if ($(res).find("#ping_server_form").length > 0) {
-							$("#ping_server_form").replaceWith($(res).find("#ping_server_form"));
-							setup_js_page();
-
-							$.ee_notice("'.lang('preferences_updated').'");
-						}
-						else {
-							res = eval(\'(\' + res + \')\');
-							$.ee_notice(res.message);
-						}
-
-					});
-			}
-
-			setup_js_page();
-		');
-
-		$this->javascript->compile();
-
-		$this->cp->add_to_head('<style type="text/css">.tablesize{height:45px!important;}</style>');
-
-		$vars = array_merge($this->_account_menu_setup(), $vars);
-
-		$this->load->view('account/ping_servers', $vars);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 *	Save ping servers
-	 */
-	function save_ping_servers()
-	{
-		// validate for unallowed blank values
-		if (empty($_POST)) {
-			show_error(lang('unauthorized_access'));
+			// Make sure we don't verify the actual member's existing password
+			$validation_data['require_cpw'] = FALSE;
 		}
 
-		$this->load->model('admin_model');
-
-		$data = array();
-
-		foreach ($_POST as $key => $val)
-		{
-			if (strncmp($key, 'server_name_', 12) == 0 && $val != '')
-			{
-				$n = substr($key, 12);
-
-				$data[] = array(
-								 'member_id'	 => $this->id,
-								 'server_name'	=> $this->input->post('server_name_'.$n),
-								 'server_url'	=> $this->input->post('server_url_'.$n),
-								 'port'		  => $this->input->post('server_port_'.$n),
-								 'ping_protocol' => $this->input->post('ping_protocol_'.$n),
-								 'is_default'	=> $this->input->post('is_default_'.$n),
-								 'server_order'	 => $this->input->post('server_order_'.$n),
-								 'site_id'		 => $this->config->item('site_id')
-								);
-			}
-		}
-
-		if (count($_POST) > 0)
-		{
-			$this->admin_model->update_ping_servers($this->id, $data);
-		}
-
-		if ($this->input->get_post('refresh') == "true")
-		{
-			// Ajax refresh - only show the minimal view
-			$this->load->vars(array('EE_view_disable' => TRUE));
-			$this->ping_servers();
-		}
-		else
-		{
-			$this->session->set_flashdata('message_success', lang('preferences_updated'));
-			$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=ping_servers');
-		}
+		return new EE_Validate($validation_data);
 	}
 
 	// --------------------------------------------------------------------
@@ -953,7 +833,7 @@ class MyAccount extends CI_Controller {
 		{
 			show_error(lang('unauthorized_access'));
 		}
-		
+
 		$this->load->library('table');
 		$this->lang->loadfile('admin');
 		$this->lang->loadfile('admin_content');
@@ -966,9 +846,8 @@ class MyAccount extends CI_Controller {
 								'id'			=>	$this->id);
 
 		$vars = array_merge($this->_account_menu_setup(), $vars);
-		
+
 		$this->cp->add_js_script(array('file' => 'cp/account_html_buttons'));
-		$this->javascript->compile();
 
 		$this->cp->add_to_head('<style type="text/css">.cp_button{display:none;}</style>');
 
@@ -991,7 +870,7 @@ class MyAccount extends CI_Controller {
 			if ($button_count == 0)
 			{
 				$buttons = $this->admin_model->get_html_buttons();
-				
+
 				foreach ($buttons->result_array() as $data)
 				{
 					unset($data['id']); // unsetting from default id for insertion
@@ -1012,13 +891,13 @@ class MyAccount extends CI_Controller {
 						'tag_row'		=> 1,
 						'classname'		=> stripslashes($predefined_buttons[$button]['classname']),
 				);
-			
+
 			$this->admin_model->update_html_buttons($this->id, array($predefined_buttons[$button]), FALSE);
 
 			$id = ($this->input->get('id')) ? AMP.'id='.$this->input->get('id') : '';
-			
+
 			// Redirect to remove the button name from the query string.  Reloading the page can lead to
-			// adding buttons you don't want, and that's just ugliness.  
+			// adding buttons you don't want, and that's just ugliness.
 			$this->session->set_flashdata('message_success', lang('html_buttons_updated'));
 			$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=html_buttons'.$id);
 		}
@@ -1060,7 +939,7 @@ class MyAccount extends CI_Controller {
 		$vars['member_id'] = $this->id;
 		$vars['i'] = 1;
 
-		$this->load->view('account/html_buttons', $vars);
+		$this->cp->render('account/html_buttons', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -1074,8 +953,8 @@ class MyAccount extends CI_Controller {
 	function delete_html_button()
 	{
 		// validate for unallowed blank values
-		if ( ! $this->input->get_post('button_id') OR 
-			 ! $this->cp->allowed_group('can_edit_html_buttons')) 
+		if ( ! $this->input->get_post('button_id') OR
+			 ! $this->cp->allowed_group('can_edit_html_buttons'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -1126,14 +1005,10 @@ class MyAccount extends CI_Controller {
 		$vars['cp_page_title'] = lang('cp_theme');
 		$this->cp->add_to_head('<meta http-equiv="pragma" content="no-cache">');
 
-		$this->javascript->output('');
-
-		$this->javascript->compile();
-
 		$vars = array_merge($this->_account_menu_setup(), $vars);
 
 		$vars['form_hidden']['id'] = $this->id;
-		
+
 		if ($this->id != $this->session->userdata('member_id'))
 		{
 			$member_data = $this->member_model->get_member_data($this->id);
@@ -1147,7 +1022,7 @@ class MyAccount extends CI_Controller {
 
 		$vars['cp_theme_options'] =	 $this->admin_model->get_cp_theme_list();
 
-		$this->load->view('account/cp_theme', $vars);
+		$this->cp->render('account/cp_theme', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -1158,7 +1033,7 @@ class MyAccount extends CI_Controller {
 	function save_theme()
 	{
 		// validate for unallowed blank values
-		if (empty($_POST)) 
+		if (empty($_POST))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -1177,7 +1052,7 @@ class MyAccount extends CI_Controller {
 	  */
 	function subscriptions()
 	{
-		$this->load->helper(array('snippets', 'string'));
+		$this->load->helper('snippets');
 		$this->load->library('table');
 		$this->load->library('pagination');
 		$this->load->library('members');
@@ -1205,8 +1080,6 @@ class MyAccount extends CI_Controller {
 			);
 		');
 
-		$this->javascript->compile();
-
 		$vars = array_merge($this->_account_menu_setup(), $vars);
 
 		// Set some base values
@@ -1227,12 +1100,14 @@ class MyAccount extends CI_Controller {
 
 		$email = $query->row('email') ;
 
-		$subscription_data = $this->members->get_member_subscriptions($this->id, $rownum);
+		$subscription_data = $this->members->get_member_subscriptions($this->id, $rownum, $perpage);
 
 		$vars['subscriptions'] = $subscription_data['result_array'];
 
+		$id = ($this->id != $this->session->userdata('member_id')) ? AMP.'id='.$this->id : '';
+
 		// Pagination stuff
-		$config['base_url'] = BASE.AMP.'C=myaccount'.AMP.'M=subscriptions';
+		$config['base_url'] = BASE.AMP.'C=myaccount'.AMP.'M=subscriptions'.$id;
 		$config['total_rows'] = $subscription_data['total_results'];
 		$config['per_page'] = $perpage;
 		$config['page_query_string'] = TRUE;
@@ -1246,7 +1121,7 @@ class MyAccount extends CI_Controller {
 		$this->pagination->initialize($config);
 		$vars['pagination'] = $this->pagination->create_links();
 
-		$this->load->view('account/subscriptions', $vars);
+		$this->cp->render('account/subscriptions', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -1274,17 +1149,19 @@ class MyAccount extends CI_Controller {
 		}
 
 		$email = $query->row('email');
-		
+
 		$this->load->library('subscription');
 
 		foreach ($_POST['toggle'] as $key => $val)
 		{
 			switch (substr($val, 0, 1))
 			{
-				case "b"	: 	$this->subscription->init('comment', array('entry_id' => substr($val, 1)), TRUE);
-								$this->subscription->unsubscribe($this->id);
+				case "b":
+					$this->subscription->init('comment', array('entry_id' => substr($val, 1)), TRUE);
+					$this->subscription->unsubscribe($this->id);
 					break;
-				case "f"	: $this->db->delete('forum_subscriptions', array('topic_id' => substr($val, 1))); 
+				case "f":
+					$this->db->delete('forum_subscriptions', array('topic_id' => substr($val, 1)));
 					break;
 			}
 		}
@@ -1304,7 +1181,6 @@ class MyAccount extends CI_Controller {
 			show_error(lang('localization_disallowed'));
 		}
 
-		$this->load->helper('date');
 		$this->load->model('language_model');
 
 		$vars['cp_page_title'] = lang('localization_settings');
@@ -1314,41 +1190,32 @@ class MyAccount extends CI_Controller {
 			$vars['message'] = lang('localization_updated');
 		}
 
-		$this->javascript->output('');
-
-		$this->javascript->compile();
-
 		$vars = array_merge($this->_account_menu_setup(), $vars);
 
 		$vars['form_hidden']['id'] = $this->id;
 
-		$fields = array('timezone', 'daylight_savings', 'language', 'time_format');
-		
+		$fields = array('timezone', 'language', 'time_format');
+
 		// Fetch profile data
 		$query = $this->member_model->get_member_data($this->id, $fields);
-		
+
 		foreach ($fields as $val)
 		{
-			{
-				$vars[$val] = $query->row($val);
-			}
+			$vars[$val] = $query->row($val);
 		}
 
 		if ($vars['timezone'] == '')
 		{
-			$vars['timezone'] = ($this->config->item('default_site_timezone') && $this->config->item('default_site_timezone') != '') ? $this->config->item('default_site_timezone') : 'UTC';
+			$vars['timezone'] = $this->config->item('default_site_timezone') ? $this->config->item('default_site_timezone') : 'UTC';
 		}
-		
+
 		if ($vars['time_format'] == '')
 		{
 			$vars['time_format'] = ($this->config->item('time_format') && $this->config->item('time_format') != '') ? $this->config->item('time_format') : 'us';
-		}		
+		}
 
 		$vars['time_format_options']['us'] = lang('united_states');
 		$vars['time_format_options']['eu'] = lang('european');
-		
-		$vars['daylight_savings_y'] = ($vars['daylight_savings'] == 'y') ? TRUE : FALSE;
-		$vars['daylight_savings_n'] = ($vars['daylight_savings'] == 'y') ? FALSE : TRUE;
 
 		if ($vars['language'] == '')
 		{
@@ -1357,7 +1224,9 @@ class MyAccount extends CI_Controller {
 
 		$vars['language_options'] = $this->language_model->language_pack_names();
 
-		$this->load->view('account/localization', $vars);
+		$vars['timezone_menu'] = $this->localize->timezone_menu($vars['timezone'], 'timezones');
+
+		$this->cp->render('account/localization', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -1382,7 +1251,6 @@ class MyAccount extends CI_Controller {
 		$data['language']	= $this->security->sanitize_filename($this->input->post('language'));
 		$data['timezone']	= $this->input->post('timezones');
 		$data['time_format'] = $this->input->post('time_format');
-		$data['daylight_savings'] = ($this->input->post('daylight_savings') == 'y') ? 'y' : 'n';
 
 		if ( ! is_dir(APPPATH.'language/'.$data['language']))
 		{
@@ -1391,27 +1259,7 @@ class MyAccount extends CI_Controller {
 
 		$this->member_model->update_member($this->id, $data);
 
-		$config = $this->member_model->get_localization_default(TRUE);
-
-		//	Update Config Values
-		if ($config['member_id'] == $this->id)
-		{
-			unset($config['member_id']);
-			$query = $this->site_model->get_site_system_preferences($this->config->item('site_id'));
-
-			$prefs = unserialize(base64_decode($query->row('site_system_preferences')));
-
-			foreach($config as $key => $value)
-			{
-				$prefs[$key] = $value;
-			}
-
-			$this->site_model->update_site_system_preferences($prefs, $this->config->item('site_id'));
-		}
-
 		$this->session->set_flashdata('message_success', lang('settings_updated'));
-
-
 		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=localization'.AMP.'id='.$this->id.AMP.'U=1');
 	}
 
@@ -1423,10 +1271,6 @@ class MyAccount extends CI_Controller {
 	function edit_signature()
 	{
 		$vars['cp_page_title'] = lang('edit_signature');
-
-		$this->javascript->output('');
-
-		$this->javascript->compile();
 
 		$vars = array_merge($this->_account_menu_setup(), $vars);
 
@@ -1461,7 +1305,7 @@ class MyAccount extends CI_Controller {
 			}
 		}
 
-		$this->load->view('account/edit_signature', $vars);
+		$this->cp->render('account/edit_signature', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -1487,7 +1331,7 @@ class MyAccount extends CI_Controller {
 		{
 			return $this->upload_signature_image();
 		}
-		
+
 		$id = ($this->input->get_post('id')) ? AMP.'id='.$this->input->get_post('id') : '';
 
 		$this->session->set_flashdata('message_success', lang('signature_updated'));
@@ -1510,20 +1354,20 @@ class MyAccount extends CI_Controller {
 		$this->load->language('number');
 
 		$vars['cp_page_title'] = lang('edit_avatar');
-		
+
 		$vars = array_merge($this->_account_menu_setup(), $vars);
 
 		$vars['form_hidden']['id'] = $this->id;
-		
+
 		// Are we a superadmin & looking at our profile, or another users?
 		if ($this->id != $this->session->userdata('member_id'))
 		{
 			$member_avatar = $this->member_model->get_member_data($this->id, array('avatar_filename', 'avatar_width', 'avatar_height', 'screen_name'));
-			
+
 			$cur_avatar_url = '';
 			$avatar_width	= '';
 			$avatar_height	= '';
-			
+
 			if ($member_avatar->row('avatar_filename') == '')
 			{
 				// there ain't no avatar
@@ -1531,7 +1375,7 @@ class MyAccount extends CI_Controller {
 					lang('no_user_avatar'),
 					$member_avatar->row('screen_name')
 				);
-				
+
 			}
 			else
 			{
@@ -1548,7 +1392,7 @@ class MyAccount extends CI_Controller {
 			$cur_avatar_url = $this->session->cache('cp_sidebar', 'cp_avatar_path');
 			$avatar_width	= $this->session->cache('cp_sidebar', 'cp_avatar_width');
 			$avatar_height	= $this->session->cache('cp_sidebar', 'cp_avatar_height');
-			
+
 			if ( ! $cur_avatar_url)
 			{
 				$vars['avatar'] = lang('no_avatar');
@@ -1556,7 +1400,7 @@ class MyAccount extends CI_Controller {
 			else
 			{
 				$vars['avatar'] = '<img src="'.$cur_avatar_url.'" border="0" width="'.$avatar_width.'" height="'.$avatar_height.'" alt="'.lang('my_avatar').'" title="'.lang('my_avatar').'" />';
-			}			
+			}
 		}
 
 		// Are there pre-installed avatars? We'll make a list of all folders in the "avatar" folder,
@@ -1565,9 +1409,9 @@ class MyAccount extends CI_Controller {
 		$vars['i'] = 0;
 
 		$this->load->helper('directory');
-		
+
 		$vars['avatar_dirs'] = directory_map($this->config->slash_item('avatar_path'), 2);
-		
+
 		if (is_array($vars['avatar_dirs']))
 		{
 			$vars['avatar_dirs'] = array_filter($vars['avatar_dirs'], 'is_array');	// only grab subfolders
@@ -1589,8 +1433,7 @@ class MyAccount extends CI_Controller {
 
 		$vars['avatar_image_remove'] = ($this->config->item('allow_avatar_uploads') == 'y' AND $cur_avatar_url != '') ? TRUE : FALSE;
 
-		$this->javascript->compile();
-		$this->load->view('account/edit_avatar', $vars);
+		$this->cp->render('account/edit_avatar', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -1609,10 +1452,6 @@ class MyAccount extends CI_Controller {
 		$this->load->language('number');
 
 		$vars['cp_page_title'] = lang('edit_photo');
-
-		$this->javascript->output('');
-
-		$this->javascript->compile();
 
 		$vars = array_merge($this->_account_menu_setup(), $vars);
 
@@ -1647,7 +1486,7 @@ class MyAccount extends CI_Controller {
 
 		$vars['remove_photo'] = ($cur_photo_url != '') ? TRUE : FALSE;
 
-		$this->load->view('account/edit_photo', $vars);
+		$this->cp->render('account/edit_photo', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -1685,8 +1524,6 @@ class MyAccount extends CI_Controller {
 				$("#browse_avatar_form").submit();
 			});
 		');
-
-		$this->javascript->compile();
 
 		$vars = array_merge($this->_account_menu_setup(), $vars);
 
@@ -1735,7 +1572,7 @@ class MyAccount extends CI_Controller {
 						'cell_alt_start' => '<td style="width:30%">'
 					));
 
-		$this->load->view('account/browse_avatars', $vars);
+		$this->cp->render('account/browse_avatars', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -1755,7 +1592,7 @@ class MyAccount extends CI_Controller {
 		{
 			return $this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=browse_avatars'.AMP.'folder='.$this->input->get_post('folder'));
 		}
-		
+
 		$folder = $this->security->sanitize_filename($this->input->get_post('folder'));
 		$file	= $this->security->sanitize_filename($this->input->get_post('avatar'));
 
@@ -1879,7 +1716,7 @@ class MyAccount extends CI_Controller {
 				case 'page':
 					$args = (isset($upload[2])) ? $upload[2] : array();
 					return call_user_func_array(array($this, $upload[1]), $args);
-			}			
+			}
 		}
 
 		// Success message
@@ -1895,13 +1732,13 @@ class MyAccount extends CI_Controller {
 	function notepad_update()
 	{
 		// validate for unallowed blank values
-		if (empty($_POST)) 
+		if (empty($_POST))
 		{
 			show_error(lang('unauthorized_access'));
 		}
 
 		$this->member_model->update_member($this->session->userdata('member_id'), array('notepad'=>$this->input->get_post('notepad')));
-		
+
 		$this->session->set_flashdata('notepad_message', lang('mbr_notepad_updated'));
 		$this->functions->redirect(BASE.AMP.$this->input->post('redirect_to'));
 	}
@@ -1920,13 +1757,9 @@ class MyAccount extends CI_Controller {
 
 		$vars['cp_page_title'] = lang('administrative_options');
 
-		$this->javascript->output('');
-
-		$this->javascript->compile();
-
 		$vars = array_merge($this->_account_menu_setup(), $vars);
 
-		$query = $this->member_model->get_member_data($this->id, array('ip_address', 'in_authorlist', 'group_id', 'localization_is_site_default'));
+		$query = $this->member_model->get_member_data($this->id, array('ip_address', 'in_authorlist', 'group_id'));
 
 		foreach ($query->row_array() as $key => $val)
 		{
@@ -1938,11 +1771,11 @@ class MyAccount extends CI_Controller {
 		// Member groups assignment
 		if ($this->cp->allowed_group('can_admin_mbr_groups'))
 		{
-			$vars['group_id_options'] = array();			
+			$vars['group_id_options'] = array();
 
 			$query = $this->member_model->get_member_groups('is_locked');
 
-			if ($this->session->userdata('group_id') == 1 && $this->session->userdata('member_id') == $this->id)
+			if ($this->session->userdata('group_id') == 1 && $this->self_edit)
 			{
 				// Can't demote ourselves; Super Admin is the only way
 				$vars['group_id_options'][1] = $query->row(0)->group_title;
@@ -1961,7 +1794,7 @@ class MyAccount extends CI_Controller {
 			}
 		}
 
-		$this->load->view('account/member_preferences', $vars);
+		$this->cp->render('account/member_preferences', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -1984,7 +1817,6 @@ class MyAccount extends CI_Controller {
 		$this->load->model('site_model');
 
 		$data['in_authorlist'] = ($this->input->post('in_authorlist') == 'y') ? 'y' : 'n';
-		$data['localization_is_site_default'] = ($this->input->post('localization_is_site_default') == 'y') ? 'y' : 'n';
 
 		if ($this->input->post('group_id'))
 		{
@@ -1997,7 +1829,7 @@ class MyAccount extends CI_Controller {
 
 			if ($this->session->userdata('group_id') == '1')
 			{
-				if ($data['group_id'] != '1' && $this->session->userdata('member_id') == $this->id)
+				if ($data['group_id'] != '1' && $this->self_edit)
 				{
 					show_error(lang('super_admin_demotion_alert'));
 				}
@@ -2006,10 +1838,10 @@ class MyAccount extends CI_Controller {
 			{
 				// Get unlocked groups
 				$query = $this->member_model->get_member_groups('', array('is_locked'=>'n'));
-				
+
 				foreach ($query->result() as $row)
 				{
-					$unlocked_groups[] = $row->group_id;			
+					$unlocked_groups[] = $row->group_id;
 				}
 
 				$query = $this->member_model->get_member_data($this->id, array('group_id'));
@@ -2022,32 +1854,10 @@ class MyAccount extends CI_Controller {
 				{
 					show_error(lang('unauthorized_access'));
 				}
-			}			
+			}
 		}
-		
-		// If this member is set to be the default localization, wipe 'em all
-		if ($data['localization_is_site_default'] == 'y') 
-		{
-			$this->db->where('localization_is_site_default', 'y');
-			$this->db->update('members', array('localization_is_site_default' => 'n'));
-		}
-		
+
 		$this->member_model->update_member($this->id, $data);
-
-		$config = $this->member_model->get_localization_default();
-
-		//	Update Config Values
-
-		$query = $this->site_model->get_site_system_preferences($this->config->item('site_id'));
-
-		$prefs = unserialize(base64_decode($query->row('site_system_preferences')));
-
-		foreach($config as $key => $value)
-		{
-			$prefs[$key] = $value;
-		}
-
-		$this->site_model->update_site_system_preferences($prefs, $this->config->item('site_id'));
 
 		$this->session->set_flashdata('message_success', lang('administrative_options_updated'));
 		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=member_preferences'.AMP.'id='.$this->id);
@@ -2055,7 +1865,7 @@ class MyAccount extends CI_Controller {
 
 	// --------------------------------------------------------------------
 
-	/** 
+	/**
 	  * Quick links
 	  */
 	function quicklinks()
@@ -2072,10 +1882,6 @@ class MyAccount extends CI_Controller {
 
 		$this->jquery->tablesorter('.mainTable', '{widgets: ["zebra"]}');
 
-		$this->javascript->output('');
-
-		$this->javascript->compile();
-
 		$vars = array_merge($this->_account_menu_setup(), $vars);
 
 		if ($this->input->get('U'))
@@ -2087,7 +1893,7 @@ class MyAccount extends CI_Controller {
 
 		$vars['blank_count'] = count($vars['quicklinks'])+1;
 
-		$this->load->view('account/quicklinks', $vars);
+		$this->cp->render('account/quicklinks', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -2117,6 +1923,9 @@ class MyAccount extends CI_Controller {
 		{
 			if (strncmp($key, 'title_', 6) == 0 && $val != '')
 			{
+				// XSS clean the title
+				$_POST[$key] = $val = $this->security->xss_clean($val);
+
 				$i = $_POST['order_'.substr($key, 6)];
 
 				if ($i == '' OR $i == 0)
@@ -2195,7 +2004,7 @@ class MyAccount extends CI_Controller {
 
 		$vars['form_hidden'] = array();
 
-		if ($this->session->userdata('group_id') != 1 && 
+		if ($this->session->userdata('group_id') != 1 &&
 			$this->id != $this->session->userdata('member_id'))
 		{
 			show_error(lang('only_self_main_menu_manager_access'));
@@ -2233,11 +2042,7 @@ class MyAccount extends CI_Controller {
 			}');
 		}
 
-		$this->javascript->output('');
-
-		$this->javascript->compile();
-
-		$this->load->view('account/main_menu_manager', $vars);
+		$this->cp->render('account/main_menu_manager', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -2247,7 +2052,7 @@ class MyAccount extends CI_Controller {
 	  */
 	function main_menu_manager_add()
 	{
-		if ($this->session->userdata('group_id') != 1 && 
+		if ($this->session->userdata('group_id') != 1 &&
 			$this->id != $this->session->userdata('member_id'))
 		{
 			show_error(lang('only_self_main_menu_manager_access'));
@@ -2259,7 +2064,7 @@ class MyAccount extends CI_Controller {
 
 		$vars = array_merge($this->_account_menu_setup(), $vars);
 
-		$link = BASE.AMP.str_replace(array('/', '--'), array('&', '='), $this->input->get('link', TRUE));
+		$link = str_replace(array('/', '--'), array('&', '='), $this->input->get('link', TRUE));
 		$linkt = base64_decode($this->input->get('linkt', TRUE));
 
 		if ($link == '')
@@ -2305,14 +2110,14 @@ class MyAccount extends CI_Controller {
 	  */
 	function main_menu_update()
 	{
-		if ($this->session->userdata['group_id'] != 1 && 
+		if ($this->session->userdata['group_id'] != 1 &&
 		   ($this->id != $this->session->userdata('member_id')))
 		{
 			show_error(lang('unauthorized_access'));
 		}
 
 		// validate for unallowed blank values
-		if (empty($_POST)) 
+		if (empty($_POST))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -2326,6 +2131,9 @@ class MyAccount extends CI_Controller {
 		{
 			if (strncmp($key, 'title_', 6) == 0 && $val != '')
 			{
+				// XSS clean the title
+				$_POST[$key] = $val = $this->security->xss_clean($val);
+
 				$i = $_POST['order_'.substr($key, 6)];
 
 				if ($i == '' OR $i == 0)
@@ -2385,7 +2193,7 @@ class MyAccount extends CI_Controller {
 
 		$this->member_model->update_member($this->id, array('quick_tabs' => trim($str)));
 
-		$this->session->set_flashdata('message_success', 
+		$this->session->set_flashdata('message_success',
 										lang('main_menu_manager_updated'));
 		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=main_menu_manager'.AMP.'id='.$this->id);
 	}
@@ -2467,14 +2275,13 @@ class MyAccount extends CI_Controller {
 
             $s = ($this->config->item('admin_session_type') != 'c') ? $this->session->userdata('session_id') : 0;
 			$path = $this->config->item('cp_url')."?S={$s}".AMP.'D=cp&C=content_publish&M=entry_form&Z=1&BK=1&channel_id='.$channel_id.'&';
-						
+
 			$type = (isset($_POST['safari'])) ? "window.getSelection()" : "document.selection?document.selection.createRange().text:document.getSelection()";
 
 			$vars['bm_link'] = "javascript:bm=$type;void(bmentry=window.open('".$path."title='+encodeURI(document.title)+'&tb_url='+encodeURI(window.location.href)+'&".$field_id."='+encodeURI(bm),'bmentry',''))";
 		}
 
-		$this->javascript->compile();
-		$this->load->view('account/bookmarklet', $vars);
+		$this->cp->render('account/bookmarklet', $vars);
 	}
 
 	/** -----------------------------------
@@ -2514,7 +2321,7 @@ class MyAccount extends CI_Controller {
 	  */
 	function ignore_list()
 	{
-		$this->load->helper(array('snippets', 'string'));
+		$this->load->helper('snippets');
 		$this->load->library('table');
 
 		$vars['cp_page_title'] = lang('ignore_list');
@@ -2544,8 +2351,6 @@ class MyAccount extends CI_Controller {
 			$(".cp_button").show();
 			$(".cp_button a").click(function () {$("#add_member").slideDown();return false;});
 		');
-
-		$this->javascript->compile();
 
 		$vars = array_merge($this->_account_menu_setup(), $vars);
 
@@ -2614,7 +2419,7 @@ class MyAccount extends CI_Controller {
 		{
 			foreach ($query->result() as $row)
 			{
-				
+
 				$member_name = (TRUE === ($this->id = $this->auth_id())) ? '<a href="'.BASE.AMP.'C=myaccount'.AMP.'M=ignore_list'.'">'.$row->screen_name.'</a>' : $row->screen_name;
 
 				$vars['ignored_members'][$row->member_id]['member_id'] = $row->member_id;
@@ -2622,9 +2427,9 @@ class MyAccount extends CI_Controller {
 			}
 		}
 
-		$this->load->view('account/ignore_list', $vars);
+		$this->cp->render('account/ignore_list', $vars);
 	}
-	
+
 	/**
 	  *	 Update Sidebar
 	  */
@@ -2634,19 +2439,163 @@ class MyAccount extends CI_Controller {
 		{
 			show_error(lang('unauthorized_access'));
 		}
-	
+
 		$this->output->enable_profiler(FALSE);
 
 		$show['show_sidebar'] = ($this->input->get_post('show') == 'false') ? 'n' : 'y';
 
 		$this->db->where('member_id', $this->session->userdata['member_id'] );
-		$this->db->update('members', $show); 
-		
+		$this->db->update('members', $show);
+
 		$resp['messageType'] = 'success';
 		$resp['message'] = lang('sidebar_updated');
-		$this->output->send_ajax_response($resp); 
+		$this->output->send_ajax_response($resp);
 
 	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Custom My Account Screens
+	 */
+	public function custom_screen()
+	{
+		list($vars, $extension, $method, $method_save) = $this->_custom_action();
+
+		// Automatically push to the $method+'_save' method
+		$vars['action'] = 'C=myaccount'.AMP.'M=custom_screen_save'.AMP.'extension='.$extension.AMP.'method='.$method.AMP.'method_save='.$method_save;
+
+		// load the view wrapper
+		$this->cp->render('account/custom_screen', $vars);
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Method called when a custom screen added with the myaccount_nav_setup
+	 * hook is called
+	 */
+	public function custom_screen_save()
+	{
+		list($vars, $extension, $method, $method_save) = $this->_custom_action('method_save');
+
+		// Redirect back
+		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=custom_screen'.AMP.'extension='.$extension.AMP.'method='.$method.AMP.'method_save='.$method_save.AMP.'id='.$this->id);
+	}
+
+	// -------------------------------------------------------------------------
+
+	public function custom_action()
+	{
+		list($vars, $extension, $method, $method_save) = $this->_custom_action();
+
+		if (AJAX_REQUEST)
+		{
+			echo $vars['content'];
+		}
+		else
+		{
+			return $vars['content'];
+		}
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Abstraction of the custom screen page that takes care of figuring out the
+	 * name of the extension, the methods that should be called, what files to
+	 * load, and what method to call
+	 *
+	 * @param  string $method_choice The method to call,
+	 *		either 'method' or 'method_save'
+	 * @return Array containing four items:
+	 *		$vars: Variables to pass to view
+	 *		$extension: Extension name (should not include '_ext' or 'ext.')
+	 *		$method: Extension's method called to display settings
+	 *		$method_save: Extension's method called when the form is submit
+	 */
+	private function _custom_action($method_choice = 'method')
+	{
+		$vars = $this->_account_menu_setup();
+		$vars['form_hidden']['id'] = $this->id;
+
+		// get the module & method
+		$extension 	= strtolower($this->input->get_post('extension'));
+		$method 	= strtolower($this->input->get_post('method'));
+
+		// Check for a method_save get variable, if it doesn't exist, assume
+		// it's the method name with _save at the end (e.g. method_save)
+		$method_save	= ($this->input->get_post('method_save')) ?
+			strtolower($this->input->get_post('method_save')) :
+			$method.'_save';
+
+		$class_name = ucfirst($extension).'_ext';
+		$file_name	= 'ext.'.$extension.'.php';
+
+		$this->_load_extension_paths($extension);
+
+		// Include the Extension
+		include_once($this->extension_paths[$extension].$file_name);
+
+		$this->load->add_package_path($this->extension_paths[$extension], FALSE);
+
+		// Validate method choice parameter
+		$method_choice = (in_array($method_choice, array('method', 'method_save'))) ?
+			$method_choice :
+			'method';
+
+		$EXTENSION = new $class_name();
+		$this->lang->loadfile($extension, '', FALSE); // Don't show errors
+		if (method_exists($EXTENSION, $$method_choice) === TRUE)
+		{
+			// get the content back from the extension
+			$vars['content'] = $EXTENSION->$$method_choice($this->id);
+		}
+		else
+		{
+			show_error(sprintf(lang('unable_to_execute_method'), $file_name));
+		}
+
+		$this->load->remove_package_path($this->extension_paths[$extension]);
+
+		return array($vars, $extension, $method, $method_save);
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Make sure the extension paths have been cached
+	 *
+	 * @param  string $extension The name of the extension to load the path of
+	 * @return void
+	 */
+	private function _load_extension_paths($extension)
+	{
+		// Have we encountered this one before?
+		if ( ! isset($this->extension_paths[$extension]))
+		{
+			// First or third party?
+			foreach (array(PATH_MOD, PATH_THIRD) as $tmp_path)
+			{
+				if (file_exists($tmp_path.$extension.'/ext.'.$extension.'.php'))
+				{
+
+					$this->extension_paths[$extension] = $tmp_path.$extension.'/';
+					break;
+				}
+			}
+
+			// Include file
+			if ( ! class_exists($extension.'_ext'))
+			{
+				if ( ! isset($this->extension_paths[$extension]))
+				{
+					show_error(sprintf(lang('unable_to_load_module'), 'ext.'.$extension.'.php'));
+				}
+			}
+		}
+	}
+
 }
 
 /* End of file myaccount.php */

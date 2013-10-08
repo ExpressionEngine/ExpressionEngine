@@ -2,10 +2,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -44,12 +44,11 @@ EE.file_manager.sync_listen = function() {
 		
 		EE.file_manager.update_progress(0);
 
-		// Send first few ajax requests
-		for (var i = 0; i < 2; i++) {
-			setTimeout(function() {
-				EE.file_manager.sync(upload_directory_id);
-			}, 15);
-		};
+		// Send ajax requests
+		// Note- testing didn't show async made much improvement on time
+		setTimeout(function() {
+			EE.file_manager.sync(upload_directory_id);
+		}, 15);
 	});
 };
 
@@ -116,10 +115,14 @@ EE.file_manager.sync = function(upload_directory_id) {
 
 		},
 		success: function(data, textStatus, xhr) {
-			if (data.message_type == "failure") {
+			if (data.message_type != "success") {
+				if (typeof(data.errors) != "undefined") {
+					for (var key in data.errors) {
+						EE.file_manager.sync_errors.push("<b>" + key + "</b>: " + data.errors[key]);
+					}
+					}else{
+							EE.file_manager.sync_errors.push("<b>Undefined errors</b>");
 
-				for (var key in data.errors) {
-					EE.file_manager.sync_errors.push("<b>" + key + "</b>: " + data.errors[key]);
 				}
 			}
 		}
@@ -145,8 +148,8 @@ EE.file_manager.finish_sync = function(upload_directory_id) {
 			'errors':          EE.file_manager.sync_errors,
 			'error_count':     EE.file_manager.sync_errors.length
 		};
-	
-		$.tmpl('sync_complete_template', sync_complete).appendTo($('#sync'));
+		
+		$.tmpl('sync_complete_template', sync_complete).appendTo('#sync');
 
         // You can't have a conditional template in a table because Firefox ignores anything in a table that's untablelike
         if (sync_complete.error_count == 0) {

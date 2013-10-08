@@ -3,7 +3,7 @@
 $lang = array(
 
 /* no Javascript Warning */
-'no_js_warning'	=> 
+'no_js_warning'	=>
 'Javascript must be enabled in order for this theme to function properly.  Please check your browser settings.',
 
 
@@ -26,7 +26,7 @@ $lang = array(
 'nav_design'	   				=> 'Design',
 	'nav_create_group'				=> 'Create Group',
 	'nav_create_template'			=> 'Create Template',
-	'nav_edit_template_group' 		=> 'Edit Template Group', 
+	'nav_edit_template_group' 		=> 'Edit Template Group',
 	'nav_edit_template_group_more'  => '...see more',
 'nav_templates'					=> 'Templates',
 	'nav_edit_templates'		 	=> 'Edit',
@@ -97,22 +97,21 @@ $lang = array(
 	'nav_category_management_short_desc'	=> 'Create, edit, and delete Categories',
 	'nav_field_group_management'			=> 'Channel Fields',
 	'nav_field_group_management_short_desc'	=> 'Create, edit, and delete Channel Fields',
+	'nav_channel_form_settings'			=> 'Channel Form',
+	'nav_channel_form_settings_short_desc'	=> 'Manage Frontend Channel Form Preferences',
 	'nav_status_group_management'		=> 'Statuses',
 	'nav_status_group_management_short_desc'	=> 'Create, edit, and delete Statuses',
 	'nav_global_channel_preferences'	=> 'Global Preferences',
 	'nav_global_channel_preferences_short_desc'	=> 'Manage Global Channel Preferences',
 
 'nav_admin_content'				=> 'Content Administration',
-	'nav_file_upload_preferences'		=> 'File Upload Preferences',
+	'nav_file_manager_short_desc'				=> 'Upload, edit, and delete Files',
+	'nav_file_upload_preferences'				=> 'File Upload Preferences',
 	'nav_file_upload_preferences_short_desc'	=> 'Create, edit, and delete File Upload Preferences',
-	'nav_file_watermark_preferences'		=> 'Watermark Preferences',
-	'nav_file_upload_preferences_short_desc'	=> 'Create, edit, and delete File Watermark Preferences',
-	'nav_file_manager_short_desc'		=> 'File Upload Preferences',
-	'nav_file_watermark_preferences_short_desc' => 'Watermark Preferences',
-	'nav_default_ping_servers'			=> 'Default Ping Servers',
-	'nav_default_ping_servers_short_desc'	=> 'Create, edit, and delete  Default Ping Servers',
-	'nav_default_html_buttons'			=> 'Default HTML Buttons',
-	'nav_default_html_buttons_short_desc'	=> 'Create, edit, and delete Default HTML Buttons',
+	'nav_file_watermark_preferences'			=> 'Watermark Preferences',
+	'nav_file_watermark_preferences_short_desc' => 'Create, edit, and delete File Watermark Preferences',
+	'nav_default_html_buttons'					=> 'Default HTML Buttons',
+	'nav_default_html_buttons_short_desc'		=> 'Create, edit, and delete Default HTML Buttons',
 
 'nav_security_and_privacy'		=> 'Security and Privacy',
 
@@ -191,7 +190,7 @@ $lang = array(
 //----------------------------
 
 'session_expiring' =>
-'Your Session has expired.  Please log back in to avoid data loss',
+'Your session has expired. Please log back in to avoid data loss.',
 
 'loading' =>
 'Loading',
@@ -211,70 +210,73 @@ $lang = array(
 'powered_by' =>
 'Powered By',
 
-'control_panel' => 
+'control_panel' =>
 'Control Panel',
 
-'main_menu' => 
+'main_menu' =>
 'CP Home',
 
-'username' => 
+'username' =>
 'Username',
 
-'password' => 
+'password' =>
 'Password',
 
 'logged_back_in'	=>
 'You are now logged back in!',
 
-'my_account' => 
+'my_account' =>
 'My Account',
 
-'myaccount' => 
+'myaccount' =>
 'My Account',
 
-'user_account' => 
+'user_account' =>
 'Member Account',
 
-'user_guide' => 
+'user_guide' =>
 'User Guide',
 
-'logout_confirm' =>
-'Are you sure you want to log-out?',
-
-'logout' => 
+'logout' =>
 'Log-out',
 
-'session_timeout' => 
-'Your session is about to expire due to inactivity',
+'session_idle' =>
+'Idle session detected',
 
-'login' => 
+'session_idle_description' =>
+'You\'ve gone idle, please enter your password to continue.',
+
+'session_idle_not_name' =>
+'Not %s?',
+
+'login' =>
 'Log-in',
 
-'copyright' => 
+'copyright' =>
 'Copyright',
 
-'rights_reserved' => 
+'rights_reserved' =>
 'All Rights Reserved',
 
-'page_rendered' => 
+'page_rendered' =>
 'Script executed in %x seconds',
 
-'queries_executed' => 
+'queries_executed' =>
 '%x SQL queries used',
 
 'build' =>
-'Build:',
+'Build Date:',
 
 'forgot_password' =>
 'Forgot your password?',
 
-'e_no_css' => 
+'e_no_css' =>
 'The requested CSS file could not be opened.',
 
-'unauthorized' => 
+'unauthorized' =>
 'Unauthorized',
 
-'unauthorized_access' => 
+'unauthorized_access' =>
 'You are not authorized to access this page',
 
 'be_careful' =>
@@ -301,19 +303,16 @@ $lang = array(
 'any' =>
 'Any',
 
-'mobile_not_supported' => 
-'This feature is not supported in the mobile browser',
-
 'required_fields' =>
 'Indicates required fields',
 
-'login' => 
+'login' =>
 'Login',
 
-'forgotten_password' => 
+'forgotten_password' =>
 'Forgotten password',
 
-'submit_email_address' => 
+'submit_email_address' =>
 'Submit your email address',
 
 'click_to_edit' =>
@@ -338,28 +337,28 @@ $lang = array(
 'hide sidebar',
 
 'reveal_sidebar' =>
-'reveal sidebar',
+'show sidebar',
 
 //----------------------------
 // Buttons
 //----------------------------
 
-'submit' => 
+'submit' =>
 'Submit',
 
-'preview' => 
+'preview' =>
 'Preview',
 
-'update' => 
+'update' =>
 'Update',
 
-'edit' => 
+'edit' =>
 'Edit',
 
-'delete' => 
+'delete' =>
 'Delete',
 
-'save_changes' => 
+'save_changes' =>
 'Save changes',
 
 'save' =>
@@ -433,6 +432,8 @@ $lang = array(
 
 'status'						=> 'Status',
 'select_all'					=> 'Select All',
+
+'name'							=> 'Name',
 
 //----------------------------
 // Sites and Channels

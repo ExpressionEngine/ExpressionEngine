@@ -66,9 +66,6 @@ $lang = array(
 'revision_saved' =>
 'Revision Saved',
 
-'dst_enabled' =>
-'DST Active on Date of Entry',
-
 'multi_entries_updated' =>
 'Entrie(s) have been Updated',
 
@@ -244,15 +241,6 @@ $lang = array(
 
 'publish_form' =>
 'Publish Form',
-
-'pings' =>
-'Pings',
-
-'no_ping_sites' =>
-'No ping servers currently exist.',
-
-'add_ping_sites' =>
-'Add Ping Servers.',
 
 'entry_date' => 
 'Entry Date',
@@ -460,18 +448,6 @@ $lang = array(
 'allow_comments' => 
 'Allow Comments',
 
-'ping_sites' => 
-'Sites To Ping',
-
-'select_entries_to_ping' =>
-'Select the channel entries you would like to ping',
-
-'view_previous_pings' => 
-'View Previous Pings',
-
-'previously_pinged_urls' => 
-'You previously pinged the following URLs',
-
 'date' => 
 'Date',
 
@@ -576,9 +552,6 @@ $lang = array(
 
 'entry_has_been_updated' =>
 'Entry Has Been Updated',
-
-'xmlrpc_ping_errors' =>
-'The following XML-RPC pings were not accepted:',
 
 'click_to_view_your_entry' =>
 'Click here to view your entry',
@@ -1010,11 +983,12 @@ Confirm the fieldtype file is located in the expressionengine/third_party/ direc
 /* PUblish Tabs */
 'menu_publish'		=> 'Publish',
 'menu_date'			=> 'Date',
-'menu_pings'		=> 'Pings',
 'menu_pages'		=> 'Pages',
 'menu_options'		=> 'Options',
 'menu_categories'	=> 'Categories',
 'menu_forum'		=> 'Forums',
+
+'rel_ft_no_entries'			=> 'No Entries',
 
 ''=>''
 );

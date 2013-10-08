@@ -3,10 +3,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -19,21 +19,42 @@
  * @package		ExpressionEngine
  * @subpackage	Core
  * @category	Model
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 class Site_model extends CI_Model {
 
 	/**
-	 * Get Site
+     * Get an array of all available site ids.
 	 *
+	 * @return array An array of integer site ids in no particular order.
+	 */
+	public function get_site_ids() 
+	{
+		if($this->config->item('multiple_sites_enabled') != 'y')
+		{
+			return array(1);
+		}
+
+		$site_query = $this->db->select('site_id')
+				->get('sites');
+		
+		$site_ids = array();
+		foreach($site_query->result_array() as $result)
+		{
+			$site_ids[] = $result['site_id'];
+		}
+		return $site_ids;	
+	}
+
+	/**
 	 * Returns all info on a site, or all sites
 	 *
 	 * @access	public
 	 * @param	id		Site Id
 	 * @return	object
 	 */
-	function get_site($site_id = '')
+	public function get_site($site_id = '')
 	{
 		if ($site_id != '')
 		{
@@ -48,15 +69,13 @@ class Site_model extends CI_Model {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Get Site System Preferences List
-	 *
 	 * Returns the site system preferences
 	 *
 	 * @access	public
 	 * @param	id		Site Id
 	 * @return	object
 	 */
-	function get_site_system_preferences($site_id = '')
+	public function get_site_system_preferences($site_id = '')
 	{
 		if ($site_id != '')
 		{
@@ -71,8 +90,6 @@ class Site_model extends CI_Model {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Update Site System Preferences List
-	 *
 	 * Updates the site system preferences
 	 *
 	 * @access	public
@@ -80,7 +97,7 @@ class Site_model extends CI_Model {
 	 * @param	id		Site Id
 	 * @return	void
 	 */
-	function update_site_system_preferences($prefs, $site_id = '')
+	public function update_site_system_preferences($prefs, $site_id = '')
 	{
 		if ($site_id != '')
 		{

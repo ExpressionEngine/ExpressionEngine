@@ -1,0 +1,397 @@
+table.grid_field_container {
+	table-layout: fixed;
+	width: 100%;
+}
+
+table.grid_field_container td.grid_delete_row_gutter {
+	width: 40px;
+}
+
+table.grid_field_container td.grid_field_container_cell {
+	position: relative;
+	width: 100%;
+}
+
+table.grid_field {
+	background-color: #fff;
+	border: 1px solid #c9cfd4;
+	box-shadow: #dbdee2 2px 2px 0;
+	margin: 9px 0 11px;
+	position: relative;
+	width: 100%;
+}
+
+table.grid_field th {
+	color: #5F6C74;
+	font-weight: normal;
+	font-size: 12px;
+	padding: 9px 8px;
+	text-align: left;
+	vertical-align: top;
+}
+
+table.grid_field th,
+table.grid_field td {
+	border-left: 1px solid #c9cfd4;
+}
+
+table.grid_field td {
+	border-top: 1px solid #c9cfd4;
+	font-size: 12px;
+	vertical-align: top;
+}
+
+table.grid_field td div.grid_cell {
+	padding: 5px;
+	position: relative;
+}
+
+table.grid_field tr.ui-sortable-helper td {
+	border-bottom: 1px solid #c9cfd4;
+}
+
+table.grid_field tr {
+	background-color: #fff;
+}
+
+table.grid_field th.grid_handle,
+table.grid_field td.grid_handle {
+	border-left: none;
+	width: 4px;
+}
+
+table.grid_field tr.blank_row,
+table.grid_field tr.empty_field {
+	display: none;
+}
+
+table.grid_field td.empty_field {
+	border-left: none;
+	padding: 17px;
+	text-align: center;
+}
+
+table.grid_field td.empty_field a:link,
+table.grid_field td.empty_field a:visited,
+table.grid_field td.empty_field a:hover,
+table.grid_field td.empty_field a:active {
+	color: #E11842;
+	text-decoration: none;
+}
+
+table.grid_field td.empty_field a:hover {
+	text-decoration: underline;
+}
+
+table.grid_field td div.file_field {
+	text-align: center;
+}
+
+table.grid_field td div.file_field p.filename {
+	display: inline-block;
+	float: none;
+}
+
+table.grid_field div.grid_padding {
+	padding: 6px 10px;
+}
+
+table.grid_field select.multiselect_input {
+	border-color: #c8cfd8;
+	width: 100%;
+}
+
+table.grid_field a.grid_button_delete {
+	display: none;
+	position: absolute;
+	right: -29px;
+	top: 0px;
+}
+
+table.grid_field .grid_full_cell_container {
+	margin: -5px;
+}
+
+/* RTE */
+
+table.grid_field .WysiHat-container {
+	width: 100%;
+}
+
+table.grid_field .WysiHat-editor-toolbar {
+	border: 0;
+	border-bottom: 1px solid #e3e3e3;
+}
+
+table.grid_field .WysiHat-editor,
+table.grid_field textarea.WysiHat-field {
+	border: 1px solid #c8cfd8;
+	border-radius: 0;
+	margin: 5px;
+}
+
+table.grid_field textarea.WysiHat-field {
+	width: 99%;
+}
+
+p.grid_error {
+	color: red;
+	font-weight: bold;
+	margin: 10px 0 5px;
+}
+
+#grid_settings {
+	margin-top: 8px;
+}
+
+#grid_col_settings_labels {
+	float: left;
+	width: 97px;
+}
+
+#grid_col_settings_container {
+	margin-right: 97px;
+	overflow-x: scroll;
+	padding-bottom: 15px;
+	width: 800px
+}
+
+#grid_col_settings_container_inner {
+	width: 2000px;
+}
+
+#grid_min_rows,
+#grid_max_rows,
+#grid_settings .grid_input_text_small {
+	margin: -4px 0 -4px 0;
+	padding: 6px;
+	position: relative;
+	text-align: center;
+	width: 47px;
+	vertical-align: middle;
+}
+
+.grid_col_width .instruction_text {
+	position: relative;
+	top: 1px;
+}
+
+#grid_min_rows,
+#grid_max_rows {
+	float: left;
+	margin: 3px 5px 3px 0;
+}
+
+#mainContent .grid_validation_error p.notice {
+	clear: both;
+	margin: 5px 0;
+	position: relative;
+	top: 5px;
+}
+
+.grid_input_label_group {
+	float: left;
+	margin: 1px 0 3px 5px;
+}
+
+.instruction_text {
+	color: #859199;
+}
+
+span.instruction_text {
+	display: block;
+	font-size: 11px;
+	margin-top: 5px
+}
+
+.grid_col_setting_label {
+	border-bottom: 1px solid #d0d7df;
+	display: block;
+	font-size: 12px;
+	padding: 13px 0 7px 0;
+}
+
+.grid_col_setting_label.grid_data_type
+{
+	padding-top: 28px;
+}
+
+.grid_data_search
+{
+	padding: 8px 0 6px 0;
+}
+
+.grid_col_settings {
+	background-color: #fff;
+	border: 1px solid #c9cfd4;
+	box-shadow: #dbdee2 2px 2px 0;
+	float: left;
+	margin-bottom: 14px;
+	margin-right: -1px;
+	width: 319px;
+}
+
+.grid_col_settings_section {
+	border-bottom: 1px solid #c0cfd6;
+	padding: 9px 10px;
+}
+
+.grid_col_settings_section.text {
+	padding: 5px;
+}
+
+.grid_field input[type=text],
+.grid_field textarea,
+.grid_col_settings_section input[type=text],
+.grid_col_settings_section textarea {
+	border-radius: 0;
+	border-color: #c8cfd8;
+	padding: 6px;
+}
+
+.grid_col_settings_section input[type=text].grid_settings_error,
+.grid_col_settings_section input[type=text].grid_settings_error:focus {
+	background-color: #f5e9e9;
+	border-color: #f6b5b5;
+}
+
+.grid_field input[type=text]:focus,
+.grid_field textarea:focus,
+.grid_col_settings_section input[type=text]:focus,
+.grid_col_settings_section textarea:focus {
+	background-color: #fbfaed;
+	border: 1px solid #a49745;
+}
+
+.grid_col_settings_section textarea {
+	resize: none;
+	width: auto;
+}
+
+.grid_col_settings_section select.select {
+	max-width: 172px;
+}
+
+.grid_col_settings_section select.grid_settings_multiselect {
+	border-color: #c8cfd8;
+	margin: -3px -4px -3px 0;
+	max-height: 142px;
+	vertical-align: top;
+	width: 184px;
+}
+
+.grid_col_settings_section select.grid_select_wide {
+	width: 230px;
+}
+
+.grid_col_settings_section .right {
+	float: right;
+}
+
+.grid_col_settings_section input[type=checkbox] {
+	margin-right: 8px
+}
+
+.grid_col_settings_section.alt,
+table.grid_field th {
+	background-color: #f5f6f5;
+}
+
+table.grid_field td.grid_handle {
+	background: #f5f6f5 url('../images/grid-sprite.png') no-repeat -66px 7px;
+}
+
+.grid_col_settings_section.grid_data_type {
+	padding: 16px 14px;
+	position: relative;
+}
+
+table.grid_field td.grid_handle,
+.grid_col_settings_section.grid_data_type {
+	cursor: move;
+	cursor: hand;
+	cursor: grab !important;
+	cursor: -moz-grab;
+	cursor: -webkit-grab;
+}
+
+.grid_col_setting_label_fixed_width {
+	display: inline-block;
+	width: 119px;
+}
+
+.grid_col_setting_label_small_width {
+	display: inline-block;
+	width: 73px;
+}
+
+a.grid_button_delete:link,
+a.grid_button_delete:visited,
+a.grid_button_delete:active,
+a.grid_button_delete:hover {
+	background: url('../images/grid-sprite.png') no-repeat -21px 0;
+	display: inline-block;
+	height: 17px;
+	text-indent: -9999px;
+	width: 18px;
+}
+
+.grid_col_settings_section.grid_data_type a.grid_button_delete {
+	display: none;
+	position: absolute;
+	right: 9px;
+	top: 17px;
+}
+
+.grid_col_settings_section.grid_data_search {
+	padding: 8px 10px 9px;
+}
+
+.grid_col_settings_section.grid_data_search label {
+	margin-right: 17px;
+	text-transform: lowercase;
+}
+
+div.grid_col_copy {
+	background-color: #fafcfb;
+	border-bottom: 0;
+	text-align: right;
+}
+
+a.grid_col_copy:link,
+a.grid_col_copy:visited,
+a.grid_col_copy:active,
+a.grid_col_copy:hover {
+	background: #f8fefa url('../images/grid-sprite.png') no-repeat 47px 9px;
+	border: 1px solid #c7ced5;
+	border-radius: 5px;
+	color: #67a036;
+	display: inline-block;
+	font-weight: bold;
+	padding: 8px 25px 8px 9px;
+	text-decoration: none;
+	text-transform: uppercase;
+}
+
+a.grid_button_add:link,
+a.grid_button_add:visited,
+a.grid_button_add:active,
+a.grid_button_add:hover {
+	background: url('../images/grid-sprite.png') no-repeat -39px 8px;
+	border: 1px solid #c7ced3;
+	border-radius: 5px;
+	display: inline-block;
+	height: 29px;
+	text-indent: -9999px;
+	width: 30px;
+}
+
+#grid_settings a.grid_button_add {
+	left: 21px;
+	position: relative;
+	top: 172px;
+}
+
+#grid_col_settings_elements {
+	display: none;
+}

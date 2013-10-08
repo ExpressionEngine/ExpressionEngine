@@ -5,7 +5,7 @@ class Wiki_ext {
 	var $name = 'Wiki';
 	var $version = '2.3';
 	var $settings_exist = 'n';
-	var $docs_url = 'http://expressionengine.com/user_guide/modules/wiki/index.html';
+	var $docs_url = 'http://ellislab.com/expressionengine/user-guide/modules/wiki/index.html';
 	var $required_by = array('module');
 
 	private $EE;
@@ -32,11 +32,11 @@ class Wiki_ext {
 			$names[] = $row->file_name;
 		}
 		
-		$this->EE->db->where_in('file_name', $names);
-		$this->EE->db->delete('wiki_uploads');
+		ee()->db->where_in('file_name', $names);
+		ee()->db->delete('wiki_uploads');
 							
 		// Clear wiki cache
-		$this->EE->functions->clear_caching('db');
+		ee()->functions->clear_caching('db');
 	}
 	
 

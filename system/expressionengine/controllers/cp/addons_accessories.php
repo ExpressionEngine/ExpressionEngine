@@ -3,10 +3,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -19,10 +19,10 @@
  * @package		ExpressionEngine
  * @subpackage	Control Panel
  * @category	Control Panel
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
-class Addons_accessories extends CI_Controller {
+class Addons_accessories extends CP_Controller {
 	
 	var $human_names = array();
 	
@@ -37,6 +37,7 @@ class Addons_accessories extends CI_Controller {
 	{
 		parent::__construct();
 		
+		$this->load->library('accessories');
 		$this->human_names = $this->_fetch_human_names();
 		
 		$this->load->library('addons');
@@ -61,7 +62,7 @@ class Addons_accessories extends CI_Controller {
 		$this->load->library('table');
 		$this->load->helper('html');
 
-		$this->cp->set_variable('cp_page_title', lang('accessories'));
+		$this->view->cp_page_title = lang('accessories');
 
 		$this->cp->set_breadcrumb(BASE.AMP.'C=addons', lang('addons'));
 		
@@ -180,9 +181,8 @@ class Addons_accessories extends CI_Controller {
 			}
 		}
 
-		$this->javascript->compile();
-
-		$this->load->view('addons/accessories', array('accessories' => $accessories));
+		$this->view->accessories = $accessories;
+		$this->cp->render('addons/accessories');
 	}
 	
 	// --------------------------------------------------------------------
@@ -317,105 +317,18 @@ class Addons_accessories extends CI_Controller {
 			$acc = new $class();
 		}
 
-		$this->cp->set_variable('cp_page_title', lang('edit_accessory_preferences').': '.$acc->name);
+		$this->view->cp_page_title = lang('edit_accessory_preferences').': '.$acc->name;
 
 		// a bit of a breadcrumb override is needed
-		$this->cp->set_variable('cp_breadcrumbs', array(
+		$this->view->cp_breadcrumbs = array(
 			BASE.AMP.'C=addons' => lang('addons'),
 			BASE.AMP.'C=addons_accessories'=> lang('addons_accessories')
-		));
+		);
 
 		$this->load->library('table');
 		$this->load->model('member_model');
 
-		$this->jquery->plugin(BASE.AMP.'C=javascript'.AMP.'M=load'.AMP.'plugin=tablesorter', TRUE);
-
-		$this->javascript->output('
-
-			// Za Toggles, zey do nuffink!
-
-			$(".toggle_controllers").toggle(
-				function(){
-					$("input[class=toggle_controller]").each(function() {
-						this.checked = true;
-					});
-				}, function (){
-					$("input[class=toggle_controller]").each(function() {
-						this.checked = false;
-					});
-				}
-			);
-
-			$(".toggle_groups").toggle(
-				function(){
-					$("input[class=toggle_group]").each(function() {
-						this.checked = true;
-					});
-				}, function (){
-					$("input[class=toggle_group]").each(function() {
-						this.checked = false;
-					});
-				}
-			);
-
-			// hide sub controllers
-			$(".sub_addons, .sub_admin_, .sub_conten, .sub_tools_").hide();
-
-			// add plus sign to parent controllers
-			$(".addons td:first, .admin td:first, .content td:first, .tools td:first").prepend("<img class=\"acc_toggle\" width=\"11\" height=\"10\" src=\"'.$this->cp->cp_theme_url.'images/publish_plus.png\" alt=\"\" style=\"float:left;position:absolute;\" />");
-			$(".sub_addons td.controller_label, .sub_admin_ td.controller_label, .sub_conten td.controller_label, .sub_tools_ td.controller_label").css("padding-left", "36px");
-
-			$(".acc_toggle").css("cursor", "pointer"); // just styling it like a link
-
-			// toggle visible and invisible
-			$(".acc_toggle").toggle(
-				function(){
-					var class_name = prep_class($(this));
-					$(this).attr("src", "'.$this->cp->cp_theme_url.'images/publish_minus.gif");
-					$(class_name).each(function() {
-						$(this).show();
-					});
-					table_stripe();
-				}, function (){
-					var class_name = prep_class($(this));
-					$(this).attr("src", "'.$this->cp->cp_theme_url.'images/publish_plus.png");
-					$(class_name).each(function() {
-						$(this).hide();
-					});
-					table_stripe();
-				}
-			);
-
-			// toggle checkboxes for groups
-			// toggle visible and invisible
-			$(".addons input, .admin input, .content input, .tools input").click(function(){
-				var checked = $(this).attr("checked");
-				var class_name = prep_class($(this)) + " input";
-				$(class_name).each(function() {
-						$(this).attr("checked", checked);
-				});
-			});
-
-			function prep_class(obj)
-			{
-				var class_name = $(obj).parent().parent().attr("class").replace(/even/, "").replace(/odd/, "").replace(/ /, "").substring(0,6);
-				if (class_name.length < 6)
-				{
-					class_name += "_";
-				}
-				return ".sub_"+class_name;
-			}
-
-			function table_stripe()
-			{
-				$("table tbody tr:visible:even").addClass("even");
-				$("table tbody tr:visible:odd").addClass("odd");
-			}
-
-			table_stripe();
-		');
-
-		$this->javascript->compile();
+		$this->cp->add_js_script('file', 'cp/addons/accessories');
 
 		$vars['member_groups'] = $this->human_names['member_groups'];
 		$controllers = $this->human_names['controllers'];
@@ -438,7 +351,7 @@ class Addons_accessories extends CI_Controller {
 		$vars['acc_controllers'] = explode('|', $installed[$name]['controllers']);
 		$vars['acc_member_groups'] = explode('|', $installed[$name]['member_groups']);
 
-		$this->load->view('addons/accessory_preferences', $vars);
+		$this->cp->render('addons/accessory_preferences', $vars);
 	}
 	
 	// --------------------------------------------------------------------

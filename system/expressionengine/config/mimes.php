@@ -3,10 +3,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -24,8 +24,8 @@
  * @package		ExpressionEngine
  * @subpackage	Config
  * @category	Config
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 	
 /*			
@@ -54,7 +54,7 @@ $mimes = array(
 				'dms'	=>	'application/octet-stream',
 				'doc'	=>	'application/msword',
 				'docm'	=>	'application/vnd.ms-word.document.macroEnabled.12',
-				'docx'	=>	'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+				'docx'	=>	array('application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.openxmlformats-officedocument.wordprocessingml'), 
 				'dotm'	=>	'application/vnd.ms-word.template.macroEnabled.12',
 				'dotx'	=>	'application/vnd.openxmlformats-officedocument.wordprocessingml.template',
 				'dvi'	=>	'application/x-dvi',
@@ -131,6 +131,7 @@ $mimes = array(
 				'qt'	=>	'video/quicktime',
 				'ra'	=>	'audio/x-realaudio',
 				'ram'	=>	'audio/x-pn-realaudio',
+				'rar'	=>	'application/x-rar-compressed',
 				'rm'	=>	'audio/x-pn-realaudio',
 				'rpm'	=>	'audio/x-pn-realaudio-plugin',
 				'rtx'	=>	'text/richtext',
@@ -154,6 +155,7 @@ $mimes = array(
 				'webm'	=>	'video/webm',
 				'wmlc'	=>	'application/wmlc',
 				'word'	=>	array('application/msword', 'application/octet-stream'),
+				'wmv' 	=> 	'video/x-ms-wmv',
 				'xht'	=>	'application/xhtml+xml',
 				'xhtml'	=>	'application/xhtml+xml',
 				'xl'	=>	'application/excel',

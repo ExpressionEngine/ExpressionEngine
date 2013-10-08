@@ -3,10 +3,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -19,8 +19,8 @@
  * @package		ExpressionEngine
  * @subpackage	Core
  * @category	Model
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 class Addons_model extends CI_Model {
 
@@ -336,6 +336,37 @@ class Addons_model extends CI_Model {
 		}
 		
 		return $_installed[$ft_name];
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * RTE Tool installed
+	 *
+	 * Returns true if a RTE tool is installed, false if not
+	 *
+	 * @access	public
+	 * @param	string
+	 * @return	boolean
+	 */
+	function rte_tool_installed($tool_name)
+	{
+		// Is the module even installed?
+		if ( ! $this->db->table_exists('rte_tools'))
+		{
+			return FALSE;
+		}
+
+		static $_installed = array();
+		
+		if ( ! isset($_installed[$tool_name]))
+		{
+			$this->db->from("rte_tools");
+			$this->db->where("name", ucfirst(strtolower(str_replace(' ', '_', $tool_name))));
+			$_installed[$tool_name] = ($this->db->count_all_results() > 0) ? TRUE : FALSE;
+		}
+		
+		return $_installed[$tool_name];
 	}
 	
 	// --------------------------------------------------------------------

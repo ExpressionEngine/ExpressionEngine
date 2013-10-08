@@ -34,7 +34,6 @@
 			width:				600px;
 
 			-webkit-border-radius: 3px;
-			-moz-border-radius:	3px;
 			border-radius:		3px;
 
 			-webkit-box-shadow: 0 1px 3px #171E23;
@@ -87,7 +86,7 @@
 </head>
 <body>
 
-<div id="branding"><a href="http://expressionengine.com/"><img src="<?=PATH_CP_GBL_IMG?>ee_logo_branding.gif" width="250" height="28" alt="<?=lang('powered_by')?> ExpressionEngine" /></a></div>
+<div id="branding"><a href="http://ellislab.com/"><img src="<?=PATH_CP_GBL_IMG?>ee_logo_branding.gif" width="250" height="28" alt="<?=lang('powered_by')?> ExpressionEngine" /></a></div>
 
 <div id="content">
 	<div id="error">	

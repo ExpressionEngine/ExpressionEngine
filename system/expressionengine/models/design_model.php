@@ -3,10 +3,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -19,18 +19,23 @@
  * @package		ExpressionEngine
  * @subpackage	Core
  * @category	Model
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 class Design_model extends CI_Model {
 
-	function fetch_templates()
+	function fetch_templates($group_id = array())
 	{
 		$this->db->select(array('t.template_id', 't.group_id', 't.template_name', 't.template_type', 't.cache', 't.refresh', 't.no_auth_bounce', 't.enable_http_auth', 't.allow_php', 't.php_parse_location', 't.hits', 'tg.group_name'));
 		$this->db->from('templates AS t');
 		$this->db->join('template_groups AS tg', 'tg.group_id = t.group_id');
 		$this->db->where('t.site_id', $this->config->item('site_id'));
 		$this->db->order_by('t.group_id, t.template_name', 'ASC');
+
+		if ( ! empty($group_id))
+		{
+			$this->db->where_in('t.group_id', $group_id);
+		}
 		
 		$keywords = trim($this->input->post('template_keywords'));
 		

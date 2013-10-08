@@ -3,10 +3,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  */
 
@@ -18,8 +18,8 @@
  * @package		ExpressionEngine
  * @subpackage	Modules
  * @category	Stats Module
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 
 class Stats {
@@ -33,26 +33,26 @@ class Stats {
 	{
 		$this->EE =& get_instance();
 
-		$this->EE->stats->load_stats();
+		ee()->stats->load_stats();
 
 		// Limit stats by channel
 		// You can limit the stats by any combination of channels
-		if ($channel_name = $this->EE->TMPL->fetch_param('channel'))
+		if ($channel_name = ee()->TMPL->fetch_param('channel'))
 		{
 			$sql = "SELECT	total_entries, 
 							total_comments,
 							last_entry_date,
 							last_comment_date
 					FROM exp_channels 
-					WHERE site_id IN ('".implode("','", $this->EE->TMPL->site_ids)."') ";
+					WHERE site_id IN ('".implode("','", ee()->TMPL->site_ids)."') ";
 
-			$sql .= $this->EE->functions->sql_andor_string($channel_name, 'exp_channels.channel_name');
+			$sql .= ee()->functions->sql_andor_string($channel_name, 'exp_channels.channel_name');
 
 			$cache_sql = md5($sql);
 
-			if ( ! isset($this->EE->stats->stats_cache[$cache_sql]))
+			if ( ! isset(ee()->stats->stats_cache[$cache_sql]))
 			{ 			
-				$query = $this->EE->db->query($sql);
+				$query = ee()->db->query($sql);
 				
 				$sdata = array(
 									'total_entries'			=> 0,
@@ -83,17 +83,17 @@ class Stats {
 
 					foreach ($sdata as $key => $val)
 					{
-						$this->EE->stats->set_statdata($key, $val);
+						ee()->stats->set_statdata($key, $val);
 						
-						$this->EE->stats->stats_cache[$cache_sql][$key] = $val;
+						ee()->stats->stats_cache[$cache_sql][$key] = $val;
 					} 
 				}
 			}
 			else
 			{
-				foreach($this->EE->stats->stats_cache[$cache_sql] as $key => $val)
+				foreach(ee()->stats->stats_cache[$cache_sql] as $key => $val)
 				{
-					$this->EE->stats->set_statdata($key, $val);
+					ee()->stats->set_statdata($key, $val);
 				}
 			}
 		}
@@ -106,35 +106,35 @@ class Stats {
 		
 		foreach ($fields as $field)
 		{
-			if ( isset($this->EE->TMPL->var_single[$field]))
+			if ( isset(ee()->TMPL->var_single[$field]))
 			{
-				$cond[$field] = $this->EE->stats->statdata($field);
-				$this->EE->TMPL->tagdata = $this->EE->TMPL->swap_var_single($field, $this->EE->stats->statdata($field), $this->EE->TMPL->tagdata);
+				$cond[$field] = ee()->stats->statdata($field);
+				ee()->TMPL->tagdata = ee()->TMPL->swap_var_single($field, ee()->stats->statdata($field), ee()->TMPL->tagdata);
 			}
 		}
 		
 		if (count($cond) > 0)
 		{
-			$this->EE->TMPL->tagdata = $this->EE->functions->prep_conditionals($this->EE->TMPL->tagdata, $cond);
+			ee()->TMPL->tagdata = ee()->functions->prep_conditionals(ee()->TMPL->tagdata, $cond);
 		}
 		
 		//  Parse dates
 		$dates = array('last_entry_date', 'last_forum_post_date', 
 						'last_comment_date', 'last_visitor_date', 'most_visitor_date');
 		
-		foreach ($this->EE->TMPL->var_single as $key => $val)
+		foreach (ee()->TMPL->var_single as $key => $val)
 		{	
 			foreach ($dates as $date)
 			{
 				if (strncmp($key, $date, strlen($date)) == 0)
 				{
-					$this->EE->TMPL->tagdata = $this->EE->TMPL->swap_var_single(
+					ee()->TMPL->tagdata = ee()->TMPL->swap_var_single(
 												$key, 
-												( ! $this->EE->stats->statdata($date) 
-													OR $this->EE->stats->statdata($date) == 0) ? '--' : 
-												$this->EE->localize->decode_date($val, 
-																$this->EE->stats->statdata($date)), 
-												$this->EE->TMPL->tagdata
+												( ! ee()->stats->statdata($date) 
+													OR ee()->stats->statdata($date) == 0) ? '--' : 
+												ee()->localize->format_date($val, 
+																ee()->stats->statdata($date)), 
+												ee()->TMPL->tagdata
 											 );
 				}
 			}
@@ -144,18 +144,18 @@ class Stats {
 
 		$names = '';
 
-		if ($this->EE->stats->statdata('current_names'))
+		if (ee()->stats->statdata('current_names'))
 		{
-			$chunk = $this->EE->TMPL->fetch_data_between_var_pairs($this->EE->TMPL->tagdata, 
+			$chunk = ee()->TMPL->fetch_data_between_var_pairs(ee()->TMPL->tagdata, 
 																	'member_names');	  
 			
 			$backspace = '';
 			
 			if ( ! preg_match("/".LD."member_names.*?backspace=[\"|'](.+?)[\"|']/", 
-					$this->EE->TMPL->tagdata, $match))
+					ee()->TMPL->tagdata, $match))
 			{
 				if (preg_match("/".LD."name.*?backspace=[\"|'](.+?)[\"|']/", 
-					$this->EE->TMPL->tagdata, $match))
+					ee()->TMPL->tagdata, $match))
 				{
 					$backspace = $match['1'];
 				}
@@ -165,26 +165,23 @@ class Stats {
 				$backspace = $match['1'];
 			}
 
-			// Load the string helper
-			$this->EE->load->helper('string');
-
 			$member_path = (preg_match("/".LD."member_path=(.+?)".RD."/", 
-							$this->EE->TMPL->tagdata, $match)) ? $match['1'] : '';
+							ee()->TMPL->tagdata, $match)) ? $match['1'] : '';
 			$member_path = str_replace("\"", "", $member_path);
 			$member_path = str_replace("'",  "", $member_path);
 			$member_path = trim_slashes($member_path);
 					
-			foreach ($this->EE->stats->statdata('current_names') as $k => $v)
+			foreach (ee()->stats->statdata('current_names') as $k => $v)
 			{
 				$temp = $chunk;
 			
 				if ($v['1'] == 'y')
 				{
-					if ($this->EE->session->userdata('group_id') == 1)
+					if (ee()->session->userdata('group_id') == 1)
 					{
 						$temp = preg_replace("/".LD."name.*?".RD."/", $v['0'].'*', $temp);
 					}
-					elseif ($this->EE->session->userdata('member_id') == $k)
+					elseif (ee()->session->userdata('member_id') == $k)
 					{
 						$temp = preg_replace("/".LD."name.*?".RD."/", $v['0'].'*', $temp);
 					}
@@ -199,7 +196,7 @@ class Stats {
 				}
 				
 				
-				$path = $this->EE->functions->create_url($member_path.'/'.$k);	
+				$path = ee()->functions->create_url($member_path.'/'.$k);	
 				
 				$temp = preg_replace("/".LD."member_path=(.+?)".RD."/", $path, $temp);
 				
@@ -216,20 +213,20 @@ class Stats {
 				
 		$names = str_replace(LD.'name'.RD, '', $names);
 
-		$this->EE->TMPL->tagdata = preg_replace("/".LD.'member_names'.".*?".RD."(.*?)".LD.'\/'.'member_names'.RD."/s", $names, $this->EE->TMPL->tagdata);
+		ee()->TMPL->tagdata = preg_replace("/".LD.'member_names'.".*?".RD."(.*?)".LD.'\/'.'member_names'.RD."/s", $names, ee()->TMPL->tagdata);
 
 		//  {if member_names}
 
 		if ($names != '')
 		{
-			$this->EE->TMPL->tagdata = preg_replace("/".LD.'if member_names'.".*?".RD."(.*?)".LD.'\/'.'if'.RD."/s", "\\1", $this->EE->TMPL->tagdata);
+			ee()->TMPL->tagdata = preg_replace("/".LD.'if member_names'.".*?".RD."(.*?)".LD.'\/'.'if'.RD."/s", "\\1", ee()->TMPL->tagdata);
 		}
 		else
 		{
-			$this->EE->TMPL->tagdata = preg_replace("/".LD.'if member_names'.".*?".RD."(.*?)".LD.'\/'.'if'.RD."/s", "", $this->EE->TMPL->tagdata);
+			ee()->TMPL->tagdata = preg_replace("/".LD.'if member_names'.".*?".RD."(.*?)".LD.'\/'.'if'.RD."/s", "", ee()->TMPL->tagdata);
 		}
 		
-		$this->return_data = $this->EE->TMPL->tagdata;
+		$this->return_data = ee()->TMPL->tagdata;
 	}
 
 }

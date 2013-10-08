@@ -1,6 +1,31 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 /**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 2.0
+ * @filesource
+ */
+ 
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine Segment Helper
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Helpers
+ * @category	Helpers
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
+ */
+
+
+/**
   * Checks to see if the current user needs to have XSS filtering or not
   *
   * @return	boolean	TRUE if they need XSS cleaning on, FALSE otherwise

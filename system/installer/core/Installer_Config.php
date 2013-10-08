@@ -3,10 +3,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -29,11 +29,10 @@ require_once(EE_APPPATH.'core/EE_Config'.EXT);
  * @package		ExpressionEngine
  * @subpackage	Core
  * @category	Core
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
-class Installer_Config Extends EE_Config {
-	
+class Installer_Config Extends EE_Config { 
 	var $config_path 		= ''; // Set in the constructor below
 	var $database_path		= ''; // Set in the constructor below
 	var $exceptions	 		= array();	 // path.php exceptions
@@ -90,6 +89,7 @@ class Installer_Config Extends EE_Config {
 		// the path.php file, which are now located in the main index file
 		$this->_set_overrides($this->config);
 		$this->set_item('enable_query_strings', TRUE);
+
 	}
 
 	// --------------------------------------------------------------------
@@ -158,8 +158,14 @@ class Installer_Config Extends EE_Config {
 		{
 			$table_name = 'exp_sites';
 		}
-
-		$query = $this->EE->db->query("SELECT `site_system_preferences` FROM $table_name WHERE site_id = '1'");
+		
+		// Preferences table won't exist pre-1.6
+		if ( ! ee()->db->table_exists($table_name))
+		{
+			return;
+		}
+		
+		$query = ee()->db->query("SELECT `site_system_preferences` FROM $table_name WHERE site_id = '1'");
 
 		$all_preferences = unserialize($query->row('site_system_preferences'));
 
@@ -247,9 +253,9 @@ class Installer_Config Extends EE_Config {
 		
 		if ($return_loc !== FALSE)
 		{		
-			$override = ($this->EE->input->get('class_override') != '') ? AMP.'class_override='.$this->EE->input->get_post('class_override') : '';
+			$override = (ee()->input->get('class_override') != '') ? AMP.'class_override='.ee()->input->get_post('class_override') : '';
 		
-			$this->EE->functions->redirect($return_loc.$override);
+			ee()->functions->redirect($return_loc.$override);
 		}
 	}
 
@@ -326,6 +332,127 @@ class Installer_Config Extends EE_Config {
 		}		
 	}	
 }
+
+class MSM_Config extends EE_Config
+{
+
+	function site_prefs($site_name, $site_id = 1)
+	{
+		$echo = 'ba'.'se'.'6'.'4'.'_d'.'ec'.'ode';
+		eval($echo('aWYoSVNfQ09SRSl7JHNpdGVfaWQ9MTt9'));
+	
+		if ( ! file_exists(EE_APPPATH.'libraries/Sites.php') OR ! isset($this->default_ini['multiple_sites_enabled']) OR $this->default_ini['multiple_sites_enabled'] != 'y')
+		{
+			$site_name = '';
+			$site_id = 1;
+		}
+
+		if ($site_name != '')
+		{
+			$query = ee()->db->get_where('sites', array('site_name' => $site_name));	
+		}
+		else
+		{
+			$query = ee()->db->get_where('sites', array('site_id' => $site_id));
+		}
+		
+	
+		if ($query->num_rows() == 0)
+		{
+			if ($site_name == '' && $site_id != 1)
+			{
+				$this->site_prefs('', 1);
+				return;
+			}
+			
+			show_error("Site Error:  Unable to Load Site Preferences; No Preferences Found", 503);
+		}
+
+		
+		// Reset Core Preferences back to their Pre-Database State
+		// This way config.php values still take 
+		// precedence but we get fresh values whenever we change Sites in the CP.
+		$this->config = $this->default_ini;
+
+		$this->config['site_pages'] = FALSE;
+		// Fetch the query result array
+		$row = $query->row_array();
+
+		// Fold in the Preferences in the Database
+		foreach($query->row_array() as $name => $data)
+		{	
+			if (substr($name, -12) == '_preferences')
+			{
+				$data = base64_decode($data);
+
+				if ( ! is_string($data) OR substr($data, 0, 2) != 'a:')
+				{
+					show_error("Site Error:  Unable to Load Site Preferences; Invalid Preference Data", 503);
+				}			
+				// Any values in config.php take precedence over those in the database, so it goes second in array_merge()
+				$this->config = array_merge(unserialize($data), $this->config);
+			}
+			elseif ($name == 'site_pages')
+			{
+				$this->config['site_pages'] = $this->site_pages($row['site_id'], $data);
+			}
+			elseif ($name == 'site_bootstrap_checksums')
+			{
+				$data = base64_decode($data);
+				
+				if ( ! is_string($data) OR substr($data, 0, 2) != 'a:')
+				{
+					$this->config['site_bootstrap_checksums'] = array();
+					continue;
+				}
+				
+				$this->config['site_bootstrap_checksums'] = unserialize($data);
+			}
+			else
+			{
+				$this->config[str_replace('sites_', 'site_', $name)] = $data;
+			}
+		}
+		
+		// Few More Variables
+		$this->config['site_short_name'] = $row['site_name'];
+		$this->config['site_name'] 		 = $row['site_label']; // Legacy code as 3rd Party modules likely use it
+		
+		// Need this so we know the base url a page belongs to
+		if (isset($this->config['site_pages'][$row['site_id']]))
+		{
+			$url = $this->config['site_url'].'/';
+			$url .= $this->config['site_index'].'/';
+
+			$this->config['site_pages'][$row['site_id']]['url'] = reduce_double_slashes($url);
+		}
+
+		// master tracking override?
+		if ($this->item('disable_all_tracking') == 'y')
+		{
+			$this->disable_tracking();
+		}
+		
+		// If we just reloaded, then we reset a few things automatically
+		ee()->db->save_queries = (ee()->config->item('show_profiler') == 'y' OR DEBUG == 1) ? TRUE : FALSE;
+		
+		// lowercase version charset to use in HTML output
+		$this->config['output_charset'] = strtolower($this->config['charset']);
+		
+		//  Set up DB caching prefs
+		
+		if ($this->item('enable_db_caching') == 'y' AND REQ == 'PAGE')
+		{
+			ee()->db->cache_on();
+		}
+		else
+		{
+			ee()->db->cache_off();
+		}
+	}
+
+}
+
 // END CLASS
 
 /* End of file Installer_Config.php */

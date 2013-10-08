@@ -3,10 +3,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -19,8 +19,8 @@
  * @package		ExpressionEngine
  * @subpackage	Core
  * @category	Model
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 class File_model extends CI_Model {
 	
@@ -39,6 +39,9 @@ class File_model extends CI_Model {
 	 * - search_value
 	 * - order
 	 * - do_count
+	 * - date_range
+	 * - date_start
+	 * - date_end
 	 *
 	 * @access	public
 	 * @param	int
@@ -72,6 +75,20 @@ class File_model extends CI_Model {
 		elseif ($parameters['type'] == 'non-image')
 		{
 			$this->db->where_not_in('mime_type', $this->_image_types);
+		}
+		
+		// Custom Date Range
+		if ( ! empty($parameters['date_start'])
+			AND ! empty($parameters['date_end'])
+			AND empty($parameters['date_range']))
+		{
+			$this->db->where('upload_date >=', strtotime($parameters['date_start']));
+			$this->db->where('upload_date <=', strtotime($parameters['date_end']));
+		}
+		// Date range based on number of days
+		elseif ( ! empty($parameters['date_range']))
+		{
+			$this->db->where('upload_date >=', $this->localize->now - ($parameters['date_range'] * 86400));
 		}
 		
 		$this->db->where('files.site_id', $this->config->item('site_id'));
@@ -241,6 +258,15 @@ class File_model extends CI_Model {
 			}
 		}
 
+		/* -------------------------------------------
+		/* 'file_after_save' hook.
+		/*  - Add additional processing after file is saved
+		*/
+			$this->extensions->call('file_after_save', $file_id, $data);
+			if ($this->extensions->end_script === TRUE) return;
+		/*
+		/* -------------------------------------------*/
+
 		return $successful;
 	}
 
@@ -295,15 +321,16 @@ class File_model extends CI_Model {
 		return $this->db->$dir_func('upload_location_id', $dir_id)
 						->get('files');
 	}
-
-
 	
 	// ------------------------------------------------------------------------	
 	
 	/**
 	 * Get files by name and directory
 	 * 
-	 * 
+	 * @param mixed $file_name An array or string with the filename/s
+	 * @param mixed $dir_id    The image directory of the files
+	 * @access public
+	 * @return query           The filename query result
 	 */
 	function get_files_by_name($file_name, $dir_id)
 	{
@@ -313,13 +340,24 @@ class File_model extends CI_Model {
 		}
 		
 		$dir_func = $this->_where_function($dir_id);
-		$name_func = $this->_where_function($file_name);
+		$this->db->$dir_func('upload_location_id', $dir_id);
 
-		return $this->db->$dir_func('upload_location_id', $dir_id)
-						->$name_func('file_name', $file_name)
-						->get('files');
+		// Collate does not work on the IN operator, so we cast to binary
+		if (is_array($file_name))
+		{
+			foreach($file_name as $key => $file)
+			{
+				$file_name[$key] = "binary $file";
+			}
+			$this->db->where_in('file_name', $file_name);
+		}
+		else
+		{
+			$this->db->where("file_name = " . $this->db->escape($file_name) . " COLLATE utf8_bin");
+		}
+
+		return $this->db->get('files');
 	}
-
 
 	// ------------------------------------------------------------------------	
 	
@@ -502,7 +540,6 @@ class File_model extends CI_Model {
 		}
 	
 		$this->load->helper('file');
-		$this->load->helper('string');
 		$this->load->helper('text');
 		$this->load->helper('directory');
 		$this->load->library('encrypt');
@@ -646,7 +683,7 @@ class File_model extends CI_Model {
 		/* 'files_after_delete' hook.
 		/*  - Add additional processing after file deletion
 		*/
-			$edata = $this->extensions->call('files_after_delete', $deleted);
+			$this->extensions->call('files_after_delete', $deleted);
 			if ($this->extensions->end_script === TRUE) return;
 		/*
 		/* -------------------------------------------*/

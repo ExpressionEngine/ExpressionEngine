@@ -3,10 +3,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -19,8 +19,8 @@
  * @package		ExpressionEngine
  * @subpackage	Core
  * @category	Core
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 class Api_channel_structure extends Api {
 
@@ -37,7 +37,7 @@ class Api_channel_structure extends Api {
 	function __construct()
 	{
 		parent::__construct();
-		$this->EE->load->model('channel_model');
+		ee()->load->model('channel_model');
 	}
 
 	// --------------------------------------------------------------------
@@ -65,7 +65,7 @@ class Api_channel_structure extends Api {
 			return $this->channel_info[$channel_id];
 		}
 		
-		$query = $this->EE->channel_model->get_channel_info($channel_id);
+		$query = ee()->channel_model->get_channel_info($channel_id);
 		
 		if ($query->num_rows() == 0)
 		{
@@ -92,7 +92,7 @@ class Api_channel_structure extends Api {
 	{
 		if ($site_id === NULL OR ! is_numeric($site_id))
 		{
-			$site_id = $this->EE->config->item('site_id');
+			$site_id = ee()->config->item('site_id');
 		}
 		
 		// return cached query object if available
@@ -101,7 +101,7 @@ class Api_channel_structure extends Api {
 			return $this->channels[$site_id];
 		}
 		
-		$query = $this->EE->channel_model->get_channels();
+		$query = ee()->channel_model->get_channels($site_id);
 		
 		if ( ! $query OR $query->num_rows() == 0)
 		{
@@ -134,17 +134,17 @@ class Api_channel_structure extends Api {
 				
 		if ($site_id === NULL OR ! is_numeric($site_id))
 		{
-			$site_id = $this->EE->config->item('site_id');
+			$site_id = ee()->config->item('site_id');
 		}
 		
 		// load the channel entries model
-		$this->EE->load->model('channel_entries_model');
+		ee()->load->model('channel_entries_model');
 				
 		// get entry ids and authors, we'll need this for the delete and stats updates
 		$entries = array();
 		$authors = array();
 		
-		$query = $this->EE->channel_entries_model->get_entries($channel_id, 'author_id');
+		$query = ee()->channel_entries_model->get_entries($channel_id, 'author_id');
 				
 		if ($query->num_rows() > 0)
 		{
@@ -158,14 +158,14 @@ class Api_channel_structure extends Api {
 		$authors = array_unique($authors);
 		
 		// gather related fields, we use this later if needed
-		$this->EE->db->select('field_id');
-		$fquery = $this->EE->db->get_where('channel_fields', array('field_type' => 'rel'));
+		ee()->db->select('field_id');
+		$fquery = ee()->db->get_where('channel_fields', array('field_type' => 'rel'));
 		
 		// delete from data, titles, comments and the channel itself
-		$this->EE->channel_model->delete_channel($channel_id, $entries, $authors);
+		ee()->channel_model->delete_channel($channel_id, $entries, $authors);
 		
 		// log the action
-		$this->EE->logger->log_action($this->EE->lang->line('channel_deleted').NBS.NBS.$channel_title); 
+		ee()->logger->log_action(ee()->lang->line('channel_deleted').NBS.NBS.$channel_title); 
 
 		return $channel_title;
 	}
@@ -188,7 +188,7 @@ class Api_channel_structure extends Api {
 			return FALSE;
 		}
 
-		$this->EE->load->model('super_model');
+		ee()->load->model('super_model');
 		
 		$channel_title		= '';
 		$channel_name		= '';
@@ -200,7 +200,7 @@ class Api_channel_structure extends Api {
 		// validate Site ID
 		if ( ! isset($site_id) OR ! is_numeric($site_id))
 		{
-			$site_id = $this->EE->config->item('site_id');
+			$site_id = ee()->config->item('site_id');
 		}
 		
 		// validate Channel title
@@ -232,7 +232,7 @@ class Api_channel_structure extends Api {
 		}
   		
 		// check channel name availability
-		$count = $this->EE->super_model->count('channels', array('site_id' => $site_id, 'channel_name' => $channel_name));
+		$count = ee()->super_model->count('channels', array('site_id' => $site_id, 'channel_name' => $channel_name));
 	  
 		if ($count > 0)
 		{
@@ -250,11 +250,11 @@ class Api_channel_structure extends Api {
 			isset($old_group_id) && isset($group_name) && isset($template_theme))
 		{
 			// load the template structure library
-			$this->EE->load->library('api/api_template_structure', 'template_structure');
-			$this->EE->lang->loadfile('design');
+			ee()->load->library('api/api_template_structure', 'template_structure');
+			ee()->lang->loadfile('design');
 
 			$group_name = strtolower($group_name);
-			$template_theme = $this->EE->security->sanitize_filename($template_theme);
+			$template_theme = ee()->security->sanitize_filename($template_theme);
 			
 			// validate group name
 			if ($group_name == '')
@@ -267,13 +267,13 @@ class Api_channel_structure extends Api {
 				$this->_set_error('illegal_characters');
 			}			
 			
-			if (in_array($group_name, $this->EE->api_template_structure->reserved_names))
+			if (in_array($group_name, ee()->api_template_structure->reserved_names))
 			{
 				$this->_set_error('reserved_name');
 			}
 			
 			// check if it's taken, too
-			$count = $this->EE->super_model->count('template_groups', array('site_id' => $site_id, 'group_name' => $group_name));
+			$count = ee()->super_model->count('template_groups', array('site_id' => $site_id, 'group_name' => $group_name));
 			
 			if ($count > 0)
 			{
@@ -289,7 +289,7 @@ class Api_channel_structure extends Api {
 				$cat_group = array($cat_group);
 			}
 			
-			$count = $this->EE->super_model->count('category_groups', array('group_id' => $cat_group));
+			$count = ee()->super_model->count('category_groups', array('group_id' => $cat_group));
 			
 			if ($count != count($cat_group))
 			{
@@ -351,14 +351,13 @@ class Api_channel_structure extends Api {
 							case 'blog_url':
 							case 'comment_url':
 							case 'search_results_url':
-							case 'ping_return_url':
 							case 'rss_url':
 								if ($create_templates != 'no')
 								{
 									if ( ! isset($old_group_name))
 									{
-										$this->EE->db->select('group_name');
-										$gquery = $this->EE->db->get_where('template_groups', array('group_id' => $old_group_id));
+										ee()->db->select('group_name');
+										$gquery = ee()->db->get_where('template_groups', array('group_id' => $old_group_id));
 										$old_group_name = $gquery->row('group_name');
 									}
 
@@ -385,14 +384,14 @@ class Api_channel_structure extends Api {
 		}
 		
 		// do it do it do it
-		$channel_url	= ( ! isset($channel_url))  ? $this->EE->functions->fetch_site_index() : $channel_url;
-		$channel_lang	= ( ! isset($channel_lang)) ? $this->EE->config->item('xml_lang') : $channel_lang;
+		$channel_url	= ( ! isset($channel_url))  ? ee()->functions->fetch_site_index() : $channel_url;
+		$channel_lang	= ( ! isset($channel_lang)) ? ee()->config->item('xml_lang') : $channel_lang;
 		
 		// Assign field group if there is only one
 		if ( ! isset($field_group) OR ! is_numeric($field_group))
 		{
-			$this->EE->db->select('group_id');
-			$query = $this->EE->db->get_where('field_groups', array('site_id' => $site_id));
+			ee()->db->select('group_id');
+			$query = ee()->db->get_where('field_groups', array('site_id' => $site_id));
 			
 			if ($query->num_rows() == 1)
 			{
@@ -401,7 +400,7 @@ class Api_channel_structure extends Api {
 		}
 		
 		// valid fields for insertion
-		$fields = $this->EE->db->list_fields('channels');
+		$fields = ee()->db->list_fields('channels');
 		
 		// we don't allow these for new channels
 		$exceptions = array('channel_id', 'total_entries', 'total_comments', 'last_entry_date', 'last_comment_date');
@@ -415,17 +414,17 @@ class Api_channel_structure extends Api {
 			}
 		}
 		
-		$channel_id = $this->EE->channel_model->create_channel($data);
+		$channel_id = ee()->channel_model->create_channel($data);
 
 		// log it
-		$this->EE->load->library('logger');
-		$this->EE->logger->log_action($this->EE->lang->line('channel_created').NBS.NBS.$channel_title);
+		ee()->load->library('logger');
+		ee()->logger->log_action(ee()->lang->line('channel_created').NBS.NBS.$channel_title);
 		
 		// Are we making templates?
 		/*
 		if ($create_templates != 'no')
 		{			
-			$group_order = $this->EE->super_model->count('template_groups') + 1;
+			$group_order = ee()->super_model->count('template_groups') + 1;
 			$group_data = array(
 								'group_name' => $group_name,
 								'group_order' => $group_order,
@@ -433,24 +432,24 @@ class Api_channel_structure extends Api {
 								'site_id' => $site_id
 								);
 
-			if (($group_id = $this->EE->api_template_structure->create_template_group($group_data)) !== FALSE)
+			if (($group_id = ee()->api_template_structure->create_template_group($group_data)) !== FALSE)
 			{
 				if ($create_templates == 'duplicate')
 				{
-					$this->EE->api_template_structure->duplicate_templates($old_group_id, $group_id, $channel_name);
+					ee()->api_template_structure->duplicate_templates($old_group_id, $group_id, $channel_name);
 				}
 				else
 				{
-					$this->EE->api_template_structure->create_templates_from_theme($template_theme, $group_id, $channel_name);
+					ee()->api_template_structure->create_templates_from_theme($template_theme, $group_id, $channel_name);
 				}				
 			}
 		}
 		*/
 		
 		// for superadmins, assign it right away
-		if ($this->EE->session->userdata('group_id') == 1)
+		if (ee()->session->userdata('group_id') == 1)
 		{
-			$this->EE->session->userdata['assigned_channels'][$channel_id] = $data['channel_title'];
+			ee()->session->userdata['assigned_channels'][$channel_id] = $data['channel_title'];
 		}
 		
 		return $channel_id;
@@ -484,7 +483,7 @@ class Api_channel_structure extends Api {
 		// validate Site ID
 		if ( ! isset($site_id) OR ! is_numeric($site_id))
 		{
-			$site_id = $this->EE->config->item('site_id');
+			$site_id = ee()->config->item('site_id');
 		}
 		
 		// validate Channel ID
@@ -528,7 +527,8 @@ class Api_channel_structure extends Api {
 		}
 				
 		// check channel name availability
-		$count = $this->EE->super_model->count('channels', array('site_id' => $site_id, 'channel_name' => $channel_name, 'channel_id !=' => $channel_id));
+		ee()->load->model('super_model');
+		$count = ee()->super_model->count('channels', array('site_id' => $site_id, 'channel_name' => $channel_name, 'channel_id !=' => $channel_id));
 	  
 		if ($count > 0)
 		{
@@ -561,16 +561,16 @@ class Api_channel_structure extends Api {
 		
 		if (isset($apply_expiration_to_existing) && isset($comment_expiration))
 		{			
-			$this->EE->channel_model->update_comment_expiration($channel_id, $comment_expiration * 86400);
+			ee()->channel_model->update_comment_expiration($channel_id, $comment_expiration * 86400);
 		}
 		
 		if (isset($clear_versioning_data))
 		{
-			$this->EE->channel_model->clear_versioning_data($channel_id);
+			ee()->channel_model->clear_versioning_data($channel_id);
 		}
 	
 		// valid fields for update
-		$fields = $this->EE->db->list_fields('channels');
+		$fields = ee()->db->list_fields('channels');
 		
 		// we don't allow these to be modified
 		$exceptions = array('channel_id', 'total_entries', 'total_comments', 'last_entry_date', 'last_comment_date');
@@ -584,7 +584,7 @@ class Api_channel_structure extends Api {
 			}
 		}
 		
-		$this->EE->channel_model->update_channel($data, $channel_id);
+		ee()->channel_model->update_channel($data, $channel_id);
 
 		return $channel_id;
 	}

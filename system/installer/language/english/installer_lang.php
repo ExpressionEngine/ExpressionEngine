@@ -13,7 +13,7 @@ $lang['license_agree'] = 'I agree to abide by the license Terms and Conditions a
 $lang['license_disagree'] = 'I do NOT agree to abide by the license Terms and Conditions as stated above';
 $lang['server_settings'] = 'Server Settings';
 $lang['license_number'] = 'ExpressionEngine License Number';
-$lang['locate_license_number'] = 'Available in the <a href="https://secure.expressionengine.com/download.php">download area</a> of the ExpressionEngine.com site.';
+$lang['locate_license_number'] = 'Available in the <a href="https://store.ellislab.com/manage">download area</a> of the EllisLab.com site.';
 $lang['name_of_index'] = 'Name of the index page of your ExpressionEngine site';
 $lang['normally_index'] = 'Unless you renamed the file it will be named <strong>index.php</strong>';
 $lang['url_of_index'] = 'URL to the directory where the above index page is located';
@@ -62,7 +62,8 @@ $lang['screen_name_info'] = 'This is the name that will appear on your channel e
 $lang['site_label'] = 'Name of your site';
 $lang['local_settings'] = 'Localization Settings';
 $lang['timezone'] = 'Your Timezone';
-$lang['dst_active'] = 'Are you currently observing Daylight Saving Time?';
+$lang['select_timezone'] = 'Select Timezone';
+$lang['no_timezones'] = 'No Timezones';
 $lang['yes'] = 'Yes';
 $lang['no'] = 'No';
 $lang['optional_modules'] = 'Optional Modules';
@@ -77,7 +78,7 @@ $lang['error'] = 'ERROR';
 $lang['submit'] = 'Submit';
 $lang['error_occurred'] = 'The following error occurred:';
 $lang['module_errors_occurred'] = 'The following error(s) were reported during module installation:';
-$lang['support_resource_info'] = 'If you have questions regarding the above errors please visit our  <a href="http://expressionengine.com/support/">Support Resources</a> page or contact ExpressionEngine technical support.';
+$lang['support_resource_info'] = 'If you have questions regarding the above errors please visit our  <a href="http://ellislab.com/support/">Support Resources</a> page or contact ExpressionEngine technical support.';
 $lang['click_to_install'] = 'Click here to install a brand new copy of ExpressionEngine';
 $lang['click_to_update'] = 'Click here to update ExpressionEngine to Version %s';
 $lang['version_update_text'] = 'Running update ...';
@@ -124,7 +125,7 @@ $lang['site_located_here'] = 'Your Website is located here';
 $lang['running_current'] = 'You are now running the most current version of ExpressionEngine!';
 $lang['version_warning'] = 'Error: In order to install ExpressionEngine, your server must be running PHP version %x or newer.';
 $lang['version_running'] = 'Your server is current running PHP version:';
-$lang['switch_hosts'] = 'If you would like to switch to a host that provides more current software, please consider <a href="http://www.enginehosting.com/">EngineHosting</a>';
+$lang['switch_hosts'] = 'Contact your hosting provider to see if newer software is available for your server.';
 
 $lang['trackback_removal_options'] = 'Trackback Conversion and Archiving Options';
 $lang['trackback_gone_in_200'] = 'The Trackback module has been removed in ExpressionEngine 2.  You can choose to convert existing trackbacks to comments and/or generate a zip archive containing all existing trackbacks.';
@@ -148,7 +149,10 @@ $lang['what_server_data_is_sent'] = '<p>What data is sent?  Answering yes to thi
 										<li>PHP version and available extensions</li>
 										<li>MySQL version, server operating system</li>
 										<li>Server software name</li>
-										<li>...and whether or not you are using forced query strings on your server</li>
+										<li>Whether or not you are using forced query strings on your server</li>
+										<li>A list of the add-ons in your third party directory</li>
+										<li>Whether or not you have Discussion Forums installed</li>
+										<li>Whether or not you have Multiple Site Manager installed</li>
 									</ul>
 									<p>All data is transmitted anonymously and cannot be associated with your local machine, ExpressionEngine user
 									account, your site, or your host.</p>';

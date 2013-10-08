@@ -3,10 +3,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -19,8 +19,8 @@
  * @package		ExpressionEngine
  * @subpackage	Core
  * @category	Core
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 class EE_Table extends CI_Table {
 
@@ -29,6 +29,7 @@ class EE_Table extends CI_Table {
 	protected $base_url = '';
 	protected $no_results = '';
 	protected $pagination_tmpl = '';
+	protected $raw_data = '';
 	
 	protected $jq_template = FALSE;
 	
@@ -53,7 +54,7 @@ class EE_Table extends CI_Table {
 			// @todo We have a code order issue with accessories.
 			// That CP code needs to change in the near future,
 			// but for now we work around it.
-			$this->set_template($this->EE->session->cache('table', 'cp_template'));
+			$this->set_template(ee()->session->cache('table', 'cp_template'));
 		}
 	}
 	
@@ -119,7 +120,7 @@ class EE_Table extends CI_Table {
 		// override initial settings from AJAX request
 		
 		// pagination reads from GET, so must be in GET
-		$tbl_offset = $this->EE->input->get('tbl_offset');
+		$tbl_offset = ee()->input->get('tbl_offset');
 		
 		if (AJAX_REQUEST && $tbl_offset === FALSE)
 		{
@@ -131,11 +132,11 @@ class EE_Table extends CI_Table {
 		}
 
 		// override sort settings from POST (EE does not allow for arrays in GET)
-		if ($this->EE->input->post('tbl_sort'))
+		if (ee()->input->post('tbl_sort'))
 		{
 			$settings['sort'] = array();
 			
-			$sort = $this->EE->input->post('tbl_sort');
+			$sort = ee()->input->post('tbl_sort');
 			
 			// sort: [ [field, dir], [dleif, rid] ]
 			foreach ($sort as $s)
@@ -157,7 +158,7 @@ class EE_Table extends CI_Table {
 				per_page: 5
 			]
 		*/
-		$controller = isset($this->EE->_mcp_reference) ? $this->EE->_mcp_reference : $this->EE;
+		$controller = isset(ee()->_mcp_reference) ? ee()->_mcp_reference : $this->EE;
 		$data = $controller->$func($settings, $params);
 		
 		$this->uniqid = uniqid('tbl_');
@@ -175,7 +176,7 @@ class EE_Table extends CI_Table {
 				// @todo loop through rows array_map cells?
 			}
 			
-			$this->EE->output->send_ajax_response(array(
+			ee()->output->send_ajax_response(array(
 				'rows'		 => $data['rows'],
 				'pagination' => $this->_create_pagination($data, TRUE)
 			));
@@ -257,7 +258,7 @@ class EE_Table extends CI_Table {
 		if ( ! $this->jq_template)
 		{
 			$this->jq_template = TRUE;
-			$this->EE->cp->add_js_script('plugin', array('tmpl', 'ee_table'));
+			ee()->cp->add_js_script('plugin', array('tmpl', 'ee_table'));
 		}
 		
 		if (empty($table_data))
@@ -357,7 +358,7 @@ class EE_Table extends CI_Table {
 		
 		if ( ! $this->base_url)
 		{
-			$this->base_url = $this->EE->cp->get_safe_refresh();
+			$this->base_url = ee()->cp->get_safe_refresh();
 		}
 		
 		$jq_config = array(
@@ -372,7 +373,7 @@ class EE_Table extends CI_Table {
 			'rows'			=> $this->raw_data
 		);
 		
-		$table_config_data = 'data-table_config="'.form_prep($this->EE->javascript->generate_json($jq_config, TRUE)).'"';
+		$table_config_data = 'data-table_config="'.form_prep(json_encode($jq_config)).'"';
 		$this->template['table_open'] = str_replace(
 			'<table',
 			'<table '.$table_config_data,
@@ -440,10 +441,10 @@ class EE_Table extends CI_Table {
 			'full_tag_open'			=> '<p id="paginationLinks">', // @todo having an id here is nonsense, you can have more than one!
 			'full_tag_close'		=> '</p>',
 			
-			'prev_link'				=> '<img src="'.$this->EE->cp->cp_theme_url.'images/pagination_prev_button.gif" width="13" height="13" alt="&lt;" />',
-			'next_link'				=> '<img src="'.$this->EE->cp->cp_theme_url.'images/pagination_next_button.gif" width="13" height="13" alt="&gt;" />',
-			'first_link'			=> '<img src="'.$this->EE->cp->cp_theme_url.'images/pagination_first_button.gif" width="13" height="13" alt="&lt; &lt;" />',
-			'last_link'				=> '<img src="'.$this->EE->cp->cp_theme_url.'images/pagination_last_button.gif" width="13" height="13" alt="&gt; &gt;" />'
+			'prev_link'				=> '<img src="'.ee()->cp->cp_theme_url.'images/pagination_prev_button.gif" width="13" height="13" alt="&lt;" />',
+			'next_link'				=> '<img src="'.ee()->cp->cp_theme_url.'images/pagination_next_button.gif" width="13" height="13" alt="&gt;" />',
+			'first_link'			=> '<img src="'.ee()->cp->cp_theme_url.'images/pagination_first_button.gif" width="13" height="13" alt="&lt; &lt;" />',
+			'last_link'				=> '<img src="'.ee()->cp->cp_theme_url.'images/pagination_last_button.gif" width="13" height="13" alt="&gt; &gt;" />'
 		);
 		
 		$config = array_merge($config, $data['pagination']);
@@ -468,15 +469,15 @@ class EE_Table extends CI_Table {
 			);
 		}
 		
-		$this->EE->load->library('pagination');
-		$this->EE->pagination->initialize($config);
+		ee()->load->library('pagination');
+		ee()->pagination->initialize($config);
 		
 		if ($ajax_request)
 		{
-			return $this->EE->pagination->create_link_array();
+			return ee()->pagination->create_link_array();
 		}
 		
-		$p = $this->EE->pagination;
+		$p = ee()->pagination;
 		
 		
 		$temp = $p->full_tag_open;
@@ -512,7 +513,7 @@ class EE_Table extends CI_Table {
 		$this->pagination_tmpl = $temp;
 		unset($temp);
 		
-		$initial = $this->EE->pagination->create_links();
+		$initial = ee()->pagination->create_links();
 		
 		if ($initial == '')
 		{

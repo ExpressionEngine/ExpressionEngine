@@ -3,14 +3,14 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -19,8 +19,8 @@
  * @package		ExpressionEngine
  * @subpackage	Modules
  * @category	Update File
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 
 class Mailinglist {
@@ -35,7 +35,7 @@ class Mailinglist {
 	{
 		$this->EE =& get_instance();
 	}
-	
+
 	// -------------------------------------------------------------------------
 
 	/**
@@ -43,16 +43,16 @@ class Mailinglist {
 	 */
 	function form()
 	{
-		$tagdata = $this->EE->TMPL->tagdata;
+		$tagdata = ee()->TMPL->tagdata;
 
-		$list = ($this->EE->TMPL->fetch_param('list') === FALSE) ? '0' : $this->EE->TMPL->fetch_param('list');
+		$list = (ee()->TMPL->fetch_param('list') === FALSE) ? '0' : ee()->TMPL->fetch_param('list');
 		$name = '';
 
 		if ($list !== FALSE)
 		{
 			if (preg_match("/full_name/", $tagdata))
 			{
-				$query = $this->EE->db->query("SELECT list_title FROM exp_mailing_lists WHERE list_name ='".$this->EE->db->escape_str($list)."'");
+				$query = ee()->db->query("SELECT list_title FROM exp_mailing_lists WHERE list_name ='".ee()->db->escape_str($list)."'");
 
 				if ($query->num_rows() == 1)
 				{
@@ -63,9 +63,9 @@ class Mailinglist {
 
 		$tagdata = str_replace(LD.'full_name'.RD, $name, $tagdata);
 
-		if ($this->EE->session->userdata('email') != '')
+		if (ee()->session->userdata('email') != '')
 		{
-			$tagdata = str_replace(LD.'email'.RD, $this->EE->session->userdata('email'), $tagdata);
+			$tagdata = str_replace(LD.'email'.RD, ee()->session->userdata('email'), $tagdata);
 		}
 		else
 		{
@@ -76,22 +76,22 @@ class Mailinglist {
 		/**  Create form
 		/** ----------------------------------------*/
 
-		if ($this->EE->TMPL->fetch_param('name') !== FALSE &&
-			preg_match("#^[a-zA-Z0-9_\-]+$#i", $this->EE->TMPL->fetch_param('name'), $match))
+		if (ee()->TMPL->fetch_param('name') !== FALSE &&
+			preg_match("#^[a-zA-Z0-9_\-]+$#i", ee()->TMPL->fetch_param('name'), $match))
 		{
-			$data['name'] = $this->EE->TMPL->fetch_param('name');
+			$data['name'] = ee()->TMPL->fetch_param('name');
 		}
 
-		$data['id']		= ($this->EE->TMPL->form_id == '') ? 'mailinglist_form' : $this->EE->TMPL->form_id;
-		$data['class']	= $this->EE->TMPL->form_class;
-		
+		$data['id']		= (ee()->TMPL->form_id == '') ? 'mailinglist_form' : ee()->TMPL->form_id;
+		$data['class']	= ee()->TMPL->form_class;
+
 		$data['hidden_fields'] = array(
-			'ACT'	=> $this->EE->functions->fetch_action_id('Mailinglist', 'insert_new_email'),
-			'RET'	=> $this->EE->functions->fetch_current_uri(),
+			'ACT'	=> ee()->functions->fetch_action_id('Mailinglist', 'insert_new_email'),
+			'RET'	=> ee()->functions->fetch_current_uri(),
 			'list'	=> $list
 		);
 
-		$res  = $this->EE->functions->form_declaration($data);
+		$res  = ee()->functions->form_declaration($data);
 
 		$res .= $tagdata;
 
@@ -111,22 +111,22 @@ class Mailinglist {
 		/**  Fetch the mailinglist language pack
 		/** ----------------------------------------*/
 
-		$this->EE->lang->loadfile('mailinglist');
+		ee()->lang->loadfile('mailinglist');
 
 		// Is the mailing list turned on?
 
-		if ($this->EE->config->item('mailinglist_enabled') == 'n')
+		if (ee()->config->item('mailinglist_enabled') == 'n')
 		{
-			return $this->EE->output->show_user_error('general', lang('mailinglist_disabled'));
+			return ee()->output->show_user_error('general', lang('mailinglist_disabled'));
 		}
 
 		 /** ----------------------------------------
 		/**  Blacklist/Whitelist Check
 		/** ----------------------------------------*/
 
-		if ($this->EE->blacklist->blacklisted == 'y' && $this->EE->blacklist->whitelisted == 'n')
+		if (ee()->blacklist->blacklisted == 'y' && ee()->blacklist->whitelisted == 'n')
 		{
-			return $this->EE->output->show_user_error('general', lang('not_authorized'));
+			return ee()->output->show_user_error('general', lang('not_authorized'));
 		}
 
 		if ( ! isset($_POST['RET']))
@@ -140,9 +140,9 @@ class Mailinglist {
 
 		$errors = array();
 
-		$email = $this->EE->input->get_post('email');
+		$email = ee()->input->get_post('email');
 		$email = trim(strip_tags($email));
-		$list = $this->EE->input->post('list');
+		$list = ee()->input->post('list');
 		$list_id = FALSE;
 
 		if ($email == '')
@@ -150,7 +150,7 @@ class Mailinglist {
 			$errors[] = lang('ml_missing_email');
 		}
 
-		$this->EE->load->helper('email');
+		ee()->load->helper('email');
 
 		if ( ! valid_email($email))
 		{
@@ -159,13 +159,6 @@ class Mailinglist {
 
 		if (count($errors) == 0)
 		{
-	
-			// Secure Forms check - do it early due to amount of further data manipulation before insert
-			if ($this->EE->security->check_xid($this->EE->input->post('XID')) == FALSE) 
-			{ 
-			 	$this->EE->functions->redirect(stripslashes($this->EE->input->post('RET')));
-			}
-			
 			/** ----------------------------------------
 			/**  Which list is being subscribed to?
 			/** ----------------------------------------*/
@@ -174,7 +167,7 @@ class Mailinglist {
 
 			if ($list == '0')
 			{
-				$query = $this->EE->db->query("SELECT COUNT(*) AS count FROM exp_mailing_lists WHERE list_id = 1");
+				$query = ee()->db->query("SELECT COUNT(*) AS count FROM exp_mailing_lists WHERE list_id = 1");
 
 				if ($query->row('count')  != 1)
 				{
@@ -187,7 +180,7 @@ class Mailinglist {
 			}
 			else
 			{
-				$query = $this->EE->db->query("SELECT list_id FROM exp_mailing_lists WHERE list_name = '".$this->EE->db->escape_str($list)."'");
+				$query = ee()->db->query("SELECT list_id FROM exp_mailing_lists WHERE list_name = '".ee()->db->escape_str($list)."'");
 
 				if ($query->num_rows() != 1)
 				{
@@ -203,14 +196,14 @@ class Mailinglist {
 			// signs up but never activates their email, then signs up again.  Note- check for list_id
 			// as they may be signing up for two different llists
 
-			$this->EE->db->query("DELETE FROM exp_mailing_list_queue WHERE email = '".$this->EE->db->escape_str($email)."' AND list_id = '".$this->EE->db->escape_str($list_id)."'");
+			ee()->db->query("DELETE FROM exp_mailing_list_queue WHERE email = '".ee()->db->escape_str($email)."' AND list_id = '".ee()->db->escape_str($list_id)."'");
 
 			/** ----------------------------------------
 			/**  Is the email already in the list?
 			/** ----------------------------------------*/
 			if ($list_id !== FALSE)
 			{
-				$query = $this->EE->db->query("SELECT count(*) AS count FROM exp_mailing_list WHERE email = '".$this->EE->db->escape_str($email)."' AND list_id = '".$this->EE->db->escape_str($list_id)."'");
+				$query = ee()->db->query("SELECT count(*) AS count FROM exp_mailing_list WHERE email = '".ee()->db->escape_str($email)."' AND list_id = '".ee()->db->escape_str($list_id)."'");
 
 				if ($query->row('count')  > 0)
 				{
@@ -219,14 +212,13 @@ class Mailinglist {
 			}
 		}
 
-
 		/** ----------------------------------------
 		/**  Are there errors to display?
 		/** ----------------------------------------*/
 
 		if (count($errors) > 0)
 		{
-			return $this->EE->output->show_user_error('submission', $errors);
+			return ee()->output->show_user_error('submission', $errors);
 		}
 
 
@@ -234,14 +226,14 @@ class Mailinglist {
 		/**  Insert email
 		/** ----------------------------------------*/
 
-		$code = $this->EE->functions->random('alnum', 10);
+		$code = ee()->functions->random('alnum', 10);
 
 		$return = '';
 
 		if ($this->email_confirm == FALSE)
 		{
-			$this->EE->db->query("INSERT INTO exp_mailing_list (list_id, authcode, email, ip_address)
-								  VALUES ('".$this->EE->db->escape_str($list_id)."', '".$code."', '".$this->EE->db->escape_str($email)."', '".$this->EE->db->escape_str($this->EE->input->ip_address())."')");
+			ee()->db->query("INSERT INTO exp_mailing_list (list_id, authcode, email, ip_address)
+								  VALUES ('".ee()->db->escape_str($list_id)."', '".$code."', '".ee()->db->escape_str($email)."', '".ee()->db->escape_str(ee()->input->ip_address())."')");
 
 			$content  = lang('ml_email_accepted');
 
@@ -249,7 +241,7 @@ class Mailinglist {
 		}
 		else
 		{
-			$this->EE->db->query("INSERT INTO exp_mailing_list_queue (email, list_id, authcode, date) VALUES ('".$this->EE->db->escape_str($email)."', '".$this->EE->db->escape_str($list_id)."', '".$code."', '".time()."')");
+			ee()->db->query("INSERT INTO exp_mailing_list_queue (email, list_id, authcode, date) VALUES ('".ee()->db->escape_str($email)."', '".ee()->db->escape_str($list_id)."', '".$code."', '".time()."')");
 
 			$this->send_email_confirmation($email, $code, $list_id);
 
@@ -257,10 +249,7 @@ class Mailinglist {
 			$content .= lang('ml_click_confirmation_link');
 		}
 
-		//  Clear security hash
-		$this->EE->security->delete_xid($this->EE->input->post('XID'));
-
-		$site_name = ($this->EE->config->item('site_name') == '') ? lang('back') : stripslashes($this->EE->config->item('site_name'));
+		$site_name = (ee()->config->item('site_name') == '') ? lang('back') : stripslashes(ee()->config->item('site_name'));
 
 		$data = array(
 			'title' 	=> lang('ml_mailinglist'),
@@ -269,7 +258,7 @@ class Mailinglist {
 			'link'		=> array($_POST['RET'], $site_name)
 		);
 
-		$this->EE->output->show_message($data);
+		ee()->output->show_message($data);
 	}
 
 	// -------------------------------------------------------------------------
@@ -279,36 +268,36 @@ class Mailinglist {
 	 */
 	function send_email_confirmation($email, $code, $list_id)
 	{
-		$query = $this->EE->db->query("SELECT list_title FROM exp_mailing_lists WHERE list_id = '".$this->EE->db->escape_str($list_id)."'");
+		$query = ee()->db->query("SELECT list_title FROM exp_mailing_lists WHERE list_id = '".ee()->db->escape_str($list_id)."'");
 
-		$action_id  = $this->EE->functions->fetch_action_id('Mailinglist', 'authorize_email');
+		$action_id  = ee()->functions->fetch_action_id('Mailinglist', 'authorize_email');
 
 		$swap = array(
-			'activation_url'	=> $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$action_id.'&id='.$code,
-			'site_name'			=> stripslashes($this->EE->config->item('site_name')),
-			'site_url'			=> $this->EE->config->item('site_url'),
+			'activation_url'	=> ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$action_id.'&id='.$code,
+			'site_name'			=> stripslashes(ee()->config->item('site_name')),
+			'site_url'			=> ee()->config->item('site_url'),
 			'mailing_list'		=> $query->row('list_title')
 		);
 
-		$template = $this->EE->functions->fetch_email_template('mailinglist_activation_instructions');
-		$email_tit = $this->EE->functions->var_swap($template['title'], $swap);
-		$email_msg = $this->EE->functions->var_swap($template['data'], $swap);
+		$template = ee()->functions->fetch_email_template('mailinglist_activation_instructions');
+		$email_tit = ee()->functions->var_swap($template['title'], $swap);
+		$email_msg = ee()->functions->var_swap($template['data'], $swap);
 
 		/** ----------------------------
 		/**  Send email
 		/** ----------------------------*/
 
-		$this->EE->load->library('email');
+		ee()->load->library('email');
 
-		$this->EE->email->wordwrap = true;
-		$this->EE->email->mailtype = 'plain';
-		$this->EE->email->priority = '3';
+		ee()->email->wordwrap = true;
+		ee()->email->mailtype = 'plain';
+		ee()->email->priority = '3';
 
-		$this->EE->email->from($this->EE->config->item('webmaster_email'), $this->EE->config->item('webmaster_name'));
-		$this->EE->email->to($email);
-		$this->EE->email->subject($email_tit);
-		$this->EE->email->message($email_msg);
-		$this->EE->email->send();
+		ee()->email->from(ee()->config->item('webmaster_email'), ee()->config->item('webmaster_name'));
+		ee()->email->to($email);
+		ee()->email->subject($email_tit);
+		ee()->email->message($email_msg);
+		ee()->email->send();
 	}
 
 	// -------------------------------------------------------------------------
@@ -322,27 +311,27 @@ class Mailinglist {
 		/**  Fetch the mailinglist language pack
 		/** ----------------------------------------*/
 
-		$this->EE->lang->loadfile('mailinglist');
+		ee()->lang->loadfile('mailinglist');
 
 		// Is the mailing list turned on?
 
-		if ($this->EE->config->item('mailinglist_enabled') == 'n')
+		if (ee()->config->item('mailinglist_enabled') == 'n')
 		{
-			return $this->EE->output->show_user_error('general', lang('mailinglist_disabled'));
+			return ee()->output->show_user_error('general', lang('mailinglist_disabled'));
 		}
 
 		/** ----------------------------------------
 		/**  Fetch the name of the site
 		/** ----------------------------------------*/
 
-		$site_name = ($this->EE->config->item('site_name') == '') ? lang('back') : stripslashes($this->EE->config->item('site_name'));
+		$site_name = (ee()->config->item('site_name') == '') ? lang('back') : stripslashes(ee()->config->item('site_name'));
 
 
 		/** ----------------------------------------
 		/**  No ID?  Tisk tisk...
 		/** ----------------------------------------*/
 
-		$id  = $this->EE->input->get_post('id');
+		$id  = ee()->input->get_post('id');
 
 		if ($id == FALSE)
 		{
@@ -351,10 +340,10 @@ class Mailinglist {
 				'title' 	=> lang('ml_mailinglist'),
 				'heading'	=> lang('error'),
 				'content'	=> lang('invalid_url'),
-				'link'		=> array($this->EE->functions->fetch_site_index(), $site_name)
+				'link'		=> array(ee()->functions->fetch_site_index(), $site_name)
 			);
 
-			$this->EE->output->show_message($data);
+			ee()->output->show_message($data);
 		}
 
 		/** ----------------------------------------
@@ -363,9 +352,9 @@ class Mailinglist {
 
 		$expire = time() - (60*60*48);
 
-		$this->EE->db->query("DELETE FROM exp_mailing_list_queue WHERE date < '$expire' ");
+		ee()->db->query("DELETE FROM exp_mailing_list_queue WHERE date < '$expire' ");
 
-		$query = $this->EE->db->query("SELECT email, list_id FROM exp_mailing_list_queue WHERE authcode = '".$this->EE->db->escape_str($id)."'");
+		$query = ee()->db->query("SELECT email, list_id FROM exp_mailing_list_queue WHERE authcode = '".ee()->db->escape_str($id)."'");
 
 		if ($query->num_rows() == 0)
 		{
@@ -373,10 +362,10 @@ class Mailinglist {
 				'title' 	=> lang('ml_mailinglist'),
 				'heading'	=> lang('error'),
 				'content'	=> lang('ml_expired_date'),
-				'link'		=> array($this->EE->functions->fetch_site_index(), $site_name)
+				'link'		=> array(ee()->functions->fetch_site_index(), $site_name)
 			);
 
-			echo $this->EE->output->show_message($data);
+			echo ee()->output->show_message($data);
 			exit;
 		}
 
@@ -389,11 +378,11 @@ class Mailinglist {
 
 		if ($list_id == 0)
 		{
-			$query = $this->EE->db->query("SELECT COUNT(*) AS count FROM exp_mailing_lists WHERE list_id = 1");
+			$query = ee()->db->query("SELECT COUNT(*) AS count FROM exp_mailing_lists WHERE list_id = 1");
 
 			if ($query->row('count')  != 1)
 			{
-				return $this->EE->output->show_user_error('general', lang('ml_no_list_id'));
+				return ee()->output->show_user_error('general', lang('ml_no_list_id'));
 			}
 			else
 			{
@@ -401,17 +390,17 @@ class Mailinglist {
 			}
 		}
 
-		$this->EE->db->query("INSERT INTO exp_mailing_list (list_id, authcode, email, ip_address)
-							  VALUES ('".$this->EE->db->escape_str($list_id)."', '$id', '".$this->EE->db->escape_str($email)."', '".$this->EE->db->escape_str($this->EE->input->ip_address())."')");
-		$this->EE->db->query("DELETE FROM exp_mailing_list_queue WHERE authcode = '".$this->EE->db->escape_str($id)."'");
+		ee()->db->query("INSERT INTO exp_mailing_list (list_id, authcode, email, ip_address)
+							  VALUES ('".ee()->db->escape_str($list_id)."', '$id', '".ee()->db->escape_str($email)."', '".ee()->db->escape_str(ee()->input->ip_address())."')");
+		ee()->db->query("DELETE FROM exp_mailing_list_queue WHERE authcode = '".ee()->db->escape_str($id)."'");
 
 
 		/** ----------------------------------------
 		/**  Is there an admin notification to send?
 		/** ----------------------------------------*/
-		if ($this->EE->config->item('mailinglist_notify') == 'y' AND $this->EE->config->item('mailinglist_notify_emails') != '')
+		if (ee()->config->item('mailinglist_notify') == 'y' AND ee()->config->item('mailinglist_notify_emails') != '')
 		{
-			$query = $this->EE->db->select('list_title')
+			$query = ee()->db->select('list_title')
 				->get_where(
 					'mailing_lists',
 					array('list_id' => $list_id)
@@ -422,37 +411,35 @@ class Mailinglist {
 				'mailing_list'	=> $query->row('list_title')
 			);
 
-			$template = $this->EE->functions->fetch_email_template('admin_notify_mailinglist');
-			$email_tit = $this->EE->functions->var_swap($template['title'], $swap);
-			$email_msg = $this->EE->functions->var_swap($template['data'], $swap);
+			$template = ee()->functions->fetch_email_template('admin_notify_mailinglist');
+			$email_tit = ee()->functions->var_swap($template['title'], $swap);
+			$email_msg = ee()->functions->var_swap($template['data'], $swap);
 
 			/** ----------------------------
 			/**  Send email
 			/** ----------------------------*/
 
-			$this->EE->load->helper('string');
-			
 			// Remove multiple commas
-			$notify_address = reduce_multiples($this->EE->config->item('mailinglist_notify_emails'), ',', TRUE);
+			$notify_address = reduce_multiples(ee()->config->item('mailinglist_notify_emails'), ',', TRUE);
 
 			if ($notify_address != '')
 			{
 				// Send email
-				$this->EE->load->library('email');
+				ee()->load->library('email');
 
 				// Load the text helper
-				$this->EE->load->helper('text');
+				ee()->load->helper('text');
 
 				foreach (explode(',', $notify_address) as $addy)
 				{
-					$this->EE->email->EE_initialize();
-					$this->EE->email->wordwrap = true;
-					$this->EE->email->from($this->EE->config->item('webmaster_email'), $this->EE->config->item('webmaster_name'));
-					$this->EE->email->to($addy);
-					$this->EE->email->reply_to($this->EE->config->item('webmaster_email'));
-					$this->EE->email->subject($email_tit);
-					$this->EE->email->message(entities_to_ascii($email_msg));
-					$this->EE->email->send();
+					ee()->email->EE_initialize();
+					ee()->email->wordwrap = true;
+					ee()->email->from(ee()->config->item('webmaster_email'), ee()->config->item('webmaster_name'));
+					ee()->email->to($addy);
+					ee()->email->reply_to(ee()->config->item('webmaster_email'));
+					ee()->email->subject($email_tit);
+					ee()->email->message(entities_to_ascii($email_msg));
+					ee()->email->send();
 				}
 			}
 		}
@@ -464,10 +451,10 @@ class Mailinglist {
 			'title' 	=> lang('ml_mailinglist'),
 			'heading'	=> lang('thank_you'),
 			'content'	=> lang('ml_account_confirmed'),
-			'link'		=> array($this->EE->functions->fetch_site_index(), $site_name)
+			'link'		=> array(ee()->functions->fetch_site_index(), $site_name)
 		);
 
-		$this->EE->output->show_message($data);
+		ee()->output->show_message($data);
 	}
 
 
@@ -478,13 +465,13 @@ class Mailinglist {
 	 */
 	function unsubscribe()
 	{
-		$this->EE->lang->loadfile('mailinglist');
-		
-		$site_name = ($this->EE->config->item('site_name') == '') ?
-			lang('back') : stripslashes($this->EE->config->item('site_name'));
-		
-		$id = $this->EE->input->get_post('id');
-		
+		ee()->lang->loadfile('mailinglist');
+
+		$site_name = (ee()->config->item('site_name') == '') ?
+			lang('back') : stripslashes(ee()->config->item('site_name'));
+
+		$id = ee()->input->get_post('id');
+
 		// If $id is invalid, deal with it now
 		// $id will be 0 if no id is passed or if it's invalid
 		if ($id === 0)
@@ -493,37 +480,37 @@ class Mailinglist {
 				'title' 	=> lang('ml_mailinglist'),
 				'heading'	=> lang('error'),
 				'content'	=> lang('invalid_url'),
-				'link'		=> array($this->EE->functions->fetch_site_index(), $site_name)
+				'link'		=> array(ee()->functions->fetch_site_index(), $site_name)
 			);
-		
-			$this->EE->output->show_message($data);
+
+			ee()->output->show_message($data);
 		}
 
 		// Fetch email associated with auth-code
 		$expire = time() - (60*60*48);
 
-		$this->EE->db->delete('mailing_list', array('authcode' => $id));
-		
-		if ($this->EE->db->affected_rows() == 0)
+		ee()->db->delete('mailing_list', array('authcode' => $id));
+
+		if (ee()->db->affected_rows() == 0)
 		{
 			$data = array(
 				'title' 	=> lang('ml_mailinglist'),
 				'heading'	=> lang('error'),
 				'content'	=> lang('ml_unsubscribe_failed'),
-				'link'		=> array($this->EE->functions->fetch_site_index(), $site_name)
+				'link'		=> array(ee()->functions->fetch_site_index(), $site_name)
 			);
-			
-			$this->EE->output->show_message($data);
+
+			ee()->output->show_message($data);
 		}
 
 		$data = array(
 			'title' 	=> lang('ml_mailinglist'),
 			'heading'	=> lang('thank_you'),
 			'content'	=> lang('ml_unsubscribe'),
-			'link'		=> array($this->EE->functions->fetch_site_index(), $site_name)
+			'link'		=> array(ee()->functions->fetch_site_index(), $site_name)
 		);
 
-		$this->EE->output->show_message($data);
+		ee()->output->show_message($data);
 	}
 
 

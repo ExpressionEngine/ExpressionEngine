@@ -3,10 +3,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  */
 
@@ -21,8 +21,8 @@
  * Indicate the new name and/or path here. The path can be relative
  * or it can be a full server path.
  *
- * http://expressionengine.com/user_guide/installation/best_practices.html
- * 
+ * http://ellislab.com/expressionengine/user-guide/installation/best_practices.html
+ *
  */
 	$system_path = './system';
 
@@ -33,16 +33,16 @@
  * --------------------------------------------------------------------
  *
  * Uncomment the following variables if you are using the Multiple
- * Site Manager: http://expressionengine.com/user_guide/cp/sites
+ * Site Manager: http://ellislab.com/expressionengine/user-guide/cp/sites
  *
  * Set the Short Name of the site this file will display, the URL of
  * this site's admin.php file, and the main URL of the site (without
- * index.php) 
+ * index.php)
  *
  */
-//	$assign_to_config['site_name']  = 'domain2_short_name';
-//	$assign_to_config['cp_url'] = 'http://domain2.com/admin.php';
-//	$assign_to_config['site_url'] = 'http://domain2.com';
+ //  $assign_to_config['site_name']  = 'domain2_short_name';
+ //  $assign_to_config['cp_url'] = 'http://domain2.com/admin.php';
+ //  $assign_to_config['site_url'] = 'http://domain2.com';
 
 
 /*
@@ -51,10 +51,10 @@
  * --------------------------------------------------------------------
  *
  * PHP and database errors are normally displayed dynamically based
- * on the authorization level of each user accessing your site.  
- * This variable allows the error reporting system to be overridden, 
- * which can be useful for low level debugging during site development, 
- * since errors happening before a user is authenticated will not normally 
+ * on the authorization level of each user accessing your site.
+ * This variable allows the error reporting system to be overridden,
+ * which can be useful for low level debugging during site development,
+ * since errors happening before a user is authenticated will not normally
  * be shown.  Options:
  *
  *	$debug = 0;  Default setting. Errors shown based on authorization level
@@ -63,7 +63,7 @@
  *
  * NOTE: Enabling this override can have security implications.
  * Enable it only if you have a good reason to.
- * 
+ *
  */
 	$debug = 0;
 
@@ -77,7 +77,7 @@
  * config class. This allows you to set custom config items or override
  * any default config values found in the config.php file.  This can
  * be handy as it permits you to share one application between more then
- * one front controller file, with each file containing different 
+ * one front controller file, with each file containing different
  * config values.
  *
  * Un-comment the $assign_to_config array below to use this feature
@@ -141,7 +141,7 @@
  * --------------------------------------------------------------------
  *  Now that we know the path, set the main constants
  * --------------------------------------------------------------------
- */	
+ */
 	// The name of THIS file
 	define('SELF', pathinfo(__FILE__, PATHINFO_BASENAME));
 
@@ -150,13 +150,13 @@
 
  	// Path to the system folder
 	define('BASEPATH', str_replace("\\", "/", $system_path.'codeigniter/system/'));
-	
+
 	// Path to the "application" folder
 	define('APPPATH', $system_path.'expressionengine/');
-	
+
 	// Path to the front controller (this file)
 	define('FCPATH', str_replace(SELF, '', __FILE__));
-	
+
 	// Name of the "system folder"
 	define('SYSDIR', trim(strrchr(trim(str_replace("\\", "/", $system_path), '/'), '/'), '/'));
 
@@ -167,7 +167,7 @@
  * --------------------------------------------------------------------
  *  Set the error reporting level
  * --------------------------------------------------------------------
- */	
+ */
 	if (DEBUG == 1)
 	{
 		error_reporting(E_ALL);
@@ -175,7 +175,7 @@
 	}
 	else
 	{
-		error_reporting(0);	
+		error_reporting(0);
 	}
 
 /*

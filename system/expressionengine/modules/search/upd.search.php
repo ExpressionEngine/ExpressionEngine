@@ -4,13 +4,13 @@
 =====================================================
  ExpressionEngine - by EllisLab
 -----------------------------------------------------
- http://expressionengine.com/
+ http://ellislab.com/
 -----------------------------------------------------
- Copyright (c) 2003 - 2012, EllisLab, Inc.
+ Copyright (c) 2003 - 2013, EllisLab, Inc.
 =====================================================
  THIS IS COPYRIGHTED SOFTWARE
  PLEASE READ THE LICENSE AGREEMENT
- http://expressionengine.com/user_guide/license.html
+ http://ellislab.com/expressionengine/user-guide/license.html
 =====================================================
  File: mcp.search.php
 -----------------------------------------------------
@@ -25,7 +25,7 @@ if ( ! defined('EXT'))
 
 class Search_upd {
 
-	var $version = '2.1';
+	var $version = '2.2.1';
 	
 	function Search_upd()
 	{
@@ -52,13 +52,14 @@ class Search_upd {
 					 search_date int(10) NOT NULL,
 					 keywords varchar(60) NOT NULL,
 					 member_id int(10) unsigned NOT NULL,
-					 ip_address varchar(16) NOT NULL,
+					 ip_address varchar(45) NOT NULL,
 					 total_results int(6) NOT NULL,
 					 per_page tinyint(3) unsigned NOT NULL,
 					 query mediumtext NULL DEFAULT NULL,
 					 custom_fields mediumtext NULL DEFAULT NULL,
 					 result_page varchar(70) NOT NULL,
-					 PRIMARY KEY `search_id` (`search_id`)
+					 PRIMARY KEY `search_id` (`search_id`),
+					 KEY `site_id` (`site_id`)
 					) ENGINE=MyISAM CHARACTER SET utf8 COLLATE utf8_general_ci";
 														
 		$sql[] = "CREATE TABLE IF NOT EXISTS exp_search_log (
@@ -66,17 +67,17 @@ class Search_upd {
 					site_id INT(4) UNSIGNED NOT NULL DEFAULT 1,
 					member_id int(10) unsigned NOT NULL,
 					screen_name varchar(50) NOT NULL,
-					ip_address varchar(16) default '0' NOT NULL,
+					ip_address varchar(45) default '0' NOT NULL,
 					search_date int(10) NOT NULL,
 					search_type varchar(32) NOT NULL,
 					search_terms varchar(200) NOT NULL,
 					PRIMARY KEY `id` (`id`),
 					KEY `site_id` (`site_id`)
-					) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci"; 
+					) ENGINE=MyISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci"; 
 	
 		foreach ($sql as $query)
 		{
-			$this->EE->db->query($query);
+			ee()->db->query($query);
 		}
 	
 		return TRUE;
@@ -93,21 +94,21 @@ class Search_upd {
 	 */	
 	function uninstall()
 	{
-		$this->EE->load->dbforge();
+		ee()->load->dbforge();
 		
-		$query = $this->EE->db->query("SELECT module_id FROM exp_modules WHERE module_name = 'Search'"); 
+		$query = ee()->db->query("SELECT module_id FROM exp_modules WHERE module_name = 'Search'"); 
 				
 		$sql[] = "DELETE FROM exp_module_member_groups WHERE module_id = '".$query->row('module_id') ."'";
 		$sql[] = "DELETE FROM exp_modules WHERE module_name = 'Search'";
 		$sql[] = "DELETE FROM exp_actions WHERE class = 'Search'";
 		$sql[] = "DELETE FROM exp_actions WHERE class = 'Search_mcp'";
 		
-		$this->EE->dbforge->drop_table('search');
-		$this->EE->dbforge->drop_table('search_log');
+		ee()->dbforge->drop_table('search');
+		ee()->dbforge->drop_table('search_log');
 	
 		foreach ($sql as $query)
 		{
-			$this->EE->db->query($query);
+			ee()->db->query($query);
 		}
 
 		return TRUE;
@@ -127,13 +128,54 @@ class Search_upd {
 	{
 		if (version_compare($current, '2.1', '<'))
 		{
-			$this->EE->load->library('utf8_db_convert');			
+			ee()->load->library('utf8_db_convert');			
 			
-			$this->EE->utf8_db_convert->do_conversion(array(
+			ee()->utf8_db_convert->do_conversion(array(
 				'exp_search_log', 'exp_search'
 			));
 		}
-		
+
+		if (version_compare($current, '2.2', '<'))
+		{
+			// Update ip_address column
+			ee()->load->dbforge();
+
+			$tables = array('search', 'search_log');
+
+			foreach ($tables as $table)
+			{
+				$column_settings = array(
+					'ip_address' => array(
+						'name' 			=> 'ip_address',
+						'type' 			=> 'varchar',
+						'constraint'	=> '45',
+						'default'		=> '0',
+						'null'			=> FALSE
+					)
+				);
+
+				if ($table == 'search')
+				{
+					unset($column_settings['ip_address']['default']);
+				}
+
+				ee()->dbforge->modify_column($table, $column_settings);	
+			}
+		}
+
+		if (version_compare($current, '2.2.1', '<'))
+		{
+			ee()->load->library('smartforge');
+
+			$fields = array(
+				'site_id'		=> array('type' => 'int',		'constraint' => '4',	'null' => FALSE,	'default' => 1),
+				'per_page'		=> array('type' => 'tinyint',	'constraint' => '3',	'unsigned' => TRUE,	'null' => FALSE),
+			);
+
+			ee()->smartforge->modify_column('search', $fields);
+
+			ee()->smartforge->add_key('search', 'site_id');
+		}
 		
 		return TRUE;
 	}

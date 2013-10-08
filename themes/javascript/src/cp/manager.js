@@ -2,16 +2,17 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
-/* This file exposes two callback functions:
+/* This file exposes three callback functions:
  * 
- * EE.manager.showPrefsRow and EE.manager.hidePrefsRow
+ * EE.manager.showPrefsRow and EE.manager.hidePrefsRow and   
+ * EE.manager.refreshPrefs
  */
 
 /*jslint browser: true, onevar: true, undef: true, nomen: true, eqeqeq: true, plusplus: false, bitwise: true, regexp: false, strict: true, newcap: true, immed: true */
@@ -69,6 +70,19 @@ function _access_edit_ajax(el, template_id, m_group_id, kind) {
 	});
 }
 
+
+function refresh_prefs_ajax(id) {
+
+	$.ajax({
+		type: "GET",
+		url: EE.template_prefs_url,
+		data: "is_ajax=TRUE&group_id=" + id,
+		dataType: 'json',
+		success: function (data) {
+			EE.pref_json = data;
+		}
+	});
+}
 
 function access_edit_ajax(el) {
 	
@@ -392,8 +406,12 @@ function bind_prefs_events() {
 		
 		$('#prefRowTemplate, #accessRowTemplate').remove();
 		
-		// Expose the two click callback functions - events bound in the controller
+		// Expose the three click callback functions - events bound in the controller
 		EE.manager = {
+			refreshPrefs: function (id) {
+
+				refresh_prefs_ajax(id);
+			},
 			showPrefsRow: function (rowdata, el) {
 				
 				var currentrow = $(el).parent().parent();

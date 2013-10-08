@@ -2,10 +2,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.3
  * @filesource
  */
@@ -212,12 +212,17 @@ $.widget('ee.table', {
 			evts = 'interact.ee_table',
 			_timeout;
 		
-		if (form) {
-			
+		if (form && obj.is(form)) {
 			// bind to submit only if it's a form
-			if (obj.is(form)) {
-				evts += ' submit.ee_table';
-			}
+			evts += ' submit.ee_table';
+		} else {
+			// A filter outside of a form? We most likely don't want enter to
+			// do anything. This was happening in the file modal search box
+			obj.bind('keydown', function(e) {
+				if (e.keyCode == 13) {
+					e.preventDefault();
+				}
+			});
 		}
 		
 		$(obj).bind(evts, function(e) {
@@ -705,10 +710,16 @@ function Sort(options, plugin) {
 	var l = this._initial_sort.length;
 	
 	while (l--) {
-		this.sort.push(this._initial_sort[l]);
-		this.header_map[ this._initial_sort[l][0] ]
-			.toggleClass(this.css.asc, (this._initial_sort[l][1] === 'asc'))
-			.toggleClass(this.css.desc, (this._initial_sort[l][1] === 'desc'));
+		
+		var this_header_map = this.header_map[ this._initial_sort[l][0] ];
+
+		if (this_header_map !== undefined)
+		{
+			this.sort.push(this._initial_sort[l]);
+			this_header_map
+				.toggleClass(this.css.asc, (this._initial_sort[l][1] === 'asc'))
+				.toggleClass(this.css.desc, (this._initial_sort[l][1] === 'desc'));
+		};
 	}
 }
 

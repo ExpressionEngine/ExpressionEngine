@@ -5,10 +5,12 @@
 
 	<?=$this->view->head_title($cp_page_title)?>
 	<?=$this->view->head_link('css/login.css'); ?>
+	<?=$this->view->script_tag('jquery/jquery.js')?>
+	
 </head>
 <body>
 
-<div id="branding"><a href="http://expressionengine.com/"><img src="<?=PATH_CP_GBL_IMG?>ee_logo_branding.gif" width="250" height="28" alt="<?=lang('powered_by')?> ExpressionEngine" /></a></div>
+<div id="branding"><a href="http://ellislab.com/"><img src="<?=PATH_CP_GBL_IMG?>ee_logo_branding.gif" width="250" height="28" alt="<?=lang('powered_by')?> ExpressionEngine" /></a></div>
 
 	<div id="content">
 		
@@ -29,7 +31,7 @@
 
 			<dt><?=lang('password', 'password')?>:</dt>
 			<dd>
-			  <?=form_password(array('style' => 'width:90%', 'size' => '32', 'dir' => 'ltr', 'name' => "password", 'id' => "password", 'maxlength' => 40))?> 
+			  <?=form_password(array('style' => 'width:90%', 'size' => '32', 'dir' => 'ltr', 'name' => "password", 'id' => "password", 'maxlength' => 40, 'autocomplete' => 'off'))?> 
 			</dd>
 		</dl>
 		
@@ -46,6 +48,12 @@
 		<?=form_close()?>
 
 	</div>
+<?php
+if (isset($script_foot))
+{
+	echo $script_foot;
+}
+?>
 
 </body>
 </html>

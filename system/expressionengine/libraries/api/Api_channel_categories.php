@@ -3,14 +3,14 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -19,12 +19,12 @@
  * @package		ExpressionEngine
  * @subpackage	Core
  * @category	Core
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 class Api_channel_categories extends Api {
 
-	
+
 	/**
 	 * Just a note, these really should be protected/private and set by the API itself
 	 * However, we're abusing them in other places, so they are set to public for now.
@@ -34,16 +34,16 @@ class Api_channel_categories extends Api {
 	public $categories			= array();
 	public $cat_parents			= array();
 	public $cat_array			= array();
-		
+
 	/**
 	 * Constructor
 	 */
 	public function __construct()
 	{
 		parent::__construct();
-		
-		$this->EE->load->model('channel_model');
-		$this->assign_cat_parent = ($this->EE->config->item('auto_assign_cat_parents') == 'n') ? FALSE : TRUE; 
+
+		ee()->load->model('channel_model');
+		$this->assign_cat_parent = (ee()->config->item('auto_assign_cat_parents') == 'n') ? FALSE : TRUE;
 	}
 
 	// --------------------------------------------------------------------
@@ -58,12 +58,12 @@ class Api_channel_categories extends Api {
 	 * multi-select form on the new entry page.
 	 *
 	 * @param 	mixed		int or array of category group ids
-	 * @param 	
+	 * @param
 	 * @param 	string		c for custom, a alphabetical
 	 *
 	 * @return 	mixed		FALSE if no results or cat array of results.
 	 */
-	public function category_tree($group_id, $selected = '', $order = 'c', $exclude="files")
+	public function category_tree($group_id, $selected = '', $order = 'c')
 	{
 		// reset $this->categories
 		$this->initialize(array(
@@ -72,16 +72,16 @@ class Api_channel_categories extends Api {
 				'cat_array'		=> array(),
 			)
 		);
-		
+
 		// Fetch the category group ID number
 		// Drop it into an array for where_in()
 		$group_ids = $group_id;
-		
+
 		if ( ! is_array($group_id))
 		{
 			$group_ids = explode('|', $group_id);
 		}
-		
+
 		$catarray = array();
 
 		if (is_array($selected))
@@ -95,10 +95,10 @@ class Api_channel_categories extends Api {
 		{
 			$catarray[$selected] = $selected;
 		}
-		
+
 		$order = ($order == 'a') ? "cat_name" : "cat_order";
-		
-		$query = $this->EE->db->select('cat_name, cat_id, parent_id, g.group_id, group_name')
+
+		$query = ee()->db->select('cat_name, cat_id, parent_id, cat_image, cat_description, g.group_id, group_name, cat_url_title')
 						->from('category_groups g, categories c')
 						->where('g.group_id', 'c.group_id', FALSE)
 						->where_in('g.group_id', $group_ids)
@@ -114,7 +114,15 @@ class Api_channel_categories extends Api {
 
 		foreach($query->result_array() as $row)
 		{
-			$cat_array[$row['cat_id']]	= array($row['parent_id'], $row['cat_name'], $row['group_id'], $row['group_name']);
+			$cat_array[$row['cat_id']]	= array(
+				$row['parent_id'],
+				$row['cat_name'],
+				$row['group_id'],
+				$row['group_name'],
+				$row['cat_image'],
+				$row['cat_description'],
+				$row['cat_url_title']
+			);
 		}
 
 		// Build our output...
@@ -126,17 +134,17 @@ class Api_channel_categories extends Api {
 				$sel = (isset($catarray[$key])) ? TRUE : FALSE;
 				$depth = 1;
 
-				$this->categories[$key] = array($key, $val[1], (int) $val[2], $val[3], $sel, $depth, FALSE);
-				//$this->categories[$key] = array('cat_id' => $key, 'cat_name' => $val['1'], 'group_id' => $val['2'], 'group_name' => $val['3'], 'selected' => $sel, 'depth' => $depth);				
+				$this->categories[$key] = array($key, $val[1], (int) $val[2], $val[3], $sel, $depth, FALSE, $val[4], $val[5], $val[6]);
+				//$this->categories[$key] = array('cat_id' => $key, 'cat_name' => $val['1'], 'group_id' => $val['2'], 'group_name' => $val['3'], 'selected' => $sel, 'depth' => $depth);
 				$this->_category_subtree($key, $cat_array, $depth, $selected);
 			}
 		}
-		
+
 		return $this->categories;
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Category sub-tree
 	 *
@@ -146,7 +154,7 @@ class Api_channel_categories extends Api {
 	 * @param	mixed
 	 * @param 	array
 	 * @param 	int
-	 * @param 	
+	 * @param
 	 */
 	protected function _category_subtree($cat_id, $cat_array, $depth, $selected = array())
 	{
@@ -169,35 +177,16 @@ class Api_channel_categories extends Api {
 			if ($cat_id == $val['0'])
 			{
 				$sel = (isset($catarray[$key])) ? TRUE : FALSE;
-				$this->categories[$key] = array($key, $val['1'], (int) $val['2'], $val['3'], $sel, $depth, (int) $val[0]);
-				//$this->categories[$key] = array('cat_id' => $key, 'cat_name' => $val['1'], 'group_id' => $val['2'], 'group_name' => $val['3'], 'selected' => $sel, 'depth' => $depth);					
-				
+				$this->categories[$key] = array($key, $val['1'], (int) $val['2'], $val['3'], $sel, $depth, (int) $val[0], $val[4], $val[5], $val[6]);
+				//$this->categories[$key] = array('cat_id' => $key, 'cat_name' => $val['1'], 'group_id' => $val['2'], 'group_name' => $val['3'], 'selected' => $sel, 'depth' => $depth);
+
 				$this->_category_subtree($key, $cat_array, $depth, $selected);
 			}
 		}
 	}
-	
-	// --------------------------------------------------------------------
-
-	/**
-	 * Category Edit Sub-tree 
-	 *
-	 * @deprecated 
-	 *
-	 * @param 	mixed
-	 * @param 	
-	 *
-	 */
-	public function category_edit_subtree($cat_id, $categories, $depth)
-	{
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.0', 'Api_channel_categories::category_form_subtree()');
-		
-		$this->category_form_subtree($cat_id, $categories, $depth);
-	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Category Form Tree
 	 *
@@ -209,12 +198,12 @@ class Api_channel_categories extends Api {
 	{
 		$order  = ($nested == 'y') ? 'group_id, parent_id, cat_name' : 'cat_name';
 
-		$this->EE->db->select('categories.group_id, categories.parent_id, categories.cat_id, categories.cat_name');
-		$this->EE->db->from('categories');
-		
+		ee()->db->select('categories.group_id, categories.parent_id, categories.cat_id, categories.cat_name');
+		ee()->db->from('categories');
+
 		if ($sites == FALSE)
 		{
-			$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
+			ee()->db->where('site_id', ee()->config->item('site_id'));
 		}
 		elseif ($sites != 'all')
 		{
@@ -222,28 +211,28 @@ class Api_channel_categories extends Api {
 			{
 				$sites = implode('|', $sites);
 			}
-			
-			$this->EE->functions->ar_andor_string($sites, 'site_id');
-		}		
-			
-		
+
+			ee()->functions->ar_andor_string($sites, 'site_id');
+		}
+
+
 		if ($categories !== FALSE)
 		{
 			if (is_array($categories))
 			{
 				$categories = implode('|', $categories);
 			}
-			
-			$this->EE->functions->ar_andor_string($categories, 'cat_id', 'exp_categories');
+
+			ee()->functions->ar_andor_string($categories, 'cat_id', 'exp_categories');
 		}
-				
-		$this->EE->db->order_by($order);
-		
-		$query = $this->EE->db->get();
+
+		ee()->db->order_by($order);
+
+		$query = ee()->db->get();
 
 		// Load the text helper
-		$this->EE->load->helper('text');
-				
+		ee()->load->helper('text');
+
 		if ($query->num_rows() > 0)
 		{
 			$categories = array();
@@ -257,7 +246,7 @@ class Api_channel_categories extends Api {
 			{
 				foreach($categories as $key => $val)
 				{
-					if (0 == $val['3']) 
+					if (0 == $val['3'])
 					{
 						$this->cat_array[] = array($val['0'], $val['1'], $val['2']);
 						$this->category_form_subtree($val['1'], $categories, $depth=1);
@@ -268,19 +257,19 @@ class Api_channel_categories extends Api {
 			{
 				$this->cat_array = $categories;
 			}
-		} 
+		}
 
 		return $this->cat_array;
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Category Edit Sub-tree
 	 *
 	 * @param 	string	category id
 	 * @param	array 	array of categories
-	 * @param 	int		
+	 * @param 	int
 	 * @return 	void
 	 */
 	public function category_form_subtree($cat_id, $categories, $depth)
@@ -289,12 +278,12 @@ class Api_channel_categories extends Api {
 
 		$indent = $spcr.$spcr.$spcr.$spcr;
 
-		if ($depth == 1)	
+		if ($depth == 1)
 		{
 			$depth = 4;
 		}
-		else 
-		{								
+		else
+		{
 			$indent = str_repeat($spcr, $depth).$indent;
 
 			$depth = $depth + 4;
@@ -302,9 +291,9 @@ class Api_channel_categories extends Api {
 
 		$sel = '';
 
-		foreach ($categories as $key => $val) 
+		foreach ($categories as $key => $val)
 		{
-			if ($cat_id == $val['3']) 
+			if ($cat_id == $val['3'])
 			{
 				$pre = ($depth > 2) ? $spcr : '';
 
@@ -329,7 +318,7 @@ class Api_channel_categories extends Api {
 			return;
 		}
 
-		$sql = "SELECT parent_id FROM exp_categories WHERE site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."' AND (";
+		$sql = "SELECT parent_id FROM exp_categories WHERE site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."' AND (";
 
 		foreach($cat_array as $val)
 		{
@@ -338,7 +327,7 @@ class Api_channel_categories extends Api {
 
 		$sql = substr($sql, 0, -3).")";
 
-		$query = $this->EE->db->query($sql);
+		$query = ee()->db->query($sql);
 
 		if ($query->num_rows() == 0)
 		{
@@ -356,35 +345,35 @@ class Api_channel_categories extends Api {
 				$temp[] = $row['parent_id'];
 			}
 		}
-		
+
 		$this->fetch_category_parents($temp);
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Fetch Allowed Category Groups
 	 *
 	 * @param 	string		String of cat groups.  either one, or a piped list
-	 * @return 	mixed		
+	 * @return 	mixed
 	 */
 	public function fetch_allowed_category_groups($cat_group)
-	{	
-		if ($this->EE->cp->allowed_group('can_admin_channels') OR $this->EE->cp->allowed_group('can_edit_categories'))
+	{
+		if (ee()->cp->allowed_group('can_admin_channels') OR ee()->cp->allowed_group('can_edit_categories'))
 		{
 			if (! is_array($cat_group))
 			{
 				$cat_group = explode('|', $cat_group);
 			}
-			
-			$this->EE->load->model('category_model');
-			$catg_query = $this->EE->category_model->get_category_group_name($cat_group);
+
+			ee()->load->model('category_model');
+			$catg_query = ee()->category_model->get_category_group_name($cat_group);
 
 			$link_info = array();
 
 			foreach($catg_query->result_array() as $catg_row)
 			{
-				$link_info[] = array('group_id' => $catg_row['group_id'], 'group_name' => $catg_row['group_name']); 
+				$link_info[] = array('group_id' => $catg_row['group_id'], 'group_name' => $catg_row['group_name']);
 			}
 
 			return $link_info;
@@ -394,9 +383,9 @@ class Api_channel_categories extends Api {
 			return FALSE;
 		}
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Get Categories
 	 *
@@ -406,7 +395,7 @@ class Api_channel_categories extends Api {
 	{
 		return $this->categories;
 	}
-	
+
 }
 
 // END CLASS

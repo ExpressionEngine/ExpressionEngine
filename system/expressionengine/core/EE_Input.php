@@ -3,10 +3,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -19,8 +19,8 @@
  * @package		ExpressionEngine
  * @subpackage	Core
  * @category	Core
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 class EE_Input extends CI_Input {
 
@@ -36,9 +36,10 @@ class EE_Input extends CI_Input {
 	 *
 	 * @access	public
 	 * @param	string
+	 * @param	bool
 	 * @return	string
 	 */
-	function cookie($index = '')
+	function cookie($index = '', $xss_clean = FALSE)
 	{
 		$EE =& get_instance();
 		
@@ -88,7 +89,11 @@ class EE_Input extends CI_Input {
 
 		$filter_keys = TRUE;
 	
-		if ($request_type == 'CP' && isset($_GET['BK']) && isset($_GET['channel_id']) && isset($_GET['title']) && $EE->session->userdata['admin_sess'] == 1)
+		if ($request_type == 'CP'
+			&& isset($_GET['BK'])
+			&& isset($_GET['channel_id'])
+			&& isset($_GET['title'])
+			&& $EE->session->userdata('admin_sess') == 1)
 		{
 			if (in_array($EE->input->get_post('channel_id'), $EE->functions->fetch_assigned_channels()))
 			{			
@@ -96,31 +101,29 @@ class EE_Input extends CI_Input {
 			}		
 		}
 	
-		if (isset($_GET))
+		if (isset($_GET) && $filter_keys == TRUE)
 		{
 			foreach($_GET as $key => $val)
 			{
-				if ($filter_keys == TRUE)
+				$clean = $this->_clean_get_input_data($val);	
+				
+				if ( ! $clean)
 				{
-					if (is_array($val))
-					{
-						$data = '';
-						
-						if ((int) config_item('debug') == 2)
-						{
-							$data = '<br>'.htmlentities(print_r($data, TRUE));
-						}
-						
-						exit(sprintf("Invalid GET Data - Array %s", $data));
-					}
-					elseif (preg_match("#(;|\?|exec\s*\(|system\s*\(|passthru\s*\(|cmd\s*\(|[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})#i", $val))
+					// Only notify super admins of the offending data
+					if ($EE->session->userdata('group_id') == 1)
 					{
 						$data = ((int) config_item('debug') == 2) ? '<br>'.htmlentities($val) : '';
-						
+							
+						set_status_header(503);
 						exit(sprintf("Invalid GET Data %s", $data));
-					}   
-				}
-			}	
+					}
+					// Otherwise, handle it more gracefully and just unset the variable
+					else
+					{
+						unset($_GET[$key]);
+					}
+				}				
+			}
 		}	
 	}
 
@@ -163,7 +166,43 @@ class EE_Input extends CI_Input {
 			$_GET['css'] = remove_invisible_characters($_css);
 		}
 	}
+
+	// --------------------------------------------------------------------
 	
+	/**
+	 * Clean GET data
+	 *
+	 * If the GET value is disallowed, we show an error to superadmins
+	 * For non-super, we unset the variable and let them go on their merry way
+	 *
+	 * @param	string Variable's key
+	 * @param	mixed Variable's value- may be string or array
+	 * @return	string
+	 */
+	function _clean_get_input_data($str)
+	{
+		if (is_array($str))
+		{
+			foreach ($str as $k => $v)
+			{
+				$out = $this->_clean_get_input_data($v);
+				
+				if ($out == FALSE)
+				{
+					return FALSE;
+				}
+			}
+
+			return TRUE;
+		}
+
+		if (preg_match("#(;|exec\s*\(|system\s*\(|passthru\s*\(|cmd\s*\()#i", $str))
+		{
+			return FALSE;
+		}
+		
+		return TRUE;
+	}
 }
 // END CLASS
 

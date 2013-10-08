@@ -3,10 +3,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -19,8 +19,8 @@
  * @package		ExpressionEngine
  * @subpackage	Modules
  * @category	Modules
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 class Emoticon {
 
@@ -60,17 +60,17 @@ class Emoticon {
 			return FALSE;
 		}
 
-		if ($this->EE->config->item('enable_emoticons') == 'n')
+		if (ee()->config->item('enable_emoticons') == 'n')
 		{
 			return FALSE;
 		}
 
 
-		$path = $this->EE->config->slash_item('emoticon_url');
+		$path = ee()->config->slash_item('emoticon_url');
 
-		$columns  = ( ! $this->EE->TMPL->fetch_param('columns'))  ? '4' : $this->EE->TMPL->fetch_param('columns');
+		$columns  = ( ! ee()->TMPL->fetch_param('columns'))  ? '4' : ee()->TMPL->fetch_param('columns');
 
-		$tagdata = $this->EE->TMPL->tagdata;
+		$tagdata = ee()->TMPL->tagdata;
 
 		//  Extract the relevant stuff from the tag
 

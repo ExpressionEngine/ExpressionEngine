@@ -3,10 +3,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -19,8 +19,8 @@
  * @package		ExpressionEngine
  * @subpackage	Core
  * @category	Core
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 class Updater {
 
@@ -61,13 +61,13 @@ class Updater {
 		// Run the queries
 		foreach ($Q as $sql)
 		{
-			$this->EE->db->query($sql);
+			ee()->db->query($sql);
 		}
 		
 	
 		$data['publish_tab_behavior'] = "hover";
 		
-		$this->EE->config->_append_config_1x($data);
+		ee()->config->_append_config_1x($data);
 		
 		return TRUE;
 	}

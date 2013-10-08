@@ -3,10 +3,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -19,8 +19,8 @@
  * @package		ExpressionEngine
  * @subpackage	Core
  * @category	Core
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 class EE_Javascript extends CI_Javascript {
 
@@ -65,7 +65,7 @@ class EE_Javascript extends CI_Javascript {
 		
 		if (is_array($val) && isset($current[$var_name]) && is_array($current[$var_name]))
 		{
-			$current[$var_name] = array_unique(array_merge($current[$var_name], $val));
+			$current[$var_name] = ee_array_unique(array_merge($current[$var_name], $val), SORT_STRING);
 		}
 		else
 		{
@@ -82,40 +82,40 @@ class EE_Javascript extends CI_Javascript {
 	 */
 	function compile($view_var = 'script_foot', $script_tags = TRUE)
 	{
-		// Experimental reduction of inline js
-		/*
-		foreach($this->js->jquery_code_for_compile as $k => $v)
-		{
-			// Remove Comments
-			$v = preg_replace('/\/\/[^\n\r\'";{}]*[\n\r]/', ' ', $v);
-			$v = preg_replace('/\/\*[^*]*\*+([^\/\'";{}][^*]*\*+)*\//', ' ', $v);
-			
-			// Safe Whitespace Replacements
-			$v = preg_replace('/[\t ]+/', ' ', $v);
-			$v = preg_replace('/(\s*?\n+\s*?)+/', "\n", $v);
-			
-			// Common Ones
-			$v = preg_replace('/([;]\n|\) \{|\{\n)/', '', $v);
-			
-			$this->js->jquery_code_for_compile[$k] = $v;
-		}
-		*/
-		
 		parent::compile($view_var, $script_tags);
 		
 		$global_js = $this->inline('
 			document.documentElement.className += "js";
 
+			var EE = '.json_encode($this->global_vars).';
+
 			if (typeof console === "undefined" || ! console.log) {
 				console = { log: function() { return false; }};
 			}
-			
-			if (typeof EE === "undefined" || ! EE) {
-				var EE = '.$this->generate_json($this->global_vars).';
-			}
 		');
 
-		$this->CI->cp->set_variable('cp_global_js', $global_js);
+		$this->CI->view->cp_global_js = $global_js;
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Generate JSON
+	 *
+	 * Can be passed a database result or associative array and returns a JSON
+	 * formatted string
+	 * 
+	 * @param	mixed	result set or array
+	 * @param	bool	match array types (defaults to objects)
+	 * @return	string	a json formatted string
+	 */
+	public function generate_json($result = NULL, $match_array_type = FALSE)
+	{
+		$EE =& get_instance();
+		$EE->load->library('logger');
+		$EE->logger->deprecated('2.6', 'the native JSON extension (json_encode())');
+
+		return parent::generate_json($result, $match_array_type);
 	}
 }
 

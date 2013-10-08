@@ -3,10 +3,10 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -19,8 +19,8 @@
  * @package		ExpressionEngine
  * @subpackage	Control Panel
  * @category	Accessories
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 class News_and_stats_acc {
 	
@@ -36,7 +36,7 @@ class News_and_stats_acc {
 	function __construct()
 	{
 		$this->EE =& get_instance();
-		$this->EE->lang->loadfile('homepage');
+		ee()->lang->loadfile('homepage');
 	}
 	
 	// --------------------------------------------------------------------
@@ -54,7 +54,7 @@ class News_and_stats_acc {
 		$this->sections['News'] = $this->_fetch_news();
 		$this->sections[lang('site_statistics')] = $this->_fetch_stats();
 		
-		$this->EE->javascript->output('
+		ee()->javascript->output('
 			$("#newsAndStats").find("a.entryLink").click(function() {
 				$(this).siblings(".fullEntry").toggle();
 				return false;
@@ -99,7 +99,7 @@ class News_and_stats_acc {
 			require PATH_PI.'pi.magpie.php';
 		}
 
-		$feed = fetch_rss('http://expressionengine.com/feeds/rss/cpnews/', 60*60*24*3); // set cache to 3 days
+		$feed = fetch_rss('http://ellislab.com/blog/rss-feed/cpnews/', 60*60*24*3); // set cache to 3 days
 
 		$i = 0;
 
@@ -110,27 +110,29 @@ class News_and_stats_acc {
 		else
 		{
 			// Load typography class
-			$this->EE->load->library('typography');
-			$this->EE->typography->initialize();
+			ee()->load->library('typography');
+			ee()->typography->initialize();
 
 			$obj = new stdClass;
 
-			for ($i = 0, $total = count($feed->items); $i < $total, $i < 3; $i++)
+			$total = (count($feed->items) >= 3) ? 3 : count($feed->items);
+
+			for ($i = 0; $i < $total; $i++)
 			{
 				$title = $feed->items[$i]['title'];
 
-				$date = $feed->items[$i]['pubdate'];
-				$date = $this->EE->localize->set_human_time(strtotime(preg_replace(
+				$date = $feed->items[$i]['dc']['date'];
+				$date = ee()->localize->human_time(strtotime(preg_replace(
 					"/(20[10][0-9]\-[0-9]{2}\-[0-9]{2})T([0-9]{2}:[0-9]{2}:[0-9]{2})Z/", 
 					'\\1 \\2 UTC',
 					$date
 				)));
 				
 				$content = $feed->items[$i]['description'];
-				$link = $this->EE->cp->masked_url($feed->items[$i]['link']);
+				$link = ee()->cp->masked_url($feed->items[$i]['link']);
 
-				$content = $this->EE->security->xss_clean(
-					$this->EE->typography->parse_type(
+				$content = ee()->security->xss_clean(
+					ee()->typography->parse_type(
 						$content, 
 						array(
 							'text_format'   => 'xhtml',
@@ -155,7 +157,7 @@ class News_and_stats_acc {
 			$ret .= '
 				<div>
 					<a onclick="window.open(this.href); return false;" href="'.
-						$this->EE->cp->masked_url('http://expressionengine.com/blog/').
+						ee()->cp->masked_url('http://ellislab.com/blog/').
 					'">'.lang('more_news').'</a>
 				</div>';
 			
@@ -177,64 +179,64 @@ class News_and_stats_acc {
 		// and save ourselves a bit of repeated code applying the class
 		$values = array('data' => '', 'class' => 'values');
 		
-		$this->EE->load->library('table');
-		$this->EE->load->helper(array('url', 'snippets'));
-//		$this->EE->table->set_heading(lang('site_statistics'), array('data' => lang('value'), 'class' => 'values'));
+		ee()->load->library('table');
+		ee()->load->helper(array('url', 'snippets'));
+//		ee()->table->set_heading(lang('site_statistics'), array('data' => lang('value'), 'class' => 'values'));
 		
-		if ($this->EE->session->userdata['group_id'] == 1)
+		if (ee()->session->userdata['group_id'] == 1)
 		{
-			$values['data'] = ($this->EE->config->item('is_system_on') == 'y') ? '<strong>'.lang('online').'</strong>' : '<strong>'.lang('offline').'</strong>';
-			$this->EE->table->add_row(lang('system_status'), $values);
+			$values['data'] = (ee()->config->item('is_system_on') == 'y') ? '<strong>'.lang('online').'</strong>' : '<strong>'.lang('offline').'</strong>';
+			ee()->table->add_row(lang('system_status'), $values);
 
-			if ($this->EE->config->item('multiple_sites_enabled') == 'y')
+			if (ee()->config->item('multiple_sites_enabled') == 'y')
 			{
-				$values['data'] = ($this->EE->config->item('is_site_on') == 'y' && $this->EE->config->item('is_system_on') == 'y') ? '<strong>'.lang('online').'</strong>' : '<strong>'.lang('offline').'</strong>';
-				$this->EE->table->add_row(lang('site_status'), $values);
+				$values['data'] = (ee()->config->item('is_site_on') == 'y' && ee()->config->item('is_system_on') == 'y') ? '<strong>'.lang('online').'</strong>' : '<strong>'.lang('offline').'</strong>';
+				ee()->table->add_row(lang('site_status'), $values);
 			}
 			
-			$this->EE->lang->loadfile('modules');
+			ee()->lang->loadfile('modules');
 			$values['data'] = APP_VER;
-			$this->EE->table->add_row(lang('module_version'), $values);
+			ee()->table->add_row(lang('module_version'), $values);
 		}
 		
 		// total entries and comments
-		$this->EE->db->where(array('site_id' => $this->EE->config->item('site_id')));
-		$query = $this->EE->db->get('stats');
+		ee()->db->where(array('site_id' => ee()->config->item('site_id')));
+		$query = ee()->db->get('stats');
 		
 		$row = $query->row();
 		
 		$values['data'] = $row->total_entries;
-		$this->EE->table->add_row(lang('total_entries'), $values);
+		ee()->table->add_row(lang('total_entries'), $values);
 
 		$values['data'] = $row->total_comments;
-		$this->EE->table->add_row(lang('total_comments'), $values);
+		ee()->table->add_row(lang('total_comments'), $values);
 		
 		// total template hits
-		$this->EE->db->select_sum('templates.hits', 'total');
-		$this->EE->db->from(array('templates'));
-		$query = $this->EE->db->get();
+		ee()->db->select_sum('templates.hits', 'total');
+		ee()->db->from(array('templates'));
+		$query = ee()->db->get();
 		
 		$row = $query->row();
 		$values['data'] = $row->total;
-		$this->EE->table->add_row(lang('total_hits'), $values);
+		ee()->table->add_row(lang('total_hits'), $values);
 
 		// member stats
-		if ($this->EE->session->userdata('group_id') == 1)
+		if (ee()->session->userdata('group_id') == 1)
 		{
 			// total members
-			$values['data'] = $this->EE->db->count_all_results('members');
-			$this->EE->table->add_row(lang('total_members'), $values);
+			$values['data'] = ee()->db->count_all_results('members');
+			ee()->table->add_row(lang('total_members'), $values);
 
 			// total members waiting validation
 			$values['data'] = 0;
 
-			if ($this->EE->config->item('req_mbr_activation') == 'manual')
+			if (ee()->config->item('req_mbr_activation') == 'manual')
 			{
-				$this->EE->db->where('group_id', '4');
-				$values['data'] = $this->EE->db->count_all_results('members');
+				ee()->db->where('group_id', '4');
+				$values['data'] = ee()->db->count_all_results('members');
 			}
 			
-			$this->EE->load->helper(array('url', 'snippets'));
+			ee()->load->helper(array('url', 'snippets'));
 			
 			$l = anchor(
 				BASE.AMP.'C=members&M=member_validation',
@@ -245,21 +247,21 @@ class News_and_stats_acc {
 			
 			$link = ($values['data'] > 0) ? $l : lang('total_validating_members');
 
-			$this->EE->table->add_row($link, $values);
+			ee()->table->add_row($link, $values);
 		}
 
 		// total comments waiting validation
-		if ($this->EE->cp->allowed_group('can_moderate_comments'))
+		if (ee()->cp->allowed_group('can_moderate_comments'))
 		{
-			$this->EE->load->model('addons_model');
+			ee()->load->model('addons_model');
 
 			// is the comment module installed?
-			if ($this->EE->addons_model->module_installed('comments'))
+			if (ee()->addons_model->module_installed('comments'))
 			{
 				$values['data'] = 0;
 			
-				$this->EE->db->where(array('status' => 'p', 'site_id' => $this->EE->config->item('site_id')));
-				$values['data'] = $this->EE->db->count_all_results('comments');
+				ee()->db->where(array('status' => 'p', 'site_id' => ee()->config->item('site_id')));
+				$values['data'] = ee()->db->count_all_results('comments');
 				
 				$l = anchor(
 					BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment'.AMP.'method=index'.AMP.'status=p',
@@ -269,7 +271,7 @@ class News_and_stats_acc {
 				);
 
 				$link = ($values['data'] > 0) ? $l : lang('total_validating_comments');
-				$this->EE->table->add_row($link, $values);
+				ee()->table->add_row($link, $values);
 			}
 		}
 		
@@ -277,9 +279,9 @@ class News_and_stats_acc {
 			'table_open' => '<table border="0" cellpadding="0" cellspacing="0">',
 		);
 		
-		$this->EE->table->set_template($tmpl);
-		$ret = $this->EE->table->generate();
-		$this->EE->table->clear();
+		ee()->table->set_template($tmpl);
+		$ret = ee()->table->generate();
+		ee()->table->clear();
 		
 		return $ret;
 	}
