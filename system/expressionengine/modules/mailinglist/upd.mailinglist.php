@@ -258,29 +258,20 @@ class Mailinglist_upd {
 
 		if (version_compare($current, '3.2', '<'))
 		{
-			ee()->dbforge->modify_column(
-				'mailing_list',
-				array(
-					'email' => array(
-						'name' 			=> 'email',
-						'type' 			=> 'varchar',
-						'constraint'	=> '75',
-						'null'			=> FALSE
+			foreach (array('mailing_list', 'mailing_list_queue') as $table)
+			{
+				ee()->dbforge->modify_column(
+					$table,
+					array(
+						'email' => array(
+							'name' 			=> 'email',
+							'type' 			=> 'varchar',
+							'constraint'	=> '75',
+							'null'			=> FALSE
+						)
 					)
-				)
-			);
-
-			ee()->dbforge->modify_column(
-				'mailing_list_queue',
-				array(
-					'email' => array(
-						'name' 			=> 'email',
-						'type' 			=> 'varchar',
-						'constraint'	=> '75',
-						'null'			=> FALSE
-					)
-				)
-			);
+				);
+			}
 		}
 
 		return TRUE;
