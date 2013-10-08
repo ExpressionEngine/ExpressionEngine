@@ -1,6 +1,6 @@
-	
+
 <div class='defaultLeft'>
-Choose Namespace:  <select onchange="location.href=this.value">
+{lang:choose_namespace}:  <select onchange="location.href=this.value">
 <option value="{path:wiki_base_url}{special_namespace}:Titles/">{main_namespace}</option>
 {wiki:custom_namespaces_list}
 <option value="{path:wiki_base_url}{special_namespace}:Titles/{namespace_short_name}/" {namespace_selected}>{namespace_label}</option>
@@ -11,7 +11,7 @@ Choose Namespace:  <select onchange="location.href=this.value">
 {wiki:title_list columns="3"}
 
 {if no_results}
-<div class="marginpad"><strong>Sorry, there seem to be no articles for this namespace.</strong></div>
+<div class="marginpad"><strong>{lang:no_namespace_results}</strong></div>
 {/if}
 
 <table style="width:100%;">
@@ -35,4 +35,3 @@ Choose Namespace:  <select onchange="location.href=this.value">
 
 {/wiki:title_list}
 
-	

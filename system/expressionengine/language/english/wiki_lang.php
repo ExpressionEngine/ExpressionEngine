@@ -451,6 +451,12 @@ referencing the namespace.  Your short name should only contain word characters 
 'by' =>
 'by',
 
+'choose_namespace' =>
+'Choose Namespace',
+
+'no_namespace_results',
+'Sorry, there seem to be no articles for this namespace.',
+
 ''=>''
 );
 
