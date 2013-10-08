@@ -439,7 +439,7 @@ referencing the namespace.  Your short name should only contain word characters 
 'closed' =>
 'Closed',
 
-'no_results' =>
+'no_search_results' =>
 'No Results for Your Search',
 
 'keywords' =>
