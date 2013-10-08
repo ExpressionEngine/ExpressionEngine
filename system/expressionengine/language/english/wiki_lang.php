@@ -349,11 +349,65 @@ referencing the namespace.  Your short name should only contain word characters 
 'cannot_add' =>
 'You are unable to add articles to the wiki. Sorry!',
 
+'cannot_edit' =>
+'You are not allowed to edit this page.',
+
 'revision_from' =>
 'Revision from',
 
 'subcategories' =>
 'Subcategories',
+
+'submissions_moderated' =>
+'Submissions to this article are moderated and will not go live until approved by an Admin.',
+
+'old_revision_warning' =>
+'WARNING: You are editing an out of date revision and submitting will overwrite more recent versions of this article.',
+
+'preview_warning' =>
+'WARNING: You are viewing a preview of your submission.  No changes to the article have been made.',
+
+'recent_file_uploads' =>
+'View 10 Most Recent File Uploads',
+
+'recent_files' =>
+'Recent Files',
+
+'add_file' =>
+'Add File',
+
+'add_image' =>
+'Add Image',
+
+'notes' =>
+'Notes',
+
+'redirect' =>
+'Redirect',
+
+'rename' =>
+'Rename',
+
+'lock_article' =>
+'Lock Article',
+
+'moderate_article' =>
+'Moderate Article',
+
+'delete_category' =>
+'Delete Category',
+
+'delete_article' =>
+'Delete Article',
+
+'submit' =>
+'Submit',
+
+'preview' =>
+'Preview',
+
+'uploaded' =>
+'Uploaded',
 
 ''=>''
 );
