@@ -409,6 +409,24 @@ referencing the namespace.  Your short name should only contain word characters 
 'uploaded' =>
 'Uploaded',
 
+'download_file' =>
+'Download File',
+
+'mime_type' =>
+'MIME Type',
+
+'delete' =>
+'Delete?',
+
+'no_summary' =>
+'No Summary',
+
+'quick_links' =>
+'Quick Links',
+
+'no_file' =>
+'No file by this name exists.',
+
 ''=>''
 );
 
