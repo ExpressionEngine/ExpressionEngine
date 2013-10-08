@@ -57,41 +57,26 @@ class Updater {
 	 */
 	private function _update_email_db_columns()
 	{
-		ee()->smartforge->modify_column(
-			'members',
-			array(
-				'email' => array(
-					'name' 			=> 'email',
-					'type' 			=> 'VARCHAR',
-					'constraint' 	=> 75,
-					'null' 			=> FALSE
-				)
-			)
+		$changes = array(
+			'members' => 'email',
+			'email_cache' => 'from_email',
+			'email_console_cache' => 'recipient',
 		);
 
-		ee()->smartforge->modify_column(
-			'email_cache',
-			array(
-				'from_email' => array(
-					'name' 			=> 'from_email',
-					'type' 			=> 'VARCHAR',
-					'constraint' 	=> 75,
-					'null' 			=> FALSE
+		foreach ($changes as $table => $column)
+		{
+			ee()->smartforge->modify_column(
+				$table,
+				array(
+					$column => array(
+						'name' 			=> $column,
+						'type' 			=> 'VARCHAR',
+						'constraint' 	=> 75,
+						'null' 			=> FALSE
+					)
 				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'email_console_cache',
-			array(
-				'recipient' => array(
-					'name' 			=> 'recipient',
-					'type' 			=> 'VARCHAR',
-					'constraint' 	=> 75,
-					'null' 			=> FALSE
-				)
-			)
-		);
+			);
+		}
 	}
 }
 /* END CLASS */
