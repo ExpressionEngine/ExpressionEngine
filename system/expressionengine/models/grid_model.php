@@ -237,9 +237,6 @@ class Grid_model extends CI_Model {
 		// Existing column
 		if ($col_id)
 		{
-			ee()->db->where('col_id', $col_id);
-			ee()->db->update($this->_table, $column);
-
 			// Make any column modifications necessary
 			ee()->api_channel_fields->edit_datatype(
 				$col_id,
@@ -247,6 +244,9 @@ class Grid_model extends CI_Model {
 				json_decode($column['col_settings'], TRUE),
 				$this->_get_ft_api_settings($column['field_id'], $content_type)
 			);
+
+			ee()->db->where('col_id', $col_id);
+			ee()->db->update($this->_table, $column);
 		}
 		// New column
 		else
