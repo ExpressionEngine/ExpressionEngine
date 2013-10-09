@@ -169,6 +169,9 @@ $lang = array(
 'enable_extensions' =>
 "Enable Extensions?",
 
+'extensions_disabled_manage' =>
+"Extensions must <a href='%s'>be enabled</a> to manage installed extensions.",
+
 'disable_extension' =>
 "Disable?",
 
@@ -1205,6 +1208,9 @@ $lang = array(
 
 "smtp_port" =>
 "SMTP Server Port",
+
+'empty_stmp_fields' =>
+'The %s field is required for SMTP.',
 
 "smtp_username" =>
 "SMTP Username",

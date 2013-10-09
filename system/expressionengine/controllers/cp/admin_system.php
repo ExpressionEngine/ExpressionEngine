@@ -209,6 +209,27 @@ class Admin_system extends CP_Controller {
 	// --------------------------------------------------------------------
 
 	/**
+	 * A validation callback for required email configuration strings only
+	 * if SMTP is the selected protocol method
+	 *
+	 * @access	public
+	 * @param	string	$str	the string being validated
+	 * @return	boolean	Whether or not the string passed validation
+	 **/
+	public function _smtp_required_field($str)
+	{
+		if ($this->input->post('mail_protocol') == 'smtp' && trim($str) == '')
+		{
+			$this->form_validation->set_message('_smtp_required_field', lang('empty_stmp_fields'));
+			return FALSE;
+		}
+
+		return TRUE;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Prep View Vars
 	 *
 	 * Populates form elements with the initial value, or the submitted

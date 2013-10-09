@@ -962,7 +962,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 	{
 		$members = ee()->db->select('member_id, quick_tabs')
 			->where('quick_tabs IS NOT NULL')
-			->like('quick_tabs', 'index.php')
+			->like('quick_tabs', '.php')
 			->get('members')
 			->result_array();
 

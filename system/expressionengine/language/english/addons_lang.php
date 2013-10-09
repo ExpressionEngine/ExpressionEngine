@@ -43,6 +43,7 @@ $lang = array(
 'component'						=>		'Component',
 'current_status'				=>		'Current Status',
 'required_by'					=>		'Required by:',
+'extensions_disabled_warning'	=>		'In order to install this add-on you need to enable extensions. Do you want to enable extensions?',
 
 'available_to_member_groups'	=>		'Available to Member Groups',
 'specific_page'					=>		'Specific Page?',
