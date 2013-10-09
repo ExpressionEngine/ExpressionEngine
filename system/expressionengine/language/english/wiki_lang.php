@@ -454,10 +454,10 @@ referencing the namespace.  Your short name should only contain word characters 
 'choose_namespace' =>
 'Choose Namespace',
 
-'no_namespace_results',
+'no_namespace_results' =>
 'Sorry, there seem to be no articles for this namespace.',
 
-'no_uncategorized_results',
+'no_uncategorized_results' =>
 'Sorry, there seem to be no uncategorized articles for this namespace.',
 
 ''=>''
