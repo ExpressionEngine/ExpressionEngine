@@ -478,6 +478,15 @@ referencing the namespace.  Your short name should only contain word characters 
 'no_uploads' =>
 'File Uploading is not allowed for this wiki.',
 
+'page' =>
+'Page',
+
+'of' =>
+'of',
+
+'pages' =>
+'pages',
+
 ''=>''
 );
 
