@@ -496,6 +496,33 @@ referencing the namespace.  Your short name should only contain word characters 
 'pages_link_to' =>
 'The following pages link to',
 
+'there' =>
+'There',
+
+'is' =>
+'is',
+
+'are' =>
+'are',
+
+'subcategory' =>
+'subcategory',
+
+'subcategories' =>
+'subcategories',
+
+'for_this_category' =>
+'for this category',
+
+'article' =>
+'article',
+
+'articles' =>
+'articles',
+
+'articles_in_category' =>
+'Articles in category',
+
 ''=>''
 );
 
