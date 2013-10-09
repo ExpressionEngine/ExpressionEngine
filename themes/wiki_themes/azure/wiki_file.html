@@ -4,21 +4,21 @@
 {if is_image}
 <p><img src="{file_url}" height="{image_height}" width="{image_width}" /></p>
 {if:else}
-<p><a href="{file_url}">Download File</a></p>
+<p><a href="{file_url}">{lang:download_file}</a></p>
 {/if}
 
-<div class="lighttext">{file_name} - MIME Type: {file_type} {if can_admin}[<a href="{delete_url}">Delete?</a>]{/if}</div>
+<div class="lighttext">{file_name} - {lang:mime_type}: {file_type} {if can_admin}[<a href="{delete_url}">{lang:delete}</a>]{/if}</div>
 
 <div class="codeblock">
 {if summary}
 {summary}
 {if:else}
-- No Summary -
+- {lang:no_summary} -
 {/if}
 </div>
 
 <div class="codeblock">
-<span class="defaultBold">Quick Links:</span>&nbsp;&nbsp;
+<span class="defaultBold">{lang:quick_links}:</span>&nbsp;&nbsp;
 <input type="text" class="input" size="25" value="[[{file_namespace}:{file_name}]]" maxlength="100" />
 {if is_image}
 &nbsp;<input type="text" class="input" size="25" value="[[{image_namespace}:{file_name}]]" maxlength="100" />
@@ -27,7 +27,6 @@
 
 
 {if:else}
-<p><strong>No file by this name exists.</strong></p>
+<p><strong>{lang:no_file}</strong></p>
 {/if}
 
-	
