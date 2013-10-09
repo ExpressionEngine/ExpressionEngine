@@ -51,11 +51,12 @@ class CI_Cache_redis extends CI_Driver
 	 * Get cache
 	 *
 	 * @param	string	Cache key identifier
+	 * @param	string	Namespace name
 	 * @return	mixed
 	 */
-	public function get($key)
+	public function get($key, $namespace = '')
 	{
-		return $this->_redis->get($key);
+		return $this->_redis->get($this->_namespaced_key($key, $namespace));
 	}
 
 	// ------------------------------------------------------------------------
@@ -66,11 +67,14 @@ class CI_Cache_redis extends CI_Driver
 	 * @param	string	Cache key identifier
 	 * @param	mixed	Data to save
 	 * @param	int	Time to live
+	 * @param	string	Namespace name
 	 * @return	bool
 	 */
-	public function save($key, $value, $ttl = NULL)
+	public function save($key, $value, $ttl = NULL, $namespace = '')
 	{
-		return ($ttl)
+		$key = $this->_namespaced_key($key, $namespace);
+
+		return ( ! empty($ttl))
 			? $this->_redis->setex($key, $ttl, $value)
 			: $this->_redis->set($key, $value);
 	}
@@ -81,11 +85,27 @@ class CI_Cache_redis extends CI_Driver
 	 * Delete from cache
 	 *
 	 * @param	string	Cache key
+	 * @param	string	Namespace name
 	 * @return	bool
 	 */
-	public function delete($key)
+	public function delete($key, $namespace = '')
 	{
-		return ($this->_redis->delete($key) === 1);
+		return ($this->_redis->delete($this->_namespaced_key($key, $namespace)) === 1);
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Delete keys from cache with a specified prefix
+	 *
+	 * @param	string	Namepace of group of cache keys to delete
+	 * @return	bool
+	 */
+	public function delete_namespace($namespace)
+	{
+		$this->_redis->delete(
+			$this->_redis->keys($this->_namespaced_key('', $namespace).'*')
+		);
 	}
 
 	// ------------------------------------------------------------------------
@@ -123,11 +143,13 @@ class CI_Cache_redis extends CI_Driver
 	 * Get cache metadata
 	 *
 	 * @param	string	Cache key
+	 * @param	string	Namespace name
 	 * @return	array
 	 */
-	public function get_metadata($key)
+	public function get_metadata($key, $namespace = '')
 	{
-		$value = $this->get($key);
+		$value = $this->get($key, $namespace);
+		$key = $this->_namespaced_key($key, $namespace);
 
 		if ($value)
 		{
@@ -218,6 +240,24 @@ class CI_Cache_redis extends CI_Driver
 		}
 	}
 
+	// ------------------------------------------------------------------------
+
+	/**
+	 * If a namespace was specified, prefixes the key with it
+	 *
+	 * @param	string	$key	Key name
+	 * @param	string	$namespace	Namespace name
+	 * @return	string	Key prefixed with namespace
+	 */
+	protected function _namespaced_key($key, $namespace)
+	{
+		if ( ! empty($namespace))
+		{
+			$namespace .= ':';
+		}
+
+		return $this->unique_key($namespace.$key);
+	}
 }
 
 /* End of file Cache_redis.php */
