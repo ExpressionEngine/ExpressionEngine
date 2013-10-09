@@ -487,6 +487,15 @@ referencing the namespace.  Your short name should only contain word characters 
 'pages' =>
 'pages',
 
+'no_articles_link_to' =>
+'No Articles Link to',
+
+'articles_that_link_to' =>
+'Articles that link to',
+
+'pages_link_to' =>
+'The following pages link to',
+
 ''=>''
 );
 
