@@ -7,7 +7,7 @@ namespace EllisLab\ExpressionEngine\Model\Entity;
 abstract class Entity {
 	protected static $meta = array();
 
-	private $dirty = array();
+	public $dirty = array();
 
 	public function __construct(array $data = array())
 	{
@@ -47,7 +47,7 @@ abstract class Entity {
 		}
 
 		$save_array = array();
-		foreach ($this->dirty as $property)
+		foreach ($this->dirty as $property => $dirty)
 		{
 			$save_array[$property] = $this->{$property};
 		}

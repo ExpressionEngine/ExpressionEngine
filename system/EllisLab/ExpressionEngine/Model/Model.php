@@ -19,11 +19,6 @@ abstract class Model {
 	protected $related_models = array();
 
 	/**
-	 * An array storing the names of modified properties. Used in validation.
-	 */
-	private $dirty = array();
-
-	/**
 	 * Initialize this model with a set of data to set on the entity.
 	 *
 	 * @param	mixed[]	$data	An array of initial property values to
@@ -94,6 +89,7 @@ abstract class Model {
 		{
 			if (property_exists($entity, $name))
 			{
+				echo 'Property exists on an entity.<br />';
 				$entity->{$name} = $value;
 				$entity->dirty[$name] = TRUE;
 				return;
@@ -161,6 +157,7 @@ abstract class Model {
 	 */
 	public function save()
 	{
+		echo 'Model::save() called.<br />';
 		$validation= $this->validate();
 		if (  $validation->hasErrors())
 		{
