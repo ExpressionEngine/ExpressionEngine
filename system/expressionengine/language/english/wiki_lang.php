@@ -550,6 +550,24 @@ referencing the namespace.  Your short name should only contain word characters 
 'elapsed_time' =>
 'Script Executed in {elapsed_time} seconds',
 
+'moderated_wiki_revision' =>
+'Moderated Wiki Revision',
+
+'new_revision' =>
+'A new revision has been posted for title',
+
+'url_to_view_revision' =>
+'URL to View Revision',
+
+'url_to_open_revision' =>
+'URL to Open Revision',
+
+'view_topic' =>
+'View Topic',
+
+'revision_content' =>
+'Revision Content',
+
 ''=>''
 );
 
