@@ -310,6 +310,9 @@ referencing the namespace.  Your short name should only contain word characters 
 'search' =>
 'Search',
 
+'go' =>
+'Go',
+
 'special_page' =>
 'Special Page',
 
@@ -519,6 +522,18 @@ referencing the namespace.  Your short name should only contain word characters 
 
 'articles_in_category' =>
 'Articles in category',
+
+'powered_by_ee' =>
+'Powered by ExpressionEngine',
+
+'ee_wiki' =>
+'ExpressionEngine Wiki',
+
+'version' =>
+'Version',
+
+'elapsed_time' =>
+'Script Executed in {elapsed_time} seconds',
 
 ''=>''
 );

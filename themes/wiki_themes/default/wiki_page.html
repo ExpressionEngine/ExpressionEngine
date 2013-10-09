@@ -103,7 +103,7 @@
 <form method="post" action="{path:wiki_base_url}{special_namespace}:Search_results">
 <div><input type="hidden" name="XID" value="{XID_HASH}" /></div>
 <input type="text" class="input" name="keywords" size="20" value="" maxlength="80" style="width:130px" />
-&nbsp;<input type="submit" class="submit" value="Search" />
+&nbsp;<input type="submit" class="submit" value="{lang:search}" />
 </form>
 </div>
 
@@ -112,7 +112,7 @@
 <form method="post" action="{path:wiki_base_url}{special_namespace}:Find_page">
 <div><input type="hidden" name="XID" value="{XID_HASH}" /></div>
 <input type="text" class="input" name="title" size="20" value="" maxlength="80" style="width:130px" />
-&nbsp;<input type="submit" class="submit" value="Go" />
+&nbsp;<input type="submit" class="submit" value="{lang:go}" />
 
 </form>
 </div>
@@ -195,9 +195,9 @@
 </div>
 
 <div id="footer">
-<a href="http://ellislab.com/">Powered by ExpressionEngine</a><br />
-ExpressionEngine Wiki - Version {module_version}<br />
-Script Executed in {elapsed_time} seconds
+<a href="http://ellislab.com/">{lang:powered_by_ee}</a><br />
+{lang:ee_wiki} - {lang:version} {module_version}<br />
+{lang:elapsed_time}
 </div>
 
 </body>
