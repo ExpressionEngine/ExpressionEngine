@@ -331,9 +331,6 @@ referencing the namespace.  Your short name should only contain word characters 
 'viewing_history' =>
 'Viewing History',
 
-'revision' =>
-'Revision',
-
 'redirected_from' =>
 'Redirected from',
 
