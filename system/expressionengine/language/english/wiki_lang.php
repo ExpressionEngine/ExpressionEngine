@@ -460,6 +460,24 @@ referencing the namespace.  Your short name should only contain word characters 
 'no_uncategorized_results' =>
 'Sorry, there seem to be no uncategorized articles for this namespace.',
 
+'image_uploads_only' =>
+'Only Image Uploads Are Allowed',
+
+'allowed_file_types' =>
+'Allowed File Types',
+
+'new_filename' =>
+'New Filename',
+
+'summary' =>
+'Summary',
+
+'no_image_uploads' =>
+'You are not allowed to upload images.',
+
+'no_uploads' =>
+'File Uploading is not allowed for this wiki.',
+
 ''=>''
 );
 
