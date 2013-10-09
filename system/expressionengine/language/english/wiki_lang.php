@@ -277,6 +277,9 @@ referencing the namespace.  Your short name should only contain word characters 
 'categories' =>
 'Categories',
 
+'list_of_titles' =>
+'List of Titles',
+
 'title_list' =>
 'Title List',
 
@@ -285,6 +288,9 @@ referencing the namespace.  Your short name should only contain word characters 
 
 'random_page' =>
 'Random Page',
+
+'uploads' =>
+'Uploads',
 
 'file_upload' =>
 'File Upload',
@@ -295,11 +301,20 @@ referencing the namespace.  Your short name should only contain word characters 
 'recent_changes' =>
 'Recent Changes',
 
+'recent_changes_page' =>
+'Recent Changes Page',
+
 'rss' =>
 'RSS',
 
+'recent_changes_rss' =>
+'Recent Changes in RSS',
+
 'atom' =>
 'Atom',
+
+'recent_changes_atom' =>
+'Recent Changes in Atom',
 
 'what_links_here' =>
 'What Links Here',
