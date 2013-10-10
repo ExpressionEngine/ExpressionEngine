@@ -178,9 +178,9 @@ class CI_Cache extends CI_Driver_Library {
 	 * @param	mixed	Prefix of group of cache keys to delete
 	 * @return	bool
 	 */
-	public function delete_namespace($namespace)
+	public function clear_namepace($namespace)
 	{
-		return $this->{$this->_adapter}->delete_namespace($namespace);
+		return $this->{$this->_adapter}->clear_namepace($namespace);
 	}
 
 	// ------------------------------------------------------------------------

@@ -88,7 +88,7 @@ class CI_Cache_apc extends CI_Driver {
 	 * @param	string	Namepace of group of cache keys to delete
 	 * @return	bool
 	 */
-	public function delete_namespace($namespace)
+	public function clear_namepace($namespace)
 	{
 		$cached = new APCIterator('user', '/^'.preg_quote($this->_namespaced_key('', $namespace), '/').'/');
 

@@ -129,7 +129,7 @@ class CI_Cache_file extends CI_Driver {
 	 * @param	mixed	Prefix of group of cache files to delete
 	 * @return	bool
 	 */
-	public function delete_namespace($namespace)
+	public function clear_namepace($namespace)
 	{
 		$files = get_filenames($this->_cache_path);
 

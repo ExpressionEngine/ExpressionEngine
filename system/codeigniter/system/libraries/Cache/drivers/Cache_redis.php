@@ -101,7 +101,7 @@ class CI_Cache_redis extends CI_Driver
 	 * @param	string	Namepace of group of cache keys to delete
 	 * @return	bool
 	 */
-	public function delete_namespace($namespace)
+	public function clear_namepace($namespace)
 	{
 		$this->_redis->delete(
 			$this->_redis->keys($this->_namespaced_key('', $namespace).'*')

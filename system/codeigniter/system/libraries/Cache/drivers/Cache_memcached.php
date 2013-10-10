@@ -106,7 +106,7 @@ class CI_Cache_memcached extends CI_Driver {
 	 * @param	mixed	Prefix of group of cache keys to delete
 	 * @return	bool
 	 */
-	public function delete_namespace($namespace)
+	public function clear_namepace($namespace)
 	{
 		$this->_create_new_namespace($namespace);
 	}

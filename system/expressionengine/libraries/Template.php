@@ -1606,7 +1606,7 @@ class EE_Template {
 			// Clear page cache if we have too many
 			if ($i > $max)
 			{
-				ee()->cache->delete_namespace('page');
+				ee()->cache->clear_namepace('page');
 			}
 		}
 	}
