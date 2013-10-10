@@ -602,7 +602,7 @@ class Wiki {
 		$this->return_data = str_replace(array_keys($data), array_values($data), $this->return_data);
 
 		// Parse the language text
-		if (preg_match_all("/{lang:(.+?)\}/i", $this->return_data, $matches))
+		if (preg_match_all("/".LD."lang:(.+?)".RD."/i", $this->return_data, $matches))
 		{
 			for ($j = 0; $j < count($matches['0']); $j++)
 			{
