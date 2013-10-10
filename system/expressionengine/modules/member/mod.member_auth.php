@@ -919,8 +919,9 @@ class Member_auth extends Member {
 		// then we'll use it.
 		if (isset(ee()->session->tracker[3]))
 		{
+			$seg = (ee()->session->tracker[3] != 'index') ? ee()->session->tracker[3] : '';
 			$site_name = stripslashes(ee()->config->item('site_name'));
-			$return = reduce_double_slashes(ee()->functions->fetch_site_index() . '/' . ee()->session->tracker[3]);
+			$return = reduce_double_slashes(ee()->functions->fetch_site_index() . '/' . $seg);
 		}
 		// Otherwise, it's entirely possible they are clicking the e-mail link after
 		// their session has expired.  In that case, the only information we have
