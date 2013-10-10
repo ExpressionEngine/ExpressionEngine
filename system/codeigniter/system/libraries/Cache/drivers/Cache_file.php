@@ -133,12 +133,12 @@ class CI_Cache_file extends CI_Driver {
 	{
 		$files = get_filenames($this->_cache_path);
 
-		foreach ($files as $file)
+		foreach (get_dir_file_info($this->_cache_path, TRUE) as $file)
 		{
-			if (strncmp($file, $namespace, strlen($namespace)) == 0 &&
-				file_exists($this->_cache_path.$file))
+			if (strncmp($file['name'], $namespace, strlen($namespace)) == 0 &&
+				file_exists($file['server_path']))
 			{
-				@unlink($this->_cache_path.$file);
+				@unlink($file['server_path']);
 			}
 		}
 
@@ -154,7 +154,17 @@ class CI_Cache_file extends CI_Driver {
 	 */
 	public function clean()
 	{
-		return delete_files($this->_cache_path, FALSE, TRUE);
+		foreach (get_dir_file_info($this->_cache_path, TRUE) as $file)
+		{
+			// Do not delete .htaccess or index.html to keep the directory secure
+			if ( ! in_array($file['name'], array('.htaccess', 'index.html'))
+				&& ! is_dir($file['server_path']))
+			{
+				@unlink($file['server_path']);
+			}
+		}
+
+		return TRUE;
 	}
 
 	// ------------------------------------------------------------------------
