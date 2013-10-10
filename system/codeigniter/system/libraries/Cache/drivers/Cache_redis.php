@@ -154,7 +154,7 @@ class CI_Cache_redis extends CI_Driver
 		if ($value)
 		{
 			return array(
-				'expire' => time() + $this->_redis->ttl($key),
+				'expire' => ee()->localize->now + $this->_redis->ttl($key),
 				'data' => $value
 			);
 		}

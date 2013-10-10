@@ -65,7 +65,7 @@ class CI_Cache_file extends CI_Driver {
 
 		$data = unserialize(file_get_contents($this->_cache_path.$id));
 
-		if ($data['ttl'] > 0 && time() > $data['time'] + $data['ttl'])
+		if ($data['ttl'] > 0 && ee()->localize->now > $data['time'] + $data['ttl'])
 		{
 			unlink($this->_cache_path.$id);
 			return FALSE;
@@ -89,7 +89,7 @@ class CI_Cache_file extends CI_Driver {
 	public function save($id, $data, $ttl = 60, $namespace = '')
 	{
 		$contents = array(
-			'time'		=> time(),
+			'time'		=> ee()->localize->now,
 			'ttl'		=> $ttl,
 			'data'		=> $data
 		);

@@ -75,11 +75,11 @@ class CI_Cache_memcached extends CI_Driver {
 
 		if (get_class($this->_memcached) === 'Memcached')
 		{
-			return $this->_memcached->set($id, array($data, time(), $ttl), $ttl);
+			return $this->_memcached->set($id, array($data, ee()->localize->now, $ttl), $ttl);
 		}
 		elseif (get_class($this->_memcached) === 'Memcache')
 		{
-			return $this->_memcached->set($id, array($data, time(), $ttl), 0, $ttl);
+			return $this->_memcached->set($id, array($data, ee()->localize->now, $ttl), 0, $ttl);
 		}
 
 		return FALSE;
@@ -267,7 +267,7 @@ class CI_Cache_memcached extends CI_Driver {
 	{
 		// We'll use the current time, that way we're pretty much guaranteed
 		// not to use an existing namespace
-		$this->_key_prefixes[$namespace] = time().':'.$namespace;
+		$this->_key_prefixes[$namespace] = ee()->localize->now.':'.$namespace;
 
 		// Save it to memcache so we can access it on subsequent page loads
 		$this->save($namespace.'-namespace', $this->_key_prefixes[$namespace], 0);
