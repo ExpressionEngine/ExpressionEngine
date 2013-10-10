@@ -1040,67 +1040,19 @@ class EE_Functions {
 	 */
 	function clear_caching($which, $sub_dir = '')
 	{
-		$actions = array('page', 'tag', 'db', 'sql', 'all');
-
-		if ( ! in_array($which, $actions))
-		{
-			return;
-		}
-
-		/* -------------------------------------
-		/*  Disable Tag Caching
-		/*
-		/*  All for you, Nevin!  Disables tag caching, which if used unwisely
-		/*  on a high traffic site can lead to disastrous disk i/o
-		/*  This setting allows quick thinking admins to temporarily disable
-		/*  it without hacking or modifying folder permissions
-		/*
-		/*  Hidden Configuration Variable
-		/*  - disable_tag_caching => Disable tag caching? (y/n)
-		/* -------------------------------------*/
-
-		if ($which == 'tag' && ee()->config->item('disable_tag_caching') == 'y')
-		{
-			return;
-		}
-
-		$db_path = '';
-
-		if ($sub_dir != '')
-		{
-			if ($which == 'all' OR $which == 'db')
-			{
-				$segs = explode('/', str_replace($this->fetch_site_index(), '', $sub_dir));
-
-				$segment_one = (isset($segs['0'])) ? $segs['0'] : 'default';
-				$segment_two = (isset($segs['1'])) ? $segs['1'] : 'index';
-
-				$db_path = '/'.$segment_one.'+'.$segment_two.'/';
-			}
-
-			$sub_dir = '/'.md5($sub_dir).'/';
-		}
-
 		switch ($which)
 		{
-			case 'page' : $this->delete_directory(APPPATH.'cache/page_cache'.$sub_dir);
+			case 'page':
+			case 'db':
+			case 'tag':
+			case 'sql':
+				ee()->cache->clear_namepace($which);
 				break;
-			case 'db'	: $this->delete_directory(APPPATH.'cache/db_cache_'.ee()->config->item('site_id').$db_path);
+			case 'all':
+				ee()->cache->clean();
 				break;
-			case 'tag'  : $this->delete_directory(APPPATH.'cache/tag_cache'.$sub_dir);
-				break;
-			case 'sql'  : $this->delete_directory(APPPATH.'cache/sql_cache'.$sub_dir);
-				break;
-			case 'all'  :
-						$this->delete_directory(APPPATH.'cache/page_cache'.$sub_dir);
-						$this->delete_directory(APPPATH.'cache/db_cache_'.ee()->config->item('site_id').$db_path);
-						$this->delete_directory(APPPATH.'cache/sql_cache'.$sub_dir);
-
-						if (ee()->config->item('disable_tag_caching') != 'y')
-						{
-							$this->delete_directory(APPPATH.'cache/tag_cache'.$sub_dir);
-						}
-				break;
+			default:
+				return;
 		}
 	}
 
