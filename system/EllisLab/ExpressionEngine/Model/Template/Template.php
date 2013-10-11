@@ -2,7 +2,7 @@
 namespace EllisLab\ExpressionEngine\Model\Template;
 
 use EllisLab\ExpressionEngine\Model\Model as Model;
-use EllisLab\ExpressionEngine\Model\Errors as Errors;
+use EllisLab\ExpressionEngine\Model\Error\Errors as Errors;
 
 /**
  *
@@ -45,14 +45,6 @@ class Template extends Model {
 	public function setLastAuthor(Member $member)
 	{
 		$this->setRelated('LastAuthor', $member);	
-	}
-
-	/**
-	 *
-	 */
-	public function validate()
-	{
-		return new Errors();
 	}
 
 }

@@ -38,6 +38,15 @@ class Homepage extends CP_Controller {
 
 		$qb = new \EllisLab\ExpressionEngine\Model\QueryBuilder();
 
+		$template = $qb->get('Template')
+			->with('TemplateGroup')
+			->filter('template_id', 1)
+			->first();
+	
+		$template->template_name = 'home';
+		$template->save();
+		echo 'Success!';
+
 /* * /
 		$templates = $qb
 			->get('Template')
@@ -65,22 +74,9 @@ class Homepage extends CP_Controller {
 
 
 /* */
-		$template_groups = $qb
-			->get('TemplateGroup')
-			->with('Templates')
-			->filter('TemplateGroup.site_id', 1)
-			->filter('Template.template_name', 'index')
-			->all();
+		
 
 
-		foreach ($template_groups as $template_group)
-		{
-			var_dump('Group: '.$template_group->group_name);
-			foreach ($template_group->getTemplates() as $template)
-			{
-				var_dump($template->template_name);
-			}
-		}
 
 /* */
 		exit;

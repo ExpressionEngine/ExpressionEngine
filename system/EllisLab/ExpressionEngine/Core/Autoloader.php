@@ -59,6 +59,10 @@ class Autoloader {
 				// From inside to out: Strip off the prefix from the namespace, turn the namespace into 
 				// a path, prepend the path prefix, append .php.  
 				$class_path = $path . str_replace('\\', '/', substr($class, strlen($prefix))) . '.php';
+				if ( ! file_exists($class_path))
+				{
+					throw new \RuntimeException('Failed to load requested class!');
+				}
 
 				require $class_path;
 				return;

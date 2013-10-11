@@ -1,6 +1,8 @@
 <?php
 namespace EllisLab\ExpressionEngine\Model;
 
+use EllisLab\ExpressionEngine\Service\Validation\ValidationResult as ValidationResult;
+
 /**
  * The base Model class
  */
@@ -61,7 +63,7 @@ abstract class Model {
 			}
 		}
 
-		throw new NonExistentPropertyException('Attempt to access a non-existent property on ' . __CLASS__);
+		throw new \InvalidArgumentException('Attempt to access a non-existent property on ' . __CLASS__);
 	}
 
 	/**
@@ -89,14 +91,13 @@ abstract class Model {
 		{
 			if (property_exists($entity, $name))
 			{
-				echo 'Property exists on an entity.<br />';
 				$entity->{$name} = $value;
 				$entity->dirty[$name] = TRUE;
 				return;
 			}
 		}
 
-		throw new NonExistentPropertyException('Attempt to access a non-existent property on ' . __CLASS__);
+		throw new \InvalidArgumentException('Attempt to access a non-existent property on ' . __CLASS__);
 	}
 
 	/**
@@ -140,7 +141,12 @@ abstract class Model {
 	 */
 	public function validate()
 	{
-		return new Errors();
+		$validation = new ValidationResult();
+		foreach ($this->entities as $entity)
+		{
+			$validation->addErrors($entity->validate());
+		}
+		return $validation;
 	}
 
 	/**
@@ -157,11 +163,10 @@ abstract class Model {
 	 */
 	public function save()
 	{
-		echo 'Model::save() called.<br />';
-		$validation= $this->validate();
-		if (  $validation->hasErrors())
+		$validation = $this->validate();
+		if ($validation->failed())
 		{
-			throw new Exception('Model failed to validate on save call!');
+			throw new \Exception('Model failed to validate on save call!');
 		}
 
 		foreach($this->entities as $entity)
