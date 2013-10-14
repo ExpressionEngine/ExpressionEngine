@@ -42,8 +42,16 @@ class Homepage extends CP_Controller {
 			->with('TemplateGroup')
 			->filter('template_id', 1)
 			->first();
-	
+
+		$template->template_id = 'This should not validate!';	
 		$template->template_name = 'home';
+
+		$validation = $template->validate();
+		if ($validation->failed())
+		{
+			echo 'Failure!';
+			return;
+		}
 		$template->save();
 		echo 'Success!';
 

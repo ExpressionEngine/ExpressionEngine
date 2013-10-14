@@ -149,6 +149,10 @@ abstract class Model {
 		return $validation;
 	}
 
+	public function cascadeValidate()
+	{
+	}
+
 	/**
 	 * Save this model. Calls validation before saving to ensure that invalid
 	 * data doesn't get saved, however, expects validation to have been called
@@ -163,7 +167,10 @@ abstract class Model {
 	 */
 	public function save()
 	{
-		$validation = $this->validate();
+		$cascade = func_get_args();
+
+		// TODO ???
+		$validation = $this->validate($cascade);
 		if ($validation->failed())
 		{
 			throw new \Exception('Model failed to validate on save call!');
@@ -173,7 +180,15 @@ abstract class Model {
 		{
 			$entity->save();
 		}
+
+
+			
 	}
+
+	protected function cascadeSave($model)
+	{
+	}
+
 
 	/**
 	 * Delete this model.
@@ -186,6 +201,10 @@ abstract class Model {
 		{
 			$entity->delete();
 		}
+	}
+
+	protected function cascadeDelete()
+	{
 	}
 
 	/**
