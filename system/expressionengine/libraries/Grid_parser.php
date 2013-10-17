@@ -154,6 +154,16 @@ class Grid_parser {
 		$entry_data = $entry_data[$entry_id];
 		$field_name = $this->grid_field_names[$field_id];
 
+		// Add field_row_index and field_row_count variables to get the index
+		// and count of rows in the field regardless of front-end output
+		$field_row_count = 1;
+		foreach ($entry_data as &$entry_data_row)
+		{
+			$entry_data_row['field_row_index'] = $field_row_count - 1;
+			$entry_data_row['field_row_count'] = $field_row_count;
+			$field_row_count++;
+		}
+
 		// :field_total_rows single variable
 		// Currently does not work well with fixed_order and search params
 		$field_total_rows = count($entry_data);
