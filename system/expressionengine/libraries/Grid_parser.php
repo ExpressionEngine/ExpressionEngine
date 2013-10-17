@@ -206,6 +206,12 @@ class Grid_parser {
 			}
 		}
 
+		// Order by random
+		if ($params['orderby'] == 'random')
+		{
+			shuffle($entry_data);
+		}
+
 		// We'll handle limit and offset parameters this way; we can't do
 		// it via SQL because we query for multiple entries at once
 		$display_entry_data = array_slice(
@@ -215,7 +221,12 @@ class Grid_parser {
 			TRUE
 		);
 
-		$row_ids = array_keys($entry_data);
+		// Collect row IDs
+		$row_ids = array();
+		foreach ($display_entry_data as $row)
+		{
+			$row_ids[] = $row['row_id'];
+		}
 
 		// :total_rows single variable
 		$total_rows = count($display_entry_data);
