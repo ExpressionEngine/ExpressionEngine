@@ -135,33 +135,121 @@ abstract class Model {
 	}
 
 	/**
-	 * Validate this model's data for saving.
+	 * Validate this model's data for saving.  May cascade the validation
+	 * through any set of related models using the same grouping language
+ 	 * that is used in the query builder.  For example:
+	 *
+	 * $entry = $qb->get('ChannelEntry')
+	 *		->with(
+	 * 			'Channel', 
+	 * 			array('Member'=>'MemberGroup'),
+	 * 			array('Categories' => 'CategoryGroup')
+	 *		)
+ 	 * 		->filter('MemberGroup.member_group_id', 5)
+	 *		->first();
+	 * 
+	 * $entry->title = 'New Title';
+	 * $channel = $entry->getChannel();
+	 * $channel->short_name = 'new_short_name';
+	 *
+	 * $validation = $entry->validate(
+	 * 		'Channel', 
+	 *		array('Member' => 'MemberGroup'),
+	 * 		array('Category' => 'CategoryGroup')
+	 * 	);
+	 *
+ 	 * This will cascade the validation through all related models and return
+ 	 * any errors found in any of the related models.	
 	 *
 	 * @return	Errors	A class containing the errors resulting from validation.
 	 */
 	public function validate()
 	{
+		$cascade = func_get_args();
+
 		$validation = new ValidationResult();
+
 		foreach ($this->entities as $entity)
 		{
 			$validation->addErrors($entity->validate());
 		}
+
+		foreach($cascade as $model_name)
+		{
+			if (is_array($model_name))
+			{
+				$this->cascadeValidate($validation, $model_name);
+			}
+			else
+			{
+				$method = 'get' . $model_name;
+				$models = $this->$method();
+
+				foreach ($models as $model)
+				{
+					$model->validate();
+				}
+			}
+		}
+
+
 		return $validation;
 	}
 
-	public function cascadeValidate()
+	/**
+	 * Cascade validation
+	 *
+	 * Cascades validation into related classes.  Gets the array of a cascaded
+	 * relation and recursively walks through that, validating. 
+	 * 
+	 * @param	Errors	$validation	The validation object to which cascaded
+	 * 				errors should be added.
+	 * @param	string[]	$model_names	The names of the models that you
+	 * 				wish to cascade into in array format.  The array must
+	 * 				be formatted in the following way:
+	 * 					array('Model Related to $this' => 'Model related to <- that model')
+	 * 
+	 * @return	Errors	A class containing the errors resulting from validation.
+	 *
+	 */
+	protected function cascadeValidate($validation, $model_names)
 	{
+		foreach ($model_names as $from_model_name => $to_model_name)
+		{
+			$method = 'get' . $from_model_name;
+			$models = $this->$method();
+		
+			foreach ($models as $model)			
+			{
+				if (is_array($to_model_name))
+				{
+					$validation->addErrors($model->cascadeValidate($to_model_name));
+				}	
+				else
+				{
+					$to_method = 'get' . $to_model_name;
+					$to_models = $model->$to_method();
+
+					foreach ($to_models as $to_model)
+					{
+						$validation->addErrors($to_model->validate());
+					}
+				}
+			}
+		}
+
+		return $validation;
 	}
 
 	/**
 	 * Save this model. Calls validation before saving to ensure that invalid
 	 * data doesn't get saved, however, expects validation to have been called
 	 * already and the errors handled.  Thus, if validation returns errors,
-	 * save will throw an exception.
+	 * save will throw an exception.  Accepts a related model cascade.
 	 *
 	 * @return 	void
 	 *
-	 * @throws	InvalidDataException	If the model fails to validate, an
+	 * @throws	Exception	If the model fails to validate, an
 	 * 						exception is thrown.  Validation should be called
 	 * 						and any errors handled before attempting to save.
 	 */
@@ -169,8 +257,7 @@ abstract class Model {
 	{
 		$cascade = func_get_args();
 
-		// TODO ???
-		$validation = $this->validate($cascade);
+		$validation = call_user_func_array(array($this, 'validate'), $cascade);
 		if ($validation->failed())
 		{
 			throw new \Exception('Model failed to validate on save call!');
@@ -181,12 +268,65 @@ abstract class Model {
 			$entity->save();
 		}
 
+		// Handle Cascade
+		foreach($cascade as $model_name)
+		{
+			if (is_array($model_name))
+			{
+				$this->cascadeSave($model_name);
+			}
+			else
+			{
+				$method = 'get' . $model_name;
+				$models = $this->$method();
 
-			
+				foreach ($models as $model)
+				{
+					$model->save();
+				}
+			}
+		}
 	}
 
-	protected function cascadeSave($model)
+	/**
+	 * Cascade save
+ 	 *
+	 * Cascades saving through related Models.  Works the same as
+	 * Model::cascadeValidate(), but doesn't return anything.
+	 * 
+	 * @param	string[]	$model_names	An array of Model names to be saved
+	 * 				in the format of array('from_model' => 'to_model').
+	 * 
+ 	 * @return	void
+	 *
+	 * @throws	Exception	If any of the related models fails to validate
+	 * 				it will throw an exception. 
+	 */
+	protected function cascadeSave($model_names)
 	{
+		foreach ($model_names as $from_model_name => $to_model_name)
+		{
+			$method = 'get' . $from_model_name;
+			$models = $this->$method();
+		
+			foreach ($models as $model)			
+			{
+				if (is_array($to_model_name))
+				{
+					$model->cascadeSave($to_model_name);
+				}	
+				else
+				{
+					$to_method = 'get' . $to_model_name;
+					$to_models = $model->$to_method();
+
+					foreach ($to_models as $to_model)
+					{
+						$to_model->save();
+					}
+				}
+			}
+		}
 	}
 
 
@@ -197,14 +337,61 @@ abstract class Model {
 	 */
 	public function delete()
 	{
+		$cascade = func_get_args();
+
 		foreach($this->entities as $entity)
 		{
 			$entity->delete();
 		}
+
+		// Handle Cascade
+		foreach($cascade as $model_name)
+		{
+			if (is_array($model_name))
+			{
+				$this->cascadeSave($model_name);
+			}
+			else
+			{
+				$method = 'get' . $model_name;
+				$models = $this->$method();
+
+				foreach ($models as $model)
+				{
+					$model->save();
+				}
+			}
+		}
 	}
 
-	protected function cascadeDelete()
+	/**
+	 *
+	 */
+	protected function cascadeDelete($model_names)
 	{
+		foreach ($model_names as $from_model_name => $to_model_name)
+		{
+			$method = 'get' . $from_model_name;
+			$models = $this->$method();
+		
+			foreach ($models as $model)
+			{
+				if (is_array($to_model_name))
+				{
+					$model->cascadeDelete($to_model_name);
+				}	
+				else
+				{
+					$to_method = 'get' . $to_model_name;
+					$to_models = $model->$to_method();
+
+					foreach ($to_models as $to_model)
+					{
+						$to_model->delete();
+					}
+				}
+			}
+		}
 	}
 
 	/**
