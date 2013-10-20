@@ -9,12 +9,14 @@ use EllisLab\ExpressionEngine\Model\Error\ValidationError as ValidationError;
  *
  */
 abstract class Entity {
+	private $di = NULL;
 	protected static $meta = array();
 
 	public $dirty = array();
 
-	public function __construct(array $data = array())
+	public function __construct(Dependencies $di, array $data = array())
 	{
+		$this->di = $di;
 		foreach ($data as $property => $value)
 		{
 			if (property_exists($this, $property))
@@ -63,7 +65,7 @@ abstract class Entity {
 		{
 			if ( isset($validation_rules[$property]))
 			{
-				$validator = new Validator();
+				$validator = $this->di->getValidationService()->getValidator();
 				if ( ! $validator->validate($validation_rules[$property], $this->$property))
 				{
 					foreach($validator->getFailedRules() as $rule)

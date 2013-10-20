@@ -1,20 +1,20 @@
 <?php
-namespace EllisLab\ExpressionEngine\Service\Validation;
+namespace EllisLab\ExpressionEngine\Core\Validation;
 
 Use EllisLab\ExpressionEngine\Model\Error\Error as Error;
 
 /**
  * Wrapper class for multiple errors, to be returned from validation.
  */
-class ValidationResult {
+class Errors {
 	protected $errors = array();
 
 	/**
-	 * Did validation result in any errors?
+	 * Do we have any errors?
 	 *
 	 * @return	boolean	TRUE if there are errors, FALSE otherwise.
 	 */
-	public function failed() 
+	public function exist() 
 	{
 		return ( ! empty($this->errors));
 	}
@@ -35,11 +35,20 @@ class ValidationResult {
 		$this->errors[] = $error;
 	}
 
-	public function addErrors(ValidationResult $result)
+	/**
+	 *
+	 */
+	public function addErrors(Errors $errors)
 	{
-		foreach($result->getErrors() as $error)
+		if ( ! $errors->exist())
+		{
+			return;
+		}
+
+		foreach($errors->getErrors() as $error)
 		{
 			$this->addError($error);
 		}
 	}
+
 }

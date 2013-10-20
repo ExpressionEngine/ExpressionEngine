@@ -1,5 +1,5 @@
 <?php
-namespace EllisLab\ExpressionEngine\Service\Validation;
+namespace EllisLab\ExpressionEngine\Core\Validation;
 
 /**
  * Validation Service 
@@ -23,8 +23,19 @@ namespace EllisLab\ExpressionEngine\Service\Validation;
  *
  */
 class Validator {
-	protected $rule_sets = array();
 	protected $failed_rules = array();
+	protected $namespaces = array();
+
+	/**
+	 *
+	 */
+	public function __construct($namespaces)
+	{
+		$this->namespaces = $namespaces;
+	}
+
+
+	// --------------------------------------------------------------------
 
 	/**
 	 * Get an array of Failed Validation Rules
@@ -76,4 +87,43 @@ class Validator {
 		}
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 *
+	 */
+	protected function parseRule($rule_definition)
+	{
+		if (preg_match("/(.*?)\[(.*?)\]/", $rule_definition, $match))
+		{
+			$rule_name	= $match[1];
+			$parameters	= $match[2];
+
+			if (strpos(',', $parameters) !== FALSE)
+			{
+				$parameters = explode(',', $parameters);
+			}
+			else
+			{
+				$parameters = array($parameters);
+			}
+		}
+		else
+		{
+			$rule_name = $rule_definition;
+			$parameters = array();
+		}
+
+		foreach($this->namespaces as $namespace)
+		{
+			$fully_qualified_class = $namespace . ucfirst($rule_name);
+			if (class_exists($fully_qualified_class))
+			{
+				$rule = new $fully_qualified_class($parameters);
+				return $rule;
+			}
+		}
+
+		throw new InvalidArgumentException('Non-existent ValidationRule, "' . $rule_definition . '", requested in validation!');
+	}
 }

@@ -1,7 +1,7 @@
 <?php
-namespace EllisLab\ExpressionEngine\Service\Validation\Rule;
+namespace EllisLab\ExpressionEngine\Core\Validation\Rule;
 
-use EllisLab\ExpressionEngine\Service\Validation\ValidationRule as ValidationRule;
+use EllisLab\ExpressionEngine\Core\Validation\ValidationRule as ValidationRule;
 use EllisLab\ExpressionEngine\Library\IpLibrary as IpLibrary;
 
 /**

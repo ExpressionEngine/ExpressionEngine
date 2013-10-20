@@ -1,5 +1,5 @@
 <?php
-namespace EllisLab\ExpressionEngine\Service\Validation;
+namespace EllisLab\ExpressionEngine\Core\Validation;
 
 /**
  *

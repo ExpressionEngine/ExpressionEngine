@@ -1,17 +1,17 @@
 <?php
-namespace EllisLab\ExpressionEngine\Service\Validation\Rule;
+namespace EllisLab\ExpressionEngine\Core\Validation\Rule;
 
-use EllisLab\ExpressionEngine\Service\Validation\ValidationRule as ValidationRule;
+use EllisLab\ExpressionEngine\Core\Validation\ValidationRule as ValidationRule;
 
 /**
- * Exact Length
+ * Minimum Length
  *
  * @access	public
  * @param	string
  * @param	value
  * @return	bool
  */
-class ExactLength extends ValidationRule {
+class MinLength extends ValidationRule {
 	protected $length=0;
 
 	public function __construct(array $parameters)
@@ -28,10 +28,10 @@ class ExactLength extends ValidationRule {
 
 		if (function_exists('mb_strlen'))
 		{
-			return (mb_strlen($value) != $this->length) ? FALSE : TRUE;
+			return (mb_strlen($value) < $this->length) ? FALSE : TRUE;
 		}
 
-		return (strlen($value) != $this->length) ? FALSE : TRUE;
+		return (strlen($value) < $this->length) ? FALSE : TRUE;
 	}
 
 }
