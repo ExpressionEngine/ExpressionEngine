@@ -2963,16 +2963,17 @@ class Channel {
 					}
 				}
 
+				// Load typography library for custom fields
+				ee()->load->library('typography');
+				ee()->typography->initialize(array(
+					'convert_curly'	=> FALSE
+				));
+
 				// parse custom fields
 				foreach($this->catfields as $cv)
 				{
 					if (isset($val['field_id_'.$cv['field_id']]) AND $val['field_id_'.$cv['field_id']] != '')
 					{
-						ee()->load->library('typography');
-						ee()->typography->initialize(array(
-							'convert_curly'	=> FALSE
-						));
-
 						$field_content = ee()->typography->parse_type(
 							$val['field_id_'.$cv['field_id']],
 							array(
@@ -3436,17 +3437,17 @@ class Channel {
 							$chunk = str_replace($ckey, reduce_double_slashes($cval.'/'.$cat_seg), $chunk);
 						}
 
-						// parse custom fields
+						// Load typography library for custom fields
+						ee()->load->library('typography');
+						ee()->typography->initialize(array(
+							'convert_curly'	=> FALSE
+						));
 
+						// parse custom fields
 						foreach($this->catfields as $cfv)
 						{
 							if (isset($row['field_id_'.$cfv['field_id']]) AND $row['field_id_'.$cfv['field_id']] != '')
 							{
-								ee()->load->library('typography');
-								ee()->typography->initialize(array(
-									'convert_curly'	=> FALSE
-								));
-
 								$field_content = ee()->typography->parse_type(
 									$row['field_id_'.$cfv['field_id']],
 									array(
@@ -3915,16 +3916,17 @@ class Channel {
 					}
 				}
 
+				// Load typography library for custom fields
+				ee()->load->library('typography');
+				ee()->typography->initialize(array(
+					'convert_curly'	=> FALSE
+				));
+
 				// parse custom fields
 				foreach($this->catfields as $ccv)
 				{
 					if (isset($val['field_id_'.$ccv['field_id']]) AND $val['field_id_'.$ccv['field_id']] != '')
 					{
-						ee()->load->library('typography');
-						ee()->typography->initialize(array(
-							'convert_curly'	=> FALSE
-						));
-
 						$field_content = ee()->typography->parse_type(
 							$val['field_id_'.$ccv['field_id']],
 							array(
@@ -4266,18 +4268,17 @@ class Channel {
 			ee()->TMPL->tagdata = ee()->file_field->parse_string(ee()->TMPL->tagdata);
 		}
 
+		// Load typography library for custom fields
+		ee()->load->library('typography');
+		ee()->typography->initialize(array(
+			'convert_curly'	=> FALSE
+		));
 
 		// parse custom fields
 		foreach($this->catfields as $ccv)
 		{
 			if ($query->row('field_id_'.$ccv['field_id']) AND $query->row('field_id_'.$ccv['field_id']) != '')
 			{
-				// parse custom fields
-				ee()->load->library('typography');
-				ee()->typography->initialize(array(
-					'convert_curly'	=> FALSE
-				));
-
 				$field_content = ee()->typography->parse_type(
 					$query->row('field_id_'.$ccv['field_id']),
 					array(
