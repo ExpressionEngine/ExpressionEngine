@@ -61,6 +61,7 @@ class EE_Template {
 	var $var_pair			= array();		// "Paired" variables
 	var $global_vars		= array();		// This array can be set via the path.php file
 	var $embed_vars		 	= array();		// This array can be set via the {embed} tag
+	var $layout_vars		= array();		// This array can be set via the {layout} tag
 	var $segment_vars		= array();		// Array of segment variables
 
 	var $tagparts			= array();		// The parts of the tag: {exp:comment:form}
@@ -214,7 +215,7 @@ class EE_Template {
 	 * @param	int
 	 * @return	void
 	 */
-	public function fetch_and_parse($template_group = '', $template = '', $sub = FALSE, $site_id = '')
+	public function fetch_and_parse($template_group = '', $template = '', $sub = FALSE, $site_id = '', $is_layout = FALSE)
 	{
 		// add this template to our subtemplate tracker
 		$this->templates_sofar = $this->templates_sofar.'|'.$site_id.':'.$template_group.'/'.$template.'|';
@@ -233,7 +234,7 @@ class EE_Template {
 
 		$this->log_item("Template Type: ".$this->template_type);
 
-		$this->parse($this->template, $sub, $site_id);
+		$this->parse($this->template, $sub, $site_id, $is_layout);
 
 		// -------------------------------------------
 		// 'template_post_parse' hook.
@@ -261,7 +262,7 @@ class EE_Template {
 	 * @param	string
 	 * @return	void
 	 */
-	public function parse(&$str, $sub = FALSE, $site_id = '')
+	public function parse(&$str, $sub = FALSE, $site_id = '', $is_layout = FALSE)
 	{
 		if ($str != '')
 		{
@@ -364,11 +365,42 @@ class EE_Template {
 			}
 		}
 
+		$layout_conditionals = array();
+
+		// Parse {layout} tag variables
+		if ($is_layout === TRUE && count($this->layout_vars) > 0)
+		{
+			$this->log_item("layout Variables (Keys): ".implode('|', array_keys($this->layout_vars)));
+			$this->log_item("layout Variables (Values): ".trim(implode('|', $this->layout_vars)));
+
+			foreach ($this->layout_vars as $key => $val)
+			{
+				$layout_conditionals['layout:'.$key] = $val;
+				$this->template = str_replace(LD.'layout:'.$key.RD, $val, $this->template);
+			}
+		}
+
 		// cleanup of leftover/undeclared embed variables
 		// don't worry with undeclared embed: vars in conditionals as the conditionals processor will handle that adequately
 		if (strpos($this->template, LD.'embed:') !== FALSE)
 		{
 			$this->template = preg_replace('/'.LD.'embed:([^!]+?)'.RD.'/', '', $this->template);
+		}
+
+/* @todo this clashes with layout:content
+		// cleanup of leftover/undeclared layout variables
+		if (strpos($this->template, LD.'layout:') !== FALSE)
+		{
+			$this->template = preg_replace('/'.LD.'layout:([^!]+?)'.RD.'/', '', $this->template);
+		}
+*/
+		// Cache the name of the layout. We do this here so that we can force
+		// layouts to be declared before module or plugin tags. That is the only
+		// reasonable way of using these - right at the top.
+		// @todo enforce the substring and make sure there is only one layout
+		if ($is_layout === FALSE)
+		{
+			$layout = $this->find_layout();
 		}
 
 		// Parse date format string "constants"
@@ -422,6 +454,7 @@ class EE_Template {
 
 			$this->final_template = $this->template;
 			$this->process_sub_templates($this->template);
+			$this->process_layout_template($this->template, $layout);
 			return;
 		}
 
@@ -437,10 +470,11 @@ class EE_Template {
 		}
 
 		// Smite Our Enemies:  Conditionals
-		$this->log_item("Parsing Segment, Embed, and Global Vars Conditionals");
+		$this->log_item("Parsing Segment, Embed, Layout, and Global Vars Conditionals");
 
 		$this->template = $this->parse_simple_segment_conditionals($this->template);
 		$this->template = $this->simple_conditionals($this->template, $this->embed_vars);
+		$this->template = $this->simple_conditionals($this->template, $layout_conditionals);
 		$this->template = $this->simple_conditionals($this->template, ee()->config->_global_vars);
 
 		// Assign Variables
@@ -496,14 +530,164 @@ class EE_Template {
 		// The sub-template routine will insert embedded
 		// templates into the master template
 
-		if ($sub == FALSE)
+		if ($sub == FALSE && $is_layout == FALSE)
 		{
 			$this->final_template = $this->template;
 			$this->process_sub_templates($this->template);
+			$this->process_layout_template($this->template, $layout);
 		}
-	 }
+	}
+
+	protected function find_layout()
+	{
+		$layout = NULL;
+		$first_tag = strpos($this->template, LD.'exp:');
+
+		if (preg_match('/('.LD.'layout\s*=)(.*?)'.RD.'/s', $this->template, $match))
+		{
+			$layout = $match;
+
+			// remove the tag
+			$this->template = str_replace($match[0], '', $this->template);
+		}
+
+		return $layout;
+	}
 
 	// --------------------------------------------------------------------
+
+	// @todo this shares a lot of code with process_sub_template: ABSTRACT ME!
+	public function process_layout_template($template, $layout)
+	{
+		if ( ! isset($layout))
+		{
+			return;
+		}
+
+		$this->log_item("Processing Layout Templates");
+
+		$this->depth++;
+
+		$layout[0] = ee()->functions->full_tag($layout[0], $template);
+		$layout[2] = substr(str_replace($layout[1], '', $layout[0]), 0, -1);
+
+		$parts = preg_split("/\s+/", $layout[2], 2);
+
+		$layout_vars = (isset($parts[1])) ? ee()->functions->assign_parameters($parts[1]) : array();
+
+		if ($layout_vars === FALSE)
+		{
+			$layout_vars = array();
+		}
+
+		$this->layout_vars = array_merge($this->layout_vars, $layout_vars);
+
+		// Handle {layout:set}
+		// We do this after parsing the layout parameters so that the parameters
+		// act as a default that can be overriden in the template.
+		if (preg_match_all('/('.LD.'layout:set)\s*(.*?)'.RD.'/s', $template, $matches))
+		{
+			foreach ($matches[2] as $key => $val)
+			{
+				if (strpos($val, LD) !== FALSE)
+				{
+					$matches[0][$key] = ee()->functions->full_tag($matches[0][$key], $template);
+					$matches[2][$key] = substr(str_replace($matches[1][$key], '', $matches[0][$key]), 0, -1);
+					$template = str_replace($matches[0][$key], '', $template);
+				}
+			}
+
+			foreach($matches[2] as $key => $val)
+			{
+				$params = ee()->functions->assign_parameters($val);
+
+				if ($params === FALSE)
+				{
+					continue;
+				}
+
+				if ( ! isset($params['name']))
+				{
+					$this->log_item("SKIPPING layout:set - no name given");
+					continue;
+				}
+
+				$layout_var_name = $params['name'];
+
+				if ( ! isset($params['value']))
+				{
+					// @todo find closest closing tag
+				}
+				else
+				{
+					$this->layout_vars[$layout_var_name] = $params['value'];
+				}
+
+				$this->final_template = str_replace($matches[0][$key], '', $this->final_template);
+			}
+		}
+
+
+		$val = trim_slashes(strip_quotes($parts[0]));
+
+		if (strpos($val, '/') === FALSE)
+		{
+			continue;
+		}
+
+		$ex = explode("/", trim($val));
+
+		if (count($ex) != 2)
+		{
+			continue;
+		}
+
+		// Determine Site
+		$site_id = ee()->config->item('site_id');
+
+		if (stristr($ex[0], ':'))
+		{
+			$name = substr($ex[0], 0, strpos($ex[0], ':'));
+
+			if (ee()->config->item('multiple_sites_enabled') == 'y' && ! IS_CORE)
+			{
+				if (count($this->sites) == 0)
+				{
+					// This should really be cached somewhere
+					ee()->db->select('site_id, site_name');
+					$sites_query = ee()->db->get('sites');
+
+					foreach($sites_query->result_array() as $row)
+					{
+						$this->sites[$row['site_id']] = $row['site_name'];
+					}
+				}
+
+				$site_id = array_search($name, $this->sites);
+
+				if (empty($site_id))
+				{
+					$site_id = ee()->config->item('site_id');
+				}
+			}
+
+			$ex[0] = str_replace($name.':', '', $ex[0]);
+		}
+
+		$this->fetch_and_parse($ex[0], $ex[1], FALSE, $site_id, TRUE);
+
+		// Check for a layout in the layout. Urgh.
+		$layout = $this->find_layout();
+
+		$this->final_template = str_replace(LD.'layout:content'.RD, $this->final_template, $this->template);
+
+		$this->embed_type = '';
+
+		// Here we go again!  Wheeeeeee.....
+		$this->process_sub_templates($this->template);
+		$this->process_layout_template($this->final_template, $layout);
+	}
+
 
 	/**
 	 * Processes Any Embedded Templates in String
