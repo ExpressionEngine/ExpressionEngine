@@ -3134,7 +3134,7 @@ class Members extends CP_Controller {
 
 		$this->view->cp_page_title = lang('ip_search');
 
-		$vars['message'] = $message;
+		$vars['cp_messages']['error'] = $message;
 
 		$this->cp->render('members/ip_search', $vars);
 	}
