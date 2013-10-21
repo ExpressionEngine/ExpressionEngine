@@ -198,7 +198,7 @@ class EE_Actions {
 
 		if ($method != '')
 		{
-			if ( ! method_exists($ACT, $method))
+			if ( ! is_callable(array($ACT, $method)))
 			{
 				if (ee()->config->item('debug') >= 1)
 				{
