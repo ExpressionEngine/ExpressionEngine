@@ -7,7 +7,9 @@ namespace EllisLab\ExpressionEngine\Core\Validation;
 class Validation {
 
 	protected $namespaces = array(
-		'EllisLab\\ExpressionEngine\\Service\\Validation\\Rule\\'
+		'EllisLab\\ExpressionEngine\\Core\\Validation\\Rule\\',
+		'EllisLab\\ExpressionEngine\\Library\\Email\\Validation\\Rule',
+		'EllisLab\\ExpressionEngine\\Library\\IpAddress\\Validation\\Rule'
 	);
 
 	/**

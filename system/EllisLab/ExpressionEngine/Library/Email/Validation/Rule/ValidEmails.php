@@ -1,5 +1,5 @@
 <?php
-namespace EllisLab\ExpressionEngine\Core\Validation\Rule;
+namespace EllisLab\ExpressionEngine\Library\Email\Validation\Rule;
 
 use EllisLab\ExpressionEngine\Core\Validation\ValidationRule as ValidationRule;
 
@@ -11,18 +11,19 @@ use EllisLab\ExpressionEngine\Core\Validation\ValidationRule as ValidationRule;
  * @param	value
  * @return	bool
  */
-class ValidEmail extends ValidationRule {
+class ValidEmails extends ValidationRule {
 
 	public function validate($value)
 	{
+		$email_rule = new ValidEmail();
 		if (strpos($value, ',') === FALSE)
 		{
-			return EmailLibrary::getInstance()->isValidEmail(trim($value));
+			return $email_rule->validate(trim($value));
 		}
 
 		foreach(explode(',', $value) as $email)
 		{
-			if (trim($email) != '' && EmailLibrary::getInstance()->isValidEmail(trim($email)) === FALSE)
+			if (trim($email) != '' && $email_rule->validate(trim($email)) === FALSE)
 			{
 				return FALSE;
 			}
