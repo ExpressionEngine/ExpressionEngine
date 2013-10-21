@@ -365,11 +365,14 @@ class Grid_model extends CI_Model {
 
 			ee()->load->helper('array_helper');
 
+			$orderby = element('orderby', $options);
+			if ($orderby == 'random' || empty($orderby))
+			{
+				$orderby = 'row_order';
+			}
+
 			ee()->db->where_in('entry_id', $entry_ids)
-				->order_by(
-					element('orderby', $options, 'row_order'),
-					element('sort', $options, 'asc')
-				);
+				->order_by($orderby, element('sort', $options, 'asc'));
 
 			// -------------------------------------------
 			// 'grid_query' hook.
@@ -463,15 +466,18 @@ class Grid_model extends CI_Model {
 
 		// orderby parameter can only order by the columns available to it,
 		// default to 'row_id'
-		if ( ! in_array($orderby, array_keys($sortable_columns)))
+		if ($orderby != 'random')
 		{
-			$orderby = 'row_order';
-		}
-		// Convert the column name to its matching table column name to hand
-		// off to the query for proper sorting
-		else
-		{
-			$orderby = 'col_id_'.$sortable_columns[$orderby];
+			if ( ! in_array($orderby, array_keys($sortable_columns)))
+			{
+				$orderby = 'row_order';
+			}
+			// Convert the column name to its matching table column name to hand
+			// off to the query for proper sorting
+			else
+			{
+				$orderby = 'col_id_'.$sortable_columns[$orderby];
+			}
 		}
 
 		// Gather search:field_name parameters
