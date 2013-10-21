@@ -535,6 +535,13 @@ class Member_auth extends Member {
 	 */
 	public function member_logout()
 	{
+		// Check Form Hash
+		$xid = ee()->input->get('XID') ? ee()->input->get('XID') : '';
+		if ( ! ee()->security->secure_forms_check($xid))
+		{
+			return ee()->output->show_user_error('general', array(lang('not_authorized')));
+		}
+
 		// Kill the session and cookies
 		ee()->db->where('site_id', ee()->config->item('site_id'));
 		ee()->db->where('ip_address', ee()->input->ip_address());

@@ -154,6 +154,16 @@ class Grid_parser {
 		$entry_data = $entry_data[$entry_id];
 		$field_name = $this->grid_field_names[$field_id];
 
+		// Add field_row_index and field_row_count variables to get the index
+		// and count of rows in the field regardless of front-end output
+		$field_row_count = 1;
+		foreach ($entry_data as &$entry_data_row)
+		{
+			$entry_data_row['field_row_index'] = $field_row_count - 1;
+			$entry_data_row['field_row_count'] = $field_row_count;
+			$field_row_count++;
+		}
+
 		// :field_total_rows single variable
 		// Currently does not work well with fixed_order and search params
 		$field_total_rows = count($entry_data);
@@ -206,6 +216,12 @@ class Grid_parser {
 			}
 		}
 
+		// Order by random
+		if ($params['orderby'] == 'random')
+		{
+			shuffle($entry_data);
+		}
+
 		// We'll handle limit and offset parameters this way; we can't do
 		// it via SQL because we query for multiple entries at once
 		$display_entry_data = array_slice(
@@ -215,7 +231,12 @@ class Grid_parser {
 			TRUE
 		);
 
-		$row_ids = array_keys($entry_data);
+		// Collect row IDs
+		$row_ids = array();
+		foreach ($display_entry_data as $row)
+		{
+			$row_ids[] = $row['row_id'];
+		}
 
 		// :total_rows single variable
 		$total_rows = count($display_entry_data);
@@ -431,6 +452,7 @@ class Grid_parser {
 					$column,
 					$field_id,
 					$entry_id,
+					$row['row_id'],
 					array(
 						'modifier'	=> $modifier,
 						'params'	=> $params
@@ -453,6 +475,7 @@ class Grid_parser {
 					$column,
 					$field_id,
 					$entry_id,
+					$row['row_id'],
 					$field,
 					$channel_row
 				);
@@ -556,6 +579,8 @@ class Grid_parser {
 	 *
 	 * @param	array	Column information
 	 * @param	string	Unique row identifier
+	 * @param	int		Field ID of Grid field
+	 * @param	int		Entry ID being processed or parsed
 	 * @return	object	Fieldtype object
 	 */
 	public function instantiate_fieldtype($column, $row_name = NULL, $field_id = 0, $entry_id = 0)
@@ -648,11 +673,18 @@ class Grid_parser {
 	 * Calls fieldtype's grid_replace_tag/replace_tag given tag properties
 	 * (modifier, params) and returns the result
 	 *
-	 * @param	int		Entry ID of current entry being parsed
-	 * @param	string	Tag data at this point of the channel parsing
+	 * @param	array	Column array from database
+	 * @param	int		Field ID of Grid field being parsed
+	 * @param	int		Entry ID of entry being parsed
+	 * @param	int		Grid row ID of row being parsed
+	 * @param	array	Array containing modifier and params for field
+	 * 					being parsed
+	 * @param	string	Field data to send to fieldtype for processing and
+	 * 					parsing
+	 * @param	string	Tag data for tag pairs being parsed
 	 * @return	string	Tag data with all Grid fields parsed
 	 */
-	protected function _replace_tag($column, $field_id, $entry_id, $field, $data, $content = FALSE)
+	protected function _replace_tag($column, $field_id, $entry_id, $row_id, $field, $data, $content = FALSE)
 	{
 		$fieldtype = $this->instantiate_fieldtype($column, NULL, $field_id, $entry_id);
 
@@ -672,6 +704,9 @@ class Grid_parser {
 			'row' => $data,
 			'content_id' => $entry_id
 		));
+
+		// Add row ID to settings array
+		$fieldtype->settings['grid_row_id'] = $row_id;
 
 		$data = $this->call('pre_process', $data['col_id_'.$column['col_id']]);
 

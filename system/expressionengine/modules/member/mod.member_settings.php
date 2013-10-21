@@ -367,9 +367,9 @@ class Member_settings extends Member {
 
 		if ($timezone == '')
 		{
-			$timezone = ($this->config->item('default_site_timezone')
-				 && $this->config->item('default_site_timezone') != '') ?
-				 $this->config->item('default_site_timezone') : 'UTC';
+			$timezone = (ee()->config->item('default_site_timezone')
+				 && ee()->config->item('default_site_timezone') != '') ?
+				 ee()->config->item('default_site_timezone') : 'UTC';
 		}
 
 
