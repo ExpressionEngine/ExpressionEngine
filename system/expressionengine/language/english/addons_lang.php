@@ -36,7 +36,7 @@ $lang = array(
 
 'delete_fieldtype_confirm'		=>		'Are you sure you want to remove this fieldtype?',
 'delete_fieldtype'				=>		'Remove Fieldtype',
-'data_will_be_lost'				=>		'All data associated with this fieldtype, including all associated channel data, will be permanently deleted!',
+'fieldtype_data_will_be_lost'	=>		'All data associated with this fieldtype, including all associated channel data, will be permanently deleted!',
 'global_settings_saved'			=>		'Settings Saved',
 
 'package_settings'				=>		'Package Settings',

@@ -3,6 +3,10 @@
 <?=form_open($form_action)?>
 
 <?php
+if (isset($components['fieldtype'])){
+	echo '<p class="notice">'.lang('fieldtype_data_will_be_lost').'</p>';
+}
+
 $this->table->set_heading(
 	array('data' => lang('component'), 'style' => 'width:40%;'),
 	array('data' => lang('status')),
