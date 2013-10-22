@@ -50,48 +50,34 @@ Class Rss_parser {
 		ee()->load->library('rss_parser');
 		$feed = ee()->rss_parser->create($url, $refresh, $this->cache_name);
 
-		// Check to see if the feed was initialized, if so, deal with the type
-		$success = $feed->init();
-		$feed->handle_content_type();
-
-		// Parse the variables
-		if ($success)
+		// Make sure there's at least one item
+		if ($feed->get_item_quantity() <= 0)
 		{
-			// Make sure there's at least one item
-			if ($feed->get_item_quantity() <= 0)
-			{
-				$this->return_data = ee()->TMPL->no_results();
-			}
-
-			$content = array(
-				'feed_items' 		=> $this->_map_feed_items($feed, $limit, $offset),
-
-				// Feed Information
-				'feed_title'		=> $feed->get_title(),
-				'feed_link'			=> $feed->get_link(),
-				'feed_copyright'	=> $feed->get_copyright(),
-				'feed_description'	=> $feed->get_description(),
-				'feed_language'		=> $feed->get_language(),
-
-				// Feed Logo Information
-				'logo_url'			=> $feed->get_image_url(),
-				'logo_title'		=> $feed->get_image_title(),
-				'logo_link'			=> $feed->get_image_link(),
-				'logo_width'		=> $feed->get_image_width(),
-				'logo_height'		=> $feed->get_image_height()
-			);
-
-			$this->return_data = ee()->TMPL->parse_variables(
-				ee()->TMPL->tagdata,
-				array($content)
-			);
-		}
-		// Feed couldn't be fetched, put the error into the Template log
-		else
-		{
-			ee()->TMPL->log_item("RSS Parser Error: ".$feed->error());
 			$this->return_data = ee()->TMPL->no_results();
 		}
+
+		$content = array(
+			'feed_items' 		=> $this->_map_feed_items($feed, $limit, $offset),
+
+			// Feed Information
+			'feed_title'		=> $feed->get_title(),
+			'feed_link'			=> $feed->get_link(),
+			'feed_copyright'	=> $feed->get_copyright(),
+			'feed_description'	=> $feed->get_description(),
+			'feed_language'		=> $feed->get_language(),
+
+			// Feed Logo Information
+			'logo_url'			=> $feed->get_image_url(),
+			'logo_title'		=> $feed->get_image_title(),
+			'logo_link'			=> $feed->get_image_link(),
+			'logo_width'		=> $feed->get_image_width(),
+			'logo_height'		=> $feed->get_image_height()
+		);
+
+		$this->return_data = ee()->TMPL->parse_variables(
+			ee()->TMPL->tagdata,
+			array($content)
+		);
 	}
 
 	// -------------------------------------------------------------------------
