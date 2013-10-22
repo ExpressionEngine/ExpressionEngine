@@ -16,23 +16,23 @@
 <div class='topBarLinks'>
 
 {if logged_out}
-	<a href="{path:login}">Login</a>	
+	<a href="{path:login}">{lang:login}</a>
 	&nbsp;&nbsp;&middot;&nbsp;&nbsp;
-	<a href="{path:register}">Register</a>	
+	<a href="{path:register}">{lang:register}</a>
 	&nbsp;&nbsp;&middot;&nbsp;&nbsp;
-	<a href="{path:memberlist}">Member List</a>
+	<a href="{path:memberlist}">{lang:member_list}</a>
 {/if}
 
 {if logged_in}
-	Logged in as:&nbsp;&nbsp;<b>{screen_name}</b>
+	{lang:logged_in_as}:&nbsp;&nbsp;<b>{screen_name}</b>
 	&nbsp;&nbsp;&middot;&nbsp;&nbsp;
-	<a href="{path:your_profile}">Your Profile</a>
+	<a href="{path:your_profile}">{lang:your_profile}</a>
 	&nbsp;&nbsp;&middot;&nbsp;&nbsp;
-	<a href="{path:your_control_panel}">Your Control Panel</a>
+	<a href="{path:your_control_panel}">{lang:your_control_panel}</a>
 	&nbsp;&nbsp;&middot;&nbsp;&nbsp;
-	<a href="{path:memberlist}">Member List</a>
+	<a href="{path:memberlist}">{lang:member_list}</a>
 	&nbsp;&nbsp;&middot;&nbsp;&nbsp;
-	<a href="{path:logout}">Log-Out</a>
+	<a href="{path:logout}">{lang:logout}</a>
 {/if}
 
 </div>
@@ -43,21 +43,21 @@
 <div id="subheader">
 <div class="itempadbig"><div class="breadcrumb">
 
-<a href="{path:wiki_home}">Wiki Home</a>
+<a href="{path:wiki_home}">{lang:wiki_home}</a>
 <span class="breadcrumbspacer">&nbsp;&nbsp;&gt;&nbsp;&nbsp;</span>
 
 {if edit_article}
 <a href="{path:view_article}">{title}</a>
-{if can_edit}<span class="breadcrumbspacer">&nbsp;&nbsp;&gt;&nbsp;&nbsp;</span>Editing{/if}
-{if cannot_edit}<span class="breadcrumbspacer">&nbsp;&nbsp;&gt;&nbsp;&nbsp;</span>Source{/if}
+{if can_edit}<span class="breadcrumbspacer">&nbsp;&nbsp;&gt;&nbsp;&nbsp;</span>{lang:editing}{/if}
+{if cannot_edit}<span class="breadcrumbspacer">&nbsp;&nbsp;&gt;&nbsp;&nbsp;</span>{lang:source}{/if}
 
 {if:elseif article_history}
 <a href="{path:view_article}">{title}</a>
-<span class="breadcrumbspacer">&nbsp;&nbsp;&gt;&nbsp;&nbsp;</span>History
+<span class="breadcrumbspacer">&nbsp;&nbsp;&gt;&nbsp;&nbsp;</span>{lang:history}
 
 {if:elseif revision}
 <a href="{path:view_article}">{title}</a>
-<span class="breadcrumbspacer">&nbsp;&nbsp;&gt;&nbsp;&nbsp;</span>Revision - {revision_id}
+<span class="breadcrumbspacer">&nbsp;&nbsp;&gt;&nbsp;&nbsp;</span>{lang:revision} - {revision_id}
 
 {if:else}
 {title}
@@ -76,14 +76,14 @@
 <div id="actMenu">
 <ul>
 {if special_page}
-<li><a href="{path:view_article}">Special Page</a></li>
+<li><a href="{path:view_article}">{lang:special_page}</a></li>
 {if:elseif file_page}
-<li><a href="{path:view_article}">File Page</a></li>
+<li><a href="{path:view_article}">{lang:file_page}</a></li>
 {if:else}
-<li><a href="{path:view_article}">View</a></li>
+<li><a href="{path:view_article}">{lang:view}</a></li>
 {if can_edit}
-<li><a href="{path:edit_article}{if revision}/revision/{revision_id}/{/if}">Edit</a></li>
-<li><a href="{path:article_history}">History</a></li>
+<li><a href="{path:edit_article}{if revision}/revision/{revision_id}/{/if}">{lang:edit}</a></li>
+<li><a href="{path:article_history}">{lang:history}</a></li>
 {/if}
 {/if}
 </ul>
@@ -98,10 +98,10 @@
 {/if}
 
 {if article_history}
-Viewing History: 
+{lang:viewing_history}:
 {/if}
 {if revision}
-Revision: 
+{lang:revision}:
 {/if}
 
 {if topic == 'index'}
@@ -117,20 +117,20 @@ Revision:
 <div id="content">
 
 {if redirected}
-<div class="lighttext">Redirected from: <a href="{path:original_page}">{original_page}</a></div>
+<div class="lighttext">{lang:redirected_from}: <a href="{path:original_page}">{original_page}</a></div>
 {/if}
 
 {if redirect_page}
-<div class="lighttext">Page Redirects To: <a href="{path:redirect_page}">{redirect_page}</a></div>
+<div class="lighttext">{lang:page_redirects_to}: <a href="{path:redirect_page}">{redirect_page}</a></div>
 {/if}
 
 {if new_article}
-<strong>This Article Does Not Exist Yet.</strong><br /><br />
+<strong>{lang:no_article}</strong><br /><br />
 {if can_edit}
-Click Edit to Create!
+{lang:click_edit_to_create}
 {/if}
 {if cannot_edit}
-You are unable to add articles to the wiki. Sorry!
+{lang:cannot_add}
 {/if}
 {/if}
 
@@ -149,55 +149,55 @@ You are unable to add articles to the wiki. Sorry!
 </div>
 
 <div class="itemHeader">
-<h2>Navigation</h2>
+<h2>{lang:navigation}</h2>
 </div>
 <div class="navMenu sideItem">
 <ul>
-<li><a href="{path:wiki_home}">Wiki Home</a></li>
-<li><a href="http://ellislab.com/expressionengine/user-guide/modules/wiki/getting_started.html">Wiki Help</a></li>
-<li><a href="{path:wiki_base_url}{special_namespace}:Categories" title="{special_namespace}:Categories">Categories</a></li>
-<li><a href="{path:wiki_base_url}{special_namespace}:Titles" title="List of Titles">Title List</a></li>
-<li><a href="{path:wiki_base_url}{special_namespace}:Uncategorized" title="Uncategorized Pages">Uncategorized Pages</a></li>
-<li><a href="{path:wiki_base_url}{special_namespace}:Random_page" title="Random Page">Random Page</a></li>
+<li><a href="{path:wiki_home}">{lang:wiki_home}</a></li>
+<li><a href="http://ellislab.com/expressionengine/user-guide/modules/wiki/getting_started.html">{lang:wiki_help}</a></li>
+<li><a href="{path:wiki_base_url}{special_namespace}:Categories" title="{special_namespace}:{lang:categories}">{lang:categories}</a></li>
+<li><a href="{path:wiki_base_url}{special_namespace}:Titles" title="{lang:list_of_titles}">{lang:title_list}</a></li>
+<li><a href="{path:wiki_base_url}{special_namespace}:Uncategorized" title="{lang:uncategorized_pages}">{lang:uncategorized_pages}</a></li>
+<li><a href="{path:wiki_base_url}{special_namespace}:Random_page" title="{lang:random_page}">{lang:random_page}</a></li>
 {if uploads}
-<li><a href="{path:wiki_base_url}{special_namespace}:Uploads" title="Uploads">File Upload</a></li>
-<li><a href="{path:wiki_base_url}{special_namespace}:Files" title="Uploaded Files">Uploaded Files</a></li>
+<li><a href="{path:wiki_base_url}{special_namespace}:Uploads" title="{lang:uploads}">{lang:file_upload}</a></li>
+<li><a href="{path:wiki_base_url}{special_namespace}:Files" title="{lang:uploaded_files}">{lang:uploaded_files}</a></li>
 {/if}
-<li><a href="{path:wiki_base_url}{special_namespace}:Recentchanges" title="Recent Changes Page">Recent Changes</a></li>
-<li><a href="{path:wiki_base_url}{special_namespace}:Recentchanges_RSS" title="Recent Changes in RSS">RSS</a></li>
-<li><a href="{path:wiki_base_url}{special_namespace}:Recentchanges_Atom" title="Recent Changes in Atom">Atom</a></li>
-{if article}<li><a href="{path:wiki_base_url}{special_namespace}:Associated_Pages/{url_title}" title="What Links Here">What Links Here</a></li>{/if}
+<li><a href="{path:wiki_base_url}{special_namespace}:Recentchanges" title="{lang:recent_changes_page}">{lang:recent_changes}</a></li>
+<li><a href="{path:wiki_base_url}{special_namespace}:Recentchanges_RSS" title="{lang:recent_changes_rss}">{lang:rss}</a></li>
+<li><a href="{path:wiki_base_url}{special_namespace}:Recentchanges_Atom" title="{lang:recent_changes_atom}">{lang:atom}</a></li>
+{if article}<li><a href="{path:wiki_base_url}{special_namespace}:Associated_Pages/{url_title}" title="{lang:what_links_here}">{lang:what_links_here}</a></li>{/if}
 </ul>
 </div>
 
 <div class="itemHeader">
-<h2>Search:</h2>
+<h2>{lang:search}:</h2>
 </div>
 
 <div class="sideItem">
 <form method="post" action="{path:wiki_base_url}{special_namespace}:Search_results">
 <div><input type="hidden" name="XID" value="{XID_HASH}" /></div>
 <input type="text" class="input" name="keywords" size="20" value="" maxlength="80" style="width:110px" />
-&nbsp;<input type="submit" class="submit" value="Search" />
+&nbsp;<input type="submit" class="submit" value="{lang:search}" />
 </form>
 </div>
 
 <div class="itemHeader">
-<h2>Create or Find Page:</h2>
+<h2>{lang:create_or_find_page}:</h2>
 </div>
 
 <div class="sideItem">
 <form method="post" action="{path:wiki_base_url}{special_namespace}:Find_page">
 <div><input type="hidden" name="XID" value="{XID_HASH}" /></div>
 <input type="text" class="input" name="title" size="20" value="" maxlength="80" style="width:110px" />
-&nbsp;<input type="submit" class="submit" value="Go" />
+&nbsp;<input type="submit" class="submit" value="{lang:go}" />
 
 </form>
 </div>
 
 
 <div class="itemHeader">
-<h2>Active Members:</h2>
+<h2>{lang:active_members}:</h2>
 </div>
 
 <div class="sideItem">
@@ -212,11 +212,10 @@ You are unable to add articles to the wiki. Sorry!
 
 
 <div id="footer">
-<a href="http://ellislab.com/">Powered by ExpressionEngine</a><br />
-ExpressionEngine Wiki - Version {module_version}<br />
-Script Executed in {elapsed_time} seconds
+<a href="http://ellislab.com/">{lang:powered_by_ee}</a><br />
+{lang:ee_wiki} - {lang:version} {module_version}<br />
+{lang:elapsed_time}
 </div>
 
 </body>
 </html>
-	

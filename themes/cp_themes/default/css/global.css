@@ -246,10 +246,15 @@ table a:hover {
 	margin-bottom:		3px;
 }
 
+.notice,
+.go_notice,
+.warning {
+	font-weight: bold;
+	margin: 5px 0;
+}
+
 .notice {
 	color:				#ce0000;
-	font-weight: 		bold;
-	margin: 			5px 0;
 }
 
 em.alert {
@@ -267,12 +272,14 @@ em.alert {
 
 .go_notice {
 	color:				#007822;
-	font-weight: 		bold;
-	margin: 			10px 0;
 }
 
 th .go_notice {
 	color:				#bce99a;
+}
+
+.warning {
+	color:				#ff6600;
 }
 
 .callout {

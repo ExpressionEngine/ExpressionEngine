@@ -63,24 +63,6 @@ abstract class EE_Fieldtype {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Constructor
-	 *
-	 * @deprecated This is only here to maintain backwards compatibility
-	 * for people using parent::EE_Fieldtype() and will be removed in a
-	 * later version.  Deprecated as of version 2.6
-	 */
-	public function EE_Fieldtype()
-	{
-		$this->EE =& get_instance();
-
-		// Log the deprecation.
-		ee()->load->library('logger');
-		ee()->logger->deprecated('2.6', 'EE_Fieldtype::__construct()');
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Re-initialize the class.
 	 *
 	 * Friend <Api_channel_fields>

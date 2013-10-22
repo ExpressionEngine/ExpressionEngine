@@ -551,43 +551,6 @@ class Cp {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Updates saved publish layouts
-	 *
-	 * @access	public
-	 * @param	array
-	 * @return	bool
-	 */
-	function delete_layout_tabs($tabs = array(), $namespace = '', $channel_id = array())
-	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('2.6', 'Layout::delete_layout_tabs()');
-
-		ee()->load->library('layout');
-		return ee()->layout->delete_layout_tabs($tabs, $namespace, $channel_id);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Deprecated Deletes fields from the saved publish layouts
-	 *
-	 * @access	public
-	 * @param	array or string
-	 * @param	int
-	 * @return	bool
-	 */
-	function delete_layout_fields($tabs, $channel_id = array())
-	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('2.6', 'Layout::delete_layout_fields()');
-
-		ee()->load->library('layout');
-		return ee()->layout->delete_layout_fields($tabs, $channel_id);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * URL to the current page unless POST data exists - in which case it
 	 * goes to the root controller.  To use the result, prefix it with BASE.AMP
 	 *
@@ -693,26 +656,6 @@ class Cp {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Abstracted Way to Add a Page Variable
-	 *
-	 * @access	public
-	 * @return	void
-	 */
-	function set_variable($name, $value)
-	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('2.6', 'view-><var> = <value>;');
-
-		// workaround for setting globals
-		ee()->load->vars($name, $value);
-
-		// the future!
-		ee()->view->$name = $value;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Abstracted Way to Add a Breadcrumb Links
 	 *
 	 * @access	public
@@ -724,61 +667,6 @@ class Cp {
 
 		$_crumbs[$link] = $title;
 		ee()->view->cp_breadcrumbs = $_crumbs;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Validate and Enable Secure Forms for the Control Panel
-	 *
-	 * @deprecated 2.6
-	 * @access	public
-	 * @return	void
-	 */
-	function secure_forms()
-	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('2.6', 'EE_Security::have_valid_xid()');
-
-		$hash = '';
-
-		if (ee()->config->item('secure_forms') == 'y')
-		{
-			if (count($_POST) > 0)
-			{
-				if ( ! isset($_POST['XID'])
-					OR ! ee()->security->secure_forms_check($_POST['XID']))
-				{
-					ee()->functions->redirect(BASE);
-				}
-
-				unset($_POST['XID']);
-			}
-
-			$hash = ee()->security->generate_xid();
-		}
-
-		define('XID_SECURE_HASH', $hash);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Fetch CP Themes
-	 *
-	 * Fetch control panel themes
-	 *
-	 * @access	public
-	 * @param	string
-	 * @return	string
-	 */
-	function fetch_cp_themes()
-	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('2.6', 'Admin_model::get_cp_theme_list()');
-
-		ee()->load->model('admin_model');
-		return ee()->admin_model->get_cp_theme_list();
 	}
 
 	// --------------------------------------------------------------------

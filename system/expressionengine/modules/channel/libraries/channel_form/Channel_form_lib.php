@@ -966,6 +966,7 @@ GRID_FALLBACK;
 		if ($this->datepicker)
 		{
 			$js_defaults['ui'][] = 'datepicker';
+			$js_defaults['file'][] = 'cp/date';
 		}
 
 		foreach ($js_defaults as $type => $files)
@@ -1794,6 +1795,9 @@ GRID_FALLBACK;
 				}
 			}
 
+			// Restore XID
+			ee()->security->restore_xid();
+
 			ee()->core->generate_page();
 			return;
 		}
@@ -1939,47 +1943,6 @@ GRID_FALLBACK;
 	// --------------------------------------------------------------------
 
 	/**
-	 * Decrypts a form input
-	 *
-	 * @param	mixed $input
-	 * @return	void
-	 */
-	public function decrypt_input($input, $xss_clean = TRUE)
-	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('2.6.0');
-
-		if (function_exists('mcrypt_encrypt'))
-		{
-			$decoded = rtrim(
-				mcrypt_decrypt(
-					MCRYPT_RIJNDAEL_256,
-					md5(ee()->session->sess_crypt_key),
-					base64_decode($input),
-					MCRYPT_MODE_ECB,
-					mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND)
-				),
-				"\0"
-			);
-		}
-		else
-		{
-			$raw = base64_decode($input);
-
-			$decoded = substr($raw, 0, -32);
-
-			if (substr($raw, -32) !== md5(ee()->session->sess_crypt_key.$decoded))
-			{
-				return FALSE;
-			}
-		}
-
-		return ($xss_clean) ? ee()->security->xss_clean($decoded) : $decoded;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Display a custom field
 	 *
 	 * @param	mixed $field_name
@@ -2019,33 +1982,6 @@ GRID_FALLBACK;
 		$_GET['channel_id'] = $this->entry('channel_id');
 
 		return ee()->api_channel_fields->apply('display_field', array('data' => $this->entry($field_name)));
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Encrypts a form input
-	 *
-	 * @param	mixed $input
-	 * @return	void
-	 */
-	public function encrypt_input($input)
-	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('2.6.0');
-
-		if ( ! function_exists('mcrypt_encrypt'))
-		{
-			return base64_encode($input.md5(ee()->session->sess_crypt_key.$input));
-		}
-
-		return base64_encode(mcrypt_encrypt(
-			MCRYPT_RIJNDAEL_256,
-			md5(ee()->session->sess_crypt_key),
-			$input,
-			MCRYPT_MODE_ECB,
-			mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND)
-		));
 	}
 
 	// --------------------------------------------------------------------

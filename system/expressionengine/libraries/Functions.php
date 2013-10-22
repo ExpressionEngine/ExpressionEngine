@@ -139,7 +139,8 @@ class EE_Functions {
 		if (strtolower($segment) == 'logout')
 		{
 			$qs = (ee()->config->item('force_query_string') == 'y') ? '' : '?';
-			return $this->fetch_site_index(0, 0).$qs.'ACT='.$this->fetch_action_id('Member', 'member_logout');
+			$xid = (ee()->config->item('secure_forms') == 'y') ? AMP.'XID='.XID_SECURE_HASH : '';
+			return $this->fetch_site_index(0, 0).$qs.'ACT='.$this->fetch_action_id('Member', 'member_logout').$xid;
 		}
 		// END Specials
 
@@ -262,28 +263,6 @@ class EE_Functions {
 		}
 
 		return $str;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Remove duplicate slashes from URL
-	 *
-	 * With all the URL/URI parsing/building, there is the potential
-	 * to end up with double slashes.  This is a clean-up function.
-	 *
-	 * Will likely be deprecated in 2.6, use string helper instead
-	 *
-	 * @access	public
-	 * @param	string
-	 * @return	string
-	 */
-	function remove_double_slashes($str)
-	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('2.6', 'reduce_double_slashes()');
-
-		return reduce_double_slashes($str);
 	}
 
 	// --------------------------------------------------------------------
@@ -1159,7 +1138,7 @@ class EE_Functions {
 		{
 			if ($del_root === FALSE)
 			{
-				@mkdir($path, 0777);
+				@mkdir($path, DIR_WRITE_MODE);
 
 				if ($fp = @fopen($path.'/index.html', FOPEN_WRITE_CREATE_DESTRUCTIVE))
 				{
@@ -1379,28 +1358,6 @@ class EE_Functions {
 		}
 
 		return $str;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Compile and cache relationship data
-	 *
-	 * This is used when submitting new channel entries or gallery posts.
-	 * It serializes the related entry data.  The reason it's in this
-	 * file is because it gets called from the publish class and the
-	 * gallery class so we need it somewhere that is accessible to both.
-	 *
-	 * @access	public
-	 * @param	string
-	 * @param	bool
-	 * @param	bool
-	 * @return	void
-	 */
-	function compile_relationship($data, $parent_entry = TRUE, $reverse = FALSE)
-	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('2.6');
 	}
 
 	// --------------------------------------------------------------------
