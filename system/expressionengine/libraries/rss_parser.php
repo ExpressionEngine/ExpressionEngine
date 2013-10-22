@@ -27,7 +27,7 @@ class EE_RSS_Parser {
 	public function __construct()
 	{
 		// Load in the necessary files
-		require_once(APPPATH.'libraries/simplepie/SimplePieAutoloader.php');
+		require_once(APPPATH.'libraries/simplepie/autoloader.php');
 		require_once(APPPATH.'libraries/simplepie/idn/idna_convert.class.php');
 	}
 
