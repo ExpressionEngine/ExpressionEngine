@@ -40,17 +40,15 @@ Class Rss_parser {
 
 	public function __construct()
 	{
-		$this->EE 	=& get_instance();
-
 		// Fetch Parameters and set defaults
-		$url 		= $this->EE->TMPL->fetch_param('url');
-		$limit 		= (int) $this->EE->TMPL->fetch_param('limit', 10);
-		$offset 	= (int) $this->EE->TMPL->fetch_param('offset', 0);
-		$refresh 	= (int) $this->EE->TMPL->fetch_param('refresh', 180);
-		
+		$url		= ee()->TMPL->fetch_param('url');
+		$limit		= (int) ee()->TMPL->fetch_param('limit', 10);
+		$offset		= (int) ee()->TMPL->fetch_param('offset', 0);
+		$refresh	= (int) ee()->TMPL->fetch_param('refresh', 180);
+
 		// Bring in SimplePie
-		require_once(PATH_THIRD.'rss_parser/libraries/SimplePieAutoloader.php');
-		require_once(PATH_THIRD.'rss_parser/libraries/idn/idna_convert.class.php');
+		require_once(APPPATH.'libraries/simplepie/SimplePieAutoloader.php');
+		require_once(APPPATH.'libraries/simplepie/idn/idna_convert.class.php');
 
 		$feed = new SimplePie();
 		$feed->set_feed_url($url);
@@ -70,7 +68,7 @@ Class Rss_parser {
 			// Make sure there's at least one item
 			if ($feed->get_item_quantity() <= 0)
 			{
-				$this->return_data = $this->EE->TMPL->no_results();
+				$this->return_data = ee()->TMPL->no_results();
 			}
 
 			$content = array(
@@ -91,16 +89,16 @@ Class Rss_parser {
 				'logo_height'		=> $feed->get_image_height()
 			);
 
-			$this->return_data = $this->EE->TMPL->parse_variables(
-				$this->EE->TMPL->tagdata, 
+			$this->return_data = ee()->TMPL->parse_variables(
+				ee()->TMPL->tagdata,
 				array($content)
 			);
 		}
 		// Feed couldn't be fetched, put the error into the Template log
 		else
 		{
-			$this->EE->TMPL->log_item("RSS Parser Error: ".$feed->error());
-			$this->return_data = $this->EE->TMPL->no_results();
+			ee()->TMPL->log_item("RSS Parser Error: ".$feed->error());
+			$this->return_data = ee()->TMPL->no_results();
 		}
 	}
 
@@ -129,7 +127,7 @@ Class Rss_parser {
 					$categories[] = array(
 						'category_name' => $category->get_term()
 					);
-				}					
+				}
 			}
 
 			// Get Authors
@@ -144,14 +142,14 @@ Class Rss_parser {
 						'author_link'	=> $author->get_link(),
 						'author_name'	=> $author->get_name()
 					);
-				}	
+				}
 			}
 
 			$items[] = array(
-				'item_title' 		=> $item->get_title(),
-				'item_link' 		=> $item->get_permalink(),
-				'item_date' 		=> $item->get_date('U'),
-				'item_content' 		=> $item->get_content(),
+				'item_title'		=> $item->get_title(),
+				'item_link'			=> $item->get_permalink(),
+				'item_date'			=> $item->get_date('U'),
+				'item_content'		=> $item->get_content(),
 				'item_description'	=> $item->get_description(),
 				'item_categories'	=> $categories,
 				'item_authors'		=> $authors
@@ -174,8 +172,8 @@ Class Rss_parser {
 		{
 			if ( ! @mkdir(APPPATH.'cache/'.$this->cache_name, DIR_WRITE_MODE))
 			{
-				$this->EE->TMPL->log_item("RSS Parser Error: Cache directory unwritable.");
-				return $this->EE->TMPL->no_results();
+				ee()->TMPL->log_item("RSS Parser Error: Cache directory unwritable.");
+				return ee()->TMPL->no_results();
 			}
 		}
 	}
@@ -184,12 +182,12 @@ Class Rss_parser {
 
 	/**
 	 * Plugin Usage
-	 * 
+	 *
 	 * @return void
 	 */
 	public function usage()
 	{
-		ob_start(); 
+		ob_start();
 		?>
 RSS Parser
 ===========================
@@ -249,7 +247,7 @@ The {items} variable contains all of the items found within the feed:
 {item_authors}
 ---------------------------
 
-The {item_authors} variable contains information about all of the authors of a 
+The {item_authors} variable contains information about all of the authors of a
 particular item. Each author has three single variables associated with it:
 
 - author_email
@@ -259,7 +257,7 @@ particular item. Each author has three single variables associated with it:
 {item_categories}
 ---------------------------
 
-The {item_categories} variable contains all of the categories that a feed item has 
+The {item_categories} variable contains all of the categories that a feed item has
 been assigned. Each category has one useful variable:
 
 - category_name
@@ -287,8 +285,8 @@ Version 1.0
 
 		<?php
 		$buffer = ob_get_contents();
-		
-		ob_end_clean(); 
+
+		ob_end_clean();
 
 		return $buffer;
 	}
