@@ -47,16 +47,8 @@ Class Rss_parser {
 		$refresh	= (int) ee()->TMPL->fetch_param('refresh', 180);
 
 		// Bring in SimplePie
-		require_once(APPPATH.'libraries/simplepie/SimplePieAutoloader.php');
-		require_once(APPPATH.'libraries/simplepie/idn/idna_convert.class.php');
-
-		$feed = new SimplePie();
-		$feed->set_feed_url($url);
-
-		// Establish the cache
-		$this->_check_cache();
-		$feed->set_cache_location(APPPATH.'cache/'.$this->cache_name.'/');
-		$feed->set_cache_duration($refresh * 60); // Get parameter to seconds
+		ee()->load->library('rss_parser');
+		$feed = ee()->rss_parser->create($url, $refresh, $this->cache_name);
 
 		// Check to see if the feed was initialized, if so, deal with the type
 		$success = $feed->init();
@@ -157,25 +149,6 @@ Class Rss_parser {
 		}
 
 		return $items;
-	}
-
-	// -------------------------------------------------------------------------
-
-	/**
-	 * Check to make sure the cache exists and create it otherwise
-	 * @return void
-	 */
-	private function _check_cache()
-	{
-		// Make sure the cache directory exists and is writeable
-		if ( ! @is_dir(APPPATH.'cache/'.$this->cache_name))
-		{
-			if ( ! @mkdir(APPPATH.'cache/'.$this->cache_name, DIR_WRITE_MODE))
-			{
-				ee()->TMPL->log_item("RSS Parser Error: Cache directory unwritable.");
-				return ee()->TMPL->no_results();
-			}
-		}
 	}
 
 	// -------------------------------------------------------------------------

@@ -270,7 +270,7 @@ class Addons_plugins extends CP_Controller {
 
 		$cp_message_success = '';
 		$cp_message_failure = '';
-		
+
 		if ( ! is_array($plugins))
 		{
 			$this->functions->redirect(BASE.AMP.'C=addons_plugins');
@@ -290,10 +290,10 @@ class Addons_plugins extends CP_Controller {
 				// first thing's first, let's make sure this isn't part of a package
 				$files = glob(PATH_THIRD.$name.'/*.php');
 				$pi_key = array_search(PATH_THIRD.$name.'/pi.'.$name.'.php', $files);
-				
+
 				// remove this file from the list
 				unset($files[$pi_key]);
-				
+
 				// any other PHP files in this directory?  If not, balleet!
 				if (empty($files))
 				{
@@ -310,7 +310,7 @@ class Addons_plugins extends CP_Controller {
 			else
 			{
 				$cp_message_failure .= ($success) ? lang('plugin_removal_success') : lang('plugin_removal_error');
-				$cp_message_failure .= ' '.ucwords(str_replace("_", " ", $name)).'<br>';				
+				$cp_message_failure .= ' '.ucwords(str_replace("_", " ", $name)).'<br>';
 			}
 		}
 
@@ -323,7 +323,7 @@ class Addons_plugins extends CP_Controller {
 		{
 			$cp_message['message_failure'] = $cp_message_failure;
 		}
-				
+
 		$this->session->set_flashdata($cp_message);
 		$this->functions->redirect(BASE.AMP.'C=addons_plugins');
 	}
@@ -363,7 +363,7 @@ class Addons_plugins extends CP_Controller {
 
 		$local_name = basename($file);
 		$local_file = PATH_THIRD.$local_name;
-	
+
 		// Get the remote file
 		$c = curl_init($file);
 		curl_setopt($c, CURLOPT_RETURNTRANSFER, 1);
@@ -410,7 +410,7 @@ class Addons_plugins extends CP_Controller {
 			else
 			{
 				@chmod($new_file, DIR_WRITE_MODE);
-				$cp_type = 'message_success';				
+				$cp_type = 'message_success';
 				$cp_message = lang('plugin_install_success');
 			}
 		}
@@ -424,7 +424,7 @@ class Addons_plugins extends CP_Controller {
 				$_ref = getcwd();
 
 				$zip = new PclZip($local_file);
-				
+
 				$temp_dir = PATH_THIRD.'47346fc7580de7596d7df8d115a3545d';
 				mkdir($temp_dir);
 				chdir($temp_dir);
@@ -436,7 +436,7 @@ class Addons_plugins extends CP_Controller {
 				{
 					// check if the file is sitting right here
 					$pi_files = glob($temp_dir.'/pi.*.php');
-					
+
 					if (empty($pi_files))
 					{
 						// check directories (GLOB_ONLYDIR not available on Windows < PHP 4.3.3, too bad...)
@@ -444,29 +444,29 @@ class Addons_plugins extends CP_Controller {
 						foreach (glob($temp_dir.'/*', GLOB_ONLYDIR) as $dir)
 						{
 							$pi_files = glob($dir.'/pi.*.php');
-							
+
 							if ( ! empty($pi_files))
 							{
 								break;
 							}
 						}
 					}
-					
+
 					if (empty($pi_files))
 					{
 						$cp_type = 'message_failure';
-						$cp_message = lang('plugin_error_no_plugins_found');						
+						$cp_message = lang('plugin_error_no_plugins_found');
 					}
 					else
 					{
 						$filename = basename($pi_files[0]);
 						$package = substr($filename, 3, -4);
-					
+
 						// does this add-on already exist?
 						if (is_dir(PATH_THIRD.$package))
 						{
 							$cp_type = 'message_failure';
-							$cp_message = lang('plugin_error_package_already_exists');						
+							$cp_message = lang('plugin_error_package_already_exists');
 						}
 						else
 						{
@@ -485,7 +485,7 @@ class Addons_plugins extends CP_Controller {
 
 				// cleanup temp zip directory
 				$this->functions->delete_directory($temp_dir, TRUE);
-				
+
 				// Fix loader scope
 				chdir($_ref);
 			}
@@ -543,9 +543,9 @@ class Addons_plugins extends CP_Controller {
 		{
 			foreach ($list as $file)
 			{
-				if (strncasecmp($file, 'pi.', 3) == 0 && 
-					substr($file, -$ext_len) == '.php' && 
-					strlen($file) > 7 && 
+				if (strncasecmp($file, 'pi.', 3) == 0 &&
+					substr($file, -$ext_len) == '.php' &&
+					strlen($file) > 7 &&
 					in_array(substr($file, 3, -$ext_len), $this->core->native_plugins))
 				{
 					$plugin_files[$file] = PATH_PI.$file;
@@ -573,8 +573,8 @@ class Addons_plugins extends CP_Controller {
 					}
 
 					// we gots a plugin?
-					if (strncasecmp($file, 'pi.', 3) == 0 && 
-						substr($file, -$ext_len) == '.php' && 
+					if (strncasecmp($file, 'pi.', 3) == 0 &&
+						substr($file, -$ext_len) == '.php' &&
 						strlen($file) > strlen('pi.'.'.php'))
 					{
 						if (substr($file, 3, -$ext_len) == $pkg_name)
@@ -597,8 +597,8 @@ class Addons_plugins extends CP_Controller {
 			// Magpie maight already be in use for an accessory or other function
 			// If so, we still need the $plugin_info, so we'll open it up and
 			// harvest what we need. This is a special exception for Magpie.
-			if ($file == 'pi.magpie.php' && 
-				in_array($path, get_included_files()) && 
+			if ($file == 'pi.magpie.php' &&
+				in_array($path, get_included_files()) &&
 				class_exists('Magpie'))
 			{
 				$contents = file_get_contents($path);
@@ -666,7 +666,7 @@ class Addons_plugins extends CP_Controller {
 				return FALSE;
 			}
 		}
-		
+
 		// Magpie maight already be in use for an accessory or other function
 		// If so, we still need the $plugin_info, so we'll open it up and
 		// harvest what we need. This is a special exception for Magpie.
@@ -677,7 +677,7 @@ class Addons_plugins extends CP_Controller {
 			$length = strpos($contents, 'Class Magpie') - $start;
 			eval(substr($contents, $start, $length));
 		}
-		
+
 		include_once($path);
 
 		if ( ! isset($plugin_info) OR ! is_array($plugin_info))
@@ -723,23 +723,23 @@ class Addons_plugins extends CP_Controller {
 	{
 		if ( ! defined('MAGPIE_CACHE_AGE'))
 		{
-			define('MAGPIE_CACHE_AGE', 60*60*24*3); // set cache to 3 days			
+			define('MAGPIE_CACHE_AGE', 60*60*24*3); // set cache to 3 days
 		}
-		
+
 		if ( ! defined('MAGPIE_CACHE_DIR'))
 		{
-			define('MAGPIE_CACHE_DIR', APPPATH.'cache/magpie_cache/');			
+			define('MAGPIE_CACHE_DIR', APPPATH.'cache/magpie_cache/');
 		}
-		
+
 		if ( ! defined('MAGPIE_DEBUG'))
 		{
 			define('MAGPIE_DEBUG', 0);
 		}
-		
+
 		if (class_exists('Magpie'))
 		{
 			$plugins = fetch_rss('http://expressionengine.com/feeds/pluginlist/', 60*60*24); // one req/day
-			
+
 			if (count($plugins->items) > 0)
 			{
 				return $plugins->items;
