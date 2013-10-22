@@ -528,18 +528,10 @@ class Addons_plugins extends CP_Controller {
 			// Used as a fallback name and url identifier
 			$filename = substr($file, 3, -$ext_len);
 
-			// Magpie maight already be in use for an accessory or other function
-			// If so, we still need the $plugin_info, so we'll open it up and
-			// harvest what we need. This is a special exception for Magpie.
-			if ($file == 'pi.magpie.php' &&
-				in_array($path, get_included_files()) &&
-				class_exists('Magpie'))
+			if ($temp = $this->_magpie_check($filename, $path))
 			{
-				$contents = file_get_contents($path);
-				$start = strpos($contents, '$plugin_info');
-				$length = strpos($contents, 'Class Magpie') - $start;
-				eval(substr($contents, $start, $length));
-			}
+				$plugin_info = $temp;
+			};
 
 			@include_once($path);
 
@@ -601,16 +593,10 @@ class Addons_plugins extends CP_Controller {
 			}
 		}
 
-		// Magpie maight already be in use for an accessory or other function
-		// If so, we still need the $plugin_info, so we'll open it up and
-		// harvest what we need. This is a special exception for Magpie.
-		if ($filename == 'magpie' AND in_array($path, get_included_files()) AND class_exists('Magpie'))
+		if ($temp = $this->_magpie_check($filename, $path))
 		{
-			$contents = file_get_contents($path);
-			$start = strpos($contents, '$plugin_info');
-			$length = strpos($contents, 'Class Magpie') - $start;
-			eval(substr($contents, $start, $length));
-		}
+			$plugin_info = $temp;
+		};
 
 		include_once($path);
 
@@ -640,6 +626,29 @@ class Addons_plugins extends CP_Controller {
 		}
 
 		return $plugin_info;
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Check for usage of the magpie plugin and get the plugin_info manually
+	 * @param  string $filename The filename to check
+	 * @param  String $path     Path where the file exists
+	 * @return Mixed            Returns $plugin_info if it's MagPie, otherwise
+	 *                          nothing
+	 */
+	private function _magpie_check($filename, $path)
+	{
+		// Magpie maight already be in use for an accessory or other function
+		// If so, we still need the $plugin_info, so we'll open it up and
+		// harvest what we need. This is a special exception for Magpie.
+		if ($filename == 'magpie' AND in_array($path, get_included_files()) AND class_exists('Magpie'))
+		{
+			$contents = file_get_contents($path);
+			$start = strpos($contents, '$plugin_info');
+			$length = strpos($contents, 'Class Magpie') - $start;
+			return eval(substr($contents, $start, $length));
+		}
 	}
 }
 
