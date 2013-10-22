@@ -1,7 +1,7 @@
 <?php
-namespace EllisLab\ExpressionEngine\Core\Validation;
+namespace EllisLab\ExpressionEngine\Model;
 
-Use EllisLab\ExpressionEngine\Model\Error\Error as Error;
+Use EllisLab\ExpressionEngine\Model\Error\Error;
 
 /**
  * Wrapper class for multiple errors, to be returned from validation.

@@ -46,8 +46,8 @@ class Homepage extends CP_Controller {
 		$template->template_id = 'This should not validate!';	
 		$template->template_name = 'home';
 
-		$validation = $template->validate();
-		if ($validation->failed())
+		$errors = $template->validate();
+		if ($errors->exist())
 		{
 			echo 'Failure!';
 			return;

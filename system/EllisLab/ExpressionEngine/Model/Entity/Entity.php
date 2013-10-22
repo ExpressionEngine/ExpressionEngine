@@ -1,15 +1,17 @@
 <?PHP
 namespace EllisLab\ExpressionEngine\Model\Entity;
 
-use EllisLab\ExpressionEngine\Service\Validation\Validator as Validator;
-use EllisLab\ExpressionEngine\Service\Validation\ValidationResult as ValidationResult;
+use EllisLab\ExpressionEngine\Core\Validation\Validator;
+use EllisLab\ExpressionEngine\Core\Validation\Error\ValidationError;
 
-use EllisLab\ExpressionEngine\Model\Error\ValidationError as ValidationError;
+use EllisLab\ExpressionEngine\Model\Errors;
+
 /**
  *
  */
 abstract class Entity {
 	private $di = NULL;
+
 	protected static $meta = array();
 
 	public $dirty = array();
@@ -53,7 +55,7 @@ abstract class Entity {
 	 */
 	public function validate()
 	{
-		$result = new ValidationResult();
+		$errors = new Errors();
 		// Nothing to validate!
 		if (empty($this->dirty))
 		{
@@ -65,12 +67,12 @@ abstract class Entity {
 		{
 			if ( isset($validation_rules[$property]))
 			{
-				$validator = $this->di->getValidationService()->getValidator();
+				$validator = $this->di->getValidation()->getValidator();
 				if ( ! $validator->validate($validation_rules[$property], $this->$property))
 				{
 					foreach($validator->getFailedRules() as $rule)
 					{
-						$result->addError(new ValidationError($property, $rule));
+						$errors->addError(new ValidationError($property, $rule));
 					}
 				}
 			}

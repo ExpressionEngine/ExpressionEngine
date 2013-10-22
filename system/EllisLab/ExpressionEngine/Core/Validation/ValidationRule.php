@@ -46,4 +46,16 @@ abstract class ValidationRule {
 	 */
 	public abstract function validate($value);
 
+
+	/**
+ 	 * To String
+ 	 *
+ 	 * Convert this Validation rule to a string.  Conveinence so that
+ 	 * the rule can be easily printed out.
+ 	 */
+	public function __toString()
+	{
+		return lcfirst(__CLASS__);
+	}
+
 }

@@ -1,5 +1,7 @@
 <?php
-namespace EllisLab\ExpressionEngine\Model\Error;
+namespace EllisLab\ExpressionEngine\Core\Validation\Error;
+
+use EllisLab\ExpressionEngine\Model\Error\Error;
 
 /**
  *

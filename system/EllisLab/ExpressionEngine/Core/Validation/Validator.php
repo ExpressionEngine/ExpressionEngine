@@ -84,7 +84,7 @@ class Validator {
 			$rule = ValidationService::parseRule($rule_definition);	
 			if ( ! $rule->validate($value))
 			{
-				$this->failed_rules[] = $rule_definition;	
+				$this->failed_rules[] = $rule;	
 			}
 		}
 		if ( ! empty($this->failed_rules))
