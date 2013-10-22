@@ -1,21 +1,21 @@
 <?php
 namespace EllisLab\ExpressionEngine\Core;
 
-use EllisLab\ExpressionEngine\Service\Validation\ValidationService as ValidationService;
+use EllisLab\ExpressionEngine\Core\Validation\Validation as Validation;
 use EllisLab\ExpressionEngine\Model\QueryBuilder as QueryBuilder;
 
 class Dependencies {
-	protected $validation_service = NULL;
+	protected $validation = NULL;
 	protected $query_builder = NULL;
 
-	public function getValidationService() 
+	public function getValidation() 
 	{
-		if ( ! isset($this->validation_service))
+		if ( ! isset($this->validation))
 		{
-			$this->validation_service = new ValidationService();
+			$this->validation = new Validation();
 		}
 	
-		return $this->validation_service;
+		return $this->validation;
 	}
 
 	public function getQueryBuilder()

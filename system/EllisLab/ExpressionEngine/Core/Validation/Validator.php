@@ -2,24 +2,24 @@
 namespace EllisLab\ExpressionEngine\Core\Validation;
 
 /**
- * Validation Service 
+ * Validator
  * 
- * A library which may be used to apply validation rules to a value.  May be
- * used to perform simple validation in multiple contexts.  Validates only
- * a single value at a time and produces an array of any rules that the value
- * failed to pass.
+ * Performs validation on one or more passed value/rule string sets. Parses the
+ * passed rule strings, loading the rules as it finds them.  It then tests the
+ * value against each rule and stores any failed rules.  Must be initialized
+ * with available rule namespaces in order to successfully find the needed
+ * rules.
  *
  * @example
- *		$validator = new Validator();
- *		$messages = array();
- * 		if ( ! $validator->validate($value, 'max_length[10]|password') )
- *		{
- *			$failed_rules = $validator->getFailedRules();
- *			foreach($failed_rules as $failed_rule)
- *			{
- *				$messages[] = lang($failed_rule);
- *			}
- *		}
+ * 	$validator = new Validator($namespaces);
+ * 	if ( ! $validator->validate($value))
+ * 	{
+ * 		$errors = new Errors();
+ * 		foreach($validator->getFailedRules() as $failed_rule)
+ * 		{
+ * 			$errors->addError(new ValidationError($failed_rule));
+ * 		}
+ *	}
  *
  */
 class Validator {
@@ -27,7 +27,13 @@ class Validator {
 	protected $namespaces = array();
 
 	/**
+	 * Construct the Validator and Inject Namespaces
 	 *
+	 * Takes and stores the injected Validation Rule namespaces.
+	 *
+	 * @param	string[]	$namespaces	The fully qualified namespaces in which
+	 * 		ValidationRules may reside.  In the order in which they were
+	 * 		registered, EllisLab namespaces first.
 	 */
 	public function __construct($namespaces)
 	{
@@ -62,8 +68,8 @@ class Validator {
 	 * if it doesn't.
 	 *
 	 * @param	string	$rule_definitions	The rules to validate based 
-	 *				on in piped string format.  For example: 
-     *				min_length[6]|password.
+	 *				on in piped string format.  For example:
+     *					"min_length[6]|password"
 	 * @param	mixed	$value	The value to validate.
 	 * 
 	 * @return	boolean	True on success, FALSE otherwise.  On a FALSE return
@@ -90,7 +96,23 @@ class Validator {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Parse a Rule Definition and Load the Rule Object
 	 *
+	 * Parses a rule string, including any parameters, and loads the necessary
+	 * rule object.  Checks each injected namespace for the rule, in the order
+	 * in which they were registered (EL namespaces first).  If a matching Rule
+	 * is not found, throws an exception.  Once the rule is found, it
+	 * instantiates it and passes the parsed parameters in the constructor.
+	 *
+	 * @param	string	$rule_definition	The definition of the rule to be
+	 * 		loaded. Only a single rule allowed, not a full multiple rule 
+	 * 		string.
+	 *
+	 * @return	ValidationRule	The instantiated ValidationRule object,
+	 * 		initialized with the rules parameters.
+	 *
+	 * @throws	InvalidArgumentException	If the rule fails to load for any
+	 * 		reason, an InvalidArgumentException is thrown.
 	 */
 	protected function parseRule($rule_definition)
 	{
@@ -126,4 +148,5 @@ class Validator {
 
 		throw new InvalidArgumentException('Non-existent ValidationRule, "' . $rule_definition . '", requested in validation!');
 	}
+
 }
