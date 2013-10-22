@@ -6,7 +6,7 @@
 	$heading = array();
 	$heading[] = count($plugins).' '.lang('plugin_installed');
 	$heading[] = lang('pi_version');
-	
+
 	if ($is_writable)
 	{
 		$heading[] = form_checkbox('select_all', 'true', FALSE, 'class="toggle_all"');
@@ -34,7 +34,7 @@
 		$this->table->add_row(array('data' => lang('no_plugins_exist'), 'colspan' => 2));
 	}
 ?>
-	
+
 <?php
 	if ($is_writable)
 	{

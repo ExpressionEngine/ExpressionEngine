@@ -84,10 +84,6 @@ class Addons_plugins extends CP_Controller {
 		// Grab the data
 		$plugins = $this->_get_installed_plugins();
 
-		// Remote Plugins Disabled - no 2.0 feed
-//		$remote = $this->_get_available_plugins($plugins);
-		$remote = array();
-
 		// Check folder permissions for all paths
 		$is_writable = TRUE;
 		foreach(array(PATH_PI, PATH_THIRD) as $path)
@@ -98,74 +94,12 @@ class Addons_plugins extends CP_Controller {
 			}
 		}
 
-		// Check dependencies
-		$curl_installed = ( ! extension_loaded('curl') || ! function_exists('curl_init')) ? FALSE : TRUE;
-
 		$sortby = FALSE;
 		$sort_url = FALSE;
 
-		if (count($remote) > 0)
-		{
-			$qm = ($this->config->item('force_query_string') == 'y') ? '' : '?';
-
-			$total_rows = count($remote);
-			$base		= BASE.AMP.'C=addons_plugins';
-			$perpage	= ( ! $this->input->get_post('perpage')) ? 10 : $this->input->get_post('perpage');
-			$page		= ( ! $this->input->get_post('page')) ? 0 : $this->input->get_post('page');
-			$sortby		= ( ! $this->input->get_post('sortby')) ? '' : $this->input->get_post('sortby');
-
-			if ($sortby == 'alpha')
-			{
-				$sort_url = $base;
-				$base .= AMP.'sortby=alpha';
-				usort($remote, array($this, '_plugin_title_sorter'));
-			}
-			else
-			{
-				$sort_url = $base.AMP.'sortby=alpha';
-			}
-
-			// Build the pagination
-			$this->load->library('pagination');
-
-			$config['base_url'] = $base;
-			$config['total_rows'] = $total_rows;
-			$config['per_page'] = $perpage;
-			$config['page_query_string'] = TRUE;
-			$config['query_string_segment'] = 'page';
-			$config['full_tag_open'] = '<p id="paginationLinks">';
-			$config['full_tag_close'] = '</p>';
-			$config['prev_link'] = '<img src="'.$this->cp->cp_theme_url.'images/pagination_prev_button.gif" width="13" height="13" alt="&lt;" />';
-			$config['next_link'] = '<img src="'.$this->cp->cp_theme_url.'images/pagination_next_button.gif" width="13" height="13" alt="&gt;" />';
-			$config['first_link'] = '<img src="'.$this->cp->cp_theme_url.'images/pagination_first_button.gif" width="13" height="13" alt="&lt; &lt;" />';
-			$config['last_link'] = '<img src="'.$this->cp->cp_theme_url.'images/pagination_last_button.gif" width="13" height="13" alt="&gt; &gt;" />';
-
-			$this->pagination->initialize($config);
-
-			// Extract the current page
-			$remote = array_slice($remote, $page, $perpage-1);
-
-			// Prep for output
-			foreach ($remote as $key => $item)
-			{
-				$attr = explode('|', $item['dc']['subject']);
-
-				$remote[$key]['dl_url'] = $attr[0];
-				$remote[$key]['version'] = $attr[1];
-				$remote[$key]['require'] = ( ! $attr[2] ) ? '' : $attr[2];
-				$remote[$key]['link'] = $this->functions->fetch_site_index().$qm.'URL='.$item['link'];
-				$remote[$key]['description'] = $this->functions->word_limiter($item['description'], '20');
-			}
-		}
-
 		// Assemble view variables
 		$vars['is_writable'] = $is_writable;
-		$vars['remote_install'] = ( ! $is_writable OR ! $curl_installed) ? FALSE : TRUE;
-
-		$vars['sort'] = $sortby;
-		$vars['sort_url'] = $sort_url;
 		$vars['plugins'] = $plugins;
-		$vars['remote'] = $remote;
 
 		$this->cp->render('addons/plugin_manager', $vars);
 	}
@@ -706,46 +640,6 @@ class Addons_plugins extends CP_Controller {
 		}
 
 		return $plugin_info;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Get available plugins
-	 *
-	 * Grab the EE rss feed of updated plugins
-	 *
-	 * @access	private
-	 * @param	mixed	array of local plugins
-	 * @return	mixed	array of available plugins
-	 */
-	function _get_available_plugins($local = array())
-	{
-		if ( ! defined('MAGPIE_CACHE_AGE'))
-		{
-			define('MAGPIE_CACHE_AGE', 60*60*24*3); // set cache to 3 days
-		}
-
-		if ( ! defined('MAGPIE_CACHE_DIR'))
-		{
-			define('MAGPIE_CACHE_DIR', APPPATH.'cache/magpie_cache/');
-		}
-
-		if ( ! defined('MAGPIE_DEBUG'))
-		{
-			define('MAGPIE_DEBUG', 0);
-		}
-
-		if (class_exists('Magpie'))
-		{
-			$plugins = fetch_rss('http://expressionengine.com/feeds/pluginlist/', 60*60*24); // one req/day
-
-			if (count($plugins->items) > 0)
-			{
-				return $plugins->items;
-			}
-		}
-		return array();
 	}
 }
 
