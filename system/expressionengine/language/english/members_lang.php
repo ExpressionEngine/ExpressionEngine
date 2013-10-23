@@ -115,8 +115,14 @@ $lang = array(
 "topic" =>
 "Topic",
 
+"title" =>
+"Title",
+
 "author" =>
 "Author",
+
+"comment" =>
+"Comment",
 
 "comments" =>
 "Comments",
