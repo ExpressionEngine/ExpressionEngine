@@ -763,7 +763,7 @@ class Channel_form_lib
 
 
 		$return = ee()->functions->form_declaration($form_attributes);
-		$return .= stripslashes(ee()->TMPL->tagdata);
+		$return .= ee()->TMPL->tagdata;
 		$return .= "</form>";
 
 
