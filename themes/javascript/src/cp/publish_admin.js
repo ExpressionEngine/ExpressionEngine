@@ -302,11 +302,7 @@ delete_publish_tab();
 add_publish_tab = function() {
 	tab_name = $("#tab_name").val();
 
-	var legalChars = /^[a-zA-Z0-9 _-]+$/; // allow only letters, numbers, spaces, underscores, and dashes
-
-	if ( ! legalChars.test(tab_name)) {
-		$.ee_notice(EE.lang.illegal_characters);
-	} else if (tab_name === "") {
+	if (tab_name === "") {
 		$.ee_notice(EE.lang.tab_name_required);
 	} else {
 		if ( ! _add_tab(tab_name)) {
