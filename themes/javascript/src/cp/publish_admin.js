@@ -302,7 +302,7 @@ delete_publish_tab();
 add_publish_tab = function() {
 	tab_name = $("#tab_name").val();
 
-	var legalChars = /^[^*>:+()\[\]=|"'.#]+$/; // allow all unicode characters except for css selectors 
+	var legalChars = /^[^*>:+()\[\]=|"'.#$]+$/; // allow all unicode characters except for css selectors and $ 
 
 	if ( ! legalChars.test(tab_name)) {
 		$.ee_notice(EE.lang.illegal_characters);
