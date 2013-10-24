@@ -153,17 +153,17 @@ RSS Parser
 
 There is only one tag for the RSS Parser:
 
-{exp:rss_parser url="http://expressionengine.com/feeds/rss/full/" offset="5" limit="10" refresh="720"}
+{exp:rss_parser url="http://ellislab.com/blog/rss-feed/" offset="5" limit="10" refresh="720"}
 
 Parameters
 ===========================
 
-The tag has three parameters:
+The tag has the following parameters:
 
 - url - The URL of the RSS or Atom feed.
 - limit - Number of items to display from feed.
 - offset - Skip a certain number of items in the display of the feed.
-- refresh - How often to refresh the cache file in minutes.  The plugin default is to refresh the cached file every three hours.
+- refresh - How often to refresh the cache file in minutes. The plugin default is to refresh the cached file every three hours.
 
 
 Single Variables
@@ -195,7 +195,7 @@ within {feed_items}.
 {feed_items}
 ---------------------------
 
-The {items} variable contains all of the items found within the feed:
+The {feed_items} variable contains all of the items found within the feed:
 
 - item_title
 - item_link
@@ -216,8 +216,8 @@ particular item. Each author has three single variables associated with it:
 {item_categories}
 ---------------------------
 
-The {item_categories} variable contains all of the categories that a feed item has
-been assigned. Each category has one useful variable:
+The {item_categories} variable contains all of the categories that a feed item
+has been assigned. Each category has one useful variable:
 
 - category_name
 
