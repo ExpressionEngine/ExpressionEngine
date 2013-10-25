@@ -122,6 +122,7 @@ class File_field {
 		));
 
 		$vars['allowed_file_dirs'] = $allowed_file_dirs;
+		$vars['directory'] = form_hidden($field_name.'_directory', $vars['upload_location_id']);
 		$vars['dropdown'] = form_dropdown($field_name.'_directory', $upload_dirs, $vars['upload_location_id']);
 
 		// Check to see if they have access to any directories to create an upload link

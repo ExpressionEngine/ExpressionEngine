@@ -144,7 +144,7 @@ class File_ft extends EE_Fieldtype {
 					});
 
 					container.find(".remove_file").click(function() {
-						container.find("input[type=hidden]").val(function(i, current_value) {
+						container.find("input[type=hidden][name*='hidden']").val(function(i, current_value) {
 							last_value[i] = current_value;
 							return '';
 						});
