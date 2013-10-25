@@ -54,8 +54,11 @@ class ChannelEntry extends FieldDataContentModel {
 	 * @return	Template|string	The parsed template with relevant tags replaced
 	 *							or the tagdata string with relevant tags replaced.
 	 */
-	public function render($template)
+	public function render(ParsedTemplate $template)
 	{
+		foreach($this->entities as $entity)
+		{
+		}
 		// call render on all custom fields
 	}
 

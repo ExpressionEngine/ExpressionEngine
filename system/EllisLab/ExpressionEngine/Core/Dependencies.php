@@ -8,6 +8,12 @@ class Dependencies {
 	protected $validation = NULL;
 	protected $query_builder = NULL;
 
+	public function __construct(Dependencies $di)
+	{
+		$this->validation = $di->validation;
+		$this->query_builder = $di->query_builder;
+	}
+
 	public function getValidation() 
 	{
 		if ( ! isset($this->validation))

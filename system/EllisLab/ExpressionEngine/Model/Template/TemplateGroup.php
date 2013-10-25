@@ -10,7 +10,8 @@ class TemplateGroup extends Model {
 		'entity_names'	=> array('TemplateGroupEntity'),
 		'key_map'		=> array(
 			'group_id' => 'TemplateGroupEntity'
-		)
+		),
+		'cascade' => 'Templates'
 	);
 
 	/**

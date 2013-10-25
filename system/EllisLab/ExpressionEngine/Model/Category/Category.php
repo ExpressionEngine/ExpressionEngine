@@ -26,6 +26,12 @@ class Category extends FieldDataContentModel {
 		return $this->manyToOne('CategoryGroup', 'group_id', 'group_id');
 	}
 
+
+	public function getChannelEntries()
+	{
+		return $this->manyToMany('ChannelEntry', 'cat_id');
+	}
+
 	/**
 	 *
 	 */

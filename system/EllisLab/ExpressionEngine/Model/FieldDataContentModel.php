@@ -34,4 +34,5 @@ abstract class FieldDataContentModel extends Model implements Content {
 
 		return $this->fields;	
 	}
+
 }

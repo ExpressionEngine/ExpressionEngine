@@ -400,6 +400,7 @@ abstract class Model {
 	 * @param String $to_model_name	Name of the model to relate to
 	 * @param String $this_key		Name of the relating key
 	 * @param String $that_key		Name of the key on the related model
+	 * @param String $name			The name of the method on the calling model	
 	 *
 	 * @return Relationship object or related data
 	 */
@@ -421,6 +422,7 @@ abstract class Model {
 	 * @param String $to_model_name	Name of the model to relate to
 	 * @param String $this_key		Name of the relating key
 	 * @param String $that_key		Name of the key on the related model
+	 * @param String $name			The name of the method on the calling model	
 	 *
 	 * @return Relationship object or related data
 	 */
@@ -442,6 +444,7 @@ abstract class Model {
 	 * @param String $to_model_name	Name of the model to relate to
 	 * @param String $this_key		Name of the relating key
 	 * @param String $that_key		Name of the key on the related model
+	 * @param String $name			The name of the method on the calling model	
 	 *
 	 * @return Relationship object or related data
 	 */
@@ -463,12 +466,22 @@ abstract class Model {
 	 * @param String $to_model_name	Name of the model to relate to
 	 * @param String $this_key		Name of the relating key
 	 * @param String $that_key		Name of the key on the related model
+	 * @param String $name			The name of the method on the calling model	
 	 *
 	 * @return Relationship object or related data
 	 */
 	public function manyToMany(
 		$to_model_name, $this_key, $that_key = NULL, $name=NULL)
-	{}
+	{
+		return $this->related(
+			'many-to-many',
+			$to_model_name,
+			$this_key,
+			$that_key,
+			$name
+		);
+			
+	}
 
 	/**
 	 * Retrieve the model as an array
