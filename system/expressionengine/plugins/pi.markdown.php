@@ -11,7 +11,7 @@
  * @since		Version 2.7
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -37,7 +37,7 @@ $plugin_info = array(
 class Markdown {
 
 	public $return_data;
-	
+
 	/**
 	 * Constructor
 	 */
@@ -47,6 +47,7 @@ class Markdown {
 		$encode_ee_tags	= ee()->TMPL->fetch_param('encode_ee_tags', 'yes');
 		$smartypants	= ee()->TMPL->fetch_param('smartypants', 'yes');
 
+		ee()->load->library('typography');
 		$this->return_data = ee()->typography->markdown(
 			$tagdata,
 			compact('encode_ee_tags', 'smartypants')
@@ -54,9 +55,9 @@ class Markdown {
 
 		return $this->return_data;
 	}
-	
+
 	// ----------------------------------------------------------------
-	
+
 	/**
 	 * Plugin Usage
 	 */
@@ -73,9 +74,9 @@ Text to be **parsed**.
 
 There are two parameters you can set:
 
-- encode_ee_tags - ('yes'/'no') defaults to 'yes', when set to 'no' allows EE 
+- encode_ee_tags - ('yes'/'no') defaults to 'yes', when set to 'no' allows EE
   code to be rendered
-- smartypants - ('yes'/'no') defaults to 'yes', when set to 'no' stops 
+- smartypants - ('yes'/'no') defaults to 'yes', when set to 'no' stops
   SmartyPants from running which leaves your quotes and hyphens alone
 <?php
 		$buffer = ob_get_contents();
