@@ -36,6 +36,19 @@ class EE_Template_Router extends CI_Router {
 
     protected function set_routes()
     {
+	    ee()->db->select('route_parsed, template_name, group_name');
+		ee()->db->from('templates');
+		ee()->db->join('template_groups', 'templates.group_id = template_groups.group_id');
+	    ee()->db->where('route_parsed is not null');
+	    $query = ee()->db->get();
+		foreach ($query->result() as $template)
+		{
+			var_dump($template);
+			$this->end_points[$template->route_parsed] = array(
+				"template" => $template->template_name,
+				"group"    => $template->group_name
+			);
+        }
     }
 
 }
