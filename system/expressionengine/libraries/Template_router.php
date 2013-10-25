@@ -32,6 +32,19 @@ class EE_Template_Router extends CI_Router {
     }
 
     public function match($uri) {
+		$request = $uri->uri_string;
+		// First check if we have a bare match
+		if ( ! empty($this->end_points[$request]))
+		{
+			return $this->end_points[$request];
+		}
+		foreach ($this->end_points as $route => $end_point)
+		{
+			if(preg_match("/$route/i", $request, $matches) == 1) {
+				// TODO: Add matched variables for template parsing here.
+				return $end_point;
+			}
+		}
     }
 
     protected function set_routes()
