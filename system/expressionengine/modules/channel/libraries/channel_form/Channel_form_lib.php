@@ -674,12 +674,15 @@ class Channel_form_lib
 			'captcha' => ($this->channel('channel_id') && $this->logged_out_member_id && ! empty($this->settings['require_captcha'][ee()->config->item('site_id')][$this->channel('channel_id')]))
 		);
 
+        $conditionals = array_merge($conditional_errors, $captcha_conditional);
+
 		// Parse conditionals
-		// $this->parse_variables['error:title'] = TRUE;
 		ee()->TMPL->tagdata = ee()->functions->prep_conditionals(
 			ee()->TMPL->tagdata,
-			array_merge($conditional_errors, $captcha_conditional)
+            $conditionals
 		);
+
+        $this->parse_variables = array_merge($this->parse_variables, $conditional_errors);
 
 		// Make sure {captcha_word} is blank
 		ee()->TMPL->tagdata = ee()->TMPL->swap_var_single('captcha_word', '', ee()->TMPL->tagdata);
@@ -1208,50 +1211,51 @@ GRID_FALLBACK;
 	 */
 	private function _add_errors()
 	{
+        $conditional_errors = array();
+
 		foreach ($this->title_fields as $field)
 		{
 			if (isset(ee()->TMPL->var_single['error:'.$field]))
 			{
-				$this->parse_variables['error:'.$field] = ( ! empty($this->field_errors[$field])) ? $this->field_errors[$field] : '';
+				$conditional_errors['error:'.$field] = ( ! empty($this->field_errors[$field])) ? $this->field_errors[$field] : '';
 			}
 		}
 
 		// Add global errors
 		if (count($this->errors) === 0)
 		{
-			$this->parse_variables['global_errors'] = array(array());
+			$conditional_errors['global_errors'] = array(array());
 		}
 		else
 		{
-			$this->parse_variables['global_errors'] = array();
+			$conditional_errors['global_errors'] = array();
 
 			foreach ($this->errors as $error)
 			{
-				$this->parse_variables['global_errors'][] = array('error' => $error);
+				$conditional_errors['global_errors'][] = array('error' => $error);
 			}
 		}
 
-		$this->parse_variables['global_errors:count'] = count($this->errors);
+		$conditional_errors['global_errors:count'] = count($this->errors);
 
 		// Add field errors
 		if (count($this->field_errors) === 0)
 		{
-			$this->parse_variables['field_errors'] = array(array());
+			$conditional_errors['field_errors'] = array(array());
 		}
 		else
 		{
-			$this->parse_variables['field_errors'] = array();
+			$conditional_errors['field_errors'] = array();
 
 			foreach ($this->field_errors as $field => $error)
 			{
-				$this->parse_variables['field_errors'][] = array('field' => $field, 'error' => $error);
+				$conditional_errors['field_errors'][] = array('field' => $field, 'error' => $error);
 			}
 		}
 
-		$this->parse_variables['field_errors:count'] = count($this->field_errors);
+		$conditional_errors['field_errors:count'] = count($this->field_errors);
 
 		// Add field errors to conditional parsing
-		$conditional_errors = $this->parse_variables;
 		if ( ! empty($conditional_errors['field_errors'][0]))
 		{
 			foreach ($conditional_errors['field_errors'] as $error)
