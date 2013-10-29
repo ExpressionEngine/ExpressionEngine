@@ -209,7 +209,6 @@ class Channel_form_lib
 			$this->edit = TRUE;
 		}
 
-		// @added rev 57
 		if ($this->edit && $this->bool_string(ee()->TMPL->fetch_param('author_only')) && $this->entry('author_id') != ee()->session->userdata('member_id'))
 		{
 			throw new Channel_form_exception(lang('channel_form_author_only'));
@@ -390,7 +389,6 @@ class Channel_form_lib
 			if ($tag_name == 'categories')
 			{
 				ee()->TMPL->tagdata = $this->swap_var_pair($tag_pair_open, $this->categories($tagparams), ee()->TMPL->tagdata, $tag_name, ! empty($tagparams['backspace']) ? $tagparams['backspace'] : FALSE);
-				//$this->parse_variables['categories'] = $this->categories($tagparams);
 			}
 
 			elseif ($tag_name == 'statuses')
@@ -671,7 +669,6 @@ class Channel_form_lib
 
 		$conditional_errors = $this->_add_errors();
 
-
 		// Parse captcha conditional
 		$captcha_conditional = array(
 			'captcha' => ($this->channel('channel_id') && $this->logged_out_member_id && ! empty($this->settings['require_captcha'][ee()->config->item('site_id')][$this->channel('channel_id')]))
@@ -856,7 +853,7 @@ class Channel_form_lib
 		{
 			if (strpos($button->classname, 'btn_img') !== FALSE)
 			{
-				// no fielbrowser -> no img field
+				// no filebrowser -> no img field
 				continue;
 			}
 			elseif(strpos($button->classname, 'markItUpSeparator') !== FALSE)
@@ -1647,8 +1644,6 @@ GRID_FALLBACK;
 
 		foreach (ee()->api_channel_fields->settings as $field_id => $settings)
 		{
-		//	$settings['field_name'] = 'field_id_'.$field_id;
-
 			if (isset($settings['field_settings']))
 			{
 				$settings = array_merge($settings, $this->unserialize($settings['field_settings'], TRUE));
@@ -1795,7 +1790,6 @@ GRID_FALLBACK;
 				}
 			}
 
-			// Restore XID
 			ee()->security->restore_xid();
 
 			ee()->core->generate_page();
