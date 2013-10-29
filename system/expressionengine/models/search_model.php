@@ -290,7 +290,17 @@ class Search_model extends CI_Model {
 			{
 				if ($data['exact_match'] != 'yes')
 				{
-					$where_clause .= " AND (exp_channel_titles.title LIKE '%".$this->db->escape_like_str($data['search_keywords'])."%' ";
+					// We are splitting the keywords and doing individual
+					// LIKE clauses to account for titles that have punctuation
+					// in them that sanitize_search_terms() stripped out
+					$keyword_clauses = array();
+					preg_match_all('/(?<!")\b\w+\b|(?<=")\b[^"]+/', $data['search_keywords'], $keywords, PREG_PATTERN_ORDER);
+					for ($i = 0; $i < count($keywords[0]); $i++)
+					{
+						$keyword_clauses[] = " exp_channel_titles.title LIKE '%".$this->db->escape_like_str($keywords[0][$i])."%' ";
+					}
+					$where_clause .= " AND (" . join($keyword_clauses, ' AND ');
+					unset($keywords, $keyword_clauses);
 				}
 				else
 				{
