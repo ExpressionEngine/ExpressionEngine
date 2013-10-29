@@ -302,6 +302,32 @@ class Category_model extends CI_Model {
 
 	// --------------------------------------------------------------------
 
+	public function get_category_id($url_title, $site_ids = array())
+	{
+		ee()->db->select('cat_id')
+			->where('cat_url_title', $url_title);
+
+		if ( ! empty($site_id) && is_array($site_ids))
+		{
+			ee()->db->where_in('site_id', $site_ids);
+		}
+		else
+		{
+			ee()->db->where('site_id', ee()->config->item('site_id'));
+		}
+
+		$result = ee()->db->get('categories');
+
+		if ($result->num_rows() == 0)
+		{
+			return FALSE;
+		}
+
+		return $result->row('cat_id');
+	}
+
+	// --------------------------------------------------------------------
+
 	/**
 	 * Update Category Group
 	 *
