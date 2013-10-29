@@ -61,26 +61,18 @@ class Query {
 		ee()->load->library('pagination');
 		$pagination = ee()->pagination->create(__CLASS__);
 		$pagination->get_template();
+		$pagination->total_rows = $query->num_rows();
+		$pagination->per_page = ee()->TMPL->fetch_param('limit', 0);
 
 		// Disable pagination if the limit parameter isn't set
-		if ( ! ee()->TMPL->fetch_param('limit', 0))
+		if ( ! $pagination->per_page)
 		{
 			$pagination->paginate = FALSE;
 		}
 
 		if ($pagination->paginate)
 		{
-			// Run the query
-			if ($query->num_rows() == 0)
-			{
-				return $this->return_data = ee()->TMPL->no_results();
-			}
-
-			$pagination->total_rows = $query->num_rows();
-			$pagination->per_page = ee()->TMPL->fetch_param('limit', 0);
 			$pagination->build($query->num_rows());
-
-			// Slice up the results
 			$results = array_slice($results, $pagination->offset, $pagination->per_page);
 		}
 
