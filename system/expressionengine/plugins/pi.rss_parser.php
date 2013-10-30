@@ -57,17 +57,11 @@ Class Rss_parser {
 		}
 		catch (Exception $e)
 		{
-			if (strpos(ee()->TMPL->tagdata, LD.'if feed_error'.RD) !== FALSE)
-			{
-				preg_match('/{if feed_error}(.*){\/if}/uis', ee()->TMPL->tagdata, $matches);
-
-				return $this->return_data = ee()->TMPL->parse_variables(
-					$matches[1],
-					array(array('feed_error' => $e->getMessage()))
-				);
-			}
-
-			return $this->return_data = '';
+			return $this->return_data = ee()->TMPL->exclusive_conditional(
+				ee()->TMPL->tagdata,
+				'feed_error',
+				array(array('feed_error' => $e->getMessage()))
+			);
 		}
 
 		// Make sure there's at least one item
