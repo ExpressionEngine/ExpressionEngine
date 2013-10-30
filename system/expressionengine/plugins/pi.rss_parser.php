@@ -48,7 +48,27 @@ Class Rss_parser {
 
 		// Bring in SimplePie
 		ee()->load->library('rss_parser');
-		$feed = ee()->rss_parser->create($url, $refresh, $this->cache_name);
+
+		// Attempt to create the feed, if there's an exception try to replace
+		// {if feed_error} and {feed_error}
+		try
+		{
+			$feed = ee()->rss_parser->create($url, $refresh, $this->cache_name);
+		}
+		catch (Exception $e)
+		{
+			if (strpos(ee()->TMPL->tagdata, LD.'if feed_error'.RD) !== FALSE)
+			{
+				preg_match('/{if feed_error}(.*){\/if}/uis', ee()->TMPL->tagdata, $matches);
+
+				return $this->return_data = ee()->TMPL->parse_variables(
+					$matches[1],
+					array(array('feed_error' => $e->getMessage()))
+				);
+			}
+
+			return $this->return_data = '';
+		}
 
 		// Make sure there's at least one item
 		if ($feed->get_item_quantity() <= 0)
