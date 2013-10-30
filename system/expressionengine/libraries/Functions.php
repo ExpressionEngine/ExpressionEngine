@@ -139,7 +139,8 @@ class EE_Functions {
 		if (strtolower($segment) == 'logout')
 		{
 			$qs = (ee()->config->item('force_query_string') == 'y') ? '' : '?';
-			return $this->fetch_site_index(0, 0).$qs.'ACT='.$this->fetch_action_id('Member', 'member_logout');
+			$xid = (ee()->config->item('secure_forms') == 'y') ? AMP.'XID='.XID_SECURE_HASH : '';
+			return $this->fetch_site_index(0, 0).$qs.'ACT='.$this->fetch_action_id('Member', 'member_logout').$xid;
 		}
 		// END Specials
 

@@ -4,7 +4,7 @@
 
 <p><strong><?=lang('delete_fieldtype_confirm')?></strong></p>
 
-<p class="notice"><?=lang('data_will_be_lost')?></p>
+<p class="notice"><?=lang('fieldtype_data_will_be_lost')?></p>
 
 <p><?=form_submit('submit', lang('delete_fieldtype'), 'class="submit"')?></p>
 

@@ -154,6 +154,16 @@ class Grid_parser {
 		$entry_data = $entry_data[$entry_id];
 		$field_name = $this->grid_field_names[$field_id];
 
+		// Add field_row_index and field_row_count variables to get the index
+		// and count of rows in the field regardless of front-end output
+		$field_row_count = 1;
+		foreach ($entry_data as &$entry_data_row)
+		{
+			$entry_data_row['field_row_index'] = $field_row_count - 1;
+			$entry_data_row['field_row_count'] = $field_row_count;
+			$field_row_count++;
+		}
+
 		// :field_total_rows single variable
 		// Currently does not work well with fixed_order and search params
 		$field_total_rows = count($entry_data);
@@ -206,6 +216,12 @@ class Grid_parser {
 			}
 		}
 
+		// Order by random
+		if ($params['orderby'] == 'random')
+		{
+			shuffle($entry_data);
+		}
+
 		// We'll handle limit and offset parameters this way; we can't do
 		// it via SQL because we query for multiple entries at once
 		$display_entry_data = array_slice(
@@ -215,7 +231,12 @@ class Grid_parser {
 			TRUE
 		);
 
-		$row_ids = array_keys($entry_data);
+		// Collect row IDs
+		$row_ids = array();
+		foreach ($display_entry_data as $row)
+		{
+			$row_ids[] = $row['row_id'];
+		}
 
 		// :total_rows single variable
 		$total_rows = count($display_entry_data);

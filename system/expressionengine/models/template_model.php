@@ -41,17 +41,18 @@ class Template_model extends CI_Model {
 	 * a saved file if appropriate) and returns an array of
 	 * populated Template_Entity objects.
 	 * 
-	 * @param	mixed[] Optional. An array of fields and values that can be
-	 *					used to filter the entities returned. Any field from
-	 *					Template_Entity may be used.  The key of the array is
-	 *					the field name and the values of the array are the
-	 *					values to check.  Values are only checked for exact
-	 *					equality and will be connected with 'AND'.  	
-	 * @param	boolean	Optional. If set, then associated Template_Group_Entity
-	 *					objects Will be loaded and set on the returned
-	 *					Template_Entity objects.
+	 * @param	mixed[]	$fields	Optional. An array of fields and values that
+	 * 		can be used to filter the entities returned. Any field from
+	 * 		Template_Entity may be used.  The key of the array is the field
+	 * 		name and the values of the array are the values to check.  Values
+	 * 		are only checked for exact equality and will be connected with
+	 * 		'AND'.  	
+	 * @param	boolean	$load_groups	Optional. If set, then associated
+	 * 		Template_Group_Entity objects Will be loaded and set on the
+	 * 		returned Template_Entity objects.
 	 *
-	 * @return	Template_Entity[]
+	 * @return	Template_Entity[]	An array of Template Entities matching
+	 * 		the fields requested.
 	 */
 	public function fetch(array $fields=array(), $load_groups=FALSE)
 	{
@@ -76,11 +77,10 @@ class Template_model extends CI_Model {
 	 * edited more recently than the template in the database. Otherwise
 	 * it will bail out.
 	 * 
-	 * @param	Template_Entity	The populated template object you wish to load
-	 *							from a file.
-	 * @param	boolean			When passed as TRUE, will only load the file
-	 * 							if the file was edited more recently than
-	 * 							the database.			
+	 * @param	Template_Entity	$template	The populated template object you
+	 * 		wish to load from a file.
+	 * @param	boolean	$only_load_last_edit	When passed as TRUE, will only
+	 * 		load the file if the file was edited more recently than the database.			
 	 *
 	 * @return	void
 	 */
@@ -150,15 +150,16 @@ class Template_model extends CI_Model {
 	 * objects.  Does not load the files associated with those entities (if
 	 * there are any), only loads the template stored in the database.
 	 *
-	 * @param	mixed[] Optional. An array of fields and values that can be
-	 *					used to filter the entities returned. Any field from
-	 *					Template_Entity may be used.  The key of the array is
-	 *					the field name and the values of the array are the
-	 *					values to check.  Values are only checked for exact
-	 *					equality and will be connected with 'AND'.  	
-	 * @param	boolean	Optional. If set, then associated Template_Group_Entity
-	 *					objects Will be loaded and set on the returned
-	 *					Template_Entity objects.
+	 * @param	mixed[]	$fields	Optional. An array of fields and values that
+	 * 		can be used to filter the entities returned. Any field from
+	 * 		Template_Entity may be used.  The key of the array is the field
+	 * 		name and the values of the array are the values to check.  Values
+	 * 		are only checked for exact equality and will be connected with
+	 * 		'AND'. So array('template_name' => 'home', 'site_id' => 1) becomes
+	 * 		"WHERE template_name = 'home' AND site_id = 1".  	
+	 * @param	boolean	$load_groups	Optional. If set, then associated
+	 * 		Template_Group_Entity objects Will be loaded and set on the
+	 * 		returned Template_Entity objects.
 	 *
 	 * @return	Template_Entity[]
 	 *
@@ -221,17 +222,18 @@ class Template_model extends CI_Model {
 	 * saved file was editted more recently than the version in the database,
 	 * override the entity's content with the version in the file.
 	 *
-	 * @param	mixed[] Optional. An array of fields and values that can be
-	 *					used to filter the entities returned. Any field from
-	 *					Template_Entity may be used.  The key of the array is
-	 *					the field name and the values of the array are the
-	 *					values to check.  Values are only checked for exact
-	 *					equality and will be connected with 'AND'.  	
-	 * @param	boolean	Optional. If set, then associated Template_Group_Entity
-	 *					objects Will be loaded and set on the returned
-	 *					Template_Entity objects.
+	 * @param	mixed[] $fields	Optional. An array of fields and values that
+	 * 		can be used to filter the entities returned. Any field from
+	 * 		Template_Entity may be used.  The key of the array is the field
+	 * 		name and the values of the array are the values to check.  Values
+	 * 		are only checked for exact equality and will be connected with
+	 * 		'AND'.  	
+	 * @param	boolean	$load_groups	Optional. If set, then associated
+	 * 		Template_Group_Entity objects Will be loaded and set on the
+	 * 		returned Template_Entity objects.
 	 *
-	 * @return	Template_Entity[]
+	 * @return	Template_Entity[] The fetched array of Template Entities, from
+	 * 		the most recently editted source.
 	 */
 	public function fetch_last_edit(array $fields=array(), $load_groups=FALSE)
 	{
@@ -269,7 +271,18 @@ class Template_model extends CI_Model {
 	// -----------------------------------------------------------------
 
 	/**
-	 * 
+	 * Save a Template_Entity to a File
+	 *
+	 * Saves a Template to a file.  Requires the Template to have the name
+	 * and group set.  Group will need to have its Template name set.
+	 *
+	 * @param	Template_Entity	$template	A populated Template_Entity that
+	 * 		also has its associated Template_Group_Entity populated and linked.
+	 * 		At a minimum Template_Entity::$template_name,
+	 * 		Template_Entity::template_type, Template_Entity::$template_data, and
+	 * 		Template_Group_Entity::$group_name will need to be set.
+	 * 	
+	 * 	@return	boolean	TRUE on success, FALSE on failure.	
 	 */	
 	public function save_to_file(Template_Entity $template)
 	{
@@ -354,7 +367,16 @@ class Template_model extends CI_Model {
 	// -----------------------------------------------------------------
 
 	/**
+ 	 * Save a Template_Entity to the Database
  	 *
+ 	 * Save a Template Entity to the database.  Converts the entity to an 
+ 	 * array.  If it has an ID it updates it, otherwise it inserts it. A
+ 	 *
+ 	 * @param	Template_Entity	$entity	The Template_Entity to save to the
+ 	 * 		database.  If an ID is present, Template will be updated. If
+ 	 * 		not it will be inserted.  
+ 	 *
+ 	 * @return	boolean	TRUE on success, FALSE on failure.
 	 */
 	public function save_to_database(Template_Entity $entity)
 	{
@@ -379,7 +401,13 @@ class Template_model extends CI_Model {
 	}
 
 	/**
+	 * Convert a Template_Entity to an Array
 	 *
+	 * Converts a Template_Entity to an array for saving to the database.
+	 *
+	 * @param	Template_Entity	$entity	The Entity you wish to save to the database.
+	 *
+	 * @return	mixed[]	The associative array to send to CI_DB.
 	 */
 	protected function _entity_to_db_array(Template_Entity $entity)
 	{	
@@ -1092,10 +1120,13 @@ class Template_model extends CI_Model {
 }
 
 /**
- *
+ * A Prototype Database Entity
+ * 
+ * A prototype database entity for use with the templates table. Properties
+ * have a 1 to 1 correspondence with db table properties.  In addition, the
+ * template knows whether or not it has been loaded from a file.
  */
-class Template_Entity 
-{
+class Template_Entity {
 	/**
 	 *
 	 */
@@ -1199,7 +1230,8 @@ class Template_Entity
 	// ----------------------------------------------------
 
 	/**
-	 *
+	 * An instance of Template_Group_Entity representing the associated
+	 * Template Group.
 	 */
 	protected $template_group;
 
@@ -1245,7 +1277,11 @@ class Template_Entity
 
 
 	/**
-	 *
+ 	 * Get Associated Template Group
+ 	 *
+ 	 * Gets an Entity representing this Template's Template Group.
+ 	 *
+	 * @returns	Template_Group_Entity	The associated Template Group.
 	 */
 	public function get_group()
 	{
@@ -1253,7 +1289,14 @@ class Template_Entity
 	}
 
 	/**
+	 * Set this Template's Template Group
 	 *
+	 * Used to set the link to this Template's Template Group.
+	 *
+	 * @param	Template_Group_Entity	$group	The group Entity to link to
+	 * 		this Template.
+	 *
+	 * @return $this
 	 */
 	public function set_group(Template_Group_Entity $group)
 	{
@@ -1262,12 +1305,10 @@ class Template_Entity
 		return $this;
 	}
 }
-
 /**
  *
  */
-class Template_Group_Entity
-{
+class Template_Group_Entity{
 	/**
 	 *
 	 */
