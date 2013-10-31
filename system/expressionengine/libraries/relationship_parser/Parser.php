@@ -472,8 +472,6 @@ class EE_Relationship_data_parser {
 				}
 			}
 
-			$rows[$entry_id] = $data;
-
 			// categories
 			if (isset($this->_categories[$entry_id]))
 			{
@@ -484,11 +482,6 @@ class EE_Relationship_data_parser {
 
 			if ($requested_cats)
 			{
-				if ( ! isset($categories[$entry_id]))
-				{
-					continue;
-				}
-
 				$not = FALSE;
 				$cat_match = FALSE;
 
@@ -496,6 +489,14 @@ class EE_Relationship_data_parser {
 				{
 					$requested_cats = substr($requested_cats, 4);
 					$not = TRUE;
+				}
+
+				// If the entry has no categories and the category parameter
+				// specifies 'not x', include it.
+				if ($not && ! isset($categories[$entry_id]))
+				{
+					$rows[$entry_id] = $data;
+					continue;
 				}
 
 				$requested_cats = explode('|', $requested_cats);
@@ -511,6 +512,10 @@ class EE_Relationship_data_parser {
 
 						$cat_match = TRUE;
 					}
+					elseif ($not)
+					{
+						$cat_match = TRUE;
+					}
 				}
 
 				if ( ! $cat_match)
@@ -518,6 +523,8 @@ class EE_Relationship_data_parser {
 					continue;
 				}
 			}
+
+			$rows[$entry_id] = $data;
 		}
 
 		// put categories into the weird form the channel module uses
