@@ -34,6 +34,11 @@ class Member_subscriptions extends Member {
 	{
 		ee()->load->library('members');
 		
+		$swap = array(
+				'form_declaration'	=> ee()->functions->form_declaration(
+					array('action' => $this->_member_path('update_subscriptions')))
+				);
+		
 		// Set some base values
 		
 		$result_data			= array();
