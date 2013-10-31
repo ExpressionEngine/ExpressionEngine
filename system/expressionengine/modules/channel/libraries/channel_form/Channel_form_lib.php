@@ -1795,6 +1795,9 @@ GRID_FALLBACK;
 				}
 			}
 
+			// Restore XID
+			ee()->security->restore_xid();
+
 			ee()->core->generate_page();
 			return;
 		}

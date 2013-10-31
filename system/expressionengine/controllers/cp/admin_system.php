@@ -31,6 +31,7 @@ class Admin_system extends CP_Controller {
 	{
 		parent::__construct();
 		$this->_restrict_prefs_access();
+		$this->lang->loadfile('homepage');
 	}
 
 	// --------------------------------------------------------------------

@@ -819,6 +819,27 @@ class Relationship_ft extends EE_Fieldtype {
 				'constraint'		=> 10,
 				'unsigned'			=> TRUE,
 				'default'			=> 0
+			),
+			'grid_field_id' => array(
+				'type'			=> 'int',
+				'constraint'	=> 10,
+				'unsigned'		=> TRUE,
+				'default'		=> 0,
+				'null'			=> FALSE
+			),
+			'grid_col_id' => array(
+				'type'			=> 'int',
+				'constraint'	=> 10,
+				'unsigned'		=> TRUE,
+				'default'		=> 0,
+				'null'			=> FALSE
+			),
+			'grid_row_id' => array(
+				'type'			=> 'int',
+				'constraint'	=> 10,
+				'unsigned'		=> TRUE,
+				'default'		=> 0,
+				'null'			=> FALSE
 			)
 		);
 
@@ -831,6 +852,7 @@ class Relationship_ft extends EE_Fieldtype {
 		ee()->dbforge->add_key('parent_id');
 		ee()->dbforge->add_key('child_id');
 		ee()->dbforge->add_key('field_id');
+		ee()->dbforge->add_key('grid_row_id');
 
 		ee()->dbforge->create_table($this->_table);
 
