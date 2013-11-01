@@ -285,7 +285,7 @@ class Content_files_modal extends CP_Controller {
 		));
 
 		$this->javascript->compile();
-		$this->load->view('_shared/file_upload/edit', $vars);
+		$this->cp->render('_shared/file_upload/edit', $vars);
 	}
 
 	// ------------------------------------------------------------------------
