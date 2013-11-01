@@ -3293,7 +3293,7 @@ class EE_Template {
 	 */
 	public function exclusive_conditional($template, $conditional, $vars = array())
 	{
-		if (strpos(ee()->TMPL->tagdata, LD."if {$conditional}".RD) !== FALSE)
+		if (strpos(ee()->TMPL->tagdata, LD."if ".preg_quote($conditional).RD) !== FALSE)
 		{
 			preg_match('/{if '.$conditional.'}(.*){\/if}/uis', $template, $matches);
 			return $this->parse_variables($matches[1], $vars);
