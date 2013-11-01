@@ -22,6 +22,11 @@ class TemplateGroup extends Model {
 		return $this->oneToMany('Template', 'group_id', 'group_id');
 	}
 
+	public function getMemberGroups()
+	{
+		return $this->manyToMany('MemberGroup', 'template_group_id', 'group_id', 'MemberGroups');
+	}
+
 	/**
 	 *
 	 */
