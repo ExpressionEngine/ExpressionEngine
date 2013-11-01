@@ -241,6 +241,7 @@ class Content_files_modal extends CP_Controller {
 
 		// Retrieve the (possibly updated) file data
 		$vars['file'] = $this->_get_file($file_id);
+		$vars['file_json'] = json_encode($vars['file']);
 
 		// Create array of hidden inputs
 		$vars['hidden'] = array(
