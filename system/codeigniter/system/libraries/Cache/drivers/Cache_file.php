@@ -94,6 +94,17 @@ class CI_Cache_file extends CI_Driver {
 			'data'		=> $data
 		);
 
+		$path = $this->_cache_path.$this->_namespaced_key('', $namespace);
+
+		// Create namespace directory if it doesn't exist
+		if ( ! file_exists($path) OR ! is_dir($path))
+		{
+			mkdir($path, DIR_WRITE_MODE);
+
+			// Write an index.html file to ensure no directory indexing
+			write_index_html($path);
+		}
+
 		$id = $this->_namespaced_key($id, $namespace);
 
 		if (write_file($this->_cache_path.$id, serialize($contents)))
@@ -131,15 +142,12 @@ class CI_Cache_file extends CI_Driver {
 	 */
 	public function clear_namepace($namespace)
 	{
-		$files = get_filenames($this->_cache_path);
+		$path = $this->_cache_path.$this->_namespaced_key('', $namespace);
 
-		foreach (get_dir_file_info($this->_cache_path, TRUE) as $file)
+		if (delete_files($path))
 		{
-			if (strncmp($file['name'], $namespace, strlen($namespace)) == 0 &&
-				file_exists($file['server_path']))
-			{
-				@unlink($file['server_path']);
-			}
+			// Write an index.html file to ensure no directory indexing
+			write_index_html($path);
 		}
 
 		return TRUE;
@@ -154,15 +162,8 @@ class CI_Cache_file extends CI_Driver {
 	 */
 	public function clean()
 	{
-		foreach (get_dir_file_info($this->_cache_path, TRUE) as $file)
-		{
-			// Do not delete .htaccess or index.html to keep the directory secure
-			if ( ! in_array($file['name'], array('.htaccess', 'index.html'))
-				&& ! is_dir($file['server_path']))
-			{
-				@unlink($file['server_path']);
-			}
-		}
+		// Delete all files in cache directory, excluding .htaccess and index.html
+		delete_files($this->_cache_path, TRUE, 0, array('.htaccess', 'index.html'));
 
 		return TRUE;
 	}
@@ -239,6 +240,8 @@ class CI_Cache_file extends CI_Driver {
 	/**
 	 * If a namespace was specified, prefixes the key with it
 	 *
+	 * For the file driver, namespaces will be actual folders
+	 *
 	 * @param	string	$key	Key name
 	 * @param	string	$namespace	Namespace name
 	 * @return	string	Key prefixed with namespace
@@ -247,7 +250,7 @@ class CI_Cache_file extends CI_Driver {
 	{
 		if ( ! empty($namespace))
 		{
-			$namespace .= '-';
+			$namespace .= '_cache/';
 		}
 
 		return $namespace.$key;

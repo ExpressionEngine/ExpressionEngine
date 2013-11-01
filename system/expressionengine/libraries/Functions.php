@@ -1041,19 +1041,18 @@ class EE_Functions {
 	 */
 	function clear_caching($which, $sub_dir = '')
 	{
-		switch ($which)
+		$options = array('page', 'db', 'tag', 'sql');
+
+		if (in_array($which, $options))
 		{
-			case 'page':
-			case 'db':
-			case 'tag':
-			case 'sql':
-				ee()->cache->clear_namepace($which);
-				break;
-			case 'all':
-				ee()->cache->clean();
-				break;
-			default:
-				return;
+			ee()->cache->clear_namepace($which);
+		}
+		elseif ($which == 'all')
+		{
+			foreach ($options as $option)
+			{
+				ee()->cache->clear_namepace($option);
+			}
 		}
 	}
 
