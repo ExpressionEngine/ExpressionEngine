@@ -10,12 +10,26 @@ use EllisLab\ExpressionEngine\Model\Errors;
  *
  */
 abstract class Entity {
+	/**
+	 * Dependency injection container.
+	 */
 	private $di = NULL;
 
+	/**
+	 * Meta data array, overridden by subclasses.
+	 */
 	protected static $meta = array();
 
+	/**
+	 * Array to track which properties have been modified, so that we
+	 * only save or validate those that need it.
+	 */
 	public $dirty = array();
 
+	/**
+	 * Construct an entity.  Initialize it with the Depdency Injection object
+	 * and, optionally, with an array of data from the database.
+	 */
 	public function __construct(Dependencies $di, array $data = array())
 	{
 		$this->di = $di;
@@ -28,6 +42,37 @@ abstract class Entity {
 		}
 	}
 
+	/**
+	 * Get Meta Data
+	 *
+	 * Get a piece of meta data on this entity.  If no key is given, then all
+	 * meta data is returned.  The meta data available is:
+	 *
+	 * 	table_name			string	-  The name of the database table that is
+	 * 		linked to this entity.  Is returned as a single string.
+	 * 	primary_key			string  - The name of the primary key of the linked
+	 * 		table.
+	 * 	related_entities	mixed[] - Information on all entities that have
+	 * 		some sort of relationship to this entity.  Returned as an array of
+	 * 		the form:
+	 * 			'this_entities_key' => array(
+	 * 				'entity' => 'EntityName',
+	 * 				'key' => 'related_entities_key',
+	 * 				'pivot_table' => 'pivot_table_name',
+	 * 				'pivot_key' => 'this_entities_key_in_pivot_table'
+	 * 				'pivot_foreign_key' => 'related_entities_key_in_pivot_table'
+	 * 			)
+	 * 	validation_rules	mixed[] - Validation rules assigned to each
+	 * 		property of this entity.  Returned as an array of
+	 * 		property => rule string pairs.  Where a rule string is a pipe
+	 * 		separated list of rule names.
+	 *
+	 * @param	mixed	$key	Which piece of meta data do you want? Available
+	 * 				values are 'table_name', 'primary_key', 'related_entities'
+	 * 				and 'validation_rules'.
+	 *
+	 * @return	mixed[]|mixed	The requested meta data.
+	 */
 	public static function getMetaData($key=NULL)
 	{
 		if (empty(static::$meta))
