@@ -1,6 +1,7 @@
 <?php namespace EllisLab\ExpressionEngine\Model;
 
 class QueryBuilder {
+	private $di = NULL;
 
 	private static $model_namespace_aliases = array(
 		'Template'       => '\EllisLab\ExpressionEngine\Model\Template\Template',
@@ -8,6 +9,11 @@ class QueryBuilder {
 		'TemplateEntity' => '\EllisLab\ExpressionEngine\Model\Entity\TemplateEntity',
 		'TemplateGroupEntity' => '\EllisLab\ExpressionEngine\Model\Entity\TemplateGroupEntity'
 	);
+
+	public function __construct(Dependencies $di)
+	{
+		$this->di = $di;
+	}
 
 	/**
 	 * Retrieve a new query object for a given model.
@@ -18,7 +24,7 @@ class QueryBuilder {
 	 */
 	public function get($model_name, $ids = NULL)
 	{
-		$query = new Query($model_name);
+		$query = new Query($this->di, $model_name);
 
 		if (isset($ids))
 		{
