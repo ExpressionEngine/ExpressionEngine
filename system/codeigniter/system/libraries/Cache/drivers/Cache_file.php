@@ -39,20 +39,20 @@ class CI_Cache_file extends CI_Driver {
 	 */
 	public function __construct()
 	{
-		$CI =& get_instance();
-		$CI->load->helper('file');
-		$path = $CI->config->item('cache_path');
-		$this->_cache_path = ($path === '') ? APPPATH.'cache/' : $path;
+		ee()->load->helper('file');
+		$path = ee()->config->item('cache_path');
+		$this->_cache_path = empty($path) ? APPPATH.'cache/' : $path;
 	}
 
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Fetch from cache
+	 * Look for a value in the cache. If it exists, return the data
+	 * if not, return FALSE
 	 *
-	 * @param	mixed	unique key id
+	 * @param	string	$id 		Key name
 	 * @param	string	$namespace	Namespace name
-	 * @return	mixed	data on success/false on failure
+	 * @return	mixed	value matching $id or FALSE on failure
 	 */
 	public function get($id, $namespace = '')
 	{
@@ -77,14 +77,13 @@ class CI_Cache_file extends CI_Driver {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Save into cache
+	 * Save value to cache
 	 *
-	 * @param	string	unique key
-	 * @param	mixed	data to store
-	 * @param	int	length of time (in seconds) the cache is valid
-	 *				- Default is 60 seconds
+	 * @param	string	$id			Key name
+	 * @param	mixed	$data		Data to store
+	 * @param	int		$ttl = 60	Cache TTL (in seconds)
 	 * @param	string	$namespace	Namespace name
-	 * @return	bool	true on success/false on failure
+	 * @return	bool	TRUE on success, FALSE on failure
 	 */
 	public function save($id, $data, $ttl = 60, $namespace = '')
 	{
@@ -119,11 +118,11 @@ class CI_Cache_file extends CI_Driver {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Delete from Cache
+	 * Delete from cache
 	 *
-	 * @param	mixed	unique identifier of item in cache
+	 * @param	string	$id			Key name
 	 * @param	string	$namespace	Namespace name
-	 * @return	bool	true on success/false on failure
+	 * @return	bool	TRUE on success, FALSE on failure
 	 */
 	public function delete($id, $namespace = '')
 	{
@@ -135,9 +134,9 @@ class CI_Cache_file extends CI_Driver {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Delete keys from cache with a specified prefix
+	 * Delete keys from cache in a specified namespace
 	 *
-	 * @param	mixed	Prefix of group of cache files to delete
+	 * @param	string	$namespace	Namespace of group of cache keys to delete
 	 * @return	bool
 	 */
 	public function clear_namepace($namespace)
@@ -156,9 +155,9 @@ class CI_Cache_file extends CI_Driver {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Clean the Cache
+	 * Clean the cache
 	 *
-	 * @return	bool	false on failure/true on success
+	 * @return	bool	TRUE on success, FALSE on failure
 	 */
 	public function clean()
 	{
@@ -173,10 +172,8 @@ class CI_Cache_file extends CI_Driver {
 	/**
 	 * Cache Info
 	 *
-	 * Not supported by file-based caching
-	 *
-	 * @param	string	user/filehits
-	 * @return	mixed	FALSE
+	 * @param	string	$type = 'user'	user/filehits (not used in this driver)
+	 * @return	mixed	array containing cache info on success OR FALSE on failure
 	 */
 	public function cache_info($type = NULL)
 	{
@@ -188,9 +185,9 @@ class CI_Cache_file extends CI_Driver {
 	/**
 	 * Get Cache Metadata
 	 *
-	 * @param	mixed	key to get cache metadata on
+	 * @param	string	$id			Key to get cache metadata on
 	 * @param	string	$namespace	Namespace name
-	 * @return	mixed	FALSE on failure, array on success.
+	 * @return	mixed	Cache item metadata
 	 */
 	public function get_metadata($id, $namespace = '')
 	{
@@ -242,7 +239,7 @@ class CI_Cache_file extends CI_Driver {
 	 *
 	 * For the file driver, namespaces will be actual folders
 	 *
-	 * @param	string	$key	Key name
+	 * @param	string	$key		Key name
 	 * @param	string	$namespace	Namespace name
 	 * @return	string	Key prefixed with namespace
 	 */

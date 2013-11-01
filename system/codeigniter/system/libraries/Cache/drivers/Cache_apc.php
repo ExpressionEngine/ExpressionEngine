@@ -26,14 +26,12 @@
 class CI_Cache_apc extends CI_Driver {
 
 	/**
-	 * Get
-	 *
 	 * Look for a value in the cache. If it exists, return the data
 	 * if not, return FALSE
 	 *
-	 * @param	string	$key	Key name
+	 * @param	string	$id 		Key name
 	 * @param	string	$namespace	Namespace name
-	 * @return	mixed	value that is stored/FALSE on failure
+	 * @return	mixed	value matching $id or FALSE on failure
 	 */
 	public function get($id, $namespace = '')
 	{
@@ -47,14 +45,13 @@ class CI_Cache_apc extends CI_Driver {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Cache Save
+	 * Save value to cache
 	 *
-	 * @param	string	Unique Key
-	 * @param	mixed	Data to store
-	 * @param	int	Length of time (in seconds) to cache the data
+	 * @param	string	$id			Key name
+	 * @param	mixed	$data		Data to store
+	 * @param	int		$ttl = 60	Cache TTL (in seconds)
 	 * @param	string	$namespace	Namespace name
-	 *
-	 * @return	bool	true on success/false on failure
+	 * @return	bool	TRUE on success, FALSE on failure
 	 */
 	public function save($id, $data, $ttl = 60, $namespace = '')
 	{
@@ -69,11 +66,11 @@ class CI_Cache_apc extends CI_Driver {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Delete from Cache
+	 * Delete from cache
 	 *
-	 * @param	mixed	unique identifier of the item in the cache
+	 * @param	string	$id			Key name
 	 * @param	string	$namespace	Namespace name
-	 * @return	bool	true on success/false on failure
+	 * @return	bool	TRUE on success, FALSE on failure
 	 */
 	public function delete($id, $namespace = '')
 	{
@@ -83,9 +80,9 @@ class CI_Cache_apc extends CI_Driver {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Delete keys from cache with a specified prefix
+	 * Delete keys from cache in a specified namespace
 	 *
-	 * @param	string	Namepace of group of cache keys to delete
+	 * @param	string	$namespace	Namespace of group of cache keys to delete
 	 * @return	bool
 	 */
 	public function clear_namepace($namespace)
@@ -103,7 +100,7 @@ class CI_Cache_apc extends CI_Driver {
 	/**
 	 * Clean the cache
 	 *
-	 * @return	bool	false on failure/true on success
+	 * @return	bool	TRUE on success, FALSE on failure
 	 */
 	public function clean()
 	{
@@ -115,8 +112,8 @@ class CI_Cache_apc extends CI_Driver {
 	/**
 	 * Cache Info
 	 *
-	 * @param	string	user/filehits
-	 * @return	mixed	array on success, false on failure
+	 * @param	string	$type = 'user'	user/filehits
+	 * @return	mixed	array containing cache info on success OR FALSE on failure
 	 */
 	 public function cache_info($type = NULL)
 	 {
@@ -128,9 +125,9 @@ class CI_Cache_apc extends CI_Driver {
 	/**
 	 * Get Cache Metadata
 	 *
-	 * @param	mixed	key to get cache metadata on
+	 * @param	string	$id			Key to get cache metadata on
 	 * @param	string	$namespace	Namespace name
-	 * @return	mixed	array on success/false on failure
+	 * @return	mixed	Cache item metadata
 	 */
 	public function get_metadata($id, $namespace = '')
 	{
@@ -154,8 +151,6 @@ class CI_Cache_apc extends CI_Driver {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * is_supported()
-	 *
 	 * Check to see if APC is available on this system, bail if it isn't.
 	 *
 	 * @return	bool
@@ -176,7 +171,7 @@ class CI_Cache_apc extends CI_Driver {
 	/**
 	 * If a namespace was specified, prefixes the key with it
 	 *
-	 * @param	string	$key	Key name
+	 * @param	string	$key		Key name
 	 * @param	string	$namespace	Namespace name
 	 * @return	string	Key prefixed with namespace
 	 */

@@ -39,25 +39,11 @@ class CI_Cache extends CI_Driver_Library {
 	);
 
 	/**
-	 * Path of cache files (if file-based cache)
-	 *
-	 * @var string
-	 */
-	protected $_cache_path = NULL;
-
-	/**
-	 * Optional sub directory for cache files (if file-based cache)
-	 *
-	 * @var string
-	 */
-	protected $_cache_subdir = '';
-
-	/**
 	 * Reference to the driver
 	 *
 	 * @var mixed
 	 */
-	protected $_adapter = 'dummy';
+	protected $_adapter = 'file';
 
 	/**
 	 * Fallback driver
@@ -126,12 +112,10 @@ class CI_Cache extends CI_Driver_Library {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Get
-	 *
 	 * Look for a value in the cache. If it exists, return the data
 	 * if not, return FALSE
 	 *
-	 * @param	string	$id
+	 * @param	string	$id 		Key name
 	 * @param	string	$namespace	Namespace name
 	 * @return	mixed	value matching $id or FALSE on failure
 	 */
@@ -143,11 +127,11 @@ class CI_Cache extends CI_Driver_Library {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Cache Save
+	 * Save value to cache
 	 *
-	 * @param	string	$id		Cache ID
+	 * @param	string	$id			Key name
 	 * @param	mixed	$data		Data to store
-	 * @param	int	$ttl = 60	Cache TTL (in seconds)
+	 * @param	int		$ttl = 60	Cache TTL (in seconds)
 	 * @param	string	$namespace	Namespace name
 	 * @return	bool	TRUE on success, FALSE on failure
 	 */
@@ -159,9 +143,9 @@ class CI_Cache extends CI_Driver_Library {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Delete from Cache
+	 * Delete from cache
 	 *
-	 * @param	string	$id	Cache ID
+	 * @param	string	$id			Key name
 	 * @param	string	$namespace	Namespace name
 	 * @return	bool	TRUE on success, FALSE on failure
 	 */
@@ -175,7 +159,7 @@ class CI_Cache extends CI_Driver_Library {
 	/**
 	 * Delete keys from cache with a specified prefix
 	 *
-	 * @param	mixed	Prefix of group of cache keys to delete
+	 * @param	string	$namespace	Namespace of group of cache keys to delete
 	 * @return	bool
 	 */
 	public function clear_namepace($namespace)
@@ -213,7 +197,7 @@ class CI_Cache extends CI_Driver_Library {
 	/**
 	 * Get Cache Metadata
 	 *
-	 * @param	string	$id	key to get cache metadata on
+	 * @param	string	$id			Key to get cache metadata on
 	 * @param	string	$namespace	Namespace name
 	 * @return	mixed	cache item metadata
 	 */

@@ -47,10 +47,12 @@ class CI_Cache_memcached extends CI_Driver {
 	);
 
 	/**
-	 * Fetch from cache
+	 * Look for a value in the cache. If it exists, return the data
+	 * if not, return FALSE
 	 *
-	 * @param	mixed	unique key id
-	 * @return	mixed	data on success/false on failure
+	 * @param	string	$id 		Key name
+	 * @param	string	$namespace	Namespace name
+	 * @return	mixed	value matching $id or FALSE on failure
 	 */
 	public function get($id, $namespace = '')
 	{
@@ -62,12 +64,13 @@ class CI_Cache_memcached extends CI_Driver {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Save
+	 * Save value to cache
 	 *
-	 * @param	string	unique identifier
-	 * @param	mixed	data being cached
-	 * @param	int	time to live
-	 * @return	bool	true on success, false on failure
+	 * @param	string	$id			Key name
+	 * @param	mixed	$data		Data to store
+	 * @param	int		$ttl = 60	Cache TTL (in seconds)
+	 * @param	string	$namespace	Namespace name
+	 * @return	bool	TRUE on success, FALSE on failure
 	 */
 	public function save($id, $data, $ttl = 60, $namespace = '')
 	{
@@ -88,10 +91,11 @@ class CI_Cache_memcached extends CI_Driver {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Delete from Cache
+	 * Delete from cache
 	 *
-	 * @param	mixed	key to be deleted.
-	 * @return	bool	true on success, false on failure
+	 * @param	string	$id			Key name
+	 * @param	string	$namespace	Namespace name
+	 * @return	bool	TRUE on success, FALSE on failure
 	 */
 	public function delete($id, $namespace = '')
 	{
@@ -101,9 +105,9 @@ class CI_Cache_memcached extends CI_Driver {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Delete keys from cache with a specified prefix
+	 * Delete keys from cache in a specified namespace
 	 *
-	 * @param	mixed	Prefix of group of cache keys to delete
+	 * @param	string	$namespace	Namespace of group of cache keys to delete
 	 * @return	bool
 	 */
 	public function clear_namepace($namespace)
@@ -114,9 +118,9 @@ class CI_Cache_memcached extends CI_Driver {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Clean the Cache
+	 * Clean the cache
 	 *
-	 * @return	bool	false on failure/true on success
+	 * @return	bool	TRUE on success, FALSE on failure
 	 */
 	public function clean()
 	{
@@ -128,9 +132,10 @@ class CI_Cache_memcached extends CI_Driver {
 	/**
 	 * Cache Info
 	 *
+	 * @param	string	$type = 'user'	user/filehits (not used in this driver)
 	 * @return	mixed	array on success, false on failure
 	 */
-	public function cache_info()
+	public function cache_info($type = NULL)
 	{
 		return $this->_memcached->getStats();
 	}
@@ -140,8 +145,9 @@ class CI_Cache_memcached extends CI_Driver {
 	/**
 	 * Get Cache Metadata
 	 *
-	 * @param	mixed	key to get cache metadata on
-	 * @return	mixed	FALSE on failure, array on success.
+	 * @param	string	$id			Key to get cache metadata on
+	 * @param	string	$namespace	Namespace name
+	 * @return	mixed	Cache item metadata
 	 */
 	public function get_metadata($id, $namespace = '')
 	{

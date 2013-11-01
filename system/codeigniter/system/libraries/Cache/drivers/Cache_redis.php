@@ -48,11 +48,12 @@ class CI_Cache_redis extends CI_Driver
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Get cache
+	 * Look for a value in the cache. If it exists, return the data
+	 * if not, return FALSE
 	 *
-	 * @param	string	Cache key identifier
-	 * @param	string	Namespace name
-	 * @return	mixed
+	 * @param	string	$id 		Key name
+	 * @param	string	$namespace	Namespace name
+	 * @return	mixed	value matching $id or FALSE on failure
 	 */
 	public function get($key, $namespace = '')
 	{
@@ -62,13 +63,13 @@ class CI_Cache_redis extends CI_Driver
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Save cache
+	 * Save value to cache
 	 *
-	 * @param	string	Cache key identifier
-	 * @param	mixed	Data to save
-	 * @param	int	Time to live
-	 * @param	string	Namespace name
-	 * @return	bool
+	 * @param	string	$id			Key name
+	 * @param	mixed	$data		Data to store
+	 * @param	int		$ttl = 60	Cache TTL (in seconds)
+	 * @param	string	$namespace	Namespace name
+	 * @return	bool	TRUE on success, FALSE on failure
 	 */
 	public function save($key, $value, $ttl = NULL, $namespace = '')
 	{
@@ -84,9 +85,9 @@ class CI_Cache_redis extends CI_Driver
 	/**
 	 * Delete from cache
 	 *
-	 * @param	string	Cache key
-	 * @param	string	Namespace name
-	 * @return	bool
+	 * @param	string	$id			Key name
+	 * @param	string	$namespace	Namespace name
+	 * @return	bool	TRUE on success, FALSE on failure
 	 */
 	public function delete($key, $namespace = '')
 	{
@@ -96,9 +97,9 @@ class CI_Cache_redis extends CI_Driver
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Delete keys from cache with a specified prefix
+	 * Delete keys from cache in a specified namespace
 	 *
-	 * @param	string	Namepace of group of cache keys to delete
+	 * @param	string	$namespace	Namespace of group of cache keys to delete
 	 * @return	bool
 	 */
 	public function clear_namepace($namespace)
@@ -113,7 +114,7 @@ class CI_Cache_redis extends CI_Driver
 	/**
 	 * Clean cache
 	 *
-	 * @return	bool
+	 * @return	bool	TRUE on success, FALSE on failure
 	 * @see		Redis::flushDB()
 	 */
 	public function clean()
@@ -124,12 +125,10 @@ class CI_Cache_redis extends CI_Driver
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Get cache driver info
+	 * Cache Info
 	 *
-	 * @param	string	Not supported in Redis.
-	 *			Only included in order to offer a
-	 *			consistent cache API.
-	 * @return	array
+	 * @param	string	$type = 'user'	user/filehits (not used in this driver)
+	 * @return	mixed	array containing cache info on success OR FALSE on failure
 	 * @see		Redis::info()
 	 */
 	public function cache_info($type = NULL)
@@ -140,11 +139,11 @@ class CI_Cache_redis extends CI_Driver
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Get cache metadata
+	 * Get Cache Metadata
 	 *
-	 * @param	string	Cache key
-	 * @param	string	Namespace name
-	 * @return	array
+	 * @param	string	$id			Key to get cache metadata on
+	 * @param	string	$namespace	Namespace name
+	 * @return	mixed	Cache item metadata
 	 */
 	public function get_metadata($key, $namespace = '')
 	{
@@ -197,11 +196,10 @@ class CI_Cache_redis extends CI_Driver
 	protected function _setup_redis()
 	{
 		$config = array();
-		$CI =& get_instance();
 
-		if ($CI->config->load('redis', TRUE, TRUE))
+		if (ee()->config->load('redis', TRUE, TRUE))
 		{
-			$config += $CI->config->item('redis');
+			$config += ee()->config->item('redis');
 		}
 
 		$config = array_merge(self::$_default_config, $config);
