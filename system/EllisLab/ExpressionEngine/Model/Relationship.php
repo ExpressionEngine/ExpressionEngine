@@ -3,11 +3,12 @@ namespace EllisLab\ExpressionEngine\Model;
 
 
 class Relationship {
+	private $dependencies = NULL;
 
 	/**
-	 * Type of relationship in dash-words
+	 * Type of relationship in camelCase. 
 	 */
-	private $type;
+	public $type;
 
 	/**
 	 * Defines the link for eagerly loaded relationships. The information we
@@ -24,27 +25,30 @@ class Relationship {
 	/**
 	 * Model instance that called the relationship
 	 */
-	private $from_model;
+	public $from_model;
 
 	/**
 	 * Name of the related model
 	 */
-	private $to_model_name;
+	public $to_model_name;
 
 	/**
 	 * Fully qualified class name of the related model
 	 */
-	private $to_model_class;
+	public $to_model_class;
 
 	/**
 	 * Initialize this relationship with its base information
 	 *
 	 * @param <Model> $from_model  		Object of the initiating model
-	 * @param String  $to_model_name	Name of the model to relate
-	 * @param String  $type				Type of relationship (e.g. one-to-one)
+	 * @param String  $to_model_name	Name of the model to relate or the name
+	 * 			 of the relationship method
+	 * @param String  $type				Type of relationship in dash words 
+	 * 			(e.g. one-to-one)
 	 */
-	public function __construct($from_model, $to_model_name, $type)
+	public function __construct(Dependencies $dependencies, $from_model, $to_model_name, $type)
 	{
+		$this->dependencies = $dependencies;
 		$this->from_model = $from_model;
 		$this->to_model_name = $to_model_name;
 		$this->to_model_class = QueryBuilder::getQualifiedClassName($to_model_name);
@@ -141,6 +145,16 @@ class Relationship {
 		return $resolvers;
 	}
 
+	private function join($query, $db)
+	{
+		$db->join(	
+			$to_table,
+			$from_table . '.' . $from_key . '=' . $to_table . '.' . $to_key);
+	}
+
+	private function subquery()
+	{}
+
 	/**
 	 * Join an given entity onto the main entity for this model.
 	 *
@@ -236,7 +250,7 @@ class Relationship {
 
 		foreach ($collection as $i => $model)
 		{
-			$model->setRelated($to_model_name, new $to_model_class($query_result[$i]));
+			$model->setRelated($to_model_name, new $to_model_class($this->dependencies, $query_result[$i]));
 		}
 	}
 
@@ -246,7 +260,7 @@ class Relationship {
 		// empty parent - no query
 		if (count($collection) === 0)
 		{
-			$this->mergeCollections($collection, new Collection);
+			$this->mergeCollections($collection, new Collection());
 			return;
 		}
 

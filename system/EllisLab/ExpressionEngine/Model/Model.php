@@ -27,12 +27,13 @@ abstract class Model {
 	 * 						set on this model.  The array indexes must
 	 * 						be valid properties on this model's entity.
 	 */
-	public function __construct(array $data = array())
+	public function __construct(Dependencies $dependencies, array $data = array())
 	{
+		$this->dependencies = $dependencies;
 		foreach (static::getMetaData('entity_names') as $entity_name)
 		{
 			$entity = QueryBuilder::getQualifiedClassName($entity_name);
-			$this->entities[$entity_name] = new $entity($data);
+			$this->entities[$entity_name] = new $entity($dependencies, $data);
 		}
 	}
 
@@ -519,6 +520,22 @@ abstract class Model {
 	public function setRelated($relationship_key, $value)
 	{
 		$this->related_models[$relationship_key] = $value;
+		return $this;
+	}
+
+	public function hasRelated($relationship_key)
+	{
+		return isset ($this->related_models[$relationship_key]);
+	}
+
+	public function addRelated($relationship_key, $model)
+	{
+		if ( ! isset($this->related_models[$relationship_key]))
+		{
+			$this->related_models[$relationship_key] = array();
+		}
+		$this->related_models[$relationship_key][] = $model;
+		return $this;
 	}
 
 	/**
@@ -537,7 +554,7 @@ abstract class Model {
 	 * @return Relationship object or related data
 	 */
 	private function related(
-		$type, $to_model_name, $this_key, $that_key = NULL, $name=NULL)
+		$type, $to_model_name, $this_key, $to_key = NULL, $name=NULL)
 	{
 		// If we already have data, return it
 		$relationship_key = (isset($name) ? $name : $to_model_name);
@@ -546,14 +563,43 @@ abstract class Model {
 			return $this->related_models[$to_model_name];
 		}
 
-		$relationship = new Relationship($this, $to_model_name, $type);
-
-		// No id, we must be querying
-		if ($this->getId() === NULL)
+		// At this point, if we don't have a to_key we'll need to default
+		// to the primary key of the target model.
+		if ( ! isset($to_key))
 		{
-			return $relationship->eagerLoad($this_key, $that_key);
+			$to_model_class = QueryBuilder::getQualifiedClassName($to_model_name);
+			$to_key = $to_model_class::getMetaData('primary_key');
 		}
 
-		return $relationship->lazyLoad($this_key, $that_key);
+		// Eager Load
+		// 	If no id is set, then we're doing an eager load during a
+		// 	query.  This model is probably mostly empty.
+		if ($this->getId() === NULL)
+		{
+			$relationship = new ModelRelationship($this);
+			$relationship->relationship_name = $relationship_key;
+			$relationship->to_model_name = $to_model_name;
+			$relationship->from_key = $this_key;
+			$relationship->to_key = $to_key;
+			return $relationship;
+		}
+
+		// Lazy Load
+		// 	Otherwise, if we haven't hit one of the previous cases, then this
+		// 	is a lazy load on an existing model.
+		$query = new Query($to_model_name);
+		$query->filter($to_model_name . '.' . $to_key, $this->$this_key);
+
+		if ($type == 'one-to-one' OR $type == 'many-to-one')
+		{
+			$result = $query->first();
+		}
+		else
+		{
+			$result = $query->all();
+		}
+
+		$this->setRelated($relationship_key, $result);
+		return $result;
 	}
 }
