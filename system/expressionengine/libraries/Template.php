@@ -3295,7 +3295,7 @@ class EE_Template {
 	{
 		if (strpos(ee()->TMPL->tagdata, LD."if {$conditional}".RD) !== FALSE)
 		{
-			preg_match('/{if '.$conditional.'}(.*){\/if}/uis', $template, $matches);
+			preg_match('/'.LD.'if '.preg_quote($conditional).RD.'(.*){\/if}/uis', $template, $matches);
 			return $this->parse_variables($matches[1], $vars);
 		}
 
