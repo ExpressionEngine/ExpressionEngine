@@ -312,7 +312,7 @@ class Grid_parser {
 			$row['total_rows'] = $total_rows;
 			$row['field_total_rows'] = $field_total_rows;
 
-			$grid_row = ee()->TMPL->parse_switch($grid_row, $count, $prefix);
+			$grid_row = ee()->TMPL->parse_switch($grid_row, $row['index'], $prefix);
 
 			$count++;
 
