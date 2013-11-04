@@ -1,4 +1,7 @@
-<?php namespace EllisLab\ExpressionEngine\Model;
+<?php namespace EllisLab\ExpressionEngine\Model\Query;
+
+use EllisLab\ExpressionEngine\Core\Dependencies;
+use EllisLab\ExpressionEngine\Model\DataStructure\Tree\QueryTreeNode;
 
 class Query {
 	private $di = NULL;
@@ -15,7 +18,7 @@ class Query {
 	private $subqueries = array();
 
 	/**
-	 * @var	TreeNode $root	The root of this query's tree of model
+	 * @var	QueryTreeNode $root	The root of this query's tree of model
 	 * 			relationships.  The model we initiated the query against.
 	 */
 	private $root = NULL;
@@ -26,7 +29,7 @@ class Query {
 	{
 		$this->di = $di;
 		$this->model_name = $model;
-		$this->root = new TreeNode($model);
+		$this->root = new QueryTreeNode($model);
 
 		// @todo Need to be able to inject this for testing.  -Bingham
 		$this->db = clone ee()->db; // TODO reset?
@@ -144,7 +147,7 @@ class Query {
 	 * 			the relationship.  Relationship names must be parsed into model
 	 * 			names before being sent to walkRelationshipTree()	
 	 */
-	private function buildRelationshipTree(TreeNode $parent, $relationship)
+	private function buildRelationshipTree(QueryTreeNode $parent, $relationship)
 	{
 		// An array could be one or two things:
 		// 	- We're specifying meta data for this node of the tree
@@ -237,13 +240,13 @@ class Query {
 	 * retrieve the relationship on the "from" object, and carry a "from" and
 	 * "to". 
 	 *
-	 * @param	TreeNode	$parent	The parent node to this one, represents the edge
+	 * @param	QueryTreeNode	$parent	The parent node to this one, represents the edge
 	 * 		leading to the attached vertex from which this node (representing an edge)
 	 * 		spawns.
 	 */
-	private function createNode(TreeNode $parent, $relationship_name, array $meta=array())
+	private function createNode(QueryTreeNode $parent, $relationship_name, array $meta=array())
 	{
-		$node = new TreeNode($relationship_name);
+		$node = new QueryTreeNode($relationship_name);
 
 		if ($parent->isRoot())
 		{
@@ -272,7 +275,7 @@ class Query {
 		return $node;
 	}
 
-	private function buildRelationship(TreeNode $node)
+	private function buildRelationship(QueryTreeNode $node)
 	{
 		if ($node->meta->method == ModelRelationshipMeta::METHOD_JOIN 
 			&& ! $this->hasParentSubquery($node))
@@ -285,7 +288,7 @@ class Query {
 		}
 	}
 
-	private function buildJoinRelationship(TreeNode $node)
+	private function buildJoinRelationship(QueryTreeNode $node)
 	{
 		$relationship_meta = $node->meta;
 		$this->selectFields($relationship_meta->to_model_name);
@@ -312,7 +315,7 @@ class Query {
 		}
 	}
 
-	private function buildSubqueryRelationship(TreeNode $node)
+	private function buildSubqueryRelationship(QueryTreeNode $node)
 	{
 		$subquery = new Query($node->meta->to_model_name);
 		$subquery->withSubtree($node->getSubtree());
@@ -320,7 +323,7 @@ class Query {
 		$this->subqueries[] = array('node' => $node, 'subquery' => $subquery);
 	}
 
-	private function hasParentSubquery(TreeNode $node)
+	private function hasParentSubquery(QueryTreeNode $node)
 	{
 		foreach($n = $node; $n !== NULL; $n = $n->getParent())
 		{
@@ -501,7 +504,7 @@ class Query {
 	 *
 	 * @param String $model Model name to select.
 	 */
-	private function selectFields(TreeNode $node)
+	private function selectFields(QueryTreeNode $node)
 	{
 		if ($node->isRoot())
 		{
@@ -531,7 +534,7 @@ class Query {
 			$properties = get_object_vars($entity_class_name);
 			foreach ($properties as $property)
 			{
-				$this->db->select($table . '.' . $property . ' AS ' . $node->getDepth() . '__' . $relationship_name . '__' . $model_name . '__' . $property);
+				$this->db->select($table . '.' . $property . ' AS ' . $node->getPath() . '__' . $model_name . '__' . $property);
 			}
 		}
 	}

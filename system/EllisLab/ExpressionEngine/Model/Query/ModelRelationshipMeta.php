@@ -1,5 +1,5 @@
 <?php
-namespace EllisLab\ExpressionEngine\Model;
+namespace EllisLab\ExpressionEngine\Model\Query;
 
 class ModelRelationshipMeta {
 
