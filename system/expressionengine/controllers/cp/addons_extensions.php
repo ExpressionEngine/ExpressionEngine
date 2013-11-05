@@ -122,7 +122,7 @@ class Addons_extensions extends CP_Controller {
 
 				// Status & Actions
 				$toggle_install_url = BASE.AMP.'C=addons_extensions'.AMP.'M=toggle_install'.AMP."which={$ext_name}";
-				$toggle_enabled_url = BASE.AMP.'C=addons_extensions'.AMP.'M=toggle_enabled'.AMP."which={$ext_name}";
+				$toggle_enabled_url = BASE.AMP.'C=addons_extensions'.AMP.'M=toggle_enabled'.AMP."which={$class_name}";
 				if ($installed)
 				{
 					$ext['actions'] = anchor($toggle_install_url, lang('uninstall')).' &#9670; ';
@@ -193,6 +193,8 @@ class Addons_extensions extends CP_Controller {
 			->where('class', $file)
 			->get('extensions')
 			->result_array();
+
+		var_dump($file);
 
 		// Toggle the status of all hooks using the status of the first
 		$status = ($hooks[0]['enabled'] == 'y') ? 'n' : 'y';
