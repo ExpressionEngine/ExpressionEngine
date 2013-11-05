@@ -56,7 +56,7 @@
 						<ul class="group">
 							<li class="rotate_90">
 								<label>
-									<?php // Rotate 90 degrees right is 270 because 
+									<?php // Rotate 90 degrees right is 270 because
 										  // the image lib rotates counter-clockwise ?>
 									<?=form_radio(array(
 										'name'	=> 'rotate',
@@ -101,5 +101,10 @@
 		</div> <!-- .panels -->
 	<?=form_close()?>
 </div> <!-- .upload_edit -->
+
+<script>
+	var file = <?= $file_json ?>;
+	parent.$.ee_fileuploader.update_file(file);
+</script>
 
 <?php $this->load->view('_shared/file_upload/iframe_footer') ?>
