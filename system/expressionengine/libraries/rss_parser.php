@@ -55,6 +55,9 @@ class EE_RSS_Parser {
 		$feed->set_cache_location(APPPATH.'cache/'.$cache_name.'/');
 		$feed->set_cache_duration($duration * 60); // Get parameter to seconds
 
+		// Strip <divs> in addition to the base tags
+		$feed->strip_htmltags(array_merge($feed->strip_htmltags, array('div')));
+
 		// Check to see if the feed was initialized, if so, deal with the type
 		$success = $feed->init();
 		$feed->handle_content_type();
