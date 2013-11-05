@@ -376,70 +376,142 @@ class Query {
 	{
 		foreach($result as $row)
 		{
+
+			// Each row holds field=>value data for the full joined query's
+			// tree.  In order to take this flat row data and reconstruct into
+			// a tree, the field names of each field=>value pair have been
+			// aliased with the path to the correct node (in ids), and the
+			// model to which the field belongs.  Each field name looks like
+			// this: path__model__fieldName
+			//
+			// Where path, model and fieldName may have single underscores in
+			// them.  The path is a series of underscore separated integers
+			// corresponding to the unique ids of nodes in this query's
+			// relationship tree.  The tree might look something like this:
+			//
+			// 				ChannelEntry(1)
+			// 			/			|			\
+			// 	Channel (2)		Author (3)		Categories (4)
+			//						|				|
+			// 					MemberGroup (5)	CategoryGroup (6)
+			//
+			// 	So a field in the CategoryGroup model would be aliased like so:
+			//
+			// 	1_4_6__CategoryGroup__group_id
+			//
+			// 	A field in the Author relationship (Member model) might be
+			// 	aliased:
+			//
+			// 	1_3__Member__member_id
+			//
+			// 	This will allow us to create the models we've pulled and
+			// 	correctly reconstruct the tree.
 			$row_data = array();
 			foreach($row as $name=>$value)
 			{
-				list($depth, $relationship_name, $model_name, $field_name) = explode('__', $name);
-				if ( ! isset($row_data[$depth]))
+				list($path, $model_name, $field_name) = explode('__', $name);
+				if ( ! isset($row_data[$path]))
 				{
-					$row_data[$depth] = array();
+					$row_data[$path] = array();
 				}
-				if ( ! isset($row_data[$depth][$relationship_name]))
+				if ( ! isset($row_data[$path]['__model_name']))
 				{
-					$row_data[$depth][$relationship_name] = array();
+					$row_data[$path]['__model_name'] = $model_name;
 				}
-				$row_data[$depth][$relationship_name]['__model_name'] = $model_name;
-				$row_data[$depth][$relationship_name][$field_name] = $value;
+				$row_data[$path][$field_name] = $value;
 			}
 
-			$node = $this->root;
-			foreach($row_data as $depth => $depth_data)
+			foreach ($row_data as $path=>$model_data)
 			{
-				foreach ($depth_data as $relationship_name => $model_data)
+				if ($this->isModelRoot($path))
 				{
-					$model_name = $model_data['__model_name'];
-					unset($model_data['__model_name']);
-
-					$model_class = QueryBuilder::getQualifiedClassName($model_name);
-					$model_primary_key = $model_data[$model_class::getMetaData('primary_key')]; 
-					
-					if ($relationship_name == 'root')
+					if ($this->modelExists($model_data))
 					{
-						$models = $parent_node->models;
-						if (isset ($models[$model_primary_key])
-						{
-							$parent_model = $models[$model_primary_key];	
-						}
-						else
-						{
-							$parent_model = new $model_class($model_data);
-							$models = array(
-								$model_primary_key => $parent_model
-							);
-							$parent_node->models = $models;
-						}
+						continue;
 					}
 					else
 					{
-						$node = $parent_node->get($relationship_name);
-						$models = $node->models;
-						
-						if (isset($models[$model_primary_key]))
-						{
-							$parent_model = $models[$model_primary_key];
-						}
-						else
-						{
-							$model = new $model_class($model_data);
-							$models = array(
-								$model_primary_key => $model
-							);
-							$parent_model->addRelated($model);
-						}
-					}	
+						$model_class = QueryBuilder::getQualifiedClassName($model_data['__model_name']);
+						$primary_key = $model_class::getMetaData('primary_key');
+						$model = new $model_class($model_data);
+						$this->results[$model_data[$primary_key]] = $model;
+					}
+				}
+				else
+				{
+					$parent_model = $this->findModelParent($row_data, $path);
+					if ($this->modelExists($model_data, $parent_model))
+					{
+						continue;
+					}
+					else
+					{
+						$model = new $model_class($model_data);
+						$parent_model->addRelated($relationship_name, $model);
+					}
 				}
 			}
 		}
+
+	}
+
+	private function isModelRoot($path, $model_data)
+	{
+		if (int($path) === 1)
+		{
+			return true;
+		}
+
+		return false;
+	}
+
+	private function modelExists($model_data, $parent=NULL)
+	{
+		$model_class = QueryBuilder::getQualifiedClassName($model_data['__model_name']);
+		$primary_key = $model_class::getMetaData('primary_key');
+		if ($parent == NULL)
+		{
+			if (isset($this->results[$model_data[$primary_key]]))
+			{
+				return TRUE;
+			}
+			else
+			{
+				return FALSE;
+			}
+		}
+	}
+
+	private function getModelNode($path)
+	{
+		$node_ids = explode('_', $path);
+		$id = array_shift($node_ids);
+		$node = $this->root;
+		while( ! empty($node_ids))
+		{
+			$id = array_shift($node_ids);
+			$node = $node->getChildById($id);
+		}
+
+		return $node;
+	}
+
+	private function findModelParent($path_data, $child_path)
+	{
+		$path = substr($child_path, 0, strrpos('_', $child_path));
+
+		$model_data = $path_data[$path];
+
+		$model_name = $model_data['__model_name'];
+		$model_class = QueryBuilder::getQualifiedClassName($model_name);
+		$primary_key_name = $model_class::getMetaData('primary_key');
+		$primary_key = $model_data[$primary_key_name];
+		
+		if (isset($this->results[$model_name][$primary_key]))
+		{
+
+		}
+
 
 	}
 
