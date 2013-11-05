@@ -32,14 +32,6 @@ class Member_memberlist extends Member {
 	var $search_total		= 0;
 
 	/** ----------------------------------
-	/**  Member_memberlist Profile Constructor
-	/** ----------------------------------*/
-	function Member_memberlist()
-	{
-	}
-
-
-	/** ----------------------------------
 	/**  Member Email Form
 	/** ----------------------------------*/
 	function email_console()
@@ -183,7 +175,7 @@ class Member_memberlist extends Member {
 		{
 			return FALSE;
 		}
-		
+
 		/** ---------------------------------
 		/**  Does the recipient accept email?
 		/** ---------------------------------*/
@@ -418,25 +410,27 @@ class Member_memberlist extends Member {
 		$valid_order_bys = array(
 				'screen_name','total_posts', 'join_date'
 			);
-	
+
 		$sort_orders = array('asc', 'desc');
-		
+
 		if (($group_id = (int) ee()->input->post('group_id')) === 0)
 		{
 			$group_id = 0;
 		}
-		
+
 		$sort_order = ( ! in_array(ee()->input->post('sort_order'), $sort_orders)) ? ee()->config->item('memberlist_sort_order') : ee()->input->post('sort_order', 'post');
-		
+
 		if (($row_limit = (int) ee()->input->post('row_limit')) === 0)
 		{
 			$row_limit = ee()->config->item('memberlist_row_limit');
-		}	
+			// TODO-WB Remove debug line
+			$row_limit = 3;
+		}
 
 		if (ee()->input->post('order_by'))
 		{
 			$order_by = ee()->input->post('order_by', 'post');
-			
+
 			if ( ! in_array($order_by, $valid_order_bys))
 			{
 				$order_by = ee()->config->item('memberlist_order_by');
@@ -446,7 +440,7 @@ class Member_memberlist extends Member {
 		{
 			$order_by = ee()->config->item('memberlist_order_by');
 		}
-		
+
 		if (($row_count = (int) ee()->input->post('row_count')) === 0)
 		{
 			$row_count = 0;
@@ -490,19 +484,17 @@ class Member_memberlist extends Member {
 		  if (preg_match("#^[0-9]{1,}\-[0-9a-z_]{1,}\-[0-9a-z]{1,}\-[0-9]{1,}\-[0-9]{1,}$#i", $this->cur_id))
 		{
 			$x = explode("-", $this->cur_id);
-		
+
 			$group_id	= $x['0'];
 			$order_by 	= $x['1'];
 			$sort_order	= $x['2'];
 			$row_limit	= $x['3'];
 			$row_count	= $x['4'];
-			
+
 			// Which segment is this?  We need the NEXT segment to pass to pagination
 			$pag_uri_segment = array_search($this->cur_id, ee()->uri->segment_array()) + 1;
-
-			//$row_count = ($this->uri_extra != '') ? $this->uri_extra : 0;
 		}
-		
+
 		$path = '/'.$group_id.'-'.$order_by.'-'.$sort_order.'-'.$row_limit;
 
 		/** ----------------------------------------
@@ -580,57 +572,27 @@ class Member_memberlist extends Member {
 		/**  Build Pagination
 		/** -----------------------------*/
 
-		// Set the stats for: {current_page} of {total_pages}
+		// Check to see if the old style pagination exists
+		// @deprecated 2.8
+		if (stripos($template, LD.'if paginate'.RD) !== FALSE)
+		{
+			$template = preg_replace("/\{if paginate\}(.*)\{\/if\}/us", "{paginate}$1{/paginate}", $template);
+			ee()->load->library('logger');
+			ee()->logger->deprecated('2.8', 'normal {paginate} tags');
+		}
 
-		$current_page = floor(($row_count / $row_limit) + 1);
-		$total_pages  = ceil($query->row('count')  / $row_limit);
+		// Start running pagination
+		ee()->load->library('pagination');
+		$pagination = ee()->pagination->create(__CLASS__);
+		$pagination->set_template($template);
+		$template = $pagination->get_template();
 
-		// Deprecate this
-		$page_count = ee()->lang->line('page').' '.$current_page.' '.ee()->lang->line('of').' '.$total_pages;
-
-		$pager = '';
-
-		if ($query->row('count')  > $row_limit)
-		{ 
-			ee()->load->library('pagination');
-
-			$config['prefix'] = $search_path.$path.'-';
-			$config['base_url'] = $this->_member_path('memberlist', '');
-			$config['total_rows'] = $query->row('count');
-			$config['per_page'] = $row_limit;
-			$config['first_link'] = ee()->lang->line('first');
-			$config['last_link'] = ee()->lang->line('last');
-			//$config['uri_segment'] = $pag_uri_segment;
-			$config['suffix'] = ($first_letter != '') ? $first_letter.'/' : '';
-			$config['first_url'] = $this->_member_path('memberlist'.$search_path.$path.'-0');
-			$config['cur_page']	= ($row_count == '') ? '0' : $row_count;
-			
-			// Allows $config['cur_page'] to override
-			$config['uri_segment'] = 0;
-  
-			if (preg_match("/".LD.'pagination_links'.RD."/", $template))
-			{
-				$config['first_tag_open'] = '<td><div class="paginate">';
-				$config['first_tag_close'] = '</div></td>';
-				$config['last_tag_open'] = '<td><div class="paginate">';
-				$config['last_tag_close'] = '</div></td>';
-				$config['next_tag_open'] = '<td><div class="paginate">';
-				$config['next_tag_close'] = '</div></td>';
-				$config['prev_tag_open'] = '<td><div class="paginate">';
-				$config['prev_tag_close'] = '</div></td>';
-				$config['cur_tag_open'] = '<td><div class="paginateCur">';
-				$config['cur_tag_close'] = '</div></td>';
-				$config['num_tag_open'] = '<td><div class="paginate">';
-				$config['num_tag_close'] = '</div></td>';				
-			}			
-			
-			ee()->pagination->initialize($config);
-			
-
-			$pager = ee()->pagination->create_links();
-			 //var_dump(ee()->pagination); //exit;
+		if ($query->row('count') > $row_limit && $pagination->paginate === TRUE)
+		{
+			$pagination->total_rows = $query->row('count');
+			$pagination->per_page = $row_limit;
+			$pagination->build($pagination->total_rows);
 			$sql .= " LIMIT ".$row_count.", ".$row_limit;
-
 		}
 
 		/** ----------------------------------------
@@ -690,7 +652,7 @@ class Member_memberlist extends Member {
 					/** ----------------------------------------
 					/**  Parse conditions in standard fields
 					/** ----------------------------------------*/
-					
+
 					// array_key_exists instead of isset since columns can be NULL
 					if (array_key_exists($val['3'], $row))
 					{
@@ -1027,34 +989,34 @@ class Member_memberlist extends Member {
 		/** ----------------------------------------
 		/**  Put rendered chunk into template
 		/** ----------------------------------------*/
-		if ($pager == '')
+		if ($pagination->paginate === TRUE)
 		{
-			$template = $this->_deny_if('paginate', $template);
-		}
-		else
-		{
-			$template = $this->_allow_if('paginate', $template);
-
-			// Deprecate these...
-			$template = str_replace(LD.'paginate'.RD, 			$pager, $template);
-			$template = str_replace(LD.'page_count'.RD, 		$page_count, $template);
-			//.....
-			$template = str_replace(LD.'pagination_links'.RD,	$pager, 		$template);
-			$template = str_replace(LD.'current_page'.RD, 		$current_page, 	$template);
-			$template = str_replace(LD.'total_pages'.RD, 		$total_pages,	$template);
+			// TODO-WB Render expects to put the pagination code at the top or
+			// bottom, how can I put it back or find a way around this?
+			$template = $pagination->render($template);
 		}
 
 		if ($this->is_search === TRUE)
 		{
-			$template = str_replace(LD."form_declaration".RD, "<form method='post' action='".$this->_member_path('member_search'.$search_path)."'>", $template);
+			$form_open = ee()->functions->form_declaration(array(
+				'method' => 'post',
+				'action' => $this->_member_path('member_search'.$search_path)
+			));
 		}
 		else
 		{
-			$template = str_replace(LD."form_declaration".RD, "<form method='post' action='".$this->_member_path('memberlist'.(($first_letter != '') ? $first_letter.'/' : $search_path))."'>", $template);
+			$form_open = ee()->functions->form_declaration(array(
+				'method' => 'post',
+				'action' => $this->_member_path('memberlist'.(($first_letter != '') ? $first_letter.'/' : $search_path))
+			));
 		}
 
-		$template = str_replace(LD."form:form_declaration:do_member_search".RD, "<form method='post' action='".$this->_member_path('do_member_search')."'>", $template);
-
+		$template = str_replace(LD."form_declaration".RD, $form_open, $template);
+		$form_open_member_search = ee()->functions->form_declaration(array(
+			'method' => 'post',
+			'action' => $this->_member_path('do_member_search')
+		));
+		$template = str_replace(LD."form:form_declaration:do_member_search".RD, $form_open_member_search, $template);
 		$template = str_replace(LD."member_rows".RD, $str, $template);
 
 		return	$template;
@@ -1155,7 +1117,7 @@ class Member_memberlist extends Member {
 		/** ----------------------------------------*/
 
 		$valid = array('screen_name', 'email', 'url', 'location', 'occupation',
-			'interests', 'aol_im', 'yahoo_im', 'msn_im', 'icq', 'bio', 
+			'interests', 'aol_im', 'yahoo_im', 'msn_im', 'icq', 'bio',
 			'signature');
 
 		$custom_fields = FALSE;

@@ -11,7 +11,7 @@
  * @since		Version 2.4
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -25,7 +25,7 @@
  */
 
 class EE_Pagination extends CI_Pagination {
-	
+
 	public function __construct()
 	{
 		$this->EE =& get_instance();
@@ -36,7 +36,7 @@ class EE_Pagination extends CI_Pagination {
 	{
 		return new Pagination_object($classname);
 	}
-	
+
 }
 
 /**
@@ -61,41 +61,60 @@ class Pagination_object {
 	public $type				= '';
 	public $dynamic_sql			= TRUE;
 	public $position			= '';
-	public $pagination_marker = "pagination_marker";
-	
+	public $pagination_marker	= "pagination_marker";
+	private $_template			= '';
+
 	public function __construct($classname)
 	{
 		$this->type = $classname;
 		$this->EE =& get_instance();
 		ee()->load->library('pagination');
+		ee()->load->library('template', NULL, 'TMPL');
 	}
-	
+
+	public function set_template($template)
+	{
+		$this->_template = $template;
+	}
+
+	private function &_template()
+	{
+		if ( ! empty($this->_template))
+		{
+			return $this->_template;
+		}
+
+		return ee()->TMPL->tagdata;
+	}
+
 	// ------------------------------------------------------------------------
 
 	/**
 	 * Step 1 of Pagination: fetch_pagination_data()
-	 * 
+	 *
 	 * Fetch pagination data
-	 * Determines if {paginate} is in the tagdata, if so flags that. Also 
-	 * checks to see if paginate_type is field, if it is, then we look for 
+	 * Determines if {paginate} is in the tagdata, if so flags that. Also
+	 * checks to see if paginate_type is field, if it is, then we look for
 	 * {multi_field="..."} and flag that.
-	 * 
-	 * The whole goal of this method is to see if we need to paginate and if 
+	 *
+	 * The whole goal of this method is to see if we need to paginate and if
 	 * we do, extract the tags within pagination and put them in another variable
 	 */
 	function get_template()
 	{
+		$template = &$this->_template();
+
 		// Quick check to see if {paginate} even exists
-		if (strpos(ee()->TMPL->tagdata, LD.'paginate'.RD) === FALSE) return;
-		
-		if (preg_match("/".LD."paginate".RD."(.+?)".LD.'\/'."paginate".RD."/s", ee()->TMPL->tagdata, $paginate_match))
+		if (strpos($template, LD.'paginate'.RD) === FALSE) return;
+
+		if (preg_match("/".LD."paginate".RD."(.+?)".LD.'\/'."paginate".RD."/s", $template, $paginate_match))
 		{
 			if (ee()->TMPL->fetch_param('paginate_type') == 'field')
 			{
 				// If we're supposed to paginate over fields, check to see if
 				// {multi_field="..."} exists. If it does capture the conetents
 				// and flag this as field_pagination.
-				if (preg_match("/".LD."multi_field\=[\"'](.+?)[\"']".RD."/s", ee()->TMPL->tagdata, $multi_field_match))
+				if (preg_match("/".LD."multi_field\=[\"'](.+?)[\"']".RD."/s", $template, $multi_field_match))
 				{
 					$this->multi_fields		= ee()->functions->fetch_simple_conditions($multi_field_match[1]);
 					$this->field_pagination	= TRUE;
@@ -115,33 +134,35 @@ class Pagination_object {
 				}
 			//
 			// -------------------------------------------
-			
+
 			// If {paginate} exists, flag for pagination and store the tags
 			// within {paginate}
 			$this->paginate		= TRUE;
 			$this->template_data	= $paginate_match[1];
-			
+
 			// Determine if pagination needs to go at the top and/or bottom, or inline
 			$this->position = ee()->TMPL->fetch_param('paginate');
-			
+
 			// Create temporary marker for inline position
 			$replace_tag = ($this->position == 'inline') ? LD.$this->pagination_marker.RD : '';
-			
-			// Remove pagination tags from template since we'll just 
+
+			// Remove pagination tags from template since we'll just
 			// append/prepend it later
-			ee()->TMPL->tagdata = preg_replace(
+			$template = preg_replace(
 				"/".LD."paginate".RD.".+?".LD.'\/'."paginate".RD."/s",
 				$replace_tag,
-				ee()->TMPL->tagdata
+				$template
 			);
 		}
+
+		return $template;
 	}
 
 	// ------------------------------------------------------------------------
 
 	/**
 	 * Build the pagination out, storing it in the Pagination_object
-	 * 
+	 *
 	 * @param integer $count Number of rows we're paginating over
 	 * @param object $query Query object of the post you're field paginating over
 	 */
@@ -169,27 +190,27 @@ class Pagination_object {
 			}
 		//
 		// -------------------------------------------
-		
+
 		// Check again to see if we need to paginate
 		if ($this->paginate == TRUE)
 		{
-			// If template_group and template are being specified in the 
+			// If template_group and template are being specified in the
 			// index.php and there's no other URI string, specify the basepath
-			if ((ee()->uri->uri_string == '' OR ee()->uri->uri_string == '/') 
-				&& ee()->config->item('template_group') != '' 
+			if ((ee()->uri->uri_string == '' OR ee()->uri->uri_string == '/')
+				&& ee()->config->item('template_group') != ''
 				&& ee()->config->item('template') != '')
 			{
 				$this->basepath = ee()->functions->create_url(
 					ee()->config->slash_item('template_group').'/'.ee()->config->item('template')
 				);
 			}
-			
+
 			// If basepath is still nothing, create the url from the uri_string
 			if ($this->basepath == '')
 			{
 				$this->basepath = ee()->functions->create_url(ee()->uri->uri_string);
 				$query_string = (ee()->uri->page_query_string != '') ? ee()->uri->page_query_string : ee()->uri->query_string;
-				
+
 				if (preg_match("#^P(\d+)|/P(\d+)#", $query_string, $match))
 				{
 					$this->offset = (isset($match[2])) ? $match[2] : $match[1];
@@ -198,27 +219,27 @@ class Pagination_object {
 					);
 				}
 			}
-			
+
 			// Standard pagination, not field_pagination
 			if ($this->field_pagination == FALSE)
 			{
-				// If we're not displaying by something, then we'll need 
+				// If we're not displaying by something, then we'll need
 				// something to paginate, otherwise if we're displaying by
 				// something (week, day) it's okay for it to be empty
 				if ($this->type === "Channel" AND ee()->TMPL->fetch_param('display_by') == '')
 				{
-					// If we're doing standard pagination and not using 
+					// If we're doing standard pagination and not using
 					// display_by, clear out the query and get out of here
 					if ($count == 0)
 					{
 						$main_query = '';
 						return;
 					}
-					
+
 					$this->total_rows = $count;
 				}
-				
-				// We need to establish the per_page limits if we're using 
+
+				// We need to establish the per_page limits if we're using
 				// cached SQL because limits are normally created when building
 				// the SQL query
 				if ($this->dynamic_sql == FALSE)
@@ -229,7 +250,7 @@ class Pagination_object {
 					$cat_limit = FALSE;
 					if (
 						(
-							in_array(ee()->config->item("reserved_category_word"), explode("/", ee()->uri->uri_string)) 
+							in_array(ee()->config->item("reserved_category_word"), explode("/", ee()->uri->uri_string))
 							OR preg_match("#(^|\/)C(\d+)#", ee()->uri->uri_string, $match)
 						)
 						AND ee()->TMPL->fetch_param('dynamic') != 'no'
@@ -248,16 +269,16 @@ class Pagination_object {
 						$this->per_page  = ( ! is_numeric(ee()->TMPL->fetch_param('limit')))  ? '100' : ee()->TMPL->fetch_param('limit');
 					}
 				}
-				
+
 				$this->offset = ($this->offset == '' OR ($this->per_page > 1 AND $this->offset == 1)) ? 0 : $this->offset;
 
-				// If we're far beyond where we should be, reset us back to 
+				// If we're far beyond where we should be, reset us back to
 				// the first page
 				if ($this->offset > $this->total_rows)
 				{
 					$this->offset = 0;
 				}
-				
+
 				$this->current_page	= floor(($this->offset / $this->per_page) + 1);
 				$this->total_pages	= intval(floor($this->total_rows / $this->per_page));
 			}
@@ -274,7 +295,7 @@ class Pagination_object {
 				}
 
 				$m_fields = array();
-				
+
 				foreach ($this->multi_fields as $val)
 				{
 					foreach($this->cfields as $site_id => $cfields)
@@ -290,7 +311,7 @@ class Pagination_object {
 				}
 
 				$this->per_page = 1;
-				
+
 				$this->total_rows = count($m_fields);
 
 				$this->total_pages = $this->total_rows;
@@ -306,7 +327,7 @@ class Pagination_object {
 				{
 					$this->offset = 0;
 				}
-				
+
 				$this->current_page = floor(($this->offset / $this->per_page) + 1);
 
 				if (isset($m_fields[$this->offset]))
@@ -324,7 +345,7 @@ class Pagination_object {
 					$this->total_pages++;
 				}
 			}
-			
+
 			// Last check to make sure we actually need to paginate
 			if ($this->total_rows > $this->per_page)
 			{
@@ -332,7 +353,7 @@ class Pagination_object {
 				{
 					$this->basepath .= SELF;
 				}
-				
+
 				// Check to see if a paginate_base was provided
 				if (ee()->TMPL->fetch_param('paginate_base'))
 				{
@@ -340,7 +361,7 @@ class Pagination_object {
 						trim_slashes(ee()->TMPL->fetch_param('paginate_base'))
 					);
 				}
-				
+
 				$config['first_url'] 	= rtrim($this->basepath, '/');
 				$config['base_url']		= $this->basepath;
 				$config['prefix']		= 'P';
@@ -375,25 +396,25 @@ class Pagination_object {
 			}
 		}
 	}
-	
+
 	// ------------------------------------------------------------------------
 
 	/**
 	 * Renders all of the pagination data in the current template.
-	 * 
+	 *
 	 * Variable Pairs:
 	 * - page_links
-	 * 
+	 *
 	 * Single Variables:
 	 * - current_page
 	 * - total_pages
-	 * 
+	 *
 	 * Conditionals:
 	 * - total_pages
 	 * - previous_page
 	 * - next_page
-	 * 
-	 * @param string $return_data The final template data to wrap the 
+	 *
+	 * @param string $return_data The final template data to wrap the
 	 * 		pagination around
 	 * @return string The $return_data with the pagination data either above,
 	 * 		below or both above and below
@@ -404,12 +425,12 @@ class Pagination_object {
 		{
 			return $return_data;
 		}
-		
+
 		if ($this->paginate == TRUE)
 		{
 			$parse_array = array();
-			
-			// Check to see if page_links is being used as a single 
+
+			// Check to see if page_links is being used as a single
 			// variable or as a variable pair
 			if (strpos($this->template_data, LD.'/pagination_links'.RD) !== FALSE)
 			{
@@ -419,36 +440,36 @@ class Pagination_object {
 			{
 				$parse_array['pagination_links'] = $this->page_links;
 			}
-			
+
 			// ----------------------------------------------------------------
-			
+
 			// Parse current_page and total_pages by default
 			$parse_array['current_page']	= $this->current_page;
 			$parse_array['total_pages']		= $this->total_pages;
-			
+
 			// Parse current_page and total_pages
 			$this->template_data = ee()->TMPL->parse_variables(
 				$this->template_data,
 				array($parse_array),
 				FALSE // Disable backspace parameter so pagination markup is protected
 			);
-			
+
 			// ----------------------------------------------------------------
-			
+
 			// Parse {if previous_page} and {if next_page}
 			$this->_parse_conditional('previous', $this->page_previous);
 			$this->_parse_conditional('next', $this->page_next);
-			
+
 			// ----------------------------------------------------------------
-			
+
 			// Parse if total_pages conditionals
 			$this->template_data = ee()->functions->prep_conditionals(
-				$this->template_data, 
+				$this->template_data,
 				array('total_pages' => $this->total_pages)
 			);
-			
+
 			// ----------------------------------------------------------------
-			
+
 			switch ($this->position)
 			{
 				case "top":
@@ -472,18 +493,18 @@ class Pagination_object {
 					break;
 			}
 		}
-		
+
 		return $return_data;
 	}
-	
+
 	// ------------------------------------------------------------------------
-	
+
 	/**
 	 * Parse {if previous_page} and {if next_page}
-	 * 
+	 *
 	 * @param Pagination_object $pagination Pagination_object that has been
 	 * 		manipulated by the other pagination methods
-	 * @param string $type Either 'next' or 'previous' depending on the 
+	 * @param string $type Either 'next' or 'previous' depending on the
 	 * 		conditional you're looking for
 	 * @param string $replacement What to replace $type_page with
 	 */
