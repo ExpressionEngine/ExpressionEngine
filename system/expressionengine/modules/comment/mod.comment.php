@@ -2269,7 +2269,6 @@ class Comment {
 				exp_channel_titles.entry_id,
 				exp_channel_titles.channel_id,
 				exp_channel_titles.author_id,
-				exp_channel_titles.comment_total,
 				exp_channel_titles.allow_comments,
 				exp_channel_titles.entry_date,
 				exp_channel_titles.comment_expiration_date,
@@ -2417,7 +2416,6 @@ class Comment {
 		$url_title				= $query->row('url_title') ;
 		$channel_title		 	= $query->row('channel_title') ;
 		$channel_id			  	= $query->row('channel_id') ;
-		$comment_total	 	 	= $query->row('comment_total')  + 1;
 		$require_membership 	= $query->row('comment_require_membership') ;
 		$comment_moderate		= (ee()->session->userdata['group_id'] == 1 OR ee()->session->userdata['exclude_from_moderation'] == 'y') ? 'n' : $force_moderation;
 		$author_notify			= $query->row('comment_notify_authors') ;
@@ -2655,7 +2653,6 @@ class Comment {
 			/**  Update comment total and "recent comment" date
 			/** ------------------------------------------------*/
 
-			ee()->db->set('comment_total', $comment_total);
 			ee()->db->set('recent_comment_date', ee()->localize->now);
 			ee()->db->where('entry_id', $_POST['entry_id']);
 
@@ -2698,6 +2695,7 @@ class Comment {
 			// Grab them all
 			$subscriptions = ee()->subscription->get_subscriptions($ignore);
 			ee()->load->model('comment_model');
+			ee()->comment_model->recount_entry_comments(array($entry_id));
 			$recipients = ee()->comment_model->fetch_email_recipients($_POST['entry_id'], $subscriptions);
 		}
 
