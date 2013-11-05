@@ -491,11 +491,15 @@ class EE_Relationship_data_parser {
 					$not = TRUE;
 				}
 
-				// If the entry has no categories and the category parameter
-				// specifies 'not x', include it.
-				if ($not && ! isset($categories[$entry_id]))
+				if (! isset($categories[$entry_id]))
 				{
-					$rows[$entry_id] = $data;
+					// If the entry has no categories and the category parameter
+					// specifies 'not x', include it.
+					if ($not)
+					{
+						$rows[$entry_id] = $data;
+					}
+
 					continue;
 				}
 
