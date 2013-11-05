@@ -1031,6 +1031,32 @@ class EE_Session {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Fetch the current session id or fingerprint
+	 *
+	 * @param 	string 		'admin' or 'user' depending on session type
+	 * @return 	string 		the session id or fingerprint
+	 */
+	public function session_id($which = 'admin')
+	{
+		$session_type = ($which == 'user') ? ee()->config->item('user_session_type') : ee()->config->item('admin_session_type');
+
+		$s = 0;
+
+		switch ($session_type)
+		{
+			case 's'	:
+				$s = ee()->session->userdata('session_id', 0);
+				break;
+			case 'cs'	:
+				$s = ee()->session->userdata('fingerprint', 0);
+				break;
+		}
+		return ($s);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Age flashdata
 	 *
 	 * Removes old, marks current as old, etc
