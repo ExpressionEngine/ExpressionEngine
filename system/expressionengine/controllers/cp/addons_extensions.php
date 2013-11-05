@@ -194,8 +194,6 @@ class Addons_extensions extends CP_Controller {
 			->get('extensions')
 			->result_array();
 
-		var_dump($file);
-
 		// Toggle the status of all hooks using the status of the first
 		$status = ($hooks[0]['enabled'] == 'y') ? 'n' : 'y';
 		foreach ($hooks as $index => $data)
