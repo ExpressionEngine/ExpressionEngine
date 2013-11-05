@@ -517,19 +517,7 @@ class EE_Core {
 	 */
 	private function _somebody_set_us_up_the_base()
 	{
-		$s = 0;
-
-		switch (ee()->config->item('admin_session_type'))
-		{
-			case 's'	:
-				$s = ee()->session->userdata('session_id', 0);
-				break;
-			case 'cs'	:
-				$s = ee()->session->userdata('fingerprint', 0);
-				break;
-		}
-
-		define('BASE', SELF.'?S='.$s.'&amp;D=cp'); // cp url
+		define('BASE', SELF.'?S='.ee()->session->session_id().'&amp;D=cp'); // cp url
 	}
 
 	// ------------------------------------------------------------------------

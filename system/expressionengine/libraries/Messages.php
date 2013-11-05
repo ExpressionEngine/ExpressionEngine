@@ -1654,8 +1654,7 @@ DOH;
 
 		if ($this->allegiance == 'cp')
 		{
-			$s = (ee()->config->item('admin_session_type') != 'c') ? ee()->session->userdata['session_id'] : 0;
-			$redirect_url = ee()->config->item('cp_url', FALSE).'?S='.$s.
+			$redirect_url = ee()->config->item('cp_url', FALSE).'?S='.ee()->session->session_id().
 							AMP.'C=myaccount'.
 							AMP.'M=messages'.
 							AMP.'P=member_search'.
@@ -1797,8 +1796,7 @@ DOH;
 
 		if ($this->allegiance == 'cp')
 		{
-			$s = (ee()->config->item('admin_session_type') != 'c') ? ee()->session->userdata['session_id'] : 0;
-			$redirect_url = ee()->config->item('cp_url', FALSE).'?S='.$s.
+			$redirect_url = ee()->config->item('cp_url', FALSE).'?S='.ee()->session->session_id().
 							AMP.'C=myaccount'.
 							AMP.'M=messages'.
 							AMP.'P=buddy_search'.
@@ -4731,9 +4729,7 @@ EWOK;
 	{
 		if ($this->allegiance == 'cp')
 		{
-			$s = (ee()->config->item('admin_session_type') != 'c') ? ee()->session->userdata['session_id'] : 0;
-
-			$url = ee()->config->item('cp_url', FALSE).'?S='.$s.'&C=myaccount&M=messages&P=member_search&Z=1';
+			$url = ee()->config->item('cp_url', FALSE).'?S='.ee()->session->session_id().'&C=myaccount&M=messages&P=member_search&Z=1';
 			$field = "&field='+which_field";
 		}
 		else
@@ -4781,9 +4777,7 @@ MRI;
 	{
 		if ($this->allegiance == 'cp')
 		{
-			$s = (ee()->config->item('admin_session_type') != 'c') ? ee()->session->userdata['session_id'] : 0;
-
-			$url = ee()->config->item('cp_url', FALSE).'?S='.$s.'&C=myaccount&M=messages&P=buddy_search&Z=1';
+			$url = ee()->config->item('cp_url', FALSE).'?S='.ee()->session->session_id().'&C=myaccount&M=messages&P=buddy_search&Z=1';
 			$which = "&which='+which";
 		}
 		else
