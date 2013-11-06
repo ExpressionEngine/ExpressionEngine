@@ -36,9 +36,13 @@ class Addons_model extends CI_Model {
 	 */
 	function get_plugin_formatting($include_none = FALSE)
 	{
-		$this->load->helper('directory');
-
 		static $filelist = array();
+		static $plugins  = array();
+
+		if (empty($plugins))
+		{
+			$plugins = $this->get_plugins();
+		}
 
 		$exclude	= array('auto_xhtml');
 		$default	= array('br' => $this->lang->line('auto_br'), 'xhtml' => 'Xhtml');
@@ -48,59 +52,11 @@ class Addons_model extends CI_Model {
 			$default['none'] = $this->lang->line('none');
 		}
 
-		if ( ! count($filelist))
+		foreach ($plugins as $plugin => $info)
 		{
-			$ext_len = strlen('.php');
-
-			// first party plugins
-			if (($map = directory_map(PATH_PI, TRUE)) !== FALSE)
+			if (isset($info['pi_typography']) AND $info['pi_typography'] == TRUE)
 			{
-				foreach ($map as $file)
-				{
-					if (strncasecmp($file, 'pi.', 3) == 0 &&
-						substr($file, -$ext_len) == '.php' &&
-						strlen($file) > strlen('pi..php'))
-					{
-						$file = substr($file, 3, -strlen('.php'));
-						$filelist[$file] = ucwords(str_replace('_', ' ', $file));
-					}
-				}
-			}
-
-
-			// now third party add-ons, which are arranged in "packages"
-			// only catch files that match the package name, as other files are merely assets
-			if (($map = directory_map(PATH_THIRD, 2)) !== FALSE)
-			{
-				foreach ($map as $pkg_name => $files)
-				{
-					if ( ! is_array($files))
-					{
-						$files = array($files);
-					}
-
-					foreach ($files as $file)
-					{
-						if (is_array($file))
-						{
-							// we're only interested in the top level files for the addon
-							continue;
-						}
-
-						// how abouts a plugin?
-						elseif (strncasecmp($file, 'pi.', 3) == 0 &&
-								substr($file, -$ext_len) == '.php' &&
-								strlen($file) > strlen('pi..php'))
-						{
-							$file = substr($file, 3, -$ext_len);
-
-							if ($file == $pkg_name)
-							{
-								$filelist[$pkg_name] = ucwords(str_replace('_', ' ', $pkg_name));
-							}
-						}
-					}
-				}
+				$filelist[$plugin] = $info['pi_name'];
 			}
 		}
 
