@@ -25,12 +25,13 @@
  */
 
 $plugin_info = array(
-	'pi_name'        => 'Markdown',
-	'pi_version'     => '1.0',
-	'pi_author'      => 'EllisLab',
-	'pi_author_url'  => 'http://ellislab.com/',
-	'pi_description' => 'Parse text using Markdown and Smartypants',
-	'pi_usage'       => Markdown::usage()
+	'pi_name'		=> 'Markdown',
+	'pi_version'	=> '1.0',
+	'pi_author'		=> 'EllisLab',
+	'pi_author_url'	=> 'http://ellislab.com/',
+	'pi_description'=> 'Parse text using Markdown and Smartypants',
+	'pi_usage'		=> Markdown::usage(),
+	'pi_typography' => TRUE
 );
 
 

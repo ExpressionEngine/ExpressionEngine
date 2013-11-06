@@ -25,7 +25,8 @@ $plugin_info = array(
 	'pi_author'			=> 'Paul Burdick',
 	'pi_author_url'		=> 'http://ellislab.com/',
 	'pi_description'	=> 'Retrieves and Parses RSS/Atom Feeds',
-	'pi_usage'			=> Magpie::usage()
+	'pi_usage'			=> Magpie::usage(),
+	'pi_typography'     => FALSE
 );
 
 

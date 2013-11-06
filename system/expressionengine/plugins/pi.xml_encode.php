@@ -6,7 +6,8 @@ $plugin_info = array(
 						'pi_author'			=> 'Rick Ellis',
 						'pi_author_url'		=> 'http://ellislab.com/',
 						'pi_description'	=> 'XML Encoding plugin.',
-						'pi_usage'			=> Xml_encode::usage()
+						'pi_usage'			=> Xml_encode::usage(),
+						'pi_typography'		=> FALSE
 					);
 
 
