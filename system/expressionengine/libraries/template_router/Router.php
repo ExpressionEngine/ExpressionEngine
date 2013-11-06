@@ -35,6 +35,16 @@ class EE_Router extends CI_Router {
 		}
 	";
 
+	public $rules_regex = "
+		(?P<rule>[^\|\[]*)    # rule name
+		(?:
+			\[
+			(?P<args>[^\]]+)  # rule arguments
+			\]
+		)?
+		\|?                   # optional delimiter
+	";
+
     public function __construct()
     {
     }
@@ -74,6 +84,21 @@ class EE_Router extends CI_Router {
 			{
 				break;
 			}
+			if ( ! empty($matches['static']))
+			{
+				$segments[] = array('static' => $matches['static']);
+			}
+			$segment['variable'] = $matches['variable'];
+			if ( ! empty($matches['rules']))
+			{
+				$segment['rules'] = $matches['rules'];
+			}
+			if (in_array($segment['variable'], $used_names))
+			{
+				throw new Exception("URL variable '{$segment['variable']}' already in use.");
+			}
+			$used_names[] = $segment['variable'];
+			$segments[] = $segment;
 			$pos += strlen($matches[0]);
 		}
 		if ($pos < $end)
@@ -90,6 +115,23 @@ class EE_Router extends CI_Router {
 
     public function parse_rules($segment)
     {
+		$rules = $segment['rules'];
+		$pos = 0;
+		$end = strlen($rules);
+		$used_rules = array();
+		$parsed_rules = array();
+		while ($pos < $end)
+		{
+			$result = preg_match("/{$this->rules_regex}/ix", $rules, $matches, 0, $pos);
+			if ($result == 0)
+			{
+				break;
+			}
+			$matches['args'] = empty($matches['args']) ? null : $matches['args'];
+			$parsed_rules[] = $matches;
+			$pos += strlen($matches[0]);
+		}
+		return $parsed_rules;
     }
 
 }
