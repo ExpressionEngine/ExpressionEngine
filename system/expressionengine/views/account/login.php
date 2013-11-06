@@ -39,7 +39,7 @@
 			document.getElementById('<?=$focus_field?>').focus();
 		</script>
 		
-		<?php if ($this->config->item('admin_session_type') == 'c'):?>
+		<?php if ($this->config->item('cp_session_type') == 'c'):?>
 			<p><?=form_checkbox('remember_me', '1', '', 'id="remember_me"')?><span><?=lang('remember_me', 'remember_me')?></span></p>
 		<?php endif;?>
 

@@ -1325,7 +1325,7 @@ GRID_FALLBACK;
 		//just to prevent any errors
 		if ( ! defined('BASE'))
 		{
-			$s = (ee()->config->item('admin_session_type') != 'c') ? ee()->session->userdata('session_id') : 0;
+			$s = (ee()->config->item('cp_session_type') != 'c') ? ee()->session->userdata('session_id') : 0;
 			define('BASE', SELF.'?S='.$s.'&amp;D=cp');
 		}
 
