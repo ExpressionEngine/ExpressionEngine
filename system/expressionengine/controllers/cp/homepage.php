@@ -40,10 +40,9 @@ class Homepage extends CP_Controller {
 		$qb = $di->getQueryBuilder();
 
 		try {
-		$template = $qb->get('Template')
+		$templates = $qb->get('Template')
 			->with('TemplateGroup')
-			->filter('template_id', 1)
-			->first();
+			->all();
 		}
 		catch(Exception $ex)
 		{
@@ -58,7 +57,7 @@ class Homepage extends CP_Controller {
 			die('Fatal Error.');
 		}
 
-		var_dump($template);
+		echo '<pre>'; var_dump($template); echo '</pre>';
 		die('Success!');
 
 /* * /

@@ -2,6 +2,7 @@
 
 use EllisLab\ExpressionEngine\Core\Dependencies;
 use EllisLab\ExpressionEngine\Model\Query\QueryTreeNode;
+use EllisLab\ExpressionEngine\Model\Collection;
 
 class Query {
 	private $di = NULL;
@@ -354,23 +355,9 @@ class Query {
 	public function all()
 	{
 		// Run the query
-		$result = $this->db->get()->result_array();
+		$result_array = $this->db->get()->result_array();
+		$collection = new Collection($this->dealiasResults($result_array));
 
-		// Build a collection
-		$collection = new Collection();
-		$model_class = QueryBuilder::getQualifiedClassName($this->model_name);
-
-		// Fill it while also populating the main model
-		foreach ($result as $i => $row)
-		{
-			$collection[] = new $model_class($this->di, $row);
-		}
-
-		// And resolve any eager loaded relationships
-		foreach ($this->relationships as $resolver)
-		{
-			$resolver($collection, $result);
-		}
 
 		return $collection;
 	}
@@ -380,39 +367,37 @@ class Query {
 	 * build the model tree out of them.
 	 */
 	private function dealiasResults($result)
-	{
+	{ // Each row holds field=>value data for the full joined query's
+		// tree.  In order to take this flat row data and reconstruct into
+		// a tree, the field names of each field=>value pair have been
+		// aliased with the path to the correct node (in ids), and the
+		// model to which the field belongs.  Each field name looks like
+		// this: path__model__fieldName
+		//
+		// Where path, model and fieldName may have single underscores in
+		// them.  The path is a series of underscore separated integers
+		// corresponding to the unique ids of nodes in this query's
+		// relationship tree.  The tree might look something like this:
+		//
+		// 				ChannelEntry(1)
+		// 			/			|			\
+		// 	Channel (2)		Author (3)		Categories (4)
+		//						|				|
+		// 					MemberGroup (5)	CategoryGroup (6)
+		//
+		// 	So a field in the CategoryGroup model would be aliased like so:
+		//
+		// 	1_4_6__CategoryGroup__group_id
+		//
+		// 	A field in the Author relationship (Member model) might be
+		// 	aliased:
+		//
+		// 	1_3__Member__member_id
+		//
+		// 	This will allow us to create the models we've pulled and
+		// 	correctly reconstruct the tree.
 		foreach($result as $row)
 		{
-
-			// Each row holds field=>value data for the full joined query's
-			// tree.  In order to take this flat row data and reconstruct into
-			// a tree, the field names of each field=>value pair have been
-			// aliased with the path to the correct node (in ids), and the
-			// model to which the field belongs.  Each field name looks like
-			// this: path__model__fieldName
-			//
-			// Where path, model and fieldName may have single underscores in
-			// them.  The path is a series of underscore separated integers
-			// corresponding to the unique ids of nodes in this query's
-			// relationship tree.  The tree might look something like this:
-			//
-			// 				ChannelEntry(1)
-			// 			/			|			\
-			// 	Channel (2)		Author (3)		Categories (4)
-			//						|				|
-			// 					MemberGroup (5)	CategoryGroup (6)
-			//
-			// 	So a field in the CategoryGroup model would be aliased like so:
-			//
-			// 	1_4_6__CategoryGroup__group_id
-			//
-			// 	A field in the Author relationship (Member model) might be
-			// 	aliased:
-			//
-			// 	1_3__Member__member_id
-			//
-			// 	This will allow us to create the models we've pulled and
-			// 	correctly reconstruct the tree.
 			$row_data = array();
 			foreach($row as $name=>$value)
 			{
@@ -427,6 +412,7 @@ class Query {
 				$row_data[$path][$field_name] = $value;
 			}
 
+			$results = array();
 			foreach ($row_data as $path=>$model_data)
 			{
 				if ($this->isRootModel($path))
@@ -437,7 +423,7 @@ class Query {
 					}
 					else
 					{
-						$this->createResultModel($model_data);
+						$results[] = $this->createResultModel($model_data);
 					}
 				}
 				else
@@ -456,6 +442,7 @@ class Query {
 			}
 		}
 
+		return $results;
 	}
 
 	/**
@@ -470,7 +457,7 @@ class Query {
 	 */	
 	private function isRootModel($path)
 	{
-		if (int($path) === 1)
+		if ((int)$path === 1)
 		{
 			return true;
 		}
@@ -485,27 +472,36 @@ class Query {
 	{
 		$model_name = $model_data['__model_name'];
 		$model_class = QueryBuilder::getQualifiedClassName($model_name);
+
 		$primary_key_name = $model_class::getMetaData('primary_key');
 		$primary_key = $model_data[$primary_key_name];
+
 		$model = new $model_class($this->di, $model_data);
-		$this->results[$model_name][$primary_key] = $model;
-		return $this->results[$model_name][$primary_key];
+		if ( ! isset ($this->model_index[$model_name]))
+		{
+			$this->model_index[$model_name] = array();
+		}
+		$this->model_index[$model_name][$primary_key] = $model;
+
+		return $this->model_index[$model_name][$primary_key];
 	}
 
 
-	private function modelExists($node, $model_data, $parent=NULL)
+	private function modelExists($model_data, $parent=NULL)
 	{
 		$model_name =  $model_data['__model_name'];
+		$relationship_name = $model_data['__relationship_name'];
+
 		$model_class = QueryBuilder::getQualifiedClassName($model_name);
 		$primary_key_name = $model_class::getMetaData('primary_key');
 		$primary_key = $model_data[$primary_key_name];
 
-		if ( ! isset($this->results[$model_name][$primary_key]))
+		if ( ! isset($this->model_index[$model_name][$primary_key]))
 		{
 			return FALSE;
 		}
 
-		if ( $parent !== NULL && ! $parent->hasRelated($node->meta->relationship_name, $primary_key))
+		if ( $parent !== NULL && ! $parent->hasRelated($relationship_name, $primary_key))
 		{
 			return FALSE;
 		}
@@ -524,9 +520,9 @@ class Query {
 		$primary_key_name = $model_class::getMetaData('primary_key');
 		$primary_key = $model_data[$primary_key_name];
 		
-		if (isset($this->results[$model_name][$primary_key]))
+		if (isset($this->model_index[$model_name][$primary_key]))
 		{
-			return $this->results[$model_name][$primary_key];
+			return $this->model_index[$model_name][$primary_key];
 		}
 
 

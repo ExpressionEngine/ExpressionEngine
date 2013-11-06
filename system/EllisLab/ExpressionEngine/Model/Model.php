@@ -97,7 +97,7 @@ abstract class Model {
 			if (property_exists($entity, $name))
 			{
 				$entity->{$name} = $value;
-				$entity->dirty[$name] = TRUE;
+				$entity->setDirty($name);
 				return;
 			}
 		}

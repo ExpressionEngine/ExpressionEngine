@@ -25,7 +25,7 @@ abstract class Entity {
 	 * Array to track which properties have been modified, so that we
 	 * only save or validate those that need it.
 	 */
-	public $dirty = array();
+	protected $dirty = array();
 
 	/**
 	 * Construct an entity.  Initialize it with the Depdency Injection object
@@ -87,6 +87,11 @@ abstract class Entity {
 		}
 
 		return static::$meta[$key];
+	}
+
+	public function setDirty($property)
+	{
+		$this->dirty[$property] = TRUE;
 	}
 
 	/**
