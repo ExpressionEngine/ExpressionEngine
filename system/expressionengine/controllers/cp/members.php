@@ -566,7 +566,7 @@ class Members extends CP_Controller {
 		// Set cookie expiration to one year if the "remember me" button is clicked
 
 		$expire = 0;
-		$type = (isset($_POST['return_destination']) && $_POST['return_destination'] == 'cp') ? $this->config->item('admin_session_type') : $this->config->item('user_session_type');
+		$type = (isset($_POST['return_destination']) && $_POST['return_destination'] == 'cp') ? $this->config->item('cp_session_type') : $this->config->item('user_session_type');
 
 		if ($type != 's')
 		{

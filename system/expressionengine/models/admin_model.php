@@ -100,7 +100,7 @@ class Admin_model extends CI_Model {
 			),
 
 			'security_cfg'		=>	array(
-				'admin_session_type'		=> array('s', array('cs' => 'cs_session', 'c' => 'c_session', 's' => 's_session')),
+				'cp_session_type'		=> array('s', array('cs' => 'cs_session', 'c' => 'c_session', 's' => 's_session')),
 				'user_session_type'			=> array('s', array('cs' => 'cs_session', 'c' => 'c_session', 's' => 's_session')),
 				'deny_duplicate_data'		=> array('r', array('y' => 'yes', 'n' => 'no')),
 				'redirect_submitted_links'	=> array('r', array('y' => 'yes', 'n' => 'no')),

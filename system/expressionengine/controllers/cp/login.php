@@ -147,11 +147,11 @@ class Login extends CP_Controller {
 
 		$base = BASE;
 
-		if ($this->config->item('admin_session_type') == 's')
+		if ($this->config->item('cp_session_type') == 's')
 		{
 			$base = preg_replace('/S=[a-zA-Z0-9]+/', 'S='.$incoming->session_id(), BASE);
 		}
-		elseif ($this->config->item('admin_session_type') == 'cs')
+		elseif ($this->config->item('cp_session_type') == 'cs')
 		{
 			$base = preg_replace('/S=[a-zA-Z0-9]+/', 'S='.$this->session->userdata['fingerprint'], BASE);
 		}

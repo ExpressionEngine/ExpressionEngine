@@ -954,7 +954,7 @@ $lang = array(
 "user_session_type" =>
 "User Session Type",
 
-"admin_session_type" =>
+"cp_session_type" =>
 "Control Panel Session Type",
 
 "security_cfg" =>
