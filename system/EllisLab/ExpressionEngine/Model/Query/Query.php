@@ -366,7 +366,7 @@ class Query {
 	 * Need to take aliased results in the form of joined query rows and
 	 * build the model tree out of them.
 	 */
-	private function dealiasResults($result)
+	private function dealiasResults($database_result)
 	{ // Each row holds field=>value data for the full joined query's
 		// tree.  In order to take this flat row data and reconstruct into
 		// a tree, the field names of each field=>value pair have been
@@ -396,7 +396,8 @@ class Query {
 		//
 		// 	This will allow us to create the models we've pulled and
 		// 	correctly reconstruct the tree.
-		foreach($result as $row)
+		$results = array();
+		foreach($database_result as $row)
 		{
 			$row_data = array();
 			foreach($row as $name=>$value)
@@ -412,7 +413,6 @@ class Query {
 				$row_data[$path][$field_name] = $value;
 			}
 
-			$results = array();
 			foreach ($row_data as $path=>$model_data)
 			{
 				if ($this->isRootModel($path))

@@ -57,7 +57,7 @@ class Homepage extends CP_Controller {
 			die('Fatal Error.');
 		}
 
-		echo '<pre>'; var_dump($template); echo '</pre>';
+		echo '<pre>'; var_dump($templates); echo '</pre>';
 		die('Success!');
 
 /* * /
