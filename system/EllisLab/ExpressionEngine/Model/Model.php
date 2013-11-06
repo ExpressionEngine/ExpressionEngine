@@ -580,12 +580,20 @@ abstract class Model {
 		// 	query.  This model is probably mostly empty.
 		if ($this->getId() === NULL)
 		{
-			$relationship = new ModelRelationshipMeta($this);
-			$relationship->type = $type;
-			$relationship->relationship_name = $relationship_key;
-			$relationship->to_model_name = $to_model_name;
-			$relationship->from_key = $this_key;
-			$relationship->to_key = $to_key;
+			$relationship = new ModelRelationshipMeta(
+				$type,
+				$relationship_key,
+				array(
+					'model_class' => get_class($this),
+					'model_name' => substr(get_class($this), strrpos('\\', get_class($this))),
+					'key' => $this_key
+				),
+				array(
+					'model_class' => QueryBuilder::getQualifiedClassName($to_model_name),
+					'model_name' => $to_model_name,
+					'key' => $to_key
+				)
+			);
 			return $relationship;
 		}
 

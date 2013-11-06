@@ -303,19 +303,21 @@ class Query {
 			case ModelRelationshipMeta::TYPE_ONE_TO_ONE:
 			case ModelRelationshipMeta::TYPE_ONE_TO_MANY:
 			case ModelRelationshipMeta::TYPE_MANY_TO_ONE:
-				$this->db->join($relationship_meta->getToTable(),
-					$relationship_meta->getFromTable() . '.' . $relationship_meta->from_key 
+				$this->db->join($relationship_meta->to_table,
+					$relationship_meta->from_table . '.' . $relationship_meta->from_key 
 					. '=' . 
-					$relationship_meta->getToTable() . '.' . $relationship_meta->to_key);
+					$relationship_meta->to_table . '.' . $relationship_meta->to_key);
 				break;
 
 			case ModelRelationshipMeta::TYPE_MANY_TO_MANY:
-				$this->db->join($relationship_meta->getPivotTable(),
-					$relationship_meta->getFromTable() . '.' . $relationship_meta->from_key 
+				$this->db->join($relationship_meta->pivot_table,
+					$relationship_meta->to_table . '.' . $relationship_meta->from_key 
 					. '=' . 
-					$relationship_meta->getPivotTable() . '.' . $relationship_meta->pivot_from_key);
-				$this->db->join($to_table,
-					$pivot_table . '.' . $pivot_to_key . '=' . $to_table . '.' . $pivot_to_key);
+					$relationship_meta->pivot_table. '.' . $relationship_meta->pivot_from_key);
+				$this->db->join($relationship_meta->to_table,
+					$relationship_meta->pivot_table . '.' . $relatioship_meta->pivot_to_key 
+					. '=' 
+					. $relationship_meta->to_table . '.' . $relationship_meta->to_key);
 				break;
 		}
 	}

@@ -16,9 +16,12 @@ class ModelRelationshipMeta {
 	protected $relationship_name = NULL;
 
 	protected $from_model_name = NULL;
-	protected $from_model = NULL;
+	protected $from_model_class = NULL;
+	protected $from_table = NULL;
 
 	protected $to_model_name = NULL;
+	protected $to_model_class = NULL;
+	protected $to_table;
 
 	protected $from_key = NULL;
 	protected $to_key = NULL;
@@ -27,9 +30,55 @@ class ModelRelationshipMeta {
 	protected $pivot_from_key = NULL;
 	protected $pivot_to_key = NULL;
 
-	public function __construct($from_model)
+	public function __construct($type, $relationship_name, array $from, array $to)
 	{
-		$this->from_model = $from_model;
+		$this->type = $type;
+		$this->relationship_name = $relationship_name;
+
+		$this->from_model_name = $from['model_name'];
+		$this->from_model_class = $from['model_class'];
+		$this->from_key = $from['key'];
+
+		$this->to_model_name = $to['model_name'];
+		$this->to_model_class = $to['model_class'];
+		$this->to_key = $to['key'];
+
+		$this->initialize();
+	}
+
+	protected function initialize()
+	{
+		// Populate from_table
+		$from_model_class = $this->from_model_class;
+		$from_key_map = $from_model_class::getMetaData('key_map');	
+		$from_entity_name = $from_key_map[$this->from_key];
+		$from_entity_class = QueryBuilder::getQualifiedClassName($from_entity_name);
+		$this->from_table = $from_entity_class::getMetaData('table_name');
+
+		// Poplate to_table
+		$entity_relationships = $from_entity_class::getMetaData('related_entities');
+		$entity_relationship = $entity_relationships[$this->from_key];
+		if ( ! isset ($entity_relationship['entity']))
+		{
+			$entity_relationship = $entity_relationship[$this->relationship_name];
+		}
+
+		$to_entity_name = $entity_relationship['entity'];
+		$to_entity_class = QueryBuilder::getQualifiedClassName($to_entity_name);
+		$this->to_table = $to_entity_class::getMetaData('table_name');
+
+		if ($this->to_key !== $entity_relationship['key'])
+		{
+			throw new \Exception('Foreign keys in relationship are not equal!');
+		}
+		
+		// Populate pivots	
+		if ($this->type === self::TYPE_MANY_TO_MANY)
+		{
+			$this->pivot_table = $entity_relationship['pivot_table'];
+			$this->pivot_from_key = $entity_relationship['pivot_key'];
+			$this->pivot_to_key = $entity_relationship['pivot_foreign_key'];
+		}
 	}
 
 	public function __set($name, $value)
@@ -58,4 +107,5 @@ class ModelRelationshipMeta {
 			$this->method = $meta['method'];
 		}
 	}
+
 }
