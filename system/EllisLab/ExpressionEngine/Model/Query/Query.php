@@ -134,7 +134,6 @@ class Query {
 		{
 			$this->buildRelationshipTree($this->root, $relationship);
 		}
-
 		foreach($this->root->getBreadthFirstIterator() as $node)
 		{
 			if ($node->isRoot())
@@ -331,7 +330,7 @@ class Query {
 
 	private function hasParentSubquery(QueryTreeNode $node)
 	{
-		for($n = $node; $n !== NULL && ! $n->isRoot(); $n = $n->getParent())
+		for($n = $node; ! $n->isRoot(); $n = $n->getParent())
 		{
 			// If we encounter a subquery parent with no parent, then that subquery
 			// node is the root and we're in a subquery!

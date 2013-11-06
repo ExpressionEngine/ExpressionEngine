@@ -47,9 +47,10 @@ class QueryTreeNode extends TreeNode {
 		$path = $this->getId();
 
 		$node = $this;
-		while ($node->getParent() !== NULL)
+		while ( ! $node->isRoot())
 		{
 			$path = $this->getParent()->getId() . '_' . $path;
+			$node = $node->getParent();
 		}
 
 		return $path;
