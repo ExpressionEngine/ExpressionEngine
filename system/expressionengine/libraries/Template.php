@@ -2814,9 +2814,6 @@ class EE_Template {
 			$str = str_replace(LD.'cp_session_id'.RD, '0', $str);
 		}
 
-		// {website_session_id}
-		$str = str_replace(LD.'website_session_id'.RD, ee()->session->session_id('user'), $str);
-
 		// {site_name} {site_url} {site_index} {webmaster_email}
 		$str = str_replace(LD.'site_name'.RD, stripslashes(ee()->config->item('site_name')), $str);
 		$str = str_replace(LD.'site_url'.RD, stripslashes(ee()->config->item('site_url')), $str);
