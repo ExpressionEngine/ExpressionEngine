@@ -73,7 +73,7 @@ class EE_Functions {
 			$url .= '?';
 		}
 
-		if (ee()->config->item('user_session_type') != 'c' && is_object(ee()->session) && REQ != 'CP' && $sess_id == TRUE && $this->template_type == 'webpage')
+		if (ee()->config->item('website_session_type') != 'c' && is_object(ee()->session) && REQ != 'CP' && $sess_id == TRUE && $this->template_type == 'webpage')
 		{
 			$url .= "/S=".ee()->session->session_id('user')."/";
 		}
@@ -624,7 +624,7 @@ class EE_Functions {
 			// function adds the session ID automatically, except in cases when the
 			// $_POST['RET'] variable is set. Since the login routine relies on the RET
 			// info to know where to redirect back to we need to sandwich in the session ID.
-			if (ee()->config->item('user_session_type') != 'c')
+			if (ee()->config->item('website_session_type') != 'c')
 			{
 				$id = ee()->session->session_id('user');
 

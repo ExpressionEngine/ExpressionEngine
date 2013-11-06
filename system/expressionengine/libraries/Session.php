@@ -137,7 +137,7 @@ class EE_Session {
 		// -------------------------------------------
 
 		// Set the validation type
-		$this->validation = (REQ == 'CP') ? ee()->config->item('cp_session_type') : ee()->config->item('user_session_type');
+		$this->validation = (REQ == 'CP') ? ee()->config->item('cp_session_type') : ee()->config->item('website_session_type');
 
 		// default to "cookies and sessions" if validation type doesn't exist or is invalid
 		if ( ! in_array($this->validation, $this->valid_session_types))
@@ -1038,7 +1038,7 @@ class EE_Session {
 	 */
 	public function session_id($which = 'admin')
 	{
-		$session_type = ($which == 'user') ? ee()->config->item('user_session_type') : ee()->config->item('cp_session_type');
+		$session_type = ($which == 'user') ? ee()->config->item('website_session_type') : ee()->config->item('cp_session_type');
 
 		$s = 0;
 

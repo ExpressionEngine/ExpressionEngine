@@ -2244,7 +2244,7 @@ UNGA;
 
 		$return = ee()->functions->form_backtrack();
 
-		if (ee()->config->item('user_session_type') != 'c')
+		if (ee()->config->item('website_session_type') != 'c')
 		{
 			if (ee()->config->item('force_query_string') == 'y' && substr($return, 0, -3) == "php")
 			{

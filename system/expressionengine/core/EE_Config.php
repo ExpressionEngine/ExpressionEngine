@@ -425,7 +425,7 @@ class EE_Config Extends CI_Config {
 			'include_seconds',
 			'cookie_domain',
 			'cookie_path',
-			'user_session_type',
+			'website_session_type',
 			'cp_session_type',
 			'allow_username_change',
 			'allow_multi_logins',

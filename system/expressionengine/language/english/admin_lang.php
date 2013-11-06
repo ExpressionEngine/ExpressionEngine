@@ -939,7 +939,7 @@ $lang = array(
 "group_assignment_defaults_to_two" =>
 "If you require account activation, members will be set to this once they are activated",
 
-"user_session_type" =>
+"website_session_type" =>
 "User Session Type",
 
 "cp_session_type" =>

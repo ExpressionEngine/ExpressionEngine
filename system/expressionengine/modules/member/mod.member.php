@@ -1487,7 +1487,7 @@ class Member {
 	 */
 	public function login_form()
 	{
-		if (ee()->config->item('user_session_type') != 'c')
+		if (ee()->config->item('website_session_type') != 'c')
 		{
 			ee()->TMPL->tagdata = preg_replace("/{if\s+auto_login}.*?{".'\/'."if}/s", '', ee()->TMPL->tagdata);
 		}

@@ -111,7 +111,7 @@ class Forum {
 		// We use this in some special URLs to determine whether the Session ID
 		// needs to be used in ee()->functions->fetch_site_index() or not
 		
-		$this->use_sess_id = (ee()->config->item('user_session_type') != 'c') ? 1 : 0;
+		$this->use_sess_id = (ee()->config->item('website_session_type') != 'c') ? 1 : 0;
 
 		// Is the forum enabled?		
 		// If not, only super admins can view it
