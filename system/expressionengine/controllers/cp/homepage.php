@@ -36,24 +36,30 @@ class Homepage extends CP_Controller {
 		$loader = new Autoloader();
 		$loader->register();
 
-		$qb = new \EllisLab\ExpressionEngine\Model\QueryBuilder();
+		$di = new \EllisLab\ExpressionEngine\Core\Dependencies();
+		$qb = $di->getQueryBuilder();
 
+		try {
 		$template = $qb->get('Template')
 			->with('TemplateGroup')
 			->filter('template_id', 1)
 			->first();
-
-		$template->template_id = 'This should not validate!';	
-		$template->template_name = 'home';
-
-		$errors = $template->validate();
-		if ($errors->exist())
-		{
-			echo 'Failure!';
-			return;
 		}
-		$template->save();
-		echo 'Success!';
+		catch(Exception $ex)
+		{
+			echo '<div>
+					<h1>Exception Caught</h1>
+					<p><strong>' . $ex->getMessage() . '</strong></p>
+					<p><em>'  . $ex->getFile() . ':' . $ex->getLine() . '<em></p>
+					<p>Stack Trace:
+						<pre>' . str_replace('#', "\n#", str_replace(':', ":\n\t\t", $ex->getTraceAsString())) . '</pre>
+					</p>
+				</div>';
+			die('Fatal Error.');
+		}
+
+		var_dump($template);
+		die('Success!');
 
 /* * /
 		$templates = $qb

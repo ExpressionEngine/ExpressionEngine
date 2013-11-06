@@ -1,5 +1,5 @@
 <?php
-namespace EllisLab\ExpressionEngine\Model\DataStructure;
+namespace EllisLab\ExpressionEngine\Model\DataStructure\Tree;
 
 
 
@@ -12,7 +12,7 @@ namespace EllisLab\ExpressionEngine\Model\DataStructure;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class BreadthFirstIterator implements OuterIterator {
+class BreadthFirstIterator implements \OuterIterator {
 
 	protected $_level;
 	protected $_iterator;
@@ -20,7 +20,7 @@ class BreadthFirstIterator implements OuterIterator {
 
 	protected $_queue = array();
 
-	public function __construct(RecursiveIterator $it)
+	public function __construct(\RecursiveIterator $it)
 	{
 		$this->_level = 0;
 		$this->_iterator = $it;

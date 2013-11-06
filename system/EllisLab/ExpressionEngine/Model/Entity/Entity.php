@@ -1,6 +1,7 @@
 <?PHP
 namespace EllisLab\ExpressionEngine\Model\Entity;
 
+use EllisLab\ExpressionEngine\Core\Dependencies;
 use EllisLab\ExpressionEngine\Core\Validation\Validator;
 use EllisLab\ExpressionEngine\Core\Validation\Error\ValidationError;
 

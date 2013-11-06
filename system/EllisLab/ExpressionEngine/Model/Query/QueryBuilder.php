@@ -1,4 +1,7 @@
-<?php namespace EllisLab\ExpressionEngine\Model\Query;
+<?php 
+namespace EllisLab\ExpressionEngine\Model\Query;
+
+use EllisLab\ExpressionEngine\Core\Dependencies;
 
 class QueryBuilder {
 	private $di = NULL;

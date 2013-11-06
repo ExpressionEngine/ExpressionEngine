@@ -1,7 +1,7 @@
 <?php namespace EllisLab\ExpressionEngine\Model\Query;
 
 use EllisLab\ExpressionEngine\Core\Dependencies;
-use EllisLab\ExpressionEngine\Model\DataStructure\Tree\QueryTreeNode;
+use EllisLab\ExpressionEngine\Model\Query\QueryTreeNode;
 
 class Query {
 	private $di = NULL;
@@ -22,6 +22,7 @@ class Query {
 	 * 			relationships.  The model we initiated the query against.
 	 */
 	private $root = NULL;
+	private $results = array();
 
 	private $data = array();
 
@@ -30,6 +31,7 @@ class Query {
 		$this->di = $di;
 		$this->model_name = $model;
 		$this->root = new QueryTreeNode($model);
+		$this->root->meta = NULL;
 
 		// @todo Need to be able to inject this for testing.  -Bingham
 		$this->db = clone ee()->db; // TODO reset?
@@ -133,8 +135,12 @@ class Query {
 			$this->buildRelationshipTree($this->root, $relationship);
 		}
 
-		foreach($root->getBreadthFirstIterator() as $node)
+		foreach($this->root->getBreadthFirstIterator() as $node)
 		{
+			if ($node->isRoot())
+			{
+				continue;
+			}
 			$this->buildRelationship($node);
 		}
 
@@ -166,7 +172,7 @@ class Query {
 				if ( isset ($relationship['with']))
 				{
 					$with = $relationship['with'];
-					unset($relationship['with'];
+					unset($relationship['with']);
 				}
 		
 				$parent->add($this->createNode($parent, $to, $relationship));
@@ -263,10 +269,10 @@ class Query {
 
 		if ( ! method_exists($from_model_class, $relationship_method))
 		{
-			throw new Exception('Undefined relationship from ' . $from_model_name . ' to ' . $relationship_name);
+			throw new \Exception('Undefined relationship from ' . $from_model_name . ' to ' . $relationship_name);
 		}
 
-		$from_model = new $from_model_class();
+		$from_model = new $from_model_class($this->di);
 		$relationship_meta = $from_model->$relationship_method();
 		$relationship_meta->override($meta);
 		$relationship_meta->from_model_name = $from_model_name;
@@ -291,7 +297,7 @@ class Query {
 	private function buildJoinRelationship(QueryTreeNode $node)
 	{
 		$relationship_meta = $node->meta;
-		$this->selectFields($relationship_meta->to_model_name);
+		$this->selectFields($node);
 		
 		switch ($relationship_meta->type)
 		{
@@ -325,7 +331,7 @@ class Query {
 
 	private function hasParentSubquery(QueryTreeNode $node)
 	{
-		foreach($n = $node; $n !== NULL; $n = $n->getParent())
+		for($n = $node; $n !== NULL && ! $n->isRoot(); $n = $n->getParent())
 		{
 			// If we encounter a subquery parent with no parent, then that subquery
 			// node is the root and we're in a subquery!
@@ -409,21 +415,20 @@ class Query {
 			$row_data = array();
 			foreach($row as $name=>$value)
 			{
-				list($path, $model_name, $field_name) = explode('__', $name);
+				list($path, $relationship_name, $model_name, $field_name) = explode('__', $name);
 				if ( ! isset($row_data[$path]))
 				{
-					$row_data[$path] = array();
-				}
-				if ( ! isset($row_data[$path]['__model_name']))
-				{
-					$row_data[$path]['__model_name'] = $model_name;
+					$row_data[$path] = array(
+						'__model_name' => $model_name,
+						'__relationship_name' => $relationship_name
+					);
 				}
 				$row_data[$path][$field_name] = $value;
 			}
 
 			foreach ($row_data as $path=>$model_data)
 			{
-				if ($this->isModelRoot($path))
+				if ($this->isRootModel($path))
 				{
 					if ($this->modelExists($model_data))
 					{
@@ -431,10 +436,7 @@ class Query {
 					}
 					else
 					{
-						$model_class = QueryBuilder::getQualifiedClassName($model_data['__model_name']);
-						$primary_key = $model_class::getMetaData('primary_key');
-						$model = new $model_class($model_data);
-						$this->results[$model_data[$primary_key]] = $model;
+						$this->createResultModel($model_data);
 					}
 				}
 				else
@@ -446,8 +448,8 @@ class Query {
 					}
 					else
 					{
-						$model = new $model_class($model_data);
-						$parent_model->addRelated($relationship_name, $model);
+						$relationship_name = $model_data['__relationship_name'];
+						$parent_model->addRelated($relationship_name, $this->createResultModel($model_data));
 					}
 				}
 			}
@@ -455,7 +457,17 @@ class Query {
 
 	}
 
-	private function isModelRoot($path, $model_data)
+	/**
+	 * Determine if this is a Root Model
+	 *
+	 * Is this a root model?  One of the ones we're get()ing.
+	 *
+	 * @param 	string	$path	The path to the model's node in the 
+	 * 		relationship tree.
+	 *
+	 * @return	boolean	TRUE if this is a root model, FALSE otherwise.
+	 */	
+	private function isRootModel($path)
 	{
 		if (int($path) === 1)
 		{
@@ -465,35 +477,39 @@ class Query {
 		return false;
 	}
 
-	private function modelExists($model_data, $parent=NULL)
+	/**
+	 *
+	 */
+	private function createResultModel($model_data)
 	{
-		$model_class = QueryBuilder::getQualifiedClassName($model_data['__model_name']);
-		$primary_key = $model_class::getMetaData('primary_key');
-		if ($parent == NULL)
-		{
-			if (isset($this->results[$model_data[$primary_key]]))
-			{
-				return TRUE;
-			}
-			else
-			{
-				return FALSE;
-			}
-		}
+		$model_name = $model_data['__model_name'];
+		$model_class = QueryBuilder::getQualifiedClassName($model_name);
+		$primary_key_name = $model_class::getMetaData('primary_key');
+		$primary_key = $model_data[$primary_key_name];
+		$model = new $model_class($this->di, $model_data);
+		$this->results[$model_name][$primary_key] = $model;
+		return $this->results[$model_name][$primary_key];
 	}
 
-	private function getModelNode($path)
+
+	private function modelExists($node, $model_data, $parent=NULL)
 	{
-		$node_ids = explode('_', $path);
-		$id = array_shift($node_ids);
-		$node = $this->root;
-		while( ! empty($node_ids))
+		$model_name =  $model_data['__model_name'];
+		$model_class = QueryBuilder::getQualifiedClassName($model_name);
+		$primary_key_name = $model_class::getMetaData('primary_key');
+		$primary_key = $model_data[$primary_key_name];
+
+		if ( ! isset($this->results[$model_name][$primary_key]))
 		{
-			$id = array_shift($node_ids);
-			$node = $node->getChildById($id);
+			return FALSE;
 		}
 
-		return $node;
+		if ( $parent !== NULL && ! $parent->hasRelated($node->meta->relationship_name, $primary_key))
+		{
+			return FALSE;
+		}
+
+		return TRUE;
 	}
 
 	private function findModelParent($path_data, $child_path)
@@ -509,10 +525,11 @@ class Query {
 		
 		if (isset($this->results[$model_name][$primary_key]))
 		{
-
+			return $this->results[$model_name][$primary_key];
 		}
 
 
+		throw new \Exception('Model parent has not been created yet!');
 	}
 
 	/**
@@ -585,8 +602,8 @@ class Query {
 		}
 		else
 		{
-			$relationship_name = $node->getName();
-			$model_name = $node->to_model_name;
+			$relationship_name = $node->meta->relationship_name;
+			$model_name = $node->meta->to_model_name;
 		}
 
 		if (in_array($model_name, $this->selected))
@@ -603,10 +620,10 @@ class Query {
 			$entity_class_name = QueryBuilder::getQualifiedClassName($entity_name);
 
 			$table = $entity_class_name::getMetaData('table_name');
-			$properties = get_object_vars($entity_class_name);
-			foreach ($properties as $property)
+			$properties = get_class_vars($entity_class_name);
+			foreach ($properties as $property=>$default_value)
 			{
-				$this->db->select($table . '.' . $property . ' AS ' . $node->getPath() . '__' . $model_name . '__' . $property);
+				$this->db->select($table . '.' . $property . ' AS ' . $node->getPathString() . '__' . $relationship_name . '__' . $model_name . '__' . $property);
 			}
 		}
 	}
@@ -646,7 +663,7 @@ class Query {
 
 		if ($table == '')
 		{
-			throw new QueryException('Unknown field name in filter: '. $key);
+			throw new \Exception('Unknown field name in filter: '. $key);
 		}
 
 		return array($table, $key);

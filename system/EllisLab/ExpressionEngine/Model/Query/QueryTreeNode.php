@@ -10,9 +10,9 @@ class QueryTreeNode extends TreeNode {
 
 	protected $children_by_id = array();
 
-	public function __construct($name, $payload=NULL)
+	public function __construct($name)
 	{
-		parent::__construct($name, $payload);
+		parent::__construct($name, array());
 		$this->id = ++self::$top_id;
 	}
 

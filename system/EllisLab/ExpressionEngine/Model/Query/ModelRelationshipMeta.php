@@ -27,9 +27,8 @@ class ModelRelationshipMeta {
 	protected $pivot_from_key = NULL;
 	protected $pivot_to_key = NULL;
 
-	public function __construct($type)
+	public function __construct($from_model)
 	{
-		$this->type = $type;
 		$this->from_model = $from_model;
 	}
 
@@ -38,8 +37,9 @@ class ModelRelationshipMeta {
 		if (property_exists($this, $name))
 		{
 			$this->{$name} = $value;
+			return;
 		}
-		throw new Exception('Property does not exist!');
+		throw new \Exception('Property "' . $name . '" does not exist!');
 	}
 
 	public function __get($name)
@@ -48,7 +48,7 @@ class ModelRelationshipMeta {
 		{
 			return $this->{$name};
 		}
-		throw new Exception('Property does not exist!');
+		throw new \Exception('Property "' . $name . '" does not exist!');
 	}
 
 	public function override(array $meta)

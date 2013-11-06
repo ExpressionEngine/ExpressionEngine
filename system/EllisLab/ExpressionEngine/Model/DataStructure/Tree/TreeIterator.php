@@ -12,7 +12,7 @@ namespace EllisLab\ExpressionEngine\Model\DataStructure\Tree;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class TreeIterator extends RecursiveArrayIterator {
+class TreeIterator extends \RecursiveArrayIterator {
 
 	/**
 	 * Override RecursiveArrayIterator's child detection method.
@@ -41,7 +41,7 @@ class TreeIterator extends RecursiveArrayIterator {
 		// Using ref as per PHP source
 		if (empty($this->ref))
 		{
-			$this->ref = new ReflectionClass($this);
+			$this->ref = new \ReflectionClass($this);
 		}
 
 		return $this->ref->newInstance($children);

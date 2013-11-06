@@ -56,7 +56,7 @@ class TreeNode {
 			return $this->data;
 		}
 
-		throw new InvalidArgumentException('Payload cannot be retrieved.');
+		throw new \InvalidArgumentException('Payload cannot be retrieved for key: "' . $key . '" in node "' . $this->getName() . '".');
 	}
 
 	// --------------------------------------------------------------------
@@ -87,7 +87,7 @@ class TreeNode {
 		}
 		else
 		{
-			throw new InvalidArgumentException('Payload cannot be modified.');
+			throw new \InvalidArgumentException('Payload cannot be modified.');
 		}
 	}
 
@@ -379,9 +379,9 @@ class TreeNode {
 	 */
 	public function getPreorderIterator()
 	{
-		return new RecursiveIteratorIterator(
+		return new \RecursiveIteratorIterator(
 			new TreeIterator(array($this)),
-			RecursiveIteratorIterator::SELF_FIRST
+			\RecursiveIteratorIterator::SELF_FIRST
 		);
 	}
 
@@ -396,9 +396,9 @@ class TreeNode {
 	 */
 	public function getPostorderIterator()
 	{
-		return new RecursiveIteratorIterator(
+		return new \RecursiveIteratorIterator(
 			new TreeIterator(array($this)),
-			RecursiveIteratorIterator::CHILD_FIRST
+			\RecursiveIteratorIterator::CHILD_FIRST
 		);
 	}
 
@@ -413,9 +413,9 @@ class TreeNode {
 	 */
 	public function getLeafIterator()
 	{
-		return new RecursiveIteratorIterator(
+		return new \RecursiveIteratorIterator(
 			new TreeIterator(array($this)),
-			RecursiveIteratorIterator::LEAVES_ONLY
+			\RecursiveIteratorIterator::LEAVES_ONLY
 		);
 	}
 

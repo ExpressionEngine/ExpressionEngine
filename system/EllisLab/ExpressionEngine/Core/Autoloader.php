@@ -61,7 +61,7 @@ class Autoloader {
 				$class_path = $path . str_replace('\\', '/', substr($class, strlen($prefix))) . '.php';
 				if ( ! file_exists($class_path))
 				{
-					throw new \RuntimeException('Failed to load requested class!');
+					throw new \RuntimeException('Failed to load class: ' . $class . '!');
 				}
 
 				require $class_path;

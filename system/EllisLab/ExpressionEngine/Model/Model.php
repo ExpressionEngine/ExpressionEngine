@@ -1,12 +1,16 @@
 <?php
 namespace EllisLab\ExpressionEngine\Model;
 
-use EllisLab\ExpressionEngine\Service\Validation\ValidationResult as ValidationResult;
+use EllisLab\ExpressionEngine\Service\Validation\ValidationResult;
+use EllisLab\ExpressionEngine\Core\Dependencies;
+use EllisLab\ExpressionEngine\Model\Query\QueryBuilder;
+use EllisLab\ExpressionEngine\Model\Query\ModelRelationshipMeta;
 
 /**
  * The base Model class
  */
 abstract class Model {
+	private $dependencies = NULL;
 
 	protected static $meta = array();
 
@@ -98,7 +102,7 @@ abstract class Model {
 			}
 		}
 
-		throw new \InvalidArgumentException('Attempt to access a non-existent property on ' . __CLASS__);
+		throw new \InvalidArgumentException('Attempt to access a non-existent property "' . $name . '" on ' . __CLASS__);
 	}
 
 	/**
@@ -409,7 +413,7 @@ abstract class Model {
 		$to_model_name, $this_key, $that_key = NULL, $name=NULL)
 	{
 		return $this->related(
-			'one-to-one',
+			ModelRelationshipMeta::TYPE_ONE_TO_ONE,
 			$to_model_name,
 			$this_key,
 			$that_key,
@@ -431,7 +435,7 @@ abstract class Model {
 		$to_model_name, $this_key, $that_key = NULL, $name=NULL)
 	{
 		return $this->related(
-			'many-to-one',
+			ModelRelationshipMeta::TYPE_MANY_TO_ONE,
 			$to_model_name,
 			$this_key,
 			$that_key,
@@ -453,7 +457,7 @@ abstract class Model {
 		$to_model_name, $this_key, $that_key = NULL, $name=NULL)
 	{
 		return $this->related(
-			'one-to-many',
+			ModelRelationshipMeta::TYPE_ONE_TO_MANY,
 			$to_model_name,
 			$this_key,
 			$that_key,
@@ -475,7 +479,7 @@ abstract class Model {
 		$to_model_name, $this_key, $that_key = NULL, $name=NULL)
 	{
 		return $this->related(
-			'many-to-many',
+			ModelRelationshipMeta::TYPE_MANY_TO_MANY,
 			$to_model_name,
 			$this_key,
 			$that_key,
@@ -576,7 +580,8 @@ abstract class Model {
 		// 	query.  This model is probably mostly empty.
 		if ($this->getId() === NULL)
 		{
-			$relationship = new ModelRelationship($this);
+			$relationship = new ModelRelationshipMeta($this);
+			$relationship->type = $type;
 			$relationship->relationship_name = $relationship_key;
 			$relationship->to_model_name = $to_model_name;
 			$relationship->from_key = $this_key;
@@ -587,7 +592,7 @@ abstract class Model {
 		// Lazy Load
 		// 	Otherwise, if we haven't hit one of the previous cases, then this
 		// 	is a lazy load on an existing model.
-		$query = new Query($to_model_name);
+		$query = $this->dependencies->getQueryBuilder()->get($to_model_name);
 		$query->filter($to_model_name . '.' . $to_key, $this->$this_key);
 
 		if ($type == 'one-to-one' OR $type == 'many-to-one')
