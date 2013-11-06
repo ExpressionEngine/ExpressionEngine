@@ -940,7 +940,7 @@ $lang = array(
 "If you require account activation, members will be set to this once they are activated",
 
 "website_session_type" =>
-"User Session Type",
+"Website Session Type",
 
 "cp_session_type" =>
 "Control Panel Session Type",
