@@ -38,34 +38,36 @@ class EE_Pagination extends CI_Pagination {
  */
 class Pagination_object {
 	public $paginate			= FALSE;
-	public $template_data		= '';
 	public $field_pagination	= FALSE;
-	public $multi_fields		= '';
-	public $total_pages			= 1;
 	public $current_page		= 1;
 	public $offset				= 0;
-	public $page_next			= '';
-	public $page_previous		= '';
-	public $page_links			= '';
-	public $page_array			= array();
 	public $total_rows			= 0;
 	public $per_page			= 0;
 	public $basepath			= '';
 	public $cfields				= array();
-	public $type				= '';
 	public $dynamic_sql			= TRUE;
 
-	private $_position			= '';
-	private $_pagination_marker	= "pagination_marker";
-	private $_template			= '';
+	private $_page_array				= array();
+	private $_total_pages			= 1;
+	private $_pagination_template	= '';
+	private $_multi_fields			= '';
+	private $_page_next				= '';
+	private $_page_previous			= '';
+	private $_page_links				= '';
+	private $_type					= '';
+	private $_position				= '';
+	private $_pagination_marker		= "pagination_marker";
+	private $_template				= '';
 
 	public function __construct($classname)
 	{
-		$this->type = $classname;
+		$this->_type = $classname;
 		ee()->load->library('pagination');
 		ee()->load->library('template', NULL, 'TMPL');
 		$this->_template = &ee()->TMPL->tagdata;
 	}
+
+	// -------------------------------------------------------------------------
 
 	public function __set($name, $value)
 	{
@@ -114,7 +116,7 @@ class Pagination_object {
 				// and flag this as field_pagination.
 				if (preg_match("/".LD."multi_field\=[\"'](.+?)[\"']".RD."/s", $template, $multi_field_match))
 				{
-					$this->multi_fields		= ee()->functions->fetch_simple_conditions($multi_field_match[1]);
+					$this->_multi_fields		= ee()->functions->fetch_simple_conditions($multi_field_match[1]);
 					$this->field_pagination	= TRUE;
 				}
 			}
@@ -136,7 +138,8 @@ class Pagination_object {
 			// If {paginate} exists, flag for pagination and store the tags
 			// within {paginate}
 			$this->paginate		= TRUE;
-			$this->template_data	= $paginate_match[1];
+			$this->_pagination_template	= $paginate_match[1];
+
 
 			// Determine if pagination needs to go at the top and/or bottom, or inline
 			$this->_position = ee()->TMPL->fetch_param('paginate', $this->_position);
@@ -224,7 +227,7 @@ class Pagination_object {
 				// If we're not displaying by something, then we'll need
 				// something to paginate, otherwise if we're displaying by
 				// something (week, day) it's okay for it to be empty
-				if ($this->type === "Channel" AND ee()->TMPL->fetch_param('display_by') == '')
+				if ($this->_type === "Channel" AND ee()->TMPL->fetch_param('display_by') == '')
 				{
 					// If we're doing standard pagination and not using
 					// display_by, clear out the query and get out of here
@@ -278,7 +281,7 @@ class Pagination_object {
 				}
 
 				$this->current_page	= floor(($this->offset / $this->per_page) + 1);
-				$this->total_pages	= intval(floor($this->total_rows / $this->per_page));
+				$this->_total_pages	= intval(floor($this->total_rows / $this->per_page));
 			}
 			else
 			{
@@ -294,7 +297,7 @@ class Pagination_object {
 
 				$m_fields = array();
 
-				foreach ($this->multi_fields as $val)
+				foreach ($this->_multi_fields as $val)
 				{
 					foreach($this->cfields as $site_id => $cfields)
 					{
@@ -312,11 +315,11 @@ class Pagination_object {
 
 				$this->total_rows = count($m_fields);
 
-				$this->total_pages = $this->total_rows;
+				$this->_total_pages = $this->total_rows;
 
-				if ($this->total_pages == 0)
+				if ($this->_total_pages == 0)
 				{
-					$this->total_pages = 1;
+					$this->_total_pages = 1;
 				}
 
 				$this->offset = ($this->offset == '') ? 0 : $this->offset;
@@ -340,7 +343,7 @@ class Pagination_object {
 			{
 				if ($this->total_rows % $this->per_page)
 				{
-					$this->total_pages++;
+					$this->_total_pages++;
 				}
 			}
 
@@ -372,20 +375,20 @@ class Pagination_object {
 				$config['uri_segment']	= 0; // Allows $config['cur_page'] to override
 
 				ee()->pagination->initialize($config);
-				$this->page_links = ee()->pagination->create_links();
+				$this->_page_links = ee()->pagination->create_links();
 				ee()->pagination->initialize($config); // Re-initialize to reset config
-				$this->page_array = ee()->pagination->create_link_array();
+				$this->_page_array = ee()->pagination->create_link_array();
 
 				// If a page_next should exist, create it
-				if ((($this->total_pages * $this->per_page) - $this->per_page) > $this->offset)
+				if ((($this->_total_pages * $this->per_page) - $this->per_page) > $this->offset)
 				{
-					$this->page_next = reduce_double_slashes($this->basepath.'/P'.($this->offset + $this->per_page));
+					$this->_page_next = reduce_double_slashes($this->basepath.'/P'.($this->offset + $this->per_page));
 				}
 
 				// If a page_previous should exist, create it
 				if (($this->offset - $this->per_page ) >= 0)
 				{
-					$this->page_previous = reduce_double_slashes($this->basepath.'/P'.($this->offset - $this->per_page));
+					$this->_page_previous = reduce_double_slashes($this->basepath.'/P'.($this->offset - $this->per_page));
 				}
 			}
 			else
@@ -419,7 +422,7 @@ class Pagination_object {
 	 */
 	function render($return_data)
 	{
-		if ($this->page_links == '')
+		if ($this->_page_links == '')
 		{
 			return $return_data;
 		}
@@ -430,24 +433,24 @@ class Pagination_object {
 
 			// Check to see if page_links is being used as a single
 			// variable or as a variable pair
-			if (strpos($this->template_data, LD.'/pagination_links'.RD) !== FALSE)
+			if (strpos($this->_pagination_template, LD.'/pagination_links'.RD) !== FALSE)
 			{
-				$parse_array['pagination_links'] = array($this->page_array);
+				$parse_array['pagination_links'] = array($this->_page_array);
 			}
 			else
 			{
-				$parse_array['pagination_links'] = $this->page_links;
+				$parse_array['pagination_links'] = $this->_page_links;
 			}
 
 			// ----------------------------------------------------------------
 
 			// Parse current_page and total_pages by default
 			$parse_array['current_page']	= $this->current_page;
-			$parse_array['total_pages']		= $this->total_pages;
+			$parse_array['total_pages']		= $this->_total_pages;
 
 			// Parse current_page and total_pages
-			$this->template_data = ee()->TMPL->parse_variables(
-				$this->template_data,
+			$this->_pagination_template = ee()->TMPL->parse_variables(
+				$this->_pagination_template,
 				array($parse_array),
 				FALSE // Disable backspace parameter so pagination markup is protected
 			);
@@ -455,15 +458,15 @@ class Pagination_object {
 			// ----------------------------------------------------------------
 
 			// Parse {if previous_page} and {if next_page}
-			$this->_parse_conditional('previous', $this->page_previous);
-			$this->_parse_conditional('next', $this->page_next);
+			$this->_parse_conditional('previous', $this->_page_previous);
+			$this->_parse_conditional('next', $this->_page_next);
 
 			// ----------------------------------------------------------------
 
 			// Parse if total_pages conditionals
-			$this->template_data = ee()->functions->prep_conditionals(
-				$this->template_data,
-				array('total_pages' => $this->total_pages)
+			$this->_pagination_template = ee()->functions->prep_conditionals(
+				$this->_pagination_template,
+				array('total_pages' => $this->_total_pages)
 			);
 
 			// ----------------------------------------------------------------
@@ -471,15 +474,15 @@ class Pagination_object {
 			switch ($this->_position)
 			{
 				case "top":
-					return $this->template_data.$return_data;
+					return $this->_pagination_template.$return_data;
 					break;
 				case "both":
-					return $this->template_data.$return_data.$this->template_data;
+					return $this->_pagination_template.$return_data.$this->_pagination_template;
 					break;
 				case "inline":
 					return ee()->TMPL->swap_var_single(
 						$this->_pagination_marker,
-						$this->template_data,
+						$this->_pagination_template,
 						$return_data
 					);
 					break;
@@ -487,7 +490,7 @@ class Pagination_object {
 				break;
 				case "bottom":
 				default:
-					return $return_data.$this->template_data;
+					return $return_data.$this->_pagination_template;
 					break;
 			}
 		}
@@ -508,11 +511,11 @@ class Pagination_object {
 	 */
 	private function _parse_conditional($type, $replacement)
 	{
-		if (preg_match_all("/".LD."if {$type}_page".RD."(.+?)".LD.'\/'."if".RD."/s", $this->template_data, $matches))
+		if (preg_match_all("/".LD."if {$type}_page".RD."(.+?)".LD.'\/'."if".RD."/s", $this->_pagination_template, $matches))
 		{
 			if ($replacement == '')
 			{
-				 $this->template_data = preg_replace("/".LD."if {$type}_page".RD.".+?".LD.'\/'."if".RD."/s", '', $this->template_data);
+				 $this->_pagination_template = preg_replace("/".LD."if {$type}_page".RD.".+?".LD.'\/'."if".RD."/s", '', $this->_pagination_template);
 			}
 			else
 			{
@@ -521,7 +524,7 @@ class Pagination_object {
 					$match = preg_replace("/".LD.'path.*?'.RD."/", $replacement, $match);
 					$match = preg_replace("/".LD.'auto_path'.RD."/", $replacement, $match);
 
-					$this->template_data = str_replace($matches[0][$count], $match, $this->template_data);
+					$this->_pagination_template = str_replace($matches[0][$count], $match, $this->_pagination_template);
 				}
 			}
 		}
