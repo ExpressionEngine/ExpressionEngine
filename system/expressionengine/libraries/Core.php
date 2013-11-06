@@ -310,9 +310,18 @@ class EE_Core {
 		ee()->load->library('session');
 		ee()->load->library('user_agent');
 
+		// Get timezone to set as PHP timezone
+		$timezone = ee()->session->userdata('timezone');
+
+		// In case this is a timezone stored in the old format...
+		if ( ! in_array($timezone, DateTimeZone::listIdentifiers()))
+		{
+			$timezone = ee()->localize->get_php_timezone($timezone);
+		}
+
 		// Set a timezone for any native PHP date functions being used
 		date_default_timezone_set(
-			ee()->localize->get_php_timezone(ee()->session->userdata('timezone'))
+			ee()->localize->get_php_timezone($timezone)
 		);
 
 		// Load the "core" language file - must happen after the session is loaded
