@@ -49,7 +49,7 @@ class Addons_model extends CI_Model {
 
 		if ($include_none === TRUE)
 		{
-			$default['none'] = $this->lang->line('none');
+			$default['none'] = lang('none');
 		}
 
 		foreach ($plugins as $plugin => $info)
