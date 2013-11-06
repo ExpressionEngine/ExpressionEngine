@@ -26,12 +26,6 @@
 
 class EE_Pagination extends CI_Pagination {
 
-	public function __construct()
-	{
-		$this->EE =& get_instance();
-		parent::__construct();
-	}
-
 	public function create($classname)
 	{
 		return new Pagination_object($classname);
@@ -60,31 +54,32 @@ class Pagination_object {
 	public $cfields				= array();
 	public $type				= '';
 	public $dynamic_sql			= TRUE;
-	public $position			= '';
-	public $pagination_marker	= "pagination_marker";
+
+	private $_position			= '';
+	private $_pagination_marker	= "pagination_marker";
 	private $_template			= '';
 
 	public function __construct($classname)
 	{
 		$this->type = $classname;
-		$this->EE =& get_instance();
 		ee()->load->library('pagination');
 		ee()->load->library('template', NULL, 'TMPL');
+		$this->_template = &ee()->TMPL->tagdata;
 	}
 
-	public function set_template($template)
+	public function __set($name, $value)
 	{
-		$this->_template = $template;
-	}
-
-	private function &_template()
-	{
-		if ( ! empty($this->_template))
+		// Keep certain variables private
+		if (in_array($name, array('template', 'position')))
 		{
-			return $this->_template;
+			$this->{'_'.$name} = $value;
+		}
+		else if (strncmp($name, '_', 1) == 0)
+		{
+			throw new Exception('Can not access private properties.');
 		}
 
-		return ee()->TMPL->tagdata;
+		$this->$name = $value;
 	}
 
 	// ------------------------------------------------------------------------
@@ -99,10 +94,13 @@ class Pagination_object {
 	 *
 	 * The whole goal of this method is to see if we need to paginate and if
 	 * we do, extract the tags within pagination and put them in another variable
+	 *
+	 * @return String The template with the pagination removed
 	 */
 	function get_template()
 	{
-		$template = &$this->_template();
+		// First get the template as we currently know it
+		$template = &$this->_template;
 
 		// Quick check to see if {paginate} even exists
 		if (strpos($template, LD.'paginate'.RD) === FALSE) return;
@@ -141,10 +139,10 @@ class Pagination_object {
 			$this->template_data	= $paginate_match[1];
 
 			// Determine if pagination needs to go at the top and/or bottom, or inline
-			$this->position = ee()->TMPL->fetch_param('paginate');
+			$this->_position = ee()->TMPL->fetch_param('paginate', $this->_position);
 
 			// Create temporary marker for inline position
-			$replace_tag = ($this->position == 'inline') ? LD.$this->pagination_marker.RD : '';
+			$replace_tag = ($this->_position == 'inline') ? LD.$this->_pagination_marker.RD : '';
 
 			// Remove pagination tags from template since we'll just
 			// append/prepend it later
@@ -470,7 +468,7 @@ class Pagination_object {
 
 			// ----------------------------------------------------------------
 
-			switch ($this->position)
+			switch ($this->_position)
 			{
 				case "top":
 					return $this->template_data.$return_data;
@@ -480,13 +478,13 @@ class Pagination_object {
 					break;
 				case "inline":
 					return ee()->TMPL->swap_var_single(
-						$this->pagination_marker,
+						$this->_pagination_marker,
 						$this->template_data,
 						$return_data
 					);
 					break;
-    			return $return_data;
-    			break;
+				return $return_data;
+				break;
 				case "bottom":
 				default:
 					return $return_data.$this->template_data;

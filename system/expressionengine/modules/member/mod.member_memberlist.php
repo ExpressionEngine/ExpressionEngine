@@ -423,8 +423,6 @@ class Member_memberlist extends Member {
 		if (($row_limit = (int) ee()->input->post('row_limit')) === 0)
 		{
 			$row_limit = ee()->config->item('memberlist_row_limit');
-			// TODO-WB Remove debug line
-			$row_limit = 3;
 		}
 
 		if (ee()->input->post('order_by'))
@@ -584,7 +582,8 @@ class Member_memberlist extends Member {
 		// Start running pagination
 		ee()->load->library('pagination');
 		$pagination = ee()->pagination->create(__CLASS__);
-		$pagination->set_template($template);
+		$pagination->template = $template;
+		$pagination->position = 'inline';
 		$template = $pagination->get_template();
 
 		if ($query->row('count') > $row_limit && $pagination->paginate === TRUE)
@@ -991,8 +990,6 @@ class Member_memberlist extends Member {
 		/** ----------------------------------------*/
 		if ($pagination->paginate === TRUE)
 		{
-			// TODO-WB Render expects to put the pagination code at the top or
-			// bottom, how can I put it back or find a way around this?
 			$template = $pagination->render($template);
 		}
 
