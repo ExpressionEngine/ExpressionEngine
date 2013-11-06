@@ -39,6 +39,7 @@ class Updater {
 		$steps = new ProgressIterator(
 			array(
 				'_update_email_db_columns',
+				'_update_session_type_names',
 			)
 		);
 
@@ -77,6 +78,26 @@ class Updater {
 				)
 			);
 		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Renames admin_session_type and user_session_type in the config
+	 *
+	 * @return void
+	 **/
+	private function _update_session_type_names()
+	{
+		$new_config_items = array(
+			'cp_session_type'      => ee()->config->item('admin_session_type'),
+			'website_session_type' => ee()->config->item('user_session_type')
+		);
+		$remove_config_items = array(
+			'admin_session_type' => '',
+			'user_session_type'  => ''
+		);
+		ee()->config->_update_config($new_config_items, $remove_config_items);
 	}
 }
 /* END CLASS */
