@@ -21,56 +21,6 @@
 
 "use strict";
 
-function _access_edit_ajax(el, template_id, m_group_id, kind) {
-
-	var str = '',
-		no_auth_bounce;
-
-	switch (kind) {
-	case 'no_auth_bounce':
-		str = jQuery.param({
-			'template_id': template_id,
-			'no_auth_bounce': el.val()
-		});
-		break;
-	case 'enable_http_auth':
-		str = jQuery.param({
-			'template_id': template_id,
-			'enable_http_auth': el.val()
-		});
-		break;
-	case 'access':
-		no_auth_bounce = (! $(el).closest('.accessTable').length) ?
-								 $('.no_auth_bounce').val() :
-								 $(el).closest('.accessTable').find('.no_auth_bounce').val();
-		str = jQuery.param({
-			'template_id': template_id,
-			'member_group_id': m_group_id,
-			'new_status': el.val(),
-			'no_auth_bounce' : no_auth_bounce
-		});
-		break;
-	}
-
-
-	$.ajax({
-		type: "POST",
-		url: EE.access_edit_url,
-		data: "is_ajax=TRUE&XID=" + EE.XID + "&" + str,
-		success: function (msg) {
-			if (msg !== '') {
-				$.ee_notice(msg, {duration: 3000, type: 'success'});
-			}
-		},
-		error: function (req, error) {
-			if (req.responseText !== '') {
-				$.ee_notice(req.responseText, {duration: 3000, type: 'error'});
-			}
-		}
-	});
-}
-
-
 function refresh_prefs_ajax(id) {
 
 	$.ajax({
@@ -84,26 +34,76 @@ function refresh_prefs_ajax(id) {
 	});
 }
 
-function access_edit_ajax(el) {
+function access_edit_ajax(element) {
 
-	var ids, template_id;
+	var template_id,
+		ids,
+		no_auth_bounce,
+		payload = [];
 
-	// access_gid_tid
-	if (el.attr('name').substr(0, 14) === 'no_auth_bounce') {
-		template_id = (el.attr('name').substr(15)) ? el.attr('name').substr(15) : $('input:hidden[name=template_id]').val();
-		_access_edit_ajax(el, template_id, '', 'no_auth_bounce');
-	}
-	else if (el.attr('name').substr(0, 16) === 'enable_http_auth') {
-		template_id = (el.attr('name').substr(17)) ? el.attr('name').substr(17) : $('input:hidden[name=template_id]').val();
-		_access_edit_ajax(el, template_id, '', 'enable_http_auth');
-	} else {
-		ids = el.attr('name').replace('access_', '').split('_');
-		template_id = (ids.length < 2) ? $('input:hidden[name=template_id]').val() : ids[1];
+	// We may be changing permissions for multiple element at a time
+	// if they selected a Select All option
+	element.each(function(index, el)
+	{
+		var el = $(el);
 
-		_access_edit_ajax(el, template_id, ids[0], 'access');
-	}
+		// Handle template bounce setting
+		if (el.attr('name').substr(0, 14) === 'no_auth_bounce')
+		{
+			template_id = (el.attr('name').substr(15))
+				? el.attr('name').substr(15) : $('input:hidden[name=template_id]').val();
+
+			payload.push({
+				template_id: template_id,
+				no_auth_bounce: el.val()
+			});
+		}
+		// Handle enabling HTTP authentication for a template
+		else if (el.attr('name').substr(0, 16) === 'enable_http_auth')
+		{
+			template_id = (el.attr('name').substr(17))
+				? el.attr('name').substr(17) : $('input:hidden[name=template_id]').val();
+
+			payload.push({
+				template_id: template_id,
+				enable_http_auth: el.val()
+			});
+		}
+		// Handle member group permissions for this template
+		else
+		{
+			ids = el.attr('name').replace('access_', '').split('_');
+			template_id = (ids.length < 2) ? $('input:hidden[name=template_id]').val() : ids[1];
+			no_auth_bounce = (! $(el).closest('.accessTable').length)
+				? $('.no_auth_bounce').val() :  $(el).closest('.accessTable').find('.no_auth_bounce').val();
+
+			el.attr('checked', 'checked');
+
+			payload.push({
+				template_id: template_id,
+				member_group_id: ids[0],
+				new_status: el.val(),
+				no_auth_bounce: no_auth_bounce
+			});
+		}
+	});
+
+	$.ajax({
+		type: "POST",
+		url: EE.access_edit_url,
+		data: {is_ajax: 'TRUE', XID: EE.XID, payload: payload},
+		success: function (msg) {
+			if (msg !== '') {
+				$.ee_notice(msg, {duration: 3000, type: 'success'});
+			}
+		},
+		error: function (req, error) {
+			if (req.responseText !== '') {
+				$.ee_notice(req.responseText, {duration: 3000, type: 'error'});
+			}
+		}
+	});
 }
-
 
 
 function template_edit_ajax() {
@@ -277,11 +277,11 @@ function bind_prefs_events() {
 			}
 
 			parent.find('.ignore_radio').click(function () {
-				if (this.value === 'y') {
-					parent.find(selector_base + 'y]').filter(':not(.ignore_radio)').trigger('click');
-				}
-				if (this.value === 'n') {
-					parent.find(selector_base + 'n]').filter(':not(.ignore_radio)').trigger('click');
+				if (this.value === 'y' || this.value === 'n')
+				{
+					access_edit_ajax(
+						parent.find(selector_base + this.value + ']').filter(':not(.ignore_radio)')
+					);
 				}
 
 				$(this).attr('checked', false);
