@@ -42,7 +42,7 @@ class Member_auth extends Member {
 
 		$login_form = $this->_load_element('login_form');
 
-		if (ee()->config->item('user_session_type') != 'c')
+		if (ee()->config->item('website_session_type') != 'c')
 		{
 			$login_form = $this->_deny_if('auto_login', $login_form);
 		}

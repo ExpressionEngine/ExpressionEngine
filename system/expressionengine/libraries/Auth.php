@@ -743,7 +743,7 @@ class Auth_result {
 	public function start_session($cp_sess = FALSE)
 	{
 		$multi = $this->session_id ? TRUE : FALSE;
-		$sess_type = $cp_sess ? 'cp_session_type' : 'user_session_type';
+		$sess_type = $cp_sess ? 'cp_session_type' : 'website_session_type';
 		
 		if ($multi)
 		{
