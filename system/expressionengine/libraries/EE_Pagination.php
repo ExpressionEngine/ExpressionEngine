@@ -424,6 +424,17 @@ class Pagination_object {
 	{
 		if ($this->_page_links == '')
 		{
+			// If there's no paginating to do and we're inline, remove the
+			// pagination_marker
+			if ($this->_position == 'inline')
+			{
+				return ee()->TMPL->swap_var_single(
+					$this->_pagination_marker,
+					'',
+					$return_data
+				);
+			}
+
 			return $return_data;
 		}
 
