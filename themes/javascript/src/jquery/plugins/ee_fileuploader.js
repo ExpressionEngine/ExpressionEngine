@@ -130,11 +130,6 @@
 					if (typeof settings.close == 'function') {
 						settings.close.call(this, file_uploader, current_file);
 					}
-					
-					// Refresh the filebrowser if we're not deleting the file
-					if (delete_file === false) {
-						$.ee_filebrowser.reload();
-					}
 				}
 
 				file_uploader.html(original_upload_html);

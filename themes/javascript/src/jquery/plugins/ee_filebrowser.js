@@ -277,8 +277,6 @@
 				var current_directory = $('#dir_choice').val();
 			},
 			close: function(event, ui) {
-				$.ee_filebrowser.reload();
-				
 				// Clear out keyword filter
 				$('#keywords', file_manager_obj).val('');
 			}
