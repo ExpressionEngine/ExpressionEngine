@@ -47,13 +47,13 @@ class Pagination_object {
 	public $cfields				= array();
 	public $dynamic_sql			= TRUE;
 
-	private $_page_array				= array();
+	private $_page_array			= array();
 	private $_total_pages			= 1;
 	private $_pagination_template	= '';
 	private $_multi_fields			= '';
 	private $_page_next				= '';
 	private $_page_previous			= '';
-	private $_page_links				= '';
+	private $_page_links			= '';
 	private $_type					= '';
 	private $_position				= '';
 	private $_pagination_marker		= "pagination_marker";
