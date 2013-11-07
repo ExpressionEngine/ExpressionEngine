@@ -100,7 +100,7 @@ class Localize {
 		switch ($date_fmt)
 		{
 			case 'eu':
-				$datestr = '%Y-%m-%d %H:%i';
+				$datestr = '%d/%m/%y %H:%i';
 				break;
 
 			case 'us':
