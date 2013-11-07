@@ -137,7 +137,7 @@ class Query {
 		}
 		foreach($this->root->getBreadthFirstIterator() as $node)
 		{
-			if ($node->isRoot())
+			if ($node->isRoot() || $this->hasParentSubquery($node))
 			{
 				continue;
 			}
@@ -281,10 +281,12 @@ class Query {
 		return $node;
 	}
 
+	/**
+	 *
+	 */
 	private function buildRelationship(QueryTreeNode $node)
 	{
-		if ($node->meta->method == ModelRelationshipMeta::METHOD_JOIN 
-			&& ! $this->hasParentSubquery($node))
+		if ($node->meta->method == ModelRelationshipMeta::METHOD_JOIN)
 		{
 			$this->buildJoinRelationship($node);
 		}
@@ -294,6 +296,9 @@ class Query {
 		}
 	}
 
+	/**
+	 *
+	 */
 	private function buildJoinRelationship(QueryTreeNode $node)
 	{
 		$relationship_meta = $node->meta;
@@ -323,14 +328,6 @@ class Query {
 		}
 	}
 
-	private function buildSubqueryRelationship(QueryTreeNode $node)
-	{
-		$subquery = new Query($node->meta->to_model_name);
-		$subquery->withSubtree($node->getSubtree());
-
-		$this->subqueries[] = array('node' => $node, 'subquery' => $subquery);
-	}
-
 	private function hasParentSubquery(QueryTreeNode $node)
 	{
 		for($n = $node; ! $n->isRoot(); $n = $n->getParent())
@@ -346,6 +343,24 @@ class Query {
 
 		return FALSE;
 	}
+
+	private function buildSubqueryRelationship(QueryTreeNode $node)
+	{
+		$subquery = new Query($node->meta->to_model_name);
+		$subquery->withSubtree($node->getSubtree());
+
+		$path = $node->getPathString();
+		$this->subqueries[$path] = $subquery;
+	}
+
+	private function withSubtree(QueryTreeNode $root)
+	{
+		foreach($root->getChildren() as $node)
+		{
+			$this->root->add($node);
+		}
+	}
+
 	
 	/**
 	 * Run the query, hydrate the models, and reassemble the relationships
@@ -367,7 +382,8 @@ class Query {
 	 * build the model tree out of them.
 	 */
 	private function dealiasResults($database_result)
-	{ // Each row holds field=>value data for the full joined query's
+	{ 
+		// Each row holds field=>value data for the full joined query's
 		// tree.  In order to take this flat row data and reconstruct into
 		// a tree, the field names of each field=>value pair have been
 		// aliased with the path to the correct node (in ids), and the

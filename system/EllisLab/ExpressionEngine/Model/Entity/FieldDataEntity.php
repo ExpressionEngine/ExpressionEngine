@@ -1,7 +1,7 @@
 <?php
 namespace EllisLab\ExpressionEngine\Model\Entity;
 
-use EllisLab\ExpressionEngine\Model\Entity\Entity as Entity;
+use EllisLab\ExpressionEngine\Model\Entity\Entity;
 
 class FieldDataEntity extends Entity {
 	protected $fields = array();

@@ -10,7 +10,12 @@ class QueryBuilder {
 		'Template'       => '\EllisLab\ExpressionEngine\Model\Template\Template',
 		'TemplateGroup'  => '\EllisLab\ExpressionEngine\Model\Template\TemplateGroup',
 		'TemplateEntity' => '\EllisLab\ExpressionEngine\Model\Entity\TemplateEntity',
-		'TemplateGroupEntity' => '\EllisLab\ExpressionEngine\Model\Entity\TemplateGroupEntity'
+		'TemplateGroupEntity' => '\EllisLab\ExpressionEngine\Model\Entity\TemplateGroupEntity',
+		'Channel' => '\EllisLab\ExpressionEngine\Module\Channel\Model\Channel',
+		'ChannelEntry' => '\EllisLab\ExpressionEngine\Module\Channel\Model\ChannelEntry',
+		'ChannelEntity' => '\EllisLab\ExpressionEngine\Module\Channel\Model\Entity\ChannelEntity',
+		'ChannelTitleEntity' => '\EllisLab\ExpressionEngine\Module\Channel\Model\Entity\ChannelTitleEntity',
+		'ChannelDataEntity' => '\EllisLab\ExpressionEngine\Module\Channel\Model\Entity\ChannelDataEntity'
 	);
 
 	public function __construct(Dependencies $di)

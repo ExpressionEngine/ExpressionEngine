@@ -26,8 +26,8 @@ abstract class FieldDataContentModel extends Model implements Content {
 			foreach ($field_structures as $field_structure)
 			{
 				$fields[$field_structure->field_id] = new $field_content_class(
-					$field_sturcture
-					$this->entities[static::getMetaData('field_content_entity')],
+					$field_sturcture,
+					$this->entities[static::getMetaData('field_content_entity')]
 				);
 			}
 		}

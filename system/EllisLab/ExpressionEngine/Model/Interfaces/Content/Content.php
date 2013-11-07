@@ -1,4 +1,5 @@
 <?PHP
+namespace EllisLab\ExpressionEngine\Model\Interfaces\Content;
 
 /**
  * Represents a piece of content in ExpressionEngine (IE a Channel Entry)

@@ -1,7 +1,7 @@
 <?php
 namespace EllisLab\ExpressionEngine\Module\Channel\Model;
 
-use EllisLab\ExpressionEngine\Model\FieldDataContentModel as Model;
+use EllisLab\ExpressionEngine\Model\FieldDataContentModel;
 
 class ChannelEntry extends FieldDataContentModel {
 	protected static $meta = array(
@@ -12,7 +12,7 @@ class ChannelEntry extends FieldDataContentModel {
 			'channel_id' => 'ChannelTitleEntity',
 			'site_id' => 'ChannelTitleEntity',
 			'author_id' => 'ChannelTitleEntity'
-		)
+		),
 		'field_content_class' => 'ChannelFieldContent',
 		'field_content_entity' => 'ChannelDataEntity'		
 	);
@@ -54,12 +54,8 @@ class ChannelEntry extends FieldDataContentModel {
 	 * @return	Template|string	The parsed template with relevant tags replaced
 	 *							or the tagdata string with relevant tags replaced.
 	 */
-	public function render(ParsedTemplate $template)
+	public function render($template)
 	{
-		foreach($this->entities as $entity)
-		{
-		}
-		// call render on all custom fields
 	}
 
 }

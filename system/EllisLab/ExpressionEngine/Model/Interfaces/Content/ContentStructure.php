@@ -1,4 +1,5 @@
 <?php
+namespace EllisLab\ExpressionEngine\Model\Interfaces\Content;
 
 /**
  * Structure Interface
@@ -6,7 +7,7 @@
  * Classes implementing this should define the structure of a collection of data.
  * For example, Channel is the structural element for ChannelEntries.
  */
-interface ContentStructure extends Settings {
+interface ContentStructure {
 
 	/**
 	 * Display the CP form form

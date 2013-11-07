@@ -24,6 +24,7 @@ abstract class DataTableFieldContent implements FieldContent {
 	{
 		return $this->structure;
 	}
+
 	/**
 	 * Save this piece of field content to the database.
 	 *
