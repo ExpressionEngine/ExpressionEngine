@@ -15,13 +15,13 @@
 	var file_manager_obj,
 		current_field = '',
 		display_type = 'list',
-		
+
 		current_directory = 0,
 		settings = {},
 		error = '',
-		
+
 		$table = null,
-		
+
 		trigger_callback;
 
 	/*
@@ -34,9 +34,9 @@
 		$.ee_filebrowser.endpoint_request('setup', function(data) {
 			dir_files_structure	= {};
 			dir_paths = {};
-			
+
 			file_manager_obj = $(data.manager).appendTo(document.body);
-			
+
 			for (var d in data.directories) {
 				if ( ! current_directory) {
 					current_directory = d;
@@ -45,7 +45,7 @@
 			}
 
 			createBrowser();
-			
+
 			// Load the file uploader
 			if (typeof $.ee_fileuploader != "undefined") {
 				$.ee_fileuploader({
@@ -84,9 +84,9 @@
 			callback = data;
 			data = {};
 		}
-		
+
 		data = $.extend(data, {'action': type});
-		
+
 		$.ajax({
 			url: EE.BASE + '&' + EE.filebrowser.endpoint_url,
 			type: 'GET',
@@ -107,7 +107,7 @@
 	};
 
 	// --------------------------------------------------------------------
-	
+
 	/*
 	 * Allows you to bind elements that will open the file browser
 	 * The callback is called with the file information when a file
@@ -134,7 +134,7 @@
 		} else {
 			settings[field_name] = new_settings;
 		}
-		
+
 		$(el).click(function() {
 			// Check to see if we have any errors from setup
 			if (error) {
@@ -151,16 +151,16 @@
 			hide_directories();
 
 			file_manager_obj.dialog("open");
-			
+
 			trigger_callback = function(file) {
 				callback.call(that, file, field_name);
 			};
 			return false;
 		});
 	};
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Gets the settings of the currently selected field
 	 *
@@ -170,9 +170,9 @@
 	$.ee_filebrowser.get_current_settings = function() {
 		return settings[current_field];
 	};
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/*
 	 * Place Image
 	 *
@@ -188,12 +188,12 @@
 				file_manager_obj.dialog("close"); // close dialog & clean up
 			}
 		);
-		
+
 		return false;
 	};
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Clear caches and close the file browser
 	 */
@@ -206,16 +206,16 @@
 		if (file) {
 			trigger_callback(file);
 		}
-		
+
 		// Clear out keyword filter
 		$('#keywords', file_manager_obj).val('');
-		
+
 		file_manager_obj.dialog("close"); // clears caches
 	};
-	
-	
+
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Refreshes the file browser with the newly upload files
 	 *
@@ -225,9 +225,9 @@
 	$.ee_filebrowser.reload_directory = function(directory_id) {
 		$.ee_filebrowser.reload();
 	};
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Refreshes the file browser with the newly upload files
 	 */
@@ -240,12 +240,12 @@
 
 	// --------------------------------------------------------------------
 
-	/* 
+	/*
 	 * Sets up all filebrowser events
 	 */
 	function createBrowser() {
 		var $dir_choice = $('#dir_choice');
-		
+
 		// Make the file manager 95% as wide as the browser window,
 		// but no more than 974px
 		var file_manager_width = $(window).width() * 0.95;
@@ -253,7 +253,7 @@
 		{
 			file_manager_width = 974;
 		}
-		
+
 		// Set up modal dialog
 		file_manager_obj.dialog({
 			width: file_manager_width,
@@ -267,11 +267,11 @@
 			zIndex: 99999,
 			open: function(event, ui) {
 				var field_dir = settings[current_field].directory;
-				
+
 				if ( ! isNaN(field_dir)) {
 					$dir_choice.val(field_dir);
 				}
-				
+
 				// force a trigger check
 				$dir_choice.trigger('interact');
 				var current_directory = $('#dir_choice').val();
@@ -281,33 +281,33 @@
 				$('#keywords', file_manager_obj).val('');
 			}
 		});
-		
+
 		var $tables = $('#file_browser_body').find('table');
 
 		$tables.each(function() {
 			$table = $(this);
-			
+
 			if ($table.data('table_config')) {
 				return false; //break
 			}
 		});
-		
+
 		var config = $table.data('table_config');
 		$table.table(config);
-		
-		
+
+
 		// Set directory in case filter happens before input has changed (because the
 		// filter is only set on certain interaction events)
 		// $table.table('add_filter', { 'dir_choice': $dir_choice.val() });
-		
+
 		$table.table('add_filter', $dir_choice);
 		$table.table('add_filter', $('#keywords'));
-		
+
 		var table_template = $table.table('get_template');
 			thumb_template = $('#thumbTmpl').remove().html(),
 			table_container = $table.table('get_container'),
 			thumb_container = $('#file_browser_body'); //$('div').insertBefore($table);
-		
+
 		$('#view_type').change(function() {
 			if (this.value == 'thumb') {
 				$table.detach();
@@ -321,16 +321,16 @@
 				$table.table('add_filter', { 'per_page': 15 });
 			}
 		});
-		
+
 		// Bind the upload submit event
 		$("#upload_form", file_manager_obj).submit($.ee_filebrowser.upload_start);
-		
+
 		// Add the display type as a class to file_browser_body
 		$('#file_browser_body', file_manager_obj).addClass(display_type);
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Hides the directory switcher based on settings passed to add_trigger
 	 */
