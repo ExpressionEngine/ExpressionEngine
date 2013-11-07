@@ -88,6 +88,33 @@ class Localize {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Fetches the time format as specified by the member's preferences
+	 * or the site's configuration.
+	 *
+	 * @return	string	Date format, like "%m/%d/%y %h:%i %a"
+	 **/
+	public function default_time_format()
+	{
+		$date_fmt = (ee()->session->userdata('time_format') != '') ? ee()->session->userdata('time_format') : $this->config->item('time_format');
+
+		switch ($date_fmt)
+		{
+			case 'eu':
+				$datestr = '%Y-%m-%d %H:%i';
+				break;
+
+			case 'us':
+			default:
+				$datestr = '%m/%d/%y %h:%i %a';
+				break;
+		}
+
+		return ($datestr);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Given an EE date format and a Unix timestamp, returns the human-readable
 	 * date in the specified timezone or member's current timezone.
 	 *
