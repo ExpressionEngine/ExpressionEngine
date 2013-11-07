@@ -343,10 +343,7 @@ class Content_files extends CP_Controller {
 		if ($total_filtered > 0 AND ! empty($this->_upload_dirs))
 		{
 			// Date
-			$date_fmt = ($this->session->userdata('time_format') != '') ?
-							$this->session->userdata('time_format') : $this->config->item('time_format');
-
-			$datestr = ($date_fmt == 'us') ? '%m/%d/%y %h:%i %a' : '%Y-%m-%d %H:%i';
+			$datestr = $this->localize->default_time_format();
 
 			$file_list = array();
 			$files = $files->result_array();
