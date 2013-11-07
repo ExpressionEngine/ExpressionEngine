@@ -1391,7 +1391,7 @@ class EE_Session {
 	 */
 	protected function _setup_session_length()
 	{
-		$u_item = ee()->config->item('user_session_ttl');
+		$u_item = ee()->config->item('website_session_ttl');
 		$cp_item = ee()->config->item('cp_session_ttl');
 
 		$this->cpan_session_len = ($cp_item !== FALSE) ? $cp_item : $this->cpan_session_len;
