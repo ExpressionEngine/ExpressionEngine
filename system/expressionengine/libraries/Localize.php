@@ -705,6 +705,7 @@ EOF;
 			return $months[$month];
 		}
 	}
+
 }
 // END CLASS
 
