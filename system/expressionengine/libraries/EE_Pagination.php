@@ -105,7 +105,7 @@ class Pagination_object {
 		$template = &$this->_template;
 
 		// Quick check to see if {paginate} even exists
-		if (strpos($template, LD.'paginate'.RD) === FALSE) return;
+		if (strpos($template, LD.'paginate'.RD) === FALSE) return $template;
 
 		if (preg_match("/".LD."paginate".RD."(.+?)".LD.'\/'."paginate".RD."/s", $template, $paginate_match))
 		{

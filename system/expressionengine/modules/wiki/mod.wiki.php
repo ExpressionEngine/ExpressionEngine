@@ -133,7 +133,7 @@ class Wiki {
 
 		if (($this->base_path = ee()->TMPL->fetch_param('base_path')) === FALSE)
 		{
-			return $this->return_data = ee()->lang->line('basepath_unset');
+			return $this->return_data = lang('basepath_unset');
 		}
 
 		$this->base_path = rtrim($this->base_path, '/').'/';
@@ -230,11 +230,11 @@ class Wiki {
 		/**  Namespaces Localization
 		/** ----------------------------------------*/
 
-		$this->main_ns		= (isset(ee()->lang->language['main_ns']))		? ee()->lang->line('main_ns') 	 : $this->main_ns;
-		$this->file_ns		= (isset(ee()->lang->language['file_ns']))		? ee()->lang->line('file_ns') 	 : $this->file_ns;
-		$this->image_ns		= (isset(ee()->lang->language['image_ns']))		? ee()->lang->line('image_ns') 	 : $this->image_ns;
-		$this->special_ns 	= (isset(ee()->lang->language['special_ns']))	? ee()->lang->line('special_ns')	 : $this->special_ns;
-		$this->category_ns	= (isset(ee()->lang->language['category_ns']))	? ee()->lang->line('category_ns') : $this->category_ns;
+		$this->main_ns		= (isset(ee()->lang->language['main_ns']))		? lang('main_ns') 	 : $this->main_ns;
+		$this->file_ns		= (isset(ee()->lang->language['file_ns']))		? lang('file_ns') 	 : $this->file_ns;
+		$this->image_ns		= (isset(ee()->lang->language['image_ns']))		? lang('image_ns') 	 : $this->image_ns;
+		$this->special_ns 	= (isset(ee()->lang->language['special_ns']))	? lang('special_ns')	 : $this->special_ns;
+		$this->category_ns	= (isset(ee()->lang->language['category_ns']))	? lang('category_ns') : $this->category_ns;
 
 		/* ----------------------------------------
 		/*  Category namespace actually has articles so it is put into the
@@ -3761,12 +3761,12 @@ class Wiki {
 	{
 		if (ee()->input->post('editing') === FALSE OR ee()->input->get_post('title') === FALSE OR ee()->input->get_post('title') == '' OR ee()->input->get_post('article_content') === FALSE)
 		{
-			return ee()->output->show_user_error('general', array(ee()->lang->line('invalid_permissions')));
+			return ee()->output->show_user_error('general', array(lang('invalid_permissions')));
 		}
 
 		if ( ! in_array(ee()->session->userdata['group_id'], $this->users) && ! in_array(ee()->session->userdata['group_id'], $this->admins))
 		{
-			return ee()->output->show_user_error('general', array(ee()->lang->line('invalid_permissions')));
+			return ee()->output->show_user_error('general', array(lang('invalid_permissions')));
 		}
 
 		/** -------------------------------------
@@ -3904,7 +3904,7 @@ class Wiki {
 
 			if ($query->row('page_locked')  == 'y' && ! in_array(ee()->session->userdata['group_id'], $this->admins))
 			{
-				return ee()->output->show_user_error('general', array(ee()->lang->line('invalid_permissions')));
+				return ee()->output->show_user_error('general', array(lang('invalid_permissions')));
 			}
 
 			if ($query->row('page_moderated')  == 'y' && ! in_array(ee()->session->userdata['group_id'], $this->admins))
@@ -3960,7 +3960,7 @@ class Wiki {
 
 					if ($t_query > 0)
 					{
-						return ee()->output->show_user_error('general', array(ee()->lang->line('duplicate_article')));
+						return ee()->output->show_user_error('general', array(lang('duplicate_article')));
 					}
 				}
 			}
@@ -4420,17 +4420,14 @@ class Wiki {
 	}
 
 
-	/** -------------------------------------
-	/**  Search Some Content!
-	/** -------------------------------------*/
-	function search_results($keywords='')
+	/**
+	 * Render the search results
+	 * @param  string $keywords [description]
+	 * @return [type]           [description]
+	 */
+	public function search_results($keywords='')
 	{
-		/** ----------------------------------------
-		/**  Check for Pagination
-		/** ----------------------------------------*/
-
-		$search_paginate = FALSE;
-
+		// Check for pagination
 		if (ee()->input->get_post('keywords') === FALSE && $keywords == '')
 		{
 			if ( ! isset($this->seg_parts['1']) OR strlen($this->seg_parts['1']) < 20)
@@ -4443,11 +4440,10 @@ class Wiki {
 
 			if ($query->num_rows() > 0)
 			{
-				var_dump('here?');
-				$search_paginate	= TRUE;
-				$paginate_sql		= $query->row('wiki_search_query') ;
-				$paginate_hash		= $query->row('wiki_search_id') ;
-				$keywords			= $query->row('wiki_search_keywords') ;
+				// Retrieve information about the search
+				$paginate_sql			= $query->row('wiki_search_query');
+				$paginate_hash			= $query->row('wiki_search_id');
+				$keywords				= $query->row('wiki_search_keywords');
 			}
 		}
 
@@ -4468,7 +4464,7 @@ class Wiki {
 		}
 		elseif(strlen($keywords) < $this->min_length_keywords)
 		{
-			return ee()->output->show_user_error('general', array(str_replace("%x", $this->min_length_keywords, ee()->lang->line('search_min_length'))));
+			return ee()->output->show_user_error('general', array(str_replace("%x", $this->min_length_keywords, lang('search_min_length'))));
 		}
 
 		$this->return_data = str_replace(
@@ -4476,6 +4472,12 @@ class Wiki {
 			array($this->_fetch_template('wiki_special_search_results.html'), stripslashes($keywords)),
 			$this->return_data
 		);
+
+		// Start work on pagination
+		ee()->load->library('pagination');
+		$pagination = ee()->pagination->create(__CLASS__);
+		$pagination->template = $this->return_data;
+		$this->return_data = $pagination->get_template();
 
 		/** ----------------------------------------
 		/**  Parse Results Tag Pair
@@ -4530,7 +4532,7 @@ class Wiki {
 		// If the hash is not found we'll simply reload the page.
 
 		if (ee()->config->item('secure_forms') == 'y'
-			AND $search_paginate === FALSE
+			AND $pagination->paginate === FALSE
 			AND ee()->security->secure_forms_check(ee()->input->post('XID')) == FALSE)
 		{
 			$this->redirect('', ee()->input->get_post('title'));
@@ -4540,7 +4542,7 @@ class Wiki {
 		/**  Our Query
 		/** ----------------------------------------*/
 
-		if ($search_paginate === TRUE)
+		if ($pagination->paginate === TRUE && isset($paginate_sql))
 		{
 			$sql = $paginate_sql;
 		}
@@ -4589,7 +4591,7 @@ class Wiki {
 			// in case they searched with only "namespace:namespace_label" and no keywords
 			if (trim($keywords) == '')
 			{
-				return ee()->output->show_user_error('general', array(ee()->lang->line('no_search_terms')));
+				return ee()->output->show_user_error('general', array(lang('no_search_terms')));
 			}
 
 			if (preg_match_all("/\-*\"(.*?)\"/", $keywords, $matches))
@@ -4663,37 +4665,45 @@ class Wiki {
 		/**  Store Pagination Hash and Query and do Garbage Collection
 		/** ----------------------------------------*/
 
-		if ($query->row('count')  > $parameters['limit'] && $search_paginate === FALSE)
+		if ($query->row('count') > $parameters['limit']
+			&& $pagination->current_page === 1)
 		{
 			$paginate_hash = ee()->functions->random('md5');
-			$search_data = array('wiki_search_id' => $paginate_hash, 'search_date' => time(), 'wiki_search_query' => $sql, 'wiki_search_keywords' => $keywords);
 
-			ee()->db->insert('wiki_search', $search_data);
+			ee()->db->insert('wiki_search', array(
+				'wiki_search_id'		=> $paginate_hash,
+				'search_date'			=> time(),
+				'wiki_search_query'		=> $sql,
+				'wiki_search_keywords'	=> $keywords
+			));
 
 			// Clear old search results
-			$expire = time() - ($this->cache_expire * 3600);
-
-			ee()->db->where('search_date <', $expire);
+			ee()->db->where('search_date <', time() - ($this->cache_expire * 3600));
 			ee()->db->delete('wiki_search');
 		}
-
-		$base_paginate = $this->base_url.$this->special_ns.':Search_results/';
-
-		if (isset($paginate_hash))
-		{
-			$base_paginate .= $paginate_hash.'/';
-		}
-
-		$this->pagination($query->row('count') , $parameters['limit'], $base_paginate);
 
 		/** ----------------------------------------
 		/**  Rerun Query This Time With Our Data
 		/** ----------------------------------------*/
 
-		if ($this->paginate === TRUE)
+		if ($pagination->paginate === TRUE)
 		{
+			$base_paginate = $this->base_url.$this->special_ns.':Search_results/';
+			if (isset($paginate_hash))
+			{
+				$base_paginate .= $paginate_hash.'/';
+			}
+
+			$pagination->basepath = $base_paginate;
+			$pagination->total_rows = $query->row('count');
+			$pagination->per_page = $parameters['limit'];
+			$pagination->build($pagination->total_rows);
+
 			// Now that the Paginate code is removed, we run this again
-			preg_match("/\{wiki:search_results(.*?)\}(.*?)\{\/wiki:search_results\}/s", $this->return_data, $match);
+			// preg_match("/\{wiki:search_results(.*?)\}(.*?)\{\/wiki:search_results\}/s", $this->return_data, $match);
+			// var_dump($match);
+			// TODO-WB Pagination is not changing and is not offet on the page
+			$this->pagination_sql .= " LIMIT ".$parameters['limit'];
 		}
 		else
 		{
@@ -4742,10 +4752,12 @@ class Wiki {
 		/** ----------------------------------------*/
 
 		$results = $this->parse_results($match, $query, $parameters, $dates);
-
+		$results = $pagination->render($results);
 		$this->return_data = str_replace($match['0'], $results, $this->return_data);
 	}
 
+
+	// -------------------------------------------------------------------------
 
 	/* ----------------------------------------
 	/*  Parsing of the Results
@@ -4762,9 +4774,9 @@ class Wiki {
 
 		ee()->load->library('typography');
 		ee()->typography->initialize(array(
-				'parse_images'	=> FALSE,
-				'parse_smileys'	=> FALSE)
-				);
+			'parse_images'	=> FALSE,
+			'parse_smileys'	=> FALSE
+		));
 
 		$results = '';
 		$i = 0;
@@ -4783,17 +4795,19 @@ class Wiki {
 			$title	= ($row['page_namespace'] != '') ? $this->namespace_label($row['page_namespace']).':'.$row['topic'] : $row['topic'];
 			$link	= $this->create_url($this->namespace_label($row['page_namespace']), $row['topic']);
 
-			$data = array(	'{title}'				=> $this->prep_title($title),
-							'{revision_id}'			=> $row['revision_id'],
-							'{page_id}'				=> $row['page_id'],
-							'{author}'				=> $row['screen_name'],
-							'{path:author_profile}'	=> ee()->functions->create_url($this->profile_path.$row['member_id']),
-							'{email}'				=> ee()->typography->encode_email($row['email']),
-							'{url}'					=> prep_url($row['url']),
-							'{revision_notes}'		=> $row['revision_notes'],
-							'{path:view_article}'	=> $link,
-							'{content}'				=> $row['page_content'],
-							'{count}'				=> $count);
+			$data = array(
+				'{title}'				=> $this->prep_title($title),
+				'{revision_id}'			=> $row['revision_id'],
+				'{page_id}'				=> $row['page_id'],
+				'{author}'				=> $row['screen_name'],
+				'{path:author_profile}'	=> ee()->functions->create_url($this->profile_path.$row['member_id']),
+				'{email}'				=> ee()->typography->encode_email($row['email']),
+				'{url}'					=> prep_url($row['url']),
+				'{revision_notes}'		=> $row['revision_notes'],
+				'{path:view_article}'	=> $link,
+				'{content}'				=> $row['page_content'],
+				'{count}'				=> $count
+			);
 
 			if (isset($parameters['switch1']))
 			{
@@ -4813,28 +4827,34 @@ class Wiki {
 
 			if (strpos($temp, '{article}') !== FALSE)
 			{
-				$data['{article}'] = $this->convert_curly_brackets(ee()->typography->parse_type( $this->wiki_syntax($row['page_content']),
-																  array(
-																		'text_format'	=> $this->text_format,
-																		'html_format'	=> $this->html_format,
-																		'auto_links'	=> $this->auto_links,
-																		'allow_img_url' => 'y'
-																	  )
-																));
+				$data['{article}'] = $this->convert_curly_brackets(
+					ee()->typography->parse_type(
+						$this->wiki_syntax($row['page_content']),
+						array(
+							'text_format'	=> $this->text_format,
+							'html_format'	=> $this->html_format,
+							'auto_links'	=> $this->auto_links,
+							'allow_img_url'	=> 'y'
+						)
+					)
+				);
 			}
 
 			if (strpos($temp, '{excerpt}') !== FALSE)
 			{
 				if ( ! isset($data['{article}']))
 				{
-					$data['{article}'] = $this->convert_curly_brackets(ee()->typography->parse_type( $this->wiki_syntax($row['page_content']),
-																	  array(
-																			'text_format'	=> $this->text_format,
-																			'html_format'	=> $this->html_format,
-																			'auto_links'	=> $this->auto_links,
-																			'allow_img_url' => 'y'
-																		  )
-																	));
+					$data['{article}'] = $this->convert_curly_brackets(
+						ee()->typography->parse_type(
+							$this->wiki_syntax($row['page_content']),
+							array(
+								'text_format'	=> $this->text_format,
+								'html_format'	=> $this->html_format,
+								'auto_links'	=> $this->auto_links,
+								'allow_img_url' => 'y'
+							)
+						)
+					);
 				}
 
 				$excerpt = trim(strip_tags($data['{article}']));
@@ -5328,7 +5348,7 @@ class Wiki {
 			if (file_exists($server_path.$new_name))
 			{
 				return ee()->output->show_user_error('general', array(
-								ee()->lang->line('file_exists')
+								lang('file_exists')
 					)
 				);
 			}
@@ -5336,7 +5356,7 @@ class Wiki {
 			if (strlen($new_name) > 60)
 			{
 				return ee()->output->show_user_error('general', array(
-								ee()->lang->line('filename_too_long')
+								lang('filename_too_long')
 					)
 				);
 			}
@@ -5344,7 +5364,7 @@ class Wiki {
 			if (ee()->upload->do_upload() === FALSE)
 			{
 				return ee()->output->show_user_error('general',
-							array(ee()->lang->line(ee()->upload->display_errors())));
+							array(lang(ee()->upload->display_errors())));
 			}
 
 			$file_data = ee()->upload->data();
@@ -5377,7 +5397,7 @@ class Wiki {
 				@unlink($file_data['full_path']);
 
 				return ee()->output->show_user_error('general',
-							array(ee()->lang->line($saved['message'])));
+							array(lang($saved['message'])));
 			}
 
 			ee()->db->insert('wiki_uploads', $data);
@@ -5484,8 +5504,8 @@ class Wiki {
 				$config['total_rows'] 	= $count;
 				$config['per_page']		= $limit;
 				$config['cur_page']		= $this->p_page;
-				$config['first_link'] 	= ee()->lang->line('pag_first_link');
-				$config['last_link'] 	= ee()->lang->line('pag_last_link');
+				$config['first_link'] 	= lang('pag_first_link');
+				$config['last_link'] 	= lang('pag_last_link');
 				$config['first_url'] 	= rtrim($base_path, '/');
 
 				// Allows $config['cur_page'] to override
@@ -5535,7 +5555,7 @@ class Wiki {
 
 			if (($query2->row('count')  + $query->row('count') ) > $this->author_limit)
 			{
-				return ee()->output->show_user_error('general', array(ee()->lang->line('submission_limit')));
+				return ee()->output->show_user_error('general', array(lang('submission_limit')));
 			}
 		}
 	}
@@ -5978,7 +5998,7 @@ class Wiki {
 
 			ee()->lang->loadfile('wiki');
 
-			$this->category_ns = (isset(ee()->lang->language['category_ns']))	? ee()->lang->line('category_ns') : $this->category_ns;
+			$this->category_ns = (isset(ee()->lang->language['category_ns']))	? lang('category_ns') : $this->category_ns;
 
 			ee()->db->query("UPDATE exp_wiki_page SET page_namespace = 'category' WHERE page_namespace = '".ee()->db->escape_str($this->category_ns)."'");
 		}
