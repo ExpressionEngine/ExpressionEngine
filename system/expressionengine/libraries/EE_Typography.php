@@ -638,6 +638,8 @@ class EE_Typography extends CI_Typography {
 	 *                         	ee tag encoding
 	 *                         - smartypants (yes/no) enable or disable
 	 *                         	smartypants
+	 *                         - no_markup (TRUE/FALSE) set to TRUE to disable
+	 *                          the parsing of markup in Markdown
 	 * @return string          Parsed Markdown content
 	 */
 	public function markdown($str, $options = array())
@@ -650,7 +652,15 @@ class EE_Typography extends CI_Typography {
 			$str = ee()->functions->encode_ee_tags($str);
 		}
 
-		$str = Markdown($str);
+		$parser = new Markdown_Parser();
+
+		// Disable other markup if this is set
+		if (isset($options['no_markup']) && $options['no_markup'] === TRUE)
+		{
+			$parser->no_markup = TRUE;
+		}
+
+		$str = $parser->transform($str);
 
 		// Run everything through SmartyPants
 		if ( ! isset($options['smartypants']) OR $options['smartypants'] == 'yes')
