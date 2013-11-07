@@ -39,7 +39,7 @@ class Updater {
 		$steps = new ProgressIterator(
 			array(
 				'_update_email_db_columns',
-				'_update_session_type_names',
+				'_update_session_config_names',
 			)
 		);
 
@@ -87,15 +87,17 @@ class Updater {
 	 *
 	 * @return void
 	 **/
-	private function _update_session_type_names()
+	private function _update_session_config_names()
 	{
 		$new_config_items = array(
 			'cp_session_type'      => ee()->config->item('admin_session_type'),
-			'website_session_type' => ee()->config->item('user_session_type')
+			'website_session_type' => ee()->config->item('user_session_type'),
+			'website_session_ttl'  => ee()->config->item('user_session_ttl')
 		);
 		$remove_config_items = array(
 			'admin_session_type' => '',
-			'user_session_type'  => ''
+			'user_session_type'  => '',
+			'user_session_ttl'   => ''
 		);
 		ee()->config->_update_config($new_config_items, $remove_config_items);
 	}
