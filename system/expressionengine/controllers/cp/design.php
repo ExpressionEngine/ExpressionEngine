@@ -1753,16 +1753,7 @@ class Design extends CP_Controller {
 		$this->view->cp_page_title = lang('edit_template').' ('.$vars['template_group'].' / '.$vars['template_name'].')';
 		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager'.AMP.'tgpref='.$group_id, lang('template_manager'));
 
-		$date_fmt = ($this->session->userdata('time_format') != '') ? $this->session->userdata('time_format') : $this->config->item('time_format');
-
-		if ($date_fmt == 'us')
-		{
-			$datestr = '%m/%d/%y %h:%i %a';
-		}
-		else
-		{
-			$datestr = '%Y-%m-%d %H:%i';
-		}
+		$datestr = $this->localize->default_time_format();
 
 		$vars['edit_date'] = $this->localize->format_date($datestr, $query->row('edit_date'));
 
@@ -2428,16 +2419,7 @@ class Design extends CP_Controller {
         		return false;
         	}
 
-			$date_fmt = ($this->session->userdata('time_format') != '') ? $this->session->userdata('time_format') : $this->config->item('time_format');
-
-			if ($date_fmt == 'us')
-			{
-				$datestr = '%m/%d/%y %h:%i %a';
-			}
-			else
-			{
-				$datestr = '%Y-%m-%d %H:%i';
-			}
+			$datestr = $this->localize->default_time_format();
 
 			$vars['revision_date'] = $this->localize->format_date($datestr, $query->row('item_date'));
 		}
@@ -4204,16 +4186,7 @@ class Design extends CP_Controller {
 		$this->db->order_by('group_name, template_name', 'ASC');
 		$query = $this->db->get('templates');
 
-		$date_fmt = ($this->session->userdata('time_format') != '') ? $this->session->userdata('time_format') : $this->config->item('time_format');
-
-		if ($date_fmt == 'us')
-		{
-			$datestr = '%m/%d/%y %h:%i %a';
-		}
-		else
-		{
-			$datestr = '%Y-%m-%d %H:%i';
-		}
+		$datestr = $this->localize->default_time_format();
 
 		$existing = array();
 		if ($query->num_rows() > 0)

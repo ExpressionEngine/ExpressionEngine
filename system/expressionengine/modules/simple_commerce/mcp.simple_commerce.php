@@ -2810,16 +2810,7 @@ MAGIC;
 			$vars['entries'][$row['entry_id']][] = mailto($row['email'], $name);
 
 			// Date
-			$date_fmt = (ee()->session->userdata('time_format') != '') ? ee()->session->userdata('time_format') : ee()->config->item('time_format');
-
-			if ($date_fmt == 'us')
-			{
-				$datestr = '%m/%d/%y %h:%i %a';
-			}
-			else
-			{
-				$datestr = '%Y-%m-%d %H:%i';
-			}
+			$datestr = $this->localize->default_time_format();
 
 			$vars['entries'][$row['entry_id']][] = ee()->localize->format_date($datestr, $row['entry_date']);
 

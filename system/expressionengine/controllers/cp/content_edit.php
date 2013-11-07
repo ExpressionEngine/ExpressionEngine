@@ -340,17 +340,8 @@ class Content_edit extends CP_Controller {
 			}
 		}
 
-
-
 		// Date formatting
-		$date_fmt = ($this->session->userdata('time_format') != '') ? $this->session->userdata('time_format') : $this->config->item('time_format');
-
-		$datestr = '%m/%d/%y %h:%i %a';
-
-		if ($date_fmt != 'us')
-		{
-			$datestr = '%Y-%m-%d %H:%i';
-		}
+		$datestr = $this->localize->default_time_format();
 
 		// Autosave - Grab all autosaved entries
 		// ----------------------------------------------------------------
