@@ -47,6 +47,8 @@ class EE_Router extends CI_Router {
 
     public function __construct()
     {
+		require_once APPPATH.'libraries/template_router/Converters.php';
+		$this->rules = new EE_Template_router_converters();
     }
 
 	public function parse_route($route)
@@ -127,8 +129,36 @@ class EE_Router extends CI_Router {
 			{
 				break;
 			}
+			// Not even Xzibit would try to parse a regex with a regex.
+			// So we'll treat regexes as a special case and concatenate and
+			// validate until we have a valid regular expression.
+			if ($matches['rule'] == 'regex')
+			{
+				$index = $pos + 7;
+				$regex = substr($matches[0], 6, 1);
+				$valid = @preg_match("/$regex/", null);
+				while ($valid == False)
+				{
+					$regex .= substr($rules, $index, 1);
+					$valid = @preg_match("/$regex/", null);
+					$index++;
+					if($end < $index) {
+						throw new Exception("Invalid Regular Expression");
+					}
+				}
+				$matches[0] = "regex[{$regex}]|";
+				$matches['args'] = $regex;
+			}
+			if (empty($this->rules->converters[$matches['rule']]))
+			{
+				throw new Exception("Converter not found: $rule");
+			}
 			$matches['args'] = empty($matches['args']) ? null : $matches['args'];
-			$parsed_rules[] = $matches;
+			$rule = $this->rules->converters[$matches['rule']]->regex($matches['args']);
+			// Place each rule inside an anchored lookahead,
+			// this will match the entire string if the rule matches.
+			// This allows rules to work together without consuming the match.
+			$parsed_rules[] = "(^(?={$rule}$).*)";
 			$pos += strlen($matches[0]);
 		}
 		return $parsed_rules;
