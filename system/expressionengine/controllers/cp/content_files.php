@@ -342,9 +342,6 @@ class Content_files extends CP_Controller {
 
 		if ($total_filtered > 0 AND ! empty($this->_upload_dirs))
 		{
-			// Date
-			$datestr = $this->localize->default_time_format();
-
 			$file_list = array();
 			$files = $files->result_array();
 
