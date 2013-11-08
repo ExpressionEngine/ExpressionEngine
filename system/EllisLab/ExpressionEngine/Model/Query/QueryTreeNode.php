@@ -9,6 +9,7 @@ class QueryTreeNode extends TreeNode {
 	protected $id = 0;
 
 	protected $children_by_id = array();
+	protected $path_string = NULL;
 
 	public function __construct($name)
 	{
@@ -44,15 +45,19 @@ class QueryTreeNode extends TreeNode {
 	 */
 	public function getPathString()
 	{
-		$path = $this->getId();
-
-		$node = $this;
-		while ( ! $node->isRoot())
+		if ( ! isset($this->path_string))
 		{
-			$path = $this->getParent()->getId() . '_' . $path;
-			$node = $node->getParent();
+			$path = $this->getId();
+
+			$node = $this;
+			while ( ! $node->isRoot())
+			{
+				$path = $node->getParent()->getId() . '_' . $path;
+				$node = $node->getParent();
+			}
+			$this->path_string = $path;
 		}
 
-		return $path;
+		return $this->path_string;
 	}
 }

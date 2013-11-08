@@ -24,11 +24,6 @@ class ChannelEntry extends FieldDataContentModel {
 
 	public function getAuthor()
 	{
-		return $this->getMember();
-	}
-
-	public function getMember()
-	{
 		return $this->manyToOne('Member', 'author_id', 'member_id', 'Author');
 	}
 

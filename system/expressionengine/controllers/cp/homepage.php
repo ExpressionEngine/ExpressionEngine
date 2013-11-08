@@ -41,7 +41,7 @@ class Homepage extends CP_Controller {
 
 		try {
 		$entries = $qb->get('ChannelEntry')
-			->with('Channel')
+			->with('Channel', array('Author'=>'MemberGroup'))
 			->all();
 		}
 		catch(Exception $ex)
@@ -57,7 +57,12 @@ class Homepage extends CP_Controller {
 			die('Fatal Error.');
 		}
 
-		echo '<pre>'; var_dump($entries); echo '</pre>';
+		echo '<pre>';
+		foreach($entries as $entry)
+		{
+			$entry->testPrint();
+		}
+		echo '</pre>';
 		die('Success!');
 
 /* * /

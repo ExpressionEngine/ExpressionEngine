@@ -13,7 +13,6 @@ class Query {
 	private $limit = '18446744073709551615'; // 2^64
 	private $offset = 0;
 
-	private $tables = array();
 	private $filters = array();
 	private $selected = array();
 	private $subqueries = array();
@@ -27,18 +26,40 @@ class Query {
 
 	private $data = array();
 
-	public function __construct(Dependencies $di, $model)
+	public function __construct(Dependencies $di, $model_name)
 	{
 		$this->di = $di;
-		$this->model_name = $model;
-		$this->root = new QueryTreeNode($model);
+		$this->model_name = $model_name;
+		$this->root = new QueryTreeNode($model_name);
 		$this->root->meta = NULL;
 
-		// @todo Need to be able to inject this for testing.  -Bingham
 		$this->db = clone ee()->db; // TODO reset?
 
 		$this->selectFields($this->root);
-		$this->addTable($this->getTableName($model));
+
+		$model_class = QueryBuilder::getQualifiedClassName($model_name);
+		$entity_names = $model_class::getMetaData('entity_names');
+
+		$primary_entity_name = array_shift($entity_names);
+		$primary_entity_class = QueryBuilder::getQualifiedClassName($primary_entity_name);
+	
+		$this->db->from($primary_entity_class::getMetaData('table_name'));
+		
+		foreach($entity_names as $entity_name)
+		{
+			$entity_class = QueryBuilder::getQualifiedClassName($entity_name);
+			$this->db->join(
+				$entity_class::getMetaData('table_name'),
+				$primary_entity_class::getMetaData('table_name') .
+				'.' .
+				$primary_entity_class::getMetaData('primary_key') . 
+				' = ' .		
+				$entity_class::getMetaData('table_name') .
+				'.' . 
+				$entity_class::getMetaData('primary_key')
+			);
+		
+		}
 	}
 
 	/**
@@ -135,6 +156,7 @@ class Query {
 		{
 			$this->buildRelationshipTree($this->root, $relationship);
 		}
+
 		foreach($this->root->getBreadthFirstIterator() as $node)
 		{
 			if ($node->isRoot() || $this->hasParentSubquery($node))
@@ -216,12 +238,13 @@ class Query {
 					else
 					{
 						// 'Member' => 'MemberGroup'	
-						$parent->add($this->createNode($parent, $from));
+						$from_node = $this->createNode($parent, $from);
+						$parent->add($from_node);
 						// 'MemberGroup' => array('Member')
 						// where $to might be an array and could result
 						// in more recursing.  The call will deal
 						// with that.
-						$this->buildRelationshipTree($to_node, $to);
+						$this->buildRelationshipTree($from_node, $to);
 					}
 				}
 			}
@@ -231,7 +254,7 @@ class Query {
 			// and that is not this call.
 			return;
 		}
-
+	
 		// If there's no more tree walking to do, then we have bubbled
 		// down to a single edge in the tree (From_Model -> To_Model), build it.
 		$parent->add($this->createNode($parent, $relationship));
@@ -473,7 +496,7 @@ class Query {
 	 */	
 	private function isRootModel($path)
 	{
-		if ((int)$path === 1)
+		if ($path == '1')
 		{
 			return true;
 		}
@@ -512,22 +535,21 @@ class Query {
 		$primary_key_name = $model_class::getMetaData('primary_key');
 		$primary_key = $model_data[$primary_key_name];
 
-		if ( ! isset($this->model_index[$model_name][$primary_key]))
+		if ( $parent !== NULL && $parent->hasRelated($relationship_name, $primary_key))
 		{
-			return FALSE;
+			return TRUE;
+		}
+		elseif ($parent === NULL && isset($this->model_index[$model_name][$primary_key]))
+		{
+			return TRUE;
 		}
 
-		if ( $parent !== NULL && ! $parent->hasRelated($relationship_name, $primary_key))
-		{
-			return FALSE;
-		}
-
-		return TRUE;
+		return FALSE;
 	}
 
 	private function findModelParent($path_data, $child_path)
 	{
-		$path = substr($child_path, 0, strrpos('_', $child_path));
+		$path = substr($child_path, 0, strrpos($child_path, '_'));
 
 		$model_data = $path_data[$path];
 

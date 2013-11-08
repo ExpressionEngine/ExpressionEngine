@@ -134,9 +134,7 @@ abstract class Model {
 	public function getId()
 	{
 		$primary_key = static::getMetaData('primary_key');
-		$key_map = static::getMetaData('key_map');
-		$entity_name = $key_map[$primary_key];
-		return $this->entities[$entity_name]->{$primary_key};
+		return $this->{$primary_key};
 	}
 
 	/**
@@ -614,5 +612,22 @@ abstract class Model {
 
 		$this->setRelated($relationship_key, $result);
 		return $result;
+	}
+
+	public function testPrint($depth='')
+	{
+		$primary_key = static::getMetaData('primary_key');
+		echo $depth . '=====' . substr(get_class($this), strrpos(get_class($this), '\\')+1) . ': ' . $this->{$primary_key} . "=====\n";
+		$depth .= "\t";
+		foreach($this->related_models as $relationship_name=>$models)
+		{
+			echo $depth . 'Relationship: ' . $relationship_name . "\n";
+			foreach($models as $model)
+			{
+				$model->testPrint($depth);
+			}
+		}
+		echo "\n";
+
 	}
 }
