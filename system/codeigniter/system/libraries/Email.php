@@ -677,7 +677,7 @@ class CI_Email {
 	{
 		if (preg_match('/[^\x20-\x7E]/', $subject))
 		{
-			$subject = $this->_prep_q_encoding($subject);			
+			$subject = $this->_prep_q_encoding($subject);
 		}
 
 		$this->set_header('Subject', $subject);
@@ -1801,7 +1801,7 @@ class CI_Email {
 			$this->_set_error_message('lang:email_no_hostname');
 			return FALSE;
 		}
-		
+
 		if ( ! is_numeric($this->smtp_port) OR $this->smtp_port < 0)
 		{
 			$this->_set_error_message('lang:email_no_port');
@@ -2198,7 +2198,7 @@ class CI_Email {
 
 		if ( ! is_array($mimes))
 		{
-			$mimes =& get_mimes();
+			include(APPPATH.'config/mimes.php');
 		}
 
 		if (isset($mimes[$ext]))

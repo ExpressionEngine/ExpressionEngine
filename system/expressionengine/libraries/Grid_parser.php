@@ -181,38 +181,38 @@ class Grid_parser {
 
 			$row_ids = explode('|', $row_ids);
 
-			// If there are mutliple row IDs
-			if (count($row_ids) > 1)
+			// Unset the "not" row_ids from entry_data
+			if ($not)
 			{
-				// Unset the "not" row_ids from entry_data
-				if ($not)
+				foreach ($row_ids as $row_id)
 				{
-					foreach ($row_ids as $row_id)
-					{
-						if (isset($entry_data[$row_id]))
-						{
-							unset($entry_data[$row_id]);
-						}
-					}
-				}
-				// Unset all rows that AREN'T in the row_id parameter
-				else
-				{
-					foreach (array_diff(array_keys($entry_data), $row_ids) as $row_id)
+					if (isset($entry_data[$row_id]))
 					{
 						unset($entry_data[$row_id]);
 					}
 				}
 			}
-			// Otherwise, if there is just one row_id, we're likely inside
-			// a next_row or prev_row tag, don't modify the entry_data
-			// so we still have access to next and previous rows
-			elseif (count($row_ids) == 1)
+			else
 			{
-				$row_index = array_search(current($row_ids), array_keys($entry_data));
+				// If there are mutliple row IDs
+				if (count($row_ids) > 1)
+				{
+					// Unset all rows that AREN'T in the row_id parameter
+					foreach (array_diff(array_keys($entry_data), $row_ids) as $row_id)
+					{
+						unset($entry_data[$row_id]);
+					}
+				}
+				// Otherwise, if there is just one row_id, we're likely inside
+				// a next_row or prev_row tag, don't modify the entry_data
+				// so we still have access to next and previous rows
+				elseif (count($row_ids) == 1)
+				{
+					$row_index = array_search(current($row_ids), array_keys($entry_data));
 
-				$params['offset'] += $row_index;
-				$params['limit'] = 1;
+					$params['offset'] += $row_index;
+					$params['limit'] = 1;
+				}
 			}
 		}
 
@@ -312,7 +312,7 @@ class Grid_parser {
 			$row['total_rows'] = $total_rows;
 			$row['field_total_rows'] = $field_total_rows;
 
-			$grid_row = ee()->TMPL->parse_switch($grid_row, $count, $prefix);
+			$grid_row = ee()->TMPL->parse_switch($grid_row, $row['index'], $prefix);
 
 			$count++;
 

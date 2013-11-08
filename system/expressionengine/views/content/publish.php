@@ -138,7 +138,7 @@
 					
 					<?php foreach ($tabs as $tab => $_fields):?>
 						
-						<div id="<?=url_title($tab, 'underscore', TRUE)?>" class="main_tab<?=($tab == $first_tab) ? '' : ' js_hide'?>">
+						<div id="<?=$tab?>" class="main_tab<?=($tab == $first_tab) ? '' : ' js_hide'?>">
 							
 							<?php foreach($_fields as $_n):?>
 								

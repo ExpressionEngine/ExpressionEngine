@@ -49,7 +49,7 @@ class Simple_commerce_upd {
 				  VALUES
 				  ('Simple_commerce', '$this->version', 'y')";
 
-		$sql[] = "INSERT INTO exp_actions (class, method) VALUES ('Simple_commerce', 'incoming_ipn')";
+		$sql[] = "INSERT INTO exp_actions (class, method, csrf_exempt) VALUES ('Simple_commerce', 'incoming_ipn', 1)";
 
 		$sql[] = "CREATE TABLE IF NOT EXISTS `exp_simple_commerce_items` (
   `item_id` int(8) unsigned NOT NULL auto_increment,
@@ -246,6 +246,14 @@ class Simple_commerce_upd {
 					)
 				)
 			);
+
+			$data = array(
+				'csrf_exempt' => 1
+				);
+
+			ee()->db->where('class', 'Simple_commerce');
+			ee()->db->where('method', 'incoming_ipn');
+			ee()->db->update('actions', $data);
 		}
 
 		return TRUE;
