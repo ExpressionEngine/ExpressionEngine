@@ -39,6 +39,7 @@ class Updater {
 		$steps = new ProgressIterator(
 			array(
 				'_update_extension_quick_tabs',
+				'_update_localization_config',
 				'_update_member_table',
 			)
 		);
@@ -70,6 +71,27 @@ class Updater {
 
 			ee()->db->update_batch('members', $members, 'member_id');
 		}
+	}
+
+	// -------------------------------------------------------------------------
+
+	private function _update_localization_config()
+	{
+		$config_items = array();
+
+		if (ee()->config->item('time_format') == 'us')
+		{
+			$config_items['date_format'] = '%m/%d/%y';
+			$config_items['time_format'] = '12';
+		}
+		else
+		{
+			$config_items['date_format'] = '%d/%m/%y';
+			$config_items['time_format'] = '24';
+		}
+
+		$config_items['include_seconds'] = ee()->config->item('include_seconds') ? ee()->config->item('include_seconds') : 'n';
+		ee()->config->_update_config($config_items);
 	}
 
 	// -------------------------------------------------------------------------
