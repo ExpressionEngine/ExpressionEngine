@@ -44,6 +44,7 @@ class Updater {
 				'_update_config_add_cookie_httponly',
 				'_convert_xid_to_csrf',
 				'_change_session_timeout_config',
+				'_update_localization_config',
 				'_update_member_table'
 			)
 		);
@@ -237,6 +238,27 @@ class Updater {
 			array('cp_session_ttl' => '', 'user_session_ttl' => '')
 		);
 
+	}
+
+	// -------------------------------------------------------------------------
+
+	private function _update_localization_config()
+	{
+		$config_items = array();
+
+		if (ee()->config->item('time_format') == 'us')
+		{
+			$config_items['date_format'] = '%m/%d/%y';
+			$config_items['time_format'] = '12';
+		}
+		else
+		{
+			$config_items['date_format'] = '%d/%m/%y';
+			$config_items['time_format'] = '24';
+		}
+
+		$config_items['include_seconds'] = ee()->config->item('include_seconds') ? ee()->config->item('include_seconds') : 'n';
+		ee()->config->_update_config($config_items);
 	}
 
 	// -------------------------------------------------------------------------
