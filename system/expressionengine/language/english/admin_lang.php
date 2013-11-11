@@ -1125,14 +1125,20 @@ $lang = array(
 "localization_cfg" =>
 "Localization Settings",
 
+"date_format" =>
+"Default Date Formatting",
+
 "time_format" =>
 "Default Time Formatting",
 
-"united_states" =>
-"United States",
+"24_hour" =>
+"24 Hour",
 
-"european" =>
-"European",
+"12_hour" =>
+"12 Hour with AM/PM",
+
+"include_seconds" =>
+"Include Seconds in the Default Time Format",
 
 "default_site_timezone" =>
 "Site Timezone",

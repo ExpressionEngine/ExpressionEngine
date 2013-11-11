@@ -131,7 +131,9 @@ class Admin_model extends CI_Model {
 
 			'localization_cfg'	=>	array(
 				'default_site_timezone'		=> array('f', 'timezone'),
-				'time_format'				=> array('s', array('us' => 'united_states', 'eu' => 'european'))
+				'date_format'				=> array('s', array('%m/%d/%y' => 'mm/dd/yy', '%d/%m/%y' => 'dd/mm/yy', '%Y-%m-%d' => 'yyyy-mm-dd')),
+				'time_format'				=> array('r', array('24' => '24_hour', '12' => '12_hour')),
+				'include_seconds'			=> array('r', array('y' => 'yes', 'n' => 'no')),
 			),
 
 			'email_cfg'			=>	array(
