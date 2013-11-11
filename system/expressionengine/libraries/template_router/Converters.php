@@ -14,6 +14,11 @@
 
 // ------------------------------------------------------------------------
 
+require_once APPPATH.'libraries/template_router/converters/Integer.php';
+require_once APPPATH.'libraries/template_router/converters/Max_length.php';
+require_once APPPATH.'libraries/template_router/converters/Min_length.php';
+require_once APPPATH.'libraries/template_router/converters/Regex.php';
+
 // ------------------------------------------------------------------------
 
 /**
@@ -31,6 +36,11 @@ class EE_Template_router_converters {
 
 	public function __construct()
 	{
+		// Register default converters
+		$this->register('int', 'EE_template_router_integer_converter');
+		$this->register('max_length', 'EE_template_router_max_length_converter');
+		$this->register('min_length', 'EE_template_router_min_length_converter');
+		$this->register('regex', 'EE_template_router_regex_converter');
 	}
 
 	// ------------------------------------------------------------------------
