@@ -22,7 +22,8 @@ class ModelRelationshipMeta {
 	protected $to_model_name = NULL;
 	protected $to_model_class = NULL;
 	protected $to_table = NULL;
-	protected $to_joined_tables = NULL;
+	protected $join_key = NULL;
+	protected $joined_tables = array();
 
 	protected $from_key = NULL;
 	protected $to_key = NULL;
@@ -67,10 +68,20 @@ class ModelRelationshipMeta {
 		$to_entity_name = $entity_relationship['entity'];
 		$to_entity_class = QueryBuilder::getQualifiedClassName($to_entity_name);
 		$this->to_table = $to_entity_class::getMetaData('table_name');
+		// Assuming we're joining tables in the same model across the main
+		// entity's primary key.
+		$this->join_key = $to_entity_class::getMetaData('primary_key');
 
-	/*	$to_model_class = $this->to_model_class;
-		$to_entity_names = $to_model_class::getMetaData('entity_names'); */
-		
+		$to_model_class = $this->to_model_class;
+		$joined_entity_names = $to_model_class::getMetaData('entity_names'); 
+
+		$key = array_search($to_entity_name, $joined_entity_names);
+		unset($joined_entity_names[$key]);
+		foreach($joined_entity_names as $joined_entity_name)
+		{
+			$joined_entity_class = QueryBuilder::getQualifiedClassName($joined_entity_name);
+			$this->joined_tables[$joined_entity_class::getMetaData('primary_key')] = $joined_entity_class::getMetaData('table_name');
+		}
 
 		if ($this->to_key !== $entity_relationship['key'])
 		{

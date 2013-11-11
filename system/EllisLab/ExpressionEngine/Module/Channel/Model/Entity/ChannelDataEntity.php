@@ -6,6 +6,7 @@ use EllisLab\ExpressionEngine\Model\Entity\FieldDataEntity;
 class ChannelDataEntity extends FieldDataEntity {
 	protected static $meta = array(
 		'table_name' => 'channel_data',
+		'field_table' => 'channel_fields',
 		'primary_key' => 'entry_id',
 		'related_entities' => array(
 			'entry_id' => array(

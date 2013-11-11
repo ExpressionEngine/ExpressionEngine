@@ -333,22 +333,31 @@ class Query {
 			case ModelRelationshipMeta::TYPE_ONE_TO_MANY:
 			case ModelRelationshipMeta::TYPE_MANY_TO_ONE:
 				$this->db->join($relationship_meta->to_table,
-					$relationship_meta->from_table . '.' . $relationship_meta->from_key 
-					. '=' . 
+					$relationship_meta->from_table . '.' . $relationship_meta->from_key .
+					'=' .
 					$relationship_meta->to_table . '.' . $relationship_meta->to_key);
 				break;
 
 			case ModelRelationshipMeta::TYPE_MANY_TO_MANY:
 				$this->db->join($relationship_meta->pivot_table,
-					$relationship_meta->to_table . '.' . $relationship_meta->from_key 
-					. '=' . 
+					$relationship_meta->to_table . '.' . $relationship_meta->from_key .
+					'=' .
 					$relationship_meta->pivot_table. '.' . $relationship_meta->pivot_from_key);
 				$this->db->join($relationship_meta->to_table,
-					$relationship_meta->pivot_table . '.' . $relatioship_meta->pivot_to_key 
-					. '=' 
-					. $relationship_meta->to_table . '.' . $relationship_meta->to_key);
+					$relationship_meta->pivot_table . '.' . $relatioship_meta->pivot_to_key .
+					'=' . 
+					$relationship_meta->to_table . '.' . $relationship_meta->to_key);
 				break;
 		}
+
+		foreach($relationship_meta->joined_tables as $joined_key => $joined_table)
+		{
+			$this->db->join($joined_table,
+				$relationship_meta->to_table . '.' . $relationship_meta->join_key .
+				'=' . 
+				$joined_table . '.' . $joined_key);
+		}
+
 	}
 
 	private function hasParentSubquery(QueryTreeNode $node)
@@ -496,7 +505,10 @@ class Query {
 	 */	
 	private function isRootModel($path)
 	{
-		if ($path == '1')
+		// If it's an integer, then it's a 
+		// root node, because it doesn't have
+		// any children.
+		if (is_int($path))
 		{
 			return true;
 		}
@@ -550,6 +562,7 @@ class Query {
 	private function findModelParent($path_data, $child_path)
 	{
 		$path = substr($child_path, 0, strrpos($child_path, '_'));
+		echo 'Path: ' . $path . '<br />';
 
 		$model_data = $path_data[$path];
 
@@ -564,7 +577,7 @@ class Query {
 		}
 
 
-		throw new \Exception('Model parent has not been created yet!');
+		throw new \Exception('Model parent has not been created yet for child path "' . $child_path . '" and model "' . $model_name . '"');
 	}
 
 	/**
@@ -655,7 +668,7 @@ class Query {
 			$entity_class_name = QueryBuilder::getQualifiedClassName($entity_name);
 
 			$table = $entity_class_name::getMetaData('table_name');
-			$properties = get_class_vars($entity_class_name);
+			$properties = $entity_class_name::getMetaData('field_list');
 			foreach ($properties as $property=>$default_value)
 			{
 				$this->db->select($table . '.' . $property . ' AS ' . $node->getPathString() . '__' . $relationship_name . '__' . $model_name . '__' . $property);

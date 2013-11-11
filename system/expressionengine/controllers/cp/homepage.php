@@ -39,10 +39,14 @@ class Homepage extends CP_Controller {
 		$di = new \EllisLab\ExpressionEngine\Core\Dependencies();
 		$qb = $di->getQueryBuilder();
 
+		echo 'Query was:<br />
+			qb->get(\'ChannelEntry\')
+				->with(\'Channel\', array(\'Author\'=>\'MemberGroup\'))
+				->all()<br />';
 		try {
 		$entries = $qb->get('ChannelEntry')
 			->with('Channel', 
-				array('Author'=> array('ChannelEntries', 'MemberGroup'))
+				array('Author'=> array('MemberGroup'))
 			)
 			->all();
 		}
@@ -59,10 +63,6 @@ class Homepage extends CP_Controller {
 			die('Fatal Error.');
 		}
 
-		echo 'Query was:<br />
-			qb->get(\'ChannelEntry\')
-				->with(\'Channel\', array(\'Author\'=>\'MemberGroup\'))
-				->all()<br />';
 		echo '<pre>';
 		foreach($entries as $entry)
 		{
@@ -70,9 +70,28 @@ class Homepage extends CP_Controller {
 		}
 		echo '</pre>';
 
+		
+		echo 'Query was:<br />
+			qb->get(\'Channel\')
+				->with(\'ChannelEntries\' => array(\'Author\'=>\'MemberGroup\'))
+				->all()<br />';
+		try {
 		$channels = $qb->get('Channel')
 			->with(array('ChannelEntries'=>array('Author' => 'MemberGroup')))
 			->all();
+		}
+		catch(Exception $ex)
+		{
+			echo '<div>
+					<h1>Exception Caught</h1>
+					<p><strong>' . $ex->getMessage() . '</strong></p>
+					<p><em>'  . $ex->getFile() . ':' . $ex->getLine() . '<em></p>
+					<p>Stack Trace:
+						<pre>' . str_replace('#', "\n#", str_replace(':', ":\n\t\t", $ex->getTraceAsString())) . '</pre>
+					</p>
+				</div>';
+			die('Fatal Error.');
+		}
 		echo '<pre>';
 		foreach($channels as $channel)
 		{

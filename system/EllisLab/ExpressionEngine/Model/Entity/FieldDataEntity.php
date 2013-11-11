@@ -44,6 +44,30 @@ class FieldDataEntity extends Entity {
 		}
 		
 	}
+
+
+	public static function getMetaData($key)
+	{
+		if ($key === 'field_list')
+		{
+			if ( ! isset(static::$meta['number_of_fields']))
+			{
+				$db = clone ee()->db;
+				static::$meta['number_of_fields'] = $db->count_all(static::getMetaData('field_table'));
+			}
+
+			$field_names = parent::getMetaData('field_list');		
+			for($id = 1; $id <= static::$meta['number_of_fields']; $id++)
+			{
+				$field_names['field_id_' . $id] = NULL;
+				$field_names['field_ft_' . $id] = NULL;
+			}
+			return $field_names;
+		}
+
+		return parent::getMetaData($key);
+		
+	}
 }
 
 

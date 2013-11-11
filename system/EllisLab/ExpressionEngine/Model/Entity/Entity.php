@@ -76,6 +76,12 @@ abstract class Entity {
 	 */
 	public static function getMetaData($key=NULL)
 	{
+		if ($key === 'field_list')
+		{
+			$getFieldList = function($class) { return get_class_vars($class); };
+			return $getFieldList(get_called_class());
+		}
+
 		if (empty(static::$meta))
 		{
 			throw new \UnderflowException('No meta data set for this entity!');
@@ -93,6 +99,8 @@ abstract class Entity {
 	{
 		$this->dirty[$property] = TRUE;
 	}
+
+
 
 	/**
 	 * Validate the Entity
