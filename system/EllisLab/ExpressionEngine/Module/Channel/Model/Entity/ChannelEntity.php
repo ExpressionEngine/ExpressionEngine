@@ -9,6 +9,10 @@ class ChannelEntity extends Entity {
 		'table_name' => 'channels',
 		'primary_key' => 'channel_id',
 		'related_entities' => array(
+			'channel_id' => array(
+				'entity' => 'ChannelTitleEntity',
+				'key' => 'channel_id'
+			),
 			'site_id' => array(
 				'entity' => 'SiteEntity',
 				'key'	 => 'site_id'

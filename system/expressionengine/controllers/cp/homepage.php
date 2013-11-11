@@ -41,7 +41,9 @@ class Homepage extends CP_Controller {
 
 		try {
 		$entries = $qb->get('ChannelEntry')
-			->with('Channel', array('Author'=>'MemberGroup'))
+			->with('Channel', 
+				array('Author'=> array('ChannelEntries', 'MemberGroup'))
+			)
 			->all();
 		}
 		catch(Exception $ex)
@@ -57,12 +59,27 @@ class Homepage extends CP_Controller {
 			die('Fatal Error.');
 		}
 
+		echo 'Query was:<br />
+			qb->get(\'ChannelEntry\')
+				->with(\'Channel\', array(\'Author\'=>\'MemberGroup\'))
+				->all()<br />';
 		echo '<pre>';
 		foreach($entries as $entry)
 		{
 			$entry->testPrint();
 		}
 		echo '</pre>';
+
+		$channels = $qb->get('Channel')
+			->with(array('ChannelEntries'=>array('Author' => 'MemberGroup')))
+			->all();
+		echo '<pre>';
+		foreach($channels as $channel)
+		{
+			$channel->testPrint();
+		}
+		echo '</pre>'; 
+
 		die('Success!');
 
 /* * /
