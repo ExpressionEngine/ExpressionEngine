@@ -38,7 +38,8 @@ class Updater {
 
 		$steps = new ProgressIterator(
 			array(
-				'_update_extension_quick_tabs'
+				'_update_extension_quick_tabs',
+				'_update_member_table',
 			)
 		);
 
@@ -69,6 +70,51 @@ class Updater {
 
 			ee()->db->update_batch('members', $members, 'member_id');
 		}
+	}
+
+	// -------------------------------------------------------------------------
+
+	private function _update_member_table()
+	{
+		// Add new columns
+		ee()->smartforge->add_column(
+			'members',
+			array(
+				'date_format'    => array(
+					'type'       => 'varchar',
+					'constraint' => 8,
+					'null'       => FALSE,
+					'default'    => '%Y-%m-%d'
+				),
+				'include_seconds' => array(
+					'type'        => 'char',
+					'constraint'  => 1,
+					'null'        => FALSE,
+					'default'     => 'n'
+				)
+			),
+			'time_format'
+		);
+
+		// Modify the default value of time_format
+		ee()->smartforge->modify_column(
+			'members',
+			array(
+				'time_format'    => array(
+					'name'       => 'time_format',
+					'type'       => 'char',
+					'constraint' => 2,
+					'null'       => FALSE,
+					'default'    => '12'
+				)
+			)
+		);
+
+		// Update all the members
+		ee()->db->where('time_format', 'us')->update('members', array('date_format' => '%m/%d/%y', 'time_format' => '12'));
+		ee()->db->where('time_format', 'eu')->update('members', array('date_format' => '%d/%m/%y', 'time_format' => '24'));
+		$include_seconds = ee()->config->item('include_seconds') ? ee()->config->item('include_seconds') : 'n';
+		ee()->db->update('members', array('include_seconds' => $include_seconds));
 	}
 
 }
