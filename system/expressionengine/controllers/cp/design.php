@@ -1753,9 +1753,7 @@ class Design extends CP_Controller {
 		$this->view->cp_page_title = lang('edit_template').' ('.$vars['template_group'].' / '.$vars['template_name'].')';
 		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager'.AMP.'tgpref='.$group_id, lang('template_manager'));
 
-		$datestr = $this->localize->default_time_format();
-
-		$vars['edit_date'] = $this->localize->format_date($datestr, $query->row('edit_date'));
+		$vars['edit_date'] = $this->localize->human_time($query->row('edit_date'));
 
 		$mquery = $this->db->query("SELECT screen_name FROM exp_members WHERE member_id = ".$query->row('last_author_id'));
 
@@ -1817,7 +1815,7 @@ class Design extends CP_Controller {
 				$file_date = get_file_info($basepath, 'date');
 				if ($file_date !== FALSE)
 				{
-					$vars['last_file_edit'] = $this->localize->format_date($datestr, $file_date['date']);
+					$vars['last_file_edit'] = $this->localize->human_time($file_date['date']);
 					if ($query->row('edit_date') < $file_date['date'])
 					{
 							$vars['file_synced'] = FALSE;
@@ -2419,9 +2417,7 @@ class Design extends CP_Controller {
         		return false;
         	}
 
-			$datestr = $this->localize->default_time_format();
-
-			$vars['revision_date'] = $this->localize->format_date($datestr, $query->row('item_date'));
+			$vars['revision_date'] = $this->localize->human_time($query->row('item_date'));
 		}
 		else
 		{
@@ -4186,8 +4182,6 @@ class Design extends CP_Controller {
 		$this->db->order_by('group_name, template_name', 'ASC');
 		$query = $this->db->get('templates');
 
-		$datestr = $this->localize->default_time_format();
-
 		$existing = array();
 		if ($query->num_rows() > 0)
 		{
@@ -4199,7 +4193,7 @@ class Design extends CP_Controller {
 					continue;
 				}
 
-				$edit_date = $this->localize->format_date($datestr, $row->edit_date);
+				$edit_date = $this->localize->human_time($row->edit_date);
 
 				$existing[$row->group_name][$row->template_name.$this->api_template_structure->file_extensions($row->template_type)] =
 				 array('template_id' => $row->template_id,
@@ -4260,7 +4254,7 @@ class Design extends CP_Controller {
 							$existing[$group_name][$template]['file_synced'] = TRUE;
 							$existing[$group_name][$template]['toggle'] = '';
 						}
-						$existing[$group_name][$template]['file_edit'] = $this->localize->format_date($datestr, $file_date);
+						$existing[$group_name][$template]['file_edit'] = $this->localize->human_time($file_date);
 						$existing[$group_name][$template]['file_name'] = $template;
 						$existing[$group_name][$template]['toggle'] = form_checkbox('toggle[]', $existing[$group_name][$template]['template_id'], '', ' class="toggle" id="sync_box_'.$existing[$group_name][$template]['template_id'].'"');
 					}

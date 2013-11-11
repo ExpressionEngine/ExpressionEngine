@@ -340,9 +340,6 @@ class Content_edit extends CP_Controller {
 			}
 		}
 
-		// Date formatting
-		$datestr = $this->localize->default_time_format();
-
 		// Autosave - Grab all autosaved entries
 		// ----------------------------------------------------------------
 
@@ -405,7 +402,7 @@ class Content_edit extends CP_Controller {
 			$row['title'] = anchor(BASE.AMP.$url, $row['title']);
 			$row['view'] = '---';
 			$row['channel_name'] = $channels[$row['channel_id']]->channel_title;
-			$row['entry_date'] = $this->localize->format_date($datestr, $row['entry_date']);
+			$row['entry_date'] = $this->localize->human_time($row['entry_date']);
 			$row['_check'] = form_checkbox('toggle[]', $row['entry_id'], '', ' class="toggle" id="delete_box_'.$row['entry_id'].'"');
 
 			// autosave indicator

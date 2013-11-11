@@ -2809,10 +2809,7 @@ MAGIC;
 			$name = ($row['screen_name'] != '') ? $row['screen_name'] : $row['username'];
 			$vars['entries'][$row['entry_id']][] = mailto($row['email'], $name);
 
-			// Date
-			$datestr = $this->localize->default_time_format();
-
-			$vars['entries'][$row['entry_id']][] = ee()->localize->format_date($datestr, $row['entry_date']);
+			$vars['entries'][$row['entry_id']][] = ee()->localize->human_time($row['entry_date']);
 
 			// Channel
 			$vars['entries'][$row['entry_id']][] = (isset($w_array[$row['channel_id']])) ? '<div class="smallNoWrap">'. $w_array[$row['channel_id']].'</div>' : '';
