@@ -242,36 +242,24 @@ class Localize {
 	 * @param	bool	Include seconds in returned string or not
 	 * @return	string	Formatted string
 	 */
-	public function human_time($timestamp = NULL, $localize = TRUE, $seconds = FALSE)
+	public function human_time($timestamp = NULL, $localize = TRUE, $seconds = '')
 	{
-		/* -------------------------------------------
-		/*	Hidden Configuration Variables
-		/*	- include_seconds => Determines whether to include seconds in our human time.
-		/* -------------------------------------------*/
 		if (func_num_args() != 3 && ee()->config->item('include_seconds') == 'y')
 		{
-			$seconds = TRUE;
+			$seconds = ':%s';
 		}
 
-		$fmt = (ee()->session->userdata('time_format') != '')
-			? ee()->session->userdata('time_format') : ee()->config->item('time_format');
+		$date_format = ee()->config->item('date_format');
+		$time_format = ee()->config->item('time_format');
 
-		// 2015-10-21
-		$format_string = '%Y-%m-%d ';
-
-		// 06:30 or 18:30
-		$format_string .= ($fmt == 'us') ? '%h:%i' : '%H:%i';
-
-		// Seconds
-		if ($seconds)
+		$format_string = $date_format . ' ';
+		if ($time_format == 24)
 		{
-			$format_string .= ':%s';
+			$format_string .= '%H:%i' . $seconds;
 		}
-
-		// AM/PM
-		if ($fmt == 'us')
+		else
 		{
-			$format_string .= ' %A';
+			$format_string .= '%h:%i' . $seconds . ' %A';
 		}
 
 		return $this->format_date($format_string, $timestamp, $localize);
@@ -696,7 +684,6 @@ EOF;
 			return $months[$month];
 		}
 	}
-
 }
 // END CLASS
 
