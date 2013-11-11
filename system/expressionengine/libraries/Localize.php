@@ -215,24 +215,25 @@ class Localize {
 	 * @param	bool	Include seconds in returned string or not
 	 * @return	string	Formatted string
 	 */
-	public function human_time($timestamp = NULL, $localize = TRUE, $seconds = '')
+	public function human_time($timestamp = NULL, $localize = TRUE, $seconds = FALSE)
 	{
 		if (func_num_args() != 3 && ee()->config->item('include_seconds') == 'y')
 		{
-			$seconds = ':%s';
+			$seconds = TRUE;
 		}
 
 		$date_format = ee()->config->item('date_format');
 		$time_format = ee()->config->item('time_format');
+		$seconds_format = $seconds ? ':%s' : '';
 
 		$format_string = $date_format . ' ';
 		if ($time_format == 24)
 		{
-			$format_string .= '%H:%i' . $seconds;
+			$format_string .= '%H:%i' . $seconds_format;
 		}
 		else
 		{
-			$format_string .= '%h:%i' . $seconds . ' %A';
+			$format_string .= '%h:%i' . $seconds_format . ' %A';
 		}
 
 		return $this->format_date($format_string, $timestamp, $localize);
