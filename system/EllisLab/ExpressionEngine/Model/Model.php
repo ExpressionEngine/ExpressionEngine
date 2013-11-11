@@ -5,6 +5,7 @@ use EllisLab\ExpressionEngine\Service\Validation\ValidationResult;
 use EllisLab\ExpressionEngine\Core\Dependencies;
 use EllisLab\ExpressionEngine\Model\Query\QueryBuilder;
 use EllisLab\ExpressionEngine\Model\Query\ModelRelationshipMeta;
+use EllisLab\ExpressionEngine\Model\Collection;
 
 /**
  * The base Model class
@@ -525,16 +526,27 @@ abstract class Model {
 		return $this;
 	}
 
-	public function hasRelated($relationship_key)
+	public function hasRelated($relationship_key, $primary_key=NULL)
 	{
-		return isset ($this->related_models[$relationship_key]);
+		if ( ! isset($this->related_models[$relationship_key]))
+		{
+			return FALSE;
+		}
+
+		if ($primary_key !== NULL)
+		{
+			$ids = $this->related_models[$relationship_key]->getIds();
+			return in_array($primary_key, $ids);
+		}
+
+		return TRUE;
 	}
 
 	public function addRelated($relationship_key, $model)
 	{
 		if ( ! isset($this->related_models[$relationship_key]))
 		{
-			$this->related_models[$relationship_key] = array();
+			$this->related_models[$relationship_key] = new Collection();
 		}
 		$this->related_models[$relationship_key][] = $model;
 		return $this;

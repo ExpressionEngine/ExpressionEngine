@@ -461,8 +461,11 @@ class Query {
 				$row_data[$path][$field_name] = $value;
 			}
 
+			echo 'Processing Row: <pre>'; var_dump($row_data); echo '</pre>';
+
 			foreach ($row_data as $path=>$model_data)
 			{
+				echo 'Processing data for path "' . $path . '" <br />';
 				if ($this->isRootModel($path))
 				{
 					if ($this->modelExists($model_data))
@@ -505,6 +508,7 @@ class Query {
 	 */	
 	private function isRootModel($path)
 	{
+		echo 'Query::isRootModel(' . $path . ')<br />';
 		// If it's an integer, then it's a 
 		// root node, because it doesn't have
 		// any children.
@@ -521,11 +525,16 @@ class Query {
 	 */
 	private function createResultModel($model_data)
 	{
+		echo 'Query::createResultModel(';
 		$model_name = $model_data['__model_name'];
+		echo $model_name; 
+
+
 		$model_class = QueryBuilder::getQualifiedClassName($model_name);
 
 		$primary_key_name = $model_class::getMetaData('primary_key');
 		$primary_key = $model_data[$primary_key_name];
+		echo '(' . $primary_key . '))<br />';
 
 		$model = new $model_class($this->di, $model_data);
 		if ( ! isset ($this->model_index[$model_name]))
@@ -540,12 +549,17 @@ class Query {
 
 	private function modelExists($model_data, $parent=NULL)
 	{
+		echo 'Query::modelExists('; 
 		$model_name =  $model_data['__model_name'];
 		$relationship_name = $model_data['__relationship_name'];
 
 		$model_class = QueryBuilder::getQualifiedClassName($model_name);
 		$primary_key_name = $model_class::getMetaData('primary_key');
 		$primary_key = $model_data[$primary_key_name];
+
+		echo $model_name . '(' . $primary_key . ')';
+		echo ($parent == NULL ? '' : ', $parent');
+		echo ') <br />';
 
 		if ( $parent !== NULL && $parent->hasRelated($relationship_name, $primary_key))
 		{
@@ -561,8 +575,17 @@ class Query {
 
 	private function findModelParent($path_data, $child_path)
 	{
+		echo 'Query::findModelParent($path_data, ' . $child_path . ')<br />'; 
+		foreach($this->model_index as $model_name => $models)
+		{
+			foreach($models as $primary_key => $data)
+			{
+				echo '$this->model_index[' . $model_name . '][' . $primary_key . ']<br />';	
+			}
+		}
+		
 		$path = substr($child_path, 0, strrpos($child_path, '_'));
-		echo 'Path: ' . $path . '<br />';
+		echo 'Parent Path: ' . $path . '<br />';
 
 		$model_data = $path_data[$path];
 
@@ -570,6 +593,8 @@ class Query {
 		$model_class = QueryBuilder::getQualifiedClassName($model_name);
 		$primary_key_name = $model_class::getMetaData('primary_key');
 		$primary_key = $model_data[$primary_key_name];
+
+		echo 'Is $this->model_index[' . $model_name . '][' . $primary_key . '] set?<br />';
 		
 		if (isset($this->model_index[$model_name][$primary_key]))
 		{
