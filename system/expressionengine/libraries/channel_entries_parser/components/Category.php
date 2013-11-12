@@ -39,8 +39,8 @@ class EE_Channel_category_parser implements EE_Channel_parser_component {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Find any {category} {/category} tag pair chunks in the template and
-	 * extract them for easier parsing in the main loop.
+	 * Before the parser runs, this will gather all category tag pairs that
+	 * need processing.
 	 *
 	 * The returned chunks will be passed to replace() as a third parameter.
 	 *
@@ -50,8 +50,22 @@ class EE_Channel_category_parser implements EE_Channel_parser_component {
 	 */
 	public function pre_process($tagdata, EE_Channel_preparser $pre)
 	{
+		return $this->_get_cat_chunks($tagdata, $pre->prefix());
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Find any {category} {/category} tag pair chunks in the template and
+	 * extract them.
+	 *
+	 * @param String	The tagdata to be parsed
+	 * @param String	Prefix used in current channel parsing
+	 * @return Array	The found category chunks
+	 */
+	protected function _get_cat_chunks($tagdata, $prefix)
+	{
 		$cat_chunk = array();
-		$prefix = $pre->prefix();
 
 		if (preg_match_all("/".LD.$prefix."categories(.*?)".RD."(.*?)".LD.'\/'.$prefix.'categories'.RD."/s", $tagdata, $matches))
 		{
@@ -87,6 +101,19 @@ class EE_Channel_category_parser implements EE_Channel_parser_component {
 		$categories = $obj->data('categories', array());
 
 		$tagname = $prefix.'categories';
+
+		// Check to see if the category chunks still exist; if not, check
+		// the tagdata in case they've been modified since pre-processing
+		foreach ($cat_chunk as $chunk)
+		{
+			if (strpos($tagdata, $chunk[2]) === FALSE)
+			{
+				$cat_chunk = $this->_get_cat_chunks($tagdata, $prefix);
+
+				$obj->preparsed()->set_once_data($this, $cat_chunk);
+				break;
+			}
+		}
 
 		if (isset($categories[$data['entry_id']]) AND is_array($categories[$data['entry_id']]) AND count($cat_chunk) > 0)
 		{

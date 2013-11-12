@@ -66,7 +66,7 @@ Overlay.prototype = {
 	_create_button: function(className) {
 		var that = this,
 			action = className.replace('-', '_');
-			button = $('<button class="button '+className+'"><b>'+this.lang[action]+'</b></button>');
+			button = $('<button class="button '+className+'" type="button"><b>'+this.lang[action]+'</b></button>');
 
 		button.attr('title', this.lang[action]);
 		button.click(function(e) {
@@ -163,6 +163,7 @@ Overlay.prototype = {
 	 * Align the <figure> tag currently being worked on.
 	 */
 	_align_figure: function(direction) {
+
 		var css = { 'text-align': direction };
 
 		if (this.$current.data('floating')) {

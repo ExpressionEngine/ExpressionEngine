@@ -74,14 +74,19 @@ class Grid_ft extends EE_Fieldtype {
 
 	public function post_save($data)
 	{
-		$this->_load_grid_lib();
+		// Prevent saving if save() was never called, happens in Channel Form
+		// if the field is missing from the form
+		if (($data = ee()->session->cache(__CLASS__, $this->name(), FALSE)) !== FALSE)
+		{
+			$this->_load_grid_lib();
 
-		ee()->grid_lib->save(ee()->session->cache(__CLASS__, $this->name()));
+			ee()->grid_lib->save($data);
+		}
 	}
 
 	// --------------------------------------------------------------------
 
-	// This fieldtypes has been converted, so it accepts all content types
+	// This fieldtype has been converted, so it accepts all content types
 	public function accepts_content_type($name)
 	{
 		return ($name != 'grid');
@@ -305,7 +310,8 @@ class Grid_ft extends EE_Fieldtype {
 				$this->row,
 				$this->id(),
 				$params,
-				$match[1]
+				$match[1],
+				$this->content_type()
 			);
 
 			// Replace the marker section with the parsed data
@@ -463,7 +469,7 @@ class Grid_ft extends EE_Fieldtype {
 
 		ee()->load->library('grid_parser');
 
-		return ee()->grid_parser->parse($this->row, $this->id(), $params, $tagdata);
+		return ee()->grid_parser->parse($this->row, $this->id(), $params, $tagdata, $this->content_type());
 	}
 
 	// --------------------------------------------------------------------
@@ -568,6 +574,7 @@ class Grid_ft extends EE_Fieldtype {
 
 		ee()->cp->add_to_head(ee()->view->head_link('css/grid.css'));
 
+		ee()->cp->add_js_script('plugin', 'ee_url_title');
 		ee()->cp->add_js_script('ui', 'sortable');
 		ee()->cp->add_js_script('file', 'cp/sort_helper');
 		ee()->cp->add_js_script('file', 'cp/grid');

@@ -4,7 +4,7 @@
 	<a rel="external" href="<?=$this->cp->masked_url('http://ellislab.com')?>"><img src="<?=$cp_theme_url?>images/ee_logo_footer.gif" alt="<?=APP_NAME?>" width="109" height="15" /></a>
 	<?=(IS_CORE)?' Core':''?> v<?=APP_VER?> <?php echo ' - ';
 	echo lang('build'). '&nbsp;'.APP_BUILD;?> - &copy; <?=lang('copyright')?> 2003 - <?= date('Y') ?> <a href="<?=$this->cp->masked_url('http://ellislab.com/')?>" rel="external">EllisLab, Inc.</a><br />
-	
+
 	<?php
 		echo str_replace("%x", $this->benchmark->elapsed_time('total_execution_time_start', 'total_execution_time_end'), lang('page_rendered'));
 		echo ' - ';
@@ -12,10 +12,43 @@
 	?>
 </div> <!-- footer -->
 
+
+<div id="idle-modal" class="pageContents">
+	<p id="idle-description" class="shun"><?=lang('session_idle_description')?></p>
+
+	<p class="idle-fourth"><strong>User:</strong></p>
+
+	<?=form_open('C=login&M=authenticate')?>
+	<div class="idle-three-fourths shun">
+		<p class="idle-fourth">
+			<img src="<?=$cp_avatar_path ? $cp_avatar_path : $cp_theme_url.'images/site_logo.gif'?>" width="50" alt="User Avatar" />
+		</p>
+		<p class="idle-three-fourths">
+			<p id="idle-screen-name"><?=$cp_screen_name?></p>
+			<input type="hidden" name="username" value="<?=form_prep($this->session->userdata('username'))?>" />
+			<span class="idle-member-group"><?=$this->session->userdata('group_title')?></span>
+		</p>
+	</div>
+
+	<div class="idle-fourth">
+		<p><label for="logout-confirm-password">Password:</label></p>
+	</div>
+	<div class="idle-three-fourths shun">
+		<p><input type="password" name="password" class="field" id="logout-confirm-password"/></p>
+	</div>
+	<?=form_close()?>
+
+
+	<p id="idle-button-group">
+		<a href="<?=BASE.AMP.'C=login&M=logout'?>"><?=sprintf(lang('session_idle_not_name'), $cp_screen_name)?></a> &nbsp;
+		<input type="submit" class="submit" id="idle-login-button" value="<?=lang('login')?>" />
+	</p>
+</div>
+
 <div id="notice_container">
 	<div id="notice_texts_container">
 		<a id="close_notice" href="javascript:jQuery.ee_notice.destroy();">&times;</a>
-		
+
 		<div class="notice_texts notice_success"></div>
 		<div class="notice_texts notice_alert"></div>
 		<div class="notice_texts notice_error"></div>
@@ -34,7 +67,7 @@
 <?php
 /* Moved to header to give third parties time to deprecate
 
-<?php 
+<?php
 if (isset($cp_global_js))
 {
 	echo $cp_global_js;

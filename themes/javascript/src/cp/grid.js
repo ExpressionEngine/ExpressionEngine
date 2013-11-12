@@ -329,6 +329,10 @@ Grid.Settings.prototype = {
 		this._bindSubmit();
 		this._highlightErrors();
 
+		// If this is a new field, bind the automatic column title plugin
+		// to the first column
+		this._bindAutoColName(this.root.find('div.grid_col_settings[data-field-name="new_0"]'));
+
 		// Fire displaySettings event
 		this._settingsDisplay();
 
@@ -568,8 +572,25 @@ Grid.Settings.prototype = {
 			opacity: 1
 		}, 400);
 
+		// Bind automatic column name
+		this._bindAutoColName(column);
+
 		// Fire displaySettings event
 		this._fireEvent('displaySettings', $('.grid_col_settings_custom > div', column));
+	},
+
+	/**
+	 * Binds ee_url_title plugin to column label box to auto-populate the
+	 * column name field; this is only applied to new columns
+	 *
+	 * @param	{jQuery Object}	el	Column to bind ee_url_title to
+	 */
+	_bindAutoColName: function(column)
+	{
+		$(column).find('input.grid_col_field_label').bind("keyup keydown", function()
+		{
+			$(this).ee_url_title($(column).find('input.grid_col_field_name'), true);
+		});
 	},
 
 	/**

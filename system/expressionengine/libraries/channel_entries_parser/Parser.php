@@ -205,6 +205,11 @@ class EE_Channel_data_parser {
 
 		$dt = 0;
 
+		ee()->load->library('typography');
+		ee()->typography->initialize(array(
+			'convert_curly'	=> FALSE
+		));
+
 		foreach ($entries as $row)
 		{
 			$tagdata = $orig_tagdata;
@@ -502,12 +507,23 @@ class EE_Channel_data_parser {
 							$data = ee()->api_channel_fields->apply('pre_process', array($cond[$key]));
 							if (ee()->api_channel_fields->check_method_exists('replace_'.$modifier))
 							{
-								$cond[$key.':'.$modifier] = ee()->api_channel_fields->apply('replace_'.$modifier, array($data, array(), FALSE));
+								$result = ee()->api_channel_fields->apply('replace_'.$modifier, array($data, array(), FALSE));
 							}
 							else
 							{
-								$cond[$key.':'.$modifier] = FALSE;
+								$result = FALSE;
 								ee()->TMPL->log_item('Unable to find parse type for custom field conditional: '.$key.':'.$modifier);
+							}
+
+							$cond[$key.':'.$modifier] = $result;
+
+							// If this key also happens to be a Grid field with the modifier
+							// "total_rows", make it the default value for evaluating
+							// conditionals
+							if (isset($channel->gfields[$row['site_id']][$key]) &&
+								$modifier == 'total_rows')
+							{
+								$cond[$key] = $result;
 							}
 						}
 					}

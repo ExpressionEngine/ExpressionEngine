@@ -50,7 +50,7 @@
 
 		<p>
 			<?=lang('ml_email_search_cont', 'email')?>
-			<?=form_input(array('name'=>'email', 'size'=>50))?>
+			<?=form_input(array('name'=>'email', 'size'=>75))?>
 		</p>
 
 		<p>

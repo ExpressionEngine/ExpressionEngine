@@ -169,6 +169,9 @@ $lang = array(
 'enable_extensions' =>
 "Enable Extensions?",
 
+'extensions_disabled_manage' =>
+"Extensions must <a href='%s'>be enabled</a> to manage installed extensions.",
+
 'disable_extension' =>
 "Disable?",
 
@@ -1095,6 +1098,12 @@ $lang = array(
 "use_newrelic_explanation" =>
 'When enabled, New Relic will add <a href="https://newrelic.com/docs/features/real-user-monitoring" rel="external">Real User Monitoring JavaScript</a> to all of your web pages.',
 
+"newrelic_app_name" =>
+"New Relic Application Name",
+
+"newrelic_app_name_explanation" =>
+"Changes the name of the application that appears in the New Relic dashboard for this installation of ExpressionEngine.",
+
 "gzip_output" =>
 "Enable GZIP Output?",
 
@@ -1199,6 +1208,9 @@ $lang = array(
 
 "smtp_port" =>
 "SMTP Server Port",
+
+'empty_stmp_fields' =>
+'The %s field is required for SMTP.',
 
 "smtp_username" =>
 "SMTP Username",

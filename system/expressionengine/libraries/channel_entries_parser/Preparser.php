@@ -91,6 +91,10 @@ class EE_Channel_preparser {
 		$this->pairs	= $this->_extract_prefixed(ee()->TMPL->var_pair);
 		$this->singles	= $this->_extract_prefixed(ee()->TMPL->var_single);
 
+		// Get subscriber totals and modified conditionals
+		$this->subscriber_totals	 = $this->_subscriber_totals();
+		$this->modified_conditionals = $this->_find_modified_conditionals();
+
 		// Run through component pre_processing steps, skipping any that
 		// were specified as being disabled.
 
@@ -111,10 +115,6 @@ class EE_Channel_preparser {
 			}
 
 		}
-
-		// Some more pre-processing work.
-		$this->subscriber_totals	 = $this->_subscriber_totals();
-		$this->modified_conditionals = $this->_find_modified_conditionals();
 	}
 
 	// --------------------------------------------------------------------
@@ -180,11 +180,26 @@ class EE_Channel_preparser {
 	 *
 	 * Returns the data of the preprocessing step of a given component.
 	 *
-	 * @return mixed	Single tag preprocessing results
+	 * @return mixed	Once tag preprocessing results
 	 */
 	public function once_data($obj)
 	{
 		return $this->_once_data[spl_object_hash($obj)];
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Single tag data setter
+	 *
+	 * Sets the data passed to the replace method of a given component.
+	 *
+	 * @return EE_Channel_parser_component	Component object to set data for
+	 * @return mixed	Data to set for component
+	 */
+	public function set_once_data($obj, $data)
+	{
+		return $this->_once_data[spl_object_hash($obj)] = $data;
 	}
 
 	// --------------------------------------------------------------------

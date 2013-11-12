@@ -231,7 +231,7 @@ class Content_edit extends CP_Controller {
 		if ($keywords)
 		{
 			$this->load->helper('search');
-			$keywords = sanitize_search_terms($keywords);
+			$keywords = xss_clean($keywords);
 
 			if (substr(strtolower($keywords), 0, 3) == 'ip:')
 			{

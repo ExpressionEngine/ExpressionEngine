@@ -63,8 +63,8 @@ class EE_Channel_parser_components {
 		$this->register_pair('EE_Channel_header_and_footer_parser');
 
 		$this->register_once('EE_Channel_category_parser');
-		$this->register_once('EE_Channel_custom_field_pair_parser');
 		$this->register_once('EE_Channel_grid_parser');
+		$this->register_once('EE_Channel_custom_field_pair_parser');
 		$this->register_once('EE_Channel_relationship_parser');
 		$this->register_once('EE_Channel_switch_parser');
 

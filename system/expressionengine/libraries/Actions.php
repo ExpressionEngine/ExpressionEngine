@@ -184,7 +184,7 @@ class EE_Actions {
 
 		$flags = 0;
 
-		if ( ! AJAX_REQUEST || $class instanceOf Strict_XID)
+		if ( ! AJAX_REQUEST || $ACT instanceOf Strict_XID)
 		{
 			$flags |= EE_Security::CSRF_STRICT;
 		}
@@ -198,7 +198,7 @@ class EE_Actions {
 
 		if ($method != '')
 		{
-			if ( ! method_exists($ACT, $method))
+			if ( ! is_callable(array($ACT, $method)))
 			{
 				if (ee()->config->item('debug') >= 1)
 				{

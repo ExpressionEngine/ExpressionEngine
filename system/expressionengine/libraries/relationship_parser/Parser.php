@@ -472,8 +472,6 @@ class EE_Relationship_data_parser {
 				}
 			}
 
-			$rows[$entry_id] = $data;
-
 			// categories
 			if (isset($this->_categories[$entry_id]))
 			{
@@ -484,11 +482,6 @@ class EE_Relationship_data_parser {
 
 			if ($requested_cats)
 			{
-				if ( ! isset($categories[$entry_id]))
-				{
-					continue;
-				}
-
 				$not = FALSE;
 				$cat_match = FALSE;
 
@@ -496,6 +489,18 @@ class EE_Relationship_data_parser {
 				{
 					$requested_cats = substr($requested_cats, 4);
 					$not = TRUE;
+				}
+
+				if (! isset($categories[$entry_id]))
+				{
+					// If the entry has no categories and the category parameter
+					// specifies 'not x', include it.
+					if ($not)
+					{
+						$rows[$entry_id] = $data;
+					}
+
+					continue;
 				}
 
 				$requested_cats = explode('|', $requested_cats);
@@ -511,6 +516,10 @@ class EE_Relationship_data_parser {
 
 						$cat_match = TRUE;
 					}
+					elseif ($not)
+					{
+						$cat_match = TRUE;
+					}
 				}
 
 				if ( ! $cat_match)
@@ -518,6 +527,8 @@ class EE_Relationship_data_parser {
 					continue;
 				}
 			}
+
+			$rows[$entry_id] = $data;
 		}
 
 		// put categories into the weird form the channel module uses
@@ -541,7 +552,26 @@ class EE_Relationship_data_parser {
 			}
 		}
 
-		if ($limit OR $offset)
+		$end_script = FALSE;
+
+		// -------------------------------------------
+		// 'relationships_modify_rows' hook.
+		//  - Take the relationship result and modify it right before starting to parse.
+		//  - added 2.7.1
+		//
+			if (ee()->extensions->active_hook('relationships_modify_rows') === TRUE)
+			{
+				$rows = ee()->extensions->call('relationships_modify_rows', $rows, $node);
+				if (ee()->extensions->end_script === TRUE) $end_script = TRUE;
+			}
+		//
+		// -------------------------------------------
+
+
+		// BEWARE:
+		// If $end_script is TRUE, we should do no more processing after the hook!
+
+		if ($end_script === FALSE && ($limit OR $offset))
 		{
 			$rows = array_slice($rows, $offset, $limit, TRUE);
 		}

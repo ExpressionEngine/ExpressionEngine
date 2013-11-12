@@ -10,7 +10,7 @@
  * @since		Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -25,8 +25,8 @@
 
 class Simple_commerce_upd {
 
-	var $version			= '2.1';
-	
+	var $version			= '2.2';
+
 	function Simple_commerce_upd()
 	{
 		// Make a local reference to the ExpressionEngine super object
@@ -41,16 +41,16 @@ class Simple_commerce_upd {
 	 *
 	 * @access	public
 	 * @return	bool
-	 */	
+	 */
 	function install()
 	{
-		$sql[] = "INSERT INTO exp_modules 
-				  (module_name, module_version, has_cp_backend) 
-				  VALUES 
+		$sql[] = "INSERT INTO exp_modules
+				  (module_name, module_version, has_cp_backend)
+				  VALUES
 				  ('Simple_commerce', '$this->version', 'y')";
-				  
-		$sql[] = "INSERT INTO exp_actions (class, method) VALUES ('Simple_commerce', 'incoming_ipn')";
-		
+
+		$sql[] = "INSERT INTO exp_actions (class, method, csrf_exempt) VALUES ('Simple_commerce', 'incoming_ipn', 1)";
+
 		$sql[] = "CREATE TABLE IF NOT EXISTS `exp_simple_commerce_items` (
   `item_id` int(8) unsigned NOT NULL auto_increment,
   `entry_id` int(8) unsigned NOT NULL,
@@ -65,7 +65,7 @@ class Simple_commerce_upd {
   `current_subscriptions` int(8) NOT NULL default '0',
   `new_member_group` int(8) default '0',
   `member_group_unsubscribe` int(8) default '0',
-  `admin_email_address` varchar(200) NULL default NULL,
+  `admin_email_address` varchar(75) NULL default NULL,
   `admin_email_template` int(5) default '0',
   `customer_email_template` int(5) default '0',
   `admin_email_template_unsubscribe` int(5) default '0',
@@ -98,20 +98,20 @@ class Simple_commerce_upd {
   `email_body` text NOT NULL,
   PRIMARY KEY `email_id` (`email_id`)
 ) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
-		
+
 
 		foreach ($sql as $query)
 		{
 			ee()->db->query($query);
 		}
-		
+
 		// update the config file based on whether this install is from the CP or the install wizard
 		if (method_exists(ee()->config, 'divination'))
 		{
 			ee()->config->_update_config(array('sc_paypal_account' 	=> '',
 											'sc_encrypt_buttons' 	=> 'n',
 											'sc_certificate_id'		=> '',
-											'sc_public_certificate' => '', 
+											'sc_public_certificate' => '',
 											'sc_private_key'		=> '',
 											'sc_paypal_certificate' => '',
 											'sc_temp_path'			=> '/tmp'));
@@ -121,19 +121,19 @@ class Simple_commerce_upd {
 			ee()->config->_assign_to_config(array('sc_paypal_account' 	=> '',
 												'sc_encrypt_buttons' 	=> 'n',
 												'sc_certificate_id'		=> '',
-												'sc_public_certificate' => '', 
+												'sc_public_certificate' => '',
 												'sc_private_key'		=> '',
 												'sc_paypal_certificate' => '',
-												'sc_temp_path'			=> '/tmp'));			
+												'sc_temp_path'			=> '/tmp'));
 		}
-		
 
-		
+
+
 		return TRUE;
 	}
 
-	
-	
+
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -141,32 +141,32 @@ class Simple_commerce_upd {
 	 *
 	 * @access	public
 	 * @return	bool
-	 */	
+	 */
 	function uninstall()
 	{
-		$query = ee()->db->query("SELECT module_id FROM exp_modules WHERE module_name = 'Simple_commerce'"); 
-				
-		$sql[] = "DELETE FROM exp_module_member_groups WHERE module_id = '".$query->row('module_id') ."'";		
+		$query = ee()->db->query("SELECT module_id FROM exp_modules WHERE module_name = 'Simple_commerce'");
+
+		$sql[] = "DELETE FROM exp_module_member_groups WHERE module_id = '".$query->row('module_id') ."'";
 		$sql[] = "DELETE FROM exp_modules WHERE module_name = 'Simple_commerce'";
 		$sql[] = "DELETE FROM exp_actions WHERE class = 'Simple_commerce'";
 		$sql[] = "DROP TABLE IF EXISTS exp_simple_commerce_items";
 		$sql[] = "DROP TABLE IF EXISTS exp_simple_commerce_purchases";
 		$sql[] = "DROP TABLE IF EXISTS exp_simple_commerce_emails";
-		
+
 
 		foreach ($sql as $query)
 		{
 			ee()->db->query($query);
 		}
-		
+
 		/** ----------------------------------------
 		/**  Remove a couple items to the config file
 		/** ----------------------------------------*/
-	  
+
 		ee()->config->_update_config('', array('sc_paypal_account' => '',
 											'sc_encrypt_buttons' => '',
 											'sc_certificate_id' => '',
-											'sc_public_certificate' => '', 
+											'sc_public_certificate' => '',
 											'sc_private_key' => '',
 											'sc_paypal_certificate' => '',
 											'sc_temp_path' => ''));
@@ -174,7 +174,7 @@ class Simple_commerce_upd {
 		return TRUE;
 	}
 
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -182,14 +182,14 @@ class Simple_commerce_upd {
 	 *
 	 * @access	public
 	 * @return	bool
-	 */	
+	 */
 	function update($current = '')
 	{
 		ee()->load->dbforge();
-		
+
 		if (version_compare($current, '2.0', '<'))
 		{
-			ee()->db->query("ALTER TABLE `exp_simple_commerce_purchases` CHANGE `paypal_details` `paypal_details` TEXT NULL DEFAULT NULL");			
+			ee()->db->query("ALTER TABLE `exp_simple_commerce_purchases` CHANGE `paypal_details` `paypal_details` TEXT NULL DEFAULT NULL");
 
 
 			ee()->db->query("ALTER TABLE `exp_simple_commerce_items` ADD COLUMN `recurring` char(1) NOT NULL default 'n'");
@@ -199,9 +199,9 @@ class Simple_commerce_upd {
 			ee()->db->query("ALTER TABLE `exp_simple_commerce_items` ADD COLUMN `admin_email_template_unsubscribe`  int(5) default '0'");
 			ee()->db->query("ALTER TABLE `exp_simple_commerce_items` ADD COLUMN `customer_email_template_unsubscribe`  int(5) default '0'");
 			ee()->db->query("ALTER TABLE `exp_simple_commerce_purchases` ADD COLUMN `subscription_end_date`  int(10) NOT NULL default '0'");
-			
+
 		}
-		
+
 		if (version_compare($current, '2.1', '<'))
 		{
 			// This was left out of update, but added to install
@@ -210,12 +210,51 @@ class Simple_commerce_upd {
 				$details = array('member_group_unsubscribe' => array(
 					'type' => 'INT',
 					'constraint' => 8,
-					'default' => 0					
+					'default' => 0
 				));
-				
+
 				ee()->dbforge->add_column('simple_commerce_items', $details, 'new_member_group');
 			}
-		}		
+		}
+
+		if (version_compare($current, '2.2', '<'))
+		{
+			$query = ee()->db->select('t.title, i.admin_email_address')
+				->from('simple_commerce_items i')
+				->join('channel_titles t', 't.entry_id = i.entry_id')
+				->where('LENGTH(i.admin_email_address) >', 75)
+				->get();
+
+			if ($query->row('count') > 0)
+			{
+				ee()->load->library('logger');
+				foreach ($query->result() as $item)
+				{
+					ee()->logger->developer('The admin email address for "'.$item->title.'" was truncated.  Original address was "'.$item->admin_email_address.'".');
+				}
+			}
+
+			ee()->dbforge->modify_column(
+				'simple_commerce_items',
+				array(
+					'admin_email_address' => array(
+						'name' 			=> 'admin_email_address',
+						'type' 			=> 'varchar',
+						'constraint'	=> '75',
+						'null'			=> TRUE,
+						'default'		=> NULL
+					)
+				)
+			);
+
+			$data = array(
+				'csrf_exempt' => 1
+				);
+
+			ee()->db->where('class', 'Simple_commerce');
+			ee()->db->where('method', 'incoming_ipn');
+			ee()->db->update('actions', $data);
+		}
 
 		return TRUE;
 	}

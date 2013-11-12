@@ -130,7 +130,7 @@ class Text_ft extends EE_Fieldtype {
 
 		$data = $this->_format_number($data, $type, $decimals);
 
-		$field_fmt = (isset($this->settings['field_fmt']))
+		$field_fmt = ($this->content_type() == 'grid')
 			? $this->settings['field_fmt'] : $this->row('field_ft_'.$this->field_id);
 
 		ee()->load->library('typography');
@@ -254,8 +254,15 @@ class Text_ft extends EE_Fieldtype {
 
 	public function grid_settings_modify_column($data)
 	{
+		$settings = $data;
+
+		if (isset($settings['col_settings']) && ! is_array($settings['col_settings']))
+		{
+			$settings = json_decode($settings['col_settings'], TRUE);
+		}
+
 		return $this->_get_column_settings(
-			isset($data['field_content_type']) ? $data['field_content_type'] : '',
+			isset($settings['field_content_type']) ? $settings['field_content_type'] : '',
 			$data['col_id'],
 			TRUE);
 	}

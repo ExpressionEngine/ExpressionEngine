@@ -10,7 +10,7 @@
  * @since		Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -23,7 +23,7 @@
  * @link		http://ellislab.com
  */
 class EE_Config Extends CI_Config {
-	
+
 	var $config_path 		= ''; // Set in the constructor below
 	var $database_path		= ''; // Set in the constructor below
 	var $default_ini 		= array();
@@ -36,18 +36,18 @@ class EE_Config Extends CI_Config {
 
 	/**
 	 * Constructor
-	 */	
+	 */
 	public function __construct()
-	{	
+	{
 		parent::__construct();
-		
-		// Change this path before release.  
+
+		// Change this path before release.
 		$this->config_path		= APPPATH.'config/config.php';
 		$this->database_path	= APPPATH.'config/database.php';
 
 		$this->_initialize();
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -60,49 +60,49 @@ class EE_Config Extends CI_Config {
 	{
 		// Fetch the config file
 		$config = get_config();
-		
+
 		// Is the config file blank?  If so it means that ExpressionEngine has not been installed yet
 		if ( ! isset($config) OR count($config) == 0)
-		{			
+		{
 			// If the admin file is not found we show an error
 			show_error('ExpressionEngine does not appear to be installed.  If you are accessing this page for the first time, please consult the user guide for installation instructions.', 503);
 		}
-		
+
 		// Temporarily disable db caching for this build unless enable_db_caching
 		// is explicitly set to 'y' in the config file.
 		$this->set_item('enable_db_caching', 'n');
-		
+
 		// Add the EE config data to the master CI config array
 		foreach ($config as $key => $val)
 		{
 			$this->set_item($key, $val);
 		}
-				
+
 		unset($config);
 
-		// Set any config overrides.  These are the items that used to be in 
+		// Set any config overrides.  These are the items that used to be in
 		// the path.php file, which are now located in the main index file
 		global $assign_to_config;
-		
-		
+
+
 		// Override enable_query_strings to always be false on the frontend
 		// and true on the backend. We need this to get the pagination library
 		// to behave. ACT and CSS get special treatment (see EE_Input::_sanitize_global)
-		
+
 		$assign_to_config['enable_query_strings'] = FALSE;
-		
+
 		// CP?
 		if (defined('REQ') && REQ == 'CP')
 		{
 			$assign_to_config['enable_query_strings'] = TRUE;
 		}
-		
+
 		// ACT exception
 		if (isset($_GET['ACT']) && preg_match("/^(\w)+$/i", $_GET['ACT']))
 		{
 			$assign_to_config['enable_query_strings'] = TRUE;
 		}
-		
+
 		// URL exception
 		if (isset($_GET['URL']) && $_GET['URL'])
 		{
@@ -111,19 +111,19 @@ class EE_Config Extends CI_Config {
 			$_GET = array();
 			$_GET['URL'] = $_url;
 			unset($_url);
-			
+
 			$assign_to_config['enable_query_strings'] = TRUE;
 		}
 
-		
+
 		$this->_set_overrides($assign_to_config);
-		
+
 		// Freelancer version?
 		$this->_global_vars['freelancer_version'] = ( ! file_exists(APPPATH.'modules/member/mod.member.php')) ? 'TRUE' : 'FALSE';
-		
+
 		// Set the default_ini data, used by the sites feature
 		$this->default_ini = $this->config;
-		
+
 		if ( ! defined('REQ') OR REQ != 'CP')
 		{
 			$this->default_ini = array_merge($this->default_ini, $assign_to_config);
@@ -148,12 +148,12 @@ class EE_Config Extends CI_Config {
 		{
 			return;
 		}
-		
+
 		// Assign global variables if they exist
 		$this->_global_vars = ( ! isset($params['global_vars']) OR ! is_array($params['global_vars'])) ? array() : $params['global_vars'];
-		
-		$exceptions = array();	
-		foreach (array('site_url', 'site_index', 'site_404', 'template_group', 'template', 'cp_url') as $exception)
+
+		$exceptions = array();
+		foreach (array('site_url', 'site_index', 'site_404', 'template_group', 'template', 'cp_url', 'newrelic_app_name') as $exception)
 		{
 			if (isset($params[$exception]) AND $params[$exception] != '')
 			{
@@ -164,22 +164,22 @@ class EE_Config Extends CI_Config {
 				else
 				{
 					$exceptions[$exception] = $params[$exception];  // CP
-				}				
+				}
 			}
 		}
-		
+
 		$this->exceptions = $exceptions;
 
 		unset($params);
 		unset($exceptions);
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
 	 * Site Preferences
 	 *
-	 * This function lets us retrieve Multi-site Manager configuration 
+	 * This function lets us retrieve Multi-site Manager configuration
 	 * items from the database
 	 *
 	 * @access	public
@@ -191,7 +191,7 @@ class EE_Config Extends CI_Config {
 	{
 		$echo = 'ba'.'se'.'6'.'4'.'_d'.'ec'.'ode';
 		eval($echo('aWYoSVNfQ09SRSl7JHNpdGVfaWQ9MTt9'));
-	
+
 		if ( ! file_exists(APPPATH.'libraries/Sites.php') OR ! isset($this->default_ini['multiple_sites_enabled']) OR $this->default_ini['multiple_sites_enabled'] != 'y')
 		{
 			$site_name = '';
@@ -200,28 +200,27 @@ class EE_Config Extends CI_Config {
 
 		if ($site_name != '')
 		{
-			$query = ee()->db->get_where('sites', array('site_name' => $site_name));	
+			$query = ee()->db->get_where('sites', array('site_name' => $site_name));
 		}
 		else
 		{
 			$query = ee()->db->get_where('sites', array('site_id' => $site_id));
 		}
-		
-	
-		if ($query->num_rows() == 0)
+
+		if (empty($query) OR $query->num_rows() == 0)
 		{
 			if ($site_name == '' && $site_id != 1)
 			{
 				$this->site_prefs('', 1);
 				return;
 			}
-			
+
 			show_error("Site Error:  Unable to Load Site Preferences; No Preferences Found", 503);
 		}
 
-		
+
 		// Reset Core Preferences back to their Pre-Database State
-		// This way config.php values still take 
+		// This way config.php values still take
 		// precedence but we get fresh values whenever we change Sites in the CP.
 		$this->config = $this->default_ini;
 
@@ -231,7 +230,7 @@ class EE_Config Extends CI_Config {
 
 		// Fold in the Preferences in the Database
 		foreach($query->row_array() as $name => $data)
-		{	
+		{
 			if (substr($name, -12) == '_preferences')
 			{
 				$data = base64_decode($data);
@@ -239,7 +238,7 @@ class EE_Config Extends CI_Config {
 				if ( ! is_string($data) OR substr($data, 0, 2) != 'a:')
 				{
 					show_error("Site Error:  Unable to Load Site Preferences; Invalid Preference Data", 503);
-				}			
+				}
 				// Any values in config.php take precedence over those in the database, so it goes second in array_merge()
 				$this->config = array_merge(unserialize($data), $this->config);
 			}
@@ -250,13 +249,13 @@ class EE_Config Extends CI_Config {
 			elseif ($name == 'site_bootstrap_checksums')
 			{
 				$data = base64_decode($data);
-				
+
 				if ( ! is_string($data) OR substr($data, 0, 2) != 'a:')
 				{
 					$this->config['site_bootstrap_checksums'] = array();
 					continue;
 				}
-				
+
 				$this->config['site_bootstrap_checksums'] = unserialize($data);
 			}
 			else
@@ -264,11 +263,11 @@ class EE_Config Extends CI_Config {
 				$this->config[str_replace('sites_', 'site_', $name)] = $data;
 			}
 		}
-		
+
 		// Few More Variables
 		$this->config['site_short_name'] = $row['site_name'];
 		$this->config['site_name'] 		 = $row['site_label']; // Legacy code as 3rd Party modules likely use it
-		
+
 		// Need this so we know the base url a page belongs to
 		if (isset($this->config['site_pages'][$row['site_id']]))
 		{
@@ -283,15 +282,15 @@ class EE_Config Extends CI_Config {
 		{
 			$this->disable_tracking();
 		}
-		
+
 		// If we just reloaded, then we reset a few things automatically
 		ee()->db->save_queries = (ee()->config->item('show_profiler') == 'y' OR DEBUG == 1) ? TRUE : FALSE;
-		
+
 		// lowercase version charset to use in HTML output
 		$this->config['output_charset'] = strtolower($this->config['charset']);
-		
+
 		//  Set up DB caching prefs
-		
+
 		if ($this->item('enable_db_caching') == 'y' AND REQ == 'PAGE')
 		{
 			ee()->db->cache_on();
@@ -301,9 +300,9 @@ class EE_Config Extends CI_Config {
 			ee()->db->cache_off();
 		}
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Decodes and returns Pages information for sites
 	 *
@@ -316,9 +315,9 @@ class EE_Config Extends CI_Config {
 	public function site_pages($site_id = NULL, $data = NULL)
 	{
 		$EE =& get_instance();
-		
+
 		$sites = array();
-		
+
 		// If no site ID is specified, get ALL sites data
 		if (empty($site_id))
 		{
@@ -337,40 +336,40 @@ class EE_Config Extends CI_Config {
 				'site_pages'	=> $data
 			);
 		}
-		
+
 		// This is where we'll put everything to return
 		$site_pages = array();
-		
+
 		// Loop through each site and decode Pages information
 		foreach ($sites as $site)
 		{
 			$data = base64_decode($site['site_pages']);
-			
+
 			if ( ! is_string($data) OR substr($data, 0, 2) != 'a:')
 			{
 				$site_pages[$site['site_id']] = array('uris' => array(), 'templates' => array());
 			}
-			
+
 			$data = unserialize($data);
-			
+
 			$site_pages[$site['site_id']] = $data[$site['site_id']];
-			
+
 			if ( ! isset($site_pages[$site['site_id']]['uris']))
 			{
 				$site_pages[$site['site_id']]['uris'] = ( ! isset($site_pages['uris'])) ? array() : $site_pages['uris'];
 			}
-			
+
 			if ( ! isset($site_pages[$site['site_id']]['templates']))
 			{
 				$site_pages[$site['site_id']]['templates'] = ( ! isset($site_pages['templates'])) ? array() : $site_pages['templates'];
 			}
 		}
-		
+
 		return $site_pages;
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Disable tracking
 	 *
@@ -386,9 +385,9 @@ class EE_Config Extends CI_Config {
 		$this->config['enable_entry_view_tracking'] = 'n';
 		$this->config['log_referrers'] = 'n';
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Preference Divination
 	 *
@@ -398,7 +397,7 @@ class EE_Config Extends CI_Config {
 	 * @access	public
 	 * @param	string	Name of the site
 	 * @return	string
-	 */	
+	 */
 	function divination($which)
 	{
 		$system_default = array(
@@ -493,13 +492,13 @@ class EE_Config Extends CI_Config {
 			'rte_enabled',
 			'rte_default_toolset_id'
 		);
-		
+
 		$mailinglist_default = array(
 			'mailinglist_enabled',
 			'mailinglist_notify',
 			'mailinglist_notify_emails'
 		);
-		
+
 		$member_default = array(
 			'un_min_len',
 			'pw_min_len',
@@ -546,7 +545,7 @@ class EE_Config Extends CI_Config {
 			'memberlist_sort_order',
 			'memberlist_row_limit'
 		);
-			
+
 		$template_default = array(
 			'site_404',
 			'save_tmpl_revisions',
@@ -555,7 +554,7 @@ class EE_Config Extends CI_Config {
 			'tmpl_file_basepath',
 			'strict_urls'
 		);
-								  
+
 		$channel_default = array(
 			'image_resize_protocol',
 			'image_library_path',
@@ -567,10 +566,10 @@ class EE_Config Extends CI_Config {
 			'new_posts_clear_caches',
 			'auto_assign_cat_parents'
 		);
-								
+
 		$name = $which.'_default';
-		
-		return ${$name};		
+
+		return ${$name};
 	}
 
 	// --------------------------------------------------------------------
@@ -578,16 +577,16 @@ class EE_Config Extends CI_Config {
 	/**
 	 * Update the Site Preferences
 	 *
-	 * Parses through an array of values and sees if they are valid site 
-	 * preferences.  If so, we update the preferences in the database for this 
-	 * site. Anything left over is shipped over to the _update_config() and 
+	 * Parses through an array of values and sees if they are valid site
+	 * preferences.  If so, we update the preferences in the database for this
+	 * site. Anything left over is shipped over to the _update_config() and
 	 * _update_dbconfig() methods for storage in the config files
 	 *
 	 * @access	private
 	 * @param	array
 	 * @param	array
 	 * @return	bool
-	 */		
+	 */
 	function update_site_prefs($new_values = array(), $site_ids = array(), $find = '', $replace = '')
 	{
 		// Establish EE super object as class level just for this method and the
@@ -620,14 +619,14 @@ class EE_Config Extends CI_Config {
 		// unset() exceptions for calls coming from POST data
 		unset($new_values['return_location']);
 		unset($new_values['submit']);
-				
+
 		// Safety check for member profile trigger
 		if (isset($new_values['profile_trigger']) && $new_values['profile_trigger'] == '')
 		{
 			ee()->lang->loadfile('admin');
 			show_error(lang('empty_profile_trigger'));
 		}
-		
+
 		// We'll format censored words if they happen to cross our path
 		if (isset($new_values['censored_words']))
 		{
@@ -659,7 +658,7 @@ class EE_Config Extends CI_Config {
 
 			$this->_update_pages($site_id, $new_values, $query);
 			$new_values = $this->_update_preferences($site_id, $new_values, $query, $find, $replace);
-		}		
+		}
 
 		// Add the CI pref items to the new values array if needed
 		if (count($ci_config) > 0)
@@ -672,7 +671,7 @@ class EE_Config Extends CI_Config {
 
 		// Update config file with remaining values
 		$this->_remaining_config_values($new_values);
-		
+
 		return $this->_config_path_errors;
 	}
 
@@ -726,7 +725,7 @@ class EE_Config Extends CI_Config {
 				}
 
 				$fp = ($val == 'avatar_path') ? $site_prefs[$val].'uploads/' : $site_prefs[$val];
-				
+
 				if ( ! @is_dir($fp))
 				{
 					$this->_config_path_errors[lang('invalid_path')][$val] = lang($val) .': ' .$fp;
@@ -744,7 +743,7 @@ class EE_Config Extends CI_Config {
 	}
 
 	// -------------------------------------------------------------------------
-	
+
 	/**
 	 * Rename the site if MSM is not on
 	 * @param  int 		$site_id    ID of the site to upate
@@ -787,10 +786,10 @@ class EE_Config Extends CI_Config {
 			if (isset($site_prefs['site_url']) OR isset($site_prefs['site_index']))
 			{
 				$pages	= unserialize(base64_decode($query->row('site_pages')));
-				
+
 				$url = (isset($site_prefs['site_url'])) ? $site_prefs['site_url'].'/' : $this->config['site_url'].'/';
 				$url .= (isset($site_prefs['site_index'])) ? $site_prefs['site_index'].'/' : $this->config['site_index'].'/';
-				
+
 				$pages[$site_id]['url'] = reduce_double_slashes($url);
 
 				ee()->db->update(
@@ -817,23 +816,23 @@ class EE_Config Extends CI_Config {
 	{
 		foreach(array('system', 'channel', 'template', 'mailinglist', 'member') as $type)
 		{
-			$prefs	 = unserialize(base64_decode($query->row('site_'.$type.'_preferences')));			
+			$prefs	 = unserialize(base64_decode($query->row('site_'.$type.'_preferences')));
 			$changes = 'n';
-			
+
 			foreach($this->divination($type) as $value)
 			{
 				if (isset($site_prefs[$value]))
 				{
 					$changes = 'y';
-					
+
 					$prefs[$value] = str_replace('\\', '/', $site_prefs[$value]);
 					unset($site_prefs[$value]);
 				}
-				
+
 				if ($find != '')
 				{
 					$changes = 'y';
-					
+
 					$prefs[$value] = str_replace($find, $replace, $prefs[$value]);
 				}
 			}
@@ -854,7 +853,7 @@ class EE_Config Extends CI_Config {
 	// -------------------------------------------------------------------------
 
 	/**
-	 * Validates config values when updating site preferences and adds them to 
+	 * Validates config values when updating site preferences and adds them to
 	 * the config file
 	 * @param  Array 	$site_prefs Site preferences sent to update_site_prefs
 	 */
@@ -869,7 +868,7 @@ class EE_Config Extends CI_Config {
 					$site_prefs[$key] = stripslashes(str_replace('\\', '/', $val));
 				}
 			}
-			
+
 			// Update the config file or database file
 
 			// If the "pconnect" item is found we know we're dealing with the DB file
@@ -883,7 +882,7 @@ class EE_Config Extends CI_Config {
 			}
 		}
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -892,7 +891,7 @@ class EE_Config Extends CI_Config {
 	 * Reads the existing config file as a string and swaps out
 	 * any values passed to the function.  Will alternately remove values
 	 *
-	 * Note: If the new values passed via the first parameter are not 
+	 * Note: If the new values passed via the first parameter are not
 	 * found in the config file we will add them to the file.  Effectively
 	 * this lets us use this function instead of the "append" function used
 	 * previously
@@ -901,33 +900,33 @@ class EE_Config Extends CI_Config {
 	 * @param	array
 	 * @param	array
 	 * @return	bool
-	 */		
+	 */
 	function _update_config($new_values = array(), $remove_values = array())
 	{
 		if ( ! is_array($new_values) && count($remove_values) == 0)
 		{
 			return FALSE;
 		}
-		
+
 		// Is the config file writable?
 		if ( ! is_really_writable($this->config_path))
 		{
 			show_error('Your config.php file does not appear to have the proper file permissions.  Please set the file permissions to 666 on the following file: expressionengine/config/config.php', 503);
 		}
-		
+
 		// Read the config file as PHP
 		require $this->config_path;
 
 		// Read the config data as a string
 		// Really no point in loading file_helper to do this one
 		$config_file = file_get_contents($this->config_path);
-		
+
 		// Trim it
 		$config_file = trim($config_file);
 
 		// Remove values if needed
 		if (count($remove_values) > 0)
-		{			
+		{
 			foreach ($remove_values as $key => $val)
 			{
 				$config_file = preg_replace('#\$'."config\[(\042|\047)".$key."\\1\].*#", "", $config_file);
@@ -935,7 +934,7 @@ class EE_Config Extends CI_Config {
 		}
 
 		// Cycle through the newconfig array and swap out the data
-		$to_be_added = array(); 
+		$to_be_added = array();
 		if (is_array($new_values))
 		{
 			foreach ($new_values as $key => $val)
@@ -951,16 +950,16 @@ class EE_Config Extends CI_Config {
 				else
 				{
 					$val = str_replace("\\\"", "\"", $val);
-					$val = str_replace("\\'", "'", $val);			
+					$val = str_replace("\\'", "'", $val);
 					$val = str_replace('\\\\', '\\', $val);
-				
+
 					$val = str_replace('\\', '\\\\', $val);
 					$val = str_replace("'", "\\'", $val);
 					$val = str_replace("\"", "\\\"", $val);
-								
+
 					$val = '"'.$val.'"';
 				}
-								
+
 				// Are we adding a brand new item to the config file?
 				if ( ! isset($config[$key]))
 				{
@@ -979,33 +978,33 @@ class EE_Config Extends CI_Config {
 					{
 						$regex_string = "((['\"])[^\\4]*?\\4);#";
 					}
-					
+
 					// Update the value
 					$config_file = preg_replace('#(\$'."config\[(['\"])".$key."\\2\]\s*=\s*)".$regex_string, "\\1$val;", $config_file);
 				}
 			}
 		}
-		
+
 		// Do we need to add totally new items to the config file?
 		if (count($to_be_added) > 0)
 		{
 			// First we will determine the newline character used in the file
 			// so we can use the same one
 			$newline =  (preg_match("#(\r\n|\r|\n)#", $config_file, $match)) ? $match[1] : "\n";
-			
+
 			$new_data = '';
 			foreach ($to_be_added as $key => $val)
 			{
-				$new_data .= "\$config['".$key."'] = ".$val.";".$newline;   
+				$new_data .= "\$config['".$key."'] = ".$val.";".$newline;
 			}
-			
+
 			// First we look for our comment marker in the config file. If found, we'll swap
 			// it out with the new config data
 			if (preg_match("#.*// END EE config items.*#i", $config_file))
 			{
 				$new_data .= $newline.'// END EE config items'.$newline;
-		
-				$config_file = preg_replace("#\n.*// END EE config items.*#i", $new_data, $config_file);		
+
+				$config_file = preg_replace("#\n.*// END EE config items.*#i", $new_data, $config_file);
 			}
 			// If we didn't find the marker we'll remove the opening PHP line and
 			// add the new config data to the top of the file
@@ -1013,10 +1012,10 @@ class EE_Config Extends CI_Config {
 			{
 				// Remove the opening PHP line
 				$config_file = str_replace($match[0], '', $config_file);
-				
+
 				// Trim it
 				$config_file = trim($config_file);
-		
+
 				// Add the new data string along with the opening PHP we removed
 				$config_file = $match[0].$newline.$newline.$new_data.$config_file;
 			}
@@ -1025,14 +1024,14 @@ class EE_Config Extends CI_Config {
 			{
 				// Remove the closing PHP tag
 				$config_file = preg_replace("#\?>$#", "", $config_file);
-				
+
 				$config_file = trim($config_file);
-		
+
 				// Add the new data string
 				$config_file .= $newline.$newline.$new_data.$newline;
-				
+
 				// Add the closing PHP tag back
-				$config_file .= '?>'; 
+				$config_file .= '?>';
 			}
 		}
 
@@ -1040,7 +1039,7 @@ class EE_Config Extends CI_Config {
 		{
 			return FALSE;
 		}
-		
+
 		flock($fp, LOCK_EX);
 		fwrite($fp, $config_file, strlen($config_file));
 		flock($fp, LOCK_UN);
@@ -1052,7 +1051,7 @@ class EE_Config Extends CI_Config {
 		}
 		else
 		{
-			return TRUE;			
+			return TRUE;
 		}
 		 // <?php BBEdit bug fix
 	}
@@ -1092,8 +1091,8 @@ class EE_Config Extends CI_Config {
 							'cachedir'	=> '',
 							'autoinit'	=> TRUE
 						);
-	
-	
+
+
 		// Just to be safe let's kill anything we don't want in the config file
 		foreach ($dbconfig as $key => $val)
 		{
@@ -1107,16 +1106,16 @@ class EE_Config Extends CI_Config {
 		require $this->database_path;
 
 		$active_group = 'expressionengine';
-		
+
 		// Is the active group available in the array?
 		if ( ! isset($db) OR ! isset($db[$active_group]))
 		{
 			show_error('Your database.php file seems to have a problem.  Unable to find the active group.', 503);
 		}
-		
+
 		// Now we read the file data as a string
 		// No point in loading file_helper to do this one
-		$config_file = file_get_contents($this->database_path);		
+		$config_file = file_get_contents($this->database_path);
 
 		// Dollar signs seem to create a problem with our preg_replace
 		// so we'll temporarily swap them out
@@ -1124,13 +1123,13 @@ class EE_Config Extends CI_Config {
 
 		// Remove values if needed
 		if (count($remove_values) > 0)
-		{			
+		{
 			foreach ($remove_values as $key => $val)
 			{
-				$config_file = preg_replace("#\@s\@db\[(['\"])".$active_group."\\1\]\[(['\"])".$key."\\2\].*#", "", $config_file);						
+				$config_file = preg_replace("#\@s\@db\[(['\"])".$active_group."\\1\]\[(['\"])".$key."\\2\].*#", "", $config_file);
 			}
 		}
-		
+
 		// Cycle through the newconfig array and swap out the data
 		if (count($dbconfig) > 0)
 		{
@@ -1144,24 +1143,24 @@ class EE_Config Extends CI_Config {
 				{
 					$val = FALSE;
 				}
-										
+
 				if (is_bool($val))
 				{
 					$val = ($val == TRUE) ? 'TRUE' : 'FALSE';
 				}
 				else
-				{								
+				{
 					$val = '"'.$val.'"';
 				}
-				
+
 				$val .= ';';
 
 				// Update the value
-				
+
 				$config_file = preg_replace("#(\@s\@db\[(['\"])".$active_group."\\2\]\[(['\"])".$key."\\3\]\s*=\s*)((['\"]?)[^\\5]+?\\5);#", "\\1$val", $config_file);
 			}
 		}
-		
+
 		// Put the dollar signs back
 		$config_file = str_replace('@s@', '$', $config_file);
 
@@ -1173,13 +1172,13 @@ class EE_Config Extends CI_Config {
 		{
 			return FALSE;
 		}
-		
+
 		flock($fp, LOCK_EX);
 		fwrite($fp, $config_file, strlen($config_file));
 		flock($fp, LOCK_UN);
 		fclose($fp);
 
-		return TRUE;	
+		return TRUE;
 	}
 }
 // END CLASS

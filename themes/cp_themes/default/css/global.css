@@ -246,10 +246,15 @@ table a:hover {
 	margin-bottom:		3px;
 }
 
+.notice,
+.go_notice,
+.warning {
+	font-weight: bold;
+	margin: 5px 0;
+}
+
 .notice {
 	color:				#ce0000;
-	font-weight: 		bold;
-	margin: 			5px 0;
 }
 
 em.alert {
@@ -267,12 +272,14 @@ em.alert {
 
 .go_notice {
 	color:				#007822;
-	font-weight: 		bold;
-	margin: 			10px 0;
 }
 
 th .go_notice {
 	color:				#bce99a;
+}
+
+.warning {
+	color:				#ff6600;
 }
 
 .callout {
@@ -4140,3 +4147,46 @@ div.pageContents,
 
 	.nanner img{ margin-right: 5px; position: relative; top: 2px; }
 
+
+/**
+ * Log-back-in modal after the user has gone idle
+ */
+
+#idle-modal {
+	display: none;
+	padding: 13px 13px 13px 13px;
+}
+
+	#idle-screen-name {
+		font-size: 14px;
+		font-weight: bold;
+		margin: 0px 0 2px 0;
+	}
+
+	#idle-description {
+		font-weight: bold;
+		margin: 0px 0 2px 0;
+	}
+
+	#idle-modal label {
+		line-height: 26px;
+	}
+
+	#idle-button-group {
+		text-align: right;
+		line-height: 22px;
+	}
+
+	.idle-fourth {
+		float: left;
+		width: 25%;
+	}
+
+	.idle-three-fourths {
+		float: left;
+		width: 75%;
+	}
+
+	.idle-member-group {
+		color: #8a98a5;
+	}

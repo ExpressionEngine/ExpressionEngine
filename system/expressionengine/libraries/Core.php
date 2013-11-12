@@ -86,8 +86,8 @@ class EE_Core {
 		// application constants
 		define('IS_CORE',		FALSE);
 		define('APP_NAME',		'ExpressionEngine'.(IS_CORE ? ' Core' : ''));
-		define('APP_BUILD',		'20130506');
-		define('APP_VER',		'2.7.0');
+		define('APP_BUILD',		'20131008');
+		define('APP_VER',		'2.7.2');
 		define('SLASH',			'&#47;');
 		define('LD',			'{');
 		define('RD',			'}');
@@ -310,9 +310,18 @@ class EE_Core {
 		ee()->load->library('session');
 		ee()->load->library('user_agent');
 
+		// Get timezone to set as PHP timezone
+		$timezone = ee()->session->userdata('timezone');
+
+		// In case this is a timezone stored in the old format...
+		if ( ! in_array($timezone, DateTimeZone::listIdentifiers()))
+		{
+			$timezone = ee()->localize->get_php_timezone($timezone);
+		}
+
 		// Set a timezone for any native PHP date functions being used
 		date_default_timezone_set(
-			ee()->localize->get_php_timezone(ee()->session->userdata('timezone'))
+			ee()->localize->get_php_timezone($timezone)
 		);
 
 		// Load the "core" language file - must happen after the session is loaded
@@ -345,7 +354,14 @@ class EE_Core {
 
 		if (REQ != 'ACTION')
 		{
-			$this->process_secure_forms();
+			if (AJAX_REQUEST && ee()->router->fetch_class() == 'login')
+			{
+				$this->process_secure_forms(EE_Security::CSRF_EXEMPT);
+			}
+			else
+			{
+				$this->process_secure_forms();
+			}
 		}
 
 		// Update system stats
@@ -475,10 +491,11 @@ class EE_Core {
 			ee()->functions->redirect(BASE.AMP.'C=login'.$return_url);
 		}
 
-		// Is the user banned?
+		// Is the user banned or not allowed CP access?
 		// Before rendering the full control panel we'll make sure the user isn't banned
 		// But only if they are not a Super Admin, as they can not be banned
-		if (ee()->session->userdata('group_id') != 1 AND ee()->session->ban_check('ip'))
+		if ((ee()->session->userdata('group_id') != 1 && ee()->session->ban_check('ip')) OR
+			(ee()->session->userdata('member_id') !== 0 && ! ee()->cp->allowed_group('can_access_cp')))
 		{
 			return ee()->output->fatal_error(lang('not_authorized'));
 		}

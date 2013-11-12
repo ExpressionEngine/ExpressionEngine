@@ -11,6 +11,7 @@ $lang['email_send_failure_smtp'] = "Unable to send email using PHP SMTP.  Your s
 $lang['email_sent'] = "Your message has been successfully sent using the following protocol: %s";
 $lang['email_no_socket'] = "Unable to open a socket to Sendmail. Please check settings.";
 $lang['email_no_hostname'] = "You did not specify a SMTP hostname.";
+$lang['email_no_port'] = "You did not specify a SMTP port.";
 $lang['email_smtp_error'] = "The following SMTP error was encountered: %s";
 $lang['email_no_smtp_unpw'] = "Error: You must assign a SMTP username and password.";
 $lang['email_failed_smtp_login'] = "Failed to send AUTH LOGIN command. Error: %s";

@@ -311,7 +311,7 @@ class EE_Template {
 		}
 
 		$seg_array = ee()->uri->segment_array();
-		
+
 		// Define some path related global variables
 		$added_globals = array(
 			'last_segment' => end($seg_array),
@@ -319,7 +319,7 @@ class EE_Template {
 			'current_path' => (ee()->uri->uri_string) ? ee()->uri->uri_string : '/',
 			'current_query_string' => http_build_query($_GET) // GET has been sanitized!
 		);
-		
+
 		ee()->config->_global_vars = array_merge(ee()->config->_global_vars, $added_globals);
 
 		// Parse manual variables and Snippets
@@ -843,9 +843,19 @@ class EE_Template {
 
 				// Strip the "chunk" from the template, replacing it with a unique marker.
 
-				if (stristr($raw_tag, 'random'))
+				// If part of the tag name is 'random', we treat it as a unique tag and only
+				// replace the first occurence so they are all processed individually. This
+				// means that tags with parameters such as orderby="random" behave as expected
+				// even if they are identical to other tags on the page.
+
+				if (stripos($raw_tag, 'random') !== FALSE)
 				{
-					$this->template = preg_replace("|".preg_quote($chunk)."|s", 'M'.$this->loop_count.$this->marker, $this->template, 1);
+					$chunk_offset = strpos($this->template, $chunk);
+
+					if ($chunk_offset !== FALSE)
+					{
+						$this->template = substr_replace($this->template, 'M'.$this->loop_count.$this->marker, $chunk_offset, strlen($chunk));
+					}
 				}
 				else
 				{
@@ -1338,109 +1348,6 @@ class EE_Template {
 				unset($EE);
 			}
 		}
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Process Tags
-	 *
-	 * Channel entries can have related entries embedded within them.
-	 * We'll extract the related tag data, stash it away in an array, and
-	 * replace it with a marker string so that the template parser
-	 * doesn't see it.  In the channel class we'll check to see if the
-	 * ee()->TMPL->related_data array contains anything.  If so, we'll celebrate
-	 * wildly.
-	 *
-	 * @param	string
-	 * @return	string
-	 */
-	public function assign_relationship_data($chunk)
-	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('2.6');
-
-		$this->related_markers = array();
-
-			if (preg_match_all("/".LD."related_entries\s+id\s*=\s*[\"\'](.+?)[\"\']".RD."(.+?)".LD.'\/'."related_entries".RD."/is", $chunk, $matches))
-		{
-			$this->log_item("Assigning Related Entry Data");
-
-			$no_rel_content = '';
-
-			for ($j = 0; $j < count($matches[0]); $j++)
-			{
-				$rand = ee()->functions->random('alnum', 8);
-				$marker = LD.'REL['.$matches[1][$j].']'.$rand.'REL'.RD;
-
-				if (preg_match("/".LD."if no_related_entries".RD."(.*?)".LD.'\/'."if".RD."/s", $matches[2][$j], $no_rel_match))
-				{
-					// Match the entirety of the conditional
-
-					if (stristr($no_rel_match[1], LD.'if'))
-					{
-						$match[0] = ee()->functions->full_tag($no_rel_match[0], $matches[2][$j], LD.'if', LD.'\/'."if".RD);
-					}
-
-					$no_rel_content = substr($no_rel_match[0], strlen(LD."if no_related_entries".RD), -strlen(LD.'/'."if".RD));
-				}
-
-				$this->related_markers[] = $matches[1][$j];
-				$vars = ee()->functions->assign_variables($matches[2][$j]);
-				$this->related_id = $matches[1][$j];
-				$this->related_data[$rand] = array(
-											'marker'			=> $rand,
-											'field_name'		=> $matches[1][$j],
-											'tagdata'			=> $matches[2][$j],
-											'var_single'		=> $vars['var_single'],
-											'var_pair' 			=> $vars['var_pair'],
-											'var_cond'			=> ee()->functions->assign_conditional_variables($matches[2][$j], '\/', LD, RD),
-											'no_rel_content'	=> $no_rel_content
-										);
-
-				$chunk = str_replace($matches[0][$j], $marker, $chunk);
-			}
-		}
-
-		if (preg_match_all("/".LD."reverse_related_entries\s*(.*?)".RD."(.+?)".LD.'\/'."reverse_related_entries".RD."/is", $chunk, $matches))
-		{
-			$this->log_item("Assigning Reverse Related Entry Data");
-
-			for ($j = 0; $j < count($matches[0]); $j++)
-			{
-				$rand = ee()->functions->random('alnum', 8);
-				$marker = LD.'REV_REL['.$rand.']REV_REL'.RD;
-				$vars = ee()->functions->assign_variables($matches[2][$j]);
-
-				$no_rev_content = '';
-
-				if (preg_match("/".LD."if no_reverse_related_entries".RD."(.*?)".LD.'\/'."if".RD."/s", $matches[2][$j], $no_rev_match))
-				{
-					// Match the entirety of the conditional
-
-					if (stristr($no_rev_match[1], LD.'if'))
-					{
-						$match[0] = ee()->functions->full_tag($no_rev_match[0], $matches[2][$j], LD.'if', LD.'\/'."if".RD);
-					}
-
-					$no_rev_content = substr($no_rev_match[0], strlen(LD."if no_reverse_related_entries".RD), -strlen(LD.'/'."if".RD));
-				}
-
-				$this->reverse_related_data[$rand] = array(
-															'marker'			=> $rand,
-															'tagdata'			=> $matches[2][$j],
-															'var_single'		=> $vars['var_single'],
-															'var_pair' 			=> $vars['var_pair'],
-															'var_cond'			=> ee()->functions->assign_conditional_variables($matches[2][$j], '\/', LD, RD),
-															'params'			=> ee()->functions->assign_parameters($matches[1][$j]),
-															'no_rev_content'	=> $no_rev_content
-														);
-
-				$chunk = str_replace($matches[0][$j], $marker, $chunk);
-			}
-		}
-
-		return $chunk;
 	}
 
 	// --------------------------------------------------------------------
@@ -3213,7 +3120,7 @@ class EE_Template {
 				if ( ! preg_match('/^segment_\d+$/i', $val['3']) OR
 				strpos($val[2], 'if:else') !== FALSE OR
 				strpos($val[0], 'if:else') !== FALSE OR
-				count(preg_split("/(\!=|==|<=|>=|<>|<|>|AND|XOR|OR|&&|\|\|)/", $val[0])) > 2)
+				count(preg_split("/(\!=|==|<=|>=|<>|<|>|%|AND|XOR|OR|&&|\|\|)/", $val[0])) > 2)
 			{
 				continue;
 			}
@@ -3309,7 +3216,7 @@ class EE_Template {
 			if ( ! isset($vars[$val[3]]) OR
 				strpos($val[2], 'if:else') !== FALSE OR
 				strpos($val[0], 'if:else') !== FALSE OR
-				count(preg_split("/(\!=|==|<=|>=|<>|<|>|AND|XOR|OR|&&|\|\|)/", $val[0])) > 2)
+				count(preg_split("/(\!=|==|<=|>=|<>|<|>|%|AND|XOR|OR|&&|\|\|)/", $val[0])) > 2)
 			{
 				continue;
 			}

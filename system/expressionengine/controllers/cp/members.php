@@ -431,98 +431,6 @@ class Members extends CP_Controller {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Delete Member (confirm)
-	 *
-	 * Warning message if you try to delete members
-	 *
-	 * @return	mixed
-	 */
-	public function member_delete_confirm()
-	{
-		if ( ! $this->cp->allowed_group('can_access_members') OR ! $this->cp->allowed_group('can_delete_members'))
-		{
-			show_error(lang('unauthorized_access'));
-		}
-
-		$from_myaccount = FALSE;
-
-		if ($this->input->get('mid') != '')
-		{
-			$from_myaccount = TRUE;
-			$_POST['toggle'][] = $this->input->get('mid');
-		}
-
-		if ( ! isset($_POST['toggle']))
-		{
-			$this->functions->redirect(BASE.AMP.'C=members'.AMP.'M=view_all_members');
-		}
-
-		if ( ! is_array($_POST['toggle']) OR count($_POST['toggle']) == 0)
-		{
-			$this->functions->redirect(BASE.AMP.'C=members'.AMP.'M=view_all_members');
-		}
-
-		$damned = array();
-
-		$vars['ids_delete'] = array();
-
-		foreach ($this->input->post('toggle') as $key => $val)
-		{
-			// Is the user trying to delete himself?
-			if ($this->session->userdata('member_id') == $val)
-			{
-				show_error(lang('can_not_delete_self'));
-			}
-
-			$damned[] = $val;
-		}
-
-		// Pass the damned on for judgement
-		$vars['damned'] = $damned;
-
-		if (count($damned) == 1)
-		{
-			$vars['user_name'] = $this->member_model->get_username($damned['0']);
-		}
-		else
-		{
-			$vars['user_name'] = '';
-		}
-
-		// Do the users being deleted have entries assigned to them?
-		// If so, fetch the member names for reassigment
-
-		if ($this->member_model->count_member_entries($damned)  > 0)
-		{
-			$vars['heirs'] = array(
-				'' => lang('member_delete_dont_reassign_entries')
-			);
-
-			$group_ids = $this->member_model->get_members_group_ids($damned);
-
-			// Find Valid Member Replacements
-			$this->db->select('member_id, username, screen_name');
-			$this->db->from('members');
-			$this->db->where_in('group_id', $group_ids);
-			$this->db->where_not_in('member_id', $damned);
-			$this->db->order_by('screen_name');
-			$heirs = $this->db->get();
-
-			foreach($heirs->result() as $heir)
-			{
-				$name_to_use = ($heir->screen_name != '') ? $heir->screen_name : $heir->username;
-				$vars['heirs'][$heir->member_id] = $name_to_use;
-			}
-		}
-
-		$this->view->cp_page_title = lang('delete_member');
-
-		$this->cp->render('members/delete_confirm', $vars);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Login as Member
 	 *
 	 * Login as Member - SuperAdmins only!
@@ -705,6 +613,91 @@ class Members extends CP_Controller {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Delete Member (confirm)
+	 *
+	 * Warning message if you try to delete members
+	 *
+	 * @return	mixed
+	 */
+	public function member_delete_confirm()
+	{
+		if ( ! ee()->cp->allowed_group('can_access_members') OR ! ee()->cp->allowed_group('can_delete_members'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		$from_myaccount = FALSE;
+
+		if (ee()->input->get('mid') != '')
+		{
+			$from_myaccount = TRUE;
+			$_POST['toggle'][] = ee()->input->get('mid');
+		}
+
+		if ( ! isset($_POST['toggle']))
+		{
+			ee()->functions->redirect(BASE.AMP.'C=members'.AMP.'M=view_all_members');
+		}
+
+		if ( ! is_array($_POST['toggle']) OR count($_POST['toggle']) == 0)
+		{
+			ee()->functions->redirect(BASE.AMP.'C=members'.AMP.'M=view_all_members');
+		}
+
+		$damned = array();
+
+		$vars['ids_delete'] = array();
+
+		foreach (ee()->input->post('toggle') as $key => $val)
+		{
+			// Is the user trying to delete himself?
+			if (ee()->session->userdata('member_id') == $val)
+			{
+				show_error(lang('can_not_delete_self'));
+			}
+
+			$damned[] = $val;
+		}
+
+		// Pass the damned on for judgement
+		$vars['damned'] = $damned;
+		$usernames = ee()->db->select('username')
+			->where_in('member_id', $damned)
+			->get('members')
+			->result_array();
+		foreach ($usernames as $member)
+		{
+			$vars['usernames'][] = $member['username'];
+		}
+
+		// Do the users being deleted have entries assigned to them?
+		// If so, fetch the member names for reassigment
+		if (ee()->member_model->count_member_entries($damned) > 0)
+		{
+			$group_ids = ee()->member_model->get_members_group_ids($damned);
+
+			// Find Valid Member Replacements
+			ee()->db->select('member_id, username, screen_name')
+				->from('members')
+				->where_in('group_id', $group_ids)
+				->where_not_in('member_id', $damned)
+				->order_by('screen_name');
+			$heirs = ee()->db->get();
+
+			foreach($heirs->result() as $heir)
+			{
+				$name_to_use = ($heir->screen_name != '') ? $heir->screen_name : $heir->username;
+				$vars['heirs'][$heir->member_id] = $name_to_use;
+			}
+		}
+
+		ee()->view->cp_page_title = lang('delete_member');
+		ee()->cp->render('members/delete_confirm', $vars);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Member Delete
 	 *
 	 * Delete Members
@@ -713,80 +706,111 @@ class Members extends CP_Controller {
 	 */
 	public function member_delete()
 	{
-		if ( ! $this->cp->allowed_group('can_access_members') OR ! $this->cp->allowed_group('can_delete_members'))
+		// Verify the member is allowed to delete
+		if ( ! ee()->cp->allowed_group('can_access_members')
+			OR ! ee()->cp->allowed_group('can_delete_members'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
 
-		if ( ! $this->input->post('delete') OR ! is_array($this->input->post('delete')))
+		// Make sure there's something to delete
+		if ( ! ee()->input->post('delete')
+			OR ! is_array(ee()->input->post('delete')))
 		{
-			$this->functions->redirect(BASE.AMP.'C=members'.AMP.'M=view_all_members');
+			ee()->functions->redirect(BASE.AMP.'C=members'.AMP.'M=view_all_members');
 		}
-
-		$this->load->model('member_model');
 
 		//  Fetch member ID numbers and build the query
+		$member_ids = ee()->input->post('delete', TRUE);
 
-		$ids = array();
-		$member_ids = array();
+		// Check to see if they're deleting super admins
+		$this->_super_admin_delete_check($member_ids);
 
-		foreach ($this->input->post('delete') as $key => $val)
-		{
-			if ($val != '')
-			{
-				$ids[] = "member_id = '".$this->db->escape_str($val)."'";
-				$member_ids[] = $this->db->escape_str($val);
-			}
-		}
+		// If we got this far we're clear to delete the members
+		ee()->load->model('member_model');
+		$heir = (ee()->input->post('heir_action') == 'assign') ?
+			ee()->input->post('heir') : NULL;
+		ee()->member_model->delete_member($member_ids, $heir);
 
-		$IDS = implode(" OR ", $ids);
+		// Send member deletion notifications
+		$this->_member_delete_notifications($member_ids);
 
-		// SAFETY CHECK
-		// Let's fetch the Member Group ID of each member being deleted
-		// If there is a Super Admin in the bunch we'll run a few more safeties
+		/* -------------------------------------------
+		/* 'cp_members_member_delete_end' hook.
+		/*  - Additional processing when a member is deleted through the CP
+		*/
+			ee()->extensions->call('cp_members_member_delete_end', $member_ids);
+			if (ee()->extensions->end_script === TRUE) return;
+		/*
+		/* -------------------------------------------*/
 
-		$super_admins = 0;
+		// Update
+		ee()->stats->update_member_stats();
 
-		$query = $this->db->query("SELECT group_id FROM exp_members WHERE ".$IDS);
+		$cp_message = (count($member_ids) == 1) ?
+			lang('member_deleted') : lang('members_deleted');
 
-		foreach ($query->result_array() as $row)
-		{
-			if ($query->row('group_id')  == 1)
-			{
-				$super_admins++;
-			}
-		}
+		ee()->session->set_flashdata('message_success', $cp_message);
+		ee()->functions->redirect(BASE.AMP.'C=members'.AMP.'M=view_all_members');
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Check to see if the members being deleted are super admins. If they are
+	 * we need to make sure that the deleting user is a super admin and that
+	 * there is at least one more super admin remaining.
+	 *
+	 * @param  Array  $member_ids Array of member_ids being deleted
+	 * @return void
+	 */
+	private function _super_admin_delete_check($member_ids)
+	{
+		$super_admins = ee()->db->select('member_id')
+			->where(array(
+				'group_id' => 1
+			))
+			->where_in('member_id', $member_ids)
+			->count_all_results('members');
 
 		if ($super_admins > 0)
 		{
 			// You must be a Super Admin to delete a Super Admin
 
-			if ($this->session->userdata['group_id'] != 1)
+			if (ee()->session->userdata['group_id'] != 1)
 			{
 				show_error(lang('must_be_superadmin_to_delete_one'));
 			}
 
 			// You can't delete the only Super Admin
-			$query = $this->member_model->count_members(1);
+			ee()->load->model('member_model');
+			$query = ee()->member_model->count_members(1);
 
 			if ($super_admins >= $query)
 			{
 				show_error(lang('can_not_delete_super_admin'));
 			}
 		}
+	}
 
-		// If we got this far we're clear to delete the members
-		$this->load->model('member_model');
-		$this->member_model->delete_member($member_ids, $this->input->post('heir'));
+	// --------------------------------------------------------------------
 
-		/** ----------------------------------
-		/**  Email notification recipients
-		/** ----------------------------------*/
-		$this->db->select('DISTINCT(member_id), screen_name, email, mbr_delete_notify_emails');
-		$this->db->join('member_groups', 'members.group_id = member_groups.group_id', 'left');
-		$this->db->where('mbr_delete_notify_emails !=', '');
-		$this->db->where_in('member_id', $member_ids);
-		$group_query = $this->db->get('members');
+	/**
+	 * Send email notifications to email addresses for the respective member
+	 * group of the users being deleted
+	 *
+	 * @param  Array  $member_ids Array of member_ids being deleted
+	 * @return void
+	 */
+	private function _member_delete_notifications($member_ids)
+	{
+		// Email notification recipients
+		$group_query = ee()->db->distinct('member_id')
+			->select('screen_name, email, mbr_delete_notify_emails')
+			->join('member_groups', 'members.group_id = member_groups.group_id', 'left')
+			->where('mbr_delete_notify_emails !=', '')
+			->where_in('member_id', $member_ids)
+			->get('members');
 
 		foreach ($group_query->result() as $member)
 		{
@@ -795,12 +819,18 @@ class Members extends CP_Controller {
 			$swap = array(
 				'name'		=> $member->screen_name,
 				'email'		=> $member->email,
-				'site_name'	=> stripslashes($this->config->item('site_name'))
+				'site_name'	=> stripslashes(ee()->config->item('site_name'))
 			);
 
-			$this->lang->loadfile('member');
-			$email_tit = $this->functions->var_swap(lang('mbr_delete_notify_title'), $swap);
-			$email_msg = $this->functions->var_swap(lang('mbr_delete_notify_message'), $swap);
+			ee()->lang->loadfile('member');
+			$email_title = ee()->functions->var_swap(
+				lang('mbr_delete_notify_title'),
+				$swap
+			);
+			$email_message = ee()->functions->var_swap(
+				lang('mbr_delete_notify_message'),
+				$swap
+			);
 
 			// No notification for the user themselves, if they're in the list
 			if (strpos($notify_address, $member->email) !== FALSE)
@@ -813,43 +843,25 @@ class Members extends CP_Controller {
 
 			if ($notify_address != '')
 			{
-				// Send email
-				$this->load->library('email');
-
-				// Load the text helper
-				$this->load->helper('text');
+				ee()->load->library('email');
+				ee()->load->helper('text');
 
 				foreach (explode(',', $notify_address) as $addy)
 				{
-					$this->email->EE_initialize();
-					$this->email->wordwrap = FALSE;
-					$this->email->from($this->config->item('webmaster_email'), $this->config->item('webmaster_name'));
-					$this->email->to($addy);
-					$this->email->reply_to($this->config->item('webmaster_email'));
-					$this->email->subject($email_tit);
-					$this->email->message(entities_to_ascii($email_msg));
-					$this->email->send();
+					ee()->email->EE_initialize();
+					ee()->email->wordwrap = FALSE;
+					ee()->email->from(
+						ee()->config->item('webmaster_email'),
+						ee()->config->item('webmaster_name')
+					);
+					ee()->email->to($addy);
+					ee()->email->reply_to(ee()->config->item('webmaster_email'));
+					ee()->email->subject($email_title);
+					ee()->email->message(entities_to_ascii($email_message));
+					ee()->email->send();
 				}
 			}
 		}
-
-		/* -------------------------------------------
-		/* 'cp_members_member_delete_end' hook.
-		/*  - Additional processing when a member is deleted through the CP
-		*/
-			$this->extensions->call('cp_members_member_delete_end', $member_ids);
-			if ($this->extensions->end_script === TRUE) return;
-		/*
-		/* -------------------------------------------*/
-
-		// Update
-		$this->stats->update_member_stats();
-
-		$cp_message = (count($ids) == 1) ? lang('member_deleted') :
-										lang('members_deleted');
-
-		$this->session->set_flashdata('message_success', $cp_message);
-		$this->functions->redirect(BASE.AMP.'C=members'.AMP.'M=view_all_members');
 	}
 
 	// --------------------------------------------------------------------
@@ -3122,7 +3134,7 @@ class Members extends CP_Controller {
 
 		$this->view->cp_page_title = lang('ip_search');
 
-		$vars['message'] = $message;
+		$vars['cp_messages']['error'] = $message;
 
 		$this->cp->render('members/ip_search', $vars);
 	}
@@ -3196,8 +3208,7 @@ class Members extends CP_Controller {
 				FROM exp_channel_titles t, exp_members m, exp_sites s
 				WHERE t.ip_address LIKE '%".$this->db->escape_like_str($ip)."%'
 				AND t.site_id = s.site_id
-				AND t.author_id = m.member_id
-				ORDER BY entry_id desc ";
+				AND t.author_id = m.member_id";
 
 		$query = $this->db->query($sql);
 		$total = $query->row('count');
@@ -3225,14 +3236,11 @@ class Members extends CP_Controller {
 		$this->db->where('module_name', 'Comment');
 		$comment_installed = $this->db->count_all_results();
 
-		if ($comment_installed  == 1)
+		if ($comment_installed == 1)
 		{
 			$sql = "SELECT COUNT(*) AS count
-					FROM exp_channel_titles t, exp_members m, exp_sites s
-					WHERE t.ip_address LIKE '%".$this->db->escape_like_str($ip)."%'
-					AND t.site_id = s.site_id
-					AND t.author_id = m.member_id
-					ORDER BY entry_id desc ";
+					FROM exp_comments c
+					WHERE c.ip_address LIKE '%".$this->db->escape_like_str($ip)."%'";
 
 			$query = $this->db->query($sql);
 			$total = $query->row('count');
@@ -3242,16 +3250,14 @@ class Members extends CP_Controller {
 			$config['total_rows'] = $total;
 			$this->pagination->initialize($config);
 
-			$sql = "SELECT s.site_label, t.entry_id, t.channel_id, t.title, t.ip_address, m.member_id, m.username, m.screen_name, m.email
-					FROM exp_channel_titles t, exp_members m, exp_sites s
-					WHERE t.ip_address LIKE '%".$this->db->escape_like_str($ip)."%'
-					AND t.site_id = s.site_id
-					AND t.author_id = m.member_id
-					ORDER BY entry_id desc
+			$sql = "SELECT c.entry_id, c.channel_id, c.comment, c.ip_address, c.author_id, c.name, c.comment_id, c.email
+					FROM exp_comments c
+					WHERE c.ip_address LIKE '%".$this->db->escape_like_str($ip)."%'
+					ORDER BY entry_id, comment_id desc
 					LIMIT {$per_page}, 10";
 
-			$vars['channel_entries_pagination'] = $this->pagination->create_links();
-			$vars['channel_entries'] = $this->db->query($sql);
+			$vars['comments_pagination'] = $this->pagination->create_links();
+			$vars['comments'] = $this->db->query($sql);
 		}
 
 		// Find Forum Topics with IP
@@ -3267,8 +3273,7 @@ class Members extends CP_Controller {
 					FROM exp_forum_topics f, exp_members m, exp_forum_boards b
 					WHERE f.ip_address LIKE '%".$this->db->escape_like_str($ip)."%'
 					AND f.board_id = b.board_id
-					AND f.author_id = m.member_id
-					ORDER BY f.topic_id desc";
+					AND f.author_id = m.member_id";
 
 			$query = $this->db->query($sql);
 			$total = $query->row('count');
@@ -3294,8 +3299,7 @@ class Members extends CP_Controller {
 			$sql = "SELECT COUNT(*) AS count
 					FROM exp_forum_posts p, exp_members m
 					WHERE p.ip_address LIKE '%".$this->db->escape_like_str($ip)."%'
-					AND p.author_id = m.member_id
-					ORDER BY p.topic_id desc";
+					AND p.author_id = m.member_id";
 
 			$query = $this->db->query($sql);
 			$total = $query->row('count');

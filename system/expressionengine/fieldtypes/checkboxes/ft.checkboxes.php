@@ -154,6 +154,8 @@ class Checkboxes_ft extends EE_Fieldtype {
 		ee()->load->helper('custom_field');
 		$data = decode_multi_field($data);
 
+		ee()->load->library('typography');
+
 		if ($tagdata)
 		{
 			return $this->_parse_multi($data, $params, $tagdata);
@@ -221,6 +223,7 @@ class Checkboxes_ft extends EE_Fieldtype {
 	function _parse_multi($data, $params, $tagdata)
 	{
 		$chunk = '';
+		$raw_chunk = '';
 		$limit = FALSE;
 
 		// Limit Parameter
@@ -228,6 +231,9 @@ class Checkboxes_ft extends EE_Fieldtype {
 		{
 			$limit = $params['limit'];
 		}
+
+		$text_format = (isset($this->row['field_ft_'.$this->field_id]))
+			? $this->row['field_ft_'.$this->field_id] : 'none';
 
 		foreach($data as $key => $item)
 		{
@@ -237,6 +243,18 @@ class Checkboxes_ft extends EE_Fieldtype {
 				$vars['count'] = $key + 1;	// {count} parameter
 
 				$tmp = ee()->functions->prep_conditionals($tagdata, $vars);
+				$raw_chunk .= ee()->functions->var_swap($tmp, $vars);
+
+				$vars['item'] = ee()->typography->parse_type(
+						$item,
+						array(
+								'text_format'	=> $text_format,
+								'html_format'	=> $this->row['channel_html_formatting'],
+								'auto_links'	=> $this->row['channel_auto_link_urls'],
+								'allow_img_url' => $this->row['channel_allow_img_urls']
+							  )
+						);
+
 				$chunk .= ee()->functions->var_swap($tmp, $vars);
 			}
 			else
@@ -249,24 +267,16 @@ class Checkboxes_ft extends EE_Fieldtype {
 		if (isset($params['backspace']))
 		{
 			$chunk = substr($chunk, 0, - $params['backspace']);
+			$raw_chunk = substr($raw_chunk, 0, - $params['backspace']);
 		}
 
 		// Experimental parameter, do not use
 		if (isset($params['raw_output']) && $params['raw_output'] == 'yes')
 		{
-			return ee()->functions->encode_ee_tags($chunk);
+			return ee()->functions->encode_ee_tags($raw_chunk);
 		}
 
-		// Typography!
-		return ee()->typography->parse_type(
-						ee()->functions->encode_ee_tags($chunk),
-						array(
-								'text_format'	=> $this->row['field_ft_'.$this->field_id],
-								'html_format'	=> $this->row['channel_html_formatting'],
-								'auto_links'	=> $this->row['channel_auto_link_urls'],
-								'allow_img_url' => $this->row['channel_allow_img_urls']
-							  )
-		);
+		return $chunk;
 	}
 
 	function display_settings($data)

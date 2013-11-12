@@ -144,7 +144,7 @@ class File_ft extends EE_Fieldtype {
 					});
 
 					container.find(".remove_file").click(function() {
-						container.find("input[type=hidden]").val(function(i, current_value) {
+						container.find("input[type=hidden][name*='hidden']").val(function(i, current_value) {
 							last_value[i] = current_value;
 							return '';
 						});
@@ -493,7 +493,7 @@ CSS;
 		);
 
 		$this->_row(
-			lang('file_ft_allowed_dirs', $prefix.'field_allowed_dirs'),
+			lang('file_ft_allowed_dirs', $prefix.'field_allowed_dirs').form_error('file_allowed_directories'),
 			form_dropdown('file_allowed_directories', $this->_allowed_directories_options(), $allowed_directories, 'id="'.$prefix.'field_allowed_dirs"')
 		);
 
@@ -641,7 +641,7 @@ JSC;
 		ee()->form_validation->set_rules(
 			'file_allowed_directories',
 			'lang:allowed_dirs_file',
-			'required|callback__check_directories'
+			'required|callback__validate_file_settings'
 		);
 	}
 
@@ -659,7 +659,10 @@ JSC;
 		if ( ! $this->_check_directories())
 		{
 			ee()->lang->loadfile('filemanager');
-			return lang('please_add_upload');
+			return sprintf(
+				lang('no_upload_directories'),
+				BASE.AMP.'C=content_files'.AMP.'M=file_upload_preferences'
+			);
 		}
 
 		return TRUE;
@@ -693,7 +696,13 @@ JSC;
 		if ( ! $this->_check_directories())
 		{
 			ee()->lang->loadfile('filemanager');
-			ee()->form_validation->set_message('_check_directories', lang('please_add_upload'));
+			ee()->form_validation->set_message(
+				'_validate_file_settings',
+				sprintf(
+					lang('no_upload_directories'),
+					BASE.AMP.'C=content_files'.AMP.'M=file_upload_preferences'
+				)
+			);
 			return FALSE;
 		}
 

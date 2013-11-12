@@ -450,15 +450,13 @@ class Rte_lib {
 		$data = preg_replace('/\n\n+/', "\n\n", $data);
 
 		// decode double encoded code chunks
-		if (preg_match_all("/\[code\](.+?)\[\/code\]/si", $data, $matches))
+		if (preg_match_all("#\[code\](.+?)\[/code\]#si", $data, $matches))
 		{
-			$i = 0;
-			foreach ($matches[1] as $chunk)
+			foreach ($matches[1] as $i => $chunk)
 			{
 				$chunk = trim($chunk);
 				$chunk = html_entity_decode($chunk, ENT_QUOTES, 'UTF-8');
 				$data = str_replace($matches[0][$i], '[code]'.$chunk.'[/code]', $data);
-				$i++;
 			}
 		}
 
@@ -519,13 +517,13 @@ class Rte_lib {
 		// most newlines we should ever have is 2
 		$data = preg_replace('/\n\n+/', "\n\n", $data);
 
-
 		// remove code chunks
 		if (preg_match_all("/\[code\](.+?)\[\/code\]/si", $data, $matches))
 		{
+			
 			foreach ($matches[1] as $i => $chunk)
 			{
-				$code_chunks[] = trim($chunk);
+				$code_chunks[$i] = trim($chunk);
 				$data = str_replace($matches[0][$i], $code_marker.$i, $data);
 			}
 		}
@@ -536,10 +534,11 @@ class Rte_lib {
 		{
 			$field['class']	= 'WysiHat-field';
 
-			foreach ($code_chunks as &$chunk)
+			foreach ($code_chunks as $i => $chunk)
 			{
 				$chunk = htmlentities($chunk, ENT_QUOTES, 'UTF-8');
 				$chunk = str_replace("\n", '<br>', $chunk);
+				$code_chunks[$i] = $chunk;
 			}
 
 			// xhtml vs br

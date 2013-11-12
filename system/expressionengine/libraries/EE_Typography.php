@@ -638,6 +638,8 @@ class EE_Typography extends CI_Typography {
 	 *                         	ee tag encoding
 	 *                         - smartypants (yes/no) enable or disable
 	 *                         	smartypants
+	 *                         - no_markup (TRUE/FALSE) set to TRUE to disable
+	 *                          the parsing of markup in Markdown
 	 * @return string          Parsed Markdown content
 	 */
 	public function markdown($str, $options = array())
@@ -650,7 +652,15 @@ class EE_Typography extends CI_Typography {
 			$str = ee()->functions->encode_ee_tags($str);
 		}
 
-		$str = Markdown($str);
+		$parser = new Markdown_Parser();
+
+		// Disable other markup if this is set
+		if (isset($options['no_markup']) && $options['no_markup'] === TRUE)
+		{
+			$parser->no_markup = TRUE;
+		}
+
+		$str = $parser->transform($str);
 
 		// Run everything through SmartyPants
 		if ( ! isset($options['smartypants']) OR $options['smartypants'] == 'yes')
@@ -700,7 +710,6 @@ class EE_Typography extends CI_Typography {
 		// Edit: Added a check for the trailing 6 characters for an edgecase
 		// where the inner url was valid, but did not exactly match the other:
 		// [url=http://www.iblamepaul.com]www.iblamepaul.com[/url] ;) -pk
-
 		$str = preg_replace_callback("#(^|\s|\(|..\])((http(s?)://)|(www\.))(\w+[^\s\)\<\[]+)(.{0,6})#im", array(&$this, 'auto_linker_callback'), $str);
 
 		// Auto link email
@@ -750,7 +759,7 @@ class EE_Typography extends CI_Typography {
 
 		$end = '';
 
-		if (preg_match("/^(.+?)([\.\,]+)$/",$matches['6'], $punc_match))
+		if (preg_match("/^(.+?)([\.\,\?\!\:\;]+)$/",$matches['6'], $punc_match))
 		{
 			$end = $punc_match[2];
 			$matches[6] = $punc_match[1];
@@ -763,8 +772,8 @@ class EE_Typography extends CI_Typography {
 				$matches['4'].'://'.
 				$matches['5'].
 				$matches['6'].'[/url]'.
-				$matches['7'].
-				$end;
+				$end.
+				$matches['7'];
 	}
 
 	// --------------------------------------------------------------------

@@ -13,7 +13,7 @@
 	<tbody>
 		<tr>
 			<td width="40%">
-				<strong><?=lang('field_type')?></strong> 
+				<strong><?=lang('field_type')?></strong>
 				<?=form_error('field_type')?>
 			</td>
 			<td>
@@ -122,7 +122,7 @@
 	<?php foreach ($field_type_tables as $ft => $data):?>
 
 		<div id="ft_<?=$ft?>" class="js_hide">
-		
+
 		<?php
 			if (is_array($data))
 			{
@@ -139,9 +139,9 @@
 		?>
 
 		</div>
-	
+
 	<?php endforeach;?>
 
 	<p><?=form_submit('field_edit_submit', lang($submit_lang_key), 'class="submit"')?></p>
-	
+
 <?=form_close()?>
