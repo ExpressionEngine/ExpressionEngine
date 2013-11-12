@@ -140,7 +140,6 @@ class Pagination_object {
 			$this->paginate		= TRUE;
 			$this->_pagination_template	= $paginate_match[1];
 
-
 			// Determine if pagination needs to go at the top and/or bottom, or inline
 			$this->_position = ee()->TMPL->fetch_param('paginate', $this->_position);
 
@@ -509,7 +508,6 @@ class Pagination_object {
 					break;
 			}
 		}
-
 		return $return_data;
 	}
 

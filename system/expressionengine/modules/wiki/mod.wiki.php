@@ -4697,6 +4697,7 @@ class Wiki {
 			$pagination->basepath = $base_paginate;
 			$pagination->total_rows = $query->row('count');
 			$pagination->per_page = $parameters['limit'];
+			$pagination->position = $parameters['paginate'];
 			$pagination->build($pagination->total_rows);
 			$this->pagination_sql .= " LIMIT {$pagination->offset}, {$parameters['limit']}";
 		}
@@ -5000,40 +5001,36 @@ class Wiki {
 			'switch'	=> ''
 		)));
 
+		// Start work on pagination
+		ee()->load->library('pagination');
+		$pagination = ee()->pagination->create(__CLASS__);
+		$pagination->template = $match[2];
+		$match[2] = $pagination->get_template();
 
+		// How many items are we paginating over?
+		$count = ee()->db->where('wiki_id', $this->wiki_id)
+			->count_all_results('wiki_uploads');
 
+		if ($count <= $limit)
+		{
+			$pagination->paginte = FALSE;
 		}
 
-		/** ----------------------------------------
-		/**  Pagination
-		/** ----------------------------------------*/
+		// Start pulling the data
+		ee()->db->select('u.*, m.member_id, m.screen_name, m.email, m.url')
+			->from('wiki_uploads u')
+			->join('members m', 'm.member_id = u.upload_author')
+			->where('u.wiki_id', $this->wiki_id)
+			->order_by($orderby, $sort)
+			->limit($limit);
 
-		$sql =	"SELECT u.*,
-				 m.member_id, m.screen_name, m.email, m.url
-				 FROM exp_wiki_uploads u, exp_members m
-				 WHERE m.member_id = u.upload_author
-				 AND u.wiki_id = '".ee()->db->escape_str($this->wiki_id)."'
-				 ORDER BY u.{$orderby} {$sort}
-				 LIMIT {$limit}";
-
-		if (stristr($this->return_data, 'paginate}'))
+		if ($pagination->paginate === TRUE)
 		{
-			$query = ee()->db->query("SELECT COUNT(*) AS count FROM exp_wiki_uploads WHERE wiki_id = '".ee()->db->escape_str($this->wiki_id)."'");
-
-			$this->pagination($query->row('count') , $limit, $this->base_url.$this->special_ns.':Files/');
-
-			if ($this->paginate === TRUE)
-			{
-				// Not that the Paginate code is removed, we run this again
-				preg_match("/\{wiki:files(.*?)\}(.*?)\{\/wiki:files\}/s", $this->return_data, $match);
-
-				$sql =	"SELECT u.*,
-						 m.member_id, m.screen_name, m.email, m.url
-						 FROM exp_wiki_uploads u, exp_members m
-						 WHERE m.member_id = u.upload_author
-						 AND u.wiki_id = '".ee()->db->escape_str($this->wiki_id)."'
-						 ORDER BY u.{$orderby} {$sort} ".$this->pagination_sql;
-			}
+			$pagination->total_rows = $count;
+			$pagination->per_page = $limit;
+			$pagination->position = $paginate;
+			$pagination->build($pagination->total_rows);
+			ee()->db->limit($limit, $pagination->offset);
 		}
 
 		/** ----------------------------------------
@@ -5046,7 +5043,8 @@ class Wiki {
 			{
 				switch ($matches['1'][$j])
 				{
-					case 'upload_date' 		: $upload_date[$matches['0'][$j]] = $matches['2'][$j];
+					case 'upload_date':
+						$upload_date[$matches['0'][$j]] = $matches['2'][$j];
 						break;
 				}
 			}
@@ -5056,7 +5054,7 @@ class Wiki {
 		/**  Our Query
 		/** ----------------------------------------*/
 
-		$query = ee()->db->query($sql);
+		$query = ee()->db->get();
 
 		if ($query->num_rows() == 0)
 		{
@@ -5077,9 +5075,9 @@ class Wiki {
 
 		ee()->load->library('typography');
 		ee()->typography->initialize(array(
-				'parse_images'	=> FALSE,
-				'parse_smileys'	=> FALSE)
-				);
+			'parse_images'	=> FALSE,
+			'parse_smileys'	=> FALSE
+		));
 
 		$files = '';
 		$count = 0;
@@ -5093,14 +5091,16 @@ class Wiki {
 			$count++;
 			$temp = $match['2'];
 
-			$data = array(	'{file_name}'			=> $row['file_name'],
-							'{path:view_file}'		=> $this->base_url.$this->file_ns.':'.$row['file_name'],
-							'{file_type}'			=> $row['file_type'],
-							'{author}'				=> $row['screen_name'],
-							'{path:author_profile}'	=> ee()->functions->create_url($this->profile_path.$row['member_id']),
-							'{email}'				=> ee()->typography->encode_email($row['email']),
-							'{url}'					=> prep_url($row['url']),
-							'{count}'				=> $count);
+			$data = array(
+				'{file_name}'			=> $row['file_name'],
+				'{path:view_file}'		=> $this->base_url.$this->file_ns.':'.$row['file_name'],
+				'{file_type}'			=> $row['file_type'],
+				'{author}'				=> $row['screen_name'],
+				'{path:author_profile}'	=> ee()->functions->create_url($this->profile_path.$row['member_id']),
+				'{email}'				=> ee()->typography->encode_email($row['email']),
+				'{url}'					=> prep_url($row['url']),
+				'{count}'				=> $count
+			);
 
 			$x = explode('/',$row['file_type']);
 
@@ -5113,14 +5113,17 @@ class Wiki {
 				$temp = $this->_deny_if('is_image', $temp);
 			}
 
-			$data['{summary}'] = $this->convert_curly_brackets(ee()->typography->parse_type( $this->wiki_syntax($row['upload_summary']),
-															  array(
-																	'text_format'	=> $this->text_format,
-																	'html_format'	=> $this->html_format,
-																	'auto_links'	=> $this->auto_links,
-																	'allow_img_url' => 'y'
-																  )
-															));
+			$data['{summary}'] = $this->convert_curly_brackets(
+				ee()->typography->parse_type(
+					$this->wiki_syntax($row['upload_summary']),
+					array(
+						'text_format'	=> $this->text_format,
+						'html_format'	=> $this->html_format,
+						'auto_links'	=> $this->auto_links,
+						'allow_img_url'	=> 'y'
+					)
+				)
+			);
 
 			$temp = $this->prep_conditionals($temp, array_merge($data, $this->conditionals));
 
@@ -5136,28 +5139,18 @@ class Wiki {
 				}
 			}
 
+			// Parse specific variables
 			foreach ($vars['var_single'] as $key => $val)
 			{
-				/** ----------------------------------------
-				/**  parse {switch} variable
-				/** ----------------------------------------*/
-				if (preg_match("/^switch\s*=.+/i", $key))
+				if ($key == 'switch')
 				{
-					$sparam = ee()->functions->assign_parameters($key);
-
-					$sw = '';
-
-					if (isset($sparam['switch']))
-					{
-						$sopt = explode("|", $sparam['switch']);
-
-						$sw = $sopt[($count-1 + count($sopt)) % count($sopt)];
-					}
-
-					$temp = ee()->TMPL->swap_var_single($key, $sw, $temp);
+					$temp = ee()->TMPL->swap_var_single(
+						$key,
+						($count % 2 == 1) ? $switch1 : $switch2,
+						$temp
+					);
 				}
-
-				if ($key == 'absolute_count')
+				else if ($key == 'absolute_count')
 				{
 					$temp = ee()->TMPL->swap_var_single($key, $count + ($this->current_page * $parameters['limit']) - $parameters['limit'], $temp);
 				}
@@ -5166,58 +5159,7 @@ class Wiki {
 			$files .= str_replace(array_keys($data), array_values($data), $temp);
 		}
 
-		/** ----------------------------------------
-		/**  Pagination - Files
-		/** ----------------------------------------*/
-
-		if ($this->paginate === TRUE)
-		{
-			$this->paginate_data = str_replace(LD.'current_page'.RD, $this->current_page, $this->paginate_data);
-			$this->paginate_data = str_replace(LD.'total_pages'.RD,	$this->total_pages, $this->paginate_data);
-			$this->paginate_data = str_replace(LD.'pagination_links'.RD, $this->pagination_links, $this->paginate_data);
-
-			if (preg_match("/".LD."if previous_page".RD."(.+?)".LD.'\/'."if".RD."/s", $this->paginate_data, $matches))
-			{
-				if ($this->page_previous == '')
-				{
-					 $this->paginate_data = preg_replace("/".LD."if previous_page".RD.".+?".LD.'\/'."if".RD."/s", '', $this->paginate_data);
-				}
-				else
-				{
-					$matches['1'] = preg_replace("/".LD.'path.*?'.RD."/", 	$this->page_previous, $matches['1']);
-					$matches['1'] = preg_replace("/".LD.'auto_path'.RD."/",	$this->page_previous, $matches['1']);
-
-					$this->paginate_data = str_replace($matches['0'], $matches['1'], $this->paginate_data);
-				}
-			 }
-
-
-			if (preg_match("/".LD."if next_page".RD."(.+?)".LD.'\/'."if".RD."/s", $this->paginate_data, $matches))
-			{
-				if ($this->page_next == '')
-				{
-					 $this->paginate_data = preg_replace("/".LD."if next_page".RD.".+?".LD.'\/'."if".RD."/s", '', $this->paginate_data);
-				}
-				else
-				{
-					$matches['1'] = preg_replace("/".LD.'path.*?'.RD."/", 	$this->page_next, $matches['1']);
-					$matches['1'] = preg_replace("/".LD.'auto_path'.RD."/",	$this->page_next, $matches['1']);
-
-					$this->paginate_data = str_replace($matches['0'], $matches['1'], $this->paginate_data);
-				}
-			}
-
-			switch ($paginate)
-			{
-				case "top"	: $files  = $this->paginate_data.$files;
-					break;
-				case "both"	: $files  = $this->paginate_data.$files.$this->paginate_data;
-					break;
-				default		: $files .= $this->paginate_data;
-					break;
-			}
-		}
-
+		$files = $pagination->render($files);
 		$this->return_data = str_replace($match['0'], $files, $this->return_data);
 	}
 
@@ -6031,7 +5973,7 @@ class Wiki {
 			{
 				if ($name == 'switch')
 				{
-					if (strpos($values['switch'], '|') !== FALSE && isset($values['switch']))
+					if (isset($values['switch']) && strpos($values['switch'], '|') !== FALSE)
 					{
 						$switch = explode("|", $values['switch']);
 						$return['switch1'] = $switch['0'];
