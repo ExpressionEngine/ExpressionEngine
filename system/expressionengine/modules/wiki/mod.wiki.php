@@ -76,18 +76,6 @@ class Wiki {
 	var $cat_depth				= 0;
 	var $parent_cats			= array();
 
-	// Pagination variables
-	var $paginate				= FALSE;
-	var $pagination_links		= '';
-	var $page_next				= '';
-	var $page_previous			= '';
-	var $current_page			= 1;
-	var $total_pages			= 1;
-	var $total_rows				=  0;
-	var $p_limit				= '';
-	var $p_page					= '';
-	var $pagination_sql			= '';
-
 	var $return_data 			= '';
 
 	/** ----------------------------------------
@@ -3386,7 +3374,7 @@ class Wiki {
 						->get();
 
 					$data = $header;
-					$data .= $this->parse_results($match, $query, $parameters, $this->parse_dates($match['2']));
+					$data .= $this->parse_results($match, $query, $parameters, $this->parse_dates($match['2']), $pagination);
 					$data .= $footer;
 				}
 			}
@@ -4607,14 +4595,14 @@ class Wiki {
 			$pagination->per_page = $parameters['limit'];
 			$pagination->position = $parameters['paginate'];
 			$pagination->build($pagination->total_rows);
-			$this->pagination_sql .= " LIMIT {$pagination->offset}, {$parameters['limit']}";
+			$pagination_sql = " LIMIT {$pagination->offset}, {$parameters['limit']}";
 		}
 		else
 		{
-			$this->pagination_sql .= " LIMIT ".$parameters['limit'];
+			$pagination_sql = " LIMIT ".$parameters['limit'];
 		}
 
-		$query = ee()->db->query("SELECT r.*, m.member_id, m.screen_name, m.email, m.url, p.page_namespace, p.page_name AS topic ".$sql.$this->pagination_sql);
+		$query = ee()->db->query("SELECT r.*, m.member_id, m.screen_name, m.email, m.url, p.page_namespace, p.page_name AS topic ".$sql.$pagination_sql);
 
 		/** ----------------------------------------
 		/**  Global Last Updated
@@ -4655,7 +4643,7 @@ class Wiki {
 		/**  Parsing of the Results
 		/** ----------------------------------------*/
 
-		$results = $this->parse_results($match, $query, $parameters, $dates);
+		$results = $this->parse_results($match, $query, $parameters, $dates, $pagination);
 		$results = $pagination->render($results);
 		$this->return_data = str_replace($match['0'], $results, $this->return_data);
 	}
@@ -4668,7 +4656,7 @@ class Wiki {
 	/*  - Use for Search and Category Page Articles
 	/* ----------------------------------------*/
 
-	function parse_results($match, $query, $parameters, $dates)
+	function parse_results($match, $query, $parameters, $dates, $pagination)
 	{
 		if (preg_match("|".LD."letter_header".RD."(.*?)".LD."\/letter_header".RD."|s",$match['2'], $block))
 		{
@@ -4796,86 +4784,28 @@ class Wiki {
 				}
 			}
 
+			// Parse specific variables
 			foreach ($vars['var_single'] as $key => $val)
 			{
-				/** ----------------------------------------
-				/**  parse {switch} variable
-				/** ----------------------------------------*/
-				if (preg_match("/^switch\s*=.+/i", $key))
+				if ($key == 'switch')
 				{
-					$sparam = ee()->functions->assign_parameters($key);
-
-					$sw = '';
-
-					if (isset($sparam['switch']))
-					{
-						$sopt = explode("|", $sparam['switch']);
-
-						$sw = $sopt[($count-1 + count($sopt)) % count($sopt)];
-					}
-
-					$temp = ee()->TMPL->swap_var_single($key, $sw, $temp);
+					$temp = ee()->TMPL->swap_var_single(
+						$key,
+						($count % 2 == 1) ? $switch1 : $switch2,
+						$temp
+					);
 				}
-
-				if ($key == 'absolute_count')
+				else if ($key == 'absolute_count')
 				{
-					$temp = ee()->TMPL->swap_var_single($key, $count + ($this->current_page * $parameters['limit']) - $parameters['limit'], $temp);
+					$temp = ee()->TMPL->swap_var_single(
+						$key,
+						$count + ($pagination->current_page * $parameters['limit']) - $parameters['limit'],
+						$temp
+					);
 				}
 			}
 
 			$results .= str_replace(array_keys($data), array_values($data), $temp);
-		}
-
-		/** ----------------------------------------
-		/**  Pagination
-		/** ----------------------------------------*/
-
-		if ($this->paginate === TRUE)
-		{
-			$this->paginate_data = str_replace(LD.'current_page'.RD, $this->current_page, $this->paginate_data);
-			$this->paginate_data = str_replace(LD.'total_pages'.RD,	$this->total_pages, $this->paginate_data);
-			$this->paginate_data = str_replace(LD.'pagination_links'.RD, $this->pagination_links, $this->paginate_data);
-
-			if (preg_match("/".LD."if previous_page".RD."(.+?)".LD.'\/'."if".RD."/s", $this->paginate_data, $matches))
-			{
-				if ($this->page_previous == '')
-				{
-					 $this->paginate_data = preg_replace("/".LD."if previous_page".RD.".+?".LD.'\/'."if".RD."/s", '', $this->paginate_data);
-				}
-				else
-				{
-					$matches['1'] = preg_replace("/".LD.'path.*?'.RD."/", 	$this->page_previous, $matches['1']);
-					$matches['1'] = preg_replace("/".LD.'auto_path'.RD."/",	$this->page_previous, $matches['1']);
-
-					$this->paginate_data = str_replace($matches['0'], $matches['1'], $this->paginate_data);
-				}
-			 }
-
-
-			if (preg_match("/".LD."if next_page".RD."(.+?)".LD.'\/'."if".RD."/s", $this->paginate_data, $matches))
-			{
-				if ($this->page_next == '')
-				{
-					 $this->paginate_data = preg_replace("/".LD."if next_page".RD.".+?".LD.'\/'."if".RD."/s", '', $this->paginate_data);
-				}
-				else
-				{
-					$matches['1'] = preg_replace("/".LD.'path.*?'.RD."/", 	$this->page_next, $matches['1']);
-					$matches['1'] = preg_replace("/".LD.'auto_path'.RD."/",	$this->page_next, $matches['1']);
-
-					$this->paginate_data = str_replace($matches['0'], $matches['1'], $this->paginate_data);
-				}
-			}
-
-			switch ($parameters['paginate'])
-			{
-				case "top"	: $results  = $this->paginate_data.$results;
-					break;
-				case "both"	: $results  = $this->paginate_data.$results.$this->paginate_data;
-					break;
-				default		: $results .= $this->paginate_data;
-					break;
-			}
 		}
 
 		return $results;
@@ -5060,7 +4990,11 @@ class Wiki {
 				}
 				else if ($key == 'absolute_count')
 				{
-					$temp = ee()->TMPL->swap_var_single($key, $count + ($this->current_page * $parameters['limit']) - $parameters['limit'], $temp);
+					$temp = ee()->TMPL->swap_var_single(
+						$key,
+						$count + ($pagination->current_page * $parameters['limit']) - $parameters['limit'],
+						$temp
+					);
 				}
 			}
 
@@ -5272,91 +5206,6 @@ class Wiki {
 										array(ee()->functions->form_declaration($data), $file_types),
 										$this->return_data);
 	}
-
-
-	/** -------------------------------------
-	/**  Pagination
-	/** -------------------------------------*/
-
-	function pagination($count, $limit, $base_path)
-	{
-		if (preg_match("/".LD."paginate".RD."(.+?)".LD."\/paginate".RD."/s", $this->return_data, $match))
-		{
-			$this->paginate		 = TRUE;
-			$this->paginate_data = $match['1'];
-
-			$this->return_data = str_replace($match['0'], '', $this->return_data);
-
-			if (ee()->uri->query_string != '' && preg_match("#^P(\d+)|/P(\d+)#", ee()->uri->query_string, $match))
-			{
-				$this->p_page = (isset($match['2'])) ? $match['2'] : $match['1'];
-
-				$base_path = reduce_double_slashes(str_replace($match['0'], '', $base_path));
-			}
-
-			$this->p_page = ($this->p_page == '' OR ($limit > 1 AND $this->p_page == 1)) ? 0 : $this->p_page;
-
-			if ($this->p_page > $count)
-			{
-				$this->p_page = 0;
-			}
-
-			$this->current_page = floor(($this->p_page / $limit) + 1);
-
-			$this->total_pages = intval(floor($count / $limit));
-
-			/** ----------------------------------------
-			/**  Create the pagination
-			/** ----------------------------------------*/
-
-			if ($count % $limit)
-			{
-				$this->total_pages++;
-			}
-
-			if ($count > $limit)
-			{
-				ee()->load->library('pagination');
-
-				if (strpos($base_path, SELF) === FALSE && ee()->config->item('site_index') != '')
-				{
-					$base_path .= SELF;
-				}
-
-				$config['base_url']		= $base_path;
-				$config['prefix']		= 'P';
-				$config['total_rows'] 	= $count;
-				$config['per_page']		= $limit;
-				$config['cur_page']		= $this->p_page;
-				$config['first_link'] 	= lang('pag_first_link');
-				$config['last_link'] 	= lang('pag_last_link');
-				$config['first_url'] 	= rtrim($base_path, '/');
-
-				// Allows $config['cur_page'] to override
-				$config['uri_segment'] = 0;
-
-				ee()->pagination->initialize($config);
-				$this->pagination_links = ee()->pagination->create_links();
-
-				if ((($this->total_pages * $limit) - $limit) > $this->p_page)
-				{
-					$this->page_next = $base_path.'P'.($this->p_page + $limit);
-				}
-
-				if (($this->p_page - $limit ) >= 0)
-				{
-					$this->page_previous = $base_path.'P'.($this->p_page - $limit);
-				}
-
-				$this->pagination_sql = " LIMIT ".$this->p_page.', '.$limit;
-			}
-			else
-			{
-				$this->p_page = '';
-			}
-		}
-	}
-
 
 	/* -------------------------------------
 	/*  Edit Limit
