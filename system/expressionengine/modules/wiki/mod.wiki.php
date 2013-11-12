@@ -1495,7 +1495,8 @@ class Wiki {
 
 		$parameters = $this->_fetch_params($match[1], array(
 			'limit'		=> 10,
-			'paginate'	=> 'bottom'
+			'paginate'	=> 'bottom',
+			'switch'	=> ''
 		));
 
 		/** ----------------------------------------
@@ -1533,28 +1534,35 @@ class Wiki {
 
 		$results = ee()->db->query("SELECT COUNT(*) AS count ".$sql);
 
-		if ($results->row('count')  == 0)
+		if ($results->row('count') == 0)
 		{
 			return $this->return_data = '';
 		}
 
-		$this->pagination($results->row('count') , $parameters['limit'], $this->base_url.$this->special_ns.':Recentchanges/');
+		ee()->load->library('pagination');
+		$pagination = ee()->pagination->create(__CLASS__);
+		$pagination->template = $match[2];
+		$match[2] = $pagination->get_template();
 
-		// Pagination code removed, rerun template preg_match()
-		if ($this->paginate === TRUE)
+		if ($pagination->paginate === TRUE)
 		{
-			preg_match("/\{wiki:recent_changes(.*?)\}(.*?)\{\/wiki:recent_changes\}/s", $this->return_data, $match);
+			$pagination->total_rows = $results->row('count');
+			$pagination->per_page = $parameters['limit'];
+			$pagination->position = $parameters['paginate'];
+			$pagination->build($pagination->total_rows);
+			$pagination_sql = " LIMIT {$pagination->offset}, {$parameters['limit']}";
 		}
+
 		else
 		{
-			$this->pagination_sql .= " LIMIT ".$parameters['limit'];
+			$pagination_sql = " LIMIT ".$parameters['limit'];
 		}
 
 		$results = ee()->db->query("SELECT r.*,
 								m.member_id, m.screen_name, m.email, m.url,
 								p.page_namespace, p.page_name AS topic ".
 								$sql.
-								$this->pagination_sql);
+								$pagination_sql);
 
 		/** ----------------------------------------
 		/**  Global Last Updated
@@ -1597,10 +1605,10 @@ class Wiki {
 
 		ee()->load->library('typography');
 		ee()->typography->initialize(array(
-				'parse_images'	=> FALSE,
-				'parse_smileys'	=> FALSE,
-				'encode_email'	=> ($type == 'rss' OR $type == 'atom') ? FALSE : TRUE)
-				);
+			'parse_images'	=> FALSE,
+			'parse_smileys'	=> FALSE,
+			'encode_email'	=> ($type == 'rss' OR $type == 'atom') ? FALSE : TRUE)
+		);
 
 		$changes = '';
 		$count = 0;
@@ -1617,27 +1625,32 @@ class Wiki {
 			$title	= ($row['page_namespace'] != '') ? $this->namespace_label($row['page_namespace']).':'.$row['topic'] : $row['topic'];
 			$link	= $this->create_url($this->namespace_label($row['page_namespace']), $row['topic']);
 
-			$data = array(	'{title}'				=> $this->prep_title($title),
-							'{revision_id}'			=> $row['revision_id'],
-							'{page_id}'				=> $row['page_id'],
-							'{author}'				=> $row['screen_name'],
-							'{path:author_profile}'	=> ee()->functions->create_url($this->profile_path.$row['member_id']),
-							'{path:member_profile}'	=> ee()->functions->create_url($this->profile_path.$row['member_id']),
-							'{email}'				=> ($type == 'rss' OR $type == 'atom') ? $row['email'] : ee()->typography->encode_email($row['email']), // No encoding for RSS/Atom
-							'{url}'					=> prep_url($row['url']),
-							'{revision_notes}'		=> $row['revision_notes'],
-							'{path:view_article}'	=> $link,
-							'{content}'				=> $row['page_content'],
-							'{count}'				=> $count);
+			$data = array(
+				'{title}'				=> $this->prep_title($title),
+				'{revision_id}'			=> $row['revision_id'],
+				'{page_id}'				=> $row['page_id'],
+				'{author}'				=> $row['screen_name'],
+				'{path:author_profile}'	=> ee()->functions->create_url($this->profile_path.$row['member_id']),
+				'{path:member_profile}'	=> ee()->functions->create_url($this->profile_path.$row['member_id']),
+				'{email}'				=> ($type == 'rss' OR $type == 'atom') ? $row['email'] : ee()->typography->encode_email($row['email']), // No encoding for RSS/Atom
+				'{url}'					=> prep_url($row['url']),
+				'{revision_notes}'		=> $row['revision_notes'],
+				'{path:view_article}'	=> $link,
+				'{content}'				=> $row['page_content'],
+				'{count}'				=> $count
+			);
 
-			$data['{article}'] = $this->convert_curly_brackets(ee()->typography->parse_type( $this->wiki_syntax($row['page_content']),
-															  array(
-																	'text_format'	=> $this->text_format,
-																	'html_format'	=> $this->html_format,
-																	'auto_links'	=> $this->auto_links,
-																	'allow_img_url' => 'y'
-																  )
-															));
+			$data['{article}'] = $this->convert_curly_brackets(
+				ee()->typography->parse_type(
+					$this->wiki_syntax($row['page_content']),
+					array(
+						'text_format'	=> $this->text_format,
+						'html_format'	=> $this->html_format,
+						'auto_links'	=> $this->auto_links,
+						'allow_img_url' => 'y'
+					)
+				)
+			);
 
 			$temp = $this->prep_conditionals($temp, array_merge($data, $this->conditionals));
 
@@ -1664,96 +1677,36 @@ class Wiki {
 				}
 			}
 
+			// Parse specific variables
 			foreach ($vars['var_single'] as $key => $val)
 			{
-				/** ----------------------------------------
-				/**  parse {switch} variable
-				/** ----------------------------------------*/
-				if (preg_match("/^switch\s*=.+/i", $key))
+				if ($key == 'switch')
 				{
-					$sparam = ee()->functions->assign_parameters($key);
-
-					$sw = '';
-
-					if (isset($sparam['switch']))
-					{
-						$sopt = explode("|", $sparam['switch']);
-
-						$sw = $sopt[($count-1 + count($sopt)) % count($sopt)];
-					}
-
-					$temp = ee()->TMPL->swap_var_single($key, $sw, $temp);
+					$temp = ee()->TMPL->swap_var_single(
+						$key,
+						($count % 2 == 1) ? $switch1 : $switch2,
+						$temp
+					);
 				}
-
-				if ($key == 'absolute_count')
+				else if ($key == 'absolute_count')
 				{
-					$temp = ee()->TMPL->swap_var_single($key, $count + ($this->current_page * $parameters['limit']) - $parameters['limit'], $temp);
+					$temp = ee()->TMPL->swap_var_single(
+						$key,
+						$count + ($pagination->current_page * $parameters['limit']) - $parameters['limit'],
+						$temp
+					);
 				}
 			}
 
 			$changes .= str_replace(array_keys($data), array_values($data), $temp);
 		}
 
-		/** ----------------------------------------
-		/**  Pagination
-		/** ----------------------------------------*/
-
-		if ($this->paginate === TRUE)
-		{
-			$this->paginate_data = str_replace(LD.'current_page'.RD, $this->current_page, $this->paginate_data);
-			$this->paginate_data = str_replace(LD.'total_pages'.RD,	$this->total_pages, $this->paginate_data);
-			$this->paginate_data = str_replace(LD.'pagination_links'.RD, $this->pagination_links, $this->paginate_data);
-
-			if (preg_match("/".LD."if previous_page".RD."(.+?)".LD.'\/'."if".RD."/s", $this->paginate_data, $matches))
-			{
-				if ($this->page_previous == '')
-				{
-					 $this->paginate_data = preg_replace("/".LD."if previous_page".RD.".+?".LD.'\/'."if".RD."/s", '', $this->paginate_data);
-				}
-				else
-				{
-					$matches['1'] = preg_replace("/".LD.'path.*?'.RD."/", 	$this->page_previous, $matches['1']);
-					$matches['1'] = preg_replace("/".LD.'auto_path'.RD."/",	$this->page_previous, $matches['1']);
-
-					$this->paginate_data = str_replace($matches['0'], $matches['1'], $this->paginate_data);
-				}
-				}
-
-
-			if (preg_match("/".LD."if next_page".RD."(.+?)".LD.'\/'."if".RD."/s", $this->paginate_data, $matches))
-			{
-				if ($this->page_next == '')
-				{
-					 $this->paginate_data = preg_replace("/".LD."if next_page".RD.".+?".LD.'\/'."if".RD."/s", '', $this->paginate_data);
-				}
-				else
-				{
-					$matches['1'] = preg_replace("/".LD.'path.*?'.RD."/", 	$this->page_next, $matches['1']);
-					$matches['1'] = preg_replace("/".LD.'auto_path'.RD."/",	$this->page_next, $matches['1']);
-
-					$this->paginate_data = str_replace($matches['0'], $matches['1'], $this->paginate_data);
-				}
-			}
-
-			switch ($parameters['paginate'])
-			{
-				case "top"	: $changes  = $this->paginate_data.$changes;
-					break;
-				case "both"	: $changes  = $this->paginate_data.$changes.$this->paginate_data;
-					break;
-				default		: $changes .= $this->paginate_data;
-					break;
-			}
-		}
-
+		$changes = $pagination->render($changes);
 		$this->return_data = str_replace($match['0'], $changes, $this->return_data);
 
 		$ex = explode("/", str_replace(array('http://', 'www.'), '', ee()->functions->create_url($this->base_path)));
-
 		$this->return_data = str_replace(array('{trimmed_url}', '{language}'), array(current($ex), ee()->config->item('xml_lang')), $this->return_data);
 	}
-
-
 
 
 	/** ----------------------------------------
