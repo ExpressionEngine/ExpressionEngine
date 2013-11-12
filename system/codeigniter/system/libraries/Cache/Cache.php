@@ -50,7 +50,7 @@ class CI_Cache extends CI_Driver_Library {
 	 *
 	 * @var string
 	 */
-	protected $_backup_driver = 'dummy';
+	protected $_backup_driver = 'file';
 
 	/**
 	 * Cache key prefix
@@ -107,6 +107,8 @@ class CI_Cache extends CI_Driver_Library {
 				$this->_adapter = $this->_backup_driver;
 			}
 		}
+
+		ee()->load->library('localize');
 	}
 
 	// ------------------------------------------------------------------------
