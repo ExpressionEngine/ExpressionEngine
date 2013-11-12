@@ -3267,9 +3267,7 @@ class Wiki {
 
 	function category_page()
 	{
-		$cat_data = $this->determine_category($this->topic);
-
-		extract($cat_data);
+		extract($this->determine_category($this->topic));
 
 		/** ----------------------------------------
 		/**  Display All of the Subcategories for a Category
@@ -3317,17 +3315,17 @@ class Wiki {
 			if ($cat_id !== 0)
 			{
 				$query = ee()->db->query("SELECT COUNT(*) AS count FROM exp_wiki_categories
-									 WHERE wiki_id = '".ee()->db->escape_str($this->wiki_id)."'
-									 AND parent_id = '".ee()->db->escape_str($cat_id)."'
-									 ORDER BY parent_id, cat_name");
+					WHERE wiki_id = '".ee()->db->escape_str($this->wiki_id)."'
+					AND parent_id = '".ee()->db->escape_str($cat_id)."'
+					ORDER BY parent_id, cat_name");
 
-				if ($query->row('count')  > 0)
+				if ($query->row('count') > 0)
 				{
 					$subs = $query->row('count') ;
 
 					$query = ee()->db->query("SELECT * FROM exp_wiki_categories
-									 WHERE wiki_id = '".ee()->db->escape_str($this->wiki_id)."'
-									 ORDER BY parent_id, cat_name");
+						WHERE wiki_id = '".ee()->db->escape_str($this->wiki_id)."'
+						ORDER BY parent_id, cat_name");
 
 					$data  = $header;
 					$data .= $this->parse_categories($this->structure_categories($query, $cat_id), $match['2'], 'nested', 0, $ancestry);
@@ -3381,69 +3379,66 @@ class Wiki {
 			/**  Parsing and Output
 			/** ----------------------------------------*/
 
+			ee()->load->library('pagination');
+			$pagination = ee()->pagination->create(__CLASS__);
+			$pagination->template = $match[2];
+			$match[2] = $pagination->get_template();
+
 			$data = $no_results;
 			$articles_total = 0;
 
 			if ($cat_id !== 0)
 			{
-				$sql = "FROM exp_wiki_category_articles ca, exp_wiki_page p, exp_wiki_revisions r, exp_members m
-						WHERE ca.cat_id = '".ee()->db->escape_str($cat_id)."'
-						AND ca.page_id = p.page_id
-						AND p.wiki_id = '".ee()->db->escape_str($this->wiki_id)."'
-						AND p.page_id = r.page_id
-						AND p.last_updated = r.revision_date
-						AND m.member_id = r.revision_author
-						AND r.revision_status = 'open'";
+				ee()->db->from('wiki_category_articles ca')
+					->join('wiki_page p', 'ca.page_id = p.page_id')
+					->join('wiki_revisions r', 'p.page_id = r.page_id')
+					->join('members m', 'm.member_id = r.revision_author')
+					->where('p.last_updated', 'r.revision_date', FALSE)
+					->where(array(
+						'ca.cat_id'			=> $cat_id,
+						'p.wiki_id'			=> $this->wiki_id,
+						'r.revision_status'	=> 'open'
+					));
+				$articles_total = ee()->db->count_all_results();
 
-				$query = ee()->db->query("SELECT COUNT(p.page_id) AS count ".$sql);
-
-				if ($query->row('count')  > 0)
+				if ($articles_total > 0)
 				{
-					$articles_total = $query->row('count') ;
-
-					$this->pagination($query->row('count') , $parameters['limit'], $this->base_url.$this->category_ns.':'.$this->topic);
-
-					// Pagination code removed, rerun template preg_match()
-					if ($this->paginate === TRUE)
+					if ($articles_total > $parameters['limit']
+						&& $pagination->paginate === TRUE)
 					{
-						preg_match("/\{wiki:category_articles(.*?)\}(.*?)\{\/wiki:category_articles\}/s", $this->return_data, $match);
 
-						if (preg_match("|".LD."if\s+no_results".RD."(.*?)".LD."\/if".RD."|s",$match['2'], $block))
-						{
-							$no_results = $block['1'];
-							$match['2'] = str_replace($block['0'],'', $match['2']);
-						}
-
-						if (preg_match("|".LD."header".RD."(.*?)".LD."\/header".RD."|s",$match['2'], $block))
-						{
-							$header = $block['1'];
-							$match['2'] = str_replace($block['0'],'', $match['2']);
-						}
-
-						if (preg_match("|".LD."footer".RD."(.*?)".LD."\/footer".RD."|s",$match['2'], $block))
-						{
-							$footer = $block['1'];
-							$match['2'] = str_replace($block['0'],'', $match['2']);
-						}
+						$pagination->total_rows = $articles_total;
+						$pagination->per_page = $parameters['limit'];
+						$pagination->position = $parameters['paginate'];
+						$pagination->build($pagination->total_rows);
+						ee()->db->limit($parameters['limit'], $pagination->offset);
 					}
 					else
 					{
-						$this->pagination_sql .= " LIMIT ".$parameters['limit'];
+						ee()->db->limit($parameters['limit']);
 					}
 
-					$query = ee()->db->query("SELECT r.*, m.member_id, m.screen_name, m.email, m.url, p.page_namespace, p.page_name AS topic ".
-										$sql.
-										" ORDER BY topic ".
-										$this->pagination_sql);
+					$query = ee()->db->select("r.*, m.member_id, m.screen_name, m.email, m.url, p.page_namespace, p.page_name AS topic")
+						->from('wiki_category_articles ca')
+						->join('wiki_page p', 'ca.page_id = p.page_id')
+						->join('wiki_revisions r', 'p.page_id = r.page_id')
+						->join('members m', 'm.member_id = r.revision_author')
+						->where('p.last_updated', 'r.revision_date', FALSE)
+						->where(array(
+							'ca.cat_id'			=> $cat_id,
+							'p.wiki_id'			=> $this->wiki_id,
+							'r.revision_status'	=> 'open'
+						))
+						->order_by('topic')
+						->get();
 
 					$data = $header;
-
 					$data .= $this->parse_results($match, $query, $parameters, $this->parse_dates($match['2']));
-
 					$data .= $footer;
 				}
 			}
 
+			$data = $pagination->render($data);
 			$this->conditionals['articles_total'] = $articles_total;
 			$this->return_data = str_replace($match['0'], str_replace('{articles_total}', $articles_total, $data), $this->return_data);
 		}
