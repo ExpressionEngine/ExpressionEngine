@@ -152,7 +152,7 @@ class Admin_system extends CP_Controller {
 			$this->form_validation->set_rules($rules);
 			$validated = $this->form_validation->run();
 
-			$vars = $this->_prep_view_vars($type);
+			$vars = $this->admin_model->prep_view_vars($type);
 			$vars['form_action'] = 'C=admin_system'.AMP.'M='.$return_loc;
 
 			if ($validated)
@@ -182,7 +182,7 @@ class Admin_system extends CP_Controller {
 
 
 		// First view
-		$vars = $this->_prep_view_vars($type);
+		$vars = $this->admin_model->prep_view_vars($type);
 		$vars['form_action'] = 'C=admin_system'.AMP.'M='.$return_loc;
 
 		$vars['cp_notice'] = FALSE;
@@ -226,176 +226,6 @@ class Admin_system extends CP_Controller {
 		}
 
 		return TRUE;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Prep View Vars
-	 *
-	 * Populates form elements with the initial value, or the submitted
-	 * value in case of a form validation error
-	 *
-	 * @access	public
-	 * @return	void
-	 */
-	function _prep_view_vars($type)
-	{
-		$f_data = $this->admin_model->get_config_fields($type);
-		$subtext = $this->admin_model->get_config_field_subtext();
-
-		// Blast through the array
-		// If we're dealing with a database configuration we need to pull the data out of the DB
-		// config file. To make thigs simple we will set the DB config items as general config values
-		if ($type == 'db_cfg')
-		{
-			require $this->config->database_path;
-
-			if ( ! isset($active_group))
-			{
-				$active_group = 'expressionengine';
-			}
-
-			if (isset($db[$active_group]))
-			{
-				$db[$active_group]['pconnect'] = ($db[$active_group]['pconnect'] === TRUE) ? 'y' : 'n';
-				$db[$active_group]['cache_on'] = ($db[$active_group]['cache_on'] === TRUE) ? 'y' : 'n';
-				$db[$active_group]['db_debug'] = ($db[$active_group]['db_debug'] === TRUE) ? 'y' : 'n';
-
-				$this->config->set_item('pconnect', $db[$active_group]['pconnect']);
-				$this->config->set_item('cache_on', $db[$active_group]['cache_on']);
-				$this->config->set_item('cachedir', $db[$active_group]['cachedir']);
-				$this->config->set_item('db_debug', $db[$active_group]['db_debug']);
-			}
-		}
-
-		$this->load->helper('date');
-		$timezones = timezones();
-
-		foreach ($f_data as $name => $options)
-		{
-			$value = $this->config->item($name);
-
-			$sub = '';
-			$details = '';
-			$selected = '';
-
-			if (isset($subtext[$name]))
-			{
-				foreach ($subtext[$name] as $txt)
-				{
-					$sub .= lang($txt);
-				}
-			}
-
-			switch ($options[0])
-			{
-				case 's':
-					// Select fields
-					foreach ($options[1] as $k => $v)
-					{
-						$details[$k] = lang($v);
-
-						if ($this->form_validation->set_select($name, $k, ($k == $value)) != '')
-						{
-							$selected = $k;
-						}
-					}
-
-					break;
-				case 'r':
-					// Radio buttons
-					foreach ($options[1] as $k => $v)
-					{
-						// little cheat for some values popped into a build update
-						if ($value === FALSE)
-						{
-							// MSM override
-							// The key 'multiple_sites_enabled' is listed in admin_model->get_config_fields() as it must be,
-							// but its possible that this install doesn't have it available as a config option. In these cases
-							// the below code will cause neither "yes" or "no" to be preselected, but instead we want
-							// "enable multiple site manager" in General Configuration to be "no".
-							if ($name == 'multiple_sites_enabled' AND $k == 'n')
-							{
-								$checked = TRUE;
-							}
-							else
-							{
-								$checked = (isset($options['2']) && $k == $options['2']) ? TRUE : FALSE;
-							}
-						}
-						else
-						{
-							$checked = ($k == $value) ? TRUE : FALSE;
-						}
-
-						$details[] = array('name' => $name, 'value' => $k, 'id' => $name.'_'.$k, 'label' => $v, 'checked' => $this->form_validation->set_radio($name, $k, $checked));
-					}
-					break;
-				case 't':
-					// Textareas
-
-					// The "kill_pipes" index instructs us to turn pipes into newlines
-					if (isset($options['1']['kill_pipes']) && $options['1']['kill_pipes'] === TRUE)
-					{
-						$text = str_replace('|', NL, $value);
-					}
-					else
-					{
-						$text = $value;
-					}
-
-					$rows = (isset($options['1']['rows'])) ? $options['1']['rows'] : '20';
-
-					$text = str_replace("\\'", "'", $text);
-
-					$details = array('name' => $name, 'class' => 'module_textarea', 'value' => $this->form_validation->set_value($name, $text), 'rows' => $rows, 'id' => $name);
-					break;
-				case 'f':
-					// Function calls
-					switch ($options['1'])
-					{
-						case 'language_menu'	:
-							$options[0] = 's';
-							$details = $this->admin_model->get_installed_language_packs();
-							$selected = $value;
-							break;
-						case 'fetch_encoding'	:
-							$options[0] = 's';
-							$details = $this->admin_model->get_xml_encodings();
-							$selected = $value;
-							break;
-						case 'site_404'			:
-							$options[0] = 's';
-							$details = $this->admin_model->get_template_list();
-							$selected = $value;
-							break;
-						case 'theme_menu'		:
-							$options[0] = 's';
-							$details = $this->admin_model->get_cp_theme_list();
-							$selected = $value;
-							break;
-						case 'timezone'			:
-							$options[0] = 'c';
-							$details = $this->localize->timezone_menu($value);
-							break;
-					}
-					break;
-				case 'p': // Fall through intended.
-				case 'i':
-					// Input fields
-					$details = array('name' => $name, 'value' => $this->form_validation->set_value($name, $value), 'id' => $name);
-
-					break;
-
-			}
-
-			$vars['fields'][$name] = array('type' => $options[0], 'value' => $details, 'subtext' => $sub, 'selected' => $selected);
-		}
-
-		$vars['type'] = $type;
-
-		return $vars;
 	}
 
 	// --------------------------------------------------------------------
