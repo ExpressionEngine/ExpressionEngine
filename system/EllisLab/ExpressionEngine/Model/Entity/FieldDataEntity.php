@@ -50,18 +50,18 @@ class FieldDataEntity extends Entity {
 	{
 		if ($key === 'field_list')
 		{
-			if ( ! isset(static::$meta['number_of_fields']))
+			$db = clone ee()->db;
+			$db->select(static::getMetaData('field_id_name'));
+			$db->from(static::getMetaData('field_table'));
+
+			$results = $db->get()->result_array();
+			$field_names = parent::getMetaData('field_list');		
+			foreach($results as $result_row)
 			{
-				$db = clone ee()->db;
-				static::$meta['number_of_fields'] = $db->count_all(static::getMetaData('field_table'));
+				$field_names['field_id_' . $result_row[static::getMetaData('field_id_name')]] = NULL;
+				$field_names['field_ft_' . $result_row[static::getMetaData('field_id_name')]] = NULL;
 			}
 
-			$field_names = parent::getMetaData('field_list');		
-			for($id = 1; $id <= static::$meta['number_of_fields']; $id++)
-			{
-				$field_names['field_id_' . $id] = NULL;
-				$field_names['field_ft_' . $id] = NULL;
-			}
 			return $field_names;
 		}
 

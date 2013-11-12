@@ -7,6 +7,7 @@ class ChannelDataEntity extends FieldDataEntity {
 	protected static $meta = array(
 		'table_name' => 'channel_data',
 		'field_table' => 'channel_fields',
+		'field_id_name' => 'field_id',
 		'primary_key' => 'entry_id',
 		'related_entities' => array(
 			'entry_id' => array(
