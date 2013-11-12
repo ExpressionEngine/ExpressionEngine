@@ -217,13 +217,15 @@ class Localize {
 	 */
 	public function human_time($timestamp = NULL, $localize = TRUE, $seconds = FALSE)
 	{
-		if (func_num_args() != 3 && ee()->config->item('include_seconds') == 'y')
+		$include_seconds = ee()->session->userdata('include_seconds') ? ee()->session->userdata('include_seconds') : ee()->config->item('include_seconds');
+		$date_format = ee()->session->userdata('date_format') ? ee()->session->userdata('date_format') : ee()->config->item('date_format');
+		$time_format = ee()->session->userdata('time_format') ? ee()->session->userdata('time_format') : ee()->config->item('time_format');
+
+		if (func_num_args() != 3 && $include_seconds == 'y')
 		{
 			$seconds = TRUE;
 		}
 
-		$date_format = ee()->config->item('date_format');
-		$time_format = ee()->config->item('time_format');
 		$seconds_format = $seconds ? ':%s' : '';
 
 		$format_string = $date_format . ' ';
