@@ -121,8 +121,8 @@ $(document).ready(function() {
 			// hide custom date picker again
 			$("#custom_date_picker").slideUp("fast");
 			
-			// redraw table
-			oTable.fnDraw();
+			// Trigger change to update filter
+			$("#date_range").change();
 		}
 	}
 	

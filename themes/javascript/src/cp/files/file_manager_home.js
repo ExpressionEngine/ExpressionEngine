@@ -196,9 +196,6 @@ $.ee_filemanager.date_range = function() {
 			
 			// Trigger change to update filter
 			$("#date_range").change();
-			
-			// redraw table
-			oTable.fnDraw();
 		}
 	}
 
