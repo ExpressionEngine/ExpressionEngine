@@ -1194,37 +1194,35 @@ class MyAccount extends CP_Controller {
 
 		$vars['form_hidden']['id'] = $this->id;
 
-		$fields = array('timezone', 'language', 'time_format');
+		$fields = array('timezone', 'language', 'date_format', 'time_format', 'include_seconds');
 
 		// Fetch profile data
 		$query = $this->member_model->get_member_data($this->id, $fields);
 
+		$values = array();
 		foreach ($fields as $val)
 		{
-			$vars[$val] = $query->row($val);
+			$values[$val] = $query->row($val);
 		}
+		$values['default_site_timezone'] = $values['timezone']; // Key differentiation with the config
 
-		if ($vars['timezone'] == '')
-		{
-			$vars['timezone'] = $this->config->item('default_site_timezone') ? $this->config->item('default_site_timezone') : 'UTC';
-		}
+		// Fetch the admin config values in order to populate the form with
+		// the same options
+		$this->load->model('admin_model');
+		$config_fields = $this->admin_model->prep_view_vars('localization_cfg', $values);
 
-		if ($vars['time_format'] == '')
-		{
-			$vars['time_format'] = ($this->config->item('time_format') && $this->config->item('time_format') != '') ? $this->config->item('time_format') : 'us';
-		}
+		// Cleanup the key differentiation
+		$vars['timezone'] = $config_fields['fields']['default_site_timezone']['value'];
+		unset($config_fields['fields']['default_site_timezone']);
 
-		$vars['time_format_options']['us'] = lang('united_states');
-		$vars['time_format_options']['eu'] = lang('european');
+		$vars = array_merge($config_fields, $vars);
 
+		$vars['language'] = $values['language'];
 		if ($vars['language'] == '')
 		{
 			$vars['language'] = ($this->config->item('deft_lang') && $this->config->item('deft_lang') != '') ? $this->config->item('deft_lang') : 'english';
 		}
-
 		$vars['language_options'] = $this->language_model->language_pack_names();
-
-		$vars['timezone_menu'] = $this->localize->timezone_menu($vars['timezone'], 'timezones');
 
 		$this->cp->render('account/localization', $vars);
 	}
@@ -1250,7 +1248,9 @@ class MyAccount extends CP_Controller {
 
 		$data['language']	= $this->security->sanitize_filename($this->input->post('language'));
 		$data['timezone']	= $this->input->post('timezones');
+		$data['date_format'] = $this->input->post('date_format');
 		$data['time_format'] = $this->input->post('time_format');
+		$data['include_seconds'] = $this->input->post('include_seconds');
 
 		if ( ! is_dir(APPPATH.'language/'.$data['language']))
 		{
