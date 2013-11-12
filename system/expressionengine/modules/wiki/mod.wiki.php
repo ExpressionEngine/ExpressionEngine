@@ -1493,14 +1493,10 @@ class Wiki {
 		/**  Parameters
 		/** ----------------------------------------*/
 
-		$parameters['limit']	= 10;
-		$parameters['paginate']	= 'bottom';
-
-		if (trim($match['1']) != '' && ($params = ee()->functions->assign_parameters($match['1'])) !== FALSE)
-		{
-			$parameters['limit']	= (isset($params['limit']) && is_numeric($params['limit'])) ? $params['limit'] : $parameters['limit'];
-			$parameters['paginate']	= (isset($params['paginate'])) ? $params['paginate'] : $parameters['paginate'];
-		}
+		$parameters = $this->_fetch_params($match[1], array(
+			'limit'		=> 10,
+			'paginate'	=> 'bottom'
+		));
 
 		/** ----------------------------------------
 		/**  Date Formats
@@ -1804,18 +1800,12 @@ class Wiki {
 			/**  Parameters
 			/** ----------------------------------------*/
 
-			$limit		= 10;
-			$backspace	= '';
-			$show_empty	= 'y';
-			$style		= '';
-
-			if (trim($match['1']) != '' && ($params = ee()->functions->assign_parameters($match['1'])) !== FALSE)
-			{
-				$limit		= (isset($params['limit']) && is_numeric($params['limit'])) ? $params['limit'] : $limit;
-				$backspace	= (isset($params['backspace']) && is_numeric($params['backspace'])) ? $params['backspace'] : $backspace;
-				$show_empty	= (isset($params['show_empty'])) ? $params['show_empty'] : $show_empty;
-				$style		= (isset($params['style'])) ? $params['style'] : $style;
-			}
+			extract($this->_fetch_params($match[1], array(
+				'limit'			=> 10,
+				'backspace'		=> '',
+				'show_empty'	=> 'y',
+				'style'			=> ''
+			)));
 
 			/** ----------------------------------------
 			/**  Our Query
@@ -3284,7 +3274,6 @@ class Wiki {
 		/** ----------------------------------------
 		/**  Display All of the Subcategories for a Category
 		/** ----------------------------------------*/
-
 		if (preg_match("/\{wiki:category_subcategories(.*?)\}(.*?)\{\/wiki:category_subcategories\}/s", $this->return_data, $match))
 		{
 			/** ----------------------------------------
@@ -3294,14 +3283,11 @@ class Wiki {
 			$no_results = '';
 			$header		= '';
 			$footer		= '';
-			$backspace	= '';
-			$style		= '';
 
-			if (trim($match['1']) != '' && ($params = ee()->functions->assign_parameters($match['1'])) !== FALSE)
-			{
-				$backspace	= (isset($params['backspace']) && is_numeric($params['backspace'])) ? $params['backspace'] : $backspace;
-				$style		= (isset($params['style'])) ? $params['style'] : $style;
-			}
+			extract($this->_fetch_params($match[1], array(
+				'backspace'	=> '',
+				'style'		=> ''
+			)));
 
 			if (preg_match("|".LD."if\s+no_results".RD."(.*?)".LD."\/if".RD."|s",$match['2'], $block))
 			{
@@ -3367,16 +3353,11 @@ class Wiki {
 			$header		= '';
 			$footer		= '';
 
-			$parameters['backspace'] = '';
-			$parameters['limit']	 = 100;
-			$parameters['paginate']  = 'bottom';
-
-			if (trim($match['1']) != '' && ($params = ee()->functions->assign_parameters($match['1'])) !== FALSE)
-			{
-				$parameters['backspace'] = (isset($params['backspace']) && is_numeric($params['backspace'])) ? $params['backspace'] : $parameters['backspace'];
-				$parameters['limit']	 = (isset($params['limit'])) ? $params['limit'] : $parameters['limit'];
-				$parameters['paginate']	= (isset($params['paginate'])) ? $params['paginate'] : $parameters['paginate'];
-			}
+			$parameters = $this->_fetch_params($match[1], array(
+				'limit'		=> 100,
+				'backspace'	=> '',
+				'paginate'	=> 'bottom'
+			));
 
 			if (preg_match("|".LD."if\s+no_results".RD."(.*?)".LD."\/if".RD."|s",$match['2'], $block))
 			{
