@@ -152,7 +152,7 @@ class Admin_system extends CP_Controller {
 			$this->form_validation->set_rules($rules);
 			$validated = $this->form_validation->run();
 
-			$vars = $this->_prep_view_vars($type);
+			$vars = $this->admin_model->prep_view_vars($type);
 			$vars['form_action'] = 'C=admin_system'.AMP.'M='.$return_loc;
 
 			if ($validated)
@@ -182,7 +182,7 @@ class Admin_system extends CP_Controller {
 
 
 		// First view
-		$vars = $this->_prep_view_vars($type);
+		$vars = $this->admin_model->prep_view_vars($type);
 		$vars['form_action'] = 'C=admin_system'.AMP.'M='.$return_loc;
 
 		$vars['cp_notice'] = FALSE;
