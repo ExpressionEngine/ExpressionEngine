@@ -245,8 +245,20 @@ $lang = array(
 'localization' =>
 'Localization Settings',
 
-'time_format' =>
-'Time Formatting',
+"date_format" =>
+"Date Formatting",
+
+"time_format" =>
+"Time Formatting",
+
+"24_hour" =>
+"24 Hour",
+
+"12_hour" =>
+"12 Hour with AM/PM",
+
+"include_seconds" =>
+"Include Seconds in the Time Format",
 
 'united_states' =>
 'United States',
