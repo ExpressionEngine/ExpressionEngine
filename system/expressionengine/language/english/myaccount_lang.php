@@ -245,16 +245,28 @@ $lang = array(
 'localization' =>
 'Localization Settings',
 
-'time_format' => 
-'Time Formatting',
+"date_format" =>
+"Date Formatting",
 
-'united_states' => 
+"time_format" =>
+"Time Formatting",
+
+"24_hour" =>
+"24 Hour",
+
+"12_hour" =>
+"12 Hour with AM/PM",
+
+"include_seconds" =>
+"Include Seconds in the Time Format",
+
+'united_states' =>
 'United States',
 
-'european' => 
+'european' =>
 'European',
 
-'your_html_buttons' => 
+'your_html_buttons' =>
 'HTML Formatting Buttons',
 
 'change_password' =>
@@ -512,7 +524,7 @@ $lang = array(
 'bookmarklet_name' =>
 'Bookmarklet Name',
 
-'single_word_no_spaces' => 
+'single_word_no_spaces' =>
 'single word, no spaces',
 
 'channel_name' =>
