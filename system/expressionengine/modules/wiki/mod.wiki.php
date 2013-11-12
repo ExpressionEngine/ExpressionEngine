@@ -4490,32 +4490,11 @@ class Wiki {
 		/**  Parameters
 		/** ----------------------------------------*/
 
-		$parameters['limit']	= 20;
-		$parameters['switch1']	= '';
-		$parameters['switch2']	= '';
-		$parameters['paginate']	= 'bottom';
-
-		if (trim($match['1']) != '' && ($params = ee()->functions->assign_parameters($match['1'])) !== FALSE)
-		{
-			$parameters['limit'] = (isset($params['limit']) && is_numeric($params['limit'])) ? $params['limit'] : $parameters['limit'];
-			$parameters['paginate']	= (isset($params['paginate'])) ? $params['paginate'] : $parameters['paginate'];
-
-			if (isset($params['switch']))
-			{
-				if (strpos($params['switch'], '|') !== FALSE)
-				{
-					$x = explode("|", $params['switch']);
-
-					$parameters['switch1'] = $x['0'];
-					$parameters['switch2'] = $x['1'];
-				}
-				else
-				{
-					$parameters['switch1'] = $params['switch'];
-				}
-			}
-		}
-
+		$parameters = $this->_fetch_params($match[1], array(
+			'limit'		=> 20,
+			'paginate'	=> 'bottom',
+			'switch'	=> ''
+		));
 
 		/* ----------------------------------------
 		/*  Date Formats
