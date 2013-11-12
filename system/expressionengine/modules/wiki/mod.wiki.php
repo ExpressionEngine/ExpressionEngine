@@ -4422,8 +4422,8 @@ class Wiki {
 
 	/**
 	 * Render the search results
-	 * @param  string $keywords [description]
-	 * @return [type]           [description]
+	 * @param  string $keywords (Optional) Search keyword from elsewhere
+	 * @return string           Parsed search results
 	 */
 	public function search_results($keywords='')
 	{
@@ -4548,11 +4548,11 @@ class Wiki {
 		}
 		else
 		{
-			$sql =	"FROM exp_wiki_revisions r, exp_members m, exp_wiki_page p
-					 WHERE p.page_id = r.page_id
-					 AND p.last_updated = r.revision_date
-					 AND p.wiki_id = '".ee()->db->escape_str($this->wiki_id)."'
-					 AND (";
+			$sql = "FROM exp_wiki_revisions r, exp_members m, exp_wiki_page p
+				WHERE p.page_id = r.page_id
+					AND p.last_updated = r.revision_date
+					AND p.wiki_id = '".ee()->db->escape_str($this->wiki_id)."'
+					AND (";
 
 			/** -------------------------------------
 			/**  Get our keywords into search terms
@@ -4698,12 +4698,7 @@ class Wiki {
 			$pagination->total_rows = $query->row('count');
 			$pagination->per_page = $parameters['limit'];
 			$pagination->build($pagination->total_rows);
-
-			// Now that the Paginate code is removed, we run this again
-			// preg_match("/\{wiki:search_results(.*?)\}(.*?)\{\/wiki:search_results\}/s", $this->return_data, $match);
-			// var_dump($match);
-			// TODO-WB Pagination is not changing and is not offet on the page
-			$this->pagination_sql .= " LIMIT ".$parameters['limit'];
+			$this->pagination_sql .= " LIMIT {$pagination->offset}, {$parameters['limit']}";
 		}
 		else
 		{

@@ -210,11 +210,15 @@ class Pagination_object {
 			if ($this->basepath == '')
 			{
 				$this->basepath = ee()->functions->create_url(ee()->uri->uri_string);
-				$query_string = (ee()->uri->page_query_string != '') ? ee()->uri->page_query_string : ee()->uri->query_string;
+			}
 
+			// Determine the offset
+			if ($this->offset === 0)
+			{
+				$query_string = (ee()->uri->page_query_string != '') ? ee()->uri->page_query_string : ee()->uri->query_string;
 				if (preg_match("#^P(\d+)|/P(\d+)#", $query_string, $match))
 				{
-					$this->offset = (isset($match[2])) ? $match[2] : $match[1];
+					$this->offset = (isset($match[2])) ? (int) $match[2] : (int) $match[1];
 					$this->basepath = reduce_double_slashes(
 						str_replace($match[0], '', $this->basepath)
 					);
