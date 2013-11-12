@@ -4976,38 +4976,17 @@ class Wiki {
 			return $this->return_data = '';
 		}
 
-		/** ----------------------------------------
-		/**  Parameters
-		/** ----------------------------------------*/
+		// Fetch parameters
+		extract($this->_fetch_params($match[1], array(
+			'limit'		=> 20,
+			'paginate'	=> 'bottom',
+			'orderby'	=> 'file_name',
+			'sort'		=> 'asc',
+			'switch'	=> ''
+		)));
 
-		$limit = 20;
-		$paginate = 'bottom';
-		$orderby = 'file_name';
-		$sort = 'asc';
-		$switch1 = '';
-		$switch2 = '';
 
-		if (trim($match['1']) != '' && ($params = ee()->functions->assign_parameters($match['1'])) !== FALSE)
-		{
-			$limit = (isset($params['limit']) && is_numeric($params['limit'])) ? $params['limit'] : $limit;
-			$paginate = (isset($params['paginate']) && is_numeric($params['paginate'])) ? $params['paginate'] : $paginate;
-			$orderby = (isset($params['orderby'])) ? $params['orderby'] : $orderby;
-			$sort = (isset($params['sort'])) ? $params['sort'] : $sort;
 
-			if (isset($params['switch']))
-			{
-				if (strpos($params['switch'], '|') !== FALSE)
-				{
-					$x = explode("|", $params['switch']);
-
-					$switch1 = $x['0'];
-					$switch2 = $x['1'];
-				}
-				else
-				{
-					$switch1 = $params['switch'];
-				}
-			}
 		}
 
 		/** ----------------------------------------
@@ -6013,6 +5992,55 @@ class Wiki {
 		ee()->db->query("UPDATE exp_modules
 					SET module_version = '".ee()->db->escape_str($this->version)."'
 					WHERE module_name = 'Wiki'");
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Fetch the parameters for a wiki tag given a string of parameters and an
+	 * array of names and default values
+	 * @param  String $param_string Parameter string from preg_match
+	 * @param  array  $params       Array with keys as the parameter name and
+	 *                              defaults as the values
+	 * @return array                Array much like the $params but with the
+	 *                              final values
+	 */
+	private function _fetch_params($param_string, $params = array('limit' => 10))
+	{
+		$return = array();
+
+		if (trim($param_string) != '' && ($values = ee()->functions->assign_parameters($param_string)) !== FALSE)
+		{
+
+			foreach ($params as $name => $default)
+			{
+				if ($name == 'switch')
+				{
+					if (strpos($values['switch'], '|') !== FALSE && isset($values['switch']))
+					{
+						$switch = explode("|", $values['switch']);
+						$return['switch1'] = $switch['0'];
+						$return['switch2'] = $switch['1'];
+					}
+					else
+					{
+						$return['switch1'] = trim($params['switch']);
+						$return['switch2'] = '';
+					}
+				}
+				else if (isset($values[$name])
+					&& ( ! is_numeric($default) XOR is_numeric($values[$name])))
+				{
+					$return[$name] = $values[$name];
+				}
+				else
+				{
+					$return[$name] = $default;
+				}
+			}
+		}
+
+		return $return;
 	}
 
 
