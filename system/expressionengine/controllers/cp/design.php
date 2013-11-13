@@ -500,7 +500,7 @@ class Design extends CP_Controller {
 			$vars['template_data'][$group_name] = $group_name;
 		}
 
-		$f_data = $this->admin_model->get_config_fields('template_cfg');
+		$f_data = ee()->config->get_config_fields('template_cfg');
 
 		foreach ($f_data as $conf => $val)
 		{
@@ -559,7 +559,7 @@ class Design extends CP_Controller {
 
 		//Just to be careful, let's strip out everything not a template conf
 		$this->load->model('admin_model');
-		$template_vars = array_keys($this->admin_model->get_config_fields('template_cfg'));
+		$template_vars = array_keys(ee()->config->get_config_fields('template_cfg'));
 
 		foreach ($_POST as $key => $val)
 		{

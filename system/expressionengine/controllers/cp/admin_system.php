@@ -134,7 +134,7 @@ class Admin_system extends CP_Controller {
 			$this->load->helper('html');
 
 			// Grab the field definitions for the settings of this type
-			$field_defs = $this->admin_model->get_config_fields($type);
+			$field_defs = ee()->config->get_config_fields($type);
 
 			// Set validation rules
 			$rules = array();
@@ -152,7 +152,7 @@ class Admin_system extends CP_Controller {
 			$this->form_validation->set_rules($rules);
 			$validated = $this->form_validation->run();
 
-			$vars = $this->admin_model->prep_view_vars($type);
+			$vars = ee()->config->prep_view_vars($type);
 			$vars['form_action'] = 'C=admin_system'.AMP.'M='.$return_loc;
 
 			if ($validated)
@@ -182,7 +182,7 @@ class Admin_system extends CP_Controller {
 
 
 		// First view
-		$vars = $this->admin_model->prep_view_vars($type);
+		$vars = ee()->config->prep_view_vars($type);
 		$vars['form_action'] = 'C=admin_system'.AMP.'M='.$return_loc;
 
 		$vars['cp_notice'] = FALSE;
