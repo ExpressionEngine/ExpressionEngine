@@ -30,10 +30,10 @@ class Admin_model extends CI_Model {
 	 * Fetches the config/preference fields, their types, and their default values
 	 *
 	 * @access	public
-	 * @param	string
-	 * @return	array
+	 * @param	string	The type of config fields to be prepared
+	 * @return	array	The array of config fields
 	 */
-	function get_config_fields($type)
+	public function get_config_fields($type)
 	{
 		$debug_options = array('1' => 'debug_one', '2' => 'debug_two');
 
@@ -434,9 +434,9 @@ class Admin_model extends CI_Model {
 	 * This text appears below any given preference definition
 	 *
 	 * @access	public
-	 * @return	array
+	 * @return	array	The secondary lines of text used in configuration pages
 	 */
-	function get_config_field_subtext()
+	public function get_config_field_subtext()
 	{
 		return array(
 			'site_url'					=> array('url_explanation'),
