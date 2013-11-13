@@ -33,7 +33,7 @@ class CI_DB_Cache {
 	function __construct()
 	{
 		// Set cache namespace to db_cache_{site_id}
-		$this->_cache_namespace = 'db_'.ee()->config->item('site_id');
+		$this->_cache_namespace = 'site_'.ee()->config->item('site_id').'_db';
 	}
 
 	// --------------------------------------------------------------------

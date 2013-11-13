@@ -1031,6 +1031,10 @@ class CI_DB_driver {
 	 */
 	function cache_set_path($path = '')
 	{
+		// Query caching now uses caching drivers
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.8');
+
 		$this->cachedir = $path;
 	}
 

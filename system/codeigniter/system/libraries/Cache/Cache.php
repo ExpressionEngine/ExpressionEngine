@@ -46,18 +46,11 @@ class CI_Cache extends CI_Driver_Library {
 	protected $_adapter = 'file';
 
 	/**
-	 * Fallback driver
+	 * Backup driver if main driver isn't available
 	 *
 	 * @var string
 	 */
 	protected $_backup_driver = 'file';
-
-	/**
-	 * Cache key prefix
-	 *
-	 * @var	string
-	 */
-	public $key_prefix = '';
 
 	/**
 	 * Constructor
@@ -67,28 +60,24 @@ class CI_Cache extends CI_Driver_Library {
 	 * @param	array	$config = array()
 	 * @return	void
 	 */
-	public function __construct($config = array())
+	public function __construct($driver = '')
 	{
-		$default_config = array(
-			'adapter',
-			'memcached'
-		);
+		/* -------------------------------------------
+		/*	Hidden Configuration Variables
+		/*	- cache_driver => Name of desired caching driver ('file', 'memcached'...)
+		/*	- cache_driver_backup => Failover caching driver name
+		/* -------------------------------------------*/
+		$driver = ee()->config->item('cache_driver');
+		$backup = ee()->config->item('cache_driver_backup');
 
-		foreach ($default_config as $key)
+		if ( ! empty($driver) && in_array($driver, $this->valid_drivers))
 		{
-			if (isset($config[$key]))
-			{
-				$param = '_'.$key;
-
-				$this->{$param} = $config[$key];
-			}
+			$this->_adapter = $driver;
 		}
 
-		isset($config['key_prefix']) && $this->key_prefix = $config['key_prefix'];
-
-		if (isset($config['backup']) && in_array($config['backup'], $this->valid_drivers))
+		if ( ! empty($backup) && in_array($backup, $this->valid_drivers))
 		{
-			$this->_backup_driver = $config['backup'];
+			$this->_backup_driver = $backup;
 		}
 
 		// If the specified adapter isn't available, check the backup.
@@ -123,7 +112,7 @@ class CI_Cache extends CI_Driver_Library {
 	 */
 	public function get($id, $namespace = '')
 	{
-		return $this->{$this->_adapter}->get($this->key_prefix.$id, $namespace);
+		return $this->{$this->_adapter}->get($id, $namespace);
 	}
 
 	// ------------------------------------------------------------------------
@@ -139,7 +128,7 @@ class CI_Cache extends CI_Driver_Library {
 	 */
 	public function save($id, $data, $ttl = 60, $namespace = '')
 	{
-		return $this->{$this->_adapter}->save($this->key_prefix.$id, $data, $ttl, $namespace);
+		return $this->{$this->_adapter}->save($id, $data, $ttl, $namespace);
 	}
 
 	// ------------------------------------------------------------------------
@@ -153,7 +142,7 @@ class CI_Cache extends CI_Driver_Library {
 	 */
 	public function delete($id, $namespace = '')
 	{
-		return $this->{$this->_adapter}->delete($this->key_prefix.$id, $namespace);
+		return $this->{$this->_adapter}->delete($id, $namespace);
 	}
 
 	// ------------------------------------------------------------------------
@@ -205,7 +194,7 @@ class CI_Cache extends CI_Driver_Library {
 	 */
 	public function get_metadata($id, $namespace = '')
 	{
-		return $this->{$this->_adapter}->get_metadata($this->key_prefix.$id, $namespace);
+		return $this->{$this->_adapter}->get_metadata($id, $namespace);
 	}
 
 	// ------------------------------------------------------------------------

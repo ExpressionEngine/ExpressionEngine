@@ -119,8 +119,7 @@ class EE_Core {
 		ee()->config->site_prefs(ee()->config->item('site_name'));
 
 		// Load the default caching driver
-		// TODO: Might want to specify this via hidden config
-		ee()->load->driver('cache', array('adapter' => 'file'));
+		ee()->load->driver('cache');
 
 		// this look backwards, but QUERY_MARKER is only used where we MUST
 		// have a ?, and do not want to double up
