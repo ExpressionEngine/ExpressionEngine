@@ -574,7 +574,7 @@ class Member_memberlist extends Member {
 		// @deprecated 2.8
 		if (stripos($template, LD.'if paginate'.RD) !== FALSE)
 		{
-			$template = preg_replace("/\{if paginate\}(.*)\{\/if\}/us", "{paginate}$1{/paginate}", $template);
+			$template = preg_replace("/{if paginate}(.*?){\/if}/uis", "{paginate}$1{/paginate}", $template);
 			ee()->load->library('logger');
 			ee()->logger->deprecated('2.8', 'normal {paginate} tags');
 		}
@@ -588,9 +588,8 @@ class Member_memberlist extends Member {
 
 		if ($query->row('count') > $row_limit && $pagination->paginate === TRUE)
 		{
-			$pagination->total_rows = $query->row('count');
 			$pagination->per_page = $row_limit;
-			$pagination->build($pagination->total_rows);
+			$pagination->build($query->row('count'));
 			$sql .= " LIMIT ".$row_count.", ".$row_limit;
 		}
 

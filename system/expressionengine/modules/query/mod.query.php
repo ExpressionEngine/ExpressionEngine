@@ -61,7 +61,6 @@ class Query {
 		ee()->load->library('pagination');
 		$pagination = ee()->pagination->create(__CLASS__);
 		$pagination->get_template();
-		$pagination->total_rows = $query->num_rows();
 		$pagination->per_page = ee()->TMPL->fetch_param('limit', 0);
 
 		// Disable pagination if the limit parameter isn't set

@@ -1534,10 +1534,9 @@ class Wiki {
 
 		if ($pagination->paginate === TRUE)
 		{
-			$pagination->total_rows = $results->row('count');
 			$pagination->per_page = $parameters['limit'];
 			$pagination->position = $parameters['paginate'];
-			$pagination->build($pagination->total_rows);
+			$pagination->build($results->row('count'));
 			$pagination_sql = " LIMIT {$pagination->offset}, {$parameters['limit']}";
 		}
 
@@ -3347,11 +3346,9 @@ class Wiki {
 					if ($articles_total > $parameters['limit']
 						&& $pagination->paginate === TRUE)
 					{
-
-						$pagination->total_rows = $articles_total;
 						$pagination->per_page = $parameters['limit'];
 						$pagination->position = $parameters['paginate'];
-						$pagination->build($pagination->total_rows);
+						$pagination->build($articles_total);
 						ee()->db->limit($parameters['limit'], $pagination->offset);
 					}
 					else
@@ -4591,10 +4588,9 @@ class Wiki {
 			}
 
 			$pagination->basepath = $base_paginate;
-			$pagination->total_rows = $query->row('count');
 			$pagination->per_page = $parameters['limit'];
 			$pagination->position = $parameters['paginate'];
-			$pagination->build($pagination->total_rows);
+			$pagination->build($query->row('count'));
 			$pagination_sql = " LIMIT {$pagination->offset}, {$parameters['limit']}";
 		}
 		else
@@ -4864,10 +4860,9 @@ class Wiki {
 
 		if ($pagination->paginate === TRUE)
 		{
-			$pagination->total_rows = $count;
 			$pagination->per_page = $limit;
 			$pagination->position = $paginate;
-			$pagination->build($pagination->total_rows);
+			$pagination->build($count);
 			ee()->db->limit($limit, $pagination->offset);
 		}
 

@@ -205,9 +205,8 @@ class File {
 		$offset = (int) ee()->TMPL->fetch_param('offset', 0);
 		if ($limit > 0 && $this->enable['pagination'] && $pagination->paginate == TRUE)
 		{
-			$pagination->total_rows = ee()->db->count_all_results();
 			$pagination->per_page = $limit;
-			$pagination->build($pagination->total_rows);
+			$pagination->build(ee()->db->count_all_results());
 			ee()->db->limit($pagination->per_page, $pagination->offset);
 		}
 		else if ($limit > 0 && $offset >= 0)

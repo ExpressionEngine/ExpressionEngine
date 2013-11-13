@@ -168,6 +168,8 @@ class Pagination_object {
 	 */
 	function build($count = 0, &$main_query = '', $query = '')
 	{
+		$this->total_rows = $count;
+
 		if (is_object($query))
 		{
 			$row = $query->row_array();
