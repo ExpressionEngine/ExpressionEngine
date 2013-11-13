@@ -1540,26 +1540,27 @@ class EE_Config Extends CI_Config {
 					break;
 				case 'f':
 					// Function calls
+					ee()->load->model('admin_model');
 					switch ($options['1'])
 					{
 						case 'language_menu'	:
 							$options[0] = 's';
-							$details = $this->admin_model->get_installed_language_packs();
+							$details = ee()->admin_model->get_installed_language_packs();
 							$selected = $value;
 							break;
 						case 'fetch_encoding'	:
 							$options[0] = 's';
-							$details = $this->admin_model->get_xml_encodings();
+							$details = ee()->admin_model->get_xml_encodings();
 							$selected = $value;
 							break;
 						case 'site_404'			:
 							$options[0] = 's';
-							$details = $this->admin_model->get_template_list();
+							$details = ee()->admin_model->get_template_list();
 							$selected = $value;
 							break;
 						case 'theme_menu'		:
 							$options[0] = 's';
-							$details = $this->admin_model->get_cp_theme_list();
+							$details = ee()->admin_model->get_cp_theme_list();
 							$selected = $value;
 							break;
 						case 'timezone'			:
