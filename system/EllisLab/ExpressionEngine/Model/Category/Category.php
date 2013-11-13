@@ -1,8 +1,7 @@
 <?php
 namespace EllisLab\ExpressionEngine\Model\Category;
 
-use EllisLab\ExpressionEngine\Model\FieldDataContentModel 
-	as FieldDataContentModel;
+use EllisLab\ExpressionEngine\Model\FieldDataContentModel;
 
 class Category extends FieldDataContentModel {
 	protected static $meta = array(

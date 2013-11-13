@@ -19,7 +19,8 @@ class QueryBuilder {
 		'Member' => '\EllisLab\ExpressionEngine\Module\Member\Model\Member',
 		'MemberGroup' => '\EllisLab\ExpressionEngine\Module\Member\Model\MemberGroup',
 		'MemberEntity' => '\EllisLab\ExpressionEngine\Module\Member\Model\Entity\MemberEntity',
-		'MemberGroupEntity' => '\EllisLab\ExpressionEngine\Module\Member\Model\Entity\MemberGroupEntity'
+		'MemberGroupEntity' => '\EllisLab\ExpressionEngine\Module\Member\Model\Entity\MemberGroupEntity',
+		'Category' => '\EllisLab\ExpressionEngine\Model\Category\Category'
 	);
 
 	public function __construct(Dependencies $di)

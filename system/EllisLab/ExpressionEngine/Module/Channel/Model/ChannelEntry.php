@@ -27,6 +27,11 @@ class ChannelEntry extends FieldDataContentModel {
 		return $this->manyToOne('Member', 'author_id', 'member_id', 'Author');
 	}
 
+	public function getCategories()
+	{
+		return $this->manyToMany('Category', 'entry_id', 'cat_id', 'Categories');
+	}
+
 	/**
 	 * A link back to the owning channel object.
 	 *

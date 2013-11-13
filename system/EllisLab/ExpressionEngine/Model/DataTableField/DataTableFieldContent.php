@@ -1,7 +1,7 @@
 <?php
 namespace EllisLab\ExpressionEngine\Model\DataTableField;
 
-use EllisLab\ExpressionEngine\Model\Interfaces\Field\FieldContent as FieldContent;
+use EllisLab\ExpressionEngine\Model\Interfaces\Field\FieldContent;
 
 abstract class DataTableFieldContent implements FieldContent {
 	protected $entity = NULL;

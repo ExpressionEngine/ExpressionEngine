@@ -1,10 +1,10 @@
+
 <?php
-namespace EllisLab\ExpressionEngine\Module\Channel\Model;
+namespace EllisLab\ExpressionEngine\Model\Category;
 
 use EllisLab\ExpressionEngine\Model\Interfaces\Field\FieldContent;
-use EllisLab\ExpressionEngine\Model\DataTableField\DataTableFieldContent;
 
-class ChannelFieldContent
+class CategoryFieldContent
 	extends DataTableFieldContent
 		 implements FieldContent {
 

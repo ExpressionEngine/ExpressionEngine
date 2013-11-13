@@ -99,6 +99,33 @@ class Homepage extends CP_Controller {
 		}
 		echo '</pre>'; 
 
+		echo 'Query was:<br />
+			qb->get(\'ChannelEntry\')
+				->with(\'Channel\', array(\'Author\'=>\'MemberGroup\'), array(\'Catergories\'=>\'CategoryGroup\'))
+				->all()<br />';
+		try {
+		$entries = $qb->get('ChannelEntry')
+			->with('Channel', array('Author' => 'MemberGroup'), array('Categories'=>'CategoryGroup'))
+			->all();
+		}
+		catch(Exception $ex)
+		{
+			echo '<div>
+					<h1>Exception Caught</h1>
+					<p><strong>' . $ex->getMessage() . '</strong></p>
+					<p><em>'  . $ex->getFile() . ':' . $ex->getLine() . '<em></p>
+					<p>Stack Trace:
+						<pre>' . str_replace('#', "\n#", str_replace(':', ":\n\t\t", $ex->getTraceAsString())) . '</pre>
+					</p>
+				</div>';
+			die('Fatal Error.');
+		}
+		echo '<pre>';
+		foreach($entries as $entry)
+		{
+			$entry->testPrint();
+		}
+		echo '</pre>'; 
 		die('Success!');
 
 /* * /
