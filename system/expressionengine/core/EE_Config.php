@@ -1189,7 +1189,7 @@ class EE_Config Extends CI_Config {
 	 * Fetches the config/preference fields, their types, and their default values
 	 *
 	 * @access	public
-	 * @param	string	The type of config fields to be prepared
+	 * @param	string	$type	The type of config fields to be prepared
 	 * @return	array	The array of config fields
 	 */
 	public function get_config_fields($type)
@@ -1420,8 +1420,9 @@ class EE_Config Extends CI_Config {
 	 * value in case of a form validation error
 	 *
 	 * @access	public
-	 * @param	string	The type of config fields to be prepared
-	 * @param	array	An optional array of values to use
+	 * @param	string	$type	The type of config fields to be prepared
+	 * @param	mixed[]	$values	An optional associative array of values to use
+	 *  	e.g. 'is_system_on' => 'y'
 	 * @return	array	The prepared array for use in views
 	 */
 	public function prep_view_vars($type, $values = array())
@@ -1593,7 +1594,7 @@ class EE_Config Extends CI_Config {
 	 * This text appears below any given preference definition
 	 *
 	 * @access	public
-	 * @return	array	The secondary lines of text used in configuration pages
+	 * @return	string[]	The secondary lines of text used in configuration pages
 	 */
 	public function get_config_field_subtext()
 	{
