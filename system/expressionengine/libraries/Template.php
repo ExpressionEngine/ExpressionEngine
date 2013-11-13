@@ -1491,6 +1491,9 @@ class EE_Template {
 
 		$namespace = ($cache_type == 'tag') ? $this->_tag_cache_prefix : $this->_page_cache_prefix;
 
+		// Prefix for URI or query string
+		$cfile = $this->_get_cache_prefix().'+'.$cfile;
+
 		// Get metadata for this cache key to see if it's expired, because even
 		// though we can set a TTL for auto-expiration, the refresh setting
 		// can change and needs to invalidate the cache if necessary
@@ -1549,12 +1552,34 @@ class EE_Template {
 			return;
 		}
 
-		$prefix = ($cache_type == 'tag') ? $this->_tag_cache_prefix : $this->_page_cache_prefix;
+		$namespace = ($cache_type == 'tag') ? $this->_tag_cache_prefix : $this->_page_cache_prefix;
 
-		if ( ! ee()->cache->save($cfile, $data, 0, $prefix))
+		// Prefix for URI or query string
+		$cfile = $this->_get_cache_prefix().'+'.$cfile;
+
+		if ( ! ee()->cache->save($cfile, $data, 0, $namespace))
 		{
-			$this->log_item("Could not create/write to cache file: ".$prefix.'-'.$cfile);
+			$this->log_item("Could not create/write to cache file: ".$namespace.'/'.$cfile);
 		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Cache items are prefixed with a hash of the URI or query string of
+	 * the current page so that tags can still be influenced by URI items
+	 * and still be cached
+	 *
+	 * @return	string	MD5 hash of current URL
+	 */
+	protected function _get_cache_prefix()
+	{
+		if (ee()->uri->uri_string != '')
+		{
+			return md5(ee()->functions->fetch_site_index().ee()->uri->uri_string);
+		}
+
+		return md5(ee()->config->item('site_url').'index'.ee()->uri->query_string);
 	}
 
 	// --------------------------------------------------------------------
