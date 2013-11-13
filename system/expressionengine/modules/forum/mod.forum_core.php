@@ -917,6 +917,7 @@ class Forum_Core extends Forum {
 	 */
 	function _create_pagination($data)
 	{
+		// TODO-WB Remove this!
 		ee()->load->library('pagination');
 
 		$config = array(
@@ -981,6 +982,7 @@ class Forum_Core extends Forum {
 	 */
 	function _fetch_page_number($total, $limit)
 	{
+		// TODO-WB Might need this, remove otherwise
 		if ($this->fetch_pref('board_post_order') == 'd')
 		{
 			return '';
@@ -2197,7 +2199,6 @@ class Forum_Core extends Forum {
 	 */
 	public function topics()
 	{
-		$pagination 	= '';
 		$query_limit	= '';
 		$current_page	= 1;
 		$total_pages	= 1;
@@ -2257,6 +2258,22 @@ class Forum_Core extends Forum {
 		//
 		// -------------------------------------------
 
+		// Check to see if the old style pagination exists
+		// @deprecated 2.8
+		if (stripos($str, LD.'if paginate'.RD) !== FALSE)
+		{
+			$str = preg_replace("/{if paginate}(.*?){\/if}/uis", "{paginate}$1{/paginate}", $str);
+			ee()->load->library('logger');
+			ee()->logger->deprecated('2.8', 'normal {paginate} tags');
+		}
+
+		// Load up pagination and start parsing
+		ee()->load->library('pagination');
+		$pagination = ee()->pagination->create(__CLASS__);
+		$pagination->template = $str;
+		$pagination->position = 'inline';
+		$str = $pagination->get_template();
+
 		// Count the topics for pagination
 		$query = ee()->db->query("SELECT COUNT(*) AS count
 							FROM exp_forum_topics t, exp_members m, exp_members a
@@ -2298,17 +2315,11 @@ class Forum_Core extends Forum {
 		}
 
 		// We have pagination!
-		if ($query->row('count')  > $topic_limit)
+		if ($query->row('count') > $topic_limit
+			&& $pagination->paginate === TRUE)
 		{
-			$pagination = $this->_create_pagination(
-										array(
-												'first_url'		=> $this->forum_path('/viewforum/'.$this->current_id.'/'),
-												'path'			=> $this->forum_path('/viewforum/'.$this->current_id.'/'),
-												'total_count'	=> $query->row('count') ,
-												'per_page'		=> $topic_limit,
-												'cur_page'		=> $this->current_page
-											)
-										);
+			$pagination->per_page = $topic_limit;
+			$pagination->build($query->row('count'));
 
 			// Set the LIMIT for our query
 			$query_limit = 'LIMIT '.$this->current_page.', '.$topic_limit;
@@ -2322,9 +2333,6 @@ class Forum_Core extends Forum {
 				$total_pages++;
 			}
 		}
-
-		$str = ($pagination == '') ? $this->deny_if('paginate', $str, '&nbsp;') :
-										$this->allow_if('paginate', $str);
 
 		// Fetch the topics
 		$query = ee()->db->query("SELECT t.topic_id, t.author_id, t.moved_forum_id, t.ip_address, t.title, t.status, t.sticky, t.poll, t.thread_views, t.topic_date, t.thread_total, t.last_post_author_id,  t.last_post_date, t.last_post_id,
@@ -2638,10 +2646,11 @@ class Forum_Core extends Forum {
 			$str = $this->allow_if('can_post', $str);
 		}
 
+		$str = $pagination->render($str);
+
 		// Finalize the template
 		$str = $this->var_swap( $str,
 								array(
-										'pagination_links'	=> $pagination,
 										'current_page'		=> $current_page,
 										'total_pages'		=> $total_pages,
 										'forum_name'		=> $this->_convert_special_chars($fdata[$this->current_id]['forum_name'], TRUE),
@@ -2694,6 +2703,7 @@ class Forum_Core extends Forum {
 	 */
 	public function threads($is_announcement = FALSE, $thread_review = FALSE, $is_split = FALSE)
 	{
+		// TODO-WB Refactor pagination
 		$posts 			= '';
 		$pagination 	= '';
 		$query_limit	= '';
@@ -9702,6 +9712,7 @@ class Forum_Core extends Forum {
 			$topic_limit = 20;
 		}
 
+		// TODO-WB Refactor pagination
 		// Do we have pagination?
 		$pagination 	= '';
 		$current_page	= 0;
@@ -10082,6 +10093,7 @@ class Forum_Core extends Forum {
 		// Load the template
 		$str = $this->load_element('thread_search_results');
 
+		// TODO-WB Refactor pagination
 		$pagination 	= '';
 		$current_page	= 0;
 		$total_pages	= 1;
