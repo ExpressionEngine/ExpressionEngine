@@ -168,7 +168,7 @@ class Cp_search {
 
 		$data = array();
 
-		$subtext = ee()->admin_model->get_config_field_subtext();
+		$subtext = ee()->config->get_config_field_subtext();
 
 		foreach($this->map as $controller => $method_map)
 		{
@@ -206,7 +206,7 @@ class Cp_search {
 				}
 				elseif (is_string($options) && substr($options, -4) == '_cfg')
 				{
-					$config = ee()->admin_model->get_config_fields($options);
+					$config = ee()->config->get_config_fields($options);
 
 					foreach($config as $lang_key => $whatever)
 					{

@@ -4921,8 +4921,8 @@ class Admin_content extends CP_Controller {
 
 		$vars['form_action'] = 'C=admin_content'.AMP.'M=update_config';
 
-		$f_data = $this->admin_model->get_config_fields($type);
-		$subtext = $this->admin_model->get_config_field_subtext();
+		$f_data = ee()->config->get_config_fields($type);
+		$subtext = ee()->config->get_config_field_subtext();
 
 		/** -----------------------------
 		/**	 Blast through the array

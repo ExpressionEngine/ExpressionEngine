@@ -1209,7 +1209,7 @@ class MyAccount extends CP_Controller {
 		// Fetch the admin config values in order to populate the form with
 		// the same options
 		$this->load->model('admin_model');
-		$config_fields = $this->admin_model->prep_view_vars('localization_cfg', $values);
+		$config_fields = ee()->config->prep_view_vars('localization_cfg', $values);
 
 		// Cleanup the key differentiation
 		$vars['timezone'] = $config_fields['fields']['default_site_timezone']['value'];
