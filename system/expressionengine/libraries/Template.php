@@ -387,20 +387,13 @@ class EE_Template {
 			$this->template = preg_replace('/'.LD.'embed:([^!]+?)'.RD.'/', '', $this->template);
 		}
 
-/* @todo this clashes with layout:content
-		// cleanup of leftover/undeclared layout variables
-		if (strpos($this->template, LD.'layout:') !== FALSE)
-		{
-			$this->template = preg_replace('/'.LD.'layout:([^!]+?)'.RD.'/', '', $this->template);
-		}
-*/
 		// Cache the name of the layout. We do this here so that we can force
 		// layouts to be declared before module or plugin tags. That is the only
 		// reasonable way of using these - right at the top.
 		// @todo enforce the substring and make sure there is only one layout
 		if ($is_layout === FALSE)
 		{
-			$layout = $this->find_layout();
+			$layout = $this->_find_layout();
 		}
 
 		// Parse date format string "constants"
@@ -538,7 +531,20 @@ class EE_Template {
 		}
 	}
 
-	protected function find_layout()
+	// --------------------------------------------------------------------
+
+	/**
+	 * Find the first layout tag.
+	 *
+	 * Error if any are found after the first exp: tag or if we find more
+	 * than one.
+	 *
+	 * @return	array  $layout  Layout tag information
+	 *				- 0: full tag
+	 *				- 1: {layout=
+ 	 * 				- 2: "some/path" [param=value]*
+	 */
+	protected function _find_layout()
 	{
 		$layout = NULL;
 		$first_tag = strpos($this->template, LD.'exp:');
@@ -556,11 +562,39 @@ class EE_Template {
 
 	// --------------------------------------------------------------------
 
-	// @todo this shares a lot of code with process_sub_template: ABSTRACT ME!
-	public function process_layout_template($template, $layout)
+	/**
+	 * Cleanup any leftover layout tags
+	 *
+	 * We need to do this at various steps of post parsing as doing it too early
+	 * can result in accidental cleanup of the {layout:content} variable.
+	 *
+	 * @return	void
+	 */
+	protected function _cleanup_layout_tags()
+	{
+		// cleanup of leftover/undeclared layout variables
+		if (strpos($this->final_template, LD.'layout:') !== FALSE)
+		{
+			$this->final_template = preg_replace('/'.LD.'layout:([^!]+?)'.RD.'/', '', $this->final_template);
+		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Processes Any Layout Templates
+	 *
+	 * If any {embed=} tags are found, it processes those templates and does a replacement.
+	 *
+	 * @param	string  Template string
+	 * @param	array	{layout tag match information from ``_find_layout``
+	 * @return	void
+	 */
+	protected function process_layout_template($template, array $layout = NULL)
 	{
 		if ( ! isset($layout))
 		{
+			$this->_cleanup_layout_tags();
 			return;
 		}
 
@@ -585,8 +619,11 @@ class EE_Template {
 		// Handle {layout:set}
 		// We do this after parsing the layout parameters so that the parameters
 		// act as a default that can be overriden in the template.
-		if (preg_match_all('/('.LD.'layout:set)\s*(.*?)'.RD.'/s', $template, $matches))
+		if (preg_match_all('/('.LD.'\/?layout:set)\s*(.*?)'.RD.'/s', $template, $matches))
 		{
+		//	var_dump($matches); // 0: full, 1: open, 2: params
+
+			// Make sure the full tag was matched
 			foreach ($matches[2] as $key => $val)
 			{
 				if (strpos($val, LD) !== FALSE)
@@ -613,81 +650,50 @@ class EE_Template {
 				}
 
 				$layout_var_name = $params['name'];
+				$value = '';
 
-				if ( ! isset($params['value']))
+				if (isset($params['value']))
+				{
+					$value = $params['value'];
+				}
+				else if (isset($matches[0][$key + 1]) && $matches[0][$key + 1][1] == '/')
 				{
 					// @todo find closest closing tag
 				}
-				else
-				{
-					$this->layout_vars[$layout_var_name] = $params['value'];
-				}
+
+				$this->layout_vars[$layout_var_name] = $value;
 
 				$this->final_template = str_replace($matches[0][$key], '', $this->final_template);
 			}
 		}
 
+		// Extract the information we need to fetch the layout
+		$fetch_data = $this->_get_fetch_data($parts[0]);
 
-		$val = trim_slashes(strip_quotes($parts[0]));
-
-		if (strpos($val, '/') === FALSE)
+		if ( ! isset($fetch_data))
 		{
-			continue;
+			$this->_cleanup_layout_tags();
+			return;
 		}
 
-		$ex = explode("/", trim($val));
+		list($template_group, $template, $site_id) = $fetch_data;
 
-		if (count($ex) != 2)
-		{
-			continue;
-		}
-
-		// Determine Site
-		$site_id = ee()->config->item('site_id');
-
-		if (stristr($ex[0], ':'))
-		{
-			$name = substr($ex[0], 0, strpos($ex[0], ':'));
-
-			if (ee()->config->item('multiple_sites_enabled') == 'y' && ! IS_CORE)
-			{
-				if (count($this->sites) == 0)
-				{
-					// This should really be cached somewhere
-					ee()->db->select('site_id, site_name');
-					$sites_query = ee()->db->get('sites');
-
-					foreach($sites_query->result_array() as $row)
-					{
-						$this->sites[$row['site_id']] = $row['site_name'];
-					}
-				}
-
-				$site_id = array_search($name, $this->sites);
-
-				if (empty($site_id))
-				{
-					$site_id = ee()->config->item('site_id');
-				}
-			}
-
-			$ex[0] = str_replace($name.':', '', $ex[0]);
-		}
-
-		$this->fetch_and_parse($ex[0], $ex[1], FALSE, $site_id, TRUE);
+		$this->fetch_and_parse($template_group, $template, FALSE, $site_id, TRUE);
 
 		// Check for a layout in the layout. Urgh.
-		$layout = $this->find_layout();
+		$layout = $this->_find_layout();
 
 		$this->final_template = str_replace(LD.'layout:content'.RD, $this->final_template, $this->template);
 
 		$this->embed_type = '';
+		$this->_cleanup_layout_tags();
 
 		// Here we go again!  Wheeeeeee.....
 		$this->process_sub_templates($this->template);
 		$this->process_layout_template($this->final_template, $layout);
 	}
 
+	// --------------------------------------------------------------------
 
 	/**
 	 * Processes Any Embedded Templates in String
@@ -747,51 +753,15 @@ class EE_Template {
 				$this->embed_vars = array();
 			}
 
-			$val = trim_slashes(strip_quotes($parts[0]));
+			// Extract the information we need to fetch the subtemplate
+			$fetch_data = $this->_get_fetch_data($parts[0]);
 
-			if (strpos($val, '/') === FALSE)
+			if ( ! isset($fetch_data))
 			{
 				continue;
 			}
 
-			$ex = explode("/", trim($val));
-
-			if (count($ex) != 2)
-			{
-				continue;
-			}
-
-			// Determine Site
-			$site_id = ee()->config->item('site_id');
-
-			if (stristr($ex[0], ':'))
-			{
-				$name = substr($ex[0], 0, strpos($ex[0], ':'));
-
-				if (ee()->config->item('multiple_sites_enabled') == 'y' && ! IS_CORE)
-				{
-					if (count($this->sites) == 0)
-					{
-						// This should really be cached somewhere
-						ee()->db->select('site_id, site_name');
-						$sites_query = ee()->db->get('sites');
-
-						foreach($sites_query->result_array() as $row)
-						{
-							$this->sites[$row['site_id']] = $row['site_name'];
-						}
-					}
-
-					$site_id = array_search($name, $this->sites);
-
-					if (empty($site_id))
-					{
-						$site_id = ee()->config->item('site_id');
-					}
-				}
-
-				$ex[0] = str_replace($name.':', '', $ex[0]);
-			}
+			list($template_group, $template, $site_id) = $fetch_data;
 
 			// Loop Prevention
 
@@ -801,10 +771,10 @@ class EE_Template {
 				Whether or not loop prevention is enabled - y/n
 			/* -------------------------------------------*/
 
-			$this->attempted_fetch[] = $ex['0'].'/'.$ex['1'];
+			$this->attempted_fetch[] = $template_group.'/'.$template;
 
 			// Tell user if a template has been recursively loaded
-			if (substr_count($this->templates_sofar, '|'.$site_id.':'.$ex['0'].'/'.$ex['1'].'|') > 1 &&
+			if (substr_count($this->templates_sofar, '|'.$site_id.':'.$template_group.'/'.$template.'|') > 1 &&
 				ee()->config->item('template_loop_prevention') != 'n')
 			{
 				// Set 503 status code, mainly so caching proxies do not cache this
@@ -816,7 +786,7 @@ class EE_Template {
 				{
 					ee()->load->helper(array('html_helper', 'language_helper'));
 
-					$message = '<p>'.sprintf(lang('template_loop'), $ex['0'].'/'.$ex['1']).'</p>'
+					$message = '<p>'.sprintf(lang('template_loop'), $template_group.'/'.$template).'</p>'
 						.'<p>'.lang('template_load_order').':</p>'
 						.ol($this->attempted_fetch);
 
@@ -833,9 +803,9 @@ class EE_Template {
 			}
 
 			// Process Subtemplate
-			$this->log_item("Processing Sub Template: ".$ex[0]."/".$ex[1]);
+			$this->log_item("Processing Sub Template: ".$template_group."/".$template);
 
-			$this->fetch_and_parse($ex[0], $ex[1], TRUE, $site_id);
+			$this->fetch_and_parse($template_group, $template, TRUE, $site_id);
 
 			$this->final_template = str_replace($matches[0][$key], $this->template, $this->final_template);
 
@@ -845,7 +815,7 @@ class EE_Template {
 			$this->process_sub_templates($this->template);
 
 			// pull the subtemplate tracker back a level to the parent template
-			$this->templates_sofar = substr($this->templates_sofar, 0, - strlen('|'.$site_id.':'.$ex[0].'/'.$ex[1].'|'));
+			$this->templates_sofar = substr($this->templates_sofar, 0, - strlen('|'.$site_id.':'.$template_group.'/'.$template.'|'));
 		}
 
 		$this->depth--;
@@ -854,6 +824,68 @@ class EE_Template {
 		{
 			$this->templates_sofar = '';
 		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Grab all the data required to fetch a template from a template path.
+	 *
+	 * @param	string  Template path string (e.g somegroup/index)
+	 * @return	array   Uniquely identifying template data
+	 *				- template_group
+	 *				- template
+	 *				- site_id
+	 */
+	protected function _get_fetch_data($template_path)
+	{
+		$val = trim_slashes(strip_quotes($template_path));
+
+		if (strpos($val, '/') === FALSE)
+		{
+			return NULL;
+		}
+
+		$ex = explode("/", trim($val));
+
+		if (count($ex) != 2)
+		{
+			return NULL;
+		}
+
+		// Determine Site
+		$site_id = ee()->config->item('site_id');
+
+		if (stristr($ex[0], ':'))
+		{
+			$name = substr($ex[0], 0, strpos($ex[0], ':'));
+
+			if (ee()->config->item('multiple_sites_enabled') == 'y' && ! IS_CORE)
+			{
+				if (count($this->sites) == 0)
+				{
+					// This should really be cached somewhere
+					ee()->db->select('site_id, site_name');
+					$sites_query = ee()->db->get('sites');
+
+					foreach($sites_query->result_array() as $row)
+					{
+						$this->sites[$row['site_id']] = $row['site_name'];
+					}
+				}
+
+				$site_id = array_search($name, $this->sites);
+
+				if (empty($site_id))
+				{
+					$site_id = ee()->config->item('site_id');
+				}
+			}
+
+			$ex[0] = str_replace($name.':', '', $ex[0]);
+		}
+
+		return array($ex[0], $ex[1], $site_id);
 	}
 
 	// --------------------------------------------------------------------
