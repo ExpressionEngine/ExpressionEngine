@@ -1536,7 +1536,7 @@ class EE_Config Extends CI_Config {
 
 					$text = str_replace("\\'", "'", $text);
 
-					$details = array('name' => $name, 'class' => 'module_textarea', 'value' => $this->form_validation->set_value($name, $text), 'rows' => $rows, 'id' => $name);
+					$details = array('name' => $name, 'class' => 'module_textarea', 'value' => ee()->form_validation->set_value($name, $text), 'rows' => $rows, 'id' => $name);
 					break;
 				case 'f':
 					// Function calls
@@ -1571,7 +1571,7 @@ class EE_Config Extends CI_Config {
 				case 'p': // Fall through intended.
 				case 'i':
 					// Input fields
-					$details = array('name' => $name, 'value' => $this->form_validation->set_value($name, $value), 'id' => $name);
+					$details = array('name' => $name, 'value' => ee()->form_validation->set_value($name, $value), 'id' => $name);
 
 					break;
 
