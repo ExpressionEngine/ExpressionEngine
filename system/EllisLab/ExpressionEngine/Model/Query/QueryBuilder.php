@@ -20,7 +20,11 @@ class QueryBuilder {
 		'MemberGroup' => '\EllisLab\ExpressionEngine\Module\Member\Model\MemberGroup',
 		'MemberEntity' => '\EllisLab\ExpressionEngine\Module\Member\Model\Entity\MemberEntity',
 		'MemberGroupEntity' => '\EllisLab\ExpressionEngine\Module\Member\Model\Entity\MemberGroupEntity',
-		'Category' => '\EllisLab\ExpressionEngine\Model\Category\Category'
+		'Category' => '\EllisLab\ExpressionEngine\Model\Category\Category',
+		'CategoryFieldDataEntity' => '\EllisLab\ExpressionEngine\Model\Entity\CategoryFieldDataEntity',
+		'CategoryEntity' => '\EllisLab\ExpressionEngine\Model\Entity\CategoryEntity',
+		'CategoryGroup' => '\EllisLab\ExpressionEngine\Model\Category\CategoryGroup',
+		'CategoryGroupEntity'=> '\EllisLab\ExpressionEngine\Model\Entity\CategoryGroupEntity'
 	);
 
 	public function __construct(Dependencies $di)

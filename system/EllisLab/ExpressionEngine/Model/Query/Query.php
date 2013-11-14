@@ -341,12 +341,12 @@ class Query {
 
 			case ModelRelationshipMeta::TYPE_MANY_TO_MANY:
 				$this->db->join($relationship_meta->pivot_table,
-					$relationship_meta->to_table . '.' . $relationship_meta->from_key .
+					$relationship_meta->from_table . '.' . $relationship_meta->from_key .
 					'=' .
 					$relationship_meta->pivot_table. '.' . $relationship_meta->pivot_from_key,
 					'LEFT OUTER');
 				$this->db->join($relationship_meta->to_table,
-					$relationship_meta->pivot_table . '.' . $relatioship_meta->pivot_to_key .
+					$relationship_meta->pivot_table . '.' . $relationship_meta->pivot_to_key .
 					'=' . 
 					$relationship_meta->to_table . '.' . $relationship_meta->to_key,
 					'LEFT OUTER');

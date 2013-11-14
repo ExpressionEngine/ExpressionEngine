@@ -2,8 +2,7 @@
 namespace EllisLab\ExpressionEngine\Model\Category;
 
 use EllisLab\ExpressionEngine\Model\Model as Model;
-use EllisLab\ExpressionEngine\Interfaces\Content\ContentStructure 
-	as ContentStructure;
+use EllisLab\ExpressionEngine\Model\Interfaces\Content\ContentStructure;
 
 class CategoryGroup extends Model implements ContentStructure {
 	protected static $meta = array(

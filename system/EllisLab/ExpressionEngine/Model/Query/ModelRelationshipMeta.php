@@ -85,7 +85,8 @@ class ModelRelationshipMeta {
 
 		if ($this->to_key !== $entity_relationship['key'])
 		{
-			throw new \Exception('Foreign keys in relationship are not equal!');
+			throw new \Exception('Foreign keys in relationship are not equal.  In "' . $this->relationship_name . '" from "' . $this->from_model_name 
+				. '" to "' . $this->to_model_name . '", to_key "' . $this->to_key . '" does not equal the key in the Entity "' . $from_entity_name . '", "' . $entity_relationship['key'] . '"');
 		}
 		
 		// Populate pivots	

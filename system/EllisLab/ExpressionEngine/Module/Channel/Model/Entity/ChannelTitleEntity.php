@@ -10,8 +10,13 @@ class ChannelTitleEntity extends Entity {
 		'primary_key' 		=> 'entry_id',
 		'related_entities' 	=> array(
 			'entry_id' => array(
-				'entity' => 'ChannelDataEntity',
-				'key'	 => 'entry_id'
+				'Categories'=>array(
+					'entity' => 'CategoryEntity',
+					'key'	 => 'cat_id',
+					'pivot_table' => 'category_posts',
+					'pivot_key' => 'entry_id',
+					'pivot_foreign_key' => 'cat_id'
+				)
 			),
 			'site_id' => array(
 				'entity' => 'SiteEntity',

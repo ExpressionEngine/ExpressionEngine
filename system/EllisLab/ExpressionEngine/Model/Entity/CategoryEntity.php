@@ -24,7 +24,7 @@ class CategoryEntity extends Entity {
 			'site_id' => array(
 				'entity' => 'SiteEntity',
 				'key'	 => 'site_id'
-			)
+			),
 			'group_id' => array(
 				'entity' => 'CategoryGroupEntity',
 				'key'	 => 'group_id'

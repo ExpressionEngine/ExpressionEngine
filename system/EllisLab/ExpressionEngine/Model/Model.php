@@ -595,7 +595,7 @@ abstract class Model {
 				$relationship_key,
 				array(
 					'model_class' => get_class($this),
-					'model_name' => substr(get_class($this), strrpos('\\', get_class($this))),
+					'model_name' => substr(get_class($this), strrpos(get_class($this), '\\')+1),
 					'key' => $this_key
 				),
 				array(
