@@ -645,7 +645,7 @@ class EE_Template {
 			}
 			else
 			{
-				$value = $params['value'];
+				$value = isset($params['value']) ? $params['value'] : '';
 				$replace_len = strlen($tag);
 			}
 
