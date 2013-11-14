@@ -3875,6 +3875,7 @@ class EE_Template {
 		{
 			foreach ($dates as $tag => $timestamp)
 			{
+				// Dates with formats
 				if (preg_match_all("/".LD.$tag."\s+format=([\"\'])([^\\1]*?)\\1".RD."/", $tagdata, $matches))
 				{
 					for ($j = 0; $j < count($matches[0]); $j++)
@@ -3882,6 +3883,10 @@ class EE_Template {
 						$tagdata = str_replace($matches[0][$j], ee()->localize->format_date($matches[2][$j], $timestamp), $tagdata);
 					}
 				}
+
+				// Raw dates
+				$tagdata = str_replace(LD.$tag.RD, $timestamp, $tagdata);
+
 			}
 		}
 		return $tagdata;
