@@ -379,27 +379,23 @@ class EE_Template {
 
 		$this->log_item("Parse Date Format String Constants");
 
+		$dates = array();
 		// Template's Last Edit time {template_edit_date format="%Y %m %d %H:%i:%s"}
-		if (strpos($this->template, LD.'template_edit_date') !== FALSE && preg_match_all("/".LD."template_edit_date\s+format=([\"\'])([^\\1]*?)\\1".RD."/", $this->template, $matches))
+		if (strpos($this->template, LD.'template_edit_date') !== FALSE)
 		{
-			for ($j = 0; $j < count($matches[0]); $j++)
-			{
-				$this->template = str_replace($matches[0][$j], ee()->localize->format_date($matches[2][$j], $this->template_edit_date), $this->template);
-			}
+			$dates['template_edit_date'] = $this->template_edit_date;
 		}
-
-		// Current time {current_time format="%Y %m %d %H:%i:%s"}
-		if (strpos($this->template, LD.'current_time') !== FALSE && preg_match_all("/".LD."current_time\s+format=([\"\'])([^\\1]*?)\\1".RD."/", $this->template, $matches))
-		{
-			for ($j = 0; $j < count($matches[0]); $j++)
-			{
-				$this->template = str_replace($matches[0][$j], ee()->localize->format_date($matches[2][$j]), $this->template);
-			}
-		}
-
-		$this->template = str_replace(LD.'current_time'.RD, ee()->localize->now, $this->template);
 
 		$this->log_item("Parse Current Time Variables");
+
+		// Current time {current_time format="%Y %m %d %H:%i:%s"}
+		if (strpos($this->template, LD.'current_time') !== FALSE)
+		{
+			$dates['current_time'] = ee()->localize->now;
+		}
+
+		$this->template = $this->parse_date_variables($this->template, $dates);
+		unset($dates);
 
 		// Is the main template cached?
 		// If a cache file exists for the primary template
