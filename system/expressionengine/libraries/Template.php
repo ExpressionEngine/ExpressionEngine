@@ -3863,9 +3863,10 @@ class EE_Template {
 	 * @param	string	$tagdata	Tag data being parsed
 	 * @param	mixed[]	$dates		An associative array of dates
 	 *  	e.g. 'entry_date' => 1234567890
+	 * @param	bool	$localize	Localize the time?
 	 * @return	string	Tag data with parsed switch variables
 	 **/
-	public function parse_date_variables($tagdata, $dates = array())
+	public function parse_date_variables($tagdata, $dates = array(), $localize = TRUE)
 	{
 		if (is_array($dates))
 		{
@@ -3876,7 +3877,7 @@ class EE_Template {
 				{
 					for ($j = 0; $j < count($matches[0]); $j++)
 					{
-						$tagdata = str_replace($matches[0][$j], ee()->localize->format_date($matches[2][$j], $timestamp), $tagdata);
+						$tagdata = str_replace($matches[0][$j], ee()->localize->format_date($matches[2][$j], $timestamp, $localize), $tagdata);
 					}
 				}
 
