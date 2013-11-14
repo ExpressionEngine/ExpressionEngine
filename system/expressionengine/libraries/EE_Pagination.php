@@ -42,13 +42,13 @@ class Pagination_object {
 	public $current_page		= 1;
 	public $offset				= 0;
 	public $total_rows			= 0;
+	public $total_pages			= 1;
 	public $per_page			= 0;
 	public $basepath			= '';
 	public $cfields				= array();
 	public $dynamic_sql			= TRUE;
 
 	private $_page_array			= array();
-	private $_total_pages			= 1;
 	private $_pagination_template	= '';
 	private $_multi_fields			= '';
 	private $_page_next				= '';
@@ -76,12 +76,11 @@ class Pagination_object {
 		{
 			$this->{'_'.$name} = $value;
 		}
-		else if (strncmp($name, '_', 1) == 0)
+		else if (strncmp($name, '_', 1) != 0)
 		{
-			throw new Exception('Can not access private properties.');
+			$this->$name = $value;
 		}
 
-		$this->$name = $value;
 	}
 
 	// ------------------------------------------------------------------------
@@ -286,7 +285,7 @@ class Pagination_object {
 				}
 
 				$this->current_page	= floor(($this->offset / $this->per_page) + 1);
-				$this->_total_pages	= intval(floor($this->total_rows / $this->per_page));
+				$this->total_pages	= intval(floor($this->total_rows / $this->per_page));
 			}
 			else
 			{
@@ -320,11 +319,11 @@ class Pagination_object {
 
 				$this->total_rows = count($m_fields);
 
-				$this->_total_pages = $this->total_rows;
+				$this->total_pages = $this->total_rows;
 
-				if ($this->_total_pages == 0)
+				if ($this->total_pages == 0)
 				{
-					$this->_total_pages = 1;
+					$this->total_pages = 1;
 				}
 
 				$this->offset = ($this->offset == '') ? 0 : $this->offset;
@@ -348,7 +347,7 @@ class Pagination_object {
 			{
 				if ($this->total_rows % $this->per_page)
 				{
-					$this->_total_pages++;
+					$this->total_pages++;
 				}
 			}
 
@@ -385,7 +384,7 @@ class Pagination_object {
 				$this->_page_array = ee()->pagination->create_link_array();
 
 				// If a page_next should exist, create it
-				if ((($this->_total_pages * $this->per_page) - $this->per_page) > $this->offset)
+				if ((($this->total_pages * $this->per_page) - $this->per_page) > $this->offset)
 				{
 					$this->_page_next = reduce_double_slashes($this->basepath.'/P'.($this->offset + $this->per_page));
 				}
@@ -462,7 +461,7 @@ class Pagination_object {
 
 			// Parse current_page and total_pages by default
 			$parse_array['current_page']	= $this->current_page;
-			$parse_array['total_pages']		= $this->_total_pages;
+			$parse_array['total_pages']		= $this->total_pages;
 
 			// Parse current_page and total_pages
 			$this->_pagination_template = ee()->TMPL->parse_variables(
@@ -482,7 +481,7 @@ class Pagination_object {
 			// Parse if total_pages conditionals
 			$this->_pagination_template = ee()->functions->prep_conditionals(
 				$this->_pagination_template,
-				array('total_pages' => $this->_total_pages)
+				array('total_pages' => $this->total_pages)
 			);
 
 			// ----------------------------------------------------------------
