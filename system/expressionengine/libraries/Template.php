@@ -391,7 +391,7 @@ class EE_Template {
 		// layouts to be declared before module or plugin tags. That is the only
 		// reasonable way of using these - right at the top.
 		// @todo enforce the substring and make sure there is only one layout
-		if ($is_layout === FALSE)
+		if ($is_layout === FALSE && $sub === FALSE)
 		{
 			$layout = $this->_find_layout();
 		}
@@ -525,9 +525,11 @@ class EE_Template {
 
 		if ($sub == FALSE && $is_layout == FALSE)
 		{
+			$this->template = $this->process_layout_template($this->template, $layout);
+			$this->template = $this->process_sub_templates($this->template);
+
 			$this->final_template = $this->template;
-			$this->process_sub_templates($this->template);
-			$this->process_layout_template($this->template, $layout);
+			$this->_cleanup_layout_tags();
 		}
 	}
 
@@ -551,6 +553,21 @@ class EE_Template {
 
 		if (preg_match('/('.LD.'layout\s*=)(.*?)'.RD.'/s', $this->template, $match))
 		{
+			$tag_pos = strpos($this->template, $match[0]);
+
+			// layout tag after exp tag? No good can come of this.
+			if ($tag_pos > $first_tag)
+			{
+				// error
+			}
+
+			// Is there another? We can't have that.
+			if (preg_match('/('.LD.'layout\s*=)(.*?)'.RD.'/s', $this->template, $_, 0, $tag_pos + 1))
+			{
+				// error
+			}
+
+			// save it
 			$layout = $match;
 
 			// remove the tag
@@ -586,16 +603,15 @@ class EE_Template {
 	 *
 	 * If any {embed=} tags are found, it processes those templates and does a replacement.
 	 *
-	 * @param	string  Template string
-	 * @param	array	{layout tag match information from ``_find_layout``
-	 * @return	void
+	 * @param	string	$template  Template string
+	 * @param	array	$layout	   {layout tag match information from ``_find_layout``
+	 * @return	string	Layout with embeded template string
 	 */
 	protected function process_layout_template($template, array $layout = NULL)
 	{
 		if ( ! isset($layout))
 		{
-			$this->_cleanup_layout_tags();
-			return;
+			return $template;
 		}
 
 		$this->log_item("Processing Layout Templates");
@@ -663,33 +679,30 @@ class EE_Template {
 			}
 		}
 
-		$this->final_template = $template;
-
 		// Extract the information we need to fetch the layout
 		$fetch_data = $this->_get_fetch_data($parts[0]);
 
 		if ( ! isset($fetch_data))
 		{
-			$this->_cleanup_layout_tags();
-			return;
+			return $template;
 		}
 
-		list($template_group, $template, $site_id) = $fetch_data;
+		list($template_group, $template_name, $site_id) = $fetch_data;
 
-		$this->fetch_and_parse($template_group, $template, FALSE, $site_id, TRUE);
+		$this->fetch_and_parse($template_group, $template_name, FALSE, $site_id, TRUE);
 
 		// Check for a layout in the layout. Urgh.
 		$layout = $this->_find_layout();
 
-		$this->final_template = str_replace(LD.'layout:content'.RD, $this->final_template, $this->template);
+		$template = str_replace(LD.'layout:content'.RD, $template, $this->template);
 
 		$this->embed_type = '';
 
 		// Here we go again!  Wheeeeeee.....
-		$this->process_sub_templates($this->template);
-		$this->process_layout_template($this->final_template, $layout);
+		$template = $this->process_layout_template($template, $layout);
+		$template = $this->process_sub_templates($template);
 
-		$this->_cleanup_layout_tags();
+		return $template;
 	}
 
 	// --------------------------------------------------------------------
@@ -699,17 +712,17 @@ class EE_Template {
 	 *
 	 * If any {embed=} tags are found, it processes those templates and does a replacement.
 	 *
-	 * @param	string
-	 * @return	void
+	 * @param	string  $parent_template  Template string to search for embeds in
+	 * @return	string  Parent template with all embeds expanded
 	 */
-	public function process_sub_templates($template)
+	public function process_sub_templates($parent_template)
 	{
 		// Match all {embed=bla/bla} tags
 		$matches = array();
 
-		if ( ! preg_match_all("/(".LD."embed\s*=)(.*?)".RD."/s", $template, $matches))
+		if ( ! preg_match_all("/(".LD."embed\s*=)(.*?)".RD."/s", $parent_template, $matches))
 		{
-			return;
+			return $parent_template;
 		}
 
 		// Loop until we have parsed all sub-templates
@@ -730,7 +743,7 @@ class EE_Template {
 		// necessary evil in case template globals are used inside the embed tag,
 		// doing this within the processing loop will result in leaving unparsed
 		// embed tags e.g. {embed="foo/bar" var="{global_var}/{custom_field}"}
-		$temp = $template;
+		$temp = $parent_template;
 		foreach ($matches[2] as $key => $val)
 		{
 			if (strpos($val, LD) !== FALSE)
@@ -760,7 +773,7 @@ class EE_Template {
 				continue;
 			}
 
-			list($template_group, $template, $site_id) = $fetch_data;
+			list($template_group, $template_name, $site_id) = $fetch_data;
 
 			// Loop Prevention
 
@@ -770,10 +783,10 @@ class EE_Template {
 				Whether or not loop prevention is enabled - y/n
 			/* -------------------------------------------*/
 
-			$this->attempted_fetch[] = $template_group.'/'.$template;
+			$this->attempted_fetch[] = $template_group.'/'.$template_name;
 
 			// Tell user if a template has been recursively loaded
-			if (substr_count($this->templates_sofar, '|'.$site_id.':'.$template_group.'/'.$template.'|') > 1 &&
+			if (substr_count($this->templates_sofar, '|'.$site_id.':'.$template_group.'/'.$template_name.'|') > 1 &&
 				ee()->config->item('template_loop_prevention') != 'n')
 			{
 				// Set 503 status code, mainly so caching proxies do not cache this
@@ -785,7 +798,7 @@ class EE_Template {
 				{
 					ee()->load->helper(array('html_helper', 'language_helper'));
 
-					$message = '<p>'.sprintf(lang('template_loop'), $template_group.'/'.$template).'</p>'
+					$message = '<p>'.sprintf(lang('template_loop'), $template_group.'/'.$template_name).'</p>'
 						.'<p>'.lang('template_load_order').':</p>'
 						.ol($this->attempted_fetch);
 
@@ -802,19 +815,22 @@ class EE_Template {
 			}
 
 			// Process Subtemplate
-			$this->log_item("Processing Sub Template: ".$template_group."/".$template);
+			$this->log_item("Processing Sub Template: ".$template_group."/".$template_name);
 
-			$this->fetch_and_parse($template_group, $template, TRUE, $site_id);
+			$this->fetch_and_parse($template_group, $template_name, TRUE, $site_id);
 
-			$this->final_template = str_replace($matches[0][$key], $this->template, $this->final_template);
+			$layout = $this->_find_layout();
+			$full_subtemplate = $this->process_layout_template($this->template, $layout);
+
+			$parent_template = str_replace($matches[0][$key], $full_subtemplate, $parent_template);
 
 			$this->embed_type = '';
 
 			// Here we go again!  Wheeeeeee.....
-			$this->process_sub_templates($this->template);
+			$parent_template = $this->process_sub_templates($parent_template);
 
 			// pull the subtemplate tracker back a level to the parent template
-			$this->templates_sofar = substr($this->templates_sofar, 0, - strlen('|'.$site_id.':'.$template_group.'/'.$template.'|'));
+			$this->templates_sofar = substr($this->templates_sofar, 0, - strlen('|'.$site_id.':'.$template_group.'/'.$template_name.'|'));
 		}
 
 		$this->depth--;
@@ -823,6 +839,8 @@ class EE_Template {
 		{
 			$this->templates_sofar = '';
 		}
+
+		return $parent_template;
 	}
 
 	// --------------------------------------------------------------------
