@@ -9658,41 +9658,30 @@ class Forum_Core extends Forum {
 			$topic_limit = 20;
 		}
 
-		// TODO-WB Refactor pagination
-		// Do we have pagination?
-		$pagination 	= '';
-		$current_page	= 0;
-		$total_pages	= 1;
-		$total_rows	 	= count($topic_ids);
+		// Check to see if the old style pagination exists
+		// @deprecated 2.8
+		if (stripos($str, LD.'if paginate'.RD) !== FALSE)
+		{
+			$str = preg_replace("/{if paginate}(.*?){\/if}/uis", "{paginate}$1{/paginate}", $str);
+			ee()->load->library('logger');
+			ee()->logger->deprecated('2.8', 'normal {paginate} tags in your forum threads template');
+		}
+
+		// Load up pagination and start parsing
+		$total_rows = count($topic_ids);
+		ee()->load->library('pagination');
+		$pagination = ee()->pagination->create(__CLASS__);
+		$pagination->template = $str;
+		$pagination->position = 'inline';
+		$str = $pagination->get_template();
 
 		if ($total_rows > $topic_limit)
 		{
-			$pagination = $this->_create_pagination(
-							array(
-									'first_url'		=> $this->forum_path('/search_results/'.$this->current_id.'/'),
-									'path'			=> $this->forum_path('/search_results/'.$this->current_id.'/'),
-									'total_count'	=> $total_rows,
-									'per_page'		=> $topic_limit,
-									'cur_page'		=> $this->current_page
-								)
-							);
+			$pagination->per_page = $topic_limit;
+			$pagination->build($total_rows);
 
 			// Slice our array so we can limit the query properly
 			$topic_ids = array_slice($topic_ids, $this->current_page, $topic_limit);
-
-			// Set the stats for: {current_page} of {total_pages}
-			$cur_page = ($this->current_page == 0) ? 1 : $this->current_page;
-			$current_page = floor(($cur_page / $topic_limit) + 1);
-			$total_pages  = ceil($total_rows / $topic_limit);
-		}
-
-		if ($pagination == '')
-		{
-			$str = $this->deny_if('paginate', $str, '&nbsp;');
-		}
-		else
-		{
-			$str = $this->allow_if('paginate', $str);
 		}
 
 		// Fetch the topics
@@ -9966,15 +9955,13 @@ class Forum_Core extends Forum {
 			$topics .= $temp;
 		}
 
+		$str = $pagination->render($str);
 		$str = str_replace('{include:result_rows}', $topics, $str);
 
 		// Parse the template
 		return $this->var_swap($this->load_element('search_results_page'),
 					array(
 						'include:search_results'	=> $str,
-						'pagination_links'			=> $pagination,
-						'current_page'				=> $current_page,
-						'total_pages'				=> $total_pages,
 						'keywords'					=> ee()->functions->encode_ee_tags($keywords),
 						'total_results'				=> $total_rows,
 						'path:new_topic' 			=> $this->forum_path('/newtopic/'.$this->current_id.'/')
