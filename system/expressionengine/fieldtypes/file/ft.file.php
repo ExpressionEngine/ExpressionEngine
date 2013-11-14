@@ -299,64 +299,11 @@ CSS;
 		{
 			$tagdata = ee()->functions->prep_conditionals($tagdata, $file_info);
 
-			// -----------------------------
-			// Any date variables to format?
-			// -----------------------------
-			$upload_date		= array();
-			$modified_date		= array();
-
-			$date_vars = array('upload_date', 'modified_date');
-
-			foreach ($date_vars as $val)
-			{
-				if (preg_match_all("/".LD.$val."\s+format=[\"'](.*?)[\"']".RD."/s", ee()->TMPL->tagdata, $matches))
-				{
-					for ($j = 0; $j < count($matches['0']); $j++)
-					{
-						$matches['0'][$j] = str_replace(LD, '', $matches['0'][$j]);
-						$matches['0'][$j] = str_replace(RD, '', $matches['0'][$j]);
-
-						switch ($val)
-						{
-							case 'upload_date':
-								$upload_date[$matches['0'][$j]] = $matches['1'][$j];
-								break;
-							case 'modified_date':
-								$modified_date[$matches['0'][$j]] = $matches['1'][$j];
-								break;
-						}
-					}
-				}
-			}
-
-			foreach (ee()->TMPL->var_single as $key => $val)
-			{
-				// Format {upload_date}
-				if (isset($upload_date[$key]))
-				{
-					$tagdata = ee()->TMPL->swap_var_single(
-						$key,
-						ee()->localize->format_date(
-							$upload_date[$key],
-							$file_info['upload_date']
-						),
-						$tagdata
-					);
-				}
-
-				// Format {modified_date}
-				if (isset($modified_date[$key]))
-				{
-					$tagdata = ee()->TMPL->swap_var_single(
-						$key,
-						ee()->localize->format_date(
-							$modified_date[$key],
-							$file_info['modified_date']
-						),
-						$tagdata
-					);
-				}
-			}
+			$date_vars = array(
+				'upload_date' => $file_info['upload_date'],
+				'modified_date' => $file_info['modified_date']
+			);
+			$tagdata = ee()->TMPL->parse_date_variables($tagdata, $date_vars);
 
 			// ---------------
 			// Parse the rest!
