@@ -75,6 +75,13 @@ class Updater {
 
 	// -------------------------------------------------------------------------
 
+	/**
+	 * Update Localization Config
+	 *
+	 * We are adding "date_format" to the config, and changing the value of
+	 * "time_format".  We are also making the hidden config "include_seconds"
+	 * not hidden.
+	 */
 	private function _update_localization_config()
 	{
 		$config_items = array();
@@ -96,6 +103,17 @@ class Updater {
 
 	// -------------------------------------------------------------------------
 
+	/**
+	 * Update Member Table
+	 *
+	 * Along with the localization config changes we are changing the member
+	 * localizaion preferences.  We are now storing the date format as the
+	 * actual format, and storing the "include_seconds" preference.
+	 *
+	 * This will add the new columns, change the default on the "time_format"
+	 * column, and update the members based on their old values (and the site's)
+	 * value on "include_seconds".
+	 */
 	private function _update_member_table()
 	{
 		// Add new columns
