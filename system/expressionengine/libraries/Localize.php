@@ -264,6 +264,15 @@ class Localize {
 	 */
 	private function _datetime($date_string = NULL, $timezone = TRUE)
 	{
+		// Fix for some versions of PHP 5.2 where DateTime will throw an
+		// uncaught exception when an invalid date string is passed in
+		if ( ! empty($date_string) &&
+			! is_numeric($date_string) &&
+			@strtotime($date_string) === FALSE)
+		{
+			return FALSE;
+		}
+
 		// Localize to member's timezone or leave as GMT
 		if (is_bool($timezone))
 		{
