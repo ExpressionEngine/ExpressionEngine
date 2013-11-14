@@ -1132,10 +1132,10 @@ $lang = array(
 "Default Time Formatting",
 
 "24_hour" =>
-"24 Hour",
+"24-hour",
 
 "12_hour" =>
-"12 Hour with AM/PM",
+"12-hour with AM/PM",
 
 "include_seconds" =>
 "Include Seconds in the Default Time Format",
