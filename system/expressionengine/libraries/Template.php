@@ -3858,6 +3858,31 @@ class EE_Template {
 
 		return $tagdata;
 	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Parses {date_tag format="..."} variables in tag data
+	 *
+	 * @param	string	$tagdata	Tag data being parsed
+	 * @param	mixed[]	$dates		An associative array of dates
+	 *  	e.g. 'entry_date' => 1234567890
+	 * @return	string	Tag data with parsed switch variables
+	 **/
+	public function parse_date_variables($tagdata, $dates = array())
+	{
+		foreach ($dates as $tag => $timestamp)
+		{
+			if (preg_match_all("/".LD.$tag."\s+format=([\"\'])([^\\1]*?)\\1".RD."/", $tagdata, $matches))
+			{
+				for ($j = 0; $j < count($matches[0]); $j++)
+				{
+					$tagdata = str_replace($matches[0][$j], ee()->localize->format_date($matches[2][$j], $timestamp), $tagdata);
+				}
+			}
+		}
+		return $tagdata;
+	}
 }
 // END CLASS
 
