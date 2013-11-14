@@ -913,45 +913,6 @@ class Forum_Core extends Forum {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Build Pagination
-	 */
-	function _create_pagination($data)
-	{
-		// TODO-WB Remove this!
-		ee()->load->library('pagination');
-
-		$config = array(
-			'first_link'		=> lang('first'),
-			'last_link'			=> lang('last'),
-			'next_link'			=> lang('next'),
-			'prev_link'			=> lang('previous'),
-			'first_tag_open'	=> '<td><div class="paginate">',
-			'first_tag_close'	=> '</div></td>',
-			'next_tag_open'		=> '<td><div class="paginate">',
-			'next_tag_close'	=> '</div></td>',
-			'prev_tag_open'		=> '<td><div class="paginate">',
-			'prev_tag_close'	=> '</div></td>',
-			'num_tag_open'		=> '<td><div class="paginate">',
-			'num_tag_close'		=> '</div></td>',
-			'cur_tag_open'		=> '<td><div class="paginateCur">',
-			'cur_tag_close'		=> '</div></td>',
-			'last_tag_open'		=> '<td><div class="paginate">',
-			'last_tag_close'	=> '</div></td>',
-			'uri_segment'		=> 0,
-			'base_url'			=> $data['path'],
-			'prefix'			=> 'P',
-			'total_rows'		=> $data['total_count'],
-			'per_page' 			=> $data['per_page'],
-			'cur_page'			=> $data['cur_page']
-		);
-
-		ee()->pagination->initialize($config);
-		return ee()->pagination->create_links();
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Fetch topic marker folder images
 	 */
 	function _fetch_topic_markers()
