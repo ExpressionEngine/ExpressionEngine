@@ -684,11 +684,12 @@ class EE_Template {
 		$this->final_template = str_replace(LD.'layout:content'.RD, $this->final_template, $this->template);
 
 		$this->embed_type = '';
-		$this->_cleanup_layout_tags();
 
 		// Here we go again!  Wheeeeeee.....
 		$this->process_sub_templates($this->template);
 		$this->process_layout_template($this->final_template, $layout);
+
+		$this->_cleanup_layout_tags();
 	}
 
 	// --------------------------------------------------------------------
