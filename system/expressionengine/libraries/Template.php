@@ -583,7 +583,7 @@ class EE_Template {
 	 * Cleanup any leftover layout tags
 	 *
 	 * We need to do this at various steps of post parsing as doing it too early
-	 * can result in accidental cleanup of the {layout:content} variable.
+	 * can result in accidental cleanup of the {layout:contents} variable.
 	 *
 	 * @return	void
 	 */
@@ -694,7 +694,7 @@ class EE_Template {
 		// Check for a layout in the layout. Urgh.
 		$layout = $this->_find_layout();
 
-		$template = str_replace(LD.'layout:content'.RD, $template, $this->template);
+		$template = str_replace(LD.'layout:contents'.RD, $template, $this->template);
 
 		$this->embed_type = '';
 
