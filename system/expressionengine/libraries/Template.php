@@ -616,56 +616,54 @@ class EE_Template {
 
 		$this->layout_vars = array_merge($this->layout_vars, $layout_vars);
 
-		// Handle {layout:set}
-		// We do this after parsing the layout parameters so that the parameters
-		// act as a default that can be overriden in the template.
-		if (preg_match_all('/('.LD.'\/?layout:set)\s*(.*?)'.RD.'/s', $template, $matches))
-		{
-		//	var_dump($matches); // 0: full, 1: open, 2: params
+		// Find the first open tag
+		$open_tag = LD.'layout:set';
+		$close_tag = LD.'/layout:set'.RD;
 
-			// Make sure the full tag was matched
-			foreach ($matches[2] as $key => $val)
+		$open_tag_len = strlen($open_tag);
+		$close_tag_len = strlen($close_tag);
+
+		$pos = strpos($template, $open_tag);
+
+		// As long as we have opening tags we need to continue looking
+		while ($pos !== FALSE)
+		{
+			$tag = ee()->functions->full_tag(substr($template, $pos, $open_tag_len), $template);
+			$params = ee()->functions->assign_parameters(substr($tag, $open_tag_len));
+
+			// If there is a closing tag and it's before the next open, then this will
+			// be treated as a tag pair.
+			$next = strpos($template, $open_tag, $pos + $open_tag_len);
+			$close = strpos($template, LD.'/layout:set', $pos + $open_tag_len);
+
+			if ($next && $close && $close < $next)
 			{
-				if (strpos($val, LD) !== FALSE)
-				{
-					$matches[0][$key] = ee()->functions->full_tag($matches[0][$key], $template);
-					$matches[2][$key] = substr(str_replace($matches[1][$key], '', $matches[0][$key]), 0, -1);
-					$template = str_replace($matches[0][$key], '', $template);
-				}
+				// we have a pair
+				$start = $pos + strlen($tag);
+				$value = substr($template, $start, $close - $start);
+				$replace_len = $close + $close_tag_len - $pos;
+			}
+			else
+			{
+				$value = $params['value'];
+				$replace_len = strlen($tag);
 			}
 
-			foreach($matches[2] as $key => $val)
+			// Remove the setter from the template
+			$template = substr_replace($template, '', $pos, $replace_len);
+
+			$this->layout_vars[$params['name']] = $value;
+
+			$pos = $next;
+
+			if ($pos !== FALSE)
 			{
-				$params = ee()->functions->assign_parameters($val);
-
-				if ($params === FALSE)
-				{
-					continue;
-				}
-
-				if ( ! isset($params['name']))
-				{
-					$this->log_item("SKIPPING layout:set - no name given");
-					continue;
-				}
-
-				$layout_var_name = $params['name'];
-				$value = '';
-
-				if (isset($params['value']))
-				{
-					$value = $params['value'];
-				}
-				else if (isset($matches[0][$key + 1]) && $matches[0][$key + 1][1] == '/')
-				{
-					// @todo find closest closing tag
-				}
-
-				$this->layout_vars[$layout_var_name] = $value;
-
-				$this->final_template = str_replace($matches[0][$key], '', $this->final_template);
+				// Adjust for the substr_replace
+				$pos -= $replace_len;
 			}
 		}
+
+		$this->final_template = $template;
 
 		// Extract the information we need to fetch the layout
 		$fetch_data = $this->_get_fetch_data($parts[0]);
