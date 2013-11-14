@@ -1,4 +1,3 @@
-
 <script type="text/javascript">
 <!--
 
@@ -29,7 +28,7 @@ function showHideRow(el)
 	else
 	{
 		document.getElementById(el).style.display = "";
-	}	
+	}
 }
 //-->
 </script>
@@ -37,14 +36,14 @@ function showHideRow(el)
 <table cellpadding="0" cellspacing="0" border="0" style="width:100%;">
 <tr>
 <td valign="middle" style="width:80%;">
-{if paginate}
+{paginate}
 <table cellpadding="0" cellspacing="0" border="0" class="paginateBorder">
 <tr>
 <td><div class="paginateStat">{current_page} {lang:of} {total_pages}</div></td>
 {pagination_links}
 </tr>
 </table>
-{/if}
+{/paginate}
 </td>
 {if can_post}
 <td align="right" style="width:20%;"><div class="button150"><div class="buttonLarge" id="pr1" onclick="navJump('{path:post_reply}')" onmouseover="navHover(this);" onmouseout="navReset(this);">{lang:post_reply}</div></div></td>
@@ -74,14 +73,14 @@ function showHideRow(el)
 <tr>
 <td valign="middle" style="width:70%;">
 
-{if paginate}
+{paginate}
 <table cellpadding="0" cellspacing="0" border="0" class="paginateBorder">
 <tr>
 <td><div class="paginateStat">{current_page} {lang:of} {total_pages}</div></td>
 {pagination_links}
 </tr>
 </table>
-{/if}
+{/paginate}
 
 </td>
 {if can_post}
@@ -107,7 +106,7 @@ function showHideRow(el)
 <div class="marginpad">
 
 {if previous_topic}
-&lsaquo;&lsaquo; <a href="{path:previous_topic_url}">{previous_topic_title}</a> 
+&lsaquo;&lsaquo; <a href="{path:previous_topic_url}">{previous_topic_title}</a>
 {/if}
 
 {if next_topic}

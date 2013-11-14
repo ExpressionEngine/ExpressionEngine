@@ -2692,10 +2692,7 @@ class Forum_Core extends Forum {
 	{
 		// TODO-WB Refactor pagination
 		$posts 			= '';
-		$pagination 	= '';
 		$query_limit	= '';
-		$current_page	= 1;
-		$total_pages	= 1;
 
 		// Fetch/Set the "topic tracker" cookie
 		$read_topics = $this->_fetch_read_topics($this->current_id);
@@ -3021,6 +3018,22 @@ class Forum_Core extends Forum {
 
 		$attach_query = FALSE;
 
+		// Check to see if the old style pagination exists
+		// @deprecated 2.8
+		if (stripos($str, LD.'if paginate'.RD) !== FALSE)
+		{
+			$str = preg_replace("/{if paginate}(.*?){\/if}/uis", "{paginate}$1{/paginate}", $str);
+			ee()->load->library('logger');
+			ee()->logger->deprecated('2.8', 'normal {paginate} tags in your forum threads template');
+		}
+
+		// Load up pagination and start parsing
+		ee()->load->library('pagination');
+		$pagination = ee()->pagination->create(__CLASS__);
+		$pagination->template = $str;
+		$pagination->position = 'inline';
+		$str = $pagination->get_template();
+
 		// Count the total number of posts
 		// We do this for purposes of pagination
 		// and to see if we even need to show anything
@@ -3038,25 +3051,15 @@ class Forum_Core extends Forum {
 			}
 
 			// We have pagination!
-			if (($pquery->row('count')  > $limit) AND $thread_review == FALSE)
+			if (($pquery->row('count') > $limit)
+				&& $thread_review == FALSE
+				&& $pagination->paginate === TRUE)
 			{
-				$pagination = $this->_create_pagination(
-										 	array(
-													'first_url'		=> $this->forum_path('/viewthread/'.$this->current_id.'/'),
-													'path'			=> $this->forum_path('/viewthread/'.$this->current_id.'/'),
-													'total_count'	=> $pquery->row('count') ,
-													'per_page'		=> $limit,
-													'cur_page'		=> $this->current_page
-										 		)
-											);
-
+				$pagination->per_page = $limit;
+				$pagination->build($pquery->row('count'));
 
 				// Set the LIMIT for our query
-				$query_limit = 'LIMIT '.$this->current_page.', '.$limit;
-
-				// Set the stats for: {current_page} of {total_pages}
-				$current_page = floor(($this->current_page / $limit) + 1);
-				$total_pages = ceil($pquery->row('count')  / $limit);
+				$query_limit = 'LIMIT '.$pagination->offset.', '.$limit;
 			}
 
 			// Fetch the posts
@@ -3128,41 +3131,7 @@ class Forum_Core extends Forum {
 
 
 		// Pagination
-		if ($pagination == '')
-		{
-			$str = $this->deny_if('paginate', $str, '&nbsp;');
-
-			if ( $is_split === TRUE)
-			{
-				$str = $this->deny_if('next_page', $str);
-				$str = $this->deny_if('previous_page', $str);
-			}
-		}
-		else
-		{
-			$str = $this->allow_if('paginate', $str);
-
-			if ( $is_split === TRUE)
-			{
-				if ($current_page < $total_pages)
-				{
-					$str = $this->allow_if('next_page', $str);
-				}
-				else
-				{
-					$str = $this->deny_if('next_page', $str);
-				}
-
-				if ($this->current_page > 0)
-				{
-					$str = $this->allow_if('previous_page', $str);
-				}
-				else
-				{
-					$str = $this->deny_if('previous_page', $str);
-				}
-			}
-		}
+		$str = $pagination->render($str);
 
 		// Create Subscription Link
 		if (ee()->session->userdata('member_id') == 0)
@@ -3246,7 +3215,7 @@ class Forum_Core extends Forum {
 		// Finalize Template
 		if ($thread_review == TRUE)
 		{
-			if ($this->current_page > 0)
+			if ($pagination->offset > 0)
 			{
 				$thread_review_rows = $posts;
 			}
@@ -3265,9 +3234,10 @@ class Forum_Core extends Forum {
 		}
 		else
 		{
-			if ($this->current_page > 0)
+			if ($pagination->offset > 0)
 			{
-				if ($current_page == $total_pages AND $order != 'asc')
+				if ($pagination->current_page == $pagination->total_pages
+					AND $order != 'asc')
 				{
 					$thread_rows = $posts.$topic;
 				}
@@ -3284,7 +3254,7 @@ class Forum_Core extends Forum {
 				}
 				else
 				{
-					if ($current_page < $total_pages)
+					if ($pagination->current_page < $pagination->total_pages)
 					{
 						$thread_rows = $posts;
 					}
@@ -3311,9 +3281,6 @@ class Forum_Core extends Forum {
 		return $this->var_swap($str,
 								array(
 										'topic_title'		=> trim($this->_convert_special_chars(ee()->typography->format_characters(ee()->typography->filter_censored_words($title)))),
-										'pagination_links'	=> $pagination,
-										'current_page'		=> $current_page,
-										'total_pages'		=> $total_pages,
 										'include:'.$thread  => $thread_rows,
 										'include:thread_review_rows' => $thread_review_rows,
 										'path:new_topic' 	=> $this->forum_path('/newtopic/'.$this->current_id.'/'),
