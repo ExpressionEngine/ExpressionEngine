@@ -133,15 +133,7 @@ class EE_Channel_custom_date_parser implements EE_Channel_parser_component {
 					$localize = $data['field_dt_'.$dval];
 				}
 
-				$tagdata = str_replace(
-					LD.$tag.RD,
-					ee()->localize->format_date(
-						$custom_date_fields[$tag],
-						$data['field_id_'.$dval],
-						$localize
-					),
-					$tagdata
-				);
+				$tagdata = ee()->TMPL->parse_date_variables($tagdata, array($dtag => $data['field_id_'.$dval]), $localize);
 			}
 		}
 
