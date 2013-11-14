@@ -9625,7 +9625,7 @@ class Forum_Core extends Forum {
 		{
 			$str = preg_replace("/{if paginate}(.*?){\/if}/uis", "{paginate}$1{/paginate}", $str);
 			ee()->load->library('logger');
-			ee()->logger->deprecated('2.8', 'normal {paginate} tags in your forum threads template');
+			ee()->logger->deprecated('2.8', 'normal {paginate} tags in your forum search results template');
 		}
 
 		// Load up pagination and start parsing
