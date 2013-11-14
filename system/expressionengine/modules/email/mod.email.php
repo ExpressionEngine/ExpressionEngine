@@ -10,7 +10,7 @@
  * @since		Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -39,7 +39,7 @@ class Email {
 	{
 		$this->EE =& get_instance();
 
-		if (ee()->config->item('email_module_captchas') === FALSE OR 
+		if (ee()->config->item('email_module_captchas') === FALSE OR
 			ee()->config->item('email_module_captchas') == 'n')
 		{
 			$this->use_captchas = 'n';
@@ -64,7 +64,7 @@ class Email {
 		$user_recipients = ee()->TMPL->fetch_param('user_recipients', 'no');
 
 		// Backwards compatible with previously documented "true/false" parameters (now "yes/no")
-		$this->_user_recipients = ($user_recipients == 'true' OR $user_recipients == 'yes') ? 'yes' : 'no'; 
+		$this->_user_recipients = ($user_recipients == 'true' OR $user_recipients == 'yes') ? 'yes' : 'no';
 
 		$recipients = ee()->TMPL->fetch_param('recipients', '');
 		$channel = ee()->TMPL->fetch_param('channel', '');
@@ -257,7 +257,7 @@ class Email {
 					 ->where('ct.channel_id = c.channel_id', '', FALSE)
 					 ->where('(ct.expiration_date = 0 OR expiration_date > '.$timestamp.')', '', FALSE)
 					 ->where('ct.status !=', 'closed');
-				
+
 				$table = ( ! is_numeric($entry_id)) ? 'ct.url_title' : 'ct.entry_id';
 
 				ee()->db->where($table, $entry_id);
@@ -350,28 +350,28 @@ class Email {
 		$tagdata = str_replace($LB, "\n", $tagdata);
 
 		$allow = ($allow_html !== FALSE) ? TRUE : FALSE;
-		
+
 		return $this->_setup_form($tagdata, $recipients, 'tellafriend_form', $allow);
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Strips fields of HTML based on $allow_html
-	 * 
+	 *
 	 * @param string $template Template string to parse
-	 * @param string $field_regex Regular expression for the form field to 
+	 * @param string $field_regex Regular expression for the form field to
 	 * 		search for
 	 * @param bool|string $allow_html Either boolean if completely allowing or
-	 * 		disallowing html or a comma delimited string of html elements to 
+	 * 		disallowing html or a comma delimited string of html elements to
 	 * 		explicitly allow
-	 * 
+	 *
 	 * @return string $template with html parsed out of it
 	 */
 	private function _strip_field_html($template, $field_regex, $allow_html)
 	{
 		// Make sure allow_html isn't true first, then run preg_match_all
-		if ($allow_html !== TRUE 
+		if ($allow_html !== TRUE
 			AND preg_match_all($field_regex, $template, $matches))
 		{
 			foreach($matches['2'] as $value)
@@ -384,14 +384,14 @@ class Email {
 			 	{
 			 		$new = strip_tags($value, $allow_html);
 			 	}
-			 
+
 			 	$template = str_replace($value, $new, $template);
 			}
 		}
-		
+
 		return $template;
 	}
-	
+
 	// -------------------------------------------------------------------------
 
 	/**
@@ -409,10 +409,10 @@ class Email {
 
 		// Is the nation of the user banend?
 		ee()->session->nation_ban_check();
-		  
+
 		// Check and Set
 		$default = array(
-			'subject', 'message', 'from', 'user_recipients', 'to', 
+			'subject', 'message', 'from', 'user_recipients', 'to',
 			'recipients', 'name', 'required'
 		);
 
@@ -475,7 +475,7 @@ class Email {
 		ee()->lang->loadfile('email');
 
 		// Basic Security Check
-		if (ee()->session->userdata('ip_address') == '' OR 
+		if (ee()->session->userdata('ip_address') == '' OR
 			ee()->session->userdata('user_agent') == '')
 		{
 			return ee()->output->show_user_error('general', array(lang('em_unauthorized_request')));
@@ -484,7 +484,7 @@ class Email {
 		// Return Variables
 		$x = explode('|',$_POST['RET']);
 		unset($_POST['RET']);
-		
+
 		if (is_numeric($x['0']))
 		{
 			$return_link = ee()->functions->form_backtrack($x['0']);
@@ -670,7 +670,7 @@ class Email {
 		$message = ($_POST['required'] != '') ? $_POST['required']."\n".$_POST['message'] : $_POST['message'];
 		$message = ee()->security->xss_clean($message);
 
-		if (isset($_POST['allow_html']) && $_POST['allow_html'] == 'y' && 
+		if (isset($_POST['allow_html']) && $_POST['allow_html'] == 'y' &&
 			strlen(strip_tags($message)) != strlen($message))
 		{
 			$mail_type = 'html';
@@ -896,7 +896,7 @@ class Email {
 				'replyto'			=> ee()->TMPL->fetch_param('replyto', '')
 			)
 		);
-		
+
 		if ($allow_html)
 		{
 			$data['hidden_fields']['allow_html'] = 'y';
@@ -937,7 +937,7 @@ class Email {
 		}
 
 		return $recipients.md5(ee()->db->username.ee()->db->password.$recipients);
-	}	
+	}
 }
 // END CLASS
 

@@ -73,7 +73,7 @@ class Moblog {
 
 
 	// ------------------------------------------------------------------------
-	
+
 	/**
 	 * 	Constructor
 	 */
@@ -104,7 +104,7 @@ class Moblog {
 	}
 
 	// ------------------------------------------------------------------------
-	
+
 	/**
 	 * 	Check for Expired Moblogs
 	 */
@@ -114,7 +114,7 @@ class Moblog {
 		$silent	= ee()->TMPL->fetch_param('silent', 'yes');
 
 		// Backwards compatible with previously documented "true/false" parameters (now "yes/no")
-		$this->silent = ($silent == 'true' OR $silent == 'yes') ? 'yes' : 'no'; 
+		$this->silent = ($silent == 'true' OR $silent == 'yes') ? 'yes' : 'no';
 
 		if ($which == '')
 		{
@@ -269,22 +269,22 @@ class Moblog {
 	}
 
 	// ------------------------------------------------------------------------
-	
+
 	/**
 	 * 	Check Pop3 Moblog
 	 *
-	 * 	
+	 *
 	 */
-	
+
 	function check_pop_moblog()
 	{
 		/** ------------------------------
 		/**  Email Login Check
 		/** ------------------------------*/
-		
+
 		$port = 110;
 		$ssl = (substr($this->moblog_array['moblog_email_server'], 0, 6) == 'ssl://');
-		
+
 		if ($ssl OR stripos($this->moblog_array['moblog_email_server'], 'gmail') !== FALSE)
 		{
 			if ( ! $ssl)
@@ -325,7 +325,7 @@ class Moblog {
 		}
 
 		if (strncasecmp($this->pop_command("PASS ".base64_decode($this->moblog_array['moblog_email_password'])), '+OK', 3) != 0)
-		{			
+		{
 			$this->message_array[] = 'invalid_password';
 			$line = $this->pop_command("QUIT");
 			@fclose($this->fp);
@@ -869,7 +869,7 @@ class Moblog {
 				{
 					ee()->db->where('channel_fields.field_type', 'textarea');
 				}
-				
+
 				$results = ee()->db->get();
 
 				if ($results->num_rows() > 0)
@@ -962,16 +962,16 @@ class Moblog {
 	}
 
 	// ------------------------------------------------------------------------
-	
+
 	/**
-	 * 	Post Entry 
+	 * 	Post Entry
 	 */
 	function post_entry()
 	{
 		// Default Channel Data
 
 		$channel_id = $this->moblog_array['moblog_channel_id'];
-		
+
 		ee()->db->select('site_id, channel_title, channel_url, rss_url, comment_url, deft_comments, cat_group, field_group, channel_notify, channel_notify_emails');
 		$query = ee()->db->get_where('channels', array('channel_id' => $channel_id));
 
@@ -986,9 +986,9 @@ class Moblog {
 
 
 		// Collect the meta data
-		
+
 		$this->post_data['subject'] = strip_tags($this->post_data['subject']);
-		
+
 		$this->moblog_array['moblog_author_id'] = ($this->moblog_array['moblog_author_id'] == 'none') ? '1' : $this->moblog_array['moblog_author_id'];
 		$author_id = ($this->author != '') ? $this->author : $this->moblog_array['moblog_author_id'];
 
@@ -1008,7 +1008,7 @@ class Moblog {
 						'title'				=> (ee()->config->item('auto_convert_high_ascii') == 'y') ? ascii_to_entities($this->post_data['subject']) : $this->post_data['subject'],
 						'ip_address'		=> $this->post_data['ip'],
 						'entry_date'		=> $entry_date,
-						'edit_date'			=> gmdate("YmdHis", $entry_date),						
+						'edit_date'			=> gmdate("YmdHis", $entry_date),
 						'year'				=> gmdate('Y', $entry_date),
 						'month'				=> gmdate('m', $entry_date),
 						'day'				=> gmdate('d', $entry_date),
@@ -1091,8 +1091,8 @@ class Moblog {
 
 					if ($key = array_search($x['0'],$field_name) OR $key = array_search($x['0'],$field_label))
 					{
-						
-						
+
+
 						$format = ( ! isset($x['1']) OR ! stristr($x['1'],"format")) ? $field_format[$key] : preg_replace("/format\=[\"\'](.*?)[\'\"]/","$1",trim($x['1']));
 
 						$matches['2'][$i] = str_replace($this->newline, "\n",$matches['2'][$i]);
@@ -1107,7 +1107,7 @@ class Moblog {
 							$this->entry_data[$key] = array('data' => $matches['2'][$i].$this->entry_data[$key]['data'],
 															'format' => $format);
 						}
-						
+
 						$this->body = str_replace($matches['0'][$i], '', $this->body);
 					}
 				}
@@ -1116,7 +1116,7 @@ class Moblog {
 
 
 		// Return New Lines
-		
+
 		$this->body = str_replace($this->newline, "\n",$this->body);
 
 
@@ -1137,7 +1137,7 @@ class Moblog {
 				$params['format']	= ( ! isset($params['format'])) ? '' : $params['format'];
 				$params['name'] 	= ( ! isset($params['name'])) 	? '' : $params['name'];
 
-				$this->parse_field($params,$matches['2'][$i], $query->row('field_group') ); 
+				$this->parse_field($params,$matches['2'][$i], $query->row('field_group') );
 				$this->template = str_replace($matches['0'],'',$this->template);
 			}
 
@@ -1196,7 +1196,7 @@ class Moblog {
 					}
 				}
 			}
-			
+
 			$data['category'] = array_unique($data['category']);
 		}
 		elseif ($this->post_data['categories'] != 'none')
@@ -1206,7 +1206,7 @@ class Moblog {
 		}
 
 		// forgive me, please.
-		
+
 		// ...
 
 		// ...
@@ -1225,7 +1225,7 @@ class Moblog {
 		ee()->api->instantiate('channel_fields');
 
 		ee()->api_channel_fields->setup_entry_settings($data['channel_id'], $data);
-	
+
 		$result = ee()->api_channel_entries->save_entry($data, $data['channel_id']);
 
 		if ($result)
@@ -1239,7 +1239,7 @@ class Moblog {
 	}
 
 	// ------------------------------------------------------------------------
-	
+
 	/**
 	 * 	Assign Params
 	 *
@@ -1275,17 +1275,17 @@ class Moblog {
 
 			return $result;
 		}
- 
+
 		return FALSE;
 	}
 
 	// ------------------------------------------------------------------------
-	
+
 	/**
 	 * 	parse_field
 	 *
 	 *	@param mixed - params
-	 * 	@param 
+	 * 	@param
 	 *	@param string
 	 */
 	function parse_field($params, $field_data, $field_group)
@@ -1316,26 +1316,26 @@ class Moblog {
 				ee()->db->select('field_id, field_fmt');
 				ee()->db->where('group_id', $field_id);
 				ee()->db->where('(field_name = "'.$params['name'].'" OR field_label = "'.$params['name'].'")', NULL, FALSE);
-				
+
 				if (ee()->config->item('moblog_allow_nontextareas') != 'y')
 				{
 					ee()->db->where('field_type', 'textarea');
 				}
-				
+
 				$results = ee()->db->get('channel_fields');
-									 
+
 				$field_id	= ($results->num_rows() > 0) ? $results->row('field_id')  : $this->moblog_array['moblog_field_id'];
 				$format 	= ($results->num_rows() > 0) ? $results->row('field_fmt')  : 'none';
 			}
 			elseif($params['name'] == '' && $params['format'] == '')
 			{
 				$field_id = $this->moblog_array['moblog_field_id'];
-				
+
 				ee()->db->select('field_fmt');
 				ee()->db->where('field_id', $field_id);
-				
+
 				$results = ee()->db->get('channel_fields');
-													 
+
 				$format	= $results->row('field_fmt') ;
 			}
 			elseif($params['name'] == '' && $params['format'] != '')
@@ -1350,33 +1350,33 @@ class Moblog {
 				ee()->db->select('field_id');
 				ee()->db->where('group_id', $field_group);
 				ee()->db->where('(field_name = "'.$params['name'].'" OR field_label = "'.$params['name'].'")');
-				
+
 				if (ee()->config->item('moblog_allow_nontextareas') != 'y')
 				{
 					ee()->db->where('field_type', 'textarea');
 				}
-				
+
 				$results = ee()->db->get('channel_fields');
-										 
+
 				$field_id	= ($results->num_rows() > 0) ? $results->row('field_id')  : $this->moblog_array['moblog_field_id'];
 				$format		= $params['format'];
 			}
 		}
-		
+
 		$dir_id = $this->moblog_array['moblog_upload_directory'];
-		
+
 		ee()->load->model('file_model');
 		ee()->load->model('file_upload_preferences_model');
-		
+
 		$prefs_q = ee()->file_upload_preferences_model->get_file_upload_preferences(1, $dir_id);
 		$sizes_q = ee()->file_model->get_dimensions_by_dir_id($dir_id);
-		
+
 		$dir_server_path = $prefs_q['server_path'];
-		
+
 		// @todo if 0 skip!!
 		$thumb_data = array();
 		$image_data = array();
-		
+
 		foreach ($sizes_q->result() as $row)
 		{
 			foreach (array('thumb', 'image') as $which)
@@ -1396,7 +1396,7 @@ class Moblog {
 		/**  Parse Content
 		/** -----------------------------*/
 
-		$pair_array = array('images','audio','movie','files'); 
+		$pair_array = array('images','audio','movie','files');
 		$float_data = $this->post_data;
 		$params = array();
 
@@ -1448,7 +1448,7 @@ class Moblog {
 						{
 							continue;
 						}
-						
+
 						foreach ($float_data[$ftype] as $k => $file)
 						{
 							// not an image
@@ -1463,17 +1463,17 @@ class Moblog {
 							$file_rel_path		= empty($image_data) ? $file : $image_data['dir'].$file;
 							$file_dimensions	= @getimagesize($dir_server_path.$file_rel_path);
 							$filename			= $this->upload_dir_code.$file_rel_path;
-						
-							$thumb_replace		= '';	
+
+							$thumb_replace		= '';
 							$thumb_dimensions	= FALSE;
-							
+
 							if ( ! empty($thumb_data))
 							{
 								$thumb_rel_path		= $thumb_data['dir'].$file;
 								$thumb_replace		= $this->upload_dir_code.$thumb_rel_path;
 								$thumb_dimensions	= @getimagesize($dir_server_path.$thumb_rel_path);
 							}
-							
+
 							$details = array(
 								'width'			=> $file_dimensions ? $file_dimensions[0] : '',
 								'height'		=> $file_dimensions ? $file_dimensions[1] : '',
@@ -1503,23 +1503,23 @@ class Moblog {
 							$template_data .= str_replace('{file}',$this->upload_dir_code.$file,$matches['2'][$i]);
 							continue;
 						}
-						
+
 						// It's an image, work out sizes
 						// Figure out sizes
 						$file_rel_path		= empty($image_data) ? $file : $image_data['dir'].$file;
 						$file_dimensions	= @getimagesize($dir_server_path.$file_rel_path);
 						$filename			= $this->upload_dir_code.$file_rel_path;
-						
-						$thumb_replace		= '';	
+
+						$thumb_replace		= '';
 						$thumb_dimensions	= FALSE;
-						
+
 						if ( ! empty($thumb_data))
 						{
 							$thumb_rel_path		= $thumb_data['dir'].$file;
 							$thumb_replace		= $this->upload_dir_code.$thumb_rel_path;
 							$thumb_dimensions	= @getimagesize($dir_server_path.$thumb_rel_path);
 						}
-						
+
 						$details = array(
 							'width'			=> $file_dimensions ? $file_dimensions[0] : '',
 							'height'		=> $file_dimensions ? $file_dimensions[1] : '',
@@ -1527,7 +1527,7 @@ class Moblog {
 							'thumb_width'	=> $thumb_dimensions ? $thumb_dimensions[0] : '',
 							'thumb_height'	=> $thumb_dimensions ? $thumb_dimensions[1] : ''
 						);
-						
+
 						$temp_data = str_replace('{file}',$filename,$matches['2'][$i]);
 
 						foreach ($details as $d => $dv)
@@ -1536,7 +1536,7 @@ class Moblog {
 						}
 
 						$template_data .= $temp_data;
-					}  
+					}
 				}
 
 				// Replace tag pair with template data
@@ -1561,17 +1561,17 @@ class Moblog {
 	}
 
 	// ------------------------------------------------------------------------
-	
+
 	/**
 	 * 	Parse Email
 	 *
 	 *	@param mixed - Email Data
-	 * 	@param 
+	 * 	@param
 	 */
 	function parse_email($email_data,$type='norm')
 	{
 		ee()->load->library('filemanager');
-		
+
 		$boundary = ($type != 'norm') ? $this->multi_boundary : $this->boundary;
 		$email_data = str_replace('boundary='.substr($boundary,2),'BOUNDARY_HERE',$email_data);
 
@@ -1744,7 +1744,7 @@ class Moblog {
 			elseif ($type == 'image' OR $type == 'application' OR $type == 'audio' OR $type == 'video' OR $subtype == 'appledouble' OR $type == 'text') // image or application
 			{
 				// no upload directory?  skip
-				
+
 				if ($upload_dir_id == 0)
 				{
 					continue;
@@ -1857,20 +1857,20 @@ class Moblog {
 
 				// Decode so that we can run xss clean on the raw
 				// data once we've determined the file type
-				
+
 				if (stristr($encoding,"base64"))
 				{
 					$file_code = base64_decode($file_code);
 					$this->message_array[] = 'base64 decoded.';
 				}
-				
+
 				/** ------------------------------
 				/**  Check and adjust for multiple files with same file name
 				/** ------------------------------*/
 
 				$file_path = ee()->filemanager->clean_filename(
 					$filename,
-					$upload_dir_id, 
+					$upload_dir_id,
 					array('ignore_dupes' => FALSE)
 				);
 				$filename = basename($file_path);
@@ -1881,7 +1881,7 @@ class Moblog {
 
 				$ext = trim(strrchr($filename, '.'), '.');
 				$is_image = FALSE; // This is needed for XSS cleaning
-				
+
 				if (in_array(strtolower($ext), $this->movie)) // Movies
 				{
 					$this->post_data['movie'][] = $filename;
@@ -1897,7 +1897,7 @@ class Moblog {
 					$key = count($this->post_data['images']) - 1;
 
 					$type = 'image'; // For those crazy application/octet-stream images
-					
+
 					$is_image = TRUE;
 				}
 				elseif (in_array(strtolower($ext), $this->files)) // Files
@@ -1908,10 +1908,10 @@ class Moblog {
 				{
 					continue;
 				}
-				
+
 				// Clean the file
 				ee()->load->helper('xss');
-				
+
 				if (xss_check())
 				{
 					$xss_result = ee()->security->xss_clean($file_code, $is_image);
@@ -1943,8 +1943,8 @@ class Moblog {
 						continue; // No upload of file.
 					}
 				}
-				
-				
+
+
 				// Check to see if we're dealing with relative paths
 				if (strncmp($file_path, '..', 2) == 0)
 				{
@@ -1964,7 +1964,7 @@ class Moblog {
 
 				// Send the file
 				$result = ee()->filemanager->save_file(
-					$file_path, 
+					$file_path,
 					$upload_dir_id,
 					array(
 						'title'     => $filename,
@@ -1972,9 +1972,9 @@ class Moblog {
 						'file_name' => $filename
 					)
 				);
-				
+
 				unset($file_code);
-				
+
 				// Check to see the result
 				if ($result['status'] === FALSE)
 				{
@@ -1983,7 +1983,7 @@ class Moblog {
 					$this->message_array[] = print_r($result, TRUE);
 					return FALSE;
 				}
-				
+
 				$this->email_files[] = $filename;
 				$this->uploads++;
 
@@ -1995,7 +1995,7 @@ class Moblog {
 	}
 
 	// ------------------------------------------------------------------------
-	
+
 	/**
 	 * 	Strip Apple Double Crap
 	 *
@@ -2039,7 +2039,7 @@ class Moblog {
 	}
 
 	// ------------------------------------------------------------------------
-	
+
 	/**
 	 * 	Check Login
 	 */
@@ -2066,9 +2066,9 @@ class Moblog {
 		/** --------------------------------------
 		/**  Check Username and Password, First
 		/** --------------------------------------*/
-		
+
 		ee()->load->helper('security');
-		
+
 		ee()->db->select('member_id, group_id');
 		ee()->db->where('username', $username);
 		ee()->db->where('password', sha1(stripslashes($password)));
@@ -2099,9 +2099,9 @@ class Moblog {
 
 		return TRUE;
 	}
-	
+
 	// ------------------------------------------------------------------------
-	
+
 	/**
 	 * 	Find Boundary
 	 */
@@ -2122,7 +2122,7 @@ class Moblog {
 	}
 
 	// ------------------------------------------------------------------------
-	
+
 	/**
 	 * 	Pop Command.
 	 *
@@ -2149,7 +2149,7 @@ class Moblog {
 	}
 
 	// ------------------------------------------------------------------------
-	
+
 	/**
 	 * 	Remove New Lines
 	 *
@@ -2168,7 +2168,7 @@ class Moblog {
 	}
 
 	// ------------------------------------------------------------------------
-	
+
 	/**
 	 * 	ISO Clean
 	 *
@@ -2247,7 +2247,7 @@ class Moblog {
 	}
 
 	// ------------------------------------------------------------------------
-	
+
 	/**
 	 * 	Find Data
 	 *
