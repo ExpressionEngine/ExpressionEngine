@@ -2200,8 +2200,6 @@ class Forum_Core extends Forum {
 	public function topics()
 	{
 		$query_limit	= '';
-		$current_page	= 1;
-		$total_pages	= 1;
 
 		// Fetch Topic order and per-page count
 		$query = ee()->db->query("SELECT forum_topic_order, forum_topics_perpage, forum_posts_perpage, forum_hot_topic, forum_enable_rss FROM exp_forums WHERE forum_id = '{$this->current_id}'");
@@ -2264,7 +2262,7 @@ class Forum_Core extends Forum {
 		{
 			$str = preg_replace("/{if paginate}(.*?){\/if}/uis", "{paginate}$1{/paginate}", $str);
 			ee()->load->library('logger');
-			ee()->logger->deprecated('2.8', 'normal {paginate} tags');
+			ee()->logger->deprecated('2.8', 'normal {paginate} tags in your forum topics template');
 		}
 
 		// Load up pagination and start parsing
@@ -2323,15 +2321,6 @@ class Forum_Core extends Forum {
 
 			// Set the LIMIT for our query
 			$query_limit = 'LIMIT '.$this->current_page.', '.$topic_limit;
-
-			// Set the stats for: {current_page} of {total_pages}
-			$current_page = floor(($this->current_page / $topic_limit) + 1);
-			$total_pages  = intval($query->row('count')  / $topic_limit);
-
-			if ($query->row('count')  % $topic_limit)
-			{
-				$total_pages++;
-			}
 		}
 
 		// Fetch the topics
@@ -2651,8 +2640,6 @@ class Forum_Core extends Forum {
 		// Finalize the template
 		$str = $this->var_swap( $str,
 								array(
-										'current_page'		=> $current_page,
-										'total_pages'		=> $total_pages,
 										'forum_name'		=> $this->_convert_special_chars($fdata[$this->current_id]['forum_name'], TRUE),
 										'forum_description'	=> $fdata[$this->current_id]['forum_description'],
 										'path:new_topic' 	=> $this->forum_path('/newtopic/'.$this->current_id.'/')
