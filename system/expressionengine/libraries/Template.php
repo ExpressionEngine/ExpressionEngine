@@ -3871,13 +3871,16 @@ class EE_Template {
 	 **/
 	public function parse_date_variables($tagdata, $dates = array())
 	{
-		foreach ($dates as $tag => $timestamp)
+		if (is_array($dates))
 		{
-			if (preg_match_all("/".LD.$tag."\s+format=([\"\'])([^\\1]*?)\\1".RD."/", $tagdata, $matches))
+			foreach ($dates as $tag => $timestamp)
 			{
-				for ($j = 0; $j < count($matches[0]); $j++)
+				if (preg_match_all("/".LD.$tag."\s+format=([\"\'])([^\\1]*?)\\1".RD."/", $tagdata, $matches))
 				{
-					$tagdata = str_replace($matches[0][$j], ee()->localize->format_date($matches[2][$j], $timestamp), $tagdata);
+					for ($j = 0; $j < count($matches[0]); $j++)
+					{
+						$tagdata = str_replace($matches[0][$j], ee()->localize->format_date($matches[2][$j], $timestamp), $tagdata);
+					}
 				}
 			}
 		}
