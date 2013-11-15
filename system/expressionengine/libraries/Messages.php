@@ -835,26 +835,9 @@ class EE_Messages {
 	/** -----------------------------------*/
 	function drafts()
 	{
-		$row_count = 0;  // How many rows shown this far (i.e. offset)
-
-		if ($this->allegiance == 'user')
-		{
-			$row_count = $this->cur_id;
-		}
-		else
-		{
-			$row_count = (ee()->input->get_post('page') === false) ? 0 : ee()->input->get_post('page');
-		}
-
-		if ( ! is_numeric($row_count))
-		{
-			$row_count = 0;
-		}
-
 		$this->single_parts['lang']['folder_id']	= '1';
 		$this->single_parts['lang']['folder_name'] = ee()->lang->line('draft_messages');
-		$this->conditionals['paginate'] = 'n';
-		
+
 		$this->conditionals['drafts_folder']	= 'y';
 		$this->conditionals['sent_folder']		= 'n';
 		$this->conditionals['trash_folder']		= 'n';
@@ -888,6 +871,40 @@ class EE_Messages {
 		$query = ee()->db->query("SELECT COUNT(exp_message_data.message_id) AS count ".$sql);
 
 		/** ----------------------------------------
+		/**  Handle Pagination
+		/** ----------------------------------------*/
+		$template = $this->retrieve_template('message_folder');
+
+		// Check to see if the old style pagination exists
+		// @deprecated 2.8
+		if (stripos($template, LD.'if paginate'.RD) !== FALSE)
+		{
+			$template = preg_replace("/{if paginate}(.*?){\/if}/uis", "{paginate}$1{/paginate}", $template);
+			ee()->load->library('logger');
+			ee()->logger->deprecated('2.8', 'normal {paginate} tags in your message folder template');
+		}
+		if (stripos($template, LD.'include:pagination_link'.RD) !== FALSE)
+		{
+			$template = str_replace('{include:pagination_link}', '{pagination_links}', $template);
+			ee()->load->library('logger');
+			ee()->logger->deprecated('2.8', 'normal {pagination_links} tags in your message folder template');
+		}
+
+		// Load up pagination and start parsing
+		ee()->load->library('pagination');
+		$pagination = ee()->pagination->create(__CLASS__);
+		$pagination->template = $template;
+		$pagination->position = 'inline';
+		$pagination->per_page = $this->per_page;
+		$template = $pagination->get_template();
+
+		if ($query->row('count') > $this->per_page)
+		{
+			$pagination->build($query->row('count'));
+			$sql .= " LIMIT ".$pagination->offset.", ".$pagination->per_page;
+		}
+
+		/** ----------------------------------------
 		/**  If No Messages, we say so.
 		/** ----------------------------------------*/
 
@@ -899,61 +916,12 @@ class EE_Messages {
 			$this->single_parts['include']['folder_rows']  = $this->retrieve_template('message_no_folder_rows');
 			$this->single_parts['form']['form_declaration']['modify_messages'] = '';
 
-			$this->return_data = $this->folder_wrapper(($folder_id == '0') ? 'n' : 'y');
-
-			return;
+			return $this->return_data = $this->folder_wrapper(
+				$pagination->render($template),
+				($folder_id == '0') ? 'n' : 'y'
+			);
 		}
 
-		/** ----------------------------------------
-		/**  Determine Current Page
-		/** ----------------------------------------*/
-		
-		$current_page = ($row_count / $this->per_page) + 1;
-			
-		$total_pages = intval($query->row('count')  / $this->per_page);
-		
-		if ($query->row('count')  % $this->per_page) 
-		{
-			$total_pages++;
-		}
-		
-		$this->single_parts['include']['page_count'] = ee()->lang->line('folder_page').' '.$current_page.' '.ee()->lang->line('of').' '.$total_pages;
-		
-		/** -----------------------------
-		/**  Do we need pagination?
-		/** -----------------------------*/
-				
-		$pager = ''; 
-		
-		if ($query->row('count')  > $this->per_page)
-		{ 											
-			ee()->load->library('pagination');
-			
-			if ($this->allegiance == 'user')
-			{
-				$config['base_url'] = $this->_create_path('drafts');
-			}
-			else
-			{
-				$config['page_query_string'] = TRUE;
-				$config['base_url'] = $this->_create_path('drafts');
-				$config['query_string_segment'] = 'page';
-			}
-			
-			$config['total_rows'] 	= $query->row('count');
-			$config['per_page']		= $this->per_page;
-			$config['cur_page']		= $row_count;			
-			$config['first_link'] 	= ee()->lang->line('pag_first_link');
-			$config['last_link'] 	= ee()->lang->line('pag_last_link');			
-			
-			ee()->pagination->initialize($config);
-			$this->single_parts['include']['pagination_link'] = ee()->pagination->create_links();
-
-			$this->conditionals['paginate'] = 'y';
-			 
-			$sql .= " LIMIT ".$row_count.", ".$this->per_page;			
-		}
-		
 		/** ----------------------------------------
 		/**  Retrieve Folder Contents
 		/** ----------------------------------------*/
@@ -1016,10 +984,10 @@ class EE_Messages {
 
 		$this->title = ee()->lang->line('draft_messages');
 		$this->crumb = ee()->lang->line('draft_messages');
-		$this->return_data = $this->folder_wrapper('y', 'n', 'n');
+
+		$template = $pagination->render($template);
+		$this->return_data = $this->folder_wrapper($template, 'y', 'n', 'n');
 	}
-
-
 
 	/** -----------------------------------
 	/**  View Folder Contents
@@ -1178,9 +1146,10 @@ class EE_Messages {
 			$this->single_parts['include']['folder_rows']  = $this->retrieve_template('message_no_folder_rows');
 			$this->single_parts['form']['form_declaration']['modify_messages'] = '';
 
-			$this->return_data = $this->folder_wrapper(($folder_id == '0') ? 'n' : 'y');
-
-			return;
+			return $this->return_data = $this->folder_wrapper(
+				$this->retrieve_template('message_folder'),
+				($folder_id == '0') ? 'n' : 'y'
+			);
 		}
 
 		/** ----------------------------------------
@@ -1339,7 +1308,10 @@ class EE_Messages {
 
 		$this->title = $folder_name;
 		$this->crumb = $folder_name;
-		$this->return_data = $this->folder_wrapper(($folder_id == '0') ? 'n' : 'y');
+		$this->return_data = $this->folder_wrapper(
+			$this->retrieve_template('message_folder'),
+			($folder_id == '0') ? 'n' : 'y'
+		);
 	}
 
 
@@ -1351,10 +1323,8 @@ class EE_Messages {
 	/** ----------------------------------------
 	/**  Wrapper for a Folder and its Contents
 	/** ----------------------------------------*/
-	function folder_wrapper($deleted='y', $moved='y', $copied = 'y')
+	function folder_wrapper($folder_template, $deleted='y', $moved='y', $copied = 'y')
 	{
-		$folder_template = $this->retrieve_template('message_folder');
-
 		$this->folders_pulldown();
 
 		$this->single_parts['include']['hidden_js'] = $this->hidden_js();
@@ -1375,13 +1345,11 @@ class EE_Messages {
 		/** ---------------------------------
 		/**  Move, Copy, Delete Buttons
 		/** ---------------------------------*/
-
 		$this->_buttons($deleted, $moved, $copied);
 
 		/** -------------------------------
 		/**  Storage Graph
 		/** -------------------------------*/
-
 		if ( ! isset($this->single_parts['image']['messages_graph']))
 		{
 			$this->storage_graph();
@@ -1389,8 +1357,6 @@ class EE_Messages {
 
 		return $this->_process_template($folder_template);
 	}
-
-
 
 	/** ----------------------------------------
 	/**  Buttons for Various Pages
