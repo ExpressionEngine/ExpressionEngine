@@ -69,13 +69,11 @@ class EE_Channel_custom_date_parser implements EE_Channel_parser_component {
 
   				$key = $prefix.$key;
 
-				if (preg_match_all("/".LD.$key."\s+format=[\"'](.*?)[\"']".RD."/s", $tagdata, $matches))
+				if (preg_match_all("/".LD.$key.".*?".RD."/s", $tagdata, $matches))
 				{
 					for ($j = 0; $j < count($matches[0]); $j++)
 					{
-						$matches[0][$j] = str_replace(array(LD, RD), '', $matches[0][$j]);
-
-						$custom_date_fields[$matches[0][$j]] = $matches[1][$j];
+						$custom_date_fields[] = str_replace(array(LD, RD), '', $matches[0][$j]);
 					}
 				}
 			}
@@ -108,7 +106,7 @@ class EE_Channel_custom_date_parser implements EE_Channel_parser_component {
 
 		$dfields = $obj->channel()->dfields;
 
-		if (isset($custom_date_fields[$tag]) && isset($dfields[$data['site_id']]))
+		if (in_array($tag, $custom_date_fields) && isset($dfields[$data['site_id']]))
 		{
 			foreach ($dfields[$data['site_id']] as $dtag => $dval)
 			{
