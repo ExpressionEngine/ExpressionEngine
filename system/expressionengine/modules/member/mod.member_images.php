@@ -123,8 +123,8 @@ class Member_images extends Member {
 		ee()->db->query("UPDATE exp_members SET signature = '".$_POST['body']."' WHERE member_id ='".ee()->session->userdata('member_id')."'");
 
 		// Is there an image to upload or remove?
-		if ((isset($_FILES['userfile']) AND 
-			$_FILES['userfile']['name'] != '') OR 
+		if ((isset($_FILES['userfile']) AND
+			$_FILES['userfile']['name'] != '') OR
 			isset($_POST['remove']))
 		{
 			return $this->upload_signature_image();
@@ -208,7 +208,7 @@ class Member_images extends Member {
 			$tmpl = $this->_load_element('avatar_folder_list');
 
 		 	$folders = '';
-		 
+
 			while (FALSE !== ($file = readdir($fp)))
 			{
 				if (is_dir($avatar_path.$file) AND $file != 'uploads' AND $file != '.' AND $file != '..')
@@ -294,7 +294,7 @@ class Member_images extends Member {
 
 		// Define the paths and get the images
 		$avatar_path = ee()->config->slash_item('avatar_path').ee()->security->sanitize_filename($this->cur_id).'/';
-		$avatar_url  = ee()->config->slash_item('avatar_url').ee()->security->sanitize_filename($this->cur_id).'/';
+		$avatar_url = ee()->config->slash_item('avatar_url').ee()->security->sanitize_filename($this->cur_id).'/';
 
 		$avatars = $this->_get_avatars($avatar_path);
 
@@ -418,7 +418,7 @@ class Member_images extends Member {
 			return $this->_trigger_error('edit_avatar', 'avatars_not_enabled');
 		}
 
-		if (ee()->input->get_post('avatar') === FALSE OR 
+		if (ee()->input->get_post('avatar') === FALSE OR
 			ee()->input->get_post('folder') === FALSE)
 		{
 			return ee()->functions->redirect(ee()->input->get_post('referrer'));
@@ -426,7 +426,7 @@ class Member_images extends Member {
 
 		$folder	= ee()->security->sanitize_filename(ee()->input->get_post('folder'));
 		$file	= ee()->security->sanitize_filename(ee()->input->get_post('avatar'));
-		
+
 		$basepath 	= ee()->config->slash_item('avatar_path');
 		$avatar		= $avatar	= $folder.'/'.$file;
 
@@ -436,8 +436,8 @@ class Member_images extends Member {
 		{
 			return $this->_trigger_error('edit_avatar', 'avatars_not_found');
 		}
-		
-		// Fetch the avatar meta-data		
+
+		// Fetch the avatar meta-data
 		if ( ! function_exists('getimagesize'))
 		{
 			return $this->_trigger_error('edit_avatar', 'image_assignment_error');
@@ -452,8 +452,8 @@ class Member_images extends Member {
 		ee()->member_model->update_member(
 			ee()->session->userdata('member_id'),
 			array(
-				'avatar_filename' => $avatar, 
-				'avatar_width' => $width, 
+				'avatar_filename' => $avatar,
+				'avatar_width' => $width,
 				'avatar_height' => $height
 			)
 		);
@@ -485,15 +485,15 @@ class Member_images extends Member {
 
 	    $avatars = array();
 
-	    while (FALSE !== ($file = readdir($fp))) 
-	    { 
+	    while (FALSE !== ($file = readdir($fp)))
+	    {
 	        if (FALSE !== ($pos = strpos($file, '.')))
 	        {
 	            if (in_array(substr($file, $pos), $extensions))
 	            {
 	                $avatars[] = $file;
 	            }
-	        }                            
+	        }
 	    }
 
 	    closedir($fp);
@@ -511,7 +511,7 @@ class Member_images extends Member {
 		return $this->_upload_image('avatar');
 	}
 
-	// --------------------------------------------------------------------	
+	// --------------------------------------------------------------------
 
 	/**
 	 * Upload Photo
@@ -539,7 +539,7 @@ class Member_images extends Member {
 	function _upload_image($type = 'avatar')
 	{
 		ee()->load->library('members');
-		
+
 		$upload = ee()->members->upload_member_images($type, ee()->session->userdata('member_id'));
 
 		if (is_array($upload))
