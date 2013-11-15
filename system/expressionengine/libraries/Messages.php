@@ -3183,7 +3183,6 @@ DOH;
 
 		$this->conditionals['bulletins']		= 'n';
 		$this->conditionals['no_bulletins']		 = 'y';
-		$this->conditionals['paginate']			 = 'n';
 		$this->conditionals['can_post_bulletin'] = (ee()->session->userdata['can_send_bulletins'] == 'y') ? 'y' : 'n';
 
 		$this->single_parts['include']['message'] = $message;
@@ -3228,73 +3227,44 @@ DOH;
 		}
 
 		/** ----------------------------------------
-		/**  Determine Current Page
+		/**  Handle Pagination
 		/** ----------------------------------------*/
-		
-		$row_count = 0;  // How many rows shown this far (i.e. offset)
-		
-		if ($this->allegiance == 'user')
-		{
-			$row_count = $this->cur_id;
-		}
-		else
-		{
-			$row_count = (ee()->input->get_post('page') === false) ? 0 : ee()->input->get_post('page');
-		}
-		
-		if ( ! is_numeric($row_count))
-		{
-			$row_count = 0;
-		}
-		
-		$this->per_page = 25;
-		
-		$current_page = ($row_count / $this->per_page) + 1;
-			
-		$total_pages = intval($query->row('count')  / $this->per_page);
-		
-		if ($query->row('count')  % $this->per_page) 
-		{
-			$total_pages++;
-		}
-		
-		$this->single_parts['include']['page_count'] = $current_page.' '.ee()->lang->line('of').' '.$total_pages;
-		
-		/** -----------------------------
-		/**  Do we need pagination?
-		/** -----------------------------*/
-				
-		$pager = ''; 		
-		
-		if ($query->row('count')  > $this->per_page)
-		{ 											
-			ee()->load->library('pagination');
-			
-			if ($this->allegiance == 'user')
-			{
-				$config['base_url'] = $this->base_url.'bulletin_board/';
-			}
-			else
-			{
-				$config['page_query_string'] = TRUE;
-				$config['base_url'] = $this->base_url.'bulletin_board';
-				$config['query_string_segment'] = 'page';
-			}
-			
-			$config['total_rows'] 	= $query->row('count');
-			$config['per_page']		= $this->per_page;
-			$config['cur_page']		= $row_count;
-			$config['first_link'] 	= ee()->lang->line('pag_first_link');
-			$config['last_link'] 	= ee()->lang->line('pag_last_link');
 
-			ee()->pagination->initialize($config);
-			$this->single_parts['include']['pagination_link'] = ee()->pagination->create_links();
+		$template = $this->retrieve_template('bulletin_board');
 
-			$this->conditionals['paginate'] = 'y';
-			 
-			$sql .= " LIMIT ".$row_count.", ".$this->per_page;			
+		// Check to see if the old style pagination exists
+		// @deprecated 2.8
+		if (stripos($template, LD.'if paginate'.RD) !== FALSE)
+		{
+			$template = preg_replace("/{if paginate}(.*?){\/if}/uis", "{paginate}$1{/paginate}", $template);
+			ee()->load->library('logger');
+			ee()->logger->deprecated('2.8', 'normal {paginate} tags in your bulletin board template');
 		}
-		
+		if (stripos($template, LD.'include:pagination_link'.RD) !== FALSE)
+		{
+			$template = str_replace('{include:pagination_link}', '{pagination_links}', $template);
+			ee()->load->library('logger');
+			ee()->logger->deprecated('2.8', 'normal {pagination_links} tags in your bulletin board template');
+		}
+
+		// Load up pagination and start parsing
+		ee()->load->library('pagination');
+		$pagination = ee()->pagination->create(__CLASS__);
+		$pagination->template = $template;
+		$pagination->position = 'inline';
+		$pagination->per_page = 2;
+		$template = $pagination->get_template();
+
+		if ($query->row('count') > $pagination->per_page)
+		{
+			$pagination->build($query->row('count'));
+			$sql .= " LIMIT ".$pagination->offset.", ".$pagination->per_page;
+		}
+
+		// Pagination template must be rendered to remove pagination marker when
+		// the page is not actually paginated
+		$template = $pagination->render($template);
+
 		/** ----------------------------------------
 		/**  Create Bulletins
 		/** ----------------------------------------*/
@@ -3350,8 +3320,8 @@ DOH;
 		/** ----------------------------------------
 		/**  Return the Folder's Contents
 		/** ----------------------------------------*/
-		
-		$this->return_data = $this->_process_template($this->retrieve_template('bulletin_board'));
+
+		$this->return_data = $this->_process_template($template);
 	}
 
 

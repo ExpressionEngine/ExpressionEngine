@@ -1,8 +1,8 @@
-	
+
 {if message}
 <div class='tableCellOne'><div class='success'>{include:message}</div></div>
 {/if}
-	
+
 <div class='menuHeadingBG'><div class="tableHeading">{lang:bulletin_board}</div></div>
 
 {if can_post_bulletin}
@@ -24,13 +24,12 @@
 {include:bulletins}
 {/if}
 
-{if paginate}
-<table border='0'  cellspacing='5' cellpadding='0' class='tablePad' >
+{paginate}
+<table border='0' cellspacing='5' cellpadding='0' class='tablePad'>
 <tr>
-<td  class='default' >
-{include:pagination_link}
+<td class='default'>
+{pagination_links}
 </td>
 </tr>
 </table>
-{/if}
-    	
+{/paginate}
