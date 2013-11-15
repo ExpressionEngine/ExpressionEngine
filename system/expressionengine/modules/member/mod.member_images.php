@@ -304,47 +304,45 @@ class Member_images extends Member {
 			return $this->_trigger_error('edit_avatar', 'avatars_not_found');
 		}
 
-		// Pagination anyone?
-		$pagination = '';
-		$max_rows	= 8;
-		$max_cols	= 3;
-		$col_ct		= 0;
-		$perpage 	= $max_rows * $max_cols;
-		$total_rows = count($avatars);
-		$rownum 	= ($this->uri_extra == '') ? 0 : $this->uri_extra;
-		$base_url	= $this->_member_path('browse_avatars/'.$this->cur_id.'/');
+		$template = $this->_load_element('browse_avatars');
 
-		if ($rownum > count($avatars))
+		// Check to see if the old style pagination exists
+		// @deprecated 2.8
+		if (stripos($template, LD.'if pagination'.RD) !== FALSE)
 		{
-			$rownum = 0;			
+			if (stripos($template, LD.'paginate'.RD) !== FALSE)
+			{
+				$template = str_replace('{paginate}', '{pagination_links}', $template);
+			}
+
+			$template = preg_replace("/{if pagination}(.*?){\/if}/uis", "{paginate}$1{/paginate}", $template);
+			ee()->load->library('logger');
+			ee()->logger->deprecated('2.8', 'normal {paginate} tags in your browse avatars template');
 		}
 
-		if ($total_rows > $perpage)
+		// Load up pagination and start parsing
+		ee()->load->library('pagination');
+		$pagination = ee()->pagination->create(__CLASS__);
+		$pagination->template = $template;
+		$pagination->position = 'inline';
+		$template = $pagination->get_template();
+
+		// Pagination anyone?
+		$max_rows = 5;
+		$max_cols = 3;
+		$per_page = $max_rows * $max_cols;
+		$total_rows = count($avatars);
+
+		if ($total_rows > $per_page)
 		{
-			$avatars = array_slice($avatars, $rownum, $perpage);
-
-			ee()->load->library('pagination');
-
-			$config['base_url']		= $base_url;
-			$config['total_rows'] 	= $total_rows;
-			$config['per_page']		= $perpage;
-			$config['cur_page']		= $rownum;
-			$config['first_link'] 	= lang('pag_first_link');
-			$config['last_link'] 	= lang('pag_last_link');
-				
-			ee()->pagination->initialize($config);
-			$pagination = ee()->pagination->create_links();			
-
-			// We add this for use later
-
-			if ($rownum != '')
-			{
-				$base_url .= $rownum.'/';
-			}
+			$pagination->per_page = $per_page;
+			$pagination->build($total_rows);
+			$avatars = array_slice($avatars, $pagination->offset, $pagination->per_page);
 		}
 
 		// Build the table rows
-		$avstr = '';
+		$avstr	= '';
+		$col_ct	= 0;
 		foreach ($avatars as $image)
 		{
 			if ($col_ct == 0)
@@ -378,20 +376,8 @@ class Member_images extends Member {
 		}
 
 		// Finalize the output
-		$template = $this->_load_element('browse_avatars');
-
-		if ($pagination == '')
-		{
-			$template = $this->_deny_if('pagination', $template);
-		}
-		else
-		{
-			$template = $this->_allow_if('pagination', $template);
-		}
-
-
-		return $this->_var_swap($template,
-			array(
+		$base_url = $this->_member_path('browse_avatars/'.$this->cur_id.'/');
+		return $this->_var_swap($pagination->render($template), array(
 			'form_declaration'		=> ee()->functions->form_declaration(
 				array(
 					'action' 		=> $this->_member_path('select_avatar'),
@@ -399,10 +385,8 @@ class Member_images extends Member {
 					)
 				),
 			'avatar_set'			=> ucwords(str_replace("_", " ", $this->cur_id)),
-			'avatar_table_rows'		=> $avstr,
-			'pagination'			=> $pagination
-			)
-		);
+			'avatar_table_rows'		=> $avstr
+		));
 	}
 
 	// --------------------------------------------------------------------
