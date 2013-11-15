@@ -1000,8 +1000,6 @@ class EE_Messages {
 		// ee()->input->get_post('folder') - CP
 		// ---------------------------------
 
-		$row_count = 0;  // How many rows shown this far (i.e. offset)
-
 		if ($folder_id == '')
 		{
 			if ($this->allegiance == 'user')
@@ -1018,15 +1016,12 @@ class EE_Messages {
 				else
 				{
 					$x = explode('_', $this->cur_id);
-
 					$folder_id = ( ! is_numeric($x['0'])) ? 1 : $x['0'];
-					$row_count = ( ! isset($x['1']) OR ! is_numeric($x['1'])) ? 0 : $x['1'];
 				}
 			}
 			else
 			{
 				$folder_id = (ee()->input->get_post('folder') === false) ? '1' : ee()->input->get_post('folder');
-				$row_count = (ee()->input->get_post('page') === false) ? 0 : ee()->input->get_post('page');
 			}
 		}
 
@@ -1034,12 +1029,6 @@ class EE_Messages {
 		{
 			$folder_id = '1';
 		}
-
-		if ( ! is_numeric($row_count))
-		{
-			$row_count = 0;
-		}
-
 
 		/** ---------------------------------------
 		/**  Retrieve Folder Name for User
@@ -1068,7 +1057,6 @@ class EE_Messages {
 		$this->single_parts['lang']['folder_name'] = ee()->lang->line('messages_folder').' - '.$folder_name;
 		$this->single_parts['lang']['folder_id'] = $folder_id;
 		$this->current_folder = $folder_id;
-		$this->conditionals['paginate'] = 'n';
 
 		/** -----------------------------------
 		/**  Folder Conditionals
@@ -1135,6 +1123,40 @@ class EE_Messages {
 		$query = ee()->db->query("SELECT COUNT(exp_message_copies.copy_id) AS count ".$sql);
 
 		/** ----------------------------------------
+		/**  Handle Pagination
+		/** ----------------------------------------*/
+		$template = $this->retrieve_template('message_folder');
+
+		// Check to see if the old style pagination exists
+		// @deprecated 2.8
+		if (stripos($template, LD.'if paginate'.RD) !== FALSE)
+		{
+			$template = preg_replace("/{if paginate}(.*?){\/if}/uis", "{paginate}$1{/paginate}", $template);
+			ee()->load->library('logger');
+			ee()->logger->deprecated('2.8', 'normal {paginate} tags in your message folder template');
+		}
+		if (stripos($template, LD.'include:pagination_link'.RD) !== FALSE)
+		{
+			$template = str_replace('{include:pagination_link}', '{pagination_links}', $template);
+			ee()->load->library('logger');
+			ee()->logger->deprecated('2.8', 'normal {pagination_links} tags in your message folder template');
+		}
+
+		// Load up pagination and start parsing
+		ee()->load->library('pagination');
+		$pagination = ee()->pagination->create(__CLASS__);
+		$pagination->template = $template;
+		$pagination->position = 'inline';
+		$pagination->per_page = $this->per_page;
+		$template = $pagination->get_template();
+
+		if ($query->row('count') > $this->per_page)
+		{
+			$pagination->build($query->row('count'));
+			$sql .= " LIMIT ".$pagination->offset.", ".$pagination->per_page;
+		}
+
+		/** ----------------------------------------
 		/**  If No Messages, we say so.
 		/** ----------------------------------------*/
 
@@ -1143,66 +1165,15 @@ class EE_Messages {
 			$this->title = $folder_name;
 			$this->crumb = $folder_name;
 
-			$this->single_parts['include']['folder_rows']  = $this->retrieve_template('message_no_folder_rows');
+			$this->single_parts['include']['folder_rows'] = $this->retrieve_template('message_no_folder_rows');
 			$this->single_parts['form']['form_declaration']['modify_messages'] = '';
 
 			return $this->return_data = $this->folder_wrapper(
-				$this->retrieve_template('message_folder'),
+				$pagination->render($template),
 				($folder_id == '0') ? 'n' : 'y'
 			);
 		}
 
-		/** ----------------------------------------
-		/**  Determine Current Page
-		/** ----------------------------------------*/
-
-		$current_page = ($row_count / $this->per_page) + 1;
-
-		$total_pages = intval($query->row('count')  / $this->per_page);
-
-		if ($query->row('count')  % $this->per_page)
-		{
-			$total_pages++;
-		}
-
-		$this->single_parts['include']['page_count'] = ee()->lang->line('folder_page').' '.$current_page.' '.ee()->lang->line('of').' '.$total_pages;
-
-		/** -----------------------------
-		/**  Do we need pagination?
-		/** -----------------------------*/
-				
-		$pager = ''; 		
-		
-		if ($query->row('count')  > $this->per_page)
-		{
-			ee()->load->library('pagination');
-
-			if ($this->allegiance == 'user')
-			{
-				//$config['base_url'] = $this->base_url.'view_folder/'.$folder_id.'_';
-				$config['base_url'] = $this->base_url.'view_folder/';
-				$config['prefix'] = $folder_id.'_';
-			}
-			else
-			{
-				$config['page_query_string'] = TRUE;
-				$config['base_url'] = $this->base_url.'view_folder'.AMP.'folder='.$folder_id;
-				$config['query_string_segment'] = 'page';
-			}
-
-			$config['total_rows'] 	= $query->row('count');
-			$config['per_page']		= $this->per_page;
-			$config['cur_page']		= $row_count;
-			$config['first_link'] 	= ee()->lang->line('pag_first_link');
-			$config['last_link'] 	= ee()->lang->line('pag_last_link');
-
-			ee()->pagination->initialize($config);
-			$this->single_parts['include']['pagination_link'] = ee()->pagination->create_links();
-
-			$this->conditionals['paginate'] = 'y';
-
-			$sql .= " LIMIT ".$row_count.", ".$this->per_page;
-		}
 
 		/** ----------------------------------------
 		/**  Retrieve Folder Contents
@@ -1229,24 +1200,18 @@ class EE_Messages {
 			$data			= $row;
 			$message_ids[]	= $row['message_id'];
 
-			$data['msg_id']	= ($row['message_read'] == 'n') ? 'u'.$row['msg_id'] : $row['msg_id'];
-			$data['buddy_list_link'] = '';
-			$data['block_list_link'] = '';
-			$data['message_date'] = ee()->localize->human_time($data['message_date']);
-			$data['style']		  = ($i % 2) ? 'tableCellTwo' : 'tableCellOne';
-			$data['message_subject']  = ($censor === FALSE) ? $data['message_subject'] : ee()->typography->filter_censored_words($data['message_subject']);
+			$data['msg_id']				= ($row['message_read'] == 'n') ? 'u'.$row['msg_id'] : $row['msg_id'];
+			$data['message_date']		= ee()->localize->human_time($data['message_date']);
+			$data['style']				= ($i % 2) ? 'tableCellTwo' : 'tableCellOne';
+			$data['message_subject']	= ($censor === FALSE) ? $data['message_subject'] : ee()->typography->filter_censored_words($data['message_subject']);
 
 			if ($this->allegiance == 'user')
 			{
-				$data['message_url']  = $this->base_url.'view_message/'.$row['msg_id'].'/';
-				//$data['buddy_list_link'] = $this->_create_path('add_buddy').$row['sender_id'].'/';
-				//$data['block_list_link'] = $this->_create_path('add_block').$row['sender_id'].'/';
+				$data['message_url'] = $this->base_url.'view_message/'.$row['msg_id'].'/';
 			}
 			else
 			{
 				$data['message_url'] = $this->base_url.'view_message'.AMP.'msg='.$row['msg_id'];
-				//$data['buddy_list_link'] = $this->_create_path('add_buddy').AMP.'id='.$row['sender_id'];
-				//$data['block_list_link'] = $this->_create_path('add_block').AMP.'id='.$row['sender_id'];
 			}
 
 			// --------------------------------
@@ -1305,20 +1270,16 @@ class EE_Messages {
 		/** ----------------------------------------
 		/**  Return the Folder's Contents
 		/** ----------------------------------------*/
-
 		$this->title = $folder_name;
 		$this->crumb = $folder_name;
+
 		$this->return_data = $this->folder_wrapper(
-			$this->retrieve_template('message_folder'),
+			$pagination->render($template),
 			($folder_id == '0') ? 'n' : 'y'
 		);
 	}
 
-
-
-
-
-
+	// -------------------------------------------------------------------------
 
 	/** ----------------------------------------
 	/**  Wrapper for a Folder and its Contents
