@@ -51,6 +51,13 @@ class EE_Router extends CI_Router {
 		$this->rules = new EE_Template_router_converters();
     }
 
+	/**
+	 * parse_route
+	 * 
+	 * @param string  EE formatted template route 
+	 * @access public
+	 * @return string The compiled regular expression
+	 */
 	public function parse_route($route)
 	{
 		$parsed_segments = array();
@@ -73,6 +80,16 @@ class EE_Router extends CI_Router {
 		return "^{$parsed_route}\/?$";
 	}
 
+    /**
+     * Parses a EE formatted template route into segments
+     * 
+     * @param string $route 
+     * @access public
+	 * @return array
+	 * 		    - variable : Segment's variable name
+	 * 		    - rules : Segment's list of validators
+	 * 		    - static : Bare segment string, only set if segment is static text
+     */
     public function parse_segments($route)
     {
 		$pos = 0;
@@ -115,6 +132,15 @@ class EE_Router extends CI_Router {
 		return $segments;
     }
 
+    /**
+     * Parse a URL segment for a list of validators and convert to a regular expression
+     * 
+	 * @param segment array
+	 * 				   - variable : Segment's variable name
+	 * 				   - rules : Segment's list of validators
+     * @access public
+     * @return array of compiled regexes
+     */
     public function parse_rules($segment)
     {
 		$rules = $segment['rules'];

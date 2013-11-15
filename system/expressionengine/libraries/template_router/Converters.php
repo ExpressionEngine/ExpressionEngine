@@ -63,6 +63,7 @@ class EE_Template_router_converters {
 	}
 
 }
+// }}}
 
 
 // ------------------------------------------------------------------------
@@ -78,6 +79,13 @@ class EE_Template_router_converters {
  */
 interface EE_Template_router_converter {
 
+	/**
+	 * Return a regular expression for validation
+	 * 
+	 * @param mixed  	The arguments for the converter 
+	 * @access public
+	 * @return string	The compiled regular expression
+	 */
 	public function regex($args);
 
 }
