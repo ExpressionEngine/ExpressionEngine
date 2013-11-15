@@ -1212,7 +1212,7 @@ class MyAccount extends CP_Controller {
 		$config_fields = ee()->config->prep_view_vars('localization_cfg', $values);
 
 		// Cleanup the key differentiation
-		$vars['timezone'] = $config_fields['fields']['default_site_timezone']['value'];
+		$vars['timezone'] = str_replace('default_site_timezone', 'timezone', $config_fields['fields']['default_site_timezone']['value']);
 		unset($config_fields['fields']['default_site_timezone']);
 
 		$vars = array_merge($config_fields, $vars);
@@ -1247,7 +1247,7 @@ class MyAccount extends CP_Controller {
 		$this->load->model('site_model');
 
 		$data['language']	= $this->security->sanitize_filename($this->input->post('language'));
-		$data['timezone']	= $this->input->post('timezones');
+		$data['timezone']	= $this->input->post('timezone');
 		$data['date_format'] = $this->input->post('date_format');
 		$data['time_format'] = $this->input->post('time_format');
 		$data['include_seconds'] = $this->input->post('include_seconds');
