@@ -989,6 +989,10 @@ GRID_FALLBACK;
 			}
 		}
 
+		// Array of possible JS and their requirements
+		// If the key is a needed JS file, it should be in ee()->cp->js_files
+		// and this just handles pulling in files required by the key.
+
 		$ui = array(
 			'core' => FALSE,
 			'widget' => array('core'),
