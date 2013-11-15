@@ -202,7 +202,7 @@ class Simple_commerce {
 		
 		if ($this->encrypt === TRUE)
 		{
-			$url = $subscribe['action'].'?cmd=_s-xclick&amp;encrypted='.urlencode($this->encrypt_data($buy_now['hidden_fields']));
+			$url = $subscribe['action'].'?cmd=_s-xclick&amp;encrypted='.urlencode($this->encrypt_data($subscribe['hidden_fields']));
 		}
 		else
 		{
