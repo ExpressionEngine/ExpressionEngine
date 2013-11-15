@@ -665,43 +665,6 @@ class Comment {
 		);
 
 		/** ----------------------------------------
-		/**  Fetch all the date-related variables
-		/** ----------------------------------------*/
-
-		$gmt_comment_date	= array();
-		$comment_date		= array();
-		$edit_date			= array();
-
-		// We do this here to avoid processing cycles in the foreach loop
-
-		$date_vars = array('gmt_comment_date', 'comment_date', 'edit_date');
-
-		foreach ($date_vars as $val)
-		{
-			if (preg_match_all("/".LD.$val."\s+format=[\"'](.*?)[\"']".RD."/s", ee()->TMPL->tagdata, $matches))
-			{
-				for ($j = 0; $j < count($matches['0']); $j++)
-				{
-					$matches['0'][$j] = str_replace(LD, '', $matches['0'][$j]);
-					$matches['0'][$j] = str_replace(RD, '', $matches['0'][$j]);
-
-					switch ($val)
-					{
-						case 'comment_date':
-							$comment_date[$matches['0'][$j]] = $matches['1'][$j];
-							break;
-						case 'gmt_comment_date':
-							$gmt_comment_date[$matches['0'][$j]] = $matches['1'][$j];
-							break;
-						case 'edit_date':
-							$edit_date[$matches['0'][$j]] = $matches['1'][$j];
-							break;
-					}
-				}
-			}
-		}
-
-		/** ----------------------------------------
 		/**  Protected Variables for Cleanup Routine
 		/** ----------------------------------------*/
 
@@ -894,57 +857,21 @@ class Comment {
 				}
 
 				/** ----------------------------------------
-				/**  parse comment date
+				/**  parse comment date and "last edit" date
 				/** ----------------------------------------*/
 
-				if (isset($comment_date[$key]) && isset($row['comment_date']))
-				{
-					$tagdata = ee()->TMPL->swap_var_single(
-						$key,
-						ee()->localize->format_date(
-							$comment_date[$key],
-							$row['comment_date']
-						),
-						$tagdata
-					);
-				}
+				$dates = array(
+					'comment_date' => $row['comment_date'],
+					'edit_date'    => $row['edit_date']
+				);
+
+				$tagdata = ee()->TMPL->parse_date_variables($tagdata, $dates);
 
 				/** ----------------------------------------
 				/**  parse GMT comment date
 				/** ----------------------------------------*/
 
-				if (isset($gmt_comment_date[$key]) && isset($row['comment_date']))
-				{
-					$tagdata = ee()->TMPL->swap_var_single(
-						$key,
-						ee()->localize->format_date(
-							$gmt_comment_date[$key],
-							$row['comment_date'],
-							FALSE
-						),
-						$tagdata
-					);
-				}
-
-				/** ----------------------------------------
-				/**  parse "last edit" date
-				/** ----------------------------------------*/
-
-				if (isset($edit_date[$key]))
-				{
-					if (isset($row['edit_date']))
-					{
-						$tagdata = ee()->TMPL->swap_var_single(
-							$key,
-							ee()->localize->format_date(
-								$edit_date[$key],
-								$row['edit_date']
-							),
-							$tagdata
-						);
-					}
-				}
-
+				$tagdata = ee()->TMPL->parse_date_variables($tagdata, array('gmt_comment_date', $row['comment_date']), FALSE);
 
 				/** ----------------------------------------
 				/**  {member_search_path}
@@ -1892,23 +1819,6 @@ class Comment {
 		//
 		// -------------------------------------------
 
-		/** ----------------------------------------
-		/**  Fetch all the date-related variables
-		/** ----------------------------------------*/
-
-		$comment_date = array();
-
-		if (preg_match_all("/".LD."comment_date\s+format=[\"'](.*?)[\"']".RD."/s", $tagdata, $matches))
-		{
-			for ($j = 0; $j < count($matches['0']); $j++)
-			{
-				$matches['0'][$j] = str_replace(LD, '', $matches['0'][$j]);
-				$matches['0'][$j] = str_replace(RD, '', $matches['0'][$j]);
-
-				$comment_date[$matches['0'][$j]] = $matches['1'][$j];
-			}
-		}
-
         /** ----------------------------------------
         /**  Set defaults based on member data as needed
         /** ----------------------------------------*/
@@ -2066,17 +1976,7 @@ class Comment {
 			/**  parse comment date
 			/** ----------------------------------------*/
 
-			elseif (isset($comment_date[$key]))
-			{
-				$tagdata = ee()->TMPL->swap_var_single(
-					$key,
-					ee()->localize->format_date(
-						$comment_date[$key],
-						ee()->localize->now
-					),
-					$tagdata
-				);
-			}
+			$tagdata = ee()->TMPL->parse_date_variables($tagdata, array('comment_date' => ee()->localize->now));
 
 		}
 
