@@ -138,9 +138,7 @@ class EE_Channel_date_parser implements EE_Channel_parser_component {
 		//  parse entry date
 		if (isset($entry_date[$key]))
 		{
-			$val = str_replace($entry_date[$key], ee()->localize->format_date($entry_date[$key], $data['entry_date']), $val);
-
-			$tagdata = str_replace(LD.$key.RD, $val, $tagdata);
+			$tagdata = ee()->TMPL->parse_date_variables($tagdata, array('entry_date' => $data['entry_date']));
 		}
 
 		//  Recent Comment Date
@@ -148,9 +146,7 @@ class EE_Channel_date_parser implements EE_Channel_parser_component {
 		{
 			if ($data['recent_comment_date'] != 0)
 			{
-				$val = str_replace($recent_comment_date[$key], ee()->localize->format_date($recent_comment_date[$key], $data['recent_comment_date']), $val);
-
-				$tagdata = str_replace(LD.$key.RD, $val, $tagdata);
+				$tagdata = ee()->TMPL->parse_date_variables($tagdata, array('recent_comment_date' => $data['recent_comment_date']));
 			}
 			else
 			{
@@ -161,32 +157,24 @@ class EE_Channel_date_parser implements EE_Channel_parser_component {
 		//  GMT date - entry date in GMT
 		elseif (isset($gmt_entry_date[$key]))
 		{
-			$val = str_replace($gmt_entry_date[$key], ee()->localize->format_date($gmt_entry_date[$key], $data['entry_date'], FALSE), $val);
-
-			$tagdata = str_replace(LD.$key.RD, $val, $tagdata);
+			$tagdata = ee()->TMPL->parse_date_variables($tagdata, array('gmt_entry_date' => $data['entry_date']), FALSE);
 		}
 
 		elseif (isset($gmt_date[$key]))
 		{
-			$val = str_replace($gmt_date[$key], ee()->localize->format_date($gmt_date[$key], $data['entry_date'], FALSE), $val);
-
-			$tagdata = str_replace(LD.$key.RD, $val, $tagdata);
+			$tagdata = ee()->TMPL->parse_date_variables($tagdata, array('gmt_date' => $data['entry_date']), FALSE);
 		}
 
 		//  parse "last edit" date
 		elseif (isset($edit_date[$key]))
 		{
-			$val = str_replace($edit_date[$key], ee()->localize->format_date($edit_date[$key], mysql_to_unix($data['edit_date'])), $val);
-
-			$tagdata = str_replace(LD.$key.RD, $val, $tagdata);
+			$tagdata = ee()->TMPL->parse_date_variables($tagdata, array('edit_date' => mysql_to_unix($data['edit_date'])));
 		}
 
 		//  "last edit" date as GMT
 		elseif (isset($gmt_edit_date[$key]))
 		{
-			$val = str_replace($gmt_edit_date[$key], ee()->localize->format_date($gmt_edit_date[$key], mysql_to_unix($data['edit_date']), FALSE), $val);
-
-			$tagdata = str_replace(LD.$key.RD, $val, $tagdata);
+			$tagdata = ee()->TMPL->parse_date_variables($tagdata, array('gmt_edit_date' => mysql_to_unix($data['edit_date'])), FALSE);
 		}
 
 
@@ -195,9 +183,7 @@ class EE_Channel_date_parser implements EE_Channel_parser_component {
 		{
 			if ($data['expiration_date'] != 0)
 			{
-				$val = str_replace($expiration_date[$key], ee()->localize->format_date($expiration_date[$key], $data['expiration_date']), $val);
-
-				$tagdata = str_replace(LD.$key.RD, $val, $tagdata);
+				$tagdata = ee()->TMPL->parse_date_variables($tagdata, array('expiration_date' => $data['expiration_date']));
 			}
 			else
 			{
@@ -231,9 +217,7 @@ class EE_Channel_date_parser implements EE_Channel_parser_component {
 
 			$week_start_date = $data['entry_date'] - (ee()->localize->format_date('%w', $data['entry_date'], TRUE) * 60 * 60 * 24) + $offset;
 
-			$val = str_replace($week_date[$key], ee()->localize->format_date($week_date[$key], $week_start_date), $val);
-
-			$tagdata = str_replace(LD.$key.RD, $val, $tagdata);
+			$tagdata = ee()->TMPL->parse_date_variables($tagdata, array('week_date' => $week_start_date));
 		}
 
 		return $tagdata;
