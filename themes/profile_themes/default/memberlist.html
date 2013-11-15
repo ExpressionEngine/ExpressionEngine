@@ -31,19 +31,19 @@
 
 <select name='order_by' class='select'>
 {order_by_options}
-</select> 
+</select>
 
 &nbsp;  <b>{lang:order}</b>
 
 <select name='sort_order' class='select'>
 {sort_order_options}
-</select> 
+</select>
 
 &nbsp; <b>{lang:rows}</b>
 
 <select name='row_limit' class='select'>
 {row_limit_options}
-</select> 
+</select>
 
 
 &nbsp; <input type='submit' value='{lang:submit}' class='submit' />
@@ -54,7 +54,7 @@
 </tbody>
 </table>
 
-{if paginate}
+{paginate}
 <div class="itempadbig">
 	<table cellpadding="0" cellspacing="0" border="0" class="paginateBorder">
 	<tr>
@@ -63,7 +63,7 @@
 	</tr>
 	</table>
 </div>
-{/if}
+{/paginate}
 
 </form>
 
@@ -81,19 +81,19 @@ function add_search_field()
 		// Find last search field
 		var originalSearchField = document.getElementById('search_field_1');
 		searchFieldCount++;
-		
+
 		// Clone it, change the id
 		var newSearchField = originalSearchField.cloneNode(true);
 		newSearchField.id = 'search_field_' + searchFieldCount;
-		
+
 		// Zero the input and change the names of fields
 		var newFieldInputs = newSearchField.getElementsByTagName('input');
 		newFieldInputs[0].value = '';
 		newFieldInputs[0].name = 'search_keywords_' + searchFieldCount;
-		
+
 		var newFieldSelects = newSearchField.getElementsByTagName('select');
 		newFieldSelects[0].name = 'search_field_' + searchFieldCount;
-		
+
 		// Append it and we're done
 		originalSearchField.parentNode.appendChild(newSearchField);
 	}
@@ -117,9 +117,9 @@ function delete_search_field(obj)
 <tr>
 	<td class='tableCellOne'>
 		{form:form_declaration:do_member_search}
-		
+
 		<div id="member_search_fields">
-		
+
 		<div id="search_field_1" class="itempadbig">
 		<input type="text" name="search_keywords_1" />
 		<select name='search_field_1' class='select' >
@@ -133,15 +133,15 @@ function delete_search_field(obj)
 		<a href="#" onclick="add_search_field(); return false;" class="defaultBold">+</a>
 		<a href="#" onclick="delete_search_field(this); return false;" class="defaultBold">-</a>
 		</div>
-		
+
 		</div>
-		
+
 		<select name='search_group_id' class='select' >
 		{group_id_options}
 		</select>
-		
+
 		<div class="itempadbig">&nbsp; <input type='submit' value='{lang:search}' class='submit' /></div>
-		
+
 		</form>
 	</td>
 </tr>
