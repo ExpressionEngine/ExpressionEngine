@@ -1481,7 +1481,8 @@ class Wiki {
 		/**  Parameters
 		/** ----------------------------------------*/
 
-		$parameters = $this->_fetch_params($match[1], array(
+		$tag_param_string = $match[1];
+		$parameters = $this->_fetch_params($tag_param_string, array(
 			'limit'		=> 10,
 			'paginate'	=> 'bottom',
 			'switch'	=> ''
@@ -1598,15 +1599,9 @@ class Wiki {
 		);
 
 		$changes = '';
-		$count = 0;
-
-		// added in 1.6 for {switch} variable and for future use
-		$vars = ee()->functions->assign_variables($match['2']);
 		ee()->load->helper('url');
-
-		foreach($results->result_array() as $row)
+		foreach($results->result_array() as $index => $row)
 		{
-			$count++;
 			$temp = $match['2'];
 
 			$title	= ($row['page_namespace'] != '') ? $this->namespace_label($row['page_namespace']).':'.$row['topic'] : $row['topic'];
@@ -1624,7 +1619,7 @@ class Wiki {
 				'{revision_notes}'		=> $row['revision_notes'],
 				'{path:view_article}'	=> $link,
 				'{content}'				=> $row['page_content'],
-				'{count}'				=> $count
+				'{count}'				=> $index + 1
 			);
 
 			$data['{article}'] = $this->convert_curly_brackets(
@@ -1664,26 +1659,20 @@ class Wiki {
 				}
 			}
 
-			// Parse specific variables
-			foreach ($vars['var_single'] as $key => $val)
+			// Deprecate old usage of switch
+			// @deprecated 2.8
+			if (isset($parameters['switch']) && ! empty($parameters['switch'])
+				&& strpos($temp, '{switch}') !== FALSE)
 			{
-				if ($key == 'switch')
-				{
-					$temp = ee()->TMPL->swap_var_single(
-						$key,
-						($count % 2 == 1) ? $switch1 : $switch2,
-						$temp
-					);
-				}
-				else if ($key == 'absolute_count')
-				{
-					$temp = ee()->TMPL->swap_var_single(
-						$key,
-						$count + ($pagination->current_page * $parameters['limit']) - $parameters['limit'],
-						$temp
-					);
-				}
+				$temp = str_replace("{switch}", "{switch='{$parameters['switch']}'}", $temp);
+				ee()->load->library('logger');
+				ee()->logger->deprecated('2.8', 'standard {switch=} tags in your wiki recent changes template');
 			}
+
+			// Bring count back to a zero index
+			$temp = ee()->TMPL->parse_switch($temp, $index);
+
+			$data['{absolute_count}'] = $pagination->offset + ($index + 1);
 
 			$changes .= str_replace(array_keys($data), array_values($data), $temp);
 		}
@@ -4355,9 +4344,9 @@ class Wiki {
 			if ($query->num_rows() > 0)
 			{
 				// Retrieve information about the search
-				$paginate_sql			= $query->row('wiki_search_query');
-				$paginate_hash			= $query->row('wiki_search_id');
-				$keywords				= $query->row('wiki_search_keywords');
+				$paginate_sql	= $query->row('wiki_search_query');
+				$paginate_hash	= $query->row('wiki_search_id');
+				$keywords		= $query->row('wiki_search_keywords');
 			}
 		}
 
@@ -4669,16 +4658,11 @@ class Wiki {
 		$results = '';
 		$i = 0;
 		$last_letter = '';
-		$count = 0;
-
-		// added in 1.6 for {switch} variable and for future use
-		$vars = ee()->functions->assign_variables($match['2']);
 		ee()->load->helper('url');
 
-		foreach($query->result_array() as $row)
+		foreach($query->result_array() as $index => $row)
 		{
 			$temp = $match['2'];
-			$count++;
 
 			$title	= ($row['page_namespace'] != '') ? $this->namespace_label($row['page_namespace']).':'.$row['topic'] : $row['topic'];
 			$link	= $this->create_url($this->namespace_label($row['page_namespace']), $row['topic']);
@@ -4694,7 +4678,7 @@ class Wiki {
 				'{revision_notes}'		=> $row['revision_notes'],
 				'{path:view_article}'	=> $link,
 				'{content}'				=> $row['page_content'],
-				'{count}'				=> $count
+				'{count}'				=> $index + 1
 			);
 
 			if (isset($parameters['switch1']))
@@ -4780,26 +4764,20 @@ class Wiki {
 				}
 			}
 
-			// Parse specific variables
-			foreach ($vars['var_single'] as $key => $val)
+			// Deprecate old usage of switch
+			// @deprecated 2.8
+			if (isset($parameters['switch']) && ! empty($parameters['switch'])
+				&& strpos($temp, '{switch}') !== FALSE)
 			{
-				if ($key == 'switch')
-				{
-					$temp = ee()->TMPL->swap_var_single(
-						$key,
-						($count % 2 == 1) ? $switch1 : $switch2,
-						$temp
-					);
-				}
-				else if ($key == 'absolute_count')
-				{
-					$temp = ee()->TMPL->swap_var_single(
-						$key,
-						$count + ($pagination->current_page * $parameters['limit']) - $parameters['limit'],
-						$temp
-					);
-				}
+				$temp = str_replace("{switch}", "{switch='{$parameters['switch']}'}", $temp);
+				ee()->load->library('logger');
+				ee()->logger->deprecated('2.8', 'standard {switch=} tags in your wiki search results or category page template');
 			}
+
+			// Bring count back to a zero index
+			$temp = ee()->TMPL->parse_switch($temp, $index);
+
+			$data['{absolute_count}'] = $pagination->offset + ($index + 1);
 
 			$results .= str_replace(array_keys($data), array_values($data), $temp);
 		}
@@ -4913,15 +4891,10 @@ class Wiki {
 		));
 
 		$files = '';
-		$count = 0;
-
-		// added in 1.6 for {switch} variable and for future use
-		$vars = ee()->functions->assign_variables($match['2']);
 		ee()->load->helper('url');
 
-		foreach($query->result_array() as $row)
+		foreach($query->result_array() as $index => $row)
 		{
-			$count++;
 			$temp = $match['2'];
 
 			$data = array(
@@ -4932,7 +4905,7 @@ class Wiki {
 				'{path:author_profile}'	=> ee()->functions->create_url($this->profile_path.$row['member_id']),
 				'{email}'				=> ee()->typography->encode_email($row['email']),
 				'{url}'					=> prep_url($row['url']),
-				'{count}'				=> $count
+				'{count}'				=> $index + 1
 			);
 
 			$x = explode('/',$row['file_type']);
@@ -4972,26 +4945,20 @@ class Wiki {
 				}
 			}
 
-			// Parse specific variables
-			foreach ($vars['var_single'] as $key => $val)
+			// Deprecate old usage of switch
+			// @deprecated 2.8
+			if (isset($switch) && ! empty($switch)
+				&& strpos($temp, '{switch}') !== FALSE)
 			{
-				if ($key == 'switch')
-				{
-					$temp = ee()->TMPL->swap_var_single(
-						$key,
-						($count % 2 == 1) ? $switch1 : $switch2,
-						$temp
-					);
-				}
-				else if ($key == 'absolute_count')
-				{
-					$temp = ee()->TMPL->swap_var_single(
-						$key,
-						$count + ($pagination->current_page * $parameters['limit']) - $parameters['limit'],
-						$temp
-					);
-				}
+				$temp = str_replace("{switch}", "{switch='{$switch}'}", $temp);
+				ee()->load->library('logger');
+				ee()->logger->deprecated('2.8', 'standard {switch=} tags in your wiki search results or category page template');
 			}
+
+			// Bring count back to a zero index
+			$temp = ee()->TMPL->parse_switch($temp, $index);
+
+			$data['{absolute_count}'] = $pagination->offset + ($index + 1);
 
 			$files .= str_replace(array_keys($data), array_values($data), $temp);
 		}
@@ -5723,21 +5690,7 @@ class Wiki {
 
 			foreach ($params as $name => $default)
 			{
-				if ($name == 'switch')
-				{
-					if (isset($values['switch']) && strpos($values['switch'], '|') !== FALSE)
-					{
-						$switch = explode("|", $values['switch']);
-						$return['switch1'] = $switch['0'];
-						$return['switch2'] = $switch['1'];
-					}
-					else
-					{
-						$return['switch1'] = trim($params['switch']);
-						$return['switch2'] = '';
-					}
-				}
-				else if (isset($values[$name])
+				if (isset($values[$name])
 					&& ( ! is_numeric($default) XOR is_numeric($values[$name])))
 				{
 					$return[$name] = $values[$name];
