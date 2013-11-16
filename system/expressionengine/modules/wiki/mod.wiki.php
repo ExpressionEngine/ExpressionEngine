@@ -76,18 +76,6 @@ class Wiki {
 	var $cat_depth				= 0;
 	var $parent_cats			= array();
 
-	// Pagination variables
-	var $paginate				= FALSE;
-	var $pagination_links		= '';
-	var $page_next				= '';
-	var $page_previous			= '';
-	var $current_page			= 1;
-	var $total_pages			= 1;
-	var $total_rows				=  0;
-	var $p_limit				= '';
-	var $p_page					= '';
-	var $pagination_sql			= '';
-
 	var $return_data 			= '';
 
 	/** ----------------------------------------
@@ -1493,7 +1481,8 @@ class Wiki {
 		/**  Parameters
 		/** ----------------------------------------*/
 
-		$parameters = $this->_fetch_params($match[1], array(
+		$tag_param_string = $match[1];
+		$parameters = $this->_fetch_params($tag_param_string, array(
 			'limit'		=> 10,
 			'paginate'	=> 'bottom'
 		));
@@ -1603,32 +1592,28 @@ class Wiki {
 				);
 
 		$changes = '';
-		$count = 0;
-
-		// added in 1.6 for {switch} variable and for future use
-		$vars = ee()->functions->assign_variables($match['2']);
 		ee()->load->helper('url');
-
-		foreach($results->result_array() as $row)
+		foreach($results->result_array() as $index => $row)
 		{
-			$count++;
 			$temp = $match['2'];
 
 			$title	= ($row['page_namespace'] != '') ? $this->namespace_label($row['page_namespace']).':'.$row['topic'] : $row['topic'];
 			$link	= $this->create_url($this->namespace_label($row['page_namespace']), $row['topic']);
 
-			$data = array(	'{title}'				=> $this->prep_title($title),
-							'{revision_id}'			=> $row['revision_id'],
-							'{page_id}'				=> $row['page_id'],
-							'{author}'				=> $row['screen_name'],
-							'{path:author_profile}'	=> ee()->functions->create_url($this->profile_path.$row['member_id']),
-							'{path:member_profile}'	=> ee()->functions->create_url($this->profile_path.$row['member_id']),
-							'{email}'				=> ($type == 'rss' OR $type == 'atom') ? $row['email'] : ee()->typography->encode_email($row['email']), // No encoding for RSS/Atom
-							'{url}'					=> prep_url($row['url']),
-							'{revision_notes}'		=> $row['revision_notes'],
-							'{path:view_article}'	=> $link,
-							'{content}'				=> $row['page_content'],
-							'{count}'				=> $count);
+			$data = array(
+				'{title}'				=> $this->prep_title($title),
+				'{revision_id}'			=> $row['revision_id'],
+				'{page_id}'				=> $row['page_id'],
+				'{author}'				=> $row['screen_name'],
+				'{path:author_profile}'	=> ee()->functions->create_url($this->profile_path.$row['member_id']),
+				'{path:member_profile}'	=> ee()->functions->create_url($this->profile_path.$row['member_id']),
+				'{email}'				=> ($type == 'rss' OR $type == 'atom') ? $row['email'] : ee()->typography->encode_email($row['email']), // No encoding for RSS/Atom
+				'{url}'					=> prep_url($row['url']),
+				'{revision_notes}'		=> $row['revision_notes'],
+				'{path:view_article}'	=> $link,
+				'{content}'				=> $row['page_content'],
+				'{count}'				=> $index + 1
+			);
 
 			$data['{article}'] = $this->convert_curly_brackets(ee()->typography->parse_type( $this->wiki_syntax($row['page_content']),
 															  array(
@@ -1664,32 +1649,20 @@ class Wiki {
 				}
 			}
 
-			foreach ($vars['var_single'] as $key => $val)
+			// Deprecate old usage of switch
+			// @deprecated 2.8
+			if (isset($parameters['switch']) && ! empty($parameters['switch'])
+				&& strpos($temp, '{switch}') !== FALSE)
 			{
-				/** ----------------------------------------
-				/**  parse {switch} variable
-				/** ----------------------------------------*/
-				if (preg_match("/^switch\s*=.+/i", $key))
-				{
-					$sparam = ee()->functions->assign_parameters($key);
-
-					$sw = '';
-
-					if (isset($sparam['switch']))
-					{
-						$sopt = explode("|", $sparam['switch']);
-
-						$sw = $sopt[($count-1 + count($sopt)) % count($sopt)];
-					}
-
-					$temp = ee()->TMPL->swap_var_single($key, $sw, $temp);
-				}
-
-				if ($key == 'absolute_count')
-				{
-					$temp = ee()->TMPL->swap_var_single($key, $count + ($this->current_page * $parameters['limit']) - $parameters['limit'], $temp);
-				}
+				$temp = str_replace("{switch}", "{switch='{$parameters['switch']}'}", $temp);
+				ee()->load->library('logger');
+				ee()->logger->deprecated('2.8', 'standard {switch=} tags in your wiki recent changes template');
 			}
+
+			// Bring count back to a zero index
+			$temp = ee()->TMPL->parse_switch($temp, $index);
+
+			$data['{absolute_count}'] = $pagination->offset + ($index + 1);
 
 			$changes .= str_replace(array_keys($data), array_values($data), $temp);
 		}
@@ -4424,11 +4397,10 @@ class Wiki {
 
 			if ($query->num_rows() > 0)
 			{
-				var_dump('here?');
-				$search_paginate	= TRUE;
-				$paginate_sql		= $query->row('wiki_search_query') ;
-				$paginate_hash		= $query->row('wiki_search_id') ;
-				$keywords			= $query->row('wiki_search_keywords') ;
+				// Retrieve information about the search
+				$paginate_sql	= $query->row('wiki_search_query');
+				$paginate_hash	= $query->row('wiki_search_id');
+				$keywords		= $query->row('wiki_search_keywords');
 			}
 		}
 
@@ -4729,31 +4701,28 @@ class Wiki {
 		$results = '';
 		$i = 0;
 		$last_letter = '';
-		$count = 0;
-
-		// added in 1.6 for {switch} variable and for future use
-		$vars = ee()->functions->assign_variables($match['2']);
 		ee()->load->helper('url');
 
-		foreach($query->result_array() as $row)
+		foreach($query->result_array() as $index => $row)
 		{
 			$temp = $match['2'];
-			$count++;
 
 			$title	= ($row['page_namespace'] != '') ? $this->namespace_label($row['page_namespace']).':'.$row['topic'] : $row['topic'];
 			$link	= $this->create_url($this->namespace_label($row['page_namespace']), $row['topic']);
 
-			$data = array(	'{title}'				=> $this->prep_title($title),
-							'{revision_id}'			=> $row['revision_id'],
-							'{page_id}'				=> $row['page_id'],
-							'{author}'				=> $row['screen_name'],
-							'{path:author_profile}'	=> ee()->functions->create_url($this->profile_path.$row['member_id']),
-							'{email}'				=> ee()->typography->encode_email($row['email']),
-							'{url}'					=> prep_url($row['url']),
-							'{revision_notes}'		=> $row['revision_notes'],
-							'{path:view_article}'	=> $link,
-							'{content}'				=> $row['page_content'],
-							'{count}'				=> $count);
+			$data = array(
+				'{title}'				=> $this->prep_title($title),
+				'{revision_id}'			=> $row['revision_id'],
+				'{page_id}'				=> $row['page_id'],
+				'{author}'				=> $row['screen_name'],
+				'{path:author_profile}'	=> ee()->functions->create_url($this->profile_path.$row['member_id']),
+				'{email}'				=> ee()->typography->encode_email($row['email']),
+				'{url}'					=> prep_url($row['url']),
+				'{revision_notes}'		=> $row['revision_notes'],
+				'{path:view_article}'	=> $link,
+				'{content}'				=> $row['page_content'],
+				'{count}'				=> $index + 1
+			);
 
 			if (isset($parameters['switch1']))
 			{
@@ -4832,32 +4801,20 @@ class Wiki {
 				}
 			}
 
-			foreach ($vars['var_single'] as $key => $val)
+			// Deprecate old usage of switch
+			// @deprecated 2.8
+			if (isset($parameters['switch']) && ! empty($parameters['switch'])
+				&& strpos($temp, '{switch}') !== FALSE)
 			{
-				/** ----------------------------------------
-				/**  parse {switch} variable
-				/** ----------------------------------------*/
-				if (preg_match("/^switch\s*=.+/i", $key))
-				{
-					$sparam = ee()->functions->assign_parameters($key);
-
-					$sw = '';
-
-					if (isset($sparam['switch']))
-					{
-						$sopt = explode("|", $sparam['switch']);
-
-						$sw = $sopt[($count-1 + count($sopt)) % count($sopt)];
-					}
-
-					$temp = ee()->TMPL->swap_var_single($key, $sw, $temp);
-				}
-
-				if ($key == 'absolute_count')
-				{
-					$temp = ee()->TMPL->swap_var_single($key, $count + ($this->current_page * $parameters['limit']) - $parameters['limit'], $temp);
-				}
+				$temp = str_replace("{switch}", "{switch='{$parameters['switch']}'}", $temp);
+				ee()->load->library('logger');
+				ee()->logger->deprecated('2.8', 'standard {switch=} tags in your wiki search results or category page template');
 			}
+
+			// Bring count back to a zero index
+			$temp = ee()->TMPL->parse_switch($temp, $index);
+
+			$data['{absolute_count}'] = $pagination->offset + ($index + 1);
 
 			$results .= str_replace(array_keys($data), array_values($data), $temp);
 		}
@@ -5027,25 +4984,22 @@ class Wiki {
 				);
 
 		$files = '';
-		$count = 0;
-
-		// added in 1.6 for {switch} variable and for future use
-		$vars = ee()->functions->assign_variables($match['2']);
 		ee()->load->helper('url');
 
-		foreach($query->result_array() as $row)
+		foreach($query->result_array() as $index => $row)
 		{
-			$count++;
 			$temp = $match['2'];
 
-			$data = array(	'{file_name}'			=> $row['file_name'],
-							'{path:view_file}'		=> $this->base_url.$this->file_ns.':'.$row['file_name'],
-							'{file_type}'			=> $row['file_type'],
-							'{author}'				=> $row['screen_name'],
-							'{path:author_profile}'	=> ee()->functions->create_url($this->profile_path.$row['member_id']),
-							'{email}'				=> ee()->typography->encode_email($row['email']),
-							'{url}'					=> prep_url($row['url']),
-							'{count}'				=> $count);
+			$data = array(
+				'{file_name}'			=> $row['file_name'],
+				'{path:view_file}'		=> $this->base_url.$this->file_ns.':'.$row['file_name'],
+				'{file_type}'			=> $row['file_type'],
+				'{author}'				=> $row['screen_name'],
+				'{path:author_profile}'	=> ee()->functions->create_url($this->profile_path.$row['member_id']),
+				'{email}'				=> ee()->typography->encode_email($row['email']),
+				'{url}'					=> prep_url($row['url']),
+				'{count}'				=> $index + 1
+			);
 
 			$x = explode('/',$row['file_type']);
 
@@ -5081,32 +5035,20 @@ class Wiki {
 				}
 			}
 
-			foreach ($vars['var_single'] as $key => $val)
+			// Deprecate old usage of switch
+			// @deprecated 2.8
+			if (isset($switch) && ! empty($switch)
+				&& strpos($temp, '{switch}') !== FALSE)
 			{
-				/** ----------------------------------------
-				/**  parse {switch} variable
-				/** ----------------------------------------*/
-				if (preg_match("/^switch\s*=.+/i", $key))
-				{
-					$sparam = ee()->functions->assign_parameters($key);
-
-					$sw = '';
-
-					if (isset($sparam['switch']))
-					{
-						$sopt = explode("|", $sparam['switch']);
-
-						$sw = $sopt[($count-1 + count($sopt)) % count($sopt)];
-					}
-
-					$temp = ee()->TMPL->swap_var_single($key, $sw, $temp);
-				}
-
-				if ($key == 'absolute_count')
-				{
-					$temp = ee()->TMPL->swap_var_single($key, $count + ($this->current_page * $parameters['limit']) - $parameters['limit'], $temp);
-				}
+				$temp = str_replace("{switch}", "{switch='{$switch}'}", $temp);
+				ee()->load->library('logger');
+				ee()->logger->deprecated('2.8', 'standard {switch=} tags in your wiki search results or category page template');
 			}
+
+			// Bring count back to a zero index
+			$temp = ee()->TMPL->parse_switch($temp, $index);
+
+			$data['{absolute_count}'] = $pagination->offset + ($index + 1);
 
 			$files .= str_replace(array_keys($data), array_values($data), $temp);
 		}
@@ -5974,21 +5916,7 @@ class Wiki {
 
 			foreach ($params as $name => $default)
 			{
-				if ($name == 'switch')
-				{
-					if (strpos($values['switch'], '|') !== FALSE && isset($values['switch']))
-					{
-						$switch = explode("|", $values['switch']);
-						$return['switch1'] = $switch['0'];
-						$return['switch2'] = $switch['1'];
-					}
-					else
-					{
-						$return['switch1'] = trim($params['switch']);
-						$return['switch2'] = '';
-					}
-				}
-				else if (isset($values[$name])
+				if (isset($values[$name])
 					&& ( ! is_numeric($default) XOR is_numeric($values[$name])))
 				{
 					$return[$name] = $values[$name];
