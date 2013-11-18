@@ -44,7 +44,7 @@ class CI_Cache_redis extends CI_Driver
 	 */
 	public function get($key, $namespace = '')
 	{
-		return $this->_redis->get($this->_namespaced_key($key, $namespace));
+		return unserialize($this->_redis->get($this->_namespaced_key($key, $namespace)));
 	}
 
 	// ------------------------------------------------------------------------
@@ -61,6 +61,7 @@ class CI_Cache_redis extends CI_Driver
 	public function save($key, $value, $ttl = NULL, $namespace = '')
 	{
 		$key = $this->_namespaced_key($key, $namespace);
+		$value = serialize($value);
 
 		return ( ! empty($ttl))
 			? $this->_redis->setex($key, $ttl, $value)
