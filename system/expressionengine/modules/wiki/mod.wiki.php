@@ -556,6 +556,12 @@ class Wiki {
 		}
 
 		/** -------------------------------------
+		/**  Parse Current Time
+		/** -------------------------------------*/
+
+		$this->return_data = ee()->TMPL->parse_date_variables($this->return_data, array('current_time' => ee()->localize->now));
+
+		/** -------------------------------------
 		/**  Parse Snippets
 		/** -------------------------------------*/
 
