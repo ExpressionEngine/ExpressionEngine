@@ -982,30 +982,7 @@ class Wiki {
 		/**  Date Formats
 		/** ----------------------------------------*/
 
-		if (preg_match_all("/".LD."(upload_date)\s+format=[\"'](.*?)[\"']".RD."/s", $this->return_data, $matches))
-		{
-			for ($j = 0; $j < count($matches['0']); $j++)
-			{
-				switch ($matches['1'][$j])
-				{
-					case 'upload_date' 		: $upload_date[$matches['0'][$j]] = $matches['2'][$j];
-						break;
-				}
-			}
-
-			foreach($upload_date as $key => $value)
-			{
-				$this->return_data = str_replace(
-					$key,
-					ee()->localize->format_date(
-						$value,
-						$row['upload_date'],
-						FALSE
-					),
-					$this->return_data
-				);
-			}
-		}
+		$this->return_data = ee()->TMPL->parse_date_variables($this->return_data, array('upload_date' => $row['upload_date']));
 
 		/** ----------------------------------------
 		/**  Parse Variables
@@ -1276,12 +1253,6 @@ class Wiki {
 		}
 
 		/** ----------------------------------------
-		/**  Date Formats
-		/** ----------------------------------------*/
-
-		$dates = $this->parse_dates($this->return_data);
-
-		/** ----------------------------------------
 		/**  Our Query
 		/** ----------------------------------------*/
 
@@ -1411,16 +1382,7 @@ class Wiki {
 
 			$temp = $this->prep_conditionals($temp, array_merge($data, $this->conditionals));
 
-			if (isset($dates['last_updated']))
-			{
-				foreach($dates['last_updated'] as $key => $value)
-				{
-					$data[$key] = ee()->localize->format_date(
-						$value,
-						$row['revision_date']
-					);
-				}
-			}
+			$temp = ee()->TMPL->parse_date_variables($temp, array('last_updated' => $row['revision_date']));
 
 			foreach ($vars['var_single'] as $key => $val)
 			{
@@ -1488,12 +1450,6 @@ class Wiki {
 		));
 
 		/** ----------------------------------------
-		/**  Date Formats
-		/** ----------------------------------------*/
-
-		$dates = $this->parse_dates($this->return_data);
-
-		/** ----------------------------------------
 		/**  Our Query
 		/** ----------------------------------------*/
 
@@ -1549,36 +1505,8 @@ class Wiki {
 		/**  Global Last Updated
 		/** ----------------------------------------*/
 
-		if (isset($dates['last_updated']))
-		{
-			foreach($dates['last_updated'] as $key => $value)
-			{
-				$this->return_data = str_replace(
-					$key,
-					ee()->localize->format_date(
-						$value,
-						$results->row('revision_date')
-					),
-					$this->return_data
-				);
-			}
-		}
-
-		if (isset($dates['gmt_last_updated']))
-		{
-			foreach($dates['gmt_last_updated'] as $key => $value)
-			{
-				$this->return_data = str_replace(
-					$key,
-					ee()->localize->format_date(
-						$value,
-						$results->row('revision_date'),
-						FALSE
-					),
-					$this->return_data
-				);
-			}
-		}
+		$this->return_data = ee()->TMPL->parse_date_variables($this->return_data, array('last_updated' => $results->row('revision_date')));
+		$this->return_data = ee()->TMPL->parse_date_variables($this->return_data, array('gmt_last_updated' => $results->row('revision_date')), FALSE);
 
 		/** ----------------------------------------
 		/**  Parsing of the Recent Changes Tag Pair
@@ -1626,28 +1554,8 @@ class Wiki {
 
 			$temp = $this->prep_conditionals($temp, array_merge($data, $this->conditionals));
 
-			if (isset($dates['revision_date']))
-			{
-				foreach($dates['revision_date'] as $key => $value)
-				{
-					$data[$key] = ee()->localize->format_date(
-						$value,
-						$row['revision_date']
-					);
-				}
-			}
-
-			if (isset($dates['gmt_revision_date']))
-			{
-				foreach($dates['gmt_revision_date'] as $key => $value)
-				{
-					$data[$key] = ee()->localize->format_date(
-						$value,
-						$row['revision_date'],
-						FALSE
-					);
-				}
-			}
+			$temp = ee()->TMPL->parse_date_variables($temp, array('revision_date' => $row['revision_date']));
+			$temp = ee()->TMPL->parse_date_variables($temp, array('gmt_revision_date' => $row['revision_date']), FALSE);
 
 			// Deprecate old usage of switch
 			// @deprecated 2.8
@@ -2649,11 +2557,6 @@ class Wiki {
 					return;
 				}
 
-				if (preg_match("/\{revision_date.*?format=[\"|'](.*?)[\"|'].*?\}/", $match['1'], $date))
-				{
-					$date_format = ($date['1'] == '') ? '' : str_replace(array(LD, RD), '', $date['1']);
-				}
-
 				/** ---------------------------------
 				/**  Parse Our Results
 				/** ---------------------------------*/
@@ -2711,17 +2614,7 @@ class Wiki {
 						}
 					}
 
-					if (isset($date_format))
-					{
-						$temp = str_replace(
-							$date['0'],
-							ee()->localize->format_date(
-								$date_format,
-								$row['revision_date']
-							),
-							$temp
-						);
-					}
+					$temp = ee()->TMPL->parse_date_variables($temp, array('revision_date' => $row['revision_date']));
 
 					$revisions .= $temp;
 				}
@@ -3411,7 +3304,7 @@ class Wiki {
 
 					$data = $header;
 
-					$data .= $this->parse_results($match, $query, $parameters, $this->parse_dates($match['2']));
+					$data .= $this->parse_results($match, $query, $parameters);
 
 					$data .= $footer;
 				}
@@ -3421,7 +3314,6 @@ class Wiki {
 			$this->return_data = str_replace($match['0'], str_replace('{articles_total}', $articles_total, $data), $this->return_data);
 		}
 	}
-
 
 	/** ----------------------------------------
 	/**  Parse Dates Out of String
@@ -3451,9 +3343,6 @@ class Wiki {
 
 		return $dates;
 	}
-
-
-
 
 	/** ----------------------------------------
 	/**  Revision
@@ -3552,31 +3441,7 @@ class Wiki {
 		/**  Date Formats
 		/** ----------------------------------------*/
 
-		if (preg_match_all("/".LD."(revision_date)\s+format=[\"'](.*?)[\"']".RD."/s", $this->return_data, $matches))
-		{
-			$revision_date = array();
-
-			for ($j = 0; $j < count($matches['0']); $j++)
-			{
-				switch ($matches['1'][$j])
-				{
-					case 'revision_date'  : $revision_date[$matches['0'][$j]] = $matches['2'][$j];
-						break;
-				}
-			}
-
-			foreach($revision_date as $key => $value)
-			{
-				$this->return_data = str_replace(
-					$key,
-					ee()->localize->format_date(
-						$value,
-						$results->row('revision_date')
-					),
-					$this->return_data
-				);
-			}
-		}
+		$this->return_data = ee()->TMPL->parse_date_variables($this->return_data, array('revision_date' => $results->row('revision_date')));
 
 		ee()->load->library('typography');
 		ee()->typography->initialize(array(
@@ -4449,15 +4314,6 @@ class Wiki {
 			'switch'	=> ''
 		));
 
-		/* ----------------------------------------
-		/*  Date Formats
-		/*	- Those GMT dates are not typical for results, but I thought it might
-		/*  be the case that there will be dynamic RSS/Atom searches in the
-		/*  future so I added them just in case.
-		/* ----------------------------------------*/
-
-		$dates = $this->parse_dates($this->return_data);
-
 		// Secure Forms check
 		// If the hash is not found we'll simply reload the page.
 
@@ -4638,42 +4494,14 @@ class Wiki {
 		/**  Global Last Updated
 		/** ----------------------------------------*/
 
-		if (isset($dates['last_updated']))
-		{
-			foreach($dates['last_updated'] as $key => $value)
-			{
-				$this->return_data = str_replace(
-					$key,
-					ee()->localize->format_date(
-						$value,
-						$results->row('revision_date')
-					),
-					$this->return_data
-				);
-			}
-		}
-
-		if (isset($dates['gmt_last_updated']))
-		{
-			foreach($dates['gmt_last_updated'] as $key => $value)
-			{
-				$this->return_data = str_replace(
-					$key,
-					ee()->localize->format_date(
-						$value,
-						$results->row('revision_date'),
-						FALSE
-					),
-					$this->return_data
-				);
-			}
-		}
+		$this->return_data = ee()->TMPL->parse_date_variables($this->return_data, array('last_updated' => $results->row('revision_date')));
+		$this->return_data = ee()->TMPL->parse_date_variables($this->return_data, array('gmt_last_updated' => $results->row('revision_date')), FALSE);
 
 		/** ----------------------------------------
 		/**  Parsing of the Results
 		/** ----------------------------------------*/
 
-		$results = $this->parse_results($match, $query, $parameters, $dates);
+		$results = $this->parse_results($match, $query, $parameters);
 
 		$this->return_data = str_replace($match['0'], $results, $this->return_data);
 	}
@@ -4684,7 +4512,7 @@ class Wiki {
 	/*  - Use for Search and Category Page Articles
 	/* ----------------------------------------*/
 
-	function parse_results($match, $query, $parameters, $dates)
+	function parse_results($match, $query, $parameters, $dates = array())
 	{
 		if (preg_match("|".LD."letter_header".RD."(.*?)".LD."\/letter_header".RD."|s",$match['2'], $block))
 		{
@@ -4778,28 +4606,8 @@ class Wiki {
 
 			$temp = $this->prep_conditionals($temp, array_merge($data, $this->conditionals));
 
-			if (isset($dates['revision_date']))
-			{
-				foreach($dates['revision_date'] as $key => $value)
-				{
-					$data[$key] = ee()->localize->format_date(
-						$value,
-						$row['revision_date']
-					);
-				}
-			}
-
-			if (isset($dates['gmt_revision_date']))
-			{
-				foreach($dates['gmt_revision_date'] as $key => $value)
-				{
-					$data[$key] = ee()->localize->format_date(
-						$value,
-						$row['revision_date'],
-						FALSE
-					);
-				}
-			}
+			$temp = ee()->TMPL->parse_date_variables($temp, array('revision_date' => $row['revision_date']));
+			$temp = ee()->TMPL->parse_date_variables($temp, array('gmt_revision_date' => $row['revision_date']), FALSE);
 
 			// Deprecate old usage of switch
 			// @deprecated 2.8
@@ -4902,10 +4710,6 @@ class Wiki {
 			'switch'	=> ''
 		)));
 
-
-
-		}
-
 		/** ----------------------------------------
 		/**  Pagination
 		/** ----------------------------------------*/
@@ -4935,22 +4739,6 @@ class Wiki {
 						 WHERE m.member_id = u.upload_author
 						 AND u.wiki_id = '".ee()->db->escape_str($this->wiki_id)."'
 						 ORDER BY u.{$orderby} {$sort} ".$this->pagination_sql;
-			}
-		}
-
-		/** ----------------------------------------
-		/**  Date Formats
-		/** ----------------------------------------*/
-
-		if (preg_match_all("/".LD."(upload_date)\s+format=[\"'](.*?)[\"']".RD."/s", $this->return_data, $matches))
-		{
-			for ($j = 0; $j < count($matches['0']); $j++)
-			{
-				switch ($matches['1'][$j])
-				{
-					case 'upload_date' 		: $upload_date[$matches['0'][$j]] = $matches['2'][$j];
-						break;
-				}
 			}
 		}
 
@@ -5023,17 +4811,7 @@ class Wiki {
 
 			$temp = $this->prep_conditionals($temp, array_merge($data, $this->conditionals));
 
-			if (isset($upload_date))
-			{
-				foreach($upload_date as $key => $value)
-				{
-					$data[$key] = ee()->localize->format_date(
-						$value,
-						$row['upload_date'],
-						FALSE
-					);
-				}
-			}
+			$temp = ee()->TMPL->parse_date_variables($temp, array('upload_date' => $row['upload_date']));
 
 			// Deprecate old usage of switch
 			// @deprecated 2.8
