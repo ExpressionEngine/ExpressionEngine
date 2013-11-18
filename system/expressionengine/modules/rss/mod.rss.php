@@ -151,112 +151,20 @@ class Rss {
 			}
 		}
 
-		// Fetch all the date-related variables
-		// We do this here to avoid processing cycles in the foreach loop
-		$entry_date_array 		= array();
-		$gmt_date_array 		= array();
-		$gmt_entry_date_array	= array();
-		$edit_date_array 		= array();
-		$gmt_edit_date_array	= array();
-
-		$date_vars = array('date', 'gmt_date', 'gmt_entry_date', 'edit_date', 'gmt_edit_date');
-
-		foreach ($date_vars as $val)
-		{
-			if (preg_match_all("/".LD.$val."\s+format=[\"'](.*?)[\"']".RD."/s", ee()->TMPL->tagdata, $matches))
-			{
-				for ($j = 0; $j < count($matches[0]); $j++)
-				{
-					$matches[0][$j] = str_replace(LD, '', $matches[0][$j]);
-					$matches[0][$j] = str_replace(RD, '', $matches[0][$j]);
-
-					switch ($val)
-					{
-						case 'date' 			: $entry_date_array[$matches[0][$j]] = $matches[1][$j];
-							break;
-						case 'gmt_date'			: $gmt_date_array[$matches[0][$j]] = $matches[1][$j];
-							break;
-						case 'gmt_entry_date'	: $gmt_entry_date_array[$matches[0][$j]] = $matches[1][$j];
-							break;
-						case 'edit_date' 		: $edit_date_array[$matches[0][$j]] = $matches[1][$j];
-							break;
-						case 'gmt_edit_date'	: $gmt_edit_date_array[$matches[0][$j]] = $matches[1][$j];
-							break;
-					}
-				}
-			}
-		}
-
 		ee()->load->helper('date');
 
-		foreach (ee()->TMPL->var_single as $key => $val)
-		{
-			//  {date}
-			if (isset($entry_date_array[$key]))
-			{
-				ee()->TMPL->tagdata = ee()->TMPL->swap_var_single(
-					$key,
-					ee()->localize->format_date(
-						$entry_date_array[$key],
-						$entry_date
-					),
-					ee()->TMPL->tagdata
-				);
-			}
+		$dates = array(
+			'date'      => $entry_date,
+			'edit_date' => mysql_to_unix($edit_date)
+		);
+		ee()->TMPL->tagdata = ee()->TMPL->parse_date_variables(ee()->TMPL->tagdata, $dates);
 
-			//  GMT date - entry date in GMT
-			if (isset($gmt_entry_date_array[$key]))
-			{
-				ee()->TMPL->tagdata = ee()->TMPL->swap_var_single(
-					$key,
-					ee()->localize->format_date(
-						$gmt_entry_date_array[$key],
-						$entry_date,
-						FALSE
-					),
-					ee()->TMPL->tagdata
-				);
-			}
-
-			if (isset($gmt_date_array[$key]))
-			{
-				ee()->TMPL->tagdata = ee()->TMPL->swap_var_single(
-					$key,
-					ee()->localize->format_date(
-						$gmt_date_array[$key],
-						$entry_date,
-						FALSE
-					),
-					ee()->TMPL->tagdata
-				);
-			}
-
-			//  parse "last edit" date
-			if (isset($edit_date_array[$key]))
-			{
-				ee()->TMPL->tagdata = ee()->TMPL->swap_var_single(
-					$key,
-					ee()->localize->format_date(
-						$edit_date_array[$key],
-						mysql_to_unix($edit_date)
-					),
-					ee()->TMPL->tagdata
-				);
-			}
-
-			//  "last edit" date as GMT
-			if (isset($gmt_edit_date_array[$key]))
-			{
-				ee()->TMPL->tagdata = ee()->TMPL->swap_var_single(
-					$key,
-					ee()->localize->format_date(
-						$gmt_edit_date_array[$key],
-						mysql_to_unix($edit_date)
-					),
-					ee()->TMPL->tagdata
-				);
-			}
-		}
+		$dates = array(
+			'gmt_date'       => $entry_date,
+			'gmt_entry_date' => $entry_date,
+			'gmt_edit_date'  => mysql_to_unix($edit_date)
+		);
+		ee()->TMPL->tagdata = ee()->TMPL->parse_date_variables(ee()->TMPL->tagdata, $dates, FALSE);
 
 		// Setup {trimmed_url}
 		$channel_url = $query->row('channel_url');
