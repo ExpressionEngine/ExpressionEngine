@@ -71,13 +71,23 @@ class CI_Cache_memcached extends CI_Driver {
 	{
 		$id = $this->_namespaced_key($id, $namespace);
 
+		// Memcache does not allow a TTL more than 30 days, anything over will
+		// cause set() to return FALSE; and Memcached interprets any TTL over
+		// 30 days to be a Unix timestamp, so we'll cap the TTL at 30 days
+		if ($ttl > 2592000)
+		{
+			$ttl = 2592000;
+		}
+
+		$data = array($data, ee()->localize->now, $ttl);
+
 		if (get_class($this->_memcached) === 'Memcached')
 		{
-			return $this->_memcached->set($id, array($data, ee()->localize->now, $ttl), $ttl);
+			return $this->_memcached->set($id, $data, $ttl);
 		}
 		elseif (get_class($this->_memcached) === 'Memcache')
 		{
-			return $this->_memcached->set($id, array($data, ee()->localize->now, $ttl), 0, $ttl);
+			return $this->_memcached->set($id, $data, 0, $ttl);
 		}
 
 		return FALSE;
