@@ -56,6 +56,7 @@ class CI_Cache_apc extends CI_Driver {
 	public function save($id, $data, $ttl = 60, $namespace = '')
 	{
 		$ttl = (int) $ttl;
+
 		return apc_store(
 			$this->_namespaced_key($id, $namespace),
 			array(serialize($data), ee()->localize->now, $ttl),

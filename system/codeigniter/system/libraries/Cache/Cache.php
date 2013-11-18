@@ -57,7 +57,7 @@ class CI_Cache extends CI_Driver_Library {
 	 *
 	 * Initialize class properties based on the configuration array.
 	 *
-	 * @param	array	$config = array()
+	 * @param	string	$driver	Name of cache driver to use
 	 * @return	void
 	 */
 	public function __construct($driver = '')
