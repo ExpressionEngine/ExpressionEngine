@@ -3864,7 +3864,7 @@ class EE_Template {
 	 * @param	mixed[]	$dates		An associative array of dates
 	 *  	e.g. 'entry_date' => 1234567890
 	 * @param	bool	$localize	Localize the time?
-	 * @return	string	Tag data with parsed switch variables
+	 * @return	string	Tag data with parsed date variables
 	 **/
 	public function parse_date_variables($tagdata, $dates = array(), $localize = TRUE)
 	{
