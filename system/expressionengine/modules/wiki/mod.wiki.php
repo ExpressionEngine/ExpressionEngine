@@ -934,7 +934,7 @@ class Wiki {
 			if ($this->can_upload == 'y' && in_array(ee()->session->userdata['group_id'], $this->admins))
 			{
 				$query = ee()->db->query("SELECT COUNT(*) AS count FROM exp_wiki_uploads
-							 		 WHERE file_name = '".ee()->db->escape_str($topic)."'");
+									 WHERE file_name = '".ee()->db->escape_str($topic)."'");
 
 				if ($query->row('count')  > 0)
 				{
@@ -1256,7 +1256,7 @@ class Wiki {
 					}
 
 					$xsql = " AND p.page_id NOT IN (".implode(',', $page_ids).")
-						  	AND p.page_redirect = '' ";
+							AND p.page_redirect = '' ";
 				}
 			break;
 
@@ -1721,7 +1721,7 @@ class Wiki {
 
 					$this->paginate_data = str_replace($matches['0'], $matches['1'], $this->paginate_data);
 				}
-			 	}
+				}
 
 
 			if (preg_match("/".LD."if next_page".RD."(.+?)".LD.'\/'."if".RD."/s", $this->paginate_data, $matches))
@@ -2185,8 +2185,8 @@ class Wiki {
 	}
 
 	/** -------------------------------------------
-    /**  Find Parent Categories
-    /** -------------------------------------------*/
+	/**  Find Parent Categories
+	/** -------------------------------------------*/
 
 	function find_parents($cat_id, $base_cat)
 	{
@@ -2304,7 +2304,7 @@ class Wiki {
 		}
 		elseif($query->num_rows() == 0)
 		{
-    		$this->return_data = $this->_deny_if('can_edit', $this->return_data);
+			$this->return_data = $this->_deny_if('can_edit', $this->return_data);
 			$this->return_data = $this->_allow_if('cannot_edit', $this->return_data);
 		}
 		elseif($query->row('page_locked')  != 'y' && (in_array(ee()->session->userdata['group_id'], $this->users) OR in_array(ee()->session->userdata['group_id'], $this->admins)))
@@ -3412,7 +3412,7 @@ class Wiki {
 						AND p.page_id = r.page_id
 						AND p.last_updated = r.revision_date
 						AND m.member_id = r.revision_author
-					 	AND r.revision_status = 'open'";
+						AND r.revision_status = 'open'";
 
 				$query = ee()->db->query("SELECT COUNT(p.page_id) AS count ".$sql);
 
@@ -3775,8 +3775,8 @@ class Wiki {
 
 		$this->edit_limit();
 
-  		// Secure Forms check
-	  	// If the hash is not found we'll simply reload the page.
+		// Secure Forms check
+		// If the hash is not found we'll simply reload the page.
 		if (ee()->security->secure_forms_check(ee()->input->post('XID')) == FALSE)
 		{
 			$this->redirect('', ee()->input->get_post('title'));
@@ -4137,7 +4137,7 @@ class Wiki {
 		$str = preg_replace("/\[code\](.+?)\[\/code\]/si", '', $str);
 
 		// Old preg_match_all before we added support for alternate text links, e.g. [[Category:Foo | Bar]]
-    	//if (preg_match_all("|\[\[".preg_quote($this->category_ns)."(ID)*\:([^\|])*?.*?\]\]|", $str, $matches))
+		//if (preg_match_all("|\[\[".preg_quote($this->category_ns)."(ID)*\:([^\|])*?.*?\]\]|", $str, $matches))
 		if (preg_match_all("/\[\[Category(ID)*\:([^\||\]]*)/", $str, $matches))
 		{
 			if ($this->cats_use_namespaces == 'n')
@@ -4183,9 +4183,9 @@ class Wiki {
 				if ($matches['1'][$i] != '')
 				{
 					$query = ee()->db->query("SELECT cat_id
-									 	FROM exp_wiki_categories
-									 	WHERE cat_id = '".ee()->db->escape_str($matches['2'][$i])."'
-									 	AND wiki_id = '".ee()->db->escape_str($this->wiki_id)."'");
+										FROM exp_wiki_categories
+										WHERE cat_id = '".ee()->db->escape_str($matches['2'][$i])."'
+										AND wiki_id = '".ee()->db->escape_str($this->wiki_id)."'");
 
 					if ($query->num_rows() > 0)
 					{
@@ -4303,7 +4303,7 @@ class Wiki {
 						$cats_found[] = $parent_cat;
 					}
 				}
-	 		}
+			}
 		}
 
 		/* -------------------------------------
@@ -4374,8 +4374,8 @@ class Wiki {
 	/** -------------------------------------*/
 	function find_page()
 	{
-  		// Secure Forms check
-	  	// If the hash is not found we'll simply reload the page.
+		// Secure Forms check
+		// If the hash is not found we'll simply reload the page.
 		if (ee()->security->secure_forms_check(ee()->input->post('XID')) == FALSE)
 		{
 			$this->redirect('', 'index');
@@ -4412,7 +4412,7 @@ class Wiki {
 
 		$query = ee()->db->query("SELECT page_name, page_namespace
 							 FROM exp_wiki_page
-						 	 WHERE (page_redirect = '' OR page_redirect IS NULL)
+							 WHERE (page_redirect = '' OR page_redirect IS NULL)
 							 AND wiki_id = '".ee()->db->escape_str($this->wiki_id)."'
 							 ORDER BY rand() LIMIT 1");
 
@@ -4443,10 +4443,11 @@ class Wiki {
 
 			if ($query->num_rows() > 0)
 			{
-				$search_paginate = TRUE;
-				$paginate_sql	 = $query->row('wiki_search_query') ;
-				$paginate_hash	 = $query->row('wiki_search_id') ;
-				$keywords		 = $query->row('wiki_search_keywords') ;
+				var_dump('here?');
+				$search_paginate	= TRUE;
+				$paginate_sql		= $query->row('wiki_search_query') ;
+				$paginate_hash		= $query->row('wiki_search_id') ;
+				$keywords			= $query->row('wiki_search_keywords') ;
 			}
 		}
 
@@ -4470,9 +4471,11 @@ class Wiki {
 			return ee()->output->show_user_error('general', array(str_replace("%x", $this->min_length_keywords, ee()->lang->line('search_min_length'))));
 		}
 
-		$this->return_data = str_replace(array('{wiki:page}', '{keywords}'),
-										 array($this->_fetch_template('wiki_special_search_results.html'), stripslashes($keywords)),
-										 $this->return_data);
+		$this->return_data = str_replace(
+			array('{wiki:page}', '{keywords}'),
+			array($this->_fetch_template('wiki_special_search_results.html'), stripslashes($keywords)),
+			$this->return_data
+		);
 
 		/** ----------------------------------------
 		/**  Parse Results Tag Pair
@@ -4524,7 +4527,7 @@ class Wiki {
 		$dates = $this->parse_dates($this->return_data);
 
 		// Secure Forms check
-	  	// If the hash is not found we'll simply reload the page.
+		// If the hash is not found we'll simply reload the page.
 
 		if (ee()->config->item('secure_forms') == 'y'
 			AND $search_paginate === FALSE
@@ -4601,10 +4604,10 @@ class Wiki {
 			if (trim($keywords) != '')
 			{
 				$terms = array_merge($terms, preg_split("/\s+/", trim($keywords)));
-  			}
+			}
 
-  			$not_and = (count($terms) > 2) ? ') AND (' : 'AND';
-  			rsort($terms);
+			$not_and = (count($terms) > 2) ? ') AND (' : 'AND';
+			rsort($terms);
 
 			/** -------------------------------------
 			/**  Log Search Terms
@@ -5957,14 +5960,14 @@ class Wiki {
 		{
 			ee()->db->query("ALTER TABLE `exp_wikis` DROP `wiki_namespaces_list`");
 			ee()->db->query("CREATE TABLE `exp_wiki_namespaces` (
-  						`namespace_id` int(6) NOT NULL auto_increment,
-  						`wiki_id` int(10) UNSIGNED NOT NULL,
-  						`namespace_name` varchar(100) NOT NULL,
-  						`namespace_label` varchar(150) NOT NULL,
-  						`namespace_users` TEXT,
-  						`namespace_admins` TEXT,
-  						PRIMARY KEY `namespace_id` (`namespace_id`),
-  						KEY `wiki_id` (`wiki_id`))");
+						`namespace_id` int(6) NOT NULL auto_increment,
+						`wiki_id` int(10) UNSIGNED NOT NULL,
+						`namespace_name` varchar(100) NOT NULL,
+						`namespace_label` varchar(150) NOT NULL,
+						`namespace_users` TEXT,
+						`namespace_admins` TEXT,
+						PRIMARY KEY `namespace_id` (`namespace_id`),
+						KEY `wiki_id` (`wiki_id`))");
 
 			/* -------------------------------
 			/*  The Category NS needs a non-changing short name, so we use
