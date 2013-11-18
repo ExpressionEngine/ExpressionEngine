@@ -26,19 +26,6 @@
 class CI_Cache_redis extends CI_Driver
 {
 	/**
-	 * Default config
-	 *
-	 * @static
-	 * @var	array
-	 */
-	protected static $_default_config = array(
-		'host' => '127.0.0.1',
-		'password' => NULL,
-		'port' => 6379,
-		'timeout' => 0
-	);
-
-	/**
 	 * Redis connection
 	 *
 	 * @var	Redis
@@ -170,10 +157,9 @@ class CI_Cache_redis extends CI_Driver
 	 */
 	public function is_supported()
 	{
-		if (extension_loaded('redis'))
+		if (extension_loaded('redis') && class_exists('Redis', FALSE))
 		{
-			$this->_setup_redis();
-			return TRUE;
+			return $this->_setup_redis();
 		}
 		else
 		{
@@ -195,30 +181,41 @@ class CI_Cache_redis extends CI_Driver
 	 */
 	protected function _setup_redis()
 	{
-		$config = array();
+		$config = array(
+			'host' => '127.0.0.1',
+			'password' => NULL,
+			'port' => 6379,
+			'timeout' => 0
+		);
 
-		if (ee()->config->load('redis', TRUE, TRUE))
+		if (($user_config = ee()->config->item('redis')) !== FALSE)
 		{
-			$config += ee()->config->item('redis');
+			$config = array_merge($config, $user_config);
 		}
-
-		$config = array_merge(self::$_default_config, $config);
 
 		$this->_redis = new Redis();
 
+		// Our return value which we will update as we setup Redis; if it's
+		// TRUE at the end, allow Redis to be used
+		$result = FALSE;
+
 		try
 		{
-			$this->_redis->connect($config['host'], $config['port'], $config['timeout']);
+			$result = $this->_redis->connect($config['host'], $config['port'], $config['timeout']);
 		}
 		catch (RedisException $e)
 		{
-			show_error('Redis connection refused. ' . $e->getMessage());
+			log_message('debug', 'Redis connection refused: '.$e->getMessage());
+			return FALSE;
 		}
 
-		if (isset($config['password']))
+		// If a password is set, attempt to authenticate
+		if ( ! empty($config['password']))
 		{
-			$this->_redis->auth($config['password']);
+			$result = $this->_redis->auth($config['password']);
 		}
+
+		return $result;
 	}
 
 	// ------------------------------------------------------------------------
