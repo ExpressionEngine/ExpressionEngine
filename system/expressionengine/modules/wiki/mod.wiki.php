@@ -4500,8 +4500,8 @@ class Wiki {
 		/**  Global Last Updated
 		/** ----------------------------------------*/
 
-		$this->return_data = ee()->TMPL->parse_date_variables($this->return_data, array('last_updated' => $results->row('revision_date')));
-		$this->return_data = ee()->TMPL->parse_date_variables($this->return_data, array('gmt_last_updated' => $results->row('revision_date')), FALSE);
+		$this->return_data = ee()->TMPL->parse_date_variables($this->return_data, array('last_updated' => $query->row('revision_date')));
+		$this->return_data = ee()->TMPL->parse_date_variables($this->return_data, array('gmt_last_updated' => $query->row('revision_date')), FALSE);
 
 		/** ----------------------------------------
 		/**  Parsing of the Results
