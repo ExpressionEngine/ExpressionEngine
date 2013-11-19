@@ -814,6 +814,10 @@ class EE_Template {
 				}
 			}
 
+			// Backup current layout vars, they don't apply to this embed
+			$layout_vars_bak = $this->layout_vars;
+			$this->layout_vars = array();
+
 			// Process Subtemplate
 			$this->log_item("Processing Sub Template: ".$template_group."/".$template_name);
 
@@ -831,6 +835,10 @@ class EE_Template {
 
 			// pull the subtemplate tracker back a level to the parent template
 			$this->templates_sofar = substr($this->templates_sofar, 0, - strlen('|'.$site_id.':'.$template_group.'/'.$template_name.'|'));
+
+			// Restore layout vars. Technically we don't need these but a third
+			// party may want them to behave correctly.
+			$this->layout_vars = $layout_vars_bak;
 		}
 
 		$this->depth--;
