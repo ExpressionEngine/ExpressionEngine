@@ -32,6 +32,7 @@ class Forum_Core extends Forum {
 	public function __construct()
 	{
 		$this->EE =& get_instance();
+		ee()->load->library('template', NULL, 'TMPL');
 	}
 
 	// --------------------------------------------------------------------
@@ -517,11 +518,6 @@ class Forum_Core extends Forum {
 
 		if (preg_match_all("/\<blockquote\s+(.*?)\>/", $str, $matches))
 		{
-			if (preg_match("/{quote_date\s+format=['|\"](.+?)['|\"]\}/i", $xtemplate, $dates))
-			{
-				$date = TRUE;
-			}
-
 			for ($i=0, $s = count($matches['0']); $i < $s; ++$i)
 			{
 				// author, date parameters
@@ -533,10 +529,7 @@ class Forum_Core extends Forum {
 
 				$template = str_replace('{quote_author}', $author, $xtemplate);
 
-				if ($date === TRUE)
-				{
-					$template = str_replace($dates['0'], ee()->localize->format_date($dates['1'], $time), $template);
-				}
+				$template = ee()->TMPL->parse_date_variables($template, array('quote_date' => $time));
 
 				$str = str_replace($matches['0'][$i], '<blockquote>'.$template, $str);
 			}
@@ -1448,35 +1441,11 @@ class Forum_Core extends Forum {
 		$template = str_replace(LD.'forum_rss_url'.RD, $this->forum_path($type), $template);
 		$template = str_replace(LD.'forum_name'.RD, $this->fetch_pref('board_label'), $template);
 
-		// {gmt_date format="%Y %m %d %H:%i:%s"}
-		if (preg_match_all("/".LD."gmt_date\s+format=[\"\'](.+?)[\"\']".RD."/", $template, $matches))
-		{
-			for ($j = 0; $j < count($matches['0']); $j++)
-			{
-				$template = preg_replace("/".$matches['0'][$j]."/", ee()->localize->format_date($matches['1'][$j], $qry->row('last_post_date'), FALSE), $template, 1);
-			}
-		}
-
-		// {gmt_edit_date format="%Y %m %d %H:%i:%s"}
-		if (preg_match_all("/".LD."gmt_edit_date\s+format=[\"\'](.+?)[\"\']".RD."/", $template, $matches))
-		{
-			for ($j = 0; $j < count($matches['0']); $j++)
-			{
-				$template = preg_replace("/".$matches['0'][$j]."/", ee()->localize->format_date($matches['1'][$j], $qry->row('topic_edit_date'), FALSE ), $template, 1);
-			}
-		}
-
-		// {gmt_post_date format="%Y %m %d %H:%i:%s"}
-		if ( ! preg_match_all("/".LD."gmt_post_date\s+format=[\"\'](.+?)[\"\']".RD."/", $row_chunk, $gmt_post_date))
-		{
-			$gmt_post_date = array();
-		}
-
-		// {gmt_edit_date format="%Y %m %d %H:%i:%s"}
-		if ( ! preg_match_all("/".LD."gmt_edit_date\s+format=[\"\'](.+?)[\"\']".RD."/", $row_chunk, $gmt_edit_date))
-		{
-			$gmt_edit_date = array();
-		}
+		$dates = array(
+			'gmt_date'      => $qry->row('last_post_date'),
+			'gmt_edit_date' => $qry->row('topic_edit_date')
+		);
+		$template = ee()->TMPL->parse_date_variables($template, $dates, FALSE);
 
 		// {relative_url} - used by Atom feeds
 		$relative_url = str_replace('http://', '', $base_url);
@@ -1536,21 +1505,11 @@ class Forum_Core extends Forum {
 			$temp = str_replace('{trimmed_url}', $trimmed_url, $temp);
 			$temp = str_replace('{relative_url}', $relative_url, $temp);
 
-			if (count($gmt_post_date) > 0)
-			{
-				for ($j = 0; $j < count($gmt_post_date['0']); $j++)
-				{
-					$temp = preg_replace("/".$gmt_post_date['0'][$j]."/", ee()->localize->format_date($gmt_post_date['1'][$j], $row['topic_date'], FALSE), $temp, 1);
-				}
-			}
-
-			if (count($gmt_edit_date) > 0)
-			{
-				for ($j = 0; $j < count($gmt_edit_date['0']); $j++)
-				{
-					$temp = preg_replace("/".$gmt_edit_date['0'][$j]."/", ee()->localize->format_date($gmt_edit_date['1'][$j], $row['topic_edit_date'], FALSE), $temp, 1);
-				}
-			}
+			$dates = array(
+				'gmt_post_date' => $row['topic_date'],
+				'gmt_edit_date' => $row['topic_edit_date']
+			);
+			$temp = ee()->TMPL->parse_date_variables($temp, $dates, FALSE);
 
 			$res .= $temp;
 		}
@@ -5965,10 +5924,6 @@ class Forum_Core extends Forum {
 			ee()->functions->clear_caching('all');
 
 			unset($_POST['ACT']);
-
-			require APPPATH.'libraries/Template.php';
-
-			ee()->TMPL = new EE_Template();
 
 			$x = explode('/',$this->trigger);
 
