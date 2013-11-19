@@ -31,6 +31,15 @@ class EE_Template_Router extends CI_Router {
         $this->set_routes();
     }
 
+    /**
+     * Match a URL to its template and group
+     * 
+     * @param EE_URI $uri 
+     * @access public
+     * @return array
+	 * 			- template_name : The name if the matched template
+	 * 			- group_name : The name of the group for the matched template
+     */
     public function match($uri) {
 		$request = $uri->uri_string;
 		// First check if we have a bare match
@@ -47,6 +56,12 @@ class EE_Template_Router extends CI_Router {
 		}
     }
 
+    /**
+     * Grab our parsed template routes from the database
+     * 
+     * @access protected
+     * @return void
+     */
     protected function set_routes()
     {
 	    ee()->db->select('route_parsed, template_name, group_name');
