@@ -199,6 +199,9 @@ Confirm the fieldtype file is located in the expressionengine/third_party/ direc
 // Date
 //----------------------------
 
+'ago' =>
+'%x ago',
+
 'year' =>
 'year',
 

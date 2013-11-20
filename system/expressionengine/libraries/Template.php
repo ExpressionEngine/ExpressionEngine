@@ -3868,22 +3868,50 @@ class EE_Template {
 	 **/
 	public function parse_date_variables($tagdata, $dates = array(), $localize = TRUE)
 	{
+		ee()->load->helper('date');
 		if (is_array($dates))
 		{
 			foreach ($dates as $tag => $timestamp)
 			{
-				// Dates with formats
-				if (preg_match_all("/".LD.$tag."\s+format=([\"\'])([^\\1]*?)\\1".RD."/", $tagdata, $matches))
+				if (preg_match_all("/".LD.$tag."(.*?)".RD."/s", $tagdata, $matches))
 				{
-					for ($j = 0; $j < count($matches[0]); $j++)
+					foreach($matches[1] as $key => $val)
 					{
-						$tagdata = str_replace($matches[0][$j], ee()->localize->format_date($matches[2][$j], $timestamp, $localize), $tagdata);
+						$relative = FALSE;
+						$parts = preg_split("/\s+/", $val, 2);
+						$args = (isset($parts[1])) ? ee()->functions->assign_parameters($parts[1]) : array();
+
+						// Determine if we need to display a relative time
+						if (isset($args['relative']))
+						{
+							if ($args['relative'] == 'yes')
+							{
+								$relative = TRUE;
+							}
+							else
+							{
+								$relative_date = strtotime($args['relative'], ee()->localize->now);
+								if ($timestamp >= $relative_date) {
+									$relative = TRUE;
+								}
+							}
+						}
+
+						if ($relative)
+						{
+							$dt = str_replace('%x', timespan($timestamp), lang('ago'));
+							$tagdata = str_replace($matches[0][$key], $dt, $tagdata);
+						}
+						elseif (isset($args['format']))
+						{
+							$tagdata = str_replace($matches[0][$key], ee()->localize->format_date($args['format'], $timestamp, $localize), $tagdata);
+						}
+						else
+						{
+							$tagdata = str_replace($matches[0][$key], $timestamp, $tagdata);
+						}
 					}
 				}
-
-				// Raw dates
-				$tagdata = str_replace(LD.$tag.RD, $timestamp, $tagdata);
-
 			}
 		}
 		return $tagdata;
