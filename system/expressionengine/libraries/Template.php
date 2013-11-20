@@ -3868,6 +3868,7 @@ class EE_Template {
 	 **/
 	public function parse_date_variables($tagdata, $dates = array(), $localize = TRUE)
 	{
+		$this->log_item(" Parsing Date Variables ");
 		ee()->load->helper('date');
 		if (is_array($dates))
 		{
@@ -3877,6 +3878,7 @@ class EE_Template {
 				{
 					foreach($matches[1] as $key => $val)
 					{
+						$dt = $timestamp;
 						$relative = FALSE;
 						$parts = preg_split("/\s+/", $val, 2);
 						$args = (isset($parts[1])) ? ee()->functions->assign_parameters($parts[1]) : array();
@@ -3891,7 +3893,12 @@ class EE_Template {
 							else
 							{
 								$relative_date = strtotime($args['relative'], ee()->localize->now);
-								if ($timestamp >= $relative_date) {
+								if ($relative_date === FALSE)
+								{
+									$this->log_item("Failed Relative Parameter: " . $args['relative']);
+								}
+								elseif ($timestamp >= $relative_date)
+								{
 									$relative = TRUE;
 								}
 							}
@@ -3900,16 +3907,18 @@ class EE_Template {
 						if ($relative)
 						{
 							$dt = str_replace('%x', timespan($timestamp), lang('ago'));
-							$tagdata = str_replace($matches[0][$key], $dt, $tagdata);
 						}
 						elseif (isset($args['format']))
 						{
-							$tagdata = str_replace($matches[0][$key], ee()->localize->format_date($args['format'], $timestamp, $localize), $tagdata);
+							$dt = ee()->localize->format_date($args['format'], $timestamp, $localize);
+							if ($dt === FALSE)
+							{
+								$this->log_item("Invalid Timestamp: " . $timestamp);
+								$dt = $timestamp;
+							}
 						}
-						else
-						{
-							$tagdata = str_replace($matches[0][$key], $timestamp, $tagdata);
-						}
+
+						$tagdata = str_replace($matches[0][$key], $dt, $tagdata);
 					}
 				}
 			}
