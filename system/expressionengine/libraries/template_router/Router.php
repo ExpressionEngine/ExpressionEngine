@@ -71,7 +71,8 @@ class EE_Router extends CI_Router {
 			else
 			{
 				$rules = $this->parse_rules($segment);
-				$parsed_segments[] = "(?P<{$segment['variable']}>" . implode('', $rules) . ")";
+				$segment = new EE_Router_segment($segment['variable'], $rules);
+				$parsed_segments[] = $segment->regex();
 			}
 		}
 		// backslash escaped for preg_match
@@ -135,11 +136,11 @@ class EE_Router extends CI_Router {
     /**
      * Parse a URL segment for a list of validators and convert to a regular expression
      * 
-	 * @param segment array
+	 * @param $segment array
 	 * 				   - variable : Segment's variable name
 	 * 				   - rules : Segment's list of validators
      * @access public
-     * @return array of compiled regexes
+     * @return array An array of initialized validation rules
      */
     public function parse_rules($segment)
     {
@@ -175,16 +176,8 @@ class EE_Router extends CI_Router {
 				$matches[0] = "regex[{$regex}]|";
 				$matches['args'] = $regex;
 			}
-			if (empty($this->rules->converters[$matches['rule']]))
-			{
-				throw new Exception("Converter not found: $rule");
-			}
-			$matches['args'] = empty($matches['args']) ? null : $matches['args'];
-			$rule = $this->rules->converters[$matches['rule']]->regex($matches['args']);
-			// Place each rule inside an anchored lookahead,
-			// this will match the entire string if the rule matches.
-			// This allows rules to work together without consuming the match.
-			$parsed_rules[] = "(^(?={$rule}$).*)";
+			$args = empty($matches['args']) ? null : $matches['args'];
+			$parsed_rules[] = $this->rules->load($matches['rule'], $args);
 			$pos += strlen($matches[0]);
 		}
 		return $parsed_rules;

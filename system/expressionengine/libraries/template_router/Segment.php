@@ -38,19 +38,39 @@ class EE_Router_segment {
 	 */
 	public function regex()
 	{
-		return "(?P<{$this->name}>" . $this->validator . ")";
+		return "(?P<{$this->name}>" . $this->validator() . ")";
+	}
+
+	/**
+	 * Validate the provided value against the segment rules
+	 * 
+	 * @param mixed $val The value to be checked 
+	 * @access public
+	 * @return bool
+	 */
+	public function validate($val) {
+		$regex = "/" . $this->validator() . "/i";
+		$result = preg_match($regex, $val);
+		if ($result === False)
+		{
+			throw new Exception("Invalid rule in segment");
+		}
 	}
 
 	/**
 	 * Run through all the rules and combine them into one validator
 	 * 
 	 * @access public
-	 * @return A regular expression for all of the segments validators
+	 * @return A regular expression for all of the segment's validators
 	 */
 	public function validator()
 	{
 		$compiled_rules = "";
-		foreach ($this->rules as $rule) {
+		foreach ($this->rules as $rule)
+		{
+			// Place each rule inside an anchored lookahead,
+			// this will match the entire string if the rule matches.
+			// This allows rules to work together without consuming the match.
 			$compiled_rules .= "(^(?={$rule->validator}$).*)";
 		}
 		return $compiled_rules;

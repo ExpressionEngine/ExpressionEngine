@@ -46,20 +46,50 @@ class EE_Template_router_converters {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Register a converter
-	 *
-	 * @param String	Class name of new converter
+	 * Load a validation rule with the provided constuctor $args
+	 * 
+	 * @param mixed $converter  The registered name of the validation rule 
+	 * @param array $args       The initial arguments for initializing the validation rule 
+	 * @access public
+	 * @return EE_template_router_converter  The instantiated validation rule
 	 */
-	public function register($name, $class)
+	public function load($converter, array $args = array())
 	{
-		$obj = new $class;
+		if (empty($this->converters[$converter]))
+		{
+			throw new Exception("Converter not found: $converter");
+		}
+
+		$class = $this->converters[$converter];
+
+		if (empty($args))
+		{
+			$obj = new $class;
+		}
+		else
+		{
+			$obj = new ReflectionClass($name);
+			$obj->newInstanceArgs($args);
+		}
 
 		if ( ! $obj instanceOf EE_Template_router_converter)
 		{
 			throw new InvalidArgumentException($class.' must implement the EE_Template_router_converter interface.');
 		}
 
-		$this->converters[$name] = $obj;
+		return $obj;
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Register a converter
+	 *
+	 * @param String	Class name of new converter
+	 */
+	public function register($name, $class)
+	{
+		$this->converters[$name] = $class;
 	}
 
 }
