@@ -2012,6 +2012,30 @@ class Forum {
 		return $crumbs;
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Parses the edit_preferences template
+	 *
+	 * Sets the proper action for the edit preferences form.
+	 *
+	 * @return string
+	 */
+
+	function edit_preferences()
+	{
+		$form = ee()->functions->form_declaration(array(
+				'action' => $this->forum_path('update_edit_preferences')
+					)
+				);
+
+		return $this->var_swap($this->load_element('edit_preferences'),
+							array(
+									'form_declaration'	=> $form
+								)
+							);
+	}
+
 	// --------------------------------------------------------------------	
 	
 	/**
