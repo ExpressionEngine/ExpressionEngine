@@ -8,7 +8,13 @@ use EllisLab\ExpressionEngine\Core\Validation\Error\ValidationError;
 use EllisLab\ExpressionEngine\Model\Errors;
 
 /**
+ * Base Entity Class
  *
+ * This is the base class for all database table Entities in ExpressionEngine.
+ * It provides basic CRUD operations against a single database table.  An
+ * instance of an Entity represents a single row in the represented table. It
+ * tracks which properties are "dirty" (have been changed since loading) and 
+ * only validates/saves those properties that are dirty.
  */
 abstract class Entity {
 	/**
@@ -30,6 +36,12 @@ abstract class Entity {
 	/**
 	 * Construct an entity.  Initialize it with the Depdency Injection object
 	 * and, optionally, with an array of data from the database.
+	 *
+	 * @param	Dependencies	$di	The dependency injection object to use for
+	 * 		this instance of an Entity.
+	 * @param	mixed[]	$data	(Optional.) An array of data to be used to
+	 * 		initialize the Entity's public properties.  Of the form
+	 * 		'property_name' => 'value'.
 	 */
 	public function __construct(Dependencies $di, array $data = array())
 	{
@@ -95,12 +107,23 @@ abstract class Entity {
 		return static::$meta[$key];
 	}
 
+	/**
+	 * Mark a Property as Dirty
+	 *
+	 * Marks a property on this entity as having been modified and needing
+	 * validation on saving.  If Entity::save() is called, the property will
+	 * be validated and any validation errors will result in an exception 
+	 * being thrown.
+	 *
+	 * @param	string	$property	The name of the property which is dirty.
+	 * 		Must be a valid property defined on the entity.
+	 *
+	 * @return void
+	 */
 	public function setDirty($property)
 	{
 		$this->dirty[$property] = TRUE;
 	}
-
-
 
 	/**
 	 * Validate the Entity
@@ -141,7 +164,16 @@ abstract class Entity {
 	}
 
 	/**
+	 * Save this Entity
 	 *
+	 * Saves this Entity to the database.  The Entity represents a single row
+	 * in its database table, and saving will result in it either being
+	 * updated or inserted depending on whether its primary_key has been set.
+	 *
+	 * @throws Exception	If validation fails, then an Exception will be
+	 * 		thrown. 
+	 *
+	 * @return void
 	 */
 	public function save()
 	{
@@ -179,7 +211,7 @@ abstract class Entity {
 		{
 			throw new ModelException('Attempt to delete an Entity with out an attached ID!');
 		}
-		ee()->db->delete(static::getMetaData('table_name'), array($primary_key, $this->{$primary_key}));
+		ee()->db->delete(static::getMetaData('table_name'), array($primary_key => $this->{$primary_key}));
 	}
 
 }
