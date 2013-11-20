@@ -15,7 +15,7 @@
 <div class="tablePostInfo">
 	{if recent_post}
 		<a href="{path:recent_thread}">{title}</a><br />
-		{lang:posted_on} {last_post format="%m-%d-%Y %h:%i %A"}<br />
+		{lang:posted_on} {last_post format="%m-%d-%Y %h:%i %A" relative="today"}<br />
 		{lang:posted_by} <a href="{path:member_profile}">{author}</a>
 	{/if}
 </div>
