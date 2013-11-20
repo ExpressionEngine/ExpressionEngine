@@ -1044,16 +1044,22 @@ class Member_memberlist extends Member {
 			$template = str_replace(LD.'total_pages'.RD, 		$total_pages,	$template);
 		}
 
-		if ($this->is_search === TRUE)
-		{
-			$template = str_replace(LD."form_declaration".RD, "<form method='post' action='".$this->_member_path('member_search'.$search_path)."'>", $template);
-		}
-		else
-		{
-			$template = str_replace(LD."form_declaration".RD, "<form method='post' action='".$this->_member_path('memberlist'.(($first_letter != '') ? $first_letter.'/' : $search_path))."'>", $template);
-		}
+		$form_action = ($this->is_search === TRUE) ? $this->_member_path('member_search'.$search_path) : 
+			$this->_member_path('memberlist'.(($first_letter != '') ? $first_letter.'/' : $search_path));
+		
+		$form_declaration = ee()->functions->form_declaration(array(
+									'action' => $form_action
+								)
+							);
+		
+		$template = str_replace(LD."form_declaration".RD, $form_declaration, $template);
 
-		$template = str_replace(LD."form:form_declaration:do_member_search".RD, "<form method='post' action='".$this->_member_path('do_member_search')."'>", $template);
+		$form_declaration = ee()->functions->form_declaration(array(
+									'action' => $this->_member_path('do_member_search')
+								)
+							);
+
+		$template = str_replace(LD."form:form_declaration:do_member_search".RD, $form_declaration, $template);
 
 		$template = str_replace(LD."member_rows".RD, $str, $template);
 
