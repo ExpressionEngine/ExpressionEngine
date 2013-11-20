@@ -1897,24 +1897,7 @@ class Forum_Core extends Forum {
 		{
 			if ($row['forum_last_post_title'] != '')
 			{
-				$date = ( ! preg_match("/{last_post\s+format=['|\"](.+?)['|\"]\}/i", $recent_chunk['1'], $match)) ? FALSE : $match;
-
-				$temp = $recent_chunk['1'];
-
-				if ($date !== FALSE AND $row['forum_last_post_date'] != 0)
-				{
-					if (date('Ymd', $row['forum_last_post_date']) == date('Ymd', ee()->localize->now))
-					{
-						ee()->load->helper('date');
-
-						$temp = str_replace($date['0'], str_replace('%x', timespan($row['forum_last_post_date']), lang('ago')), $temp);
-					}
-					else
-					{
-						$temp = str_replace($date['0'], ee()->localize->format_date($date['1'], $row['forum_last_post_date']), $temp);
-					}
-				}
-
+				$temp = ee()->TMPL->parse_date_variables($recent_chunk['1'], array('last_post' => $row['forum_last_post_date']));
 
 				$temp = str_replace('{title}', $this->_convert_special_chars($row['forum_last_post_title']), $temp);
 				$temp = str_replace('{author}', $row['forum_last_post_author'], $temp);
@@ -2014,9 +1997,6 @@ class Forum_Core extends Forum {
 		$str = $this->load_element('announcement_topics');
 		$template = $this->load_element('announcement_topic_rows');
 
-		// Fetch the "post_date" date
-		$date = ( ! preg_match("/{post_date\s+format=['|\"](.+?)['|\"]\}/i", $template, $match)) ? FALSE : $match;
-
 		// Fetch the topic markers
 		$markers = $this->_fetch_topic_markers();
 		$topic_marker = $markers['announce'];
@@ -2028,10 +2008,7 @@ class Forum_Core extends Forum {
 
 		foreach ($query->result_array() as $row)
 		{
-			$temp = $template;
-
-
-			$temp = $this->var_swap($temp,
+			$temp = $this->var_swap($template,
 							array(
 									'topic_marker'			=>	$topic_marker,
 									'topic_title'			=>	$this->_convert_special_chars($row['title']),
@@ -2043,23 +2020,7 @@ class Forum_Core extends Forum {
 							);
 
 			// Parse the "post_date" date
-			if ($date !== FALSE AND $row['topic_date'] != 0)
-			{
-				if (date('Ymd', $row['topic_date']) == date('Ymd', ee()->localize->now))
-				{
-					$dt = str_replace('%x', timespan($row['topic_date']), lang('ago'));
-				}
-				else
-				{
-					$dt = ee()->localize->format_date($date['1'], $row['topic_date']);
-				}
-			}
-			else
-			{
-				$dt = '-';
-			}
-
-			$temp = str_replace($date['0'], $dt, $temp);
+			$temp = ee()->TMPL->parse_date_variables($temp, array('post_date' => $row['topic_date']));
 
 			$topics .= $temp;
 		}
@@ -2300,11 +2261,6 @@ class Forum_Core extends Forum {
 
 		// Fetch the "row" template
 		$template = $this->load_element('topic_rows');
-
-		// Fetch the "last_reply" date
-		// We do this here to keep it out of the loop
-
-		$date = ( ! preg_match("/{last_reply\s+format=['|\"](.+?)['|\"]\}/i", $template, $match)) ? FALSE : $match;
 
 		// Fetch the "read topics" cookie
 
@@ -2547,26 +2503,7 @@ class Forum_Core extends Forum {
 								)
 							);
 
-			// Parse the "last_reply" date
-			if ($date !== FALSE AND $row['last_post_date'] != 0)
-			{
-				if (date('Ymd', $row['last_post_date']) == date('Ymd', ee()->localize->now))
-				{
-					ee()->load->helper('date');
-
-					$dt = str_replace('%x', timespan($row['last_post_date']), lang('ago'));
-				}
-				else
-				{
-					$dt = ee()->localize->format_date($date['1'], $row['last_post_date']);
-				}
-			}
-			else
-			{
-				$dt = '-';
-			}
-
-			$temp = str_replace($date['0'], $dt, $temp);
+			$temp = ee()->TMPL->parse_date_variables($temp, array('last_reply' => $row['last_post_date']));
 
 			/* -------------------------------------
 			/*  'forum_topics_loop_end' hook.
@@ -3506,11 +3443,6 @@ class Forum_Core extends Forum {
 
 		$rank_class = 'rankMember';
 
-		//  Grab some variables which we'll use later
-		$post_date  = ( ! preg_match_all("/{post_date\s+format=['|\"](.+?)['|\"]\}/i", $template, $matches)) ? FALSE : $matches;
-		$join_date  = ( ! preg_match_all("/{join_date\s+format=['|\"](.+?)['|\"]\}/i", $template, $matches)) ? FALSE : $matches;
-		$edit_date  = ( ! preg_match_all("/{edit_date\s+format=['|\"](.+?)['|\"]\}/i", $template, $matches)) ? FALSE : $matches;
-
 		$rank_stars = '';
 
 		if (preg_match("/{if\s+rank_stars\}(.+?){\/if\}/i", $template, $matches))
@@ -3661,28 +3593,20 @@ class Forum_Core extends Forum {
 				}
 			}
 
-			// Parse the post date and join date
-			for ($j = 0; $j < count($post_date[0]); $j++)
-			{
-				$temp = str_replace($post_date[0][$j], ee()->localize->format_date($post_date['1'][$j], $row['date']), $temp);
-			}
-
-			for ($j = 0; $j < count($join_date[0]); $j++)
-			{
-				$temp = str_replace($join_date[0][$j], ee()->localize->format_date($join_date['1'][$j], $row['join_date']), $temp);
-			}
+			$dates = array(
+				'post_date' => $row['date'],
+				'join_date' => $row['join_date'],
+			);
+			$temp = ee()->TMPL->parse_date_variables($temp, $dates);
 
 			// 2 minute window for edits
 			if ($row['forum_display_edit_date'] == 'y' AND ($row['edit_date'] - $row['date']) > 120)
 			{
-				for ($j = 0; $j < count($edit_date[0]); $j++)
-				{
-					$temp = str_replace($edit_date[0][$j], ee()->localize->format_date($edit_date[1][$j], $row['edit_date']), $temp);
-				}
+				$temp = ee()->TMPL->parse_date_variables($temp, array('edit_date' => $row['edit_date']));
 
 				$temp = str_replace(LD.'edit_author'.RD, $row['edit_author'], $temp);
 				$temp = str_replace(LD.'edit_author_id'.RD, $row['edit_author_id'], $temp);
-				$temp = str_replace('{path:edit_author_profile}', $this->profile_path($row['edit_author_id']), $temp);
+				$temp = str_replace(LD.'path:edit_author_profile'.RD, $this->profile_path($row['edit_author_id']), $temp);
 
 				$temp = $this->allow_if('edited', $temp);
 			}
@@ -7077,17 +7001,7 @@ class Forum_Core extends Forum {
 
 		$template = $this->load_element('move_reply_confirmation');
 
-		$post_date  = ( ! preg_match_all("/{post_date\s+format=['|\"](.+?)['|\"]\}/i", $template, $matches)) ? FALSE : $matches;
-
-		if ($post_date !== FALSE)
-		{
-			$count = count($post_date['0']);
-
-			for ($i = 0; $i < $count; $i++)
-			{
-				$template = str_replace($post_date['0'][$i], ee()->localize->format_date($post_date['1'][$i], $query->row('post_date') ), $template);
-			}
-		}
+		$template = ee()->TMPL->parse_date_variables($template, array('post_date' => $query->row('post_date')));
 
 		return $this->var_swap($template,
 								array(
@@ -8458,17 +8372,14 @@ class Forum_Core extends Forum {
 		$str = $this->load_element('visitor_stats');
 
 		// Parse Date-based stats
-
-		foreach (array('last_entry_date', 'last_forum_post_date', 'last_comment_date', 'last_visitor_date','most_visitor_date') as $stat)
-		{
-			if (preg_match_all("/{".$stat."\s+format=['|\"](.+?)['|\"]\}/i", $str, $matches))
-			{
-				for ($j = 0; $j < count($matches['0']); $j++)
-				{
-					$str = str_replace($matches['0'][$j], ee()->localize->format_date($matches['1'][$j], ee()->stats->statdata($stat)), $str);
-				}
-			}
-		}
+		$dates = array(
+			'last_entry_date'      => ee()->stats->statdata('last_entry_date'),
+			'last_forum_post_date' => ee()->stats->statdata('last_forum_post_date'),
+			'last_comment_date'    => ee()->stats->statdata('last_comment_date'),
+			'last_visitor_date'    => ee()->stats->statdata('last_visitor_date'),
+			'most_visitor_date'    => ee()->stats->statdata('most_visitor_date')
+		);
+		$str = ee()->TMPL->parse_date_variables($str, $dates);
 
 		// Parse Non-date-based stats
 		foreach (array('total_members', 'total_logged_in', 'total_guests',
@@ -9774,11 +9685,6 @@ class Forum_Core extends Forum {
 		// Fetch the "row" template
 		$template = $this->load_element('result_rows');
 
-		// Fetch the "last_reply" date
-		// We do this here to keep it out of the loop
-
-		$date = ( ! preg_match("/{last_reply\s+format=['|\"](.+?)['|\"]\}/i", $template, $match)) ? FALSE : $match;
-
 		// Fetch the topic markers
 		$markers = $this->_fetch_topic_markers();
 
@@ -9941,23 +9847,7 @@ class Forum_Core extends Forum {
 					);
 
 			// Parse the "last_reply" date
-			if ($date !== FALSE AND $row['last_post_date'] != 0)
-			{
-				if (date('Ymd', $row['last_post_date']) == date('Ymd', ee()->localize->now))
-				{
-					$dt = str_replace('%x', timespan($row['last_post_date']), lang('ago'));
-				}
-				else
-				{
-					$dt = ee()->localize->format_date($date['1'], $row['last_post_date']);
-				}
-			}
-			else
-			{
-				$dt = '-';
-			}
-
-			$temp = str_replace($date['0'], $dt, $temp);
+			$temp = ee()->TMPL->parse_date_variables($temp, array('last_reply' => $row['last_post_date']));
 
 			// Complile the string
 
@@ -10111,11 +10001,6 @@ class Forum_Core extends Forum {
 		// Fetch the "row" template
 		$template = $this->load_element('thread_result_rows');
 
-		// Fetch the "last_reply" date
-		// We do this here to keep it out of the loop
-
-		$date = ( ! preg_match("/{post_date\s+format=['|\"](.+?)['|\"]\}/i", $template, $match)) ? FALSE : $match;
-
 		// Fetch the topic markers
 		$markers = $this->_fetch_topic_markers();
 
@@ -10184,23 +10069,7 @@ class Forum_Core extends Forum {
 			);
 
 			// Parse the post_date
-			if ($date !== FALSE AND $row['post_date'] != 0)
-			{
-				if (date('Ymd', $row['post_date']) == date('Ymd', ee()->localize->now))
-				{
-					$dt = str_replace('%x', timespan($row['post_date']), lang('ago'));
-				}
-				else
-				{
-					$dt = ee()->localize->format_date($date['1'], $row['post_date']);
-				}
-			}
-			else
-			{
-				$dt = '-';
-			}
-
-			$temp = str_replace($date['0'], $dt, $temp);
+			$temp = ee()->TMPL->parse_date_variables($temp, array('post_date' => $row['post_date']));
 
 			// Complile the string
 
@@ -10762,32 +10631,6 @@ class Forum_Core extends Forum {
 							'allow_img_url' => $query->row('forum_allow_img_urls')
 							);
 
-		// Fetch date-related variables
-		$topic_date 		= array();
-		$last_post_date 	= array();
-
-		$date_vars = array('topic_date', 'last_post_date');
-
-		foreach ($date_vars as $val)
-		{
-			if (preg_match_all("/".LD.$val."\s+format=[\"'](.*?)[\"']".RD."/s", ee()->TMPL->tagdata, $matches))
-			{
-				for ($j = 0; $j < count($matches['0']); $j++)
-				{
-					$matches['0'][$j] = str_replace(LD, '', $matches['0'][$j]);
-					$matches['0'][$j] = str_replace(RD, '', $matches['0'][$j]);
-
-					switch ($val)
-					{
-						case 'topic_date'		: $topic_date[$matches['0'][$j]] = $matches['1'][$j];
-							break;
-						case 'last_post_date'	: $last_post_date[$matches['0'][$j]] = $matches['1'][$j];
-							break;
-					}
-				}
-			}
-		}
-
 		// Blast through the result
 		ee()->load->library('typography');
 		ee()->typography->initialize();
@@ -10902,36 +10745,16 @@ class Forum_Core extends Forum {
 													 );
 				}
 
-				// parse topic date
-				if (isset($topic_date[$key]))
-				{
-					$tagdata = ee()->TMPL->swap_var_single(
-						$key,
-						ee()->localize->format_date(
-							$topic_date[$key],
-							$row['topic_date']
-						),
-						$tagdata
-					);
-				}
+				$dates = array(
+					'topic_date'     => $row['topic_date'],
+					'last_post_date' => $row['last_post_date']
+				);
+				$tagdata = ee()->TMPL->parse_date_variables($tagdata, $dates);
 
 				// {topic_relative_date}
 				if ($key == "topic_relative_date")
 				{
 					$tagdata = ee()->TMPL->swap_var_single($val, timespan($row['topic_date']), $tagdata);
-				}
-
-				// parse last post date
-				if (isset($last_post_date[$key]))
-				{
-					$tagdata = ee()->TMPL->swap_var_single(
-						$key,
-						ee()->localize->format_date(
-							$last_post_date[$key],
-							$row['last_post_date']
-						),
-						$tagdata
-					);
 				}
 
 				// {last_post_relative_date}

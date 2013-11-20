@@ -1137,9 +1137,10 @@ class Forum {
 		{
 			$str = $this->allow_if('in_forum', $str);
 		}
-			// Parse the language text
-			if (preg_match_all("/{lang:(.+?)\}/i", $str, $matches))
-			{
+
+		// Parse the language text
+		if (preg_match_all("/{lang:(.+?)\}/i", $str, $matches))
+		{
 			for ($j = 0; $j < count($matches['0']); $j++)
 			{
 				$line = lang($matches['1'][$j]);
@@ -1165,18 +1166,19 @@ class Forum {
 		}
 
 		// Parse the last visit date
-		if (preg_match_all("/{last_visit_date\s+format=['|\"](.+?)['|\"]\}/i", $str, $matches))
+		if (preg_match_all("/".LD."last_visit_date(.*?)".RD."/i", $str, $matches))
 		{
-			for ($j = 0; $j < count($matches['0']); $j++)
+			// One-off: show text instead of a date in case of guests
+			if (ee()->session->userdata('member_id') == 0)
 			{
-				if (ee()->session->userdata('member_id') == 0)
+				for ($j = 0; $j < count($matches['0']); $j++)
 				{
 					$str = str_replace($matches['0'][$j], lang('never'), $str);
 				}
-				else
-				{
-					$str = str_replace($matches['0'][$j], ee()->localize->format_date($matches['1'][$j], ee()->session->userdata['last_visit']), $str);
-				}
+			}
+			else
+			{
+				$str = ee()->TMPL->parse_date_variables($str, array('last_visit_date' => ee()->session->userdata('last_visit')));
 			}
 		}
 
