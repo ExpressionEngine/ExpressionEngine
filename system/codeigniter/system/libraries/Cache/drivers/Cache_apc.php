@@ -29,14 +29,14 @@ class CI_Cache_apc extends CI_Driver {
 	 * Look for a value in the cache. If it exists, return the data
 	 * if not, return FALSE
 	 *
-	 * @param	string	$id 		Key name
+	 * @param	string	$key 		Key name
 	 * @param	string	$namespace	Namespace name
 	 * @return	mixed	value matching $id or FALSE on failure
 	 */
-	public function get($id, $namespace = '')
+	public function get($key, $namespace = '')
 	{
 		$success = FALSE;
-		$data = apc_fetch($this->_namespaced_key($id, $namespace), $success);
+		$data = apc_fetch($this->_namespaced_key($key, $namespace), $success);
 
 		return ($success === TRUE && is_array($data))
 			? unserialize($data[0]) : FALSE;
@@ -47,18 +47,18 @@ class CI_Cache_apc extends CI_Driver {
 	/**
 	 * Save value to cache
 	 *
-	 * @param	string	$id			Key name
+	 * @param	string	$key		Key name
 	 * @param	mixed	$data		Data to store
 	 * @param	int		$ttl = 60	Cache TTL (in seconds)
 	 * @param	string	$namespace	Namespace name
 	 * @return	bool	TRUE on success, FALSE on failure
 	 */
-	public function save($id, $data, $ttl = 60, $namespace = '')
+	public function save($key, $data, $ttl = 60, $namespace = '')
 	{
 		$ttl = (int) $ttl;
 
 		return apc_store(
-			$this->_namespaced_key($id, $namespace),
+			$this->_namespaced_key($key, $namespace),
 			array(serialize($data), ee()->localize->now, $ttl),
 			$ttl
 		);
@@ -69,13 +69,13 @@ class CI_Cache_apc extends CI_Driver {
 	/**
 	 * Delete from cache
 	 *
-	 * @param	string	$id			Key name
+	 * @param	string	$key		Key name
 	 * @param	string	$namespace	Namespace name
 	 * @return	bool	TRUE on success, FALSE on failure
 	 */
-	public function delete($id, $namespace = '')
+	public function delete($key, $namespace = '')
 	{
-		return apc_delete($this->_namespaced_key($id, $namespace));
+		return apc_delete($this->_namespaced_key($key, $namespace));
 	}
 
 	// ------------------------------------------------------------------------
@@ -113,8 +113,8 @@ class CI_Cache_apc extends CI_Driver {
 	/**
 	 * Cache Info
 	 *
-	 * @param	string	$type = 'user'	user/filehits
-	 * @return	mixed	array containing cache info on success OR FALSE on failure
+	 * @param	string	$type = 'user'	User/filehits
+	 * @return	mixed	Array containing cache info on success OR FALSE on failure
 	 */
 	 public function cache_info($type = NULL)
 	 {
@@ -126,14 +126,14 @@ class CI_Cache_apc extends CI_Driver {
 	/**
 	 * Get Cache Metadata
 	 *
-	 * @param	string	$id			Key to get cache metadata on
+	 * @param	string	$key		Key to get cache metadata on
 	 * @param	string	$namespace	Namespace name
 	 * @return	mixed	Cache item metadata
 	 */
-	public function get_metadata($id, $namespace = '')
+	public function get_metadata($key, $namespace = '')
 	{
 		$success = FALSE;
-		$stored = apc_fetch($this->_namespaced_key($id, $namespace), $success);
+		$stored = apc_fetch($this->_namespaced_key($key, $namespace), $success);
 
 		if ($success === FALSE OR count($stored) !== 3)
 		{

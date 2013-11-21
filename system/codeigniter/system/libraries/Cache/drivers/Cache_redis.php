@@ -38,7 +38,7 @@ class CI_Cache_redis extends CI_Driver
 	 * Look for a value in the cache. If it exists, return the data
 	 * if not, return FALSE
 	 *
-	 * @param	string	$id 		Key name
+	 * @param	string	$key 		Key name
 	 * @param	string	$namespace	Namespace name
 	 * @return	mixed	value matching $id or FALSE on failure
 	 */
@@ -52,7 +52,7 @@ class CI_Cache_redis extends CI_Driver
 	/**
 	 * Save value to cache
 	 *
-	 * @param	string	$id			Key name
+	 * @param	string	$key		Key name
 	 * @param	mixed	$data		Data to store
 	 * @param	int		$ttl = 60	Cache TTL (in seconds)
 	 * @param	string	$namespace	Namespace name
@@ -73,7 +73,7 @@ class CI_Cache_redis extends CI_Driver
 	/**
 	 * Delete from cache
 	 *
-	 * @param	string	$id			Key name
+	 * @param	string	$key		Key name
 	 * @param	string	$namespace	Namespace name
 	 * @return	bool	TRUE on success, FALSE on failure
 	 */
@@ -142,7 +142,8 @@ class CI_Cache_redis extends CI_Driver
 		{
 			return array(
 				'expire' => ee()->localize->now + $this->_redis->ttl($key),
-				'data' => $value
+				'mtime'	=> NULL,
+				'data' => unserialize($value)
 			);
 		}
 
@@ -158,6 +159,11 @@ class CI_Cache_redis extends CI_Driver
 	 */
 	public function is_supported()
 	{
+		// Redis already set up
+		if ( ! empty($this->_redis))
+		{
+			return TRUE;
+		}
 		if (extension_loaded('redis') && class_exists('Redis', FALSE))
 		{
 			return $this->_setup_redis();
@@ -207,11 +213,20 @@ class CI_Cache_redis extends CI_Driver
 		catch (RedisException $e)
 		{
 			log_message('debug', 'Redis connection refused: '.$e->getMessage());
+			$this->_redis = FALSE;
+			return FALSE;
+		}
+
+		// Redis will return FALSE sometimes instead of throwing an exeption
+		if ( ! $result)
+		{
+			log_message('debug', 'Redis connection failed.');
+			$this->_redis = FALSE;
 			return FALSE;
 		}
 
 		// If a password is set, attempt to authenticate
-		if ( ! empty($config['password']))
+		if ( ! empty($config['password']) && $result)
 		{
 			$result = $this->_redis->auth($config['password']);
 		}

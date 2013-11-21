@@ -106,13 +106,13 @@ class CI_Cache extends CI_Driver_Library {
 	 * Look for a value in the cache. If it exists, return the data
 	 * if not, return FALSE
 	 *
-	 * @param	string	$id 		Key name
+	 * @param	string	$key 		Key name
 	 * @param	string	$namespace	Namespace name
 	 * @return	mixed	value matching $id or FALSE on failure
 	 */
-	public function get($id, $namespace = '')
+	public function get($key, $namespace = '')
 	{
-		return $this->{$this->_adapter}->get($id, $namespace);
+		return $this->{$this->_adapter}->get($key, $namespace);
 	}
 
 	// ------------------------------------------------------------------------
@@ -120,15 +120,15 @@ class CI_Cache extends CI_Driver_Library {
 	/**
 	 * Save value to cache
 	 *
-	 * @param	string	$id			Key name
+	 * @param	string	$key		Key name
 	 * @param	mixed	$data		Data to store
 	 * @param	int		$ttl = 60	Cache TTL (in seconds)
 	 * @param	string	$namespace	Namespace name
 	 * @return	bool	TRUE on success, FALSE on failure
 	 */
-	public function save($id, $data, $ttl = 60, $namespace = '')
+	public function save($key, $data, $ttl = 60, $namespace = '')
 	{
-		return $this->{$this->_adapter}->save($id, $data, $ttl, $namespace);
+		return $this->{$this->_adapter}->save($key, $data, $ttl, $namespace);
 	}
 
 	// ------------------------------------------------------------------------
@@ -136,13 +136,13 @@ class CI_Cache extends CI_Driver_Library {
 	/**
 	 * Delete from cache
 	 *
-	 * @param	string	$id			Key name
+	 * @param	string	$key		Key name
 	 * @param	string	$namespace	Namespace name
 	 * @return	bool	TRUE on success, FALSE on failure
 	 */
-	public function delete($id, $namespace = '')
+	public function delete($key, $namespace = '')
 	{
-		return $this->{$this->_adapter}->delete($id, $namespace);
+		return $this->{$this->_adapter}->delete($key, $namespace);
 	}
 
 	// ------------------------------------------------------------------------
@@ -188,13 +188,13 @@ class CI_Cache extends CI_Driver_Library {
 	/**
 	 * Get Cache Metadata
 	 *
-	 * @param	string	$id			Key to get cache metadata on
+	 * @param	string	$key		Key to get cache metadata on
 	 * @param	string	$namespace	Namespace name
 	 * @return	mixed	cache item metadata
 	 */
-	public function get_metadata($id, $namespace = '')
+	public function get_metadata($key, $namespace = '')
 	{
-		return $this->{$this->_adapter}->get_metadata($id, $namespace);
+		return $this->{$this->_adapter}->get_metadata($key, $namespace);
 	}
 
 	// ------------------------------------------------------------------------

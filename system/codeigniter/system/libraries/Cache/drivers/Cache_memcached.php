@@ -45,13 +45,13 @@ class CI_Cache_memcached extends CI_Driver {
 	 * Look for a value in the cache. If it exists, return the data
 	 * if not, return FALSE
 	 *
-	 * @param	string	$id 		Key name
+	 * @param	string	$key 		Key name
 	 * @param	string	$namespace	Namespace name
 	 * @return	mixed	value matching $id or FALSE on failure
 	 */
-	public function get($id, $namespace = '')
+	public function get($key, $namespace = '')
 	{
-		$data = $this->_memcached->get($this->_namespaced_key($id, $namespace));
+		$data = $this->_memcached->get($this->_namespaced_key($key, $namespace));
 
 		return is_array($data) ? $data[0] : FALSE;
 	}
@@ -61,15 +61,15 @@ class CI_Cache_memcached extends CI_Driver {
 	/**
 	 * Save value to cache
 	 *
-	 * @param	string	$id			Key name
+	 * @param	string	$key		Key name
 	 * @param	mixed	$data		Data to store
 	 * @param	int		$ttl = 60	Cache TTL (in seconds)
 	 * @param	string	$namespace	Namespace name
 	 * @return	bool	TRUE on success, FALSE on failure
 	 */
-	public function save($id, $data, $ttl = 60, $namespace = '')
+	public function save($key, $data, $ttl = 60, $namespace = '')
 	{
-		$id = $this->_namespaced_key($id, $namespace);
+		$key = $this->_namespaced_key($key, $namespace);
 
 		// Memcache does not allow a TTL more than 30 days, anything over will
 		// cause set() to return FALSE; and Memcached interprets any TTL over
@@ -83,11 +83,11 @@ class CI_Cache_memcached extends CI_Driver {
 
 		if (get_class($this->_memcached) === 'Memcached')
 		{
-			return $this->_memcached->set($id, $data, $ttl);
+			return $this->_memcached->set($key, $data, $ttl);
 		}
 		elseif (get_class($this->_memcached) === 'Memcache')
 		{
-			return $this->_memcached->set($id, $data, 0, $ttl);
+			return $this->_memcached->set($key, $data, 0, $ttl);
 		}
 
 		return FALSE;
@@ -98,13 +98,13 @@ class CI_Cache_memcached extends CI_Driver {
 	/**
 	 * Delete from cache
 	 *
-	 * @param	string	$id			Key name
+	 * @param	string	$key		Key name
 	 * @param	string	$namespace	Namespace name
 	 * @return	bool	TRUE on success, FALSE on failure
 	 */
-	public function delete($id, $namespace = '')
+	public function delete($key, $namespace = '')
 	{
-		return $this->_memcached->delete($this->_namespaced_key($id, $namespace));
+		return $this->_memcached->delete($this->_namespaced_key($key, $namespace));
 	}
 
 	// ------------------------------------------------------------------------
@@ -150,13 +150,13 @@ class CI_Cache_memcached extends CI_Driver {
 	/**
 	 * Get Cache Metadata
 	 *
-	 * @param	string	$id			Key to get cache metadata on
+	 * @param	string	$key		Key to get cache metadata on
 	 * @param	string	$namespace	Namespace name
 	 * @return	mixed	Cache item metadata
 	 */
-	public function get_metadata($id, $namespace = '')
+	public function get_metadata($key, $namespace = '')
 	{
-		$stored = $this->_memcached->get($this->_namespaced_key($id, $namespace));
+		$stored = $this->_memcached->get($this->_namespaced_key($key, $namespace));
 
 		if (count($stored) !== 3)
 		{
@@ -214,10 +214,6 @@ class CI_Cache_memcached extends CI_Driver {
 
 		ee()->load->helper('array');
 
-		// We'll keep track of the return values of addServer here to make
-		// sure we have at least one good server
-		$results = array();
-
 		// Add servers to Memcache
 		foreach ($memcache_config as $server)
 		{
@@ -236,7 +232,17 @@ class CI_Cache_memcached extends CI_Driver {
 			}
 		}
 
-		return TRUE;
+		// Check each server to see if it's reporting the time; if at least
+		// one server reports the time, we'll consider this driver ok to use
+		foreach ($this->cache_info() as $server)
+		{
+			if ($server['time'] != 0)
+			{
+				return TRUE;
+			}
+		}
+
+		return FALSE;
 	}
 
 	// ------------------------------------------------------------------------
