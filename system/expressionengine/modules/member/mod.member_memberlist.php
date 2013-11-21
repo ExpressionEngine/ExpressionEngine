@@ -1044,8 +1044,14 @@ class Member_memberlist extends Member {
 			$template = str_replace(LD.'total_pages'.RD, 		$total_pages,	$template);
 		}
 
-		$form_action = ($this->is_search === TRUE) ? $this->_member_path('member_search'.$search_path) :
-			$this->_member_path('memberlist'.(($first_letter != '') ? $first_letter.'/' : $search_path));
+		if ($this->is_search === TRUE)
+		{
+			$form_action = $this->_member_path('member_search'.$search_path);
+		}
+		else
+		{
+			$form_action = $this->_member_path('memberlist'.(($first_letter != '') ? $first_letter.'/' : $search_path));
+		}
 
 		$form_declaration = ee()->functions->form_declaration(array(
 									'action' => $form_action
