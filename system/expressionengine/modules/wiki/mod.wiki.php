@@ -556,12 +556,6 @@ class Wiki {
 		}
 
 		/** -------------------------------------
-		/**  Parse Current Time
-		/** -------------------------------------*/
-
-		$this->return_data = ee()->TMPL->parse_date_variables($this->return_data, array('current_time' => ee()->localize->now));
-
-		/** -------------------------------------
 		/**  Parse Snippets
 		/** -------------------------------------*/
 
@@ -594,6 +588,12 @@ class Wiki {
 
 		$this->return_data = $this->prep_conditionals($this->return_data, array_merge($data, $this->conditionals));
 		$this->return_data = str_replace(array_keys($data), array_values($data), $this->return_data);
+
+		/** -------------------------------------
+		/**  Parse Current Time
+		/** -------------------------------------*/
+
+		$this->return_data = ee()->TMPL->parse_date_variables($this->return_data, array('current_time' => ee()->localize->now));
 
 		// Parse the language text
 		if (preg_match_all("/".LD."lang:(.+?)".RD."/i", $this->return_data, $matches))
