@@ -71,7 +71,7 @@ class EE_Channel_date_parser implements EE_Channel_parser_component {
 
 			$full_val = $prefix.$val;
 
-			if (preg_match_all("/".LD.$full_val.".*".RD."/s", $tagdata, $matches))
+			if (preg_match_all("/".LD.$full_val.".+?".RD."/i", $tagdata, $matches))
 			{
 				for ($j = 0; $j < count($matches[0]); $j++)
 				{

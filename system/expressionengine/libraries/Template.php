@@ -3874,7 +3874,7 @@ class EE_Template {
 		{
 			foreach ($dates as $tag => $timestamp)
 			{
-				if (preg_match_all("/".LD.$tag."(.*?)".RD."/s", $tagdata, $matches))
+				if (preg_match_all("/".LD.$tag."(.+?)".RD."/i", $tagdata, $matches))
 				{
 					foreach($matches[1] as $key => $val)
 					{
