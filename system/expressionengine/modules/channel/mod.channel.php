@@ -3195,18 +3195,6 @@ class Channel {
 			}
 		}
 
-		$entry_date = array();
-		preg_match_all("/".LD."entry_date\s+format\s*=\s*(\042|\047)([^\\1]*?)\\1".RD."/s", $title_chunk, $matches);
-		{
-			$j = count($matches[0]);
-			for ($i = 0; $i < $j; $i++)
-			{
-				$matches[0][$i] = str_replace(array(LD,RD), '', $matches[0][$i]);
-
-				$entry_date[$matches[0][$i]] = $matches[2][$i];
-			}
-		}
-
 		$return_data = '';
 
 		if (ee()->TMPL->fetch_param('style') == '' OR ee()->TMPL->fetch_param('style') == 'nested')
@@ -3229,14 +3217,10 @@ class Channel {
 						$chunk = str_replace($tkey, reduce_double_slashes($tval.'/'.$row['entry_id']), $chunk);
 					}
 
+					$chunk = ee()->TMPL->parse_date_variables($chunk, array('entry_date' => $row['entry_date']));
+
 					foreach(ee()->TMPL->var_single as $key => $val)
 					{
-						if (isset($entry_date[$key]))
-						{
-							$val = str_replace($entry_date[$key], ee()->localize->format_date($entry_date[$key], $row['entry_date']), $val);
-							$chunk = ee()->TMPL->swap_var_single($key, $val, $chunk);
-						}
-
 						if ($key == 'entry_id')
 						{
 							$chunk = ee()->TMPL->swap_var_single($key, $row['entry_id'], $chunk);
