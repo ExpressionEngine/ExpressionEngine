@@ -71,7 +71,7 @@ class EE_Channel_date_parser implements EE_Channel_parser_component {
 
 			$full_val = $prefix.$val;
 
-			if (preg_match_all("/".LD.$full_val."\s+format=([\"'])([^\\1]*?)\\1".RD."/s", $tagdata, $matches))
+			if (preg_match_all("/".LD.$full_val.".*".RD."/s", $tagdata, $matches))
 			{
 				for ($j = 0; $j < count($matches[0]); $j++)
 				{
@@ -80,28 +80,28 @@ class EE_Channel_date_parser implements EE_Channel_parser_component {
 					switch ($val)
 					{
 						case 'entry_date':
-							$entry_date[$matches[0][$j]] = $matches[2][$j];
+							$entry_date[$matches[0][$j]] = TRUE;
 							break;
 						case 'gmt_date':
-							$gmt_date[$matches[0][$j]] = $matches[2][$j];
+							$gmt_date[$matches[0][$j]] = TRUE;
 							break;
 						case 'gmt_entry_date':
-							$gmt_entry_date[$matches[0][$j]] = $matches[2][$j];
+							$gmt_entry_date[$matches[0][$j]] = TRUE;
 							break;
 						case 'edit_date':
-							$edit_date[$matches[0][$j]] = $matches[2][$j];
+							$edit_date[$matches[0][$j]] = TRUE;
 							break;
 						case 'gmt_edit_date':
-							$gmt_edit_date[$matches[0][$j]] = $matches[2][$j];
+							$gmt_edit_date[$matches[0][$j]] = TRUE;
 							break;
 						case 'expiration_date':
-							$expiration_date[$matches[0][$j]] = $matches[2][$j];
+							$expiration_date[$matches[0][$j]] = TRUE;
 							break;
 						case 'recent_comment_date':
-							$recent_comment_date[$matches[0][$j]] = $matches[2][$j];
+							$recent_comment_date[$matches[0][$j]] = TRUE;
 							break;
 						case 'week_date':
-							$week_date[$matches[0][$j]] = $matches[2][$j];
+							$week_date[$matches[0][$j]] = TRUE;
 							break;
 					}
 				}
@@ -129,20 +129,16 @@ class EE_Channel_date_parser implements EE_Channel_parser_component {
 		$data = $obj->row();
 		$prefix = $obj->prefix();
 
-		// @todo
-		$key = $tag;
-		$val = $tag_options;
-
 		extract($date_vars);
 
 		//  parse entry date
-		if (isset($entry_date[$key]))
+		if (isset($entry_date[$tag]))
 		{
 			$tagdata = ee()->TMPL->parse_date_variables($tagdata, array('entry_date' => $data['entry_date']));
 		}
 
 		//  Recent Comment Date
-		elseif (isset($recent_comment_date[$key]))
+		elseif (isset($recent_comment_date[$tag]))
 		{
 			if ($data['recent_comment_date'] != 0)
 			{
@@ -150,36 +146,36 @@ class EE_Channel_date_parser implements EE_Channel_parser_component {
 			}
 			else
 			{
-				$tagdata = str_replace(LD.$key.RD, '', $tagdata);
+				$tagdata = str_replace(LD.$tag.RD, '', $tagdata);
 			}
 		}
 
 		//  GMT date - entry date in GMT
-		elseif (isset($gmt_entry_date[$key]))
+		elseif (isset($gmt_entry_date[$tag]))
 		{
 			$tagdata = ee()->TMPL->parse_date_variables($tagdata, array('gmt_entry_date' => $data['entry_date']), FALSE);
 		}
 
-		elseif (isset($gmt_date[$key]))
+		elseif (isset($gmt_date[$tag]))
 		{
 			$tagdata = ee()->TMPL->parse_date_variables($tagdata, array('gmt_date' => $data['entry_date']), FALSE);
 		}
 
 		//  parse "last edit" date
-		elseif (isset($edit_date[$key]))
+		elseif (isset($edit_date[$tag]))
 		{
 			$tagdata = ee()->TMPL->parse_date_variables($tagdata, array('edit_date' => mysql_to_unix($data['edit_date'])));
 		}
 
 		//  "last edit" date as GMT
-		elseif (isset($gmt_edit_date[$key]))
+		elseif (isset($gmt_edit_date[$tag]))
 		{
 			$tagdata = ee()->TMPL->parse_date_variables($tagdata, array('gmt_edit_date' => mysql_to_unix($data['edit_date'])), FALSE);
 		}
 
 
 		//  parse expiration date
-		elseif (isset($expiration_date[$key]))
+		elseif (isset($expiration_date[$tag]))
 		{
 			if ($data['expiration_date'] != 0)
 			{
@@ -187,13 +183,13 @@ class EE_Channel_date_parser implements EE_Channel_parser_component {
 			}
 			else
 			{
-				$tagdata = str_replace(LD.$key.RD, "", $tagdata);
+				$tagdata = str_replace(LD.$tag.RD, "", $tagdata);
 			}
 		}
 
 
 		//  "week_date"
-		elseif (isset($week_date[$key]))
+		elseif (isset($week_date[$tag]))
 		{
 			// Subtract the number of days the entry is "into" the week to get zero (Sunday)
 			// If the entry date is for Sunday, and Monday is being used as the week's start day,
