@@ -183,7 +183,7 @@ class Member_memberlist extends Member {
 		{
 			return FALSE;
 		}
-		
+
 		/** ---------------------------------
 		/**  Does the recipient accept email?
 		/** ---------------------------------*/
@@ -418,25 +418,25 @@ class Member_memberlist extends Member {
 		$valid_order_bys = array(
 				'screen_name','total_posts', 'join_date'
 			);
-	
+
 		$sort_orders = array('asc', 'desc');
-		
+
 		if (($group_id = (int) ee()->input->post('group_id')) === 0)
 		{
 			$group_id = 0;
 		}
-		
+
 		$sort_order = ( ! in_array(ee()->input->post('sort_order'), $sort_orders)) ? ee()->config->item('memberlist_sort_order') : ee()->input->post('sort_order', 'post');
-		
+
 		if (($row_limit = (int) ee()->input->post('row_limit')) === 0)
 		{
 			$row_limit = ee()->config->item('memberlist_row_limit');
-		}	
+		}
 
 		if (ee()->input->post('order_by'))
 		{
 			$order_by = ee()->input->post('order_by', 'post');
-			
+
 			if ( ! in_array($order_by, $valid_order_bys))
 			{
 				$order_by = ee()->config->item('memberlist_order_by');
@@ -446,7 +446,7 @@ class Member_memberlist extends Member {
 		{
 			$order_by = ee()->config->item('memberlist_order_by');
 		}
-		
+
 		if (($row_count = (int) ee()->input->post('row_count')) === 0)
 		{
 			$row_count = 0;
@@ -490,19 +490,19 @@ class Member_memberlist extends Member {
 		  if (preg_match("#^[0-9]{1,}\-[0-9a-z_]{1,}\-[0-9a-z]{1,}\-[0-9]{1,}\-[0-9]{1,}$#i", $this->cur_id))
 		{
 			$x = explode("-", $this->cur_id);
-		
+
 			$group_id	= $x['0'];
 			$order_by 	= $x['1'];
 			$sort_order	= $x['2'];
 			$row_limit	= $x['3'];
 			$row_count	= $x['4'];
-			
+
 			// Which segment is this?  We need the NEXT segment to pass to pagination
 			$pag_uri_segment = array_search($this->cur_id, ee()->uri->segment_array()) + 1;
 
 			//$row_count = ($this->uri_extra != '') ? $this->uri_extra : 0;
 		}
-		
+
 		$path = '/'.$group_id.'-'.$order_by.'-'.$sort_order.'-'.$row_limit;
 
 		/** ----------------------------------------
@@ -591,7 +591,7 @@ class Member_memberlist extends Member {
 		$pager = '';
 
 		if ($query->row('count')  > $row_limit)
-		{ 
+		{
 			ee()->load->library('pagination');
 
 			$config['prefix'] = $search_path.$path.'-';
@@ -604,10 +604,10 @@ class Member_memberlist extends Member {
 			$config['suffix'] = ($first_letter != '') ? $first_letter.'/' : '';
 			$config['first_url'] = $this->_member_path('memberlist'.$search_path.$path.'-0');
 			$config['cur_page']	= ($row_count == '') ? '0' : $row_count;
-			
+
 			// Allows $config['cur_page'] to override
 			$config['uri_segment'] = 0;
-  
+
 			if (preg_match("/".LD.'pagination_links'.RD."/", $template))
 			{
 				$config['first_tag_open'] = '<td><div class="paginate">';
@@ -621,11 +621,11 @@ class Member_memberlist extends Member {
 				$config['cur_tag_open'] = '<td><div class="paginateCur">';
 				$config['cur_tag_close'] = '</div></td>';
 				$config['num_tag_open'] = '<td><div class="paginate">';
-				$config['num_tag_close'] = '</div></td>';				
-			}			
-			
+				$config['num_tag_close'] = '</div></td>';
+			}
+
 			ee()->pagination->initialize($config);
-			
+
 
 			$pager = ee()->pagination->create_links();
 			 //var_dump(ee()->pagination); //exit;
@@ -690,7 +690,7 @@ class Member_memberlist extends Member {
 					/** ----------------------------------------
 					/**  Parse conditions in standard fields
 					/** ----------------------------------------*/
-					
+
 					// array_key_exists instead of isset since columns can be NULL
 					if (array_key_exists($val['3'], $row))
 					{
@@ -1046,14 +1046,26 @@ class Member_memberlist extends Member {
 
 		if ($this->is_search === TRUE)
 		{
-			$template = str_replace(LD."form_declaration".RD, "<form method='post' action='".$this->_member_path('member_search'.$search_path)."'>", $template);
+			$form_action = $this->_member_path('member_search'.$search_path);
 		}
 		else
 		{
-			$template = str_replace(LD."form_declaration".RD, "<form method='post' action='".$this->_member_path('memberlist'.(($first_letter != '') ? $first_letter.'/' : $search_path))."'>", $template);
+			$form_action = $this->_member_path('memberlist'.(($first_letter != '') ? $first_letter.'/' : $search_path));
 		}
 
-		$template = str_replace(LD."form:form_declaration:do_member_search".RD, "<form method='post' action='".$this->_member_path('do_member_search')."'>", $template);
+		$form_declaration = ee()->functions->form_declaration(array(
+									'action' => $form_action
+								)
+							);
+
+		$template = str_replace(LD."form_declaration".RD, $form_declaration, $template);
+
+		$form_declaration = ee()->functions->form_declaration(array(
+									'action' => $this->_member_path('do_member_search')
+								)
+							);
+
+		$template = str_replace(LD."form:form_declaration:do_member_search".RD, $form_declaration, $template);
 
 		$template = str_replace(LD."member_rows".RD, $str, $template);
 
@@ -1155,7 +1167,7 @@ class Member_memberlist extends Member {
 		/** ----------------------------------------*/
 
 		$valid = array('screen_name', 'email', 'url', 'location', 'occupation',
-			'interests', 'aol_im', 'yahoo_im', 'msn_im', 'icq', 'bio', 
+			'interests', 'aol_im', 'yahoo_im', 'msn_im', 'icq', 'bio',
 			'signature');
 
 		$custom_fields = FALSE;
