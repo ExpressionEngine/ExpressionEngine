@@ -1197,6 +1197,9 @@ class Forum {
 			$str = $this->allow_if('feeds_enabled', $str);
 		}
 
+		// Parse {current_time}
+		$str = ee()->TMPL->parse_date_variables($str, array('current_time' => ee()->localize->now));
+
 		// Parse the forum segments and board prefs
 		$conds = array(
 			'current_request'	=> $this->current_request,
