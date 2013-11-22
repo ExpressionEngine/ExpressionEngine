@@ -3872,54 +3872,54 @@ class EE_Template {
 		ee()->load->helper('date');
 		if (is_array($dates))
 		{
-			foreach ($dates as $tag => $timestamp)
+			$tags = implode('|', array_keys($dates));
+			if (preg_match_all("/".LD."(".$tags.")(.+?)".RD."/i", $tagdata, $matches))
 			{
-				if (preg_match_all("/".LD.$tag."(.+?)".RD."/i", $tagdata, $matches))
+				foreach($matches[2] as $key => $val)
 				{
-					foreach($matches[1] as $key => $val)
-					{
-						$dt = $timestamp;
-						$relative = FALSE;
-						$parts = preg_split("/\s+/", $val, 2);
-						$args = (isset($parts[1])) ? ee()->functions->assign_parameters($parts[1]) : array();
+					$timestamp = $dates[$matches[1][$key]];
+					$dt = $timestamp;
+					$relative = FALSE;
 
-						// Determine if we need to display a relative time
-						if (isset($args['relative']))
+					$parts = preg_split("/\s+/", $val, 2);
+					$args = (isset($parts[1])) ? ee()->functions->assign_parameters($parts[1]) : array();
+
+					// Determine if we need to display a relative time
+					if (isset($args['relative']))
+					{
+						if ($args['relative'] == 'yes')
 						{
-							if ($args['relative'] == 'yes')
+							$relative = TRUE;
+						}
+						else
+						{
+							$relative_date = strtotime($args['relative'], ee()->localize->now);
+							if ($relative_date === FALSE)
+							{
+								$this->log_item("Failed Relative Parameter: " . $args['relative']);
+							}
+							elseif ($timestamp >= $relative_date)
 							{
 								$relative = TRUE;
 							}
-							else
-							{
-								$relative_date = strtotime($args['relative'], ee()->localize->now);
-								if ($relative_date === FALSE)
-								{
-									$this->log_item("Failed Relative Parameter: " . $args['relative']);
-								}
-								elseif ($timestamp >= $relative_date)
-								{
-									$relative = TRUE;
-								}
-							}
 						}
-
-						if ($relative)
-						{
-							$dt = str_replace('%x', timespan($timestamp), lang('ago'));
-						}
-						elseif (isset($args['format']))
-						{
-							$dt = ee()->localize->format_date($args['format'], $timestamp, $localize);
-							if ($dt === FALSE)
-							{
-								$this->log_item("Invalid Timestamp: " . $timestamp);
-								$dt = $timestamp;
-							}
-						}
-
-						$tagdata = str_replace($matches[0][$key], $dt, $tagdata);
 					}
+
+					if ($relative)
+					{
+						$dt = str_replace('%x', timespan($timestamp), lang('ago'));
+					}
+					elseif (isset($args['format']))
+					{
+						$dt = ee()->localize->format_date($args['format'], $timestamp, $localize);
+						if ($dt === FALSE)
+						{
+							$this->log_item("Invalid Timestamp: " . $timestamp);
+							$dt = $timestamp;
+						}
+					}
+
+					$tagdata = str_replace($matches[0][$key], $dt, $tagdata);
 				}
 			}
 		}
