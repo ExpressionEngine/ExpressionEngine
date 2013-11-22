@@ -3870,7 +3870,7 @@ class EE_Template {
 	{
 		$this->log_item(" Parsing Date Variables ");
 		ee()->load->helper('date');
-		if (is_array($dates))
+		if (is_array($dates) && ! empty($dates))
 		{
 			$tags = implode('|', array_keys($dates));
 			if (preg_match_all("/".LD."(".$tags.")(.+?)".RD."/i", $tagdata, $matches))
