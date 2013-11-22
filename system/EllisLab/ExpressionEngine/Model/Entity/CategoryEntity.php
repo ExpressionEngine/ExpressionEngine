@@ -9,16 +9,10 @@ class CategoryEntity extends Entity {
 		'primary_key' => 'cat_id',
 		'related_entities' => array(
 			'cat_id' => array(
-				array(
-					'entity' => 'CategoryFieldDataEntity',
-					'key'	 => 'cat_id'
-				),
-				array(
-					'entity' => 'ChannelTitleEntity',
-					'pivot_table' => 'category_posts',
-					'pivot_key' => 'cat_id',
-					'pivot_foreign_key' => 'entry_id'
-				)
+				'entity' => 'ChannelTitleEntity',
+				'pivot_table' => 'category_posts',
+				'pivot_key' => 'cat_id',
+				'pivot_foreign_key' => 'entry_id'
 			),
 			
 			'site_id' => array(

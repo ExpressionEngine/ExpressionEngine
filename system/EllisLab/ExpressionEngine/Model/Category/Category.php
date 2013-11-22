@@ -22,13 +22,13 @@ class Category extends FieldDataContentModel {
 	 */
 	public function getCategoryGroup()
 	{
-		return $this->manyToOne('CategoryGroup', 'group_id', 'group_id');
+		return $this->manyToOne('CategoryGroup', 'CategoryGroup', 'group_id', 'group_id');
 	}
 
 
 	public function getChannelEntries()
 	{
-		return $this->manyToMany('ChannelEntry', 'cat_id');
+		return $this->manyToMany('ChannelEntries', 'ChannelEntry', 'cat_id', 'entry_id');
 	}
 
 	/**
@@ -36,7 +36,7 @@ class Category extends FieldDataContentModel {
 	 */
 	public function getParent()
 	{
-		return $this->manyToOne('Category', 'parent_id', 'cat_id');
+		return $this->manyToOne('Parent', 'Category', 'parent_id', 'cat_id');
 	}
 
 	/**

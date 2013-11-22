@@ -15,12 +15,12 @@ class CategoryGroup extends Model implements ContentStructure {
 	);
 
 	/**
-	 * Relationship to the FieldGroup for this Channel.
+	 * Relationship to the field structure for this category.
 	 */
 	public function getCategoryFieldStructures()
 	{
 		return $this->manyToOne(
-			'CategoryFieldStructure', 'group_id', 'group_id');	
+			'CategoryFieldStructures', 'CategoryFieldStructure', 'group_id', 'group_id');	
 	}
 
 	/**
@@ -29,24 +29,8 @@ class CategoryGroup extends Model implements ContentStructure {
 	public function getCategories()
 	{
 		return $this->oneToMany(
-			'Category', 'group_id', 'group_id');
+			'Categories', 'Category', 'group_id', 'group_id');
 	}
-
-	/**
-	 * Display the specified settings section
-	 *
-	 * @return String   HTML Settings form
-	 */
-	public function getSettings($name = NULL)
-	{}
-
-	/**
-	 * Validate the setting data
-	 *
-	 * @return Errors
-	 */
-	public function validate()
-	{}
 
 	/**
 	 * Display the CP entry form

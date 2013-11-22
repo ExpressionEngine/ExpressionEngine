@@ -416,7 +416,7 @@ abstract class Model {
 			$to_model_name,
 			$this_key,
 			$that_key,
-			$name
+			$relationship_name
 		);
 	}
 
@@ -438,7 +438,7 @@ abstract class Model {
 			$to_model_name,
 			$this_key,
 			$that_key,
-			$name
+			$relationship_name
 		);
 	}
 
@@ -460,7 +460,7 @@ abstract class Model {
 			$to_model_name,
 			$this_key,
 			$that_key,
-			$name
+			$relationship_name
 		);
 	}
 
@@ -482,7 +482,7 @@ abstract class Model {
 			$to_model_name,
 			$this_key,
 			$that_key,
-			$name
+			$relationship_name
 		);
 			
 	}
