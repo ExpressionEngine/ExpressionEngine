@@ -23,7 +23,7 @@ class Channel extends Model implements ContentStructure {
 	public function getChannelFieldGroup()
 	{
 		return $this->manyToOne(
-			'ChannelFieldGroup', 'field_group', 'group_id');	
+			'ChannelFieldGroup', 'ChannelFieldGroup', 'field_group', 'group_id');	
 	}
 
 	/**
@@ -32,38 +32,7 @@ class Channel extends Model implements ContentStructure {
 	public function getChannelEntries()
 	{
 		return $this->oneToMany(
-			'ChannelEntry', 'channel_id', 'channel_id');
-	}
-
-	/**
-	 * Display the specified settings section
-	 *
-	 * @return String   HTML Settings form
-	 */
-	public function getSettings($name = NULL)
-	{
-		$set = new SettingsSet($this, array(
-			'path'           => 'ChannelPathSettings',
-			'commentPosting' => 'ChannelCommentPostingSettings',
-			// ... more settings
-		));
-
-		if (isset($name))
-		{
-			return $set->getSetting($name);
-		}
-
-		return $set->getSettings();
-	}
-
-	/**
-	 * Validate the setting data
-	 *
-	 * @return Errors
-	 */
-	public function validate()
-	{
-
+			'ChannelEntries', 'ChannelEntry', 'channel_id', 'channel_id');
 	}
 
 	/**

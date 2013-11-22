@@ -19,7 +19,17 @@ class TemplateGroup extends Model {
 	 */
 	public function getTemplates()
 	{
-		return $this->oneToMany('Template', 'group_id', 'group_id');
+		return $this->oneToMany('Templates', 'Template', 'group_id', 'group_id');
+	}
+
+	public function setTemplates(array $templates)
+	{
+		$this->setRelated('Templates', $templates);
+		foreach($templates as $template)
+		{
+			$template->group_id = $this->group_id;
+		}
+		return $this;
 	}
 
 	public function getMemberGroups()
@@ -27,11 +37,9 @@ class TemplateGroup extends Model {
 		return $this->manyToMany('MemberGroup', 'template_group_id', 'group_id', 'MemberGroups');
 	}
 
-	/**
-	 *
-	 */
-	public function validate()
+	public function setMemberGroups(array $member_groups)
 	{
-		return new Errors();
+		$this->setRelated('MemberGroups', $member_groups);
+		return $this;
 	}
 }

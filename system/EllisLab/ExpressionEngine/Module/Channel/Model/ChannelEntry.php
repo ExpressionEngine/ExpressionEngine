@@ -3,6 +3,16 @@ namespace EllisLab\ExpressionEngine\Module\Channel\Model;
 
 use EllisLab\ExpressionEngine\Model\FieldDataContentModel;
 
+/**
+ * Channel Entry 
+ *
+ * An entry in a content channel.  May have multiple custom fields in
+ * addition to a number of built in fields.  Is content and may be
+ * rendered on the front end.  Has a publish form that includes its
+ * many fields as sub publish elements.
+ *
+ * Related to Channel which defines the structure of this content.
+ */
 class ChannelEntry extends FieldDataContentModel {
 	protected static $meta = array(
 		'primary_key' => 'entry_id',
@@ -19,17 +29,37 @@ class ChannelEntry extends FieldDataContentModel {
 
 	public function getChannel()
 	{
-		return $this->manyToOne('Channel', 'channel_id', 'channel_id');
+		return $this->manyToOne('Channel', 'Channel', 'channel_id', 'channel_id');
+	}
+
+	public function setChannel(Channel $channel)
+	{
+		$this->setRelated('Channel', $channel);
+		$this->channel_id = $channel->channel_id;
+		return $this;
 	}
 
 	public function getAuthor()
 	{
-		return $this->manyToOne('Member', 'author_id', 'member_id', 'Author');
+		return $this->manyToOne('Author', 'Member', 'author_id', 'member_id');
+	}
+
+	public function setAuthor(Member $author)
+	{
+		$this->setRelated('Author', $author);
+		$this->author_id = $author->member_id;
+		return $this;
 	}
 
 	public function getCategories()
 	{
-		return $this->manyToMany('Category', 'entry_id', 'cat_id', 'Categories');
+		return $this->manyToMany('Categories', 'Category', 'entry_id', 'cat_id');
+	}
+
+	public function setCategories(array $categories)
+	{
+		$this->setRelated('Categories', $categories);
+		return $this;
 	}
 
 	/**

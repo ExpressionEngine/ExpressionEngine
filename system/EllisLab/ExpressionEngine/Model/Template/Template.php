@@ -2,7 +2,6 @@
 namespace EllisLab\ExpressionEngine\Model\Template;
 
 use EllisLab\ExpressionEngine\Model\Model as Model;
-use EllisLab\ExpressionEngine\Model\Error\Errors as Errors;
 
 /**
  *
@@ -24,27 +23,26 @@ class Template extends Model {
 	 */
 	public function getTemplateGroup()
 	{
-		return $this->manyToOne('TemplateGroup', 'group_id');
+		return $this->manyToOne('TemplateGroup', 'TemplateGroup', 'group_id', 'group_id');
 	}
 
 	public function setTemplateGroup(TemplateGroup $template_group)
 	{
 		$this->setRelated('TemplateGroup', $template_group);
+		$this->group_id = $template_group->group_id;
+		return $this;
 	}
 
 	public function getLastAuthor()
 	{
-		return $this->manyToOne(
-			'Member', 
-			'last_author_id', 
-			'member_id', 
-			'LastAuthor'
-		);
+		return $this->manyToOne('LastAuthor', 'Member', 'last_author_id', 'member_id');
 	}
 
 	public function setLastAuthor(Member $member)
 	{
 		$this->setRelated('LastAuthor', $member);	
+		$this->last_author_id = $member->member_id;
+		return $this;
 	}
 
 }

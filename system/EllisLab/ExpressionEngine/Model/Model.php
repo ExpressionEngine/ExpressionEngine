@@ -409,7 +409,7 @@ abstract class Model {
 	 * @return Relationship object or related data
 	 */
 	public function oneToOne(
-		$to_model_name, $this_key, $that_key = NULL, $name=NULL)
+		$relationship_name, $to_model_name, $this_key, $that_key)
 	{
 		return $this->related(
 			ModelRelationshipMeta::TYPE_ONE_TO_ONE,
@@ -431,7 +431,7 @@ abstract class Model {
 	 * @return Relationship object or related data
 	 */
 	public function manyToOne(
-		$to_model_name, $this_key, $that_key = NULL, $name=NULL)
+		$relationship_name, $to_model_name, $this_key, $that_key)
 	{
 		return $this->related(
 			ModelRelationshipMeta::TYPE_MANY_TO_ONE,
@@ -453,7 +453,7 @@ abstract class Model {
 	 * @return Relationship object or related data
 	 */
 	public function oneToMany(
-		$to_model_name, $this_key, $that_key = NULL, $name=NULL)
+		$relationship_name, $to_model_name, $this_key, $that_key)
 	{
 		return $this->related(
 			ModelRelationshipMeta::TYPE_ONE_TO_MANY,
@@ -475,7 +475,7 @@ abstract class Model {
 	 * @return Relationship object or related data
 	 */
 	public function manyToMany(
-		$to_model_name, $this_key, $that_key = NULL, $name=NULL)
+		$relationship_name, $to_model_name, $this_key, $that_key)
 	{
 		return $this->related(
 			ModelRelationshipMeta::TYPE_MANY_TO_MANY,

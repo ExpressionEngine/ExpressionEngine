@@ -9,4 +9,20 @@ class MemberGroup extends Model {
 		'entity_names' => array('MemberGroupEntity'),
 	);
 
+	public function getMembers()
+	{
+		return $this->oneToMany('Members', 'Member', 'group_id', 'group_id');
+	}
+
+	public function setMembers(array $members)
+	{
+		$this->setRelated('Members', $members);
+		foreach($members as $member)
+		{
+			$member->group_id = $this->group_id;
+		}
+
+		return $this;
+	}
+
 }
