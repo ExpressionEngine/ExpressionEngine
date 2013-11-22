@@ -789,6 +789,23 @@ class Comment {
 			$tagdata = ee()->functions->prep_conditionals($tagdata, $cond);
 
 			/** ----------------------------------------
+			/**  parse comment date and "last edit" date
+			/** ----------------------------------------*/
+
+			$dates = array(
+				'comment_date' => $row['comment_date'],
+				'edit_date'    => $row['edit_date']
+			);
+
+			$tagdata = ee()->TMPL->parse_date_variables($tagdata, $dates);
+
+			/** ----------------------------------------
+			/**  parse GMT comment date
+			/** ----------------------------------------*/
+
+			$tagdata = ee()->TMPL->parse_date_variables($tagdata, array('gmt_comment_date', $row['comment_date']), FALSE);
+
+			/** ----------------------------------------
 			/**  Parse "single" variables
 			/** ----------------------------------------*/
 			foreach (ee()->TMPL->var_single as $key => $val)
@@ -855,23 +872,6 @@ class Comment {
 						$tagdata
 					);
 				}
-
-				/** ----------------------------------------
-				/**  parse comment date and "last edit" date
-				/** ----------------------------------------*/
-
-				$dates = array(
-					'comment_date' => $row['comment_date'],
-					'edit_date'    => $row['edit_date']
-				);
-
-				$tagdata = ee()->TMPL->parse_date_variables($tagdata, $dates);
-
-				/** ----------------------------------------
-				/**  parse GMT comment date
-				/** ----------------------------------------*/
-
-				$tagdata = ee()->TMPL->parse_date_variables($tagdata, array('gmt_comment_date', $row['comment_date']), FALSE);
 
 				/** ----------------------------------------
 				/**  {member_search_path}
