@@ -3569,22 +3569,9 @@ class EE_Template {
 	function _parse_var_single($name, $value, $string)
 	{
 		// parse date variables where applicable
-		if (isset($this->date_vars[$name]))
+		if (in_array($name, $this->date_vars))
 		{
-			foreach ($this->date_vars[$name] as $dvar => $dval)
-			{
-				$string = str_replace(LD.$dvar.RD,
-									  ee()->localize->format_date($dval, $value),
-									  $string);
-			}
-
-			// unformatted dates
-			if (strpos($string, LD.$name.RD) !== FALSE)
-			{
-				$string = str_replace(LD.$name.RD, $value, $string);
-			}
-
-			return $string;
+			return $this->parse_date_variables($string, array($name => $value));
 		}
 
 		// Simple Variable - Find & Replace & Return
@@ -3786,33 +3773,22 @@ class EE_Template {
 	/**
 	 * Match Date Vars
 	 *
-	 * Finds date variables within tagdata
-	 * 	 array structure:
-	 *	 [name] => Array
-	 *	     (
-	 *	         [name format="%m/%d/%y"] => Array
-	 *	             (
-	 *	                 [0] => %m/%d/%y
-	 *	                 [1] => %m
-	 *	                 [2] => %d
-	 *	                 [3] => %y
-	 *	             )
+	 * Finds date variables within tagdata and adds the variable name
+	 * to $this->date_vars
  	 *
 	 * @access	public
-	 * @param	string
+	 * @param	string	$str	Tag data with possible date tags
 	 * @return	void
 	 */
-	function _match_date_vars($str)
+	public function _match_date_vars($str)
 	{
-		if (strpos($str, 'format=') === FALSE) return;
+		if ((strpos($str, 'format=') === FALSE) && (strpos($str, 'relative=') === FALSE)) return;
 
-		if (preg_match_all("/".LD."([\w:\-]+)\s+format=[\"'](.*?)[\"']".RD."/", $str, $matches, PREG_SET_ORDER))
+		if (preg_match_all("/".LD."([\w:\-]+)\s+(format|relative)=[\"'](.*?)[\"']".RD."/", $str, $matches, PREG_SET_ORDER))
 		{
 			for ($j = 0, $tot = count($matches); $j < $tot; $j++)
 			{
-				$matches[$j][0] = str_replace(array(LD,RD), '', $matches[$j][0]);
-
-				$this->date_vars[$matches[$j][1]][$matches[$j][0]] = $matches[$j][2];
+				$this->date_vars[] = $matches[$j][1];
 			}
 		}
 		else
@@ -3868,7 +3844,7 @@ class EE_Template {
 	 **/
 	public function parse_date_variables($tagdata, $dates = array(), $localize = TRUE)
 	{
-		$this->log_item(" Parsing Date Variables ");
+		$this->log_item("Parsing Date Variables: " . sprintf("Called @ %s:%d from %s::%s", xdebug_call_file(), xdebug_call_line(), xdebug_call_class(), xdebug_call_function()));
 		ee()->load->helper('date');
 		if (is_array($dates) && ! empty($dates))
 		{
