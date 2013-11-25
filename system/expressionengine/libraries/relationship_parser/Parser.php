@@ -168,26 +168,7 @@ class EE_Relationship_data_parser {
 				$categories[$entry_id] = $this->category($entry_id);
 			}
 
-			// put categories into the weird form the channel module uses
-			// @todo take db results directly
-			foreach ($categories as &$cats)
-			{
-				foreach ($cats as &$cat)
-				{
-					if ( ! empty($cat))
-					{
-						$cat = array(
-							$cat['cat_id'],
-							$cat['parent_id'],
-							$cat['cat_name'],
-							$cat['cat_image'],
-							$cat['cat_description'],
-							$cat['group_id'],
-							$cat['cat_url_title']
-						);
-					}
-				}
-			}
+			$categories = $this->_format_cat_array($categories);
 
 			$data = array(
 				'entries' => array($entry_id => $this->entry($entry_id)),
@@ -531,26 +512,7 @@ class EE_Relationship_data_parser {
 			$rows[$entry_id] = $data;
 		}
 
-		// put categories into the weird form the channel module uses
-		// @todo take db results directly
-		foreach ($categories as &$cats)
-		{
-			foreach ($cats as &$cat)
-			{
-				if ( ! empty($cat))
-				{
-					$cat = array(
-						$cat['cat_id'],
-						$cat['parent_id'],
-						$cat['cat_name'],
-						$cat['cat_image'],
-						$cat['cat_description'],
-						$cat['group_id'],
-						$cat['cat_url_title']
-					);
-				}
-			}
-		}
+		$categories = $this->_format_cat_array($categories);
 
 		$end_script = FALSE;
 
@@ -580,6 +542,56 @@ class EE_Relationship_data_parser {
 			'entries' => $rows,
 			'categories' => $categories,
 		);
+	}
+
+ 	// --------------------------------------------------------------------
+
+	/**
+	 * Utility method to format the category array for processing by the
+	 * Channel Entries Parser's Category parser.  Renames required elements and
+	 * leaves the rest alone.
+	 *
+	 * @param 	array	An array of category data.  Required keys below:
+	 * 		- cat_id: changed to index 0
+	 * 		- parent_id: changed to index 1
+	 * 		- cat_name: changed to index 2
+	 * 		- cat_image: changed to index 3
+	 * 		- cat_description: changed to index 4
+	 * 		- group_id: changed to index 5
+	 * 		- cat_url_title: changed to index 6
+	 *
+	 * @return	array  The array of category data with keys renamed to match the
+	 *                 category parser's requirements.
+	 */
+
+	private function _format_cat_array($categories)
+	{
+		// @todo take db results directly
+		foreach ($categories as &$cats)
+		{
+			foreach ($cats as &$cat)
+			{
+				if ( ! empty($cat))
+				{
+					$cat['0'] = $cat['cat_id'];
+					unset($cat['cat_id']);
+					$cat['1'] = $cat['parent_id'];
+					unset($cat['parent_id']);
+					$cat['2'] = $cat['cat_name'];
+					unset($cat['cat_name']);
+					$cat['3'] = $cat['cat_image'];
+					unset($cat['cat_image']);
+					$cat['4'] = $cat['cat_description'];
+					unset($cat['cat_description']);
+					$cat['5'] = $cat['group_id'];
+					unset($cat['group_id']);
+					$cat['6'] = $cat['cat_url_title'];
+					unset($cat['cat_url_title']);
+				}
+			}
+		}
+
+		return $categories;
 	}
 
  	// --------------------------------------------------------------------

@@ -989,6 +989,10 @@ GRID_FALLBACK;
 			}
 		}
 
+		// Array of possible JS and their requirements
+		// If the key is a needed JS file, it should be in ee()->cp->js_files
+		// and this just handles pulling in files required by the key.
+
 		$ui = array(
 			'core' => FALSE,
 			'widget' => array('core'),
@@ -1899,9 +1903,9 @@ GRID_FALLBACK;
 			return $categories;
 		}
 
-		if ( ! empty($params['group_id']))
+		if ( ! empty($params['show_group']))
 		{
-			ee()->channel_form_data_sorter->filter($categories, 'category_group_id', $params['group_id'], 'in_array');
+			ee()->channel_form_data_sorter->filter($categories, 'category_group_id', $params['show_group'], 'in_array');
 		}
 
 		if ( ! empty($params['order_by']))
