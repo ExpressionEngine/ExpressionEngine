@@ -1564,7 +1564,7 @@ class EE_Config Extends CI_Config {
 							$selected = $value;
 							break;
 						case 'timezone'			:
-							$options[0] = 'c';
+							$options[0] = 'v';
 							$details = ee()->localize->timezone_menu($value);
 							break;
 					}
