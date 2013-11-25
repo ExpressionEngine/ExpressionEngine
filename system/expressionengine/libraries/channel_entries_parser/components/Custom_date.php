@@ -63,16 +63,17 @@ class EE_Channel_custom_date_parser implements EE_Channel_parser_component {
 	 */
 	public function replace($tagdata, EE_Channel_data_parser $obj, $custom_date_fields)
 	{
-		$tag = $obj->tag();
 		$data = $obj->row();
-
 		$dfields = $obj->channel()->dfields;
+
+		$dates = array();
+		$gmt_dates = array();
 
 		foreach ($dfields[$data['site_id']] as $dtag => $dval)
 		{
 			if ($data['field_id_'.$dval] == 0 OR $data['field_id_'.$dval] == '')
 			{
-				$tagdata = str_replace(LD.$tag.RD, '', $tagdata);
+				$dates[$dtag] = '';
 				continue;
 			}
 
@@ -85,7 +86,25 @@ class EE_Channel_custom_date_parser implements EE_Channel_parser_component {
 				$localize = $data['field_dt_'.$dval];
 			}
 
-			$tagdata = ee()->TMPL->parse_date_variables($tagdata, array($dtag => $data['field_id_'.$dval]), $localize);
+			if ($localize)
+			{
+				$dates[$dtag] = $data['field_id_'.$dval];
+			}
+			else
+			{
+				$gmt_dates[$dtag] = $data['field_id_'.$dval];
+			}
+
+		}
+
+		if ( ! empty($dates))
+		{
+			$tagdata = ee()->TMPL->parse_date_variables($tagdata, $dates, TRUE);
+		}
+
+		if ( ! empty($gmt_dates))
+		{
+			$tagdata = ee()->TMPL->parse_date_variables($tagdata, $gmt_dates, FALSE);
 		}
 
 		return $tagdata;
