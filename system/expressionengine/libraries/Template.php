@@ -3849,7 +3849,6 @@ class EE_Template {
 	 **/
 	public function parse_date_variables($tagdata, $dates = array(), $localize = TRUE)
 	{
-		ee()->load->helper('date');
 		if (is_array($dates) && ! empty($dates))
 		{
 			$tags = implode('|', array_keys($dates));
@@ -3866,41 +3865,7 @@ class EE_Template {
 					{
 						$parts = preg_split("/\s+/", $val, 2);
 						$args = (isset($parts[1])) ? ee()->functions->assign_parameters($parts[1]) : array();
-
-						// Determine if we need to display a relative time
-						if (isset($args['relative']))
-						{
-							if ($args['relative'] == 'yes')
-							{
-								$relative = TRUE;
-							}
-							else
-							{
-								$relative_date = strtotime($args['relative'], ee()->localize->now);
-								if ($relative_date === FALSE)
-								{
-									$this->log_item("Failed Relative Parameter: " . $args['relative']);
-								}
-								elseif ($timestamp >= $relative_date)
-								{
-									$relative = TRUE;
-								}
-							}
-						}
-
-						if ($relative)
-						{
-							$dt = str_replace('%x', timespan($timestamp), lang('ago'));
-						}
-						elseif (isset($args['format']))
-						{
-							$dt = ee()->localize->format_date($args['format'], $timestamp, $localize);
-							if ($dt === FALSE)
-							{
-								$this->log_item("Invalid Timestamp: " . $timestamp);
-								$dt = $timestamp;
-							}
-						}
+						$dt = $this->process_date($timestamp, $args, $localize);
 					}
 
 					$tagdata = str_replace($matches[0][$key], $dt, $tagdata);
@@ -3908,6 +3873,63 @@ class EE_Template {
 			}
 		}
 		return $tagdata;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Determines how to format a date (UNIX timestamp, formatted date, or
+	 * relative date)
+	 *
+	 * @param	string	$timestamp	Tag data being parsed
+	 * @param	mixed[]	$parameters		An associative array of dates
+	 *  	e.g. 'format'   => '%Y-%m-%d'
+	 * 		     'relative' => 'today'
+	 * @param	bool	$localize	Localize the time?
+	 * @return	string	The "formatted" date
+	 **/
+	public function process_date($timestamp, $parameters = array(), $localize = TRUE)
+	{
+		$dt = $timestamp;
+		$relative = FALSE;
+
+		// Determine if we need to display a relative time
+		if (isset($parameters['relative']))
+		{
+			if ($parameters['relative'] == 'yes')
+			{
+				$relative = TRUE;
+			}
+			else
+			{
+				$relative_date = strtotime($parameters['relative'], ee()->localize->now);
+				if ($relative_date === FALSE)
+				{
+					$this->log_item("Failed Relative Parameter: " . $parameters['relative']);
+				}
+				elseif ($timestamp >= $relative_date)
+				{
+					$relative = TRUE;
+				}
+			}
+		}
+
+		if ($relative)
+		{
+			ee()->load->helper('date');
+			$dt = str_replace('%x', timespan($timestamp), lang('ago'));
+		}
+		elseif (isset($parameters['format']))
+		{
+			$dt = ee()->localize->format_date($parameters['format'], $timestamp);
+			if ($dt === FALSE)
+			{
+				$this->log_item("Invalid Timestamp: " . $timestamp);
+				$dt = $timestamp;
+			}
+		}
+
+		return $dt;
 	}
 }
 // END CLASS
