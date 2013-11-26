@@ -257,8 +257,7 @@ class Date_ft extends EE_Fieldtype {
 
 	function replace_tag($date, $params = array(), $tagdata = FALSE)
 	{
-		// if we're here, they're just using the date field without formatting, e.g. {custom_date}
-		return $date;
+		return ee()->TMPL->process_date($date, $params);
 	}
 
 	// --------------------------------------------------------------------
