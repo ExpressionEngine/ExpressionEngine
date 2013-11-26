@@ -59,7 +59,7 @@ class EE_Typography extends CI_Typography {
 	var $safe_decode = array();
 
 	// A marker used to hide quotes in text
-	// // before it is passed through the parser.
+	// before it is passed through the parser.
 	private $quote_marker = NULL;
 
 	/**
@@ -532,11 +532,6 @@ class EE_Typography extends CI_Typography {
 	 * typography class, so the call to restore_quotes_in_tags() must be to the
 	 * same instance of typography in the same request. 
 	 *
-	 * Todo: This does not handle nested tags, eg.
-	 * {encode="{logged_in_member_email}"}  Handling these with Regex is a
-	 * nightmare and it seems likely to be an edge case, so I'd like to
-	 * leave it for now.
-	 *
 	 * @param	string	$str	The string potentially containing EE tags that you
 	 * 		wish to protect quotes in.
 	 *
@@ -545,7 +540,7 @@ class EE_Typography extends CI_Typography {
 	 * 		The marker is time dependent and stored in this instance of the
 	 * 		typography object.
 	 */
-	public function protect_quotes_in_tags($str)
+	protected function protect_quotes_in_tags($str)
 	{
 		if ( ! isset($this->quote_marker) )
 		{
@@ -584,7 +579,7 @@ class EE_Typography extends CI_Typography {
 	 *
 	 *  @return string	The string with quotes restored.
 	 */
-	public function restore_quotes_in_tags($str)
+	protected function restore_quotes_in_tags($str)
 	{
 		$single_quote_marker = '{{SINGLE_QUOTE:' . $this->quote_marker . '}}';
 		$double_quote_marker = '{{DOUBLE_QUOTE:' . $this->quote_marker . '}}';
