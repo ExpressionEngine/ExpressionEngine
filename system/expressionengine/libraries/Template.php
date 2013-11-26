@@ -3849,7 +3849,6 @@ class EE_Template {
 	 **/
 	public function parse_date_variables($tagdata, $dates = array(), $localize = TRUE)
 	{
-		$this->log_item("Parsing Date Variables: " . sprintf("Called @ %s:%d from %s::%s", xdebug_call_file(), xdebug_call_line(), xdebug_call_class(), xdebug_call_function()));
 		ee()->load->helper('date');
 		if (is_array($dates) && ! empty($dates))
 		{
