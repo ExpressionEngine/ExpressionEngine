@@ -13,9 +13,9 @@ $(document).ready(function() {
 
 	$(".paginationLinks .first").hide();
 	$(".paginationLinks .previous").hide();
-	
+
 	$(".toggle_all").toggle(
-		function(){		
+		function(){
 			$("input.toggle").each(function() {
 				this.checked = true;
 			});
@@ -26,24 +26,24 @@ $(document).ready(function() {
 			});
 		}
 	);
-	
+
 	$("#custom_date_start_span").datepicker({
 		dateFormat: "yy-mm-dd",
 		prevText: "<<",
 		nextText: ">>",
-		onSelect: function(date) { 
+		onSelect: function(date) {
 			$("#custom_date_start").val(date);
 			dates_picked();
-		} 
-	}); 
-	$("#custom_date_end_span").datepicker({ 
+		}
+	});
+	$("#custom_date_end_span").datepicker({
 		dateFormat: "yy-mm-dd",
 		prevText: "<<",
 		nextText: ">>",
 		onSelect: function(date) {
 			$("#custom_date_end").val(date);
 			dates_picked();
-		} 
+		}
 	});
 
 	$("#custom_date_start, #custom_date_end").focus(function(){
@@ -60,7 +60,7 @@ $(document).ready(function() {
 
 
 
-	// The oracle knows everything.  
+	// The oracle knows everything.
 
 	var channel_oracle 	= EE.edit.channelInfo,
 		spaceString 	= new RegExp('!-!', "g"),
@@ -95,8 +95,8 @@ $(document).ready(function() {
 		if (channel_oracle[index] === undefined) {
 			index = 0;
 		}
-				
-		jQuery.each(channel_oracle[index], function(key, val) { 					
+
+		jQuery.each(channel_oracle[index], function(key, val) {
 			switch(key) {
 				case 'categories':	$('select#f_cat_id').empty().append(val);
 					break;
@@ -108,7 +108,7 @@ $(document).ready(function() {
 
 	$("#f_channel_id").change(function() {
 		changemenu(this.value);
-	});	
+	});
 
 
 	function dates_picked() {
@@ -117,16 +117,16 @@ $(document).ready(function() {
 			focus_number = $("#date_range").children().length;
 			$("#date_range").append("<option id=\"custom_date_option\">" + $("#custom_date_start").val() + " to " + $("#custom_date_end").val() + "</option>");
 			document.getElementById("date_range").options[focus_number].selected=true;
-			
+
 			// hide custom date picker again
 			$("#custom_date_picker").slideUp("fast");
-			
-			// redraw table
-			oTable.fnDraw();
+
+			// Trigger change to update filter
+			$("#date_range").change();
 		}
 	}
-	
-	
+
+
 	$("#date_range").change(function() {
 		if ($('#date_range').val() == 'custom_date') {
 			// clear any current dates, remove any custom options
@@ -141,18 +141,18 @@ $(document).ready(function() {
 		}
 	});
 
-	// Require at least one comment checked to submit	
+	// Require at least one comment checked to submit
 	$("#entries_form").submit(function() {
 		if ( ! $("input:checkbox", this).is(":checked")) {
 			$.ee_notice(EE.lang.selection_required, {"type" : "error"});
 			return false;
 		}
 	});
-	
-	
+
+
 	// Keyword filter
 	var indicator = $('.searchIndicator');
-	
+
 	$('table')
 	.table('add_filter', $('#keywords').closest('form'))
 	.bind('tableload', function() {
@@ -161,40 +161,40 @@ $(document).ready(function() {
 	.bind('tableupdate', function() {
 		indicator.css('visibility', 'hidden');
 	});
-	
+
 });
 
 /*
-                                         ,r5GABBBHBM##########Bhi:.                                         
-                                       :2#@#MBM#@@@@@@@@@@@@@@@@@Hr                                         
-                                    .;2#@@@@BAH#@@@@#MMM#@@@@@@@@@@3;.                                      
-                                   :5#@@@#HHBMBHAG925issiXAMBAAM@@@@@MS,                                    
-                                 .;9@@@#MHBM#MAXir;;;;;;;;riX&HBM@@@@@@A;.                                  
-                                ,5#@@#HAHBBA3ir;::::::;;::;rs2A#@@@@@@@@@5,                                 
-                               :9@@@@@MBAXSs;,.,,:::::::::;;;;s9M@@##@@@@#s.                                
-                              ,S#@@@@M&Xs;:,,,,,::::::::::::;;;ri2&BMM#@@@&r.                               
-                             .sH@@@Bh5r;::,,,:::,,::::,;;;;;;;;;;ri9B#B#@@@Ar.                              
-                             ;h@@@#hi;::::::::::,,:;;:;;;;;;;;;;rrri9B##@@@@X;.                             
-                            :2#@@@MXs;::::;;;::::;;;;;r;::::;rrsssrrihM@@@@@H2:                             
-                           .rH@@@@A2srrr;;;;;;;;;;r;;::,,,:;s5XXX332is5&#@@@#&r                             
-                           .sB@@@#A2issrrrrr;;;;;;;:,..,;s222SS2GBM&XS2&#@@@#BS,                            
-                           ,S#@@@MA35isrrr;;::::,,,...:ihB&S;:;s529AHHA&B@@#HA9s,                           
-                           :X@@@#BAh2Ssr;::,,,..,.  .:s233i;:;s22S59&Xrr3#@HX2X5:                           
-                           :3@@@@#B&XSisssiSir;;:..:risrri5X252X25525r;;5B#Gis5S:                           
-                           ,iB@@@@@MAGhGAM#Mh55XX22hHAS;:;i25issrrsisr;;s&BGSsSS:                           
-                            :2#@@@@#@@#A9XG&S:.r#@@AX33s;;;;rrssrriir;;;s3BMGiii:                           
-                         .  .rH@@@@@#BAh33A#Hi:;2&2r;s22SisssiSs;,,:;rsrs2ABAX22;                           
-                         .   :SH#@@@MA&AH&922SrrSX2s;ri22XSr:,,,. .,:rsii2X2Ssii:                           
-                               ;&@@@@H9X25irrssi29Xs:,,;rrrr:...,,:::;rrsS555SSi:                           
-                              .r&@@@#AXSiS2X2SS222i;. .,:;;rr;;;rrr;;;;;rsS2GAA2;                           
-                         ,::.   .s#@MG3XX5ir;::riis;::;rsrrssr;;;rrrrr;;;;ri3A&S:                           
-                       .;9A3i;.  .9@MhSis;:....:sS5Sisssrrrrrr;;rrr;;;::;;;s2&hi:                           
-                       .rh3rrsSSs;:sGBGSr;::::::rsiSSs;:,,:;rrsiSir;:,:;;;;r2ABA3Sr,                        
-                        ;3X;,:rXA2;r3BB9irr;rrrrrrrrrr;:::;;;;;s22i;:,:;rrrsXMMG3h9S;.                      
-                        ;B@Gr..:r2&A2;:sXSsrrrsissrrrrrr;:.,,,:rssr:::;;rrrSGMAirsX&&Xi;:,                  
-                       ;h@@@2:..,sA#3, r&3Ss;;;sS225s;:,,..,:;iis;:;;;;rssi2ABAXr;sG##A93Xi;.               
-                      ;#@@H2r;,.,rXH&srhMXss;:,:rS9h2s;;rssrrssr;;;;rrrrssi3AHMBXrrS&G25G#@#hi;,.           
-                     ;A@@9;,,::,.;X3r.,X#&ir;;:,,:r2XXXX2ir;:,,,:;rrrrsrsi2332hBM&2S5Srr5H@@@#BG2i;,.       
+                                         ,r5GABBBHBM##########Bhi:.
+                                       :2#@#MBM#@@@@@@@@@@@@@@@@@Hr
+                                    .;2#@@@@BAH#@@@@#MMM#@@@@@@@@@@3;.
+                                   :5#@@@#HHBMBHAG925issiXAMBAAM@@@@@MS,
+                                 .;9@@@#MHBM#MAXir;;;;;;;;riX&HBM@@@@@@A;.
+                                ,5#@@#HAHBBA3ir;::::::;;::;rs2A#@@@@@@@@@5,
+                               :9@@@@@MBAXSs;,.,,:::::::::;;;;s9M@@##@@@@#s.
+                              ,S#@@@@M&Xs;:,,,,,::::::::::::;;;ri2&BMM#@@@&r.
+                             .sH@@@Bh5r;::,,,:::,,::::,;;;;;;;;;;ri9B#B#@@@Ar.
+                             ;h@@@#hi;::::::::::,,:;;:;;;;;;;;;;rrri9B##@@@@X;.
+                            :2#@@@MXs;::::;;;::::;;;;;r;::::;rrsssrrihM@@@@@H2:
+                           .rH@@@@A2srrr;;;;;;;;;;r;;::,,,:;s5XXX332is5&#@@@#&r
+                           .sB@@@#A2issrrrrr;;;;;;;:,..,;s222SS2GBM&XS2&#@@@#BS,
+                           ,S#@@@MA35isrrr;;::::,,,...:ihB&S;:;s529AHHA&B@@#HA9s,
+                           :X@@@#BAh2Ssr;::,,,..,.  .:s233i;:;s22S59&Xrr3#@HX2X5:
+                           :3@@@@#B&XSisssiSir;;:..:risrri5X252X25525r;;5B#Gis5S:
+                           ,iB@@@@@MAGhGAM#Mh55XX22hHAS;:;i25issrrsisr;;s&BGSsSS:
+                            :2#@@@@#@@#A9XG&S:.r#@@AX33s;;;;rrssrriir;;;s3BMGiii:
+                         .  .rH@@@@@#BAh33A#Hi:;2&2r;s22SisssiSs;,,:;rsrs2ABAX22;
+                         .   :SH#@@@MA&AH&922SrrSX2s;ri22XSr:,,,. .,:rsii2X2Ssii:
+                               ;&@@@@H9X25irrssi29Xs:,,;rrrr:...,,:::;rrsS555SSi:
+                              .r&@@@#AXSiS2X2SS222i;. .,:;;rr;;;rrr;;;;;rsS2GAA2;
+                         ,::.   .s#@MG3XX5ir;::riis;::;rsrrssr;;;rrrrr;;;;ri3A&S:
+                       .;9A3i;.  .9@MhSis;:....:sS5Sisssrrrrrr;;rrr;;;::;;;s2&hi:
+                       .rh3rrsSSs;:sGBGSr;::::::rsiSSs;:,,:;rrsiSir;:,:;;;;r2ABA3Sr,
+                        ;3X;,:rXA2;r3BB9irr;rrrrrrrrrr;:::;;;;;s22i;:,:;rrrsXMMG3h9S;.
+                        ;B@Gr..:r2&A2;:sXSsrrrsissrrrrrr;:.,,,:rssr:::;;rrrSGMAirsX&&Xi;:,
+                       ;h@@@2:..,sA#3, r&3Ss;;;sS225s;:,,..,:;iis;:;;;;rssi2ABAXr;sG##A93Xi;.
+                      ;#@@H2r;,.,rXH&srhMXss;:,:rS9h2s;;rssrrssr;;;;rrrrssi3AHMBXrrS&G25G#@#hi;,.
+                     ;A@@9;,,::,.;X3r.,X#&ir;;:,,:r2XXXX2ir;:,,,:;rrrrsrsi2332hBM&2S5Srr5H@@@#BG2i;,.
                     ;h#Ai;,,:;::;9#5   ;M@#5rsr;:::rsis;::,,,,,:;siissisi2h3Ssi9B#A2Sir;;iX&AM###MHh2ir;:.:,
                   .r9AS: ..,;;;sh@@S    ;A@#A2srrrrr;;;;:;;;;;rrrrssiiS52992iii533SrriSs;ri2XGG33h93GAHHH39r
                  :SAAi,...,:;;;5B@Bs      i@@@AX5Sisr;rrsrr;;;;rrrsiS52XX2SisiSSisrrrS92ss2X392sri522223GGAX

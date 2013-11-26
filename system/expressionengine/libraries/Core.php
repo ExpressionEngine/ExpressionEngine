@@ -320,9 +320,7 @@ class EE_Core {
 		}
 
 		// Set a timezone for any native PHP date functions being used
-		date_default_timezone_set(
-			ee()->localize->get_php_timezone($timezone)
-		);
+		date_default_timezone_set($timezone);
 
 		// Load the "core" language file - must happen after the session is loaded
 		ee()->lang->loadfile('core');

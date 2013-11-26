@@ -67,6 +67,8 @@ class Grid_parser {
 			return FALSE;
 		}
 
+		$field_ids = array();
+
 		// Validate matches
 		foreach ($matches as $key => $match)
 		{
