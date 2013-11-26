@@ -58,6 +58,10 @@ class EE_Typography extends CI_Typography {
 	var $safe_encode = array();
 	var $safe_decode = array();
 
+	// A marker used to hide quotes in text
+	// // before it is passed through the parser.
+	private $quote_marker = NULL;
+
 	/**
 	 * Constructor
 	 */
@@ -338,7 +342,6 @@ class EE_Typography extends CI_Typography {
 		/** -------------------------------------*/
 
 		// Next, we need to encode EE tags contained in entries, comments, etc. so that they don't get parsed.
-
 		$str = ee()->functions->encode_ee_tags($str, $this->convert_curly);
 
 		/** -------------------------------------
@@ -405,6 +408,9 @@ class EE_Typography extends CI_Typography {
 		//  Decode BBCode
 		$str = $this->decode_bbcode($str);
 
+
+		$str = $this->protect_quotes_in_tags($str);
+
 		/** -------------------------------------
 		/**  Format text
 		/** -------------------------------------*/
@@ -458,6 +464,9 @@ class EE_Typography extends CI_Typography {
 				break;
 		}
 
+		$str = $this->restore_quotes_in_tags($str);
+
+
 		// Encode PHP post-Markdown parsing
 		if ($separate_parser)
 		{
@@ -494,11 +503,13 @@ class EE_Typography extends CI_Typography {
 			}
 		}
 
+
 		// Standard email addresses
 		$str = $this->decode_emails($str);
 
 		// Insert the cached code tags
 		$str = $this->_convert_code_markers($str);
+
 
 		// -------------------------------------------
 		// 'typography_parse_type_end' hook.
@@ -512,6 +523,71 @@ class EE_Typography extends CI_Typography {
 		// -------------------------------------------
 
 		return $str;
+	}
+
+	/**
+	 * Protected Quotes in EE Tags
+	 *
+	 * Search all EE tags in the string for quotes and protect the quotes from
+	 * being parsed by subsequent parsers by replacing them with a marker.  The
+	 * marker will then be switched back out for the quotes in question by running
+	 * restore quotes in tags. The marker is time dependent and stored in the 
+	 * instance of the typography class, so the call to restore_quotes_in_tags()
+	 * must be to the same instance of typography in the same request. 
+	 *
+	 * Note: This does not handle nested tags, eg. {encode="{logged_in_member_email}"}
+	 *
+	 * @param	string	$str	The string potentially containing EE tags that you
+	 * 		wish to protect quotes in.
+	 *
+	 * @return	string	The parsed string with any quotes in EE tags replaced by
+	 * 	{{SINGLE_QUOTE:marker}} or {{DOUBLE_QUOTE:marker}} respectively.  The marker
+	 * 	is time dependent and stored in this instance of the typography object.
+	 */
+	protected function protect_quotes_in_tags($str)
+	{
+		if ( ! isset($this->quote_marker) )
+		{
+			$this->quote_marker = md5(time(0) . 'quote_marker');
+		}
+
+		$single_quote_marker = '{{SINGLE_QUOTE:' . $this->quote_marker . '}}';
+		$double_quote_marker = '{{DOUBLE_QUOTE:' . $this->quote_marker . '}}';
+
+		if (preg_match_all("/{.*?}/", $str, $matches, PREG_SET_ORDER)) 
+		{
+			foreach($matches as $match)
+			{
+				$str = str_replace($match[0], 
+					str_replace(
+						array('\'', '"'), 
+						array($single_quote_marker, $double_quote_marker), 
+						$match[0]),
+					$str
+				);	
+			}
+		}
+
+		return $str;
+	}
+
+	/**
+	 *  Restores Quotes in EE Tags
+	 *
+	 *  Restores quotes in EE tags hidden by EE_Typography::protect_quotes_in_tags().  Must
+	 *  be called on the same instance of EE_Typography that protected the quotes, as the
+	 *  marker is time dependent and stored on the Typography instance.
+	 *
+	 *  @param	string	$str	The string in which to restore the quotes.
+	 *
+	 *  @return string	The string with quotes restored.
+	 */
+	protected function restore_quotes_in_tags($str)
+	{
+		$single_quote_marker = '{{SINGLE_QUOTE:' . $this->quote_marker . '}}';
+		$double_quote_marker = '{{DOUBLE_QUOTE:' . $this->quote_marker . '}}';
+
+		return str_replace(array($single_quote_marker, $double_quote_marker), array('\'', '"'), $str);
 	}
 
 	// --------------------------------------------------------------------
