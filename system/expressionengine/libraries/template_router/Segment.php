@@ -14,7 +14,7 @@
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Router Segment Class
+ * ExpressionEngine Route Segment Class
  *
  * @package		ExpressionEngine
  * @subpackage	Core
@@ -22,7 +22,7 @@
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class EE_Router_segment {
+class EE_Route_segment {
 
     public function __construct($name, $rules)
     {
@@ -71,9 +71,19 @@ class EE_Router_segment {
 			// Place each rule inside an anchored lookahead,
 			// this will match the entire string if the rule matches.
 			// This allows rules to work together without consuming the match.
-			$compiled_rules .= "(^(?={$rule->validator}$).*)";
+			$compiled_rules .= "(^(?=" . $rule->validator() . "$).*)";
 		}
 		return $compiled_rules;
+	}
+
+	public function set($val)
+	{
+		$this->value = $val;
+	}
+
+	public function __toString()
+	{
+		return $this->value;
 	}
 
 }

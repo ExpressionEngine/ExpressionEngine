@@ -25,7 +25,7 @@
  */
 class EE_Template_router_regex_converter implements EE_Template_router_converter {
 
-	public function regex($regex)
+	public function validator()
 	{
 		return $regex;
 	}

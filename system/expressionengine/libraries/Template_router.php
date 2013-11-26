@@ -54,6 +54,7 @@ class EE_Template_Router extends CI_Router {
 				return $end_point;
 			}
 		}
+		throw new Exception('No such template route.');
     }
 
     /**
@@ -71,7 +72,6 @@ class EE_Template_Router extends CI_Router {
 	    $query = ee()->db->get();
 		foreach ($query->result() as $template)
 		{
-			var_dump($template);
 			$this->end_points[$template->route_parsed] = array(
 				"template" => $template->template_name,
 				"group"    => $template->group_name

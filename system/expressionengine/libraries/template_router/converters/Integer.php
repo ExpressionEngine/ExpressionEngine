@@ -25,7 +25,7 @@
  */
 class EE_Template_router_integer_converter implements EE_Template_router_converter {
 
-	public function regex($args)
+	public function validator()
 	{
 		return "([0-9]+)";
 	}

@@ -25,9 +25,13 @@
  */
 class EE_Template_router_min_length_converter implements EE_Template_router_converter {
 
-	public function regex($length)
+	public function __construct($length) {
+		$this->length = $length;
+	}
+
+	public function validator()
 	{
-		return "(.{{$length},})";
+		return "(.{{$this->length},})";
 	}
 
 }

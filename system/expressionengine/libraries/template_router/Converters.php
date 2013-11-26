@@ -53,7 +53,7 @@ class EE_Template_router_converters {
 	 * @access public
 	 * @return EE_template_router_converter  The instantiated validation rule
 	 */
-	public function load($converter, array $args = array())
+	public function load($converter, $args = array())
 	{
 		if (empty($this->converters[$converter]))
 		{
@@ -68,13 +68,8 @@ class EE_Template_router_converters {
 		}
 		else
 		{
-			$obj = new ReflectionClass($name);
+			$obj = new ReflectionClass($class);
 			$obj->newInstanceArgs($args);
-		}
-
-		if ( ! $obj instanceOf EE_Template_router_converter)
-		{
-			throw new InvalidArgumentException($class.' must implement the EE_Template_router_converter interface.');
 		}
 
 		return $obj;
@@ -110,10 +105,9 @@ interface EE_Template_router_converter {
 	/**
 	 * Return a regular expression for validation
 	 * 
-	 * @param mixed  	The arguments for the converter 
 	 * @access public
 	 * @return string	The compiled regular expression
 	 */
-	public function regex($args);
+	public function validator();
 
 }

@@ -14,7 +14,7 @@
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Router Class
+ * ExpressionEngine Route Class
  *
  * @package		ExpressionEngine
  * @subpackage	Core
@@ -22,7 +22,10 @@
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class EE_Router extends CI_Router {
+class EE_Route {
+
+	public $segments = array();
+	public $variables = array();
 
 	public $segment_regex = "
     	(?P<static>[^{]*)                     # static rule data
@@ -45,11 +48,53 @@ class EE_Router extends CI_Router {
 		\|?                   # optional delimiter
 	";
 
-    public function __construct()
+    public function __construct($route)
     {
+		require_once APPPATH.'libraries/template_router/Segment.php';
 		require_once APPPATH.'libraries/template_router/Converters.php';
 		$this->rules = new EE_Template_router_converters();
+		$this->parse_route($route);
     }
+
+	public function build(array $variables = array())
+	{
+		$url = array();
+		foreach ($variables as $key => $val)
+		{
+			$this->variables[$key]->set($val);
+		}
+		foreach($this->segments as $segment)
+		{
+			if (is_string($segment))
+			{
+				$url[] = $segment;
+			} else {
+				if (empty($segment->value))
+				{
+					throw new Exception("Segment '{$segment->name}' missing value.");
+				}
+				$url[] =  $segment->value;
+			}
+		}
+		return implode('/', $url);
+	}
+
+	public function compile() {
+		$url = array();
+		foreach($this->segments as $segment)
+		{
+			if (is_string($segment))
+			{
+				$url .= $segment;
+			} else {
+				$url .= $segment->regex();
+			}
+		}
+		// backslash escaped for preg_match
+		$parsed_route = implode('\/', $url);
+		// anchor the beginning and end, and add optional trailing slash
+		return "^{$parsed_route}\/?$";
+	}
 
 	/**
 	 * parse_route
@@ -60,25 +105,23 @@ class EE_Router extends CI_Router {
 	 */
 	public function parse_route($route)
 	{
-		$parsed_segments = array();
 		$segments = $this->parse_segments($route);
+		$index = 0;
 		foreach ($segments as $segment)
 		{
 			if ( ! empty($segment['static']))
 			{
-				$parsed_segments[] = $segment['static'];
+				$this->segments[] = $segment['static'];
 			}
 			else
 			{
-				$rules = $this->parse_rules($segment);
-				$segment = new EE_Router_segment($segment['variable'], $rules);
-				$parsed_segments[] = $segment->regex();
+				$rules = $this->parse_rules($segment['rules']);
+				$segment = new EE_Route_segment($segment['variable'], $rules);
+				$this->segments[$index] = $segment;
+				$this->variables[$segment->name] =& $this->segments[$index];
 			}
+			$index++;
 		}
-		// backslash escaped for preg_match
-		$parsed_route = implode('\/', $parsed_segments);
-		// anchor the beginning and end, and add optional trailing slash
-		return "^{$parsed_route}\/?$";
 	}
 
     /**
@@ -136,15 +179,13 @@ class EE_Router extends CI_Router {
     /**
      * Parse a URL segment for a list of validators and convert to a regular expression
      * 
-	 * @param $segment array
-	 * 				   - variable : Segment's variable name
-	 * 				   - rules : Segment's list of validators
+	 * @param $rules string  An EE formatted validation string e.g.:
+	 * 						   "rule1[arg1,arg2...]|rule2|..."
      * @access public
-     * @return array An array of initialized validation rules
+     * @return EE_Template_router_converter[]  An array of initialized validation rules
      */
-    public function parse_rules($segment)
+    public function parse_rules($rules)
     {
-		$rules = $segment['rules'];
 		$pos = 0;
 		$end = strlen($rules);
 		$used_rules = array();
@@ -156,6 +197,7 @@ class EE_Router extends CI_Router {
 			{
 				break;
 			}
+			$args = array();
 			// Not even Xzibit would try to parse a regex with a regex.
 			// So we'll treat regexes as a special case and concatenate and
 			// validate until we have a valid regular expression.
@@ -176,7 +218,11 @@ class EE_Router extends CI_Router {
 				$matches[0] = "regex[{$regex}]|";
 				$matches['args'] = $regex;
 			}
-			$args = empty($matches['args']) ? null : $matches['args'];
+			elseif( ! empty($matches['args']))
+			{
+				$args = explode(',', $matches['args']);
+				array_walk($args, 'trim');
+			}
 			$parsed_rules[] = $this->rules->load($matches['rule'], $args);
 			$pos += strlen($matches[0]);
 		}
@@ -186,5 +232,5 @@ class EE_Router extends CI_Router {
 }
 // END CLASS
 
-/* End of file Router.php */
-/* Location: ./system/expressionengine/libraries/template_router/Router.php */
+/* End of file Route.php */
+/* Location: ./system/expressionengine/libraries/template_router/Route.php */
