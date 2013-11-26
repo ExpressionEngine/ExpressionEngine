@@ -1211,6 +1211,18 @@ class MyAccount extends CP_Controller {
 		$this->load->model('admin_model');
 		$config_fields = ee()->config->prep_view_vars('localization_cfg', $values);
 
+		// Cleaning up some design oddness: removing labels from the radios
+		foreach ($config_fields['fields'] as $field => &$data)
+		{
+			if ($data['type'] == 'r')
+			{
+				for ($i = 0; $i < count($data['value']); $i++)
+				{
+					$data['value'][$i]['id'] = '';
+				}
+			}
+		}
+
 		// Cleanup the key differentiation
 		$vars['timezone'] = str_replace('default_site_timezone', 'timezone', $config_fields['fields']['default_site_timezone']['value']);
 		unset($config_fields['fields']['default_site_timezone']);
