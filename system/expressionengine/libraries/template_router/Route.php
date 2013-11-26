@@ -33,7 +33,7 @@ class EE_Route {
     	(?P<variable>[a-zA-Z_][a-zA-Z0-9_]*)  # variable name
     	(?:
     	    \:                                # variable delimiter
-    	    (?P<rules>.*)                     # rules
+    	    (?P<rules>.*?)                    # rules
     	)?
 		}
 	";
@@ -56,6 +56,13 @@ class EE_Route {
 		$this->parse_route($route);
     }
 
+	/**
+	 * Build a URL for the route.
+	 * 
+	 * @param array $variables  An associative array of values for each named variable
+	 * @access public
+	 * @return string  The URL with all values set
+	 */
 	public function build(array $variables = array())
 	{
 		$url = array();
@@ -76,35 +83,43 @@ class EE_Route {
 				$url[] =  $segment->value;
 			}
 		}
-		return implode('/', $url);
+		return implode('', $url);
 	}
 
+	/**
+	 * Compile the route to a regular expression used for matching.
+	 * 
+	 * @access public
+	 * @return string  The compiled regular expression.
+	 */
 	public function compile() {
 		$url = array();
 		foreach($this->segments as $segment)
 		{
 			if (is_string($segment))
 			{
-				$url .= $segment;
+				$url[] = $segment;
 			} else {
-				$url .= $segment->regex();
+				$url[] = $segment->regex();
 			}
 		}
+		$parsed_route = implode('', $url);
 		// backslash escaped for preg_match
-		$parsed_route = implode('\/', $url);
+		$parsed_route = str_replace('/', '\/', $parsed_route);
 		// anchor the beginning and end, and add optional trailing slash
 		return "^{$parsed_route}\/?$";
 	}
 
 	/**
-	 * parse_route
+	 * Parse the route and set the segments and named variables for this route.
 	 * 
 	 * @param string  EE formatted template route 
 	 * @access public
-	 * @return string The compiled regular expression
+	 * @return void
 	 */
 	public function parse_route($route)
 	{
+		$route = trim($route, '/');
 		$segments = $this->parse_segments($route);
 		$index = 0;
 		foreach ($segments as $segment)
@@ -167,7 +182,7 @@ class EE_Route {
 		if ($pos < $end)
 		{
 			$remainder = substr($route, $pos);
-			if ( (strpos($remainder, '<') && strpos($remainder, '>')) === False)
+			if ( (strpos($remainder, '{') === False && strpos($remainder, '}')) === False)
 			{
 				throw new Exception("Invalid URL Route: $route");
 			}

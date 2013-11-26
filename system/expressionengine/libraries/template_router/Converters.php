@@ -69,7 +69,7 @@ class EE_Template_router_converters {
 		else
 		{
 			$obj = new ReflectionClass($class);
-			$obj->newInstanceArgs($args);
+			$obj = $obj->newInstanceArgs($args);
 		}
 
 		return $obj;

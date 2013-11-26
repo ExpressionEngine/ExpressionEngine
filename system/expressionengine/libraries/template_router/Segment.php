@@ -81,11 +81,6 @@ class EE_Route_segment {
 		$this->value = $val;
 	}
 
-	public function __toString()
-	{
-		return $this->value;
-	}
-
 }
 // END CLASS
 
