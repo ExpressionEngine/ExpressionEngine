@@ -257,7 +257,13 @@ class Date_ft extends EE_Fieldtype {
 
 	function replace_tag($date, $params = array(), $tagdata = FALSE)
 	{
-		return ee()->TMPL->process_date($date, $params);
+		$localize = TRUE;
+		if (isset($this->row['field_dt_'.$this->name]) AND $this->row['field_dt_'.$this->name] != '')
+		{
+			$localize = $this->row['field_dt_'.$this->name];
+		}
+
+		return ee()->TMPL->process_date($date, $params, $localize);
 	}
 
 	// --------------------------------------------------------------------
