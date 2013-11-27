@@ -3921,7 +3921,7 @@ class EE_Template {
 		}
 		elseif (isset($parameters['format']))
 		{
-			$dt = ee()->localize->format_date($parameters['format'], $timestamp);
+			$dt = ee()->localize->format_date($parameters['format'], $timestamp, $localize);
 			if ($dt === FALSE)
 			{
 				$this->log_item("Invalid Timestamp: " . $timestamp);
