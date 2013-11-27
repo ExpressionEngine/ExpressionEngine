@@ -15,7 +15,6 @@
 // ------------------------------------------------------------------------
 
 require_once APPPATH.'libraries/channel_entries_parser/components/Category.php';
-require_once APPPATH.'libraries/channel_entries_parser/components/Custom_date.php';
 require_once APPPATH.'libraries/channel_entries_parser/components/Custom_field.php';
 require_once APPPATH.'libraries/channel_entries_parser/components/Custom_field_pair.php';
 require_once APPPATH.'libraries/channel_entries_parser/components/Custom_member_field.php';
