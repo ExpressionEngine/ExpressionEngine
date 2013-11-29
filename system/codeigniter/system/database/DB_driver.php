@@ -289,7 +289,30 @@ class CI_DB_driver {
 		// Save the  query for debugging
 		if ($this->save_queries == TRUE)
 		{
-			$this->queries[] = $sql;
+			$file = '';
+			$callstack = debug_backtrace();
+
+			// Log file the query came from
+			if (count($callstack) >= 2)
+			{
+				// Queries from CI
+				if (strpos($callstack[1]['file'], BASEPATH) === 0)
+				{
+					$file = 'CI/'.str_replace(BASEPATH, '', $callstack[1]['file']);
+				}
+				// Queries from EE
+				elseif (strpos($callstack[1]['file'], APPPATH) === 0)
+				{
+					$file = 'APP/'.str_replace(APPPATH, '', $callstack[1]['file']);
+				}
+				else
+				{
+					$file = 'UNKNOWN: '.$callstack[1]['file'];
+				}
+				$file = "\n#".$file.' L:'.$callstack[1]['line'];
+			}
+
+			$this->queries[] = $sql . $file;
 		}
 
 		// Start the Query Timer
