@@ -98,7 +98,7 @@ class CI_Cache_file extends CI_Driver {
 		// Create namespace directory if it doesn't exist
 		if ( ! file_exists($path) OR ! is_dir($path))
 		{
-			mkdir($path, DIR_WRITE_MODE);
+			mkdir($path, DIR_WRITE_MODE, TRUE);
 
 			// Write an index.html file to ensure no directory indexing
 			write_index_html($path);
@@ -126,9 +126,9 @@ class CI_Cache_file extends CI_Driver {
 	 */
 	public function delete($id, $namespace = '')
 	{
-		$id = $this->_namespaced_key($id, $namespace);
+		$id = $this->_cache_path.$this->_namespaced_key($id, $namespace);
 
-		return file_exists($this->_cache_path.$id) ? unlink($this->_cache_path.$id) : FALSE;
+		return file_exists($id) ? unlink($id) : FALSE;
 	}
 
 	// ------------------------------------------------------------------------
@@ -145,8 +145,8 @@ class CI_Cache_file extends CI_Driver {
 
 		if (delete_files($path))
 		{
-			// Write an index.html file to ensure no directory indexing
-			write_index_html($path);
+			// Remove the namespace directory
+			rmdir($path);
 		}
 
 		return TRUE;
@@ -162,7 +162,12 @@ class CI_Cache_file extends CI_Driver {
 	public function clean()
 	{
 		// Delete all files in cache directory, excluding .htaccess and index.html
-		delete_files($this->_cache_path, TRUE, 0, array('.htaccess', 'index.html'));
+		delete_files(
+			$this->_cache_path.$this->_namespaced_key('', ''),
+			TRUE,
+			0,
+			array('.htaccess', 'index.html')
+		);
 
 		return TRUE;
 	}
@@ -245,12 +250,16 @@ class CI_Cache_file extends CI_Driver {
 	 */
 	protected function _namespaced_key($key, $namespace)
 	{
+		// By default, separate cache items by site
+		$prefix = ee()->config->item('site_short_name') . '/';
+
+		// By default, separate cache items by site
 		if ( ! empty($namespace))
 		{
-			$namespace .= '_cache/';
+			$prefix .= $namespace . '_cache/';
 		}
 
-		return $namespace.$key;
+		return $prefix.$key;
 	}
 }
 
