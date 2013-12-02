@@ -164,6 +164,8 @@ class Login extends CP_Controller {
 
 		if (AJAX_REQUEST)
 		{
+			header('X-EEXID: '.$this->security->generate_xid());
+
 			$this->output->send_ajax_response(array(
 				'base'			=> $base,
 				'messageType'	=> 'success',
