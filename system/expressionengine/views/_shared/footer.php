@@ -36,13 +36,12 @@
 	<div class="idle-three-fourths shun">
 		<p><input type="password" name="password" class="field" id="logout-confirm-password"/></p>
 	</div>
-	<?=form_close()?>
-
 
 	<p id="idle-button-group">
 		<a href="<?=BASE.AMP.'C=login&M=logout'?>"><?=sprintf(lang('session_idle_not_name'), $cp_screen_name)?></a> &nbsp;
 		<input type="submit" class="submit" id="idle-login-button" value="<?=lang('login')?>" />
 	</p>
+	<?=form_close()?>
 </div>
 
 <div id="notice_container">
