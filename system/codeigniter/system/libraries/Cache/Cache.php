@@ -26,6 +26,15 @@
 class CI_Cache extends CI_Driver_Library {
 
 	/**
+	 * These constants specify the scope in which the cache item should
+	 * exist; either it should exist in and be accessible only by the
+	 * current site, or it should be globally accessible by the EE
+	 * installation across MSM sites
+	 */
+	const CACHE_LOCAL = 1;	// Scoped to the current site
+	const CACHE_GLOBAL = 2;	// Scoped to global EE install
+
+	/**
 	 * Valid cache drivers
 	 *
 	 * @var array
@@ -110,9 +119,9 @@ class CI_Cache extends CI_Driver_Library {
 	 * @param	string	$namespace	Namespace name
 	 * @return	mixed	value matching $id or FALSE on failure
 	 */
-	public function get($key, $namespace = '')
+	public function get($key, $namespace = '', $scope = self::CACHE_LOCAL)
 	{
-		return $this->{$this->_adapter}->get($key, $namespace);
+		return $this->{$this->_adapter}->get($key, $namespace, $scope);
 	}
 
 	// ------------------------------------------------------------------------
@@ -126,9 +135,9 @@ class CI_Cache extends CI_Driver_Library {
 	 * @param	string	$namespace	Namespace name
 	 * @return	bool	TRUE on success, FALSE on failure
 	 */
-	public function save($key, $data, $ttl = 60, $namespace = '')
+	public function save($key, $data, $ttl = 60, $namespace = '', $scope = self::CACHE_LOCAL)
 	{
-		return $this->{$this->_adapter}->save($key, $data, $ttl, $namespace);
+		return $this->{$this->_adapter}->save($key, $data, $ttl, $namespace, $scope);
 	}
 
 	// ------------------------------------------------------------------------
@@ -140,9 +149,9 @@ class CI_Cache extends CI_Driver_Library {
 	 * @param	string	$namespace	Namespace name
 	 * @return	bool	TRUE on success, FALSE on failure
 	 */
-	public function delete($key, $namespace = '')
+	public function delete($key, $namespace = '', $scope = self::CACHE_LOCAL)
 	{
-		return $this->{$this->_adapter}->delete($key, $namespace);
+		return $this->{$this->_adapter}->delete($key, $namespace, $scope);
 	}
 
 	// ------------------------------------------------------------------------
@@ -153,7 +162,7 @@ class CI_Cache extends CI_Driver_Library {
 	 * @param	string	$namespace	Namespace of group of cache keys to delete
 	 * @return	bool
 	 */
-	public function clear_namepace($namespace)
+	public function clear_namepace($namespace, $scope = self::CACHE_LOCAL)
 	{
 		return $this->{$this->_adapter}->clear_namepace($namespace);
 	}
@@ -165,7 +174,7 @@ class CI_Cache extends CI_Driver_Library {
 	 *
 	 * @return	bool	TRUE on success, FALSE on failure
 	 */
-	public function clean()
+	public function clean($scope = self::CACHE_LOCAL)
 	{
 		return $this->{$this->_adapter}->clean();
 	}
@@ -192,7 +201,7 @@ class CI_Cache extends CI_Driver_Library {
 	 * @param	string	$namespace	Namespace name
 	 * @return	mixed	cache item metadata
 	 */
-	public function get_metadata($key, $namespace = '')
+	public function get_metadata($key, $namespace = '', $scope = self::CACHE_LOCAL)
 	{
 		return $this->{$this->_adapter}->get_metadata($key, $namespace);
 	}
@@ -239,8 +248,16 @@ class CI_Cache extends CI_Driver_Library {
 	 * @param	string	$key	Key to make unique
 	 * @return	string	Key made unique to this site
 	 */
-	public function unique_key($key)
+	public function unique_key($key, $scope = self::CACHE_LOCAL)
 	{
+		$prefix = ee()->config->item('site_url');
+
+		if (ee()->config->item('multiple_sites_enabled') == 'y' &&
+			$scope == self::CACHE_GLOBAL)
+		{
+
+		}
+
 		return ee()->config->item('site_url').':'.$key;
 	}
 }

@@ -40,7 +40,7 @@
 		$EE =& get_instance();
 
 		// Attempt to grab the local cached file
-		$cached = ee()->cache->get('current_version');
+		$cached = ee()->cache->get('current_version', NULL, CI_Cache::CACHE_GLOBAL);
 
 		$data = '';
 
@@ -114,7 +114,13 @@
 			}
 
 			// Cache version information for a day
-			ee()->cache->save('current_version', $version_file, 60 * 60 * 24);
+			ee()->cache->save(
+				'current_version',
+				$version_file,
+				60 * 60 * 24,
+				NULL,
+				CI_Cache::CACHE_GLOBAL
+			);
 		}
 		else
 		{

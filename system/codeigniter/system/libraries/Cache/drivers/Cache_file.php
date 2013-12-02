@@ -54,9 +54,9 @@ class CI_Cache_file extends CI_Driver {
 	 * @param	string	$namespace	Namespace name
 	 * @return	mixed	value matching $id or FALSE on failure
 	 */
-	public function get($id, $namespace = '')
+	public function get($id, $namespace = '', $scope = CI_Cache::CACHE_LOCAL)
 	{
-		$id = $this->_namespaced_key($id, $namespace);
+		$id = $this->_namespaced_key($id, $namespace, $scope);
 
 		if ( ! file_exists($this->_cache_path.$id))
 		{
@@ -85,7 +85,7 @@ class CI_Cache_file extends CI_Driver {
 	 * @param	string	$namespace	Namespace name
 	 * @return	bool	TRUE on success, FALSE on failure
 	 */
-	public function save($id, $data, $ttl = 60, $namespace = '')
+	public function save($id, $data, $ttl = 60, $namespace = '', $scope = CI_Cache::CACHE_LOCAL)
 	{
 		$contents = array(
 			'time'		=> ee()->localize->now,
@@ -93,7 +93,7 @@ class CI_Cache_file extends CI_Driver {
 			'data'		=> $data
 		);
 
-		$path = $this->_cache_path.$this->_namespaced_key('', $namespace);
+		$path = $this->_cache_path.$this->_namespaced_key('', $namespace, $scope);
 
 		// Create namespace directory if it doesn't exist
 		if ( ! file_exists($path) OR ! is_dir($path))
@@ -104,7 +104,7 @@ class CI_Cache_file extends CI_Driver {
 			write_index_html($path);
 		}
 
-		$id = $this->_namespaced_key($id, $namespace);
+		$id = $this->_namespaced_key($id, $namespace, $scope);
 
 		if (write_file($this->_cache_path.$id, serialize($contents)))
 		{
@@ -124,9 +124,9 @@ class CI_Cache_file extends CI_Driver {
 	 * @param	string	$namespace	Namespace name
 	 * @return	bool	TRUE on success, FALSE on failure
 	 */
-	public function delete($id, $namespace = '')
+	public function delete($id, $namespace = '', $scope = CI_Cache::CACHE_LOCAL)
 	{
-		$id = $this->_cache_path.$this->_namespaced_key($id, $namespace);
+		$id = $this->_cache_path.$this->_namespaced_key($id, $namespace, $scope);
 
 		return file_exists($id) ? unlink($id) : FALSE;
 	}
@@ -139,9 +139,9 @@ class CI_Cache_file extends CI_Driver {
 	 * @param	string	$namespace	Namespace of group of cache keys to delete
 	 * @return	bool
 	 */
-	public function clear_namepace($namespace)
+	public function clear_namepace($namespace, $scope = CI_Cache::CACHE_LOCAL)
 	{
-		$path = $this->_cache_path.$this->_namespaced_key('', $namespace);
+		$path = $this->_cache_path.$this->_namespaced_key('', $namespace, $scope);
 
 		if (delete_files($path))
 		{
@@ -159,11 +159,11 @@ class CI_Cache_file extends CI_Driver {
 	 *
 	 * @return	bool	TRUE on success, FALSE on failure
 	 */
-	public function clean()
+	public function clean($scope = CI_Cache::CACHE_LOCAL)
 	{
 		// Delete all files in cache directory, excluding .htaccess and index.html
 		delete_files(
-			$this->_cache_path.$this->_namespaced_key('', ''),
+			$this->_cache_path.$this->_namespaced_key('', '', $scope),
 			TRUE,
 			0,
 			array('.htaccess', 'index.html')
@@ -194,9 +194,9 @@ class CI_Cache_file extends CI_Driver {
 	 * @param	string	$namespace	Namespace name
 	 * @return	mixed	Cache item metadata
 	 */
-	public function get_metadata($id, $namespace = '')
+	public function get_metadata($id, $namespace = '', $scope = CI_Cache::CACHE_LOCAL)
 	{
-		$id = $this->_namespaced_key($id, $namespace);
+		$id = $this->_namespaced_key($id, $namespace, $scope);
 
 		if ( ! file_exists($this->_cache_path.$id))
 		{
@@ -248,10 +248,15 @@ class CI_Cache_file extends CI_Driver {
 	 * @param	string	$namespace	Namespace name
 	 * @return	string	Key prefixed with namespace
 	 */
-	protected function _namespaced_key($key, $namespace)
+	protected function _namespaced_key($key, $namespace, $scope = CI_Cache::CACHE_LOCAL)
 	{
-		// By default, separate cache items by site
-		$prefix = ee()->config->item('site_short_name') . '/';
+		$prefix = '';
+
+		// For locally-cached items, separate by site name
+		if ($scope == CI_Cache::CACHE_LOCAL)
+		{
+			$prefix = ee()->config->item('site_short_name') . '/';
+		}
 
 		// By default, separate cache items by site
 		if ( ! empty($namespace))
