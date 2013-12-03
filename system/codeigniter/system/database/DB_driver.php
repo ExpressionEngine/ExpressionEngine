@@ -289,30 +289,59 @@ class CI_DB_driver {
 		// Save the  query for debugging
 		if ($this->save_queries == TRUE)
 		{
-			$file = '';
-			$callstack = debug_backtrace();
+			$source = '';
+			$trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 3);
 
 			// Log file the query came from
-			if (count($callstack) >= 2)
+			if (count($trace) >= 2)
 			{
-				// Queries from CI
-				if (strpos($callstack[1]['file'], BASEPATH) === 0)
+				ee()->load->helper('array');
+
+				// Get file and line in which query method was called
+				$file = element('file', $trace[1], '');
+				$line = element('line', $trace[1], '');
+
+				$func = '';
+				$class = '';
+
+				if (isset($trace[1]['class']))
 				{
-					$file = 'CI/'.str_replace(BASEPATH, '', $callstack[1]['file']);
+					$frame = 1;
+
+					// Skip calls to get() or get_where(), get the next stack frame
+					if ($trace[1]['class'] == 'CI_DB_active_record')
+					{
+						$frame = 2;
+					}
+
+					$func = element('function', $trace[$frame], '');
+					$class = element('class', $trace[$frame], '');
 				}
-				// Queries from EE
-				elseif (strpos($callstack[1]['file'], APPPATH) === 0)
+
+				// Replace path with APP or CI to shorten the string
+				if ($file != '')
 				{
-					$file = 'APP/'.str_replace(APPPATH, '', $callstack[1]['file']);
+					if (strpos($file, BASEPATH) === 0)
+					{
+						$file = 'CI/' . str_replace(BASEPATH, '', $file);
+					}
+					elseif (strpos($file, APPPATH) === 0)
+					{
+						$file = 'APP/' . str_replace(APPPATH,'',$file);
+					}
+					else
+					{
+						$file = basename($file);
+					}
 				}
-				else
-				{
-					$file = 'UNKNOWN: '.$callstack[1]['file'];
-				}
-				$file = "\n#".$file.' L:'.$callstack[1]['line'];
+
+				// Build the caller source info
+				$source = "\n#".$file . ' L:' . $line . '  ';
+				$source .= ($class != '') ? $class . '::' : '';
+				$source .= ($func != '') ? $func . '() ' : '';
 			}
 
-			$this->queries[] = $sql . $file;
+			$this->queries[] = $sql . $source;
 		}
 
 		// Start the Query Timer
