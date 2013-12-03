@@ -24,7 +24,7 @@
  */
 class EE_Route_segment {
 
-    public function __construct($name, $rules)
+    public function __construct($name, $rules = array())
     {
 		$this->name = $name;
 		$this->rules = $rules;

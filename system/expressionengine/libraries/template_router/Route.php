@@ -83,7 +83,7 @@ class EE_Route {
 				$url[] =  $segment->value;
 			}
 		}
-		return implode('', $url);
+		return '/' . implode('', $url);
 	}
 
 	/**
@@ -130,8 +130,15 @@ class EE_Route {
 			}
 			else
 			{
-				$rules = $this->parse_rules($segment['rules']);
-				$segment = new EE_Route_segment($segment['variable'], $rules);
+				if (empty($segment['rules']))
+				{
+					$segment = new EE_Route_segment($segment['variable']);
+				}
+				else
+				{
+					$rules = $this->parse_rules($segment['rules']);
+					$segment = new EE_Route_segment($segment['variable'], $rules);
+				}
 				$this->segments[$index] = $segment;
 				$this->variables[$segment->name] =& $this->segments[$index];
 			}
