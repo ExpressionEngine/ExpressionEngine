@@ -11,19 +11,24 @@ use EllisLab\ExpressionEngine\Model\Collection;
  * The base Model class
  */
 abstract class Model {
-	protected $dependencies = NULL;
+	protected $_dependencies = NULL;
 
-	protected static $meta = array();
+	protected static $_meta = array();
 
 	/**
 	 * The database gateway object for the related database table.
 	 */
-	protected $gateways = array();
+	protected $_gateways = array();
 
 	/**
 	 *
 	 */
-	protected $related_models = array();
+	protected $_related_models = array();
+
+	/**
+	 *
+	 */
+	protected $_dirty = array();
 
 	/**
 	 * Initialize this model with a set of data to set on the gateway.
@@ -34,12 +39,7 @@ abstract class Model {
 	 */
 	public function __construct(Dependencies $dependencies, array $data = array())
 	{
-		$this->dependencies = $dependencies;
-		foreach (static::getMetaData('gateway_names') as $gateway_name)
-		{
-			$gateway = QueryBuilder::getQualifiedClassName($gateway_name);
-			$this->gateways[$gateway_name] = new $gateway($dependencies, $data);
-		}
+		$this->_dependencies = $dependencies;
 	}
 
 	/**
@@ -61,12 +61,9 @@ abstract class Model {
 			return $this->$method();
 		}
 
-		foreach ($this->gateways as $gateway)
+		if (property_exists($this, $name) && strpos('_', $name) !== 0)
 		{
-			if (property_exists($gateway, $name))
-			{
-				return $gateway->{$name};
-			}
+			return $this->{$name};
 		}
 
 		throw new \InvalidArgumentException('Attempt to access a non-existent property on ' . __CLASS__);
@@ -93,14 +90,11 @@ abstract class Model {
 			return $this->$method($value);
 		}
 
-		foreach($this->gateways as $gateway)
+		if (property_exists($this, $name) && strpos('_', $name) !== 0)
 		{
-			if (property_exists($gateway, $name))
-			{
-				$gateway->{$name} = $value;
-				$gateway->setDirty($name);
-				return;
-			}
+			$this->{$name} = $value;
+			$this->setDirty($name);
+			return;
 		}
 
 		throw new \InvalidArgumentException('Attempt to access a non-existent property "' . $name . '" on ' . __CLASS__);
@@ -114,17 +108,17 @@ abstract class Model {
 	 */
 	public static function getMetaData($key = NULL)
 	{
-		if (empty(static::$meta))
+		if (empty(static::$_meta))
 		{
 			throw new \UnderflowException('No meta data set for this class!');
 		}
 
 		if ( ! isset($key))
 		{
-			return static::$meta;
+			return static::$_meta;
 		}
 
-		return static::$meta[$key];
+		return static::$_meta[$key];
 	}
 
 	/**
@@ -169,11 +163,13 @@ abstract class Model {
 	 */
 	public function validate()
 	{
+		$this->map();
+
 		$cascade = func_get_args();
 
 		$validation = new ValidationResult();
 
-		foreach ($this->gateways as $gateway)
+		foreach ($this->_gateways as $gateway)
 		{
 			$validation->addErrors($gateway->validate());
 		}
@@ -259,6 +255,7 @@ abstract class Model {
 	 */
 	public function save()
 	{
+		$this->map();
 		$cascade = func_get_args();
 
 		$validation = call_user_func_array(array($this, 'validate'), $cascade);
@@ -267,7 +264,7 @@ abstract class Model {
 			throw new \Exception('Model failed to validate on save call!');
 		}
 
-		foreach($this->gateways as $gateway)
+		foreach($this->_gateways as $gateway)
 		{
 			$gateway->save();
 		}
@@ -341,9 +338,11 @@ abstract class Model {
 	 */
 	public function delete()
 	{
+		$this->map();
+
 		$cascade = func_get_args();
 
-		foreach($this->gateways as $gateway)
+		foreach($this->_gateways as $gateway)
 		{
 			$gateway->delete();
 		}
@@ -394,6 +393,41 @@ abstract class Model {
 						$to_model->delete();
 					}
 				}
+			}
+		}
+	}
+
+	protected function map()
+	{
+		if (empty($this->_gateways))
+		{
+			foreach (static::getMetaData('gateway_names') as $gateway_name)
+			{
+				$gateway = $this->_dependencies->getQueryBuilder()->getQualifiedClassName($gateway_name);
+				$this->_gateways[$gateway_name] = new $gateway($this->_dependencies, $data);
+			}
+		}
+
+		foreach(get_object_vars($this) as $property => $value)
+		{
+			// Ignore the ones we've hidden.
+			if (strpos($property, '_') === 0)
+			{
+				continue;
+			}
+
+			foreach($this->_gateways as $gateway)
+			{
+				$gateway->{$property} = $value;
+			}
+		}
+
+		// Translate the ones that are dirty.
+		foreach ($this->_dirty as $dirty_property)
+		{
+			foreach($this->_gateways as $gateway)
+			{
+				$gateway->setDirty($dirty_property);	
 			}
 		}
 	}
@@ -497,7 +531,7 @@ abstract class Model {
 		// extract all public vars from our gateways and flatten them
 		$keys = array_keys(call_user_func_array(
 			'array_merge',
-			array_map('get_object_vars', $this->gateways)
+			array_map('get_object_vars', $this->_gateways)
 		));
 
 		// Combine the keys with their value as controlled by __get
@@ -522,20 +556,20 @@ abstract class Model {
 	 */
 	public function setRelated($relationship_key, $value)
 	{
-		$this->related_models[$relationship_key] = $value;
+		$this->_related_models[$relationship_key] = $value;
 		return $this;
 	}
 
 	public function hasRelated($relationship_key, $primary_key=NULL)
 	{
-		if ( ! isset($this->related_models[$relationship_key]))
+		if ( ! isset($this->_related_models[$relationship_key]))
 		{
 			return FALSE;
 		}
 
 		if ($primary_key !== NULL)
 		{
-			$ids = $this->related_models[$relationship_key]->getIds();
+			$ids = $this->_related_models[$relationship_key]->getIds();
 			return in_array($primary_key, $ids);
 		}
 
@@ -544,11 +578,11 @@ abstract class Model {
 
 	public function addRelated($relationship_key, $model)
 	{
-		if ( ! isset($this->related_models[$relationship_key]))
+		if ( ! isset($this->_related_models[$relationship_key]))
 		{
-			$this->related_models[$relationship_key] = new Collection();
+			$this->_related_models[$relationship_key] = new Collection();
 		}
-		$this->related_models[$relationship_key][] = $model;
+		$this->_related_models[$relationship_key][] = $model;
 		return $this;
 	}
 
@@ -572,9 +606,9 @@ abstract class Model {
 	{
 		// If we already have data, return it
 		$relationship_key = (isset($name) ? $name : $to_model_name);
-		if (array_key_exists($relationship_key, $this->related_models))
+		if (array_key_exists($relationship_key, $this->_related_models))
 		{
-			return $this->related_models[$to_model_name];
+			return $this->_related_models[$to_model_name];
 		}
 
 		// At this point, if we don't have a to_key we'll need to default
@@ -610,7 +644,7 @@ abstract class Model {
 		// Lazy Load
 		// 	Otherwise, if we haven't hit one of the previous cases, then this
 		// 	is a lazy load on an existing model.
-		$query = $this->dependencies->getQueryBuilder()->get($to_model_name);
+		$query = $this->_dependencies->getQueryBuilder()->get($to_model_name);
 		$query->filter($to_model_name . '.' . $to_key, $this->$this_key);
 
 		if ($type == 'one-to-one' OR $type == 'many-to-one')
@@ -631,7 +665,7 @@ abstract class Model {
 		$primary_key = static::getMetaData('primary_key');
 		echo $depth . '=====' . substr(get_class($this), strrpos(get_class($this), '\\')+1) . ': ' . $this->{$primary_key} . "=====\n";
 		$depth .= "\t";
-		foreach($this->related_models as $relationship_name=>$models)
+		foreach($this->_related_models as $relationship_name=>$models)
 		{
 			echo $depth . 'Relationship: ' . $relationship_name . "\n";
 			foreach($models as $model)

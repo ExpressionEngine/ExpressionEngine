@@ -14,7 +14,7 @@ use EllisLab\ExpressionEngine\Model\FieldDataContentModel;
  * Related to Channel which defines the structure of this content.
  */
 class ChannelEntry extends FieldDataContentModel {
-	protected static $meta = array(
+	protected static $_meta = array(
 		'primary_key' => 'entry_id',
 		'gateway_names' => array('ChannelTitleGateway', 'ChannelDataGateway'),
 		'key_map' => array(

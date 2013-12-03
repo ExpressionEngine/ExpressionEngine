@@ -7,7 +7,7 @@ use EllisLab\ExpressionEngine\Model\Interfaces\Content\ContentStructure
 
 
 class Channel extends Model implements ContentStructure {
-	protected static $meta = array(
+	protected static $_meta = array(
 		'primary_key' => 'channel_id',
 		'gateway_names' => array('ChannelGateway'),
 		'key_map' => array(

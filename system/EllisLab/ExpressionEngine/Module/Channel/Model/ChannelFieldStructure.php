@@ -8,7 +8,7 @@ class ChannelFieldStructure
 	extends Model 
 		implements FieldStructure {
 
-	protected static $meta = array(
+	protected static $_meta = array(
 		'primary_key' => 'field_id',
 		'gateway_names' => array('ChannelFieldGateway'),
 		'key_map' => array(

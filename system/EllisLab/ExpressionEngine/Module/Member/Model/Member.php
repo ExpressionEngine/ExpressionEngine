@@ -11,7 +11,7 @@ use EllisLab\ExpressionEngine\Model\Model;
  * the website.  
  */
 class Member extends Model {
-	protected static $meta = array(
+	protected static $_meta = array(
 		'primary_key' => 'member_id',
 		'gateway_names' => array('MemberGateway'),
 		'key_map' => array(

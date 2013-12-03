@@ -1,7 +1,7 @@
 <?php
 
 class ChannelFieldGroup extends Model {
-	protected static $meta = array(
+	protected static $_meta = array(
 		'primary_key' 	=> 'group_id',
 		'gateway_names' 	=> array('FieldGroupGateway'),
 		'key_map'		=> array(

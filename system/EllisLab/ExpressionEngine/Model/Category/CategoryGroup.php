@@ -5,7 +5,7 @@ use EllisLab\ExpressionEngine\Model\Model as Model;
 use EllisLab\ExpressionEngine\Model\Interfaces\Content\ContentStructure;
 
 class CategoryGroup extends Model implements ContentStructure {
-	protected static $meta = array(
+	protected static $_meta = array(
 		'primary_key' => 'group_id',
 		'gateway_names' => array('CategoryGroupGateway'),
 		'key_map' => array(

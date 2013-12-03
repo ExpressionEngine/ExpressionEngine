@@ -4,7 +4,7 @@ namespace EllisLab\ExpressionEngine\Model\Category;
 use EllisLab\ExpressionEngine\Model\FieldDataContentModel;
 
 class Category extends FieldDataContentModel {
-	protected static $meta = array(
+	protected static $_meta = array(
 		'primary_key' => 'cat_id',
 		'gateway_names' => array('CategoryGateway', 'CategoryFieldDataGateway'),
 		'key_map' => array(
