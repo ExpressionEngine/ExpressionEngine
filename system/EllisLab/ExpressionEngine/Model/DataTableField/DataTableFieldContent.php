@@ -4,13 +4,13 @@ namespace EllisLab\ExpressionEngine\Model\DataTableField;
 use EllisLab\ExpressionEngine\Model\Interfaces\Field\FieldContent;
 
 abstract class DataTableFieldContent implements FieldContent {
-	protected $entity = NULL;
+	protected $gateway = NULL;
 	protected $structure = NULL;
 
-	public function __construct($structure, $entity)
+	public function __construct($structure, $gateway)
 	{
 		$this->structure = $structure;
-		$this->entity = $entity;
+		$this->gateway = $gateway;
 	}
 
 	/**
@@ -36,7 +36,7 @@ abstract class DataTableFieldContent implements FieldContent {
 	 */
 	public function save() 
 	{
-		$this->entity->save();
+		$this->gateway->save();
 	}
 
 	/**

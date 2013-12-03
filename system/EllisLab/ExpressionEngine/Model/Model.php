@@ -11,14 +11,14 @@ use EllisLab\ExpressionEngine\Model\Collection;
  * The base Model class
  */
 abstract class Model {
-	private $dependencies = NULL;
+	protected $dependencies = NULL;
 
 	protected static $meta = array();
 
 	/**
-	 * The database entity object for the related database table.
+	 * The database gateway object for the related database table.
 	 */
-	protected $entities = array();
+	protected $gateways = array();
 
 	/**
 	 *
@@ -26,25 +26,25 @@ abstract class Model {
 	protected $related_models = array();
 
 	/**
-	 * Initialize this model with a set of data to set on the entity.
+	 * Initialize this model with a set of data to set on the gateway.
 	 *
 	 * @param	mixed[]	$data	An array of initial property values to
 	 * 						set on this model.  The array indexes must
-	 * 						be valid properties on this model's entity.
+	 * 						be valid properties on this model's gateway.
 	 */
 	public function __construct(Dependencies $dependencies, array $data = array())
 	{
 		$this->dependencies = $dependencies;
-		foreach (static::getMetaData('entity_names') as $entity_name)
+		foreach (static::getMetaData('gateway_names') as $gateway_name)
 		{
-			$entity = QueryBuilder::getQualifiedClassName($entity_name);
-			$this->entities[$entity_name] = new $entity($dependencies, $data);
+			$gateway = QueryBuilder::getQualifiedClassName($gateway_name);
+			$this->gateways[$gateway_name] = new $gateway($dependencies, $data);
 		}
 	}
 
 	/**
 	 * Pass through getter that allows properties to be gotten from this model
-	 * but stored in the wrapped entity.
+	 * but stored in the wrapped gateway.
 	 *
 	 * @param	string	$name	The name of the property to be retrieved.
 	 *
@@ -61,11 +61,11 @@ abstract class Model {
 			return $this->$method();
 		}
 
-		foreach ($this->entities as $entity)
+		foreach ($this->gateways as $gateway)
 		{
-			if (property_exists($entity, $name))
+			if (property_exists($gateway, $name))
 			{
-				return $entity->{$name};
+				return $gateway->{$name};
 			}
 		}
 
@@ -74,10 +74,10 @@ abstract class Model {
 
 	/**
 	 * Pass through setter that allows properties to be set on this model,
-	 * but stored in the wrapped entity.
+	 * but stored in the wrapped gateway.
 	 *
 	 * @param	string	$name	The name of the property being set. Must be
-	 * 						a valid property on the wrapped entity.
+	 * 						a valid property on the wrapped gateway.
 	 * @param	mixed	$value	The value to set the property to.
 	 *
 	 * @return	void
@@ -93,12 +93,12 @@ abstract class Model {
 			return $this->$method($value);
 		}
 
-		foreach($this->entities as $entity)
+		foreach($this->gateways as $gateway)
 		{
-			if (property_exists($entity, $name))
+			if (property_exists($gateway, $name))
 			{
-				$entity->{$name} = $value;
-				$entity->setDirty($name);
+				$gateway->{$name} = $value;
+				$gateway->setDirty($name);
 				return;
 			}
 		}
@@ -173,9 +173,9 @@ abstract class Model {
 
 		$validation = new ValidationResult();
 
-		foreach ($this->entities as $entity)
+		foreach ($this->gateways as $gateway)
 		{
-			$validation->addErrors($entity->validate());
+			$validation->addErrors($gateway->validate());
 		}
 
 		foreach($cascade as $model_name)
@@ -267,9 +267,9 @@ abstract class Model {
 			throw new \Exception('Model failed to validate on save call!');
 		}
 
-		foreach($this->entities as $entity)
+		foreach($this->gateways as $gateway)
 		{
-			$entity->save();
+			$gateway->save();
 		}
 
 		// Handle Cascade
@@ -343,9 +343,9 @@ abstract class Model {
 	{
 		$cascade = func_get_args();
 
-		foreach($this->entities as $entity)
+		foreach($this->gateways as $gateway)
 		{
-			$entity->delete();
+			$gateway->delete();
 		}
 
 		// Handle Cascade
@@ -490,14 +490,14 @@ abstract class Model {
 	/**
 	 * Retrieve the model as an array
 	 *
-	 * @return Array Merged values of all entities.
+	 * @return Array Merged values of all gateways.
 	 */
 	public function toArray()
 	{
-		// extract all public vars from our entities and flatten them
+		// extract all public vars from our gateways and flatten them
 		$keys = array_keys(call_user_func_array(
 			'array_merge',
-			array_map('get_object_vars', $this->entities)
+			array_map('get_object_vars', $this->gateways)
 		));
 
 		// Combine the keys with their value as controlled by __get

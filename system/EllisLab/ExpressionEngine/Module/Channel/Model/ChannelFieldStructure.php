@@ -10,11 +10,11 @@ class ChannelFieldStructure
 
 	protected static $meta = array(
 		'primary_key' => 'field_id',
-		'entity_names' => array('ChannelFieldEntity'),
+		'gateway_names' => array('ChannelFieldGateway'),
 		'key_map' => array(
-			'field_id' => 'ChannelFieldEntity',
-			'site_id' => 'ChannelFieldEntity',
-			'group_id' => 'ChannelFieldEntity'
+			'field_id' => 'ChannelFieldGateway',
+			'site_id' => 'ChannelFieldGateway',
+			'group_id' => 'ChannelFieldGateway'
 		)
 	);	
 

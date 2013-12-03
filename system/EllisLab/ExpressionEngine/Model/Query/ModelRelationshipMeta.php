@@ -53,48 +53,48 @@ class ModelRelationshipMeta {
 		// Populate from_table
 		$from_model_class = $this->from_model_class;
 		$from_key_map = $from_model_class::getMetaData('key_map');	
-		$from_entity_name = $from_key_map[$this->from_key];
-		$from_entity_class = QueryBuilder::getQualifiedClassName($from_entity_name);
-		$this->from_table = $from_entity_class::getMetaData('table_name');
+		$from_gateway_name = $from_key_map[$this->from_key];
+		$from_gateway_class = QueryBuilder::getQualifiedClassName($from_gateway_name);
+		$this->from_table = $from_gateway_class::getMetaData('table_name');
 
 		// Poplate to_table
-		$entity_relationships = $from_entity_class::getMetaData('related_entities');
-		$entity_relationship = $entity_relationships[$this->from_key];
-		if ( ! isset ($entity_relationship['entity']))
+		$gateway_relationships = $from_gateway_class::getMetaData('related_gateways');
+		$gateway_relationship = $gateway_relationships[$this->from_key];
+		if ( ! isset ($gateway_relationship['gateway']))
 		{
-			$entity_relationship = $entity_relationship[$this->relationship_name];
+			$gateway_relationship = $gateway_relationship[$this->relationship_name];
 		}
 
-		$to_entity_name = $entity_relationship['entity'];
-		$to_entity_class = QueryBuilder::getQualifiedClassName($to_entity_name);
-		$this->to_table = $to_entity_class::getMetaData('table_name');
+		$to_gateway_name = $gateway_relationship['gateway'];
+		$to_gateway_class = QueryBuilder::getQualifiedClassName($to_gateway_name);
+		$this->to_table = $to_gateway_class::getMetaData('table_name');
 		// Assuming we're joining tables in the same model across the main
-		// entity's primary key.
-		$this->join_key = $to_entity_class::getMetaData('primary_key');
+		// gateway's primary key.
+		$this->join_key = $to_gateway_class::getMetaData('primary_key');
 
 		$to_model_class = $this->to_model_class;
-		$joined_entity_names = $to_model_class::getMetaData('entity_names'); 
+		$joined_gateway_names = $to_model_class::getMetaData('gateway_names'); 
 
-		$key = array_search($to_entity_name, $joined_entity_names);
-		unset($joined_entity_names[$key]);
-		foreach($joined_entity_names as $joined_entity_name)
+		$key = array_search($to_gateway_name, $joined_gateway_names);
+		unset($joined_gateway_names[$key]);
+		foreach($joined_gateway_names as $joined_gateway_name)
 		{
-			$joined_entity_class = QueryBuilder::getQualifiedClassName($joined_entity_name);
-			$this->joined_tables[$joined_entity_class::getMetaData('primary_key')] = $joined_entity_class::getMetaData('table_name');
+			$joined_gateway_class = QueryBuilder::getQualifiedClassName($joined_gateway_name);
+			$this->joined_tables[$joined_gateway_class::getMetaData('primary_key')] = $joined_gateway_class::getMetaData('table_name');
 		}
 
-		if ($this->to_key !== $entity_relationship['key'])
+		if ($this->to_key !== $gateway_relationship['key'])
 		{
 			throw new \Exception('Foreign keys in relationship are not equal.  In "' . $this->relationship_name . '" from "' . $this->from_model_name 
-				. '" to "' . $this->to_model_name . '", to_key "' . $this->to_key . '" does not equal the key in the Entity "' . $from_entity_name . '", "' . $entity_relationship['key'] . '"');
+				. '" to "' . $this->to_model_name . '", to_key "' . $this->to_key . '" does not equal the key in the Gateway "' . $from_gateway_name . '", "' . $gateway_relationship['key'] . '"');
 		}
 		
 		// Populate pivots	
 		if ($this->type === self::TYPE_MANY_TO_MANY)
 		{
-			$this->pivot_table = $entity_relationship['pivot_table'];
-			$this->pivot_from_key = $entity_relationship['pivot_key'];
-			$this->pivot_to_key = $entity_relationship['pivot_foreign_key'];
+			$this->pivot_table = $gateway_relationship['pivot_table'];
+			$this->pivot_from_key = $gateway_relationship['pivot_key'];
+			$this->pivot_to_key = $gateway_relationship['pivot_foreign_key'];
 		}
 	}
 

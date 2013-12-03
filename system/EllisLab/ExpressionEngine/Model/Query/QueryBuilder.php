@@ -9,22 +9,22 @@ class QueryBuilder {
 	private static $model_namespace_aliases = array(
 		'Template'       => '\EllisLab\ExpressionEngine\Model\Template\Template',
 		'TemplateGroup'  => '\EllisLab\ExpressionEngine\Model\Template\TemplateGroup',
-		'TemplateEntity' => '\EllisLab\ExpressionEngine\Model\Entity\TemplateEntity',
-		'TemplateGroupEntity' => '\EllisLab\ExpressionEngine\Model\Entity\TemplateGroupEntity',
+		'TemplateGateway' => '\EllisLab\ExpressionEngine\Model\Gateway\TemplateGateway',
+		'TemplateGroupGateway' => '\EllisLab\ExpressionEngine\Model\Gateway\TemplateGroupGateway',
 		'Channel' => '\EllisLab\ExpressionEngine\Module\Channel\Model\Channel',
 		'ChannelEntry' => '\EllisLab\ExpressionEngine\Module\Channel\Model\ChannelEntry',
-		'ChannelEntity' => '\EllisLab\ExpressionEngine\Module\Channel\Model\Entity\ChannelEntity',
-		'ChannelTitleEntity' => '\EllisLab\ExpressionEngine\Module\Channel\Model\Entity\ChannelTitleEntity',
-		'ChannelDataEntity' => '\EllisLab\ExpressionEngine\Module\Channel\Model\Entity\ChannelDataEntity',
+		'ChannelGateway' => '\EllisLab\ExpressionEngine\Module\Channel\Model\Gateway\ChannelGateway',
+		'ChannelTitleGateway' => '\EllisLab\ExpressionEngine\Module\Channel\Model\Gateway\ChannelTitleGateway',
+		'ChannelDataGateway' => '\EllisLab\ExpressionEngine\Module\Channel\Model\Gateway\ChannelDataGateway',
 		'Member' => '\EllisLab\ExpressionEngine\Module\Member\Model\Member',
 		'MemberGroup' => '\EllisLab\ExpressionEngine\Module\Member\Model\MemberGroup',
-		'MemberEntity' => '\EllisLab\ExpressionEngine\Module\Member\Model\Entity\MemberEntity',
-		'MemberGroupEntity' => '\EllisLab\ExpressionEngine\Module\Member\Model\Entity\MemberGroupEntity',
+		'MemberGateway' => '\EllisLab\ExpressionEngine\Module\Member\Model\Gateway\MemberGateway',
+		'MemberGroupGateway' => '\EllisLab\ExpressionEngine\Module\Member\Model\Gateway\MemberGroupGateway',
 		'Category' => '\EllisLab\ExpressionEngine\Model\Category\Category',
-		'CategoryFieldDataEntity' => '\EllisLab\ExpressionEngine\Model\Entity\CategoryFieldDataEntity',
-		'CategoryEntity' => '\EllisLab\ExpressionEngine\Model\Entity\CategoryEntity',
+		'CategoryFieldDataGateway' => '\EllisLab\ExpressionEngine\Model\Gateway\CategoryFieldDataGateway',
+		'CategoryGateway' => '\EllisLab\ExpressionEngine\Model\Gateway\CategoryGateway',
 		'CategoryGroup' => '\EllisLab\ExpressionEngine\Model\Category\CategoryGroup',
-		'CategoryGroupEntity'=> '\EllisLab\ExpressionEngine\Model\Entity\CategoryGroupEntity'
+		'CategoryGroupGateway'=> '\EllisLab\ExpressionEngine\Model\Gateway\CategoryGroupGateway'
 	);
 
 	public function __construct(Dependencies $di)

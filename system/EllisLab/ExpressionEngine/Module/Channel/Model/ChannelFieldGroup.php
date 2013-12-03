@@ -3,10 +3,10 @@
 class ChannelFieldGroup extends Model {
 	protected static $meta = array(
 		'primary_key' 	=> 'group_id',
-		'entity_names' 	=> array('FieldGroupEntity'),
+		'gateway_names' 	=> array('FieldGroupGateway'),
 		'key_map'		=> array(
-			'group_id' => 'FieldGroupEntity',
-			'site_id' => 'FieldGroupEntity'
+			'group_id' => 'FieldGroupGateway',
+			'site_id' => 'FieldGroupGateway'
 		)
 	);
 

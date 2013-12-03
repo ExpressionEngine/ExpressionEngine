@@ -9,11 +9,11 @@ use EllisLab\ExpressionEngine\Model\Interfaces\Content\ContentStructure
 class Channel extends Model implements ContentStructure {
 	protected static $meta = array(
 		'primary_key' => 'channel_id',
-		'entity_names' => array('ChannelEntity'),
+		'gateway_names' => array('ChannelGateway'),
 		'key_map' => array(
-			'channel_id' => 'ChannelEntity',
-			'site_id' => 'ChannelEntity',
-			'field_group' => 'ChannelEntity'
+			'channel_id' => 'ChannelGateway',
+			'site_id' => 'ChannelGateway',
+			'field_group' => 'ChannelGateway'
 		)	
 	);
 

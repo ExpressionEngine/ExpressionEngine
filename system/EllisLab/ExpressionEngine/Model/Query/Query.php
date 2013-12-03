@@ -38,25 +38,25 @@ class Query {
 		$this->selectFields($this->root);
 
 		$model_class = QueryBuilder::getQualifiedClassName($model_name);
-		$entity_names = $model_class::getMetaData('entity_names');
+		$gateway_names = $model_class::getMetaData('gateway_names');
 
-		$primary_entity_name = array_shift($entity_names);
-		$primary_entity_class = QueryBuilder::getQualifiedClassName($primary_entity_name);
+		$primary_gateway_name = array_shift($gateway_names);
+		$primary_gateway_class = QueryBuilder::getQualifiedClassName($primary_gateway_name);
 	
-		$this->db->from($primary_entity_class::getMetaData('table_name'));
+		$this->db->from($primary_gateway_class::getMetaData('table_name'));
 		
-		foreach($entity_names as $entity_name)
+		foreach($gateway_names as $gateway_name)
 		{
-			$entity_class = QueryBuilder::getQualifiedClassName($entity_name);
+			$gateway_class = QueryBuilder::getQualifiedClassName($gateway_name);
 			$this->db->join(
-				$entity_class::getMetaData('table_name'),
-				$primary_entity_class::getMetaData('table_name') .
+				$gateway_class::getMetaData('table_name'),
+				$primary_gateway_class::getMetaData('table_name') .
 				'.' .
-				$primary_entity_class::getMetaData('primary_key') . 
+				$primary_gateway_class::getMetaData('primary_key') . 
 				' = ' .		
-				$entity_class::getMetaData('table_name') .
+				$gateway_class::getMetaData('table_name') .
 				'.' . 
-				$entity_class::getMetaData('primary_key')
+				$gateway_class::getMetaData('primary_key')
 			);
 		
 		}
@@ -704,12 +704,12 @@ class Query {
 
 		$model_class_name = QueryBuilder::getQualifiedClassName($model_name);
 
-		foreach ($model_class_name::getMetaData('entity_names') as $entity_name)
+		foreach ($model_class_name::getMetaData('gateway_names') as $gateway_name)
 		{
-			$entity_class_name = QueryBuilder::getQualifiedClassName($entity_name);
+			$gateway_class_name = QueryBuilder::getQualifiedClassName($gateway_name);
 
-			$table = $entity_class_name::getMetaData('table_name');
-			$properties = $entity_class_name::getMetaData('field_list');
+			$table = $gateway_class_name::getMetaData('table_name');
+			$properties = $gateway_class_name::getMetaData('field_list');
 			foreach ($properties as $property=>$default_value)
 			{
 				$this->db->select($table . '.' . $property . ' AS ' . $node->getPathString() . '__' . $relationship_name . '__' . $model_name . '__' . $property);
@@ -771,7 +771,7 @@ class Query {
 	}
 
 	/**
-	 * Retrieve the table name for a given Model and key. If more than one entity
+	 * Retrieve the table name for a given Model and key. If more than one gateway
 	 * has the key, it will return the first.
 	 *
 	 * @param String $model_name The name of the model
@@ -791,20 +791,20 @@ class Query {
 
 		if (isset($known_keys[$key]))
 		{
-			$key_entity = QueryBuilder::getQualifiedClassName($known_keys[$key]);
-			return $key_entity::getMetaData('table_name');
+			$key_gateway = QueryBuilder::getQualifiedClassName($known_keys[$key]);
+			return $key_gateway::getMetaData('table_name');
 		}
 
 		// If it's not a key, we need to loop. Technically it could be on more
-		// than one entity - we only return the first one.
-		$entity_names = $model::getMetadata('entity_names');
+		// than one gateway - we only return the first one.
+		$gateway_names = $model::getMetadata('gateway_names');
 
-		foreach ($entity_names as $entity)
+		foreach ($gateway_names as $gateway)
 		{
-			$entity = QueryBuilder::getQualifiedClassName($entity);
-			if (property_exists($entity, $key))
+			$gateway = QueryBuilder::getQualifiedClassName($gateway);
+			if (property_exists($gateway, $key))
 			{
-				return $entity::getMetaData('table_name');
+				return $gateway::getMetaData('table_name');
 			}
 		}
 

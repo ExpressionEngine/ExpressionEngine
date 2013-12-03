@@ -10,11 +10,11 @@ class Template extends Model {
 
 	protected static $meta = array(
 		'primary_key'	=> 'template_id',
-		'entity_names'	=> array('TemplateEntity'),
+		'gateway_names'	=> array('TemplateGateway'),
 		'key_map'		=> array(
-			'template_id' => 'TemplateEntity',
-			'group_id'    => 'TemplateEntity',
-			'last_author_id' => 'TemplateEntity'
+			'template_id' => 'TemplateGateway',
+			'group_id'    => 'TemplateGateway',
+			'last_author_id' => 'TemplateGateway'
 		)
 	);
 

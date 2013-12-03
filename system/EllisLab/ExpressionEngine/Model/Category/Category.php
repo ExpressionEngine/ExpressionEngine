@@ -6,15 +6,15 @@ use EllisLab\ExpressionEngine\Model\FieldDataContentModel;
 class Category extends FieldDataContentModel {
 	protected static $meta = array(
 		'primary_key' => 'cat_id',
-		'entity_names' => array('CategoryEntity', 'CategoryFieldDataEntity'),
+		'gateway_names' => array('CategoryGateway', 'CategoryFieldDataGateway'),
 		'key_map' => array(
-			'cat_id' => 'CategoryEntity',
-			'site_id' => 'CategoryEntity',
-			'group_id' => 'CategoryEntity',
-			'parent_id' => 'CategoryEntity'
+			'cat_id' => 'CategoryGateway',
+			'site_id' => 'CategoryGateway',
+			'group_id' => 'CategoryGateway',
+			'parent_id' => 'CategoryGateway'
 		),
 		'field_content_class' => 'CategoryFieldContent',
-		'field_content_entity' => 'CategoryFieldDataEntity'
+		'field_content_gateway' => 'CategoryFieldDataGateway'
 	);
 	
 	/**

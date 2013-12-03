@@ -13,12 +13,12 @@ class Relationship {
 	/**
 	 * Defines the link for eagerly loaded relationships. The information we
 	 * we need to link our $from_model to our $to_model is:
-	 *	$from_entity The correct entity on this model
+	 *	$from_gateway The correct gateway on this model
 	 *	$from_key	 The key we're using from this model
 	 *	$to_key		 The key we're relating to
 	 *
-	 * We do not store a to-entity. It can happen that one key relates
-	 * to multiple entities, so we need to set up a relationship for each.
+	 * We do not store a to-gateway. It can happen that one key relates
+	 * to multiple gateways, so we need to set up a relationship for each.
 	 */
 	private $link = array();
 
@@ -73,12 +73,12 @@ class Relationship {
 			$to_key = $to_name::getMetaData('primary_key');
 		}
 
-		$from_entity = $this->findEntityForFromKey($from_key);
+		$from_gateway = $this->findGatewayForFromKey($from_key);
 
 		$this->link = array(
 			'from_key' => $from_key,
 			'to_key'   => $to_key,
-			'from_entity' => $from_entity
+			'from_gateway' => $from_gateway
 		);
 
 		return $this;
@@ -135,7 +135,7 @@ class Relationship {
 
 		$resolvers = array();
 
-		foreach ($this->findRelatedEntities() as $relation)
+		foreach ($this->findRelatedGateways() as $relation)
 		{
 			$buildRelationship = 'build'.$this->type;
 
@@ -156,18 +156,18 @@ class Relationship {
 	{}
 
 	/**
-	 * Join an given entity onto the main entity for this model.
+	 * Join an given gateway onto the main gateway for this model.
 	 *
-	 * @param String $to_entity Fully qualified name of the entity to join
+	 * @param String $to_gateway Fully qualified name of the gateway to join
 	 * @param DB $db database object
 	 * @return void
 	 */
-	private function joinEntity($to_entity, $db)
+	private function joinGateway($to_gateway, $db)
 	{
-		$from_entity = $this->link['from_entity'];
+		$from_gateway = $this->link['from_gateway'];
 
-		$to_table = $to_entity::getMetaData('table_name');
-		$from_table = $from_entity::getMetaData('table_name');
+		$to_table = $to_gateway::getMetaData('table_name');
+		$from_table = $from_gateway::getMetaData('table_name');
 
 		$db->join(
 			$to_table,
@@ -182,7 +182,7 @@ class Relationship {
 	 * returns a resolving function that will be called after the query has
 	 * been run.
 	 *
-	 * @param Array $relation Related entity information [entity => ..., key => ...]
+	 * @param Array $relation Related gateway information [gateway => ..., key => ...]
 	 * @param Query $query query object
 	 * @param DB $db database object
 	 * @return Closure
@@ -199,7 +199,7 @@ class Relationship {
 	 * returns a resolving function that will be called after the query has
 	 * been run.
 	 *
-	 * @param Array $relation Related entity information [entity => ..., key => ...]
+	 * @param Array $relation Related gateway information [gateway => ..., key => ...]
 	 * @param Query $query query object
 	 * @param DB $db database object
 	 * @return Closure
@@ -210,7 +210,7 @@ class Relationship {
 		$to_model_name = $this->to_model_name;
 
 		$query->selectFields($to_model_name);
-		$this->joinEntity($relation['entity'], $db);
+		$this->joinGateway($relation['gateway'], $db);
 
 		// Return a function that resolves the relationship
 		return function($collection, $query_result) use ($that)
@@ -226,7 +226,7 @@ class Relationship {
 	 * returns a resolving function that will be called after the query has
 	 * been run.
 	 *
-	 * @param Array $relation Related entity information [entity => ..., key => ...]
+	 * @param Array $relation Related gateway information [gateway => ..., key => ...]
 	 * @param Query $query query object
 	 * @param DB $db database object
 	 * @return Closure
@@ -326,29 +326,29 @@ class Relationship {
 	}
 
 	/**
-	 * Find the entity that holds this model's from key
+	 * Find the gateway that holds this model's from key
 	 *
-	 * @return String Fully qualified class name of the entity
+	 * @return String Fully qualified class name of the gateway
 	 */
-	private function findEntityForFromKey($from_key)
+	private function findGatewayForFromKey($from_key)
 	{
-		$from_entities = $this->from_model->getMetaData('key_map');
-		$from_entity = $from_entities[$from_key];
+		$from_gateways = $this->from_model->getMetaData('key_map');
+		$from_gateway = $from_gateways[$from_key];
 
-		return QueryBuilder::getQualifiedClassName($from_entity);
+		return QueryBuilder::getQualifiedClassName($from_gateway);
 	}
 
 	/**
-	 * Grab the related_entities information from the current entity
+	 * Grab the related_gateways information from the current gateway
 	 * and namespace the qualified class names.
 	 *
-	 * @return Array List of related entities [entity => '...', key => '...']
+	 * @return Array List of related gateways [gateway => '...', key => '...']
 	 */
-	private function findRelatedEntities()
+	private function findRelatedGateways()
 	{
-		$from_entity = $this->link['from_entity'];
+		$from_gateway = $this->link['from_gateway'];
 
-		$from_related = $from_entity::getMetaData('related_entities');
+		$from_related = $from_gateway::getMetaData('related_gateways');
 		$to_related = $from_related[$this->link['from_key']];
 
 		if ( ! is_array(current($to_related)))
@@ -358,7 +358,7 @@ class Relationship {
 
 		foreach ($to_related as &$relation)
 		{
-			$relation['entity'] = QueryBuilder::getQualifiedClassName($relation['entity']);
+			$relation['gateway'] = QueryBuilder::getQualifiedClassName($relation['gateway']);
 		}
 
 		return $to_related;

@@ -7,9 +7,9 @@ class TemplateGroup extends Model {
 
 	protected static $meta = array(
 		'primary_key'	=> 'group_id',
-		'entity_names'	=> array('TemplateGroupEntity'),
+		'gateway_names'	=> array('TemplateGroupGateway'),
 		'key_map'		=> array(
-			'group_id' => 'TemplateGroupEntity'
+			'group_id' => 'TemplateGroupGateway'
 		),
 		'cascade' => 'Templates'
 	);

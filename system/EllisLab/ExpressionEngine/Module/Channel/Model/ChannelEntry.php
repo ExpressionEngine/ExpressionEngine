@@ -16,15 +16,15 @@ use EllisLab\ExpressionEngine\Model\FieldDataContentModel;
 class ChannelEntry extends FieldDataContentModel {
 	protected static $meta = array(
 		'primary_key' => 'entry_id',
-		'entity_names' => array('ChannelTitleEntity', 'ChannelDataEntity'),
+		'gateway_names' => array('ChannelTitleGateway', 'ChannelDataGateway'),
 		'key_map' => array(
-			'entry_id' => 'ChannelTitleEntity',
-			'channel_id' => 'ChannelTitleEntity',
-			'site_id' => 'ChannelTitleEntity',
-			'author_id' => 'ChannelTitleEntity'
+			'entry_id' => 'ChannelTitleGateway',
+			'channel_id' => 'ChannelTitleGateway',
+			'site_id' => 'ChannelTitleGateway',
+			'author_id' => 'ChannelTitleGateway'
 		),
 		'field_content_class' => 'ChannelFieldContent',
-		'field_content_entity' => 'ChannelDataEntity'		
+		'field_content_gateway' => 'ChannelDataGateway'		
 	);
 
 	public function getChannel()

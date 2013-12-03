@@ -13,9 +13,9 @@ use EllisLab\ExpressionEngine\Model\Model;
 class Member extends Model {
 	protected static $meta = array(
 		'primary_key' => 'member_id',
-		'entity_names' => array('MemberEntity'),
+		'gateway_names' => array('MemberGateway'),
 		'key_map' => array(
-			'group_id' => 'MemberEntity'
+			'group_id' => 'MemberGateway'
 		)
 	);
 
