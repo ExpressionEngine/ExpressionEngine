@@ -17,6 +17,17 @@ class Category extends FieldDataContentModel {
 		'field_content_gateway' => 'CategoryFieldDataGateway'
 	);
 	
+	// Properties
+	protected $cat_id;
+	protected $site_id;
+	protected $group_id;
+	protected $parent_id;
+	protected $cat_name;
+	protected $cat_url_title;
+	protected $cat_description;
+	protected $cat_image;
+	protected $cat_order;
+
 	/**
 	 *
 	 */

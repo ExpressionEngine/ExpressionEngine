@@ -1,7 +1,7 @@
 <?php
 namespace EllisLab\ExpressionEngine\Model\Category;
 
-use EllisLab\ExpressionEngine\Model\Model as Model;
+use EllisLab\ExpressionEngine\Model\Model;
 use EllisLab\ExpressionEngine\Model\Interfaces\Content\ContentStructure;
 
 class CategoryGroup extends Model implements ContentStructure {
@@ -13,6 +13,16 @@ class CategoryGroup extends Model implements ContentStructure {
 			'site_id' => 'CategoryGroupGateway',
 		)	
 	);
+
+	// Properties
+	protected $group_id;
+	protected $site_id;
+	protected $group_name;
+	protected $sort_order;
+	protected $exclude_group;
+	protected $field_html_formatting;
+	protected $can_edit_categories;
+	protected $can_delete_categories;
 
 	/**
 	 * Relationship to the field structure for this category.

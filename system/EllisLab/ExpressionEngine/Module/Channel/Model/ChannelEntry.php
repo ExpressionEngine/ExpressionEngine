@@ -27,6 +27,33 @@ class ChannelEntry extends FieldDataContentModel {
 		'field_content_gateway' => 'ChannelDataGateway'		
 	);
 
+	// Properties
+	protected $entry_id;
+	protected $site_id;
+	protected $channel_id;
+	protected $author_id;
+	protected $forum_topic_id;
+	protected $ip_address;
+	protected $title;
+	protected $url_title;
+	protected $status;
+	protected $versioning_enabled;
+	protected $view_count_one;
+	protected $view_count_two;
+	protected $view_count_three;
+	protected $view_count_four;
+	protected $allow_comments;
+	protected $sticky;
+	protected $entry_date;
+	protected $year;
+	protected $month;
+	protected $day;
+	protected $expiration_date;
+	protected $comment_expiration_date;
+	protected $edit_date;
+	protected $recent_comment_date;
+	protected $comment_total;						
+
 	public function getChannel()
 	{
 		return $this->manyToOne('Channel', 'Channel', 'channel_id', 'channel_id');
