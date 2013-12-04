@@ -49,24 +49,23 @@ class Autoloader {
 	 */
 	public function loadClass($class)
 	{
-		$base_dir = APPPATH;
-
 		// @todo this prefix handling will not do sub-namespaces correctly
 		foreach ($this->prefixes as $prefix => $path)
 		{
 			if (strpos($class, $prefix) === 0)
 			{
-				// From inside to out: Strip off the prefix from the namespace, turn the namespace into 
-				// a path, prepend the path prefix, append .php.  
+				// From inside to out: Strip off the prefix from the namespace, turn the namespace into
+				// a path, prepend the path prefix, append .php.
 				$class_path = $path . str_replace('\\', '/', substr($class, strlen($prefix))) . '.php';
-				if ( ! file_exists($class_path))
-				{
-					throw new \RuntimeException('Failed to load class: ' . $class . '!');
-				}
 
-				require $class_path;
-				return;
+				if (file_exists($class_path))
+				{
+					require $class_path;
+					return;
+				}
 			}
 		}
+
+		throw new \RuntimeException('Failed to load class: ' . $class . '!');
 	}
 }
