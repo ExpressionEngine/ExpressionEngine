@@ -71,7 +71,7 @@ class EE_Route_segment {
 			// Place each rule inside an anchored lookahead,
 			// this will match the entire string if the rule matches.
 			// This allows rules to work together without consuming the match.
-			$compiled_rules .= "(^(?=" . $rule->validator() . "$).*)";
+			$compiled_rules .= "((?=\b" . $rule->validator() . "\b).*)";
 		}
 		return $compiled_rules;
 	}
