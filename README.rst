@@ -64,3 +64,26 @@ Push your changes up whenever you're ready to::
 
 When you are ready to send us the code or solicit feedback, send a Pull
 Request using GitHub to the ExpressionEngine-Reactor repository.
+
+************
+Unit Testing
+************
+
+In order to run unit tests you will need PHPUnit and Phing. These can
+be installed with composer or pear::
+
+  pear config-set auto_discover 1
+  pear install pear.phpunit.de/PHPUnit
+
+  # OR
+  composer global require 'phpunit/phpunit=3.7.*'
+  composer global require phing/phing:2.6.1
+
+Make sure that the bin path of the system you're using is in your $PATH.
+For composer this defaults to `~/.composer/vendor/bin`, for PEAR it can
+be found using `pear config-get bin_dir`.
+
+You can then run all current unit tests using phing::
+
+  phing tests
+
