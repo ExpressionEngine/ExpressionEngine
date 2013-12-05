@@ -74,7 +74,7 @@ class TreeNode {
 	{
 		if ($this->_frozen)
 		{
-			throw new RuntimeException('Cannot modify payload. Tree node is frozen.');
+			throw new \RuntimeException('Cannot modify payload. Tree node is frozen.');
 		}
 
 		if (is_array($this->data))
@@ -124,12 +124,12 @@ class TreeNode {
 	{
 		if ($child == $this)
 		{
-			throw new RuntimeException('Cannot add tree node to itself.');
+			throw new \RuntimeException('Cannot add tree node to itself.');
 		}
 
 		if ($this->_frozen)
 		{
-			throw new RuntimeException('Cannot add child. Tree node is frozen.');
+			throw new \RuntimeException('Cannot add child. Tree node is frozen.');
 		}
 
 		$this->children[] = $child;
