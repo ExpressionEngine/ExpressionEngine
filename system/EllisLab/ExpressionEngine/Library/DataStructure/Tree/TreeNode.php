@@ -1,5 +1,5 @@
 <?php
-namespace EllisLab\ExpressionEngine\Model\DataStructure\Tree;
+namespace EllisLab\ExpressionEngine\Library\DataStructure\Tree;
 
 
 /**
@@ -74,7 +74,7 @@ class TreeNode {
 	{
 		if ($this->_frozen)
 		{
-			throw new RuntimeException('Cannot modify payload. Tree node is frozen.');
+			throw new \RuntimeException('Cannot modify payload. Tree node is frozen.');
 		}
 
 		if (is_array($this->data))
@@ -124,12 +124,12 @@ class TreeNode {
 	{
 		if ($child == $this)
 		{
-			throw new RuntimeException('Cannot add tree node to itself.');
+			throw new \RuntimeException('Cannot add tree node to itself.');
 		}
 
 		if ($this->_frozen)
 		{
-			throw new RuntimeException('Cannot add child. Tree node is frozen.');
+			throw new \RuntimeException('Cannot add child. Tree node is frozen.');
 		}
 
 		$this->children[] = $child;
@@ -210,7 +210,7 @@ class TreeNode {
 	/**
 	 * Get all of the node's children
 	 *
-	 * @return TreeNode[] 
+	 * @return TreeNode[]
 	 */
 	public function getChildren()
 	{
@@ -222,7 +222,7 @@ class TreeNode {
 	/**
 	 * Get the node's first child
 	 *
-	 * @return TreeNode 
+	 * @return TreeNode
 	 */
 	public function getFirstChild()
 	{
@@ -246,7 +246,7 @@ class TreeNode {
 	/**
 	 * Get all of a node's siblings
 	 *
-	 * @return TreeNode[] 
+	 * @return TreeNode[]
 	 */
 	public function getSiblings()
 	{

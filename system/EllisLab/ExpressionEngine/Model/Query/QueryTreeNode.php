@@ -1,7 +1,7 @@
 <?php
 namespace EllisLab\ExpressionEngine\Model\Query;
 
-use EllisLab\ExpressionEngine\Model\DataStructure\Tree\TreeNode;
+use EllisLab\ExpressionEngine\Library\DataStructure\Tree\TreeNode;
 
 class QueryTreeNode extends TreeNode {
 	public static $top_id = 0;

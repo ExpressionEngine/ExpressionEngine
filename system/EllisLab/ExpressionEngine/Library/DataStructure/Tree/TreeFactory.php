@@ -1,5 +1,5 @@
-<?php  
-namespace EllisLab\ExpressionEngine\Model\DataStructure\Tree;
+<?php
+namespace EllisLab\ExpressionEngine\Library\DataStructure\Tree;
 
 
 /**

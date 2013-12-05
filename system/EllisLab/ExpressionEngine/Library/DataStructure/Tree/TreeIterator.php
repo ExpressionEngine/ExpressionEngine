@@ -1,5 +1,5 @@
 <?php
-namespace EllisLab\ExpressionEngine\Model\DataStructure\Tree;
+namespace EllisLab\ExpressionEngine\Library\DataStructure\Tree;
 
 
 
@@ -32,7 +32,7 @@ class TreeIterator extends \RecursiveArrayIterator {
 	 * ahead into the children array and not try to iterate over the
 	 * over the public name property.
 	 *
-	 * @return TreeIterator 
+	 * @return TreeIterator
 	 */
 	public function getChildren()
 	{
