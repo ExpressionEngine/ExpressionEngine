@@ -682,7 +682,7 @@ class Content_publish extends CP_Controller {
 
 		if ($show_comments_link)
 		{
-			if (isset($this->installed_modules['comment']))
+			if (isset($this->cp->installed_modules['comment']))
 			{
 				$comment_count = $this->db->where('entry_id', $entry_id)
 										  ->count_all_results('comments');

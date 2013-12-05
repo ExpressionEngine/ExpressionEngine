@@ -132,7 +132,7 @@ class EE_Security extends CI_Security {
 		define('REQUEST_XID', $request_xid);
 		define('XID_SECURE_HASH', $hash);
 
-		if (AJAX_REQUEST && count($_POST))
+		if (AJAX_REQUEST && ee()->input->server('REQUEST_METHOD') == 'POST')
 		{
 			header('X-EEXID: '.XID_SECURE_HASH);
 		}
