@@ -1,5 +1,5 @@
 <?php
-namespace EllisLab\ExpressionEngine\Model\DataStructure\Tree;
+namespace EllisLab\ExpressionEngine\Library\DataStructure\Tree;
 
 
 /**
@@ -210,7 +210,7 @@ class TreeNode {
 	/**
 	 * Get all of the node's children
 	 *
-	 * @return TreeNode[] 
+	 * @return TreeNode[]
 	 */
 	public function getChildren()
 	{
@@ -222,7 +222,7 @@ class TreeNode {
 	/**
 	 * Get the node's first child
 	 *
-	 * @return TreeNode 
+	 * @return TreeNode
 	 */
 	public function getFirstChild()
 	{
@@ -246,7 +246,7 @@ class TreeNode {
 	/**
 	 * Get all of a node's siblings
 	 *
-	 * @return TreeNode[] 
+	 * @return TreeNode[]
 	 */
 	public function getSiblings()
 	{
