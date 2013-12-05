@@ -61,6 +61,7 @@ class EE_Template {
 	var $var_pair			= array();		// "Paired" variables
 	var $global_vars		= array();		// This array can be set via the path.php file
 	var $embed_vars		 	= array();		// This array can be set via the {embed} tag
+	var $template_route_vars = array();		// Array of segment variables
 	var $segment_vars		= array();		// Array of segment variables
 
 	var $tagparts			= array();		// The parts of the tag: {exp:comment:form}
@@ -347,6 +348,12 @@ class EE_Template {
 		{
 			$this->template = str_replace(LD.'segment_'.$i.RD, ee()->uri->segment($i), $this->template);
 			$this->segment_vars['segment_'.$i] = ee()->uri->segment($i);
+		}
+
+		// Parse template route segments
+		foreach($this->template_route_vars as $key => $var)
+		{
+			$this->template = str_replace(LD.$key.RD, $var, $this->template);
 		}
 
 		// Parse {embed} tag variables
@@ -1663,7 +1670,12 @@ class EE_Template {
 		ee()->load->library('template_router');
         try {
             $match = ee()->template_router->match(ee()->uri);
-            return $this->fetch_template($match['group'], $match['template'], FALSE);
+			$this->template_route_vars = array();
+			foreach($match->matches as $key => $val)
+			{
+				$this->template_route_vars['segment:' . $key] = $val;
+			}
+            return $this->fetch_template($match->end_point['group'], $match->end_point['template'], FALSE);
         } catch (Exception $error) {
 			// route not found
         }
@@ -3062,7 +3074,7 @@ class EE_Template {
 		}
 
 		// Final Prep, Safety On
-		$str = ee()->functions->prep_conditionals($str, array_merge($this->segment_vars, $this->embed_vars, ee()->config->_global_vars, $data), 'y');
+		$str = ee()->functions->prep_conditionals($str, array_merge($this->segment_vars, $this->template_route_vars, $this->embed_vars, ee()->config->_global_vars, $data), 'y');
 
 		// Protect Already Existing Unparsed PHP
 
