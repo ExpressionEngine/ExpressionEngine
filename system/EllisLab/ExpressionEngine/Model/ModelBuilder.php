@@ -35,7 +35,7 @@ class ModelBuilder {
 
 	public function get($model_name, $ids = NULL)
 	{
-		$query = new Query($this->di, $model_name);
+		$query = new Query($this, $model_name);
 
 		if (isset($ids))
 		{

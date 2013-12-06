@@ -1,8 +1,8 @@
 <?php namespace EllisLab\ExpressionEngine\Model\Query;
 
-use EllisLab\ExpressionEngine\Core\Dependencies;
-use EllisLab\ExpressionEngine\Model\Query\QueryTreeNode;
 use EllisLab\ExpressionEngine\Model\Collection;
+use EllisLab\ExpressionEngine\Model\ModelBuilder;
+use EllisLab\ExpressionEngine\Model\Query\QueryTreeNode;
 
 class Query {
 
@@ -26,9 +26,9 @@ class Query {
 	private $data = array();
 	private $results = array();
 
-	public function __construct(Dependencies $di, $model_name)
+	public function __construct(ModelBuilder $builder, $model_name)
 	{
-		$this->builder = $di->getModelBuilder();
+		$this->builder = $builder;
 
 		$this->model_name = $model_name;
 		$this->root = new QueryTreeNode($model_name);
@@ -38,17 +38,17 @@ class Query {
 
 		$this->selectFields($this->root);
 
-		$model_class = $this->builder->resolveAlias($model_name);
+		$model_class = $builder->resolveAlias($model_name);
 		$gateway_names = $model_class::getMetaData('gateway_names');
 
 		$primary_gateway_name = array_shift($gateway_names);
-		$primary_gateway_class = $this->builder->resolveAlias($primary_gateway_name);
+		$primary_gateway_class = $builder->resolveAlias($primary_gateway_name);
 
 		$this->db->from($primary_gateway_class::getMetaData('table_name'));
 
 		foreach($gateway_names as $gateway_name)
 		{
-			$gateway_class = $this->builder->resolveAlias($gateway_name);
+			$gateway_class = $builder->resolveAlias($gateway_name);
 			$this->db->join(
 				$gateway_class::getMetaData('table_name'),
 				$primary_gateway_class::getMetaData('table_name') .
