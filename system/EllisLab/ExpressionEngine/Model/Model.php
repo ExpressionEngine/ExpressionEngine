@@ -11,6 +11,8 @@ use EllisLab\ExpressionEngine\Model\Collection;
  * The base Model class
  */
 abstract class Model {
+
+	protected $_builder = NULL;
 	protected $_dependencies = NULL;
 
 	protected static $_meta = array();
@@ -40,6 +42,7 @@ abstract class Model {
 	public function __construct(Dependencies $dependencies, array $data = array())
 	{
 		$this->_dependencies = $dependencies;
+		$this->_builder = $dependencies->getModelBuilder();
 	}
 
 	/**
@@ -139,25 +142,25 @@ abstract class Model {
 	 *
 	 * $entry = $qb->get('ChannelEntry')
 	 *		->with(
-	 * 			'Channel', 
+	 * 			'Channel',
 	 * 			array('Member'=>'MemberGroup'),
 	 * 			array('Categories' => 'CategoryGroup')
 	 *		)
  	 * 		->filter('MemberGroup.member_group_id', 5)
 	 *		->first();
-	 * 
+	 *
 	 * $entry->title = 'New Title';
 	 * $channel = $entry->getChannel();
 	 * $channel->short_name = 'new_short_name';
 	 *
 	 * $validation = $entry->validate(
-	 * 		'Channel', 
+	 * 		'Channel',
 	 *		array('Member' => 'MemberGroup'),
 	 * 		array('Category' => 'CategoryGroup')
 	 * 	);
 	 *
  	 * This will cascade the validation through all related models and return
- 	 * any errors found in any of the related models.	
+ 	 * any errors found in any of the related models.
 	 *
 	 * @return	Errors	A class containing the errors resulting from validation.
 	 */
@@ -200,15 +203,15 @@ abstract class Model {
 	 * Cascade validation
 	 *
 	 * Cascades validation into related classes.  Gets the array of a cascaded
-	 * relation and recursively walks through that, validating. 
-	 * 
+	 * relation and recursively walks through that, validating.
+	 *
 	 * @param	Errors	$validation	The validation object to which cascaded
 	 * 				errors should be added.
 	 * @param	string[]	$model_names	The names of the models that you
 	 * 				wish to cascade into in array format.  The array must
 	 * 				be formatted in the following way:
 	 * 					array('Model Related to $this' => 'Model related to <- that model')
-	 * 
+	 *
 	 * @return	Errors	A class containing the errors resulting from validation.
 	 *
 	 */
@@ -218,13 +221,13 @@ abstract class Model {
 		{
 			$method = 'get' . $from_model_name;
 			$models = $this->$method();
-		
-			foreach ($models as $model)			
+
+			foreach ($models as $model)
 			{
 				if (is_array($to_model_name))
 				{
 					$validation->addErrors($model->cascadeValidate($to_model_name));
-				}	
+				}
 				else
 				{
 					$to_method = 'get' . $to_model_name;
@@ -294,14 +297,14 @@ abstract class Model {
  	 *
 	 * Cascades saving through related Models.  Works the same as
 	 * Model::cascadeValidate(), but doesn't return anything.
-	 * 
+	 *
 	 * @param	string[]	$model_names	An array of Model names to be saved
 	 * 				in the format of array('from_model' => 'to_model').
-	 * 
+	 *
  	 * @return	void
 	 *
 	 * @throws	Exception	If any of the related models fails to validate
-	 * 				it will throw an exception. 
+	 * 				it will throw an exception.
 	 */
 	protected function cascadeSave($model_names)
 	{
@@ -309,13 +312,13 @@ abstract class Model {
 		{
 			$method = 'get' . $from_model_name;
 			$models = $this->$method();
-		
-			foreach ($models as $model)			
+
+			foreach ($models as $model)
 			{
 				if (is_array($to_model_name))
 				{
 					$model->cascadeSave($to_model_name);
-				}	
+				}
 				else
 				{
 					$to_method = 'get' . $to_model_name;
@@ -376,13 +379,13 @@ abstract class Model {
 		{
 			$method = 'get' . $from_model_name;
 			$models = $this->$method();
-		
+
 			foreach ($models as $model)
 			{
 				if (is_array($to_model_name))
 				{
 					$model->cascadeDelete($to_model_name);
-				}	
+				}
 				else
 				{
 					$to_method = 'get' . $to_model_name;
@@ -403,7 +406,7 @@ abstract class Model {
 		{
 			foreach (static::getMetaData('gateway_names') as $gateway_name)
 			{
-				$gateway = $this->_dependencies->getQueryBuilder()->getQualifiedClassName($gateway_name);
+				$gateway = $this->_dependencies->getModelBuilder()->resolveAlias($gateway_name);
 				$this->_gateways[$gateway_name] = new $gateway($this->_dependencies, $data);
 			}
 		}
@@ -427,7 +430,7 @@ abstract class Model {
 		{
 			foreach($this->_gateways as $gateway)
 			{
-				$gateway->setDirty($dirty_property);	
+				$gateway->setDirty($dirty_property);
 			}
 		}
 	}
@@ -438,7 +441,7 @@ abstract class Model {
 	 * @param String $to_model_name	Name of the model to relate to
 	 * @param String $this_key		Name of the relating key
 	 * @param String $that_key		Name of the key on the related model
-	 * @param String $name			The name of the method on the calling model	
+	 * @param String $name			The name of the method on the calling model
 	 *
 	 * @return Relationship object or related data
 	 */
@@ -460,7 +463,7 @@ abstract class Model {
 	 * @param String $to_model_name	Name of the model to relate to
 	 * @param String $this_key		Name of the relating key
 	 * @param String $that_key		Name of the key on the related model
-	 * @param String $name			The name of the method on the calling model	
+	 * @param String $name			The name of the method on the calling model
 	 *
 	 * @return Relationship object or related data
 	 */
@@ -482,7 +485,7 @@ abstract class Model {
 	 * @param String $to_model_name	Name of the model to relate to
 	 * @param String $this_key		Name of the relating key
 	 * @param String $that_key		Name of the key on the related model
-	 * @param String $name			The name of the method on the calling model	
+	 * @param String $name			The name of the method on the calling model
 	 *
 	 * @return Relationship object or related data
 	 */
@@ -504,7 +507,7 @@ abstract class Model {
 	 * @param String $to_model_name	Name of the model to relate to
 	 * @param String $this_key		Name of the relating key
 	 * @param String $that_key		Name of the key on the related model
-	 * @param String $name			The name of the method on the calling model	
+	 * @param String $name			The name of the method on the calling model
 	 *
 	 * @return Relationship object or related data
 	 */
@@ -518,7 +521,7 @@ abstract class Model {
 			$that_key,
 			$relationship_name
 		);
-			
+
 	}
 
 	/**
@@ -597,7 +600,7 @@ abstract class Model {
 	 * @param String $to_key		Name of the key on the related model
 	 * @param String $name			The name of the Relationship, when
 	 * 		different from the name of the model.  For example ChannelEntry has
-	 * 		an Author (getAuthor(), setAuthor()). 
+	 * 		an Author (getAuthor(), setAuthor()).
 	 *
 	 * @return Relationship object or related data
 	 */
@@ -615,7 +618,7 @@ abstract class Model {
 		// to the primary key of the target model.
 		if ( ! isset($to_key))
 		{
-			$to_model_class = QueryBuilder::getQualifiedClassName($to_model_name);
+			$to_model_class = $this->_builder->resolveAlias($to_model_name);
 			$to_key = $to_model_class::getMetaData('primary_key');
 		}
 
@@ -625,6 +628,7 @@ abstract class Model {
 		if ($this->getId() === NULL)
 		{
 			$relationship = new ModelRelationshipMeta(
+				$this->_dependencies,
 				$type,
 				$relationship_key,
 				array(
@@ -633,7 +637,7 @@ abstract class Model {
 					'key' => $this_key
 				),
 				array(
-					'model_class' => QueryBuilder::getQualifiedClassName($to_model_name),
+					'model_class' => $this->_builder->resolveAlias($to_model_name),
 					'model_name' => $to_model_name,
 					'key' => $to_key
 				)
@@ -644,7 +648,7 @@ abstract class Model {
 		// Lazy Load
 		// 	Otherwise, if we haven't hit one of the previous cases, then this
 		// 	is a lazy load on an existing model.
-		$query = $this->_dependencies->getQueryBuilder()->get($to_model_name);
+		$query = $this->_dependencies->modelBuilder()->get($to_model_name);
 		$query->filter($to_model_name . '.' . $to_key, $this->$this_key);
 
 		if ($type == 'one-to-one' OR $type == 'many-to-one')

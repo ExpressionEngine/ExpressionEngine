@@ -5,7 +5,8 @@ use EllisLab\ExpressionEngine\Model\Query\QueryTreeNode;
 use EllisLab\ExpressionEngine\Model\Collection;
 
 class Query {
-	private $di = NULL;
+	private $di;
+	private $builder;
 
 	private $db;
 	private $model_name;
@@ -22,13 +23,14 @@ class Query {
 	 * 			relationships.  The model we initiated the query against.
 	 */
 	private $root = NULL;
-	private $results = array();
-
 	private $data = array();
+	private $results = array();
 
 	public function __construct(Dependencies $di, $model_name)
 	{
 		$this->di = $di;
+		$this->builder = $di->getModelBuilder();
+
 		$this->model_name = $model_name;
 		$this->root = new QueryTreeNode($model_name);
 		$this->root->meta = NULL;
@@ -37,28 +39,28 @@ class Query {
 
 		$this->selectFields($this->root);
 
-		$model_class = QueryBuilder::getQualifiedClassName($model_name);
+		$model_class = $this->builder->resolveAlias($model_name);
 		$gateway_names = $model_class::getMetaData('gateway_names');
 
 		$primary_gateway_name = array_shift($gateway_names);
-		$primary_gateway_class = QueryBuilder::getQualifiedClassName($primary_gateway_name);
-	
+		$primary_gateway_class = $this->builder->resolveAlias($primary_gateway_name);
+
 		$this->db->from($primary_gateway_class::getMetaData('table_name'));
-		
+
 		foreach($gateway_names as $gateway_name)
 		{
-			$gateway_class = QueryBuilder::getQualifiedClassName($gateway_name);
+			$gateway_class = $this->builder->resolveAlias($gateway_name);
 			$this->db->join(
 				$gateway_class::getMetaData('table_name'),
 				$primary_gateway_class::getMetaData('table_name') .
 				'.' .
-				$primary_gateway_class::getMetaData('primary_key') . 
-				' = ' .		
+				$primary_gateway_class::getMetaData('primary_key') .
+				' = ' .
 				$gateway_class::getMetaData('table_name') .
-				'.' . 
+				'.' .
 				$gateway_class::getMetaData('primary_key')
 			);
-		
+
 		}
 	}
 
@@ -129,7 +131,7 @@ class Query {
 	 * 			'Member' => array(
 	 * 				array('MemberGroup'=>'Member'),
 	 * 				'MemberCustomFields')),
-	 * 		array('Categories' => 'CategoryGroup')) 
+	 * 		array('Categories' => 'CategoryGroup'))
 	 * OR
 	 *
 	 * get('ChannelEntry')
@@ -145,8 +147,8 @@ class Query {
 	 * 				'to' => array('MemberGroup', 'MemberCustomFields')
 	 * 				'method' => 'join'),
 	 * 		array('Categories' => array(
-	 * 			'CategoryCustomFields', 
-	 * 			'CategoryGroup')) 
+	 * 			'CategoryCustomFields',
+	 * 			'CategoryGroup'))
 	 */
 	public function with()
 	{
@@ -173,18 +175,18 @@ class Query {
 	 *
 	 * @param string	$from_model_name	Must be the name of the *Model* not
 	 * 			the relationship.  Relationship names must be parsed into model
-	 * 			names before being sent to walkRelationshipTree()	
+	 * 			names before being sent to walkRelationshipTree()
 	 */
 	private function buildRelationshipTree(QueryTreeNode $parent, $relationship)
 	{
 		// An array could be one or two things:
 		// 	- We're specifying meta data for this node of the tree
 		// 		where meta data could be things like join vs subquery
-		// 	- The relationship tree has another level below this one 
+		// 	- The relationship tree has another level below this one
 		if (is_array($relationship))
 		{
 			// If the 'to' key exists, then we're specifying meta data, but
-			// we could still have another level below this one in the 
+			// we could still have another level below this one in the
 			// relationship tree.  So we need to check for a 'with' key.
 			if ( isset($relationship['to']))
 			{
@@ -196,7 +198,7 @@ class Query {
 					$with = $relationship['with'];
 					unset($relationship['with']);
 				}
-		
+
 				$parent->add($this->createNode($parent, $to, $relationship));
 
 				// If we have a with key, then recurse.
@@ -228,16 +230,16 @@ class Query {
 						$parent->add($this->createNode($parent, $to));
 					}
 					// Otherwise, if the key is not numeric, then
-					// we have the case of 
+					// we have the case of
 					// 	'Member' => array(
 					// 		'MemberGroup' => array('Member')
 					// 	)
 					// 	We'll need to build the 'Member' => 'MemberGroup'
-					// 	relationship and then recurse into the 
-					// 	'MemberGroup' => 'Member' relationship. 
+					// 	relationship and then recurse into the
+					// 	'MemberGroup' => 'Member' relationship.
 					else
 					{
-						// 'Member' => 'MemberGroup'	
+						// 'Member' => 'MemberGroup'
 						$from_node = $this->createNode($parent, $from);
 						$parent->add($from_node);
 						// 'MemberGroup' => array('Member')
@@ -248,13 +250,13 @@ class Query {
 					}
 				}
 			}
-			// If we had an array, then we definitely recursed, and the 
+			// If we had an array, then we definitely recursed, and the
 			// recursive calls will eventually boil down to a single from
 			// and to.  The call with a non-array to will handle the building
 			// and that is not this call.
 			return;
 		}
-	
+
 		// If there's no more tree walking to do, then we have bubbled
 		// down to a single edge in the tree (From_Model -> To_Model), build it.
 		$parent->add($this->createNode($parent, $relationship));
@@ -267,7 +269,7 @@ class Query {
 	 * relationship tree, nodes are actually the edges in the Relationship graph.
 	 * They are named for the relationship, the name of the method used to
 	 * retrieve the relationship on the "from" object, and carry a "from" and
-	 * "to". 
+	 * "to".
 	 *
 	 * @param	QueryTreeNode	$parent	The parent node to this one, represents the edge
 	 * 		leading to the attached vertex from which this node (representing an edge)
@@ -286,7 +288,7 @@ class Query {
 			$from_model_name = $parent->meta->to_model_name;
 		}
 
-		$from_model_class = QueryBuilder::getQualifiedClassName($from_model_name);
+		$from_model_class = $this->builder->resolveAlias($from_model_name);
 
 		$relationship_method = 'get' . $relationship_name;
 
@@ -326,7 +328,7 @@ class Query {
 	{
 		$relationship_meta = $node->meta;
 		$this->selectFields($node);
-		
+
 		switch ($relationship_meta->type)
 		{
 			case ModelRelationshipMeta::TYPE_ONE_TO_ONE:
@@ -347,7 +349,7 @@ class Query {
 					'LEFT OUTER');
 				$this->db->join($relationship_meta->to_table,
 					$relationship_meta->pivot_table . '.' . $relationship_meta->pivot_to_key .
-					'=' . 
+					'=' .
 					$relationship_meta->to_table . '.' . $relationship_meta->to_key,
 					'LEFT OUTER');
 				break;
@@ -357,7 +359,7 @@ class Query {
 		{
 			$this->db->join($joined_table,
 				$relationship_meta->to_table . '.' . $relationship_meta->join_key .
-				'=' . 
+				'=' .
 				$joined_table . '.' . $joined_key,
 				'LEFT OUTER');
 		}
@@ -397,7 +399,7 @@ class Query {
 		}
 	}
 
-	
+
 	/**
 	 * Run the query, hydrate the models, and reassemble the relationships
 	 *
@@ -418,7 +420,7 @@ class Query {
 	 * build the model tree out of them.
 	 */
 	private function dealiasResults($database_result)
-	{ 
+	{
 		// Each row holds field=>value data for the full joined query's
 		// tree.  In order to take this flat row data and reconstruct into
 		// a tree, the field names of each field=>value pair have been
@@ -464,7 +466,7 @@ class Query {
 				}
 				$row_data[$path][$field_name] = $value;
 
-				
+
 			}
 
 			//echo 'Processing Row: <pre>'; var_dump($row_data); //echo '</pre>';
@@ -473,7 +475,7 @@ class Query {
 			{
 				// If this is an empty model that happened to have been grabbed due to the join,
 				// move on and don't do anything.
-				$model_class = QueryBuilder::getQualifiedClassName($model_data['__model_name']);
+				$model_class = $this->builder->resolveAlias($model_data['__model_name']);
 				$primary_key_name = $model_class::getMetaData('primary_key');
 				if ( $row_data[$path][$primary_key_name] === NULL)
 				{
@@ -517,15 +519,15 @@ class Query {
 	 *
 	 * Is this a root model?  One of the ones we're get()ing.
 	 *
-	 * @param 	string	$path	The path to the model's node in the 
+	 * @param 	string	$path	The path to the model's node in the
 	 * 		relationship tree.
 	 *
 	 * @return	boolean	TRUE if this is a root model, FALSE otherwise.
-	 */	
+	 */
 	private function isRootModel($path)
 	{
 		//echo 'Query::isRootModel(' . $path . ')<br />';
-		// If it's an integer, then it's a 
+		// If it's an integer, then it's a
 		// root node, because it doesn't have
 		// any children.
 		if (is_int($path))
@@ -543,10 +545,10 @@ class Query {
 	{
 		//echo 'Query::createResultModel(';
 		$model_name = $model_data['__model_name'];
-		//echo $model_name; 
+		//echo $model_name;
 
 
-		$model_class = QueryBuilder::getQualifiedClassName($model_name);
+		$model_class = $this->builder->resolveAlias($model_name);
 
 		$primary_key_name = $model_class::getMetaData('primary_key');
 		$primary_key = $model_data[$primary_key_name];
@@ -565,11 +567,11 @@ class Query {
 
 	private function modelExists($model_data, $parent=NULL)
 	{
-		//echo 'Query::modelExists('; 
+		//echo 'Query::modelExists(';
 		$model_name =  $model_data['__model_name'];
 		$relationship_name = $model_data['__relationship_name'];
 
-		$model_class = QueryBuilder::getQualifiedClassName($model_name);
+		$model_class = $this->builder->resolveAlias($model_name);
 		$primary_key_name = $model_class::getMetaData('primary_key');
 		$primary_key = $model_data[$primary_key_name];
 
@@ -591,27 +593,27 @@ class Query {
 
 	private function findModelParent($path_data, $child_path)
 	{
-		//echo 'Query::findModelParent($path_data, ' . $child_path . ')<br />'; 
+		//echo 'Query::findModelParent($path_data, ' . $child_path . ')<br />';
 		foreach($this->model_index as $model_name => $models)
 		{
 			foreach($models as $primary_key => $data)
 			{
-				//echo '$this->model_index[' . $model_name . '][' . $primary_key . ']<br />';	
+				//echo '$this->model_index[' . $model_name . '][' . $primary_key . ']<br />';
 			}
 		}
-		
+
 		$path = substr($child_path, 0, strrpos($child_path, '_'));
 		//echo 'Parent Path: ' . $path . '<br />';
 
 		$model_data = $path_data[$path];
 
 		$model_name = $model_data['__model_name'];
-		$model_class = QueryBuilder::getQualifiedClassName($model_name);
+		$model_class = $this->builder->resolveAlias($model_name);
 		$primary_key_name = $model_class::getMetaData('primary_key');
 		$primary_key = $model_data[$primary_key_name];
 
 		//echo 'Is $this->model_index[' . $model_name . '][' . $primary_key . '] set?<br />';
-		
+
 		if (isset($this->model_index[$model_name][$primary_key]))
 		{
 			return $this->model_index[$model_name][$primary_key];
@@ -702,11 +704,11 @@ class Query {
 
 		$this->selected[] = $model_name;
 
-		$model_class_name = QueryBuilder::getQualifiedClassName($model_name);
+		$model_class_name = $this->builder->resolveAlias($model_name);
 
 		foreach ($model_class_name::getMetaData('gateway_names') as $gateway_name)
 		{
-			$gateway_class_name = QueryBuilder::getQualifiedClassName($gateway_name);
+			$gateway_class_name = $this->builder->resolveAlias($gateway_name);
 
 			$table = $gateway_class_name::getMetaData('table_name');
 			$properties = $gateway_class_name::getMetaData('field_list');
@@ -766,7 +768,7 @@ class Query {
 	 */
 	private function getPrimaryKey($model_name)
 	{
-		$model = QueryBuilder::getQualifiedClassName($model_name);
+		$model = $this->builder->resolveAlias($model_name);
 		return $model::getMetaData('primary_key');
 	}
 
@@ -785,13 +787,13 @@ class Query {
 			$key = $this->getPrimaryKey($model_name);
 		}
 
-		$model = QueryBuilder::getQualifiedClassName($model_name);
+		$model = $this->builder->resolveAlias($model_name);
 
 		$known_keys = $model::getMetaData('key_map');
 
 		if (isset($known_keys[$key]))
 		{
-			$key_gateway = QueryBuilder::getQualifiedClassName($known_keys[$key]);
+			$key_gateway = $this->builder->resolveAlias($known_keys[$key]);
 			return $key_gateway::getMetaData('table_name');
 		}
 
@@ -801,7 +803,7 @@ class Query {
 
 		foreach ($gateway_names as $gateway)
 		{
-			$gateway = QueryBuilder::getQualifiedClassName($gateway);
+			$gateway = $this->builder->resolveAlias($gateway);
 			if (property_exists($gateway, $key))
 			{
 				return $gateway::getMetaData('table_name');

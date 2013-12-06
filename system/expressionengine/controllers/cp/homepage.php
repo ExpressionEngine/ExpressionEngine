@@ -37,15 +37,16 @@ class Homepage extends CP_Controller {
 		$loader->register();
 
 		$di = new \EllisLab\ExpressionEngine\Core\Dependencies();
-		$qb = $di->getQueryBuilder();
+
+		$mb = $di->getModelBuilder();
 
 		echo 'Query was:<br />
 			qb->get(\'ChannelEntry\')
 				->with(\'Channel\', array(\'Author\'=>\'MemberGroup\'))
 				->all()<br />';
 		try {
-		$entries = $qb->get('ChannelEntry')
-			->with('Channel', 
+		$entries = $mb->get('ChannelEntry')
+			->with('Channel',
 				array('Author'=> array('MemberGroup'))
 			)
 			->all();
@@ -70,13 +71,13 @@ class Homepage extends CP_Controller {
 		}
 		echo '</pre>';
 
-		
+
 		echo 'Query was:<br />
 			qb->get(\'Channel\')
 				->with(\'ChannelEntries\' => array(\'Author\'=>\'MemberGroup\'))
 				->all()<br />';
 		try {
-		$channels = $qb->get('Channel')
+		$channels = $mb->get('Channel')
 			->with(array('ChannelEntries'=>array('Author' => 'MemberGroup')))
 			->all();
 		}
@@ -97,14 +98,14 @@ class Homepage extends CP_Controller {
 		{
 			$channel->testPrint();
 		}
-		echo '</pre>'; 
+		echo '</pre>';
 
 		echo 'Query was:<br />
 			qb->get(\'ChannelEntry\')
 				->with(\'Channel\', array(\'Author\'=>\'MemberGroup\'), array(\'Catergories\'=>\'CategoryGroup\'))
 				->all()<br />';
 		try {
-		$entries = $qb->get('ChannelEntry')
+		$entries = $mb->get('ChannelEntry')
 			->with('Channel', array('Author' => 'MemberGroup'), array('Categories'=>'CategoryGroup'))
 			->all();
 		}
@@ -125,11 +126,11 @@ class Homepage extends CP_Controller {
 		{
 			$entry->testPrint();
 		}
-		echo '</pre>'; 
+		echo '</pre>';
 		die('Success!');
 
 /* * /
-		$templates = $qb
+		$templates = $mb
 			->get('Template')
 			->with('TemplateGroup')
 			->filter('Template.template_name', 'index')
@@ -138,7 +139,7 @@ class Homepage extends CP_Controller {
 
 		$t1 = microtime(TRUE);
 
-		$templates = $qb
+		$templates = $mb
 			->get('Template')
 			->with('TemplateGroup')
 			->filter('Template.template_name', 'index')
@@ -155,7 +156,7 @@ class Homepage extends CP_Controller {
 
 
 /* */
-		
+
 
 
 
