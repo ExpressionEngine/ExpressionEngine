@@ -5,7 +5,7 @@ use EllisLab\ExpressionEngine\Model\Query\QueryTreeNode;
 use EllisLab\ExpressionEngine\Model\Collection;
 
 class Query {
-	private $di;
+
 	private $builder;
 
 	private $db;
@@ -28,7 +28,6 @@ class Query {
 
 	public function __construct(Dependencies $di, $model_name)
 	{
-		$this->di = $di;
 		$this->builder = $di->getModelBuilder();
 
 		$this->model_name = $model_name;
