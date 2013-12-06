@@ -12,7 +12,6 @@ class ModelRelationshipMeta {
 	const TYPE_MANY_TO_MANY = 'manyToMany';
 
 	protected $builder;
-	protected $dependencies;
 
 	protected $type = NULL;
 	protected $method = self::METHOD_JOIN;
