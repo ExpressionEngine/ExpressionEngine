@@ -27,36 +27,32 @@ class AutoloaderTest extends \PHPUnit_Framework_TestCase {
 		$this->autoloader = NULL;
 	}
 
-
-	public function testAutoloaderBadPathExceptionBasic()
+	public function testLoadClass()
 	{
-		$this->setExpectedException('\RuntimeException');
+		$this->autoloader->loadClass('EllisLab\AutoloaderTest\TestFileOne');
+		$this->assertTrue(class_exists('\TestFilseOne'), 'loadClass(): file without namespacing');
+
+		$this->autoloader->loadClass('EllisLab\AutoloaderTest\TestFileTwo');
+		$this->assertTrue(class_exists('\EllisLab\AutoloaderTest\TestFileTwo'), 'class file with namespacing');
+	}
+
+	/**
+	 * @expectedException \RuntimeException
+	 */
+	public function testLoadClassThrowsExceptionForBadPath()
+	{
 		$this->autoloader->loadClass('TestFileOne.php');
 	}
 
-
-	public function testAutoloaderBadPathExceptionWithValidPrefix()
+	/**
+	 * @expectedException \RuntimeException
+	 */
+	public function testLoadClassThrowsExceptionForBadPathWithValidPrefix()
 	{
-		$this->setExpectedException('\RuntimeException');
 		$this->autoloader->loadClass('Ellislab\BadFileName');
 	}
 
-
-	public function testAutoloaderSuccessNoNamespace()
-	{
-		$this->autoloader->loadClass('EllisLab\AutoloaderTest\TestFileOne');
-		$this->assertTrue(class_exists('\TestFileOne'));
-	}
-
-
-	public function testAutoloaderSuccessWithNamespace()
-	{
-		$this->autoloader->loadClass('EllisLab\AutoloaderTest\TestFileTwo');
-		$this->assertTrue(class_exists('\EllisLab\AutoloaderTest\TestFileTwo'));
-	}
-
-
-	public function testAutoloaderNewObjectFullyQualified()
+	public function testRegister()
 	{
 		$this->autoloader->register();
 		$test = new \EllisLab\AutoloaderTest\TestFileThree();
@@ -65,8 +61,7 @@ class AutoloaderTest extends \PHPUnit_Framework_TestCase {
 		$this->assertInstanceOf('EllisLab\AutoloaderTest\TestFileThree', $test);
 	}
 
-
-	public function testAutoloaderNewObjectAlias()
+	public function testLoadClassHandlesAutomaticallyResolvedAlias()
 	{
 		$this->autoloader->register();
 		$test = new TestAlias\TestFileFour();
