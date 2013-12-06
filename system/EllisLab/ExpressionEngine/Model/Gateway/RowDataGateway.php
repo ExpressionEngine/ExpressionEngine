@@ -7,6 +7,17 @@ use EllisLab\ExpressionEngine\Core\Validation\Error\ValidationError;
 
 use EllisLab\ExpressionEngine\Model\Errors;
 
+
+/**
+ * Helper function to list fields. We need to be
+ * able to get all publicly declared fields. This
+ * is the easiest way I can think of.
+ */
+function getFieldList($class)
+{
+	return get_class_vars($class);
+}
+
 /**
  * Base Gateway Class
  *
@@ -91,8 +102,7 @@ abstract class RowDataGateway {
 	{
 		if ($key === 'field_list')
 		{
-			$getFieldList = function($class) { return get_class_vars($class); };
-			return $getFieldList(get_called_class());
+			return getFieldList(get_called_class());
 		}
 
 		if (empty(static::$meta))
@@ -139,6 +149,7 @@ abstract class RowDataGateway {
 	public function validate()
 	{
 		$errors = new Errors();
+
 		// Nothing to validate!
 		if (empty($this->dirty))
 		{
@@ -148,7 +159,7 @@ abstract class RowDataGateway {
 		$validation_rules = static::getMetaData('validation_rules');
 		foreach ($this->dirty as $property => $dirty)
 		{
-			if ( isset($validation_rules[$property]))
+			if (isset($validation_rules[$property]))
 			{
 				$validator = $this->di->getValidation()->getValidator();
 				if ( ! $validator->validate($validation_rules[$property], $this->$property))
