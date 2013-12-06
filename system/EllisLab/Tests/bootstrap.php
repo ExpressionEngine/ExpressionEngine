@@ -5,7 +5,7 @@ error_reporting(E_ALL | E_STRICT);
 ini_set('display_errors', 1);
 
 // Path constants
-define('PROJECT_BASE',	realpath($dir.'/../../').'/');
+define('PROJECT_BASE',	realpath(__DIR__.'/../../').'/');
 define('BASEPATH',		PROJECT_BASE.'codeigniter/system/');
 define('APPPATH',		PROJECT_BASE.'expressionengine/');
 
