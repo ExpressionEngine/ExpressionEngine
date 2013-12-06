@@ -406,8 +406,7 @@ abstract class Model {
 		{
 			foreach (static::getMetaData('gateway_names') as $gateway_name)
 			{
-				$gateway = $this->_dependencies->getModelBuilder()->resolveAlias($gateway_name);
-				$this->_gateways[$gateway_name] = new $gateway($this->_dependencies, $data);
+				$this->_gateways[$gateway_name] = $this->_builder->makeGateway($gateway_name, $data);
 			}
 		}
 
