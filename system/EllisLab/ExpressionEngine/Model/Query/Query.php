@@ -525,16 +525,10 @@ class Query {
 	 */
 	private function isRootModel($path)
 	{
-		//echo 'Query::isRootModel(' . $path . ')<br />';
 		// If it's an integer, then it's a
 		// root node, because it doesn't have
 		// any children.
-		if (is_int($path))
-		{
-			return true;
-		}
-
-		return false;
+		return is_int($path);
 	}
 
 	/**
