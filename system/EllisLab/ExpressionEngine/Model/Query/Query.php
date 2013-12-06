@@ -288,16 +288,15 @@ class Query {
 			$from_model_name = $parent->meta->to_model_name;
 		}
 
-		$from_model_class = $this->builder->resolveAlias($from_model_name);
+		$from_model = $this->builder->make($from_model_name);
 
 		$relationship_method = 'get' . $relationship_name;
 
-		if ( ! method_exists($from_model_class, $relationship_method))
+		if ( ! method_exists($from_model, $relationship_method))
 		{
 			throw new \Exception('Undefined relationship from ' . $from_model_name . ' to ' . $relationship_name);
 		}
 
-		$from_model = new $from_model_class($this->di);
 		$relationship_meta = $from_model->$relationship_method();
 		$relationship_meta->override($meta);
 		$relationship_meta->from_model_name = $from_model_name;
@@ -543,22 +542,18 @@ class Query {
 	 */
 	private function createResultModel($model_data)
 	{
-		//echo 'Query::createResultModel(';
 		$model_name = $model_data['__model_name'];
-		//echo $model_name;
 
+		$model = $this->builder->make($model_name, $model_data);
 
-		$model_class = $this->builder->resolveAlias($model_name);
-
-		$primary_key_name = $model_class::getMetaData('primary_key');
+		$primary_key_name = $model::getMetaData('primary_key');
 		$primary_key = $model_data[$primary_key_name];
-		//echo '(' . $primary_key . '))<br />';
 
-		$model = new $model_class($this->di, $model_data);
 		if ( ! isset ($this->model_index[$model_name]))
 		{
 			$this->model_index[$model_name] = array();
 		}
+
 		$this->model_index[$model_name][$primary_key] = $model;
 
 		return $this->model_index[$model_name][$primary_key];
