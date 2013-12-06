@@ -1,12 +1,13 @@
-<?php 
-namespace EllisLab\ExpressionEngine\Model\Query;
+<?php
+namespace EllisLab\ExpressionEngine\Model;
 
 use EllisLab\ExpressionEngine\Core\Dependencies;
+use EllisLab\ExpressionEngine\Model\Query\Query;
 
-class QueryBuilder {
-	private $di = NULL;
+class ModelBuilder {
 
-	private static $model_namespace_aliases = array(
+	private $di;
+	private $model_namespace_aliases = array(
 		'Template'       => '\EllisLab\ExpressionEngine\Model\Template\Template',
 		'TemplateGroup'  => '\EllisLab\ExpressionEngine\Model\Template\TemplateGroup',
 		'TemplateGateway' => '\EllisLab\ExpressionEngine\Model\Gateway\TemplateGateway',
@@ -32,16 +33,9 @@ class QueryBuilder {
 		$this->di = $di;
 	}
 
-	/**
-	 * Retrieve a new query object for a given model.
-	 *
-	 * @param String  $model_name Name of the model
-	 * @param  Mixed  $ids One or more primary key ids to prefilter the query
-	 * @return Mixed  Query result in form of a model or collection
-	 */
 	public function get($model_name, $ids = NULL)
 	{
-		$query = new Query($this->di, $model_name);
+		$query = new Query($this, $model_name);
 
 		if (isset($ids))
 		{
@@ -58,31 +52,62 @@ class QueryBuilder {
 		return $query;
 	}
 
+	public function make($model, array $data = array())
+	{
+		$class = $this->resolveAlias($model);
+
+		if ( ! is_a($class, '\EllisLab\ExpressionEngine\Model\Model', TRUE))
+		{
+			throw new \InvalidArgumentException('Can only create Models.');
+		}
+
+		return new $class($this->di, $data);
+	}
+
 	/**
-	 * Register a model under a given name.
+	 * Create a gateway instance
 	 *
-	 * @param String $name  Name to use when interacting with the query builder
+	 * @param String $alias  Name to use when interacting with the query builder
 	 * @param String $fully_qualified_name  Fully qualified class name of the model to use
 	 * @return void
 	 */
-	public static function registerModel($name, $fully_qualified_name)
+	public function makeGateway($gateway, $data = array())
 	{
-		if (array_key_exists($name, static::$model_namespace_aliases))
+		$class = $this->resolveAlias($model);
+
+		if ( ! is_a($class, '\EllisLab\ExpressionEngine\Model\Gateway\RowDataGateway', TRUE))
+		{
+			throw new \InvalidArgumentException('Can only create Models.');
+		}
+
+		return new $class($this->di, $data);
+	}
+
+	/**
+	 * Register a model under a given alias.
+	 *
+	 * @param String $alias  Name to use when interacting with the query builder
+	 * @param String $fully_qualified_name  Fully qualified class name of the model to use
+	 * @return void
+	 */
+	public function registerModel($alias, $fully_qualified_name)
+	{
+		if (array_key_exists($alias, $this->model_namespace_aliases))
 		{
 			throw new \OverflowException('Model name has already been registered: '. $model);
 		}
 
-		static::$model_namespace_aliases[$name] = $fully_qualified_name;
+		$this->model_namespace_aliases[$alias] = $fully_qualified_name;
 	}
 
 	/**
-	 * Register a model under a given name.
+	 * Get an alias's full qualified name.
 	 *
 	 * @param String $name Name of the model
 	 * @return String Fully qualified name of the class
 	 */
-	public static function getQualifiedClassName($model)
+	public function resolveAlias($alias)
 	{
-		return static::$model_namespace_aliases[$model];
+		return $this->model_namespace_aliases[$alias];
 	}
 }

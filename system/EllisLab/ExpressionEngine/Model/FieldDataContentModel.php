@@ -19,20 +19,20 @@ abstract class FieldDataContentModel extends Model implements Content {
 			$field_structures = $this->getContentStructure()
 				->getFieldStructures();
 
-			$field_content_class = QueryBuilder::getQualifiedClassName(
+			$field_content_class = $this->builder->resolveAlias(
 				static::getMetaData('field_content_class')
 			);
 
 			foreach ($field_structures as $field_structure)
 			{
 				$fields[$field_structure->field_id] = new $field_content_class(
-					$field_sturcture,
+					$field_structure,
 					$this->gateways[static::getMetaData('field_content_gateway')]
 				);
 			}
 		}
 
-		return $this->fields;	
+		return $this->fields;
 	}
 
 }

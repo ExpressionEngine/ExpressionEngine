@@ -1,40 +1,50 @@
 <?php
 namespace EllisLab\ExpressionEngine\Core;
 
-use EllisLab\ExpressionEngine\Core\Validation\Validation as Validation;
-use EllisLab\ExpressionEngine\Model\Query\QueryBuilder as QueryBuilder;
+use \EllisLab\ExpressionEngine\Model\ModelBuilder;
+use \EllisLab\ExpressionEngine\Core\Validation\Validation;
 
 class Dependencies {
-	protected $validation = NULL;
-	protected $query_builder = NULL;
 
-	public function __construct(Dependencies $di = NULL)
-	{
-		if ( $di !== NULL)
-		{
-			$this->validation = $di->validation;
-			$this->query_builder = $di->query_builder;
-		}
-	}
+    protected $registry;
 
-	public function getValidation() 
-	{
-		if ( ! isset($this->validation))
-		{
-			$this->validation = new Validation($this);
-		}
-	
-		return $this->validation;
-	}
+    public function __construct(Dependencies $old_di = NULL)
+    {
+        if (isset($old_id))
+        {
+            $this->registry =& $old_di->registry;
+        }
+        else
+        {
+            $this->registry = array();
+        }
+    }
 
-	public function getQueryBuilder()
-	{
-		if ( ! isset($this->query_builder))
-		{
-			$this->query_builder = new QueryBuilder($this);
-		}
-		
-		return $this->query_builder;
-	}
+    protected function singleton(\Closure $object)
+    {
+        $hash = spl_object_hash($object);
 
+        if ( ! isset($this->registry[$hash]))
+        {
+            $this->registry[$hash] = $object($this);
+        }
+
+        return $this->registry[$hash];
+    }
+
+    public function getModelBuilder()
+    {
+        return $this->singleton(function($di)
+        {
+            return new ModelBuilder($di);
+        });
+    }
+
+    public function getValidation()
+    {
+        return $this->singleton(function($di)
+        {
+            return new Validation($di);
+        });
+    }
 }

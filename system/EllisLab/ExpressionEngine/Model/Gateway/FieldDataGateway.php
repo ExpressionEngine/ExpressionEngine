@@ -4,6 +4,7 @@ namespace EllisLab\ExpressionEngine\Model\Gateway;
 use EllisLab\ExpressionEngine\Model\Gateway\Gateway;
 
 class FieldDataGateway extends RowDataGateway {
+
 	protected $fields = array();
 
 	public function __get($name)
@@ -13,7 +14,7 @@ class FieldDataGateway extends RowDataGateway {
 			list($id) = sscanf($name, 'field_id_%d');
 			return $this->fields[$id]->data;
 		}
-		elseif(strpos($name, 'field_fmt_') === 0)
+		elseif (strpos($name, 'field_fmt_') === 0)
 		{
 			list($id) = sscanf($name, 'field_fmt_%d');
 			return $this->fields[$id]->format;
@@ -32,7 +33,7 @@ class FieldDataGateway extends RowDataGateway {
 			$this->fields[$id]->data = $value;
 			$this->dirty[$name] = TRUE;
 		}
-		elseif(strpos($name, 'field_fmt_') === 0)
+		elseif (strpos($name, 'field_fmt_') === 0)
 		{
 			list($id) = sscanf($name, 'field_fmt_%d');
 			if ( ! isset($this->fields[$id]))
@@ -42,7 +43,7 @@ class FieldDataGateway extends RowDataGateway {
 			$this->fields[$id]->format = $value;
 			$this->dirty[$name] = TRUE;
 		}
-		
+
 	}
 
 
@@ -55,7 +56,8 @@ class FieldDataGateway extends RowDataGateway {
 			$db->from(static::getMetaData('field_table'));
 
 			$results = $db->get()->result_array();
-			$field_names = parent::getMetaData('field_list');		
+			$field_names = parent::getMetaData('field_list');
+
 			foreach($results as $result_row)
 			{
 				$field_names['field_id_' . $result_row[static::getMetaData('field_id_name')]] = NULL;
@@ -66,12 +68,13 @@ class FieldDataGateway extends RowDataGateway {
 		}
 
 		return parent::getMetaData($key);
-		
+
 	}
 }
 
 
 class FieldData {
+
 	public $field_id;
 	public $data;
 	public $format;
