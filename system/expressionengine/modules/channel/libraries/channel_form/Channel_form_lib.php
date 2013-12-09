@@ -1903,6 +1903,11 @@ GRID_FALLBACK;
 			return $categories;
 		}
 
+		if ( ! empty($params['group_id']))
+		{
+			$params['show_group'] = $params['group_id'];
+		}
+
 		if ( ! empty($params['show_group']))
 		{
 			ee()->channel_form_data_sorter->filter($categories, 'category_group_id', $params['show_group'], 'in_array');
