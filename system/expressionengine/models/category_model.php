@@ -58,24 +58,6 @@ class Category_model extends CI_Model {
 		return $result;
 	}
 
-	/**
-	 * Get Categories
-	 *
-	 * This is actually completely misnamed, as it returns category_groups
-	 * and not all categories, or something like the name suggests
-	 * So, deprecating this function as of 2.2.0, and aliasing
-	 * get_category_groups() -- ga
-	 *
-	 * @deprecated 	2.2.0
-	 */
-	public function get_categories($group_id = '', $site_id = TRUE)
-	{
-		$EE = get_instance();
-		$EE->load->library('logger');
-		$EE->logger->deprecated('2.2.0', 'Category_model::get_category_groups()');
-		return $this->get_category_groups($group_id, $site_id);
-	}
-
 	// --------------------------------------------------------------------
 
 	/**

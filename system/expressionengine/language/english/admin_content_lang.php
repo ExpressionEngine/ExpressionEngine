@@ -311,6 +311,9 @@ $lang = array(
 'illegal_characters' =>
 'The name you submitted may only contain alpha-numeric characters, spaces, underscores, and dashes',
 
+'illegal_tab_name' =>
+'Tab names may not contain the following characters: *, >, :, +, (, ), [, ], =, |, ", \', ., #, or $',
+
 'comment_require_membership' =>
 'Require membership in order to post comments?',
 

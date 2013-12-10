@@ -38,7 +38,8 @@ class Updater {
 
 		$steps = new ProgressIterator(
 			array(
-				'_update_extension_quick_tabs'
+				'_update_extension_quick_tabs',
+				'_extract_server_offset_config'
 			)
 		);
 
@@ -71,6 +72,69 @@ class Updater {
 		}
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Make sure server_offset is set in config.php and not in the
+	 * exp_sites table because the UI for settings server offset is gone
+	 *
+	 * Previously, server_offset could be set via the control panel, in
+	 * which case the value would get trapped in the site preferences array
+	 * with no interface to change since the UI for the setting was removed
+	 * in 2.6. This puts it back in config.php and out of the sites table
+	 * to help potential confusion if server time appears off but no
+	 * apparent setting is causing it.
+	 */
+	private function _extract_server_offset_config()
+	{
+		// Get server offset from config.php if it exists
+		// (DB prefs aren't loaded yet)
+		$server_offset = ee()->config->item('server_offset');
+
+		$sites = ee()->db->select('site_id, site_system_preferences')
+			->get('sites')
+			->result_array();
+
+		foreach ($sites as $site)
+		{
+			$prefs = unserialize(base64_decode($site['site_system_preferences']));
+
+			// Don't run the update query if we don't have to
+			$update = FALSE;
+
+			// Remove server_offset from site system preferences array
+			if (isset($prefs['server_offset']))
+			{
+				if ($server_offset === FALSE)
+				{
+					$server_offset = $prefs['server_offset'];
+				}
+
+				unset($prefs['server_offset']);
+
+				$update = TRUE;
+			}
+
+			if ($update)
+			{
+				ee()->db->update(
+					'sites',
+					array('site_system_preferences' => base64_encode(serialize($prefs))),
+					array('site_id' => $site['site_id'])
+				);
+			}
+		}
+
+		// Add server_offset back to site preferences, but this time
+		// it will end up in config.php because server_offset is no
+		// longer in divination
+		if ( ! empty($server_offset))
+		{
+			ee()->config->update_site_prefs(array(
+				'server_offset' => $server_offset
+			), 'all');
+		}
+	}
 }
 /* END CLASS */
 
