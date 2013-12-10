@@ -229,7 +229,7 @@ EE.namespace('EE.publish.file_browser');
 	 * Fire up the file browser for file fields
 	 */
 	EE.publish.file_browser.file_field = function() {
-		add_trigger("input[type=file]", "#publishForm, .pageContents");
+		add_trigger("input[type=file]", "#publishForm .publish_file, .pageContents");
 
 		// Bind a new trigger when a new Grid row is added
 		Grid.bind('file', 'display', function(cell)
