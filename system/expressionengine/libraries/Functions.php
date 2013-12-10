@@ -144,6 +144,33 @@ class EE_Functions {
 		}
 		// END Specials
 
+        // Handle template routes
+        $parts = explode(' ', $segment);
+        $template = array_shift($parts);
+        list($group, $template) = explode('/', $template);
+        if ( !empty($group) && !empty($template))
+        {
+            // Proceed only if we have a template route set
+	        ee()->db->select('route, template_name, group_name');
+		    ee()->db->from('templates');
+		    ee()->db->join('template_groups', 'templates.group_id = template_groups.group_id');
+	        ee()->db->where('template_name', $template);
+	        ee()->db->where('group_name', $group);
+	        ee()->db->where('route_parsed is not null');
+	        $query = ee()->db->get();
+            if ($query->num_rows() > 0)
+            {
+		        require_once APPPATH.'libraries/template_router/Route.php';
+                $route = new EE_Route($query->row()->route);
+                $options = array();
+                foreach($parts as $part) {
+                    $part = explode('=', $part);
+                    $options[$part[0]] = $part[1];
+                }
+                $segment = $route->build($options);
+            }
+        }
+
 		$base = $this->fetch_site_index(0, $sess_id).'/'.trim_slashes($segment);
 
 		$out = reduce_double_slashes($base);

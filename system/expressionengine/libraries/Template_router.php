@@ -28,6 +28,7 @@ class EE_Template_Router extends CI_Router {
 
     function __construct()
     {
+		require_once APPPATH.'libraries/template_router/Match.php';
         $this->set_routes();
     }
 
@@ -50,8 +51,7 @@ class EE_Template_Router extends CI_Router {
 		foreach ($this->end_points as $route => $end_point)
 		{
 			if(preg_match("/$route/i", $request, $matches) == 1) {
-				// TODO: Add matched variables for template parsing here.
-				return $end_point;
+				return new EE_Route_match($end_point, $matches);
 			}
 		}
 		throw new Exception('No such template route.');

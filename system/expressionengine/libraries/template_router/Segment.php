@@ -55,6 +55,7 @@ class EE_Route_segment {
 		{
 			throw new Exception("Invalid rule in segment");
 		}
+        return $result === 1 ? True : False;
 	}
 
 	/**
