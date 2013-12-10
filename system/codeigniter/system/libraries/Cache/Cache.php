@@ -117,6 +117,8 @@ class CI_Cache extends CI_Driver_Library {
 	 *
 	 * @param	string	$key 		Key name
 	 * @param	string	$namespace	Namespace name
+	 * @param	const	$scope	self::CACHE_LOCAL or self::CACHE_GLOBAL for
+	 *		local or global scoping of the cache item
 	 * @return	mixed	value matching $id or FALSE on failure
 	 */
 	public function get($key, $namespace = '', $scope = self::CACHE_LOCAL)
@@ -133,6 +135,8 @@ class CI_Cache extends CI_Driver_Library {
 	 * @param	mixed	$data		Data to store
 	 * @param	int		$ttl = 60	Cache TTL (in seconds)
 	 * @param	string	$namespace	Namespace name
+	 * @param	const	$scope	self::CACHE_LOCAL or self::CACHE_GLOBAL for
+	 *		local or global scoping of the cache item
 	 * @return	bool	TRUE on success, FALSE on failure
 	 */
 	public function save($key, $data, $ttl = 60, $namespace = '', $scope = self::CACHE_LOCAL)
@@ -147,6 +151,8 @@ class CI_Cache extends CI_Driver_Library {
 	 *
 	 * @param	string	$key		Key name
 	 * @param	string	$namespace	Namespace name
+	 * @param	const	$scope	self::CACHE_LOCAL or self::CACHE_GLOBAL for
+	 *		local or global scoping of the cache item
 	 * @return	bool	TRUE on success, FALSE on failure
 	 */
 	public function delete($key, $namespace = '', $scope = self::CACHE_LOCAL)
@@ -160,6 +166,8 @@ class CI_Cache extends CI_Driver_Library {
 	 * Delete keys from cache with a specified prefix
 	 *
 	 * @param	string	$namespace	Namespace of group of cache keys to delete
+	 * @param	const	$scope	self::CACHE_LOCAL or self::CACHE_GLOBAL for
+	 *		local or global scoping of the cache item
 	 * @return	bool
 	 */
 	public function clear_namepace($namespace, $scope = self::CACHE_LOCAL)
@@ -172,6 +180,8 @@ class CI_Cache extends CI_Driver_Library {
 	/**
 	 * Clean the cache
 	 *
+	 * @param	const	$scope	self::CACHE_LOCAL or self::CACHE_GLOBAL for
+	 *		local or global scoping of the cache item
 	 * @return	bool	TRUE on success, FALSE on failure
 	 */
 	public function clean($scope = self::CACHE_LOCAL)
@@ -199,6 +209,8 @@ class CI_Cache extends CI_Driver_Library {
 	 *
 	 * @param	string	$key		Key to get cache metadata on
 	 * @param	string	$namespace	Namespace name
+	 * @param	const	$scope	self::CACHE_LOCAL or self::CACHE_GLOBAL for
+	 *		local or global scoping of the cache item
 	 * @return	mixed	cache item metadata
 	 */
 	public function get_metadata($key, $namespace = '', $scope = self::CACHE_LOCAL)
@@ -241,24 +253,36 @@ class CI_Cache extends CI_Driver_Library {
 	// ------------------------------------------------------------------------
 
 	/**
+	 * Returns a unique key fit for using on a memory-based cache driver
+	 *
 	 * For storage drivers that can store keys for many sites, we want to make
 	 * sure keys are kept unique to the current site, so we'll prefix the key
 	 * name with the site URL
 	 *
+	 * For instances where the cached item is to be globally scoped to the
+	 * installation, we'll prefix the key with a hash of the APPPATH and the
+	 * server's IP address, so for instances where multiple servers are using
+	 * the same Memcached/Redis server, cache items can remain unique but still
+	 * globally scoped to the install
+	 *
+	 * Why not use the hash all the time? Using the raw site URL will provide
+	 * more clarity when debugging cache issues
+	 *
 	 * @param	string	$key	Key to make unique
+	 * @param	const	$scope	self::CACHE_LOCAL or self::CACHE_GLOBAL for
+	 *		local or global scoping of the cache item
 	 * @return	string	Key made unique to this site
 	 */
 	public function unique_key($key, $scope = self::CACHE_LOCAL)
 	{
 		$prefix = ee()->config->item('site_url');
 
-		if (ee()->config->item('multiple_sites_enabled') == 'y' &&
-			$scope == self::CACHE_GLOBAL)
+		if ($scope == self::CACHE_GLOBAL)
 		{
-
+			$prefix = md5(ee()->input->server('SERVER_ADDR').APPPATH);
 		}
 
-		return ee()->config->item('site_url').':'.$key;
+		return $prefix.':'.$key;
 	}
 }
 
