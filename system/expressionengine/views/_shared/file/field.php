@@ -20,6 +20,8 @@
 			<p class='sub_filename'><?=$upload?></p>
 			<?php if ( ! $allowed_file_dirs):?>
 				<p><?=$dropdown?></p>
+			<?php else: ?>
+				<p><?=$directory?></p>
 			<?php endif; ?>
 
 			<?php if ( ! empty($existing_files)) : ?>
@@ -28,3 +30,4 @@
 		</div>
 	</div>
 </div>
+<div class="clear"></div>

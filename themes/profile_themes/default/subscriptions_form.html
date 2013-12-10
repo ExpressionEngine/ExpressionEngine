@@ -1,10 +1,10 @@
 
-<script type="text/javascript"> 
+<script type="text/javascript">
 <!--
 
 function toggle(thebutton)
 {
-	if (thebutton.checked) 
+	if (thebutton.checked)
 	{
 	   val = true;
 	}
@@ -12,27 +12,27 @@ function toggle(thebutton)
 	{
 	   val = false;
 	}
-				
+
 	var len = document.target.elements.length;
 
-	for (var i = 0; i < len; i++) 
+	for (var i = 0; i < len; i++)
 	{
 		var button = document.target.elements[i];
-		
-		var name_array = button.name.split("["); 
-		
-		if (name_array[0] == "toggle") 
+
+		var name_array = button.name.split("[");
+
+		if (name_array[0] == "toggle")
 		{
 			button.checked = val;
 		}
 	}
-	
+
 	document.target.toggleflag.checked = val;
 }
 //-->
 </script>
 
-<form method="post" action="{path:update_subscriptions}" name="target">
+{form_declaration}
 
 <div class='profileHeadingBG'><div class="tableHeading">{lang:subscriptions}</div></div>
 

@@ -138,6 +138,8 @@ class Radio_ft extends EE_Fieldtype {
 		$text_format = (isset($this->row['field_ft_'.$this->field_id]))
 			? $this->row['field_ft_'.$this->field_id] : 'none';
 
+		ee()->load->library('typography');
+
 		return ee()->typography->parse_type(
 			ee()->functions->encode_ee_tags($data),
 			array(

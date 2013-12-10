@@ -209,7 +209,6 @@ class Channel_form_lib
 			$this->edit = TRUE;
 		}
 
-		// @added rev 57
 		if ($this->edit && $this->bool_string(ee()->TMPL->fetch_param('author_only')) && $this->entry('author_id') != ee()->session->userdata('member_id'))
 		{
 			throw new Channel_form_exception(lang('channel_form_author_only'));
@@ -390,7 +389,6 @@ class Channel_form_lib
 			if ($tag_name == 'categories')
 			{
 				ee()->TMPL->tagdata = $this->swap_var_pair($tag_pair_open, $this->categories($tagparams), ee()->TMPL->tagdata, $tag_name, ! empty($tagparams['backspace']) ? $tagparams['backspace'] : FALSE);
-				//$this->parse_variables['categories'] = $this->categories($tagparams);
 			}
 
 			elseif ($tag_name == 'statuses')
@@ -671,18 +669,20 @@ class Channel_form_lib
 
 		$conditional_errors = $this->_add_errors();
 
-
 		// Parse captcha conditional
 		$captcha_conditional = array(
 			'captcha' => ($this->channel('channel_id') && $this->logged_out_member_id && ! empty($this->settings['require_captcha'][ee()->config->item('site_id')][$this->channel('channel_id')]))
 		);
 
+        $conditionals = array_merge($conditional_errors, $captcha_conditional);
+
 		// Parse conditionals
-		// $this->parse_variables['error:title'] = TRUE;
 		ee()->TMPL->tagdata = ee()->functions->prep_conditionals(
 			ee()->TMPL->tagdata,
-			array_merge($conditional_errors, $captcha_conditional)
+            $conditionals
 		);
+
+        $this->parse_variables = array_merge($this->parse_variables, $conditional_errors);
 
 		// Make sure {captcha_word} is blank
 		ee()->TMPL->tagdata = ee()->TMPL->swap_var_single('captcha_word', '', ee()->TMPL->tagdata);
@@ -763,7 +763,7 @@ class Channel_form_lib
 
 
 		$return = ee()->functions->form_declaration($form_attributes);
-		$return .= stripslashes(ee()->TMPL->tagdata);
+		$return .= ee()->TMPL->tagdata;
 		$return .= "</form>";
 
 
@@ -856,7 +856,7 @@ class Channel_form_lib
 		{
 			if (strpos($button->classname, 'btn_img') !== FALSE)
 			{
-				// no fielbrowser -> no img field
+				// no filebrowser -> no img field
 				continue;
 			}
 			elseif(strpos($button->classname, 'markItUpSeparator') !== FALSE)
@@ -966,6 +966,7 @@ GRID_FALLBACK;
 		if ($this->datepicker)
 		{
 			$js_defaults['ui'][] = 'datepicker';
+			$js_defaults['file'][] = 'cp/date';
 		}
 
 		foreach ($js_defaults as $type => $files)
@@ -987,6 +988,10 @@ GRID_FALLBACK;
 				}
 			}
 		}
+
+		// Array of possible JS and their requirements
+		// If the key is a needed JS file, it should be in ee()->cp->js_files
+		// and this just handles pulling in files required by the key.
 
 		$ui = array(
 			'core' => FALSE,
@@ -1073,7 +1078,7 @@ GRID_FALLBACK;
 			$this->head .= '<script type="text/javascript" src="'.$js_url.'"></script>'."\n";
 		}
 
-		$this->head .= '<script type="text/javascript" charset="utf-8" src="'.ee()->functions->fetch_site_index().QUERY_MARKER.'ACT='.ee()->functions->fetch_action_id('Channel', 'combo_loader').'&'.str_replace('%2C', ',', http_build_query(ee()->cp->js_files)).'&v='.max($mtime).$use_live_url.$include_jquery.'"></script>'."\n";
+		$this->head .= '<script type="text/javascript" charset="utf-8" src="'.ee()->functions->fetch_site_index().QUERY_MARKER.'ACT='.ee()->functions->fetch_action_id('Channel', 'combo_loader').'&'.str_replace(array('%2C', '%2F'), array(',', '/'), http_build_query(ee()->cp->js_files)).'&v='.max($mtime).$use_live_url.$include_jquery.'"></script>'."\n";
 
 		//add fieldtype styles
 		foreach (ee()->cp->its_all_in_your_head as $item)
@@ -1210,50 +1215,51 @@ GRID_FALLBACK;
 	 */
 	private function _add_errors()
 	{
+        $conditional_errors = array();
+
 		foreach ($this->title_fields as $field)
 		{
 			if (isset(ee()->TMPL->var_single['error:'.$field]))
 			{
-				$this->parse_variables['error:'.$field] = ( ! empty($this->field_errors[$field])) ? $this->field_errors[$field] : '';
+				$conditional_errors['error:'.$field] = ( ! empty($this->field_errors[$field])) ? $this->field_errors[$field] : '';
 			}
 		}
 
 		// Add global errors
 		if (count($this->errors) === 0)
 		{
-			$this->parse_variables['global_errors'] = array(array());
+			$conditional_errors['global_errors'] = array(array());
 		}
 		else
 		{
-			$this->parse_variables['global_errors'] = array();
+			$conditional_errors['global_errors'] = array();
 
 			foreach ($this->errors as $error)
 			{
-				$this->parse_variables['global_errors'][] = array('error' => $error);
+				$conditional_errors['global_errors'][] = array('error' => $error);
 			}
 		}
 
-		$this->parse_variables['global_errors:count'] = count($this->errors);
+		$conditional_errors['global_errors:count'] = count($this->errors);
 
 		// Add field errors
 		if (count($this->field_errors) === 0)
 		{
-			$this->parse_variables['field_errors'] = array(array());
+			$conditional_errors['field_errors'] = array(array());
 		}
 		else
 		{
-			$this->parse_variables['field_errors'] = array();
+			$conditional_errors['field_errors'] = array();
 
 			foreach ($this->field_errors as $field => $error)
 			{
-				$this->parse_variables['field_errors'][] = array('field' => $field, 'error' => $error);
+				$conditional_errors['field_errors'][] = array('field' => $field, 'error' => $error);
 			}
 		}
 
-		$this->parse_variables['field_errors:count'] = count($this->field_errors);
+		$conditional_errors['field_errors:count'] = count($this->field_errors);
 
 		// Add field errors to conditional parsing
-		$conditional_errors = $this->parse_variables;
 		if ( ! empty($conditional_errors['field_errors'][0]))
 		{
 			foreach ($conditional_errors['field_errors'] as $error)
@@ -1646,8 +1652,6 @@ GRID_FALLBACK;
 
 		foreach (ee()->api_channel_fields->settings as $field_id => $settings)
 		{
-		//	$settings['field_name'] = 'field_id_'.$field_id;
-
 			if (isset($settings['field_settings']))
 			{
 				$settings = array_merge($settings, $this->unserialize($settings['field_settings'], TRUE));
@@ -1794,6 +1798,8 @@ GRID_FALLBACK;
 				}
 			}
 
+			ee()->security->restore_xid();
+
 			ee()->core->generate_page();
 			return;
 		}
@@ -1899,7 +1905,12 @@ GRID_FALLBACK;
 
 		if ( ! empty($params['group_id']))
 		{
-			ee()->channel_form_data_sorter->filter($categories, 'category_group_id', $params['group_id'], 'in_array');
+			$params['show_group'] = $params['group_id'];
+		}
+
+		if ( ! empty($params['show_group']))
+		{
+			ee()->channel_form_data_sorter->filter($categories, 'category_group_id', $params['show_group'], 'in_array');
 		}
 
 		if ( ! empty($params['order_by']))

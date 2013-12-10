@@ -1300,6 +1300,7 @@ class Content_publish extends CP_Controller {
 			'lang.duplicate_tab_name'			=> lang('duplicate_tab_name'),
 			'lang.hide_toolbar' 				=> lang('hide_toolbar'),
 			'lang.illegal_characters'			=> lang('illegal_characters'),
+			'lang.illegal_tab_name'				=> lang('illegal_tab_name'),
 			'lang.loading'						=> lang('loading'),
 			'lang.tab_name'						=> lang('tab_name'),
 			'lang.show_toolbar' 				=> lang('show_toolbar'),

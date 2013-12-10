@@ -535,6 +535,13 @@ class Member_auth extends Member {
 	 */
 	public function member_logout()
 	{
+		// Check Form Hash
+		$xid = ee()->input->get('XID') ? ee()->input->get('XID') : '';
+		if ( ! ee()->security->secure_forms_check($xid))
+		{
+			return ee()->output->show_user_error('general', array(lang('not_authorized')));
+		}
+
 		// Kill the session and cookies
 		ee()->db->where('site_id', ee()->config->item('site_id'));
 		ee()->db->where('ip_address', ee()->input->ip_address());
@@ -919,8 +926,9 @@ class Member_auth extends Member {
 		// then we'll use it.
 		if (isset(ee()->session->tracker[3]))
 		{
+			$seg = (ee()->session->tracker[3] != 'index') ? ee()->session->tracker[3] : '';
 			$site_name = stripslashes(ee()->config->item('site_name'));
-			$return = reduce_double_slashes(ee()->functions->fetch_site_index() . '/' . ee()->session->tracker[3]);
+			$return = reduce_double_slashes(ee()->functions->fetch_site_index() . '/' . $seg);
 		}
 		// Otherwise, it's entirely possible they are clicking the e-mail link after
 		// their session has expired.  In that case, the only information we have
