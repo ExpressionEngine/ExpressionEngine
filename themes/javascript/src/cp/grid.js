@@ -63,6 +63,10 @@ Grid.Publish.prototype = {
 		this._toggleRowManipulationButtons();
 		this._fieldDisplay();
 
+		// Store the original row count so we can properly increment new
+		// row placeholder IDs in _addRow()
+		this.original_row_count = this._getRows().size();
+
 		// Disable input elements in our blank template container so they
 		// don't get submitted on form submission
 		this.blankRow.find(':input').attr('disabled', 'disabled');
@@ -202,10 +206,11 @@ Grid.Publish.prototype = {
 		el.removeClass('blank_row');
 
 		// Increment namespacing on inputs
+		this.original_row_count++;
 		el.html(
 			el.html().replace(
 				RegExp('new_row_[0-9]{1,}', 'g'),
-				'new_row_' + this.rowContainer.find('tr').size()
+				'new_row_' + this.original_row_count
 			)
 		);
 
