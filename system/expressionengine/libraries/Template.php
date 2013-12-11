@@ -3865,6 +3865,9 @@ class EE_Template {
 					{
 						$parts = preg_split("/\s+/", $val, 2);
 						$args = (isset($parts[1])) ? ee()->functions->assign_parameters($parts[1]) : array();
+						if (strpos($val, ':relative') !== FALSE) {
+							$args['relative'] = 'yes';
+						}
 						$dt = $this->process_date($timestamp, $args, $localize);
 					}
 
