@@ -1152,7 +1152,7 @@ MAGIC;
 		{			
 			return FALSE;
 		}
-		
+
 		$where = array(
 			'moblog_enabled'	=> 'y',
 			'moblog_id'			=> $id
@@ -1174,72 +1174,45 @@ MAGIC;
 		$MP->moblog_array = $query->row_array();
 		
 		$error = FALSE;
+
 		if ($MP->moblog_array['moblog_email_type'] == 'imap')
 		{
-			if ( ! $MP->check_imap_moblog())
-			{
-				$display = $MP->message_array;
-				$cp_message = '';
-				
-				foreach ($MP->message_array as $val)
-				{
-					$cp_message .= lang($val).'<br>';
-				}
-
-				ee()->session->set_flashdata('message_failure', $cp_message);
-			}
-			else
-			{
-				$message = lang('moblog_successful_check').'<br />';
-				$message .= lang('emails_done').NBS.NBS.$MP->emails_done.'<br />';
-				$message .= lang('entries_added').NBS.NBS.$MP->entries_added.'<br />';
-				$message .= lang('attachments_uploaded').NBS.NBS.$MP->uploads.'<br />';
-				
-				if (count($MP->message_array) > 0)
-				{
-					$message .= $MP->errors();
-					$error = TRUE;
-				}
-				
-				ee()->session->set_flashdata(array('message' => $message, 'error' => $error));
-				ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=moblog');
-			}
+			$this->_moblog_check_return($MP->check_imap_moblog(), $MP->errors());
 		}
 		else
 		{
-			if ( ! $MP->check_pop_moblog())
-			{
-				$display = $MP->message_array;
-				$cp_message = '';
-				
-				foreach ($MP->message_array as $val)
-				{
-					$cp_message .= lang($val).'<br>';
-				}
-
-				ee()->session->set_flashdata('message_failure', $cp_message);				
-			}
-			else
-			{
-				$message = lang('moblog_successful_check').'<br />';
-				$message .= lang('emails_done').NBS.NBS.$MP->emails_done.'<br />';
-				$message .= lang('entries_added').NBS.NBS.$MP->entries_added.'<br />';
-				$message .= lang('attachments_uploaded').NBS.NBS.$MP->uploads.'<br />';
-
-				if (count($MP->message_array) > 0)
-				{
-					$message .= $MP->errors();
-					$error = TRUE;
-				}
-
-				ee()->session->set_flashdata(array('message' => $message, 'error' => $error));
-				ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=moblog');
-			}			
+			$this->_moblog_check_return($MP->check_pop_moblog(), $MP->errors());
 		}
+	}
+	
+	/** -------------------------
+	/**  Moblog Check Return
+	/** -------------------------*/
+	
+	function _moblog_check_return($response, $error_string)
+	{
+		if ( ! $response)
+		{
+			ee()->session->set_flashdata('message_failure', $error_string);				
+			ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=moblog');
+		}
+		else
+		{
+			$message['message_success'] = lang('moblog_successful_check');
+			$message['message_success'] .=  BR.lang('emails_done').NBS.NBS.$MP->emails_done;
+			$message['message_success'] .=  BR.lang('entries_added').NBS.NBS.$MP->entries_added;
+			$message['message_success'] .=  BR.lang('attachments_uploaded').NBS.NBS.$MP->uploads;
 
-		ee()->session->set_flashdata(array('message' => $MP->errors(), 'error' => TRUE));
-		ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=moblog');
+			if ( ! empty($error_string))
+			{
+				$message['message_failure'] = BR.$error_string;
+			}
+
+			ee()->session->set_flashdata($message);
+			ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=moblog');
+		}			
 	}	
+		
 }
 // END CLASS
 
