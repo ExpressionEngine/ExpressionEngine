@@ -84,8 +84,8 @@ class EE_Template {
 
 	var $reverse_related_data = array();	//  A multi-dimensional array containing any reverse related tags
 
-	protected $_tag_cache_prefix	= 'tag';	// Tag cache key prefix
-	protected $_page_cache_prefix	= 'page'; 	// Page cache key prefix
+	protected $_tag_cache_prefix	= 'tag_cache';	// Tag cache key namespace
+	protected $_page_cache_prefix	= 'page_cache'; // Page cache key namespace
 
 	var $disable_caching	= FALSE;
 
@@ -1497,13 +1497,13 @@ class EE_Template {
 		// Get metadata for this cache key to see if it's expired, because even
 		// though we can set a TTL for auto-expiration, the refresh setting
 		// can change and needs to invalidate the cache if necessary
-		$cache_info = ee()->cache->get_metadata($cfile, $namespace);
+		$cache_info = ee()->cache->get_metadata('/'.$namespace.'/'.$cfile);
 
 		// If expiration date plus refresh time is greater than now and there is
 		// something in the cache, return cached copy
 		if (isset($cache_info['expire']) &&
 			$cache_info['expire'] + $refresh > ee()->localize->now &&
-			$cache = ee()->cache->get($cfile, $namespace))
+			$cache = ee()->cache->get('/'.$namespace.'/'.$cfile))
 		{
 			$status = 'CURRENT';
 		}
@@ -1557,7 +1557,7 @@ class EE_Template {
 		// Prefix for URI or query string
 		$cfile = $this->_get_cache_prefix().'+'.$cfile;
 
-		if ( ! ee()->cache->save($cfile, $data, 0, $namespace))
+		if ( ! ee()->cache->save('/'.$namespace.'/'.$cfile, $data, 0))
 		{
 			$this->log_item("Could not create/write to cache file: ".$namespace.'/'.$cfile);
 		}
@@ -1631,7 +1631,7 @@ class EE_Template {
 			// Clear page cache if we have too many
 			if ($i > $max)
 			{
-				ee()->cache->clear_namepace('page');
+				ee()->cache->delete('/page/');
 			}
 		}
 	}

@@ -116,14 +116,13 @@ class CI_Cache extends CI_Driver_Library {
 	 * if not, return FALSE
 	 *
 	 * @param	string	$key 		Key name
-	 * @param	string	$namespace	Namespace name
 	 * @param	const	$scope	self::CACHE_LOCAL or self::CACHE_GLOBAL for
 	 *		local or global scoping of the cache item
 	 * @return	mixed	value matching $id or FALSE on failure
 	 */
-	public function get($key, $namespace = '', $scope = self::CACHE_LOCAL)
+	public function get($key, $scope = self::CACHE_LOCAL)
 	{
-		return $this->{$this->_adapter}->get($key, $namespace, $scope);
+		return $this->{$this->_adapter}->get($key, $scope);
 	}
 
 	// ------------------------------------------------------------------------
@@ -134,14 +133,13 @@ class CI_Cache extends CI_Driver_Library {
 	 * @param	string	$key		Key name
 	 * @param	mixed	$data		Data to store
 	 * @param	int		$ttl = 60	Cache TTL (in seconds)
-	 * @param	string	$namespace	Namespace name
 	 * @param	const	$scope	self::CACHE_LOCAL or self::CACHE_GLOBAL for
 	 *		local or global scoping of the cache item
 	 * @return	bool	TRUE on success, FALSE on failure
 	 */
-	public function save($key, $data, $ttl = 60, $namespace = '', $scope = self::CACHE_LOCAL)
+	public function save($key, $data, $ttl = 60, $scope = self::CACHE_LOCAL)
 	{
-		return $this->{$this->_adapter}->save($key, $data, $ttl, $namespace, $scope);
+		return $this->{$this->_adapter}->save($key, $data, $ttl, $scope);
 	}
 
 	// ------------------------------------------------------------------------
@@ -149,30 +147,19 @@ class CI_Cache extends CI_Driver_Library {
 	/**
 	 * Delete from cache
 	 *
+	 * To clear a particular namespace, pass in the namespace with a trailing
+	 * slash like so:
+	 *
+	 * ee()->cache->delete('/namespace_name/');
+	 *
 	 * @param	string	$key		Key name
-	 * @param	string	$namespace	Namespace name
 	 * @param	const	$scope	self::CACHE_LOCAL or self::CACHE_GLOBAL for
 	 *		local or global scoping of the cache item
 	 * @return	bool	TRUE on success, FALSE on failure
 	 */
-	public function delete($key, $namespace = '', $scope = self::CACHE_LOCAL)
+	public function delete($key, $scope = self::CACHE_LOCAL)
 	{
-		return $this->{$this->_adapter}->delete($key, $namespace, $scope);
-	}
-
-	// ------------------------------------------------------------------------
-
-	/**
-	 * Delete keys from cache with a specified prefix
-	 *
-	 * @param	string	$namespace	Namespace of group of cache keys to delete
-	 * @param	const	$scope	self::CACHE_LOCAL or self::CACHE_GLOBAL for
-	 *		local or global scoping of the cache item
-	 * @return	bool
-	 */
-	public function clear_namepace($namespace, $scope = self::CACHE_LOCAL)
-	{
-		return $this->{$this->_adapter}->clear_namepace($namespace);
+		return $this->{$this->_adapter}->delete($key, $scope);
 	}
 
 	// ------------------------------------------------------------------------
@@ -208,14 +195,13 @@ class CI_Cache extends CI_Driver_Library {
 	 * Get Cache Metadata
 	 *
 	 * @param	string	$key		Key to get cache metadata on
-	 * @param	string	$namespace	Namespace name
 	 * @param	const	$scope	self::CACHE_LOCAL or self::CACHE_GLOBAL for
 	 *		local or global scoping of the cache item
 	 * @return	mixed	cache item metadata
 	 */
-	public function get_metadata($key, $namespace = '', $scope = self::CACHE_LOCAL)
+	public function get_metadata($key, $scope = self::CACHE_LOCAL)
 	{
-		return $this->{$this->_adapter}->get_metadata($key, $namespace);
+		return $this->{$this->_adapter}->get_metadata($key, $scope);
 	}
 
 	// ------------------------------------------------------------------------
@@ -283,6 +269,21 @@ class CI_Cache extends CI_Driver_Library {
 		}
 
 		return $prefix.':'.$key;
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Returns the separator character used to separate nested namespace names
+	 *
+	 * This is a method rather than a property because properties get caught in
+	 * CI_Driver_Library's magic __get method
+	 *
+	 * @return	string	Namespace separator character
+	 */
+	public function namespace_separator()
+	{
+		return '/';
 	}
 }
 

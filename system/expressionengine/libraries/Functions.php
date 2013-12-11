@@ -1045,13 +1045,13 @@ class EE_Functions {
 
 		if (in_array($which, $options))
 		{
-			ee()->cache->clear_namepace($which);
+			ee()->cache->delete('/'.$which.'/');
 		}
 		elseif ($which == 'all')
 		{
 			foreach ($options as $option)
 			{
-				ee()->cache->clear_namepace($option);
+				ee()->cache->delete('/'.$option.'/');
 			}
 		}
 	}

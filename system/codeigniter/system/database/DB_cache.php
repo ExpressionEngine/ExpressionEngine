@@ -25,16 +25,7 @@
 class CI_DB_Cache {
 
 	// Namespace cache items will be stored in
-	private $_cache_namespace = '';
-
-	/**
-	 * Constructor
-	 */
-	function __construct()
-	{
-		// Set cache namespace to db_cache_{site_id}
-		$this->_cache_namespace = 'site_'.ee()->config->item('site_id').'_db';
-	}
+	private $_cache_namespace = 'db_cache';
 
 	// --------------------------------------------------------------------
 
@@ -46,10 +37,7 @@ class CI_DB_Cache {
 	 */
 	public function read($sql)
 	{
-		return ee()->cache->get(
-			$this->_prefixed_key($sql),
-			$this->_cache_namespace
-		);
+		return ee()->cache->get('/'.$this->_cache_namespace.'/'.$this->_prefixed_key($sql));
 	}
 
 	// --------------------------------------------------------------------
@@ -64,10 +52,9 @@ class CI_DB_Cache {
 	function write($sql, $object)
 	{
 		return ee()->cache->save(
-			$this->_prefixed_key($sql),
+			'/'.$this->_cache_namespace.'/'.$this->_prefixed_key($sql),
 			$object,
-			0, // TTL
-			$this->_cache_namespace
+			0 // TTL
 		);
 	}
 

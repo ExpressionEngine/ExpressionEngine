@@ -67,7 +67,7 @@ class Channel {
 	public $pager_sql 				= '';
 
 	// SQL cache key prefix
-	protected $_sql_cache_prefix	= 'sql';
+	protected $_sql_cache_prefix	= 'sql_cache';
 
 	// Misc. - Class variable usable by extensions
 	public $misc					= FALSE;
@@ -147,7 +147,7 @@ class Channel {
 			}
 		}
 
-		return ee()->cache->get(md5($tag.$this->uri), $this->_sql_cache_prefix);
+		return ee()->cache->get('/'.$this->_sql_cache_prefix.'/'.md5($tag.$this->uri));
 	}
 
 	// ------------------------------------------------------------------------
@@ -160,10 +160,9 @@ class Channel {
 		$tag = ($identifier == '') ? ee()->TMPL->tagproper : ee()->TMPL->tagproper.$identifier;
 
 		return ee()->cache->save(
-			md5($tag.$this->uri),
+			'/'.$this->_sql_cache_prefix.'/'.md5($tag.$this->uri),
 			$sql,
-			0,	// No TTL, cache lives on till cleared
-			$this->_sql_cache_prefix
+			0	// No TTL, cache lives on till cleared
 		);
 	}
 
