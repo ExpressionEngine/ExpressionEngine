@@ -1668,7 +1668,8 @@ class EE_Template {
 
         // If we have a URI we check against template routes first
 		ee()->load->library('template_router');
-        try {
+        try
+        {
             $match = ee()->template_router->match(ee()->uri);
 			$this->template_route_vars = array();
 			foreach($match->matches as $key => $val)
@@ -1676,7 +1677,9 @@ class EE_Template {
 				$this->template_route_vars['segment:' . $key] = $val;
 			}
             return $this->fetch_template($match->end_point['group'], $match->end_point['template'], FALSE);
-        } catch (Exception $error) {
+        }
+        catch (Exception $error)
+        {
 			// route not found
         }
 

@@ -148,20 +148,12 @@ class EE_Functions {
         $parts = explode(' ', $segment);
         $template = array_shift($parts);
         list($group, $template) = explode('/', $template);
-        if ( !empty($group) && !empty($template))
+        if ( ! empty($group) && ! empty($template))
         {
-            // Proceed only if we have a template route set
-	        ee()->db->select('route, template_name, group_name');
-		    ee()->db->from('templates');
-		    ee()->db->join('template_groups', 'templates.group_id = template_groups.group_id');
-	        ee()->db->where('template_name', $template);
-	        ee()->db->where('group_name', $group);
-	        ee()->db->where('route_parsed is not null');
-	        $query = ee()->db->get();
-            if ($query->num_rows() > 0)
+            ee()->load->library('template_router');
+            $route = ee()->template_router->fetch_route($group, $template);
+            if( ! empty($route))
             {
-		        require_once APPPATH.'libraries/template_router/Route.php';
-                $route = new EE_Route($query->row()->route);
                 $options = array();
                 foreach($parts as $part) {
                     $part = explode('=', $part);

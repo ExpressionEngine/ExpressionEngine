@@ -29,6 +29,7 @@ class EE_Template_Router extends CI_Router {
     function __construct()
     {
 		require_once APPPATH.'libraries/template_router/Match.php';
+		require_once APPPATH.'libraries/template_router/Route.php';
         $this->set_routes();
     }
 
@@ -63,7 +64,7 @@ class EE_Template_Router extends CI_Router {
      * @access protected
      * @return void
      */
-    protected function set_routes()
+    public function set_routes()
     {
 	    ee()->db->select('route_parsed, template_name, group_name');
 		ee()->db->from('templates');
@@ -76,6 +77,33 @@ class EE_Template_Router extends CI_Router {
 				"template" => $template->template_name,
 				"group"    => $template->group_name
 			);
+        }
+    }
+
+    /**
+     * Fetch the template route for the specified template.
+     * 
+     * @param string $group     The name of the template group
+     * @param string $template  The name of the template 
+     * @access public
+     * @return EE_Route  An instantiated route object for the matched route
+     */
+    public function fetch_route($group, $template)
+    {
+	    ee()->db->select('route, template_name, group_name');
+		ee()->db->from('templates');
+		ee()->db->join('template_groups', 'templates.group_id = template_groups.group_id');
+	    ee()->db->where('template_name', $template);
+	    ee()->db->where('group_name', $group);
+	    ee()->db->where('route is not null');
+	    $query = ee()->db->get();
+        if ($query->num_rows() > 0)
+        {
+            return new EE_Route($query->row()->route);
+        }
+        else
+        {
+            return;
         }
     }
 
