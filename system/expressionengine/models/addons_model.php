@@ -44,8 +44,7 @@ class Addons_model extends CI_Model {
 			$plugins = $this->get_plugins();
 		}
 
-		$exclude	= array('auto_xhtml');
-		$default	= array('br' => lang('auto_br'), 'xhtml' => lang('xhtml'));
+		$default = array('br' => lang('auto_br'), 'xhtml' => lang('xhtml'));
 
 		if ($include_none === TRUE)
 		{
