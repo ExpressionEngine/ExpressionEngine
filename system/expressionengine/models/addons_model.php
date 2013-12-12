@@ -98,6 +98,7 @@ class Addons_model extends CI_Model {
 
 					if ( ! isset($plugin_info))
 					{
+						ee()->logger->developer('The plugin at '.$file.' is missing the $plugin_info array.', TRUE);
 						continue;
 					}
 
@@ -142,6 +143,7 @@ class Addons_model extends CI_Model {
 
 							if ( ! isset($plugin_info))
 							{
+								ee()->logger->developer('The plugin at '.$pkg_name.'/'.$file.' is missing the $plugin_info array.', TRUE);
 								continue;
 							}
 						}
