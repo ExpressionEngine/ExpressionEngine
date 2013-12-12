@@ -88,7 +88,15 @@ class Addons_model extends CI_Model {
 			{
 				if (strncasecmp($file, 'pi.', 3) == 0 && substr($file, -$ext_len) == '.php' && strlen($file) > strlen('pi..php'))
 				{
-					if ( ! @include_once(PATH_PI.$file))
+					// From php.net: "Because include is a special language
+					// construct, parentheses are not needed around its
+					// argument. Take care when comparing return value."
+					if ((@include_once PATH_PI.$file) === FALSE)
+					{
+						continue;
+					}
+
+					if ( ! isset($plugin_info))
 					{
 						continue;
 					}
@@ -127,7 +135,12 @@ class Addons_model extends CI_Model {
 					{
 						if ( ! class_exists(ucfirst($pkg_name)))
 						{
-							if ( ! @include_once(PATH_THIRD.$pkg_name.'/'.$file))
+							if ((@include_once PATH_THIRD.$pkg_name.'/'.$file) === FALSE)
+							{
+								continue;
+							}
+
+							if ( ! isset($plugin_info))
 							{
 								continue;
 							}
