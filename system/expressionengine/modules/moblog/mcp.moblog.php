@@ -1177,11 +1177,11 @@ MAGIC;
 
 		if ($MP->moblog_array['moblog_email_type'] == 'imap')
 		{
-			$this->_moblog_check_return($MP->check_imap_moblog(), $MP->errors());
+			$this->_moblog_check_return($MP->check_imap_moblog(), $MP);
 		}
 		else
 		{
-			$this->_moblog_check_return($MP->check_pop_moblog(), $MP->errors());
+			$this->_moblog_check_return($MP->check_pop_moblog(), $MP);
 		}
 	}
 
@@ -1189,11 +1189,11 @@ MAGIC;
 	/**  Moblog Check Return
 	/** -------------------------*/
 
-	function _moblog_check_return($response, $error_string)
+	function _moblog_check_return($response, $MP)
 	{
 		if ( ! $response)
 		{
-			ee()->session->set_flashdata('message_failure', $error_string);
+			ee()->session->set_flashdata('message_failure', $MP->errors());
 			ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=moblog');
 		}
 		else
@@ -1205,7 +1205,7 @@ MAGIC;
 
 			if ( ! empty($error_string))
 			{
-				$message['message_failure'] = BR.$error_string;
+				$message['message_failure'] = BR.$MP->errors();
 			}
 
 			ee()->session->set_flashdata($message);
