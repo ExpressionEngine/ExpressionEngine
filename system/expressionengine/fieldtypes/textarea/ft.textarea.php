@@ -42,12 +42,42 @@ class Textarea_ft extends EE_Fieldtype {
 
 	function display_field($data)
 	{
+		// Set a boolean telling if we're in Grid AND this textarea has
+		// markItUp enabled
+		$grid_markitup = ($this->content_type() == 'grid' &&
+			isset($this->settings['show_formatting_buttons']) &&
+			$this->settings['show_formatting_buttons'] == 1);
+
+		if ($grid_markitup)
+		{
+			// Load the Grid cell display binding only once
+			if ( ! ee()->session->cache(__CLASS__, 'grid_js_loaded'))
+			{
+				ee()->javascript->output('
+					Grid.bind("textarea", "display", function(cell)
+					{
+						var textarea = $("textarea.markItUp", cell);
+
+						// Only apply file browser trigger if a field was found
+						if (textarea.size())
+						{
+							textarea.markItUp(mySettings);
+							EE.publish.file_browser.textarea(cell);
+						}
+					});
+				');
+
+				ee()->session->set_cache(__CLASS__, 'grid_js_loaded', TRUE);
+			}
+		}
+
 		return form_textarea(array(
-			'name'	=> $this->field_name,
-			'id'	=> $this->field_name,
+			'name'	=> $this->name(),
+			'id'	=> $this->name(),
 			'value'	=> $data,
 			'rows'	=> $this->settings['field_ta_rows'],
-			'dir'	=> $this->settings['field_text_direction']
+			'dir'	=> $this->settings['field_text_direction'],
+			'class' => ($grid_markitup) ? 'markItUp' : ''
 		));
 	}
 
@@ -124,7 +154,13 @@ class Textarea_ft extends EE_Fieldtype {
 		return array(
 			$this->grid_field_formatting_row($data),
 			$this->grid_text_direction_row($data),
-			$this->grid_textarea_max_rows_row($data)
+			$this->grid_textarea_max_rows_row($data),
+			$this->grid_checkbox_row(
+				lang('grid_show_fmt_btns'),
+				'show_formatting_buttons',
+				1,
+				(isset($data['show_formatting_buttons']) && $data['show_formatting_buttons'] == 1)
+			),
 		);
 	}
 }

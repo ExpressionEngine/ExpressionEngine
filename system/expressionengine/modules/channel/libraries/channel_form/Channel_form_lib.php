@@ -989,6 +989,10 @@ GRID_FALLBACK;
 			}
 		}
 
+		// Array of possible JS and their requirements
+		// If the key is a needed JS file, it should be in ee()->cp->js_files
+		// and this just handles pulling in files required by the key.
+
 		$ui = array(
 			'core' => FALSE,
 			'widget' => array('core'),
@@ -1074,7 +1078,7 @@ GRID_FALLBACK;
 			$this->head .= '<script type="text/javascript" src="'.$js_url.'"></script>'."\n";
 		}
 
-		$this->head .= '<script type="text/javascript" charset="utf-8" src="'.ee()->functions->fetch_site_index().QUERY_MARKER.'ACT='.ee()->functions->fetch_action_id('Channel', 'combo_loader').'&'.str_replace('%2C', ',', http_build_query(ee()->cp->js_files)).'&v='.max($mtime).$use_live_url.$include_jquery.'"></script>'."\n";
+		$this->head .= '<script type="text/javascript" charset="utf-8" src="'.ee()->functions->fetch_site_index().QUERY_MARKER.'ACT='.ee()->functions->fetch_action_id('Channel', 'combo_loader').'&'.str_replace(array('%2C', '%2F'), array(',', '/'), http_build_query(ee()->cp->js_files)).'&v='.max($mtime).$use_live_url.$include_jquery.'"></script>'."\n";
 
 		//add fieldtype styles
 		foreach (ee()->cp->its_all_in_your_head as $item)
@@ -1901,7 +1905,12 @@ GRID_FALLBACK;
 
 		if ( ! empty($params['group_id']))
 		{
-			ee()->channel_form_data_sorter->filter($categories, 'category_group_id', $params['group_id'], 'in_array');
+			$params['show_group'] = $params['group_id'];
+		}
+
+		if ( ! empty($params['show_group']))
+		{
+			ee()->channel_form_data_sorter->filter($categories, 'category_group_id', $params['show_group'], 'in_array');
 		}
 
 		if ( ! empty($params['order_by']))
@@ -1936,47 +1945,6 @@ GRID_FALLBACK;
 	public function clear_entry()
 	{
 		$this->entry = FALSE;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Decrypts a form input
-	 *
-	 * @param	mixed $input
-	 * @return	void
-	 */
-	public function decrypt_input($input, $xss_clean = TRUE)
-	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('2.6.0');
-
-		if (function_exists('mcrypt_encrypt'))
-		{
-			$decoded = rtrim(
-				mcrypt_decrypt(
-					MCRYPT_RIJNDAEL_256,
-					md5(ee()->session->sess_crypt_key),
-					base64_decode($input),
-					MCRYPT_MODE_ECB,
-					mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND)
-				),
-				"\0"
-			);
-		}
-		else
-		{
-			$raw = base64_decode($input);
-
-			$decoded = substr($raw, 0, -32);
-
-			if (substr($raw, -32) !== md5(ee()->session->sess_crypt_key.$decoded))
-			{
-				return FALSE;
-			}
-		}
-
-		return ($xss_clean) ? ee()->security->xss_clean($decoded) : $decoded;
 	}
 
 	// --------------------------------------------------------------------
@@ -2021,33 +1989,6 @@ GRID_FALLBACK;
 		$_GET['channel_id'] = $this->entry('channel_id');
 
 		return ee()->api_channel_fields->apply('display_field', array('data' => $this->entry($field_name)));
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Encrypts a form input
-	 *
-	 * @param	mixed $input
-	 * @return	void
-	 */
-	public function encrypt_input($input)
-	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('2.6.0');
-
-		if ( ! function_exists('mcrypt_encrypt'))
-		{
-			return base64_encode($input.md5(ee()->session->sess_crypt_key.$input));
-		}
-
-		return base64_encode(mcrypt_encrypt(
-			MCRYPT_RIJNDAEL_256,
-			md5(ee()->session->sess_crypt_key),
-			$input,
-			MCRYPT_MODE_ECB,
-			mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND)
-		));
 	}
 
 	// --------------------------------------------------------------------

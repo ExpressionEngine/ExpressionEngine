@@ -1249,9 +1249,8 @@ class Search {
 		if (strlen(ee()->uri->query_string) < 32)
 		{
 			return ee()->output->show_user_error(
-				'off',
-				array(lang('search_no_result')),
-				lang('search_result_heading')
+				'general', 
+				array(lang('invalid_action'))
 			);
 		}
 
@@ -1289,7 +1288,11 @@ class Search {
 
 		if ($query->num_rows() == 0 OR $query->row('total_results')  == 0)
 		{
-			return ee()->output->show_user_error('off', array(lang('search_no_result')), lang('search_result_heading'));
+			// This should be impossible as we already know there are results
+			return ee()->output->show_user_error(
+				'general', 
+				array(lang('invalid_action'))
+			);
 		}
 
 		$fields = ($query->row('custom_fields') == '') ? array() : unserialize(stripslashes($query->row('custom_fields') ));
@@ -1304,7 +1307,11 @@ class Search {
 
 		if ($query->row('count')  == 0)
 		{
-			return ee()->output->show_user_error('off', array(lang('search_no_result')), lang('search_result_heading'));
+			// This should also be impossible
+			return ee()->output->show_user_error(
+				'general', 
+				array(lang('invalid_action'))
+			);
 		}
 
 		// Calculate total number of pages and add total rows

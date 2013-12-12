@@ -47,12 +47,12 @@ $.ee_filemanager.file_uploader = function() {
 			if (file.replace == true) {
 				$('.mainTable tbody tr:has(td:contains(' + file.file_id + ')):has(td:contains(' + file.file_name + '))').remove();
 			};
-			
+
 			// Build actions
 			file.actions = '';
 			$.each(EE.fileuploader.actions, function(index, val) {
 				var current_action = val.replace('[file_id]', file.file_id).replace('[upload_dir]', file.upload_directory_prefs.id);
-				
+
 				// Add the edit action only if it's an image
 				if (index == "delete") {
 					file.action_delete = current_action;
@@ -60,22 +60,22 @@ $.ee_filemanager.file_uploader = function() {
 					file.actions += current_action + '&nbsp;&nbsp;';
 				};
 			});
-			
+
 			if (typeof file.title == "undefined") {
 				file.title = file.name;
 			};
-			
+
 			if (file.is_image) {
 				// Build link
 				var $link = $('<a>', {
-					'id': 		'', 
+					'id': 		'',
 					'href': 	file.upload_directory_prefs.url + file.file_name,
 					'title': 	file.file_name,
 					'text': 	file.title,
 					'rel': 		'#overlay',
 					'class': 	'less_important_link overlay'
 				});
-				
+
 				// I realize how foolish this looks, but in order to pass the html
 				// to jQuery templates, we need the html and jQuery in its infinite
 				// wisdom has no method to get the full html of an object, it only
@@ -86,10 +86,10 @@ $.ee_filemanager.file_uploader = function() {
 			} else {
 				file.link = file.title;
 			};
-			
+
 			// Send it all to the jQuery Template
 			$('.mainTable tbody').prepend($.tmpl('filemanager_row', file));
-			
+
 			if ($('td.dataTables_empty').size()) {
 				$('td.dataTables_empty').parent().remove();
 			};
@@ -108,7 +108,7 @@ $.ee_filemanager.file_uploader = function() {
 		trigger: '#action_nav a.upload_file'
 	});
 };
-	
+
 $.ee_filemanager.directory_change = function() {
 	var file_oracle		= EE.file.directoryInfo,
 		spaceString		= new RegExp('!-!', "g");
@@ -156,20 +156,20 @@ $.ee_filemanager.date_range = function() {
 		dateFormat: "yy-mm-dd",
 		prevText: "<<",
 		nextText: ">>",
-		onSelect: function(date) { 
+		onSelect: function(date) {
 			$("#custom_date_start").val(date);
 			dates_picked();
-		} 
+		}
 	});
 
-	$("#custom_date_end_span").datepicker({ 
+	$("#custom_date_end_span").datepicker({
 		dateFormat: "yy-mm-dd",
 		prevText: "<<",
 		nextText: ">>",
 		onSelect: function(date) {
 			$("#custom_date_end").val(date);
 			dates_picked();
-		} 
+		}
 	});
 
 	$("#custom_date_start, #custom_date_end").focus(function(){
@@ -193,12 +193,9 @@ $.ee_filemanager.date_range = function() {
 
 			// hide custom date picker again
 			$("#custom_date_picker").slideUp("fast");
-			
+
 			// Trigger change to update filter
 			$("#date_range").change();
-			
-			// redraw table
-			oTable.fnDraw();
 		}
 	}
 
@@ -219,7 +216,7 @@ $.ee_filemanager.date_range = function() {
 
 $.ee_filemanager.toggle_all = function() {
 	$(".toggle_all").toggle(
-		function(){		
+		function(){
 			$("input.toggle").each(function() {
 				this.checked = true;
 			});
@@ -290,5 +287,5 @@ $.ee_filemanager.image_overlay = function() {
 $.ee_filemanager.datatables = function() {
 
 	$(".mainTable").table('add_filter', $('#filterform'));
-	
+
 };

@@ -1353,109 +1353,6 @@ class EE_Template {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Process Tags
-	 *
-	 * Channel entries can have related entries embedded within them.
-	 * We'll extract the related tag data, stash it away in an array, and
-	 * replace it with a marker string so that the template parser
-	 * doesn't see it.  In the channel class we'll check to see if the
-	 * ee()->TMPL->related_data array contains anything.  If so, we'll celebrate
-	 * wildly.
-	 *
-	 * @param	string
-	 * @return	string
-	 */
-	public function assign_relationship_data($chunk)
-	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('2.6');
-
-		$this->related_markers = array();
-
-			if (preg_match_all("/".LD."related_entries\s+id\s*=\s*[\"\'](.+?)[\"\']".RD."(.+?)".LD.'\/'."related_entries".RD."/is", $chunk, $matches))
-		{
-			$this->log_item("Assigning Related Entry Data");
-
-			$no_rel_content = '';
-
-			for ($j = 0; $j < count($matches[0]); $j++)
-			{
-				$rand = ee()->functions->random('alnum', 8);
-				$marker = LD.'REL['.$matches[1][$j].']'.$rand.'REL'.RD;
-
-				if (preg_match("/".LD."if no_related_entries".RD."(.*?)".LD.'\/'."if".RD."/s", $matches[2][$j], $no_rel_match))
-				{
-					// Match the entirety of the conditional
-
-					if (stristr($no_rel_match[1], LD.'if'))
-					{
-						$match[0] = ee()->functions->full_tag($no_rel_match[0], $matches[2][$j], LD.'if', LD.'\/'."if".RD);
-					}
-
-					$no_rel_content = substr($no_rel_match[0], strlen(LD."if no_related_entries".RD), -strlen(LD.'/'."if".RD));
-				}
-
-				$this->related_markers[] = $matches[1][$j];
-				$vars = ee()->functions->assign_variables($matches[2][$j]);
-				$this->related_id = $matches[1][$j];
-				$this->related_data[$rand] = array(
-											'marker'			=> $rand,
-											'field_name'		=> $matches[1][$j],
-											'tagdata'			=> $matches[2][$j],
-											'var_single'		=> $vars['var_single'],
-											'var_pair' 			=> $vars['var_pair'],
-											'var_cond'			=> ee()->functions->assign_conditional_variables($matches[2][$j], '\/', LD, RD),
-											'no_rel_content'	=> $no_rel_content
-										);
-
-				$chunk = str_replace($matches[0][$j], $marker, $chunk);
-			}
-		}
-
-		if (preg_match_all("/".LD."reverse_related_entries\s*(.*?)".RD."(.+?)".LD.'\/'."reverse_related_entries".RD."/is", $chunk, $matches))
-		{
-			$this->log_item("Assigning Reverse Related Entry Data");
-
-			for ($j = 0; $j < count($matches[0]); $j++)
-			{
-				$rand = ee()->functions->random('alnum', 8);
-				$marker = LD.'REV_REL['.$rand.']REV_REL'.RD;
-				$vars = ee()->functions->assign_variables($matches[2][$j]);
-
-				$no_rev_content = '';
-
-				if (preg_match("/".LD."if no_reverse_related_entries".RD."(.*?)".LD.'\/'."if".RD."/s", $matches[2][$j], $no_rev_match))
-				{
-					// Match the entirety of the conditional
-
-					if (stristr($no_rev_match[1], LD.'if'))
-					{
-						$match[0] = ee()->functions->full_tag($no_rev_match[0], $matches[2][$j], LD.'if', LD.'\/'."if".RD);
-					}
-
-					$no_rev_content = substr($no_rev_match[0], strlen(LD."if no_reverse_related_entries".RD), -strlen(LD.'/'."if".RD));
-				}
-
-				$this->reverse_related_data[$rand] = array(
-															'marker'			=> $rand,
-															'tagdata'			=> $matches[2][$j],
-															'var_single'		=> $vars['var_single'],
-															'var_pair' 			=> $vars['var_pair'],
-															'var_cond'			=> ee()->functions->assign_conditional_variables($matches[2][$j], '\/', LD, RD),
-															'params'			=> ee()->functions->assign_parameters($matches[1][$j]),
-															'no_rev_content'	=> $no_rev_content
-														);
-
-				$chunk = str_replace($matches[0][$j], $marker, $chunk);
-			}
-		}
-
-		return $chunk;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Fetch Parameter for Tag
 	 *
 	 * Used by Modules to fetch a paramter for the tag currently be processed.  We also have code
@@ -1777,15 +1674,8 @@ class EE_Template {
 		ee()->db->where('site_id', ee()->config->item('site_id'));
 		$query = ee()->db->get('template_groups');
 
-		// This really shouldn't happen, but some addons have accidentally
-		// created duplicates so we cannot fail silently.
-		if ($query->num_rows() > 1)
-		{
-			$this->log_item("Duplicate Template Group: ".ee()->uri->segment(1));
-		}
-
 		// Template group found!
-		elseif ($query->num_rows() == 1)
+		if ($query->num_rows() == 1)
 		{
 			// Set the name of our template group
 			$template_group = ee()->uri->segment(1);
@@ -1841,11 +1731,22 @@ class EE_Template {
 		// The first segment in the URL does NOT correlate to a valid template group.  Oh my!
 		else
 		{
+			if ($query->num_rows() > 1)
+			{
+				$duplicate = TRUE;
+				$log_message = "Duplicate Template Group: ".ee()->uri->segment(1);
+			}
+			else
+			{
+				$duplicate = FALSE;
+				$log_message = "Template group and template not found, showing 404 page";
+			}
+
 			// If we are enforcing strict URLs we need to show a 404
-			if ($this->strict_urls == TRUE)
+			if ($duplicate == TRUE OR $this->strict_urls == TRUE)
 			{
 				// is there a file we can automatically create this template from?
-				if (ee()->config->item('save_tmpl_files') == 'y' && ee()->config->item('tmpl_file_basepath') != '')
+				if ($duplicate == FALSE && ee()->config->item('save_tmpl_files') == 'y' && ee()->config->item('tmpl_file_basepath') != '')
 				{
 					if ($this->_create_from_file(ee()->uri->segment(1), ee()->uri->segment(2)))
 					{
@@ -1855,11 +1756,12 @@ class EE_Template {
 
 				if (ee()->config->item('site_404'))
 				{
-					$this->log_item("Template group and template not found, showing 404 page");
+					$this->log_item($log_message);
 					return $this->fetch_template('', '', FALSE);
 				}
 				else
 				{
+					$this->log_item($log_message);
 					return $this->_404();
 				}
 			}
