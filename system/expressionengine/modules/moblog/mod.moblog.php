@@ -86,6 +86,7 @@ class Moblog {
 		/**  Default file formats
 		/** -----------------------------*/
 
+
 		$this->movie = array('3gp','mov','mpg','avi','movie');
 		$this->audio = array('mid','midi','mp2','mp3','aac','mp4','aif','aiff','aifc','ram','rm','rpm','wav','ra','rv','wav');
 		$this->image = array('bmp','gif','jpeg','jpg','jpe','png','tiff','tif');
@@ -620,64 +621,7 @@ class Moblog {
 
 			if ( ! $this->find_boundary($email_data)) // OR $this->moblog_array['moblog_upload_directory'] == '0')
 			{
-				/** -------------------------
-				/**  No files, just text
-				/** -------------------------*/
-
-				$duo = $this->newline.$this->newline;
-				$this->body = $this->find_data($email_data, $duo,$duo.'.'.$this->newline);
-
-				if ($this->body == '')
-				{
-					$this->body = $this->find_data($email_data, $duo,$this->newline.'.'.$this->newline);
-				}
-
-				// Check for Quoted-Printable and Base64 encoding
-				if (stristr($email_data,'Content-Transfer-Encoding'))
-				{
-					$encoding = $this->find_data($email_data, "Content-Transfer-Encoding: ", $this->newline);
-
-					if ( ! stristr(trim($encoding), "quoted-printable") AND ! stristr(trim($encoding), "base64"))
-					{
-						// try it without the space after the colon...
-						$encoding = $this->find_data($email_data, "Content-Transfer-Encoding:", $this->newline);
-					}
-
-					if(stristr(trim($encoding),"quoted-printable"))
-					{
-						$this->body = str_replace($this->newline,"\n",$this->body);
-						$this->body = quoted_printable_decode($this->body);
-						$this->body = (substr($this->body,0,1) != '=') ? $this->body : substr($this->body,1);
-						$this->body = (substr($this->body,-1) != '=') ? $this->body : substr($this->body,0,-1);
-						$this->body = $this->remove_newlines($this->body,$this->newline);
-					}
-					elseif(stristr(trim($encoding),"base64"))
-					{
-						$this->body = str_replace($this->newline,"\n",$this->body);
-						$this->body = base64_decode(trim($this->body));
-						$this->body = $this->remove_newlines($this->body,$this->newline);
-					}
-				}
-
-				if ($this->charset != ee()->config->item('charset'))
-            	{
-            		if (function_exists('mb_convert_encoding'))
-            		{
-            			$this->body = mb_convert_encoding($this->body, strtoupper(ee()->config->item('charset')), strtoupper($this->charset));
-            		}
-            		elseif(function_exists('iconv') AND ($iconvstr = @iconv(strtoupper($this->charset), strtoupper(ee()->config->item('charset')), $this->body)) !== FALSE)
-            		{
-            			$this->body = $iconvstr;
-            		}
-            		elseif(strtolower(ee()->config->item('charset')) == 'utf-8' && strtolower($this->charset) == 'iso-8859-1')
-            		{
-            			$this->body = utf8_encode($this->body);
-            		}
-            		elseif(strtolower(ee()->config->item('charset')) == 'iso-8859-1' && strtolower($this->charset) == 'utf-8')
-            		{
-            			$this->body = utf8_decode($this->body);
-            		}
-            	}
+				$this->_parse_boundary_contents($email_data, FALSE);
 			}
 			else
 			{
@@ -1560,53 +1504,33 @@ class Moblog {
 		$this->entry_data[$field_id]['format'] 	= $format;
 	}
 
-	// ------------------------------------------------------------------------
-
-	/**
-	 * 	Parse Email
-	 *
-	 *	@param mixed - Email Data
-	 * 	@param
-	 */
-	function parse_email($email_data,$type='norm')
+	function _find_content_type($value)
 	{
-		ee()->load->library('filemanager');
+			$type_data = FALSE;
 
-		$boundary = ($type != 'norm') ? $this->multi_boundary : $this->boundary;
-		$email_data = str_replace('boundary='.substr($boundary,2),'BOUNDARY_HERE',$email_data);
+			$contents					= $this->find_data($value, "Content-Type:", $this->newline);
+			$x							= explode(';',$contents);
+			$content_type				= $x['0'];
 
-		$email_parts = explode($boundary, $email_data);
+			$type_data['content_type']	= strtolower($content_type);
+			$pieces						= explode('/',trim($type_data['content_type']));
+			$type_data['type'] 			= trim($pieces['0']);
+			$type_data['subtype']		= ( ! isset($pieces['1'])) ? '0' : trim($pieces['1']);
 
-		if (count($email_parts) < 2)
-		{
-			$boundary = str_replace("+","\+", $boundary);
-			$email_parts = explode($boundary, $email_data);
-		}
+			return $type_data;
+	}
 
-		if (count($email_parts) < 2)
-		{
-			return FALSE;
-			unset($email_parts);
-			unset($email_data);
-		}
 
-		$upload_dir_id = $this->moblog_array['moblog_upload_directory'];
 
-		if ($upload_dir_id != 0)
-		{
-			$this->upload_dir_code = '{filedir_'.$upload_dir_id.'}';
-		}
-
-		//  Find Attachments
-		foreach ($email_parts as $key => $value)
-		{
+	function _parse_boundary_contents($data, $has_boundary = TRUE)
+	{
 			// Skip headers and those with no content-type
-			if ($key == '0' OR stristr($value, 'Content-Type:') === FALSE)
+			if (stristr($data, 'Content-Type:') === FALSE)
 			{
-				continue;
+				return;
 			}
 
-			$contents		= $this->find_data($value, "Content-Type:", $this->newline);
+			$contents		= $this->find_data($data, "Content-Type:", $this->newline);
 			$x				= explode(';',$contents);
 			$content_type	= $x['0'];
 
@@ -1622,42 +1546,42 @@ class Moblog {
 			/** --------------------------*/
 			if ($type == 'multipart' && $subtype != 'appledouble')
 			{
-				if ( ! stristr($value,'boundary='))
+				if ( ! stristr($data,'boundary='))
 				{
-					continue;
+					return;
 				}
 
-				$this->multi_boundary = "--".$this->find_data($value, "boundary=", $this->newline);
+				$this->multi_boundary = "--".$this->find_data($data, "boundary=", $this->newline);
 				$this->multi_boundary = trim(str_replace('"','',$this->multi_boundary));
 
 				if (strlen($this->multi_boundary) == 0)
 				{
-					continue;
+					return;
 				}
 
-				$this->parse_email($value,'multi');
+				$this->parse_email($data,'multi');
 				$this->multi_boundary = '';
-				continue;
+				return;
 			}
 
 
 			/** --------------------------
 			/**  Quick Grab of Headers
 			/** --------------------------*/
-			$headers = $this->find_data($value, '', $this->newline.$this->newline);
+			$headers = $this->find_data($data, '', $this->newline.$this->newline);
 
 			/** ---------------------------
 			/**  Text : plain, html, rtf
 			/** ---------------------------*/
-			if ($type == 'text' && $headers != '' &&
-				(($this->txt_override === TRUE && $subtype == 'plain') OR ! stristr($headers,'name=')))
+			if (($has_boundary == FALSE && $type == 'text') OR ($type == 'text' && $headers != '' &&
+				(($this->txt_override === TRUE && $subtype == 'plain') OR ! stristr($headers,'name='))))
 			{
 				$duo	=  $this->newline.$this->newline;
-				$text  = $this->find_data($value, $duo,'');
+				$text  = $this->find_data($data, $duo,'');
 
 				if ($text == '')
 				{
-					$text = $this->find_data($value, $this->newline,'');
+					$text = $this->find_data($data, $this->newline,'');
 				}
 
 				/** ------------------------------------
@@ -1672,9 +1596,9 @@ class Moblog {
 				/** ------------------------------------
 				/**  Check for Encoding of Text
 				/** ------------------------------------*/
-				if (stristr($value,'Content-Transfer-Encoding'))
+				if (stristr($data,'Content-Transfer-Encoding'))
 				{
-					$encoding = $this->find_data($value, "Content-Transfer-Encoding:", $this->newline);
+					$encoding = $this->find_data($data, "Content-Transfer-Encoding:", $this->newline);
 
 					/** ------------------------------------
 					/**  Check for Quoted-Printable encoding
@@ -1745,20 +1669,22 @@ class Moblog {
 			{
 				// no upload directory?  skip
 
+				$upload_dir_id = $this->moblog_array['moblog_upload_directory'];
+
 				if ($upload_dir_id == 0)
 				{
-					continue;
+					return;
 				}
 
 				if ($subtype == 'appledouble')
 				{
-					if ( ! $data = $this->appledouble($value))
+					if ( ! $data = $this->appledouble($data))
 					{
-						continue;
+						return;
 					}
 					else
 					{
-						$value 		= $data['value'];
+						$data 		= $data['value'];
 						$subtype 	= $data['subtype'];
 						$type		= $data['type'];
 						unset($data);
@@ -1768,16 +1694,16 @@ class Moblog {
 				/** ------------------------------
 				/**  Determine Filename
 				/** ------------------------------*/
-				$contents = $this->find_data($value, "name=", $this->newline);
+				$contents = $this->find_data($data, "name=", $this->newline);
 
 				if ($contents == '')
 				{
-					$contents = $this->find_data($value, 'Content-Location:', $this->newline);
+					$contents = $this->find_data($data, 'Content-Location:', $this->newline);
 				}
 
 				if ($contents == '')
 				{
-					$contents = $this->find_data($value, 'Content-ID:', $this->newline);
+					$contents = $this->find_data($data, 'Content-ID:', $this->newline);
 					$contents = str_replace('<','', $contents);
 					$contents = str_replace('<','', $contents);
 				}
@@ -1790,7 +1716,7 @@ class Moblog {
 
 				if (stristr($filename, 'dottedline') OR stristr($filename, 'spacer.gif') OR stristr($filename, 'masthead.jpg'))
 				{
-					continue;
+					return;
 				}
 
 				/** --------------------------------
@@ -1798,11 +1724,11 @@ class Moblog {
 				/** --------------------------------*/
 
 				$duo = $this->newline.$this->newline;
-				$file_code = $this->find_data($value, $duo,'');
+				$file_code = $this->find_data($data, $duo,'');
 
 				if ($file_code == '')
 				{
-					$file_code = $this->find_data($value, $this->newline,'');
+					$file_code = $this->find_data($data, $this->newline,'');
 
 					if ($file_code == '')
 					{
@@ -1815,7 +1741,7 @@ class Moblog {
 				/**  Determine Encoding
 				/** --------------------------------*/
 
-				$contents = $this->find_data($value, "Content-Transfer-Encoding:", $this->newline);
+				$contents = $this->find_data($data, "Content-Transfer-Encoding:", $this->newline);
 				$x = explode(';',$contents);
 				$encoding = $x['0'];
 				$encoding = trim(str_replace('"','',$encoding));
@@ -1835,7 +1761,7 @@ class Moblog {
 						$this->body = ( ! isset($this->post_data[$type]['plain'])) ? $this->post_data[$type]['alt'] : $this->post_data[$type]['plain'];
 					}
 
-					continue;
+					return;
 				}
 
 				// Eudora and Mail.app use this by default
@@ -1906,7 +1832,7 @@ class Moblog {
 				}
 				else
 				{
-					continue;
+					return;
 				}
 
 				// Clean the file
@@ -1940,7 +1866,7 @@ class Moblog {
 					{
 						$this->attach_text = $file_code;
 						$this->attach_name = $filename;
-						continue; // No upload of file.
+						return; // No upload of file.
 					}
 				}
 
@@ -1988,6 +1914,58 @@ class Moblog {
 				$this->uploads++;
 
 			} // End files/images section
+
+
+	}
+
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * 	Parse Email
+	 *
+	 *	@param mixed - Email Data
+	 * 	@param
+	 */
+	function parse_email($email_data,$type='norm')
+	{
+		ee()->load->library('filemanager');
+
+		$boundary = ($type != 'norm') ? $this->multi_boundary : $this->boundary;
+		$email_data = str_replace('boundary='.substr($boundary,2),'BOUNDARY_HERE',$email_data);
+
+		$email_parts = explode($boundary, $email_data);
+
+		if (count($email_parts) < 2)
+		{
+			$boundary = str_replace("+","\+", $boundary);
+			$email_parts = explode($boundary, $email_data);
+		}
+
+		if (count($email_parts) < 2)
+		{
+			return FALSE;
+			unset($email_parts);
+			unset($email_data);
+		}
+
+		$upload_dir_id = $this->moblog_array['moblog_upload_directory'];
+
+		if ($upload_dir_id != 0)
+		{
+			$this->upload_dir_code = '{filedir_'.$upload_dir_id.'}';
+		}
+
+		//  Find Attachments
+		foreach ($email_parts as $key => $value)
+		{
+			// Skip headers
+			if ($key == '0')
+			{
+				continue;
+			}
+
+			$this->_parse_boundary_contents($value);
 
 		} // End foreach
 
