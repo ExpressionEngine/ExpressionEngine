@@ -916,6 +916,13 @@ class Moblog {
 
 		$channel_id = $this->moblog_array['moblog_channel_id'];
 
+		$upload_dir_id = $this->moblog_array['moblog_upload_directory'];
+
+		if ($upload_dir_id != 0)
+		{
+			$this->upload_dir_code = '{filedir_'.$upload_dir_id.'}';
+		}
+
 		ee()->db->select('site_id, channel_title, channel_url, rss_url, comment_url, deft_comments, cat_group, field_group, channel_notify, channel_notify_emails');
 		$query = ee()->db->get_where('channels', array('channel_id' => $channel_id));
 
@@ -1236,6 +1243,7 @@ class Moblog {
 	{
 		$field_id = '1';
 		$format = 'none';
+		$field_type = '';
 
 		/** -----------------------------
 		/**  Determine Field Id and Format
@@ -1257,7 +1265,7 @@ class Moblog {
 			{
 				$xsql = (ee()->config->item('moblog_allow_nontextareas') == 'y') ? "" : " AND exp_channel_fields.field_type = 'textarea' ";
 
-				ee()->db->select('field_id, field_fmt');
+				ee()->db->select('field_id, field_fmt, field_type');
 				ee()->db->where('group_id', $field_id);
 				ee()->db->where('(field_name = "'.$params['name'].'" OR field_label = "'.$params['name'].'")', NULL, FALSE);
 
@@ -1270,6 +1278,7 @@ class Moblog {
 
 				$field_id	= ($results->num_rows() > 0) ? $results->row('field_id')  : $this->moblog_array['moblog_field_id'];
 				$format 	= ($results->num_rows() > 0) ? $results->row('field_fmt')  : 'none';
+				$field_type = ($results->num_rows() > 0) ? $results->row('field_type')  : '';
 			}
 			elseif($params['name'] == '' && $params['format'] == '')
 			{
@@ -1291,7 +1300,7 @@ class Moblog {
 			{
 				$xsql = (ee()->config->item('moblog_allow_nontextareas') == 'y') ? "" : " AND exp_channel_fields.field_type = 'textarea' ";
 
-				ee()->db->select('field_id');
+				ee()->db->select('field_id, field_type');
 				ee()->db->where('group_id', $field_group);
 				ee()->db->where('(field_name = "'.$params['name'].'" OR field_label = "'.$params['name'].'")');
 
@@ -1304,6 +1313,7 @@ class Moblog {
 
 				$field_id	= ($results->num_rows() > 0) ? $results->row('field_id')  : $this->moblog_array['moblog_field_id'];
 				$format		= $params['format'];
+				$field_type	= ($results->num_rows() > 0) ? $results->row('field_type')  : '';
 			}
 		}
 
@@ -1494,6 +1504,50 @@ class Moblog {
 			}
 		}
 
+		// File fields need file directory appended
+
+//echo '<pre>';
+//var_dump($field_type);
+//var_dump($this->upload_dir_code);
+//var_dump($field_data);
+
+
+// with file in custom field only
+//string(8) "textarea"
+//string(0) ""
+//string(6) "{text}"
+//string(4) "file"
+//string(0) ""
+//string(11) "01-31_3.jpg"
+
+// with file and text both in custom fields
+//string(8) "textarea"
+//string(11) "{filedir_1}"
+//string(6) "{text}"
+//string(4) "file"
+//string(11) "{filedir_1}"
+//string(22) "{filedir_1}01-31_4.jpg"
+
+//file only, in template
+//string(0) ""
+//string(0) ""
+//string(70) "{text} picture code"
+
+// file and text in template
+//string(0) ""
+//string(11) "{filedir_1}"
+//string(75) "{text}
+//<img width="" height="" alt="pic" src="{filedir_1}01-31_7.jpg">
+//"
+
+
+
+		if ($field_type == 'file' && ! empty($this->upload_dir_code) && strpos($field_data, $this->upload_dir_code) !== 0)
+		{
+			$field_data = $this->upload_dir_code.$field_data;
+		}
+
+
 		/** ------------------------------
 		/**  Variable Single:  text
 		/** ------------------------------*/
@@ -1504,20 +1558,44 @@ class Moblog {
 		$this->entry_data[$field_id]['format'] 	= $format;
 	}
 
-	function _find_content_type($value)
+
+	function _get_content_type($data)
 	{
-			$type_data = FALSE;
+		$data = explode($this->newline, $data);
+		$headers = array(
+			'content_type' => 'Content-Type:',
+			'content_transfer_encoding' => 'Content-Transfer-Encoding:'
+			);
 
-			$contents					= $this->find_data($value, "Content-Type:", $this->newline);
-			$x							= explode(';',$contents);
-			$content_type				= $x['0'];
+		$content_type = '';
+		$content_transfter_encoding = '';
 
-			$type_data['content_type']	= strtolower($content_type);
-			$pieces						= explode('/',trim($type_data['content_type']));
-			$type_data['type'] 			= trim($pieces['0']);
-			$type_data['subtype']		= ( ! isset($pieces['1'])) ? '0' : trim($pieces['1']);
+		foreach ($data as $line)
+		{
+			foreach ($headers as $name => $header)
+			{
+				if (strpos($line, $header) === 0)
+				{
+					$length = strlen($header);
+					$$name = trim(substr($line, $length));
+				}
+			}
+		}
 
-			return $type_data;
+		$x				= explode(';', $content_type);
+		$content	= $x['0'];
+		$content	= strtolower($content);
+		$pieces			= explode('/',trim($content));
+		$contents['type']	= trim($pieces['0']);
+		$contents['subtype']	= ( ! isset($pieces['1'])) ? '0' : trim($pieces['1']);
+
+		$x = explode(';', $content_transfer_encoding);
+		$encoding = $x['0'];
+		$encoding = trim(str_replace('"', '', $encoding));
+		$encoding = str_replace($this->newline, '', $encoding);
+		$contents['encoding'] = $encoding;
+
+		return $contents;
 	}
 
 
@@ -1530,16 +1608,12 @@ class Moblog {
 				return;
 			}
 
-			$contents		= $this->find_data($data, "Content-Type:", $this->newline);
-			$x				= explode(';',$contents);
-			$content_type	= $x['0'];
+			$contents = $this->_get_content_type($data);
 
-			$content_type	= strtolower($content_type);
-			$pieces			= explode('/',trim($content_type));
-			$type			= trim($pieces['0']);
-			$subtype		= ( ! isset($pieces['1'])) ? '0' : trim($pieces['1']);
-
-			$charset		= 'auto';
+			$type = $contents['type'];
+			$subtype = $contents['subtype'];
+			$encoding = $contents['encoding'];
+			$charset = 'auto';
 
 			/** --------------------------
 			/**  Outlook Exception
@@ -1561,6 +1635,7 @@ class Moblog {
 
 				$this->parse_email($data,'multi');
 				$this->multi_boundary = '';
+
 				return;
 			}
 
@@ -1596,10 +1671,8 @@ class Moblog {
 				/** ------------------------------------
 				/**  Check for Encoding of Text
 				/** ------------------------------------*/
-				if (stristr($data,'Content-Transfer-Encoding'))
+				if ( ! empty($encoding))
 				{
-					$encoding = $this->find_data($data, "Content-Transfer-Encoding:", $this->newline);
-
 					/** ------------------------------------
 					/**  Check for Quoted-Printable encoding
 					/** ------------------------------------*/
@@ -1737,15 +1810,6 @@ class Moblog {
 					}
 				}
 
-				/** --------------------------------
-				/**  Determine Encoding
-				/** --------------------------------*/
-
-				$contents = $this->find_data($data, "Content-Transfer-Encoding:", $this->newline);
-				$x = explode(';',$contents);
-				$encoding = $x['0'];
-				$encoding = trim(str_replace('"','',$encoding));
-				$encoding = str_replace($this->newline,'',$encoding);
 
 				if ( ! stristr($encoding,"base64") &&  ! stristr($encoding,"7bit") &&  ! stristr($encoding,"8bit") && ! stristr($encoding,"quoted-printable"))
 				{
@@ -1794,11 +1858,14 @@ class Moblog {
 				/**  Check and adjust for multiple files with same file name
 				/** ------------------------------*/
 
+				ee()->load->library('filemanager');
+
 				$file_path = ee()->filemanager->clean_filename(
 					$filename,
 					$upload_dir_id,
 					array('ignore_dupes' => FALSE)
 				);
+
 				$filename = basename($file_path);
 
 				/** ---------------------------
@@ -1916,6 +1983,9 @@ class Moblog {
 			} // End files/images section
 
 
+
+// fails $has_boundary bool(false) $type string(49) "content-transfer-encoding:subject:message-id:date" end
+//exit('end');
 	}
 
 
@@ -1929,7 +1999,6 @@ class Moblog {
 	 */
 	function parse_email($email_data,$type='norm')
 	{
-		ee()->load->library('filemanager');
 
 		$boundary = ($type != 'norm') ? $this->multi_boundary : $this->boundary;
 		$email_data = str_replace('boundary='.substr($boundary,2),'BOUNDARY_HERE',$email_data);
@@ -1947,13 +2016,6 @@ class Moblog {
 			return FALSE;
 			unset($email_parts);
 			unset($email_data);
-		}
-
-		$upload_dir_id = $this->moblog_array['moblog_upload_directory'];
-
-		if ($upload_dir_id != 0)
-		{
-			$this->upload_dir_code = '{filedir_'.$upload_dir_id.'}';
 		}
 
 		//  Find Attachments
