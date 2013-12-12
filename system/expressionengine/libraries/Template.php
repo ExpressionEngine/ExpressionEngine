@@ -3924,6 +3924,7 @@ class EE_Template {
 		}
 		elseif (isset($parameters['format']))
 		{
+			$localize = isset($parameters['timezone']) ? $parameters['timezone'] : $localize;
 			$dt = ee()->localize->format_date($parameters['format'], $timestamp, $localize);
 			if ($dt === FALSE)
 			{
