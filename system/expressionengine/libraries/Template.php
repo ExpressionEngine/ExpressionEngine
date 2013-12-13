@@ -3885,9 +3885,11 @@ class EE_Template {
 	 * relative date)
 	 *
 	 * @param	string	$timestamp	Tag data being parsed
-	 * @param	mixed[]	$parameters		An associative array of dates
+	 * @param	mixed[]	$parameters		An associative array of parameters
 	 *  	e.g. 'format'   => '%Y-%m-%d'
 	 * 		     'relative' => 'today'
+	 * 		     'units'    => 'years|months|days'
+	 * 		     'depth'    => '2'
 	 * @param	bool	$localize	Localize the time?
 	 * @return	string	The "formatted" date
 	 **/
