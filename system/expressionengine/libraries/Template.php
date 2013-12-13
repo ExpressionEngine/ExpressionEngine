@@ -3884,7 +3884,7 @@ class EE_Template {
 	 * Determines how to format a date (UNIX timestamp, formatted date, or
 	 * relative date)
 	 *
-	 * @param	string	$timestamp	Tag data being parsed
+	 * @param	string	$timestamp	The UNIX timestamp being processed
 	 * @param	mixed[]	$parameters		An associative array of parameters
 	 *  	e.g. 'format'   => '%Y-%m-%d'
 	 * 		     'relative' => 'today'
