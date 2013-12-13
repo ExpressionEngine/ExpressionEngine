@@ -3920,7 +3920,13 @@ class EE_Template {
 		if ($relative)
 		{
 			ee()->load->helper('date');
-			$dt = str_replace('%x', timespan($timestamp), lang('ago'));
+			$depth = isset($parameters['depth']) ? $parameters['depth'] : NULL;
+			$units = NULL;
+			if (isset($parameters['units']))
+			{
+				$units = explode('|', $parameters['units']);
+			}
+			$dt = str_replace('%x', timespan($timestamp, time(), $units, $depth), lang('ago'));
 		}
 		elseif (isset($parameters['format']))
 		{
