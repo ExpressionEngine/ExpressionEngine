@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -77,9 +77,15 @@ class Addons_model extends CI_Model {
 	{
 		$this->load->helper('directory');
 
-		$plugins = array();
-		$info 	= array();
+		static $info = array();
+
+		if ( ! empty($info))
+		{
+			return $info;
+		}
+
 		$ext_len = strlen('.php');
+		$plugins = array();
 
 		// first party plugins
 		if (($map = directory_map(PATH_PI, TRUE)) !== FALSE)
@@ -88,25 +94,11 @@ class Addons_model extends CI_Model {
 			{
 				if (strncasecmp($file, 'pi.', 3) == 0 && substr($file, -$ext_len) == '.php' && strlen($file) > strlen('pi..php'))
 				{
-					// From php.net: "Because include is a special language
-					// construct, parentheses are not needed around its
-					// argument. Take care when comparing return value."
-					if ((@include_once PATH_PI.$file) === FALSE)
-					{
-						continue;
-					}
-
-					if ( ! isset($plugin_info))
-					{
-						ee()->logger->developer('The plugin at '.$file.' is missing the $plugin_info array.', TRUE);
-						continue;
-					}
-
 					$name = substr($file, 3, -$ext_len);
-
-					$plugins[] = $name;
-
-					$info[$name] = $plugin_info;
+					$plugins[] = array(
+						'name' => $name,
+						'path' => PATH_PI.$file
+					);
 				}
 			}
 		}
@@ -136,24 +128,47 @@ class Addons_model extends CI_Model {
 					{
 						if ( ! class_exists(ucfirst($pkg_name)))
 						{
-							if ((@include_once PATH_THIRD.$pkg_name.'/'.$file) === FALSE)
-							{
-								continue;
-							}
-
-							if ( ! isset($plugin_info))
-							{
-								ee()->logger->developer('The plugin at '.$pkg_name.'/'.$file.' is missing the $plugin_info array.', TRUE);
-								continue;
-							}
+							$plugins[] = array(
+								'name' => $pkg_name,
+								'path' => PATH_THIRD.$pkg_name.'/'.$file
+							);
 						}
-
-						$plugins[] = $pkg_name;
-
-						$info[$pkg_name] = $plugin_info;
 					}
 				}
 			}
+		}
+
+		foreach ($plugins as $plugin)
+		{
+			// A plugin might already be in use for an accessory or
+			// other function. If so, we still need the $plugin_info,
+			// so we'll open it up and harvest what we need.
+			if (in_array($plugin['path'], get_included_files()))
+			{
+				$contents = file_get_contents($plugin['path']);
+				$start = strpos($contents, '$plugin_info');
+				$length = strpos($contents, ');', $start) - $start + 2;
+				eval(substr($contents, $start, $length));
+			}
+			else
+			{
+				// From php.net: "Because include is a special language
+				// construct, parentheses are not needed around its
+				// argument. Take care when comparing return value."
+				$included = @include_once $plugin['path'];
+				if ($included === FALSE)
+				{
+					continue;
+				}
+			}
+
+			if ( ! isset($plugin_info))
+			{
+				ee()->logger->developer('The plugin at '.$plugin['path'].' is missing the $plugin_info array.', TRUE);
+				continue;
+			}
+
+			$info[$plugin['name']] = array_unique($plugin_info);
 		}
 
 		return $info;
