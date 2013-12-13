@@ -268,6 +268,14 @@ class Date_ft extends EE_Fieldtype {
 
 	// --------------------------------------------------------------------
 
+	function replace_relative($date, $params = array(), $tagdata = FALSE)
+	{
+		$params['relative'] = 'yes';
+		return $this->replace_tag($date, $params, $tagdata);
+	}
+
+	// --------------------------------------------------------------------
+
 	public function grid_replace_tag($data, $params = array(), $tagdata = FALSE)
 	{
 		ee()->load->helper('custom_field_helper');
