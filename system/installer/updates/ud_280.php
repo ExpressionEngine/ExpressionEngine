@@ -89,12 +89,12 @@ class Updater {
 
 		if (ee()->config->item('time_format') == 'us')
 		{
-			$config_items['date_format'] = '%m/%d/%y';
+			$config_items['date_format'] = '%n/%j/%y';
 			$config_items['time_format'] = '12';
 		}
 		else
 		{
-			$config_items['date_format'] = '%d/%m/%y';
+			$config_items['date_format'] = '%j/%n/%y';
 			$config_items['time_format'] = '24';
 		}
 
@@ -152,8 +152,8 @@ class Updater {
 		);
 
 		// Update all the members
-		ee()->db->where('time_format', 'us')->update('members', array('date_format' => '%m/%d/%y', 'time_format' => '12'));
-		ee()->db->where('time_format', 'eu')->update('members', array('date_format' => '%d/%m/%y', 'time_format' => '24'));
+		ee()->db->where('time_format', 'us')->update('members', array('date_format' => '%n/%j/%y', 'time_format' => '12'));
+		ee()->db->where('time_format', 'eu')->update('members', array('date_format' => '%j/%n/%y', 'time_format' => '24'));
 		$include_seconds = ee()->config->item('include_seconds') ? ee()->config->item('include_seconds') : 'n';
 		ee()->db->update('members', array('include_seconds' => $include_seconds));
 	}
