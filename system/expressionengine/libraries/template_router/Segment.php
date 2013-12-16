@@ -74,6 +74,11 @@ class EE_Route_segment {
 			// This allows rules to work together without consuming the match.
 			$compiled_rules .= "((?=\b" . $rule->validator() . "\b).*)";
 		}
+        if (empty($this->rules))
+        {
+            // Default to a wildcard match if we have no rules
+            $compiled_rules = "(.*)";
+        }
 		return $compiled_rules;
 	}
 
