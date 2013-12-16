@@ -107,6 +107,18 @@ class EE_Template_Router extends CI_Router {
         }
     }
 
+    /**
+     * Create EE_Route object from EE formatted route string
+     * 
+     * @param string $route An EE formatted route string 
+     * @access public
+     * @return EE_Route The instantiated route object.
+     */
+    public function create_route($route)
+    {
+        return new EE_Route($route);
+    }
+
 }
 // END CLASS
 

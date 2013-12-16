@@ -3813,7 +3813,10 @@ class Design extends CP_Controller {
 		}
         elseif ($route = $this->input->get_post('template_route'))
 		{
-            // Parse and validate route here
+            // TODO: add error checking
+            ee()->load->library('template_router');
+            $template_route = ee()->template_router->create_route($route);
+			$this->template_model->update_template_ajax($template_id, array('route_parsed' => $template_route->compile()));
 			$this->template_model->update_template_ajax($template_id, array('route' => $route));
 		}
 		else
