@@ -22,7 +22,7 @@
 "use strict";
 
 function _access_edit_ajax(el, template_id, m_group_id, kind) {
-	
+
 	var str = '',
 		no_auth_bounce;
 	
@@ -37,6 +37,12 @@ function _access_edit_ajax(el, template_id, m_group_id, kind) {
 		str = jQuery.param({
 			'template_id': template_id,
 			'enable_http_auth': el.val()
+		});
+		break;
+	case 'template_route':
+		str = jQuery.param({
+			'template_id': template_id,
+			'template_route': el.val()
 		});
 		break;
 	case 'access':
@@ -96,6 +102,10 @@ function access_edit_ajax(el) {
 	else if (el.attr('name').substr(0, 16) === 'enable_http_auth') {
 		template_id = (el.attr('name').substr(17)) ? el.attr('name').substr(17) : $('input:hidden[name=template_id]').val();
 		_access_edit_ajax(el, template_id, '', 'enable_http_auth');
+    }
+	else if (el.attr('name').substr(0, 14) === 'template_route') {
+		template_id = (el.attr('name').substr(15)) ? el.attr('name').substr(15) : $('input:hidden[name=template_id]').val();
+		_access_edit_ajax(el, template_id, '', 'template_route');
 	} else {
 		ids = el.attr('name').replace('access_', '').split('_');
 		template_id = (ids.length < 2) ? $('input:hidden[name=template_id]').val() : ids[1];
@@ -305,6 +315,13 @@ function bind_prefs_events() {
 			headerrow.find('.enable_http_auth').attr({
 				'id': 'enable_http_auth_' + template_id,
 				'name': 'enable_http_auth_' + template_id
+			});
+
+			// template_route
+			headerrow.find(".template_route").val(rowdata.template_route);
+			headerrow.find('.template_route').attr({
+				'id': 'template_route_' + template_id,
+				'name': 'template_route_' + template_id
 			});
 
 			// Set data, ids, and names

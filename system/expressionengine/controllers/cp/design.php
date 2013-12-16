@@ -1360,6 +1360,7 @@ class Design extends CP_Controller {
 		$cache = $this->input->post('cache');
 		$hits = $this->input->post('hits');
 		$enable_http_auth = $this->input->post('enable_http_auth');
+		$template_route = $this->input->post('template_route');
 		$no_auth_bounce = $this->input->post('no_auth_bounce');
 
 		if ($template_type !== FALSE && $template_type != 'null')
@@ -1739,6 +1740,7 @@ class Design extends CP_Controller {
 		$vars['save_template_file'] = ($query->row('save_template_file') != 'y') ? FALSE : TRUE ;
 		$vars['no_auth_bounce']		= $query->row('no_auth_bounce');
 		$vars['enable_http_auth']	= $query->row('enable_http_auth');
+		$vars['template_route']	    = $query->row('route');
 
 		foreach(array('template_type', 'cache', 'refresh', 'allow_php', 'php_parse_location', 'hits') as $pref)
 		{
@@ -3394,7 +3396,8 @@ class Design extends CP_Controller {
 					'hits' => $row['hits'],
 					'access' => $access,
 					'no_auth_bounce' => $row['no_auth_bounce'],
-					'enable_http_auth' => $row['enable_http_auth']
+					'enable_http_auth' => $row['enable_http_auth'],
+					'template_route' => $row['route']
 				);
 
 
@@ -3408,6 +3411,7 @@ class Design extends CP_Controller {
 			$vars['templates'][$row['group_id']][$row['template_id']]['group_id'] = $row['group_id'];
 			$vars['templates'][$row['group_id']][$row['template_id']]['template_name'] = $row['template_name'];
 			$vars['templates'][$row['group_id']][$row['template_id']]['template_type'] = $row['template_type'];
+			$vars['templates'][$row['group_id']][$row['template_id']]['template_route'] = $row['route'];
 			$vars['templates'][$row['group_id']][$row['template_id']]['enable_http_auth'] = $row['enable_http_auth'];  // needed for display
 
 			$vars['templates'][$row['group_id']][$row['template_id']]['hidden'] = (strncmp($row['template_name'], $hidden_indicator, $hidden_indicator_length) == 0) ? TRUE : FALSE;
@@ -3604,6 +3608,7 @@ class Design extends CP_Controller {
 				'hits' => $row['hits'],
 				'access' => $access,
 				'no_auth_bounce' => $row['no_auth_bounce'],
+				'route' => $row['route'],
 				'enable_http_auth' => $row['enable_http_auth']
 			);
 		}
@@ -3805,6 +3810,11 @@ class Design extends CP_Controller {
 			}
 
 			$this->template_model->update_template_ajax($template_id, array('no_auth_bounce' => $no_auth_bounce));
+		}
+        elseif ($route = $this->input->get_post('template_route'))
+		{
+            // Parse and validate route here
+			$this->template_model->update_template_ajax($template_id, array('route' => $route));
 		}
 		else
 		{

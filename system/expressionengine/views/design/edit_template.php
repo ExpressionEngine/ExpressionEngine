@@ -164,6 +164,13 @@
 						</td>
 						<td><?=form_dropdown('enable_http_auth',  array('y' => lang('yes'), 'n' => lang('no')), $enable_http_auth, 'class="enable_http_auth"')?></td>
 					</tr>
+					<tr>
+						<td>
+							<?=lang('template_route', 'template_route')?>
+							<div class="subtext"><?=lang('template_route_subtext')?></div>
+						</td>
+						<td><input name="template_route" type="text" value="<?=$template_route?>" /></td>
+					</tr>
 				</table>
 				</div>
 			</div>

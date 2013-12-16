@@ -127,6 +127,13 @@
 								</td>
 								<td><?=form_dropdown('enable_http_auth',  array('y' => lang('yes'), 'n' => lang('no')), '', 'class="enable_http_auth"')?></td>
 							</tr>
+							<tr>
+								<td>
+									<?=lang('template_route', 'template_route')?>
+									<div class="subtext"><?=lang('template_route_subtext')?></div>
+								</td>
+								<td><input name="template_route" class="template_route" type="text" value="" /></td>
+							</tr>
 						</table>
 					</div>
 				<?php endif; ?>
