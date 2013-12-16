@@ -235,7 +235,7 @@ class Localize {
 		}
 		else
 		{
-			$format_string .= '%h:%i' . $seconds_format . ' %A';
+			$format_string .= '%g:%i' . $seconds_format . ' %A';
 		}
 
 		return $this->format_date($format_string, $timestamp, $localize);
