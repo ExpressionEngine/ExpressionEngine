@@ -85,21 +85,33 @@ class Updater {
 	 */
 	private function _update_localization_config()
 	{
-		$config_items = array();
+		$localization_preferences = array();
 
-		if (ee()->config->item('time_format') == 'us')
-		{
-			$config_items['date_format'] = '%n/%j/%y';
-			$config_items['time_format'] = '12';
-		}
-		else
-		{
-			$config_items['date_format'] = '%j/%n/%y';
-			$config_items['time_format'] = '24';
-		}
+		ee()->db->select('site_id, site_system_preferences');
+    	$query = ee()->db->get('sites');
 
-		$config_items['include_seconds'] = ee()->config->item('include_seconds') ? ee()->config->item('include_seconds') : 'n';
-		ee()->config->_update_config($config_items);
+    	if ($query->num_rows() > 0)
+    	{
+			foreach ($query->result_array() as $row)
+			{
+				$system_prefs = base64_decode($row['site_system_preferences']);
+				$system_prefs = unserialize($system_prefs);
+
+				if ($system_prefs['time_format'] == 'us')
+				{
+					$localization_preferences['date_format'] = '%n/%j/%y';
+					$localization_preferences['time_format'] = '12';
+				}
+				else
+				{
+					$localization_preferences['date_format'] = '%j/%n/%y';
+					$localization_preferences['time_format'] = '24';
+				}
+
+				$localization_preferences['include_seconds'] = ee()->config->item('include_seconds') ? ee()->config->item('include_seconds') : 'n';
+				ee()->config->update_site_prefs($localization_preferences, 'all');
+			}
+		}
 	}
 
 	// -------------------------------------------------------------------------
