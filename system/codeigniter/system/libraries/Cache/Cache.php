@@ -115,7 +115,7 @@ class CI_Cache extends CI_Driver_Library {
 	 * Look for a value in the cache. If it exists, return the data
 	 * if not, return FALSE
 	 *
-	 * @param	string	$key 		Key name
+	 * @param	string	$key 	Key name
 	 * @param	const	$scope	self::CACHE_LOCAL or self::CACHE_GLOBAL for
 	 *		local or global scoping of the cache item
 	 * @return	mixed	value matching $id or FALSE on failure
@@ -152,7 +152,7 @@ class CI_Cache extends CI_Driver_Library {
 	 *
 	 * ee()->cache->delete('/namespace_name/');
 	 *
-	 * @param	string	$key		Key name
+	 * @param	string	$key	Key name
 	 * @param	const	$scope	self::CACHE_LOCAL or self::CACHE_GLOBAL for
 	 *		local or global scoping of the cache item
 	 * @return	bool	TRUE on success, FALSE on failure
@@ -194,7 +194,7 @@ class CI_Cache extends CI_Driver_Library {
 	/**
 	 * Get Cache Metadata
 	 *
-	 * @param	string	$key		Key to get cache metadata on
+	 * @param	string	$key	Key to get cache metadata on
 	 * @param	const	$scope	self::CACHE_LOCAL or self::CACHE_GLOBAL for
 	 *		local or global scoping of the cache item
 	 * @return	mixed	cache item metadata

@@ -33,25 +33,27 @@ class CI_Cache_memcached extends CI_Driver {
 	protected $_memcached = NULL;
 
 	/**
-	 * Keeps current namespaces in memory in the format of:
-	 *
-	 *     'namespace' => 'key_prefix'
+	 * Keeps current namespaces in memory
 	 *
 	 * @var array
 	 */
-	protected $_key_prefixes = array();
+	protected $_namespaces = array();
 
 	/**
 	 * Look for a value in the cache. If it exists, return the data
 	 * if not, return FALSE
 	 *
 	 * @param	string	$key 		Key name
-	 * @param	string	$namespace	Namespace name
+	 * @param	const	$scope		CI_Cache::CACHE_LOCAL or CI_Cache::CACHE_GLOBAL
+	 *		 for local or global scoping of the cache item
+	 * @param	bool	$namespace 	Whether or not to namespace the key
 	 * @return	mixed	value matching $id or FALSE on failure
 	 */
-	public function get($key, $namespace = '')
+	public function get($key, $scope = CI_Cache::CACHE_LOCAL, $namespace = TRUE)
 	{
-		$data = $this->_memcached->get($this->_namespaced_key($key, $namespace));
+		$key = ($namespace) ? $this->_namespaced_key($key, $scope) : $this->unique_key($key, $scope);
+
+		$data = $this->_memcached->get($key);
 
 		return is_array($data) ? $data[0] : FALSE;
 	}
@@ -64,12 +66,14 @@ class CI_Cache_memcached extends CI_Driver {
 	 * @param	string	$key		Key name
 	 * @param	mixed	$data		Data to store
 	 * @param	int		$ttl = 60	Cache TTL (in seconds)
-	 * @param	string	$namespace	Namespace name
+	 * @param	const	$scope		CI_Cache::CACHE_LOCAL or CI_Cache::CACHE_GLOBAL
+	 *		 for local or global scoping of the cache item
+	 * @param	bool	$namespace 	Whether or not to namespace the key
 	 * @return	bool	TRUE on success, FALSE on failure
 	 */
-	public function save($key, $data, $ttl = 60, $namespace = '')
+	public function save($key, $data, $ttl = 60, $scope = CI_Cache::CACHE_LOCAL, $namespace = TRUE)
 	{
-		$key = $this->_namespaced_key($key, $namespace);
+		$key = ($namespace) ? $this->_namespaced_key($key, $scope) : $this->unique_key($key, $scope);
 
 		// Memcache does not allow a TTL more than 30 days, anything over will
 		// cause set() to return FALSE; and Memcached interprets any TTL over
@@ -98,26 +102,22 @@ class CI_Cache_memcached extends CI_Driver {
 	/**
 	 * Delete from cache
 	 *
-	 * @param	string	$key		Key name
-	 * @param	string	$namespace	Namespace name
+	 * @param	string	$key	Key name
+	 * @param	const	$scope	CI_Cache::CACHE_LOCAL or CI_Cache::CACHE_GLOBAL
+	 *		 for local or global scoping of the cache item
 	 * @return	bool	TRUE on success, FALSE on failure
 	 */
-	public function delete($key, $namespace = '')
+	public function delete($key, $scope = CI_Cache::CACHE_LOCAL)
 	{
-		return $this->_memcached->delete($this->_namespaced_key($key, $namespace));
-	}
+		// Delete namespace contents
+		if (strrpos($key, $this->namespace_separator(), -1) !== FALSE)
+		{
+			$this->_create_new_namespace($key, $scope);
 
-	// ------------------------------------------------------------------------
+			return TRUE;
+		}
 
-	/**
-	 * Delete keys from cache in a specified namespace
-	 *
-	 * @param	string	$namespace	Namespace of group of cache keys to delete
-	 * @return	bool
-	 */
-	public function clear_namepace($namespace)
-	{
-		$this->_create_new_namespace($namespace);
+		return $this->_memcached->delete($this->_namespaced_key($key, $scope));
 	}
 
 	// ------------------------------------------------------------------------
@@ -125,11 +125,15 @@ class CI_Cache_memcached extends CI_Driver {
 	/**
 	 * Clean the cache
 	 *
+	 * @param	const	$scope	CI_Cache::CACHE_LOCAL or CI_Cache::CACHE_GLOBAL
+	 *		 for local or global scoping of the cache item
 	 * @return	bool	TRUE on success, FALSE on failure
 	 */
-	public function clean()
+	public function clean($scope = CI_Cache::CACHE_LOCAL)
 	{
-		return $this->_memcached->flush();
+		$this->_create_new_namespace('', $scope, TRUE);
+
+		return TRUE;
 	}
 
 	// ------------------------------------------------------------------------
@@ -151,12 +155,13 @@ class CI_Cache_memcached extends CI_Driver {
 	 * Get Cache Metadata
 	 *
 	 * @param	string	$key		Key to get cache metadata on
-	 * @param	string	$namespace	Namespace name
+	 * @param	const	$scope	CI_Cache::CACHE_LOCAL or CI_Cache::CACHE_GLOBAL
+	 *		 for local or global scoping of the cache item
 	 * @return	mixed	Cache item metadata
 	 */
-	public function get_metadata($key, $namespace = '')
+	public function get_metadata($key, $scope = CI_Cache::CACHE_LOCAL)
 	{
-		$stored = $this->_memcached->get($this->_namespaced_key($key, $namespace));
+		$stored = $this->_memcached->get($this->_namespaced_key($key, $scope));
 
 		if (count($stored) !== 3)
 		{
@@ -232,6 +237,9 @@ class CI_Cache_memcached extends CI_Driver {
 			}
 		}
 
+		// Attempt to get previously-created namespaces and assign to class variable
+		$this->_namespaces = $this->get('namespaces', CI_Cache::CACHE_GLOBAL, FALSE);
+
 		// Check each server to see if it's reporting the time; if at least
 		// one server reports the time, we'll consider this driver ok to use
 		foreach ($this->cache_info() as $server)
@@ -277,75 +285,133 @@ class CI_Cache_memcached extends CI_Driver {
 
 	/**
 	 * Create a new namespace, which essentially invalidates an old/expired
-	 * namespace. Since Memcache doesn't let us delete cache keys based on a
-	 * pattern, and we don't want to iterate over every key stored on each
-	 * Memcache server we're connected to to figure out what to delete, we'll
-	 * just create a new namespace every time we want to clear a particular
-	 * subset of cached items. For example, for page caches, our namespace may
-	 * be "1234:page:", but if we want to start the page cache fresh, we'll
-	 * change it to "1235:page:", so that new page cache items will be forced
-	 * to be created anew.
+	 * namespace.
+	 *
+	 * Memcache(d) does not provide a way to delete or invalidate cache items
+	 * based on a wildcard pattern, and we do not way to iterate over every key
+	 * stored in numerous Memcached servers to figure out what to delete. So
+	 * we're using Memcached's recommended namespacing method of prefixing keys
+	 * with a random number.
+	 *
+	 * For example, for page caches, our namespace may be "/page". We cannot
+	 * tell Memcached to delete all keys beginning with "/page", so we prefix
+	 * the key with a number, like so: "12345:/page". If we want to clear the
+	 * page cache, we change the number ("12346:/page") so that items
+	 * requested from the cache are effectively not existent, thus acting like
+	 * a cleared cache.
+	 *
+	 * It may be easiest to think of it like versioning. All past versions
+	 * continue to live in the cache store until automatically purged by
+	 * Memcached, but as we clear namespaces, we basically create new versions
+	 * of them for new things to be stored in.
 	 *
 	 * @param	string	$namespace	Name of the namespace, eg. "page", "tag"
+	 * @param	const	$scope		CI_Cache::CACHE_LOCAL or CI_Cache::CACHE_GLOBAL
+	 *		 for local or global scoping of the cache item
+	 * @param	bool	$clear_scope	Whether or not to clear the current scope
 	 * @return	string	New namespace/prefix for keys to be stored in this
 	 *					namespace
 	 */
-	protected function _create_new_namespace($namespace)
+	protected function _create_new_namespace($namespace, $scope = CI_Cache::CACHE_LOCAL, $clear_scope = FALSE)
 	{
-		// We'll use the current time, that way we're pretty much guaranteed
-		// not to use an existing namespace
-		$this->_key_prefixes[$namespace] = ee()->localize->now.':'.$namespace;
+		// Get the current unique scope string
+		$root_key = $this->unique_key('', $scope);
 
-		// Save it to memcache so we can access it on subsequent page loads
-		$this->save($namespace.'-namespace', $this->_key_prefixes[$namespace], 0);
+		// We'll use the current time concatendated with a random number, that
+		// way we're pretty much guaranteed not to use an existing namespace
+		$unique_key = ee()->localize->now.rand(1,10000);
 
-		return $this->_key_prefixes[$namespace];
+		// If no root namespace exists for the current scope, create one and
+		// wipe out all other namespaces; or if the $clear_scope parameter is
+		// set, in which case we are clearing the cache for the current scope
+		if ( ! isset($this->_namespaces[$root_key]['root_namespace']) || $clear_scope)
+		{
+			$this->_namespaces[$root_key] = array('root_namespace' => $unique_key);
+		}
+
+		// If we're not creating a new cache for the current scope, we must be
+		// creating a new namespace under the current scope
+		if ( ! $clear_scope)
+		{
+			$this->_namespaces[$root_key][$namespace] = $unique_key;
+		}
+
+		// Save our class namespaces array to Memcached so we can access it on
+		// subsequent page loads
+		$this->save(
+			'namespaces',
+			$this->_namespaces,
+			0,
+			CI_Cache::CACHE_GLOBAL,
+			FALSE // Don't namespace this key
+		);
+
+		return $unique_key;
 	}
 
 	// ------------------------------------------------------------------------
 
 	/**
 	 * Creates a properly namespaced key ready for storage or retreval of any
-	 * cache item. Given something like "some_data" for the key and "tag" for
-	 * the namespace, returns something like "//ee2/:12345:tag:some_data" to
-	 * ensure we are pulling from the correct namespace while making the key
-	 * unique to this site since Memcache can store data for many sites
+	 * cache item.
+	 *
+	 * For example, given a key of "/page/contact" and a scope of CACHE_LOCAL,
+	 * would return a key similar to:
+	 *
+	 *     http://site.com:12345678:/page/contact
+	 *
+	 * This is so that a Memcached server serving many EE installs can use the
+	 * same keys, conflict free. But it also serves to create namespaces within
+	 * the cache store that we can indiviaully manange. For more information on
+	 * this, see the doc block for _create_new_namespace above.
 	 *
 	 * @param	string	$key	Key name
-	 * @param	string	$namespace	Name of the namespace, eg. "page", "tag"
+	 * @param	const	$scope	CI_Cache::CACHE_LOCAL or CI_Cache::CACHE_GLOBAL
+	 *		 for local or global scoping of the cache item
 	 * @return	string	Key that has been prefixed with the proper namespace
 	 *					and make unique to this site
 	 */
-	protected function _namespaced_key($key, $namespace)
+	protected function _namespaced_key($key, $scope = CI_Cache::CACHE_LOCAL)
 	{
-		if ( ! empty($namespace))
-		{
-			// If key isn't already cached locally, try to get it from Memcache
-			if ( ! isset($this->_key_prefixes[$namespace]))
-			{
-				$data = $this->_memcached->get($this->unique_key($namespace.'-namespace'));
+		$root_key = $this->unique_key('', $scope);
 
-				// Cache the new namespace, or create a new one if we didn't
-				// find one
-				if (is_array($data))
+		// Make sure this scope has a root namespace
+		if (isset($this->_namespaces[$root_key]['root_namespace']))
+		{
+			// If the key contains our namespace separator character...
+			if (strpos($key, $this->namespace_separator()) !== FALSE)
+			{
+				// Separate the namespace from the cache key name
+				$namespace = substr($key, 0, strrpos($key, $this->namespace_separator()) + 1);
+
+				// If this namespace is already set, get it from local cache
+				if (isset($this->_namespaces[$root_key][$namespace]))
 				{
-					$namespace = $this->_key_prefixes[$namespace] = $data[0];
+					$namespace = $this->_namespaces[$root_key][$namespace];
 				}
+				// Otherwise, create the namespace
 				else
 				{
-					$namespace = $this->_create_new_namespace($namespace);
+					$namespace = $this->_create_new_namespace($namespace, $scope);
 				}
 			}
-			// Return cached namespace
-			elseif (isset($this->_key_prefixes[$namespace]))
+			// Key is not namespaced, give it the namespace identifier of the
+			// root namespace of the scope
+			else
 			{
-				$namespace = $this->_key_prefixes[$namespace];
+				$namespace = $this->_namespaces[$root_key]['root_namespace'];
 			}
+		}
+		// If the current scope does not have namespaces setup, create one
+		// and try to make a namespaced key again
+		else
+		{
+			$this->_create_new_namespace('', $scope, TRUE);
 
-			$namespace .= ':';
+			return $this->_namespaced_key($key, $scope);
 		}
 
-		return $this->unique_key($namespace.$key);
+		return $this->unique_key($namespace.':'.$key);
 	}
 }
 
