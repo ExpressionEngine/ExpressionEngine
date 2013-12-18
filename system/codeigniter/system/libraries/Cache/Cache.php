@@ -23,7 +23,7 @@
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class CI_Cache extends CI_Driver_Library {
+class Cache extends CI_Driver_Library {
 
 	/**
 	 * These constants specify the scope in which the cache item should
@@ -31,8 +31,8 @@ class CI_Cache extends CI_Driver_Library {
 	 * current site, or it should be globally accessible by the EE
 	 * installation across MSM sites
 	 */
-	const CACHE_LOCAL = 1;	// Scoped to the current site
-	const CACHE_GLOBAL = 2;	// Scoped to global EE install
+	const GLOBAL_SCOPE = 1;	// Scoped to the current site
+	const LOCAL_SCOPE = 2;	// Scoped to global EE install
 
 	/**
 	 * Valid cache drivers
@@ -116,11 +116,11 @@ class CI_Cache extends CI_Driver_Library {
 	 * if not, return FALSE
 	 *
 	 * @param	string	$key 	Key name
-	 * @param	const	$scope	self::CACHE_LOCAL or self::CACHE_GLOBAL for
+	 * @param	const	$scope	Cache::LOCAL_SCOPE or Cache::GLOBAL_SCOPE for
 	 *		local or global scoping of the cache item
 	 * @return	mixed	value matching $id or FALSE on failure
 	 */
-	public function get($key, $scope = self::CACHE_LOCAL)
+	public function get($key, $scope = Cache::LOCAL_SCOPE)
 	{
 		return $this->{$this->_adapter}->get($key, $scope);
 	}
@@ -133,11 +133,11 @@ class CI_Cache extends CI_Driver_Library {
 	 * @param	string	$key		Key name
 	 * @param	mixed	$data		Data to store
 	 * @param	int		$ttl = 60	Cache TTL (in seconds)
-	 * @param	const	$scope	self::CACHE_LOCAL or self::CACHE_GLOBAL for
+	 * @param	const	$scope	Cache::LOCAL_SCOPE or Cache::GLOBAL_SCOPE for
 	 *		local or global scoping of the cache item
 	 * @return	bool	TRUE on success, FALSE on failure
 	 */
-	public function save($key, $data, $ttl = 60, $scope = self::CACHE_LOCAL)
+	public function save($key, $data, $ttl = 60, $scope = Cache::LOCAL_SCOPE)
 	{
 		return $this->{$this->_adapter}->save($key, $data, $ttl, $scope);
 	}
@@ -153,11 +153,11 @@ class CI_Cache extends CI_Driver_Library {
 	 * ee()->cache->delete('/namespace_name/');
 	 *
 	 * @param	string	$key	Key name
-	 * @param	const	$scope	self::CACHE_LOCAL or self::CACHE_GLOBAL for
+	 * @param	const	$scope	Cache::LOCAL_SCOPE or Cache::GLOBAL_SCOPE for
 	 *		local or global scoping of the cache item
 	 * @return	bool	TRUE on success, FALSE on failure
 	 */
-	public function delete($key, $scope = self::CACHE_LOCAL)
+	public function delete($key, $scope = Cache::LOCAL_SCOPE)
 	{
 		return $this->{$this->_adapter}->delete($key, $scope);
 	}
@@ -167,11 +167,11 @@ class CI_Cache extends CI_Driver_Library {
 	/**
 	 * Clean the cache
 	 *
-	 * @param	const	$scope	self::CACHE_LOCAL or self::CACHE_GLOBAL for
+	 * @param	const	$scope	Cache::LOCAL_SCOPE or Cache::GLOBAL_SCOPE for
 	 *		local or global scoping of the cache item
 	 * @return	bool	TRUE on success, FALSE on failure
 	 */
-	public function clean($scope = self::CACHE_LOCAL)
+	public function clean($scope = Cache::LOCAL_SCOPE)
 	{
 		return $this->{$this->_adapter}->clean();
 	}
@@ -195,11 +195,11 @@ class CI_Cache extends CI_Driver_Library {
 	 * Get Cache Metadata
 	 *
 	 * @param	string	$key	Key to get cache metadata on
-	 * @param	const	$scope	self::CACHE_LOCAL or self::CACHE_GLOBAL for
+	 * @param	const	$scope	Cache::LOCAL_SCOPE or Cache::GLOBAL_SCOPE for
 	 *		local or global scoping of the cache item
 	 * @return	mixed	cache item metadata
 	 */
-	public function get_metadata($key, $scope = self::CACHE_LOCAL)
+	public function get_metadata($key, $scope = Cache::LOCAL_SCOPE)
 	{
 		return $this->{$this->_adapter}->get_metadata($key, $scope);
 	}
@@ -255,15 +255,15 @@ class CI_Cache extends CI_Driver_Library {
 	 * more clarity when debugging cache issues
 	 *
 	 * @param	string	$key	Key to make unique
-	 * @param	const	$scope	self::CACHE_LOCAL or self::CACHE_GLOBAL for
+	 * @param	const	$scope	Cache::LOCAL_SCOPE or Cache::GLOBAL_SCOPE for
 	 *		local or global scoping of the cache item
 	 * @return	string	Key made unique to this site
 	 */
-	public function unique_key($key, $scope = self::CACHE_LOCAL)
+	public function unique_key($key, $scope = Cache::LOCAL_SCOPE)
 	{
 		$prefix = ee()->config->item('site_url');
 
-		if ($scope == self::CACHE_GLOBAL)
+		if ($scope == Cache::GLOBAL_SCOPE)
 		{
 			$prefix = md5(ee()->input->server('SERVER_ADDR').APPPATH);
 		}

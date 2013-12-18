@@ -39,11 +39,11 @@ class CI_Cache_redis extends CI_Driver
 	 * if not, return FALSE
 	 *
 	 * @param	string	$key 	Key name
-	 * @param	const	$scope	CI_Cache::CACHE_LOCAL or CI_Cache::CACHE_GLOBAL
+	 * @param	const	$scope	Cache::LOCAL_SCOPE or Cache::GLOBAL_SCOPE
 	 *		 for local or global scoping of the cache item
 	 * @return	mixed	value matching $id or FALSE on failure
 	 */
-	public function get($key, $scope = CI_Cache::CACHE_LOCAL)
+	public function get($key, $scope = Cache::LOCAL_SCOPE)
 	{
 		return unserialize($this->_redis->get($this->unique_key($key, $scope)));
 	}
@@ -56,11 +56,11 @@ class CI_Cache_redis extends CI_Driver
 	 * @param	string	$key		Key name
 	 * @param	mixed	$data		Data to store
 	 * @param	int		$ttl = 60	Cache TTL (in seconds)
-	 * @param	const	$scope		CI_Cache::CACHE_LOCAL or CI_Cache::CACHE_GLOBAL
+	 * @param	const	$scope		Cache::LOCAL_SCOPE or Cache::GLOBAL_SCOPE
 	 *		 for local or global scoping of the cache item
 	 * @return	bool	TRUE on success, FALSE on failure
 	 */
-	public function save($key, $value, $ttl = NULL, $scope = CI_Cache::CACHE_LOCAL)
+	public function save($key, $value, $ttl = NULL, $scope = Cache::LOCAL_SCOPE)
 	{
 		$key = $this->unique_key($key, $scope);
 		$value = serialize($value);
@@ -76,11 +76,11 @@ class CI_Cache_redis extends CI_Driver
 	 * Delete from cache
 	 *
 	 * @param	string	$key	Key name
-	 * @param	const	$scope	CI_Cache::CACHE_LOCAL or CI_Cache::CACHE_GLOBAL
+	 * @param	const	$scope	Cache::LOCAL_SCOPE or Cache::GLOBAL_SCOPE
 	 *		 for local or global scoping of the cache item
 	 * @return	bool	TRUE on success, FALSE on failure
 	 */
-	public function delete($key, $scope = CI_Cache::CACHE_LOCAL)
+	public function delete($key, $scope = Cache::LOCAL_SCOPE)
 	{
 		// Delete namespace contents
 		if (strrpos($key, $this->namespace_separator(), -1) !== FALSE)
@@ -99,11 +99,11 @@ class CI_Cache_redis extends CI_Driver
 	/**
 	 * Clean cache for the current scope
 	 *
-	 * @param	const	$scope	CI_Cache::CACHE_LOCAL or CI_Cache::CACHE_GLOBAL
+	 * @param	const	$scope	Cache::LOCAL_SCOPE or Cache::GLOBAL_SCOPE
 	 *		 for local or global scoping of the cache item
 	 * @return	bool	TRUE on success, FALSE on failureå
 	 */
-	public function clean($scope = CI_Cache::CACHE_LOCAL)
+	public function clean($scope = Cache::LOCAL_SCOPE)
 	{
 		return ($this->_redis->delete(
 			$this->_redis->keys($this->unique_key('', $scope).'*')
@@ -130,11 +130,11 @@ class CI_Cache_redis extends CI_Driver
 	 * Get Cache Metadata
 	 *
 	 * @param	string	$id		Key to get cache metadata on
-	 * @param	const	$scope	CI_Cache::CACHE_LOCAL or CI_Cache::CACHE_GLOBAL
+	 * @param	const	$scope	Cache::LOCAL_SCOPE or Cache::GLOBAL_SCOPE
 	 *		 for local or global scoping of the cache item
 	 * @return	mixed	Cache item metadata
 	 */
-	public function get_metadata($key, $scope = CI_Cache::CACHE_LOCAL)
+	public function get_metadata($key, $scope = Cache::LOCAL_SCOPE)
 	{
 		$value = $this->get($key, $scope);
 		$key = $this->unique_key($key, $scope);

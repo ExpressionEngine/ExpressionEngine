@@ -58,11 +58,11 @@ class CI_Cache_file extends CI_Driver {
 	 * if not, return FALSE
 	 *
 	 * @param	string	$key 	Key name
-	 * @param	const	$scope	CI_Cache::CACHE_LOCAL or CI_Cache::CACHE_GLOBAL
+	 * @param	const	$scope	Cache::LOCAL_SCOPE or Cache::GLOBAL_SCOPE
 	 *		 for local or global scoping of the cache item
 	 * @return	mixed	Value matching $key or FALSE on failure
 	 */
-	public function get($key, $scope = CI_Cache::CACHE_LOCAL)
+	public function get($key, $scope = Cache::LOCAL_SCOPE)
 	{
 		$key = $this->_namespaced_key($key, $scope);
 
@@ -90,11 +90,11 @@ class CI_Cache_file extends CI_Driver {
 	 * @param	string	$key		Key name
 	 * @param	mixed	$data		Data to store
 	 * @param	int		$ttl = 60	Cache TTL (in seconds)
-	 * @param	const	$scope		CI_Cache::CACHE_LOCAL or CI_Cache::CACHE_GLOBAL
+	 * @param	const	$scope		Cache::LOCAL_SCOPE or Cache::GLOBAL_SCOPE
 	 *		 for local or global scoping of the cache item
 	 * @return	bool	TRUE on success, FALSE on failure
 	 */
-	public function save($key, $data, $ttl = 60, $scope = CI_Cache::CACHE_LOCAL)
+	public function save($key, $data, $ttl = 60, $scope = Cache::LOCAL_SCOPE)
 	{
 		$contents = array(
 			'time'		=> ee()->localize->now,
@@ -139,11 +139,11 @@ class CI_Cache_file extends CI_Driver {
 	 * ee()->cache->delete('/namespace_name/');
 	 *
 	 * @param	string	$key	Key name
-	 * @param	const	$scope	CI_Cache::CACHE_LOCAL or CI_Cache::CACHE_GLOBAL
+	 * @param	const	$scope	Cache::LOCAL_SCOPE or Cache::GLOBAL_SCOPE
 	 *		 for local or global scoping of the cache item
 	 * @return	bool	TRUE on success, FALSE on failure
 	 */
-	public function delete($key, $scope = CI_Cache::CACHE_LOCAL)
+	public function delete($key, $scope = Cache::LOCAL_SCOPE)
 	{
 		$path = $this->_cache_path.$this->_namespaced_key($key, $scope);
 
@@ -169,11 +169,11 @@ class CI_Cache_file extends CI_Driver {
 	/**
 	 * Clean the cache
 	 *
-	 * @param	const	$scope	CI_Cache::CACHE_LOCAL or CI_Cache::CACHE_GLOBAL
+	 * @param	const	$scope	Cache::LOCAL_SCOPE or Cache::GLOBAL_SCOPE
 	 *		 for local or global scoping of the cache item
 	 * @return	bool	TRUE on success, FALSE on failure
 	 */
-	public function clean($scope = CI_Cache::CACHE_LOCAL)
+	public function clean($scope = Cache::LOCAL_SCOPE)
 	{
 		// Delete all files in cache directory, excluding .htaccess and index.html
 		delete_files(
@@ -205,11 +205,11 @@ class CI_Cache_file extends CI_Driver {
 	 * Get Cache Metadata
 	 *
 	 * @param	string	$key	Key to get cache metadata on
-	 * @param	const	$scope	CI_Cache::CACHE_LOCAL or CI_Cache::CACHE_GLOBAL
+	 * @param	const	$scope	Cache::LOCAL_SCOPE or Cache::GLOBAL_SCOPE
 	 *		 for local or global scoping of the cache item
 	 * @return	mixed	cache item metadata
 	 */
-	public function get_metadata($key, $scope = CI_Cache::CACHE_LOCAL)
+	public function get_metadata($key, $scope = Cache::LOCAL_SCOPE)
 	{
 		$key = $this->_namespaced_key($key, $scope);
 
@@ -260,11 +260,11 @@ class CI_Cache_file extends CI_Driver {
 	 * For the file driver, namespaces will be actual folders
 	 *
 	 * @param	string	$key	Key name
-	 * @param	const	$scope	CI_Cache::CACHE_LOCAL or CI_Cache::CACHE_GLOBAL
+	 * @param	const	$scope	Cache::LOCAL_SCOPE or Cache::GLOBAL_SCOPE
 	 *		 for local or global scoping of the cache item
 	 * @return	string	Key prefixed with namespace
 	 */
-	protected function _namespaced_key($key, $scope = CI_Cache::CACHE_LOCAL)
+	protected function _namespaced_key($key, $scope = Cache::LOCAL_SCOPE)
 	{
 		// Make sure the key doesn't begin or end with a namespace separator or
 		// directory separator to force the last segment of the key to be the
@@ -275,7 +275,7 @@ class CI_Cache_file extends CI_Driver {
 		$key = str_replace($this->namespace_separator(), DIRECTORY_SEPARATOR, $key);
 
 		// For locally-cached items, separate by site name
-		if ($scope == CI_Cache::CACHE_LOCAL)
+		if ($scope == Cache::LOCAL_SCOPE)
 		{
 			$key = ee()->config->item('site_short_name') . DIRECTORY_SEPARATOR . $key;
 		}

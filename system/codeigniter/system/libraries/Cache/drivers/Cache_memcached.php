@@ -44,12 +44,12 @@ class CI_Cache_memcached extends CI_Driver {
 	 * if not, return FALSE
 	 *
 	 * @param	string	$key 		Key name
-	 * @param	const	$scope		CI_Cache::CACHE_LOCAL or CI_Cache::CACHE_GLOBAL
+	 * @param	const	$scope		Cache::LOCAL_SCOPE or Cache::GLOBAL_SCOPE
 	 *		 for local or global scoping of the cache item
 	 * @param	bool	$namespace 	Whether or not to namespace the key
 	 * @return	mixed	value matching $id or FALSE on failure
 	 */
-	public function get($key, $scope = CI_Cache::CACHE_LOCAL, $namespace = TRUE)
+	public function get($key, $scope = Cache::LOCAL_SCOPE, $namespace = TRUE)
 	{
 		$key = ($namespace) ? $this->_namespaced_key($key, $scope) : $this->unique_key($key, $scope);
 
@@ -66,12 +66,12 @@ class CI_Cache_memcached extends CI_Driver {
 	 * @param	string	$key		Key name
 	 * @param	mixed	$data		Data to store
 	 * @param	int		$ttl = 60	Cache TTL (in seconds)
-	 * @param	const	$scope		CI_Cache::CACHE_LOCAL or CI_Cache::CACHE_GLOBAL
+	 * @param	const	$scope		Cache::LOCAL_SCOPE or Cache::GLOBAL_SCOPE
 	 *		 for local or global scoping of the cache item
 	 * @param	bool	$namespace 	Whether or not to namespace the key
 	 * @return	bool	TRUE on success, FALSE on failure
 	 */
-	public function save($key, $data, $ttl = 60, $scope = CI_Cache::CACHE_LOCAL, $namespace = TRUE)
+	public function save($key, $data, $ttl = 60, $scope = Cache::LOCAL_SCOPE, $namespace = TRUE)
 	{
 		$key = ($namespace) ? $this->_namespaced_key($key, $scope) : $this->unique_key($key, $scope);
 
@@ -103,11 +103,11 @@ class CI_Cache_memcached extends CI_Driver {
 	 * Delete from cache
 	 *
 	 * @param	string	$key	Key name
-	 * @param	const	$scope	CI_Cache::CACHE_LOCAL or CI_Cache::CACHE_GLOBAL
+	 * @param	const	$scope	Cache::LOCAL_SCOPE or Cache::GLOBAL_SCOPE
 	 *		 for local or global scoping of the cache item
 	 * @return	bool	TRUE on success, FALSE on failure
 	 */
-	public function delete($key, $scope = CI_Cache::CACHE_LOCAL)
+	public function delete($key, $scope = Cache::LOCAL_SCOPE)
 	{
 		// Delete namespace contents
 		if (strrpos($key, $this->namespace_separator(), -1) !== FALSE)
@@ -126,11 +126,11 @@ class CI_Cache_memcached extends CI_Driver {
 	/**
 	 * Clean the cache
 	 *
-	 * @param	const	$scope	CI_Cache::CACHE_LOCAL or CI_Cache::CACHE_GLOBAL
+	 * @param	const	$scope	Cache::LOCAL_SCOPE or Cache::GLOBAL_SCOPE
 	 *		 for local or global scoping of the cache item
 	 * @return	bool	TRUE on success, FALSE on failure
 	 */
-	public function clean($scope = CI_Cache::CACHE_LOCAL)
+	public function clean($scope = Cache::LOCAL_SCOPE)
 	{
 		$this->_create_new_namespace('', $scope, TRUE);
 
@@ -156,11 +156,11 @@ class CI_Cache_memcached extends CI_Driver {
 	 * Get Cache Metadata
 	 *
 	 * @param	string	$key		Key to get cache metadata on
-	 * @param	const	$scope	CI_Cache::CACHE_LOCAL or CI_Cache::CACHE_GLOBAL
+	 * @param	const	$scope	Cache::LOCAL_SCOPE or Cache::GLOBAL_SCOPE
 	 *		 for local or global scoping of the cache item
 	 * @return	mixed	Cache item metadata
 	 */
-	public function get_metadata($key, $scope = CI_Cache::CACHE_LOCAL)
+	public function get_metadata($key, $scope = Cache::LOCAL_SCOPE)
 	{
 		$stored = $this->_memcached->get($this->_namespaced_key($key, $scope));
 
@@ -239,7 +239,7 @@ class CI_Cache_memcached extends CI_Driver {
 		}
 
 		// Attempt to get previously-created namespaces and assign to class variable
-		$this->_namespaces = $this->get('namespaces', CI_Cache::CACHE_GLOBAL, FALSE);
+		$this->_namespaces = $this->get('namespaces', Cache::GLOBAL_SCOPE, FALSE);
 
 		// Check each server to see if it's reporting the time; if at least
 		// one server reports the time, we'll consider this driver ok to use
@@ -307,13 +307,13 @@ class CI_Cache_memcached extends CI_Driver {
 	 * of them for new things to be stored in.
 	 *
 	 * @param	string	$namespace	Name of the namespace, eg. "page", "tag"
-	 * @param	const	$scope		CI_Cache::CACHE_LOCAL or CI_Cache::CACHE_GLOBAL
+	 * @param	const	$scope		Cache::LOCAL_SCOPE or Cache::GLOBAL_SCOPE
 	 *		 for local or global scoping of the cache item
 	 * @param	bool	$clear_scope	Whether or not to clear the current scope
 	 * @return	string	New namespace/prefix for keys to be stored in this
 	 *					namespace
 	 */
-	protected function _create_new_namespace($namespace, $scope = CI_Cache::CACHE_LOCAL, $clear_scope = FALSE)
+	protected function _create_new_namespace($namespace, $scope = Cache::LOCAL_SCOPE, $clear_scope = FALSE)
 	{
 		// Get the current unique scope string
 		$root_key = $this->unique_key('', $scope);
@@ -343,7 +343,7 @@ class CI_Cache_memcached extends CI_Driver {
 			'namespaces',
 			$this->_namespaces,
 			0,
-			CI_Cache::CACHE_GLOBAL,
+			Cache::GLOBAL_SCOPE,
 			FALSE // Don't namespace this key
 		);
 
@@ -367,12 +367,12 @@ class CI_Cache_memcached extends CI_Driver {
 	 * this, see the doc block for _create_new_namespace above.
 	 *
 	 * @param	string	$key	Key name
-	 * @param	const	$scope	CI_Cache::CACHE_LOCAL or CI_Cache::CACHE_GLOBAL
+	 * @param	const	$scope	Cache::LOCAL_SCOPE or Cache::GLOBAL_SCOPE
 	 *		 for local or global scoping of the cache item
 	 * @return	string	Key that has been prefixed with the proper namespace
 	 *					and make unique to this site
 	 */
-	protected function _namespaced_key($key, $scope = CI_Cache::CACHE_LOCAL)
+	protected function _namespaced_key($key, $scope = Cache::LOCAL_SCOPE)
 	{
 		$root_key = $this->unique_key('', $scope);
 

@@ -40,7 +40,7 @@
 		$EE =& get_instance();
 
 		// Attempt to grab the local cached file
-		$cached = ee()->cache->get('current_version', CI_Cache::CACHE_GLOBAL);
+		$cached = ee()->cache->get('current_version', Cache::GLOBAL_SCOPE);
 
 		$data = '';
 
@@ -118,7 +118,7 @@
 				'current_version',
 				$version_file,
 				60 * 60 * 24,
-				CI_Cache::CACHE_GLOBAL
+				Cache::GLOBAL_SCOPE
 			);
 		}
 		else

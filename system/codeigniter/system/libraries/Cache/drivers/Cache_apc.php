@@ -30,11 +30,11 @@ class CI_Cache_apc extends CI_Driver {
 	 * if not, return FALSE
 	 *
 	 * @param	string	$key 	Key name
-	 * @param	const	$scope	CI_Cache::CACHE_LOCAL or CI_Cache::CACHE_GLOBAL
+	 * @param	const	$scope	Cache::CACHE_LOCAL or Cache::CACHE_GLOBAL
 	 *		 for local or global scoping of the cache item
 	 * @return	mixed	value matching $id or FALSE on failure
 	 */
-	public function get($key, $scope = CI_Cache::CACHE_LOCAL)
+	public function get($key, $scope = Cache::CACHE_LOCAL)
 	{
 		$success = FALSE;
 		$data = apc_fetch($this->unique_key($key, $scope), $success);
@@ -51,11 +51,11 @@ class CI_Cache_apc extends CI_Driver {
 	 * @param	string	$key		Key name
 	 * @param	mixed	$data		Data to store
 	 * @param	int		$ttl = 60	Cache TTL (in seconds)
-	 * @param	const	$scope		CI_Cache::CACHE_LOCAL or CI_Cache::CACHE_GLOBAL
+	 * @param	const	$scope		Cache::CACHE_LOCAL or Cache::CACHE_GLOBAL
 	 *		 for local or global scoping of the cache item
 	 * @return	bool	TRUE on success, FALSE on failure
 	 */
-	public function save($key, $data, $ttl = 60, $scope = CI_Cache::CACHE_LOCAL)
+	public function save($key, $data, $ttl = 60, $scope = Cache::CACHE_LOCAL)
 	{
 		$ttl = (int) $ttl;
 
@@ -72,11 +72,11 @@ class CI_Cache_apc extends CI_Driver {
 	 * Delete from cache
 	 *
 	 * @param	string	$key	Key name
-	 * @param	const	$scope	CI_Cache::CACHE_LOCAL or CI_Cache::CACHE_GLOBAL
+	 * @param	const	$scope	Cache::CACHE_LOCAL or Cache::CACHE_GLOBAL
 	 *		 for local or global scoping of the cache item
 	 * @return	bool	TRUE on success, FALSE on failure
 	 */
-	public function delete($key, $scope = CI_Cache::CACHE_LOCAL)
+	public function delete($key, $scope = Cache::CACHE_LOCAL)
 	{
 		// Delete namespace contents
 		if (strrpos($key, $this->namespace_separator(), -1) !== FALSE)
@@ -103,11 +103,11 @@ class CI_Cache_apc extends CI_Driver {
 	/**
 	 * Clean the cache
 	 *
-	 * @param	const	$scope		CI_Cache::CACHE_LOCAL or CI_Cache::CACHE_GLOBAL
+	 * @param	const	$scope		Cache::CACHE_LOCAL or Cache::CACHE_GLOBAL
 	 *		 for local or global scoping of the cache item
 	 * @return	bool	TRUE on success, FALSE on failure
 	 */
-	public function clean($scope = CI_Cache::CACHE_LOCAL)
+	public function clean($scope = Cache::CACHE_LOCAL)
 	{
 		return apc_clear_cache('user');
 	}
@@ -131,11 +131,11 @@ class CI_Cache_apc extends CI_Driver {
 	 * Get Cache Metadata
 	 *
 	 * @param	string	$key	Key to get cache metadata on
-	 * @param	const	$scope	CI_Cache::CACHE_LOCAL or CI_Cache::CACHE_GLOBAL
+	 * @param	const	$scope	Cache::CACHE_LOCAL or Cache::CACHE_GLOBAL
 	 *		 for local or global scoping of the cache item
 	 * @return	mixed	Cache item metadata
 	 */
-	public function get_metadata($key, $scope = CI_Cache::CACHE_LOCAL)
+	public function get_metadata($key, $scope = Cache::CACHE_LOCAL)
 	{
 		$success = FALSE;
 		$stored = apc_fetch($this->unique_key($key, $scope), $success);
