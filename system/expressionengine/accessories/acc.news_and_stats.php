@@ -87,9 +87,9 @@ class News_and_stats_acc {
 			ee()->load->library('typography');
 			ee()->typography->initialize();
 
-			foreach ($feed->get_items() as $index => $item)
+			foreach ($feed->get_items(0, 3) as $index => $item)
 			{
-				$title = $item->get_title();
+				$title = strip_tags($item->get_title());
 
 				$date = ee()->localize->human_time($item->get_date('U'));
 
@@ -99,10 +99,10 @@ class News_and_stats_acc {
 					ee()->typography->parse_type(
 						$content,
 						array(
-							'text_format'   => 'xhtml',
-							'html_format'   => 'all',
-							'auto_links'    => 'y',
-							'allow_img_url' => 'n'
+							'text_format'	=> 'xhtml',
+							'html_format'	=> 'all',
+							'auto_links'	=> 'y',
+							'allow_img_url'	=> 'n'
 						)
 					)
 				);
