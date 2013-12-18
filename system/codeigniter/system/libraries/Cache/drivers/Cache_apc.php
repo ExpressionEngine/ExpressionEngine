@@ -29,14 +29,15 @@ class CI_Cache_apc extends CI_Driver {
 	 * Look for a value in the cache. If it exists, return the data
 	 * if not, return FALSE
 	 *
-	 * @param	string	$key 		Key name
-	 * @param	string	$namespace	Namespace name
+	 * @param	string	$key 	Key name
+	 * @param	const	$scope	CI_Cache::CACHE_LOCAL or CI_Cache::CACHE_GLOBAL
+	 *		 for local or global scoping of the cache item
 	 * @return	mixed	value matching $id or FALSE on failure
 	 */
-	public function get($key, $namespace = '')
+	public function get($key, $scope = CI_Cache::CACHE_LOCAL)
 	{
 		$success = FALSE;
-		$data = apc_fetch($this->_namespaced_key($key, $namespace), $success);
+		$data = apc_fetch($this->unique_key($key, $scope), $success);
 
 		return ($success === TRUE && is_array($data))
 			? unserialize($data[0]) : FALSE;
@@ -50,15 +51,16 @@ class CI_Cache_apc extends CI_Driver {
 	 * @param	string	$key		Key name
 	 * @param	mixed	$data		Data to store
 	 * @param	int		$ttl = 60	Cache TTL (in seconds)
-	 * @param	string	$namespace	Namespace name
+	 * @param	const	$scope		CI_Cache::CACHE_LOCAL or CI_Cache::CACHE_GLOBAL
+	 *		 for local or global scoping of the cache item
 	 * @return	bool	TRUE on success, FALSE on failure
 	 */
-	public function save($key, $data, $ttl = 60, $namespace = '')
+	public function save($key, $data, $ttl = 60, $scope = CI_Cache::CACHE_LOCAL)
 	{
 		$ttl = (int) $ttl;
 
 		return apc_store(
-			$this->_namespaced_key($key, $namespace),
+			$this->unique_key($key, $scope),
 			array(serialize($data), ee()->localize->now, $ttl),
 			$ttl
 		);
@@ -69,31 +71,31 @@ class CI_Cache_apc extends CI_Driver {
 	/**
 	 * Delete from cache
 	 *
-	 * @param	string	$key		Key name
-	 * @param	string	$namespace	Namespace name
+	 * @param	string	$key	Key name
+	 * @param	const	$scope	CI_Cache::CACHE_LOCAL or CI_Cache::CACHE_GLOBAL
+	 *		 for local or global scoping of the cache item
 	 * @return	bool	TRUE on success, FALSE on failure
 	 */
-	public function delete($key, $namespace = '')
+	public function delete($key, $scope = CI_Cache::CACHE_LOCAL)
 	{
-		return apc_delete($this->_namespaced_key($key, $namespace));
-	}
-
-	// ------------------------------------------------------------------------
-
-	/**
-	 * Delete keys from cache in a specified namespace
-	 *
-	 * @param	string	$namespace	Namespace of group of cache keys to delete
-	 * @return	bool
-	 */
-	public function clear_namepace($namespace)
-	{
-		$cached = new APCIterator('user', '/^'.preg_quote($this->_namespaced_key('', $namespace), '/').'/');
-
-		foreach ($cached as $item)
+		// Delete namespace contents
+		if (strrpos($key, $this->namespace_separator(), -1) !== FALSE)
 		{
-			apc_delete($item['key']);
+			$cached = new APCIterator(
+				'user',
+				'/^'.preg_quote($this->unique_key($key, $scope), '/').'/'
+			);
+
+			foreach ($cached as $item)
+			{
+				apc_delete($item['key']);
+			}
+
+			return TRUE;
 		}
+
+		// Delete specific key
+		return apc_delete($this->unique_key($key, $scope));
 	}
 
 	// ------------------------------------------------------------------------
@@ -101,9 +103,11 @@ class CI_Cache_apc extends CI_Driver {
 	/**
 	 * Clean the cache
 	 *
+	 * @param	const	$scope		CI_Cache::CACHE_LOCAL or CI_Cache::CACHE_GLOBAL
+	 *		 for local or global scoping of the cache item
 	 * @return	bool	TRUE on success, FALSE on failure
 	 */
-	public function clean()
+	public function clean($scope = CI_Cache::CACHE_LOCAL)
 	{
 		return apc_clear_cache('user');
 	}
@@ -126,14 +130,15 @@ class CI_Cache_apc extends CI_Driver {
 	/**
 	 * Get Cache Metadata
 	 *
-	 * @param	string	$key		Key to get cache metadata on
-	 * @param	string	$namespace	Namespace name
+	 * @param	string	$key	Key to get cache metadata on
+	 * @param	const	$scope	CI_Cache::CACHE_LOCAL or CI_Cache::CACHE_GLOBAL
+	 *		 for local or global scoping of the cache item
 	 * @return	mixed	Cache item metadata
 	 */
-	public function get_metadata($key, $namespace = '')
+	public function get_metadata($key, $scope = CI_Cache::CACHE_LOCAL)
 	{
 		$success = FALSE;
-		$stored = apc_fetch($this->_namespaced_key($key, $namespace), $success);
+		$stored = apc_fetch($this->unique_key($key, $scope), $success);
 
 		if ($success === FALSE OR count($stored) !== 3)
 		{
@@ -165,25 +170,6 @@ class CI_Cache_apc extends CI_Driver {
 		}
 
 		return TRUE;
-	}
-
-	// ------------------------------------------------------------------------
-
-	/**
-	 * If a namespace was specified, prefixes the key with it
-	 *
-	 * @param	string	$key		Key name
-	 * @param	string	$namespace	Namespace name
-	 * @return	string	Key prefixed with namespace
-	 */
-	protected function _namespaced_key($key, $namespace)
-	{
-		if ( ! empty($namespace))
-		{
-			$namespace .= ':';
-		}
-
-		return $this->unique_key($namespace.$key);
 	}
 }
 

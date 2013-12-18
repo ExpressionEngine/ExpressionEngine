@@ -117,6 +117,7 @@ class CI_Cache_memcached extends CI_Driver {
 			return TRUE;
 		}
 
+		// Delete specific key
 		return $this->_memcached->delete($this->_namespaced_key($key, $scope));
 	}
 

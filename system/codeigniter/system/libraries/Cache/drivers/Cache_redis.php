@@ -90,6 +90,7 @@ class CI_Cache_redis extends CI_Driver
 			) === 1);
 		}
 
+		// Delete specific key
 		return ($this->_redis->delete($this->unique_key($key, $scope)) === 1);
 	}
 
