@@ -303,7 +303,7 @@ class Updater {
 					'type'       => 'varchar',
 					'constraint' => 8,
 					'null'       => FALSE,
-					'default'    => '%Y-%m-%d'
+					'default'    => '%n/%j/%y'
 				),
 				'include_seconds' => array(
 					'type'        => 'char',
