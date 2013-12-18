@@ -27,7 +27,7 @@ class EE_Template_router_integer_converter implements EE_Template_router_convert
 
 	public function validator()
 	{
-		return "([\-+]?[0-9]+)";
+		return "([a-zA-Z0-9]+)";
 	}
 
 }

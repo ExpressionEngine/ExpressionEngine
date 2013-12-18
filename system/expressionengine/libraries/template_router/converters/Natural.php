@@ -15,7 +15,7 @@
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Template Router Integer Converter
+ * ExpressionEngine Template Router Natural Number Converter
  *
  * @package		ExpressionEngine
  * @subpackage	Core
@@ -23,11 +23,11 @@
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class EE_Template_router_integer_converter implements EE_Template_router_converter {
+class EE_Template_router_natural_converter implements EE_Template_router_converter {
 
 	public function validator()
 	{
-		return "([\-+]?[0-9]+)";
+		return "([0-9]+)";
 	}
 
 }
