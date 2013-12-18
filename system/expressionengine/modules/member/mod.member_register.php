@@ -450,8 +450,12 @@ class Member_register extends Member {
 			// overridden below if used as optional fields
 			'language'		=> (ee()->config->item('deft_lang')) ?
 									ee()->config->item('deft_lang') : 'english',
-			'time_format'	=> (ee()->config->item('time_format')) ?
-									ee()->config->item('time_format') : 'us',
+			'date_format'	=> ee()->config->item('date_format') ?
+					 				ee()->config->item('date_format') : '%n/%j/%y',
+			'time_format'	=> ee()->config->item('time_format') ?
+									ee()->config->item('time_format') : '12',
+			'include_seconds' => ee()->config->item('include_seconds') ?
+									ee()->config->item('include_seconds') : 'n',
 			'timezone'		=> ee()->config->item('default_site_timezone')
 		);
 
@@ -477,10 +481,12 @@ class Member_register extends Member {
 		// Optional Fields
 
 		$optional = array(
-			'bio'			=> 'bio',
-			'language'		=> 'deft_lang',
-			'timezone'		=> 'server_timezone',
-			'time_format'	=> 'time_format'
+			'bio'				=> 'bio',
+			'language'			=> 'deft_lang',
+			'timezone'			=> 'server_timezone',
+			'date_format'		=> 'date_format',
+			'time_format'		=> 'time_format',
+			'include_seconds'	=> 'include_seconds'
 		);
 
 		foreach($optional as $key => $value)
