@@ -191,10 +191,9 @@ class CI_Cache_file extends CI_Driver {
 	/**
 	 * Cache Info
 	 *
-	 * @param	string	$type = 'user'	user/filehits (not used in this driver)
 	 * @return	mixed	array containing cache info on success OR FALSE on failure
 	 */
-	public function cache_info($type = NULL)
+	public function cache_info()
 	{
 		return get_dir_file_info($this->_cache_path);
 	}

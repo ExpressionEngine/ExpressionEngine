@@ -115,11 +115,10 @@ class CI_Cache_redis extends CI_Driver
 	/**
 	 * Cache Info
 	 *
-	 * @param	string	$type = 'user'	user/filehits (not used in this driver)
 	 * @return	mixed	array containing cache info on success OR FALSE on failure
 	 * @see		Redis::info()
 	 */
-	public function cache_info($type = NULL)
+	public function cache_info()
 	{
 		return $this->_redis->info();
 	}

@@ -142,10 +142,9 @@ class CI_Cache_memcached extends CI_Driver {
 	/**
 	 * Cache Info
 	 *
-	 * @param	string	$type = 'user'	user/filehits (not used in this driver)
 	 * @return	mixed	array on success, false on failure
 	 */
-	public function cache_info($type = NULL)
+	public function cache_info()
 	{
 		return $this->_memcached->getStats();
 	}
