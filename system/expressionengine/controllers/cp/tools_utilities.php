@@ -163,6 +163,15 @@ class Tools_utilities extends CP_Controller {
 		$vars['auto_custom_field_enabled'] = TRUE;
 		$vars['timezone_menu'] = $this->localize->timezone_menu('UTC', 'timezones');
 
+		// Fetch the admin config values in order to populate the form with
+		// the same options
+		$this->load->model('admin_model');
+		$config_fields = ee()->config->prep_view_vars('localization_cfg');
+
+		$vars['date_format'] = $config_fields['fields']['date_format'];
+		$vars['time_format'] = $config_fields['fields']['time_format'];
+		$vars['include_seconds'] = $config_fields['fields']['include_seconds'];
+
 		$this->cp->render('tools/import_from_xml', $vars);
 
 	}
@@ -202,8 +211,18 @@ class Tools_utilities extends CP_Controller {
 				 'rules'   => ''
 			),
 			array(
+				 'field'   => 'date_format',
+				 'label'   => 'lang:date_format',
+				 'rules'   => ''
+			),
+			array(
 				 'field'   => 'time_format',
 				 'label'   => 'lang:time_format',
+				 'rules'   => ''
+			),
+			array(
+				 'field'   => 'include_seconds',
+				 'label'   => 'lang:include_seconds',
 				 'rules'   => ''
 			),
 			array(
@@ -259,17 +278,22 @@ class Tools_utilities extends CP_Controller {
 			'group_id' 			=> $this->input->post('group_id'),
 			'language' 			=> ($this->input->post('language') == lang('none')) ? '' : $this->input->post('language'),
 			'timezones' 		=> $this->input->post('timezones'),
+			'date_format' 		=> $this->input->post('date_format'),
 			'time_format' 		=> $this->input->post('time_format'),
+			'include_seconds' 	=> $this->input->post('include_seconds'),
 			'auto_custom_field' => ($this->input->post('auto_custom_field') == 'y') ? 'y' : 'n'
 		);
 
+		$localization_cfg = ee()->config->get_config_fields('localization_cfg');
 
 		$vars['data_display'] = array(
 			'xml_file'   		=> $data['xml_file'],
 			'default_group_id'	=> $group_name,
 			'language' 			=> ($data['language'] == '') ? lang('none') : ucfirst($data['language']),
 			'timezones' 		=> lang($data['timezones']),
-			'time_format' 		=> ($data['time_format'] == 'us') ? lang('united_states') : lang('european'),
+			'date_format' 		=> lang($localization_cfg['date_format'][1][$data['date_format']]),
+			'time_format' 		=> lang($localization_cfg['time_format'][1][$data['time_format']]),
+			'include_seconds' 	=> lang($localization_cfg['include_seconds'][1][$data['include_seconds']]),
 			'auto_custom_field' => ($data['auto_custom_field'] == 'y') ? lang('yes') : lang('no')
 		);
 
@@ -372,17 +396,22 @@ class Tools_utilities extends CP_Controller {
 			'group_id' 			=> $this->input->post('group_id'),
 			'language' 			=> ($this->input->post('language') == lang('none')) ? '' : $this->input->post('language'),
 			'timezones' 		=> $this->input->post('timezones'),
+			'date_format' 		=> $this->input->post('date_format'),
 			'time_format' 		=> $this->input->post('time_format'),
+			'include_seconds' 	=> $this->input->post('include_seconds'),
 			'auto_custom_field' => ($this->input->post('auto_custom_field') == 'y') ? 'y' : 'n'
 		);
 
+		$localization_cfg = ee()->config->get_config_fields('localization_cfg');
 
 		$vars['data_display'] = array(
 			'xml_file'   		=> $data['xml_file'],
 			'default_group_id'	=> $group_name,
 			'language' 			=> ($data['language'] == '') ? lang('none') : ucfirst($data['language']),
 			'timezones' 		=> lang($data['timezones']),
-			'time_format' 		=> ($data['time_format'] == 'us') ? lang('united_states') : lang('european'),
+			'date_format' 		=> lang($localization_cfg['date_format'][1][$data['date_format']]),
+			'time_format' 		=> lang($localization_cfg['time_format'][1][$data['time_format']]),
+			'include_seconds' 	=> lang($localization_cfg['include_seconds'][1][$data['include_seconds']]),
 			'auto_custom_field' => ($data['auto_custom_field'] == 'y') ? lang('yes') : lang('no')
 		 );
 
@@ -924,7 +953,9 @@ class Tools_utilities extends CP_Controller {
 		$this->default_fields['group_id']			= $this->input->post('group_id');
 		$this->default_fields['language']			= ($this->input->post('language') == lang('none') OR $this->input->post('language') == '') ? 'english' : strtolower($this->input->post('language'));
 		$this->default_fields['timezone']			= $this->input->post('timezones') ? $this->input->post('timezones') : $this->config->item('default_site_timezone');
+		$this->default_fields['date_format']		= $this->input->post('date_format');
 		$this->default_fields['time_format']		= $this->input->post('time_format');
+		$this->default_fields['include_seconds']	= $this->input->post('include_seconds');
 		$this->default_fields['ip_address']			= '0.0.0.0';
 		$this->default_fields['join_date']			= $this->localize->now;
 
