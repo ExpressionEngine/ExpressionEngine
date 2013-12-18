@@ -38,13 +38,14 @@ class CI_Cache_redis extends CI_Driver
 	 * Look for a value in the cache. If it exists, return the data
 	 * if not, return FALSE
 	 *
-	 * @param	string	$key 		Key name
-	 * @param	string	$namespace	Namespace name
+	 * @param	string	$key 	Key name
+	 * @param	const	$scope	CI_Cache::CACHE_LOCAL or CI_Cache::CACHE_GLOBAL
+	 *		 for local or global scoping of the cache item
 	 * @return	mixed	value matching $id or FALSE on failure
 	 */
-	public function get($key, $namespace = '')
+	public function get($key, $scope = CI_Cache::CACHE_LOCAL)
 	{
-		return unserialize($this->_redis->get($this->_namespaced_key($key, $namespace)));
+		return unserialize($this->_redis->get($this->unique_key($key, $scope)));
 	}
 
 	// ------------------------------------------------------------------------
@@ -55,12 +56,13 @@ class CI_Cache_redis extends CI_Driver
 	 * @param	string	$key		Key name
 	 * @param	mixed	$data		Data to store
 	 * @param	int		$ttl = 60	Cache TTL (in seconds)
-	 * @param	string	$namespace	Namespace name
+	 * @param	const	$scope		CI_Cache::CACHE_LOCAL or CI_Cache::CACHE_GLOBAL
+	 *		 for local or global scoping of the cache item
 	 * @return	bool	TRUE on success, FALSE on failure
 	 */
-	public function save($key, $value, $ttl = NULL, $namespace = '')
+	public function save($key, $value, $ttl = NULL, $scope = CI_Cache::CACHE_LOCAL)
 	{
-		$key = $this->_namespaced_key($key, $namespace);
+		$key = $this->unique_key($key, $scope);
 		$value = serialize($value);
 
 		return ( ! empty($ttl))
@@ -73,41 +75,38 @@ class CI_Cache_redis extends CI_Driver
 	/**
 	 * Delete from cache
 	 *
-	 * @param	string	$key		Key name
-	 * @param	string	$namespace	Namespace name
+	 * @param	string	$key	Key name
+	 * @param	const	$scope	CI_Cache::CACHE_LOCAL or CI_Cache::CACHE_GLOBAL
+	 *		 for local or global scoping of the cache item
 	 * @return	bool	TRUE on success, FALSE on failure
 	 */
-	public function delete($key, $namespace = '')
+	public function delete($key, $scope = CI_Cache::CACHE_LOCAL)
 	{
-		return ($this->_redis->delete($this->_namespaced_key($key, $namespace)) === 1);
+		// Delete namespace contents
+		if (strrpos($key, $this->namespace_separator(), -1) !== FALSE)
+		{
+			return ($this->_redis->delete(
+				$this->_redis->keys($this->unique_key($key, $scope).'*')
+			) === 1);
+		}
+
+		return ($this->_redis->delete($this->unique_key($key, $scope)) === 1);
 	}
 
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Delete keys from cache in a specified namespace
+	 * Clean cache for the current scope
 	 *
-	 * @param	string	$namespace	Namespace of group of cache keys to delete
-	 * @return	bool
+	 * @param	const	$scope	CI_Cache::CACHE_LOCAL or CI_Cache::CACHE_GLOBAL
+	 *		 for local or global scoping of the cache item
+	 * @return	bool	TRUE on success, FALSE on failureå
 	 */
-	public function clear_namepace($namespace)
+	public function clean($scope = CI_Cache::CACHE_LOCAL)
 	{
-		$this->_redis->delete(
-			$this->_redis->keys($this->_namespaced_key('', $namespace).'*')
-		);
-	}
-
-	// ------------------------------------------------------------------------
-
-	/**
-	 * Clean cache
-	 *
-	 * @return	bool	TRUE on success, FALSE on failure
-	 * @see		Redis::flushDB()
-	 */
-	public function clean()
-	{
-		return $this->_redis->flushDB();
+		return ($this->_redis->delete(
+			$this->_redis->keys($this->unique_key('', $scope).'*')
+		) === 1);
 	}
 
 	// ------------------------------------------------------------------------
@@ -129,21 +128,22 @@ class CI_Cache_redis extends CI_Driver
 	/**
 	 * Get Cache Metadata
 	 *
-	 * @param	string	$id			Key to get cache metadata on
-	 * @param	string	$namespace	Namespace name
+	 * @param	string	$id		Key to get cache metadata on
+	 * @param	const	$scope	CI_Cache::CACHE_LOCAL or CI_Cache::CACHE_GLOBAL
+	 *		 for local or global scoping of the cache item
 	 * @return	mixed	Cache item metadata
 	 */
-	public function get_metadata($key, $namespace = '')
+	public function get_metadata($key, $scope = CI_Cache::CACHE_LOCAL)
 	{
-		$value = $this->get($key, $namespace);
-		$key = $this->_namespaced_key($key, $namespace);
+		$value = $this->get($key, $scope);
+		$key = $this->unique_key($key, $scope);
 
 		if ($value)
 		{
 			return array(
 				'expire' => ee()->localize->now + $this->_redis->ttl($key),
 				'mtime'	=> NULL,
-				'data' => unserialize($value)
+				'data' => $value
 			);
 		}
 
@@ -249,25 +249,6 @@ class CI_Cache_redis extends CI_Driver
 		{
 			$this->_redis->close();
 		}
-	}
-
-	// ------------------------------------------------------------------------
-
-	/**
-	 * If a namespace was specified, prefixes the key with it
-	 *
-	 * @param	string	$key	Key name
-	 * @param	string	$namespace	Namespace name
-	 * @return	string	Key prefixed with namespace
-	 */
-	protected function _namespaced_key($key, $namespace)
-	{
-		if ( ! empty($namespace))
-		{
-			$namespace .= ':';
-		}
-
-		return $this->unique_key($namespace.$key);
 	}
 }
 
