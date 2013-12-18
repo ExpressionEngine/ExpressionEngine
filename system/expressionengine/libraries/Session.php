@@ -611,7 +611,9 @@ class EE_Session {
 		if (ee()->config->item('allow_member_localization') == 'n')
 		{
 			$this->userdata['timezone'] = ee()->config->item('default_site_timezone');
-			$this->userdata['time_format'] = ee()->config->item('time_format') ? ee()->config->item('time_format') : 'us';
+			$this->userdata['date_format'] = ee()->config->item('date_format') ? ee()->config->item('date_format') : '%n/%j/%y';
+			$this->userdata['time_format'] = ee()->config->item('time_format') ? ee()->config->item('time_format') : '12';
+			$this->userdata['include_seconds'] = ee()->config->item('include_seconds') ? ee()->config->item('include_seconds') : 'n';
  		}
 
 		// Assign Sites, Channel, Template, and Module Access Privs
@@ -1141,7 +1143,9 @@ class EE_Session {
 			'location'			=> ee()->input->cookie('my_location'),
 			'language'			=> '',
 			'timezone'			=> ee()->config->item('default_site_timezone'),
-			'time_format'		=> ee()->config->item('time_format') ? ee()->config->item('time_format') : 'us',
+			'date_format'		=> ee()->config->item('date_format') ? ee()->config->item('date_format') : '%n/%j/%y',
+			'time_format'		=> ee()->config->item('time_format') ? ee()->config->item('time_format') : '12',
+			'include_seconds'	=> ee()->config->item('include_seconds') ? ee()->config->item('include_seconds') : 'n',
 			'group_id'			=> '3',
 			'access_cp'			=>  0,
 			'last_visit'		=>  0,
