@@ -84,17 +84,14 @@ class Member_settings extends Member {
 	{
 		$query = ee()->db->query("SELECT email, join_date, last_visit, last_activity, last_entry_date, last_comment_date, total_forum_topics, total_forum_posts, total_entries, total_comments, last_forum_post_date FROM exp_members WHERE member_id = '".ee()->session->userdata('member_id')."'");
 
-		$time_fmt = (ee()->session->userdata['time_format'] != '') ? ee()->session->userdata['time_format'] : ee()->config->item('time_format');
-		$datecodes = ($time_fmt == 'us') ? $this->us_datecodes : $this->eu_datecodes;
-
 		return  $this->_var_swap($this->_load_element('home_page'),
 								array(
 										'email'						=> $query->row('email') ,
 										'join_date'					=> ee()->localize->format_date($datecodes['long'], $query->row('join_date') ),
-										'last_visit_date'			=> ($query->row('last_activity')  == 0) ? '--' : ee()->localize->format_date($datecodes['long'], $query->row('last_activity') ),
-										'recent_entry_date'			=> ($query->row('last_entry_date')  == 0) ? '--' : ee()->localize->format_date($datecodes['long'], $query->row('last_entry_date') ),
-										'recent_comment_date'		=> ($query->row('last_comment_date')  == 0) ? '--' : ee()->localize->format_date($datecodes['long'], $query->row('last_comment_date') ),
-										'recent_forum_post_date'	=> ($query->row('last_forum_post_date')  == 0) ? '--' : ee()->localize->format_date($datecodes['long'], $query->row('last_forum_post_date') ),
+										'last_visit_date'			=> ($query->row('last_activity')  == 0) ? '--' : ee()->localize->human_time($query->row('last_activity') ),
+										'recent_entry_date'			=> ($query->row('last_entry_date')  == 0) ? '--' : ee()->localize->human_time($query->row('last_entry_date') ),
+										'recent_comment_date'		=> ($query->row('last_comment_date')  == 0) ? '--' : ee()->localize->human_time($query->row('last_comment_date') ),
+										'recent_forum_post_date'	=> ($query->row('last_forum_post_date')  == 0) ? '--' : ee()->localize->human_time($query->row('last_forum_post_date') ),
 										'total_topics'				=> $query->row('total_forum_topics') ,
 										'total_posts'				=> $query->row('total_forum_posts')  + $query->row('total_forum_topics') ,
 										'total_replies'				=> $query->row('total_forum_posts') ,
