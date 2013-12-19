@@ -18,6 +18,10 @@ class Query {
 	private $selected = array();
 	private $subqueries = array();
 
+	private $aliases = array();
+	private $tables = array();
+
+
 	/**
 	 * @var	QueryTreeNode $root	The root of this query's tree of model
 	 * 			relationships.  The model we initiated the query against.
@@ -29,33 +33,43 @@ class Query {
 	public function __construct(ModelBuilder $builder, $model_name)
 	{
 		$this->builder = $builder;
+		$this->db = clone ee()->db; // TODO reset?
+
+		$this->createRoot($model_name);
+
+	}
+
+	protected function createRoot($model_name)
+	{
 
 		$this->model_name = $model_name;
 		$this->root = new QueryTreeNode($model_name);
 		$this->root->meta = NULL;
 
-		$this->db = clone ee()->db; // TODO reset?
-
 		$this->selectFields($this->root);
 
-		$model_class = $builder->resolveAlias($model_name);
+		$model_class = $this->builder->getRegisteredClass($model_name);
 		$gateway_names = $model_class::getMetaData('gateway_names');
 
 		$primary_gateway_name = array_shift($gateway_names);
-		$primary_gateway_class = $builder->resolveAlias($primary_gateway_name);
+		$primary_gateway_class = $this->builder->getRegisteredClass($primary_gateway_name);
 
-		$this->db->from($primary_gateway_class::getMetaData('table_name'));
+		$primary_tablename = $primary_gateway_class::getMetaData('table_name');
+		$primary_aliased_tablename =  $primary_tablename . '_' . $this->root->getId();
+		$this->db->from($primary_tablename . ' AS ' . $primary_aliased_tablename);
 
 		foreach($gateway_names as $gateway_name)
 		{
-			$gateway_class = $builder->resolveAlias($gateway_name);
+			$gateway_class = $this->builder->getRegisteredClass($gateway_name);
+			$tablename = $gateway_class::getMetaData('table_name');
+			$aliased_tablename = $tablename . '_' . $this->root->getId();
 			$this->db->join(
-				$gateway_class::getMetaData('table_name'),
-				$primary_gateway_class::getMetaData('table_name') .
+				$tablename . ' AS ' . $aliased_tablename,
+				$primary_aliased_tablename.
 				'.' .
 				$primary_gateway_class::getMetaData('primary_key') .
 				' = ' .
-				$gateway_class::getMetaData('table_name') .
+				$aliased_tablename .
 				'.' .
 				$gateway_class::getMetaData('primary_key')
 			);
@@ -276,6 +290,14 @@ class Query {
 	 */
 	private function createNode(QueryTreeNode $parent, $relationship_name, array $meta=array())
 	{
+		/*if (strpos('AS', $relationship_name))
+		{
+			list($relationship_name, $alias) = explode('AS', $relationship_name);
+			$relationship_name = trim($relationship_name);
+			$alias = trim($alias);
+			$this->setAlias($alias, $relationship_name);	
+		}*/
+
 		$node = new QueryTreeNode($relationship_name);
 
 		if ($parent->isRoot())
@@ -327,38 +349,41 @@ class Query {
 		$relationship_meta = $node->meta;
 		$this->selectFields($node);
 
+		$from_id = $node->getParent()->getId();
+		
+
 		switch ($relationship_meta->type)
 		{
 			case ModelRelationshipMeta::TYPE_ONE_TO_ONE:
 			case ModelRelationshipMeta::TYPE_ONE_TO_MANY:
 			case ModelRelationshipMeta::TYPE_MANY_TO_ONE:
-				$this->db->join($relationship_meta->to_table,
-					$relationship_meta->from_table . '.' . $relationship_meta->from_key .
+				$this->db->join($relationship_meta->to_table . ' AS ' . $relationship_meta->to_table . '_' . $node->getId(),
+					$relationship_meta->from_table . '_' . $from_id . '.' . $relationship_meta->from_key .
 					'=' .
-					$relationship_meta->to_table . '.' . $relationship_meta->to_key,
+					$relationship_meta->to_table . '_' . $node->getId() . '.' . $relationship_meta->to_key,
 					'LEFT OUTER');
 				break;
 
 			case ModelRelationshipMeta::TYPE_MANY_TO_MANY:
-				$this->db->join($relationship_meta->pivot_table,
-					$relationship_meta->from_table . '.' . $relationship_meta->from_key .
+				$this->db->join($relationship_meta->pivot_table . ' AS ' . $relationship_meta->pivot_table . '_' . $node->getId(),
+					$relationship_meta->from_table . '_' . $from_id . '.' . $relationship_meta->from_key .
 					'=' .
-					$relationship_meta->pivot_table. '.' . $relationship_meta->pivot_from_key,
+					$relationship_meta->pivot_table . '_' . $node->getId() . '.' . $relationship_meta->pivot_from_key,
 					'LEFT OUTER');
-				$this->db->join($relationship_meta->to_table,
-					$relationship_meta->pivot_table . '.' . $relationship_meta->pivot_to_key .
+				$this->db->join($relationship_meta->to_table . ' AS ' . $relationship_meta->to_table . '_' . $node->getId(),
+					$relationship_meta->pivot_table . '_' . $node->getId() . '.' . $relationship_meta->pivot_to_key .
 					'=' .
-					$relationship_meta->to_table . '.' . $relationship_meta->to_key,
+					$relationship_meta->to_table . '_' . $node->getId() . '.' . $relationship_meta->to_key,
 					'LEFT OUTER');
 				break;
 		}
 
 		foreach($relationship_meta->joined_tables as $joined_key => $joined_table)
 		{
-			$this->db->join($joined_table,
-				$relationship_meta->to_table . '.' . $relationship_meta->join_key .
+			$this->db->join($joined_table . ' AS ' . $joined_table . '_' . $node->getId(),
+				$relationship_meta->to_table . '_' . $node->getId() . '.' . $relationship_meta->join_key .
 				'=' .
-				$joined_table . '.' . $joined_key,
+				$joined_table . '_' . $node->getId() . '.' . $joined_key,
 				'LEFT OUTER');
 		}
 
@@ -398,6 +423,15 @@ class Query {
 	}
 
 
+	public function aliasTable($table, $alias=NULL)
+	{
+		if ($alias === NULL) {
+			return $table;
+		}
+
+		return $table . ' AS ' . $alias;
+	}
+
 	/**
 	 * Run the query, hydrate the models, and reassemble the relationships
 	 *
@@ -405,9 +439,14 @@ class Query {
 	 */
 	public function all()
 	{
+		//$query = $this->db->_compile_select();
+		//echo $query;
+		//die();
+
 		// Run the query
 		$result_array = $this->db->get()->result_array();
-		$collection = new Collection($this->dealiasResults($result_array));
+//		echo '<pre>'; var_dump($result_array); echo '</pre>';
+		$collection = new Collection($this->parseDatabaseResult($result_array));
 
 
 		return $collection;
@@ -417,19 +456,18 @@ class Query {
 	 * Need to take aliased results in the form of joined query rows and
 	 * build the model tree out of them.
 	 */
-	private function dealiasResults($database_result)
+	private function parseDatabaseResult($database_result)
 	{
-		// Each row holds field=>value data for the full joined query's
-		// tree.  In order to take this flat row data and reconstruct into
-		// a tree, the field names of each field=>value pair have been
-		// aliased with the path to the correct node (in ids), and the
-		// model to which the field belongs.  Each field name looks like
-		// this: path__model__fieldName
+		// Each row holds field=>value data for the full joined query's tree.
+		// In order to take this flat row data and reconstruct it into a tree,
+		// the field names of each field=>value pair have been aliased with the
+		// path to the correct node (in ids), and the model to which the field
+		// belongs.  Each field name looks like this: path__model__fieldName
 		//
-		// Where path, model and fieldName may have single underscores in
-		// them.  The path is a series of underscore separated integers
-		// corresponding to the unique ids of nodes in this query's
-		// relationship tree.  The tree might look something like this:
+		// Where path, model and fieldName may have single underscores in them.
+		// The path is a series of underscore separated integers corresponding
+		// to the unique ids of nodes in this query's relationship tree.  The
+		// tree might look something like this:
 		//
 		// 				ChannelEntry(1)
 		// 			/			|			\
@@ -473,7 +511,7 @@ class Query {
 			{
 				// If this is an empty model that happened to have been grabbed due to the join,
 				// move on and don't do anything.
-				$model_class = $this->builder->resolveAlias($model_data['__model_name']);
+				$model_class = $this->builder->getRegisteredClass($model_data['__model_name']);
 				$primary_key_name = $model_class::getMetaData('primary_key');
 				if ( $row_data[$path][$primary_key_name] === NULL)
 				{
@@ -559,7 +597,7 @@ class Query {
 		$model_name =  $model_data['__model_name'];
 		$relationship_name = $model_data['__relationship_name'];
 
-		$model_class = $this->builder->resolveAlias($model_name);
+		$model_class = $this->builder->getRegisteredClass($model_name);
 		$primary_key_name = $model_class::getMetaData('primary_key');
 		$primary_key = $model_data[$primary_key_name];
 
@@ -596,7 +634,7 @@ class Query {
 		$model_data = $path_data[$path];
 
 		$model_name = $model_data['__model_name'];
-		$model_class = $this->builder->resolveAlias($model_name);
+		$model_class = $this->builder->getRegisteredClass($model_name);
 		$primary_key_name = $model_class::getMetaData('primary_key');
 		$primary_key = $model_data[$primary_key_name];
 
@@ -685,40 +723,25 @@ class Query {
 			$model_name = $node->meta->to_model_name;
 		}
 
-		if (in_array($model_name, $this->selected))
-		{
-			return;
-		}
-
-		$this->selected[] = $model_name;
-
-		$model_class_name = $this->builder->resolveAlias($model_name);
+		$model_class_name = $this->builder->getRegisteredClass($model_name);
 
 		foreach ($model_class_name::getMetaData('gateway_names') as $gateway_name)
 		{
-			$gateway_class_name = $this->builder->resolveAlias($gateway_name);
+			$gateway_class_name = $this->builder->getRegisteredClass($gateway_name);
 
 			$table = $gateway_class_name::getMetaData('table_name');
 			$properties = $gateway_class_name::getMetaData('field_list');
 			foreach ($properties as $property=>$default_value)
 			{
-				$this->db->select($table . '.' . $property . ' AS ' . $node->getPathString() . '__' . $relationship_name . '__' . $model_name . '__' . $property);
+				$this->db->select($table . '_' . $node->getId() . '.' . $property . ' AS ' . $node->getPathString() . '__' . $relationship_name . '__' . $model_name . '__' . $property);
 			}
 		}
 	}
 
-	/**
-	 * Add a table to the FROM statement
-	 *
-	 * @param String $table_name Name of the table to add.
-	 */
-	private function addTable($table_name)
+	private function setAlias($alias, $relationship_name)
 	{
-		if ( ! in_array($table_name, $this->tables))
-		{
-			$this->db->from($table_name);
-			$this->tables[] = $table_name;
-		}
+		$this->aliases[$relationship_name] = $alias;
+		return $this;
 	}
 
 	/**
@@ -730,12 +753,16 @@ class Query {
 	 */
 	private function resolveAlias($alias)
 	{
-		$model_name = strtok($alias, '.');
-		$key		= strtok('.');
+		$relationship_name = strtok($alias, '.');
+		if ( isset ($this->aliases[$relationship_name]))
+		{
+			$alias = $this->aliases[$relationship_name];
+		}
+		$key = strtok('.');
 
 		if ($key == FALSE)
 		{
-			$key = $this->getPrimaryKey($model_name);
+			$model_name = $this->getModelFromRelationship($relationship_name);
 		}
 
 		$table = $this->getTableName($model_name, $key);
@@ -756,7 +783,7 @@ class Query {
 	 */
 	private function getPrimaryKey($model_name)
 	{
-		$model = $this->builder->resolveAlias($model_name);
+		$model = $this->builder->getRegisteredClass($model_name);
 		return $model::getMetaData('primary_key');
 	}
 
@@ -775,13 +802,13 @@ class Query {
 			$key = $this->getPrimaryKey($model_name);
 		}
 
-		$model = $this->builder->resolveAlias($model_name);
+		$model = $this->builder->getRegisteredClass($model_name);
 
 		$known_keys = $model::getMetaData('key_map');
 
 		if (isset($known_keys[$key]))
 		{
-			$key_gateway = $this->builder->resolveAlias($known_keys[$key]);
+			$key_gateway = $this->builder->getRegisteredClass($known_keys[$key]);
 			return $key_gateway::getMetaData('table_name');
 		}
 
@@ -791,7 +818,7 @@ class Query {
 
 		foreach ($gateway_names as $gateway)
 		{
-			$gateway = $this->builder->resolveAlias($gateway);
+			$gateway = $this->builder->getRegisteredClass($gateway);
 			if (property_exists($gateway, $key))
 			{
 				return $gateway::getMetaData('table_name');

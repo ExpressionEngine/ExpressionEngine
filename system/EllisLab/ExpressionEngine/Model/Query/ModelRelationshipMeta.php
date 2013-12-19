@@ -16,14 +16,17 @@ class ModelRelationshipMeta {
 	protected $type = NULL;
 	protected $method = self::METHOD_JOIN;
 	protected $relationship_name = NULL;
+	protected $relationship_alias = NULL;
 
 	protected $from_model_name = NULL;
 	protected $from_model_class = NULL;
 	protected $from_table = NULL;
+	protected $from_table_alias = NULL;
 
 	protected $to_model_name = NULL;
 	protected $to_model_class = NULL;
 	protected $to_table = NULL;
+	protected $to_table_alias = NULL;
 	protected $join_key = NULL;
 	protected $joined_tables = array();
 
@@ -58,7 +61,7 @@ class ModelRelationshipMeta {
 		$from_model_class = $this->from_model_class;
 		$from_key_map = $from_model_class::getMetaData('key_map');
 		$from_gateway_name = $from_key_map[$this->from_key];
-		$from_gateway_class = $this->builder->resolveAlias($from_gateway_name);
+		$from_gateway_class = $this->builder->getRegisteredClass($from_gateway_name);
 		$this->from_table = $from_gateway_class::getMetaData('table_name');
 
 		// Poplate to_table
@@ -70,7 +73,7 @@ class ModelRelationshipMeta {
 		}
 
 		$to_gateway_name = $gateway_relationship['gateway'];
-		$to_gateway_class = $this->builder->resolveAlias($to_gateway_name);
+		$to_gateway_class = $this->builder->getRegisteredClass($to_gateway_name);
 		$this->to_table = $to_gateway_class::getMetaData('table_name');
 		// Assuming we're joining tables in the same model across the main
 		// gateway's primary key.
@@ -83,7 +86,7 @@ class ModelRelationshipMeta {
 		unset($joined_gateway_names[$key]);
 		foreach($joined_gateway_names as $joined_gateway_name)
 		{
-			$joined_gateway_class = $this->builder->resolveAlias($joined_gateway_name);
+			$joined_gateway_class = $this->builder->getRegisteredClass($joined_gateway_name);
 			$this->joined_tables[$joined_gateway_class::getMetaData('primary_key')] = $joined_gateway_class::getMetaData('table_name');
 		}
 

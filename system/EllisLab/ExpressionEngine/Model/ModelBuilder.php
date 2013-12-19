@@ -54,7 +54,7 @@ class ModelBuilder {
 
 	public function make($model, array $data = array())
 	{
-		$class = $this->resolveAlias($model);
+		$class = $this->getRegisteredClass($model);
 
 		if ( ! is_a($class, '\EllisLab\ExpressionEngine\Model\Model', TRUE))
 		{
@@ -73,7 +73,7 @@ class ModelBuilder {
 	 */
 	public function makeGateway($gateway, $data = array())
 	{
-		$class = $this->resolveAlias($model);
+		$class = $this->getRegisteredClass($model);
 
 		if ( ! is_a($class, '\EllisLab\ExpressionEngine\Model\Gateway\RowDataGateway', TRUE))
 		{
@@ -90,7 +90,7 @@ class ModelBuilder {
 	 * @param String $fully_qualified_name  Fully qualified class name of the model to use
 	 * @return void
 	 */
-	public function registerModel($alias, $fully_qualified_name)
+	public function registerClass($class_name, $fully_qualified_name)
 	{
 		if (array_key_exists($alias, $this->model_namespace_aliases))
 		{
@@ -106,8 +106,8 @@ class ModelBuilder {
 	 * @param String $name Name of the model
 	 * @return String Fully qualified name of the class
 	 */
-	public function resolveAlias($alias)
+	public function getRegisteredClass($class_name)
 	{
-		return $this->model_namespace_aliases[$alias];
+		return $this->model_namespace_aliases[$class_name];
 	}
 }

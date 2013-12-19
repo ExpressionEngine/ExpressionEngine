@@ -66,6 +66,6 @@ class Autoloader {
 			}
 		}
 
-		throw new \RuntimeException('Failed to load class: ' . $class . '!');
+		//throw new \RuntimeException('Failed to load class: ' . $class . '!');
 	}
 }

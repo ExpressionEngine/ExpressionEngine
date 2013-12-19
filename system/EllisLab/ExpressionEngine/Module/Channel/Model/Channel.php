@@ -100,4 +100,22 @@ class Channel extends Model implements ContentStructure {
 		return $form_elements;
 	}
 
+
+	public function testPrint($depth='')
+	{
+		$primary_key = static::getMetaData('primary_key');
+		echo $depth . '=====' . substr(get_class($this), strrpos(get_class($this), '\\')+1) . ': ' . '(' . $this->{$primary_key} . ') ' . $this->channel_title . "=====\n";
+		$depth .= "\t";
+		foreach($this->_related_models as $relationship_name=>$models)
+		{
+			echo $depth . 'Relationship: ' . $relationship_name . "\n";
+			foreach($models as $model)
+			{
+				$model->testPrint($depth);
+			}
+		}
+		echo "\n";
+
+	}
+
 }

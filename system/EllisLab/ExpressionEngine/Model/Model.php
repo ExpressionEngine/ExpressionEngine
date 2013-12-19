@@ -43,6 +43,14 @@ abstract class Model {
 	{
 		$this->_dependencies = $dependencies;
 		$this->_builder = $dependencies->getModelBuilder();
+
+		foreach ($data as $property => $value)
+		{
+			if (property_exists($this, $property))
+			{
+				$this->{$property} = $value;
+			}
+		}
 	}
 
 	/**
@@ -617,7 +625,7 @@ abstract class Model {
 		// to the primary key of the target model.
 		if ( ! isset($to_key))
 		{
-			$to_model_class = $this->_builder->resolveAlias($to_model_name);
+			$to_model_class = $this->_builder->getRegisteredClass($to_model_name);
 			$to_key = $to_model_class::getMetaData('primary_key');
 		}
 
@@ -636,7 +644,7 @@ abstract class Model {
 					'key' => $this_key
 				),
 				array(
-					'model_class' => $this->_builder->resolveAlias($to_model_name),
+					'model_class' => $this->_builder->getRegisteredClass($to_model_name),
 					'model_name' => $to_model_name,
 					'key' => $to_key
 				)
