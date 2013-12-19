@@ -165,11 +165,11 @@ class Date_ft extends EE_Fieldtype {
 			$date = $field_data;
 		}
 
-		$date_fmt = ee()->session->userdata('time_format');
-		$date_fmt = $date_fmt ? $date_fmt : ee()->config->item('time_format');
+		$time_format = ee()->session->userdata('time_format');
+		$time_format = $time_format ? $time_format : ee()->config->item('time_format');
 
 		ee()->javascript->set_global(array(
-			'date.format' => $date_fmt,
+			'date.format' => $time_format,
 			'date.include_seconds' => ee()->config->item('include_seconds')
 		));
 
