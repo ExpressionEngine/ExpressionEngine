@@ -206,13 +206,12 @@ class Member_register extends Member {
 		$pw_min_len = str_replace("%x", ee()->config->item('pw_min_len'),
 									lang('mbr_password_length'));
 
-		// Time format selection menu
-		$tf = "<select name='time_format' class='select'>\n";
-		$tf .= "<option value='us'>".lang('united_states')."</option>\n";
-		$tf .= "<option value='eu'>".lang('european')."</option>\n";
-		$tf .= "</select>\n";
+		// Fetch the admin config values in order to populate the form with
+		// the same options
+		ee()->load->model('admin_model');
+		ee()->load->helper('form');
 
-		ee()->load->helper('date_helper');
+		$config_fields = ee()->config->prep_view_vars('localization_cfg');
 
 		// Parse languge lines
 		$reg_form = $this->_var_swap($reg_form,
@@ -220,7 +219,9 @@ class Member_register extends Member {
 											'lang:username_length'	=> $un_min_len,
 											'lang:password_length'	=> $pw_min_len,
 											'form:localization'		=> ee()->localize->timezone_menu(),
-											'form:time_format'		=> $tf,
+											'form:date_format'		=> form_preference('date_format', $config_fields['fields']['date_format']),
+											'form:time_format'		=> form_preference('time_format', $config_fields['fields']['time_format']),
+											'form:include_seconds'	=> form_preference('include_seconds', $config_fields['fields']['include_seconds']),
 											'form:language'			=> ee()->functions->language_pack_names('english')
 
 										)
