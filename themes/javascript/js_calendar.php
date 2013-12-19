@@ -513,7 +513,7 @@ class js_calendar {
 			var day		= (this.date  < 10) 	?  '0' + this.date		: this.date;
 			var minutes	= (this.minutes  < 10)	?  '0' + this.minutes	: this.minutes;
 
-			if (format == 'us')
+			if (format == '12')
 			{
 				var hours	= (this.hours > 12) ? this.hours - 12 : this.hours;
 				var ampm	= (this.hours > 11) ? 'PM' : 'AM'
