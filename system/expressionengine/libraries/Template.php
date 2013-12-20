@@ -24,84 +24,84 @@
  */
 class EE_Template {
 
-	var $loop_count	  		=	0;			// Main loop counter.
-	var $depth				=	0;			// Sub-template loop depth
-	var $in_point			=  '';			// String position of matched opening tag
-	var $template			=  '';			// The requested template (page)
-	var $final_template	 	=  '';			// The finalized template
-	var $fl_tmpl		 	=  '';			// 'Floating' copy of the template.  Used as a temporary "work area".
-	var $cache_hash	  		=  '';			// md5 checksum of the template name.  Used as title of cache file.
-	var $cache_status		=  '';			// Status of page cache (NO_CACHE, CURRENT, EXPIRED)
-	var $tag_cache_status	=  '';			// Status of tag cache (NO_CACHE, CURRENT, EXPIRED)
-	var $cache_timestamp	=  '';
-	var $template_type  	=  '';			// Type of template (webpage, rss)
-	var $embed_type			=  '';			// Type of template for embedded template
-	var $template_hits		=	0;
-	var $php_parse_location =  'output';	// Where in the chain the PHP gets parsed
-	var $template_edit_date	=	'';			// Template edit date
-	var $templates_sofar	=   '';			// Templates processed so far, subtemplate tracker
-	var $attempted_fetch	=  array();		// Templates attempted to fetch but may have bailed due to recursive embeds
-	var $encode_email		=  TRUE;		// Whether to use the email encoder.  This is set automatically
-	var $hit_lock_override	=  FALSE;		// Set to TRUE if you want hits tracked on sub-templates
-	var $hit_lock			=  FALSE;		// Lets us lock the hit counter if sub-templates are contained in a template
-	var $parse_php			=  FALSE;		// Whether to parse PHP or not
-	var $protect_javascript =  TRUE;		// Protect javascript in conditionals
+	var $loop_count				= 0;			// Main loop counter.
+	var $depth					= 0;			// Sub-template loop depth
+	var $in_point				= '';			// String position of matched opening tag
+	var $template				= '';			// The requested template (page)
+	var $final_template			= '';			// The finalized template
+	var $fl_tmpl				= '';			// 'Floating' copy of the template.  Used as a temporary "work area".
+	var $cache_hash				= '';			// md5 checksum of the template name.  Used as title of cache file.
+	var $cache_status			= '';			// Status of page cache (NO_CACHE, CURRENT, EXPIRED)
+	var $tag_cache_status		= '';			// Status of tag cache (NO_CACHE, CURRENT, EXPIRED)
+	var $cache_timestamp		= '';
+	var $template_type			= '';			// Type of template (webpage, rss)
+	var $embed_type				= '';			// Type of template for embedded template
+	var $template_hits			= 0;
+	var $php_parse_location		= 'output';		// Where in the chain the PHP gets parsed
+	var $template_edit_date		= '';			// Template edit date
+	var $templates_sofar		= '';			// Templates processed so far, subtemplate tracker
+	var $attempted_fetch		=  array();		// Templates attempted to fetch but may have bailed due to recursive embeds
+	var $encode_email			=  TRUE;		// Whether to use the email encoder.  This is set automatically
+	var $hit_lock_override		=  FALSE;		// Set to TRUE if you want hits tracked on sub-templates
+	var $hit_lock				=  FALSE;		// Lets us lock the hit counter if sub-templates are contained in a template
+	var $parse_php				=  FALSE;		// Whether to parse PHP or not
+	var $protect_javascript		=  TRUE;		// Protect javascript in conditionals
 
-	var $group_name			= '';			// Group of template being parsed
-	var $template_name		= '';			// Name of template being parsed
-	var $template_id		= 0;
+	var $group_name				= '';			// Group of template being parsed
+	var $template_name			= '';			// Name of template being parsed
+	var $template_id			= 0;
 
-	var $tag_data			= array();		// Data contained in tags
-	var $modules		 	= array();		// List of installed modules
-	var $module_data		= array();		// Data for modules from exp_channels
-	var $plugins		 	= array();		// List of installed plug-ins
+	var $tag_data				= array();		// Data contained in tags
+	var $modules				= array();		// List of installed modules
+	var $module_data			= array();		// Data for modules from exp_channels
+	var $plugins				= array();		// List of installed plug-ins
 
-	var $var_single	  		= array();		// "Single" variables
-	var $var_cond			= array();		// "Conditional" variables
-	var $var_pair			= array();		// "Paired" variables
-	var $global_vars		= array();		// This array can be set via the path.php file
-	var $embed_vars		 	= array();		// This array can be set via the {embed} tag
-	var $segment_vars		= array();		// Array of segment variables
+	var $var_single				= array();		// "Single" variables
+	var $var_cond				= array();		// "Conditional" variables
+	var $var_pair				= array();		// "Paired" variables
+	var $global_vars			= array();		// This array can be set via the path.php file
+	var $embed_vars				= array();		// This array can be set via the {embed} tag
+	var $segment_vars			= array();		// Array of segment variables
 
-	var $tagparts			= array();		// The parts of the tag: {exp:comment:form}
-	var $tagdata			= '';			// The chunk between tag pairs.  This is what modules will utilize
-	var $tagproper			= '';			// The full opening tag
-	var $no_results			= '';			// The contents of the {if no_results}{/if} conditionals
-	var $no_results_block	= '';			// The {if no_results}{/if} chunk
-	var $search_fields		= array();		// Special array of tag parameters that begin with 'search:'
-	var $date_vars			= array();		// Date variables found in the tagdata (FALSE if date variables do not exist in tagdata)
-	var $unfound_vars		= array();		// These are variables that have not been found in the tagdata and can be ignored
-	var $conditional_vars	= array();		// Used by the template variable parser to prep conditionals
-	var $TYPE				= FALSE;		// FALSE if Typography has not been instantiated, Typography Class object otherwise
+	var $tagparts				= array();		// The parts of the tag: {exp:comment:form}
+	var $tagdata				= '';			// The chunk between tag pairs.  This is what modules will utilize
+	var $tagproper				= '';			// The full opening tag
+	var $no_results				= '';			// The contents of the {if no_results}{/if} conditionals
+	var $no_results_block		= '';			// The {if no_results}{/if} chunk
+	var $search_fields			= array();		// Special array of tag parameters that begin with 'search:'
+	var $date_vars				= array();		// Date variables found in the tagdata (FALSE if date variables do not exist in tagdata)
+	var $unfound_vars			= array();		// These are variables that have not been found in the tagdata and can be ignored
+	var $conditional_vars		= array();		// Used by the template variable parser to prep conditionals
+	var $TYPE					= FALSE;		// FALSE if Typography has not been instantiated, Typography Class object otherwise
 
-	var $related_data		= array();		//  A multi-dimensional array containing any related tags
-	var $related_id			= '';			// Used temporarily for the related ID number
-	var $related_markers	= array();		// Used temporarily
+	var $related_data			= array();		//  A multi-dimensional array containing any related tags
+	var $related_id				= '';			// Used temporarily for the related ID number
+	var $related_markers		= array();		// Used temporarily
 
-	var $site_ids			= array();		// Site IDs for the Sites Request for a Tag
-	var $sites				= array();		// Array of sites with site_id as key and site_name as value, used to determine site_ids for tag, above.
-	var $site_prefs_cache	= array();		// Array of cached site prefs, to allow fetching of another site's template files
+	var $site_ids				= array();		// Site IDs for the Sites Request for a Tag
+	var $sites					= array();		// Array of sites with site_id as key and site_name as value, used to determine site_ids for tag, above.
+	var $site_prefs_cache		= array();		// Array of cached site prefs, to allow fetching of another site's template files
 
-	var $reverse_related_data = array();	//  A multi-dimensional array containing any reverse related tags
+	var $reverse_related_data	= array();		// A multi-dimensional array containing any reverse related tags
 
 	protected $_tag_cache_prefix	= 'tag_cache';	// Tag cache key namespace
 	protected $_page_cache_prefix	= 'page_cache'; // Page cache key namespace
 
-	var $disable_caching	= FALSE;
+	var $disable_caching		= FALSE;
 
-	var $debugging			= FALSE;		// Template parser debugging on?
-	var $cease_processing	= FALSE;		// Used with no_results() method.
-	var $log				= array();		// Log of Template processing
-	var $start_microtime	= 0;			// For Logging (= microtime())
+	var $debugging				= FALSE;		// Template parser debugging on?
+	var $cease_processing		= FALSE;		// Used with no_results() method.
+	var $log					= array();		// Log of Template processing
+	var $start_microtime		= 0;			// For Logging (= microtime())
 
-    var $strict_urls		= FALSE;		// Whether to make URLs operate strictly or not.  This is set via a template global pref
+	var $strict_urls			= FALSE;		// Whether to make URLs operate strictly or not.  This is set via a template global pref
 
-	var $realm				= 'Restricted Content';  // Localize?
+	var $realm					= 'Restricted Content'; // Localize?
 
-	var $marker = '0o93H7pQ09L8X1t49cHY01Z5j4TT91fGfr'; // Temporary marker used as a place-holder for template data
+	var $marker					= '0o93H7pQ09L8X1t49cHY01Z5j4TT91fGfr'; // Temporary marker used as a place-holder for template data
 
-	var $form_id			= '';		// 	Form Id
-	var $form_class 		= '';		// 	Form Class
+	var $form_id				= '';			// Form Id
+	var $form_class				= '';			// Form Class
 
 	// --------------------------------------------------------------------
 
@@ -1655,20 +1655,20 @@ class EE_Template {
 		if (ee()->uri->segment(1) === FALSE)
 		{
 			return $this->fetch_template('', 'index', TRUE);
-        }
-        // Is only the pagination showing in the URI?
-        elseif(count(ee()->uri->segments) == 1 &&
-        		preg_match("#^(P\d+)$#", ee()->uri->segment(1), $match))
-        {
-        	ee()->uri->query_string = $match['1'];
-        	return $this->fetch_template('', 'index', TRUE);
-        }
+		}
+		// Is only the pagination showing in the URI?
+		elseif(count(ee()->uri->segments) == 1 &&
+				preg_match("#^(P\d+)$#", ee()->uri->segment(1), $match))
+		{
+			ee()->uri->query_string = $match['1'];
+			return $this->fetch_template('', 'index', TRUE);
+		}
 
-        // Set the strict urls pref
-        if (ee()->config->item('strict_urls') !== FALSE)
-        {
-        	$this->strict_urls = (ee()->config->item('strict_urls') == 'y') ? TRUE : FALSE;
-        }
+		// Set the strict urls pref
+		if (ee()->config->item('strict_urls') !== FALSE)
+		{
+			$this->strict_urls = (ee()->config->item('strict_urls') == 'y') ? TRUE : FALSE;
+		}
 
 		// At this point we know that we have at least one segment in the URI, so
 		// let's try to determine what template group/template we should show
@@ -1863,8 +1863,8 @@ class EE_Template {
 		}
 
 		// Fetch the template!
-       return $this->fetch_template($template_group, $template, FALSE);
-    }
+	   return $this->fetch_template($template_group, $template, FALSE);
+	}
 
 	// --------------------------------------------------------------------
 
@@ -2163,7 +2163,7 @@ class EE_Template {
 		// We can manually set certain things not to be cached, like the
 		// search template and the member directory after it's updated
 
-	 	// Note: I think search caching is OK.
+		// Note: I think search caching is OK.
 		// $cache_override = array('member' => 'U', 'search' => FALSE);
 
 		$cache_override = array('member');
@@ -2245,7 +2245,7 @@ class EE_Template {
 			{
 				ee()->config->config = $site_switch;
 			}
-        }
+		}
 
 		// standardize newlines
 		$row['template_data'] =  str_replace(array("\r\n", "\r"), "\n", $row['template_data']);
@@ -2719,32 +2719,32 @@ class EE_Template {
 
 		// Stylesheet variable: {stylesheet=group/template}
 		if (strpos($str, 'stylesheet=') !== FALSE && preg_match_all("/".LD."\s*stylesheet=[\042\047]?(.*?)[\042\047]?".RD."/", $str, $css_matches))
-        {
-        	$css_versions = array();
+		{
+			$css_versions = array();
 
-        	if (ee()->config->item('send_headers') == 'y')
-        	{
-        		$sql = "SELECT t.template_name, tg.group_name, t.edit_date, t.save_template_file FROM exp_templates t, exp_template_groups tg
-        				WHERE  t.group_id = tg.group_id
-        				AND    t.template_type = 'css'
-        				AND    t.site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."'";
+			if (ee()->config->item('send_headers') == 'y')
+			{
+				$sql = "SELECT t.template_name, tg.group_name, t.edit_date, t.save_template_file FROM exp_templates t, exp_template_groups tg
+						WHERE  t.group_id = tg.group_id
+						AND    t.template_type = 'css'
+						AND    t.site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."'";
 
-        		foreach($css_matches[1] as $css_match)
-        		{
-        			$ex = explode('/', $css_match, 2);
+				foreach($css_matches[1] as $css_match)
+				{
+					$ex = explode('/', $css_match, 2);
 
-        			if (isset($ex[1]))
-        			{
-        				$css_parts[] = "(t.template_name = '".ee()->db->escape_str($ex[1])."' AND tg.group_name = '".ee()->db->escape_str($ex[0])."')";
-        			}
-        		}
+					if (isset($ex[1]))
+					{
+						$css_parts[] = "(t.template_name = '".ee()->db->escape_str($ex[1])."' AND tg.group_name = '".ee()->db->escape_str($ex[0])."')";
+					}
+				}
 
-        		$css_query = ( ! isset($css_parts)) ? ee()->db->query($sql) : ee()->db->query($sql.' AND ('.implode(' OR ', $css_parts) .')');
+				$css_query = ( ! isset($css_parts)) ? ee()->db->query($sql) : ee()->db->query($sql.' AND ('.implode(' OR ', $css_parts) .')');
 
-        		if ($css_query->num_rows() > 0)
-        		{
-        			foreach($css_query->result_array() as $row)
-        			{
+				if ($css_query->num_rows() > 0)
+				{
+					foreach($css_query->result_array() as $row)
+					{
 						$css_versions[$row['group_name'].'/'.$row['template_name']] = $row['edit_date'];
 
 						if (ee()->config->item('save_tmpl_files') == 'y' AND ee()->config->item('tmpl_file_basepath') != '' AND $row['save_template_file'] == 'y')
@@ -2757,9 +2757,9 @@ class EE_Template {
 								$css_versions[$row['group_name'].'/'.$row['template_name']] = filemtime($basepath);
 							}
 						}
-        			}
-        		}
-        	}
+					}
+				}
+			}
 
 			$s_index = ee()->functions->fetch_site_index();
 
@@ -2773,9 +2773,9 @@ class EE_Template {
 				$str = str_replace($css_matches[0][$ci], $s_index.QUERY_MARKER.'css='.$css_matches[1][$ci].(isset($css_versions[$css_matches[1][$ci]]) ? '.v.'.$css_versions[$css_matches[1][$ci]] : ''), $str);
 			}
 
-        	unset($css_matches);
-        	unset($css_versions);
-        }
+			unset($css_matches);
+			unset($css_versions);
+		}
 
 		// Email encode: {encode="you@yoursite.com" title="click Me"}
 		if (strpos($str, LD.'encode=') !== FALSE)
@@ -3288,6 +3288,33 @@ class EE_Template {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Handle "exclusive" conditional statements. For example, if there's a
+	 * specific condition where a tag would otherwise fail and you either want
+	 * to show nothing for the tag or you want to show text within an
+	 * {if failure_condition} conditional.
+	 *
+	 * @param  string $template    The template string
+	 * @param  string $conditional The conditional name (if using {if
+	 *     failure_condition}, $conditional should be failure_condition)
+	 * @param  array  $vars        Variables to pass to
+	 *     Template::parse_variables()
+	 * @return string              The parsed template passed in with nothing
+	 *     but the conditional's contents parsed and displayed
+	 */
+	public function exclusive_conditional($template, $conditional, $vars = array())
+	{
+		if (strpos(ee()->TMPL->tagdata, LD."if {$conditional}".RD) !== FALSE)
+		{
+			preg_match('/'.LD.'if '.preg_quote($conditional).RD.'(.*){\/if}/uis', $template, $matches);
+			return $this->parse_variables($matches[1], $vars);
+		}
+
+		return '';
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Log Item for Template Processing Log
 	 *
 	 * @access	public
@@ -3639,7 +3666,7 @@ class EE_Template {
 					//$double_quote = str_replace("'", '"', $matches['0']);
 
 	//[0] => {id_path="about/test"}
-    //[1] => "about/test"
+	//[1] => "about/test"
 
 					// Switch to double quotes
 
@@ -3811,7 +3838,7 @@ class EE_Template {
 	 *	                 [2] => %d
 	 *	                 [3] => %y
 	 *	             )
- 	 *
+	 *
 	 * @access	public
 	 * @param	string
 	 * @return	void
