@@ -18,7 +18,7 @@ $lang = array(
 'Forum Topic',
 
 'password_auth' =>
-'You must submit your current Super Admin password to continue',
+'You must submit your current password to continue',
 
 'existing_password_exp' =>
 'You must submit the current password to update this page',
@@ -260,11 +260,8 @@ $lang = array(
 "include_seconds" =>
 "Include Seconds in the Time Format",
 
-'united_states' =>
-'United States',
-
-'european' =>
-'European',
+'time_format' =>
+'Time Formatting',
 
 'your_html_buttons' =>
 'HTML Formatting Buttons',

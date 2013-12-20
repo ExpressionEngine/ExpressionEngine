@@ -86,8 +86,8 @@ class EE_Core {
 		// application constants
 		define('IS_CORE',		FALSE);
 		define('APP_NAME',		'ExpressionEngine'.(IS_CORE ? ' Core' : ''));
-		define('APP_BUILD',		'20131008');
-		define('APP_VER',		'2.7.2');
+		define('APP_BUILD',		'20131210');
+		define('APP_VER',		'2.7.3');
 		define('SLASH',			'&#47;');
 		define('LD',			'{');
 		define('RD',			'}');
@@ -272,7 +272,7 @@ class EE_Core {
 	 */
 	public function run_ee()
 	{
-		$this->native_plugins = array('magpie', 'markdown', 'xml_encode');
+		$this->native_plugins = array('magpie', 'markdown', 'rss_parser', 'xml_encode');
 		$this->native_modules = array(
 			'blacklist', 'channel', 'comment', 'commerce', 'email', 'emoticon',
 			'file', 'forum', 'ip_to_nation', 'jquery', 'mailinglist', 'member',
