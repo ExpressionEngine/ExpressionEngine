@@ -45,7 +45,8 @@ class Updater {
 				'_convert_xid_to_csrf',
 				'_change_session_timeout_config',
 				'_update_localization_config',
-				'_update_member_table'
+				'_update_member_table',
+				'_update_session_config_names'
 			)
 		);
 
@@ -334,6 +335,87 @@ class Updater {
 		ee()->db->where('time_format', 'eu')->update('members', array('date_format' => '%j-%n-%y', 'time_format' => '24'));
 		$include_seconds = ee()->config->item('include_seconds') ? ee()->config->item('include_seconds') : 'n';
 		ee()->db->update('members', array('include_seconds' => $include_seconds));
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Renames admin_session_type, user_session_type, and user_session_ttl in
+	 * the site system preferences and config (if needed)
+	 *
+	 * @return void
+	 **/
+	private function _update_session_config_names()
+	{
+		// First: update the site_system_preferences columns
+		$sites = ee()->db->select('site_id, site_system_preferences')
+			->get('sites')
+			->result_array();
+
+		foreach ($sites as $site)
+	    {
+			$prefs = unserialize(base64_decode($site['site_system_preferences']));
+
+			// Don't run the update query if we don't have to
+			$update = FALSE;
+
+			if (isset($prefs['admin_session_type']))
+			{
+				$prefs['cp_session_type'] = $prefs['admin_session_type'];
+				unset($prefs['admin_session_type']);
+				$update = TRUE;
+			}
+
+			if (isset($prefs['user_session_type']))
+			{
+				$prefs['website_session_type'] = $prefs['user_session_type'];
+				unset($prefs['user_session_type']);
+				$update = TRUE;
+			}
+
+			if (isset($prefs['user_session_ttl']))
+			{
+				$prefs['website_session_ttl'] = $prefs['user_session_ttl'];
+				unset($prefs['user_session_ttl']);
+				$update = TRUE;
+			}
+
+			if ($update)
+			{
+				ee()->db->update(
+					'sites',
+					array('site_system_preferences' => base64_encode(serialize($prefs))),
+					array('site_id' => $site['site_id'])
+				);
+			}
+
+			if ( ! empty($new_config_items))
+			{
+				ee()->config->update_site_prefs($new_config_items, $site['site_id']);
+			}
+		}
+
+		// Second: update any $config overrides
+		$new_config_items = array();
+		if (ee()->config->item('admin_session_type') !== FALSE)
+		{
+			$new_config_items['cp_session_type'] = ee()->config->item('admin_session_type');
+		}
+		if (ee()->config->item('user_session_type') !== FALSE)
+		{
+			$new_config_items['website_session_type'] = ee()->config->item('user_session_type');
+		}
+		if (ee()->config->item('user_session_ttl') !== FALSE)
+		{
+			$new_config_items['website_session_ttl'] = ee()->config->item('user_session_ttl');
+		}
+
+		$remove_config_items = array(
+			'admin_session_type' => '',
+			'user_session_type'  => '',
+			'user_session_ttl'   => ''
+		);
+		ee()->config->_update_config($new_config_items, $remove_config_items);
 	}
 }
 /* END CLASS */
