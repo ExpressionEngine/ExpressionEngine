@@ -172,7 +172,7 @@ class Cache extends CI_Driver_Library {
 	 */
 	public function clean($scope = Cache::LOCAL_SCOPE)
 	{
-		return $this->{$this->_adapter}->clean();
+		return $this->{$this->_adapter}->clean($scope);
 	}
 
 	// ------------------------------------------------------------------------

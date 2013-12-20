@@ -110,7 +110,7 @@ class CI_Cache_memcached extends CI_Driver {
 	public function delete($key, $scope = Cache::LOCAL_SCOPE)
 	{
 		// Delete namespace contents
-		if (strrpos($key, $this->namespace_separator(), -1) !== FALSE)
+		if (strrpos($key, $this->namespace_separator(), strlen($key) - 1) !== FALSE)
 		{
 			$this->_create_new_namespace($key, $scope);
 

@@ -45,7 +45,9 @@ class CI_Cache_redis extends CI_Driver
 	 */
 	public function get($key, $scope = Cache::LOCAL_SCOPE)
 	{
-		return unserialize($this->_redis->get($this->unique_key($key, $scope)));
+		$data = unserialize($this->_redis->get($this->unique_key($key, $scope)));
+
+		return is_array($data) ? $data[0] : FALSE;
 	}
 
 	// ------------------------------------------------------------------------
@@ -63,11 +65,12 @@ class CI_Cache_redis extends CI_Driver
 	public function save($key, $value, $ttl = NULL, $scope = Cache::LOCAL_SCOPE)
 	{
 		$key = $this->unique_key($key, $scope);
-		$value = serialize($value);
+
+		$data = serialize(array($value, ee()->localize->now));
 
 		return ( ! empty($ttl))
-			? $this->_redis->setex($key, $ttl, $value)
-			: $this->_redis->set($key, $value);
+			? $this->_redis->setex($key, $ttl, $data)
+			: $this->_redis->set($key, $data);
 	}
 
 	// ------------------------------------------------------------------------
@@ -83,7 +86,7 @@ class CI_Cache_redis extends CI_Driver
 	public function delete($key, $scope = Cache::LOCAL_SCOPE)
 	{
 		// Delete namespace contents
-		if (strrpos($key, $this->namespace_separator(), -1) !== FALSE)
+		if (strrpos($key, $this->namespace_separator(), strlen($key) - 1) !== FALSE)
 		{
 			return ($this->_redis->delete(
 				$this->_redis->keys($this->unique_key($key, $scope).'*')
@@ -135,15 +138,17 @@ class CI_Cache_redis extends CI_Driver
 	 */
 	public function get_metadata($key, $scope = Cache::LOCAL_SCOPE)
 	{
-		$value = $this->get($key, $scope);
+		$data = $data = unserialize($this->_redis->get($this->unique_key($key, $scope)));
 		$key = $this->unique_key($key, $scope);
 
-		if ($value)
+		if (is_array($data))
 		{
+			list($data, $time) = $data;
+
 			return array(
 				'expire' => ee()->localize->now + $this->_redis->ttl($key),
-				'mtime'	=> NULL,
-				'data' => $value
+				'mtime'	=> $time,
+				'data' => $data
 			);
 		}
 

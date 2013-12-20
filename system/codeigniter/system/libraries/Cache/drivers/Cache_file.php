@@ -148,7 +148,7 @@ class CI_Cache_file extends CI_Driver {
 		$path = $this->_cache_path.$this->_namespaced_key($key, $scope);
 
 		// If we are deleting contents of a namespace
-		if (strrpos($key, $this->namespace_separator(), -1) !== FALSE)
+		if (strrpos($key, $this->namespace_separator(), strlen($key) - 1) !== FALSE)
 		{
 			$path .= DIRECTORY_SEPARATOR;
 
@@ -175,15 +175,21 @@ class CI_Cache_file extends CI_Driver {
 	 */
 	public function clean($scope = Cache::LOCAL_SCOPE)
 	{
+		$path = $this->_cache_path.$this->_namespaced_key('', $scope);
+
 		// Delete all files in cache directory, excluding .htaccess and index.html
-		delete_files(
-			$this->_cache_path.$this->_namespaced_key('', $scope),
+		$result = delete_files(
+			$path,
 			TRUE,
 			0,
-			array('.htaccess', 'index.html')
+			// Only skip htaccess for the global scope
+			($scope == Cache::GLOBAL_SCOPE) ? array('.htaccess') : array()
 		);
 
-		return TRUE;
+		// Replace index.html
+		write_index_html($path);
+
+		return $result;
 	}
 
 	// ------------------------------------------------------------------------
@@ -229,8 +235,9 @@ class CI_Cache_file extends CI_Driver {
 			}
 
 			return array(
-				'expire' => $mtime + $data['ttl'],
-				'mtime'	 => $mtime
+				'expire'	=> $mtime + $data['ttl'],
+				'mtime'		=> $mtime,
+				'data'		=> $data['data']
 			);
 		}
 
