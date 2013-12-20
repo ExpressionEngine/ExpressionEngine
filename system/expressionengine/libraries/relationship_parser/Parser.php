@@ -119,7 +119,6 @@ class EE_Relationship_data_parser {
 	 */
 	public function parse_node($node, $parent_id, $tagdata)
 	{
-		$this->find_no_results($node, $tagdata);
 
 		if ( ! isset($node->entry_ids[$parent_id]))
 		{
@@ -169,26 +168,7 @@ class EE_Relationship_data_parser {
 				$categories[$entry_id] = $this->category($entry_id);
 			}
 
-			// put categories into the weird form the channel module uses
-			// @todo take db results directly
-			foreach ($categories as &$cats)
-			{
-				foreach ($cats as &$cat)
-				{
-					if ( ! empty($cat))
-					{
-						$cat = array(
-							$cat['cat_id'],
-							$cat['parent_id'],
-							$cat['cat_name'],
-							$cat['cat_image'],
-							$cat['cat_description'],
-							$cat['group_id'],
-							$cat['cat_url_title']
-						);
-					}
-				}
-			}
+			$categories = $this->_format_cat_array($categories);
 
 			$data = array(
 				'entries' => array($entry_id => $this->entry($entry_id)),
@@ -220,46 +200,6 @@ class EE_Relationship_data_parser {
 		}
 
 		return $tagdata;
-	}
-
- 	// --------------------------------------------------------------------
-
-	/**
-	 * Assign no results data to the node.
-	 *
-	 * Find the no_results tag once per node. This is more future proofing
-	 * than anything, currently it makes very little difference where we
-	 * pull it out.
-	 *
-	 * @param	object	The tree node of this tag pair
-	 * @param	string	The tagdata to delete the tags from.
-	 * @return 	void
-	 */
-	public function find_no_results($node, $tagdata)
-	{
-		if (isset($node->no_results))
-		{
-			return;
-		}
-
-		$tag = preg_quote($node->name(), '/');
-
-		// Find no results chunks
-		$has_no_results = strpos($tagdata, 'if '.$node->name().':no_results') !== FALSE;
-
-		if ($has_no_results && preg_match("/".LD."if {$tag}:no_results".RD."(.*?)".LD.'\/'."if".RD."/s", $tagdata, $match))
-		{
-			if (stristr($match[1], LD.'if'))
-			{
-				$match[0] = ee()->functions->full_tag($match[0], $tagdata, LD.'if', LD.'\/'."if".RD);
-				$match[1] = substr($match[0], strlen(LD."if {$tag}:no_results".RD), -strlen(LD.'/'."if".RD));
-			}
-
-			$node->no_results = $match;
-			return;
-		}
-
-		$node->no_results = FALSE;
 	}
 
  	// --------------------------------------------------------------------
@@ -304,6 +244,44 @@ class EE_Relationship_data_parser {
 		return $this->cleanup_no_results_tag($node, $result);
 	}
 
+ 	// --------------------------------------------------------------------
+
+	/**
+	 * Find a node's no_results Tag
+	 *
+	 * Find the no_results tag belonging to a node, given that node's contents.
+	 * Where the contents of a node is everything contained inside of its opening
+	 * and closing tag. {node_opening} Contents. {/node_closing}  Returns
+	 * either the contents of the no_results block, or the whole no_results tag.
+	 *
+	 * @param	object	$node			The tree node of this tag pair.
+	 * @param	string	$node_tagdata	The tagdata of the specific node we're
+	 *									examining (not the channel:entries tag,
+	 *									but the child/parent/sibling tag.
+	 * @param	boolean	$whole_tag	(Optional) If True, then the whole no_results
+	 *								tag rather than just its contents, will be
+	 * 								returned.
+	 *
+	 * @return	string	Contents of the no_results tag or an empty string. If
+	 *					$whole_tag is TRUE, then whole {if no_results} {/if}
+	 *					tag block will be returned.
+	 */
+	public function find_no_results($node, $node_tagdata, $whole_tag=FALSE)
+	{
+		$tag = preg_quote($node->name(), '/');
+
+		// Find no results chunks
+		$has_no_results = strpos($node_tagdata, 'if '.$node->name().':no_results') !== FALSE;
+
+		if ($has_no_results && preg_match("/".LD."if {$tag}:no_results".RD."(.*?)".LD.'\/'."if".RD."/s", $node_tagdata, $match))
+		{
+			return ($whole_tag ? $match[0] : $match[1]);
+		}
+
+		return '';
+	}
+
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -314,12 +292,14 @@ class EE_Relationship_data_parser {
 	 * all over the place.
 	 *
 	 * @param	object	The tree node of this tag pair
-	 * @param	string	The tagdata to delete the tags from.
+	 * @param	string	The tagdata to delete the tags from.  This the
+	 * 					channel:entries tag's contents, not the node's
+	 * 					contents.
 	 * @return 	string	The cleaned tagdata
 	 */
 	public function clear_node_tagdata($node, $tagdata)
 	{
-		$tag = preg_quote($node->name(), '/');
+		$tag_name = preg_quote($node->name(), '/');
 		$open_tag = preg_quote($node->open_tag, '/');
 
 		if ($node->shortcut)
@@ -327,43 +307,34 @@ class EE_Relationship_data_parser {
 			$tagdata = str_replace($node->open_tag, '', $tagdata);
 		}
 
-		if ( ! preg_match_all('/'.$open_tag.'(.+?){\/'.$tag.'}/is', $tagdata, $matches, PREG_SET_ORDER))
+		while ( preg_match('/'.$open_tag.'(.+?){\/'.$tag_name.'}/is', $tagdata, $match))
 		{
-			return $tagdata;
-		}
-
-		$no_results = $node->no_results;
-		$no_results = empty($no_results) ? '' : $node->no_results[1];
-
-		foreach ($matches as $match)
-		{
+			$no_results = $this->find_no_results($node, $match[1]);
 			$tagdata = substr_replace($tagdata, $no_results, strpos($tagdata, $match[0]), strlen($match[0]));
 		}
 
-		$tagdata = preg_replace('/'.$open_tag.'(.+?){\/'.$tag.'}/is', '', $tagdata);
-		return str_replace($node->open_tag, '', $tagdata);
+		return $tagdata;
 	}
 
 	// --------------------------------------------------------------------
 
 	/**
-	 * Deletes the node tags from the given template and replace it with
-	 * the no_results tag if it exists.
-	 *
-	 * Used for empty nodes so that we don't end up with unparsed tags
-	 * all over the place.
+	 * Removes leftover no_results tags from the node's template
+	 * after we've successfully parsed the node.
 	 *
 	 * @param	object	The tree node of this tag pair
-	 * @param	string	The tagdata to delete the tags from.
+	 * @param	string	The tagdata to delete the tags from. In this
+	 * 					case this is the node's contents, not the
+	 * 					channel:entries tag's contents.
 	 * @return 	string	The cleaned tagdata
 	 */
 	public function cleanup_no_results_tag($node, $tagdata)
 	{
-		$no_results = $node->no_results;
+		$no_results = $this->find_no_results($node, $tagdata, TRUE);
 
 		if ( ! empty($no_results))
 		{
-			$tagdata = str_replace($no_results[0], '', $tagdata);
+			$tagdata = str_replace($no_results, '', $tagdata);
 		}
 
 		return $tagdata;
@@ -397,11 +368,6 @@ class EE_Relationship_data_parser {
 		// enforce offset and limit
 		$offset = $node->param('offset');
 		$limit = $node->param('limit');
-
-		if ($limit)
-		{
-			$entry_ids = array_slice($entry_ids, $offset, $limit);
-		}
 
 		// make sure defaults are set
 		if ( ! $node->param('status'))
@@ -487,8 +453,6 @@ class EE_Relationship_data_parser {
 				}
 			}
 
-			$rows[$entry_id] = $data;
-
 			// categories
 			if (isset($this->_categories[$entry_id]))
 			{
@@ -499,11 +463,6 @@ class EE_Relationship_data_parser {
 
 			if ($requested_cats)
 			{
-				if ( ! isset($categories[$entry_id]))
-				{
-					continue;
-				}
-
 				$not = FALSE;
 				$cat_match = FALSE;
 
@@ -511,6 +470,18 @@ class EE_Relationship_data_parser {
 				{
 					$requested_cats = substr($requested_cats, 4);
 					$not = TRUE;
+				}
+
+				if (! isset($categories[$entry_id]))
+				{
+					// If the entry has no categories and the category parameter
+					// specifies 'not x', include it.
+					if ($not)
+					{
+						$rows[$entry_id] = $data;
+					}
+
+					continue;
 				}
 
 				$requested_cats = explode('|', $requested_cats);
@@ -526,6 +497,10 @@ class EE_Relationship_data_parser {
 
 						$cat_match = TRUE;
 					}
+					elseif ($not)
+					{
+						$cat_match = TRUE;
+					}
 				}
 
 				if ( ! $cat_match)
@@ -533,9 +508,64 @@ class EE_Relationship_data_parser {
 					continue;
 				}
 			}
+
+			$rows[$entry_id] = $data;
 		}
 
-		// put categories into the weird form the channel module uses
+		$categories = $this->_format_cat_array($categories);
+
+		$end_script = FALSE;
+
+		// -------------------------------------------
+		// 'relationships_modify_rows' hook.
+		//  - Take the relationship result and modify it right before starting to parse.
+		//  - added 2.7.1
+		//
+			if (ee()->extensions->active_hook('relationships_modify_rows') === TRUE)
+			{
+				$rows = ee()->extensions->call('relationships_modify_rows', $rows, $node);
+				if (ee()->extensions->end_script === TRUE) $end_script = TRUE;
+			}
+		//
+		// -------------------------------------------
+
+
+		// BEWARE:
+		// If $end_script is TRUE, we should do no more processing after the hook!
+
+		if ($end_script === FALSE && ($limit OR $offset))
+		{
+			$rows = array_slice($rows, $offset, $limit, TRUE);
+		}
+
+		return array(
+			'entries' => $rows,
+			'categories' => $categories,
+		);
+	}
+
+ 	// --------------------------------------------------------------------
+
+	/**
+	 * Utility method to format the category array for processing by the
+	 * Channel Entries Parser's Category parser.  Renames required elements and
+	 * leaves the rest alone.
+	 *
+	 * @param 	array	An array of category data.  Required keys below:
+	 * 		- cat_id: changed to index 0
+	 * 		- parent_id: changed to index 1
+	 * 		- cat_name: changed to index 2
+	 * 		- cat_image: changed to index 3
+	 * 		- cat_description: changed to index 4
+	 * 		- group_id: changed to index 5
+	 * 		- cat_url_title: changed to index 6
+	 *
+	 * @return	array  The array of category data with keys renamed to match the
+	 *                 category parser's requirements.
+	 */
+
+	private function _format_cat_array($categories)
+	{
 		// @todo take db results directly
 		foreach ($categories as &$cats)
 		{
@@ -543,23 +573,25 @@ class EE_Relationship_data_parser {
 			{
 				if ( ! empty($cat))
 				{
-					$cat = array(
-						$cat['cat_id'],
-						$cat['parent_id'],
-						$cat['cat_name'],
-						$cat['cat_image'],
-						$cat['cat_description'],
-						$cat['group_id'],
-						$cat['cat_url_title']
-					);
+					$cat['0'] = $cat['cat_id'];
+					unset($cat['cat_id']);
+					$cat['1'] = $cat['parent_id'];
+					unset($cat['parent_id']);
+					$cat['2'] = $cat['cat_name'];
+					unset($cat['cat_name']);
+					$cat['3'] = $cat['cat_image'];
+					unset($cat['cat_image']);
+					$cat['4'] = $cat['cat_description'];
+					unset($cat['cat_description']);
+					$cat['5'] = $cat['group_id'];
+					unset($cat['group_id']);
+					$cat['6'] = $cat['cat_url_title'];
+					unset($cat['cat_url_title']);
 				}
 			}
 		}
 
-		return array(
-			'entries' => $rows,
-			'categories' => $categories,
-		);
+		return $categories;
 	}
 
  	// --------------------------------------------------------------------

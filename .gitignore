@@ -18,6 +18,7 @@ system/tests/phpunit/vendor/
 system/tests/phpunit/composer.lock
 
 images/test1/
+images/design/
 
 system/expressionengine/cache/*
 !system/expressionengine/cache/index.html

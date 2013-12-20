@@ -24,8 +24,8 @@
  */
 class Sites extends CP_Controller {
 
-	var $version 			= '2.1.5';
-	var $build_number		= '20130410';
+	var $version 			= '2.1.6';
+	var $build_number		= '20130827';
 	var $allow_new_sites 	= FALSE;
 
 	/**
@@ -1277,6 +1277,39 @@ class Sites extends CP_Controller {
 
 										$this->dbforge->add_column('channel_data', $columns);
 									}
+									elseif($row['field_type'] == 'grid')
+									{
+										$this->load->library('api');
+										$this->api->instantiate('channel_fields');
+										$this->api_channel_fields->fetch_installed_fieldtypes();
+
+										$this->load->model('grid_model');
+										
+										$this->load->dbforge();
+										ee()->dbforge->add_column(
+											'channel_data', 
+											array(
+												'field_id_' . $field_id => array(
+													'type'			=> 'int',
+													'constraint'	=> 10
+												),
+												'field_ft_' . $field_id => array(
+													'type'			=> 'tinytext'
+												)	
+											) 
+										);
+										
+										$this->grid_model->create_field($field_id, 'channel');
+										
+										$columns = $this->grid_model->get_columns_for_field($old_field_id, 'channel');	
+										foreach($columns as $column) 
+										{
+											unset($column['col_id']);
+											$column['field_id'] = $field_id;
+											$column['col_settings'] = json_encode($column['col_settings']);
+											$this->grid_model->save_col_settings($column);
+										}
+									}
 									else
 									{
 										$columns = array(
@@ -1672,7 +1705,7 @@ class Sites extends CP_Controller {
 										FALSE
 									);
 									
-									$null_type = ($row['field_type'] == 'date' OR $row['field_type'] == 'relationship') ? 0 : NULL;
+									$null_type = ($row['field_type'] == 'date' OR $row['field_type'] == 'relationship' OR $row['field_type'] == 'grid') ? 0 : NULL;
 									$this->db->set('field_id_'.$row['field_id'], $null_type);
 									$this->db->where('channel_id', $channel_id)
 										->update('channel_data');
@@ -1866,7 +1899,8 @@ class Sites extends CP_Controller {
 		
 		$vars['site_id'] = $site_id;
 		$vars['message'] = lang('delete_site_confirmation');
-		
+		$vars['site_label'] = $query->row()->site_label;
+				
 		$this->cp->render('sites/delete_confirm', $vars);
 	}
 	
@@ -1996,6 +2030,12 @@ class Sites extends CP_Controller {
 				if ($row['field_type'] == 'date')
 				{
 					$this->smartforge->drop_column('channel_data', 'field_dt_'.$row['field_id']);
+				}
+				elseif ($row['field_type'] == 'grid')
+				{
+					$this->db->where('field_id', $row['field_id'])
+								->delete('grid_columns');	
+					$this->dbforge->drop_table('channel_grid_field_' . $row['field_id']);
 				}
 			}
 		}

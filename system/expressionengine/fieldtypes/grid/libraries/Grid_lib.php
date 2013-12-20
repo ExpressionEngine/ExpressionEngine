@@ -8,7 +8,7 @@
  * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
- * @since		Version 2.0
+ * @since		Version 2.7
  * @filesource
  */
 
@@ -141,7 +141,7 @@ class Grid_lib {
 		}
 
 		// Call the fieldtype's field display method and capture the output
-		$display_field = ee()->grid_parser->call('display_field', form_prep($row_data));
+		$display_field = ee()->grid_parser->call('display_field', $row_data);
 
 		// Default name for new rows
 		$row_id = 'new_row_0';
@@ -216,6 +216,12 @@ class Grid_lib {
 		// Get row data to send back to fieldtypes with new row IDs
 		$rows = ee()->grid_model->get_entry_rows($this->entry_id, $this->field_id, $this->content_type);
 		$rows = $rows[$this->entry_id];
+
+		// Remove deleted rows from $rows
+		foreach ($deleted_rows as $deleted_row)
+		{
+			unset($rows[$deleted_row['row_id']]);
+		}
 
 		$i = 0;
 
@@ -345,6 +351,10 @@ class Grid_lib {
 			$data = $data['rows'];
 		}
 
+		// Make a copy of the files array so we can spoof it per field below
+		$grid_field_name = $this->field_name;
+		$files_backup = $_FILES;
+
 		foreach ($data as $row_id => $row)
 		{
 			foreach ($columns as $column)
@@ -382,6 +392,27 @@ class Grid_lib {
 				{
 					$fieldtype->settings['grid_row_id'] = str_replace('row_id_', '', $row_id);
 				}
+
+				// Inside grid our files arrays end up being deeply nested. Since
+				// the fields access these arrays directly, we set the FILES array
+				// to what is expected by the field for each iteration.
+				$_FILES = array();
+
+				if (isset($files_backup[$grid_field_name]))
+				{
+					$newfiles = array();
+
+					foreach ($files_backup[$grid_field_name] as $files_key => $value)
+					{
+						if (isset($value['rows'][$row_id][$col_id]))
+						{
+							$newfiles[$files_key] = $value['rows'][$row_id][$col_id];
+						}
+					}
+
+					$_FILES[$col_id] = $newfiles;
+				}
+
 
 				// Call the fieldtype's validate/save method and capture the output
 				$result = ee()->grid_parser->call($method, $row[$col_id]);
@@ -442,6 +473,9 @@ class Grid_lib {
 			}
 		}
 
+		// reset $_FILES in case it's used in other code
+		$_FILES = $files_backup;
+
 		return array('value' => $final_values, 'error' => $errors);
 	}
 
@@ -467,14 +501,17 @@ class Grid_lib {
 		$ft_api = ee()->api_channel_fields;
 
 		$this->_fieldtypes = $ft_api->fetch_installed_fieldtypes();
+		unset($this->_fieldtypes['grid']);
 
 		foreach ($this->_fieldtypes as $field_name => $data)
 		{
-			$ft_api->setup_handler($field_name);
+			$fieldtype = $ft_api->setup_handler($field_name, TRUE);
 
-			// We'll check the existence of certain methods to determine whether
-			// or not this fieldtype is ready for Grid
-			if ( ! $ft_api->check_method_exists('grid_display_settings'))
+			// Check to see if the fieldtype accepts Grid as a content type;
+			// also, temporarily exlcude Relationships for content types
+			// other than channel
+			if ( ! $fieldtype->accepts_content_type('grid') ||
+				($this->content_type != 'channel' && $field_name == 'relationship'))
 			{
 				unset($this->_fieldtypes[$field_name]);
 			}
@@ -641,7 +678,12 @@ class Grid_lib {
 			// If any columns are missing from the new settings, delete them
 			if ( ! empty($cols_to_delete))
 			{
-				ee()->grid_model->delete_columns($cols_to_delete, $old_cols, $settings['field_id']);
+				ee()->grid_model->delete_columns(
+					$cols_to_delete,
+					$old_cols,
+					$settings['field_id'],
+					$this->content_type
+				);
 			}
 		}
 	}
@@ -724,25 +766,31 @@ class Grid_lib {
 	 */
 	public function get_settings_form($type, $column = NULL)
 	{
+		$ft_api = ee()->api_channel_fields;
+		$settings = NULL;
+
 		// Returns blank settings form for a specific fieldtype
 		if (empty($column))
 		{
-			ee()->api_channel_fields->setup_handler($type);
+			$ft_api->setup_handler($type);
 
-			return $this->_view_for_col_settings(
-				$type,
-				ee()->api_channel_fields->apply('grid_display_settings', array(array()))
-			);
+			if ($ft_api->check_method_exists('grid_display_settings'))
+			{
+				$settings = $ft_api->apply('grid_display_settings', array(array()));
+			}
+
+			return $this->_view_for_col_settings($type, $settings);
 		}
 
 		ee()->grid_parser->instantiate_fieldtype($column, NULL, $this->field_id, 0);
 
+		if ($ft_api->check_method_exists('grid_display_settings'))
+		{
+			$settings = $ft_api->apply('grid_display_settings', array($column['col_settings']));
+		}
+
 		// Otherwise, return the prepopulated settings form based on column settings
-		return $this->_view_for_col_settings(
-			$type,
-			ee()->api_channel_fields->apply('grid_display_settings', array($column['col_settings'])),
-			$column['col_id']
-		);
+		return $this->_view_for_col_settings($type, $settings, $column['col_id']);
 	}
 
 	// ------------------------------------------------------------------------

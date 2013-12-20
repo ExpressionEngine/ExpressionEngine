@@ -321,15 +321,16 @@ class File_model extends CI_Model {
 		return $this->db->$dir_func('upload_location_id', $dir_id)
 						->get('files');
 	}
-
-
 	
 	// ------------------------------------------------------------------------	
 	
 	/**
 	 * Get files by name and directory
 	 * 
-	 * 
+	 * @param mixed $file_name An array or string with the filename/s
+	 * @param mixed $dir_id    The image directory of the files
+	 * @access public
+	 * @return query           The filename query result
 	 */
 	function get_files_by_name($file_name, $dir_id)
 	{
@@ -339,13 +340,24 @@ class File_model extends CI_Model {
 		}
 		
 		$dir_func = $this->_where_function($dir_id);
-		$name_func = $this->_where_function($file_name);
+		$this->db->$dir_func('upload_location_id', $dir_id);
 
-		return $this->db->$dir_func('upload_location_id', $dir_id)
-						->$name_func('file_name', $file_name)
-						->get('files');
+		// Collate does not work on the IN operator, so we cast to binary
+		if (is_array($file_name))
+		{
+			foreach($file_name as $key => $file)
+			{
+				$file_name[$key] = "binary $file";
+			}
+			$this->db->where_in('file_name', $file_name);
+		}
+		else
+		{
+			$this->db->where("file_name = " . $this->db->escape($file_name) . " COLLATE utf8_bin");
+		}
+
+		return $this->db->get('files');
 	}
-
 
 	// ------------------------------------------------------------------------	
 	

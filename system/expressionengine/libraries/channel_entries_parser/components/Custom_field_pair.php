@@ -8,7 +8,7 @@
  * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
- * @since		Version 2.0
+ * @since		Version 2.6
  * @filesource
  */
 
@@ -105,8 +105,31 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
 			return $tagdata;
 		}
 
-		$pfield_chunk = $pfield_chunks[$site_id];
 		$ft_api = ee()->api_channel_fields;
+
+		// Check to see if the pair field chunks still exist; if not, check
+		// the tagdata in case they've been modified since pre-processing.
+		// This check appears before the main loop below in case any custom
+		// fields were removed from the tagdata.
+		foreach ($pfield_chunks[$site_id] as $tag_name => $chunks)
+		{
+			foreach($chunks as $chk_data)
+			{
+				if (strpos($tagdata, $chk_data[3]) === FALSE)
+				{
+					$pfield_chunks[$site_id][$tag_name] = ee()->api_channel_fields->get_pair_field(
+						$tagdata,
+						$tag_name,
+						$prefix
+					);
+
+					$obj->preparsed()->set_once_data($this, $pfield_chunks);
+					break;
+				}
+			}
+		}
+
+		$pfield_chunk = $pfield_chunks[$site_id];
 
 		foreach ($pfield_chunk as $tag_name => $chunks)
 		{
@@ -115,6 +138,7 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
 			$field_id = $cfields[$field_name];
 
 			$ft = $ft_api->setup_handler($field_id, TRUE);
+			$ft_name = $ft_api->field_type;
 
 			if ($ft)
 			{
@@ -122,20 +146,26 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
 				ee()->load->add_package_path($_ft_path, FALSE);
 
 				$ft->_init(array(
-					'row' => $data,
-					'content_id' => $data['entry_id']
+					'row'			=> $data,
+					'content_id'	=> $data['entry_id'],
+					'content_type'	=> 'channel'
 				));
 
-				$pre_processed = $ft->pre_process(
-					$ft_api->custom_field_data_hook(
-						$ft,
-						'pre_process',
-						$data['field_id_'.$field_id]
-					)
-				);
+				$pre_processed = $ft_api->apply('pre_process', array(
+					$data['field_id_'.$field_id]
+				));
 
 				foreach($chunks as $chk_data)
 				{
+					// If some how the fieldtype that the channel fields
+					// API is referencing changed to another fieldtype
+					// (Grid may cause this), get it back on track to
+					// parse the next chunk
+					if ($ft_name != $ft_api->field_type)
+					{
+						$ft_api->setup_handler($field_id);
+					}
+
 					list($modifier, $content, $params, $chunk) = $chk_data;
 
 					$tpl_chunk = '';
@@ -167,21 +197,21 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
 
 					if (method_exists($ft, $parse_fnc))
 					{
-						$tpl_chunk = $ft->$parse_fnc(
-							$ft_api->custom_field_data_hook($ft, $parse_fnc, $pre_processed),
+						$tpl_chunk = $ft_api->apply($parse_fnc, array(
+							$pre_processed,
 							$params,
 							$content
-						);
+						));
 					}
 					// Go to catchall and include modifier
 					elseif (method_exists($ft, 'replace_tag_catchall') AND $modifier !== '')
 					{
-						$tpl_chunk = $ft->replace_tag_catchall(
-							$ft_api->custom_field_data_hook($ft, 'replace_tag_catchall', $pre_processed),
+						$tpl_chunk = $ft_api->apply('replace_tag_catchall', array(
+							$pre_processed,
 							$params,
 							$content,
 							$modifier
-						);
+						));
 					}
 
 					$tagdata = str_replace($chunk, $tpl_chunk, $tagdata);

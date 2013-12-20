@@ -166,8 +166,11 @@ class Channel_form_lib
 			throw new Channel_form_exception(lang('channel_form_no_channel'));
 		}
 
+		//temporarily set the site_id for cross-site channel:form
+		$current_site_id = ee()->config->item('site_id');
 
-		//load member data for logged out member
+		ee()->config->set_item('site_id', $this->site_id);
+
 		$this->fetch_logged_out_member(ee()->TMPL->fetch_param('logged_out_member_id'));
 		$this->load_session_override();
 
@@ -206,7 +209,6 @@ class Channel_form_lib
 			$this->edit = TRUE;
 		}
 
-		// @added rev 57
 		if ($this->edit && $this->bool_string(ee()->TMPL->fetch_param('author_only')) && $this->entry('author_id') != ee()->session->userdata('member_id'))
 		{
 			throw new Channel_form_exception(lang('channel_form_author_only'));
@@ -387,7 +389,6 @@ class Channel_form_lib
 			if ($tag_name == 'categories')
 			{
 				ee()->TMPL->tagdata = $this->swap_var_pair($tag_pair_open, $this->categories($tagparams), ee()->TMPL->tagdata, $tag_name, ! empty($tagparams['backspace']) ? $tagparams['backspace'] : FALSE);
-				//$this->parse_variables['categories'] = $this->categories($tagparams);
 			}
 
 			elseif ($tag_name == 'statuses')
@@ -668,24 +669,26 @@ class Channel_form_lib
 
 		$conditional_errors = $this->_add_errors();
 
-
 		// Parse captcha conditional
 		$captcha_conditional = array(
 			'captcha' => ($this->channel('channel_id') && $this->logged_out_member_id && ! empty($this->settings['require_captcha'][ee()->config->item('site_id')][$this->channel('channel_id')]))
 		);
 
+        $conditionals = array_merge($conditional_errors, $captcha_conditional);
+
 		// Parse conditionals
-		// $this->parse_variables['error:title'] = TRUE;
 		ee()->TMPL->tagdata = ee()->functions->prep_conditionals(
 			ee()->TMPL->tagdata,
-			array_merge($conditional_errors, $captcha_conditional)
+            $conditionals
 		);
+
+        $this->parse_variables = array_merge($this->parse_variables, $conditional_errors);
 
 		// Make sure {captcha_word} is blank
 		ee()->TMPL->tagdata = ee()->TMPL->swap_var_single('captcha_word', '', ee()->TMPL->tagdata);
 
 		// Replace {captcha} with actual captcha
-		ee()->TMPL->tagdata = ee()->TMPL->swap_var_single('captcha', ee()->functions->create_captcha(), ee()->TMPL->tagdata);
+		ee()->TMPL->tagdata = ee()->TMPL->swap_var_single('captcha', ee()->functions->create_captcha('', $captcha_conditional['captcha']), ee()->TMPL->tagdata);
 
 		// Parse the variables
 		if ($this->parse_variables)
@@ -698,19 +701,8 @@ class Channel_form_lib
 			$this->_file_enctype = TRUE;
 		}
 
-		//add class to form
-		if (ee()->TMPL->fetch_param('class'))
-		{
-			ee()->TMPL->tagparams['form_class'] = ee()->TMPL->fetch_param('class');
-		}
-
 		//set group-based return url
 		$this->form_hidden('return', (ee()->TMPL->fetch_param('return_'.ee()->session->userdata['group_id'])) ? ee()->TMPL->fetch_param('return_'.ee()->session->userdata['group_id']) : ee()->TMPL->fetch_param('return'));
-
-		//temporarily set the site_id for cross-site channel:form
-		$current_site_id = ee()->config->item('site_id');
-
-		ee()->config->set_item('site_id', $this->site_id);
 
 		// Nothin'
 		if (ee()->session->userdata('member_id') == 0)
@@ -737,21 +729,33 @@ class Channel_form_lib
 
 		$hidden_fields = array_merge($hidden_fields, $this->_hidden_fields);
 
+		// If uploading a file keep a copy of all hidden vars in the query string
+		// This way we can check if POST data is dropped because of size limits
+		if ($this->file)
+		{
+			$action = $hidden_fields;
+			$action_url = $action['RET'];
+			$action['ACT'] = ee()->functions->insert_action_ids($action['ACT']);
+			$action = $action_url . '?' . http_build_query($action);
+		}
+		else
+		{
+			$action = $hidden_fields['RET'];
+		}
 
 		$this->form_attribute(
 			array(
 				'onsubmit' => ee()->TMPL->fetch_param('onsubmit'),
 				'name' => ee()->TMPL->fetch_param('name'),
-				'class' => ee()->TMPL->fetch_param('class'),
-				'id' => ee()->TMPL->fetch_param('id')
+				'id' => ee()->TMPL->fetch_param('id'),
+				'class' => ee()->TMPL->fetch_param('class')
 			)
 		);
 
 		$form_attributes = array(
 			'hidden_fields' => $hidden_fields,
-			'action'		=> $RET,
-			'id'			=> 'publishForm',
-			'class'			=> ee()->TMPL->form_class,
+			'action'		=> $action,
+			'id'			=> ee()->TMPL->fetch_param('id', 'publishForm'),
 			'enctype' 		=> $this->_file_enctype ? 'enctype="multipart/form-data"' : 'multi'
 		);
 
@@ -759,7 +763,7 @@ class Channel_form_lib
 
 
 		$return = ee()->functions->form_declaration($form_attributes);
-		$return .= stripslashes(ee()->TMPL->tagdata);
+		$return .= ee()->TMPL->tagdata;
 		$return .= "</form>";
 
 
@@ -852,7 +856,7 @@ class Channel_form_lib
 		{
 			if (strpos($button->classname, 'btn_img') !== FALSE)
 			{
-				// no fielbrowser -> no img field
+				// no filebrowser -> no img field
 				continue;
 			}
 			elseif(strpos($button->classname, 'markItUpSeparator') !== FALSE)
@@ -929,6 +933,15 @@ class Channel_form_lib
 				$value['XID'] = '{XID_HASH}';
 
 				$this->head .= 'if (typeof EE == "undefined" || ! EE) { '."\n".'var EE = '.json_encode($value).';}'."\n";
+				$this->head .= <<<GRID_FALLBACK
+EE.grid_cache = [];
+
+window.Grid = {
+	bind: function() {
+		EE.grid_cache.push(arguments);
+	}
+};
+GRID_FALLBACK;
 			}
 			else
 			{
@@ -941,6 +954,7 @@ class Channel_form_lib
 		$this->head .= "\n".' // ]]>'."\n".'</script>';
 
 		$js_defaults = array(
+			'file' => array('underscore'),
 			'ui' => array('core', 'widget', 'button', 'dialog'),
 			'plugin' => array('markitup'),
 		);
@@ -952,6 +966,7 @@ class Channel_form_lib
 		if ($this->datepicker)
 		{
 			$js_defaults['ui'][] = 'datepicker';
+			$js_defaults['file'][] = 'cp/date';
 		}
 
 		foreach ($js_defaults as $type => $files)
@@ -973,6 +988,10 @@ class Channel_form_lib
 				}
 			}
 		}
+
+		// Array of possible JS and their requirements
+		// If the key is a needed JS file, it should be in ee()->cp->js_files
+		// and this just handles pulling in files required by the key.
 
 		$ui = array(
 			'core' => FALSE,
@@ -1059,7 +1078,7 @@ class Channel_form_lib
 			$this->head .= '<script type="text/javascript" src="'.$js_url.'"></script>'."\n";
 		}
 
-		$this->head .= '<script type="text/javascript" charset="utf-8" src="'.ee()->functions->fetch_site_index().QUERY_MARKER.'ACT='.ee()->functions->fetch_action_id('Channel', 'combo_loader').'&'.str_replace('%2C', ',', http_build_query(ee()->cp->js_files)).'&v='.max($mtime).$use_live_url.$include_jquery.'"></script>'."\n";
+		$this->head .= '<script type="text/javascript" charset="utf-8" src="'.ee()->functions->fetch_site_index().QUERY_MARKER.'ACT='.ee()->functions->fetch_action_id('Channel', 'combo_loader').'&'.str_replace(array('%2C', '%2F'), array(',', '/'), http_build_query(ee()->cp->js_files)).'&v='.max($mtime).$use_live_url.$include_jquery.'"></script>'."\n";
 
 		//add fieldtype styles
 		foreach (ee()->cp->its_all_in_your_head as $item)
@@ -1088,52 +1107,10 @@ class Channel_form_lib
 			ee()->jquery->jquery_code_for_compile = array();
 		}
 
-		//add datepicker class
+		// add datepicker css
 		if ($this->datepicker)
 		{
-			$date_fmt = ee()->session->userdata('time_format');
-			$date_fmt = $date_fmt ? $date_fmt : ee()->config->item('time_format');
-
 			$this->head .= '<style type="text/css">.hasDatepicker{background:#fff url('.ee()->config->item('theme_folder_url').'cp_themes/default/images/calendar_bg.gif) no-repeat 98% 2px;background-repeat:no-repeat;background-position:99%;}</style>';
-			$this->head .= trim('
-				<script type="text/javascript">
-					$.createDatepickerTime=function(){
-						date = new Date();
-						hours = date.getHours();
-						minutes = date.getMinutes();
-						suffix = "";
-						format = "'.$date_fmt.'";
-
-						if (minutes < 10) {
-							minutes = "0" + minutes;
-						}
-
-						if (format == "us") {
-							if (hours > 12) {
-								hours -= 12;
-								suffix = " PM";
-							} else if (hours == 12) {
-								suffix = " PM";
-							} else {
-								suffix = " AM";
-							}
-						}
-
-						if (hours == 0)
-						{
-							hours = 12;
-						}
-
-						if (hours < 10)
-						{
-							hours = "0" + hours;
-						}
-
-						return " \'" + hours + ":" + minutes + suffix + "\'";
-					}
-
-					EE.date_obj_time = $.createDatepickerTime();
-				</script>');
 		}
 	}
 
@@ -1163,6 +1140,7 @@ class Channel_form_lib
 				'pulldown'		=> 0,
 				'checkbox'		=> 0,
 				'relationship'	=> 0,
+				'relationships'	=> 0,
 				'multiselect'	=> 0,
 				'date'			=> 0,
 				'radio'			=> 0,
@@ -1216,6 +1194,10 @@ class Channel_form_lib
 				{
 					$custom_field_variables_row['allow_multiple'] = ($settings['allow_multiple'] == 0) ? 0 : 1;
 				}
+
+				// Also listen for plural form of relationship in conditionals
+				// because the field is called "Relationships"
+				$custom_field_variables_row['relationships'] = 1;
 			}
 
 			$custom_field_variables[$field_name] = $custom_field_variables_row;
@@ -1233,50 +1215,51 @@ class Channel_form_lib
 	 */
 	private function _add_errors()
 	{
+        $conditional_errors = array();
+
 		foreach ($this->title_fields as $field)
 		{
 			if (isset(ee()->TMPL->var_single['error:'.$field]))
 			{
-				$this->parse_variables['error:'.$field] = ( ! empty($this->field_errors[$field])) ? $this->field_errors[$field] : '';
+				$conditional_errors['error:'.$field] = ( ! empty($this->field_errors[$field])) ? $this->field_errors[$field] : '';
 			}
 		}
 
 		// Add global errors
 		if (count($this->errors) === 0)
 		{
-			$this->parse_variables['global_errors'] = array(array());
+			$conditional_errors['global_errors'] = array(array());
 		}
 		else
 		{
-			$this->parse_variables['global_errors'] = array();
+			$conditional_errors['global_errors'] = array();
 
 			foreach ($this->errors as $error)
 			{
-				$this->parse_variables['global_errors'][] = array('error' => $error);
+				$conditional_errors['global_errors'][] = array('error' => $error);
 			}
 		}
 
-		$this->parse_variables['global_errors:count'] = count($this->errors);
+		$conditional_errors['global_errors:count'] = count($this->errors);
 
 		// Add field errors
 		if (count($this->field_errors) === 0)
 		{
-			$this->parse_variables['field_errors'] = array(array());
+			$conditional_errors['field_errors'] = array(array());
 		}
 		else
 		{
-			$this->parse_variables['field_errors'] = array();
+			$conditional_errors['field_errors'] = array();
 
 			foreach ($this->field_errors as $field => $error)
 			{
-				$this->parse_variables['field_errors'][] = array('field' => $field, 'error' => $error);
+				$conditional_errors['field_errors'][] = array('field' => $field, 'error' => $error);
 			}
 		}
 
-		$this->parse_variables['field_errors:count'] = count($this->field_errors);
+		$conditional_errors['field_errors:count'] = count($this->field_errors);
 
 		// Add field errors to conditional parsing
-		$conditional_errors = $this->parse_variables;
 		if ( ! empty($conditional_errors['field_errors'][0]))
 		{
 			foreach ($conditional_errors['field_errors'] as $error)
@@ -1304,8 +1287,19 @@ class Channel_form_lib
 		// Get hidden meta vars
 		if ( ! isset($_POST['meta']))
 		{
-			// This should never be valid
-			return;
+			if (isset($_GET['meta']))
+			{
+				// If $_POST is empty that means we exceeded PHP's post_max_size
+				$_POST['meta'] = $_GET['meta'];
+				$dropped = TRUE;
+			}
+			else
+			{
+				// This should never be valid
+				return;
+			}
+		} else {
+			$dropped = FALSE;
 		}
 
 		$this->_get_meta_vars();
@@ -1384,27 +1378,33 @@ class Channel_form_lib
 		}
 
 		//captcha check
+		$captcha_required = FALSE;
+
 		if ($this->channel('channel_id') && ! empty($this->logged_out_member_id) && ! empty($this->settings['require_captcha'][ee()->config->item('site_id')][$this->_meta['channel_id']]))
 		{
+			$captcha_required = TRUE;
+
 			if ( ! ee()->input->post('captcha'))
 			{
-				$this->errors[] = lang('captcha_required');
+				$this->field_errors['captcha_word'] = lang('captcha_required');
 			}
-
-			ee()->db->where('word', ee()->input->post('captcha', TRUE));
-			ee()->db->where('ip_address', ee()->input->ip_address());
-			ee()->db->where('date > ', '(UNIX_TIMESTAMP()-7200)', FALSE);
-
-			if ( ! ee()->db->count_all_results('captcha'))
+			else
 			{
-				$this->errors[] = lang('captcha_incorrect');
+				ee()->db->where('word', ee()->input->post('captcha', TRUE));
+				ee()->db->where('ip_address', ee()->input->ip_address());
+				ee()->db->where('date > ', '(UNIX_TIMESTAMP()-7200)', FALSE);
+
+				if ( ! ee()->db->count_all_results('captcha'))
+				{
+					$this->field_errors['captcha_word'] = lang('captcha_incorrect');
+				}
+
+				ee()->db->where('word', ee()->input->post('captcha', TRUE));
+				ee()->db->where('ip_address', ee()->input->ip_address());
+				ee()->db->where('date < ', '(UNIX_TIMESTAMP()-7200)', FALSE);
+
+				ee()->db->delete('captcha');
 			}
-
-			ee()->db->where('word', ee()->input->post('captcha', TRUE));
-			ee()->db->where('ip_address', ee()->input->ip_address());
-			ee()->db->where('date < ', '(UNIX_TIMESTAMP()-7200)', FALSE);
-
-			ee()->db->delete('captcha');
 		}
 
 		// Status Check to prevent post overrides
@@ -1475,62 +1475,15 @@ class Channel_form_lib
 			$isset = (
 				isset($_POST['field_id_'.$field['field_id']]) ||
 				isset($_POST[$field['field_name']]) ||
-				(
-					((isset($_FILES['field_id_'.$field['field_id']]) && $_FILES['field_id_'.$field['field_id']]['error'] != 4) ||
-					(isset($_FILES[$field['field_name']]) && $_FILES[$field['field_name']]['error'] != 4)) &&
-					in_array($field['field_type'], $this->file_fields)
-				)
+				isset($_POST[$field['field_name'].'_hidden_file']) // always call the fieldtype if a file field was on the page
 			);
-
-			// If file exists, add it to the POST array for validation
-			if (isset($_FILES[$field['field_name']]['name']))
-			{
-				// Allow multi-dimensional arrays that contain files
-				if (is_array($_FILES[$field['field_name']]['name'])
-					&& isset($_POST[$field['field_name']])
-					&& is_array($_POST[$field['field_name']]))
-				{
-					$_POST[$field['field_name']] = array_merge_recursive(
-						$_POST[$field['field_name']],
-						$_FILES[$field['field_name']]['name']
-					);
-				}
-				else
-				{
-					$_POST[$field['field_name']] = $_FILES[$field['field_name']]['name'];
-				}
-			}
 
 			if (in_array($field['field_type'], $this->file_fields))
 			{
-				// Need to do a few more checks to see if the file was selected
-				// in another way.
-				foreach ($_FILES as $key => $value)
+				// trick validation into calling the file fieldtype
+				if (isset($_FILES[$field['field_name']]['name']))
 				{
-					if ($key == $field['field_name'])
-					{
-						$_FILES['field_id_'.$field['field_id']] = $value;
-
-						// Check to see if a file was actually selected
-						if ($_POST[$field['field_name']] === '')
-						{
-							if ( ! empty($_POST[$field['field_name'].'_existing']))
-							{
-								$_POST[$field['field_name']] = $_POST[$field['field_name'].'_existing'];
-								$isset = TRUE;
-							}
-							elseif ( ! empty($_POST[$field['field_name'].'_hidden']))
-							{
-								$_POST[$field['field_name']] = $_POST[$field['field_name'].'_hidden'];
-								$isset = TRUE;
-							}
-						}
-					}
-					elseif (preg_match('/^'.$field['field_name'].'_(.+)/', $key, $match))
-					{
-						$_FILES['field_id_'.$field['field_id'].'_'.$match[1]] = $value;
-						unset($_FILES[$key]);
-					}
+					$_POST[$field['field_name']] = $_FILES[$field['field_name']]['name'];
 				}
 			}
 
@@ -1553,6 +1506,13 @@ class Channel_form_lib
 				if ($field['field_required'] == 'y' && ! in_array('required', $field_rules))
 				{
 					array_unshift($field_rules, 'required');
+				}
+
+				// the file field does not always populate the $_POST[$field] value and does its own
+				// check for required
+				if ($field['field_type'] == 'file')
+				{
+					$field_rules = array_diff($field_rules, array('required'));
 				}
 
 				ee()->form_validation->set_rules($field['field_name'], $field['field_label'], implode('|', $field_rules));
@@ -1609,7 +1569,9 @@ class Channel_form_lib
 
 		foreach ($this->title_fields as $field)
 		{
-			if (isset($this->default_fields[$field]))
+			// Disable default checks if $_POST was dropped
+			// The only thing we can validate is filesize
+			if (isset($this->default_fields[$field]) && ! $dropped)
 			{
 				ee()->api_channel_fields->set_settings($field, $this->default_fields[$field]);
 
@@ -1690,8 +1652,6 @@ class Channel_form_lib
 
 		foreach (ee()->api_channel_fields->settings as $field_id => $settings)
 		{
-			$settings['field_name'] = 'field_id_'.$field_id;
-
 			if (isset($settings['field_settings']))
 			{
 				$settings = array_merge($settings, $this->unserialize($settings['field_settings'], TRUE));
@@ -1704,7 +1664,7 @@ class Channel_form_lib
 		//since we are now using the call_field_validation rule
 		if ( ! ee()->form_validation->run())
 		{
-			$this->field_errors = ee()->form_validation->_error_array;
+			$this->field_errors = (is_array($this->field_errors)) ? array_merge($this->field_errors, ee()->form_validation->_error_array) : ee()->form_validation->_error_array;
 		}
 
 		// CI's form validation rules can either throw an error, or be used as
@@ -1758,6 +1718,10 @@ class Channel_form_lib
 
 			//load the just created entry into memory
 			$this->fetch_entry(ee()->api_channel_form_channel_entries->entry_id);
+		}
+		elseif ($captcha_required && $this->error_handling == 'inline')
+		{
+			$this->field_errors = array_merge($this->field_errors, array('captcha_word' => lang('captcha_required')));
 		}
 
 		$this->unload_session_override();
@@ -1834,6 +1798,8 @@ class Channel_form_lib
 				}
 			}
 
+			ee()->security->restore_xid();
+
 			ee()->core->generate_page();
 			return;
 		}
@@ -1869,6 +1835,11 @@ class Channel_form_lib
 		if (strpos($return, 'URL_TITLE') !== FALSE)
 		{
 			$return = str_replace('URL_TITLE', $this->entry('url_title'), $return);
+		}
+
+		if (strpos($return, 'AUTHOR_ID') !== FALSE)
+		{
+			$return = str_replace('AUTHOR_ID', $this->entry('author_id'), $return);
 		}
 
 		if ($hook_return = ee()->api_channel_form_channel_entries->trigger_hook('entry_submission_redirect', $return))
@@ -1934,12 +1905,17 @@ class Channel_form_lib
 
 		if ( ! empty($params['group_id']))
 		{
-			ee()->data_sorter->filter($categories, 'category_group_id', $params['group_id'], 'in_array');
+			$params['show_group'] = $params['group_id'];
+		}
+
+		if ( ! empty($params['show_group']))
+		{
+			ee()->channel_form_data_sorter->filter($categories, 'category_group_id', $params['show_group'], 'in_array');
 		}
 
 		if ( ! empty($params['order_by']))
 		{
-			ee()->data_sorter->sort($categories, $params['order_by'], @$params['sort']);
+			ee()->channel_form_data_sorter->sort($categories, $params['order_by'], @$params['sort']);
 		}
 
 		//reset array indices
@@ -1974,47 +1950,6 @@ class Channel_form_lib
 	// --------------------------------------------------------------------
 
 	/**
-	 * Decrypts a form input
-	 *
-	 * @param	mixed $input
-	 * @return	void
-	 */
-	public function decrypt_input($input, $xss_clean = TRUE)
-	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('2.6.0');
-
-		if (function_exists('mcrypt_encrypt'))
-		{
-			$decoded = rtrim(
-				mcrypt_decrypt(
-					MCRYPT_RIJNDAEL_256,
-					md5(ee()->session->sess_crypt_key),
-					base64_decode($input),
-					MCRYPT_MODE_ECB,
-					mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND)
-				),
-				"\0"
-			);
-		}
-		else
-		{
-			$raw = base64_decode($input);
-
-			$decoded = substr($raw, 0, -32);
-
-			if (substr($raw, -32) !== md5(ee()->session->sess_crypt_key.$decoded))
-			{
-				return FALSE;
-			}
-		}
-
-		return ($xss_clean) ? ee()->security->xss_clean($decoded) : $decoded;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Display a custom field
 	 *
 	 * @param	mixed $field_name
@@ -2033,45 +1968,27 @@ class Channel_form_lib
 
 		ee()->api->instantiate('channel_fields');
 
-		ee()->api_channel_fields->field_type = $this->get_field_type($field_name);
+		$fieldtype = ee()->api_channel_fields->setup_handler( $this->get_field_type($field_name), TRUE);
 
-		ee()->api_channel_fields->field_types[ee()->api_channel_fields->field_type]->field_name = $field_name;
+		$fieldtype->_init(
+			array(
+				'field_id'		=> $this->get_field_id($field_name),
+				'field_name'	=> $field_name,
+				'content_id'	=> $this->entry('entry_id'),
+				'content_type'	=> 'channel'
+			)
+		);
 
-		ee()->api_channel_fields->field_types[ee()->api_channel_fields->field_type]->field_id = $this->get_field_id($field_name);
-
-		ee()->api_channel_fields->field_types[ee()->api_channel_fields->field_type]->settings = array_merge($this->get_field_settings($field_name), $this->get_field_data($field_name), ee()->api_channel_fields->get_global_settings(ee()->api_channel_fields->field_type));
+		$fieldtype->settings = array_merge(
+			$this->get_field_settings($field_name),
+			$this->get_field_data($field_name),
+			ee()->api_channel_fields->get_global_settings(ee()->api_channel_fields->field_type)
+		);
 
 		$_GET['entry_id'] = $this->entry('entry_id');
 		$_GET['channel_id'] = $this->entry('channel_id');
 
 		return ee()->api_channel_fields->apply('display_field', array('data' => $this->entry($field_name)));
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Encrypts a form input
-	 *
-	 * @param	mixed $input
-	 * @return	void
-	 */
-	public function encrypt_input($input)
-	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('2.6.0');
-
-		if ( ! function_exists('mcrypt_encrypt'))
-		{
-			return base64_encode($input.md5(ee()->session->sess_crypt_key.$input));
-		}
-
-		return base64_encode(mcrypt_encrypt(
-			MCRYPT_RIJNDAEL_256,
-			md5(ee()->session->sess_crypt_key),
-			$input,
-			MCRYPT_MODE_ECB,
-			mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND)
-		));
 	}
 
 	// --------------------------------------------------------------------
@@ -2550,7 +2467,7 @@ class Channel_form_lib
 			return;
 		}
 
-		$this->_form_attribute[$name] = $value;
+		$this->_form_attributes[$name] = $value;
 	}
 
 	// --------------------------------------------------------------------
@@ -3208,6 +3125,7 @@ class Channel_form_lib
 			'comment_expiration_date',
 			'recent_comment_date',
 			'comment_total',
+			'captcha_word'
 		);
 
 		$this->valid_callbacks = array(

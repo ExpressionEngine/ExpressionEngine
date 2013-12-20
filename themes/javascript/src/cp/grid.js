@@ -40,7 +40,6 @@ var Grid = window.Grid = {
  * Grid Publish class
  *
  * @param	{string}	field		Field ID of table to instantiate as a Grid
- * @param	{string}	settings	JSON string of field settings
  */
 Grid.Publish = function(field, settings)
 {
@@ -48,7 +47,7 @@ Grid.Publish = function(field, settings)
 	this.blankRow = this.root.find('tr.blank_row');
 	this.emptyField = this.root.find('tr.empty_field');
 	this.rowContainer = this.root.find('.grid_row_container');
-	this.settings = settings;
+	this.settings = (settings !== undefined) ? settings : EE.grid_field_settings[field.id];
 	this.init();
 
 	this.eventHandlers = [];
@@ -58,7 +57,6 @@ Grid.Publish.prototype = {
 
 	init: function()
 	{
-		this._addMinimumRows();
 		this._bindSortable();
 		this._bindAddButton();
 		this._bindDeleteButton();
@@ -81,6 +79,7 @@ Grid.Publish.prototype = {
 			axis: 'y',						// Only allow vertical dragging
 			containment: 'parent',			// Contain to parent
 			handle: 'td.grid_handle',		// Set drag handle
+			cancel: 'td.grid_sort_cancel',	// Do not allow sort on this handle
 			items: 'tr.grid_row',			// Only allow these to be sortable
 			sort: EE.sortable_sort_helper,	// Custom sort handler
 			helper: function(event, row)	// Fix issue where cell widths collapse on drag
@@ -157,6 +156,11 @@ Grid.Publish.prototype = {
 			// Show delete buttons if the row count is above the min rows setting
 			deleteButtons.toggle(rowCount > this.settings.grid_min_rows);
 		}
+
+		// Do not allow sortable to run when there is only one row, otherwise
+		// the row becomes detached from the table and column headers change
+		// width in a fluid-column-width table
+		this.rowContainer.find('td.grid_handle').toggleClass('grid_sort_cancel', rowCount == 1);
 	},
 
 	/**
@@ -263,6 +267,8 @@ Grid.Publish.prototype = {
 			{
 				that._fireEvent('display', $(this));
 			});
+
+			that._addMinimumRows();
 		}, 500);
 	},
 
@@ -322,6 +328,10 @@ Grid.Settings.prototype = {
 		this._bindColTypeChange();
 		this._bindSubmit();
 		this._highlightErrors();
+
+		// If this is a new field, bind the automatic column title plugin
+		// to the first column
+		this._bindAutoColName(this.root.find('div.grid_col_settings[data-field-name^="new_"]'));
 
 		// Fire displaySettings event
 		this._settingsDisplay();
@@ -562,8 +572,28 @@ Grid.Settings.prototype = {
 			opacity: 1
 		}, 400);
 
+		// Bind automatic column name
+		this._bindAutoColName(column);
+
 		// Fire displaySettings event
 		this._fireEvent('displaySettings', $('.grid_col_settings_custom > div', column));
+	},
+
+	/**
+	 * Binds ee_url_title plugin to column label box to auto-populate the
+	 * column name field; this is only applied to new columns
+	 *
+	 * @param	{jQuery Object}	el	Column to bind ee_url_title to
+	 */
+	_bindAutoColName: function(columns)
+	{
+		columns.each(function(index, column)
+		{
+			$('input.grid_col_field_label', column).bind("keyup keydown", function()
+			{
+				$(this).ee_url_title($(column).find('input.grid_col_field_name'), true);
+			});
+		});
 	},
 
 	/**
@@ -589,16 +619,20 @@ Grid.Settings.prototype = {
 		// Clear out column name field in new column because it has to be unique
 		el.find('input[name$="\\[name\\]"]').attr('value', '');
 
-		// Need to make sure the new columns field names are unique
+		// Need to make sure the new column's field names are unique
+		var new_namespace = 'new_' + $('.grid_col_settings', this.root).size();
+
 		el.html(
 			el.html().replace(
 				RegExp('(new_|col_id_)[0-9]{1,}', 'g'),
-				'new_' + $('.grid_col_settings').size()
+				new_namespace
 			)
 		);
 
+		el.attr('data-field-name', new_namespace);
+
 		// Make sure inputs are enabled if creating blank column
-		el.find(':input').removeAttr('disabled');
+		el.find(':input').removeAttr('disabled').removeClass('grid_settings_error');
 
 		return el;
 	},
@@ -676,10 +710,10 @@ Grid.Settings.prototype = {
 	{
 		var cloned = el.clone();
 
-		el.find(":input").each(function()
+		el.find(":input:enabled").each(function()
 		{
 			// Find the new input in the cloned column for editing
-			var new_input = cloned.find(":input[name='"+$(this).attr('name')+"']");
+			var new_input = cloned.find(":input[name='"+$(this).attr('name')+"']:enabled");
 
 			if ($(this).is("select"))
 			{

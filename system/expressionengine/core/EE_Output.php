@@ -10,7 +10,7 @@
  * @since		Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -27,9 +27,9 @@ class EE_Output extends CI_Output {
 	var $out_type		= 'webpage';
 	var $refresh_msg	= TRUE;			// TRUE/FALSE - whether to show the "You will be redirected in 5 seconds" message.
 	var $refresh_time	= 1;			// Number of seconds for redirects
-	
+
 	var $remove_unparsed_variables = FALSE; // whether to remove left-over variables that had bad syntax
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -44,14 +44,14 @@ class EE_Output extends CI_Output {
 	function set_header($header, $replace = TRUE)
 	{
 		$EE =& get_instance();
-		
+
 		// We always need to send a content type
-		
+
 		if ($EE->config->item('send_headers') != 'y' && strncasecmp($header, 'content-type', 12) != 0)
 		{
 			return;
 		}
-		
+
 		parent::set_header($header, $replace);
 	}
 
@@ -66,19 +66,19 @@ class EE_Output extends CI_Output {
 	function _display($output = '')
 	{
 		$EE =& get_instance();
-		
+
 		if ($output == '')
 		{
 			$output = $this->final_output;
 		}
-		
-		
+
+
 		// Generate No-Cache Headers
-		
+
 		if ($EE->config->item('send_headers') == 'y' && $this->out_type != 'feed' && $this->out_type != '404' && $this->out_type != 'cp_asset')
-		{		
+		{
 			$this->set_status_header(200);
-			
+
 			$this->set_header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
 			$this->set_header("Last-Modified: ".gmdate("D, d M Y H:i:s")." GMT");
 			$this->set_header("Pragma: no-cache");
@@ -87,7 +87,7 @@ class EE_Output extends CI_Output {
 
 		// Content Type Headers
 		// Also need to do some extra work for feeds
-		
+
 		switch ($this->out_type)
 		{
 			case 'webpage':	$this->set_header("Content-Type: text/html; charset=".$EE->config->item('charset'));
@@ -113,7 +113,7 @@ class EE_Output extends CI_Output {
 				$template_types = $EE->extensions->call('template_types', array());
 				//
 				// -------------------------------------------
-				
+
 				if (isset($template_types[$this->out_type]))
 				{
 					// Set custom headers as defined by the template_headers key,
@@ -128,10 +128,10 @@ class EE_Output extends CI_Output {
 				}
 				break;
 		}
-		
+
 		// Compress the output
 		// We simply set the ci config value to true
-		
+
 		if ($EE->config->item('gzip_output') == 'y' AND REQ == 'PAGE')
 		{
 			$EE->config->set_item('compress_output', TRUE);
@@ -147,7 +147,7 @@ class EE_Output extends CI_Output {
 		// Send it to the CI method for final processing
 		parent::_display($output);
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -160,9 +160,9 @@ class EE_Output extends CI_Output {
 	function _send_feed(&$output)
 	{
 		$EE =& get_instance();
-		
+
 		$request = ( ! function_exists('getallheaders')) ? array() : @getallheaders();
-		
+
 		if (preg_match("|<ee\:last_update>(.*?)<\/ee\:last_update>|", $output, $matches))
 		{
 			$last_update = $matches['1'];
@@ -172,38 +172,38 @@ class EE_Output extends CI_Output {
 		{
 			$last_update = $EE->localize->now;
 		}
-		
+
 		$output = trim($output);
-		
-		
-		// Check for the 'If-Modified-Since' Header			
-		
+
+
+		// Check for the 'If-Modified-Since' Header
+
 		if ($EE->config->item('send_headers') == 'y' && isset($request['If-Modified-Since']) && trim($request['If-Modified-Since']) != '')
 		{
 			$x				= explode(';', $request['If-Modified-Since']);
 			$modify_tstamp	= strtotime($x['0']);
-		
+
 			// If no new content, send no data
-			
+
 			if ($last_update <= $modify_tstamp)
 			{
 				$this->set_status_header(304);
 				exit;
 			}
 		}
-		
+
 		$this->set_status_header(200);
-		$this->set_header("Content-Type: text/xml; charset=".$EE->config->item('output_charset'));		
-		
+		$this->set_header("Content-Type: text/xml; charset=".$EE->config->item('output_charset'));
+
 		$this->set_header('Expires: '.gmdate('D, d M Y H:i:s', $last_update+(60*60)).' GMT'); // One hour
 		$this->set_header('Last-Modified: '.gmdate('D, d M Y H:i:s', $last_update).' GMT');
 		$this->set_header("Cache-Control: no-store, no-cache, must-revalidate");
 		$this->set_header("Cache-Control: post-check=0, pre-check=0", false);
 		$this->set_header("Pragma: no-cache");
-		
-		
+
+
 		// Swap XML declaration for RSS files
-		
+
 		$output = preg_replace("/{\?xml(.+?)\?}/", "<?xml\\1?".">", $output);
 	}
 
@@ -219,16 +219,16 @@ class EE_Output extends CI_Output {
 	{
 		$EE =& get_instance();
 		$heading = ($use_lang == TRUE && is_object($EE->lang)) ? $EE->lang->line('error') : 'Error Message';
-		
+
 		$data = array(	'title' 	=> $heading,
 						'heading'	=> $heading,
 						'content'	=> '<p>'.$error_msg.'</p>'
 					 );
-										
+
 		$this->show_message($data);
 	}
 
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -241,12 +241,12 @@ class EE_Output extends CI_Output {
 	{
 		$EE =& get_instance();
 		$query = $EE->db->query("SELECT template_data FROM exp_specialty_templates WHERE site_id = '".$EE->db->escape_str($EE->config->item('site_id'))."' AND template_name = 'offline_template'");
-		
+
 		$this->set_status_header(503, 'Service Temporarily Unavailable');
 		@header('Retry-After: 3600');
-		
+
 		echo $query->row('template_data') ;
-		exit;						
+		exit;
 	}
 
 	// --------------------------------------------------------------------
@@ -269,11 +269,11 @@ class EE_Output extends CI_Output {
 	function show_message($data, $xhtml = TRUE)
 	{
 		$EE =& get_instance();
-		
+
 		@header("Cache-Control: no-cache, must-revalidate");
 		@header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
 		@header("Pragma: no-cache");
-		
+
 		foreach (array('title', 'heading', 'content', 'redirect', 'rate', 'link') as $val)
 		{
 			if ( ! isset($data[$val]))
@@ -281,48 +281,48 @@ class EE_Output extends CI_Output {
 				$data[$val] = '';
 			}
 		}
-		
+
 		if ( ! is_numeric($data['rate']) OR $data['rate'] == '')
 		{
 			$data['rate'] = $this->refresh_time;
 		}
-		
+
 		$data['meta_refresh']	= ($data['redirect'] != '') ? "<meta http-equiv='refresh' content='".$data['rate']."; url=".$EE->security->xss_clean($data['redirect'])."'>" : '';
-		$data['charset']		= $EE->config->item('output_charset');	
-				
+		$data['charset']		= $EE->config->item('output_charset');
+
 		if (is_array($data['link']) AND count($data['link']) > 0)
 		{
 			$refresh_msg = ($data['redirect'] != '' AND $this->refresh_msg == TRUE) ? $EE->lang->line('click_if_no_redirect') : '';
-		
+
 			$ltitle = ($refresh_msg == '') ? $data['link']['1'] : $refresh_msg;
-			
+
 			$url = (strtolower($data['link']['0']) == 'javascript:history.go(-1)') ? $data['link']['0'] : $EE->security->xss_clean($data['link']['0']);
-		
+
 			$data['link'] = "<a href='".$url."'>".$ltitle."</a>";
 		}
 
 		if ($xhtml == TRUE && isset($EE->session))
 		{
 			$EE->load->library('typography');
-	
+
 			$data['content'] = $EE->typography->parse_type(stripslashes($data['content']), array('text_format' => 'xhtml'));
-		}		
+		}
 
 		$EE->db->select('template_data');
 		$EE->db->where('site_id', $EE->config->item('site_id'));
-		$EE->db->where('template_name', 'message_template');		
+		$EE->db->where('template_name', 'message_template');
 		$query = $EE->db->get('specialty_templates');
-		
+
 		$row = $query->row_array();
-		
+
 		foreach ($data as $key => $val)
 		{
 			$row['template_data']  = str_replace('{'.$key.'}', $val, $row['template_data'] );
 		}
 
-		echo  stripslashes($row['template_data'] );		
+		echo  stripslashes($row['template_data'] );
 		exit;
-	} 
+	}
 
 	// --------------------------------------------------------------------
 
@@ -338,13 +338,14 @@ class EE_Output extends CI_Output {
 	function show_user_error($type = 'submission', $errors, $heading = '')
 	{
 		if (defined('REQ') && REQ == 'CP')
-		{		
-			ee()->load->library('logger');
-			ee()->logger->deprecated('2.6', 'show_error()');
+		{
+		// Deprecation temporarily removed due to some lingering complex use cases in the CP.
+		//	ee()->load->library('logger');
+		//	ee()->logger->deprecated('2.6', 'show_error()');
 		}
 
 		$this->set_header("Content-Type: text/html; charset=".ee()->config->item('charset'));
-		
+
 		if ($type != 'off')
 		{
 			if ($type == 'general')
@@ -358,7 +359,7 @@ class EE_Output extends CI_Output {
 		}
 
 		$content  = '<ul>';
-		
+
 		if ( ! is_array($errors))
 		{
 			$content.= "<li>".$errors."</li>\n";
@@ -370,9 +371,9 @@ class EE_Output extends CI_Output {
 				$content.= "<li>".$val."</li>\n";
 			}
 		}
-		
+
 		$content .= "</ul>";
-		
+
 		$data = array(
 			'title' 	=> ee()->lang->line('error'),
 			'heading'	=> $heading,
@@ -381,7 +382,7 @@ class EE_Output extends CI_Output {
 			'link'		=> array('JavaScript:history.go(-1)', ee()->lang->line('return_to_previous'))
 		);
 
-		$this->_restore_xid($content);				
+		$this->_restore_xid($content);
 		$this->show_message($data, 0);
 	}
 
@@ -435,14 +436,14 @@ class EE_Output extends CI_Output {
 	function send_ajax_response($msg, $error = FALSE)
 	{
 		$this->enable_profiler(FALSE);
-		
+
 		if ($error === TRUE)
 		{
 			$this->set_status_header(500);
 		}
-		
+
 		$EE =& get_instance();
-		
+
 		if ($EE->config->item('send_headers') == 'y')
 		{
 			if (is_array($msg))
@@ -451,16 +452,16 @@ class EE_Output extends CI_Output {
 			}
 			else
 			{
-				@header('Content-Type: text/html; charset=UTF-8');	
+				@header('Content-Type: text/html; charset=UTF-8');
 			}
 		}
-		
+
 		$EE->load->library('javascript');
 		exit(json_encode($msg));
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Send Cache Headers
 	 *
@@ -475,7 +476,7 @@ class EE_Output extends CI_Output {
 	function send_cache_headers($modified, $max_age = 172800, $etag_path = NULL)
 	{
 		$EE =& get_instance();
-		
+
 		if ($EE->config->item('send_headers') == 'y')
 		{
 			$max_age		= (int) $max_age;
@@ -512,19 +513,19 @@ class EE_Output extends CI_Output {
 			// load-balanced environments
 			if ( ! is_null($etag_path))
 			{
-				$this->set_header("ETag: ".md5($modified.$etag_path));				
+				$this->set_header("ETag: ".md5($modified.$etag_path));
 			}
 		}
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Setter for the remove_unparsed_variables class var
 	 *
 	 * used in the ee.php controller.
 	 *
-	 * @param 	boolean 	
+	 * @param 	boolean
 	 */
 	public function remove_unparsed_variables($remove_unparsed_vars)
 	{

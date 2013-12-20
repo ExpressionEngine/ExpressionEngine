@@ -31,14 +31,14 @@ class Ip_to_nation_mcp {
 	{
 		$this->load->helper('array');
 		$this->load->model('ip_to_nation_data', 'ip_data');
-		
+
 		$this->base_url = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=ip_to_nation';
 
 		if ($this->cp->allowed_group('can_moderate_comments', 'can_edit_all_comments', 'can_delete_all_comments'))
 		{
 			$this->cp->set_right_nav(array(
 				'update_ips' => $this->base_url.AMP.'method=update_data'
-			));	
+			));
 		}
 	}
 
@@ -58,7 +58,7 @@ class Ip_to_nation_mcp {
 		if (isset($_POST['ip']))
 		{
 			$ip_address = trim($_POST['ip']);
-			
+
 			if ($this->input->valid_ip($ip_address))
 		    {
 		    	$ip = $ip_address;
@@ -142,7 +142,7 @@ class Ip_to_nation_mcp {
 		$this->session->set_flashdata('message_success', lang('banlist_updated'));
 		$this->functions->redirect($this->base_url.AMP.'method=index');
 	}
-	
+
 	// ----------------------------------------------------------------------
 
 	/**
@@ -246,14 +246,14 @@ class Ip_to_nation_mcp {
 				$response_code[] = $http_status;
 			}
 		}
-		
+
 		if ( ! $valid_response)
 		{
 			// cleanup
 			array_map('unlink', $out_files);
-			
+
 			$msg = (in_array('403', $response_code)) ? 'ip_db_connection_403' : 'ip_db_connection_error';
-			
+
 			$this->output->send_ajax_response(array(
 				'error' => lang($msg)
 				));
@@ -306,9 +306,9 @@ class Ip_to_nation_mcp {
 
 		// cleanup
 		array_map('unlink', $this->_cache_files('csv,gz,zip'));
-		
+
 		$this->config->_update_config(array('ip2nation_db_date' => $this->localize->now));
-		
+
 		$this->output->send_ajax_response(array(
 			'success' => lang('ip_db_updated')
 		));
@@ -316,15 +316,21 @@ class Ip_to_nation_mcp {
 
 	// ----------------------------------------------------------------------
 
-	function _cache_files($ext)
+	function _cache_files($extensions)
 	{
-		$ext = '{'.str_replace(' ', '', $ext).'}';
+		$extensions = str_replace(' ', '', $extensions);
 		$path = $this->_cache_path();
-		$matches = glob($path.'*.'.$ext, GLOB_BRACE);
-		
-        //On some systems it is impossible to distinguish between empty match and an error. 
-		$matches = ( ! is_array($matches)) ? array() : $matches;
-		
+		$matches = array();
+
+		// The GLOB_BRACE flag isn't available on some non-GNU systems
+		foreach (explode(',', $extensions) as $ext)
+		{
+			if ($files = glob($path.'*.'.$ext))
+			{
+				$matches = array_merge($matches, $files);
+			}
+		}
+
 		return $matches;
 	}
 
@@ -344,7 +350,7 @@ class Ip_to_nation_mcp {
 		if ( ! is_dir($cache_path))
 		{
 			mkdir($cache_path, DIR_WRITE_MODE);
-			@chmod($cache_path, DIR_WRITE_MODE);	
+			@chmod($cache_path, DIR_WRITE_MODE);
 		}
 
 		return $cache_path;
@@ -367,7 +373,7 @@ class Ip_to_nation_mcp {
 
 		$outname = str_replace('.gz', '', $source);
 		file_put_contents($cache_path.$outname, $file_contents);
-		@chmod($cache_path.$outname, FILE_WRITE_MODE);	
+		@chmod($cache_path.$outname, FILE_WRITE_MODE);
 	}
 
 	// ----------------------------------------------------------------------
@@ -397,9 +403,9 @@ class Ip_to_nation_mcp {
 					fwrite($fp, "$buf");
 					zip_entry_close($zip_entry);
 				}
-				
+
 				fclose($fp);
-				@chmod($outfile, FILE_WRITE_MODE);	
+				@chmod($outfile, FILE_WRITE_MODE);
 			}
 
 			zip_close($zip);

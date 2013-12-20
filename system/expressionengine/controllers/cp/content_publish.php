@@ -282,7 +282,7 @@ class Content_publish extends CP_Controller {
 		$this->file_field->browser();
 
 		$this->cp->add_js_script(array(
-			'ui'	 => array('datepicker', 'resizable', 'draggable', 'droppable'),
+			'ui'	 => array('resizable', 'draggable', 'droppable'),
 			'plugin' => array('markitup', 'toolbox.expose', 'overlay', 'tmpl', 'ee_url_title'),
 			'file'	=> array('json2', 'cp/publish_tabs')
 		));
@@ -457,9 +457,9 @@ class Content_publish extends CP_Controller {
 
 		$clean_layout = array();
 
-		foreach($layout_info as $tab => $field)
+		foreach($layout_info as $tab)
 		{
-			foreach ($field as $name => $info)
+			foreach ($tab['fields'] as $name => $info)
 			{
 				if (count($required) > 0)
 				{
@@ -481,7 +481,7 @@ class Content_publish extends CP_Controller {
 				}
 			}
 
-			$clean_layout[strtolower($tab)] = $layout_info[$tab];
+			$clean_layout[strtolower($tab['name'])] = $tab['fields'];
 		}
 
 		if (count($error) > 0 OR count($valid_name_error) > 0)
@@ -651,42 +651,6 @@ class Content_publish extends CP_Controller {
 
 		$entry_title = $this->typography->format_characters($resrow['title']);
 
-		foreach ($fields as $key => $val)
-		{
-			if (isset($resrow[$key]) AND $val != 'relationship' and $resrow[$key] != '')
-			{
-				$expl = explode('field_id_', $key);
-
-				if (isset($resrow['field_dt_'.$expl['1']]))
-				{
-					if ($resrow[$key] != 0)
-					{
-						$localize = ($resrow['field_dt_'.$expl['1']] != '')
-							? $resrow['field_dt_'.$expl['1']] : TRUE;
-
-						$r .= $this->localize->human_time($resrow[$key], $localize);
-					}
-				}
-				else
-				{
-					ee()->load->library('api');
-					ee()->api->instantiate('channel_fields');
-					ee()->api_channel_fields->fetch_custom_channel_fields();
-					ee()->api_channel_fields->setup_handler($val);
-					ee()->api_channel_fields->set_settings($expl['1'], array(
-						'field_type' => $val
-					));
-					ee()->api_channel_fields->apply('_init', array(array(
-						'field_id' => $expl['1'],
-						'row' => $resrow,
-						'content_id' => $entry_id
-					)));
-					$data = ee()->api_channel_fields->apply('pre_process', array($resrow[$key]));
-					$r .= ee()->api_channel_fields->apply('replace_tag', array('data' => $data));
-				}
-			}
-		}
-
 		$publish_another_link = BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$channel_id;
 
 		// Ugh, we just overwrite? Strong typing please!!
@@ -718,7 +682,7 @@ class Content_publish extends CP_Controller {
 
 		if ($show_comments_link)
 		{
-			if (isset($this->installed_modules['comment']))
+			if (isset($this->cp->installed_modules['comment']))
 			{
 				$comment_count = $this->db->where('entry_id', $entry_id)
 										  ->count_all_results('comments');
@@ -1328,11 +1292,7 @@ class Content_publish extends CP_Controller {
 		/*
 		/* -------------------------------------*/
 
-		$date_fmt = ($this->session->userdata('time_format') != '')
-					? $this->session->userdata('time_format') : $this->config->item('time_format');
-
 		$this->javascript->set_global(array(
-			'date.format'						=> $date_fmt,
 			'lang.add_new_html_button'			=> lang('add_new_html_button'),
 			'lang.add_tab' 						=> lang('add_tab'),
 			'lang.close' 						=> lang('close'),
@@ -1340,6 +1300,7 @@ class Content_publish extends CP_Controller {
 			'lang.duplicate_tab_name'			=> lang('duplicate_tab_name'),
 			'lang.hide_toolbar' 				=> lang('hide_toolbar'),
 			'lang.illegal_characters'			=> lang('illegal_characters'),
+			'lang.illegal_tab_name'				=> lang('illegal_tab_name'),
 			'lang.loading'						=> lang('loading'),
 			'lang.tab_name'						=> lang('tab_name'),
 			'lang.show_toolbar' 				=> lang('show_toolbar'),

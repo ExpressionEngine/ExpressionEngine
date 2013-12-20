@@ -40,6 +40,7 @@ class EE_Template {
 	var $php_parse_location =  'output';	// Where in the chain the PHP gets parsed
 	var $template_edit_date	=	'';			// Template edit date
 	var $templates_sofar	=   '';			// Templates processed so far, subtemplate tracker
+	var $attempted_fetch	=  array();		// Templates attempted to fetch but may have bailed due to recursive embeds
 	var $encode_email		=  TRUE;		// Whether to use the email encoder.  This is set automatically
 	var $hit_lock_override	=  FALSE;		// Set to TRUE if you want hits tracked on sub-templates
 	var $hit_lock			=  FALSE;		// Lets us lock the hit counter if sub-templates are contained in a template
@@ -309,9 +310,17 @@ class EE_Template {
 			ee()->config->_global_vars[$site_var] = stripslashes(ee()->config->item($site_var));
 		}
 
-		// Parse {last_segment} variable
 		$seg_array = ee()->uri->segment_array();
-		ee()->config->_global_vars['last_segment'] = end($seg_array);
+
+		// Define some path related global variables
+		$added_globals = array(
+			'last_segment' => end($seg_array),
+			'current_url' => ee()->functions->fetch_current_uri(),
+			'current_path' => (ee()->uri->uri_string) ? ee()->uri->uri_string : '/',
+			'current_query_string' => http_build_query($_GET) // GET has been sanitized!
+		);
+
+		ee()->config->_global_vars = array_merge(ee()->config->_global_vars, $added_globals);
 
 		// Parse manual variables and Snippets
 		// These are variables that can be set in the path.php file
@@ -608,10 +617,35 @@ class EE_Template {
 				Whether or not loop prevention is enabled - y/n
 			/* -------------------------------------------*/
 
-			if (substr_count($this->templates_sofar, '|'.$site_id.':'.$ex['0'].'/'.$ex['1'].'|') > 1 && ee()->config->item('template_loop_prevention') != 'n')
+			$this->attempted_fetch[] = $ex['0'].'/'.$ex['1'];
+
+			// Tell user if a template has been recursively loaded
+			if (substr_count($this->templates_sofar, '|'.$site_id.':'.$ex['0'].'/'.$ex['1'].'|') > 1 &&
+				ee()->config->item('template_loop_prevention') != 'n')
 			{
-				$this->final_template = (ee()->config->item('debug') >= 1) ? str_replace('%s', $ex['0'].'/'.$ex['1'], ee()->lang->line('template_loop')) : "";
-				return;
+				// Set 503 status code, mainly so caching proxies do not cache this
+				ee()->output->set_status_header(503, 'Service Temporarily Unavailable');
+
+				// Tell user which template was loaded recursively and in what order
+				// so they can easily fix the error
+				if (ee()->config->item('debug') >= 1)
+				{
+					ee()->load->helper(array('html_helper', 'language_helper'));
+
+					$message = '<p>'.sprintf(lang('template_loop'), $ex['0'].'/'.$ex['1']).'</p>'
+						.'<p>'.lang('template_load_order').':</p>'
+						.ol($this->attempted_fetch);
+
+					ee()->output->show_message(array(
+						'heading' => 'Error',
+						'content' => $message
+					), FALSE);
+				}
+				// Show nothing if debug is off
+				else
+				{
+					exit;
+				}
 			}
 
 			// Process Subtemplate
@@ -809,9 +843,19 @@ class EE_Template {
 
 				// Strip the "chunk" from the template, replacing it with a unique marker.
 
-				if (stristr($raw_tag, 'random'))
+				// If part of the tag name is 'random', we treat it as a unique tag and only
+				// replace the first occurence so they are all processed individually. This
+				// means that tags with parameters such as orderby="random" behave as expected
+				// even if they are identical to other tags on the page.
+
+				if (stripos($raw_tag, 'random') !== FALSE)
 				{
-					$this->template = preg_replace("|".preg_quote($chunk)."|s", 'M'.$this->loop_count.$this->marker, $this->template, 1);
+					$chunk_offset = strpos($this->template, $chunk);
+
+					if ($chunk_offset !== FALSE)
+					{
+						$this->template = substr_replace($this->template, 'M'.$this->loop_count.$this->marker, $chunk_offset, strlen($chunk));
+					}
 				}
 				else
 				{
@@ -1309,109 +1353,6 @@ class EE_Template {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Process Tags
-	 *
-	 * Channel entries can have related entries embedded within them.
-	 * We'll extract the related tag data, stash it away in an array, and
-	 * replace it with a marker string so that the template parser
-	 * doesn't see it.  In the channel class we'll check to see if the
-	 * ee()->TMPL->related_data array contains anything.  If so, we'll celebrate
-	 * wildly.
-	 *
-	 * @param	string
-	 * @return	string
-	 */
-	public function assign_relationship_data($chunk)
-	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('2.6');
-
-		$this->related_markers = array();
-
-			if (preg_match_all("/".LD."related_entries\s+id\s*=\s*[\"\'](.+?)[\"\']".RD."(.+?)".LD.'\/'."related_entries".RD."/is", $chunk, $matches))
-		{
-			$this->log_item("Assigning Related Entry Data");
-
-			$no_rel_content = '';
-
-			for ($j = 0; $j < count($matches[0]); $j++)
-			{
-				$rand = ee()->functions->random('alnum', 8);
-				$marker = LD.'REL['.$matches[1][$j].']'.$rand.'REL'.RD;
-
-				if (preg_match("/".LD."if no_related_entries".RD."(.*?)".LD.'\/'."if".RD."/s", $matches[2][$j], $no_rel_match))
-				{
-					// Match the entirety of the conditional
-
-					if (stristr($no_rel_match[1], LD.'if'))
-					{
-						$match[0] = ee()->functions->full_tag($no_rel_match[0], $matches[2][$j], LD.'if', LD.'\/'."if".RD);
-					}
-
-					$no_rel_content = substr($no_rel_match[0], strlen(LD."if no_related_entries".RD), -strlen(LD.'/'."if".RD));
-				}
-
-				$this->related_markers[] = $matches[1][$j];
-				$vars = ee()->functions->assign_variables($matches[2][$j]);
-				$this->related_id = $matches[1][$j];
-				$this->related_data[$rand] = array(
-											'marker'			=> $rand,
-											'field_name'		=> $matches[1][$j],
-											'tagdata'			=> $matches[2][$j],
-											'var_single'		=> $vars['var_single'],
-											'var_pair' 			=> $vars['var_pair'],
-											'var_cond'			=> ee()->functions->assign_conditional_variables($matches[2][$j], '\/', LD, RD),
-											'no_rel_content'	=> $no_rel_content
-										);
-
-				$chunk = str_replace($matches[0][$j], $marker, $chunk);
-			}
-		}
-
-		if (preg_match_all("/".LD."reverse_related_entries\s*(.*?)".RD."(.+?)".LD.'\/'."reverse_related_entries".RD."/is", $chunk, $matches))
-		{
-			$this->log_item("Assigning Reverse Related Entry Data");
-
-			for ($j = 0; $j < count($matches[0]); $j++)
-			{
-				$rand = ee()->functions->random('alnum', 8);
-				$marker = LD.'REV_REL['.$rand.']REV_REL'.RD;
-				$vars = ee()->functions->assign_variables($matches[2][$j]);
-
-				$no_rev_content = '';
-
-				if (preg_match("/".LD."if no_reverse_related_entries".RD."(.*?)".LD.'\/'."if".RD."/s", $matches[2][$j], $no_rev_match))
-				{
-					// Match the entirety of the conditional
-
-					if (stristr($no_rev_match[1], LD.'if'))
-					{
-						$match[0] = ee()->functions->full_tag($no_rev_match[0], $matches[2][$j], LD.'if', LD.'\/'."if".RD);
-					}
-
-					$no_rev_content = substr($no_rev_match[0], strlen(LD."if no_reverse_related_entries".RD), -strlen(LD.'/'."if".RD));
-				}
-
-				$this->reverse_related_data[$rand] = array(
-															'marker'			=> $rand,
-															'tagdata'			=> $matches[2][$j],
-															'var_single'		=> $vars['var_single'],
-															'var_pair' 			=> $vars['var_pair'],
-															'var_cond'			=> ee()->functions->assign_conditional_variables($matches[2][$j], '\/', LD, RD),
-															'params'			=> ee()->functions->assign_parameters($matches[1][$j]),
-															'no_rev_content'	=> $no_rev_content
-														);
-
-				$chunk = str_replace($matches[0][$j], $marker, $chunk);
-			}
-		}
-
-		return $chunk;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Fetch Parameter for Tag
 	 *
 	 * Used by Modules to fetch a paramter for the tag currently be processed.  We also have code
@@ -1733,15 +1674,8 @@ class EE_Template {
 		ee()->db->where('site_id', ee()->config->item('site_id'));
 		$query = ee()->db->get('template_groups');
 
-		// This really shouldn't happen, but some addons have accidentally
-		// created duplicates so we cannot fail silently.
-		if ($query->num_rows() > 1)
-		{
-			$this->log_item("Duplicate Template Group: ".ee()->uri->segment(1));
-		}
-
 		// Template group found!
-		elseif ($query->num_rows() == 1)
+		if ($query->num_rows() == 1)
 		{
 			// Set the name of our template group
 			$template_group = ee()->uri->segment(1);
@@ -1797,11 +1731,22 @@ class EE_Template {
 		// The first segment in the URL does NOT correlate to a valid template group.  Oh my!
 		else
 		{
+			if ($query->num_rows() > 1)
+			{
+				$duplicate = TRUE;
+				$log_message = "Duplicate Template Group: ".ee()->uri->segment(1);
+			}
+			else
+			{
+				$duplicate = FALSE;
+				$log_message = "Template group and template not found, showing 404 page";
+			}
+
 			// If we are enforcing strict URLs we need to show a 404
-			if ($this->strict_urls == TRUE)
+			if ($duplicate == TRUE OR $this->strict_urls == TRUE)
 			{
 				// is there a file we can automatically create this template from?
-				if (ee()->config->item('save_tmpl_files') == 'y' && ee()->config->item('tmpl_file_basepath') != '')
+				if ($duplicate == FALSE && ee()->config->item('save_tmpl_files') == 'y' && ee()->config->item('tmpl_file_basepath') != '')
 				{
 					if ($this->_create_from_file(ee()->uri->segment(1), ee()->uri->segment(2)))
 					{
@@ -1811,11 +1756,12 @@ class EE_Template {
 
 				if (ee()->config->item('site_404'))
 				{
-					$this->log_item("Template group and template not found, showing 404 page");
+					$this->log_item($log_message);
 					return $this->fetch_template('', '', FALSE);
 				}
 				else
 				{
+					$this->log_item($log_message);
 					return $this->_404();
 				}
 			}
@@ -2923,15 +2869,6 @@ class EE_Template {
 			$str = preg_replace_callback("/".LD."\s*path=(.*?)".RD."/", array(&ee()->functions, 'create_url'), $str);
 		}
 
-		// {current_url}
-		$str = str_replace(LD.'current_url'.RD, ee()->functions->fetch_current_uri(), $str);
-
-		// {current_path}
-		$str = str_replace(LD.'current_path'.RD, ((ee()->uri->uri_string) ? ee()->uri->uri_string : '/'), $str);
-
-		// {current_query_string} - we use $_GET because it's been sanitized
-		$str = str_replace(LD.'current_query_string'.RD, http_build_query($_GET), $str);
-
 		// Add Action IDs form forms and links
 		$str = ee()->functions->insert_action_ids($str);
 
@@ -3188,7 +3125,7 @@ class EE_Template {
 				if ( ! preg_match('/^segment_\d+$/i', $val['3']) OR
 				strpos($val[2], 'if:else') !== FALSE OR
 				strpos($val[0], 'if:else') !== FALSE OR
-				count(preg_split("/(\!=|==|<=|>=|<>|<|>|AND|XOR|OR|&&|\|\|)/", $val[0])) > 2)
+				count(preg_split("/(\!=|==|<=|>=|<>|<|>|%|AND|XOR|OR|&&|\|\|)/", $val[0])) > 2)
 			{
 				continue;
 			}
@@ -3284,7 +3221,7 @@ class EE_Template {
 			if ( ! isset($vars[$val[3]]) OR
 				strpos($val[2], 'if:else') !== FALSE OR
 				strpos($val[0], 'if:else') !== FALSE OR
-				count(preg_split("/(\!=|==|<=|>=|<>|<|>|AND|XOR|OR|&&|\|\|)/", $val[0])) > 2)
+				count(preg_split("/(\!=|==|<=|>=|<>|<|>|%|AND|XOR|OR|&&|\|\|)/", $val[0])) > 2)
 			{
 				continue;
 			}

@@ -395,7 +395,7 @@ class Addons_plugins extends CP_Controller {
 		flock($fp, LOCK_UN);
 		fclose($fp);
 
-		@chmod($local_file, 0777);
+		@chmod($local_file, DIR_WRITE_MODE);
 
 		// Check file information so we know what to do with it
 
@@ -409,7 +409,7 @@ class Addons_plugins extends CP_Controller {
 			}
 			else
 			{
-				@chmod($new_file, 0777);
+				@chmod($new_file, DIR_WRITE_MODE);
 				$cp_type = 'message_success';				
 				$cp_message = lang('plugin_install_success');
 			}

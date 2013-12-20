@@ -588,9 +588,9 @@ class EE_Stats {
 					->where('status', 'o')
 					->get('comments');
 					
-				$comment_date = ($query->num_rows() == 0 OR ! is_numeric($query->row('max_date') )) ? 0 : $query->row('max_date') ;
+				$comment_date = ($query->num_rows() == 0 OR ! is_numeric($query->row('comment_date') )) ? 0 : $query->row('comment_date') ;
 			}
-
+			
 			ee()->db->set('comment_total', $comment_total)
 							->set('recent_comment_date', $comment_date)
 							->where('entry_id', $entry_id)
@@ -813,4 +813,4 @@ class EE_Stats {
 // END CLASS
 
 /* End of file mcp.stats.php */
-/* Location: ./system/expressionengine/modules/stats/mcp.stats.php */
+/* Location: ./system/expressionengine/Libraries/stats.php */

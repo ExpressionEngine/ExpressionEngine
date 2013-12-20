@@ -8,10 +8,10 @@
  * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
- * @since		Version 2.0
+ * @since		Version 2.6
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -47,7 +47,7 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 	 */
 	public function pre_process($tagdata, EE_Channel_preparser $pre)
 	{
-		
+
 		$result_path = (preg_match("/".LD.$pre->prefix()."member_search_path\s*=(.*?)".RD."/s", $tagdata, $match)) ? $match[1] : 'search/results';
 		$result_path = str_replace(array('"',"'"), "", $result_path);
 
@@ -226,7 +226,7 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 		{
 			$extracted_path = ee()->functions->extract_path($key);
 			$path = ($extracted_path != '' AND $extracted_path != 'SITE_INDEX') ? $extracted_path.'/'.$data['url_title'] : $data['url_title'];
-			
+
 			$tagdata = str_replace(
 				LD.$key.RD,
 				ee()->functions->create_url($path, FALSE),
@@ -305,7 +305,7 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 		{
 			$tagdata = str_replace(LD.$val.RD, $data['url_title'], $tagdata);
 		}
-		
+
 		//  {trimmed_url} - used by Atom feeds
 		elseif ($key == $prefix."trimmed_url")
 		{

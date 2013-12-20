@@ -14,7 +14,7 @@ function update_destination(obj)
 		var name   = obj.value;
 		var path_x = name.lastIndexOf('\/');
 		var path_y = name.lastIndexOf('\\');
-		
+
 		if (path_x != -1)
 		{
 			name = name.substring(path_x+1);
@@ -23,7 +23,7 @@ function update_destination(obj)
 		{
 			name = name.substring(path_y+1);
 		}
-	
+
 		document.getElementById('new_filename').value = name.replace(/ /g, '_');
 	}
 }
@@ -36,34 +36,33 @@ function update_destination(obj)
 <div class="codeblock"><input type="file" name="userfile" size="20" onchange='update_destination(this)' /></div>
 
 {if file_types == 'images'}
-<div class="codeblock"><div class="defaultBold">Only Image Uploads Are Allowed</div></div>
+<div class="codeblock"><div class="defaultBold">{lang:image_uploads_only}</div></div>
 {if:else}
-<div class="codeblock"><div class="defaultBold">Allowed File Types:</div> {file_types}</div>
+<div class="codeblock"><div class="defaultBold">{lang:allowed_file_types}:</div> {file_types}</div>
 {/if}
 
 <div class="codeblock">
-<span class="defaultBold">New Filename: </span>
+<span class="defaultBold">{lang:new_filename}: </span>
 &nbsp;&nbsp;<input class="input" name="new_filename" id="new_filename" type="text" size="50" maxlength="80" />
 </div>
 
 <div class="codeblock">
-<div class="defaultBold">Summary: </div>
+<div class="defaultBold">{lang:summary}: </div>
 <textarea style='width:98%;' name='summary' id='summary' cols='90' rows='10' class='textarea'></textarea>
 </div>
 
-<input name="submit" class="submit" type="submit" value="Submit" />
+<input name="submit" class="submit" type="submit" value="{lang:submit}" />
 </form>
 {/if}
 
 {if cannot_edit}
-<p><strong>You are not allowed to upload images.</strong></p>
+<p><strong>{lang:no_image_uploads}</strong></p>
 {/if}
 
 {if:else}
 
-<p><strong>File Uploading is not allowed for this wiki.</strong></p>
+<p><strong>{lang:no_uploads}</strong></p>
 
 {/if}
 
 
-	

@@ -20,9 +20,9 @@ EE.namespace('EE.publish.file_browser');
 	/**
 	 * Fires up the filebrowser for text areas
 	 */
-	EE.publish.file_browser.textarea = function() {
+	EE.publish.file_browser.textarea = function(context) {
 		// Bind the image html buttons
-		$.ee_filebrowser.add_trigger(".btn_img a, .file_manipulate", function(file) {
+		$.ee_filebrowser.add_trigger($(".btn_img a, .file_manipulate", context), function(file) {
 			var textarea,
 				replace = '',
 				props = '',
@@ -35,16 +35,24 @@ EE.namespace('EE.publish.file_browser');
 				button_id = button_id[1];
 			}
 
-			// A bit of working around various textareas, text inputs, tec
-			if ($(this).closest("#markItUpWrite_mode_textarea").length) {
-				textareaId = "write_mode_textarea";
-			} else {
-				textareaId = $(this).closest(".publish_field").attr("id").replace("hold_field_", "field_id_");
-			}
-
-			if (textareaId != undefined) {
-				textarea = $("#"+textareaId);
+			if (context !== undefined)
+			{
+				textarea = $('textarea', context);
 				textarea.focus();
+			}
+			else
+			{
+				// A bit of working around various textareas, text inputs, tec
+				if ($(this).closest("#markItUpWrite_mode_textarea").length) {
+					textareaId = "write_mode_textarea";
+				} else {
+					textareaId = $(this).closest(".publish_field").attr("id").replace("hold_field_", "field_id_");
+				}
+
+				if (textareaId != undefined) {
+					textarea = $("#"+textareaId, context);
+					textarea.focus();
+				}
 			}
 
 			// We also need to allow file insertion into text inputs (vs textareas) but markitup
@@ -223,7 +231,7 @@ EE.namespace('EE.publish.file_browser');
 				return false;
 			});
 		});
-	}
+	};
 
 	/**
 	 * Fire up the file browser for file fields
@@ -246,7 +254,7 @@ EE.namespace('EE.publish.file_browser');
 	};
 
 	$(function() {
-		if (EE.filebrowser.publish == true) {
+		if (EE.filebrowser.publish) {
 			// Give Markitup time to activate
 			setTimeout(function() {
 				EE.publish.file_browser.file_field();

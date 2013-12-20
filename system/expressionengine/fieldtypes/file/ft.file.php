@@ -55,7 +55,7 @@ class File_ft extends EE_Fieldtype {
 	{
 		return ee()->file_field->validate(
 			$data,
-			$this->field_name,
+			$this->name(),
 			$this->settings['field_required'],
 			array(
 				'grid_row_id' => isset($this->settings['grid_row_id'])
@@ -127,12 +127,15 @@ class File_ft extends EE_Fieldtype {
 
 			$script = <<<JSC
 			$(document).ready(function() {
-				$('.file_field').each(function() {
-					var container = $(this),
-						last_value = [],
+				function setupFileField(container) {
+					var last_value = [],
 						fileselector = container.find('.no_file'),
-						hidden_name = container.find('[name$="_hidden_file"]').prop('name'),
+						hidden_name = container.find('input[name*="_hidden_file"]').prop('name'),
 						placeholder;
+
+					if ( ! hidden_name) {
+						return;
+					}
 
 					remove = $('<input/>', {
 						'type': 'hidden',
@@ -141,7 +144,7 @@ class File_ft extends EE_Fieldtype {
 					});
 
 					container.find(".remove_file").click(function() {
-						container.find("input[type=hidden]").val(function(i, current_value) {
+						container.find("input[type=hidden][name*='hidden']").val(function(i, current_value) {
 							last_value[i] = current_value;
 							return '';
 						});
@@ -164,7 +167,16 @@ class File_ft extends EE_Fieldtype {
 
 						return false;
 					});
+				}
+				// most of them
+				$('.file_field').each(function() {
+					setupFileField($(this));
 				});
+
+				// in grid
+				Grid.bind('file', 'display', function(cell) {
+					setupFileField(cell);
+				})
 			});
 JSC;
 			ee()->javascript->output($script);
@@ -481,7 +493,7 @@ CSS;
 		);
 
 		$this->_row(
-			lang('file_ft_allowed_dirs', $prefix.'field_allowed_dirs'),
+			lang('file_ft_allowed_dirs', $prefix.'field_allowed_dirs').form_error('file_allowed_directories'),
 			form_dropdown('file_allowed_directories', $this->_allowed_directories_options(), $allowed_directories, 'id="'.$prefix.'field_allowed_dirs"')
 		);
 
@@ -629,7 +641,7 @@ JSC;
 		ee()->form_validation->set_rules(
 			'file_allowed_directories',
 			'lang:allowed_dirs_file',
-			'required|callback__check_directories'
+			'required|callback__validate_file_settings'
 		);
 	}
 
@@ -647,7 +659,10 @@ JSC;
 		if ( ! $this->_check_directories())
 		{
 			ee()->lang->loadfile('filemanager');
-			return lang('please_add_upload');
+			return sprintf(
+				lang('no_upload_directories'),
+				BASE.AMP.'C=content_files'.AMP.'M=file_upload_preferences'
+			);
 		}
 
 		return TRUE;
@@ -681,7 +696,13 @@ JSC;
 		if ( ! $this->_check_directories())
 		{
 			ee()->lang->loadfile('filemanager');
-			ee()->form_validation->set_message('_check_directories', lang('please_add_upload'));
+			ee()->form_validation->set_message(
+				'_validate_file_settings',
+				sprintf(
+					lang('no_upload_directories'),
+					BASE.AMP.'C=content_files'.AMP.'M=file_upload_preferences'
+				)
+			);
 			return FALSE;
 		}
 
@@ -717,6 +738,19 @@ JSC;
 		}
 
 		return $data;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Accept all content types.
+	 *
+	 * @param string  The name of the content type
+	 * @return bool   Accepts all content types
+	 */
+	public function accepts_content_type($name)
+	{
+		return TRUE;
 	}
 }
 

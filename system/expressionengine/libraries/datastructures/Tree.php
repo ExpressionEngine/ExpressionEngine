@@ -4,13 +4,13 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
- * @since		Version 2.0
+ * @since		Version 2.6
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /*
@@ -97,7 +97,7 @@ class EE_Tree {
 	 *
 	 * An array of tree root nodes, with children in the __children__ key
 	 * of their respective parents. Thus forming a tree as a nested array.
-	 * 
+	 *
 	 * A lookup table of id => row, where each item is actually a reference
 	 * into the tree. This way we can do quick by-index lookups.
 	 *
@@ -172,7 +172,7 @@ class EE_TreeNode {
 	protected $children_names;
 
 	private $_frozen = FALSE;
-	
+
 	public function __construct($name, $payload = NULL)
 	{
 		$this->name = $name;
@@ -195,7 +195,7 @@ class EE_TreeNode {
 	 */
 	public function __get($key)
 	{
-		if (is_array($this->data))
+		if (is_array($this->data) && isset($this->data[$key]))
 		{
 			return $this->data[$key];
 		}
@@ -590,7 +590,7 @@ class EE_TreeNode {
 	 *
 	 * Links up the parent node for upwards traversal. Should only ever
 	 * be called from add() to maintain referential integrity.
-	 * 
+	 *
 	 * In theory add() has access to the property directly, but sometimes
 	 * it's useful to override this with additional functionality.
 	 *

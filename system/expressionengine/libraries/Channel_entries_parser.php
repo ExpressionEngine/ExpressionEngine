@@ -8,10 +8,10 @@
  * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
- * @since		Version 2.0
+ * @since		Version 2.6
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -190,10 +190,17 @@ class EE_Channel_parser {
 	 */
 	public function parse(Channel $channel, array $data, array $config = array())
 	{
+		// Gather site IDs
+		$site_ids = array();
+		foreach ($data['entries'] as $entry)
+		{
+			$site_ids[] = $entry['site_id'];
+		}
+
 		$parser = $this->data_parser(
-			$this->pre_parser($channel, array_keys($data['entries']), $config)
+			$this->pre_parser($channel, array_unique($site_ids), array_keys($data['entries']), $config)
 		);
-		
+
 		return $parser->parse($data, $config);
 	}
 
@@ -210,7 +217,10 @@ class EE_Channel_parser {
 	 *					  custom fields. They are stored in public arrays so we
 	 *					  cannot assume they remain unchanged =( .
 	 *
-	 * @param entry_ids - An array of entry ids. This can be used to retrieve
+	 * @param site_ids  - An array of site IDs that the entries for this
+	 *                    preparser belong to.
+	 *
+	 * @param entry_ids - An array of entry IDs. This can be used to retrieve
 	 *					  additional data ahead of time. A good example of that
 	 *					  would be the relationship parser.
 	 *
@@ -222,9 +232,9 @@ class EE_Channel_parser {
 	 *
 	 * @return Object<EE_Channel_preparser>
 	 */
-	public function pre_parser(Channel $channel, array $entry_ids, array $config = array())
+	public function pre_parser(Channel $channel, array $site_ids, array $entry_ids, array $config = array())
 	{
-		return new EE_Channel_preparser($channel, $this, $entry_ids, $config);
+		return new EE_Channel_preparser($channel, $this, $site_ids, $entry_ids, $config);
 	}
 
 	// --------------------------------------------------------------------

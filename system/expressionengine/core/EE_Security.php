@@ -132,7 +132,7 @@ class EE_Security extends CI_Security {
 		define('REQUEST_XID', $request_xid);
 		define('XID_SECURE_HASH', $hash);
 
-		if (AJAX_REQUEST && count($_POST))
+		if (AJAX_REQUEST && ee()->input->server('REQUEST_METHOD') == 'POST')
 		{
 			header('X-EEXID: '.XID_SECURE_HASH);
 		}
@@ -163,7 +163,7 @@ class EE_Security extends CI_Security {
 				array(
 					'used'			=> 0,
 					'hash' 			=> $xid,
-					'session_id' 	=> ee()->session->userdata('session_id'),
+					'session_id' 	=> (string) ee()->session->userdata('session_id'),
 					'date >' 		=> ee()->localize->now - $this->_xid_ttl
 				)
 			);
