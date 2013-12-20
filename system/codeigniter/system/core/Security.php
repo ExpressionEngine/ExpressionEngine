@@ -55,6 +55,30 @@ class CI_Security {
 			=> '[removed]'
 	);
 
+	/* html5 entities we need to manually decode pre PHP 5.4 */
+	protected $_html5_entites = array(
+		'&Tab;'		=> '&#x00009;',
+		'&NewLine;'	=> '&#x0000A;',
+		'&excl;'	=> '&#x00021;',
+		'&quot;'	=> '&#x00022;',
+		'&QUOT;'	=> '&#x00022;',
+		'&num;'		=> '&#x00023;',
+		'&dollar;'	=> '&#x00024;',
+		'&percnt;'	=> '&#x00025;',
+		'&amp;'		=> '&#x00026;',
+		'&lpar;'	=> '&#x00028;',
+		'&rpar;'	=> '&#x00029;',
+		'&ast;'		=> '&#x0002A;',
+		'&plus;'	=> '&#x0002B;',
+		'&comma;'	=> '&#x0002C;',
+		'&period;'	=> '&#x0002E;',
+		'&sol;'		=> '&#x0002F;',
+		'&colon;'	=> '&#x0003A;',
+		'&semi;'	=> '&#x0003B;',
+		'&lt;'		=> '&#x0003C;',
+		'&gt;'		=> '&#x0003E;'
+	);
+
 	/**
 	 * Constructor
 	 */
@@ -464,12 +488,12 @@ class CI_Security {
 	{
 		if (strpos($str, '&') === FALSE)
 		{
-				return $str;
+			return $str;
 		}
 
 		if (empty($charset))
 		{
-				$charset = config_item('charset');
+			$charset = config_item('charset');
 		}
 
 		do
@@ -478,12 +502,40 @@ class CI_Security {
 
 			$str = preg_replace('~(&#x0*[0-9a-f]{2,5});?~iS', '$1;', $str, -1, $matches);
 			$str = preg_replace('~(&#\d{2,4});?~S', '$1;', $str, -1, $matches1);
-			$str = html_entity_decode($str, ENT_COMPAT, $charset);
+
+			// ENT_HTML5 is PHP 5.4+ only
+			if ( ! defined('ENT_HTML5'))
+			{
+				$str = str_replace(
+					array_keys($this->_html5_entites),
+					array_values($this->_html5_entites),
+					$str
+				);
+				$str = html_entity_decode($str, ENT_COMPAT, $charset);
+			}
+			else
+			{
+				$str = html_entity_decode($str, ENT_COMPAT | ENT_HTML5, $charset);
+
+			}
 		}
 		while ($matches OR $matches1);
 
 		return $str;
 	}
+
+
+	/*
+	public function testHmlt5Entities()
+	{
+		foreach ($this->_html5_entites as $ent1 => $ent2)
+		{
+			$a = html_entity_decode($ent1, ENT_COMPAT | ENT_HTML5);
+			$b = html_entity_decode($ent2, ENT_COMPAT);
+			assert($a == $b, $ent1.' '.$a.' '.$b);
+		}
+	}
+	*/
 	// --------------------------------------------------------------------
 
 	/**
