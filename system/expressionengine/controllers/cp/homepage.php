@@ -47,7 +47,7 @@ class Homepage extends CP_Controller {
 		try {
 		$entries = $mb->get('ChannelEntry')
 			->with('Channel',
-				array('Author'=> array('MemberGroup'))
+				array('Author'=> array('MemberGroup', 'ChannelEntries AS AuthorEntries'))
 			)
 			->all();
 		}

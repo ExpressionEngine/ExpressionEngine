@@ -15,6 +15,7 @@ class Member extends Model {
 		'primary_key' => 'member_id',
 		'gateway_names' => array('MemberGateway'),
 		'key_map' => array(
+			'member_id' => 'MemberGateway',
 			'group_id' => 'MemberGateway'
 		)
 	);

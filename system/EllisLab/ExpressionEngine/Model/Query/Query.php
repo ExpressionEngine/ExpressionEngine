@@ -78,9 +78,61 @@ class Query {
 	}
 
 	/**
+	 * Get the node for a given relationship name from the relationship tree
+	 */
+	protected function getNodeForRelationship($relationship_name)
+	{
+		$relationship_name = $this->getAlias($relationship_name);
+		foreach($this->root->getBreadthFirstIterator() as $node)
+		{
+			if ($node->getName() == $relationship_name)
+			{
+				return $node;
+			}
+		}
+
+		return NULL;
+	}
+
+	/**
+	 * Take Relationship.property and translate it to table.property
+	 */
+	protected function translateProperty($relationship_property)
+	{
+		$relationship_name = strtok($relationship_property, '.');
+		$node = $this->getNodeForRelationship($relationship_name);
+
+		$model_class = $node->meta->to_model_class;
+
+		$property = strtok('.');
+		if ( $property === FALSE)
+		{
+			$property = $model_class::getMetaData('primary_key');
+		}
+		
+		$gateway_names = $model_class::getMetaData('gateway_names');
+		foreach($gateway_names as $gateway_name)
+		{
+			$gateway_class = $this->builder->getRegisteredClass($gateway_name);
+			if (array_key_exists($property, $gateway_class::getMetaData('field_list')))
+			{
+				$table = $gateway_class::getMetaData('table_name');
+				break;
+			}
+		}
+		if ( ! isset($table))
+		{
+			throw new \Exception('Property ' . $property . ' was not found on model ' . $model_class);
+		}
+
+		$result = $table . '_' . $node->getId() . '.' . $property;
+		return $result;
+	}
+	
+	/**
 	 * Apply a filter
 	 *
-	 * @param String $key		Modelname.columnname to filter on
+	 * @param String $key		Relationship.columnname to filter on
 	 * @param String $operator	Comparison to perform [==, !=, <, >, <=, >=, IN]
 	 * @param Mixed  $value		Value to compare to
 	 * @return Query $this
@@ -88,23 +140,16 @@ class Query {
 	 * The third parameter is optional. If it is not given, the == operator is
 	 * assumed and the second parameter becomes the value.
 	 */
-	public function filter($key, $operator, $value = NULL)
+	public function filter($property, $operator, $value = NULL)
 	{
-		$model_name = strtok($key, '.');
-
-		if ($model_name == $this->model_name)
-		{
-			$this->applyFilter($key, $operator, $value);
-		}
-		else
-		{
-			$this->filters[] = array($key, $operator, $value);
-		}
+		// We'll use this to mask the application.  We'll need it
+		// when we do subquerying.
+		$this->applyFilter($property, $operator, $value);
 
 		return $this;
 	}
 
-	private function applyFilter($key, $operator, $value)
+	private function applyFilter($relationship_property, $operator, $value)
 	{
 		if ( ! isset($value))
 		{
@@ -117,17 +162,18 @@ class Query {
 			$operator = ''; // CI's query builder defaults to equals
 		}
 
-		list($table, $key) = $this->resolveAlias($key);
+		$table_property = $this->translateProperty($relationship_property);
 
 		if ($operator == 'IN')
 		{
-			$this->db->where_in($table.'.'.$key, (array) $value);
+			$this->db->where_in($table_property, (array) $value);
 		}
 		else
 		{
-			$this->db->where($table.'.'.$key.' '.$operator, $value);
+			$this->db->where($table_property.' '.$operator, $value);
 		}
 	}
+
 
 	/**
 	 * Eager load a relationship
@@ -290,13 +336,13 @@ class Query {
 	 */
 	private function createNode(QueryTreeNode $parent, $relationship_name, array $meta=array())
 	{
-		/*if (strpos('AS', $relationship_name))
+		if (strpos($relationship_name, 'AS'))
 		{
 			list($relationship_name, $alias) = explode('AS', $relationship_name);
 			$relationship_name = trim($relationship_name);
 			$alias = trim($alias);
 			$this->setAlias($alias, $relationship_name);	
-		}*/
+		}
 
 		$node = new QueryTreeNode($relationship_name);
 
@@ -420,16 +466,6 @@ class Query {
 		{
 			$this->root->add($node);
 		}
-	}
-
-
-	public function aliasTable($table, $alias=NULL)
-	{
-		if ($alias === NULL) {
-			return $table;
-		}
-
-		return $table . ' AS ' . $alias;
 	}
 
 	/**
@@ -740,91 +776,17 @@ class Query {
 
 	private function setAlias($alias, $relationship_name)
 	{
-		$this->aliases[$relationship_name] = $alias;
+		$this->aliases[$alias] = $relationship_name;
 		return $this;
 	}
 
-	/**
-	 * Take a string such as ModelName.field and resolve it to its
-	 * proper tablename and key for where queries.
-	 *
-	 * @param String $name Model specific accessor
-	 * @return array [table, key]
-	 */
-	private function resolveAlias($alias)
+	private function getAlias($aliased)
 	{
-		$relationship_name = strtok($alias, '.');
-		if ( isset ($this->aliases[$relationship_name]))
+		if ( isset ($this->aliases[$aliased]))
 		{
-			$alias = $this->aliases[$relationship_name];
+			return $this->aliases[$aliased];
 		}
-		$key = strtok('.');
-
-		if ($key == FALSE)
-		{
-			$model_name = $this->getModelFromRelationship($relationship_name);
-		}
-
-		$table = $this->getTableName($model_name, $key);
-
-		if ($table == '')
-		{
-			throw new \Exception('Unknown field name in filter: '. $key);
-		}
-
-		return array($table, $key);
+		return $aliased;
 	}
 
-	/**
-	 * Retreive the primary key for a given model.
-	 *
-	 * @param String $model_name The name of the model
-	 * @return array [table, key_name]
-	 */
-	private function getPrimaryKey($model_name)
-	{
-		$model = $this->builder->getRegisteredClass($model_name);
-		return $model::getMetaData('primary_key');
-	}
-
-	/**
-	 * Retrieve the table name for a given Model and key. If more than one gateway
-	 * has the key, it will return the first.
-	 *
-	 * @param String $model_name The name of the model
-	 * @param String $key The name of the property [optional, defaults to primary key]
-	 * @return String Table name
-	 */
-	private function getTableName($model_name, $key = NULL)
-	{
-		if ( ! isset($key))
-		{
-			$key = $this->getPrimaryKey($model_name);
-		}
-
-		$model = $this->builder->getRegisteredClass($model_name);
-
-		$known_keys = $model::getMetaData('key_map');
-
-		if (isset($known_keys[$key]))
-		{
-			$key_gateway = $this->builder->getRegisteredClass($known_keys[$key]);
-			return $key_gateway::getMetaData('table_name');
-		}
-
-		// If it's not a key, we need to loop. Technically it could be on more
-		// than one gateway - we only return the first one.
-		$gateway_names = $model::getMetadata('gateway_names');
-
-		foreach ($gateway_names as $gateway)
-		{
-			$gateway = $this->builder->getRegisteredClass($gateway);
-			if (property_exists($gateway, $key))
-			{
-				return $gateway::getMetaData('table_name');
-			}
-		}
-
-		return NULL;
-	}
 }

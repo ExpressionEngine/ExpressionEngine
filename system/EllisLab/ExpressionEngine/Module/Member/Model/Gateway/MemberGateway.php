@@ -16,7 +16,12 @@ class MemberGateway extends RowDataGateway {
 			'group_id' => array(
 				'gateway' => 'MemberGroupGateway',
 				'key' => 'group_id'
+			),
+			'member_id' => array(
+				'gateway' => 'ChannelTitleGateway',
+				'key' => 'author_id'
 			)
+			
 		)
 	);
 
