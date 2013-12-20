@@ -109,7 +109,7 @@ class Updater {
 				}
 
 				$localization_preferences['include_seconds'] = ee()->config->item('include_seconds') ? ee()->config->item('include_seconds') : 'n';
-				ee()->config->update_site_prefs($localization_preferences, 'all');
+				ee()->config->update_site_prefs($localization_preferences, $row['site_id']);
 			}
 		}
 	}
