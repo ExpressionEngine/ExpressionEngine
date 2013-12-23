@@ -252,9 +252,6 @@ class Query {
 
 	/**
 	 *
-	 * @param string	$from_model_name	Must be the name of the *Model* not
-	 * 			the relationship.  Relationship names must be parsed into model
-	 * 			names before being sent to walkRelationshipTree()
 	 */
 	private function buildRelationshipTree(QueryTreeNode $parent, $relationship)
 	{
@@ -511,7 +508,7 @@ class Query {
 	 * Need to take aliased results in the form of joined query rows and
 	 * build the model tree out of them.
 	 */
-	private function parseDatabaseResult($database_result)
+	protected function parseDatabaseResult($database_result)
 	{
 		// Each row holds field=>value data for the full joined query's tree.
 		// In order to take this flat row data and reconstruct it into a tree,
@@ -629,7 +626,7 @@ class Query {
 	 *
 	 * @return	boolean	TRUE if this is a root model, FALSE otherwise.
 	 */
-	private function isRootModel($path)
+	protected function isRootModel($path)
 	{
 		// If it's an integer, then it's a
 		// root node, because it doesn't have
@@ -640,7 +637,7 @@ class Query {
 	/**
 	 *
 	 */
-	private function createResultModel($model_data)
+	protected function createResultModel($model_data)
 	{
 		$model_name = $model_data['__model_name'];
 
@@ -659,7 +656,7 @@ class Query {
 		return $this->model_index[$model_name][$primary_key];
 	}
 
-	private function findModelParent($path_data, $child_path)
+	protected function findModelParent($path_data, $child_path)
 	{
 		$path = substr($child_path, 0, strrpos($child_path, '_'));
 
@@ -738,7 +735,7 @@ class Query {
 	 *
 	 * @param String $model Model name to select.
 	 */
-	private function selectFields(QueryTreeNode $node)
+	protected function selectFields(QueryTreeNode $node)
 	{
 		if ($node->isRoot())
 		{
@@ -766,13 +763,13 @@ class Query {
 		}
 	}
 
-	private function setAlias($alias, $relationship_name)
+	protected function setAlias($alias, $relationship_name)
 	{
 		$this->aliases[$alias] = $relationship_name;
 		return $this;
 	}
 
-	private function getAlias($aliased)
+	protected function getAlias($aliased)
 	{
 		if ( isset ($this->aliases[$aliased]))
 		{
