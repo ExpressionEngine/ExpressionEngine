@@ -47,6 +47,16 @@ class Admin_content extends CP_Controller {
 
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content', lang('admin_content'));
 
+		require APPPATH . '../EllisLab/ExpressionEngine/Core/Autoloader.php';
+		$loader = new Autoloader();
+		$loader->register();
+
+		$di = new \EllisLab\ExpressionEngine\Core\Dependencies();
+
+		// Conveinence links	
+		$this->dependencies = $di;
+		$this->builder = $this->dependencies->getModelBuilder();
+
 		// Note- no access check here to allow the publish page access to categories
 	}
 
@@ -126,70 +136,62 @@ class Admin_content extends CP_Controller {
 		}
 
 		$this->load->helper('snippets');
-		$this->load->model('channel_model');
-		$this->load->model('category_model');
-
 		$this->cp->add_js_script('plugin', 'ee_url_title');
-
 		$this->javascript->output('
 			$("#channel_title").bind("keyup keydown", function() {
 				$(this).ee_url_title("#channel_name");
 			});
 		');
-
 		$this->view->cp_page_title = lang('create_new_channel');
 
-		$channels = $this->channel_model->get_channels($this->config->item('site_id'), array('channel_id', 'channel_title'));
-
+		$channels = $this->builder
+			->get('Channel')
+			->filter('site_id', $this->config->item('site_id'))
+			->order('channel_title')
+			->all();
 		$vars['duplicate_channel_prefs_options'][''] = lang('do_not_duplicate');
-
-		if ($channels != FALSE && $channels->num_rows() > 0)
+		if ( ! empty($channels))
 		{
-			foreach($channels->result() as $channel)
+			foreach($channels as $channel)
 			{
 				$vars['duplicate_channel_prefs_options'][$channel->channel_id] = $channel->channel_title;
 			}
 		}
 
 		$vars['cat_group_options'][''] = lang('none');
-
-		$groups = $this->category_model->get_category_groups('', $this->config->item('site_id'));
-
-		if ($groups->num_rows() > 0)
+		$category_groups = $this->builder->get('CategoryGroup')
+			->filter('site_id', $this->config->item('site_id'))
+			->order('group_name')
+			->all();
+		if ( ! empty($category_groups))
 		{
-			foreach ($groups->result() as $group)
+			foreach ($category_groups as $group)
 			{
 				$vars['cat_group_options'][$group->group_id] = $group->group_name;
 			}
 		}
 
 		$vars['status_group_options'][''] = lang('none');
-
-		$this->db->select('group_id, group_name');
-		$this->db->where('site_id', $this->config->item('site_id'));
-		$this->db->order_by('group_name');
-
-		$groups = $this->db->get('status_groups');
-
-		if ($groups->num_rows() > 0)
+		$status_groups = $this->builder->get('StatusGroup')
+			->filter('site_id', $this->config->item('site_id'))
+			->order('group_name')
+			->all();
+		if ( ! empty($status_groups))
 		{
-			foreach ($groups->result() as $group)
+			foreach ($groups as $group)
 			{
 				$vars['status_group_options'][$group->group_id] = $group->group_name;
 			}
 		}
 
 		$vars['field_group_options'][''] = lang('none');
-
-		$this->db->select('group_id, group_name');
-		$this->db->where('site_id', $this->config->item('site_id'));
-		$this->db->order_by('group_name');
-
-		$groups = $this->db->get('field_groups');
-
-		if ($groups->num_rows() > 0)
+		$field_groups = $this->builder->get('FieldGroup')
+			->filter('site_id', $this->config->item('site_id'))
+			->order('group_name')
+			->all();
+		if ( ! empty($field_groups))
 		{
-			foreach ($groups->result() as $group)
+			foreach ($field_groups as $group)
 			{
 				$vars['field_group_options'][$group->group_id] = $group->group_name;
 			}
@@ -198,24 +200,18 @@ class Admin_content extends CP_Controller {
 		// New themes may contain more than one group, thus naming collisions will happen
 		// unless this is revamped.
 		$vars['themes'] = array();
-
-		$this->db->select('group_id, group_name, s.site_label');
-		$this->db->from('template_groups tg, sites s');
-		$this->db->where('tg.site_id = s.site_id', NULL, FALSE);
-
+		$query = $this->builder->get('TemplateGroup')
+			->with('Site')
+			->order('TemplateGroup.group_name');
 		if ($this->config->item('multiple_sites_enabled') !== 'y')
 		{
-			$this->db->where('tg.site_id', '1');
+			$query->filter('TemplateGroup.site_id', 1);
 		}
-
-		$this->db->order_by('tg.group_name');
-		$query = $this->db->get();
-
+		$template_groups = $query->all();
 		$vars['old_group_id'] = array();
-
-		foreach ($query->result_array() as $row)
+		foreach ($template_groups as $group)
 		{
-			$vars['old_group_id'][$row['group_id']] = ($this->config->item('multiple_sites_enabled') == 'y') ? $row['site_label'].NBS.'-'.NBS.$row['group_name'] : $row['group_name'];
+			$vars['old_group_id'][$group->group_id] = ($this->config->item('multiple_sites_enabled') == 'y') ? $group->getSite()->site_label.NBS.'-'.NBS.$group->group_name : $group->group_name;
 		}
 
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=channel_management', lang('channels'));
