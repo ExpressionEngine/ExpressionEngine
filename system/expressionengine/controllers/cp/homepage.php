@@ -49,6 +49,7 @@ class Homepage extends CP_Controller {
 			->with('Channel',
 				array('Author'=> array('MemberGroup', 'ChannelEntries AS AuthorEntries'))
 			)
+			->order('ChannelEntry.entry_id')
 			->order('AuthorEntries.entry_id')
 			->all();
 		}

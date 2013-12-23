@@ -103,7 +103,14 @@ class Query {
 		$relationship_name = strtok($relationship_property, '.');
 		$node = $this->getNodeForRelationship($relationship_name);
 
-		$model_class = $node->meta->to_model_class;
+		if ( ! $node->isRoot())
+		{
+			$model_class = $node->meta->to_model_class;
+		}
+		else
+		{
+			$model_class = $this->builder->getRegisteredClass($relationship_name);
+		}
 
 		$property = strtok('.');
 		if ( $property === FALSE)
