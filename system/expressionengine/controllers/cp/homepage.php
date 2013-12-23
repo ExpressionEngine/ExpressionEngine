@@ -47,8 +47,9 @@ class Homepage extends CP_Controller {
 		try {
 		$entries = $mb->get('ChannelEntry')
 			->with('Channel',
-				array('Author'=> array('MemberGroup', 'ChannelEntries'))
+				array('Author'=> array('MemberGroup', 'ChannelEntries AS AuthorEntries'))
 			)
+			->order('AuthorEntries.entry_id')
 			->all();
 		}
 		catch(Exception $ex)

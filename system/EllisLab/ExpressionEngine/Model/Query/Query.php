@@ -150,7 +150,7 @@ class Query {
 		return $this;
 	}
 
-	private function applyFilter($relationship_property, $operator, $value)
+	protected function applyFilter($relationship_property, $operator, $value)
 	{
 		if ( ! isset($value))
 		{
@@ -175,6 +175,18 @@ class Query {
 		}
 	}
 
+
+	public function order($property, $direction = 'DESC')
+	{
+		$this->applyOrder($property, $direction);		
+		return $this;
+	}
+
+	protected function applyOrder($relationship_property, $direction = 'DESC')
+	{
+		$table_property = $this->translateProperty($relationship_property);
+		$this->db->order_by($table_property, $direction);
+	}
 
 	/**
 	 * Eager load a relationship
