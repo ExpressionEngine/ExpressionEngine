@@ -42,12 +42,12 @@ class Homepage extends CP_Controller {
 
 		echo 'Query was:<br />
 			qb->get(\'ChannelEntry\')
-				->with(\'Channel\', array(\'Author\'=>\'MemberGroup\'))
+				->with(\'Channel\', array(\'Author\'=>array(\'MemberGroup\', \'ChannelEntries\')))
 				->all()<br />';
 		try {
 		$entries = $mb->get('ChannelEntry')
 			->with('Channel',
-				array('Author'=> array('MemberGroup', 'ChannelEntries AS AuthorEntries'))
+				array('Author'=> array('MemberGroup', 'ChannelEntries'))
 			)
 			->all();
 		}

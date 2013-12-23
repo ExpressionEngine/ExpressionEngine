@@ -27,8 +27,9 @@ class Query {
 	 * 			relationships.  The model we initiated the query against.
 	 */
 	private $root = NULL;
-	private $data = array();
+	private $model_index = array();
 	private $results = array();
+	private $result_index = array();
 
 	public function __construct(ModelBuilder $builder, $model_name)
 	{
@@ -481,7 +482,6 @@ class Query {
 
 		// Run the query
 		$result_array = $this->db->get()->result_array();
-//		echo '<pre>'; var_dump($result_array); echo '</pre>';
 		$collection = new Collection($this->parseDatabaseResult($result_array));
 
 
@@ -522,7 +522,7 @@ class Query {
 		//
 		// 	This will allow us to create the models we've pulled and
 		// 	correctly reconstruct the tree.
-		$results = array();
+		$this->results = array();
 		foreach($database_result as $row)
 		{
 			$row_data = array();
@@ -555,35 +555,49 @@ class Query {
 					continue;
 				}
 
-				//echo 'Processing data for path "' . $path . '" <br />';
-				if ($this->isRootModel($path))
+				$model_name =  $model_data['__model_name'];
+				$relationship_name = $model_data['__relationship_name'];
+
+				$model_class = $this->builder->getRegisteredClass($model_name);
+				$primary_key_name = $model_class::getMetaData('primary_key');
+				$primary_key = $model_data[$primary_key_name];
+
+				if ( isset ($this->model_index[$model_name][$primary_key]))
 				{
-					if ($this->modelExists($model_data))
-					{
-						continue;
-					}
-					else
-					{
-						$results[] = $this->createResultModel($model_data);
-					}
+					$model = $this->model_index[$model_name][$primary_key];
 				}
 				else
 				{
-					$parent_model = $this->findModelParent($row_data, $path);
-					if ($this->modelExists($model_data, $parent_model))
+					$model = $this->createResultModel($model_data);
+				}
+
+				if ($this->isRootModel($path))
+				{
+					if ( ! isset($this->result_index[$primary_key]))
 					{
-						continue;
+						$this->results[] = $model;
+						$this->result_index[$primary_key] = TRUE;
 					}
-					else
-					{
-						$relationship_name = $model_data['__relationship_name'];
-						$parent_model->addRelated($relationship_name, $this->createResultModel($model_data));
-					}
+					continue;
+				}
+
+				$parent_model = $this->findModelParent($row_data, $path);
+				if ($parent_model === NULL)
+				{
+					throw new \Exception('Missing model parent!');
+				}
+				else if ($parent_model->hasRelated($relationship_name, $primary_key))
+				{
+					continue;
+				}
+				else
+				{
+					$parent_model->addRelated($relationship_name, $model);
 				}
 			}
 		}
 
-		return $results;
+		return $this->results;
 	}
 
 	/**
@@ -626,46 +640,9 @@ class Query {
 		return $this->model_index[$model_name][$primary_key];
 	}
 
-
-	private function modelExists($model_data, $parent=NULL)
-	{
-		//echo 'Query::modelExists(';
-		$model_name =  $model_data['__model_name'];
-		$relationship_name = $model_data['__relationship_name'];
-
-		$model_class = $this->builder->getRegisteredClass($model_name);
-		$primary_key_name = $model_class::getMetaData('primary_key');
-		$primary_key = $model_data[$primary_key_name];
-
-		//echo $model_name . '(' . $primary_key . ')';
-		//echo ($parent == NULL ? '' : ', $parent');
-		//echo ') <br />';
-
-		if ( $parent !== NULL && $parent->hasRelated($relationship_name, $primary_key))
-		{
-			return TRUE;
-		}
-		elseif ($parent === NULL && isset($this->model_index[$model_name][$primary_key]))
-		{
-			return TRUE;
-		}
-
-		return FALSE;
-	}
-
 	private function findModelParent($path_data, $child_path)
 	{
-		//echo 'Query::findModelParent($path_data, ' . $child_path . ')<br />';
-		foreach($this->model_index as $model_name => $models)
-		{
-			foreach($models as $primary_key => $data)
-			{
-				//echo '$this->model_index[' . $model_name . '][' . $primary_key . ']<br />';
-			}
-		}
-
 		$path = substr($child_path, 0, strrpos($child_path, '_'));
-		//echo 'Parent Path: ' . $path . '<br />';
 
 		$model_data = $path_data[$path];
 
@@ -674,14 +651,10 @@ class Query {
 		$primary_key_name = $model_class::getMetaData('primary_key');
 		$primary_key = $model_data[$primary_key_name];
 
-		//echo 'Is $this->model_index[' . $model_name . '][' . $primary_key . '] set?<br />';
-
 		if (isset($this->model_index[$model_name][$primary_key]))
 		{
 			return $this->model_index[$model_name][$primary_key];
 		}
-
-
 		throw new \Exception('Model parent has not been created yet for child path "' . $child_path . '" and model "' . $model_name . '"');
 	}
 

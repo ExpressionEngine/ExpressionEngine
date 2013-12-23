@@ -117,18 +117,23 @@ class ChannelEntry extends FieldDataContentModel {
 
 	public function testPrint($depth='')
 	{
+		if ($depth == "\t\t\t")
+		{
+			return;
+		}
 		$primary_key = static::getMetaData('primary_key');
-		echo $depth . '=====' . substr(get_class($this), strrpos(get_class($this), '\\')+1) . ': ' . '(' . $this->{$primary_key} . ') ' . $this->title . "=====\n";
-		$depth .= "\t";
+		$model_name = substr(get_class($this), strrpos(get_class($this), '\\')+1);
+		echo $depth . '=====' . $model_name . ': ' . '(' . $this->{$primary_key} . ') ' . $this->title . ' OBJ(' . spl_object_hash($this) .')' . "=====\n";
 		foreach($this->_related_models as $relationship_name=>$models)
 		{
-			echo $depth . 'Relationship: ' . $relationship_name . "\n";
+			echo $depth . '----Relationship: ' . $relationship_name . "----\n";
 			foreach($models as $model)
 			{
-				$model->testPrint($depth);
+				$model->testPrint($depth . "\t");
 			}
+			echo $depth . '---- END Relationship: ' . $relationship_name . "----\n";
 		}
-		echo "\n";
+		echo $depth . '===== END ' . $model_name . ': ' . '(' . $this->{$primary_key} . ') ' . $this->title . "=====\n";
 
 	}
 
