@@ -50,7 +50,7 @@ class EE_RSS_Parser {
 		$feed->registry->call('Cache', 'register', array('ee', 'EE_SimplePie_Cache_driver'));
 
 		// Establish the cache
-		$feed->set_cache_location('ee:');
+		$feed->set_cache_location('ee:' . $cache_name);
 		$feed->set_cache_duration($duration * 60); // Get parameter to seconds
 
 		// Check to see if the feed was initialized, if so, deal with the type

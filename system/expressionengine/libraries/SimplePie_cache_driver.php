@@ -30,7 +30,7 @@ class EE_SimplePie_Cache_Driver implements SimplePie_Cache_Base
 	 *
 	 * @var string
 	 */
-	protected $name;
+	protected $name = '';
 
 	/**
 	 * Create a new cache object
@@ -41,7 +41,15 @@ class EE_SimplePie_Cache_Driver implements SimplePie_Cache_Base
 	 */
 	public function __construct($location, $name, $type)
 	{
-		$this->name = $name;
+		// Separate string to get the namespace
+		$location = explode(':', $location, 2);
+
+		if (isset($location[1]) && ! empty($location[1]))
+		{
+			$this->name = $location[1] . '/';
+		}
+
+		$this->name .= $name;
 	}
 
 	/**
