@@ -1188,11 +1188,6 @@ class Design extends CP_Controller {
 			$headings[] = array('php_parse_location', lang('parse_stage'));
 		}
 
-		if ($this->config->item('save_tmpl_files') == 'y' AND $this->config->item('tmpl_file_basepath') != '')
-		{
-			$headings[] = array('save_template_file', lang('save_template_file'));
-		}
-
 		$headings[] = array('hits', lang('hit_counter'));
 
 		$vars['headings'] = $headings;
@@ -1229,11 +1224,6 @@ class Design extends CP_Controller {
 
 			$vars['template_prefs']['allow_php'] = form_dropdown('allow_php', $yes_no_options, 'null', 'id="allow_php"');
 			$vars['template_prefs']['php_parse_location'] = form_dropdown('php_parse_location', $php_i_o_options, 'null', 'id="php_parse_location"');
-		}
-
-		if ($this->config->item('save_tmpl_files') == 'y' AND $this->config->item('tmpl_file_basepath') != '')
-		{
-			$vars['template_prefs']['save_template_file'] = form_dropdown('save_template_file', $yes_no_options, 'null', 'id="save_template_file"');
 		}
 
 		$vars['template_prefs']['hits'] = form_input(array('name'=>'hits', 'value'=>'', 'size'=>5));
@@ -1419,47 +1409,10 @@ class Design extends CP_Controller {
 			$data['no_auth_bounce'] = $no_auth_bounce;
 		}
 
-		if ($this->config->item('save_tmpl_files') == 'y' AND $this->config->item('tmpl_file_basepath') != '')
-		{
-			$save_template_file = $this->input->post('save_template_file');
-
-			if ($save_template_file != FALSE && $save_template_file != 'null')
-			{
-				$data['save_template_file'] = $save_template_file;
-			}
-		}
-
 		if (count($data) > 0)
 		{
 			// If we switched 'save' to no, we need to delete files.
 			$short_name = $this->config->item('site_short_name');
-
-			if ($this->input->post('save_template_file') == 'n')
-			{
-				$this->db->from('templates');
-				$this->db->select('template_name, template_type, template_id');
-				$this->db->where('save_template_file', 'y');
-				$this->db->where_in('template_id', $templates);
-
-				$query = $this->db->get();
-
-
-				if ($query->num_rows() > 0)
-				{
-					foreach ($query->result_array() as $row)
-					{
-						$tdata = array(
-								'template_id'		=> $row['template_id'],
-								'site_short_name'	=> $short_name,
-								'template_group'	=> $delete[$row['template_id']],
-								'template_name'		=> $row['template_name'],
-								'template_type'		=> $row['template_type']
-								);
-
-						$this->_delete_template_file($tdata);
-					}
-				}
-			}
 
 			$this->db->query($this->db->update_string('exp_templates', $data, "template_id IN ('".implode("','", $templates)."')"));
 		}
