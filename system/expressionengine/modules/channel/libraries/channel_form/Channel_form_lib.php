@@ -1906,6 +1906,13 @@ GRID_FALLBACK;
 		if ( ! empty($params['group_id']))
 		{
 			$params['show_group'] = $params['group_id'];
+
+			ee()->load->library('logger');
+			ee()->logger->deprecate_template_tag(
+				'Using group_id in Channel Form {categories} tag pairs is deprecated. Please use {categories show_group="..."} instead.',
+				"/({exp:channel:form.*)({categories(.*?)group_id=(.*?)})(.*)/uis",
+				"$1{categories$3show_group=$4}$5"
+			);
 		}
 
 		if ( ! empty($params['show_group']))
