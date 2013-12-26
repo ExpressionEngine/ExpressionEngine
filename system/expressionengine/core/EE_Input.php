@@ -149,7 +149,7 @@ class EE_Input extends CI_Input {
 	 * EE_Input::delete_cookie(). Handles the common config file logic, calls 
 	 * the set_cookie_end hook and sets the cookie. 
 	 *
-	 * Must recieve name, value, expire and httponly in the parameter array or 
+	 * Must recieve name, value, and expire in the parameter array or 
 	 * will throw an exception.
  	 * 
 	 * @param	mixed[]	The array of data containing name, value, expire and 
@@ -167,7 +167,7 @@ class EE_Input extends CI_Input {
 			throw new RuntimeException('EE_Input::_set_cookie() is missing key data.');
 		}
 
-		// Set previx, path and domain. We'll pull em out of config.
+		// Set prefix, path and domain. We'll pull em out of config.
 		if (REQ == 'CP' && ee()->config->item('multiple_sites_enabled') == 'y')
 		{
 			$data['prefix'] = ( ! ee()->config->cp_cookie_prefix) ? 'exp_' : ee()->config->cp_cookie_prefix;
