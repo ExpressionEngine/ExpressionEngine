@@ -101,7 +101,15 @@ class Query {
 	protected function translateProperty($relationship_property)
 	{
 		$relationship_name = strtok($relationship_property, '.');
+		$property = strtok('.');
 		$node = $this->getNodeForRelationship($relationship_name);
+
+		if ($node === NULL && $property === FALSE)
+		{
+			$property = $relationship_name;
+			$relationship_name = $this->root->getName();
+			$node = $this->root;
+		}
 
 		if ( ! $node->isRoot())
 		{
@@ -112,8 +120,7 @@ class Query {
 			$model_class = $this->builder->getRegisteredClass($relationship_name);
 		}
 
-		$property = strtok('.');
-		if ( $property === FALSE)
+		if ($property === FALSE)
 		{
 			$property = $model_class::getMetaData('primary_key');
 		}
