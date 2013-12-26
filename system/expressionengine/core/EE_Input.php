@@ -37,7 +37,6 @@ class EE_Input extends CI_Input {
 	 * must be equal to the value used when setting the cookie.  
 	 * 
 	 * @param	string	The name of the cookie to be deleted.
-	 * @param	boolean	The value of HTTP only used to when setting the cookie.
 	 * 
 	 * @return	boolean FALSE if output has already been sent (and thus the 
 	 * 						cookie not set), TRUE otherwise.
@@ -47,7 +46,7 @@ class EE_Input extends CI_Input {
 		$data = array(
 			'name' => $name,
 			'value' => '',
-			'expire' => time() - 86500,
+			'expire' => ee()->localize->now - 86500,
 		);
 	
 		return $this->_set_cookie($data);
@@ -60,10 +59,12 @@ class EE_Input extends CI_Input {
 	 *
 	 * Set a cookie with a particular name, value and expiration.  Determine
 	 * whether the cookie should be HTTP only or not.  Domain, path and prefix
-	 * are kept as parameters to maintain compatibility with CI_Input::set_cookie()
-	 * however, they are ignored in favor of the configuration file values. Expiration
-	 * may be set to 0 to create an unexpiring cookie, or given a time in seconds to
-	 * indicate that a cookie should expire that many seconds from the moment it is set.
+	 * are kept as parameters to maintain compatibility with
+	 * CI_Input::set_cookie() however, they are ignored in favor of the
+	 * configuration file values. Expiration may be set to 0 to create a cookie
+	 * that expires at the end of the session (when the browser closes), or
+	 * given a time in seconds to indicate that a cookie should expire that
+	 * many seconds from the moment it is set.
 	 * 
 	 * @param	string	The name to assign the cookie.  This will be prefixed with
 	 * 						the value from the config file or exp_.
@@ -127,11 +128,11 @@ class EE_Input extends CI_Input {
 		{
 			ee()->load->library('logger');
 			ee()->logger->deprecated('2.6', 'EE_Input::delete_cookie()');
-			$data['expire'] = time() - 86500;
+			$data['expire'] = ee()->localize->now - 86500;
 		}
 		else if ($data['expire'] > 0)
 		{
-			$data['expire'] = time() + $expire;
+			$data['expire'] = ee()->localize->now + $expire;
 		}
 		else 
 		{

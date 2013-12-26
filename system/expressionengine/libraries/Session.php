@@ -945,29 +945,6 @@ class EE_Session {
 		return $tracker;
 	}
 
-	// -------------------------------------------------------------------- 
-	
-	/**
-	 * Update Cookies
-	 */  
-	function update_cookies()
-	{
-		// this method, cookies_exist, and the c_expire cookie are unused application wide
-		ee()->load->library('logger');
-		ee()->logger->deprecated('2.6');
-
-		if (ee()->input->cookie($this->c_expire))
-		{
-			$now 	= time() + 300;
-			$expire = 60*60*24*365;
-			
-			if (ee()->input->cookie($this->c_expire) > $now)
-			{ 
-				ee()->input->set_cookie($this->c_expire , time()+$expire, $expire);
-			}
-		}
-	}
-
 	// --------------------------------------------------------------------	
 
 	/**
