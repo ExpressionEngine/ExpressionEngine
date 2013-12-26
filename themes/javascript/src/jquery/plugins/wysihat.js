@@ -129,6 +129,7 @@ var WysiHat = window.WysiHat = {
 // ---------------------------------------------------------------------
 
 WysiHat.Editor = function($field, options) {
+
 	this.$field = $field.hide();
 	this.$editor = this.create();
 
@@ -138,8 +139,9 @@ WysiHat.Editor = function($field, options) {
 	this.Element = WysiHat.Element;
 	this.Commands = WysiHat.Commands;
 	this.Formatting = WysiHat.Formatting;
-	
+
 	this.init(options);
+
 }
 
 WysiHat.Editor.prototype = {
@@ -151,6 +153,24 @@ WysiHat.Editor.prototype = {
 	_emptyChar: String.fromCharCode(8203),
 	_empty: function () {
 	    return '<p>'+this._emptyChar+'</p>';
+	},
+
+	isEmpty: function() {
+		html = this.$editor.html();
+
+		if ( html == '' ||
+			 html == '\0' ||
+			 html == '<br>' ||
+			 html == '<br/>' ||
+			 html == '<p></p>' ||
+			 html == '<p><br></p>' ||
+			 html == '<p>\0</p>' ||
+			 html == this._empty() )
+		{
+			return true;
+		}
+
+		return false;
 	},
 
 	/**
@@ -266,18 +286,14 @@ WysiHat.Editor.prototype = {
 			s = window.getSelection(),
 			r;
 
-		if ( val == '' ||
-			 val == '<br>' ||
-			 val == '<br/>' ||
-			 val == '<p></p>' ||
-			 val == '<p>\0</p>')
+		if (this.isEmpty())
 		{
 			$el.html(this._empty());
 
 			r = document.createRange();
 			s.removeAllRanges();
 			r.selectNodeContents($el.find('p').get(0));
-			
+
 			// Get Firefox's cursor behaving naturally by clearing out the
 			// zero-width character; if we run this for webkit too, then it
 			// breaks Webkit's cursor behavior
@@ -568,7 +584,7 @@ WysiHat.Paster = (function() {
 					}
 
 					var $parentBlock = $(startC).closest(WysiHat.Element.getBlocks().join(','));
-					
+
 					if ($parentBlock.length)
 					{
 						Editor.Formatting.cleanupPaste($paster, $parentBlock.get(0).tagName);
@@ -592,22 +608,13 @@ WysiHat.Paster = (function() {
 						Editor.Commands.insertHTML(''); // IE 8 can't do deleteContents
 					}
 
-					html = Editor.$editor.html();
-
-					if ( html == '' ||
-						 html == '\0' ||
-						 html == '<br>' ||
-						 html == '<br/>' ||
-						 html == '<p></p>' ||
-						 html == '<p><br></p>' ||
-						 html == '<p>\0</p>' ||
-						 html == Editor._empty())
+					if (Editor.isEmpty())
 					{
 						// on an empty editor we want to completely replace
 						// otherwise the first paragraph gets munged
 						Editor.selectEmptyParagraph();
 					}
-					
+
 					Editor.Commands.insertHTML($paster.html());
 
 					// The final cleanup pass will inevitably lose the selection
@@ -1013,11 +1020,21 @@ WysiHat.Event.prototype = {
 			// 'focusout change': $.proxy(this._blurEvent, this),
 			'selectionchange focusin mousedown': $.proxy(this._rangeEvent, this),
 			'keydown keyup keypress': $.proxy(this._keyEvent, this),
-			'cut undo redo paste input contextmenu': $.proxy(this._menuEvent, this)
+			'cut undo redo paste input contextmenu': $.proxy(this._menuEvent, this),
+			'focus': $.proxy(this._focusEvent, this)
 		//	'click doubleclick mousedown mouseup': $.proxy(this._mouseEvent, this)
 		};
 
 		this.$editor.on(event_map);
+	},
+
+	_focusEvent: function() {
+		if (this.Editor.isEmpty())
+		{
+			// on an empty editor we want to completely replace
+			// otherwise the first paragraph gets munged
+			this.Editor.selectEmptyParagraph();
+		}
 	},
 
 	/**
@@ -1234,7 +1251,7 @@ WysiHat.Undo.prototype = {
 		var delta = this.saved[this.index],
 			diff = delta.changes,
 			length = diff.length;
-		
+
 		for (var i = 0; i < length; i++) {
 			change = diff[i];
 			S = S.substring(0, change[0]) + change[1] + S.substring(change[0] + change[2].length);
@@ -1310,7 +1327,7 @@ WysiHat.Undo.prototype = {
 			{
 				break;
 			}
-			
+
 			trim_before++;
 		}
 
@@ -1796,7 +1813,7 @@ $.extend(WysiHat.Commands, {
 		{
 			return this.is[state]();
 		}
-		
+
 		try {
 			return document.queryCommandState(state);
 		}
@@ -2324,7 +2341,7 @@ $.extend(WysiHat.Commands.make, {
  * this.is('italic');
  * this.make('italic');
  * this.toggle('blockquote');
- * 
+ *
  * this.Commands.advancedStuff();
  */
 
@@ -2606,19 +2623,21 @@ WysiHat.Formatting = {
 				.replace( /<\/?[A-Z]+/g, function(tag) {
 					return tag.toLowerCase();
 				})
-				// // cleanup whitespace and emtpy tags
-				.replace(/(\t|\n| )+/g, ' ')		// reduce whitespace to spaces
-				.replace(/>\s+</g, '> <')			// reduce whitespace next to tags
-				.replace('<p>&nbsp;</p>', '')		// remove empty paragraphs
-				.replace(/<br\/?>\s?<\/p>/, '</p>')	// remove brs at ends of paragraphs
-				.replace(/<p>\n+<\/p>/, '')			// remove paragraphs full of newlines
-				.replace(that.reBlocks, '$1\n\n')	// line between blocks
-				.replace(/<br\/?>/g, '<br>\n')		// newlines after brs
-				.replace(/&nbsp;/g, ' ')			// nbps to spaces
+				// cleanup whitespace and empty tags
+				.replace(/(\t|\n| )+/g, ' ')			// reduce whitespace to spaces
+				.replace(/>\s+</g, '> <')				// reduce whitespace next to tags
+				.replace('/&nbsp;/g', ' ')				// remove non-breaking spaces
+				.replace('/<p>[ ]+</p>/g', '')			// remove empty paragraphs
+				.replace(/<br ?\/?>\s?<\/p>/g, '</p>')	// remove brs at ends of paragraphs
+				.replace(/<p>\n+<\/p>/g, '')			// remove paragraphs full of newlines
+				.replace(that.reBlocks, '$1\n\n')		// line between blocks
+				.replace(/<br ?\/?>/g, '<br>\n')		// newlines after brs
 
 				// prettify lists
+				.replace(/(ul|ol|li)>\s+<(\/)?(ul|ol|li)>/g, '$1>\n<$2$3>')
 				.replace(/><li>/g, '>\n<li>')
 				.replace(/<\/li>\n+</g, '</li>\n<')
+				.replace(/^\s+(<li>|<\/?ul>|<\/?ol>)/gm, '$1')
 				.replace(/<li>/g, '    <li>')
 
 				// prettify tables
@@ -2629,11 +2648,17 @@ WysiHat.Formatting = {
 				.replace(/<tr>/g, '    <tr>');
 		});
 
+		// Remove the extra white space that gets added after the
+		// last block in the .replace(that.reBlocks, '$1\n\n') line.	
+		// If we don't remove it, then it sticks around and eventually
+		// becomes a new paragraph.  Which is just annoying.
+		$el.html($el.html().trim());
+
 	},
-	
+
 	getBrowserMarkupFrom: function( $el )
 	{
-		var $container = $('<div>' + $el.val().replace(/\n/, '') + '</div>'),
+		var $container = $('<div>' + $el.val()+ '</div>'),
 			html;
 
 		this.cleanup($container);
@@ -2847,7 +2872,7 @@ WysiHat.Toolbar.prototype = {
 		}
 		else
 		{
-			$btn = $('<button aria-pressed="false" tabindex="-1"></button>');
+			$btn = $('<button aria-pressed="false" tabindex="-1" type="button"></button>');
 
 			$btn.append('<b>' + button.label + '</b>')
 				.addClass( 'button ' + button.name)
@@ -2883,7 +2908,6 @@ WysiHat.Toolbar.prototype = {
 
 	observeButtonClick: function(button)
 	{
-
 		var evt = (button.type && button.type == 'select') ? 'change' : 'click',
 			that = this;
 

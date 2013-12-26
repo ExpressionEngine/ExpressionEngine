@@ -12,10 +12,10 @@ $lang = array(
 'yes' =>
 'Yes',
 
-'on' => 
+'on' =>
 'on',
 
-'off' => 
+'off' =>
 'off',
 
 'first' =>
@@ -24,13 +24,13 @@ $lang = array(
 'last' =>
 'Last',
 
-'enabled' => 
+'enabled' =>
 'enabled',
 
-'disabled' => 
+'disabled' =>
 'disabled',
 
-'back' => 
+'back' =>
 'Back',
 
 'submit' =>
@@ -57,7 +57,7 @@ $lang = array(
 'dot' =>
 'dot',
 
-'or' => 
+'or' =>
 'or',
 
 'id' =>
@@ -69,10 +69,10 @@ $lang = array(
 'search' =>
 'Search',
 
-'system_off_msg' => 
+'system_off_msg' =>
 'This site is currently inactive.',
 
-'not_authorized' => 
+'not_authorized' =>
 'You are not authorized to perform this action',
 
 'auto_redirection' =>
@@ -112,7 +112,7 @@ $lang = array(
 'general_error' =>
 'The following errors were encountered',
 
-'invalid_action' => 
+'invalid_action' =>
 'The action you have requested is invalid.',
 
 'current_password_required' =>
@@ -158,10 +158,10 @@ Confirm the fieldtype file is located in the expressionengine/third_party/ direc
 // Template.php
 //----------------------------
 
-'error_tag_syntax' => 
+'error_tag_syntax' =>
 'The following tag has a syntax error:',
 
-'error_fix_syntax' => 
+'error_fix_syntax' =>
 'Please correct the syntax in your template.',
 
 'error_tag_module_processing' =>
@@ -173,23 +173,26 @@ Confirm the fieldtype file is located in the expressionengine/third_party/ direc
 'template_loop' =>
 'You have caused a template loop due to improperly nested sub-templates (\'%s\' recursively called)',
 
+'template_load_order' =>
+'Template load order',
+
 //----------------------------
 // Email
 //----------------------------
 
-'forgotten_email_sent' => 
+'forgotten_email_sent' =>
 'If this email address is associated with an account, instructions for resetting your password have just been emailed to you.',
 
-'error_sending_email' => 
+'error_sending_email' =>
 'Unable to send email at this time.',
 
-'no_email_found' => 
+'no_email_found' =>
 'The email address you submitted was not found in the database.',
 
-'your_new_login_info' => 
+'your_new_login_info' =>
 'Login information',
 
-'password_has_been_reset' => 
+'password_has_been_reset' =>
 'Your password was reset and a new one has been emailed to you.',
 
 //----------------------------
@@ -250,140 +253,140 @@ Confirm the fieldtype file is located in the expressionengine/third_party/ direc
 'PM' =>
 'PM',
 
-'Sun' => 
+'Sun' =>
 'Sun',
 
-'Mon' => 
+'Mon' =>
 'Mon',
 
-'Tue' => 
+'Tue' =>
 'Tue',
 
-'Wed' => 
+'Wed' =>
 'Wed',
 
-'Thu' => 
+'Thu' =>
 'Thu',
 
-'Fri' => 
+'Fri' =>
 'Fri',
 
-'Sat' => 
+'Sat' =>
 'Sat',
 
-'Su' =>  
+'Su' =>
 'S',
 
-'Mo' => 
+'Mo' =>
 'M',
 
-'Tu' => 
+'Tu' =>
 'T',
 
-'We' => 
+'We' =>
 'W',
 
-'Th' => 
+'Th' =>
 'T',
 
-'Fr' => 
+'Fr' =>
 'F',
 
-'Sa' => 
+'Sa' =>
 'S',
 
-'Sunday' => 
+'Sunday' =>
 'Sunday',
 
-'Monday' => 
+'Monday' =>
 'Monday',
 
-'Tuesday' => 
+'Tuesday' =>
 'Tuesday',
 
-'Wednesday' => 
+'Wednesday' =>
 'Wednesday',
 
-'Thursday' => 
+'Thursday' =>
 'Thursday',
 
-'Friday' => 
+'Friday' =>
 'Friday',
 
-'Saturday' => 
+'Saturday' =>
 'Saturday',
 
 
-'Jan' => 
+'Jan' =>
 'Jan',
 
-'Feb' => 
+'Feb' =>
 'Feb',
 
-'Mar' => 
+'Mar' =>
 'Mar',
 
-'Apr' => 
+'Apr' =>
 'Apr',
 
-'May' => 
+'May' =>
 'May',
 
-'Jun' => 
+'Jun' =>
 'Jun',
 
-'Jul' => 
+'Jul' =>
 'Jul',
 
-'Aug' => 
+'Aug' =>
 'Aug',
 
-'Sep' => 
+'Sep' =>
 'Sep',
 
-'Oct' => 
+'Oct' =>
 'Oct',
 
-'Nov' => 
+'Nov' =>
 'Nov',
 
-'Dec' => 
+'Dec' =>
 'Dec',
 
-'January' => 
+'January' =>
 'January',
 
-'February' => 
+'February' =>
 'February',
 
-'March' => 
+'March' =>
 'March',
 
-'April' => 
+'April' =>
 'April',
 
-'May_l' => 
+'May_l' =>
 'May',
 
-'June' => 
+'June' =>
 'June',
 
-'July' => 
+'July' =>
 'July',
 
-'August' => 
+'August' =>
 'August',
 
-'September' => 
+'September' =>
 'September',
 
-'October' => 
+'October' =>
 'October',
 
-'November' => 
+'November' =>
 'November',
 
-'December' => 
+'December' =>
 'December',
 
 

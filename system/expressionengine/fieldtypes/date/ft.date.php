@@ -31,7 +31,6 @@ class Date_ft extends EE_Fieldtype {
 
 	var $has_array_data = FALSE;
 
-
 	function save($data)
 	{
 		if ( ! is_numeric($data))
@@ -129,7 +128,11 @@ class Date_ft extends EE_Fieldtype {
 		}
 		else
 		{
-			if ( ! $field_data)
+			// primarily handles default expiration, comment expiration, etc.
+			// in this context 'offset' is unrelated to localization.
+			$offset = isset($this->settings['default_offset']) ? $this->settings['default_offset'] : 0;
+
+			if ( ! $field_data && ! $offset)
 			{
 				$field_data = $date;
 
@@ -145,6 +148,11 @@ class Date_ft extends EE_Fieldtype {
 					$localize = $this->settings['field_dt'];
 				}
 
+				if ( ! $field_data && $offset)
+				{
+					$field_data = $date + $offset;
+				}
+
 				// doing it in here so that if we don't have field_data
 				// the field doesn't get populated, but the calendar still
 				// shows the correct default.
@@ -157,7 +165,18 @@ class Date_ft extends EE_Fieldtype {
 			$date = $field_data;
 		}
 
-		ee()->javascript->set_global('date.include_seconds', ee()->config->item('include_seconds'));
+		$date_fmt = ee()->session->userdata('time_format');
+		$date_fmt = $date_fmt ? $date_fmt : ee()->config->item('time_format');
+
+		ee()->javascript->set_global(array(
+			'date.format' => $date_fmt,
+			'date.include_seconds' => ee()->config->item('include_seconds')
+		));
+
+		ee()->cp->add_js_script(array(
+			'ui' => 'datepicker',
+			'file' => 'cp/date'
+		));
 
 		// Note- the JS will automatically localize the default date- but not necessarily in a way we want
 		// Hence we adjust default date to compensate for the coming localization
@@ -346,6 +365,19 @@ class Date_ft extends EE_Fieldtype {
 				'default'		=> NULL
 			)
 		);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Accept all content types.
+	 *
+	 * @param string  The name of the content type
+	 * @return bool   Accepts all content types
+	 */
+	public function accepts_content_type($name)
+	{
+		return TRUE;
 	}
 }
 

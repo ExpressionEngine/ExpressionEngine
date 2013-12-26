@@ -62,32 +62,6 @@ if ( ! function_exists('sanitize_filename'))
 	}
 }
 
-// --------------------------------------------------------------------
-
-/**
- * Hash encode a string
- *
- * @access	public
- * @param	string
- * @return	string
- */
-if ( ! function_exists('do_hash'))
-{
-	function do_hash($str, $type = 'sha1')
-	{
-		$CI =& get_instance();
-		$CI->load->library('logger');
-		$CI->logger->deprecated('2.6', "PHP's hashing functions");
-
-		if ($type == 'sha1')
-		{
-			return sha1($str);
-		}
-		
-		return md5($str);
-	}
-}
-
 // ------------------------------------------------------------------------
 
 /**

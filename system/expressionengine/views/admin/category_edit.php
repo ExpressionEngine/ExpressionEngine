@@ -43,14 +43,16 @@
 		<?php endif ?>
 	</div>
 
+	<div class="clear"></div>
+
 	<p>
 		<?=form_label(lang('category_parent'), 'parent_id')?><br />
-		<?php 
+		<?php
 		$options['0'] = $this->lang->line('none');
 		foreach($parent_id_options as $val)
 		{
 			$indent = ($val['5'] != 1) ? repeater(NBS.NBS.NBS.NBS, $val['5']) : '';
-			$options[$val['0']] = $indent.$val['1']; 
+			$options[$val['0']] = $indent.$val['1'];
 		}
 		echo form_dropdown('parent_id', $options, $parent_id, 'id="parent_id"');
 		?>
@@ -71,7 +73,7 @@
 					'name'		=> 'field_id_'.$field['field_id'],
 					'id'		=> 'field_id_'.$field['field_id'],
 					'value'		=> set_value(
-						'field_id_'.$field['field_id'], 
+						'field_id_'.$field['field_id'],
 						$field['field_content']
 					),
 					'maxlength'	=> $field['field_maxl'],

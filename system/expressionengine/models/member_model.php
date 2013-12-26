@@ -99,7 +99,7 @@ class Member_model extends CI_Model {
 	 */
 	function get_members($group_id = '', $limit = '', $offset = '', $search_value = '', $order = array(), $column = 'all')
 	{
-		$this->db->select("members.username, members.member_id, members.screen_name, members.email, members.join_date, members.last_visit, members.group_id, members.member_id, members.in_authorlist");
+		$this->db->select("members.username, members.member_id, members.screen_name, members.email, members.join_date, members.last_visit, members.group_id, members.in_authorlist");
 
 		$this->_prep_search_query($group_id, $search_value, $column);
 
@@ -865,11 +865,14 @@ class Member_model extends CI_Model {
 			$this->db->where('author_id', $member_id);
 			$new_stats = $this->db->get('channel_titles')->row_array();
 
+			// Default to 0 if there are no entries to pull back
+			$entry_date = ($new_stats['entry_date']) ? $new_stats['entry_date'] : 0;
+
 			// Update member stats
 			$this->db->where('member_id', $member_id);
 			$this->db->update('members', array(
 				'total_entries' => $new_stats['count'],
-				'last_entry_date' => $new_stats['entry_date']
+				'last_entry_date' => $entry_date
 			));
 		}
 	}
@@ -1627,16 +1630,9 @@ class Member_model extends CI_Model {
 		}
 		elseif ($search_value != '')
 		{
-			$search_field = 'all';
-
-			if ( ! in_array($search_in, $no_search))
+			if (in_array($search_in, $no_search) OR $search_in == 'all')
 			{
-				$search_in = $search_field;
-			}
-
-			if ($search_in == 'all')
-			{
-				$this->db->where("(`exp_members`.`screen_name` LIKE '%".$this->db->escape_like_str($search_value)."%' OR `exp_members`.`username` LIKE '%".$this->db->escape_like_str($search_value)."%' OR `exp_members`.`email` LIKE '%".$this->db->escape_like_str($search_value)."%')", NULL, TRUE);
+				$this->db->where("(`exp_members`.`screen_name` LIKE '%".$this->db->escape_like_str($search_value)."%' OR `exp_members`.`username` LIKE '%".$this->db->escape_like_str($search_value)."%' OR `exp_members`.`email` LIKE '%".$this->db->escape_like_str($search_value)."%' OR `exp_members`.`member_id` LIKE '%".$this->db->escape_like_str($search_value)."%')", NULL, TRUE);
 			}
 			else
 			{

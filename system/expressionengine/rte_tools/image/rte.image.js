@@ -8,25 +8,26 @@
  * ImageChooser - hit the button, select/show the filebrowser
  *
  * And then lastly, at the end of the file, there is the button to hook
- * it all up. 
+ * it all up.
  */
 (function() {
 
-var Overlay = {
+function Overlay($editor) {
 
-	init: function($editor) {
-		this.lang = EE.rte.image;
-		this.dragging = false;
+	this.lang = EE.rte.image;
+	this.dragging = false;
 
-		this.$current = null;
-		this.$editor = $editor;
-		this.$overlay = this._create_overlay();
+	this.$current = null;
+	this.$editor = $editor;
+	this.$overlay = this._create_overlay();
 
-		this._add_buttons();
-		this._bind_hover();
-		this._disable_dragging();
-		this._select_on_double_click();
-	},
+	this._add_buttons();
+	this._bind_hover();
+	this._disable_dragging();
+	this._select_on_double_click();
+}
+
+Overlay.prototype = {
 
 	/**
 	 * Create a blank overlay div and connect it to the editor. We'll fill
@@ -65,13 +66,12 @@ var Overlay = {
 	_create_button: function(className) {
 		var that = this,
 			action = className.replace('-', '_');
-			button = $('<button class="button '+className+'"><b>'+this.lang[action]+'</b></button>'),
-			button_actions = this._button_actions();
+			button = $('<button class="button '+className+'" type="button"><b>'+this.lang[action]+'</b></button>');
 
 		button.attr('title', this.lang[action]);
 		button.click(function(e) {
 			e.preventDefault();
-			button_actions[action]();
+			that._button_actions()[action]();
 			that._hide_overlay();
 		});
 
@@ -91,7 +91,7 @@ var Overlay = {
 
 			var	$this	= $(this),
 				offsets = $this.position();
-			
+
 			that.$current = $this.closest('figure');
 			that.$current.data('floating', (that.$current.css('float') != 'none'));
 
@@ -163,6 +163,7 @@ var Overlay = {
 	 * Align the <figure> tag currently being worked on.
 	 */
 	_align_figure: function(direction) {
+
 		var css = { 'text-align': direction };
 
 		if (this.$current.data('floating')) {
@@ -179,8 +180,8 @@ var Overlay = {
 		var that = this;
 
 		return {
-			align_left: $.proxy(this, '_align_figure', 'left'),
-			align_right: $.proxy(this, '_align_figure', 'right'),
+			align_left: $.proxy(that, '_align_figure', 'left'),
+			align_right: $.proxy(that, '_align_figure', 'right'),
 
 			align_center: function() {
 				if (that.$current.data('floating')) {
@@ -307,7 +308,7 @@ var ImageChooser = {
 		this.$editor.focus();
 		this.Editor.Commands.restoreRanges(this.saved_ranges);
 		this.saved_ranges[0].insertNode( $figure.get(0) );
-				
+
 		this.$browser
 			.find('#view_type').val('list').change() // switch the view back
 			.parent().show();						 // show the footer again
@@ -364,13 +365,13 @@ WysiHat.addButton('image', {
 			path_re = new RegExp(path, 'g');
 			html = html.replace( path_re, filedirs[path] );
 		}
-		
+
 		$editor.html(html);
 
 		// blargh
 		setTimeout(function() {
 			ImageChooser.init($editor, that.$element);
-			Overlay.init($editor);
+			new Overlay($editor);
 		}, 50);
 
 		return this.parent.init(name, $editor);

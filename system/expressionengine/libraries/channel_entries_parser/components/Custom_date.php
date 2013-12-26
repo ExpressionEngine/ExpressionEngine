@@ -8,10 +8,10 @@
  * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
- * @since		Version 2.0
+ * @since		Version 2.6
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -137,7 +137,7 @@ class EE_Channel_custom_date_parser implements EE_Channel_parser_component {
 					LD.$tag.RD,
 					ee()->localize->format_date(
 						$custom_date_fields[$tag],
-						$data['field_id_'.$dval], 
+						$data['field_id_'.$dval],
 						$localize
 					),
 					$tagdata

@@ -8,10 +8,10 @@
  * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
- * @since		Version 2.0
+ * @since		Version 2.6
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -39,8 +39,8 @@ class EE_Channel_category_parser implements EE_Channel_parser_component {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Find any {category} {/category} tag pair chunks in the template and
-	 * extract them for easier parsing in the main loop.
+	 * Before the parser runs, this will gather all category tag pairs that
+	 * need processing.
 	 *
 	 * The returned chunks will be passed to replace() as a third parameter.
 	 *
@@ -50,9 +50,23 @@ class EE_Channel_category_parser implements EE_Channel_parser_component {
 	 */
 	public function pre_process($tagdata, EE_Channel_preparser $pre)
 	{
+		return $this->_get_cat_chunks($tagdata, $pre->prefix());
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Find any {category} {/category} tag pair chunks in the template and
+	 * extract them.
+	 *
+	 * @param String	The tagdata to be parsed
+	 * @param String	Prefix used in current channel parsing
+	 * @return Array	The found category chunks
+	 */
+	protected function _get_cat_chunks($tagdata, $prefix)
+	{
 		$cat_chunk = array();
-		$prefix = $pre->prefix();
-		
+
 		if (preg_match_all("/".LD.$prefix."categories(.*?)".RD."(.*?)".LD.'\/'.$prefix.'categories'.RD."/s", $tagdata, $matches))
 		{
 			for ($j = 0; $j < count($matches[0]); $j++)
@@ -88,12 +102,25 @@ class EE_Channel_category_parser implements EE_Channel_parser_component {
 
 		$tagname = $prefix.'categories';
 
+		// Check to see if the category chunks still exist; if not, check
+		// the tagdata in case they've been modified since pre-processing
+		foreach ($cat_chunk as $chunk)
+		{
+			if (strpos($tagdata, $chunk[2]) === FALSE)
+			{
+				$cat_chunk = $this->_get_cat_chunks($tagdata, $prefix);
+
+				$obj->preparsed()->set_once_data($this, $cat_chunk);
+				break;
+			}
+		}
+
 		if (isset($categories[$data['entry_id']]) AND is_array($categories[$data['entry_id']]) AND count($cat_chunk) > 0)
 		{
 			// Get category ID from URL for {if active} conditional
 			ee()->load->helper('segment');
 			$active_cat = ($obj->channel()->pagination->dynamic_sql && $obj->channel()->cat_request) ? parse_category($obj->channel()->query_string) : FALSE;
-			
+
 			foreach ($cat_chunk as $catkey => $catval)
 			{
 				$cats = '';
@@ -160,10 +187,10 @@ class EE_Channel_category_parser implements EE_Channel_parser_component {
 					{
 						$temp = preg_replace("#".LD."path=.+?".RD."#", ee()->functions->create_url("SITE_INDEX"), $temp);
 					}
-					
+
 					ee()->load->library('file_field');
 					$cat_image = ee()->file_field->parse_field($v[3]);
-					
+
 					$cat_vars = array(
 						'category_name'			=> $v[2],
 						'category_url_title'	=> $v[6],
@@ -217,7 +244,7 @@ class EE_Channel_category_parser implements EE_Channel_parser_component {
 									'allow_img_url'	=> 'y'
 								)
 							);
-							
+
 							$temp = str_replace(LD.$cv2['field_name'].RD, $field_content, $temp);
 						}
 						else

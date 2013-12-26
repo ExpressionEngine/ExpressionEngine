@@ -86,8 +86,8 @@ class EE_Core {
 		// application constants
 		define('IS_CORE',		FALSE);
 		define('APP_NAME',		'ExpressionEngine'.(IS_CORE ? ' Core' : ''));
-		define('APP_BUILD',		'20130506');
-		define('APP_VER',		'2.6.1');
+		define('APP_BUILD',		'20131210');
+		define('APP_VER',		'2.7.3');
 		define('SLASH',			'&#47;');
 		define('LD',			'{');
 		define('RD',			'}');
@@ -274,7 +274,7 @@ class EE_Core {
 	 */
 	public function run_ee()
 	{
-		$this->native_plugins = array('magpie', 'markdown', 'xml_encode');
+		$this->native_plugins = array('magpie', 'markdown', 'rss_parser', 'xml_encode');
 		$this->native_modules = array(
 			'blacklist', 'channel', 'comment', 'commerce', 'email', 'emoticon',
 			'file', 'forum', 'ip_to_nation', 'jquery', 'mailinglist', 'member',
@@ -312,10 +312,17 @@ class EE_Core {
 		ee()->load->library('session');
 		ee()->load->library('user_agent');
 
+		// Get timezone to set as PHP timezone
+		$timezone = ee()->session->userdata('timezone');
+
+		// In case this is a timezone stored in the old format...
+		if ( ! in_array($timezone, DateTimeZone::listIdentifiers()))
+		{
+			$timezone = ee()->localize->get_php_timezone($timezone);
+		}
+
 		// Set a timezone for any native PHP date functions being used
-		date_default_timezone_set(
-			ee()->localize->get_php_timezone(ee()->session->userdata('timezone'))
-		);
+		date_default_timezone_set($timezone);
 
 		// Load the "core" language file - must happen after the session is loaded
 		ee()->lang->loadfile('core');
@@ -345,9 +352,16 @@ class EE_Core {
 
 		ee()->input->filter_get_data(REQ);
 
-		if (REQ != 'ACT')
+		if (REQ != 'ACTION')
 		{
-			$this->process_secure_forms();
+			if (AJAX_REQUEST && ee()->router->fetch_class() == 'login')
+			{
+				$this->process_secure_forms(EE_Security::CSRF_EXEMPT);
+			}
+			else
+			{
+				$this->process_secure_forms();
+			}
 		}
 
 		// Update system stats
@@ -408,19 +422,7 @@ class EE_Core {
 	 */
 	public function run_cp()
 	{
-		$s = 0;
-
-		switch (ee()->config->item('admin_session_type'))
-		{
-			case 's'	:
-				$s = ee()->session->userdata('session_id', 0);
-				break;
-			case 'cs'	:
-				$s = ee()->session->userdata('fingerprint', 0);
-				break;
-		}
-
-		define('BASE', SELF.'?S='.$s.'&amp;D=cp'); // cp url
+		$this->_somebody_set_us_up_the_base();
 
 		// Show the control panel home page in the event that a
 		// controller class isn't found in the URL
@@ -489,10 +491,11 @@ class EE_Core {
 			ee()->functions->redirect(BASE.AMP.'C=login'.$return_url);
 		}
 
-		// Is the user banned?
+		// Is the user banned or not allowed CP access?
 		// Before rendering the full control panel we'll make sure the user isn't banned
 		// But only if they are not a Super Admin, as they can not be banned
-		if (ee()->session->userdata('group_id') != 1 AND ee()->session->ban_check('ip'))
+		if ((ee()->session->userdata('group_id') != 1 && ee()->session->ban_check('ip')) OR
+			(ee()->session->userdata('member_id') !== 0 && ! ee()->cp->allowed_group('can_access_cp')))
 		{
 			return ee()->output->fatal_error(lang('not_authorized'));
 		}
@@ -513,6 +516,29 @@ class EE_Core {
 		{
 			ee()->config->update_site_prefs(array('doc_url' => 'http://ellislab.com/expressionengine/user-guide/'));
 		}
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Define the BASE constant
+	 * @return void
+	 */
+	private function _somebody_set_us_up_the_base()
+	{
+		$s = 0;
+
+		switch (ee()->config->item('admin_session_type'))
+		{
+			case 's'	:
+				$s = ee()->session->userdata('session_id', 0);
+				break;
+			case 'cs'	:
+				$s = ee()->session->userdata('fingerprint', 0);
+				break;
+		}
+
+		define('BASE', SELF.'?S='.$s.'&amp;D=cp'); // cp url
 	}
 
 	// ------------------------------------------------------------------------
@@ -749,8 +775,9 @@ class EE_Core {
 		{
 			if (REQ == 'CP')
 			{
+				$this->_somebody_set_us_up_the_base();
 				ee()->session->set_flashdata('message_failure', lang('invalid_action'));
-				ee()->functions->redirect(SELF);
+				ee()->functions->redirect(BASE);
 			}
 			else
 			{

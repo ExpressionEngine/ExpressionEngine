@@ -3,7 +3,7 @@
 <?php if ($grand_total == 0):?>
 	<p class="notice"><?=lang('no_members_matching_that_criteria')?></p>
 <?php else:?>
-	
+
 	<?php
 		//  Find Member Accounts with IP
 		if ($members_accounts->num_rows() > 0):
@@ -101,7 +101,7 @@
 			$this->table->set_heading(
 				array('style'=>'width:40%;', 'data'=>lang('comment')),
 				array('style'=>'width:20%;', 'data'=>lang('author')),
-				array('style'=>'width:20%;', 'data'=>lang('ip')),
+				array('style'=>'width:20%;', 'data'=>lang('mbr_email_address')),
 				array('style'=>'width:20%;', 'data'=>lang('ip_address'))
 			);
 
@@ -120,7 +120,7 @@
 					'<a href="'.BASE.AMP.'C=publish'.AMP.'M=edit_comment'.AMP.'channel_id='.$comment->channel_id.AMP.'entry_id='.$comment->entry_id.AMP.'comment_id='.$comment->comment_id.AMP.'current_page=0"><b>'.substr(strip_tags($comment->comment), 0, 45).'...</b></a>',
 					$author,
 					'<a href="mailto:'.$comment->email.'">'.$comment->email.'</a>',
-					$channel->ip_address
+					$comment->ip_address
 				);
 			}
 
@@ -128,11 +128,11 @@
 			$this->table->clear(); // get out of the way for the next table
 	?>
 	<div id="filterMenu">
-		<h3><?=lang('channel_entries')?></h3>
+		<h3><?=lang('comments')?></h3>
 		<?=$comments_table?><br />
 		<?=$comments_pagination?>
 	</div>
-	
+
 	<?php endif; /*end comments*/?>
 
 

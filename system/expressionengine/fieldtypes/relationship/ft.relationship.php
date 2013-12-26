@@ -4,10 +4,10 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
- * @since		Version 2.0
+ * @since		Version 2.6
  * @filesource
  */
 
@@ -308,6 +308,7 @@ class Relationship_ft extends EE_Fieldtype {
 			}
 		}
 
+
 		$limit_channels = $this->settings['channels'];
 		$limit_categories = $this->settings['categories'];
 		$limit_statuses = $this->settings['statuses'];
@@ -319,6 +320,13 @@ class Relationship_ft extends EE_Fieldtype {
 
 		$order_field = $this->settings['order_field'];
 
+		$separate_query_for_selected = (count($selected) && $limit);
+
+		if ($separate_query_for_selected)
+		{
+			ee()->db->start_cache();
+		}
+
 		// Bug 19321, old fields use date
 		if ($order_field == 'date')
 		{
@@ -326,13 +334,10 @@ class Relationship_ft extends EE_Fieldtype {
 		}
 
 		ee()->db
+			->distinct()
+			->from('channel_titles')
 			->select('channel_titles.entry_id, channel_titles.title')
 			->order_by($order_field, $this->settings['order_dir']);
-
-		if ($limit)
-		{
-			ee()->db->limit($limit);
-		}
 
 		if (count($limit_channels))
 		{
@@ -412,13 +417,34 @@ class Relationship_ft extends EE_Fieldtype {
 			ee()->db->where('channel_titles.entry_id !=', $entry_id);
 		}
 
-		if (count($selected))
+		if ($limit)
 		{
-			ee()->db->or_where_in('channel_titles.entry_id', $selected);
+			ee()->db->limit($limit);
 		}
 
-		ee()->db->distinct();
-		$entries = ee()->db->get('channel_titles')->result_array();
+		// If we've got a limit and selected entries, we need to run the query
+		// twice. Once without those entries and then separately with only those
+		// entries.
+
+		if ($separate_query_for_selected)
+		{
+			ee()->db->stop_cache();
+			ee()->db->where_not_in('channel_titles.entry_id', $selected);
+		}
+
+		$entries = ee()->db->get()->result_array();
+
+		if ($separate_query_for_selected)
+		{
+			ee()->db->limit(count($selected));
+			ee()->db->where_in('channel_titles.entry_id', $selected);
+			$entries = array_merge(
+				$entries,
+				ee()->db->get()->result_array()
+			);
+		}
+
+		ee()->db->flush_cache();
 
 		if ($this->settings['allow_multiple'] == 0)
 		{
@@ -432,15 +458,28 @@ class Relationship_ft extends EE_Fieldtype {
 			return form_dropdown($field_name.'[data][]', $options, current($selected));
 		}
 
+		ee()->cp->add_js_script(array(
+			'plugin' => 'ee_interact.event',
+			'file' => 'cp/relationships',
+			'ui' => 'sortable'
+		));
+
+		if ( ! isset($this->settings['grid_row_id']) && substr($field_name, 7) != 'col_id_' && count($entries))
+		{
+			ee()->javascript->output("EE.setup_relationship_field('".$this->field_name."');");
+		}
+
 		if (REQ == 'CP')
 		{
-			ee()->cp->add_js_script('file', 'cp/relationships');
-
-			if ( ! isset($this->settings['grid_row_id']) && count($entries))
-			{
-				ee()->javascript->output("EE.setup_relationship_field('".$this->field_name."');");
-			}
+			$css_link = ee()->view->head_link('css/relationship.css');
 		}
+		// Channel Form
+		else
+		{
+			$css_link = '<link rel="stylesheet" href="'.ee()->config->slash_item('theme_folder_url').'cp_themes/default/css/relationship.css" type="text/css" media="screen" />'.PHP_EOL;
+		}
+
+		ee()->cp->add_to_head($css_link);
 
 		return ee()->load->view('publish', compact('field_name', 'entries', 'selected', 'order'), TRUE);
 	}
@@ -574,7 +613,7 @@ class Relationship_ft extends EE_Fieldtype {
 				'style="height: 140px"'
 			),
 			$this->grid_dropdown_row(
-				lang('authors'),
+				lang('rel_ft_authors'),
 				'authors[]',
 				$util->all_authors(),
 				isset($data['authors']) ? $data['authors'] : NULL,
@@ -781,6 +820,27 @@ class Relationship_ft extends EE_Fieldtype {
 				'constraint'		=> 10,
 				'unsigned'			=> TRUE,
 				'default'			=> 0
+			),
+			'grid_field_id' => array(
+				'type'			=> 'int',
+				'constraint'	=> 10,
+				'unsigned'		=> TRUE,
+				'default'		=> 0,
+				'null'			=> FALSE
+			),
+			'grid_col_id' => array(
+				'type'			=> 'int',
+				'constraint'	=> 10,
+				'unsigned'		=> TRUE,
+				'default'		=> 0,
+				'null'			=> FALSE
+			),
+			'grid_row_id' => array(
+				'type'			=> 'int',
+				'constraint'	=> 10,
+				'unsigned'		=> TRUE,
+				'default'		=> 0,
+				'null'			=> FALSE
 			)
 		);
 
@@ -793,6 +853,7 @@ class Relationship_ft extends EE_Fieldtype {
 		ee()->dbforge->add_key('parent_id');
 		ee()->dbforge->add_key('child_id');
 		ee()->dbforge->add_key('field_id');
+		ee()->dbforge->add_key('grid_row_id');
 
 		ee()->dbforge->create_table($this->_table);
 
@@ -838,6 +899,23 @@ class Relationship_ft extends EE_Fieldtype {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Modify column settings for a Relationship field in a grid.
+	 *
+	 * @param	array	$data	An array of data with the structure:
+	 *								field_id - The id of the field to modify.
+	 * 								ee_action - delete or add (action we're
+	 *									taking)
+	 *
+	 * @return	array	The SQL definition of the modified field.
+	 */
+	public function grid_settings_modify_column($data)
+	{
+		return $this->_settings_modify_column($data, TRUE);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Settings Modify Column
 	 *
 	 * @param	array
@@ -847,23 +925,71 @@ class Relationship_ft extends EE_Fieldtype {
 	 */
 	public function settings_modify_column($data)
 	{
+		return $this->_settings_modify_column($data);
+	}
+
+	/**
+	 * Modify column settings for a Relationship field
+	 *
+	 * Handles cases both in and out of Grids, since they're mostly the
+	 * same except for a minor tweak (col_id_ vs field_id_).  If you need
+	 * to add something to both add it here.  Make sure it's valid for
+	 * both and you account for the change in field name.
+	 *
+	 * @param	array	$data	An array of data with the structure:
+	 *								field_id - The id of the field to modify.
+	 * 								ee_action - delete or add (action we're
+	 *									taking)
+	 * @param	boolean	$grid	Are we working with a grid field? If TRUE, we
+	 * 							are otherwise, it's a normal Relationship field.
+	 *
+	 * @return	array	The SQL definition of the modified field.
+	 */
+	protected function _settings_modify_column($data, $grid = FALSE)
+	{
 		if ($data['ee_action'] == 'delete')
 		{
-			// remove relationships
-			ee()->db
-				->where('field_id', $data['field_id'])
-				->delete($this->_table);
+			$this->_clear_defunct_relationships(
+				($grid) ? $data['col_id'] : $data['field_id'],
+				$grid
+			);
 		}
 
 		// pretty much a dummy field. Here just for consistency's sake
 		// and in case we decide to store something in it.
+		$field_name = ($grid ? 'col_id_' . $data['col_id'] : 'field_id_' . $data['field_id']);
 
-		$fields['field_id_'.$data['field_id']] = array(
+		$fields[$field_name] = array(
 			'type' => 'VARCHAR',
 			'constraint' => 8
 		);
 
 		return $fields;
+	}
+
+	/**
+	 * Delete the relationship rows belonging to a field that has been deleted.
+	 * This code is called from multiple places.
+	 *
+	 * @param	int	$field_id	The id of the deleted field.
+	 *
+	 * @return void
+	 */
+	protected function _clear_defunct_relationships($field_id, $grid = FALSE)
+	{
+		// remove relationships
+		if ($grid)
+		{
+			ee()->db
+				->where('grid_col_id', $field_id)
+				->delete($this->_table);
+		}
+		else
+		{
+			ee()->db
+				->where('field_id', $field_id)
+				->delete($this->_table);
+		}
 	}
 }
 

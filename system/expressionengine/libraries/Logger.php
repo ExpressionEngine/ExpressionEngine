@@ -10,7 +10,7 @@
  * @since		Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -22,8 +22,10 @@
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
- 
+
 class EE_Logger {
+
+	protected $_dev_log_hashes = array();
 
 	/**
 	 * Constructor
@@ -49,12 +51,12 @@ class EE_Logger {
 		{
 			$action = implode("\n", $action);
 		}
-		
+
 		if (trim($action) == '')
 		{
 			return;
 		}
-												
+
 		ee()->db->query(
 			ee()->db->insert_string(
 				'exp_cp_log',
@@ -69,9 +71,9 @@ class EE_Logger {
 			)
 		);
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Log an item in the Developer Log
 	 *
@@ -94,8 +96,24 @@ class EE_Logger {
 	 */
 	public function developer($data, $update = FALSE, $expires = 0)
 	{
+		// Grab previously-logged items upfront and cache
+		if (empty($this->_dev_log_hashes))
+		{
+			// Order by timestamp to store only the latest timestamp in the
+			// cache array
+			$rows = ee()->db->select('hash, timestamp')
+				->order_by('timestamp', 'asc')
+				->get('developer_log')
+				->result_array();
+
+			foreach ($rows as $row)
+			{
+				$this->_dev_log_hashes[$row['hash']] = $row['timestamp'];
+			}
+		}
+
 		$log_data = array();
-		
+
 		// If we were passed an array, add its contents to $log_data
 		if (is_array($data))
 		{
@@ -106,44 +124,55 @@ class EE_Logger {
 		{
 			$log_data['description'] = $data;
 		}
-		
-		// If this log is not to be duplicated
-		if ($update)
+
+		// Get a hash of the data to see if we've aleady logged this
+		$hash = md5(serialize($log_data));
+
+		// Load Localize in case this is being called via the Javascript
+		// controller where full EE bootstrapping hasn't run
+		ee()->load->library('localize');
+
+		// If this log is not to be duplicated and it already exists in the DB
+		if ($update && isset($this->_dev_log_hashes[$hash]))
 		{
-			// Look to see if this exact log data is already in the database
-			ee()->db->where($log_data);
-			ee()->db->order_by('log_id', 'desc');
-			$duplicate = ee()->db->get('developer_log')->row_array();
-			
-			if (count($duplicate))
+			// If $expires is set, only update item if the duplicate is old enough
+			if (ee()->localize->now - $expires > $this->_dev_log_hashes[$hash])
 			{
-				// If $expires is set, only update item if the duplicate is old enough
-				if (ee()->localize->now - $expires > $duplicate['timestamp'])
-				{
-					// Set log item as unviewed and update the timestamp
-					$duplicate['viewed'] = 'n';
-					$duplicate['timestamp'] = ee()->localize->now;
-					
-					ee()->db->where('log_id', $duplicate['log_id']);
-					ee()->db->update('developer_log', $duplicate);
-					
-					$duplicate['updated'] = TRUE;
-				}
-				
-				return $duplicate;
+				// There may be multiple items with the same hash for if a log item
+				// was previously set not to update, so update based on timestamp too
+				ee()->db->where(
+					array(
+						'hash'		=> $hash,
+						'timestamp' => $this->_dev_log_hashes[$hash]
+					)
+				);
+
+				// Set log item as unviewed and update the timestamp
+				ee()->db->update('developer_log',
+					array(
+						'viewed'	=> 'n',
+						'timestamp' => ee()->localize->now
+					)
+				);
 			}
+
+			return;
 		}
-		
+
 		// If we got here, we're inserting a new item into the log
 		$log_data['timestamp'] = ee()->localize->now;
-		
+		$log_data['hash'] = $hash;
+
 		ee()->db->insert('developer_log', $log_data);
-		
+
+		// Add to the hash cache so we don't have to requery
+		$this->_dev_log_hashes[$hash] = $log_data['timestamp'];
+
 		return $log_data;
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Log a function as deprecated
 	 *
@@ -184,7 +213,7 @@ class EE_Logger {
 		$deprecated = array(
 			'function'			=> $function.'()',				// Name of deprecated function
 			'line'				=> $line,						// Line where 'function' was called
-			'file'				=> $file,						// File where 'function' was called 
+			'file'				=> $file,						// File where 'function' was called
 			'deprecated_since'	=> $version,					// Version function was deprecated
 			'use_instead'		=> ( ! empty($use_instead))		// Function to use instead
 				? htmlentities($use_instead) : NULL
@@ -217,7 +246,7 @@ class EE_Logger {
 							'template_name' => $template_obj->template_name
 						);
 
-						// check in snippets						
+						// check in snippets
 						$global_vars = ee()->config->_global_vars;
 
 						$regex = '/'.preg_quote($addon_tag, '/').'/';
@@ -235,16 +264,16 @@ class EE_Logger {
 				}
 			}
 		}
-		
+
 		// Only bug the user about this again after a week, or 604800 seconds
 		$deprecation_log = $this->developer($deprecated, TRUE, 604800);
-		
+
 		// Show and store flashdata only if we're in the CP, and only to Super Admins
-		if (REQ == 'CP' && isset(ee()->session) && ee()->session instanceof EE_Session 
+		if (REQ == 'CP' && isset(ee()->session) && ee()->session instanceof EE_Session
 			&& ee()->session->userdata('group_id') == 1)
 		{
 			ee()->lang->loadfile('tools');
-			
+
 			// Set JS globals for "What does this mean?" modal
 			ee()->javascript->set_global(
 				array(
@@ -254,7 +283,7 @@ class EE_Logger {
 					)
 				)
 			);
-			
+
 			if (isset($deprecation_log['updated']))
 			{
 				ee()->session->set_flashdata(
@@ -266,9 +295,9 @@ class EE_Logger {
 			}
 		}
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Builds deprecation notice language based on data given
 	 *
@@ -286,7 +315,7 @@ class EE_Logger {
 
 		// "Deprecated function %s called"
 		$message = sprintf(lang('deprecated_function'), $deprecated['function']);
-		
+
 		// "in %s on line %d."
 		if (isset($deprecated['file']) && isset($deprecated['line']))
 		{
@@ -316,38 +345,38 @@ class EE_Logger {
 				$message .= sprintf(lang('deprecated_snippets'), implode(', ', $snippets));
 			}
 		}
-		
-		if (isset($deprecated['deprecated_since']) 
+
+		if (isset($deprecated['deprecated_since'])
 			|| isset($deprecated['deprecated_use_instead']))
 		{
 			// Add a line break if there is additional information
 			$message .= '<br />';
-			
+
 			// "Deprecated since %s."
 			if (isset($deprecated['deprecated_since']))
 			{
 				$message .= sprintf(lang('deprecated_since'), $deprecated['deprecated_since']);
 			}
-			
+
 			// "Use %s instead."
 			if (isset($deprecated['use_instead']))
 			{
 				$message .= NBS.sprintf(lang('deprecated_use_instead'), $deprecated['use_instead']);
 			}
 		}
-		
+
 		return $message;
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Log a message in the Updater log.
 	 *
 	 * @access	public
 	 * @param	string		Message to add to the log.
 	 * @param	bool			If TRUE, add backtrace info to the log.
-	 * @return	void	
+	 * @return	void
 	 */
 	public function updater($log_message, $exception = FALSE)
 	{
@@ -371,7 +400,7 @@ class EE_Logger {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Create the update_log table if it doesn't already exist. Must be done
 	 * here rather than through the usual Updater since we need it available
@@ -379,7 +408,7 @@ class EE_Logger {
 	 * exist.
 	 *
 	 * @access	private
-	 * @return	bool	
+	 * @return	bool
 	 */
 	private function _setup_log()
 	{
@@ -388,7 +417,7 @@ class EE_Logger {
 		if ( ! ee()->db->table_exists($table))
 		{
 			ee()->load->dbforge();
-			
+
 			$fields = array(
 				'log_id' => array(
 					'type'				=> 'int',

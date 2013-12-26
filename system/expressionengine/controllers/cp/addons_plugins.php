@@ -83,10 +83,6 @@ class Addons_plugins extends CP_Controller {
 
 		// Grab the data
 		$plugins = $this->_get_installed_plugins();
-		
-		// Remote Plugins Disabled - no 2.0 feed
-//		$remote = $this->_get_available_plugins($plugins);
-		$remote = array();
 
 		// Check folder permissions for all paths
 		$is_writable = TRUE;
@@ -98,74 +94,12 @@ class Addons_plugins extends CP_Controller {
 			}
 		}
 
-		// Check dependencies
-		$curl_installed = ( ! extension_loaded('curl') || ! function_exists('curl_init')) ? FALSE : TRUE;
-
 		$sortby = FALSE;
 		$sort_url = FALSE;
 
-		if (count($remote) > 0)
-		{
-			$qm = ($this->config->item('force_query_string') == 'y') ? '' : '?';
-
-			$total_rows = count($remote);
-			$base		= BASE.AMP.'C=addons_plugins';
-			$perpage	= ( ! $this->input->get_post('perpage')) ? 10 : $this->input->get_post('perpage');
-			$page		= ( ! $this->input->get_post('page')) ? 0 : $this->input->get_post('page');
-			$sortby		= ( ! $this->input->get_post('sortby')) ? '' : $this->input->get_post('sortby');
-
-			if ($sortby == 'alpha')
-			{
-				$sort_url = $base;
-				$base .= AMP.'sortby=alpha';
-				usort($remote, array($this, '_plugin_title_sorter'));
-			}
-			else
-			{
-				$sort_url = $base.AMP.'sortby=alpha';
-			}
-
-			// Build the pagination
-			$this->load->library('pagination');
-
-			$config['base_url'] = $base;
-			$config['total_rows'] = $total_rows;
-			$config['per_page'] = $perpage;
-			$config['page_query_string'] = TRUE;
-			$config['query_string_segment'] = 'page';
-			$config['full_tag_open'] = '<p id="paginationLinks">';
-			$config['full_tag_close'] = '</p>';
-			$config['prev_link'] = '<img src="'.$this->cp->cp_theme_url.'images/pagination_prev_button.gif" width="13" height="13" alt="&lt;" />';
-			$config['next_link'] = '<img src="'.$this->cp->cp_theme_url.'images/pagination_next_button.gif" width="13" height="13" alt="&gt;" />';
-			$config['first_link'] = '<img src="'.$this->cp->cp_theme_url.'images/pagination_first_button.gif" width="13" height="13" alt="&lt; &lt;" />';
-			$config['last_link'] = '<img src="'.$this->cp->cp_theme_url.'images/pagination_last_button.gif" width="13" height="13" alt="&gt; &gt;" />';
-
-			$this->pagination->initialize($config);
-
-			// Extract the current page
-			$remote = array_slice($remote, $page, $perpage-1);
-
-			// Prep for output
-			foreach ($remote as $key => $item)
-			{
-				$attr = explode('|', $item['dc']['subject']);
-
-				$remote[$key]['dl_url'] = $attr[0];
-				$remote[$key]['version'] = $attr[1];
-				$remote[$key]['require'] = ( ! $attr[2] ) ? '' : $attr[2];
-				$remote[$key]['link'] = $this->functions->fetch_site_index().$qm.'URL='.$item['link'];
-				$remote[$key]['description'] = $this->functions->word_limiter($item['description'], '20');
-			}
-		}
-
 		// Assemble view variables
 		$vars['is_writable'] = $is_writable;
-		$vars['remote_install'] = ( ! $is_writable OR ! $curl_installed) ? FALSE : TRUE;
-
-		$vars['sort'] = $sortby;
-		$vars['sort_url'] = $sort_url;
 		$vars['plugins'] = $plugins;
-		$vars['remote'] = $remote;
 
 		$this->cp->render('addons/plugin_manager', $vars);
 	}
@@ -270,7 +204,7 @@ class Addons_plugins extends CP_Controller {
 
 		$cp_message_success = '';
 		$cp_message_failure = '';
-		
+
 		if ( ! is_array($plugins))
 		{
 			$this->functions->redirect(BASE.AMP.'C=addons_plugins');
@@ -290,10 +224,10 @@ class Addons_plugins extends CP_Controller {
 				// first thing's first, let's make sure this isn't part of a package
 				$files = glob(PATH_THIRD.$name.'/*.php');
 				$pi_key = array_search(PATH_THIRD.$name.'/pi.'.$name.'.php', $files);
-				
+
 				// remove this file from the list
 				unset($files[$pi_key]);
-				
+
 				// any other PHP files in this directory?  If not, balleet!
 				if (empty($files))
 				{
@@ -310,7 +244,7 @@ class Addons_plugins extends CP_Controller {
 			else
 			{
 				$cp_message_failure .= ($success) ? lang('plugin_removal_success') : lang('plugin_removal_error');
-				$cp_message_failure .= ' '.ucwords(str_replace("_", " ", $name)).'<br>';				
+				$cp_message_failure .= ' '.ucwords(str_replace("_", " ", $name)).'<br>';
 			}
 		}
 
@@ -323,7 +257,7 @@ class Addons_plugins extends CP_Controller {
 		{
 			$cp_message['message_failure'] = $cp_message_failure;
 		}
-				
+
 		$this->session->set_flashdata($cp_message);
 		$this->functions->redirect(BASE.AMP.'C=addons_plugins');
 	}
@@ -363,7 +297,7 @@ class Addons_plugins extends CP_Controller {
 
 		$local_name = basename($file);
 		$local_file = PATH_THIRD.$local_name;
-	
+
 		// Get the remote file
 		$c = curl_init($file);
 		curl_setopt($c, CURLOPT_RETURNTRANSFER, 1);
@@ -395,7 +329,7 @@ class Addons_plugins extends CP_Controller {
 		flock($fp, LOCK_UN);
 		fclose($fp);
 
-		@chmod($local_file, 0777);
+		@chmod($local_file, DIR_WRITE_MODE);
 
 		// Check file information so we know what to do with it
 
@@ -409,8 +343,8 @@ class Addons_plugins extends CP_Controller {
 			}
 			else
 			{
-				@chmod($new_file, 0777);
-				$cp_type = 'message_success';				
+				@chmod($new_file, DIR_WRITE_MODE);
+				$cp_type = 'message_success';
 				$cp_message = lang('plugin_install_success');
 			}
 		}
@@ -424,7 +358,7 @@ class Addons_plugins extends CP_Controller {
 				$_ref = getcwd();
 
 				$zip = new PclZip($local_file);
-				
+
 				$temp_dir = PATH_THIRD.'47346fc7580de7596d7df8d115a3545d';
 				mkdir($temp_dir);
 				chdir($temp_dir);
@@ -436,7 +370,7 @@ class Addons_plugins extends CP_Controller {
 				{
 					// check if the file is sitting right here
 					$pi_files = glob($temp_dir.'/pi.*.php');
-					
+
 					if (empty($pi_files))
 					{
 						// check directories (GLOB_ONLYDIR not available on Windows < PHP 4.3.3, too bad...)
@@ -444,29 +378,29 @@ class Addons_plugins extends CP_Controller {
 						foreach (glob($temp_dir.'/*', GLOB_ONLYDIR) as $dir)
 						{
 							$pi_files = glob($dir.'/pi.*.php');
-							
+
 							if ( ! empty($pi_files))
 							{
 								break;
 							}
 						}
 					}
-					
+
 					if (empty($pi_files))
 					{
 						$cp_type = 'message_failure';
-						$cp_message = lang('plugin_error_no_plugins_found');						
+						$cp_message = lang('plugin_error_no_plugins_found');
 					}
 					else
 					{
 						$filename = basename($pi_files[0]);
 						$package = substr($filename, 3, -4);
-					
+
 						// does this add-on already exist?
 						if (is_dir(PATH_THIRD.$package))
 						{
 							$cp_type = 'message_failure';
-							$cp_message = lang('plugin_error_package_already_exists');						
+							$cp_message = lang('plugin_error_package_already_exists');
 						}
 						else
 						{
@@ -485,7 +419,7 @@ class Addons_plugins extends CP_Controller {
 
 				// cleanup temp zip directory
 				$this->functions->delete_directory($temp_dir, TRUE);
-				
+
 				// Fix loader scope
 				chdir($_ref);
 			}
@@ -543,9 +477,9 @@ class Addons_plugins extends CP_Controller {
 		{
 			foreach ($list as $file)
 			{
-				if (strncasecmp($file, 'pi.', 3) == 0 && 
-					substr($file, -$ext_len) == '.php' && 
-					strlen($file) > 7 && 
+				if (strncasecmp($file, 'pi.', 3) == 0 &&
+					substr($file, -$ext_len) == '.php' &&
+					strlen($file) > 7 &&
 					in_array(substr($file, 3, -$ext_len), $this->core->native_plugins))
 				{
 					$plugin_files[$file] = PATH_PI.$file;
@@ -573,8 +507,8 @@ class Addons_plugins extends CP_Controller {
 					}
 
 					// we gots a plugin?
-					if (strncasecmp($file, 'pi.', 3) == 0 && 
-						substr($file, -$ext_len) == '.php' && 
+					if (strncasecmp($file, 'pi.', 3) == 0 &&
+						substr($file, -$ext_len) == '.php' &&
 						strlen($file) > strlen('pi.'.'.php'))
 					{
 						if (substr($file, 3, -$ext_len) == $pkg_name)
@@ -594,18 +528,10 @@ class Addons_plugins extends CP_Controller {
 			// Used as a fallback name and url identifier
 			$filename = substr($file, 3, -$ext_len);
 
-			// Magpie maight already be in use for an accessory or other function
-			// If so, we still need the $plugin_info, so we'll open it up and
-			// harvest what we need. This is a special exception for Magpie.
-			if ($file == 'pi.magpie.php' && 
-				in_array($path, get_included_files()) && 
-				class_exists('Magpie'))
+			if ($temp = $this->_magpie_check($filename, $path))
 			{
-				$contents = file_get_contents($path);
-				$start = strpos($contents, '$plugin_info');
-				$length = strpos($contents, 'Class Magpie') - $start;
-				eval(substr($contents, $start, $length));
-			}
+				$plugin_info = $temp;
+			};
 
 			@include_once($path);
 
@@ -666,18 +592,12 @@ class Addons_plugins extends CP_Controller {
 				return FALSE;
 			}
 		}
-		
-		// Magpie maight already be in use for an accessory or other function
-		// If so, we still need the $plugin_info, so we'll open it up and
-		// harvest what we need. This is a special exception for Magpie.
-		if ($filename == 'magpie' AND in_array($path, get_included_files()) AND class_exists('Magpie'))
+
+		if ($temp = $this->_magpie_check($filename, $path))
 		{
-			$contents = file_get_contents($path);
-			$start = strpos($contents, '$plugin_info');
-			$length = strpos($contents, 'Class Magpie') - $start;
-			eval(substr($contents, $start, $length));
-		}
-		
+			$plugin_info = $temp;
+		};
+
 		include_once($path);
 
 		if ( ! isset($plugin_info) OR ! is_array($plugin_info))
@@ -708,44 +628,27 @@ class Addons_plugins extends CP_Controller {
 		return $plugin_info;
 	}
 
-	// --------------------------------------------------------------------
+	// -------------------------------------------------------------------------
 
 	/**
-	 * Get available plugins
-	 *
-	 * Grab the EE rss feed of updated plugins
-	 *
-	 * @access	private
-	 * @param	mixed	array of local plugins
-	 * @return	mixed	array of available plugins
+	 * Check for usage of the magpie plugin and get the plugin_info manually
+	 * @param  string $filename The filename to check
+	 * @param  String $path     Path where the file exists
+	 * @return Mixed            Returns $plugin_info if it's MagPie, otherwise
+	 *                          nothing
 	 */
-	function _get_available_plugins($local = array())
+	private function _magpie_check($filename, $path)
 	{
-		if ( ! defined('MAGPIE_CACHE_AGE'))
+		// Magpie maight already be in use for an accessory or other function
+		// If so, we still need the $plugin_info, so we'll open it up and
+		// harvest what we need. This is a special exception for Magpie.
+		if ($filename == 'magpie' AND in_array($path, get_included_files()) AND class_exists('Magpie'))
 		{
-			define('MAGPIE_CACHE_AGE', 60*60*24*3); // set cache to 3 days			
+			$contents = file_get_contents($path);
+			$start = strpos($contents, '$plugin_info');
+			$length = strpos($contents, 'Class Magpie') - $start;
+			return eval(substr($contents, $start, $length));
 		}
-		
-		if ( ! defined('MAGPIE_CACHE_DIR'))
-		{
-			define('MAGPIE_CACHE_DIR', APPPATH.'cache/magpie_cache/');			
-		}
-		
-		if ( ! defined('MAGPIE_DEBUG'))
-		{
-			define('MAGPIE_DEBUG', 0);
-		}
-		
-		if (class_exists('Magpie'))
-		{
-			$plugins = fetch_rss('http://expressionengine.com/feeds/pluginlist/', 60*60*24); // one req/day
-			
-			if (count($plugins->items) > 0)
-			{
-				return $plugins->items;
-			}
-		}
-		return array();
 	}
 }
 

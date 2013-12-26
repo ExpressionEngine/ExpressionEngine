@@ -335,14 +335,15 @@ class CI_Encrypt {
 	{
 		$data = $this->_remove_cipher_noise($data, $key);
 		$init_size = mcrypt_get_iv_size($this->_get_cipher(), $this->_get_mode());
+		$mb_adjusted_data_length =  (MB_ENABLED) ? mb_strlen($data, 'ascii') : strlen($data);
 
-		if ($init_size > strlen($data))
+		if ($init_size > $mb_adjusted_data_length)
 		{
 			return FALSE;
 		}
 
-		$init_vect = substr($data, 0, $init_size);
-		$data = substr($data, $init_size);
+		$init_vect = (MB_ENABLED) ? mb_substr($data, 0, $init_size, 'ascii') : substr($data, 0, $init_size);
+		$data = (MB_ENABLED) ? mb_substr($data, $init_size, mb_strlen($data, 'ascii'), 'ascii') : substr($data, $init_size);
 		return rtrim(mcrypt_decrypt($this->_get_cipher(), $key, $data, $this->_get_mode(), $init_vect), "\0");
 	}
 
@@ -363,10 +364,11 @@ class CI_Encrypt {
 	function _add_cipher_noise($data, $key)
 	{
 		$keyhash = $this->hash($key);
-		$keylen = strlen($keyhash);
+		$keylen = (MB_ENABLED) ? mb_strlen($keyhash, 'ascii') : strlen($keyhash);
 		$str = '';
+		$len = (MB_ENABLED) ? mb_strlen($data, 'ascii') : strlen($data);
 
-		for ($i = 0, $j = 0, $len = strlen($data); $i < $len; ++$i, ++$j)
+        for ($i = 0, $j = 0, $len; $i < $len; ++$i, ++$j)
 		{
 			if ($j >= $keylen)
 			{
@@ -394,10 +396,11 @@ class CI_Encrypt {
 	function _remove_cipher_noise($data, $key)
 	{
 		$keyhash = $this->hash($key);
-		$keylen = strlen($keyhash);
+		$keylen = (MB_ENABLED) ? mb_strlen($keyhash, 'ascii') : strlen($keyhash);
 		$str = '';
-
-		for ($i = 0, $j = 0, $len = strlen($data); $i < $len; ++$i, ++$j)
+		$len = (MB_ENABLED) ? mb_strlen($data, 'ascii') : strlen($data);
+		
+		for ($i = 0, $j = 0, $len; $i < $len; ++$i, ++$j)
 		{
 			if ($j >= $keylen)
 			{

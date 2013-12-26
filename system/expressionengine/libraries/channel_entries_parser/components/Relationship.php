@@ -8,10 +8,10 @@
  * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
- * @since		Version 2.0
+ * @since		Version 2.6
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -35,7 +35,7 @@ class EE_Channel_relationship_parser implements EE_Channel_parser_component {
 	{
 		return empty($pre->channel()->rfields) OR in_array('relationships', $disabled);
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -50,9 +50,19 @@ class EE_Channel_relationship_parser implements EE_Channel_parser_component {
 	public function pre_process($tagdata, EE_Channel_preparser $pre)
 	{
 		$rfields = $pre->channel()->rfields;
-		$site_id = config_item('site_id');
+		$process_fields = array();
 
-		if ( ! isset($rfields[$site_id]) OR empty($rfields[$site_id]))
+		foreach ($pre->site_ids() as $site_id)
+		{
+			if ( ! isset($rfields[$site_id]) OR empty($rfields[$site_id]))
+			{
+				continue;
+			}
+
+			$process_fields[$site_id] = $rfields[$site_id];
+		}
+
+		if (empty($process_fields))
 		{
 			return NULL;
 		}
@@ -62,7 +72,7 @@ class EE_Channel_relationship_parser implements EE_Channel_parser_component {
 		try
 		{
 			return ee()->relationships_parser->create(
-				$rfields[$site_id],
+				$process_fields,
 				$pre->entry_ids()
 			);
 		}

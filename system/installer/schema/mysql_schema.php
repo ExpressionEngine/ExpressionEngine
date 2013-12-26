@@ -226,7 +226,7 @@ class EE_Schema {
 			cache_date int(10) unsigned default '0' NOT NULL,
 			total_sent int(6) unsigned NOT NULL,
 			from_name varchar(70) NOT NULL,
-			from_email varchar(70) NOT NULL,
+			from_email varchar(75) NOT NULL,
 			recipient text NOT NULL,
 			cc text NOT NULL,
 			bcc text NOT NULL,
@@ -272,7 +272,7 @@ class EE_Schema {
 			member_id int(10) unsigned NOT NULL,
 			member_name varchar(50) NOT NULL,
 			ip_address varchar(45) default '0' NOT NULL,
-			recipient varchar(70) NOT NULL,
+			recipient varchar(75) NOT NULL,
 			recipient_name varchar(50) NOT NULL,
 			subject varchar(120) NOT NULL,
 			message mediumtext NOT NULL,
@@ -292,7 +292,7 @@ class EE_Schema {
 			unique_id varchar(40) NOT NULL,
 			crypt_key varchar(40) NULL DEFAULT NULL,
 			authcode varchar(10) NULL DEFAULT NULL,
-			email varchar(72) NOT NULL,
+			email varchar(75) NOT NULL,
 			url varchar(150) NULL DEFAULT NULL,
 			location varchar(50) NULL DEFAULT NULL,
 			occupation varchar(80) NULL DEFAULT NULL,
@@ -1307,6 +1307,7 @@ class EE_Schema {
 			`addon_module` varchar(100) NULL,
 			`addon_method` varchar(100) NULL,
 			`snippets` text NULL,
+			`hash` char(32) NOT NULL,
 			PRIMARY KEY (`log_id`)
 		)";
 
@@ -1438,6 +1439,9 @@ class EE_Schema {
 		{
 			$Q[] = "INSERT INTO `exp_fieldtypes` (`name`,`version`,`settings`,`has_global_settings`) VALUES ('".$name."','1.0','YTowOnt9','n')";
 		}
+
+		// Add Grid as a content type
+		$Q[] = "INSERT INTO `exp_content_types` (`name`) VALUES ('grid')";
 
 		// --------------------------------------------------------------------
 		// --------------------------------------------------------------------

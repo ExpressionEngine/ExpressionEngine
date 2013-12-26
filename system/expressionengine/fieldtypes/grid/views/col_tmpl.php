@@ -1,4 +1,4 @@
-<div class="grid_col_settings">
+<div class="grid_col_settings" data-field-name="<?=$field_name?>">
 	<div class="grid_col_settings_section grid_data_type alt">
 		<?=form_dropdown(
 			'grid[cols]['.$field_name.'][col_type]',
@@ -9,10 +9,10 @@
 		<a href="#" class="grid_button_delete" title="<?=lang('grid_delete_column')?>"><?=lang('grid_delete_column')?></a>
 	</div>
 	<div class="grid_col_settings_section text">
-		<?=form_input('grid[cols]['.$field_name.'][col_label]', isset($column['col_label']) ? $column['col_label'] : '')?>
+		<?=form_input('grid[cols]['.$field_name.'][col_label]', isset($column['col_label']) ? $column['col_label'] : '', ' class="grid_col_field_label"')?>
 	</div>
 	<div class="grid_col_settings_section text alt">
-		<?=form_input('grid[cols]['.$field_name.'][col_name]', isset($column['col_name']) ? $column['col_name'] : '')?>
+		<?=form_input('grid[cols]['.$field_name.'][col_name]', isset($column['col_name']) ? $column['col_name'] : '', ' class="grid_col_field_name"')?>
 	</div>
 	<div class="grid_col_settings_section text">
 		<?=form_input('grid[cols]['.$field_name.'][col_instructions]', isset($column['col_instructions']) ? $column['col_instructions'] : '')?>

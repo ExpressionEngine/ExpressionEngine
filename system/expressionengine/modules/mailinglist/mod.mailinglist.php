@@ -10,7 +10,7 @@
  * @since		Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -35,7 +35,7 @@ class Mailinglist {
 	{
 		$this->EE =& get_instance();
 	}
-	
+
 	// -------------------------------------------------------------------------
 
 	/**
@@ -84,7 +84,7 @@ class Mailinglist {
 
 		$data['id']		= (ee()->TMPL->form_id == '') ? 'mailinglist_form' : ee()->TMPL->form_id;
 		$data['class']	= ee()->TMPL->form_class;
-		
+
 		$data['hidden_fields'] = array(
 			'ACT'	=> ee()->functions->fetch_action_id('Mailinglist', 'insert_new_email'),
 			'RET'	=> ee()->functions->fetch_current_uri(),
@@ -159,13 +159,6 @@ class Mailinglist {
 
 		if (count($errors) == 0)
 		{
-	
-			// Secure Forms check - do it early due to amount of further data manipulation before insert
-			if (ee()->security->check_xid(ee()->input->post('XID')) == FALSE) 
-			{ 
-			 	ee()->functions->redirect(stripslashes(ee()->input->post('RET')));
-			}
-			
 			/** ----------------------------------------
 			/**  Which list is being subscribed to?
 			/** ----------------------------------------*/
@@ -219,7 +212,6 @@ class Mailinglist {
 			}
 		}
 
-
 		/** ----------------------------------------
 		/**  Are there errors to display?
 		/** ----------------------------------------*/
@@ -256,9 +248,6 @@ class Mailinglist {
 			$content  = lang('ml_email_confirmation_sent')."\n\n";
 			$content .= lang('ml_click_confirmation_link');
 		}
-
-		//  Clear security hash
-		ee()->security->delete_xid(ee()->input->post('XID'));
 
 		$site_name = (ee()->config->item('site_name') == '') ? lang('back') : stripslashes(ee()->config->item('site_name'));
 
@@ -429,7 +418,7 @@ class Mailinglist {
 			/** ----------------------------
 			/**  Send email
 			/** ----------------------------*/
-			
+
 			// Remove multiple commas
 			$notify_address = reduce_multiples(ee()->config->item('mailinglist_notify_emails'), ',', TRUE);
 
@@ -477,12 +466,12 @@ class Mailinglist {
 	function unsubscribe()
 	{
 		ee()->lang->loadfile('mailinglist');
-		
+
 		$site_name = (ee()->config->item('site_name') == '') ?
 			lang('back') : stripslashes(ee()->config->item('site_name'));
-		
+
 		$id = ee()->input->get_post('id');
-		
+
 		// If $id is invalid, deal with it now
 		// $id will be 0 if no id is passed or if it's invalid
 		if ($id === 0)
@@ -493,7 +482,7 @@ class Mailinglist {
 				'content'	=> lang('invalid_url'),
 				'link'		=> array(ee()->functions->fetch_site_index(), $site_name)
 			);
-		
+
 			ee()->output->show_message($data);
 		}
 
@@ -501,7 +490,7 @@ class Mailinglist {
 		$expire = time() - (60*60*48);
 
 		ee()->db->delete('mailing_list', array('authcode' => $id));
-		
+
 		if (ee()->db->affected_rows() == 0)
 		{
 			$data = array(
@@ -510,7 +499,7 @@ class Mailinglist {
 				'content'	=> lang('ml_unsubscribe_failed'),
 				'link'		=> array(ee()->functions->fetch_site_index(), $site_name)
 			);
-			
+
 			ee()->output->show_message($data);
 		}
 

@@ -235,7 +235,8 @@ class Api {
 				}
 			
 				ee()->db->select("{$url_title_field}, MID({$url_title_field}, ".(strlen($url_title) + 1).") + 1 AS next_suffix", FALSE);
-				ee()->db->where("{$url_title_field} REGEXP('".preg_quote(ee()->db->escape_str($url_title))."[0-9]*$')");
+				ee()->db->where("{$url_title_field} LIKE '".preg_quote(ee()->db->escape_str($url_title))."%'");
+				ee()->db->where("{$url_title_field} REGEXP('^".preg_quote(ee()->db->escape_str($url_title))."[0-9]*$')");
 				ee()->db->where(array($type_field => $type_id));
 				ee()->db->order_by('next_suffix', 'DESC');
 				ee()->db->limit(1);

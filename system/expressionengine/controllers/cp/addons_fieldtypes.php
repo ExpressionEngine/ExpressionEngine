@@ -246,9 +246,7 @@ class Addons_fieldtypes extends CP_Controller {
 
 		if ($FT->info['version'] > $version && method_exists($FT, 'update') && $FT->update($version) !== FALSE)
 		{
-			$this->api_channel_fields->custom_field_data_hook($FT, 'update', $version);
-
-			if ($FT->update($version) !== FALSE)
+			if ($this->api_channel_fields->apply('update', array($version)) !== FALSE)
 			{
 				$this->db->update('fieldtypes', array('version' => $FT->info['version']), array('name' => $ft));
 			}

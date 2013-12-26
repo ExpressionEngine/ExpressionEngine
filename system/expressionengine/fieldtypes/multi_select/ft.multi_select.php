@@ -28,7 +28,7 @@ class Multi_select_ft extends EE_Fieldtype {
 		'name'		=> 'Multi Select',
 		'version'	=> '1.0'
 	);
-	
+
 	var $has_array_data = TRUE;
 
 	function display_field($data)
@@ -37,19 +37,21 @@ class Multi_select_ft extends EE_Fieldtype {
 
 		$values = decode_multi_field($data);
 		$field_options = $this->_get_field_options($data);
-		
+
 		$text_direction = (isset($this->settings['field_text_direction']))
 			? $this->settings['field_text_direction'] : 'ltr';
 
 		return form_multiselect($this->field_name.'[]', $field_options, $values, 'dir="'.$text_direction.'" class="multiselect_input" id="field_id_'.$this->field_id.'"');
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	function replace_tag($data, $params = array(), $tagdata = FALSE)
 	{
 		ee()->load->helper('custom_field');
 		$data = decode_multi_field($data);
+
+		ee()->load->library('typography');
 
 		if ($tagdata)
 		{
@@ -60,9 +62,9 @@ class Multi_select_ft extends EE_Fieldtype {
 			return $this->_parse_single($data, $params);
 		}
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	function _parse_single($data, $params)
 	{
 		if (isset($params['limit']))
@@ -99,8 +101,8 @@ class Multi_select_ft extends EE_Fieldtype {
 			return ee()->functions->encode_ee_tags($entry);
 		}
 
-		$text_format = (isset($this->row['field_ft_'.$this->field_id]))
-			? $this->row['field_ft_'.$this->field_id] : 'none';
+		$text_format = ($this->content_type() == 'grid')
+			? $this->settings['field_fmt'] : $this->row('field_ft_'.$this->field_id);
 
 		return ee()->typography->parse_type(
 				ee()->functions->encode_ee_tags($entry),
@@ -112,12 +114,13 @@ class Multi_select_ft extends EE_Fieldtype {
 					  )
 		);
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	function _parse_multi($data, $params, $tagdata)
 	{
 		$chunk = '';
+		$raw_chunk = '';
 		$limit = FALSE;
 
 		// Limit Parameter
@@ -125,6 +128,9 @@ class Multi_select_ft extends EE_Fieldtype {
 		{
 			$limit = $params['limit'];
 		}
+
+		$text_format = (isset($this->row['field_ft_'.$this->field_id]))
+			? $this->row['field_ft_'.$this->field_id] : 'none';
 
 		foreach($data as $key => $item)
 		{
@@ -134,6 +140,18 @@ class Multi_select_ft extends EE_Fieldtype {
 				$vars['count'] = $key + 1;	// {count} parameter
 
 				$tmp = ee()->functions->prep_conditionals($tagdata, $vars);
+				$raw_chunk .= ee()->functions->var_swap($tmp, $vars);
+
+				$vars['item'] = ee()->typography->parse_type(
+						$item,
+						array(
+								'text_format'	=> $text_format,
+								'html_format'	=> $this->row['channel_html_formatting'],
+								'auto_links'	=> $this->row['channel_auto_link_urls'],
+								'allow_img_url' => $this->row['channel_allow_img_urls']
+							  )
+						);
+
 				$chunk .= ee()->functions->var_swap($tmp, $vars);
 			}
 			else
@@ -146,26 +164,18 @@ class Multi_select_ft extends EE_Fieldtype {
 		if (isset($params['backspace']))
 		{
 			$chunk = substr($chunk, 0, - $params['backspace']);
+			$raw_chunk = substr($raw_chunk, 0, - $params['backspace']);
 		}
-		
+
 		// Experimental parameter, do not use
 		if (isset($params['raw_output']) && $params['raw_output'] == 'yes')
 		{
 			return ee()->functions->encode_ee_tags($chunk);
 		}
-		
-		// Typography!
-		return ee()->typography->parse_type(
-						ee()->functions->encode_ee_tags($chunk),
-						array(
-								'text_format'	=> $this->row['field_ft_'.$this->field_id],
-								'html_format'	=> $this->row['channel_html_formatting'],
-								'auto_links'	=> $this->row['channel_auto_link_urls'],
-								'allow_img_url' => $this->row['channel_allow_img_urls']
-							  )
-		);
+
+		return $chunk;
 	}
-	
+
 	function display_settings($data)
 	{
 		$this->field_formatting_row($data, 'multi_select');
@@ -223,8 +233,21 @@ class Multi_select_ft extends EE_Fieldtype {
 				}
 			}
 		}
-		
+
 		return $field_options;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Accept all content types.
+	 *
+	 * @param string  The name of the content type
+	 * @return bool   Accepts all content types
+	 */
+	public function accepts_content_type($name)
+	{
+		return TRUE;
 	}
 }
 

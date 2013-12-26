@@ -61,7 +61,7 @@
 .ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button { font-family: Helvetica, Arial, sans-serif; font-size: 1em; }
 .ui-widget-content { border: 1px solid #ecf1f4; background: #ecf1f4 url(../images/ui-bg_highlight-hard_0_ECF1F4_1x100.png) 50% top repeat-x; color: #505050; }
 .ui-widget-content a { color: #505050; }
-.ui-widget-header { border: 1px solid #; background: #8ea1ad url(../images/ui-bg_highlight-soft_40_8ea1ad_1x100.png) 50% 50% repeat-x; color: #ffffff; font-weight: bold; }
+.ui-widget-header { border: 1px solid #ecf1f4; background: #8ea1ad url(../images/ui-bg_highlight-soft_40_8ea1ad_1x100.png) 50% 50% repeat-x; color: #ffffff; font-weight: bold; }
 .ui-widget-header a { color: #ffffff; }
 
 /* Interaction states

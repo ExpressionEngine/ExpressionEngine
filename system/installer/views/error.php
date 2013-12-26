@@ -1,5 +1,5 @@
-<h2 class="important"><?php echo $this->lang->line('error_occurred'); ?></h2>
+<h2 class="important"><?=lang('error_occurred')?></h2>
 
-<p class="pad"><?php echo $error; ?></p>
+<p class="pad"><?=$error?></p>
 
-<p><?php echo $this->lang->line('support_resource_info'); ?></p>
+<p><?=lang('support_resource_info')?></p>

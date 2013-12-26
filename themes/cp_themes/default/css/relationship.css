@@ -1,0 +1,221 @@
+
+.multiselect,
+.multiselect-active,
+.multiselect-filter {
+	width: 49%;
+
+	/* we don't support IE 6 or 7 */
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+.multiselect,
+.multiselect-active {
+	background: #DDE2E5;
+	border: 1px solid #B6C0C2;
+	height: 240px;
+	overflow: auto;
+}
+
+.multiselect-active {
+	float: right;
+	height: 279px;		/* multiselect + filter box */
+	line-height: 160%;
+}
+
+.multiselect-filter {
+	background: rgb(229, 233, 235);
+	border: 1px solid #B6C0C2;
+	border-bottom: none;
+	margin: 7px 0 0 0;
+	padding: 6px 4px;
+	position: relative;
+}
+
+.multiselect-filter:after {
+	background: transparent url('../images/relationship-sprite.png') no-repeat -20px 0;
+	content: '';
+	height: 10px;
+	position: absolute;
+	right: 15px;
+	top: 14px;
+	width: 10px;
+}
+
+/* channel form list tweak */
+.multiselect ul,
+.multiselect-active ul {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+
+/* Some grid size tweaks */
+
+.grid_field .multiselect {
+	height: 151px;
+}
+
+.grid_field .multiselect-active {
+	height: 190px;
+}
+
+.grid_field .multiselect-active,
+.grid_field .multiselect-filter {
+	margin-top: 0px;
+}
+
+
+.multiselect-filter input,
+.multiselect-filter input:focus,
+.grid_field .multiselect-filter input[type=text],
+.grid_field .multiselect-filter input[type=text]:focus {
+	border-radius: 13px;
+	border: 1px solid rgb(182, 192, 194);
+	padding: 5px 10px 4px 8px;
+	width: 100%;
+
+	/* channel form tweaks */
+	outline: 0;
+	margin: 0;
+
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+.multiselect li,
+.multiselect-active li {
+	background: #fff;
+	border-bottom: 1px solid #B6C0C2;
+	padding: 5px 10px;
+	position: relative;
+	z-index: 0;
+}
+
+.multiselect li:nth-child(even),
+.multiselect-active li:nth-child(even) {
+	background: #F7FBFE;
+}
+
+.multiselect-active li {
+	padding-left: 30px;
+}
+
+.multiselect-active .remove-item {
+	color: #E67174;
+	display: none;
+	font-size: 20px;
+	height: 100%;
+	padding: 5px;
+	position: absolute;
+	right: 0;
+	top: 0;
+}
+
+.multiselect-active li:hover .remove-item {
+	display: inline-block;
+	cursor: pointer;
+}
+
+.multiselect-active .reorder-handle {
+	background: transparent url('../images/relationship-sprite.png') no-repeat -12px 10px;
+	height: 100%;
+	width: 8px;
+	position: absolute;
+	left: 6px;
+	top: 0;
+}
+
+.multiselect-active li {
+	vertical-align: baseline;
+	color: #2a7c10;
+	font-weight: bold;
+	cursor: move;
+}
+
+.multiselect.empty li,
+.multiselect-active.empty li {
+	background: transparent;
+	border-bottom: none;
+	color: #aaa;
+	font-size: 14px;
+	font-weight: bold;
+	margin: 0;
+	padding: 24% 0 0 0;
+	text-align: center;
+	text-shadow: 0 1px 1px #EDF2F5;
+}
+
+.multiselect li label {
+	-webkit-transition: padding .1s linear;
+	-moz-transition: padding .1s linear;
+}
+
+.multiselect li label:before {
+  content: '';
+  position: absolute;
+  left: 10px;
+  width: 12px;
+  height: 20px;
+  background: transparent url('../images/relationship-sprite.png') no-repeat 0 5px;
+  opacity: 0;
+
+  -moz-transition: opacity .1s linear; /* firefox is the only browser that can animate :before */
+}
+
+.multiselect li.selected {
+	background-color: #FFFADD;
+}
+
+.multiselect li.selected label {
+	color: #2a7c10;
+	font-weight: bold;
+	padding-left: 20px;
+}
+
+.multiselect li.selected label:before {
+	opacity: 1;
+}
+
+.force-scroll {
+	overflow: scroll;
+	overflow-y: scroll;
+	overflow-x: hidden;
+}
+
+/* aggravating safari bug where position:ing or float:ing an element
+   will reduce the scrollbar box-shadow to a z-index of 0, never to
+   be seen again underneath element's the children..
+*/
+.force-scroll > *,
+.force-scroll > * {
+	border-right: 1px solid #B6C0C2;
+	box-sizing: border-box;
+	width: 100%;
+}
+
+.force-scroll::-webkit-scrollbar,
+.force-scroll::-moz-scrollbar {
+	-webkit-appearance: none;
+	margin: 2px;
+	padding: 2px;
+	width: 9px;
+}
+
+.force-scroll::-webkit-scrollbar-track {
+    background-color: #fff;
+    /* See comment on .force-scroll ul ... border-left does *not* work here either
+	box-shadow: 1px 0 1px #B6C0C2;
+	*/
+}
+
+.force-scroll::-webkit-scrollbar-thumb {
+	background-clip: padding-box;
+	background-color: rgba(0,0,0,.3);
+	border-radius: 4px;
+	border-width: 0 2px 0 2px;
+	box-shadow: inset 0 0 0 2px #fff;
+}

@@ -11,7 +11,8 @@
 */
 
 $platforms = array (
-					'windows nt 6.0'	=> 'Windows Longhorn',
+					'windows nt 6.1' 	=> 'Windows 7',
+    				'windows nt 6.0' 	=> 'Windows Vista',
 					'windows nt 5.2'	=> 'Windows 2003',
 					'windows nt 5.0'	=> 'Windows 2000',
 					'windows nt 5.1'	=> 'Windows XP',
@@ -49,6 +50,7 @@ $platforms = array (
 // multiple browser types so we want to identify the sub-type first.
 $browsers = array(
 					'Flock'				=> 'Flock',
+					'OPR'				=> 'Opera',
 					'Chrome'			=> 'Chrome',
 					'Opera'				=> 'Opera',
 					'MSIE'				=> 'Internet Explorer',

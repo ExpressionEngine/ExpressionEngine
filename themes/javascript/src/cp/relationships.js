@@ -80,6 +80,12 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 		this.active = $(container).find('.multiselect-active');
 		this.searchField = $(container).find('.multiselect-filter input');
 
+		// not a multi field - we could catch this in the php, but this works
+		// and we may want a prettier single relationship interface at some point
+		if ( ! this.root.length) {
+			return;
+		}
+
 		// cache a few things for search and query-less access
 		this.activeMap = {};
 		this.listItems = this.root.find('li');
@@ -239,8 +245,7 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 				moveBack: function(i) {
 					var old_value = that.defaultList[i].find('input:text').val();
 
-					if (old_value < this.activeLength)
-					{
+					if (old_value < this.activeLength) {
 						var li = that.activeMap[i],
 							idx = li.index() + 1,
 							reSort = li.nextAll();
@@ -265,8 +270,7 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 			// overflowing. Silly browsers.
 			that.active.addClass('force-scroll');
 
-			if ( ! that.force_empty)
-			{
+			if ( ! that.force_empty) {
 				// find existing checked items
 				var checked = _.map(this.root.find(':checked'), function(el, i) {
 					var li = $(el).closest('li'),
@@ -287,9 +291,8 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 
 					util.moveOver(idx);
 				});
-			}
-			else
-			{
+
+			} else {
 				_.each(this.root.find(':checked'), function(el, i) {
 					var parent = $(el).closest('li');
 
@@ -334,7 +337,7 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 			this.root.parents('form').on('submit', function(evt) {
 
 				that.root.find('input:text').each(function() {
-					if($(this).val() == "0") {
+					if ($(this).val() == "0") {
 						$(this).remove();
 					}
 				});
@@ -514,8 +517,7 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 				score += 1;
 			}
 
-			for (var i = 0; i < searchLength; i++)
-			{
+			for (var i = 0; i < searchLength; i++) {
 				var charLoc = item.indexOf(
 					search.charAt(i).toLowerCase()
 				);
@@ -645,6 +647,22 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 	};
 
 	/**
+	 * Cache the relationship object on the associated dom element
+	 *
+	 * Makes sure that we only ever instantiate a relationship of a
+	 * given name once.
+	 */
+	function cached_relationship_object(element, creation_callback) {
+		var el = $(element);
+
+		if ( ! el.data('relationship-object')) {
+			el.data('relationship-object', creation_callback(el));
+		}
+
+		return el.data('relationship-object');
+	}
+
+	/**
 	 * Public method to instantiate
 	 *
 	 * If it's a relationship field we need to find the cells for existing
@@ -652,15 +670,19 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 	 * simply bind on the field name we were given.
 	 */
 	EE.setup_relationship_field = function(field_name) {
-		if (field_name[0] == 'f') { // field_id_x vs col_id_x for grid
-			return new RelationshipField(
-				$('#sub_hold_'+field_name.replace('id_', ''))
-			);
-		}
+		var element = document.getElementById('relationship-' + field_name);
+
+		return cached_relationship_object(element, function(el) {
+			return new RelationshipField(el);
+		});
 	};
 
 	Grid.bind('relationship', 'display', function(cell) {
-		new RelationshipField(cell, ! cell.data('row-id'));
+		var element = cell.find('.relationship');
+
+		return cached_relationship_object(element, function(el) {
+			return new RelationshipField(cell, ! cell.data('row-id'));
+		});
 	});
 
 })(jQuery);

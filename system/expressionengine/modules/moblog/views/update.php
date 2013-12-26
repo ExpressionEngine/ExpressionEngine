@@ -50,8 +50,8 @@
 		</tr>
 	</tbody>
 </table>
-	
-	
+
+
 <table class="mainTable solo channel_fields" border="0" cellspacing="0" cellpadding="0">
 	<thead>
 		<tr>
@@ -162,7 +162,7 @@
 		<tr>
 			<td><?=form_label(lang('moblog_email_password'), 'moblog_email_password')?><br /> <?=lang('data_encrypted')?></td>
 			<td>
-				<?=form_input(array('id'=>'moblog_email_password','name'=>'moblog_email_password','class'=>'field','value'=>set_value('moblog_email_password', $values['moblog_email_password'])))?>
+				<?=form_password(array('id'=>'moblog_email_password','name'=>'moblog_email_password','class'=>'field','value'=>set_value('moblog_email_password', $values['moblog_email_password'])))?>
 				<?=form_error('moblog_email_password')?>
 			</td>
 		</tr>
@@ -210,7 +210,7 @@
 	</tbody>
 </table>
 
-	
+
 <table class="mainTable solo channel_fields" border="0" cellspacing="0" cellpadding="0">
 	<thead>
 		<tr>
@@ -239,7 +239,7 @@
 				<?=form_error('moblog_thumb_size')?>
 			</td>
 		</tr>
-	</tbody>	
+	</tbody>
 </table>
 
 <p>

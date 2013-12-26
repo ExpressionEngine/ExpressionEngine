@@ -44,12 +44,11 @@ EE.file_manager.sync_listen = function() {
 		
 		EE.file_manager.update_progress(0);
 
-		// Send first few ajax requests
-		for (var i = 0; i < 2; i++) {
-			setTimeout(function() {
-				EE.file_manager.sync(upload_directory_id);
-			}, 15);
-		};
+		// Send ajax requests
+		// Note- testing didn't show async made much improvement on time
+		setTimeout(function() {
+			EE.file_manager.sync(upload_directory_id);
+		}, 15);
 	});
 };
 
@@ -116,10 +115,14 @@ EE.file_manager.sync = function(upload_directory_id) {
 
 		},
 		success: function(data, textStatus, xhr) {
-			if (data.message_type == "failure") {
+			if (data.message_type != "success") {
+				if (typeof(data.errors) != "undefined") {
+					for (var key in data.errors) {
+						EE.file_manager.sync_errors.push("<b>" + key + "</b>: " + data.errors[key]);
+					}
+					}else{
+							EE.file_manager.sync_errors.push("<b>Undefined errors</b>");
 
-				for (var key in data.errors) {
-					EE.file_manager.sync_errors.push("<b>" + key + "</b>: " + data.errors[key]);
 				}
 			}
 		}

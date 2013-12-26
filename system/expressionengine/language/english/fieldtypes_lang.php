@@ -31,6 +31,7 @@ $lang = array(
 'rel_ft_limit_left'			=> 'Limit entries to',
 'rel_ft_limit_right'		=> 'returned',
 'rel_ft_limit_subtext'		=> 'leave blank to allow ALL entries',
+'rel_ft_authors'			=> 'Authors',
 'rel_ft_order'				=> 'Order entries by',
 'rel_ft_order_title'		=> 'Entry Title',
 'rel_ft_order_date'			=> 'Entry Date',
@@ -53,6 +54,7 @@ $lang = array(
 'file_ft_limit_left'			=> 'Limit existing files to',
 'file_ft_limit_right'			=> 'returned',
 'file_ft_limit_files_subtext'	=> 'leave blank to show ALL files',
+'file_ft_select_existing'		=> 'Select an existing file',
 
 // Grid
 'grid_options'				=> 'Grid Field Options',
@@ -71,6 +73,7 @@ $lang = array(
 'grid_col_width_percent'	=> 'Percentage.',
 'grid_col_required'			=> 'Required?',
 'grid_col_searchable'		=> 'Searchable?',
+'grid_show_fmt_btns'		=> 'Show formatting buttons?',
 'grid_output_format'		=> 'Output formatting?',
 'grid_text_direction'		=> 'Text direction?',
 'grid_limit_input'			=> 'Limit input?',

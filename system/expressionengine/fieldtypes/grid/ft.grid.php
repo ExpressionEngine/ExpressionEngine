@@ -7,7 +7,7 @@
  * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
- * @since		Version 2.0
+ * @since		Version 2.7
  * @filesource
  */
 
@@ -69,22 +69,27 @@ class Grid_ft extends EE_Fieldtype {
 	{
 		ee()->session->set_cache(__CLASS__, $this->name(), $data);
 
-		return NULL;
+		return ' ';
 	}
 
 	public function post_save($data)
 	{
-		$this->_load_grid_lib();
+		// Prevent saving if save() was never called, happens in Channel Form
+		// if the field is missing from the form
+		if (($data = ee()->session->cache(__CLASS__, $this->name(), FALSE)) !== FALSE)
+		{
+			$this->_load_grid_lib();
 
-		ee()->grid_lib->save(ee()->session->cache(__CLASS__, $this->name()));
+			ee()->grid_lib->save($data);
+		}
 	}
 
 	// --------------------------------------------------------------------
 
-	// This fieldtypes has been converted, so it accepts all content types
+	// This fieldtype has been converted, so it accepts all content types
 	public function accepts_content_type($name)
 	{
-		return TRUE;
+		return ($name != 'grid');
 	}
 
 
@@ -105,9 +110,18 @@ class Grid_ft extends EE_Fieldtype {
 	{
 		$entries = ee()->grid_model->get_entry_rows($entry_ids, $this->id(), $this->content_type());
 
+		// Skip params in the loop
+		unset($entries['params']);
+
 		$row_ids = array();
 		foreach ($entries as $rows)
 		{
+			// Continue if entry has no rows
+			if (empty($rows))
+			{
+				continue;
+			}
+
 			foreach ($rows as $row)
 			{
 				$row_ids[] = $row['row_id'];
@@ -149,7 +163,21 @@ class Grid_ft extends EE_Fieldtype {
 			'grid_max_rows' => $this->settings['grid_max_rows']
 		);
 
-		ee()->javascript->output('EE.grid(document.getElementById("'.$this->name().'"), '.json_encode($settings).');');
+		if (REQ == 'CP')
+		{
+			// Set settings as a global for easy reinstantiation of field
+			// by third parties
+			ee()->javascript->set_global('grid_field_settings.'.$this->name(), $settings);
+
+			// getElementById instead of $('#...') for field names that have
+			// brackets in them
+			ee()->javascript->output('EE.grid(document.getElementById("'.$this->name().'"));');
+		}
+		// Channel Form
+		else
+		{
+			ee()->javascript->output('EE.grid(document.getElementById("'.$this->name().'"), '.json_encode($settings).');');
+		}
 
 		$this->_load_grid_lib();
 
@@ -282,7 +310,8 @@ class Grid_ft extends EE_Fieldtype {
 				$this->row,
 				$this->id(),
 				$params,
-				$match[1]
+				$match[1],
+				$this->content_type()
 			);
 
 			// Replace the marker section with the parsed data
@@ -440,7 +469,7 @@ class Grid_ft extends EE_Fieldtype {
 
 		ee()->load->library('grid_parser');
 
-		return ee()->grid_parser->parse($this->row, $this->id(), $params, $tagdata);
+		return ee()->grid_parser->parse($this->row, $this->id(), $params, $tagdata, $this->content_type());
 	}
 
 	// --------------------------------------------------------------------
@@ -545,6 +574,7 @@ class Grid_ft extends EE_Fieldtype {
 
 		ee()->cp->add_to_head(ee()->view->head_link('css/grid.css'));
 
+		ee()->cp->add_js_script('plugin', 'ee_url_title');
 		ee()->cp->add_js_script('ui', 'sortable');
 		ee()->cp->add_js_script('file', 'cp/sort_helper');
 		ee()->cp->add_js_script('file', 'cp/grid');
@@ -664,7 +694,7 @@ class Grid_ft extends EE_Fieldtype {
 	{
 		if (isset($data['ee_action']) && $data['ee_action'] == 'delete')
 		{
-			$columns = ee()->grid_model->get_columns_for_field($settings['field_id'], $this->content_type(), FALSE);
+			$columns = ee()->grid_model->get_columns_for_field($data['field_id'], $this->content_type(), FALSE);
 
 			$col_types = array();
 			foreach ($columns as $column)
@@ -679,11 +709,12 @@ class Grid_ft extends EE_Fieldtype {
 				ee()->grid_model->delete_columns(
 					array_keys($col_types),
 					$col_types,
-					$this->settings['field_id']
+					$data['field_id'],
+					$this->content_type()
 				);
 			}
 
-			ee()->grid_model->delete_field($data['field_id']);
+			ee()->grid_model->delete_field($data['field_id'], $this->content_type());
 		}
 	}
 
