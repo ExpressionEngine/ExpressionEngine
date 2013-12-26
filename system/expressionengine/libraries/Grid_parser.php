@@ -58,7 +58,7 @@ class Grid_parser {
 	{
 		// Bail out if there are no grid fields present to parse
 		if ( ! preg_match_all(
-				"/".LD.'\/?('.preg_quote($pre_parser->prefix()).'(?:(?:'.implode('|', array_flip($grid_fields)).'):?)+)\b([^}{]*)?'.RD."/",
+				"/".LD.'\/?('.preg_quote($pre_parser->prefix()).'(?:(?:'.implode('|', array_flip($grid_fields)).'):?))\b([^}{]*)?'.RD."/",
 				$tagdata,
 				$matches,
 				PREG_SET_ORDER)
@@ -397,7 +397,7 @@ class Grid_parser {
 
 		// Gather the variables to parse
 		if ( ! preg_match_all(
-				"/".LD.'?[^\/]((?:(?:'.preg_quote($field_name).'):?)+)\b([^}{]*)?'.RD."/",
+				"/".LD.'?[^\/]((?:(?:'.preg_quote($field_name).'):?))\b([^}{]*)?'.RD."/",
 				$tagdata,
 				$matches,
 				PREG_SET_ORDER) || empty($row)
