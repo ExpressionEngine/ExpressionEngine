@@ -127,7 +127,7 @@ class EE_Input extends CI_Input {
 		if ( ! is_numeric($data['expire']))
 		{
 			ee()->load->library('logger');
-			ee()->logger->deprecated('2.6', 'EE_Input::delete_cookie()');
+			ee()->logger->deprecated('2.8', 'EE_Input::delete_cookie()');
 			$data['expire'] = ee()->localize->now - 86500;
 		}
 		else if ($data['expire'] > 0)

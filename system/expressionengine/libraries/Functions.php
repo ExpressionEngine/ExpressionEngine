@@ -717,7 +717,7 @@ class EE_Functions {
 	 * Set Cookie
 	 *
 	 * @access	public
-	 * @deprecated 2.7
+	 * @deprecated 2.8
 	 * @param	string
 	 * @param	string
 	 * @param	string
