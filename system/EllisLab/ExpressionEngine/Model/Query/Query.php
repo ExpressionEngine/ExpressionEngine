@@ -34,7 +34,7 @@ class Query {
 	public function __construct(ModelBuilder $builder, $model_name)
 	{
 		$this->builder = $builder;
-		$this->db = clone ee()->db; // TODO reset?
+		$this->db = ee()->db; // TODO reset?
 
 		$this->createRoot($model_name);
 
