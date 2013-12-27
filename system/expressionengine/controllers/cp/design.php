@@ -4718,7 +4718,7 @@ class Design extends CP_Controller {
 		$this->load->library('api');
 		$this->api->instantiate('template_structure');
 
-		$this->db->select(array('group_name', 'template_name', 'template_type', 'save_template_file'));
+		$this->db->select(array('group_name', 'template_name', 'template_type'));
 		$this->db->join('template_groups', 'template_groups.group_id = templates.group_id');
 		$this->db->where('templates.site_id', $this->config->item('site_id'));
 		$this->db->order_by('group_name, template_name', 'ASC');
@@ -4729,7 +4729,7 @@ class Design extends CP_Controller {
 		{
 			foreach ($query->result() as $row)
 			{
-				$existing[$row->group_name.'.group'][$row->template_name] = $row->save_template_file;
+				$existing[$row->group_name.'.group'][$row->template_name] = 'y';
 			}
 		}
 
@@ -4844,14 +4844,12 @@ class Design extends CP_Controller {
 						continue;
 					}
 
-
 					$data = array(
 									'group_id'				=> $group_id,
 									'template_name'			=> $template_name,
 									'template_type'			=> $template_type,
 									'template_data'			=> file_get_contents($basepath.'/'.$group.'/'.$template),
 									'edit_date'				=> $this->localize->now,
-									'save_template_file'	=> 'y',
 									'last_author_id'		=> $this->session->userdata['member_id'],
 									'site_id'				=> $this->config->item('site_id')
 								 );
@@ -4872,7 +4870,6 @@ class Design extends CP_Controller {
 									'template_name'			=> 'index',
 									'template_data'			=> '',
 									'edit_date'				=> $this->localize->now,
-									'save_template_file'	=> 'y',
 									'last_author_id'		=> $this->session->userdata['member_id'],
 									'site_id'				=> $this->config->item('site_id')
 								 );
