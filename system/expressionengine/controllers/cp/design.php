@@ -1551,7 +1551,7 @@ class Design extends CP_Controller {
 									template_data, template_type,
 									template_notes, cache, refresh,
 									no_auth_bounce, allow_php,
-									php_parse_location, save_template_file')
+									php_parse_location')
 							->from('templates t, template_groups tg')
 							->where('t.template_id',
 									$this->input->post('existing_template'))
@@ -1559,8 +1559,7 @@ class Design extends CP_Controller {
 							->get();
 
 			if ($this->config->item('save_tmpl_files') == 'y' &&
-				$this->config->item('tmpl_file_basepath') != '' &&
-				$qry->row('save_template_file')  == 'y')
+				$this->config->item('tmpl_file_basepath') != '')
 			{
 				$basepath = $this->config->item('tmpl_file_basepath');
 				$basepath .= (substr($basepath, -1) != '/') ? '/' : '';
@@ -1697,7 +1696,6 @@ class Design extends CP_Controller {
 		$vars['template_data']		= $query->row('template_data') ;
 		$vars['template_name']		= $query->row('template_name') ;
 		$vars['template_notes']		= $query->row('template_notes') ;
-		$vars['save_template_file'] = ($query->row('save_template_file') != 'y') ? FALSE : TRUE ;
 		$vars['no_auth_bounce']		= $query->row('no_auth_bounce');
 		$vars['enable_http_auth']	= $query->row('enable_http_auth');
 		$vars['template_route'] 	= $query->row('route');
@@ -1766,7 +1764,7 @@ class Design extends CP_Controller {
 			}
 		}
 
-		if ($this->config->item('save_tmpl_files') == 'y' AND $this->config->item('tmpl_file_basepath') != '' AND $vars['save_template_file'] == TRUE)
+		if ($this->config->item('save_tmpl_files') == 'y' AND $this->config->item('tmpl_file_basepath') != '')
 		{
 			$this->load->helper('file');
 			$basepath = $this->config->slash_item('tmpl_file_basepath');
@@ -1823,8 +1821,6 @@ class Design extends CP_Controller {
 		$vars['message'] = $message;
 
 		$vars['save_template_revision'] = ($this->config->item('save_tmpl_revisions') == 'y') ? 1 : '';
-
-		$vars['can_save_file'] = ($this->config->item('save_tmpl_files') == 'y' && $this->config->item('tmpl_file_basepath') != '') ? TRUE : FALSE;
 
 		$this->cp->add_js_script(array(
 				'plugin'	=> 'markitup',
@@ -1936,8 +1932,7 @@ class Design extends CP_Controller {
 		}
 
 		$save_result = FALSE;
-		$delete_template_file = FALSE;
-		$save_template_file = ($this->input->post('save_template_file') == 'y') ? 'y' : 'n';
+		$save_template_file = FALSE;
 
 		/** -------------------------------
 		/**	 Save template as file
@@ -1947,47 +1942,24 @@ class Design extends CP_Controller {
 
 		if ($this->config->item('tmpl_file_basepath') != '' && $this->config->item('save_tmpl_files') == 'y')
 		{
-			$query = $this->db->query("SELECT exp_templates.template_name, exp_templates.template_type, exp_templates.save_template_file, exp_template_groups.group_name
+			$save_template_file = TRUE;
+			$query = $this->db->query("SELECT exp_templates.template_name, exp_templates.template_type, exp_template_groups.group_name
 								FROM exp_templates
 								LEFT JOIN exp_template_groups ON exp_templates.group_id = exp_template_groups.group_id
 								WHERE template_id = '".$this->db->escape_str($template_id)."'");
 
-			if ($save_template_file == 'y')
-			{
-				$tdata = array(
-								'site_short_name'	=> $this->config->item('site_short_name'),
-								'template_id'		=> $template_id,
-								'template_group'	=> $query->row('group_name') ,
-								'template_name'		=> $query->row('template_name'),
-								'template_type'		=> $query->row('template_type'),
-								'template_data'		=> $_POST['template_data'],
-								'edit_date'			=> $this->localize->now,
-								'last_author_id'	=> $this->session->userdata['member_id']
-								);
+			$tdata = array(
+							'site_short_name'	=> $this->config->item('site_short_name'),
+							'template_id'		=> $template_id,
+							'template_group'	=> $query->row('group_name') ,
+							'template_name'		=> $query->row('template_name'),
+							'template_type'		=> $query->row('template_type'),
+							'template_data'		=> $_POST['template_data'],
+							'edit_date'			=> $this->localize->now,
+							'last_author_id'	=> $this->session->userdata['member_id']
+							);
 
-				$save_result = $this->update_template_file($tdata);
-			}
-			else
-			{
-				// If the template was previously saved as a text file,
-				// but the checkbox was not selected this time we'll
-				// delete the file
-
-				if ($query->row('save_template_file')  == 'y')
-				{
-					$delete_template_file = TRUE;
-
-					$tdata = array(
-								'template_id'		=> $template_id,
-								'site_short_name'	=> $this->config->item('site_short_name'),
-								'template_group'	=> $query->row('group_name') ,
-								'template_name'		=> $query->row('template_name'),
-								'template_type'		=> $query->row('template_type')
-								);
-
-					$template_file_result = $this->_delete_template_file($tdata);
-				}
-			}
+			$save_result = $this->update_template_file($tdata);
 		}
 
 		/** -------------------------------
@@ -2012,7 +1984,7 @@ class Design extends CP_Controller {
 		/**	 Save Template
 		/** -------------------------------*/
 
-		$this->db->query($this->db->update_string('exp_templates', array('template_data' => $_POST['template_data'], 'edit_date' => $this->localize->now, 'last_author_id' => $this->session->userdata['member_id'], 'save_template_file' => $save_template_file, 'template_notes' => $_POST['template_notes']), "template_id = '$template_id'"));
+		$this->db->query($this->db->update_string('exp_templates', array('template_data' => $_POST['template_data'], 'edit_date' => $this->localize->now, 'last_author_id' => $this->session->userdata['member_id'], 'template_notes' => $_POST['template_notes']), "template_id = '$template_id'"));
 
 		// Clear cache files
 		$this->functions->clear_caching('all');
@@ -2020,15 +1992,10 @@ class Design extends CP_Controller {
 		$message = lang('template_updated');
 		$cp_message['message_success'] = lang('template_updated');
 
-		if ($save_template_file == 'y' AND $save_result == FALSE)
+		if ($save_template_file == TRUE AND $save_result == FALSE)
 		{
 			$cp_message['message_failure'] = lang('template_not_saved');
 			$message .= BR.lang('template_not_saved');
-		}
-		elseif ($delete_template_file == TRUE && $template_file_result == FALSE)
-		{
-			$cp_message['message_failure'] = lang('template_file_not_deleted');
-			$message .= BR.lang('template_file_not_deleted');
 		}
 
 		/* -------------------------------------
