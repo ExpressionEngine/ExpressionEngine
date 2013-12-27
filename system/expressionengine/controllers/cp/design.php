@@ -4115,7 +4115,7 @@ class Design extends CP_Controller {
 
 			if (is_numeric($_POST['duplicate_group']))
 			{
-				$query = $this->db->query("SELECT template_name, save_template_file, template_data, template_type, template_notes, cache, refresh, no_auth_bounce, allow_php, php_parse_location FROM exp_templates WHERE group_id = '".$this->db->escape_str($_POST['duplicate_group'])."'");
+				$query = $this->db->query("SELECT template_name, template_data, template_type, template_notes, cache, refresh, no_auth_bounce, allow_php, php_parse_location FROM exp_templates WHERE group_id = '".$this->db->escape_str($_POST['duplicate_group'])."'");
 
 				if ($query->num_rows() > 0)
 				{
@@ -4143,7 +4143,6 @@ class Design extends CP_Controller {
 					$data = array(
 									'group_id'				=> $group_id,
 									'template_name'			=> $row['template_name'],
-									'save_template_file'	=> $row['save_template_file'],
 									'template_notes'		=> $row['template_notes'],
 									'cache'					=> $row['cache'],
 									'refresh'				=> $row['refresh'],
