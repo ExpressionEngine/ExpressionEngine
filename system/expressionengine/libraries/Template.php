@@ -2404,7 +2404,7 @@ class EE_Template {
 
 					$query = ee()->db->select('a.template_id, a.template_data,
 						a.template_name, a.template_type, a.edit_date,
-						a.save_template_file, a.cache, a.refresh, a.hits,
+						a.cache, a.refresh, a.hits,
 						a.allow_php, a.php_parse_location, b.group_name')
 						->from('templates a')
 						->join('template_groups b', 'a.group_id = b.group_id')
@@ -2518,7 +2518,7 @@ class EE_Template {
 		}
 
 		// Retrieve template file if necessary
-		if ($row['save_template_file'] == 'y')
+		if (ee()->config->item('save_tmpl_files') == 'y' AND ee()->config->item('tmpl_file_basepath') != '')
 		{
 			$site_switch = FALSE;
 
@@ -2537,23 +2537,19 @@ class EE_Template {
 				}
 			}
 
-			if (ee()->config->item('save_tmpl_files') == 'y'
-				AND ee()->config->item('tmpl_file_basepath') != '')
+			$this->log_item("Retrieving Template from File");
+			ee()->load->library('api');
+			ee()->api->instantiate('template_structure');
+
+			$basepath = rtrim(ee()->config->item('tmpl_file_basepath'), '/').'/';
+
+			$basepath .= ee()->config->item('site_short_name').'/'
+				.$row['group_name'].'.group/'.$row['template_name']
+				.ee()->api_template_structure->file_extensions($row['template_type']);
+
+			if (file_exists($basepath))
 			{
-				$this->log_item("Retrieving Template from File");
-				ee()->load->library('api');
-				ee()->api->instantiate('template_structure');
-
-				$basepath = rtrim(ee()->config->item('tmpl_file_basepath'), '/').'/';
-
-				$basepath .= ee()->config->item('site_short_name').'/'
-					.$row['group_name'].'.group/'.$row['template_name']
-					.ee()->api_template_structure->file_extensions($row['template_type']);
-
-				if (file_exists($basepath))
-				{
-					$row['template_data'] = file_get_contents($basepath);
-				}
+				$row['template_data'] = file_get_contents($basepath);
 			}
 
 			if ($site_switch !== FALSE)
@@ -2704,7 +2700,6 @@ class EE_Template {
 			'template_type'			=> $template_type,
 			'template_data'			=> file_get_contents($basepath.'/'.$filename),
 			'edit_date'				=> ee()->localize->now,
-			'save_template_file'	=> 'y',
 			'last_author_id'		=> '1',	// assume a super admin
 			'site_id'				=> ee()->config->item('site_id')
 		 );
@@ -3049,7 +3044,7 @@ class EE_Template {
 
 			if (ee()->config->item('send_headers') == 'y')
 			{
-				$sql = "SELECT t.template_name, tg.group_name, t.edit_date, t.save_template_file FROM exp_templates t, exp_template_groups tg
+				$sql = "SELECT t.template_name, tg.group_name, t.edit_date FROM exp_templates t, exp_template_groups tg
 						WHERE  t.group_id = tg.group_id
 						AND    t.template_type = 'css'
 						AND    t.site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."'";
@@ -3072,7 +3067,7 @@ class EE_Template {
 					{
 						$css_versions[$row['group_name'].'/'.$row['template_name']] = $row['edit_date'];
 
-						if (ee()->config->item('save_tmpl_files') == 'y' AND ee()->config->item('tmpl_file_basepath') != '' AND $row['save_template_file'] == 'y')
+						if (ee()->config->item('save_tmpl_files') == 'y' AND ee()->config->item('tmpl_file_basepath') != '')
 						{
 							$basepath = ee()->config->slash_item('tmpl_file_basepath').ee()->config->item('site_short_name').'/';
 							$basepath .= $row['group_name'].'.group/'.$row['template_name'].'.css';
