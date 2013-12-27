@@ -3751,13 +3751,19 @@ class Design extends CP_Controller {
 						'hits'					=> $this->input->get_post('hits')
 		);
 
-		$this->db->select('template_name, template_type, save_template_file, group_name, templates.group_id');
+		$this->db->select('template_name, template_type, group_name, templates.group_id');
 		$this->db->join('template_groups', 'template_groups.group_id = templates.group_id');
 		$this->db->where('template_id', $template_id);
 		$this->db->where('templates.site_id', $this->config->item('site_id'));
 		$query = $this->db->get('templates');
 
 		$template_info = $query->row_array();
+
+		$save_template_file = FALSE;
+		if ($this->config->item('tmpl_file_basepath') != '' && $this->config->item('save_tmpl_files') == 'y')
+		{
+			$save_template_file = TRUE;
+		}
 
 		// safety
 		if (count($template_info) == 0)
@@ -3789,7 +3795,7 @@ class Design extends CP_Controller {
 				$this->output->send_ajax_response(lang('reserved_name'), TRUE);
 			}
 
-			if ($template_info['save_template_file'] == 'y')
+			if ($save_template_file)
 			{
 				$rename_file = TRUE;
 			}
