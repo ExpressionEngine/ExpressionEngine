@@ -6,7 +6,7 @@ use EllisLab\ExpressionEngine\Model\Model;
 class StatusGroup extends Model {
 	protected static $_meta = array(
 		'primary_key' => 'group_id',
-		'gateways' => 'StatusGroupGateway',
+		'gateway_names' => array('StatusGroupGateway'),
 		'key_map' => array(
 			'group_id' => 'StatusGroupGateway',
 			'site_id' => 'StatusGroupGateway'

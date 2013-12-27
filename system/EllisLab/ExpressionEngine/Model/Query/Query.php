@@ -756,7 +756,6 @@ class Query {
 		}
 
 		$model_class_name = $this->builder->getRegisteredClass($model_name);
-
 		foreach ($model_class_name::getMetaData('gateway_names') as $gateway_name)
 		{
 			$gateway_class_name = $this->builder->getRegisteredClass($gateway_name);

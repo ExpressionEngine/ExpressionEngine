@@ -121,12 +121,17 @@ abstract class Model {
 	{
 		if (empty(static::$_meta))
 		{
-			throw new \UnderflowException('No meta data set for this class!');
+			throw new \UnderflowException('No meta data set for ' . get_called_class());
 		}
 
 		if ( ! isset($key))
 		{
 			return static::$_meta;
+		}
+
+		if ( ! isset (static::$_meta[$key]))
+		{
+			throw new \DomainException('Missing meta data, "' . $key . '", in ' . get_called_class());
 		}
 
 		return static::$_meta[$key];

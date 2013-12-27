@@ -13,6 +13,8 @@ class ModelBuilder {
 		'TemplateGateway' => '\EllisLab\ExpressionEngine\Model\Gateway\TemplateGateway',
 		'TemplateGroupGateway' => '\EllisLab\ExpressionEngine\Model\Gateway\TemplateGroupGateway',
 		'Channel' => '\EllisLab\ExpressionEngine\Module\Channel\Model\Channel',
+		'ChannelFieldGroup'=> '\EllisLab\ExpressionEngine\Module\Channel\Model\ChannelFieldGroup',
+		'ChannelFieldGroupGateway' => '\EllisLab\ExpressionEngine\Module\Channel\Model\Gateway\ChannelFieldGroupGateway',
 		'ChannelEntry' => '\EllisLab\ExpressionEngine\Module\Channel\Model\ChannelEntry',
 		'ChannelGateway' => '\EllisLab\ExpressionEngine\Module\Channel\Model\Gateway\ChannelGateway',
 		'ChannelTitleGateway' => '\EllisLab\ExpressionEngine\Module\Channel\Model\Gateway\ChannelTitleGateway',
@@ -25,7 +27,11 @@ class ModelBuilder {
 		'CategoryFieldDataGateway' => '\EllisLab\ExpressionEngine\Model\Gateway\CategoryFieldDataGateway',
 		'CategoryGateway' => '\EllisLab\ExpressionEngine\Model\Gateway\CategoryGateway',
 		'CategoryGroup' => '\EllisLab\ExpressionEngine\Model\Category\CategoryGroup',
-		'CategoryGroupGateway'=> '\EllisLab\ExpressionEngine\Model\Gateway\CategoryGroupGateway'
+		'CategoryGroupGateway'=> '\EllisLab\ExpressionEngine\Model\Gateway\CategoryGroupGateway',
+		'StatusGroup' => '\EllisLab\ExpressionEngine\Model\StatusGroup',
+		'StatusGroupGateway' => '\EllisLab\ExpressionEngine\Model\Gateway\StatusGroupGateway',
+		'Site' => '\EllisLab\ExpressionEngine\Model\Site',
+		'SiteGateway' => '\EllisLab\ExpressionEngine\Model\Gateway\SiteGateway'
 	);
 
 	public function __construct(Dependencies $di)

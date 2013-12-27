@@ -178,14 +178,14 @@ class Admin_content extends CP_Controller {
 			->all();
 		if ( ! empty($status_groups))
 		{
-			foreach ($groups as $group)
+			foreach ($status_groups as $group)
 			{
 				$vars['status_group_options'][$group->group_id] = $group->group_name;
 			}
 		}
 
 		$vars['field_group_options'][''] = lang('none');
-		$field_groups = $this->builder->get('FieldGroup')
+		$field_groups = $this->builder->get('ChannelFieldGroup')
 			->filter('site_id', $this->config->item('site_id'))
 			->order('group_name')
 			->all();

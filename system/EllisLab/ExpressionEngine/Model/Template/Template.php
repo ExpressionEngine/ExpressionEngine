@@ -1,20 +1,21 @@
 <?php
 namespace EllisLab\ExpressionEngine\Model\Template;
 
-use EllisLab\ExpressionEngine\Model\Model as Model;
+use EllisLab\ExpressionEngine\Model\Model;
 
 /**
  *
  */
 class Template extends Model {
 
-	protected static $meta = array(
+	protected static $_meta = array(
 		'primary_key'	=> 'template_id',
 		'gateway_names'	=> array('TemplateGateway'),
 		'key_map'		=> array(
 			'template_id' => 'TemplateGateway',
 			'group_id'    => 'TemplateGateway',
-			'last_author_id' => 'TemplateGateway'
+			'last_author_id' => 'TemplateGateway',
+			'site_id' => 'TemplateGateway'
 		)
 	);
 
@@ -45,5 +46,16 @@ class Template extends Model {
 		return $this;
 	}
 
+	public function getSite()
+	{
+		return $this->manyToOne('Site', 'Site', 'site_id', 'site_id');
+	}
+
+	public function setSite(Site $site)
+	{
+		$this->setRelated('Site', $site);
+		$this->site_id = $site->site_id;
+		return $this;
+	}
 }
 

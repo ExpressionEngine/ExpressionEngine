@@ -1,29 +1,21 @@
 <?php
+namespace EllisLab\ExpressionEngine\Module\Channel\Model;
+
+use EllisLab\ExpressionEngine\Model\Model;
 
 class ChannelFieldGroup extends Model {
 	protected static $_meta = array(
 		'primary_key' 	=> 'group_id',
-		'gateway_names' 	=> array('FieldGroupGateway'),
+		'gateway_names' 	=> array('ChannelFieldGroupGateway'),
 		'key_map'		=> array(
-			'group_id' => 'FieldGroupGateway',
-			'site_id' => 'FieldGroupGateway'
+			'group_id' => 'ChannelFieldGroupGateway',
+			'site_id' => 'ChannelFieldGroupGateway'
 		)
 	);
 
-	public function getChannelFieldStructures()
-	{
-		return $this->oneToMany('ChannelFieldStructure', 'group_id', 'group_id');
-	}
-
-	/**
-	 * Validate the field group.
-	 *
-	 * @throws StructureInvalidException if missing / invalid data
-	 * @return void
-	 */
-	public function validate()
-	{
-
-	}
+	// Properties
+	protected $group_id;
+	protected $site_id;
+	protected $group_name;
 
 }
