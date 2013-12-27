@@ -52,6 +52,7 @@ class EE_Route {
     {
 		require_once APPPATH.'libraries/template_router/Segment.php';
 		require_once APPPATH.'libraries/template_router/Converters.php';
+		ee()->lang->loadfile('template_router');
 		$this->rules = new EE_Template_router_converters();
 		$this->parse_route($route);
     }
@@ -78,7 +79,7 @@ class EE_Route {
 			} else {
 				if (empty($segment->value))
 				{
-					throw new Exception("Segment '{$segment->name}' missing value.");
+					throw new Exception(lang('missing_segment_value') . $segment->name);
 				}
 				$url[] =  $segment->value;
 			}
@@ -180,7 +181,7 @@ class EE_Route {
 			}
 			if (in_array($segment['variable'], $used_names))
 			{
-				throw new Exception("URL variable '{$segment['variable']}' already in use.");
+				throw new Exception(lang('variable_in_use') . $segment['variable']);
 			}
 			$used_names[] = $segment['variable'];
 			$segments[] = $segment;
@@ -191,7 +192,7 @@ class EE_Route {
 			$remainder = substr($route, $pos);
 			if ( (strpos($remainder, '{') === False && strpos($remainder, '}')) === False)
 			{
-				throw new Exception("Invalid URL Route: $route");
+				throw new Exception(lang('invalid_route') . $route);
 			}
 			$segments[] = array('static' => $remainder);
 		}
@@ -234,7 +235,7 @@ class EE_Route {
 					$valid = @preg_match("/$regex/", null);
 					$index++;
 					if($end < $index) {
-						throw new Exception("Invalid Regular Expression");
+						throw new Exception(lang('invalid_regex'));
 					}
 				}
 				$matches[0] = "regex[{$regex}]|";

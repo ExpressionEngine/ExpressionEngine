@@ -35,6 +35,7 @@ class EE_Template_router_converters {
 
 	public function __construct()
 	{
+		ee()->lang->loadfile('template_router');
 		// Register default converters
 		$this->register('int', 'EE_template_router_integer_converter');
 		$this->register('max_length', 'EE_template_router_max_length_converter');
@@ -55,7 +56,7 @@ class EE_Template_router_converters {
 	{
 		if (empty($this->converters[$converter]))
 		{
-			throw new Exception("Converter not found: $converter");
+			throw new Exception(lang('missing_rule') . $converter);
 		}
 
 		$class = $this->converters[$converter];

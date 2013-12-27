@@ -28,6 +28,7 @@ class EE_Route_segment {
     {
 		$this->name = $name;
 		$this->rules = $rules;
+		ee()->lang->loadfile('template_router');
 	}
 
 	/**
@@ -53,7 +54,7 @@ class EE_Route_segment {
 		$result = preg_match($regex, $val);
 		if ($result === False)
 		{
-			throw new Exception("Invalid rule in segment");
+			throw new Exception(lang('validation_failed'));
 		}
         return $result === 1 ? True : False;
 	}
