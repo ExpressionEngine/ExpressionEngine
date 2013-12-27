@@ -4358,7 +4358,6 @@ class Design extends CP_Controller {
 		$this->db->select(array('group_name', 'templates.group_id', 'template_name', 'template_type', 'template_id', 'edit_date'));
 		$this->db->join('template_groups', 'template_groups.group_id = templates.group_id');
 		$this->db->where('templates.site_id', $this->config->item('site_id'));
-		$this->db->where('save_template_file', 'y');
 		$this->db->order_by('group_name, template_name', 'ASC');
 		$query = $this->db->get('templates');
 
@@ -4514,7 +4513,6 @@ class Design extends CP_Controller {
 			$this->db->select(array('group_name', 'template_name', 'template_type', 'template_id', 'edit_date', 'template_data'));
 			$this->db->join('template_groups', 'template_groups.group_id = templates.group_id');
 			$this->db->where('templates.site_id', $this->config->item('site_id'));
-			$this->db->where('save_template_file', 'y');
 			$this->db->where_in('template_id', $create_files);
 			$this->db->order_by('group_name, template_name', 'ASC');
 			$query = $this->db->get('templates');
@@ -4554,7 +4552,6 @@ class Design extends CP_Controller {
 		$this->db->select(array('group_name', 'templates.group_id', 'template_name', 'template_type', 'template_id', 'edit_date'));
 		$this->db->join('template_groups', 'template_groups.group_id = templates.group_id');
 		$this->db->where('templates.site_id', $this->config->item('site_id'));
-		$this->db->where('save_template_file', 'y');
 		$this->db->where_in('template_id', $damned);
 		$this->db->order_by('group_name, template_name', 'ASC');
 		$query = $this->db->get('templates');
@@ -4629,7 +4626,6 @@ class Design extends CP_Controller {
 								'template_type'			=> $existing[$group][$template]['4'],
 								'template_data'			=> $contents,
 								'edit_date'				=> $this->localize->now,
-								'save_template_file'	=> 'y',
 								'last_author_id'		=> $this->session->userdata['member_id'],
 								'site_id'				=> $this->config->item('site_id')
 								);
