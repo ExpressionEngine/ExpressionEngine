@@ -1002,7 +1002,7 @@ class Channel {
 					{
 						if ($not === TRUE)
 						{
-							$entry_id = implode('|', array_diff(array_flip($pages_uris), explode('|', $ids)));
+							$entry_id = implode('|', array_diff(array_flip($pages_uris), $ids));
 						}
 						else
 						{
