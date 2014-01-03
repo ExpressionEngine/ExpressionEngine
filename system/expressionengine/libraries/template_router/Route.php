@@ -106,7 +106,7 @@ class EE_Route {
 		}
 		$parsed_route = implode('', $url);
 		// backslash escaped for preg_match
-		$parsed_route = str_replace('/', '\/?', $parsed_route);
+		$parsed_route = str_replace('/', '\/', $parsed_route);
 		// anchor the beginning and end, and add optional trailing slash
 		return "^{$parsed_route}\/?$";
 	}
