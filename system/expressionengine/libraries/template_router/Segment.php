@@ -39,7 +39,7 @@ class EE_Route_segment {
 	 */
 	public function regex()
 	{
-		return "(?P<{$this->name}>" . $this->validator() . ")";
+		return "(?P<{$this->name}>(" . $this->validator() . ")?)";
 	}
 
 	/**
@@ -56,7 +56,7 @@ class EE_Route_segment {
 		{
 			throw new Exception(lang('validation_failed'));
 		}
-        return $result === 1 ? True : False;
+        return $result === 1;
 	}
 
 	/**
