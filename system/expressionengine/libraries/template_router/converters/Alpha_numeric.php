@@ -23,7 +23,7 @@
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class EE_Template_router_integer_converter implements EE_Template_router_converter {
+class EE_Template_router_alpha_numeric_converter implements EE_Template_router_converter {
 
 	public function validator()
 	{

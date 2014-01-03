@@ -17,6 +17,16 @@
 require_once APPPATH.'libraries/template_router/converters/Integer.php';
 require_once APPPATH.'libraries/template_router/converters/Max_length.php';
 require_once APPPATH.'libraries/template_router/converters/Min_length.php';
+require_once APPPATH.'libraries/template_router/converters/Alpha_dash.php';
+require_once APPPATH.'libraries/template_router/converters/Alpha_numeric.php';
+require_once APPPATH.'libraries/template_router/converters/Alpha.php';
+require_once APPPATH.'libraries/template_router/converters/Base64.php';
+require_once APPPATH.'libraries/template_router/converters/Integer.php';
+require_once APPPATH.'libraries/template_router/converters/Max_length.php';
+require_once APPPATH.'libraries/template_router/converters/Min_length.php';
+require_once APPPATH.'libraries/template_router/converters/Natural.php';
+require_once APPPATH.'libraries/template_router/converters/Numeric.php';
+require_once APPPATH.'libraries/template_router/converters/Required.php';
 
 // ------------------------------------------------------------------------
 
@@ -37,9 +47,16 @@ class EE_Template_router_converters {
 	{
 		ee()->lang->loadfile('template_router');
 		// Register default converters
+		$this->register('alpha', 'EE_template_router_alpha_converter');
+		$this->register('max_length', 'EE_template_router_alpha_dash_converter');
+		$this->register('alpha_numeric', 'EE_template_router_alpha_numeric_converter');
+		$this->register('base64', 'EE_template_router_base64_converter');
 		$this->register('int', 'EE_template_router_integer_converter');
 		$this->register('max_length', 'EE_template_router_max_length_converter');
 		$this->register('min_length', 'EE_template_router_min_length_converter');
+		$this->register('natural', 'EE_template_router_natural_converter');
+		$this->register('numeric', 'EE_template_router_numeric_converter');
+		$this->register('required', 'EE_template_router_required_converter');
 	}
 
 	// ------------------------------------------------------------------------
