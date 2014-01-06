@@ -5,7 +5,7 @@ use EllisLab\ExpressionEngine\Core\Dependencies;
 use EllisLab\ExpressionEngine\Core\Validation\Validator;
 use EllisLab\ExpressionEngine\Core\Validation\Error\ValidationError;
 
-use EllisLab\ExpressionEngine\Model\Errors;
+use EllisLab\ExpressionEngine\Model\Error\Errors;
 
 
 /**
@@ -153,7 +153,7 @@ abstract class RowDataGateway {
 		// Nothing to validate!
 		if (empty($this->dirty))
 		{
-			return $result;
+			return $errors;
 		}
 
 		$validation_rules = static::getMetaData('validation_rules');
@@ -172,7 +172,7 @@ abstract class RowDataGateway {
 			}
 		}
 
-		return $result;
+		return $errors;
 	}
 
 	/**

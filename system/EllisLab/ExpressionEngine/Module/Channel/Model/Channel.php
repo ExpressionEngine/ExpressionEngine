@@ -100,6 +100,73 @@ class Channel extends Model implements ContentStructure {
 		return $form_elements;
 	}
 
+
+	/**
+	 * Duplicate another Channel's preferences
+	 */
+	public function duplicatePreferences(Channel $channel)
+	{
+		$exceptions = array('channel_id', 'site_id', 'channel_name', 'channel_title', 'total_entries',
+							'total_comments', 'last_entry_date', 'last_comment_date');
+
+		foreach(get_object_vars($this) as $property => $value)
+		{
+			// don't duplicate fields that are unique to each channel
+			if ( in_array($property, $exceptions) || strpos($property, '_') === 0)
+			{
+				continue;
+			}
+
+		
+
+			switch ($property)
+			{
+				// category, field, and status fields should only be duped
+				// if both channels are assigned to the same group of each
+				case 'cat_group':
+					// allow to implicitly set category group to "None"
+					if ( ! isset($this->{$property}))
+					{
+						$this->{$property} = $channel->{$property};
+					}
+					break;
+				case 'status_group':
+				case 'field_group':
+					if ( ! isset($this->{$property}))
+					{
+						$this->{$property} = $channel->{$property};
+					}
+					elseif ($this->{$property} == '')
+					{
+						 $this->{$property} = NULL;
+					}
+					break;
+				case 'deft_status':
+				case 'deft_status':
+					if ( ! isset($this->status_group) OR $this->status_group == $channel->status_group )
+					{
+						$this->{$property} = $channel->{$property};
+					}
+					break;
+				case 'search_excerpt':
+					if ( ! isset($this->field_group) OR $this->field_group == $channel->field_group )
+					{
+						$this->{$property} = $channel->{$property};
+					}
+					break;
+				case 'deft_category':
+					if ( ! isset($this->cat_group) OR count(array_diff(explode('|', $this->cat_group), explode('|', $channel->cat_group ))) == 0)
+					{
+						$this->{$property} = $channel->{$property};
+					}
+					break;
+				default:
+					$this->{$property} = $channel->{$property};
+					break;
+			}
+		}
+	}
+
 	public function testPrint($depth='')
 	{
 		if ($depth == "\t\t\t")

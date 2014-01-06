@@ -1,7 +1,7 @@
 <?php
 namespace EllisLab\ExpressionEngine\Model;
 
-use EllisLab\ExpressionEngine\Service\Validation\ValidationResult;
+use EllisLab\ExpressionEngine\Model\Error\Errors;
 use EllisLab\ExpressionEngine\Core\Dependencies;
 use EllisLab\ExpressionEngine\Model\Query\QueryBuilder;
 use EllisLab\ExpressionEngine\Model\Query\ModelRelationshipMeta;
@@ -77,7 +77,7 @@ abstract class Model {
 			return $this->{$name};
 		}
 
-		throw new \InvalidArgumentException('Attempt to access a non-existent property on ' . __CLASS__);
+		throw new \InvalidArgumentException('Attempt to access a non-existent property, "' . $name . '", on ' . get_called_class());
 	}
 
 	/**
@@ -108,7 +108,7 @@ abstract class Model {
 			return;
 		}
 
-		throw new \InvalidArgumentException('Attempt to access a non-existent property "' . $name . '" on ' . __CLASS__);
+		throw new \InvalidArgumentException('Attempt to access a non-existent property "' . $name . '" on ' . get_called_class());
 	}
 
 	/**
@@ -183,18 +183,18 @@ abstract class Model {
 
 		$cascade = func_get_args();
 
-		$validation = new ValidationResult();
+		$errors = new Errors();
 
 		foreach ($this->_gateways as $gateway)
 		{
-			$validation->addErrors($gateway->validate());
+			$errors->addErrors($gateway->validate());
 		}
 
 		foreach($cascade as $model_name)
 		{
 			if (is_array($model_name))
 			{
-				$this->cascadeValidate($validation, $model_name);
+				$this->cascadeValidate($errors, $model_name);
 			}
 			else
 			{
@@ -208,8 +208,7 @@ abstract class Model {
 			}
 		}
 
-
-		return $validation;
+		return $errors;
 	}
 
 	/**
@@ -228,33 +227,31 @@ abstract class Model {
 	 * @return	Errors	A class containing the errors resulting from validation.
 	 *
 	 */
-	protected function cascadeValidate($validation, $model_names)
+	protected function cascadeValidate($errors, $relationships)
 	{
-		foreach ($model_names as $from_model_name => $to_model_name)
+		foreach ($relationships as $from_relationship => $to_relationship)
 		{
 			$method = 'get' . $from_model_name;
 			$models = $this->$method();
 
 			foreach ($models as $model)
 			{
-				if (is_array($to_model_name))
+				if (is_array($to_relationship))
 				{
-					$validation->addErrors($model->cascadeValidate($to_model_name));
+					$model->cascadeValidate($errors, $to_relationship);
 				}
 				else
 				{
-					$to_method = 'get' . $to_model_name;
+					$to_method = 'get' . $to_relationship;
 					$to_models = $model->$to_method();
 
 					foreach ($to_models as $to_model)
 					{
-						$validation->addErrors($to_model->validate());
+						$errors->addErrors($to_model->validate());
 					}
 				}
 			}
 		}
-
-		return $validation;
 	}
 
 	/**
@@ -274,8 +271,8 @@ abstract class Model {
 		$this->map();
 		$cascade = func_get_args();
 
-		$validation = call_user_func_array(array($this, 'validate'), $cascade);
-		if ($validation->failed())
+		$errors = call_user_func_array(array($this, 'validate'), $cascade);
+		if ($errors->exist())
 		{
 			throw new \Exception('Model failed to validate on save call!');
 		}
@@ -419,7 +416,7 @@ abstract class Model {
 		{
 			foreach (static::getMetaData('gateway_names') as $gateway_name)
 			{
-				$this->_gateways[$gateway_name] = $this->_builder->makeGateway($gateway_name, $data);
+				$this->_gateways[$gateway_name] = $this->_builder->makeGateway($gateway_name);
 			}
 		}
 

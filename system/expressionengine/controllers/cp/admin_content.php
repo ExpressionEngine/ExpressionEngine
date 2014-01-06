@@ -500,11 +500,6 @@ class Admin_content extends CP_Controller {
 
 		if (isset($_POST['cat_group']) && is_array($_POST['cat_group']))
 		{
-			foreach($_POST['cat_group'] as $key => $value)
-			{
-				unset($_POST['cat_group_'.$key]);
-			}
-
 			$_POST['cat_group'] = implode('|', $_POST['cat_group']);
 		}
 
@@ -543,102 +538,37 @@ class Admin_content extends CP_Controller {
 				$this->input->post('field_group') != '')
 				? $this->input->post('field_group') : NULL;
 
-			// duplicating preferences?
-			if ($dupe_id !== FALSE AND is_numeric($dupe_id))
-			{
-				$this->db->where('channel_id', $dupe_id);
-				$wquery = $this->db->get('channels');
-
-				if ($wquery->num_rows() == 1)
-				{
-					$exceptions = array('channel_id', 'site_id', 'channel_name', 'channel_title', 'total_entries',
-										'total_comments', 'last_entry_date', 'last_comment_date');
-
-					foreach($wquery->row_array() as $key => $val)
-					{
-						// don't duplicate fields that are unique to each channel
-						if ( ! in_array($key, $exceptions))
-						{
-							switch ($key)
-							{
-								// category, field, and status fields should only be duped
-								// if both channels are assigned to the same group of each
-								case 'cat_group':
-									// allow to implicitly set category group to "None"
-									if ( ! isset($_POST[$key]))
-									{
-										$_POST[$key] = $val;
-									}
-									break;
-								case 'status_group':
-								case 'field_group':
-									if ( ! isset($_POST[$key]))
-									{
-										$_POST[$key] = $val;
-									}
-									elseif ($_POST[$key] == '')
-									{
-										 $_POST[$key] = NULL;
-									}
-									break;
-								case 'deft_status':
-								case 'deft_status':
-									if ( ! isset($_POST['status_group']) OR $_POST['status_group'] == $wquery->row('status_group') )
-									{
-										$_POST[$key] = $val;
-									}
-									break;
-								case 'search_excerpt':
-									if ( ! isset($_POST['field_group']) OR $_POST['field_group'] == $wquery->row('field_group') )
-									{
-										$_POST[$key] = $val;
-									}
-									break;
-								case 'deft_category':
-									if ( ! isset($_POST['cat_group']) OR count(array_diff(explode('|', $_POST['cat_group']), explode('|', $wquery->row('cat_group') ))) == 0)
-									{
-										$_POST[$key] = $val;
-									}
-									break;
-								case 'blog_url':
-								case 'comment_url':
-								case 'search_results_url':
-								case 'rss_url':
-										$_POST[$key] = $val;
-									break;
-								default :
-									$_POST[$key] = $val;
-									break;
-							}
-						}
-					}
-				}
-			}
-
-
 			$_POST['default_entry_title'] = '';
 			$_POST['url_title_prefix'] = '';
 
-			$this->db->insert('channels', $_POST);
+			$channel = $this->builder->make('Channel', $_POST);
 
-			$insert_id = $this->db->insert_id();
-			$channel_id = $insert_id;
+			// duplicating preferences?
+			if ($dupe_id !== FALSE AND is_numeric($dupe_id))
+			{
+				$dupe_channel = $this->builder
+					->get('Channel')
+					->filter('channel_id', $dupe_id)
+					->first();
+				$channel->duplicatePreferences($dupe_channel);
+			}
 
-			// If they made the channel?  Give access to that channel to the member group?
+			$channel->save();
 
 			if ($dupe_id !== FALSE AND is_numeric($dupe_id))
 			{
 				// Duplicate layouts
-				$this->layout->duplicate_layout($dupe_id, $channel_id);
+				$this->layout->duplicate_layout($dupe_id, $channel->channel_id);
 			}
 
+			// If they made the channel?  Give access to that channel to the member group?
 			// If member group has ability to create the channel, they should be
 			// able to access it as well
 			if ($this->session->userdata('group_id') != 1)
 			{
 				$data = array(
 					'group_id'		=> $this->session->userdata('group_id'),
-					'channel_id'	=> $channel_id
+					'channel_id'	=> $channel->channel_id
 				);
 
 				$this->db->insert('channel_member_groups', $data);

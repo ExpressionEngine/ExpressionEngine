@@ -79,11 +79,11 @@ class ModelBuilder {
 	 */
 	public function makeGateway($gateway, $data = array())
 	{
-		$class = $this->getRegisteredClass($model);
+		$class = $this->getRegisteredClass($gateway);
 
 		if ( ! is_a($class, '\EllisLab\ExpressionEngine\Model\Gateway\RowDataGateway', TRUE))
 		{
-			throw new \InvalidArgumentException('Can only create Models.');
+			throw new \InvalidArgumentException('Can only create Gateways.');
 		}
 
 		return new $class($this->di, $data);
