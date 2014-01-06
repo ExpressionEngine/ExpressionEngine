@@ -42,8 +42,8 @@ class CI_Driver_Library {
 	/**
 	 * Get magic method
 	 *
-	 * The first time a child is used it won't exist, so we instantiate it
-	 * subsequents calls will go straight to the proper child.
+	 * The first time a child is used it won't exist, so we instantiate it with
+	 * load_driver(). Subsequents calls will go straight to the proper child.
 	 *
 	 * @param	string	Child class name
 	 * @return	object	Child class

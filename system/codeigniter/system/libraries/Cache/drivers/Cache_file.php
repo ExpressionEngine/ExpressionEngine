@@ -102,7 +102,10 @@ class CI_Cache_file extends CI_Driver {
 			'data'		=> $data
 		);
 
-		$path = $this->_cache_path.$this->_namespaced_key($key, $scope);
+		$key = $this->_namespaced_key($key, $scope);
+
+		// Build file path to this key
+		$path = $this->_cache_path . $key;
 
 		// Remove the cache item name to get the path by looking backwards
 		// for the directory sepatator
@@ -116,8 +119,6 @@ class CI_Cache_file extends CI_Driver {
 			// Write an index.html file to ensure no directory indexing
 			write_index_html($path);
 		}
-
-		$key = $this->_namespaced_key($key, $scope);
 
 		if (write_file($this->_cache_path.$key, serialize($contents)))
 		{
