@@ -360,7 +360,7 @@ class Grid_model extends CI_Model {
 			// search:field parameter
 			if (isset($options['search']) && ! empty($options['search']))
 			{
-				$this->_field_search($options['search'], $field_id);
+				$this->_field_search($options['search'], $field_id, $content_type);
 			}
 
 			ee()->load->helper('array_helper');
