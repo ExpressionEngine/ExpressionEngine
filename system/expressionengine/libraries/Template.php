@@ -215,7 +215,7 @@ class EE_Template {
 	 * @param	int
 	 * @return	void
 	 */
-	public function fetch_and_parse($template_group = '', $template = '', $sub = FALSE, $site_id = '', $is_layout = FALSE)
+	public function fetch_and_parse($template_group = '', $template = '', $is_embed = FALSE, $site_id = '', $is_layout = FALSE)
 	{
 		// add this template to our subtemplate tracker
 		$this->templates_sofar = $this->templates_sofar.'|'.$site_id.':'.$template_group.'/'.$template.'|';
@@ -234,7 +234,7 @@ class EE_Template {
 
 		$this->log_item("Template Type: ".$this->template_type);
 
-		$this->parse($this->template, $sub, $site_id, $is_layout);
+		$this->parse($this->template, $is_embed, $site_id, $is_layout);
 
 		// -------------------------------------------
 		// 'template_post_parse' hook.
@@ -245,7 +245,7 @@ class EE_Template {
 			$this->final_template = ee()->extensions->call(
 				'template_post_parse',
 				$this->final_template,
-				$sub,
+				($is_embed || $is_layout), // $is_partial
 				$site_id
 			);
 		}
@@ -262,7 +262,7 @@ class EE_Template {
 	 * @param	string
 	 * @return	void
 	 */
-	public function parse(&$str, $sub = FALSE, $site_id = '', $is_layout = FALSE)
+	public function parse(&$str, $is_embed = FALSE, $site_id = '', $is_layout = FALSE)
 	{
 		if ($str != '')
 		{
@@ -272,7 +272,7 @@ class EE_Template {
 		// Static Content, No Parsing
 		if ($this->template_type == 'static' OR $this->embed_type == 'static')
 		{
-			if ($sub == FALSE)
+			if ($is_embed == FALSE)
 			{
 				$this->final_template = $this->template;
 			}
@@ -294,7 +294,7 @@ class EE_Template {
 		{
 			$this->log_item("Smart Static Parsing Triggered");
 
-			if ($sub == FALSE)
+			if ($is_embed == FALSE)
 			{
 				$this->final_template = $this->template;
 			}
@@ -351,7 +351,7 @@ class EE_Template {
 		}
 
 		// Parse {embed} tag variables
-		if ($sub === TRUE && count($this->embed_vars) > 0)
+		if ($is_embed === TRUE && count($this->embed_vars) > 0)
 		{
 			$this->log_item("Embed Variables (Keys): ".implode('|', array_keys($this->embed_vars)));
 			$this->log_item("Embed Variables (Values): ".trim(implode('|', $this->embed_vars)));
@@ -390,8 +390,7 @@ class EE_Template {
 		// Cache the name of the layout. We do this here so that we can force
 		// layouts to be declared before module or plugin tags. That is the only
 		// reasonable way of using these - right at the top.
-		// @todo enforce the substring and make sure there is only one layout
-		if ($is_layout === FALSE && $sub === FALSE)
+		if ($is_layout === FALSE && $is_embed === FALSE)
 		{
 			$layout = $this->_find_layout();
 		}
@@ -431,7 +430,7 @@ class EE_Template {
 		// there is no reason to go further.
 		// However we do need to fetch any subtemplates
 
-		if ($this->cache_status == 'CURRENT' AND $sub == FALSE)
+		if ($this->cache_status == 'CURRENT' AND $is_embed == FALSE)
 		{
 			$this->log_item("Cached Template Used");
 
@@ -523,7 +522,7 @@ class EE_Template {
 		// The sub-template routine will insert embedded
 		// templates into the master template
 
-		if ($sub == FALSE && $is_layout == FALSE)
+		if ($is_embed == FALSE && $is_layout == FALSE)
 		{
 			$this->template = $this->process_layout_template($this->template, $layout);
 			$this->template = $this->process_sub_templates($this->template);
@@ -554,17 +553,39 @@ class EE_Template {
 		if (preg_match('/('.LD.'layout\s*=)(.*?)'.RD.'/s', $this->template, $match))
 		{
 			$tag_pos = strpos($this->template, $match[0]);
+			$error = '';
 
 			// layout tag after exp tag? No good can come of this.
 			if ($tag_pos > $first_tag)
 			{
-				// error
+				if (ee()->config->item('debug') >= 1)
+				{
+					$error = ee()->lang->line('error_layout_too_late');
+					ee()->output->fatal_error($error);
+				}
+				else
+				{
+					exit;
+				}
 			}
-
 			// Is there another? We can't have that.
-			if (preg_match('/('.LD.'layout\s*=)(.*?)'.RD.'/s', $this->template, $_, 0, $tag_pos + 1))
+			elseif (preg_match('/('.LD.'layout\s*=)(.*?)'.RD.'/s', $this->template, $bad_layout, 0, $tag_pos + 1))
 			{
-				// error
+				if (ee()->config->item('debug') >= 1)
+				{
+					$error = ee()->lang->line('error_multiple_layouts');
+
+					$error .= '<br><br>';
+					$error .= htmlspecialchars($match[0]);
+					$error .= '<br><br>';
+					$error .= htmlspecialchars($bad_layout[0]);
+
+					ee()->output->fatal_error($error);
+				}
+				else
+				{
+					exit;
+				}
 			}
 
 			// save it
@@ -1218,7 +1239,6 @@ class EE_Template {
 				{
 					if ( ! in_array($this->tag_data[$i]['class'] , $this->plugins))
 					{
-
 						$this->log_item("Invalid Tag");
 
 						if (ee()->config->item('debug') >= 1)
@@ -1241,7 +1261,9 @@ class EE_Template {
 							ee()->output->fatal_error($error);
 						}
 						else
+						{
 							return FALSE;
+						}
 					}
 					else
 					{
