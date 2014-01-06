@@ -392,7 +392,7 @@ class Wiki_mcp {
 
 	/**
 	 * Create New Wiki
-	 * 
+	 *
 	 */
 	function create()
 	{
@@ -412,17 +412,17 @@ class Wiki_mcp {
 	 * Delete Namespace
 	 */
 	function delete_namespace()
-	{	
+	{
 		if ( ! AJAX_REQUEST)
 		{
 			show_error(ee()->lang->line('unauthorized_access'));
 		}
-		
+
 		ee()->load->model('wiki_model');
-		
+
 		if (ee()->wiki_model->delete_namespace(ee()->input->get_post('namespace_id')) === TRUE)
 		{
-			ee()->output->send_ajax_response(array('response' => 'success')); 
+			ee()->output->send_ajax_response(array('response' => 'success'));
 		}
 
 		ee()->output->send_ajax_response(array('response' => 'failure'));
@@ -643,14 +643,12 @@ class Wiki_mcp {
 		ee()->functions->clear_caching('all');
 		ee()->session->set_flashdata('message_success', ee()->lang->line('template_updated'));
 
-		$redirect_url = $this->base_url.AMP.'method=theme_templates';
-
 		if (ee()->input->get_post('update_and_return') !== FALSE)
 		{
-			ee()->functions->redirect($redirect_url.AMP.'theme='.$theme);
+			ee()->functions->redirect($this->base_url.AMP.'method=theme_templates'.AMP.'theme='.$theme);
 		}
 
-		ee()->functions->redirect($redirect_url.AMP.'theme='.$theme.AMP.'template='.$template);
+		ee()->functions->redirect($this->base_url.AMP.'method=edit_template'.AMP.'theme='.$theme.AMP.'template='.$template);
 	}
 }
 /* END Class */

@@ -1023,26 +1023,40 @@ class Admin_content extends CP_Controller {
 		{
 			$channel->statuses = $default_statuses;
 			$all_channels[$channel->channel_id] = $channel;
-			$all_statuses[$channel->status_group] = $channel->channel_id;
+			$all_statuses[] = $channel->status_group;
 		}
 
-		$status_group_ids = array_filter(array_keys($all_statuses));
+		$status_group_ids = array_filter(array_unique($all_statuses));
 
 		if (count($status_group_ids))
 		{
-			$statuses = $this->db
+			$status_query = $this->db
 				->where_in('group_id', $status_group_ids)
 				->get('statuses')
 				->result();
 
-			foreach ($statuses as $status)
+			// Create status look-up array
+			$statuses = array();
+			foreach ($status_query as $status)
 			{
 				$name = ($status->status == 'open' OR
 						$status->status == 'closed')
 						? lang($status->status) : $status->status;
 
-				$channel_id = $all_statuses[$status->group_id];
-				$all_channels[$channel_id]->statuses[$status->status] = $name;
+				$statuses[$status->group_id][$status->status] = $name;
+			}
+
+			// Get the statuses for each channel
+			foreach ($all_channels as $channel)
+			{
+				if ( ! empty($channel->status_group))
+				{
+					// Merge custom statuses with default statuses
+					$all_channels[$channel->channel_id]->statuses = array_merge(
+						$default_statuses,
+						$statuses[$channel->status_group]
+					);
+				}
 			}
 		}
 
@@ -4052,7 +4066,9 @@ class Admin_content extends CP_Controller {
 				 $this->db->query("INSERT INTO exp_field_formatting (field_id, field_fmt) VALUES ('$id', '$key')");
 		}
 
-		return $this->field_edit();
+		$group_id = $this->input->get_post('group_id');
+		$field_id = $this->input->get_post('field_id');
+		$this->functions->redirect(BASE.AMP.'C=admin_content'.AMP.'M=field_edit'.AMP.'field_id='.$field_id.AMP.'group_id='.$group_id);
 	}
 
 

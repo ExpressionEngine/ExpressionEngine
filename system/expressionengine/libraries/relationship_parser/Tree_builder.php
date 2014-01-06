@@ -140,7 +140,7 @@ class EE_relationship_tree_builder {
 			);
 		}
 
-		$this->_unique_ids = array_unique(
+		$this->_unique_ids = ee_array_unique(
 			call_user_func_array('array_merge', $all_entry_ids),
 			SORT_NUMERIC
 		);

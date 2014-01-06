@@ -217,6 +217,12 @@ class Grid_lib {
 		$rows = ee()->grid_model->get_entry_rows($this->entry_id, $this->field_id, $this->content_type);
 		$rows = $rows[$this->entry_id];
 
+		// Remove deleted rows from $rows
+		foreach ($deleted_rows as $deleted_row)
+		{
+			unset($rows[$deleted_row['row_id']]);
+		}
+
 		$i = 0;
 
 		// Call post_save callback for fieldtypes

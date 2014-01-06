@@ -73,6 +73,7 @@ $lang = array(
 'grid_col_width_percent'	=> 'Percentage.',
 'grid_col_required'			=> 'Required?',
 'grid_col_searchable'		=> 'Searchable?',
+'grid_show_fmt_btns'		=> 'Show formatting buttons?',
 'grid_output_format'		=> 'Output formatting?',
 'grid_text_direction'		=> 'Text direction?',
 'grid_limit_input'			=> 'Limit input?',

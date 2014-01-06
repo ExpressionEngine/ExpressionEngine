@@ -142,39 +142,8 @@ class EE_Email extends CI_Email {
 				return $ret;
 			}
 		}
-		//
-		// ------------------------------------------------------
 
 		return parent::_spool_email();
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Mime Types
-	 *
-	 * @param	string
-	 * @return	string
-	 */
-	protected function _mime_types($ext = '')
-	{
-		static $mimes;
-
-		$ext = strtolower($ext);
-
-		if ( ! is_array($mimes))
-		{
-			include(APPPATH.'config/mimes.php');
-		}
-
-		if (isset($mimes[$ext]))
-		{
-			return is_array($mimes[$ext])
-				? current($mimes[$ext])
-				: $mimes[$ext];
-		}
-
-		return 'application/x-unknown-content-type';
 	}
 }
 // END CLASS

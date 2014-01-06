@@ -86,8 +86,8 @@ class EE_Core {
 		// application constants
 		define('IS_CORE',		FALSE);
 		define('APP_NAME',		'ExpressionEngine'.(IS_CORE ? ' Core' : ''));
-		define('APP_BUILD',		'20130924');
-		define('APP_VER',		'2.7.1');
+		define('APP_BUILD',		'20131210');
+		define('APP_VER',		'2.7.3');
 		define('SLASH',			'&#47;');
 		define('LD',			'{');
 		define('RD',			'}');
@@ -272,7 +272,7 @@ class EE_Core {
 	 */
 	public function run_ee()
 	{
-		$this->native_plugins = array('magpie', 'markdown', 'xml_encode');
+		$this->native_plugins = array('magpie', 'markdown', 'rss_parser', 'xml_encode');
 		$this->native_modules = array(
 			'blacklist', 'channel', 'comment', 'commerce', 'email', 'emoticon',
 			'file', 'forum', 'ip_to_nation', 'jquery', 'mailinglist', 'member',
@@ -310,10 +310,17 @@ class EE_Core {
 		ee()->load->library('session');
 		ee()->load->library('user_agent');
 
+		// Get timezone to set as PHP timezone
+		$timezone = ee()->session->userdata('timezone');
+
+		// In case this is a timezone stored in the old format...
+		if ( ! in_array($timezone, DateTimeZone::listIdentifiers()))
+		{
+			$timezone = ee()->localize->get_php_timezone($timezone);
+		}
+
 		// Set a timezone for any native PHP date functions being used
-		date_default_timezone_set(
-			ee()->localize->get_php_timezone(ee()->session->userdata('timezone'))
-		);
+		date_default_timezone_set($timezone);
 
 		// Load the "core" language file - must happen after the session is loaded
 		ee()->lang->loadfile('core');

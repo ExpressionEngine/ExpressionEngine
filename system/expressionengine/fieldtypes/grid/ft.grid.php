@@ -74,14 +74,19 @@ class Grid_ft extends EE_Fieldtype {
 
 	public function post_save($data)
 	{
-		$this->_load_grid_lib();
+		// Prevent saving if save() was never called, happens in Channel Form
+		// if the field is missing from the form
+		if (($data = ee()->session->cache(__CLASS__, $this->name(), FALSE)) !== FALSE)
+		{
+			$this->_load_grid_lib();
 
-		ee()->grid_lib->save(ee()->session->cache(__CLASS__, $this->name()));
+			ee()->grid_lib->save($data);
+		}
 	}
 
 	// --------------------------------------------------------------------
 
-	// This fieldtypes has been converted, so it accepts all content types
+	// This fieldtype has been converted, so it accepts all content types
 	public function accepts_content_type($name)
 	{
 		return ($name != 'grid');

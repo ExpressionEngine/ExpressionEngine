@@ -9,7 +9,7 @@
 
 <div id="emoticons" class="tableCellOne" style="border: 1px solid #666; position:absolute;visibility:hidden;">
 
-<script type="text/javascript"> 
+<script type="text/javascript">
 //<![CDATA[
 function add_smiley(smiley)
 {
@@ -21,7 +21,7 @@ function add_smiley(smiley)
 //]]>
 </script>
 
-<form method='post' action='' >
+{form_declaration}
 <table border='0' cellspacing='0' cellpadding='10' style='width:200px'>
 
 {include:emoticons}
@@ -33,7 +33,7 @@ function add_smiley(smiley)
 </div>
 </div>
 
-<script type="text/javascript"> 
+<script type="text/javascript">
 //<![CDATA[
 var emoticonspopup = new PopupWindow("emoticons");
 emoticonspopup.offsetY=0;
@@ -86,7 +86,7 @@ emoticonspopup.autoHide();
 </td>
 <td class="tableCellTwo" style="width:75%">
 <div class="default">
- 
+
  {include:html_formatting_buttons}
 
 </div>
@@ -101,7 +101,7 @@ emoticonspopup.autoHide();
 </td>
 <td class="tableCellTwo" style="width:75%">
 <div class="default">
- 
+
 <select name="size" class="select" onchange="selectinsert(this, 'size')" >
 <option value="0">{lang:size}</option>
 <option value="1">{lang:small}</option>
@@ -217,4 +217,3 @@ emoticonspopup.autoHide();
 </table>
 
 </form>
- 

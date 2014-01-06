@@ -308,6 +308,7 @@ class Relationship_ft extends EE_Fieldtype {
 			}
 		}
 
+
 		$limit_channels = $this->settings['channels'];
 		$limit_categories = $this->settings['categories'];
 		$limit_statuses = $this->settings['statuses'];
@@ -319,6 +320,13 @@ class Relationship_ft extends EE_Fieldtype {
 
 		$order_field = $this->settings['order_field'];
 
+		$separate_query_for_selected = (count($selected) && $limit);
+
+		if ($separate_query_for_selected)
+		{
+			ee()->db->start_cache();
+		}
+
 		// Bug 19321, old fields use date
 		if ($order_field == 'date')
 		{
@@ -326,13 +334,10 @@ class Relationship_ft extends EE_Fieldtype {
 		}
 
 		ee()->db
+			->distinct()
+			->from('channel_titles')
 			->select('channel_titles.entry_id, channel_titles.title')
 			->order_by($order_field, $this->settings['order_dir']);
-
-		if ($limit)
-		{
-			ee()->db->limit($limit);
-		}
 
 		if (count($limit_channels))
 		{
@@ -412,13 +417,34 @@ class Relationship_ft extends EE_Fieldtype {
 			ee()->db->where('channel_titles.entry_id !=', $entry_id);
 		}
 
-		if (count($selected))
+		if ($limit)
 		{
-			ee()->db->or_where_in('channel_titles.entry_id', $selected);
+			ee()->db->limit($limit);
 		}
 
-		ee()->db->distinct();
-		$entries = ee()->db->get('channel_titles')->result_array();
+		// If we've got a limit and selected entries, we need to run the query
+		// twice. Once without those entries and then separately with only those
+		// entries.
+
+		if ($separate_query_for_selected)
+		{
+			ee()->db->stop_cache();
+			ee()->db->where_not_in('channel_titles.entry_id', $selected);
+		}
+
+		$entries = ee()->db->get()->result_array();
+
+		if ($separate_query_for_selected)
+		{
+			ee()->db->limit(count($selected));
+			ee()->db->where_in('channel_titles.entry_id', $selected);
+			$entries = array_merge(
+				$entries,
+				ee()->db->get()->result_array()
+			);
+		}
+
+		ee()->db->flush_cache();
 
 		if ($this->settings['allow_multiple'] == 0)
 		{
@@ -434,7 +460,8 @@ class Relationship_ft extends EE_Fieldtype {
 
 		ee()->cp->add_js_script(array(
 			'plugin' => 'ee_interact.event',
-			'file' => 'cp/relationships'
+			'file' => 'cp/relationships',
+			'ui' => 'sortable'
 		));
 
 		if ( ! isset($this->settings['grid_row_id']) && substr($field_name, 7) != 'col_id_' && count($entries))
@@ -793,6 +820,27 @@ class Relationship_ft extends EE_Fieldtype {
 				'constraint'		=> 10,
 				'unsigned'			=> TRUE,
 				'default'			=> 0
+			),
+			'grid_field_id' => array(
+				'type'			=> 'int',
+				'constraint'	=> 10,
+				'unsigned'		=> TRUE,
+				'default'		=> 0,
+				'null'			=> FALSE
+			),
+			'grid_col_id' => array(
+				'type'			=> 'int',
+				'constraint'	=> 10,
+				'unsigned'		=> TRUE,
+				'default'		=> 0,
+				'null'			=> FALSE
+			),
+			'grid_row_id' => array(
+				'type'			=> 'int',
+				'constraint'	=> 10,
+				'unsigned'		=> TRUE,
+				'default'		=> 0,
+				'null'			=> FALSE
 			)
 		);
 
@@ -805,6 +853,7 @@ class Relationship_ft extends EE_Fieldtype {
 		ee()->dbforge->add_key('parent_id');
 		ee()->dbforge->add_key('child_id');
 		ee()->dbforge->add_key('field_id');
+		ee()->dbforge->add_key('grid_row_id');
 
 		ee()->dbforge->create_table($this->_table);
 
@@ -896,11 +945,14 @@ class Relationship_ft extends EE_Fieldtype {
 	 *
 	 * @return	array	The SQL definition of the modified field.
 	 */
-	protected function _settings_modify_column($data, $grid=FALSE)
+	protected function _settings_modify_column($data, $grid = FALSE)
 	{
 		if ($data['ee_action'] == 'delete')
 		{
-			$this->_clear_defunct_relationships($data['field_id']);
+			$this->_clear_defunct_relationships(
+				($grid) ? $data['col_id'] : $data['field_id'],
+				$grid
+			);
 		}
 
 		// pretty much a dummy field. Here just for consistency's sake
@@ -923,12 +975,21 @@ class Relationship_ft extends EE_Fieldtype {
 	 *
 	 * @return void
 	 */
-	protected function _clear_defunct_relationships($field_id)
+	protected function _clear_defunct_relationships($field_id, $grid = FALSE)
 	{
 		// remove relationships
-		ee()->db
-			->where('field_id', $field_id)
-			->delete($this->_table);
+		if ($grid)
+		{
+			ee()->db
+				->where('grid_col_id', $field_id)
+				->delete($this->_table);
+		}
+		else
+		{
+			ee()->db
+				->where('field_id', $field_id)
+				->delete($this->_table);
+		}
 	}
 }
 

@@ -10,7 +10,7 @@
  * @since		Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -25,7 +25,7 @@
 
 class Mailinglist_upd {
 
-	var $version = '3.1';
+	var $version = '3.2';
 
 	function Mailinglist_upd()
 	{
@@ -94,7 +94,7 @@ class Mailinglist_upd {
 												),
 						'email'  => array(
 													'type' 				=> 'varchar',
-													'constraint'		=> '50',
+													'constraint'		=> '75',
 													'null'				=> FALSE
 												),
 						'ip_address'  => array(
@@ -119,7 +119,7 @@ class Mailinglist_upd {
 												),
 						'email'  => array(
 													'type' 				=> 'varchar',
-													'constraint'		=> '50',
+													'constraint'		=> '75',
 													'null'				=> FALSE
 												),
 						'list_id'	=> array(
@@ -254,6 +254,24 @@ class Mailinglist_upd {
 					)
 				)
 			);
+		}
+
+		if (version_compare($current, '3.2', '<'))
+		{
+			foreach (array('mailing_list', 'mailing_list_queue') as $table)
+			{
+				ee()->dbforge->modify_column(
+					$table,
+					array(
+						'email' => array(
+							'name' 			=> 'email',
+							'type' 			=> 'varchar',
+							'constraint'	=> '75',
+							'null'			=> FALSE
+						)
+					)
+				);
+			}
 		}
 
 		return TRUE;

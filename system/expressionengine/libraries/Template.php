@@ -1913,20 +1913,20 @@ class EE_Template {
 		if (ee()->uri->segment(1) === FALSE)
 		{
 			return $this->fetch_template('', 'index', TRUE);
-        }
-        // Is only the pagination showing in the URI?
-        elseif(count(ee()->uri->segments) == 1 &&
-        		preg_match("#^(P\d+)$#", ee()->uri->segment(1), $match))
-        {
-        	ee()->uri->query_string = $match['1'];
-        	return $this->fetch_template('', 'index', TRUE);
-        }
+		}
+		// Is only the pagination showing in the URI?
+		elseif(count(ee()->uri->segments) == 1 &&
+				preg_match("#^(P\d+)$#", ee()->uri->segment(1), $match))
+		{
+			ee()->uri->query_string = $match['1'];
+			return $this->fetch_template('', 'index', TRUE);
+		}
 
-        // Set the strict urls pref
-        if (ee()->config->item('strict_urls') !== FALSE)
-        {
-        	$this->strict_urls = (ee()->config->item('strict_urls') == 'y') ? TRUE : FALSE;
-        }
+		// Set the strict urls pref
+		if (ee()->config->item('strict_urls') !== FALSE)
+		{
+			$this->strict_urls = (ee()->config->item('strict_urls') == 'y') ? TRUE : FALSE;
+		}
 
 		// At this point we know that we have at least one segment in the URI, so
 		// let's try to determine what template group/template we should show
@@ -1937,15 +1937,8 @@ class EE_Template {
 		ee()->db->where('site_id', ee()->config->item('site_id'));
 		$query = ee()->db->get('template_groups');
 
-		// This really shouldn't happen, but some addons have accidentally
-		// created duplicates so we cannot fail silently.
-		if ($query->num_rows() > 1)
-		{
-			$this->log_item("Duplicate Template Group: ".ee()->uri->segment(1));
-		}
-
 		// Template group found!
-		elseif ($query->num_rows() == 1)
+		if ($query->num_rows() == 1)
 		{
 			// Set the name of our template group
 			$template_group = ee()->uri->segment(1);
@@ -2001,11 +1994,22 @@ class EE_Template {
 		// The first segment in the URL does NOT correlate to a valid template group.  Oh my!
 		else
 		{
+			if ($query->num_rows() > 1)
+			{
+				$duplicate = TRUE;
+				$log_message = "Duplicate Template Group: ".ee()->uri->segment(1);
+			}
+			else
+			{
+				$duplicate = FALSE;
+				$log_message = "Template group and template not found, showing 404 page";
+			}
+
 			// If we are enforcing strict URLs we need to show a 404
-			if ($this->strict_urls == TRUE)
+			if ($duplicate == TRUE OR $this->strict_urls == TRUE)
 			{
 				// is there a file we can automatically create this template from?
-				if (ee()->config->item('save_tmpl_files') == 'y' && ee()->config->item('tmpl_file_basepath') != '')
+				if ($duplicate == FALSE && ee()->config->item('save_tmpl_files') == 'y' && ee()->config->item('tmpl_file_basepath') != '')
 				{
 					if ($this->_create_from_file(ee()->uri->segment(1), ee()->uri->segment(2)))
 					{
@@ -2015,11 +2019,12 @@ class EE_Template {
 
 				if (ee()->config->item('site_404'))
 				{
-					$this->log_item("Template group and template not found, showing 404 page");
+					$this->log_item($log_message);
 					return $this->fetch_template('', '', FALSE);
 				}
 				else
 				{
+					$this->log_item($log_message);
 					return $this->_404();
 				}
 			}
@@ -2116,8 +2121,8 @@ class EE_Template {
 		}
 
 		// Fetch the template!
-       return $this->fetch_template($template_group, $template, FALSE);
-    }
+	   return $this->fetch_template($template_group, $template, FALSE);
+	}
 
 	// --------------------------------------------------------------------
 
@@ -2416,7 +2421,7 @@ class EE_Template {
 		// We can manually set certain things not to be cached, like the
 		// search template and the member directory after it's updated
 
-	 	// Note: I think search caching is OK.
+		// Note: I think search caching is OK.
 		// $cache_override = array('member' => 'U', 'search' => FALSE);
 
 		$cache_override = array('member');
@@ -2498,7 +2503,7 @@ class EE_Template {
 			{
 				ee()->config->config = $site_switch;
 			}
-        }
+		}
 
 		// standardize newlines
 		$row['template_data'] =  str_replace(array("\r\n", "\r"), "\n", $row['template_data']);
@@ -2972,32 +2977,32 @@ class EE_Template {
 
 		// Stylesheet variable: {stylesheet=group/template}
 		if (strpos($str, 'stylesheet=') !== FALSE && preg_match_all("/".LD."\s*stylesheet=[\042\047]?(.*?)[\042\047]?".RD."/", $str, $css_matches))
-        {
-        	$css_versions = array();
+		{
+			$css_versions = array();
 
-        	if (ee()->config->item('send_headers') == 'y')
-        	{
-        		$sql = "SELECT t.template_name, tg.group_name, t.edit_date, t.save_template_file FROM exp_templates t, exp_template_groups tg
-        				WHERE  t.group_id = tg.group_id
-        				AND    t.template_type = 'css'
-        				AND    t.site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."'";
+			if (ee()->config->item('send_headers') == 'y')
+			{
+				$sql = "SELECT t.template_name, tg.group_name, t.edit_date, t.save_template_file FROM exp_templates t, exp_template_groups tg
+						WHERE  t.group_id = tg.group_id
+						AND    t.template_type = 'css'
+						AND    t.site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."'";
 
-        		foreach($css_matches[1] as $css_match)
-        		{
-        			$ex = explode('/', $css_match, 2);
+				foreach($css_matches[1] as $css_match)
+				{
+					$ex = explode('/', $css_match, 2);
 
-        			if (isset($ex[1]))
-        			{
-        				$css_parts[] = "(t.template_name = '".ee()->db->escape_str($ex[1])."' AND tg.group_name = '".ee()->db->escape_str($ex[0])."')";
-        			}
-        		}
+					if (isset($ex[1]))
+					{
+						$css_parts[] = "(t.template_name = '".ee()->db->escape_str($ex[1])."' AND tg.group_name = '".ee()->db->escape_str($ex[0])."')";
+					}
+				}
 
-        		$css_query = ( ! isset($css_parts)) ? ee()->db->query($sql) : ee()->db->query($sql.' AND ('.implode(' OR ', $css_parts) .')');
+				$css_query = ( ! isset($css_parts)) ? ee()->db->query($sql) : ee()->db->query($sql.' AND ('.implode(' OR ', $css_parts) .')');
 
-        		if ($css_query->num_rows() > 0)
-        		{
-        			foreach($css_query->result_array() as $row)
-        			{
+				if ($css_query->num_rows() > 0)
+				{
+					foreach($css_query->result_array() as $row)
+					{
 						$css_versions[$row['group_name'].'/'.$row['template_name']] = $row['edit_date'];
 
 						if (ee()->config->item('save_tmpl_files') == 'y' AND ee()->config->item('tmpl_file_basepath') != '' AND $row['save_template_file'] == 'y')
@@ -3010,9 +3015,9 @@ class EE_Template {
 								$css_versions[$row['group_name'].'/'.$row['template_name']] = filemtime($basepath);
 							}
 						}
-        			}
-        		}
-        	}
+					}
+				}
+			}
 
 			$s_index = ee()->functions->fetch_site_index();
 
@@ -3026,9 +3031,9 @@ class EE_Template {
 				$str = str_replace($css_matches[0][$ci], $s_index.QUERY_MARKER.'css='.$css_matches[1][$ci].(isset($css_versions[$css_matches[1][$ci]]) ? '.v.'.$css_versions[$css_matches[1][$ci]] : ''), $str);
 			}
 
-        	unset($css_matches);
-        	unset($css_versions);
-        }
+			unset($css_matches);
+			unset($css_versions);
+		}
 
 		// Email encode: {encode="you@yoursite.com" title="click Me"}
 		if (strpos($str, LD.'encode=') !== FALSE)
@@ -3541,6 +3546,33 @@ class EE_Template {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Handle "exclusive" conditional statements. For example, if there's a
+	 * specific condition where a tag would otherwise fail and you either want
+	 * to show nothing for the tag or you want to show text within an
+	 * {if failure_condition} conditional.
+	 *
+	 * @param  string $template    The template string
+	 * @param  string $conditional The conditional name (if using {if
+	 *     failure_condition}, $conditional should be failure_condition)
+	 * @param  array  $vars        Variables to pass to
+	 *     Template::parse_variables()
+	 * @return string              The parsed template passed in with nothing
+	 *     but the conditional's contents parsed and displayed
+	 */
+	public function exclusive_conditional($template, $conditional, $vars = array())
+	{
+		if (strpos(ee()->TMPL->tagdata, LD."if {$conditional}".RD) !== FALSE)
+		{
+			preg_match('/'.LD.'if '.preg_quote($conditional).RD.'(.*){\/if}/uis', $template, $matches);
+			return $this->parse_variables($matches[1], $vars);
+		}
+
+		return '';
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Log Item for Template Processing Log
 	 *
 	 * @access	public
@@ -3892,7 +3924,7 @@ class EE_Template {
 					//$double_quote = str_replace("'", '"', $matches['0']);
 
 	//[0] => {id_path="about/test"}
-    //[1] => "about/test"
+	//[1] => "about/test"
 
 					// Switch to double quotes
 
@@ -4064,7 +4096,7 @@ class EE_Template {
 	 *	                 [2] => %d
 	 *	                 [3] => %y
 	 *	             )
- 	 *
+	 *
 	 * @access	public
 	 * @param	string
 	 * @return	void

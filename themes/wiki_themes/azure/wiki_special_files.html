@@ -1,7 +1,7 @@
 
 <div class="marginpad">
 {if no_files}
-<strong>No Files Have Been Uploaded</strong>
+<strong>{lang:no_files}</strong>
 {/if}
 
 {if files}
@@ -9,10 +9,10 @@
 <div class="marginpad">
 
 {wiki:files limit="10" paginate="bottom"}
-<a href="{path:view_file}">{file_name}</a> - Uploaded: {upload_date format="%j %M %Y"} by <a href="{path:author_profile}">{author}</a><br />
+<a href="{path:view_file}">{file_name}</a> - {lang:uploaded}: {upload_date format="%j %M %Y"} {lang:by} <a href="{path:author_profile}">{author}</a><br />
 
 {paginate}
-<br /><div>Page {current_page} of {total_pages} pages {pagination_links}</div>
+<br /><div>{lang:page} {current_page} {lang:of} {total_pages} {lang:pages} {pagination_links}</div>
 {/paginate}
 
 {/wiki:files}
@@ -22,4 +22,3 @@
 {/if}
 </div>
 
-	

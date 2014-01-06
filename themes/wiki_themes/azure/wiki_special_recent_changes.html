@@ -5,9 +5,8 @@
 <a href="{path:view_article}">{title}</a> &nbsp; - &nbsp; {revision_date format="%H:%i, %j %M %Y"} &nbsp; - &nbsp; <a href="{path:author_profile}">{author}</a> {if notes}({notes}){/if}<br />
 
 {paginate}
-<br /><div>Page {current_page} of {total_pages} pages {pagination_links}</div>
+<br /><div>{lang:page} {current_page} {lang:of} {total_pages} {lang:pages} {pagination_links}</div>
 {/paginate}
 
 {/wiki:recent_changes}
 
-	

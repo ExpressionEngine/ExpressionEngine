@@ -788,7 +788,6 @@ Sort.prototype = {
 		this.clear();
 		this.add(column, dir);
 		
-		this.plugin.refresh();
 		return this;
 	},
 	
