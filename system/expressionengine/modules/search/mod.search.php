@@ -851,7 +851,7 @@ class Search {
 					{
 						if (count($terms) == 1 && isset($this->_meta['where']) && $this->_meta['where'] == 'word')
 						{
-							$sql .= "\nOR ((exp_channel_data.field_id_".$val." LIKE '".$terms_like['0']." %' OR exp_channel_data.field_id_".$val." LIKE '% ".$terms_like['0']." %' OR exp_channel_data.field_id_".$val." LIKE '% ".$terms_like['0']." %' OR exp_channel_data.field_id_".$val." = '".$terms['0']."') ";
+							$sql .= "\nOR ((exp_channel_data.field_id_".$val." LIKE '".$terms_like['0']." %' OR exp_channel_data.field_id_".$val." LIKE '% ".$terms_like['0']." %' OR exp_channel_data.field_id_".$val." LIKE '% ".$terms_like['0']."' OR exp_channel_data.field_id_".$val." = '".$terms['0']."') ";
 
 							// and close up the member clause
 							if ($member_ids != '')
@@ -1249,7 +1249,6 @@ class Search {
 			return ee()->output->show_user_error(
 				'off',
 				array(lang('search_no_result')),
-				lang('search_result_heading')
 			);
 		}
 
@@ -1265,13 +1264,27 @@ class Search {
 		// Retrieve the search_id
 		$qstring = explode('/', ee()->uri->query_string);
 		$search_id = trim($qstring[0]);
+		}
+		else
+		{
+			$pagination->offset = 0;
+			$search_id = $qstring;
+		}
+
+		// If there is a slash in the search ID we'll kill everything after it.
+		$search_id = trim($search_id);
+		$search_id = preg_replace("#/.+#", "", $search_id);
 
 		// Fetch the cached search query
 		$query = ee()->db->get_where('search', array('search_id' => $search_id));
 
 		if ($query->num_rows() == 0 OR $query->row('total_results')  == 0)
 		{
-			return ee()->output->show_user_error('off', array(lang('search_no_result')), lang('search_result_heading'));
+			// This should be impossible as we already know there are results
+			return ee()->output->show_user_error(
+				'general', 
+				array(lang('invalid_action'))
+			);
 		}
 
 		$fields	= ($query->row('custom_fields') == '') ? array() : unserialize(stripslashes($query->row('custom_fields') ));
@@ -1286,7 +1299,11 @@ class Search {
 
 		if ($query->row('count') == 0)
 		{
-			return ee()->output->show_user_error('off', array(lang('search_no_result')), lang('search_result_heading'));
+			// This should also be impossible
+			return ee()->output->show_user_error(
+				'general', 
+				array(lang('invalid_action'))
+			);
 		}
 
 		// Calculate total number of pages and add total rows

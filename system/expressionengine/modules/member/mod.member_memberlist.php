@@ -576,8 +576,32 @@ class Member_memberlist extends Member {
 		{
 			$template = preg_replace("/{if paginate}(.*?){\/if}/uis", "{paginate}$1{/paginate}", $template);
 			ee()->load->library('logger');
+			$config['last_link'] = ee()->lang->line('last');
+			//$config['uri_segment'] = $pag_uri_segment;
+			$config['suffix'] = ($first_letter != '') ? $first_letter.'/' : '';
+			$config['first_url'] = $this->_member_path('memberlist'.$search_path.$path.'-0');
+			$config['cur_page']	= ($row_count == '') ? '0' : $row_count;
+
+			// Allows $config['cur_page'] to override
+			$config['uri_segment'] = 0;
+
+			if (preg_match("/".LD.'pagination_links'.RD."/", $template))
+			{
+				$config['first_tag_open'] = '<td><div class="paginate">';
+				$config['first_tag_close'] = '</div></td>';
+				$config['last_tag_open'] = '<td><div class="paginate">';
+				$config['last_tag_close'] = '</div></td>';
+				$config['next_tag_open'] = '<td><div class="paginate">';
+				$config['next_tag_close'] = '</div></td>';
+				$config['prev_tag_open'] = '<td><div class="paginate">';
+				$config['prev_tag_close'] = '</div></td>';
+				$config['cur_tag_open'] = '<td><div class="paginateCur">';
+				$config['cur_tag_close'] = '</div></td>';
 			ee()->logger->deprecated('2.8', 'normal {paginate} tags');
+				$config['num_tag_close'] = '</div></td>';
 		}
+
+			ee()->pagination->initialize($config);
 
 		// Start running pagination
 		ee()->load->library('pagination');
@@ -1006,6 +1030,18 @@ class Member_memberlist extends Member {
 				'action' => $this->_member_path('memberlist'.(($first_letter != '') ? $first_letter.'/' : $search_path))
 			));
 		}
+
+		$form_declaration = ee()->functions->form_declaration(array(
+									'action' => $form_action
+								)
+							);
+
+		$template = str_replace(LD."form_declaration".RD, $form_declaration, $template);
+
+		$form_declaration = ee()->functions->form_declaration(array(
+									'action' => $this->_member_path('do_member_search')
+								)
+							);
 
 		$template = str_replace(LD."form_declaration".RD, $form_open, $template);
 		$form_open_member_search = ee()->functions->form_declaration(array(

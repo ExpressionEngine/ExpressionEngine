@@ -134,6 +134,15 @@ table.grid_field textarea.WysiHat-field {
 	width: 99%;
 }
 
+table.grid_field div.markItUp {
+	padding-top: 0;
+}
+
+table.grid_field div.markItUp,
+table.grid_field div.markItUp ul {
+	margin: 0 0 5px 0;
+}
+
 p.grid_error {
 	color: red;
 	font-weight: bold;

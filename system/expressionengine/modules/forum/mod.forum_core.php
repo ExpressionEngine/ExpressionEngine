@@ -2283,6 +2283,9 @@ class Forum_Core extends Forum {
 			$query_limit = 'LIMIT '.$this->current_page.', '.$topic_limit;
 		}
 
+		$str = ($pagination == '') ? $this->deny_if('paginate', $str, '&nbsp;') :
+										$this->allow_if('paginate', $str);
+
 		// Fetch the topics
 		$query = ee()->db->query("SELECT t.topic_id, t.author_id, t.moved_forum_id, t.ip_address, t.title, t.status, t.sticky, t.poll, t.thread_views, t.topic_date, t.thread_total, t.last_post_author_id,  t.last_post_date, t.last_post_id,
 								m.screen_name AS last_post_author,
@@ -3351,10 +3354,16 @@ class Forum_Core extends Forum {
 			// Security fix
 			$question = $this->convert_forum_tags($question);
 
+
+			$form_declaration = ee()->functions->form_declaration(array(
+												'action' => $this->forum_path('viewthread/'.$this->current_id)
+											)
+										);
+
 			$template = $this->var_swap($template,
 									array(
 											'poll_question'	=> $this->_convert_special_chars(ee()->typography->filter_censored_words($question)),
-											'form_declaration'	=> "<form method='post' action='".$this->forum_path('viewthread/'.$this->current_id)."' >",
+											'form_declaration'	=> $form_declaration,
 											'include:poll_question_rows' => $rows
 										)
 									);
