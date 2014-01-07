@@ -129,7 +129,24 @@ class Pagination_object {
 			//
 				if (ee()->extensions->active_hook('channel_module_fetch_pagination_data') === TRUE)
 				{
+					ee()->load->libary('logger');
+					ee()->logger->deprecated('2.8', 'Renamed to pagination_fetch_data');
+
 					ee()->extensions->universal_call('channel_module_fetch_pagination_data', $this);
+					if (ee()->extensions->end_script === TRUE) return;
+				}
+			//
+			// -------------------------------------------
+
+			// -------------------------------------------
+			// 'pagination_fetch_data' hook.
+			//  - Works with the 'create_pagination' hook
+			//  - Developers, if you want to modify the $this object remember
+			//	to use a reference on function call.
+			//
+				if (ee()->extensions->active_hook('pagination_fetch_data') === TRUE)
+				{
+					ee()->extensions->universal_call('pagination_fetch_data', $this);
 					if (ee()->extensions->end_script === TRUE) return;
 				}
 			//
@@ -187,7 +204,24 @@ class Pagination_object {
 		//
 			if (ee()->extensions->active_hook('channel_module_create_pagination') === TRUE)
 			{
+				ee()->load->libary('logger');
+				ee()->logger->deprecated('2.8', 'Renamed to pagination_create');
+
 				ee()->extensions->universal_call('channel_module_create_pagination', $this, $count);
+				if (ee()->extensions->end_script === TRUE) return;
+			}
+		//
+		// -------------------------------------------
+
+		// -------------------------------------------
+		// 'pagination_create' hook.
+		//  - Rewrite the pagination function in the Channel module
+		//  - Could be used to expand the kind of pagination available
+		//  - Paginate via field length, for example
+		//
+			if (ee()->extensions->active_hook('pagination_create') === TRUE)
+			{
+				ee()->extensions->universal_call('pagination_create', $this, $count);
 				if (ee()->extensions->end_script === TRUE) return;
 			}
 		//
