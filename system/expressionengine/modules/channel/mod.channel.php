@@ -2072,6 +2072,12 @@ class Channel {
 				$total = $query->num_rows;
 				$this->absolute_results = $total;
 
+				// Adjust for offset
+				if ($total >= $offset)
+				{
+					$total = $total - $offset;
+				}
+
 				$this->pagination->build($total, $this->sql);
 			}
 			else
