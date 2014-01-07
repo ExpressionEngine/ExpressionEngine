@@ -190,6 +190,15 @@ class EE_Channel_data_parser {
 		$total_results = count($entries);
 		$site_pages = config_item('site_pages');
 
+		foreach (ee()->TMPL->site_ids as $site_id)
+		{
+			if ($site_id != ee()->config->item('site_id'))
+			{
+				$pages = ee()->config->site_pages($site_id);
+				$site_pages[$site_id] = $pages[$site_id];
+			}
+		}
+
 		$result = ''; // final template
 
 		// If custom fields are enabled, notify them of the data we're about to send
