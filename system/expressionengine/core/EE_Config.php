@@ -207,8 +207,7 @@ class EE_Config Extends CI_Config {
 			$query = ee()->db->get_where('sites', array('site_id' => $site_id));
 		}
 
-
-		if ($query->num_rows() == 0)
+		if (empty($query) OR $query->num_rows() == 0)
 		{
 			if ($site_name == '' && $site_id != 1)
 			{
@@ -445,7 +444,6 @@ class EE_Config Extends CI_Config {
 			'log_referrers',
 			'max_referrers',
 			'time_format',
-			'server_offset',
 			'default_site_timezone',
 			'mail_protocol',
 			'smtp_server',

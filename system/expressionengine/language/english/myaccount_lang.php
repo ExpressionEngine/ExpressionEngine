@@ -18,7 +18,7 @@ $lang = array(
 'Forum Topic',
 
 'password_auth' =>
-'You must submit your current Super Admin password to continue',
+'You must submit your current password to continue',
 
 'existing_password_exp' =>
 'You must submit the current password to update this page',
@@ -245,16 +245,16 @@ $lang = array(
 'localization' =>
 'Localization Settings',
 
-'time_format' => 
+'time_format' =>
 'Time Formatting',
 
-'united_states' => 
+'united_states' =>
 'United States',
 
-'european' => 
+'european' =>
 'European',
 
-'your_html_buttons' => 
+'your_html_buttons' =>
 'HTML Formatting Buttons',
 
 'change_password' =>
@@ -512,7 +512,7 @@ $lang = array(
 'bookmarklet_name' =>
 'Bookmarklet Name',
 
-'single_word_no_spaces' => 
+'single_word_no_spaces' =>
 'single word, no spaces',
 
 'channel_name' =>

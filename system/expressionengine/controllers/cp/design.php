@@ -1740,7 +1740,7 @@ class Design extends CP_Controller {
 		$vars['save_template_file'] = ($query->row('save_template_file') != 'y') ? FALSE : TRUE ;
 		$vars['no_auth_bounce']		= $query->row('no_auth_bounce');
 		$vars['enable_http_auth']	= $query->row('enable_http_auth');
-		$vars['template_route']	    = $query->row('route');
+		$vars['template_route'] 	= $query->row('route');
 
 		foreach(array('template_type', 'cache', 'refresh', 'allow_php', 'php_parse_location', 'hits') as $pref)
 		{
@@ -3608,8 +3608,8 @@ class Design extends CP_Controller {
 				'hits' => $row['hits'],
 				'access' => $access,
 				'no_auth_bounce' => $row['no_auth_bounce'],
-				'route' => $row['route'],
-				'enable_http_auth' => $row['enable_http_auth']
+				'enable_http_auth' => $row['enable_http_auth'],
+				'template_route' => $row['template_route']
 			);
 		}
 
@@ -3772,62 +3772,71 @@ class Design extends CP_Controller {
 			$this->output->send_ajax_response(lang('unauthorized_access'), TRUE);
 		}
 
-		$template_id = $this->input->get_post("template_id");
+		ee()->output->enable_profiler(FALSE);
+		ee()->load->helper('array_helper');
 
-		if ( ! $this->_template_access_privs(array('template_id' => $template_id)))
+		$payload = ee()->input->post('payload');
+
+		// We may be changing permissions for multiple member groups at a time
+		// if they selected a Select All option
+		foreach ($payload as $group)
 		{
-			$this->output->send_ajax_response(lang('unauthorized_access'), TRUE);
-		}
+			$template_id = $group['template_id'];
 
-		$this->output->enable_profiler(FALSE);
-		if ($member_group = $this->input->get_post('member_group_id'))
-		{
-			$new_status = $this->input->get_post('new_status');
-			$no_auth_bounce = $this->input->get_post('no_auth_bounce');
-
-			if (($new_status != 'y' && $new_status != 'n') OR ! ctype_digit($no_auth_bounce))
+			if ( ! $this->_template_access_privs(array('template_id' => $template_id)))
 			{
 				$this->output->send_ajax_response(lang('unauthorized_access'), TRUE);
 			}
 
-			$this->template_model->update_access_ajax($template_id, $member_group, $new_status);
-			$this->template_model->update_template_ajax($template_id, array('no_auth_bounce' => $no_auth_bounce));
-		}
-		elseif ($enable_http_auth = $this->input->get_post('enable_http_auth'))
-		{
-			if ($enable_http_auth != 'y' && $enable_http_auth != 'n')
+			if ($member_group = element('member_group_id', $group))
 			{
-				$this->output->send_ajax_response(lang('unauthorized_access'), TRUE);
-			}
+				$new_status = element('new_status', $group);
+				$no_auth_bounce = element('no_auth_bounce', $group);
 
-			$this->template_model->update_template_ajax($template_id, array('enable_http_auth' => $enable_http_auth));
-		}
-		elseif ($no_auth_bounce = $this->input->get_post('no_auth_bounce'))
-		{
-			if ( ! ctype_digit($no_auth_bounce))
+				if (($new_status != 'y' && $new_status != 'n') OR ! ctype_digit($no_auth_bounce))
+				{
+					$this->output->send_ajax_response(lang('unauthorized_access'), TRUE);
+				}
+
+				$this->template_model->update_access_ajax($template_id, $member_group, $new_status);
+				$this->template_model->update_template_ajax($template_id, array('no_auth_bounce' => $no_auth_bounce));
+			}
+			elseif ($enable_http_auth = element('enable_http_auth', $group))
 			{
-				$this->output->send_ajax_response(lang('unauthorized_access'), TRUE);
-			}
+				if ($enable_http_auth != 'y' && $enable_http_auth != 'n')
+				{
+					$this->output->send_ajax_response(lang('unauthorized_access'), TRUE);
+				}
 
-			$this->template_model->update_template_ajax($template_id, array('no_auth_bounce' => $no_auth_bounce));
-		}
-        elseif ($route = $this->input->get_post('template_route'))
-		{
-            ee()->load->library('template_router');
-            try
+				$this->template_model->update_template_ajax($template_id, array('enable_http_auth' => $enable_http_auth));
+			}
+			elseif ($no_auth_bounce = element('no_auth_bounce', $group))
+			{
+				if ( ! ctype_digit($no_auth_bounce))
+				{
+					$this->output->send_ajax_response(lang('unauthorized_access'), TRUE);
+				}
+
+				$this->template_model->update_template_ajax($template_id, array('no_auth_bounce' => $no_auth_bounce));
+			}
+            elseif ($route = element('template_route', $group))
             {
-                $template_route = ee()->template_router->create_route($route);
+                ee()->load->library('template_router');
+                try
+                {
+                    $template_route = ee()->template_router->create_route($route);
+                }
+                catch (Exception $error)
+                {
+                    $this->output->send_ajax_response($error->getMessage(), TRUE);
+                }
+                $this->template_model->update_template_ajax($template_id, array('route_parsed' => $template_route->compile()));
+                $this->template_model->update_template_ajax($template_id, array('route' => $route));
             }
-            catch (Exception $error)
-            {
-				$this->output->send_ajax_response($error->getMessage(), TRUE);
-            }
-			$this->template_model->update_template_ajax($template_id, array('route_parsed' => $template_route->compile()));
-			$this->template_model->update_template_ajax($template_id, array('route' => $route));
-		}
-		else
-		{
-			$this->output->send_ajax_response(lang('unauthorized_access'), TRUE);
+			else
+			{
+				$this->output->send_ajax_response(lang('unauthorized_access'), TRUE);
+			}
 		}
 
 		$this->output->send_ajax_response(lang('preferences_updated'));
