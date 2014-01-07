@@ -39,7 +39,8 @@ class Updater {
 		$steps = new ProgressIterator(
 			array(
 				'_update_extension_quick_tabs',
-				'_extract_server_offset_config'
+				'_extract_server_offset_config',
+				'_update_template_db_columns'
 			)
 		);
 
@@ -135,6 +136,31 @@ class Updater {
 			), 'all');
 		}
 	}
+
+	// -------------------------------------------------------------------------
+
+	private function _update_template_db_columns()
+	{
+        // Add route and route_parsed columns to templates table
+		ee()->smartforge->add_column(
+			'templates',
+			array(
+				'route' => array(
+					'type'			=> 'varchar',
+					'default'		=> 512,
+					'null'			=> True
+				)
+			),
+			array(
+				'route_parsed' => array(
+					'type'			=> 'varchar',
+					'default'		=> 512,
+					'null'			=> True
+				)
+			)
+		);
+	}
+
 }
 /* END CLASS */
 
