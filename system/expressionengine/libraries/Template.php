@@ -2143,8 +2143,8 @@ class EE_Template {
 				{
 					$removed = array_shift(ee()->session->tracker);
 				}
-
-				ee()->functions->set_cookie('tracker', serialize(ee()->session->tracker), '0');
+				
+				ee()->input->set_cookie('tracker', serialize(ee()->session->tracker), '0'); 
 			}
 		}
 

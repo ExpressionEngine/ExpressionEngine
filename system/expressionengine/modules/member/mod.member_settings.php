@@ -2240,8 +2240,8 @@ UNGA;
 		}
 
 		// Clear the tracker cookie since we're not sure where the redirect should go
-		ee()->functions->set_cookie('tracker');
-
+		ee()->input->delete_cookie('tracker');
+		
 		$return = ee()->functions->form_backtrack();
 
 		if (ee()->config->item('user_session_type') != 'c')

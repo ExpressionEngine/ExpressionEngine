@@ -1446,11 +1446,11 @@ class Member {
 		ee()->db->where('session_id', ee()->session->userdata('session_id'))
 					 ->delete('sessions');
 
-		ee()->functions->set_cookie(ee()->session->c_session);
-		ee()->functions->set_cookie(ee()->session->c_expire);
-		ee()->functions->set_cookie(ee()->session->c_anon);
-		ee()->functions->set_cookie('read_topics');
-		ee()->functions->set_cookie('tracker');
+		ee()->input->delete_cookie(ee()->session->c_session);
+		ee()->input->delete_cookie(ee()->session->c_expire);
+		ee()->input->delete_cookie(ee()->session->c_anon);
+		ee()->input->delete_cookie('read_topics');
+		ee()->input->delete_cookie('tracker');
 
 		// Build Success Message
 		$url	= ee()->config->item('site_url');
