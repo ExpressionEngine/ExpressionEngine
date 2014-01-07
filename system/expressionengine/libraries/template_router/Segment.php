@@ -39,7 +39,7 @@ class EE_Route_segment {
 	 */
 	public function regex()
 	{
-		return "(?P<{$this->name}>(" . $this->validator() . "))";
+		return "(?P<{$this->name}>(" . $this->validator() . "))?";
 	}
 
 	/**
@@ -73,12 +73,12 @@ class EE_Route_segment {
 			// Place each rule inside an anchored lookahead,
 			// this will match the entire string if the rule matches.
 			// This allows rules to work together without consuming the match.
-			$compiled_rules .= "((?=\b" . $rule->validator() . "\b).*)";
+			$compiled_rules .= "((?=\b" . $rule->validator() . "\b)[^\/]*)";
 		}
         if (empty($this->rules))
         {
             // Default to a wildcard match if we have no rules
-            $compiled_rules = "(.*)";
+            $compiled_rules = "([^\/]*)";
         }
 		return $compiled_rules;
 	}

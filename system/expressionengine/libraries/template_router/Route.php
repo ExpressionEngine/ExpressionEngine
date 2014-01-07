@@ -99,14 +99,14 @@ class EE_Route {
 		{
 			if (is_string($segment))
 			{
+		        // backslash escaped and optional for preg_match
+		        $segment = str_replace('/', '\/?', $segment);
 				$url[] = $segment;
 			} else {
 				$url[] = $segment->regex();
 			}
 		}
 		$parsed_route = implode('', $url);
-		// backslash escaped for preg_match
-		$parsed_route = str_replace('/', '\/', $parsed_route);
 		// anchor the beginning and end, and add optional trailing slash
 		return "^{$parsed_route}\/?$";
 	}

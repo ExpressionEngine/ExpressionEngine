@@ -63,7 +63,6 @@ class EE_Template {
 	var $embed_vars				= array();		// This array can be set via the {embed} tag
 	var $segment_vars			= array();		// Array of segment variables
 	var $template_route_vars    = array();		// Array of segment variables
-	var $segment_vars		    = array();		// Array of segment variables
 
 	var $tagparts				= array();		// The parts of the tag: {exp:comment:form}
 	var $tagdata				= '';			// The chunk between tag pairs.  This is what modules will utilize
@@ -354,7 +353,7 @@ class EE_Template {
 		// Parse template route segments
 		foreach($this->template_route_vars as $key => $var)
 		{
-			$this->template = str_replace(LD.$key.RD, $var, $this->template);
+			$this->template = str_replace(LD.$key.RD, $var[0], $this->template);
 		}
 
 		// Parse {embed} tag variables

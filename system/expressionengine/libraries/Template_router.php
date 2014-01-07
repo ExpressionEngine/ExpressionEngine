@@ -52,7 +52,7 @@ class EE_Template_Router extends CI_Router {
 		}
 		foreach ($this->end_points as $route => $end_point)
 		{
-			if(preg_match("/$route/i", $request, $matches) == 1) {
+			if(preg_match_all("/$route/i", $request, $matches) == 1) {
 				return new EE_Route_match($end_point, $matches);
 			}
 		}
