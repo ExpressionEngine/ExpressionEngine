@@ -271,7 +271,7 @@ class Pagination_object {
 					}
 					else
 					{
-						$this->per_page  = ( ! is_numeric(ee()->TMPL->fetch_param('limit')))  ? '100' : ee()->TMPL->fetch_param('limit');
+						$this->per_page  = ( ! is_numeric(ee()->TMPL->fetch_param('limit'))) ? '100' : ee()->TMPL->fetch_param('limit');
 					}
 				}
 
