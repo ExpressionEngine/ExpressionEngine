@@ -1044,7 +1044,7 @@ class Template_model extends CI_Model {
 						'admin_notify_forum_post'				=> array('name_of_poster', 'forum_name', 'title', 'body', 'thread_url', 'post_url'),
 						'admin_notify_mailinglist'				=> array('email', 'mailing_list'),
 						'mbr_activation_instructions'			=> array('name',  'username', 'email', 'activation_url', 'site_name', 'site_url'),
-						'forgot_password_instructions'			=> array('name', 'reset_url', 'site_name', 'site_url'),
+						'forgot_password_instructions'			=> array('name', 'username', 'reset_url', 'site_name', 'site_url'),
 						'decline_member_validation'				=> array('name', 'site_name', 'site_url'),
 						'validated_member_notify'				=> array('name', 'site_name', 'site_url'),
 						'mailinglist_activation_instructions'	=> array('activation_url', 'site_name', 'site_url', 'mailing_list'),
