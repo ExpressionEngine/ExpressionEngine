@@ -47,7 +47,7 @@ class Pagination_object {
 	public $basepath			= '';
 	public $cfields				= array();
 	public $dynamic_sql			= TRUE;
-	public $page_marker			= "P";
+	public $prefix				= "P";
 
 	private $_page_array			= array();
 	private $_pagination_template	= '';
@@ -264,7 +264,7 @@ class Pagination_object {
 			if ($this->offset === 0)
 			{
 				$query_string = (ee()->uri->page_query_string != '') ? ee()->uri->page_query_string : ee()->uri->query_string;
-				if (preg_match("#^{$this->page_marker}(\d+)|/{$this->page_marker}(\d+)#", $query_string, $match))
+				if (preg_match("#^{$this->prefix}(\d+)|/{$this->prefix}(\d+)#", $query_string, $match))
 				{
 					$this->offset = (isset($match[2])) ? (int) $match[2] : (int) $match[1];
 					$this->basepath = reduce_double_slashes(
@@ -418,7 +418,7 @@ class Pagination_object {
 				$config = array(
 					'first_url'		=> rtrim($this->basepath, '/'),
 					'base_url'		=> $this->basepath,
-					'prefix'		=> 'P',
+					'prefix'		=> $this->prefix,
 					'total_rows'	=> $this->total_rows,
 					'per_page'		=> $this->per_page,
 					// cur_page uses the offset because P45 (or similar) is a page

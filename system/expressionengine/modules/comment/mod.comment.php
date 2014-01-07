@@ -262,7 +262,7 @@ class Comment {
 
 		// Fetch entry ids- we'll use them to make sure comments are to open, etc. entries
 		$comment_id_param = FALSE;
-		if  ($dynamic == TRUE OR $force_entry == TRUE)
+		if ($dynamic == TRUE OR $force_entry == TRUE)
 		{
 			if ($force_entry == TRUE)
 			{
@@ -520,6 +520,7 @@ class Comment {
 
 			// Determine the offset from the query string
 			$p = ( ! $dynamic) ? 'N' : 'P';
+			$pagination->prefix = $p;
 
 			// Figure out of we need a pagination offset
 			if (preg_match('/'.$p.'(\d+)(?:\/|$)/', ee()->uri->uri_string, $matches))
