@@ -748,7 +748,7 @@ class Auth_result {
 		if ($multi)
 		{
 			// multi login - we have a session
-			ee()->functions->set_cookie(
+			ee()->input->set_cookie(
 				ee()->session->c_session,
 				$this->session_id,
 				ee()->session->session_length
@@ -772,12 +772,12 @@ class Auth_result {
 			
 			if ($this->anon)
 			{
-				ee()->functions->set_cookie(ee()->session->c_anon, 1, $expire);
+				ee()->input->set_cookie($this->EE->session->c_anon, 1, $expire);
 			}
 			else
 			{
 				// Unset the anon cookie
-				ee()->functions->set_cookie(ee()->session->c_anon);				
+				ee()->input->delete_cookie($this->EE->session->c_anon);				
 			}
 			
 			// (un)set remember me

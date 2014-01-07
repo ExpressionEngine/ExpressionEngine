@@ -2929,28 +2929,28 @@ class Comment {
 
 		if ($notify == 'y')
 		{
-			ee()->functions->set_cookie('notify_me', 'yes', 60*60*24*365);
+			ee()->input->set_cookie('notify_me', 'yes', 60*60*24*365);
 		}
 		else
 		{
-			ee()->functions->set_cookie('notify_me', 'no', 60*60*24*365);
+			ee()->input->set_cookie('notify_me', 'no', 60*60*24*365);
 		}
 
 		if (ee()->input->post('save_info'))
 		{
-			ee()->functions->set_cookie('save_info',	'yes',				60*60*24*365);
-			ee()->functions->set_cookie('my_name',		$_POST['name'],		60*60*24*365);
-			ee()->functions->set_cookie('my_email',	$_POST['email'],	60*60*24*365);
-			ee()->functions->set_cookie('my_url',		$_POST['url'],		60*60*24*365);
-			ee()->functions->set_cookie('my_location',	$_POST['location'],	60*60*24*365);
+			ee()->input->set_cookie('save_info',	'yes',				60*60*24*365);
+			ee()->input->set_cookie('my_name',		$_POST['name'],		60*60*24*365);
+			ee()->input->set_cookie('my_email',	$_POST['email'],	60*60*24*365);
+			ee()->input->set_cookie('my_url',		$_POST['url'],		60*60*24*365);
+			ee()->input->set_cookie('my_location',	$_POST['location'],	60*60*24*365);
 		}
 		else
 		{
-			ee()->functions->set_cookie('save_info',	'no', 60*60*24*365);
-			ee()->functions->set_cookie('my_name',		'');
-			ee()->functions->set_cookie('my_email',	'');
-			ee()->functions->set_cookie('my_url',		'');
-			ee()->functions->set_cookie('my_location',	'');
+			ee()->input->set_cookie('save_info',	'no', 60*60*24*365);
+			ee()->input->set_cookie('my_name',		'');
+			ee()->input->set_cookie('my_email',	'');
+			ee()->input->set_cookie('my_url',		'');
+			ee()->input->set_cookie('my_location',	'');
 		}
 
 		// -------------------------------------------

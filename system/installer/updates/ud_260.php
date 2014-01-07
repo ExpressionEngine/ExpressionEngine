@@ -66,6 +66,7 @@ class Updater {
 		{
 			$this->$v();
 		}
+
 		return TRUE;
 	}
 
