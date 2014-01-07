@@ -117,6 +117,9 @@ class CI_Pagination {
 	{
 		$link_array = $this->create_link_array();
 
+		// Calculate the total number of pages
+		$num_pages = ceil($this->total_rows / $this->per_page);
+
 		// And here we go...
 		$output = '';
 
@@ -127,7 +130,7 @@ class CI_Pagination {
 		}
 
 		// Render the "First" link
-		if  ( ! empty($link_array['first_page'][0]))
+		if ($this->cur_page > ($this->num_links + 1))
 		{
 			$first_page = $link_array['first_page'][0];
 
@@ -135,7 +138,7 @@ class CI_Pagination {
 		}
 
 		// Render the "previous" link
-		if  ( ! empty($link_array['previous_page'][0]))
+		if ( ! empty($link_array['previous_page'][0]))
 		{
 			$previous_page = $link_array['previous_page'][0];
 
@@ -168,7 +171,7 @@ class CI_Pagination {
 		}
 
 		// Render the "Last" link
-		if ( ! empty($link_array['last_page'][0]))
+		if (($this->cur_page + $this->num_links) < $num_pages)
 		{
 			$last_page = $link_array['last_page'][0];
 
@@ -254,20 +257,13 @@ class CI_Pagination {
 		$first_url = ($this->first_url == '') ? $this->base_url : $this->first_url;
 
 		// Render the "First" link
-		if  ($this->first_link !== FALSE AND $this->cur_page > ($this->num_links + 1))
-		{
-			$link_array['first_page'][0] = array(
-				'pagination_url'	=> $first_url,
-				'text'				=> $this->first_link
-			);
-		}
-		else
-		{
-			$link_array['first_page'][0] = array();
-		}
+		$link_array['first_page'][0] = array(
+			'pagination_url'	=> $first_url,
+			'text'				=> $this->first_link
+		);
 
 		// Render the "previous" link
-		if  ($this->prev_link !== FALSE AND $this->cur_page != 1)
+		if ($this->prev_link !== FALSE AND $this->cur_page != 1)
 		{
 			$i = $uri_page_number - $this->per_page;
 
@@ -350,19 +346,12 @@ class CI_Pagination {
 		}
 
 		// Render the "Last" link
-		if ($this->last_link !== FALSE AND ($this->cur_page + $this->num_links) < $num_pages)
-		{
-			$offset = (($num_pages * $this->per_page) - $this->per_page);
+		$offset = (($num_pages * $this->per_page) - $this->per_page);
 
-			$link_array['last_page'][0] = array(
-				'pagination_url'	=> $this->base_url.$this->prefix.$offset.$this->suffix,
-				'text'				=> $this->last_link
-			);
-		}
-		else
-		{
-			$link_array['last_page'][0] = array();
-		}
+		$link_array['last_page'][0] = array(
+			'pagination_url'	=> $this->base_url.$this->prefix.$offset.$this->suffix,
+			'text'				=> $this->last_link
+		);
 
 		$this->_remove_double_slashes($link_array);
 

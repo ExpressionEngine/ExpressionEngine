@@ -60,6 +60,7 @@ class Pagination_object {
 	private $_position				= '';
 	private $_pagination_marker		= "pagination_marker";
 	private $_template				= '';
+	private $_always_show_first_last = FALSE;
 
 	public function __construct($classname)
 	{
@@ -128,10 +129,22 @@ class Pagination_object {
 				}
 			}
 
-			// Check for pagination_links pages variable
-			if (preg_match("/".LD."pagination_links page_padding=[\"'](\d+)[\"']".RD."/", $template, $pagination_links_match))
+			// Grab the parameters from {pagination_links}
+			if (preg_match("/".LD."pagination_links(.*)".RD."/", $template, $pagination_links_match))
 			{
-				$this->_page_links_limit = $pagination_links_match[1];
+				$parameters = ee()->functions->assign_parameters($pagination_links_match[1]);
+
+				// Check for page_padding
+				if (isset($parameters['page_padding']))
+				{
+					$this->_page_links_limit = $parameters['page_padding'];
+				}
+
+				// Check for always_show_first_last
+				if (isset($parameters['always_show_first_last']) && substr($parameters['always_show_first_last'], 0, 1) === 'y')
+				{
+					$this->_always_show_first_last = TRUE;
+				}
 			}
 
 			// -------------------------------------------
@@ -508,7 +521,21 @@ class Pagination_object {
 				$parse_array['pagination_links'] = $this->_page_links;
 			}
 
-			// ----------------------------------------------------------------
+			// Check to see if we should be showing first/last page or not
+			if ($this->_always_show_first_last == FALSE)
+			{
+				// Don't show the first
+				if ($this->current_page <= ($this->_page_links_limit + 1))
+				{
+					$parse_array['pagination_links'][0]['first_page'] = array();
+				}
+
+				// Don't show the last
+				if (($this->current_page + $this->_page_links_limit) >= $this->total_pages)
+				{
+					$parse_array['pagination_links'][0]['last_page'] = array();
+				}
+			}
 
 			// Parse current_page and total_pages by default
 			$parse_array['current_page']	= $this->current_page;
