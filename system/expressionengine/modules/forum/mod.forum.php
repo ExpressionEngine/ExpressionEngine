@@ -1219,7 +1219,7 @@ class Forum {
 					'include:spellcheck_js'		=> $this->spellcheck_js(),
 					'path:spellcheck_iframe'	=> $this->forum_path('/spellcheck_iframe/'),
 					'screen_name'				=> $this->_convert_special_chars(ee()->session->userdata('screen_name')),
-					'path:logout'				=> ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.ee()->functions->fetch_action_id('Member', 'member_logout').'&amp;FROM=forum&amp;board_id='.$this->fetch_pref('original_board_id'),
+					'path:logout'				=> ee()->functions->create_url('logout').'&amp;FROM=forum&amp;board_id='.$this->fetch_pref('original_board_id'),
 					'path:image_url'			=> $this->image_url,
 					'path:forum_home'			=> $this->forum_path(),
 					'path:your_control_panel'	=> $this->profile_path('profile'),
