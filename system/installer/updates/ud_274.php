@@ -55,13 +55,25 @@ class Updater {
 	 * Update Specialty Templates
 	 *
 	 * Was updated in 2.6 and 2.7, but we need to add the line with {username}.
+	 * But only to installations that haven't modified the default.
 	 */
 	private function _update_specialty_templates()
 	{
 		ee()->db->where('template_name', 'reset_password_notification');
 		ee()->db->delete('specialty_templates');
 
-		$data = array(
+		$old_data = '{name},
+
+To reset your password, please go to the following page:
+
+{reset_url}
+
+If you do not wish to reset your password, ignore this message. It will expire in 24 hours.
+
+{site_name}
+{site_url}';
+
+		$new_data = array(
 			'template_data'=>'{name},
 
 To reset your password, please go to the following page:
@@ -76,7 +88,8 @@ If you do not wish to reset your password, ignore this message. It will expire i
 {site_url}');
 
 		ee()->db->where('template_name', 'forgot_password_instructions')
-			->update('specialty_templates', $data);
+			->where('template_data', $old_data)
+			->update('specialty_templates', $new_data);
 
 	}
 }
