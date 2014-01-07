@@ -367,16 +367,18 @@ class Pagination_object {
 					);
 				}
 
-				$config['first_url'] 	= rtrim($this->basepath, '/');
-				$config['base_url']		= $this->basepath;
-				$config['prefix']		= 'P';
-				$config['total_rows'] 	= $this->total_rows;
-				$config['per_page']		= $this->per_page;
-				// cur_page uses the offset because P45 (or similar) is a page
-				$config['cur_page']		= $this->offset;
-				$config['first_link'] 	= lang('pag_first_link');
-				$config['last_link'] 	= lang('pag_last_link');
-				$config['uri_segment']	= 0; // Allows $config['cur_page'] to override
+				$config = array(
+					'first_url'		=> rtrim($this->basepath, '/'),
+					'base_url'		=> $this->basepath,
+					'prefix'		=> 'P',
+					'total_rows'	=> $this->total_rows,
+					'per_page'		=> $this->per_page,
+					// cur_page uses the offset because P45 (or similar) is a page
+					'cur_page'		=> $this->offset,
+					'first_link'	=> lang('pag_first_link'),
+					'last_link'		=> lang('pag_last_link'),
+					'uri_segment'	=> 0 // Allows $config['cur_page'] to override
+				);
 
 				ee()->pagination->initialize($config);
 				$this->_page_links = ee()->pagination->create_links();
