@@ -169,7 +169,7 @@ class File_ft extends EE_Fieldtype {
 					});
 				}
 				// most of them
-				$('.file_field').each(function() {
+				$('.file_field').not('.grid_field .file_field').each(function() {
 					setupFileField($(this));
 				});
 

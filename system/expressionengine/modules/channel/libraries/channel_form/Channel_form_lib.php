@@ -455,8 +455,6 @@ class Channel_form_lib
 			}
 		}
 
-		$this->form_hidden('checkbox_fields', implode('|', $checkbox_fields));
-
 		//edit form
 		if ($this->entry)
 		{
@@ -515,6 +513,11 @@ class Channel_form_lib
 				// use fieldtype display_field method
 				elseif (preg_match('/^field:(.*)$/', $key, $match))
 				{
+					if ($this->get_field_type($match[1]) == 'checkboxes')
+					{
+						$checkbox_fields[] = $match[1];
+					}
+
 					$this->parse_variables[$match[0]] = (array_key_exists($match[1], $this->custom_fields)) ? $this->display_field($match[1]) : '';
 				}
 
@@ -646,6 +649,11 @@ class Channel_form_lib
 					elseif ($tag_name == 'options:'.$field['field_name'] && ($field_type_match = $this->get_field_type($field['field_name'])) &&
 							(in_array($field_type_match, $this->option_fields) OR $field_type_match == 'relationship'))
 					{
+						if ($field['field_type'] == 'checkboxes')
+						{
+							$checkbox_fields[] = $field['field_name'];
+						}
+
 						$this->parse_variables['options:'.$field['field_name']] = (isset($custom_field_variables[$field['field_name']]['options'])) ? $custom_field_variables[$field['field_name']]['options'] : '';
 					}
 				}
@@ -661,11 +669,17 @@ class Channel_form_lib
 				//let's not needlessly call this, otherwise we could get duplicate fields rendering
 				if (strpos(ee()->TMPL->tagdata, LD.'field:'.$field['field_name'].RD) !== FALSE)
 				{
+					if ($field['field_type'] == 'checkboxes')
+					{
+						$checkbox_fields[] = $field['field_name'];
+					}
+
 					$this->parse_variables['field:'.$field['field_name']] = (array_key_exists($field['field_name'], $this->custom_fields)) ? $this->display_field($field['field_name']) : '';
 				}
 			}
 		}
 
+		$this->form_hidden('checkbox_fields', implode('|', array_unique($checkbox_fields)));
 
 		$conditional_errors = $this->_add_errors();
 
@@ -1906,6 +1920,13 @@ GRID_FALLBACK;
 		if ( ! empty($params['group_id']))
 		{
 			$params['show_group'] = $params['group_id'];
+
+			ee()->load->library('logger');
+			ee()->logger->deprecate_template_tag(
+				'Using group_id in Channel Form {categories} tag pairs is deprecated. Please use {categories show_group="..."} instead.',
+				"/({exp:channel:form.*)({categories(.*?)group_id=(.*?)})(.*)/uis",
+				"$1{categories$3show_group=$4}$5"
+			);
 		}
 
 		if ( ! empty($params['show_group']))
@@ -2627,6 +2648,8 @@ GRID_FALLBACK;
 		{
 			$this->_meta[$name] = (isset($this->_meta[$name])) ? $this->_meta[$name] : FALSE;
 		}
+
+		$this->preserve_checkboxes = (isset($this->_meta['preserve_checkboxes'])) ? $this->_meta['preserve_checkboxes'] : FALSE;
 
 		// Should be y or FALSE for allow_comments
 		// We do this here so they can be set via form input when not specified as a param

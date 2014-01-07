@@ -41,6 +41,7 @@ class Updater {
 				'_update_extension_quick_tabs',
 				'_extract_server_offset_config',
 				'_update_session_config_names'
+				'_update_config_add_cookie_httponly'
 			)
 		);
 
@@ -216,6 +217,21 @@ class Updater {
 			'user_session_ttl'   => ''
 		);
 		ee()->config->_update_config($new_config_items, $remove_config_items);
+	}
+
+	/**
+	 * Update Config to Add cookie_httponly
+	 *
+	 * Update the config.php file to add the new cookie_httponly paramter and
+	 * set it to default to 'y'.
+	 */
+	private function _update_config_add_cookie_httponly()
+	{
+		ee()->config->_update_config(
+			array(
+				'cookie_httponly' => 'y'
+			)
+		);
 	}
 }
 /* END CLASS */

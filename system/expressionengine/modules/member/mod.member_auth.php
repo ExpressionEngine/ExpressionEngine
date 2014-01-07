@@ -550,7 +550,7 @@ class Member_auth extends Member {
 
 		ee()->session->destroy();
 
-		ee()->functions->set_cookie('read_topics');
+		ee()->input->delete_cookie('read_topics');
 
 		/* -------------------------------------------
 		/* 'member_member_logout' hook.

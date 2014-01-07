@@ -10,7 +10,7 @@
  * @since		Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -33,7 +33,7 @@ class EE_Menu {
 	{
 		$this->EE =& get_instance();
 		ee()->load->library('api');
-	}	
+	}
 
 	// --------------------------------------------------------------------
 
@@ -44,14 +44,14 @@ class EE_Menu {
 	 *
 	 * @access	public
 	 * @return	void
-	 */	 
+	 */
 	function generate_menu($permissions = '')
 	{
 		if ( ! ee()->cp->allowed_group('can_access_cp'))
 		{
 			return;
 		}
-		
+
 		$menu = array();
 		$menu['content'] = array(
 			'publish'	=> BASE.AMP.'C=content_publish',
@@ -63,9 +63,9 @@ class EE_Menu {
 				'file_watermark_preferences'	=> BASE.AMP.'C=content_files'.AMP.'M=watermark_preferences',
 			)
 		);
-		
-		// 
-		
+
+		//
+
 		$menu['design'] = array(
 			'templates'		=> array(
 				'edit_templates'				=> array(),
@@ -74,7 +74,7 @@ class EE_Menu {
 				'----',
 				'snippets'						=> BASE.AMP.'C=design'.AMP.'M=snippets',
 				'global_variables'				=> BASE.AMP.'C=design'.AMP.'M=global_variables',
-				'----',                 
+				'----',
 				'template_preferences'			=> BASE.AMP.'C=design'.AMP.'M=template_preferences_manager',
 				'global_preferences'			=> BASE.AMP.'C=design'.AMP.'M=global_template_preferences'
 			),
@@ -84,7 +84,7 @@ class EE_Menu {
 				'offline_template'				=> BASE.AMP.'C=design'.AMP.'M=system_offline'
 			),
 		);
-		
+
 		$menu['addons'] = array(
 			'modules'				   			=> BASE.AMP.'C=addons_modules',
 			'accessories'			   			=> BASE.AMP.'C=addons_accessories',
@@ -93,7 +93,7 @@ class EE_Menu {
 			'plugins'				   			=> BASE.AMP.'C=addons_plugins'
 		);
 
-		$menu['members'] = array(      
+		$menu['members'] = array(
 			'view_all_members'		   			=> BASE.AMP.'C=members'.AMP.'M=view_all_members',
 			'member_groups'			   			=> BASE.AMP.'C=members'.AMP.'M=member_group_manager',
 			'----',
@@ -145,8 +145,8 @@ class EE_Menu {
 				'throttling_configuration'		=> BASE.AMP.'C=admin_system'.AMP.'M=throttling_configuration'
 			)
 		);
-		
-		
+
+
 		$menu['tools'] = array(
 			'tools_communicate'					=> BASE.AMP.'C=tools_communicate',
 			'----',
@@ -173,13 +173,13 @@ class EE_Menu {
 		{
 			$menu['tools']['tools_logs']['view_search_log'] = BASE.AMP.'C=tools_logs'.AMP.'M=view_search_log';
 		}
-		
+
 		// Show Developer Log for Super Admins only
 		if (ee()->session->userdata('group_id') == 1)
 		{
 			$menu['tools']['tools_logs']['view_developer_log'] = BASE.AMP.'C=tools_logs'.AMP.'M=view_developer_log';
 		}
-		
+
 		// Add channels
 
 		ee()->api->instantiate('channel_structure');
@@ -189,22 +189,22 @@ class EE_Menu {
 		{
 			$menu['content']['publish'] = array();
 			$menu['content']['edit'] = array('nav_edit_all' => BASE.AMP.'C=content_edit');
-			
+
 			foreach($channels->result() as $channel)
 			{
 				$menu['content']['publish'][$channel->channel_title] = BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$channel->channel_id;
 				$menu['content']['edit'][$channel->channel_title] = BASE.AMP.'C=content_edit'.AMP.'channel_id='.$channel->channel_id;
 			}
-			
+
 			if ($channels->num_rows() === 1)
 			{
 				$menu['content']['publish'] = current($menu['content']['publish']);
 				$menu['content']['edit'] = current($menu['content']['edit']);
 			}
 		}
-		
+
 		// Add Templates and Themes
-		
+
 		ee()->load->model('template_model');
 
 		// Grab all the groups a user is assigned to
@@ -213,38 +213,38 @@ class EE_Menu {
 		// Grab all of the template groups in their desired order
 		$template_groups = ee()->template_model->get_template_groups();
 		$template_groups = $template_groups->result_array();
-		
+
 		// If there are allowed groups or the user is a Super Admin, go through with it
 		if (count($allowed_groups) OR ee()->session->userdata('group_id') == 1)
 		{
 			// In the event $allowed_groups has information in it, build a where clause for them
 			$additional_where = count($allowed_groups) ? array('template_groups.group_id' => array_keys($allowed_groups)) : array();
-			
+
 			$templates = ee()->template_model->get_templates(NULL, array('template_groups.group_id'), $additional_where);
-			
+
 			if ($templates->num_rows() > 0)
 			{
 				$by_group = array();
-				
+
 				// Reorganize the results so they're sorted by group name
 				foreach($templates->result() as $row)
 				{
 					$by_group[$row->group_name][] = $row;
 				}
-				
+
 				// Using the template groups as a guide for ordering, build the list of templates
 				foreach($template_groups as $group)
 				{
 					$group_id   = $group['group_id'];
 					$group_name = $group['group_name'];
-					
+
 					if ( ! isset($by_group[$group_name]))
 					{
 						continue;
 					}
-					
+
 					$templates  = $by_group[$group_name];
-					
+
 					foreach($templates as $row)
 					{
 						$menu['design']['templates']['edit_templates'][$group_name][$row->template_name] = BASE.AMP.'C=design'.AMP.'M=edit_template'.AMP.'id='.$row->template_id;
@@ -256,7 +256,7 @@ class EE_Menu {
 					$menu['design']['templates']['edit_templates'][$group_name][lang('nav_edit_template_group')] = BASE.AMP.'C=design'.AMP.'M=manager'.AMP.'tgpref='.$group_id;
 					$menu['design']['templates']['edit_templates'][$group_name][lang('nav_create_template')] = BASE.AMP.'C=design'.AMP.'M=new_template'.AMP.'group_id='.$group_id;
 				}
-				
+
 				unset($by_group);
 				$menu['design']['templates']['edit_templates'][] = '----';
 			}
@@ -272,12 +272,12 @@ class EE_Menu {
 		{
 			$menu['design']['themes']['forum_themes'] = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=forum'.AMP.'method=forum_templates';
 		}
-		
+
 		if (ee()->db->table_exists('wikis'))
 		{
 			$menu['design']['themes']['wiki_themes'] = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=wiki'.AMP.'method=list_themes';
 		}
-		
+
 		if ( ! IS_CORE)
 		{
 			$menu['design']['themes']['member_profile_templates'] = BASE.AMP."C=design".AMP."M=member_profile_templates";
@@ -285,7 +285,7 @@ class EE_Menu {
 
 		$menu = $this->_remove_blocked_menu_items($menu);
 		$menu = $this->_add_overviews($menu);
-	
+
  		/* -------------------------------------------
 		/* 'cp_menu_array' hook.
 		/*  - Modify menu array
@@ -297,7 +297,7 @@ class EE_Menu {
 			}
 		/*
 		/* -------------------------------------------*/
-		
+
 
 		// Only get the views once
 		$this->menu_parent	= ee()->load->view('_shared/menu/item_parent', '', TRUE);
@@ -308,15 +308,15 @@ class EE_Menu {
 		$menu_string  = $this->_process_menu($menu);
 		$menu_string .= $this->_process_menu($this->_fetch_quick_tabs(), 0, FALSE);
 		$menu_string .= $this->_process_menu(array('help' => $this->generate_help_link()), 0, TRUE, '', 'external');
-		
+
 		// Visit Site / MSM Switcher gets an extra class
 		$menu_string .= $this->_process_menu($this->_fetch_site_list(), 0, FALSE, 'msm_sites');
 
 		ee()->load->vars('menu_string', $menu_string);
-		
+
 		return $menu;
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -337,12 +337,12 @@ class EE_Menu {
 			$label = ($use_lang_keys) ? lang('nav_'.$name) : $name;
 			$sub_use_lang = ( ! $use_lang_keys OR in_array($name, array('publish', 'edit', 'edit_templates'))) ? FALSE : TRUE;
 			$link_class = $depth ? '' : 'first_level';
-			
+
 			if (is_array($data))
 			{
 				$parent_href = (isset($data['nav_edit_all'])) ? $data['nav_edit_all'] : '#';
 				unset($data['nav_edit_all']);
-				
+
 				$menu .= str_replace(
 					array(
 						'{title}',
@@ -418,19 +418,19 @@ class EE_Menu {
 			{
 				$menu[$key][] = '----';
 				$menu[$key]['overview'] = BASE.AMP."C={$key}";
-							
+
 				if ($key == 'admin')
 				{
 					$menu[$key]['overview'] .= "_system";
 				}
 			}
 		}
-		
+
 		return $menu;
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Remove Blocked Menu Items
 	 *
@@ -462,7 +462,7 @@ class EE_Menu {
 			{
 				unset($menu['content']['edit']);
 			}
-			
+
 			if ( ! ee()->cp->allowed_group('can_access_files'))
 			{
 				unset($menu['content']['files']);
@@ -474,7 +474,7 @@ class EE_Menu {
 					unset($menu['content']['files'][0]);
 					unset($menu['content']['files']['file_upload_preferences']);
 					unset($menu['content']['files']['file_watermark_preferences']);
-				}				
+				}
 			}
 		}
 
@@ -492,11 +492,11 @@ class EE_Menu {
 			elseif (ee()->session->userdata('group_id') != 1)
 			{
 				$allowed_modules = array_keys(ee()->session->userdata('assigned_modules'));
-				
+
 				if (count($allowed_modules) == 0)
 				{
 					unset($menu['design']['themes']['forum_themes']);
-					unset($menu['design']['themes']['wiki_themes']);					
+					unset($menu['design']['themes']['wiki_themes']);
 				}
 				else
 				{
@@ -504,13 +504,13 @@ class EE_Menu {
 					ee()->db->select('module_name');
 					ee()->db->where_in('module_id', $allowed_modules);
 					$query = ee()->db->get('modules');
-					
-					
+
+
 					foreach ($query->result_array() as $row)
 					{
 						$m_names[] = $row['module_name'].'_themes';
 					}
-					
+
 					if ( ! in_array('forum_themes', $m_names))
 					{
 						unset($menu['design']['themes']['forum_themes']);
@@ -519,26 +519,26 @@ class EE_Menu {
 					if ( ! in_array('wiki_themes', $m_names))
 					{
 						unset($menu['design']['themes']['wiki_themes']);
-					}					
+					}
 				}
 			}
-			
+
 			if ( ! ee()->cp->allowed_group('can_admin_mbr_templates'))
 			{
 				unset($menu['design']['themes']['member_profile_templates']);
 
-				if (count($menu['design']['themes']) == 0)
+				if (empty($menu['design']['themes']))
 				{
 					unset($menu['design']['themes']);
 				}
 			}
-			
+
 			if ( ! ee()->cp->allowed_group('can_admin_design'))
 			{
 				unset($menu['design']['message_pages']);
-				unset($menu['design']['templates']['template_preferences']);				
+				unset($menu['design']['templates']['template_preferences']);
 				unset($menu['design']['templates']['global_preferences']);
-			}			
+			}
 
 			if ( ! ee()->cp->allowed_group('can_admin_templates'))
 			{
@@ -548,7 +548,7 @@ class EE_Menu {
 				unset($menu['design']['templates']['snippets']);
 				unset($menu['design']['templates']['sync_templates']);
 				unset($menu['design']['templates']['global_variables']);
-				unset($menu['design']['templates'][0]);	
+				unset($menu['design']['templates'][0]);
 			}
 		}
 
@@ -562,28 +562,28 @@ class EE_Menu {
 			{
 				unset($menu['addons']['modules']);
 			}
-		
+
 			if ( ! ee()->cp->allowed_group('can_access_accessories'))
 			{
 				unset($menu['addons']['accessories']);
 			}
-		
+
 			if ( ! ee()->cp->allowed_group('can_access_extensions'))
 			{
 				unset($menu['addons']['extensions']);
 			}
-		
+
 			if ( ! ee()->cp->allowed_group('can_access_plugins'))
 			{
 				unset($menu['addons']['plugins']);
 			}
-			
+
 			if ( ! ee()->cp->allowed_group('can_access_fieldtypes'))
 			{
 				unset($menu['addons']['fieldtypes']);
 			}
 		}
-		
+
 		if ( ! ee()->cp->allowed_group('can_access_members'))
 		{
 			unset($menu['members']);
@@ -592,7 +592,7 @@ class EE_Menu {
 		{
 			$member_divider_3 = TRUE;
 			$unset_count = 0;
-			
+
 			if ( ! ee()->cp->allowed_group('can_admin_members'))
 			{
 				unset($menu['members']['ip_search']);
@@ -603,8 +603,8 @@ class EE_Menu {
 				unset($menu['members'][1]);
 				unset($menu['members'][3]);
 				$unset_count++;
-								
-				$member_divider_3 = FALSE;								
+
+				$member_divider_3 = FALSE;
 			}
 
 			if ( ! ee()->cp->allowed_group('can_ban_users'))
@@ -622,8 +622,8 @@ class EE_Menu {
 			{
 				unset($menu['members']['member_groups']);
 				$unset_count++;
-			}			
-			
+			}
+
 			if ($unset_count == 3)
 			{
 				unset($menu['members'][0]);
@@ -643,15 +643,15 @@ class EE_Menu {
 				unset($menu['admin']['email_configuration']);
 				unset($menu['admin']['admin_system']);
 				unset($menu['admin']['security_and_privacy']);
-			
-				unset($menu['admin'][1]);	
+
+				unset($menu['admin'][1]);
 			}
-		
+
 			if ( ! ee()->cp->allowed_group('can_access_content_prefs'))
 			{
 				unset($menu['admin']['channel_management']);
 				unset($menu['admin']['admin_content']);
-				unset($menu['admin'][0]);	
+				unset($menu['admin'][0]);
 			}
 			else
 			{
@@ -659,8 +659,8 @@ class EE_Menu {
 				{
 					unset($menu['admin']['channel_management']);
 					unset($menu['admin']['admin_content']);
-					unset($menu['admin'][0]);	
-				}				
+					unset($menu['admin'][0]);
+				}
 			}
 		}
 
@@ -671,12 +671,12 @@ class EE_Menu {
 		else
 		{
 			$tools_divider = FALSE;
-			
+
 			if ( ! ee()->cp->allowed_group('can_access_comm'))
 			{
-				unset($menu['tools']['tools_communicate']);	
-				unset($menu['tools'][0]);							
-			}			
+				unset($menu['tools']['tools_communicate']);
+				unset($menu['tools'][0]);
+			}
 
 			if ( ! ee()->cp->allowed_group('can_access_data'))
 			{
@@ -686,7 +686,7 @@ class EE_Menu {
 			{
 				$tools_divider = TRUE;
 			}
-			
+
 			if ( ! ee()->cp->allowed_group('can_access_utilities'))
 			{
 				unset($menu['tools']['tools_utilities']);
@@ -695,7 +695,7 @@ class EE_Menu {
 			{
 				$tools_divider = TRUE;
 			}
-			
+
 			if ( ! ee()->cp->allowed_group('can_access_logs'))
 			{
 				unset($menu['tools']['tools_logs']);
@@ -704,10 +704,10 @@ class EE_Menu {
 			{
 				$tools_divider = TRUE;
 			}
-			
+
 			if ( ! $tools_divider)
 			{
-				unset($menu['tools'][0]);							
+				unset($menu['tools'][0]);
 			}
 		}
 
@@ -736,7 +736,7 @@ class EE_Menu {
 
 				$title = (isset($x['0'])) ? $x['0'] : '';
 				$link  = (isset($x['1'])) ? $x['1'] : '';
-				
+
 				// Look to see if the session is in the link; if so, it was
 				// it was likely stored the old way which made for possibly
 				// broken links, like if it was saved with index.php but is
@@ -752,7 +752,7 @@ class EE_Menu {
 
 		return $tabs;
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -767,8 +767,8 @@ class EE_Menu {
 	{
 		// Add MSM Site Switcher
 		ee()->load->model('site_model');
-		
-		$site_list = ee()->session->userdata('assigned_sites'); 
+
+		$site_list = ee()->session->userdata('assigned_sites');
 		$site_list = (ee()->config->item('multiple_sites_enabled') === 'y' && ! IS_CORE) ? $site_list : FALSE;
 
 		$menu = array();
@@ -782,16 +782,16 @@ class EE_Menu {
 				$site_backlink = implode('|', explode(AMP, $site_backlink));
 				$site_backlink = AMP."page=".strtr(base64_encode($site_backlink), '+=', '-_');
 			}
-			
+
 			$menu[ee()->config->item('site_name')][lang('view_site')] = ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'URL='.ee()->functions->fetch_site_index();
-			
+
 			if (ee()->cp->allowed_group('can_admin_sites'))
 			{
 				$menu[ee()->config->item('site_name')][lang('edit_sites')] = BASE.AMP.'C=sites'.AMP.'M=manage_sites';
 			}
-			
+
 			$menu[ee()->config->item('site_name')][] = '----';
-			
+
 			foreach($site_list as $site_id => $site_name)
 			{
 				$menu[ee()->config->item('site_name')][$site_name] = BASE.AMP.'C=sites'.AMP.'site_id='.$site_id.$site_backlink;
@@ -801,12 +801,12 @@ class EE_Menu {
 		{
 			$menu[ee()->config->item('site_name')] = ee()->config->item('base_url').ee()->config->item('site_index').'?URL='.ee()->config->item('base_url').ee()->config->item('site_index');
 		}
-		
+
 		return $menu;
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Generate Help Link
 	 *
@@ -841,7 +841,7 @@ class EE_Menu {
 				'fieldtypes'						=> 'cp/add-ons/fieldtype_manager.html',
 				'plugins'							=> 'cp/add-ons/plugin_manager.html'
 			),
-						
+
 			'admin_content'			=> array(
 				'index'								=> 'cp/admin/channels/index.html',
 				'category_edit'						=> 'cp/admin/channels/category_create.html',
@@ -867,9 +867,9 @@ class EE_Menu {
 				'file_upload_preferences'			=> 'cp/admin/channels/file_upload_preferences.html',
 				'edit_upload_preferences'			=> 'cp/admin/channels/file_upload_preferences.html'
 			),
-			
+
 			'admin_system'			=> array(
-				'index'							=> 'cp/admin/index.html',								
+				'index'							=> 'cp/admin/index.html',
 				'captcha_preferences'			=> 'cp/admin/captcha_preferences.html',
 				'database_settings'				=> 'cp/admin/database_settings.html',
 				'cookie_settings'				=> 'cp/admin/cookie_settings.html',
@@ -886,19 +886,19 @@ class EE_Menu {
 				'tracking_preferences'			=> 'cp/admin/tracking_preferences.html',
 				'word_censoring'				=> 'cp/admin/word_censoring.html'
 			),
-			
+
 			'admin'					=> 'cp/admin/index.html',
-			
+
 			'content_edit'			=> array(
 				'index'					=> 'cp/content/edit.html',
 				'content_edit'			=> 'cp/content/edit.html',
 				'view_comments'			=> 'cp/content/comments.html'
 			),
-			
+
 			'content_publish'		=> 'cp/content/publish.html',
-			
+
 			'content_files'			=> 'cp/content/publish.html',
-			
+
 			'content'				=> array(
 				'index'							=> 'cp/content/publish.html', // This is for the different channels that don't have a defined index
 				'content'						=> 'cp/content/publish.html',
@@ -906,11 +906,11 @@ class EE_Menu {
 				'file_manager'					=> 'cp/content/files/file_manager.html',
 				'file_upload_preferences'		=> 'cp/content/files/file_upload_preferences.html',
 				'file_watermark_preferences'	=> 'cp/content/files/watermark_preferences.html'
-				
+
 			),
-			
+
 			'css'					=> '',
-			
+
 			'design'				=> array(
 				'index'							=> 'cp/design/templates/index.html',
 				'edit_template'					=> 'cp/design/templates/edit_template.html',
@@ -926,12 +926,12 @@ class EE_Menu {
 				'template_manager'				=> 'cp/design/templates/templates.html',
 				'snippets'						=> 'cp/design/templates/snippets.html',
 				'sync_templates'				=> 'cp/design/templates/synchronize_templates.html',
-				
+
 				'email_notification'			=> 'cp/design/message_pages/index.html',
 				'user_message'					=> 'cp/design/message_pages/index.html',
 				'system_offline'				=> 'cp/design/message_pages/index.html',
 				'offline_template'				=> 'cp/design/message_pages/index.html',
-				
+
 				'member_profile_templates'		=> 'cp/design/themes/member_profile_templates.html',
 				'list_profile_templates'		=> 'cp/design/themes/member_profile_templates.html',
 				'edit_profile_template'			=> 'cp/design/themes/member_profile_templates.html',
@@ -939,15 +939,15 @@ class EE_Menu {
 				'forum_themes'					=> 'modules/forum/forum_themes.html',
 				'wiki_themes'					=> 'modules/wiki/wiki_templates.html',
 			),
-			
+
 			'help'					=> '',
-			
+
 			'homepage'				=> 'cp/index.html',
-			
+
 			'javascript'			=> '',
-			
+
 			'login'					=> 'cp/',
-			
+
 			'members'				=> array(
 				'index'					=> 'cp/members/index.html',
 				'new_member_form'		=> 'cp/members/new_member_registration.html',
@@ -966,17 +966,17 @@ class EE_Menu {
 				'view_all_members'		=> 'cp/members/view_members.html',
 				'ip_search'				=> 'cp/members/ip_search.html'
 			),
-			
+
 			'myaccount'				=> 'cp/my_account/index.html',
-						
+
 			'content_files'			=> array(
 				'index'							=> 'cp/content/files/file_manager.html',
 				'file_manager'					=> 'cp/content/files/file_manager.html',
 				'edit_upload_preferences'		=> 'cp/content/files/file_upload_preferences.html',
-				'file_upload_preferences'		=> 'cp/content/files/file_upload_preferences.html',					
+				'file_upload_preferences'		=> 'cp/content/files/file_upload_preferences.html',
 				'watermark_preferences'			=> 'cp/content/files/watermark_preferences.html'
 			),
-			
+
 			'tools'					=> 'cp/tools/index.html',
 			'tools_communicate'		=> 'cp/tools/communicate.html',
 
@@ -992,7 +992,7 @@ class EE_Menu {
 				'import_from_xml'			=> 'cp/tools/utilities/member_import/import_from_xml.html',
 				'confirm_xml_form'			=> 'cp/tools/utilities/member_import/import_from_xml.html'
 			),
-			
+
 			'tools_data'			=> array(
 				'index'					=> 'cp/tools/index.html',
 				'clear_caching'			=> 'cp/tools/data/clear_cached_data_files.html',
@@ -1021,9 +1021,9 @@ class EE_Menu {
 				'add_edit_site'			=> 'cp/sites/createsite.html'
 			)
 		);
-		
+
 		$page = ee()->config->item('doc_url');
-		
+
 		if ( ! isset($help_map[$class]))
 		{
 			return $page;
@@ -1085,7 +1085,7 @@ class EE_Menu {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 }
 // END CLASS
 

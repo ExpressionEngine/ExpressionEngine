@@ -299,6 +299,47 @@ class EE_Logger {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Deprecate a template tag and replace it in templates
+	 *
+	 * @param  String $message     The message to send to the developer log,
+	 *                             uses developer() not deprecated()
+	 * @param  String $regex       Regular expression to run through
+	 *                             preg_replace
+	 * @param  String $replacement Replacement to pass to preg_replace
+	 * @return void
+	 */
+	public function deprecate_template_tag($message, $regex, $replacement)
+	{
+		ee()->load->model('template_model');
+		$templates = ee()->template_model->fetch_last_edit(array(), TRUE);
+
+		foreach($templates as $template)
+		{
+			// Find and replace the tags
+			$template->template_data = preg_replace(
+				"/({exp:channel:form.*)({categories(.*?)group_id=(.*?)})(.*)/uis",
+				"$1{categories$3show_group=$4}$5",
+				$template->template_data
+			);
+
+			// save the template
+			// if saving to file, save the file
+			if ($template->loaded_from_file)
+			{
+				ee()->template_model->save_to_file($template);
+			}
+			else
+			{
+				ee()->template_model->save_to_database($template);
+			}
+		}
+
+		$this->developer($message, TRUE, 604800);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Builds deprecation notice language based on data given
 	 *
 	 * @param	array $deprecated Data array of deprecated function details
