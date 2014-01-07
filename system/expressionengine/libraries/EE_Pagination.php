@@ -82,7 +82,6 @@ class Pagination_object {
 		{
 			$this->$name = $value;
 		}
-
 	}
 
 	// ------------------------------------------------------------------------
@@ -106,9 +105,16 @@ class Pagination_object {
 		$template = &$this->_template;
 
 		// Quick check to see if {paginate} even exists
-		if (strpos($template, LD.'paginate'.RD) === FALSE) return $template;
+		if (strpos($template, LD.'paginate'.RD) === FALSE && ee()->TMPL->fetch_param('paginate') != 'hidden')
+		{
+			return $template;
+		}
 
-		if (preg_match("/".LD."paginate".RD."(.+?)".LD.'\/'."paginate".RD."/s", $template, $paginate_match))
+		if (ee()->TMPL->fetch_param('paginate') == 'hidden')
+		{
+			$this->paginate = TRUE;
+		}
+		else if (preg_match("/".LD."paginate".RD."(.+?)".LD.'\/'."paginate".RD."/s", $template, $paginate_match))
 		{
 			if (ee()->TMPL->fetch_param('paginate_type') == 'field')
 			{
@@ -163,21 +169,21 @@ class Pagination_object {
 			// within {paginate}
 			$this->paginate		= TRUE;
 			$this->_pagination_template	= $paginate_match[1];
-
-			// Determine if pagination needs to go at the top and/or bottom, or inline
-			$this->_position = ee()->TMPL->fetch_param('paginate', $this->_position);
-
-			// Create temporary marker for inline position
-			$replace_tag = ($this->_position == 'inline') ? LD.$this->_pagination_marker.RD : '';
-
-			// Remove pagination tags from template since we'll just
-			// append/prepend it later
-			$template = preg_replace(
-				"/".LD."paginate".RD.".+?".LD.'\/'."paginate".RD."/s",
-				$replace_tag,
-				$template
-			);
 		}
+
+		// Determine if pagination needs to go at the top and/or bottom, or inline
+		$this->_position = ee()->TMPL->fetch_param('paginate', $this->_position);
+
+		// Create temporary marker for inline position
+		$replace_tag = ($this->_position == 'inline') ? LD.$this->_pagination_marker.RD : '';
+
+		// Remove pagination tags from template since we'll just
+		// append/prepend it later
+		$template = preg_replace(
+			"/".LD."paginate".RD.".+?".LD.'\/'."paginate".RD."/s",
+			$replace_tag,
+			$template
+		);
 
 		return $template;
 	}
