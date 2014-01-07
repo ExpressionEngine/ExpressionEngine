@@ -420,6 +420,9 @@ class CI_Pagination {
 			{
 				$this->cur_page = $this->CI->uri->segment($this->uri_segment);
 
+				$this->cur_page = ltrim($this->cur_page, $this->prefix);
+				$this->cur_page = rtrim($this->cur_page, $this->suffix);
+
 				// Prep the current page - no funny business!
 				$this->cur_page = (int) $this->cur_page;
 			}
