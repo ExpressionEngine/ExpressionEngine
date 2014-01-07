@@ -55,6 +55,7 @@ class Pagination_object {
 	private $_page_next				= '';
 	private $_page_previous			= '';
 	private $_page_links			= '';
+	private $_page_links_limit		= 2;
 	private $_type					= '';
 	private $_position				= '';
 	private $_pagination_marker		= "pagination_marker";
@@ -119,6 +120,12 @@ class Pagination_object {
 					$this->_multi_fields		= ee()->functions->fetch_simple_conditions($multi_field_match[1]);
 					$this->field_pagination	= TRUE;
 				}
+			}
+
+			// Check for pagination_links pages variable
+			if (preg_match("/".LD."pagination_links page_padding=[\"'](\d+)[\"']".RD."/", $template, $pagination_links_match))
+			{
+				$this->_page_links_limit = $pagination_links_match[1];
 			}
 
 			// -------------------------------------------
@@ -410,6 +417,7 @@ class Pagination_object {
 					'per_page'		=> $this->per_page,
 					// cur_page uses the offset because P45 (or similar) is a page
 					'cur_page'		=> $this->offset,
+					'num_links'		=> $this->_page_links_limit,
 					'first_link'	=> lang('pag_first_link'),
 					'last_link'		=> lang('pag_last_link'),
 					'uri_segment'	=> 0 // Allows $config['cur_page'] to override
