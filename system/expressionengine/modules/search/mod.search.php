@@ -1225,9 +1225,7 @@ class Search {
 		
 		// Load Pagination Object
 		ee()->load->library('pagination');
-		$pagination = new Pagination_object(__CLASS__);
-		
-		// Capture Pagination Template
+		$pagination = ee()->pagination->create(__CLASS__);
 		$pagination->get_template();
 		
 		// Check to see if we're using old style pagination
@@ -1263,27 +1261,11 @@ class Search {
 				'search_date <' => ee()->localize->now - ($this->cache_expire * 3600)
 			)
 		);
-		
-		// Fetch ID number and page number
-		$pagination->offset = 0;
-		$qstring = ee()->uri->query_string;
 
-		// Parse page number
-		if (preg_match("#^P(\d+)|/P(\d+)#", $qstring, $match))
-		{
-			$pagination->offset = (isset($match[2])) ? $match[2] : $match[1];
-			$search_id = trim_slashes(str_replace($match[0], '', $qstring));
-		}
-		else
-		{
-			$pagination->offset = 0;
-			$search_id = $qstring;
-		}
-		
-		// If there is a slash in the search ID we'll kill everything after it.
-		$search_id = trim($search_id); 
-		$search_id = preg_replace("#/.+#", "", $search_id);
-		
+		// Retrieve the search_id
+		$qstring = explode('/', ee()->uri->query_string);
+		$search_id = trim($qstring[0]);
+
 		// Fetch the cached search query
 		$query = ee()->db->get_where('search', array('search_id' => $search_id));
 		
@@ -1308,9 +1290,8 @@ class Search {
 		}
 		
 		// Calculate total number of pages and add total rows
-		$pagination->current_page 	= ($pagination->offset / $pagination->per_page) + 1;
-		$pagination->total_rows 	= $query->row('count');
-		
+		$pagination->total_rows = $query->row('count');
+
 		// Figure out total number of pages for old style pagination
 		// TODO: Remove once old pagination is phased out
 		if ($old_pagination)
