@@ -47,6 +47,7 @@ class Pagination_object {
 	public $basepath			= '';
 	public $cfields				= array();
 	public $dynamic_sql			= TRUE;
+	public $page_marker			= "P";
 
 	private $_page_array			= array();
 	private $_pagination_template	= '';
@@ -216,7 +217,7 @@ class Pagination_object {
 			if ($this->offset === 0)
 			{
 				$query_string = (ee()->uri->page_query_string != '') ? ee()->uri->page_query_string : ee()->uri->query_string;
-				if (preg_match("#^P(\d+)|/P(\d+)#", $query_string, $match))
+				if (preg_match("#^{$this->page_marker}(\d+)|/{$this->page_marker}(\d+)#", $query_string, $match))
 				{
 					$this->offset = (isset($match[2])) ? (int) $match[2] : (int) $match[1];
 					$this->basepath = reduce_double_slashes(
@@ -281,7 +282,7 @@ class Pagination_object {
 				// the first page
 				if ($this->offset > $this->total_rows)
 				{
-					$this->offset = 0;
+					return ee()->TMPL->no_results();
 				}
 
 				$this->current_page	= floor(($this->offset / $this->per_page) + 1);
