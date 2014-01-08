@@ -62,7 +62,7 @@ class EE_Template {
 	var $global_vars			= array();		// This array can be set via the path.php file
 	var $embed_vars				= array();		// This array can be set via the {embed} tag
 	var $segment_vars			= array();		// Array of segment variables
-	var $template_route_vars    = array();		// Array of segment variables
+	var $template_route_vars 	= array();		// Array of segment variables
 
 	var $tagparts				= array();		// The parts of the tag: {exp:comment:form}
 	var $tagdata				= '';			// The chunk between tag pairs.  This is what modules will utilize
@@ -1667,22 +1667,22 @@ class EE_Template {
 			return $this->fetch_template('', 'index', TRUE);
 		}
 
-        // If we have a URI we check against template routes first
+		// If we have a URI we check against template routes first
 		ee()->load->library('template_router');
-        try
-        {
-            $match = ee()->template_router->match(ee()->uri);
+		try
+		{
+			$match = ee()->template_router->match(ee()->uri);
 			$this->template_route_vars = array();
 			foreach($match->matches as $key => $val)
 			{
 				$this->template_route_vars['segment:' . $key] = $val;
 			}
-            return $this->fetch_template($match->end_point['group'], $match->end_point['template'], FALSE);
-        }
-        catch (Exception $error)
-        {
+			return $this->fetch_template($match->end_point['group'], $match->end_point['template'], FALSE);
+		}
+		catch (Exception $error)
+		{
 			// route not found
-        }
+		}
 
 		// Set the strict urls pref
 		if (ee()->config->item('strict_urls') !== FALSE)

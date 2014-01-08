@@ -24,14 +24,14 @@
  */
 class EE_Route_match {
 
-    public $end_point = array();
-    public $matches = array();
+	public $end_point = array();
+	public $matches = array();
 
-    public function __construct($end_point, $matches)
-    {
-        $this->end_point = $end_point;
-        $this->matches = $matches;
-    }
+	public function __construct($end_point, $matches)
+	{
+		$this->end_point = $end_point;
+		$this->matches = $matches;
+	}
 
 }
 // END CLASS

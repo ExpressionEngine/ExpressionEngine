@@ -28,13 +28,13 @@ class EE_Route {
 	public $variables = array();
 
 	public $segment_regex = "
-    	(?P<static>[^{]*)                     # static rule data
-    	{	
-    	(?P<variable>[a-zA-Z_][a-zA-Z0-9_]*)  # variable name
-    	(?:
-    	    \:                                # variable delimiter
-    	    (?P<rules>.*?)                    # rules
-    	)?
+		(?P<static>[^{]*)                     # static rule data
+		{	
+		(?P<variable>[a-zA-Z_][a-zA-Z0-9_]*)  # variable name
+		(?:
+			\:                                # variable delimiter
+			(?P<rules>.*?)                    # rules
+		)?
 		}
 	";
 
@@ -48,23 +48,23 @@ class EE_Route {
 		\|?                   # optional delimiter
 	";
 
-    /**
-     * Route constructor
-     * 
-     * @param string $route   The EE formatted route string
-     * @param bool $required  Set whether route segments are optional or required
-     * @access public
-     * @return void
-     */
-    public function __construct($route, $required = False)
-    {
+	/**
+	 * Route constructor
+	 * 
+	 * @param string $route   The EE formatted route string
+	 * @param bool $required  Set whether route segments are optional or required
+	 * @access public
+	 * @return void
+	 */
+	public function __construct($route, $required = False)
+	{
 		require_once APPPATH.'libraries/template_router/Segment.php';
 		require_once APPPATH.'libraries/template_router/Converters.php';
 		ee()->lang->loadfile('template_router');
-        $this->required = $required;
+		$this->required = $required;
 		$this->rules = new EE_Template_router_converters();
 		$this->parse_route($route);
-    }
+	}
 
 	/**
 	 * Build a URL for the route.
@@ -108,17 +108,17 @@ class EE_Route {
 		{
 			if (is_string($segment))
 			{
-                $delimiter = $this->required ? '\/' : '\/?';
-		        // backslash escaped for preg_match
-		        $segment = str_replace('/', $delimiter, $segment);
+				$delimiter = $this->required ? '\/' : '\/?';
+				// backslash escaped for preg_match
+				$segment = str_replace('/', $delimiter, $segment);
 				$url[] = $segment;
 			} else {
 				$regex = $segment->regex();
-                if ( ! $this->required)
-                {
-                    $regex .= '?';
-                }
-                $url[] = $regex;
+				if ( ! $this->required)
+				{
+					$regex .= '?';
+				}
+				$url[] = $regex;
 			}
 		}
 		$parsed_route = implode('', $url);
@@ -162,18 +162,18 @@ class EE_Route {
 		}
 	}
 
-    /**
-     * Parses a EE formatted template route into segments
-     * 
-     * @param string $route 
-     * @access public
+	/**
+	 * Parses a EE formatted template route into segments
+	 * 
+	 * @param string $route 
+	 * @access public
 	 * @return array
-	 * 		    - variable : Segment's variable name
-	 * 		    - rules : Segment's list of validators
-	 * 		    - static : Bare segment string, only set if segment is static text
-     */
-    public function parse_segments($route)
-    {
+	 *			- variable : Segment's variable name
+	 *			- rules : Segment's list of validators
+	 *			- static : Bare segment string, only set if segment is static text
+	 */
+	public function parse_segments($route)
+	{
 		$pos = 0;
 		$end = strlen($route);
 		$used_names = array();
@@ -212,18 +212,18 @@ class EE_Route {
 			$segments[] = array('static' => $remainder);
 		}
 		return $segments;
-    }
+	}
 
-    /**
-     * Parse a URL segment for a list of validators and convert to a regular expression
-     * 
+	/**
+	 * Parse a URL segment for a list of validators and convert to a regular expression
+	 * 
 	 * @param $rules string  An EE formatted validation string e.g.:
-	 * 						   "rule1[arg1,arg2...]|rule2|..."
-     * @access public
-     * @return EE_Template_router_converter[]  An array of initialized validation rules
-     */
-    public function parse_rules($rules)
-    {
+	 *						   "rule1[arg1,arg2...]|rule2|..."
+	 * @access public
+	 * @return EE_Template_router_converter[]  An array of initialized validation rules
+	 */
+public function parse_rules($rules)
+{
 		$pos = 0;
 		$end = strlen($rules);
 		$used_rules = array();
@@ -265,7 +265,7 @@ class EE_Route {
 			$pos += strlen($matches[0]);
 		}
 		return $parsed_rules;
-    }
+	}
 
 }
 // END CLASS

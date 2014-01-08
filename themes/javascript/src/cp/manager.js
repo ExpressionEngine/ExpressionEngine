@@ -329,19 +329,19 @@ function bind_prefs_events() {
 				'name': 'enable_http_auth_' + template_id
 			});
 
-            // template route
-            headerrow.find(".template_route").val(rowdata.template_route);
-            headerrow.find('.template_route').attr({
-                    'id': 'template_route_' + template_id,
-                    'name': 'template_route_' + template_id
-            });
-
-            // template route required
-            headerrow.find(".route_required").val(rowdata.route_required);
-            headerrow.find('.route_required').attr({
-                    'id': 'route_required_' + template_id,
-                    'name': 'route_required_' + template_id
-            });
+			// template route
+			headerrow.find(".template_route").val(rowdata.template_route);
+			headerrow.find('.template_route').attr({
+				'id': 'template_route_' + template_id,
+				'name': 'template_route_' + template_id
+			});
+			
+			// template route required
+			headerrow.find(".route_required").val(rowdata.route_required);
+			headerrow.find('.route_required').attr({
+				'id': 'route_required_' + template_id,
+				'name': 'route_required_' + template_id
+			});
 
 			// Set data, ids, and names
 

@@ -3779,7 +3779,7 @@ class Design extends CP_Controller {
 
 		ee()->output->enable_profiler(FALSE);
 		ee()->load->helper('array_helper');
-        ee()->load->library('template_router');
+		ee()->load->library('template_router');
 
 		$payload = ee()->input->post('payload');
 
@@ -3835,40 +3835,40 @@ class Design extends CP_Controller {
 
 				$this->template_model->update_template_ajax($template_id, array('route_required' => $required));
 
-                // We have to recompile the route when route_required changes
-                $route = $query->row('route');
-                try
-                {
-                    $template_route = ee()->template_router->create_route($route, $required == 'y');
-                }
-                catch (Exception $error)
-                {
-                    $this->output->send_ajax_response($error->getMessage(), TRUE);
-                }
-                $this->template_model->update_template_ajax($template_id, array('route_parsed' => $template_route->compile()));
-            }
-            elseif ($route = element('template_route', $group))
-            {
-                // Must check whether route segments are required before compiling route
-                if ($required = element('route_required', $group))
-                {
-                    $required = ($required == 'y');
-                }
-                else
-                {
-                    $required = ($query->row('route_required') == 'y');
-                }
-                try
-                {
-                    $template_route = ee()->template_router->create_route($route, $required);
-                }
-                catch (Exception $error)
-                {
-                    $this->output->send_ajax_response($error->getMessage(), TRUE);
-                }
-                $this->template_model->update_template_ajax($template_id, array('route_parsed' => $template_route->compile()));
-                $this->template_model->update_template_ajax($template_id, array('route' => $route));
-            }
+				// We have to recompile the route when route_required changes
+				$route = $query->row('route');
+				try
+				{
+					$template_route = ee()->template_router->create_route($route, $required == 'y');
+				}
+				catch (Exception $error)
+				{
+					$this->output->send_ajax_response($error->getMessage(), TRUE);
+				}
+				$this->template_model->update_template_ajax($template_id, array('route_parsed' => $template_route->compile()));
+				}
+				elseif ($route = element('template_route', $group))
+				{
+					// Must check whether route segments are required before compiling route
+					if ($required = element('route_required', $group))
+					{
+						$required = ($required == 'y');
+					}
+					else
+					{
+						$required = ($query->row('route_required') == 'y');
+					}
+					try
+					{
+						$template_route = ee()->template_router->create_route($route, $required);
+					}
+					catch (Exception $error)
+					{
+						$this->output->send_ajax_response($error->getMessage(), TRUE);
+					}
+					$this->template_model->update_template_ajax($template_id, array('route_parsed' => $template_route->compile()));
+					$this->template_model->update_template_ajax($template_id, array('route' => $route));
+				}
 			else
 			{
 				$this->output->send_ajax_response(lang('unauthorized_access'), TRUE);

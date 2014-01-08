@@ -24,8 +24,8 @@
  */
 class EE_Route_segment {
 
-    public function __construct($name, $rules = array())
-    {
+	public function __construct($name, $rules = array())
+	{
 		$this->name = $name;
 		$this->rules = $rules;
 		ee()->lang->loadfile('template_router');
@@ -56,7 +56,7 @@ class EE_Route_segment {
 		{
 			throw new Exception(lang('validation_failed'));
 		}
-        return $result === 1;
+		return $result === 1;
 	}
 
 	/**
@@ -75,11 +75,11 @@ class EE_Route_segment {
 			// This allows rules to work together without consuming the match.
 			$compiled_rules .= "((?=\b" . $rule->validator() . "\b)[^\/]*)";
 		}
-        if (empty($this->rules))
-        {
-            // Default to a wildcard match if we have no rules
-            $compiled_rules = "([^\/]*)";
-        }
+		if (empty($this->rules))
+		{
+			// Default to a wildcard match if we have no rules
+			$compiled_rules = "([^\/]*)";
+		}
 		return $compiled_rules;
 	}
 
