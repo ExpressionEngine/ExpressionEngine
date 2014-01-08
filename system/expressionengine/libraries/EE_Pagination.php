@@ -74,14 +74,14 @@ class Pagination_object {
 
 	public function __set($name, $value)
 	{
-		// Keep certain variables private
+		// Allow for template and position overrides.
+		// template lets the developer override the template from the standard
+		// TMPL->tagdata.
+		// position lets the developer override the position of the pagination
+		// (e.g. top, bottom, both, hidden)
 		if (in_array($name, array('template', 'position')))
 		{
 			$this->{'_'.$name} = $value;
-		}
-		else if (strncmp($name, '_', 1) != 0)
-		{
-			$this->$name = $value;
 		}
 	}
 
