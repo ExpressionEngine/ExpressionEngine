@@ -147,15 +147,23 @@ class Updater {
 			array(
 				'route' => array(
 					'type'			=> 'varchar',
-					'default'		=> 512,
+					'constraint'    => 512,
 					'null'			=> True
 				)
 			),
 			array(
 				'route_parsed' => array(
 					'type'			=> 'varchar',
-					'default'		=> 512,
+					'constraint'    => 512,
 					'null'			=> True
+				)
+			),
+			array(
+				'route_required' => array(
+					'type'			=> 'char',
+					'constraint'    => 1,
+					'default'		=> 'n',
+					'null'		    => False
 				)
 			)
 		);

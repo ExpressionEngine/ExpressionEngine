@@ -111,13 +111,14 @@ class EE_Template_Router extends CI_Router {
     /**
      * Create EE_Route object from EE formatted route string
      * 
-     * @param string $route An EE formatted route string 
+     * @param string $route   An EE formatted route string 
+     * @param bool $required  Set whether segments are optional or required
      * @access public
      * @return EE_Route The instantiated route object.
      */
-    public function create_route($route)
+    public function create_route($route, $required = False)
     {
-        return new EE_Route($route);
+        return new EE_Route($route, $required);
     }
 
 }

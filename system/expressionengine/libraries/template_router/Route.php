@@ -48,11 +48,20 @@ class EE_Route {
 		\|?                   # optional delimiter
 	";
 
-    public function __construct($route)
+    /**
+     * Route constructor
+     * 
+     * @param string $route   The EE formatted route string
+     * @param bool $required  Set whether route segments are optional or required
+     * @access public
+     * @return void
+     */
+    public function __construct($route, $required = False)
     {
 		require_once APPPATH.'libraries/template_router/Segment.php';
 		require_once APPPATH.'libraries/template_router/Converters.php';
 		ee()->lang->loadfile('template_router');
+        $this->required = $required;
 		$this->rules = new EE_Template_router_converters();
 		$this->parse_route($route);
     }
@@ -99,11 +108,17 @@ class EE_Route {
 		{
 			if (is_string($segment))
 			{
-		        // backslash escaped and optional for preg_match
-		        $segment = str_replace('/', '\/?', $segment);
+                $delimiter = $this->required ? '\/' : '\/?';
+		        // backslash escaped for preg_match
+		        $segment = str_replace('/', $delimiter, $segment);
 				$url[] = $segment;
 			} else {
-				$url[] = $segment->regex();
+				$regex = $segment->regex();
+                if ( ! $this->required)
+                {
+                    $regex .= '?';
+                }
+                $url[] = $regex;
 			}
 		}
 		$parsed_route = implode('', $url);

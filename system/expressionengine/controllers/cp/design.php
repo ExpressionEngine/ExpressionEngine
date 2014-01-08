@@ -1361,6 +1361,7 @@ class Design extends CP_Controller {
 		$hits = $this->input->post('hits');
 		$enable_http_auth = $this->input->post('enable_http_auth');
 		$template_route = $this->input->post('template_route');
+		$route_required = $this->input->post('route_required');
 		$no_auth_bounce = $this->input->post('no_auth_bounce');
 
 		if ($template_type !== FALSE && $template_type != 'null')
@@ -1741,6 +1742,7 @@ class Design extends CP_Controller {
 		$vars['no_auth_bounce']		= $query->row('no_auth_bounce');
 		$vars['enable_http_auth']	= $query->row('enable_http_auth');
 		$vars['template_route'] 	= $query->row('route');
+		$vars['route_required'] 	= $query->row('route_required');
 
 		foreach(array('template_type', 'cache', 'refresh', 'allow_php', 'php_parse_location', 'hits') as $pref)
 		{
@@ -3397,7 +3399,8 @@ class Design extends CP_Controller {
 					'access' => $access,
 					'no_auth_bounce' => $row['no_auth_bounce'],
 					'enable_http_auth' => $row['enable_http_auth'],
-					'template_route' => $row['route']
+					'template_route' => $row['route'],
+					'route_required' => $row['route_required']
 				);
 
 
@@ -3412,6 +3415,7 @@ class Design extends CP_Controller {
 			$vars['templates'][$row['group_id']][$row['template_id']]['template_name'] = $row['template_name'];
 			$vars['templates'][$row['group_id']][$row['template_id']]['template_type'] = $row['template_type'];
 			$vars['templates'][$row['group_id']][$row['template_id']]['template_route'] = $row['route'];
+			$vars['templates'][$row['group_id']][$row['template_id']]['route_required'] = $row['route_required'];
 			$vars['templates'][$row['group_id']][$row['template_id']]['enable_http_auth'] = $row['enable_http_auth'];  // needed for display
 
 			$vars['templates'][$row['group_id']][$row['template_id']]['hidden'] = (strncmp($row['template_name'], $hidden_indicator, $hidden_indicator_length) == 0) ? TRUE : FALSE;
@@ -3609,7 +3613,8 @@ class Design extends CP_Controller {
 				'access' => $access,
 				'no_auth_bounce' => $row['no_auth_bounce'],
 				'enable_http_auth' => $row['enable_http_auth'],
-				'template_route' => $row['template_route']
+				'template_route' => $row['template_route'],
+				'route_required' => $row['route_required']
 			);
 		}
 
@@ -3774,6 +3779,7 @@ class Design extends CP_Controller {
 
 		ee()->output->enable_profiler(FALSE);
 		ee()->load->helper('array_helper');
+        ee()->load->library('template_router');
 
 		$payload = ee()->input->post('payload');
 
@@ -3782,6 +3788,7 @@ class Design extends CP_Controller {
 		foreach ($payload as $group)
 		{
 			$template_id = $group['template_id'];
+		    $query = $this->template_model->get_template_info($template_id);
 
 			if ( ! $this->_template_access_privs(array('template_id' => $template_id)))
 			{
@@ -3819,12 +3826,41 @@ class Design extends CP_Controller {
 
 				$this->template_model->update_template_ajax($template_id, array('no_auth_bounce' => $no_auth_bounce));
 			}
-            elseif ($route = element('template_route', $group))
+            elseif ($required = element('route_required', $group))
             {
-                ee()->load->library('template_router');
+				if ($required != 'y' && $required != 'n')
+				{
+					$this->output->send_ajax_response(lang('unauthorized_access'), TRUE);
+				}
+
+				$this->template_model->update_template_ajax($template_id, array('route_required' => $required));
+
+                // We have to recompile the route when route_required changes
+                $route = $query->row('route');
                 try
                 {
-                    $template_route = ee()->template_router->create_route($route);
+                    $template_route = ee()->template_router->create_route($route, $required == 'y');
+                }
+                catch (Exception $error)
+                {
+                    $this->output->send_ajax_response($error->getMessage(), TRUE);
+                }
+                $this->template_model->update_template_ajax($template_id, array('route_parsed' => $template_route->compile()));
+            }
+            elseif ($route = element('template_route', $group))
+            {
+                // Must check whether route segments are required before compiling route
+                if ($required = element('route_required', $group))
+                {
+                    $required = ($required == 'y');
+                }
+                else
+                {
+                    $required = ($query->row('route_required') == 'y');
+                }
+                try
+                {
+                    $template_route = ee()->template_router->create_route($route, $required);
                 }
                 catch (Exception $error)
                 {

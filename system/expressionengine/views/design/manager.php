@@ -134,6 +134,13 @@
 								</td>
 								<td><input name="template_route" class="template_route" type="text" value="" /></td>
 							</tr>
+							<tr>
+								<td>
+									<?=lang('route_required', 'route_required')?>
+									<div class="subtext"><?=lang('route_required_subtext')?></div>
+								</td>
+								<td><?=form_dropdown('route_required',  array('y' => lang('yes'), 'n' => lang('no')), '', 'class="route_required"')?></td>
+							</tr>
 						</table>
 					</div>
 				<?php endif; ?>

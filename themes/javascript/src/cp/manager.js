@@ -80,6 +80,17 @@ function access_edit_ajax(element) {
 				template_route: el.val()
 			});
 		}
+		// Handle template route required
+		else if (el.attr('name').substr(0, 14) === 'route_required')
+		{
+			template_id = (el.attr('name').substr(15))
+				? el.attr('name').substr(15) : $('input:hidden[name=template_id]').val();
+
+			payload.push({
+				template_id: template_id,
+				route_required: el.val()
+			});
+		}
 		// Handle member group permissions for this template
 		else
 		{
@@ -109,9 +120,6 @@ function access_edit_ajax(element) {
 			}
 		},
 		error: function (req, error) {
-            console.log(payload);
-            console.log(error);
-            console.log(req);
 			if (req.responseText !== '') {
 				$.ee_notice(req.responseText, {duration: 3000, type: 'error'});
 			}
@@ -326,6 +334,13 @@ function bind_prefs_events() {
             headerrow.find('.template_route').attr({
                     'id': 'template_route_' + template_id,
                     'name': 'template_route_' + template_id
+            });
+
+            // template route required
+            headerrow.find(".route_required").val(rowdata.route_required);
+            headerrow.find('.route_required').attr({
+                    'id': 'route_required_' + template_id,
+                    'name': 'route_required_' + template_id
             });
 
 			// Set data, ids, and names

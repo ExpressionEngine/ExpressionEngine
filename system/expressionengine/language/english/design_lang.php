@@ -643,6 +643,12 @@ username and password to view the template.',
 'template_route_subtext' =>
 'If a route is provided here it will override the default group/template URL structure.',
 
+'route_required' =>
+'Require All Segments:',
+
+'route_required_subtext' =>
+'If route segments are required all segments in the template route must be present in the request URI.',
+
 'http_auth_protected' =>
 'HTTP Auth Protected',
 
