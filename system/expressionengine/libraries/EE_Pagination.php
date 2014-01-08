@@ -72,6 +72,26 @@ class Pagination_object {
 
 	// -------------------------------------------------------------------------
 
+	/**
+	 * Retrieve non-public properties
+	 * @param  string $name  Name of the property
+	 * @return mixed         Value of the property
+	 */
+	public function __get($name)
+	{
+		if (in_array($name, array('type')))
+		{
+			return $this->{'_'.$name};
+		}
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Sets non-public properties
+	 * @param string $name  Name of the property to set
+	 * @param string $value Value of the property
+	 */
 	public function __set($name, $value)
 	{
 		// Allow for template and position overrides.
