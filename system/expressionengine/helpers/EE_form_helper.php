@@ -11,7 +11,7 @@
  * @since		Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -37,14 +37,14 @@
  * @param	array	a key/value pair of attributes
  * @param	array	a key/value pair hidden data
  * @return	string
- */	
+ */
 
 if (REQ == 'CP')
 {
 	function form_open($action = '', $attributes = array(), $hidden = array())
 	{
 		$CI =& get_instance();
-		
+
 		$action = ( strpos($action, '://') === FALSE) ? BASE.AMP.$action : $action;
 
 		$form = '<form action="'.$action.'"';
@@ -55,7 +55,7 @@ if (REQ == 'CP')
 			{
 				$form .= ' method="post"';
 			}
-			
+
 			foreach ($attributes as $key => $val)
 			{
 				$form .= ' '.$key.'="'.$val.'"';
@@ -65,24 +65,24 @@ if (REQ == 'CP')
 		{
 			$form .= ' method="post" '.$attributes;
 		}
-	
+
 		$form .= ">\n";
-		
+
 		if ($CI->config->item('secure_forms') == 'y')
 		{
 			if ( ! is_array($hidden))
 			{
 				$hidden = array();
 			}
-			
-			$hidden['XID'] = XID_SECURE_HASH;
+
+			$hidden['CSRF_TOKEN'] = CSRF_TOKEN;
 		}
 
 		if (is_array($hidden) AND count($hidden > 0))
 		{
 			$form .= form_hidden($hidden)."\n";
 		}
-	
+
 		return $form;
 	}
 }
