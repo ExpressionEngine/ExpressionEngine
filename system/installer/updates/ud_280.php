@@ -40,7 +40,7 @@ class Updater {
 			array(
 				'_update_extension_quick_tabs',
 				'_extract_server_offset_config',
-				'_update_session_config_names'
+				'_update_session_config_names',
 				'_update_config_add_cookie_httponly'
 			)
 		);
