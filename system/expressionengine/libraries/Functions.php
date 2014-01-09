@@ -705,10 +705,13 @@ class EE_Functions {
 	 */
 	function clear_spam_hashes()
 	{
-		if (ee()->config->item('secure_forms') == 'y')
-		{
-			ee()->security->garbage_collect_xids();
-		}
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.8');
+
+		// if (ee()->config->item('secure_forms') == 'y')
+		// {
+		// 	ee()->security->garbage_collect_xids();
+		// }
 	}
 
 	// --------------------------------------------------------------------

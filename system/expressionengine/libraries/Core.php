@@ -153,7 +153,7 @@ class EE_Core {
 		{
 			$cookie_prefix = ee()->config->item('cookie_prefix');
 			$cookie_path  = ee()->config->item('cookie_path');
-			$cookie_domain =  ee()->config->item('cookie_domain');		
+			$cookie_domain =  ee()->config->item('cookie_domain');
 			$cookie_httponly = ee()->config->item('cookie_httponly');
 
 			if (! empty($last_site_id) && is_numeric($last_site_id) && $last_site_id != ee()->config->item('site_id'))
@@ -163,7 +163,7 @@ class EE_Core {
 
 			ee()->config->cp_cookie_prefix = $cookie_prefix;
 			ee()->config->cp_cookie_path  = $cookie_path;
-			ee()->config->cp_cookie_domain =  $cookie_domain;	
+			ee()->config->cp_cookie_domain =  $cookie_domain;
 			ee()->config->cp_cookie_httponly = $cookie_httponly;
 		}
 
@@ -751,7 +751,6 @@ class EE_Core {
 				ee()->db->delete('throttle');
 			}
 
-			ee()->functions->clear_spam_hashes();
 			ee()->functions->clear_caching('all');
 		}
 	}
