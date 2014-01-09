@@ -115,6 +115,11 @@ abstract class RowDataGateway {
 			return static::$meta;
 		}
 
+		if( ! isset (static::$meta[$key]))
+		{
+			return NULL;
+		}
+
 		return static::$meta[$key];
 	}
 
@@ -134,6 +139,7 @@ abstract class RowDataGateway {
 	public function setDirty($property)
 	{
 		$this->dirty[$property] = TRUE;
+		return $this;
 	}
 
 	/**
@@ -157,6 +163,12 @@ abstract class RowDataGateway {
 		}
 
 		$validation_rules = static::getMetaData('validation_rules');
+		// Nothing to validate.
+		if ($validation_rules === NULL)
+		{
+			return $errors;
+		}
+
 		foreach ($this->dirty as $property => $dirty)
 		{
 			if (isset($validation_rules[$property]))
