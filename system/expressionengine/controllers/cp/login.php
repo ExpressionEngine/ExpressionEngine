@@ -128,7 +128,7 @@ class Login extends CP_Controller {
 
 		// Kill existing flash cookie
 		$this->input->delete_cookie('flash');
-		
+
 		if (isset($_POST['remember_me']))
 		{
 			$incoming->remember_me();
@@ -162,9 +162,13 @@ class Login extends CP_Controller {
 			$return_path = $base.AMP.base64_decode($this->input->post('return_path'));
 		}
 
+		// cycle the csrf token
+		$csrf_token = ee()->csrf->refresh_token();
+
 		if (AJAX_REQUEST)
 		{
-			header('X-EEXID: '.$this->security->generate_xid());
+			header('X-CSRF-TOKEN: '.$csrf_token);
+			header('X-EEXID: '.$csrf_token);
 
 			$this->output->send_ajax_response(array(
 				'base'			=> $base,
@@ -361,10 +365,13 @@ class Login extends CP_Controller {
 		$this->db->delete('online_users');
 
 		$this->session->destroy();
-		
-		$this->input->delete_cookie('read_topics');  
+
+		$this->input->delete_cookie('read_topics');
 
 		$this->logger->log_action(lang('member_logged_out'));
+
+		// cycle the csrf token
+		ee()->csrf->refresh_token();
 
 		if ($this->input->get('auto_expire'))
 		{
