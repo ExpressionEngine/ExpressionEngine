@@ -758,6 +758,7 @@ EE.cp.xid = (function() {
 	function setXid(new_xid) {
 		$('input[name="XID"]').val(new_xid);
 		$('input[name="CSRF_TOKEN"]').val(new_xid);
+
 		EE.XID = new_xid;
 		EE.CSRF_TOKEN = new_xid
 	}

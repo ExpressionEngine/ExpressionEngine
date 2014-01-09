@@ -1811,8 +1811,6 @@ GRID_FALLBACK;
 				}
 			}
 
-			ee()->security->restore_xid();
-
 			ee()->core->generate_page();
 			return;
 		}

@@ -174,14 +174,9 @@ class EE_Security extends CI_Security {
 		ee()->load->library('logger');
 		ee()->logger->deprecated('2.8', 'Use the CSRF_TOKEN constant.');
 
-		$hashes = array();
+		$hashes = array_fill(0, $count, $count, CSRF_TOKEN);
 
-		for ($i = 0; $i < $count; $i++)
-		{
-			$hashes[] = CSRF_TOKEN;
-		}
-
-		return (count($hashes) > 1 OR $array) ? $hashes : $hashes[0];
+		return ($count > 1 OR $array) ? $hashes : $hashes[0];
 	}
 
 	// --------------------------------------------------------------------

@@ -9636,9 +9636,6 @@ class Forum_Core extends Forum {
 			'link'		=> array($this->forum_path('search_results/'.$search_id), $this->fetch_pref('forum_name'))
 		 );
 
-		// Allow back button use for searches
-		ee()->security->restore_xid();
-
 		return ee()->output->show_message($data);
 	}
 
