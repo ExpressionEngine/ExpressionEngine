@@ -46,7 +46,8 @@ class Updater {
 				'_change_session_timeout_config',
 				'_update_localization_config',
 				'_update_member_table',
-				'_update_session_config_names'
+				'_update_session_config_names',
+				'_update_config_add_cookie_httponly'
 			)
 		);
 
