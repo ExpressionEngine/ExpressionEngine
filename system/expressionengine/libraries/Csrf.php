@@ -47,7 +47,7 @@ class Csrf {
 	 * This can sometimes be useful to know when creating pages that may be open
 	 * for a very long time.
 	 *
-	 * @return Integer token timeout
+	 * @return Integer token timeout [0 = no timeout]
 	 */
 	public function get_expiration()
 	{

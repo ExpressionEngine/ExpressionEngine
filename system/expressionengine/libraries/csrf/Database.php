@@ -34,7 +34,7 @@ class Csrf_database implements Csrf_storage_backend {
 
 	public function get_expiration()
 	{
-		return 60 * 60 * 24; // 2 days
+		return 0; // never - times out with session
 	}
 
 	/**
@@ -64,6 +64,8 @@ class Csrf_database implements Csrf_storage_backend {
 	{
 		ee()->db->where('session_id', ee()->session->userdata('session_id'))
 			->delete('security_hashes');
+
+		$this->collect_garbage();
 	}
 
 	/**
@@ -75,10 +77,7 @@ class Csrf_database implements Csrf_storage_backend {
 	 */
 	public function fetch_token()
 	{
-		$result = ee()->db->where(array(
-				'session_id' 	=> ee()->session->userdata('session_id'),
-				'date >' 		=> ee()->localize->now - $this->get_expiration()
-			))
+		$result = ee()->db->where('session_id', ee()->session->userdata('session_id'))
 			->get('security_hashes')
 			->row();
 
@@ -99,9 +98,13 @@ class Csrf_database implements Csrf_storage_backend {
 
 		if ((rand() % 100) < self::GC_PROBABILITY)
 		{
-			ee()->db->where('session_id', ee()->session->userdata('session_id'))
-				->or_where('date <', ee()->localize->now - $this->get_expiration())
-				->delete('security_hashes');
+			$s = ee()->db->dbprefix('sessions');
+			$sh = ee()->db->dbprefix('security_hashes');
+
+			// active record cannot do this query
+			// delete any csrf tokens whose associated session cannot be
+			// found in the session table.
+			ee()->db->query("DELETE FROM ${sh} sh LEFT JOIN ${s} s ON s.session_id = sh.session_id WHERE s.session_id IS NULL");
 		}
 	}
 
