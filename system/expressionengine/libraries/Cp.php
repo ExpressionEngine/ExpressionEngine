@@ -208,7 +208,8 @@ class Cp {
 
 		ee()->javascript->set_global(array(
 			'BASE'				=> str_replace(AMP, '&', BASE),
-			'XID'				=> XID_SECURE_HASH,
+			'XID'				=> CSRF_TOKEN,
+			'CSRF_TOKEN'		=> CSRF_TOKEN,
 			'PATH_CP_GBL_IMG'	=> PATH_CP_GBL_IMG,
 			'CP_SIDEBAR_STATE'	=> ee()->session->userdata('show_sidebar'),
 			'username'			=> ee()->session->userdata('username'),
