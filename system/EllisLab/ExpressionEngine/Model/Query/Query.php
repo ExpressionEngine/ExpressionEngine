@@ -648,7 +648,7 @@ class Query {
 	{
 		$model_name = $model_data['__model_name'];
 
-		$model = $this->builder->make($model_name, $model_data);
+		$model = $this->builder->make($model_name, $model_data, FALSE);
 
 		$primary_key_name = $model::getMetaData('primary_key');
 		$primary_key = $model_data[$primary_key_name];

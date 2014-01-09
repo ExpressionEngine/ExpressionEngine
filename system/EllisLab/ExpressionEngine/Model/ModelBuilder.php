@@ -58,7 +58,7 @@ class ModelBuilder {
 		return $query;
 	}
 
-	public function make($model, array $data = array())
+	public function make($model, array $data = array(), $dirty = TRUE)
 	{
 		$class = $this->getRegisteredClass($model);
 
@@ -67,7 +67,7 @@ class ModelBuilder {
 			throw new \InvalidArgumentException('Can only create Models.');
 		}
 
-		return new $class($this->di, $data);
+		return new $class($this->di, $data, $dirty);
 	}
 
 	/**

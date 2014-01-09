@@ -35,11 +35,18 @@ abstract class Model {
 	/**
 	 * Initialize this model with a set of data to set on the gateway.
 	 *
-	 * @param	mixed[]	$data	An array of initial property values to
-	 * 						set on this model.  The array indexes must
-	 * 						be valid properties on this model's gateway.
+	 * @param	Dependencies	$dependencies	The dependency injection object
+	 * 		which provides access to things like the database and ModelBuilder.
+	 * @param	mixed[]	$data	An array of initial property values to set on
+	 * 		this model.  The array indexes must be valid properties on this
+	 * 		model's gateway.
+	 * @param	boolean	$dirty	(Optional) Should we mark the initial data as
+	 * 		dirty?  If TRUE, all initial data that the model is sent will be
+	 * 		marked as dirty data that will be validated and saved on the next
+	 * 		save call.  Otherwise, it will be treated as clean and assumed
+	 * 		to have come from the database.
 	 */
-	public function __construct(Dependencies $dependencies, array $data = array())
+	public function __construct(Dependencies $dependencies, array $data = array(), $dirty = TRUE)
 	{
 		$this->_dependencies = $dependencies;
 		$this->_builder = $dependencies->getModelBuilder();
@@ -49,6 +56,10 @@ abstract class Model {
 			if (property_exists($this, $property))
 			{
 				$this->{$property} = $value;
+				if ($dirty)
+				{
+					$this->setDirty($property);
+				}
 			}
 		}
 	}
@@ -111,6 +122,17 @@ abstract class Model {
 		throw new \InvalidArgumentException('Attempt to access a non-existent property "' . $name . '" on ' . get_called_class());
 	}
 
+	protected function setDirty($property)
+	{
+		$this->_dirty[$property] = TRUE;
+		return $this;
+	}
+
+	protected function isDirty($property)
+	{
+		return (isset($this->_dirty[$property]) && $this->_dirty[$property]);
+	}
+
 	/**
 	 * Get the model metadata
 	 *
@@ -129,9 +151,15 @@ abstract class Model {
 			return static::$_meta;
 		}
 
-		if ( ! isset (static::$_meta[$key]))
+		// If the key is not set, and is not an optional key such as validation_rules,
+		// throw an exception.
+		if ( ! isset (static::$_meta[$key]) && ! in_array($key, array('validation_rules')))
 		{
 			throw new \DomainException('Missing meta data, "' . $key . '", in ' . get_called_class());
+		}
+		else if ( ! isset (static::$_meta[$key]))
+		{
+			return NULL;
 		}
 
 		return static::$_meta[$key];
@@ -430,16 +458,14 @@ abstract class Model {
 
 			foreach($this->_gateways as $gateway)
 			{
-				$gateway->{$property} = $value;
-			}
-		}
-
-		// Translate the ones that are dirty.
-		foreach ($this->_dirty as $dirty_property)
-		{
-			foreach($this->_gateways as $gateway)
-			{
-				$gateway->setDirty($dirty_property);
+				if (property_exists($gateway, $property)) 
+				{
+					$gateway->{$property} = $value;
+					if ($this->isDirty($property))
+					{
+						$gateway->setDirty($property);
+					}
+				}
 			}
 		}
 	}
