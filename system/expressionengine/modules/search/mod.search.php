@@ -1249,7 +1249,7 @@ class Search {
 		if (strlen(ee()->uri->query_string) < 32)
 		{
 			return ee()->output->show_user_error(
-				'general', 
+				'general',
 				array(lang('invalid_action'))
 			);
 		}
@@ -1290,7 +1290,7 @@ class Search {
 		{
 			// This should be impossible as we already know there are results
 			return ee()->output->show_user_error(
-				'general', 
+				'general',
 				array(lang('invalid_action'))
 			);
 		}
@@ -1309,7 +1309,7 @@ class Search {
 		{
 			// This should also be impossible
 			return ee()->output->show_user_error(
-				'general', 
+				'general',
 				array(lang('invalid_action'))
 			);
 		}
@@ -1609,7 +1609,6 @@ class Search {
 
 		$data['hidden_fields'] = array(
 			'ACT'	=> ee()->functions->fetch_action_id('Search', 'do_search'),
-			'XID'	=> '',
 			'RES'	=> ee()->TMPL->fetch_param('results'),
 			'meta'	=> $meta
 		);
@@ -1777,7 +1776,6 @@ class Search {
 		$data['class'] = ee()->TMPL->form_class;
 		$data['hidden_fields'] = array(
 			'ACT'	=> ee()->functions->fetch_action_id('Search', 'do_search'),
-			'XID'	=> '',
 			'RES'	=> ee()->TMPL->fetch_param('results'),
 			'meta'	=> $meta
 		);
