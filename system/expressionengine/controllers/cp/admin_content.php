@@ -510,38 +510,35 @@ class Admin_content extends CP_Controller {
 		{
 			unset($_POST['channel_id']);
 			unset($_POST['clear_versioning_data']);
-
-			$_POST['channel_url']	  = $this->functions->fetch_site_index();
-			$_POST['channel_lang']	 = $this->config->item('xml_lang');
-
-			// Assign field group if there is only one
-
-			if ($dupe_id != '' && ( ! isset($_POST['field_group']) OR (isset($_POST['field_group']) && ! is_numeric($_POST['field_group']))))
-			{
-				$this->db->select('group_id');
-				$this->db->where('site_id', $this->config->item('site_id'));
-				$query = $this->db->get('field_groups');
-
-				if ($query->num_rows() == 1)
-				{
-					$_POST['field_group'] = $query->row('group_id');
-				}
-			}
-
-			// Insert data
-
-			$_POST['site_id'] = $this->config->item('site_id');
-			$_POST['status_group'] = ($this->input->post('status_group') !== FALSE &&
-				$this->input->post('status_group') != '')
-				? $this->input->post('status_group') : NULL;
-			$_POST['field_group'] = ($this->input->post('field_group') !== FALSE &&
-				$this->input->post('field_group') != '')
-				? $this->input->post('field_group') : NULL;
-
 			$_POST['default_entry_title'] = '';
 			$_POST['url_title_prefix'] = '';
 
 			$channel = $this->builder->make('Channel', $_POST);
+			$channel->channel_url = $this->functions->fetch_site_index();
+			$channel->channel_lang = $this->config->item('xml_lang');
+			$channel->site_id = $this->config->item('site_id');
+
+			// Assign field group if there is only one
+			if ($dupe_id != '' 
+				&& ( $channel->field_group === NULL || ! is_numeric($channel->field_group)))
+			{
+				$field_groups = $this->builder->get('ChannelFieldGroup')
+					->filter('site_id', $channel->site_id)
+					->all();
+
+				if (count($field_groups) === 1)
+				{
+					$channel->field_group = $field_groups[0]->group_id;
+				}
+			}
+
+			// Make sure these are the correct NULL value if they are not set.
+			$channel->status_group = ($channel->status_group !== FALSE 
+				&& $channel->status_group != '')
+				? $channel->status_group : NULL;
+			$channel->field_group = ($channel->field_group !== FALSE &&
+				$channel->field_group != '')
+				? $channel->field_group : NULL;
 
 			// duplicating preferences?
 			if ($dupe_id !== FALSE AND is_numeric($dupe_id))
