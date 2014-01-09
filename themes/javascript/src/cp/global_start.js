@@ -38,14 +38,18 @@ jQuery(document).ready(function () {
 			});
 		}
 
-		// Add XID to EE POST requests
+		// Add CSRF TOKEN to EE POST requests
 		if (type == 'POST' && options.crossDomain === false) {
-			jqXHR.setRequestHeader("X-EEXID", old_xid);
+			jqXHR.setRequestHeader("X-CSRF-TOKEN", old_xid);
 		}
 
 		var defaultHeaderResponses = {
 			// Refresh xids
 			xid: function(new_xid) {
+				EE.cp.xid.set(new_xid);
+			},
+
+			'csrf-token': function(new_xid) {
 				EE.cp.xid.set(new_xid);
 			},
 
@@ -753,7 +757,9 @@ EE.cp.xid = (function() {
 
 	function setXid(new_xid) {
 		$('input[name="XID"]').val(new_xid);
+		$('input[name="CSRF_TOKEN"]').val(new_xid);
 		EE.XID = new_xid;
+		EE.CSRF_TOKEN = new_xid
 	}
 
 	function refreshXID(callback) {
