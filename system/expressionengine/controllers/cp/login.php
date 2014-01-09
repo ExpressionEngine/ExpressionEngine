@@ -668,7 +668,7 @@ class Login extends CP_Controller {
 		}
 
 		$this->output->send_ajax_response(array(
-			'xid'	  => XID_SECURE_HASH,
+			'xid'	  => CSRF_TOKEN,
 			'message' => 'refresh'
 		));
 	}

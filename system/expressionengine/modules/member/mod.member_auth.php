@@ -148,6 +148,8 @@ class Member_auth extends Member {
 			ee()->output->show_user_error('general', $line);
 		}
 
+		$csrf_token = ee()->csrf->refresh_token();
+
 		$success = '';
 
 		// Log me in.
@@ -535,9 +537,12 @@ class Member_auth extends Member {
 	 */
 	public function member_logout()
 	{
-		// Check Form Hash
-		$xid = ee()->input->get('XID') ? ee()->input->get('XID') : '';
-		if ( ! ee()->security->secure_forms_check($xid))
+		// Check CSRF Token
+		$token = FALSE;
+		if ( ! $token) $token = ee()->input->get('CSRF_TOKEN');
+		if ( ! $token) $token = ee()->input->get('XID');
+
+		if ($token != CSRF_TOKEN)
 		{
 			return ee()->output->show_user_error('general', array(lang('not_authorized')));
 		}
@@ -551,6 +556,8 @@ class Member_auth extends Member {
 		ee()->session->destroy();
 
 		ee()->input->delete_cookie('read_topics');
+
+		$csrf_token = ee()->csrf->refresh_token();
 
 		/* -------------------------------------------
 		/* 'member_member_logout' hook.
