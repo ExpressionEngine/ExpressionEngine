@@ -244,7 +244,7 @@ public function parse_rules($rules)
 				$index = $pos + 7;
 				$regex = substr($matches[0], 6, 1);
 				$valid = @preg_match("/$regex/", null);
-				while ($valid == False)
+				while ($valid === False)
 				{
 					$regex .= substr($rules, $index, 1);
 					$valid = @preg_match("/$regex/", null);
@@ -255,6 +255,7 @@ public function parse_rules($rules)
 				}
 				$matches[0] = "regex[{$regex}]|";
 				$matches['args'] = $regex;
+				$args[] = $regex;
 			}
 			elseif( ! empty($matches['args']))
 			{

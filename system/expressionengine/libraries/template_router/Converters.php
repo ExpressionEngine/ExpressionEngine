@@ -26,6 +26,7 @@ require_once APPPATH.'libraries/template_router/converters/Max_length.php';
 require_once APPPATH.'libraries/template_router/converters/Min_length.php';
 require_once APPPATH.'libraries/template_router/converters/Natural.php';
 require_once APPPATH.'libraries/template_router/converters/Numeric.php';
+require_once APPPATH.'libraries/template_router/converters/Regex.php';
 
 // ------------------------------------------------------------------------
 
@@ -55,6 +56,7 @@ class EE_Template_router_converters {
 		$this->register('min_length', 'EE_template_router_min_length_converter');
 		$this->register('natural', 'EE_template_router_natural_converter');
 		$this->register('numeric', 'EE_template_router_numeric_converter');
+		$this->register('regex', 'EE_template_router_regex_converter');
 	}
 
 	// ------------------------------------------------------------------------
