@@ -54,13 +54,12 @@ class EE_Security extends CI_Security {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Check and Validate Form XID in Post
+	 * Check and Validate Form CSRF tokens
 	 *
-	 * Checks the post data for a form XID and then validates that XID.
-	 * The XID -- regardless of whether or not it checks out as valid
-	 * -- will then be deleted and a new one generated.  If the validation
-	 * check fails, we'll return false and the caller should then show
-	 * an appropriate error.
+	 * Checks any POST and PUT data for a valid csrf tokens. Sometimes requests
+	 * are skipped, so we  The main
+	 * processing happens in the csrf library which differentiates between
+	 * logged in and logged out users.
 	 *
 	 * @access public
 	 * @return boolean FALSE if there is an invalid XID, TRUE if valid or no XID
@@ -100,11 +99,6 @@ class EE_Security extends CI_Security {
 
 		// Retrieve the current token
 		$csrf_token	= ee()->csrf->get_user_token();
-
-		// Remove csrf information from the post array to make this feature
-		// completely transparent to the developer.
-		unset($_POST['XID']);
-		unset($_POST['CSRF_TOKEN']);
 
 		// Set the constant and the legacy constants. Le sigh.
 		define('CSRF_TOKEN', $csrf_token);
