@@ -58,7 +58,7 @@ class Grid_parser {
 	{
 		// Bail out if there are no grid fields present to parse
 		if ( ! preg_match_all(
-				"/".LD.'\/?('.preg_quote($pre_parser->prefix()).'(?:(?:'.implode('|', array_flip($grid_fields)).'):?)+)\b([^}{]*)?'.RD."/",
+				"/".LD.'\/?('.preg_quote($pre_parser->prefix()).'(?:(?:'.implode('|', array_flip($grid_fields)).'):?))\b([^}{]*)?'.RD."/",
 				$tagdata,
 				$matches,
 				PREG_SET_ORDER)
@@ -155,6 +155,19 @@ class Grid_parser {
 		$params = $entry_data['params'];
 		$entry_data = $entry_data[$entry_id];
 		$field_name = $this->grid_field_names[$field_id];
+
+		// Fix for when there is a Grid field in a Channel Entries loop, but
+		// the same Grid field is also being brought in via a Relationships
+		// field in the same loop, the first Grid field is not parsed because
+		// it was replaced in the $grid_field_names array by the tag name in
+		// the Relationships tag pair; a better fix is having a separate parser
+		// instance for each instance of the Channel Entries parser but this
+		// will have to do for now
+		if (strpos($tagdata, $field_name) === FALSE)
+		{
+			$field_name = substr($field_name, strrpos($field_name, ':') + 1);
+			$this->grid_field_names[$field_id] = $field_name;
+		}
 
 		// Add field_row_index and field_row_count variables to get the index
 		// and count of rows in the field regardless of front-end output
@@ -375,6 +388,12 @@ class Grid_parser {
 			$grid_tagdata .= $this->_parse_row($channel_row, $field_id, $grid_row, $row, $content_type);
 		}
 
+		// Backspace parameter
+		if (isset($params['backspace']) && $params['backspace'] > 0)
+		{
+			$grid_tagdata = substr($grid_tagdata, 0, -$params['backspace']);
+		}
+
 		return $grid_tagdata;
 	}
 
@@ -397,7 +416,7 @@ class Grid_parser {
 
 		// Gather the variables to parse
 		if ( ! preg_match_all(
-				"/".LD.'?[^\/]((?:(?:'.preg_quote($field_name).'):?)+)\b([^}{]*)?'.RD."/",
+				"/".LD.'?[^\/]((?:(?:'.preg_quote($field_name).'):?))\b([^}{]*)?'.RD."/",
 				$tagdata,
 				$matches,
 				PREG_SET_ORDER) || empty($row)

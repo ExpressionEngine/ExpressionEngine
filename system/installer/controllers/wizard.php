@@ -24,7 +24,7 @@
  */
 class Wizard extends CI_Controller {
 
-	var $version			= '2.7.2';	// The version being installed
+	var $version			= '2.7.3';	// The version being installed
 	var $installed_version	= ''; 		// The version the user is currently running (assuming they are running EE)
 	var $minimum_php		= '5.2.4';	// Minimum version required to run EE
 	var $schema				= NULL;		// This will contain the schema object with our queries
@@ -2380,7 +2380,8 @@ PAPAYA;
 			'cookie_domain'					=>	'',
 			'cookie_path'					=>	'',
 			'cookie_prefix'					=>	'',
-			'user_session_type'				=>	'c',
+			'cookie_httponly'				=>	'y',
+			'user_session_type'				=>	'c', 
 			'admin_session_type'			=>	'cs',
 			'allow_username_change'			=>	'y',
 			'allow_multi_logins'			=>	'y',

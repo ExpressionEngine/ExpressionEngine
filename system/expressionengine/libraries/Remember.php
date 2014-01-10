@@ -296,7 +296,7 @@ class Remember {
 	protected function _delete_cookie()
 	{
 		$this->cookie_value = FALSE;
-		ee()->functions->set_cookie($this->cookie);
+		ee()->input->delete_cookie($this->cookie);
 	}
 
 	// --------------------------------------------------------------------
@@ -309,7 +309,7 @@ class Remember {
 	protected function _set_cookie($value, $expiration)
 	{
 		$this->cookie_value = $value;
-		ee()->functions->set_cookie($this->cookie, $value, $expiration);
+		ee()->input->set_cookie($this->cookie, $value, $expiration);
 	}
 	
 	// --------------------------------------------------------------------

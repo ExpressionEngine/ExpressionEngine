@@ -964,17 +964,36 @@ class Channel {
 		/**  Only Entries with Pages
 		/**------*/
 
-		if (ee()->TMPL->fetch_param('show_pages') !== FALSE && in_array(ee()->TMPL->fetch_param('show_pages'), array('only', 'no')) && ($pages = ee()->config->item('site_pages')) !== FALSE)
+		if (ee()->TMPL->fetch_param('show_pages') !== FALSE && in_array(ee()->TMPL->fetch_param('show_pages'), array('only', 'no')))
 		{
 			$pages_uris = array();
 
-			foreach ($pages as $data)
+			foreach (ee()->TMPL->site_ids as $site_id)
 			{
-				$pages_uris += $data['uris'];
+				if ($site_id != ee()->config->item('site_id'))
+				{
+					$pages = ee()->config->site_pages($site_id);
+				}
+				else
+				{
+					$pages = ee()->config->item('site_pages');
+				}
+
+				if (empty($pages))
+				{
+					continue;
+				}
+
+				foreach ($pages as $data)
+				{
+					$pages_uris += $data['uris'];
+				}
 			}
 
 			if (count($pages_uris) > 0 OR ee()->TMPL->fetch_param('show_pages') == 'only')
 			{
+				$pages_uri_ids = array_keys($pages_uris);
+
 				// consider entry_id
 				if (ee()->TMPL->fetch_param('entry_id') !== FALSE)
 				{
@@ -992,29 +1011,30 @@ class Channel {
 					{
 						if ($not === TRUE)
 						{
-							$entry_id = implode('|', array_diff(array_flip($pages_uris), explode('|', $ids)));
+							$entry_id = implode('|', array_diff(array_flip($pages_uris), $ids));
 						}
 						else
 						{
-							$entry_id = implode('|',array_diff($ids, array_diff($ids, array_flip($pages_uris))));
+							$entry_id = implode('|',array_diff($ids, array_diff($ids, $pages_uri_ids)));
 						}
 					}
 					else
 					{
 						if ($not === TRUE)
 						{
-							$entry_id = "not {$entry_id}|".implode('|', array_flip($pages_uris));
+							$entry_id = "not {$entry_id}|".implode('|', $pages_uri_ids);
 						}
 						else
 						{
-							$entry_id = implode('|',array_diff($ids, array_flip($pages_uris)));
+							$entry_id = implode('|',array_diff($ids, $pages_uri_ids));
 						}
 					}
 				}
 				else
 				{
-					$entry_id = ((ee()->TMPL->fetch_param('show_pages') == 'no') ? 'not ' : '').implode('|', array_flip($pages_uris));
+					$entry_id = ((ee()->TMPL->fetch_param('show_pages') == 'no') ? 'not ' : '').implode('|', $pages_uri_ids);
 				}
+
 
 				//  No pages and show_pages only
 				if ($entry_id == '' && ee()->TMPL->fetch_param('show_pages') == 'only')
@@ -4980,6 +5000,7 @@ class Channel {
 		{
 			return ee()->TMPL->no_results();
 		}
+
 
 		$this->query = ee()->db->query($this->sql);
 

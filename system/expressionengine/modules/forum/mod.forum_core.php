@@ -2702,7 +2702,7 @@ class Forum_Core extends Forum {
 		if (ee()->session->userdata('member_id') == 0)
 		{
 			$expire = 60*60*24*365;
-			ee()->functions->set_cookie('forum_topics', serialize($read_topics), $expire);
+			ee()->input->set_cookie('forum_topics', serialize($read_topics), $expire);
 		}
 		else
 		{
@@ -6241,7 +6241,7 @@ class Forum_Core extends Forum {
 			if (ee()->session->userdata('member_id') == 0)
 			{
 				$expire = 60*60*24*365;
-				ee()->functions->set_cookie('forum_topics', serialize($read_topics), $expire);
+				ee()->input->set_cookie('forum_topics', serialize($read_topics), $expire);
 			}
 		}
 

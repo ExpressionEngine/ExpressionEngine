@@ -41,7 +41,11 @@ system/expressionengine/third_party/*
 !system/expressionengine/third_party/nannerbanner
 !system/expressionengine/third_party/ellislab_high_ascii_decode
 
-system/expressionengine/language/deutsch/*
+system/codeigniter/system/language/*
+!system/codeigniter/system/language/english/*
+
+system/expressionengine/language/*
+!system/expressionengine/language/english/*
 
 ^images/(captchas|avatars/uploads|forum_attachments|member_photos|signature_attachments|pm_attachments|uploads)/(?!index\.html)
 

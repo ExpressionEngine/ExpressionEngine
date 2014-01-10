@@ -128,7 +128,11 @@ class Date_ft extends EE_Fieldtype {
 		}
 		else
 		{
-			if ( ! $field_data)
+			// primarily handles default expiration, comment expiration, etc.
+			// in this context 'offset' is unrelated to localization.
+			$offset = isset($this->settings['default_offset']) ? $this->settings['default_offset'] : 0;
+
+			if ( ! $field_data && ! $offset)
 			{
 				$field_data = $date;
 
@@ -142,6 +146,11 @@ class Date_ft extends EE_Fieldtype {
 				if (isset($this->settings['field_dt']) AND $this->settings['field_dt'] != '')
 				{
 					$localize = $this->settings['field_dt'];
+				}
+
+				if ( ! $field_data && $offset)
+				{
+					$field_data = $date + $offset;
 				}
 
 				// doing it in here so that if we don't have field_data
