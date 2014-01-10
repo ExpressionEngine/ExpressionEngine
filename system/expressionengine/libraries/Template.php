@@ -1891,22 +1891,6 @@ class EE_Template {
 	/**
 	 * 404 Page
 	 *
-	 * Either shows the 404 template if there is one, or generates a generic 404
-	 *
-	 * @return	string
-	 */
-	protected function display_404()
-	{
-		$this->log_item("404 Page Returned");
-		ee()->output->set_status_header(404);
-		echo '<html><head><title>404 Page Not Found</title></head><body><h1>Status: 404 Page Not Found</h1></body></html>';
-		exit;
-	}
-	// --------------------------------------------------------------------
-
-	/**
-	 * 404 Page
-	 *
 	 * If users do not have a 404 template specified this is what gets shown
 	 *
 	 * @return	string
