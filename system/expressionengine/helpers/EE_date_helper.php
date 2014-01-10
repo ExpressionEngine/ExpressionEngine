@@ -132,9 +132,6 @@ if ( ! function_exists('timespan'))
 {
 	function timespan($timestamp = 0, $referent = NULL, $units = NULL, $depth = NULL)
 	{
-		$CI =& get_instance();
-		$CI->lang->load('date');
-
 		$date_parts = array();
 		$str = '';
 
@@ -144,11 +141,11 @@ if ( ! function_exists('timespan'))
 		{
 			if ($parts[$key] == 1)
 			{
-				$date_parts[] = $parts[$key].' '.$CI->lang->line(rtrim($key, 's'));
+				$date_parts[] = $parts[$key].' '.lang(rtrim($key, 's'));
 			}
 			elseif ($parts[$key] > 1)
 			{
-				$date_parts[] = $parts[$key].' '.$CI->lang->line(rtrim($key));
+				$date_parts[] = $parts[$key].' '.lang(rtrim($key));
 			}
 		}
 
