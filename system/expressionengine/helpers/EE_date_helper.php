@@ -157,7 +157,7 @@ if ( ! function_exists('timespan'))
 		if (count($date_parts) > 1)
 		{
 			$i = count($date_parts) - 1;
-			$date_parts[$i] = 'and '.$date_parts[$i];
+			$date_parts[$i] = lang('and').' '.$date_parts[$i];
 		}
 
 		$str = implode(', ', $date_parts);

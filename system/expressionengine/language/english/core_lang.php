@@ -57,6 +57,9 @@ $lang = array(
 'dot' =>
 'dot',
 
+'and' =>
+'and',
+
 'or' =>
 'or',
 
