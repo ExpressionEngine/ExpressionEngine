@@ -32,16 +32,16 @@
  * @access	public
  * @param	int			$timestamp	Unix timestamp of the date for calculation
  * @param	int			$referent	Unix timestamp of the date being compared against (default: time())
- * @param	string[]	$units		An array of units (date parts) to calculate
+ * @param	string[]	$units_to_calculate		An array of units (date parts) to calculate
  * @return	int[]	An associative array of date parts
  *  	e.g. 'minutes'  => '1'
  * 		     'seconds'  => '3'
  */
 if ( ! function_exists('timespan_parts'))
 {
-	function timespan_parts($timestamp = 0, $referent = NULL, $units = NULL)
+	function timespan_parts($timestamp = 0, $referent = NULL, $units_to_calculate = NULL)
 	{
-		$date_parts = array(
+		$units = array(
 			'years'   => 0,
 			'months'  => 0,
 			'weeks'   => 0,
@@ -62,55 +62,55 @@ if ( ! function_exists('timespan_parts'))
 			$referent = time();
 		}
 
-		if ( ! is_array($units))
+		if ( ! is_array($units_to_calculate))
 		{
-			$units = array('years', 'months', 'weeks', 'days', 'hours', 'minutes', 'seconds');
+			$units_to_calculate = array('years', 'months', 'weeks', 'days', 'hours', 'minutes', 'seconds');
 		}
 
 		$delta = abs($timestamp - $referent);
 
-		if (in_array('years', $units))
+		if (in_array('years', $units_to_calculate))
 		{
-			$date_parts['years'] = (int) floor($delta / 31536000);
-			$delta -= $date_parts['years'] * 31536000;
+			$units['years'] = (int) floor($delta / 31536000);
+			$delta -= $units['years'] * 31536000;
 		}
 
-		if (in_array('months', $units))
+		if (in_array('months', $units_to_calculate))
 		{
-			$date_parts['months'] = (int) floor($delta / 2628000);
-			$delta -= $date_parts['months'] * 2628000;
+			$units['months'] = (int) floor($delta / 2628000);
+			$delta -= $units['months'] * 2628000;
 		}
 
-		if (in_array('weeks', $units))
+		if (in_array('weeks', $units_to_calculate))
 		{
-			$date_parts['weeks'] = (int) floor($delta / 604800);
-			$delta -= $date_parts['weeks'] * 604800;
+			$units['weeks'] = (int) floor($delta / 604800);
+			$delta -= $units['weeks'] * 604800;
 		}
 
-		if (in_array('days', $units))
+		if (in_array('days', $units_to_calculate))
 		{
-			$date_parts['days'] = (int) floor($delta / 86400);
-			$delta -= $date_parts['days'] * 86400;
+			$units['days'] = (int) floor($delta / 86400);
+			$delta -= $units['days'] * 86400;
 		}
 
-		if (in_array('hours', $units))
+		if (in_array('hours', $units_to_calculate))
 		{
-			$date_parts['hours'] = (int) floor($delta / 3600);
-			$delta -= $date_parts['hours'] * 3600;
+			$units['hours'] = (int) floor($delta / 3600);
+			$delta -= $units['hours'] * 3600;
 		}
 
-		if (in_array('minutes', $units))
+		if (in_array('minutes', $units_to_calculate))
 		{
-			$date_parts['minutes'] = (int) floor($delta / 60);
-			$delta -= $date_parts['minutes'] * 60;
+			$units['minutes'] = (int) floor($delta / 60);
+			$delta -= $units['minutes'] * 60;
 		}
 
-		if (in_array('seconds', $units))
+		if (in_array('seconds', $units_to_calculate))
 		{
-			$date_parts['seconds'] = $delta;
+			$units['seconds'] = $delta;
 		}
 
-		return $date_parts;
+		return $units;
 	}
 }
 
@@ -123,46 +123,57 @@ if ( ! function_exists('timespan_parts'))
  *
  * @access	public
  * @param	int			$timestamp	Unix timestamp of the date for calculation
- * @param	int			$referent	Unix timestamp of the date being compared against (default: time())
- * @param	string[]	$units		An array of units (date parts) to calculate
+ * @param	int			$referent	Unix timestamp of the date being compared
+ *                                  against (default: time())
+ * @param	string		$singular	The text to use when the calculated value
+ *                                  of a unit is 1
+ * @param	string		$less_than	The text to use when the timespan is less
+ *                                  than the smallest unit being calculated
+ * @param	string[]	$units_to_calculate		An array of units (date parts)
+ *                                              to calculate
  * @param	int			$depth		Determines how many date parts we use
  * @return	string	A human readable relative date string
  */
 if ( ! function_exists('timespan'))
 {
-	function timespan($timestamp = 0, $referent = NULL, $units = NULL, $depth = NULL)
+	function timespan($timestamp = 0, $referent = NULL, $singular = 'one', $less_than = 'less than', $units_to_calculate = NULL, $depth = NULL)
 	{
-		$date_parts = array();
-		$str = '';
+		$units = array();
 
-		$parts = timespan_parts($timestamp, $referent, $units);
+		$calculated_units = timespan_parts($timestamp, $referent, $units_to_calculate);
 
 		foreach (array('years', 'months', 'weeks', 'days', 'hours', 'minutes', 'seconds') as $key)
 		{
-			if ($parts[$key] == 1)
+			if ($calculated_units[$key] == 1)
 			{
-				$date_parts[] = $parts[$key].' '.lang(rtrim($key, 's'));
+				$units[] = $singular.' '.lang(rtrim($key, 's'));
 			}
-			elseif ($parts[$key] > 1)
+			elseif ($calculated_units[$key] > 1)
 			{
-				$date_parts[] = $parts[$key].' '.lang(rtrim($key));
+				$units[] = $calculated_units[$key].' '.lang(rtrim($key));
 			}
+		}
+
+		if (empty($units))
+		{
+			$unit = is_array($units_to_calculate) ? end($units_to_calculate) : 'seconds';
+			return $less_than.' '.$singular.' '.lang(rtrim($unit, 's'));
 		}
 
 		if (is_numeric($depth))
 		{
-			$date_parts = array_slice($date_parts, 0, $depth);
+			$units = array_slice($units, 0, $depth);
 		}
 
-		if (count($date_parts) > 1)
+		if (count($units) > 1)
 		{
-			$i = count($date_parts) - 1;
-			$date_parts[$i] = lang('and').' '.$date_parts[$i];
+			$i = count($units) - 1;
+			$units[$i] = lang('and').' '.$units[$i];
 		}
 
-		$str = implode(', ', $date_parts);
+		$str = implode(', ', $units);
 
-		if (count($date_parts) < 3)
+		if (count($units) < 3)
 		{
 			$str = str_replace(',', '', $str);
 		}
