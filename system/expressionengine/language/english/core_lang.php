@@ -176,6 +176,12 @@ Confirm the fieldtype file is located in the expressionengine/third_party/ direc
 'template_load_order' =>
 'Template load order',
 
+'error_multiple_layouts' =>
+'Multiple Layouts found, please ensure you only have one layout tag per template',
+
+'error_layout_too_late' =>
+'Plugin or module tag found before layout declaration. Please move the layout tag to the top of your template.',
+
 //----------------------------
 // Email
 //----------------------------

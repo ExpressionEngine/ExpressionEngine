@@ -28,6 +28,191 @@ class EE_Input extends CI_Input {
 
 
 	// --------------------------------------------------------------------
+
+	/**
+ 	 * Delete a Cookie
+	 * 
+	 * Delete a cookie with the given name.  Prefix will be automatically set
+	 * from the configuation file, as will domain and path.  Httponly must be
+	 * must be equal to the value used when setting the cookie.  
+	 * 
+	 * @param	string	The name of the cookie to be deleted.
+	 * 
+	 * @return	boolean FALSE if output has already been sent (and thus the 
+	 * 						cookie not set), TRUE otherwise.
+	 */
+	public function delete_cookie($name)
+	{
+		$data = array(
+			'name' => $name,
+			'value' => '',
+			'expire' => ee()->localize->now - 86500,
+		);
+	
+		return $this->_set_cookie($data);
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Set a Cookie
+	 *
+	 * Set a cookie with a particular name, value and expiration.  Determine
+	 * whether the cookie should be HTTP only or not.  Domain, path and prefix
+	 * are kept as parameters to maintain compatibility with
+	 * CI_Input::set_cookie() however, they are ignored in favor of the
+	 * configuration file values. Expiration may be set to 0 to create a cookie
+	 * that expires at the end of the session (when the browser closes), or
+	 * given a time in seconds to indicate that a cookie should expire that
+	 * many seconds from the moment it is set.
+	 * 
+	 * @param	string	The name to assign the cookie.  This will be prefixed with
+	 * 						the value from the config file or exp_.
+	 * @param	string	The value to assign the cookie. This will be 
+	 * 						automatically URL encoded when set and decoded
+	 * 						when retrieved.
+	 * @param	string	A time in seconds after which the cookie should expire.
+	 * 						The cookie will be set to expire this many seconds
+	 * 						after it is set.
+	 * @param	string	The domain.  IGNORED  Kept only for consistency with
+	 *						CI_Input::set_cookie(). Set from config.
+	 * @param	string	The path.  IGNORED  Kept only for consistency with
+	 *						CI_Input::set_cookie(). Set from config.
+	 * @param	string	The prefix.  IGNORED  Kept only for consistency with
+	 *						CI_Input::set_cookie(). Set from config.
+	 * 
+	 * @return	boolean	FALSE if output has already been sent, TRUE otherwise.	
+	 */
+	public function set_cookie($name = '', $value = '', $expire = '', $domain = '', $path = '/', $prefix = '')
+	{
+
+		$data = array(
+			'name' => $name,
+			'value' => $value,
+			'expire' => $expire,
+			// We have to set these so we can 
+			// check them and give the deprecation
+			// warning.  However, they will be
+			// ignored.
+			'domain' => $domain,
+			'path' => $path,
+			'prefix' => $prefix
+		);
+
+		// If name is an array, then most of the values we just set in the data array
+		// are probably their defaults.  Override the defaults with whatever happens
+		// to be in the array.  Yes, this is ugly as all get out.
+		if (is_array($name))
+		{
+			foreach (array('value', 'expire', 'name', 'domain', 'path', 'prefix') as $item)
+			{
+				if (isset($name[$item]))
+				{
+					$data[$item] = $name[$item];
+				}
+			}
+		}
+
+		if ($data['domain'] !== '' || $data['path'] !== '/' || $data['prefix'] !== '')
+		{
+			ee()->load->library('logger');
+			ee()->logger->developer('Warning: domain, path and prefix must be set in EE\'s configuration files and cannot be overriden in set_cookie.');
+		}
+
+
+		// Clean up the value.
+		$data['value'] = stripslashes($data['value']);
+
+		// Handle expiration dates.  
+		if ( ! is_numeric($data['expire']))
+		{
+			ee()->load->library('logger');
+			ee()->logger->deprecated('2.8', 'EE_Input::delete_cookie()');
+			$data['expire'] = ee()->localize->now - 86500;
+		}
+		else if ($data['expire'] > 0)
+		{
+			$data['expire'] = ee()->localize->now + $expire;
+		}
+		else 
+		{
+			$data['expire'] = 0;
+		}
+		
+		$this->_set_cookie($data);
+	}
+
+	/**
+	 * Set a Cookie
+	 * 
+	 * Protected method called from EE_Input::set_cookie() and 
+	 * EE_Input::delete_cookie(). Handles the common config file logic, calls 
+	 * the set_cookie_end hook and sets the cookie. 
+	 *
+	 * Must recieve name, value, and expire in the parameter array or 
+	 * will throw an exception.
+ 	 * 
+	 * @param	mixed[]	The array of data containing name, value, expire and 
+	 * 						httponly.  Must contain those parameters.
+	 * @return	bool	If output exists prior to calling this method it will 
+	 * 						fail with FALSE, otherwise it will return TRUE.  
+	 * 						This does not indicate whether the user accepts the 
+	 * 						cookie.
+	 */
+	protected function _set_cookie(array $data)
+	{
+		// Always assume we'll forget and catch ourselves.  The earlier you catch this sort of screw up the better.
+		if( ! isset($data['name']) || ! isset($data['value']) || ! isset($data['expire']))
+		{
+			throw new RuntimeException('EE_Input::_set_cookie() is missing key data.');
+		}
+
+		// Set prefix, path and domain. We'll pull em out of config.
+		if (REQ == 'CP' && ee()->config->item('multiple_sites_enabled') == 'y')
+		{
+			$data['prefix'] = ( ! ee()->config->cp_cookie_prefix) ? 'exp_' : ee()->config->cp_cookie_prefix;
+			$data['path']	= ( ! ee()->config->cp_cookie_path) ? '/' : ee()->config->cp_cookie_path;
+			$data['domain'] = ( ! ee()->config->cp_cookie_domain) ? '' : ee()->config->cp_cookie_domain;
+			$data['httponly'] = ( ! ee()->config->cp_cookie_httponly) ? 'y' : ee()->config->cp_cookie_httponly;
+		}
+		else
+		{
+			$data['prefix'] = ( ! ee()->config->item('cookie_prefix')) ? 'exp_' : ee()->config->item('cookie_prefix').'_';
+			$data['path']	= ( ! ee()->config->item('cookie_path'))	? '/'	: ee()->config->item('cookie_path');
+			$data['domain'] = ( ! ee()->config->item('cookie_domain')) ? '' : ee()->config->item('cookie_domain');
+			$data['httponly'] = ( ! ee()->config->item('cookie_httponly')) ? 'y' : ee()->config->item('cookie_httponly');
+		}
+		
+		//  Turn httponly into a true boolean.
+		$data['httponly'] = ($data['httponly'] == 'y' ? TRUE : FALSE);
+	
+		// Deal with secure cookies.	
+		$data['secure_cookie'] = (ee()->config->item('cookie_secure') === TRUE) ? 1 : 0;
+		if ($data['secure_cookie'])
+		{
+			$req = isset($_SERVER['HTTPS']) ? $_SERVER['HTTPS'] : FALSE;
+			if ( ! $req OR $req == 'off')
+			{
+				return FALSE;
+			}
+		}
+
+		/* -------------------------------------------
+		/* 'set_cookie_end' hook.
+		/*  - Take control of Cookie setting routine
+		/*  - Added EE 2.5.0
+		*/
+			ee()->extensions->call('set_cookie_end', $data);
+			if (ee()->extensions->end_script === TRUE) return;
+		/*
+		/* -------------------------------------------*/
+
+					
+		return setcookie($data['prefix'].$data['name'], $data['value'], $data['expire'], 
+			$data['path'], $data['domain'], $data['secure_cookie'], $data['httponly']);
+	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * Fetch an item from the COOKIE array
