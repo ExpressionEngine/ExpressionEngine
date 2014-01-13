@@ -1058,6 +1058,24 @@ class Search {
 			}
 		}
 
+		// -------------------------------------------
+	    // 'channel_search_modify_query' hook.
+	    //  - Take the whole query string array, do what you wish
+	    //  - added 2.7.x
+	    //
+	        if (ee()->extensions->active_hook('channel_search_modify_query') === TRUE)
+	        {
+	            $modified_sql = ee()->extensions->call('channel_search_modify_query', $sql);
+
+	            // Make sure its valid
+	            if (is_string($modified_sql) && $modified_sql != '') $sql = $modified_sql;
+
+	            // This will save the custom query and the total results to exp_search
+	            if (ee()->extensions->end_script === TRUE) return $sql;
+	        }
+	    //
+	    // -------------------------------------------
+
 		/** ----------------------------------------------
 		/**  Are there results?
 		/** ----------------------------------------------*/
