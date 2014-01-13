@@ -56,7 +56,7 @@ class EE_Route {
 	 * @access public
 	 * @return void
 	 */
-	public function __construct($route, $required = False)
+	public function __construct($route, $required = FALSE)
 	{
 		require_once APPPATH.'libraries/template_router/Segment.php';
 		require_once APPPATH.'libraries/template_router/Converters.php';
@@ -205,7 +205,7 @@ class EE_Route {
 		if ($pos < $end)
 		{
 			$remainder = substr($route, $pos);
-			if ( (strpos($remainder, '{') === False && strpos($remainder, '}')) === False)
+			if ( (strpos($remainder, '{') === FALSE && strpos($remainder, '}')) === FALSE)
 			{
 				throw new Exception(lang('invalid_route') . $route);
 			}
@@ -244,7 +244,7 @@ public function parse_rules($rules)
 				$index = $pos + 7;
 				$regex = substr($matches[0], 6, 1);
 				$valid = @preg_match("/$regex/", null);
-				while ($valid === False)
+				while ($valid === FALSE)
 				{
 					$regex .= substr($rules, $index, 1);
 					$valid = @preg_match("/$regex/", null);

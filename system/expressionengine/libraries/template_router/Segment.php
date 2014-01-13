@@ -52,7 +52,7 @@ class EE_Route_segment {
 	public function validate($val) {
 		$regex = "/" . $this->validator() . "/i";
 		$result = preg_match($regex, $val);
-		if ($result === False)
+		if ($result === FALSE)
 		{
 			throw new Exception(lang('validation_failed'));
 		}

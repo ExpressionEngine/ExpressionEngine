@@ -116,7 +116,7 @@ class EE_Template_Router extends CI_Router {
 	 * @access public
 	 * @return EE_Route The instantiated route object.
 	 */
-	public function create_route($route, $required = False)
+	public function create_route($route, $required = FALSE)
 	{
 		return new EE_Route($route, $required);
 	}
