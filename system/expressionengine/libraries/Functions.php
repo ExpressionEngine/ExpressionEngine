@@ -2598,11 +2598,6 @@ class EE_Functions {
 				while(isset($x[$i]));
 			}
 
-			// This should prevent, for example, the variable 'comment' from
-			// overwriting the variable 'comments'.
-
-			uksort($data, array($this, 'reverse_key_sort'));
-
 			if ($safety == 'y')
 			{
 				// Make sure we have the same amount of opening conditional tags
@@ -2692,7 +2687,7 @@ class EE_Functions {
 						//     {if "value" OR "value"_global}Hello world{/if}
 						//
 						// ..and triggers our Invalid EE Conditional Variable error.
-						$match = preg_replace("/(?<![\w-])$key(?![\w-])/", $value, $match);
+						$match = preg_replace("/(?<![\w-])".preg_quote($key)."(?![\w-])/", $value, $match);
 					}
 				}
 			}
