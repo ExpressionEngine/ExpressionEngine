@@ -397,11 +397,11 @@ class EE_Session {
 		$this->userdata['session_id']	= $this->sdata['session_id'];
 		$this->userdata['fingerprint']	= $this->sdata['fingerprint'];
 		$this->userdata['site_id']		= ee()->config->item('site_id');
-
-		ee()->functions->set_cookie($this->c_session, $this->sdata['session_id'], $this->session_length);
-		ee()->functions->set_cookie($this->c_expire, time()+$this->session_length, $this->session_length);
-
-		ee()->db->query(ee()->db->insert_string('exp_sessions', $this->sdata));
+		
+		ee()->input->set_cookie($this->c_session, $this->sdata['session_id'], $this->session_length);	
+		ee()->input->set_cookie($this->c_expire, time()+$this->session_length, $this->session_length);
+		
+		ee()->db->query(ee()->db->insert_string('exp_sessions', $this->sdata));	
 
 		return $this->sdata['session_id'];
 	}
@@ -476,10 +476,10 @@ class EE_Session {
 		$this->fetch_guest_data();
 
 		ee()->remember->delete();
-		ee()->functions->set_cookie($this->c_session);
-		ee()->functions->set_cookie($this->c_expire);
-		ee()->functions->set_cookie($this->c_anon);
-		ee()->functions->set_cookie('tracker');
+		ee()->input->delete_cookie($this->c_session);
+		ee()->input->delete_cookie($this->c_expire);	
+		ee()->input->delete_cookie($this->c_anon);
+		ee()->input->delete_cookie('tracker'); 
 	}
 
 	// --------------------------------------------------------------------
@@ -528,7 +528,7 @@ class EE_Session {
 		if ( ! ee()->input->cookie('last_visit'))
 		{
 			$this->userdata['last_visit'] = ee()->localize->now-($expire*10);
-			ee()->functions->set_cookie('last_visit', $this->userdata['last_visit'], $expire);
+			ee()->input->set_cookie('last_visit', $this->userdata['last_visit'], $expire);		
 		}
 		else
 		{
@@ -541,11 +541,11 @@ class EE_Session {
 		if (($this->sdata['last_activity'] + $this->session_length) < ee()->localize->now)
 		{
 			$this->userdata['last_visit'] = $this->sdata['last_activity'];
-			ee()->functions->set_cookie('last_visit', $this->userdata['last_visit'], $expire);
+			ee()->input->set_cookie('last_visit', $this->userdata['last_visit'], $expire);	
 		}
 
 		// Update the last activity with each page load
-		ee()->functions->set_cookie('last_activity', ee()->localize->now, $expire);
+		ee()->input->set_cookie('last_activity', ee()->localize->now, $expire);			
 	}
 
 	// --------------------------------------------------------------------
@@ -943,14 +943,14 @@ class EE_Session {
 		}
 
 		if (REQ == 'PAGE')
-		{
-			ee()->functions->set_cookie('tracker', serialize($tracker), '0');
+		{		
+			ee()->input->set_cookie('tracker', serialize($tracker), '0');
 		}
 
 		return $tracker;
 	}
 
-	// --------------------------------------------------------------------
+	// --------------------------------------------------------------------	
 
 	/**
 	 * Update Member session
@@ -976,7 +976,7 @@ class EE_Session {
 		// Update session ID cookie
 		if ($this->validation != 's')
 		{
-			ee()->functions->set_cookie($this->c_session , $this->sdata['session_id'],  $this->session_length);
+			ee()->input->set_cookie($this->c_session , $this->sdata['session_id'],  $this->session_length);	
 		}
 
 		// If we only require cookies for validation, set admin session.
@@ -1211,7 +1211,7 @@ class EE_Session {
 			$payload = $payload.md5($payload.$this->sess_crypt_key);
 		}
 
-		ee()->functions->set_cookie('flash' , $payload, 86500);
+		ee()->input->set_cookie('flash' , $payload, 86500);
 	}
 
 	// --------------------------------------------------------------------
