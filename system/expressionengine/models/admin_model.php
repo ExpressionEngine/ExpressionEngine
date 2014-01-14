@@ -101,7 +101,6 @@ class Admin_model extends CI_Model {
 			'security_cfg'		=>	array(
 				'admin_session_type'		=> array('s', array('cs' => 'cs_session', 'c' => 'c_session', 's' => 's_session')),
 				'user_session_type'			=> array('s', array('cs' => 'cs_session', 'c' => 'c_session', 's' => 's_session')),
-				'secure_forms'				=> array('r', array('y' => 'yes', 'n' => 'no')),
 				'deny_duplicate_data'		=> array('r', array('y' => 'yes', 'n' => 'no')),
 				'redirect_submitted_links'	=> array('r', array('y' => 'yes', 'n' => 'no')),
 				'allow_username_change'		=> array('r', array('y' => 'yes', 'n' => 'no')),
@@ -286,7 +285,6 @@ class Admin_model extends CI_Model {
 			'cookie_domain'				=> array('cookie_domain_explanation'),
 			'cookie_prefix'				=> array('cookie_prefix_explain'),
 			'cookie_path'				=> array('cookie_path_explain'),
-			'secure_forms'				=> array('secure_forms_explanation'),
 			'deny_duplicate_data'		=> array('deny_duplicate_data_explanation'),
 			'redirect_submitted_links'	=> array('redirect_submitted_links_explanation'),
 			'require_secure_passwords'	=> array('secure_passwords_explanation'),

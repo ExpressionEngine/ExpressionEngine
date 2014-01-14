@@ -73,7 +73,7 @@ class Csrf {
 	public function check()
 	{
 		// If secure forms is off we don't need to check
-		if (ee()->config->item('secure_forms') == 'n')
+		if (config_item('csrf_protection') === FALSE)
 		{
 			return TRUE;
 		}

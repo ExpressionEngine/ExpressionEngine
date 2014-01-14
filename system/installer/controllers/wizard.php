@@ -149,7 +149,7 @@ class Wizard extends CI_Controller {
 		'encryption_key' 		=> '',
 		'cookie_prefix'			=> '',
 		'global_xss_filtering'	=> FALSE,
-		'csrf_protection' 		=> FALSE,
+		'csrf_protection' 		=> TRUE,		// Enabled starting 2.8, replacing secure_forms
 		'compress_output' 		=> FALSE,
 		'time_reference' 		=> 'local',
 		'rewrite_short_tags' 	=> TRUE			// Enabled for cleaner view files and compatibility
@@ -2381,7 +2381,7 @@ PAPAYA;
 			'cookie_path'					=>	'',
 			'cookie_prefix'					=>	'',
 			'cookie_httponly'				=>	'y',
-			'user_session_type'				=>	'c', 
+			'user_session_type'				=>	'c',
 			'admin_session_type'			=>	'cs',
 			'allow_username_change'			=>	'y',
 			'allow_multi_logins'			=>	'y',
@@ -2467,7 +2467,6 @@ PAPAYA;
 			'max_tmpl_revisions'			=>	'5',
 			'save_tmpl_files'				=>	'n',
 			'tmpl_file_basepath'			=>	realpath('./expressionengine/templates/').DIRECTORY_SEPARATOR,
-			'secure_forms'					=>	'y',
 			'deny_duplicate_data'			=>	'y',
 			'redirect_submitted_links'		=>	'n',
 			'enable_censoring'				=>	'n',
@@ -2572,7 +2571,6 @@ PAPAYA;
 			'cp_theme',
 			'email_module_captchas',
 			'log_search_terms',
-			'secure_forms',
 			'deny_duplicate_data',
 			'redirect_submitted_links',
 			'enable_censoring',

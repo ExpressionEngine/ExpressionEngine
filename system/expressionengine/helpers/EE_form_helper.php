@@ -68,7 +68,7 @@ if (REQ == 'CP')
 
 		$form .= ">\n";
 
-		if ($CI->config->item('secure_forms') == 'y')
+		if (config_item('csrf_protection') === TRUE)
 		{
 			if ( ! is_array($hidden))
 			{

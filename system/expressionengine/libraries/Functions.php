@@ -139,7 +139,8 @@ class EE_Functions {
 		if (strtolower($segment) == 'logout')
 		{
 			$qs = (ee()->config->item('force_query_string') == 'y') ? '' : '?';
-			$xid = (ee()->config->item('secure_forms') == 'y') ? AMP.'CSRF_TOKEN='.CSRF_TOKEN : '';
+			$xid = config_item('csrf_protection') ? AMP.'CSRF_TOKEN='.CSRF_TOKEN : '';
+
 			return $this->fetch_site_index(0, 0).$qs.'ACT='.$this->fetch_action_id('Member', 'member_logout').$xid;
 		}
 		// END Specials
@@ -449,13 +450,6 @@ class EE_Functions {
 		if (is_array($data['hidden_fields']) && ! isset($data['hidden_fields']['site_id']))
 		{
 			$data['hidden_fields']['site_id'] = ee()->config->item('site_id');
-		}
-
-
-		// Add the CSRF Protection Hash
-		if (ee()->config->item('csrf_protection') == TRUE )
-		{
-			$data['hidden_fields'][ee()->security->get_csrf_token_name()] = ee()->security->get_csrf_hash();
 		}
 
 		// -------------------------------------------
