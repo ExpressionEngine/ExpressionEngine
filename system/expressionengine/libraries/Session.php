@@ -469,7 +469,7 @@ class EE_Session {
 		}
 
 		ee()->db->where('session_id', $this->userdata['session_id']);
-		ee()->db->delete(array('sessions', 'secure_hashes'));
+		ee()->db->delete(array('sessions', 'security_hashes'));
 
 		// Really should redirect after calling this
 		// method, but if someone doesn't - we're safe
@@ -728,7 +728,7 @@ class EE_Session {
 			if ($query->row('last_activity')  < (ee()->localize->now - $this->session_length))
 			{
 				ee()->db->where('session_id', $this->sdata['session_id']);
-				ee()->db->delete(array('sessions', 'secure_hashes'));
+				ee()->db->delete(array('sessions', 'security_hashes'));
 
 				$this->_initialize_session();
 
