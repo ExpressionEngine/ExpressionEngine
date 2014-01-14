@@ -1,15 +1,5 @@
 <?php
 
-interface Csrf_storage_backend {
-
-	public function get_expiration();
-
-	public function store_token($token);
-	public function delete_token();
-	public function fetch_token();
-
-}
-
 class Csrf {
 
 	private $backend;
@@ -23,10 +13,13 @@ class Csrf {
 		$session_id = ee()->session->userdata('session_id');
 		$backend = ($session_id == 0) ? 'cookie' : 'database';
 
+		require_once APPPATH.'libraries/csrf/Storage_backend_interface.php';
 		require_once APPPATH.'libraries/csrf/'.ucfirst($backend).'.php';
 
 		$class = 'Csrf_'.$backend;
 		$this->backend = new $class;
+
+		assert($this->backend instanceOf Csrf_storage_backend);
 	}
 
 	/**
