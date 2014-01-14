@@ -59,29 +59,24 @@ class EE_Security extends CI_Security {
 	public function have_valid_xid($flags = self::CSRF_STRICT)
 	{
 		$is_valid = FALSE;
-		$run_check = config_item('csrf_protection');
-
-		// exempt trumps all
-		if ($flags & self::CSRF_EXEMPT)
-		{
-			$run_check = FALSE;
-		}
-		// for now, only check non-cp ajax in strict mode
-		elseif (AJAX_REQUEST && REQ != 'CP' && ! ($flags & self::CSRF_STRICT))
-		{
-			$run_check = FALSE;
-		}
 
 		// Check the token if we must
 		ee()->load->library('csrf');
 
-		if ($run_check)
-		{
-			$is_valid = ee()->csrf->check();
-		}
-		else
+		// exempt trumps all
+		if ($flags & self::CSRF_EXEMPT)
 		{
 			$is_valid = TRUE;
+		}
+		// for now, only check non-cp ajax in strict mode
+		elseif (AJAX_REQUEST && REQ != 'CP' && ! ($flags & self::CSRF_STRICT))
+		{
+			$is_valid = TRUE;
+		}
+		// otherwise, run the check if enabled
+		elseif (config_item('csrf_protection') !== FALSE)
+		{
+			$is_valid = ee()->csrf->check();
 		}
 
 		// Retrieve the current token
