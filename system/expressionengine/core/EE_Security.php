@@ -148,7 +148,7 @@ class EE_Security extends CI_Security {
 	public function generate_xid($count = 1, $array = FALSE)
 	{
 		ee()->load->library('logger');
-		ee()->logger->deprecated('2.8', 'Use the CSRF_TOKEN constant.');
+		ee()->logger->deprecated('2.8', 'the CSRF_TOKEN constant');
 
 		$hashes = array_fill(0, $count, $count, CSRF_TOKEN);
 
@@ -205,37 +205,43 @@ class EE_Security extends CI_Security {
 		return;
 	}
 
-	// Override to disable CI's CSRF Handling
-	public function csrf_verify()
-	{
-		return $this;
-	}
+	// --------------------------------------------------------------------
 
-	public function csrf_set_cookie()
-	{
-		return $this;
-	}
-
-	public function csrf_show_error()
-	{
-		return $this;
-	}
-
+	/**
+	 * Get CSRF Hash
+	 *
+	 * Compatibility addition so we can show a deprecation error for the
+	 * strange case where a third party is calling CI's csrf handling.
+	 * No one should be affected by this.
+	 *
+	 * @return 	string 	self::_csrf_hash
+	 */
 	public function get_csrf_hash()
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.8');
+
 		return CSRF_TOKEN;
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Get CSRF Token Name
+	 *
+	 * Compatibility addition so we can show a deprecation error for the
+	 * strange case where a third party is calling CI's csrf handling.
+	 * No one should be affected by this.
+	 *
+	 * @return 	string 	self::csrf_token_name
+	 */
 	public function get_csrf_token_name()
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.8');
+
 		return 'CSRF_TOKEN';
 	}
-
-	protected function _csrf_set_hash()
-	{
-		return '';
-	}
-
 }
 // END CLASS
 

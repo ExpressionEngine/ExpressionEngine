@@ -60,7 +60,7 @@ if ( ! function_exists('form_open'))
 		// CSRF
 		if ($CI->config->item('csrf_protection') === TRUE)
 		{
-			$hidden[$CI->security->get_csrf_token_name()] = $CI->security->get_csrf_hash();
+			$hidden['CSRF_TOKEN'] = CSRF_TOKEN;
 		}
 
 		if (is_array($hidden) AND count($hidden) > 0)
