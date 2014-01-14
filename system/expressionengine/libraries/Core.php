@@ -178,6 +178,12 @@ class EE_Core {
 			ee()->config->set_item('index_page', ee()->config->item('site_index'));
 		}
 
+		// Backwards compatibility for the removed secure forms setting.
+		// Developers are still checking against this key, so we'll wait some
+		// time before removing it.
+		$secure_forms = (ee()->config->item('csrf_protection') === TRUE) ? 'y' : 'n';
+		ee()->config->set_item('secure_forms', $secure_forms);
+
 		// Set the path to the "themes" folder
 		if (ee()->config->item('theme_folder_path') !== FALSE &&
 			ee()->config->item('theme_folder_path') != '')
