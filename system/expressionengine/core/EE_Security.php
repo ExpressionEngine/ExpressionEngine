@@ -45,14 +45,6 @@ class EE_Security extends CI_Security {
 	const CSRF_STRICT = 1;	// require single-use token for ajax requests
 	const CSRF_EXEMPT = 2;	// opt-out of xid checks
 
-	// Small note, if you feel the urge to add a constructor,
-	// do not call ee() or get_instance(). The CI Security library
-	// is sometimes instantiated before the controller is loaded.
-	// i.e. when turning CI's csrf_protection on. Which you shouldn't
-	// do in EE anywho. -pk
-
-	// --------------------------------------------------------------------
-
 	/**
 	 * Check and Validate Form CSRF tokens
 	 *
