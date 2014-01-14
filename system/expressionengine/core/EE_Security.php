@@ -67,15 +67,10 @@ class EE_Security extends CI_Security {
 	public function have_valid_xid($flags = self::CSRF_STRICT)
 	{
 		$is_valid = FALSE;
-		$run_check = TRUE;
+		$run_check = config_item('csrf_protection');
 
-		// Check all of the exceptions
-		if (ee()->config->item('secure_forms') == 'n')
-		{
-			$run_check = FALSE;
-		}
 		// exempt trumps all
-		elseif ($flags & self::CSRF_EXEMPT)
+		if ($flags & self::CSRF_EXEMPT)
 		{
 			$run_check = FALSE;
 		}
@@ -221,6 +216,37 @@ class EE_Security extends CI_Security {
 		ee()->logger->deprecated('2.8');
 
 		return;
+	}
+
+	// Override to disable CI's CSRF Handling
+	public function csrf_verify()
+	{
+		return $this;
+	}
+
+	public function csrf_set_cookie()
+	{
+		return $this;
+	}
+
+	public function csrf_show_error()
+	{
+		return $this;
+	}
+
+	public function get_csrf_hash()
+	{
+		return CSRF_TOKEN;
+	}
+
+	public function get_csrf_token_name()
+	{
+		return 'CSRF_TOKEN';
+	}
+
+	protected function _csrf_set_hash()
+	{
+		return '';
 	}
 
 }
