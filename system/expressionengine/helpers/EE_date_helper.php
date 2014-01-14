@@ -33,13 +33,13 @@
  * @param	int			$timestamp	Unix timestamp of the date for calculation
  * @param	int			$referent	Unix timestamp of the date being compared against (default: time())
  * @param	string[]	$units_to_calculate		An array of units (date parts) to calculate
- * @return	int[]	An associative array of date parts
+ * @return	int[]	An associative array of date units
  *  	e.g. 'minutes'  => '1'
  * 		     'seconds'  => '3'
  */
-if ( ! function_exists('timespan_parts'))
+if ( ! function_exists('timespan_units'))
 {
-	function timespan_parts($timestamp = 0, $referent = NULL, $units_to_calculate = NULL)
+	function timespan_units($timestamp = 0, $referent = NULL, $units_to_calculate = NULL)
 	{
 		$units = array(
 			'years'   => 0,
@@ -118,8 +118,8 @@ if ( ! function_exists('timespan_parts'))
 
 /**
  * Generates a human readable relative date string based on at least one timestamp
- *  	e.g. 'a day ago'
- *  	      'in 5 hours'
+ *  	e.g. 'a day'
+ *  	     '5 hours'
  *
  * @access	public
  * @param	int			$timestamp	Unix timestamp of the date for calculation
@@ -134,13 +134,13 @@ if ( ! function_exists('timespan_parts'))
  * @param	int			$depth		Determines how many date parts we use
  * @return	string	A human readable relative date string
  */
-if ( ! function_exists('timespan'))
+if ( ! function_exists('relative_date'))
 {
-	function timespan($timestamp = 0, $referent = NULL, $singular = 'one', $less_than = 'less than', $units_to_calculate = NULL, $depth = NULL)
+	function relative_date($timestamp = 0, $referent = NULL, $singular = 'one', $less_than = 'less than', $units_to_calculate = NULL, $depth = NULL)
 	{
 		$units = array();
 
-		$calculated_units = timespan_parts($timestamp, $referent, $units_to_calculate);
+		$calculated_units = timespan_units($timestamp, $referent, $units_to_calculate);
 
 		foreach (array('years', 'months', 'weeks', 'days', 'hours', 'minutes', 'seconds') as $key)
 		{

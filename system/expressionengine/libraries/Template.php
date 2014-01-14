@@ -4228,7 +4228,7 @@ class EE_Template {
 			}
 			$depth = isset($parameters['depth']) ? $parameters['depth'] : 1;
 
-			$relative_date = timespan($timestamp, time(), $singular, $less_than, $units, $depth);
+			$relative_date = relative_date($timestamp, time(), $singular, $less_than, $units, $depth);
 
 			if ($timestamp <= ee()->localize->now)
 			{
