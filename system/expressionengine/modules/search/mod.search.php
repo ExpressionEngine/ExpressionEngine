@@ -507,17 +507,17 @@ class Search {
 			}
 		}
 
-        /** ----------------------------------------------
-        /**  Limit to a specific member? We do this now
-        /**  as there's a potential for this to bring the
-        /**  search to an end if it's not a valid member
-        /** ----------------------------------------------*/
+		/** ----------------------------------------------
+		/**  Limit to a specific member? We do this now
+		/**  as there's a potential for this to bring the
+		/**  search to an end if it's not a valid member
+		/** ----------------------------------------------*/
 
 		$member_array	= array();
 		$member_ids		= '';
 
-        if (isset($_GET['mbr']) AND is_numeric($_GET['mbr']))
-        {
+		if (isset($_GET['mbr']) AND is_numeric($_GET['mbr']))
+		{
 			$query = ee()->db->select('member_id')->get_where('members', array(
 				'member_id' => $_GET['mbr']
 			));
@@ -530,9 +530,9 @@ class Search {
 			{
 				$member_array[] = $query->row('member_id');
 			}
-        }
-        else
-        {
+		}
+		else
+		{
 			if (ee()->input->post('member_name') != '')
 			{
 				ee()->db->select('member_id');
@@ -735,14 +735,14 @@ class Search {
 			if (trim($this->keywords) != '')
 			{
 				$terms = array_merge($terms, preg_split("/\s+/", trim($this->keywords)));
-  			}
+			}
 
-  			$not_and = (count($terms) > 2) ? ') AND (' : 'AND';
-  			rsort($terms);
+			$not_and = (count($terms) > 2) ? ') AND (' : 'AND';
+			rsort($terms);
 			$terms_like = ee()->db->escape_like_str($terms);
 			$terms = ee()->db->escape_str($terms);
 
-  			/** ----------------------------------
+			/** ----------------------------------
 			/**  Search in Title Field
 			/** ----------------------------------*/
 
@@ -1057,6 +1057,24 @@ class Search {
 				$sql .= ' AND ('.$temp.') ';
 			}
 		}
+
+		// -------------------------------------------
+		// 'channel_search_modify_query' hook.
+		//  - Take the whole query string array, do what you wish
+		//  - added 2.7.x
+		//
+			if (ee()->extensions->active_hook('channel_search_modify_query') === TRUE)
+			{
+				$modified_sql = ee()->extensions->call('channel_search_modify_query', $this, $sql);
+
+				// Make sure its valid
+				if (is_string($modified_sql) && $modified_sql != '') $sql = $modified_sql;
+
+				// This will save the custom query and the total results to exp_search
+				if (ee()->extensions->end_script === TRUE) return $sql;
+			}
+		//
+		// -------------------------------------------
 
 		/** ----------------------------------------------
 		/**  Are there results?
