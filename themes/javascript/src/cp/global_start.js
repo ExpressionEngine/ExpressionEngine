@@ -612,8 +612,7 @@ EE.cp.broadcastEvents = (function() {
 				}
 
 				// Hide the dialog
-				logoutModal.off('dialogbeforeclose');
-				logoutModal.dialog('close');
+				Events.login();
 
 				// Fix the EE.BASE variable
 				EE.BASE = result.base.replace(/&amp;/g, '&');
@@ -726,6 +725,8 @@ EE.cp.broadcastEvents = (function() {
 		login: function() {
 			logoutModal.off('dialogbeforeclose');
 			logoutModal.dialog('close');
+
+			logoutModal.find(':password').val('');
 
 			State.modalActive = false;
 			State.idleCount = 0;
