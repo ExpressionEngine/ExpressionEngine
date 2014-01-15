@@ -30,7 +30,7 @@ EE.namespace = function(namespace_string) {
 	}
 
 	// @todo disallow 'prototype', duh
-	// create a property if it doesn't exist if (typeof parent[parts[i]] === "undefined") {
+	// create a property if it doesn't exist
 	for (var i = 0, max = parts.length; i < max; i += 1) {
 		if (typeof parent[parts[i]] === "undefined") {
 			parent[parts[i]] = {};
