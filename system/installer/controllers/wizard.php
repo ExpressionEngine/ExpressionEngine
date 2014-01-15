@@ -129,7 +129,6 @@ class Wizard extends CI_Controller {
 	// and CI config files are one in the same now we use this data when we write the
 	// initial config file using $this->_write_config_data()
 	var $ci_config = array(
-		'index_page' 			=> 'index.php',
 		'uri_protocol'			=> 'AUTO',
 		'url_suffix' 			=> '',
 		'language'				=> 'english',
