@@ -131,7 +131,6 @@ class Wizard extends CI_Controller {
 		'uri_protocol'			=> 'AUTO',
 		'charset' 				=> 'UTF-8',
 		'subclass_prefix' 		=> 'EE_',
-		'permitted_uri_chars' 	=> 'a-z 0-9~%.:_\-',
 		'enable_query_strings'	=> FALSE,
 		'directory_trigger' 	=> 'D',
 		'controller_trigger' 	=> 'C',
