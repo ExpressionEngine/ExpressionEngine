@@ -66,34 +66,6 @@ $config['charset'] = '{charset}';
 */
 $config['subclass_prefix'] = '{subclass_prefix}';
 
-
-/*
-|--------------------------------------------------------------------------
-| Enable Query Strings
-|--------------------------------------------------------------------------
-|
-| By default CodeIgniter uses search-engine friendly segment based URLs:
-| example.com/who/what/where/
-|
-| You can optionally enable standard query string based URLs:
-| example.com?who=me&what=something&where=here
-|
-| Options are: TRUE or FALSE (boolean)
-|
-| The two other items let you set the query string "words" that will
-| invoke your controllers and its functions:
-| example.com/index.php?c=controller&m=function
-|
-| Please note that some of the helpers won't work as expected when
-| this feature is enabled, since CodeIgniter is designed primarily to
-| use segment based URLs.
-|
-*/
-$config['enable_query_strings'] = {enable_query_strings};
-$config['directory_trigger'] = '{directory_trigger}';
-$config['controller_trigger'] = '{controller_trigger}';
-$config['function_trigger'] = '{function_trigger}';
-
 /*
 |--------------------------------------------------------------------------
 | Error Logging Threshold
