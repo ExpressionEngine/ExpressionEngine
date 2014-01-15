@@ -81,7 +81,6 @@ class Wizard extends CI_Controller {
 	var $userdata = array(
 		'app_version'			=> '',
 		'doc_url'				=> 'http://ellislab.com/expressionengine/user-guide/',
-		'install_lock'			=> '1',
 		'ext'					=> '.php',
 		'ip'					=> '',
 		'database'				=> 'mysql',
@@ -2381,7 +2380,7 @@ PAPAYA;
 			'cookie_path'					=>	'',
 			'cookie_prefix'					=>	'',
 			'cookie_httponly'				=>	'y',
-			'user_session_type'				=>	'c', 
+			'user_session_type'				=>	'c',
 			'admin_session_type'			=>	'cs',
 			'allow_username_change'			=>	'y',
 			'allow_multi_logins'			=>	'y',

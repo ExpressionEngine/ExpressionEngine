@@ -133,8 +133,8 @@
  *  EE Control Panel Constants
  * -------------------------------------------------------------------
  *
- * If the "installer" folder exists the $config['install_lock'] is off
- * we will load the installation wizard.  Otherwise we load the CP
+ * If the "installer" folder exists we'll load the installation
+ * wizard. Otherwise, we'll load the CP.
  *
  */
  	// Is the installation folder present?
