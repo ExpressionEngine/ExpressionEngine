@@ -117,8 +117,9 @@ $config['log_date_format'] = '{log_date_format}';
 | Cache Directory Path
 |--------------------------------------------------------------------------
 |
-| Leave this BLANK unless you would like to set something other than the default
-| system/cache/ folder.  Use a full server path with trailing slash.
+| Leave this BLANK unless you would like to set something other than the
+| default system/expressionengine/cache/ directory. Use a full server path
+| with trailing slash.
 |
 */
 $config['cache_path'] = '{cache_path}';
