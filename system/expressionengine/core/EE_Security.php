@@ -68,7 +68,7 @@ class EE_Security extends CI_Security {
 			$is_valid = TRUE;
 		}
 		// otherwise, run the check if enabled
-		elseif (config_item('csrf_protection') !== FALSE)
+		elseif ( ! config_item('disable_csrf_protection'))
 		{
 			$is_valid = ee()->csrf->check();
 		}
