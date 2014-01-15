@@ -40,7 +40,8 @@ class Updater {
 			array(
 				'_update_extension_quick_tabs',
 				'_extract_server_offset_config',
-				'_update_config_add_cookie_httponly'
+				'_update_config_add_cookie_httponly',
+				'_make_search_csrf_exempt'
 			)
 		);
 
@@ -138,7 +139,7 @@ class Updater {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Update Config to Add cookie_httponly
 	 *
@@ -154,6 +155,17 @@ class Updater {
 		);
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Make searches exempt from CSRF check.
+	 */
+	private function _make_search_csrf_exempt()
+	{
+		ee()->db->where('class', 'Search')
+			->where('method', 'do_search')
+			->update('actions', array('csrf_exempt' => 1));
+	}
 
 }
 /* END CLASS */
