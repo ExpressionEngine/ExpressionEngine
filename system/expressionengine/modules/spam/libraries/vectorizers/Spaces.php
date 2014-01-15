@@ -1,4 +1,4 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -35,7 +35,7 @@ class Spaces {
 	public static function vectorize($source)
 	{
 		$whitespace = preg_match_all('/\s/u', $source);
-		$characters  = preg_match_all('/[^\s]/u', $source);
+		$characters  = mb_strlen($source);
 		if ($characters !== 0)
 		{
 			$ratio = $whitespace / $characters;

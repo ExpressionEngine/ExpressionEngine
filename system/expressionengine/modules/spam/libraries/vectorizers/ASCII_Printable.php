@@ -23,10 +23,10 @@
  * @link		http://ellislab.com
  */
 
-class Punctuation {
+class ASCII_Printable {
 
 	/**
-	 * Calculates the ratio of punctuation to non-punctuation 
+	 * Calculates the ratio of non-ASCII printable characters 
 	 * 
 	 * @param string $source The source text 
 	 * @access public
@@ -34,11 +34,11 @@ class Punctuation {
 	 */
 	public static function vectorize($source)
 	{
-		$punctuation = preg_match_all('/[!-~]/u', $source);
-		$characters  = mb_strlen($source);
-		if ($characters !== 0)
+		$non_ascii  = preg_match_all('/[^\x20-\x7E]/u', $source);
+		$length = mb_strlen($source);
+		if ($length !== 0)
 		{
-			$ratio = $whitespace / $characters;
+			$ratio = $non_ascii / $length;
 		}
 		else
 		{
