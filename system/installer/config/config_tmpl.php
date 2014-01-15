@@ -70,26 +70,6 @@ $config['subclass_prefix'] = '{subclass_prefix}';
 
 /*
 |--------------------------------------------------------------------------
-| Allowed URL Characters
-|--------------------------------------------------------------------------
-|
-| This lets you specify which characters are permitted within your URLs.
-| When someone tries to submit a URL with disallowed characters they will
-| get a warning message.
-|
-| As a security measure you are STRONGLY encouraged to restrict URLs to
-| as few characters as possible.  By default only these are allowed: a-z 0-9~%.:_-
-|
-| Leave blank to allow all characters -- but only if you are insane.
-|
-| DO NOT CHANGE THIS UNLESS YOU FULLY UNDERSTAND THE REPERCUSSIONS!!
-|
-*/
-$config['permitted_uri_chars'] = '{permitted_uri_chars}';
-
-
-/*
-|--------------------------------------------------------------------------
 | Enable Query Strings
 |--------------------------------------------------------------------------
 |
