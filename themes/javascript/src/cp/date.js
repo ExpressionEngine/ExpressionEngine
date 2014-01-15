@@ -13,7 +13,7 @@
 
 		date = date || new Date();
 		config = $.extend({
-			format: '12',
+			time_format: '12',
 			include_seconds: 'n'
 		}, config);
 
@@ -23,7 +23,7 @@
 			segments = [],
 			suffix = '';
 
-		if (config.format == "12") {
+		if (config.time_format == "12") {
 			suffix = (hours < 12) ? ' AM': ' PM';
 			hours = hours % 12 || 12;
 		}

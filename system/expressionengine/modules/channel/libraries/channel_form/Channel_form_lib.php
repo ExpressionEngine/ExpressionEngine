@@ -238,7 +238,7 @@ class Channel_form_lib
 
 		if ($this->datepicker)
 		{
-			ee()->javascript->output('$.datepicker.setDefaults({dateFormat:$.datepicker.W3C+EE.date_obj_time});');
+			ee()->javascript->output('$.datepicker.setDefaults({dateFormat:"'.ee()->localize->datepicker_format().'"+EE.date_obj_time});');
 		}
 
 		//decide which fields to show, based on pipe delimited list of field id's and/or field short names

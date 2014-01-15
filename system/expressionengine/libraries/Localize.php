@@ -669,6 +669,36 @@ EOF;
 			return $months[$month];
 		}
 	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Reads the configured date format from either userdata or the site's
+	 * config and returns the string needed to format the JS datepicker
+	 * to match.
+	 *
+	 * @access public
+	 * @return string The string needed for the 'dateFormat:' argument for
+	 *                the jQuery datepicker plugin.
+	 */
+	public function datepicker_format()
+	{
+		$date_format = ee()->session->userdata('date_format', ee()->config->item('date_format'));
+
+		// Days
+		$date_format = str_replace('%d', 'dd', $date_format);
+		$date_format = str_replace('%j', 'd', $date_format);
+
+		// Months
+		$date_format = str_replace('%m', 'mm', $date_format);
+		$date_format = str_replace('%n', 'm', $date_format);
+
+		// Years
+		$date_format = str_replace('%Y', 'yy', $date_format);
+		$date_format = str_replace('%y', 'y', $date_format);
+
+		return $date_format;
+	}
 }
 // END CLASS
 
