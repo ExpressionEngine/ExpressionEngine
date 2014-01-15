@@ -136,8 +136,6 @@ class Wizard extends CI_Controller {
 		'log_date_format' 		=> 'Y-m-d H:i:s',
 		'cache_path' 			=> '',
 		'encryption_key' 		=> '',
-		'cookie_prefix'			=> '',
-		'time_reference' 		=> 'local',
 		'rewrite_short_tags' 	=> TRUE			// Enabled for cleaner view files and compatibility
 	);
 
