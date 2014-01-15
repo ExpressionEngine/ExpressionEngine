@@ -49,7 +49,8 @@ class Login extends CP_Controller {
 	{
 		// We don't want to allow access to the login screen to someone
 		// who is already logged in.
-		if ($this->session->userdata('member_id') !== 0)
+		if ($this->session->userdata('member_id') !== 0 &&
+			ee()->session->userdata('admin_sess') == 1)
 		{
 			return $this->functions->redirect(BASE);
 		}
