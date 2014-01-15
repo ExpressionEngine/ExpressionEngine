@@ -67,7 +67,7 @@ $.ajaxPrefilter(function(options, originalOptions, jqXHR) {
 
 	// Add CSRF TOKEN to EE POST requests
 	if (type == 'POST' && options.crossDomain === false) {
-		jqXHR.setRequestHeader("X-CSRF-TOKEN", old_token);
+		jqXHR.setRequestHeader('X-CSRF-TOKEN', old_token);
 	}
 
 	var defaultHeaderResponses = {
@@ -177,13 +177,21 @@ $(document).ready(function () {
 
 
 // Simple function to deal with csrf tokens
-EE.cp.setCsrfToken = function(new_xid) {
-	$('input[name="XID"]').val(new_xid);
-	$('input[name="CSRF_TOKEN"]').val(new_xid);
+EE.cp.setCsrfToken = function(newToken, skipBroadcast /* internal */) {
+	$('input[name="XID"]').val(newToken);
+	$('input[name="CSRF_TOKEN"]').val(newToken);
 
-	EE.XID = new_xid;
-	EE.CSRF_TOKEN = new_xid;
+	EE.XID = newToken;
+	EE.CSRF_TOKEN = newToken;
+
+	if ( ! skipBroadcast) {
+		$(window).trigger('broadcast.csrfToken', result.csrfToken);
+	}
 };
+
+$(window).bind('broadcast.csrfToken', function(data) {
+	EE.cp.setCsrfToken(data, true);
+});
 
 
 // Show / hide accessories
@@ -527,6 +535,14 @@ EE.cp.zebra_tables = function(table) {
 };
 
 
+EE.cp.refreshCsrfToken = function() {
+
+	$.getJSON(EE.BASE + '&C=login&M=refresh_csrf_token', function(result) {
+		console.log(result);
+		EE.cp.setCsrfToken(result.csrfToken);
+	});
+}
+
 /**
  * Handle idle / inaction between windows
  *
@@ -574,6 +590,10 @@ EE.cp.broadcastEvents = (function() {
 	// This modal is required, remove the close button in the titlebar.
 	logoutModal.closest('.ui-dialog').find('.ui-dialog-titlebar-close').remove();
 
+	// If the modal hasn't been interacted with in over 10 minutes we'll send a request for
+	// the current csrf token. It can flip on us during long waits due to the session timeout.
+	logoutModal.find('form').on('interact', _.throttle(EE.cp.refreshCsrfToken, 10 * 60 * 1000));
+
 	// Bind on the modal submission
 	logoutModal.find('form').on('submit', function() {
 
@@ -604,6 +624,8 @@ EE.cp.broadcastEvents = (function() {
 
 				$('a').prop('href', replaceBase);
 				$('form').prop('action', replaceBase);
+
+				EE.cp.refreshCsrfToken();
 
 				$(window).trigger('broadcast.idleState', 'login');
 			},
