@@ -97,7 +97,7 @@ $.ajaxPrefilter(function(options, originalOptions, jqXHR) {
 	};
 
 	// Set EE response header defaults
-	eeResponseHeaders = $.merge(
+	var eeResponseHeaders = $.merge(
 		defaultHeaderResponses,
 		originalOptions.eeResponseHeaders || {}
 	);
@@ -137,8 +137,7 @@ $(document).ready(function () {
 
 	// call the input placeholder polyfill early so that we don't get
 	// weird flashes of content
-	if ( ! 'placeholder' in document.createElement('input'))
-	{
+	if ( ! 'placeholder' in document.createElement('input')) {
 		EE.insert_placeholders();
 	}
 
@@ -151,31 +150,7 @@ $(document).ready(function () {
 
 	// Notice banners
 	if (EE.importantMessage) {
-		msgBoxOpen = EE.importantMessage.state;
-		msgContainer = $("#ee_important_message");
-
-		save_state = function () {
-			msgBoxOpen = ! msgBoxOpen;
-			document.cookie = "exp_home_msg_state=" + (msgBoxOpen ? "open" : "closed");
-		};
-
-		setup_hidden = function () {
-			$.ee_notice.show_info(function () {
-				$.ee_notice.hide_info();
-				msgContainer.removeClass("closed").show();
-				save_state();
-			});
-		};
-
-		msgContainer.find(".msg_open_close").click(function () {
-			msgContainer.hide();
-			setup_hidden();
-			save_state();
-		});
-
-		if ( ! msgBoxOpen) {
-			setup_hidden();
-		}
+		EE.cp.showNoticeBanner();
 	}
 
 	EE.cp.zebra_tables();
@@ -187,7 +162,7 @@ $(document).ready(function () {
 	EE.cp.control_panel_search();
 
 	// Setup sidebar hover descriptions
-	$('h4', '#quickLinks').click(function () {
+	$('#quickLinks h4').click(function () {
 		window.location.href = EE.BASE + '&C=myaccount&M=quicklinks';
 	})
 	.add('#notePad').hover(function () {
@@ -200,16 +175,13 @@ $(document).ready(function () {
 });
 
 
-// Simple object to deal with csrf tokens
-EE.cp.setCsrfToken = {
+// Simple function to deal with csrf tokens
+EE.cp.setCsrfToken = function(new_xid) {
+	$('input[name="XID"]').val(new_xid);
+	$('input[name="CSRF_TOKEN"]').val(new_xid);
 
-	set: function(new_xid) {
-		$('input[name="XID"]').val(new_xid);
-		$('input[name="CSRF_TOKEN"]').val(new_xid);
-
-		EE.XID = new_xid;
-		EE.CSRF_TOKEN = new_xid;
-	}
+	EE.XID = new_xid;
+	EE.CSRF_TOKEN = new_xid;
 };
 
 
@@ -237,6 +209,36 @@ EE.cp.accessory_toggle = function() {
 			$parent.addClass("current");
 		}
 	});
+};
+
+// Upgrade and developer log notices
+EE.cp.showNoticeBanner = function() {
+	var msgBoxOpen, msgContainer, save_state, setup_hidden;
+	msgBoxOpen = EE.importantMessage.state;
+	msgContainer = $("#ee_important_message");
+
+	save_state = function () {
+		msgBoxOpen = ! msgBoxOpen;
+		document.cookie = "exp_home_msg_state=" + (msgBoxOpen ? "open" : "closed");
+	};
+
+	setup_hidden = function () {
+		$.ee_notice.show_info(function () {
+			$.ee_notice.hide_info();
+			msgContainer.removeClass("closed").show();
+			save_state();
+		});
+	};
+
+	msgContainer.find(".msg_open_close").click(function () {
+		msgContainer.hide();
+		setup_hidden();
+		save_state();
+	});
+
+	if ( ! msgBoxOpen) {
+		setup_hidden();
+	}
 };
 
 
