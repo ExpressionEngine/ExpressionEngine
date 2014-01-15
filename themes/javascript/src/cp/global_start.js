@@ -16,6 +16,7 @@
 
  /**
   * Namespace function that non-destructively creates "namespace" objects (e.g. EE.publish.example)
+  *
   * @param {String} namespace_string The namespace string (e.g. EE.publish.example)
   * @returns The object to create
   */
@@ -41,7 +42,7 @@ EE.namespace = function(namespace_string) {
 	return parent;
 };
 
-// Create the base namespace
+// Create the base cp namespace
 EE.namespace('EE.cp');
 
 /**
@@ -467,27 +468,27 @@ EE.insert_placeholders = function () {
 			return;
 		}
 
-		var jqEl = $(this),
+		var input = $(this),
 			placeholder = this.placeholder,
-			orig_color = jqEl.css('color');
+			orig_color = input.css('color');
 
-		if (jqEl.val() == '') {
-			jqEl.data('user_data', 'n');
+		if (input.val() == '') {
+			input.data('user_data', 'n');
 		}
 
-		jqEl.focus(function () {
+		input.focus(function () {
 			// Reset color & remove placeholder text
-			jqEl.css('color', orig_color);
-			if (jqEl.val() === placeholder) {
-				jqEl.val('');
-				jqEl.data('user_data', 'y');
+			input.css('color', orig_color);
+			if (input.val() === placeholder) {
+				input.val('');
+				input.data('user_data', 'y');
 			}
 		})
 		.blur(function () {
 			// If no user content -> add placeholder text and dim
-			if (jqEl.val() === '' || jqEl.val === placeholder) {
-				jqEl.val(placeholder).css('color', '#888');
-				jqEl.data('user_data', 'n');
+			if (input.val() === '' || input.val === placeholder) {
+				input.val(placeholder).css('color', '#888');
+				input.data('user_data', 'n');
 			}
 		})
 		.trigger('blur');
