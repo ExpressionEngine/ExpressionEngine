@@ -130,7 +130,6 @@ class Wizard extends CI_Controller {
 	// initial config file using $this->_write_config_data()
 	var $ci_config = array(
 		'uri_protocol'			=> 'AUTO',
-		'url_suffix' 			=> '',
 		'language'				=> 'english',
 		'charset' 				=> 'UTF-8',
 		'enable_hooks' 			=> FALSE,
