@@ -93,8 +93,8 @@ class Content_edit extends CP_Controller {
 		{
 			$perpage = ($this->input->cookie('perpage') == FALSE) ? 50 : $this->input->cookie('perpage');
 		}
-		
-		$this->input->set_cookie('perpage' , $perpage, 60*60*24*182);		
+
+		$this->input->set_cookie('perpage' , $perpage, 60*60*24*182);
 
 		// Table
 		// ----------------------------------------------------------------
@@ -776,7 +776,7 @@ class Content_edit extends CP_Controller {
 
 			// Set up date js
 			$this->javascript->output('
-				$(".entry_date_'.$entry_id.'").datepicker({constrainInput: false, dateFormat: $.datepicker.W3C + date_obj_time, defaultDate: new Date("'.$this->localize->format_date('%D %M %d %Y', $row['entry_date']).'")});
+				$(".entry_date_'.$entry_id.'").datepicker({constrainInput: false, dateFormat: "'.ee()->localize->datepicker_format().'" + date_obj_time, defaultDate: new Date("'.$this->localize->format_date('%D %M %d %Y', $row['entry_date']).'")});
 			');
 
 			// Sticky

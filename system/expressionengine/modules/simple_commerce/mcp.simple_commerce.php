@@ -1094,8 +1094,8 @@ class Simple_commerce_mcp {
 				$vars['purchases'][$id]['purchase_id'] =  0;
 
 			ee()->javascript->output('
-			$("#purchase_date_'.$id.'").datepicker({dateFormat: $.datepicker.W3C + date_obj_time, defaultDate: new Date('.ee()->localize->format_date('%D %M %d %Y').')});
-			$("#subscription_end_date_'.$id.'").datepicker({dateFormat: $.datepicker.W3C + date_obj_time, defaultDate: new Date('.ee()->localize->format_date('%D %M %d %Y').')});
+			$("#purchase_date_'.$id.'").datepicker({dateFormat: "'ee()->localize->datepicker_format().'" + date_obj_time, defaultDate: new Date('.ee()->localize->format_date('%D %M %d %Y').')});
+			$("#subscription_end_date_'.$id.'").datepicker({dateFormat: "'ee()->localize->datepicker_format().'" + date_obj_time, defaultDate: new Date('.ee()->localize->format_date('%D %M %d %Y').')});
 		');
 
 			}
@@ -1126,7 +1126,7 @@ class Simple_commerce_mcp {
 
 
 			ee()->javascript->output('
-			$("#purchase_date_'.$row['purchase_id'].'").datepicker({dateFormat: $.datepicker.W3C + date_obj_time, defaultDate: new Date('.$now_p_date.')});
+			$("#purchase_date_'.$row['purchase_id'].'").datepicker({dateFormat: "'ee()->localize->datepicker_format().'" + date_obj_time, defaultDate: new Date('.$now_p_date.')});
 		');
 
 			}

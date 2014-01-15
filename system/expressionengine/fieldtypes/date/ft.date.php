@@ -165,12 +165,10 @@ class Date_ft extends EE_Fieldtype {
 			$date = $field_data;
 		}
 
-		$time_format = ee()->session->userdata('time_format');
-		$time_format = $time_format ? $time_format : ee()->config->item('time_format');
-
 		ee()->javascript->set_global(array(
-			'date.format' => $time_format,
-			'date.include_seconds' => ee()->config->item('include_seconds')
+			'date.date_format' => ee()->localize->datepicker_format(),
+			'date.time_format' => ee()->session->userdata('time_format', ee()->config->item('time_format')),
+			'date.include_seconds' => ee()->session->userdata('include_seconds', ee()->config->item('include_seconds'))
 		));
 
 		ee()->cp->add_js_script(array(
@@ -187,7 +185,7 @@ class Date_ft extends EE_Fieldtype {
 
 			$("#'.$this->field_name.'").not(".grid_field_container #'.$this->field_name.'").datepicker({
 				constrainInput: false,
-				dateFormat: $.datepicker.W3C + EE.date_obj_time,
+				dateFormat: EE.date.date_format + EE.date_obj_time,
 				defaultDate: new Date(adjustedDefault)
 			});
 		');
@@ -207,7 +205,7 @@ class Date_ft extends EE_Fieldtype {
 
 				cell.find(".ee_datepicker").datepicker({
 					constrainInput: false,
-					dateFormat: $.datepicker.W3C + EE.date_obj_time,
+					dateFormat: EE.date.date_format + EE.date_obj_time,
 					defaultDate: new Date(adjustedDefault)
 				});
 			});
