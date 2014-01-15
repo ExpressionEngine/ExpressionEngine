@@ -1,9 +1,3 @@
-/*jslint browser: true, onevar: true, undef: true, nomen: true, eqeqeq: true, plusplus: true, bitwise: true, regexp: true, strict: true, newcap: true, immed: true */
-
-/*global $, jQuery, EE, window, document, console */
-
-"use strict";
-
 /*!
  * ExpressionEngine - by EllisLab
  *
@@ -16,83 +10,130 @@
  * @filesource
  */
 
-// Setup Base EE Control Panel
-jQuery(document).ready(function () {
+(function($) {
 
-	var $ = jQuery;
+"use strict";
 
-	// Setup Global Ajax Events
+ /**
+  * Namespace function that non-destructively creates "namespace" objects (e.g. EE.publish.example)
+  * @param {String} namespace_string The namespace string (e.g. EE.publish.example)
+  * @returns The object to create
+  */
+EE.namespace = function(namespace_string) {
+	var parts = namespace_string.split('.'),
+		parent = EE;
 
-	// Ajax Errors can be hard to debug so we'll always add a simple
-	// error handler if none were specified.
-	$.ajaxPrefilter(function(options, originalOptions, jqXHR) {
-		var old_xid = EE.XID,
-			type = options.type.toUpperCase();
+	// strip redundant leading global
+	if (parts[0] === "EE") {
+		parts = parts.slice(1);
+	}
 
-		// Throw all errors
-		if ( ! _.has(options, 'error')) {
-			jqXHR.error(function(data) {
-				_.defer(function() {
-					throw [data.statusText, data.responseText];
-				});
-			});
-		}
-
-		// Add CSRF TOKEN to EE POST requests
-		if (type == 'POST' && options.crossDomain === false) {
-			jqXHR.setRequestHeader("X-CSRF-TOKEN", old_xid);
-		}
-
-		var defaultHeaderResponses = {
-			// Refresh xids
-			xid: function(new_xid) {
-				EE.cp.xid.set(new_xid);
-			},
-
-			'csrf-token': function(new_xid) {
-				EE.cp.xid.set(new_xid);
-			},
-
-			// Force redirects (e.g. logout)
-			redirect: function(url) {
-				window.location = EE.BASE + '&' + url.replace('//', '/'); // replace to prevent //example.com
-			},
-
-			broadcast: function(event) {
-				EE.cp.broadcastEvents[event]();
-				$(window).trigger('broadcast', event);
-			}
+	// @todo disallow 'prototype', duh
+	// create a property if it doesn't exist if (typeof parent[parts[i]] === "undefined") {
+	for (var i = 0, max = parts.length; i < max; i += 1) {
+		if (typeof parent[parts[i]] === "undefined") {
+			parent[parts[i]] = {};
 		};
 
-		// Set EE response header defaults
-		eeResponseHeaders = $.merge(
-			defaultHeaderResponses,
-			originalOptions.eeResponseHeaders || {}
-		);
+		parent = parent[parts[i]];
+	}
 
-		jqXHR.complete(function(xhr) {
+	return parent;
+};
 
-			if (options.crossDomain === false) {
-				_.each(eeResponseHeaders, function(callback, name) {
-					var headerValue = xhr.getResponseHeader('X-EE'+name);
+// Create the base namespace
+EE.namespace('EE.cp');
 
-					if (headerValue) {
-						callback(headerValue);
-					}
-				});
-			}
+/**
+ * Hook into jQuery's ajax functionality to build in handling of our
+ * csrf tokens and custom response headers.
+ *
+ * We also add a custom error handler in case the developer does not specify
+ * one. This prevents silent failure.
+ */
+$.ajaxPrefilter(function(options, originalOptions, jqXHR) {
+	var old_token = EE.CSRF_TOKEN,
+		type = options.type.toUpperCase();
+
+	// Throw all errors
+	if ( ! _.has(options, 'error')) {
+		jqXHR.error(function(data) {
+			_.defer(function() {
+				throw [data.statusText, data.responseText];
+			});
 		});
-	});
+	}
 
-	// A 401 in combination with a url indicates a redirect, we use this
-	// on the login page to catch periodic ajax requests (e.g. autosave)
+	// Add CSRF TOKEN to EE POST requests
+	if (type == 'POST' && options.crossDomain === false) {
+		jqXHR.setRequestHeader("X-CSRF-TOKEN", old_token);
+	}
 
-	// Deprecated! Use X-EERedirect
-	$(document).bind('ajaxComplete', function (evt, xhr) {
-		if (xhr.status && (+ xhr.status) === 401) {
-			window.location = EE.BASE + '&' + xhr.responseText;
+	var defaultHeaderResponses = {
+		// Refresh xids (deprecated)
+		'eexid': function(new_xid) {
+			if (new_xid) {
+				EE.cp.setCsrfToken(new_xid);
+			}
+		},
+
+		// Refresh csrf tokens
+		'csrf-token': function(new_token) {
+			if (new_token) {
+				EE.cp.setCsrfToken(new_token);
+			}
+		},
+
+		// Force redirects (e.g. logout)
+		'ee-redirect': function(url) {
+			window.location = EE.BASE + '&' + url.replace('//', '/'); // replace to prevent //example.com
+		},
+
+		// Trigger broadcast events
+		'ee-broadcast': function(event) {
+			EE.cp.broadcastEvents[event]();
+			$(window).trigger('broadcast', event);
+		}
+	};
+
+	// Set EE response header defaults
+	eeResponseHeaders = $.merge(
+		defaultHeaderResponses,
+		originalOptions.eeResponseHeaders || {}
+	);
+
+	jqXHR.complete(function(xhr) {
+
+		if (options.crossDomain === false) {
+			_.each(eeResponseHeaders, function(callback, name) {
+				var headerValue = xhr.getResponseHeader('X-'+name);
+
+				if (headerValue) {
+					callback(headerValue);
+				}
+			});
 		}
 	});
+});
+
+
+// Grid has become a dependency for a few fieldtypes. However, sometimes it's not
+// on the page or loaded after the fieldtype. So instead of tryin to always load
+// grid or doing weird dependency juggling, we're just going to cache any calls
+// to grid.bind for now. Grid will override this definition and replay them if/when
+// it becomes available on the page. Long term we need a better solution for js
+// dependencies.
+EE.grid_cache = [];
+
+window.Grid = {
+	bind: function() {
+		EE.grid_cache.push(arguments);
+	}
+};
+
+
+// Setup Base EE Control Panel
+$(document).ready(function () {
 
 	// call the input placeholder polyfill early so that we don't get
 	// weird flashes of content
@@ -103,7 +144,6 @@ jQuery(document).ready(function () {
 
 
 	// External links open in new window
-
 	$('a[rel="external"]').click(function () {
 		window.open(this.href);
 		return false;
@@ -133,7 +173,7 @@ jQuery(document).ready(function () {
 			save_state();
 		});
 
-		if (! msgBoxOpen) {
+		if ( ! msgBoxOpen) {
 			setup_hidden();
 		}
 	}
@@ -142,85 +182,11 @@ jQuery(document).ready(function () {
 	EE.cp.show_hide_sidebar();
 	EE.cp.display_notices();
 	EE.cp.deprecation_meaning();
-
-
-	// Setup Notepad
-	EE.notepad = (function () {
-
-		var notepad = $('#notePad'),
-			notepad_form = $("#notepad_form"),
-			notepad_txtarea = $('#notePadTextEdit'),
-			notepad_controls = $('#notePadControls'),
-			notepad_text = $('#notePadText');
-			notepad_empty = notepad_text.text(),
-			current_content = notepad_txtarea.val();
-
-		return {
-			init: function () {
-				if (current_content) {
-					notepad_text.html(current_content.replace(/</ig, '&lt;').replace(/>/ig, '&gt;').replace(/\n/ig, '<br />'));
-				}
-
-				notepad.click(EE.notepad.show);
-				notepad_controls.find('a.cancel').click(EE.notepad.hide);
-
-				notepad_form.submit(EE.notepad.submit);
-				notepad_controls.find('input.submit').click(EE.notepad.submit);
-
-				notepad_txtarea.autoResize();
-			},
-
-			submit: function () {
-				current_content = $.trim(notepad_txtarea.val());
-
-				var newval = current_content.replace(/</ig, '&lt;').replace(/>/ig, '&gt;').replace(/\n/ig, '<br />');
-
-				notepad_txtarea.attr('readonly', 'readonly').css('opacity', 0.5);
-				notepad_controls.find('#notePadSaveIndicator').show();
-
-				$.post(notepad_form.attr('action'), {'notepad': current_content }, function (ret) {
-					notepad_text.html(newval || notepad_empty).show();
-					notepad_txtarea.attr('readonly', false).css('opacity', 1).hide();
-					notepad_controls.hide().find('#notePadSaveIndicator').hide();
-				}, 'json');
-				return false;
-			},
-
-			show: function () {
-				// Already showing?
-				if (notepad_controls.is(':visible')) {
-					return false;
-				}
-
-				var newval = '';
-
-				if (notepad_text.hide().text() !== notepad_empty) {
-					newval = notepad_text.html().replace(/<br>/ig, '\n').replace(/&lt;/ig, '<').replace(/&gt;/ig, '>');
-				}
-
-				notepad_controls.show();
-				notepad_txtarea.val(newval).show()
-								.height(0).focus()
-								.trigger('keypress');
-			},
-
-			hide: function () {
-				notepad_text.show();
-				notepad_txtarea.hide();
-				notepad_controls.hide();
-				return false;
-			}
-		};
-	}());
-
-	EE.notepad.init();
-
+	EE.cp.notepad.init();
 	EE.cp.accessory_toggle();
-
 	EE.cp.control_panel_search();
 
 	// Setup sidebar hover descriptions
-
 	$('h4', '#quickLinks').click(function () {
 		window.location.href = EE.BASE + '&C=myaccount&M=quicklinks';
 	})
@@ -230,36 +196,22 @@ jQuery(document).ready(function () {
 		$('.sidebar_hover_desc', this).hide();
 	})
 	.css('cursor', 'pointer');
-}); // ready
 
-/**
- * Namespace function that non-destructively creates "namespace" objects (e.g. EE.publish.example)
- * @param {String} namespace_string The namespace string (e.g. EE.publish.example)
- * @returns The object to create
- */
-EE.namespace = function(namespace_string) {
-	var parts = namespace_string.split('.'),
-		parent = EE;
+});
 
-	// strip redundant leading global
-	if (parts[0] === "EE") {
-		parts = parts.slice(1);
+
+// Simple object to deal with csrf tokens
+EE.cp.setCsrfToken = {
+
+	set: function(new_xid) {
+		$('input[name="XID"]').val(new_xid);
+		$('input[name="CSRF_TOKEN"]').val(new_xid);
+
+		EE.XID = new_xid;
+		EE.CSRF_TOKEN = new_xid;
 	}
-
-	// @todo disallow 'prototype', duh
-	// create a property if it doesn't exist if (typeof parent[parts[i]] === "undefined") {
-	for (var i = 0, max = parts.length; i < max; i += 1) {
-		if (typeof parent[parts[i]] === "undefined") {
-			parent[parts[i]] = {};
-		};
-
-		parent = parent[parts[i]];
-	}
-
-	return parent;
 };
 
-EE.namespace('EE.cp');
 
 // Show / hide accessories
 EE.cp.accessory_toggle = function() {
@@ -286,6 +238,86 @@ EE.cp.accessory_toggle = function() {
 		}
 	});
 };
+
+
+// Setup Notepad
+EE.cp.notepad = (function () {
+
+	var notepad_form,
+		notepad_txtarea,
+		notepad_controls,
+		notepad_text,
+		notepad_empty,
+		current_content;
+
+	return {
+		init: function () {
+
+			var notepad = $('#notePad');
+
+			notepad_form = $("#notepad_form");
+			notepad_txtarea = $('#notePadTextEdit');
+			notepad_controls = $('#notePadControls');
+			notepad_text = $('#notePadText');
+			notepad_empty = notepad_text.text();
+			current_content = notepad_txtarea.val();
+
+			if (current_content) {
+				notepad_text.html(current_content.replace(/</ig, '&lt;').replace(/>/ig, '&gt;').replace(/\n/ig, '<br />'));
+			}
+
+			notepad.click(EE.cp.notepad.show);
+			notepad_controls.find('a.cancel').click(EE.cp.notepad.hide);
+
+			notepad_form.submit(EE.cp.notepad.submit);
+			notepad_controls.find('input.submit').click(EE.cp.notepad.submit);
+
+			notepad_txtarea.autoResize();
+		},
+
+		submit: function () {
+			current_content = $.trim(notepad_txtarea.val());
+
+			var newval = current_content.replace(/</ig, '&lt;').replace(/>/ig, '&gt;').replace(/\n/ig, '<br />');
+
+			notepad_txtarea.attr('readonly', 'readonly').css('opacity', 0.5);
+			notepad_controls.find('#notePadSaveIndicator').show();
+
+			$.post(notepad_form.attr('action'), {'notepad': current_content }, function (ret) {
+				notepad_text.html(newval || notepad_empty).show();
+				notepad_txtarea.attr('readonly', false).css('opacity', 1).hide();
+				notepad_controls.hide().find('#notePadSaveIndicator').hide();
+			}, 'json');
+			return false;
+		},
+
+		show: function () {
+			// Already showing?
+			if (notepad_controls.is(':visible')) {
+				return false;
+			}
+
+			var newval = '';
+
+			if (notepad_text.hide().text() !== notepad_empty) {
+				newval = notepad_text.html().replace(/<br>/ig, '\n').replace(/&lt;/ig, '<').replace(/&gt;/ig, '>');
+			}
+
+			notepad_controls.show();
+			notepad_txtarea.val(newval).show()
+							.height(0).focus()
+							.trigger('keypress');
+		},
+
+		hide: function () {
+			notepad_text.show();
+			notepad_txtarea.hide();
+			notepad_controls.hide();
+			return false;
+		}
+	};
+})();
+
 
 // Ajax for control panel search
 EE.cp.control_panel_search = function() {
@@ -460,33 +492,69 @@ EE.insert_placeholders = function () {
 	});
 };
 
+// Modal for "What does this mean?" link on deprecation notices
+EE.cp.deprecation_meaning = function() {
+	$('.deprecation_meaning').click(function(event) {
+		event.preventDefault();
 
+		var deprecation_meaning_modal = $('<div class="alert">' + EE.developer_log.deprecation_meaning + ' </div>');
+
+		deprecation_meaning_modal.dialog({
+			height: 300,
+			modal: true,
+			title: EE.developer_log.dev_log_help,
+			width: 460
+		});
+	});
+};
+
+EE.cp.zebra_tables = function(table) {
+	table = table || $('table');
+
+	if ( ! table.jquery) {
+		table = $(table);
+	}
+
+	$(table)
+		.find('tr')
+		.removeClass('even odd')
+		.filter(':even').addClass('even')
+		.end()
+		.filter(':odd').addClass('odd');
+};
+
+
+/**
+ * Handle idle / inaction between windows
+ *
+ * This code relies heavily on timing. In order to reduce complexity everything is
+ * handled in steps (ticks) of 15 seconds. We count for how many ticks we have been
+ * in a given state and act accordingly. This gives us reasonable timing information
+ * without having to set, cancel, and track multiple timeouts.
+ *
+ * The conditions currently are as follows:
+ *
+ * - If an ee tab has focus we call it idle after 20 minutes of no interaction
+ * - If no ee tab has focus, we call it idle after 40 minutes of no activity
+ * - If they work around the modal (inspector), all request will land on the login page.
+ * - Logging out of one tab will show the modal on all other tabs.
+ * - Logging into the modal on one tab, will show it on all other tabs.
+ *
+ * The object returned is one that allows manual triggering of an event. For
+ * example, to force the modal to show you could call:
+ *
+ *     EE.cp.broadcastEvents['modal']();
+ *
+ * This is used by our ajax filter to allow triggering an event with the
+ * X-EE-BROADCAST header
+ *
+ */
 EE.cp.broadcastEvents = (function() {
-
-	/**
-	 * Handle idle / inaction between windows
-	 *
-	 * This code relies heavily on timing. In order to reduce complexity everything is
-	 * handled in steps (ticks) of 15 seconds. We count for how many ticks we have been
-	 * in a given state and act accordingly. This gives us reasonable timing information
-	 * without having to set, cancel, and track multiple timeouts.
-	 *
-	 * The conditions currently are as follows:
-	 *
-	 * - If an ee tab has focus we call it idle after 20 minutes of no interaction
-	 * - If no ee tab has focus, we call it idle after 40 minutes of no activity
-	 * - If the modal receive no interaction for more than 30 minutes, we show the login page.
-	 * - If they work around the modal (inspector), all request will land on the login page.
-	 * - Logging out of one tab will show the modal on all other tabs.
-	 * - Logging into the modal on one tab, will show it on all other tabs.
-	 */
-		// - Config toggle to turn it off?
 
 	// Define our time limits:
 	var TICK_TIME          = 15 * 1000, // 15 seconds between ticks, 4 per minute
-		FOCUSED_TICK_LIMIT = 4 * 20,    // 20 minutes: time before modal if window focused
-		BLURRED_TICK_LIMIT = 4 * 40,    // 40 minutes: time before modal if no focus
-		LOGOUT_TICK_LIMIT  = 4 * 30;    // 30 minutes: time before logout if no modal interaction
+		FOCUSED_TICK_LIMIT = 1, //4 * 20,    // 20 minutes: time before modal if window focused
+		BLURRED_TICK_LIMIT = 1; //4 * 40;    // 40 minutes: time before modal if no focus
 
 	// Make sure we have our modal available when we need it
 	var logoutModal = $('#idle-modal').dialog({
@@ -564,16 +632,7 @@ EE.cp.broadcastEvents = (function() {
 			return (this.modalActive === false && mustShowModal === true);
 		},
 
-		logoutThresholdReached: function() {
-			return (this.modalActive && this.idleCount > LOGOUT_TICK_LIMIT);
-		},
-
 		resolve: function() {
-
-			if (this.logoutThresholdReached()) {
-				Events.logout();
-				$(window).trigger('broadcast.idleState', 'logout');
-			}
 
 			if (State.modalThresholdReached()) {
 				Events.modal();
@@ -640,14 +699,11 @@ EE.cp.broadcastEvents = (function() {
 
 		// received another window's login event, check and hide modal
 		login: function() {
-			EE.cp.xid.refresh(function() {
-				// lose the modal
-				logoutModal.off('dialogbeforeclose');
-				logoutModal.dialog('close');
+			logoutModal.off('dialogbeforeclose');
+			logoutModal.dialog('close');
 
-				State.modalActive = false;
-				State.idleCount = 0;
-			});
+			State.modalActive = false;
+			State.idleCount = 0;
 		},
 
 		// received another window's logout event, leave page
@@ -748,150 +804,6 @@ EE.cp.broadcastEvents = (function() {
 
 })();
 
-
-EE.cp.xid = (function() {
-
-	var loadWasFromBFCache = false,
-		submission = false,
-		lastRefresh = new Date;
-
-	function setXid(new_xid) {
-		$('input[name="XID"]').val(new_xid);
-		$('input[name="CSRF_TOKEN"]').val(new_xid);
-
-		EE.XID = new_xid;
-		EE.CSRF_TOKEN = new_xid
-	}
-
-	function refreshXID(callback) {
-		$.get(EE.BASE + '&C=login&M=refresh_xid', function(result) {
-			if (result.message != 'refresh') {
-				return;
-			}
-
-			lastRefresh = new Date;
-
-			// refresh xid
-			setXid(result.xid);
-
-			if (callback) {
-				callback(result);
-			}
-		});
-	}
-
-	var Events = {
-
-		// A submission spells certain death to this xid so don't
-		// bother holding on to it.
-		submit: function() {
-			submission = true;
-			localStorage.removeItem('EE_XID', EE.XID);
-		},
-
-		// If they unload a page that was not loaded from the bfcache
-		// and the unload was not triggered by a submission then this
-		// is an unused xid and we can hold on to it in the hopes that
-		// they will not spend hours in a form after navigation.
-		pagehide: function(event) {
-			if ( ! loadWasFromBFCache && ! submission) {
-				localStorage.setItem('EE_XID', EE.XID);
-			}
-		},
-
-		// Showing a page from the bfcache? Do our best to use a valid xid.
-		pageshow: function(event) {
-			loadWasFromBFCache = event.persisted;
-
-			if ( ! event.persisted) {
-				return;
-			}
-
-			var xid = localStorage.getItem('EE_XID');
-
-			if (xid) {
-				// refresh xid
-				EE.cp.xid.set(xid);
-			} else {
-				EE.cp.xid.refresh();
-			}
-		}
-	};
-
-	// modern browsers only
-	if ('onpagehide' in window) {
-		window.addEventListener('submit', Events.submit, false);
-		window.addEventListener('pagehide', Events.pagehide, false);
-		window.addEventListener('pageshow', Events.pageshow, false);
-	}
-
-	// Everyone else just gets a periodic refresh
-	// We check every minute and refresh every 30
-	setTimeout(function() {
-		var now = new Date;
-		if ((now - lastRefresh) > 30 * 60 * 1000) {
-			refreshXID();
-		}
-	}, 60000);
-
-	// expose set and refresh
-	return {
-		set: function(new_xid) {
-			setXid(new_xid);
-		},
-
-		refresh: function(callback) {
-			refreshXID(callback);
-		}
-	};
-
-})();
-
-// Modal for "What does this mean?" link on deprecation notices
-EE.cp.deprecation_meaning = function() {
-	$('.deprecation_meaning').click(function(event) {
-		event.preventDefault();
-
-		var deprecation_meaning_modal = $('<div class="alert">' + EE.developer_log.deprecation_meaning + ' </div>');
-
-		deprecation_meaning_modal.dialog({
-			height: 300,
-			modal: true,
-			title: EE.developer_log.dev_log_help,
-			width: 460
-		});
-	});
-};
-
-EE.cp.zebra_tables = function(table) {
-	table = table || $('table');
-
-	if ( ! table.jquery) {
-		table = $(table);
-	}
-
-	$(table)
-		.find('tr')
-		.removeClass('even odd')
-		.filter(':even').addClass('even')
-		.end()
-		.filter(':odd').addClass('odd');
-};
-
-// Grid has become a dependency for a few fieldtypes. However, sometimes it's not
-// on the page or loaded after the fieldtype. So instead of tryin to always load
-// grid or doing weird dependency juggling, we're just going to cache any calls
-// to grid.bind for now. Grid will override this definition and replay them if/when
-// it becomes available on the page. Long term we need a better solution for js
-// dependencies.
-EE.grid_cache = [];
-
-var Grid = {
-	bind: function() {
-		EE.grid_cache.push(arguments);
-	}
-};
-
 // First step in deprecating scripts in add_to_head().
 // Next release the message will be more visible/annoying.
 
@@ -915,3 +827,6 @@ var Grid = {
 		}
 	}
 })();
+
+
+})(jQuery);
