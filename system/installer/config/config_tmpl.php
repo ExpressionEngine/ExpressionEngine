@@ -51,17 +51,6 @@ $config['uri_protocol']	= '{uri_protocol}';
 */
 $config['charset'] = '{charset}';
 
-/*
-|--------------------------------------------------------------------------
-| Enable/Disable System Hooks
-|--------------------------------------------------------------------------
-|
-| If you would like to use the "hooks" feature you must enable it by
-| setting this variable to TRUE (boolean).  See the user guide for details.
-|
-*/
-$config['enable_hooks'] = {enable_hooks};
-
 
 /*
 |--------------------------------------------------------------------------

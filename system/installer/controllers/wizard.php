@@ -130,7 +130,6 @@ class Wizard extends CI_Controller {
 	var $ci_config = array(
 		'uri_protocol'			=> 'AUTO',
 		'charset' 				=> 'UTF-8',
-		'enable_hooks' 			=> FALSE,
 		'subclass_prefix' 		=> 'EE_',
 		'permitted_uri_chars' 	=> 'a-z 0-9~%.:_\-',
 		'enable_query_strings'	=> FALSE,
