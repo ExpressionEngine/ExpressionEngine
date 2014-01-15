@@ -666,25 +666,20 @@ class Login extends CP_Controller {
 	/**
 	 *	Refresh XID
 	 *
-	 *	This method is hit by users who are logged in and using cookies only
-	 *	As their session type.  we'll silently refresh their XIDs in the background
-	 *	Instead of forcing them to log back in each time.
-	 *	This method will keep the user logged in indefinitely, as the session type is
-	 *	already set to cookies.  If we didn't do this, they would simply be redirected to
-	 *	the control panel home page.
+	 *	This method is hit
 	 *
 	 */
-	public function refresh_xid()
+	public function refresh_csrf_token()
 	{
 		// the only way we will be hitting this is through an ajax request.
-		// Any other way is monkeying with URLs.  I have no patience for URL monkiers.
-		if ( ! AJAX_REQUEST OR ! $this->cp->allowed_group('can_access_cp'))
+		// Any other way is monkeying with URLs. I have no patience for URL monkiers.
+		if ( ! AJAX_REQUEST)
 		{
 			show_error(lang('unauthorized_access'));
 		}
 
 		$this->output->send_ajax_response(array(
-			'xid'	  => CSRF_TOKEN,
+			'csrfToken' => CSRF_TOKEN,
 			'message' => 'refresh'
 		));
 	}
