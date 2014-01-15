@@ -40,8 +40,7 @@ class Updater {
 			array(
 				'_update_extension_quick_tabs',
 				'_extract_server_offset_config',
-				'_update_config_add_cookie_httponly',
-				'_make_search_csrf_exempt'
+				'_update_config_add_cookie_httponly'
 			)
 		);
 
