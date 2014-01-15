@@ -453,6 +453,26 @@ class EE_Session {
 		}
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Lock the control panel
+	 *
+	 * This logs the user out of the cp, but keeps their frontend session
+	 * active. We do this when we trigger the CP idle modal to prevent
+	 * tampering.
+	 */
+	public function lock_cp()
+	{
+		if (ee()->session->userdata('admin_sess') == 0)
+		{
+			return;
+		}
+
+		ee()->db->set('admin_sess', 0)
+			->where('session_id', $this->userdata['session_id'])
+			->update('sessions');
+	}
 
 	// --------------------------------------------------------------------
 

@@ -349,10 +349,25 @@ class Login extends CP_Controller {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Lock CP
+	 *
+	 * Keep the session alive, but lock them out of the control panel
+	 *
+	 * @return void
+	 */
+	public function lock_cp()
+	{
+		ee()->session->lock_cp();
+		$this->functions->redirect(BASE.AMP.'C=login');
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Log-out
 	 *
 	 * @access	public
-	 * @return	null
+	 * @return	void
 	 */
 	public function logout()
 	{

@@ -640,7 +640,7 @@ EE.cp.broadcastEvents = (function() {
 			if (State.modalThresholdReached()) {
 				Events.modal();
 				$(window).trigger('broadcast.idleState', 'modal');
-				$.get(EE.BASE + '&C=login&M=logout'); // log them out in the background to prevent tampering
+				$.get(EE.BASE + '&C=login&M=lock_cp'); // lock them out of the cp in the background to prevent tampering
 			}
 
 			// ping other windows if we've been reset
