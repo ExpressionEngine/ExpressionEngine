@@ -135,18 +135,6 @@ $config['cache_path'] = '{cache_path}';
 */
 $config['encryption_key'] = '{encryption_key}';
 
-
-/*
-|--------------------------------------------------------------------------
-| CSRF Protection
-|--------------------------------------------------------------------------
-|
-| Determines whether Cross Site Request Forgery protection is enabled.
-| For more info visit the security library page of the user guide
-|
-*/
-$config['csrf_protection'] = {csrf_protection};
-
 /*
 |--------------------------------------------------------------------------
 | Output Compression
