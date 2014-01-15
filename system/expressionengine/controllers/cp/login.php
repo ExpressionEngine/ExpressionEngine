@@ -458,6 +458,7 @@ class Login extends CP_Controller {
 
 		$member_id = $query->row('member_id');
 		$name  = ($query->row('screen_name') == '') ? $query->row('username') : $query->row('screen_name');
+		$username  = $query->row('username');
 
 		// Clean out any old reset codes.
 		$a_day_ago = time() - (60*60*24);
@@ -470,9 +471,10 @@ class Login extends CP_Controller {
 		$data = array('member_id' => $member_id, 'resetcode' => $rand, 'date' => time());
 		$this->db->query($this->db->insert_string('exp_reset_password', $data));
 
-		// Buid the email message
+		// Build the email message
 		$swap = array(
 			'name'		=> $name,
+			'username'		=> $username,
 			'reset_url'	=> reduce_double_slashes($this->config->item('cp_url')."?S=0&D=cp&C=login&M=reset_password&resetcode=".$rand),
 			'site_name'	=> stripslashes($this->config->item('site_name')),
 			'site_url'	=> $this->config->item('site_url')
