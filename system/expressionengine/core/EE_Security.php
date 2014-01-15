@@ -48,8 +48,7 @@ class EE_Security extends CI_Security {
 	/**
 	 * Check and Validate Form CSRF tokens
 	 *
-	 * Checks any POST and PUT data for a valid csrf tokens. Sometimes requests
-	 * are skipped, so we  The main
+	 * Checks any POST and PUT data for a valid csrf tokens. The main
 	 * processing happens in the csrf library which differentiates between
 	 * logged in and logged out users.
 	 *
@@ -63,13 +62,8 @@ class EE_Security extends CI_Security {
 		// Check the token if we must
 		ee()->load->library('csrf');
 
-		// exempt trumps all
-		if ($flags & self::CSRF_EXEMPT)
-		{
-			$is_valid = TRUE;
-		}
-		// for now, only check non-cp ajax in strict mode
-		elseif (AJAX_REQUEST && REQ != 'CP' && ! ($flags & self::CSRF_STRICT))
+		if (($flags & self::CSRF_EXEMPT) || // exempt trumps all
+			(AJAX_REQUEST && REQ != 'CP' && ! ($flags & self::CSRF_STRICT))) // non-cp ajax only gets checked for strict mode
 		{
 			$is_valid = TRUE;
 		}
