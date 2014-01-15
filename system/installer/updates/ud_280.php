@@ -157,16 +157,6 @@ class Updater {
 
 	// --------------------------------------------------------------------
 
-	/**
-	 * Make searches exempt from CSRF check.
-	 */
-	private function _make_search_csrf_exempt()
-	{
-		ee()->db->where('class', 'Search')
-			->where('method', 'do_search')
-			->update('actions', array('csrf_exempt' => 1));
-	}
-
 }
 /* END CLASS */
 

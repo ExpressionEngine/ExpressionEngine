@@ -25,7 +25,7 @@ if ( ! defined('EXT'))
 
 class Search_upd {
 
-	var $version = '2.2.1';
+	var $version = '2.2.2';
 
 	function Search_upd()
 	{
@@ -175,6 +175,14 @@ class Search_upd {
 			ee()->smartforge->modify_column('search', $fields);
 
 			ee()->smartforge->add_key('search', 'site_id');
+		}
+
+		if (version_compare($current, '2.2.2', '<'))
+		{
+			// Make searches exempt from CSRF check.
+			ee()->db->where('class', 'Search')
+				->where('method', 'do_search')
+				->update('actions', array('csrf_exempt' => 1));
 		}
 
 		return TRUE;
