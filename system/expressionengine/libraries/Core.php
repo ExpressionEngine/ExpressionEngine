@@ -781,12 +781,12 @@ class EE_Core {
 			if (REQ == 'CP')
 			{
 				$this->_somebody_set_us_up_the_base();
-				ee()->session->set_flashdata('message_failure', lang('invalid_action'));
+				ee()->session->set_flashdata('message_failure', lang('csrf_token_expired'));
 				ee()->functions->redirect(BASE);
 			}
 			else
 			{
-				ee()->output->show_user_error('general', array(lang('invalid_action')));
+				ee()->output->show_user_error('general', array(lang('csrf_token_expired')));
 			}
 		}
 	}
