@@ -138,7 +138,6 @@ class Wizard extends CI_Controller {
 		'cache_path' 			=> '',
 		'encryption_key' 		=> '',
 		'cookie_prefix'			=> '',
-		'csrf_protection' 		=> FALSE,
 		'compress_output' 		=> FALSE,
 		'time_reference' 		=> 'local',
 		'rewrite_short_tags' 	=> TRUE			// Enabled for cleaner view files and compatibility
