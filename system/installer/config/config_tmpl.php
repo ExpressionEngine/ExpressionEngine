@@ -136,17 +136,6 @@ $config['cache_path'] = '{cache_path}';
 */
 $config['encryption_key'] = '{encryption_key}';
 
-/*
-|--------------------------------------------------------------------------
-| Global XSS Filtering
-|--------------------------------------------------------------------------
-|
-| Determines whether the XSS filter is always active when GET, POST or
-| COOKIE data is encountered
-|
-*/
-$config['global_xss_filtering'] = {global_xss_filtering};
-
 
 /*
 |--------------------------------------------------------------------------
