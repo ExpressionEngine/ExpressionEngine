@@ -721,6 +721,14 @@ class Cp {
 	 */
 	function add_to_head($data)
 	{
+		// Deprecated for scripts. Let's encourage good practices. This will
+		// also let us move jquery in the future.
+		if (strpos($data, '<script') !== FALSE)
+		{
+			ee()->load->library('logger');
+			ee()->logger->deprecated('2.8', 'CP::add_to_foot() for scripts');
+		}
+
 		$this->its_all_in_your_head[] = $data;
 	}
 
