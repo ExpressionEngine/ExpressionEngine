@@ -166,21 +166,26 @@ class Updater {
 		// Store old setting
 		$secure_forms = ee()->config->item('secure_forms');
 
-		// Remove from config file
+		// Remove config item from config file
 		ee()->config->_update_config(array(), array('secure_forms' => ''));
 
-		// Remove from db
+		// Remove config item from db
 		$msm_config = new MSM_Config();
 		$msm_config->remove_config_item('secure_forms');
 
-		// If no, set disabled
+		// If it was no, we need to set it as disabled
 		if ($secure_forms == 'y')
 		{
 			ee()->config->_update_config(array('disable_csrf_protection' => TRUE));
 		}
 
+		// We changed how we access the table, so we'll re-key it to efficiently
+		// select on the session id, which is the only column we use now.
+		ee()->db->truncate('security_hashes');
 
-
+		ee()->smartforge->drop_column('security_hashes', 'used');
+		ee()->smartforge->drop_key('security_hashes', 'hash');
+		ee()->smartforge->add_key('security_hashes', 'session_id');
 
 	}
 
