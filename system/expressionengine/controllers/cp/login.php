@@ -100,6 +100,7 @@ class Login extends CP_Controller {
 			// In the event it's a string, send it to return to login
 			$this->_return_to_login(implode(', ', $this->auth->errors));
 		}
+
 		list($username, $password, $incoming) = $verify_result;
 		$member_id = $incoming->member('member_id');
 
@@ -122,7 +123,6 @@ class Login extends CP_Controller {
 		{
 			return $this->_un_pw_update_form();
 		}
-
 
 		// Set cookies and start session
 		// ----------------------------------------------------------------
@@ -163,14 +163,8 @@ class Login extends CP_Controller {
 			$return_path = $base.AMP.base64_decode($this->input->post('return_path'));
 		}
 
-		// cycle the csrf token
-		$csrf_token = ee()->csrf->refresh_token();
-
 		if (AJAX_REQUEST)
 		{
-			header('X-CSRF-TOKEN: '.$csrf_token);
-			header('X-EEXID: '.$csrf_token);
-
 			$this->output->send_ajax_response(array(
 				'base'			=> $base,
 				'messageType'	=> 'success',
@@ -385,9 +379,6 @@ class Login extends CP_Controller {
 		$this->input->delete_cookie('read_topics');
 
 		$this->logger->log_action(lang('member_logged_out'));
-
-		// cycle the csrf token
-		ee()->csrf->refresh_token();
 
 		if ($this->input->get('auto_expire'))
 		{
@@ -678,8 +669,10 @@ class Login extends CP_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
+		header('X-CSRF-TOKEN: '.CSRF_TOKEN);
+		header('X-EEXID: '.CSRF_TOKEN);
+
 		$this->output->send_ajax_response(array(
-			'csrfToken' => CSRF_TOKEN,
 			'message' => 'refresh'
 		));
 	}

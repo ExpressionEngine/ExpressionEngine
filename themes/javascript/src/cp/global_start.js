@@ -538,9 +538,9 @@ EE.cp.zebra_tables = function(table) {
 EE.cp.refreshCsrfToken = function() {
 
 	$.getJSON(EE.BASE + '&C=login&M=refresh_csrf_token', function(result) {
-		console.log(result);
 		EE.cp.setCsrfToken(result.csrfToken);
 	});
+
 }
 
 /**
@@ -618,12 +618,15 @@ EE.cp.broadcastEvents = (function() {
 				EE.BASE = result.base.replace(/&amp;/g, '&');
 
 				var replaceBase = function(i, value) {
-					return value.replace(oldBase, EE.BASE);
+					if (value) {
+						return value.replace(oldBase, EE.BASE);
+					}
 				};
 
-				$('a').prop('href', replaceBase);
-				$('form').prop('action', replaceBase);
+				$('a').attr('href', replaceBase);
+				$('form').attr('action', replaceBase);
 
+				// Grab the new token
 				EE.cp.refreshCsrfToken();
 
 				$(window).trigger('broadcast.idleState', 'login');
