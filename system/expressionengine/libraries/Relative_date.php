@@ -103,6 +103,13 @@ class Relative_date_object {
 	 */
 	public function calculate($units = array('years', 'months', 'weeks', 'days', 'hours', 'minutes', 'seconds'))
 	{
+		if ( ! is_array($units))
+		{
+			throw new Exception('We need an array of units to calculate');
+		}
+
+		$this->_calculated_units = $units;
+
 		$this->_units = array(
 			'years'   => 0,
 			'months'  => 0,
@@ -112,13 +119,6 @@ class Relative_date_object {
 			'minutes' => 0,
 			'seconds' => 0
 		);
-
-		if ( ! is_array($units))
-		{
-			throw new Exception('We need an array of units to calculate');
-		}
-
-		$this->_calculated_units = $units;
 
 		$delta = abs($this->_timestamp - $this->_reference);
 
