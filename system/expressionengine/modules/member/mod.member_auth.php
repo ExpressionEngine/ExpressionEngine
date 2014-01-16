@@ -696,6 +696,7 @@ class Member_auth extends Member {
 		$member_id = $memberQuery->row('member_id');
 		$username  = $memberQuery->row('username');
 		$name  = ($memberQuery->row('screen_name') == '') ? $memberQuery->row('username') : $memberQuery->row('screen_name');
+		$username  = $memberQuery->row('username');
 
 		// Kill old data from the reset_password field
 		$a_day_ago = time() - (60*60*24);
@@ -739,6 +740,7 @@ class Member_auth extends Member {
 
 		$swap = array(
 			'name'		=> $name,
+			'username'    => $username,
 			'reset_url'	=> reduce_double_slashes(ee()->functions->fetch_site_index(0, 0) . '/' . ee()->config->item('profile_trigger') . '/reset_password?&id='.$rand.$forum_id),
 			'site_name'	=> $site_name,
 			'site_url'	=> $return
