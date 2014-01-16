@@ -542,7 +542,7 @@ class Pagination_object {
 			}
 
 			// Check to see if we should be showing first/last page or not
-			if ($this->_always_show_first_last == FALSE)
+			if ($this->_always_show_first_last == FALSE && is_array($parse_array['pagination_links']))
 			{
 				// Don't show the first
 				if ($this->current_page <= ($this->_page_links_limit + 1))

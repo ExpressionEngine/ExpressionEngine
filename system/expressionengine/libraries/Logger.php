@@ -312,13 +312,12 @@ class EE_Logger {
 	{
 		ee()->load->model('template_model');
 		$templates = ee()->template_model->fetch_last_edit(array(), TRUE);
-
 		foreach($templates as $template)
 		{
 			// Find and replace the tags
 			$template->template_data = preg_replace(
-				"/({exp:channel:form.*)({categories(.*?)group_id=(.*?)})(.*)/uis",
-				"$1{categories$3show_group=$4}$5",
+				$regex,
+				$replacement,
 				$template->template_data
 			);
 
@@ -333,6 +332,13 @@ class EE_Logger {
 				ee()->template_model->save_to_database($template);
 			}
 		}
+
+		// Update current tagdata
+		ee()->TMPL->tagdata = preg_replace(
+			$regex,
+			$replacement,
+			ee()->TMPL->tagdata
+		);
 
 		$this->developer($message, TRUE, 604800);
 	}
