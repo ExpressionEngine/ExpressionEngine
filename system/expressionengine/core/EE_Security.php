@@ -63,12 +63,13 @@ class EE_Security extends CI_Security {
 		ee()->load->library('csrf');
 
 		if (($flags & self::CSRF_EXEMPT) || // exempt trumps all
-			(AJAX_REQUEST && REQ != 'CP' && ! ($flags & self::CSRF_STRICT))) // non-cp ajax only gets checked for strict mode
+			(AJAX_REQUEST && REQ != 'CP' && ! ($flags & self::CSRF_STRICT)) || // non-cp ajax only gets checked for strict mode
+			config_item('disable_csrf_protection')) // disabled
 		{
 			$is_valid = TRUE;
 		}
-		// otherwise, run the check if enabled
-		elseif ( ! config_item('disable_csrf_protection'))
+		// otherwise, run the check
+		else
 		{
 			$is_valid = ee()->csrf->check();
 		}
