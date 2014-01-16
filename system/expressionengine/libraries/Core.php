@@ -776,7 +776,7 @@ class EE_Core {
 	final public function process_secure_forms($flags = EE_Security::CSRF_STRICT)
 	{
 		// Secure forms stuff
-		if( ! ee()->security->have_valid_xid($flags))
+		if ( ! ee()->security->have_valid_xid($flags))
 		{
 			if (REQ == 'CP')
 			{
