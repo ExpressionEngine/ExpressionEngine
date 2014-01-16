@@ -40,7 +40,8 @@ class Updater {
 			array(
 				'_update_extension_quick_tabs',
 				'_extract_server_offset_config',
-				'_update_config_add_cookie_httponly'
+				'_update_config_add_cookie_httponly',
+				'_convert_xid_to_csrf'
 			)
 		);
 
@@ -138,7 +139,7 @@ class Updater {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Update Config to Add cookie_httponly
 	 *
@@ -154,6 +155,34 @@ class Updater {
 		);
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Update security hashes table and set new config item.
+	 *
+	 */
+	private function _convert_xid_to_csrf()
+	{
+		// Store old setting
+		$secure_forms = ee()->config->item('secure_forms');
+
+		// Remove from config file
+		ee()->config->_update_config(array(), array('secure_forms' => ''));
+
+		// Remove from db
+		$msm_config = new MSM_Config();
+		$msm_config->remove_config_item('secure_forms');
+
+		// If no, set disabled
+		if ($secure_forms == 'y')
+		{
+			ee()->config->_update_config(array('disable_csrf_protection' => TRUE));
+		}
+
+
+
+
+	}
 
 }
 /* END CLASS */
