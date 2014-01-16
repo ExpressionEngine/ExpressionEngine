@@ -4187,7 +4187,7 @@ class EE_Template {
 	 * relative date)
 	 *
 	 * @param	string	$timestamp	The UNIX timestamp being processed
-	 * @param	mixed[]	$parameters		An associative array of parameters
+	 * @param	mixed[]	$parameters	An associative array of parameters
 	 *  	e.g. 'format'   => '%Y-%m-%d'
 	 * 		     'units'    => 'years|months|days'
 	 * 		     'depth'    => '2'
@@ -4207,7 +4207,7 @@ class EE_Template {
 				$adjusted_timestamp = strtotime($parameters['stop'], $timestamp);
 				if ($adjusted_timestamp === FALSE)
 				{
-					$this->log_item("Failed Stop Parameter: " . $parameters['stop']);
+					$this->log_item("Invalid Stop Parameter: " . $parameters['stop']);
 				}
 				elseif (ee()->localize->now >= $adjusted_timestamp)
 				{
@@ -4218,28 +4218,44 @@ class EE_Template {
 
 		if ($relative)
 		{
-			ee()->load->helper('date');
-			$singular = isset($parameters['singular']) ? $parameters['singular'] : 'one';
-			$less_than = isset($parameters['less_than']) ? $parameters['less_than'] : 'less than';
-			$units = NULL;
+			ee()->load->library('relative_date');
+
+			$relative_date = ee()->relative_date->create($timestamp);
+
+			$units = array();
 			if (isset($parameters['units']))
 			{
-				$units = explode('|', $parameters['units']);
+				$valid_units = $relative_date->valid_units;
+				foreach(explode('|', $parameters['units']) as $unit)
+				{
+					if (in_array($unit, $valid_units))
+					{
+						$units[] = $unit;
+					}
+					else
+					{
+						$this->log_item("Invalid Relative Date Unit: " . $unit);
+					}
+				}
 			}
+
+			if (empty($units))
+			{
+				$units = $relative_date->valid_units;
+			}
+
+			$relative_date->calculate($units);
+
+			foreach (array('singular', 'less_than', 'past', 'future') as $param)
+			{
+				if (isset($parameters[$param]))
+				{
+					$relative_date->{$param} = $parameters[$param];
+				}
+			}
+
 			$depth = isset($parameters['depth']) ? $parameters['depth'] : 1;
-
-			$relative_date = relative_date($timestamp, time(), $singular, $less_than, $units, $depth);
-
-			if ($timestamp <= ee()->localize->now)
-			{
-				$str = isset($parameters['past']) ? $parameters['past'] : "%s ago";
-			}
-			else
-			{
-				$str = isset($parameters['future']) ? $parameters['future'] : "in %s";
-			}
-
-			$dt = str_replace('%s', $relative_date, $str);
+			$dt = $relative_date->render($depth);
 		}
 		elseif (isset($parameters['format']))
 		{
