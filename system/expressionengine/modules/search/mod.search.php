@@ -1230,12 +1230,15 @@ class Search {
 
 		// Check to see if we're using old style pagination
 		// TODO: Remove once old pagination is phased out
-		$old_pagination = (strpos(ee()->TMPL->template, LD.'if paginate'.RD) !== FALSE) ? TRUE : FALSE;
+		preg_match("/\{if paginate\}(.*)\{\/if\}/is", ee()->TMPL->tagdata, $matches);
+		$old_pagination = (isset($matches[1])) ? $matches[1] : FALSE;
 
 		// If we are using old pagination, log it as deprecated
 		// TODO: Remove once old pagination is phased out
 		if ($old_pagination)
 		{
+			ee()->TMPL->tagdata = preg_replace("/\{if paginate\}(.*)\{\/if\}/is", '', ee()->TMPL->tagdata);
+
 			ee()->load->library('logger');
 			ee()->logger->developer('Deprecated template tag {if paginate}. Old style pagination in the Search Module has been deprecated in 2.4 and will be removed soon. Switch to the new Channel style pagination.', TRUE);
 		}
@@ -1248,7 +1251,7 @@ class Search {
 		{
 			return ee()->output->show_user_error(
 				'off',
-				array(lang('search_no_result')),
+				array(lang('search_no_result'))
 			);
 		}
 
@@ -1264,16 +1267,6 @@ class Search {
 		// Retrieve the search_id
 		$qstring = explode('/', ee()->uri->query_string);
 		$search_id = trim($qstring[0]);
-		}
-		else
-		{
-			$pagination->offset = 0;
-			$search_id = $qstring;
-		}
-
-		// If there is a slash in the search ID we'll kill everything after it.
-		$search_id = trim($search_id);
-		$search_id = preg_replace("#/.+#", "", $search_id);
 
 		// Fetch the cached search query
 		$query = ee()->db->get_where('search', array('search_id' => $search_id));
@@ -1282,7 +1275,7 @@ class Search {
 		{
 			// This should be impossible as we already know there are results
 			return ee()->output->show_user_error(
-				'general', 
+				'general',
 				array(lang('invalid_action'))
 			);
 		}
@@ -1301,7 +1294,7 @@ class Search {
 		{
 			// This should also be impossible
 			return ee()->output->show_user_error(
-				'general', 
+				'general',
 				array(lang('invalid_action'))
 			);
 		}
@@ -1313,6 +1306,12 @@ class Search {
 		// TODO: Remove once old pagination is phased out
 		if ($old_pagination)
 		{
+			if (preg_match("#^P(\d+)|/P(\d+)#", ee()->uri->query_string, $match))
+			{
+				$pagination->offset = $match[2];
+				$pagination->current_page = floor($pagination->offset / $pagination->per_page) + 1;
+			}
+
 			$total_pages = intval($pagination->total_rows / $pagination->per_page);
 
 			if ($pagination->total_rows % $pagination->per_page)
@@ -1540,36 +1539,21 @@ class Search {
 
 		// Add Old Style Pagination
 		// TODO: Remove once old pagination is phased out
-		if ($old_pagination)
+		if ($old_pagination && ! empty($pager))
 		{
-			if ($pager == '')
-			{
-				ee()->TMPL->template = preg_replace(
-					"#".LD."if paginate".RD.".*?".LD."/if".RD."#s",
-					'',
-					ee()->TMPL->template
-				);
-			}
-			else
-			{
-				ee()->TMPL->template = preg_replace(
-					"#".LD."if paginate".RD."(.*?)".LD."/if".RD."#s",
-					"\\1",
-					ee()->TMPL->template
-				);
-			}
-
-			ee()->TMPL->template = str_replace(
-				LD.'paginate'.RD,
+			$old_pagination = ee()->TMPL->swap_var_single(
+				'paginate',
 				$pager,
-				ee()->TMPL->template
+				$old_pagination
 			);
 
-			ee()->TMPL->template = str_replace(
-				LD.'page_count'.RD,
+			$old_pagination = ee()->TMPL->swap_var_single(
+				'page_count',
 				$page_count,
-				ee()->TMPL->template
+				$old_pagination
 			);
+
+			ee()->TMPL->tagdata .= $old_pagination;
 		}
 
 		return ee()->TMPL->tagdata;
