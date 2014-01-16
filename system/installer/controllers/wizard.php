@@ -149,7 +149,7 @@ class Wizard extends CI_Controller {
 		'encryption_key' 		=> '',
 		'cookie_prefix'			=> '',
 		'global_xss_filtering'	=> FALSE,
-		'csrf_protection' 		=> TRUE,		// Enabled starting 2.8, replacing secure_forms
+		'csrf_protection' 		=> FALSE,
 		'compress_output' 		=> FALSE,
 		'time_reference' 		=> 'local',
 		'rewrite_short_tags' 	=> TRUE			// Enabled for cleaner view files and compatibility
