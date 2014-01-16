@@ -2355,7 +2355,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	bool
 	 */
-	function assign_parameters($str)
+	function assign_parameters($str, $defaults = array())
 	{
 		if ($str == "")
 			return FALSE;
@@ -2363,15 +2363,16 @@ class EE_Functions {
 		// \047 - Single quote octal
 		// \042 - Double quote octal
 
-		// I don't know for sure, but I suspect using octals is more reliable than ASCII.
-		// I ran into a situation where a quote wasn't being matched until I switched to octal.
-		// I have no idea why, so just to be safe I used them here. - Rick
+		// I don't know for sure, but I suspect using octals is more reliable
+		// than ASCII. I ran into a situation where a quote wasn't being matched
+		// until I switched to octal. I have no idea why, so just to be safe I
+		// used them here. - Rick
 
 		// matches[0] => attribute and value
 		// matches[1] => attribute name
 		// matches[2] => single or double quote
 		// matches[3] => attribute value
-		preg_match_all("/(\S+?)\s*=\s*(\042|\047)([^\\2]*?)\\2/is",  $str, $matches, PREG_SET_ORDER);
+		preg_match_all("/(\S+?)\s*=\s*(\042|\047)([^\\2]*?)\\2/is", $str, $matches, PREG_SET_ORDER);
 
 		if (count($matches) > 0)
 		{
@@ -2380,6 +2381,15 @@ class EE_Functions {
 			foreach($matches as $match)
 			{
 				$result[$match[1]] = (trim($match[3]) == '') ? $match[3] : trim($match[3]);
+			}
+
+			foreach ($defaults as $name => $default_value)
+			{
+				if ( ! isset($result[$name])
+					OR (is_numeric($default_value) && ! is_numeric($result[$name])))
+				{
+					$result[$name] = $default_value;
+				}
 			}
 
 			return $result;

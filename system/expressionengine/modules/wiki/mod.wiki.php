@@ -1482,7 +1482,7 @@ class Wiki {
 		/** ----------------------------------------*/
 
 		$tag_param_string = $match[1];
-		$parameters = $this->_fetch_params($tag_param_string, array(
+		$parameters = ee()->functions->assign_parameters($tag_param_string, array(
 			'limit'		=> 10,
 			'paginate'	=> 'bottom',
 			'switch'	=> ''
@@ -1729,7 +1729,7 @@ class Wiki {
 			/**  Parameters
 			/** ----------------------------------------*/
 
-			extract($this->_fetch_params($match[1], array(
+			extract(ee()->functions->assign_parameters($match[1], array(
 				'limit'			=> 10,
 				'backspace'		=> '',
 				'show_empty'	=> 'y',
@@ -3211,7 +3211,7 @@ class Wiki {
 			$header		= '';
 			$footer		= '';
 
-			extract($this->_fetch_params($match[1], array(
+			extract(ee()->functions->assign_parameters($match[1], array(
 				'backspace'	=> '',
 				'style'		=> ''
 			)));
@@ -3280,7 +3280,7 @@ class Wiki {
 			$header		= '';
 			$footer		= '';
 
-			$parameters = $this->_fetch_params($match[1], array(
+			$parameters = ee()->functions->assign_parameters($match[1], array(
 				'limit'		=> 100,
 				'backspace'	=> '',
 				'paginate'	=> 'bottom'
@@ -4395,7 +4395,7 @@ class Wiki {
 		/**  Parameters
 		/** ----------------------------------------*/
 
-		$parameters = $this->_fetch_params($match[1], array(
+		$parameters = ee()->functions->assign_parameters($match[1], array(
 			'limit'		=> 20,
 			'paginate'	=> 'bottom',
 			'switch'	=> ''
@@ -4805,7 +4805,7 @@ class Wiki {
 		}
 
 		// Fetch parameters
-		extract($this->_fetch_params($match[1], array(
+		extract(ee()->functions->assign_parameters($match[1], array(
 			'limit'		=> 20,
 			'paginate'	=> 'bottom',
 			'orderby'	=> 'file_name',
@@ -5669,43 +5669,6 @@ class Wiki {
 					SET module_version = '".ee()->db->escape_str($this->version)."'
 					WHERE module_name = 'Wiki'");
 	}
-
-	// -------------------------------------------------------------------------
-
-	/**
-	 * Fetch the parameters for a wiki tag given a string of parameters and an
-	 * array of names and default values
-	 * @param  String $param_string Parameter string from preg_match
-	 * @param  array  $params       Array with keys as the parameter name and
-	 *                              defaults as the values
-	 * @return array                Array much like the $params but with the
-	 *                              final values
-	 */
-	private function _fetch_params($param_string, $params = array('limit' => 10))
-	{
-		$return = array();
-
-		if (trim($param_string) != '' && ($values = ee()->functions->assign_parameters($param_string)) !== FALSE)
-		{
-
-			foreach ($params as $name => $default)
-			{
-				if (isset($values[$name])
-					&& ( ! is_numeric($default) XOR is_numeric($values[$name])))
-				{
-					$return[$name] = $values[$name];
-				}
-				else
-				{
-					$return[$name] = $default;
-				}
-			}
-		}
-
-		return $return;
-	}
-
-
 }
 /* END Class */
 
