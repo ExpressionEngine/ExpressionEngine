@@ -451,6 +451,47 @@ class MSM_Config extends EE_Config
 		}
 	}
 
+	/**
+	 * Remove a config item from all msm sites
+	 */
+	public function remove_config_item($remove_key)
+	{
+		$columns = array(
+			'site_system_preferences',
+			'site_mailinglist_preferences',
+			'site_member_preferences',
+			'site_template_preferences',
+			'site_channel_preferences',
+		);
+
+		ee()->db->select(implode(', ', $columns).', site_id');
+
+		$sites = ee()->db->get('sites')->result_array();
+
+		foreach ($sites as $site)
+		{
+			$changed = FALSE;
+			$site_id = $site['site_id'];
+
+			unset($site['site_id']);
+
+			foreach ($site as $column => $data)
+			{
+				$data = unserialize(base64_decode($data));
+
+				if (isset($data[$remove_key]))
+				{
+					$changed = TRUE;
+					unset($data[$remove_key]);
+					$site[$column] = base64_encode(serialize($data));
+				}
+			}
+
+			ee()->db->where('site_id', $site_id);
+			ee()->db->update('sites', $site);
+		}
+	}
+
 }
 
 // END CLASS
