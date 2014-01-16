@@ -696,7 +696,6 @@ class Member_auth extends Member {
 		$member_id = $memberQuery->row('member_id');
 		$username  = $memberQuery->row('username');
 		$name  = ($memberQuery->row('screen_name') == '') ? $memberQuery->row('username') : $memberQuery->row('screen_name');
-		$username  = $memberQuery->row('username');
 
 		// Kill old data from the reset_password field
 		$a_day_ago = time() - (60*60*24);
