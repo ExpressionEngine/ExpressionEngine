@@ -572,8 +572,8 @@ EE.cp.broadcastEvents = (function() {
 
 	// Define our time limits:
 	var TICK_TIME          = 15 * 1000, // 15 seconds between ticks, 4 per minute
-		FOCUSED_TICK_LIMIT = 1, //4 * 20,    // 20 minutes: time before modal if window focused
-		BLURRED_TICK_LIMIT = 1; //4 * 40;    // 40 minutes: time before modal if no focus
+		FOCUSED_TICK_LIMIT = 4 * 20,    // 20 minutes: time before modal if window focused
+		BLURRED_TICK_LIMIT = 4 * 40;    // 40 minutes: time before modal if no focus
 
 	// Make sure we have our modal available when we need it
 	var logoutModal = $('#idle-modal').dialog({
