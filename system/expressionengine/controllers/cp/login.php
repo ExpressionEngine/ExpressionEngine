@@ -153,7 +153,7 @@ class Login extends CP_Controller {
 		}
 		elseif ($this->config->item('admin_session_type') == 'cs')
 		{
-			$base = preg_replace('/S=[a-zA-Z0-9]/', 'S='.$this->session->userdata['fingerprint'], BASE);
+			$base = preg_replace('/S=[a-zA-Z0-9]+/', 'S='.$this->session->userdata['fingerprint'], BASE);
 		}
 
 		$return_path = $base.AMP.'C=homepage';
