@@ -185,12 +185,39 @@ EE.cp.setCsrfToken = function(newToken, skipBroadcast /* internal */) {
 	EE.CSRF_TOKEN = newToken;
 
 	if ( ! skipBroadcast) {
-		$(window).trigger('broadcast.csrfToken', result.csrfToken);
+		$(window).trigger('broadcast.setCsrfToken', newToken);
 	}
 };
 
-$(window).bind('broadcast.csrfToken', function(data) {
+$(window).bind('broadcast.setCsrfToken', function(event, data) {
 	EE.cp.setCsrfToken(data, true);
+});
+
+
+// Simple function to deal with base paths tokens
+EE.cp.setBasePath = function(newBase, skipBroadcast /* internal */) {
+
+	var newBase = newBase.replace(/&amp;/g, '&');
+
+	var replaceBase = function(i, value) {
+		if (value) {
+			return value.replace(EE.BASE, newBase);
+		}
+	};
+
+	$('a').attr('href', replaceBase);
+	$('form').attr('action', replaceBase);
+
+	// Set it as the new base
+	EE.BASE = newBase;
+
+	if ( ! skipBroadcast) {
+		$(window).trigger('broadcast.setBasePath', newBase);
+	}
+};
+
+$(window).bind('broadcast.setBasePath', function(event, data) {
+	EE.cp.setBasePath(data, true);
 });
 
 
@@ -571,9 +598,9 @@ EE.cp.refreshCsrfToken = function() {
 EE.cp.broadcastEvents = (function() {
 
 	// Define our time limits:
-	var TICK_TIME          = 15 * 1000, // 15 seconds between ticks, 4 per minute
-		FOCUSED_TICK_LIMIT = 4 * 20,    // 20 minutes: time before modal if window focused
-		BLURRED_TICK_LIMIT = 4 * 40;    // 40 minutes: time before modal if no focus
+	var TICK_TIME          = 5 * 1000,			// Check state every 5 seconds
+		FOCUSED_IDLE_LIMIT = 20 * 60 * 1000,	// 20 minutes: time before modal if window focused
+		BLURRED_IDLE_LIMIT = 40 * 60 * 1000;    // 40 minutes: time before modal if no focus
 
 	// Make sure we have our modal available when we need it
 	var logoutModal = $('#idle-modal').dialog({
@@ -592,12 +619,12 @@ EE.cp.broadcastEvents = (function() {
 
 	// If the modal hasn't been interacted with in over 10 minutes we'll send a request for
 	// the current csrf token. It can flip on us during long waits due to the session timeout.
+	// If the session times out this will get us a cookie based csrf token, which is what you
+	// would normally log in with, so it's fine.
 	logoutModal.find('form').on('interact', _.throttle(EE.cp.refreshCsrfToken, 10 * 60 * 1000));
 
 	// Bind on the modal submission
 	logoutModal.find('form').on('submit', function() {
-
-		var oldBase = EE.BASE;
 
 		$.ajax({
 			type: 'POST',
@@ -614,17 +641,8 @@ EE.cp.broadcastEvents = (function() {
 				// Hide the dialog
 				Events.login();
 
-				// Fix the EE.BASE variable
-				EE.BASE = result.base.replace(/&amp;/g, '&');
-
-				var replaceBase = function(i, value) {
-					if (value) {
-						return value.replace(oldBase, EE.BASE);
-					}
-				};
-
-				$('a').attr('href', replaceBase);
-				$('form').attr('action', replaceBase);
+				// Update the EE.BASE variable
+				EE.cp.setBasePath(result.base);
 
 				// Grab the new token
 				EE.cp.refreshCsrfToken();
@@ -644,18 +662,33 @@ EE.cp.broadcastEvents = (function() {
 	 * This object tracks the current state of the page.
 	 *
 	 * The resolve function is called once per tick. The individual events will
-	 * set hasFocus and increment idleCount.
+	 * set hasFocus and set isIdle and lastIdle time.
 	 */
 	var State = {
 
 		hasFocus: true,
 		modalActive: false,
-		idleCount: 0,
+		isIdle: false,
+		lastActive: $.now(),
 		pingReceived: false,
 
+		setNotIdle: function() {
+			// Before we set someone as not idle we need to check if they've
+			// sneakily been idle for a long time. When you close your laptop
+			// the timer stops. Reopening it hours later creates a race between
+			// the tick timer and the non-idle events. When that happens, you're
+			// way past the threshold and therefore too late.
+			if ( ! State.modalThresholdReached()) {
+				this.isIdle = false;
+				this.lastActive = $.now();
+			}
+		},
+
 		modalThresholdReached: function() {
-			var mustShowModal = (this.hasFocus && this.idleCount > FOCUSED_TICK_LIMIT) ||
-								( ! this.hasFocus && this.idleCount > BLURRED_TICK_LIMIT);
+			var idleTimeDelta = $.now() - this.lastActive;
+
+			var mustShowModal = (this.hasFocus && idleTimeDelta > FOCUSED_IDLE_LIMIT) ||
+								( ! this.hasFocus && idleTimeDelta > BLURRED_IDLE_LIMIT);
 			return (this.modalActive === false && mustShowModal === true);
 		},
 
@@ -668,7 +701,7 @@ EE.cp.broadcastEvents = (function() {
 			}
 
 			// ping other windows if we've been reset
-			if (this.idleCount == 0 && this.pingReceived === false) {
+			if ( ! this.isIdle && this.pingReceived === false) {
 				$(window).trigger('broadcast.idleState', 'active');
 			}
 
@@ -684,31 +717,31 @@ EE.cp.broadcastEvents = (function() {
 
 		// nothing has happened - we were idle
 		_default: function() {
-			State.idleCount += 1;
+			State.isIdle = true;
 		},
 
 		// received another window's active event, user active
 		active: function() {
-			State.idleCount = 0;
+			State.setNotIdle();
 			State.hasFocus = false;
 		},
 
 		// user focused, they are active
 		focus: function() {
-			State.idleCount = 0;
+			State.setNotIdle();
 			State.hasFocus = true;
 		},
 
 		// user left, they are idle
 		blur: function() {
-			State.idleCount = 1;
+			State.isIdle = true;
 			State.hasFocus = false;
 		},
 
 		// user typing / mousing, possibly active
 		interact: function() {
 			if (State.hasFocus) {
-				State.idleCount = 0;
+				State.setNotIdle();
 			}
 		},
 
@@ -721,7 +754,7 @@ EE.cp.broadcastEvents = (function() {
 				State.modalActive = true;
 			}
 
-			State.idleCount += 1;
+			State.isIdle = true;
 		},
 
 		// received another window's login event, check and hide modal
@@ -732,7 +765,7 @@ EE.cp.broadcastEvents = (function() {
 			logoutModal.find(':password').val('');
 
 			State.modalActive = false;
-			State.idleCount = 0;
+			State.setNotIdle();
 		},
 
 		// received another window's logout event, leave page
