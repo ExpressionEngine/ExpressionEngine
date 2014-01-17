@@ -221,10 +221,14 @@ $(window).bind('broadcast.setBasePath', function(event, data) {
 });
 
 
-EE.cp.refreshCsrfToken = function() {
+EE.cp.refreshSessionData = function() {
 
+	// running the request will return the x-csrf-header, which will trigger
+	// our prefilter. We still need to replace the base though.
 	$.getJSON(EE.BASE + '&C=login&M=refresh_csrf_token', function(result) {
-		EE.cp.setCsrfToken(result.csrfToken);
+		if (result.base) {
+			EE.cp.setBasePath(result.base);
+		}
 	});
 
 };
@@ -621,7 +625,7 @@ EE.cp.broadcastEvents = (function() {
 	// the current csrf token. It can flip on us during long waits due to the session timeout.
 	// If the session times out this will get us a cookie based csrf token, which is what you
 	// would normally log in with, so it's fine.
-	logoutModal.find('form').on('interact', _.throttle(EE.cp.refreshCsrfToken, 10 * 60 * 1000));
+	logoutModal.find('form').on('interact', _.throttle(EE.cp.refreshSessionData, 10 * 60 * 1000));
 
 	// Bind on the modal submission
 	logoutModal.find('form').on('submit', function() {
@@ -641,11 +645,8 @@ EE.cp.broadcastEvents = (function() {
 				// Hide the dialog
 				Events.login();
 
-				// Update the EE.BASE variable
-				EE.cp.setBasePath(result.base);
-
 				// Grab the new token
-				EE.cp.refreshCsrfToken();
+				EE.cp.refreshSessionData();
 
 				$(window).trigger('broadcast.idleState', 'login');
 			},
@@ -736,6 +737,7 @@ EE.cp.broadcastEvents = (function() {
 		blur: function() {
 			State.isIdle = true;
 			State.hasFocus = false;
+			State.lastActive = $.now();
 		},
 
 		// user typing / mousing, possibly active
@@ -749,11 +751,12 @@ EE.cp.broadcastEvents = (function() {
 		modal: function() {
 			if ( ! State.modalActive) {
 				logoutModal.dialog('open');
-				logoutModal.on('dialogbeforeclose', $.proxy(this, 'logout')); // prevent tampering
+				logoutModal.on('dialogbeforeclose', $.proxy(this, 'logout')); // prevent tampering. If they close it, they go.
 
 				State.modalActive = true;
 			}
 
+			State.lastActive = $.now();
 			State.isIdle = true;
 		},
 
@@ -765,6 +768,7 @@ EE.cp.broadcastEvents = (function() {
 			logoutModal.find(':password').val('');
 
 			State.modalActive = false;
+			State.lastActive = $.now();
 			State.setNotIdle();
 		},
 
