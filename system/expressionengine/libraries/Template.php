@@ -1861,24 +1861,33 @@ class EE_Template {
 	{
 		if ($this->disable_caching == FALSE && ee()->cache->get_adapter() == 'file')
 		{
-			// Determine cache path
-			if ( ! $path = ee()->config->item('cache_path'))
-			{
-				$path = APPPATH.'cache/';
-			}
+			$cache_info = ee()->cache->cache_info();
 
-			// Get an array of files in the cache path
-			$files = get_filenames($path);
-			$i = 0;
-
-			// Loop through files and count the ones with a prefix of 'page'
-			foreach ($files as $file)
+			// Find the directory holding our page cache
+			foreach ($cache_info as $item)
 			{
-				if (strncmp($file, 'page', 4) == 0)
+				// Explode the path by directory separator
+				$path = explode(
+					DIRECTORY_SEPARATOR,
+					trim($item['relative_path'], DIRECTORY_SEPARATOR)
+				);
+
+				// See if the last item in the path is page_cache
+				if ('page_cache' == array_pop($path))
 				{
-					$i++;
+					$path = $item['relative_path'];
+					break;
 				}
 			}
+
+			// Bail if we couldn't find the directory
+			if (empty($path))
+			{
+				return;
+			}
+
+			// Count files in the directory
+			$count = count(get_filenames($path));
 
 			$max = 1000;
 
@@ -1891,9 +1900,9 @@ class EE_Template {
 			}
 
 			// Clear page cache if we have too many
-			if ($i > $max)
+			if ($count > $max)
 			{
-				ee()->cache->delete('/page/');
+				ee()->cache->delete('/page_cache/');
 			}
 		}
 	}

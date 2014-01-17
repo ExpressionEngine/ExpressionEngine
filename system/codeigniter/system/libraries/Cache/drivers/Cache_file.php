@@ -202,7 +202,7 @@ class CI_Cache_file extends CI_Driver {
 	 */
 	public function cache_info()
 	{
-		return get_dir_file_info($this->_cache_path);
+		return get_dir_file_info($this->_cache_path, FALSE);
 	}
 
 	// ------------------------------------------------------------------------
