@@ -673,6 +673,7 @@ class Login extends CP_Controller {
 		header('X-EEXID: '.CSRF_TOKEN);
 
 		$this->output->send_ajax_response(array(
+			'base' => BASE,
 			'message' => 'refresh'
 		));
 	}
