@@ -221,9 +221,6 @@ class Pagination_object {
 		$this->total_rows = $total_rows;
 		$this->per_page = $per_page;
 
-		$row = (is_object($this->field_pagination_query))
-			? $this->field_pagination_query->row_array() : '';
-
 		// -------------------------------------------
 		// 'channel_module_create_pagination' hook.
 		//  - Rewrite the pagination function in the Channel module
@@ -313,18 +310,19 @@ class Pagination_object {
 				$this->current_page	= floor(($this->offset / $this->per_page) + 1);
 				$this->total_pages	= intval(floor($this->total_rows / $this->per_page));
 			}
+			// Field pagination - base values
 			else
 			{
-				//  Field pagination - base values
-
 				// If we're doing field pagination and there's not even one
 				// entry, then clear out the sql and get out of here
-				if ($this->total_rows == 0)
+				if ($this->total_rows == 0
+					OR ! is_object($this->field_pagination_query))
 				{
 					return FALSE;
 				}
 
 				$m_fields = array();
+				$row = $this->field_pagination_query->row_array();
 
 				foreach ($this->_multi_fields as $val)
 				{
