@@ -221,6 +221,15 @@ $(window).bind('broadcast.setBasePath', function(event, data) {
 });
 
 
+EE.cp.refreshCsrfToken = function() {
+
+	$.getJSON(EE.BASE + '&C=login&M=refresh_csrf_token', function(result) {
+		EE.cp.setCsrfToken(result.csrfToken);
+	});
+
+};
+
+
 // Show / hide accessories
 EE.cp.accessory_toggle = function() {
 	$('#accessoryTabs li a').click(function (event) {
@@ -560,15 +569,6 @@ EE.cp.zebra_tables = function(table) {
 		.end()
 		.filter(':odd').addClass('odd');
 };
-
-
-EE.cp.refreshCsrfToken = function() {
-
-	$.getJSON(EE.BASE + '&C=login&M=refresh_csrf_token', function(result) {
-		EE.cp.setCsrfToken(result.csrfToken);
-	});
-
-}
 
 /**
  * Handle idle / inaction between windows
