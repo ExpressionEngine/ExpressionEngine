@@ -110,7 +110,7 @@ class CI_Cache_memcached extends CI_Driver {
 	public function delete($key, $scope = Cache::LOCAL_SCOPE)
 	{
 		// Delete namespace contents
-		if (strrpos($key, $this->namespace_separator(), strlen($key) - 1) !== FALSE)
+		if (strrpos($key, Cache::NAMESPACE_SEPARATOR, strlen($key) - 1) !== FALSE)
 		{
 			$this->_create_new_namespace($key, $scope);
 
@@ -284,74 +284,6 @@ class CI_Cache_memcached extends CI_Driver {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Create a new namespace, which essentially invalidates an old/expired
-	 * namespace.
-	 *
-	 * Memcache(d) does not provide a way to delete or invalidate cache items
-	 * based on a wildcard pattern, and we do not way to iterate over every key
-	 * stored in numerous Memcached servers to figure out what to delete. So
-	 * we're using Memcached's recommended namespacing method of prefixing keys
-	 * with a random number.
-	 *
-	 * For example, for page caches, our namespace may be "/page". We cannot
-	 * tell Memcached to delete all keys beginning with "/page", so we prefix
-	 * the key with a number, like so: "12345:/page". If we want to clear the
-	 * page cache, we change the number ("12346:/page") so that items
-	 * requested from the cache are effectively not existent, thus acting like
-	 * a cleared cache.
-	 *
-	 * It may be easiest to think of it like versioning. All past versions
-	 * continue to live in the cache store until automatically purged by
-	 * Memcached, but as we clear namespaces, we basically create new versions
-	 * of them for new things to be stored in.
-	 *
-	 * @param	string	$namespace	Name of the namespace, eg. "page", "tag"
-	 * @param	const	$scope		Cache::LOCAL_SCOPE or Cache::GLOBAL_SCOPE
-	 *		 for local or global scoping of the cache item
-	 * @param	bool	$clear_scope	Whether or not to clear the current scope
-	 * @return	string	New namespace/prefix for keys to be stored in this
-	 *					namespace
-	 */
-	protected function _create_new_namespace($namespace, $scope = Cache::LOCAL_SCOPE, $clear_scope = FALSE)
-	{
-		// Get the current unique scope string
-		$root_key = $this->unique_key('', $scope);
-
-		// We'll use the current time concatendated with a random number, that
-		// way we're pretty much guaranteed not to use an existing namespace
-		$unique_key = ee()->localize->now.rand(1,10000);
-
-		// If no root namespace exists for the current scope, create one and
-		// wipe out all other namespaces; or if the $clear_scope parameter is
-		// set, in which case we are clearing the cache for the current scope
-		if ( ! isset($this->_namespaces[$root_key]['root_namespace']) || $clear_scope)
-		{
-			$this->_namespaces[$root_key] = array('root_namespace' => $unique_key);
-		}
-
-		// If we're not creating a new cache for the current scope, we must be
-		// creating a new namespace under the current scope
-		if ( ! $clear_scope)
-		{
-			$this->_namespaces[$root_key][$namespace] = $unique_key;
-		}
-
-		// Save our class namespaces array to Memcached so we can access it on
-		// subsequent page loads
-		$this->save(
-			'namespaces',
-			$this->_namespaces,
-			0,
-			Cache::GLOBAL_SCOPE,
-			FALSE // Don't namespace this key
-		);
-
-		return $unique_key;
-	}
-
-	// ------------------------------------------------------------------------
-
-	/**
 	 * Creates a properly namespaced key ready for storage or retreval of any
 	 * cache item.
 	 *
@@ -375,43 +307,193 @@ class CI_Cache_memcached extends CI_Driver {
 	{
 		$root_key = $this->unique_key('', $scope);
 
-		// Make sure this scope has a root namespace
-		if (isset($this->_namespaces[$root_key]['root_namespace']))
-		{
-			// If the key contains our namespace separator character...
-			if (strpos($key, $this->namespace_separator()) !== FALSE)
-			{
-				// Separate the namespace from the cache key name
-				$namespace = substr($key, 0, strrpos($key, $this->namespace_separator()) + 1);
-
-				// If this namespace is already set, get it from local cache
-				if (isset($this->_namespaces[$root_key][$namespace]))
-				{
-					$namespace = $this->_namespaces[$root_key][$namespace];
-				}
-				// Otherwise, create the namespace
-				else
-				{
-					$namespace = $this->_create_new_namespace($namespace, $scope);
-				}
-			}
-			// Key is not namespaced, give it the namespace identifier of the
-			// root namespace of the scope
-			else
-			{
-				$namespace = $this->_namespaces[$root_key]['root_namespace'];
-			}
-		}
 		// If the current scope does not have namespaces setup, create one
-		// and try to make a namespaced key again
-		else
+		if ( ! isset($this->_namespaces[$root_key]['root_namespace']))
 		{
 			$this->_create_new_namespace('', $scope, TRUE);
-
-			return $this->_namespaced_key($key, $scope);
 		}
 
-		return $this->unique_key($namespace.':'.$key);
+		// If the key contains our namespace separator character...
+		if (strpos($key, Cache::NAMESPACE_SEPARATOR) !== FALSE)
+		{
+			// Separate the namespace from the cache key name
+			$namespace = substr($key, 0, strrpos($key, Cache::NAMESPACE_SEPARATOR) + 1);
+
+			// Get new namespace string
+			$namespace = $this->_get_namespace($namespace, $scope);
+
+			// Remove namespace from key
+			$key = substr($key, strrpos($key, Cache::NAMESPACE_SEPARATOR) + 1);
+		}
+		// Key is not namespaced, give it the namespace identifier of the
+		// root namespace of the scope
+		else
+		{
+			$namespace = $this->_namespaces[$root_key]['root_namespace'];
+		}
+
+		return $this->unique_key($namespace.':'.$key, $scope);
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Takes a namespace string and converts it to a string we need to use to
+	 * access namespaced keys in Memcached. For example, given we are passed
+	 * this:
+	 *
+	 * 	  /some/nested/namespace/
+	 *
+	 * Each part of a namespace needs to be associated with its current version
+	 * (see docs for _create_new_namespace() for more), so we'll return
+	 * something like this:
+	 *
+	 * 	  /some:12345/nested:12346/namespace:12347/
+	 *
+	 * @param	string	$namespace	Namespace string, separated from key
+	 * @param	const	$scope		Cache::LOCAL_SCOPE or Cache::GLOBAL_SCOPE
+	 *		 for local or global scoping of the cache item
+	 * @return	string	New namespace/prefix for keys to be stored in this
+	 *					namespace
+	 */
+	protected function _get_namespace($namespace, $scope)
+	{
+		// Get the current unique scope string
+		$root_key = $this->unique_key('', $scope);
+
+		// Namespaces are stored in the array without leading slash as a
+		// kind of normalization
+		$namespace = ltrim($namespace, Cache::NAMESPACE_SEPARATOR);
+
+		// Set up the namespace if it doesn't exist
+		if ( ! isset($this->_namespaces[$root_key][$namespace]))
+		{
+			$this->_create_new_namespace($namespace, $scope);
+		}
+
+		// Cut up namespace into its respective parts (split by namespace
+		// separator character) and get ready to build the new namespace
+		// string
+		$namespace_array = $this->_namespaces[$root_key];
+		$namespace = trim($namespace, Cache::NAMESPACE_SEPARATOR);
+		$parts = explode(Cache::NAMESPACE_SEPARATOR, $namespace);
+		$namespace_lookup = '';
+		$namespace_string = Cache::NAMESPACE_SEPARATOR;
+
+		// For each part of the namespace, get its current unique identifier
+		// and build a new namespace string
+		foreach ($parts as $part)
+		{
+			// Work our way down the namespace tree
+			$namespace_lookup .= $part . Cache::NAMESPACE_SEPARATOR;
+
+			if (isset($namespace_array[$namespace_lookup]))
+			{
+				$namespace_string .= $part
+					. ':'
+					. $namespace_array[$namespace_lookup]
+					. Cache::NAMESPACE_SEPARATOR;
+			}
+		}
+
+		return $namespace_string;
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Create a new namespace, which essentially invalidates an old/expired
+	 * namespace.
+	 *
+	 * Memcache(d) does not provide a way to delete or invalidate cache items
+	 * based on a wildcard pattern, and we do not way to iterate over every key
+	 * stored in numerous Memcached servers to figure out what to delete. So
+	 * we're using Memcached's recommended namespacing method of prefixing keys
+	 * with a random number.
+	 *
+	 * For example, for page caches, our namespace may be "/page/". We cannot
+	 * tell Memcached to delete all keys beginning with "/page/", so we attach
+	 * a number to the namespace, like so: "/page:12345/". If we want to clear
+	 * the page cache, we change the number ("/page:12346/") so that items
+	 * requested from the cache are effectively not existent, thus acting like
+	 * a cleared cache.
+	 *
+	 * It may be easiest to think of it like versioning. All past versions
+	 * continue to live in the cache store until automatically purged by
+	 * Memcached, but as we clear namespaces, we basically create new versions
+	 * of them for new things to be stored in.
+	 *
+	 * @param	string	$namespace	Namespace string, separated from key
+	 * @param	const	$scope		Cache::LOCAL_SCOPE or Cache::GLOBAL_SCOPE
+	 *		 for local or global scoping of the cache item
+	 * @param	bool	$clear_scope	Whether or not to clear the current scope
+	 * @return	void
+	 */
+	protected function _create_new_namespace($namespace, $scope, $clear_scope = FALSE)
+	{
+		// Get the current unique scope string
+		$root_key = $this->unique_key('', $scope);
+
+		// If no root namespace exists for the current scope, create one and
+		// wipe out all other namespaces; or if the $clear_scope parameter is
+		// set, in which case we are clearing the cache for the current scope
+		if ( ! isset($this->_namespaces[$root_key]['root_namespace']) || $clear_scope)
+		{
+			$this->_namespaces[$root_key] = array(
+				'root_namespace' => $this->_generate_unique_id()
+			);
+		}
+
+		// If we're not creating a new cache for the current scope, we must be
+		// creating a new namespace under the current scope
+		if ( ! $clear_scope)
+		{
+			// Cut up namespace into its respective parts (split by namespace
+			// separator character) and get ready to create the new namespace
+			$namespace_array = &$this->_namespaces[$root_key];
+			$namespace = trim($namespace, Cache::NAMESPACE_SEPARATOR);
+			$parts = explode('/', $namespace);
+			$namespace_lookup = '';
+
+			// Foreach part that doesn't exist, we'll create it; or if we run
+			// into the specific namespace being asked to renew, renew it
+			foreach ($parts as $part)
+			{
+				// Work our way down the namespace tree; they're stored in a
+				// flat array for easier lookup
+				$namespace_lookup .= $part.Cache::NAMESPACE_SEPARATOR;
+
+				if ( ! isset($namespace_array[$namespace_lookup])
+					OR $namespace.Cache::NAMESPACE_SEPARATOR == $namespace_lookup)
+				{
+					$namespace_array[$namespace_lookup] = $this->_generate_unique_id();
+				}
+			}
+		}
+
+		// Save our class namespaces array to Memcached so we can access it on
+		// subsequent page loads
+		$this->save(
+			'namespaces',
+			$this->_namespaces,
+			0,
+			Cache::GLOBAL_SCOPE,
+			FALSE // Don't namespace this key
+		);
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Generates a unique identifier for the namespace. We'll use the current
+	 * time concatenated with a random number, that way we're pretty much
+	 * guaranteed not to use an existing namespace.
+	 *
+	 * @return	string	Unique identifying string for a namespace
+	 */
+	protected function _generate_unique_id()
+	{
+		return ee()->localize->now.rand(1,10000);
 	}
 }
 

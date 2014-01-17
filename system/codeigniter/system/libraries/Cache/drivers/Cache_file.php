@@ -108,7 +108,7 @@ class CI_Cache_file extends CI_Driver {
 		$path = $this->_cache_path . $key;
 
 		// Remove the cache item name to get the path by looking backwards
-		// for the directory sepatator
+		// for the directory separator
 		$path = substr($path, 0, strrpos($path, DIRECTORY_SEPARATOR) + 1);
 
 		// Create namespace directory if it doesn't exist
@@ -149,7 +149,7 @@ class CI_Cache_file extends CI_Driver {
 		$path = $this->_cache_path.$this->_namespaced_key($key, $scope);
 
 		// If we are deleting contents of a namespace
-		if (strrpos($key, $this->namespace_separator(), strlen($key) - 1) !== FALSE)
+		if (strrpos($key, Cache::NAMESPACE_SEPARATOR, strlen($key) - 1) !== FALSE)
 		{
 			$path .= DIRECTORY_SEPARATOR;
 
@@ -276,10 +276,10 @@ class CI_Cache_file extends CI_Driver {
 		// Make sure the key doesn't begin or end with a namespace separator or
 		// directory separator to force the last segment of the key to be the
 		// file name and so we can prefix a directory reliably
-		$key = trim($key, $this->namespace_separator().DIRECTORY_SEPARATOR);
+		$key = trim($key, Cache::NAMESPACE_SEPARATOR.DIRECTORY_SEPARATOR);
 
 		// Replace all namespace separators with the system's directory separator
-		$key = str_replace($this->namespace_separator(), DIRECTORY_SEPARATOR, $key);
+		$key = str_replace(Cache::NAMESPACE_SEPARATOR, DIRECTORY_SEPARATOR, $key);
 
 		// For locally-cached items, separate by site name
 		if ($scope == Cache::LOCAL_SCOPE)

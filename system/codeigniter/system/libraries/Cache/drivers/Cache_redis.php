@@ -86,7 +86,7 @@ class CI_Cache_redis extends CI_Driver
 	public function delete($key, $scope = Cache::LOCAL_SCOPE)
 	{
 		// Delete namespace contents
-		if (strrpos($key, $this->namespace_separator(), strlen($key) - 1) !== FALSE)
+		if (strrpos($key, Cache::NAMESPACE_SEPARATOR, strlen($key) - 1) !== FALSE)
 		{
 			return ($this->_redis->delete(
 				$this->_redis->keys($this->unique_key($key, $scope).'*')

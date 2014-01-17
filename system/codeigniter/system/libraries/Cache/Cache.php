@@ -34,6 +34,9 @@ class Cache extends CI_Driver_Library {
 	const GLOBAL_SCOPE = 1;	// Scoped to the current site
 	const LOCAL_SCOPE = 2;	// Scoped to global EE install
 
+	// separator character used to separate nested namespace names
+	const NAMESPACE_SEPARATOR = '/';
+
 	/**
 	 * Valid cache drivers
 	 *
@@ -264,21 +267,6 @@ class Cache extends CI_Driver_Library {
 		}
 
 		return $prefix.':'.$key;
-	}
-
-	// ------------------------------------------------------------------------
-
-	/**
-	 * Returns the separator character used to separate nested namespace names
-	 *
-	 * This is a method rather than a property because properties get caught in
-	 * CI_Driver_Library's magic __get method
-	 *
-	 * @return	string	Namespace separator character
-	 */
-	public function namespace_separator()
-	{
-		return '/';
 	}
 }
 
