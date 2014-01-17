@@ -215,7 +215,8 @@ class Cp {
 			'username'			=> ee()->session->userdata('username'),
 			'router_class'		=> ee()->router->class, // advanced css
 			'lang'				=> $js_lang_keys,
-			'THEME_URL'			=> $this->cp_theme_url
+			'THEME_URL'			=> $this->cp_theme_url,
+			'hasRememberMe'		=> (bool) ee()->remember->exists()
 		));
 
 		// Combo-load the javascript files we need for every request
