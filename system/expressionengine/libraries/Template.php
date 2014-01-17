@@ -673,7 +673,7 @@ class EE_Template {
 			$next = strpos($template, $open_tag, $pos + $open_tag_len);
 			$close = strpos($template, LD.'/layout:set', $pos + $open_tag_len);
 
-			if ($next && $close && $close < $next)
+			if ($close && ( ! $next || $close < $next))
 			{
 				// we have a pair
 				$start = $pos + strlen($tag);
@@ -2406,8 +2406,8 @@ class EE_Template {
 				{
 					$removed = array_shift(ee()->session->tracker);
 				}
-				
-				ee()->input->set_cookie('tracker', serialize(ee()->session->tracker), '0'); 
+
+				ee()->input->set_cookie('tracker', serialize(ee()->session->tracker), '0');
 			}
 		}
 
