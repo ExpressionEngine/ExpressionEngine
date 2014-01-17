@@ -174,7 +174,7 @@ class Updater {
 		$msm_config->remove_config_item('secure_forms');
 
 		// If it was no, we need to set it as disabled
-		if ($secure_forms == 'y')
+		if ($secure_forms == 'n')
 		{
 			ee()->config->_update_config(array('disable_csrf_protection' => TRUE));
 		}
