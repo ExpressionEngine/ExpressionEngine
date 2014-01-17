@@ -266,12 +266,19 @@ class Channel {
 						$this->pagination->paginate = TRUE;
 						$this->pagination->field_pagination = TRUE;
 						$this->pagination->cfields = $this->cfields;
-						$this->pagination->build(trim($cache), 1, $this->sql, ee()->db->query(trim($pg_query)));
+						$this->pagination->field_pagination_query = ee()->db->query(trim($pg_query));
+						if ($this->pagination->build(trim($cache), 1) == FALSE)
+						{
+							$this->sql = '';
+						}
 					}
 				}
 				else
 				{
-					$this->pagination->build(trim($cache), 0, $this->sql);
+					if ($this->pagination->build(trim($cache), 0) == FALSE)
+					{
+						$this->sql = '';
+					}
 				}
 			}
 		}
@@ -2078,9 +2085,8 @@ class Channel {
 		// We do this hear so we can use the offset into next, then later one as well
 		$offset = ( ! ee()->TMPL->fetch_param('offset') OR ! is_numeric(ee()->TMPL->fetch_param('offset'))) ? '0' : ee()->TMPL->fetch_param('offset');
 
-		//  Do we need pagination?
+		// Do we need pagination?
 		// We'll run the query to find out
-
 		if ($this->pagination->paginate == TRUE)
 		{
 			$this->pager_sql = '';
@@ -2097,8 +2103,8 @@ class Channel {
 				{
 					$total = $total - $offset;
 				}
-
-				$this->pagination->build($total, $this->pagination->per_page, $this->sql);
+				$total = 0;
+				$this->pagination->build($total, $this->pagination->per_page);
 			}
 			else
 			{
@@ -2110,7 +2116,8 @@ class Channel {
 				$this->absolute_results = $total;
 
 				$this->pagination->cfields = $this->cfields;
-				$this->pagination->build($total, 1, $this->sql, $query);
+				$this->pagination->field_pagination_query = $query;
+				$this->pagination->build($total, 1);
 
 				if (ee()->config->item('enable_sql_caching') == 'y')
 				{

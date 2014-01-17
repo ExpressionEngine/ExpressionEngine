@@ -35,17 +35,18 @@ class EE_Pagination extends CI_Pagination {
  * Pagination object created for each instance of pagination.
  */
 class Pagination_object {
-	public $paginate			= FALSE;
-	public $field_pagination	= FALSE;
-	public $current_page		= 1;
-	public $offset				= 0;
-	public $total_rows			= 0;
-	public $total_pages			= 1;
-	public $per_page			= 0;
-	public $basepath			= '';
-	public $cfields				= array();
-	public $dynamic_sql			= TRUE;
-	public $prefix				= "P";
+	public $paginate				= FALSE;
+	public $field_pagination		= FALSE;
+	public $current_page			= 1;
+	public $offset					= 0;
+	public $total_rows				= 0;
+	public $total_pages				= 1;
+	public $per_page				= 0;
+	public $basepath				= '';
+	public $cfields					= array();
+	public $dynamic_sql				= TRUE;
+	public $prefix					= "P";
+	public $field_pagination_query	= NULL;
 
 	private $_page_array			= array();
 	private $_pagination_template	= '';
@@ -112,6 +113,8 @@ class Pagination_object {
 	 * The whole goal of this method is to see if we need to paginate and if
 	 * we do, extract the tags within pagination and put them in another variable
 	 *
+	 * @param String $template The template to prepare, typically
+	 *                         ee()->TMPL->tagdata
 	 * @return String The template with the pagination removed
 	 */
 	function prepare($template)
@@ -210,23 +213,17 @@ class Pagination_object {
 	/**
 	 * Build the pagination out, storing it in the Pagination_object
 	 *
-	 * @param integer $total_rows	Number of rows we're paginating over
-	 * @param integer $per_page		Number of items per page
-	 * @param object  $query 		Query object of the post you're field paginating over
+	 * @param integer	$total_rows	Number of rows we're paginating over
+	 * @param integer	$per_page	Number of items per page
+	 * @return Boolean TRUE if successful, FALSE otherwise
 	 */
-	function build($total_rows = 0, $per_page = 0, &$main_query = '', $query = '')
+	function build($total_rows = 0, $per_page = 0)
 	{
 		$this->total_rows = $total_rows;
 		$this->per_page = $per_page;
 
-		if (is_object($query))
-		{
-			$row = $query->row_array();
-		}
-		else
-		{
-			$row = '';
-		}
+		$row = (is_object($this->field_pagination_query))
+			? $this->field_pagination_query->row_array() : '';
 
 		// -------------------------------------------
 		// 'channel_module_create_pagination' hook.
@@ -298,15 +295,11 @@ class Pagination_object {
 				// If we're not displaying by something, then we'll need
 				// something to paginate, otherwise if we're displaying by
 				// something (week, day) it's okay for it to be empty
-				if ($this->_type === "Channel" AND ee()->TMPL->fetch_param('display_by') == '')
+				if ($this->_type === "Channel"
+					&& ee()->TMPL->fetch_param('display_by') == ''
+					&& $this->total_rows == 0)
 				{
-					// If we're doing standard pagination and not using
-					// display_by, clear out the query and get out of here
-					if ($this->total_rows == 0)
-					{
-						$main_query = '';
-						return;
-					}
+					return FALSE;
 				}
 
 				// We need to establish the per_page limits if we're using
@@ -336,7 +329,7 @@ class Pagination_object {
 					}
 					else
 					{
-						$this->per_page  = ( ! is_numeric(ee()->TMPL->fetch_param('limit'))) ? '100' : ee()->TMPL->fetch_param('limit');
+						$this->per_page = ( ! is_numeric(ee()->TMPL->fetch_param('limit'))) ? '100' : ee()->TMPL->fetch_param('limit');
 					}
 				}
 
@@ -360,8 +353,7 @@ class Pagination_object {
 				// entry, then clear out the sql and get out of here
 				if ($this->total_rows == 0)
 				{
-					$main_query = '';
-					return;
+					return FALSE;
 				}
 
 				$m_fields = array();
@@ -464,6 +456,8 @@ class Pagination_object {
 				$this->offset = 0;
 			}
 		}
+
+		return TRUE;
 	}
 
 	// ------------------------------------------------------------------------
