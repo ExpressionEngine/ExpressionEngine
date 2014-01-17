@@ -26,11 +26,6 @@
 
 class Relative_date {
 
-	public function __construct()
-	{
-		$this->EE =& get_instance();
-	}
-
 	public function create($timestamp, $reference = NULL)
 	{
 		return new Relative_Date_object($timestamp, $reference);
