@@ -172,7 +172,6 @@ class Relative_date_object {
 	 *  	     '5 hours'
 	 *
 	 * @access	public
-	 * @param	string[]	$units	An array of units (date parts) to calculate
 	 * @param	int			$depth	Determines how many date parts we use
 	 * @return	string	A human readable relative date string
 	 */
