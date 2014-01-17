@@ -84,7 +84,7 @@ class Channel {
 		$this->EE =& get_instance();
 
 		ee()->load->library('pagination');
-		$this->pagination = ee()->pagination->create(__CLASS__);
+		$this->pagination = ee()->pagination->create();
 
 		$this->query_string = (ee()->uri->page_query_string != '') ? ee()->uri->page_query_string : ee()->uri->query_string;
 
@@ -232,7 +232,7 @@ class Channel {
 
 		if ($this->enable['pagination'] == TRUE)
 		{
-			$this->pagination->get_template();
+			ee()->TMPL->tagdata = $this->pagination->prepare(ee()->TMPL->tagdata);
 		}
 
 		$save_cache = FALSE;
@@ -266,12 +266,12 @@ class Channel {
 						$this->pagination->paginate = TRUE;
 						$this->pagination->field_pagination = TRUE;
 						$this->pagination->cfields = $this->cfields;
-						$this->pagination->build(trim($cache), $this->sql, ee()->db->query(trim($pg_query)));
+						$this->pagination->build(trim($cache), 1, $this->sql, ee()->db->query(trim($pg_query)));
 					}
 				}
 				else
 				{
-					$this->pagination->build(trim($cache), $this->sql);
+					$this->pagination->build(trim($cache), 0, $this->sql);
 				}
 			}
 		}
@@ -2089,7 +2089,7 @@ class Channel {
 			{
 				$this->pager_sql = $sql_a.$sql_b.$sql;
 				$query = ee()->db->query($this->pager_sql);
-				$total = $query->num_rows;
+				$total = $query->num_rows();
 				$this->absolute_results = $total;
 
 				// Adjust for offset
@@ -2098,7 +2098,7 @@ class Channel {
 					$total = $total - $offset;
 				}
 
-				$this->pagination->build($total, $this->sql);
+				$this->pagination->build($total, $this->pagination->per_page, $this->sql);
 			}
 			else
 			{
@@ -2110,7 +2110,7 @@ class Channel {
 				$this->absolute_results = $total;
 
 				$this->pagination->cfields = $this->cfields;
-				$this->pagination->build($total, $this->sql, $query);
+				$this->pagination->build($total, 1, $this->sql, $query);
 
 				if (ee()->config->item('enable_sql_caching') == 'y')
 				{

@@ -322,10 +322,9 @@ class Member_images extends Member {
 
 		// Load up pagination and start parsing
 		ee()->load->library('pagination');
-		$pagination = ee()->pagination->create(__CLASS__);
-		$pagination->template = $template;
+		$pagination = ee()->pagination->create();
 		$pagination->position = 'inline';
-		$template = $pagination->get_template();
+		$template = $pagination->prepare($template);
 
 		// Pagination anyone?
 		$max_rows = 5;
@@ -335,8 +334,7 @@ class Member_images extends Member {
 
 		if ($total_rows > $per_page)
 		{
-			$pagination->per_page = $per_page;
-			$pagination->build($total_rows);
+			$pagination->build($total_rows, $per_page);
 			$avatars = array_slice($avatars, $pagination->offset, $pagination->per_page);
 		}
 

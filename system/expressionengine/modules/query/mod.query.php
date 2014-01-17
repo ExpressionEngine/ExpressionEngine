@@ -59,19 +59,19 @@ class Query {
 
 		// Start up pagination
 		ee()->load->library('pagination');
-		$pagination = ee()->pagination->create(__CLASS__);
-		$pagination->get_template();
-		$pagination->per_page = ee()->TMPL->fetch_param('limit', 0);
+		$pagination = ee()->pagination->create();
+		ee()->TMPL->tagdata = $pagination->prepare(ee()->TMPL->tagdata);
+		$per_page = ee()->TMPL->fetch_param('limit', 0);
 
 		// Disable pagination if the limit parameter isn't set
-		if ( ! $pagination->per_page)
+		if (empty($per_page))
 		{
 			$pagination->paginate = FALSE;
 		}
 
 		if ($pagination->paginate)
 		{
-			$pagination->build($query->num_rows());
+			$pagination->build($query->num_rows(), $per_page);
 			$results = array_slice($results, $pagination->offset, $pagination->per_page);
 		}
 

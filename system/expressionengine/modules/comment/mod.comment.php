@@ -388,7 +388,7 @@ class Comment {
 		if ($enabled['pagination'])
 		{
 			// Capture the pagination template
-			$pagination->get_template();
+			ee()->TMPL->tagdata = $pagination->prepare(ee()->TMPL->tagdata);
 		}
 
 		/** ----------------------------------------
@@ -519,18 +519,7 @@ class Comment {
 			}
 
 			// Determine the offset from the query string
-			$p = ( ! $dynamic) ? 'N' : 'P';
-			$pagination->prefix = $p;
-
-			// Figure out of we need a pagination offset
-			if (preg_match('/'.$p.'(\d+)(?:\/|$)/', ee()->uri->uri_string, $matches))
-			{
-				$pagination->offset = $matches[1];
-			}
-			else
-			{
-				$pagination->offset = 0;
-			}
+			$pagination->prefix = ( ! $dynamic) ? 'N' : 'P';
 		}
 
 		$this_sort = ($random) ? 'random' : strtolower($sort);
@@ -567,7 +556,7 @@ class Comment {
 		if ($enabled['pagination'])
 		{
 			// Build pagination
-			$pagination->build($pagination->total_rows);
+			$pagination->build($pagination->total_rows, $pagination->per_page);
 		}
 
 		/** -----------------------------------

@@ -2227,10 +2227,9 @@ class Forum_Core extends Forum {
 
 		// Load up pagination and start parsing
 		ee()->load->library('pagination');
-		$pagination = ee()->pagination->create(__CLASS__);
-		$pagination->template = $str;
+		$pagination = ee()->pagination->create();
 		$pagination->position = 'inline';
-		$str = $pagination->get_template();
+		$str = $pagination->prepare($str);
 
 		// Count the topics for pagination
 		$query = ee()->db->query("SELECT COUNT(*) AS count
@@ -2276,8 +2275,7 @@ class Forum_Core extends Forum {
 		if ($query->row('count') > $topic_limit
 			&& $pagination->paginate === TRUE)
 		{
-			$pagination->per_page = $topic_limit;
-			$pagination->build($query->row('count'));
+			$pagination->build($query->row('count'), $topic_limit);
 
 			// Set the LIMIT for our query
 			$query_limit = 'LIMIT '.$this->current_page.', '.$topic_limit;
@@ -2991,10 +2989,9 @@ class Forum_Core extends Forum {
 
 		// Load up pagination and start parsing
 		ee()->load->library('pagination');
-		$pagination = ee()->pagination->create(__CLASS__);
-		$pagination->template = $str;
+		$pagination = ee()->pagination->create();
 		$pagination->position = 'inline';
-		$str = $pagination->get_template();
+		$str = $pagination->prepare($str);
 
 		// Count the total number of posts
 		// We do this for purposes of pagination
@@ -3011,8 +3008,7 @@ class Forum_Core extends Forum {
 				&& $thread_review == FALSE
 				&& $pagination->paginate === TRUE)
 			{
-				$pagination->per_page = $limit;
-				$pagination->build($pquery->row('count'));
+				$pagination->build($pquery->row('count'), $limit);
 
 				// Set the LIMIT for our query
 				$query_limit = 'LIMIT '.$pagination->offset.', '.$limit;
@@ -9640,15 +9636,13 @@ class Forum_Core extends Forum {
 		// Load up pagination and start parsing
 		$total_rows = count($topic_ids);
 		ee()->load->library('pagination');
-		$pagination = ee()->pagination->create(__CLASS__);
-		$pagination->template = $str;
+		$pagination = ee()->pagination->create();
 		$pagination->position = 'inline';
-		$str = $pagination->get_template();
+		$str = $pagination->prepare($str);
 
 		if ($total_rows > $topic_limit)
 		{
-			$pagination->per_page = $topic_limit;
-			$pagination->build($total_rows);
+			$pagination->build($total_rows, $topic_limit);
 
 			// Slice our array so we can limit the query properly
 			$topic_ids = array_slice($topic_ids, $this->current_page, $topic_limit);
@@ -10009,15 +10003,13 @@ class Forum_Core extends Forum {
 		$post_limit	= 20;
 		$total_rows	= count($post_ids);
 		ee()->load->library('pagination');
-		$pagination = ee()->pagination->create(__CLASS__);
-		$pagination->template = $str;
+		$pagination = ee()->pagination->create();
 		$pagination->position = 'inline';
-		$str = $pagination->get_template();
+		$str = $pagination->prepare($str);
 
 		if ($total_rows > $post_limit && $pagination->paginate === TRUE)
 		{
-			$pagination->per_page = $post_limit;
-			$pagination->build($total_rows);
+			$pagination->build($total_rows, $post_limit);
 
 			// Slice our array so we can limit the query properly
 			$post_ids = array_slice($post_ids, $this->current_page, $post_limit);

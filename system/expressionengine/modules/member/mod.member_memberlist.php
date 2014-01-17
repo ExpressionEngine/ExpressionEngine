@@ -605,15 +605,13 @@ class Member_memberlist extends Member {
 
 		// Start running pagination
 		ee()->load->library('pagination');
-		$pagination = ee()->pagination->create(__CLASS__);
-		$pagination->template = $template;
+		$pagination = ee()->pagination->create();
 		$pagination->position = 'inline';
-		$template = $pagination->get_template();
+		$template = $pagination->prepare($template);
 
 		if ($query->row('count') > $row_limit && $pagination->paginate === TRUE)
 		{
-			$pagination->per_page = $row_limit;
-			$pagination->build($query->row('count'));
+			$pagination->build($query->row('count'), $row_limit);
 			$sql .= " LIMIT ".$row_count.", ".$row_limit;
 		}
 

@@ -56,8 +56,8 @@ class File {
 		$this->_fetch_disable_param();
 
 		ee()->load->library('pagination');
-		$pagination = ee()->pagination->create(__CLASS__);
-		$pagination->get_template();
+		$pagination = ee()->pagination->create();
+		ee()->TMPL->tagdata = $pagination->prepare(ee()->TMPL->tagdata);
 
 		if ($this->enable['pagination'] == FALSE)
 		{
@@ -201,12 +201,10 @@ class File {
 
 		// Set the limit
 		$limit = (int) ee()->TMPL->fetch_param('limit', 0);
-		// TODO-WB: Document offset
 		$offset = (int) ee()->TMPL->fetch_param('offset', 0);
 		if ($limit > 0 && $this->enable['pagination'] && $pagination->paginate == TRUE)
 		{
-			$pagination->per_page = $limit;
-			$pagination->build(ee()->db->count_all_results());
+			$pagination->build(ee()->db->count_all_results(), $limit);
 			ee()->db->limit($pagination->per_page, $pagination->offset);
 		}
 		else if ($limit > 0 && $offset >= 0)

@@ -892,15 +892,13 @@ class EE_Messages {
 
 		// Load up pagination and start parsing
 		ee()->load->library('pagination');
-		$pagination = ee()->pagination->create(__CLASS__);
-		$pagination->template = $template;
+		$pagination = ee()->pagination->create();
 		$pagination->position = 'inline';
-		$pagination->per_page = $this->per_page;
-		$template = $pagination->get_template();
+		$template = $pagination->prepare($template);
 
 		if ($query->row('count') > $this->per_page)
 		{
-			$pagination->build($query->row('count'));
+			$pagination->build($query->row('count'), $this->per_page);
 			$sql .= " LIMIT ".$pagination->offset.", ".$pagination->per_page;
 		}
 
@@ -1144,15 +1142,13 @@ class EE_Messages {
 
 		// Load up pagination and start parsing
 		ee()->load->library('pagination');
-		$pagination = ee()->pagination->create(__CLASS__);
-		$pagination->template = $template;
+		$pagination = ee()->pagination->create();
 		$pagination->position = 'inline';
-		$pagination->per_page = $this->per_page;
-		$template = $pagination->get_template();
+		$template = $pagination->prepare($template);
 
 		if ($query->row('count') > $this->per_page)
 		{
-			$pagination->build($query->row('count'));
+			$pagination->build($query->row('count'), $this->per_page);
 			$sql .= " LIMIT ".$pagination->offset.", ".$pagination->per_page;
 		}
 
@@ -3176,15 +3172,13 @@ DOH;
 
 		// Load up pagination and start parsing
 		ee()->load->library('pagination');
-		$pagination = ee()->pagination->create(__CLASS__);
-		$pagination->template = $template;
+		$pagination = ee()->pagination->create();
 		$pagination->position = 'inline';
-		$pagination->per_page = 2;
-		$template = $pagination->get_template();
+		$template = $pagination->prepare($template);
 
-		if ($query->row('count') > $pagination->per_page)
+		if ($query->row('count') > $this->per_page)
 		{
-			$pagination->build($query->row('count'));
+			$pagination->build($query->row('count'), $this->per_page);
 			$sql .= " LIMIT ".$pagination->offset.", ".$pagination->per_page;
 		}
 

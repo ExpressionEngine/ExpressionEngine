@@ -1529,15 +1529,13 @@ class Wiki {
 		}
 
 		ee()->load->library('pagination');
-		$pagination = ee()->pagination->create(__CLASS__);
-		$pagination->template = $match[2];
-		$match[2] = $pagination->get_template();
+		$pagination = ee()->pagination->create();
+		$match[2] = $pagination->prepare($match[2]);
 
 		if ($pagination->paginate === TRUE)
 		{
-			$pagination->per_page = $parameters['limit'];
 			$pagination->position = $parameters['paginate'];
-			$pagination->build($results->row('count'));
+			$pagination->build($results->row('count'), $parameters['limit']);
 			$pagination_sql = " LIMIT {$pagination->offset}, {$parameters['limit']}";
 		}
 
@@ -3309,9 +3307,8 @@ class Wiki {
 			/** ----------------------------------------*/
 
 			ee()->load->library('pagination');
-			$pagination = ee()->pagination->create(__CLASS__);
-			$pagination->template = $match[2];
-			$match[2] = $pagination->get_template();
+			$pagination = ee()->pagination->create();
+			$match[2] = $pagination->prepare($match[2]);
 
 			$data = $no_results;
 			$articles_total = 0;
@@ -3335,9 +3332,8 @@ class Wiki {
 					if ($articles_total > $parameters['limit']
 						&& $pagination->paginate === TRUE)
 					{
-						$pagination->per_page = $parameters['limit'];
 						$pagination->position = $parameters['paginate'];
-						$pagination->build($articles_total);
+						$pagination->build($articles_total, $parameters['limit']);
 						ee()->db->limit($parameters['limit'], $pagination->offset);
 					}
 					else
@@ -4378,9 +4374,8 @@ class Wiki {
 
 		// Start work on pagination
 		ee()->load->library('pagination');
-		$pagination = ee()->pagination->create(__CLASS__);
-		$pagination->template = $this->return_data;
-		$this->return_data = $pagination->get_template();
+		$pagination = ee()->pagination->create();
+		$this->return_data = $pagination->prepare($this->return_data);
 
 		/** ----------------------------------------
 		/**  Parse Results Tag Pair
@@ -4577,9 +4572,8 @@ class Wiki {
 			}
 
 			$pagination->basepath = $base_paginate;
-			$pagination->per_page = $parameters['limit'];
 			$pagination->position = $parameters['paginate'];
-			$pagination->build($query->row('count'));
+			$pagination->build($query->row('count'), $parameters['limit']);
 			$pagination_sql = " LIMIT {$pagination->offset}, {$parameters['limit']}";
 		}
 		else
@@ -4815,9 +4809,8 @@ class Wiki {
 
 		// Start work on pagination
 		ee()->load->library('pagination');
-		$pagination = ee()->pagination->create(__CLASS__);
-		$pagination->template = $match[2];
-		$match[2] = $pagination->get_template();
+		$pagination = ee()->pagination->create();
+		$match[2] = $pagination->prepare($match[2]);
 
 		// How many items are we paginating over?
 		$count = ee()->db->where('wiki_id', $this->wiki_id)
@@ -4838,9 +4831,8 @@ class Wiki {
 
 		if ($pagination->paginate === TRUE)
 		{
-			$pagination->per_page = $limit;
 			$pagination->position = $paginate;
-			$pagination->build($count);
+			$pagination->build($count, $limit);
 			ee()->db->limit($limit, $pagination->offset);
 		}
 

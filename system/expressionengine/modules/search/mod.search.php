@@ -1255,8 +1255,8 @@ class Search {
 
 		// Load Pagination Object
 		ee()->load->library('pagination');
-		$pagination = ee()->pagination->create(__CLASS__);
-		$pagination->get_template();
+		$pagination = ee()->pagination->create();
+		ee()->TMPL->tagdata = $pagination->prepare(ee()->TMPL->tagdata);
 
 		// Check search ID number
 		// If the QSTR variable is less than 32 characters long we
@@ -1321,7 +1321,7 @@ class Search {
 		// If we're paginating limit the query and do it again
 		if ($pagination->paginate === TRUE)
 		{
-			$pagination->build($pagination->total_rows);
+			$pagination->build($pagination->total_rows, $pagination->per_page);
 			$sql .= " LIMIT ".$pagination->offset.", ".$pagination->per_page;
 		}
 		else
