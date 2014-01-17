@@ -44,7 +44,6 @@ class Pagination_object {
 	public $per_page				= 0;
 	public $basepath				= '';
 	public $cfields					= array();
-	public $dynamic_sql				= TRUE;
 	public $prefix					= "P";
 	public $field_pagination_query	= NULL;
 
@@ -300,37 +299,6 @@ class Pagination_object {
 					&& $this->total_rows == 0)
 				{
 					return FALSE;
-				}
-
-				// We need to establish the per_page limits if we're using
-				// cached SQL because limits are normally created when building
-				// the SQL query
-				if ($this->dynamic_sql == FALSE)
-				{
-					// Check to see if we can actually deal with cat_limit. Has
-					// to have dynamic != 'no' and channel set with a category
-					// in the uri_string somewhere
-					$cat_limit = FALSE;
-					if (
-						(
-							in_array(ee()->config->item("reserved_category_word"), explode("/", ee()->uri->uri_string))
-							OR preg_match("#(^|\/)C(\d+)#", ee()->uri->uri_string, $match)
-						)
-						AND ee()->TMPL->fetch_param('dynamic') != 'no'
-						AND ee()->TMPL->fetch_param('channel')
-					)
-					{
-						$cat_limit = TRUE;
-					}
-
-					if ($cat_limit AND is_numeric(ee()->TMPL->fetch_param('cat_limit')))
-					{
-						$this->per_page = ee()->TMPL->fetch_param('cat_limit');
-					}
-					else
-					{
-						$this->per_page = ( ! is_numeric(ee()->TMPL->fetch_param('limit'))) ? '100' : ee()->TMPL->fetch_param('limit');
-					}
 				}
 
 				$this->offset = ($this->offset == '' OR ($this->per_page > 1 AND $this->offset == 1)) ? 0 : $this->offset;

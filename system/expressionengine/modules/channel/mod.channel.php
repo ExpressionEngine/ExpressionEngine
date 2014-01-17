@@ -256,8 +256,34 @@ class Channel {
 
 			if (($cache = $this->fetch_cache('pagination_count')) !== FALSE)
 			{
-				// Used by pagination to determine whether we're coming from the cache
-				$this->pagination->dynamic_sql = FALSE;
+				// We need to establish the per_page limits if we're using
+				// cached SQL because limits are normally created when building
+				// the SQL query
+
+				// Check to see if we can actually deal with cat_limit. Has
+				// to have dynamic != 'no' and channel set with a category
+				// in the uri_string somewhere
+				$cat_limit = FALSE;
+				if (
+					(
+						in_array(ee()->config->item("reserved_category_word"), explode("/", ee()->uri->uri_string))
+						OR preg_match("#(^|\/)C(\d+)#", ee()->uri->uri_string, $match)
+					)
+					AND ee()->TMPL->fetch_param('dynamic') != 'no'
+					AND ee()->TMPL->fetch_param('channel')
+				)
+				{
+					$cat_limit = TRUE;
+				}
+
+				if ($cat_limit AND is_numeric(ee()->TMPL->fetch_param('cat_limit')))
+				{
+					$per_page = ee()->TMPL->fetch_param('cat_limit');
+				}
+				else
+				{
+					$per_page = ( ! is_numeric(ee()->TMPL->fetch_param('limit'))) ? '100' : ee()->TMPL->fetch_param('limit');
+				}
 
 				if (($this->fetch_cache('field_pagination')) !== FALSE)
 				{
@@ -267,7 +293,7 @@ class Channel {
 						$this->pagination->field_pagination = TRUE;
 						$this->pagination->cfields = $this->cfields;
 						$this->pagination->field_pagination_query = ee()->db->query(trim($pg_query));
-						if ($this->pagination->build(trim($cache), 1) == FALSE)
+						if ($this->pagination->build(trim($cache), $per_page) == FALSE)
 						{
 							$this->sql = '';
 						}
@@ -275,7 +301,7 @@ class Channel {
 				}
 				else
 				{
-					if ($this->pagination->build(trim($cache), 0) == FALSE)
+					if ($this->pagination->build(trim($cache), $per_page) == FALSE)
 					{
 						$this->sql = '';
 					}
