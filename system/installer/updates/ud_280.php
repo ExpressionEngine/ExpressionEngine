@@ -188,7 +188,6 @@ class Updater {
 		ee()->smartforge->add_key('security_hashes', 'session_id');
 
 	}
-
 }
 /* END CLASS */
 

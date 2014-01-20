@@ -965,6 +965,7 @@ GRID_FALLBACK;
 		}
 
 		$this->head .= "\n".' // ]]>'."\n".'</script>';
+		$js_file_strings = array();
 
 		$js_defaults = array(
 			'file' => array('underscore'),
@@ -1061,7 +1062,8 @@ GRID_FALLBACK;
 			else
 			{
 				$mtime[] = ee()->cp->_get_js_mtime($type, $files);
-				ee()->cp->js_files[$type] = implode(',', $files);
+				ee()->cp->js_files[$type] = $files;
+				$js_file_strings[$type] = implode(',', $files);
 			}
 		}
 
@@ -1091,7 +1093,7 @@ GRID_FALLBACK;
 			$this->head .= '<script type="text/javascript" src="'.$js_url.'"></script>'."\n";
 		}
 
-		$this->head .= '<script type="text/javascript" charset="utf-8" src="'.ee()->functions->fetch_site_index().QUERY_MARKER.'ACT='.ee()->functions->fetch_action_id('Channel', 'combo_loader').'&'.str_replace(array('%2C', '%2F'), array(',', '/'), http_build_query(ee()->cp->js_files)).'&v='.max($mtime).$use_live_url.$include_jquery.'"></script>'."\n";
+		$this->head .= '<script type="text/javascript" charset="utf-8" src="'.ee()->functions->fetch_site_index().QUERY_MARKER.'ACT='.ee()->functions->fetch_action_id('Channel', 'combo_loader').'&'.str_replace(array('%2C', '%2F'), array(',', '/'), http_build_query($js_file_strings)).'&v='.max($mtime).$use_live_url.$include_jquery.'"></script>'."\n";
 
 		//add fieldtype styles
 		foreach (ee()->cp->its_all_in_your_head as $item)
