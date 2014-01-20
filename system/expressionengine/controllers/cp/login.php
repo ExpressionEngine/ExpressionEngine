@@ -657,7 +657,9 @@ class Login extends CP_Controller {
 	/**
 	 *	Refresh XID
 	 *
-	 *	This method is hit
+	 * If running with cookies only this method is hit periodically otherwise
+	 * it's hit before logging back in to ensure a valid anonymous csrf token
+	 * and again after logging in to retrieve a valid session bound csrf token.
 	 *
 	 */
 	public function refresh_csrf_token()

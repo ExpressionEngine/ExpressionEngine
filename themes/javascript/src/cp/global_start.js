@@ -208,6 +208,19 @@ EE.cp.setBasePath = function(newBase, skipBroadcast /* internal */) {
 	$('a').attr('href', replaceBase);
 	$('form').attr('action', replaceBase);
 
+	// Since the session id in the current url is no longer correct, a
+	// refresh will end up on the login page. We will replace the current
+	// url to avoid that issue. You still cannot use the back button after
+	// logging back in, but how likely are you to remember what page you
+	// were on before leaving this one open for 20 minutes anyways?
+	if (typeof window.history.pushState == 'function') {
+		window.history.replaceState(
+			null,
+			document.title,
+			window.location.href.replace(EE.BASE, newBase)
+		);
+	}
+
 	// Set it as the new base
 	EE.BASE = newBase;
 
@@ -221,14 +234,15 @@ $(window).bind('broadcast.setBasePath', function(event, data) {
 });
 
 
-EE.cp.refreshSessionData = function() {
+EE.cp.refreshSessionData = function(event, base) {
+	if (base) {
+		EE.cp.setBasePath(base);
+	}
 
 	// running the request will return the x-csrf-header, which will trigger
 	// our prefilter. We still need to replace the base though.
 	$.getJSON(EE.BASE + '&C=login&M=refresh_csrf_token', function(result) {
-		if (result.base) {
-			EE.cp.setBasePath(result.base);
-		}
+		EE.cp.setBasePath(result.base);
 	});
 
 };
@@ -500,7 +514,7 @@ EE.cp.display_notices = function() {
 	var types = ["success", "notice", "error"];
 
 	$(".message.js_hide").each(function() {
-		for (i in types) {
+		for (var i in types) {
 			if ($(this).hasClass(types[i])) {
 				$.ee_notice($(this).html(), {type: types[i]});
 			}
@@ -594,7 +608,7 @@ EE.cp.zebra_tables = function(table) {
  * example, to force the modal to show you could call:
  *
  *     EE.cp.broadcastEvents['modal']();
- *
+ *e
  * This is used by our ajax filter to allow triggering an event with the
  * X-EE-BROADCAST header
  *
@@ -604,7 +618,8 @@ EE.cp.broadcastEvents = (function() {
 	// Define our time limits:
 	var TICK_TIME          = 5 * 1000,			// Check state every 5 seconds
 		FOCUSED_IDLE_LIMIT = 20 * 60 * 1000,	// 20 minutes: time before modal if window focused
-		BLURRED_IDLE_LIMIT = 40 * 60 * 1000;    // 40 minutes: time before modal if no focus
+		BLURRED_IDLE_LIMIT = 40 * 60 * 1000,    // 40 minutes: time before modal if no focus
+		REMEMBER_ME_LIMIT  = 50 * 60 * 1000;	// 50 minutes: refresh remember me
 
 	// Make sure we have our modal available when we need it
 	var logoutModal = $('#idle-modal').dialog({
@@ -646,7 +661,7 @@ EE.cp.broadcastEvents = (function() {
 				Events.login();
 
 				// Grab the new token
-				EE.cp.refreshSessionData();
+				EE.cp.refreshSessionData(null, result.base);
 
 				$(window).trigger('broadcast.idleState', 'login');
 			},
@@ -663,46 +678,56 @@ EE.cp.broadcastEvents = (function() {
 	 * This object tracks the current state of the page.
 	 *
 	 * The resolve function is called once per tick. The individual events will
-	 * set hasFocus and set isIdle and lastIdle time.
+	 * set hasFocus and lastActive time.
 	 */
 	var State = {
 
 		hasFocus: true,
 		modalActive: false,
-		isIdle: false,
-		lastActive: $.now(),
 		pingReceived: false,
+		lastActive: $.now(),
+		lastRefresh: $.now(),
 
-		setNotIdle: function() {
+		setActiveTime: function() {
 			// Before we set someone as not idle we need to check if they've
 			// sneakily been idle for a long time. When you close your laptop
 			// the timer stops. Reopening it hours later creates a race between
 			// the tick timer and the non-idle events. When that happens, you're
 			// way past the threshold and therefore too late.
-			if ( ! State.modalThresholdReached()) {
-				this.isIdle = false;
+			if (this.modalActive || ! this.modalThresholdReached()) {
 				this.lastActive = $.now();
 			}
 		},
 
 		modalThresholdReached: function() {
-			var idleTimeDelta = $.now() - this.lastActive;
-
-			var mustShowModal = (this.hasFocus && idleTimeDelta > FOCUSED_IDLE_LIMIT) ||
+			var idleTimeDelta = $.now() - this.lastActive,
+				mustShowModal = (this.hasFocus && idleTimeDelta > FOCUSED_IDLE_LIMIT) ||
 								( ! this.hasFocus && idleTimeDelta > BLURRED_IDLE_LIMIT);
 			return (this.modalActive === false && mustShowModal === true);
 		},
 
+		rememberThresholdReached: function() {
+			var refreshTimeDelta = $.now() - this.lastRefresh;
+			return refreshTimeDelta > REMEMBER_ME_LIMIT;
+		},
+
 		resolve: function() {
+
+			if (EE.hasRememberMe) {
+				if (State.rememberThresholdReached()) {
+					this.lastRefresh = $.now();
+					EE.cp.refreshSessionData();
+				}
+
+				return;
+			}
 
 			if (State.modalThresholdReached()) {
 				Events.modal();
 				$(window).trigger('broadcast.idleState', 'modal');
 				$.get(EE.BASE + '&C=login&M=lock_cp'); // lock them out of the cp in the background to prevent tampering
 			}
-
-			// ping other windows if we've been reset
-			if ( ! this.isIdle && this.pingReceived === false) {
+			else if (this.hasFocus && this.pingReceived === false) {
 				$(window).trigger('broadcast.idleState', 'active');
 			}
 
@@ -716,34 +741,27 @@ EE.cp.broadcastEvents = (function() {
 	 */
 	var Events = {
 
-		// nothing has happened - we were idle
-		_default: function() {
-			State.isIdle = true;
-		},
-
 		// received another window's active event, user active
 		active: function() {
-			State.setNotIdle();
-			State.hasFocus = false;
+			State.setActiveTime();
 		},
 
 		// user focused, they are active
 		focus: function() {
-			State.setNotIdle();
+			State.setActiveTime();
 			State.hasFocus = true;
 		},
 
 		// user left, they are idle
 		blur: function() {
-			State.isIdle = true;
+			State.setActiveTime();
 			State.hasFocus = false;
-			State.lastActive = $.now();
 		},
 
 		// user typing / mousing, possibly active
 		interact: function() {
 			if (State.hasFocus) {
-				State.setNotIdle();
+				State.setActiveTime();
 			}
 		},
 
@@ -756,8 +774,7 @@ EE.cp.broadcastEvents = (function() {
 				State.modalActive = true;
 			}
 
-			State.lastActive = $.now();
-			State.isIdle = true;
+			State.setActiveTime();
 		},
 
 		// received another window's login event, check and hide modal
@@ -767,9 +784,8 @@ EE.cp.broadcastEvents = (function() {
 
 			logoutModal.find(':password').val('');
 
+			State.setActiveTime();
 			State.modalActive = false;
-			State.lastActive = $.now();
-			State.setNotIdle();
 		},
 
 		// received another window's logout event, leave page
@@ -784,29 +800,11 @@ EE.cp.broadcastEvents = (function() {
 	 */
 	var EventTracker = {
 
-		eventsRecorded: [],
+		_t: null,
 
 		init: function() {
 			this._bindEvents();
-			this.tick();
-		},
-
-		tick: function() {
-			// no events? run default
-			if ( ! this.eventsRecorded.length) {
-				this.eventsRecorded = ['_default'];
-			}
-
-			// replay events that happened during this tick
-			_.each(this.eventsRecorded, function(evt) {
-				Events[evt]();
-			});
-
-			State.resolve();
-
-			this.eventsRecorded = [];
-
-			setTimeout($.proxy(this, 'tick'), TICK_TIME);
+			this.track();
 		},
 
 		/**
@@ -819,7 +817,7 @@ EE.cp.broadcastEvents = (function() {
 		 * and not fill up the queue uselessly.
 		 */
 		_bindEvents: function() {
-			var track = $.proxy(this, '_track'),
+			var track = $.proxy(this, 'track'),
 				that = this;
 
 			// Bind on the broadcast event
@@ -827,8 +825,8 @@ EE.cp.broadcastEvents = (function() {
 
 				switch (idleState) {
 					case 'active':
-						track(idleState);
 						State.pingReceived = true;
+						track(idleState);
 						break;
 					case 'modal':
 					case 'login':
@@ -858,8 +856,15 @@ EE.cp.broadcastEvents = (function() {
 		/**
 		 * Helper method to record an event
 		 */
-		_track: function(name) {
-			this.eventsRecorded.push(name);
+		track: function(name) {
+			if (name) {
+				Events[name]();
+			}
+
+			State.resolve();
+
+			clearTimeout(this._t);
+			this._t = setTimeout($.proxy(this, 'track'), TICK_TIME);
 		}
 	};
 
