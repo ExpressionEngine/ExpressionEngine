@@ -857,14 +857,14 @@ EE.cp.broadcastEvents = (function() {
 		 * Helper method to record an event
 		 */
 		track: function(name) {
+			clearTimeout(this._t);
+			this._t = setTimeout($.proxy(this, 'track'), TICK_TIME);
+
 			if (name) {
 				Events[name]();
 			}
 
 			State.resolve();
-
-			clearTimeout(this._t);
-			this._t = setTimeout($.proxy(this, 'track'), TICK_TIME);
 		}
 	};
 
