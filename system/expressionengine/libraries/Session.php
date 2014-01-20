@@ -999,12 +999,6 @@ class EE_Session {
 			ee()->input->set_cookie($this->c_session , $this->sdata['session_id'],  $this->session_length);
 		}
 
-		// If we only require cookies for validation, set admin session.
-		if ($this->validation == 'c'  AND  $this->access_cp == TRUE)
-		{
-			$this->sdata['admin_sess'] = 1;
-		}
-
 		// We'll unset the "last activity" item from the session data array.
 		// We do this to avoid a conflict with the "last_activity" item in the
 		// userdata array since we'll be merging the two arrays in a later step
