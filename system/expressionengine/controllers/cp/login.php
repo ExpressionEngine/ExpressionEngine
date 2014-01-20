@@ -352,7 +352,15 @@ class Login extends CP_Controller {
 	public function lock_cp()
 	{
 		ee()->session->lock_cp();
-		$this->functions->redirect(BASE.AMP.'C=login');
+
+		if ( ! AJAX_REQUEST)
+		{
+			$this->functions->redirect(BASE.AMP.'C=login');
+		}
+
+		$this->output->send_ajax_response(array(
+			'message' => 'locked'
+		));
 	}
 
 	// --------------------------------------------------------------------
