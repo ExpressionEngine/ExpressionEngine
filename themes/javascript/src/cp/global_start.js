@@ -803,6 +803,10 @@ EE.cp.broadcastEvents = (function() {
 		_t: null,
 
 		init: function() {
+			$(window).trigger('broadcast.setBasePath', EE.BASE);
+			$(window).trigger('broadcast.setCsrfToken', EE.CSRF_TOKEN);
+			$(window).trigger('broadcast.idleState', 'login');
+
 			this._bindEvents();
 			this.track();
 		},
