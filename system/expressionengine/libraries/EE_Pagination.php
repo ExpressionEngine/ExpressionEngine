@@ -119,8 +119,11 @@ class Pagination_object {
 	function prepare($template)
 	{
 		// Prepare the template
-		if (ee()->TMPL->fetch_param('paginate') != 'hidden'
-			&& strpos($template, LD.'paginate'.RD) !== FALSE
+		if (ee()->TMPL->fetch_param('paginate') == 'hidden')
+		{
+			$this->paginate = TRUE;
+		}
+		else if (strpos($template, LD.'paginate'.RD) !== FALSE
 			&& preg_match("/".LD."paginate".RD."(.+?)".LD.'\/'."paginate".RD."/s", $template, $paginate_match))
 		{
 			if (ee()->TMPL->fetch_param('paginate_type') == 'field')
@@ -188,10 +191,10 @@ class Pagination_object {
 			// If {paginate} exists store the pagination template
 			$this->paginate = TRUE;
 			$this->_pagination_template	= $paginate_match[1];
-		}
 
-		// Determine if pagination needs to go at the top and/or bottom, or inline
-		$this->_position = ee()->TMPL->fetch_param('paginate', $this->_position);
+			// Determine if pagination needs to go at the top and/or bottom, or inline
+			$this->_position = ee()->TMPL->fetch_param('paginate', $this->_position);
+		}
 
 		// Create temporary marker for inline position
 		$replace_tag = ($this->_position == 'inline') ? LD.$this->_pagination_marker.RD : '';
