@@ -412,6 +412,7 @@ class EE_Config Extends CI_Config {
 			'webmaster_name',
 			'channel_nomenclature',
 			'max_caches',
+			'cache_driver',
 			'captcha_url',
 			'captcha_path',
 			'captcha_font',

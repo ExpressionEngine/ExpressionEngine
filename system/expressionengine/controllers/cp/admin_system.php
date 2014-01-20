@@ -379,6 +379,10 @@ class Admin_system extends CP_Controller {
 							$options[0] = 'c';
 							$details = $this->localize->timezone_menu($value);
 							break;
+						case 'caching_driver':
+							$options[0] = 'c';
+							$details = ee()->cache->admin_setting();
+							break;
 					}
 					break;
 				case 'p': // Fall through intended.

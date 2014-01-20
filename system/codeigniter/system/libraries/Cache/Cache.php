@@ -43,10 +43,10 @@ class Cache extends CI_Driver_Library {
 	 * @var array
 	 */
 	protected $valid_drivers = array(
-		'dummy',
 		'file',
 		'memcached',
-		'redis'
+		'redis',
+		'dummy'
 	);
 
 	/**
@@ -267,6 +267,49 @@ class Cache extends CI_Driver_Library {
 		}
 
 		return $prefix.':'.$key;
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Returns HTML form for the Caching Driver setting on the General
+	 * Configuration screen, and also optionally an error message if the driver
+	 * selected cannot be used
+	 *
+	 * @return	string	HTML dropdown and optional error message
+	 */
+	public function admin_setting()
+	{
+		$options = array();
+		$adapter = ee()->config->item('cache_driver');
+
+		if (empty($adapter))
+		{
+			$adapter = 'file';
+		}
+
+		// Create options array fit for a dropdown
+		foreach ($this->valid_drivers as $driver)
+		{
+			$options[$driver] = ucwords($driver);
+		}
+
+		$output = form_dropdown('cache_driver', $options, $adapter);
+
+		// If the driver we want to use isn't what we are using, build an error
+		// message
+		if ($adapter !== $this->get_adapter())
+		{
+			$error_key = ($adapter == 'file')
+				? 'caching_driver_file_fail' : 'caching_driver_failover';
+
+			$output .= NBS.NBS
+				.'<span style="color: red; font-size: 11px; font-weight: bold">'
+				.sprintf(lang($error_key), ucwords($adapter), ucwords($this->get_adapter()))
+				.'</span>';
+		}
+
+		return $output;
 	}
 }
 
