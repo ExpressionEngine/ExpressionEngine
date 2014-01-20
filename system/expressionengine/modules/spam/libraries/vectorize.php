@@ -54,11 +54,12 @@ class Collection {
 			if( ! empty($text))
 			{
 				$text = str_ireplace($stop_words,' ',$text);
-				$this->documents[] = new Document($text);
+				$doc = new Document($text);
+				$this->documents[] = $doc;
 				$this->corpus .= ' ' . $doc->text;
 			}
 		}
-		$this->corpus = new Distribution($this->corpus);
+		$this->corpus = new Document($this->corpus);
 	}
 
 	/**
@@ -84,7 +85,7 @@ class Collection {
 	 */
 	public function term_frequency(Document $doc, $term)
 	{
-		return 0.5 + (0.5 * $doc->frequency($term)) / $doc[0];
+		return 0.5 + (0.5 * $doc($term)) / $doc->frequency[0];
 	}
 
 	/**
@@ -184,7 +185,7 @@ class Document implements Iterator {
 			$count[$key] = $val / $num;
 		}
 		arsort($count);
-		return array_slice($count, 0, $this->limit);
+		return $count; 
 	}
 
 	public function rewind()
