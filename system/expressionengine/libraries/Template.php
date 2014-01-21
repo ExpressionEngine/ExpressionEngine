@@ -430,7 +430,7 @@ class EE_Template {
 		// there is no reason to go further.
 		// However we do need to fetch any subtemplates
 
-		if ($this->cache_status == 'CURRENT' AND $is_embed == FALSE)
+		if ($this->cache_status == 'CURRENT' AND $is_embed == FALSE && $is_layout == FALSE)
 		{
 			$this->log_item("Cached Template Used");
 
@@ -444,9 +444,9 @@ class EE_Template {
 
 			$this->log_item("Conditionals Parsed, Processing Sub Templates");
 
+			$this->template = $this->process_sub_templates($this->template);
+			$this->template = $this->process_layout_template($this->template, $layout);
 			$this->final_template = $this->template;
-			$this->process_sub_templates($this->template);
-			$this->process_layout_template($this->template, $layout);
 			return;
 		}
 
