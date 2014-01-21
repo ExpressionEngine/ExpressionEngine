@@ -452,7 +452,17 @@ class CI_Cache_memcached extends CI_Driver {
 			// separator character) and get ready to create the new namespace
 			$namespace_array = &$this->_namespaces[$root_key];
 			$namespace = trim($namespace, Cache::NAMESPACE_SEPARATOR);
-			$parts = explode('/', $namespace);
+
+			// Remove other array keys under this namespace
+			foreach ($namespace_array as $key => $value)
+			{
+				if (strpos($key, $namespace.Cache::NAMESPACE_SEPARATOR) === 0)
+				{
+					unset($namespace_array[$key]);
+				}
+			}
+
+			$parts = explode(Cache::NAMESPACE_SEPARATOR, $namespace);
 			$namespace_lookup = '';
 
 			// Foreach part that doesn't exist, we'll create it; or if we run
