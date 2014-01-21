@@ -85,7 +85,9 @@ class EE_Route {
 			if (is_string($segment))
 			{
 				$url[] = $segment;
-			} else {
+			}
+			else
+			{
 				if (empty($segment->value))
 				{
 					throw new Exception(lang('missing_segment_value') . $segment->name);
@@ -102,7 +104,8 @@ class EE_Route {
 	 * @access public
 	 * @return string  The compiled regular expression.
 	 */
-	public function compile() {
+	public function compile()
+	{
 		$url = array();
 		foreach($this->segments as $segment)
 		{
@@ -112,7 +115,9 @@ class EE_Route {
 				// backslash escaped for preg_match
 				$segment = str_replace('/', $delimiter, $segment);
 				$url[] = $segment;
-			} else {
+			}
+			else
+			{
 				$regex = $segment->regex();
 				if ( ! $this->required)
 				{
@@ -249,7 +254,8 @@ public function parse_rules($rules)
 					$regex .= substr($rules, $index, 1);
 					$valid = @preg_match("/$regex/", null);
 					$index++;
-					if($end < $index) {
+					if($end < $index)
+					{
 						throw new Exception(lang('invalid_regex'));
 					}
 				}

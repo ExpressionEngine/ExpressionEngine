@@ -116,7 +116,8 @@ class EE_Template_router_converters {
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-interface EE_Template_router_converter {
+interface EE_Template_router_converter
+{
 
 	/**
 	 * Return a regular expression for validation

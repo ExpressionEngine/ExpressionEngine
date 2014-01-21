@@ -39,11 +39,10 @@ class EE_Template_Router extends CI_Router {
 	 * 
 	 * @param EE_URI $uri 
 	 * @access public
-	 * @return array
-	 *			- template_name : The name if the matched template
-	 *			- group_name : The name of the group for the matched template
+	 * @return EE_Route_match Instantiated match object for the matched template & group
 	 */
-	public function match($uri) {
+	public function match($uri)
+	{
 		$request = $uri->uri_string;
 		// First check if we have a bare match
 		if ( ! empty($this->end_points[$request]))
@@ -52,7 +51,8 @@ class EE_Template_Router extends CI_Router {
 		}
 		foreach ($this->end_points as $route => $end_point)
 		{
-			if(preg_match_all("/$route/i", $request, $matches) == 1) {
+			if(preg_match_all("/$route/i", $request, $matches) == 1)
+			{
 				return new EE_Route_match($end_point, $matches);
 			}
 		}
@@ -101,10 +101,6 @@ class EE_Template_Router extends CI_Router {
 		if ($query->num_rows() > 0)
 		{
 			return new EE_Route($query->row()->route);
-		}
-		else
-		{
-			return;
 		}
 	}
 

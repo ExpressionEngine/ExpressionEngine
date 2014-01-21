@@ -49,7 +49,8 @@ class EE_Route_segment {
 	 * @access public
 	 * @return bool
 	 */
-	public function validate($val) {
+	public function validate($val)
+	{
 		$regex = "/" . $this->validator() . "/i";
 		$result = preg_match($regex, $val);
 		if ($result === FALSE)
