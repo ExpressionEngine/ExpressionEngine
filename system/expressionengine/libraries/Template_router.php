@@ -44,11 +44,13 @@ class EE_Template_Router extends CI_Router {
 	public function match($uri)
 	{
 		$request = $uri->uri_string;
+
 		// First check if we have a bare match
 		if ( ! empty($this->end_points[$request]))
 		{
 			return $this->end_points[$request];
 		}
+
 		foreach ($this->end_points as $route => $end_point)
 		{
 			if(preg_match_all("/$route/i", $request, $matches) == 1)
@@ -56,6 +58,7 @@ class EE_Template_Router extends CI_Router {
 				return new EE_Route_match($end_point, $matches);
 			}
 		}
+
 		throw new Exception(lang('route_not_found'));
 	}
 
@@ -72,6 +75,7 @@ class EE_Template_Router extends CI_Router {
 		ee()->db->join('template_groups', 'templates.group_id = template_groups.group_id');
 		ee()->db->where('route_parsed is not null');
 		$query = ee()->db->get();
+
 		foreach ($query->result() as $template)
 		{
 			$this->end_points[$template->route_parsed] = array(
@@ -98,6 +102,7 @@ class EE_Template_Router extends CI_Router {
 		ee()->db->where('group_name', $group);
 		ee()->db->where('route is not null');
 		$query = ee()->db->get();
+
 		if ($query->num_rows() > 0)
 		{
 			return new EE_Route($query->row()->route);

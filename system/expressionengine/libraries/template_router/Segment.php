@@ -53,10 +53,12 @@ class EE_Route_segment {
 	{
 		$regex = "/" . $this->validator() . "/i";
 		$result = preg_match($regex, $val);
+
 		if ($result === FALSE)
 		{
 			throw new Exception(lang('validation_failed'));
 		}
+
 		return $result === 1;
 	}
 
@@ -69,6 +71,7 @@ class EE_Route_segment {
 	public function validator()
 	{
 		$compiled_rules = "";
+
 		foreach ($this->rules as $rule)
 		{
 			// Place each rule inside an anchored lookahead,
@@ -76,11 +79,13 @@ class EE_Route_segment {
 			// This allows rules to work together without consuming the match.
 			$compiled_rules .= "((?=\b" . $rule->validator() . "\b)[^\/]*)";
 		}
+
 		if (empty($this->rules))
 		{
 			// Default to a wildcard match if we have no rules
 			$compiled_rules = "([^\/]*)";
 		}
+
 		return $compiled_rules;
 	}
 

@@ -76,10 +76,12 @@ class EE_Route {
 	public function build(array $variables = array())
 	{
 		$url = array();
+		
 		foreach ($variables as $key => $val)
 		{
 			$this->variables[$key]->set($val);
 		}
+
 		foreach($this->segments as $segment)
 		{
 			if (is_string($segment))
@@ -92,9 +94,11 @@ class EE_Route {
 				{
 					throw new Exception(lang('missing_segment_value') . $segment->name);
 				}
+
 				$url[] =  $segment->value;
 			}
 		}
+
 		return '/' . implode('', $url);
 	}
 
@@ -107,26 +111,30 @@ class EE_Route {
 	public function compile()
 	{
 		$url = array();
+
 		foreach($this->segments as $segment)
 		{
 			if (is_string($segment))
 			{
-				$delimiter = $this->required ? '\/' : '\/?';
-				// backslash escaped for preg_match
+				$delimiter = $this->required ? '\/' : '\/?'; // backslash escaped for preg_match
 				$segment = str_replace('/', $delimiter, $segment);
 				$url[] = $segment;
 			}
 			else
 			{
 				$regex = $segment->regex();
+
 				if ( ! $this->required)
 				{
 					$regex .= '?';
 				}
+
 				$url[] = $regex;
 			}
 		}
+
 		$parsed_route = implode('', $url);
+
 		// anchor the beginning and end, and add optional trailing slash
 		return "^{$parsed_route}\/?$";
 	}
@@ -143,6 +151,7 @@ class EE_Route {
 		$route = trim($route, '/');
 		$segments = $this->parse_segments($route);
 		$index = 0;
+
 		foreach ($segments as $segment)
 		{
 			if ( ! empty($segment['static']))
@@ -160,9 +169,11 @@ class EE_Route {
 					$rules = $this->parse_rules($segment['rules']);
 					$segment = new EE_Route_segment($segment['variable'], $rules);
 				}
+				
 				$this->segments[$index] = $segment;
 				$this->variables[$segment->name] =& $this->segments[$index];
 			}
+
 			$index++;
 		}
 	}
@@ -182,27 +193,34 @@ class EE_Route {
 		$pos = 0;
 		$end = strlen($route);
 		$used_names = array();
+
 		while ($pos < $end)
 		{
 			$segment = array();
 			$result = preg_match("/{$this->segment_regex}/ix", $route, $matches, 0, $pos);
+
 			if ($result == 0)
 			{
 				break;
 			}
+
 			if ( ! empty($matches['static']))
 			{
 				$segments[] = array('static' => $matches['static']);
 			}
+
 			$segment['variable'] = $matches['variable'];
+
 			if ( ! empty($matches['rules']))
 			{
 				$segment['rules'] = $matches['rules'];
 			}
+
 			if (in_array($segment['variable'], $used_names))
 			{
 				throw new Exception(lang('variable_in_use') . $segment['variable']);
 			}
+
 			$used_names[] = $segment['variable'];
 			$segments[] = $segment;
 			$pos += strlen($matches[0]);
@@ -210,12 +228,15 @@ class EE_Route {
 		if ($pos < $end)
 		{
 			$remainder = substr($route, $pos);
+
 			if ( (strpos($remainder, '{') === FALSE && strpos($remainder, '}')) === FALSE)
 			{
 				throw new Exception(lang('invalid_route') . $route);
 			}
+
 			$segments[] = array('static' => $remainder);
 		}
+
 		return $segments;
 	}
 
@@ -233,14 +254,18 @@ public function parse_rules($rules)
 		$end = strlen($rules);
 		$used_rules = array();
 		$parsed_rules = array();
+
 		while ($pos < $end)
 		{
 			$result = preg_match("/{$this->rules_regex}/ix", $rules, $matches, 0, $pos);
+
 			if ($result == 0)
 			{
 				break;
 			}
+
 			$args = array();
+
 			// Not even Xzibit would try to parse a regex with a regex.
 			// So we'll treat regexes as a special case and concatenate and
 			// validate until we have a valid regular expression.
@@ -249,16 +274,19 @@ public function parse_rules($rules)
 				$index = $pos + 7;
 				$regex = substr($matches[0], 6, 1);
 				$valid = @preg_match("/$regex/", null);
+
 				while ($valid === FALSE)
 				{
 					$regex .= substr($rules, $index, 1);
 					$valid = @preg_match("/$regex/", null);
 					$index++;
+
 					if($end < $index)
 					{
 						throw new Exception(lang('invalid_regex'));
 					}
 				}
+
 				$matches[0] = "regex[{$regex}]|";
 				$matches['args'] = $regex;
 				$args[] = $regex;
@@ -268,9 +296,11 @@ public function parse_rules($rules)
 				$args = explode(',', $matches['args']);
 				array_walk($args, 'trim');
 			}
+
 			$parsed_rules[] = $this->rules->load($matches['rule'], $args);
 			$pos += strlen($matches[0]);
 		}
+
 		return $parsed_rules;
 	}
 
