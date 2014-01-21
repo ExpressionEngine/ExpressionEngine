@@ -563,10 +563,8 @@ class EE_Template {
 					$error = ee()->lang->line('error_layout_too_late');
 					ee()->output->fatal_error($error);
 				}
-				else
-				{
-					exit;
-				}
+
+				exit;
 			}
 			// Is there another? We can't have that.
 			elseif (preg_match('/('.LD.'layout\s*=)(.*?)'.RD.'/s', $this->template, $bad_layout, 0, $tag_pos + 1))
@@ -582,10 +580,8 @@ class EE_Template {
 
 					ee()->output->fatal_error($error);
 				}
-				else
-				{
-					exit;
-				}
+
+				exit;
 			}
 
 			// save it
@@ -828,11 +824,9 @@ class EE_Template {
 						'content' => $message
 					), FALSE);
 				}
+
 				// Show nothing if debug is off
-				else
-				{
-					exit;
-				}
+				exit;
 			}
 
 			// Backup current layout vars, they don't apply to this embed
