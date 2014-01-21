@@ -13,6 +13,17 @@ class StatusGroup extends Model {
 		)
 	);
 
+	public function getStatuses()
+	{
+		return $this->oneToMany('Statuses', 'Status', 'group_id', 'group_id');
+	}
+
+	public function setStatuses(array $statuses)
+	{
+		$this->setRelated('Statuses', $statuses);
+		return $this;
+	}
+
 	protected $group_id;
 	protected $site_id;
 	protected $group_name;

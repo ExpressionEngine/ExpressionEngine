@@ -18,6 +18,12 @@ class Channel extends Model implements ContentStructure {
 	);
 
 	// Properties
+
+	/**
+	 * This is the primary key id.
+	 *
+	 * @type int
+	 */	
 	protected $channel_id;
 	protected $site_id;
 	protected $channel_name;

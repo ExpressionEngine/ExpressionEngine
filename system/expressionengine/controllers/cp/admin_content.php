@@ -260,43 +260,49 @@ class Admin_content extends CP_Controller {
 			return $this->channel_update();
 		}
 
-		$query = $this->channel_model->get_channel_info($channel_id);
-
-		foreach ($query->row_array() as $key => $val)
-		{
-			$vars[$key] = $val;
-		}
+		$channel = $this->builder->get('Channel', $channel_id);
+		$vars['channel'] = $channel;
 
 		$vars['form_hidden']['channel_id'] = $channel_id;
 
 		// live_look_template
-		$query = $this->template_model->get_templates();
+		$templates = $this->builder->get('Template')
+			->with('TemplateGroup')
+			->all();
 
 		$vars['live_look_template_options'][0] = lang('no_live_look_template');
 
-		if ($query->num_rows() > 0)
+		if ( count($templates) > 0)
 		{
-			foreach ($query->result() as $template)
+			foreach ($templates as $template)
 			{
-				$vars['live_look_template_options'][$template->template_id] = $template->group_name.'/'.$template->template_name;
+				$vars['live_look_template_options'][$template->template_id] = $template->getGroup()->group_name.'/'.$template->template_name;
 			}
 		}
 
 		// Default status menu
 		$query = $this->status_model->get_statuses($vars['status_group']);
+		$statuses = $this->builder->get('Status')
+			->with('StatusGroup')
+			->filer('Status.group_id', $channel->status_group)
+			->all();
 
+		// These will always be there, and also need extra processing.
 		$vars['deft_status_options']['open'] = lang('open');
 		$vars['deft_status_options']['closed'] = lang('closed');
-
-		if ($query->num_rows() > 0)
+		if (count($statuses) > 0)
 		{
-			foreach ($query->result() as $row)
+			foreach ($statuses as $status)
 			{
-				$status_name = ($row->status == 'open' OR $row->status == 'closed') ? lang($row->status) : $row->status;
-				$vars['deft_status_options'][$row->status] = $status_name;
+				// We already did these ones, so skip em.
+				if ($status->status == 'open' || $status->status == 'closed')
+				{
+					continue;
+				}
+
+				$vars['deft_status_options'][$status->status] = $status->status;
 			}
 		}
-
 		$vars['deft_category_options'][''] = lang('none');
 
 		$cats = $vars['cat_group'] ? explode('|', $vars['cat_group']) : array();
