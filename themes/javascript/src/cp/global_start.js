@@ -608,7 +608,7 @@ EE.cp.zebra_tables = function(table) {
  * example, to force the modal to show you could call:
  *
  *     EE.cp.broadcastEvents['modal']();
- *e
+ *
  * This is used by our ajax filter to allow triggering an event with the
  * X-EE-BROADCAST header
  *
