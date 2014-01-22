@@ -2805,6 +2805,11 @@ PAPAYA;
 		// any unanticipated keys that aren't in our template?
 		$extra_config = '';
 
+		// Remove site_label from $config since we don't want
+		// it showing up in the config file.
+		if ($config['site_label'])
+				unset($config['site_label']);
+
 		foreach ($config as $key => $val)
 		{
 			$extra_config .= "\$config['{$key}'] = '{$val}';\n";

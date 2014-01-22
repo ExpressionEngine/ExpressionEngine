@@ -21,8 +21,6 @@ $config['is_system_on'] = '{is_system_on}';
 $config['allow_extensions'] = '{allow_extensions}';
 {extra_config}
 
-// END EE config items
-
 /*
 |--------------------------------------------------------------------------
 | URI PROTOCOL
@@ -72,7 +70,7 @@ $config['subclass_prefix'] = '{subclass_prefix}';
 | Error Logging Threshold
 |--------------------------------------------------------------------------
 |
-| If you have enabled error logging, you can set an error threshold to 
+| If you have enabled error logging, you can set an error threshold to
 | determine what gets logged. Threshold options are:
 |
 |	0 = Disables logging, Error logging TURNED OFF
