@@ -981,14 +981,21 @@ class EE_Session {
 
 		$cur_session_id = $this->sdata['session_id'];
 
-		// generate a new session ID if they've remained active during the whole TTL
-		// but only if the session ID is being transported via a cookie, or the
-		// rotation would cause you to have an invalid session in other open windows or tabs
+		// generate a new session ID if they've remained active during the whole
+		// TTL but only if the session ID is being transported via a cookie, or
+		// the rotation would cause you to have an invalid session in other open
+		// windows or tabs. Note that the fingerprint is not affected by a
+		// session id change, so it also works for cs.
 		if ($this->validation != 's' && ($this->sdata['last_activity'] - $this->sdata['sess_start']) > $this->session_length)
 		{
 			$this->sdata['session_id'] = ee()->functions->random();
 			$this->userdata['session_id'] = $this->sdata['session_id'];
 			$this->sdata['sess_start'] = $this->sdata['last_activity'];
+
+			// Security hashes are tied to session ids. Fix them.
+			ee()->db->set('session_id', $this->sdata['session_id'])
+				->where('session_id', $cur_session_id)
+				->update('security_hashes');
 		}
 
 		ee()->db->query(ee()->db->update_string('exp_sessions', $this->sdata, "session_id = '".$cur_session_id."'"));
