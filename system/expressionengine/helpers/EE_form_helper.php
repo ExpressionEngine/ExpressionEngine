@@ -68,7 +68,7 @@ if (REQ == 'CP')
 
 		$form .= ">\n";
 
-		if ( ! config_item('disable_csrf_protection'))
+		if ( ! bool_config_item('disable_csrf_protection'))
 		{
 			if ( ! is_array($hidden))
 			{

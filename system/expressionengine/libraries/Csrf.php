@@ -99,7 +99,7 @@ class Csrf {
 	public function check()
 	{
 		// If secure forms is off we don't need to check
-		if (config_item('disable_csrf_protection'))
+		if (bool_config_item('disable_csrf_protection'))
 		{
 			return TRUE;
 		}

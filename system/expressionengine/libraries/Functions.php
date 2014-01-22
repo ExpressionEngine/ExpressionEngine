@@ -139,7 +139,7 @@ class EE_Functions {
 		if (strtolower($segment) == 'logout')
 		{
 			$qs = (ee()->config->item('force_query_string') == 'y') ? '' : '?';
-			$xid = config_item('disable_csrf_protection') ? '' : AMP.'CSRF_TOKEN='.CSRF_TOKEN;
+			$xid = bool_config_item('disable_csrf_protection') ? '' : AMP.'CSRF_TOKEN='.CSRF_TOKEN;
 
 			return $this->fetch_site_index(0, 0).$qs.'ACT='.$this->fetch_action_id('Member', 'member_logout').$xid;
 		}

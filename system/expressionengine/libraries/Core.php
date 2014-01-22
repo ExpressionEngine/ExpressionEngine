@@ -181,7 +181,7 @@ class EE_Core {
 		// Backwards compatibility for the removed secure forms setting.
 		// Developers are still checking against this key, so we'll wait some
 		// time before removing it.
-		$secure_forms = (config_item('disable_csrf_protection')) ? 'n' : 'y';
+		$secure_forms = (bool_config_item('disable_csrf_protection')) ? 'n' : 'y';
 		ee()->config->set_item('secure_forms', $secure_forms);
 
 		// Set the path to the "themes" folder
