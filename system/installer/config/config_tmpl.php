@@ -20,8 +20,6 @@ $config['is_system_on'] = '{is_system_on}';
 $config['allow_extensions'] = '{allow_extensions}';
 {extra_config}
 
-// END EE config items
-
 /*
 |--------------------------------------------------------------------------
 | URI PROTOCOL
