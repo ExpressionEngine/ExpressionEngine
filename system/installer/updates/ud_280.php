@@ -40,6 +40,7 @@ class Updater {
 			array(
 				'_update_extension_quick_tabs',
 				'_extract_server_offset_config',
+				'_clear_cache',
 				'_update_config_add_cookie_httponly'
 			)
 		);
@@ -140,6 +141,27 @@ class Updater {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Clear the cache, we have a new folder structure for the cache
+	 * directory with the introduction of caching drivers
+	 */
+	private function _clear_cache()
+	{
+		$cache_path = EE_APPPATH.'cache';
+
+		// Attempt to grab cache_path config if it's set
+		if ($path = ee()->config->item('cache_path'))
+		{
+			$cache_path = ee()->config->item('cache_path');
+		}
+
+		ee()->load->helper('file');
+
+		delete_files($cache_path, TRUE, 0, array('.htaccess', 'index.html'));
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Update Config to Add cookie_httponly
 	 *
 	 * Update the config.php file to add the new cookie_httponly paramter and
@@ -153,9 +175,6 @@ class Updater {
 			)
 		);
 	}
-
-	// --------------------------------------------------------------------
-
 }
 /* END CLASS */
 

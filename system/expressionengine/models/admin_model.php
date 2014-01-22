@@ -59,6 +59,7 @@ class Admin_model extends CI_Model {
 				'cp_theme'					=> array('f', 'theme_menu'),
 				'deft_lang'					=> array('f', 'language_menu'),
 				'xml_lang'					=> array('f', 'fetch_encoding'),
+				'caching_driver'			=> array('f', 'caching_driver'),
 				'max_caches'				=> array('i', ''),
 				'new_version_check'			=> array('r', array('y' => 'yes', 'n' => 'no')),
 				// 'channel_nomenclature'		=> array('i', ''),
