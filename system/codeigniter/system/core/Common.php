@@ -290,8 +290,6 @@
 			$value = config_item($item);
 		}
 
-		var_dump($value);
-
 		if ($value === 'y')
 		{
 			$value = TRUE;
