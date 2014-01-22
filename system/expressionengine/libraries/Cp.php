@@ -188,24 +188,6 @@ class Cp {
 			'session_idle'		=> lang('session_idle')
 		);
 
-		/* -------------------------------------------
-		/*	Hidden Configuration Variable
-		/*	- login_reminder => y/n  to turn the CP Login Reminder On or Off.  Default is 'y'
-        /* -------------------------------------------*/
-
-		if (ee()->config->item('login_reminder') != 'n')
-		{
-			$js_lang_keys['session_expiring'] = lang('session_expiring');
-			$js_lang_keys['username'] = lang('username');
-			$js_lang_keys['password'] = lang('password');
-			$js_lang_keys['login'] = lang('login');
-
-			ee()->javascript->set_global(array(
-				'SESS_TIMEOUT'		=> ee()->session->cpan_session_len * 1000,
-				'SESS_TYPE'			=> ee()->config->item('admin_session_type')
-			));
-		}
-
 		ee()->javascript->set_global(array(
 			'BASE'				=> str_replace(AMP, '&', BASE),
 			'XID'				=> CSRF_TOKEN,
