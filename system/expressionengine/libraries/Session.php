@@ -86,6 +86,7 @@ class EE_Session {
 
 	public $sess_crypt_key		= '';
 
+	public $cookie_ttl			= '';
 	public $session_length		= '';
 	public $validation_type  	= '';
 
@@ -117,6 +118,8 @@ class EE_Session {
 		ee()->load->library('localize');
 
 		$this->session_length = $this->_setup_session_length();
+
+		$this->cookie_ttl = $this->_setup_cookie_ttl();
 
 		// Set Default Session Values
 		// Set USER-DATA as GUEST until proven otherwise
@@ -398,8 +401,8 @@ class EE_Session {
 		$this->userdata['fingerprint']	= $this->sdata['fingerprint'];
 		$this->userdata['site_id']		= ee()->config->item('site_id');
 
-		ee()->input->set_cookie($this->c_session, $this->sdata['session_id'], $this->session_length);
-		ee()->input->set_cookie($this->c_expire, time()+$this->session_length, $this->session_length);
+		ee()->input->set_cookie($this->c_session, $this->sdata['session_id'], $this->cookie_ttl);
+		ee()->input->set_cookie($this->c_expire, time()+$this->session_length, $this->cookie_ttl);
 
 		ee()->db->query(ee()->db->insert_string('exp_sessions', $this->sdata));
 
@@ -1003,7 +1006,7 @@ class EE_Session {
 		// Update session ID cookie
 		if ($this->validation != 's')
 		{
-			ee()->input->set_cookie($this->c_session , $this->sdata['session_id'],  $this->session_length);
+			ee()->input->set_cookie($this->c_session , $this->sdata['session_id'],  $this->cookie_ttl);
 		}
 
 		// We'll unset the "last activity" item from the session data array.
@@ -1356,19 +1359,28 @@ class EE_Session {
 	/**
 	 * Setup Session Lengths
 	 *
-	 * This method allows the user to specify session TTLs in the config
-	 * file so no 'hacking' of the class properties are needed.
-	 *
-	 * @return 	void
+	 * @return 	integer Session length in seconds
 	 */
 	protected function _setup_session_length()
+	{
+		return (REQ == 'CP') ? $this->cpan_session_len : $this->user_session_len;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Setup Session Cookie Timeout
+	 *
+	 * @return 	int Cookie timeout in seconds
+	 */
+	protected function _setup_cookie_ttl()
 	{
 		if (bool_config_item('expire_session_on_browser_close'))
 		{
 			return 0;
 		}
 
-		return (REQ == 'CP') ? $this->cpan_session_len : $this->user_session_len;
+		return $this->session_length;
 	}
 
 	// --------------------------------------------------------------------
