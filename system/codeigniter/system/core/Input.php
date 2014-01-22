@@ -220,7 +220,7 @@ class CI_Input {
 			}
 		}
 
-		$secure_cookie = (config_item('cookie_secure') === TRUE) ? 1 : 0;
+		$secure_cookie = (bool_config_item('cookie_secure') === TRUE) ? 1 : 0;
 
 		if ($secure_cookie)
 		{
