@@ -243,7 +243,7 @@ class EE_Template {
 		// Static Content, No Parsing
 		if ($this->template_type == 'static' OR $this->embed_type == 'static')
 		{
-			if ($is_embed == FALSE)
+			if ($is_embed == FALSE && $is_layout == FALSE)
 			{
 				$this->final_template = $this->template;
 			}
@@ -265,7 +265,7 @@ class EE_Template {
 		{
 			$this->log_item("Smart Static Parsing Triggered");
 
-			if ($is_embed == FALSE)
+			if ($is_embed == FALSE && $is_layout == FALSE)
 			{
 				$this->final_template = $this->template;
 			}
@@ -401,7 +401,7 @@ class EE_Template {
 		// there is no reason to go further.
 		// However we do need to fetch any subtemplates
 
-		if ($this->cache_status == 'CURRENT' AND $is_embed == FALSE)
+		if ($this->cache_status == 'CURRENT' AND $is_embed == FALSE && $is_layout == FALSE)
 		{
 			$this->log_item("Cached Template Used");
 
@@ -414,10 +414,10 @@ class EE_Template {
 			}
 
 			$this->log_item("Conditionals Parsed, Processing Sub Templates");
-
+			$this->template = $this->process_layout_template($this->template, $layout);
+			$this->template = $this->process_sub_templates($this->template);
 			$this->final_template = $this->template;
-			$this->process_sub_templates($this->template);
-			$this->process_layout_template($this->template, $layout);
+			$this->_cleanup_layout_tags();
 			return;
 		}
 
@@ -473,8 +473,16 @@ class EE_Template {
 		// Write the cache file if needed
 		if ($this->cache_status == 'EXPIRED')
 		{
-			$this->template = ee()->functions->insert_action_ids($this->template);
-			$this->write_cache_file($this->cache_hash, $this->template, 'template');
+			$cache_template = ee()->functions->insert_action_ids($this->template);
+
+			// we remove the layout name early to prevent nested tags, we need
+			// to reinsert that tag at the beginning of template before caching
+			if ( ! empty($layout))
+			{
+				$cache_template = $layout[0]."\n".$this->template;
+			}
+
+			$this->write_cache_file($this->cache_hash, $cache_template, 'template');
 		}
 
 		// Parse Our Uncacheable Forms
@@ -534,10 +542,8 @@ class EE_Template {
 					$error = ee()->lang->line('error_layout_too_late');
 					ee()->output->fatal_error($error);
 				}
-				else
-				{
-					exit;
-				}
+
+				exit;
 			}
 			// Is there another? We can't have that.
 			elseif (preg_match('/('.LD.'layout\s*=)(.*?)'.RD.'/s', $this->template, $bad_layout, 0, $tag_pos + 1))
@@ -553,10 +559,8 @@ class EE_Template {
 
 					ee()->output->fatal_error($error);
 				}
-				else
-				{
-					exit;
-				}
+
+				exit;
 			}
 
 			// save it
@@ -644,7 +648,7 @@ class EE_Template {
 			$next = strpos($template, $open_tag, $pos + $open_tag_len);
 			$close = strpos($template, LD.'/layout:set', $pos + $open_tag_len);
 
-			if ($next && $close && $close < $next)
+			if ($close && ( ! $next || $close < $next))
 			{
 				// we have a pair
 				$start = $pos + strlen($tag);
@@ -799,11 +803,9 @@ class EE_Template {
 						'content' => $message
 					), FALSE);
 				}
+
 				// Show nothing if debug is off
-				else
-				{
-					exit;
-				}
+				exit;
 			}
 
 			// Backup current layout vars, they don't apply to this embed

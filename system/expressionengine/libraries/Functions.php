@@ -2448,11 +2448,6 @@ class EE_Functions {
 				while(isset($x[$i]));
 			}
 
-			// This should prevent, for example, the variable 'comment' from
-			// overwriting the variable 'comments'.
-
-			uksort($data, array($this, 'reverse_key_sort'));
-
 			if ($safety == 'y')
 			{
 				// Make sure we have the same amount of opening conditional tags
@@ -2530,7 +2525,19 @@ class EE_Functions {
 					// Make sure $key doesn't appear as "{$key " or ":$key "
 					if (strpos($match, LD.$key.' ') === FALSE AND strpos($match, ':'.$key) === FALSE)
 					{
-						$match = str_replace($key, $value, $match);
+						// Replace using word boundaries to avoid variables that
+						// partially include the same name. For example, we have
+						// a global var called "my_var_global" but we are comparing
+						// it to a variable valled "my_var":
+						//
+						//     {if my_var OR my_var_global}Hello world{/if}
+						//
+						// It ends up looking like this:
+						//
+						//     {if "value" OR "value"_global}Hello world{/if}
+						//
+						// ..and triggers our Invalid EE Conditional Variable error.
+						$match = preg_replace("/(?<![\w-])".preg_quote($key)."(?![\w-])/", $value, $match);
 					}
 				}
 			}

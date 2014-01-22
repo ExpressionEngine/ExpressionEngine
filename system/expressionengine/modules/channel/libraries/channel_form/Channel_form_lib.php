@@ -58,7 +58,6 @@ class Channel_form_lib
 	public $native_variables;
 	public $option_fields;
 	public $parse_variables;
-	public $preserve_checkboxes;
 	public $post_error_callbacks;
 	public $require_save_call;
 	public $settings;
@@ -82,8 +81,8 @@ class Channel_form_lib
 	private $all_params = array(
 		'allow_comments', 'author_only', 'channel', 'class', 'datepicker',
 		'dynamic_title', 'entry_id', 'error_handling', 'id', 'include_jquery',
-		'json', 'logged_out_member_id', 'preserve_checkboxes', 'require_entry',
-		'return', 'return_X', 'rules', 'rte_selector', 'rte_toolset_id', 'include_assets',
+		'json', 'logged_out_member_id', 'require_entry', 'return', 'return_X',
+		'rules', 'rte_selector', 'rte_toolset_id', 'include_assets',
 		'secure_action', 'secure_return', 'site', 'url_title', 'use_live_url'
 	);
 
@@ -376,10 +375,14 @@ class Channel_form_lib
 			ee()->javascript->output('$.each(EE.markItUpFields,function(a){$("#"+a).markItUp(mySettings);});');
 		}
 
-		// We'll store all checkbox fieldnames in here, so that in case one
-		// has preserve_checkboxes set to "yes" but still needs to edit
-		// checkboxes that have the potential to be blank, the field can be
-		// updated while preserving the checkboxes that aren't on screen
+		// Since empty checkbox arrays don't show up in POST at all, we
+		// fill them in with their old values to preserve them in case they
+		// weren't on screen at all, in the instance someone is using
+		// Channel Form to update a partial entry (not including all fields
+		// in the form); but for the cases where the checkbox fields are
+		// present on screen and are left blank, we need to keep track of
+		// which fields those are here so we don't repopulate them with
+		// their old values
 		$checkbox_fields = array();
 
 		foreach (ee()->TMPL->var_pair as $tag_pair_open => $tagparams)
@@ -966,6 +969,7 @@ GRID_FALLBACK;
 		}
 
 		$this->head .= "\n".' // ]]>'."\n".'</script>';
+		$js_file_strings = array();
 
 		$js_defaults = array(
 			'file' => array('underscore'),
@@ -1062,7 +1066,8 @@ GRID_FALLBACK;
 			else
 			{
 				$mtime[] = ee()->cp->_get_js_mtime($type, $files);
-				ee()->cp->js_files[$type] = implode(',', $files);
+				ee()->cp->js_files[$type] = $files;
+				$js_file_strings[$type] = implode(',', $files);
 			}
 		}
 
@@ -1092,7 +1097,7 @@ GRID_FALLBACK;
 			$this->head .= '<script type="text/javascript" src="'.$js_url.'"></script>'."\n";
 		}
 
-		$this->head .= '<script type="text/javascript" charset="utf-8" src="'.ee()->functions->fetch_site_index().QUERY_MARKER.'ACT='.ee()->functions->fetch_action_id('Channel', 'combo_loader').'&'.str_replace(array('%2C', '%2F'), array(',', '/'), http_build_query(ee()->cp->js_files)).'&v='.max($mtime).$use_live_url.$include_jquery.'"></script>'."\n";
+		$this->head .= '<script type="text/javascript" charset="utf-8" src="'.ee()->functions->fetch_site_index().QUERY_MARKER.'ACT='.ee()->functions->fetch_action_id('Channel', 'combo_loader').'&'.str_replace(array('%2C', '%2F'), array(',', '/'), http_build_query($js_file_strings)).'&v='.max($mtime).$use_live_url.$include_jquery.'"></script>'."\n";
 
 		//add fieldtype styles
 		foreach (ee()->cp->its_all_in_your_head as $item)
@@ -1621,10 +1626,7 @@ GRID_FALLBACK;
 				{
 					if ($this->entry($field) !== FALSE)
 					{
-						if ( ! in_array($field, $this->checkboxes) || $this->_meta['preserve_checkboxes'])
-						{
-							$_POST[$field] = $this->entry($field);
-						}
+						$_POST[$field] = $this->entry($field);
 					}
 				}
 			}
@@ -2648,8 +2650,6 @@ GRID_FALLBACK;
 		{
 			$this->_meta[$name] = (isset($this->_meta[$name])) ? $this->_meta[$name] : FALSE;
 		}
-
-		$this->preserve_checkboxes = (isset($this->_meta['preserve_checkboxes'])) ? $this->_meta['preserve_checkboxes'] : FALSE;
 
 		// Should be y or FALSE for allow_comments
 		// We do this here so they can be set via form input when not specified as a param

@@ -290,7 +290,7 @@ class CI_DB_driver {
 		if ($this->save_queries == TRUE)
 		{
 			$source = '';
-			$trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 3);
+			$trace = debug_backtrace();
 
 			// Log file the query came from
 			if (count($trace) >= 2)
