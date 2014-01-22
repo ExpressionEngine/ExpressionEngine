@@ -41,7 +41,8 @@ class Updater {
 				'_update_extension_quick_tabs',
 				'_extract_server_offset_config',
 				'_update_config_add_cookie_httponly',
-				'_convert_xid_to_csrf'
+				'_convert_xid_to_csrf',
+				'_change_session_timeout_config'
 			)
 		);
 
@@ -176,7 +177,7 @@ class Updater {
 		// If it was no, we need to set it as disabled
 		if ($secure_forms == 'n')
 		{
-			ee()->config->_update_config(array('disable_csrf_protection' => TRUE));
+			ee()->config->_update_config(array('disable_csrf_protection' => 'y'));
 		}
 
 		// We changed how we access the table, so we'll re-key it to efficiently
@@ -186,6 +187,32 @@ class Updater {
 		ee()->smartforge->drop_column('security_hashes', 'used');
 		ee()->smartforge->drop_key('security_hashes', 'hash');
 		ee()->smartforge->add_key('security_hashes', 'session_id');
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Remove session ttl configs in favor of a single "log out when browser
+	 * closes" config, which is the only safe change that should be made to
+	 * session timeouts. Use remember me for longer sessions.
+	 *
+	 */
+	private function _change_session_timeout_config()
+	{
+		$cp_ttl = ee()->config->item('cp_session_ttl');
+		$u_ttl = ee()->config->item('user_session_ttl');
+
+		// Add the new item if they previously had one expiring on browser close
+		if ($cp_ttl === 0 || $cp_ttl === '0' || $u_ttl === 0 || $u_ttl === '0')
+		{
+			ee()->config->_update_config(array('expire_session_on_browser_close' => 'y'));
+		}
+
+		// Remove old items if they existed
+		ee()->config->_update_config(
+			array(),
+			array('cp_session_ttl' => '', 'user_session_ttl' => '')
+		);
 
 	}
 }
