@@ -778,16 +778,19 @@ class EE_Core {
 		// Secure forms stuff
 		if ( ! ee()->security->have_valid_xid($flags))
 		{
+			ee()->output->set_status_header(403);
+
 			if (REQ == 'CP')
 			{
-				$this->_somebody_set_us_up_the_base();
-				ee()->session->set_flashdata('message_failure', lang('csrf_token_expired'));
-				ee()->functions->redirect(BASE);
+				if (AJAX_REQUEST)
+				{
+					header('X-EE-Broadcast: modal');
+				}
+
+				show_error(lang('csrf_token_expired'));
 			}
-			else
-			{
-				ee()->output->show_user_error('general', array(lang('csrf_token_expired')));
-			}
+
+			ee()->output->show_user_error('general', array(lang('csrf_token_expired')));
 		}
 	}
 }
