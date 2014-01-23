@@ -59,7 +59,7 @@ class Login extends CP_Controller {
 		if (AJAX_REQUEST)
 		{
 			//header('X-EERedirect: C=login');
-			header('X-EEBroadcast: modal');
+			header('X-EE-Broadcast: modal');
 			die('Logged out');
 		}
 
