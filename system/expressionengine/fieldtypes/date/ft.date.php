@@ -183,32 +183,33 @@ class Date_ft extends EE_Fieldtype {
 			var jsCurrentUTC = d.getTimezoneOffset()*60;
 			var adjustedDefault = 1000*('.$date.'+jsCurrentUTC);
 
-			$("#'.$this->field_name.'").not(".grid_field_container #'.$this->field_name.'").datepicker({
+			$("[name='.$this->field_name.']").not(".grid_field_container [name='.$this->field_name.']").datepicker({
 				constrainInput: false,
 				dateFormat: EE.date.date_format + EE.date_obj_time,
 				defaultDate: new Date(adjustedDefault)
 			});
 		');
 
-		if ( ! ee()->session->cache(__CLASS__, 'grid_js_loaded'))
+		if ( ! ee()->session->cache(__CLASS__, 'grid_js_loaded')
+			&& $this->content_type() == 'grid')
 		{
 			ee()->javascript->output('
 
-			Grid.bind("date", "display", function(cell)
-			{
-				var d = new Date();
-				var jsCurrentUTC = d.getTimezoneOffset()*60;
-				var adjustedDefault = 1000*('.$date.'+jsCurrentUTC);
+				Grid.bind("date", "display", function(cell)
+				{
+					var d = new Date();
+					var jsCurrentUTC = d.getTimezoneOffset()*60;
+					var adjustedDefault = 1000*('.$date.'+jsCurrentUTC);
 
-				field = cell.find(".ee_datepicker");
-				field.removeAttr("id");
+					field = cell.find(".ee_datepicker");
+					field.removeAttr("id");
 
-				cell.find(".ee_datepicker").datepicker({
-					constrainInput: false,
-					dateFormat: EE.date.date_format + EE.date_obj_time,
-					defaultDate: new Date(adjustedDefault)
+					cell.find(".ee_datepicker").datepicker({
+						constrainInput: false,
+						dateFormat: $.datepicker.W3C + EE.date_obj_time,
+						defaultDate: new Date(adjustedDefault)
+					});
 				});
-			});
 
 			');
 
@@ -224,7 +225,6 @@ class Date_ft extends EE_Fieldtype {
 
 		$r = form_input(array(
 			'name'	=> $this->field_name,
-			'id'	=> $this->field_name,
 			'value'	=> $custom_date,
 			'class'	=> $input_class
 		));
@@ -246,7 +246,7 @@ class Date_ft extends EE_Fieldtype {
 				);
 
 				$r .= NBS.NBS.NBS.NBS;
-				$r .= form_dropdown($date_local, $localized_opts, $localized, 'dir="'.$text_direction.'" id="'.$date_local.'"');
+				$r .= form_dropdown($date_local, $localized_opts, $localized, 'dir="'.$text_direction.'"');
 			}
 		}
 
