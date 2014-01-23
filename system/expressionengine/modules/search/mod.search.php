@@ -36,6 +36,7 @@ class Search {
 	var	$cat_array  	= array();
 	var $fields			= array();
 	var $num_rows		= 0;
+	var $hash			= "";
 
 	protected $_meta 	= array();
 
@@ -236,6 +237,8 @@ class Search {
 		$original_keywords = $this->keywords;
 		$mbr = ( ! isset($_GET['mbr'])) ? '' : $_GET['mbr'];
 
+		$this->hash = ee()->functions->random('md5');
+
 		$sql = $this->build_standard_query();
 
 		/** ----------------------------------------
@@ -246,10 +249,8 @@ class Search {
 		{
 			if (isset($this->_meta['no_results_page']) AND $this->_meta['no_results_page'] != '')
 			{
-				$hash = ee()->functions->random('md5');
-
 				$data = array(
-					'search_id'		=> $hash,
+					'search_id'		=> $this->hash,
 					'search_date'	=> time(),
 					'member_id'		=> ee()->session->userdata('member_id'),
 					'keywords'		=> ($original_keywords != '') ? $original_keywords : $mbr,
@@ -264,7 +265,7 @@ class Search {
 
 				ee()->db->query(ee()->db->insert_string('exp_search', $data));
 
-				return ee()->functions->redirect(ee()->functions->create_url(ee()->functions->extract_path("='".$this->_meta['no_results_page']."'")).'/'.$hash.'/');
+				return ee()->functions->redirect(ee()->functions->create_url(ee()->functions->extract_path("='".$this->_meta['no_results_page']."'")).'/'.$this->hash.'/');
 			}
 			else
 			{
@@ -276,8 +277,6 @@ class Search {
 		/**  If we have a result, cache it
 		/** ----------------------------------------*/
 
-		$hash = ee()->functions->random('md5');
-
 		$sql = str_replace("\\", "\\\\", $sql);
 
 		// This fixes a bug that occurs when a different table prefix is used
@@ -285,7 +284,7 @@ class Search {
 		$sql = str_replace('exp_', 'MDBMPREFIX', $sql);
 
 		$data = array(
-			'search_id'		=> $hash,
+			'search_id'		=> $this->hash,
 			'search_date'	=> time(),
 			'member_id'		=> ee()->session->userdata('member_id'),
 			'keywords'		=> ($original_keywords != '') ? $original_keywords : $mbr,
@@ -307,7 +306,7 @@ class Search {
 		$path = reduce_double_slashes(
 			ee()->functions->create_url(
 				trim_slashes($this->_meta['result_page'])
-			).'/'.$hash.'/'
+			).'/'.$this->hash.'/'
 		);
 
 		ee()->security->restore_xid();
@@ -507,17 +506,17 @@ class Search {
 			}
 		}
 
-        /** ----------------------------------------------
-        /**  Limit to a specific member? We do this now
-        /**  as there's a potential for this to bring the
-        /**  search to an end if it's not a valid member
-        /** ----------------------------------------------*/
+		/** ----------------------------------------------
+		/**  Limit to a specific member? We do this now
+		/**  as there's a potential for this to bring the
+		/**  search to an end if it's not a valid member
+		/** ----------------------------------------------*/
 
 		$member_array	= array();
 		$member_ids		= '';
 
-        if (isset($_GET['mbr']) AND is_numeric($_GET['mbr']))
-        {
+		if (isset($_GET['mbr']) AND is_numeric($_GET['mbr']))
+		{
 			$query = ee()->db->select('member_id')->get_where('members', array(
 				'member_id' => $_GET['mbr']
 			));
@@ -530,9 +529,9 @@ class Search {
 			{
 				$member_array[] = $query->row('member_id');
 			}
-        }
-        else
-        {
+		}
+		else
+		{
 			if (ee()->input->post('member_name') != '')
 			{
 				ee()->db->select('member_id');
@@ -735,14 +734,14 @@ class Search {
 			if (trim($this->keywords) != '')
 			{
 				$terms = array_merge($terms, preg_split("/\s+/", trim($this->keywords)));
-  			}
+			}
 
-  			$not_and = (count($terms) > 2) ? ') AND (' : 'AND';
-  			rsort($terms);
+			$not_and = (count($terms) > 2) ? ') AND (' : 'AND';
+			rsort($terms);
 			$terms_like = ee()->db->escape_like_str($terms);
 			$terms = ee()->db->escape_str($terms);
 
-  			/** ----------------------------------
+			/** ----------------------------------
 			/**  Search in Title Field
 			/** ----------------------------------*/
 
@@ -1058,6 +1057,39 @@ class Search {
 			}
 		}
 
+		// -------------------------------------------
+		// 'channel_search_modify_search_query' hook.
+		//  - Take the whole query string, do what you wish
+		//  - added 2.8
+		//
+			if (ee()->extensions->active_hook('channel_search_modify_search_query') === TRUE)
+			{
+				$modified_sql = ee()->extensions->call('channel_search_modify_search_query', $sql, $this->hash);
+
+				// Make sure its valid
+				if (is_string($modified_sql) && $modified_sql != '')
+				{
+					$sql = $modified_sql;
+				}
+
+				// This will save the custom query and the total results to exp_search
+				if (ee()->extensions->end_script === TRUE)
+				{
+					$query = ee()->db->query($sql);
+
+					if ($query->num_rows() == 0)
+					{
+						return FALSE;
+					}
+
+					$this->num_rows = $query->num_rows();
+					
+					return $sql;
+				}
+			}
+		//
+		// -------------------------------------------
+
 		/** ----------------------------------------------
 		/**  Are there results?
 		/** ----------------------------------------------*/
@@ -1301,6 +1333,24 @@ class Search {
 
 		$pagination->per_page = (int) $query->row('per_page');
 		$res_page = $query->row('result_page');
+
+		// -------------------------------------------
+        // 'channel_search_modify_result_query' hook.
+        //  - Take the whole query string, do what you wish
+        //  - added 2.8
+        //
+            if (ee()->extensions->active_hook('channel_search_modify_result_query') === TRUE)
+            {
+                $modified_sql = ee()->extensions->call('channel_search_modify_result_query', $sql, $search_id);
+
+                // Make sure its valid
+                if (is_string($modified_sql) && $modified_sql != '')
+                {
+                	$sql = $modified_sql;
+                }
+            }
+        //
+        // -------------------------------------------
 
 		// Run the search query
 		$query = ee()->db->query(preg_replace("/SELECT(.*?)\s+FROM\s+/is", 'SELECT COUNT(*) AS count FROM ', $sql));
