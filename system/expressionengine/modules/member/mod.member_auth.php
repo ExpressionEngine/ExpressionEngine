@@ -539,7 +539,7 @@ class Member_auth extends Member {
 	{
 		// Check CSRF Token
 		$token = FALSE;
-		if ( ! $token) $token = ee()->input->get('CSRF_TOKEN');
+		if ( ! $token) $token = ee()->input->get('csrf_token');
 		if ( ! $token) $token = ee()->input->get('XID');
 
 		if ($token != CSRF_TOKEN)

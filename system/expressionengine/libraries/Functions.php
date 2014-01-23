@@ -139,7 +139,7 @@ class EE_Functions {
 		if (strtolower($segment) == 'logout')
 		{
 			$qs = (ee()->config->item('force_query_string') == 'y') ? '' : '?';
-			$xid = bool_config_item('disable_csrf_protection') ? '' : AMP.'CSRF_TOKEN='.CSRF_TOKEN;
+			$xid = bool_config_item('disable_csrf_protection') ? '' : AMP.'csrf_token='.CSRF_TOKEN;
 
 			return $this->fetch_site_index(0, 0).$qs.'ACT='.$this->fetch_action_id('Member', 'member_logout').$xid;
 		}
@@ -507,7 +507,7 @@ class EE_Functions {
 		if ($data['secure'] == TRUE)
 		{
 			unset($data['hidden_fields']['XID']);
-			$data['hidden_fields']['CSRF_TOKEN'] = '{CSRF_TOKEN}'; // we use the tag instead of the constant to allow caching of the template
+			$data['hidden_fields']['csrf_token'] = '{csrf_token}'; // we use the tag instead of the constant to allow caching of the template
 		}
 
 		if (is_array($data['hidden_fields']))
@@ -1408,7 +1408,7 @@ class EE_Functions {
 	function add_form_security_hash($str)
 	{
 		// Add security hash. Need to replace the legacy XID one as well.
-		$str = str_replace('{CSRF_TOKEN}', CSRF_TOKEN, $str);
+		$str = str_replace('{csrf_token}', CSRF_TOKEN, $str);
 		$str = str_replace('{XID_HASH}', CSRF_TOKEN, $str);
 
 		return $str;

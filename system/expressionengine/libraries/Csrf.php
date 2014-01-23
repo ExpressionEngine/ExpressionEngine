@@ -139,14 +139,14 @@ class Csrf {
 
 		// Try to find a token in POST or headers. We need to support the legacy
 		// XID field and header.
-		if ( ! $token) $token = ee()->input->post('CSRF_TOKEN');
+		if ( ! $token) $token = ee()->input->post('csrf_token');
 		if ( ! $token) $token = ee()->input->server('HTTP_X_CSRF_TOKEN');
 		if ( ! $token) $token = ee()->input->post('XID');
 		if ( ! $token) $token = ee()->input->server('HTTP_X_EEXID');
 
 		// Remove csrf information from the post array to make this feature
 		// completely transparent to the developer.
-		unset($_POST['CSRF_TOKEN']);
+		unset($_POST['csrf_token']);
 		unset($_POST['XID']);
 
 		// Reject failed tokens or tokens of bogus size

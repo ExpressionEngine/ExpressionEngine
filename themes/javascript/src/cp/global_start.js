@@ -179,7 +179,7 @@ $(document).ready(function () {
 // Simple function to deal with csrf tokens
 EE.cp.setCsrfToken = function(newToken, skipBroadcast /* internal */) {
 	$('input[name="XID"]').val(newToken);
-	$('input[name="CSRF_TOKEN"]').val(newToken);
+	$('input[name="csrf_token"]').val(newToken);
 
 	EE.XID = newToken;
 	EE.CSRF_TOKEN = newToken;

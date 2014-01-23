@@ -60,7 +60,7 @@ if ( ! function_exists('form_open'))
 		// CSRF
 		if ( ! bool_config_item('disable_csrf_protection'))
 		{
-			$hidden['CSRF_TOKEN'] = CSRF_TOKEN;
+			$hidden['csrf_token'] = CSRF_TOKEN;
 		}
 
 		if (is_array($hidden) AND count($hidden) > 0)

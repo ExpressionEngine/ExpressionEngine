@@ -235,7 +235,7 @@ class EE_Security extends CI_Security {
 		ee()->load->library('logger');
 		ee()->logger->deprecated('2.8');
 
-		return 'CSRF_TOKEN';
+		return 'csrf_token';
 	}
 }
 // END CLASS

@@ -3336,7 +3336,7 @@ $.fn.CommentEditor = function(options) {
 
 	var view_elements = [OPT.comment_body, OPT.showEditor, OPT.closeComment].join(','),
 		edit_elements = '.editCommentBox',
-		csrf_token = '{CSRF_TOKEN}';
+		csrf_token = '{csrf_token}';
 
 	return this.each(function() {
 		var id = this.id.replace('comment_', ''),
@@ -3361,7 +3361,7 @@ $.fn.CommentEditor = function(options) {
 	}
 
 	function closeComment(id) {
-		var data = {status: "close", comment_id: id, CSRF_TOKEN: csrf_token};
+		var data = {status: "close", comment_id: id, csrf_token: csrf_token};
 
 		$.post(OPT.url, data, function (res) {
 			if (res.error) {
@@ -3374,7 +3374,7 @@ $.fn.CommentEditor = function(options) {
 
 	function saveComment(id) {
 		var content = $("#comment_"+id).find('.editCommentBox'+' textarea').val(),
-			data = {comment: content, comment_id: id, CSRF_TOKEN: csrf_token};
+			data = {comment: content, comment_id: id, csrf_token: csrf_token};
 
 		$.post(OPT.url, data, function (res) {
 			if (res.error) {

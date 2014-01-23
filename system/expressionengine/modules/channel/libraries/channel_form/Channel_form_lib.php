@@ -942,8 +942,8 @@ class Channel_form_lib
 		{
 			if ($key == 'EE')
 			{
-				$value['XID'] = '{CSRF_TOKEN}';
-				$value['CSRF_TOKEN'] = '{CSRF_TOKEN}';
+				$value['XID'] = '{csrf_token}';
+				$value['CSRF_TOKEN'] = '{csrf_token}';
 
 				$this->head .= 'if (typeof EE == "undefined" || ! EE) { '."\n".'var EE = '.json_encode($value).';}'."\n";
 				$this->head .= <<<GRID_FALLBACK
