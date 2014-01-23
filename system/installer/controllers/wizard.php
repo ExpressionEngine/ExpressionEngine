@@ -328,8 +328,16 @@ class Wizard extends CI_Controller {
 			return FALSE;
 		}
 
+		$cache_path = EE_APPPATH.'cache';
+
+		// Attempt to grab cache_path config if it's set
+		if (ee()->config->item('cache_path'))
+		{
+			$cache_path = ee()->config->item('cache_path');
+		}
+
 		// Is the cache folder writable?
-		if ( ! is_really_writable(EE_APPPATH.'/cache'))
+		if ( ! is_really_writable($cache_path))
 		{
 			$this->_set_output('error', array('error' => $this->lang->line('unwritable_cache_folder')));
 			return FALSE;
