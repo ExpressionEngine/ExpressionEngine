@@ -341,8 +341,8 @@ class Updater {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Renames admin_session_type, user_session_type, and user_session_ttl in
-	 * the site system preferences and config (if needed)
+	 * Renames admin_session_type and user_session_type in the site system
+	 * preferences and config (if needed)
 	 *
 	 * @return void
 	 **/
@@ -374,13 +374,6 @@ class Updater {
 				$update = TRUE;
 			}
 
-			if (isset($prefs['user_session_ttl']))
-			{
-				$prefs['website_session_ttl'] = $prefs['user_session_ttl'];
-				unset($prefs['user_session_ttl']);
-				$update = TRUE;
-			}
-
 			if ($update)
 			{
 				ee()->db->update(
@@ -406,15 +399,10 @@ class Updater {
 		{
 			$new_config_items['website_session_type'] = ee()->config->item('user_session_type');
 		}
-		if (ee()->config->item('user_session_ttl') !== FALSE)
-		{
-			$new_config_items['website_session_ttl'] = ee()->config->item('user_session_ttl');
-		}
 
 		$remove_config_items = array(
 			'admin_session_type' => '',
 			'user_session_type'  => '',
-			'user_session_ttl'   => ''
 		);
 		ee()->config->_update_config($new_config_items, $remove_config_items);
 	}
