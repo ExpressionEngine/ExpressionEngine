@@ -617,9 +617,9 @@ EE.cp.broadcastEvents = (function() {
 
 	// Define our time limits:
 	var TICK_TIME          = 5 * 1000,			// Check state every 5 seconds
-		FOCUSED_IDLE_LIMIT = 20 * 60 * 1000,	// 20 minutes: time before modal if window focused
-		BLURRED_IDLE_LIMIT = 40 * 60 * 1000,    // 40 minutes: time before modal if no focus
-		REMEMBER_ME_LIMIT  = 50 * 60 * 1000;	// 50 minutes: refresh remember me
+		FOCUSED_IDLE_LIMIT = 30 * 60 * 1000,	// 30 minutes: time before modal if window focused
+		BLURRED_IDLE_LIMIT = 45 * 60 * 1000,    // 45 minutes: time before modal if no focus
+		REFRESH_TIME_LIMIT = 50 * 60 * 1000;	// 50 minutes: refresh if active or remember me
 
 	// Make sure we have our modal available when we need it
 	var logoutModal = $('#idle-modal').dialog({
@@ -695,6 +695,15 @@ EE.cp.broadcastEvents = (function() {
 			// the tick timer and the non-idle events. When that happens, you're
 			// way past the threshold and therefore too late.
 			if (this.modalActive || ! this.modalThresholdReached()) {
+
+				// If they're active on the page for an extend period of time
+				// without hitting the backend, we can sometimes run past the
+				// session timeout. To prevent that from happening we'll refresh
+				// their session last activity in the background.
+				if (this.refreshThresholdReached()) {
+					this.doRefresh();
+				}
+
 				this.lastActive = $.now();
 			}
 		},
@@ -706,23 +715,27 @@ EE.cp.broadcastEvents = (function() {
 			return (this.modalActive === false && mustShowModal === true);
 		},
 
-		rememberThresholdReached: function() {
+		refreshThresholdReached: function() {
 			var refreshTimeDelta = $.now() - this.lastRefresh;
-			return refreshTimeDelta > REMEMBER_ME_LIMIT;
+			return refreshTimeDelta > REFRESH_TIME_LIMIT;
+		},
+
+		doRefresh: function() {
+			this.lastRefresh = $.now();
+			EE.cp.refreshSessionData();
 		},
 
 		resolve: function() {
 
 			if (EE.hasRememberMe) {
-				if (State.rememberThresholdReached()) {
-					this.lastRefresh = $.now();
-					EE.cp.refreshSessionData();
+				if (this.refreshThresholdReached()) {
+					this.doRefresh();
 				}
 
 				return;
 			}
 
-			if (State.modalThresholdReached()) {
+			if (this.modalThresholdReached()) {
 				Events.modal();
 				$(window).trigger('broadcast.idleState', 'modal');
 				$.get(EE.BASE + '&C=login&M=lock_cp'); // lock them out of the cp in the background to prevent tampering
