@@ -969,67 +969,18 @@ class EE_Functions {
 	 */
 	function clear_caching($which, $sub_dir = '')
 	{
-		$actions = array('page', 'tag', 'db', 'sql', 'all');
+		$options = array('page', 'db', 'tag', 'sql');
 
-		if ( ! in_array($which, $actions))
+		if (in_array($which, $options))
 		{
-			return;
+			ee()->cache->delete('/'.$which.'_cache/');
 		}
-
-		/* -------------------------------------
-		/*  Disable Tag Caching
-		/*
-		/*  All for you, Nevin!  Disables tag caching, which if used unwisely
-		/*  on a high traffic site can lead to disastrous disk i/o
-		/*  This setting allows quick thinking admins to temporarily disable
-		/*  it without hacking or modifying folder permissions
-		/*
-		/*  Hidden Configuration Variable
-		/*  - disable_tag_caching => Disable tag caching? (y/n)
-		/* -------------------------------------*/
-
-		if ($which == 'tag' && ee()->config->item('disable_tag_caching') == 'y')
+		elseif ($which == 'all')
 		{
-			return;
-		}
-
-		$db_path = '';
-
-		if ($sub_dir != '')
-		{
-			if ($which == 'all' OR $which == 'db')
+			foreach ($options as $option)
 			{
-				$segs = explode('/', str_replace($this->fetch_site_index(), '', $sub_dir));
-
-				$segment_one = (isset($segs['0'])) ? $segs['0'] : 'default';
-				$segment_two = (isset($segs['1'])) ? $segs['1'] : 'index';
-
-				$db_path = '/'.$segment_one.'+'.$segment_two.'/';
+				ee()->cache->delete('/'.$option.'_cache/');
 			}
-
-			$sub_dir = '/'.md5($sub_dir).'/';
-		}
-
-		switch ($which)
-		{
-			case 'page' : $this->delete_directory(APPPATH.'cache/page_cache'.$sub_dir);
-				break;
-			case 'db'	: $this->delete_directory(APPPATH.'cache/db_cache_'.ee()->config->item('site_id').$db_path);
-				break;
-			case 'tag'  : $this->delete_directory(APPPATH.'cache/tag_cache'.$sub_dir);
-				break;
-			case 'sql'  : $this->delete_directory(APPPATH.'cache/sql_cache'.$sub_dir);
-				break;
-			case 'all'  :
-						$this->delete_directory(APPPATH.'cache/page_cache'.$sub_dir);
-						$this->delete_directory(APPPATH.'cache/db_cache_'.ee()->config->item('site_id').$db_path);
-						$this->delete_directory(APPPATH.'cache/sql_cache'.$sub_dir);
-
-						if (ee()->config->item('disable_tag_caching') != 'y')
-						{
-							$this->delete_directory(APPPATH.'cache/tag_cache'.$sub_dir);
-						}
-				break;
 		}
 	}
 
@@ -2482,11 +2433,6 @@ class EE_Functions {
 				while(isset($x[$i]));
 			}
 
-			// This should prevent, for example, the variable 'comment' from
-			// overwriting the variable 'comments'.
-
-			uksort($data, array($this, 'reverse_key_sort'));
-
 			if ($safety == 'y')
 			{
 				// Make sure we have the same amount of opening conditional tags
@@ -2564,7 +2510,19 @@ class EE_Functions {
 					// Make sure $key doesn't appear as "{$key " or ":$key "
 					if (strpos($match, LD.$key.' ') === FALSE AND strpos($match, ':'.$key) === FALSE)
 					{
-						$match = str_replace($key, $value, $match);
+						// Replace using word boundaries to avoid variables that
+						// partially include the same name. For example, we have
+						// a global var called "my_var_global" but we are comparing
+						// it to a variable valled "my_var":
+						//
+						//     {if my_var OR my_var_global}Hello world{/if}
+						//
+						// It ends up looking like this:
+						//
+						//     {if "value" OR "value"_global}Hello world{/if}
+						//
+						// ..and triggers our Invalid EE Conditional Variable error.
+						$match = preg_replace("/(?<![\w-])".preg_quote($key)."(?![\w-])/", $value, $match);
 					}
 				}
 			}

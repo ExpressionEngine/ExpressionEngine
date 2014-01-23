@@ -57,7 +57,7 @@ The title of the entry is:
 Posted by: {name}
 Email: {email}
 
-To read the entry please visit: 
+To read the entry please visit:
 {entry_url}
 
 EOF;
@@ -123,7 +123,7 @@ You have just received a comment for the following channel:
 The title of the entry is:
 {entry_title}
 
-Located at: 
+Located at:
 {comment_url}
 
 Posted by: {name}
@@ -198,6 +198,8 @@ return <<<EOF
 To reset your password, please go to the following page:
 
 {reset_url}
+
+Then log in with your username: {username}
 
 If you do not wish to reset your password, ignore this message. It will expire in 24 hours.
 
@@ -374,7 +376,7 @@ You can see the comments at the following URL:
 {comment_url}
 
 {comments}
-{comment} 
+{comment}
 {/comments}
 
 To stop receiving notifications for this entry, click here:
@@ -611,9 +613,9 @@ return <<<EOF
 
 <style type="text/css">
 
-body { 
-background-color:	#ffffff; 
-margin:				50px; 
+body {
+background-color:	#ffffff;
+margin:				50px;
 font-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;
 font-size:			11px;
 color:				#000;
@@ -628,7 +630,7 @@ text-decoration:	none;
 color:			  #330099;
 background-color:	transparent;
 }
-  
+
 a:visited {
 color:				#330099;
 background-color:	transparent;
@@ -704,9 +706,9 @@ return <<<EOF
 
 <style type="text/css">
 
-body { 
-background-color:	#ffffff; 
-margin:				50px; 
+body {
+background-color:	#ffffff;
+margin:				50px;
 font-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;
 font-size:			11px;
 color:				#000;
@@ -720,7 +722,7 @@ text-decoration:	none;
 color:			  #330099;
 background-color:	transparent;
 }
-  
+
 a:visited {
 color:				#330099;
 background-color:	transparent;

@@ -290,7 +290,7 @@ class CI_DB_driver {
 		if ($this->save_queries == TRUE)
 		{
 			$source = '';
-			$trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 3);
+			$trace = debug_backtrace();
 
 			// Log file the query came from
 			if (count($trace) >= 2)
@@ -1083,6 +1083,10 @@ class CI_DB_driver {
 	 */
 	function cache_set_path($path = '')
 	{
+		// Query caching now uses caching drivers
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.8');
+
 		$this->cachedir = $path;
 	}
 
@@ -1173,7 +1177,7 @@ class CI_DB_driver {
 			}
 		}
 
-		$this->CACHE = new CI_DB_Cache($this); // pass db object to support multiple db connections and returned db objects
+		$this->CACHE = new CI_DB_Cache(); // pass db object to support multiple db connections and returned db objects
 		return TRUE;
 	}
 

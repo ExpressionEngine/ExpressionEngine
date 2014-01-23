@@ -12,7 +12,6 @@
 */
 
 $config['app_version'] = '{app_version}';
-$config['install_lock'] = '{install_lock}';
 $config['license_number'] = '{license_number}';
 $config['debug'] = '{debug}';
 $config['cp_url'] = '{cp_url}';
@@ -181,7 +180,7 @@ $config['function_trigger'] = '{function_trigger}';
 | Error Logging Threshold
 |--------------------------------------------------------------------------
 |
-| If you have enabled error logging, you can set an error threshold to 
+| If you have enabled error logging, you can set an error threshold to
 | determine what gets logged. Threshold options are:
 |
 |	0 = Disables logging, Error logging TURNED OFF

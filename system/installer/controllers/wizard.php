@@ -24,7 +24,7 @@
  */
 class Wizard extends CI_Controller {
 
-	var $version			= '2.7.3';	// The version being installed
+	var $version			= '2.7.4';	// The version being installed
 	var $installed_version	= ''; 		// The version the user is currently running (assuming they are running EE)
 	var $minimum_php		= '5.2.4';	// Minimum version required to run EE
 	var $schema				= NULL;		// This will contain the schema object with our queries
@@ -81,7 +81,6 @@ class Wizard extends CI_Controller {
 	var $userdata = array(
 		'app_version'			=> '',
 		'doc_url'				=> 'http://ellislab.com/expressionengine/user-guide/',
-		'install_lock'			=> '1',
 		'ext'					=> '.php',
 		'ip'					=> '',
 		'database'				=> 'mysql',
@@ -329,8 +328,16 @@ class Wizard extends CI_Controller {
 			return FALSE;
 		}
 
+		$cache_path = EE_APPPATH.'cache';
+
+		// Attempt to grab cache_path config if it's set
+		if (ee()->config->item('cache_path'))
+		{
+			$cache_path = ee()->config->item('cache_path');
+		}
+
 		// Is the cache folder writable?
-		if ( ! is_really_writable(EE_APPPATH.'/cache'))
+		if ( ! is_really_writable($cache_path))
 		{
 			$this->_set_output('error', array('error' => $this->lang->line('unwritable_cache_folder')));
 			return FALSE;
@@ -2383,6 +2390,8 @@ PAPAYA;
 			'website_session_type'			=>	'c',
 			'cp_session_type'				=>	'cs',
 			'cookie_httponly'				=>	'y',
+			'user_session_type'				=>	'c',
+			'admin_session_type'			=>	'cs',
 			'allow_username_change'			=>	'y',
 			'allow_multi_logins'			=>	'y',
 			'password_lockout'				=>	'y',

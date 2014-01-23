@@ -317,8 +317,8 @@ class EE_Logger {
 		{
 			// Find and replace the tags
 			$template->template_data = preg_replace(
-				"/({exp:channel:form.*)({categories(.*?)group_id=(.*?)})(.*)/uis",
-				"$1{categories$3show_group=$4}$5",
+				$regex,
+				$replacement,
 				$template->template_data
 			);
 

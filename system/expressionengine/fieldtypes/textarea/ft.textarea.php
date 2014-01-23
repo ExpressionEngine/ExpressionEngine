@@ -73,7 +73,6 @@ class Textarea_ft extends EE_Fieldtype {
 
 		return form_textarea(array(
 			'name'	=> $this->name(),
-			'id'	=> $this->name(),
 			'value'	=> $data,
 			'rows'	=> $this->settings['field_ta_rows'],
 			'dir'	=> $this->settings['field_text_direction'],
