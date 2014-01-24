@@ -311,6 +311,15 @@ $lang = array(
 "enable_throttling_explanation" =>
 "This feature generates a 404 header and message if a request to your site is made in which the template group does not exist in the URL. It is intended primarily to keep search engine crawlers from repeatedly requesting nonexistent pages.",
 
+"caching_driver" =>
+"Caching Driver",
+
+"caching_driver_failover" =>
+"Cannot connect to %s, using %s driver instead",
+
+"caching_driver_file_fail" =>
+"Cannot use %s driver, check cache path permissions, using %s driver",
+
 "max_caches" =>
 "Maximum Number of Cachable URIs",
 

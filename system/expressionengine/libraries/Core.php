@@ -118,23 +118,8 @@ class EE_Core {
 
 		ee()->config->site_prefs(ee()->config->item('site_name'));
 
-		// force EE's db cache path - do this AFTER site prefs have been assigned
-		// Due to CI's DB_cache handling- suffix with site id
-		ee()->db->cache_set_path(APPPATH.'cache/db_cache_'.ee()->config->item('site_id'));
-
-		// make sure the DB cache folder exists if we're caching!
-		if (ee()->db->cache_on === TRUE &&
-			! @is_dir(APPPATH.'cache/db_cache_'.ee()->config->item('site_id')))
-		{
-			@mkdir(APPPATH.'cache/db_cache_'.ee()->config->item('site_id'), DIR_WRITE_MODE);
-
-			if ($fp = @fopen(APPPATH.'cache/db_cache_'.ee()->config->item('site_id').'/index.html', FOPEN_WRITE_CREATE_DESTRUCTIVE))
-			{
-				fclose($fp);
-			}
-
-			@chmod(APPPATH.'cache/db_cache_'.ee()->config->item('site_id'), DIR_WRITE_MODE);
-		}
+		// Load the default caching driver
+		ee()->load->driver('cache');
 
 		// this look backwards, but QUERY_MARKER is only used where we MUST
 		// have a ?, and do not want to double up
