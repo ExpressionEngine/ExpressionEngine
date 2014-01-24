@@ -137,7 +137,7 @@ class EE_Session {
 		// -------------------------------------------
 
 		// Set the validation type
-		$this->validation = (REQ == 'CP') ? ee()->config->item('admin_session_type') : ee()->config->item('user_session_type');
+		$this->validation = (REQ == 'CP') ? ee()->config->item('cp_session_type') : ee()->config->item('website_session_type');
 
 		// default to "cookies and sessions" if validation type doesn't exist or is invalid
 		if ( ! in_array($this->validation, $this->valid_session_types))
@@ -1008,6 +1008,32 @@ class EE_Session {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Fetch the current session id or fingerprint
+	 *
+	 * @param 	string 		'admin' or 'user' depending on session type
+	 * @return 	string 		the session id or fingerprint
+	 */
+	public function session_id($which = 'admin')
+	{
+		$session_type = ($which == 'user') ? ee()->config->item('website_session_type') : ee()->config->item('cp_session_type');
+
+		$s = 0;
+
+		switch ($session_type)
+		{
+			case 's'	:
+				$s = ee()->session->userdata('session_id', 0);
+				break;
+			case 'cs'	:
+				$s = ee()->session->userdata('fingerprint', 0);
+				break;
+		}
+		return ($s);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Age flashdata
 	 *
 	 * Removes old, marks current as old, etc
@@ -1342,7 +1368,7 @@ class EE_Session {
 	 */
 	protected function _setup_session_length()
 	{
-		$u_item = ee()->config->item('user_session_ttl');
+		$u_item = ee()->config->item('website_session_ttl');
 		$cp_item = ee()->config->item('cp_session_ttl');
 
 		$this->cpan_session_len = ($cp_item !== FALSE) ? $cp_item : $this->cpan_session_len;
