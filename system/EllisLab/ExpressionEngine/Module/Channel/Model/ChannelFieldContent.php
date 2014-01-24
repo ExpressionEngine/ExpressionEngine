@@ -24,22 +24,4 @@ class ChannelFieldContent
 		// TODO
 	}
 
-
-	/**
-	 * Validate this piece of field content to ensure that it is valid for
-	 * saving.  On failure, throw an exception containing all error 
-	 * information.
- 	 * 
-	 * @return void
-	 * 
- 	 * @throws	FieldContentInvalidException	On validation failure a 
-	 * 						FieldContentInvalidException will be thrown with 
-	 * 						all relevant errors.
-	 */
-	public function validate() 
-	{
-		// TODO	
-	}
-
-
 }

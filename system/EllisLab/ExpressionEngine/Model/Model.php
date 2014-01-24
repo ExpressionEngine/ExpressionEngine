@@ -239,6 +239,57 @@ abstract class Model {
 		return $errors;
 	}
 
+	public function cascade($cascade, $method)
+	{
+		$returned = array();
+		foreach($cascade as $model_name)
+		{
+			if (is_array($model_name))
+			{
+				$this->cascadeValidate($errors, $model_name);
+			}
+			else
+			{
+				$method = 'get' . $model_name;
+				$models = $this->$method();
+
+				foreach ($models as $model)
+				{
+					$model->validate();
+				}
+			}
+		}
+	}
+
+	public function cascadeRecursive($cascade, $method)
+	{
+		$result = array();
+		foreach ($relationships as $from_relationship => $to_relationship)
+		{
+			$method = 'get' . $from_model_name;
+			$models = $this->$method();
+
+			foreach ($models as $model)
+			{
+				if (is_array($to_relationship))
+				{
+					$
+					$return = array_merge($return, $model->cascadeRecursive($to_relationship));
+				}
+				else
+				{
+					$relationship_method = 'get' . $to_relationship;
+					$to_models = $model->$relationship_method();
+
+					foreach ($to_models as $to_model)
+					{
+						$return[] = $to_model->$method();
+					}
+				}
+			}
+		}
+	}
+
 	/**
 	 * Cascade validation
 	 *

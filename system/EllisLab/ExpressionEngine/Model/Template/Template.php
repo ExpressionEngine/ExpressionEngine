@@ -19,6 +19,25 @@ class Template extends Model {
 		)
 	);
 
+	// Properties
+	protected $template_id;
+	protected $site_id;
+	protected $group_id;
+	protected $template_name;
+	protected $save_template_file;
+	protected $template_type;
+	protected $template_data;
+	protected $template_notes;
+	protected $edit_date;
+	protected $last_author_id;
+	protected $cache;
+	protected $refresh;
+	protected $no_auth_bounce;
+	protected $enable_http_auth;
+	protected $allow_php;
+	protected $php_parse_location;
+	protected $hits;
+
 	/**
 	 *
 	 */

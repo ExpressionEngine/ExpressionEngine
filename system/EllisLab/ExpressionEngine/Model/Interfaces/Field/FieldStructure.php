@@ -1,4 +1,6 @@
 <?php
+namespace EllisLab\ExpressionEngine\Model\Interfaces\Field;
+
 /**
  * Field Structure Interface
  *
@@ -7,15 +9,7 @@
 interface FieldStructure {
 
 	/**
-	 * Get the settings object for this field.
-	 *
-	 * @param	string	$name	Optional.  The name of the group of settings 
-	 * 							you wish to retrieve.
-	 */
-	public function getSettings($name=NULL);
-
-	/**
-	 * Get the form that defines this field (usually required properties).
+     * Display the settings form for this field
 	 *
 	 * @return	string|View		Either the HTML string of the form partial, or 
 	 * 							a view object representing it.
@@ -40,12 +34,12 @@ interface FieldStructure {
     public function validate();
 
     /**
-     * Display the settings form for this field
+	 * Get the form that defines this field (usually required properties).
      *
      * @param FieldContent   $field_content   An object implementing the FieldContent interface
      * @return String   HTML for the entry / edit form
      */
-    public function getPublishForm($field_content);
+    public function getPublishForm(FieldContent $field_content);
 
     /**
      * Delete settings and all content for this field

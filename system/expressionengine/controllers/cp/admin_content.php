@@ -237,10 +237,6 @@ class Admin_content extends CP_Controller {
 
 		$this->load->library('table');
 		$this->load->helper('snippets');
-		$this->load->model('channel_model');
-		$this->load->model('template_model');
-		$this->load->model('status_model');
-		$this->load->model('field_model');
 		$this->load->model('admin_model');
 
 		$channel_id = $this->input->get_post('channel_id');
@@ -260,7 +256,7 @@ class Admin_content extends CP_Controller {
 			return $this->channel_update();
 		}
 
-		$channel = $this->builder->get('Channel', $channel_id);
+		$channel = $this->builder->get('Channel')->filter('channel_id', $channel_id)->first();
 		$vars['channel'] = $channel;
 
 		$vars['form_hidden']['channel_id'] = $channel_id;
@@ -281,7 +277,6 @@ class Admin_content extends CP_Controller {
 		}
 
 		// Default status menu
-		$query = $this->status_model->get_statuses($vars['status_group']);
 		$statuses = $this->builder->get('Status')
 			->with('StatusGroup')
 			->filer('Status.group_id', $channel->status_group)
@@ -303,43 +298,42 @@ class Admin_content extends CP_Controller {
 				$vars['deft_status_options'][$status->status] = $status->status;
 			}
 		}
+
+
 		$vars['deft_category_options'][''] = lang('none');
 
-		$cats = $vars['cat_group'] ? explode('|', $vars['cat_group']) : array();
+		$category_group_ids = $channel->cat_group ? explode('|', $channel->cat_group) : array();
 
 		// Needz moar felineness!
-		if (count($cats))
+		if (count($category_group_ids))
 		{
-			$this->db->select('CONCAT('.$this->db->dbprefix('category_groups').'.group_name, ": ", '.$this->db->dbprefix('categories').'.cat_name) as display_name', FALSE);
-			$this->db->select('categories.cat_id, categories.cat_name, category_groups.group_name');
-			$this->db->from('categories, '.$this->db->dbprefix('category_groups'));
-			$this->db->where($this->db->dbprefix('category_groups').'.group_id = '.$this->db->dbprefix('categories').'.group_id', NULL, FALSE);
-			$this->db->where_in('categories.group_id', $cats);
-			$this->db->order_by('display_name');
+			$categories = $this->builder->get('Category')
+				->with('CategoryGroup')
+				->filter('CategoryGroup.group_id', 'in', $category_group_ids)
+				->sort('CategoryGroup.group_name')
+				->sort('Category.cat_name')
+				->all();
 
-			$query = $this->db->get();
-
-			if ($query->num_rows() > 0)
+			if (count($categories) > 0)
 			{
-				foreach ($query->result() as $row)
+				foreach ($categories as $category)
 				{
-					$vars['deft_category_options'][$row->cat_id] = $row->display_name;
+					$vars['deft_category_options'][$category->cat_id] = $category->getCategoryGroup()->group_name . ': ' . $category.cat_name;
 				}
 			}
 		}
 
-		// Default field for search excerpt
-		$this->db->select('field_id, field_label');
-		$this->db->where('group_id', $vars['field_group']);
-		$query = $this->db->get('channel_fields');
+		$channel_fields = $this->builder->get('ChannelFieldStructure')
+			->filter('group_id', $channel->field_group)
+			->all();
 
 		$vars['search_excerpt_options'] = array();
 
-		if ($query->num_rows() > 0)
+		if (count($channel_fields) > 0)
 		{
-			foreach ($query->result() as $row)
+			foreach ($channel_fields as $channel_field)
 			{
-				$vars['search_excerpt_options'][$row->field_id] = $row->field_label;
+				$vars['search_excerpt_options'][$channel_field->field_id] = $channel_field->field_label;
 			}
 		}
 
