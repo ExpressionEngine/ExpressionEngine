@@ -53,6 +53,7 @@ class Relative_date_object {
 		$this->_timestamp = (int) $timestamp;
 		$this->_reference = is_numeric($reference) ? $reference : ee()->localize->now;
 
+		// Initializing to NULL so as not to break the magic __get() method
 		$this->_units = array(
 			'years'   => NULL,
 			'months'  => NULL,
@@ -103,8 +104,6 @@ class Relative_date_object {
 			throw new Exception('We need an array of units to calculate');
 		}
 
-		$this->_calculated_units = $units;
-
 		$this->_units = array(
 			'years'   => 0,
 			'months'  => 0,
@@ -115,47 +114,26 @@ class Relative_date_object {
 			'seconds' => 0
 		);
 
+		$seconds = array(
+			'years'   => 31536000,
+			'months'  => 2628000,
+			'weeks'   => 604800,
+			'days'    => 86400,
+			'hours'   => 3600,
+			'minutes' => 60,
+			'seconds' => 1
+		);
+
 		$delta = abs($this->_timestamp - $this->_reference);
 
-		if (in_array('years', $units))
+		foreach ($this->_valid_units as $unit)
 		{
-			$this->_units['years'] = (int) floor($delta / 31536000);
-			$delta -= $this->_units['years'] * 31536000;
-		}
-
-		if (in_array('months', $units))
-		{
-			$this->_units['months'] = (int) floor($delta / 2628000);
-			$delta -= $this->_units['months'] * 2628000;
-		}
-
-		if (in_array('weeks', $units))
-		{
-			$this->_units['weeks'] = (int) floor($delta / 604800);
-			$delta -= $this->_units['weeks'] * 604800;
-		}
-
-		if (in_array('days', $units))
-		{
-			$this->_units['days'] = (int) floor($delta / 86400);
-			$delta -= $this->_units['days'] * 86400;
-		}
-
-		if (in_array('hours', $units))
-		{
-			$this->_units['hours'] = (int) floor($delta / 3600);
-			$delta -= $this->_units['hours'] * 3600;
-		}
-
-		if (in_array('minutes', $units))
-		{
-			$this->_units['minutes'] = (int) floor($delta / 60);
-			$delta -= $this->_units['minutes'] * 60;
-		}
-
-		if (in_array('seconds', $units))
-		{
-			$this->_units['seconds'] = $delta;
+			if (in_array($unit, $units))
+			{
+				$this->_calculated_units[] = $unit;
+				$this->_units[$unit] = (int) floor($delta / $seconds[$unit]);
+				$delta -= $this->_units[$unit] * $seconds[$unit];
+			}
 		}
 	}
 
