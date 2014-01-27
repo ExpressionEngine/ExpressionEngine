@@ -39,6 +39,8 @@ class Updater {
 		$steps = new ProgressIterator(
 			array(
 				'_update_extension_quick_tabs',
+				'_update_localization_config',
+				'_update_member_table',
 				'_extract_server_offset_config',
 				'_update_session_config_names',
 				'_clear_cache',
@@ -73,6 +75,102 @@ class Updater {
 
 			ee()->db->update_batch('members', $members, 'member_id');
 		}
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Update Localization Config
+	 *
+	 * We are adding "date_format" to the config, and changing the value of
+	 * "time_format".  We are also making the hidden config "include_seconds"
+	 * not hidden.
+	 */
+	private function _update_localization_config()
+	{
+		$localization_preferences = array();
+
+		ee()->db->select('site_id, site_system_preferences');
+    	$query = ee()->db->get('sites');
+
+    	if ($query->num_rows() > 0)
+    	{
+			foreach ($query->result_array() as $row)
+			{
+				$system_prefs = base64_decode($row['site_system_preferences']);
+				$system_prefs = unserialize($system_prefs);
+
+				if ($system_prefs['time_format'] == 'us')
+				{
+					$localization_preferences['date_format'] = '%n/%j/%y';
+					$localization_preferences['time_format'] = '12';
+				}
+				else
+				{
+					$localization_preferences['date_format'] = '%j-%n-%y';
+					$localization_preferences['time_format'] = '24';
+				}
+
+				$localization_preferences['include_seconds'] = ee()->config->item('include_seconds') ? ee()->config->item('include_seconds') : 'n';
+				ee()->config->update_site_prefs($localization_preferences, $row['site_id']);
+			}
+		}
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Update Member Table
+	 *
+	 * Along with the localization config changes we are changing the member
+	 * localizaion preferences.  We are now storing the date format as the
+	 * actual format, and storing the "include_seconds" preference.
+	 *
+	 * This will add the new columns, change the default on the "time_format"
+	 * column, and update the members based on their old values (and the site's)
+	 * value on "include_seconds".
+	 */
+	private function _update_member_table()
+	{
+		// Add new columns
+		ee()->smartforge->add_column(
+			'members',
+			array(
+				'date_format'    => array(
+					'type'       => 'varchar',
+					'constraint' => 8,
+					'null'       => FALSE,
+					'default'    => '%n/%j/%y'
+				),
+				'include_seconds' => array(
+					'type'        => 'char',
+					'constraint'  => 1,
+					'null'        => FALSE,
+					'default'     => 'n'
+				)
+			),
+			'time_format'
+		);
+
+		// Modify the default value of time_format
+		ee()->smartforge->modify_column(
+			'members',
+			array(
+				'time_format'    => array(
+					'name'       => 'time_format',
+					'type'       => 'char',
+					'constraint' => 2,
+					'null'       => FALSE,
+					'default'    => '12'
+				)
+			)
+		);
+
+		// Update all the members
+		ee()->db->where('time_format', 'us')->update('members', array('date_format' => '%n/%j/%y', 'time_format' => '12'));
+		ee()->db->where('time_format', 'eu')->update('members', array('date_format' => '%j-%n-%y', 'time_format' => '24'));
+		$include_seconds = ee()->config->item('include_seconds') ? ee()->config->item('include_seconds') : 'n';
+		ee()->db->update('members', array('include_seconds' => $include_seconds));
 	}
 
 	// --------------------------------------------------------------------

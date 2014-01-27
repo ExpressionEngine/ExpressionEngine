@@ -254,7 +254,7 @@ class Members extends CP_Controller {
 				'username'		=> '<a href="'.BASE.AMP.'C=myaccount'.AMP.'id='.$member['member_id'].'">'.$member['username'].'</a>',
 				'screen_name'	=> $member['screen_name'],
 				'email'			=> '<a href="mailto:'.$member['email'].'">'.$member['email'].'</a>',
-				'join_date'		=> $this->localize->format_date('%Y-%m-%d', $member['join_date']),
+				'join_date'		=> $this->localize->format_date(ee()->session->userdata('date_format', ee()->config->item('date_format')), $member['join_date']),
 				'last_visit'	=> ($member['last_visit'] == 0) ? ' - ' : $this->localize->human_time($member['last_visit']),
 				'group_id'		=> $groups[$member['group_id']],
 				'_check'		=> '<input class="toggle" type="checkbox" name="toggle[]" value="'.$member['member_id'].'" />'
@@ -2332,7 +2332,9 @@ class Members extends CP_Controller {
 		$data['join_date']	= $this->localize->now;
 		$data['language'] 	= $this->config->item('deft_lang');
 		$data['timezone'] 	= $this->config->item('default_site_timezone');
-		$data['time_format'] = $this->config->item('time_format') ? $this->config->item('time_format') : 'us';
+		$data['date_format'] = $this->config->item('date_format') ? $this->config->item('date_format') : '%n/%j/%y';
+		$data['time_format'] = $this->config->item('time_format') ? $this->config->item('time_format') : '12';
+		$data['include_seconds'] = $this->config->item('include_seconds') ? $this->config->item('include_seconds') : 'n';
 
 		// Was a member group ID submitted?
 

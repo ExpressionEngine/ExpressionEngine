@@ -242,8 +242,20 @@ type of your imported data, the passwords will not work, and affected members wi
 'tab' =>
 'Tab',
 
-'time_format' =>
-'Default Time Format',
+"date_format" =>
+"Date Formatting",
+
+"time_format" =>
+"Time Formatting",
+
+"24_hour" =>
+"24 Hour",
+
+"12_hour" =>
+"12 Hour with AM/PM",
+
+"include_seconds" =>
+"Include Seconds in the Time Format",
 
 'timezones' =>
 'Default Timezone',
