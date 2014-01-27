@@ -195,19 +195,20 @@ class Date_ft extends EE_Fieldtype {
 		{
 			ee()->javascript->output('
 
-			Grid.bind("date", "display", function(cell)
-			{
-				var d = new Date();
-				var jsCurrentUTC = d.getTimezoneOffset()*60;
-				var adjustedDefault = 1000*('.$date.'+jsCurrentUTC);
+				Grid.bind("date", "display", function(cell)
+				{
+					var d = new Date();
+					var jsCurrentUTC = d.getTimezoneOffset()*60;
+					var adjustedDefault = 1000*('.$date.'+jsCurrentUTC);
 
-				field = cell.find(".ee_datepicker");
-				field.removeAttr("id");
+					field = cell.find(".ee_datepicker");
+					field.removeAttr("id");
 
-				cell.find(".ee_datepicker").datepicker({
-					constrainInput: false,
-					dateFormat: EE.date.date_format + EE.date_obj_time,
-					defaultDate: new Date(adjustedDefault)
+					cell.find(".ee_datepicker").datepicker({
+						constrainInput: false,
+						dateFormat: EE.date.date_format + EE.date_obj_time,
+						defaultDate: new Date(adjustedDefault)
+					});
 				});
 
 			');
