@@ -206,7 +206,7 @@ class Date_ft extends EE_Fieldtype {
 
 					cell.find(".ee_datepicker").datepicker({
 						constrainInput: false,
-						dateFormat: $.datepicker.W3C + EE.date_obj_time,
+						dateFormat: EE.date.date_format + EE.date_obj_time,
 						defaultDate: new Date(adjustedDefault)
 					});
 				});
