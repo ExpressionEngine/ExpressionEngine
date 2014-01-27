@@ -161,7 +161,7 @@ class Relative_date_object {
 			}
 			elseif ($this->_units[$key] > 1)
 			{
-				$units[] = $this->_units[$key].' '.lang(rtrim($key));
+				$units[] = $this->_units[$key].' '.lang($key);
 			}
 		}
 
