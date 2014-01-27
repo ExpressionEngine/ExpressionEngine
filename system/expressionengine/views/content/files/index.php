@@ -39,8 +39,9 @@
 		<div class="clear_left"></div>
 	</div> <!-- filterMenu -->			
 	<?=form_open('C=content_files'.AMP.'M=multi_edit_form', array('name'=>'file_form', 'id'=>'file_form'))?>
-	
+	<div class="wide_content">
 		<?=$table_html?>
+	</div>
 	
 		<div class="tableSubmit">
 			<?=form_hidden('upload_dir', $selected_dir)?>
