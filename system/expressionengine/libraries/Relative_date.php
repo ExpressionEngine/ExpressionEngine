@@ -201,18 +201,24 @@ class Relative_date_object {
 				$units = array_slice($units, 0, $depth);
 			}
 
+			// If we have more than one unit on display add an 'and' in for
+			// grammar's sake
 			if (count($units) > 1)
 			{
 				$i = count($units) - 1;
 				$units[$i] = lang('and').' '.$units[$i];
 			}
 
-			$str = implode(', ', $units);
-
-			if (count($units) < 3)
+			// Add commas if we have more than 2 units to display
+			if (count($units) > 2)
 			{
-				$str = str_replace(',', '', $str);
+				$str = implode(', ', $units);
 			}
+			else
+			{
+				$str = implode(' ', $units);
+			}
+
 		}
 
 		if ($this->_timestamp <= $this->_reference)
