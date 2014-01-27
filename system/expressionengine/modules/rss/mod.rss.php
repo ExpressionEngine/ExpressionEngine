@@ -277,14 +277,19 @@ class Rss {
 		}
 
 		//  Add status declaration
-		$sql .= "AND exp_channel_titles.status != 'closed' ";
-
 		if ($status = ee()->TMPL->fetch_param('status'))
 		{
 			$status = str_replace('Open',	'open',	$status);
 			$status = str_replace('Closed', 'closed', $status);
 
-			$sql .= ee()->functions->sql_andor_string($status, 'exp_channel_titles.status');
+			$status_str = ee()->functions->sql_andor_string($status, 'exp_channel_titles.status');
+
+			if (stristr($status_str, "'closed'") === FALSE)
+			{
+				$status_str .= " AND exp_channel_titles.status != 'closed' ";
+			}
+
+			$sql .= $status_str;
 		}
 		else
 		{

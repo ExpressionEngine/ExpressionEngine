@@ -165,12 +165,10 @@ class Date_ft extends EE_Fieldtype {
 			$date = $field_data;
 		}
 
-		$date_fmt = ee()->session->userdata('time_format');
-		$date_fmt = $date_fmt ? $date_fmt : ee()->config->item('time_format');
-
 		ee()->javascript->set_global(array(
-			'date.format' => $date_fmt,
-			'date.include_seconds' => ee()->config->item('include_seconds')
+			'date.date_format' => ee()->localize->datepicker_format(),
+			'date.time_format' => ee()->session->userdata('time_format', ee()->config->item('time_format')),
+			'date.include_seconds' => ee()->session->userdata('include_seconds', ee()->config->item('include_seconds'))
 		));
 
 		ee()->cp->add_js_script(array(
@@ -185,14 +183,15 @@ class Date_ft extends EE_Fieldtype {
 			var jsCurrentUTC = d.getTimezoneOffset()*60;
 			var adjustedDefault = 1000*('.$date.'+jsCurrentUTC);
 
-			$("#'.$this->field_name.'").not(".grid_field_container #'.$this->field_name.'").datepicker({
+			$("[name='.$this->field_name.']").not(".grid_field_container [name='.$this->field_name.']").datepicker({
 				constrainInput: false,
-				dateFormat: $.datepicker.W3C + EE.date_obj_time,
+				dateFormat: EE.date.date_format + EE.date_obj_time,
 				defaultDate: new Date(adjustedDefault)
 			});
 		');
 
-		if ( ! ee()->session->cache(__CLASS__, 'grid_js_loaded'))
+		if ( ! ee()->session->cache(__CLASS__, 'grid_js_loaded')
+			&& $this->content_type() == 'grid')
 		{
 			ee()->javascript->output('
 
@@ -207,10 +206,9 @@ class Date_ft extends EE_Fieldtype {
 
 				cell.find(".ee_datepicker").datepicker({
 					constrainInput: false,
-					dateFormat: $.datepicker.W3C + EE.date_obj_time,
+					dateFormat: EE.date.date_format + EE.date_obj_time,
 					defaultDate: new Date(adjustedDefault)
 				});
-			});
 
 			');
 
@@ -226,7 +224,6 @@ class Date_ft extends EE_Fieldtype {
 
 		$r = form_input(array(
 			'name'	=> $this->field_name,
-			'id'	=> $this->field_name,
 			'value'	=> $custom_date,
 			'class'	=> $input_class
 		));
@@ -248,7 +245,7 @@ class Date_ft extends EE_Fieldtype {
 				);
 
 				$r .= NBS.NBS.NBS.NBS;
-				$r .= form_dropdown($date_local, $localized_opts, $localized, 'dir="'.$text_direction.'" id="'.$date_local.'"');
+				$r .= form_dropdown($date_local, $localized_opts, $localized, 'dir="'.$text_direction.'"');
 			}
 		}
 

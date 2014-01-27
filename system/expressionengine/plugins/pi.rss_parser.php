@@ -36,7 +36,7 @@ $plugin_info = array(
 
 Class Rss_parser {
 
-	private $cache_name = 'rss_cache';
+	private $cache_name = 'rss_parser_plugin';
 
 	public function __construct()
 	{

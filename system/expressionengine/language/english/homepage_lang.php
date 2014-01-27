@@ -6,12 +6,6 @@ $lang = array(
 // Home page
 //----------------------------
 
-'install_lock_warning' =>
-'Warning: Your installation folder is still on your server.',
-
-'install_lock_removal' =>
-'For security purposes, please remove the folder called <strong>installer</strong> from your server using your FTP program.',
-
 'checksum_changed_warning' =>
 'One or more core files have been altered:',
 

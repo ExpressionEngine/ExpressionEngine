@@ -137,7 +137,7 @@ class EE_Session {
 		// -------------------------------------------
 
 		// Set the validation type
-		$this->validation = (REQ == 'CP') ? ee()->config->item('admin_session_type') : ee()->config->item('user_session_type');
+		$this->validation = (REQ == 'CP') ? ee()->config->item('cp_session_type') : ee()->config->item('website_session_type');
 
 		// default to "cookies and sessions" if validation type doesn't exist or is invalid
 		if ( ! in_array($this->validation, $this->valid_session_types))
@@ -611,7 +611,9 @@ class EE_Session {
 		if (ee()->config->item('allow_member_localization') == 'n')
 		{
 			$this->userdata['timezone'] = ee()->config->item('default_site_timezone');
-			$this->userdata['time_format'] = ee()->config->item('time_format') ? ee()->config->item('time_format') : 'us';
+			$this->userdata['date_format'] = ee()->config->item('date_format') ? ee()->config->item('date_format') : '%n/%j/%y';
+			$this->userdata['time_format'] = ee()->config->item('time_format') ? ee()->config->item('time_format') : '12';
+			$this->userdata['include_seconds'] = ee()->config->item('include_seconds') ? ee()->config->item('include_seconds') : 'n';
  		}
 
 		// Assign Sites, Channel, Template, and Module Access Privs
@@ -1008,6 +1010,32 @@ class EE_Session {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Fetch the current session id or fingerprint
+	 *
+	 * @param 	string 		'admin' or 'user' depending on session type
+	 * @return 	string 		the session id or fingerprint
+	 */
+	public function session_id($which = 'admin')
+	{
+		$session_type = ($which == 'user') ? ee()->config->item('website_session_type') : ee()->config->item('cp_session_type');
+
+		$s = 0;
+
+		switch ($session_type)
+		{
+			case 's'	:
+				$s = ee()->session->userdata('session_id', 0);
+				break;
+			case 'cs'	:
+				$s = ee()->session->userdata('fingerprint', 0);
+				break;
+		}
+		return ($s);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Age flashdata
 	 *
 	 * Removes old, marks current as old, etc
@@ -1141,7 +1169,9 @@ class EE_Session {
 			'location'			=> ee()->input->cookie('my_location'),
 			'language'			=> '',
 			'timezone'			=> ee()->config->item('default_site_timezone'),
-			'time_format'		=> ee()->config->item('time_format') ? ee()->config->item('time_format') : 'us',
+			'date_format'		=> ee()->config->item('date_format') ? ee()->config->item('date_format') : '%n/%j/%y',
+			'time_format'		=> ee()->config->item('time_format') ? ee()->config->item('time_format') : '12',
+			'include_seconds'	=> ee()->config->item('include_seconds') ? ee()->config->item('include_seconds') : 'n',
 			'group_id'			=> '3',
 			'access_cp'			=>  0,
 			'last_visit'		=>  0,
@@ -1342,7 +1372,7 @@ class EE_Session {
 	 */
 	protected function _setup_session_length()
 	{
-		$u_item = ee()->config->item('user_session_ttl');
+		$u_item = ee()->config->item('website_session_ttl');
 		$cp_item = ee()->config->item('cp_session_ttl');
 
 		$this->cpan_session_len = ($cp_item !== FALSE) ? $cp_item : $this->cpan_session_len;

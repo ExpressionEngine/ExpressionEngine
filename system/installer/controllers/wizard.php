@@ -24,7 +24,7 @@
  */
 class Wizard extends CI_Controller {
 
-	var $version			= '2.7.3';	// The version being installed
+	var $version			= '2.7.4';	// The version being installed
 	var $installed_version	= ''; 		// The version the user is currently running (assuming they are running EE)
 	var $minimum_php		= '5.2.4';	// Minimum version required to run EE
 	var $schema				= NULL;		// This will contain the schema object with our queries
@@ -81,7 +81,6 @@ class Wizard extends CI_Controller {
 	var $userdata = array(
 		'app_version'			=> '',
 		'doc_url'				=> 'http://ellislab.com/expressionengine/user-guide/',
-		'install_lock'			=> '1',
 		'ext'					=> '.php',
 		'ip'					=> '',
 		'database'				=> 'mysql',
@@ -329,8 +328,16 @@ class Wizard extends CI_Controller {
 			return FALSE;
 		}
 
+		$cache_path = EE_APPPATH.'cache';
+
+		// Attempt to grab cache_path config if it's set
+		if (ee()->config->item('cache_path'))
+		{
+			$cache_path = ee()->config->item('cache_path');
+		}
+
 		// Is the cache folder writable?
-		if ( ! is_really_writable(EE_APPPATH.'/cache'))
+		if ( ! is_really_writable($cache_path))
 		{
 			$this->_set_output('error', array('error' => $this->lang->line('unwritable_cache_folder')));
 			return FALSE;
@@ -2380,8 +2387,10 @@ PAPAYA;
 			'cookie_domain'					=>	'',
 			'cookie_path'					=>	'',
 			'cookie_prefix'					=>	'',
+			'website_session_type'			=>	'c',
+			'cp_session_type'				=>	'cs',
 			'cookie_httponly'				=>	'y',
-			'user_session_type'				=>	'c', 
+			'user_session_type'				=>	'c',
 			'admin_session_type'			=>	'cs',
 			'allow_username_change'			=>	'y',
 			'allow_multi_logins'			=>	'y',
@@ -2402,7 +2411,9 @@ PAPAYA;
 			'max_referrers'					=>	'500',
 			'is_system_on'					=>	'y',
 			'allow_extensions'				=>	'y',
-			'time_format'					=>	'us',
+			'date_format'					=>	'%n/%j/%y',
+			'time_format'					=>	'12',
+			'include_seconds'				=>	'n',
 			'server_offset'					=>	'',
 			'default_site_timezone'			=>	$this->userdata['default_site_timezone'],
 			'mail_protocol'					=>	'mail',
@@ -2535,8 +2546,8 @@ PAPAYA;
 			'include_seconds',
 			'cookie_domain',
 			'cookie_path',
-			'user_session_type',
-			'admin_session_type',
+			'website_session_type',
+			'cp_session_type',
 			'allow_username_change',
 			'allow_multi_logins',
 			'password_lockout',
@@ -2554,7 +2565,9 @@ PAPAYA;
 			'gzip_output',
 			'log_referrers',
 			'max_referrers',
+			'date_format',
 			'time_format',
+			'include_seconds',
 			'server_offset',
 			'default_site_timezone',
 			'mail_protocol',

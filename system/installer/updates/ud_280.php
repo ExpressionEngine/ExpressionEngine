@@ -39,7 +39,11 @@ class Updater {
 		$steps = new ProgressIterator(
 			array(
 				'_update_extension_quick_tabs',
+				'_update_localization_config',
+				'_update_member_table',
 				'_extract_server_offset_config',
+				'_update_session_config_names',
+				'_clear_cache',
 				'_update_config_add_cookie_httponly'
 			)
 		);
@@ -71,6 +75,102 @@ class Updater {
 
 			ee()->db->update_batch('members', $members, 'member_id');
 		}
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Update Localization Config
+	 *
+	 * We are adding "date_format" to the config, and changing the value of
+	 * "time_format".  We are also making the hidden config "include_seconds"
+	 * not hidden.
+	 */
+	private function _update_localization_config()
+	{
+		$localization_preferences = array();
+
+		ee()->db->select('site_id, site_system_preferences');
+    	$query = ee()->db->get('sites');
+
+    	if ($query->num_rows() > 0)
+    	{
+			foreach ($query->result_array() as $row)
+			{
+				$system_prefs = base64_decode($row['site_system_preferences']);
+				$system_prefs = unserialize($system_prefs);
+
+				if ($system_prefs['time_format'] == 'us')
+				{
+					$localization_preferences['date_format'] = '%n/%j/%y';
+					$localization_preferences['time_format'] = '12';
+				}
+				else
+				{
+					$localization_preferences['date_format'] = '%j-%n-%y';
+					$localization_preferences['time_format'] = '24';
+				}
+
+				$localization_preferences['include_seconds'] = ee()->config->item('include_seconds') ? ee()->config->item('include_seconds') : 'n';
+				ee()->config->update_site_prefs($localization_preferences, $row['site_id']);
+			}
+		}
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Update Member Table
+	 *
+	 * Along with the localization config changes we are changing the member
+	 * localizaion preferences.  We are now storing the date format as the
+	 * actual format, and storing the "include_seconds" preference.
+	 *
+	 * This will add the new columns, change the default on the "time_format"
+	 * column, and update the members based on their old values (and the site's)
+	 * value on "include_seconds".
+	 */
+	private function _update_member_table()
+	{
+		// Add new columns
+		ee()->smartforge->add_column(
+			'members',
+			array(
+				'date_format'    => array(
+					'type'       => 'varchar',
+					'constraint' => 8,
+					'null'       => FALSE,
+					'default'    => '%n/%j/%y'
+				),
+				'include_seconds' => array(
+					'type'        => 'char',
+					'constraint'  => 1,
+					'null'        => FALSE,
+					'default'     => 'n'
+				)
+			),
+			'time_format'
+		);
+
+		// Modify the default value of time_format
+		ee()->smartforge->modify_column(
+			'members',
+			array(
+				'time_format'    => array(
+					'name'       => 'time_format',
+					'type'       => 'char',
+					'constraint' => 2,
+					'null'       => FALSE,
+					'default'    => '12'
+				)
+			)
+		);
+
+		// Update all the members
+		ee()->db->where('time_format', 'us')->update('members', array('date_format' => '%n/%j/%y', 'time_format' => '12'));
+		ee()->db->where('time_format', 'eu')->update('members', array('date_format' => '%j-%n-%y', 'time_format' => '24'));
+		$include_seconds = ee()->config->item('include_seconds') ? ee()->config->item('include_seconds') : 'n';
+		ee()->db->update('members', array('include_seconds' => $include_seconds));
 	}
 
 	// --------------------------------------------------------------------
@@ -138,7 +238,97 @@ class Updater {
 	}
 
 	// --------------------------------------------------------------------
-	
+
+	/**
+	 * Renames admin_session_type and user_session_type in the site system
+	 * preferences and config (if needed)
+	 *
+	 * @return void
+	 **/
+	private function _update_session_config_names()
+	{
+		// First: update the site_system_preferences columns
+		$sites = ee()->db->select('site_id, site_system_preferences')
+			->get('sites')
+			->result_array();
+
+		foreach ($sites as $site)
+	    {
+			$prefs = unserialize(base64_decode($site['site_system_preferences']));
+
+			// Don't run the update query if we don't have to
+			$update = FALSE;
+
+			if (isset($prefs['admin_session_type']))
+			{
+				$prefs['cp_session_type'] = $prefs['admin_session_type'];
+				unset($prefs['admin_session_type']);
+				$update = TRUE;
+			}
+
+			if (isset($prefs['user_session_type']))
+			{
+				$prefs['website_session_type'] = $prefs['user_session_type'];
+				unset($prefs['user_session_type']);
+				$update = TRUE;
+			}
+
+			if ($update)
+			{
+				ee()->db->update(
+					'sites',
+					array('site_system_preferences' => base64_encode(serialize($prefs))),
+					array('site_id' => $site['site_id'])
+				);
+			}
+
+			if ( ! empty($new_config_items))
+			{
+				ee()->config->update_site_prefs($new_config_items, $site['site_id']);
+			}
+		}
+
+		// Second: update any $config overrides
+		$new_config_items = array();
+		if (ee()->config->item('admin_session_type') !== FALSE)
+		{
+			$new_config_items['cp_session_type'] = ee()->config->item('admin_session_type');
+		}
+		if (ee()->config->item('user_session_type') !== FALSE)
+		{
+			$new_config_items['website_session_type'] = ee()->config->item('user_session_type');
+		}
+
+		$remove_config_items = array(
+			'admin_session_type' => '',
+			'user_session_type'  => '',
+		);
+		ee()->config->_update_config($new_config_items, $remove_config_items);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Clear the cache, we have a new folder structure for the cache
+	 * directory with the introduction of caching drivers
+	 */
+	private function _clear_cache()
+	{
+		$cache_path = EE_APPPATH.'cache';
+
+		// Attempt to grab cache_path config if it's set
+		if ($path = ee()->config->item('cache_path'))
+		{
+			$cache_path = ee()->config->item('cache_path');
+		}
+
+		ee()->load->helper('file');
+
+		delete_files($cache_path, TRUE, 0, array('.htaccess', 'index.html'));
+	}
+
+	// --------------------------------------------------------------------
+
 	/**
 	 * Update Config to Add cookie_httponly
 	 *
@@ -153,8 +343,6 @@ class Updater {
 			)
 		);
 	}
-
-
 }
 /* END CLASS */
 

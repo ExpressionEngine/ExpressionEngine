@@ -85,8 +85,8 @@ class EE_Template {
 
 	var $reverse_related_data = array();	//  A multi-dimensional array containing any reverse related tags
 
-	var $t_cache_path		= 'tag_cache/';	 // Location of the tag cache file
-	var $p_cache_path		= 'page_cache/'; // Location of the page cache file
+	protected $_tag_cache_prefix	= 'tag_cache';	// Tag cache key namespace
+	protected $_page_cache_prefix	= 'page_cache'; // Page cache key namespace
 	var $disable_caching	= FALSE;
 
 	var $debugging			= FALSE;		// Template parser debugging on?
@@ -144,39 +144,10 @@ class EE_Template {
 	{
 		$this->log_item(" - Begin Template Processing - ");
 
-		// Set the name of the cache folder for both tag and page caching
-
-		if (ee()->uri->uri_string != '')
+		// Run garbage collection about 10% of the time
+		if (rand(1, 10) == 1)
 		{
-			$this->t_cache_path .= md5(ee()->functions->fetch_site_index().ee()->uri->uri_string).'/';
-			$this->p_cache_path .= md5(ee()->functions->fetch_site_index().ee()->uri->uri_string).'/';
-		}
-		else
-		{
-			$this->t_cache_path .= md5(ee()->config->item('site_url').'index'.ee()->uri->query_string).'/';
-			$this->p_cache_path .= md5(ee()->config->item('site_url').'index'.ee()->uri->query_string).'/';
-		}
-
-		// We limit the total number of cache files in order to
-		// keep some sanity with large sites or ones that get
-		// hit by over-ambitious crawlers.
-		if ($this->disable_caching == FALSE)
-		{
-			if ($dh = @opendir(APPPATH.'cache/page_cache'))
-			{
-				$i = 0;
-				while (FALSE !== (readdir($dh)))
-				{
-					$i++;
-				}
-
-				$max = ( ! ee()->config->item('max_caches') OR ! is_numeric(ee()->config->item('max_caches')) OR ee()->config->item('max_caches') > 1000) ? 1000 : ee()->config->item('max_caches');
-
-				if ($i > $max)
-				{
-					ee()->functions->clear_caching('page');
-				}
-			}
+			$this->_garbage_collect_cache();
 		}
 
 		$this->log_item("URI: ".ee()->uri->uri_string);
@@ -272,7 +243,7 @@ class EE_Template {
 		// Static Content, No Parsing
 		if ($this->template_type == 'static' OR $this->embed_type == 'static')
 		{
-			if ($is_embed == FALSE)
+			if ($is_embed == FALSE && $is_layout == FALSE)
 			{
 				$this->final_template = $this->template;
 			}
@@ -294,7 +265,7 @@ class EE_Template {
 		{
 			$this->log_item("Smart Static Parsing Triggered");
 
-			if ($is_embed == FALSE)
+			if ($is_embed == FALSE && $is_layout == FALSE)
 			{
 				$this->final_template = $this->template;
 			}
@@ -426,7 +397,7 @@ class EE_Template {
 		// there is no reason to go further.
 		// However we do need to fetch any subtemplates
 
-		if ($this->cache_status == 'CURRENT' AND $is_embed == FALSE)
+		if ($this->cache_status == 'CURRENT' AND $is_embed == FALSE && $is_layout == FALSE)
 		{
 			$this->log_item("Cached Template Used");
 
@@ -439,10 +410,10 @@ class EE_Template {
 			}
 
 			$this->log_item("Conditionals Parsed, Processing Sub Templates");
-
+			$this->template = $this->process_layout_template($this->template, $layout);
+			$this->template = $this->process_sub_templates($this->template);
 			$this->final_template = $this->template;
-			$this->process_sub_templates($this->template);
-			$this->process_layout_template($this->template, $layout);
+			$this->_cleanup_layout_tags();
 			return;
 		}
 
@@ -498,8 +469,16 @@ class EE_Template {
 		// Write the cache file if needed
 		if ($this->cache_status == 'EXPIRED')
 		{
-			$this->template = ee()->functions->insert_action_ids($this->template);
-			$this->write_cache_file($this->cache_hash, $this->template, 'template');
+			$cache_template = ee()->functions->insert_action_ids($this->template);
+
+			// we remove the layout name early to prevent nested tags, we need
+			// to reinsert that tag at the beginning of template before caching
+			if ( ! empty($layout))
+			{
+				$cache_template = $layout[0]."\n".$this->template;
+			}
+
+			$this->write_cache_file($this->cache_hash, $cache_template, 'template');
 		}
 
 		// Parse Our Uncacheable Forms
@@ -559,10 +538,8 @@ class EE_Template {
 					$error = ee()->lang->line('error_layout_too_late');
 					ee()->output->fatal_error($error);
 				}
-				else
-				{
-					exit;
-				}
+
+				exit;
 			}
 			// Is there another? We can't have that.
 			elseif (preg_match('/('.LD.'layout\s*=)(.*?)'.RD.'/s', $this->template, $bad_layout, 0, $tag_pos + 1))
@@ -578,10 +555,8 @@ class EE_Template {
 
 					ee()->output->fatal_error($error);
 				}
-				else
-				{
-					exit;
-				}
+
+				exit;
 			}
 
 			// save it
@@ -669,7 +644,7 @@ class EE_Template {
 			$next = strpos($template, $open_tag, $pos + $open_tag_len);
 			$close = strpos($template, LD.'/layout:set', $pos + $open_tag_len);
 
-			if ($next && $close && $close < $next)
+			if ($close && ( ! $next || $close < $next))
 			{
 				// we have a pair
 				$start = $pos + strlen($tag);
@@ -824,11 +799,9 @@ class EE_Template {
 						'content' => $message
 					), FALSE);
 				}
+
 				// Show nothing if debug is off
-				else
-				{
-					exit;
-				}
+				exit;
 			}
 
 			// Backup current layout vars, they don't apply to this embed
@@ -1765,49 +1738,40 @@ class EE_Template {
 		$status = ($cache_type == 'tag') ? 'tag_cache_status' : 'cache_status';
 		$status =& $this->$status;
 
+		// Bail out if this tag/template isn't set to cache
 		if ( ! isset($args['cache']) OR $args['cache'] != 'yes')
 		{
 			$status = 'NO_CACHE';
 			return FALSE;
 		}
 
-		$cache_dir = ($cache_type == 'tag') ? APPPATH.'cache/'.$this->t_cache_path : $cache_dir = APPPATH.'cache/'.$this->p_cache_path;
-		$file = $cache_dir.$cfile;
-
-		if ( ! file_exists($file) OR ! ($fp = @fopen($file, FOPEN_READ)))
-		{
-			$status = 'EXPIRED';
-			return FALSE;
-		}
-
-		$cache = '';
+		// Get refresh setting in minutes, convert to seconds
 		$refresh = ( ! isset($args['refresh'])) ? 0 : $args['refresh'];
+		$refresh *= 60;
 
-		flock($fp, LOCK_SH);
+		$namespace = ($cache_type == 'tag') ? $this->_tag_cache_prefix : $this->_page_cache_prefix;
 
-		// Read the first line (left a small buffer - just in case)
-		$timestamp	= trim(fgets($fp, 30));
+		// Prefix for URI or query string
+		$cfile = $this->_get_cache_prefix().'+'.$cfile;
 
-		if ((strlen($timestamp) != 10) OR ($timestamp !== ((string)(int) $timestamp))) // Integer check
+		// Get metadata for this cache key to see if it's expired, because even
+		// though we can set a TTL for auto-expiration, the refresh setting
+		// can change and needs to invalidate the cache if necessary
+		$cache_info = ee()->cache->get_metadata('/'.$namespace.'/'.$cfile);
+
+		// If expiration date plus refresh time is greater than now and there is
+		// something in the cache, return cached copy
+		if (isset($cache_info['expire']) &&
+			$cache_info['expire'] + $refresh > ee()->localize->now &&
+			$cache = ee()->cache->get('/'.$namespace.'/'.$cfile))
 		{
-			// Should never happen - so we'll log it
-			$this->log_item("Invalid Cache File Format: ".$file);
-			$status = 'EXPIRED';
-		}
-		elseif (time() > ($timestamp + ($refresh * 60)))
-		{
-			$status = 'EXPIRED';
+			$status = 'CURRENT';
 		}
 		else
 		{
-			// Timestamp valid - read rest of file
-			$this->cache_timestamp = (int) $timestamp;
-			$status = 'CURRENT';
-			$cache = @fread($fp, filesize($file));
+			$cache = '';
+			$status = 'EXPIRED';
 		}
-
-		flock($fp, LOCK_UN);
-		fclose($fp);
 
 		return $cache;
 	}
@@ -1848,46 +1812,97 @@ class EE_Template {
 			return;
 		}
 
-		$cache_dir  = ($cache_type == 'tag') ? APPPATH.'cache/'.$this->t_cache_path : $cache_dir = APPPATH.'cache/'.$this->p_cache_path;
-		$cache_base = ($cache_type == 'tag') ? APPPATH.'cache/tag_cache' : APPPATH.'cache/page_cache';
+		$namespace = ($cache_type == 'tag') ? $this->_tag_cache_prefix : $this->_page_cache_prefix;
 
-		$cache_file = $cache_dir.$cfile;
+		// Prefix for URI or query string
+		$cfile = $this->_get_cache_prefix().'+'.$cfile;
 
-		$dirs = array($cache_base, $cache_dir);
-
-		foreach ($dirs as $dir)
+		if ( ! ee()->cache->save('/'.$namespace.'/'.$cfile, $data, 0))
 		{
-			if ( ! @is_dir($dir))
+			$this->log_item("Could not create/write to cache file: ".$namespace.'/'.$cfile);
+		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Cache items are prefixed with a hash of the URI or query string of
+	 * the current page so that tags can still be influenced by URI items
+	 * and still be cached
+	 *
+	 * @return	string	MD5 hash of current URL
+	 */
+	protected function _get_cache_prefix()
+	{
+		if (ee()->uri->uri_string != '')
+		{
+			return md5(ee()->functions->fetch_site_index().ee()->uri->uri_string);
+		}
+
+		return md5(ee()->config->item('site_url').'index'.ee()->uri->query_string);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Page cache garbage collection
+	 *
+	 * We limit the total number of cache files in order to keep some
+	 * sanity with large sites or ones that get hit by over-ambitious
+	 * crawlers. This will check the cache directory and make sure there
+	 * are no more than 1000 page cache files, or the value set by the
+	 * 'max_caches' config value;
+	 *
+	 * @return	void
+	 */
+	protected function _garbage_collect_cache()
+	{
+		if ($this->disable_caching == FALSE && ee()->cache->get_adapter() == 'file')
+		{
+			$cache_info = ee()->cache->cache_info();
+
+			// Find the directory holding our page cache
+			foreach ($cache_info as $item)
 			{
-				if ( ! @mkdir($dir, DIR_WRITE_MODE))
-				{
-					return;
-				}
+				// Explode the path by directory separator
+				$path = explode(
+					DIRECTORY_SEPARATOR,
+					trim($item['relative_path'], DIRECTORY_SEPARATOR)
+				);
 
-				if ($dir == $cache_base && $fp = @fopen($dir.'/index.html', FOPEN_WRITE_CREATE_DESTRUCTIVE))
+				// See if the last item in the path is page_cache
+				if ('page_cache' == array_pop($path))
 				{
-					fclose($fp);
+					$path = $item['relative_path'];
+					break;
 				}
+			}
 
-				@chmod($dir, DIR_WRITE_MODE);
+			// Bail if we couldn't find the directory
+			if (empty($path))
+			{
+				return;
+			}
+
+			// Count files in the directory
+			$count = count(get_filenames($path));
+
+			$max = 1000;
+
+			// Figure out what our max number of page cache files should be
+			if ( ! ee()->config->item('max_caches') OR
+				! is_numeric(ee()->config->item('max_caches')) OR
+				ee()->config->item('max_caches') > 1000)
+			{
+				$max = ee()->config->item('max_caches');
+			}
+
+			// Clear page cache if we have too many
+			if ($count > $max)
+			{
+				ee()->cache->delete('/page_cache/');
 			}
 		}
-
-		if ( ! $fp = @fopen($cache_file, FOPEN_WRITE_CREATE_DESTRUCTIVE))
-		{
-			$this->log_item("Could not create/write to cache file: ".$cache_file);
-			return;
-		}
-
-		flock($fp, LOCK_EX);
-		if (fwrite($fp, time()."\n".$data) === FALSE)
-		{
-			$this->log_item("Could not write to cache file: ".$cache_file);
-		}
-		flock($fp, LOCK_UN);
-		fclose($fp);
-
-		@chmod($cache_file, FILE_WRITE_MODE);
 	}
 
 	// --------------------------------------------------------------------
@@ -2963,6 +2978,16 @@ class EE_Template {
 		else
 		{
 			$str = str_replace(LD.'cp_url'.RD, '', $str);
+		}
+
+		// {cp_session_id}
+		if (ee()->session->access_cp === TRUE)
+		{
+			$str = str_replace(LD.'cp_session_id'.RD, ee()->session->session_id(), $str);
+		}
+		else
+		{
+			$str = str_replace(LD.'cp_session_id'.RD, '0', $str);
 		}
 
 		// {site_name} {site_url} {site_index} {webmaster_email}
