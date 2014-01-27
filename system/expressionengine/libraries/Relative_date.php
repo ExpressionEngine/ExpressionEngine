@@ -39,6 +39,7 @@ class Relative_date {
 class Relative_date_object {
 	public $singular 			= 'one';
 	public $less_than 			= 'less than';
+	public $about				= 'about';
 	public $past 				= '%s ago';
 	public $future 				= 'in %s';
 
@@ -145,15 +146,53 @@ class Relative_date_object {
 	 *  	     '5 hours'
 	 *
 	 * @access	public
-	 * @param	int			$depth	Determines how many date parts we use
+	 * @param	int		$depth	Determines how many date parts we use
 	 * @return	string	A human readable relative date string
 	 */
 	public function render($depth = 1)
 	{
 		$units = array();
+		$rounded = FALSE;
+
+		// Check to see if we need to round the smallest displayed unit
+		if (is_numeric($depth) AND $depth > 0)
+		{
+			$non_zero_units = array();
+			foreach ($this->_calculated_units as $key)
+			{
+				if ($this->_units[$key])
+				{
+					$non_zero_units[] = $key;
+				}
+			}
+
+			// Rounding needed
+			if ($depth < count($non_zero_units)) {
+				$round_to = $non_zero_units[$depth - 1];
+				$i = array_search($round_to, $this->_valid_units) + 1;
+				$round_from = $this->_valid_units[$i];
+				unset($i);
+
+				$thresholds = array(
+					'seconds' => 45,
+					'minutes' => 45,
+					'hours'   => 22,
+					'days'    => 6,
+					'weeks'   => 3,
+					'months'  => 11,
+				);
+
+				if ($this->_units[$round_from] >= $thresholds[$round_from])
+				{
+					$this->_units[$round_to]++;
+				}
+
+				$rounded = TRUE;
+			}
+		}
 
 		// Generate the string from years to seconds
-		foreach ($this->_valid_units as $key)
+		foreach ($this->_calculated_units as $key)
 		{
 			if ($this->_units[$key] == 1)
 			{
@@ -206,6 +245,11 @@ class Relative_date_object {
 		else
 		{
 			$str = str_replace('%s', $str, $this->future);
+		}
+
+		if ($rounded)
+		{
+			$str = $this->about.' '.$str;
 		}
 
 		return $str;
