@@ -174,7 +174,7 @@ class Relative_date_object {
 		}
 		else
 		{
-			if (is_numeric($depth))
+			if (is_numeric($depth) AND $depth > 0)
 			{
 				$units = array_slice($units, 0, $depth);
 			}
