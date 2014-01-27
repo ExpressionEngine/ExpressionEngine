@@ -202,7 +202,7 @@ class Cp {
 
 			ee()->javascript->set_global(array(
 				'SESS_TIMEOUT'		=> ee()->session->cpan_session_len * 1000,
-				'SESS_TYPE'			=> ee()->config->item('admin_session_type')
+				'SESS_TYPE'			=> ee()->config->item('cp_session_type')
 			));
 		}
 

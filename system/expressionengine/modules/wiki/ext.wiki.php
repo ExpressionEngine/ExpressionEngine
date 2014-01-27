@@ -9,7 +9,7 @@ class Wiki_ext {
 	var $required_by = array('module');
 
 	private $EE;
-	
+
 	/**
 	 * Constructor
 	 */
@@ -26,19 +26,19 @@ class Wiki_ext {
 	function files_after_delete($deleted_rows)
 	{
 		$names = array();
-		
+
 		foreach ($deleted_rows as $row)
 		{
 			$names[] = $row->file_name;
 		}
-		
+
 		ee()->db->where_in('file_name', $names);
 		ee()->db->delete('wiki_uploads');
-							
+
 		// Clear wiki cache
 		ee()->functions->clear_caching('db');
 	}
-	
+
 
 	// --------------------------------------------------------------------
 
@@ -71,7 +71,7 @@ class Wiki_ext {
 	{
 		show_error('This extension is automatically deleted with the wiki module');
 	}
-	
+
 		// --------------------------------------------------------------------
 
 	/**
@@ -82,7 +82,7 @@ class Wiki_ext {
 		return TRUE;
 		//show_error('This extension is automatically deleted with the wiki module');
 	}
-	
+
 }
 
 /* End of file ext.wiki.php */

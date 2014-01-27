@@ -24,83 +24,84 @@
  */
 class EE_Template {
 
-	var $loop_count				= 0;			// Main loop counter.
-	var $depth					= 0;			// Sub-template loop depth
-	var $in_point				= '';			// String position of matched opening tag
-	var $template				= '';			// The requested template (page)
-	var $final_template			= '';			// The finalized template
-	var $fl_tmpl				= '';			// 'Floating' copy of the template.  Used as a temporary "work area".
-	var $cache_hash				= '';			// md5 checksum of the template name.  Used as title of cache file.
-	var $cache_status			= '';			// Status of page cache (NO_CACHE, CURRENT, EXPIRED)
-	var $tag_cache_status		= '';			// Status of tag cache (NO_CACHE, CURRENT, EXPIRED)
-	var $cache_timestamp		= '';
-	var $template_type			= '';			// Type of template (webpage, rss)
-	var $embed_type				= '';			// Type of template for embedded template
-	var $template_hits			= 0;
-	var $php_parse_location		= 'output';		// Where in the chain the PHP gets parsed
-	var $template_edit_date		= '';			// Template edit date
-	var $templates_sofar		= '';			// Templates processed so far, subtemplate tracker
-	var $attempted_fetch		=  array();		// Templates attempted to fetch but may have bailed due to recursive embeds
-	var $encode_email			=  TRUE;		// Whether to use the email encoder.  This is set automatically
-	var $hit_lock_override		=  FALSE;		// Set to TRUE if you want hits tracked on sub-templates
-	var $hit_lock				=  FALSE;		// Lets us lock the hit counter if sub-templates are contained in a template
-	var $parse_php				=  FALSE;		// Whether to parse PHP or not
-	var $protect_javascript		=  TRUE;		// Protect javascript in conditionals
+	var $loop_count	  		=	0;			// Main loop counter.
+	var $depth				=	0;			// Sub-template loop depth
+	var $in_point			=  '';			// String position of matched opening tag
+	var $template			=  '';			// The requested template (page)
+	var $final_template	 	=  '';			// The finalized template
+	var $fl_tmpl		 	=  '';			// 'Floating' copy of the template.  Used as a temporary "work area".
+	var $cache_hash	  		=  '';			// md5 checksum of the template name.  Used as title of cache file.
+	var $cache_status		=  '';			// Status of page cache (NO_CACHE, CURRENT, EXPIRED)
+	var $tag_cache_status	=  '';			// Status of tag cache (NO_CACHE, CURRENT, EXPIRED)
+	var $cache_timestamp	=  '';
+	var $template_type  	=  '';			// Type of template (webpage, rss)
+	var $embed_type			=  '';			// Type of template for embedded template
+	var $template_hits		=	0;
+	var $php_parse_location =  'output';	// Where in the chain the PHP gets parsed
+	var $template_edit_date	=	'';			// Template edit date
+	var $templates_sofar	=   '';			// Templates processed so far, subtemplate tracker
+	var $attempted_fetch	=  array();		// Templates attempted to fetch but may have bailed due to recursive embeds
+	var $encode_email		=  TRUE;		// Whether to use the email encoder.  This is set automatically
+	var $hit_lock_override	=  FALSE;		// Set to TRUE if you want hits tracked on sub-templates
+	var $hit_lock			=  FALSE;		// Lets us lock the hit counter if sub-templates are contained in a template
+	var $parse_php			=  FALSE;		// Whether to parse PHP or not
+	var $protect_javascript =  TRUE;		// Protect javascript in conditionals
 
-	var $group_name				= '';			// Group of template being parsed
-	var $template_name			= '';			// Name of template being parsed
-	var $template_id			= 0;
+	var $group_name			= '';			// Group of template being parsed
+	var $template_name		= '';			// Name of template being parsed
+	var $template_id		= 0;
 
-	var $tag_data				= array();		// Data contained in tags
-	var $modules				= array();		// List of installed modules
-	var $module_data			= array();		// Data for modules from exp_channels
-	var $plugins				= array();		// List of installed plug-ins
+	var $tag_data			= array();		// Data contained in tags
+	var $modules		 	= array();		// List of installed modules
+	var $module_data		= array();		// Data for modules from exp_channels
+	var $plugins		 	= array();		// List of installed plug-ins
 
-	var $var_single				= array();		// "Single" variables
-	var $var_cond				= array();		// "Conditional" variables
-	var $var_pair				= array();		// "Paired" variables
-	var $global_vars			= array();		// This array can be set via the path.php file
-	var $embed_vars				= array();		// This array can be set via the {embed} tag
-	var $segment_vars			= array();		// Array of segment variables
+	var $var_single	  		= array();		// "Single" variables
+	var $var_cond			= array();		// "Conditional" variables
+	var $var_pair			= array();		// "Paired" variables
+	var $global_vars		= array();		// This array can be set via the path.php file
+	var $embed_vars		 	= array();		// This array can be set via the {embed} tag
+	var $layout_vars		= array();		// This array can be set via the {layout} tag
+	var $segment_vars		= array();		// Array of segment variables
 
-	var $tagparts				= array();		// The parts of the tag: {exp:comment:form}
-	var $tagdata				= '';			// The chunk between tag pairs.  This is what modules will utilize
-	var $tagproper				= '';			// The full opening tag
-	var $no_results				= '';			// The contents of the {if no_results}{/if} conditionals
-	var $no_results_block		= '';			// The {if no_results}{/if} chunk
-	var $search_fields			= array();		// Special array of tag parameters that begin with 'search:'
-	var $date_vars				= array();		// Date variables found in the tagdata (FALSE if date variables do not exist in tagdata)
-	var $unfound_vars			= array();		// These are variables that have not been found in the tagdata and can be ignored
-	var $conditional_vars		= array();		// Used by the template variable parser to prep conditionals
-	var $TYPE					= FALSE;		// FALSE if Typography has not been instantiated, Typography Class object otherwise
+	var $tagparts			= array();		// The parts of the tag: {exp:comment:form}
+	var $tagdata			= '';			// The chunk between tag pairs.  This is what modules will utilize
+	var $tagproper			= '';			// The full opening tag
+	var $no_results			= '';			// The contents of the {if no_results}{/if} conditionals
+	var $no_results_block	= '';			// The {if no_results}{/if} chunk
+	var $search_fields		= array();		// Special array of tag parameters that begin with 'search:'
+	var $date_vars			= array();		// Date variables found in the tagdata (FALSE if date variables do not exist in tagdata)
+	var $unfound_vars		= array();		// These are variables that have not been found in the tagdata and can be ignored
+	var $conditional_vars	= array();		// Used by the template variable parser to prep conditionals
+	var $TYPE				= FALSE;		// FALSE if Typography has not been instantiated, Typography Class object otherwise
 
-	var $related_data			= array();		//  A multi-dimensional array containing any related tags
-	var $related_id				= '';			// Used temporarily for the related ID number
-	var $related_markers		= array();		// Used temporarily
+	var $related_data		= array();		//  A multi-dimensional array containing any related tags
+	var $related_id			= '';			// Used temporarily for the related ID number
+	var $related_markers	= array();		// Used temporarily
 
-	var $site_ids				= array();		// Site IDs for the Sites Request for a Tag
-	var $sites					= array();		// Array of sites with site_id as key and site_name as value, used to determine site_ids for tag, above.
-	var $site_prefs_cache		= array();		// Array of cached site prefs, to allow fetching of another site's template files
+	var $site_ids			= array();		// Site IDs for the Sites Request for a Tag
+	var $sites				= array();		// Array of sites with site_id as key and site_name as value, used to determine site_ids for tag, above.
+	var $site_prefs_cache	= array();		// Array of cached site prefs, to allow fetching of another site's template files
 
-	var $reverse_related_data	= array();		// A multi-dimensional array containing any reverse related tags
+	var $reverse_related_data = array();	//  A multi-dimensional array containing any reverse related tags
 
-	var $t_cache_path			= 'tag_cache/';	// Location of the tag cache file
-	var $p_cache_path			= 'page_cache/';// Location of the page cache file
-	var $disable_caching		= FALSE;
+	protected $_tag_cache_prefix	= 'tag_cache';	// Tag cache key namespace
+	protected $_page_cache_prefix	= 'page_cache'; // Page cache key namespace
+	var $disable_caching	= FALSE;
 
-	var $debugging				= FALSE;		// Template parser debugging on?
-	var $cease_processing		= FALSE;		// Used with no_results() method.
-	var $log					= array();		// Log of Template processing
-	var $start_microtime		= 0;			// For Logging (= microtime())
+	var $debugging			= FALSE;		// Template parser debugging on?
+	var $cease_processing	= FALSE;		// Used with no_results() method.
+	var $log				= array();		// Log of Template processing
+	var $start_microtime	= 0;			// For Logging (= microtime())
 
-	var $strict_urls			= FALSE;		// Whether to make URLs operate strictly or not.  This is set via a template global pref
+    var $strict_urls		= FALSE;		// Whether to make URLs operate strictly or not.  This is set via a template global pref
 
-	var $realm					= 'Restricted Content'; // Localize?
+	var $realm				= 'Restricted Content';  // Localize?
 
-	var $marker					= '0o93H7pQ09L8X1t49cHY01Z5j4TT91fGfr'; // Temporary marker used as a place-holder for template data
+	var $marker = '0o93H7pQ09L8X1t49cHY01Z5j4TT91fGfr'; // Temporary marker used as a place-holder for template data
 
-	var $form_id				= '';			// Form Id
-	var $form_class				= '';			// Form Class
+	var $form_id			= '';		// 	Form Id
+	var $form_class 		= '';		// 	Form Class
 
 	// --------------------------------------------------------------------
 
@@ -143,39 +144,10 @@ class EE_Template {
 	{
 		$this->log_item(" - Begin Template Processing - ");
 
-		// Set the name of the cache folder for both tag and page caching
-
-		if (ee()->uri->uri_string != '')
+		// Run garbage collection about 10% of the time
+		if (rand(1, 10) == 1)
 		{
-			$this->t_cache_path .= md5(ee()->functions->fetch_site_index().ee()->uri->uri_string).'/';
-			$this->p_cache_path .= md5(ee()->functions->fetch_site_index().ee()->uri->uri_string).'/';
-		}
-		else
-		{
-			$this->t_cache_path .= md5(ee()->config->item('site_url').'index'.ee()->uri->query_string).'/';
-			$this->p_cache_path .= md5(ee()->config->item('site_url').'index'.ee()->uri->query_string).'/';
-		}
-
-		// We limit the total number of cache files in order to
-		// keep some sanity with large sites or ones that get
-		// hit by over-ambitious crawlers.
-		if ($this->disable_caching == FALSE)
-		{
-			if ($dh = @opendir(APPPATH.'cache/page_cache'))
-			{
-				$i = 0;
-				while (FALSE !== (readdir($dh)))
-				{
-					$i++;
-				}
-
-				$max = ( ! ee()->config->item('max_caches') OR ! is_numeric(ee()->config->item('max_caches')) OR ee()->config->item('max_caches') > 1000) ? 1000 : ee()->config->item('max_caches');
-
-				if ($i > $max)
-				{
-					ee()->functions->clear_caching('page');
-				}
-			}
+			$this->_garbage_collect_cache();
 		}
 
 		$this->log_item("URI: ".ee()->uri->uri_string);
@@ -214,7 +186,7 @@ class EE_Template {
 	 * @param	int
 	 * @return	void
 	 */
-	public function fetch_and_parse($template_group = '', $template = '', $sub = FALSE, $site_id = '')
+	public function fetch_and_parse($template_group = '', $template = '', $is_embed = FALSE, $site_id = '', $is_layout = FALSE)
 	{
 		// add this template to our subtemplate tracker
 		$this->templates_sofar = $this->templates_sofar.'|'.$site_id.':'.$template_group.'/'.$template.'|';
@@ -233,7 +205,7 @@ class EE_Template {
 
 		$this->log_item("Template Type: ".$this->template_type);
 
-		$this->parse($this->template, $sub, $site_id);
+		$this->parse($this->template, $is_embed, $site_id, $is_layout);
 
 		// -------------------------------------------
 		// 'template_post_parse' hook.
@@ -244,7 +216,7 @@ class EE_Template {
 			$this->final_template = ee()->extensions->call(
 				'template_post_parse',
 				$this->final_template,
-				$sub,
+				($is_embed || $is_layout), // $is_partial
 				$site_id
 			);
 		}
@@ -261,7 +233,7 @@ class EE_Template {
 	 * @param	string
 	 * @return	void
 	 */
-	public function parse(&$str, $sub = FALSE, $site_id = '')
+	public function parse(&$str, $is_embed = FALSE, $site_id = '', $is_layout = FALSE)
 	{
 		if ($str != '')
 		{
@@ -271,7 +243,7 @@ class EE_Template {
 		// Static Content, No Parsing
 		if ($this->template_type == 'static' OR $this->embed_type == 'static')
 		{
-			if ($sub == FALSE)
+			if ($is_embed == FALSE && $is_layout == FALSE)
 			{
 				$this->final_template = $this->template;
 			}
@@ -293,7 +265,7 @@ class EE_Template {
 		{
 			$this->log_item("Smart Static Parsing Triggered");
 
-			if ($sub == FALSE)
+			if ($is_embed == FALSE && $is_layout == FALSE)
 			{
 				$this->final_template = $this->template;
 			}
@@ -350,7 +322,7 @@ class EE_Template {
 		}
 
 		// Parse {embed} tag variables
-		if ($sub === TRUE && count($this->embed_vars) > 0)
+		if ($is_embed === TRUE && count($this->embed_vars) > 0)
 		{
 			$this->log_item("Embed Variables (Keys): ".implode('|', array_keys($this->embed_vars)));
 			$this->log_item("Embed Variables (Values): ".trim(implode('|', $this->embed_vars)));
@@ -364,11 +336,34 @@ class EE_Template {
 			}
 		}
 
+		$layout_conditionals = array();
+
+		// Parse {layout} tag variables
+		if ($is_layout === TRUE && count($this->layout_vars) > 0)
+		{
+			$this->log_item("layout Variables (Keys): ".implode('|', array_keys($this->layout_vars)));
+			$this->log_item("layout Variables (Values): ".trim(implode('|', $this->layout_vars)));
+
+			foreach ($this->layout_vars as $key => $val)
+			{
+				$layout_conditionals['layout:'.$key] = $val;
+				$this->template = str_replace(LD.'layout:'.$key.RD, $val, $this->template);
+			}
+		}
+
 		// cleanup of leftover/undeclared embed variables
 		// don't worry with undeclared embed: vars in conditionals as the conditionals processor will handle that adequately
 		if (strpos($this->template, LD.'embed:') !== FALSE)
 		{
 			$this->template = preg_replace('/'.LD.'embed:([^!]+?)'.RD.'/', '', $this->template);
+		}
+
+		// Cache the name of the layout. We do this here so that we can force
+		// layouts to be declared before module or plugin tags. That is the only
+		// reasonable way of using these - right at the top.
+		if ($is_layout === FALSE && $is_embed === FALSE)
+		{
+			$layout = $this->_find_layout();
 		}
 
 		// Parse date format string "constants"
@@ -406,7 +401,7 @@ class EE_Template {
 		// there is no reason to go further.
 		// However we do need to fetch any subtemplates
 
-		if ($this->cache_status == 'CURRENT' AND $sub == FALSE)
+		if ($this->cache_status == 'CURRENT' AND $is_embed == FALSE && $is_layout == FALSE)
 		{
 			$this->log_item("Cached Template Used");
 
@@ -419,9 +414,10 @@ class EE_Template {
 			}
 
 			$this->log_item("Conditionals Parsed, Processing Sub Templates");
-
+			$this->template = $this->process_layout_template($this->template, $layout);
+			$this->template = $this->process_sub_templates($this->template);
 			$this->final_template = $this->template;
-			$this->process_sub_templates($this->template);
+			$this->_cleanup_layout_tags();
 			return;
 		}
 
@@ -437,10 +433,11 @@ class EE_Template {
 		}
 
 		// Smite Our Enemies:  Conditionals
-		$this->log_item("Parsing Segment, Embed, and Global Vars Conditionals");
+		$this->log_item("Parsing Segment, Embed, Layout, and Global Vars Conditionals");
 
 		$this->template = $this->parse_simple_segment_conditionals($this->template);
 		$this->template = $this->simple_conditionals($this->template, $this->embed_vars);
+		$this->template = $this->simple_conditionals($this->template, $layout_conditionals);
 		$this->template = $this->simple_conditionals($this->template, ee()->config->_global_vars);
 
 		// Assign Variables
@@ -476,8 +473,16 @@ class EE_Template {
 		// Write the cache file if needed
 		if ($this->cache_status == 'EXPIRED')
 		{
-			$this->template = ee()->functions->insert_action_ids($this->template);
-			$this->write_cache_file($this->cache_hash, $this->template, 'template');
+			$cache_template = ee()->functions->insert_action_ids($this->template);
+
+			// we remove the layout name early to prevent nested tags, we need
+			// to reinsert that tag at the beginning of template before caching
+			if ( ! empty($layout))
+			{
+				$cache_template = $layout[0]."\n".$this->template;
+			}
+
+			$this->write_cache_file($this->cache_hash, $cache_template, 'template');
 		}
 
 		// Parse Our Uncacheable Forms
@@ -496,12 +501,205 @@ class EE_Template {
 		// The sub-template routine will insert embedded
 		// templates into the master template
 
-		if ($sub == FALSE)
+		if ($is_embed == FALSE && $is_layout == FALSE)
 		{
+			$this->template = $this->process_layout_template($this->template, $layout);
+			$this->template = $this->process_sub_templates($this->template);
+
 			$this->final_template = $this->template;
-			$this->process_sub_templates($this->template);
+			$this->_cleanup_layout_tags();
 		}
-	 }
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Find the first layout tag.
+	 *
+	 * Error if any are found after the first exp: tag or if we find more
+	 * than one.
+	 *
+	 * @return	array  $layout  Layout tag information
+	 *				- 0: full tag
+	 *				- 1: {layout=
+ 	 * 				- 2: "some/path" [param=value]*
+	 */
+	protected function _find_layout()
+	{
+		$layout = NULL;
+		$first_tag = strpos($this->template, LD.'exp:');
+
+		if (preg_match('/('.LD.'layout\s*=)(.*?)'.RD.'/s', $this->template, $match))
+		{
+			$tag_pos = strpos($this->template, $match[0]);
+			$error = '';
+
+			// layout tag after exp tag? No good can come of this.
+			if ($tag_pos > $first_tag)
+			{
+				if (ee()->config->item('debug') >= 1)
+				{
+					$error = ee()->lang->line('error_layout_too_late');
+					ee()->output->fatal_error($error);
+				}
+
+				exit;
+			}
+			// Is there another? We can't have that.
+			elseif (preg_match('/('.LD.'layout\s*=)(.*?)'.RD.'/s', $this->template, $bad_layout, 0, $tag_pos + 1))
+			{
+				if (ee()->config->item('debug') >= 1)
+				{
+					$error = ee()->lang->line('error_multiple_layouts');
+
+					$error .= '<br><br>';
+					$error .= htmlspecialchars($match[0]);
+					$error .= '<br><br>';
+					$error .= htmlspecialchars($bad_layout[0]);
+
+					ee()->output->fatal_error($error);
+				}
+
+				exit;
+			}
+
+			// save it
+			$layout = $match;
+
+			// remove the tag
+			$this->template = str_replace($match[0], '', $this->template);
+		}
+
+		return $layout;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Cleanup any leftover layout tags
+	 *
+	 * We need to do this at various steps of post parsing as doing it too early
+	 * can result in accidental cleanup of the {layout:contents} variable.
+	 *
+	 * @return	void
+	 */
+	protected function _cleanup_layout_tags()
+	{
+		// cleanup of leftover/undeclared layout variables
+		if (strpos($this->final_template, LD.'layout:') !== FALSE)
+		{
+			$this->final_template = preg_replace('/'.LD.'layout:([^!]+?)'.RD.'/', '', $this->final_template);
+		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Processes Any Layout Templates
+	 *
+	 * If any {embed=} tags are found, it processes those templates and does a replacement.
+	 *
+	 * @param	string	$template  Template string
+	 * @param	array	$layout	   {layout tag match information from ``_find_layout``
+	 * @return	string	Layout with embeded template string
+	 */
+	protected function process_layout_template($template, array $layout = NULL)
+	{
+		if ( ! isset($layout))
+		{
+			return $template;
+		}
+
+		$this->log_item("Processing Layout Templates");
+
+		$this->depth++;
+
+		$layout[0] = ee()->functions->full_tag($layout[0], $template);
+		$layout[2] = substr(str_replace($layout[1], '', $layout[0]), 0, -1);
+
+		$parts = preg_split("/\s+/", $layout[2], 2);
+
+		$layout_vars = (isset($parts[1])) ? ee()->functions->assign_parameters($parts[1]) : array();
+
+		if ($layout_vars === FALSE)
+		{
+			$layout_vars = array();
+		}
+
+		$this->layout_vars = array_merge($this->layout_vars, $layout_vars);
+
+		// Find the first open tag
+		$open_tag = LD.'layout:set';
+		$close_tag = LD.'/layout:set'.RD;
+
+		$open_tag_len = strlen($open_tag);
+		$close_tag_len = strlen($close_tag);
+
+		$pos = strpos($template, $open_tag);
+
+		// As long as we have opening tags we need to continue looking
+		while ($pos !== FALSE)
+		{
+			$tag = ee()->functions->full_tag(substr($template, $pos, $open_tag_len), $template);
+			$params = ee()->functions->assign_parameters(substr($tag, $open_tag_len));
+
+			// If there is a closing tag and it's before the next open, then this will
+			// be treated as a tag pair.
+			$next = strpos($template, $open_tag, $pos + $open_tag_len);
+			$close = strpos($template, LD.'/layout:set', $pos + $open_tag_len);
+
+			if ($close && ( ! $next || $close < $next))
+			{
+				// we have a pair
+				$start = $pos + strlen($tag);
+				$value = substr($template, $start, $close - $start);
+				$replace_len = $close + $close_tag_len - $pos;
+			}
+			else
+			{
+				$value = isset($params['value']) ? $params['value'] : '';
+				$replace_len = strlen($tag);
+			}
+
+			// Remove the setter from the template
+			$template = substr_replace($template, '', $pos, $replace_len);
+
+			$this->layout_vars[$params['name']] = $value;
+
+			$pos = $next;
+
+			if ($pos !== FALSE)
+			{
+				// Adjust for the substr_replace
+				$pos -= $replace_len;
+			}
+		}
+
+		// Extract the information we need to fetch the layout
+		$fetch_data = $this->_get_fetch_data($parts[0]);
+
+		if ( ! isset($fetch_data))
+		{
+			return $template;
+		}
+
+		list($template_group, $template_name, $site_id) = $fetch_data;
+
+		$this->fetch_and_parse($template_group, $template_name, FALSE, $site_id, TRUE);
+
+		// Check for a layout in the layout. Urgh.
+		$layout = $this->_find_layout();
+
+		$template = str_replace(LD.'layout:contents'.RD, $template, $this->template);
+
+		$this->embed_type = '';
+
+		// Here we go again!  Wheeeeeee.....
+		$template = $this->process_layout_template($template, $layout);
+		$template = $this->process_sub_templates($template);
+
+		return $template;
+	}
 
 	// --------------------------------------------------------------------
 
@@ -510,17 +708,17 @@ class EE_Template {
 	 *
 	 * If any {embed=} tags are found, it processes those templates and does a replacement.
 	 *
-	 * @param	string
-	 * @return	void
+	 * @param	string  $parent_template  Template string to search for embeds in
+	 * @return	string  Parent template with all embeds expanded
 	 */
-	public function process_sub_templates($template)
+	public function process_sub_templates($parent_template)
 	{
 		// Match all {embed=bla/bla} tags
 		$matches = array();
 
-		if ( ! preg_match_all("/(".LD."embed\s*=)(.*?)".RD."/s", $template, $matches))
+		if ( ! preg_match_all("/(".LD."embed\s*=)(.*?)".RD."/s", $parent_template, $matches))
 		{
-			return;
+			return $parent_template;
 		}
 
 		// Loop until we have parsed all sub-templates
@@ -541,7 +739,7 @@ class EE_Template {
 		// necessary evil in case template globals are used inside the embed tag,
 		// doing this within the processing loop will result in leaving unparsed
 		// embed tags e.g. {embed="foo/bar" var="{global_var}/{custom_field}"}
-		$temp = $template;
+		$temp = $parent_template;
 		foreach ($matches[2] as $key => $val)
 		{
 			if (strpos($val, LD) !== FALSE)
@@ -563,51 +761,15 @@ class EE_Template {
 				$this->embed_vars = array();
 			}
 
-			$val = trim_slashes(strip_quotes($parts[0]));
+			// Extract the information we need to fetch the subtemplate
+			$fetch_data = $this->_get_fetch_data($parts[0]);
 
-			if (strpos($val, '/') === FALSE)
+			if ( ! isset($fetch_data))
 			{
 				continue;
 			}
 
-			$ex = explode("/", trim($val));
-
-			if (count($ex) != 2)
-			{
-				continue;
-			}
-
-			// Determine Site
-			$site_id = ee()->config->item('site_id');
-
-			if (stristr($ex[0], ':'))
-			{
-				$name = substr($ex[0], 0, strpos($ex[0], ':'));
-
-				if (ee()->config->item('multiple_sites_enabled') == 'y' && ! IS_CORE)
-				{
-					if (count($this->sites) == 0)
-					{
-						// This should really be cached somewhere
-						ee()->db->select('site_id, site_name');
-						$sites_query = ee()->db->get('sites');
-
-						foreach($sites_query->result_array() as $row)
-						{
-							$this->sites[$row['site_id']] = $row['site_name'];
-						}
-					}
-
-					$site_id = array_search($name, $this->sites);
-
-					if (empty($site_id))
-					{
-						$site_id = ee()->config->item('site_id');
-					}
-				}
-
-				$ex[0] = str_replace($name.':', '', $ex[0]);
-			}
+			list($template_group, $template_name, $site_id) = $fetch_data;
 
 			// Loop Prevention
 
@@ -617,10 +779,10 @@ class EE_Template {
 				Whether or not loop prevention is enabled - y/n
 			/* -------------------------------------------*/
 
-			$this->attempted_fetch[] = $ex['0'].'/'.$ex['1'];
+			$this->attempted_fetch[] = $template_group.'/'.$template_name;
 
 			// Tell user if a template has been recursively loaded
-			if (substr_count($this->templates_sofar, '|'.$site_id.':'.$ex['0'].'/'.$ex['1'].'|') > 1 &&
+			if (substr_count($this->templates_sofar, '|'.$site_id.':'.$template_group.'/'.$template_name.'|') > 1 &&
 				ee()->config->item('template_loop_prevention') != 'n')
 			{
 				// Set 503 status code, mainly so caching proxies do not cache this
@@ -632,7 +794,7 @@ class EE_Template {
 				{
 					ee()->load->helper(array('html_helper', 'language_helper'));
 
-					$message = '<p>'.sprintf(lang('template_loop'), $ex['0'].'/'.$ex['1']).'</p>'
+					$message = '<p>'.sprintf(lang('template_loop'), $template_group.'/'.$template_name).'</p>'
 						.'<p>'.lang('template_load_order').':</p>'
 						.ol($this->attempted_fetch);
 
@@ -641,27 +803,36 @@ class EE_Template {
 						'content' => $message
 					), FALSE);
 				}
+
 				// Show nothing if debug is off
-				else
-				{
-					exit;
-				}
+				exit;
 			}
 
+			// Backup current layout vars, they don't apply to this embed
+			$layout_vars_bak = $this->layout_vars;
+			$this->layout_vars = array();
+
 			// Process Subtemplate
-			$this->log_item("Processing Sub Template: ".$ex[0]."/".$ex[1]);
+			$this->log_item("Processing Sub Template: ".$template_group."/".$template_name);
 
-			$this->fetch_and_parse($ex[0], $ex[1], TRUE, $site_id);
+			$this->fetch_and_parse($template_group, $template_name, TRUE, $site_id);
 
-			$this->final_template = str_replace($matches[0][$key], $this->template, $this->final_template);
+			$layout = $this->_find_layout();
+			$full_subtemplate = $this->process_layout_template($this->template, $layout);
+
+			$parent_template = str_replace($matches[0][$key], $full_subtemplate, $parent_template);
 
 			$this->embed_type = '';
 
 			// Here we go again!  Wheeeeeee.....
-			$this->process_sub_templates($this->template);
+			$parent_template = $this->process_sub_templates($parent_template);
 
 			// pull the subtemplate tracker back a level to the parent template
-			$this->templates_sofar = substr($this->templates_sofar, 0, - strlen('|'.$site_id.':'.$ex[0].'/'.$ex[1].'|'));
+			$this->templates_sofar = substr($this->templates_sofar, 0, - strlen('|'.$site_id.':'.$template_group.'/'.$template_name.'|'));
+
+			// Restore layout vars. Technically we don't need these but a third
+			// party may want them to behave correctly.
+			$this->layout_vars = $layout_vars_bak;
 		}
 
 		$this->depth--;
@@ -670,6 +841,70 @@ class EE_Template {
 		{
 			$this->templates_sofar = '';
 		}
+
+		return $parent_template;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Grab all the data required to fetch a template from a template path.
+	 *
+	 * @param	string  Template path string (e.g somegroup/index)
+	 * @return	array   Uniquely identifying template data
+	 *				- template_group
+	 *				- template
+	 *				- site_id
+	 */
+	protected function _get_fetch_data($template_path)
+	{
+		$val = trim_slashes(strip_quotes($template_path));
+
+		if (strpos($val, '/') === FALSE)
+		{
+			return NULL;
+		}
+
+		$ex = explode("/", trim($val));
+
+		if (count($ex) != 2)
+		{
+			return NULL;
+		}
+
+		// Determine Site
+		$site_id = ee()->config->item('site_id');
+
+		if (stristr($ex[0], ':'))
+		{
+			$name = substr($ex[0], 0, strpos($ex[0], ':'));
+
+			if (ee()->config->item('multiple_sites_enabled') == 'y' && ! IS_CORE)
+			{
+				if (count($this->sites) == 0)
+				{
+					// This should really be cached somewhere
+					ee()->db->select('site_id, site_name');
+					$sites_query = ee()->db->get('sites');
+
+					foreach($sites_query->result_array() as $row)
+					{
+						$this->sites[$row['site_id']] = $row['site_name'];
+					}
+				}
+
+				$site_id = array_search($name, $this->sites);
+
+				if (empty($site_id))
+				{
+					$site_id = ee()->config->item('site_id');
+				}
+			}
+
+			$ex[0] = str_replace($name.':', '', $ex[0]);
+		}
+
+		return array($ex[0], $ex[1], $site_id);
 	}
 
 	// --------------------------------------------------------------------
@@ -977,7 +1212,6 @@ class EE_Template {
 				{
 					if ( ! in_array($this->tag_data[$i]['class'] , $this->plugins))
 					{
-
 						$this->log_item("Invalid Tag");
 
 						if (ee()->config->item('debug') >= 1)
@@ -1000,7 +1234,9 @@ class EE_Template {
 							ee()->output->fatal_error($error);
 						}
 						else
+						{
 							return FALSE;
+						}
 					}
 					else
 					{
@@ -1506,49 +1742,40 @@ class EE_Template {
 		$status = ($cache_type == 'tag') ? 'tag_cache_status' : 'cache_status';
 		$status =& $this->$status;
 
+		// Bail out if this tag/template isn't set to cache
 		if ( ! isset($args['cache']) OR $args['cache'] != 'yes')
 		{
 			$status = 'NO_CACHE';
 			return FALSE;
 		}
 
-		$cache_dir = ($cache_type == 'tag') ? APPPATH.'cache/'.$this->t_cache_path : $cache_dir = APPPATH.'cache/'.$this->p_cache_path;
-		$file = $cache_dir.$cfile;
-
-		if ( ! file_exists($file) OR ! ($fp = @fopen($file, FOPEN_READ)))
-		{
-			$status = 'EXPIRED';
-			return FALSE;
-		}
-
-		$cache = '';
+		// Get refresh setting in minutes, convert to seconds
 		$refresh = ( ! isset($args['refresh'])) ? 0 : $args['refresh'];
+		$refresh *= 60;
 
-		flock($fp, LOCK_SH);
+		$namespace = ($cache_type == 'tag') ? $this->_tag_cache_prefix : $this->_page_cache_prefix;
 
-		// Read the first line (left a small buffer - just in case)
-		$timestamp	= trim(fgets($fp, 30));
+		// Prefix for URI or query string
+		$cfile = $this->_get_cache_prefix().'+'.$cfile;
 
-		if ((strlen($timestamp) != 10) OR ($timestamp !== ((string)(int) $timestamp))) // Integer check
+		// Get metadata for this cache key to see if it's expired, because even
+		// though we can set a TTL for auto-expiration, the refresh setting
+		// can change and needs to invalidate the cache if necessary
+		$cache_info = ee()->cache->get_metadata('/'.$namespace.'/'.$cfile);
+
+		// If expiration date plus refresh time is greater than now and there is
+		// something in the cache, return cached copy
+		if (isset($cache_info['expire']) &&
+			$cache_info['expire'] + $refresh > ee()->localize->now &&
+			$cache = ee()->cache->get('/'.$namespace.'/'.$cfile))
 		{
-			// Should never happen - so we'll log it
-			$this->log_item("Invalid Cache File Format: ".$file);
-			$status = 'EXPIRED';
-		}
-		elseif (time() > ($timestamp + ($refresh * 60)))
-		{
-			$status = 'EXPIRED';
+			$status = 'CURRENT';
 		}
 		else
 		{
-			// Timestamp valid - read rest of file
-			$this->cache_timestamp = (int) $timestamp;
-			$status = 'CURRENT';
-			$cache = @fread($fp, filesize($file));
+			$cache = '';
+			$status = 'EXPIRED';
 		}
-
-		flock($fp, LOCK_UN);
-		fclose($fp);
 
 		return $cache;
 	}
@@ -1589,46 +1816,97 @@ class EE_Template {
 			return;
 		}
 
-		$cache_dir  = ($cache_type == 'tag') ? APPPATH.'cache/'.$this->t_cache_path : $cache_dir = APPPATH.'cache/'.$this->p_cache_path;
-		$cache_base = ($cache_type == 'tag') ? APPPATH.'cache/tag_cache' : APPPATH.'cache/page_cache';
+		$namespace = ($cache_type == 'tag') ? $this->_tag_cache_prefix : $this->_page_cache_prefix;
 
-		$cache_file = $cache_dir.$cfile;
+		// Prefix for URI or query string
+		$cfile = $this->_get_cache_prefix().'+'.$cfile;
 
-		$dirs = array($cache_base, $cache_dir);
-
-		foreach ($dirs as $dir)
+		if ( ! ee()->cache->save('/'.$namespace.'/'.$cfile, $data, 0))
 		{
-			if ( ! @is_dir($dir))
+			$this->log_item("Could not create/write to cache file: ".$namespace.'/'.$cfile);
+		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Cache items are prefixed with a hash of the URI or query string of
+	 * the current page so that tags can still be influenced by URI items
+	 * and still be cached
+	 *
+	 * @return	string	MD5 hash of current URL
+	 */
+	protected function _get_cache_prefix()
+	{
+		if (ee()->uri->uri_string != '')
+		{
+			return md5(ee()->functions->fetch_site_index().ee()->uri->uri_string);
+		}
+
+		return md5(ee()->config->item('site_url').'index'.ee()->uri->query_string);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Page cache garbage collection
+	 *
+	 * We limit the total number of cache files in order to keep some
+	 * sanity with large sites or ones that get hit by over-ambitious
+	 * crawlers. This will check the cache directory and make sure there
+	 * are no more than 1000 page cache files, or the value set by the
+	 * 'max_caches' config value;
+	 *
+	 * @return	void
+	 */
+	protected function _garbage_collect_cache()
+	{
+		if ($this->disable_caching == FALSE && ee()->cache->get_adapter() == 'file')
+		{
+			$cache_info = ee()->cache->cache_info();
+
+			// Find the directory holding our page cache
+			foreach ($cache_info as $item)
 			{
-				if ( ! @mkdir($dir, DIR_WRITE_MODE))
-				{
-					return;
-				}
+				// Explode the path by directory separator
+				$path = explode(
+					DIRECTORY_SEPARATOR,
+					trim($item['relative_path'], DIRECTORY_SEPARATOR)
+				);
 
-				if ($dir == $cache_base && $fp = @fopen($dir.'/index.html', FOPEN_WRITE_CREATE_DESTRUCTIVE))
+				// See if the last item in the path is page_cache
+				if ('page_cache' == array_pop($path))
 				{
-					fclose($fp);
+					$path = $item['relative_path'];
+					break;
 				}
+			}
 
-				@chmod($dir, DIR_WRITE_MODE);
+			// Bail if we couldn't find the directory
+			if (empty($path))
+			{
+				return;
+			}
+
+			// Count files in the directory
+			$count = count(get_filenames($path));
+
+			$max = 1000;
+
+			// Figure out what our max number of page cache files should be
+			if ( ! ee()->config->item('max_caches') OR
+				! is_numeric(ee()->config->item('max_caches')) OR
+				ee()->config->item('max_caches') > 1000)
+			{
+				$max = ee()->config->item('max_caches');
+			}
+
+			// Clear page cache if we have too many
+			if ($count > $max)
+			{
+				ee()->cache->delete('/page_cache/');
 			}
 		}
-
-		if ( ! $fp = @fopen($cache_file, FOPEN_WRITE_CREATE_DESTRUCTIVE))
-		{
-			$this->log_item("Could not create/write to cache file: ".$cache_file);
-			return;
-		}
-
-		flock($fp, LOCK_EX);
-		if (fwrite($fp, time()."\n".$data) === FALSE)
-		{
-			$this->log_item("Could not write to cache file: ".$cache_file);
-		}
-		flock($fp, LOCK_UN);
-		fclose($fp);
-
-		@chmod($cache_file, FILE_WRITE_MODE);
 	}
 
 	// --------------------------------------------------------------------
@@ -2143,8 +2421,8 @@ class EE_Template {
 				{
 					$removed = array_shift(ee()->session->tracker);
 				}
-				
-				ee()->input->set_cookie('tracker', serialize(ee()->session->tracker), '0'); 
+
+				ee()->input->set_cookie('tracker', serialize(ee()->session->tracker), '0');
 			}
 		}
 
@@ -2704,6 +2982,16 @@ class EE_Template {
 		else
 		{
 			$str = str_replace(LD.'cp_url'.RD, '', $str);
+		}
+
+		// {cp_session_id}
+		if (ee()->session->access_cp === TRUE)
+		{
+			$str = str_replace(LD.'cp_session_id'.RD, ee()->session->session_id(), $str);
+		}
+		else
+		{
+			$str = str_replace(LD.'cp_session_id'.RD, '0', $str);
 		}
 
 		// {site_name} {site_url} {site_index} {webmaster_email}

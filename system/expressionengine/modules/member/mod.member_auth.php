@@ -42,7 +42,7 @@ class Member_auth extends Member {
 
 		$login_form = $this->_load_element('login_form');
 
-		if (ee()->config->item('user_session_type') != 'c')
+		if (ee()->config->item('website_session_type') != 'c')
 		{
 			$login_form = $this->_deny_if('auto_login', $login_form);
 		}
@@ -739,6 +739,7 @@ class Member_auth extends Member {
 
 		$swap = array(
 			'name'		=> $name,
+			'username'    => $username,
 			'reset_url'	=> reduce_double_slashes(ee()->functions->fetch_site_index(0, 0) . '/' . ee()->config->item('profile_trigger') . '/reset_password?&id='.$rand.$forum_id),
 			'site_name'	=> $site_name,
 			'site_url'	=> $return

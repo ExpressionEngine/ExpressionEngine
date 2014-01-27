@@ -326,7 +326,7 @@ EE.publish.save_layout = function() {
 				merge = true;
 				visible = false;
 			}
-	
+
 			$("#"+tab_id).find(".publish_field").each(function() {
 
 				var that = $(this),
@@ -532,7 +532,7 @@ $(document).ready(function() {
 		$('.glossary_content a').click(function(){
 			var parent_div = $(this).closest('.publish_field'),
 				field_id = parent_div.attr('id').replace('hold_field_', 'field_id_');
-			parent_div.find('#'+field_id).insertAtCursor( $(this).attr('title') );
+			parent_div.find('[name='+field_id+']').insertAtCursor( $(this).attr('title') );
 
 			return false;
 		});
@@ -620,7 +620,7 @@ $(document).ready(function() {
 	if (EE.publish.markitup.fields !== undefined)
 	{
 		$.each(EE.publish.markitup.fields, function(key, value) {
-			$("#"+key).markItUp(mySettings);
+			$("textarea[name="+key+"]").markItUp(mySettings);
 		});
 	}
 
@@ -667,7 +667,7 @@ $(document).ready(function() {
 
 				// regular field (id_#) or named field (id_forum_content_blah)
 				if (trigger_id.match(/^id_\d+$/)) {
-					source_txt = $("#field_" + trigger_id);
+					source_txt = $("textarea[name=field_"+trigger_id+"]");
 				} else {
 					source_txt = $('#' + trigger_id.replace(/id_/, ''));
 				}

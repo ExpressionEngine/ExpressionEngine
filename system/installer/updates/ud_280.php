@@ -42,6 +42,8 @@ class Updater {
 				'_update_localization_config',
 				'_update_member_table',
 				'_extract_server_offset_config',
+				'_update_session_config_names',
+				'_clear_cache',
 				'_update_config_add_cookie_httponly'
 			)
 		);
@@ -238,6 +240,96 @@ class Updater {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Renames admin_session_type and user_session_type in the site system
+	 * preferences and config (if needed)
+	 *
+	 * @return void
+	 **/
+	private function _update_session_config_names()
+	{
+		// First: update the site_system_preferences columns
+		$sites = ee()->db->select('site_id, site_system_preferences')
+			->get('sites')
+			->result_array();
+
+		foreach ($sites as $site)
+	    {
+			$prefs = unserialize(base64_decode($site['site_system_preferences']));
+
+			// Don't run the update query if we don't have to
+			$update = FALSE;
+
+			if (isset($prefs['admin_session_type']))
+			{
+				$prefs['cp_session_type'] = $prefs['admin_session_type'];
+				unset($prefs['admin_session_type']);
+				$update = TRUE;
+			}
+
+			if (isset($prefs['user_session_type']))
+			{
+				$prefs['website_session_type'] = $prefs['user_session_type'];
+				unset($prefs['user_session_type']);
+				$update = TRUE;
+			}
+
+			if ($update)
+			{
+				ee()->db->update(
+					'sites',
+					array('site_system_preferences' => base64_encode(serialize($prefs))),
+					array('site_id' => $site['site_id'])
+				);
+			}
+
+			if ( ! empty($new_config_items))
+			{
+				ee()->config->update_site_prefs($new_config_items, $site['site_id']);
+			}
+		}
+
+		// Second: update any $config overrides
+		$new_config_items = array();
+		if (ee()->config->item('admin_session_type') !== FALSE)
+		{
+			$new_config_items['cp_session_type'] = ee()->config->item('admin_session_type');
+		}
+		if (ee()->config->item('user_session_type') !== FALSE)
+		{
+			$new_config_items['website_session_type'] = ee()->config->item('user_session_type');
+		}
+
+		$remove_config_items = array(
+			'admin_session_type' => '',
+			'user_session_type'  => '',
+		);
+		ee()->config->_update_config($new_config_items, $remove_config_items);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Clear the cache, we have a new folder structure for the cache
+	 * directory with the introduction of caching drivers
+	 */
+	private function _clear_cache()
+	{
+		$cache_path = EE_APPPATH.'cache';
+
+		// Attempt to grab cache_path config if it's set
+		if ($path = ee()->config->item('cache_path'))
+		{
+			$cache_path = ee()->config->item('cache_path');
+		}
+
+		ee()->load->helper('file');
+
+		delete_files($cache_path, TRUE, 0, array('.htaccess', 'index.html'));
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Update Config to Add cookie_httponly
 	 *
 	 * Update the config.php file to add the new cookie_httponly paramter and
@@ -251,8 +343,6 @@ class Updater {
 			)
 		);
 	}
-
-
 }
 /* END CLASS */
 
