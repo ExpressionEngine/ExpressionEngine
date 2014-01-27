@@ -115,11 +115,11 @@ class Relative_date_object {
 		);
 
 		$seconds = array(
-			'years'   => 31536000,
-			'months'  => 2628000,
-			'weeks'   => 604800,
-			'days'    => 86400,
-			'hours'   => 3600,
+			'years'   => 31536000,	// 365 * 24 * 60 * 60
+			'months'  => 2628000,	// (365 * 24 * 60 * 60) / 12
+			'weeks'   => 604800,	// 7 * 24 * 60 * 60
+			'days'    => 86400,		// 24 * 60 * 60
+			'hours'   => 3600,		// 60 * 60
 			'minutes' => 60,
 			'seconds' => 1
 		);
