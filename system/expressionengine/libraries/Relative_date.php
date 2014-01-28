@@ -44,6 +44,7 @@ class Relative_date_object {
 	public $future 				= 'in %s';
 
 	private $_units				= array();
+	private $_deltas			= array();
 	private $_calculated_units	= array();
 	private $_timestamp			= 0;
 	private $_reference			= 0;
@@ -134,6 +135,7 @@ class Relative_date_object {
 				$this->_calculated_units[] = $unit;
 				$this->_units[$unit] = (int) floor($delta / $seconds[$unit]);
 				$delta -= $this->_units[$unit] * $seconds[$unit];
+				$this->_deltas[$unit] = $delta;
 			}
 		}
 	}
@@ -170,20 +172,19 @@ class Relative_date_object {
 			if ($depth < count($non_zero_units))
 			{
 				$round_to = $non_zero_units[$depth - 1];
-				$i = array_search($round_to, $this->_valid_units) + 1;
-				$round_from = $this->_valid_units[$i];
-				unset($i);
 
-				$thresholds = array(
-					'seconds' => 45,
-					'minutes' => 45,
-					'hours'   => 22,
-					'days'    => 6,
-					'weeks'   => 3,
-					'months'  => 11,
+				// These are the number of seconds at which we will round up
+				// based on the delta from the calculation
+				$delta_thresholds = array(
+					'years'   => 29808000,	// 345 days
+					'months'  => 2160000,	// 25 days
+					'weeks'   => 518400,	// 6 days
+					'days'    => 79200,		// 22 hours
+					'hours'   => 2700,		// 45 minutes
+					'minutes' => 45,		// 45 seconds
 				);
 
-				if ($this->_units[$round_from] >= $thresholds[$round_from])
+				if ($this->_deltas[$round_to] >= $delta_thresholds[$round_to])
 				{
 					$this->_units[$round_to]++;
 				}
