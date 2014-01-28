@@ -1116,6 +1116,8 @@ class Simple_commerce {
 	/** -------------------------------------*/
 	function prep_val($str)
 	{
+		return urlencode($str);
+
 		// Oh, PayPal, the hoops I must jump through to woo thee...
 		// PayPal is displaying its cart as UTF-8, sending UTF-8 headers, but when
 		// processing the form data, is obviously wonking with it.  This will force
