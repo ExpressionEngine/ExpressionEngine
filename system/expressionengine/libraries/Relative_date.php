@@ -167,7 +167,8 @@ class Relative_date_object {
 			}
 
 			// Rounding needed
-			if ($depth < count($non_zero_units)) {
+			if ($depth < count($non_zero_units))
+			{
 				$round_to = $non_zero_units[$depth - 1];
 				$i = array_search($round_to, $this->_valid_units) + 1;
 				$round_from = $this->_valid_units[$i];
