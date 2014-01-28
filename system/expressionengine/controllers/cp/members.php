@@ -254,7 +254,7 @@ class Members extends CP_Controller {
 				'username'		=> '<a href="'.BASE.AMP.'C=myaccount'.AMP.'id='.$member['member_id'].'">'.$member['username'].'</a>',
 				'screen_name'	=> $member['screen_name'],
 				'email'			=> '<a href="mailto:'.$member['email'].'">'.$member['email'].'</a>',
-				'join_date'		=> $this->localize->format_date('%Y-%m-%d', $member['join_date']),
+				'join_date'		=> $this->localize->format_date(ee()->session->userdata('date_format', ee()->config->item('date_format')), $member['join_date']),
 				'last_visit'	=> ($member['last_visit'] == 0) ? ' - ' : $this->localize->human_time($member['last_visit']),
 				'group_id'		=> $groups[$member['group_id']],
 				'_check'		=> '<input class="toggle" type="checkbox" name="toggle[]" value="'.$member['member_id'].'" />'
@@ -566,12 +566,12 @@ class Members extends CP_Controller {
 		// Set cookie expiration to one year if the "remember me" button is clicked
 
 		$expire = 0;
-		$type = (isset($_POST['return_destination']) && $_POST['return_destination'] == 'cp') ? $this->config->item('admin_session_type') : $this->config->item('user_session_type');
+		$type = (isset($_POST['return_destination']) && $_POST['return_destination'] == 'cp') ? $this->config->item('cp_session_type') : $this->config->item('website_session_type');
 
 		if ($type != 's')
 		{
-			$this->functions->set_cookie($this->session->c_expire , time()+$expire, $expire);
-			$this->functions->set_cookie($this->session->c_anon , 1,  $expire);
+			$this->input->set_cookie($this->session->c_expire , time()+$expire, $expire);
+			$this->input->set_cookie($this->session->c_anon , 1,  $expire);
 		}
 
 		// Create a new session
@@ -588,18 +588,7 @@ class Members extends CP_Controller {
 		{
 			if ($_POST['return_destination'] == 'cp')
 			{
-				$admin_session_type = $this->config->item('admin_session_type');
-
-				switch ($admin_session_type)
-				{
-					case 's' 	: $s = $this->session->userdata['session_id'];
-						break;
-					case 'cs' 	: $s = $this->session->userdata['fingerprint'];
-						break;
-					default 	: $s = 0;
-				}
-
-				$return_path = $this->config->item('cp_url', FALSE).'?S='.$s;
+				$return_path = $this->config->item('cp_url', FALSE).'?S='.ee()->session->session_id();
 			}
 			elseif ($_POST['return_destination'] == 'other' && isset($_POST['other_url']) && stristr($_POST['other_url'], 'http'))
 			{
@@ -2343,7 +2332,9 @@ class Members extends CP_Controller {
 		$data['join_date']	= $this->localize->now;
 		$data['language'] 	= $this->config->item('deft_lang');
 		$data['timezone'] 	= $this->config->item('default_site_timezone');
-		$data['time_format'] = $this->config->item('time_format') ? $this->config->item('time_format') : 'us';
+		$data['date_format'] = $this->config->item('date_format') ? $this->config->item('date_format') : '%n/%j/%y';
+		$data['time_format'] = $this->config->item('time_format') ? $this->config->item('time_format') : '12';
+		$data['include_seconds'] = $this->config->item('include_seconds') ? $this->config->item('include_seconds') : 'n';
 
 		// Was a member group ID submitted?
 

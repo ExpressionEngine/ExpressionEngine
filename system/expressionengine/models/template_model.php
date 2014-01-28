@@ -1308,7 +1308,8 @@ class Template_Entity {
 /**
  *
  */
-class Template_Group_Entity{
+class Template_Group_Entity
+{
 	/**
 	 *
 	 */

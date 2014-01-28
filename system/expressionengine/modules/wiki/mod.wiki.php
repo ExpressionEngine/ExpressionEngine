@@ -529,7 +529,7 @@ class Wiki {
 						'{path:view_article}'		=> $link,
 						'{path:edit_article}'		=> $link.'/edit',
 
-						'{path:logout}'				=> ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.ee()->functions->fetch_action_id('Member', 'member_logout'),
+						'{path:logout}'				=> ee()->functions->create_url('logout'),
 						'{path:your_control_panel}'	=> ee()->functions->create_url($this->profile_path.'profile'),
 						'{path:your_profile}'		=> ee()->functions->create_url($this->profile_path.ee()->session->userdata('member_id')),
 						'{path:login}'				=> ee()->functions->create_url($this->profile_path.'login'),
@@ -5339,8 +5339,8 @@ class Wiki {
 
 		// success, so let's make remove this request from the tracker so login redirects don't go here
 		array_shift(ee()->session->tracker);
-		ee()->functions->set_cookie('tracker', serialize(ee()->session->tracker), '0');
-
+		ee()->input->set_cookie('tracker', serialize(ee()->session->tracker), '0');
+		
 		fpassthru($fp);
 		@fclose($fp);
 		exit;

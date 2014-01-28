@@ -50,7 +50,7 @@ EE.namespace('EE.publish.file_browser');
 				}
 
 				if (textareaId != undefined) {
-					textarea = $("#"+textareaId, context);
+					textarea = $("textarea[name="+textareaId+"]", context);
 					textarea.focus();
 				}
 			}

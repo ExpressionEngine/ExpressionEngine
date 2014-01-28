@@ -71,7 +71,7 @@ if ( ! function_exists('smiley_js'))
 				var smiley_map = {$m};
 
 				function insert_smiley(smiley, field_id) {
-					var el = document.getElementById(field_id), newStart;
+					var el = document.getElementsByName(field_id)[0], newStart;
 
 					if ( ! el && smiley_map[field_id]) {
 						el = document.getElementById(smiley_map[field_id]);

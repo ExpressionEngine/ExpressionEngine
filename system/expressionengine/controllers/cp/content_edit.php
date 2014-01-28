@@ -94,8 +94,7 @@ class Content_edit extends CP_Controller {
 			$perpage = ($this->input->cookie('perpage') == FALSE) ? 50 : $this->input->cookie('perpage');
 		}
 
-		$this->functions->set_cookie('perpage' , $perpage, 60*60*24*182);
-
+		$this->input->set_cookie('perpage' , $perpage, 60*60*24*182);
 
 		// Table
 		// ----------------------------------------------------------------
@@ -339,18 +338,6 @@ class Content_edit extends CP_Controller {
 			}
 		}
 
-
-
-		// Date formatting
-		$date_fmt = ($this->session->userdata('time_format') != '') ? $this->session->userdata('time_format') : $this->config->item('time_format');
-
-		$datestr = '%m/%d/%y %h:%i %a';
-
-		if ($date_fmt != 'us')
-		{
-			$datestr = '%Y-%m-%d %H:%i';
-		}
-
 		// Autosave - Grab all autosaved entries
 		// ----------------------------------------------------------------
 
@@ -413,7 +400,7 @@ class Content_edit extends CP_Controller {
 			$row['title'] = anchor(BASE.AMP.$url, $row['title']);
 			$row['view'] = '---';
 			$row['channel_name'] = $channels[$row['channel_id']]->channel_title;
-			$row['entry_date'] = $this->localize->format_date($datestr, $row['entry_date']);
+			$row['entry_date'] = $this->localize->human_time($row['entry_date']);
 			$row['_check'] = form_checkbox('toggle[]', $row['entry_id'], '', ' class="toggle" id="delete_box_'.$row['entry_id'].'"');
 
 			// autosave indicator
@@ -789,7 +776,7 @@ class Content_edit extends CP_Controller {
 
 			// Set up date js
 			$this->javascript->output('
-				$(".entry_date_'.$entry_id.'").datepicker({constrainInput: false, dateFormat: $.datepicker.W3C + date_obj_time, defaultDate: new Date("'.$this->localize->format_date('%D %M %d %Y', $row['entry_date']).'")});
+				$(".entry_date_'.$entry_id.'").datepicker({constrainInput: false, dateFormat: "'.ee()->localize->datepicker_format().'" + date_obj_time, defaultDate: new Date("'.$this->localize->format_date('%D %M %d %Y', $row['entry_date']).'")});
 			');
 
 			// Sticky

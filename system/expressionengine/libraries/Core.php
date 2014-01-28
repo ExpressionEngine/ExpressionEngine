@@ -118,23 +118,8 @@ class EE_Core {
 
 		ee()->config->site_prefs(ee()->config->item('site_name'));
 
-		// force EE's db cache path - do this AFTER site prefs have been assigned
-		// Due to CI's DB_cache handling- suffix with site id
-		ee()->db->cache_set_path(APPPATH.'cache/db_cache_'.ee()->config->item('site_id'));
-
-		// make sure the DB cache folder exists if we're caching!
-		if (ee()->db->cache_on === TRUE &&
-			! @is_dir(APPPATH.'cache/db_cache_'.ee()->config->item('site_id')))
-		{
-			@mkdir(APPPATH.'cache/db_cache_'.ee()->config->item('site_id'), DIR_WRITE_MODE);
-
-			if ($fp = @fopen(APPPATH.'cache/db_cache_'.ee()->config->item('site_id').'/index.html', FOPEN_WRITE_CREATE_DESTRUCTIVE))
-			{
-				fclose($fp);
-			}
-
-			@chmod(APPPATH.'cache/db_cache_'.ee()->config->item('site_id'), DIR_WRITE_MODE);
-		}
+		// Load the default caching driver
+		ee()->load->driver('cache');
 
 		// this look backwards, but QUERY_MARKER is only used where we MUST
 		// have a ?, and do not want to double up
@@ -153,7 +138,8 @@ class EE_Core {
 		{
 			$cookie_prefix = ee()->config->item('cookie_prefix');
 			$cookie_path  = ee()->config->item('cookie_path');
-			$cookie_domain =  ee()->config->item('cookie_domain');
+			$cookie_domain =  ee()->config->item('cookie_domain');		
+			$cookie_httponly = ee()->config->item('cookie_httponly');
 
 			if (! empty($last_site_id) && is_numeric($last_site_id) && $last_site_id != ee()->config->item('site_id'))
 			{
@@ -162,7 +148,8 @@ class EE_Core {
 
 			ee()->config->cp_cookie_prefix = $cookie_prefix;
 			ee()->config->cp_cookie_path  = $cookie_path;
-			ee()->config->cp_cookie_domain =  $cookie_domain;
+			ee()->config->cp_cookie_domain =  $cookie_domain;	
+			ee()->config->cp_cookie_httponly = $cookie_httponly;
 		}
 
 		// This allows CI compatibility
@@ -524,19 +511,7 @@ class EE_Core {
 	 */
 	private function _somebody_set_us_up_the_base()
 	{
-		$s = 0;
-
-		switch (ee()->config->item('admin_session_type'))
-		{
-			case 's'	:
-				$s = ee()->session->userdata('session_id', 0);
-				break;
-			case 'cs'	:
-				$s = ee()->session->userdata('fingerprint', 0);
-				break;
-		}
-
-		define('BASE', SELF.'?S='.$s.'&amp;D=cp'); // cp url
+		define('BASE', SELF.'?S='.ee()->session->session_id().'&amp;D=cp'); // cp url
 	}
 
 	// ------------------------------------------------------------------------

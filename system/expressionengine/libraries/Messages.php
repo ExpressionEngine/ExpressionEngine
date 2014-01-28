@@ -202,6 +202,7 @@ class EE_Messages {
 
 
 
+
 	// -----------------------------------
 	//  Process Page :
 	//  Convert and Template into Content
@@ -475,9 +476,9 @@ class EE_Messages {
 		$rows	  = $this->retrieve_template('message_edit_folders_row');
 
 		$form_details = array('action'	=> $this->base_url.'edit_folders',
-							  'id'		=> 'edit_folders',
-							  'secure'	=> ($this->allegiance == 'cp') ? FALSE : TRUE
-							  );
+			'id'		=> 'edit_folders',
+			'secure'	=> ($this->allegiance == 'cp') ? FALSE : TRUE
+		);
 
 		$this->single_parts['form']['form_declaration']['edit_folders'] = ee()->functions->form_declaration($form_details);
 		$this->single_parts['include']['current_folders'] = '';
@@ -1014,6 +1015,7 @@ class EE_Messages {
 				else
 				{
 					$x = explode('_', $this->cur_id);
+
 					$folder_id = ( ! is_numeric($x['0'])) ? 1 : $x['0'];
 				}
 			}
@@ -1170,7 +1172,6 @@ class EE_Messages {
 			);
 		}
 
-
 		/** ----------------------------------------
 		/**  Retrieve Folder Contents
 		/** ----------------------------------------*/
@@ -1315,13 +1316,13 @@ class EE_Messages {
 		return $this->_process_template($folder_template);
 	}
 
+
 	/** ----------------------------------------
 	/**  Buttons for Various Pages
 	/** ----------------------------------------*/
 	function _buttons($deleted='y', $moved='y', $copied = 'y')
 	{
 		$style = 'buttons';
-
 
 		/** ---------------------------------
 		/**  Move, Copy, Delete Buttons
@@ -1578,8 +1579,7 @@ DOH;
 
 		if ($this->allegiance == 'cp')
 		{
-			$s = (ee()->config->item('admin_session_type') != 'c') ? ee()->session->userdata['session_id'] : 0;
-			$redirect_url = ee()->config->item('cp_url', FALSE).'?S='.$s.
+			$redirect_url = ee()->config->item('cp_url', FALSE).'?S='.ee()->session->session_id().
 							AMP.'C=myaccount'.
 							AMP.'M=messages'.
 							AMP.'P=member_search'.
@@ -1721,8 +1721,7 @@ DOH;
 
 		if ($this->allegiance == 'cp')
 		{
-			$s = (ee()->config->item('admin_session_type') != 'c') ? ee()->session->userdata['session_id'] : 0;
-			$redirect_url = ee()->config->item('cp_url', FALSE).'?S='.$s.
+			$redirect_url = ee()->config->item('cp_url', FALSE).'?S='.ee()->session->session_id().
 							AMP.'C=myaccount'.
 							AMP.'M=messages'.
 							AMP.'P=buddy_search'.
@@ -1881,6 +1880,7 @@ DOH;
 		}
 
 		$this->single_parts['lang']['storage_status']		= str_replace(array('%x', '%y'), array($this->single_parts['lang']['total_messages'], $this->single_parts['lang']['max_messages']), ee()->lang->line('storage_status'));
+
 		$this->single_parts['lang']['storage_percentage']	= str_replace('%x', $this->single_parts['lang']['usage_percent'], ee()->lang->line('storage_percentage'));
 	}
 
@@ -2004,6 +2004,7 @@ DOH;
 
 
 
+
 	/** -----------------------------------
 	/**  Erase Messages
 	/** -----------------------------------*/
@@ -2105,7 +2106,7 @@ DOH;
 
 
 
-	/** -----------------------------------
+
 	/**  Convert Recipients to Valid List
 	/** -----------------------------------*/
 	function convert_recipients($str, $type='string', $by='screen_name')
@@ -3163,6 +3164,7 @@ DOH;
 			ee()->load->library('logger');
 			ee()->logger->deprecated('2.8', 'normal {paginate} tags in your bulletin board template');
 		}
+
 		if (stripos($template, LD.'include:pagination_link'.RD) !== FALSE)
 		{
 			$template = str_replace('{include:pagination_link}', '{pagination_links}', $template);
@@ -3241,7 +3243,6 @@ DOH;
 		/** ----------------------------------------
 		/**  Return the Folder's Contents
 		/** ----------------------------------------*/
-
 		$this->return_data = $this->_process_template($template);
 	}
 
@@ -4623,9 +4624,7 @@ EWOK;
 	{
 		if ($this->allegiance == 'cp')
 		{
-			$s = (ee()->config->item('admin_session_type') != 'c') ? ee()->session->userdata['session_id'] : 0;
-
-			$url = ee()->config->item('cp_url', FALSE).'?S='.$s.'&C=myaccount&M=messages&P=member_search&Z=1';
+			$url = ee()->config->item('cp_url', FALSE).'?S='.ee()->session->session_id().'&C=myaccount&M=messages&P=member_search&Z=1';
 			$field = "&field='+which_field";
 		}
 		else
@@ -4673,9 +4672,7 @@ MRI;
 	{
 		if ($this->allegiance == 'cp')
 		{
-			$s = (ee()->config->item('admin_session_type') != 'c') ? ee()->session->userdata['session_id'] : 0;
-
-			$url = ee()->config->item('cp_url', FALSE).'?S='.$s.'&C=myaccount&M=messages&P=buddy_search&Z=1';
+			$url = ee()->config->item('cp_url', FALSE).'?S='.ee()->session->session_id().'&C=myaccount&M=messages&P=buddy_search&Z=1';
 			$which = "&which='+which";
 		}
 		else

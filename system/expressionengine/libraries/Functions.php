@@ -73,17 +73,9 @@ class EE_Functions {
 			$url .= '?';
 		}
 
-		if (ee()->config->item('user_session_type') != 'c' && is_object(ee()->session) && REQ != 'CP' && $sess_id == TRUE && $this->template_type == 'webpage')
+		if (ee()->config->item('website_session_type') != 'c' && is_object(ee()->session) && REQ != 'CP' && $sess_id == TRUE && $this->template_type == 'webpage')
 		{
-			switch (ee()->config->item('user_session_type'))
-			{
-				case 's'	:
-					$url .= "/S=".ee()->session->userdata('session_id', 0)."/";
-					break;
-				case 'cs'	:
-					$url .= "/S=".ee()->session->userdata('fingerprint', 0)."/";
-					break;
-			}
+			$url .= "/S=".ee()->session->session_id('user')."/";
 		}
 
 		if ($add_slash == TRUE)
@@ -610,16 +602,9 @@ class EE_Functions {
 			// function adds the session ID automatically, except in cases when the
 			// $_POST['RET'] variable is set. Since the login routine relies on the RET
 			// info to know where to redirect back to we need to sandwich in the session ID.
-			if (ee()->config->item('user_session_type') != 'c')
+			if (ee()->config->item('website_session_type') != 'c')
 			{
-				if (ee()->config->item('user_session_type') == 's')
-				{
-					$id = ee()->session->userdata['session_id'];
-				}
-				else
-				{
-					$id = ee()->session->userdata['fingerprint'];
-				}
+				$id = ee()->session->session_id('user');
 
 				if ($id != '' && ! stristr($ret, $id))
 				{
@@ -717,6 +702,7 @@ class EE_Functions {
 	 * Set Cookie
 	 *
 	 * @access	public
+	 * @deprecated 2.8
 	 * @param	string
 	 * @param	string
 	 * @param	string
@@ -724,68 +710,10 @@ class EE_Functions {
 	 */
 	function set_cookie($name = '', $value = '', $expire = '')
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecate('2.8', 'EE_Input::set_cookie()');
 
-		$data['name'] = $name;
-
-		if ( ! is_numeric($expire))
-		{
-			$data['expire'] = time() - 86500;
-		}
-		else
-		{
-			if ($expire > 0)
-			{
-				$data['expire'] = time() + $expire;
-			}
-			else
-			{
-				$data['expire'] = 0;
-			}
-		}
-
-		$data['prefix'] = ( ! ee()->config->item('cookie_prefix')) ? 'exp_' : ee()->config->item('cookie_prefix').'_';
-		$data['path']	= ( ! ee()->config->item('cookie_path'))	? '/'	: ee()->config->item('cookie_path');
-
-		if (REQ == 'CP' && ee()->config->item('multiple_sites_enabled') == 'y')
-		{
-			$data['prefix'] = ( ! ee()->config->cp_cookie_prefix) ? 'exp_' : ee()->config->cp_cookie_prefix.'_';;
-			$data['path']	= ( ! ee()->config->cp_cookie_path) ? '/' : ee()->config->cp_cookie_path;
-			$data['domain'] = ( ! ee()->config->cp_cookie_domain) ? '' : ee()->config->cp_cookie_domain;
-		}
-		else
-		{
-			$data['prefix'] = ( ! ee()->config->item('cookie_prefix')) ? 'exp_' : ee()->config->item('cookie_prefix').'_';
-			$data['path']	= ( ! ee()->config->item('cookie_path'))	? '/'	: ee()->config->item('cookie_path');
-			$data['domain'] = ( ! ee()->config->item('cookie_domain')) ? '' : ee()->config->item('cookie_domain');
-		}
-
-		$data['value'] = stripslashes($value);
-
-		$data['secure_cookie'] = (ee()->config->item('cookie_secure') === TRUE) ? 1 : 0;
-
-		if ($data['secure_cookie'])
-		{
-			$req = isset($_SERVER['HTTPS']) ? $_SERVER['HTTPS'] : FALSE;
-
-			if ( ! $req OR $req == 'off')
-			{
-				return FALSE;
-			}
-		}
-
-		/* -------------------------------------------
-		/* 'set_cookie_end' hook.
-		/*  - Take control of Cookie setting routine
-		/*  - Added EE 2.5.0
-		*/
-			ee()->extensions->call('set_cookie_end', $data);
-			if (ee()->extensions->end_script === TRUE) return;
-		/*
-		/* -------------------------------------------*/
-
-
-		setcookie($data['prefix'].$data['name'], $data['value'], $data['expire'],
-			$data['path'], $data['domain'], $data['secure_cookie']);
+		return ee()->input->set_cookie($name, $value, $expire);
 	}
 
 	// --------------------------------------------------------------------
@@ -1041,67 +969,18 @@ class EE_Functions {
 	 */
 	function clear_caching($which, $sub_dir = '')
 	{
-		$actions = array('page', 'tag', 'db', 'sql', 'all');
+		$options = array('page', 'db', 'tag', 'sql');
 
-		if ( ! in_array($which, $actions))
+		if (in_array($which, $options))
 		{
-			return;
+			ee()->cache->delete('/'.$which.'_cache/');
 		}
-
-		/* -------------------------------------
-		/*  Disable Tag Caching
-		/*
-		/*  All for you, Nevin!  Disables tag caching, which if used unwisely
-		/*  on a high traffic site can lead to disastrous disk i/o
-		/*  This setting allows quick thinking admins to temporarily disable
-		/*  it without hacking or modifying folder permissions
-		/*
-		/*  Hidden Configuration Variable
-		/*  - disable_tag_caching => Disable tag caching? (y/n)
-		/* -------------------------------------*/
-
-		if ($which == 'tag' && ee()->config->item('disable_tag_caching') == 'y')
+		elseif ($which == 'all')
 		{
-			return;
-		}
-
-		$db_path = '';
-
-		if ($sub_dir != '')
-		{
-			if ($which == 'all' OR $which == 'db')
+			foreach ($options as $option)
 			{
-				$segs = explode('/', str_replace($this->fetch_site_index(), '', $sub_dir));
-
-				$segment_one = (isset($segs['0'])) ? $segs['0'] : 'default';
-				$segment_two = (isset($segs['1'])) ? $segs['1'] : 'index';
-
-				$db_path = '/'.$segment_one.'+'.$segment_two.'/';
+				ee()->cache->delete('/'.$option.'_cache/');
 			}
-
-			$sub_dir = '/'.md5($sub_dir).'/';
-		}
-
-		switch ($which)
-		{
-			case 'page' : $this->delete_directory(APPPATH.'cache/page_cache'.$sub_dir);
-				break;
-			case 'db'	: $this->delete_directory(APPPATH.'cache/db_cache_'.ee()->config->item('site_id').$db_path);
-				break;
-			case 'tag'  : $this->delete_directory(APPPATH.'cache/tag_cache'.$sub_dir);
-				break;
-			case 'sql'  : $this->delete_directory(APPPATH.'cache/sql_cache'.$sub_dir);
-				break;
-			case 'all'  :
-						$this->delete_directory(APPPATH.'cache/page_cache'.$sub_dir);
-						$this->delete_directory(APPPATH.'cache/db_cache_'.ee()->config->item('site_id').$db_path);
-						$this->delete_directory(APPPATH.'cache/sql_cache'.$sub_dir);
-
-						if (ee()->config->item('disable_tag_caching') != 'y')
-						{
-							$this->delete_directory(APPPATH.'cache/tag_cache'.$sub_dir);
-						}
-				break;
 		}
 	}
 
@@ -2567,11 +2446,6 @@ class EE_Functions {
 				while(isset($x[$i]));
 			}
 
-			// This should prevent, for example, the variable 'comment' from
-			// overwriting the variable 'comments'.
-
-			uksort($data, array($this, 'reverse_key_sort'));
-
 			if ($safety == 'y')
 			{
 				// Make sure we have the same amount of opening conditional tags
@@ -2649,7 +2523,19 @@ class EE_Functions {
 					// Make sure $key doesn't appear as "{$key " or ":$key "
 					if (strpos($match, LD.$key.' ') === FALSE AND strpos($match, ':'.$key) === FALSE)
 					{
-						$match = str_replace($key, $value, $match);
+						// Replace using word boundaries to avoid variables that
+						// partially include the same name. For example, we have
+						// a global var called "my_var_global" but we are comparing
+						// it to a variable valled "my_var":
+						//
+						//     {if my_var OR my_var_global}Hello world{/if}
+						//
+						// It ends up looking like this:
+						//
+						//     {if "value" OR "value"_global}Hello world{/if}
+						//
+						// ..and triggers our Invalid EE Conditional Variable error.
+						$match = preg_replace("/(?<![\w-])".preg_quote($key)."(?![\w-])/", $value, $match);
 					}
 				}
 			}

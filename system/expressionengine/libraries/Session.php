@@ -137,7 +137,7 @@ class EE_Session {
 		// -------------------------------------------
 
 		// Set the validation type
-		$this->validation = (REQ == 'CP') ? ee()->config->item('admin_session_type') : ee()->config->item('user_session_type');
+		$this->validation = (REQ == 'CP') ? ee()->config->item('cp_session_type') : ee()->config->item('website_session_type');
 
 		// default to "cookies and sessions" if validation type doesn't exist or is invalid
 		if ( ! in_array($this->validation, $this->valid_session_types))
@@ -397,11 +397,11 @@ class EE_Session {
 		$this->userdata['session_id']	= $this->sdata['session_id'];
 		$this->userdata['fingerprint']	= $this->sdata['fingerprint'];
 		$this->userdata['site_id']		= ee()->config->item('site_id');
-
-		ee()->functions->set_cookie($this->c_session, $this->sdata['session_id'], $this->session_length);
-		ee()->functions->set_cookie($this->c_expire, time()+$this->session_length, $this->session_length);
-
-		ee()->db->query(ee()->db->insert_string('exp_sessions', $this->sdata));
+		
+		ee()->input->set_cookie($this->c_session, $this->sdata['session_id'], $this->session_length);	
+		ee()->input->set_cookie($this->c_expire, time()+$this->session_length, $this->session_length);
+		
+		ee()->db->query(ee()->db->insert_string('exp_sessions', $this->sdata));	
 
 		return $this->sdata['session_id'];
 	}
@@ -476,10 +476,10 @@ class EE_Session {
 		$this->fetch_guest_data();
 
 		ee()->remember->delete();
-		ee()->functions->set_cookie($this->c_session);
-		ee()->functions->set_cookie($this->c_expire);
-		ee()->functions->set_cookie($this->c_anon);
-		ee()->functions->set_cookie('tracker');
+		ee()->input->delete_cookie($this->c_session);
+		ee()->input->delete_cookie($this->c_expire);	
+		ee()->input->delete_cookie($this->c_anon);
+		ee()->input->delete_cookie('tracker'); 
 	}
 
 	// --------------------------------------------------------------------
@@ -528,7 +528,7 @@ class EE_Session {
 		if ( ! ee()->input->cookie('last_visit'))
 		{
 			$this->userdata['last_visit'] = ee()->localize->now-($expire*10);
-			ee()->functions->set_cookie('last_visit', $this->userdata['last_visit'], $expire);
+			ee()->input->set_cookie('last_visit', $this->userdata['last_visit'], $expire);		
 		}
 		else
 		{
@@ -541,11 +541,11 @@ class EE_Session {
 		if (($this->sdata['last_activity'] + $this->session_length) < ee()->localize->now)
 		{
 			$this->userdata['last_visit'] = $this->sdata['last_activity'];
-			ee()->functions->set_cookie('last_visit', $this->userdata['last_visit'], $expire);
+			ee()->input->set_cookie('last_visit', $this->userdata['last_visit'], $expire);	
 		}
 
 		// Update the last activity with each page load
-		ee()->functions->set_cookie('last_activity', ee()->localize->now, $expire);
+		ee()->input->set_cookie('last_activity', ee()->localize->now, $expire);			
 	}
 
 	// --------------------------------------------------------------------
@@ -611,7 +611,9 @@ class EE_Session {
 		if (ee()->config->item('allow_member_localization') == 'n')
 		{
 			$this->userdata['timezone'] = ee()->config->item('default_site_timezone');
-			$this->userdata['time_format'] = ee()->config->item('time_format') ? ee()->config->item('time_format') : 'us';
+			$this->userdata['date_format'] = ee()->config->item('date_format') ? ee()->config->item('date_format') : '%n/%j/%y';
+			$this->userdata['time_format'] = ee()->config->item('time_format') ? ee()->config->item('time_format') : '12';
+			$this->userdata['include_seconds'] = ee()->config->item('include_seconds') ? ee()->config->item('include_seconds') : 'n';
  		}
 
 		// Assign Sites, Channel, Template, and Module Access Privs
@@ -943,14 +945,14 @@ class EE_Session {
 		}
 
 		if (REQ == 'PAGE')
-		{
-			ee()->functions->set_cookie('tracker', serialize($tracker), '0');
+		{		
+			ee()->input->set_cookie('tracker', serialize($tracker), '0');
 		}
 
 		return $tracker;
 	}
 
-	// --------------------------------------------------------------------
+	// --------------------------------------------------------------------	
 
 	/**
 	 * Update Member session
@@ -976,7 +978,7 @@ class EE_Session {
 		// Update session ID cookie
 		if ($this->validation != 's')
 		{
-			ee()->functions->set_cookie($this->c_session , $this->sdata['session_id'],  $this->session_length);
+			ee()->input->set_cookie($this->c_session , $this->sdata['session_id'],  $this->session_length);	
 		}
 
 		// If we only require cookies for validation, set admin session.
@@ -1003,6 +1005,32 @@ class EE_Session {
 	public function userdata($which, $default = FALSE)
 	{
 		return ( ! isset($this->userdata[$which])) ? $default : $this->userdata[$which];
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Fetch the current session id or fingerprint
+	 *
+	 * @param 	string 		'admin' or 'user' depending on session type
+	 * @return 	string 		the session id or fingerprint
+	 */
+	public function session_id($which = 'admin')
+	{
+		$session_type = ($which == 'user') ? ee()->config->item('website_session_type') : ee()->config->item('cp_session_type');
+
+		$s = 0;
+
+		switch ($session_type)
+		{
+			case 's'	:
+				$s = ee()->session->userdata('session_id', 0);
+				break;
+			case 'cs'	:
+				$s = ee()->session->userdata('fingerprint', 0);
+				break;
+		}
+		return ($s);
 	}
 
 	// --------------------------------------------------------------------
@@ -1141,7 +1169,9 @@ class EE_Session {
 			'location'			=> ee()->input->cookie('my_location'),
 			'language'			=> '',
 			'timezone'			=> ee()->config->item('default_site_timezone'),
-			'time_format'		=> ee()->config->item('time_format') ? ee()->config->item('time_format') : 'us',
+			'date_format'		=> ee()->config->item('date_format') ? ee()->config->item('date_format') : '%n/%j/%y',
+			'time_format'		=> ee()->config->item('time_format') ? ee()->config->item('time_format') : '12',
+			'include_seconds'	=> ee()->config->item('include_seconds') ? ee()->config->item('include_seconds') : 'n',
 			'group_id'			=> '3',
 			'access_cp'			=>  0,
 			'last_visit'		=>  0,
@@ -1211,7 +1241,7 @@ class EE_Session {
 			$payload = $payload.md5($payload.$this->sess_crypt_key);
 		}
 
-		ee()->functions->set_cookie('flash' , $payload, 86500);
+		ee()->input->set_cookie('flash' , $payload, 86500);
 	}
 
 	// --------------------------------------------------------------------
@@ -1342,7 +1372,7 @@ class EE_Session {
 	 */
 	protected function _setup_session_length()
 	{
-		$u_item = ee()->config->item('user_session_ttl');
+		$u_item = ee()->config->item('website_session_ttl');
 		$cp_item = ee()->config->item('cp_session_ttl');
 
 		$this->cpan_session_len = ($cp_item !== FALSE) ? $cp_item : $this->cpan_session_len;

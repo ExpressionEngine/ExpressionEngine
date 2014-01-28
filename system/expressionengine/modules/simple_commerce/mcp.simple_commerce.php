@@ -1094,8 +1094,8 @@ class Simple_commerce_mcp {
 				$vars['purchases'][$id]['purchase_id'] =  0;
 
 			ee()->javascript->output('
-			$("#purchase_date_'.$id.'").datepicker({dateFormat: $.datepicker.W3C + date_obj_time, defaultDate: new Date('.ee()->localize->format_date('%D %M %d %Y').')});
-			$("#subscription_end_date_'.$id.'").datepicker({dateFormat: $.datepicker.W3C + date_obj_time, defaultDate: new Date('.ee()->localize->format_date('%D %M %d %Y').')});
+			$("#purchase_date_'.$id.'").datepicker({dateFormat: "'ee()->localize->datepicker_format().'" + date_obj_time, defaultDate: new Date('.ee()->localize->format_date('%D %M %d %Y').')});
+			$("#subscription_end_date_'.$id.'").datepicker({dateFormat: "'ee()->localize->datepicker_format().'" + date_obj_time, defaultDate: new Date('.ee()->localize->format_date('%D %M %d %Y').')});
 		');
 
 			}
@@ -1126,7 +1126,7 @@ class Simple_commerce_mcp {
 
 
 			ee()->javascript->output('
-			$("#purchase_date_'.$row['purchase_id'].'").datepicker({dateFormat: $.datepicker.W3C + date_obj_time, defaultDate: new Date('.$now_p_date.')});
+			$("#purchase_date_'.$row['purchase_id'].'").datepicker({dateFormat: "'ee()->localize->datepicker_format().'" + date_obj_time, defaultDate: new Date('.$now_p_date.')});
 		');
 
 			}
@@ -2255,7 +2255,7 @@ MAGIC;
 			$perpage = 50;
 		}
 
-		ee()->functions->set_cookie('perpage' , $perpage, 60*60*24*182);
+		ee()->input->set_cookie('perpage' , $perpage, 60*60*24*182);
 
 		$vars['perpage_selected'] = $perpage;
 
@@ -2809,19 +2809,7 @@ MAGIC;
 			$name = ($row['screen_name'] != '') ? $row['screen_name'] : $row['username'];
 			$vars['entries'][$row['entry_id']][] = mailto($row['email'], $name);
 
-			// Date
-			$date_fmt = (ee()->session->userdata('time_format') != '') ? ee()->session->userdata('time_format') : ee()->config->item('time_format');
-
-			if ($date_fmt == 'us')
-			{
-				$datestr = '%m/%d/%y %h:%i %a';
-			}
-			else
-			{
-				$datestr = '%Y-%m-%d %H:%i';
-			}
-
-			$vars['entries'][$row['entry_id']][] = ee()->localize->format_date($datestr, $row['entry_date']);
+			$vars['entries'][$row['entry_id']][] = ee()->localize->human_time($row['entry_date']);
 
 			// Channel
 			$vars['entries'][$row['entry_id']][] = (isset($w_array[$row['channel_id']])) ? '<div class="smallNoWrap">'. $w_array[$row['channel_id']].'</div>' : '';
