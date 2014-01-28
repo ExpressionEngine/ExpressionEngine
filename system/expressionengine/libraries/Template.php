@@ -4271,7 +4271,7 @@ class EE_Template {
 
 			$relative_date->calculate($units);
 
-			foreach (array('singular', 'less_than', 'past', 'future') as $param)
+			foreach (array('singular', 'less_than', 'past', 'future', 'about') as $param)
 			{
 				if (isset($parameters[$param]))
 				{
