@@ -128,29 +128,14 @@ class Wizard extends CI_Controller {
 	// and CI config files are one in the same now we use this data when we write the
 	// initial config file using $this->_write_config_data()
 	var $ci_config = array(
-		'base_url'				=> '',
-		'index_page' 			=> 'index.php',
 		'uri_protocol'			=> 'AUTO',
-		'url_suffix' 			=> '',
-		'language'				=> 'english',
 		'charset' 				=> 'UTF-8',
-		'enable_hooks' 			=> FALSE,
 		'subclass_prefix' 		=> 'EE_',
-		'permitted_uri_chars' 	=> 'a-z 0-9~%.:_\-',
-		'enable_query_strings'	=> FALSE,
-		'directory_trigger' 	=> 'D',
-		'controller_trigger' 	=> 'C',
-		'function_trigger' 		=> 'M',
 		'log_threshold' 		=> 0,
 		'log_path' 				=> '',
 		'log_date_format' 		=> 'Y-m-d H:i:s',
 		'cache_path' 			=> '',
 		'encryption_key' 		=> '',
-		'cookie_prefix'			=> '',
-		'global_xss_filtering'	=> FALSE,
-		'csrf_protection' 		=> FALSE,
-		'compress_output' 		=> FALSE,
-		'time_reference' 		=> 'local',
 		'rewrite_short_tags' 	=> TRUE			// Enabled for cleaner view files and compatibility
 	);
 
@@ -2832,6 +2817,11 @@ PAPAYA;
 
 		// any unanticipated keys that aren't in our template?
 		$extra_config = '';
+
+		// Remove site_label from $config since we don't want
+		// it showing up in the config file.
+		if ($config['site_label'])
+				unset($config['site_label']);
 
 		foreach ($config as $key => $val)
 		{
