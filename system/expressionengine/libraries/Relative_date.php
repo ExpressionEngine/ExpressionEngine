@@ -239,6 +239,11 @@ class Relative_date_object {
 
 		}
 
+		if ($rounded)
+		{
+			$str = $this->about.' '.$str;
+		}
+
 		if ($this->_timestamp <= $this->_reference)
 		{
 			$str = str_replace('%s', $str, $this->past);
@@ -246,11 +251,6 @@ class Relative_date_object {
 		else
 		{
 			$str = str_replace('%s', $str, $this->future);
-		}
-
-		if ($rounded)
-		{
-			$str = $this->about.' '.$str;
 		}
 
 		return $str;
