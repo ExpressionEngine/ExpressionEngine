@@ -153,60 +153,20 @@ class Relative_date_object {
 	 */
 	public function render($depth = 1)
 	{
-		$units = array();
 		$rounded = FALSE;
+		$units = $this->_units;
 
-		// Check to see if we need to round the smallest displayed unit
-		if (is_numeric($depth) AND $depth > 0)
-		{
-			$non_zero_units = array();
-			foreach ($this->_calculated_units as $key)
-			{
-				if ($this->_units[$key])
-				{
-					$non_zero_units[] = $key;
-				}
-			}
-
-			// Rounding needed
-			if ($depth < count($non_zero_units))
-			{
-				$round_to = $non_zero_units[$depth - 1];
-
-				// These are the number of seconds at which we will round up
-				// based on the delta from the calculation
-				$delta_thresholds = array(
-					'years'   => 29808000,	// 345 days
-					'months'  => 2160000,	// 25 days
-					'weeks'   => 518400,	// 6 days
-					'days'    => 79200,		// 22 hours
-					'hours'   => 2700,		// 45 minutes
-					'minutes' => 45,		// 45 seconds
-				);
-
-				if ($this->_deltas[$round_to] >= $delta_thresholds[$round_to])
-				{
-					$this->_units[$round_to]++;
-				}
-
-				$rounded = TRUE;
-			}
-		}
-
-		// Generate the string from years to seconds
+		$non_zero_units = array();
 		foreach ($this->_calculated_units as $key)
 		{
-			if ($this->_units[$key] == 1)
+			if ($units[$key] > 0)
 			{
-				$units[] = $this->singular.' '.lang(rtrim($key, 's'));
-			}
-			elseif ($this->_units[$key] > 1)
-			{
-				$units[] = $this->_units[$key].' '.lang($key);
+				$non_zero_units[] = $key;
 			}
 		}
 
-		if (empty($units))
+		// Check to see if we have a "less than" case
+		if (empty($non_zero_units))
 		{
 			$unit = end($this->_calculated_units);
 			reset($this->_calculated_units);
@@ -217,33 +177,69 @@ class Relative_date_object {
 		{
 			if (is_numeric($depth) AND $depth > 0)
 			{
-				$units = array_slice($units, 0, $depth);
+				// Check to see if we need to round the smallest displayed unit
+				if ($depth < count($non_zero_units))
+				{
+					$round_to = $non_zero_units[$depth - 1];
+
+					// These are the number of seconds at which we will round up
+					// based on the delta from the calculation
+					$delta_thresholds = array(
+						'years'   => 29808000,	// 345 days
+						'months'  => 2160000,	// 25 days
+						'weeks'   => 518400,	// 6 days
+						'days'    => 79200,		// 22 hours
+						'hours'   => 2700,		// 45 minutes
+						'minutes' => 45,		// 45 seconds
+					);
+
+					if ($this->_deltas[$round_to] >= $delta_thresholds[$round_to])
+					{
+						$units[$round_to]++;
+						$rounded = TRUE;
+					}
+				}
+
+				$non_zero_units = array_slice($non_zero_units, 0, $depth);
+			}
+
+			$display_units = array();
+			foreach ($non_zero_units as $key)
+			{
+				if ($units[$key] == 1)
+				{
+					$display_units[] = $this->singular.' '.lang(rtrim($key, 's'));
+				}
+				elseif ($units[$key] > 1)
+				{
+					$display_units[] = $units[$key].' '.lang($key);
+				}
 			}
 
 			// If we have more than one unit on display add an 'and' in for
 			// grammar's sake
-			if (count($units) > 1)
+			if (count($display_units) > 1)
 			{
-				$i = count($units) - 1;
-				$units[$i] = lang('and').' '.$units[$i];
+				$i = count($display_units) - 1;
+				$display_units[$i] = lang('and').' '.$display_units[$i];
 			}
 
 			// Add commas if we have more than 2 units to display
-			if (count($units) > 2)
+			if (count($display_units) > 2)
 			{
-				$str = implode(', ', $units);
+				$str = implode(', ', $display_units);
 			}
 			else
 			{
-				$str = implode(' ', $units);
+				$str = implode(' ', $display_units);
 			}
 
+			if ($rounded)
+			{
+				$str = $this->about.' '.$str;
+			}
 		}
 
-		if ($rounded)
-		{
-			$str = $this->about.' '.$str;
-		}
 
 		if ($this->_timestamp <= $this->_reference)
 		{
