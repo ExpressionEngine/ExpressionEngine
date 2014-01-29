@@ -80,6 +80,19 @@ class Localize {
 			return '';
 		}
 
+		// d-m-y formatted dates can be ambiguous, as such we will reformat
+		// them to m/d/y here. I'd much rather use DateTime::createFromFormat
+		// but that was introduced in PHP 5.3.0
+		$date_format = ee()->session->userdata('date_format', ee()->config->item('date_format'));
+		if (
+			(strpos($date_format, '-%y') !== FALSE) AND
+			(preg_match('/^\d{1,2}-\d{1,2}-\d{2,4}/', $human_string) == 1)
+		   )
+		{
+			list($day, $month, $year) = explode('-', $human_string);
+			$human_string = $month.'/'.$day.'/'.$year;
+		}
+
 		$dt = $this->_datetime($human_string, $localized);
 
 		return ($dt) ? $dt->format('U') : FALSE;
