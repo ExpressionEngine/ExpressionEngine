@@ -217,120 +217,14 @@ abstract class Model {
 		{
 			$errors->addErrors($gateway->validate());
 		}
-
-		foreach($cascade as $model_name)
+		
+		$cascade_errors = $this->cascade($cascade, 'validate');
+		foreach($cascade_errors as $cascade_error)
 		{
-			if (is_array($model_name))
-			{
-				$this->cascadeValidate($errors, $model_name);
-			}
-			else
-			{
-				$method = 'get' . $model_name;
-				$models = $this->$method();
-
-				foreach ($models as $model)
-				{
-					$model->validate();
-				}
-			}
+			$errors->addErrors($cascade_error);
 		}
 
 		return $errors;
-	}
-
-	public function cascade($cascade, $method)
-	{
-		$returned = array();
-		foreach($cascade as $model_name)
-		{
-			if (is_array($model_name))
-			{
-				$this->cascadeValidate($errors, $model_name);
-			}
-			else
-			{
-				$method = 'get' . $model_name;
-				$models = $this->$method();
-
-				foreach ($models as $model)
-				{
-					$model->validate();
-				}
-			}
-		}
-	}
-
-	public function cascadeRecursive($cascade, $method)
-	{
-		$result = array();
-		foreach ($relationships as $from_relationship => $to_relationship)
-		{
-			$method = 'get' . $from_model_name;
-			$models = $this->$method();
-
-			foreach ($models as $model)
-			{
-				if (is_array($to_relationship))
-				{
-					$
-					$return = array_merge($return, $model->cascadeRecursive($to_relationship));
-				}
-				else
-				{
-					$relationship_method = 'get' . $to_relationship;
-					$to_models = $model->$relationship_method();
-
-					foreach ($to_models as $to_model)
-					{
-						$return[] = $to_model->$method();
-					}
-				}
-			}
-		}
-	}
-
-	/**
-	 * Cascade validation
-	 *
-	 * Cascades validation into related classes.  Gets the array of a cascaded
-	 * relation and recursively walks through that, validating.
-	 *
-	 * @param	Errors	$validation	The validation object to which cascaded
-	 * 				errors should be added.
-	 * @param	string[]	$model_names	The names of the models that you
-	 * 				wish to cascade into in array format.  The array must
-	 * 				be formatted in the following way:
-	 * 					array('Model Related to $this' => 'Model related to <- that model')
-	 *
-	 * @return	Errors	A class containing the errors resulting from validation.
-	 *
-	 */
-	protected function cascadeValidate($errors, $relationships)
-	{
-		foreach ($relationships as $from_relationship => $to_relationship)
-		{
-			$method = 'get' . $from_model_name;
-			$models = $this->$method();
-
-			foreach ($models as $model)
-			{
-				if (is_array($to_relationship))
-				{
-					$model->cascadeValidate($errors, $to_relationship);
-				}
-				else
-				{
-					$to_method = 'get' . $to_relationship;
-					$to_models = $model->$to_method();
-
-					foreach ($to_models as $to_model)
-					{
-						$errors->addErrors($to_model->validate());
-					}
-				}
-			}
-		}
 	}
 
 	/**
@@ -361,67 +255,8 @@ abstract class Model {
 			$gateway->save();
 		}
 
-		// Handle Cascade
-		foreach($cascade as $model_name)
-		{
-			if (is_array($model_name))
-			{
-				$this->cascadeSave($model_name);
-			}
-			else
-			{
-				$method = 'get' . $model_name;
-				$models = $this->$method();
-
-				foreach ($models as $model)
-				{
-					$model->save();
-				}
-			}
-		}
+		$this->cascade($cascade, 'save');
 	}
-
-	/**
-	 * Cascade save
- 	 *
-	 * Cascades saving through related Models.  Works the same as
-	 * Model::cascadeValidate(), but doesn't return anything.
-	 *
-	 * @param	string[]	$model_names	An array of Model names to be saved
-	 * 				in the format of array('from_model' => 'to_model').
-	 *
- 	 * @return	void
-	 *
-	 * @throws	Exception	If any of the related models fails to validate
-	 * 				it will throw an exception.
-	 */
-	protected function cascadeSave($model_names)
-	{
-		foreach ($model_names as $from_model_name => $to_model_name)
-		{
-			$method = 'get' . $from_model_name;
-			$models = $this->$method();
-
-			foreach ($models as $model)
-			{
-				if (is_array($to_model_name))
-				{
-					$model->cascadeSave($to_model_name);
-				}
-				else
-				{
-					$to_method = 'get' . $to_model_name;
-					$to_models = $model->$to_method();
-
-					foreach ($to_models as $to_model)
-					{
-						$to_model->save();
-					}
-				}
-			}
-		}
-	}
-
 
 	/**
 	 * Delete this model.
@@ -438,55 +273,8 @@ abstract class Model {
 		{
 			$gateway->delete();
 		}
-
-		// Handle Cascade
-		foreach($cascade as $model_name)
-		{
-			if (is_array($model_name))
-			{
-				$this->cascadeSave($model_name);
-			}
-			else
-			{
-				$method = 'get' . $model_name;
-				$models = $this->$method();
-
-				foreach ($models as $model)
-				{
-					$model->save();
-				}
-			}
-		}
-	}
-
-	/**
-	 *
-	 */
-	protected function cascadeDelete($model_names)
-	{
-		foreach ($model_names as $from_model_name => $to_model_name)
-		{
-			$method = 'get' . $from_model_name;
-			$models = $this->$method();
-
-			foreach ($models as $model)
-			{
-				if (is_array($to_model_name))
-				{
-					$model->cascadeDelete($to_model_name);
-				}
-				else
-				{
-					$to_method = 'get' . $to_model_name;
-					$to_models = $model->$to_method();
-
-					foreach ($to_models as $to_model)
-					{
-						$to_model->delete();
-					}
-				}
-			}
-		}
+		
+		$this->cascade($cascade, 'delete');
 	}
 
 	protected function map()
@@ -519,6 +307,64 @@ abstract class Model {
 				}
 			}
 		}
+	}
+
+	/**
+	 *
+	 * 		'Channel',
+	 *		array('Member' => array('MemberGroup'=>'Members')),
+	 * 		array('Category' => 'CategoryGroup')
+	 */
+	protected function cascade($cascade, $method)
+	{
+		$result = array();
+		foreach($cascade as $model_name)
+		{
+			if (is_array($model_name))
+			{
+				$result = array_merge($result, $this->cascadeRecursive($model_name, $method));
+			}
+			else
+			{
+				$relationship_method = 'get' . $model_name;
+				$models = $this->$relationship_method();
+
+				foreach ($models as $model)
+				{
+					$result[] = $model->$method();
+				}
+			}
+		}
+		return $result;
+	}
+
+	protected function cascadeRecursive($cascade, $method)
+	{
+		$result = array();
+		foreach ($relationships as $from_relationship => $to_relationship)
+		{
+			$method = 'get' . $from_model_name;
+			$models = $this->$method();
+
+			foreach ($models as $model)
+			{
+				if (is_array($to_relationship))
+				{
+					$result = array_merge($result, $model->cascadeRecursive($to_relationship, $method));
+				}
+				else
+				{
+					$relationship_method = 'get' . $to_relationship;
+					$to_models = $model->$relationship_method();
+
+					foreach ($to_models as $to_model)
+					{
+						$result[] = $to_model->$method();
+					}
+				}
+			}
+		}
+		return $result;
 	}
 
 	/**
@@ -697,7 +543,18 @@ abstract class Model {
 		$relationship_key = (isset($name) ? $name : $to_model_name);
 		if (array_key_exists($relationship_key, $this->_related_models))
 		{
-			return $this->_related_models[$to_model_name];
+			switch($type)
+			{ 
+				case ModelRelationshipMeta::TYPE_MANY_TO_MANY:
+				case ModelRelationshipMeta::TYPE_ONE_TO_MANY:
+					return $this->_related_models[$to_model_name];
+				case ModelRelationshipMeta::TYPE_MANY_TO_ONE:
+				case ModelRelationshipMeta::TYPE_ONE_TO_ONE:
+					return $this->_related_models[$to_model_name][0];
+				default:
+					throw new \Exception('Unknown type!');
+			}
+
 		}
 
 		// At this point, if we don't have a to_key we'll need to default
@@ -734,7 +591,7 @@ abstract class Model {
 		// Lazy Load
 		// 	Otherwise, if we haven't hit one of the previous cases, then this
 		// 	is a lazy load on an existing model.
-		$query = $this->_dependencies->modelBuilder()->get($to_model_name);
+		$query = $this->_dependencies->getModelBuilder()->get($to_model_name);
 		$query->filter($to_model_name . '.' . $to_key, $this->$this_key);
 
 		if ($type == 'one-to-one' OR $type == 'many-to-one')
