@@ -28,6 +28,8 @@ class ModelBuilder {
 		'CategoryGateway' => '\EllisLab\ExpressionEngine\Model\Gateway\CategoryGateway',
 		'CategoryGroup' => '\EllisLab\ExpressionEngine\Model\Category\CategoryGroup',
 		'CategoryGroupGateway'=> '\EllisLab\ExpressionEngine\Model\Gateway\CategoryGroupGateway',
+		'Status' => '\EllisLab\ExpressionEngine\Model\Status',
+		'StatusGateway' => '\EllisLab\ExpressionEngine\Model\Gateway\StatusGateway',
 		'StatusGroup' => '\EllisLab\ExpressionEngine\Model\StatusGroup',
 		'StatusGroupGateway' => '\EllisLab\ExpressionEngine\Model\Gateway\StatusGroupGateway',
 		'Site' => '\EllisLab\ExpressionEngine\Model\Site',

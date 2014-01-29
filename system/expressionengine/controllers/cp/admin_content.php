@@ -271,15 +271,15 @@ class Admin_content extends CP_Controller {
 		if ( count($templates) > 0)
 		{
 			foreach ($templates as $template)
-			{
-				$vars['live_look_template_options'][$template->template_id] = $template->getGroup()->group_name.'/'.$template->template_name;
+			{	
+				$vars['live_look_template_options'][$template->template_id] = $template->getTemplateGroup()->group_name.'/'.$template->template_name;
 			}
 		}
 
 		// Default status menu
 		$statuses = $this->builder->get('Status')
 			->with('StatusGroup')
-			->filer('Status.group_id', $channel->status_group)
+			->filter('Status.group_id', $channel->status_group)
 			->all();
 
 		// These will always be there, and also need extra processing.
@@ -303,22 +303,23 @@ class Admin_content extends CP_Controller {
 		$vars['deft_category_options'][''] = lang('none');
 
 		$category_group_ids = $channel->cat_group ? explode('|', $channel->cat_group) : array();
-
+		
 		// Needz moar felineness!
 		if (count($category_group_ids))
 		{
 			$categories = $this->builder->get('Category')
 				->with('CategoryGroup')
 				->filter('CategoryGroup.group_id', 'in', $category_group_ids)
-				->sort('CategoryGroup.group_name')
-				->sort('Category.cat_name')
-				->all();
+				->order('CategoryGroup.group_name')
+				->order('Category.cat_name')
+				->all(); 
+
 
 			if (count($categories) > 0)
 			{
 				foreach ($categories as $category)
 				{
-					$vars['deft_category_options'][$category->cat_id] = $category->getCategoryGroup()->group_name . ': ' . $category.cat_name;
+					$vars['deft_category_options'][$category->cat_id] = $category->getCategoryGroup()->group_name . ': ' . $category->cat_name;
 				}
 			}
 		}

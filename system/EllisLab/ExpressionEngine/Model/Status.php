@@ -14,7 +14,7 @@ class Status extends Model {
 		)
 	);
 
-	public function getSatusGroup()
+	public function getStatusGroup()
 	{
 		return $this->manyToOne(
 			'StatusGroup', 'StatusGroup', 'group_id', 'group_id');

@@ -37,7 +37,6 @@ class Query {
 		$this->db = ee()->db; // TODO reset?
 
 		$this->createRoot($model_name);
-
 	}
 
 	protected function createRoot($model_name)
@@ -179,7 +178,7 @@ class Query {
 
 		$table_property = $this->translateProperty($relationship_property);
 
-		if ($operator == 'IN')
+		if (strtolower($operator) == 'in')
 		{
 			$this->db->where_in($table_property, (array) $value);
 		}
@@ -385,7 +384,7 @@ class Query {
 
 		if ( ! method_exists($from_model, $relationship_method))
 		{
-			throw new \Exception('Undefined relationship from ' . $from_model_name . ' to ' . $relationship_name);
+			throw new \Exception('Undefined relationship from ' . $from_model_name . ' to ' . $relationship_name . '.  Could not find ' . $relationship_method . '().');
 		}
 
 		$relationship_meta = $from_model->$relationship_method();
@@ -492,6 +491,13 @@ class Query {
 		}
 	}
 
+
+	public function debug_query()
+	{
+		$query = $this->db->_compile_select();
+		return $query;
+	}
+
 	/**
 	 * Run the query, hydrate the models, and reassemble the relationships
 	 *
@@ -499,10 +505,6 @@ class Query {
 	 */
 	public function all()
 	{
-		//$query = $this->db->_compile_select();
-		//echo $query;
-		//die();
-
 		// Run the query
 		$result_array = $this->db->get()->result_array();
 		$collection = new Collection($this->parseDatabaseResult($result_array));
