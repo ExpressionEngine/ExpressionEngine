@@ -219,6 +219,8 @@ class EE_Channel_data_parser {
 			'convert_curly'	=> FALSE
 		));
 
+		ee()->load->helper('date');
+
 		foreach ($entries as $row)
 		{
 			$tagdata = $orig_tagdata;
