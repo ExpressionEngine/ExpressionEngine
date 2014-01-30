@@ -421,7 +421,6 @@ class EE_Output extends CI_Output {
 			}
 		}
 
-		$EE->load->library('javascript');
 		exit(json_encode($msg));
 	}
 

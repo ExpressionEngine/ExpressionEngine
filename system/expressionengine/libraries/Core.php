@@ -417,10 +417,22 @@ class EE_Core {
 
 		// Show the control panel home page in the event that a
 		// controller class isn't found in the URL
-		if (ee()->router->fetch_class() == '' OR
-			! isset($_GET['S']))
+		if (ee()->router->fetch_class() == ''/* OR
+			! isset($_GET['S'])*/)
 		{
 			ee()->functions->redirect(BASE.AMP.'C=homepage');
+		}
+
+		if (ee()->uri->segment(1) == 'cp')
+		{
+			// new url, restore old style get
+			$get = array_filter(array(
+				'D' => 'cp',
+				'C' => ee()->uri->segment(2),
+				'M' => ee()->uri->segment(3)
+			));
+
+			$_GET = array_merge($get, $_GET);
 		}
 
 

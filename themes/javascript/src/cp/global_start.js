@@ -157,6 +157,7 @@ $(document).ready(function () {
 	EE.cp.zebra_tables();
 	EE.cp.show_hide_sidebar();
 	EE.cp.display_notices();
+	EE.cp.cleanUrls();
 	EE.cp.deprecation_meaning();
 	EE.cp.notepad.init();
 	EE.cp.accessory_toggle();
@@ -195,13 +196,17 @@ $(window).bind('broadcast.setCsrfToken', function(event, data) {
 
 
 // Simple function to deal with base paths tokens
+var sessionIdRegex = /[&?](S=[A-Za-z0-9]+)/;
+
 EE.cp.setBasePath = function(newBase, skipBroadcast /* internal */) {
 
-	var newBase = newBase.replace(/&amp;/g, '&');
+	var newBase = newBase.replace(/&amp;/g, '&'),
+		newBaseS = newBase.match(sessionIdRegex) || ['', ''],
+		oldBaseS = EE.BASE.match(sessionIdRegex) || ['', ''];
 
 	var replaceBase = function(i, value) {
 		if (value) {
-			return value.replace(EE.BASE, newBase);
+			return value.replace(oldBaseS[1], newBaseS[1]);
 		}
 	};
 
@@ -217,7 +222,7 @@ EE.cp.setBasePath = function(newBase, skipBroadcast /* internal */) {
 		window.history.replaceState(
 			null,
 			document.title,
-			window.location.href.replace(EE.BASE, newBase)
+			window.location.href.replace(oldBaseS[1], newBaseS[1])
 		);
 	}
 
@@ -274,6 +279,48 @@ EE.cp.accessory_toggle = function() {
 	});
 };
 
+var urlRegex = /(.*?)[?](.*?&)?(D=cp(?:&C=[^&]+(?:&M=[^&]+)?)?)(?:&(.+))?$/,
+	slashify = /&?[DCM]=/g,
+	lTrimAmp = /^&+/,
+	rTrimAmp = /&+$/,
+	removeEmptySession = /(^|&)S=0(&|$)/;
+
+EE.cp.cleanUrl = function(i, url) {
+	url = url || i; // i exists if coming from jQuery attr callback
+
+	var result = urlRegex.exec(url);
+
+	if ( ! result) {
+		return;
+	}
+
+	// result[1] // index.php
+	// result[2] // S=49204&
+	// result[3] // D=cp&C=foo&M=bar
+	// result[4] // &foobarbaz
+
+	var path   = result[3].replace(slashify, '/'),
+		preQs  = result[2] || '',
+		postQs = result[4] || '',
+		newUrl = result[1] + '?' + path;
+
+	var QS = postQs + '&' + preQs.replace(removeEmptySession, '');
+
+	QS = QS.replace(lTrimAmp, '').replace(rTrimAmp, '');
+
+	if (QS) {
+		newUrl += '?' + QS;
+	}
+
+	return newUrl.replace(rTrimAmp, '');
+};
+
+EE.cp.cleanUrls = function() {
+	$('a').attr('href', EE.cp.cleanUrl);
+	$('form').attr('action', EE.cp.cleanUrl);
+};
+
+
 // Upgrade and developer log notices
 EE.cp.showNoticeBanner = function() {
 	var msgBoxOpen, msgContainer, save_state, setup_hidden;
@@ -303,7 +350,6 @@ EE.cp.showNoticeBanner = function() {
 		setup_hidden();
 	}
 };
-
 
 // Setup Notepad
 EE.cp.notepad = (function () {
@@ -382,7 +428,6 @@ EE.cp.notepad = (function () {
 		}
 	};
 })();
-
 
 // Ajax for control panel search
 EE.cp.control_panel_search = function() {

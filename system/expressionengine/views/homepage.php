@@ -56,7 +56,7 @@
 			</li>
 		<?php endif;?>
 		<?php if ($this->session->userdata['can_admin_templates'] == 'y'):?>
-			<li class="item"><a href="<?=BASE.AMP.'C=design'.AMP.'M=new_template'?>" class="submenu accordion"><?=lang('template')?></a>
+			<li class="item"><a href="#" class="submenu accordion"><?=lang('template')?></a>
 				<ul class="submenu" style="display:none">
 					<?php if (count($cp_menu_items['design']['templates']['edit_templates']) <= 1):?>
 						<li><p><?=$no_templates?></p></li>
@@ -69,16 +69,16 @@
 					<?php endif;?>
 				</ul>
 			</li>
-			<li class="group"><a href="<?=BASE.AMP.'C=design'.AMP.'M=new_template_group'?>"><?=lang('template_group')?></a></li>
+			<li class="group"><a href="<?=cp_url('design/new_template_group')?>"><?=lang('template_group')?></a></li>
 		<?php endif;?>
 		<?php if ($show_page_option):?>
-			<li class="item"><a href="<?=BASE.AMP.'C=content_publish'?>"><?=lang('page')?></a></li>
+			<li class="item"><a href="<?=cp_url('content_publish')?>"><?=lang('page')?></a></li>
 		<?php endif;?>
 		<?php if ($this->session->userdata['can_admin_channels'] == 'y'):?>
-			<li class="group"><a href="<?=BASE.AMP.'C=admin_content'.AMP.'M=channel_add'?>"><?=lang('channel')?></a></li>
+			<li class="group"><a href="<?=cp_url('admin_content/channel_add')?>"><?=lang('channel')?></a></li>
 		<?php endif;?>
 		<?php if ($this->config->item('multiple_sites_enabled') == 'y' && $this->cp->allowed_group('can_admin_sites')):?>
-			<li class="site"><a href="<?=BASE.AMP.'C=sites&M=manage_sites'?>"><?=lang('site')?></a></li>
+			<li class="site"><a href="<?=cp_url('sites/manage_sites')?>"><?=lang('site')?></a></li>
 		<?php endif;?>
 		</ul>
 

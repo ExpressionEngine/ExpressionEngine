@@ -1624,7 +1624,6 @@ class EE_Config Extends CI_Config {
 			'cookie_domain'				=> array('cookie_domain_explanation'),
 			'cookie_prefix'				=> array('cookie_prefix_explain'),
 			'cookie_path'				=> array('cookie_path_explain'),
-			'secure_forms'				=> array('secure_forms_explanation'),
 			'deny_duplicate_data'		=> array('deny_duplicate_data_explanation'),
 			'redirect_submitted_links'	=> array('redirect_submitted_links_explanation'),
 			'require_secure_passwords'	=> array('secure_passwords_explanation'),
