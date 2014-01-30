@@ -739,8 +739,8 @@ class Cp {
 	 * Member access validation
 	 *
 	 * @access	public
-	 * @param	string
-	 * @return	bool
+	 * @param	string  any number of permission names
+	 * @return	bool    TRUE if member has all permissions
 	 */
 	function allowed_group()
 	{
