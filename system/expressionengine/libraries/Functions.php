@@ -355,7 +355,8 @@ class EE_Functions {
 			$location = str_ireplace(array('%0d', '%0a'), '', $location);
 		}
 
-		$location = str_replace('&amp;', '&', $this->insert_action_ids($location));
+		$location = $this->insert_action_ids($location);
+		$location = ee()->uri->reformat($location);
 
 		if (count(ee()->session->flashdata))
 		{
@@ -366,9 +367,7 @@ class EE_Functions {
 				// We want the data that would be available for the next request
 				ee()->session->_age_flashdata();
 
-				ee()->load->library('javascript');
-
-					die(json_encode(ee()->session->flashdata));
+				die(json_encode(ee()->session->flashdata));
 			}
 		}
 
@@ -387,9 +386,12 @@ class EE_Functions {
 				break;
 		}
 
-		if($status_code !== NULL && $status_code >= 300 && $status_code <= 308) {
+		if($status_code !== NULL && $status_code >= 300 && $status_code <= 308)
+		{
 			header($header, TRUE, $status_code);
-		} else {
+		}
+		else
+		{
 			header($header);
 		}
 
