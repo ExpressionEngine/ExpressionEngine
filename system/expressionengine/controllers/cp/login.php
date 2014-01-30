@@ -172,7 +172,7 @@ class Login extends CP_Controller {
 			));
 		}
 
-		$this->functions->redirect($return_path);
+		$this->functions->redirect(ee()->uri->reformat($return_path, $base));
 	}
 
 	// --------------------------------------------------------------------

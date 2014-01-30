@@ -235,7 +235,15 @@ class EE_URI extends CI_URI {
 
 	// --------------------------------------------------------------------
 
-	public function reformat($old)
+	/**
+	 * Reformat our old ugly urls to something a little more elegant.
+	 *
+	 * @access	private
+	 * @param	string  $old   Old ugly cp url
+	 * @param   string  $base  Current base url, to make hte login redirect work
+	 * @return	string  New pretty cp url
+	 */
+	public function reformat($old, $base = BASE)
 	{
 		$new = str_replace(AMP, '&', $old);
 
@@ -245,7 +253,7 @@ class EE_URI extends CI_URI {
 			return $new;
 		}
 
-		$base = str_replace(AMP, '&', BASE);
+		$base = str_replace(AMP, '&', $base);
 
 		// base not found? non-cp url or in the new format already
 		if (strpos($new, $base) !== 0)
