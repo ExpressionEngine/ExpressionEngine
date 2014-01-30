@@ -137,6 +137,7 @@ jQuery(document).ready(function () {
 	EE.cp.zebra_tables();
 	EE.cp.show_hide_sidebar();
 	EE.cp.display_notices();
+	EE.cp.cleanUrls();
 	EE.cp.deprecation_meaning();
 
 
@@ -282,6 +283,49 @@ EE.cp.accessory_toggle = function() {
 		}
 	});
 };
+
+
+var urlRegex = /(.*?)[?](.*?&)?(D=cp(?:&C=[^&]+(?:&M=[^&]+)?)?)(?:&(.+))?$/,
+	slashify = /&?[DCM]=/g,
+	lTrimAmp = /^&+/,
+	rTrimAmp = /&+$/,
+	removeEmptySession = /(^|&)S=0(&|$)/;
+
+EE.cp.cleanUrl = function(i, url) {
+	url = url || i; // i exists if coming from jQuery attr callback
+
+	var result = urlRegex.exec(url);
+
+	if ( ! result) {
+		return;
+	}
+
+	// result[1] // index.php
+	// result[2] // S=49204&
+	// result[3] // D=cp&C=foo&M=bar
+	// result[4] // &foobarbaz
+
+	var path   = result[3].replace(slashify, '/'),
+		preQs  = result[2] || '',
+		postQs = result[4] || '',
+		newUrl = result[1] + '?' + path;
+
+	var QS = postQs + '&' + preQs.replace(removeEmptySession, '');
+
+	QS = QS.replace(lTrimAmp, '').replace(rTrimAmp, '');
+
+	if (QS) {
+		newUrl += '?' + QS;
+	}
+
+	return newUrl.replace(rTrimAmp, '');
+};
+
+EE.cp.cleanUrls = function() {
+	$('a').attr('href', EE.cp.cleanUrl);
+	$('form').attr('action', EE.cp.cleanUrl);
+};
+
 
 // Ajax for control panel search
 EE.cp.control_panel_search = function() {
