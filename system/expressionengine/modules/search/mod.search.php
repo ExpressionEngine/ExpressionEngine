@@ -309,7 +309,6 @@ class Search {
 			).'/'.$this->hash.'/'
 		);
 
-		ee()->security->restore_xid();
 		return ee()->functions->redirect($path);
 	}
 
@@ -1659,7 +1658,6 @@ class Search {
 
 		$data['hidden_fields'] = array(
 			'ACT'	=> ee()->functions->fetch_action_id('Search', 'do_search'),
-			'XID'	=> '',
 			'RES'	=> ee()->TMPL->fetch_param('results'),
 			'meta'	=> $meta
 		);
@@ -1827,7 +1825,6 @@ class Search {
 		$data['class'] = ee()->TMPL->form_class;
 		$data['hidden_fields'] = array(
 			'ACT'	=> ee()->functions->fetch_action_id('Search', 'do_search'),
-			'XID'	=> '',
 			'RES'	=> ee()->TMPL->fetch_param('results'),
 			'meta'	=> $meta
 		);

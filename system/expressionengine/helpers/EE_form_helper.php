@@ -68,14 +68,14 @@ if (REQ == 'CP')
 
 		$form .= ">\n";
 
-		if ($CI->config->item('secure_forms') == 'y')
+		if ( ! bool_config_item('disable_csrf_protection'))
 		{
 			if ( ! is_array($hidden))
 			{
 				$hidden = array();
 			}
 
-			$hidden['XID'] = XID_SECURE_HASH;
+			$hidden['csrf_token'] = CSRF_TOKEN;
 		}
 
 		if (is_array($hidden) AND count($hidden > 0))

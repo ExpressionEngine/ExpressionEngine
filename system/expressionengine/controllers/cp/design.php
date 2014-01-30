@@ -40,7 +40,8 @@ class Design extends CP_Controller {
 		'elapsed_time',
 		'hits',
 		'total_queries',
-		'XID_HASH'
+		'XID_HASH',
+		'csrf_token'
 	);
 
 	/**

@@ -975,17 +975,11 @@ $lang = array(
 "s_session" =>
 "Session ID only",
 
-"secure_forms" =>
-"Process form data in Secure Mode?",
-
 "deny_duplicate_data" =>
 "Deny Duplicate Data?",
 
 "deny_duplicate_data_explanation" =>
 "This option prevents data submitted by users (comments, etc.) from being received if it is an exact duplicate of data that already exists.",
-
-"secure_forms_explanation" =>
-"Prevents automated spamming and multiple accidental submissions.",
 
 "allow_multi_logins" =>
 "Allow multiple log-ins from a single account?",

@@ -86,6 +86,7 @@ class EE_Session {
 
 	public $sess_crypt_key		= '';
 
+	public $cookie_ttl			= '';
 	public $session_length		= '';
 	public $validation_type  	= '';
 
@@ -117,6 +118,8 @@ class EE_Session {
 		ee()->load->library('localize');
 
 		$this->session_length = $this->_setup_session_length();
+
+		$this->cookie_ttl = $this->_setup_cookie_ttl();
 
 		// Set Default Session Values
 		// Set USER-DATA as GUEST until proven otherwise
@@ -397,11 +400,11 @@ class EE_Session {
 		$this->userdata['session_id']	= $this->sdata['session_id'];
 		$this->userdata['fingerprint']	= $this->sdata['fingerprint'];
 		$this->userdata['site_id']		= ee()->config->item('site_id');
-		
-		ee()->input->set_cookie($this->c_session, $this->sdata['session_id'], $this->session_length);	
-		ee()->input->set_cookie($this->c_expire, time()+$this->session_length, $this->session_length);
-		
-		ee()->db->query(ee()->db->insert_string('exp_sessions', $this->sdata));	
+
+		ee()->input->set_cookie($this->c_session, $this->sdata['session_id'], $this->cookie_ttl);
+		ee()->input->set_cookie($this->c_expire, time()+$this->session_length, $this->cookie_ttl);
+
+		ee()->db->query(ee()->db->insert_string('exp_sessions', $this->sdata));
 
 		return $this->sdata['session_id'];
 	}
@@ -411,7 +414,7 @@ class EE_Session {
 	/**
 	 * Delete old sessions if probability is met
 	 *
-	 * By default, the probability is set to 10 percent.
+	 * By default, the probability is set to 5 percent.
 	 * That means sessions will only be deleted one
 	 * out of ten times a page is loaded.
 	 */
@@ -453,6 +456,26 @@ class EE_Session {
 		}
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Lock the control panel
+	 *
+	 * This logs the user out of the cp, but keeps their frontend session
+	 * active. We do this when we trigger the CP idle modal to prevent
+	 * tampering.
+	 */
+	public function lock_cp()
+	{
+		if (ee()->session->userdata('admin_sess') == 0)
+		{
+			return;
+		}
+
+		ee()->db->set('admin_sess', 0)
+			->where('session_id', $this->userdata['session_id'])
+			->update('sessions');
+	}
 
 	// --------------------------------------------------------------------
 
@@ -469,7 +492,7 @@ class EE_Session {
 		}
 
 		ee()->db->where('session_id', $this->userdata['session_id']);
-		ee()->db->delete('sessions');
+		ee()->db->delete(array('sessions', 'security_hashes'));
 
 		// Really should redirect after calling this
 		// method, but if someone doesn't - we're safe
@@ -477,9 +500,9 @@ class EE_Session {
 
 		ee()->remember->delete();
 		ee()->input->delete_cookie($this->c_session);
-		ee()->input->delete_cookie($this->c_expire);	
+		ee()->input->delete_cookie($this->c_expire);
 		ee()->input->delete_cookie($this->c_anon);
-		ee()->input->delete_cookie('tracker'); 
+		ee()->input->delete_cookie('tracker');
 	}
 
 	// --------------------------------------------------------------------
@@ -528,7 +551,7 @@ class EE_Session {
 		if ( ! ee()->input->cookie('last_visit'))
 		{
 			$this->userdata['last_visit'] = ee()->localize->now-($expire*10);
-			ee()->input->set_cookie('last_visit', $this->userdata['last_visit'], $expire);		
+			ee()->input->set_cookie('last_visit', $this->userdata['last_visit'], $expire);
 		}
 		else
 		{
@@ -541,11 +564,11 @@ class EE_Session {
 		if (($this->sdata['last_activity'] + $this->session_length) < ee()->localize->now)
 		{
 			$this->userdata['last_visit'] = $this->sdata['last_activity'];
-			ee()->input->set_cookie('last_visit', $this->userdata['last_visit'], $expire);	
+			ee()->input->set_cookie('last_visit', $this->userdata['last_visit'], $expire);
 		}
 
 		// Update the last activity with each page load
-		ee()->input->set_cookie('last_activity', ee()->localize->now, $expire);			
+		ee()->input->set_cookie('last_activity', ee()->localize->now, $expire);
 	}
 
 	// --------------------------------------------------------------------
@@ -729,8 +752,8 @@ class EE_Session {
 		{
 			if ($query->row('last_activity')  < (ee()->localize->now - $this->session_length))
 			{
-				ee()->db->delete('sessions', array(
-							'session_id' => $this->sdata['session_id']));
+				ee()->db->where('session_id', $this->sdata['session_id']);
+				ee()->db->delete(array('sessions', 'security_hashes'));
 
 				$this->_initialize_session();
 
@@ -945,14 +968,14 @@ class EE_Session {
 		}
 
 		if (REQ == 'PAGE')
-		{		
+		{
 			ee()->input->set_cookie('tracker', serialize($tracker), '0');
 		}
 
 		return $tracker;
 	}
 
-	// --------------------------------------------------------------------	
+	// --------------------------------------------------------------------
 
 	/**
 	 * Update Member session
@@ -963,14 +986,21 @@ class EE_Session {
 
 		$cur_session_id = $this->sdata['session_id'];
 
-		// generate a new session ID if they've remained active during the whole TTL
-		// but only if the session ID is being transported via a cookie, or the
-		// rotation would cause you to have an invalid session in other open windows or tabs
+		// generate a new session ID if they've remained active during the whole
+		// TTL but only if the session ID is being transported via a cookie, or
+		// the rotation would cause you to have an invalid session in other open
+		// windows or tabs. Note that the fingerprint is not affected by a
+		// session id change, so it also works for cs.
 		if ($this->validation != 's' && ($this->sdata['last_activity'] - $this->sdata['sess_start']) > $this->session_length)
 		{
 			$this->sdata['session_id'] = ee()->functions->random();
 			$this->userdata['session_id'] = $this->sdata['session_id'];
 			$this->sdata['sess_start'] = $this->sdata['last_activity'];
+
+			// Security hashes are tied to session ids. Fix them.
+			ee()->db->set('session_id', $this->sdata['session_id'])
+				->where('session_id', $cur_session_id)
+				->update('security_hashes');
 		}
 
 		ee()->db->query(ee()->db->update_string('exp_sessions', $this->sdata, "session_id = '".$cur_session_id."'"));
@@ -978,13 +1008,7 @@ class EE_Session {
 		// Update session ID cookie
 		if ($this->validation != 's')
 		{
-			ee()->input->set_cookie($this->c_session , $this->sdata['session_id'],  $this->session_length);	
-		}
-
-		// If we only require cookies for validation, set admin session.
-		if ($this->validation == 'c'  AND  $this->access_cp == TRUE)
-		{
-			$this->sdata['admin_sess'] = 1;
+			ee()->input->set_cookie($this->c_session , $this->sdata['session_id'],  $this->cookie_ttl);
 		}
 
 		// We'll unset the "last activity" item from the session data array.
@@ -1365,20 +1389,28 @@ class EE_Session {
 	/**
 	 * Setup Session Lengths
 	 *
-	 * This method allows the user to specify session TTLs in the config
-	 * file so no 'hacking' of the class properties are needed.
-	 *
-	 * @return 	void
+	 * @return 	integer Session length in seconds
 	 */
 	protected function _setup_session_length()
 	{
-		$u_item = ee()->config->item('website_session_ttl');
-		$cp_item = ee()->config->item('cp_session_ttl');
-
-		$this->cpan_session_len = ($cp_item !== FALSE) ? $cp_item : $this->cpan_session_len;
-		$this->user_session_len = ($u_item !== FALSE) ? $u_item : $this->user_session_len;
-
 		return (REQ == 'CP') ? $this->cpan_session_len : $this->user_session_len;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Setup Session Cookie Timeout
+	 *
+	 * @return 	int Cookie timeout in seconds
+	 */
+	protected function _setup_cookie_ttl()
+	{
+		if (bool_config_item('expire_session_on_browser_close'))
+		{
+			return 0;
+		}
+
+		return $this->session_length;
 	}
 
 	// --------------------------------------------------------------------

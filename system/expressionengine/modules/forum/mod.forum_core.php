@@ -6006,14 +6006,6 @@ class Forum_Core extends Forum {
 			return;
 		}
 
-		// Secure forms?
-	  	// If the hash is not found we'll simply reload the page.
-	  	if ( ! ee()->security->secure_forms_check(ee()->input->post('XID')))
-	  	{
-			ee()->functions->redirect(ee()->functions->fetch_current_uri());
-			exit;
-	  	}
-
 		$announcement = 'n';
 
 		if (ee()->input->get_post('announcement') == 'y')
@@ -9643,9 +9635,6 @@ class Forum_Core extends Forum {
 			'redirect'	=> $this->forum_path('search_results/'.$search_id),
 			'link'		=> array($this->forum_path('search_results/'.$search_id), $this->fetch_pref('forum_name'))
 		 );
-
-		// Allow back button use for searches
-		ee()->security->restore_xid();
 
 		return ee()->output->show_message($data);
 	}

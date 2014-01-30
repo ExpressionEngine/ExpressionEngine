@@ -173,9 +173,8 @@ class EE_Schema {
 			date int(10) unsigned NOT NULL,
 			session_id varchar(40) default '0' NOT NULL,
 			hash varchar(40) NOT NULL,
-			used tinyint(1) unsigned DEFAULT '0' NOT NULL,
 			PRIMARY KEY `hash_id` (`hash_id`),
-			KEY `hash` (`hash`)
+			KEY `session_id` (`session_id`)
 		)";
 
 		// CAPTCHA data

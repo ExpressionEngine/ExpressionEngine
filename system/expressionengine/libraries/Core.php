@@ -138,7 +138,7 @@ class EE_Core {
 		{
 			$cookie_prefix = ee()->config->item('cookie_prefix');
 			$cookie_path  = ee()->config->item('cookie_path');
-			$cookie_domain =  ee()->config->item('cookie_domain');		
+			$cookie_domain =  ee()->config->item('cookie_domain');
 			$cookie_httponly = ee()->config->item('cookie_httponly');
 
 			if (! empty($last_site_id) && is_numeric($last_site_id) && $last_site_id != ee()->config->item('site_id'))
@@ -148,7 +148,7 @@ class EE_Core {
 
 			ee()->config->cp_cookie_prefix = $cookie_prefix;
 			ee()->config->cp_cookie_path  = $cookie_path;
-			ee()->config->cp_cookie_domain =  $cookie_domain;	
+			ee()->config->cp_cookie_domain =  $cookie_domain;
 			ee()->config->cp_cookie_httponly = $cookie_httponly;
 		}
 
@@ -162,6 +162,12 @@ class EE_Core {
 		{
 			ee()->config->set_item('index_page', ee()->config->item('site_index'));
 		}
+
+		// Backwards compatibility for the removed secure forms setting.
+		// Developers are still checking against this key, so we'll wait some
+		// time before removing it.
+		$secure_forms = (bool_config_item('disable_csrf_protection')) ? 'n' : 'y';
+		ee()->config->set_item('secure_forms', $secure_forms);
 
 		// Set the path to the "themes" folder
 		if (ee()->config->item('theme_folder_path') !== FALSE &&
@@ -724,7 +730,6 @@ class EE_Core {
 				ee()->db->delete('throttle');
 			}
 
-			ee()->functions->clear_spam_hashes();
 			ee()->functions->clear_caching('all');
 		}
 	}
@@ -744,18 +749,21 @@ class EE_Core {
 	final public function process_secure_forms($flags = EE_Security::CSRF_STRICT)
 	{
 		// Secure forms stuff
-		if( ! ee()->security->have_valid_xid($flags))
+		if ( ! ee()->security->have_valid_xid($flags))
 		{
+			ee()->output->set_status_header(403);
+
 			if (REQ == 'CP')
 			{
-				$this->_somebody_set_us_up_the_base();
-				ee()->session->set_flashdata('message_failure', lang('invalid_action'));
-				ee()->functions->redirect(BASE);
+				if (AJAX_REQUEST)
+				{
+					header('X-EE-Broadcast: modal');
+				}
+
+				show_error(lang('csrf_token_expired'));
 			}
-			else
-			{
-				ee()->output->show_user_error('general', array(lang('invalid_action')));
-			}
+
+			ee()->output->show_user_error('general', array(lang('csrf_token_expired')));
 		}
 	}
 }

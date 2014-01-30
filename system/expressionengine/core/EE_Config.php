@@ -465,7 +465,6 @@ class EE_Config Extends CI_Config {
 			'cp_theme',
 			'email_module_captchas',
 			'log_search_terms',
-			'secure_forms',
 			'deny_duplicate_data',
 			'redirect_submitted_links',
 			'enable_censoring',
