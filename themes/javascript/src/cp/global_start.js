@@ -157,6 +157,7 @@ $(document).ready(function () {
 	EE.cp.zebra_tables();
 	EE.cp.show_hide_sidebar();
 	EE.cp.display_notices();
+	EE.cp.cleanUrls();
 	EE.cp.deprecation_meaning();
 	EE.cp.notepad.init();
 	EE.cp.accessory_toggle();
@@ -195,13 +196,17 @@ $(window).bind('broadcast.setCsrfToken', function(event, data) {
 
 
 // Simple function to deal with base paths tokens
+var sessionIdRegex = /[&?](S=[A-Za-z0-9]+)/;
+
 EE.cp.setBasePath = function(newBase, skipBroadcast /* internal */) {
 
-	var newBase = newBase.replace(/&amp;/g, '&');
+	var newBase = newBase.replace(/&amp;/g, '&'),
+		newBaseS = newBase.match(sessionIdRegex) || ['', ''],
+		oldBaseS = EE.BASE.match(sessionIdRegex) || ['', ''];
 
 	var replaceBase = function(i, value) {
 		if (value) {
-			return value.replace(EE.BASE, newBase);
+			return value.replace(oldBaseS[1], newBaseS[1]);
 		}
 	};
 
@@ -217,7 +222,7 @@ EE.cp.setBasePath = function(newBase, skipBroadcast /* internal */) {
 		window.history.replaceState(
 			null,
 			document.title,
-			window.location.href.replace(EE.BASE, newBase)
+			window.location.href.replace(oldBaseS[1], newBaseS[1])
 		);
 	}
 
@@ -274,6 +279,48 @@ EE.cp.accessory_toggle = function() {
 	});
 };
 
+var urlRegex = /(.*?)[?](.*?&)?(D=cp(?:&C=[^&]+(?:&M=[^&]+)?)?)(?:&(.+))?$/,
+	slashify = /&?[DCM]=/g,
+	lTrimAmp = /^&+/,
+	rTrimAmp = /&+$/,
+	removeEmptySession = /(^|&)S=0(&|$)/;
+
+EE.cp.cleanUrl = function(i, url) {
+	url = url || i; // i exists if coming from jQuery attr callback
+
+	var result = urlRegex.exec(url);
+
+	if ( ! result) {
+		return;
+	}
+
+	// result[1] // index.php
+	// result[2] // S=49204&
+	// result[3] // D=cp&C=foo&M=bar
+	// result[4] // &foobarbaz
+
+	var path   = result[3].replace(slashify, '/'),
+		preQs  = result[2] || '',
+		postQs = result[4] || '',
+		newUrl = result[1] + '?' + path;
+
+	var QS = postQs + '&' + preQs.replace(removeEmptySession, '');
+
+	QS = QS.replace(lTrimAmp, '').replace(rTrimAmp, '');
+
+	if (QS) {
+		newUrl += '?' + QS;
+	}
+
+	return newUrl.replace(rTrimAmp, '');
+};
+
+EE.cp.cleanUrls = function() {
+	$('a').attr('href', EE.cp.cleanUrl);
+	$('form').attr('action', EE.cp.cleanUrl);
+};
+
+
 // Upgrade and developer log notices
 EE.cp.showNoticeBanner = function() {
 	var msgBoxOpen, msgContainer, save_state, setup_hidden;
@@ -303,7 +350,6 @@ EE.cp.showNoticeBanner = function() {
 		setup_hidden();
 	}
 };
-
 
 // Setup Notepad
 EE.cp.notepad = (function () {
@@ -382,7 +428,6 @@ EE.cp.notepad = (function () {
 		}
 	};
 })();
-
 
 // Ajax for control panel search
 EE.cp.control_panel_search = function() {
@@ -617,8 +662,8 @@ EE.cp.broadcastEvents = (function() {
 
 	// Define our time limits:
 	var TICK_TIME          = 5 * 1000,			// Check state every 5 seconds
-		FOCUSED_IDLE_LIMIT = 30 * 60 * 1000,	// 30 minutes: time before modal if window focused
-		BLURRED_IDLE_LIMIT = 45 * 60 * 1000,    // 45 minutes: time before modal if no focus
+		FOCUSED_IDLE_LIMIT = 5000, //30 * 60 * 1000,	// 30 minutes: time before modal if window focused
+		BLURRED_IDLE_LIMIT = 3000, //45 * 60 * 1000,    // 45 minutes: time before modal if no focus
 		REFRESH_TIME_LIMIT = 50 * 60 * 1000;	// 50 minutes: refresh if active or remember me
 
 	// Make sure we have our modal available when we need it
