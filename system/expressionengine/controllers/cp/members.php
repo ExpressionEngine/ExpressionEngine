@@ -3051,11 +3051,11 @@ class Members extends CP_Controller {
 		foreach ($custom_fields->result() as $field)
 		{
 			$fields[] = array(
-								'id'	=> $field->m_field_id,
-								'label'	=> $field->m_field_label,
-								'name'	=> $field->m_field_name,
-								'value'	=> $field->m_field_order
-							);
+				'id'	=> $field->m_field_id,
+				'label'	=> $field->m_field_label,
+				'name'	=> $field->m_field_name,
+				'value'	=> $field->m_field_order
+			);
 		}
 
 		$vars['fields'] = $fields;
