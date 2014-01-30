@@ -58,9 +58,9 @@ if ( ! function_exists('form_open'))
 		$form .= '>';
 
 		// CSRF
-		if ($CI->config->item('csrf_protection') === TRUE)
+		if ( ! bool_config_item('disable_csrf_protection'))
 		{
-			$hidden[$CI->security->get_csrf_token_name()] = $CI->security->get_csrf_hash();
+			$hidden['csrf_token'] = CSRF_TOKEN;
 		}
 
 		if (is_array($hidden) AND count($hidden) > 0)

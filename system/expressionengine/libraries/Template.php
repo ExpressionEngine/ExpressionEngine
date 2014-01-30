@@ -2984,6 +2984,16 @@ class EE_Template {
 			$str = str_replace(LD.'cp_url'.RD, '', $str);
 		}
 
+		// {cp_session_id}
+		if (ee()->session->access_cp === TRUE)
+		{
+			$str = str_replace(LD.'cp_session_id'.RD, ee()->session->session_id(), $str);
+		}
+		else
+		{
+			$str = str_replace(LD.'cp_session_id'.RD, '0', $str);
+		}
+
 		// {site_name} {site_url} {site_index} {webmaster_email}
 		$str = str_replace(LD.'site_name'.RD, stripslashes(ee()->config->item('site_name')), $str);
 		$str = str_replace(LD.'site_url'.RD, stripslashes(ee()->config->item('site_url')), $str);

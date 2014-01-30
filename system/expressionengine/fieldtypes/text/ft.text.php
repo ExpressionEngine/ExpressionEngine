@@ -100,7 +100,6 @@ class Text_ft extends EE_Fieldtype {
 
 		$field = array(
 			'name'		=> $this->field_name,
-			'id'		=> $this->field_name,
 			'value'		=> $this->_format_number($data, $type),
 			'dir'		=> $this->settings['field_text_direction'],
 			'field_content_type' => $type

@@ -188,33 +188,17 @@ class Cp {
 			'session_idle'		=> lang('session_idle')
 		);
 
-		/* -------------------------------------------
-		/*	Hidden Configuration Variable
-		/*	- login_reminder => y/n  to turn the CP Login Reminder On or Off.  Default is 'y'
-        /* -------------------------------------------*/
-
-		if (ee()->config->item('login_reminder') != 'n')
-		{
-			$js_lang_keys['session_expiring'] = lang('session_expiring');
-			$js_lang_keys['username'] = lang('username');
-			$js_lang_keys['password'] = lang('password');
-			$js_lang_keys['login'] = lang('login');
-
-			ee()->javascript->set_global(array(
-				'SESS_TIMEOUT'		=> ee()->session->cpan_session_len * 1000,
-				'SESS_TYPE'			=> ee()->config->item('admin_session_type')
-			));
-		}
-
 		ee()->javascript->set_global(array(
 			'BASE'				=> str_replace(AMP, '&', BASE),
-			'XID'				=> XID_SECURE_HASH,
+			'XID'				=> CSRF_TOKEN,
+			'CSRF_TOKEN'		=> CSRF_TOKEN,
 			'PATH_CP_GBL_IMG'	=> PATH_CP_GBL_IMG,
 			'CP_SIDEBAR_STATE'	=> ee()->session->userdata('show_sidebar'),
 			'username'			=> ee()->session->userdata('username'),
 			'router_class'		=> ee()->router->class, // advanced css
 			'lang'				=> $js_lang_keys,
-			'THEME_URL'			=> $this->cp_theme_url
+			'THEME_URL'			=> $this->cp_theme_url,
+			'hasRememberMe'		=> (bool) ee()->remember->exists()
 		));
 
 		// Combo-load the javascript files we need for every request
@@ -720,6 +704,14 @@ class Cp {
 	 */
 	function add_to_head($data)
 	{
+		// Deprecated for scripts. Let's encourage good practices. This will
+		// also let us move jquery in the future.
+		if (strpos($data, '<script') !== FALSE)
+		{
+			ee()->load->library('logger');
+			ee()->logger->deprecated('2.8', 'CP::add_to_foot() for scripts');
+		}
+
 		$this->its_all_in_your_head[] = $data;
 	}
 

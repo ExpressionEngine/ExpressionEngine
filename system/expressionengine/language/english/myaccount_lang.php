@@ -245,14 +245,23 @@ $lang = array(
 'localization' =>
 'Localization Settings',
 
+"date_format" =>
+"Date Formatting",
+
+"time_format" =>
+"Time Formatting",
+
+"24_hour" =>
+"24 Hour",
+
+"12_hour" =>
+"12 Hour with AM/PM",
+
+"include_seconds" =>
+"Include Seconds in the Time Format",
+
 'time_format' =>
 'Time Formatting',
-
-'united_states' =>
-'United States',
-
-'european' =>
-'European',
 
 'your_html_buttons' =>
 'HTML Formatting Buttons',

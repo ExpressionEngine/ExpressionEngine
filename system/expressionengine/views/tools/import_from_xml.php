@@ -38,13 +38,21 @@
 			<td><?=$timezone_menu?></td>
 		</tr>
 		<tr class="odd">
+			<td><?=lang('date_format', 'date_format')?></td>
+			<td><?=form_preference('date_format', $date_format)?></td>
+		</tr>
+		<tr class="even">
 			<td><?=lang('time_format', 'time_format')?></td>
-			<td><?=form_dropdown('time_format', array('us' => lang('united_states'), 'eu' => lang('european')), set_value('time_format'))?></td>
+			<td><?=form_preference('time_format', $time_format)?></td>
+		</tr>
+		<tr class="odd">
+			<td><?=lang('include_seconds', 'include_seconds')?></td>
+			<td><?=form_preference('include_seconds', $include_seconds)?></td>
 		</tr>
 		<tr class="even">
 			<td><?=lang('auto_custom_field', 'auto_custom_field')?></td>
 			<td><?=lang('auto_custom_field_blurb')?><br />
-			<label for="auto_custom_field"><input type="checkbox" name="auto_custom_field" value="y" <?php echo set_checkbox('auto_custom_field', 'y'); ?> />		
+			<label for="auto_custom_field"><input type="checkbox" name="auto_custom_field" value="y" <?php echo set_checkbox('auto_custom_field', 'y'); ?> />
 			<?=lang('auto_custom_field')?></label></td>
 		</tr>
 	</tbody>

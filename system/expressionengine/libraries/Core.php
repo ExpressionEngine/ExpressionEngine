@@ -163,6 +163,12 @@ class EE_Core {
 			ee()->config->set_item('index_page', ee()->config->item('site_index'));
 		}
 
+		// Backwards compatibility for the removed secure forms setting.
+		// Developers are still checking against this key, so we'll wait some
+		// time before removing it.
+		$secure_forms = (bool_config_item('disable_csrf_protection')) ? 'n' : 'y';
+		ee()->config->set_item('secure_forms', $secure_forms);
+
 		// Set the path to the "themes" folder
 		if (ee()->config->item('theme_folder_path') !== FALSE &&
 			ee()->config->item('theme_folder_path') != '')
@@ -523,19 +529,7 @@ class EE_Core {
 	 */
 	private function _somebody_set_us_up_the_base()
 	{
-		$s = 0;
-
-		switch (ee()->config->item('admin_session_type'))
-		{
-			case 's'	:
-				$s = ee()->session->userdata('session_id', 0);
-				break;
-			case 'cs'	:
-				$s = ee()->session->userdata('fingerprint', 0);
-				break;
-		}
-
-		define('BASE', SELF.'?S='.$s.'&amp;D=cp'); // cp url
+		define('BASE', SELF.'?S='.ee()->session->session_id().'&amp;D=cp'); // cp url
 	}
 
 	// ------------------------------------------------------------------------
@@ -748,7 +742,6 @@ class EE_Core {
 				ee()->db->delete('throttle');
 			}
 
-			ee()->functions->clear_spam_hashes();
 			ee()->functions->clear_caching('all');
 		}
 	}
@@ -768,18 +761,21 @@ class EE_Core {
 	final public function process_secure_forms($flags = EE_Security::CSRF_STRICT)
 	{
 		// Secure forms stuff
-		if( ! ee()->security->have_valid_xid($flags))
+		if ( ! ee()->security->have_valid_xid($flags))
 		{
+			ee()->output->set_status_header(403);
+
 			if (REQ == 'CP')
 			{
-				$this->_somebody_set_us_up_the_base();
-				ee()->session->set_flashdata('message_failure', lang('invalid_action'));
-				ee()->functions->redirect(BASE);
+				if (AJAX_REQUEST)
+				{
+					header('X-EE-Broadcast: modal');
+				}
+
+				show_error(lang('csrf_token_expired'));
 			}
-			else
-			{
-				ee()->output->show_user_error('general', array(lang('invalid_action')));
-			}
+
+			ee()->output->show_user_error('general', array(lang('csrf_token_expired')));
 		}
 	}
 }
