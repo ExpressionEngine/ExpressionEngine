@@ -4095,18 +4095,6 @@ class EE_Template {
 	 *
 	 * Finds date variables within tagdata and adds the variable name
 	 * to $this->date_vars
- 	 *
-	 * Finds date variables within tagdata
-	 * 	 array structure:
-	 *	 [name] => Array
-	 *	     (
-	 *	         [name format="%m/%d/%y"] => Array
-	 *	             (
-	 *	                 [0] => %m/%d/%y
-	 *	                 [1] => %m
-	 *	                 [2] => %d
-	 *	                 [3] => %y
-	 *	             )
 	 *
 	 * @access	public
 	 * @param	string	$str	Tag data with possible date tags
@@ -4114,53 +4102,32 @@ class EE_Template {
 	 */
 	public function _match_date_vars($str)
 	{
-		$has_standard  = FALSE;
-		$standard_fail = FALSE;
-
-		$has_relative  = FALSE;
-		$relative_fail = FALSE;
-
-		if ((strpos($str, 'format=') !== FALSE) && (strpos($str, 'timezone=') !== FALSE))
+		if (strpos($str, 'format=') !== FALSE ||
+			strpos($str, 'timezone=') !== FALSE ||
+			strpos($str, ':relative') !== FALSE)
 		{
-			$has_standard = TRUE;
-			if (preg_match_all("/".LD."([\w\-]+)\s+(format|timezone|stop)=[\"'](.*?)[\"']".RD."/", $str, $matches, PREG_SET_ORDER))
+			if (preg_match_all("/".LD."([\w\-]+)\s+(format|timezone)=[\"'](.*?)[\"']".RD."/", $str, $matches, PREG_SET_ORDER))
 			{
-				for ($j = 0, $tot = count($matches); $j < $tot; $j++)
+				foreach ($matches as $match)
 				{
-					$this->date_vars[] = $matches[$j][1];
+					$this->date_vars[] = $match[1];
 				}
 			}
-			else
-			{
-				$standard_fail = TRUE;
-			}
-		}
 
-		if (strpos($str, ':relative') !== FALSE)
-		{
-			$has_relative = TRUE;
 			if (preg_match_all("/".LD."([\w\-]+):relative(.*?)".RD."/", $str, $matches, PREG_SET_ORDER))
 			{
-				for ($j = 0, $tot = count($matches); $j < $tot; $j++)
+				foreach ($matches as $match)
 				{
-					$this->date_vars[] = $matches[$j][1];
+					$this->date_vars[] = $match[1];
 				}
 			}
-			else
-			{
-				$relative_fail = TRUE;
-			}
-		}
 
-		// Make sure we don't try to parse date variables again on further
-		// calls to parse_variables() or parse_variables_row()
-		if (
-			($standard_fail && $relative_fail) OR
-			($standard_fail && ! $has_relative) OR
-			($relative_fail && ! $has_standard)
-		   )
-		{
-			$this->date_vars = FALSE;
+			// Make sure we don't try to parse date variables again on further
+			// calls to parse_variables() or parse_variables_row()
+			if (empty($this->date_vars))
+			{
+				$this->date_vars = FALSE;
+			}
 		}
 	}
 
