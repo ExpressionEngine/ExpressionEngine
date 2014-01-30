@@ -662,8 +662,8 @@ EE.cp.broadcastEvents = (function() {
 
 	// Define our time limits:
 	var TICK_TIME          = 5 * 1000,			// Check state every 5 seconds
-		FOCUSED_IDLE_LIMIT = 5000, //30 * 60 * 1000,	// 30 minutes: time before modal if window focused
-		BLURRED_IDLE_LIMIT = 3000, //45 * 60 * 1000,    // 45 minutes: time before modal if no focus
+		FOCUSED_IDLE_LIMIT = 30 * 60 * 1000,	// 30 minutes: time before modal if window focused
+		BLURRED_IDLE_LIMIT = 45 * 60 * 1000,    // 45 minutes: time before modal if no focus
 		REFRESH_TIME_LIMIT = 50 * 60 * 1000;	// 50 minutes: refresh if active or remember me
 
 	// Make sure we have our modal available when we need it
