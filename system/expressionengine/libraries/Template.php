@@ -4120,7 +4120,7 @@ class EE_Template {
 		{
 			for ($j = 0, $tot = count($matches); $j < $tot; $j++)
 			{
-				$this->date_vars[] = $matches[$j][1];
+				$this->date_vars[] = str_replace(':relative', '', $matches[$j][1]);
 			}
 		}
 		else
