@@ -4114,20 +4114,56 @@ class EE_Template {
 	 */
 	public function _match_date_vars($str)
 	{
-		if ((strpos($str, 'format=') === FALSE) AND (strpos($str, 'timezone=') === FALSE) AND (strpos($str, ':relative') === FALSE)) return;
+		$has_standard  = FALSE;
+		$standard_fail = FALSE;
 
-		if (preg_match_all("/".LD."([\w:\-]+)(\s+(format|timezone)=[\"'](.*?)[\"'])?".RD."/", $str, $matches, PREG_SET_ORDER))
+		$has_relative  = FALSE;
+		$relative_fail = FALSE;
+
+		if ((strpos($str, 'format=') !== FALSE) && (strpos($str, 'timezone=') !== FALSE))
 		{
-			for ($j = 0, $tot = count($matches); $j < $tot; $j++)
+			$has_standard = TRUE;
+			if (preg_match_all("/".LD."([\w\-]+)\s+(format|timezone|stop)=[\"'](.*?)[\"']".RD."/", $str, $matches, PREG_SET_ORDER))
 			{
-				$this->date_vars[] = str_replace(':relative', '', $matches[$j][1]);
+				for ($j = 0, $tot = count($matches); $j < $tot; $j++)
+				{
+					$this->date_vars[] = $matches[$j][1];
+				}
+			}
+			else
+			{
+				$standard_fail = TRUE;
 			}
 		}
-		else
+
+		if (strpos($str, ':relative') !== FALSE)
 		{
-			// make sure we don't try to parse date variables again on further calls to parse_variables() or parse_variables_row()
+			$has_relative = TRUE;
+			if (preg_match_all("/".LD."([\w\-]+):relative(.*?)".RD."/", $str, $matches, PREG_SET_ORDER))
+			{
+				for ($j = 0, $tot = count($matches); $j < $tot; $j++)
+				{
+					$this->date_vars[] = $matches[$j][1];
+				}
+			}
+			else
+			{
+				$relative_fail = TRUE;
+			}
+		}
+
+		// Make sure we don't try to parse date variables again on further
+		// calls to parse_variables() or parse_variables_row()
+		if (
+			($standard_fail && $relative_fail) OR
+			($standard_fail && ! $has_relative) OR
+			($relative_fail && ! $has_standard)
+		   )
+		{
 			$this->date_vars = FALSE;
 		}
+
+		var_dump($this->date_vars);
 	}
 
 	// --------------------------------------------------------------------
