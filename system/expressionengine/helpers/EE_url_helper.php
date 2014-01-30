@@ -44,17 +44,7 @@ function cp_url($path, $qs = '')
 		$qs = http_build_query($qs, AMP);
 	}
 
-	$s = 0;
-
-	switch (ee()->config->item('admin_session_type'))
-	{
-		case 's'	:
-			$s = ee()->session->userdata('session_id', 0);
-			break;
-		case 'cs'	:
-			$s = ee()->session->userdata('fingerprint', 0);
-			break;
-	}
+	$s = ee()->session->session_id();
 
 	if ($s)
 	{
