@@ -1684,7 +1684,7 @@ DOH;
 
 		foreach ($_POST as $key => $val)
 		{
-			if ($key == 'which_field' OR $key == 'XID')
+			if ($key == 'which_field')
 			{
 				continue;
 			}
@@ -1826,7 +1826,7 @@ DOH;
 
 		foreach ($_POST as $key => $val)
 		{
-			if ($key == 'which' OR $key == 'XID')
+			if ($key == 'which')
 			{
 				continue;
 			}

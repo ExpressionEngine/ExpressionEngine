@@ -118,6 +118,9 @@ $lang = array(
 'invalid_action' =>
 'The action you have requested is invalid.',
 
+'csrf_token_expired' =>
+'This form has expired. Please refresh and try again.',
+
 'current_password_required' =>
 'Your current password is required.',
 

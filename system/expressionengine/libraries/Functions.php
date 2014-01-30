@@ -131,7 +131,8 @@ class EE_Functions {
 		if (strtolower($segment) == 'logout')
 		{
 			$qs = (ee()->config->item('force_query_string') == 'y') ? '' : '?';
-			$xid = (ee()->config->item('secure_forms') == 'y') ? AMP.'XID='.XID_SECURE_HASH : '';
+			$xid = bool_config_item('disable_csrf_protection') ? '' : AMP.'csrf_token='.CSRF_TOKEN;
+
 			return $this->fetch_site_index(0, 0).$qs.'ACT='.$this->fetch_action_id('Member', 'member_logout').$xid;
 		}
 		// END Specials
@@ -347,7 +348,8 @@ class EE_Functions {
 			$location = str_ireplace(array('%0d', '%0a'), '', $location);
 		}
 
-		$location = str_replace('&amp;', '&', $this->insert_action_ids($location));
+		$location = $this->insert_action_ids($location);
+		$location = ee()->uri->reformat($location);
 
 		if (count(ee()->session->flashdata))
 		{
@@ -358,9 +360,7 @@ class EE_Functions {
 				// We want the data that would be available for the next request
 				ee()->session->_age_flashdata();
 
-				ee()->load->library('javascript');
-
-					die(json_encode(ee()->session->flashdata));
+				die(json_encode(ee()->session->flashdata));
 			}
 		}
 
@@ -379,9 +379,12 @@ class EE_Functions {
 				break;
 		}
 
-		if($status_code !== NULL && $status_code >= 300 && $status_code <= 308) {
+		if($status_code !== NULL && $status_code >= 300 && $status_code <= 308)
+		{
 			header($header, TRUE, $status_code);
-		} else {
+		}
+		else
+		{
 			header($header);
 		}
 
@@ -420,14 +423,14 @@ class EE_Functions {
 		ee()->load->helper('form');
 
 		$deft = array(
-						'hidden_fields'	=> array(),
-						'action'		=> '',
-						'id'			=> '',
-						'class'			=> '',
-						'secure'		=> TRUE,
-						'enctype' 		=> '',
-						'onsubmit'		=> '',
-					);
+			'hidden_fields'	=> array(),
+			'action'		=> '',
+			'id'			=> '',
+			'class'			=> '',
+			'secure'		=> TRUE,
+			'enctype' 		=> '',
+			'onsubmit'		=> '',
+		);
 
 
 		foreach ($deft as $key => $val)
@@ -441,13 +444,6 @@ class EE_Functions {
 		if (is_array($data['hidden_fields']) && ! isset($data['hidden_fields']['site_id']))
 		{
 			$data['hidden_fields']['site_id'] = ee()->config->item('site_id');
-		}
-
-
-		// Add the CSRF Protection Hash
-		if (ee()->config->item('csrf_protection') == TRUE )
-		{
-			$data['hidden_fields'][ee()->security->get_csrf_token_name()] = ee()->security->get_csrf_hash();
 		}
 
 		// -------------------------------------------
@@ -504,17 +500,8 @@ class EE_Functions {
 
 		if ($data['secure'] == TRUE)
 		{
-			if (ee()->config->item('secure_forms') == 'y')
-			{
-				if ( ! isset($data['hidden_fields']['XID']))
-				{
-					$data['hidden_fields'] = array_merge(array('XID' => '{XID_HASH}'), $data['hidden_fields']);
-				}
-				elseif ($data['hidden_fields']['XID'] == '')
-				{
-					$data['hidden_fields']['XID']  = '{XID_HASH}';
-				}
-			}
+			unset($data['hidden_fields']['XID']);
+			$data['hidden_fields']['csrf_token'] = '{csrf_token}'; // we use the tag instead of the constant to allow caching of the template
 		}
 
 		if (is_array($data['hidden_fields']))
@@ -690,10 +677,13 @@ class EE_Functions {
 	 */
 	function clear_spam_hashes()
 	{
-		if (ee()->config->item('secure_forms') == 'y')
-		{
-			ee()->security->garbage_collect_xids();
-		}
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.8');
+
+		// if (ee()->config->item('secure_forms') == 'y')
+		// {
+		// 	ee()->security->garbage_collect_xids();
+		// }
 	}
 
 	// --------------------------------------------------------------------
@@ -1355,35 +1345,9 @@ class EE_Functions {
 	 */
 	function add_form_security_hash($str)
 	{
-		if (ee()->config->item('secure_forms') == 'y')
-		{
-			if (preg_match_all("/({XID_HASH})/", $str, $matches))
-			{
-				$db_reset = FALSE;
-
-				// Disable DB caching if it's currently set
-
-				if (ee()->db->cache_on == TRUE)
-				{
-					ee()->db->cache_off();
-					$db_reset = TRUE;
-				}
-
-				// Add security hashes
-				$hashes = ee()->security->generate_xid(count($matches[1]), TRUE);
-
-				foreach ($hashes as $hash)
-				{
-					$str = preg_replace("/{XID_HASH}/", $hash, $str, 1);
-				}
-
-				// Re-enable DB caching
-				if ($db_reset == TRUE)
-				{
-					ee()->db->cache_on();
-				}
-			}
-		}
+		// Add security hash. Need to replace the legacy XID one as well.
+		$str = str_replace('{csrf_token}', CSRF_TOKEN, $str);
+		$str = str_replace('{XID_HASH}', CSRF_TOKEN, $str);
 
 		return $str;
 	}

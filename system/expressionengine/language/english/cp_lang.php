@@ -189,9 +189,6 @@ $lang = array(
 // Control Panel
 //----------------------------
 
-'session_expiring' =>
-'Your session has expired. Please log back in to avoid data loss.',
-
 'loading' =>
 'Loading',
 

@@ -732,12 +732,10 @@ class Channel_form_lib
 		// build the form
 
 		$RET = ee()->functions->fetch_current_uri();
-		$XID = ( ! isset($_POST['XID'])) ? '' : $_POST['XID'];
 
 		$hidden_fields = array(
 			'RET'	  				=> $RET,
 			'URI'	  				=> (ee()->uri->uri_string == '') ? 'index' : ee()->uri->uri_string,
-			'XID'	  				=> $XID,
 			'return_url'			=> (isset($_POST['return_url'])) ? $_POST['return_url'] : ee()->TMPL->fetch_param('return'),
 			'author_id'				=> ee()->session->userdata('member_id'),
 			'channel_id'			=> $this->channel('channel_id'),
@@ -947,7 +945,8 @@ class Channel_form_lib
 		{
 			if ($key == 'EE')
 			{
-				$value['XID'] = '{XID_HASH}';
+				$value['XID'] = '{csrf_token}';
+				$value['CSRF_TOKEN'] = '{csrf_token}';
 
 				$this->head .= 'if (typeof EE == "undefined" || ! EE) { '."\n".'var EE = '.json_encode($value).';}'."\n";
 				$this->head .= <<<GRID_FALLBACK
@@ -1813,8 +1812,6 @@ GRID_FALLBACK;
 					$this->entry[$field] = ee()->localize->string_to_timestamp($this->entry($field));
 				}
 			}
-
-			ee()->security->restore_xid();
 
 			ee()->core->generate_page();
 			return;

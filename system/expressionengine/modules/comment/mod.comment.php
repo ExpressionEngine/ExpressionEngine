@@ -1673,14 +1673,12 @@ class Comment {
 		}
 
 		$PRV = (isset($_POST['PRV'])) ? $_POST['PRV'] : ee()->TMPL->fetch_param('preview');
-		$XID = (isset($_POST['XID'])) ? $_POST['XID'] : '';
 
 		$hidden_fields = array(
 			'ACT'	  	=> ee()->functions->fetch_action_id('Comment', 'insert_new_comment'),
 			'RET'	  	=> $RET,
 			'URI'	  	=> (ee()->uri->uri_string == '') ? 'index' : ee()->uri->uri_string,
 			'PRV'	  	=> $PRV,
-			'XID'	  	=> $XID,
 			'entry_id' 	=> $query->row('entry_id')
 		);
 
@@ -2519,13 +2517,6 @@ class Comment {
 
 		$return_link = ( ! stristr($_POST['RET'],'http://') && ! stristr($_POST['RET'],'https://')) ? ee()->functions->create_url($_POST['RET']) : $_POST['RET'];
 
-		// Secure Forms check
-		if (ee()->security->secure_forms_check(ee()->input->post('XID')) == FALSE)
-		{
-			ee()->functions->redirect(stripslashes($return_link));
-		}
-
-
 		//  Insert data
 		$sql = ee()->db->insert_string('exp_comments', $data);
 		ee()->db->query($sql);
@@ -3114,15 +3105,6 @@ class Comment {
 			ee()->output->send_ajax_response(array('error' => $unauthorized));
 		}
 
-		$xid = ee()->input->get_post('XID');
-
-
-		// Secure Forms check - do it early due to amount of further data manipulation before insert
-		if (ee()->security->secure_forms_check($xid) == FALSE)
-		{
-		 	ee()->output->send_ajax_response(array('error' => $unauthorized));
-		}
-
 		$edited_status = (ee()->input->get_post('status') != 'close') ? FALSE : 'c';
 		$edited_comment = ee()->input->get_post('comment');
 		$can_edit = FALSE;
@@ -3183,10 +3165,8 @@ class Comment {
 					// We closed an entry, update our stats
 					$this->_update_comment_stats($entry_id, $channel_id, $author_id);
 
-					// create new security hash and send it back with updated comment.
-
-					$new_hash = $this->_new_hash();
-					ee()->output->send_ajax_response(array('moderated' => ee()->lang->line('closed'), 'XID' => $new_hash));
+					// Send back the updated comment
+					ee()->output->send_ajax_response(array('moderated' => ee()->lang->line('closed')));
 				}
 
 				ee()->load->library('typography');
@@ -3201,11 +3181,8 @@ class Comment {
 					)
 				);
 
-				// create new security hash and send it back with updated comment.
-
-				$new_hash = $this->_new_hash();
-
-				ee()->output->send_ajax_response(array('comment' => $f_comment, 'XID' => $new_hash));
+				// Send back the updated comment
+				ee()->output->send_ajax_response(array('comment' => $f_comment));
 			}
 		}
 
@@ -3259,7 +3236,7 @@ $.fn.CommentEditor = function(options) {
 
 	var view_elements = [OPT.comment_body, OPT.showEditor, OPT.closeComment].join(','),
 		edit_elements = '.editCommentBox',
-		hash = '{XID_HASH}';
+		csrf_token = '{csrf_token}';
 
 	return this.each(function() {
 		var id = this.id.replace('comment_', ''),
@@ -3284,22 +3261,20 @@ $.fn.CommentEditor = function(options) {
 	}
 
 	function closeComment(id) {
-		var data = {status: "close", comment_id: id, XID: hash};
+		var data = {status: "close", comment_id: id, csrf_token: csrf_token};
 
 		$.post(OPT.url, data, function (res) {
 			if (res.error) {
 				return $.error('Could not moderate comment.');
 			}
 
-			hash = res.XID;
-			$('input[name=XID]').val(hash);
 			$('#comment_' + id).hide();
 	   });
 	}
 
 	function saveComment(id) {
 		var content = $("#comment_"+id).find('.editCommentBox'+' textarea').val(),
-			data = {comment: content, comment_id: id, XID: hash};
+			data = {comment: content, comment_id: id, csrf_token: csrf_token};
 
 		$.post(OPT.url, data, function (res) {
 			if (res.error) {
@@ -3307,8 +3282,6 @@ $.fn.CommentEditor = function(options) {
 				return $.error('Could not save comment.');
 			}
 
-			hash = res.XID;
-			$('input[name=XID]').val(hash);
 			$("#comment_"+id).find('.comment_body').html(res.comment);
 			hideEditor(id);
    		});
@@ -3332,43 +3305,6 @@ CMT_EDIT_SCR;
 		}
 
 		exit($script);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * New Hash
-	 *
-	 * Generates a new secure forms CSRF hash for the current user
-	 *
-	 * @access	public
-	 * @param	string
-	 * @return	string
-	 */
-	function _new_hash()
-	{
-		if (ee()->config->item('secure_forms') != 'y')
-		{
-			return FALSE;
-		}
-
-		$db_reset = FALSE;
-
-		if (ee()->db->cache_on == TRUE)
-		{
-			ee()->db->cache_off();
-			$db_reset = TRUE;
-		}
-
-		$hash = ee()->security->generate_xid();
-
-		// Re-enable DB caching
-		if ($db_reset == TRUE)
-		{
-			ee()->db->cache_on();
-		}
-
-		return $hash;
 	}
 
 	// --------------------------------------------------------------------

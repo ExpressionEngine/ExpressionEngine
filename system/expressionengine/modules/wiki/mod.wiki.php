@@ -3600,13 +3600,6 @@ class Wiki {
 
 		$this->edit_limit();
 
-		// Secure Forms check
-		// If the hash is not found we'll simply reload the page.
-		if (ee()->security->secure_forms_check(ee()->input->post('XID')) == FALSE)
-		{
-			$this->redirect('', ee()->input->get_post('title'));
-		}
-
 		/** -------------------------------------
 		/**  Process Edit Form
 		/** -------------------------------------*/
@@ -4199,25 +4192,14 @@ class Wiki {
 	/** -------------------------------------*/
 	function find_page()
 	{
-		// Secure Forms check
-		// If the hash is not found we'll simply reload the page.
-		if (ee()->security->secure_forms_check(ee()->input->post('XID')) == FALSE)
-		{
-			$this->redirect('', 'index');
-		}
-
 		if (ee()->input->post('title') !== FALSE && ee()->input->get_post('title') != '')
 		{
 			$title = $this->valid_title(ee()->security->xss_clean(strip_tags(ee()->input->post('title'))));
 
 			$this->redirect('', $title);
 		}
-		else
-		{
-			$this->redirect('', 'index');
-		}
 
-		exit;
+		$this->redirect('', 'index');
 	}
 
 
@@ -4319,16 +4301,6 @@ class Wiki {
 			'paginate'	=> 'bottom',
 			'switch'	=> ''
 		));
-
-		// Secure Forms check
-		// If the hash is not found we'll simply reload the page.
-
-		if (ee()->config->item('secure_forms') == 'y'
-			AND $search_paginate === FALSE
-			AND ee()->security->secure_forms_check(ee()->input->post('XID')) == FALSE)
-		{
-			$this->redirect('', ee()->input->get_post('title'));
-		}
 
 		/** ----------------------------------------
 		/**  Our Query
@@ -4927,13 +4899,6 @@ class Wiki {
 
 			ee()->lang->loadfile('upload');
 
-			// Secure Forms
-			if (ee()->config->item('secure_forms') == 'y'
-				AND ! ee()->security->secure_forms_check(ee()->input->post('XID')))
-			{
-				$this->redirect($this->special_ns, 'Uploads');
-			}
-
 			/** -------------------------------------
 			/**  Edit Limit
 			/** -------------------------------------*/
@@ -5358,7 +5323,7 @@ class Wiki {
 		// success, so let's make remove this request from the tracker so login redirects don't go here
 		array_shift(ee()->session->tracker);
 		ee()->input->set_cookie('tracker', serialize(ee()->session->tracker), '0');
-		
+
 		fpassthru($fp);
 		@fclose($fp);
 		exit;
