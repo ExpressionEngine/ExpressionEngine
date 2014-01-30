@@ -138,7 +138,7 @@ class EE_Core {
 		{
 			$cookie_prefix = ee()->config->item('cookie_prefix');
 			$cookie_path  = ee()->config->item('cookie_path');
-			$cookie_domain =  ee()->config->item('cookie_domain');		
+			$cookie_domain =  ee()->config->item('cookie_domain');
 			$cookie_httponly = ee()->config->item('cookie_httponly');
 
 			if (! empty($last_site_id) && is_numeric($last_site_id) && $last_site_id != ee()->config->item('site_id'))
@@ -148,7 +148,7 @@ class EE_Core {
 
 			ee()->config->cp_cookie_prefix = $cookie_prefix;
 			ee()->config->cp_cookie_path  = $cookie_path;
-			ee()->config->cp_cookie_domain =  $cookie_domain;	
+			ee()->config->cp_cookie_domain =  $cookie_domain;
 			ee()->config->cp_cookie_httponly = $cookie_httponly;
 		}
 
@@ -411,10 +411,22 @@ class EE_Core {
 
 		// Show the control panel home page in the event that a
 		// controller class isn't found in the URL
-		if (ee()->router->fetch_class() == '' OR
-			! isset($_GET['S']))
+		if (ee()->router->fetch_class() == ''/* OR
+			! isset($_GET['S'])*/)
 		{
 			ee()->functions->redirect(BASE.AMP.'C=homepage');
+		}
+
+		if (ee()->uri->segment(1) == 'cp')
+		{
+			// new url, restore old style get
+			$get = array_filter(array(
+				'D' => 'cp',
+				'C' => ee()->uri->segment(2),
+				'M' => ee()->uri->segment(3)
+			));
+
+			$_GET = array_merge($get, $_GET);
 		}
 
 
