@@ -196,13 +196,17 @@ $(window).bind('broadcast.setCsrfToken', function(event, data) {
 
 
 // Simple function to deal with base paths tokens
+var sessionIdRegex = /[&?](S=[A-Za-z0-9]+)/;
+
 EE.cp.setBasePath = function(newBase, skipBroadcast /* internal */) {
 
-	var newBase = newBase.replace(/&amp;/g, '&');
+	var newBase = newBase.replace(/&amp;/g, '&'),
+		newBaseS = newBase.match(sessionIdRegex) || ['', ''],
+		oldBaseS = EE.BASE.match(sessionIdRegex) || ['', ''];
 
 	var replaceBase = function(i, value) {
 		if (value) {
-			return value.replace(EE.BASE, newBase);
+			return value.replace(oldBaseS[1], newBaseS[1]);
 		}
 	};
 
@@ -218,7 +222,7 @@ EE.cp.setBasePath = function(newBase, skipBroadcast /* internal */) {
 		window.history.replaceState(
 			null,
 			document.title,
-			window.location.href.replace(EE.BASE, newBase)
+			window.location.href.replace(oldBaseS[1], newBaseS[1])
 		);
 	}
 
@@ -658,8 +662,8 @@ EE.cp.broadcastEvents = (function() {
 
 	// Define our time limits:
 	var TICK_TIME          = 5 * 1000,			// Check state every 5 seconds
-		FOCUSED_IDLE_LIMIT = 30 * 60 * 1000,	// 30 minutes: time before modal if window focused
-		BLURRED_IDLE_LIMIT = 45 * 60 * 1000,    // 45 minutes: time before modal if no focus
+		FOCUSED_IDLE_LIMIT = 5000, //30 * 60 * 1000,	// 30 minutes: time before modal if window focused
+		BLURRED_IDLE_LIMIT = 3000, //45 * 60 * 1000,    // 45 minutes: time before modal if no focus
 		REFRESH_TIME_LIMIT = 50 * 60 * 1000;	// 50 minutes: refresh if active or remember me
 
 	// Make sure we have our modal available when we need it
