@@ -4162,8 +4162,6 @@ class EE_Template {
 		{
 			$this->date_vars = FALSE;
 		}
-
-		var_dump($this->date_vars);
 	}
 
 	// --------------------------------------------------------------------
