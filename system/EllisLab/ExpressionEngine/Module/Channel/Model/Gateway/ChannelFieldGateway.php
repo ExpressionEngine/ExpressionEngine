@@ -1,5 +1,5 @@
 <?php
-namespace EllisLab\ExpressionEngine\Module\Model\Gateway;
+namespace EllisLab\ExpressionEngine\Module\Channel\Model\Gateway;
 
 use EllisLab\ExpressionEngine\Model\Gateway\RowDataGateway;
 

@@ -1,6 +1,8 @@
 <?php
 namespace EllisLab\ExpressionEngine\Model\Interfaces\Field;
 
+use EllisLab\ExpressionEngine\Model\Interfaces\Field\FieldContent;
+
 /**
  * Field Structure Interface
  *
@@ -39,7 +41,7 @@ interface FieldStructure {
      * @param FieldContent   $field_content   An object implementing the FieldContent interface
      * @return String   HTML for the entry / edit form
      */
-    public function getPublishForm(FieldContent $field_content);
+    public function getPublishForm($field_content = NULL);
 
     /**
      * Delete settings and all content for this field

@@ -240,7 +240,7 @@ class Admin_content extends CP_Controller {
 		$this->load->model('admin_model');
 
 		$channel_id = $this->input->get_post('channel_id');
-
+	
 		// If we don't have the $channel_id variable, bail out.
 		if ($channel_id == '' OR ! is_numeric($channel_id))
 		{
@@ -366,7 +366,7 @@ class Admin_content extends CP_Controller {
 
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=channel_management', lang('channels'));
 
-		$this->view->cp_page_title = lang('channel_prefs').': '.$vars['channel_title'];
+		$this->view->cp_page_title = lang('channel_prefs').': '.$channel->channel_title;
 		$this->cp->render('admin/channel_edit', $vars);
 	}
 
@@ -417,11 +417,13 @@ class Admin_content extends CP_Controller {
 
 		if ($this->form_validation->old_value('channel_id'))
 		{
+			echo 'Have old channel id.';
 			$this->db->where('channel_id != ', $this->form_validation->old_value('channel_id'));
 		}
 
 		if ($this->db->count_all_results('channels') > 0)
 		{
+			echo 'And still fail.';
 			$this->form_validation->set_message('_valid_channel_name', lang('taken_channel_name'));
 			return FALSE;
 		}
@@ -589,11 +591,10 @@ class Admin_content extends CP_Controller {
 			// We treat as installed/not and delete the whole tab.
 
 			$this->layout->sync_layout($_POST, $_POST['channel_id']);
+			
 
-			$sql = $this->db->update_string('exp_channels', $_POST, 'channel_id='.$this->db->escape_str($_POST['channel_id']));
-
-			$this->db->query($sql);
-			$channel_id = $this->db->escape_str($_POST['channel_id']);
+			$channel = $this->builder->make('Channel', $_POST);
+			$channel->save();
 
 			$success_msg = lang('channel_updated');
 		}
@@ -608,7 +609,7 @@ class Admin_content extends CP_Controller {
 		}
 		else
 		{
-			$this->functions->redirect(BASE.AMP.'C=admin_content'.AMP.'M=channel_edit&channel_id='.$channel_id);
+			$this->functions->redirect(BASE.AMP.'C=admin_content'.AMP.'M=channel_edit&channel_id='.$channel->channel_id);
 		}
 	}
 

@@ -1,8 +1,9 @@
 <?php
-namespace EllisLab\ExpressionEngine\Module\Model;
+namespace EllisLab\ExpressionEngine\Module\Channel\Model;
 
-use EllisLab\ExpresionEngine\Model\Model as Model;
-use EllisLab\ExpressionEngine\Model\Interfaces\Field\FieldStructure as FieldStructure;
+use EllisLab\ExpressionEngine\Model\Model;
+use EllisLab\ExpressionEngine\Model\Interfaces\Field\FieldStructure;
+use EllisLab\ExpressoinEngine\Model\Interfaces\Field\FieldContent;
 
 class ChannelFieldStructure 
 	extends Model 
@@ -58,7 +59,7 @@ class ChannelFieldStructure
      * @param FieldContent   $field_content   An object implementing the FieldContent interface
      * @return String   HTML for the entry / edit form
      */
-    public function getPublishForm(FieldContent $field_content = NULL)
+    public function getPublishForm($field_content = NULL)
 	{}
 
 	
