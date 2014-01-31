@@ -360,6 +360,29 @@ abstract class Model {
 		return $model_xml;
 	}
 
+	public function fromXml($model_xml)
+	{
+		foreach($model_xml->property as $property)
+		{
+			$name = $property['name'];
+			$this->{$name} = $property;
+		}
+
+		foreach($model_xml->related_models as $related_models_xml)
+		{
+			$models = new Collection();
+			foreach($related_models_xml as $related_model_xml)
+			{
+				$model_class = $related_model_xml['name'];
+				$model = new $model_class();
+				$model->fromXml($related_model_xml);
+				$models[] = $model;
+			}
+			$models->save();
+			$this->setRelated($related_models_xml['relationship'], $models);
+		}
+	}
+
 	protected function map()
 	{
 		if (empty($this->_gateways))

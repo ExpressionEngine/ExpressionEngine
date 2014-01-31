@@ -75,26 +75,11 @@ class Skeleton extends CP_Controller {
 
 		$skeleton_xml = SimpleXML($file_contents);
 
-		// Order matters here.
-		$model_names = array(
-			'ChannelFieldGroup', 
-			'StatusGroup', 
-			'CategoryGroup', 
-			'Channel', 
-			'TemplateGroup');
-		foreach($model_names as $model_name)
+		foreach($skeleton_xml->EESiteSkeleton->model as $model_xml)
 		{
-			$models = new Collection();
-			foreach($skeleton_xml->{$model_name} as $model_xml)
-			{
-				$model = $this->builder->make($model_name);
-				$model->fromXml($model_xml);
-				$models[] = $model;
-			}
-			$models->save();
+			$model_class = $model_xml['name'];
+			$model->fromXml($model_xml);
 		}
-
-
 
 		// redirect or show success message
 	}
