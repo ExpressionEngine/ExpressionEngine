@@ -1840,10 +1840,6 @@ class Member_settings extends Member {
 
 		foreach ($_POST as $key => $val)
 		{
-			if ($key == 'XID')
-			{
-				continue;
-			}
 			if ($key == 'group_id')
 			{
 				if ($val != 'any')
@@ -2241,7 +2237,7 @@ UNGA;
 
 		// Clear the tracker cookie since we're not sure where the redirect should go
 		ee()->input->delete_cookie('tracker');
-		
+
 		$return = ee()->functions->form_backtrack();
 
 		if (ee()->config->item('website_session_type') != 'c')

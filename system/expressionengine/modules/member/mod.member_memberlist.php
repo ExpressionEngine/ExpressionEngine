@@ -167,16 +167,6 @@ class Member_memberlist extends Member {
 		}
 
 		/** ---------------------------------
-		/**  Do we have a secure hash?
-		/** ---------------------------------*/
-
-		if (ee()->config->item('secure_forms') == 'y'
-			AND ! ee()->security->secure_forms_check(ee()->input->post('XID')))
-		{
-			return FALSE;
-		}
-
-		/** ---------------------------------
 		/**  Does the recipient accept email?
 		/** ---------------------------------*/
 

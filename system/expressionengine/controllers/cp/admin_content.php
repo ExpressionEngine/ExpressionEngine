@@ -1198,7 +1198,6 @@ class Admin_content extends CP_Controller {
 
 		$this->load->library('table');
 		$this->load->model('category_model');
-		$this->lang->loadfile('admin_content');
 
 		$this->view->cp_page_title = lang('categories');
 
@@ -1264,7 +1263,6 @@ class Admin_content extends CP_Controller {
 
 		$this->load->model('admin_model');
 		$this->load->model('category_model');
-		$this->lang->loadfile('admin_content');
 		$this->load->library('table');
 
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=category_management', lang('categories'));
@@ -1389,8 +1387,6 @@ class Admin_content extends CP_Controller {
 			$this->functions->redirect(BASE.AMP.'C=admin_content'.AMP.'M=category_management');
 		}
 
-		$this->lang->loadfile('admin_content');
-
 		// check for bad characters in group name
 		if ( ! preg_match("#^[a-zA-Z0-9_\-/\s]+$#i", $_POST['group_name']))
 		{
@@ -1497,7 +1493,6 @@ class Admin_content extends CP_Controller {
 			show_error(lang('not_authorized'));
 		}
 
-		$this->lang->loadfile('admin_content');
 		$this->load->model('category_model');
 
 		$this->view->cp_page_title = lang('delete_group');
@@ -1542,7 +1537,6 @@ class Admin_content extends CP_Controller {
 			show_error(lang('not_authorized'));
 		}
 
-		$this->lang->loadfile('admin_content');
 		$this->load->model('category_model');
 
 		$category = $this->category_model->get_category_group_name($group_id);
@@ -1592,7 +1586,6 @@ class Admin_content extends CP_Controller {
 			$this->_restrict_prefs_access();
 		}
 
-		$this->lang->loadfile('admin_content');
 		$this->load->model('category_model');
 		$this->load->library('table');
 		$this->load->library('api');
@@ -1712,7 +1705,6 @@ class Admin_content extends CP_Controller {
 		}
 
 		$this->load->model('category_model');
-		$this->lang->loadfile('admin_content');
 		$this->load->library('form_validation');
 
 		$group_id = $this->input->get_post('group_id');
@@ -1961,7 +1953,6 @@ class Admin_content extends CP_Controller {
 		$zurl .= ($this->input->get_post('cat_group') !== FALSE) ? AMP.'cat_group='.$this->input->get_post('cat_group') : '';
 		$zurl .= ($this->input->get_post('integrated') !== FALSE) ? AMP.'integrated='.$this->input->get_post('integrated') : '';
 
-		$this->lang->loadfile('admin_content');
 		$this->load->model('category_model');
 
 		$this->view->cp_page_title = lang('delete_category');
@@ -2062,7 +2053,6 @@ class Admin_content extends CP_Controller {
 
 		$edit = ($this->input->post('cat_id') == '') ? FALSE : TRUE;
 
-		$this->lang->loadfile('admin_content');
 		$this->load->model('category_model');
 		$this->load->library('api');
 		$this->api->instantiate('channel_categories');
@@ -2463,8 +2453,6 @@ class Admin_content extends CP_Controller {
 			return FALSE;
 		}
 
-		$this->lang->loadfile('admin_content');
-
 		$this->view->cp_page_title = lang('global_sort_order');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=category_editor'.AMP.'group_id='.$group_id, lang('categories'));
 
@@ -2703,7 +2691,6 @@ class Admin_content extends CP_Controller {
 		}
 
 		$this->load->library('table');
-		$this->lang->loadfile('admin_content');
 		$this->load->model('category_model');
 
 		$this->view->cp_page_title = lang('custom_category_fields');
@@ -2783,7 +2770,6 @@ class Admin_content extends CP_Controller {
 
 		$this->load->model('addons_model');
 		$this->load->helper('snippets_helper');
-		$this->lang->loadfile('admin_content');
 		$this->load->library('table');
 
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=category_management', lang('categories'));
@@ -3018,8 +3004,6 @@ class Admin_content extends CP_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->lang->loadfile('admin_content');
-
 		unset($_POST['custom_field_edit']); // submit button
 
 		// Check for required fields
@@ -3171,7 +3155,6 @@ class Admin_content extends CP_Controller {
 			show_error(lang('not_authorized'));
 		}
 
-		$this->lang->loadfile('admin_content');
 		$this->load->model('category_model');
 
 		$this->view->cp_page_title = lang('delete_field');
@@ -3222,7 +3205,6 @@ class Admin_content extends CP_Controller {
 		}
 
 		$this->load->model('category_model');
-		$this->lang->loadfile('admin_content');
 
 		$query = $this->category_model->get_category_label_name($group_id, $field_id);
 
@@ -3258,7 +3240,6 @@ class Admin_content extends CP_Controller {
 
 		$this->load->library('table');
 		$this->load->model('field_model');
-		$this->lang->loadfile('admin_content');
 
 		$this->view->cp_page_title = lang('field_management');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content', lang('admin_content'));
@@ -3291,7 +3272,6 @@ class Admin_content extends CP_Controller {
 		$this->_restrict_prefs_access();
 
 		$this->load->model('status_model');
-		$this->lang->loadfile('admin_content');
 		$this->load->model('field_model');
 
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=field_group_management', lang('field_management'));
@@ -3353,7 +3333,6 @@ class Admin_content extends CP_Controller {
 			show_error(lang('not_authorized'));
 		}
 
-		$this->lang->loadfile('admin_content');
 		$this->load->model('field_model');
 
 		$this->view->cp_page_title = lang('delete_group');
@@ -3400,7 +3379,6 @@ class Admin_content extends CP_Controller {
 		}
 
 		$this->load->model('field_model');
-		$this->lang->loadfile('admin_content');
 
 		// store the name for the delete message
 		$group_name = $this->field_model->get_field_group($group_id);
@@ -3460,8 +3438,6 @@ class Admin_content extends CP_Controller {
 		{
 			return $this->field_group_edit();
 		}
-
-		$this->lang->loadfile('admin_content');
 
 		if ( ! preg_match("#^[a-zA-Z0-9_\-/\s]+$#i", $group_name))
 		{
@@ -3552,7 +3528,6 @@ class Admin_content extends CP_Controller {
 		$vars['message'] = $message; //lang('preferences_updated')
 
 		$this->load->library('table');
-		$this->lang->loadfile('admin_content');
 		$this->load->model('field_model');
 
 		// Fetch the name of the category group
@@ -3610,7 +3585,6 @@ class Admin_content extends CP_Controller {
 		$this->load->helper(array('snippets_helper', 'form'));
 
 		$this->api->instantiate('channel_fields');
-		$this->lang->loadfile('admin_content');
 
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=field_group_management', lang('field_management'));
 
@@ -3803,7 +3777,6 @@ class Admin_content extends CP_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->lang->loadfile('admin_content');
 		$this->load->library('api');
 		$this->api->instantiate('channel_fields');
 
@@ -3888,7 +3861,6 @@ class Admin_content extends CP_Controller {
 			show_error(lang('not_authorized'));
 		}
 
-		$this->lang->loadfile('admin_content');
 		$this->load->model('field_model');
 
 		$this->view->cp_page_title = lang('delete_field');
@@ -3933,7 +3905,6 @@ class Admin_content extends CP_Controller {
 		}
 
 		$this->load->model('field_model');
-		$this->lang->loadfile('admin_content');
 
 		$deleted = $this->field_model->delete_fields($field_id);
 
@@ -3994,7 +3965,6 @@ class Admin_content extends CP_Controller {
 
 		$this->load->library('table');
 		$this->load->model('addons_model');
-		$this->lang->loadfile('admin_content');
 
 		$this->jquery->tablesorter('.mainTable', '{
 			headers: {1: {sorter: false}},
@@ -4090,7 +4060,6 @@ class Admin_content extends CP_Controller {
 
 		$this->load->library('table');
 		$this->load->model('status_model');
-		$this->lang->loadfile('admin_content');
 
 		$this->view->cp_page_title = lang('statuses');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content', lang('admin_content'));
@@ -4124,8 +4093,6 @@ class Admin_content extends CP_Controller {
 	{
 		$this->_restrict_prefs_access();
 
-		$this->load->model('status_model');
-		$this->lang->loadfile('admin_content');
 		$this->load->model('status_model');
 
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=status_group_management', lang('statuses'));
@@ -4189,7 +4156,6 @@ class Admin_content extends CP_Controller {
 			show_error(lang('not_authorized'));
 		}
 
-		$this->lang->loadfile('admin_content');
 		$this->load->model('status_model');
 
 		$this->view->cp_page_title = lang('delete_group');
@@ -4235,7 +4201,6 @@ class Admin_content extends CP_Controller {
 		}
 
 		$this->load->model('status_model');
-		$this->lang->loadfile('admin_content');
 
 		$query = $this->status_model->get_status_group($group_id);
 
@@ -4290,7 +4255,6 @@ class Admin_content extends CP_Controller {
 		}
 
 		$this->load->model('status_model');
-		$this->lang->loadfile('admin_content');
 
 		// Is the group name taken?
 		if ($this->status_model->is_duplicate_status_group_name($group_name, $group_id))
@@ -4361,7 +4325,6 @@ class Admin_content extends CP_Controller {
 		}
 
 		$this->load->model('status_model');
-		$this->lang->loadfile('admin_content');
 		$this->load->library('table');
 
 		$group_name = $this->status_model->get_status_group($group_id);
@@ -4410,7 +4373,6 @@ class Admin_content extends CP_Controller {
 		));
 
 		$this->load->library('table');
-		$this->lang->loadfile('admin_content');
 		$this->load->model('status_model');
 
 		$query = $this->status_model->get_status($status_id);
@@ -4625,7 +4587,6 @@ class Admin_content extends CP_Controller {
 			show_error(lang('not_authorized'));
 		}
 
-		$this->lang->loadfile('admin_content');
 		$this->load->model('status_model');
 
 		$this->view->cp_page_title = lang('delete_status');
@@ -4727,7 +4688,6 @@ class Admin_content extends CP_Controller {
 		$this->_restrict_prefs_access();
 
 		$this->load->library('table');
-		$this->lang->loadfile('admin_content');
 		$this->load->model('admin_model');
 
 		$member_id = (int) $this->input->get_post('member_id');

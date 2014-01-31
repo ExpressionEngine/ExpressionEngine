@@ -45,7 +45,12 @@ if (REQ == 'CP')
 	{
 		$CI =& get_instance();
 
-		$action = ( strpos($action, '://') === FALSE) ? BASE.AMP.$action : $action;
+		if (strpos($action, '://') === FALSE && strpos($action, BASE) !== 0)
+		{
+			$action = BASE.AMP.$action;
+		}
+
+		$action = ee()->uri->reformat($action);
 
 		$form = '<form action="'.$action.'"';
 
@@ -68,14 +73,14 @@ if (REQ == 'CP')
 
 		$form .= ">\n";
 
-		if ($CI->config->item('secure_forms') == 'y')
+		if ( ! bool_config_item('disable_csrf_protection'))
 		{
 			if ( ! is_array($hidden))
 			{
 				$hidden = array();
 			}
 
-			$hidden['XID'] = XID_SECURE_HASH;
+			$hidden['csrf_token'] = CSRF_TOKEN;
 		}
 
 		if (is_array($hidden) AND count($hidden > 0))

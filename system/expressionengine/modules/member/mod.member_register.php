@@ -427,13 +427,6 @@ class Member_register extends Member {
 			ee()->db->query("DELETE FROM exp_captcha WHERE (word='".ee()->db->escape_str($_POST['captcha'])."' AND ip_address = '".ee()->input->ip_address()."') OR date < UNIX_TIMESTAMP()-7200");
 		}
 
-		// Secure Mode Forms?
-		if (ee()->config->item('secure_forms') == 'y'
-			AND ! ee()->security->secure_forms_check(ee()->input->post('XID')))
-		{
-			return ee()->output->show_user_error('general', array(lang('not_authorized')));
-		}
-
 		ee()->load->helper('security');
 
 		// Assign the base query data
