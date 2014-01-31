@@ -14,7 +14,6 @@ class Skeleton extends CP_Controller {
 		parent::__construct();
 
 		$this->cp->set_breadcrumb(BASE.AMP.'C=skeleton', lang('skeleton'));
-
 		require APPPATH . '../EllisLab/ExpressionEngine/Core/Autoloader.php';
 		$loader = new Autoloader();
 		$loader->register();
@@ -24,85 +23,87 @@ class Skeleton extends CP_Controller {
 		// Conveinence links	
 		$this->dependencies = $di;
 		$this->builder = $this->dependencies->getModelBuilder();
-
 	}
 
-	public function export()
+	public function export_skeleton()
 	{
+
 		$skeleton_xml = '
-		<?xml version="1.0" standalone="yes"?>
-		<EESiteSkeleton>';
+		<?xml version="1.0" standalone="yes"?>' . "\n"
+		. $depth . '<EESiteSkeleton>' . "\n";
 
 		$field_groups = $this->builder->get('ChannelFieldGroup')->with('ChannelFieldStructures')->all();
-		$skeleton_xml .= $field_groups->toXml();
+		$skeleton_xml .= $depth . '<ChannelFieldGroup>' . "\n";
+		foreach ($field_groups as $field_group)
+		{
+			$skeleton_xml .= $field_group->toXml('ChannelFieldStructures');
+		}
+		$skeleton_xml .= '</ChannelFieldGroup>' . "\n";
 
 		$status_groups = $this->builder->get('StatusGroup')->with('Statuses')->all();
-		$skeleton_xml .= $status_groups->toXml();
+		$skeleton_xml .= '<StatusGroup>' . "\n";
+		foreach($status_groups as $status_group)
+		{
+			$skeleton_xml .= $status_group->toXml('Statuses');
+		}
+		$skeleton_xml .= '</StatusGroup>' . "\n";
 
 		$category_groups = $this->builder->get('CategoryGroup')->with('Categories')->all();
-		$skeleton_xml .= $category_groups->toXml();
+		$skeleton_xml .= '<CategoryGroup>' . "\n";
+		foreach($category_groups as $category_group)
+		{
+			$skeleton_xml .= $category_group->toXml('Categories');
+		}
+		$skeleton_xml .= '</CategoryGroup>' . "\n";
 
 		$channels = $this->builder->get('Channel')->all();
-		$skeleton_xml .= $channels->toXml();
+		$skeleton_xml .= '<Channel>' . "\n";
+		foreach($channels as $channel)
+		{
+			$skeleton_xml .= $channel->toXml();
+		}
+		$skeleton_xml .= '</Channel>' . "\n";
 
 		$template_groups = $this->builder->get('TemplateGroup')->with('Templates')->all();
-		$skeleton_xml .= $template_groups->toXml();
+		$skeleton_xml .= '<TemplateGroup>' . "\n";
+		foreach($template_groups as $template_group)
+		{
+			$skeleton_xml .= $template_group->toXml('Templates');
+		}
+		$skeleton_xml .= '</TemplateGroup>' . "\n";
 
-		$skeleton_xml = '</EESiteSkeleton>';
+		$skeleton_xml .= '</EESiteSkeleton>' . "\n";
 
-		header('Content-Type: text/xml');
-		header('Content-Disposition: attachment; filename=skeleton.xml');
-		header('Pragma: no-cache');
+	echo '<pre>';	var_dump(htmlentities($skeleton_xml)); echo '</pre>';
+		die();
+
 	}
 
 	public function import()
 	{
+		// show form to get the file
+
 		$skeleton_xml = SimpleXML($file_contents);
 
-		$field_groups = new Collection();
-		foreach($skeleton_xml->field_groups as $field_group_xml)
+		// Order matters here.
+		$model_names = array(
+			'ChannelFieldGroup', 
+			'StatusGroup', 
+			'CategoryGroup', 
+			'Channel', 
+			'TemplateGroup');
+		foreach($model_names as $model_name)
 		{
-			$field_group = $this->builder->make('ChannelFieldGroup');
-			$field_group->fromXml($field_group_xml);
-			$field_groups[] = $field_group;
+			$models = new Collection();
+			foreach($skeleton_xml->{$model_name} as $model_xml)
+			{
+				$model = $this->builder->make($model_name);
+				$model->fromXml($model_xml);
+				$models[] = $model;
+			}
+			$models->save();
 		}
-		$field_groups->save();
 
-		$status_groups = new Collection();
-		foreach($skeleton_xml->status_groups as $status_group_xml)
-		{
-			$status_group = $this->builder->make('StatusGroup');
-			$status_group->fromXml($status_group_xml);
-			$status_groups[] = $status_group;
-		}
-		$status_groups->save();
-
-		$category_groups = new Collection();
-		foreach($skeleton_xml->category_groups as $category_group_xml)
-		{
-			$category_group = $this->builder->make('CategoryGroup');
-			$category_group->fromXml($category_group_xml);
-			$category_groups[] = $category_group;
-		}
-		$category_groups->save();
-
-		$channels = new Collection();
-		foreach($skeleton_xml->channels as $channel_xml)
-		{
-			$channel = $this->builder->make('Channel');
-			$channel->fromXml($channel_xml);
-			$channels[] = $channel;
-		}
-		$channels->save();
-
-		$template_groups = new Collection();
-		foreach($skeleton_xml->template_groups as $template_group_xml)
-		{
-			$template_group = $this->builder->make('TemplateGroup');
-			$template_group->fromXml($template_group_xml);
-			$template_groups[] = $template_group;
-		}
-		$template_groups->save();
 
 
 		// redirect or show success message
