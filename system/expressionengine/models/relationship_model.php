@@ -177,7 +177,7 @@ class Relationship_model extends CI_Model {
 					'relationships_query',
 					$node->field_name(),
 					$entry_ids,
-					$depths,
+					array('longest' => $longest_branch_length, 'shortest' => 0),
 					$db->_compile_select(FALSE, FALSE)
 				);
 			}
