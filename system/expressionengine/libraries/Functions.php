@@ -146,20 +146,28 @@ class EE_Functions {
 
 		// Handle template routes
 		$parts = explode(' ', $segment);
-		$template = array_shift($parts);
-		list($group, $template) = explode('/', $template);
-		if ( ! empty($group) && ! empty($template))
+
+		if (count($parts) > 1)
 		{
-			ee()->load->library('template_router');
-			$route = ee()->template_router->fetch_route($group, $template);
-			if( ! empty($route))
+			$template = array_shift($parts);
+			list($group, $template) = explode('/', $template);
+
+			if ( ! empty($group) && ! empty($template))
 			{
-				$options = array();
-				foreach($parts as $part) {
-					$part = explode('=', $part);
-					$options[$part[0]] = $part[1];
+				ee()->load->library('template_router');
+				$route = ee()->template_router->fetch_route($group, $template);
+
+				if( ! empty($route))
+				{
+					$options = array();
+
+					foreach($parts as $part) {
+						$part = explode('=', $part);
+						$options[$part[0]] = $part[1];
+					}
+
+					$segment = $route->build($options);
 				}
-				$segment = $route->build($options);
 			}
 		}
 

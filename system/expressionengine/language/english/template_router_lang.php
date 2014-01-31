@@ -1,6 +1,7 @@
 <?php 
 
 $lang = array( 
+	'duplicate_route' => 'Route already in use.',
 	'invalid_regex' => 'Invalid regular expression',
 	'invalid_route' => 'Invalid template route: ',
 	'missing_rule' => 'Rule does not exist: ',

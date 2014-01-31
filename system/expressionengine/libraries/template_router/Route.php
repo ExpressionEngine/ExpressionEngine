@@ -136,7 +136,7 @@ class EE_Route {
 		$parsed_route = implode('', $url);
 
 		// anchor the beginning and end, and add optional trailing slash
-		return "^{$parsed_route}\/?$";
+		return "^{$parsed_route}\/?(P[0-9]+)?\/?$";
 	}
 
 	/**
@@ -194,47 +194,62 @@ class EE_Route {
 		$end = strlen($route);
 		$used_names = array();
 
-		while ($pos < $end)
+		if (strpos($route, '{') !== FALSE)
 		{
-			$segment = array();
-			$result = preg_match("/{$this->segment_regex}/ix", $route, $matches, 0, $pos);
-
-			if ($result == 0)
+			while ($pos < $end)
 			{
-				break;
-			}
+				$segment = array();
+				$result = preg_match("/{$this->segment_regex}/ix", $route, $matches, 0, $pos);
 
-			if ( ! empty($matches['static']))
+				if ($result == 0)
+				{
+					break;
+				}
+
+				if ( ! empty($matches['static']))
+				{
+					$segments[] = array('static' => $matches['static']);
+				}
+
+				$segment['variable'] = $matches['variable'];
+
+				if ( ! empty($matches['rules']))
+				{
+					$segment['rules'] = $matches['rules'];
+				}
+
+				if (in_array($segment['variable'], $used_names))
+				{
+					throw new Exception(lang('variable_in_use') . $segment['variable']);
+				}
+
+				$used_names[] = $segment['variable'];
+				$segments[] = $segment;
+				$pos += strlen($matches[0]);
+			}
+			if ($pos < $end)
 			{
-				$segments[] = array('static' => $matches['static']);
+				$remainder = substr($route, $pos);
+
+				if ( (strpos($remainder, '{') === FALSE && strpos($remainder, '}')) === FALSE)
+				{
+					// Using entity so error msg displays correctly
+					$route = str_replace('/', '&#47;', $route);
+					throw new Exception(lang('invalid_route') . $route);
+				}
+
+				$segments[] = array('static' => $remainder);
 			}
-
-			$segment['variable'] = $matches['variable'];
-
-			if ( ! empty($matches['rules']))
-			{
-				$segment['rules'] = $matches['rules'];
-			}
-
-			if (in_array($segment['variable'], $used_names))
-			{
-				throw new Exception(lang('variable_in_use') . $segment['variable']);
-			}
-
-			$used_names[] = $segment['variable'];
-			$segments[] = $segment;
-			$pos += strlen($matches[0]);
 		}
-		if ($pos < $end)
+		else
 		{
-			$remainder = substr($route, $pos);
+			// We just have a static route with no variables
+			$parts = explode("/", $route);
 
-			if ( (strpos($remainder, '{') === FALSE && strpos($remainder, '}')) === FALSE)
+			foreach($parts as $segment)
 			{
-				throw new Exception(lang('invalid_route') . $route);
+				$segments[] = array('static' => $segment . '/');
 			}
-
-			$segments[] = array('static' => $remainder);
 		}
 
 		return $segments;

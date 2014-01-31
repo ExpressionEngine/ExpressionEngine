@@ -3613,7 +3613,7 @@ class Design extends CP_Controller {
 				'access' => $access,
 				'no_auth_bounce' => $row['no_auth_bounce'],
 				'enable_http_auth' => $row['enable_http_auth'],
-				'template_route' => $row['template_route'],
+				'template_route' => $row['route'],
 				'route_required' => $row['route_required']
 			);
 		}
@@ -3846,29 +3846,46 @@ class Design extends CP_Controller {
 					$this->output->send_ajax_response($error->getMessage(), TRUE);
 				}
 				$this->template_model->update_template_ajax($template_id, array('route_parsed' => $template_route->compile()));
-				}
-				elseif ($route = element('template_route', $group))
+			}
+			elseif (isset($group['template_route']))
+			{
+				$route = $group['template_route'];
+				$templates = $this->template_model->fetch(array('route' => $route));
+
+				if(count($templates) > 0 && $templates[0]->template_id !== $template_id)
 				{
-					// Must check whether route segments are required before compiling route
-					if ($required = element('route_required', $group))
+					$this->output->send_ajax_response(lang('duplicate_route'), TRUE);
+				}
+
+				// Must check whether route segments are required before compiling route
+				if ($required = element('route_required', $group))
+				{
+					$required = ($required == 'y');
+				}
+				else
+				{
+					$required = ($query->row('route_required') == 'y');
+				}
+				try
+				{
+					if($route !== "")
 					{
-						$required = ($required == 'y');
+						$template_route = ee()->template_router->create_route($route, $required);
+						$route_parsed = $template_route->compile();
 					}
 					else
 					{
-						$required = ($query->row('route_required') == 'y');
+						$route = NULL;
+						$route_parsed = NULL;
 					}
-					try
-					{
-						$template_route = ee()->template_router->create_route($route, $required);
-					}
-					catch (Exception $error)
-					{
-						$this->output->send_ajax_response($error->getMessage(), TRUE);
-					}
-					$this->template_model->update_template_ajax($template_id, array('route_parsed' => $template_route->compile()));
-					$this->template_model->update_template_ajax($template_id, array('route' => $route));
 				}
+				catch (Exception $error)
+				{
+					$this->output->send_ajax_response($error->getMessage(), TRUE);
+				}
+				$this->template_model->update_template_ajax($template_id, array('route_parsed' => $route_parsed));
+				$this->template_model->update_template_ajax($template_id, array('route' => $route));
+			}
 			else
 			{
 				$this->output->send_ajax_response(lang('unauthorized_access'), TRUE);
