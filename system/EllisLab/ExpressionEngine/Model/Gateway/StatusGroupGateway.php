@@ -11,6 +11,10 @@ class StatusGroupGateway extends RowDataGateway {
 			'site_id' => array(
 				'gateway' => 'SiteGateway',
 				'key' => 'site_id'
+			),
+			'group_id' => array(
+				'gateway' => 'StatusGateway',
+				'key' => 'group_id'
 			)
 		)
 	);

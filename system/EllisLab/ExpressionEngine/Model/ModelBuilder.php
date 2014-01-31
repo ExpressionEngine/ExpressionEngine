@@ -118,6 +118,10 @@ class ModelBuilder {
 	 */
 	public function getRegisteredClass($class_name)
 	{
+		if ( ! array_key_exists($class_name, $this->model_namespace_aliases))
+		{
+			throw new \UnderflowException('Model "' . $class_name . '" has not been registered yet!');
+		}
 		return $this->model_namespace_aliases[$class_name];
 	}
 }
