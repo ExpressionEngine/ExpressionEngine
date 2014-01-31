@@ -260,6 +260,27 @@ abstract class Model {
 	}
 
 	/**
+	 *  Save but always insert so that we can restore from a database backup.
+	 */
+	public function restore()
+	{
+		$this->map();
+		$cascade = func_get_args();
+
+		$errors = call_user_func_array(array($this, 'validate'), $cascade);
+		if ($errors->exist())
+		{
+			throw new \Exception('Model failed to validate on restore call!');
+		}
+
+		foreach($this->_gateways as $gateway)
+		{
+			$gateway->restore();
+		}
+
+		$this->cascade($cascade, 'restore');
+	}
+	/**
 	 * Delete this model.
 	 *
 	 * @return	void
@@ -378,9 +399,10 @@ abstract class Model {
 				$model->fromXml($related_model_xml);
 				$models[] = $model;
 			}
-			$models->save();
 			$this->setRelated($related_models_xml['relationship'], $models);
 		}
+
+		$this->restore();
 	}
 
 	protected function map()
