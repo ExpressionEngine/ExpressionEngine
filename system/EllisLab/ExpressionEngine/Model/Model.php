@@ -218,11 +218,12 @@ abstract class Model {
 			$errors->addErrors($gateway->validate());
 		}
 		
-		$cascade_errors = $this->cascade($cascade, 'validate');
-		foreach($cascade_errors as $cascade_error)
-		{
-			$errors->addErrors($cascade_error);
-		}
+		$this->cascade($cascade, 'validate', 
+			function($cascade_errors) use ($errors)
+			{
+				$errors->addErrors($cascade_errors);
+			}
+		);
 
 		return $errors;
 	}
@@ -315,14 +316,13 @@ abstract class Model {
 	 *		array('Member' => array('MemberGroup'=>'Members')),
 	 * 		array('Category' => 'CategoryGroup')
 	 */
-	protected function cascade($cascade, $method)
+	protected function cascade($cascade, $method, $callback = NULL)
 	{
-		$result = array();
 		foreach($cascade as $model_name)
 		{
 			if (is_array($model_name))
 			{
-				$result = array_merge($result, $this->cascadeRecursive($model_name, $method));
+				$this->cascadeRecursive($model_name, $method, $callback));
 			}
 			else
 			{
@@ -331,16 +331,21 @@ abstract class Model {
 
 				foreach ($models as $model)
 				{
-					$result[] = $model->$method();
+					if ($callback !== NULL)
+					{
+						$callback($model->$method());
+					}
+					else
+					{
+						$model->$method();
+					}
 				}
 			}
 		}
-		return $result;
 	}
 
-	protected function cascadeRecursive($cascade, $method)
+	protected function cascadeRecursive($cascade, $method, $callback = NULL)
 	{
-		$result = array();
 		foreach ($relationships as $from_relationship => $to_relationship)
 		{
 			$method = 'get' . $from_model_name;
@@ -350,7 +355,7 @@ abstract class Model {
 			{
 				if (is_array($to_relationship))
 				{
-					$result = array_merge($result, $model->cascadeRecursive($to_relationship, $method));
+					$model->cascadeRecursive($to_relationship, $method, $callback);
 				}
 				else
 				{
@@ -359,12 +364,18 @@ abstract class Model {
 
 					foreach ($to_models as $to_model)
 					{
-						$result[] = $to_model->$method();
+						if ($callback !== NULL)
+						{
+							$callback($to_model->$method());
+						}
+						else
+						{
+							$to_model->$method();
+						}
 					}
 				}
 			}
 		}
-		return $result;
 	}
 
 	/**
