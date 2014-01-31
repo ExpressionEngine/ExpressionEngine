@@ -11,6 +11,10 @@ class ChannelFieldGroupGateway extends RowDataGateway {
 			'site_id' => array(
 				'gateway' => 'SiteGateway',
 				'key'	 => 'site_id'
+			),
+			'group_id' => array(
+				'gateway' => 'ChannelFieldGateway',
+				'key' => 'group_id'
 			)
 		)	
 	);
