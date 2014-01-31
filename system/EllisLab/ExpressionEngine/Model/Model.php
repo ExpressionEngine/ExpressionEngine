@@ -282,8 +282,7 @@ abstract class Model {
 	{
 		$cascade = func_get_args();
 
-		$class_name = get_class($this);
-		$model_xml = '<' . substr($class_name, strrpos($class_name, '\\')+1) . '>' . "\n";
+		$model_xml = '<model name="' . get_class($this) . '">' . "\n";
 
 		foreach(get_object_vars($this) as $property => $value)
 		{
@@ -293,7 +292,7 @@ abstract class Model {
 				continue;
 			}
 
-			$model_xml .= '<' . $property . '>' . $value . '</' . $property . '>' . "\n";
+			$model_xml .= '<property name="' . $property . '">' . $value . '</property>' . "\n";
 		}
 
 		if ( empty ($cascade))
@@ -310,28 +309,34 @@ abstract class Model {
 					{
 						$method = 'get' . $from_relationship;
 						$models = $this->$method();
-					
-						$model_xml .= '<' . $from_relationship . '>' . "\n";	
-						foreach ($models as $model)
+				
+						if (count ($models) > 0)
 						{
-							if (is_array($to_relationship))
+							$model_xml .= '<related_models relationship="' . $from_relationship . '">' . "\n";	
+							foreach ($models as $model)
 							{
-								$model_xml .= $model->toXml($to_relationship);
-							}
-							else
-							{
-								$relationship_method = 'get' . $to_relationship;
-								$to_models = $model->$relationship_method();
-
-								$model_xml .= '<' . $to_relationship . '>' . "\n";
-								foreach ($to_models as $to_model)
+								if (is_array($to_relationship))
 								{
-									$to_model->toXml();
+									$model_xml .= $model->toXml($to_relationship);
 								}
-								$model_xml .= '</' . $to_relationship . '>' . "\n";
+								else
+								{
+									$relationship_method = 'get' . $to_relationship;
+									$to_models = $model->$relationship_method();
+
+									if (count($to_models) > 0)
+									{
+										$model_xml .= '<related_models relationship="' . $to_relationship . '"> ' . "\n";
+										foreach ($to_models as $to_model)
+										{
+											$to_model->toXml();
+										}
+										$model_xml .= '</related_models>' . "\n";
+									}
+								}
 							}
+							$model_xml .= '</related_models>' . "\n";
 						}
-						$model_xml .= '</' . $from_relationship . '>' . "\n";
 					}
 				}
 				else
@@ -339,16 +344,19 @@ abstract class Model {
 					$relationship_method = 'get' . $relationship_name;
 					$models = $this->$relationship_method();
 
-					$model_xml .= '<' . $relationship_name . '>' . "\n";
-					foreach ($models as $model)
+					if (count($models) > 0)
 					{
-						$model_xml .= $model->toXml();
+						$model_xml .= '<related_models relationship="' . $relationship_name . '">' . "\n";
+						foreach ($models as $model)
+						{
+							$model_xml .= $model->toXml();
+						}
+						$model_xml .= '</related_models>' . "\n";
 					}
-					$model_xml .= '</' . $relationship_name . '>' . "\n";
 				}
 			}
 		}
-		$model_xml .= '</' . substr($class_name, strrpos($class_name, '\\')+1) . '>' . "\n";
+		$model_xml .= '</model>' . "\n";
 		return $model_xml;
 	}
 

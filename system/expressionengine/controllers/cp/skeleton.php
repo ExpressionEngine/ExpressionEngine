@@ -30,47 +30,37 @@ class Skeleton extends CP_Controller {
 
 		$skeleton_xml = '
 		<?xml version="1.0" standalone="yes"?>' . "\n"
-		. $depth . '<EESiteSkeleton>' . "\n";
+		. '<EESiteSkeleton>' . "\n";
 
 		$field_groups = $this->builder->get('ChannelFieldGroup')->with('ChannelFieldStructures')->all();
-		$skeleton_xml .= $depth . '<ChannelFieldGroup>' . "\n";
 		foreach ($field_groups as $field_group)
 		{
 			$skeleton_xml .= $field_group->toXml('ChannelFieldStructures');
 		}
-		$skeleton_xml .= '</ChannelFieldGroup>' . "\n";
 
 		$status_groups = $this->builder->get('StatusGroup')->with('Statuses')->all();
-		$skeleton_xml .= '<StatusGroup>' . "\n";
 		foreach($status_groups as $status_group)
 		{
 			$skeleton_xml .= $status_group->toXml('Statuses');
 		}
-		$skeleton_xml .= '</StatusGroup>' . "\n";
 
 		$category_groups = $this->builder->get('CategoryGroup')->with('Categories')->all();
-		$skeleton_xml .= '<CategoryGroup>' . "\n";
 		foreach($category_groups as $category_group)
 		{
 			$skeleton_xml .= $category_group->toXml('Categories');
 		}
-		$skeleton_xml .= '</CategoryGroup>' . "\n";
 
 		$channels = $this->builder->get('Channel')->all();
-		$skeleton_xml .= '<Channel>' . "\n";
 		foreach($channels as $channel)
 		{
 			$skeleton_xml .= $channel->toXml();
 		}
-		$skeleton_xml .= '</Channel>' . "\n";
 
 		$template_groups = $this->builder->get('TemplateGroup')->with('Templates')->all();
-		$skeleton_xml .= '<TemplateGroup>' . "\n";
 		foreach($template_groups as $template_group)
 		{
 			$skeleton_xml .= $template_group->toXml('Templates');
 		}
-		$skeleton_xml .= '</TemplateGroup>' . "\n";
 
 		$skeleton_xml .= '</EESiteSkeleton>' . "\n";
 
