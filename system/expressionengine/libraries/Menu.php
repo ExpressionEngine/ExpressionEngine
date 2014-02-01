@@ -117,6 +117,10 @@ class EE_Menu {
 				'----',
 				'global_channel_preferences'	=> BASE.AMP.'C=admin_content'.AMP.'M=global_channel_preferences'
 			),
+			'skeleton' => array(
+				'import'						=> BASE.AMP.'C=skeleton'.AMP.'M=import',
+				'export'						=> BASE.AMP.'C=skeleton'.AMP.'M=export'
+			),
 			'----',
 			'general_configuration'			=> BASE.AMP.'C=admin_system'.AMP.'M=general_configuration',
 			'localization_settings'			=> BASE.AMP.'C=admin_system'.AMP.'M=localization_settings',
