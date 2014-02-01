@@ -25,11 +25,10 @@ class Skeleton extends CP_Controller {
 		$this->builder = $this->dependencies->getModelBuilder();
 	}
 
-	public function export_skeleton()
+	public function export()
 	{
 
-		$skeleton_xml = '
-		<?xml version="1.0" standalone="yes"?>' . "\n"
+		$skeleton_xml = '<?xml version="1.0" standalone="yes"?>' . "\n"
 		. '<EESiteSkeleton>' . "\n";
 
 		$field_groups = $this->builder->get('ChannelFieldGroup')->with('ChannelFieldStructures')->all();
@@ -64,23 +63,33 @@ class Skeleton extends CP_Controller {
 
 		$skeleton_xml .= '</EESiteSkeleton>' . "\n";
 
-	echo '<pre>';	var_dump(htmlentities($skeleton_xml)); echo '</pre>';
-		die();
-
+		header('Content-disposition: attachment; filename="skeleton.xml"');
+		header('Content-type: "text/xml"; charset="utf8"');
+		echo $skeleton_xml;
+		exit();
 	}
 
 	public function import()
 	{
-		// show form to get the file
-
-		$skeleton_xml = SimpleXML($file_contents);
-
-		foreach($skeleton_xml->EESiteSkeleton->model as $model_xml)
+		if ( ! empty ($_POST))
 		{
-			$model_class = $model_xml['name'];
-			$model->fromXml($model_xml);
+			$file_contents = file_get_contents($_FILES['userfile']['tmp_name']);	
+
+			// show form to get the file
+			$skeleton_xml = SimpleXML($file_contents);
+
+			foreach($skeleton_xml->EESiteSkeleton->model as $model_xml)
+			{
+				$model_class = $model_xml['name'];
+				$model->fromXml($model_xml);
+			}
+			return ee()->functions->redirect(BASE.AMP.'C=homepage');
 		}
 
-		// redirect or show success message
+		$this->view->title = lang('import_skeleton');
+		$this->view->cp_page_title = lang('import_skeleton');
+		$this->cp->set_breadcrumb(BASE.AMP.'C=skeleton'.AMP.'M=import', lang('import_skeleton'));
+
+		$this->cp->render('skeleton/import');
 	}
 }
