@@ -2,6 +2,7 @@
 
 $lang = array(
 
-'skeleton' => 'Skeleton'
+'skeleton' => 'Skeleton',
+'import_skeleton' => 'Import Site Skeleton'
 
 );

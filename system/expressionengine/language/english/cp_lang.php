@@ -103,6 +103,9 @@ $lang = array(
 	'nav_status_group_management_short_desc'	=> 'Create, edit, and delete Statuses',
 	'nav_global_channel_preferences'	=> 'Global Preferences',
 	'nav_global_channel_preferences_short_desc'	=> 'Manage Global Channel Preferences',
+'nav_skeleton'					=> 'Site Skeleton',
+	'nav_import'				=> 'Import',
+	'nav_export'				=> 'Export',
 
 'nav_admin_content'				=> 'Content Administration',
 	'nav_file_manager_short_desc'				=> 'Upload, edit, and delete Files',
