@@ -27,7 +27,6 @@ class Skeleton extends CP_Controller {
 
 	public function export()
 	{
-
 		$skeleton_xml = '<?xml version="1.0" standalone="yes"?>' . "\n"
 		. '<EESiteSkeleton>' . "\n";
 
@@ -76,20 +75,24 @@ class Skeleton extends CP_Controller {
 			$file_contents = file_get_contents($_FILES['userfile']['tmp_name']);	
 
 			// show form to get the file
-			$skeleton_xml = SimpleXML($file_contents);
+			$skeleton_xml = new SimpleXMLElement($file_contents);
 
-			foreach($skeleton_xml->EESiteSkeleton->model as $model_xml)
+			foreach($skeleton_xml->model as $model_xml)
 			{
-				$model_class = $model_xml['name'];
+				$model_class = (string) $model_xml['name'];
+				$model = new $model_class($this->dependencies);
 				$model->fromXml($model_xml);
 			}
+
 			return ee()->functions->redirect(BASE.AMP.'C=homepage');
 		}
+		else 
+		{
+			$this->view->title = lang('import_skeleton');
+			$this->view->cp_page_title = lang('import_skeleton');
+			$this->cp->set_breadcrumb(BASE.AMP.'C=skeleton'.AMP.'M=import', lang('import_skeleton'));
 
-		$this->view->title = lang('import_skeleton');
-		$this->view->cp_page_title = lang('import_skeleton');
-		$this->cp->set_breadcrumb(BASE.AMP.'C=skeleton'.AMP.'M=import', lang('import_skeleton'));
-
-		$this->cp->render('skeleton/import');
+			$this->cp->render('skeleton/import');
+		}
 	}
 }
