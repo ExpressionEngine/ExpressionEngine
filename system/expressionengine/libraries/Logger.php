@@ -299,7 +299,7 @@ class EE_Logger {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Deprecate a template tag and replace it in templates
+	 * Deprecate a template tag and replace it in templates and snippets
 	 *
 	 * @param  String $message     The message to send to the developer log,
 	 *                             uses developer() not deprecated()
@@ -312,7 +312,8 @@ class EE_Logger {
 	{
 		ee()->load->model('template_model');
 		$templates = ee()->template_model->fetch_last_edit(array(), TRUE);
-		foreach($templates as $template)
+
+		foreach ($templates as $template)
 		{
 			// Find and replace the tags
 			$template->template_data = preg_replace(
@@ -333,12 +334,30 @@ class EE_Logger {
 			}
 		}
 
-		// Update current tagdata
-		ee()->TMPL->tagdata = preg_replace(
-			$regex,
-			$replacement,
-			ee()->TMPL->tagdata
-		);
+		// Update snippets
+		ee()->load->model('snippet_model');
+		$snippets = ee()->snippet_model->fetch();
+
+		foreach ($snippets as $snippet)
+		{
+			$snippet->snippet_contents = preg_replace(
+				$regex,
+				$replacement,
+				$snippet->snippet_contents
+			);
+
+			ee()->snippet_model->save($snippet);
+		}
+
+		// Update current tagdata if running outside the updater
+		if (isset(ee()->TMPL->tagdata))
+		{
+			ee()->TMPL->tagdata = preg_replace(
+				$regex,
+				$replacement,
+				ee()->TMPL->tagdata
+			);
+		}
 
 		$this->developer($message, TRUE, 604800);
 	}

@@ -1254,36 +1254,6 @@ class Search {
 		// Fetch the search language file
 		ee()->lang->loadfile('search');
 
-		// Check to see if we're using old style pagination
-		if (strpos(ee()->TMPL->tagdata, '{if paginate}') !== FALSE)
-		{
-			ee()->load->library('logger');
-
-			if (strpos(ee()->TMPL->tagdata, '{page_count}') !== FALSE)
-			{
-				ee()->logger->deprecate_template_tag(
-					'Replaced {exp:search:search_results} pagination loop\'s {page_count} with "Page {current_page} of {total_pages}".',
-					"/{page_count}/uis",
-					"Page {current_page} of {total_pages}"
-				);
-			}
-
-			if (strpos(ee()->TMPL->tagdata, '{paginate}') !== FALSE)
-			{
-				ee()->logger->deprecate_template_tag(
-					'Replaced {exp:search:search_results} pagination loop\'s {paginate} with "{pagination_links}".',
-					"/{paginate}/uis",
-					"{pagination_links}"
-				);
-			}
-
-			ee()->logger->deprecate_template_tag(
-				'Replaced {exp:search:search_results} pagination loop\'s {if paginate} with {paginate}...{/paginate}. Switch to the new Channel style pagination.',
-				"/{if paginate}(.*){\/if}/uis",
-				"{paginate}$1{/paginate}"
-			);
-		}
-
 		// Load Pagination Object
 		ee()->load->library('pagination');
 		$pagination = ee()->pagination->create();
