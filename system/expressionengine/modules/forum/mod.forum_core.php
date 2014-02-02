@@ -2222,7 +2222,7 @@ class Forum_Core extends Forum {
 		{
 			$str = preg_replace("/{if paginate}(.*?){\/if}/uis", "{paginate}$1{/paginate}", $str);
 			ee()->load->library('logger');
-			ee()->logger->deprecated('2.8', 'normal {paginate} tags in your forum topics template');
+			ee()->logger->developer('{if paginate} has been deprecated, use normal {paginate} tags in your forum topics template.', TRUE, 604800);
 		}
 
 		// Load up pagination and start parsing
@@ -2984,7 +2984,7 @@ class Forum_Core extends Forum {
 		{
 			$str = preg_replace("/{if paginate}(.*?){\/if}/uis", "{paginate}$1{/paginate}", $str);
 			ee()->load->library('logger');
-			ee()->logger->deprecated('2.8', 'normal {paginate} tags in your forum threads template');
+			ee()->logger->developer('{if paginate} has been deprecated, use normal {paginate} tags in your forum threads template.', TRUE, 604800);
 		}
 
 		// Load up pagination and start parsing
@@ -9619,7 +9619,7 @@ class Forum_Core extends Forum {
 		{
 			$str = preg_replace("/{if paginate}(.*?){\/if}/uis", "{paginate}$1{/paginate}", $str);
 			ee()->load->library('logger');
-			ee()->logger->deprecated('2.8', 'normal {paginate} tags in your forum search results template');
+			ee()->logger->developer('{if paginate} has been deprecated, use normal {paginate} tags in your forum search results template.', TRUE, 604800);
 		}
 
 		// Load up pagination and start parsing
@@ -9985,7 +9985,7 @@ class Forum_Core extends Forum {
 		{
 			$str = preg_replace("/{if paginate}(.*?){\/if}/uis", "{paginate}$1{/paginate}", $str);
 			ee()->load->library('logger');
-			ee()->logger->deprecated('2.8', 'normal {paginate} tags in your forum search results template');
+			ee()->logger->developer('{if paginate} has been deprecated, use normal {paginate} tags in your forum search results template.', TRUE, 604800);
 		}
 
 		// Load up pagination and start parsing

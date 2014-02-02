@@ -166,7 +166,7 @@ class Pagination_object {
 				if (ee()->extensions->active_hook('channel_module_fetch_pagination_data') === TRUE)
 				{
 					ee()->load->libary('logger');
-					ee()->logger->deprecated('2.8', 'Renamed to pagination_fetch_data');
+					ee()->logger->developer('The channel_module_fetch_pagination_data hook has been renamed to pagination_fetch_data as of 2.8', TRUE, 604800);
 
 					ee()->extensions->universal_call('channel_module_fetch_pagination_data', $this);
 					if (ee()->extensions->end_script === TRUE) return;
@@ -233,7 +233,7 @@ class Pagination_object {
 			if (ee()->extensions->active_hook('channel_module_create_pagination') === TRUE)
 			{
 				ee()->load->libary('logger');
-				ee()->logger->deprecated('2.8', 'Renamed to pagination_create');
+				ee()->logger->developer('The channel_module_create_pagination hook has been renamed to pagination_create as of 2.8', TRUE, 604800);
 
 				ee()->extensions->universal_call('channel_module_create_pagination', $this, $this->total_rows);
 				if (ee()->extensions->end_script === TRUE) return;

@@ -1664,7 +1664,7 @@ class Wiki {
 			{
 				$temp = str_replace("{switch}", "{switch='{$parameters['switch']}'}", $temp);
 				ee()->load->library('logger');
-				ee()->logger->deprecated('2.8', 'standard {switch=} tags in your wiki recent changes template');
+				ee()->logger->developer('The wiki\'s {switch} variable has been deprecated, use standard {switch=} tags in your wiki recent changes template.', TRUE, 604800);
 			}
 
 			// Bring count back to a zero index
@@ -4737,7 +4737,7 @@ class Wiki {
 			{
 				$temp = str_replace("{switch}", "{switch='{$parameters['switch']}'}", $temp);
 				ee()->load->library('logger');
-				ee()->logger->deprecated('2.8', 'standard {switch=} tags in your wiki search results or category page template');
+				ee()->logger->developer('The wiki\'s {switch} variable has been deprecated, use standard {switch=} tags in your wiki search results or category page template.', TRUE, 604800);
 			}
 
 			// Bring count back to a zero index
@@ -4916,7 +4916,7 @@ class Wiki {
 			{
 				$temp = str_replace("{switch}", "{switch='{$switch}'}", $temp);
 				ee()->load->library('logger');
-				ee()->logger->deprecated('2.8', 'standard {switch=} tags in your wiki search results or category page template');
+				ee()->logger->developer('The wiki\'s {switch} variable has been deprecated, use standard {switch=} tags in your wiki search results or category page template.', TRUE, 604800);
 			}
 
 			// Bring count back to a zero index

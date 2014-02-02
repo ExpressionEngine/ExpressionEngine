@@ -566,6 +566,7 @@ class Member_memberlist extends Member {
 		{
 			$template = preg_replace("/{if paginate}(.*?){\/if}/uis", "{paginate}$1{/paginate}", $template);
 			ee()->load->library('logger');
+			ee()->logger->developer('{if paginate} has been deprecated, use normal {paginate} tags in your Member List template.', TRUE, 604800);
 			$config['last_link'] = ee()->lang->line('last');
 			//$config['uri_segment'] = $pag_uri_segment;
 			$config['suffix'] = ($first_letter != '') ? $first_letter.'/' : '';
@@ -587,7 +588,6 @@ class Member_memberlist extends Member {
 				$config['prev_tag_close'] = '</div></td>';
 				$config['cur_tag_open'] = '<td><div class="paginateCur">';
 				$config['cur_tag_close'] = '</div></td>';
-			ee()->logger->deprecated('2.8', 'normal {paginate} tags');
 				$config['num_tag_close'] = '</div></td>';
 		}
 

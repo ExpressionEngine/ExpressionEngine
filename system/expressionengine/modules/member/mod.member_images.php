@@ -317,7 +317,7 @@ class Member_images extends Member {
 
 			$template = preg_replace("/{if pagination}(.*?){\/if}/uis", "{paginate}$1{/paginate}", $template);
 			ee()->load->library('logger');
-			ee()->logger->deprecated('2.8', 'normal {paginate} tags in your browse avatars template');
+			ee()->logger->developer('{if paginate} has been deprecated, use normal {paginate} tags in your browse avatars template.', TRUE, 604800);
 		}
 
 		// Load up pagination and start parsing

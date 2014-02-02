@@ -882,13 +882,13 @@ class EE_Messages {
 		{
 			$template = preg_replace("/{if paginate}(.*?){\/if}/uis", "{paginate}$1{/paginate}", $template);
 			ee()->load->library('logger');
-			ee()->logger->deprecated('2.8', 'normal {paginate} tags in your message folder template');
+			ee()->logger->developer('{if paginate} has been deprecated, use normal {paginate} tags in your message folder template.', TRUE, 604800);
 		}
 		if (stripos($template, LD.'include:pagination_link'.RD) !== FALSE)
 		{
 			$template = str_replace('{include:pagination_link}', '{pagination_links}', $template);
 			ee()->load->library('logger');
-			ee()->logger->deprecated('2.8', 'normal {pagination_links} tags in your message folder template');
+			ee()->logger->developer('{include:pagination_link} has been deprecated, use the {pagination_links} tag in your message folder template.', TRUE, 604800);
 		}
 
 		// Load up pagination and start parsing
@@ -1133,13 +1133,13 @@ class EE_Messages {
 		{
 			$template = preg_replace("/{if paginate}(.*?){\/if}/uis", "{paginate}$1{/paginate}", $template);
 			ee()->load->library('logger');
-			ee()->logger->deprecated('2.8', 'normal {paginate} tags in your message folder template');
+			ee()->logger->developer('{if paginate} has been deprecated, use normal {paginate} tags in your message folder template.', TRUE, 604800);
 		}
 		if (stripos($template, LD.'include:pagination_link'.RD) !== FALSE)
 		{
 			$template = str_replace('{include:pagination_link}', '{pagination_links}', $template);
 			ee()->load->library('logger');
-			ee()->logger->deprecated('2.8', 'normal {pagination_links} tags in your message folder template');
+			ee()->logger->developer('{include:pagination_link} has been deprecated, use the {pagination_links} tag in your message folder template.', TRUE, 604800);
 		}
 
 		// Load up pagination and start parsing
@@ -3162,14 +3162,14 @@ DOH;
 		{
 			$template = preg_replace("/{if paginate}(.*?){\/if}/uis", "{paginate}$1{/paginate}", $template);
 			ee()->load->library('logger');
-			ee()->logger->deprecated('2.8', 'normal {paginate} tags in your bulletin board template');
+			ee()->logger->developer('{if paginate} has been deprecated, use normal {paginate} tags in your bulletin board template.', TRUE, 604800);
 		}
 
 		if (stripos($template, LD.'include:pagination_link'.RD) !== FALSE)
 		{
 			$template = str_replace('{include:pagination_link}', '{pagination_links}', $template);
 			ee()->load->library('logger');
-			ee()->logger->deprecated('2.8', 'normal {pagination_links} tags in your bulletin board template');
+			ee()->logger->developer('{include:pagination_link} has been deprecated, use the {pagination_links} tag in your bulletin board template.', TRUE, 604800);
 		}
 
 		// Load up pagination and start parsing
