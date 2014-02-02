@@ -4223,6 +4223,11 @@ class EE_Template {
 	 **/
 	public function process_date($timestamp, $parameters = array(), $relative = FALSE, $localize = TRUE)
 	{
+		if ($timestamp === NULL)
+		{
+			return '';
+		}
+
 		$dt = $timestamp;
 
 		// Determine if we need to display a relative time
