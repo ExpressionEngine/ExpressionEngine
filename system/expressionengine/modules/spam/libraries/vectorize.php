@@ -62,17 +62,27 @@ class Collection {
 		$this->corpus = new Document($this->corpus);
 	}
 
-	/**
-	 * Return the term frequency inverse document frequency for a given source & term in the collection
-	 * 
-	 * @param string $source The input document 
-	 * @access public
-	 * @return float The calculated tfidf
-	 */
-	public function tfidf($source, $term)
+	public function vectorize($source)
 	{
-		$doc = new Document($source);
-		return $this->term_frequency($doc, $term) * $this->inverse_document_frequency($term);
+		$source = new Document($source);
+		$vector = $this->_tfidf($source);
+		return $vector;
+	}
+
+	/**
+	 * Return the term frequency inverse document frequency for all documents in the collection
+	 * 
+	 * @access public
+	 * @return array The calculated tfidf
+	 */
+	public function tfidf()
+	{
+		$tfidf = array();
+		foreach($this->documents as $source)
+		{
+			$tfidf[] = $this->_tfidf($source);
+		}
+		return $tfidf;
 	}
 
 	/**
@@ -81,11 +91,11 @@ class Collection {
 	 * @param Document $doc 
 	 * @param string $term 
 	 * @access public
-	 * @return floadt The term frequency
+	 * @return float The term frequency
 	 */
 	public function term_frequency(Document $doc, $term)
 	{
-		return 0.5 + (0.5 * $doc($term)) / $doc->frequency[0];
+		return 0.5 + (0.5 * $doc($term)) / $doc->max_frequency;
 	}
 
 	/**
@@ -97,17 +107,29 @@ class Collection {
 	 */
 	public function inverse_document_frequency($term)
 	{
-		$count = 0;
-		foreach($this->collection as $doc)
-		{
-			if( ! empty($doc->frequency[$term]))
-			{
-				$count++;
-			}
-		}
-		return log(count($this->collection) / $count);
+		$freq = $this->corpus->frequency($term);
+		return log(count($this->documents) / $freq);
 	}
-	
+
+	/**
+	 * _tfidf
+	 * 
+	 * @param Document $source 
+	 * @access private
+	 * @return array Calculated TFIDF vector
+	 */
+	private function _tfidf($source)
+	{
+		$vector = array();
+		foreach($this->corpus as $term => $freq)
+		{
+			$tf = $this->term_frequency($source, $term);
+			$idf = $this->inverse_document_frequency($term);
+			$vector[] = $tf * $idf;
+		}
+		return $vector;
+	}
+
 }
 
 
@@ -118,8 +140,10 @@ class Collection {
  */
 class Document implements Iterator {
 
-	private $position = 0;
 	public $frequency = array();
+	public $words = array();
+	public $max_frequency = 0;
+	private $position = 0;
 	
 	/**
 	 * Clean the text, and then generate the frequency table.
@@ -131,7 +155,7 @@ class Document implements Iterator {
 	public function __construct($text)
 	{
 		$text = str_replace(array("\n","\r","\t"),'',$text);
-		$text = preg_replace("/[^a-zA-Z0-9\s\p{P}]/", "", $text);
+		$text = preg_replace("/[^a-zA-Z0-9\s]/", "", $text);
 		$text = trim(preg_replace('/\s\s+/', ' ', $text));
 		$this->text = $text;
 		$this->frequency = $this->_frequency($text);
@@ -148,6 +172,18 @@ class Document implements Iterator {
 	 */
 	public function __invoke($word)
 	{
+		return $this->frequency($word);
+	}
+	
+	/**
+	 * Return the frequency of a word.
+	 * 
+	 * @access public
+	 * @param string $word The word you want the frequency of
+	 * @return float
+	 */
+	public function frequency($word)
+	{
 		if(empty($this->frequency[$word]))
 		{
 			return 0;
@@ -157,7 +193,6 @@ class Document implements Iterator {
 			return $this->frequency[$word];
 		}
 	}
-	
 
 	/**
 	 * Count and rank the frequency of words
@@ -171,6 +206,7 @@ class Document implements Iterator {
 		$count = array();
 		$words = explode(' ', $text);
 		$num = count($words);
+		$max = 0;
 		foreach($words as $word)
 		{
 			if(isset($count[$word]))
@@ -179,11 +215,9 @@ class Document implements Iterator {
 			} else {
 				$count[$word] = 1;
 			}
+			$max = max($max, $count[$word]);
 		}
-		foreach($count as $key => $val)
-		{
-			$count[$key] = $val / $num;
-		}
+		$this->max_frequency = $max;
 		arsort($count);
 		return $count; 
 	}
