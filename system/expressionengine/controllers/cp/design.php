@@ -3184,6 +3184,24 @@ class Design extends CP_Controller {
 	// --------------------------------------------------------------------
 
 	/**
+	 * URL Manager
+	 *
+	 * URL Route Manager
+	 *
+	 * @access	public
+	 * @return	type
+	 */
+	function url_manager()
+	{
+		$vars = array();
+		$this->view->cp_page_title = lang('url_manager');
+		$vars['templates'] = $this->template_model->get_templates();
+		$this->cp->render('design/url_manager', $vars);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Manager
 	 *
 	 * Template Manager
