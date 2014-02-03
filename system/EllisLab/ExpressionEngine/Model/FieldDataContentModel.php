@@ -7,7 +7,7 @@ use EllisLab\ExpressionEngine\Model\Interfaces\Content\Content as Content;
 // TODO This desperately needs a better name, but I got nothing!
 abstract class FieldDataContentModel extends Model implements Content {
 
-	protected $fields = array();
+	protected $_fields = array();
 
 	/**
 	 *
