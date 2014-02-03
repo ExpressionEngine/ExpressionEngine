@@ -1220,6 +1220,7 @@ class EE_Config Extends CI_Config {
 				'cp_theme'					=> array('f', 'theme_menu'),
 				'deft_lang'					=> array('f', 'language_menu'),
 				'xml_lang'					=> array('f', 'fetch_encoding'),
+				'caching_driver'			=> array('f', 'caching_driver'),
 				'max_caches'				=> array('i', ''),
 				'new_version_check'			=> array('r', array('y' => 'yes', 'n' => 'no')),
 				// 'channel_nomenclature'		=> array('i', ''),
@@ -1567,6 +1568,10 @@ class EE_Config Extends CI_Config {
 						case 'timezone'			:
 							$options[0] = 'v';
 							$details = ee()->localize->timezone_menu($value);
+							break;
+						case 'caching_driver'	:
+							$options[0] = 'v';
+							$details = ee()->cache->admin_setting();
 							break;
 					}
 					break;
