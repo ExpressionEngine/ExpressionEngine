@@ -280,6 +280,7 @@ abstract class Model {
 
 		$this->cascade($cascade, 'restore');
 	}
+
 	/**
 	 * Delete this model.
 	 *
@@ -385,8 +386,9 @@ abstract class Model {
 	{
 		foreach($model_xml->property as $property)
 		{
-			$name = $property['name'];
-			$this->{$name} = $property;
+			$name = (string) $property['name'];
+			$this->{$name} = (string) $property;
+			$this->setDirty($name);
 		}
 
 		foreach($model_xml->related_models as $related_models_xml)
@@ -394,12 +396,12 @@ abstract class Model {
 			$models = new Collection();
 			foreach($related_models_xml as $related_model_xml)
 			{
-				$model_class = $related_model_xml['name'];
-				$model = new $model_class();
+				$model_class = (string) $related_model_xml['name'];
+				$model = new $model_class($this->_dependencies);
 				$model->fromXml($related_model_xml);
 				$models[] = $model;
 			}
-			$this->setRelated($related_models_xml['relationship'], $models);
+			$this->setRelated((string) $related_models_xml['relationship'], $models);
 		}
 
 		$this->restore();
