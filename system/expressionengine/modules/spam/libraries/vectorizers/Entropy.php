@@ -34,11 +34,11 @@ class Entropy {
 	 */
 	public static function vectorize($source)
 	{
-    	$length = mb_strlen($source);
-    	$compressed = gzcompress($source);
-    	$compressed_length = mb_strlen($compressed) - 8; // 8 bytes of gzip overhead
-    	$ratio = $compressed_length / $length;
-    	return $ratio;
+		$length = mb_strlen($source);
+		$compressed = gzcompress($source);
+		$compressed_length = mb_strlen($compressed) - 8; // 8 bytes of gzip overhead
+		$ratio = $compressed_length / $length;
+		return $ratio;
 	}
 
 }

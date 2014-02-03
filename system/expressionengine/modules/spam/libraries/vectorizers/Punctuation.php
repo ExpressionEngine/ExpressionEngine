@@ -44,7 +44,7 @@ class Punctuation {
 		{
 			$ratio = 1;
 		}
-    	return $ratio;
+		return $ratio;
 	}
 
 }

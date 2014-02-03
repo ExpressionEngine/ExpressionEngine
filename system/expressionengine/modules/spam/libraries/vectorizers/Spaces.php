@@ -44,7 +44,7 @@ class Spaces {
 		{
 			$ratio = 1;
 		}
-    	return $ratio;
+		return $ratio;
 	}
 
 }

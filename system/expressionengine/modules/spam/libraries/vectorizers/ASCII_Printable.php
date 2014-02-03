@@ -44,7 +44,7 @@ class ASCII_Printable {
 		{
 			$ratio = 1;
 		}
-    	return $ratio;
+		return $ratio;
 	}
 
 }
