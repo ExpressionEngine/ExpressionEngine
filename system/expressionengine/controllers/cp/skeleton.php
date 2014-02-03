@@ -37,7 +37,11 @@ class Skeleton extends CP_Controller {
 			$skeleton_xml .= $field_group->toXml('ChannelFieldStructures');
 		}
 
-		$status_groups = $this->builder->get('StatusGroup')->with('Statuses')->all();
+		$status_groups = $this->builder->get('StatusGroup')
+			->with('Statuses')
+			->filter('Statuses.status_id', '!=', 1)
+			->filter('Statuses.status_id', '!=', 2)
+			->all();
 		foreach($status_groups as $status_group)
 		{
 			$skeleton_xml .= $status_group->toXml('Statuses');
