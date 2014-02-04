@@ -313,8 +313,12 @@ class EE_Logger {
 		ee()->load->model('template_model');
 		$templates = ee()->template_model->fetch_last_edit(array(), TRUE);
 
+		$changed = 0;
+
 		foreach ($templates as $template)
 		{
+			$old_template_data = $template->template_data;
+
 			// Find and replace the tags
 			$template->template_data = preg_replace(
 				$regex,
@@ -322,15 +326,24 @@ class EE_Logger {
 				$template->template_data
 			);
 
-			// save the template
-			// if saving to file, save the file
-			if ($template->loaded_from_file)
+			// Only save if the template data changed
+			if ($old_template_data != $template->template_data)
 			{
-				ee()->template_model->save_to_file($template);
-			}
-			else
-			{
-				ee()->template_model->save_to_database($template);
+				// Keep track of how many changed templates we have
+				// so we know whether or not to bother the user with
+				// a deprecation notification
+				$changed++;
+
+				// save the template
+				// if saving to file, save the file
+				if ($template->loaded_from_file)
+				{
+					ee()->template_model->save_to_file($template);
+				}
+				else
+				{
+					ee()->template_model->save_to_database($template);
+				}
 			}
 		}
 
@@ -340,13 +353,21 @@ class EE_Logger {
 
 		foreach ($snippets as $snippet)
 		{
+			$old_snippet_contents = $snippet->snippet_contents;
+
 			$snippet->snippet_contents = preg_replace(
 				$regex,
 				$replacement,
 				$snippet->snippet_contents
 			);
 
-			ee()->snippet_model->save($snippet);
+			// Only save if the snippet data changed
+			if ($old_snippet_contents != $snippet->snippet_contents)
+			{
+				$changed++;
+
+				ee()->snippet_model->save($snippet);
+			}
 		}
 
 		// Update current tagdata if running outside the updater
@@ -359,7 +380,11 @@ class EE_Logger {
 			);
 		}
 
-		$this->developer($message, TRUE, 604800);
+		// Only log the change if changes were made
+		if ($changed > 0)
+		{
+			$this->developer($message, TRUE, 604800);
+		}
 	}
 
 	// --------------------------------------------------------------------
