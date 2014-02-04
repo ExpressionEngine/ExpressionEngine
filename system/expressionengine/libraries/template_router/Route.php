@@ -136,7 +136,7 @@ class EE_Route {
 		$parsed_route = implode('', $url);
 
 		// anchor the beginning and end, and add optional trailing slash
-		return "^{$parsed_route}\/?(P[0-9]+)?\/?$";
+		return "^{$parsed_route}\/?$";
 	}
 
 	/**
