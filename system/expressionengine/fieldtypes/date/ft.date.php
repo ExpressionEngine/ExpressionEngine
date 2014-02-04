@@ -264,8 +264,26 @@ class Date_ft extends EE_Fieldtype {
 
 	function replace_tag($date, $params = array(), $tagdata = FALSE)
 	{
-		// if we're here, they're just using the date field without formatting, e.g. {custom_date}
-		return $date;
+		$localize = TRUE;
+		if (isset($this->row['field_dt_'.$this->name]) AND $this->row['field_dt_'.$this->name] != '')
+		{
+			$localize = $this->row['field_dt_'.$this->name];
+		}
+
+		return ee()->TMPL->process_date($date, $params, FALSE, $localize);
+	}
+
+	// --------------------------------------------------------------------
+
+	function replace_relative($date, $params = array(), $tagdata = FALSE)
+	{
+		$localize = TRUE;
+		if (isset($this->row['field_dt_'.$this->name]) AND $this->row['field_dt_'.$this->name] != '')
+		{
+			$localize = $this->row['field_dt_'.$this->name];
+		}
+
+		return ee()->TMPL->process_date($date, $params, TRUE, $localize);
 	}
 
 	// --------------------------------------------------------------------
