@@ -420,6 +420,13 @@ class Updater {
 	{
 		ee()->load->library('logger');
 
+		// Replace SINGLE {paginate} variable with {pagination_links}
+		ee()->logger->deprecate_template_tag(
+			'Replaced {exp:search:search_results} pagination loop\'s {paginate} single variable with {pagination_links}.',
+			"/({exp:search:search_results.*?){paginate}(((?!{\/paginate}).)*{\/exp:search:search_results})/uis",
+			"$1{pagination_links}$2"
+		);
+
 		// Replace {page_count} with "Page {current_page} of {total_pages}"
 		ee()->logger->deprecate_template_tag(
 			'Replaced {exp:search:search_results} pagination loop\'s {page_count} with "Page {current_page} of {total_pages}".',
@@ -433,8 +440,6 @@ class Updater {
 			"/({exp:search:search_results(\s.*?)?}(.*?)){if paginate}(.*){\/if}((.*?){\/exp:search:search_results})/uis",
 			"$1{paginate}$4{/paginate}$5"
 		);
-
-		// TODO: Replace SINGLE {paginate} variable with {pagination_links}
 	}
 }
 /* END CLASS */
