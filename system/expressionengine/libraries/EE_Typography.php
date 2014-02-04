@@ -526,11 +526,11 @@ class EE_Typography extends CI_Typography {
 	 * Search all EE tags in the string for quotes and protect the quotes from
 	 * being parsed by subsequent parsers by replacing them with a marker.  The
 	 * marker will then be switched back out for the quotes in question by
-	 * running restore quotes in tags. 
+	 * running restore quotes in tags.
 	 *
 	 * Note: The marker is time dependent and stored in the instance of the
 	 * typography class, so the call to restore_quotes_in_tags() must be to the
-	 * same instance of typography in the same request. 
+	 * same instance of typography in the same request.
 	 *
 	 * @param	string	$str	The string potentially containing EE tags that you
 	 * 		wish to protect quotes in.
@@ -547,20 +547,20 @@ class EE_Typography extends CI_Typography {
 			$this->quote_marker = md5(time(0) . 'quote_marker');
 		}
 
-		$single_quote_marker = '{{SINGLE_QUOTE:' . $this->quote_marker . '}}';
-		$double_quote_marker = '{{DOUBLE_QUOTE:' . $this->quote_marker . '}}';
+		$single_quote_marker = '{{SINGLEQUOTE:' . $this->quote_marker . '}}';
+		$double_quote_marker = '{{DOUBLEQUOTE:' . $this->quote_marker . '}}';
 
-		if (preg_match_all("/{.*?}/", $str, $matches, PREG_SET_ORDER)) 
+		if (preg_match_all("/{.*?}/", $str, $matches, PREG_SET_ORDER))
 		{
 			foreach($matches as $match)
 			{
-				$str = str_replace($match[0], 
+				$str = str_replace($match[0],
 					str_replace(
-						array('\'', '"'), 
-						array($single_quote_marker, $double_quote_marker), 
+						array('\'', '"'),
+						array($single_quote_marker, $double_quote_marker),
 						$match[0]),
 					$str
-				);	
+				);
 			}
 		}
 
@@ -581,8 +581,8 @@ class EE_Typography extends CI_Typography {
 	 */
 	protected function restore_quotes_in_tags($str)
 	{
-		$single_quote_marker = '{{SINGLE_QUOTE:' . $this->quote_marker . '}}';
-		$double_quote_marker = '{{DOUBLE_QUOTE:' . $this->quote_marker . '}}';
+		$single_quote_marker = '{{SINGLEQUOTE:' . $this->quote_marker . '}}';
+		$double_quote_marker = '{{DOUBLEQUOTE:' . $this->quote_marker . '}}';
 
 		return str_replace(array($single_quote_marker, $double_quote_marker), array('\'', '"'), $str);
 	}
