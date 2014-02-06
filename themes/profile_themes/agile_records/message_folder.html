@@ -1,4 +1,4 @@
-<!-- Template: Private Message - Message Folder -->				
+<!-- Template: Private Message - Message Folder -->
 {include:hidden_js}
 {include:toggle_js}
 
@@ -46,15 +46,15 @@
 {form:form_declaration:modify_messages}
 
 
-{if paginate}
-<table>
+{paginate}
+<table border='0' cellspacing='5' cellpadding='0' class='tablePad'>
 <tr>
-<td>
-{include:pagination_link}
+<td class='default'>
+{pagination_links}
 </td>
 </tr>
 </table>
-{/if}
+{/paginate}
 
 
 <table class="member_table">
@@ -71,13 +71,13 @@
 
 </div>
 
-{if paginate}
+{paginate}
 	<table>
 		<tr>
-			<td>{include:pagination_link}</td>
+			<td>{pagination_links}</td>
 		</tr>
 	</table>
-{/if}
+{/paginate}
 {include:folder_pulldown:move}
 
 {include:folder_pulldown:copy}

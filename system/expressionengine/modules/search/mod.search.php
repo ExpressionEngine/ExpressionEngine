@@ -1256,22 +1256,8 @@ class Search {
 
 		// Load Pagination Object
 		ee()->load->library('pagination');
-		$pagination = new Pagination_object(__CLASS__);
-
-		// Capture Pagination Template
-		$pagination->get_template();
-
-		// Check to see if we're using old style pagination
-		// TODO: Remove once old pagination is phased out
-		$old_pagination = (strpos(ee()->TMPL->template, LD.'if paginate'.RD) !== FALSE) ? TRUE : FALSE;
-
-		// If we are using old pagination, log it as deprecated
-		// TODO: Remove once old pagination is phased out
-		if ($old_pagination)
-		{
-			ee()->load->library('logger');
-			ee()->logger->developer('Deprecated template tag {if paginate}. Old style pagination in the Search Module has been deprecated in 2.4 and will be removed soon. Switch to the new Channel style pagination.', TRUE);
-		}
+		$pagination = ee()->pagination->create();
+		ee()->TMPL->tagdata = $pagination->prepare(ee()->TMPL->tagdata);
 
 		// Check search ID number
 		// If the QSTR variable is less than 32 characters long we
@@ -1280,8 +1266,8 @@ class Search {
 		if (strlen(ee()->uri->query_string) < 32)
 		{
 			return ee()->output->show_user_error(
-				'general',
-				array(lang('invalid_action'))
+				'off',
+				array(lang('search_no_result'))
 			);
 		}
 
@@ -1294,25 +1280,9 @@ class Search {
 			)
 		);
 
-		// Fetch ID number and page number
-		$pagination->offset = 0;
-		$qstring = ee()->uri->query_string;
-
-		// Parse page number
-		if (preg_match("#^P(\d+)|/P(\d+)#", $qstring, $match))
-		{
-			$pagination->offset = (isset($match[2])) ? $match[2] : $match[1];
-			$search_id = trim_slashes(str_replace($match[0], '', $qstring));
-		}
-		else
-		{
-			$pagination->offset = 0;
-			$search_id = $qstring;
-		}
-
-		// If there is a slash in the search ID we'll kill everything after it.
-		$search_id = trim($search_id);
-		$search_id = preg_replace("#/.+#", "", $search_id);
+		// Retrieve the search_id
+		$qstring = explode('/', ee()->uri->query_string);
+		$search_id = trim($qstring[0]);
 
 		// Fetch the cached search query
 		$query = ee()->db->get_where('search', array('search_id' => $search_id));
@@ -1326,8 +1296,8 @@ class Search {
 			);
 		}
 
-		$fields = ($query->row('custom_fields') == '') ? array() : unserialize(stripslashes($query->row('custom_fields') ));
-		$sql 	= unserialize(stripslashes($query->row('query')));
+		$fields	= ($query->row('custom_fields') == '') ? array() : unserialize(stripslashes($query->row('custom_fields') ));
+		$sql	= unserialize(stripslashes($query->row('query')));
 		$sql	= str_replace('MDBMPREFIX', 'exp_', $sql);
 
 		$pagination->per_page = (int) $query->row('per_page');
@@ -1354,7 +1324,7 @@ class Search {
 		// Run the search query
 		$query = ee()->db->query(preg_replace("/SELECT(.*?)\s+FROM\s+/is", 'SELECT COUNT(*) AS count FROM ', $sql));
 
-		if ($query->row('count')  == 0)
+		if ($query->row('count') == 0)
 		{
 			// This should also be impossible
 			return ee()->output->show_user_error(
@@ -1364,58 +1334,14 @@ class Search {
 		}
 
 		// Calculate total number of pages and add total rows
-		$pagination->current_page 	= ($pagination->offset / $pagination->per_page) + 1;
-		$pagination->total_rows 	= $query->row('count');
-
-		// Figure out total number of pages for old style pagination
-		// TODO: Remove once old pagination is phased out
-		if ($old_pagination)
-		{
-			$total_pages = intval($pagination->total_rows / $pagination->per_page);
-
-			if ($pagination->total_rows  % $pagination->per_page)
-			{
-				$total_pages++;
-			}
-
-			$page_count = lang('page').' '.$pagination->current_page.' '.lang('of').' '.$total_pages;
-
-			$pager = '';
-
-			if ($pagination->total_rows > $pagination->per_page)
-			{
-				ee()->load->library('pagination');
-
-				$config = array(
-					'base_url' 		=> ee()->functions->create_url($res_page.'/'.$search_id, 0, 0),
-					'prefix'		=> 'P',
-					'total_rows'	=> $pagination->total_rows,
-					'per_page'		=> $pagination->per_page,
-					'cur_page'		=> $pagination->offset,
-					'first_link'	=> lang('pag_first_link'),
-					'last_link'		=> lang('pag_last_link'),
-					'uri_segment'	=> 0 // Allows $config['cur_page'] to override
-				);
-
-				ee()->pagination->initialize($config);
-				$pager = ee()->pagination->create_links();
-			}
-		}
+		$pagination->total_items = $query->row('count');
 
 		// Build pagination if enabled
+		// If we're paginating limit the query and do it again
 		if ($pagination->paginate === TRUE)
 		{
-			$pagination->build($pagination->total_rows);
-		}
-
-		// If we're paginating, old or new, limit the query and do it again
-		if ($pagination->paginate === TRUE OR $old_pagination)
-		{
+			$pagination->build($pagination->total_items, $pagination->per_page);
 			$sql .= " LIMIT ".$pagination->offset.", ".$pagination->per_page;
-		}
-		else if ($pagination->per_page > 0)
-		{
-			$sql .= " LIMIT 0, ".$pagination->per_page;
 		}
 		else
 		{
@@ -1595,40 +1521,6 @@ class Search {
 			'lang:keywords'				=>	lang('search_keywords')
 		);
 		ee()->TMPL->template = ee()->functions->var_swap(ee()->TMPL->template, $swap);
-
-		// Add Old Style Pagination
-		// TODO: Remove once old pagination is phased out
-		if ($old_pagination)
-		{
-			if ($pager == '')
-			{
-				ee()->TMPL->template = preg_replace(
-					"#".LD."if paginate".RD.".*?".LD."/if".RD."#s",
-					'',
-					ee()->TMPL->template
-				);
-			}
-			else
-			{
-				ee()->TMPL->template = preg_replace(
-					"#".LD."if paginate".RD."(.*?)".LD."/if".RD."#s",
-					"\\1",
-					ee()->TMPL->template
-				);
-			}
-
-			ee()->TMPL->template = str_replace(
-				LD.'paginate'.RD,
-				$pager,
-				ee()->TMPL->template
-			);
-
-			ee()->TMPL->template = str_replace(
-				LD.'page_count'.RD,
-				$page_count,
-				ee()->TMPL->template
-			);
-		}
 
 		return ee()->TMPL->tagdata;
 	}

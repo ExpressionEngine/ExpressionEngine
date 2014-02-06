@@ -48,7 +48,8 @@ class Updater {
 				'_update_localization_config',
 				'_update_member_table',
 				'_update_session_config_names',
-				'_update_config_add_cookie_httponly'
+				'_update_config_add_cookie_httponly',
+				'_replace_old_search_pagination'
 			)
 		);
 
@@ -450,6 +451,40 @@ If you do not wish to reset your password, ignore this message. It will expire i
 			'user_session_type'  => '',
 		);
 		ee()->config->_update_config($new_config_items, $remove_config_items);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Renames admin_session_type and user_session_type in the site system
+	 * preferences and config (if needed)
+	 *
+	 * @return void
+	 **/
+	private function _replace_old_search_pagination()
+	{
+		ee()->load->library('logger');
+
+		// Replace SINGLE {paginate} variable with {pagination_links}
+		ee()->logger->deprecate_template_tag(
+			'Replaced {exp:search:search_results} pagination loop\'s {paginate} single variable with {pagination_links}.',
+			"/({exp:search:search_results.*?){paginate}(((?!{\/paginate}).)*{\/exp:search:search_results})/uis",
+			"$1{pagination_links}$2"
+		);
+
+		// Replace {page_count} with "Page {current_page} of {total_pages}"
+		ee()->logger->deprecate_template_tag(
+			'Replaced {exp:search:search_results} pagination loop\'s {page_count} with "Page {current_page} of {total_pages}".',
+			"/({exp:search:search_results(\s.*?)?}(.*?)){page_count}((.*?){\/exp:search:search_results})/uis",
+			"$1Page {current_page} of {total_pages}$4"
+		);
+
+		// Replace {if paginate}...{/if} with {paginate}...{/paginate}
+		ee()->logger->deprecate_template_tag(
+			'Replaced {exp:search:search_results} pagination loop\'s {if paginate} with {paginate}...{/paginate}. Switch to the new Channel style pagination.',
+			"/({exp:search:search_results(\s.*?)?}(.*?)){if paginate}(.*){\/if}((.*?){\/exp:search:search_results})/uis",
+			"$1{paginate}$4{/paginate}$5"
+		);
 	}
 }
 /* END CLASS */
