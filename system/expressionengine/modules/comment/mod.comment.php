@@ -515,7 +515,7 @@ class Comment {
 				// When we are only showing comments and it is not based on an
 				// entry id or url title in the URL, we can make the query much
 				// more efficient and save some work.
-				$pagination->total_rows = ee()->db->count_all_results();
+				$pagination->total_items = ee()->db->count_all_results();
 			}
 
 			// Determine the offset from the query string
@@ -556,7 +556,7 @@ class Comment {
 		if ($enabled['pagination'])
 		{
 			// Build pagination
-			$pagination->build($pagination->total_rows, $pagination->per_page);
+			$pagination->build($pagination->total_items, $pagination->per_page);
 		}
 
 		/** -----------------------------------
@@ -720,7 +720,7 @@ class Comment {
 			$row['absolute_count']	= $absolute_count;
 			if ($enabled['pagination'])
 			{
-				$row['total_comments']	= $pagination->total_rows;
+				$row['total_comments']	= $pagination->total_items;
 			}
 			$row['total_results']	= $total_results;
 

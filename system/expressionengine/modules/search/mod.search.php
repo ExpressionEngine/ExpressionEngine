@@ -1334,13 +1334,13 @@ class Search {
 		}
 
 		// Calculate total number of pages and add total rows
-		$pagination->total_rows = $query->row('count');
+		$pagination->total_items = $query->row('count');
 
 		// Build pagination if enabled
 		// If we're paginating limit the query and do it again
 		if ($pagination->paginate === TRUE)
 		{
-			$pagination->build($pagination->total_rows, $pagination->per_page);
+			$pagination->build($pagination->total_items, $pagination->per_page);
 			$sql .= " LIMIT ".$pagination->offset.", ".$pagination->per_page;
 		}
 		else

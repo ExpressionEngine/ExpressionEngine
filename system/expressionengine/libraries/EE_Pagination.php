@@ -36,28 +36,30 @@ class EE_Pagination extends CI_Pagination {
  */
 class Pagination_object {
 	public $paginate				= FALSE;
-	public $field_pagination		= FALSE;
-	public $current_page			= 1;
-	public $offset					= 0;
-	public $total_rows				= 0;
+	public $total_items				= 0;
 	public $total_pages				= 1;
 	public $per_page				= 0;
+	public $offset					= 0;
+	public $current_page			= 1;
 	public $basepath				= '';
-	public $cfields					= array();
 	public $prefix					= "P";
+
+	// Field Pagination specific properties
+	public $cfields					= array();
+	public $field_pagination		= FALSE;
 	public $field_pagination_query	= NULL;
 
-	private $_page_array			= array();
-	private $_pagination_template	= '';
-	private $_multi_fields			= '';
-	private $_page_next				= '';
-	private $_page_previous			= '';
-	private $_page_links			= '';
-	private $_page_links_limit		= 2;
-	private $_type					= '';
-	private $_position				= '';
-	private $_pagination_marker		= "pagination_marker";
-	private $_always_show_first_last = FALSE;
+	private $_page_array				= array();
+	private $_pagination_template		= '';
+	private $_multi_fields				= '';
+	private $_page_next					= '';
+	private $_page_previous				= '';
+	private $_page_links				= '';
+	private $_page_links_limit			= 2;
+	private $_type						= '';
+	private $_position					= '';
+	private $_pagination_marker			= "pagination_marker";
+	private $_always_show_first_last	= FALSE;
 
 	public function __construct()
 	{
@@ -215,13 +217,13 @@ class Pagination_object {
 	/**
 	 * Build the pagination out, storing it in the Pagination_object
 	 *
-	 * @param integer	$total_rows	Number of rows we're paginating over
+	 * @param integer	$total_items	Number of rows we're paginating over
 	 * @param integer	$per_page	Number of items per page
 	 * @return Boolean TRUE if successful, FALSE otherwise
 	 */
-	function build($total_rows = 0, $per_page = 0)
+	function build($total_items, $per_page)
 	{
-		$this->total_rows = $total_rows;
+		$this->total_items = $total_items;
 		$this->per_page = $per_page;
 
 		// -------------------------------------------
@@ -235,7 +237,7 @@ class Pagination_object {
 				ee()->load->libary('logger');
 				ee()->logger->developer('The channel_module_create_pagination hook has been renamed to pagination_create as of 2.8', TRUE, 604800);
 
-				ee()->extensions->universal_call('channel_module_create_pagination', $this, $this->total_rows);
+				ee()->extensions->universal_call('channel_module_create_pagination', $this, $this->total_items);
 				if (ee()->extensions->end_script === TRUE) return;
 			}
 		//
@@ -249,7 +251,7 @@ class Pagination_object {
 		//
 			if (ee()->extensions->active_hook('pagination_create') === TRUE)
 			{
-				ee()->extensions->universal_call('pagination_create', $this, $this->total_rows);
+				ee()->extensions->universal_call('pagination_create', $this, $this->total_items);
 				if (ee()->extensions->end_script === TRUE) return;
 			}
 		//
@@ -296,7 +298,7 @@ class Pagination_object {
 				// something (week, day) it's okay for it to be empty
 				if ($this->_type === "Channel"
 					&& ee()->TMPL->fetch_param('display_by') == ''
-					&& $this->total_rows == 0)
+					&& $this->total_items == 0)
 				{
 					return FALSE;
 				}
@@ -305,20 +307,20 @@ class Pagination_object {
 
 				// If we're far beyond where we should be, reset us back to
 				// the first page
-				if ($this->offset > $this->total_rows)
+				if ($this->offset > $this->total_items)
 				{
 					return ee()->TMPL->no_results();
 				}
 
 				$this->current_page	= floor(($this->offset / $this->per_page) + 1);
-				$this->total_pages	= intval(floor($this->total_rows / $this->per_page));
+				$this->total_pages	= intval(floor($this->total_items / $this->per_page));
 			}
 			// Field pagination - base values
 			else
 			{
 				// If we're doing field pagination and there's not even one
 				// entry, then clear out the sql and get out of here
-				if ($this->total_rows == 0
+				if ($this->total_items == 0
 					OR ! is_object($this->field_pagination_query))
 				{
 					return FALSE;
@@ -342,15 +344,15 @@ class Pagination_object {
 				}
 
 				$this->per_page = 1;
-				$this->total_rows = count($m_fields);
-				$this->total_pages = $this->total_rows;
+				$this->total_items = count($m_fields);
+				$this->total_pages = $this->total_items;
 				if ($this->total_pages == 0)
 				{
 					$this->total_pages = 1;
 				}
 
 				$this->offset = ($this->offset == '') ? 0 : $this->offset;
-				if ($this->offset > $this->total_rows)
+				if ($this->offset > $this->total_items)
 				{
 					$this->offset = 0;
 				}
@@ -365,16 +367,16 @@ class Pagination_object {
 			}
 
 			//  Create the pagination
-			if ($this->total_rows > 0 && $this->per_page > 0)
+			if ($this->total_items > 0 && $this->per_page > 0)
 			{
-				if ($this->total_rows % $this->per_page)
+				if ($this->total_items % $this->per_page)
 				{
 					$this->total_pages++;
 				}
 			}
 
 			// Last check to make sure we actually need to paginate
-			if ($this->total_rows > $this->per_page)
+			if ($this->total_items > $this->per_page)
 			{
 				if (strpos($this->basepath, SELF) === FALSE && ee()->config->item('site_index') != '')
 				{
@@ -393,7 +395,7 @@ class Pagination_object {
 					'first_url'		=> rtrim($this->basepath, '/'),
 					'base_url'		=> $this->basepath,
 					'prefix'		=> $this->prefix,
-					'total_rows'	=> $this->total_rows,
+					'total_rows'	=> $this->total_items,
 					'per_page'		=> $this->per_page,
 					// cur_page uses the offset because P45 (or similar) is a page
 					'cur_page'		=> $this->offset,

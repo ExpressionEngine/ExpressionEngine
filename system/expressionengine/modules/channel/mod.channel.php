@@ -1465,7 +1465,7 @@ class Channel {
 							$distinct = array_reverse($distinct);
 						}
 
-						$this->pagination->total_rows = count($distinct);
+						$this->pagination->total_items = count($distinct);
 
 						$cur = ($this->pagination->offset == '') ? 0 : $this->pagination->offset;
 
@@ -1538,7 +1538,7 @@ class Channel {
 							$distinct = array_reverse($distinct);
 						}
 
-						$this->pagination->total_rows = count($distinct);
+						$this->pagination->total_items = count($distinct);
 
 						$cur = ($this->pagination->offset == '') ? 0 : $this->pagination->offset;
 
@@ -1631,7 +1631,7 @@ class Channel {
 						$distinct = array_unique($distinct);
 						rsort($distinct);
 
-						$this->pagination->total_rows = count($distinct);
+						$this->pagination->total_items = count($distinct);
 						$cur = ($this->pagination->offset == '') ? 0 : $this->pagination->offset;
 
 						/** ---------------------------------
