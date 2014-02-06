@@ -1688,7 +1688,7 @@ class EE_Config Extends CI_Config {
 	{
 		$pref = parent::slash_item($item);
 
-		if (defined(EE_APPPATH))
+		if (defined('EE_APPPATH'))
 		{
 			$pref = str_replace(APPPATH, EE_APPPATH, $pref);
 		}
