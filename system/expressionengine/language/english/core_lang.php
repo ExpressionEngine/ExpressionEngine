@@ -226,6 +226,12 @@ Confirm the fieldtype file is located in the expressionengine/third_party/ direc
 'months' =>
 'months',
 
+'fortnight' =>
+'fortnight',
+
+'fortnights' =>
+'fortnights',
+
 'week' =>
 'week',
 
