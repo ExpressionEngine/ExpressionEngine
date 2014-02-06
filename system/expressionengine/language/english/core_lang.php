@@ -57,6 +57,9 @@ $lang = array(
 'dot' =>
 'dot',
 
+'and' =>
+'and',
+
 'or' =>
 'or',
 
@@ -208,6 +211,9 @@ Confirm the fieldtype file is located in the expressionengine/third_party/ direc
 // Date
 //----------------------------
 
+'ago' =>
+'%x ago',
+
 'year' =>
 'year',
 
@@ -219,6 +225,12 @@ Confirm the fieldtype file is located in the expressionengine/third_party/ direc
 
 'months' =>
 'months',
+
+'fortnight' =>
+'fortnight',
+
+'fortnights' =>
+'fortnights',
 
 'week' =>
 'week',

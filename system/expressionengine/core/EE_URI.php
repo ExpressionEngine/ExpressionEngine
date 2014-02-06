@@ -243,7 +243,7 @@ class EE_URI extends CI_URI {
 	 * @param   string  $base  Current base url, to make hte login redirect work
 	 * @return	string  New pretty cp url
 	 */
-	public function reformat($old, $base = BASE)
+	public function reformat($old, $base = NULL)
 	{
 		$new = str_replace(AMP, '&', $old);
 
@@ -251,6 +251,11 @@ class EE_URI extends CI_URI {
 		if (REQ != 'CP')
 		{
 			return $new;
+		}
+
+		if ( ! isset($base))
+		{
+			$base = BASE;
 		}
 
 		$base = str_replace(AMP, '&', $base);

@@ -38,6 +38,7 @@ class Updater {
 
 		$steps = new ProgressIterator(
 			array(
+				'_update_specialty_templates',
 				'_update_extension_quick_tabs',
 				'_extract_server_offset_config',
 				'_clear_cache',
@@ -57,6 +58,50 @@ class Updater {
 			$this->$v();
 		}
 		return TRUE;
+	}
+
+	// -------------------------------------------------------------------
+
+	/**
+	 * Update Specialty Templates
+	 *
+	 * Was updated in 2.6 and 2.7, but we need to add the line with {username}.
+	 * But only to installations that haven't modified the default.
+	 */
+	private function _update_specialty_templates()
+	{
+		ee()->db->where('template_name', 'reset_password_notification');
+		ee()->db->delete('specialty_templates');
+
+		$old_data = '{name},
+
+To reset your password, please go to the following page:
+
+{reset_url}
+
+If you do not wish to reset your password, ignore this message. It will expire in 24 hours.
+
+{site_name}
+{site_url}';
+
+		$new_data = array(
+			'template_data'=>'{name},
+
+To reset your password, please go to the following page:
+
+{reset_url}
+
+Then log in with your username: {username}
+
+If you do not wish to reset your password, ignore this message. It will expire in 24 hours.
+
+{site_name}
+{site_url}');
+
+		ee()->db->where('template_name', 'forgot_password_instructions')
+			->where('template_data', $old_data)
+			->update('specialty_templates', $new_data);
+
 	}
 
 	// -------------------------------------------------------------------------
