@@ -3889,7 +3889,7 @@ class EE_Template {
 	function _parse_var_single($name, $value, $string)
 	{
 		// parse date variables where applicable
-		if (in_array($name, $this->date_vars))
+		if (in_array($name, (array) $this->date_vars))
 		{
 			return $this->parse_date_variables($string, array($name => $value));
 		}
