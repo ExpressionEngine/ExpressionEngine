@@ -140,6 +140,42 @@ class EE_Route {
 	}
 
 	/**
+	 * Checks for equivalence, matches segment by segment
+	 * 
+	 * @param string  EE formatted template route 
+	 * @access public
+	 * @return bool  Returns True if routes are equivalent
+	 */
+	public function equals(EE_Route $route)
+	{
+		foreach($this->segments as $index => $segment)
+		{
+			$comparison = $route->segments[$index];
+
+			if (is_string($segment))
+			{
+				if($segment !== $comparison)
+				{
+					return FALSE;
+				}
+			}
+			else
+			{
+				$segment_rules = array_map('serialize', $segment->rules);
+				$comparison_rules = array_map('serialize', $comparison->rules);
+				$diff = array_diff($segment_rules, $comparison_rules);
+				$comparison_diff = array_diff($comparison_rules, $segment_rules);
+
+				if( ! (empty($diff) && empty($comparison_diff)))
+				{
+					return FALSE;
+				}
+			}
+		}
+		return TRUE;
+	}
+
+	/**
 	 * Parse the route and set the segments and named variables for this route.
 	 * 
 	 * @param string  EE formatted template route 
@@ -263,8 +299,8 @@ class EE_Route {
 	 * @access public
 	 * @return EE_Template_router_converter[]  An array of initialized validation rules
 	 */
-public function parse_rules($rules)
-{
+	public function parse_rules($rules)
+	{
 		$pos = 0;
 		$end = strlen($rules);
 		$used_rules = array();

@@ -3868,12 +3868,6 @@ class Design extends CP_Controller {
 			elseif (isset($group['template_route']))
 			{
 				$route = $group['template_route'];
-				$templates = $this->template_model->fetch(array('route' => $route));
-
-				if(count($templates) > 0 && $templates[0]->template_id !== $template_id)
-				{
-					$this->output->send_ajax_response(lang('duplicate_route'), TRUE);
-				}
 
 				// Must check whether route segments are required before compiling route
 				if ($required = element('route_required', $group))
@@ -3901,6 +3895,23 @@ class Design extends CP_Controller {
 				{
 					$this->output->send_ajax_response($error->getMessage(), TRUE);
 				}
+
+				$this->load->model('design_model');
+				$templates = $this->design_model->fetch_templates();
+
+				foreach ($templates->result() as $row)
+				{
+					if( ! empty($row->route) && $row->template_id != $template_id)
+					{
+						$existing_route = new EE_Route($row->route);
+
+						if($template_route->equals($existing_route))
+						{
+							$this->output->send_ajax_response(lang('duplicate_route'), TRUE);
+						}
+					}
+				}
+
 				$this->template_model->update_template_ajax($template_id, array('route_parsed' => $route_parsed));
 				$this->template_model->update_template_ajax($template_id, array('route' => $route));
 			}
