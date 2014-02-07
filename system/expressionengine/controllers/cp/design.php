@@ -68,6 +68,7 @@ class Design extends CP_Controller {
 				'global_variables'				=> BASE.AMP.'C=design'.AMP.'M=global_variables',
 				'snippets'						=> BASE.AMP.'C=design'.AMP.'M=snippets',
 				'sync_templates'				=> BASE.AMP.'C=design'.AMP.'M=sync_templates',
+				'url_manager'					=> BASE.AMP.'C=design'.AMP.'M=url_manager',
 			));
 		}
 
@@ -1361,6 +1362,8 @@ class Design extends CP_Controller {
 		$cache = $this->input->post('cache');
 		$hits = $this->input->post('hits');
 		$enable_http_auth = $this->input->post('enable_http_auth');
+		$template_route = $this->input->post('template_route');
+		$route_required = $this->input->post('route_required');
 		$no_auth_bounce = $this->input->post('no_auth_bounce');
 
 		if ($template_type !== FALSE && $template_type != 'null')
@@ -1740,6 +1743,8 @@ class Design extends CP_Controller {
 		$vars['save_template_file'] = ($query->row('save_template_file') != 'y') ? FALSE : TRUE ;
 		$vars['no_auth_bounce']		= $query->row('no_auth_bounce');
 		$vars['enable_http_auth']	= $query->row('enable_http_auth');
+		$vars['template_route'] 	= $query->row('route');
+		$vars['route_required'] 	= $query->row('route_required');
 
 		foreach(array('template_type', 'cache', 'refresh', 'allow_php', 'php_parse_location', 'hits') as $pref)
 		{
@@ -3159,6 +3164,46 @@ class Design extends CP_Controller {
 	// --------------------------------------------------------------------
 
 	/**
+	 * URL Manager
+	 *
+	 * URL Route Manager
+	 *
+	 * @access	public
+	 * @return	type
+	 */
+	function url_manager()
+	{
+		$vars = array();
+		$this->view->cp_page_title = lang('url_manager');
+		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager', lang('template_manager'));
+		$this->load->model('design_model');
+		$this->load->library('table');
+
+		$this->db->select(array('t.template_name', 'tg.group_name', 't.template_id', 't.route', 't.route_parsed'));
+		$this->db->from('templates AS t');
+		$this->db->join('template_groups AS tg', 'tg.group_id = t.group_id');
+		$this->db->where('t.site_id', $this->config->item('site_id'));
+		$this->db->order_by('tg.group_name, t.template_name', 'ASC');
+		$templates = $this->db->get();
+
+		$table = array();
+		foreach($templates->result() as $template)
+		{
+			$name = '<a id="templateId_'.$template->template_id.'" href="'.BASE.AMP.'C=design'.AMP.'M=edit_template'.AMP.'id='.$template->template_id.'">'.$template->template_name.'</a>';
+			$table[] = array($template->group_name, $name, $template->route);
+		}
+
+		$this->table->set_template(array(
+			'table_open' => '<table class="templateTable" border="0" cellspacing="0" cellpadding="0">'
+		));
+		$this->table->set_heading(array('Group', 'Template', 'Route'));
+		$vars['table'] = $this->table->generate($table);
+		$this->cp->render('design/url_manager', $vars);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Manager
 	 *
 	 * Template Manager
@@ -3373,7 +3418,9 @@ class Design extends CP_Controller {
 					'hits' => $row['hits'],
 					'access' => $access,
 					'no_auth_bounce' => $row['no_auth_bounce'],
-					'enable_http_auth' => $row['enable_http_auth']
+					'enable_http_auth' => $row['enable_http_auth'],
+					'template_route' => $row['route'],
+					'route_required' => $row['route_required']
 				);
 
 
@@ -3387,6 +3434,8 @@ class Design extends CP_Controller {
 			$vars['templates'][$row['group_id']][$row['template_id']]['group_id'] = $row['group_id'];
 			$vars['templates'][$row['group_id']][$row['template_id']]['template_name'] = $row['template_name'];
 			$vars['templates'][$row['group_id']][$row['template_id']]['template_type'] = $row['template_type'];
+			$vars['templates'][$row['group_id']][$row['template_id']]['template_route'] = $row['route'];
+			$vars['templates'][$row['group_id']][$row['template_id']]['route_required'] = $row['route_required'];
 			$vars['templates'][$row['group_id']][$row['template_id']]['enable_http_auth'] = $row['enable_http_auth'];  // needed for display
 
 			$vars['templates'][$row['group_id']][$row['template_id']]['hidden'] = (strncmp($row['template_name'], $hidden_indicator, $hidden_indicator_length) == 0) ? TRUE : FALSE;
@@ -3583,7 +3632,9 @@ class Design extends CP_Controller {
 				'hits' => $row['hits'],
 				'access' => $access,
 				'no_auth_bounce' => $row['no_auth_bounce'],
-				'enable_http_auth' => $row['enable_http_auth']
+				'enable_http_auth' => $row['enable_http_auth'],
+				'template_route' => $row['route'],
+				'route_required' => $row['route_required']
 			);
 		}
 
@@ -3748,6 +3799,7 @@ class Design extends CP_Controller {
 
 		ee()->output->enable_profiler(FALSE);
 		ee()->load->helper('array_helper');
+		ee()->load->library('template_router');
 
 		$payload = ee()->input->post('payload');
 
@@ -3756,6 +3808,7 @@ class Design extends CP_Controller {
 		foreach ($payload as $group)
 		{
 			$template_id = $group['template_id'];
+		    $query = $this->template_model->get_template_info($template_id);
 
 			if ( ! $this->_template_access_privs(array('template_id' => $template_id)))
 			{
@@ -3792,6 +3845,79 @@ class Design extends CP_Controller {
 				}
 
 				$this->template_model->update_template_ajax($template_id, array('no_auth_bounce' => $no_auth_bounce));
+			}
+            elseif ($required = element('route_required', $group))
+            {
+				if ($required != 'y' && $required != 'n')
+				{
+					$this->output->send_ajax_response(lang('unauthorized_access'), TRUE);
+				}
+
+				$this->template_model->update_template_ajax($template_id, array('route_required' => $required));
+
+				// We have to recompile the route when route_required changes
+				$route = $query->row('route');
+
+				try
+				{
+					$template_route = ee()->template_router->create_route($route, $required == 'y');
+				}
+				catch (Exception $error)
+				{
+					$this->output->send_ajax_response($error->getMessage(), TRUE);
+				}
+
+				$this->template_model->update_template_ajax($template_id, array('route_parsed' => $template_route->compile()));
+			}
+			elseif (isset($group['template_route']))
+			{
+				$route = $group['template_route'];
+
+				// Must check whether route segments are required before compiling route
+				if ($required = element('route_required', $group))
+				{
+					$required = ($required == 'y');
+				}
+				else
+				{
+					$required = ($query->row('route_required') == 'y');
+				}
+				try
+				{
+					if($route !== "")
+					{
+						$template_route = ee()->template_router->create_route($route, $required);
+						$route_parsed = $template_route->compile();
+					}
+					else
+					{
+						$route = NULL;
+						$route_parsed = NULL;
+					}
+				}
+				catch (Exception $error)
+				{
+					$this->output->send_ajax_response($error->getMessage(), TRUE);
+				}
+
+				$this->load->model('design_model');
+				$templates = $this->design_model->fetch_templates();
+
+				foreach ($templates->result() as $row)
+				{
+					if( ! empty($row->route) && $row->template_id != $template_id)
+					{
+						$existing_route = new EE_Route($row->route);
+
+						if($template_route->equals($existing_route))
+						{
+							$this->output->send_ajax_response(lang('duplicate_route'), TRUE);
+						}
+					}
+				}
+
+				$this->template_model->update_template_ajax($template_id, array('route_parsed' => $route_parsed));
+				$this->template_model->update_template_ajax($template_id, array('route' => $route));
 			}
 			else
 			{

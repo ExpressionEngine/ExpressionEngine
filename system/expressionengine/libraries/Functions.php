@@ -137,6 +137,33 @@ class EE_Functions {
 		}
 		// END Specials
 
+		// Handle template routes
+		$parts = explode(' ', $segment);
+
+		if (count($parts) > 1)
+		{
+			$template = array_shift($parts);
+			list($group, $template) = explode('/', $template);
+
+			if ( ! empty($group) && ! empty($template))
+			{
+				ee()->load->library('template_router');
+				$route = ee()->template_router->fetch_route($group, $template);
+
+				if( ! empty($route))
+				{
+					$options = array();
+
+					foreach($parts as $part) {
+						$part = explode('=', $part);
+						$options[$part[0]] = $part[1];
+					}
+
+					$segment = $route->build($options);
+				}
+			}
+		}
+
 		$base = $this->fetch_site_index(0, $sess_id).'/'.trim_slashes($segment);
 
 		$out = reduce_double_slashes($base);

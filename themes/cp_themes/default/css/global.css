@@ -2225,6 +2225,11 @@ div#template_keywords_reset span {
 
 .templateSearchResults h3 { margin:0; }
 
+/* URL Manager */
+#url_manager {
+	padding:			0 15px 15px 15px;
+}
+
 /* Edit Page */
 .status_open {
 	color:				#093;
