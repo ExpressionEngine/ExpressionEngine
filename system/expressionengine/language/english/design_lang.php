@@ -673,6 +673,9 @@ username and password to view the template.',
 'template_manager' =>
 'Template Manager',
 
+'url_manager' =>
+'URL Manager',
+
 'template_id_not_found' =>
 'Invalid template id selected',
 

@@ -3195,7 +3195,27 @@ class Design extends CP_Controller {
 	{
 		$vars = array();
 		$this->view->cp_page_title = lang('url_manager');
-		$vars['templates'] = $this->template_model->get_templates();
+		$this->load->model('design_model');
+		$this->load->library('table');
+
+		$this->db->select(array('t.template_name', 'tg.group_name', 't.route', 't.route_parsed'));
+		$this->db->from('templates AS t');
+		$this->db->join('template_groups AS tg', 'tg.group_id = t.group_id');
+		$this->db->where('t.site_id', $this->config->item('site_id'));
+		$this->db->order_by('tg.group_name, t.template_name', 'ASC');
+		$templates = $this->db->get();
+
+		$table = array();
+		foreach($templates->result() as $template)
+		{
+			$table[] = array($template->template_name, $template->group_name, $template->route);
+		}
+
+		$this->table->set_template(array(
+			'table_open' => '<table class="templateTable" border="0" cellspacing="0" cellpadding="0">'
+		));
+		$this->table->set_heading(array('Template', 'Group', 'Route'));
+		$vars['table'] = $this->table->generate($table);
 		$this->cp->render('design/url_manager', $vars);
 	}
 
@@ -3855,6 +3875,7 @@ class Design extends CP_Controller {
 
 				// We have to recompile the route when route_required changes
 				$route = $query->row('route');
+
 				try
 				{
 					$template_route = ee()->template_router->create_route($route, $required == 'y');
@@ -3863,6 +3884,7 @@ class Design extends CP_Controller {
 				{
 					$this->output->send_ajax_response($error->getMessage(), TRUE);
 				}
+
 				$this->template_model->update_template_ajax($template_id, array('route_parsed' => $template_route->compile()));
 			}
 			elseif (isset($group['template_route']))
