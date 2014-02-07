@@ -7,10 +7,6 @@
 			</div>
 
 			<div id="url_manager">
-				<div class="formHeading">
-					Match Route:
-					<input type="text" name="template_route" value=""/>
-				</div>
 				<?php echo $table ?>
 			</div>
 		</div>

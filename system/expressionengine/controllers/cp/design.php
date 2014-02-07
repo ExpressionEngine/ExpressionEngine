@@ -67,6 +67,7 @@ class Design extends CP_Controller {
 				'global_variables'				=> BASE.AMP.'C=design'.AMP.'M=global_variables',
 				'snippets'						=> BASE.AMP.'C=design'.AMP.'M=snippets',
 				'sync_templates'				=> BASE.AMP.'C=design'.AMP.'M=sync_templates',
+				'url_manager'					=> BASE.AMP.'C=design'.AMP.'M=url_manager',
 			));
 		}
 
@@ -3195,10 +3196,11 @@ class Design extends CP_Controller {
 	{
 		$vars = array();
 		$this->view->cp_page_title = lang('url_manager');
+		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager', lang('template_manager'));
 		$this->load->model('design_model');
 		$this->load->library('table');
 
-		$this->db->select(array('t.template_name', 'tg.group_name', 't.route', 't.route_parsed'));
+		$this->db->select(array('t.template_name', 'tg.group_name', 't.template_id', 't.route', 't.route_parsed'));
 		$this->db->from('templates AS t');
 		$this->db->join('template_groups AS tg', 'tg.group_id = t.group_id');
 		$this->db->where('t.site_id', $this->config->item('site_id'));
@@ -3208,13 +3210,14 @@ class Design extends CP_Controller {
 		$table = array();
 		foreach($templates->result() as $template)
 		{
-			$table[] = array($template->template_name, $template->group_name, $template->route);
+			$name = '<a id="templateId_'.$template->template_id.'" href="'.BASE.AMP.'C=design'.AMP.'M=edit_template'.AMP.'id='.$template->template_id.'">'.$template->template_name.'</a>';
+			$table[] = array($template->group_name, $name, $template->route);
 		}
 
 		$this->table->set_template(array(
 			'table_open' => '<table class="templateTable" border="0" cellspacing="0" cellpadding="0">'
 		));
-		$this->table->set_heading(array('Template', 'Group', 'Route'));
+		$this->table->set_heading(array('Group', 'Template', 'Route'));
 		$vars['table'] = $this->table->generate($table);
 		$this->cp->render('design/url_manager', $vars);
 	}
