@@ -299,7 +299,7 @@ class EE_Logger {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Deprecate a template tag and replace it in templates
+	 * Deprecate a template tag and replace it in templates and snippets
 	 *
 	 * @param  String $message     The message to send to the developer log,
 	 *                             uses developer() not deprecated()
@@ -313,8 +313,12 @@ class EE_Logger {
 		ee()->load->model('template_model');
 		$templates = ee()->template_model->fetch_last_edit(array(), TRUE);
 
-		foreach($templates as $template)
+		$changed = 0;
+
+		foreach ($templates as $template)
 		{
+			$old_template_data = $template->template_data;
+
 			// Find and replace the tags
 			$template->template_data = preg_replace(
 				$regex,
@@ -322,19 +326,63 @@ class EE_Logger {
 				$template->template_data
 			);
 
-			// save the template
-			// if saving to file, save the file
-			if ($template->loaded_from_file)
+			// Only save if the template data changed
+			if ($old_template_data != $template->template_data)
 			{
-				ee()->template_model->save_to_file($template);
-			}
-			else
-			{
+				// Keep track of how many changed templates we have
+				// so we know whether or not to bother the user with
+				// a deprecation notification
+				$changed++;
+
+				// save the template
 				ee()->template_model->save_to_database($template);
+
+				// if saving to file, save the file
+				if ($template->save_template_file)
+				{
+					ee()->template_model->save_to_file($template);
+				}
 			}
 		}
 
-		$this->developer($message, TRUE, 604800);
+		// Update snippets
+		ee()->load->model('snippet_model');
+		$snippets = ee()->snippet_model->fetch();
+
+		foreach ($snippets as $snippet)
+		{
+			$old_snippet_contents = $snippet->snippet_contents;
+
+			$snippet->snippet_contents = preg_replace(
+				$regex,
+				$replacement,
+				$snippet->snippet_contents
+			);
+
+			// Only save if the snippet data changed
+			if ($old_snippet_contents != $snippet->snippet_contents)
+			{
+				$changed++;
+
+				ee()->snippet_model->save($snippet);
+			}
+		}
+
+		// Update current tagdata if running outside the updater
+		if (isset(ee()->TMPL->tagdata))
+		{
+			ee()->TMPL->tagdata = preg_replace(
+				$regex,
+				$replacement,
+				ee()->TMPL->tagdata
+			);
+		}
+
+		// Only log the change if changes were made
+		if ($changed > 0)
+		{
+			$this->developer($message, TRUE, 604800);
+		}
 	}
 
 	// --------------------------------------------------------------------

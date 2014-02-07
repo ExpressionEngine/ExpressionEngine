@@ -173,9 +173,8 @@ class EE_Schema {
 			date int(10) unsigned NOT NULL,
 			session_id varchar(40) default '0' NOT NULL,
 			hash varchar(40) NOT NULL,
-			used tinyint(1) unsigned DEFAULT '0' NOT NULL,
 			PRIMARY KEY `hash_id` (`hash_id`),
-			KEY `hash` (`hash`)
+			KEY `session_id` (`session_id`)
 		)";
 
 		// CAPTCHA data
@@ -343,7 +342,9 @@ class EE_Schema {
 			smart_notifications char(1) NOT NULL default 'y',
 			language varchar(50) NOT NULL,
 			timezone varchar(50) NOT NULL,
-			time_format char(2) default 'us' NOT NULL,
+			time_format char(2) DEFAULT '12' NOT NULL,
+			date_format varchar(8) DEFAULT '%n/%j/%y' NOT NULL,
+			include_seconds char(1) DEFAULT 'n' NOT NULL,
 			cp_theme varchar(32) NULL DEFAULT NULL,
 			profile_theme varchar(32) NULL DEFAULT NULL,
 			forum_theme varchar(32) NULL DEFAULT NULL,

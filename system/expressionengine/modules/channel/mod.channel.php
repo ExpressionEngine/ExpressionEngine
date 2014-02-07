@@ -57,7 +57,7 @@ class Channel {
 
 	// These are used with the nested category trees
 
-	public $category_list  			= array();
+	public $category_list			= array();
 	public $cat_full_array			= array();
 	public $cat_array				= array();
 	public $temp_array				= array();
@@ -66,8 +66,8 @@ class Channel {
 	public $pagination;
 	public $pager_sql 				= '';
 
-	// SQL Caching
-	public $sql_cache_dir			= 'sql_cache/';
+	// SQL cache key prefix
+	protected $_sql_cache_prefix	= 'sql_cache';
 
 	// Misc. - Class variable usable by extensions
 	public $misc					= FALSE;
@@ -84,11 +84,7 @@ class Channel {
 		$this->EE =& get_instance();
 
 		ee()->load->library('pagination');
-		$this->pagination = ee()->pagination->create(__CLASS__);
-		// $this->pagination->per_page = $this->limit;
-
-		// Used by pagination to determine whether we're coming from the cache
-		$this->pagination->dynamic_sql = FALSE;
+		$this->pagination = ee()->pagination->create();
 
 		$this->query_string = (ee()->uri->page_query_string != '') ? ee()->uri->page_query_string : ee()->uri->query_string;
 
@@ -147,19 +143,7 @@ class Channel {
 			}
 		}
 
-		$cache_file = APPPATH.'cache/'.$this->sql_cache_dir.md5($tag.$this->uri);
-
-		if ( ! $fp = @fopen($cache_file, FOPEN_READ))
-		{
-			return FALSE;
-		}
-
-		flock($fp, LOCK_SH);
-		$sql = @fread($fp, filesize($cache_file));
-		flock($fp, LOCK_UN);
-		fclose($fp);
-
-		return $sql;
+		return ee()->cache->get('/'.$this->_sql_cache_prefix.'/'.md5($tag.$this->uri));
 	}
 
 	// ------------------------------------------------------------------------
@@ -171,36 +155,11 @@ class Channel {
 	{
 		$tag = ($identifier == '') ? ee()->TMPL->tagproper : ee()->TMPL->tagproper.$identifier;
 
-		$cache_dir  = APPPATH.'cache/'.$this->sql_cache_dir;
-		$cache_file = $cache_dir.md5($tag.$this->uri);
-
-		if ( ! @is_dir($cache_dir))
-		{
-			if ( ! @mkdir($cache_dir, DIR_WRITE_MODE))
-			{
-				return FALSE;
-			}
-
-			if ($fp = @fopen($cache_dir.'/index.html', FOPEN_WRITE_CREATE_DESTRUCTIVE))
-			{
-				fclose($fp);
-			}
-
-			@chmod($cache_dir, DIR_WRITE_MODE);
-		}
-
-		if ( ! $fp = @fopen($cache_file, FOPEN_WRITE_CREATE_DESTRUCTIVE))
-		{
-			return FALSE;
-		}
-
-		flock($fp, LOCK_EX);
-		fwrite($fp, $sql);
-		flock($fp, LOCK_UN);
-		fclose($fp);
-		@chmod($cache_file, FILE_WRITE_MODE);
-
-		return TRUE;
+		return ee()->cache->save(
+			'/'.$this->_sql_cache_prefix.'/'.md5($tag.$this->uri),
+			$sql,
+			0	// No TTL, cache lives on till cleared
+		);
 	}
 
 	// ------------------------------------------------------------------------
@@ -236,7 +195,7 @@ class Channel {
 
 		if ($this->enable['pagination'] == TRUE)
 		{
-			$this->pagination->get_template();
+			ee()->TMPL->tagdata = $this->pagination->prepare(ee()->TMPL->tagdata);
 		}
 
 		$save_cache = FALSE;
@@ -258,22 +217,57 @@ class Channel {
 				}
 			}
 
-			if (FALSE !== ($cache = $this->fetch_cache('pagination_count')))
+			if (($cache = $this->fetch_cache('pagination_count')) !== FALSE)
 			{
-				if (FALSE !== ($this->fetch_cache('field_pagination')))
+				// We need to establish the per_page limits if we're using
+				// cached SQL because limits are normally created when building
+				// the SQL query
+
+				// Check to see if we can actually deal with cat_limit. Has
+				// to have dynamic != 'no' and channel set with a category
+				// in the uri_string somewhere
+				$cat_limit = FALSE;
+				if (
+					(
+						in_array(ee()->config->item("reserved_category_word"), explode("/", ee()->uri->uri_string))
+						OR preg_match("#(^|\/)C(\d+)#", ee()->uri->uri_string, $match)
+					)
+					AND ee()->TMPL->fetch_param('dynamic') != 'no'
+					AND ee()->TMPL->fetch_param('channel')
+				)
 				{
-					if (FALSE !== ($pg_query = $this->fetch_cache('pagination_query')))
+					$cat_limit = TRUE;
+				}
+
+				if ($cat_limit AND is_numeric(ee()->TMPL->fetch_param('cat_limit')))
+				{
+					$per_page = ee()->TMPL->fetch_param('cat_limit');
+				}
+				else
+				{
+					$per_page = ( ! is_numeric(ee()->TMPL->fetch_param('limit'))) ? '100' : ee()->TMPL->fetch_param('limit');
+				}
+
+				if (($this->fetch_cache('field_pagination')) !== FALSE)
+				{
+					if (($pg_query = $this->fetch_cache('pagination_query')) !== FALSE)
 					{
 						$this->pagination->paginate = TRUE;
 						$this->pagination->field_pagination = TRUE;
 						$this->pagination->cfields = $this->cfields;
-						$this->pagination->build(trim($cache), $this->sql, ee()->db->query(trim($pg_query)));
+						$this->pagination->field_pagination_query = ee()->db->query(trim($pg_query));
+						if ($this->pagination->build(trim($cache), $per_page) == FALSE)
+						{
+							$this->sql = '';
+						}
 					}
 				}
 				else
 				{
-					$this->pagination->cfields = $this->cfields;
-					$this->pagination->build(trim($cache), $this->sql);
+					if ($this->pagination->build(trim($cache), $per_page) == FALSE)
+					{
+						$this->sql = '';
+					}
 				}
 			}
 		}
@@ -654,14 +648,8 @@ class Channel {
 		$page_marker	= FALSE;
 		$dynamic		= TRUE;
 
-		$this->pagination->dynamic_sql = TRUE;
-
-		/**------
-		/**  Is dynamic='off' set?
-		/**------*/
-
+		// Is dynamic='off' set?
 		// If so, we'll override all dynamically set variables
-
 		if (ee()->TMPL->fetch_param('dynamic') == 'no')
 		{
 			$dynamic = FALSE;
@@ -696,8 +684,6 @@ class Channel {
 		{
 			$qstring = $this->query_string;
 		}
-
-		$this->pagination->basepath = ee()->functions->create_url($this->uristr);
 
 		if ($qstring == '')
 		{
@@ -768,14 +754,8 @@ class Channel {
 
 				if (($dynamic OR ee()->TMPL->fetch_param('paginate')) && preg_match("#^P(\d+)|/P(\d+)#", $qstring, $match))
 				{
-					$this->pagination->offset = (isset($match[2])) ? $match[2] : $match[1];
-
-					$this->pagination->basepath = reduce_double_slashes(str_replace($match[0], '', $this->pagination->basepath));
-
-					$this->uristr  = reduce_double_slashes(str_replace($match[0], '', $this->uristr));
-
+					$this->uristr = reduce_double_slashes(str_replace($match[0], '', $this->uristr));
 					$qstring = trim_slashes(str_replace($match[0], '', $qstring));
-
 					$page_marker = TRUE;
 				}
 
@@ -896,7 +876,7 @@ class Channel {
 
 				if (preg_match("#^N(\d+)|/N(\d+)#", $qstring, $match))
 				{
-					$this->uristr  = reduce_double_slashes(str_replace($match[0], '', $this->uristr));
+					$this->uristr = reduce_double_slashes(str_replace($match[0], '', $this->uristr));
 
 					$qstring = trim_slashes(str_replace($match[0], '', $qstring));
 				}
@@ -1485,7 +1465,7 @@ class Channel {
 							$distinct = array_reverse($distinct);
 						}
 
-						$this->pagination->total_rows = count($distinct);
+						$this->pagination->total_items = count($distinct);
 
 						$cur = ($this->pagination->offset == '') ? 0 : $this->pagination->offset;
 
@@ -1558,7 +1538,7 @@ class Channel {
 							$distinct = array_reverse($distinct);
 						}
 
-						$this->pagination->total_rows = count($distinct);
+						$this->pagination->total_items = count($distinct);
 
 						$cur = ($this->pagination->offset == '') ? 0 : $this->pagination->offset;
 
@@ -1651,16 +1631,7 @@ class Channel {
 						$distinct = array_unique($distinct);
 						rsort($distinct);
 
-						/* Old code, did nothing
-						*
-						if (ee()->TMPL->fetch_param('week_sort') == 'desc')
-						{
-							$distinct = array_reverse($distinct);
-						}
-						*
-						*/
-
-						$this->pagination->total_rows = count($distinct);
+						$this->pagination->total_items = count($distinct);
 						$cur = ($this->pagination->offset == '') ? 0 : $this->pagination->offset;
 
 						/** ---------------------------------
@@ -2103,9 +2074,8 @@ class Channel {
 		// We do this hear so we can use the offset into next, then later one as well
 		$offset = ( ! ee()->TMPL->fetch_param('offset') OR ! is_numeric(ee()->TMPL->fetch_param('offset'))) ? '0' : ee()->TMPL->fetch_param('offset');
 
-		//  Do we need pagination?
+		// Do we need pagination?
 		// We'll run the query to find out
-
 		if ($this->pagination->paginate == TRUE)
 		{
 			$this->pager_sql = '';
@@ -2114,7 +2084,7 @@ class Channel {
 			{
 				$this->pager_sql = $sql_a.$sql_b.$sql;
 				$query = ee()->db->query($this->pager_sql);
-				$total = $query->num_rows;
+				$total = $query->num_rows();
 				$this->absolute_results = $total;
 
 				// Adjust for offset
@@ -2122,10 +2092,8 @@ class Channel {
 				{
 					$total = $total - $offset;
 				}
-
-				$this->pagination->cfields = $this->cfields;
-
-				$this->pagination->build($total, $this->sql);
+				$total = 0;
+				$this->pagination->build($total, $this->pagination->per_page);
 			}
 			else
 			{
@@ -2137,7 +2105,8 @@ class Channel {
 				$this->absolute_results = $total;
 
 				$this->pagination->cfields = $this->cfields;
-				$this->pagination->build($total, $this->sql, $query);
+				$this->pagination->field_pagination_query = $query;
+				$this->pagination->build($total, 1);
 
 				if (ee()->config->item('enable_sql_caching') == 'y')
 				{
@@ -3215,18 +3184,6 @@ class Channel {
 			}
 		}
 
-		$entry_date = array();
-		preg_match_all("/".LD."entry_date\s+format\s*=\s*(\042|\047)([^\\1]*?)\\1".RD."/s", $title_chunk, $matches);
-		{
-			$j = count($matches[0]);
-			for ($i = 0; $i < $j; $i++)
-			{
-				$matches[0][$i] = str_replace(array(LD,RD), '', $matches[0][$i]);
-
-				$entry_date[$matches[0][$i]] = $matches[2][$i];
-			}
-		}
-
 		$return_data = '';
 
 		if (ee()->TMPL->fetch_param('style') == '' OR ee()->TMPL->fetch_param('style') == 'nested')
@@ -3249,14 +3206,10 @@ class Channel {
 						$chunk = str_replace($tkey, reduce_double_slashes($tval.'/'.$row['entry_id']), $chunk);
 					}
 
+					$chunk = ee()->TMPL->parse_date_variables($chunk, array('entry_date' => $row['entry_date']));
+
 					foreach(ee()->TMPL->var_single as $key => $val)
 					{
-						if (isset($entry_date[$key]))
-						{
-							$val = str_replace($entry_date[$key], ee()->localize->format_date($entry_date[$key], $row['entry_date']), $val);
-							$chunk = ee()->TMPL->swap_var_single($key, $val, $chunk);
-						}
-
 						if ($key == 'entry_id')
 						{
 							$chunk = ee()->TMPL->swap_var_single($key, $row['entry_id'], $chunk);

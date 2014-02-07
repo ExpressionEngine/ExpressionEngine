@@ -123,7 +123,7 @@
 				});
 
 				return firstIndex;
-			},
+			}
 		};
 
 		// GO GO GO
