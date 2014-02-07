@@ -5,4 +5,4 @@
 	 * @return void
 	 */
 
-(function(a){({init:function(){this.extension_enable_verify()},extension_enable_verify:function(){EE.extensions_disabled&&a("#mainContent form").submit(function(b){return confirm(EE.extensions_disabled_warning)?(a(this).append(a("<input>",{type:"hidden",name:"enable_extensions",value:"yes"})),!0):!1})}}).init()})(jQuery);
+(function(a){({init:function(){this.extension_enable_verify()},extension_enable_verify:function(){EE.extensions_disabled&&a("#mainContent form").submit(function(){return confirm(EE.extensions_disabled_warning)?(a(this).append(a("<input>",{type:"hidden",name:"enable_extensions",value:"yes"})),!0):!1})}}).init()})(jQuery);
