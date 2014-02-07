@@ -2092,7 +2092,7 @@ class Channel {
 				{
 					$total = $total - $offset;
 				}
-				$total = 0;
+
 				$this->pagination->build($total, $this->pagination->per_page);
 			}
 			else
