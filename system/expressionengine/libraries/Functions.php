@@ -728,7 +728,7 @@ class EE_Functions {
 	function set_cookie($name = '', $value = '', $expire = '')
 	{
 		ee()->load->library('logger');
-		ee()->logger->deprecate('2.8', 'EE_Input::set_cookie()');
+		ee()->logger->deprecated('2.8', 'EE_Input::set_cookie()');
 
 		return ee()->input->set_cookie($name, $value, $expire);
 	}
