@@ -5768,9 +5768,10 @@ class Forum_Core extends Forum {
 
 			unset($_POST['ACT']);
 
-			require APPPATH.'libraries/Template.php';
-
-			ee()->TMPL = new EE_Template();
+			if ( ! isset(ee()->TMPL))
+			{
+				ee()->load->library('template', NULL, 'TMPL');
+			}
 
 			$x = explode('/',$this->trigger);
 
