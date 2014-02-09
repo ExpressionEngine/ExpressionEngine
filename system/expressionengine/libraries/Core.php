@@ -136,7 +136,7 @@ class EE_Core {
 
 		if (REQ == 'CP' && ee()->config->item('multiple_sites_enabled') == 'y')
 		{
-			$cookie_prefix = ee()->config->item('cookie_prefix');
+			$cookie_prefix = ee()->config->item('cookie_prefix').'_';
 			$cookie_path  = ee()->config->item('cookie_path');
 			$cookie_domain =  ee()->config->item('cookie_domain');
 			$cookie_httponly = ee()->config->item('cookie_httponly');
