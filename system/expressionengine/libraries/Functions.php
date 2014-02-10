@@ -2526,7 +2526,7 @@ class EE_Functions {
 						//     {if "value" OR "value"_global}Hello world{/if}
 						//
 						// ..and triggers our Invalid EE Conditional Variable error.
-						$match = preg_replace("/(?<![\w-])".preg_quote($key)."(?![\w-])/", $value, $match);
+						$match = preg_replace("/(?<![\w-])".preg_quote($key, '/')."(?![\w-])/", $value, $match);
 					}
 				}
 			}
