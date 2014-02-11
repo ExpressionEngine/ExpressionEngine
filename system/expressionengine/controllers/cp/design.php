@@ -3189,7 +3189,8 @@ class Design extends CP_Controller {
 		$table = array();
 		foreach($templates->result() as $template)
 		{
-			$name = '<a id="templateId_'.$template->template_id.'" href="'.BASE.AMP.'C=design'.AMP.'M=edit_template'.AMP.'id='.$template->template_id.'">'.$template->template_name.'</a>';
+			$url = cp_url('design/edit_template', array('id' => $template->template_id));
+			$name = '<a id="templateId_'.$template->template_id.'" href="'.$url.'">'.$template->template_name.'</a>';
 			$table[] = array($template->group_name, $name, $template->route);
 		}
 
