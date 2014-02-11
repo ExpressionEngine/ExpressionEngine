@@ -136,10 +136,15 @@ class EE_Core {
 
 		if (REQ == 'CP' && ee()->config->item('multiple_sites_enabled') == 'y')
 		{
-			$cookie_prefix = ee()->config->item('cookie_prefix').'_';
+			$cookie_prefix = ee()->config->item('cookie_prefix');
 			$cookie_path  = ee()->config->item('cookie_path');
 			$cookie_domain =  ee()->config->item('cookie_domain');
 			$cookie_httponly = ee()->config->item('cookie_httponly');
+
+			if ($cookie_prefix)
+			{
+				$cookie_prefix .= '_';
+			}
 
 			if (! empty($last_site_id) && is_numeric($last_site_id) && $last_site_id != ee()->config->item('site_id'))
 			{
