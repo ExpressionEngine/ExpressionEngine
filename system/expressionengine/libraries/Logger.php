@@ -388,6 +388,77 @@ class EE_Logger {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Deprecate tags within specialty templates (forum, profile, wiki)
+	 *
+	 * @param  String $message     The message to send to the developer log,
+	 *                             uses developer() not deprecated()
+	 * @param  String $regex       Regular expression to run through
+	 *                             preg_replace
+	 * @param  String $replacement Replacement to pass to preg_replace
+	 * @return void
+	 */
+	public function deprecate_specialty_template_tag($message, $regex, $replacement)
+	{
+		ee()->load->helper(array('directory', 'file'));
+
+		foreach (array('forum', 'wiki', 'profile') as $type)
+		{
+			if (is_dir($current_path = PATH_THEMES.$type.'_themes/'))
+			{
+				$this->_update_specialty_template(
+					directory_map($current_path),
+					$current_path,
+					$regex,
+					$replacement
+				);
+			}
+		}
+
+		$this->developer($message, TRUE, 604800);
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Update specialty templates given an array of specialty templates from
+	 * directory_map
+	 * @param  Mixed  $filename    Filename to replace or directory_map listing
+	 *                             (or section of listing)
+	 * @param  String $path        Full path to where $filename exists
+	 * @param  String $regex       Regular expression to run through
+	 *                             preg_replace
+	 * @param  String $replacement Replacement to pass to preg_replace
+	 * @return void
+	 */
+	private function _update_specialty_template($filename, $path, $regex, $replacement)
+	{
+		if (is_array($filename))
+		{
+			foreach ($filename as $current_directory => $file)
+			{
+				// Only append $current_directory if it's not numeric
+				$recursive_path = ( ! is_numeric($current_directory)) ? $path.$current_directory.'/' : $path;
+				return $this->_update_specialty_template($file, $recursive_path, $regex, $replacement);
+			}
+		}
+
+		$full_filename = $path.$filename;
+		if ($file_contents = read_file($full_filename))
+		{
+			write_file(
+				$full_filename,
+				preg_replace(
+					$regex,
+					$replacement,
+					$file_contents
+				)
+			);
+		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Builds deprecation notice language based on data given
 	 *
 	 * @param	array $deprecated Data array of deprecated function details

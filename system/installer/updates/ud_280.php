@@ -50,7 +50,8 @@ class Updater {
 				'_update_member_table',
 				'_update_session_config_names',
 				'_update_config_add_cookie_httponly',
-				'_replace_old_search_pagination'
+				'_replace_old_search_pagination',
+				'_replace_old_specialty_pagination'
 			)
 		);
 
@@ -195,7 +196,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 
 	/**
 	 * Add three new columns for necessary for Template Routes
-	 * 
+	 *
 	 * @access private
 	 * @return void
 	 */
@@ -491,8 +492,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 	// --------------------------------------------------------------------
 
 	/**
-	 * Renames admin_session_type and user_session_type in the site system
-	 * preferences and config (if needed)
+	 * Replaces old style pagination in search results tags
 	 *
 	 * @return void
 	 **/
@@ -519,6 +519,30 @@ If you do not wish to reset your password, ignore this message. It will expire i
 			'Replaced {exp:search:search_results} pagination loop\'s {if paginate} with {paginate}...{/paginate}. Switch to the new Channel style pagination.',
 			"/({exp:search:search_results(\s.*?)?}(.*?)){if paginate}(.*){\/if}((.*?){\/exp:search:search_results})/uis",
 			"$1{paginate}$4{/paginate}$5"
+		);
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Replaces old style pagination in specialty (Wiki, Forum, Profile)
+	 * templates
+	 * @return void
+	 */
+	private function _replace_old_specialty_pagination()
+	{
+		ee()->load->library('logger');
+
+		ee()->logger->deprecate_specialty_template_tag(
+			'Replaced specialty templates\' {if paginate} and {if pagination} with {paginate}...{/paginate}. Switch to the new Channel style pagination.',
+			"/{if (?:paginate|pagination)}(.*?){\/if}/uis",
+			"{paginate}$1{/paginate}"
+		);
+
+		ee()->logger->deprecate_specialty_template_tag(
+			'Replaced specialty template\'s {pagination} and {include:pagination_links} with {pagination_links}. Switch to the new Channel style pagination.',
+			"/{pagination}|{include:pagination_link}/uis",
+			"{pagination_links}"
 		);
 	}
 
