@@ -4297,7 +4297,7 @@ class EE_Template {
 
 			if (empty($units))
 			{
-				$units = $relative_date->valid_units;
+				$units = array('years', 'months', 'weeks', 'days', 'hours', 'minutes', 'seconds');
 			}
 
 			$relative_date->calculate($units);
