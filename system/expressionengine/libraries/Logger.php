@@ -442,8 +442,13 @@ class EE_Logger {
 			}
 		}
 
+		// Figure out if this is text, we're not updating images...
 		$full_filename = $path.$filename;
-		if ($file_contents = read_file($full_filename))
+		$type = explode('/', get_mime_by_extension($full_filename));
+
+		if ($type[0] === 'text'
+			&& ($file_contents = read_file($full_filename))
+			&& preg_match($regex, $file_contents))
 		{
 			write_file(
 				$full_filename,
