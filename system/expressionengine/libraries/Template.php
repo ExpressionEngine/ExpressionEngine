@@ -63,6 +63,7 @@ class EE_Template {
 	var $embed_vars		 	= array();		// This array can be set via the {embed} tag
 	var $layout_vars		= array();		// This array can be set via the {layout} tag
 	var $segment_vars		= array();		// Array of segment variables
+	var $template_route_vars = array();		// Array of segment variables
 
 	var $tagparts			= array();		// The parts of the tag: {exp:comment:form}
 	var $tagdata			= '';			// The chunk between tag pairs.  This is what modules will utilize
@@ -319,6 +320,12 @@ class EE_Template {
 		{
 			$this->template = str_replace(LD.'segment_'.$i.RD, ee()->uri->segment($i), $this->template);
 			$this->segment_vars['segment_'.$i] = ee()->uri->segment($i);
+		}
+
+		// Parse template route segments
+		foreach($this->template_route_vars as $key => $var)
+		{
+			$this->template = str_replace(LD.$key.RD, $var[0], $this->template);
 		}
 
 		// Parse {embed} tag variables
@@ -1925,12 +1932,30 @@ class EE_Template {
 		{
 			return $this->fetch_template('', 'index', TRUE);
 		}
+
 		// Is only the pagination showing in the URI?
 		elseif(count(ee()->uri->segments) == 1 &&
 				preg_match("#^(P\d+)$#", ee()->uri->segment(1), $match))
 		{
 			ee()->uri->query_string = $match['1'];
 			return $this->fetch_template('', 'index', TRUE);
+		}
+
+		// If we have a URI we check against template routes first
+		ee()->load->library('template_router');
+		try
+		{
+			$match = ee()->template_router->match(ee()->uri);
+			$this->template_route_vars = array();
+			foreach($match->matches as $key => $val)
+			{
+				$this->template_route_vars['segment:' . $key] = $val;
+			}
+			return $this->fetch_template($match->end_point['group'], $match->end_point['template'], FALSE);
+		}
+		catch (Exception $error)
+		{
+			// route not found
 		}
 
 		// Set the strict urls pref
@@ -3326,7 +3351,7 @@ class EE_Template {
 		}
 
 		// Final Prep, Safety On
-		$str = ee()->functions->prep_conditionals($str, array_merge($this->segment_vars, $this->embed_vars, ee()->config->_global_vars, $data), 'y');
+		$str = ee()->functions->prep_conditionals($str, array_merge($this->segment_vars, $this->template_route_vars, $this->embed_vars, ee()->config->_global_vars, $data), 'y');
 
 		// Protect Already Existing Unparsed PHP
 
@@ -3889,7 +3914,7 @@ class EE_Template {
 	function _parse_var_single($name, $value, $string)
 	{
 		// parse date variables where applicable
-		if (in_array($name, $this->date_vars))
+		if (in_array($name, (array) $this->date_vars))
 		{
 			return $this->parse_date_variables($string, array($name => $value));
 		}

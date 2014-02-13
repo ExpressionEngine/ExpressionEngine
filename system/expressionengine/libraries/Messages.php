@@ -202,7 +202,8 @@ class EE_Messages {
 
 
 
- 	// -----------------------------------
+
+	// -----------------------------------
 	//  Process Page :
 	//  Convert and Template into Content
 	// -----------------------------------
@@ -297,7 +298,7 @@ class EE_Messages {
 		}
 
 		return $template;
- 	}
+	}
 
 
 
@@ -475,9 +476,9 @@ class EE_Messages {
 		$rows	  = $this->retrieve_template('message_edit_folders_row');
 
 		$form_details = array('action'	=> $this->base_url.'edit_folders',
-						 	  'id'		=> 'edit_folders',
-						 	  'secure'	=> ($this->allegiance == 'cp') ? FALSE : TRUE
-						 	  );
+			'id'		=> 'edit_folders',
+			'secure'	=> ($this->allegiance == 'cp') ? FALSE : TRUE
+		);
 
 		$this->single_parts['form']['form_declaration']['edit_folders'] = ee()->functions->form_declaration($form_details);
 		$this->single_parts['include']['current_folders'] = '';
@@ -620,8 +621,8 @@ class EE_Messages {
 		/** ------------------------*/
 
 		$this->menu_items['single_items']['compose_message'] = array('text' => ee()->lang->line('compose_message'),
-						 											 'link' => $this->_create_path('compose'),
-						 											 'image' => '',
+																	 'link' => $this->_create_path('compose'),
+																	 'image' => '',
 																	 'style' => 'defaultBold');
 
 
@@ -719,7 +720,7 @@ class EE_Messages {
 																'image' => '',
 																'style' => '');
 
- 	}
+	}
 
 	function menu_array()
 	{
@@ -802,7 +803,7 @@ class EE_Messages {
 		}
 
 		$this->menu = $this->_process_template($template);
- 	}
+	}
 
 
 	// -----------------------------------
@@ -817,10 +818,10 @@ class EE_Messages {
 	function inbox()
 	{
 		$this->view_folder('1');
- 	}
+	}
 
 
- 	/** -----------------------------------
+	/** -----------------------------------
 	/**  Deleted Messages
 	/** -----------------------------------*/
 	function deleted()
@@ -835,25 +836,8 @@ class EE_Messages {
 	/** -----------------------------------*/
 	function drafts()
 	{
-		$row_count = 0;  // How many rows shown this far (i.e. offset)
-
-		if ($this->allegiance == 'user')
-		{
-			$row_count = $this->cur_id;
-		}
-		else
-		{
-			$row_count = (ee()->input->get_post('page') === false) ? 0 : ee()->input->get_post('page');
-		}
-
-		if ( ! is_numeric($row_count))
-		{
-			$row_count = 0;
-		}
-
 		$this->single_parts['lang']['folder_id']	= '1';
 		$this->single_parts['lang']['folder_name'] = ee()->lang->line('draft_messages');
-		$this->conditionals['paginate'] = 'n';
 
 		$this->conditionals['drafts_folder']	= 'y';
 		$this->conditionals['sent_folder']		= 'n';
@@ -888,10 +872,42 @@ class EE_Messages {
 		$query = ee()->db->query("SELECT COUNT(exp_message_data.message_id) AS count ".$sql);
 
 		/** ----------------------------------------
+		/**  Handle Pagination
+		/** ----------------------------------------*/
+		$template = $this->retrieve_template('message_folder');
+
+		// Check to see if the old style pagination exists
+		// @deprecated 2.8
+		if (stripos($template, LD.'if paginate'.RD) !== FALSE)
+		{
+			$template = preg_replace("/{if paginate}(.*?){\/if}/uis", "{paginate}$1{/paginate}", $template);
+			ee()->load->library('logger');
+			ee()->logger->developer('{if paginate} has been deprecated, use normal {paginate} tags in your message folder template.', TRUE, 604800);
+		}
+		if (stripos($template, LD.'include:pagination_link'.RD) !== FALSE)
+		{
+			$template = str_replace('{include:pagination_link}', '{pagination_links}', $template);
+			ee()->load->library('logger');
+			ee()->logger->developer('{include:pagination_link} has been deprecated, use the {pagination_links} tag in your message folder template.', TRUE, 604800);
+		}
+
+		// Load up pagination and start parsing
+		ee()->load->library('pagination');
+		$pagination = ee()->pagination->create();
+		$pagination->position = 'inline';
+		$template = $pagination->prepare($template);
+
+		if ($query->row('count') > $this->per_page)
+		{
+			$pagination->build($query->row('count'), $this->per_page);
+			$sql .= " LIMIT ".$pagination->offset.", ".$pagination->per_page;
+		}
+
+		/** ----------------------------------------
 		/**  If No Messages, we say so.
 		/** ----------------------------------------*/
 
-		if ($query->row('count')  == 0)
+		if ($query->row('count') == 0)
 		{
 			$this->title = ee()->lang->line('draft_messages');
 			$this->crumb = ee()->lang->line('draft_messages');
@@ -899,72 +915,23 @@ class EE_Messages {
 			$this->single_parts['include']['folder_rows']  = $this->retrieve_template('message_no_folder_rows');
 			$this->single_parts['form']['form_declaration']['modify_messages'] = '';
 
-			$this->return_data = $this->folder_wrapper(($folder_id == '0') ? 'n' : 'y');
-
-			return;
-		}
-
-		/** ----------------------------------------
-		/**  Determine Current Page
-		/** ----------------------------------------*/
-
-		$current_page = ($row_count / $this->per_page) + 1;
-
-		$total_pages = intval($query->row('count')  / $this->per_page);
-
-		if ($query->row('count')  % $this->per_page)
-		{
-			$total_pages++;
-		}
-
-		$this->single_parts['include']['page_count'] = ee()->lang->line('folder_page').' '.$current_page.' '.ee()->lang->line('of').' '.$total_pages;
-
-		/** -----------------------------
-		/**  Do we need pagination?
-		/** -----------------------------*/
-
-		$pager = '';
-
-		if ($query->row('count')  > $this->per_page)
-		{
-			ee()->load->library('pagination');
-
-			if ($this->allegiance == 'user')
-			{
-				$config['base_url'] = $this->_create_path('drafts');
-			}
-			else
-			{
-				$config['page_query_string'] = TRUE;
-				$config['base_url'] = $this->_create_path('drafts');
-				$config['query_string_segment'] = 'page';
-			}
-
-			$config['total_rows'] 	= $query->row('count');
-			$config['per_page']		= $this->per_page;
-			$config['cur_page']		= $row_count;
-			$config['first_link'] 	= ee()->lang->line('pag_first_link');
-			$config['last_link'] 	= ee()->lang->line('pag_last_link');
-
-			ee()->pagination->initialize($config);
-			$this->single_parts['include']['pagination_link'] = ee()->pagination->create_links();
-
-			$this->conditionals['paginate'] = 'y';
-
-			$sql .= " LIMIT ".$row_count.", ".$this->per_page;
+			return $this->return_data = $this->folder_wrapper(
+				$pagination->render($template),
+				($folder_id == '0') ? 'n' : 'y'
+			);
 		}
 
 		/** ----------------------------------------
 		/**  Retrieve Folder Contents
 		/** ----------------------------------------*/
 
-		$folder_rows_template	= $this->retrieve_template('message_folder_rows');
+		$folder_rows_template = $this->retrieve_template('message_folder_rows');
 		$r = '';
 		$i = 0;
 		$censor = FALSE;
 
 		if (ee()->config->item('enable_censoring') == 'y' && ee()->config->item('censored_words') != '')
-        {
+		{
 			ee()->load->library('typography');
 			ee()->typography->initialize();
 			$censor = TRUE;
@@ -1016,10 +983,10 @@ class EE_Messages {
 
 		$this->title = ee()->lang->line('draft_messages');
 		$this->crumb = ee()->lang->line('draft_messages');
-		$this->return_data = $this->folder_wrapper('y', 'n', 'n');
- 	}
 
-
+		$template = $pagination->render($template);
+		$this->return_data = $this->folder_wrapper($template, 'y', 'n', 'n');
+	}
 
 	/** -----------------------------------
 	/**  View Folder Contents
@@ -1031,8 +998,6 @@ class EE_Messages {
 		// ee()->uri->query_string - User
 		// ee()->input->get_post('folder') - CP
 		// ---------------------------------
-
-		$row_count = 0;  // How many rows shown this far (i.e. offset)
 
 		if ($folder_id == '')
 		{
@@ -1052,13 +1017,11 @@ class EE_Messages {
 					$x = explode('_', $this->cur_id);
 
 					$folder_id = ( ! is_numeric($x['0'])) ? 1 : $x['0'];
-					$row_count = ( ! isset($x['1']) OR ! is_numeric($x['1'])) ? 0 : $x['1'];
 				}
 			}
 			else
 			{
 				$folder_id = (ee()->input->get_post('folder') === false) ? '1' : ee()->input->get_post('folder');
-				$row_count = (ee()->input->get_post('page') === false) ? 0 : ee()->input->get_post('page');
 			}
 		}
 
@@ -1066,12 +1029,6 @@ class EE_Messages {
 		{
 			$folder_id = '1';
 		}
-
-		if ( ! is_numeric($row_count))
-		{
-			$row_count = 0;
-		}
-
 
 		/** ---------------------------------------
 		/**  Retrieve Folder Name for User
@@ -1100,7 +1057,6 @@ class EE_Messages {
 		$this->single_parts['lang']['folder_name'] = ee()->lang->line('messages_folder').' - '.$folder_name;
 		$this->single_parts['lang']['folder_id'] = $folder_id;
 		$this->current_folder = $folder_id;
-		$this->conditionals['paginate'] = 'n';
 
 		/** -----------------------------------
 		/**  Folder Conditionals
@@ -1167,6 +1123,38 @@ class EE_Messages {
 		$query = ee()->db->query("SELECT COUNT(exp_message_copies.copy_id) AS count ".$sql);
 
 		/** ----------------------------------------
+		/**  Handle Pagination
+		/** ----------------------------------------*/
+		$template = $this->retrieve_template('message_folder');
+
+		// Check to see if the old style pagination exists
+		// @deprecated 2.8
+		if (stripos($template, LD.'if paginate'.RD) !== FALSE)
+		{
+			$template = preg_replace("/{if paginate}(.*?){\/if}/uis", "{paginate}$1{/paginate}", $template);
+			ee()->load->library('logger');
+			ee()->logger->developer('{if paginate} has been deprecated, use normal {paginate} tags in your message folder template.', TRUE, 604800);
+		}
+		if (stripos($template, LD.'include:pagination_link'.RD) !== FALSE)
+		{
+			$template = str_replace('{include:pagination_link}', '{pagination_links}', $template);
+			ee()->load->library('logger');
+			ee()->logger->developer('{include:pagination_link} has been deprecated, use the {pagination_links} tag in your message folder template.', TRUE, 604800);
+		}
+
+		// Load up pagination and start parsing
+		ee()->load->library('pagination');
+		$pagination = ee()->pagination->create();
+		$pagination->position = 'inline';
+		$template = $pagination->prepare($template);
+
+		if ($query->row('count') > $this->per_page)
+		{
+			$pagination->build($query->row('count'), $this->per_page);
+			$sql .= " LIMIT ".$pagination->offset.", ".$pagination->per_page;
+		}
+
+		/** ----------------------------------------
 		/**  If No Messages, we say so.
 		/** ----------------------------------------*/
 
@@ -1175,64 +1163,13 @@ class EE_Messages {
 			$this->title = $folder_name;
 			$this->crumb = $folder_name;
 
-			$this->single_parts['include']['folder_rows']  = $this->retrieve_template('message_no_folder_rows');
+			$this->single_parts['include']['folder_rows'] = $this->retrieve_template('message_no_folder_rows');
 			$this->single_parts['form']['form_declaration']['modify_messages'] = '';
 
-			$this->return_data = $this->folder_wrapper(($folder_id == '0') ? 'n' : 'y');
-
-			return;
-		}
-
-		/** ----------------------------------------
-		/**  Determine Current Page
-		/** ----------------------------------------*/
-
-		$current_page = ($row_count / $this->per_page) + 1;
-
-		$total_pages = intval($query->row('count')  / $this->per_page);
-
-		if ($query->row('count')  % $this->per_page)
-		{
-			$total_pages++;
-		}
-
-		$this->single_parts['include']['page_count'] = ee()->lang->line('folder_page').' '.$current_page.' '.ee()->lang->line('of').' '.$total_pages;
-
-		/** -----------------------------
-		/**  Do we need pagination?
-		/** -----------------------------*/
-
-		$pager = '';
-
-		if ($query->row('count')  > $this->per_page)
-		{
-			ee()->load->library('pagination');
-
-			if ($this->allegiance == 'user')
-			{
-				//$config['base_url'] = $this->base_url.'view_folder/'.$folder_id.'_';
-				$config['base_url'] = $this->base_url.'view_folder/';
-				$config['prefix'] = $folder_id.'_';
-			}
-			else
-			{
-				$config['page_query_string'] = TRUE;
-				$config['base_url'] = $this->base_url.'view_folder'.AMP.'folder='.$folder_id;
-				$config['query_string_segment'] = 'page';
-			}
-
-			$config['total_rows'] 	= $query->row('count');
-			$config['per_page']		= $this->per_page;
-			$config['cur_page']		= $row_count;
-			$config['first_link'] 	= ee()->lang->line('pag_first_link');
-			$config['last_link'] 	= ee()->lang->line('pag_last_link');
-
-			ee()->pagination->initialize($config);
-			$this->single_parts['include']['pagination_link'] = ee()->pagination->create_links();
-
-			$this->conditionals['paginate'] = 'y';
-
-			$sql .= " LIMIT ".$row_count.", ".$this->per_page;
+			return $this->return_data = $this->folder_wrapper(
+				$pagination->render($template),
+				($folder_id == '0') ? 'n' : 'y'
+			);
 		}
 
 		/** ----------------------------------------
@@ -1246,7 +1183,7 @@ class EE_Messages {
 		$censor = FALSE;
 
 		if (ee()->config->item('enable_censoring') == 'y' && ee()->config->item('censored_words') != '')
-        {
+		{
 			ee()->load->library('typography');
 			ee()->typography->initialize();
 			$censor = TRUE;
@@ -1260,24 +1197,18 @@ class EE_Messages {
 			$data			= $row;
 			$message_ids[]	= $row['message_id'];
 
-			$data['msg_id']	= ($row['message_read'] == 'n') ? 'u'.$row['msg_id'] : $row['msg_id'];
-			$data['buddy_list_link'] = '';
-			$data['block_list_link'] = '';
-			$data['message_date'] = ee()->localize->human_time($data['message_date']);
-			$data['style']		  = ($i % 2) ? 'tableCellTwo' : 'tableCellOne';
-			$data['message_subject']  = ($censor === FALSE) ? $data['message_subject'] : ee()->typography->filter_censored_words($data['message_subject']);
+			$data['msg_id']				= ($row['message_read'] == 'n') ? 'u'.$row['msg_id'] : $row['msg_id'];
+			$data['message_date']		= ee()->localize->human_time($data['message_date']);
+			$data['style']				= ($i % 2) ? 'tableCellTwo' : 'tableCellOne';
+			$data['message_subject']	= ($censor === FALSE) ? $data['message_subject'] : ee()->typography->filter_censored_words($data['message_subject']);
 
 			if ($this->allegiance == 'user')
 			{
-				$data['message_url']  = $this->base_url.'view_message/'.$row['msg_id'].'/';
-				//$data['buddy_list_link'] = $this->_create_path('add_buddy').$row['sender_id'].'/';
-				//$data['block_list_link'] = $this->_create_path('add_block').$row['sender_id'].'/';
+				$data['message_url'] = $this->base_url.'view_message/'.$row['msg_id'].'/';
 			}
 			else
 			{
 				$data['message_url'] = $this->base_url.'view_message'.AMP.'msg='.$row['msg_id'];
-				//$data['buddy_list_link'] = $this->_create_path('add_buddy').AMP.'id='.$row['sender_id'];
-				//$data['block_list_link'] = $this->_create_path('add_block').AMP.'id='.$row['sender_id'];
 			}
 
 			// --------------------------------
@@ -1336,59 +1267,54 @@ class EE_Messages {
 		/** ----------------------------------------
 		/**  Return the Folder's Contents
 		/** ----------------------------------------*/
-
 		$this->title = $folder_name;
 		$this->crumb = $folder_name;
-		$this->return_data = $this->folder_wrapper(($folder_id == '0') ? 'n' : 'y');
- 	}
 
+		$this->return_data = $this->folder_wrapper(
+			$pagination->render($template),
+			($folder_id == '0') ? 'n' : 'y'
+		);
+	}
 
-
-
-
-
+	// -------------------------------------------------------------------------
 
 	/** ----------------------------------------
 	/**  Wrapper for a Folder and its Contents
 	/** ----------------------------------------*/
-	function folder_wrapper($deleted='y', $moved='y', $copied = 'y')
+	function folder_wrapper($folder_template, $deleted='y', $moved='y', $copied = 'y')
 	{
- 		$folder_template = $this->retrieve_template('message_folder');
+		$this->folders_pulldown();
 
- 		$this->folders_pulldown();
+		$this->single_parts['include']['hidden_js'] = $this->hidden_js();
+		$this->single_parts['include']['toggle_js'] = $this->toggle_js();
+		$this->single_parts['path']['compose_message'] = $this->_create_path('compose');
+		$this->single_parts['path']['erase_messages']  = $this->_create_path('erase');
 
- 		$this->single_parts['include']['hidden_js'] = $this->hidden_js();
- 		$this->single_parts['include']['toggle_js'] = $this->toggle_js();
- 		$this->single_parts['path']['compose_message'] = $this->_create_path('compose');
- 		$this->single_parts['path']['erase_messages']  = $this->_create_path('erase');
-
- 		$details = array('hidden_fields'	=> array('this_folder' => $this->single_parts['lang']['folder_id'], 'daction' => ''),
-						 'action'			=> $this->_create_path('modify_messages'),
-						 'id'				=> 'target',
-						 'enctype'			=> 'multi',
-						 'secure'			=> ($this->allegiance == 'cp') ? FALSE : TRUE
-						 );
+		$details = array(
+			'hidden_fields'	=> array('this_folder' => $this->single_parts['lang']['folder_id'], 'daction' => ''),
+			'action'			=> $this->_create_path('modify_messages'),
+			'id'				=> 'target',
+			'enctype'			=> 'multi',
+			'secure'			=> ($this->allegiance == 'cp') ? FALSE : TRUE
+		);
 
 		$this->single_parts['form']['form_declaration']['modify_messages']  = ee()->functions->form_declaration($details);
 
 		/** ---------------------------------
 		/**  Move, Copy, Delete Buttons
 		/** ---------------------------------*/
+		$this->_buttons($deleted, $moved, $copied);
 
- 		$this->_buttons($deleted, $moved, $copied);
+		/** -------------------------------
+		/**  Storage Graph
+		/** -------------------------------*/
+		if ( ! isset($this->single_parts['image']['messages_graph']))
+		{
+			$this->storage_graph();
+		}
 
- 		/** -------------------------------
- 		/**  Storage Graph
- 		/** -------------------------------*/
-
- 		if ( ! isset($this->single_parts['image']['messages_graph']))
- 		{
- 			$this->storage_graph();
- 		}
-
- 		return $this->_process_template($folder_template);
+		return $this->_process_template($folder_template);
 	}
-
 
 
 	/** ----------------------------------------
@@ -1398,68 +1324,67 @@ class EE_Messages {
 	{
 		$style = 'buttons';
 
-
- 		/** ---------------------------------
+		/** ---------------------------------
 		/**  Move, Copy, Delete Buttons
 		/** ---------------------------------*/
 
- 		if ($deleted == 'n')
- 		{
- 			$this->single_parts['form']['delete_button'] = '';
- 		}
- 		else
- 		{
- 			$this->single_parts['form']['delete_button'] = "<button type='submit' id='delete' name='delete' value='delete' ".
- 															"class='{$style}' title='{lang:delete_selected}' ".
- 															"onclick='dynamic_action(\"delete\");'>".
- 															"{lang:messages_delete}</button> ";
- 		}
+		if ($deleted == 'n')
+		{
+			$this->single_parts['form']['delete_button'] = '';
+		}
+		else
+		{
+			$this->single_parts['form']['delete_button'] = "<button type='submit' id='delete' name='delete' value='delete' ".
+															"class='{$style}' title='{lang:delete_selected}' ".
+															"onclick='dynamic_action(\"delete\");'>".
+															"{lang:messages_delete}</button> ";
+		}
 
- 		if ($moved == 'n')
- 		{
- 			$this->single_parts['form']['move_button'] = '';
- 		}
- 		else
- 		{
- 			$this->single_parts['form']['move_button'] = "<button type='submit' id='move' name='move' value='move' ".
- 														  "class='{$style}' title='{lang:move_selected}' ".
- 														  "onclick='dynamic_move();return false;'>".
- 														  "{lang:messages_move}</button>".NBS.NBS;
- 		}
+		if ($moved == 'n')
+		{
+			$this->single_parts['form']['move_button'] = '';
+		}
+		else
+		{
+			$this->single_parts['form']['move_button'] = "<button type='submit' id='move' name='move' value='move' ".
+														  "class='{$style}' title='{lang:move_selected}' ".
+														  "onclick='dynamic_move();return false;'>".
+														  "{lang:messages_move}</button>".NBS.NBS;
+		}
 
- 		if ($copied == 'n')
- 		{
- 			$this->single_parts['form']['copy_button'] = '';
- 		}
- 		else
- 		{
- 			$this->single_parts['form']['copy_button'] = "<button type='submit' id='copy' name='copy' value='copy' ".
- 														  "class='{$style}' title='{lang:copy_selected}' ".
- 														  "onclick='dynamic_copy();return false;'>".
- 														  "{lang:messages_copy}</button>".NBS.NBS;
- 		}
+		if ($copied == 'n')
+		{
+			$this->single_parts['form']['copy_button'] = '';
+		}
+		else
+		{
+			$this->single_parts['form']['copy_button'] = "<button type='submit' id='copy' name='copy' value='copy' ".
+														  "class='{$style}' title='{lang:copy_selected}' ".
+														  "onclick='dynamic_copy();return false;'>".
+														  "{lang:messages_copy}</button>".NBS.NBS;
+		}
 
- 		$this->single_parts['form']['forward_button'] = "<button type='submit' id='forward' name='forward' value='forward' ".
- 														 "class='{$style}' title='{lang:messages_forward}' ".
- 														 "onclick='dynamic_action(\"forward\");'>".
- 														 "{lang:messages_forward}</button>".NBS.NBS;
+		$this->single_parts['form']['forward_button'] = "<button type='submit' id='forward' name='forward' value='forward' ".
+														 "class='{$style}' title='{lang:messages_forward}' ".
+														 "onclick='dynamic_action(\"forward\");'>".
+														 "{lang:messages_forward}</button>".NBS.NBS;
 
 
- 		$this->single_parts['form']['reply_button'] = "<button type='submit' id='reply' name='reply' value='reply' ".
- 														  "class='{$style}' title='{lang:messages_reply}' ".
- 														  "onclick='dynamic_action(\"reply\");'>".
- 														  "{lang:messages_reply}</button>".NBS.NBS;
+		$this->single_parts['form']['reply_button'] = "<button type='submit' id='reply' name='reply' value='reply' ".
+														  "class='{$style}' title='{lang:messages_reply}' ".
+														  "onclick='dynamic_action(\"reply\");'>".
+														  "{lang:messages_reply}</button>".NBS.NBS;
 
- 		$this->single_parts['form']['reply_all_button'] = "<button type='submit' id='reply_all' name='reply_all' value='reply_all' ".
- 														  "class='{$style}' title='{lang:messages_reply_all}' ".
- 														  "onclick='dynamic_action(\"reply_all\");'>".
- 														  "{lang:messages_reply_all}</button>".NBS.NBS;
+		$this->single_parts['form']['reply_all_button'] = "<button type='submit' id='reply_all' name='reply_all' value='reply_all' ".
+														  "class='{$style}' title='{lang:messages_reply_all}' ".
+														  "onclick='dynamic_action(\"reply_all\");'>".
+														  "{lang:messages_reply_all}</button>".NBS.NBS;
 
- 		$this->single_parts['form']['add_button']	= $this->list_js().
- 													  "<button type='submit' id='add' name='add' value='add' ".
- 													  "class='{$style}' title='{lang:add_member}' ".
- 													  "onclick='list_addition();return false;'>".
- 													  "{lang:add_member}</button>".NBS.NBS;
+		$this->single_parts['form']['add_button']	= $this->list_js().
+													  "<button type='submit' id='add' name='add' value='add' ".
+													  "class='{$style}' title='{lang:add_member}' ".
+													  "onclick='list_addition();return false;'>".
+													  "{lang:add_member}</button>".NBS.NBS;
 
 
 	}
@@ -1471,30 +1396,30 @@ class EE_Messages {
 	/** ----------------------------------------*/
 	function retrieve_template($which='')
 	{
- 		if ($which == '')
- 		{
- 			$which = 'message_folder';
- 		}
-
- 		/** ----------------------------------
- 		/**  CP Templates - Quick, Easy
- 		/** ----------------------------------*/
-
- 		if ($this->allegiance == 'cp')
- 		{
- 			if ( ! class_exists('Messages_mcp'))
- 			{
- 				require APPPATH.'cp/cp.messages.php';
- 				$this->messages_cp = new Messages_mcp();
- 			}
-
- 			$which = $which.'_cp';
- 			return $this->messages_cp->{$which}();
- 		}
+		if ($which == '')
+		{
+			$which = 'message_folder';
+		}
 
 		/** ----------------------------------
- 		/**  User Templates - Slow, Painful
- 		/** ----------------------------------*/
+		/**  CP Templates - Quick, Easy
+		/** ----------------------------------*/
+
+		if ($this->allegiance == 'cp')
+		{
+			if ( ! class_exists('Messages_mcp'))
+			{
+				require APPPATH.'cp/cp.messages.php';
+				$this->messages_cp = new Messages_mcp();
+			}
+
+			$which = $which.'_cp';
+			return $this->messages_cp->{$which}();
+		}
+
+		/** ----------------------------------
+		/**  User Templates - Slow, Painful
+		/** ----------------------------------*/
 //$debug = debug_backtrace();
 //echo '<pre>';print_r($debug[1]);echo'</pre>';exit;
 		if ($this->theme_path == '')
@@ -1617,8 +1542,8 @@ DOH;
 
 		$form_details = array('hidden_fields' => array('which_field' => $which_field),
 							  'action'	=> $this->_create_path('do_member_search', AMP.'Z=1'),
-						 	  'secure'	=> ($this->allegiance == 'cp') ? FALSE : TRUE
-						 	  );
+							  'secure'	=> ($this->allegiance == 'cp') ? FALSE : TRUE
+							  );
 
 		$this->single_parts['form']['form_declaration']['do_member_search'] = ee()->functions->form_declaration($form_details);
 		$this->single_parts['include']['message'] = $message;
@@ -1709,7 +1634,7 @@ DOH;
 			ee()->functions->redirect($redirect_url);
 		}
 
-  		$Q = implode(" AND ", $search_query);
+		$Q = implode(" AND ", $search_query);
 
 		$sql = "SELECT DISTINCT exp_members.screen_name FROM exp_members, exp_member_groups
 				WHERE exp_members.group_id = exp_member_groups.group_id
@@ -1759,8 +1684,8 @@ DOH;
 
 		$form_details = array('hidden_fields' => array('which' => $which),
 							  'action'	=> $this->_create_path('do_buddy_search', AMP.'Z=1'),
-						 	  'secure'	=> ($this->allegiance == 'cp') ? FALSE : TRUE
-						 	  );
+							  'secure'	=> ($this->allegiance == 'cp') ? FALSE : TRUE
+							  );
 
 		$this->single_parts['form']['form_declaration']['do_member_search'] = ee()->functions->form_declaration($form_details);
 		$this->single_parts['include']['message'] = $message;
@@ -1851,7 +1776,7 @@ DOH;
 			ee()->functions->redirect($redirect_url);
 		}
 
-  		$Q = implode(" AND ", $search_query);
+		$Q = implode(" AND ", $search_query);
 
 		$sql = "SELECT DISTINCT exp_members.member_id, exp_members.screen_name FROM exp_members, exp_member_groups
 				WHERE exp_members.group_id = exp_member_groups.group_id
@@ -1906,7 +1831,7 @@ DOH;
 		$results = ee()->db->query($tql);
 
 		$this->total_messages = $query->row('count') ; + $results->row('count') ;
- 	}
+	}
 
 
 
@@ -1948,15 +1873,16 @@ DOH;
 				$this->single_parts['image']['messages_graph']['width'] -= 6;
 			}
 
- 			if ($this->single_parts['image']['messages_graph']['width'] > $this->graph_width)
- 			{
- 				$this->single_parts['image']['messages_graph']['width'] = $this->graph_width;
- 			}
- 		}
+			if ($this->single_parts['image']['messages_graph']['width'] > $this->graph_width)
+			{
+				$this->single_parts['image']['messages_graph']['width'] = $this->graph_width;
+			}
+		}
 
- 		$this->single_parts['lang']['storage_status']		= str_replace(array('%x', '%y'), array($this->single_parts['lang']['total_messages'], $this->single_parts['lang']['max_messages']), ee()->lang->line('storage_status'));
+		$this->single_parts['lang']['storage_status']		= str_replace(array('%x', '%y'), array($this->single_parts['lang']['total_messages'], $this->single_parts['lang']['max_messages']), ee()->lang->line('storage_status'));
+
 		$this->single_parts['lang']['storage_percentage']	= str_replace('%x', $this->single_parts['lang']['usage_percent'], ee()->lang->line('storage_percentage'));
- 	}
+	}
 
 
 
@@ -2074,7 +2000,8 @@ DOH;
 		}
 
 		ee()->functions->redirect($url);
- 	}
+	}
+
 
 
 
@@ -2174,12 +2101,12 @@ DOH;
 		/** ----------------------------------------*/
 
 		ee()->functions->redirect($this->_create_path('inbox'));
- 	}
+	}
 
 
 
 
- 	/** -----------------------------------
+
 	/**  Convert Recipients to Valid List
 	/** -----------------------------------*/
 	function convert_recipients($str, $type='string', $by='screen_name')
@@ -2515,7 +2442,7 @@ DOH;
 				$data = $this->_message_data($id, '', $this->member_id);
 
 				if (ee()->config->item('enable_censoring') == 'y' && ee()->config->item('censored_words') != '')
-        		{
+				{
 					ee()->load->library('typography');
 					ee()->typography->initialize();
 
@@ -2585,7 +2512,7 @@ DOH;
 				$data = $this->_message_data($id, $this->member_id);
 
 				if (ee()->config->item('enable_censoring') == 'y' && ee()->config->item('censored_words') != '')
-        		{
+				{
 					ee()->load->library('typography');
 					ee()->typography->initialize();
 
@@ -2625,34 +2552,34 @@ DOH;
 			$this->single_parts['input']['cc']				  = '';
 			$this->single_parts['input']['recipients']		  = ( ! ee()->input->get_post('recipients')) ? '' : $this->convert_recipients(ee()->input->get_post('recipients'));
 			$this->single_parts['include']['preview_message'] = '';
- 		}
+		}
 
- 		$details['hidden_fields'] = $hidden;
+		$details['hidden_fields'] = $hidden;
 
- 		$this->single_parts['form']['form_declaration']['messages'] = ee()->functions->form_declaration($details);
+		$this->single_parts['form']['form_declaration']['messages'] = ee()->functions->form_declaration($details);
 
- 		// --------------------------------------------
- 		//  If upload path is not specified we
- 		//  override all attachment related settings
- 		// --------------------------------------------
+		// --------------------------------------------
+		//  If upload path is not specified we
+		//  override all attachment related settings
+		// --------------------------------------------
 
- 		if ($this->upload_path == '')
- 		{
- 			$this->conditionals['attachments_allowed']	= 'n';
+		if ($this->upload_path == '')
+		{
+			$this->conditionals['attachments_allowed']	= 'n';
 			$this->conditionals['attachments_exist']		  = 'n';
 			$this->single_parts['include']['attachments'] = '';
- 		}
+		}
 
- 		/** ---------------------------------------
- 		/**  Error Message Displaying, if any
- 		/** ---------------------------------------*/
+		/** ---------------------------------------
+		/**  Error Message Displaying, if any
+		/** ---------------------------------------*/
 
- 		if (is_array($errors) && count($errors) > 0)
- 		{
- 			$this->single_parts['lang']['error_message'] = implode(BR, $errors);
+		if (is_array($errors) && count($errors) > 0)
+		{
+			$this->single_parts['lang']['error_message'] = implode(BR, $errors);
 
- 			$this->single_parts['include']['submission_error'] = $this->_process_template($this->retrieve_template('message_submission_error'));
- 		}
+			$this->single_parts['include']['submission_error'] = $this->_process_template($this->retrieve_template('message_submission_error'));
+		}
 
 		/** ----------------------------------------
 		/**  Return the Compose Form Contents
@@ -2662,83 +2589,83 @@ DOH;
 		$this->crumb = ee()->lang->line('compose_message');
 		$this->return_data = $this->_process_template($template);
 
- 	}
+	}
 
 
 
- 	//----------------------------------------
+	//----------------------------------------
 	// 	Fetch Message Data
 	//  Massage that message data, si vous plait
 	//----------------------------------------
 
- 	function _message_data($id, $sender='', $recipient='')
- 	{
+	function _message_data($id, $sender='', $recipient='')
+	{
 
- 		$data = array();
+		$data = array();
 
- 		// ------------------------------------------
- 		//  If $recipient is set, this is a message
- 		//  being viewed. So, $id is actually the copy_id
- 		//  in the exp_message_copies table.
- 		// -----------------------------------------
+		// ------------------------------------------
+		//  If $recipient is set, this is a message
+		//  being viewed. So, $id is actually the copy_id
+		//  in the exp_message_copies table.
+		// -----------------------------------------
 
- 		if ($recipient != '' && is_numeric($recipient))
- 		{
- 			$query = ee()->db->query("SELECT message_id, message_folder, message_read FROM exp_message_copies
- 								 WHERE copy_id = '".ee()->db->escape_str($id)."'
- 								 AND recipient_id = '".ee()->db->escape_str($recipient)."'");
+		if ($recipient != '' && is_numeric($recipient))
+		{
+			$query = ee()->db->query("SELECT message_id, message_folder, message_read FROM exp_message_copies
+								 WHERE copy_id = '".ee()->db->escape_str($id)."'
+								 AND recipient_id = '".ee()->db->escape_str($recipient)."'");
 
- 			if ($query->num_rows() == 0)
- 			{
- 				return FALSE;
- 			}
+			if ($query->num_rows() == 0)
+			{
+				return FALSE;
+			}
 
- 			$mid = $query->row('message_id') ;
- 			$data['folder_id'] = $query->row('message_folder') ;
- 			$data['message_read'] = $query->row('message_read') ;
- 		}
- 		else
- 		{
- 			$mid = $id;
- 		}
+			$mid = $query->row('message_id') ;
+			$data['folder_id'] = $query->row('message_folder') ;
+			$data['message_read'] = $query->row('message_read') ;
+		}
+		else
+		{
+			$mid = $id;
+		}
 
- 		$sql = "SELECT * FROM exp_message_data WHERE message_id = '".ee()->db->escape_str($mid)."'";
+		$sql = "SELECT * FROM exp_message_data WHERE message_id = '".ee()->db->escape_str($mid)."'";
 
- 		if ($sender != '' && is_numeric($sender))
- 		{
- 			$sql .= " AND sender_id = '".ee()->db->escape_str($sender)."'";
- 		}
+		if ($sender != '' && is_numeric($sender))
+		{
+			$sql .= " AND sender_id = '".ee()->db->escape_str($sender)."'";
+		}
 
- 		$query = ee()->db->query($sql);
+		$query = ee()->db->query($sql);
 
- 		if ($query->num_rows() == 0)
- 		{
- 			return FALSE;
- 		}
+		if ($query->num_rows() == 0)
+		{
+			return FALSE;
+		}
 
- 		/** ---------------------------------
- 		/**  Do a Little Data Work
- 		/** ---------------------------------*/
+		/** ---------------------------------
+		/**  Do a Little Data Work
+		/** ---------------------------------*/
 
- 		foreach($query->row_array() as $key => $value)
- 		{
- 			$data[str_replace('message_', '', $key)] = $value;
- 		}
+		foreach($query->row_array() as $key => $value)
+		{
+			$data[str_replace('message_', '', $key)] = $value;
+		}
 
- 		$data = str_replace('message_', '', $data);
+		$data = str_replace('message_', '', $data);
 
- 		$data['recipients']  = str_replace('|', ', ', $data['recipients']);
- 		$data['cc'] 		 = str_replace('|', ', ', $data['cc']);
- 		$data['attachments'] = array();
- 		$data['date']		 = ee()->localize->human_time($data['date']);
+		$data['recipients']  = str_replace('|', ', ', $data['recipients']);
+		$data['cc'] 		 = str_replace('|', ', ', $data['cc']);
+		$data['attachments'] = array();
+		$data['date']		 = ee()->localize->human_time($data['date']);
 
- 		$results = ee()->db->query("SELECT screen_name FROM exp_members WHERE member_id = '".ee()->db->escape_str($data['sender_id'])."'");
+		$results = ee()->db->query("SELECT screen_name FROM exp_members WHERE member_id = '".ee()->db->escape_str($data['sender_id'])."'");
 
- 		$data['sender'] = $results->row('screen_name') ;
+		$data['sender'] = $results->row('screen_name') ;
 
- 		/** ---------------------------------
- 		/**  Create Preview of Message
- 		/** ---------------------------------*/
+		/** ---------------------------------
+		/**  Create Preview of Message
+		/** ---------------------------------*/
 
 		ee()->load->library('typography');
 		ee()->typography->initialize(array(
@@ -2746,39 +2673,39 @@ DOH;
 				);
 
 		$this->single_parts['include']['parsed_message'] = ee()->typography->parse_type(stripslashes($data['body']),
-									 		 								  array(
-									 		 								  'text_format'	=> 'xhtml',
-									 		 								  'html_format'	=> $this->html_format,
-									 		 								  'auto_links'	=> $this->auto_links,
-									 		 								  'allow_img_url' => 'n'
-									 		 								 ));
+																			  array(
+																			  'text_format'	=> 'xhtml',
+																			  'html_format'	=> $this->html_format,
+																			  'auto_links'	=> $this->auto_links,
+																			  'allow_img_url' => 'n'
+																			 ));
 
 		$data['preview'] = $this->_process_template($this->retrieve_template('preview_message'));
 
- 		/** ---------------------------------
- 		/**  Fetch Attachment Information
- 		/** ---------------------------------*/
+		/** ---------------------------------
+		/**  Fetch Attachment Information
+		/** ---------------------------------*/
 
- 		if ($query->row('message_attachments')  == 'y')
- 		{
- 			$results = ee()->db->query("SELECT attachment_name, attachment_id, attachment_size, attachment_hash
- 									FROM exp_message_attachments
- 									WHERE message_id = '".ee()->db->escape_str($mid)."'");
+		if ($query->row('message_attachments')  == 'y')
+		{
+			$results = ee()->db->query("SELECT attachment_name, attachment_id, attachment_size, attachment_hash
+									FROM exp_message_attachments
+									WHERE message_id = '".ee()->db->escape_str($mid)."'");
 
- 			if ($results->num_rows() > 0)
- 			{
- 				$data['attach'] = array();
+			if ($results->num_rows() > 0)
+			{
+				$data['attach'] = array();
 
- 				foreach($results->result_array() as $row)
- 				{
- 					$data['attachments'][] = $row;
- 					$data['attach'][] = $row['attachment_id'];
- 				}
- 			}
- 		}
+				foreach($results->result_array() as $row)
+				{
+					$data['attachments'][] = $row;
+					$data['attach'][] = $row['attachment_id'];
+				}
+			}
+		}
 
- 		return $data;
- 	}
+		return $data;
+	}
 
 
 
@@ -2787,25 +2714,25 @@ DOH;
 	//  for the Compose Page
 	//----------------------------------------
 
- 	function _display_attachments($data)
- 	{
- 		$main = $this->retrieve_template('message_attachments');
- 		$rows = $this->retrieve_template('message_attachment_rows');
+	function _display_attachments($data)
+	{
+		$main = $this->retrieve_template('message_attachments');
+		$rows = $this->retrieve_template('message_attachment_rows');
 
- 		$this->single_parts['include']['attachment_rows'] = '';
+		$this->single_parts['include']['attachment_rows'] = '';
 
- 		for($i = 0, $l = count($data); $i < $l; $i++)
- 		{
- 			foreach($data[$i] as $key => $value)
- 			{
- 				$this->single_parts['input'][$key] = $value;
- 			}
+		for($i = 0, $l = count($data); $i < $l; $i++)
+		{
+			foreach($data[$i] as $key => $value)
+			{
+				$this->single_parts['input'][$key] = $value;
+			}
 
- 			$this->single_parts['include']['attachment_rows'] .= $this->_process_template($rows);
- 		}
+			$this->single_parts['include']['attachment_rows'] .= $this->_process_template($rows);
+		}
 
- 		return $this->_process_template($main);
- 	}
+		return $this->_process_template($main);
+	}
 
 
 	//----------------------------------------
@@ -2813,11 +2740,11 @@ DOH;
 	//  for the viewing of a message
 	//----------------------------------------
 
- 	function _attachment_links($data)
- 	{
- 		$rows = $this->retrieve_template('message_attachment_link');
+	function _attachment_links($data)
+	{
+		$rows = $this->retrieve_template('message_attachment_link');
 
- 		if ($this->allegiance == 'user')
+		if ($this->allegiance == 'user')
 		{
 			$url = $this->base_url.'attachment/';
 		}
@@ -2826,26 +2753,26 @@ DOH;
 			$url = $this->base_url.'attachment'.AMP.'aid=';
 		}
 
- 		$r = '';
+		$r = '';
 
- 		for($i = 0, $l = count($data); $i < $l; $i++)
- 		{
- 			foreach($data[$i] as $key => $value)
- 			{
- 				$this->single_parts['input'][$key] = $value;
- 			}
+		for($i = 0, $l = count($data); $i < $l; $i++)
+		{
+			foreach($data[$i] as $key => $value)
+			{
+				$this->single_parts['input'][$key] = $value;
+			}
 
- 			$this->single_parts['path']['download_link'] = ($this->allegiance == 'user') ? $url.$data[$i]['attachment_hash'].'/' : $url.$data[$i]['attachment_hash'];
+			$this->single_parts['path']['download_link'] = ($this->allegiance == 'user') ? $url.$data[$i]['attachment_hash'].'/' : $url.$data[$i]['attachment_hash'];
 
- 			$r .= $this->_process_template($rows);
- 		}
+			$r .= $this->_process_template($rows);
+		}
 
- 		return $r;
- 	}
+		return $r;
+	}
 
 
 
- 	/** -----------------------------------
+	/** -----------------------------------
 	/**  Send Message
 	/** -----------------------------------*/
 	function send_message()
@@ -2869,7 +2796,7 @@ DOH;
 
 
 
- 	/** -----------------------------------
+	/** -----------------------------------
 	/**  View a Single Message
 	/** -----------------------------------*/
 	function view_message($copy_id = '')
@@ -2902,7 +2829,7 @@ DOH;
 		}
 
 		if (ee()->config->item('enable_censoring') == 'y' && ee()->config->item('censored_words') != '')
-        {
+		{
 			ee()->load->library('typography');
 			ee()->typography->initialize();
 
@@ -2999,7 +2926,7 @@ DOH;
 		$this->crumb = ee()->lang->line('private_message');
 		$this->return_data = $this->_process_template($this->retrieve_template('view_message'));
 
- 	}
+	}
 
 
 	/** --------------------------------
@@ -3101,9 +3028,9 @@ DOH;
 
 		$form_details = array('hidden_fields' => array('name' => '','description' => '', 'which' => 'buddy', 'daction' => ''),
 							  'action'		  => $this->_create_path('edit_list'),
-						 	  'id'			  => 'target',
-						 	  'secure'		  => ($this->allegiance == 'cp') ? FALSE : TRUE
-						 	  );
+							  'id'			  => 'target',
+							  'secure'		  => ($this->allegiance == 'cp') ? FALSE : TRUE
+							  );
 
 		$this->single_parts['form']['form_declaration']['list'] = ee()->functions->form_declaration($form_details);
 		$this->single_parts['lang']['list_title'] =	ee()->lang->line('buddy_list');
@@ -3173,14 +3100,13 @@ DOH;
 
 	function bulletin_board($message='')
 	{
-			ee()->db->query("UPDATE exp_members SET last_view_bulletins = '".ee()->localize->now."' WHERE member_id = '{$this->member_id}'");
+		ee()->db->query("UPDATE exp_members SET last_view_bulletins = '".ee()->localize->now."' WHERE member_id = '{$this->member_id}'");
 
-			$this->title = ee()->lang->line('bulletin_board');
+		$this->title = ee()->lang->line('bulletin_board');
 		$this->crumb = ee()->lang->line('bulletin_board');
 
 		$this->conditionals['bulletins']		= 'n';
 		$this->conditionals['no_bulletins']		 = 'y';
-		$this->conditionals['paginate']			 = 'n';
 		$this->conditionals['can_post_bulletin'] = (ee()->session->userdata['can_send_bulletins'] == 'y') ? 'y' : 'n';
 
 		$this->single_parts['include']['message'] = $message;
@@ -3201,9 +3127,9 @@ DOH;
 				 AND bulletin_date < ".ee()->localize->now."
 				 AND
 				 (
-				 	b.bulletin_expires > ".ee()->localize->now."
-				 	OR
-				 	b.bulletin_expires = 0
+					b.bulletin_expires > ".ee()->localize->now."
+					OR
+					b.bulletin_expires = 0
 				 )
 				 ORDER BY b.bulletin_date DESC";
 
@@ -3225,72 +3151,42 @@ DOH;
 		}
 
 		/** ----------------------------------------
-		/**  Determine Current Page
+		/**  Handle Pagination
 		/** ----------------------------------------*/
 
-		$row_count = 0;  // How many rows shown this far (i.e. offset)
+		$template = $this->retrieve_template('bulletin_board');
 
-		if ($this->allegiance == 'user')
+		// Check to see if the old style pagination exists
+		// @deprecated 2.8
+		if (stripos($template, LD.'if paginate'.RD) !== FALSE)
 		{
-			$row_count = $this->cur_id;
-		}
-		else
-		{
-			$row_count = (ee()->input->get_post('page') === false) ? 0 : ee()->input->get_post('page');
-		}
-
-		if ( ! is_numeric($row_count))
-		{
-			$row_count = 0;
+			$template = preg_replace("/{if paginate}(.*?){\/if}/uis", "{paginate}$1{/paginate}", $template);
+			ee()->load->library('logger');
+			ee()->logger->developer('{if paginate} has been deprecated, use normal {paginate} tags in your bulletin board template.', TRUE, 604800);
 		}
 
-		$this->per_page = 25;
-
-		$current_page = ($row_count / $this->per_page) + 1;
-
-		$total_pages = intval($query->row('count')  / $this->per_page);
-
-		if ($query->row('count')  % $this->per_page)
+		if (stripos($template, LD.'include:pagination_link'.RD) !== FALSE)
 		{
-			$total_pages++;
+			$template = str_replace('{include:pagination_link}', '{pagination_links}', $template);
+			ee()->load->library('logger');
+			ee()->logger->developer('{include:pagination_link} has been deprecated, use the {pagination_links} tag in your bulletin board template.', TRUE, 604800);
 		}
 
-		$this->single_parts['include']['page_count'] = $current_page.' '.ee()->lang->line('of').' '.$total_pages;
+		// Load up pagination and start parsing
+		ee()->load->library('pagination');
+		$pagination = ee()->pagination->create();
+		$pagination->position = 'inline';
+		$template = $pagination->prepare($template);
 
-		/** -----------------------------
-		/**  Do we need pagination?
-		/** -----------------------------*/
-
-		$pager = '';
-
-		if ($query->row('count')  > $this->per_page)
+		if ($query->row('count') > $this->per_page)
 		{
-			ee()->load->library('pagination');
-
-			if ($this->allegiance == 'user')
-			{
-				$config['base_url'] = $this->base_url.'bulletin_board/';
-			}
-			else
-			{
-				$config['page_query_string'] = TRUE;
-				$config['base_url'] = $this->base_url.'bulletin_board';
-				$config['query_string_segment'] = 'page';
-			}
-
-			$config['total_rows'] 	= $query->row('count');
-			$config['per_page']		= $this->per_page;
-			$config['cur_page']		= $row_count;
-			$config['first_link'] 	= ee()->lang->line('pag_first_link');
-			$config['last_link'] 	= ee()->lang->line('pag_last_link');
-
-			ee()->pagination->initialize($config);
-			$this->single_parts['include']['pagination_link'] = ee()->pagination->create_links();
-
-			$this->conditionals['paginate'] = 'y';
-
-			$sql .= " LIMIT ".$row_count.", ".$this->per_page;
+			$pagination->build($query->row('count'), $this->per_page);
+			$sql .= " LIMIT ".$pagination->offset.", ".$pagination->per_page;
 		}
+
+		// Pagination template must be rendered to remove pagination marker when
+		// the page is not actually paginated
+		$template = $pagination->render($template);
 
 		/** ----------------------------------------
 		/**  Create Bulletins
@@ -3305,7 +3201,7 @@ DOH;
 		$censor = FALSE;
 
 		if (ee()->config->item('enable_censoring') == 'y' && ee()->config->item('censored_words') != '')
-        {
+		{
 			ee()->load->library('typography');
 			ee()->typography->initialize();
 			$censor = TRUE;
@@ -3347,8 +3243,7 @@ DOH;
 		/** ----------------------------------------
 		/**  Return the Folder's Contents
 		/** ----------------------------------------*/
-
-		$this->return_data = $this->_process_template($this->retrieve_template('bulletin_board'));
+		$this->return_data = $this->_process_template($template);
 	}
 
 
@@ -3413,9 +3308,9 @@ DOH;
 		/** ----------------------------------------*/
 
 		$form_details = array('action'	=> $this->base_url.'sending_bulletin',
-						 	  'id'		=> 'sending_bulletin',
-						 	  'secure'	=> ($this->allegiance == 'cp') ? FALSE : TRUE
-						 	  );
+							  'id'		=> 'sending_bulletin',
+							  'secure'	=> ($this->allegiance == 'cp') ? FALSE : TRUE
+							  );
 
 		$this->single_parts['form']['form_declaration']['sending_bulletin'] = ee()->functions->form_declaration($form_details);
 
@@ -3804,9 +3699,9 @@ DOH;
 
 		$form_details = array('hidden_fields' => array('name' => '','description' => '', 'which' => 'blocked', 'daction' => ''),
 							  'action'		  => $this->_create_path('edit_list'),
-						 	  'id'			  => 'target',
-						 	  'secure'		  => ($this->allegiance == 'cp') ? FALSE : TRUE
-						 	  );
+							  'id'			  => 'target',
+							  'secure'		  => ($this->allegiance == 'cp') ? FALSE : TRUE
+							  );
 
 		$this->single_parts['form']['form_declaration']['list'] = ee()->functions->form_declaration($form_details);
 		$this->single_parts['lang']['list_title'] =	ee()->lang->line('blocked_list');
@@ -3865,7 +3760,7 @@ DOH;
 		$this->title = ee()->lang->line('blocked_list');
 		$this->crumb = ee()->lang->line('blocked_list');
 		$this->return_data = $this->_process_template($template);
- 	}
+	}
 
 
 
@@ -3951,7 +3846,7 @@ DOH;
 				ee()->db->query("DELETE FROM exp_message_data WHERE message_id IN ('".implode("','", $delete)."')");
 			}
 		}
- 	}
+	}
 
 
 
@@ -4035,7 +3930,7 @@ function getAnchorPosition(anchorname) {
 	else if (document.all) { use_css=true; }
 	else if (document.layers) { use_layers=true; }
 	// Logic to find position
- 	if (use_gebi && document.all) {
+	if (use_gebi && document.all) {
 		x=AnchorPosition_getPageOffsetLeft(document.all[anchorname]);
 		y=AnchorPosition_getPageOffsetTop(document.all[anchorname]);
 		}
@@ -4044,7 +3939,7 @@ function getAnchorPosition(anchorname) {
 		x=AnchorPosition_getPageOffsetLeft(o);
 		y=AnchorPosition_getPageOffsetTop(o);
 		}
- 	else if (use_css) {
+	else if (use_css) {
 		x=AnchorPosition_getPageOffsetLeft(document.all[anchorname]);
 		y=AnchorPosition_getPageOffsetTop(document.all[anchorname]);
 		}
@@ -4511,10 +4406,10 @@ MRT;
 	/**  Show Hide JS
 	/** -----------------------------------*/
 
- 	function showhide_js()
- 	{
+	function showhide_js()
+	{
 
- 		$prefix = ( ! ee()->config->item('cookie_prefix')) ? 'exp_' : ee()->config->item('cookie_prefix').'_';
+		$prefix = ( ! ee()->config->item('cookie_prefix')) ? 'exp_' : ee()->config->item('cookie_prefix').'_';
 		$path	= ( ! ee()->config->item('cookie_path'))	? '/'	: ee()->config->item('cookie_path');
 		$domain = ( ! ee()->config->item('cookie_domain')) ? ''	 : ee()->config->item('cookie_domain');
 		$domain = ($domain == '') ? '' : 'domain='.$domain;
@@ -4545,13 +4440,13 @@ function showHide(entryID, htmlObj)
 </script>
 EOT;
 
- 		return $str;
+		return $str;
 
- 	}
+	}
 
 
 
- 	/** -----------------------------------------------------------
+	/** -----------------------------------------------------------
 	/**  Emoticons
 	/** -----------------------------------------------------------*/
 	function emoticons()
@@ -4687,14 +4582,14 @@ function list_addition()
 
 	 if ( ! Name || Name == null)
 	 {
-	 	return;
+		return;
 	 }
 
 	 var Description = prompt(member_description, '');
 
 	 if ( ! Name || Name == null)
 	 {
-	 	return;
+		return;
 	 }
 
 	 document.getElementById('target').name.value = Name;
@@ -5193,46 +5088,46 @@ DIRT;
 
 
 /*
-                                      ,.   '\'\    ,---.
-     Quiet, Paul, I'm pondering.     | \\  l\\l_ //    |
-            _              _         |  \\/ `/  `.|    |   Err...right, Rick! Narf!
-          / \\   \        //\        | Y |   |   ||  Y |
-          |  \\   \      //  |       |  \|   |   |\ /  |   /
-          [   ||        ||   ]       \   |  o|o  | >  /   /
-         ]    ||        ||    [       \___\_--_ /_/__/
-         |  \_|l,------.l|_/  |       /.-\(____) /--.\
-         |   >'          `<   |       `--(______)----'
-         \  (/~'--____--'~\)  /           U// U / \
-          `-_>-__________-<_-'            / \  / /|
-              /(_*(__)*_)\               ( .) / / ]
-              \___/__\___/                `.`' /   [
-               /__`--'__\                  |`-'    |
-            /\(__,>-~~ __)                 |       |__
-         /\//\\\        /                 _l       |--:.
-         '\/  <^\      /^>               |  `    ( |   \\
-              _\ >-__-< /_             ,-\  ,-~~->. \   `:.___,/
-             (___\    /___)           (____/    (____)    `---'
+									  ,.   '\'\    ,---.
+	 Quiet, Paul, I'm pondering.     | \\  l\\l_ //    |
+			_              _         |  \\/ `/  `.|    |   Err...right, Rick! Narf!
+		  / \\   \        //\        | Y |   |   ||  Y |
+		  |  \\   \      //  |       |  \|   |   |\ /  |   /
+		  [   ||        ||   ]       \   |  o|o  | >  /   /
+		 ]    ||        ||    [       \___\_--_ /_/__/
+		 |  \_|l,------.l|_/  |       /.-\(____) /--.\
+		 |   >'          `<   |       `--(______)----'
+		 \  (/~'--____--'~\)  /           U// U / \
+		  `-_>-__________-<_-'            / \  / /|
+			  /(_*(__)*_)\               ( .) / / ]
+			  \___/__\___/                `.`' /   [
+			   /__`--'__\                  |`-'    |
+			/\(__,>-~~ __)                 |       |__
+		 /\//\\\        /                 _l       |--:.
+		 '\/  <^\      /^>               |  `    ( |   \\
+			  _\ >-__-< /_             ,-\  ,-~~->. \   `:.___,/
+			 (___\    /___)           (____/    (____)    `---'
 
 
-                    SRKmHWgK         6HP
-                   WRWWQWm              yQgX
-                zWQQqRRWT                 rqQqB
-              gqQqRtWR          fbXn16hs    XXRQq0
-            gXkQ8X           pkSb     b04     RQQXXK
-          QXXQkQ7          aDahC      XSO      RbXQQRQ
-        R88kXXQ          PZFwX       kkk        bQkQkRQLt
-       QdXkkdXt        rYOZ4Vt     4bd6          qXk8X8QR
-      gQQQd8kp        G6TuTy     3khP            tXQQQQRQa
-      Q888Xdb2        1TuL6    pkS       Q        RX8QQRQH
-      Kb88kSd8        YZZZ6yF6         4h        zk888RQR
-       QQQ8bdbV       ywyn            k          X8b8RRg
-        uQXb8Qb6      zFDD          X4          XQbQXbQ
-          gRb8Qkh      apX        wQ          t8QXQQW
-            bR8QbE      hSF    1bA          bQbR8W
-              zBXQRa      zDDf2         KqQRqRbgy
-                tGEgQh                aQRRqXXW
-                    CmWQ             KRRQgqQ
-                         wqC       HmQpYj
+					SRKmHWgK         6HP
+				   WRWWQWm              yQgX
+				zWQQqRRWT                 rqQqB
+			  gqQqRtWR          fbXn16hs    XXRQq0
+			gXkQ8X           pkSb     b04     RQQXXK
+		  QXXQkQ7          aDahC      XSO      RbXQQRQ
+		R88kXXQ          PZFwX       kkk        bQkQkRQLt
+	   QdXkkdXt        rYOZ4Vt     4bd6          qXk8X8QR
+	  gQQQd8kp        G6TuTy     3khP            tXQQQQRQa
+	  Q888Xdb2        1TuL6    pkS       Q        RX8QQRQH
+	  Kb88kSd8        YZZZ6yF6         4h        zk888RQR
+	   QQQ8bdbV       ywyn            k          X8b8RRg
+		uQXb8Qb6      zFDD          X4          XQbQXbQ
+		  gRb8Qkh      apX        wQ          t8QXQQW
+			bR8QbE      hSF    1bA          bQbR8W
+			  zBXQRa      zDDf2         KqQRqRbgy
+				tGEgQh                aQRRqXXW
+					CmWQ             KRRQgqQ
+						 wqC       HmQpYj
 
 */
 

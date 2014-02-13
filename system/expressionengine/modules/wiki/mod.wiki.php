@@ -121,7 +121,7 @@ class Wiki {
 
 		if (($this->base_path = ee()->TMPL->fetch_param('base_path')) === FALSE)
 		{
-			return $this->return_data = ee()->lang->line('basepath_unset');
+			return $this->return_data = lang('basepath_unset');
 		}
 
 		$this->base_path = rtrim($this->base_path, '/').'/';
@@ -218,11 +218,11 @@ class Wiki {
 		/**  Namespaces Localization
 		/** ----------------------------------------*/
 
-		$this->main_ns		= (isset(ee()->lang->language['main_ns']))		? ee()->lang->line('main_ns') 	 : $this->main_ns;
-		$this->file_ns		= (isset(ee()->lang->language['file_ns']))		? ee()->lang->line('file_ns') 	 : $this->file_ns;
-		$this->image_ns		= (isset(ee()->lang->language['image_ns']))		? ee()->lang->line('image_ns') 	 : $this->image_ns;
-		$this->special_ns 	= (isset(ee()->lang->language['special_ns']))	? ee()->lang->line('special_ns')	 : $this->special_ns;
-		$this->category_ns	= (isset(ee()->lang->language['category_ns']))	? ee()->lang->line('category_ns') : $this->category_ns;
+		$this->main_ns		= (isset(ee()->lang->language['main_ns']))		? lang('main_ns') 	 : $this->main_ns;
+		$this->file_ns		= (isset(ee()->lang->language['file_ns']))		? lang('file_ns') 	 : $this->file_ns;
+		$this->image_ns		= (isset(ee()->lang->language['image_ns']))		? lang('image_ns') 	 : $this->image_ns;
+		$this->special_ns 	= (isset(ee()->lang->language['special_ns']))	? lang('special_ns')	 : $this->special_ns;
+		$this->category_ns	= (isset(ee()->lang->language['category_ns']))	? lang('category_ns') : $this->category_ns;
 
 		/* ----------------------------------------
 		/*  Category namespace actually has articles so it is put into the
@@ -1450,10 +1450,17 @@ class Wiki {
 		/** ----------------------------------------*/
 
 		$tag_param_string = $match[1];
-		$parameters = $this->_fetch_params($tag_param_string, array(
+		$parameters = ee()->functions->assign_parameters($tag_param_string, array(
 			'limit'		=> 10,
-			'paginate'	=> 'bottom'
+			'paginate'	=> 'bottom',
+			'switch'	=> ''
 		));
+
+		/** ----------------------------------------
+		/**  Date Formats
+		/** ----------------------------------------*/
+
+		$dates = $this->parse_dates($this->return_data);
 
 		/** ----------------------------------------
 		/**  Our Query
@@ -1484,28 +1491,32 @@ class Wiki {
 
 		$results = ee()->db->query("SELECT COUNT(*) AS count ".$sql);
 
-		if ($results->row('count')  == 0)
+		if ($results->row('count') == 0)
 		{
 			return $this->return_data = '';
 		}
 
-		$this->pagination($results->row('count') , $parameters['limit'], $this->base_url.$this->special_ns.':Recentchanges/');
+		ee()->load->library('pagination');
+		$pagination = ee()->pagination->create();
+		$match[2] = $pagination->prepare($match[2]);
 
-		// Pagination code removed, rerun template preg_match()
-		if ($this->paginate === TRUE)
+		if ($pagination->paginate === TRUE)
 		{
-			preg_match("/\{wiki:recent_changes(.*?)\}(.*?)\{\/wiki:recent_changes\}/s", $this->return_data, $match);
+			$pagination->position = $parameters['paginate'];
+			$pagination->build($results->row('count'), $parameters['limit']);
+			$pagination_sql = " LIMIT {$pagination->offset}, {$parameters['limit']}";
 		}
+
 		else
 		{
-			$this->pagination_sql .= " LIMIT ".$parameters['limit'];
+			$pagination_sql = " LIMIT ".$parameters['limit'];
 		}
 
 		$results = ee()->db->query("SELECT r.*,
 								m.member_id, m.screen_name, m.email, m.url,
 								p.page_namespace, p.page_name AS topic ".
 								$sql.
-								$this->pagination_sql);
+								$pagination_sql);
 
 		/** ----------------------------------------
 		/**  Global Last Updated
@@ -1520,10 +1531,10 @@ class Wiki {
 
 		ee()->load->library('typography');
 		ee()->typography->initialize(array(
-				'parse_images'	=> FALSE,
-				'parse_smileys'	=> FALSE,
-				'encode_email'	=> ($type == 'rss' OR $type == 'atom') ? FALSE : TRUE)
-				);
+			'parse_images'	=> FALSE,
+			'parse_smileys'	=> FALSE,
+			'encode_email'	=> ($type == 'rss' OR $type == 'atom') ? FALSE : TRUE)
+		);
 
 		$changes = '';
 		ee()->load->helper('url');
@@ -1549,19 +1560,26 @@ class Wiki {
 				'{count}'				=> $index + 1
 			);
 
-			$data['{article}'] = $this->convert_curly_brackets(ee()->typography->parse_type( $this->wiki_syntax($row['page_content']),
-															  array(
-																	'text_format'	=> $this->text_format,
-																	'html_format'	=> $this->html_format,
-																	'auto_links'	=> $this->auto_links,
-																	'allow_img_url' => 'y'
-																  )
-															));
+			$data['{article}'] = $this->convert_curly_brackets(
+				ee()->typography->parse_type(
+					$this->wiki_syntax($row['page_content']),
+					array(
+						'text_format'	=> $this->text_format,
+						'html_format'	=> $this->html_format,
+						'auto_links'	=> $this->auto_links,
+						'allow_img_url' => 'y'
+					)
+				)
+			);
 
 			$temp = $this->prep_conditionals($temp, array_merge($data, $this->conditionals));
 
 			$temp = ee()->TMPL->parse_date_variables($temp, array('revision_date' => $row['revision_date']));
 			$temp = ee()->TMPL->parse_date_variables($temp, array('gmt_revision_date' => $row['revision_date']), FALSE);
+						FALSE
+					);
+				}
+			}
 
 			// Deprecate old usage of switch
 			// @deprecated 2.8
@@ -1570,7 +1588,7 @@ class Wiki {
 			{
 				$temp = str_replace("{switch}", "{switch='{$parameters['switch']}'}", $temp);
 				ee()->load->library('logger');
-				ee()->logger->deprecated('2.8', 'standard {switch=} tags in your wiki recent changes template');
+				ee()->logger->developer('The wiki\'s {switch} variable has been deprecated, use standard {switch=} tags in your wiki recent changes template.', TRUE, 604800);
 			}
 
 			// Bring count back to a zero index
@@ -1626,21 +1644,12 @@ class Wiki {
 			{
 				case "top"	: $changes  = $this->paginate_data.$changes;
 					break;
-				case "both"	: $changes  = $this->paginate_data.$changes.$this->paginate_data;
-					break;
-				default		: $changes .= $this->paginate_data;
-					break;
-			}
-		}
-
+		$changes = $pagination->render($changes);
 		$this->return_data = str_replace($match['0'], $changes, $this->return_data);
 
 		$ex = explode("/", str_replace(array('http://', 'www.'), '', ee()->functions->create_url($this->base_path)));
-
 		$this->return_data = str_replace(array('{trimmed_url}', '{language}'), array(current($ex), ee()->config->item('xml_lang')), $this->return_data);
 	}
-
-
 
 
 	/** ----------------------------------------
@@ -1687,7 +1696,7 @@ class Wiki {
 			/**  Parameters
 			/** ----------------------------------------*/
 
-			extract($this->_fetch_params($match[1], array(
+			extract(ee()->functions->assign_parameters($match[1], array(
 				'limit'			=> 10,
 				'backspace'		=> '',
 				'show_empty'	=> 'y',
@@ -3139,9 +3148,7 @@ class Wiki {
 
 	function category_page()
 	{
-		$cat_data = $this->determine_category($this->topic);
-
-		extract($cat_data);
+		extract($this->determine_category($this->topic));
 
 		/** ----------------------------------------
 		/**  Display All of the Subcategories for a Category
@@ -3156,7 +3163,7 @@ class Wiki {
 			$header		= '';
 			$footer		= '';
 
-			extract($this->_fetch_params($match[1], array(
+			extract(ee()->functions->assign_parameters($match[1], array(
 				'backspace'	=> '',
 				'style'		=> ''
 			)));
@@ -3189,17 +3196,17 @@ class Wiki {
 			if ($cat_id !== 0)
 			{
 				$query = ee()->db->query("SELECT COUNT(*) AS count FROM exp_wiki_categories
-									 WHERE wiki_id = '".ee()->db->escape_str($this->wiki_id)."'
-									 AND parent_id = '".ee()->db->escape_str($cat_id)."'
-									 ORDER BY parent_id, cat_name");
+					WHERE wiki_id = '".ee()->db->escape_str($this->wiki_id)."'
+					AND parent_id = '".ee()->db->escape_str($cat_id)."'
+					ORDER BY parent_id, cat_name");
 
-				if ($query->row('count')  > 0)
+				if ($query->row('count') > 0)
 				{
 					$subs = $query->row('count') ;
 
 					$query = ee()->db->query("SELECT * FROM exp_wiki_categories
-									 WHERE wiki_id = '".ee()->db->escape_str($this->wiki_id)."'
-									 ORDER BY parent_id, cat_name");
+						WHERE wiki_id = '".ee()->db->escape_str($this->wiki_id)."'
+						ORDER BY parent_id, cat_name");
 
 					$data  = $header;
 					$data .= $this->parse_categories($this->structure_categories($query, $cat_id), $match['2'], 'nested', 0, $ancestry);
@@ -3225,7 +3232,7 @@ class Wiki {
 			$header		= '';
 			$footer		= '';
 
-			$parameters = $this->_fetch_params($match[1], array(
+			$parameters = ee()->functions->assign_parameters($match[1], array(
 				'limit'		=> 100,
 				'backspace'	=> '',
 				'paginate'	=> 'bottom'
@@ -3253,69 +3260,62 @@ class Wiki {
 			/**  Parsing and Output
 			/** ----------------------------------------*/
 
+			ee()->load->library('pagination');
+			$pagination = ee()->pagination->create();
+			$match[2] = $pagination->prepare($match[2]);
+
 			$data = $no_results;
 			$articles_total = 0;
 
 			if ($cat_id !== 0)
 			{
-				$sql = "FROM exp_wiki_category_articles ca, exp_wiki_page p, exp_wiki_revisions r, exp_members m
-						WHERE ca.cat_id = '".ee()->db->escape_str($cat_id)."'
-						AND ca.page_id = p.page_id
-						AND p.wiki_id = '".ee()->db->escape_str($this->wiki_id)."'
-						AND p.page_id = r.page_id
-						AND p.last_updated = r.revision_date
-						AND m.member_id = r.revision_author
-						AND r.revision_status = 'open'";
+				ee()->db->from('wiki_category_articles ca')
+					->join('wiki_page p', 'ca.page_id = p.page_id')
+					->join('wiki_revisions r', 'p.page_id = r.page_id')
+					->join('members m', 'm.member_id = r.revision_author')
+					->where('p.last_updated', 'r.revision_date', FALSE)
+					->where(array(
+						'ca.cat_id'			=> $cat_id,
+						'p.wiki_id'			=> $this->wiki_id,
+						'r.revision_status'	=> 'open'
+					));
+				$articles_total = ee()->db->count_all_results();
 
-				$query = ee()->db->query("SELECT COUNT(p.page_id) AS count ".$sql);
-
-				if ($query->row('count')  > 0)
+				if ($articles_total > 0)
 				{
-					$articles_total = $query->row('count') ;
-
-					$this->pagination($query->row('count') , $parameters['limit'], $this->base_url.$this->category_ns.':'.$this->topic);
-
-					// Pagination code removed, rerun template preg_match()
-					if ($this->paginate === TRUE)
+					if ($articles_total > $parameters['limit']
+						&& $pagination->paginate === TRUE)
 					{
-						preg_match("/\{wiki:category_articles(.*?)\}(.*?)\{\/wiki:category_articles\}/s", $this->return_data, $match);
-
-						if (preg_match("|".LD."if\s+no_results".RD."(.*?)".LD."\/if".RD."|s",$match['2'], $block))
-						{
-							$no_results = $block['1'];
-							$match['2'] = str_replace($block['0'],'', $match['2']);
-						}
-
-						if (preg_match("|".LD."header".RD."(.*?)".LD."\/header".RD."|s",$match['2'], $block))
-						{
-							$header = $block['1'];
-							$match['2'] = str_replace($block['0'],'', $match['2']);
-						}
-
-						if (preg_match("|".LD."footer".RD."(.*?)".LD."\/footer".RD."|s",$match['2'], $block))
-						{
-							$footer = $block['1'];
-							$match['2'] = str_replace($block['0'],'', $match['2']);
-						}
+						$pagination->position = $parameters['paginate'];
+						$pagination->build($articles_total, $parameters['limit']);
+						ee()->db->limit($parameters['limit'], $pagination->offset);
 					}
 					else
 					{
-						$this->pagination_sql .= " LIMIT ".$parameters['limit'];
+						ee()->db->limit($parameters['limit']);
 					}
 
-					$query = ee()->db->query("SELECT r.*, m.member_id, m.screen_name, m.email, m.url, p.page_namespace, p.page_name AS topic ".
-										$sql.
-										" ORDER BY topic ".
-										$this->pagination_sql);
+					$query = ee()->db->select("r.*, m.member_id, m.screen_name, m.email, m.url, p.page_namespace, p.page_name AS topic")
+						->from('wiki_category_articles ca')
+						->join('wiki_page p', 'ca.page_id = p.page_id')
+						->join('wiki_revisions r', 'p.page_id = r.page_id')
+						->join('members m', 'm.member_id = r.revision_author')
+						->where('p.last_updated', 'r.revision_date', FALSE)
+						->where(array(
+							'ca.cat_id'			=> $cat_id,
+							'p.wiki_id'			=> $this->wiki_id,
+							'r.revision_status'	=> 'open'
+						))
+						->order_by('topic')
+						->get();
 
 					$data = $header;
-
-					$data .= $this->parse_results($match, $query, $parameters);
-
+					$data .= $this->parse_results($match, $query, $parameters, $this->parse_dates($match['2']), $pagination);
 					$data .= $footer;
 				}
 			}
 
+			$data = $pagination->render($data);
 			$this->conditionals['articles_total'] = $articles_total;
 			$this->return_data = str_replace($match['0'], str_replace('{articles_total}', $articles_total, $data), $this->return_data);
 		}
@@ -3586,12 +3586,12 @@ class Wiki {
 	{
 		if (ee()->input->post('editing') === FALSE OR ee()->input->get_post('title') === FALSE OR ee()->input->get_post('title') == '' OR ee()->input->get_post('article_content') === FALSE)
 		{
-			return ee()->output->show_user_error('general', array(ee()->lang->line('invalid_permissions')));
+			return ee()->output->show_user_error('general', array(lang('invalid_permissions')));
 		}
 
 		if ( ! in_array(ee()->session->userdata['group_id'], $this->users) && ! in_array(ee()->session->userdata['group_id'], $this->admins))
 		{
-			return ee()->output->show_user_error('general', array(ee()->lang->line('invalid_permissions')));
+			return ee()->output->show_user_error('general', array(lang('invalid_permissions')));
 		}
 
 		/** -------------------------------------
@@ -3722,7 +3722,7 @@ class Wiki {
 
 			if ($query->row('page_locked')  == 'y' && ! in_array(ee()->session->userdata['group_id'], $this->admins))
 			{
-				return ee()->output->show_user_error('general', array(ee()->lang->line('invalid_permissions')));
+				return ee()->output->show_user_error('general', array(lang('invalid_permissions')));
 			}
 
 			if ($query->row('page_moderated')  == 'y' && ! in_array(ee()->session->userdata['group_id'], $this->admins))
@@ -3778,7 +3778,7 @@ class Wiki {
 
 					if ($t_query > 0)
 					{
-						return ee()->output->show_user_error('general', array(ee()->lang->line('duplicate_article')));
+						return ee()->output->show_user_error('general', array(lang('duplicate_article')));
 					}
 				}
 			}
@@ -4227,17 +4227,14 @@ class Wiki {
 	}
 
 
-	/** -------------------------------------
-	/**  Search Some Content!
-	/** -------------------------------------*/
-	function search_results($keywords='')
+	/**
+	 * Render the search results
+	 * @param  string $keywords (Optional) Search keyword from elsewhere
+	 * @return string           Parsed search results
+	 */
+	public function search_results($keywords='')
 	{
-		/** ----------------------------------------
-		/**  Check for Pagination
-		/** ----------------------------------------*/
-
-		$search_paginate = FALSE;
-
+		// Check for pagination
 		if (ee()->input->get_post('keywords') === FALSE && $keywords == '')
 		{
 			if ( ! isset($this->seg_parts['1']) OR strlen($this->seg_parts['1']) < 20)
@@ -4274,7 +4271,7 @@ class Wiki {
 		}
 		elseif(strlen($keywords) < $this->min_length_keywords)
 		{
-			return ee()->output->show_user_error('general', array(str_replace("%x", $this->min_length_keywords, ee()->lang->line('search_min_length'))));
+			return ee()->output->show_user_error('general', array(str_replace("%x", $this->min_length_keywords, lang('search_min_length'))));
 		}
 
 		$this->return_data = str_replace(
@@ -4282,6 +4279,11 @@ class Wiki {
 			array($this->_fetch_template('wiki_special_search_results.html'), stripslashes($keywords)),
 			$this->return_data
 		);
+
+		// Start work on pagination
+		ee()->load->library('pagination');
+		$pagination = ee()->pagination->create();
+		$this->return_data = $pagination->prepare($this->return_data);
 
 		/** ----------------------------------------
 		/**  Parse Results Tag Pair
@@ -4296,27 +4298,36 @@ class Wiki {
 		/**  Parameters
 		/** ----------------------------------------*/
 
-		$parameters = $this->_fetch_params($match[1], array(
+		$parameters = ee()->functions->assign_parameters($match[1], array(
 			'limit'		=> 20,
 			'paginate'	=> 'bottom',
 			'switch'	=> ''
 		));
 
+		/* ----------------------------------------
+		/*  Date Formats
+		/*	- Those GMT dates are not typical for results, but I thought it might
+		/*  be the case that there will be dynamic RSS/Atom searches in the
+		/*  future so I added them just in case.
+		/* ----------------------------------------*/
+
+		$dates = $this->parse_dates($this->return_data);
+
 		/** ----------------------------------------
 		/**  Our Query
 		/** ----------------------------------------*/
 
-		if ($search_paginate === TRUE)
+		if ($pagination->paginate === TRUE && isset($paginate_sql))
 		{
 			$sql = $paginate_sql;
 		}
 		else
 		{
-			$sql =	"FROM exp_wiki_revisions r, exp_members m, exp_wiki_page p
-					 WHERE p.page_id = r.page_id
-					 AND p.last_updated = r.revision_date
-					 AND p.wiki_id = '".ee()->db->escape_str($this->wiki_id)."'
-					 AND (";
+			$sql = "FROM exp_wiki_revisions r, exp_members m, exp_wiki_page p
+				WHERE p.page_id = r.page_id
+					AND p.last_updated = r.revision_date
+					AND p.wiki_id = '".ee()->db->escape_str($this->wiki_id)."'
+					AND (";
 
 			/** -------------------------------------
 			/**  Get our keywords into search terms
@@ -4355,7 +4366,7 @@ class Wiki {
 			// in case they searched with only "namespace:namespace_label" and no keywords
 			if (trim($keywords) == '')
 			{
-				return ee()->output->show_user_error('general', array(ee()->lang->line('no_search_terms')));
+				return ee()->output->show_user_error('general', array(lang('no_search_terms')));
 			}
 
 			if (preg_match_all("/\-*\"(.*?)\"/", $keywords, $matches))
@@ -4429,44 +4440,46 @@ class Wiki {
 		/**  Store Pagination Hash and Query and do Garbage Collection
 		/** ----------------------------------------*/
 
-		if ($query->row('count')  > $parameters['limit'] && $search_paginate === FALSE)
+		if ($query->row('count') > $parameters['limit']
+			&& $pagination->current_page === 1)
 		{
 			$paginate_hash = ee()->functions->random('md5');
-			$search_data = array('wiki_search_id' => $paginate_hash, 'search_date' => time(), 'wiki_search_query' => $sql, 'wiki_search_keywords' => $keywords);
 
-			ee()->db->insert('wiki_search', $search_data);
+			ee()->db->insert('wiki_search', array(
+				'wiki_search_id'		=> $paginate_hash,
+				'search_date'			=> time(),
+				'wiki_search_query'		=> $sql,
+				'wiki_search_keywords'	=> $keywords
+			));
 
 			// Clear old search results
-			$expire = time() - ($this->cache_expire * 3600);
-
-			ee()->db->where('search_date <', $expire);
+			ee()->db->where('search_date <', time() - ($this->cache_expire * 3600));
 			ee()->db->delete('wiki_search');
 		}
-
-		$base_paginate = $this->base_url.$this->special_ns.':Search_results/';
-
-		if (isset($paginate_hash))
-		{
-			$base_paginate .= $paginate_hash.'/';
-		}
-
-		$this->pagination($query->row('count') , $parameters['limit'], $base_paginate);
 
 		/** ----------------------------------------
 		/**  Rerun Query This Time With Our Data
 		/** ----------------------------------------*/
 
-		if ($this->paginate === TRUE)
+		if ($pagination->paginate === TRUE)
 		{
-			// Now that the Paginate code is removed, we run this again
-			preg_match("/\{wiki:search_results(.*?)\}(.*?)\{\/wiki:search_results\}/s", $this->return_data, $match);
+			$base_paginate = $this->base_url.$this->special_ns.':Search_results/';
+			if (isset($paginate_hash))
+			{
+				$base_paginate .= $paginate_hash.'/';
+			}
+
+			$pagination->basepath = $base_paginate;
+			$pagination->position = $parameters['paginate'];
+			$pagination->build($query->row('count'), $parameters['limit']);
+			$pagination_sql = " LIMIT {$pagination->offset}, {$parameters['limit']}";
 		}
 		else
 		{
-			$this->pagination_sql .= " LIMIT ".$parameters['limit'];
+			$pagination_sql = " LIMIT ".$parameters['limit'];
 		}
 
-		$query = ee()->db->query("SELECT r.*, m.member_id, m.screen_name, m.email, m.url, p.page_namespace, p.page_name AS topic ".$sql.$this->pagination_sql);
+		$query = ee()->db->query("SELECT r.*, m.member_id, m.screen_name, m.email, m.url, p.page_namespace, p.page_name AS topic ".$sql.$pagination_sql);
 
 		/** ----------------------------------------
 		/**  Global Last Updated
@@ -4479,18 +4492,20 @@ class Wiki {
 		/**  Parsing of the Results
 		/** ----------------------------------------*/
 
-		$results = $this->parse_results($match, $query, $parameters);
-
+		$results = $this->parse_results($match, $query, $parameters, $dates, $pagination);
+		$results = $pagination->render($results);
 		$this->return_data = str_replace($match['0'], $results, $this->return_data);
 	}
 
+
+	// -------------------------------------------------------------------------
 
 	/* ----------------------------------------
 	/*  Parsing of the Results
 	/*  - Use for Search and Category Page Articles
 	/* ----------------------------------------*/
 
-	function parse_results($match, $query, $parameters, $dates = array())
+	function parse_results($match, $query, $parameters, $dates, $pagination)
 	{
 		if (preg_match("|".LD."letter_header".RD."(.*?)".LD."\/letter_header".RD."|s",$match['2'], $block))
 		{
@@ -4500,9 +4515,9 @@ class Wiki {
 
 		ee()->load->library('typography');
 		ee()->typography->initialize(array(
-				'parse_images'	=> FALSE,
-				'parse_smileys'	=> FALSE)
-				);
+			'parse_images'	=> FALSE,
+			'parse_smileys'	=> FALSE
+		));
 
 		$results = '';
 		$i = 0;
@@ -4548,28 +4563,34 @@ class Wiki {
 
 			if (strpos($temp, '{article}') !== FALSE)
 			{
-				$data['{article}'] = $this->convert_curly_brackets(ee()->typography->parse_type( $this->wiki_syntax($row['page_content']),
-																  array(
-																		'text_format'	=> $this->text_format,
-																		'html_format'	=> $this->html_format,
-																		'auto_links'	=> $this->auto_links,
-																		'allow_img_url' => 'y'
-																	  )
-																));
+				$data['{article}'] = $this->convert_curly_brackets(
+					ee()->typography->parse_type(
+						$this->wiki_syntax($row['page_content']),
+						array(
+							'text_format'	=> $this->text_format,
+							'html_format'	=> $this->html_format,
+							'auto_links'	=> $this->auto_links,
+							'allow_img_url'	=> 'y'
+						)
+					)
+				);
 			}
 
 			if (strpos($temp, '{excerpt}') !== FALSE)
 			{
 				if ( ! isset($data['{article}']))
 				{
-					$data['{article}'] = $this->convert_curly_brackets(ee()->typography->parse_type( $this->wiki_syntax($row['page_content']),
-																	  array(
-																			'text_format'	=> $this->text_format,
-																			'html_format'	=> $this->html_format,
-																			'auto_links'	=> $this->auto_links,
-																			'allow_img_url' => 'y'
-																		  )
-																	));
+					$data['{article}'] = $this->convert_curly_brackets(
+						ee()->typography->parse_type(
+							$this->wiki_syntax($row['page_content']),
+							array(
+								'text_format'	=> $this->text_format,
+								'html_format'	=> $this->html_format,
+								'auto_links'	=> $this->auto_links,
+								'allow_img_url' => 'y'
+							)
+						)
+					);
 				}
 
 				$excerpt = trim(strip_tags($data['{article}']));
@@ -4594,7 +4615,7 @@ class Wiki {
 			{
 				$temp = str_replace("{switch}", "{switch='{$parameters['switch']}'}", $temp);
 				ee()->load->library('logger');
-				ee()->logger->deprecated('2.8', 'standard {switch=} tags in your wiki search results or category page template');
+				ee()->logger->developer('The wiki\'s {switch} variable has been deprecated, use standard {switch=} tags in your wiki search results or category page template.', TRUE, 604800);
 			}
 
 			// Bring count back to a zero index
@@ -4603,58 +4624,6 @@ class Wiki {
 			$data['{absolute_count}'] = $pagination->offset + ($index + 1);
 
 			$results .= str_replace(array_keys($data), array_values($data), $temp);
-		}
-
-		/** ----------------------------------------
-		/**  Pagination
-		/** ----------------------------------------*/
-
-		if ($this->paginate === TRUE)
-		{
-			$this->paginate_data = str_replace(LD.'current_page'.RD, $this->current_page, $this->paginate_data);
-			$this->paginate_data = str_replace(LD.'total_pages'.RD,	$this->total_pages, $this->paginate_data);
-			$this->paginate_data = str_replace(LD.'pagination_links'.RD, $this->pagination_links, $this->paginate_data);
-
-			if (preg_match("/".LD."if previous_page".RD."(.+?)".LD.'\/'."if".RD."/s", $this->paginate_data, $matches))
-			{
-				if ($this->page_previous == '')
-				{
-					 $this->paginate_data = preg_replace("/".LD."if previous_page".RD.".+?".LD.'\/'."if".RD."/s", '', $this->paginate_data);
-				}
-				else
-				{
-					$matches['1'] = preg_replace("/".LD.'path.*?'.RD."/", 	$this->page_previous, $matches['1']);
-					$matches['1'] = preg_replace("/".LD.'auto_path'.RD."/",	$this->page_previous, $matches['1']);
-
-					$this->paginate_data = str_replace($matches['0'], $matches['1'], $this->paginate_data);
-				}
-			 }
-
-
-			if (preg_match("/".LD."if next_page".RD."(.+?)".LD.'\/'."if".RD."/s", $this->paginate_data, $matches))
-			{
-				if ($this->page_next == '')
-				{
-					 $this->paginate_data = preg_replace("/".LD."if next_page".RD.".+?".LD.'\/'."if".RD."/s", '', $this->paginate_data);
-				}
-				else
-				{
-					$matches['1'] = preg_replace("/".LD.'path.*?'.RD."/", 	$this->page_next, $matches['1']);
-					$matches['1'] = preg_replace("/".LD.'auto_path'.RD."/",	$this->page_next, $matches['1']);
-
-					$this->paginate_data = str_replace($matches['0'], $matches['1'], $this->paginate_data);
-				}
-			}
-
-			switch ($parameters['paginate'])
-			{
-				case "top"	: $results  = $this->paginate_data.$results;
-					break;
-				case "both"	: $results  = $this->paginate_data.$results.$this->paginate_data;
-					break;
-				default		: $results .= $this->paginate_data;
-					break;
-			}
 		}
 
 		return $results;
@@ -4680,7 +4649,7 @@ class Wiki {
 		}
 
 		// Fetch parameters
-		extract($this->_fetch_params($match[1], array(
+		extract(ee()->functions->assign_parameters($match[1], array(
 			'limit'		=> 20,
 			'paginate'	=> 'bottom',
 			'orderby'	=> 'file_name',
@@ -4688,35 +4657,49 @@ class Wiki {
 			'switch'	=> ''
 		)));
 
+		// Start work on pagination
+		ee()->load->library('pagination');
+		$pagination = ee()->pagination->create();
+		$match[2] = $pagination->prepare($match[2]);
+
+		// How many items are we paginating over?
+		$count = ee()->db->where('wiki_id', $this->wiki_id)
+			->count_all_results('wiki_uploads');
+
+		if ($count <= $limit)
+		{
+			$pagination->paginte = FALSE;
+		}
+
+		// Start pulling the data
+		ee()->db->select('u.*, m.member_id, m.screen_name, m.email, m.url')
+			->from('wiki_uploads u')
+			->join('members m', 'm.member_id = u.upload_author')
+			->where('u.wiki_id', $this->wiki_id)
+			->order_by($orderby, $sort)
+			->limit($limit);
+
+		if ($pagination->paginate === TRUE)
+		{
+			$pagination->position = $paginate;
+			$pagination->build($count, $limit);
+			ee()->db->limit($limit, $pagination->offset);
+		}
+
 		/** ----------------------------------------
-		/**  Pagination
+		/**  Date Formats
 		/** ----------------------------------------*/
 
-		$sql =	"SELECT u.*,
-				 m.member_id, m.screen_name, m.email, m.url
-				 FROM exp_wiki_uploads u, exp_members m
-				 WHERE m.member_id = u.upload_author
-				 AND u.wiki_id = '".ee()->db->escape_str($this->wiki_id)."'
-				 ORDER BY u.{$orderby} {$sort}
-				 LIMIT {$limit}";
-
-		if (stristr($this->return_data, 'paginate}'))
+		if (preg_match_all("/".LD."(upload_date)\s+format=[\"'](.*?)[\"']".RD."/s", $this->return_data, $matches))
 		{
-			$query = ee()->db->query("SELECT COUNT(*) AS count FROM exp_wiki_uploads WHERE wiki_id = '".ee()->db->escape_str($this->wiki_id)."'");
-
-			$this->pagination($query->row('count') , $limit, $this->base_url.$this->special_ns.':Files/');
-
-			if ($this->paginate === TRUE)
+			for ($j = 0; $j < count($matches['0']); $j++)
 			{
-				// Not that the Paginate code is removed, we run this again
-				preg_match("/\{wiki:files(.*?)\}(.*?)\{\/wiki:files\}/s", $this->return_data, $match);
-
-				$sql =	"SELECT u.*,
-						 m.member_id, m.screen_name, m.email, m.url
-						 FROM exp_wiki_uploads u, exp_members m
-						 WHERE m.member_id = u.upload_author
-						 AND u.wiki_id = '".ee()->db->escape_str($this->wiki_id)."'
-						 ORDER BY u.{$orderby} {$sort} ".$this->pagination_sql;
+				switch ($matches['1'][$j])
+				{
+					case 'upload_date':
+						$upload_date[$matches['0'][$j]] = $matches['2'][$j];
+						break;
+				}
 			}
 		}
 
@@ -4724,7 +4707,7 @@ class Wiki {
 		/**  Our Query
 		/** ----------------------------------------*/
 
-		$query = ee()->db->query($sql);
+		$query = ee()->db->get();
 
 		if ($query->num_rows() == 0)
 		{
@@ -4745,9 +4728,9 @@ class Wiki {
 
 		ee()->load->library('typography');
 		ee()->typography->initialize(array(
-				'parse_images'	=> FALSE,
-				'parse_smileys'	=> FALSE)
-				);
+			'parse_images'	=> FALSE,
+			'parse_smileys'	=> FALSE
+		));
 
 		$files = '';
 		ee()->load->helper('url');
@@ -4778,18 +4761,31 @@ class Wiki {
 				$temp = $this->_deny_if('is_image', $temp);
 			}
 
-			$data['{summary}'] = $this->convert_curly_brackets(ee()->typography->parse_type( $this->wiki_syntax($row['upload_summary']),
-															  array(
-																	'text_format'	=> $this->text_format,
-																	'html_format'	=> $this->html_format,
-																	'auto_links'	=> $this->auto_links,
-																	'allow_img_url' => 'y'
-																  )
-															));
+			$data['{summary}'] = $this->convert_curly_brackets(
+				ee()->typography->parse_type(
+					$this->wiki_syntax($row['upload_summary']),
+					array(
+						'text_format'	=> $this->text_format,
+						'html_format'	=> $this->html_format,
+						'auto_links'	=> $this->auto_links,
+						'allow_img_url'	=> 'y'
+					)
+				)
+			);
 
 			$temp = $this->prep_conditionals($temp, array_merge($data, $this->conditionals));
 
+			if (isset($upload_date))
+			{
+				foreach($upload_date as $key => $value)
+				{
+					$data[$key] = ee()->localize->format_date(
+						$value,
 			$temp = ee()->TMPL->parse_date_variables($temp, array('upload_date' => $row['upload_date']));
+						FALSE
+					);
+				}
+			}
 
 			// Deprecate old usage of switch
 			// @deprecated 2.8
@@ -4798,7 +4794,7 @@ class Wiki {
 			{
 				$temp = str_replace("{switch}", "{switch='{$switch}'}", $temp);
 				ee()->load->library('logger');
-				ee()->logger->deprecated('2.8', 'standard {switch=} tags in your wiki search results or category page template');
+				ee()->logger->developer('The wiki\'s {switch} variable has been deprecated, use standard {switch=} tags in your wiki search results or category page template.', TRUE, 604800);
 			}
 
 			// Bring count back to a zero index
@@ -4809,58 +4805,7 @@ class Wiki {
 			$files .= str_replace(array_keys($data), array_values($data), $temp);
 		}
 
-		/** ----------------------------------------
-		/**  Pagination - Files
-		/** ----------------------------------------*/
-
-		if ($this->paginate === TRUE)
-		{
-			$this->paginate_data = str_replace(LD.'current_page'.RD, $this->current_page, $this->paginate_data);
-			$this->paginate_data = str_replace(LD.'total_pages'.RD,	$this->total_pages, $this->paginate_data);
-			$this->paginate_data = str_replace(LD.'pagination_links'.RD, $this->pagination_links, $this->paginate_data);
-
-			if (preg_match("/".LD."if previous_page".RD."(.+?)".LD.'\/'."if".RD."/s", $this->paginate_data, $matches))
-			{
-				if ($this->page_previous == '')
-				{
-					 $this->paginate_data = preg_replace("/".LD."if previous_page".RD.".+?".LD.'\/'."if".RD."/s", '', $this->paginate_data);
-				}
-				else
-				{
-					$matches['1'] = preg_replace("/".LD.'path.*?'.RD."/", 	$this->page_previous, $matches['1']);
-					$matches['1'] = preg_replace("/".LD.'auto_path'.RD."/",	$this->page_previous, $matches['1']);
-
-					$this->paginate_data = str_replace($matches['0'], $matches['1'], $this->paginate_data);
-				}
-			 }
-
-
-			if (preg_match("/".LD."if next_page".RD."(.+?)".LD.'\/'."if".RD."/s", $this->paginate_data, $matches))
-			{
-				if ($this->page_next == '')
-				{
-					 $this->paginate_data = preg_replace("/".LD."if next_page".RD.".+?".LD.'\/'."if".RD."/s", '', $this->paginate_data);
-				}
-				else
-				{
-					$matches['1'] = preg_replace("/".LD.'path.*?'.RD."/", 	$this->page_next, $matches['1']);
-					$matches['1'] = preg_replace("/".LD.'auto_path'.RD."/",	$this->page_next, $matches['1']);
-
-					$this->paginate_data = str_replace($matches['0'], $matches['1'], $this->paginate_data);
-				}
-			}
-
-			switch ($paginate)
-			{
-				case "top"	: $files  = $this->paginate_data.$files;
-					break;
-				case "both"	: $files  = $this->paginate_data.$files.$this->paginate_data;
-					break;
-				default		: $files .= $this->paginate_data;
-					break;
-			}
-		}
-
+		$files = $pagination->render($files);
 		$this->return_data = str_replace($match['0'], $files, $this->return_data);
 	}
 
@@ -4958,7 +4903,7 @@ class Wiki {
 			if (file_exists($server_path.$new_name))
 			{
 				return ee()->output->show_user_error('general', array(
-								ee()->lang->line('file_exists')
+								lang('file_exists')
 					)
 				);
 			}
@@ -4966,7 +4911,7 @@ class Wiki {
 			if (strlen($new_name) > 60)
 			{
 				return ee()->output->show_user_error('general', array(
-								ee()->lang->line('filename_too_long')
+								lang('filename_too_long')
 					)
 				);
 			}
@@ -4974,7 +4919,7 @@ class Wiki {
 			if (ee()->upload->do_upload() === FALSE)
 			{
 				return ee()->output->show_user_error('general',
-							array(ee()->lang->line(ee()->upload->display_errors())));
+							array(lang(ee()->upload->display_errors())));
 			}
 
 			$file_data = ee()->upload->data();
@@ -5007,7 +4952,7 @@ class Wiki {
 				@unlink($file_data['full_path']);
 
 				return ee()->output->show_user_error('general',
-							array(ee()->lang->line($saved['message'])));
+							array(lang($saved['message'])));
 			}
 
 			ee()->db->insert('wiki_uploads', $data);
@@ -5059,91 +5004,6 @@ class Wiki {
 										$this->return_data);
 	}
 
-
-	/** -------------------------------------
-	/**  Pagination
-	/** -------------------------------------*/
-
-	function pagination($count, $limit, $base_path)
-	{
-		if (preg_match("/".LD."paginate".RD."(.+?)".LD."\/paginate".RD."/s", $this->return_data, $match))
-		{
-			$this->paginate		 = TRUE;
-			$this->paginate_data = $match['1'];
-
-			$this->return_data = str_replace($match['0'], '', $this->return_data);
-
-			if (ee()->uri->query_string != '' && preg_match("#^P(\d+)|/P(\d+)#", ee()->uri->query_string, $match))
-			{
-				$this->p_page = (isset($match['2'])) ? $match['2'] : $match['1'];
-
-				$base_path = reduce_double_slashes(str_replace($match['0'], '', $base_path));
-			}
-
-			$this->p_page = ($this->p_page == '' OR ($limit > 1 AND $this->p_page == 1)) ? 0 : $this->p_page;
-
-			if ($this->p_page > $count)
-			{
-				$this->p_page = 0;
-			}
-
-			$this->current_page = floor(($this->p_page / $limit) + 1);
-
-			$this->total_pages = intval(floor($count / $limit));
-
-			/** ----------------------------------------
-			/**  Create the pagination
-			/** ----------------------------------------*/
-
-			if ($count % $limit)
-			{
-				$this->total_pages++;
-			}
-
-			if ($count > $limit)
-			{
-				ee()->load->library('pagination');
-
-				if (strpos($base_path, SELF) === FALSE && ee()->config->item('site_index') != '')
-				{
-					$base_path .= SELF;
-				}
-
-				$config['base_url']		= $base_path;
-				$config['prefix']		= 'P';
-				$config['total_rows'] 	= $count;
-				$config['per_page']		= $limit;
-				$config['cur_page']		= $this->p_page;
-				$config['first_link'] 	= ee()->lang->line('pag_first_link');
-				$config['last_link'] 	= ee()->lang->line('pag_last_link');
-				$config['first_url'] 	= rtrim($base_path, '/');
-
-				// Allows $config['cur_page'] to override
-				$config['uri_segment'] = 0;
-
-				ee()->pagination->initialize($config);
-				$this->pagination_links = ee()->pagination->create_links();
-
-				if ((($this->total_pages * $limit) - $limit) > $this->p_page)
-				{
-					$this->page_next = $base_path.'P'.($this->p_page + $limit);
-				}
-
-				if (($this->p_page - $limit ) >= 0)
-				{
-					$this->page_previous = $base_path.'P'.($this->p_page - $limit);
-				}
-
-				$this->pagination_sql = " LIMIT ".$this->p_page.', '.$limit;
-			}
-			else
-			{
-				$this->p_page = '';
-			}
-		}
-	}
-
-
 	/* -------------------------------------
 	/*  Edit Limit
 	/*  - Not specifying wiki_id in here because
@@ -5165,7 +5025,7 @@ class Wiki {
 
 			if (($query2->row('count')  + $query->row('count') ) > $this->author_limit)
 			{
-				return ee()->output->show_user_error('general', array(ee()->lang->line('submission_limit')));
+				return ee()->output->show_user_error('general', array(lang('submission_limit')));
 			}
 		}
 	}
@@ -5608,7 +5468,7 @@ class Wiki {
 
 			ee()->lang->loadfile('wiki');
 
-			$this->category_ns = (isset(ee()->lang->language['category_ns']))	? ee()->lang->line('category_ns') : $this->category_ns;
+			$this->category_ns = (isset(ee()->lang->language['category_ns']))	? lang('category_ns') : $this->category_ns;
 
 			ee()->db->query("UPDATE exp_wiki_page SET page_namespace = 'category' WHERE page_namespace = '".ee()->db->escape_str($this->category_ns)."'");
 		}
@@ -5644,43 +5504,6 @@ class Wiki {
 					SET module_version = '".ee()->db->escape_str($this->version)."'
 					WHERE module_name = 'Wiki'");
 	}
-
-	// -------------------------------------------------------------------------
-
-	/**
-	 * Fetch the parameters for a wiki tag given a string of parameters and an
-	 * array of names and default values
-	 * @param  String $param_string Parameter string from preg_match
-	 * @param  array  $params       Array with keys as the parameter name and
-	 *                              defaults as the values
-	 * @return array                Array much like the $params but with the
-	 *                              final values
-	 */
-	private function _fetch_params($param_string, $params = array('limit' => 10))
-	{
-		$return = array();
-
-		if (trim($param_string) != '' && ($values = ee()->functions->assign_parameters($param_string)) !== FALSE)
-		{
-
-			foreach ($params as $name => $default)
-			{
-				if (isset($values[$name])
-					&& ( ! is_numeric($default) XOR is_numeric($values[$name])))
-				{
-					$return[$name] = $values[$name];
-				}
-				else
-				{
-					$return[$name] = $default;
-				}
-			}
-		}
-
-		return $return;
-	}
-
-
 }
 /* END Class */
 

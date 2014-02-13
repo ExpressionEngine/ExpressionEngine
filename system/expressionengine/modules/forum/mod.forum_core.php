@@ -904,44 +904,6 @@ class Forum_Core extends Forum {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Build Pagination
-	 */
-	function _create_pagination($data)
-	{
-		ee()->load->library('pagination');
-
-		$config = array(
-			'first_link'		=> lang('first'),
-			'last_link'			=> lang('last'),
-			'next_link'			=> lang('next'),
-			'prev_link'			=> lang('previous'),
-			'first_tag_open'	=> '<td><div class="paginate">',
-			'first_tag_close'	=> '</div></td>',
-			'next_tag_open'		=> '<td><div class="paginate">',
-			'next_tag_close'	=> '</div></td>',
-			'prev_tag_open'		=> '<td><div class="paginate">',
-			'prev_tag_close'	=> '</div></td>',
-			'num_tag_open'		=> '<td><div class="paginate">',
-			'num_tag_close'		=> '</div></td>',
-			'cur_tag_open'		=> '<td><div class="paginateCur">',
-			'cur_tag_close'		=> '</div></td>',
-			'last_tag_open'		=> '<td><div class="paginate">',
-			'last_tag_close'	=> '</div></td>',
-			'uri_segment'		=> 0,
-			'base_url'			=> $data['path'],
-			'prefix'			=> 'P',
-			'total_rows'		=> $data['total_count'],
-			'per_page' 			=> $data['per_page'],
-			'cur_page'			=> $data['cur_page']
-		);
-
-		ee()->pagination->initialize($config);
-		return ee()->pagination->create_links();
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Fetch topic marker folder images
 	 */
 	function _fetch_topic_markers()
@@ -2114,10 +2076,7 @@ class Forum_Core extends Forum {
 	 */
 	public function topics()
 	{
-		$pagination 	= '';
 		$query_limit	= '';
-		$current_page	= 1;
-		$total_pages	= 1;
 
 		// Fetch Topic order and per-page count
 		$query = ee()->db->query("SELECT forum_topic_order, forum_topics_perpage, forum_posts_perpage, forum_hot_topic, forum_enable_rss FROM exp_forums WHERE forum_id = '{$this->current_id}'");
@@ -2174,6 +2133,21 @@ class Forum_Core extends Forum {
 		//
 		// -------------------------------------------
 
+		// Check to see if the old style pagination exists
+		// @deprecated 2.8
+		if (stripos($str, LD.'if paginate'.RD) !== FALSE)
+		{
+			$str = preg_replace("/{if paginate}(.*?){\/if}/uis", "{paginate}$1{/paginate}", $str);
+			ee()->load->library('logger');
+			ee()->logger->developer('{if paginate} has been deprecated, use normal {paginate} tags in your forum topics template.', TRUE, 604800);
+		}
+
+		// Load up pagination and start parsing
+		ee()->load->library('pagination');
+		$pagination = ee()->pagination->create();
+		$pagination->position = 'inline';
+		$str = $pagination->prepare($str);
+
 		// Count the topics for pagination
 		$query = ee()->db->query("SELECT COUNT(*) AS count
 							FROM exp_forum_topics t, exp_members m, exp_members a
@@ -2215,29 +2189,13 @@ class Forum_Core extends Forum {
 		}
 
 		// We have pagination!
-		if ($query->row('count')  > $topic_limit)
+		if ($query->row('count') > $topic_limit
+			&& $pagination->paginate === TRUE)
 		{
-			$pagination = $this->_create_pagination(
-										array(
-												'first_url'		=> $this->forum_path('/viewforum/'.$this->current_id.'/'),
-												'path'			=> $this->forum_path('/viewforum/'.$this->current_id.'/'),
-												'total_count'	=> $query->row('count') ,
-												'per_page'		=> $topic_limit,
-												'cur_page'		=> $this->current_page
-											)
-										);
+			$pagination->build($query->row('count'), $topic_limit);
 
 			// Set the LIMIT for our query
 			$query_limit = 'LIMIT '.$this->current_page.', '.$topic_limit;
-
-			// Set the stats for: {current_page} of {total_pages}
-			$current_page = floor(($this->current_page / $topic_limit) + 1);
-			$total_pages  = intval($query->row('count')  / $topic_limit);
-
-			if ($query->row('count')  % $topic_limit)
-			{
-				$total_pages++;
-			}
 		}
 
 		$str = ($pagination == '') ? $this->deny_if('paginate', $str, '&nbsp;') :
@@ -2531,12 +2489,11 @@ class Forum_Core extends Forum {
 			$str = $this->allow_if('can_post', $str);
 		}
 
+		$str = $pagination->render($str);
+
 		// Finalize the template
 		$str = $this->var_swap( $str,
 								array(
-										'pagination_links'	=> $pagination,
-										'current_page'		=> $current_page,
-										'total_pages'		=> $total_pages,
 										'forum_name'		=> $this->_convert_special_chars($fdata[$this->current_id]['forum_name'], TRUE),
 										'forum_description'	=> $fdata[$this->current_id]['forum_description'],
 										'path:new_topic' 	=> $this->forum_path('/newtopic/'.$this->current_id.'/')
@@ -2588,10 +2545,7 @@ class Forum_Core extends Forum {
 	public function threads($is_announcement = FALSE, $thread_review = FALSE, $is_split = FALSE)
 	{
 		$posts 			= '';
-		$pagination 	= '';
 		$query_limit	= '';
-		$current_page	= 1;
-		$total_pages	= 1;
 
 		// Fetch/Set the "topic tracker" cookie
 		$read_topics = $this->_fetch_read_topics($this->current_id);
@@ -2917,6 +2871,21 @@ class Forum_Core extends Forum {
 
 		$attach_query = FALSE;
 
+		// Check to see if the old style pagination exists
+		// @deprecated 2.8
+		if (stripos($str, LD.'if paginate'.RD) !== FALSE)
+		{
+			$str = preg_replace("/{if paginate}(.*?){\/if}/uis", "{paginate}$1{/paginate}", $str);
+			ee()->load->library('logger');
+			ee()->logger->developer('{if paginate} has been deprecated, use normal {paginate} tags in your forum threads template.', TRUE, 604800);
+		}
+
+		// Load up pagination and start parsing
+		ee()->load->library('pagination');
+		$pagination = ee()->pagination->create();
+		$pagination->position = 'inline';
+		$str = $pagination->prepare($str);
+
 		// Count the total number of posts
 		// We do this for purposes of pagination
 		// and to see if we even need to show anything
@@ -2927,32 +2896,15 @@ class Forum_Core extends Forum {
 
 		if ($pquery->row('count')  > 0)
 		{
-			// No funny business with the page count allowed
-			if ($this->current_page > $pquery->row('count') )
-			{
-				$this->current_page = 0;
-			}
-
 			// We have pagination!
-			if (($pquery->row('count')  > $limit) AND $thread_review == FALSE)
+			if (($pquery->row('count') > $limit)
+				&& $thread_review == FALSE
+				&& $pagination->paginate === TRUE)
 			{
-				$pagination = $this->_create_pagination(
-										 	array(
-													'first_url'		=> $this->forum_path('/viewthread/'.$this->current_id.'/'),
-													'path'			=> $this->forum_path('/viewthread/'.$this->current_id.'/'),
-													'total_count'	=> $pquery->row('count') ,
-													'per_page'		=> $limit,
-													'cur_page'		=> $this->current_page
-										 		)
-											);
-
+				$pagination->build($pquery->row('count'), $limit);
 
 				// Set the LIMIT for our query
-				$query_limit = 'LIMIT '.$this->current_page.', '.$limit;
-
-				// Set the stats for: {current_page} of {total_pages}
-				$current_page = floor(($this->current_page / $limit) + 1);
-				$total_pages = ceil($pquery->row('count')  / $limit);
+				$query_limit = 'LIMIT '.$pagination->offset.', '.$limit;
 			}
 
 			// Fetch the posts
@@ -3024,41 +2976,7 @@ class Forum_Core extends Forum {
 
 
 		// Pagination
-		if ($pagination == '')
-		{
-			$str = $this->deny_if('paginate', $str, '&nbsp;');
-
-			if ( $is_split === TRUE)
-			{
-				$str = $this->deny_if('next_page', $str);
-				$str = $this->deny_if('previous_page', $str);
-			}
-		}
-		else
-		{
-			$str = $this->allow_if('paginate', $str);
-
-			if ( $is_split === TRUE)
-			{
-				if ($current_page < $total_pages)
-				{
-					$str = $this->allow_if('next_page', $str);
-				}
-				else
-				{
-					$str = $this->deny_if('next_page', $str);
-				}
-
-				if ($this->current_page > 0)
-				{
-					$str = $this->allow_if('previous_page', $str);
-				}
-				else
-				{
-					$str = $this->deny_if('previous_page', $str);
-				}
-			}
-		}
+		$str = $pagination->render($str);
 
 		// Create Subscription Link
 		if (ee()->session->userdata('member_id') == 0)
@@ -3142,7 +3060,7 @@ class Forum_Core extends Forum {
 		// Finalize Template
 		if ($thread_review == TRUE)
 		{
-			if ($this->current_page > 0)
+			if ($pagination->offset > 0)
 			{
 				$thread_review_rows = $posts;
 			}
@@ -3161,9 +3079,10 @@ class Forum_Core extends Forum {
 		}
 		else
 		{
-			if ($this->current_page > 0)
+			if ($pagination->offset > 0)
 			{
-				if ($current_page == $total_pages AND $order != 'asc')
+				if ($pagination->current_page == $pagination->total_pages
+					AND $order != 'asc')
 				{
 					$thread_rows = $posts.$topic;
 				}
@@ -3180,7 +3099,7 @@ class Forum_Core extends Forum {
 				}
 				else
 				{
-					if ($current_page < $total_pages)
+					if ($pagination->current_page < $pagination->total_pages)
 					{
 						$thread_rows = $posts;
 					}
@@ -3207,9 +3126,6 @@ class Forum_Core extends Forum {
 		return $this->var_swap($str,
 								array(
 										'topic_title'		=> trim($this->_convert_special_chars(ee()->typography->format_characters(ee()->typography->filter_censored_words($title)))),
-										'pagination_links'	=> $pagination,
-										'current_page'		=> $current_page,
-										'total_pages'		=> $total_pages,
 										'include:'.$thread  => $thread_rows,
 										'include:thread_review_rows' => $thread_review_rows,
 										'path:new_topic' 	=> $this->forum_path('/newtopic/'.$this->current_id.'/'),
@@ -9564,40 +9480,28 @@ class Forum_Core extends Forum {
 			$topic_limit = 20;
 		}
 
-		// Do we have pagination?
-		$pagination 	= '';
-		$current_page	= 0;
-		$total_pages	= 1;
-		$total_rows	 	= count($topic_ids);
+		// Check to see if the old style pagination exists
+		// @deprecated 2.8
+		if (stripos($str, LD.'if paginate'.RD) !== FALSE)
+		{
+			$str = preg_replace("/{if paginate}(.*?){\/if}/uis", "{paginate}$1{/paginate}", $str);
+			ee()->load->library('logger');
+			ee()->logger->developer('{if paginate} has been deprecated, use normal {paginate} tags in your forum search results template.', TRUE, 604800);
+		}
+
+		// Load up pagination and start parsing
+		$total_rows = count($topic_ids);
+		ee()->load->library('pagination');
+		$pagination = ee()->pagination->create();
+		$pagination->position = 'inline';
+		$str = $pagination->prepare($str);
 
 		if ($total_rows > $topic_limit)
 		{
-			$pagination = $this->_create_pagination(
-							array(
-									'first_url'		=> $this->forum_path('/search_results/'.$this->current_id.'/'),
-									'path'			=> $this->forum_path('/search_results/'.$this->current_id.'/'),
-									'total_count'	=> $total_rows,
-									'per_page'		=> $topic_limit,
-									'cur_page'		=> $this->current_page
-								)
-							);
+			$pagination->build($total_rows, $topic_limit);
 
 			// Slice our array so we can limit the query properly
 			$topic_ids = array_slice($topic_ids, $this->current_page, $topic_limit);
-
-			// Set the stats for: {current_page} of {total_pages}
-			$cur_page = ($this->current_page == 0) ? 1 : $this->current_page;
-			$current_page = floor(($cur_page / $topic_limit) + 1);
-			$total_pages  = ceil($total_rows / $topic_limit);
-		}
-
-		if ($pagination == '')
-		{
-			$str = $this->deny_if('paginate', $str, '&nbsp;');
-		}
-		else
-		{
-			$str = $this->allow_if('paginate', $str);
 		}
 
 		// Fetch the topics
@@ -9849,15 +9753,13 @@ class Forum_Core extends Forum {
 			$topics .= $temp;
 		}
 
+		$str = $pagination->render($str);
 		$str = str_replace('{include:result_rows}', $topics, $str);
 
 		// Parse the template
 		return $this->var_swap($this->load_element('search_results_page'),
 					array(
 						'include:search_results'	=> $str,
-						'pagination_links'			=> $pagination,
-						'current_page'				=> $current_page,
-						'total_pages'				=> $total_pages,
 						'keywords'					=> ee()->functions->encode_ee_tags($keywords),
 						'total_results'				=> $total_rows,
 						'path:new_topic' 			=> $this->forum_path('/newtopic/'.$this->current_id.'/')
@@ -9922,40 +9824,29 @@ class Forum_Core extends Forum {
 		// Load the template
 		$str = $this->load_element('thread_search_results');
 
-		$pagination 	= '';
-		$current_page	= 0;
-		$total_pages	= 1;
-		$post_limit 	= 20;
-		$total_rows	 	= count($post_ids);
-
-		if ($total_rows > $post_limit)
+		// Check to see if the old style pagination exists
+		// @deprecated 2.8
+		if (stripos($str, LD.'if paginate'.RD) !== FALSE)
 		{
-			$pagination = $this->_create_pagination(array(
-				'first_url'		=> $this->forum_path('/search_thread/'.$this->current_id.$topic_id.'/'),
-				'path'			=> $this->forum_path('/search_thread/'.$this->current_id.$topic_id.'/'),
-				'total_count'	=> $total_rows,
-				'per_page'		=> 20,
-				'cur_page'		=> $this->current_page
-			));
+			$str = preg_replace("/{if paginate}(.*?){\/if}/uis", "{paginate}$1{/paginate}", $str);
+			ee()->load->library('logger');
+			ee()->logger->developer('{if paginate} has been deprecated, use normal {paginate} tags in your forum search results template.', TRUE, 604800);
+		}
+
+		// Load up pagination and start parsing
+		$post_limit	= 20;
+		$total_rows	= count($post_ids);
+		ee()->load->library('pagination');
+		$pagination = ee()->pagination->create();
+		$pagination->position = 'inline';
+		$str = $pagination->prepare($str);
+
+		if ($total_rows > $post_limit && $pagination->paginate === TRUE)
+		{
+			$pagination->build($total_rows, $post_limit);
 
 			// Slice our array so we can limit the query properly
-
 			$post_ids = array_slice($post_ids, $this->current_page, $post_limit);
-
-			// Set the stats for: {current_page} of {total_pages}
-
-			$cur_page = ($this->current_page == 0) ? 1 : $this->current_page;
-			$current_page = floor(($cur_page / $post_limit) + 1);
-			$total_pages  = ceil($total_rows / $post_limit);
-		}
-
-		if ($pagination == '')
-		{
-			$str = $this->deny_if('paginate', $str, '&nbsp;');
-		}
-		else
-		{
-			$str = $this->allow_if('paginate', $str);
 		}
 
 		// Fetch the posts and topic title
@@ -10070,6 +9961,7 @@ class Forum_Core extends Forum {
 			$topics .= $temp;
 		}
 
+		$str = $pagination->render($str);
 		$str = str_replace('{include:thread_result_rows}', $topics, $str);
 
 		// Parse the template
@@ -10077,9 +9969,6 @@ class Forum_Core extends Forum {
 			$this->load_element('search_thread_page'),
 			array(
 				'include:thread_search_results'	=> $str,
-				'pagination_links'			=> $pagination,
-				'current_page'				=> $current_page,
-				'total_pages'				=> $total_pages,
 				'keywords'					=> $keywords,
 				'total_results'				=> $total_rows,
 				'topic_title'				=> ee()->typography->filter_censored_words(

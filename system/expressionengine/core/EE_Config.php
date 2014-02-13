@@ -1673,6 +1673,29 @@ class EE_Config Extends CI_Config {
 		);
 	}
 
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Fetch a config item and add a slash after it
+	 *
+	 * This is installer aware and will always return the correct path in the
+	 * ExpressionEngine install
+	 *
+	 * @param  string $item the config item
+	 * @return string       the config value
+	 */
+	public function slash_item($item)
+	{
+		$pref = parent::slash_item($item);
+
+		if (defined('EE_APPPATH'))
+		{
+			$pref = str_replace(APPPATH, EE_APPPATH, $pref);
+		}
+
+		return $pref;
+	}
+
 }
 // END CLASS
 

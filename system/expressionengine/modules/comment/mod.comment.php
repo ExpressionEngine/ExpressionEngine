@@ -157,7 +157,7 @@ class Comment {
 		if ($enabled['pagination'])
 		{
 			ee()->load->library('pagination');
-			$pagination = new Pagination_object(__CLASS__);
+			$pagination = ee()->pagination->create(__CLASS__);
 		}
 
 		if (ee()->TMPL->fetch_param('dynamic') == 'no')
@@ -169,7 +169,6 @@ class Comment {
 			$dynamic = TRUE;
 		}
 
-		//
 		$force_entry = FALSE;
 		if (ee()->TMPL->fetch_param('author_id') !== FALSE
 			OR ee()->TMPL->fetch_param('entry_id') !== FALSE
@@ -216,7 +215,7 @@ class Comment {
 				{
 					$pagination->current_page = $match['2'];
 				}
-				$uristr  = trim(reduce_double_slashes(str_replace($match['0'], '/', $uristr)), '/');
+				$uristr = trim(reduce_double_slashes(str_replace($match['0'], '/', $uristr)), '/');
 			}
 		}
 		else
@@ -263,7 +262,7 @@ class Comment {
 
 		// Fetch entry ids- we'll use them to make sure comments are to open, etc. entries
 		$comment_id_param = FALSE;
-		if  ($dynamic == TRUE OR $force_entry == TRUE)
+		if ($dynamic == TRUE OR $force_entry == TRUE)
 		{
 			if ($force_entry == TRUE)
 			{
@@ -370,40 +369,26 @@ class Comment {
 			}
 		}
 
-
-		//  Set sorting and limiting
-		if ( ! $dynamic)
+		if ($enabled['pagination'])
 		{
-			if ($enabled['pagination'])
-			{
-				$pagination->per_page = ee()->TMPL->fetch_param('limit', 100);
-			}
-			else
-			{
-				$limit = ee()->TMPL->fetch_param('limit', 100);
-			}
-			$sort = ee()->TMPL->fetch_param('sort', 'desc');
+			$pagination->per_page = ee()->TMPL->fetch_param('limit', $this->limit);
 		}
 		else
 		{
-
-			if ($enabled['pagination'])
-			{
-				$pagination->per_page = ee()->TMPL->fetch_param('limit', $this->limit);
-			}
-			else
-			{
-				$limit = ee()->TMPL->fetch_param('limit', $this->limit);
-			}
-			$sort = ee()->TMPL->fetch_param('sort', 'asc');
+			$limit = ee()->TMPL->fetch_param('limit', $this->limit);
 		}
+
+		//  Set sorting and limiting
+		$sort = ( ! $dynamic)
+			? ee()->TMPL->fetch_param('sort', 'desc')
+			: ee()->TMPL->fetch_param('sort', 'asc');
 
 		$allowed_sorts = array('date', 'email', 'location', 'name', 'url');
 
 		if ($enabled['pagination'])
 		{
 			// Capture the pagination template
-			$pagination->get_template();
+			ee()->TMPL->tagdata = $pagination->prepare(ee()->TMPL->tagdata);
 		}
 
 		/** ----------------------------------------
@@ -426,11 +411,10 @@ class Comment {
 		}
 
 		$random = ($order_by == 'random') ? TRUE : FALSE;
-		$order_by  = ($order_by == 'date' OR ! in_array($order_by, $allowed_sorts))  ? 'comment_date' : $order_by;
+		$order_by = ($order_by == 'date' OR ! in_array($order_by, $allowed_sorts))  ? 'comment_date' : $order_by;
 
 		// We cache the query in case we need to do a count for dynamic off pagination
 		ee()->db->start_cache();
-
 		ee()->db->select('comment_date, comment_id');
 		ee()->db->from('comments c');
 
@@ -526,36 +510,19 @@ class Comment {
 
 		if ($enabled['pagination'])
 		{
-			$total_rows = ee()->db->count_all_results();
 			if ($pagination->paginate === TRUE)
 			{
-				// When we are only showing comments and it is
-				// not based on an entry id or url title
-				// in the URL, we can make the query much
+				// When we are only showing comments and it is not based on an
+				// entry id or url title in the URL, we can make the query much
 				// more efficient and save some work.
-				$pagination->total_rows = $total_rows;
+				$pagination->total_items = ee()->db->count_all_results();
 			}
+
+			// Determine the offset from the query string
+			$pagination->prefix = ( ! $dynamic) ? 'N' : 'P';
 		}
 
 		$this_sort = ($random) ? 'random' : strtolower($sort);
-
-		// We're not stripping it out this time, so we can just
-		// ignore the check if we're not paginating.
-		if ($enabled['pagination'])
-		{
-			$p = ( ! $dynamic) ? 'N' : 'P';
-
-			// Figure out of we need a pagination offset
-			if (preg_match('/'.$p.'(\d+)(?:\/|$)/', ee()->uri->uri_string, $matches))
-			{
-				$pagination->offset = $matches[1];
-			}
-			else
-			{
-				$pagination->offset = 0;
-			}
-		}
-
 		ee()->db->order_by($order_by, $this_sort);
 
 		if ($enabled['pagination'])
@@ -589,7 +556,7 @@ class Comment {
 		if ($enabled['pagination'])
 		{
 			// Build pagination
-			$pagination->build($pagination->per_page);
+			$pagination->build($pagination->total_items, $pagination->per_page);
 		}
 
 		/** -----------------------------------
@@ -716,7 +683,7 @@ class Comment {
 			$row['absolute_count']	= $absolute_count;
 			if ($enabled['pagination'])
 			{
-				$row['total_comments']	= $total_rows;
+				$row['total_comments']	= $pagination->total_items;
 			}
 			$row['total_results']	= $total_results;
 

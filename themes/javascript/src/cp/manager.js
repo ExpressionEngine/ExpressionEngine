@@ -69,6 +69,28 @@ function access_edit_ajax(element) {
 				enable_http_auth: el.val()
 			});
 		}
+		// Handle template route
+		else if (el.attr('name').substr(0, 14) === 'template_route')
+		{
+			template_id = (el.attr('name').substr(15))
+				? el.attr('name').substr(15) : $('input:hidden[name=template_id]').val();
+
+			payload.push({
+				template_id: template_id,
+				template_route: el.val()
+			});
+		}
+		// Handle template route required
+		else if (el.attr('name').substr(0, 14) === 'route_required')
+		{
+			template_id = (el.attr('name').substr(15))
+				? el.attr('name').substr(15) : $('input:hidden[name=template_id]').val();
+
+			payload.push({
+				template_id: template_id,
+				route_required: el.val()
+			});
+		}
 		// Handle member group permissions for this template
 		else
 		{
@@ -305,6 +327,20 @@ function bind_prefs_events() {
 			headerrow.find('.enable_http_auth').attr({
 				'id': 'enable_http_auth_' + template_id,
 				'name': 'enable_http_auth_' + template_id
+			});
+
+			// template route
+			headerrow.find(".template_route").val(rowdata.template_route);
+			headerrow.find('.template_route').attr({
+				'id': 'template_route_' + template_id,
+				'name': 'template_route_' + template_id
+			});
+			
+			// template route required
+			headerrow.find(".route_required").val(rowdata.route_required);
+			headerrow.find('.route_required').attr({
+				'id': 'route_required_' + template_id,
+				'name': 'route_required_' + template_id
 			});
 
 			// Set data, ids, and names

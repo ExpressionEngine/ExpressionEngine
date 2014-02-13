@@ -38,8 +38,10 @@ class Updater {
 
 		$steps = new ProgressIterator(
 			array(
+				'_update_specialty_templates',
 				'_update_extension_quick_tabs',
 				'_extract_server_offset_config',
+				'_update_template_db_columns',
 				'_clear_cache',
 				'_update_config_add_cookie_httponly',
 				'_convert_xid_to_csrf',
@@ -47,7 +49,8 @@ class Updater {
 				'_update_localization_config',
 				'_update_member_table',
 				'_update_session_config_names',
-				'_update_config_add_cookie_httponly'
+				'_update_config_add_cookie_httponly',
+				'_replace_old_search_pagination'
 			)
 		);
 
@@ -56,6 +59,50 @@ class Updater {
 			$this->$v();
 		}
 		return TRUE;
+	}
+
+	// -------------------------------------------------------------------
+
+	/**
+	 * Update Specialty Templates
+	 *
+	 * Was updated in 2.6 and 2.7, but we need to add the line with {username}.
+	 * But only to installations that haven't modified the default.
+	 */
+	private function _update_specialty_templates()
+	{
+		ee()->db->where('template_name', 'reset_password_notification');
+		ee()->db->delete('specialty_templates');
+
+		$old_data = '{name},
+
+To reset your password, please go to the following page:
+
+{reset_url}
+
+If you do not wish to reset your password, ignore this message. It will expire in 24 hours.
+
+{site_name}
+{site_url}';
+
+		$new_data = array(
+			'template_data'=>'{name},
+
+To reset your password, please go to the following page:
+
+{reset_url}
+
+Then log in with your username: {username}
+
+If you do not wish to reset your password, ignore this message. It will expire in 24 hours.
+
+{site_name}
+{site_url}');
+
+		ee()->db->where('template_name', 'forgot_password_instructions')
+			->where('template_data', $old_data)
+			->update('specialty_templates', $new_data);
+
 	}
 
 	// -------------------------------------------------------------------------
@@ -142,6 +189,40 @@ class Updater {
 				'server_offset' => $server_offset
 			), 'all');
 		}
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Add three new columns for necessary for Template Routes
+	 * 
+	 * @access private
+	 * @return void
+	 */
+	private function _update_template_db_columns()
+	{
+        // Add route and route_parsed columns to templates table
+		ee()->smartforge->add_column(
+			'templates',
+			array(
+				'route' => array(
+					'type'			=> 'varchar',
+					'constraint'    => 512,
+					'null'			=> True
+				),
+				'route_parsed' => array(
+					'type'			=> 'varchar',
+					'constraint'    => 512,
+					'null'			=> True
+				),
+				'route_required' => array(
+					'type'			=> 'char',
+					'constraint'    => 1,
+					'default'		=> 'n',
+					'null'		    => False
+				)
+			)
+		);
 	}
 
 	// --------------------------------------------------------------------
@@ -406,7 +487,43 @@ class Updater {
 		);
 		ee()->config->_update_config($new_config_items, $remove_config_items);
 	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Renames admin_session_type and user_session_type in the site system
+	 * preferences and config (if needed)
+	 *
+	 * @return void
+	 **/
+	private function _replace_old_search_pagination()
+	{
+		ee()->load->library('logger');
+
+		// Replace SINGLE {paginate} variable with {pagination_links}
+		ee()->logger->deprecate_template_tag(
+			'Replaced {exp:search:search_results} pagination loop\'s {paginate} single variable with {pagination_links}.',
+			"/({exp:search:search_results.*?){paginate}(((?!{\/paginate}).)*{\/exp:search:search_results})/uis",
+			"$1{pagination_links}$2"
+		);
+
+		// Replace {page_count} with "Page {current_page} of {total_pages}"
+		ee()->logger->deprecate_template_tag(
+			'Replaced {exp:search:search_results} pagination loop\'s {page_count} with "Page {current_page} of {total_pages}".',
+			"/({exp:search:search_results(\s.*?)?}(.*?)){page_count}((.*?){\/exp:search:search_results})/uis",
+			"$1Page {current_page} of {total_pages}$4"
+		);
+
+		// Replace {if paginate}...{/if} with {paginate}...{/paginate}
+		ee()->logger->deprecate_template_tag(
+			'Replaced {exp:search:search_results} pagination loop\'s {if paginate} with {paginate}...{/paginate}. Switch to the new Channel style pagination.',
+			"/({exp:search:search_results(\s.*?)?}(.*?)){if paginate}(.*){\/if}((.*?){\/exp:search:search_results})/uis",
+			"$1{paginate}$4{/paginate}$5"
+		);
+	}
+
 }
+
 /* END CLASS */
 
 /* End of file ud_280.php */
