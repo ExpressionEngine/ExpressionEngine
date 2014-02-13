@@ -400,12 +400,13 @@ class EE_Logger {
 	public function deprecate_specialty_template_tag($message, $regex, $replacement)
 	{
 		ee()->load->helper(array('directory', 'file'));
+		$results = array();
 
 		foreach (array('forum', 'wiki', 'profile') as $type)
 		{
 			if (is_dir($current_path = PATH_THEMES.$type.'_themes/'))
 			{
-				$this->_update_specialty_template(
+				$results[$type] = $this->_update_specialty_template(
 					directory_map($current_path),
 					$current_path,
 					$regex,
@@ -414,7 +415,10 @@ class EE_Logger {
 			}
 		}
 
-		$this->developer($message, TRUE, 604800);
+		if (strpos(json_encode($results), 'true') !== FALSE)
+		{
+			$this->developer($message, TRUE, 604800);
+		}
 	}
 
 	// -------------------------------------------------------------------------
@@ -438,8 +442,9 @@ class EE_Logger {
 			{
 				// Only append $current_directory if it's not numeric
 				$recursive_path = ( ! is_numeric($current_directory)) ? $path.$current_directory.'/' : $path;
-				return $this->_update_specialty_template($file, $recursive_path, $regex, $replacement);
+				$filename[$current_directory] = $this->_update_specialty_template($file, $recursive_path, $regex, $replacement);
 			}
+			return $filename;
 		}
 
 		// Figure out if this is text, we're not updating images...
@@ -458,7 +463,11 @@ class EE_Logger {
 					$file_contents
 				)
 			);
+
+			return TRUE;
 		}
+
+		return FALSE;
 	}
 
 	// --------------------------------------------------------------------
