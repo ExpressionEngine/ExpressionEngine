@@ -3179,8 +3179,9 @@ class Design extends CP_Controller {
 		$this->load->model('design_model');
 		$this->load->library('table');
 
-		$this->db->select(array('t.template_name', 'tg.group_name', 't.template_id', 't.route', 't.route_parsed'));
+		$this->db->select(array('t.template_name', 'tg.group_name', 't.template_id', 'tr.route', 'tr.route_parsed'));
 		$this->db->from('templates AS t');
+		$this->db->join('template_routes AS tr', 'tr.template_id = t.template_id', 'left');
 		$this->db->join('template_groups AS tg', 'tg.group_id = t.group_id');
 		$this->db->where('t.site_id', $this->config->item('site_id'));
 		$this->db->order_by('tg.group_name, t.template_name', 'ASC');
@@ -3423,7 +3424,6 @@ class Design extends CP_Controller {
 					'template_route' => $row['route'],
 					'route_required' => $row['route_required']
 				);
-
 
 				$first = $row['group_id'];
 			}
@@ -3854,7 +3854,7 @@ class Design extends CP_Controller {
 					$this->output->send_ajax_response(lang('unauthorized_access'), TRUE);
 				}
 
-				$this->template_model->update_template_ajax($template_id, array('route_required' => $required));
+				$this->template_model->update_template_route($template_id, array('route_required' => $required));
 
 				// We have to recompile the route when route_required changes
 				$route = $query->row('route');
@@ -3868,7 +3868,7 @@ class Design extends CP_Controller {
 					$this->output->send_ajax_response($error->getMessage(), TRUE);
 				}
 
-				$this->template_model->update_template_ajax($template_id, array('route_parsed' => $template_route->compile()));
+				$this->template_model->update_template_route($template_id, array('route_parsed' => $template_route->compile()));
 			}
 			elseif (isset($group['template_route']))
 			{
@@ -3917,8 +3917,8 @@ class Design extends CP_Controller {
 					}
 				}
 
-				$this->template_model->update_template_ajax($template_id, array('route_parsed' => $route_parsed));
-				$this->template_model->update_template_ajax($template_id, array('route' => $route));
+				$this->template_model->update_template_route($template_id, array('route_parsed' => $route_parsed));
+				$this->template_model->update_template_route($template_id, array('route' => $route));
 			}
 			else
 			{

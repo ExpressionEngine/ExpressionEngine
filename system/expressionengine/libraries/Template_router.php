@@ -72,6 +72,7 @@ class EE_Template_Router extends CI_Router {
 	{
 		ee()->db->select('route_parsed, template_name, group_name');
 		ee()->db->from('templates');
+		ee()->db->join('template_routes', 'templates.template_id = template_routes.template_id');
 		ee()->db->join('template_groups', 'templates.group_id = template_groups.group_id');
 		ee()->db->where('route_parsed is not null');
 		$query = ee()->db->get();

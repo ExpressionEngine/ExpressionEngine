@@ -194,35 +194,49 @@ If you do not wish to reset your password, ignore this message. It will expire i
 	// -------------------------------------------------------------------------
 
 	/**
-	 * Add three new columns for necessary for Template Routes
+	 * Add new Template Routes table
 	 * 
 	 * @access private
 	 * @return void
 	 */
 	private function _update_template_db_columns()
 	{
-        // Add route and route_parsed columns to templates table
-		ee()->smartforge->add_column(
-			'templates',
+		ee()->smartforge->add_field(
 			array(
+				'route_id' => array(
+					'type'			 => 'int',
+					'constraint'     => 10,
+					'null'			 => FALSE,
+					'unsigned'		 => TRUE,
+					'auto_increment' => TRUE
+				),
+				'template_id' => array(
+					'type'			=> 'int',
+					'constraint'    => 10,
+					'unsigned'		 => TRUE,
+					'null'			=> FALSE
+				),
 				'route' => array(
 					'type'			=> 'varchar',
 					'constraint'    => 512,
-					'null'			=> True
+					'null'			=> TRUE
 				),
 				'route_parsed' => array(
 					'type'			=> 'varchar',
 					'constraint'    => 512,
-					'null'			=> True
+					'null'			=> TRUE
 				),
 				'route_required' => array(
 					'type'			=> 'char',
 					'constraint'    => 1,
 					'default'		=> 'n',
-					'null'		    => False
+					'null'		    => FALSE
 				)
 			)
 		);
+		ee()->dbforge->add_key('route_id', TRUE);
+		ee()->dbforge->add_key('template_id');
+		ee()->smartforge->create_table('exp_template_routes');
 	}
 
 	// --------------------------------------------------------------------
