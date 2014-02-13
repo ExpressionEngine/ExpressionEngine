@@ -720,9 +720,20 @@ class EE_Typography extends CI_Typography {
 		require_once(APPPATH.'libraries/typography/Markdown/markdown.php');
 
 		// Encode EE Tags
-		if ( ! isset($options['encode_ee_tags']) OR $options['encode_ee_tags'] == 'yes')
+		if ( ! isset($options['encode_ee_tags'])
+			OR $options['encode_ee_tags'] == 'yes')
 		{
 			$str = ee()->functions->encode_ee_tags($str);
+		}
+
+		// Ignore [code]
+		$code_blocks = array();
+		preg_match_all("/\[code\](.*?)\[\/code\]/uis", $str, $matches);
+		foreach ($matches[0] as $match)
+		{
+			$hash = random_string('md5');
+			$code_blocks[$hash] = $match;
+			$str = str_replace($match, $hash, $str);
 		}
 
 		$parser = new Markdown_Parser();
@@ -737,6 +748,7 @@ class EE_Typography extends CI_Typography {
 		// processors.
 		$str = $this->protect_quotes_in_tags($str);
 
+		// Parse the Markdown
 		$str = $parser->transform($str);
 
 		// Run everything through SmartyPants
@@ -749,7 +761,43 @@ class EE_Typography extends CI_Typography {
 		// Restore the quotes we protected earlier.
 		$str = $this->restore_quotes_in_tags($str);
 
+		// Replace <pre><code> with [code]
+		// Only relevant IF being called by typography parser
+		$backtrace = debug_backtrace();
+		if ( ! in_array($backtrace[1]['class'], array('EE_Typography', 'Markdown')))
+		{
+			$str = preg_replace(
+				"/<pre><code>(.*?)<\/code><\/pre>/uis",
+				"[code]$1[/code]",
+				$str
+			);
+		}
+
+		// Replace [code]
+		foreach ($code_blocks as $hash => $code_block)
+		{
+			$str = str_replace($hash, $code_block, $str);
+		}
+
 		return $str;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * preg_replace_callback for callback to fix quotes in code blocks
+	 * @param  array  $matches matches from a preg_replace_callback
+	 * @return string          replaced text with double encoded quotes replaced
+	 */
+	private function _markdown_fix_code_blocks($matches)
+	{
+		$replacement = str_replace(
+			array('&amp;#123;&amp;#47;', '&amp;#123;', '&amp;#125;'),
+			array('&#123;&#47;', '&#123;', '&#125;'),
+			$matches[0]
+		);
+
+		return $replacement;
 	}
 
 	// --------------------------------------------------------------------
