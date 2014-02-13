@@ -3,7 +3,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -24,7 +24,7 @@ $.ee_watermark = function() {
 	else {
 		$(".text_type").hide();
 	}
-	
+
 	$.ee_watermark.type_toggle();
 };
 
@@ -43,7 +43,7 @@ $.ee_watermark.watermark_test = function() {
 		wm_drop = (item.gallery_wm_use_drop_shadow[0].checked) ? 'y' : 'n',
 		text_color = item.gallery_wm_font_color.value,
 		shad_color = item.gallery_wm_shadow_color.value;
-	
+
 	if (item.gallery_wm_type[1].checked)
 	{
 		wm_type = 't';
@@ -52,12 +52,12 @@ $.ee_watermark.watermark_test = function() {
 	{
 		wm_type = 'g';
 	}
-	
+
 	var theText = item.gallery_wm_text.value;
-	
+
 	theText = theText.replace('/;/g', '').replace('?', '');
-	
-	var loc = base + 
+
+	var loc = base +
 	'&gallery_wm_type=' + wm_type +
 	'&gallery_wm_text=' + theText +
 	'&gallery_wm_image_path=' + item.gallery_wm_image_path.value +
@@ -77,7 +77,7 @@ $.ee_watermark.watermark_test = function() {
 	'&gallery_wm_shadow_distance=' + item.gallery_wm_shadow_distance.value +
 	'&gallery_wm_opacity=' + item.gallery_wm_opacity.value +
 	'&gallery_wm_test_image_path=' + item.gallery_wm_test_image_path.value;
-	
+
 	window.open(loc, 'wm_tester','width=<?php echo $testwidth; ?>,height=<?php echo $testheight; ?>,screenX=0,screenY=0,top=0,left=0,toolbar=0,status=0,scrollbars=0,location=0,menubar=1,resizable=1');
 
 	return false;

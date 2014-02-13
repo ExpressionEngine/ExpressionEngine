@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -26,7 +26,7 @@ class Progress {
 
 	public $prefix = '';
 	protected $_config = array();
-	
+
 	/**
 	 * Updates the current state
 	 *
@@ -43,9 +43,9 @@ class Progress {
 		$_SESSION['_progress_state'] = $new_state;
 		session_write_close();
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Get State
 	 *
@@ -58,9 +58,9 @@ class Progress {
 		session_start();
 		return isset($_SESSION['_progress_state']) ? $this->prefix.$_SESSION['_progress_state'] : FALSE;
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Clear State
 	 *
@@ -74,9 +74,9 @@ class Progress {
 		unset ($_SESSION['_progress_state']);
 		session_write_close();
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Gets the proper js and meta tag
 	 *

@@ -4,13 +4,13 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -38,7 +38,7 @@ class Content extends CP_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -46,7 +46,7 @@ class Content extends CP_Controller {
 	 *
 	 * @access	public
 	 * @return	void
-	 */	
+	 */
 	function index()
 	{
 		if ( ! $this->cp->allowed_group('can_access_content'))
@@ -59,14 +59,14 @@ class Content extends CP_Controller {
 		$this->javascript->output(
 			$this->javascript->slidedown("#adminTemplatesSubmenu")
 		);
-		
+
 		$this->view->cp_page_title = lang('content');
 		$this->view->controller = 'content';
 
 		$this->cp->render('_shared/overview');
 	}
-	
-	
+
+
 }
 // END CLASS
 

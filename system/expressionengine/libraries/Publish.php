@@ -4,13 +4,13 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -22,7 +22,7 @@
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Publish 
+class Publish
 {
 	/**
 	 * Constructor
@@ -31,12 +31,12 @@ class Publish
 	{
 		$this->EE =& get_instance();
 	}
-	
+
 	public function build_categories_block($cat_group_ids, $entry_id, $selected_categories, $default_category = '', $file = FALSE)
 	{
 		ee()->load->library('api');
 		ee()->api->instantiate('channel_categories');
-		
+
 		$default	= array(
 			'string_override'		=> lang('no_categories'),
 			'field_id'				=> 'category',
@@ -52,7 +52,7 @@ class Publish
 			'selected'				=> 'n',
 			'options'				=> array()
 		);
-		
+
 		// No categories? Easy peasy
 		if ( ! $cat_group_ids)
 		{
@@ -69,9 +69,9 @@ class Publish
 				$cat_group_ids = array($cat_group_ids);
 			}
 		}
-		
+
 		ee()->api->instantiate('channel_categories');
-		
+
 		$catlist	= array();
 		$categories	= array();
 
@@ -84,7 +84,7 @@ class Publish
 		elseif (count($_POST) > 0)
 		{
 			$catlist = array();
-			
+
 			if (isset($_POST['category']) && is_array($_POST['category']))
 			{
 				foreach ($_POST['category'] as $val)
@@ -105,11 +105,11 @@ class Publish
 				ee()->db->from(array('categories c', 'category_posts p'));
 				ee()->db->where('p.entry_id', $entry_id);
 			}
-			
+
 			ee()->db->select('c.cat_name, p.*');
 			ee()->db->where_in('c.group_id', $cat_group_ids);
 			ee()->db->where('c.cat_id = p.cat_id');
-			
+
 			$qry = ee()->db->get();
 
 			foreach ($qry->result() as $row)
@@ -124,24 +124,24 @@ class Publish
 				$catlist[$val] = $val;
 			}
 		}
-		
+
 		// Figure out valid category options
 		ee()->api_channel_categories->category_tree($cat_group_ids, $catlist);
 
 		if (count(ee()->api_channel_categories->categories) > 0)
-		{  
+		{
 			// add categories in again, over-ride setting above
 			foreach (ee()->api_channel_categories->categories as $val)
 			{
 				$categories[$val['3']][] = $val;
 			}
 		}
-		
-		
+
+
 		// If the user can edit categories, we'll go ahead and
 		// show the links to make that work
 		$edit_links = FALSE;
-		
+
 		if (ee()->session->userdata('can_edit_categories') == 'y')
 		{
 			$link_info = ee()->api_channel_categories->fetch_allowed_category_groups($cat_group_ids);
@@ -149,7 +149,7 @@ class Publish
 			if (is_array($link_info) && count($link_info))
 			{
 				$edit_links = array();
-				
+
 				foreach ($link_info as $val)
 				{
 					$edit_links[] = array(
@@ -159,7 +159,7 @@ class Publish
 				}
 			}
 		}
-		
+
 		// Load in necessary lang keys
 		ee()->lang->loadfile('admin_content');
 		ee()->javascript->set_global(array(
@@ -168,18 +168,18 @@ class Publish
 				'edit_category'	=> lang('edit_category')
 			)
 		));
-		
+
 		// EE.publish.lang.update_category
-		
+
 		// Build the mess
 		$data = compact('categories', 'edit_links');
 
 		$default['options']			= $categories;
 		$default['string_override'] = ee()->load->view('content/_assets/categories', $data, TRUE);
-		
+
 		return array('category' => $default);
 	}
-	
+
 }
 // END CLASS
 

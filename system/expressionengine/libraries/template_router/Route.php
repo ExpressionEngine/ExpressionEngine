@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -29,7 +29,7 @@ class EE_Route {
 
 	public $segment_regex = "
 		(?P<static>[^{]*)                     # static rule data
-		{	
+		{
 		(?P<variable>[a-zA-Z_][a-zA-Z0-9_]*)  # variable name
 		(?:
 			\:                                # variable delimiter
@@ -50,7 +50,7 @@ class EE_Route {
 
 	/**
 	 * Route constructor
-	 * 
+	 *
 	 * @param string $route   The EE formatted route string
 	 * @param bool $required  Set whether route segments are optional or required
 	 * @access public
@@ -68,7 +68,7 @@ class EE_Route {
 
 	/**
 	 * Build a URL for the route.
-	 * 
+	 *
 	 * @param array $variables  An associative array of values for each named variable
 	 * @access public
 	 * @return string  The URL with all values set
@@ -76,7 +76,7 @@ class EE_Route {
 	public function build(array $variables = array())
 	{
 		$url = array();
-		
+
 		foreach ($variables as $key => $val)
 		{
 			$this->variables[$key]->set($val);
@@ -104,7 +104,7 @@ class EE_Route {
 
 	/**
 	 * Compile the route to a regular expression used for matching.
-	 * 
+	 *
 	 * @access public
 	 * @return string  The compiled regular expression.
 	 */
@@ -141,8 +141,8 @@ class EE_Route {
 
 	/**
 	 * Checks for equivalence, matches segment by segment
-	 * 
-	 * @param string  EE formatted template route 
+	 *
+	 * @param string  EE formatted template route
 	 * @access public
 	 * @return bool  Returns True if routes are equivalent
 	 */
@@ -177,8 +177,8 @@ class EE_Route {
 
 	/**
 	 * Parse the route and set the segments and named variables for this route.
-	 * 
-	 * @param string  EE formatted template route 
+	 *
+	 * @param string  EE formatted template route
 	 * @access public
 	 * @return void
 	 */
@@ -205,7 +205,7 @@ class EE_Route {
 					$rules = $this->parse_rules($segment['rules']);
 					$segment = new EE_Route_segment($segment['variable'], $rules);
 				}
-				
+
 				$this->segments[$index] = $segment;
 				$this->variables[$segment->name] =& $this->segments[$index];
 			}
@@ -216,8 +216,8 @@ class EE_Route {
 
 	/**
 	 * Parses a EE formatted template route into segments
-	 * 
-	 * @param string $route 
+	 *
+	 * @param string $route
 	 * @access public
 	 * @return array
 	 *			- variable : Segment's variable name
@@ -293,7 +293,7 @@ class EE_Route {
 
 	/**
 	 * Parse a URL segment for a list of validators and convert to a regular expression
-	 * 
+	 *
 	 * @param $rules string  An EE formatted validation string e.g.:
 	 *						   "rule1[arg1,arg2...]|rule2|..."
 	 * @access public

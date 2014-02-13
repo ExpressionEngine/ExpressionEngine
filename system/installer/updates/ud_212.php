@@ -5,13 +5,13 @@
  *
  * @package     ExpressionEngine
  * @author      EllisLab Dev Team
- * @copyright   Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright   Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license     http://ellislab.com/expressionengine/user-guide/license.html
  * @link        http://ellislab.com
  * @since       Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -92,13 +92,13 @@ class Updater {
 			ee()->db->where('location', '0');
 			ee()->db->update('comments');
 		}
-		
+
 		// Remove allow_multi_emails from config
 		ee()->config->_update_config(array(), array('allow_multi_emails' => ''));
-		
+
 		return TRUE;
 	}
-}   
+}
 /* END CLASS */
 
 /* End of file ud_212.php */

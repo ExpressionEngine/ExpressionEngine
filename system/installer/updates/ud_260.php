@@ -5,14 +5,14 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.6
  * @filesource
  */
 
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -25,7 +25,7 @@
  * @link		http://expressionengine.com
  */
 class Updater {
-	
+
 	public $version_suffix = '';
 
 	/**
@@ -34,9 +34,9 @@ class Updater {
 	public function __construct()
 	{
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Do Update
 	 *
@@ -177,7 +177,7 @@ class Updater {
 
 	/**
 	 * Update Session table
-	 * 
+	 *
 	 * We duplicate this from the 2.5.4 update because the changes weren't
 	 * made to the schema file and therefore aren't present for new installs
 	 * of 2.5.4 or 2.5.5
@@ -226,14 +226,14 @@ class Updater {
 		ee()->db->where('method', 'reset_password')
 			->where('class', 'Member')
 			->update('actions', array('method'=>'process_reset_password'));
-	} 
+	}
 
 	// -------------------------------------------------------------------
 
 	/**
 	 * Update Specialty Templates
 	 *
-	 * Required for the changes to the reset password flow.  We needed to 
+	 * Required for the changes to the reset password flow.  We needed to
 	 * slightly change the language of the related e-mail template to fit
 	 * the new flow.
 	 */
@@ -249,22 +249,22 @@ To reset your password, please go to the following page:
 If you do not wish to reset your password, ignore this message. It will expire in 24 hours.
 
 {site_name}
-{site_url}');	
+{site_url}');
 
 		ee()->db->where('template_name', 'forgot_password_instructions')
 			->update('specialty_templates', $data);
-		
+
 	}
 
 	// -------------------------------------------------------------------
 
 	/**
-	 * Update the Fieldtype and Channel Fields Tables for Relationships 
+	 * Update the Fieldtype and Channel Fields Tables for Relationships
  	 *
 	 * Updates the fieldtypes and channel_fields tables to
 	 * use the new relationships field, instead of the old one.
 	 * Does its best to hang on to the settings of the old field.
-	 * 
+	 *
 	 * @return	void
 	 */
 	private function _update_relationship_fieldtype()
@@ -276,8 +276,8 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		// UPDATE TABLE `exp_channel_fields` set field_type='relationships' where field_type='rel';
 		ee()->db->where('field_type', 'rel');
 		ee()->db->update('channel_fields', array('field_type'=>'relationship'));
-	
-		ee()->db->where('field_type', 'relationship');	
+
+		ee()->db->where('field_type', 'relationship');
 		$channel_fields = ee()->db->get('channel_fields');
 		foreach ($channel_fields->result_array() as $channel_field)
 		{
@@ -293,13 +293,13 @@ If you do not wish to reset your password, ignore this message. It will expire i
 				'order_dir'		=> $channel_field['field_related_sort'],
 				'allow_multiple'	=> 0
 			);
-			
+
 			ee()->db->where('field_id', $channel_field['field_id']);
 			ee()->db->update(
-				'channel_fields', 
-				array('field_settings'=>base64_encode(serialize($settings)))); 
-					
-		} 
+				'channel_fields',
+				array('field_settings'=>base64_encode(serialize($settings))));
+
+		}
 
 	}
 
@@ -312,11 +312,11 @@ If you do not wish to reset your password, ignore this message. It will expire i
 	 * data from Channel_data, and while we're at it, clean out the
 	 * old relationships data that we no longer use.
 	 *
-	 * @return	void	
+	 * @return	void
 	 */
 	private function _update_relationship_table()
 	{
- 
+
 		// ALTER TABLE `exp_relationships` CHANGE COLUMN `rel_id` `relationship_id` int(10) unsigned NOT NULL DEFAULT 0;
 		ee()->smartforge->modify_column(
 			'relationships',
@@ -346,7 +346,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 			)
 		);
 
-		// ALTER TABLE `exp_relationships` CHANGE COLUMN `rel_child_id` `child_id` int(10) unsigned NOT NULL DEFAULT 0; 	
+		// ALTER TABLE `exp_relationships` CHANGE COLUMN `rel_child_id` `child_id` int(10) unsigned NOT NULL DEFAULT 0;
 		ee()->smartforge->modify_column(
 			'relationships',
 			array(
@@ -366,7 +366,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 
 		// ALTER TABLE `exp_relationships` DROP COLUMN `rel_data`;
 		ee()->smartforge->drop_column('relationships', 'rel_data');
-		
+
 		// ALTER TABLE `exp_relationships` DROP COLUMN `reverse_rel_data`;
 		ee()->smartforge->drop_column('relationships', 'reverse_rel_data');
 
@@ -392,7 +392,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 			),
 			'child_id'
 		);
-	
+
 		// alter table exp_relationships ADD KEY `field_id` (`field_id`);
 		ee()->smartforge->add_key('relationships', 'field_id');
 
@@ -432,9 +432,9 @@ If you do not wish to reset your password, ignore this message. It will expire i
 			JOIN ' . $channel_data . '
 			ON (' . $relationships . '.relationship_id = ' . $channel_data . '.field_id_' . $field['field_id'] . ')
 			SET ' . $relationships . '.field_id = ' . $field['field_id'];
-		ee()->db->query($sql); 
+		ee()->db->query($sql);
 
-			
+
 		ee()->db->update('channel_data', array('field_id_' . $field['field_id']=> NULL));
 	}
 
@@ -449,7 +449,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 	 * are replaced by the named field pair and 'reverse_related_entries' are
 	 * replaced by a 'parents' tag.
 	 *
-	 * @return void 
+	 * @return void
 	 */
 	private function _update_relationship_tags()
 	{
@@ -464,20 +464,20 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		// We need to figure out which template to load.
 		// Need to check the edit date.
 		ee()->load->model('template_model');
-		$templates = ee()->template_model->fetch_last_edit(array(), TRUE); 
-	
+		$templates = ee()->template_model->fetch_last_edit(array(), TRUE);
+
 		// related_entries
 		// Foreach template
 		foreach($templates as $template)
 		{
 			// If there aren't any related entries tags, then we don't need to continue.
-			if (strpos($template->template_data, 'related_entries') === FALSE 
+			if (strpos($template->template_data, 'related_entries') === FALSE
 				&& strpos($template->template_data, 'reverse_related_entries') === FALSE)
 			{
 				continue;
 			}
 
-			// Find the {related_entries} and {reverse_related_entries} tags 
+			// Find the {related_entries} and {reverse_related_entries} tags
 			// (match pairs and wrapped tags)
 			$template->template_data = ee()->template->replace_related_entries_tags($template->template_data);
 
@@ -503,7 +503,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 	 *
 	 * Cleaning up some discrepancies between a fresh installation and an
 	 * upgraded installation.
-	 * 
+	 *
 	 */
 	private function _schema_cleanup()
 	{
@@ -630,7 +630,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		}
 	}
 
-}	
+}
 /* END CLASS */
 
 /* End of file ud_260.php */

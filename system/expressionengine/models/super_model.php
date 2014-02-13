@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -15,7 +15,7 @@
 
 /**
  * ExpressionEngine Super Model
- * 
+ *
  * This model contains some abstracted can-do database functions that
  * are used by a plethora of libraries and controllers to keep database calls
  * out of such code as much as possible
@@ -29,7 +29,7 @@
 class Super_model extends CI_Model {
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Count All
 	 *
@@ -44,7 +44,7 @@ class Super_model extends CI_Model {
 	{
 		if ( ! is_array($where))
 		{
-			return $this->db->count_all($table);			
+			return $this->db->count_all($table);
 		}
 		else
 		{
@@ -57,7 +57,7 @@ class Super_model extends CI_Model {
 				}
 				else
 				{
-					$this->db->where($field, $value);					
+					$this->db->where($field, $value);
 				}
 			}
 
@@ -65,7 +65,7 @@ class Super_model extends CI_Model {
 		}
 	}
 
-	// --------------------------------------------------------------------	
+	// --------------------------------------------------------------------
 }
 // END CLASS
 

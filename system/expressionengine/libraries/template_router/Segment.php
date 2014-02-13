@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -33,7 +33,7 @@ class EE_Route_segment {
 
 	/**
 	 * Compile the segment down to a named regex
-	 * 
+	 *
 	 * @access public
 	 * @return string A regular expression for the segment
 	 */
@@ -44,8 +44,8 @@ class EE_Route_segment {
 
 	/**
 	 * Validate the provided value against the segment rules
-	 * 
-	 * @param mixed $val The value to be checked 
+	 *
+	 * @param mixed $val The value to be checked
 	 * @access public
 	 * @return bool
 	 */
@@ -64,7 +64,7 @@ class EE_Route_segment {
 
 	/**
 	 * Run through all the rules and combine them into one validator
-	 * 
+	 *
 	 * @access public
 	 * @return A regular expression for all of the segment's validators
 	 */

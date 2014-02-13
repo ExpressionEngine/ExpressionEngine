@@ -4,13 +4,13 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -37,7 +37,7 @@ class EE_Addons {
 	{
 		$this->EE =& get_instance();
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -57,14 +57,14 @@ class EE_Addons {
 			'fieldtypes'	=> 'ft',
 			'rte_tools'		=> 'rte'
 		);
-				
+
 		if ( ! is_array($this->_map))
 		{
 			ee()->load->helper('directory');
-			
+
 			// Initialize the _map array so if no addons of a certain type
 			// are found, we can still return _map[$type] without errors
-			
+
 			$this->_map = array(
 				'modules'		=> array(),
 				'extensions'	=> array(),
@@ -79,7 +79,7 @@ class EE_Addons {
 				$this->package_list($map);
 
 			}
-			
+
 			// Run through extensions, modules, fieldtypes and rte_tools
 			foreach (array('extensions', 'modules', 'fieldtypes', 'rte_tools') as $val)
 			{
@@ -87,21 +87,21 @@ class EE_Addons {
 				{
 					$this->package_list($map, $val, TRUE);
 
-				}				
+				}
 			}
-			
+
 			if ($type != '')
 			{
 				ksort($this->_map[$type]);
 			}
 			ksort($this->_packages);
 		}
-		
+
 		// And now first party addons - will override any third party packages of the same name.
 		// We can be a little more efficient here and only check the directory they asked for
-		
+
 		static $_fp_read = array('extensions', 'modules', 'fieldtypes', 'rte_tools');
-		
+
 		// is_package calls this function with a blank key to skip
 		// first party - we'll do that right here instead of checking
 		// if the folder exists
@@ -109,31 +109,31 @@ class EE_Addons {
 		{
 			return array();
 		}
-		
+
 		if ( ! in_array($type, $_fp_read))
 		{
 			ee()->load->helper('file');
 
 			$ext_len = strlen('.php');
-			
+
 			$abbr = $type_ident[$type];
 
 			$root_path = ($abbr == 'mcp') ? PATH_MOD : constant('PATH_'.strtoupper($abbr));
-			
+
 			$list = get_filenames($root_path);
 
 			if (is_array($list))
 			{
 				foreach ($list as $file)
 				{
-					if (strncasecmp($file, $abbr.'.', strlen($abbr.'.')) == 0 && 
-						substr($file, -$ext_len) == '.php' && 
+					if (strncasecmp($file, $abbr.'.', strlen($abbr.'.')) == 0 &&
+						substr($file, -$ext_len) == '.php' &&
 						strlen($file) > strlen($abbr.'.'.'.php'))
 					{
 						$name	= substr($file, strlen($abbr.'.'), - $ext_len);
 						$class	= ($abbr == 'pi') ? ucfirst($name) : ucfirst($name).'_'.$abbr;
 						$path = ($abbr == 'ext' OR $abbr == 'acc' OR $abbr == 'ft' OR $abbr == 'rte') ? constant('PATH_'.strtoupper($abbr)) : $root_path.$name.'/';
-						
+
 						$this->_map[$type][$name] = array(
 							'path'	=> $path,
 							'file'	=> $file,
@@ -154,7 +154,7 @@ class EE_Addons {
 
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Create package array
 	 *
@@ -174,10 +174,10 @@ class EE_Addons {
 			'fieldtypes'	=> 'ft',
 			'rte_tools'		=> 'rte'
 		);
-		
+
 		// First party is plural, third party is singular
 		// so we need some inflection references
-			
+
 		$_plural_map = array(
 			'modules'		=> 'module',
 			'extensions'	=> 'extension',
@@ -185,7 +185,7 @@ class EE_Addons {
 			'accessories'	=> 'accessory',
 			'fieldtypes'	=> 'fieldtype',
 			'rte_tools'		=> 'rte_tool'
-		); 
+		);
 
    		$type = ($type == '') ? '' : $type.'/';
 
@@ -212,7 +212,7 @@ class EE_Addons {
 					if ($valid)
 					{
 						$name = ($ident === 'ft') ? $match[1] : $pkg_name;
-						
+
 						// Plugin classes don't have a suffix
 						$class = ($ident == 'pi') ? ucfirst($name) : ucfirst($name).'_'.$ident;
 						$path = ($native) ? APPPATH.$type.$pkg_name.'/' : PATH_THIRD.$pkg_name.'/';
@@ -242,7 +242,7 @@ class EE_Addons {
 						{
 							$this->_packages[$pkg_name][$_plural_map[$addon_type]] =& $this->_map[$addon_type][$pkg_name];
 						}
-						
+
 						break;
 					}
 				}
@@ -252,7 +252,7 @@ class EE_Addons {
 
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Get information on what's installed
 	 *
@@ -263,24 +263,24 @@ class EE_Addons {
 	function get_installed($type = 'modules')
 	{
 		static $_installed = array();
-		
+
 		if (isset($_installed[$type]))
 		{
 			return $_installed[$type];
 		}
-		
+
 		$_installed[$type] = array();
-		
+
 		ee()->load->model('addons_model');
-		
+
 		if ($type == 'modules')
 		{
 			$query = ee()->addons_model->get_installed_modules();
-			
+
 			if ($query->num_rows() > 0)
 			{
 				$files = $this->get_files('modules');
-				
+
 				foreach($query->result_array() as $row)
 				{
 					if (isset($files[$row['module_name']]))
@@ -301,7 +301,7 @@ class EE_Addons {
 				foreach ($query->result_array() as $row)
 				{
 					$name = strtolower(substr($row['class'], 0, -4));
-					
+
 					if (isset($files[$name]))
 					{
 						$_installed[$type][$name] = array_merge($files[$name], $row);
@@ -312,11 +312,11 @@ class EE_Addons {
 		elseif ($type == 'extensions')
 		{
 			$query = ee()->addons_model->get_installed_extensions();
-			
+
 			if ($query->num_rows() > 0)
 			{
 				$files = $this->get_files('extensions');
-				
+
 				foreach($query->result_array() as $row)
 				{
 					$name = strtolower(substr($row['class'], 0, -4));
@@ -331,15 +331,15 @@ class EE_Addons {
 		elseif ($type == 'fieldtypes')
 		{
 			$query = ee()->db->get('fieldtypes');
-			
+
 			if ($query->num_rows() > 0)
 			{
 				$files = $this->get_files('fieldtypes');
-				
+
 				foreach($query->result_array() as $row)
 				{
 					$name = $row['name'];
-					
+
 					if (isset($files[$name]))
 					{
 						$_installed[$type][$name] = array_merge($files[$name], $row);
@@ -350,11 +350,11 @@ class EE_Addons {
 		elseif ($type == 'rte_tools')
 		{
 			$query = ee()->db->get_where('rte_tools');
-			
+
 			if ($query->num_rows() > 0)
 			{
 				$files = $this->get_files('rte_tools');
-				
+
 				foreach($query->result_array() as $row)
 				{
 					$name = strtolower(substr($row['class'], 0, -4));
@@ -366,12 +366,12 @@ class EE_Addons {
 				}
 			}
 		}
-		
+
 		return $_installed[$type];
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Is package
 	 *
@@ -384,9 +384,9 @@ class EE_Addons {
 		$this->get_files('');	// blank key lets us skip first party
 		return array_key_exists($name, $this->_packages);
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Package
 	 *
@@ -404,9 +404,9 @@ class EE_Addons {
 		}
 
 		return $this->_map[$type][$name]['type'];
-	}	
-	
-	
+	}
+
+
 }
 // END Addons class
 

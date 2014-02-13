@@ -3,7 +3,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -65,22 +65,22 @@ function isTextInput(el) {
 	if (jQuery.nodeName(el, "textarea")) {
 		return true;
 	}
-	
+
 	if ( ! jQuery.nodeName(el, "input")) {
 		return false;
 	}
-	
+
 	var type = el.type;
-	
+
 	if ( ! type) {
 		return true;
 	}
-	
+
 	if (type == "text" || type == "password" || type == "search" ||
 		type == "url" || type == "email" || type == "tel") {
 		return true;
 	}
-	
+
 	return false;
 }
 
@@ -90,11 +90,11 @@ function isTextInput(el) {
  */
 function triggerOnText(el, data, delay) {
 	delay = delay || 0;
-	
+
 	setTimeout(function() {
 		var old_val = $.data(el, '_interact_cache'),
 			new_val = el.value;
-		
+
 		if (old_val !== new_val) {
 			$.event.trigger('interact', data, el);
 			$.data(el, '_interact_cache', new_val);
@@ -103,13 +103,13 @@ function triggerOnText(el, data, delay) {
 }
 
 $.event.special.interact = {
-	
+
 	/* jQuery Event Bind
 	 *
  	 * Bind our special interact event.
 	 */
 	setup: function( data, namespaces ) {
-		
+
 		// for forms we need to bind on the kids instead
 		if ($.nodeName( this, "form" )) {
 			allFormElements(this, function() {
@@ -117,36 +117,36 @@ $.event.special.interact = {
 			});
 			return;
 		}
-		
+
 		// text inputs don't fire a sensible change event,
 		// for live filtering we need to know when something
-		// is changed as soon as the user releases the key.	
+		// is changed as soon as the user releases the key.
 		if (isTextInput(this)) {
-			
+
 			// store old value so we don't fire uselessly
 			// this is consistent with other element change events
 			$.data(this, '_interact_cache', this.value);
-			
+
 			// keyup
 			$.event.add(this, 'keyup.specialInteract change.specialInteract', function() {
 				triggerOnText(this, data);
 			});
-			
+
 			// cut, paste, and IE's oninput
 			$.event.add(this, 'input.specialInteract cut.specialInteract paste.specialInteract', function() {
 				triggerOnText(this, data, 25);
 			});
-			
+
 			return;
 		}
-		
+
 		// and a change event for all other elements as well
 		// as browsers that don't recognize cut and paste events
 		$.event.add(this, 'change.specialInteract', function() {
 			$.event.trigger('interact', data, this);
 		});
 	},
-	
+
 	/* jQuery Event Unbind
 	 *
  	 * Remove all helper events we added
@@ -154,7 +154,7 @@ $.event.special.interact = {
 	teardown: function(namespaces) {
 		$(this).unbind('.specialInteract');
 	}
-	
+
 };
 
 

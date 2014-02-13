@@ -3,7 +3,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -74,7 +74,7 @@ function taginsert(item, tagOpen, tagClose)
 			selStart = theField.selectionStart,
 			selEnd = theField.selectionEnd;
 
-		if (selEnd <= 2 && typeof(selLength) != 'undefined') { 
+		if (selEnd <= 2 && typeof(selLength) != 'undefined') {
 			selEnd = selLength;
 		}
 
@@ -162,13 +162,13 @@ $(document).ready(function() {
 	}
 
 	if (EE.publish.smileys === true) {
-		
+
 		$("a.glossary_link").click(function(){
 			$(this).parent().siblings('.glossary_content').slideToggle("fast");
 			$(this).parent().siblings('.smileyContent .spellcheck_content').hide();
 			return false;
 		});
-		
+
 		$('a.smiley_link').toggle(function() {
 			which = $(this).attr('id').substr(12);
 			$('#smiley_table_'+which).slideDown('fast', function() {
@@ -177,22 +177,22 @@ $(document).ready(function() {
 			}, function() {
 				$('#smiley_table_'+which).slideUp('fast');
 			});
-	
+
 			$(this).parent().siblings('.glossary_content, .spellcheck_content').hide();
-	
+
 			$('.glossary_content a').click(function(){
 				$.markItUp({ replaceWith:$(this).attr('title')});
 				return false;
 			});
 	}
-	
+
 	$(".btn_plus a").click(function(){
 		return confirm(EE.lang.confirm_exit, "");
 	});
-	
+
 	// inject the collapse button into the formatting buttons list
 	$(".markItUpHeader ul").prepend("<li class=\"close_formatting_buttons\"><a href=\"#\"><img width=\"10\" height=\"10\" src=\""+EE.THEME_URL+"images/publish_minus.gif\" alt=\"Close Formatting Buttons\"/></a></li>");
-	
+
 	$(".close_formatting_buttons a").toggle(
 		function() {
 			$(this).parent().parent().children(":not(.close_formatting_buttons)").hide();
@@ -204,9 +204,9 @@ $(document).ready(function() {
 			$(this).children("img").attr("src", EE.THEME_URL+"images/publish_minus.gif");
 		}
 	);
-		
+
 	var field_for_writemode_publish = "";
-	
+
 	if (EE.publish.show_write_mode === true) {
 		$("#write_mode_textarea").markItUp(myWritemodeSettings);
 	}

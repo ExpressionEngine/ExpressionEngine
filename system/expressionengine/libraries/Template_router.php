@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -36,8 +36,8 @@ class EE_Template_Router extends CI_Router {
 
 	/**
 	 * Match a URL to its template and group
-	 * 
-	 * @param EE_URI $uri 
+	 *
+	 * @param EE_URI $uri
 	 * @access public
 	 * @return EE_Route_match Instantiated match object for the matched template & group
 	 */
@@ -64,7 +64,7 @@ class EE_Template_Router extends CI_Router {
 
 	/**
 	 * Grab our parsed template routes from the database
-	 * 
+	 *
 	 * @access protected
 	 * @return void
 	 */
@@ -87,9 +87,9 @@ class EE_Template_Router extends CI_Router {
 
 	/**
 	 * Fetch the template route for the specified template.
-	 * 
+	 *
 	 * @param string $group		The name of the template group
-	 * @param string $template	The name of the template 
+	 * @param string $template	The name of the template
 	 * @access public
 	 * @return EE_Route  An instantiated route object for the matched route
 	 */
@@ -111,8 +111,8 @@ class EE_Template_Router extends CI_Router {
 
 	/**
 	 * Create EE_Route object from EE formatted route string
-	 * 
-	 * @param string $route   An EE formatted route string 
+	 *
+	 * @param string $route   An EE formatted route string
 	 * @param bool $required  Set whether segments are optional or required
 	 * @access public
 	 * @return EE_Route The instantiated route object.

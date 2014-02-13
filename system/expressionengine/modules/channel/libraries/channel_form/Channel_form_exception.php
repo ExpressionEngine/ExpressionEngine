@@ -5,13 +5,13 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.7
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -26,7 +26,7 @@
 class Channel_form_exception extends Exception {
 
 	private $_type;
-	
+
 	/**
 	 * Override the constructor to work more like show_user_error
 	 */
@@ -36,12 +36,12 @@ class Channel_form_exception extends Exception {
 		{
 			$message = implode("</li>\n<li>", $message);
 		}
-		
+
 		parent::__construct($message);
 		$this->_type = $type;
 	}
 
-	// --------------------------------------------------------------------	
+	// --------------------------------------------------------------------
 
 	/**
 	 * Custom accessor to show the user error at the catch site

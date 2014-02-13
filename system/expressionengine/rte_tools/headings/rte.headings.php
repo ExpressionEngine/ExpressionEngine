@@ -5,13 +5,13 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.5
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -24,16 +24,16 @@
  * @link		http://ellislab.com
  */
 class Headings_rte {
-	
+
 	public $info = array(
 		'name'			=> 'Headings',
 		'version'		=> '1.0',
 		'description'	=> 'Adds or swaps heading levels in the RTE. Can also revert text to a paragraph',
 		'cp_only'		=> 'n'
 	);
-	
+
 	private $EE;
-	
+
 	/**
 	 * Constructor
 	 *
@@ -108,7 +108,7 @@ class Headings_rte {
 					while ( el.nodeType != "1" )
 					{
 						el = el.parentNode;
-						
+
 						if (el == null)
 						{
 							break;
@@ -133,9 +133,9 @@ class Headings_rte {
 				}
 			}
 		});
-		
+
 <?php	$buffer = ob_get_contents();
-		ob_end_clean(); 
+		ob_end_clean();
 		return $buffer;
 	}
 

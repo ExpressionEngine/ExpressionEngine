@@ -3,7 +3,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -335,7 +335,7 @@ function bind_prefs_events() {
 				'id': 'template_route_' + template_id,
 				'name': 'template_route_' + template_id
 			});
-			
+
 			// template route required
 			headerrow.find(".route_required").val(rowdata.route_required);
 			headerrow.find('.route_required').attr({

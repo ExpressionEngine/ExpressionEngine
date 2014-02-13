@@ -5,13 +5,13 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.7
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -46,7 +46,7 @@ class Channel_form_category_tree_obj {
 
 	protected $categories = array();
 
-	// --------------------------------------------------------------------	
+	// --------------------------------------------------------------------
 
 	/**
 	 * Category Tree
@@ -104,7 +104,7 @@ class Channel_form_category_tree_obj {
 
 		// Fetch category groups
 		$group_ids = explode('|', $group_id);
-		
+
 		ee()->db->select('cat_name, cat_id, parent_id');
 		ee()->db->where_in('group_id', $group_ids);
 		ee()->db->order_by('group_id, parent_id, cat_order');
@@ -150,14 +150,14 @@ class Channel_form_category_tree_obj {
 		}
 	}
 
-	// --------------------------------------------------------------------	
+	// --------------------------------------------------------------------
 
 	public function categories()
 	{
 		return $this->categories;
 	}
 
-	// --------------------------------------------------------------------	
+	// --------------------------------------------------------------------
 
 	/**
 	 * Category sub-tree

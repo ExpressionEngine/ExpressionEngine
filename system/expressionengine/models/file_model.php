@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -23,7 +23,7 @@
  * @link		http://ellislab.com
  */
 class File_model extends CI_Model {
-	
+
 	private $_image_types = array('image/png', 'image/jpeg', 'image/gif');
 
 	/**
@@ -54,15 +54,15 @@ class File_model extends CI_Model {
 			'type' => 'all',
 			'do_count' => TRUE
 		), $parameters);
-		
+
 		$this->load->helper('text');
 		// If we add a dir col- will need a join
-		
+
 		$dir_id = ( ! is_array($dir_id)) ? array($dir_id) : $dir_id;
 
 		// We run most of this twice to get a total filter count
 		$this->db->start_cache();
-		
+
 		if ( ! empty($dir_id))
 		{
 			$this->db->where_in("upload_location_id", $dir_id);
@@ -76,7 +76,7 @@ class File_model extends CI_Model {
 		{
 			$this->db->where_not_in('mime_type', $this->_image_types);
 		}
-		
+
 		// Custom Date Range
 		if ( ! empty($parameters['date_start'])
 			AND ! empty($parameters['date_end'])
@@ -90,14 +90,14 @@ class File_model extends CI_Model {
 		{
 			$this->db->where('upload_date >=', $this->localize->now - ($parameters['date_range'] * 86400));
 		}
-		
+
 		$this->db->where('files.site_id', $this->config->item('site_id'));
-		
+
 		if (isset($parameters['cat_id']) && $parameters['cat_id'] != 'none' && is_numeric($parameters['cat_id']))
 		{
 			$this->db->join('file_categories', 'exp_files.file_id = exp_file_categories.file_id', 'left');
 			$this->db->where('cat_id', $parameters['cat_id']);
-		}		
+		}
 
 		if (isset($parameters['search_value']))
 		{
@@ -116,9 +116,9 @@ class File_model extends CI_Model {
 		}
 
 		$this->db->stop_cache();
-		
+
 		$return_data['filter_count'] = $this->db->count_all_results('files');
-		
+
 		if ($return_data['filter_count'] === 0)
 		{
 			$this->db->flush_cache();
@@ -144,7 +144,7 @@ class File_model extends CI_Model {
 		{
 			foreach ($parameters['order'] as $key => $val)
 			{
-				// If the key is set to upload location name, then we need to 
+				// If the key is set to upload location name, then we need to
 				// join upload_prefs and sort on the name there
 				if ($key == 'upload_location_name')
 				{
@@ -152,7 +152,7 @@ class File_model extends CI_Model {
 					$this->db->order_by('upload_prefs.name', $val);
 					continue;
 				}
-				
+
 				$this->db->order_by('files.'.$key, $val);
 			}
 		}
@@ -160,15 +160,15 @@ class File_model extends CI_Model {
 		{
 			$this->db->order_by('upload_date DESC, files.file_id DESC');
 		}
-		
+
 		$return_data['results'] = $this->db->get('files');
-		
+
 		$this->db->flush_cache();
-		
+
 		return $return_data;
 	}
 
-	// ------------------------------------------------------------------------	
+	// ------------------------------------------------------------------------
 
 	/**
 	 * Save a file
@@ -200,21 +200,21 @@ class File_model extends CI_Model {
 			'modified_date' => '',
 			'file_hw_original' => ''
 		);
-		
+
 		// Remove data that can't exist in the database
 		$data = array_intersect_key($data, $valid_keys);
-		
+
 		// Set some defaults if missing
 		if ( ! isset($data['modified_by_member_id']))
 		{
 			$data['modified_by_member_id'] = $this->session->userdata('member_id');
 		}
-		
+
 		if ( ! isset($data['modified_date']))
 		{
 			$data['modified_date'] = $this->localize->now;
 		}
-				
+
 		if (isset($data['file_name']) OR isset($data['title']))
 		{
 			$data['title'] = ( ! isset($data['title'])) ? $data['file_name'] : $data['title'];
@@ -241,7 +241,7 @@ class File_model extends CI_Model {
 
 		// Deal with categories
 		$this->load->model('file_category_model');
-		
+
 		if (isset($data['categories']) AND is_array($data['categories']))
 		{
 			foreach ($data['categories'] as $cat_id)
@@ -270,7 +270,7 @@ class File_model extends CI_Model {
 		return $successful;
 	}
 
-	// ------------------------------------------------------------------------	
+	// ------------------------------------------------------------------------
 
 	/**
 	 * Count Files
@@ -280,17 +280,17 @@ class File_model extends CI_Model {
 	function count_files($dir_id = FALSE)
 	{
 		$dir_func = $this->_where_function($dir_id);
-		
+
 		if ( ! empty($dir_id))
 		{
 			$this->db->$dir_func('upload_location_id', $dir_id);
 		}
-		
+
 		return $this->db->count_all_results('files');
 	}
-	
-	// ------------------------------------------------------------------------	
-	
+
+	// ------------------------------------------------------------------------
+
 	/**
 	 * Count Images
 	 *
@@ -302,12 +302,12 @@ class File_model extends CI_Model {
 		return $this->count_files($dir_id);
 	}
 
-	// ------------------------------------------------------------------------	
-	
+	// ------------------------------------------------------------------------
+
 	/**
 	 * Get files by directory
-	 * 
-	 * 
+	 *
+	 *
 	 */
 	function get_files_by_dir($dir_id)
 	{
@@ -315,18 +315,18 @@ class File_model extends CI_Model {
 		{
 			return FALSE;
 		}
-		
+
 		$dir_func = $this->_where_function($dir_id);
 
 		return $this->db->$dir_func('upload_location_id', $dir_id)
 						->get('files');
 	}
-	
-	// ------------------------------------------------------------------------	
-	
+
+	// ------------------------------------------------------------------------
+
 	/**
 	 * Get files by name and directory
-	 * 
+	 *
 	 * @param mixed $file_name An array or string with the filename/s
 	 * @param mixed $dir_id    The image directory of the files
 	 * @access public
@@ -338,7 +338,7 @@ class File_model extends CI_Model {
 		{
 			return FALSE;
 		}
-		
+
 		$dir_func = $this->_where_function($dir_id);
 		$this->db->$dir_func('upload_location_id', $dir_id);
 
@@ -359,44 +359,44 @@ class File_model extends CI_Model {
 		return $this->db->get('files');
 	}
 
-	// ------------------------------------------------------------------------	
-	
+	// ------------------------------------------------------------------------
+
 	/**
 	 * Get files by id
-	 * 
-	 * 
+	 *
+	 *
 	 */
 	function get_files_by_id($file_id, $dir_id = FALSE)
 	{
 		$dir_func = $this->_where_function($dir_id);
 		$file_func = $this->_where_function($file_id);
-		
+
 		if ( ! empty($dir_id))
 		{
 			$this->db->$dir_func('upload_location_id', $dir_id);
 		}
 
-		
+
 		return $this->db->$file_func('file_id', $file_id)
 						->get('files');
 	}
-	
-	// ------------------------------------------------------------------------	
-	
+
+	// ------------------------------------------------------------------------
+
 	/**
 	 * Get dimensions by dir_id
-	 * 
-	 * 
+	 *
+	 *
 	 */
 	function get_dimensions_by_dir_id($dir_id = FALSE, $with_watermarks = FALSE)
 	{
 		$dir_func = $this->_where_function($dir_id);
-		
+
 		if ($with_watermarks)
 		{
 			$this->db->join('file_watermarks', 'wm_id = watermark_id', 'left');
 		}
-		
+
 		if ( ! empty($dir_id))
 		{
 			$this->db->$dir_func('upload_location_id', $dir_id);
@@ -404,8 +404,8 @@ class File_model extends CI_Model {
 
 		return $this->db->get('file_dimensions');
 	}
-	
-	
+
+
 	// ------------------------------------------------------------------------
 
 	/**
@@ -416,7 +416,7 @@ class File_model extends CI_Model {
 	function get_watermark_preferences($id = array())
 	{
 		$func = $this->_where_function($id);
-		
+
 		if ( ! empty($id))
 		{
 			$this->db->$func('wm_id', $id);
@@ -424,7 +424,7 @@ class File_model extends CI_Model {
 
 		return $this->db->get('file_watermarks');
 	}
-	
+
 	// ------------------------------------------------------------------------
 
 	/**
@@ -440,12 +440,12 @@ class File_model extends CI_Model {
 		{
 			return 'where_in';
 		}
-		
+
 		return 'where';
 	}
 
 	// ------------------------------------------------------------------------
-	
+
 	/**
 	 * Delete Watermark Preference
 	 *
@@ -464,17 +464,17 @@ class File_model extends CI_Model {
 		// ok, now remove the pref
 		$this->db->where('wm_id', $id);
 		$this->db->delete('file_watermarks');
-		
+
 		// clean up resized
 		$this->db->where('watermark_id', $id);
 		$this->db->update('file_dimensions', array('watermark_id' => 0));
-		
+
 		// And reset any dimensions using this watermark to 0
 		$this->update_dimensions(array('watermark_id' => 0), array('watermark_id' => array($id)));
 
 		return $deleting->row('wm_name');
 	}
-	
+
 	// ------------------------------------------------------------------------
 
 	/**
@@ -491,8 +491,8 @@ class File_model extends CI_Model {
 
 		return $this->db->get($table);
 	}
-	
-	
+
+
 	// ------------------------------------------------------------------------
 
 	/**
@@ -511,9 +511,9 @@ class File_model extends CI_Model {
 				$this->db->where_in($k, $v);
 			}
 		}
-		
-		$this->db->update('file_dimensions', $data); 
-	}	
+
+		$this->db->update('file_dimensions', $data);
+	}
 
 
 	// --------------------------------------------------------------------
@@ -533,12 +533,12 @@ class File_model extends CI_Model {
 		{
 			$directories = array($directories);
 		}
-		
+
 		if ( ! is_array($allowed_types))
 		{
 			$allowed_types = array($allowed_types);
 		}
-	
+
 		$this->load->helper('file');
 		$this->load->helper('text');
 		$this->load->helper('directory');
@@ -548,13 +548,13 @@ class File_model extends CI_Model {
 		{
 			return $files;
 		}
-		
+
 		foreach ($directories as $key => $directory)
 		{
 			if ( ! empty($files_array))
 			{
 				$source_dir = rtrim(realpath($directory), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
-				
+
 				foreach($files_array as $file)
 				{
 					$directory_files[] = get_file_info($source_dir.$file);
@@ -597,7 +597,7 @@ class File_model extends CI_Model {
 
 					if ($get_dimensions)
 					{
-						if (function_exists('getimagesize')) 
+						if (function_exists('getimagesize'))
 						{
 							if ($D = @getimagesize($file['relative_path'].$file['name']))
 							{
@@ -634,11 +634,11 @@ class File_model extends CI_Model {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Deletes a file that's been stored on the database. Completely removes
 	 * database records and the file itself.
-	 * 
+	 *
 	 * @param array $file_ids An array of file IDs from exp_files
 	 * @param boolean $delete_raw_files Set this to FALSE to not delete the files
 	 * @return boolean TRUE if successful, FALSE otherwise
@@ -647,15 +647,15 @@ class File_model extends CI_Model {
 	{
 		$return = TRUE;
 		$deleted = array();
-		
+
 		if ( ! is_array($file_ids))
 		{
 			$file_ids = array($file_ids);
 		}
-		
+
 		$file_information = $this->get_files_by_id($file_ids);
-		
-		foreach ($file_information->result() as $file) 
+
+		foreach ($file_information->result() as $file)
 		{
 			// Store deleted file information for hook
 			$deleted[] = $file;
@@ -664,7 +664,7 @@ class File_model extends CI_Model {
 			{
 				// Then delete the raw file
 				$this->delete_raw_file(
-					$file->file_name, 
+					$file->file_name,
 					$file->upload_location_id
 				);
 			}
@@ -678,7 +678,7 @@ class File_model extends CI_Model {
 				'file_id' => $file->file_id
 			));
 		}
-		
+
 		/* -------------------------------------------
 		/* 'files_after_delete' hook.
 		/*  - Add additional processing after file deletion
@@ -687,12 +687,12 @@ class File_model extends CI_Model {
 			if ($this->extensions->end_script === TRUE) return;
 		/*
 		/* -------------------------------------------*/
-		
+
 		return $return;
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Delete files by filename.
 	 *
@@ -715,13 +715,13 @@ class File_model extends CI_Model {
 
 		return $this->delete_files($file_ids);
 	}
-	
-	
+
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Deletes all files associated with a file (source, thumb, and dimensions)
-	 * 
+	 *
 	 * @param string $file_name The name of the file to delete
 	 * @param integer $directory_id The directory ID where the file is located
 	 * @param boolean $only_thumbs Set this to TRUE if you only want to delete thumbnails
@@ -731,25 +731,25 @@ class File_model extends CI_Model {
 	{
 		$this->load->model('file_upload_preferences_model');
 		$this->load->library('filemanager');
-		
+
 		// Get the directory's information
 		$upload_dir = $this->file_upload_preferences_model->get_file_upload_preferences(
 			$this->session->userdata('group_id'),
 			$directory_id
 		);
-		
+
 		// Delete the thumb
 		$thumb_information = $this->filemanager->get_thumb($file_name, $directory_id);
 		@unlink($thumb_information['thumb_path']);
-		
+
 		// Then, delete the dimensions
 		$file_dimensions = $this->get_dimensions_by_dir_id($directory_id);
-		
+
 		foreach ($file_dimensions->result() as $file_dimension)
 		{
 			@unlink($upload_dir['server_path'] . '_' . $file_dimension->short_name . '/' . $file_name);
 		}
-		
+
 		if ( ! $only_thumbs)
 		{
 			// Finally, delete the original
@@ -758,7 +758,7 @@ class File_model extends CI_Model {
 				return FALSE;
 			}
 		}
-		
+
 		return TRUE;
 	}
 }

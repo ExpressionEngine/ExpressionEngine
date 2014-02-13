@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -13,7 +13,7 @@
  */
 
 class Installer_profiler extends CI_profiler {
-	
+
 	/**
 	 * Overriding the _compile_config() method in the CI profiler.
 	 *
@@ -22,7 +22,7 @@ class Installer_profiler extends CI_profiler {
 	 * this will at least keep the database variables obfuscated.
 	 */
 	protected function _compile_config()
-	{	
+	{
 		$output  = "\n\n";
 		$output .= '<fieldset id="ci_profiler_config" style="border:1px solid #000;padding:6px 10px 10px 10px;margin:20px 0 20px 0;background-color:#eee">';
 		$output .= "\n";
@@ -32,7 +32,7 @@ class Installer_profiler extends CI_profiler {
 		$output .= "\n\n<table style='width:100%; display:none' id='ci_profiler_config_table'>\n";
 
 		$protected_vals = array(
-				'db_hostname', 'db_username', 'db_password', 'db_name', 
+				'db_hostname', 'db_username', 'db_password', 'db_name',
 				'db_type', 'db_prefix', 'db_conntype'
 			);
 

@@ -5,13 +5,13 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.5
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -24,9 +24,9 @@
  * @link		http://ellislab.com
  */
 class Updater {
-	
+
 	var $version_suffix = '';
-	
+
 	/**
 	 * Do Update
 	 *
@@ -36,7 +36,7 @@ class Updater {
 	{
 		return TRUE;
 	}
-}	
+}
 /* END CLASS */
 
 /* End of file ud_240.php */

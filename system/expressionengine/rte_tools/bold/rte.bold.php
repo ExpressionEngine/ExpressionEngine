@@ -5,13 +5,13 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.5
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -31,9 +31,9 @@ class Bold_rte {
 		'description'	=> 'Bolds and un-bolds selected text',
 		'cp_only'		=> 'n'
 	);
-	
+
 	private $EE;
-	
+
 	/**
 	 * Constructor
 	 *
@@ -44,7 +44,7 @@ class Bold_rte {
 		// Make a local reference of the ExpressionEngine super object
 		$this->EE =& get_instance();
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -73,14 +73,14 @@ class Bold_rte {
 	function definition()
 	{
 		ob_start(); ?>
-		
+
 		WysiHat.addButton('bold', {
 			label: 			EE.rte.bold.add,
 			'toggle-text':	EE.rte.bold.remove
 		});
-		
+
 <?php	$buffer = ob_get_contents();
-		ob_end_clean(); 
+		ob_end_clean();
 		return $buffer;
 	}
 

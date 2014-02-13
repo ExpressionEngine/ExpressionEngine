@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.6
@@ -67,9 +67,9 @@ class EE_Template_router_converters {
 
 	/**
 	 * Load a validation rule with the provided constuctor $args
-	 * 
-	 * @param mixed $converter  The registered name of the validation rule 
-	 * @param array $args       The initial arguments for initializing the validation rule 
+	 *
+	 * @param mixed $converter  The registered name of the validation rule
+	 * @param array $args       The initial arguments for initializing the validation rule
 	 * @access public
 	 * @return EE_template_router_converter  The instantiated validation rule
 	 */
@@ -112,7 +112,7 @@ class EE_Template_router_converters {
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Rule Converter Implementation 
+ * ExpressionEngine Rule Converter Implementation
  *
  * @package		ExpressionEngine
  * @subpackage	Core
@@ -125,7 +125,7 @@ interface EE_Template_router_converter
 
 	/**
 	 * Return a regular expression for validation
-	 * 
+	 *
 	 * @access public
 	 * @return string	The compiled regular expression
 	 */

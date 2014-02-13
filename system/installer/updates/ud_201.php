@@ -5,13 +5,13 @@
  *
  * @package     ExpressionEngine
  * @author      EllisLab Dev Team
- * @copyright   Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright   Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license     http://ellislab.com/expressionengine/user-guide/license.html
  * @link        http://ellislab.com
  * @since       Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -26,7 +26,7 @@
 class Updater {
 
 	var $version_suffix = 'pb01';
-    
+
     function Updater()
     {
         $this->EE =& get_instance();
@@ -51,7 +51,7 @@ class Updater {
 
 		// Rename option groups to checkboxes
 		ee()->db->set('field_type', 'checkboxes');
-		ee()->db->where('field_type', 'option_group');	
+		ee()->db->where('field_type', 'option_group');
 		ee()->db->update('channel_fields');
 
 		// Add missing column
@@ -64,7 +64,7 @@ class Updater {
 				)
 			)
 		);
-	    
+
 		// Increase fieldtype name length
 		ee()->smartforge->modify_column(
 			'channel_fields',
@@ -77,8 +77,8 @@ class Updater {
 					'default'		=> 'text',
 				),
 			)
-		);        
-		
+		);
+
 		// Add fieldtype table
 
 		ee()->dbforge->add_field(
@@ -111,14 +111,14 @@ class Updater {
 				)
 			)
 		);
-		
+
 		ee()->dbforge->add_key('fieldtype_id', TRUE);
 		ee()->smartforge->create_table('fieldtypes');
-		
+
 		// Install default field types
-		
+
 		$default_fts = array('select', 'text', 'textarea', 'date', 'file', 'multi_select', 'checkboxes', 'radio', 'rel');
-		
+
 		foreach($default_fts as $name)
 		{
 			$values = array(
@@ -130,15 +130,15 @@ class Updater {
 
 			ee()->smartforge->insert_set('fieldtypes', $values, $values);
 		}
-		
+
 		// Remove weblog from specialty_templates
 		ee()->db->set('data_title', "REPLACE(`data_title`, 'weblog', 'channel')", FALSE);
 		ee()->db->update('specialty_templates');
-		
+
 		ee()->db->set('template_data', "REPLACE(`template_data`, 'weblog_name', 'channel_name')", FALSE);
 		ee()->db->update('specialty_templates');
-		
-		// Ditch 
+
+		// Ditch
 		ee()->db->where('template_name', 'admin_notify_trackback');
 		ee()->db->delete('specialty_templates');
 
@@ -147,24 +147,24 @@ class Updater {
 
 		ee()->db->where('template_name', 'gallery_comment_notification');
 		ee()->db->delete('specialty_templates');
-		
-		
+
+
 		// Set settings to yes so nothing disappears
-		
+
 		$set_to_yes = array(
 			'text'		=> array('show_smileys', 'show_glossary', 'show_spellcheck', 'field_show_formatting_btns', 'show_file_selector'),
 			'textarea'	=> array('show_smileys', 'show_glossary', 'show_spellcheck', 'field_show_formatting_btns', 'show_file_selector')
 		);
-		
+
 		foreach($set_to_yes as $fieldtype => $yes_settings)
 		{
 			$final_settings = array();
-			
+
 			foreach($yes_settings as $name)
 			{
 				$final_settings['field_'.$name] = 'y';
 			}
-			
+
 			ee()->db->set('field_settings', base64_encode(serialize($final_settings)));
 			ee()->db->where('field_type', $fieldtype);
 			ee()->db->update('channel_fields');
@@ -174,7 +174,7 @@ class Updater {
         return TRUE;
 
     }
-}   
+}
 /* END CLASS */
 
 /* End of file ud_201.php */

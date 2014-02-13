@@ -3,7 +3,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -51,7 +51,7 @@ $(document).ready(function () {
 			crop.destroy();
 			crop = null;
 		}
-			
+
 			// reset the crop form values
 			cropCoords({
 				'h': EE.filemanager.image_height,
@@ -61,8 +61,8 @@ $(document).ready(function () {
 			});
 
 		$('#toggle_crop').show();
-		$('#cancel_crop').hide();	
-		
+		$('#cancel_crop').hide();
+
 		return false;
 	});
 
@@ -83,9 +83,9 @@ $(document).ready(function () {
 			}
 		});
 
-		return false;		
+		return false;
 	});
-	
+
 	$(".crop_dim").keyup(function () {
 		// todo, finish
 		$('#toggle_crop').hide();

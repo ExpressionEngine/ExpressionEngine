@@ -4,13 +4,13 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -23,11 +23,11 @@
  * @link		http://ellislab.com
  */
 class Addons_accessories extends CP_Controller {
-	
+
 	var $human_names = array();
-	
+
 	// Note: the ignored_controllers array is treated as static by the installer
-	
+
 	var $parent_controllers = array('addons', 'admin', 'content', 'tools');
 
 	/**
@@ -36,10 +36,10 @@ class Addons_accessories extends CP_Controller {
 	public function __construct()
 	{
 		parent::__construct();
-		
+
 		$this->load->library('accessories');
 		$this->human_names = $this->_fetch_human_names();
-		
+
 		$this->load->library('addons');
 		$files = $this->addons->get_files();
 	}
@@ -50,36 +50,36 @@ class Addons_accessories extends CP_Controller {
 	 * Index function
 	 *
 	 * @return	void
-	 */	
+	 */
 	public function index()
 	{
-		if ( ! $this->cp->allowed_group('can_access_addons') 
+		if ( ! $this->cp->allowed_group('can_access_addons')
 			OR ! $this->cp->allowed_group('can_access_accessories'))
 		{
 			show_error(lang('unauthorized_access'));
-		}		
-		
+		}
+
 		$this->load->library('table');
 		$this->load->helper('html');
 
 		$this->view->cp_page_title = lang('accessories');
 
 		$this->cp->set_breadcrumb(BASE.AMP.'C=addons', lang('addons'));
-		
+
 		$this->jquery->tablesorter('.mainTable', '{
-        	textExtraction: "complex",			
+        	textExtraction: "complex",
 			widgets: ["zebra"]
-		}');		
-	
+		}');
+
 		$this->load->library('addons');
-		
+
 		$accessories = $this->addons->get_files('accessories');
 		$installed = $this->addons->get_installed('accessories');
 
 		$data = $this->human_names;
 		$num_all_member_groups = count($data['member_groups']);
 		$num_all_controllers = count($data['controllers']);
-		
+
 		foreach ($accessories as $name => $info)
 		{
 			// Grab the version and description
@@ -92,7 +92,7 @@ class Addons_accessories extends CP_Controller {
 			$path = PATH_THIRD.strtolower($name).'/';
 
 			$this->load->add_package_path($path, FALSE);
-			
+
 			$ACC = new $accessories[$name]['class']();
 
 			$this->load->remove_package_path($path);
@@ -102,7 +102,7 @@ class Addons_accessories extends CP_Controller {
 			$accessories[$name]['description'] = $ACC->description;
 
 			if (isset($installed[$name]))
-			{				
+			{
 				$accessories[$name]['acc_pref_url'] = BASE.AMP.'C=addons_accessories'.AMP.'M=edit_prefs'.AMP.'accessory='.$name;
 				$accessories[$name]['acc_install'] = anchor(
 					BASE.AMP.'C=addons_accessories'.AMP.'M=uninstall'.AMP.'accessory='.$name,
@@ -129,7 +129,7 @@ class Addons_accessories extends CP_Controller {
 					$accessories[$name]['acc_member_groups'] = array_map(array($this, '_get_human_name'), $installed[$name]['member_groups']);
 				}
 				else
-				{	
+				{
 					// over 3 listed, and this starts to get a bit out of hand, so we'll show the first 3, and say how
 					// many others there are, and offer the option of looking at them
 					$member_groups = array_map(array($this, '_get_human_name'), $installed[$name]['member_groups']);
@@ -184,9 +184,9 @@ class Addons_accessories extends CP_Controller {
 		$this->view->accessories = $accessories;
 		$this->cp->render('addons/accessories');
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Process Request
 	 *
@@ -198,22 +198,22 @@ class Addons_accessories extends CP_Controller {
 	public function process_request()
 	{
 		// only methods beginning with 'process_' are allowed to be called via this method
-		if (($name = $this->input->get_post('accessory')) === FALSE 
+		if (($name = $this->input->get_post('accessory')) === FALSE
 			OR ($method = $this->input->get_post('method')) === FALSE
 			OR strncmp($method, 'process_', 8) != 0)
 		{
 			$this->functions->redirect(BASE.AMP.'C=addons_accessories');
 
 		}
-		
+
 		$class = $this->accessories->_get_accessory_class($name);
-		
+
 		// add the package and view paths
 		$path = PATH_THIRD.strtolower($name).'/';
-		
+
 		$this->load->add_package_path($path, FALSE);
 		$this->load->library('accessories');
-		
+
 		$ACC = new $class();
 
 		// execute the requested method
@@ -221,7 +221,7 @@ class Addons_accessories extends CP_Controller {
 		{
 			$this->functions->redirect(BASE.AMP.'C=addons_accessories');
 		}
-		
+
 		$return = $ACC->$method();
 
 		// remove package path
@@ -231,7 +231,7 @@ class Addons_accessories extends CP_Controller {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Install
 	 *
@@ -239,14 +239,14 @@ class Addons_accessories extends CP_Controller {
 	 */
 	public function install()
 	{
-		if ( ! $this->cp->allowed_group('can_access_addons') 
+		if ( ! $this->cp->allowed_group('can_access_addons')
 			OR ! $this->cp->allowed_group('can_access_accessories'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
 
 		$this->load->library('addons/addons_installer');
-		
+
 		$accessory = $this->input->get_post('accessory');
 
 		if ($this->addons_installer->install($accessory, 'accessory'))
@@ -257,7 +257,7 @@ class Addons_accessories extends CP_Controller {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Uninstall Accessory
 	 *
@@ -265,25 +265,25 @@ class Addons_accessories extends CP_Controller {
 	 */
 	public function uninstall()
 	{
-		if ( ! $this->cp->allowed_group('can_access_addons') 
+		if ( ! $this->cp->allowed_group('can_access_addons')
 			OR ! $this->cp->allowed_group('can_access_accessories'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
-		
+
 		$this->load->library('addons/addons_installer');
-		
+
 		$accessory = $this->input->get_post('accessory');
-		
+
 		if ($this->addons_installer->uninstall($accessory, 'accessory'))
 		{
 			$this->session->set_flashdata('message_success', lang('uninstalled'));
 			$this->functions->redirect(BASE.AMP.'C=addons_accessories');
 		}
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Edit visibility preferences
 	 *
@@ -291,7 +291,7 @@ class Addons_accessories extends CP_Controller {
 	 */
 	public function edit_prefs()
 	{
-		if ( ! $this->cp->allowed_group('can_access_addons') 
+		if ( ! $this->cp->allowed_group('can_access_addons')
 			OR ! $this->cp->allowed_group('can_access_accessories'))
 		{
 			show_error(lang('unauthorized_access'));
@@ -345,7 +345,7 @@ class Addons_accessories extends CP_Controller {
 
 		// Info for this accessory
 		$vars['name'] = $name;
-		
+
 		$installed = $this->addons->get_installed('accessories');
 
 		$vars['acc_controllers'] = explode('|', $installed[$name]['controllers']);
@@ -353,9 +353,9 @@ class Addons_accessories extends CP_Controller {
 
 		$this->cp->render('addons/accessory_preferences', $vars);
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Update Preferences
 	 *
@@ -364,19 +364,19 @@ class Addons_accessories extends CP_Controller {
 	 */
 	public function update_prefs()
 	{
-		if ( ! $this->cp->allowed_group('can_access_addons') 
+		if ( ! $this->cp->allowed_group('can_access_addons')
 			OR ! $this->cp->allowed_group('can_access_accessories'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
-		
+
 		if ( ! $name = $this->input->get_post('accessory'))
 		{
 			$this->functions->redirect(BASE.AMP.'C=addons_accessories');
 		}
 
 		$class = ucfirst(strtolower(str_replace(' ', '_', $name))).'_acc';
-		
+
 		$this->db->where('class', $class);
 
 		if ($this->db->count_all_results('accessories') == 0)
@@ -394,7 +394,7 @@ class Addons_accessories extends CP_Controller {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Get arrays for controllers or groups, create human readable
 	 * controller names on the fly.
@@ -404,10 +404,10 @@ class Addons_accessories extends CP_Controller {
 	private function _fetch_human_names()
 	{
 		$this->load->helper('directory');
-		
+
 		$data['controllers'] = array();
 		$data['member_groups'] = array();
-		
+
 		// Controllers
 
 		foreach(directory_map(APPPATH.'controllers/cp') as $file)
@@ -421,7 +421,7 @@ class Addons_accessories extends CP_Controller {
 			$name = str_replace('_', ' - ', $file);
 			$data['controllers'][$file] = ucwords($name);
 		}
-		
+
 		ksort($data['controllers']);
 
 		// Member Groups
@@ -438,13 +438,13 @@ class Addons_accessories extends CP_Controller {
 		{
 			$data['member_groups'][$group->group_id] = $group->group_title;
 		}
-	
+
 		return $data;
 	}
 
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Get a human name
 	 *

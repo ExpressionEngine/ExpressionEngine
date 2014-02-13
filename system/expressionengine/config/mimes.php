@@ -4,20 +4,20 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
  * ExpressionEngine Allowed Mime Types
  *
  * These are the mime types that are allowed to be uploaded using the
- * upload class.  For security reasons the list is kept as small as 
+ * upload class.  For security reasons the list is kept as small as
  * possible.  If you need to upload types that are not in the list you can
  * add them.
  *
@@ -27,8 +27,8 @@
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-	
-/*			
+
+/*
 | -------------------------------------------------------------------
 | MIME TYPES
 | -------------------------------------------------------------------
@@ -54,7 +54,7 @@ $mimes = array(
 				'dms'	=>	'application/octet-stream',
 				'doc'	=>	'application/msword',
 				'docm'	=>	'application/vnd.ms-word.document.macroEnabled.12',
-				'docx'	=>	array('application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.openxmlformats-officedocument.wordprocessingml'), 
+				'docx'	=>	array('application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.openxmlformats-officedocument.wordprocessingml'),
 				'dotm'	=>	'application/vnd.ms-word.template.macroEnabled.12',
 				'dotx'	=>	'application/vnd.openxmlformats-officedocument.wordprocessingml.template',
 				'dvi'	=>	'application/x-dvi',

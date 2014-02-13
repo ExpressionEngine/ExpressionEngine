@@ -4,13 +4,13 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -37,21 +37,21 @@ class Updater {
 		$Q[] = "ALTER TABLE `exp_sessions` ADD INDEX (`member_id`);";
 		$Q[] = "ALTER TABLE `exp_template_no_access` ADD INDEX (`template_id`);";
 		$Q[] = "ALTER TABLE `exp_trackbacks` ADD INDEX (`weblog_id`);";
-		
+
 		// pMachine News Feed for Control Panel homepage
 		$Q[] = "ALTER TABLE exp_member_homepage ADD `pmachine_news_feed` char(1) NOT NULL default 'l'";
 		$Q[] = "ALTER TABLE exp_member_homepage ADD `pmachine_news_feed_order` int(3) NOT NULL default '0'";
-		
+
 		// Run the queries
 		foreach ($Q as $sql)
 		{
 			ee()->db->query($sql);
 		}
-		
+
 		return TRUE;
 	}
-	
-}	
+
+}
 // END CLASS
 
 

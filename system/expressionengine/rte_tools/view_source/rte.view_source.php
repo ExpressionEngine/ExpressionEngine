@@ -5,13 +5,13 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.5
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -24,16 +24,16 @@
  * @link		http://ellislab.com
  */
 class View_source_rte {
-	
+
 	public $info = array(
 		'name'			=> 'View Source',
 		'version'		=> '1.0',
 		'description'	=> 'Triggers the RTE to switch to and from view source mode',
 		'cp_only'		=> 'n'
 	);
-	
+
 	private $EE;
-	
+
 	/**
 	 * Constructor
 	 *
@@ -62,7 +62,7 @@ class View_source_rte {
 			)
 		);
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -77,9 +77,9 @@ class View_source_rte {
 		.WysiHat-editor-toolbar .view_source {
 			text-transform: uppercase;
 		}
-		
+
 <?php	$buffer = ob_get_contents();
-		ob_end_clean(); 
+		ob_end_clean();
 		return $buffer;
 	}
 
@@ -93,7 +93,7 @@ class View_source_rte {
 	function definition()
 	{
 		ob_start(); ?>
-		
+
 		WysiHat.addButton('view_source', {
 			label:			EE.rte.view_source.code,
 			'toggle-text':	EE.rte.view_source.content,
@@ -102,9 +102,9 @@ class View_source_rte {
 				this.Commands.toggleHTML(this);
 			}
 		});
-		
+
 <?php	$buffer = ob_get_contents();
-		ob_end_clean(); 
+		ob_end_clean();
 		return $buffer;
 	}
 

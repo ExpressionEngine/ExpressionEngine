@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.5
@@ -28,7 +28,7 @@ class Rte_tool_model extends CI_Model {
 
 	/**
 	 * Get Tool List
-	 * 
+	 *
 	 * @access	public
 	 * @param	bool 	Only include tools that are enabled?
 	 * @return	array 	Associative array of tools sorted by (translated) name
@@ -53,7 +53,7 @@ class Rte_tool_model extends CI_Model {
 		// alpha sort by final tool name
 		if (count($tools))
 		{
-			usort($tools, array($this, '_sort_by_name'));		
+			usort($tools, array($this, '_sort_by_name'));
 		}
 
 		return $tools;
@@ -62,7 +62,7 @@ class Rte_tool_model extends CI_Model {
 
 	/**
 	 * Gets the tool IDs for the supplied tools
-	 * 
+	 *
 	 * @access	public
 	 * @param	array $tools An array of string tool names in the specific order you want them
 	 * @return	array The tool IDs
@@ -98,10 +98,10 @@ class Rte_tool_model extends CI_Model {
 		// return the IDs
 		return $tool_ids;
 	}
-	
+
 	/**
 	 * Get Tools
-	 * 
+	 *
 	 * @access	public
 	 * @param	array	The IDs of the tools to get
 	 * @return	array 	An array of tools, each indexed to globals, libraries, styles, and definition
@@ -124,10 +124,10 @@ class Rte_tool_model extends CI_Model {
 			$i = array_search($row->tool_id, $tool_ids);
 			$tools_sorted[$i] = $row;
 		}
-		
+
 		// Sort by index
 		ksort($tools_sorted);
-		
+
 		// Define the components of each tool
 		$tool = array(
 			'info'			=> array(),
@@ -150,11 +150,11 @@ class Rte_tool_model extends CI_Model {
 				{
 					continue;
 				}
-				
+
 				// load it in, instantiate the tool & add the definition
 				include_once($file);
 				$TOOL = new $t->class();
-				
+
 				// loop through the pieces and pull them from the object
 				foreach ($tool as $component => $default)
 				{
@@ -187,7 +187,7 @@ class Rte_tool_model extends CI_Model {
 
 	/**
 	 * Save a tool
-	 * 
+	 *
 	 * @access	public
 	 * @param	array $tool Tool row to update/insert
 	 * @param	int $tool_id The ID of the tool to update
@@ -200,10 +200,10 @@ class Rte_tool_model extends CI_Model {
 		{
 			$this->db->where('tool_id', $tool_id)
 				->update('rte_tools', $tool);
-		} 
+		}
 		else
 		{
-			$this->db->insert('rte_tools', $tool);		
+			$this->db->insert('rte_tools', $tool);
 		}
 
 		// return the affected rows
@@ -273,8 +273,8 @@ class Rte_tool_model extends CI_Model {
 		{
 			$files_map[$file['class']] = '';
 		}
-		
-		// Diff the two arrays to figure out what's orphaned and delete 
+
+		// Diff the two arrays to figure out what's orphaned and delete
 		// those tools
 		$orphaned_tools = array_diff_key($tool_map, $files_map);
 		foreach ($orphaned_tools as $orphaned_tool_id)
@@ -295,7 +295,7 @@ class Rte_tool_model extends CI_Model {
 
 	/**
 	 * Helper for sorting tools by name (anonymous functions, please!)
-	 * 
+	 *
 	 * @access	private
 	 * @param	array 	Tool
 	 * @param	array 	Tool

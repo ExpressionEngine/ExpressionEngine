@@ -5,13 +5,13 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.5
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -24,14 +24,14 @@
  * @link		http://ellislab.com
  */
 class Blockquote_rte {
-	
+
 	public $info = array(
 		'name'			=> 'Blockquote',
 		'version'		=> '1.0',
 		'description'	=> 'Triggers the RTE to block quote or un-quote the selected block of text',
 		'cp_only'		=> 'n'
 	);
-	
+
 	private $EE;
 
 	/**
@@ -44,7 +44,7 @@ class Blockquote_rte {
 		// Make a local reference of the ExpressionEngine super object
 		$this->EE =& get_instance();
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -73,7 +73,7 @@ class Blockquote_rte {
 	function definition()
 	{
 		ob_start(); ?>
-		
+
 		WysiHat.addButton('blockquote', {
 			label:			EE.rte.blockquote.add,
 			'toggle-text': 	EE.rte.blockquote.remove,
@@ -92,21 +92,21 @@ class Blockquote_rte {
 					while ( el.nodeType != "1" )
 					{
 						el = el.parentNode;
-						
+
 						if (el == null)
 						{
 							break;
 						}
 					}
 				}
-				
+
 				$blockquote	= $(el).parents('blockquote');
 				return  !! $blockquote.length;
 			}
 		});
-		
+
 <?php	$buffer = ob_get_contents();
-		ob_end_clean(); 
+		ob_end_clean();
 		return $buffer;
 	}
 

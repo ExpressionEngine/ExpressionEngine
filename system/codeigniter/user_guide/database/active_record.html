@@ -525,31 +525,31 @@ $this->db->insert('mytable', $object);
 
 
 
-<h2>$this->db->insert_batch();</h2> 
+<h2>$this->db->insert_batch();</h2>
 <p>Generates an insert string based on the data you supply, and runs the query. You can pass a
-<strong>multidimensional array</strong> to the function:</p> 
- 
-<code> 
-$data = array(<br/> 
-&nbsp;&nbsp;&nbsp;array(<br /> 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'title' => 'My title' ,<br /> 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'name' => 'My Name' ,<br /> 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'date' => 'My date'<br /> 
-&nbsp;&nbsp;&nbsp;),<br /> 
-&nbsp;&nbsp;&nbsp;array(<br /> 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'title' => 'Another title' ,<br /> 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'name' => 'Another Name' ,<br /> 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'date' => 'Another date'<br /> 
-&nbsp;&nbsp;&nbsp;)<br/> 
-);<br /> 
-<br /> 
+<strong>multidimensional array</strong> to the function:</p>
+
+<code>
+$data = array(<br/>
+&nbsp;&nbsp;&nbsp;array(<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'title' => 'My title' ,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'name' => 'My Name' ,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'date' => 'My date'<br />
+&nbsp;&nbsp;&nbsp;),<br />
+&nbsp;&nbsp;&nbsp;array(<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'title' => 'Another title' ,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'name' => 'Another Name' ,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'date' => 'Another date'<br />
+&nbsp;&nbsp;&nbsp;)<br/>
+);<br />
+<br />
 $this->db->update_batch('mytable', $data);
-<br /><br /> 
-// Produces: INSERT INTO mytable (title, name, date) VALUES ('My title', 'My name', 'My date'),  ('Another title', 'Another name', 'Another date')</code> 
- 
-<p>The first parameter will contain the table name, the second is a multidimensional associative array of values.</p> 
- 
-<p class="important"><strong>Note:</strong> All values are escaped automatically producing safer queries.</p> 
+<br /><br />
+// Produces: INSERT INTO mytable (title, name, date) VALUES ('My title', 'My name', 'My date'),  ('Another title', 'Another name', 'Another date')</code>
+
+<p>The first parameter will contain the table name, the second is a multidimensional associative array of values.</p>
+
+<p class="important"><strong>Note:</strong> All values are escaped automatically producing safer queries.</p>
 
 
 
@@ -779,7 +779,7 @@ Previous Topic:&nbsp;&nbsp;<a href="helpers.html">Query Helper Functions</a>
 <a href="../index.html">User Guide Home</a>&nbsp;&nbsp;&nbsp;&middot;&nbsp;&nbsp;
 Next Topic:&nbsp;&nbsp;<a href="transactions.html">Transactions</a>
 </p>
-<p><a href="http://codeigniter.com">CodeIgniter</a> &nbsp;&middot;&nbsp; Copyright &#169; 2006 - 2013 &nbsp;&middot;&nbsp; <a href="http://ellislab.com/">EllisLab, Inc.</a></p>
+<p><a href="http://codeigniter.com">CodeIgniter</a> &nbsp;&middot;&nbsp; Copyright &#169; 2006 - 2014 &nbsp;&middot;&nbsp; <a href="http://ellislab.com/">EllisLab, Inc.</a></p>
 </div>
 
 </body>
