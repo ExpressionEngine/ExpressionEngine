@@ -48,13 +48,8 @@ function cp_url($path, $qs = '')
 
 	if ($s)
 	{
-		$qs = $qs.AMP.'S='.$s;
-
 		// Remove AMP from the beginning of the query string if it exists
-		if (substr($qs, 0, strlen(AMP)) == AMP)
-		{
-			$qs = substr($qs, strlen(AMP));
-		}
+		$qs = preg_replace('#^'.AMP.'#', '', $qs.AMP.'S='.$s);
 	}
 
 	$path = rtrim('?/cp/'.$path, '/');
