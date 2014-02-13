@@ -725,6 +725,16 @@ class EE_Typography extends CI_Typography {
 			$str = ee()->functions->encode_ee_tags($str);
 		}
 
+		// Ignore [code]
+		$code_blocks = array();
+		preg_match_all("/\[code\](.*?)\[\/code\]/uis", $str, $matches);
+		foreach ($matches[0] as $match)
+		{
+			$hash = random_string('md5');
+			$code_blocks[$hash] = $match;
+			$str = str_replace($match, $hash, $str);
+		}
+
 		$parser = new Markdown_Parser();
 
 		// Disable other markup if this is set
@@ -748,6 +758,12 @@ class EE_Typography extends CI_Typography {
 
 		// Restore the quotes we protected earlier.
 		$str = $this->restore_quotes_in_tags($str);
+
+		// Replace [code]
+		foreach ($code_blocks as $hash => $code_block)
+		{
+			$str = str_replace($hash, $code_block, $str);
+		}
 
 		return $str;
 	}
