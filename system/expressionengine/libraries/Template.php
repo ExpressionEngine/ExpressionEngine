@@ -3178,6 +3178,12 @@ class EE_Template {
 			$str = preg_replace_callback("/".LD."\s*path=(.*?)".RD."/", array(&ee()->functions, 'create_url'), $str);
 		}
 
+		// Route variable: {route=group/template foo='bar'}
+		if (strpos($str, 'route=') !== FALSE)
+		{
+			$str = preg_replace_callback("/".LD."\s*route=(.*?)".RD."/", array(&ee()->functions, 'create_route'), $str);
+		}
+
 		// Add Action IDs form forms and links
 		$str = ee()->functions->insert_action_ids($str);
 

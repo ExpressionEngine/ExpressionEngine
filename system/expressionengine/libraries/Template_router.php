@@ -95,7 +95,7 @@ class EE_Template_Router extends CI_Router {
 	 */
 	public function fetch_route($group, $template)
 	{
-		ee()->db->select('route, template_name, group_name');
+		ee()->db->select('route, route_required, template_name, group_name');
 		ee()->db->from('templates');
 		ee()->db->join('template_groups', 'templates.group_id = template_groups.group_id');
 		ee()->db->where('template_name', $template);
@@ -105,7 +105,8 @@ class EE_Template_Router extends CI_Router {
 
 		if ($query->num_rows() > 0)
 		{
-			return new EE_Route($query->row()->route);
+			$required = $query->row()->route_required == 'y';
+			return new EE_Route($query->row()->route, $required);
 		}
 	}
 
