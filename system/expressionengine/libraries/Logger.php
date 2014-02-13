@@ -447,11 +447,11 @@ class EE_Logger {
 			return $filename;
 		}
 
-		// Figure out if this is text, we're not updating images...
+		// Figure out if this is .html, .css, .feed, or .xml
 		$full_filename = $path.$filename;
-		$type = explode('/', get_mime_by_extension($full_filename));
+		$extension = pathinfo($full_filename, PATHINFO_EXTENSION);
 
-		if ($type[0] === 'text'
+		if (in_array($extension, array('html', 'css', 'feed', 'xml'))
 			&& ($file_contents = read_file($full_filename))
 			&& preg_match($regex, $file_contents))
 		{
