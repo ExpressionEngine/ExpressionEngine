@@ -3883,38 +3883,39 @@ class Design extends CP_Controller {
 				{
 					$required = ($query->row('route_required') == 'y');
 				}
-				try
+
+				if($route !== "")
 				{
-					if($route !== "")
+					try
 					{
 						$template_route = ee()->template_router->create_route($route, $required);
 						$route_parsed = $template_route->compile();
 					}
-					else
+					catch (Exception $error)
 					{
-						$route = NULL;
-						$route_parsed = NULL;
+						$this->output->send_ajax_response($error->getMessage(), TRUE);
 					}
-				}
-				catch (Exception $error)
-				{
-					$this->output->send_ajax_response($error->getMessage(), TRUE);
-				}
 
-				$this->load->model('design_model');
-				$templates = $this->design_model->fetch_templates();
+					$this->load->model('design_model');
+					$templates = $this->design_model->fetch_templates();
 
-				foreach ($templates->result() as $row)
-				{
-					if( ! empty($row->route) && $row->template_id != $template_id)
+					foreach ($templates->result() as $row)
 					{
-						$existing_route = new EE_Route($row->route);
-
-						if($template_route->equals($existing_route))
+						if( ! empty($row->route) && $row->template_id != $template_id)
 						{
-							$this->output->send_ajax_response(lang('duplicate_route'), TRUE);
+							$existing_route = new EE_Route($row->route);
+
+							if($template_route->equals($existing_route))
+							{
+								$this->output->send_ajax_response(lang('duplicate_route'), TRUE);
+							}
 						}
 					}
+				}
+				else
+				{
+					$route = NULL;
+					$route_parsed = NULL;
 				}
 
 				$this->template_model->update_template_route($template_id, array('route_parsed' => $route_parsed));
