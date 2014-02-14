@@ -785,24 +785,6 @@ class EE_Typography extends CI_Typography {
 	// --------------------------------------------------------------------
 
 	/**
-	 * preg_replace_callback for callback to fix quotes in code blocks
-	 * @param  array  $matches matches from a preg_replace_callback
-	 * @return string          replaced text with double encoded quotes replaced
-	 */
-	private function _markdown_fix_code_blocks($matches)
-	{
-		$replacement = str_replace(
-			array('&amp;#123;&amp;#47;', '&amp;#123;', '&amp;#125;'),
-			array('&#123;&#47;', '&#123;', '&#125;'),
-			$matches[0]
-		);
-
-		return $replacement;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Auto link URLs and email addresses
 	 *
 	 * @param 	string
