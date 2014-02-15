@@ -649,6 +649,9 @@ username and password to view the template.',
 'route_required_subtext' =>
 'If route segments are required all segments in the template route must be present in the request URI.',
 
+'template_routes_saved' =>
+'Template Routes saved',
+
 'http_auth_protected' =>
 'HTTP Auth Protected',
 

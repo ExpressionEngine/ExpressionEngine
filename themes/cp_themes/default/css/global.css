@@ -2230,6 +2230,15 @@ div#template_keywords_reset span {
 	padding:			0 15px 15px 15px;
 }
 
+#url_manager .submit {
+	margin: 			15px 0 0 0;
+}
+
+#url_manager .route_error {
+	background-color: 	#f5e9e9;
+	border-color: 		#f6b5b5;
+}
+
 /* Edit Page */
 .status_open {
 	color:				#093;

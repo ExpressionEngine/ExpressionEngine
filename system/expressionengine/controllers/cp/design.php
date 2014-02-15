@@ -3161,6 +3161,113 @@ class Design extends CP_Controller {
 		$this->functions->redirect(BASE.AMP.'C=design'.AMP.'M='.$function.AMP.'theme='.$theme.AMP.'name='.$name);
 	}
 
+	/**
+	 * _get_template_routes
+	 * 
+	 * @access private
+	 * @return Template route array
+	 */
+	private function _get_template_routes()
+	{
+		$this->db->select(array('t.template_name', 'tg.group_name', 't.template_id', 'tr.route', 'tr.route_parsed', 'tr.route_required'));
+		$this->db->from('templates AS t');
+		$this->db->join('template_routes AS tr', 'tr.template_id = t.template_id', 'left');
+		$this->db->join('template_groups AS tg', 'tg.group_id = t.group_id');
+		$this->db->where('t.site_id', $this->config->item('site_id'));
+		$this->db->order_by('LENGTH(tr.route_parsed), tg.group_name, t.template_name', 'ASC');
+
+		return $this->db->get();
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Update Template Routes
+	 *
+	 * Set routes for the route manager page
+	 *
+	 * @access	public
+	 * @return	type
+	 */
+	function update_template_routes()
+	{
+		if ( ! $this->cp->allowed_group('can_access_design', 'can_admin_design'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		ee()->load->library('template_router');
+		ee()->load->model('template_model');
+		$errors = array();
+		$error_ids = array();
+
+		foreach ($_POST as $id => $route)
+		{
+			if (strpos($id, 'route') !== FALSE)
+			{
+				$error = FALSE;
+				$id = substr($id, 6);
+
+				if ( ! empty($_POST['required_' . $id]))
+				{
+					$required = $_POST['required_' . $id];
+				}
+				else
+				{
+					$required = 'n';
+				}
+
+				if ($route !== "")
+				{
+
+					try
+					{
+						$ee_route = new EE_Route($route, $required == 'y');
+						$compiled = $ee_route->compile();
+					}
+					catch (Exception $error)
+					{
+						$error = $error->getMessage();
+						$error_ids[] = $id;
+						$errors[] = $error;
+					}
+				}
+				else
+				{
+					$compiled = NULL;
+					$route = NULL;
+					$required = 'n';
+				}
+
+				if ($error === FALSE)
+				{
+					$data = array(
+						'route' => $route,
+						'route_parsed' => $compiled,
+						'route_required' => $required
+					);
+					$this->template_model->update_template_route($id, $data);
+				}
+			}
+		}
+
+		if (empty($errors))
+		{
+			$this->session->set_flashdata('message_success', lang('template_routes_saved'));
+			$this->functions->redirect(cp_url('design/url_manager'));
+		}
+		else
+		{
+			$vars = array();
+			$vars['error_ids'] = $error_ids;
+			$vars['templates'] = $this->_get_template_routes();
+			$this->view->cp_page_title = lang('url_manager');
+			$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager', lang('template_manager'));
+			$this->load->library('table');
+			$this->cp->render('design/url_manager', $vars);
+		}
+	}
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -3173,33 +3280,22 @@ class Design extends CP_Controller {
 	 */
 	function url_manager()
 	{
+		if ( ! $this->cp->allowed_group('can_access_design', 'can_admin_design'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$vars = array();
 		$this->view->cp_page_title = lang('url_manager');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager', lang('template_manager'));
-		$this->load->model('design_model');
 		$this->load->library('table');
+		$vars['templates'] = $this->_get_template_routes();
+		$vars['error_ids'] = array();
+        $vars['options'] = array(
+        	'n' => lang('no'),
+        	'y' => lang('yes')
+        );
 
-		$this->db->select(array('t.template_name', 'tg.group_name', 't.template_id', 'tr.route', 'tr.route_parsed'));
-		$this->db->from('templates AS t');
-		$this->db->join('template_routes AS tr', 'tr.template_id = t.template_id', 'left');
-		$this->db->join('template_groups AS tg', 'tg.group_id = t.group_id');
-		$this->db->where('t.site_id', $this->config->item('site_id'));
-		$this->db->order_by('tg.group_name, t.template_name', 'ASC');
-		$templates = $this->db->get();
-
-		$table = array();
-		foreach($templates->result() as $template)
-		{
-			$url = cp_url('design/edit_template', array('id' => $template->template_id));
-			$name = '<a id="templateId_'.$template->template_id.'" href="'.$url.'">'.$template->template_name.'</a>';
-			$table[] = array($template->group_name, $name, $template->route);
-		}
-
-		$this->table->set_template(array(
-			'table_open' => '<table class="templateTable" border="0" cellspacing="0" cellpadding="0">'
-		));
-		$this->table->set_heading(array('Group', 'Template', 'Route'));
-		$vars['table'] = $this->table->generate($table);
 		$this->cp->render('design/url_manager', $vars);
 	}
 
@@ -4178,7 +4274,6 @@ class Design extends CP_Controller {
 		');
 
 
-		$vars['message'] = $message;
 		$vars['form_hidden'] = array();
 
 		$vars['template_groups'] = $this->template_model->get_template_groups();
