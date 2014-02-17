@@ -566,6 +566,38 @@ class Template_model extends CI_Model {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Update Template Route
+	 *
+	 * @access	public
+	 * @param	int
+	 * @param	array
+	 * @return	void
+	 */
+	function update_template_route($template_id, $fields = array())
+	{
+		$query = $this->db->get_where('template_routes', array('template_id' => $template_id), 1, 0);
+
+		if($query->num_rows() == 0)
+		{
+			$fields['template_id'] = $template_id;
+			$this->db->insert('template_routes', $fields);
+		}
+		else
+		{
+			$this->db->update('template_routes', $fields, array('template_id' => $template_id));
+		}
+
+		if ($this->db->affected_rows() != 1)
+		{
+			return FALSE;
+		}
+
+		return TRUE;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Get Template Info
 	 *
 	 * @access	public
@@ -580,7 +612,8 @@ class Template_model extends CI_Model {
 			$this->db->select(implode(",", $fields));
 		}
 
-		$this->db->where('template_id', $template_id);
+		$this->db->join('template_routes AS tr', 'tr.template_id = templates.template_id', 'left');
+		$this->db->where('templates.template_id', $template_id);
 		$this->db->where('site_id', $this->config->item('site_id'));
 		return $this->db->get('templates');
 	}

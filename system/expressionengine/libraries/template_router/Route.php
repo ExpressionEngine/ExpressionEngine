@@ -84,22 +84,20 @@ class EE_Route {
 
 		foreach($this->segments as $segment)
 		{
-			if (is_string($segment))
+			if (is_string($segment) && $segment != '/')
 			{
-				$url[] = $segment;
+				$url[] = trim($segment, '/');
 			}
-			else
+			elseif($segment instanceof EE_Route_segment)
 			{
-				if (empty($segment->value))
+				if ( ! empty($segment->value))
 				{
-					throw new Exception(lang('missing_segment_value') . $segment->name);
+					$url[] =  $segment->value;
 				}
-
-				$url[] =  $segment->value;
 			}
 		}
 
-		return '/' . implode('', $url);
+		return '/' . implode('/', $url);
 	}
 
 	/**
