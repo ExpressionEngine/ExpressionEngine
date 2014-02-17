@@ -21,7 +21,7 @@
 						}
 
 						$this->table->set_template(array(
-							'table_open' => '<table class="templateTable" border="0" cellspacing="0" cellpadding="0">'
+							'table_open' => '<table class="mainTable" border="0" cellspacing="0" cellpadding="0">'
 						));
 						$this->table->set_heading(array('Group', 'Template', 'Route', 'Segments Required?'));
 						echo $this->table->generate($table);
