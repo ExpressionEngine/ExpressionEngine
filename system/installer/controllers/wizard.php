@@ -2457,6 +2457,7 @@ PAPAYA;
 			'prv_msg_html_format'			=> 'safe',
 			'prv_msg_auto_links'			=> 'y',
 			'prv_msg_max_chars'				=> '6000',
+			'enable_template_routes'		=>	'y',
 			'strict_urls'					=>	'y',
 			'site_404'						=>	'',
 			'save_tmpl_revisions'			=>	'n',
@@ -2682,6 +2683,7 @@ PAPAYA;
 
 		// Default Templates Prefs
 		$template_default = array(
+			'enable_template_routes',
 			'strict_urls',
 			'site_404',
 			'save_tmpl_revisions',

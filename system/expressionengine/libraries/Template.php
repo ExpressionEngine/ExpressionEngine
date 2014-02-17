@@ -1942,20 +1942,23 @@ class EE_Template {
 		}
 
 		// If we have a URI we check against template routes first
-		ee()->load->library('template_router');
-		try
+		if (ee()->config->item('enable_template_routes') == 'y')
 		{
-			$match = ee()->template_router->match(ee()->uri);
-			$this->template_route_vars = array();
-			foreach($match->matches as $key => $val)
+			ee()->load->library('template_router');
+			try
 			{
-				$this->template_route_vars['segment:' . $key] = $val;
+				$match = ee()->template_router->match(ee()->uri);
+				$this->template_route_vars = array();
+				foreach($match->matches as $key => $val)
+				{
+					$this->template_route_vars['segment:' . $key] = $val;
+				}
+				return $this->fetch_template($match->end_point['group'], $match->end_point['template'], FALSE);
 			}
-			return $this->fetch_template($match->end_point['group'], $match->end_point['template'], FALSE);
-		}
-		catch (Exception $error)
-		{
-			// route not found
+			catch (Exception $error)
+			{
+				// route not found
+			}
 		}
 
 		// Set the strict urls pref

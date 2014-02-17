@@ -68,8 +68,12 @@ class Design extends CP_Controller {
 				'global_variables'				=> BASE.AMP.'C=design'.AMP.'M=global_variables',
 				'snippets'						=> BASE.AMP.'C=design'.AMP.'M=snippets',
 				'sync_templates'				=> BASE.AMP.'C=design'.AMP.'M=sync_templates',
-				'url_manager'					=> BASE.AMP.'C=design'.AMP.'M=url_manager',
 			));
+
+			if ($this->config->item('enable_template_routes') == 'y')
+			{
+				$this->sub_breadcrumbs['url_manager'] = cp_url('design/url_manager');
+			}
 		}
 
 		// This is worded as "Can administrate design preferences" in member group management.
@@ -509,26 +513,20 @@ class Design extends CP_Controller {
 			$vars[$conf] = $this->config->item($conf);
 		}
 
-        $vars['save_tmpl_revisions_options'] = array(
-                                                'n'    => lang('no'),
-                                                'y'   => lang('yes')
-                                                );
+		$options_array = array(
+			'n' => lang('no'),
+			'y' => lang('yes')
+		);
 
-        $vars['save_tmpl_files_options'] = array(
-                                                'n'    => lang('no'),
-                                                'y'   => lang('yes')
-                                                );
+		$vars['save_tmpl_revisions_options'] = $options_array;
+		$vars['route_options'] = $options_array;
+		$vars['save_tmpl_files_options'] = $options_array;
+		$vars['strict_urls_options'] = $options_array;
 
-        $vars['save_tmpl_files_n'] = TRUE;
-        $vars['save_tmpl_files_y'] = FALSE;
-        $vars['save_tmpl_revisions_n'] = TRUE;
-        $vars['save_tmpl_revisions_y'] = FALSE;
-
-
-		$vars['strict_urls_options'] = array(
-									            'n'    => lang('no'),
-									            'y'   => lang('yes')
-											);
+		$vars['save_tmpl_files_n'] = TRUE;
+		$vars['save_tmpl_files_y'] = FALSE;
+		$vars['save_tmpl_revisions_n'] = TRUE;
+		$vars['save_tmpl_revisions_y'] = FALSE;
 
 		if ($vars['save_tmpl_files'] && $vars['save_tmpl_files'] == 'y')
 		{
@@ -3178,6 +3176,11 @@ class Design extends CP_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
+		if ($this->config->item('enable_template_routes') == 'n')
+		{
+			$this->functions->redirect(cp_url('design/manager'));
+		}
+
 		ee()->load->library('template_router');
 		ee()->load->model('template_model');
 		$errors = array();
@@ -3260,6 +3263,11 @@ class Design extends CP_Controller {
 		if ( ! $this->cp->allowed_group('can_access_design', 'can_admin_design'))
 		{
 			show_error(lang('unauthorized_access'));
+		}
+
+		if ($this->config->item('enable_template_routes') == 'n')
+		{
+			$this->functions->redirect(cp_url('design/manager'));
 		}
 
 		$vars = array();
