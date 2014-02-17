@@ -1938,7 +1938,7 @@ class Design extends CP_Controller {
 		$vars['warnings'] = $warnings;
 		$vars['template_types'] = $this->_get_template_types();
 
-		$this->javascript->set_global('importantMessage.warnings', $warnings);
+		$this->javascript->set_global('manager.warnings', $warnings);
 		$this->cp->set_right_nav(array(
 		    'view_rendered_template' => $vars['view_path']
 		    ));
