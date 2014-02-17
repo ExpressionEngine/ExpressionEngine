@@ -42,6 +42,7 @@ class Updater {
 				'_update_extension_quick_tabs',
 				'_extract_server_offset_config',
 				'_update_template_db_columns',
+				'_add_template_routes_config',
 				'_clear_cache',
 				'_update_config_add_cookie_httponly',
 				'_convert_xid_to_csrf',
@@ -188,6 +189,33 @@ If you do not wish to reset your password, ignore this message. It will expire i
 			ee()->config->update_site_prefs(array(
 				'server_offset' => $server_offset
 			), 'all');
+		}
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Add new Template Routes config item
+	 * 
+	 * @access private
+	 * @return void
+	 */
+	private function _add_template_routes_config()
+	{
+		$sites = ee()->db->select('site_id, site_template_preferences')
+			->get('sites')
+			->result_array();
+
+		foreach ($sites as $site)
+	    {
+			$prefs = unserialize(base64_decode($site['site_template_preferences']));
+			$prefs['enable_template_routes'] = 'y';
+
+			ee()->db->update(
+				'sites',
+				array('site_template_preferences' => base64_encode(serialize($prefs))),
+				array('site_id' => $site['site_id'])
+			);
 		}
 	}
 
