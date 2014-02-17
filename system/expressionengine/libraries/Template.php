@@ -439,6 +439,7 @@ class EE_Template {
 		$this->log_item("Parsing Segment, Embed, Layout, and Global Vars Conditionals");
 
 		$this->template = $this->parse_simple_segment_conditionals($this->template);
+		$this->template = $this->simple_conditionals($this->template, $this->layout_vars);
 		$this->template = $this->simple_conditionals($this->template, $this->embed_vars);
 		$this->template = $this->simple_conditionals($this->template, $layout_conditionals);
 		$this->template = $this->simple_conditionals($this->template, ee()->config->_global_vars);
