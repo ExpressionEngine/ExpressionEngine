@@ -3186,53 +3186,51 @@ class Design extends CP_Controller {
 		$errors = array();
 		$error_ids = array();
 
-		foreach ($_POST as $id => $route)
+		foreach ($this->template_model->fetch() as $template)
 		{
-			if (strpos($id, 'route') !== FALSE)
+			$error = FALSE;
+			$id = $template->template_id;
+			$route_required = $this->input->post('required_' . $id);
+			$route = $this->input->post('route_' . $id);
+
+			if ($route_required !== FALSE)
 			{
-				$error = FALSE;
-				$id = substr($id, 6);
+				$required = $route_required;				}
+			else
+			{
+				$required = 'n';
+			}
 
-				if ( ! empty($_POST['required_' . $id]))
-				{
-					$required = $_POST['required_' . $id];
-				}
-				else
-				{
-					$required = 'n';
-				}
+			if ($route !== "")
+			{
 
-				if ($route !== "")
+				try
 				{
+					$ee_route = new EE_Route($route, $required == 'y');
+					$compiled = $ee_route->compile();
+				}
+				catch (Exception $error)
+				{
+					$error = $error->getMessage();
+					$error_ids[] = $id;
+					$errors[$id] = $error;
+				}
+			}
+			else
+			{
+				$compiled = NULL;
+				$route = NULL;
+				$required = 'n';
+			}
 
-					try
-					{
-						$ee_route = new EE_Route($route, $required == 'y');
-						$compiled = $ee_route->compile();
-					}
-					catch (Exception $error)
-					{
-						$error = $error->getMessage();
-						$error_ids[] = $id;
-						$errors[$id] = $error;
-					}
-				}
-				else
-				{
-					$compiled = NULL;
-					$route = NULL;
-					$required = 'n';
-				}
-
-				if ($error === FALSE)
-				{
-					$data = array(
-						'route' => $route,
-						'route_parsed' => $compiled,
-						'route_required' => $required
-					);
-					$this->template_model->update_template_route($id, $data);
-				}
+			if ($error === FALSE)
+			{
+				$data = array(
+					'route' => $route,
+					'route_parsed' => $compiled,
+					'route_required' => $required
+				);
+				$this->template_model->update_template_route($id, $data);
 			}
 		}
 
