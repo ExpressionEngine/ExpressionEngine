@@ -358,6 +358,8 @@ class EE_Template {
 			}
 		}
 
+		$this->layout_conditionals = $layout_conditionals;
+
 		// cleanup of leftover/undeclared embed variables
 		// don't worry with undeclared embed: vars in conditionals as the conditionals processor will handle that adequately
 		if (strpos($this->template, LD.'embed:') !== FALSE)
@@ -813,7 +815,9 @@ class EE_Template {
 
 			// Backup current layout vars, they don't apply to this embed
 			$layout_vars_bak = $this->layout_vars;
+			$layout_conditionals = $this->layout_conditionals;
 			$this->layout_vars = array();
+			$this->layout_conditionals = array();
 
 			// Process Subtemplate
 			$this->log_item("Processing Sub Template: ".$template_group."/".$template_name);
@@ -836,6 +840,7 @@ class EE_Template {
 			// Restore layout vars. Technically we don't need these but a third
 			// party may want them to behave correctly.
 			$this->layout_vars = $layout_vars_bak;
+			$this->layout_conditionals = $layout_conditionals;
 		}
 
 		$this->depth--;
@@ -3351,7 +3356,7 @@ class EE_Template {
 		}
 
 		// Final Prep, Safety On
-		$str = ee()->functions->prep_conditionals($str, array_merge($this->segment_vars, $this->template_route_vars, $this->embed_vars, ee()->config->_global_vars, $data), 'y');
+		$str = ee()->functions->prep_conditionals($str, array_merge($this->segment_vars, $this->template_route_vars, $this->embed_vars, $this->layout_conditionals, ee()->config->_global_vars, $data), 'y');
 
 		// Protect Already Existing Unparsed PHP
 
