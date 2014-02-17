@@ -3185,8 +3185,9 @@ class Design extends CP_Controller {
 		ee()->load->model('template_model');
 		$errors = array();
 		$error_ids = array();
+		$query = $this->template_model->get_templates();
 
-		foreach ($this->template_model->fetch(array(), true) as $template)
+		foreach ($query->result() as $template)
 		{
 			$error = FALSE;
 			$id = $template->template_id;
