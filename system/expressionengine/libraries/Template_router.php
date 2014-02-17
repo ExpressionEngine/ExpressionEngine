@@ -97,7 +97,7 @@ class EE_Template_Router extends CI_Router {
 	 */
 	public function fetch_route($group, $template)
 	{
-		ee()->db->select('route_parsed, template_name, group_name');
+		ee()->db->select('route, route_parsed, route_required, template_name, group_name');
 		ee()->db->from('templates');
 		ee()->db->join('template_routes', 'templates.template_id = template_routes.template_id');
 		ee()->db->join('template_groups', 'templates.group_id = template_groups.group_id');
