@@ -1940,7 +1940,7 @@ class Design extends CP_Controller {
 		$vars['warnings'] = $warnings;
 		$vars['template_types'] = $this->_get_template_types();
 
-		$this->javascript->set_global('manager.warnings', $warnings);
+		$this->javascript->set_global('importantMessage.warnings', $warnings);
 		$this->cp->set_right_nav(array(
 		    'view_rendered_template' => $vars['view_path']
 		    ));
@@ -3161,24 +3161,6 @@ class Design extends CP_Controller {
 		$this->functions->redirect(BASE.AMP.'C=design'.AMP.'M='.$function.AMP.'theme='.$theme.AMP.'name='.$name);
 	}
 
-	/**
-	 * _get_template_routes
-	 * 
-	 * @access private
-	 * @return Template route array
-	 */
-	private function _get_template_routes()
-	{
-		$this->db->select(array('t.template_name', 'tg.group_name', 't.template_id', 'tr.route', 'tr.route_parsed', 'tr.route_required'));
-		$this->db->from('templates AS t');
-		$this->db->join('template_routes AS tr', 'tr.template_id = t.template_id', 'left');
-		$this->db->join('template_groups AS tg', 'tg.group_id = t.group_id');
-		$this->db->where('t.site_id', $this->config->item('site_id'));
-		$this->db->order_by('LENGTH(tr.route_parsed), tg.group_name, t.template_name', 'ASC');
-
-		return $this->db->get();
-	}
-
 	// --------------------------------------------------------------------
 
 	/**
@@ -3229,7 +3211,7 @@ class Design extends CP_Controller {
 					{
 						$error = $error->getMessage();
 						$error_ids[] = $id;
-						$errors[] = $error;
+						$errors[$id] = $error;
 					}
 				}
 				else
@@ -3258,27 +3240,22 @@ class Design extends CP_Controller {
 		}
 		else
 		{
-			$vars = array();
-			$vars['error_ids'] = $error_ids;
-			$vars['templates'] = $this->_get_template_routes();
-			$this->view->cp_page_title = lang('url_manager');
-			$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager', lang('template_manager'));
-			$this->load->library('table');
-			$this->cp->render('design/url_manager', $vars);
+			$this->url_manager($_POST, $error_ids, $errors);
 		}
 	}
 
 	// --------------------------------------------------------------------
 
 	/**
-	 * URL Manager
-	 *
-	 * URL Route Manager
-	 *
-	 * @access	public
-	 * @return	type
+	 * url_manager
+	 * 
+	 * @param array $input  The POST input, only used if we need to show errors
+	 * @param array $error_ids  An array of template IDs for errors
+	 * @param string $error_messages  An array of error messages
+	 * @access public
+	 * @return void
 	 */
-	function url_manager()
+	function url_manager($input = array(), $error_ids = array(), $error_messages = "")
 	{
 		if ( ! $this->cp->allowed_group('can_access_design', 'can_admin_design'))
 		{
@@ -3289,12 +3266,22 @@ class Design extends CP_Controller {
 		$this->view->cp_page_title = lang('url_manager');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager', lang('template_manager'));
 		$this->load->library('table');
-		$vars['templates'] = $this->_get_template_routes();
-		$vars['error_ids'] = array();
+
+		$vars['input'] = $input;
+		$vars['error_ids'] = $error_ids;
+		$vars['errors'] = $error_messages;
         $vars['options'] = array(
         	'n' => lang('no'),
         	'y' => lang('yes')
         );
+
+		$this->db->select(array('t.template_name', 'tg.group_name', 't.template_id', 'tr.route', 'tr.route_parsed', 'tr.route_required'));
+		$this->db->from('templates AS t');
+		$this->db->join('template_routes AS tr', 'tr.template_id = t.template_id', 'left');
+		$this->db->join('template_groups AS tg', 'tg.group_id = t.group_id');
+		$this->db->where('t.site_id', $this->config->item('site_id'));
+		$this->db->order_by('LENGTH(tr.route_parsed), tg.group_name, t.template_name', 'ASC');
+		$vars['templates'] = $this->db->get();
 
 		$this->cp->render('design/url_manager', $vars);
 	}

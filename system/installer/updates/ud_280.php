@@ -201,7 +201,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 	 */
 	private function _update_template_db_columns()
 	{
-		ee()->smartforge->add_field(
+		ee()->dbforge->add_field(
 			array(
 				'route_id' => array(
 					'type'			 => 'int',
@@ -236,7 +236,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		);
 		ee()->dbforge->add_key('route_id', TRUE);
 		ee()->dbforge->add_key('template_id');
-		ee()->smartforge->create_table('exp_template_routes');
+		ee()->smartforge->create_table('template_routes');
 	}
 
 	// --------------------------------------------------------------------
