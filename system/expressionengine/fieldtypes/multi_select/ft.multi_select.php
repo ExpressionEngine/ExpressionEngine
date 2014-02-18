@@ -46,6 +46,13 @@ class Multi_select_ft extends EE_Fieldtype {
 
 	// --------------------------------------------------------------------
 
+	function grid_display_field($data)
+	{
+		return $this->display_field(form_prep($data));
+	}
+
+	// --------------------------------------------------------------------
+
 	function replace_tag($data, $params = array(), $tagdata = FALSE)
 	{
 		ee()->load->helper('custom_field');

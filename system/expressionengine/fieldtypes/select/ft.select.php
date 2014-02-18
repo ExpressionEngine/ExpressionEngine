@@ -82,6 +82,13 @@ class Select_ft extends EE_Fieldtype {
 
 	// --------------------------------------------------------------------
 
+	function grid_display_field($data)
+	{
+		return $this->display_field(form_prep($data));
+	}
+
+	// --------------------------------------------------------------------
+
 	function replace_tag($data, $params = '', $tagdata = '')
 	{
 		// Experimental parameter, do not use
