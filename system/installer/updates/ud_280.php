@@ -41,6 +41,7 @@ class Updater {
 				'_update_specialty_templates',
 				'_update_extension_quick_tabs',
 				'_extract_server_offset_config',
+				'_update_template_db_columns',
 				'_clear_cache',
 				'_update_config_add_cookie_httponly',
 				'_convert_xid_to_csrf',
@@ -188,6 +189,40 @@ If you do not wish to reset your password, ignore this message. It will expire i
 				'server_offset' => $server_offset
 			), 'all');
 		}
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Add three new columns for necessary for Template Routes
+	 * 
+	 * @access private
+	 * @return void
+	 */
+	private function _update_template_db_columns()
+	{
+        // Add route and route_parsed columns to templates table
+		ee()->smartforge->add_column(
+			'templates',
+			array(
+				'route' => array(
+					'type'			=> 'varchar',
+					'constraint'    => 512,
+					'null'			=> True
+				),
+				'route_parsed' => array(
+					'type'			=> 'varchar',
+					'constraint'    => 512,
+					'null'			=> True
+				),
+				'route_required' => array(
+					'type'			=> 'char',
+					'constraint'    => 1,
+					'default'		=> 'n',
+					'null'		    => False
+				)
+			)
+		);
 	}
 
 	// --------------------------------------------------------------------
@@ -486,7 +521,9 @@ If you do not wish to reset your password, ignore this message. It will expire i
 			"$1{paginate}$4{/paginate}$5"
 		);
 	}
+
 }
+
 /* END CLASS */
 
 /* End of file ud_280.php */
