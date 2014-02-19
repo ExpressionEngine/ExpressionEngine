@@ -5223,7 +5223,7 @@ class Channel {
 	public function submit_entry()
 	{
 		//exit if not called as an action
-		if ( ! empty(ee()->TMPL) || ! ee()->input->get_post('ACT'))
+		if (REQ !== 'ACTION')
 		{
 			return '';
 		}
