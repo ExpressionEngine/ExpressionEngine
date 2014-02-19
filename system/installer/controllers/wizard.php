@@ -209,6 +209,7 @@ class Wizard extends CI_Controller {
 		}
 
 		$this->root_theme_path = $this->theme_path;
+		define('PATH_THEMES', $this->root_theme_path);
 		$this->theme_path .= 'site_themes/';
 		$this->theme_path = str_replace('//', '/', $this->theme_path);
 		$this->root_theme_path = str_replace('//', '/', $this->root_theme_path);
