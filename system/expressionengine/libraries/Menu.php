@@ -70,6 +70,7 @@ class EE_Menu {
 			'templates'		=> array(
 				'edit_templates'				=> array(),
 				'template_manager'				=> cp_url('design/manager'),
+				'template_route_manager'		=> cp_url('design/url_manager'),
 				'sync_templates'				=> cp_url('design/sync_templates'),
 				'----',
 				'snippets'						=> cp_url('design/snippets'),
@@ -86,25 +87,25 @@ class EE_Menu {
 		);
 
 		$menu['addons'] = array(
-			'modules'				   			=> cp_url('addons_modules'),
-			'accessories'			   			=> cp_url('addons_accessories'),
-			'extensions'			   			=> cp_url('addons_extensions'),
-			'fieldtypes'			   			=> cp_url('addons_fieldtypes'),
-			'plugins'				   			=> cp_url('addons_plugins')
+			'modules'							=> cp_url('addons_modules'),
+			'accessories'						=> cp_url('addons_accessories'),
+			'extensions'						=> cp_url('addons_extensions'),
+			'fieldtypes'						=> cp_url('addons_fieldtypes'),
+			'plugins'							=> cp_url('addons_plugins')
 		);
 
 		$menu['members'] = array(
-			'view_all_members'		   			=> cp_url('members/view_all_members'),
-			'member_groups'			   			=> cp_url('members/member_group_manager'),
+			'view_all_members'					=> cp_url('members/view_all_members'),
+			'member_groups'						=> cp_url('members/member_group_manager'),
 			'----',
-			'ip_search'			   				=> cp_url('members/ip_search'),
+			'ip_search'							=> cp_url('members/ip_search'),
 			'----',
-			'register_member'		   			=> cp_url('members/new_member_form'),
-			'user_banning'			   			=> cp_url('members/member_banning'),
-			'activate_pending_members' 			=> cp_url('members/member_validation'),
+			'register_member'					=> cp_url('members/new_member_form'),
+			'user_banning'						=> cp_url('members/member_banning'),
+			'activate_pending_members'			=> cp_url('members/member_validation'),
 			'----',
-			'custom_member_fields'	   			=> cp_url('members/custom_profile_fields'),
-			'member_config'   					=> cp_url('members/member_config')
+			'custom_member_fields'				=> cp_url('members/custom_profile_fields'),
+			'member_config'						=> cp_url('members/member_config')
 		);
 
 		$menu['admin'] = array(
@@ -924,6 +925,7 @@ class EE_Menu {
 				'new_template'					=> 'cp/design/templates/new_template.html',
 				'manager'						=> 'cp/design/templates/templates.html',
 				'template_manager'				=> 'cp/design/templates/templates.html',
+				'template_route_manager'		=> 'cp/design/templates/template_route_manager.html',
 				'snippets'						=> 'cp/design/templates/snippets.html',
 				'sync_templates'				=> 'cp/design/templates/synchronize_templates.html',
 
