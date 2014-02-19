@@ -395,9 +395,11 @@ class EE_Logger {
 	 * @param  String $regex       Regular expression to run through
 	 *                             preg_replace
 	 * @param  String $replacement Replacement to pass to preg_replace
+	 * @param  String $specific_template     Filename of specific template to
+	 *                                       deprecate in
 	 * @return void
 	 */
-	public function deprecate_specialty_template_tag($message, $regex, $replacement)
+	public function deprecate_specialty_template_tag($message, $regex, $replacement, $specific_template = '')
 	{
 		ee()->load->helper(array('directory', 'file'));
 		$results = array();
@@ -410,7 +412,8 @@ class EE_Logger {
 					directory_map($current_path),
 					$current_path,
 					$regex,
-					$replacement
+					$replacement,
+					$specific_template
 				);
 			}
 		}
@@ -432,9 +435,11 @@ class EE_Logger {
 	 * @param  String $regex       Regular expression to run through
 	 *                             preg_replace
 	 * @param  String $replacement Replacement to pass to preg_replace
+	 * @param  String $specific_template     Filename of specific template to
+	 *                                       deprecate in
 	 * @return void
 	 */
-	private function _update_specialty_template($filename, $path, $regex, $replacement)
+	private function _update_specialty_template($filename, $path, $regex, $replacement, $specific_template)
 	{
 		if (is_array($filename))
 		{
@@ -442,16 +447,18 @@ class EE_Logger {
 			{
 				// Only append $current_directory if it's not numeric
 				$recursive_path = ( ! is_numeric($current_directory)) ? $path.$current_directory.'/' : $path;
-				$filename[$current_directory] = $this->_update_specialty_template($file, $recursive_path, $regex, $replacement);
+				$filename[$current_directory] = $this->_update_specialty_template($file, $recursive_path, $regex, $replacement, $specific_template);
 			}
 			return $filename;
 		}
 
 		// Figure out if this is .html, .css, .feed, or .xml
 		$full_filename = $path.$filename;
-		$extension = pathinfo($full_filename, PATHINFO_EXTENSION);
+		$pathinfo = pathinfo($full_filename);
 
-		if (in_array($extension, array('html', 'css', 'feed', 'xml'))
+		if (($specific_template == ''
+			OR $specific_template == $filename)
+			&& in_array($pathinfo['extension'], array('html', 'css', 'feed', 'xml'))
 			&& ($file_contents = read_file($full_filename))
 			&& preg_match($regex, $file_contents))
 		{
@@ -469,6 +476,7 @@ class EE_Logger {
 
 		return FALSE;
 	}
+
 
 	// --------------------------------------------------------------------
 

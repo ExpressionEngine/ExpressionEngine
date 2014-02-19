@@ -577,6 +577,13 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		ee()->load->library('logger');
 
 		ee()->logger->deprecate_specialty_template_tag(
+			'Replaced subscription pagination template\'s {pagination} with {paginate}{pagination_links}{/paginate}. Switch to the new Channel style pagination.',
+			"/{pagination}/uis",
+			"{paginate}{pagination_links}{/paginate}",
+			'subscription_pagination.html'
+		);
+
+		ee()->logger->deprecate_specialty_template_tag(
 			'Replaced specialty templates\' {if paginate} and {if pagination} with {paginate}...{/paginate}. Switch to the new Channel style pagination.',
 			"/{if (?:paginate|pagination)}(.*?){\/if}/uis",
 			"{paginate}$1{/paginate}"
