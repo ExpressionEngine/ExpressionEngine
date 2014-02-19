@@ -52,7 +52,8 @@ class Updater {
 				'_update_session_config_names',
 				'_update_config_add_cookie_httponly',
 				'_replace_old_search_pagination',
-				'_replace_old_specialty_pagination'
+				'_replace_old_specialty_pagination',
+				'_update_doc_url'
 			)
 		);
 
@@ -197,7 +198,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 
 	/**
 	 * Add new Template Routes config item
-	 * 
+	 *
 	 * @access private
 	 * @return void
 	 */
@@ -224,7 +225,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 
 	/**
 	 * Add new Template Routes table
-	 * 
+	 *
 	 * @access private
 	 * @return void
 	 */
@@ -586,6 +587,22 @@ If you do not wish to reset your password, ignore this message. It will expire i
 			"/{pagination}|{include:pagination_link}/uis",
 			"{pagination_links}"
 		);
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Update outdated doc_url config item so overview help links are relevant
+	 * @return  void
+	 */
+	private function _update_doc_url()
+	{
+		if (strpos(ee()->config->item('doc_url'), 'expressionengine.com/user_guide') !== FALSE)
+		{
+			ee()->config->_update_config(array(
+				'doc_url' => 'http://ellislab.com/expressionengine/user-guide/'
+			));
+		}
 	}
 
 }
