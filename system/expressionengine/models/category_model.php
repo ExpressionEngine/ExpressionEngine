@@ -354,10 +354,10 @@ class Category_model extends CI_Model {
 		$this->db->where('group_id', $group_id);
 		$query = $this->db->get('categories');
 
+		$cat_ids = array();
+
 		if ($query->num_rows() > 0)
 		{
-			$cat_ids = array();
-
 			foreach ($query->result() as $row)
 			{
 				$cat_ids[] = $row->cat_id;
