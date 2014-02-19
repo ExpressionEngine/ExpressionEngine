@@ -35,109 +35,78 @@ class Member_subscriptions extends Member {
 		ee()->load->library('members');
 
 		$swap = array(
-				'form_declaration'	=> ee()->functions->form_declaration(
-					array('action' => $this->_member_path('update_subscriptions')))
-				);
+			'form_declaration'	=> ee()->functions->form_declaration(
+				array('action' => $this->_member_path('update_subscriptions'))
+			)
+		);
 
 		// Set some base values
+		$result_data	= array();
+		$pageurl		= $this->_member_path('edit_subscriptions');
+		$perpage		= 50;
+		$page_links		= '';
+		$total_count	= 0;
 
-		$result_data			= array();
-		$pageurl 				= $this->_member_path('edit_subscriptions');
-		$perpage				= 50;
-		$rownum  				= $this->cur_id;
-		$page_links				= '';
-		$total_count			= 0;
+		$temp = $this->_var_swap(
+			$this->_load_element('subscription_pagination'),
+			array(
+				'lang:unsubscribe' => lang('unsubscribe'),
+				'class' => ($perpage % 2) ? 'tableCellOne' : 'tableCellTwo'
+			)
+		);
 
-		$rownum = ($rownum != '') ? substr($rownum, 1) : 0;
+		// Setup base pagiation
+		ee()->load->library('pagination');
+		$pagination = ee()->pagination->create();
+		$pagination->position = 'inline';
+		$pagination->prefix = 'R';
+		$temp = $pagination->prepare($temp);
 
-		$rownum = ($rownum == '' OR ($perpage > 1 AND $rownum == 1)) ? 0 : $rownum;
-
-		// Set update path
-		$swap['path:update_subscriptions'] = $this->_member_path('update_subscriptions');
-
-		$subscription_data = ee()->members->get_member_subscriptions(ee()->session->userdata('member_id'), $rownum, $perpage);
-
-		// No results?  Bah, how boring...
+		$subscription_data = ee()->members->get_member_subscriptions(ee()->session->userdata('member_id'));
 		$total_rows = $subscription_data['total_results'];
 		$result_data = $subscription_data['result_array'];
+		$pagination->build($total_rows, $perpage);
+
+		// Get only what we need
+		$result_data = array_slice($subscription_data['result_array'], $pagination->offset, $perpage);
+		$total_rows = count($result_data);
 
 		if ($total_rows == 0)
 		{
-			$swap['subscription_results'] = $this->_var_swap($this->_load_element('no_subscriptions_message'), array('lang:no_subscriptions'=> ee()->lang->line('no_subscriptions')));
+			$swap['subscription_results'] = $this->_var_swap($this->_load_element('no_subscriptions_message'), array('lang:no_subscriptions'=> lang('no_subscriptions')));
 
 			return $this->_var_swap($this->_load_element('subscriptions_form'), $swap);
 		}
 
-		// Do we need pagination?
-		if ($rownum > $total_rows)
-		{
-			$rownum = 0;
-		}
-
-		$t_current_page = floor(($rownum / $perpage) + 1);
-		$total_pages	= intval(floor($total_rows / $perpage));
-
-		if ($total_rows % $perpage)
-		{
-			$total_pages++;
-		}
-
-		if ($total_rows > $perpage)
-		{
-			ee()->load->library('pagination');
-
-			$config['base_url']		= $pageurl;
-			$config['prefix']		= 'R';
-			$config['total_rows'] 	= $total_rows;
-			$config['per_page']		= $perpage;
-			$config['cur_page']		= $rownum;
-			$config['first_link'] 	= ee()->lang->line('pag_first_link');
-			$config['last_link'] 	= ee()->lang->line('pag_last_link');
-
-			// Allows $config['cur_page'] to override
-			$config['uri_segment'] = 0;
-
-			ee()->pagination->initialize($config);
-			$page_links = ee()->pagination->create_links();
-		}
+		// Set update path
+		$swap['path:update_subscriptions'] = $this->_member_path('update_subscriptions');
 
 		// Build the result table...
 		$out = $this->_var_swap(
 			$this->_load_element('subscription_result_heading'),
 			array(
-					'lang:title'		=>	ee()->lang->line('title'),
-					'lang:type'		 =>	ee()->lang->line('type'),
-					'lang:unsubscribe'  =>	ee()->lang->line('unsubscribe')
-				 )
+				'lang:title'		=> lang('title'),
+				'lang:type'			=> lang('type'),
+				'lang:unsubscribe'	=> lang('unsubscribe')
+			)
 		);
-
 
 		$i = 0;
 		foreach ($result_data as $val)
 		{
 			$rowtemp = $this->_load_element('subscription_result_rows');
 
-			$rowtemp = str_replace('{class}',	($i++ % 2) ? 'tableCellOne' : 'tableCellTwo', $rowtemp);
+			$rowtemp = str_replace('{class}', ($i++ % 2) ? 'tableCellOne' : 'tableCellTwo', $rowtemp);
 
-			$rowtemp = str_replace('{path}',	$val['path'],	$rowtemp);
-			$rowtemp = str_replace('{title}',	$val['title'],	$rowtemp);
-			$rowtemp = str_replace('{id}',	  $val['id'],		$rowtemp);
-			$rowtemp = str_replace('{type}',	$val['type'],	$rowtemp);
+			$rowtemp = str_replace('{path}', $val['path'], $rowtemp);
+			$rowtemp = str_replace('{title}', $val['title'], $rowtemp);
+			$rowtemp = str_replace('{id}', $val['id'], $rowtemp);
+			$rowtemp = str_replace('{type}', $val['type'], $rowtemp);
 
 			$out .= $rowtemp;
 		}
 
-		$out .= $this->_var_swap(
-			$this->_load_element('subscription_pagination'),
-			array(
-				'pagination' => $page_links,
-				'lang:unsubscribe' => ee()->lang->line('unsubscribe'),
-				'class' => ($i++ % 2) ? 'tableCellOne' : 'tableCellTwo'
-			)
-		);
-
-
-		$swap['subscription_results'] = $out;
+		$swap['subscription_results'] = $out.$pagination->render($temp);
 
 		return $this->_var_swap(
 			$this->_load_element('subscriptions_form'), $swap
@@ -175,8 +144,8 @@ class Member_subscriptions extends Member {
 		return $this->_var_swap(
 			$this->_load_element('success'),
 			array(
-				'lang:heading'		=>	ee()->lang->line('subscriptions'),
-				'lang:message'		=>	ee()->lang->line('subscriptions_removed')
+				'lang:heading'		=>	lang('subscriptions'),
+				'lang:message'		=>	lang('subscriptions_removed')
 			 )
 		);
 	}
