@@ -66,19 +66,28 @@ class EE_Menu {
 
 		//
 
+		$template_menu = array(
+			'edit_templates'				=> array(),
+			'template_manager'				=> cp_url('design/manager')
+		);
+
+		if (ee()->config->item('enable_template_routes') == 'y')
+		{
+			$template_menu += array('template_route_manager' => cp_url('design/url_manager'));
+		}
+
+		$template_menu += array(
+			'sync_templates'				=> cp_url('design/sync_templates'),
+			'----',
+			'snippets'						=> cp_url('design/snippets'),
+			'global_variables'				=> cp_url('design/global_variables'),
+			'----',
+			'template_preferences'			=> cp_url('design/template_preferences_manager'),
+			'global_preferences'			=> cp_url('design/global_template_preferences')
+		);
+
 		$menu['design'] = array(
-			'templates'		=> array(
-				'edit_templates'				=> array(),
-				'template_manager'				=> cp_url('design/manager'),
-				'template_route_manager'		=> cp_url('design/url_manager'),
-				'sync_templates'				=> cp_url('design/sync_templates'),
-				'----',
-				'snippets'						=> cp_url('design/snippets'),
-				'global_variables'				=> cp_url('design/global_variables'),
-				'----',
-				'template_preferences'			=> cp_url('design/template_preferences_manager'),
-				'global_preferences'			=> cp_url('design/global_template_preferences')
-			),
+			'templates' => $template_menu,
 			'message_pages' => array(
 				'email_notification'			=> cp_url('design/email_notification'),
 				'user_message'					=> cp_url('design/user_message'),
