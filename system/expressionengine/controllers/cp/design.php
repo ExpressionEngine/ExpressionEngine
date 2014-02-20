@@ -3185,6 +3185,7 @@ class Design extends CP_Controller {
 		ee()->load->model('template_model');
 		$errors = array();
 		$error_ids = array();
+		$updated_routes = array();
 
 		foreach ($this->template_model->fetch() as $template)
 		{
@@ -3192,6 +3193,7 @@ class Design extends CP_Controller {
 			$id = $template->template_id;
 			$route_required = $this->input->post('required_' . $id);
 			$route = $this->input->post('route_' . $id);
+			$ee_route = NULL;
 
 			if ($route_required !== FALSE)
 			{
@@ -3201,7 +3203,7 @@ class Design extends CP_Controller {
 				$required = 'n';
 			}
 
-			if ($route !== "")
+			if ( ! empty($route))
 			{
 
 				try
@@ -3221,6 +3223,25 @@ class Design extends CP_Controller {
 				$compiled = NULL;
 				$route = NULL;
 				$required = 'n';
+			}
+
+			// Check if we have a duplicate route
+			if ( ! empty($ee_route))
+			{
+				foreach ($updated_routes as $existing_route)
+				{
+					if ($ee_route->equals($existing_route))
+					{
+						$error_ids[] = $id;
+						$errors[$id] = lang('duplicate_route');
+						$error = TRUE;
+					}
+				}
+
+				if ($error === FALSE)
+				{
+					$updated_routes[] = $ee_route;
+				}
 			}
 
 			if ($error === FALSE)
