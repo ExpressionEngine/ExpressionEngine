@@ -14,9 +14,6 @@
 
 // ------------------------------------------------------------------------
 
-require_once APPPATH.'libraries/template_router/converters/Integer.php';
-require_once APPPATH.'libraries/template_router/converters/Max_length.php';
-require_once APPPATH.'libraries/template_router/converters/Min_length.php';
 require_once APPPATH.'libraries/template_router/converters/Alpha_dash.php';
 require_once APPPATH.'libraries/template_router/converters/Alpha_numeric.php';
 require_once APPPATH.'libraries/template_router/converters/Alpha.php';
@@ -54,7 +51,7 @@ class EE_Template_router_converters {
 		$this->register('alpha_numeric', 'EE_template_router_alpha_numeric_converter');
 		$this->register('base64', 'EE_template_router_base64_converter');
 		$this->register('category', 'EE_template_router_category_converter');
-		$this->register('int', 'EE_template_router_integer_converter');
+		$this->register('integer', 'EE_template_router_integer_converter');
 		$this->register('max_length', 'EE_template_router_max_length_converter');
 		$this->register('min_length', 'EE_template_router_min_length_converter');
 		$this->register('natural', 'EE_template_router_natural_converter');
