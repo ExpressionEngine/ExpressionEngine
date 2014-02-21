@@ -27,7 +27,7 @@ class EE_Template_router_base64_converter implements EE_Template_router_converte
 
 	public function validator()
 	{
-		return "([^a-zA-Z0-9\/\+=]+)";
+		return "([a-zA-Z0-9\/\+=]+)";
 	}
 
 }
