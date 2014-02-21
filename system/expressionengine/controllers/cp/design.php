@@ -3187,7 +3187,7 @@ class Design extends CP_Controller {
 		$error_ids = array();
 		$updated_routes = array();
 
-		foreach ($this->template_model->fetch() as $template)
+		foreach ($this->template_model->fetch(array(), true) as $template)
 		{
 			$error = FALSE;
 			$id = $template->template_id;
@@ -3270,7 +3270,7 @@ class Design extends CP_Controller {
 
 	/**
 	 * url_manager
-	 * 
+	 *
 	 * @param array $input  The POST input, only used if we need to show errors
 	 * @param array $error_ids  An array of template IDs for errors
 	 * @param string $error_messages  An array of error messages
