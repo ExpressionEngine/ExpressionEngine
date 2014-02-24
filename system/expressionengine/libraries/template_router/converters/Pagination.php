@@ -27,7 +27,7 @@ class EE_Template_router_pagination_converter implements EE_Template_router_conv
 
 	public function validator()
 	{
-		return "(P[0-9]+)";
+		return "((P|R|N)[0-9]+)";
 	}
 
 }

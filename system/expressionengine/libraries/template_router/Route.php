@@ -29,11 +29,11 @@ class EE_Route {
 
 	public $segment_regex = "
 		(?P<static>[^{]*)                     # static rule data
-		{
-		(?P<variable>[a-zA-Z_][a-zA-Z0-9_]*)  # variable name
+		{	
+		(?P<variable>[^}:]*)  # variable name
 		(?:
 			\:                                # variable delimiter
-			(?P<rules>.*?)                    # rules
+			(?P<rules>.*?(regex\[.*\])?.*?)   # rules
 		)?
 		}
 	";
@@ -245,7 +245,16 @@ class EE_Route {
 					$segments[] = array('static' => $matches['static']);
 				}
 
-				$segment['variable'] = $matches['variable'];
+				$variable = $matches['variable'];
+
+				if (preg_match("/^[a-zA-Z][a-zA-Z0-9]*$/ix", $variable))
+				{
+					$segment['variable'] = $variable;
+				}
+				else
+				{
+					throw new Exception(lang('invalid_variable') . $variable);
+				}
 
 				if ( ! empty($matches['rules']))
 				{

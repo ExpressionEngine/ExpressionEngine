@@ -1116,8 +1116,6 @@ class Simple_commerce {
 	/** -------------------------------------*/
 	function prep_val($str)
 	{
-		return urlencode($str);
-
 		// Oh, PayPal, the hoops I must jump through to woo thee...
 		// PayPal is displaying its cart as UTF-8, sending UTF-8 headers, but when
 		// processing the form data, is obviously wonking with it.  This will force
@@ -1129,7 +1127,7 @@ class Simple_commerce {
 		ee()->load->helper('typography');
 
 		$str = str_replace('&amp;', '&', $str);
-		$str = urlencode(utf8_decode(entity_decode($str, 'utf-8')));
+		$str = urlencode(entity_decode($str, 'utf-8'));
 
 		return $str;
 	}

@@ -325,7 +325,7 @@ class EE_Template {
 		// Parse template route segments
 		foreach($this->template_route_vars as $key => $var)
 		{
-			$this->template = str_replace(LD.$key.RD, $var[0], $this->template);
+			$this->template = str_replace(LD.$key.RD, $var, $this->template);
 		}
 
 		// Parse {embed} tag variables
@@ -1956,7 +1956,7 @@ class EE_Template {
 				$this->template_route_vars = array();
 				foreach($match->matches as $key => $val)
 				{
-					$this->template_route_vars['segment:' . $key] = $val;
+					$this->template_route_vars['segment:' . $key] = $val[0];
 				}
 				return $this->fetch_template($match->end_point['group'], $match->end_point['template'], FALSE);
 			}
