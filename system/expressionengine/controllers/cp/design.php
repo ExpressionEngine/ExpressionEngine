@@ -68,8 +68,12 @@ class Design extends CP_Controller {
 				'global_variables'				=> BASE.AMP.'C=design'.AMP.'M=global_variables',
 				'snippets'						=> BASE.AMP.'C=design'.AMP.'M=snippets',
 				'sync_templates'				=> BASE.AMP.'C=design'.AMP.'M=sync_templates',
-				'url_manager'					=> BASE.AMP.'C=design'.AMP.'M=url_manager',
 			));
+
+			if ($this->config->item('enable_template_routes') == 'y')
+			{
+				$this->sub_breadcrumbs['url_manager'] = cp_url('design/url_manager');
+			}
 		}
 
 		// This is worded as "Can administrate design preferences" in member group management.
@@ -509,26 +513,20 @@ class Design extends CP_Controller {
 			$vars[$conf] = $this->config->item($conf);
 		}
 
-        $vars['save_tmpl_revisions_options'] = array(
-                                                'n'    => lang('no'),
-                                                'y'   => lang('yes')
-                                                );
+		$options_array = array(
+			'n' => lang('no'),
+			'y' => lang('yes')
+		);
 
-        $vars['save_tmpl_files_options'] = array(
-                                                'n'    => lang('no'),
-                                                'y'   => lang('yes')
-                                                );
+		$vars['save_tmpl_revisions_options'] = $options_array;
+		$vars['route_options'] = $options_array;
+		$vars['save_tmpl_files_options'] = $options_array;
+		$vars['strict_urls_options'] = $options_array;
 
-        $vars['save_tmpl_files_n'] = TRUE;
-        $vars['save_tmpl_files_y'] = FALSE;
-        $vars['save_tmpl_revisions_n'] = TRUE;
-        $vars['save_tmpl_revisions_y'] = FALSE;
-
-
-		$vars['strict_urls_options'] = array(
-									            'n'    => lang('no'),
-									            'y'   => lang('yes')
-											);
+		$vars['save_tmpl_files_n'] = TRUE;
+		$vars['save_tmpl_files_y'] = FALSE;
+		$vars['save_tmpl_revisions_n'] = TRUE;
+		$vars['save_tmpl_revisions_y'] = FALSE;
 
 		if ($vars['save_tmpl_files'] && $vars['save_tmpl_files'] == 'y')
 		{
@@ -3164,40 +3162,154 @@ class Design extends CP_Controller {
 	// --------------------------------------------------------------------
 
 	/**
-	 * URL Manager
+	 * Update Template Routes
 	 *
-	 * URL Route Manager
+	 * Set routes for the route manager page
 	 *
 	 * @access	public
 	 * @return	type
 	 */
-	function url_manager()
+	function update_template_routes()
 	{
+		if ( ! $this->cp->allowed_group('can_access_design', 'can_admin_design'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		if ($this->config->item('enable_template_routes') == 'n')
+		{
+			$this->functions->redirect(cp_url('design/manager'));
+		}
+
+		ee()->load->library('template_router');
+		ee()->load->model('template_model');
+		$errors = array();
+		$error_ids = array();
+		$updated_routes = array();
+
+		foreach ($this->template_model->fetch(array(), true) as $template)
+		{
+			$error = FALSE;
+			$id = $template->template_id;
+			$route_required = $this->input->post('required_' . $id);
+			$route = $this->input->post('route_' . $id);
+			$ee_route = NULL;
+
+			if ($route_required !== FALSE)
+			{
+				$required = $route_required;				}
+			else
+			{
+				$required = 'n';
+			}
+
+			if ( ! empty($route))
+			{
+
+				try
+				{
+					$ee_route = new EE_Route($route, $required == 'y');
+					$compiled = $ee_route->compile();
+				}
+				catch (Exception $error)
+				{
+					$error = $error->getMessage();
+					$error_ids[] = $id;
+					$errors[$id] = $error;
+				}
+			}
+			else
+			{
+				$compiled = NULL;
+				$route = NULL;
+				$required = 'n';
+			}
+
+			// Check if we have a duplicate route
+			if ( ! empty($ee_route))
+			{
+				foreach ($updated_routes as $existing_route)
+				{
+					if ($ee_route->equals($existing_route))
+					{
+						$error_ids[] = $id;
+						$errors[$id] = lang('duplicate_route');
+						$error = TRUE;
+					}
+				}
+
+				if ($error === FALSE)
+				{
+					$updated_routes[] = $ee_route;
+				}
+			}
+
+			if ($error === FALSE)
+			{
+				$data = array(
+					'route' => $route,
+					'route_parsed' => $compiled,
+					'route_required' => $required
+				);
+				$this->template_model->update_template_route($id, $data);
+			}
+		}
+
+		if (empty($errors))
+		{
+			$this->session->set_flashdata('message_success', lang('template_routes_saved'));
+			$this->functions->redirect(cp_url('design/url_manager'));
+		}
+		else
+		{
+			$this->url_manager($_POST, $error_ids, $errors);
+		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * url_manager
+	 *
+	 * @param array $input  The POST input, only used if we need to show errors
+	 * @param array $error_ids  An array of template IDs for errors
+	 * @param string $error_messages  An array of error messages
+	 * @access public
+	 * @return void
+	 */
+	function url_manager($input = array(), $error_ids = array(), $error_messages = "")
+	{
+		if ( ! $this->cp->allowed_group('can_access_design', 'can_admin_design'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		if ($this->config->item('enable_template_routes') == 'n')
+		{
+			$this->functions->redirect(cp_url('design/manager'));
+		}
+
 		$vars = array();
 		$this->view->cp_page_title = lang('url_manager');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager', lang('template_manager'));
-		$this->load->model('design_model');
 		$this->load->library('table');
 
-		$this->db->select(array('t.template_name', 'tg.group_name', 't.template_id', 't.route', 't.route_parsed'));
+		$vars['input'] = $input;
+		$vars['error_ids'] = $error_ids;
+		$vars['errors'] = $error_messages;
+        $vars['options'] = array(
+        	'n' => lang('no'),
+        	'y' => lang('yes')
+        );
+
+		$this->db->select(array('t.template_name', 'tg.group_name', 't.template_id', 'tr.route', 'tr.route_parsed', 'tr.route_required'));
 		$this->db->from('templates AS t');
+		$this->db->join('template_routes AS tr', 'tr.template_id = t.template_id', 'left');
 		$this->db->join('template_groups AS tg', 'tg.group_id = t.group_id');
 		$this->db->where('t.site_id', $this->config->item('site_id'));
-		$this->db->order_by('tg.group_name, t.template_name', 'ASC');
-		$templates = $this->db->get();
+		$this->db->order_by('LENGTH(tr.route_parsed), tg.group_name, t.template_name', 'ASC');
+		$vars['templates'] = $this->db->get();
 
-		$table = array();
-		foreach($templates->result() as $template)
-		{
-			$name = '<a id="templateId_'.$template->template_id.'" href="'.BASE.AMP.'C=design'.AMP.'M=edit_template'.AMP.'id='.$template->template_id.'">'.$template->template_name.'</a>';
-			$table[] = array($template->group_name, $name, $template->route);
-		}
-
-		$this->table->set_template(array(
-			'table_open' => '<table class="templateTable" border="0" cellspacing="0" cellpadding="0">'
-		));
-		$this->table->set_heading(array('Group', 'Template', 'Route'));
-		$vars['table'] = $this->table->generate($table);
 		$this->cp->render('design/url_manager', $vars);
 	}
 
@@ -3422,7 +3534,6 @@ class Design extends CP_Controller {
 					'template_route' => $row['route'],
 					'route_required' => $row['route_required']
 				);
-
 
 				$first = $row['group_id'];
 			}
@@ -3853,7 +3964,7 @@ class Design extends CP_Controller {
 					$this->output->send_ajax_response(lang('unauthorized_access'), TRUE);
 				}
 
-				$this->template_model->update_template_ajax($template_id, array('route_required' => $required));
+				$this->template_model->update_template_route($template_id, array('route_required' => $required));
 
 				// We have to recompile the route when route_required changes
 				$route = $query->row('route');
@@ -3867,7 +3978,7 @@ class Design extends CP_Controller {
 					$this->output->send_ajax_response($error->getMessage(), TRUE);
 				}
 
-				$this->template_model->update_template_ajax($template_id, array('route_parsed' => $template_route->compile()));
+				$this->template_model->update_template_route($template_id, array('route_parsed' => $template_route->compile()));
 			}
 			elseif (isset($group['template_route']))
 			{
@@ -3882,42 +3993,43 @@ class Design extends CP_Controller {
 				{
 					$required = ($query->row('route_required') == 'y');
 				}
-				try
+
+				if($route !== "")
 				{
-					if($route !== "")
+					try
 					{
 						$template_route = ee()->template_router->create_route($route, $required);
 						$route_parsed = $template_route->compile();
 					}
-					else
+					catch (Exception $error)
 					{
-						$route = NULL;
-						$route_parsed = NULL;
+						$this->output->send_ajax_response($error->getMessage(), TRUE);
 					}
-				}
-				catch (Exception $error)
-				{
-					$this->output->send_ajax_response($error->getMessage(), TRUE);
-				}
 
-				$this->load->model('design_model');
-				$templates = $this->design_model->fetch_templates();
+					$this->load->model('design_model');
+					$templates = $this->design_model->fetch_templates();
 
-				foreach ($templates->result() as $row)
-				{
-					if( ! empty($row->route) && $row->template_id != $template_id)
+					foreach ($templates->result() as $row)
 					{
-						$existing_route = new EE_Route($row->route);
-
-						if($template_route->equals($existing_route))
+						if( ! empty($row->route) && $row->template_id != $template_id)
 						{
-							$this->output->send_ajax_response(lang('duplicate_route'), TRUE);
+							$existing_route = new EE_Route($row->route);
+
+							if($template_route->equals($existing_route))
+							{
+								$this->output->send_ajax_response(lang('duplicate_route'), TRUE);
+							}
 						}
 					}
 				}
+				else
+				{
+					$route = NULL;
+					$route_parsed = NULL;
+				}
 
-				$this->template_model->update_template_ajax($template_id, array('route_parsed' => $route_parsed));
-				$this->template_model->update_template_ajax($template_id, array('route' => $route));
+				$this->template_model->update_template_route($template_id, array('route_parsed' => $route_parsed));
+				$this->template_model->update_template_route($template_id, array('route' => $route));
 			}
 			else
 			{
@@ -4176,7 +4288,6 @@ class Design extends CP_Controller {
 		');
 
 
-		$vars['message'] = $message;
 		$vars['form_hidden'] = array();
 
 		$vars['template_groups'] = $this->template_model->get_template_groups();

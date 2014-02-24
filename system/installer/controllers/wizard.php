@@ -24,7 +24,7 @@
  */
 class Wizard extends CI_Controller {
 
-	var $version			= '2.7.4';	// The version being installed
+	var $version			= '2.8.0';	// The version being installed
 	var $installed_version	= ''; 		// The version the user is currently running (assuming they are running EE)
 	var $minimum_php		= '5.2.4';	// Minimum version required to run EE
 	var $schema				= NULL;		// This will contain the schema object with our queries
@@ -2457,6 +2457,7 @@ PAPAYA;
 			'prv_msg_html_format'			=> 'safe',
 			'prv_msg_auto_links'			=> 'y',
 			'prv_msg_max_chars'				=> '6000',
+			'enable_template_routes'		=>	'y',
 			'strict_urls'					=>	'y',
 			'site_404'						=>	'',
 			'save_tmpl_revisions'			=>	'n',
@@ -2682,6 +2683,7 @@ PAPAYA;
 
 		// Default Templates Prefs
 		$template_default = array(
+			'enable_template_routes',
 			'strict_urls',
 			'site_404',
 			'save_tmpl_revisions',

@@ -643,11 +643,21 @@ username and password to view the template.',
 'template_route_subtext' =>
 'If a route is provided here it will override the default group/template URL structure.',
 
+'enable_template_routes' =>
+'Enable Template Routes',
+
+'enable_template_routes_exp' =>
+'Disabling template routes will remove the route options from the access panel
+and templates will only be accesible from the default group/template URL.',
+
 'route_required' =>
 'Require All Segments:',
 
 'route_required_subtext' =>
 'If route segments are required all segments in the template route must be present in the request URI.',
+
+'template_routes_saved' =>
+'Template Routes saved',
 
 'http_auth_protected' =>
 'HTTP Auth Protected',
