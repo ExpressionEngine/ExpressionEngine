@@ -65,10 +65,10 @@ class Design extends CP_Controller {
 		if ($this->cp->allowed_group('can_admin_templates'))
 		{
 			$this->sub_breadcrumbs = array_merge($this->sub_breadcrumbs, array(
-				'global_variables'				=> BASE.AMP.'C=design'.AMP.'M=global_variables',
-				'snippets'						=> BASE.AMP.'C=design'.AMP.'M=snippets',
-				'sync_templates'				=> BASE.AMP.'C=design'.AMP.'M=sync_templates',
-				'url_manager'					=> BASE.AMP.'C=design'.AMP.'M=url_manager',
+				'global_variables'	=> cp_url('design/global_variables'),
+				'snippets'			=> cp_url('design/snippets'),
+				'sync_templates'	=> cp_url('design/sync_templates'),
+				'url_manager'		=> cp_url('design/url_manager'),
 			));
 		}
 
@@ -76,8 +76,8 @@ class Design extends CP_Controller {
 		if ($this->cp->allowed_group('can_admin_design'))
 		{
 			$this->sub_breadcrumbs = array_merge($this->sub_breadcrumbs, array(
-				'global_template_preferences'	=> BASE.AMP.'C=design'.AMP.'M=global_template_preferences',
-				'template_preferences_manager'	=> BASE.AMP.'C=design'.AMP.'M=template_preferences_manager'
+				'global_template_preferences'	=> cp_url('design/global_template_preferences'),
+				'template_preferences_manager'	=> cp_url('design/template_preferences_manager')
 			));
 		}
 
@@ -260,7 +260,10 @@ class Design extends CP_Controller {
 		$vars['damned'] = array($group_id);
 
 		$vars['cp_page_title'] = lang('delete_template_group');
-		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager'.AMP.'tgpref='.$group_id, lang('template_manager'));
+		$this->cp->set_breadcrumb(
+			cp_url('design/manager', "tgpref={$group_id}"),
+			lang('template_manager')
+		);
 
 		$vars['form_hidden']['group_id'] = $group_id;
 
@@ -332,7 +335,7 @@ class Design extends CP_Controller {
 		$this->db->delete('exp_template_member_groups', array('template_group_id' => $group_id));
 
 		$this->session->set_flashdata('message_success', lang('template_group_deleted'));
-		$this->functions->redirect(BASE.AMP.'C=design'.AMP.'M=manager');
+		$this->functions->redirect(cp_url('design/manager'));
 	}
 
 	// --------------------------------------------------------------------
@@ -392,7 +395,10 @@ class Design extends CP_Controller {
 		//create_new_template
 
 		$this->view->cp_page_title = lang('create_new_template');
-		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager'.AMP.'tgpref='.$group_id, lang('template_manager'));
+		$this->cp->set_breadcrumb(
+			cp_url('design/manager', "tgpref={$group_id}"),
+			lang('template_manager')
+		);
 
 		$this->cp->render('design/new_template', $vars);
 	}
@@ -415,7 +421,7 @@ class Design extends CP_Controller {
 		}
 
 		$this->view->cp_page_title = lang('create_new_template_group');
-		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager', lang('template_manager'));
+		$this->cp->set_breadcrumb(cp_url('design/manager'), lang('template_manager'));
 
 		$this->load->model('template_model');
 		$this->lang->loadfile('admin_content');
@@ -490,9 +496,9 @@ class Design extends CP_Controller {
 		}');
 
 		$this->view->cp_page_title = lang('global_template_preferences');
-		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager', lang('template_manager'));
+		$this->cp->set_breadcrumb(cp_url('design/manager'), lang('template_manager'));
 
-        $vars['template_data'] = array('' => lang('none'));
+		$vars['template_data'] = array('' => lang('none'));
 
 		$templates = $this->template_model->get_templates();
 
@@ -574,7 +580,7 @@ class Design extends CP_Controller {
 		$this->config->update_site_prefs($_POST);
 
 		$this->session->set_flashdata('message_success', lang('preferences_updated'));
-		$this->functions->redirect(BASE.AMP.'C=design'.AMP.'M=global_template_preferences');
+		$this->functions->redirect(cp_url('design/global_template_preferences'));
 	}
 
 	// --------------------------------------------------------------------
@@ -603,7 +609,7 @@ class Design extends CP_Controller {
 			widgets: ["zebra"]
 		}');
 
-		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager', lang('template_manager'));
+		$this->cp->set_breadcrumb(cp_url('design/manager'), lang('template_manager'));
 		$this->view->cp_page_title = lang('snippets');
 
 		$vars['snippets'] = $this->template_model->get_snippets();
@@ -612,8 +618,8 @@ class Design extends CP_Controller {
 		$vars['message'] = ($this->input->get_post('update') !== FALSE) ? lang('snippet_updated') : FALSE;
 
 		$this->cp->set_right_nav(array(
-			'create_new_snippet' => BASE.AMP.'C=design'.AMP.'M=snippets_edit')
-		);
+			'create_new_snippet' => cp_url('design/snippets_edit')
+		));
 
 		$this->cp->render('design/snippets', $vars);
 	}
@@ -669,8 +675,8 @@ class Design extends CP_Controller {
 		}
 
 		$this->view->cp_page_title = $vars['create_edit'];
-		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager', lang('template_manager'));
-		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=snippets', lang('snippets'));
+		$this->cp->set_breadcrumb(cp_url('design/manager'), lang('template_manager'));
+		$this->cp->set_breadcrumb(cp_url('design/snippets'), lang('snippets'));
 
 		$this->cp->render('design/snippets_edit', $vars);
 	}
@@ -767,11 +773,11 @@ class Design extends CP_Controller {
 
 		if ($this->input->get_post('update_and_return') !== FALSE)
 		{
-			$this->functions->redirect(BASE.AMP.'C=design'.AMP.'M=snippets'.AMP.'update=1');
+			$this->functions->redirect(cp_url('design/snippets', 'update=1'));
 		}
 		else
 		{
-			$this->functions->redirect(BASE.AMP.'C=design'.AMP.'M=snippets_edit'.AMP.'snippet='.$snippet_name.AMP.'update=1');
+			$this->functions->redirect(cp_url('design/snippets_edit', 'snippet='.$snippet_name.AMP.'update=1');
 		}
 	}
 
@@ -809,12 +815,12 @@ class Design extends CP_Controller {
 		{
 			$this->template_model->delete_snippet($snippet_id);
 			$this->session->set_flashdata('message_success', lang('snippet_deleted'));
-			$this->functions->redirect(BASE.AMP.'C=design'.AMP.'M=snippets'.AMP.'delete=1');
+			$this->functions->redirect(cp_url('design/snippets', 'delete=1'));
 		}
 		else
 		{
-			$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager', lang('template_manager'));
-			$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=snippets', lang('snippets'));
+			$this->cp->set_breadcrumb(cp_url('design/manager'), lang('template_manager'));
+			$this->cp->set_breadcrumb(cp_url('design/snippets'), lang('snippets'));
 
 			$this->view->cp_page_title = lang('delete_snippet');
 			$this->cp->render('design/snippets_delete', $snippet);
@@ -841,7 +847,7 @@ class Design extends CP_Controller {
 		$this->load->library('table');
 
 		$this->view->cp_page_title = lang('global_variables');
-		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager', lang('template_manager'));
+		$this->cp->set_breadcrumb(cp_url('design/manager'), lang('template_manager'));
 
 		$this->jquery->tablesorter('.mainTable', '{
 			headers: {2: {sorter: false}},
@@ -852,8 +858,8 @@ class Design extends CP_Controller {
 		$vars['global_variables_count']	= $vars['global_variables']->num_rows();
 
 		$this->cp->set_right_nav(array(
-		        'create_new_global_variable'  => BASE.AMP.'C=design'.AMP.'M=global_variables_create'
-		    ));
+			'create_new_global_variable'  => cp_url('design/global_variables_create')
+		));
 
 		$this->cp->render('design/global_variables', $vars);
 	}
@@ -881,8 +887,8 @@ class Design extends CP_Controller {
 		$variable_id = $this->input->get_post('variable_id');
 		$variable_name = $this->input->get_post('variable_name');
 		$variable_data = $this->input->get_post('variable_data');
-		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager', lang('template_manager'));
-		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=global_variables', lang('global_variables'));
+		$this->cp->set_breadcrumb(cp_url('design/manager'), lang('template_manager'));
+		$this->cp->set_breadcrumb(cp_url('design/global_variables'), lang('global_variables'));
 
 		if ($variable_name != '')
 		{
@@ -908,7 +914,7 @@ class Design extends CP_Controller {
 
 			// Send success message and move user back to global vars page
 			$this->session->set_flashdata('message_success', lang('global_var_updated'));
-			$this->functions->redirect(BASE.AMP.'C=design'.AMP.'M=global_variables');
+			$this->functions->redirect(cp_url('design/global_variables'));
 		}
 		else
 		{
@@ -954,8 +960,8 @@ class Design extends CP_Controller {
 		$variable_name = $this->input->get_post('variable_name');
 		$variable_data = $this->input->get_post('variable_data');
 
-		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager', lang('template_manager'));
-		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=global_variables', lang('global_variables'));
+		$this->cp->set_breadcrumb(cp_url('design/manager'), lang('template_manager'));
+		$this->cp->set_breadcrumb(cp_url('design/global_variables'), lang('global_variables'));
 
 		// Existing variables, will have an id
 		if ($variable_name != '')
@@ -1010,8 +1016,8 @@ class Design extends CP_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager', lang('template_manager'));
-		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=global_variables', lang('global_variables'));
+		$this->cp->set_breadcrumb(cp_url('design/manager'), lang('template_manager'));
+		$this->cp->set_breadcrumb(cp_url('design/global_variables'), lang('global_variables'));
 
 		$variable_id = $this->input->get_post('variable_id');
 
@@ -1282,7 +1288,7 @@ class Design extends CP_Controller {
 		$vars['enable_http_auth_options'] = $yes_no_options;
 
 		$this->view->cp_page_title = lang('template_preferences_manager');
-		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager', lang('template_manager'));
+		$this->cp->set_breadcrumb(cp_url('design/manager'), lang('template_manager'));
 
 		$this->cp->render('design/template_preferences_manager', $vars);
 	}
@@ -1530,7 +1536,7 @@ class Design extends CP_Controller {
 			}
 		}
 
-		$this->functions->redirect(BASE.AMP.'C=design'.AMP.'M=template_preferences_manager'.AMP.'U=1');
+		$this->functions->redirect(cp_url('design/template_preferences_manager', 'U=1'));
 	}
 
 	// --------------------------------------------------------------------
@@ -1592,7 +1598,7 @@ class Design extends CP_Controller {
 		{
 			$qry = $this->db->select('tg.group_name, template_name,
 									template_data, template_type,
-						 			template_notes, cache, refresh,
+									template_notes, cache, refresh,
 									no_auth_bounce, allow_php,
 									php_parse_location, save_template_file')
 							->from('templates t, template_groups tg')
@@ -1757,7 +1763,7 @@ class Design extends CP_Controller {
 
 		// now that we have the info, we can set the breadcrumb and page titles
 		$this->view->cp_page_title = lang('edit_template').' ('.$vars['template_group'].' / '.$vars['template_name'].')';
-		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager'.AMP.'tgpref='.$group_id, lang('template_manager'));
+		$this->cp->set_breadcrumb(cp_url('design/manager', 'tgpref='.$group_id), lang('template_manager'));
 
 		$vars['edit_date'] = $this->localize->human_time($query->row('edit_date'));
 
@@ -1897,7 +1903,7 @@ class Design extends CP_Controller {
 
 		$this->javascript->set_global('template.markitup', $markItUp);
 		$this->javascript->set_global('template.url',
-		 								str_replace(AMP, '&', BASE).'&C=design&M=template_revision_history&template='.$template_id.'&revision_id=');
+										str_replace(AMP, '&', BASE).'&C=design&M=template_revision_history&template='.$template_id.'&revision_id=');
 
 		$vars['table_template'] = array(
 					'table_open'			=> '<table class="templateTable templateEditorTable" border="0" cellspacing="0" cellpadding="0">'
@@ -1942,8 +1948,8 @@ class Design extends CP_Controller {
 
 		$this->javascript->set_global('manager.warnings', $warnings);
 		$this->cp->set_right_nav(array(
-		    'view_rendered_template' => $vars['view_path']
-		    ));
+			'view_rendered_template' => $vars['view_path']
+			));
 
 		$this->cp->render('design/edit_template', $vars);
 	}
@@ -2095,7 +2101,7 @@ class Design extends CP_Controller {
 			$this->db->where('template_id', $template_id);
 			$query = $this->db->get('templates');
 
-			$this->functions->redirect(BASE.AMP.'C=design'.AMP.'M=manager'.AMP.'tgpref='.$query->row('group_id'));
+			$this->functions->redirect(cp_url('design/manager', 'tgpref='.$query->row('group_id')));
 		}
 		elseif (count($this->warnings))
 		{
@@ -2105,7 +2111,7 @@ class Design extends CP_Controller {
 		{
 			//$this->edit_template($template_id, $message);
 			$this->session->set_flashdata($cp_message);
-			$this->functions->redirect(BASE.AMP.'C=design'.AMP.'M=edit_template'.AMP.'id='.$template_id);
+			$this->functions->redirect(cp_url('design/edit_template', 'id='.$template_id));
 		}
 	}
 
@@ -2372,8 +2378,8 @@ class Design extends CP_Controller {
 	/**
 	  *  View Template Revision
 	  */
-    function template_revision_history()
-    {
+	function template_revision_history()
+	{
 		if ($this->config->item('save_tmpl_revisions') == 'n')
 		{
 			// Revisions are off, but they are here anyway
@@ -2388,13 +2394,13 @@ class Design extends CP_Controller {
 		}
 
 		if ( ! $id = $this->input->get_post('revision_id'))
-        {
-            show_error(lang('unauthorized_access'));
-        }
+		{
+			show_error(lang('unauthorized_access'));
+		}
 
 
 
-        $item_id = $this->input->get_post('template');
+		$item_id = $this->input->get_post('template');
 
 		$this->load->library('api');
 		$this->api->instantiate('template_structure');
@@ -2406,7 +2412,7 @@ class Design extends CP_Controller {
 		if ($id != 'clear')
 		{
 			$vars['cp_page_title'] = lang('revision_history');
-			$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager', lang('template_manager'));
+			$this->cp->set_breadcrumb(cp_url('design/manager'), lang('template_manager'));
 
 			$this->db->select('item_id, item_data, item_date');
 			$this->db->where('tracker_id', $id);
@@ -2418,10 +2424,10 @@ class Design extends CP_Controller {
 			$vars['revision_data'] = $query->row('item_data');
 			$vars['type'] = 'revision';
 
-        	if ($query->num_rows() == 0)
-        	{
-        		return false;
-        	}
+			if ($query->num_rows() == 0)
+			{
+				return false;
+			}
 
 			$vars['revision_date'] = $this->localize->human_time($query->row('item_date'));
 		}
@@ -2435,10 +2441,10 @@ class Design extends CP_Controller {
 			$vars['revision_date'] = '';
 		}
 
-        if ( ! $this->_template_access_privs(array('template_id' => $item_id)))
-        {
-        	show_error(lang('unauthorized_access'));
-        }
+		if ( ! $this->_template_access_privs(array('template_id' => $item_id)))
+		{
+			show_error(lang('unauthorized_access'));
+		}
 
 		$query = $this->template_model->get_template_info($item_id);
 
@@ -2456,7 +2462,7 @@ class Design extends CP_Controller {
 		$vars['template_name']		= $query->row('template_name') ;
 
 		$this->cp->render('design/revision_history', $vars);
-    }
+	}
 
 
 	// --------------------------------------------------------------------
@@ -2465,17 +2471,17 @@ class Design extends CP_Controller {
 	  *  Clear Revision History
 	  */
 
-    function clear_revision_history()
-    {
+	function clear_revision_history()
+	{
 		if ( ! $this->cp->allowed_group('can_access_design', 'can_admin_templates'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
 
-        if ( ! $id = $this->input->post('template_id'))
-        {
-            return false;
-        }
+		if ( ! $id = $this->input->post('template_id'))
+		{
+			return false;
+		}
 
 		$this->db->where('item_id', $id);
 		$this->db->where('item_table', 'exp_templates');
@@ -2490,7 +2496,7 @@ class Design extends CP_Controller {
 		$vars['revision_date'] = '';
 
 		$this->cp->render('design/revision_history', $vars);
-    }
+	}
 
 
 	// --------------------------------------------------------------------
@@ -2564,7 +2570,7 @@ class Design extends CP_Controller {
 		$vars['group_id'] = $group_id;
 
 		$vars['cp_page_title'] = lang('template_del_conf');
-		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager'.AMP.'tgpref='.$group_id, lang('template_manager'));
+		$this->cp->set_breadcrumb(cp_url('design/manager', 'tgpref='.$group_id), lang('template_manager'));
 
 		$vars['form_hidden']['template_id'] = $template_id;
 
@@ -2753,7 +2759,7 @@ class Design extends CP_Controller {
 			$this->template_model->update_specialty_template($template_id, $template_data);
 
 			$this->session->set_flashdata('message_success', lang('template_updated'));
-			$this->functions->redirect(BASE.AMP.'C=design'.AMP.'M=user_message');
+			$this->functions->redirect(cp_url('design/user_message'));
 		}
 		else
 		{
@@ -2821,7 +2827,7 @@ class Design extends CP_Controller {
 			$this->template_model->update_specialty_template($template_id, $template_data);
 
 			$this->session->set_flashdata('message_success', lang('template_updated'));
-			$this->functions->redirect(BASE.AMP.'C=design'.AMP.'M=system_offline');
+			$this->functions->redirect(cp_url('design/system_offline'));
 		}
 		else
 		{
@@ -2892,7 +2898,7 @@ class Design extends CP_Controller {
 		}
 
 		$this->view->cp_page_title = lang('edit_template');
-		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=email_notification', lang('email_notification_template'));
+		$this->cp->set_breadcrumb(cp_url('design/email_notification'), lang('email_notification_template'));
 
 		$this->cp->add_js_script(array('plugin' => 'markitup'));
 
@@ -2968,11 +2974,11 @@ class Design extends CP_Controller {
 
 		if ($this->input->get_post('update_and_return') !== FALSE)
 		{
-			$this->functions->redirect(BASE.AMP.'C=design'.AMP.'M=email_notification');
+			$this->functions->redirect(cp_url('design/email_notification'));
 		}
 
 		// go back to the edit page for this template
-		$this->functions->redirect(BASE.AMP.'C=design'.AMP.'M=edit_email_notification'.AMP.'template='.$template_name);
+		$this->functions->redirect(cp_url('design/edit_email_notification','template='.$template_name));
 	}
 
 	// --------------------------------------------------------------------
@@ -3154,11 +3160,11 @@ class Design extends CP_Controller {
 		$this->session->set_flashdata('message_success',lang('template_updated'));
 		if ($this->input->get_post('update_and_return') !== FALSE)
 		{
-			$this->functions->redirect(BASE.AMP.'C=design'.AMP.'M=list_'.$type.'_templates'.AMP.'name='.$theme);
+			$this->functions->redirect(cp_url('design/list_'.$type.'_templates', 'name='.$theme));
 		}
 		// go back to the edit page for the appropriate area
 		$function = "edit_{$type}_template";
-		$this->functions->redirect(BASE.AMP.'C=design'.AMP.'M='.$function.AMP.'theme='.$theme.AMP.'name='.$name);
+		$this->functions->redirect(cp_url('design/'.$function, 'theme='.$theme.AMP.'name='.$name));
 	}
 
 	// --------------------------------------------------------------------
@@ -3175,7 +3181,7 @@ class Design extends CP_Controller {
 	{
 		$vars = array();
 		$this->view->cp_page_title = lang('url_manager');
-		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager', lang('template_manager'));
+		$this->cp->set_breadcrumb(cp_url('design/manager'), lang('template_manager'));
 		$this->load->model('design_model');
 		$this->load->library('table');
 
@@ -3808,7 +3814,7 @@ class Design extends CP_Controller {
 		foreach ($payload as $group)
 		{
 			$template_id = $group['template_id'];
-		    $query = $this->template_model->get_template_info($template_id);
+			$query = $this->template_model->get_template_info($template_id);
 
 			if ( ! $this->_template_access_privs(array('template_id' => $template_id)))
 			{
@@ -3846,8 +3852,8 @@ class Design extends CP_Controller {
 
 				$this->template_model->update_template_ajax($template_id, array('no_auth_bounce' => $no_auth_bounce));
 			}
-            elseif ($required = element('route_required', $group))
-            {
+			elseif ($required = element('route_required', $group))
+			{
 				if ($required != 'y' && $required != 'n')
 				{
 					$this->output->send_ajax_response(lang('unauthorized_access'), TRUE);
@@ -3967,7 +3973,7 @@ class Design extends CP_Controller {
 		if ($this->form_validation->run() === FALSE)
 		{
 			$this->view->cp_page_title = lang('edit_template_group_form');
-			$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager'.AMP.'tgpref='.$group_id, lang('template_manager'));
+			$this->cp->set_breadcrumb(cp_url('design/manager', 'tgpref='.$group_id), lang('template_manager'));
 
 			$vars['form_hidden'] = array(
 				'group_id'		=> $group_id,
@@ -4139,7 +4145,7 @@ class Design extends CP_Controller {
 
 		}
 
-		$this->functions->redirect(BASE.AMP.'C=design'.AMP.'M=manager'.AMP.'tgpref='.$group_id);
+		$this->functions->redirect(cp_url('design/manager', 'tgpref='.$group_id));
 	}
 
 	// --------------------------------------------------------------------
@@ -4228,7 +4234,7 @@ class Design extends CP_Controller {
 				$this->template_model->update_template_group($group, array('group_order' => $order));
 			}
 
-			$this->functions->redirect(BASE.AMP.'C=design'.AMP.'M=edit_template_group_order');
+			$this->functions->redirect(cp_url('design/edit_template_group_order'));
 		}
 	}
 
@@ -4256,15 +4262,15 @@ class Design extends CP_Controller {
 		}
 
 		$vars['table_template'] = array('table_open' => '<table id="entries" class="templateTable" border="0" cellspacing="0" cellpadding="0">',
-                    'row_start'           => '<tr class="odd">',
-                    'row_end'             => '</tr>',
-                    'cell_start'          => '<td>',
-                    'cell_end'            => '</td>',
+					'row_start'           => '<tr class="odd">',
+					'row_end'             => '</tr>',
+					'cell_start'          => '<td>',
+					'cell_end'            => '</td>',
 
-                    'row_alt_start'       => '<tr>',
-                    'row_alt_end'         => '</tr>',
-                    'cell_alt_start'      => '<td>',
-                    'cell_alt_end'        => '</td>',
+					'row_alt_start'       => '<tr>',
+					'row_alt_end'         => '</tr>',
+					'cell_alt_start'      => '<td>',
+					'cell_alt_end'        => '</td>',
 
 
 		);
@@ -4278,7 +4284,7 @@ class Design extends CP_Controller {
 		$this->_sync_from_files();
 
 		$vars['cp_page_title'] = lang('sync_templates');
-		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager', lang('template_manager'));
+		$this->cp->set_breadcrumb(cp_url('design/manager'), lang('template_manager'));
 
 		$this->javascript->output(array(
 				'$(".toggle_all").toggle(
@@ -4419,7 +4425,7 @@ class Design extends CP_Controller {
 
 		if ($this->config->item('save_tmpl_files') != 'y' OR $this->config->item('tmpl_file_basepath') == '')
 		{
-			$this->functions->redirect(BASE.AMP.'C=design'.AMP.'M=sync_templates');
+			$this->functions->redirect(cp_url('design/sync_templates'));
 		}
 
 		if ( ! $this->cp->allowed_group('can_admin_templates'))
@@ -4429,12 +4435,12 @@ class Design extends CP_Controller {
 
 		if ( ! $confirmed = $this->input->get_post('confirm') OR $confirmed != 'confirm')
 		{
-			$this->functions->redirect(BASE.AMP.'C=design'.AMP.'M=sync_templates');
+			$this->functions->redirect(cp_url('design/sync_templates'));
 		}
 
 		if ( ! $this->input->post('toggle') OR ! is_array($this->input->post('toggle')))
 		{
-			$this->functions->redirect(BASE.AMP.'C=design'.AMP.'M=sync_templates');
+			$this->functions->redirect(cp_url('design/sync_templates'));
 		}
 
 		$damned = array();
@@ -4579,7 +4585,7 @@ class Design extends CP_Controller {
 								'save_template_file'	=> 'y',
 								'last_author_id'		=> $this->session->userdata['member_id'],
 								'site_id'				=> $this->config->item('site_id')
-							 	);
+								);
 
 							$this->db->where('template_id', $existing[$group][$template]['1']);
 							$this->db->update('templates', $data);
@@ -4594,7 +4600,7 @@ class Design extends CP_Controller {
 									'item_data'			=> $contents,
 									'item_date'			=> $this->localize->now,
 									'item_author_id'	=> $this->session->userdata['member_id']
-					 				);
+									);
 
 								$this->db->insert('revision_tracker', $data);
 
@@ -4648,7 +4654,7 @@ class Design extends CP_Controller {
 		$message = lang('sync_completed');
 
 		$this->session->set_flashdata('message_success', $message);
-		$this->functions->redirect(BASE.AMP.'C=design'.AMP.'M=sync_templates');
+		$this->functions->redirect(cp_url('design/sync_templates'));
 	}
 
 	/**
