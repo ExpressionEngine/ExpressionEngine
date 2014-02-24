@@ -386,26 +386,6 @@ function bind_prefs_events() {
 			$(currentrow).after(headerrow);
 		}
 
-		// Template editor page?
-		if (! prefs_template || ! access_template)
-		{
-			tables = $('#templateAccess, #templatePreferences');
-			template_id = $('input:hidden[name=template_id]').val();
-			group_id = $('input:hidden[name=group_id]').val();
-
-			$('#templatePreferences').data('ajax_ids', {'id': template_id, 'group_id': group_id});
-
-			all_checkbox_toggles($('#templateAccess'));
-
-			tables.find('input:text').unbind('blur.manager_updated').bind('blur.manager_updated', template_edit_ajax);
-			tables.find('input:radio').unbind('click.manager_updated').bind('click.manager_updated', template_edit_ajax);
-			tables.find('select').unbind('change.manager_updated').bind('change.manager_updated', template_edit_ajax);
-
-			return;
-		}
-
-		$('#prefRowTemplate, #accessRowTemplate').remove();
-
 		// Expose the three click callback functions - events bound in the controller
 		EE.manager = {
 			refreshPrefs: function (id) {
@@ -438,6 +418,26 @@ function bind_prefs_events() {
 				return false;
 			}
 		};
+
+		// Template editor page?
+		if (! prefs_template || ! access_template)
+		{
+			tables = $('#templateAccess, #templatePreferences');
+			template_id = $('input:hidden[name=template_id]').val();
+			group_id = $('input:hidden[name=group_id]').val();
+
+			$('#templatePreferences').data('ajax_ids', {'id': template_id, 'group_id': group_id});
+
+			all_checkbox_toggles($('#templateAccess'));
+
+			tables.find('input:text').unbind('blur.manager_updated').bind('blur.manager_updated', template_edit_ajax);
+			tables.find('input:radio').unbind('click.manager_updated').bind('click.manager_updated', template_edit_ajax);
+			tables.find('select').unbind('change.manager_updated').bind('change.manager_updated', template_edit_ajax);
+
+			return;
+		}
+
+		$('#prefRowTemplate, #accessRowTemplate').remove();
 	});
 
 	$('.last_edit').css('opacity', 0).show();
