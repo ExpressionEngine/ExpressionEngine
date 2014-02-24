@@ -776,7 +776,7 @@ class Design extends CP_Controller {
 		}
 		else
 		{
-			$this->functions->redirect(cp_url('design/snippets_edit', 'snippet='.$snippet_name.AMP.'update=1');
+			$this->functions->redirect(cp_url('design/snippets_edit', 'snippet='.$snippet_name.AMP.'update=1'));
 		}
 	}
 
