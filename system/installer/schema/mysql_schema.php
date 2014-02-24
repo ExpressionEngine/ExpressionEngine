@@ -970,13 +970,22 @@ class EE_Schema {
 			allow_php char(1) NOT NULL default 'n',
 			php_parse_location char(1) NOT NULL default 'o',
 			hits int(10) unsigned NOT NULL default 0,
-			route varchar(512) DEFAULT NULL,
-			route_parsed varchar(512) DEFAULT NULL,
-			route_required char(1) NOT NULL DEFAULT 'n',
 			PRIMARY KEY `template_id` (`template_id`),
 			KEY `group_id` (`group_id`),
 			KEY `template_name` (`template_name`),
 			KEY `site_id` (`site_id`)
+		)";
+
+		// Template Routes
+
+		$Q[] = "CREATE TABLE `exp_template_routes` (
+			`route_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+			`template_id` int(10) unsigned NOT NULL,
+			`route` varchar(512) DEFAULT NULL,
+			`route_parsed` varchar(512) DEFAULT NULL,
+			`route_required` char(1) NOT NULL DEFAULT 'n',
+			PRIMARY KEY (`route_id`),
+			KEY `template_id` (`template_id`)
 		)";
 
 		// Template "no access"

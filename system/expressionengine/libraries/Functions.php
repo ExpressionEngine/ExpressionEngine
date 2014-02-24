@@ -93,6 +93,65 @@ class EE_Functions {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Create a URL for a Template Route
+	 *
+	 * The input to this function is parsed and added to the
+	 * full site URL to create a full URL/URI
+	 *
+	 * @access	public
+	 * @param	string
+	 * @param	bool
+	 * @return	string
+	 */
+	function create_route($segment, $sess_id = TRUE)
+	{
+		if (is_array($segment))
+		{
+			$segment = $segment[1];
+		}
+
+		if (isset($this->cached_url[$segment]))
+		{
+			return $this->cached_url[$segment];
+		}
+
+		$full_segment = $segment;
+		$parts = explode(' ', $segment);
+
+		$template = array_shift($parts);
+		$template = trim($template, '"\'');
+		list($group, $template) = explode('/', $template);
+
+		if ( ! empty($group) && ! empty($template))
+		{
+			ee()->load->library('template_router');
+			$route = ee()->template_router->fetch_route($group, $template);
+
+			if( ! empty($route))
+			{
+				$options = array();
+
+				foreach($parts as $part) {
+					$part = explode('=', $part);
+					$options[$part[0]] = trim($part[1], '"\'');
+				}
+
+				$segment = $route->build($options);
+			}
+		}
+
+		$base = $this->fetch_site_index(0, $sess_id).'/'.trim_slashes($segment);
+
+		$out = reduce_double_slashes($base);
+
+		$this->cached_url[$full_segment] = $out;
+
+		return $out;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Create a custom URL
 	 *
 	 * The input to this function is parsed and added to the
@@ -135,34 +194,8 @@ class EE_Functions {
 
 			return $this->fetch_site_index(0, 0).$qs.'ACT='.$this->fetch_action_id('Member', 'member_logout').$xid;
 		}
+
 		// END Specials
-
-		// Handle template routes
-		$parts = explode(' ', $segment);
-
-		if (count($parts) > 1)
-		{
-			$template = array_shift($parts);
-			list($group, $template) = explode('/', $template);
-
-			if ( ! empty($group) && ! empty($template))
-			{
-				ee()->load->library('template_router');
-				$route = ee()->template_router->fetch_route($group, $template);
-
-				if( ! empty($route))
-				{
-					$options = array();
-
-					foreach($parts as $part) {
-						$part = explode('=', $part);
-						$options[$part[0]] = $part[1];
-					}
-
-					$segment = $route->build($options);
-				}
-			}
-		}
 
 		$base = $this->fetch_site_index(0, $sess_id).'/'.trim_slashes($segment);
 
@@ -728,7 +761,7 @@ class EE_Functions {
 	function set_cookie($name = '', $value = '', $expire = '')
 	{
 		ee()->load->library('logger');
-		ee()->logger->deprecate('2.8', 'EE_Input::set_cookie()');
+		ee()->logger->deprecated('2.8', 'EE_Input::set_cookie()');
 
 		return ee()->input->set_cookie($name, $value, $expire);
 	}
@@ -2526,7 +2559,7 @@ class EE_Functions {
 						//     {if "value" OR "value"_global}Hello world{/if}
 						//
 						// ..and triggers our Invalid EE Conditional Variable error.
-						$match = preg_replace("/(?<![\w-])".preg_quote($key)."(?![\w-])/", $value, $match);
+						$match = preg_replace("/(?<![\w-])".preg_quote($key, '/')."(?![\w-])/", $value, $match);
 					}
 				}
 			}

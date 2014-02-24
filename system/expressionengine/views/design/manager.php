@@ -127,6 +127,7 @@
 								</td>
 								<td><?=form_dropdown('enable_http_auth',  array('y' => lang('yes'), 'n' => lang('no')), '', 'class="enable_http_auth"')?></td>
 							</tr>
+							<?php if ($this->config->item('enable_template_routes') == 'y'): ?>
 							<tr>
 								<td>
 									<?=lang('template_route', 'template_route')?>
@@ -141,6 +142,7 @@
 								</td>
 								<td><?=form_dropdown('route_required',  array('y' => lang('yes'), 'n' => lang('no')), '', 'class="route_required"')?></td>
 							</tr>
+							<?php endif; ?>
 						</table>
 					</div>
 				<?php endif; ?>

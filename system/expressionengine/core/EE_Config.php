@@ -554,7 +554,8 @@ class EE_Config Extends CI_Config {
 			'max_tmpl_revisions',
 			'save_tmpl_files',
 			'tmpl_file_basepath',
-			'strict_urls'
+			'strict_urls',
+			'enable_template_routes'
 		);
 
 		$channel_default = array(
@@ -1336,6 +1337,7 @@ class EE_Config Extends CI_Config {
 			),
 
 			'template_cfg'		=>	array(
+				'enable_template_routes'	=> array('d', array('y' => 'yes', 'n' => 'no')),
 				'strict_urls'				=> array('d', array('y' => 'yes', 'n' => 'no')),
 				'site_404'					=> array('f', 'site_404'),
 				'save_tmpl_revisions'		=> array('r', array('y' => 'yes', 'n' => 'no')),
@@ -1649,6 +1651,7 @@ class EE_Config Extends CI_Config {
 			'log_email_console_msgs'	=> array('log_email_console_msgs_exp'),
 			'use_membership_captcha'	=> array('captcha_explanation'),
 			'strict_urls'				=> array('strict_urls_info'),
+			'enable_template_routes'	=> array('enable_template_routes_exp'),
 			'tmpl_display_mode'			=> array('tmpl_display_mode_exp'),
 			'save_tmpl_files'			=> array('save_tmpl_files_exp'),
 			'tmpl_file_basepath'		=> array('tmpl_file_basepath_exp'),

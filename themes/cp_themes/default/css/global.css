@@ -2226,8 +2226,10 @@ div#template_keywords_reset span {
 .templateSearchResults h3 { margin:0; }
 
 /* URL Manager */
-#url_manager {
-	padding:			0 15px 15px 15px;
+
+#url_manager .route_error {
+	background-color: 	#f5e9e9;
+	border-color: 		#f6b5b5;
 }
 
 /* Edit Page */

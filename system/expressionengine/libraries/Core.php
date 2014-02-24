@@ -86,8 +86,8 @@ class EE_Core {
 		// application constants
 		define('IS_CORE',		FALSE);
 		define('APP_NAME',		'ExpressionEngine'.(IS_CORE ? ' Core' : ''));
-		define('APP_BUILD',		'20131210');
-		define('APP_VER',		'2.7.3');
+		define('APP_BUILD',		'20140207');
+		define('APP_VER',		'2.8.0');
 		define('SLASH',			'&#47;');
 		define('LD',			'{');
 		define('RD',			'}');
@@ -140,6 +140,11 @@ class EE_Core {
 			$cookie_path  = ee()->config->item('cookie_path');
 			$cookie_domain =  ee()->config->item('cookie_domain');
 			$cookie_httponly = ee()->config->item('cookie_httponly');
+
+			if ($cookie_prefix)
+			{
+				$cookie_prefix .= '_';
+			}
 
 			if (! empty($last_site_id) && is_numeric($last_site_id) && $last_site_id != ee()->config->item('site_id'))
 			{

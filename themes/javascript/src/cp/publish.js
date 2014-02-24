@@ -785,12 +785,12 @@ $(document).ready(function() {
 	$(".tab_menu li:first").addClass("current");
 
 	if (EE.publish.title_focus == true) {
-		$("#title").focus();
+		$("#publishForm input[name=title]").focus();
 	}
 
 	if (EE.publish.which == 'new') {
-		$("#title").bind("keyup blur", function() {
-			$('#title').ee_url_title($('#url_title'));
+		$("#publishForm input[name=title]").bind("keyup blur", function() {
+			$('#publishForm input[name=title]').ee_url_title($('#publishForm input[name=url_title]'));
 		});
 	}
 

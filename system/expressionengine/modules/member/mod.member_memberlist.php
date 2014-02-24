@@ -589,9 +589,10 @@ class Member_memberlist extends Member {
 				$config['cur_tag_open'] = '<td><div class="paginateCur">';
 				$config['cur_tag_close'] = '</div></td>';
 				$config['num_tag_close'] = '</div></td>';
-		}
+			}
 
 			ee()->pagination->initialize($config);
+		}
 
 		// Start running pagination
 		ee()->load->library('pagination');
@@ -1018,18 +1019,6 @@ class Member_memberlist extends Member {
 				'action' => $this->_member_path('memberlist'.(($first_letter != '') ? $first_letter.'/' : $search_path))
 			));
 		}
-
-		$form_declaration = ee()->functions->form_declaration(array(
-									'action' => $form_action
-								)
-							);
-
-		$template = str_replace(LD."form_declaration".RD, $form_declaration, $template);
-
-		$form_declaration = ee()->functions->form_declaration(array(
-									'action' => $this->_member_path('do_member_search')
-								)
-							);
 
 		$template = str_replace(LD."form_declaration".RD, $form_open, $template);
 		$form_open_member_search = ee()->functions->form_declaration(array(

@@ -1506,7 +1506,6 @@ class Wiki {
 			$pagination->build($results->row('count'), $parameters['limit']);
 			$pagination_sql = " LIMIT {$pagination->offset}, {$parameters['limit']}";
 		}
-
 		else
 		{
 			$pagination_sql = " LIMIT ".$parameters['limit'];
@@ -1576,10 +1575,6 @@ class Wiki {
 
 			$temp = ee()->TMPL->parse_date_variables($temp, array('revision_date' => $row['revision_date']));
 			$temp = ee()->TMPL->parse_date_variables($temp, array('gmt_revision_date' => $row['revision_date']), FALSE);
-						FALSE
-					);
-				}
-			}
 
 			// Deprecate old usage of switch
 			// @deprecated 2.8
@@ -1603,47 +1598,6 @@ class Wiki {
 		/**  Pagination
 		/** ----------------------------------------*/
 
-		if ($this->paginate === TRUE)
-		{
-			$this->paginate_data = str_replace(LD.'current_page'.RD, $this->current_page, $this->paginate_data);
-			$this->paginate_data = str_replace(LD.'total_pages'.RD,	$this->total_pages, $this->paginate_data);
-			$this->paginate_data = str_replace(LD.'pagination_links'.RD, $this->pagination_links, $this->paginate_data);
-
-			if (preg_match("/".LD."if previous_page".RD."(.+?)".LD.'\/'."if".RD."/s", $this->paginate_data, $matches))
-			{
-				if ($this->page_previous == '')
-				{
-					 $this->paginate_data = preg_replace("/".LD."if previous_page".RD.".+?".LD.'\/'."if".RD."/s", '', $this->paginate_data);
-				}
-				else
-				{
-					$matches['1'] = preg_replace("/".LD.'path.*?'.RD."/", 	$this->page_previous, $matches['1']);
-					$matches['1'] = preg_replace("/".LD.'auto_path'.RD."/",	$this->page_previous, $matches['1']);
-
-					$this->paginate_data = str_replace($matches['0'], $matches['1'], $this->paginate_data);
-				}
-				}
-
-
-			if (preg_match("/".LD."if next_page".RD."(.+?)".LD.'\/'."if".RD."/s", $this->paginate_data, $matches))
-			{
-				if ($this->page_next == '')
-				{
-					 $this->paginate_data = preg_replace("/".LD."if next_page".RD.".+?".LD.'\/'."if".RD."/s", '', $this->paginate_data);
-				}
-				else
-				{
-					$matches['1'] = preg_replace("/".LD.'path.*?'.RD."/", 	$this->page_next, $matches['1']);
-					$matches['1'] = preg_replace("/".LD.'auto_path'.RD."/",	$this->page_next, $matches['1']);
-
-					$this->paginate_data = str_replace($matches['0'], $matches['1'], $this->paginate_data);
-				}
-			}
-
-			switch ($parameters['paginate'])
-			{
-				case "top"	: $changes  = $this->paginate_data.$changes;
-					break;
 		$changes = $pagination->render($changes);
 		$this->return_data = str_replace($match['0'], $changes, $this->return_data);
 
@@ -4774,18 +4728,7 @@ class Wiki {
 			);
 
 			$temp = $this->prep_conditionals($temp, array_merge($data, $this->conditionals));
-
-			if (isset($upload_date))
-			{
-				foreach($upload_date as $key => $value)
-				{
-					$data[$key] = ee()->localize->format_date(
-						$value,
 			$temp = ee()->TMPL->parse_date_variables($temp, array('upload_date' => $row['upload_date']));
-						FALSE
-					);
-				}
-			}
 
 			// Deprecate old usage of switch
 			// @deprecated 2.8
