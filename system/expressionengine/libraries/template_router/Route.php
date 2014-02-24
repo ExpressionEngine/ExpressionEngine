@@ -33,7 +33,7 @@ class EE_Route {
 		(?P<variable>[^}:]*)  # variable name
 		(?:
 			\:                                # variable delimiter
-			(?P<rules>.*?)                    # rules
+			(?P<rules>.*?(regex\[.*\])?.*?)   # rules
 		)?
 		}
 	";
