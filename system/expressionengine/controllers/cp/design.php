@@ -3186,8 +3186,9 @@ class Design extends CP_Controller {
 		$errors = array();
 		$error_ids = array();
 		$updated_routes = array();
-
-		foreach ($this->template_model->fetch(array(), true) as $template)
+		$query = $this->template_model->get_templates();
+  
+		foreach ($query->result() as $template)
 		{
 			$error = FALSE;
 			$id = $template->template_id;
