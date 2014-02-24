@@ -1098,41 +1098,47 @@ class EE_Template {
 
 				if (substr_count($this->tag_data[$i]['tag'], LD.'exp') > 1 && isset($this->tag_data[$i]['params']['parse']) && $this->tag_data[$i]['params']['parse'] == 'inward')
 				{
-					foreach($this->tag_data[$i]['params'] as $name => $param)
+					// Process regular params AND search fields
+					foreach (array('params', 'search_fields') as $tag_data_key)
 					{
-						if (stristr($this->tag_data[$i]['params'][$name], LD.'exp'))
+						foreach($this->tag_data[$i][$tag_data_key] as $name => $param)
 						{
-							$this->log_item("Plugin in Parameter, Processing Plugin First");
-
-							$TMPL2 = clone $this;
-
-							while (is_int(strpos($TMPL2->tag_data[$i]['params'][$name], LD.'exp:')))
+							// Find param values with {exp, but skip "search:" keys in params array
+							if (stristr($this->tag_data[$i][$tag_data_key][$name], LD.'exp') &&
+								! stristr($name, 'search:'))
 							{
-								unset(ee()->TMPL);
-								ee()->TMPL = new EE_Template();
-								ee()->TMPL->start_microtime = $this->start_microtime;
-								ee()->TMPL->template = $TMPL2->tag_data[$i]['params'][$name];
-								ee()->TMPL->tag_data	= array();
-								ee()->TMPL->var_single = array();
-								ee()->TMPL->var_cond	= array();
-								ee()->TMPL->var_pair	= array();
-								ee()->TMPL->plugins = $TMPL2->plugins;
-								ee()->TMPL->modules = $TMPL2->modules;
-								ee()->TMPL->parse_tags();
-								ee()->TMPL->process_tags();
-								ee()->TMPL->loop_count = 0;
-								$TMPL2->tag_data[$i]['params'][$name] = ee()->TMPL->template;
-								$TMPL2->log = array_merge($TMPL2->log, ee()->TMPL->log);
+								$this->log_item("Plugin in Parameter, Processing Plugin First");
+
+								$TMPL2 = clone $this;
+
+								while (is_int(strpos($TMPL2->tag_data[$i][$tag_data_key][$name], LD.'exp:')))
+								{
+									unset(ee()->TMPL);
+									ee()->TMPL = new EE_Template();
+									ee()->TMPL->start_microtime = $this->start_microtime;
+									ee()->TMPL->template = $TMPL2->tag_data[$i][$tag_data_key][$name];
+									ee()->TMPL->tag_data	= array();
+									ee()->TMPL->var_single = array();
+									ee()->TMPL->var_cond	= array();
+									ee()->TMPL->var_pair	= array();
+									ee()->TMPL->plugins = $TMPL2->plugins;
+									ee()->TMPL->modules = $TMPL2->modules;
+									ee()->TMPL->parse_tags();
+									ee()->TMPL->process_tags();
+									ee()->TMPL->loop_count = 0;
+									$TMPL2->tag_data[$i][$tag_data_key][$name] = ee()->TMPL->template;
+									$TMPL2->log = array_merge($TMPL2->log, ee()->TMPL->log);
+								}
+
+								foreach (get_object_vars($TMPL2) as $key => $value)
+								{
+									$this->$key = $value;
+								}
+
+								unset($TMPL2);
+
+								ee()->TMPL = $this;
 							}
-
-							foreach (get_object_vars($TMPL2) as $key => $value)
-							{
-								$this->$key = $value;
-							}
-
-							unset($TMPL2);
-
-							ee()->TMPL = $this;
 						}
 					}
 				}
