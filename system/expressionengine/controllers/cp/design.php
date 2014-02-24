@@ -65,16 +65,10 @@ class Design extends CP_Controller {
 		if ($this->cp->allowed_group('can_admin_templates'))
 		{
 			$this->sub_breadcrumbs = array_merge($this->sub_breadcrumbs, array(
-<<<<<<< HEAD
 				'global_variables'	=> cp_url('design/global_variables'),
 				'snippets'			=> cp_url('design/snippets'),
 				'sync_templates'	=> cp_url('design/sync_templates'),
 				'url_manager'		=> cp_url('design/url_manager'),
-=======
-				'global_variables'				=> BASE.AMP.'C=design'.AMP.'M=global_variables',
-				'snippets'						=> BASE.AMP.'C=design'.AMP.'M=snippets',
-				'sync_templates'				=> BASE.AMP.'C=design'.AMP.'M=sync_templates',
->>>>>>> 876ae5fc7c7699c5b03a20541e833c941abafe92
 			));
 
 			if ($this->config->item('enable_template_routes') == 'y')
@@ -3200,7 +3194,7 @@ class Design extends CP_Controller {
 		$error_ids = array();
 		$updated_routes = array();
 		$query = $this->template_model->get_templates();
-  
+
 		foreach ($query->result() as $template)
 		{
 			$error = FALSE;
@@ -3305,21 +3299,16 @@ class Design extends CP_Controller {
 
 		$vars = array();
 		$this->view->cp_page_title = lang('url_manager');
-<<<<<<< HEAD
 		$this->cp->set_breadcrumb(cp_url('design/manager'), lang('template_manager'));
-		$this->load->model('design_model');
-=======
-		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager', lang('template_manager'));
->>>>>>> 876ae5fc7c7699c5b03a20541e833c941abafe92
 		$this->load->library('table');
 
 		$vars['input'] = $input;
 		$vars['error_ids'] = $error_ids;
 		$vars['errors'] = $error_messages;
-        $vars['options'] = array(
-        	'n' => lang('no'),
-        	'y' => lang('yes')
-        );
+		$vars['options'] = array(
+			'n' => lang('no'),
+			'y' => lang('yes')
+		);
 
 		$this->db->select(array('t.template_name', 'tg.group_name', 't.template_id', 'tr.route', 'tr.route_parsed', 'tr.route_required'));
 		$this->db->from('templates AS t');
