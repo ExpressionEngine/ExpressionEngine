@@ -373,7 +373,7 @@ class Content_files extends CP_Controller {
 					$is_image = $this->filemanager->is_editable_image($file_path, $file['mime_type']);
 
 					$r['file_name'] = anchor(
-						$file_location,
+						$file_location.'?v='.$file['modified_date'], // Cache-bust
 						$file['file_name'],
 						array(
 							'class'	=> 'less_important_link overlay',

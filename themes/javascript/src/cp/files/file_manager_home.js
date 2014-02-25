@@ -66,10 +66,11 @@ $.ee_filemanager.file_uploader = function() {
 			};
 
 			if (file.is_image) {
+				var date = new Date(); // Cache-bust
 				// Build link
 				var $link = $('<a>', {
 					'id': 		'',
-					'href': 	file.upload_directory_prefs.url + file.file_name,
+					'href': 	file.upload_directory_prefs.url + file.file_name + '?v=' + date.getTime(),
 					'title': 	file.file_name,
 					'text': 	file.title,
 					'rel': 		'#overlay',
