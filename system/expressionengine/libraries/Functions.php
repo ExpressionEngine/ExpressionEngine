@@ -127,7 +127,11 @@ class EE_Functions {
 			ee()->load->library('template_router');
 			$route = ee()->template_router->fetch_route($group, $template);
 
-			if( ! empty($route))
+			if (empty($route))
+			{
+				return "{route=$segment}";
+			}
+			else
 			{
 				$options = array();
 
