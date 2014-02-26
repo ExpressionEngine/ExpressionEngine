@@ -3918,7 +3918,11 @@ class Design extends CP_Controller {
 
 		ee()->output->enable_profiler(FALSE);
 		ee()->load->helper('array_helper');
-		ee()->load->library('template_router');
+
+		if ( ! IS_CORE)
+		{
+			ee()->load->library('template_router');
+		}
 
 		$payload = ee()->input->post('payload');
 
