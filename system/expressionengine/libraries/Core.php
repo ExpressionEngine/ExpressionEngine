@@ -168,6 +168,11 @@ class EE_Core {
 			ee()->config->set_item('index_page', ee()->config->item('site_index'));
 		}
 
+		if (IS_CORE)
+		{
+			ee()->config->set_item('enable_template_routes', 'n');
+		}
+
 		// Backwards compatibility for the removed secure forms setting.
 		// Developers are still checking against this key, so we'll wait some
 		// time before removing it.
