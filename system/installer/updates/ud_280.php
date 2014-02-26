@@ -546,21 +546,21 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		// Replace SINGLE {paginate} variable with {pagination_links}
 		ee()->logger->deprecate_template_tag(
 			'Replaced {exp:search:search_results} pagination loop\'s {paginate} single variable with {pagination_links}.',
-			"/({exp:search:search_results.*?){paginate}(((?!{\/paginate}).)*{\/exp:search:search_results})/uis",
+			"/({exp:search:search_results.*?)(?!{paginate}.*?{\/paginate}.*?{\/exp:search:search_results}){paginate}(.*?{\/exp:search:search_results})/is",
 			"$1{pagination_links}$2"
 		);
 
 		// Replace {page_count} with "Page {current_page} of {total_pages}"
 		ee()->logger->deprecate_template_tag(
 			'Replaced {exp:search:search_results} pagination loop\'s {page_count} with "Page {current_page} of {total_pages}".',
-			"/({exp:search:search_results(\s.*?)?}(.*?)){page_count}((.*?){\/exp:search:search_results})/uis",
+			"/({exp:search:search_results(\s.*?)?}(.*?)){page_count}((.*?){\/exp:search:search_results})/is",
 			"$1Page {current_page} of {total_pages}$4"
 		);
 
 		// Replace {if paginate}...{/if} with {paginate}...{/paginate}
 		ee()->logger->deprecate_template_tag(
 			'Replaced {exp:search:search_results} pagination loop\'s {if paginate} with {paginate}...{/paginate}. Switch to the new Channel style pagination.',
-			"/({exp:search:search_results(\s.*?)?}(.*?)){if paginate}(.*){\/if}((.*?){\/exp:search:search_results})/uis",
+			"/({exp:search:search_results(\s.*?)?}(.*?)){if paginate}(.*){\/if}((.*?){\/exp:search:search_results})/is",
 			"$1{paginate}$4{/paginate}$5"
 		);
 	}
@@ -578,20 +578,20 @@ If you do not wish to reset your password, ignore this message. It will expire i
 
 		ee()->logger->deprecate_specialty_template_tag(
 			'Replaced subscription pagination template\'s {pagination} with {paginate}{pagination_links}{/paginate}. Switch to the new Channel style pagination.',
-			"/{pagination}/uis",
+			"/{pagination}/is",
 			"{paginate}{pagination_links}{/paginate}",
 			'subscription_pagination.html'
 		);
 
 		ee()->logger->deprecate_specialty_template_tag(
 			'Replaced specialty templates\' {if paginate} and {if pagination} with {paginate}...{/paginate}. Switch to the new Channel style pagination.',
-			"/{if (?:paginate|pagination)}(.*?){\/if}/uis",
+			"/{if (?:paginate|pagination)}(.*?){\/if}/is",
 			"{paginate}$1{/paginate}"
 		);
 
 		ee()->logger->deprecate_specialty_template_tag(
 			'Replaced specialty template\'s {pagination} and {include:pagination_links} with {pagination_links}. Switch to the new Channel style pagination.',
-			"/{pagination}|{include:pagination_link}/uis",
+			"/{pagination}|{include:pagination_link}/is",
 			"{pagination_links}"
 		);
 	}
