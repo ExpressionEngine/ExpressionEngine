@@ -661,7 +661,7 @@ EE.cp.zebra_tables = function(table) {
 EE.cp.broadcastEvents = (function() {
 
 	// Define our time limits:
-	var TICK_TIME          = 5 * 1000,			// Check state every 5 seconds
+	var TICK_TIME          = 1 * 1000,			// Check state every second
 		FOCUSED_IDLE_LIMIT = 30 * 60 * 1000,	// 30 minutes: time before modal if window focused
 		BLURRED_IDLE_LIMIT = 45 * 60 * 1000,    // 45 minutes: time before modal if no focus
 		REFRESH_TIME_LIMIT = 50 * 60 * 1000;	// 50 minutes: refresh if active or remember me
@@ -906,7 +906,7 @@ EE.cp.broadcastEvents = (function() {
 			var interaction = 'DOMMouseScroll keydown mousedown mousemove mousewheel touchmove touchstart';
 			$(document).on(
 				interaction.split(' ').join('.idleState '),     // namespace the events
-				_.throttle(_.partial(track, 'interact'), 2000)  // throttle event firing
+				_.throttle(_.partial(track, 'interact'), 500)  // throttle event firing
 			);
 
 			// Clicking the logout button fires "modal" on all the others

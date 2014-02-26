@@ -88,7 +88,7 @@ class EE_Template {
 
 	protected $_tag_cache_prefix	= 'tag_cache';	// Tag cache key namespace
 	protected $_page_cache_prefix	= 'page_cache'; // Page cache key namespace
-	var $disable_caching	= FALSE;
+	var $disable_caching			= FALSE;
 
 	var $debugging			= FALSE;		// Template parser debugging on?
 	var $cease_processing	= FALSE;		// Used with no_results() method.
@@ -827,12 +827,13 @@ class EE_Template {
 			$layout = $this->_find_layout();
 			$full_subtemplate = $this->process_layout_template($this->template, $layout);
 
-			$parent_template = str_replace($matches[0][$key], $full_subtemplate, $parent_template);
-
 			$this->embed_type = '';
 
-			// Here we go again!  Wheeeeeee.....
-			$parent_template = $this->process_sub_templates($parent_template);
+			// Nesnestedted embeds. Here we go again!  Wheeeeeee.....
+			$full_subtemplate = $this->process_sub_templates($full_subtemplate);
+
+			// Insert it back into the parent template
+			$parent_template = str_replace($matches[0][$key], $full_subtemplate, $parent_template);
 
 			// pull the subtemplate tracker back a level to the parent template
 			$this->templates_sofar = substr($this->templates_sofar, 0, - strlen('|'.$site_id.':'.$template_group.'/'.$template_name.'|'));
