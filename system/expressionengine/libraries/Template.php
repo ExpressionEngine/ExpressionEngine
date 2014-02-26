@@ -4145,15 +4145,14 @@ class EE_Template {
 			strpos($str, 'timezone=') !== FALSE ||
 			strpos($str, ':relative') !== FALSE)
 		{
-			if ($standard = preg_match_all("/".LD."([\w\-]+)\s+(format|timezone)=[\"'](.*?)[\"']".RD."/", $str, $matches, PREG_SET_ORDER))
+			if ($relative = preg_match_all("/".LD."([\w\-]+):relative(.*?)".RD."/", $str, $matches, PREG_SET_ORDER))
 			{
 				foreach ($matches as $match)
 				{
 					$this->date_vars[] = $match[1];
 				}
 			}
-
-			if ($relative = preg_match_all("/".LD."([\w\-]+):relative(.*?)".RD."/", $str, $matches, PREG_SET_ORDER))
+			elseif ($standard = preg_match_all("/".LD."([\w:\-]+)\s+(format|timezone)=[\"'](.*?)[\"']".RD."/", $str, $matches, PREG_SET_ORDER))
 			{
 				foreach ($matches as $match)
 				{
@@ -4168,6 +4167,7 @@ class EE_Template {
 				$this->date_vars = FALSE;
 			}
 		}
+		var_dump($this->date_vars);
 	}
 
 	// --------------------------------------------------------------------
