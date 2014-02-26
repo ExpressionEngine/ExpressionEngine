@@ -152,7 +152,7 @@ class Wizard extends CI_Controller {
 	{
 		parent::__construct();
 
-		define('IS_CORE', FALSE);
+		define('IS_CORE', TRUE);
 
 		// Third party constants
 		if ($this->config->item('third_party_path'))
