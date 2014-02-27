@@ -579,7 +579,7 @@ class EE_Messages {
 
 		if (isset($_POST['folder_new']) && $_POST['folder_new'] != '' && isset($empty))
 		{
-			$data[$empty] = ee()->input->post('folder_'.$i, TRUE);
+			$data[$empty] = ee()->input->post('folder_new', TRUE);
 		}
 
 		ee()->db->query(ee()->db->update_string('exp_message_folders', $data, "member_id = '{$this->member_id}'"));
