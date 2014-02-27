@@ -1,8 +1,8 @@
 <div id="member">
-	
+
 	<!-- Utilized member conditionals: http://ellislab.com/expressionengine/user-guide/templates/globals/conditionals.html-->
             <h4>Hello{if logged_in} {screen_name}{/if}!</h4>
-            {if is_freelancer == FALSE}
+            {if is_core == FALSE}
 			<ul>
 				{if logged_in}
                 <li><a href="{path='member/profile'}">Your Home</a></li>
