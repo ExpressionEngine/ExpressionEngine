@@ -569,7 +569,7 @@ class EE_Messages {
 			}
 			else
 			{
-				$data['folder'.$i.'_name'] = ee()->functions->encode_ee_tags(ee()->input->post('folder_'.$i, TRUE), TRUE);
+				$data['folder'.$i.'_name'] = ee()->input->post('folder_'.$i, TRUE);
 			}
 		}
 
@@ -579,7 +579,7 @@ class EE_Messages {
 
 		if (isset($_POST['folder_new']) && $_POST['folder_new'] != '' && isset($empty))
 		{
-			$data[$empty] = ee()->functions->encode_ee_tags(ee()->input->post('folder_'.$i, TRUE), TRUE);
+			$data[$empty] = ee()->input->post('folder_'.$i, TRUE);
 		}
 
 		ee()->db->query(ee()->db->update_string('exp_message_folders', $data, "member_id = '{$this->member_id}'"));
@@ -2433,7 +2433,6 @@ DOH;
 		$data['subject'] = ee()->functions->encode_ee_tags($data['subject'], TRUE);
 		$data['body'] = ee()->functions->encode_ee_tags($data['body'], TRUE);
 
-
 		/** ----------------------------------------
 		/**  Preview, Reply, Forward or New Entry?
 		/** ----------------------------------------*/
@@ -3445,7 +3444,7 @@ DOH;
 						'bulletin_date'		=> $begins,
 						'hash'				=> ee()->functions->random('alnum', 10),
 						'bulletin_expires'	=> $expires,
-						'bulletin_message'	=> ee()->functions->encode_ee_tags(ee()->input->post('bulletin_message', TRUE), TRUE)
+						'bulletin_message'	=> ee()->input->post('bulletin_message', TRUE)
 					 );
 
 		foreach($groups as $group_id)

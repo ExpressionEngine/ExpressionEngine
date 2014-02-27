@@ -1084,13 +1084,13 @@ class Member_settings extends Member {
 
 		foreach ($fields as $val)
 		{
-			$data[$val] = (isset($_POST[$val])) ? ee()->functions->encode_ee_tags(ee()->security->xss_clean($_POST[$val]), TRUE) : '';
+			$data[$val] = (isset($_POST[$val])) ? ee()->security->xss_clean($_POST[$val]) : '';
 			unset($_POST[$val]);
 		}
 
 		ee()->load->helper('url');
 		$data['url'] = preg_replace('/[\'"]/is', '', $data['url']);
-		$data['url'] = ee()->functions->encode_ee_tags(prep_url($data['url']), TRUE);
+		$data['url'] = prep_url($data['url']);
 
 		if (is_numeric($data['bday_d']) AND is_numeric($data['bday_m']))
 		{
@@ -1123,7 +1123,7 @@ class Member_settings extends Member {
 			{
 				if (strncmp($key, 'm_field_id_', 11) == 0)
 				{
-					$m_data[$key] = ee()->functions->encode_ee_tags(ee()->security->xss_clean($val), TRUE);
+					$m_data[$key] = ee()->security->xss_clean($val);
 				}
 			}
 
@@ -2058,7 +2058,7 @@ UNGA;
 					array('action' => $this->_member_path('update_notepad'))
 				),
 				'path:update_notepad'	=> $this->_member_path('update_notepad'),
-				'notepad_data'			=> $query->row('notepad') ,
+				'notepad_data'			=> $this->_form_prep_encoded($query->row('notepad')),
 				'notepad_size'			=> $query->row('notepad_size')
 			)
 		);
@@ -2079,7 +2079,7 @@ UNGA;
 
 		$notepad_size = ( ! is_numeric($_POST['notepad_size'])) ? 18 : $_POST['notepad_size'];
 
-		ee()->db->query("UPDATE exp_members SET notepad = '".ee()->db->escape_str(ee()->functions->encode_ee_tags(ee()->security->xss_clean($_POST['notepad']), TRUE))."', notepad_size = '".$notepad_size."' WHERE member_id ='".ee()->session->userdata('member_id')."'");
+		ee()->db->query("UPDATE exp_members SET notepad = '".ee()->db->escape_str(ee()->security->xss_clean($_POST['notepad']))."', notepad_size = '".$notepad_size."' WHERE member_id ='".ee()->session->userdata('member_id')."'");
 
 		/** -------------------------------------
 		/**  Success message

@@ -90,7 +90,7 @@ class Member_images extends Member {
 				'path:signature_image'		=> ee()->config->slash_item('sig_img_url').$query->row('sig_img_filename'),
 				'signature_image_width'		=> $query->row('sig_img_width'),
 				'signature_image_height'	=> $query->row('sig_img_height'),
-				'signature'					=> ee()->functions->encode_ee_tags($query->row('signature')),
+				'signature'					=> ee()->functions->encode_ee_tags($query->row('signature'), TRUE),
 				'lang:max_image_size'		=> $max_size,
 				'maxchars'					=> (ee()->config->item('sig_maxlength') == 0) ? 10000 : ee()->config->item('sig_maxlength'),
 				'include:html_formatting_buttons' => $buttons,
@@ -120,7 +120,7 @@ class Member_images extends Member {
 			return ee()->output->show_user_error('submission', str_replace('%x', $maxlength, lang('sig_too_big')));
 		}
 
-		ee()->db->query("UPDATE exp_members SET signature = '".ee()->functions->encode_ee_tags(ee()->input->post('body', TRUE), TRUE)."' WHERE member_id ='".ee()->session->userdata('member_id')."'");
+		ee()->db->query("UPDATE exp_members SET signature = '".ee()->input->post('body', TRUE)."' WHERE member_id ='".ee()->session->userdata('member_id')."'");
 
 		// Is there an image to upload or remove?
 		if ((isset($_FILES['userfile']) AND
