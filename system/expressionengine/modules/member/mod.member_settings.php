@@ -1077,13 +1077,13 @@ class Member_settings extends Member {
 
 		foreach ($fields as $val)
 		{
-			$data[$val] = (isset($_POST[$val])) ? ee()->security->xss_clean($_POST[$val]) : '';
+			$data[$val] = (isset($_POST[$val])) ? ee()->functions->encode_ee_tags(ee()->security->xss_clean($_POST[$val]), TRUE) : '';
 			unset($_POST[$val]);
 		}
 
 		ee()->load->helper('url');
 		$data['url'] = preg_replace('/[\'"]/is', '', $data['url']);
-		$data['url'] = prep_url($data['url']);
+		$data['url'] = ee()->functions->encode_ee_tags(prep_url($data['url']), TRUE);
 
 		if (is_numeric($data['bday_d']) AND is_numeric($data['bday_m']))
 		{
@@ -1116,7 +1116,7 @@ class Member_settings extends Member {
 			{
 				if (strncmp($key, 'm_field_id_', 11) == 0)
 				{
-					$m_data[$key] = ee()->security->xss_clean($val);
+					$m_data[$key] = ee()->functions->encode_ee_tags(ee()->security->xss_clean($val), TRUE);
 				}
 			}
 
@@ -1135,9 +1135,9 @@ class Member_settings extends Member {
 			if (ee()->db->table_exists('comments'))
 			{
 				$d = array(
-						'location'	=> $data['location'],
-						'url'		=> $data['url']
-					);
+					'location'	=> $data['location'],
+					'url'		=> $data['url']
+				);
 
 				ee()->db->where('author_id', ee()->session->userdata('member_id'));
 				ee()->db->update('comments', $d);
@@ -1149,11 +1149,11 @@ class Member_settings extends Member {
 		/** -------------------------------------*/
 
 		return $this->_var_swap($this->_load_element('success'),
-								array(
-										'lang:heading'	=>	ee()->lang->line('profile_updated'),
-										'lang:message'	=>	ee()->lang->line('mbr_profile_has_been_updated')
-									 )
-								);
+			array(
+				'lang:heading' => ee()->lang->line('profile_updated'),
+				'lang:message' => ee()->lang->line('mbr_profile_has_been_updated')
+			)
+		);
 	}
 
 
