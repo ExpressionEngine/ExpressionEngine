@@ -750,7 +750,8 @@ class Member_memberlist extends Member {
 				/**  Manual replacements
 				/** ----------------------------------------*/
 
-				$temp = str_replace(LD.'name'.RD, ($row['screen_name'] != '') ? $row['screen_name'] : $row['username'], $temp);
+				$name_replacement = ($row['screen_name'] != '') ? $row['screen_name'] : $row['username'];
+				$temp = $this->_var_swap_single('name', $name_replacement, $temp);
 
 				/** ----------------------------------------
 				/**  1:1 variables
