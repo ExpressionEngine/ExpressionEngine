@@ -919,7 +919,7 @@ class Member_settings extends Member {
 				{
 					$rows = ( ! isset($row['m_field_ta_rows'])) ? '10' : $row['m_field_ta_rows'];
 
-					$tarea = "<textarea name='".'m_field_id_'.$row['m_field_id']."' id='".'m_field_id_'.$row['m_field_id']."' style='width:".$width.";' class='textarea' cols='90' rows='{$rows}'>".form_prep($field_data)."</textarea>";
+					$tarea = "<textarea name='".'m_field_id_'.$row['m_field_id']."' id='".'m_field_id_'.$row['m_field_id']."' style='width:".$width.";' class='textarea' cols='90' rows='{$rows}'>".$this->_form_prep_encoded($field_data)."</textarea>";
 
 					$temp = str_replace('<td ', "<td valign='top' ", $temp);
 					$temp = str_replace('{lang:profile_field}', $required.$row['m_field_label'], $temp);
@@ -932,7 +932,7 @@ class Member_settings extends Member {
 					/**  Render text fields
 					/** ----------------------------------------*/
 
-					$input = "<input type='text' name='".'m_field_id_'.$row['m_field_id']."' id='".'m_field_id_'.$row['m_field_id']."' style='width:".$width.";' value='".form_prep($field_data)."' maxlength='".$row['m_field_maxl']."' class='input' />";
+					$input = "<input type='text' name='".'m_field_id_'.$row['m_field_id']."' id='".'m_field_id_'.$row['m_field_id']."' style='width:".$width.";' value='".$this->_form_prep_encoded($field_data)."' maxlength='".$row['m_field_maxl']."' class='input' />";
 
 					$temp = str_replace('{lang:profile_field}', $required.$row['m_field_label'], $temp);
 					$temp = str_replace('{lang:profile_field_description}', $row['m_field_description'], $temp);
