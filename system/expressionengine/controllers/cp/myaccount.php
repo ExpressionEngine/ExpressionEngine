@@ -517,10 +517,11 @@ class MyAccount extends CP_Controller {
 		// what's this users current email?
 		$query = $this->member_model->get_member_data($this->id, array('email'));
 		$current_email = $query->row('email');
-
+		$email = ee()->functions->ee_encode_tags($this->input->post('email', TRUE), TRUE);
+		
 		$this->VAL = $this->_validate_user(array(
-			'require_cpw'	=> ($current_email != $this->input->post('email')) ? TRUE : FALSE,
-			'email'			=> $this->input->post('email'),
+			'require_cpw'	=> ($current_email != $email) ? TRUE : FALSE,
+			'email'			=> $email,
 			'cur_email'		=> $current_email,
 			'cur_password'	=> $this->input->post('current_password')
 		));
@@ -532,9 +533,10 @@ class MyAccount extends CP_Controller {
 			show_error($this->VAL->show_errors());
 		}
 
+
 		// Assign the query data
 		$data = array(
-			'email'				 	=> $this->input->post('email'),
+			'email'				 	=> $email,
 			'accept_admin_email' 	=> (isset($_POST['accept_admin_email'])) ? 'y' : 'n',
 			'accept_user_email'	 	=> (isset($_POST['accept_user_email']))  ? 'y' : 'n',
 			'notify_by_default'	 	=> (isset($_POST['notify_by_default']))  ? 'y' : 'n',
@@ -549,10 +551,10 @@ class MyAccount extends CP_Controller {
 		if (isset($this->cp->installed_modules['comment']))
 		{
 			//	Update comments and log email change
-			if ($current_email != $_POST['email'])
+			if ($current_email != $email)
 			{
 				$this->db->where('author_id', $this->id);
-				$this->db->update('comments', array('email' => $this->input->post('email')));
+				$this->db->update('comments', array('email' => $email));
 
 				$this->logger->log_action($this->VAL->log_msg);
 			}
