@@ -3,9 +3,9 @@
 	<title>{site_name}: Contact Us</title>
 {global_stylesheets}
 
-{rss} 
+{rss}
 {favicon}
-{html_head_end}	
+{html_head_end}
 	<body>
 {nav_access}
 	{branding_begin}
@@ -14,10 +14,10 @@
 			{global_top_member}
 	{branding_end}
 	{wrapper_begin}
-{embed="global_embeds/.page_header" header="Contact Us"}	
+{embed="global_embeds/.page_header" header="Contact Us"}
     <div id="feature" class="contact">
 		<h3 class="getintouch">Get in Touch</h3>
-		 
+
 
 <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat .</p>
 </div> <!-- ending #feature -->
@@ -26,30 +26,9 @@
 
 	<div id="content_pri" class="contact"> <!-- This is where all primary content, left column gets entered -->
 
-			<!-- This uses the Email Module's Contact Form: http://ellislab.com/expressionengine/user-guide/modules/email/contact_form.html -->
-			{exp:email:contact_form user_recipients="false" recipients="admin@example.com" charset="utf-8"}
-			<fieldset id="contact_fields">
-			<label for="from">
-				<span>Your Email:</span>
-				<input type="text" id="from" name="from" value="{member_email}" />
-			</label>
+			<!-- The licensed version could make use of the Email Module's Contact Form: http://ellislab.com/expressionengine/user-guide/modules/email/contact_form.html -->
 
-			<label for="subject">
-				<span>Subject:</span>
-				<input type="text" id="subject" name="subject" size="40" value="Contact Form" />
-			</label>
-
-			<label for="message">
-				<span>Message:</span>
-				<textarea id="message" name="message" rows="18" cols="40">Email from: {member_name}, Sent at: {current_time format="%Y %m %d"}</textarea>
-			</label>
-			</fieldset>
-
-			<fieldset id="contact_action">
-				<p>We will never pass on your details to third parties.</p>
-				<input name="submit" type='submit' value='Submit' id='contactSubmit' />
-			</fieldset>
-			{/exp:email:contact_form}
+			<p>We'd love to hear from you. You can {encode='{webmaster_email}' title="email us"} or contact us at the address on your right.</p>
 	</div>
 
 	<div id="content_sec" class="contact">
@@ -64,7 +43,7 @@
 	<p><img src="{site_url}themes/site_themes/agile_records/images/uploads/map2.jpg" alt="" /></p>
 
 	</div>	<!-- ending #content_sec -->
-	
+
 {global_footer}
 {wrapper_close}
 {js}
