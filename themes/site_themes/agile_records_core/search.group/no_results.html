@@ -1,0 +1,53 @@
+{!-- Explanations and learning materials can be found in news/index and the other news template groups.  In-line comments here are only for features not introduced in news/index. --}
+{html_head}
+	<title>{site_name}: No Search Results</title>
+{global_stylesheets}
+{rss} 
+{favicon}
+{html_head_end}	
+	<body>
+{nav_access}
+	{branding_begin}
+			{embed="global_embeds/.top_nav" loc="not_found"}
+			{global_top_search}
+			{global_top_member}
+	{branding_end}
+	{wrapper_begin}
+{embed="global_embeds/.page_header" header="Search Results"}	
+	
+
+	<div id="content_pri"> <!-- This is where all primary content, left column gets entered -->
+		
+		<!-- No search results: http://ellislab.com/expressionengine/user-guide/modules/search/simple.html#par_no_result_page -->
+		<!-- This is delivered based on the no_result_page parameter of the search form  -->
+		
+				<h3>Search Results</h3>
+				
+				<!-- exp:search:keywords: http://ellislab.com/expressionengine/user-guide/modules/search/keywords.html -->
+				<!-- exp:search:keywords lets you echo out what search term was used -->
+					<p>Sorry, no results were found for "<strong>{exp:search:keywords}</strong>".  Please try again.</p>
+	</div>
+
+	<div id="content_sec" class="right green40">
+		<h3 class="oldernews">Browse Older News</h3>
+		<div id="news_archives">
+			<div id="categories_box">
+			{news_categories}
+			</div>
+			<div id="month_box">
+			{news_month_archives}
+			</div>
+		</div> <!-- ending #news_archives -->
+
+		{news_calendar}
+
+		{news_popular}
+
+	{rss_links}
+
+	</div>	<!-- ending #content_sec -->
+
+{global_footer}
+{wrapper_close}
+{js}
+{html_close}

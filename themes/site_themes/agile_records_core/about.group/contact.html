@@ -1,0 +1,71 @@
+{!-- Explanations and learning materials can be found in news/index and the other news template groups.  In-line comments here are only for features not introduced in news/index. --}
+{html_head}
+	<title>{site_name}: Contact Us</title>
+{global_stylesheets}
+
+{rss} 
+{favicon}
+{html_head_end}	
+	<body>
+{nav_access}
+	{branding_begin}
+			{embed="global_embeds/.top_nav" loc="contact"}
+			{global_top_search}
+			{global_top_member}
+	{branding_end}
+	{wrapper_begin}
+{embed="global_embeds/.page_header" header="Contact Us"}	
+    <div id="feature" class="contact">
+		<h3 class="getintouch">Get in Touch</h3>
+		 
+
+<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat .</p>
+</div> <!-- ending #feature -->
+
+	<div class="feature_end"></div>
+
+	<div id="content_pri" class="contact"> <!-- This is where all primary content, left column gets entered -->
+
+			<!-- This uses the Email Module's Contact Form: http://ellislab.com/expressionengine/user-guide/modules/email/contact_form.html -->
+			{exp:email:contact_form user_recipients="false" recipients="admin@example.com" charset="utf-8"}
+			<fieldset id="contact_fields">
+			<label for="from">
+				<span>Your Email:</span>
+				<input type="text" id="from" name="from" value="{member_email}" />
+			</label>
+
+			<label for="subject">
+				<span>Subject:</span>
+				<input type="text" id="subject" name="subject" size="40" value="Contact Form" />
+			</label>
+
+			<label for="message">
+				<span>Message:</span>
+				<textarea id="message" name="message" rows="18" cols="40">Email from: {member_name}, Sent at: {current_time format="%Y %m %d"}</textarea>
+			</label>
+			</fieldset>
+
+			<fieldset id="contact_action">
+				<p>We will never pass on your details to third parties.</p>
+				<input name="submit" type='submit' value='Submit' id='contactSubmit' />
+			</fieldset>
+			{/exp:email:contact_form}
+	</div>
+
+	<div id="content_sec" class="contact">
+		<h3 class="address">Address</h3>
+		 <p>
+			12343 Valencia Street,<br />
+			Mission District,<br />
+			San Francisco,<br />
+			California,<br />
+			ZIP 123
+			 </p>
+	<p><img src="{site_url}themes/site_themes/agile_records/images/uploads/map2.jpg" alt="" /></p>
+
+	</div>	<!-- ending #content_sec -->
+	
+{global_footer}
+{wrapper_close}
+{js}
+{html_close}

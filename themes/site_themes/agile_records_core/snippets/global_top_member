@@ -1,0 +1,17 @@
+<div id="member">
+	
+	<!-- Utilized member conditionals: http://ellislab.com/expressionengine/user-guide/templates/globals/conditionals.html-->
+            <h4>Hello{if logged_in} {screen_name}{/if}!</h4>
+            {if is_freelancer == FALSE}
+			<ul>
+				{if logged_in}
+                <li><a href="{path='member/profile'}">Your Home</a></li>
+                <li><a href="{path=LOGOUT}">Log out</a></li>
+				{/if}
+				{if logged_out}
+				<li><a href="{path='member/register'}">Register</a></li>
+				<li><a href="{path='member/login'}">Log in</a></li>
+				{/if}
+            </ul>
+			{/if}
+        </div> <!-- ending #member -->
