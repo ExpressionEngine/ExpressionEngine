@@ -37,7 +37,7 @@ class Csrf {
 	public function __construct()
 	{
 		$session_id = ee()->session->userdata('session_id');
-		$backend = ($session_id == 0) ? 'cookie' : 'database';
+		$backend = ($session_id === 0) ? 'cookie' : 'database';
 
 		require_once APPPATH.'libraries/csrf/Storage_backend_interface.php';
 		require_once APPPATH.'libraries/csrf/'.ucfirst($backend).'.php';
