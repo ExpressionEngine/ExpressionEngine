@@ -107,6 +107,7 @@ class EE_Functions {
 	{
 		if (is_array($segment))
 		{
+			$tag = trim($segment[0], "{}");
 			$segment = $segment[1];
 		}
 
@@ -116,10 +117,10 @@ class EE_Functions {
 		}
 
 		$full_segment = $segment;
-		$parts = explode(' ', $segment);
+		$parts = $this->assign_parameters($tag);
 
-		$template = array_shift($parts);
-		$template = trim($template, '"\'');
+		$template = $parts['route'];
+		$template = trim($template, '"\' ');
 		list($group, $template) = explode('/', $template);
 
 		if ( ! empty($group) && ! empty($template) && ! IS_CORE)
@@ -133,14 +134,8 @@ class EE_Functions {
 			}
 			else
 			{
-				$options = array();
-
-				foreach($parts as $part) {
-					$part = explode('=', $part);
-					$options[$part[0]] = trim($part[1], '"\'');
-				}
-
-				$segment = $route->build($options);
+				unset($parts['route']);
+				$segment = $route->build($parts);
 			}
 		}
 
