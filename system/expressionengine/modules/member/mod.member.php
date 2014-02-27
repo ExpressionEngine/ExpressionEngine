@@ -2469,8 +2469,16 @@ class Member {
 	/**
 	 * Swap single variables with final value
 	 */
-	function _var_swap_single($search, $replace, $source)
+	function _var_swap_single($search, $replace, $source, $encode_ee_tags = TRUE)
 	{
+		if ($encode_ee_tags)
+		{
+			$replace = ee()->functions->encode_ee_tags($replace, TRUE);
+		}
+
+		var_dump($search, $replace);
+
+
 		return str_replace(LD.$search.RD, $replace, $source);
 	}
 
@@ -2912,7 +2920,7 @@ class Member {
 
 				if (isset($row[$val]))
 				{
-					$temp = ee()->TMPL->swap_var_single($pre.$val, $row[$val], $temp);
+					$temp = ee()->TMPL->swap_var_single($pre.$val, ee()->functions->encode_ee_tags($row[$val]), $temp);
 				}
 			}
 
