@@ -504,7 +504,7 @@ class EE_Messages {
 
 			$t++;
 			$this->single_parts['lang']['required']		= ($key < 3) ? ee()->lang->line('folder_required') : '';
-			$this->single_parts['input']['folder_name']	= $value['0'];
+			$this->single_parts['input']['folder_name']	= ee()->functions->encode_ee_tags(ee()->security->xss_clean($value['0']), TRUE);
 			$this->single_parts['input']['folder_id']	= $key;
 			$this->single_parts['style']				= ($t % 2) ? 'tableCellOne' : 'tableCellTwo';
 
@@ -2429,9 +2429,6 @@ DOH;
 			}
 		}
 
-		// Clean up subject and body
-		$data['subject'] = ee()->functions->encode_ee_tags($data['subject'], TRUE);
-		$data['body'] = ee()->functions->encode_ee_tags($data['body'], TRUE);
 
 		/** ----------------------------------------
 		/**  Preview, Reply, Forward or New Entry?
@@ -2441,6 +2438,10 @@ DOH;
 			if (ee()->input->post('daction') !== FALSE && (ee()->input->get_post('daction') == 'reply' OR ee()->input->get_post('daction') == 'reply_all' OR ee()->input->get_post('daction') == 'forward'))
 			{
 				$data = $this->_message_data($id, '', $this->member_id);
+
+				// Clean up subject and body
+				$data['subject'] = ee()->functions->encode_ee_tags($data['subject'], TRUE);
+				$data['body'] = ee()->functions->encode_ee_tags($data['body'], TRUE);
 
 				if (ee()->config->item('enable_censoring') == 'y' && ee()->config->item('censored_words') != '')
 				{
@@ -2512,6 +2513,10 @@ DOH;
 			{
 				$data = $this->_message_data($id, $this->member_id);
 
+				// Clean up subject and body
+				$data['subject'] = ee()->functions->encode_ee_tags($data['subject'], TRUE);
+				$data['body'] = ee()->functions->encode_ee_tags($data['body'], TRUE);
+
 				if (ee()->config->item('enable_censoring') == 'y' && ee()->config->item('censored_words') != '')
 				{
 					ee()->load->library('typography');
@@ -2548,8 +2553,8 @@ DOH;
 		}
 		else
 		{
-			$this->single_parts['input']['subject']			  = ( ! ee()->input->get_post('subject')) ? '' : 'sss'.ee()->input->get_post('subject');
-			$this->single_parts['input']['body']			  = ( ! ee()->input->get_post('body')) ? '' :  ee()->input->get_post('body');
+			$this->single_parts['input']['subject']			  = ( ! ee()->input->get_post('subject')) ? '' : ee()->input->get_post('subject', TRUE);
+			$this->single_parts['input']['body']			  = ( ! ee()->input->get_post('body')) ? '' : ee()->input->get_post('body', TRUE);
 			$this->single_parts['input']['cc']				  = '';
 			$this->single_parts['input']['recipients']		  = ( ! ee()->input->get_post('recipients')) ? '' : $this->convert_recipients(ee()->input->get_post('recipients'));
 			$this->single_parts['include']['preview_message'] = '';
