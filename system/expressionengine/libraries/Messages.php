@@ -235,11 +235,11 @@ class EE_Messages {
 		/** --------------------------
 		/**  Process any sent data
 		/** --------------------------*/
-
 		if (is_array($data) && count($data) > 0)
 		{
 			foreach($data as $key => $value)
 			{
+				$value = ee()->functions->encode_ee_tags($value, TRUE);
 				$template = str_replace(LD.$key.RD, $value, $template);
 			}
 		}
@@ -569,7 +569,7 @@ class EE_Messages {
 			}
 			else
 			{
-				$data['folder'.$i.'_name'] = ee()->security->xss_clean($_POST['folder_'.$i]);
+				$data['folder'.$i.'_name'] = ee()->functions->encode_ee_tags(ee()->input->post('folder_'.$i, TRUE), TRUE);
 			}
 		}
 
@@ -579,7 +579,7 @@ class EE_Messages {
 
 		if (isset($_POST['folder_new']) && $_POST['folder_new'] != '' && isset($empty))
 		{
-			$data[$empty] = ee()->security->xss_clean($_POST['folder_new']);
+			$data[$empty] = ee()->functions->encode_ee_tags(ee()->input->post('folder_'.$i, TRUE), TRUE);
 		}
 
 		ee()->db->query(ee()->db->update_string('exp_message_folders', $data, "member_id = '{$this->member_id}'"));
@@ -778,7 +778,6 @@ class EE_Messages {
 		$this->single_parts['include']['hide_menu_style'] = $hidden_style;
 		$this->single_parts['include']['hide_menu_link']  = $hidden_link;
 		$this->single_parts['include']['hide_menu_js']	  = $this->showhide_js();
-
 		$this->single_parts['include']['menu_items'] = '';
 
 		foreach($map as $item)
@@ -787,9 +786,8 @@ class EE_Messages {
 			{
 				foreach($this->menu_items['repeat_items'][$item] as $item_member)
 				{
-					$this->single_parts['title'] = $item_member['text'];
+					$this->single_parts['title'] = ee()->functions->encode_ee_tags($item_member['text'], TRUE);
 					$this->single_parts['link']  = $item_member['link'];
-
 					$this->single_parts['include']['menu_items'] .= $this->_process_template($rows);
 				}
 			}
@@ -797,7 +795,6 @@ class EE_Messages {
 			{
 				$this->single_parts['title'] = $this->menu_items['single_items'][$item]['text'];
 				$this->single_parts['link']  = $this->menu_items['single_items'][$item]['link'];
-
 				$this->single_parts['include']['menu_items'] .= $this->_process_template($rows);
 			}
 		}
@@ -947,6 +944,7 @@ class EE_Messages {
 			$data['message_date'] = ee()->localize->human_time($data['message_date']);
 			$data['style']		  = ($i % 2) ? 'tableCellTwo' : 'tableCellOne';
 			$data['message_subject']  = ($censor === FALSE) ? $data['message_subject'] : ee()->typography->filter_censored_words($data['message_subject']);
+			$data['message_subject'] = ee()->functions->encode_ee_tags($data['message_subject'], TRUE);
 
 			if ($this->allegiance == 'user')
 			{
@@ -2431,10 +2429,14 @@ DOH;
 			}
 		}
 
+		// Clean up subject and body
+		$data['subject'] = ee()->functions->encode_ee_tags($data['subject'], TRUE);
+		$data['body'] = ee()->functions->encode_ee_tags($data['body'], TRUE);
+
+
 		/** ----------------------------------------
 		/**  Preview, Reply, Forward or New Entry?
 		/** ----------------------------------------*/
-
 		if ($id != '' && is_numeric($id))
 		{
 			if (ee()->input->post('daction') !== FALSE && (ee()->input->get_post('daction') == 'reply' OR ee()->input->get_post('daction') == 'reply_all' OR ee()->input->get_post('daction') == 'forward'))
@@ -2827,6 +2829,9 @@ DOH;
 		{
 			return $this->_error_page('invalid_message');
 		}
+
+		$data['subject'] = ee()->functions->encode_ee_tags($data['subject'], TRUE);
+		$data['body'] = ee()->functions->encode_ee_tags($data['body'], TRUE);
 
 		if (ee()->config->item('enable_censoring') == 'y' && ee()->config->item('censored_words') != '')
 		{
@@ -3297,12 +3302,12 @@ DOH;
 		/**  Nasty Little Hobbits! No Sending!
 		/** -----------------------------------*/
 
-			if (ee()->session->userdata['can_send_bulletins'] != 'y')
-			{
-				return FALSE;
-			}
+		if (ee()->session->userdata['can_send_bulletins'] != 'y')
+		{
+			return FALSE;
+		}
 
-			$this->title = ee()->lang->line('send_bulletin');
+		$this->title = ee()->lang->line('send_bulletin');
 		$this->crumb = ee()->lang->line('send_bulletin');
 
 		/** ----------------------------------------
@@ -3374,12 +3379,12 @@ DOH;
 		/**  Nasty Little Hobbits! No Sending!
 		/** -----------------------------------*/
 
-			if (ee()->session->userdata['can_send_bulletins'] != 'y')
-			{
-				return FALSE;
-			}
+		if (ee()->session->userdata['can_send_bulletins'] != 'y')
+		{
+			return FALSE;
+		}
 
-			if ( ! isset($_POST['group_id']) OR ! is_numeric($_POST['group_id']))
+		if ( ! isset($_POST['group_id']) OR ! is_numeric($_POST['group_id']))
 		{
 			return FALSE;
 		}
@@ -3440,7 +3445,7 @@ DOH;
 						'bulletin_date'		=> $begins,
 						'hash'				=> ee()->functions->random('alnum', 10),
 						'bulletin_expires'	=> $expires,
-						'bulletin_message'	=> $_POST['bulletin_message']
+						'bulletin_message'	=> ee()->functions->encode_ee_tags(ee()->input->post('bulletin_message', TRUE), TRUE)
 					 );
 
 		foreach($groups as $group_id)
