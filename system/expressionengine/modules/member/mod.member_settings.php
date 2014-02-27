@@ -982,21 +982,28 @@ class Member_settings extends Member {
 				'form:birthday_month'	=> $this->_birthday_month($query->row('bday_m') ),
 				'form:birthday_day'		=> $this->_birthday_day($query->row('bday_d') ),
 				'url'					=> ($query->row('url')  == '') ? 'http://' : $query->row('url') ,
-				'location'				=> form_prep($query->row('location') ),
-				'occupation'			=> form_prep($query->row('occupation') ),
-				'interests'				=> form_prep($query->row('interests') ),
-				'aol_im'				=> form_prep($query->row('aol_im') ),
-				'icq'					=> form_prep($query->row('icq') ),
-				'icq_im'				=> form_prep($query->row('icq') ),
-				'yahoo_im'				=> form_prep($query->row('yahoo_im') ),
-				'msn_im'				=> form_prep($query->row('msn_im') ),
-				'bio'					=> form_prep($query->row('bio') ),
+				'location'				=> $this->_form_prep_encoded($query->row('location') ),
+				'occupation'			=> $this->_form_prep_encoded($query->row('occupation') ),
+				'interests'				=> $this->_form_prep_encoded($query->row('interests') ),
+				'aol_im'				=> $this->_form_prep_encoded($query->row('aol_im') ),
+				'icq'					=> $this->_form_prep_encoded($query->row('icq') ),
+				'icq_im'				=> $this->_form_prep_encoded($query->row('icq') ),
+				'yahoo_im'				=> $this->_form_prep_encoded($query->row('yahoo_im') ),
+				'msn_im'				=> $this->_form_prep_encoded($query->row('msn_im') ),
+				'bio'					=> $this->_form_prep_encoded($query->row('bio') ),
 				'custom_profile_fields'	=> $r
 			)
 		);
 	}
 
-
+	/**
+	 * Encode EE tags after form prepping or they'll be rendered in the text area.
+	 */
+	protected function _form_prep_encoded($value)
+	{
+		$value = form_prep($value);
+		return ee()->functions->encode_ee_tags($value, TRUE);
+	}
 
 
 	/** ----------------------------------------

@@ -2742,7 +2742,7 @@ class Member {
 				//  {email}
 				if ($key == "email")
 				{
-					ee()->TMPL->tagdata = $this->_var_swap_single($val, ee()->typography->encode_email($default_fields['email']), ee()->TMPL->tagdata);
+					ee()->TMPL->tagdata = $this->_var_swap_single($val, ee()->typography->encode_email($default_fields['email']), ee()->TMPL->tagdata, FALSE);
 				}
 
 				//  {birthday}
