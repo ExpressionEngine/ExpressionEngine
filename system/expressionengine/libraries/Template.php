@@ -295,6 +295,8 @@ class EE_Template {
 
 		ee()->config->_global_vars = array_merge(ee()->config->_global_vars, $added_globals);
 
+		ee()->config->_global_vars['is_core'] = (IS_CORE) ? TRUE : FALSE;
+
 		// Parse manual variables and Snippets
 		// These are variables that can be set in the path.php file
 

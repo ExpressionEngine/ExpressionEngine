@@ -1,0 +1,38 @@
+<h5>Calendar</h5>
+		<div id="news_calendar">
+			
+			<!-- Channel Calendar Tag: http://ellislab.com/expressionengine/user-guide/modules/channel/calendar.html -->
+			
+			{exp:channel:calendar switch="calendarToday|calendarCell" channel="news"}
+			<table class="calendarBG" border="0" cellpadding="6" cellspacing="1" summary="My Calendar">
+			<tr class="calendarHeader">
+			<th><div class="calendarMonthLinks"><a href="{previous_path='news/archives'}">&lt;&lt;</a></div></th>
+			<th colspan="5">{date format="%F %Y"}</th>
+			<th><div class="calendarMonthLinks"><a class="calendarMonthLinks" href="{next_path='news/archives'}">&gt;&gt;</a></div></th>
+			</tr>
+			<tr>
+			{calendar_heading}
+			<td class="calendarDayHeading">{lang:weekday_abrev}</td>
+			{/calendar_heading}
+			</tr>
+
+			{calendar_rows }
+			{row_start}<tr>{/row_start}
+
+			{if entries}
+			<td class='{switch}' align='center'><a href="{day_path='news/archives'}">{day_number}</a></td>
+			{/if}
+
+			{if not_entries}
+			<td class='{switch}' align='center'>{day_number}</td>
+			{/if}
+
+			{if blank}
+			<td class='calendarBlank'>{day_number}</td>
+			{/if}
+
+			{row_end}</tr>{/row_end}
+			{/calendar_rows}
+			</table>
+			{/exp:channel:calendar}
+		</div> <!-- ending #news_calendar -->
