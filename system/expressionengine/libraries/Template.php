@@ -701,6 +701,10 @@ class EE_Template {
 
 		$this->embed_type = '';
 
+		// pull the subtemplate tracker back a level to the parent template
+		$this->templates_sofar = substr($this->templates_sofar, 0, - strlen('|'.$site_id.':'.$template_group.'/'.$template_name.'|'));
+
+
 		// Here we go again!  Wheeeeeee.....
 		$template = $this->process_layout_template($template, $layout);
 		$template = $this->process_sub_templates($template);
