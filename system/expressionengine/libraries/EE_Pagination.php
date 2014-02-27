@@ -43,13 +43,13 @@ class Pagination_object {
 	public $current_page			= 1;
 	public $basepath				= '';
 	public $prefix					= "P";
-	public $template_data			= '';
 
 	// Field Pagination specific properties
 	public $cfields					= array();
 	public $field_pagination		= FALSE;
 	public $field_pagination_query	= NULL;
 
+	private $_template_data				= '';
 	private $_page_array				= array();
 	private $_multi_fields				= '';
 	private $_page_next					= '';
@@ -79,7 +79,7 @@ class Pagination_object {
 	 */
 	public function __get($name)
 	{
-		if (in_array($name, array('type')))
+		if (in_array($name, array('type', 'template_data')))
 		{
 			return $this->{'_'.$name};
 		}
@@ -97,7 +97,7 @@ class Pagination_object {
 		// Allow for position overrides.
 		// position lets the developer override the position of the pagination
 		// (e.g. top, bottom, both, hidden)
-		if (in_array($name, array('position')))
+		if (in_array($name, array('position', 'template_data')))
 		{
 			$this->{'_'.$name} = $value;
 		}
