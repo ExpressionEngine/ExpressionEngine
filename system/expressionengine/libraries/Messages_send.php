@@ -801,8 +801,8 @@ class EE_Messages_send extends EE_Messages {
 		$data = array(
 			'sender_id'				=> $this->member_id,
 			'message_date'			=> ee()->localize->now,
-			'message_subject'		=> ee()->functions->encode_ee_tags(ee()->input->get_post('subject', TRUE), TRUE),
-			'message_body'			=> ee()->functions->encode_ee_tags(ee()->input->get_post('body', TRUE), TRUE),
+			'message_subject'		=> ee()->input->get_post('subject', TRUE),
+			'message_body'			=> ee()->input->get_post('body', TRUE),
 			'message_tracking'		=> ( ! ee()->input->get_post('tracking')) ? 'n' : 'y',
 			'message_attachments'	=> (count($this->attachments) > 0) ? 'y' : 'n',
 			'message_recipients'	=> implode('|', $recipients),

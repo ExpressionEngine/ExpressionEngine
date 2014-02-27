@@ -1084,13 +1084,13 @@ class Member_settings extends Member {
 
 		foreach ($fields as $val)
 		{
-			$data[$val] = (isset($_POST[$val])) ? ee()->functions->encode_ee_tags(ee()->security->xss_clean($_POST[$val]), TRUE) : '';
+			$data[$val] = (isset($_POST[$val])) ? ee()->security->xss_clean($_POST[$val]) : '';
 			unset($_POST[$val]);
 		}
 
 		ee()->load->helper('url');
 		$data['url'] = preg_replace('/[\'"]/is', '', $data['url']);
-		$data['url'] = ee()->functions->encode_ee_tags(prep_url($data['url']), TRUE);
+		$data['url'] = prep_url($data['url']);
 
 		if (is_numeric($data['bday_d']) AND is_numeric($data['bday_m']))
 		{
@@ -1123,7 +1123,7 @@ class Member_settings extends Member {
 			{
 				if (strncmp($key, 'm_field_id_', 11) == 0)
 				{
-					$m_data[$key] = ee()->functions->encode_ee_tags(ee()->security->xss_clean($val), TRUE);
+					$m_data[$key] = ee()->security->xss_clean($val);
 				}
 			}
 
