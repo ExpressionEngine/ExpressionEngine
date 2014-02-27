@@ -35,7 +35,7 @@ body {
  
 .shade {
  background-color:  #f6f6f6;
- padding: 6px 0 10px 22px;
+ padding: 6px 22px 10px;
  margin-top: 10px;
  margin-bottom: 20px;
  border:     #7B81A9 1px solid;
