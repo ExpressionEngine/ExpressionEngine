@@ -425,7 +425,7 @@ class MyAccount extends CP_Controller {
 		{
 			if (isset($_POST[$val]))
 			{
-				$data[$val] = ee()->functions->encode_ee_tags($_POST[$val], TRUE);
+				$data[$val] = $_POST[$val];
 			}
 
 			unset($_POST[$val]);
