@@ -543,23 +543,25 @@ If you do not wish to reset your password, ignore this message. It will expire i
 	{
 		ee()->load->library('logger');
 
+		$pagination_docs = ee()->config->item('doc_url').'templates/pagination.html';
+
 		// Replace SINGLE {paginate} variable with {pagination_links}
 		ee()->logger->deprecate_template_tag(
-			'Replaced {exp:search:search_results} pagination loop\'s {paginate} single variable with {pagination_links}.',
+			'Replaced {exp:search:search_results} pagination loop\'s {paginate} single variable with {pagination_links}. Use <a href="'.$pagination_docs.'">the global pagination style</a> in the future.',
 			"/({exp:search:search_results.*?)(?!{paginate}.*?{\/paginate}.*?{\/exp:search:search_results}){paginate}(.*?{\/exp:search:search_results})/is",
 			"$1{pagination_links}$2"
 		);
 
 		// Replace {page_count} with "Page {current_page} of {total_pages}"
 		ee()->logger->deprecate_template_tag(
-			'Replaced {exp:search:search_results} pagination loop\'s {page_count} with "Page {current_page} of {total_pages}".',
+			'Replaced {exp:search:search_results} pagination loop\'s {page_count} with "Page {current_page} of {total_pages}". Use <a href="'.$pagination_docs.'">the global pagination style</a> in the future.',
 			"/({exp:search:search_results(\s.*?)?}(.*?)){page_count}((.*?){\/exp:search:search_results})/is",
 			"$1Page {current_page} of {total_pages}$4"
 		);
 
 		// Replace {if paginate}...{/if} with {paginate}...{/paginate}
 		ee()->logger->deprecate_template_tag(
-			'Replaced {exp:search:search_results} pagination loop\'s {if paginate} with {paginate}...{/paginate}. Switch to the new Channel style pagination.',
+			'Replaced {exp:search:search_results} pagination loop\'s {if paginate} with {paginate}...{/paginate}. Use <a href="'.$pagination_docs.'">the global pagination style</a> in the future.',
 			"/({exp:search:search_results(\s.*?)?}(.*?)){if paginate}(.*){\/if}((.*?){\/exp:search:search_results})/is",
 			"$1{paginate}$4{/paginate}$5"
 		);
@@ -576,21 +578,23 @@ If you do not wish to reset your password, ignore this message. It will expire i
 	{
 		ee()->load->library('logger');
 
+		$pagination_docs = ee()->config->item('doc_url').'templates/pagination.html';
+
 		ee()->logger->deprecate_specialty_template_tag(
-			'Replaced subscription pagination template\'s {pagination} with {paginate}{pagination_links}{/paginate}. Switch to the new Channel style pagination.',
+			'Replaced subscription pagination templates\' {pagination} with {paginate}{pagination_links}{/paginate}. Use <a href="'.$pagination_docs.'">the global pagination style</a> in the future.',
 			"/{pagination}/is",
 			"{paginate}{pagination_links}{/paginate}",
 			'subscription_pagination.html'
 		);
 
 		ee()->logger->deprecate_specialty_template_tag(
-			'Replaced specialty templates\' {if paginate} and {if pagination} with {paginate}...{/paginate}. Switch to the new Channel style pagination.',
+			'Replaced specialty templates\' {if paginate} and {if pagination} with {paginate}...{/paginate}. Use <a href="'.$pagination_docs.'">the global pagination style</a> in the future.',
 			"/{if (?:paginate|pagination)}(.*?){\/if}/is",
 			"{paginate}$1{/paginate}"
 		);
 
 		ee()->logger->deprecate_specialty_template_tag(
-			'Replaced specialty template\'s {pagination} and {include:pagination_links} with {pagination_links}. Switch to the new Channel style pagination.',
+			'Replaced specialty templates\' {pagination} and {include:pagination_links} with {pagination_links}. Use <a href="'.$pagination_docs.'">the global pagination style</a> in the future.',
 			"/{pagination}|{include:pagination_link}/is",
 			"{pagination_links}"
 		);
