@@ -3133,22 +3133,6 @@ DOH;
 				 )
 				 ORDER BY b.bulletin_date DESC";
 
-		/** ----------------------------------------
-		/**  Run "count" query for pagination
-		/** ----------------------------------------*/
-
-		$query = ee()->db->query("SELECT COUNT(b.bulletin_id) AS count ".$sql);
-
-		/** ----------------------------------------
-		/**  If No Messages, we say so.
-		/** ----------------------------------------*/
-
-		if ($query->row('count')  == 0)
-		{
-			$this->single_parts['include']['bulletins'] = ee()->lang->line('message_no_bulletins');
-			$this->return_data = $this->_process_template($this->retrieve_template('bulletin_board'));
-			return;
-		}
 
 		/** ----------------------------------------
 		/**  Handle Pagination
@@ -3178,6 +3162,14 @@ DOH;
 		$pagination->position = 'inline';
 		$template = $pagination->prepare($template);
 
+		/** ----------------------------------------
+		/**  Run "count" query for pagination
+		/** ----------------------------------------*/
+
+		$query = ee()->db->query("SELECT COUNT(b.bulletin_id) AS count ".$sql);
+
+
+		// Limit the pagination
 		if ($query->row('count') > $this->per_page)
 		{
 			$pagination->build($query->row('count'), $this->per_page);
@@ -3187,6 +3179,16 @@ DOH;
 		// Pagination template must be rendered to remove pagination marker when
 		// the page is not actually paginated
 		$template = $pagination->render($template);
+
+		/** ----------------------------------------
+		/**  If No Messages, we say so.
+		/** ----------------------------------------*/
+		if ($query->row('count') == 0)
+		{
+			$this->single_parts['include']['bulletins'] = ee()->lang->line('message_no_bulletins');
+			$this->return_data = $this->_process_template($template);
+			return;
+		}
 
 		/** ----------------------------------------
 		/**  Create Bulletins
