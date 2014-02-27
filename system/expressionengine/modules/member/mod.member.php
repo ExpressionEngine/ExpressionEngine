@@ -2476,9 +2476,6 @@ class Member {
 			$replace = ee()->functions->encode_ee_tags($replace, TRUE);
 		}
 
-		var_dump($search, $replace);
-
-
 		return str_replace(LD.$search.RD, $replace, $source);
 	}
 
