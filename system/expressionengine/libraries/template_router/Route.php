@@ -33,7 +33,7 @@ class EE_Route {
 		(?P<variable>[^}:]*)  # variable name
 		(?:
 			\:                                # variable delimiter
-			(?P<rules>.*?(regex\[.*\])?.*?)   # rules
+			(?P<rules>.*?(regex\[.*?\])?.*?)  # rules
 		)?
 		}
 	";
@@ -86,13 +86,13 @@ class EE_Route {
 		{
 			if (is_string($segment) && $segment != '/')
 			{
-				$url[] = trim($segment, '/');
+				$url[] = urlencode(trim($segment, '/'));
 			}
 			elseif($segment instanceof EE_Route_segment)
 			{
 				if ( ! empty($segment->value))
 				{
-					$url[] =  $segment->value;
+					$url[] =  urlencode($segment->value);
 				}
 			}
 		}
@@ -182,7 +182,7 @@ class EE_Route {
 	 */
 	public function parse_route($route)
 	{
-		$route = trim($route, '/');
+		$route = trim($route, '/ ');
 		$segments = $this->parse_segments($route);
 		$index = 0;
 

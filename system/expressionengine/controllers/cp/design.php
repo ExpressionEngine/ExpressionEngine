@@ -3188,6 +3188,11 @@ class Design extends CP_Controller {
 			$this->functions->redirect(cp_url('design/manager'));
 		}
 
+		if (empty($_POST))
+		{
+			$this->functions->redirect(cp_url('design/url_manager'));
+		}
+
 		ee()->load->library('template_router');
 		ee()->load->model('template_model');
 		$errors = array();
