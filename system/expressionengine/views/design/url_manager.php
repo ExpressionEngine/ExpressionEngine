@@ -2,6 +2,7 @@
 		<div class="formArea">
 			<?=form_open('C=design'.AMP.'M=update_template_routes')?>
 				<div id="url_manager">
+					<p><?= lang('template_route_notice'); ?></p>
 					<?php
 						$table = array();
 						foreach($templates->result() as $template)
