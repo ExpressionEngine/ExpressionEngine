@@ -55,7 +55,8 @@ class EE_Template_Router extends CI_Router {
 		{
 			if(preg_match_all("/$route/i", $request, $matches) == 1)
 			{
-				return new EE_Route_match($end_point, $matches);
+				$route = $this->fetch_route($end_point['group'], $end_point['template']);
+				return new EE_Route_match($end_point, $matches, $route);
 			}
 		}
 

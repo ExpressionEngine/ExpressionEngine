@@ -27,10 +27,14 @@ class EE_Route_match {
 	public $end_point = array();
 	public $matches = array();
 
-	public function __construct($end_point, $matches)
+	public function __construct($end_point, $matches, $route)
 	{
 		$this->end_point = $end_point;
-		$this->matches = $matches;
+
+		foreach($route->subpatterns as $hash => $variable)
+		{
+			$this->matches[$variable] = $matches[$hash];
+		}
 	}
 
 }
