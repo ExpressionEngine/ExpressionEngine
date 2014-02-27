@@ -2079,7 +2079,7 @@ UNGA;
 
 		$notepad_size = ( ! is_numeric($_POST['notepad_size'])) ? 18 : $_POST['notepad_size'];
 
-		ee()->db->query("UPDATE exp_members SET notepad = '".ee()->db->escape_str(ee()->functions->encode_ee_tags(ee()->security->xss_clean($_POST['notepad']), TRUE))."', notepad_size = '".$notepad_size."' WHERE member_id ='".ee()->session->userdata('member_id')."'");
+		ee()->db->query("UPDATE exp_members SET notepad = '".ee()->db->escape_str(ee()->security->xss_clean($_POST['notepad']))."', notepad_size = '".$notepad_size."' WHERE member_id ='".ee()->session->userdata('member_id')."'");
 
 		/** -------------------------------------
 		/**  Success message
