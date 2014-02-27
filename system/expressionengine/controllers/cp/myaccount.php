@@ -1749,7 +1749,8 @@ class MyAccount extends CP_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->member_model->update_member($this->session->userdata('member_id'), array('notepad'=>$this->input->get_post('notepad')));
+		$notepad = ee()->functions->encode_ee_tags($this->input->get_post('notepad', TRUE), TRUE);
+		$this->member_model->update_member($this->session->userdata('member_id'), array('notepad'=>$notepad));
 
 		$this->session->set_flashdata('notepad_message', lang('mbr_notepad_updated'));
 		$this->functions->redirect(BASE.AMP.$this->input->post('redirect_to'));
