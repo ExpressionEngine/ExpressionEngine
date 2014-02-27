@@ -88,7 +88,9 @@ class EE_Route {
 		{
 			if (is_string($segment) && $segment != '/')
 			{
-				$url[] = urlencode(trim($segment, '/'));
+				$parts = explode("/", $segment);
+				$parts = array_map('urlencode', $parts);
+				$url[] = implode("/", $parts);
 			}
 			elseif($segment instanceof EE_Route_segment)
 			{
