@@ -26,6 +26,7 @@ class EE_Route {
 
 	public $segments = array();
 	public $variables = array();
+	public $subpatterns = array();
 
 	public $segment_regex = "
 		(?P<static>[^{]*)                     # static rule data
@@ -76,10 +77,11 @@ class EE_Route {
 	public function build(array $variables = array())
 	{
 		$url = array();
+		$map = array_flip($this->subpatterns);
 
 		foreach ($variables as $key => $val)
 		{
-			$this->variables[$key]->set($val);
+			$this->variables[$map[$key]]->set($val);
 		}
 
 		foreach($this->segments as $segment)
@@ -247,9 +249,11 @@ class EE_Route {
 
 				$variable = $matches['variable'];
 
-				if (preg_match("/^[a-zA-Z][a-zA-Z0-9]*$/ix", $variable))
+				if (preg_match("/^[a-zA-Z0-9_\-]*$/ix", $variable))
 				{
-					$segment['variable'] = $variable;
+					$hash = md5($variable);
+					$this->subpatterns[$hash] = $variable;
+					$segment['variable'] = $hash;
 				}
 				else
 				{

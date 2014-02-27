@@ -47,7 +47,7 @@ class EE_Template_router_converters {
 		ee()->lang->loadfile('template_router');
 		// Register default converters
 		$this->register('alpha', 'EE_template_router_alpha_converter');
-		$this->register('max_length', 'EE_template_router_alpha_dash_converter');
+		$this->register('alpha_dash', 'EE_template_router_alpha_dash_converter');
 		$this->register('alpha_numeric', 'EE_template_router_alpha_numeric_converter');
 		$this->register('base64', 'EE_template_router_base64_converter');
 		$this->register('category', 'EE_template_router_category_converter');
