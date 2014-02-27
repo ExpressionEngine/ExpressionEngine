@@ -2058,7 +2058,7 @@ UNGA;
 					array('action' => $this->_member_path('update_notepad'))
 				),
 				'path:update_notepad'	=> $this->_member_path('update_notepad'),
-				'notepad_data'			=> $query->row('notepad') ,
+				'notepad_data'			=> $this->_form_prep_encoded($query->row('notepad')),
 				'notepad_size'			=> $query->row('notepad_size')
 			)
 		);
