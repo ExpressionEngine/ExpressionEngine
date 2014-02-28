@@ -948,7 +948,7 @@ class Member_settings extends Member {
 
 					foreach (explode("\n", trim($row['m_field_list_items'])) as $v)
 					{
-						$v = trim($v);
+						$v = $this->_form_prep_encoded(trim($v));
 
 						$selected = ($field_data == $v) ? " selected='selected'" : '';
 
