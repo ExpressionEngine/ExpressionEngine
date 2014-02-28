@@ -2572,8 +2572,6 @@ DOH;
 
 		$this->single_parts['form']['form_declaration']['messages'] = ee()->functions->form_declaration($details);
 
-		var_dump($this->single_parts['input']['subject']);
-
 		// --------------------------------------------
 		//  If upload path is not specified we
 		//  override all attachment related settings
