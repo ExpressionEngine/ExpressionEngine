@@ -450,7 +450,7 @@ class EE_Messages {
 
 			for($i=3; $i <= $this->max_folders; $i++)
 			{
-				$this->folders[$i] = $query->row('folder'.$i.'_name');
+				$this->folders[$i] = htmlspecialchars($query->row('folder'.$i.'_name'), ENT_QUOTES);
 			}
 
 			asort($this->folders);
