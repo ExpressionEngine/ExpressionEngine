@@ -6,7 +6,7 @@
  *
  * @package		CodeIgniter
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc.
  * @license		http://codeigniter.com/user_guide/license.html
  * @link		http://codeigniter.com
  * @since		Version 1.0
@@ -52,7 +52,7 @@ class CI_Javascript {
 		log_message('debug', "Javascript Class Initialized and loaded.  Driver used: $js_library_driver");
 	}
 
-	// --------------------------------------------------------------------	
+	// --------------------------------------------------------------------
 	// Event Code
 	// --------------------------------------------------------------------
 
@@ -378,7 +378,7 @@ class CI_Javascript {
 		return $this->js->_unload($element, $js);
 	}
 
-	// --------------------------------------------------------------------	
+	// --------------------------------------------------------------------
 	// Effects
 	// --------------------------------------------------------------------
 
@@ -685,7 +685,7 @@ class CI_Javascript {
 
 		return $str;
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -746,71 +746,6 @@ class CI_Javascript {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Generate JSON
-	 *
-	 * Can be passed a database result or associative array and returns a JSON formatted string
-	 *
-	 * @param	mixed	result set or array
-	 * @param	bool	match array types (defaults to objects)
-	 * @return	string	a json formatted string
-	 */
-	function generate_json($result = NULL, $match_array_type = FALSE)
-	{
-		// JSON data can optionally be passed to this function
-		// either as a database result object or an array, or a user supplied array
-		if ( ! is_null($result))
-		{
-			if (is_object($result))
-			{
-				$json_result = $result->result_array();
-			}
-			elseif (is_array($result))
-			{
-				$json_result = $result;
-			}
-			else
-			{
-				return $this->_prep_args($result);
-			}
-		}
-		else
-		{
-			return 'null';
-		}
-
-		$json = array();
-		$_is_assoc = TRUE;
-
-		if ( ! is_array($json_result) AND empty($json_result))
-		{
-			show_error("Generate JSON Failed - Illegal key, value pair.");
-		}
-		elseif ($match_array_type)
-		{
-			$_is_assoc = $this->_is_associative_array($json_result);
-		}
-
-		foreach ($json_result as $k => $v)
-		{
-			if ($_is_assoc)
-			{
-				$json[] = $this->_prep_args($k, TRUE).':'.$this->generate_json($v, $match_array_type);
-			}
-			else
-			{
-				$json[] = $this->generate_json($v, $match_array_type);
-			}
-		}
-
-		$json = implode(',', $json);
-
-		return $_is_assoc ? "{".$json."}" : "[".$json."]";
-
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Is associative array
 	 *
 	 * Checks for an associative array
@@ -855,8 +790,8 @@ class CI_Javascript {
 		}
 		elseif (is_string($result) OR $is_key)
 		{
-			return '"'.str_replace(array('\\', "\t", "\n", "\r", '"', '/'), array('\\\\', '\\t', '\\n', "\\r", '\"', '\/'), $result).'"';			
-			
+			return '"'.str_replace(array('\\', "\t", "\n", "\r", '"', '/'), array('\\\\', '\\t', '\\n', "\\r", '\"', '\/'), $result).'"';
+
 		}
 		elseif (is_scalar($result))
 		{

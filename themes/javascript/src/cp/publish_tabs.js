@@ -3,7 +3,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -33,7 +33,7 @@ function tab_focus(tab_id)
 	$(".main_tab").css("z-index", "");
 	$("#"+tab_id).css("z-index", "5");
 	selected_tab = tab_id;
-	
+
 	$(".main_tab").sortable("refreshPositions");
 }
 

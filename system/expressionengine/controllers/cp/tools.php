@@ -4,13 +4,13 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -32,7 +32,7 @@ class Tools extends CP_Controller {
 	function __construct()
 	{
 		parent::__construct();
-		
+
 		if ( ! $this->cp->allowed_group('can_access_tools'))
 		{
 			show_error(lang('unauthorized_access'));
@@ -40,7 +40,7 @@ class Tools extends CP_Controller {
 
 		$this->lang->loadfile('tools');
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -48,7 +48,7 @@ class Tools extends CP_Controller {
 	 *
 	 * @access	public
 	 * @return	void
-	 */	
+	 */
 	function index()
 	{
 		$this->view->cp_page_title = lang('tools');
@@ -56,7 +56,7 @@ class Tools extends CP_Controller {
 
 		$this->cp->render('_shared/overview');
 	}
-	
+
 }
 
 /* End of file tools.php */

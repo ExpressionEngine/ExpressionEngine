@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -68,7 +68,7 @@ class Auth {
 	// Hashing algorithms to try with their respective
 	// byte sizes. The byte sizes are used to identify
 	// the hash function, so they must be unique!
-	
+
 	private $hash_algos = array(
 		128		=> 'sha512',
 		64		=> 'sha256',
@@ -84,12 +84,12 @@ class Auth {
 	function __construct()
 	{
 		$this->EE =& get_instance();
-		
+
 		// Remove any hash algos that we don't have
 		// access to in this environment
 		$this->hash_algos = array_intersect($this->hash_algos, hash_algos());
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -102,7 +102,7 @@ class Auth {
 		$member = ee()->db->get_where('members', array('member_id' => $id));
 		return $this->_authenticate($member, $password);
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -128,9 +128,9 @@ class Auth {
 		$member = ee()->db->get_where('members', array('username' => $username));
 		return $this->_authenticate($member, $password);
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Authenticate from basic http auth
 	 *
@@ -175,21 +175,21 @@ class Auth {
 	{
 		die('@todo');
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Run through the majority of the authentication checks
-	 * 
+	 *
 	 * @return array(
 	 *		username: from POST
 	 *		password: from POST
 	 *		incoming: from Auth library, using username and password
 	 *	)
-	 * 
+	 *
 	 * Your best option is to use:
 	 * 		list($username, $password, $incoming) = $this->verify()
-	 * 
+	 *
 	 * If an error results, the lang key will be added to $this->(auth->)errors[]
 	 * and this method will return FALSE
 	 */
@@ -226,7 +226,7 @@ class Auth {
 			/* -------------------------------------------*/
 		}
 
-		// Is IP and User Agent required for login?	
+		// Is IP and User Agent required for login?
 		if ( ! ee()->auth->check_require_ip())
 		{
 			$this->errors[] = 'unauthorized_request';
@@ -237,7 +237,7 @@ class Auth {
 		if (ee()->session->check_password_lockout($username) === TRUE)
 		{
 			ee()->lang->loadfile('login');
-			
+
 			$line = lang('password_lockout_in_effect');
 			$line = sprintf($line, ee()->config->item('password_lockout_interval'));
 
@@ -265,7 +265,7 @@ class Auth {
 		if( ! $incoming) {
 			$incoming = ee()->auth->authenticate_email($username, $password);
 		}
-		
+
 		// Not even close
 		if ( ! $incoming)
 		{
@@ -287,7 +287,7 @@ class Auth {
 			return FALSE;
 		}
 
-		// Do we allow multiple logins on the same account?		
+		// Do we allow multiple logins on the same account?
 		if (ee()->config->item('allow_multi_logins') == 'n')
 		{
 			if ($incoming->has_other_session())
@@ -296,10 +296,10 @@ class Auth {
 				return FALSE;
 			}
 		}
-		
+
 		return array($username, $password, $incoming);
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -312,7 +312,7 @@ class Auth {
 	{
 		if (ee()->config->item('require_ip_for_login') == 'y')
 		{
-			if (ee()->session->userdata('ip_address') == '' OR 
+			if (ee()->session->userdata('ip_address') == '' OR
 				ee()->session->userdata('user_agent') == '')
 			{
 				return FALSE;
@@ -321,7 +321,7 @@ class Auth {
 
 		return TRUE;
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -342,7 +342,7 @@ class Auth {
 		{
 			return FALSE;
 		}
-		
+
 		// No hash function specified? Use the best one
 		// we have access to in this environment.
 		if ($h_byte_size === FALSE)
@@ -355,7 +355,7 @@ class Auth {
 			// What are they feeding us? This can happen if
 			// they move servers and the new environment is
 			// less secure. Nothing we can do but fail. Hard.
-			
+
 			die('Fatal Error: No matching hash algorithm.');
 		}
 
@@ -378,13 +378,13 @@ class Auth {
 			// ignore it
 			$salt = '';
 		}
-		
+
 		return array(
 			'salt'		=> $salt,
 			'password'	=> hash($this->hash_algos[$h_byte_size], $salt.$password)
 		);
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -397,7 +397,7 @@ class Auth {
 		ee()->db->where('member_id', (int) $member_id);
 		ee()->db->set('username', $username);
 		ee()->db->update('members');
-		
+
 		return (bool) ee()->db->affected_rows();
 	}
 	// --------------------------------------------------------------------
@@ -410,25 +410,25 @@ class Auth {
 	public function update_password($member_id, $password)
 	{
 		$hashed_pair = $this->hash_password($password);
-		
+
 		if ($hashed_pair === FALSE)
 		{
 			return FALSE;
 		}
-		
+
 		// remove old remember me's and sessions, so that
 		// changing your password effectively logs out people
 		// using the old one.
 		ee()->remember->delete_others();
-		
+
 		ee()->db->where('member_id', (int) $member_id);
 		ee()->db->where('session_id !=', ee()->session->userdata('session_id'));
 		ee()->db->delete('sessions');
-		
+
 		// update password in db
 		ee()->db->where('member_id', (int) $member_id);
 		ee()->db->update('members', $hashed_pair);
-		
+
 		return (bool) ee()->db->affected_rows();
 	}
 
@@ -455,35 +455,35 @@ class Auth {
 
 		$m_salt = $member->row('salt');
 		$m_pass = $member->row('password');
-		
+
 		// hash using the algo used for this password
 		$h_byte_size = strlen($m_pass);
 		$hashed_pair = $this->hash_password($password, $m_salt, $h_byte_size);
-		
+
 		if ($hashed_pair === FALSE OR $m_pass !== $hashed_pair['password'])
 		{
 			return FALSE;
 		}
-		
-		
+
+
 		// Officially a valid user, but are they as secure as possible?
 		// ----------------------------------------------------------------
-		
+
 		reset($this->hash_algos);
-		
+
 		// Not hashed or better algo available?
 		if ( ! $m_salt OR $h_byte_size != key($this->hash_algos))
 		{
 			$m_id = $member->row('member_id');
 			$this->update_password($m_id, $password);
 		}
-		
+
 		$authed = new Auth_result($member->row());
 		$member->free_result();
-		
+
 		return $authed;
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -495,7 +495,7 @@ class Auth {
 	{
 		//  Find Username, Please
 		// ----------------------------------------------------------------
-		
+
 		if (isset($_SERVER['PHP_AUTH_USER']))
 		{
 			$user = $_SERVER['PHP_AUTH_USER'];
@@ -516,11 +516,11 @@ class Auth {
 		{
 			$user = getenv('AUTH_USER');
 		}
-		
-		
+
+
 		//  Find Password, Please
 		// ----------------------------------------------------------------
-		
+
 		if (isset($_SERVER['PHP_AUTH_PW']))
 		{
 			$pass = $_SERVER['PHP_AUTH_PW'];
@@ -541,10 +541,10 @@ class Auth {
 		{
 			$pass = getenv('AUTH_PASSWORD');
 		}
-		
+
 		// Authentication for IIS
 		// ----------------------------------------------------------------
-		
+
 		if ( ! isset ($user) OR ! isset($pass) OR (empty($user) && empty($pass)))
 		{
 			if ( isset($_SERVER['HTTP_AUTHORIZATION']) && substr($_SERVER['HTTP_AUTHORIZATION'], 0, 6) == 'Basic ')
@@ -560,12 +560,12 @@ class Auth {
 				list($user, $pass) = explode(':', base64_decode(substr(getenv('HTTP_AUTHORIZATION'), 6)));
 			}
 		}
-		
+
 		//  Authentication for FastCGI
 		// ----------------------------------------------------------------
-		
+
 		if ( ! isset ($user) OR ! isset($pass) OR (empty($user) && empty($pass)))
-		{	
+		{
 			if ( ! empty($_ENV) && isset($_ENV['Authorization']) && substr($_ENV['Authorization'], 0, 6) == 'Basic ')
 			{
 				list($user, $pass) = explode(':', base64_decode(substr($_ENV['Authorization'], 6)));
@@ -575,7 +575,7 @@ class Auth {
 				list($user, $pass) = explode(':', base64_decode(substr(getenv('Authorization'), 6)));
 			}
 		}
-		
+
 		if ( ! isset ($user) OR ! isset($pass) OR (empty($user) && empty($pass)))
 		{
 			return FALSE;
@@ -584,7 +584,7 @@ class Auth {
 		// Check password Lockout
 		if (ee()->session->check_password_lockout($user) === TRUE)
 		{
-			return FALSE;	
+			return FALSE;
 		}
 
 		return $this->authenticate_username($user, $pass);
@@ -601,7 +601,7 @@ class Auth_result {
 	private $remember_me = FALSE;
 	private $anon = FALSE;
 	private $EE;
-	
+
 	/**
 	 * Constructor
 	 *
@@ -614,9 +614,9 @@ class Auth_result {
 		$this->EE =& get_instance();
 		$this->member = $member;
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Group data getter
 	 *
@@ -630,17 +630,17 @@ class Auth_result {
 				'group_id' => $this->member('group_id'),
 				'site_id' => ee()->config->item('site_id'),
 			));
-			
+
 			$this->group = $group_q->row();
-			
+
 			$group_q->free_result();
 		}
-		
+
 		return isset($this->group->$key) ? $this->group->$key : $default;
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Multi-login check
 	 *
@@ -651,35 +651,35 @@ class Auth_result {
 		// Kill old sessions first
 		ee()->session->gc_probability = 100;
 		ee()->session->delete_old_sessions();
-	
+
 		$expire = time() - ee()->session->session_length;
-		
+
 		// See if there is a current session
 		ee()->db->select('ip_address, user_agent');
 		ee()->db->where('member_id', $this->member('member_id'));
 		ee()->db->where('last_activity >', $expire);
 		$result = ee()->db->get('sessions');
-		
+
 		// If a session exists, trigger the error message
 		if ($result->num_rows() == 1)
 		{
 			$ip = ee()->session->userdata['ip_address'];
 			$ua = ee()->session->userdata['user_agent'];
-			
-			if ($ip != $result->row('ip_address') OR 
+
+			if ($ip != $result->row('ip_address') OR
 				$ua != $result->row('user_agent'))
 			{
 				$result->free_result();
 				return TRUE;
 			}
 		}
-		
+
 		$result->free_result();
 		return FALSE;
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Simplified permission checks
 	 *
@@ -689,9 +689,9 @@ class Auth_result {
 	{
 		return ($this->group($perm) === 'y');
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Ban check
 	 *
@@ -703,12 +703,12 @@ class Auth_result {
 		{
 			return ee()->session->ban_check();
 		}
-		
+
 		return FALSE;
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Member data getter
 	 *
@@ -718,9 +718,9 @@ class Auth_result {
 	{
 		return isset($this->member->$key) ? $this->member->$key : $default;
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Anon setter
 	 *
@@ -732,7 +732,7 @@ class Auth_result {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Start session
 	 *
@@ -743,12 +743,12 @@ class Auth_result {
 	public function start_session($cp_sess = FALSE)
 	{
 		$multi = $this->session_id ? TRUE : FALSE;
-		$sess_type = $cp_sess ? 'admin_session_type' : 'user_session_type';
-		
+		$sess_type = $cp_sess ? 'cp_session_type' : 'website_session_type';
+
 		if ($multi)
 		{
 			// multi login - we have a session
-			ee()->functions->set_cookie(
+			ee()->input->set_cookie(
 				ee()->session->c_session,
 				$this->session_id,
 				ee()->session->session_length
@@ -764,22 +764,22 @@ class Auth_result {
 				$cp_sess
 			);
 		}
-		
-		
+
+
 		if (ee()->config->item($sess_type) != 's')
 		{
 			$expire = ee()->remember->get_expiry();
-			
+
 			if ($this->anon)
 			{
-				ee()->functions->set_cookie(ee()->session->c_anon, 1, $expire);
+				ee()->input->set_cookie($this->EE->session->c_anon, 1, $expire);
 			}
 			else
 			{
 				// Unset the anon cookie
-				ee()->functions->set_cookie(ee()->session->c_anon);				
+				ee()->input->delete_cookie($this->EE->session->c_anon);
 			}
-			
+
 			// (un)set remember me
 			if ($this->remember_me)
 			{
@@ -790,7 +790,7 @@ class Auth_result {
 				ee()->remember->delete();
 			}
 		}
-		
+
 		if ($cp_sess === TRUE)
 		{
 			// Log the login
@@ -832,12 +832,12 @@ class Auth_result {
 			// -------------------------------------------
 		}
 
-		// Delete old password lockouts		
+		// Delete old password lockouts
 		ee()->session->delete_password_lockout();
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Session id getter session
 	 *
@@ -849,9 +849,9 @@ class Auth_result {
 	{
 		return $this->session_id;
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Session id setter
 	 *
@@ -864,7 +864,7 @@ class Auth_result {
 	{
 		$this->session_id = $session_id;
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -873,14 +873,14 @@ class Auth_result {
 	 * Whether or not this session will be started with 'remember me'
 	 *
 	 * @access	public
-	 */	
+	 */
 	public function remember_me($remember = TRUE)
 	{
 		$this->remember_me = ($remember) ? TRUE : FALSE;
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Hook data utility method
 	 *
@@ -895,7 +895,7 @@ class Auth_result {
 		$obj = clone $this->member;
 		$obj->session_id = $this->session_id;
 		$obj->can_access_cp = $this->has_permission('can_access_cp');
-		
+
 		return $obj;
 	}
 }

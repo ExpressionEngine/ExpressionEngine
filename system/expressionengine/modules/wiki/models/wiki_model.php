@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -126,7 +126,7 @@ class Wiki_model extends CI_Model {
 
 		$data = array(	'wiki_id'		=> $wiki_id,
 						'page_name'		=> 'index',
-						'page_namespace'	=> '',						
+						'page_namespace'	=> '',
 						'last_updated'	=> $this->localize->now);
 
 		$this->db->insert('wiki_page', $data);
@@ -174,10 +174,10 @@ class Wiki_model extends CI_Model {
 	function fetch_upload_options($value = '')
 	{
 		$this->load->model('file_upload_preferences_model');
-		
+
 		$options[0] = $this->lang->line('none');
 		$options = $this->file_upload_preferences_model->get_dropdown_array(NULL, NULL, $options);
-		
+
 		return $options;
 	}
 
@@ -238,7 +238,7 @@ class Wiki_model extends CI_Model {
 	 *
 	 * @param int		namespace ID
 	 * @return boolean	TRUE on success / FALSE on failure
-	 */	
+	 */
 	function delete_namespace($id)
 	{
 		return $this->db->delete('wiki_namespaces', array('namespace_id' => $id));

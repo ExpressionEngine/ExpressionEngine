@@ -5,13 +5,13 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.5
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -24,9 +24,9 @@
  * @link		http://ellislab.com
  */
 class Updater {
-	
+
 	var $version_suffix = '';
-	
+
 	/**
 	 * Constructor
 	 */
@@ -34,7 +34,7 @@ class Updater {
 	{
 		$this->EE =& get_instance();
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -64,10 +64,10 @@ class Updater {
 	{
 		ee()->load->dbforge();
 
-		$tables = array('sessions', 'throttle', 'online_users', 
-			'security_hashes', 'captcha', 'password_lockout', 
-			'email_console_cache', 'members', 'channel_titles', 
-			'channel_entries_autosave', 'cp_log', 'member_search', 
+		$tables = array('sessions', 'throttle', 'online_users',
+			'security_hashes', 'captcha', 'password_lockout',
+			'email_console_cache', 'members', 'channel_titles',
+			'channel_entries_autosave', 'cp_log', 'member_search',
 			'remember_me');
 
 		foreach ($tables as $table)
@@ -81,7 +81,7 @@ class Updater {
 					'null'			=> FALSE
 				)
 			);
-			
+
 			if ($table == 'remember_me')
 			{
 				unset($column_settings['ip_address']['null']);
@@ -90,7 +90,7 @@ class Updater {
 			ee()->smartforge->modify_column($table, $column_settings);
 		}
 	}
-}	
+}
 /* END CLASS */
 
 /* End of file ud_251.php */

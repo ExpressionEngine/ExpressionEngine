@@ -6,7 +6,7 @@
 -----------------------------------------------------
  http://ellislab.com/
 -----------------------------------------------------
- Copyright (c) 2003 - 2013, EllisLab, Inc.
+ Copyright (c) 2003 - 2014, EllisLab, Inc.
 =====================================================
  THIS IS COPYRIGHTED SOFTWARE
  PLEASE READ THE LICENSE AGREEMENT
@@ -25,8 +25,8 @@ if ( ! defined('EXT'))
 
 class Search_upd {
 
-	var $version = '2.2.1';
-	
+	var $version = '2.2.2';
+
 	function Search_upd()
 	{
 		// Make a local reference to the ExpressionEngine super object
@@ -41,11 +41,11 @@ class Search_upd {
 	 *
 	 * @access	public
 	 * @return	bool
-	 */	
+	 */
 	function install()
 	{
 		$sql[] = "INSERT INTO exp_modules (module_name, module_version, has_cp_backend) VALUES ('Search', '$this->version', 'n')";
-		$sql[] = "INSERT INTO exp_actions (class, method) VALUES ('Search', 'do_search')";
+		$sql[] = "INSERT INTO exp_actions (class, method, csrf_exempt) VALUES ('Search', 'do_search', 1)";
 		$sql[] = "CREATE TABLE IF NOT EXISTS exp_search (
 					 search_id varchar(32) NOT NULL,
 					 site_id INT(4) NOT NULL DEFAULT 1,
@@ -61,7 +61,7 @@ class Search_upd {
 					 PRIMARY KEY `search_id` (`search_id`),
 					 KEY `site_id` (`site_id`)
 					) ENGINE=MyISAM CHARACTER SET utf8 COLLATE utf8_general_ci";
-														
+
 		$sql[] = "CREATE TABLE IF NOT EXISTS exp_search_log (
 					id int(10) NOT NULL auto_increment,
 					site_id INT(4) UNSIGNED NOT NULL DEFAULT 1,
@@ -73,17 +73,17 @@ class Search_upd {
 					search_terms varchar(200) NOT NULL,
 					PRIMARY KEY `id` (`id`),
 					KEY `site_id` (`site_id`)
-					) ENGINE=MyISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci"; 
-	
+					) ENGINE=MyISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
+
 		foreach ($sql as $query)
 		{
 			ee()->db->query($query);
 		}
-	
+
 		return TRUE;
 	}
-	
-	
+
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -91,21 +91,21 @@ class Search_upd {
 	 *
 	 * @access	public
 	 * @return	bool
-	 */	
+	 */
 	function uninstall()
 	{
 		ee()->load->dbforge();
-		
-		$query = ee()->db->query("SELECT module_id FROM exp_modules WHERE module_name = 'Search'"); 
-				
+
+		$query = ee()->db->query("SELECT module_id FROM exp_modules WHERE module_name = 'Search'");
+
 		$sql[] = "DELETE FROM exp_module_member_groups WHERE module_id = '".$query->row('module_id') ."'";
 		$sql[] = "DELETE FROM exp_modules WHERE module_name = 'Search'";
 		$sql[] = "DELETE FROM exp_actions WHERE class = 'Search'";
 		$sql[] = "DELETE FROM exp_actions WHERE class = 'Search_mcp'";
-		
+
 		ee()->dbforge->drop_table('search');
 		ee()->dbforge->drop_table('search_log');
-	
+
 		foreach ($sql as $query)
 		{
 			ee()->db->query($query);
@@ -113,8 +113,8 @@ class Search_upd {
 
 		return TRUE;
 	}
-	
-	
+
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -122,14 +122,14 @@ class Search_upd {
 	 *
 	 * @access	public
 	 * @return	bool
-	 */	
-	
+	 */
+
 	function update($current='')
 	{
 		if (version_compare($current, '2.1', '<'))
 		{
-			ee()->load->library('utf8_db_convert');			
-			
+			ee()->load->library('utf8_db_convert');
+
 			ee()->utf8_db_convert->do_conversion(array(
 				'exp_search_log', 'exp_search'
 			));
@@ -159,7 +159,7 @@ class Search_upd {
 					unset($column_settings['ip_address']['default']);
 				}
 
-				ee()->dbforge->modify_column($table, $column_settings);	
+				ee()->dbforge->modify_column($table, $column_settings);
 			}
 		}
 
@@ -176,7 +176,15 @@ class Search_upd {
 
 			ee()->smartforge->add_key('search', 'site_id');
 		}
-		
+
+		if (version_compare($current, '2.2.2', '<'))
+		{
+			// Make searches exempt from CSRF check.
+			ee()->db->where('class', 'Search')
+				->where('method', 'do_search')
+				->update('actions', array('csrf_exempt' => 1));
+		}
+
 		return TRUE;
 	}
 

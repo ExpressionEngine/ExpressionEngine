@@ -1,0 +1,39 @@
+{exp:rss:feed channel="news"}
+
+<?xml version="1.0" encoding="{encoding}"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="{channel_language}">
+
+	<title type="text">{exp:xml_encode}{channel_name}{/exp:xml_encode}</title>
+	<subtitle type="text">{exp:xml_encode}{channel_name}:{channel_description}{/exp:xml_encode}</subtitle>
+	<link rel="alternate" type="text/html" href="{channel_url}" />
+	<link rel="self" type="application/atom+xml" href="{path={atom_feed_location}}" />
+	<updated>{gmt_edit_date format='%Y-%m-%dT%H:%i:%sZ'}</updated>
+	<rights>Copyright (c) {gmt_date format="%Y"}, {author}</rights>
+	<generator uri="http://ellislab.com/" version="{version}">ExpressionEngine</generator>
+	<id>tag:{trimmed_url},{gmt_date format="%Y:%m:%d"}</id>
+
+{exp:channel:entries channel="news" limit="15" dynamic_start="on" disable="member_data"}
+	<entry>
+	  <title>{exp:xml_encode}{title}{/exp:xml_encode}</title>
+	  <link rel="alternate" type="text/html" href="{comment_url_title_auto_path}" />
+	  <id>tag:{trimmed_url},{gmt_entry_date format="%Y"}:{relative_url}/{channel_id}.{entry_id}</id>
+	  <published>{gmt_entry_date format="%Y-%m-%dT%H:%i:%sZ"}</published>
+	  <updated>{gmt_edit_date format='%Y-%m-%dT%H:%i:%sZ'}</updated>
+	  <author>
+			<name>{author}</name>
+			<email>{email}</email>
+			{if url}<uri>{url}</uri>{/if}
+	  </author>
+{categories}
+	  <category term="{exp:xml_encode}{category_name}{/exp:xml_encode}"
+		scheme="{path=news/index}"
+		label="{exp:xml_encode}{category_name}{/exp:xml_encode}" />{/categories}
+	  <content type="html"><![CDATA[
+		{news_body} {news_extended}
+	  ]]></content>
+	</entry>
+{/exp:channel:entries}
+
+</feed>
+
+{/exp:rss:feed}						

@@ -1,0 +1,85 @@
+{if segment_2 != ''}
+  {redirect="404"}
+{/if}
+{html_head}
+	<title>{site_name}</title>
+{global_stylesheets}
+{rss} 
+{favicon}
+{html_head_end}	
+	<body>
+	{nav_access}
+	{branding_begin}
+			{embed="global_embeds/.top_nav" loc="home"}
+			{global_top_search}
+			{global_top_member}
+	{branding_end}
+	{wrapper_begin}
+{embed="global_embeds/.page_header" header="News"}	
+	<div id="feature" class="news">
+			{global_featured_welcome}
+			{global_featured_band}
+	    </div> <!-- ending #feature -->
+
+        	<div class="feature_end"></div>
+
+	<div id="content_pri"> <!-- This is where all primary content, left column gets entered -->
+		<!--  This is the channel entries tag.  Documentation for this parameter can be found at http://ellislab.com/expressionengine/user-guide/modules/channel/channel_entries.html
+				 Parameter Explanation:
+		channel= which channel to output, multiple channels may be piped in (channel_1|channel_2)
+		limit= limits the number of entries output in this instance of the tag
+		disable= turns off parsing of un-needed data -->
+		
+		{exp:channel:entries channel="news" limit="3" disable="categories|member_data|category_fields|pagination"}
+		
+		<!-- if no_results is a conditional variable, it can not be combined with advanced conditionals.  http://ellislab.com/expressionengine/user-guide/modules/channel/conditional_variables.html#cond_if_no_results -->
+		
+		{if no_results}<p>Sample No Results Information</p>{/if}
+		{if count == "1"}
+		<h3 class="recentnews">Recent News</h3>
+		<ul id="news_listing">
+		{/if}
+			<li>
+				<h4><a href="{comment_url_title_auto_path}">{title}</a>  //  <!-- entry_date is a variable, and date formatting variables can be found at http://ellislab.com/expressionengine/user-guide/templates/date_variable_formatting.html -->{entry_date format="%F %d %Y"}</h4>
+				
+				<!-- the following two lines are custom channel fields. http://ellislab.com/expressionengine/user-guide/cp/admin/channel_administration/custom_channel_fields.html -->
+				
+				{if news_image}
+					<img src="{news_image}" alt="{title}" />
+				{/if}
+				{news_body}
+				<p><a href="{comment_url_title_auto_path}#news_comments">{comment_total} comments</a> {global_edit_this}
+								{if news_extended != ""}  |  <a href="{comment_url_title_auto_path}">Read more</a>{/if}</p>  
+
+			</li>
+		{if count == total_results}</ul>{/if}
+		{/exp:channel:entries}
+		
+
+
+
+	</div>
+
+	<div id="content_sec" class="right green40">
+		<h3 class="oldernews">Browse Older News</h3>
+		<div id="news_archives">
+			<div id="categories_box">
+			{news_categories}
+			</div>
+			<div id="month_box">
+			{news_month_archives}
+			</div>
+		</div> <!-- ending #news_archives -->
+		
+		{news_calendar}
+		
+		{news_popular}
+		
+	{rss_links}
+
+	</div>	<!-- ending #content_sec -->
+	
+{global_footer}
+{wrapper_close}
+{js}
+{html_close}

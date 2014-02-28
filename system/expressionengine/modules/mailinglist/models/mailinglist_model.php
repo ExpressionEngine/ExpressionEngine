@@ -4,13 +4,13 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -23,7 +23,7 @@
  * @link		http://ellislab.com
  */
 class Mailinglist_model extends CI_Model  {
-	
+
 	/**
 	 * Get Mailinglists
 	 *
@@ -34,7 +34,7 @@ class Mailinglist_model extends CI_Model  {
 		$this->db->order_by('list_title');
 		return $this->db->get('mailing_lists');
 	}
-	
+
 	// ------------------------------------------------------------------------
 
 	/**
@@ -50,7 +50,7 @@ class Mailinglist_model extends CI_Model  {
 		{
 			$this->db->select($addt_select);
 		}
-		
+
 		if ($id)
 		{
 			if (is_array($id))
@@ -59,13 +59,13 @@ class Mailinglist_model extends CI_Model  {
 			}
 			else
 			{
-				$this->db->where('list_id', $id);	
-			}			
+				$this->db->where('list_id', $id);
+			}
 		}
-		
+
 		return $this->db->get('mailing_lists');
 	}
-	
+
 	// ------------------------------------------------------------------------
 
 	/**
@@ -81,7 +81,7 @@ class Mailinglist_model extends CI_Model  {
 		{
 			$this->db->select($addt_select);
 		}
-		
+
 		if ($id)
 		{
 			if (is_array($id))
@@ -90,21 +90,21 @@ class Mailinglist_model extends CI_Model  {
 			}
 			else
 			{
-				$this->db->where('list_id', $id);	
-			}			
+				$this->db->where('list_id', $id);
+			}
 		}
-		
+
 		return $this->db->get('mailing_list');
 	}
-	
+
 
 	// ------------------------------------------------------------------------
-	
+
 	/**
 	 * Update Mailinglist
 	 *
 	 * @param mixed 	FALSE or integer
-	 * @param array 	
+	 * @param array
 	 * @return void
 	 */
 	function update_mailinglist($list_id, $data)
@@ -118,7 +118,7 @@ class Mailinglist_model extends CI_Model  {
 			$this->db->where('list_id', $list_id);
 			$this->db->update('mailing_lists', $data);
 		}
-		
+
 		return;
 	}
 
@@ -141,13 +141,13 @@ class Mailinglist_model extends CI_Model  {
 	}
 
 	// ------------------------------------------------------------------------
-	
+
 	/**
 	 * Unique Mailinglist shortname
 	 *
 	 * @param mixed 	list id
-	 * @param str		
-	 * @return boolean	
+	 * @param str
+	 * @return boolean
 	 */
 	function unique_shortname($list_id, $str)
 	{
@@ -155,7 +155,7 @@ class Mailinglist_model extends CI_Model  {
 		{
 			$this->db->where('list_id !=', $list_id);
 		}
-		
+
 		$this->db->where('list_name', $str);
 
 		$count = $this->db->count_all_results('mailing_lists');
@@ -169,7 +169,7 @@ class Mailinglist_model extends CI_Model  {
 	}
 
 	// ------------------------------------------------------------------------
-	
+
 	/**
 	 * Delete Mailinglists
 	 *
@@ -183,20 +183,20 @@ class Mailinglist_model extends CI_Model  {
 
 		return ($this->db->affected_rows() == 1) ? $this->lang->line('ml_list_deleted') : $this->lang->line('ml_lists_deleted');
 	}
-	
-	// ------------------------------------------------------------------------	
-	
+
+	// ------------------------------------------------------------------------
+
 	/**
 	 * Insert new contact
 	 *
-	 * @param array 
+	 * @param array
 	 */
 	function insert_subscription($data)
 	{
 		return $this->db->insert('mailing_list', $data);
 	}
 
-	// ------------------------------------------------------------------------	
+	// ------------------------------------------------------------------------
 
 	/**
 	 * Delete Subscription
@@ -209,17 +209,17 @@ class Mailinglist_model extends CI_Model  {
 		$this->db->where('email', $email);
 		$this->db->where('list_id', $list_id);
 		$this->db->delete('mailing_list');
-		
+
 		return;
 	}
-	
-	// ------------------------------------------------------------------------	
+
+	// ------------------------------------------------------------------------
 
 	/**
-	 * Delete Email 
+	 * Delete Email
 	 *
 	 * @param int 		user_id
-	 * @return string 	
+	 * @return string
 	 */
 	function delete_email($user)
 	{
@@ -229,22 +229,22 @@ class Mailinglist_model extends CI_Model  {
 		return ($this->db->affected_rows() == 1) ? $this->lang->line('ml_email_deleted') : $this->lang->line('ml_emails_deleted');
 	}
 
-	// ------------------------------------------------------------------------	
-	
+	// ------------------------------------------------------------------------
+
 	/**
 	 * Mailinglist Search
 	 *
 	 * @param int	List id
 	 * @param str	email
 	 * @param array order
-	 * @param int 
+	 * @param int
 	 * @param int
 	 * @return object
 	 */
 	function mailinglist_search($list_id = '', $email = '', $order = array(), $rownum = 0, $perpage = '')
 	{
 		$do_join = FALSE;
-			
+
 		$this->db->select('user_id, mailing_list.list_id, email, ip_address');
 		$this->db->from('mailing_list');
 
@@ -283,7 +283,7 @@ class Mailinglist_model extends CI_Model  {
 
 		return $this->db->get();
 	}
-	
+
 }
 // END CLASS
 

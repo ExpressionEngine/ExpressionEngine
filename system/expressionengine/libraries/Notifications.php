@@ -5,13 +5,13 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -32,11 +32,11 @@ class Notifications {
 	{
 		// Get EE superobject reference
 		$this->EE =& get_instance();
-		
+
 		ee()->load->library('api');
 		ee()->load->library('email');
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -53,10 +53,10 @@ class Notifications {
 	{
 		ee()->api->instantiate('channel_structure');
 		ee()->load->model('channel_entries_model');
-		
+
 		$e = ee()->channel_entries_model->get_entry($entry_id, $channel_id);
 		$c = ee()->api_channel_structure->get_channel_info($channel_id);
-		
+
 		$swap = array(
 						'name'				=> ee()->session->userdata('screen_name'),
 						'email'				=> ee()->session->userdata('email'),
@@ -65,7 +65,7 @@ class Notifications {
 						'entry_url'			=> reduce_double_slashes($c->row('channel_url').'/'.$e->row('url_title')),
 						'comment_url'		=> reduce_double_slashes($c->row('comment_url').'/'.$e->row('url_title'))
 		);
-		
+
 		$template = ee()->functions->fetch_email_template('admin_notify_entry');
 		$email_tit = ee()->functions->var_swap($template['title'], $swap);
 		$email_msg = ee()->functions->var_swap($template['data'], $swap);
@@ -99,7 +99,7 @@ class Notifications {
 			}
 		}
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -121,13 +121,13 @@ class Notifications {
 
 		$subject = ee()->lang->line('checksum_email_subject');
 		$message = ee()->lang->line('checksum_email_message');
-		
+
 		$message = str_replace(
 			array('{url}', '{changed}'),
 			array(ee()->config->item('base_url'), implode("\n", $changed)),
 			$message
 		);
-		
+
 		ee()->email->EE_initialize();
 		ee()->email->wordwrap = false;
 		ee()->email->from(ee()->config->item('webmaster_email'), ee()->config->item('webmaster_name'));

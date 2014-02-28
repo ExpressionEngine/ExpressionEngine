@@ -5,13 +5,13 @@
  *
  * @package     ExpressionEngine
  * @author      EllisLab Dev Team
- * @copyright   Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright   Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license     http://ellislab.com/expressionengine/user-guide/license.html
  * @link        http://ellislab.com
  * @since       Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -37,7 +37,7 @@ class Updater {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Do Update
 	 *
@@ -56,21 +56,21 @@ class Updater {
 		{
 			$this->$v();
 		}
-				
+
 		return TRUE;
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
 	 * Update Session Table
 	 *
-	 * Drops site_id field from sessions table 
+	 * Drops site_id field from sessions table
 	 *
 	 * @return 	void
 	 */
 	private function _update_session_table()
-	{	
+	{
 		// Drop site_id
 		ee()->smartforge->drop_column('sessions', 'site_id');
     }
@@ -89,7 +89,7 @@ class Updater {
 			ee()->config->_update_config(array('emoticon_url' => $emoticon_url), array('emoticon_path' => ''));
 		}
 	}
-}   
+}
 /* END CLASS */
 
 /* End of file ud_230.php */

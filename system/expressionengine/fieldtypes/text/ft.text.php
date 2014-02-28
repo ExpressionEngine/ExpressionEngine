@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -100,7 +100,6 @@ class Text_ft extends EE_Fieldtype {
 
 		$field = array(
 			'name'		=> $this->field_name,
-			'id'		=> $this->field_name,
 			'value'		=> $this->_format_number($data, $type),
 			'dir'		=> $this->settings['field_text_direction'],
 			'field_content_type' => $type

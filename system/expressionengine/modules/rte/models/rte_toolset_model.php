@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.5
@@ -23,10 +23,10 @@
  * @link		http://ellislab.com
  */
 class Rte_toolset_model extends CI_Model {
-	
+
 	/**
 	 * Get member's RTE preferences
-	 * 
+	 *
 	 * @access	public
 	 * @return	array
 	 */
@@ -37,14 +37,14 @@ class Rte_toolset_model extends CI_Model {
 			->where('member_id', $member_id)
 			->get('members')
 			->row_array();
-	
+
 		return $prefs;
 	}
 
 
 	/**
 	 * Get all toolsets available for the current member
-	 * 
+	 *
 	 * @access	public
 	 * @param	int $member_id Member ID for whose toolsets we want
 	 * @return	array The tools in ID => name format
@@ -56,14 +56,14 @@ class Rte_toolset_model extends CI_Model {
 			->or_where("member_id = '0' AND enabled = 'y'")
 			->get('rte_toolsets')
 			->result_array();
-			
+
 		return $toolsets;
 	}
 
 
 	/**
 	 * Get all the Toolsets
-	 * 
+	 *
 	 * @access	public
 	 * @param	bool $list Whether or not you want it to be a ID => name list
 	 * @return	array The tools
@@ -87,7 +87,7 @@ class Rte_toolset_model extends CI_Model {
 
 	/**
 	 * Get the tools for the member’s toolset
-	 * 
+	 *
 	 * @param	bool
 	 * @return	int The ID of the current member’s toolset
 	 */
@@ -117,7 +117,7 @@ class Rte_toolset_model extends CI_Model {
 
 	/**
 	 * Check to see if the current member can access the Toolset
-	 * 
+	 *
 	 * @access	public
 	 * @param	int $toolset_id The Toolset ID
 	 * @return	bool
@@ -159,7 +159,7 @@ class Rte_toolset_model extends CI_Model {
 				}
 			}
 		}
-				
+
 		return (($toolset->member_id != 0 && $toolset->member_id == $this->session->userdata('member_id')) ||
 				($toolset->member_id == 0 && $admin));
 	}
@@ -167,7 +167,7 @@ class Rte_toolset_model extends CI_Model {
 
 	/**
 	 * Get the toolset
-	 * 
+	 *
 	 * @access	public
 	 * @param	int $toolset_id The Toolset ID
 	 * @return	obj The Toolset row object
@@ -196,10 +196,10 @@ class Rte_toolset_model extends CI_Model {
 		return $toolset;
 	}
 
-	
+
 	/**
 	 * Tells you if a toolset is private
-	 * 
+	 *
 	 * @access	public
 	 * @param	int $toolset_id The Toolset ID
 	 * @return	bool
@@ -218,7 +218,7 @@ class Rte_toolset_model extends CI_Model {
 
 	/**
 	 * Save a toolset
-	 * 
+	 *
 	 * @access	public
 	 * @param	array	toolset row to update/insert
 	 * @param	int		ID of the toolset to update
@@ -231,10 +231,10 @@ class Rte_toolset_model extends CI_Model {
 		{
 			$this->db->where('toolset_id', $toolset_id)
 				->update('rte_toolsets', $toolset);
-		} 
+		}
 		else
 		{
-			$this->db->insert('rte_toolsets', $toolset);		
+			$this->db->insert('rte_toolsets', $toolset);
 		}
 
 		return $this->db->affected_rows();
@@ -243,7 +243,7 @@ class Rte_toolset_model extends CI_Model {
 
 	/**
 	 * Delete a toolset
-	 * 
+	 *
 	 * @access	public
 	 * @param	int $toolset_id The ID of the toolset to delete
 	 * @return	mixed
@@ -273,7 +273,7 @@ class Rte_toolset_model extends CI_Model {
 			'Link', 'Ordered List', 'Underline', 'Unordered List',
 			'View Source');
 
-		// Load all available tools		
+		// Load all available tools
 		foreach ($tool_names as $tool)
 		{
 			$this->db->insert(
@@ -300,13 +300,13 @@ class Rte_toolset_model extends CI_Model {
 				'tools'		=> implode('|', $tool_ids),
 				'enabled'	=> 'y'
 			)
-		);		
+		);
 	}
 
 
 	/**
 	 * Check the name of the toolset for uniqueness
-	 * 
+	 *
 	 * @access	public
 	 * @param	string $name The Toolset name
 	 * @param	int $toolset_id The ID of the toolset (optional)

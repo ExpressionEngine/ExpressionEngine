@@ -6,7 +6,7 @@
  *
  * @package		CodeIgniter
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc.
  * @license		http://codeigniter.com/user_guide/license.html
  * @link		http://codeigniter.com
  * @since		Version 1.0
@@ -399,7 +399,7 @@ class CI_Encrypt {
 		$keylen = (MB_ENABLED) ? mb_strlen($keyhash, 'ascii') : strlen($keyhash);
 		$str = '';
 		$len = (MB_ENABLED) ? mb_strlen($data, 'ascii') : strlen($data);
-		
+
 		for ($i = 0, $j = 0, $len; $i < $len; ++$i, ++$j)
 		{
 			if ($j >= $keylen)

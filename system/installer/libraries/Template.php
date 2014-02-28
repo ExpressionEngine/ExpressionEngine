@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -33,13 +33,13 @@ class Installer_Template {
 	private $related_markers = array();
 
 	/**
-	 * Build the installer's Template library and load all the 
+	 * Build the installer's Template library and load all the
 	 * libraries it will need.
 	 */
 	public function __construct()
 	{
 		// We're gonna need this to be already loaded.
-		require_once(APPPATH . 'libraries/Functions.php');	
+		require_once(APPPATH . 'libraries/Functions.php');
 		ee()->functions = new Installer_Functions();
 
 		require_once(APPPATH . 'libraries/Extensions.php');
@@ -70,9 +70,9 @@ class Installer_Template {
 
 		ee()->db->select('field_id, field_name');
 		$query = ee()->db->get('channel_fields');
-	
-		$channel_custom_fields = array();	
-		foreach ($query->result_array() as $field) 
+
+		$channel_custom_fields = array();
+		foreach ($query->result_array() as $field)
 		{
 			$channel_custom_fields[] = $field['field_name'];
 		}
@@ -95,7 +95,7 @@ class Installer_Template {
 			'url_or_email_as_author', 'url_or_email_as_link', 'url_title',
 			'url_title_path', 'username', 'week_date'
 		);
-	
+
 		$channel_pair_variables = array(
 			'date_header', 'date_footer', 'categories'
 		);
@@ -107,7 +107,7 @@ class Installer_Template {
 		// variables with the single entry short-cut
 		//
 		// NOTE If we don't use a tag pair, we have no where for parameters
-		// to go.  Maybe check for parameters and make the decision to 
+		// to go.  Maybe check for parameters and make the decision to
 		// use tag pair vs single entry then?
 		foreach ($this->related_data as $marker=>$relationship_tag)
 		{
@@ -123,7 +123,7 @@ class Installer_Template {
 						continue;
 					}
 					// Just replace the front of the tag.  This way any paramters are left where they are.
-					$new_var = '{' . $relationship_tag['field_name'] . ':' . $variable; 
+					$new_var = '{' . $relationship_tag['field_name'] . ':' . $variable;
 					$tagdata = str_replace('{' . $variable, $new_var, $tagdata);
 				}
 			}
@@ -137,7 +137,7 @@ class Installer_Template {
 						continue;
 					}
 					// Just the front of the tag, leave parameters in place.
-					$new_var = $relationship_tag['field_name'] . ':' . $variable; 
+					$new_var = $relationship_tag['field_name'] . ':' . $variable;
 					$tagdata = str_replace('{' . $variable, '{' . $new_var, $tagdata);
 					// For pairs, we have to replace the closing tag as well.
 					$tagdata = str_replace('{/' . $variable, '{/' . $new_var, $tagdata);
@@ -145,12 +145,12 @@ class Installer_Template {
 			}
 
 			// If no_related_entries no longer works.  It's been replaced by prefix:no_results
-			$tagdata = str_replace('{if no_related_entries}', '{if ' . $relationship_tag['field_name'] . ':no_results}', $tagdata);	
-				
+			$tagdata = str_replace('{if no_related_entries}', '{if ' . $relationship_tag['field_name'] . ':no_results}', $tagdata);
+
 			$tagdata = '{' . $relationship_tag['field_name'] . '}' . $tagdata . '{/' . $relationship_tag['field_name'] . '}';
 			$target = '{REL[' . $relationship_tag['field_name'] . ']' . $marker . 'REL}';
 			$template_data = str_replace($target, $tagdata, $template_data);
-		}	
+		}
 
 		// Now deal with {reverse_related_entries}, just replace each
 		// tag pair with a {parents} tag pair and put the parameters from
@@ -182,11 +182,11 @@ class Installer_Template {
 					}
 					$new_var = 'parents:' . $variable;
 					$tagdata = str_replace('{' . $variable, '{' . $new_var, $tagdata);
-					$tagdata = str_replace('{/' . $variable, '{/' . $new_var, $tagdata); 
+					$tagdata = str_replace('{/' . $variable, '{/' . $new_var, $tagdata);
 				}
 			}
-		
-			// If no_reverse_related_entries doesn't work anymore.  Replace with no_results.	
+
+			// If no_reverse_related_entries doesn't work anymore.  Replace with no_results.
 			$tagdata = str_replace('{if no_reverse_related_entries}', '{if parents:no_results}', $tagdata);
 
 			$parentTag = 'parents ';
@@ -208,48 +208,48 @@ class Installer_Template {
 	 *
 	 * Channel entries can have related entries embedded within them.  We'll
 	 * extract the related tag data, stash it away in an array, and replace it
-	 * with a marker string so that the template parser doesn't see it. 
+	 * with a marker string so that the template parser doesn't see it.
 	 *
 	 * This is a helper method called by _replace_related_entries_tags(), not
 	 * to be called by do_update().
 	 *
 	 * This method has multiple side effects and makes use of the following
 	 * class variables:
-	 * 		$related_data, $reverse_related_data, 
+	 * 		$related_data, $reverse_related_data,
 	 *		$related_id, $related_markers
 	 *
 	 * @param	string The template chunk to be chekd for relationship tags.
 	 *
 	 * @return	string The parsed template chunk, with relationship tags removed.
-	 */	
+	 */
 	private function _assign_relationship_data($chunk)
 	{
 		$this->related_markers = array();
 		$this->related_data = array();
 		$this->reverse_related_data = array();
 		$this->related_id = NULL;
-		
+
 		if (preg_match_all("/".LD."related_entries\s+id\s*=\s*[\"\'](.+?)[\"\']".RD."(.+?)".LD.'\/'."related_entries".RD."/is", $chunk, $matches))
-		{  		
+		{
 			$no_rel_content = '';
-			
+
 			for ($j = 0; $j < count($matches[0]); $j++)
 			{
 				$rand = ee()->functions->random('alnum', 8);
 				$marker = LD.'REL['.$matches[1][$j].']'.$rand.'REL'.RD;
-				
-				if (preg_match("/".LD."if no_related_entries".RD."(.*?)".LD.'\/'."if".RD."/s", $matches[2][$j], $no_rel_match)) 
+
+				if (preg_match("/".LD."if no_related_entries".RD."(.*?)".LD.'\/'."if".RD."/s", $matches[2][$j], $no_rel_match))
 				{
 					// Match the entirety of the conditional
-					
+
 					if (stristr($no_rel_match[1], LD.'if'))
 					{
 						$match[0] = ee()->functions->full_tag($no_rel_match[0], $matches[2][$j], LD.'if', LD.'\/'."if".RD);
 					}
-					
+
 					$no_rel_content = substr($no_rel_match[0], strlen(LD."if no_related_entries".RD), -strlen(LD.'/'."if".RD));
 				}
-				
+
 				$this->related_markers[] = $matches[1][$j];
 				$vars = ee()->functions->assign_variables($matches[2][$j]);
 				$this->related_id = $matches[1][$j];
@@ -262,33 +262,33 @@ class Installer_Template {
 											'var_cond'			=> ee()->functions->assign_conditional_variables($matches[2][$j], '\/', LD, RD),
 											'no_rel_content'	=> $no_rel_content
 										);
-										
-				$chunk = str_replace($matches[0][$j], $marker, $chunk);					
+
+				$chunk = str_replace($matches[0][$j], $marker, $chunk);
 			}
 		}
 
 		if (preg_match_all("/".LD."reverse_related_entries\s*(.*?)".RD."(.+?)".LD.'\/'."reverse_related_entries".RD."/is", $chunk, $matches))
-		{  		
+		{
 			for ($j = 0; $j < count($matches[0]); $j++)
 			{
 				$rand = ee()->functions->random('alnum', 8);
 				$marker = LD.'REV_REL['.$rand.']REV_REL'.RD;
 				$vars = ee()->functions->assign_variables($matches[2][$j]);
-				
+
 				$no_rev_content = '';
 
-				if (preg_match("/".LD."if no_reverse_related_entries".RD."(.*?)".LD.'\/'."if".RD."/s", $matches[2][$j], $no_rev_match)) 
+				if (preg_match("/".LD."if no_reverse_related_entries".RD."(.*?)".LD.'\/'."if".RD."/s", $matches[2][$j], $no_rev_match))
 				{
 					// Match the entirety of the conditional
-					
+
 					if (stristr($no_rev_match[1], LD.'if'))
 					{
 						$match[0] = ee()->functions->full_tag($no_rev_match[0], $matches[2][$j], LD.'if', LD.'\/'."if".RD);
 					}
-					
+
 					$no_rev_content = substr($no_rev_match[0], strlen(LD."if no_reverse_related_entries".RD), -strlen(LD.'/'."if".RD));
 				}
-				
+
 				$this->reverse_related_data[$rand] = array(
 															'marker'			=> $rand,
 															'tagdata'			=> $matches[2][$j],
@@ -298,11 +298,11 @@ class Installer_Template {
 															'params'			=> ee()->functions->assign_parameters($matches[1][$j]),
 															'no_rev_content'	=> $no_rev_content
 														);
-										
-				$chunk = str_replace($matches[0][$j], $marker, $chunk);					
+
+				$chunk = str_replace($matches[0][$j], $marker, $chunk);
 			}
 		}
-	
+
 		return $chunk;
 	}
 

@@ -3,7 +3,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -26,15 +26,15 @@ $(textarea).scrollToCursor();
 (function() {
 	function Selection_Base(el) {
 		this.el = el;
-		
+
 		this.lastIdx = -2;
 		this.currentIdx = 0;
-		
+
 		if (document.selection) {
 			this.range = this.el.createTextRange();
 		}
 	}
-	
+
 	Selection_Base.prototype = {
 
 		createSelection: function(start, end) {
@@ -47,9 +47,9 @@ $(textarea).scrollToCursor();
 			else if (document.selection) {
 				var r = document.selection.createRange();
 				r.moveStart("character", -this.el.value.length);
-				
+
 				r.collapse();
-				
+
 				r.moveStart("character", start);
 				r.moveEnd("character", end - start);
 				r.select();
@@ -73,20 +73,20 @@ $(textarea).scrollToCursor();
 				return {start: this.el.selectionStart, end: this.el.selectionEnd};
 			}
 			else if (document.selection) {
-				
+
 				var r = document.selection.createRange(),
 					selectionEnd = Math.abs(r.duplicate().moveEnd('character', -100000));
 					selectionStart = selectionEnd - r.text.length;
-				
+
 				return {start: selectionStart, end: selectionEnd};
 			}
 		},
 
 		replaceWith: function(text) {
 			var newStart;
-			
+
 			this.el.focus();
-			
+
 			if ('selectionStart' in this.el) {
 				newStart = this.el.selectionStart + text.length;
 
@@ -101,13 +101,13 @@ $(textarea).scrollToCursor();
 
 			return this;
 		},
-		
-		selectNext: function(find) {			
-			
+
+		selectNext: function(find) {
+
 			if ('selectionStart' in this.el) {
-			
+
 				var old = this.currentIdx, chunck;
-			
+
 				if (old > 0) {
 					chunk = this.el.value.substring(this.currentIdx);
 				}
@@ -130,7 +130,7 @@ $(textarea).scrollToCursor();
 			}
 			else if (document.selection) {
 				// This is actually easier in IE - whoa!
-				
+
 				this.el.focus();
 
 				var res = this.range.findText(find, 1, 0);
@@ -144,7 +144,7 @@ $(textarea).scrollToCursor();
 				}
 			}
 		},
-		
+
 		resetCycle: function() {
 			this.lastIdx = -2;
 			this.currentIdx = 0;
@@ -154,12 +154,12 @@ $(textarea).scrollToCursor();
 			}
 		}
 	};
-	
+
 	if (jQuery) {
 
 		function Selection(el) {
 			Selection_Base.call(this, el);
-			
+
 			var textarea_line_height = 13,
 				jQ_el = $(this.el),
 				old_height = jQ_el.scrollTop(9999).scrollTop(),
@@ -173,19 +173,19 @@ $(textarea).scrollToCursor();
 			this.textarea_line_height = new_height - old_height;
 			this.jQ_el = jQ_el;
 		}
-		
+
 		// Add any methods that require jQuery support
-		
+
 		var F = function() {};
 		F.prototype = Selection_Base.prototype;
 		Selection.prototype = new F();
 		Selection.prototype.constructor = Selection;
 
 		Selection.prototype.scrollToCursor = function() {
-			
+
 			// IE already does this when you create a selection, so we only hack
 			// around the others
-			
+
 			if ('selectionStart' in this.el) {
 				var boundaries = this.getSelectedRange(),
 					lines = this.jQ_el.val().substr(0, boundaries.start).split("\n"),
@@ -201,7 +201,7 @@ $(textarea).scrollToCursor();
 				lineCount = (lineCount > 5) ? lineCount - 5 : 0;
 				this.jQ_el.scrollTop((lineCount - 5) * this.textarea_line_height);
 			}
-			
+
 			return this;
 		}
 	}
@@ -232,7 +232,7 @@ $(textarea).scrollToCursor();
 			return this.sel;
 		},
 		_resize: function() {
-			
+
 			var range = this.sel.getSelectedRange();
 
 			if (range.start == range.end && range.end == this.el.value.length) {
@@ -257,13 +257,13 @@ $(textarea).scrollToCursor();
 			});
 		}
 	};
-	
+
 	// ---------------------------------
 
 	if (jQuery) {
-		
+
 		// And we want methods to be available the traditional jQuery way
-		
+
 		for (func in Txtarea.prototype) {
 			jQuery.fn[func] = (function(f) {
 				return function() {
@@ -274,7 +274,7 @@ $(textarea).scrollToCursor();
 						jQ_Txt = new Txtarea(this[0]);
 						this.data('txtarea', jQ_Txt);
 					}
-					
+
 					return jQ_Txt[f].apply(jQ_Txt, args);
 				}
 			})(func);

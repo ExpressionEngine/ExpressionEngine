@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -64,7 +64,6 @@ class EE_Email extends CI_Email {
 		/*	Hidden Configuration Variables
 		/*	- email_newline => Default newline.
 		/*  - email_crlf => CRLF used in quoted-printable encoding
-		/*  - email_smtp_port => SMTP Port
 		/*  - email_smtp_crypto => Cryptographic protocol (Secure Sockets Layer or Transport Layer Security allowed)
         /* -------------------------------------------*/
 
@@ -76,14 +75,6 @@ class EE_Email extends CI_Email {
 		if (ee()->config->item('email_crlf') !== FALSE)
 		{
 			$config['crlf'] = ee()->config->item('email_crlf');
-		}
-
-		if (ee()->config->item('email_smtp_port') !== FALSE)
-		{
-			ee()->load->library('logger');
-			ee()->logger->deprecated('2.6', '$config["smtp_port"] = "'.ee()->config->item('email_smtp_port').'";');
-
-			$config['smtp_port'] = ee()->config->item('email_smtp_port');
 		}
 
 		if (ee()->config->item('email_smtp_crypto') == 'tls' OR ee()->config->item('email_smtp_crypto') == 'ssl')
@@ -151,37 +142,8 @@ class EE_Email extends CI_Email {
 				return $ret;
 			}
 		}
-		//
-		// ------------------------------------------------------
 
 		return parent::_spool_email();
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Removed from CI, here temporarily during deprecation period
-	 */
-	function _get_ip()
-	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('2.6', 'Input::ip_address()');
-
-		// Why was this ever here?
-		return ee()->input->ip_address();
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Removed from CI, here temporarily during deprecation period
-	 */
-	function _set_header($header, $value)
-	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('2.6', 'Email::set_header()');
-
-		$this->set_header($header, $value);
 	}
 }
 // END CLASS

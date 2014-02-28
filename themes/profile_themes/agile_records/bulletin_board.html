@@ -1,8 +1,8 @@
-<!-- Template: Bulletin Board -->	
+<!-- Template: Bulletin Board -->
 {if message}
 <p>{include:message}</p>
 {/if}
-	
+
 <h3>{lang:bulletin_board}</h3>
 
 {if can_post_bulletin}
@@ -18,13 +18,12 @@
 {include:bulletins}
 {/if}
 
-{if paginate}
+{paginate}
 <table>
 <tr>
 <td>
-{include:pagination_link}
+{pagination_links}
 </td>
 </tr>
 </table>
-{/if}
-<!-- End Template: Bulletin Board -->
+{/paginate}

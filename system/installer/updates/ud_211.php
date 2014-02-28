@@ -5,13 +5,13 @@
  *
  * @package     ExpressionEngine
  * @author      EllisLab Dev Team
- * @copyright   Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright   Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license     http://ellislab.com/expressionengine/user-guide/license.html
  * @link        http://ellislab.com
  * @since       Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -37,10 +37,10 @@ class Updater {
 	function do_update()
 	{
 		// update channel_data table changing text fields to NOT NULL
-		
+
 		// Get all the text fields in the table
 		$fields = ee()->db->field_data('channel_data');
-		
+
 		$fields_to_alter = array();
 
 		foreach ($fields as $field)
@@ -49,7 +49,7 @@ class Updater {
 			{
 				$fields_to_alter[] = array($field->name, $field->type);
 			}
-		} 		
+		}
 
 		if (count($fields_to_alter) > 0)
 		{
@@ -59,7 +59,7 @@ class Updater {
 				ee()->db->query("UPDATE `exp_channel_data` SET {$row['0']} = '' WHERE {$row['0']} IS NULL");
 			}
 		}
-		
+
 		// There was a brief time where this was altered but installer still set to 50 characters
 		// so we update again to catch any from that window
 		$fields = array(
@@ -85,16 +85,16 @@ class Updater {
 		);
 
 		ee()->smartforge->insert_set('specialty_templates', $values, $unique);
-		
+
 		// Do we need to move comment notifications?
 		// We should skip it if the Comments module isn't installed.
 		if ( ! ee()->db->table_exists('comments'))
 		{
-			return TRUE;			
-		}		
-		
+			return TRUE;
+		}
+
 		ee()->progress->update_state("Creating Comment Subscription Table");
-			
+
 			$fields = array(
 				'subscription_id'	=> array('type' => 'int'	, 'constraint' => '10', 'unsigned' => TRUE, 'auto_increment' => TRUE),
 				'entry_id'			=> array('type' => 'int'	, 'constraint' => '10', 'unsigned' => TRUE),
@@ -109,20 +109,20 @@ class Updater {
 		ee()->dbforge->add_field($fields);
 		ee()->dbforge->add_key('subscription_id', TRUE);
 		ee()->dbforge->add_key(array('entry_id', 'member_id'));
-		ee()->smartforge->create_table('comment_subscriptions');		
+		ee()->smartforge->create_table('comment_subscriptions');
 
 
 		// this step can be a doozy.  Set time limit to infinity.
 		// Server process timeouts are out of our control, unfortunately
 		@set_time_limit(0);
 		ee()->db->save_queries = FALSE;
-		
+
 		ee()->progress->update_state('Moving Comment Notifications to Subscriptions');
-				
+
 		$batch = 50;
 		$offset = 0;
 		$progress   = "Moving Comment Notifications: %s";
-		
+
 		// If the notify field doesn't exist anymore, we can move on
 		// to the next update file.
 		if ( ! ee()->db->field_exists('notify', 'comments'))
@@ -133,32 +133,32 @@ class Updater {
 		ee()->db->distinct();
 		ee()->db->select('entry_id, email, name, author_id');
 		ee()->db->where('notify', 'y');
-		
+
 		$total = ee()->db->count_all_results('comments');
 
 		if (count($total) > 0)
 		{
 			for ($i = 0; $i < $total; $i = $i + $batch)
 			{
-				ee()->progress->update_state(str_replace('%s', "{$offset} of {$count} queries", $progress));	
+				ee()->progress->update_state(str_replace('%s', "{$offset} of {$count} queries", $progress));
 
 				$data = array();
-		
+
 				ee()->db->distinct();
 				ee()->db->select('entry_id, email, name, author_id');
 				ee()->db->where('notify', 'y');
 				ee()->db->limit($batch, $offset);
 				$comment_data = ee()->db->get('comments');
-							
+
 				$s_date = NULL;
-					
+
 				// convert to comments
 				foreach($comment_data->result_array() as $row)
 				{
 					$author_id = $row['author_id'];
 					$rand = $author_id.$this->random('alnum', 8);
 					$email = ($row['email'] == '') ? NULL : $row['email'];
-			
+
 					$data[] = array(
 						'entry_id'			=> $row['entry_id'],
 						'member_id'			=> $author_id,
@@ -168,7 +168,7 @@ class Updater {
 						'hash'				=> $rand
 					);
 				}
-				
+
 				if (count($data) > 0)
 				{
 					if (ee()->db->insert_batch('comment_subscriptions', $data))
@@ -185,14 +185,14 @@ class Updater {
 						ee()->db->update('comments');
 					}
 				}
-				
-				$offset = $offset + $batch; 
+
+				$offset = $offset + $batch;
 			}
 		}
-		
+
 		//  Lastly- we get rid of the notify field
 		ee()->smartforge->drop_column('comments', 'notify');
-		
+
 		return TRUE;
 	}
 
@@ -212,23 +212,23 @@ You can see the comments at the following URL:
 {comment_url}
 
 {comments}
-{comment} 
+{comment}
 {/comments}
 
 To stop receiving notifications for this entry, click here:
 {notification_removal_url}
 EOF;
 	}
-	
+
 	// ------------------------------------------------------------------------
 
 	function random($type = 'encrypt', $len = 8)
 	{
 		ee()->load->helper('string');
 		return random_string($type, $len);
-	}	
-	
-}   
+	}
+
+}
 /* END CLASS */
 
 /* End of file ud_211.php */

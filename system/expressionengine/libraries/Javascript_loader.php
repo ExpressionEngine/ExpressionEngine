@@ -4,13 +4,13 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.5
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -23,7 +23,7 @@
  * @link		http://ellislab.com
  */
 class Javascript_loader {
-	
+
 	/**
 	 * Constructor
 	 */
@@ -36,11 +36,11 @@ class Javascript_loader {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Javascript Combo Loader 
+	 * Javascript Combo Loader
 	 *
 	 * Combo load multiple javascript files to reduce HTTP requests
 	 * BASE.AMP.'C=javascript&M=combo&ui=ui,packages&file=another&plugin=plugins&package=third,party,packages'
-	 * 
+	 *
 	 * @access public
 	 * @return string
 	 */
@@ -56,14 +56,14 @@ class Javascript_loader {
 			'package'	=> PATH_THIRD,
 			'fp_module'	=> PATH_MOD
 		);
-		
+
 		$mock_name = '';
 
 		foreach($types as $type => $path)
 		{
 			$mock_name .= $this->input->get_post($type);
 			$files = explode(',', $this->input->get_post($type));
-			
+
 			foreach($files as $file)
 			{
 				if ($type == 'package' OR $type == 'fp_module')
@@ -74,7 +74,7 @@ class Javascript_loader {
 				{
 					$parts = explode('/', $file);
 					$file = array();
-					
+
 					foreach ($parts as $part)
 					{
 						if ($part != '..')
@@ -82,14 +82,14 @@ class Javascript_loader {
 							$file[] = $this->security->sanitize_filename($part);
 						}
 					}
-								
+
 					$file = implode('/', $file);
 				}
 				else
 				{
 					$file = $this->security->sanitize_filename($file);
 				}
-				
+
 				$file = $path.$file.'.js';
 
 				if (file_exists($file))
@@ -101,18 +101,18 @@ class Javascript_loader {
 
 		$modified = $this->input->get_post('v');
 		$this->set_headers($mock_name, $modified);
-		
+
 		$this->output->set_header('Content-Length: '.strlen($contents));
 		$this->output->set_output($contents);
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Set Headers
 	 *
 	 * @access	private
-     * @param	string 
+     * @param	string
 	 * @return	string
 	 */
     function set_headers($file, $mtime = FALSE)
@@ -136,7 +136,7 @@ class Javascript_loader {
 		{
 			$modified_since = substr($modified_since, 0, $pos);
 		}
-		
+
 		// If the file is in the client cache, we'll
 		// send a 304 and be done with it.
 
@@ -145,10 +145,10 @@ class Javascript_loader {
 			$this->output->set_status_header(304);
 			exit;
 		}
-		
+
 		// Send a custom ETag to maintain a useful cache in
 		// load-balanced environments
-		
+
         $this->output->set_header("ETag: ".md5($modified.$file));
 
 		// All times GMT
@@ -159,11 +159,11 @@ class Javascript_loader {
 		$this->output->set_header("Cache-Control: max-age={$max_age}, must-revalidate");
 		$this->output->set_header('Vary: Accept-Encoding');
 		$this->output->set_header('Last-Modified: '.$modified);
-		$this->output->set_header('Expires: '.$expires);        
+		$this->output->set_header('Expires: '.$expires);
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Avoid get_instance()
 	 */

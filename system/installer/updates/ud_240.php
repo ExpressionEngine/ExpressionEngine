@@ -5,13 +5,13 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -24,10 +24,10 @@
  * @link		http://ellislab.com
  */
 class Updater {
-	
+
 	private $EE;
 	var $version_suffix = '';
-	
+
 	/**
 	 * Constructor
 	 */
@@ -35,9 +35,9 @@ class Updater {
 	{
 		$this->EE =& get_instance();
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Do Update
 	 *
@@ -61,12 +61,12 @@ class Updater {
 		{
 			$this->$v();
 		}
-		
+
 		return TRUE;
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Update Watermarks Table
 	 *
@@ -91,9 +91,9 @@ class Updater {
 			)
 		);
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Update File Dimensions Table
 	 *
@@ -116,9 +116,9 @@ class Updater {
 			)
 		);
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Update Files Table
 	 *
@@ -141,7 +141,7 @@ class Updater {
 				)
 			)
 		);
-		
+
 		// Rename "caption" field to "description"
 		ee()->smartforge->modify_column(
 			'files',
@@ -152,21 +152,21 @@ class Updater {
 				),
 			)
 		);
-		
+
 		// Drop the 6 custom fields
 		for ($i = 1; $i < 7; $i++)
-		{ 
+		{
 			ee()->smartforge->drop_column('files', 'field_'.$i);
 			ee()->smartforge->drop_column('files', 'field_'.$i.'_fmt');
 		}
-		
+
 		// Drop 'metadata' and 'status' fields
 		ee()->smartforge->drop_column('files', 'metadata');
 		ee()->smartforge->drop_column('files', 'status');
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Add Developer Log table
 	 *
@@ -224,12 +224,12 @@ class Updater {
 				)
 			)
 		);
-		
+
 		ee()->dbforge->add_key('log_id', TRUE);
 		ee()->smartforge->create_table('developer_log');
 	}
-	
-	
+
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -289,13 +289,13 @@ class Updater {
 				'default'			=> '0'
 			)
 		));
-		
+
 		ee()->dbforge->add_key('remember_me_id', TRUE);
 		ee()->dbforge->add_key('member_id');
-		
+
 		ee()->smartforge->create_table('remember_me');
 	}
-}	
+}
 /* END CLASS */
 
 /* End of file ud_240.php */

@@ -4,13 +4,13 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -22,7 +22,7 @@
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
- 
+
 // The left side of the array is the text that appears in the link
 // The right side is the tag or entity to be inserted
 
@@ -48,7 +48,7 @@ $glossary[2][] = array('horizontal_rule',	'&lt;hr /&gt;');
 $glossary[2][] = array('font',	"&lt;style='font-family: Verdana; font-size:11px; color:#000;'&gt;");
 $glossary[2][] = array('unordered_list',	"&lt;ul&gt;\n&lt;li&gt;&lt;/li&gt;\n&lt;/ul&gt;");
 $glossary[2][] = array('ordered_list',		"&lt;ol&gt;\n&lt;li&gt;&lt;/li&gt;\n&lt;/ol&gt;");
-				
+
 
 $glossary[3][] = array('&lt;  &amp;lt;',			'&lt;');
 $glossary[3][] = array('&gt;  &amp;gt;',			'&gt;');

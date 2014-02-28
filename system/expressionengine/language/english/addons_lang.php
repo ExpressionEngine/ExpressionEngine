@@ -33,16 +33,19 @@ $lang = array(
 'extension_disabled'			=>		'Extension Disabled',
 'extensions_enabled'			=>		'Extensions Enabled',
 'extensions_disabled'			=>		'Extensions Disabled',
+'ext_enabled_short'				=>		'enabled',
+'ext_disabled_short'			=>		'disabled',
 
 'delete_fieldtype_confirm'		=>		'Are you sure you want to remove this fieldtype?',
 'delete_fieldtype'				=>		'Remove Fieldtype',
-'data_will_be_lost'				=>		'All data associated with this fieldtype, including all associated channel data, will be permanently deleted!',
+'fieldtype_data_will_be_lost'	=>		'All data associated with this fieldtype, including all associated channel data, will be permanently deleted!',
 'global_settings_saved'			=>		'Settings Saved',
 
 'package_settings'				=>		'Package Settings',
 'component'						=>		'Component',
 'current_status'				=>		'Current Status',
 'required_by'					=>		'Required by:',
+'extensions_disabled_warning'	=>		'In order to install this add-on you need to enable extensions. Do you want to enable extensions?',
 
 'available_to_member_groups'	=>		'Available to Member Groups',
 'specific_page'					=>		'Specific Page?',

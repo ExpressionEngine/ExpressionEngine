@@ -1,0 +1,10 @@
+<div id="sidebar_date_archives">
+    	    <h5>Date Archives</h5>
+    		<ul id="months">
+    			{!-- Archive Month Link Tags: http://ellislab.com/expressionengine/user-guide/modules/weblog/archive_month_links.html --}
+		
+    			{exp:channel:month_links channel="news" limit="50"}
+    			<li><a href="{path='news/archives'}">{month}, {year}</a></li>
+    			{/exp:channel:month_links}
+    		</ul>
+    	</div>

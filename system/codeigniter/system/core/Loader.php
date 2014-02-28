@@ -6,7 +6,7 @@
  *
  * @package		CodeIgniter
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc.
  * @license		http://codeigniter.com/user_guide/license.html
  * @link		http://codeigniter.com
  * @since		Version 1.0
@@ -503,20 +503,36 @@ class CI_Loader {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Driver
+	 * Driver Loader
 	 *
-	 * Loads a driver library
+	 * Loads a driver library.
 	 *
-	 * @param	string	the name of the class
-	 * @param	mixed	the optional parameters
-	 * @param	string	an optional object name
-	 * @return	void
+	 * @param	string|string[]	$library	Driver name(s)
+	 * @param	array		$params		Optional parameters to pass to the driver
+	 * @param	string		$object_name	An optional object name to assign to
+	 *
+	 * @return	void|object|bool	Object or FALSE on failure if $library is a string
+	 *					and $object_name is set. void otherwise.
 	 */
 	public function driver($library = '', $params = NULL, $object_name = NULL)
 	{
-		if ( ! class_exists('CI_Driver_Library'))
+		if (is_array($library))
 		{
-			// we aren't instantiating an object here, that'll be done by the Library itself
+			foreach ($library as $driver)
+			{
+				$this->driver($driver);
+			}
+			return;
+		}
+
+		if ($library === '')
+		{
+			return FALSE;
+		}
+
+		if ( ! class_exists('CI_Driver_Library', FALSE))
+		{
+			// We aren't instantiating an object here, just making the base class available
 			require BASEPATH.'libraries/Driver.php';
 		}
 

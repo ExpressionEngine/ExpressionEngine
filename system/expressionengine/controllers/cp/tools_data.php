@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -44,13 +44,13 @@ class Tools_data extends CP_Controller {
 		$this->lang->loadfile('tools_data');
 
 		$this->sub_breadcrumbs['sql_view_database'] = BASE.AMP.'C=tools_data'.AMP.'M=sql_view_database';
-		
+
 		// Only show Database Query Form link for Super Admins
 		if ($this->session->userdata('group_id') == '1')
 		{
 			$this->sub_breadcrumbs['sql_query_form'] = BASE.AMP.'C=tools_data'.AMP.'M=sql_query_form';
 		}
-		
+
 		$this->sub_breadcrumbs = array_merge($this->sub_breadcrumbs,
 			array(
 				'sql_status'			=> BASE.AMP.'C=tools_data'.AMP.'M=sql_status',
@@ -140,7 +140,7 @@ class Tools_data extends CP_Controller {
 		$sql_info = $this->tools_model->get_sql_info();
 
 		$this->view->cp_page_title = lang('sql_manager');
-		
+
 		$this->cp->set_right_nav($this->sub_breadcrumbs);
 
 		// a bit of a breadcrumb override is needed
@@ -174,7 +174,7 @@ class Tools_data extends CP_Controller {
 		{
 			show_error(lang('unauthorized_access'));
 		}
-		
+
 		// Super Admins only, please
 		if ($this->session->userdata('group_id') != '1')
 		{
@@ -459,17 +459,17 @@ class Tools_data extends CP_Controller {
 					// Modify the query so we get the total sans LIMIT
 					$row  = ( ! $this->input->get_post('per_page')) ? 0 : $this->input->get_post('per_page');
 					$new_sql = $sql." LIMIT ".$row.", ".$row_limit;
-					
+
 					if ( ! $query = $this->db->query($new_sql))
 					{
 						$vars['no_results'] = lang('sql_no_result');
 						$this->cp->render('tools/sql_results', $vars);
 						return;
 					}
-					
+
 					// Get total results
 					$total_results = $this->db->query($sql)->num_rows();
-					
+
 					if ($total_results > $row_limit)
 					{
 						$config['base_url'] = BASE.AMP.'C=tools_data'.AMP.'M=sql_run_query'.AMP.'thequery='.rawurlencode(base64_encode($sql));
@@ -478,7 +478,7 @@ class Tools_data extends CP_Controller {
 						$config['page_query_string'] = TRUE;
 						$config['first_link'] = lang('pag_first_link');
 						$config['last_link'] = lang('pag_last_link');
-						
+
 						$this->pagination->initialize($config);
 					}
 				}
@@ -606,7 +606,7 @@ class Tools_data extends CP_Controller {
 			{
 				$site_id = substr($where, strlen('site_preferences_'));
 			}
-	
+
 			/** -------------------------------------------
 			/**  Site Preferences in Certain Tables/Fields
 			/** -------------------------------------------*/
@@ -672,7 +672,7 @@ class Tools_data extends CP_Controller {
 				$this->db->select('board_id');
 				$this->db->where('board_site_id', $site_id);
 				$query = $this->db->get('forum_boards');
-				
+
 				if ($query->num_rows() > 0)
 				{
 					foreach($query->result_array() as $row)
@@ -748,7 +748,7 @@ class Tools_data extends CP_Controller {
 			headers: {2: {sorter: false}},
 			widgets: ["zebra"]
 		}');
-		
+
 		$this->cp->set_right_nav(array(lang('recount_prefs') => BASE.AMP.'C=admin_system'.AMP.'M=recount_preferences'));
 
 		// Do the forums exist?
@@ -788,7 +788,7 @@ class Tools_data extends CP_Controller {
 		{
 			$recount = $this->_do_recount_stats($which, $forum_exists);
 			$this->session->set_flashdata('message_success', lang('recount_completed') );
-			$this->functions->redirect(BASE.AMP.'C=tools_data'.AMP.'M=recount_stats');			
+			$this->functions->redirect(BASE.AMP.'C=tools_data'.AMP.'M=recount_stats');
 		}
 
 		$this->view->cp_page_title = lang('recount_stats');
@@ -817,9 +817,9 @@ class Tools_data extends CP_Controller {
 	function _do_recount_stats($which, $forum_exists)
 	{
 		$sources = array('members', 'channel_titles', 'forums', 'forum_topics', 'sites');
-		
+
 		$this->cp->get_installed_modules();
-		
+
 		if ( ! in_array($which, $sources))
 		{
 			return FALSE;
@@ -836,20 +836,20 @@ class Tools_data extends CP_Controller {
 
 			if (isset($this->cp->installed_modules['comment']))
 			{
-				$member_comments_count = $this->db->query('SELECT COUNT(*) AS count, author_id FROM exp_comments GROUP BY author_id ORDER BY count DESC');					
-			}				
+				$member_comments_count = $this->db->query('SELECT COUNT(*) AS count, author_id FROM exp_comments GROUP BY author_id ORDER BY count DESC');
+			}
 
 			$member_message_count = $this->db->query('SELECT COUNT(*) AS count, recipient_id FROM exp_message_copies WHERE message_read = "n" GROUP BY recipient_id ORDER BY count DESC');
 
 			$member_data = array();
-			
+
 			if ($member_entries_count->num_rows() > 0)
 			{
 
 				foreach ($member_entries_count->result() as $row)
 				{
 					$member_entries[$row->author_id]['member_id'] = $row->author_id;
-					$member_entries[$row->author_id]['total_entries'] = $row->count;						
+					$member_entries[$row->author_id]['total_entries'] = $row->count;
 					$member_entries[$row->author_id]['total_comments'] = 0;
 					$member_entries[$row->author_id]['private_messages'] = 0;
 					$member_entries[$row->author_id]['total_forum_posts'] = 0;
@@ -865,19 +865,19 @@ class Tools_data extends CP_Controller {
 					{
 						if (isset($member_entries[$row->author_id]['member_id']))
 						{
-							$member_entries[$row->author_id]['total_comments'] = $row->count;							
+							$member_entries[$row->author_id]['total_comments'] = $row->count;
 						}
 						else
 						{
 							$member_entries[$row->author_id]['member_id'] = $row->author_id;
-							$member_entries[$row->author_id]['total_entries'] = 0;					
+							$member_entries[$row->author_id]['total_entries'] = 0;
 							$member_entries[$row->author_id]['total_comments'] = $row->count;
 							$member_entries[$row->author_id]['private_messages'] = 0;
 							$member_entries[$row->author_id]['total_forum_posts'] = 0;
 							$member_entries[$row->author_id]['total_forum_topics'] = 0;
 						}
-					}	
-				}					
+					}
+				}
 			}
 
 			if ($member_message_count->num_rows() > 0)
@@ -886,15 +886,15 @@ class Tools_data extends CP_Controller {
 				{
 					if (isset($member_entries[$row->recipient_id]['member_id']))
 					{
-						$member_entries[$row->recipient_id]['private_messages'] = $row->count;							
+						$member_entries[$row->recipient_id]['private_messages'] = $row->count;
 					}
 					else
 					{
 						$member_entries[$row->recipient_id]['member_id'] = $row->recipient_id;
-						$member_entries[$row->recipient_id]['total_entries'] = 0;					
+						$member_entries[$row->recipient_id]['total_entries'] = 0;
 						$member_entries[$row->recipient_id]['total_comments'] = 0;
 						$member_entries[$row->recipient_id]['private_messages'] = $row->count;
-						
+
 						$member_entries[$row->recipient_id]['total_forum_posts'] = 0;
 						$member_entries[$row->recipient_id]['total_forum_topics'] = 0;
 					}
@@ -912,12 +912,12 @@ class Tools_data extends CP_Controller {
 					{
 						if (isset($member_entries[$row->author_id]['member_id']))
 						{
-							$member_entries[$row->author_id]['total_forum_topics'] = $row->count;							
+							$member_entries[$row->author_id]['total_forum_topics'] = $row->count;
 						}
 						else
 						{
 							$member_entries[$row->author_id]['member_id'] = $row->author_id;
-							$member_entries[$row->author_id]['total_entries'] = 0;					
+							$member_entries[$row->author_id]['total_entries'] = 0;
 							$member_entries[$row->author_id]['total_comments'] = 0;
 							$member_entries[$row->author_id]['private_messages'] = 0;
 							$member_entries[$row->author_id]['total_forum_posts'] = 0;
@@ -932,12 +932,12 @@ class Tools_data extends CP_Controller {
 					{
 						if (isset($member_entries[$row->author_id]['member_id']))
 						{
-							$member_entries[$row->author_id]['total_forum_posts'] = $row->count;							
+							$member_entries[$row->author_id]['total_forum_posts'] = $row->count;
 						}
 						else
 						{
 							$member_entries[$row->author_id]['member_id'] = $row->author_id;
-							$member_entries[$row->author_id]['total_entries'] = 0;					
+							$member_entries[$row->author_id]['total_entries'] = 0;
 							$member_entries[$row->author_id]['total_comments'] = 0;
 							$member_entries[$row->author_id]['private_messages'] = 0;
 							$member_entries[$row->author_id]['total_forum_posts'] = $row->count;
@@ -949,10 +949,10 @@ class Tools_data extends CP_Controller {
 
 			if ( ! empty($member_entries))
 			{
-				$this->db->update_batch('exp_members', $member_entries, 'member_id');	
+				$this->db->update_batch('exp_members', $member_entries, 'member_id');
 
 				// Set the rest to 0 for all of the above
-				
+
 				$data = array(
 					'total_entries'			=> 0,
 					'total_comments'		=> 0,
@@ -962,7 +962,7 @@ class Tools_data extends CP_Controller {
 				);
 
 				$this->db->where_not_in('member_id', array_keys($member_entries));
-				$this->db->update('members', $data); 
+				$this->db->update('members', $data);
 			}
 		}
 		elseif ($which == 'channel_titles')
@@ -988,7 +988,7 @@ class Tools_data extends CP_Controller {
 					{
 						$channel_titles[$row->entry_id]['recent_comment_date'] = $row->recent;
 					}
-				}					
+				}
 			}
 
 			// Set the rest to 0 for all of the above
@@ -1002,11 +1002,11 @@ class Tools_data extends CP_Controller {
 				$this->db->update_batch('exp_channel_titles', $channel_titles, 'entry_id');
 
 				$this->db->where_not_in('entry_id', array_keys($channel_titles));
-				$this->db->update('channel_titles', $data); 
+				$this->db->update('channel_titles', $data);
 			}
 			else
 			{
-				$this->db->update('channel_titles', $data); 				
+				$this->db->update('channel_titles', $data);
 			}
 		}
 		elseif ($which == 'forums')
@@ -1119,7 +1119,7 @@ class Tools_data extends CP_Controller {
 			foreach($query->result_array() as $row)
 			{
 				$this->config->set_item('site_id', $row['site_id']);
-				
+
 				if (isset($this->cp->installed_modules['comment']))
 				{
 					$this->stats->update_comment_stats();

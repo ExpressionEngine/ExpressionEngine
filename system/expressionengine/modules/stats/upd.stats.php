@@ -4,13 +4,13 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -26,7 +26,7 @@
 class Stats_upd {
 
 	var $version	= '2.0';
-	
+
 	function Stats_upd()
 	{
 		$this->EE =& get_instance();
@@ -91,7 +91,7 @@ class Stats_upd {
 		{
 			return FALSE;
 		}
-		
+
 		if (version_compare($current, '2.0', '<'))
 		{
 			ee()->dbforge->drop_column('stats', 'weblog_id');

@@ -3,7 +3,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -20,7 +20,7 @@
 // things happening on document.ready we'll init them when they click on the sidebar link
 
 $("#showToolbarLink").find("a").one("click", function() {
-	
+
 	// set up resizing of publish fields
 	$(".publish_field").resizable({
 		handles: "e",
@@ -31,12 +31,12 @@ $("#showToolbarLink").find("a").one("click", function() {
 			if (percent_width < 10) {
 				percent_width = 10;
 			}
-		
+
 			// maximum of 100
 			if (percent_width > 99) {
 				percent_width = 100;
 			}
-		
+
 			$(this).css("width", percent_width + "%");
 		}
 	});
@@ -51,7 +51,7 @@ $("#showToolbarLink").find("a").one("click", function() {
 
 	var newTabButtons = {},
 		addAuthorButtons = {};
-	
+
 	newTabButtons[EE.lang.add_tab] = add_publish_tab;
 
 	$("#new_tab_dialog").dialog({
@@ -63,9 +63,9 @@ $("#showToolbarLink").find("a").one("click", function() {
 		minHeight: 0,
 		buttons: newTabButtons
 	});
-	
+
 	$(".add_tab_link").click(function() {
-		
+
 		$("#tab_name").val("");
 		$("#add_tab label").text(EE.lang.tab_name+": ");
 		$("#new_tab_dialog").dialog("open");
@@ -84,10 +84,10 @@ $("#showToolbarLink").find("a").one("click", function() {
 			placeholder: "publishTabSortPlaceholder",
 			items: "li:not(.addTabButton)"
 		});
-		
+
 		// EE._hidden_fields is defined at the bottom of publish.js
 		$(EE._hidden_fields).closest('.publish_field').show();
-		
+
 		$("a span", "#showToolbarLink").text(EE.lang.hide_toolbar);
 		$("#showToolbarLink").animate({
 			marginRight: "210"
@@ -96,7 +96,7 @@ $("#showToolbarLink").find("a").one("click", function() {
 			marginRight: "196"
 		}, function(){
 			$("#tools").show();
-			
+
 			// Swap the image
 			$("#showToolbarImg").hide();
 			$("#hideToolbarImg").css("display", "inline");	// .show() uses block
@@ -106,7 +106,7 @@ $("#showToolbarLink").find("a").one("click", function() {
 
 		$(".ui-resizable-e").show(500);
 		$(".addTabButton").css("display", "inline");
-		
+
 	}, function (){
 
 		// enable all form elements
@@ -126,11 +126,11 @@ $("#showToolbarLink").find("a").one("click", function() {
 
 		$(".ui-resizable-e").hide();
 		$(".addTabButton").hide();
-		
+
 		// Swap the image
 		$("#hideToolbarImg").hide();
 		$("#showToolbarImg").css("display", "inline");	// .show() uses block
-		
+
 		// EE._hidden_fields is defined at the bottom of publish.js
 		$(EE._hidden_fields).closest('.publish_field').hide();
 	}
@@ -169,36 +169,36 @@ $("#toggle_member_groups_all").toggle(
 
 $('.delete_field').click(function(event) {
 	event.preventDefault();
-	
+
 	var $link = $(this),
 		field_id = $link.attr('id').substr(13),
 		$field = $('#hold_field_'+field_id),
 		$image = $link.children('img');
-	
+
 	var hide_field = function() {
 		if ($field.is(":hidden")) {
 			$field.css("display", "none");
 		} else {
 			$field.slideUp();
 		}
-		
+
 		// set percent width to be used on hidden fields...
 		$field.attr('data-width', EE.publish.get_percentage_width($field));
-		
+
 		$link.attr('data-visible', 'n')
 			.children().attr("src", EE.THEME_URL+"images/closed_eye.png");
 	};
-	
+
 	var show_field = function() {
 		$field.slideDown();
-		
+
 		// remove percent width
 		$field.attr('data-width', false);
-		
+
 		$link.attr('data-visible', 'y')
 			.children().attr("src", EE.THEME_URL+"images/open_eye.png");
 	};
-	
+
 	if ($link.attr('data-visible') == 'y') {
 		hide_field();
 	} else {
@@ -255,21 +255,21 @@ tab_req_check = function(tab_name) {
 		var id = this.id.replace(/hold_field_/, ""),
 			i = 0,
 			key = "";
-				
+
 		for (key in required) {
 			if (required[key] == id) {
 				illegal = true;
 				illegal_fields[i] = id;
-				i++;	
+				i++;
             }
 		}
 	});
-		
+
 	if (illegal === true) {
 		$.ee_notice(EE.publish.lang.tab_has_req_field + illegal_fields.join(","), {"type" : "error"});
 		return true;
 	}
-	
+
 	return false;
 };
 
@@ -280,7 +280,7 @@ function delete_publish_tab()
 	// function reference instead
 	$("#publish_tab_list").unbind("click.tab_delete");
 	$("#publish_tab_list").bind("click.tab_delete", function(evt) {
-	
+
 		if (evt.target !== this) {
 	    	var the_li = $(evt.target).closest("li");
 			the_id = the_li.attr("id").replace(/remove_tab_/, "");
@@ -289,12 +289,12 @@ function delete_publish_tab()
 				_delete_tab_hide(the_li, the_id);
 			}
 	    }
-		
+
 		return false;
 	});
 }
 
- 
+
 
 // when the page loads set up existing tabs to delete
 delete_publish_tab();
@@ -302,7 +302,7 @@ delete_publish_tab();
 add_publish_tab = function() {
 	tab_name = $("#tab_name").val();
 
-	var legalChars = /^[^*>:+()\[\]=|"'.#$]+$/; // allow all unicode characters except for css selectors and $ 
+	var legalChars = /^[^*>:+()\[\]=|"'.#$]+$/; // allow all unicode characters except for css selectors and $
 
 	if ( ! legalChars.test(tab_name)) {
 		$.ee_notice(EE.lang.illegal_tab_name);
@@ -326,15 +326,15 @@ function _add_tab(tab_name) {
 	if ($("#"+tab_name_filtered).length) {
 		if ($("#"+tab_name_filtered).css('display') == "none") {
 			// Tab was hidden- just return it
-			
+
 			$("#"+"remove_tab_"+tab_name_filtered).fadeIn();
 			$("#"+"menu_"+tab_name_filtered).fadeIn();
-			
-				
+
+
 			// apply the classes to make it look focused
 			$("#tab_menu_tabs li").removeClass("current");
 			$("#menu_"+tab_name_filtered).addClass("current");
-			
+
 			tab_focus(tab_name_filtered);
 
 			return true;
@@ -356,12 +356,12 @@ function _add_tab(tab_name) {
 	// The "add tab" button counts for 1, so we look for it plus the new tab (hence 2)
 	if ($("#tab_menu_tabs li:visible").length <= 2) {
 		tab_focus(tab_name_filtered);
-	}  
+	}
 
 	// apply the classes to make it look focused
 	$("#tab_menu_tabs li").removeClass("current");
 	$("#menu_"+tab_name_filtered).addClass("current");
-	
+
 	// re-assign behaviours
 	setup_tabs();
 	delete_publish_tab();

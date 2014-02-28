@@ -1,0 +1,65 @@
+{!-- Explanations and learning materials can be found in news/index and the other news template groups.  In-line comments here are only for features not introduced in news/index. --}
+{html_head}
+	<title>{site_name}: Contact Us</title>
+{global_stylesheets}
+
+{rss} 
+{favicon}
+{html_head_end}	
+	<body>
+{nav_access}
+	{branding_begin}
+			{embed="global_embeds/.top_nav" loc="about"}
+			{global_top_search}
+			{global_top_member}
+	{branding_end}
+	{wrapper_begin}
+{embed="global_embeds/.page_header" header="About"}
+
+
+<div id="feature" class="about">
+	{exp:channel:entries channel="about" url_title="about_the_label" dynamic="no"  limit="1" disable="pagination|member_data|categories|category_fields"}
+		<h3 class="about">{title}</h3>
+		{about_body}
+	{/exp:channel:entries}
+</div> <!-- ending #feature -->
+
+	<div class="feature_end"></div>
+
+<div id="content_pri" class="about"> <!-- This is where all primary content, left column gets entered -->
+
+		<!-- Standard Channel Entries tag, but instead of relying on the URL for what to display, we request a specific entry for display via url-title:
+	http://ellislab.com/expressionengine/user-guide/modules/channel/parameters.html#par_url_title
+	
+	and we force the channel entries tag to ignore the URL and always deliver the same content by using dynamic="no":
+	
+	http://ellislab.com/expressionengine/user-guide/modules/channel/parameters.html#par_dynamic	
+	-->
+	
+		{exp:channel:entries channel="about" dynamic="no" url_title="about_the_label" limit="1" disable="pagination|member_data|categories|category_fields"}
+			{about_extended}
+		{/exp:channel:entries}
+</div>
+
+<div id="content_sec" class="staff_profiles right green40">
+		<h3 class="staff">Staff Profiles</h3>
+		{exp:channel:entries channel="about" limit="6" category="3" dynamic="off" orderby="date" sort="asc"}
+			{if count == "1"}<ul class="staff_member">{/if}
+				<li class="{switch="||end"}">
+					<h4>{title} <a href="#">i</a></h4>
+					<div class="profile">
+						{about_staff_title}
+					</div>
+					<img src="{about_image}" alt="{title}" />
+				</li>
+			{if count == total_results}</ul>{/if}
+		{/exp:channel:entries}
+	
+</div>	<!-- ending #content_sec -->	
+
+
+	
+{global_footer}
+{wrapper_close}
+{js}
+{html_close}

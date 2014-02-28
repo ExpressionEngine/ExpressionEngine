@@ -4,13 +4,13 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -29,7 +29,7 @@ class EE_Subscription {
 	var $anonymous	= FALSE;	// allow anonymous subscriptions? if true, table must have email column
 
 	var $publisher	= array();
-	
+
 	var $table;
 
 	/**
@@ -42,7 +42,7 @@ class EE_Subscription {
 		// Get EE superobject reference
 		$this->EE =& get_instance();
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -56,12 +56,12 @@ class EE_Subscription {
 		$this->module	 = $module;
 		$this->publisher = $publisher;
 		$this->anonymous = $anonymous;
-		
+
 		$this->table	 = $module.'_subscriptions';
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Check if they're subscribed
 	 *
@@ -72,19 +72,19 @@ class EE_Subscription {
 	function is_subscribed($identifiers = FALSE)
 	{
 		$user = $this->_prep($identifiers);
-		
+
 		if ( ! $user)
 		{
 			return FALSE;
 		}
-		
+
 		list($member_ids, $emails) = $user;
 
 		if ( ! count($member_ids) && ! count($emails))
 		{
 			return;
 		}
-			
+
 		$func = 'where_in';
 
 		if (count($member_ids))
@@ -97,7 +97,7 @@ class EE_Subscription {
 		{
 			ee()->db->$func('email', $emails);
 		}
-		
+
 		ee()->db->select('member_id');
 		ee()->db->where($this->publisher);
 		$query = ee()->db->get($this->table);
@@ -106,12 +106,12 @@ class EE_Subscription {
 		{
 			return TRUE;
 		}
-		
+
 		return FALSE;
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Mark post as read
 	 *
@@ -122,9 +122,9 @@ class EE_Subscription {
 	{
 		$this->_mark($identifiers, 'n', $skip_prep);
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Mark post as unread
 	 *
@@ -135,9 +135,9 @@ class EE_Subscription {
 	{
 		$this->_mark($identifiers, 'y', $skip_prep);
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Add subscriptions for current post
 	 *
@@ -148,17 +148,17 @@ class EE_Subscription {
 	{
 		$rand = '';
 		$user = $this->_prep($identifiers);
-		
+
 		if ( ! $user)
 		{
 			return;
 		}
-		
+
 		$existing_ids = array();
 		$existing_emails = array();
-		
+
 		$subscriptions = $this->get_subscriptions();
-		
+
 		foreach($subscriptions as $row)
 		{
 			if ($row['member_id'])
@@ -170,8 +170,8 @@ class EE_Subscription {
 				$existing_emails[] = $row['email'];
 			}
 		}
-		
-		
+
+
 		list($member_ids, $emails) = $user;
 
 		// Handle duplicates
@@ -182,12 +182,12 @@ class EE_Subscription {
 		{
 			$data	 = array();
 			$default = $this->publisher;
-			
+
 			// Add member ids
 			foreach($new_member_ids as $id)
 			{
 				$rand = $id.ee()->functions->random('alnum', 8);
-				
+
 				$data[] = array_merge($default, array(
 					'hash'				=> $rand,
 					'member_id'			=> $id,
@@ -195,12 +195,12 @@ class EE_Subscription {
 					'subscription_date'	=> ee()->localize->now
 				));
 			}
-			
+
 			// Add emails
 			foreach($new_emails as $email)
 			{
 				$rand = ee()->functions->random('alnum', 15);
-				
+
 				$data[] = array_merge($default, array(
 					'hash'				=> $rand,
 					'member_id'			=> 0,
@@ -208,11 +208,11 @@ class EE_Subscription {
 					'subscription_date'	=> ee()->localize->now
 				));
 			}
-			
+
 			// Batch it in case there are lots of them
             ee()->db->insert_batch($this->table, $data);
 		}
-		
+
 		// Refresh existing subscriptions if there were any
 		// @todo update subscription date
 		if ($mark_existing)
@@ -224,9 +224,9 @@ class EE_Subscription {
 			$this->mark_as_read($dupes, TRUE);
 		}
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Remove subscriptions for current post
 	 *
@@ -254,8 +254,8 @@ class EE_Subscription {
 			{
 				return;
 			}
-			
-			
+
+
 			$func = 'where_in';
 
 			if (count($member_ids))
@@ -269,13 +269,13 @@ class EE_Subscription {
 				ee()->db->$func('email', $emails);
 			}
 		}
-		
+
 		ee()->db->where($this->publisher);
 		ee()->db->delete($this->table);
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Remove all subscriptions for a publisher
 	 *
@@ -289,7 +289,7 @@ class EE_Subscription {
 		ee()->db->where($this->publisher);
 		ee()->db->delete($this->table);
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -337,13 +337,13 @@ class EE_Subscription {
 	{
 		$emails		= array();
 		$member_ids	= array();
-		
+
 		// Grab them all
 		if ($this->anonymous)
 		{
 			ee()->db->select($this->table.'.email');
 		}
-		
+
 		if ($ignore)
 		{
 			if (is_numeric($ignore) && $ignore != 0)
@@ -355,7 +355,7 @@ class EE_Subscription {
 				ee()->db->where($this->table.'.email !=', $ignore);
 			}
 		}
-		
+
 		ee()->db->select("{$this->table}.subscription_id, {$this->table}.member_id, {$this->table}.notification_sent, {$this->table}.hash");
 		ee()->db->from($this->table);
 
@@ -372,9 +372,9 @@ class EE_Subscription {
 		{
 			return array();
 		}
-		
+
 		$return = array();
-		
+
 		foreach($query->result_array() as $subscription)
 		{
 			if ($subscription['member_id'] != 0)
@@ -386,12 +386,12 @@ class EE_Subscription {
 				$return[$subscription['subscription_id']] = $subscription;
 			}
 		}
-		
+
 		return $return;
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Prep user data
 	 *
@@ -404,10 +404,10 @@ class EE_Subscription {
 	function _prep($identifiers = FALSE)
 	{
 		static $current_user = '';
-		
+
 		$emails		= array();
 		$member_ids	= array();
-		
+
 		// No user specified? Use the current one
 		if ($identifiers == FALSE)
 		{
@@ -415,14 +415,14 @@ class EE_Subscription {
 			{
 				$current_user = $this->_get_current_user();
 			}
-			
+
 			// get_current_user returns false if it can't
 			// find an existing identifier
 			if ($current_user === FALSE)
 			{
 				return FALSE;
 			}
-			
+
 			$array = key($current_user).'s';
 			${$array}[] = current($current_user);
 		}
@@ -448,12 +448,12 @@ class EE_Subscription {
 				}
 			}
 		}
-		
+
 		return array($member_ids, $emails);
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Mark a subscription as read / unread
 	 *
@@ -468,41 +468,41 @@ class EE_Subscription {
 		if ( ! $skip_prep)
 		{
 			$identifiers = $this->_prep($identifiers);
-			
+
 			if ( ! $identifiers)
 			{
 				return;
 			}
 		}
-		
+
 		list($member_ids, $emails) = $identifiers;
-		
+
 		if ( ! count($member_ids) && ! count($emails))
 		{
 			return;
 		}
-		
+
 		$func = 'where_in';
-		
+
 		if (count($member_ids))
 		{
 			ee()->db->where_in('member_id', $member_ids);
 			$func = 'or_where_in';
 		}
-		
+
 		if (count($emails))
 		{
 			ee()->db->$func('email', $emails);
 		}
-		
+
 		ee()->db->set('notification_sent', $new_state);
-		
+
 		ee()->db->where($this->publisher);
 		ee()->db->update($this->table);
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Identify the current user
 	 *
@@ -521,7 +521,7 @@ class EE_Subscription {
 		{
 			return array('email' => ee()->session->userdata('email'));
 		}
-		
+
 		// anonymous
 		return FALSE;
 	}

@@ -4,13 +4,13 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -36,10 +36,10 @@ class Cp_search {
 	{
 		$this->EE =& get_instance();
 		$this->_search_map();
-		
+
 		ee()->lang->loadfile('cp_search');
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -55,14 +55,14 @@ class Cp_search {
 	function generate_results($search)
 	{
 		$result = array();
-		
-		$sql = "SELECT *, MATCH(keywords) AGAINST (?) AS relevance 
-				FROM ".ee()->db->dbprefix('cp_search_index')." 
-				WHERE MATCH(keywords) AGAINST (?) 
+
+		$sql = "SELECT *, MATCH(keywords) AGAINST (?) AS relevance
+				FROM ".ee()->db->dbprefix('cp_search_index')."
+				WHERE MATCH(keywords) AGAINST (?)
 				ORDER BY relevance DESC";
 
 		$query = ee()->db->query($sql, array($search, $search));
-		
+
 		foreach($query->result() as $row)
 		{
 			// Don't show things they cannot use
@@ -70,13 +70,13 @@ class Cp_search {
 			{
 				continue;
 			}
-			
+
 			$url = BASE.AMP.'C='.$row->controller.AMP.'M='.$row->method;
 			$name = $this->_get_description($row->controller, $row->method);
-			
+
 			$result[] = array('url' => $url, 'name' => $name);
 		}
-		
+
 		return $result;
 	}
 
@@ -94,18 +94,18 @@ class Cp_search {
 	function _get_description($controller, $method)
 	{
 		$options = $this->map[$controller][$method];
-		
+
 		if ( ! is_array($options) && substr($options, -4) == '_cfg')
 		{
 			return ee()->lang->line($options);
 		}
-		
+
 		if (is_array($options))
 		{
 			unset($options['access'], $options['keywords']);
 			$options = array_pop($options);
 		}
-		
+
 		if (substr($options, -4) == '_cfg')
 		{
 			return ee()->lang->line($options);
@@ -113,17 +113,17 @@ class Cp_search {
 		else
 		{
 			$prefix = $controller.'_';
-		
+
 			if ($start = strpos($controller, '_'))
 			{
 				$prefix = substr($controller, $start + 1, 4).'_';
 			}
-	
+
 			if (strpos($method, $prefix) === 0)
 			{
 				return ee()->lang->line($method);
 			}
-		
+
 			return ee()->lang->line($prefix.$method);
 		}
 	}
@@ -142,12 +142,12 @@ class Cp_search {
 	{
 		ee()->db->where('language', $language);
 		$count = ee()->db->count_all_results('cp_search_index');
-		
+
 		return ($count > 0);
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Build Index
 	 *
@@ -162,13 +162,13 @@ class Cp_search {
 	{
 		// PHP 4 redundancy dept. of redundancy
 		$this->EE =& get_instance();
-		
+
 		ee()->load->model('admin_model');
 		ee()->lang->loadfile('admin');
 
 		$data = array();
 
-		$subtext = ee()->admin_model->get_config_field_subtext();
+		$subtext = ee()->config->get_config_field_subtext();
 
 		foreach($this->map as $controller => $method_map)
 		{
@@ -176,9 +176,9 @@ class Cp_search {
 			{
 				$values = array();
 				$options = $val;
-				
+
 				$access = 'all';
-				
+
 				if (is_array($options))
 				{
 					if (isset($options['access']))
@@ -192,11 +192,11 @@ class Cp_search {
 						$values[] = $options['keywords'];
 						unset($options['keywords']);
 					}
-					
+
 					// Flatten! Flatten!
 					$options = array_pop($options);
 				}
-				
+
 				if (is_array($options))
 				{
 					foreach($options as $keyword)
@@ -206,7 +206,7 @@ class Cp_search {
 				}
 				elseif (is_string($options) && substr($options, -4) == '_cfg')
 				{
-					$config = ee()->admin_model->get_config_fields($options);
+					$config = ee()->config->get_config_fields($options);
 
 					foreach($config as $lang_key => $whatever)
 					{
@@ -234,15 +234,15 @@ class Cp_search {
 					{
 						$values = array_merge($values, $this->_parse_controller($controller, $method));
 					}
-					
+
 					$values[] = $this->_get_description($controller, $method);
 				}
-				
+
 				if ( ! count($values) > 0)
 				{
 					continue;
 				}
-				
+
 				$data = array('controller'		=> $controller,
 								'method'		=> $method,
 								'keywords'		=> implode(' ', $values),
@@ -256,10 +256,10 @@ class Cp_search {
 
 		return TRUE;
 	}
-	
-	
+
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Parse Controller
 	 *
@@ -280,19 +280,19 @@ class Cp_search {
 		{
 			return array();
 		}
-		
+
 		// Cache controller info so we don't parse the same file a bajilion times
 		if ( ! isset($this->_c_cache['name']) OR $this->_c_cache['name'] != $controller)
 		{
 			// Grab the file contents
 			$this->_c_cache['source'] = file_get_contents(APPPATH.'controllers/cp/'.$controller.'.php');
-			
+
 			// Initialize arrays
 			$this->_c_cache['methods'] = array();
 			$this->_c_cache['lang_files'] = array();
 
 			$lang_files[] = current(explode('_', $controller, 2));
-			
+
 			// Language files used by this class
 			if (preg_match_all('#'.preg_quote('$this->lang->loadfile(').'(\042|\047)([^\\1]*?)\\1#', $this->_c_cache['source'], $matches))
 			{
@@ -301,14 +301,14 @@ class Cp_search {
 					$lang_files[] = $match;
 				}
 			}
-			
+
 			// Methods used by this class
 			if (preg_match_all('#function\s+(\w+)\(#i', $this->_c_cache['source'], $functions))
 			{
 				foreach($functions[0] as $key => $func)
 				{
 					$name = $functions[1][$key];
-					
+
 					$start = strpos($this->_c_cache['source'], $functions[0][$key]);
 					$end = isset($functions[0][$key+1]) ? strpos($this->_c_cache['source'], $functions[0][$key+1]) : strlen($this->_c_cache['source']);
 
@@ -322,23 +322,23 @@ class Cp_search {
 		{
 			return array();
 		}
-		
+
 		// Grab the function source
 		$start = $this->_c_cache['methods'][$method][0];
 		$end = $this->_c_cache['methods'][$method][1];
-		
+
 		$chunk = substr($this->_c_cache['source'], $start, $end - $start);
-		
+
 		$views = array();
 		$langs = array();
-		
+
 		// Views loaded by this function
 		if (preg_match_all('#'.preg_quote('$this->load->view(').'(\042|\047)([^\\1]*?)\\1#', $chunk, $matches))
 		{
 			foreach($matches[2] as $match)
 			{
 				$views[] = $match;
-				
+
 				if ($process_views)
 				{
 					$langs = $this->_process_view($match);
@@ -350,7 +350,7 @@ class Cp_search {
 			// No views - no output - no point in giving them a link!
 			return array();
 		}
-		
+
 		// Language keys used by the function
 		if (preg_match_all('#'.preg_quote('$this->lang->line(').'(\042|\047)([^\\1]*?)\\1#', $chunk, $matches))
 		{
@@ -361,11 +361,11 @@ class Cp_search {
 				{
 					continue;
 				}
-				
+
 				$langs[] = $match;
 			}
 		}
-		
+
 		$language = 'english';
 
 		$lang_files = array_unique($lang_files);
@@ -391,9 +391,9 @@ class Cp_search {
 
 		return $values;
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Process View
 	 *
@@ -406,18 +406,18 @@ class Cp_search {
 	function _process_view($view)
 	{
 		$nonsense = array('unauthorized_access', 'none', 'all', 'open', 'closed', 'and_more', 'install', 'uninstall', 'add', 'edit', 'delete');
-		
+
 		$langs = array();
 		$path = PATH_CP_THEME.ee()->config->item('cp_theme').'/'.$view.'.php';
-		
+
 		if ( ! file_exists($path))
 		{
 			return $langs;
 		}
-		
+
 		$view = str_replace('.php', '', $view);
 		$view = file_get_contents($path);
-		
+
 		if (preg_match_all('#'.preg_quote('lang(').'(\042|\047)([^\\1]*?)\\1#', $view, $matches))
 		{
 			foreach($matches[2] as $match)
@@ -427,7 +427,7 @@ class Cp_search {
 				{
 					continue;
 				}
-				
+
 				$langs[] = $match;
 			}
 		}
@@ -472,7 +472,7 @@ class Cp_search {
 					'mailing_list_preferences'		=> array('access' => 'can_access_sys_prefs', 'mailinglist_cfg'),
 					'emoticon_preferences'			=> array('access' => 'can_access_sys_prefs', 'emoticon_cfg'),
 					'tracking_preferences'			=> array('access' => 'can_access_sys_prefs', 'tracking_cfg'),
-					'mailing_list_preferences'		=> array('access' => 'can_access_sys_prefs', 'mailinglist_cfg'),							
+					'mailing_list_preferences'		=> array('access' => 'can_access_sys_prefs', 'mailinglist_cfg'),
 					'search_log_configuration'		=> array('access' => 'can_access_sys_prefs', 'search_log_cfg')
 			),
 			'admin_content'		=> array(
@@ -484,16 +484,16 @@ class Cp_search {
 					'index'							=> array('access' => 'can_access_accessories', TRUE)
 			),
 			'addons_extensions'	=> array(
-					'index'							=> array('access' => 'can_access_extensions', TRUE)							
+					'index'							=> array('access' => 'can_access_extensions', TRUE)
 			),
 			'addons_fieldtypes'	=> array(
-					'index'							=> array('access' => 'can_access_fieldtypes', TRUE)							
+					'index'							=> array('access' => 'can_access_fieldtypes', TRUE)
 			),
 			'addons_modules'	=> array(
-					'index'							=> array('access' => 'can_access_modules', TRUE)						
+					'index'							=> array('access' => 'can_access_modules', TRUE)
 			),
 			'addons_plugins'	=> array(
-					'index'							=> array('access' => 'can_access_plugins', TRUE)						
+					'index'							=> array('access' => 'can_access_plugins', TRUE)
 			),
 			'content_publish'		=> array(
 					'index'							=> array('keywords' => 'publish new entry', TRUE)

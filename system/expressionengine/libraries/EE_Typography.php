@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -711,6 +711,8 @@ class EE_Typography extends CI_Typography {
 	 *                         	ee tag encoding
 	 *                         - smartypants (yes/no) enable or disable
 	 *                         	smartypants
+	 *                         - no_markup (TRUE/FALSE) set to TRUE to disable
+	 *                          the parsing of markup in Markdown
 	 * @return string          Parsed Markdown content
 	 */
 	public function markdown($str, $options = array())
@@ -718,17 +720,36 @@ class EE_Typography extends CI_Typography {
 		require_once(APPPATH.'libraries/typography/Markdown/markdown.php');
 
 		// Encode EE Tags
-		if ( ! isset($options['encode_ee_tags']) OR $options['encode_ee_tags'] == 'yes')
+		if ( ! isset($options['encode_ee_tags'])
+			OR $options['encode_ee_tags'] == 'yes')
 		{
 			$str = ee()->functions->encode_ee_tags($str);
+		}
+
+		// Ignore [code]
+		$code_blocks = array();
+		preg_match_all("/\[code\](.*?)\[\/code\]/uis", $str, $matches);
+		foreach ($matches[0] as $match)
+		{
+			$hash = random_string('md5');
+			$code_blocks[$hash] = $match;
+			$str = str_replace($match, $hash, $str);
+		}
+
+		$parser = new Markdown_Parser();
+
+		// Disable other markup if this is set
+		if (isset($options['no_markup']) && $options['no_markup'] === TRUE)
+		{
+			$parser->no_markup = TRUE;
 		}
 
 		// Protect any quotes in EE tags from the Markdown and SmartyPants
 		// processors.
 		$str = $this->protect_quotes_in_tags($str);
 
-		$str = Markdown($str);
-
+		// Parse the Markdown
+		$str = $parser->transform($str);
 
 		// Run everything through SmartyPants
 		if ( ! isset($options['smartypants']) OR $options['smartypants'] == 'yes')
@@ -739,6 +760,24 @@ class EE_Typography extends CI_Typography {
 
 		// Restore the quotes we protected earlier.
 		$str = $this->restore_quotes_in_tags($str);
+
+		// Replace <pre><code> with [code]
+		// Only relevant IF being called by typography parser
+		$backtrace = debug_backtrace();
+		if ( ! in_array($backtrace[1]['class'], array('EE_Typography', 'Markdown')))
+		{
+			$str = preg_replace(
+				"/<pre><code>(.*?)<\/code><\/pre>/uis",
+				"[code]$1[/code]",
+				$str
+			);
+		}
+
+		// Replace [code]
+		foreach ($code_blocks as $hash => $code_block)
+		{
+			$str = str_replace($hash, $code_block, $str);
+		}
 
 		return $str;
 	}

@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -25,51 +25,6 @@
  * @link		http://ellislab.com
  */
 class EE_Loader extends CI_Loader {
-
-	public $_ci_view_path = ''; // deprecated, do not change, was private in 2.1.5 and will be private again in the near future
-	private $ee_view_depth = 0;
-
-
-	/**
-	 * Load CI View
-	 *
-	 * This is extended to keep some backward compatibility for people
-	 * changing _ci_view_path. I tried doing a getter/setter, but since all
-	 * of CI's object references are stuck onto the loader when loading views
-	 * I get access errors left and right. -pk
-	 *
-	 * @deprecated 2.6
-	 */
-	public function view($view, $vars = array(), $return = FALSE)
-	{
-		if ($this->ee_view_depth === 0 && $this->_ci_view_path != '')
-		{
-			ee()->load->library('logger');
-			ee()->logger->deprecated('2.6', 'load::add_package_path()');
-
-			$this->_ci_view_paths = array($this->_ci_view_path => FALSE) + $this->_ci_view_paths;
-		}
-
-		if (is_array($vars) && isset($vars['cp_page_title']))
-		{
-			ee()->view->cp_page_title = $vars['cp_page_title'];
-		}
-
-		$this->ee_view_depth++;
-
-		$ret = parent::view($view, $vars, $return);
-
-		$this->ee_view_depth--;
-
-		if ($this->ee_view_depth === 0 && $this->_ci_view_path != '')
-		{
-			array_shift($this->_ci_view_paths);
-		}
-
-		return $ret;
-	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Load EE View
@@ -121,9 +76,6 @@ class EE_Loader extends CI_Loader {
 	 * the transition for third-party developers, we are extending the CI
 	 * loader function to return NULL in the event a load function to Security
 	 * is called.
-	 *
-	 * $this->load->library('security') is @deprecated, and this temporary
-	 * workaround will be removed in a future version
 	 */
 	public function library($library = '', $params = NULL, $object_name = NULL)
 	{
@@ -137,10 +89,9 @@ class EE_Loader extends CI_Loader {
 			return;
 		}
 
+		// Security is always loaded
 		if (strtolower($library) == 'security')
 		{
-			ee()->load->library('logger');
-			ee()->logger->deprecated('2.6', 'The security library is always loaded.');
 			return NULL;
 		}
 

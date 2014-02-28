@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -30,14 +30,6 @@ class Member_memberlist extends Member {
 	var $search_keywords	= '';
 	var $search_fields		= '';
 	var $search_total		= 0;
-
-	/** ----------------------------------
-	/**  Member_memberlist Profile Constructor
-	/** ----------------------------------*/
-	function Member_memberlist()
-	{
-	}
-
 
 	/** ----------------------------------
 	/**  Member Email Form
@@ -175,16 +167,6 @@ class Member_memberlist extends Member {
 		}
 
 		/** ---------------------------------
-		/**  Do we have a secure hash?
-		/** ---------------------------------*/
-
-		if (ee()->config->item('secure_forms') == 'y'
-			AND ! ee()->security->secure_forms_check(ee()->input->post('XID')))
-		{
-			return FALSE;
-		}
-
-		/** ---------------------------------
 		/**  Does the recipient accept email?
 		/** ---------------------------------*/
 
@@ -303,7 +285,7 @@ class Member_memberlist extends Member {
 		return $this->_var_swap(
 			$this->_load_element('aim_console'),
 			array(
-				'aol_im'			=>	$query->row('aol_im') ,
+				'aol_im'			=>	ee()->functions->encode_ee_tags($query->row('aol_im'), TRUE) ,
 				'lang:close_window'	=>	ee()->lang->line('mbr_close_window')
 			 )
 		);
@@ -337,7 +319,7 @@ class Member_memberlist extends Member {
 
 		$data = array(
 			'hidden_fields' => array(
-				'to'		=> $query->row('icq') ,
+				'to'		=> ee()->functions->encode_ee_tags($query->row('icq'), TRUE) ,
 				'from'		=> ee()->session->userdata['screen_name'],
 				'fromemail'	=> ''
 			),
@@ -353,8 +335,8 @@ class Member_memberlist extends Member {
 			array(
 				'form_declaration'	=>	ee()->functions->form_declaration($data),
 				'name'				=>	$query->row('screen_name') ,
-				'icq'				=>	$query->row('icq') ,
-				'icq_im'			=>	$query->row('icq') ,
+				'icq'				=>	ee()->functions->encode_ee_tags($query->row('icq'), TRUE),
+				'icq_im'			=>	ee()->functions->encode_ee_tags($query->row('icq'), TRUE),
 				'lang:recipient'	=>	ee()->lang->line('mbr_icq_recipient'),
 				'lang:subject'		=>	ee()->lang->line('mbr_icq_subject'),
 				'lang:message'		=>	ee()->lang->line('mbr_icq_message')
@@ -499,8 +481,6 @@ class Member_memberlist extends Member {
 
 			// Which segment is this?  We need the NEXT segment to pass to pagination
 			$pag_uri_segment = array_search($this->cur_id, ee()->uri->segment_array()) + 1;
-
-			//$row_count = ($this->uri_extra != '') ? $this->uri_extra : 0;
 		}
 
 		$path = '/'.$group_id.'-'.$order_by.'-'.$sort_order.'-'.$row_limit;
@@ -580,25 +560,13 @@ class Member_memberlist extends Member {
 		/**  Build Pagination
 		/** -----------------------------*/
 
-		// Set the stats for: {current_page} of {total_pages}
-
-		$current_page = floor(($row_count / $row_limit) + 1);
-		$total_pages  = ceil($query->row('count')  / $row_limit);
-
-		// Deprecate this
-		$page_count = ee()->lang->line('page').' '.$current_page.' '.ee()->lang->line('of').' '.$total_pages;
-
-		$pager = '';
-
-		if ($query->row('count')  > $row_limit)
+		// Check to see if the old style pagination exists
+		// @deprecated 2.8
+		if (stripos($template, LD.'if paginate'.RD) !== FALSE)
 		{
-			ee()->load->library('pagination');
-
-			$config['prefix'] = $search_path.$path.'-';
-			$config['base_url'] = $this->_member_path('memberlist', '');
-			$config['total_rows'] = $query->row('count');
-			$config['per_page'] = $row_limit;
-			$config['first_link'] = ee()->lang->line('first');
+			$template = preg_replace("/{if paginate}(.*?){\/if}/uis", "{paginate}$1{/paginate}", $template);
+			ee()->load->library('logger');
+			ee()->logger->developer('{if paginate} has been deprecated, use normal {paginate} tags in your Member List template.', TRUE, 604800);
 			$config['last_link'] = ee()->lang->line('last');
 			//$config['uri_segment'] = $pag_uri_segment;
 			$config['suffix'] = ($first_letter != '') ? $first_letter.'/' : '';
@@ -620,17 +588,22 @@ class Member_memberlist extends Member {
 				$config['prev_tag_close'] = '</div></td>';
 				$config['cur_tag_open'] = '<td><div class="paginateCur">';
 				$config['cur_tag_close'] = '</div></td>';
-				$config['num_tag_open'] = '<td><div class="paginate">';
 				$config['num_tag_close'] = '</div></td>';
 			}
 
 			ee()->pagination->initialize($config);
+		}
 
+		// Start running pagination
+		ee()->load->library('pagination');
+		$pagination = ee()->pagination->create();
+		$pagination->position = 'inline';
+		$template = $pagination->prepare($template);
 
-			$pager = ee()->pagination->create_links();
-			 //var_dump(ee()->pagination); //exit;
+		if ($query->row('count') > $row_limit && $pagination->paginate === TRUE)
+		{
+			$pagination->build($query->row('count'), $row_limit);
 			$sql .= " LIMIT ".$row_count.", ".$row_limit;
-
 		}
 
 		/** ----------------------------------------
@@ -663,7 +636,7 @@ class Member_memberlist extends Member {
 					array(
 						'aim_console'	=> "onclick=\"window.open('".$this->_member_path('aim_console/'.$row['member_id'])."', '_blank', 'width=240,height=360,scrollbars=yes,resizable=yes,status=yes,screenx=5,screeny=5');\"",
 						'icq_console'	=> "onclick=\"window.open('".$this->_member_path('icq_console/'.$row['member_id'])."', '_blank', 'width=650,height=580,scrollbars=yes,resizable=yes,status=yes,screenx=5,screeny=5');\"",
-						'yahoo_console'	=> "http://edit.yahoo.com/config/send_webmesg?.target=".$row['yahoo_im']."&amp;.src=pg",
+						'yahoo_console'	=> "http://edit.yahoo.com/config/send_webmesg?.target=".ee()->functions->encode_ee_tags($row['yahoo_im'], TRUE)."&amp;.src=pg",
 						'email_console'	=> "onclick=\"window.open('".$this->_member_path('email_console/'.$row['member_id'])."', '_blank', 'width=650,height=600,scrollbars=yes,resizable=yes,status=yes,screenx=5,screeny=5');\"",
 					)
 				);
@@ -777,7 +750,8 @@ class Member_memberlist extends Member {
 				/**  Manual replacements
 				/** ----------------------------------------*/
 
-				$temp = str_replace(LD.'name'.RD, ($row['screen_name'] != '') ? $row['screen_name'] : $row['username'], $temp);
+				$name_replacement = ($row['screen_name'] != '') ? $row['screen_name'] : $row['username'];
+				$temp = $this->_var_swap_single('name', $name_replacement, $temp);
 
 				/** ----------------------------------------
 				/**  1:1 variables
@@ -1027,46 +1001,32 @@ class Member_memberlist extends Member {
 		/** ----------------------------------------
 		/**  Put rendered chunk into template
 		/** ----------------------------------------*/
-		if ($pager == '')
+		if ($pagination->paginate === TRUE)
 		{
-			$template = $this->_deny_if('paginate', $template);
-		}
-		else
-		{
-			$template = $this->_allow_if('paginate', $template);
-
-			// Deprecate these...
-			$template = str_replace(LD.'paginate'.RD, 			$pager, $template);
-			$template = str_replace(LD.'page_count'.RD, 		$page_count, $template);
-			//.....
-			$template = str_replace(LD.'pagination_links'.RD,	$pager, 		$template);
-			$template = str_replace(LD.'current_page'.RD, 		$current_page, 	$template);
-			$template = str_replace(LD.'total_pages'.RD, 		$total_pages,	$template);
+			$template = $pagination->render($template);
 		}
 
 		if ($this->is_search === TRUE)
 		{
-			$form_action = $this->_member_path('member_search'.$search_path);
+			$form_open = ee()->functions->form_declaration(array(
+				'method' => 'post',
+				'action' => $this->_member_path('member_search'.$search_path)
+			));
 		}
 		else
 		{
-			$form_action = $this->_member_path('memberlist'.(($first_letter != '') ? $first_letter.'/' : $search_path));
+			$form_open = ee()->functions->form_declaration(array(
+				'method' => 'post',
+				'action' => $this->_member_path('memberlist'.(($first_letter != '') ? $first_letter.'/' : $search_path))
+			));
 		}
 
-		$form_declaration = ee()->functions->form_declaration(array(
-									'action' => $form_action
-								)
-							);
-
-		$template = str_replace(LD."form_declaration".RD, $form_declaration, $template);
-
-		$form_declaration = ee()->functions->form_declaration(array(
-									'action' => $this->_member_path('do_member_search')
-								)
-							);
-
-		$template = str_replace(LD."form:form_declaration:do_member_search".RD, $form_declaration, $template);
-
+		$template = str_replace(LD."form_declaration".RD, $form_open, $template);
+		$form_open_member_search = ee()->functions->form_declaration(array(
+			'method' => 'post',
+			'action' => $this->_member_path('do_member_search')
+		));
+		$template = str_replace(LD."form:form_declaration:do_member_search".RD, $form_open_member_search, $template);
 		$template = str_replace(LD."member_rows".RD, $str, $template);
 
 		return	$template;

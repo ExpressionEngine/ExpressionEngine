@@ -169,6 +169,9 @@ $lang = array(
 'enable_extensions' =>
 "Enable Extensions?",
 
+'extensions_disabled_manage' =>
+"Extensions must <a href='%s'>be enabled</a> to manage installed extensions.",
+
 'disable_extension' =>
 "Disable?",
 
@@ -307,6 +310,15 @@ $lang = array(
 
 "enable_throttling_explanation" =>
 "This feature generates a 404 header and message if a request to your site is made in which the template group does not exist in the URL. It is intended primarily to keep search engine crawlers from repeatedly requesting nonexistent pages.",
+
+"caching_driver" =>
+"Caching Driver",
+
+"caching_driver_failover" =>
+"Cannot connect to %s, using %s driver instead",
+
+"caching_driver_file_fail" =>
+"Cannot use %s driver, check cache path permissions, using %s driver",
 
 "max_caches" =>
 "Maximum Number of Cachable URIs",
@@ -939,10 +951,10 @@ $lang = array(
 "group_assignment_defaults_to_two" =>
 "If you require account activation, members will be set to this once they are activated",
 
-"user_session_type" =>
-"User Session Type",
+"website_session_type" =>
+"Website Session Type",
 
-"admin_session_type" =>
+"cp_session_type" =>
 "Control Panel Session Type",
 
 "security_cfg" =>
@@ -963,17 +975,11 @@ $lang = array(
 "s_session" =>
 "Session ID only",
 
-"secure_forms" =>
-"Process form data in Secure Mode?",
-
 "deny_duplicate_data" =>
 "Deny Duplicate Data?",
 
 "deny_duplicate_data_explanation" =>
 "This option prevents data submitted by users (comments, etc.) from being received if it is an exact duplicate of data that already exists.",
-
-"secure_forms_explanation" =>
-"Prevents automated spamming and multiple accidental submissions.",
 
 "allow_multi_logins" =>
 "Allow multiple log-ins from a single account?",
@@ -1122,14 +1128,20 @@ $lang = array(
 "localization_cfg" =>
 "Localization Settings",
 
+"date_format" =>
+"Default Date Formatting",
+
 "time_format" =>
 "Default Time Formatting",
 
-"united_states" =>
-"United States",
+"24_hour" =>
+"24-hour",
 
-"european" =>
-"European",
+"12_hour" =>
+"12-hour with AM/PM",
+
+"include_seconds" =>
+"Include Seconds in the Default Time Format",
 
 "default_site_timezone" =>
 "Site Timezone",
