@@ -67,11 +67,10 @@ class Design extends CP_Controller {
 			$this->sub_breadcrumbs = array_merge($this->sub_breadcrumbs, array(
 				'global_variables'	=> cp_url('design/global_variables'),
 				'snippets'			=> cp_url('design/snippets'),
-				'sync_templates'	=> cp_url('design/sync_templates'),
-				'url_manager'		=> cp_url('design/url_manager'),
+				'sync_templates'	=> cp_url('design/sync_templates')
 			));
 
-			if ($this->config->item('enable_template_routes') == 'y')
+			if ($this->config->item('enable_template_routes') == 'y' && ! IS_CORE)
 			{
 				$this->sub_breadcrumbs['url_manager'] = cp_url('design/url_manager');
 			}
