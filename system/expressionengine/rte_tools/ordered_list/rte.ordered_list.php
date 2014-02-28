@@ -5,13 +5,13 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.5
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -24,16 +24,16 @@
  * @link		http://ellislab.com
  */
 class Ordered_list_rte {
-	
+
 	public $info = array(
 		'name'			=> 'Ordered List',
 		'version'		=> '1.0',
 		'description'	=> 'Triggers the RTE to make the selected blocks into ordered list items',
 		'cp_only'		=> 'n'
 	);
-	
+
 	private $EE;
-	
+
 	/**
 	 * Constructor
 	 *
@@ -62,7 +62,7 @@ class Ordered_list_rte {
 			)
 		);
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -73,7 +73,7 @@ class Ordered_list_rte {
 	function definition()
 	{
 		ob_start(); ?>
-		
+
 		WysiHat.addButton('ordered_list', {
 			label:			EE.rte.ordered_list.add,
 			'toggle-text':	EE.rte.ordered_list.remove,
@@ -84,9 +84,9 @@ class Ordered_list_rte {
 				return this.is('orderedList');
 			}
 		});
-		
+
 <?php	$buffer = ob_get_contents();
-		ob_end_clean(); 
+		ob_end_clean();
 		return $buffer;
 	}
 

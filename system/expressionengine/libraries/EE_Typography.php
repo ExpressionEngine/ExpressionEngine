@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -57,6 +57,10 @@ class EE_Typography extends CI_Typography {
 	// Allowed tags  Note: Specified in initialize()
 	var $safe_encode = array();
 	var $safe_decode = array();
+
+	// A marker used to hide quotes in text
+	// before it is passed through the parser.
+	private $quote_marker = NULL;
 
 	/**
 	 * Constructor
@@ -338,7 +342,6 @@ class EE_Typography extends CI_Typography {
 		/** -------------------------------------*/
 
 		// Next, we need to encode EE tags contained in entries, comments, etc. so that they don't get parsed.
-
 		$str = ee()->functions->encode_ee_tags($str, $this->convert_curly);
 
 		/** -------------------------------------
@@ -458,6 +461,7 @@ class EE_Typography extends CI_Typography {
 				break;
 		}
 
+
 		// Encode PHP post-Markdown parsing
 		if ($separate_parser)
 		{
@@ -494,11 +498,13 @@ class EE_Typography extends CI_Typography {
 			}
 		}
 
+
 		// Standard email addresses
 		$str = $this->decode_emails($str);
 
 		// Insert the cached code tags
 		$str = $this->_convert_code_markers($str);
+
 
 		// -------------------------------------------
 		// 'typography_parse_type_end' hook.
@@ -512,6 +518,73 @@ class EE_Typography extends CI_Typography {
 		// -------------------------------------------
 
 		return $str;
+	}
+
+	/**
+	 * Protected Quotes in EE Tags
+	 *
+	 * Search all EE tags in the string for quotes and protect the quotes from
+	 * being parsed by subsequent parsers by replacing them with a marker.  The
+	 * marker will then be switched back out for the quotes in question by
+	 * running restore quotes in tags.
+	 *
+	 * Note: The marker is time dependent and stored in the instance of the
+	 * typography class, so the call to restore_quotes_in_tags() must be to the
+	 * same instance of typography in the same request.
+	 *
+	 * @param	string	$str	The string potentially containing EE tags that you
+	 * 		wish to protect quotes in.
+	 *
+	 * @return	string	The parsed string with any quotes in EE tags replaced
+	 * 		by {{SINGLE_QUOTE:marker}} or {{DOUBLE_QUOTE:marker}} respectively.
+	 * 		The marker is time dependent and stored in this instance of the
+	 * 		typography object.
+	 */
+	protected function protect_quotes_in_tags($str)
+	{
+		if ( ! isset($this->quote_marker) )
+		{
+			$this->quote_marker = md5(time(0) . 'quote_marker');
+		}
+
+		$single_quote_marker = '{{SINGLEQUOTE:' . $this->quote_marker . '}}';
+		$double_quote_marker = '{{DOUBLEQUOTE:' . $this->quote_marker . '}}';
+
+		if (preg_match_all("/{.*?}/", $str, $matches, PREG_SET_ORDER))
+		{
+			foreach($matches as $match)
+			{
+				$str = str_replace($match[0],
+					str_replace(
+						array('\'', '"'),
+						array($single_quote_marker, $double_quote_marker),
+						$match[0]),
+					$str
+				);
+			}
+		}
+
+		return $str;
+	}
+
+	/**
+	 *  Restores Quotes in EE Tags
+	 *
+	 *  Restores quotes in EE tags hidden by
+	 *  EE_Typography::protect_quotes_in_tags().  Must be called on the same
+	 *  instance of EE_Typography that protected the quotes, as the marker is
+	 *  time dependent and stored on the Typography instance.
+	 *
+	 *  @param	string	$str	The string in which to restore the quotes.
+	 *
+	 *  @return string	The string with quotes restored.
+	 */
+	protected function restore_quotes_in_tags($str)
+	{
+		$single_quote_marker = '{{SINGLEQUOTE:' . $this->quote_marker . '}}';
+		$double_quote_marker = '{{DOUBLEQUOTE:' . $this->quote_marker . '}}';
+
+		return str_replace(array($single_quote_marker, $double_quote_marker), array('\'', '"'), $str);
 	}
 
 	// --------------------------------------------------------------------
@@ -638,6 +711,8 @@ class EE_Typography extends CI_Typography {
 	 *                         	ee tag encoding
 	 *                         - smartypants (yes/no) enable or disable
 	 *                         	smartypants
+	 *                         - no_markup (TRUE/FALSE) set to TRUE to disable
+	 *                          the parsing of markup in Markdown
 	 * @return string          Parsed Markdown content
 	 */
 	public function markdown($str, $options = array())
@@ -645,18 +720,63 @@ class EE_Typography extends CI_Typography {
 		require_once(APPPATH.'libraries/typography/Markdown/markdown.php');
 
 		// Encode EE Tags
-		if ( ! isset($options['encode_ee_tags']) OR $options['encode_ee_tags'] == 'yes')
+		if ( ! isset($options['encode_ee_tags'])
+			OR $options['encode_ee_tags'] == 'yes')
 		{
 			$str = ee()->functions->encode_ee_tags($str);
 		}
 
-		$str = Markdown($str);
+		// Ignore [code]
+		$code_blocks = array();
+		preg_match_all("/\[code\](.*?)\[\/code\]/uis", $str, $matches);
+		foreach ($matches[0] as $match)
+		{
+			$hash = random_string('md5');
+			$code_blocks[$hash] = $match;
+			$str = str_replace($match, $hash, $str);
+		}
+
+		$parser = new Markdown_Parser();
+
+		// Disable other markup if this is set
+		if (isset($options['no_markup']) && $options['no_markup'] === TRUE)
+		{
+			$parser->no_markup = TRUE;
+		}
+
+		// Protect any quotes in EE tags from the Markdown and SmartyPants
+		// processors.
+		$str = $this->protect_quotes_in_tags($str);
+
+		// Parse the Markdown
+		$str = $parser->transform($str);
 
 		// Run everything through SmartyPants
 		if ( ! isset($options['smartypants']) OR $options['smartypants'] == 'yes')
 		{
 			require_once(APPPATH.'libraries/typography/SmartyPants/smartypants.php');
 			$str = SmartyPants($str);
+		}
+
+		// Restore the quotes we protected earlier.
+		$str = $this->restore_quotes_in_tags($str);
+
+		// Replace <pre><code> with [code]
+		// Only relevant IF being called by typography parser
+		$backtrace = debug_backtrace();
+		if ( ! in_array($backtrace[1]['class'], array('EE_Typography', 'Markdown')))
+		{
+			$str = preg_replace(
+				"/<pre><code>(.*?)<\/code><\/pre>/uis",
+				"[code]$1[/code]",
+				$str
+			);
+		}
+
+		// Replace [code]
+		foreach ($code_blocks as $hash => $code_block)
+		{
+			$str = str_replace($hash, $code_block, $str);
 		}
 
 		return $str;

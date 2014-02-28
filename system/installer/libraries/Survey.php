@@ -4,13 +4,13 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -24,7 +24,7 @@
  */
 
 class Survey {
-	
+
 	private $_survey_url = 'survey-collector.ellislab.com';
 
 	function __construct()
@@ -83,7 +83,7 @@ class Survey {
 	 * @return	void
 	 */
 	function send_survey($version)
-	{			
+	{
 		$data = array();
 
 		if (isset($_POST['send_anonymous_server_data']) && $_POST['send_anonymous_server_data'] == 'y')
@@ -98,7 +98,7 @@ class Survey {
 		unset($_POST['participate_in_survey']);
 		unset($_POST['send_anonymous_server_data']);
 		unset($_POST['submit']);
-		
+
 		foreach ($_POST as $key => $val)
 		{
 			$data[$key] = $val;
@@ -107,7 +107,7 @@ class Survey {
 		$data['ee_version'] = $version;
 
 		$postdata = '';
-		
+
 		foreach ($data as $key => $val)
 		{
 			$postdata .= "&{$key}=".urlencode(stripslashes($val));
@@ -119,9 +119,9 @@ class Survey {
 			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
 			curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
 			curl_setopt($ch, CURLOPT_URL, "http://{$this->_survey_url}/");
-			curl_setopt($ch, CURLOPT_POST, 1); 
+			curl_setopt($ch, CURLOPT_POST, 1);
 			curl_setopt($ch, CURLOPT_POSTFIELDS, $postdata);
-			
+
 			// silently, please
 			ob_start();
 			curl_exec($ch);
@@ -141,7 +141,7 @@ class Survey {
 				fputs($fp, "Connection: close\r\n\r\n");
 				fputs($fp, $postdata . "\r\n\r\n");
 			}
-			
+
 			@fclose($fp);
 		}
 	}

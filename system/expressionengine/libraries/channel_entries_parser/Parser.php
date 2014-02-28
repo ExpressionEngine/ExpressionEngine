@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.6
@@ -190,6 +190,15 @@ class EE_Channel_data_parser {
 		$total_results = count($entries);
 		$site_pages = config_item('site_pages');
 
+		foreach (ee()->TMPL->site_ids as $site_id)
+		{
+			if ($site_id != ee()->config->item('site_id'))
+			{
+				$pages = ee()->config->site_pages($site_id);
+				$site_pages[$site_id] = $pages[$site_id];
+			}
+		}
+
 		$result = ''; // final template
 
 		// If custom fields are enabled, notify them of the data we're about to send
@@ -204,6 +213,13 @@ class EE_Channel_data_parser {
 		$parser_components = $this->_parser->components();
 
 		$dt = 0;
+
+		ee()->load->library('typography');
+		ee()->typography->initialize(array(
+			'convert_curly'	=> FALSE
+		));
+
+		ee()->load->helper('date');
 
 		foreach ($entries as $row)
 		{

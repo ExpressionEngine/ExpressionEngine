@@ -1,0 +1,10 @@
+<div id="sidebar_category_archives">
+      		<h5>Categories</h5>
+  			<ul id="categories">
+  				<!-- Weblog Categories tag: http://ellislab.com/expressionengine/user-guide/modules/weblog/categories.html -->
+				
+  				{exp:channel:categories channel="news" style="linear"}
+  				<li><a href="{path='news/archives'}">{category_name}</a></li>
+  				{/exp:channel:categories}
+  			</ul>
+  		</div>

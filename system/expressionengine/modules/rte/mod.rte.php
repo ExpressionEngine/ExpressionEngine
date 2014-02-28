@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.5
@@ -25,7 +25,7 @@
 class Rte {
 
 	public $return_data	= '';
-	
+
 	/**
 	  * Constructor
 	  */
@@ -39,12 +39,12 @@ class Rte {
 			return;
 		}
 	}
-	
+
 	// ------------------------------------------------------------------------
 
 	/**
 	 * Outputs the RTE's toolset JS. Called via an ACT.
-	 * 
+	 *
 	 * @access	public
 	 * @return	mixed 	The JS
 	 */
@@ -58,7 +58,7 @@ class Rte {
 
 		$toolset_id 	= (int)ee()->input->get('toolset_id');
 		$include 		= explode(',', ee()->input->get('include', TRUE));
-		
+
 		// all allowed includes default to FALSE
 		foreach (array('jquery', 'jquery_ui') as $allowed)
 		{

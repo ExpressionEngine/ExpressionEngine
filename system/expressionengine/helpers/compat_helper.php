@@ -5,13 +5,13 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -194,7 +194,7 @@ function ee_inet_ntop($ip)
 		}
 
 		// ipv4 mapped?
-		if ($i == 6 && $best_start == 0 && 
+		if ($i == 6 && $best_start == 0 &&
 			($best_len == 6 OR ($best_len == 5 && $parts[5] == 'ffff')))
 		{
 			$out .= ee_inet_ntop(pack('H4H4', $parts[6], $parts[7]));
@@ -262,7 +262,7 @@ function ee_inet_pton($str)
 		array_unshift($args, str_repeat('H4', 8));
 		return call_user_func_array('pack', $args);
 	}
-	
+
 	if (strpos($str, '.'))
 	{
 		return pack('N', ip2long($str));

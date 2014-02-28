@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -42,7 +42,7 @@ class Member_auth extends Member {
 
 		$login_form = $this->_load_element('login_form');
 
-		if (ee()->config->item('user_session_type') != 'c')
+		if (ee()->config->item('website_session_type') != 'c')
 		{
 			$login_form = $this->_deny_if('auto_login', $login_form);
 		}
@@ -147,6 +147,8 @@ class Member_auth extends Member {
 
 			ee()->output->show_user_error('general', $line);
 		}
+
+		$csrf_token = ee()->csrf->refresh_token();
 
 		$success = '';
 
@@ -535,9 +537,12 @@ class Member_auth extends Member {
 	 */
 	public function member_logout()
 	{
-		// Check Form Hash
-		$xid = ee()->input->get('XID') ? ee()->input->get('XID') : '';
-		if ( ! ee()->security->secure_forms_check($xid))
+		// Check CSRF Token
+		$token = FALSE;
+		if ( ! $token) $token = ee()->input->get('csrf_token');
+		if ( ! $token) $token = ee()->input->get('XID');
+
+		if ($token != CSRF_TOKEN)
 		{
 			return ee()->output->show_user_error('general', array(lang('not_authorized')));
 		}
@@ -550,7 +555,9 @@ class Member_auth extends Member {
 
 		ee()->session->destroy();
 
-		ee()->functions->set_cookie('read_topics');
+		ee()->input->delete_cookie('read_topics');
+
+		$csrf_token = ee()->csrf->refresh_token();
 
 		/* -------------------------------------------
 		/* 'member_member_logout' hook.
@@ -739,6 +746,7 @@ class Member_auth extends Member {
 
 		$swap = array(
 			'name'		=> $name,
+			'username'    => $username,
 			'reset_url'	=> reduce_double_slashes(ee()->functions->fetch_site_index(0, 0) . '/' . ee()->config->item('profile_trigger') . '/reset_password?&id='.$rand.$forum_id),
 			'site_name'	=> $site_name,
 			'site_url'	=> $return

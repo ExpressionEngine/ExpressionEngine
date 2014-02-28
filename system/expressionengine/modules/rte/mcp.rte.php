@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.5
@@ -67,7 +67,7 @@ class Rte_mcp {
 		ee()->load->model('rte_toolset_model');
 
 		$toolsets = ee()->rte_toolset_model->get_toolset_list();
-		
+
 		// prep the Default Toolset dropdown
 		$toolset_opts = array();
 
@@ -111,10 +111,10 @@ class Rte_mcp {
 		// return the page
 		return ee()->load->view('index', $vars, TRUE);
 	}
-	
-	
+
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Update prefs form action
 	 *
@@ -136,7 +136,7 @@ class Rte_mcp {
 			lang('default_toolset'),
 			'required|is_numeric'
 		);
-		
+
 		if (ee()->form_validation->run())
 		{
 			// update the prefs
@@ -147,12 +147,12 @@ class Rte_mcp {
 		{
 			ee()->session->set_flashdata('message_failure', lang('settings_not_saved'));
 		}
-		
+
 		ee()->functions->redirect($this->_base_url);
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Provides Edit Toolset Screen HTML
 	 *
@@ -166,7 +166,7 @@ class Rte_mcp {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Saves a toolset
 	 *
@@ -179,7 +179,7 @@ class Rte_mcp {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Enables or disables a toolset
 	 *
@@ -189,7 +189,7 @@ class Rte_mcp {
 	public function toggle_toolset()
 	{
 		ee()->load->model('rte_toolset_model');
-		
+
 		$toolset_id = ee()->input->get_post('toolset_id');
 		$enabled = ee()->input->get_post('enabled') != 'n' ? 'y' :'n';
 
@@ -206,7 +206,7 @@ class Rte_mcp {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Deletes a toolset
 	 *
@@ -216,19 +216,19 @@ class Rte_mcp {
 	public function delete_toolset()
 	{
 		ee()->load->model('rte_toolset_model');
-		
+
 		$toolset_id = ee()->input->get_post('toolset_id');
-		
+
 		// Delete
 		if (ee()->rte_toolset_model->delete($toolset_id))
 		{
 			ee()->session->set_flashdata('message_success', lang('toolset_deleted'));
-			
+
 			// If the default toolset was deleted
 			if ($toolset_id == ee()->config->item('rte_default_toolset_id'))
 			{
 				$toolsets = ee()->rte_toolset_model->get_toolset_list();
-				
+
 				// Make the new default toolset the first available
 				if ( ! empty($toolsets))
 				{
@@ -243,7 +243,7 @@ class Rte_mcp {
 						'rte_default_toolset_id' => 0
 					);
 				}
-				
+
 				ee()->config->update_site_prefs($default_toolset_pref);
 			}
 		}
@@ -251,7 +251,7 @@ class Rte_mcp {
 		{
 			ee()->session->set_flashdata('message_failure', lang('toolset_not_deleted'));
 		}
-		
+
 		ee()->functions->redirect($this->_base_url);
 	}
 
@@ -266,7 +266,7 @@ class Rte_mcp {
 	public function toggle_tool()
 	{
 		ee()->load->model('rte_tool_model');
-		
+
 		$tool_id = ee()->input->get_post('tool_id');
 		$enabled = ee()->input->get_post('enabled') != 'n' ? 'y' :'n';
 
@@ -286,7 +286,7 @@ class Rte_mcp {
 
 	/**
 	 * Actual preference-updating code
-	 * 
+	 *
 	 * @access	private
 	 * @return	void
 	 */
@@ -303,7 +303,7 @@ class Rte_mcp {
 
 	/**
 	 * Makes sure users can access a given method
-	 * 
+	 *
 	 * @access	private
 	 * @return	void
 	 */
@@ -311,7 +311,7 @@ class Rte_mcp {
 	{
 		// super admins always can
 		$can_access = (ee()->session->userdata('group_id') == '1');
-		
+
 		if ( ! $can_access)
 		{
 			// get the group_ids with access
@@ -333,13 +333,13 @@ class Rte_mcp {
 				}
 			}
 		}
-		
+
 		if ( ! $can_access)
 		{
 			show_error(lang('unauthorized_access'));
-		}		
+		}
 	}
-	
+
 }
 // END CLASS
 

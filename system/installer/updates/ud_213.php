@@ -5,13 +5,13 @@
  *
  * @package     ExpressionEngine
  * @author      EllisLab Dev Team
- * @copyright   Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright   Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license     http://ellislab.com/expressionengine/user-guide/license.html
  * @link        http://ellislab.com
  * @since       Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -35,14 +35,14 @@ class Updater {
     function do_update()
     {
 		ee()->load->library('layout');
-		
+
 		$layouts = ee()->db->get('layout_publish');
-		
+
 		if ($layouts->num_rows() === 0)
 		{
 			return TRUE;
 		}
-		
+
 		$layouts = $layouts->result_array();
 
 		foreach ($layouts as &$layout)
@@ -51,7 +51,7 @@ class Updater {
 
 			foreach ($old_layout as $tab => &$fields)
 			{
-				$field_keys = array_keys($fields);				
+				$field_keys = array_keys($fields);
 
 				foreach ($field_keys as &$key)
 				{
@@ -67,12 +67,12 @@ class Updater {
 			$layout['field_layout'] = serialize($old_layout);
 
 		}
-		
+
 		ee()->db->update_batch('layout_publish', $layouts, 'layout_id');
-		
+
 		return TRUE;
 	}
-}   
+}
 /* END CLASS */
 
 /* End of file ud_213.php */

@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -173,16 +173,11 @@ class Channel_calendar extends Channel {
 		/**  {date format="%m %Y"}
 		/** ----------------------------------------*/
 
+		$dates = array();
+
 		// This variable is used in the heading of the calendar
 		// to show the month and year
-
-		if (preg_match_all("#".LD."date format=[\"|'](.+?)[\"|']".RD."#", ee()->TMPL->tagdata, $matches))
-		{
-			foreach ($matches['1'] as $match)
-			{
-				ee()->TMPL->tagdata = preg_replace("#".LD."date format=.+?".RD."#", ee()->localize->format_date($match, $date), ee()->TMPL->tagdata, 1);
-			}
-		}
+		$dates['date'] = $date;
 
 		/** ----------------------------------------
 		/**  {previous_date format="%m %Y"}
@@ -190,14 +185,7 @@ class Channel_calendar extends Channel {
 
 		// This variable is used in the heading of the calendar
 		// to show the month and year
-
-		if (preg_match_all("#".LD."previous_date format=[\"|'](.+?)[\"|']".RD."#", ee()->TMPL->tagdata, $matches))
-		{
-			foreach ($matches['1'] as $match)
-			{
-				ee()->TMPL->tagdata = preg_replace("#".LD."previous_date format=.+?".RD."#", ee()->localize->format_date($match, $previous_date), ee()->TMPL->tagdata, 1);
-			}
-		}
+		$dates['previous_date'] = $previous_date;
 
 		/** ----------------------------------------
 		/**  {next_date format="%m %Y"}
@@ -205,15 +193,9 @@ class Channel_calendar extends Channel {
 
 		// This variable is used in the heading of the calendar
 		// to show the month and year
+		$dates['next_date'] = $next_date;
 
-		if (preg_match_all("#".LD."next_date format=[\"|'](.+?)[\"|']".RD."#", ee()->TMPL->tagdata, $matches))
-		{
-			foreach ($matches['1'] as $match)
-			{
-				ee()->TMPL->tagdata = preg_replace("#".LD."next_date format=.+?".RD."#", ee()->localize->format_date($match, $next_date), ee()->TMPL->tagdata, 1);
-			}
-		}
-
+		ee()->TMPL->tagdata = ee()->TMPL->parse_date_variables(ee()->TMPL->tagdata, $dates);
 
 		/** ----------------------------------------
 		/**  Day Heading
@@ -305,16 +287,6 @@ class Channel_calendar extends Channel {
 			$row_chunk = trim($match['1']);
 
 			//  Fetch all the entry_date variable
-
-			if (preg_match_all("/".LD."entry_date\s+format=[\"'](.*?)[\"']".RD."/s", $row_chunk, $matches))
-			{
-				for ($j = 0; $j < count($matches['0']); $j++)
-				{
-					$matches['0'][$j] = str_replace(array(LD,RD), '', $matches['0'][$j]);
-
-					$entry_dates[$matches['0'][$j]] = $matches['1'][$j];
-				}
-			}
 
 			if (preg_match("/".LD."row_start".RD."(.*?)".LD.'\/'."row_start".RD."/s", $row_chunk, $match))
 			{
@@ -472,14 +444,7 @@ class Channel_calendar extends Channel {
 
 					foreach (ee()->TMPL->var_single as $key => $val)
 					{
-						if (isset($entry_dates[$key]))
-						{
-							$entry_date[$key] = ee()->localize->format_date(
-								$entry_dates[$key],
-								$row['entry_date']
-							);
-						}
-
+						$entry_date[$key] = $row['entry_date'];
 
 						/** ----------------------------------------
 						/**  parse permalink
@@ -737,9 +702,9 @@ class Channel_calendar extends Channel {
 									$str);
 
 				// Entry Date
-				foreach ($val['2'] as $k => $v)
+				foreach ($val['2'] as $date)
 				{
-					$str = str_replace(LD.$k.RD, $v, $str);
+					$str = ee()->TMPL->parse_date_variables($str, array('entry_date' => $date));
 				}
 
 				// Permalink

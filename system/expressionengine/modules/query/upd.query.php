@@ -4,13 +4,13 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -40,7 +40,7 @@ class Query_upd {
 	 *
 	 * @access	public
 	 * @return	bool
-	 */	
+	 */
 	function install()
 	{
 		$data = array(
@@ -50,10 +50,10 @@ class Query_upd {
 		);
 
 		ee()->db->insert('modules', $data);
-		
+
 		return TRUE;
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -61,13 +61,13 @@ class Query_upd {
 	 *
 	 * @access	public
 	 * @return	bool
-	 */	
+	 */
 	function uninstall()
 	{
-		ee()->db->select('module_id');		
+		ee()->db->select('module_id');
 		$query = ee()->db->get_where('modules', array('module_name' => 'Query'));
 		$module_id = $query->row('module_id');
-				
+
 		ee()->db->where('module_id', $module_id);
 		ee()->db->delete('module_member_groups');
 
@@ -82,7 +82,7 @@ class Query_upd {
 
 		return TRUE;
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -90,7 +90,7 @@ class Query_upd {
 	 *
 	 * @access	public
 	 * @return	bool
-	 */	
+	 */
 	function update($current='')
 	{
 		return FALSE;

@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -188,33 +188,17 @@ class Cp {
 			'session_idle'		=> lang('session_idle')
 		);
 
-		/* -------------------------------------------
-		/*	Hidden Configuration Variable
-		/*	- login_reminder => y/n  to turn the CP Login Reminder On or Off.  Default is 'y'
-        /* -------------------------------------------*/
-
-		if (ee()->config->item('login_reminder') != 'n')
-		{
-			$js_lang_keys['session_expiring'] = lang('session_expiring');
-			$js_lang_keys['username'] = lang('username');
-			$js_lang_keys['password'] = lang('password');
-			$js_lang_keys['login'] = lang('login');
-
-			ee()->javascript->set_global(array(
-				'SESS_TIMEOUT'		=> ee()->session->cpan_session_len * 1000,
-				'SESS_TYPE'			=> ee()->config->item('admin_session_type')
-			));
-		}
-
 		ee()->javascript->set_global(array(
 			'BASE'				=> str_replace(AMP, '&', BASE),
-			'XID'				=> XID_SECURE_HASH,
+			'XID'				=> CSRF_TOKEN,
+			'CSRF_TOKEN'		=> CSRF_TOKEN,
 			'PATH_CP_GBL_IMG'	=> PATH_CP_GBL_IMG,
 			'CP_SIDEBAR_STATE'	=> ee()->session->userdata('show_sidebar'),
 			'username'			=> ee()->session->userdata('username'),
 			'router_class'		=> ee()->router->class, // advanced css
 			'lang'				=> $js_lang_keys,
-			'THEME_URL'			=> $this->cp_theme_url
+			'THEME_URL'			=> $this->cp_theme_url,
+			'hasRememberMe'		=> (bool) ee()->remember->exists()
 		));
 
 		// Combo-load the javascript files we need for every request
@@ -551,43 +535,6 @@ class Cp {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Updates saved publish layouts
-	 *
-	 * @access	public
-	 * @param	array
-	 * @return	bool
-	 */
-	function delete_layout_tabs($tabs = array(), $namespace = '', $channel_id = array())
-	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('2.6', 'Layout::delete_layout_tabs()');
-
-		ee()->load->library('layout');
-		return ee()->layout->delete_layout_tabs($tabs, $namespace, $channel_id);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Deprecated Deletes fields from the saved publish layouts
-	 *
-	 * @access	public
-	 * @param	array or string
-	 * @param	int
-	 * @return	bool
-	 */
-	function delete_layout_fields($tabs, $channel_id = array())
-	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('2.6', 'Layout::delete_layout_fields()');
-
-		ee()->load->library('layout');
-		return ee()->layout->delete_layout_fields($tabs, $channel_id);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * URL to the current page unless POST data exists - in which case it
 	 * goes to the root controller.  To use the result, prefix it with BASE.AMP
 	 *
@@ -693,26 +640,6 @@ class Cp {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Abstracted Way to Add a Page Variable
-	 *
-	 * @access	public
-	 * @return	void
-	 */
-	function set_variable($name, $value)
-	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('2.6', 'view-><var> = <value>;');
-
-		// workaround for setting globals
-		ee()->load->vars($name, $value);
-
-		// the future!
-		ee()->view->$name = $value;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Abstracted Way to Add a Breadcrumb Links
 	 *
 	 * @access	public
@@ -724,61 +651,6 @@ class Cp {
 
 		$_crumbs[$link] = $title;
 		ee()->view->cp_breadcrumbs = $_crumbs;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Validate and Enable Secure Forms for the Control Panel
-	 *
-	 * @deprecated 2.6
-	 * @access	public
-	 * @return	void
-	 */
-	function secure_forms()
-	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('2.6', 'EE_Security::have_valid_xid()');
-
-		$hash = '';
-
-		if (ee()->config->item('secure_forms') == 'y')
-		{
-			if (count($_POST) > 0)
-			{
-				if ( ! isset($_POST['XID'])
-					OR ! ee()->security->secure_forms_check($_POST['XID']))
-				{
-					ee()->functions->redirect(BASE);
-				}
-
-				unset($_POST['XID']);
-			}
-
-			$hash = ee()->security->generate_xid();
-		}
-
-		define('XID_SECURE_HASH', $hash);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Fetch CP Themes
-	 *
-	 * Fetch control panel themes
-	 *
-	 * @access	public
-	 * @param	string
-	 * @return	string
-	 */
-	function fetch_cp_themes()
-	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('2.6', 'Admin_model::get_cp_theme_list()');
-
-		ee()->load->model('admin_model');
-		return ee()->admin_model->get_cp_theme_list();
 	}
 
 	// --------------------------------------------------------------------
@@ -832,6 +704,14 @@ class Cp {
 	 */
 	function add_to_head($data)
 	{
+		// Deprecated for scripts. Let's encourage good practices. This will
+		// also let us move jquery in the future.
+		if (strpos($data, '<script') !== FALSE)
+		{
+			ee()->load->library('logger');
+			ee()->logger->deprecated('2.8', 'CP::add_to_foot() for scripts');
+		}
+
 		$this->its_all_in_your_head[] = $data;
 	}
 
@@ -859,8 +739,8 @@ class Cp {
 	 * Member access validation
 	 *
 	 * @access	public
-	 * @param	string
-	 * @return	bool
+	 * @param	string  any number of permission names
+	 * @return	bool    TRUE if member has all permissions
 	 */
 	function allowed_group()
 	{

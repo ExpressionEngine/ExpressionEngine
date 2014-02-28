@@ -6,7 +6,7 @@
  *
  * @package		CodeIgniter
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc.
  * @license		http://codeigniter.com/user_guide/license.html
  * @link		http://codeigniter.com
  * @since		Version 1.0
@@ -96,7 +96,7 @@ class CI_Session {
 		{
 			$this->sess_expiration = (60*60*24*365*2);
 		}
-		
+
 		// Set the cookie name
 		$this->sess_cookie_name = $this->cookie_prefix.$this->sess_cookie_name;
 
@@ -402,8 +402,8 @@ class CI_Session {
 			$this->CI->db->where('session_id', $this->userdata['session_id']);
 			$this->CI->db->delete($this->sess_table_name);
 		}
-		
-		$secure_cookie = (config_item('cookie_secure') === TRUE) ? 1 : 0;
+
+		$secure_cookie = (bool_config_item('cookie_secure') === TRUE) ? 1 : 0;
 
 		if ($secure_cookie)
 		{
@@ -670,8 +670,8 @@ class CI_Session {
 		}
 
 		$expire = ($this->sess_expire_on_close === TRUE) ? 0 : $this->sess_expiration + time();
-		
-		$secure_cookie = (config_item('cookie_secure') === TRUE) ? 1 : 0;
+
+		$secure_cookie = (bool_config_item('cookie_secure') === TRUE) ? 1 : 0;
 
 		if ($secure_cookie)
 		{

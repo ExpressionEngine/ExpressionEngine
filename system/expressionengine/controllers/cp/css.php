@@ -4,13 +4,13 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -34,7 +34,7 @@ class Css extends CI_Controller {
 
 	/**
 	 * _remap function
-	 * 
+	 *
 	 * Any CSS file in the view collection
 	 *
 	 * @access	private
@@ -45,19 +45,19 @@ class Css extends CI_Controller {
 		{
 			return $this->_cp_global_ext();
 		}
-		
+
 		$file = 'global';
 		$path = '';
 
 		$cp_theme = $this->input->get_post('theme');
-		
+
 		if ($this->input->get_post('M') == 'third_party' && $package = $this->input->get_post('package'))
 		{
 			$package = strtolower($package);
-			
+
 			$file = $this->input->get_post('file');
 			$path = PATH_THIRD.$package.'/';
-			
+
 			// There's a good chance we don't need ci_view_path
 			// So try this first
 			if (file_exists($path.'css/'.$file.'.css'))
@@ -69,7 +69,7 @@ class Css extends CI_Controller {
 		{
 			$file = $this->input->get_post('M');
 		}
-		
+
 		$css_paths = array(
 			PATH_CP_THEME.$cp_theme.'/',
 			PATH_CP_THEME.'default/'
@@ -79,22 +79,22 @@ class Css extends CI_Controller {
 		{
 			array_shift($css_paths);
 		}
-		
+
 		foreach ($css_paths as $a_path)
 		{
 			$path = $a_path.'css/'.$file.'.css';
-			
+
 			if (file_exists($path))
 			{
 				break;
 			}
 		}
-		
+
 		return $this->_load_css_file($path, $file);
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Load CSS File
 	 *
@@ -109,7 +109,7 @@ class Css extends CI_Controller {
 		{
 			return FALSE;
 		}
-		
+
 		$this->output->out_type = 'cp_asset';
 		$this->output->enable_profiler(FALSE);
 
@@ -126,8 +126,8 @@ class Css extends CI_Controller {
 	}
 
 
-	// ------------------------------------------------------------------------	
-	
+	// ------------------------------------------------------------------------
+
 	/**
 	 * Control Panel Global Extension
 	 *
@@ -146,16 +146,16 @@ class Css extends CI_Controller {
 			$str = $this->extensions->call('cp_css_end');
 		/*
 		/* -------------------------------------------*/
-		
+
 		$this->output->out_type = 'cp_asset';
 		$this->output->set_header("Content-Type: text/css");
-		
+
 		$this->output->set_header('Content-Length: '.strlen($str));
-		$this->output->set_output($str);		
+		$this->output->set_output($str);
 	}
 
 	// --------------------------------------------------------------------
-	
+
 }
 // END CLASS
 

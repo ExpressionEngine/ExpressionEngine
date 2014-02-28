@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.7
@@ -93,7 +93,7 @@ class Member_field_model extends CI_Model {
 			{
 				ee()->dbforge->modify_column(
 					$this->table_data,
-					$this->_field_settings($data['m_field_id'], $data['m_field_type'], $data['m_field_maxl'])
+					$this->_field_settings($data['m_field_id'], $data['m_field_type'], $data['m_field_maxl'], FALSE)
 				);
 			}
 
@@ -112,14 +112,21 @@ class Member_field_model extends CI_Model {
 	 * @param  Integer	$id		ID of the field
 	 * @param  String	$type	Field type ('textarea', 'text')
 	 * @param  Integer	$maxl	Length/constraint of the field
+	 * @param  Bool 	$new	Indicates new vs. modification
 	 * @return Array			Array to pass back to dbforge
 	 */
-	private function _field_settings($id, $type, $maxl)
+	private function _field_settings($id, $type, $maxl, $new = TRUE)
 	{
 		$column_data = array();
 
 		// Create the row in member_data
 		$name = 'm_field_id_'.$id;
+
+		if ( ! $new)
+		{
+			$column_data[$name]['name'] = $name;
+		}
+
 		$column_data[$name]['type'] = ($type == 'textarea') ? 'text' : 'varchar';
 
 		if ($type != 'textarea')

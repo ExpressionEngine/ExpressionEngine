@@ -5,13 +5,13 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -41,13 +41,13 @@ function encode_multi_field($data = array())
 	{
 		$data = array($data);
 	}
-	
+
 	// Escape pipes
 	foreach($data as $key => $val)
 	{
 		$data[$key] = str_replace(array('\\', '|'), array('\\\\', '\|'), $val);
 	}
-	
+
 	// Implode on seperator
 	return implode('|', $data);
 }
@@ -69,15 +69,15 @@ function decode_multi_field($data = '')
 	{
 		return array();
 	}
-	
+
 	if (is_array($data))
 	{
 		return $data;
 	}
-	
+
 	// Explode at non-escaped pipes ([\\\\] == one backslash, thanks to php + regex escaping)
 	$data = preg_split("#(?<![\\\\])[|]#", $data);
-	
+
 	// Reduce slashes
 	return str_replace(array('\|', '\\\\'), array('|', '\\'), $data);
 }

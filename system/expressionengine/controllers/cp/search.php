@@ -4,13 +4,13 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -34,7 +34,7 @@ class Search extends CP_Controller {
 		$this->lang->loadfile('admin');
 		$this->load->library('Cp_search');
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -42,15 +42,15 @@ class Search extends CP_Controller {
 	 *
 	 * @access	public
 	 * @return	void
-	 */	
+	 */
 	function index()
 	{
 		$this->load->helper('html');
 		$this->load->helper('search');
-		
+
 		$vars['cp_page_title'] = lang('search_results');
 		$this->view->cp_page_title = $vars['cp_page_title'];
-		
+
 		// Saved search
 		if ($search = $this->input->get('saved'))
 		{
@@ -65,7 +65,7 @@ class Search extends CP_Controller {
 		{
 			// Save the search
 			$search = rawurlencode(base64_encode($search));
-			
+
 			if (AJAX_REQUEST)
 			{
 				// Force a js redirect
@@ -77,8 +77,8 @@ class Search extends CP_Controller {
 			// Degrade 'nicely'
 			$this->functions->redirect(BASE.AMP.'C=search'.AMP.'M=build_index'.AMP.'saved='.$search);
 		}
-		
-		
+
+
 		$vars['keywords'] = sanitize_search_terms($search);
 		$vars['can_rebuild'] = $this->cp->allowed_group('can_access_utilities');
 		$vars['search_data'] = $this->cp_search->generate_results($search);
@@ -89,7 +89,7 @@ class Search extends CP_Controller {
 			echo $this->load->view('search/sidebar', $vars, TRUE);
 			exit;
 		}
-		
+
 		$this->cp->render('search/results', $vars);
 	}
 
@@ -97,7 +97,7 @@ class Search extends CP_Controller {
 
 	/**
 	 * Build Index
-	 * 
+	 *
 	 * Shows a 'working' page and orchestrates the rebuilding process
 	 *
 	 * @access	public
@@ -108,16 +108,16 @@ class Search extends CP_Controller {
 		// Did they specify a language
 		$language = $this->input->get('language');
 		$language = $language ? $language : $this->config->item('language');
-		
+
 		// Show an intermediate page so they don't refresh and make sure we keep any saved searches
 		$flag = $this->input->get('working');
 		$saved = $this->input->get('saved') ? AMP.'saved='.$this->input->get('saved') : '';
-		
+
 		if ( ! $flag)
 		{
 			$vars['cp_page_title'] = 'Rebuilding Index';
 			$this->view->cp_page_title = $vars['cp_page_title'];
-			
+
 			// Meta refresh to start the process
 			$meta = '<meta http-equiv="refresh" content="1;url='.BASE.AMP.'C=search'.AMP.'M=build_index'.AMP.'language='.$language.AMP.'working=y'.$saved.'" />';
 			$this->cp->add_to_head($meta);
@@ -128,9 +128,9 @@ class Search extends CP_Controller {
 			// Clear all keywords for this language
 			$this->db->where('language', $language);
 			$this->db->delete('cp_search_index');
-			
+
 			// And we're on our way
-			$this->cp_search->_build_index($language);			
+			$this->cp_search->_build_index($language);
 			$this->functions->redirect(BASE.AMP.'C=search'.AMP.'M=build_index'.AMP.'working=n'.$saved);
 		}
 		else
@@ -139,7 +139,7 @@ class Search extends CP_Controller {
 			{
 				$this->functions->redirect(BASE.AMP.'C=search'.$saved);
 			}
-			
+
 			$this->functions->redirect(BASE.AMP.'C=homepage');
 		}
 	}

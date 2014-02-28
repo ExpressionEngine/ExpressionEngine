@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -18,10 +18,10 @@
 // so instead of maintaining the code in both, we'll just
 // do an include and create a small meta class that
 // CI can instantiate using the proper prefix.
-	
+
 require_once(EE_APPPATH.'core/EE_Lang'.EXT);
 
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -35,7 +35,7 @@ require_once(EE_APPPATH.'core/EE_Lang'.EXT);
  */
 
 class Installer_Lang Extends EE_Lang {
-	
+
 	/**
 	 *   Fetch a specific line of text
 	 *
@@ -50,7 +50,7 @@ class Installer_Lang Extends EE_Lang {
 
 		if (IS_CORE)
 		{
-			$line = str_replace('ExpressionEngine', 'ExpressionEngine Core', $line);			
+			$line = str_replace('ExpressionEngine', 'ExpressionEngine Core', $line);
 		}
 
 		return $line;

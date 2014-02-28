@@ -1,0 +1,103 @@
+{!-- Explanations and learning materials can be found in news/index and the other news template groups.  In-line comments here are only for features not introduced in news/index. --}
+{html_head}
+	<title>{site_name}: {exp:search:search_results}
+		{if count == "1"}
+			Search Results for "{exp:search:keywords}"
+		{/if}
+		{/exp:search:search_results}
+	</title>
+{global_stylesheets}
+{rss} 
+{favicon}
+{html_head_end}	
+	<body>
+{nav_access}
+	{branding_begin}
+		{embed="global_embeds/.top_nav" loc="not_found"}
+		{global_top_search}
+		{global_top_member}
+	{branding_end}
+	{wrapper_begin}
+	{embed="global_embeds/.page_header" header="Search Results"}	
+	
+	<div id="content_pri"> <!-- This is where all primary content, left column gets entered -->
+		
+		<!-- Search Results tag: http://ellislab.com/expressionengine/user-guide/modules/search/index.html#results -->
+		
+		{exp:search:search_results}
+			{if count == "1"}
+				<!-- exp:search:keywords: http://ellislab.com/expressionengine/user-guide/modules/search/keywords.html -->
+				<!-- exp:search:keywords lets you echo out what search term was used -->
+			
+				<h3>Search Results for "<strong>{exp:search:keywords}</strong>":</h3>
+				<ul id="news_listing">
+			{/if}
+			
+			<li>
+				<h4>
+					<a href="{comment_url_title_auto_path}">{title}</a>  //  
+					<!-- entry_date is a variable, and date formatting variables can be found at http://ellislab.com/expressionengine/user-guide/templates/date_variable_formatting.html -->
+					{entry_date format="%F %d %Y"}
+				</h4>
+			
+				<!-- news_body and news_image are  custom channel fields. http://ellislab.com/expressionengine/user-guide/cp/admin/channel_administration/custom_channel_fields.html -->
+				{if news_image}
+					<img src="{news_image}" alt="{title}" />
+				{/if}
+				{news_body}
+			</li>
+			{if count == total_results}</ul>{/if}
+			
+			{paginate}
+				<div class="pagination">
+					{pagination_links}
+						<ul>
+							{first_page}
+								<li><a href="{pagination_url}" class="page-first">First Page</a></li>
+							{/first_page}
+
+							{previous_page}
+								<li><a href="{pagination_url}" class="page-previous">Previous Page</a></li>
+							{/previous_page}
+
+							{page}
+								<li><a href="{pagination_url}" class="page-{pagination_page_number} {if current_page}active{/if}">{pagination_page_number}</a></li>
+							{/page}
+
+							{next_page}
+								<li><a href="{pagination_url}" class="page-next">Next Page</a></li>
+							{/next_page}
+
+							{last_page}
+								<li><a href="{pagination_url}" class="page-last">Last Page</a></li>
+							{/last_page}
+						</ul>
+					{/pagination_links}
+				</div> <!-- ending .pagination -->
+			{/paginate}
+		{/exp:search:search_results}
+	</div>
+
+	<div id="content_sec" class="right green40">
+		<h3 class="oldernews">Browse Older News</h3>
+		<div id="news_archives">
+			<div id="categories_box">
+			{news_categories}
+			</div>
+			<div id="month_box">
+			{news_month_archives}
+			</div>
+		</div> <!-- ending #news_archives -->
+
+		{news_calendar}
+
+		{news_popular}
+
+	{rss_links}
+
+	</div>	<!-- ending #content_sec -->
+
+{global_footer}
+{wrapper_close}
+{js}
+{html_close}

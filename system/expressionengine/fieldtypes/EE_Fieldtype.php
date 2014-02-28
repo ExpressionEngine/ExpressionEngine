@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -58,24 +58,6 @@ abstract class EE_Fieldtype {
 	public function __construct()
 	{
 		$this->EE =& get_instance();
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Constructor
-	 *
-	 * @deprecated This is only here to maintain backwards compatibility
-	 * for people using parent::EE_Fieldtype() and will be removed in a
-	 * later version.  Deprecated as of version 2.6
-	 */
-	public function EE_Fieldtype()
-	{
-		$this->EE =& get_instance();
-
-		// Log the deprecation.
-		ee()->load->library('logger');
-		ee()->logger->deprecated('2.6', 'EE_Fieldtype::__construct()');
 	}
 
 	// --------------------------------------------------------------------

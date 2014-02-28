@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -360,7 +360,7 @@ class Grid_model extends CI_Model {
 			// search:field parameter
 			if (isset($options['search']) && ! empty($options['search']))
 			{
-				$this->_field_search($options['search'], $field_id);
+				$this->_field_search($options['search'], $field_id, $content_type);
 			}
 
 			ee()->load->helper('array_helper');

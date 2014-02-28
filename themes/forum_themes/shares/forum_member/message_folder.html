@@ -1,4 +1,4 @@
-				
+
 {include:hidden_js}
 {include:toggle_js}
 
@@ -59,15 +59,15 @@
 {form:form_declaration:modify_messages}
 
 
-{if paginate}
-<table border='0'  cellspacing='5' cellpadding='0' class='tablePad' >
+{paginate}
+<table border='0' cellspacing='5' cellpadding='0' class='tablePad'>
 <tr>
-<td  class='default' >
-{include:pagination_link}
+<td class='default'>
+{pagination_links}
 </td>
 </tr>
 </table>
-{/if}
+{/paginate}
 
 <div class="tablePad">
 
@@ -106,16 +106,16 @@
 
 </div>
 
-{if paginate}
-<table border='0'  cellspacing='5' cellpadding='0' class='tablePad' >
+{paginate}
+<table border='0' cellspacing='5' cellpadding='0' class='tablePad'>
 <tr>
-<td  class='default' >
-<div>{include:pagination_link}</div>
+<td class='default'>
+{pagination_links}
 </td>
 </tr>
 </table>
+{/paginate}
 
-{/if}
 {include:folder_pulldown:move}
 
 {include:folder_pulldown:copy}

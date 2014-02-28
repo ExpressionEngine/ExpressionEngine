@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -30,7 +30,7 @@ class Moblog_mcp {
 	var $author_array 		= array();
 	var $image_dim_array	= array();
 	var $upload_loc_array	= array();
-	
+
 	var $default_template 	= '';
 	var $default_channel_cat	= '';
 
@@ -59,9 +59,9 @@ class Moblog_mcp {
 EOT;
 
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Moblog Homepage
 	 *
@@ -150,7 +150,7 @@ EOT;
 
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Create Moblog
 	 *
@@ -163,10 +163,10 @@ EOT;
 		ee()->load->library('form_validation');
 		ee()->load->library('api');
 		ee()->api->instantiate('channel_categories');
-		
+
 		$id		= ( ! ee()->input->get_post('id')) ? '' : ee()->input->get_post('id');
 		$basis	= ( ! ee()->input->post('basis'))  ? '' : ee()->input->post('basis');
-		
+
 		$count = ee()->db->count_all('moblogs');
 
 		$vars['hidden_fields'] = array('id' => $id, 'basis' => $basis);
@@ -187,9 +187,9 @@ EOT;
 		{
 			ee()->db->select('moblog_id, moblog_full_name');
 			$query = ee()->db->get('moblogs');
-			
+
 			$options['none'] = lang('none');
-			
+
 			foreach($query->result_array() as $row)
 			{
 				$options[$row['moblog_id']] = $row['moblog_full_name'];
@@ -197,12 +197,12 @@ EOT;
 
 			return ee()->load->view('choose', array('options' => $options), TRUE);
 		}
-		
+
 
 		// Fetch Channels
-		
+
 		$channel_array = array();
-		
+
 		ee()->db->select('channel_id, channel_title, site_label');
 		ee()->db->from(array('channels', 'sites'));
 		ee()->db->where('channels.site_id = '.ee()->db->dbprefix('sites.site_id'));
@@ -211,9 +211,9 @@ EOT;
 		{
 			ee()->db->where('channels.site_id', '1');
 		}
-		
+
 		$channel_array['null'] = lang('channel_id');
-		
+
 		$result = ee()->db->get();
 
 		if ($result->num_rows() > 0)
@@ -227,22 +227,22 @@ EOT;
 		// Fetch Upload Directories
 		$this->upload_loc_array = array('0' => lang('none'));
 		$this->image_dim_array = array('0' => lang('none'));
-		
+
 		$upload_array = array('0' => lang('none'));
-		
+
 		ee()->load->model(array('file_model', 'file_upload_preferences_model'));
 
 		$upload_prefs = ee()->file_upload_preferences_model->get_file_upload_preferences(ee()->session->userdata['group_id']);
-		
+
 		$sizes_q = ee()->file_model->get_dimensions_by_dir_id(1);
 		$sizes = array();
-		
+
 		foreach ($upload_prefs as $row)
 		{
 			$sizes[$row['id']] = array('0' => '----');
 			$upload_array[$row['id']] = $row['name'];
 		}
-		
+
 		foreach ($sizes_q->result() as $size)
 		{
 			$sizes[$size->upload_location_id][$size->id] = $size->title;
@@ -256,7 +256,7 @@ EOT;
 						'moblog_time_interval'		=> '15',
 						'moblog_enabled'			=> 'y',
 						'moblog_file_archive'		=> 'n',
-						
+
 						// moblog_entry_settings
 						'channel_id'				=> array($channel_array, 0),
 						'cat_id[]'					=> array(array('none'=> lang('none')), array('none' => lang('none'), '' => '-----')),
@@ -280,7 +280,7 @@ EOT;
 						'moblog_auth_delete'		=> 'n',
 						'moblog_valid_from'			=> '',	// textarea
 						'moblog_ignore_text'		=> '',	// textarea
-						
+
 						// moblog_image_settings
 						'moblog_upload_directory'	=> array(array('0'=> lang('none')), '0'),
 						'moblog_image_size'			=> array(array('0'=> lang('none')), '0'),
@@ -289,7 +289,7 @@ EOT;
 
 
 		// Filtering Javascript
-		
+
 		$this->_filtering_menus('moblog_create');
 		ee()->javascript->compile();
 
@@ -307,10 +307,10 @@ EOT;
 		ee()->form_validation->set_rules('moblog_email_password',		'lang:moblog_email_password',	'required');
 		ee()->form_validation->set_rules('moblog_time_interval',		'lang:moblog_time_interval',	'required');
 		ee()->form_validation->set_rules('moblog_enabled',				'lang:moblog_enabled',			'required|enum[y,n]');
-		
+
 		// All the non-required fields...sighs
 		ee()->form_validation->set_rules('moblog_valid_from',			'lang:moblog_valid_from',		'prep_list[,]|valid_emails');
-		
+
 		ee()->form_validation->set_rules('channel_id',					'lang:channel_id',				'');
 		ee()->form_validation->set_rules('cat_id[]',					'lang:cat_id',					'');
 		ee()->form_validation->set_rules('field_id',					'lang:field_id',				'');
@@ -322,11 +322,11 @@ EOT;
 		ee()->form_validation->set_rules('moblog_template',			'lang:moblog_template',			'');
 		ee()->form_validation->set_rules('moblog_allow_overrides',		'lang:moblog_allow_overrides',	'enum[y,n]');
 		ee()->form_validation->set_rules('moblog_sticky_entry',		'lang:moblog_sticky_entry',		'enum[y,n]');
-		
+
 		ee()->form_validation->set_rules('moblog_upload_directory',	'lang:moblog_upload_directory',	'required');
 		ee()->form_validation->set_rules('moblog_image_size',			'lang:moblog_image_size',		'is_natural');
 		ee()->form_validation->set_rules('moblog_thumb_size',			'lang:moblog_thumb_size',		'is_natural');
-		
+
 		ee()->form_validation->set_error_delimiters('<p class="notice">', '</p>');
 
 		if ($edit_id = ee()->input->post('id'))
@@ -335,27 +335,27 @@ EOT;
 		}
 
 		// Data
-		
+
 		$data = array('author_id' => ee()->session->userdata['member_id']);
-		
+
 		$form_data['moblog_upload_directory'] = array($upload_array, '');
-		
+
 		if (($basis != '' && $basis != 'none') OR ($id != '' && is_numeric($id)))
 		{
-			$moblog_id = ($basis != '') ? $basis : $id;  
-			
+			$moblog_id = ($basis != '') ? $basis : $id;
+
 			$query = ee()->db->get_where('moblogs', array('moblog_id' => $moblog_id));
-			
+
 			// Fetch a single row
-			
+
 			$row = $query->row_array();
-			
+
 			// Upload Directory Double-Check
-		
+
 			if ( ! isset($upload_array[$row['moblog_upload_directory']]))
 			{
 				$upload_prefs = ee()->file_upload_preferences_model->get_file_upload_preferences(1, $row['moblog_upload_directory']);
-				
+
 				if (count($upload_prefs) > 0)
 				{
 					$upload_array[$row['moblog_upload_directory']] = $upload_prefs['name'];
@@ -381,7 +381,7 @@ EOT;
 
 						'moblog_image_size'			=> $row['moblog_image_size'],
 						'moblog_thumb_size'			=> $row['moblog_thumb_size'],
-						
+
 						'moblog_email_type'			=> $row['moblog_email_type'] ,
 						'moblog_email_address'		=> base64_decode($row['moblog_email_address'] ),
 						'moblog_email_server'		=> $row['moblog_email_server'] ,
@@ -396,13 +396,13 @@ EOT;
 						'moblog_file_archive'		=> $row['moblog_file_archive'] ,
 
 						'moblog_allow_overrides'	=> ( ! isset($row['moblog_allow_overrides'] ) OR $row['moblog_allow_overrides']  == '') ? 'y' : $row['moblog_allow_overrides'] ,
-						'moblog_sticky_entry'		=> ( ! isset($row['moblog_sticky_entry'] ) OR $row['moblog_sticky_entry']  == '') ? 'n' : $row['moblog_sticky_entry'] 
+						'moblog_sticky_entry'		=> ( ! isset($row['moblog_sticky_entry'] ) OR $row['moblog_sticky_entry']  == '') ? 'n' : $row['moblog_sticky_entry']
 						);
 
 			/** ------------------------------
 			/**  Modify Form Creation Data
 			/** ------------------------------*/
-			
+
 			if ($row['moblog_channel_id'] != 0 && array_key_exists($row['moblog_channel_id'], $this->channel_array))
 			{
 				// Upload Locations
@@ -415,7 +415,7 @@ EOT;
 
 				// Image Dimensions
 				$size_options = $this->image_dim_array[$data['moblog_upload_directory']];
-				
+
 				if ( ! isset($size_options[$data['moblog_image_size']]))
 				{
 					$data['moblog_image_size'] = 0;
@@ -424,22 +424,22 @@ EOT;
 				{
 					$data['moblog_thumb_size'] = 0;
 				}
-				
+
 				$form_data['moblog_image_size'] = array(
 					$size_options,
 					$data['moblog_image_size']
 				);
-				
+
 				$form_data['moblog_thumb_size'] = array(
 					$size_options,
 					$data['moblog_thumb_size']
 				);
-				
-				
+
+
 				$form_data['channel_id'][1] = $row['moblog_channel_id'];
-				
+
 				$new_array = array('none'=> lang('none'));
-				
+
 				foreach(ee()->api_channel_categories->cat_array as $key => $val)
 				{
 					if (is_array($val) && ! in_array($val['0'], explode('|', $this->channel_array[$query->row('moblog_channel_id')]['1'])))
@@ -452,7 +452,7 @@ EOT;
 				{
 					$new_array = array('all'=> lang('all'));
 				}
-				
+
 				$new_array = array('none'=> lang('none'));
 				$i=0;
 
@@ -491,12 +491,12 @@ EOT;
 						}
 					}
 				}
-				
+
 				if ( ! in_array($row['moblog_status'], $new_array))
 				{
 					$new_array[$row['moblog_status'] ] = $row['moblog_status'] ;
 				}
-					
+
 				$form_data['status'] = array($new_array, $data['status']);
 				$new_array = array('none'=> lang('none'));
 
@@ -507,10 +507,10 @@ EOT;
 						$new_array[$val['1']] = $val['2'];
 					}
 				}
-				
+
 				$form_data['field_id'] = array($new_array, $data['field_id']);
 				$new_array = array('none'=> lang('none'));
-				
+
 				foreach($this->author_array as $val)
 				{
 					if (is_array($val) && $val['0'] == $row['moblog_channel_id'] )
@@ -518,17 +518,17 @@ EOT;
 						$new_array[$val['1']] = $val['2'];
 					}
 				}
-				
-				$form_data['author_id'] = array($new_array, $data['author_id']);	
+
+				$form_data['author_id'] = array($new_array, $data['author_id']);
 			}
 		}
-			
+
 		/** -----------------------------
 		/**  Create the form
 		/** -----------------------------*/
 
 		$vars['submit_text'] = ($id != '' && is_numeric($id)) ? 'update' : 'submit';
-		
+
 		// Set the default types
 		foreach($form_data as $key => $var)
 		{
@@ -542,7 +542,7 @@ EOT;
 
 		if (ee()->form_validation->run() === FALSE)
 		{
-			// If the "basis_flag" $_POST is set, it means they have come from the form 
+			// If the "basis_flag" $_POST is set, it means they have come from the form
 			// that asks if they want to build this moblog based on another one. We need
 			// to unset the form validation error messages.
 			if (ee()->input->post('basis_flag'))
@@ -552,12 +552,12 @@ EOT;
 
 			return ee()->load->view('update', $vars, TRUE);
 		}
-		
+
 		$this->update_moblog();
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * JavaScript filtering code
 	 *
@@ -569,46 +569,46 @@ EOT;
 	 */
 	function _filtering_menus($form_name)
 	{
-		// In order to build our filtering options we need to gather 
+		// In order to build our filtering options we need to gather
 		// all the channels, categories and custom statuses
-		
-		/** ----------------------------- 
+
+		/** -----------------------------
 		/**  Allowed Channels
 		/** -----------------------------*/
-		
+
 		$allowed_channels = ee()->functions->fetch_assigned_channels(TRUE);
 
 		if (count($allowed_channels) > 0)
 		{
 			// Fetch channel titles
 			ee()->db->select('channel_title, channel_id, cat_group, status_group, field_group');
-					
+
 			if ( ! ee()->cp->allowed_group('can_edit_other_entries'))
 			{
 				ee()->db->where_in('channel_id', $allowed_channels);
 			}
-			
+
 			ee()->db->order_by('channel_title');
 			$query = ee()->db->get('channels');
 
 			foreach ($query->result_array() as $row)
 			{
 				$this->channel_array[$row['channel_id']] = array(str_replace('"','',$row['channel_title']), $row['cat_group'], $row['status_group'], $row['field_group']);
-			}		
+			}
 		}
-		
+
 
 		//  Category Tree
 		$cat_array = ee()->api_channel_categories->category_form_tree('y', FALSE, 'all');
-		  
-		/** ----------------------------- 
+
+		/** -----------------------------
 		/**  Entry Statuses
 		/** -----------------------------*/
-		
+
 		ee()->db->select('group_id, status');
 		ee()->db->order_by('status_order');
 		$query = ee()->db->get('statuses');
-		
+
 		if ($query->num_rows() > 0)
 		{
 			foreach ($query->result_array() as $row)
@@ -617,10 +617,10 @@ EOT;
 			}
 		}
 
-		/** ----------------------------- 
+		/** -----------------------------
 		/**  Custom Channel Fields
 		/** -----------------------------*/
-		
+
 		/* -------------------------------------
 		/*  Hidden Configuration Variable
 		/*  - moblog_allow_nontextareas => Removes the textarea only restriction
@@ -629,14 +629,14 @@ EOT;
 
 		ee()->db->select('group_id, field_label, field_id');
 		ee()->db->order_by('field_label');
-		
+
 		if (ee()->config->item('moblog_allow_nontextareas') != 'y')
 		{
 			ee()->db->where('channel_fields.field_type', 'textarea');
 		}
-		
+
 		$query = ee()->db->get('channel_fields');
-		
+
 		if ($query->num_rows() > 0)
 		{
 			foreach ($query->result_array() as $row)
@@ -645,46 +645,46 @@ EOT;
 			}
 		}
 
-		/** ----------------------------- 
+		/** -----------------------------
 		/**  SuperAdmins
 		/** -----------------------------*/
-		
+
 		ee()->db->select('member_id, username, screen_name');
 		ee()->db->where('group_id', '1');
 		$query = ee()->db->get('members');
-		
+
 		foreach ($query->result_array() as $row)
 			{
 				$author = ($row['screen_name'] == '') ? $row['username'] : $row['screen_name'];
-				
+
 				foreach($this->channel_array as $key => $value)
 				{
 					$this->author_array[]  = array($key, $row['member_id'], str_replace('"','',$author));
 				}
 			}
-		
-		/** ----------------------------- 
+
+		/** -----------------------------
 		/**  Assignable Channel Authors
 		/** -----------------------------*/
 		$dbp = ee()->db->dbprefix;
-		
+
 		ee()->db->select('channels.channel_id, members.member_id, members.group_id, members.username, members.screen_name');
 		ee()->db->from(array('channels', 'members', 'channel_member_groups'));
 		ee()->db->where("({$dbp}channel_member_groups.channel_id = {$dbp}channels.channel_id OR {$dbp}channel_member_groups.channel_id IS NULL)");
 		ee()->db->where("{$dbp}members.group_id", "{$dbp}channel_member_groups.group_id", FALSE);
 
 		$query = ee()->db->get();
-		
+
 		if ($query->num_rows() > 0)
 		{
 			foreach ($query->result_array() as $row)
 			{
 				$author = ($row['screen_name'] == '') ? $row['username'] : $row['screen_name'];
-				
+
 				$this->author_array[]  = array($row['channel_id'], $row['member_id'], str_replace('"','',$author));
 			}
 		}
-			
+
 		// Create JSON Reference
 
 		// Mixing php with output buffering was ugly, so we'll build out a js objects with
@@ -696,11 +696,11 @@ EOT;
 		{
 			$any = 0;
 			$cats = array();
-	
+
 			if (count($cat_array) > 0)
 			{
 				$last_group = 0;
-		
+
 				foreach ($cat_array as $k => $v)
 				{
 					if (in_array($v['0'], explode('|', $val['1'])))
@@ -709,10 +709,10 @@ EOT;
 						{
 							$cats[] = array('', lang('all'));
 							$cats[] = array('none', lang('none'));
-							
+
 							$set = 'y';
 						}
-				
+
 						if ($last_group == 0 OR $last_group != $v['0'])
 						{
 							$cats[] = array('', '-------');
@@ -722,7 +722,7 @@ EOT;
 						$cats[] = array($v['1'], $v['2']);
 					}
 				}
-		
+
 				if ( ! isset($set))
 		        {
 					$cats[] = array('none', lang('none'));
@@ -756,10 +756,10 @@ EOT;
 			$channel_info[$key]['statuses'] = $statuses;
 
 			$fields = array();
-	
+
 			$fields[] = array('none', lang('none'));
-			
- 
+
+
 			if (count($this->field_array) > 0)
 			{
 				foreach ($this->field_array as $k => $v)
@@ -770,17 +770,17 @@ EOT;
 					}
 				}
 			}
-	
+
 			$channel_info[$key]['fields'] = $fields;
 
 			$authors = array();
-	
+
 			$authors[] = array('none', lang('none'));
 
 			if (count($this->author_array) > 0)
 			{
 				$inserted_authors = array();
-		
+
 				foreach ($this->author_array as $k => $v)
 				{
 					if ($v['0'] == $key && ! in_array($v['1'],$inserted_authors))
@@ -790,7 +790,7 @@ EOT;
 					}
 				}
 			}
-	
+
 			$channel_info[$key]['authors'] = $authors;
 		}
 
@@ -809,11 +809,11 @@ var spaceString = new RegExp('!-!', "g");
 // converting everything into option elements
 (function() {
 	jQuery.each(channel_map, function(key, details) {
-		
+
 		// Go through each of the individual settings and build a proper dom element
 		jQuery.each(details, function(group, values) {
 			var html = new String();
-			
+
 			// Add the new option fields
 			jQuery.each(values, function(a, b) {
 				html += '<option value="' + b[0] + '">' + b[1].replace(spaceString, String.fromCharCode(160)) + "</option>";
@@ -829,7 +829,7 @@ var spaceString = new RegExp('!-!', "g");
 function changemenu(index)
 {
 	var channels = 'null';
-	
+
 	if (channel_map[index] === undefined) {
 		$('select[name=field_id], select[name="cat_id[]"], select[name=status], select[name=author_id]').empty().append(empty_select);
 	}
@@ -854,29 +854,29 @@ $('select[name=channel_id]').change(function() {
 });
 
 MAGIC;
-		
+
 		// And same idea for file upload dirs and dimensions
 		$this->upload_loc_array = array('0' => lang('none'));
 		$this->image_dim_array = array('0' => $this->upload_loc_array);
-		
-		// Fetch Upload Directories		
+
+		// Fetch Upload Directories
 		ee()->load->model(array('file_model', 'file_upload_preferences_model'));
-		
+
 		$sizes_q = ee()->file_model->get_dimensions_by_dir_id();
 		$sizes_array = array();
-		
+
 		foreach ($sizes_q->result_array() as $row)
 		{
 			$sizes_array[$row['upload_location_id']][$row['id']] = $row['title'];
 		}
-		
+
 		$upload_q = ee()->file_upload_preferences_model->get_file_upload_preferences(ee()->session->userdata['group_id']);
-		
+
 		foreach ($upload_q as $row)
 		{
 			$this->image_dim_array[$row['id']] = array('0' => $this->lang->line('none'));
 			$this->upload_loc_array[$row['id']] = $row['name'];
-			
+
 			// Get sizes
 			if (isset($sizes_array[$row['id']]))
 			{
@@ -886,9 +886,9 @@ MAGIC;
 				}
 			}
 		}
-		
+
 		$upload_info = json_encode($this->image_dim_array);
-		
+
 		$javascript .= <<<MAGIC
 
 // An object to represent our channels
@@ -906,14 +906,14 @@ var spaceString = new RegExp('!-!', "g");
 
 		// add option fields
 		jQuery.each(options, function(k, v) {
-			
+
 			html += '<option value="' + k + '">' + v.replace(spaceString, String.fromCharCode(160)) + "</option>";
 		});
-		
+
 		if (html) {
 			upload_info[key] = html;
 		}
-	});	
+	});
 })();
 
 // Change the submenus
@@ -930,13 +930,13 @@ $('select[name=moblog_upload_directory]').change(function() {
 
 MAGIC;
 
-		
-		
+
+
 		ee()->javascript->output($javascript);
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Form validation duplicate name callback
 	 *
@@ -951,11 +951,11 @@ MAGIC;
 			ee()->db->where('moblog_id !=', $edit_id);
 			ee()->db->stop_cache();
 		}
-		
+
 		if ($which == 'moblog_short_name')
 		{
 			// Short Name Check - Zzzzz...
-			
+
 			ee()->db->where('moblog_short_name', $str);
 			$count = ee()->db->count_all_results('moblogs');
 
@@ -980,12 +980,12 @@ MAGIC;
 				return FALSE;
 			}
 		}
-		
+
 		return TRUE;
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Update Moblog
 	 *
@@ -1006,18 +1006,18 @@ MAGIC;
 				$_POST['cat_id'] = array('none');
 			}
 		}
-		
-		
+
+
 		// Format from emails
-		
+
 		$from_values = '';
-		
+
 		if (isset($_POST['moblog_valid_from']))
 		{
 			$from_emails = explode(",", ee()->input->post('moblog_valid_from'));
-			
+
 			if (count($from_emails) > 0)
-			{	
+			{
 				$from_values = implode('|', $from_emails);
 			}
 		}
@@ -1033,10 +1033,10 @@ MAGIC;
 						'moblog_auth_required'		=> $_POST['moblog_auth_required'],
 						'moblog_auth_delete'		=> $_POST['moblog_auth_delete'],
 						'moblog_upload_directory'	=> $_POST['moblog_upload_directory'],
-						
+
 						'moblog_image_size'			=> $_POST['moblog_image_size'],
 						'moblog_thumb_size'			=> $_POST['moblog_thumb_size'],
-						
+
 						'moblog_email_type'			=> $_POST['moblog_email_type'],
 						'moblog_email_address'		=> base64_encode($_POST['moblog_email_address']),
 						'moblog_email_server'		=> $_POST['moblog_email_server'],
@@ -1049,20 +1049,20 @@ MAGIC;
 						'moblog_time_interval'		=> $_POST['moblog_time_interval'],
 						'moblog_enabled'			=> $_POST['moblog_enabled'],
 						'moblog_file_archive'		=> $_POST['moblog_file_archive'],
-						
+
 						'moblog_allow_overrides'	=> ( ! isset($_POST['moblog_allow_overrides'])) ? 'y' : $_POST['moblog_allow_overrides'],
 						'moblog_sticky_entry'		=> ( ! isset($_POST['moblog_sticky_entry'])) ? 'n' : $_POST['moblog_sticky_entry']
-						);						
-		
+						);
+
 		// In 1.6 this module wasn't strict mode compatible and just inserted 'none'
 		// into integer fields. This is a quick hack to simply unset those. As well
 		// as a check to make sure that we have a usable id
-		
+
 		if (isset($_POST['id']) && ! is_numeric($_POST['id']))
 		{
 			unset($_POST['id']);
 		}
-		
+
 		$int_fields = array('moblog_id', 'moblog_channel_id', 'moblog_time_interval', 'moblog_author_id', 'moblog_upload_directory', 'moblog_image_width',
 							'moblog_image_height', 'moblog_resize_width', 'moblog_resize_height', 'moblog_thumbnail_width', 'moblog_thumbnail_height'
 							);
@@ -1087,12 +1087,12 @@ MAGIC;
 			ee()->db->query($sql);
 			$message = lang('moblog_updated');
 		}
-		
+
 		ee()->session->set_flashdata('message_success', $message);
 		ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=moblog');
 	}
-	
-	
+
+
 	/** -------------------------------------------
 	/**  Delete Confirm
 	/** -------------------------------------------*/
@@ -1106,18 +1106,18 @@ MAGIC;
 		ee()->load->helper('form');
 
 		$vars['cp_page_title'] = lang('moblog_delete_confirm_title');
-		
+
 		ee()->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=moblog', lang('moblog'));
 		$vars['form_action'] = 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=moblog'.AMP.'method=delete_moblogs';
-		
+
 		foreach ($_POST['toggle'] as $val)
 		{
 			$vars['damned'][] = $val;
 		}
-		
+
 		return ee()->load->view('delete_confirm', $vars, TRUE);
 	}
-	
+
 	/** -------------------------------------------
 	/**  Delete Moblogs
 	/** -------------------------------------------*/
@@ -1134,112 +1134,85 @@ MAGIC;
 		}
 
 		ee()->db->delete('moblogs');
-	
+
 		$message = (count($_POST['delete']) == 1) ? lang('moblog_deleted') : lang('moblogs_deleted');
 
 		ee()->session->set_flashdata('message_success', $message);
 		ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=moblog');
 	}
 
-	
+
 	/** -------------------------
 	/**  Check Moblog
 	/** -------------------------*/
-	
+
 	function check_moblog()
 	{
 		if ( ! $id = ee()->input->get('moblog_id'))
-		{			
+		{
 			return FALSE;
 		}
-		
+
 		$where = array(
 			'moblog_enabled'	=> 'y',
 			'moblog_id'			=> $id
 		);
-		
+
 		$query = ee()->db->get_where('moblogs', $where);
 
 		if ($query->num_rows() == 0)
 		{
 			return ee()->output->show_user_error('submission', array(lang('invalid_moblog')));
 		}
-		
+
 		if ( ! class_exists('Moblog'))
 		{
 			require PATH_MOD.'moblog/mod.moblog.php';
 		}
-		
+
 		$MP = new Moblog();
 		$MP->moblog_array = $query->row_array();
-		
+
 		$error = FALSE;
+
 		if ($MP->moblog_array['moblog_email_type'] == 'imap')
 		{
-			if ( ! $MP->check_imap_moblog())
-			{
-				$display = $MP->message_array;
-				$cp_message = '';
-				
-				foreach ($MP->message_array as $val)
-				{
-					$cp_message .= lang($val).'<br>';
-				}
-
-				ee()->session->set_flashdata('message_failure', $cp_message);
-			}
-			else
-			{
-				$message = lang('moblog_successful_check').'<br />';
-				$message .= lang('emails_done').NBS.NBS.$MP->emails_done.'<br />';
-				$message .= lang('entries_added').NBS.NBS.$MP->entries_added.'<br />';
-				$message .= lang('attachments_uploaded').NBS.NBS.$MP->uploads.'<br />';
-				
-				if (count($MP->message_array) > 0)
-				{
-					$message .= $MP->errors();
-					$error = TRUE;
-				}
-				
-				ee()->session->set_flashdata(array('message' => $message, 'error' => $error));
-				ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=moblog');
-			}
+			$this->_moblog_check_return($MP->check_imap_moblog(), $MP);
 		}
 		else
 		{
-			if ( ! $MP->check_pop_moblog())
-			{
-				$display = $MP->message_array;
-				$cp_message = '';
-				
-				foreach ($MP->message_array as $val)
-				{
-					$cp_message .= lang($val).'<br>';
-				}
-
-				ee()->session->set_flashdata('message_failure', $cp_message);				
-			}
-			else
-			{
-				$message = lang('moblog_successful_check').'<br />';
-				$message .= lang('emails_done').NBS.NBS.$MP->emails_done.'<br />';
-				$message .= lang('entries_added').NBS.NBS.$MP->entries_added.'<br />';
-				$message .= lang('attachments_uploaded').NBS.NBS.$MP->uploads.'<br />';
-
-				if (count($MP->message_array) > 0)
-				{
-					$message .= $MP->errors();
-					$error = TRUE;
-				}
-
-				ee()->session->set_flashdata(array('message' => $message, 'error' => $error));
-				ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=moblog');
-			}			
+			$this->_moblog_check_return($MP->check_pop_moblog(), $MP);
 		}
+	}
 
-		ee()->session->set_flashdata(array('message' => $MP->errors(), 'error' => TRUE));
-		ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=moblog');
-	}	
+	/** -------------------------
+	/**  Moblog Check Return
+	/** -------------------------*/
+
+	function _moblog_check_return($response, $MP)
+	{
+		if ( ! $response)
+		{
+			ee()->session->set_flashdata('message_failure', $MP->errors());
+			ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=moblog');
+		}
+		else
+		{
+			$message['message_success'] = lang('moblog_successful_check');
+			$message['message_success'] .=  BR.lang('emails_done').NBS.NBS.$MP->emails_done;
+			$message['message_success'] .=  BR.lang('entries_added').NBS.NBS.$MP->entries_added;
+			$message['message_success'] .=  BR.lang('attachments_uploaded').NBS.NBS.$MP->uploads;
+
+			if ( ! empty($error_string))
+			{
+				$message['message_failure'] = BR.$MP->errors();
+			}
+
+			ee()->session->set_flashdata($message);
+			ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=moblog');
+		}
+	}
+
 }
 // END CLASS
 

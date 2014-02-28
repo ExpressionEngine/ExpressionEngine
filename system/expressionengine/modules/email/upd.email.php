@@ -4,13 +4,13 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -26,7 +26,7 @@
 class Email_upd {
 
 	var $version = '2.0';
-	
+
 	function Email_upd()
 	{
 		$this->EE =& get_instance();
@@ -40,7 +40,7 @@ class Email_upd {
 	 *
 	 * @access	public
 	 * @return	bool
-	 */	
+	 */
 	function install()
 	{
 		$sql[] = "INSERT INTO exp_modules (module_name, module_version, has_cp_backend) VALUES ('Email', '$this->version', 'n')";
@@ -52,19 +52,19 @@ class Email_upd {
 		sender_email varchar(75) NOT NULL ,
 		sender_username varchar(50) NOT NULL ,
 		number_recipients int(4) unsigned default '1' NOT NULL,
-		PRIMARY KEY `email_id` (`email_id`) 
+		PRIMARY KEY `email_id` (`email_id`)
 		) ENGINE=MyISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
-		
+
 		foreach ($sql as $query)
 		{
 			ee()->db->query($query);
 		}
-		
+
 		return TRUE;
 	}
 
-	
-	
+
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -72,16 +72,16 @@ class Email_upd {
 	 *
 	 * @access	public
 	 * @return	bool
-	 */	
+	 */
 	function uninstall()
 	{
-		$query = ee()->db->query("SELECT module_id FROM exp_modules WHERE module_name = 'Email'"); 
-				
+		$query = ee()->db->query("SELECT module_id FROM exp_modules WHERE module_name = 'Email'");
+
 		$sql[] = "DELETE FROM exp_module_member_groups WHERE module_id = '".$query->row('module_id') ."'";
 		$sql[] = "DELETE FROM exp_modules WHERE module_name = 'Email'";
 		$sql[] = "DELETE FROM exp_actions WHERE class = 'Email'";
 		$sql[] = "DROP TABLE IF EXISTS exp_email_tracker";
-	
+
 		foreach ($sql as $query)
 		{
 			ee()->db->query($query);
@@ -98,13 +98,13 @@ class Email_upd {
 	 *
 	 * @access	public
 	 * @return	bool
-	 */	
-	
+	 */
+
 	function update($current='')
 	{
 		return FALSE;
 	}
-	
+
 }
 // END CLASS
 

@@ -4,13 +4,13 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -35,18 +35,18 @@ class EE_Spellcheck {
 		$this->EE =& get_instance();
 
 		ee()->lang->loadfile('spellcheck');
-		
+
 		if (function_exists('pspell_new') OR function_exists('curl_init') OR extension_loaded('openssl'))
 		{
 			ee()->load->library('javascript', array('autoload' => FALSE));
 
 			$this->enabled = TRUE;
-			
+
 			// Is this a CP or front end request?
 			if (REQ == 'CP') {
 				ee()->cp->add_to_foot(ee()->javascript->inline($this->javascript()));
-			}			
-			
+			}
+
 			ee()->javascript->output('eeSpell.init();');
 			ee()->load->helper('spellcheck');
 		}
@@ -85,16 +85,16 @@ class EE_Spellcheck {
 			$is_frontend = 'false';
 			$check_url = ($check_url == "") ? str_replace('&amp;', '&', BASE).'&C=content_publish&M=spellcheck_actions&action=check' : str_replace('&amp;', '&', $check_url);
 		}
-		
+
 		$check_url = str_replace('&amp;', '&', $check_url);
-		
+
 
 		$r  = ($wrap === TRUE) ? '<script type="text/javascript">'.NL.'//<![CDATA['.NL : '';
 
 		$r .= <<<EOT
 
 		/** --------------------------------------------------
-		/**  Spelling Check 
+		/**  Spelling Check
 		/** --------------------------------------------------*/
 
 		var SP_XMLHttp,
@@ -153,36 +153,36 @@ class EE_Spellcheck {
 		}
 
 		spellingCheck.prototype.searchXML = function(xmlURL, data)
-		{	
+		{
 			var XMLurl = xmlURL;
-			
+
 			if (window.XMLHttpRequest)
 			{
 				SP_frameBase.body.innerHTML = "";
 				SP_inProgress();
-				
+
 				SP_XMLHttp = new XMLHttpRequest();
 				SP_XMLHttp.onreadystatechange = this.processReqChange;
 				SP_XMLHttp.open("POST", XMLurl, true);
 				SP_XMLHttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded;");
 				SP_XMLHttp.send(data);
 			// branch for IE/Windows ActiveX version
-			} 
+			}
 			else if (window.ActiveXObject)
 			{
 				isIE = true;
-				
+
 				try
 				{
 					SP_XMLHttp = new ActiveXObject("Microsoft.XMLHTTP");
 				}
 				catch(g){ return SP_unsupportedBrowser();}
-				
+
 				if (SP_XMLHttp)
 				{
 					SP_frameBase.body.innerHTML = "";
 					SP_inProgress();
-					
+
 					SP_XMLHttp.onreadystatechange = this.processReqChange;
 					SP_XMLHttp.open("POST", XMLurl, true);
 					SP_XMLHttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded;");
@@ -194,7 +194,7 @@ class EE_Spellcheck {
 				SP_unsupportedBrowser();
 			}
 		}
-		
+
 		spellingCheck.prototype.processReqChange = function()
 		{
 			if ( ! isFrontend) {
@@ -209,7 +209,7 @@ class EE_Spellcheck {
 					if (SP_XMLHttp.responseText == "")
 					{
 						SP_clicked = false;
-						
+
 						if (isFrontend) {
 							alert("There was a problem retrieving the XML data");
 						}
@@ -220,7 +220,7 @@ class EE_Spellcheck {
 					else
 					{
 						SP_parseXML();
-						
+
 						if (SP_suggested.length == 0)
 						{
 							SP_frameBase.body.innerHTML = "";
@@ -260,58 +260,58 @@ class EE_Spellcheck {
 				}
 			}
 		}
-		
+
 		spellingCheck.prototype.getResults = function(field)
 		{
 			if (SP_clicked)
 			{
 				return SP_closeSpellCheck();
 			}
-			
+
 			if (SP_win) SP_win.hidePopup();
-			
+
 			if ( ! field)
 			{
 				return;
 			}
-			
+
 			SP_spellField = field;
 			SP_hiddenField = document.getElementById("spellcheck_hidden_" + field);
-			SP_contentField = document.getElementById(field);
-			
+			SP_contentField = document.getElementsByName(field)[0];
+
 			if ( ! isFrontend)
 				SP_hiddenField.innerHTML = "";
-			
+
 			SP_originalText = SP_contentField.value;
 			SP_checkedText  = SP_contentField.value;
 			SP_suggested = new Array();
-			
+
 			if ( ! SP_originalText || SP_originalText == "")
 			{
 				return;
 			}
-			
+
 			SP_clicked = true;
-			
+
 			var searchString = SP_originalText;
-			
+
 			xmlURL = "{$check_url}";
 			data = "q=" + escape(searchString) + "&XID={$XID_SECURE_HASH}";
-			
+
 			if (!SP_additionalLinks)
 			{
 				// console.log(SP_hiddenField.innerHTML);
-				
+
 				SP_additionalLinks = SP_hiddenField.innerHTML;
 				// console.log(SP_additionalLinks);
 			}
-			
+
 			SP_popupDiv = document.getElementById("spellcheck_popup");
 			SP_frameObj = document.getElementById("spellcheck_frame_"+SP_spellField);
 
 			if (SP_frameObj.contentDocument)
 			{
-				SP_frameBase = SP_frameObj.contentDocument; 
+				SP_frameBase = SP_frameObj.contentDocument;
 			}
 			else if (SP_frameObj.contentWindow)
 			{
@@ -324,21 +324,21 @@ class EE_Spellcheck {
 			else
 			{
 				if ( ! SP_PinTA)
-				{	
+				{
 					SP_clicked = false;
-					
+
 					if (isFrontend)
 						SP_frameObj.style.display = 'block';
-					
+
 					SP_inProgress();
 					SP_PinTA = new Date();
 					setTimeout("eeSpell.getResults(SP_spellField)", SP_timeOut);
 					return;
 				}
 				else
-				{	
+				{
 					var current = new Date();
-					
+
 					if (current - SP_PinTA > SP_timeOutMax) // Final Chance
 					{
 						if (SP_frameObj.contentDocument)
@@ -373,23 +373,23 @@ class EE_Spellcheck {
 				}
 			}
 			if (SP_win) SP_frameBase.onmouseup = SP_PopupWindow_hidePopupWindows;
-			
+
 			SP_PinTA = false;
-			
+
 			if (isFrontend)
 				SP_hiddenField.style.visibility = 'hidden';
 
 			this.searchXML(xmlURL, data);
 		}
-		
-		
+
+
 		function SP_parseXML()
 		{
 			//alert(SP_XMLHttp.responseText);
 			var SP_suggestedItems = SP_XMLHttp.responseXML.getElementsByTagName("item");
-						
+
 			for (var i = 0; i < SP_suggestedItems.length; i++)
-			{	
+			{
 				if (SP_suggestedItems[i].childNodes.length > 1)
 				{
 					elementText = SP_suggestedItems[i].childNodes[1].nodeValue;
@@ -398,33 +398,33 @@ class EE_Spellcheck {
 				{
 					elementText = SP_suggestedItems[i].firstChild.nodeValue;
 				}
-							
+
 				elementParts = elementText.split(":");
 				SP_suggested[i] = elementParts[0];
 				SP_repWords[i]  = elementParts[1];
 			}
 		}
-		
+
 		function SP_prepareText()
-		{	
+		{
 			SP_checkedText = SP_checkedText.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-			
+
 			for (i=0; i < SP_suggested.length; i++)
 			{
 				compareString = eval("/(\\W*)" + SP_suggested[i] + "(\\W*)/g");
-				
+
 				SP_checkedText = SP_checkedText.replace(compareString,"$1<span class=\""+spellClass+"\">" + SP_suggested[i] + "</span>$2");
 			}
-			
+
 			SP_checkedText = SP_checkedText.replace(/(\\r\\n|\\n|\\r)/g, "<br />");
 		}
-		
+
 		function SP_tagSpans()
 		{
 			SP_frameBase.body.innerHTML = SP_checkedText;
-			
+
 			var spans = SP_frameBase.getElementsByTagName("span");
-			
+
 			for (var i = 0, l = spans.length; i < l; ++i)
 			{
 				if (spans[i].className.indexOf(spellClass) > -1)
@@ -434,23 +434,23 @@ class EE_Spellcheck {
 				}
 			}
 		}
-		
+
 		function SP_tagLinks()
-		{	
+		{
 			var links = SP_frameBase.getElementsByTagName("a");
-			
+
 			for (var i = 0, l = links.length; i < l; ++i)
 			{
 				links[i].onclick = function() {return false;};
 			}
 		}
-		
-		
-		
+
+
+
 		function SP_resetSpanStyles()
 		{
 			var spans = SP_frameBase.getElementsByTagName("span");
-			
+
 			for (var i = 0, l = spans.length; i < l; ++i)
 			{
 				if (spans[i].className.indexOf(spellClassSelected) > -1)
@@ -459,21 +459,21 @@ class EE_Spellcheck {
 				}
 			}
 		}
-		
-		
+
+
 		function SP_clickWord()
 		{
 			SP_recentlyClicked = this;
-			
+
 			var spans = SP_frameBase.getElementsByTagName("span");
-			
+
 			for (var i = 0, l = spans.length; i < l; ++i)
 			{
 				spans[i].className = spellClass;
 			}
-			
+
 			this.className = spellClassSelected;
-			
+
 			for(i=0, l = SP_suggested.length; i < l; ++i)
 			{
 				if (SP_suggested[i] == this.innerHTML)
@@ -481,43 +481,43 @@ class EE_Spellcheck {
 					break;
 				}
 			}
-			
+
 			//alert(this.innerHTML + " :" + SP_repWords[i] + " ID:" + this.id);
-			
+
 			SP_popupDiv.innerHTML = SP_suggestionMenu(SP_repWords[i], this.id);
-			
+
 			frameCoordinates = SP_absolutePosition(SP_frameObj);
 			scrollCoordinates = SP_scrollPosition(SP_frameBase);
-				
-			SP_win = new SP_PopupWindow("spellcheck_popup"); 
+
+			SP_win = new SP_PopupWindow("spellcheck_popup");
 			SP_win.offsetX = frameCoordinates.x;
 			SP_win.offsetY = frameCoordinates.y+17 - scrollCoordinates.y;
 			SP_win.showPopup(this);
 			SP_win.autoHide();
 			SP_win.editInProgress = false;
 		}
-		
+
 		function SP_suggestionMenu(suggestions, id)
 		{
 			words = suggestions.split(",");
-			
+
 			for (i=0, l = words.length, str=""; i < l;  ++i)
 			{
 				str += "<a href=\"javascript:void(0);\" onclick=\"SP_replaceWord(this, \'" + id + "\');return false;\">";
 				str += words[i] + "</a><br />";
 			}
-			
+
 			str += "----<br /><a href=\"javascript:void(0);\" onmousedown=\"SP_editWordPause();\" onclick=\"SP_editWord(this, \'" + id + "\');return false;\">" + langEditWord + "</a>";
-			
+
 			return str;
 		}
-		
+
 		function SP_replaceWord(el, id)
 		{
 			var spans = SP_frameBase.getElementsByTagName("span");
-		
+
 			var newText = SP_frameBase.createTextNode(el.innerHTML);
-			
+
 			if (spans[id])
 			{
 				spans[id].parentNode.insertBefore(newText, spans[id]);
@@ -525,22 +525,22 @@ class EE_Spellcheck {
 				SP_resetSpanStyles();
 				// spans[id].innerHTML = el.innerHTML;
 			}
-			
+
 			if (SP_win) SP_win.hidePopup();
 		}
-		
+
 		function SP_editWordPause()
 		{
 			// Safari has issues
 			SP_temp = document.onmouseup;
 			document.onmouseup = function() {}
 		}
-		
-		
+
+
 		function SP_editWord(el, id)
-		{	
+		{
 			var spans = SP_frameBase.getElementsByTagName("span");
-			
+
 			if (spans[id])
 			{
 				var newObj = document.createElement("input");
@@ -551,38 +551,38 @@ class EE_Spellcheck {
 				newObj.setAttribute("size", spans[id].innerHTML.length+2);
 				newObj.setAttribute("class", "input");
 				newObj.onkeypress = SP_saveEditReturn;
-				
+
 				el.parentNode.insertBefore(newObj, el);
-				
+
 				var newObj2 = document.createElement("a");
 				newObj2.setAttribute("href", "javascript:void(0);");
 				newObj2.setAttribute("id", "link_"+id);
 				newObj2.onclick = SP_saveEdit;
 				newObj2.innerHTML = langSaveEdit;
 				el.parentNode.insertBefore(document.createElement("br"), el);
-				
+
 				el.parentNode.insertBefore(newObj2, el);
-				
+
 				el.parentNode.removeChild(el);
 				newObj.focus();
 				newObj.select();
 			}
-			
+
 			if (SP_temp)
 			{
 				document.onmouseup = SP_temp;
 				SP_temp = false;
 			}
 		}
-		
+
 		function SP_saveEdit()
 		{
 			var id = this.id.replace("link_", "");
-			
+
 			var spans = SP_frameBase.getElementsByTagName("span");
-			
+
 			var inputs = document.getElementsByTagName("input");
-			
+
 			if (spans[id] && inputs["input_"+id])
 			{
 				var newText = SP_frameBase.createTextNode(inputs["input_"+id].value);
@@ -590,25 +590,25 @@ class EE_Spellcheck {
 				spans[id].parentNode.removeChild(spans[id]);
 				SP_resetSpanStyles();
 			}
-			
+
 			if (SP_win) SP_win.hidePopup();
 		}
-		
+
 		function SP_saveEditReturn(e)
 		{
 			if (window.event)
 			{
 				e = window.event;
 			}
-				
+
 			var charCode = ( ! e.which || e.which == 0) ? e.keyCode : e.which;
-		
+
 			if (charCode == 13)
 			{
 				var id = this.id.replace("input_", "");
-			
+
 				var spans = SP_frameBase.getElementsByTagName("span");
-			
+
 				if (spans[id])
 				{
 					var newText = SP_frameBase.createTextNode(this.value);
@@ -616,28 +616,28 @@ class EE_Spellcheck {
 					spans[id].parentNode.removeChild(spans[id]);
 					SP_resetSpanStyles();
 				}
-			
+
 				SP_win.hidePopup();
-				
+
 				return false;
 			}
 		}
-		
-		
+
+
 		function SP_absolutePosition(el)
 		{
 			var coordinates = { x: el.offsetLeft, y: el.offsetTop };
-			
+
 			if (el.offsetParent)
 			{
 				var tmp = SP_absolutePosition(el.offsetParent);
 				coordinates.x += tmp.x;
 				coordinates.y += tmp.y;
 			}
-			
+
 			return coordinates;
 		};
-		
+
 		function SP_scrollPosition(el)
 		{
 			if ( ! el.documentElement.scrollTop)
@@ -648,17 +648,17 @@ class EE_Spellcheck {
 			{
 				var coordinates = { x:  SP_frameBase.documentElement.scrollLeft, y:  SP_frameBase.documentElement.scrollTop };
 			}
-			
+
 			return coordinates;
 		};
-		
-		
+
+
 		function SP_closeSpellCheck()
-		{	
+		{
 			if (SP_win) SP_win.hidePopup();
-			
+
 			SP_clicked = false;
-			
+
 			if (SP_frameObj && ! SP_unSupported)
 			{
 				if (isFrontend) {
@@ -668,43 +668,43 @@ class EE_Spellcheck {
 				SP_frameBase.body.innerHTML = "";
 			}
 		}
-		
+
 		function SP_inProgress()
-		{	
+		{
 			SP_unSupported = false;
 			SP_hiddenField.innerHTML = "<p class=\"go_notice\">"+langInProgress+"</p>";
 		}
-		
+
 		function SP_saveSpellCheck(el_id)
-		{	
+		{
 			if (SP_win) SP_win.hidePopup();
-			
+
 			SP_clicked = false;
-			
+
 			var spans = SP_frameBase.getElementsByTagName("span");
-			
+
 			for (var i = spans.length; --i >= 0;) // Need to go backwards through nodes
-			{	
+			{
 				if (spans[i].className.indexOf(spellClass) > -1)
 				{
 					spans[i].parentNode.insertBefore(spans[i].firstChild, spans[i]);
 					spans[i].parentNode.removeChild(spans[i]);
 				}
 			}
-			
+
 			var content = SP_frameBase.body.innerHTML;
-			
+
 			content = content.replace(/(\\r\\n|\\r|\\n)/g, " ").replace(/<br *\/?>/gi, "\\n");
-			
+
 			SP_frameBase.body.innerHTML = "";
-			
+
 			content = content.replace(/&gt;/g, ">").replace(/&lt;/g, "<").replace(/&amp;/g, "&");
-			
+
 			SP_contentField.value = content;
-			
+
 			if ( ! isFrontend)
 				$(el_id).closest(".spellcheck_content").show().slideToggle("fast");
-				
+
 			return false;
 		}
 
@@ -719,7 +719,7 @@ class EE_Spellcheck {
 		{
 			SP_clicked = false;
 			SP_unSupported = true;
-			
+
 			if (isFrontend) {
 				SP_hiddenField.innerHTML = ' | ' +  langUnsupported;
 				SP_hiddenField.style.visibility = 'visible';
@@ -728,11 +728,11 @@ class EE_Spellcheck {
 				SP_hiddenField.innerHTML = "<p class=\"go_notice\">"+langUnsupported+"</p>";
 			}
 		}
-		
+
 		function SP_noSuggestions()
 		{
 			SP_clicked = false;
-			
+
 			if (isFrontend) {
 				SP_hiddenField.innerHTML = ' | ' + langNoSuggestions;
 				SP_hiddenField.style.visibility = 'visible';
@@ -743,7 +743,7 @@ class EE_Spellcheck {
 				$.ee_notice(langNoSuggestions);
 			}
 		}
-		
+
 		// Used on the frontend
 		function SP_revertToOriginal()
 		{
@@ -760,22 +760,22 @@ class EE_Spellcheck {
 		}
 
 		var eeSpell = new spellingCheck();
-		
+
 		/** ----------------------------------------
 		/**  Spell Check Popup Code
 		/** ----------------------------------------*/
-		
+
 		// ===================================================================
 		//  - CREATOR -
 		// Author: Matt Kruse <matt@mattkruse.com>
 		// WWW: http://www.mattkruse.com/
 		// ===================================================================
-		
-		
+
+
 		// 	 SP_getAnchorPosition(anchorname)
 		//	This function returns an object having .x and .y properties which are the coordinates
 		//	of the named anchor, relative to the page.
-		
+
 		function SP_getAnchorPosition(object)
 		{
 			// This function will return an Object with x and y properties
@@ -818,7 +818,7 @@ class EE_Spellcheck {
 			coordinates.y=y;
 			return coordinates;
 			}
-		
+
 		// Functions for IE to get position of an object
 		function SP_AnchorPosition_getPageOffsetLeft (el)
 		{
@@ -826,7 +826,7 @@ class EE_Spellcheck {
 			while ((el=el.offsetParent) != null) { ol += el.offsetLeft; }
 			return ol;
 		}
-		
+
 		function SP_AnchorPosition_getPageOffsetTop (el)
 		{
 			var ot=el.offsetTop;
@@ -834,13 +834,13 @@ class EE_Spellcheck {
 			return ot;
 		}
 		/* SOURCE FILE: PopupWindow.js */
-		
-		/* 
+
+		/*
 		PopupWindow.js
 		Author: Matt Kruse
 		Last modified: 02/16/04
 		*/
-		
+
 		// Set the position of the popup window based on the anchor
 		function SP_PopupWindow_getXYPosition(object) {
 			var coordinates = SP_getAnchorPosition(object);
@@ -872,11 +872,11 @@ class EE_Spellcheck {
 				if (this.use_gebi) {
 					document.getElementById(this.divName).innerHTML = this.contents;
 					}
-				else if (this.use_css) { 
+				else if (this.use_css) {
 					document.all[this.divName].innerHTML = this.contents;
 					}
-				else if (this.use_layers) { 
-					var d = document.layers[this.divName]; 
+				else if (this.use_layers) {
+					var d = document.layers[this.divName];
 					d.document.open();
 					d.document.writeln(this.contents);
 					d.document.close();
@@ -949,7 +949,7 @@ class EE_Spellcheck {
 		{
 			if (this.divName != null)
 			{
-				if (this.use_gebi) 
+				if (this.use_gebi)
 				{
 					document.getElementById(this.divName).style.visibility = "hidden";
 				}
@@ -962,7 +962,7 @@ class EE_Spellcheck {
 					document.layers[this.divName].visibility = "hidden";
 				}
 			}
-			else 
+			else
 			{
 				if (this.popupWindow && ! this.popupWindow.closed)
 				{
@@ -1009,7 +1009,7 @@ class EE_Spellcheck {
 				}
 			return false;
 			}
-			
+
 		// Check an onmouseDown event to see if we should hide
 		function SP_PopupWindow_hideIfNotClicked(e) {
 			if (this.autoHideEnabled && ! this.isClicked(e)) {
@@ -1028,7 +1028,7 @@ class EE_Spellcheck {
 					p.hideIfNotClicked(e);
 					}
 				}
-				
+
 				SP_recentlyClicked.className = spellClass;
 			}
 		// Run this immediately to attach the event listener
@@ -1038,13 +1038,13 @@ class EE_Spellcheck {
 			{
 				document.captureEvents(Event.MOUSEUP);
 			}
-			
+
 			window.popupWindowOldEventListener = document.onmouseup;
-			
+
 			if (window.popupWindowOldEventListener != null)
 			{
 				document.onmouseup = new Function("window.popupWindowOldEventListener(); SP_PopupWindow_hidePopupWindows();");
-				
+
 				if (SP_frameBase)
 				{
 					SP_frameBase.onmouseup = new Function("window.popupWindowOldEventListener(); SP_PopupWindow_hidePopupWindows();");
@@ -1054,7 +1054,7 @@ class EE_Spellcheck {
 			{
 				// Turned this off because Safari is a pain with the Edit Word ability
 				document.onmouseup = SP_PopupWindow_hidePopupWindows;
-				
+
 				if (SP_frameBase)
 				{
 					SP_frameBase.onmouseup = SP_PopupWindow_hidePopupWindows;
@@ -1079,7 +1079,7 @@ class EE_Spellcheck {
 			this.populated = false;
 			this.visible = false;
 			this.autoHideEnabled = false;
-			
+
 			this.contents = "";
 			this.url="";
 			this.windowProperties="toolbar=no,location=no,status=no,menubar=no,scrollbars=auto,resizable,alwaysRaised,dependent,titlebar=no";
@@ -1116,18 +1116,18 @@ class EE_Spellcheck {
 EOT;
 
 		$r .= ($wrap === TRUE) ? NL.'//]]>'.NL.'</script>' : '';
-		
+
 		if (REQ != 'CP')
 		{
 			$r = str_replace('{XID_SECURE_HASH}', 'ignore', $r);
 		}
-		
+
 		return $r;
-	
+
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * iFrame
 	 */
@@ -1138,29 +1138,29 @@ EOT;
 
 		ee()->session->tracker = array_shift(ee()->session->tracker);
 
-		ee()->functions->set_cookie('tracker', serialize(ee()->session->tracker), '0');
+		ee()->input->set_cookie('tracker', serialize($this->EE->session->tracker), '0');
 
   		if ( ! defined('AMP')) define('AMP', '&amp;');
 		if ( ! defined('BR'))  define('BR',  '<br />');
 		if ( ! defined('NL'))  define('NL',  "\n");
-		if ( ! defined('NBS')) define('NBS', "&nbsp;");	
+		if ( ! defined('NBS')) define('NBS', "&nbsp;");
 
-		
+
 		$header =
 
 		"<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"\n\n".
 		"\"http://www.w3.org/TR/html4/loose.dtd\">\n\n".
 		"<head>\n".
-		"<title>".APP_NAME." | Spell Check</title>\n\n".		
+		"<title>".APP_NAME." | Spell Check</title>\n\n".
 		"<meta http-equiv='content-type' content='text/html; charset=".ee()->config->item('output_charset')."'>\n".
 		"<meta name='MSSmartTagsPreventParsing' content='TRUE'>\n".
 		"<meta http-equiv='expires' content='-1'>\n".
-		"<meta http-equiv='expires' content='Mon, 01 Jan 1970 23:59:59 GMT'>\n".		
+		"<meta http-equiv='expires' content='Mon, 01 Jan 1970 23:59:59 GMT'>\n".
 		"<meta http-equiv='pragma' content='no-cache'>\n";
-		
+
 		if (REQ == 'CP')
 		{
-			$header .= ee()->view->head_link('css/spellcheck_frame.css');			
+			$header .= ee()->view->head_link('css/spellcheck_frame.css');
 		}
 		else
 		{
@@ -1195,17 +1195,17 @@ EOT;
 				</style>
 EOH;
 		}
-		
-		
+
+
 		$header .= "</head>\n\n".
-		"<body></body>\n</html>";		
-		
+		"<body></body>\n</html>";
+
 		@header('Content-Type: text/html');
 		exit($header);
 	}
 
-	
-	
+
+
 	/** -----------------------------------------
 	/**  Spell Check for Textareas
 	/** -----------------------------------------*/
@@ -1213,54 +1213,54 @@ EOH;
 	{
 		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
-		
+
 		/* -------------------------------------------
 		/*	Hidden Configuration Variable
 		/*
 		/*	- spellcheck_language_code => What is the two letter ISO 639 language
 		/*	  code for the spellcheck (ex: en, es, de)
 		/* -------------------------------------------*/
-		
+
 		if (ee()->config->item('spellcheck_language_code') !== FALSE && strlen(ee()->config->item('spellcheck_language_code')) == 2)
 		{
 			$lang = ee()->config->item('spellcheck_language_code');
 		}
-		
+
 		// ----------------------------------
-		//  These 100 words make up 1/2 of all written material 
-		//  and by not checking them we should be able to greatly 
+		//  These 100 words make up 1/2 of all written material
+		//  and by not checking them we should be able to greatly
 		//  speed up the spellchecker
 		// ----------------------------------
 
-		$common = array('the', 'of', 'and', 'a', 'to', 'in', 'is', 'you', 'that', 
-						'it', 'he', 'was', 'for', 'on', 'are', 'as', 'with', 'his', 
-						'they', 'I', 'at', 'be', 'this', 'have', 'from', 'or', 'one', 
-						'had', 'by', 'word', 'but', 'not', 'what', 'all', 'were', 'we', 
-						'when', 'your', 'can', 'said', 'there', 'use', 'an', 'each', 
-						'which', 'she', 'do', 'how', 'their', 'if', 'will', 'up', 
-						'other', 'about', 'out', 'many', 'then', 'them', 'these', 'so', 
-						'some', 'her', 'would', 'make', 'like', 'him', 'into', 'time', 
-						'has', 'look', 'two', 'more', 'write', 'go', 'see', 'number', 
-						'no', 'way', 'could', 'people', 'my', 'than', 'first', 'water', 
-						'been', 'call', 'who', 'oil', 'its', 'now', 'find', 'long', 
+		$common = array('the', 'of', 'and', 'a', 'to', 'in', 'is', 'you', 'that',
+						'it', 'he', 'was', 'for', 'on', 'are', 'as', 'with', 'his',
+						'they', 'I', 'at', 'be', 'this', 'have', 'from', 'or', 'one',
+						'had', 'by', 'word', 'but', 'not', 'what', 'all', 'were', 'we',
+						'when', 'your', 'can', 'said', 'there', 'use', 'an', 'each',
+						'which', 'she', 'do', 'how', 'their', 'if', 'will', 'up',
+						'other', 'about', 'out', 'many', 'then', 'them', 'these', 'so',
+						'some', 'her', 'would', 'make', 'like', 'him', 'into', 'time',
+						'has', 'look', 'two', 'more', 'write', 'go', 'see', 'number',
+						'no', 'way', 'could', 'people', 'my', 'than', 'first', 'water',
+						'been', 'call', 'who', 'oil', 'its', 'now', 'find', 'long',
 						'down', 'day', 'did', 'get', 'come', 'made', 'may', 'part');
-		
+
 		// The contents of the field are encoded by javascript before
 		// they are sent to us so we have to decode them before processing.
 		// We are also removing any HTML code and HTML code entities so that we
 		// do not process them as misspelled words.
-		
+
 		$content = preg_replace("|<.*?".">|", '', rawurldecode(ee()->security->xss_clean(ee()->input->get_post('q'))));
 		$content = str_replace(array('&amp;', '&lt;', '&gt;'), '', $content);
-		
+
 		$str = '<?xml version="1.0" encoding="UTF-8"?'.">\n<items>\n";
 		$items = array();
 		$prechecked  = array();
-		
+
 		if ( ! function_exists('pspell_new'))
 		{
 			$content = str_replace('&', ' ', stripslashes($content));
-			
+
 			// Google has silently changed the service internally, setting ignoredups="1" now causes results to
 			// always return as spelled correctly.  -- changed 8/20/08 d.j.
 			$payload = 	'<spellrequest textalreadyclipped="0" ignoredups="0" ignoredigits="1" ignoreallcaps="0"><text>'
@@ -1271,34 +1271,34 @@ EOH;
 
 			if (function_exists('curl_init'))
 			{
-				$data = EE_Spellcheck::curl_process($url, $payload); 
+				$data = EE_Spellcheck::curl_process($url, $payload);
 			}
 			else
 			{
 				$data = EE_Spellcheck::fsockopen_process($url, $payload);
 			}
-			
+
 			if ($data == '')
 			{
 				ee()->output->set_status_header(404);
 				@header("Date: ".gmdate("D, d M Y H:i:s")." GMT");
 				exit('Unable to connect to spellcheck');
 			}
-			
+
 			// suckz => <c o="10" l="5" s="0">sucks	sicks	suck	sacks	socks</c>
-			
+
 			if ($data != '' && preg_match_all("|<c\s+(.*?)>(.*?)</c>|is", $data, $matches))
 			{
 				for($i = 0, $s = count($matches['0']); $i < $s; ++$i)
 				{
 					$x = explode('"', $matches['1'][$i]);
 					$word = substr($content, $x['1'], $x['3']);
-					
+
 					if ( ! in_array($word, $prechecked))
 					{
 						$sug = preg_split("|\s+|s", $matches['2'][$i]);
 						natcasesort($sug);
-					
+
 						$items[] = $word.':'.implode(',',$sug).'';
 						$prechecked[] = $word;
 					}
@@ -1309,123 +1309,123 @@ EOH;
 		{
 			// Split it up by non-words
 			preg_match_all("|[\w\']{2,20}|", stripslashes($content), $parts);
-		
+
 			$pspell = pspell_new($lang);
-			
+
 			for($i=0, $s = count($parts['0']); $i < $s; $i++)
 			{
 				if ( ! is_numeric($parts['0'][$i]) &&
-					! in_array(strtolower($parts['0'][$i]), $common) && 
-					! in_array($parts['0'][$i], $prechecked) && 
+					! in_array(strtolower($parts['0'][$i]), $common) &&
+					! in_array($parts['0'][$i], $prechecked) &&
 					! pspell_check($pspell, $parts['0'][$i]))
 				{
 					$sug = array();
-					
+
 					if ($suggestions = pspell_suggest($pspell, $parts['0'][$i]))
 					{
 						foreach ($suggestions as $suggest)
 						{
 							$sug[] = $suggest;
-							
+
 							if (count($sug) > 8) break;
 						}
 					}
-				
+
 					natcasesort($sug);
-					
+
 					$items[] = $parts['0'][$i].':'.implode(',',$sug).'';
 					$prechecked[] = $parts['0'][$i];
 				}
 			}
 		}
-		
+
 		$str .= (count($items) == 0) ? '' : "<item>".implode("</item>\n<item>",$items)."</item>";
-		
+
 		$str .= "\n</items>";
-			
+
 		@header("Content-Type: text/xml");
 		exit($str);
 	}
 
-	
-	
-	
+
+
+
 	/** ----------------------------------------
 	/**  Sing a Song, Have a Dance
 	/** ----------------------------------------*/
-	
+
 	function curl_process($url, $payload)
 	{
-		$ch=curl_init(); 
+		$ch=curl_init();
 		curl_setopt($ch,CURLOPT_SSL_VERIFYPEER,FALSE);
-		curl_setopt($ch,CURLOPT_URL,$url); 
-		curl_setopt($ch,CURLOPT_POST,1); 
-		curl_setopt($ch,CURLOPT_POSTFIELDS,$payload); 
+		curl_setopt($ch,CURLOPT_URL,$url);
+		curl_setopt($ch,CURLOPT_POST,1);
+		curl_setopt($ch,CURLOPT_POSTFIELDS,$payload);
 
-		// Start ob to prevent curl_exec from displaying stuff. 
-		ob_start(); 
+		// Start ob to prevent curl_exec from displaying stuff.
+		ob_start();
 		curl_exec($ch);
 
-		//Get contents of output buffer 
-		$info=ob_get_contents(); 
+		//Get contents of output buffer
+		$info=ob_get_contents();
 		curl_close($ch);
 
-		//End ob and erase contents.  
-		ob_end_clean(); 
+		//End ob and erase contents.
+		ob_end_clean();
 
-		return $info; 
+		return $info;
 	}
 
-	
-	
+
+
 	/** ----------------------------------------
 	/**  Drinking with Friends is Fun!
 	/** ----------------------------------------*/
-	
+
 	function fsockopen_process($url, $payload)
-	{ 
+	{
 		$parts	= parse_url($url);
 		$host	= $parts['host'];
 		$path	= ( ! isset($parts['path'])) ? '/' : $parts['path'];
 		$port	= ($parts['scheme'] == "https") ? '443' : '80';
 		$ssl	= ($parts['scheme'] == "https") ? 'ssl://' : '';
-		
+
 		if (isset($parts['query']) && $parts['query'] != '')
 		{
 			$path .= '?'.$parts['query'];
 		}
-		
+
 		$info = '';
 
-		$fp = @fsockopen($ssl.$host, $port, $error_num, $error_str, 8); 
+		$fp = @fsockopen($ssl.$host, $port, $error_num, $error_str, 8);
 
 		if (is_resource($fp))
 		{
-			fputs($fp, "POST {$path} HTTP/1.0\r\n"); 
-			fputs($fp, "Host: {$host}\r\n"); 
-			fputs($fp, "Content-Type: application/x-www-form-urlencoded\r\n"); 
-			fputs($fp, "Content-Length: ".strlen($payload)."\r\n"); 
-			fputs($fp, "Connection: close\r\n\r\n"); 
+			fputs($fp, "POST {$path} HTTP/1.0\r\n");
+			fputs($fp, "Host: {$host}\r\n");
+			fputs($fp, "Content-Type: application/x-www-form-urlencoded\r\n");
+			fputs($fp, "Content-Length: ".strlen($payload)."\r\n");
+			fputs($fp, "Connection: close\r\n\r\n");
 			fputs($fp, $payload . "\r\n\r\n");
-			
+
 			/* ------------------------------
 			/*  This error suppression has to do with a PHP bug involving
 			/*  SSL connections: http://bugs.php.net/bug.php?id=23220
 			/* ------------------------------*/
-			
+
 			$old_level = error_reporting(0);
-			
+
 			while($datum = fread($fp, 4096))
 			{
 				$info .= $datum;
 			}
-			
+
 			error_reporting($old_level);
 
-			@fclose($fp); 
+			@fclose($fp);
 		}
-		
-		return $info; 
+
+		return $info;
 	}
 
 

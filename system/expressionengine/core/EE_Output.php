@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -382,42 +382,7 @@ class EE_Output extends CI_Output {
 			'link'		=> array('JavaScript:history.go(-1)', ee()->lang->line('return_to_previous'))
 		);
 
-		$this->_restore_xid($content);
 		$this->show_message($data, 0);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Restore XID
-	 *
-	 * By default our error output provides a back link for the user. In
-	 * a lot of cases these errors indicate that a form was not filled in
-	 * correctly, so we want to allow XID reuse.
-	 *
-	 * Exceptions to this rule are authorization errors and invalid actions.
-	 *
-	 * @access	public
-	 * @param	string	error response that will be shown to the user
-	 * @return	void
-	 */
-	protected function _restore_xid($str)
-	{
-		$xid_reuse_exceptions = array(
-			lang('not_authorized'),
-			lang('unauthorized_access'),
-			lang('invalid_action')
-		);
-
-		foreach ($xid_reuse_exceptions as $exception)
-		{
-			if (strpos($str, $exception) !== FALSE)
-			{
-				return;
-			}
-		}
-
-		ee()->security->restore_xid();
 	}
 
 	// --------------------------------------------------------------------
@@ -456,7 +421,6 @@ class EE_Output extends CI_Output {
 			}
 		}
 
-		$EE->load->library('javascript');
 		exit(json_encode($msg));
 	}
 

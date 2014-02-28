@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -59,10 +59,8 @@ class Relationship_model extends CI_Model {
 	 */
 	protected function _run_node_query($node, $entry_ids, $grid_field_id)
 	{
-		$depths = $this->_min_max_branches($node);
-
-		$longest_branch_length = $depths['longest'];
-		$shortest_branch_length = $depths['shortest'];
+		$shortest_branch_length = 0;
+		$longest_branch_length = $this->_find_longest_branch($node);
 
 		switch ($node->field_name())
 		{
@@ -99,6 +97,15 @@ class Relationship_model extends CI_Model {
 		$db->select($relative_child.' as L0_id');
 		$db->from($this->_table.' as L0');
 
+		if ($type == self::GRID)
+		{
+			$db->where_in('L0.grid_field_id', array($grid_field_id, '0'));
+		}
+		else
+		{
+			$db->where('L0.grid_field_id', 0);
+		}
+
 		for ($level = 0; $level <= $longest_branch_length; $level++)
 		{
 			$next_level = $level + 1;
@@ -114,7 +121,7 @@ class Relationship_model extends CI_Model {
 					($next_level >= $shortest_branch_length) ? 'left' : ''
 				);
 
-				$db->where('L'.$level.'.grid_field_id', 0);
+			//	$db->where('L'.$level.'.grid_field_id', 0);
 			}
 			else
 			{
@@ -124,7 +131,7 @@ class Relationship_model extends CI_Model {
 					($next_level >= $shortest_branch_length) ? 'left' : ''
 				);
 			}
-
+/*
 			if ($type == self::GRID)
 			{
 				$db->where_in('L'.$level.'.grid_field_id', array($grid_field_id, '0'));
@@ -133,7 +140,7 @@ class Relationship_model extends CI_Model {
 			{
 				$db->where('L' . $level . '.grid_field_id', 0);
 			}
-
+*/
 			$db->order_by('L0.order', 'asc');
 
 			if ($level > 0)
@@ -143,6 +150,7 @@ class Relationship_model extends CI_Model {
 				$db->select('L' . $level . '.parent_id AS L' . $level . '_parent');
 				$db->select('L' . $level . '.child_id as L' . $level . '_id');
 			}
+
 		}
 
 		if ($type == self::SIBLING)
@@ -169,7 +177,7 @@ class Relationship_model extends CI_Model {
 					'relationships_query',
 					$node->field_name(),
 					$entry_ids,
-					$depths,
+					array('longest' => $longest_branch_length, 'shortest' => 0),
 					$db->_compile_select(FALSE, FALSE)
 				);
 			}
@@ -190,14 +198,13 @@ class Relationship_model extends CI_Model {
 	 * Branch length utility method.
 	 *
 	 */
-	protected function _min_max_branches(EE_TreeNode $tree)
+	protected function _find_longest_branch(EE_TreeNode $tree)
 	{
 		$it = new RecursiveIteratorIterator(
 			new ParseNodeIterator(array($tree)),
 			RecursiveIteratorIterator::LEAVES_ONLY
 		);
 
-		$shortest = INF;
 		$longest = 0;
 
 		foreach ($it as $leaf)
@@ -209,22 +216,12 @@ class Relationship_model extends CI_Model {
 				$depth -= 1;
 			}
 
-			if ($depth < $shortest)
-			{
-				$shortest = $depth;
-			}
-
 			if ($depth > $longest)
 			{
 				$longest = $depth;
 			}
 		}
 
-		if (is_infinite($shortest))
-		{
-			$shortest = 0;
-		}
-
-		return compact('shortest', 'longest');
+		return $longest;
 	}
 }

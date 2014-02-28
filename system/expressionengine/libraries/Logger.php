@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -295,6 +295,188 @@ class EE_Logger {
 			}
 		}
 	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Deprecate a template tag and replace it in templates and snippets
+	 *
+	 * @param  String $message     The message to send to the developer log,
+	 *                             uses developer() not deprecated()
+	 * @param  String $regex       Regular expression to run through
+	 *                             preg_replace
+	 * @param  String $replacement Replacement to pass to preg_replace
+	 * @return void
+	 */
+	public function deprecate_template_tag($message, $regex, $replacement)
+	{
+		ee()->load->model('template_model');
+		$templates = ee()->template_model->fetch_last_edit(array(), TRUE);
+
+		$changed = 0;
+
+		foreach ($templates as $template)
+		{
+			$old_template_data = $template->template_data;
+
+			// Find and replace the tags
+			$template->template_data = preg_replace(
+				$regex,
+				$replacement,
+				$template->template_data
+			);
+
+			// Only save if the template data changed
+			if ($old_template_data != $template->template_data)
+			{
+				// Keep track of how many changed templates we have
+				// so we know whether or not to bother the user with
+				// a deprecation notification
+				$changed++;
+
+				// save the template
+				ee()->template_model->save_to_database($template);
+
+				// if saving to file, save the file
+				if ($template->save_template_file)
+				{
+					ee()->template_model->save_to_file($template);
+				}
+			}
+		}
+
+		// Update snippets
+		ee()->load->model('snippet_model');
+		$snippets = ee()->snippet_model->fetch();
+
+		foreach ($snippets as $snippet)
+		{
+			$old_snippet_contents = $snippet->snippet_contents;
+
+			$snippet->snippet_contents = preg_replace(
+				$regex,
+				$replacement,
+				$snippet->snippet_contents
+			);
+
+			// Only save if the snippet data changed
+			if ($old_snippet_contents != $snippet->snippet_contents)
+			{
+				$changed++;
+
+				ee()->snippet_model->save($snippet);
+			}
+		}
+
+		// Update current tagdata if running outside the updater
+		if (isset(ee()->TMPL->tagdata))
+		{
+			ee()->TMPL->tagdata = preg_replace(
+				$regex,
+				$replacement,
+				ee()->TMPL->tagdata
+			);
+		}
+
+		// Only log the change if changes were made
+		if ($changed > 0)
+		{
+			$this->developer($message, TRUE, 604800);
+		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Deprecate tags within specialty templates (forum, profile, wiki)
+	 *
+	 * @param  String $message     The message to send to the developer log,
+	 *                             uses developer() not deprecated()
+	 * @param  String $regex       Regular expression to run through
+	 *                             preg_replace
+	 * @param  String $replacement Replacement to pass to preg_replace
+	 * @param  String $specific_template     Filename of specific template to
+	 *                                       deprecate in
+	 * @return void
+	 */
+	public function deprecate_specialty_template_tag($message, $regex, $replacement, $specific_template = '')
+	{
+		ee()->load->helper(array('directory', 'file'));
+		$results = array();
+
+		foreach (array('forum', 'wiki', 'profile') as $type)
+		{
+			if (is_dir($current_path = PATH_THEMES.$type.'_themes/'))
+			{
+				$results[$type] = $this->_update_specialty_template(
+					directory_map($current_path),
+					$current_path,
+					$regex,
+					$replacement,
+					$specific_template
+				);
+			}
+		}
+
+		if (strpos(json_encode($results), 'true') !== FALSE)
+		{
+			$this->developer($message, TRUE, 604800);
+		}
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Update specialty templates given an array of specialty templates from
+	 * directory_map
+	 * @param  Mixed  $filename    Filename to replace or directory_map listing
+	 *                             (or section of listing)
+	 * @param  String $path        Full path to where $filename exists
+	 * @param  String $regex       Regular expression to run through
+	 *                             preg_replace
+	 * @param  String $replacement Replacement to pass to preg_replace
+	 * @param  String $specific_template     Filename of specific template to
+	 *                                       deprecate in
+	 * @return void
+	 */
+	private function _update_specialty_template($filename, $path, $regex, $replacement, $specific_template)
+	{
+		if (is_array($filename))
+		{
+			foreach ($filename as $current_directory => $file)
+			{
+				// Only append $current_directory if it's not numeric
+				$recursive_path = ( ! is_numeric($current_directory)) ? $path.$current_directory.'/' : $path;
+				$filename[$current_directory] = $this->_update_specialty_template($file, $recursive_path, $regex, $replacement, $specific_template);
+			}
+			return $filename;
+		}
+
+		// Figure out if this is .html, .css, .feed, or .xml
+		$full_filename = $path.$filename;
+		$pathinfo = pathinfo($full_filename);
+
+		if (($specific_template == ''
+			OR $specific_template == $filename)
+			&& in_array($pathinfo['extension'], array('html', 'css', 'feed', 'xml'))
+			&& ($file_contents = read_file($full_filename))
+			&& preg_match($regex, $file_contents))
+		{
+			write_file(
+				$full_filename,
+				preg_replace(
+					$regex,
+					$replacement,
+					$file_contents
+				)
+			);
+
+			return TRUE;
+		}
+
+		return FALSE;
+	}
+
 
 	// --------------------------------------------------------------------
 

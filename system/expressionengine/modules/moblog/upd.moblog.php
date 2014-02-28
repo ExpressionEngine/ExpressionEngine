@@ -4,13 +4,13 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -51,7 +51,7 @@ class Moblog_upd {
 		ee()->db->insert('modules', array(
 			'module_name'		=> 'Moblog',
 			'module_version'	=> $this->version,
-			'has_cp_backend'	=> 'y'	
+			'has_cp_backend'	=> 'y'
 		));
 
 		$fields = array(
@@ -89,11 +89,11 @@ class Moblog_upd {
 			'moblog_valid_from'			=> array('type' => 'text'),
 			'moblog_ignore_text'		=> array('type' => 'text')
 		);
-		
+
 		ee()->dbforge->add_field($fields);
 		ee()->dbforge->add_key('moblog_id', TRUE);
 		ee()->dbforge->create_table('moblogs');
-		
+
 		return TRUE;
 	}
 
@@ -183,7 +183,7 @@ class Moblog_upd {
 					'alter' => array('type' => 'char', 'constraint' => 1, 'default' => 'n')
 				),
 			);
-			
+
 			$this->_add_fields($new_fields);
 		}
 
@@ -235,35 +235,35 @@ class Moblog_upd {
 		return TRUE;
 	}
 	// END
-	
+
 
 	// ------------------------------------------------------------------------
-	
+
 	/**
 	 * Adds new columns to moblogs table
 	 *
 	 * @param	array	$new_fields	The associative array containing the new fields to add
-	 */	
+	 */
 	function _add_fields($new_fields)
 	{
 		ee()->load->dbforge();
-		
+
 		// Get a list of the current fields
 		$existing_fields = ee()->db->list_fields('moblogs');
 
 		// Add fields that don't exist
 		foreach($new_fields AS $new_field_name => $new_field_data)
 		{
-			if ( ! array_key_exists($new_field_name, $existing_fields))		
+			if ( ! array_key_exists($new_field_name, $existing_fields))
 			{
-				$after = $new_field_data['after'] ? $new_field_data['after'] : ''; 
+				$after = $new_field_data['after'] ? $new_field_data['after'] : '';
 				$field = array($new_field_name => $new_field_data['alter']);
-				
+
 				ee()->dbforge->add_column('moblogs', $field, $after);
 			}
 		}
-	}	
-		
+	}
+
 	// ------------------------------------------------------------------------
 
 	/**
@@ -274,17 +274,17 @@ class Moblog_upd {
 	function _drop_columns($columns)
 	{
 		ee()->load->dbforge();
-		
+
 		// Delete old fields
 		foreach($columns AS $column)
 		{
 			ee()->dbforge->drop_column('moblogs', $column);
 		}
-	}	
+	}
 
 
 	// ------------------------------------------------------------------------
-	
+
 	/**
 	 * Converts moblog image sizes to upload preference sizes
 	 */
@@ -302,26 +302,26 @@ class Moblog_upd {
 			if ($row->moblog_resize_image == 'y')
 			{
 				$image_id = $this->_create_new_upload_size(
-					$row->moblog_short_name.'_image', 
+					$row->moblog_short_name.'_image',
 					$row->moblog_image_width,
 					$row->moblog_image_height,
 					$row->moblog_upload_directory
 				);
-			}		
-			
+			}
+
 			if ($row->moblog_create_thumbnail == 'y')
 			{
 				$thumb_id = $this->_create_new_upload_size(
-					$row->moblog_short_name.'_thumb', 
-					$row->moblog_thumbnail_width, 
+					$row->moblog_short_name.'_thumb',
+					$row->moblog_thumbnail_width,
 					$row->moblog_thumbnail_height,
 					$row->moblog_upload_directory
 				);
-			}		
+			}
 
 			// Make those the image_size and thumb_size
 			ee()->db->update(
-				'moblogs', 
+				'moblogs',
 				array(
 					'moblog_image_size' => $image_id,
 					'moblog_thumb_size' => $thumb_id
@@ -337,10 +337,10 @@ class Moblog_upd {
 	 * Creates a new image size given a size name and the moblog's settings as
 	 *	a row from the database
 	 *
-	 * @param	string	$size_name	The name for the size under upload preferences	
+	 * @param	string	$size_name	The name for the size under upload preferences
 	 * @param	integer	$width		Width of the new size
 	 * @param	integer	$height		Height of the new size
-	 * @return	
+	 * @return
 	 */
 	private function _create_new_upload_size($size_name, $width, $height, $upload_id)
 	{

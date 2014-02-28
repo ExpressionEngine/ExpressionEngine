@@ -5,13 +5,13 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -40,12 +40,12 @@
 			$day   = $ex[2];
 
 			$qstring = trim_slashes(str_replace($match[0], '', $qstring));
-			
-		}	
-		
-		return array('year' => $year, 'month' => $month, 'day' => $day, 'qstring' => $qstring);	
+
+		}
+
+		return array('year' => $year, 'month' => $month, 'day' => $day, 'qstring' => $qstring);
 	}
-	
+
 	// ------------------------------------------------------------------------
 
 	/**
@@ -63,104 +63,42 @@
 
 			$qstring = trim_slashes(str_replace($match[2], '', $qstring));
 		}
-		
+
 		return array('year' => $year, 'month' => $month, 'qstring' => $qstring);
 	}
 
 	// ------------------------------------------------------------------------
 
 	/**
-	  *  Parse ID
-	  */
-	function parse_id($qstring, $dynamic = TRUE)
-	{
-		$entry_id = FALSE;
-		
-		if ($dynamic && preg_match("#^(\d+)(.*)#", $qstring, $match))
-		{
-			$seg = ( ! isset($match[2])) ? '' : $match[2];
-
-			if (substr($seg, 0, 1) == "/" OR $seg == '')
-			{
-				$entry_id = $match[1];
-				$qstring = trim_slashes(preg_replace("#^".$match[1]."#", '', $qstring));
-			}
-		}
-		
-		return array('entry_id' => $entry_id, 'qstring' => $qstring);		
-	}
-	
-	// ------------------------------------------------------------------------
-
-	/**
-	  *  Parse Page Number
-	  */
-	function parse_page_number($qstring, $basepath, $uristr, $dynamic = TRUE)
-	{
-		$EE =& get_instance();
-		
-		$p_page = FALSE;
-		$basepath = FALSE;
-		$uristr = FALSE;
-		
-		if ($dynamic && preg_match("#^P(\d+)|/P(\d+)#", $qstring, $match)) 
-		{
-			$p_page = (isset($match[2])) ? $match[2] : $match[1];
-
-			$basepath = reduce_double_slashes(str_replace($match[0], '', $basepath));
-
-			$uristr  = reduce_double_slashes(str_replace($match[0], '', $uristr));
-
-			$qstring = trim_slashes(str_replace($match[0], '', $qstring));
-
-			//$page_marker = TRUE;
-		}
-		
-		return array('p_page' => $p_page, 'basepath' => $basepath, 'uristr' => $uristr, 'qstring' => $qstring);
-	}
-	
-		
-	// ------------------------------------------------------------------------
-
-	/**
-	  *  Parse N Indicator
-	  */
-	function parse_n($qstring, $uristr, $dynamic = TRUE)
-	{
-		$uristr = FALSE;
-		
-		if (preg_match("#^N(\d+)|/N(\d+)#", $qstring, $match))
-		{
-			$uristr  = reduce_double_slashes(str_replace($match[0], '', $uristr));
-
-			$qstring = trim_slashes(str_replace($match[0], '', $qstring));
-		}
-		
-		return array('uristr' => $uristr, 'qstring' => $qstring);		
-	}	
-
-	/**
 	 * Parse category ID from query string
 	 *
 	 * @param	string	$qstring Query string
-	 * @return	string	URL title or ID of category, whichever is present in the URL
+	 * @return	string	ID of the category regardless of type being used
 	 */
-	function parse_category($qstring = '')
+	function parse_category($query_string)
 	{
-		$EE =& get_instance();
-		
-		$reserved_category_word = (string) $EE->config->item("reserved_category_word");
-		
+		$reserved_category_word = (string) ee()->config->item("reserved_category_word");
+
 		// Parse out URL title from query string
-		if ($EE->config->item("use_category_name") == 'y' 
-			&& $reserved_category_word != ''
-			&& strpos($qstring, $reserved_category_word) !== FALSE 
+		if ($reserved_category_word != ''
+			&& strpos($query_string, $reserved_category_word) !== FALSE
 		)
 		{
-			return preg_replace("/(.*?)\/".preg_quote($reserved_category_word)."\//i", '', '/'.$qstring);
+			$split = explode('/', $query_string);
+			foreach ($split as $index => $value)
+			{
+				if ($value == $reserved_category_word && isset($split[$index + 1]))
+				{
+					$category_name = $split[$index + 1];
+					break;
+				}
+			}
+
+			ee()->load->model('category_model');
+			return ee()->category_model->get_category_id($category_name);
 		}
 		// Parse out category ID in the format of CXX
-		else if (preg_match("#(^|\/)C(\d+)#", $qstring, $match))
+		else if (preg_match("#(^|\/)C(\d+)#", $query_string, $match))
 		{
 			return $match[2];
 		}

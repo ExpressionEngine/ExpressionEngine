@@ -6,7 +6,7 @@
  *
  * @package		CodeIgniter
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc.
  * @license		http://codeigniter.com/user_guide/license.html
  * @link		http://codeigniter.com
  * @since		Version 1.0
@@ -333,7 +333,7 @@ class CI_DB_forge {
 		{
 			show_error('A table name is required for that operation.');
 		}
-		
+
 		// add field info into field array, but we can only do one at a time
 		// so we cycle through
 

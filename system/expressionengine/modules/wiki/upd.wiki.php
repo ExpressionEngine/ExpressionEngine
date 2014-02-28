@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -25,12 +25,12 @@
 class Wiki_upd {
 
 	var $version = '2.3';
-	
+
 	function Wiki_upd()
 	{
 		$this->EE =& get_instance();
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -38,11 +38,11 @@ class Wiki_upd {
 	 *
 	 * @access	public
 	 * @return	bool
-	 */	
+	 */
 	function install()
 	{
 		$sql[] = "INSERT INTO exp_modules (module_name, module_version, has_cp_backend) VALUES ('Wiki', '$this->version', 'y')";
-		
+
 		$sql[] = "CREATE TABLE IF NOT EXISTS exp_wiki_page (
 				page_id int(10) unsigned NOT NULL auto_increment,
 				wiki_id INT(3) UNSIGNED NOT NULL,
@@ -134,12 +134,12 @@ class Wiki_upd {
 				PRIMARY KEY `namespace_id` (`namespace_id`),
 				KEY `wiki_id` (`wiki_id`))
 				DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
-					
+
 		foreach ($sql as $query)
 		{
 			ee()->db->query($query);
 		}
-		
+
 		// Add Extension Hook
 		ee()->db->insert('extensions', array(
 			'class'    => 'Wiki_ext',
@@ -150,11 +150,11 @@ class Wiki_upd {
 			'version'  => $this->version,
 			'enabled'  => 'y'
 		));
-				
+
 		return TRUE;
 	}
-	
-	
+
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -165,8 +165,8 @@ class Wiki_upd {
 	 */
 	function uninstall()
 	{
-		$query = ee()->db->query("SELECT module_id FROM exp_modules WHERE module_name = 'Wiki'"); 
-				
+		$query = ee()->db->query("SELECT module_id FROM exp_modules WHERE module_name = 'Wiki'");
+
 		$sql[] = "DELETE FROM exp_module_member_groups WHERE module_id = '".$query->row('module_id') ."'";
 		$sql[] = "DELETE FROM exp_modules WHERE module_name = 'Wiki'";
 		$sql[] = "DELETE FROM exp_actions WHERE class = 'Wiki'";
@@ -178,12 +178,12 @@ class Wiki_upd {
 		$sql[] = "DROP TABLE IF EXISTS exp_wiki_categories";
 		$sql[] = "DROP TABLE IF EXISTS exp_wiki_category_articles";
 		$sql[] = "DROP TABLE IF EXISTS exp_wiki_namespaces";
-	
+
 		foreach ($sql as $query)
 		{
 			ee()->db->query($query);
 		}
-		
+
 		// Disable extension
 		ee()->db->delete('extensions', array('class' => 'Wiki_ext'));
 
@@ -199,8 +199,8 @@ class Wiki_upd {
 	 *
 	 * @access	public
 	 * @return	bool
-	 */	
-	
+	 */
+
 	function update($current='')
 	{
 		if (version_compare($current, '1.1', '<'))
@@ -238,14 +238,14 @@ class Wiki_upd {
 			ee()->dbforge->add_key('namespace_id', TRUE);
 			ee()->dbforge->add_key('wiki_id');
 			ee()->dbforge->create_table('wiki_namespaces');
-    	
+
     		/* -------------------------------
-    		/*  The Category NS needs a non-changing short name, so we use 
+    		/*  The Category NS needs a non-changing short name, so we use
     		/*  'category'.  Prior to this it was using the Label, so we need
-    		/*  to do a conversion for any category articles already in the 
+    		/*  to do a conversion for any category articles already in the
     		/*  exp_wiki_page database table.
     		/* -------------------------------*/
-    		
+
 			ee()->db->where('page_namespace', lang('category_ns'));
 			ee()->db->update('wiki_page', array(
 				'page_namespace' => 'category'
@@ -255,21 +255,21 @@ class Wiki_upd {
 		if (version_compare($current, '1.2', '<'))
 		{
 			ee()->load->dbforge();
-			
+
 			ee()->dbforge->add_column(
-				'wiki_page', 
+				'wiki_page',
 				array(
 					'last_revision_id' => array(
 						'type'			=> 'int',
 						'constraint'	=> 10
 					)
-				), 
+				),
 				'last_updated'
 			);
-			
+
 			ee()->db->query("
 				UPDATE exp_wiki_page, exp_wiki_revisions
-				SET exp_wiki_page.last_revision_id = 
+				SET exp_wiki_page.last_revision_id =
 					(
 						SELECT MAX(exp_wiki_revisions.revision_id)
 						FROM exp_wiki_revisions
@@ -278,7 +278,7 @@ class Wiki_upd {
 				WHERE exp_wiki_page.page_id = exp_wiki_revisions.page_id"
 			);
 		}
-		
+
 		if (version_compare($current, '2.0', '<'))
 		{
 			ee()->db->query("ALTER TABLE `exp_wiki_category_articles` DROP KEY `page_id`");
@@ -289,17 +289,17 @@ class Wiki_upd {
 			ee()->db->query("ALTER TABLE `exp_wiki_page` CHANGE `page_redirect` `page_redirect` VARCHAR(125) NULL DEFAULT NULL");
 			ee()->db->query("ALTER TABLE `exp_wiki_page` CHANGE `last_revision_id` `last_revision_id` INT(10) NULL DEFAULT NULL");
 		}
-		
+
 		if (version_compare($current, '2.1', '<'))
 		{
 			ee()->db->query("ALTER TABLE `exp_wiki_page` CHANGE `page_namespace` `page_namespace` VARCHAR(125) NOT NULL DEFAULT ''");
 		}
-		
+
 		if (version_compare($current, '2.2', '<'))
 		{
 			ee()->db->query("ALTER TABLE `exp_wiki_search` ADD COLUMN search_date int(10) NOT NULL AFTER wiki_search_id");
 		}
-		
+
 		if (version_compare($current, '2.3', '<'))
 		{
 			// Add Extension Hook
@@ -313,10 +313,10 @@ class Wiki_upd {
 				'enabled'  => 'y'
 			));
 		}
-				
+
 		return TRUE;
 	}
-	
+
 }
 /* END Class */
 

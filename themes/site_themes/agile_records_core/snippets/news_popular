@@ -1,0 +1,9 @@
+<h5>Popular News Items</h5>
+
+<!-- Channel Entries tag ordered by track views for "popular posts".  See Tracking Entry Views at http://ellislab.com/expressionengine/user-guide/modules/weblog/entry_tracking.html -->
+
+{exp:channel:entries channel="news" limit="4" disable="categories|custom_fields|category_fields|trackbacks|pagination|member_data" dynamic="no"}
+	{if count == "1"}<ul>{/if}
+		<li><a href="{comment_url_title_auto_path}">{title}</a> </li>
+	{if count == total_results}</ul>{/if}
+{/exp:channel:entries}

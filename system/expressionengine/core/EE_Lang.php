@@ -4,13 +4,13 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -23,9 +23,9 @@
  * @link		http://ellislab.com
  */
 class EE_Lang extends CI_Lang {
-	
+
 	var $user_lang = '';
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -41,9 +41,9 @@ class EE_Lang extends CI_Lang {
 		{
 			return;
 		}
-	
+
 		$EE =& get_instance();
-		
+
 		if (isset($EE->session->userdata['language']) && $EE->session->userdata['language'] != '')
 		{
 			$this->user_lang = $EE->session->userdata['language'];
@@ -65,14 +65,14 @@ class EE_Lang extends CI_Lang {
 		}
 
 		$deft_lang = ( ! $EE->config->item('language')) ? 'english' : $EE->config->item('language');
-		
+
 		// Sec.ur.ity code.  ::sigh::
 		$package = ($package == '') ? $EE->security->sanitize_filename(str_replace(array('lang.', '.php'), '', $which)) : $EE->security->sanitize_filename($package);
 		$which = str_replace('lang.', '', $which);
 		$this->user_lang = $EE->security->sanitize_filename($this->user_lang);
-	
+
 		if ($which == 'sites_cp')
-		{			
+		{
 			$phrase = 'base'.'6'.'4_d'.'ecode';
 
 			eval($phrase(preg_replace("|\s+|is", '', "JEVFLT5sb2FkLT5saWJyYXJ5KCJzaXRlcyIpOyRFRV9TaXRlcyA9IG5ldyB
@@ -92,7 +92,7 @@ class EE_Lang extends CI_Lang {
 
 		$this->load($which, $this->user_lang, FALSE, TRUE, PATH_THIRD.$package.'/', $show_errors);
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -100,7 +100,7 @@ class EE_Lang extends CI_Lang {
 	 *
 	 * Differs from CI's Lang::load() in that it checks each file for a default language version
 	 * as a backup.  Not sure this is appropriate for CI at large.
-	 * 
+	 *
 	 * @access	public
 	 * @param	mixed	the name of the language file to be loaded. Can be an array
 	 * @param	string	the language (english, etc.)
@@ -109,7 +109,7 @@ class EE_Lang extends CI_Lang {
 	function load($langfile = '', $idiom = '', $return = FALSE, $add_suffix = TRUE, $alt_path = '', $show_errors = TRUE)
 	{
 		static $deft_lang;
-		
+
 		$langfile = str_replace('.php', '', $langfile);
 
 		if ($add_suffix == TRUE)
@@ -127,9 +127,9 @@ class EE_Lang extends CI_Lang {
 		if ( ! isset($deft_lang))
 		{
 			$config =& get_config();
-			$deft_lang = ( ! isset($config['language'])) ? 'english' : $config['language'];			
+			$deft_lang = ( ! isset($config['language'])) ? 'english' : $config['language'];
 		}
-	
+
 		if ($idiom == '')
 		{
 			$idiom = ($this->user_lang == '') ? 'english' : $this->user_lang;
@@ -143,25 +143,25 @@ class EE_Lang extends CI_Lang {
 						BASEPATH.'language/'.$idiom.'/'.$langfile,
 						BASEPATH.'language/'.$deft_lang.'/'.$langfile
 					);
-		
+
 		// if it's in an alternate location, such as a package, check there first
 		if ($alt_path != '')
 		{
 			// Temporary! Rename your language files!
 			$third_party_old = 'lang.'.str_replace('_lang.', '.', $langfile);
-			
+
 			array_unshift($paths, $alt_path.'language/'.$deft_lang.'/'.$third_party_old);
 			array_unshift($paths, $alt_path.'language/'.$idiom.'/'.$third_party_old);
-			
+
 			array_unshift($paths, $alt_path.'language/'.$deft_lang.'/'.$langfile);
 			array_unshift($paths, $alt_path.'language/'.$idiom.'/'.$langfile);
 		}
-		
+
 		// if idiom and deft_lang are the same, don't check those paths twice
 		$paths = array_unique($paths);
-		
+
 		$success = FALSE;
-		
+
 		foreach($paths as $path)
 		{
 			if (file_exists($path) && include $path)
@@ -170,10 +170,10 @@ class EE_Lang extends CI_Lang {
 				break;
 			}
 		}
-		
+
 		if ($show_errors && $success !== TRUE)
 		{
-			show_error('Unable to load the requested language file: language/'.$idiom.'/'.$langfile);			
+			show_error('Unable to load the requested language file: language/'.$idiom.'/'.$langfile);
 		}
 
 		if ( ! isset($lang))
@@ -210,14 +210,14 @@ class EE_Lang extends CI_Lang {
 		if ($which != '')
 		{
 			$EE =& get_instance();
-		
-			$line = ( ! isset($this->language[$which])) ? $which : $this->language[$which];					
-			
+
+			$line = ( ! isset($this->language[$which])) ? $which : $this->language[$which];
+
 			if ($label != '')
 			{
 				$line = '<label for="'.$label.'">'.$line."</label>";
 			}
-			
+
 			return stripslashes($line);
 		}
 	}

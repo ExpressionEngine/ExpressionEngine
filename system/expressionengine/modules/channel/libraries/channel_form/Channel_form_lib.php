@@ -6,7 +6,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team,
  * 		- Original Development by Barrett Newton -- http://barrettnewton.com
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -58,7 +58,6 @@ class Channel_form_lib
 	public $native_variables;
 	public $option_fields;
 	public $parse_variables;
-	public $preserve_checkboxes;
 	public $post_error_callbacks;
 	public $require_save_call;
 	public $settings;
@@ -82,8 +81,8 @@ class Channel_form_lib
 	private $all_params = array(
 		'allow_comments', 'author_only', 'channel', 'class', 'datepicker',
 		'dynamic_title', 'entry_id', 'error_handling', 'id', 'include_jquery',
-		'json', 'logged_out_member_id', 'preserve_checkboxes', 'require_entry',
-		'return', 'return_X', 'rules', 'rte_selector', 'rte_toolset_id', 'include_assets',
+		'json', 'logged_out_member_id', 'require_entry', 'return', 'return_X',
+		'rules', 'rte_selector', 'rte_toolset_id', 'include_assets',
 		'secure_action', 'secure_return', 'site', 'url_title', 'use_live_url'
 	);
 
@@ -238,7 +237,7 @@ class Channel_form_lib
 
 		if ($this->datepicker)
 		{
-			ee()->javascript->output('$.datepicker.setDefaults({dateFormat:$.datepicker.W3C+EE.date_obj_time});');
+			ee()->javascript->output('$.datepicker.setDefaults({dateFormat:"'.ee()->localize->datepicker_format().'"+EE.date_obj_time});');
 		}
 
 		//decide which fields to show, based on pipe delimited list of field id's and/or field short names
@@ -376,10 +375,14 @@ class Channel_form_lib
 			ee()->javascript->output('$.each(EE.markItUpFields,function(a){$("#"+a).markItUp(mySettings);});');
 		}
 
-		// We'll store all checkbox fieldnames in here, so that in case one
-		// has preserve_checkboxes set to "yes" but still needs to edit
-		// checkboxes that have the potential to be blank, the field can be
-		// updated while preserving the checkboxes that aren't on screen
+		// Since empty checkbox arrays don't show up in POST at all, we
+		// fill them in with their old values to preserve them in case they
+		// weren't on screen at all, in the instance someone is using
+		// Channel Form to update a partial entry (not including all fields
+		// in the form); but for the cases where the checkbox fields are
+		// present on screen and are left blank, we need to keep track of
+		// which fields those are here so we don't repopulate them with
+		// their old values
 		$checkbox_fields = array();
 
 		foreach (ee()->TMPL->var_pair as $tag_pair_open => $tagparams)
@@ -455,8 +458,6 @@ class Channel_form_lib
 			}
 		}
 
-		$this->form_hidden('checkbox_fields', implode('|', $checkbox_fields));
-
 		//edit form
 		if ($this->entry)
 		{
@@ -515,6 +516,11 @@ class Channel_form_lib
 				// use fieldtype display_field method
 				elseif (preg_match('/^field:(.*)$/', $key, $match))
 				{
+					if ($this->get_field_type($match[1]) == 'checkboxes')
+					{
+						$checkbox_fields[] = $match[1];
+					}
+
 					$this->parse_variables[$match[0]] = (array_key_exists($match[1], $this->custom_fields)) ? $this->display_field($match[1]) : '';
 				}
 
@@ -646,6 +652,11 @@ class Channel_form_lib
 					elseif ($tag_name == 'options:'.$field['field_name'] && ($field_type_match = $this->get_field_type($field['field_name'])) &&
 							(in_array($field_type_match, $this->option_fields) OR $field_type_match == 'relationship'))
 					{
+						if ($field['field_type'] == 'checkboxes')
+						{
+							$checkbox_fields[] = $field['field_name'];
+						}
+
 						$this->parse_variables['options:'.$field['field_name']] = (isset($custom_field_variables[$field['field_name']]['options'])) ? $custom_field_variables[$field['field_name']]['options'] : '';
 					}
 				}
@@ -661,11 +672,17 @@ class Channel_form_lib
 				//let's not needlessly call this, otherwise we could get duplicate fields rendering
 				if (strpos(ee()->TMPL->tagdata, LD.'field:'.$field['field_name'].RD) !== FALSE)
 				{
+					if ($field['field_type'] == 'checkboxes')
+					{
+						$checkbox_fields[] = $field['field_name'];
+					}
+
 					$this->parse_variables['field:'.$field['field_name']] = (array_key_exists($field['field_name'], $this->custom_fields)) ? $this->display_field($field['field_name']) : '';
 				}
 			}
 		}
 
+		$this->form_hidden('checkbox_fields', implode('|', array_unique($checkbox_fields)));
 
 		$conditional_errors = $this->_add_errors();
 
@@ -715,12 +732,10 @@ class Channel_form_lib
 		// build the form
 
 		$RET = ee()->functions->fetch_current_uri();
-		$XID = ( ! isset($_POST['XID'])) ? '' : $_POST['XID'];
 
 		$hidden_fields = array(
 			'RET'	  				=> $RET,
 			'URI'	  				=> (ee()->uri->uri_string == '') ? 'index' : ee()->uri->uri_string,
-			'XID'	  				=> $XID,
 			'return_url'			=> (isset($_POST['return_url'])) ? $_POST['return_url'] : ee()->TMPL->fetch_param('return'),
 			'author_id'				=> ee()->session->userdata('member_id'),
 			'channel_id'			=> $this->channel('channel_id'),
@@ -930,7 +945,8 @@ class Channel_form_lib
 		{
 			if ($key == 'EE')
 			{
-				$value['XID'] = '{XID_HASH}';
+				$value['XID'] = '{csrf_token}';
+				$value['CSRF_TOKEN'] = '{csrf_token}';
 
 				$this->head .= 'if (typeof EE == "undefined" || ! EE) { '."\n".'var EE = '.json_encode($value).';}'."\n";
 				$this->head .= <<<GRID_FALLBACK
@@ -952,6 +968,7 @@ GRID_FALLBACK;
 		}
 
 		$this->head .= "\n".' // ]]>'."\n".'</script>';
+		$js_file_strings = array();
 
 		$js_defaults = array(
 			'file' => array('underscore'),
@@ -1048,7 +1065,8 @@ GRID_FALLBACK;
 			else
 			{
 				$mtime[] = ee()->cp->_get_js_mtime($type, $files);
-				ee()->cp->js_files[$type] = implode(',', $files);
+				ee()->cp->js_files[$type] = $files;
+				$js_file_strings[$type] = implode(',', $files);
 			}
 		}
 
@@ -1078,7 +1096,7 @@ GRID_FALLBACK;
 			$this->head .= '<script type="text/javascript" src="'.$js_url.'"></script>'."\n";
 		}
 
-		$this->head .= '<script type="text/javascript" charset="utf-8" src="'.ee()->functions->fetch_site_index().QUERY_MARKER.'ACT='.ee()->functions->fetch_action_id('Channel', 'combo_loader').'&'.str_replace(array('%2C', '%2F'), array(',', '/'), http_build_query(ee()->cp->js_files)).'&v='.max($mtime).$use_live_url.$include_jquery.'"></script>'."\n";
+		$this->head .= '<script type="text/javascript" charset="utf-8" src="'.ee()->functions->fetch_site_index().QUERY_MARKER.'ACT='.ee()->functions->fetch_action_id('Channel', 'combo_loader').'&'.str_replace(array('%2C', '%2F'), array(',', '/'), http_build_query($js_file_strings)).'&v='.max($mtime).$use_live_url.$include_jquery.'"></script>'."\n";
 
 		//add fieldtype styles
 		foreach (ee()->cp->its_all_in_your_head as $item)
@@ -1329,7 +1347,7 @@ GRID_FALLBACK;
 		//just to prevent any errors
 		if ( ! defined('BASE'))
 		{
-			$s = (ee()->config->item('admin_session_type') != 'c') ? ee()->session->userdata('session_id') : 0;
+			$s = (ee()->config->item('cp_session_type') != 'c') ? ee()->session->userdata('session_id') : 0;
 			define('BASE', SELF.'?S='.$s.'&amp;D=cp');
 		}
 
@@ -1607,10 +1625,7 @@ GRID_FALLBACK;
 				{
 					if ($this->entry($field) !== FALSE)
 					{
-						if ( ! in_array($field, $this->checkboxes) || $this->_meta['preserve_checkboxes'])
-						{
-							$_POST[$field] = $this->entry($field);
-						}
+						$_POST[$field] = $this->entry($field);
 					}
 				}
 			}
@@ -1798,8 +1813,6 @@ GRID_FALLBACK;
 				}
 			}
 
-			ee()->security->restore_xid();
-
 			ee()->core->generate_page();
 			return;
 		}
@@ -1906,6 +1919,13 @@ GRID_FALLBACK;
 		if ( ! empty($params['group_id']))
 		{
 			$params['show_group'] = $params['group_id'];
+
+			ee()->load->library('logger');
+			ee()->logger->deprecate_template_tag(
+				'Using group_id in Channel Form {categories} tag pairs is deprecated. Please use {categories show_group="..."} instead.',
+				"/({exp:channel:form.*)({categories(.*?)group_id=(.*?)})(.*)/uis",
+				"$1{categories$3show_group=$4}$5"
+			);
 		}
 
 		if ( ! empty($params['show_group']))
@@ -1950,47 +1970,6 @@ GRID_FALLBACK;
 	// --------------------------------------------------------------------
 
 	/**
-	 * Decrypts a form input
-	 *
-	 * @param	mixed $input
-	 * @return	void
-	 */
-	public function decrypt_input($input, $xss_clean = TRUE)
-	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('2.6.0');
-
-		if (function_exists('mcrypt_encrypt'))
-		{
-			$decoded = rtrim(
-				mcrypt_decrypt(
-					MCRYPT_RIJNDAEL_256,
-					md5(ee()->session->sess_crypt_key),
-					base64_decode($input),
-					MCRYPT_MODE_ECB,
-					mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND)
-				),
-				"\0"
-			);
-		}
-		else
-		{
-			$raw = base64_decode($input);
-
-			$decoded = substr($raw, 0, -32);
-
-			if (substr($raw, -32) !== md5(ee()->session->sess_crypt_key.$decoded))
-			{
-				return FALSE;
-			}
-		}
-
-		return ($xss_clean) ? ee()->security->xss_clean($decoded) : $decoded;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Display a custom field
 	 *
 	 * @param	mixed $field_name
@@ -2030,33 +2009,6 @@ GRID_FALLBACK;
 		$_GET['channel_id'] = $this->entry('channel_id');
 
 		return ee()->api_channel_fields->apply('display_field', array('data' => $this->entry($field_name)));
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Encrypts a form input
-	 *
-	 * @param	mixed $input
-	 * @return	void
-	 */
-	public function encrypt_input($input)
-	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('2.6.0');
-
-		if ( ! function_exists('mcrypt_encrypt'))
-		{
-			return base64_encode($input.md5(ee()->session->sess_crypt_key.$input));
-		}
-
-		return base64_encode(mcrypt_encrypt(
-			MCRYPT_RIJNDAEL_256,
-			md5(ee()->session->sess_crypt_key),
-			$input,
-			MCRYPT_MODE_ECB,
-			mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND)
-		));
 	}
 
 	// --------------------------------------------------------------------

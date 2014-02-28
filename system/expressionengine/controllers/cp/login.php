@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -49,7 +49,8 @@ class Login extends CP_Controller {
 	{
 		// We don't want to allow access to the login screen to someone
 		// who is already logged in.
-		if ($this->session->userdata('member_id') !== 0)
+		if ($this->session->userdata('member_id') !== 0 &&
+			ee()->session->userdata('admin_sess') == 1)
 		{
 			return $this->functions->redirect(BASE);
 		}
@@ -58,7 +59,7 @@ class Login extends CP_Controller {
 		if (AJAX_REQUEST)
 		{
 			//header('X-EERedirect: C=login');
-			header('X-EEBroadcast: modal');
+			header('X-EE-Broadcast: modal');
 			die('Logged out');
 		}
 
@@ -99,6 +100,7 @@ class Login extends CP_Controller {
 			// In the event it's a string, send it to return to login
 			$this->_return_to_login(implode(', ', $this->auth->errors));
 		}
+
 		list($username, $password, $incoming) = $verify_result;
 		$member_id = $incoming->member('member_id');
 
@@ -122,12 +124,11 @@ class Login extends CP_Controller {
 			return $this->_un_pw_update_form();
 		}
 
-
 		// Set cookies and start session
 		// ----------------------------------------------------------------
 
 		// Kill existing flash cookie
-		$this->functions->set_cookie('flash');
+		$this->input->delete_cookie('flash');
 
 		if (isset($_POST['remember_me']))
 		{
@@ -136,7 +137,7 @@ class Login extends CP_Controller {
 
 		if (is_numeric($this->input->post('site_id')))
 		{
-			$this->functions->set_cookie('cp_last_site_id', $this->input->post('site_id'), 0);
+			$this->input->set_cookie('cp_last_site_id', $this->input->post('site_id'), 0);
 		}
 
 		$incoming->start_session(TRUE);
@@ -146,13 +147,13 @@ class Login extends CP_Controller {
 
 		$base = BASE;
 
-		if ($this->config->item('admin_session_type') == 's')
+		if ($this->config->item('cp_session_type') == 's')
 		{
-			$base = preg_replace('/S=\d+/', 'S='.$incoming->session_id(), BASE);
+			$base = preg_replace('/S=[a-zA-Z0-9]+/', 'S='.$incoming->session_id(), BASE);
 		}
-		elseif ($this->config->item('admin_session_type') == 'cs')
+		elseif ($this->config->item('cp_session_type') == 'cs')
 		{
-			$base = preg_replace('/S=\d+/', 'S='.$this->session->userdata['fingerprint'], BASE);
+			$base = preg_replace('/S=[a-zA-Z0-9]+/', 'S='.$this->session->userdata['fingerprint'], BASE);
 		}
 
 		$return_path = $base.AMP.'C=homepage';
@@ -171,7 +172,7 @@ class Login extends CP_Controller {
 			));
 		}
 
-		$this->functions->redirect($return_path);
+		$this->functions->redirect(ee()->uri->reformat($return_path, $base));
 	}
 
 	// --------------------------------------------------------------------
@@ -342,10 +343,33 @@ class Login extends CP_Controller {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Lock CP
+	 *
+	 * Keep the session alive, but lock them out of the control panel
+	 *
+	 * @return void
+	 */
+	public function lock_cp()
+	{
+		ee()->session->lock_cp();
+
+		if ( ! AJAX_REQUEST)
+		{
+			$this->functions->redirect(BASE.AMP.'C=login');
+		}
+
+		$this->output->send_ajax_response(array(
+			'message' => 'locked'
+		));
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Log-out
 	 *
 	 * @access	public
-	 * @return	null
+	 * @return	void
 	 */
 	public function logout()
 	{
@@ -360,7 +384,7 @@ class Login extends CP_Controller {
 
 		$this->session->destroy();
 
-		$this->functions->set_cookie('read_topics');
+		$this->input->delete_cookie('read_topics');
 
 		$this->logger->log_action(lang('member_logged_out'));
 
@@ -456,6 +480,7 @@ class Login extends CP_Controller {
 
 		$member_id = $query->row('member_id');
 		$name  = ($query->row('screen_name') == '') ? $query->row('username') : $query->row('screen_name');
+		$username  = $query->row('username');
 
 		// Clean out any old reset codes.
 		$a_day_ago = time() - (60*60*24);
@@ -468,9 +493,10 @@ class Login extends CP_Controller {
 		$data = array('member_id' => $member_id, 'resetcode' => $rand, 'date' => time());
 		$this->db->query($this->db->insert_string('exp_reset_password', $data));
 
-		// Buid the email message
+		// Build the email message
 		$swap = array(
 			'name'		=> $name,
+			'username'		=> $username,
 			'reset_url'	=> reduce_double_slashes($this->config->item('cp_url')."?S=0&D=cp&C=login&M=reset_password&resetcode=".$rand),
 			'site_name'	=> stripslashes($this->config->item('site_name')),
 			'site_url'	=> $this->config->item('site_url')
@@ -641,25 +667,25 @@ class Login extends CP_Controller {
 	/**
 	 *	Refresh XID
 	 *
-	 *	This method is hit by users who are logged in and using cookies only
-	 *	As their session type.  we'll silently refresh their XIDs in the background
-	 *	Instead of forcing them to log back in each time.
-	 *	This method will keep the user logged in indefinitely, as the session type is
-	 *	already set to cookies.  If we didn't do this, they would simply be redirected to
-	 *	the control panel home page.
+	 * If running with cookies only this method is hit periodically otherwise
+	 * it's hit before logging back in to ensure a valid anonymous csrf token
+	 * and again after logging in to retrieve a valid session bound csrf token.
 	 *
 	 */
-	public function refresh_xid()
+	public function refresh_csrf_token()
 	{
 		// the only way we will be hitting this is through an ajax request.
-		// Any other way is monkeying with URLs.  I have no patience for URL monkiers.
-		if ( ! AJAX_REQUEST OR ! $this->cp->allowed_group('can_access_cp'))
+		// Any other way is monkeying with URLs. I have no patience for URL monkiers.
+		if ( ! AJAX_REQUEST)
 		{
 			show_error(lang('unauthorized_access'));
 		}
 
+		header('X-CSRF-TOKEN: '.CSRF_TOKEN);
+		header('X-EEXID: '.CSRF_TOKEN);
+
 		$this->output->send_ajax_response(array(
-			'xid'	  => XID_SECURE_HASH,
+			'base' => BASE,
 			'message' => 'refresh'
 		));
 	}

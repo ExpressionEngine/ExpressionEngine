@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -157,7 +157,7 @@ class Comment {
 		if ($enabled['pagination'])
 		{
 			ee()->load->library('pagination');
-			$pagination = new Pagination_object(__CLASS__);
+			$pagination = ee()->pagination->create(__CLASS__);
 		}
 
 		if (ee()->TMPL->fetch_param('dynamic') == 'no')
@@ -169,7 +169,6 @@ class Comment {
 			$dynamic = TRUE;
 		}
 
-		//
 		$force_entry = FALSE;
 		if (ee()->TMPL->fetch_param('author_id') !== FALSE
 			OR ee()->TMPL->fetch_param('entry_id') !== FALSE
@@ -216,7 +215,7 @@ class Comment {
 				{
 					$pagination->current_page = $match['2'];
 				}
-				$uristr  = trim(reduce_double_slashes(str_replace($match['0'], '/', $uristr)), '/');
+				$uristr = trim(reduce_double_slashes(str_replace($match['0'], '/', $uristr)), '/');
 			}
 		}
 		else
@@ -263,7 +262,7 @@ class Comment {
 
 		// Fetch entry ids- we'll use them to make sure comments are to open, etc. entries
 		$comment_id_param = FALSE;
-		if  ($dynamic == TRUE OR $force_entry == TRUE)
+		if ($dynamic == TRUE OR $force_entry == TRUE)
 		{
 			if ($force_entry == TRUE)
 			{
@@ -370,40 +369,26 @@ class Comment {
 			}
 		}
 
-
-		//  Set sorting and limiting
-		if ( ! $dynamic)
+		if ($enabled['pagination'])
 		{
-			if ($enabled['pagination'])
-			{
-				$pagination->per_page = ee()->TMPL->fetch_param('limit', 100);
-			}
-			else
-			{
-				$limit = ee()->TMPL->fetch_param('limit', 100);
-			}
-			$sort = ee()->TMPL->fetch_param('sort', 'desc');
+			$pagination->per_page = ee()->TMPL->fetch_param('limit', $this->limit);
 		}
 		else
 		{
-
-			if ($enabled['pagination'])
-			{
-				$pagination->per_page = ee()->TMPL->fetch_param('limit', $this->limit);
-			}
-			else
-			{
-				$limit = ee()->TMPL->fetch_param('limit', $this->limit);
-			}
-			$sort = ee()->TMPL->fetch_param('sort', 'asc');
+			$limit = ee()->TMPL->fetch_param('limit', $this->limit);
 		}
+
+		//  Set sorting and limiting
+		$sort = ( ! $dynamic)
+			? ee()->TMPL->fetch_param('sort', 'desc')
+			: ee()->TMPL->fetch_param('sort', 'asc');
 
 		$allowed_sorts = array('date', 'email', 'location', 'name', 'url');
 
 		if ($enabled['pagination'])
 		{
 			// Capture the pagination template
-			$pagination->get_template();
+			ee()->TMPL->tagdata = $pagination->prepare(ee()->TMPL->tagdata);
 		}
 
 		/** ----------------------------------------
@@ -426,11 +411,10 @@ class Comment {
 		}
 
 		$random = ($order_by == 'random') ? TRUE : FALSE;
-		$order_by  = ($order_by == 'date' OR ! in_array($order_by, $allowed_sorts))  ? 'comment_date' : $order_by;
+		$order_by = ($order_by == 'date' OR ! in_array($order_by, $allowed_sorts))  ? 'comment_date' : $order_by;
 
 		// We cache the query in case we need to do a count for dynamic off pagination
 		ee()->db->start_cache();
-
 		ee()->db->select('comment_date, comment_id');
 		ee()->db->from('comments c');
 
@@ -526,36 +510,19 @@ class Comment {
 
 		if ($enabled['pagination'])
 		{
-			$total_rows = ee()->db->count_all_results();
 			if ($pagination->paginate === TRUE)
 			{
-				// When we are only showing comments and it is
-				// not based on an entry id or url title
-				// in the URL, we can make the query much
+				// When we are only showing comments and it is not based on an
+				// entry id or url title in the URL, we can make the query much
 				// more efficient and save some work.
-				$pagination->total_rows = $total_rows;
+				$pagination->total_items = ee()->db->count_all_results();
 			}
+
+			// Determine the offset from the query string
+			$pagination->prefix = ( ! $dynamic) ? 'N' : 'P';
 		}
 
 		$this_sort = ($random) ? 'random' : strtolower($sort);
-
-		// We're not stripping it out this time, so we can just
-		// ignore the check if we're not paginating.
-		if ($enabled['pagination'])
-		{
-			$p = ( ! $dynamic) ? 'N' : 'P';
-
-			// Figure out of we need a pagination offset
-			if (preg_match('/'.$p.'(\d+)(?:\/|$)/', ee()->uri->uri_string, $matches))
-			{
-				$pagination->offset = $matches[1];
-			}
-			else
-			{
-				$pagination->offset = 0;
-			}
-		}
-
 		ee()->db->order_by($order_by, $this_sort);
 
 		if ($enabled['pagination'])
@@ -589,7 +556,7 @@ class Comment {
 		if ($enabled['pagination'])
 		{
 			// Build pagination
-			$pagination->build($pagination->per_page);
+			$pagination->build($pagination->total_items, $pagination->per_page);
 		}
 
 		/** -----------------------------------
@@ -665,43 +632,6 @@ class Comment {
 		);
 
 		/** ----------------------------------------
-		/**  Fetch all the date-related variables
-		/** ----------------------------------------*/
-
-		$gmt_comment_date	= array();
-		$comment_date		= array();
-		$edit_date			= array();
-
-		// We do this here to avoid processing cycles in the foreach loop
-
-		$date_vars = array('gmt_comment_date', 'comment_date', 'edit_date');
-
-		foreach ($date_vars as $val)
-		{
-			if (preg_match_all("/".LD.$val."\s+format=[\"'](.*?)[\"']".RD."/s", ee()->TMPL->tagdata, $matches))
-			{
-				for ($j = 0; $j < count($matches['0']); $j++)
-				{
-					$matches['0'][$j] = str_replace(LD, '', $matches['0'][$j]);
-					$matches['0'][$j] = str_replace(RD, '', $matches['0'][$j]);
-
-					switch ($val)
-					{
-						case 'comment_date':
-							$comment_date[$matches['0'][$j]] = $matches['1'][$j];
-							break;
-						case 'gmt_comment_date':
-							$gmt_comment_date[$matches['0'][$j]] = $matches['1'][$j];
-							break;
-						case 'edit_date':
-							$edit_date[$matches['0'][$j]] = $matches['1'][$j];
-							break;
-					}
-				}
-			}
-		}
-
-		/** ----------------------------------------
 		/**  Protected Variables for Cleanup Routine
 		/** ----------------------------------------*/
 
@@ -753,7 +683,7 @@ class Comment {
 			$row['absolute_count']	= $absolute_count;
 			if ($enabled['pagination'])
 			{
-				$row['total_comments']	= $total_rows;
+				$row['total_comments']	= $pagination->total_items;
 			}
 			$row['total_results']	= $total_results;
 
@@ -826,6 +756,23 @@ class Comment {
 			$tagdata = ee()->functions->prep_conditionals($tagdata, $cond);
 
 			/** ----------------------------------------
+			/**  parse comment date and "last edit" date
+			/** ----------------------------------------*/
+
+			$dates = array(
+				'comment_date' => $row['comment_date'],
+				'edit_date'    => $row['edit_date']
+			);
+
+			$tagdata = ee()->TMPL->parse_date_variables($tagdata, $dates);
+
+			/** ----------------------------------------
+			/**  parse GMT comment date
+			/** ----------------------------------------*/
+
+			$tagdata = ee()->TMPL->parse_date_variables($tagdata, array('gmt_comment_date', $row['comment_date']), FALSE);
+
+			/** ----------------------------------------
 			/**  Parse "single" variables
 			/** ----------------------------------------*/
 			foreach (ee()->TMPL->var_single as $key => $val)
@@ -892,59 +839,6 @@ class Comment {
 						$tagdata
 					);
 				}
-
-				/** ----------------------------------------
-				/**  parse comment date
-				/** ----------------------------------------*/
-
-				if (isset($comment_date[$key]) && isset($row['comment_date']))
-				{
-					$tagdata = ee()->TMPL->swap_var_single(
-						$key,
-						ee()->localize->format_date(
-							$comment_date[$key],
-							$row['comment_date']
-						),
-						$tagdata
-					);
-				}
-
-				/** ----------------------------------------
-				/**  parse GMT comment date
-				/** ----------------------------------------*/
-
-				if (isset($gmt_comment_date[$key]) && isset($row['comment_date']))
-				{
-					$tagdata = ee()->TMPL->swap_var_single(
-						$key,
-						ee()->localize->format_date(
-							$gmt_comment_date[$key],
-							$row['comment_date'],
-							FALSE
-						),
-						$tagdata
-					);
-				}
-
-				/** ----------------------------------------
-				/**  parse "last edit" date
-				/** ----------------------------------------*/
-
-				if (isset($edit_date[$key]))
-				{
-					if (isset($row['edit_date']))
-					{
-						$tagdata = ee()->TMPL->swap_var_single(
-							$key,
-							ee()->localize->format_date(
-								$edit_date[$key],
-								$row['edit_date']
-							),
-							$tagdata
-						);
-					}
-				}
-
 
 				/** ----------------------------------------
 				/**  {member_search_path}
@@ -1746,14 +1640,12 @@ class Comment {
 		}
 
 		$PRV = (isset($_POST['PRV'])) ? $_POST['PRV'] : ee()->TMPL->fetch_param('preview');
-		$XID = (isset($_POST['XID'])) ? $_POST['XID'] : '';
 
 		$hidden_fields = array(
 			'ACT'	  	=> ee()->functions->fetch_action_id('Comment', 'insert_new_comment'),
 			'RET'	  	=> $RET,
 			'URI'	  	=> (ee()->uri->uri_string == '') ? 'index' : ee()->uri->uri_string,
 			'PRV'	  	=> $PRV,
-			'XID'	  	=> $XID,
 			'entry_id' 	=> $query->row('entry_id')
 		);
 
@@ -1891,23 +1783,6 @@ class Comment {
 			}
 		//
 		// -------------------------------------------
-
-		/** ----------------------------------------
-		/**  Fetch all the date-related variables
-		/** ----------------------------------------*/
-
-		$comment_date = array();
-
-		if (preg_match_all("/".LD."comment_date\s+format=[\"'](.*?)[\"']".RD."/s", $tagdata, $matches))
-		{
-			for ($j = 0; $j < count($matches['0']); $j++)
-			{
-				$matches['0'][$j] = str_replace(LD, '', $matches['0'][$j]);
-				$matches['0'][$j] = str_replace(RD, '', $matches['0'][$j]);
-
-				$comment_date[$matches['0'][$j]] = $matches['1'][$j];
-			}
-		}
 
         /** ----------------------------------------
         /**  Set defaults based on member data as needed
@@ -2066,17 +1941,7 @@ class Comment {
 			/**  parse comment date
 			/** ----------------------------------------*/
 
-			elseif (isset($comment_date[$key]))
-			{
-				$tagdata = ee()->TMPL->swap_var_single(
-					$key,
-					ee()->localize->format_date(
-						$comment_date[$key],
-						ee()->localize->now
-					),
-					$tagdata
-				);
-			}
+			$tagdata = ee()->TMPL->parse_date_variables($tagdata, array('comment_date' => ee()->localize->now));
 
 		}
 
@@ -2619,13 +2484,6 @@ class Comment {
 
 		$return_link = ( ! stristr($_POST['RET'],'http://') && ! stristr($_POST['RET'],'https://')) ? ee()->functions->create_url($_POST['RET']) : $_POST['RET'];
 
-		// Secure Forms check
-		if (ee()->security->secure_forms_check(ee()->input->post('XID')) == FALSE)
-		{
-			ee()->functions->redirect(stripslashes($return_link));
-		}
-
-
 		//  Insert data
 		$sql = ee()->db->insert_string('exp_comments', $data);
 		ee()->db->query($sql);
@@ -2929,28 +2787,28 @@ class Comment {
 
 		if ($notify == 'y')
 		{
-			ee()->functions->set_cookie('notify_me', 'yes', 60*60*24*365);
+			ee()->input->set_cookie('notify_me', 'yes', 60*60*24*365);
 		}
 		else
 		{
-			ee()->functions->set_cookie('notify_me', 'no', 60*60*24*365);
+			ee()->input->set_cookie('notify_me', 'no', 60*60*24*365);
 		}
 
 		if (ee()->input->post('save_info'))
 		{
-			ee()->functions->set_cookie('save_info',	'yes',				60*60*24*365);
-			ee()->functions->set_cookie('my_name',		$_POST['name'],		60*60*24*365);
-			ee()->functions->set_cookie('my_email',	$_POST['email'],	60*60*24*365);
-			ee()->functions->set_cookie('my_url',		$_POST['url'],		60*60*24*365);
-			ee()->functions->set_cookie('my_location',	$_POST['location'],	60*60*24*365);
+			ee()->input->set_cookie('save_info',	'yes',				60*60*24*365);
+			ee()->input->set_cookie('my_name',		$_POST['name'],		60*60*24*365);
+			ee()->input->set_cookie('my_email',	$_POST['email'],	60*60*24*365);
+			ee()->input->set_cookie('my_url',		$_POST['url'],		60*60*24*365);
+			ee()->input->set_cookie('my_location',	$_POST['location'],	60*60*24*365);
 		}
 		else
 		{
-			ee()->functions->set_cookie('save_info',	'no', 60*60*24*365);
-			ee()->functions->set_cookie('my_name',		'');
-			ee()->functions->set_cookie('my_email',	'');
-			ee()->functions->set_cookie('my_url',		'');
-			ee()->functions->set_cookie('my_location',	'');
+			ee()->input->set_cookie('save_info',	'no', 60*60*24*365);
+			ee()->input->set_cookie('my_name',		'');
+			ee()->input->set_cookie('my_email',	'');
+			ee()->input->set_cookie('my_url',		'');
+			ee()->input->set_cookie('my_location',	'');
 		}
 
 		// -------------------------------------------
@@ -3214,15 +3072,6 @@ class Comment {
 			ee()->output->send_ajax_response(array('error' => $unauthorized));
 		}
 
-		$xid = ee()->input->get_post('XID');
-
-
-		// Secure Forms check - do it early due to amount of further data manipulation before insert
-		if (ee()->security->secure_forms_check($xid) == FALSE)
-		{
-		 	ee()->output->send_ajax_response(array('error' => $unauthorized));
-		}
-
 		$edited_status = (ee()->input->get_post('status') != 'close') ? FALSE : 'c';
 		$edited_comment = ee()->input->get_post('comment');
 		$can_edit = FALSE;
@@ -3283,10 +3132,8 @@ class Comment {
 					// We closed an entry, update our stats
 					$this->_update_comment_stats($entry_id, $channel_id, $author_id);
 
-					// create new security hash and send it back with updated comment.
-
-					$new_hash = $this->_new_hash();
-					ee()->output->send_ajax_response(array('moderated' => ee()->lang->line('closed'), 'XID' => $new_hash));
+					// Send back the updated comment
+					ee()->output->send_ajax_response(array('moderated' => ee()->lang->line('closed')));
 				}
 
 				ee()->load->library('typography');
@@ -3301,11 +3148,8 @@ class Comment {
 					)
 				);
 
-				// create new security hash and send it back with updated comment.
-
-				$new_hash = $this->_new_hash();
-
-				ee()->output->send_ajax_response(array('comment' => $f_comment, 'XID' => $new_hash));
+				// Send back the updated comment
+				ee()->output->send_ajax_response(array('comment' => $f_comment));
 			}
 		}
 
@@ -3359,7 +3203,7 @@ $.fn.CommentEditor = function(options) {
 
 	var view_elements = [OPT.comment_body, OPT.showEditor, OPT.closeComment].join(','),
 		edit_elements = '.editCommentBox',
-		hash = '{XID_HASH}';
+		csrf_token = '{csrf_token}';
 
 	return this.each(function() {
 		var id = this.id.replace('comment_', ''),
@@ -3384,22 +3228,20 @@ $.fn.CommentEditor = function(options) {
 	}
 
 	function closeComment(id) {
-		var data = {status: "close", comment_id: id, XID: hash};
+		var data = {status: "close", comment_id: id, csrf_token: csrf_token};
 
 		$.post(OPT.url, data, function (res) {
 			if (res.error) {
 				return $.error('Could not moderate comment.');
 			}
 
-			hash = res.XID;
-			$('input[name=XID]').val(hash);
 			$('#comment_' + id).hide();
 	   });
 	}
 
 	function saveComment(id) {
 		var content = $("#comment_"+id).find('.editCommentBox'+' textarea').val(),
-			data = {comment: content, comment_id: id, XID: hash};
+			data = {comment: content, comment_id: id, csrf_token: csrf_token};
 
 		$.post(OPT.url, data, function (res) {
 			if (res.error) {
@@ -3407,8 +3249,6 @@ $.fn.CommentEditor = function(options) {
 				return $.error('Could not save comment.');
 			}
 
-			hash = res.XID;
-			$('input[name=XID]').val(hash);
 			$("#comment_"+id).find('.comment_body').html(res.comment);
 			hideEditor(id);
    		});
@@ -3432,43 +3272,6 @@ CMT_EDIT_SCR;
 		}
 
 		exit($script);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * New Hash
-	 *
-	 * Generates a new secure forms CSRF hash for the current user
-	 *
-	 * @access	public
-	 * @param	string
-	 * @return	string
-	 */
-	function _new_hash()
-	{
-		if (ee()->config->item('secure_forms') != 'y')
-		{
-			return FALSE;
-		}
-
-		$db_reset = FALSE;
-
-		if (ee()->db->cache_on == TRUE)
-		{
-			ee()->db->cache_off();
-			$db_reset = TRUE;
-		}
-
-		$hash = ee()->security->generate_xid();
-
-		// Re-enable DB caching
-		if ($db_reset == TRUE)
-		{
-			ee()->db->cache_on();
-		}
-
-		return $hash;
 	}
 
 	// --------------------------------------------------------------------

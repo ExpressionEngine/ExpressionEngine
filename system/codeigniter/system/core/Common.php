@@ -6,7 +6,7 @@
  *
  * @package		CodeIgniter
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc.
  * @license		http://codeigniter.com/user_guide/license.html
  * @link		http://codeigniter.com
  * @since		Version 1.0
@@ -271,6 +271,40 @@
 // ------------------------------------------------------------------------
 
 /**
+* Returns the specified config item as a boolean.
+*
+* Defaults to FALSE for items that are not set. Intelligently converts 'y/n'
+* to booleans.
+*
+* @access	public
+* @return	mixed
+*/
+	function bool_config_item($item)
+	{
+		if (function_exists('get_instance') && get_instance() !== NULL)
+		{
+			$value = ee()->config->item($item);
+		}
+		else
+		{
+			$value = config_item($item);
+		}
+
+		if ($value === 'y')
+		{
+			$value = TRUE;
+		}
+		elseif ($value === 'n')
+		{
+			$value = FALSE;
+		}
+
+		return (bool) $value;
+	}
+
+// ------------------------------------------------------------------------
+
+/**
 * Error Handler
 *
 * This function lets us invoke the exception class and
@@ -478,16 +512,16 @@
 	function remove_invisible_characters($str, $url_encoded = TRUE)
 	{
 		$non_displayables = array();
-		
+
 		// every control character except newline (dec 10)
 		// carriage return (dec 13), and horizontal tab (dec 09)
-		
+
 		if ($url_encoded)
 		{
 			$non_displayables[] = '/%0[0-8bcef]/';	// url encoded 00-08, 11, 12, 14, 15
 			$non_displayables[] = '/%1[0-9a-f]/';	// url encoded 16-31
 		}
-		
+
 		$non_displayables[] = '/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]+/S';	// 00-08, 11, 12, 14-31, 127
 
 		do
@@ -498,7 +532,7 @@
 
 		return $str;
 	}
-	
+
 // ------------------------------------------------------------------------
 
 if ( ! function_exists('function_usable'))
@@ -549,7 +583,7 @@ if ( ! function_exists('function_usable'))
 
 		return FALSE;
 	}
-}	
+}
 
 /* End of file Common.php */
 /* Location: ./system/core/Common.php */

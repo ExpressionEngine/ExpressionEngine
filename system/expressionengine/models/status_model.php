@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -24,7 +24,7 @@
  */
 class Status_model extends CI_Model {
 
-	// Default "open" and "closed" status colors	
+	// Default "open" and "closed" status colors
 	var $status_color_open	= '009933';
 	var $status_color_closed = '990000';
 
@@ -42,9 +42,9 @@ class Status_model extends CI_Model {
 		{
 			$this->db->where('group_id', $group_id);
 		}
-		
+
 		$this->db->from('statuses');
-		
+
 		if ($channel_id != '')
 		{
 			$this->db->select('statuses.status_id, statuses.status');
@@ -92,8 +92,8 @@ class Status_model extends CI_Model {
 		$this->db->where('group_id', $group_id);
 
 		$status_order = $this->db->get('statuses');
-		
-		return ($status_order->num_rows() == 0) ? 1 : $status_order->row('status_order') + 1;		
+
+		return ($status_order->num_rows() == 0) ? 1 : $status_order->row('status_order') + 1;
 	}
 
 	// --------------------------------------------------------------------
@@ -133,7 +133,7 @@ class Status_model extends CI_Model {
 		$this->db->where('status_groups.site_id', $site_id);
 		$this->db->group_by('status_groups.group_id');
 		$this->db->order_by('status_groups.group_name');
-		
+
 		return $this->db->get('status_groups');
 	}
 
@@ -152,7 +152,7 @@ class Status_model extends CI_Model {
 
 		// Clear out any references in exp_channels
 		$this->db->where('status_group', $group_id);
-		$this->db->update('channels', array('status_group' => NULL));		
+		$this->db->update('channels', array('status_group' => NULL));
 	}
 
 	// --------------------------------------------------------------------

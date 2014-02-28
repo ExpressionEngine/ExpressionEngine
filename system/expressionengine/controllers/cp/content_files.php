@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -77,10 +77,10 @@ class Content_files extends CP_Controller {
 			$nav['file_upload_preferences']	= BASE.AMP.'C=content_files'.AMP.'M=file_upload_preferences';
 			$nav['watermark_prefs']	= BASE.AMP.'C=content_files'.AMP.'M=watermark_preferences';
 			//$nav['batch_upload']	= BASE.AMP.'C=content_files'.AMP.'M=batch_upload';
-		}		
+		}
 
 		$this->cp->set_right_nav($nav);
-		
+
 		$this->_base_url = BASE.AMP.'C=content_files';
 	}
 
@@ -94,7 +94,7 @@ class Content_files extends CP_Controller {
 		$this->load->library('table');
 		$this->load->helper('search');
 		$this->api->instantiate('channel_categories');
-		
+
 		$this->table->set_base_url('C=content_files');
 		$this->table->set_columns(array(
 			'file_id'		=> array('header' => '#'),
@@ -123,13 +123,13 @@ class Content_files extends CP_Controller {
 				)
 			)
 		));
-		
+
 		$initial_state = array(
 			'sort'	=> array('upload_date' => 'desc')
 		);
-		
+
 		$data = $this->table->datasource('_files_filter', $initial_state);
-		
+
 		// Grab our private return data
 		$get_post = $data['get_post'];
 		$allowed_dirs = $data['allowed_dirs'];
@@ -141,7 +141,7 @@ class Content_files extends CP_Controller {
 		// Create our various filter data
 		$upload_dirs_options = array();
 		$upload_dirs_options['null'] = lang('filter_by_directory');
-		
+
 		if (count($this->_upload_dirs) > 2)
 		{
 			$upload_dirs_options['all'] = lang('all');
@@ -152,12 +152,12 @@ class Content_files extends CP_Controller {
 			$upload_dirs_options[$dir['id']] = $dir['name'];
 			$allowed_dirs[] = $k;
 		}
-		
+
 		$selected_dir = ($selected_dir = $this->input->get_post('dir_id')) ? $selected_dir : NULL;
-		
+
 		// We need this for the filter, so grab it now
 		$cat_form_array = $this->api_channel_categories->category_form_tree($this->nest_categories);
-		
+
 		// If we have directories we'll write the JavaScript menu switching code
 		if (count($allowed_dirs) > 0)
 		{
@@ -195,9 +195,9 @@ class Content_files extends CP_Controller {
 			'custom_field'	=> lang('custom_fields'),
 			'all'			=> lang('all')
 		);
-		
+
 		$no_upload_dirs = FALSE;
-		
+
 		if (empty($this->_upload_dirs))
 		{
 			$no_upload_dirs = TRUE;
@@ -207,12 +207,12 @@ class Content_files extends CP_Controller {
 			'download'			=> lang('download_selected'),
 			'delete'			=> lang('delete_selected_files')
 		);
-		
-		
+
+
 		// Page Title
 		$this->view->cp_page_title = lang('content_files');
-		
-		// both filebrowser and fileuploader need to be loaded because 
+
+		// both filebrowser and fileuploader need to be loaded because
 		// fileuploader depends on filebrowser's methods
 		$this->cp->add_js_script(array(
 			'plugin'	=> array(
@@ -221,7 +221,7 @@ class Content_files extends CP_Controller {
 			'file'		=> 'cp/files/file_manager_home',
 			'ui' 		=> array('datepicker', 'dialog')
 		));
-		
+
 		if ($allowed_dirs != FALSE)
 		{
 			$this->cp->set_action_nav(array(
@@ -248,7 +248,7 @@ class Content_files extends CP_Controller {
 				)
 			)
 		));
-		
+
 
 		$data = array_merge($data, array(
 			'action_options' 		=> (isset($action_options)) ? $action_options : NULL,
@@ -285,14 +285,14 @@ class Content_files extends CP_Controller {
 		$allowed_dirs = $this->_setup_allowed_dirs();
 
 		$dirs = ($get_post['dir_id'] === FALSE) ? $this->_allowed_dirs : $get_post['dir_id'];
-		
+
 		$params = array(
-			'cat_id' 		=> $get_post['cat_id'], 
-			'type'			=> $get_post['file_type'], 
-			'limit'			=> $get_post['per_page'], 
+			'cat_id' 		=> $get_post['cat_id'],
+			'type'			=> $get_post['file_type'],
+			'limit'			=> $get_post['per_page'],
 			'offset'		=> $state['offset'],
-			'search_value'	=> $get_post['keywords'], 
-			'order'			=> $state['sort'], 
+			'search_value'	=> $get_post['keywords'],
+			'order'			=> $state['sort'],
 			'no_clue'		=> TRUE,
 			'search_in'		=> ($get_post['search_in'] != '') ? $get_post['search_in'] : 'file_name',
 			'date_start'	=> $get_post['date_start'],
@@ -300,7 +300,7 @@ class Content_files extends CP_Controller {
 			'date_range'	=> (substr($get_post['date_range'], 0, strlen($get_post['date_start'])) == $get_post['date_start'])
 								? FALSE : $get_post['date_range']
 		);
-		
+
 		$filtered_entries = $this->file_model->get_files($dirs, $params);
 
 		$files = $filtered_entries['results'];
@@ -309,7 +309,7 @@ class Content_files extends CP_Controller {
 		return array(
 			'rows' => $this->_fetch_file_list($files, $total_filtered),
 			'no_results' => sprintf(
-				lang('no_uploaded_files'), 
+				lang('no_uploaded_files'),
 				$this->cp->masked_url('http://ellislab.com/expressionengine/user-guide/cp/content/files/sync_files.html'),
 				BASE.AMP.'C=content_files'.AMP.'M=file_upload_preferences'
 			),
@@ -317,7 +317,7 @@ class Content_files extends CP_Controller {
 				'per_page'	 => $params['limit'],
 				'total_rows' => $total_filtered
 			),
-			
+
 			// regular returns
 			'get_post' => $get_post,
 			'allowed_dirs' => $allowed_dirs
@@ -342,12 +342,6 @@ class Content_files extends CP_Controller {
 
 		if ($total_filtered > 0 AND ! empty($this->_upload_dirs))
 		{
-			// Date
-			$date_fmt = ($this->session->userdata('time_format') != '') ?
-							$this->session->userdata('time_format') : $this->config->item('time_format');
-
-			$datestr = ($date_fmt == 'us') ? '%m/%d/%y %h:%i %a' : '%Y-%m-%d %H:%i';
-			
 			$file_list = array();
 			$files = $files->result_array();
 
@@ -358,7 +352,7 @@ class Content_files extends CP_Controller {
 					'file_id' => $file['file_id'],
 					'title'	=> $file['title']
 				);
-				
+
 				$is_image = FALSE;
 
 				$file_location = rtrim($this->_upload_dirs[$file['upload_location_id']]['url'], '/').'/'.rawurlencode($file['file_name']);
@@ -399,12 +393,12 @@ class Content_files extends CP_Controller {
 				$r['upload_date'] = $this->localize->human_time($file['upload_date'], TRUE);
 
 				$action_base = BASE.AMP.'C=content_files'.AMP.'M=multi_edit_form'.AMP.'file_id='.$file['file_id'];
-				
+
 				$actions = '<a href="'.$action_base.AMP.'action=download" title="'.lang('file_download').'"><img src="'.$this->cp->cp_theme_url.'images/icon-download-file.png"></a>';
 				$actions .= NBS.NBS;
 				$actions .= '<a href="'.BASE.AMP.'C=content_files'.AMP.'M=edit_file'.AMP.'upload_dir='.$file['upload_location_id'].AMP.'file_id='.$file['file_id'].'" title="'.lang('edit_file').'"><img src="'.$this->cp->cp_theme_url.'images/icon-edit.png" alt="'.lang('edit_file').'" /></a>';
-				
-				$delete_action = '<a href="'.$action_base.AMP.'action=delete" title="'.lang('delete_selected_files').'"><img src="'.$this->cp->cp_theme_url.'images/icon-delete.png"></a>';				
+
+				$delete_action = '<a href="'.$action_base.AMP.'action=delete" title="'.lang('delete_selected_files').'"><img src="'.$this->cp->cp_theme_url.'images/icon-delete.png"></a>';
 
 				if ($is_image)
 				{
@@ -415,7 +409,7 @@ class Content_files extends CP_Controller {
 				$r['_actions'] = $actions;
 				$r['_delete'] = $delete_action;
 				$r['_check'] = form_checkbox('toggle[]', $file['file_id'], '', ' class="toggle" id="toggle_box_'.$file['file_id'].'"');
-				
+
 				$file_list[] = $r;
 			}
 		}
@@ -440,7 +434,7 @@ class Content_files extends CP_Controller {
 	private function _fetch_get_post_vars()
 	{
 		$this->load->helper('search');
-		
+
 		$ret = array(
 			'author_id'		=> $this->input->get_post('author_id'),
 			'cat_id'		=> $this->input->get_post('cat_id'),
@@ -461,7 +455,7 @@ class Content_files extends CP_Controller {
 			'date_end'		=> (($date_end = $this->input->get_post('custom_date_end')) != 'yyyy-mm-dd'
 									AND $date_end !== FALSE) ? $date_end : FALSE
 		);
-		
+
 		if ($this->input->post('keywords'))
 		{
 			$ret['keywords'] = sanitize_search_terms($this->input->post('keywords'));
@@ -616,7 +610,7 @@ class Content_files extends CP_Controller {
 
 		$this->javascript->set_global('file.directoryInfo', $file_info);
 	}
-	
+
 	// ------------------------------------------------------------------------
 
 	/**
@@ -628,7 +622,7 @@ class Content_files extends CP_Controller {
 	public function multi_edit_form()
 	{
 		$files = $this->_get_file_ids();
-		
+
 		switch ($this->input->get_post('action'))
 		{
 			case 'download':
@@ -644,9 +638,9 @@ class Content_files extends CP_Controller {
 				break;
 		}
 	}
-	
+
 	// ------------------------------------------------------------------------
-	
+
 	/**
 	 * Get the list of files and the directory ID for batch file actions
 	 *
@@ -666,9 +660,9 @@ class Content_files extends CP_Controller {
 			if ( ! ($files = $this->input->get_post('file_id')))
 			{
 				show_error(lang('unauthorized_access'));
-			}			
+			}
 		}
-		
+
 		if ( ! is_array($files))
 		{
 			$files = array($files);
@@ -714,21 +708,21 @@ class Content_files extends CP_Controller {
 		{
 			$message_type = 'message_failure';
 			$message = lang('choose_file');
-			
+
 			if (AJAX_REQUEST)
 			{
 				$this->output->send_ajax_response(array(
 					'type'    => $message_type,
 					'message' => $message
 				), TRUE);
-				
+
 				return;
 			}
-			
+
 			$this->session->set_flashdata($message_type, $message);
 			$this->functions->redirect(BASE.AMP.'C=content_files');
 		}
-		
+
 		$delete = $this->file_model->delete_files($files);
 
 		$message_type = ($delete) ? 'message_success' : 'message_failure';
@@ -741,7 +735,7 @@ class Content_files extends CP_Controller {
 				'message' => $message
 			));
 		}
-		
+
 		$this->session->set_flashdata($message_type, $message);
 		$this->functions->redirect(BASE.AMP.'C=content_files');
 	}
@@ -763,20 +757,20 @@ class Content_files extends CP_Controller {
 		if ( ! $this->filemanager->download_files($files))
 		{
 			$message = (count($files) > 1) ? lang('problem_downloading_file') : lang('problem_downloading_file');
-			
+
 			$this->session->set_flashdata('message_failure', $message);
 			$this->functions->redirect(BASE.AMP.'C=content_files');
 		}
 	}
 
 	// ------------------------------------------------------------------------
-	
+
 	/**
 	 * Edit's a file's metadata
 	 */
 	public function edit_file()
 	{
-		// Check to see if POST data is present, if it is, send it to 
+		// Check to see if POST data is present, if it is, send it to
 		// _save_file to update the data
 		$this->load->library('form_validation');
 		$this->form_validation->set_error_delimiters('<div class="notice">', '</div>');
@@ -786,7 +780,7 @@ class Content_files extends CP_Controller {
 		{
 			return $this->_save_file();
 		}
-		
+
 		// Get the file data
 		$data = $this->_edit_setup('edit_file');
 
@@ -794,19 +788,19 @@ class Content_files extends CP_Controller {
 		$data['tabs'] = array(
 			'file_metadata'
 		);
-		
+
 		// Get the categories
 		$this->load->library('publish');
 		$this->load->model(array('file_upload_preferences_model'));
-		$category_group_ids = $this->file_upload_preferences_model->get_category_groups($data['upload_location_id']);		
-		
+		$category_group_ids = $this->file_upload_preferences_model->get_category_groups($data['upload_location_id']);
+
 		if (count($category_group_ids) != 1 OR current($category_group_ids) != '')
 		{
 			$data['tabs'][] = 'categories';
 			$categories = $this->publish->build_categories_block($category_group_ids, $data['file_id'], NULL, '', TRUE);
 			$data['categories'] = $categories;
 		}
-		
+
 		// Create fields for the view
 		$data['fields'] = array(
 			'file_title' => array(
@@ -850,18 +844,18 @@ class Content_files extends CP_Controller {
 				'type' => 'text'
 			)
 		);
-		
+
 		// Droppable is in here because of publish_tabs
 		$this->cp->add_js_script(array(
 			'ui'		=> array('droppable'),
 			'file'		=> array('cp/publish_tabs')
 		));
-				
+
 		$this->cp->render('content/files/edit_file', $data);
 	}
-	
+
 	// ------------------------------------------------------------------------
-	
+
 	/**
 	 * Save the file's data to the database
 	 */
@@ -871,7 +865,7 @@ class Content_files extends CP_Controller {
 		{
 			show_error(lang('unauthorized_access'));
 		}
-		
+
 		// Update the file
 		$this->file_model->save_file(array(
 			'file_id'		=> $file_id,
@@ -880,22 +874,22 @@ class Content_files extends CP_Controller {
 			'credit'		=> $this->input->post('credit'),
 			'location'		=> $this->input->post('location')
 		));
-		
+
 		$this->load->model('file_category_model');
-		
+
 		// Delete existing categories
 		$this->file_category_model->delete($file_id);
-		
+
 		// Add new categories
 		$categories = $this->input->post('category');
 		if ($categories)
 		{
-			foreach ($categories as $category_id) 
+			foreach ($categories as $category_id)
 			{
 				$this->file_category_model->set($file_id, $category_id);
 			}
 		}
-		
+
 		// Move em on out
 		$this->session->set_flashdata('message_success', lang('file_saved'));
 		$this->functions->redirect(
@@ -903,7 +897,7 @@ class Content_files extends CP_Controller {
 			'C=content_files'
 		);
 	}
-	
+
 	// ------------------------------------------------------------------------
 
 	/**
@@ -916,11 +910,11 @@ class Content_files extends CP_Controller {
 	public function edit_image()
 	{
 		$accordion_position = 0;
-		
+
 		// Setup and run validation first
 		$this->load->library('form_validation');
 		$this->form_validation->set_error_delimiters('<div class="notice">', '</div>');
-		
+
 		if (isset($_POST['save_image_crop']))
 		{
 			$this->form_validation->set_rules('crop_width', 'lang:crop_width', 'trim|numeric|greater_than[0]|required');
@@ -944,9 +938,9 @@ class Content_files extends CP_Controller {
 		{
 			return $this->filemanager->_do_image_processing();
 		}
-		
+
 		$data = $this->_edit_setup('edit_image');
-		
+
 		// Prep javascript with globals, libraries and accordion call
 		$this->javascript->set_global(array(
 			'filemanager'	=> array(
@@ -955,26 +949,26 @@ class Content_files extends CP_Controller {
 				'resize_over_confirmation' 	=> lang('resize_over_confirmation')
 			),
 		));
-		
+
 		$this->cp->add_js_script(array(
 			'file'		=> 'cp/files/file_manager_edit',
 			'plugin'	=> array('jcrop', 'ee_resize_scale'),
 			'ui'		=> 'accordion'
 		));
-		
+
 		$this->javascript->output('
 	        $("#file_manager_toolbar").accordion({
-				autoHeight: false, 
+				autoHeight: false,
 				header: "h3",
 				active: ' . $accordion_position . '
 			});
 		');
-		
+
 		$this->cp->render('content/files/edit_image', $data);
 	}
 
 	// ------------------------------------------------------------------------
-	
+
 	/**
 	 * Setup for an edit page (edit file and edit image)
 	 * Gets the data to pass to the views which includes:
@@ -982,10 +976,10 @@ class Content_files extends CP_Controller {
 	 * 	- file info
 	 * 	- file url
 	 * 	- file name
-	 * 
+	 *
 	 * @param string $page_title_lang_key The lang key for the page title
 	 * @return array Array containing the file's info from the database, as
-	 * 		well as some formatted information for the edit file and 
+	 * 		well as some formatted information for the edit file and
 	 * 		edit image pages
 	 */
 	private function _edit_setup($page_title_lang_key)
@@ -1017,9 +1011,9 @@ class Content_files extends CP_Controller {
 		$file_query = $this->db->get_where('files', array(
 			'file_id' => $file_id
 		));
-			
+
 		$file = $file_query->row_array();
-		
+
 		// Some vars for later
 		$file_name	= $file['file_name'];
 		$file_url	= $this->_upload_dirs[$file_dir]['url'].rawurldecode($file_name);
@@ -1032,7 +1026,7 @@ class Content_files extends CP_Controller {
 		}
 
 		$file_info = $this->filemanager->get_file_info($file_path);
-		
+
 		$data = array(
 			'filemtime'		=> ($filemtime = @filemtime($file_path)) ? $filemtime : 0,
 			'file_info'		=> $file_info,
@@ -1040,17 +1034,17 @@ class Content_files extends CP_Controller {
 			'file_path'		=> $file_path,
 			'file_url'		=> $file_url,
 			'form_hiddens'	=> array(
-				'upload_dir'	=> $file['upload_location_id'], 
-				'file_name'		=> $file_name, 
+				'upload_dir'	=> $file['upload_location_id'],
+				'file_name'		=> $file_name,
 				'file_id'		=> $file_id
 			)
 		);
-		
+
 		$data = array_merge($file, $data);
-		
+
 		return $data;
 	}
-	
+
 	// ------------------------------------------------------------------------
 
 	/**
@@ -1068,7 +1062,7 @@ class Content_files extends CP_Controller {
 		$var['sizes'] = array();
 
 		$resize_existing = FALSE;
-		
+
 		// No file directory- they want to sync them all
 		if ($file_dir === FALSE)
 		{
@@ -1083,13 +1077,13 @@ class Content_files extends CP_Controller {
 
 			$ids = array($file_dir);
 		}
-		
+
 		// Get the resize info for the directory
 		$this->db->select('*');
 		$this->db->from('file_dimensions');
-		$this->db->join('file_watermarks', 'wm_id = watermark_id', 'left');	
+		$this->db->join('file_watermarks', 'wm_id = watermark_id', 'left');
 		$this->db->where_in('upload_location_id', $ids);
-		$query = $this->db->get();		
+		$query = $this->db->get();
 
 		// Build skeleton of the size array with the upload directories loaded in
 		$js_size = array();
@@ -1104,9 +1098,9 @@ class Content_files extends CP_Controller {
 			foreach ($query->result() as $row)
 			{
 				$js_size[$row->upload_location_id][$row->id] = array('short_name' => $row->short_name, 'resize_type' => $row->resize_type, 'width' => $row->width, 'height' => $row->height, 'watermark_id' => $row->watermark_id);
-								
+
 				$vars['sizes'][] = array('short_name' => $row->short_name, 'title' => $row->title, 'resize_type' => lang($row->resize_type), 'width' => $row->width, 'height' => $row->height, 'id' => $row->id, 'wm_name' => ($row->wm_name) ? $row->wm_name : '--');
-				
+
 				if ($row->watermark_id != 0)
 				{
 					$js_size[$row->upload_location_id][$row->id]['wm_type'] = $row->wm_type;
@@ -1170,12 +1164,12 @@ class Content_files extends CP_Controller {
 
 		$this->view->cp_page_title = $this->_upload_dirs[$cid]['name'];
 
-		$this->cp->set_breadcrumb(BASE.AMP.'C=content_files', lang('file_manager'));			
+		$this->cp->set_breadcrumb(BASE.AMP.'C=content_files', lang('file_manager'));
 		$this->cp->set_breadcrumb(
 			BASE.AMP.'C=content_files'.AMP.'M=file_upload_preferences',
 			lang('file_upload_prefs')
 		);
-		
+
 		$this->cp->render('content/files/sync', $vars);
 
 
@@ -1202,7 +1196,7 @@ class Content_files extends CP_Controller {
 		$file_data = array();
 		$replace_sizes = array();
 		$db_sync = ($this->input->post('db_sync') == 'y') ? 'y' : 'n';
-		
+
 		// If file exists- make sure it exists in db - otherwise add it to db and generate all child sizes
 		// If db record exists- make sure file exists -  otherwise delete from db - ?? check for child sizes??
 
@@ -1216,31 +1210,31 @@ class Content_files extends CP_Controller {
 		}
 
 		$id = key($sizes);
-		
+
 		// Final run through, it syncs the db, removing stray records and thumbs
 		if ($db_sync == 'y')
 		{
 			$this->filemanager->sync_database($id);
 			$errors[] = 'synced!';
-	
+
 			if (AJAX_REQUEST)
 			{
 				return $this->output->send_ajax_response(array(
 					'message_type'	=> 'success'
 				));
 			}
-			
+
 			return;
-		}		
-		
+		}
+
 		$dir_data = $this->_upload_dirs[$id];
-		
+
 		$this->filemanager->xss_clean_off();
 		$dir_data['dimensions'] = (is_array($sizes[$id])) ? $sizes[$id] : array();
-		$this->filemanager->set_upload_dir_prefs($id, $dir_data);		
-		
+		$this->filemanager->set_upload_dir_prefs($id, $dir_data);
+
 		// Now for everything NOT forcably replaced
-		
+
 		$missing_only_sizes = (is_array($sizes[$id])) ? $sizes[$id] : array();
 
 		// Check for resize_ids
@@ -1270,26 +1264,26 @@ class Content_files extends CP_Controller {
 
 			// Clean filename
 			$clean_filename = basename($this->filemanager->clean_filename(
-				$file['name'], 
+				$file['name'],
 				$id,
 				array('convert_spaces' => FALSE)
-			));	
+			));
 
 			if ($file['name'] != $clean_filename)
 			{
-				// It is just remotely possible the new clean filename already exists 
-				// So we check for that and increment if such is the case 
-				if (file_exists($this->_upload_dirs[$id]['server_path'].$clean_filename)) 
-				{ 
+				// It is just remotely possible the new clean filename already exists
+				// So we check for that and increment if such is the case
+				if (file_exists($this->_upload_dirs[$id]['server_path'].$clean_filename))
+				{
 					$clean_filename = basename($this->filemanager->clean_filename(
-						$clean_filename, 
-						$id, 
+						$clean_filename,
+						$id,
 						array(
 							'convert_spaces' => FALSE,
 							'ignore_dupes' => FALSE
 						)
-					)); 
-				} 
+					));
+				}
 
 				// Rename the file
         		if ( ! @copy($this->_upload_dirs[$id]['server_path'].$file['name'],
@@ -1299,8 +1293,8 @@ class Content_files extends CP_Controller {
 					continue;
 				}
 
-				unlink($this->_upload_dirs[$id]['server_path'].$file['name']);	
-				$file['name'] = $clean_filename;			
+				unlink($this->_upload_dirs[$id]['server_path'].$file['name']);
+				$file['name'] = $clean_filename;
 			}
 
 			// Does it exist in DB?
@@ -1309,12 +1303,12 @@ class Content_files extends CP_Controller {
 			if ($query->num_rows() > 0)
 			{
 				// It exists, but do we need to change sizes or add a missing thumb?
-				
+
 				if ( ! $this->filemanager->is_editable_image($this->_upload_dirs[$id]['server_path'].$file['name'], $file['mime']))
 				{
 					continue;
-				}	
-				
+				}
+
 				// Note 'Regular' batch needs to check if file exists- and then do something if so
 				if ( ! empty($replace_sizes))
 				{
@@ -1329,7 +1323,7 @@ class Content_files extends CP_Controller {
 						TRUE,	// Create thumb
 						FALSE	// Overwrite existing thumbs
 					);
-					
+
 					if ( ! $thumb_created)
 					{
 						$errors[$file['name']] = lang('thumb_not_created');
@@ -1348,22 +1342,22 @@ class Content_files extends CP_Controller {
 					TRUE, 	// Create thumb
 					TRUE 	// Don't overwrite existing thumbs
 				);
-				
+
 				$file_path_name = $this->_upload_dirs[$id]['server_path'].$file['name'];
-				
+
 				// Update dimensions
 				$image_dimensions = $this->filemanager->get_image_dimensions($file_path_name);
-				
+
 				$file_data = array(
 					'file_id'				=> $query->row('file_id'),
 					'file_size'				=> filesize($file_path_name),
 					'file_hw_original'		=> $image_dimensions['height'] . ' ' . $image_dimensions['width']
 				);
 				$this->file_model->save_file($file_data);
-				
+
 				continue;
 			}
-			
+
 			$file_location = reduce_double_slashes(
 				$dir_data['url'].'/'.$file['name']
 			);
@@ -1373,7 +1367,7 @@ class Content_files extends CP_Controller {
 			);
 
 			$file_dim = (isset($file['dimensions']) && $file['dimensions'] != '') ? str_replace(array('width="', 'height="', '"'), '', $file['dimensions']) : '';
-			
+
 			$image_dimensions = $this->filemanager->get_image_dimensions($file_path);
 
 			$file_data = array(
@@ -1389,10 +1383,10 @@ class Content_files extends CP_Controller {
 				'upload_date'			=> $file['date'],
 				'modified_date'			=> $file['date']
 			);
-			
-			
+
+
 			$saved = $this->filemanager->save_file($this->_upload_dirs[$id]['server_path'].$file['name'], $id, $file_data, FALSE);
-			
+
 			if ( ! $saved['status'])
 			{
 				$errors[$file['name']] = $saved['message'];
@@ -1403,7 +1397,7 @@ class Content_files extends CP_Controller {
 		{
 			$this->filemanager->sync_database($id);
 		}
-		
+
 		if (AJAX_REQUEST)
 		{
 			if (count($errors))
@@ -1455,8 +1449,8 @@ class Content_files extends CP_Controller {
 		$this->load->model('file_model');
 
 		$this->view->cp_page_title = lang('watermark_prefs');
-		$this->cp->set_breadcrumb($this->_base_url, lang('file_manager'));		
-		
+		$this->cp->set_breadcrumb($this->_base_url, lang('file_manager'));
+
 
 		$this->jquery->tablesorter('.mainTable', '{
 			headers: {1: {sorter: false}, 2: {sorter: false}},
@@ -1486,15 +1480,15 @@ class Content_files extends CP_Controller {
 
 		$this->load->library(array('table', 'filemanager'));
 		$this->load->model('file_model');
-		
+
 		$this->cp->add_js_script(array(
 			'plugin' => array('jscolor'),
 			'file'   => array('cp/files/watermark_settings')
 		));
-		
+
 		$id = $this->input->get_post('id');
-		$type = ($id) ? 'edit' : 'new';	
-		
+		$type = ($id) ? 'edit' : 'new';
+
 		$this->view->cp_page_title = lang('wm_'.$type);
 		$this->cp->set_breadcrumb($this->_base_url, lang('file_manager'));
 		$this->cp->set_breadcrumb($this->_base_url.AMP.'M=watermark_preferences', lang('watermark_prefs'));
@@ -1565,7 +1559,7 @@ class Content_files extends CP_Controller {
 		}
 
 		for ($i = 1; $i <= 100; $i++)
-		{ 
+		{
 			$vars['opacity_options'][$i] = $i;
 		}
 
@@ -1663,13 +1657,13 @@ class Content_files extends CP_Controller {
 			$this->_update_watermark_preferences();
 		}
 	}
-	
+
 	function _name_check($str)
 	{
 		// Check for duplicates
 		//$this->db->where('site_id', $this->config->item('site_id'));
 		$this->db->where('wm_name', $str);
-		
+
 		if ($this->form_validation->old_value('wm_id'))
 		{
 			$this->db->where('wm_id != ', $this->form_validation->old_value('wm_id'));
@@ -1680,13 +1674,13 @@ class Content_files extends CP_Controller {
 			$this->form_validation->set_message('_name_check', lang('wm_name_taken'));
 			return FALSE;
 		}
-		
+
 		return TRUE;
 	}
 
 
 
-	// ------------------------------------------------------------------------	
+	// ------------------------------------------------------------------------
 
 	function _update_watermark_preferences()
 	{
@@ -1774,7 +1768,7 @@ class Content_files extends CP_Controller {
 
 
 		$this->cp->set_breadcrumb($this->_base_url, lang('file_manager'));
-		$this->cp->set_breadcrumb($this->_base_url.AMP.'M=watermark_preferences', 
+		$this->cp->set_breadcrumb($this->_base_url.AMP.'M=watermark_preferences',
 								lang('watermark_prefs'));
 
 		$data = array(
@@ -1912,7 +1906,7 @@ class Content_files extends CP_Controller {
 		);
 
 		$data['image_sizes'] = array();
-		
+
 
 
 		if ($type == 'new')
@@ -1925,7 +1919,7 @@ class Content_files extends CP_Controller {
 			{
 				$data['field_'.$field] = $this->input->post($field);
 			}
-			
+
 			$data['field_url'] = base_url();
 			$data['field_server_path'] = str_replace(SYSDIR.'/', '', FCPATH);
 		}
@@ -2133,7 +2127,7 @@ class Content_files extends CP_Controller {
 		{
 			show_error(lang('unauthorized_access'));
 		}
-		
+
 		$this->load->model('admin_model');
 
 		// If the $id variable is present we are editing an
@@ -2160,7 +2154,7 @@ class Content_files extends CP_Controller {
 		if (
 			$this->admin_model->unique_upload_name(
 				strtolower($this->input->post('name')),
-				strtolower($this->input->post('cur_name')), 
+				strtolower($this->input->post('cur_name')),
 				$edit
 			)
 		)
@@ -2175,7 +2169,7 @@ class Content_files extends CP_Controller {
 		unset($_POST['submit']); // submit button
 		unset($_POST['add_image_size']);
 		unset($_POST['add_size']);
-		
+
 
 		$data = array();
 		$no_access = array();
@@ -2198,8 +2192,8 @@ class Content_files extends CP_Controller {
 					{
 						return $this->output->show_user_error('submission', array(lang('invalid_shortname')));
 					}
-					
-					
+
+
 					// Do we need to delete?
 					if (isset($_POST['remove_size_'.$row['id']]))
 					{
@@ -2208,10 +2202,10 @@ class Content_files extends CP_Controller {
 
 						$this->db->where('id', $row['id']);
 						$this->db->delete('file_dimensions');
-						
+
 						continue;
 					}
-					
+
 					$updatedata = array(
 						'site_id' => $this->config->item('site_id'),
 						'short_name' => $_POST['size_short_name_'.$row['id']],
@@ -2227,7 +2221,7 @@ class Content_files extends CP_Controller {
 
 					$names[]  = $_POST['size_short_name_'.$row['id']];
 					unset($_POST['size_short_name_'.$row['id']]);
-					
+
 				}
 			}
 		}
@@ -2237,7 +2231,7 @@ class Content_files extends CP_Controller {
 		{
 			$_POST['cat_group'] = '';
 		}
-		
+
 		foreach ($_POST as $key => $val)
 		{
 			if (substr($key, 0, 7) == 'access_')
@@ -2269,11 +2263,11 @@ class Content_files extends CP_Controller {
 				{
 					$number = substr($key, strlen('size_short_name_'));
 					$name = 'size_short_name_'.$number;
-					
+
 					if (trim($val) == '') continue;
-					
+
 					$short_name = $this->input->post($name);
-					
+
 					if ($short_name === FALSE OR
 						preg_match('/[^a-z0-9\_\-]/i', $short_name) OR
 						in_array(strtolower($short_name), $names) OR
@@ -2281,7 +2275,7 @@ class Content_files extends CP_Controller {
 					{
 						return $this->output->show_user_error('submission', array(lang('invalid_short_name')));
 					}
-					
+
 					$size_data = array(
 						'site_id' => $this->config->item('site_id'),
 						'upload_location_id' => $id,
@@ -2292,7 +2286,7 @@ class Content_files extends CP_Controller {
 						'width' => ($_POST['size_width_'.$number] == '') ? 0 : $_POST['size_width_'.$number],
 						'watermark_id' => $_POST['size_watermark_id_'.$number]
 					);
-					
+
 					$names[]  = $_POST[$name];
 				}
 			}
@@ -2301,7 +2295,7 @@ class Content_files extends CP_Controller {
 				$data[$key] = $val;
 			}
 		}
-		
+
 		// Construct the query based on whether we are updating or inserting
 		if ($edit === TRUE)
 		{
@@ -2316,10 +2310,10 @@ class Content_files extends CP_Controller {
 			$id = $this->db->insert_id();
 			$cp_message = lang('new_file_upload_created');
 		}
-		
+
 		if (isset($size_data))
 		{
-			// Set upload location id in size data 
+			// Set upload location id in size data
 			$size_data['upload_location_id'] = $id;
 			$this->db->insert('file_dimensions', $size_data);
 		}
@@ -2359,7 +2353,7 @@ class Content_files extends CP_Controller {
 		{
 			show_error(lang('unauthorized_access'));
 		}
-		
+
 		$id = $this->input->get_post('id');
 
 		if ( ! $id)
@@ -2407,7 +2401,7 @@ class Content_files extends CP_Controller {
 		{
 			show_error(lang('unauthorized_access'));
 		}
-		
+
 		$id = $this->input->get_post('id');
 
 		if ( ! $id)

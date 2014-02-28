@@ -11,12 +11,12 @@ function showHideRow(el)
     else
     {
         document.getElementById(el).style.display = "";
-    }	
+    }
 }
 //-->
 </script>
 
-{if paginate}
+{paginate}
 <table cellpadding="0" cellspacing="0" border="0">
 <tr>
 <td valign="middle">
@@ -30,7 +30,8 @@ function showHideRow(el)
 
 </td>
 </tr>
-</table>{/if}
+</table>
+{/paginate}
 
 {if can_post}
 <table cellpadding="0" cellspacing="0" border="0">
@@ -66,14 +67,14 @@ function showHideRow(el)
 <table cellpadding="0" cellspacing="0" border="0">
 <tr>
 <td valign="middle">
-{if paginate}
+{paginate}
 	<table cellpadding="0" cellspacing="0" border="0" class="paginateBorder">
 	<tr>
 	<td><div class="paginateStat">{current_page} {lang:of} {total_pages}</div></td>
 	{pagination_links}
 	</tr>
 	</table>
-{/if}
+{/paginate}
 </td>
 {if can_post}
 <td class="button150"><a href="#" title="{lang:post_new_topic}" onclick="navJump('{path:new_topic}')"><img src="{path:image_url}bt_new_topic.gif" border='0' width='151' height='26' alt="{lang:post_new_topic}"/></a></td>
