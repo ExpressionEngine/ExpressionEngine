@@ -374,7 +374,7 @@ class Member_settings extends Member {
 										array(
 												'aim_console'			=> "onclick=\"window.open('".$this->_member_path('aim_console/'.$this->cur_id)."', '_blank', 'width=240,height=360,scrollbars=yes,resizable=yes,status=yes,screenx=5,screeny=5');\"",
 												'icq_console'			=> "onclick=\"window.open('".$this->_member_path('icq_console/'.$this->cur_id)."', '_blank', 'width=650,height=580,scrollbars=yes,resizable=yes,status=yes,screenx=5,screeny=5');\"",
-												'yahoo_console'			=> "http://edit.yahoo.com/config/send_webmesg?.target=".$row['yahoo_im'] ."&amp;.src=pg",
+												'yahoo_console'			=> "http://edit.yahoo.com/config/send_webmesg?.target=".ee()->functions->encode_ee_tags($row['yahoo_im'], TRUE) ."&amp;.src=pg",
 												'email_console'			=> "onclick=\"window.open('".$this->_member_path('email_console/'.$this->cur_id)."', '_blank', 'width=650,height=600,scrollbars=yes,resizable=yes,status=yes,screenx=5,screeny=5');\"",
 												'send_private_message'	=> $this->_member_path('messages/pm/'.$this->cur_id),
 												'search_path'			=> $search_path,
@@ -919,7 +919,7 @@ class Member_settings extends Member {
 				{
 					$rows = ( ! isset($row['m_field_ta_rows'])) ? '10' : $row['m_field_ta_rows'];
 
-					$tarea = "<textarea name='".'m_field_id_'.$row['m_field_id']."' id='".'m_field_id_'.$row['m_field_id']."' style='width:".$width.";' class='textarea' cols='90' rows='{$rows}'>".form_prep($field_data)."</textarea>";
+					$tarea = "<textarea name='".'m_field_id_'.$row['m_field_id']."' id='".'m_field_id_'.$row['m_field_id']."' style='width:".$width.";' class='textarea' cols='90' rows='{$rows}'>".$this->_form_prep_encoded($field_data)."</textarea>";
 
 					$temp = str_replace('<td ', "<td valign='top' ", $temp);
 					$temp = str_replace('{lang:profile_field}', $required.$row['m_field_label'], $temp);
@@ -932,7 +932,7 @@ class Member_settings extends Member {
 					/**  Render text fields
 					/** ----------------------------------------*/
 
-					$input = "<input type='text' name='".'m_field_id_'.$row['m_field_id']."' id='".'m_field_id_'.$row['m_field_id']."' style='width:".$width.";' value='".form_prep($field_data)."' maxlength='".$row['m_field_maxl']."' class='input' />";
+					$input = "<input type='text' name='".'m_field_id_'.$row['m_field_id']."' id='".'m_field_id_'.$row['m_field_id']."' style='width:".$width.";' value='".$this->_form_prep_encoded($field_data)."' maxlength='".$row['m_field_maxl']."' class='input' />";
 
 					$temp = str_replace('{lang:profile_field}', $required.$row['m_field_label'], $temp);
 					$temp = str_replace('{lang:profile_field_description}', $row['m_field_description'], $temp);
@@ -948,7 +948,7 @@ class Member_settings extends Member {
 
 					foreach (explode("\n", trim($row['m_field_list_items'])) as $v)
 					{
-						$v = trim($v);
+						$v = $this->_form_prep_encoded(trim($v));
 
 						$selected = ($field_data == $v) ? " selected='selected'" : '';
 
@@ -981,22 +981,29 @@ class Member_settings extends Member {
 				'form:birthday_year'	=> $this->_birthday_year($query->row('bday_y') ),
 				'form:birthday_month'	=> $this->_birthday_month($query->row('bday_m') ),
 				'form:birthday_day'		=> $this->_birthday_day($query->row('bday_d') ),
-				'url'					=> ($query->row('url')  == '') ? 'http://' : $query->row('url') ,
-				'location'				=> form_prep($query->row('location') ),
-				'occupation'			=> form_prep($query->row('occupation') ),
-				'interests'				=> form_prep($query->row('interests') ),
-				'aol_im'				=> form_prep($query->row('aol_im') ),
-				'icq'					=> form_prep($query->row('icq') ),
-				'icq_im'				=> form_prep($query->row('icq') ),
-				'yahoo_im'				=> form_prep($query->row('yahoo_im') ),
-				'msn_im'				=> form_prep($query->row('msn_im') ),
-				'bio'					=> form_prep($query->row('bio') ),
+				'url'					=> ($query->row('url')  == '') ? 'http://' : $this->_form_prep_encoded($query->row('url') ),
+				'location'				=> $this->_form_prep_encoded($query->row('location') ),
+				'occupation'			=> $this->_form_prep_encoded($query->row('occupation') ),
+				'interests'				=> $this->_form_prep_encoded($query->row('interests') ),
+				'aol_im'				=> $this->_form_prep_encoded($query->row('aol_im') ),
+				'icq'					=> $this->_form_prep_encoded($query->row('icq') ),
+				'icq_im'				=> $this->_form_prep_encoded($query->row('icq') ),
+				'yahoo_im'				=> $this->_form_prep_encoded($query->row('yahoo_im') ),
+				'msn_im'				=> $this->_form_prep_encoded($query->row('msn_im') ),
+				'bio'					=> $this->_form_prep_encoded($query->row('bio') ),
 				'custom_profile_fields'	=> $r
 			)
 		);
 	}
 
-
+	/**
+	 * Encode EE tags after form prepping or they'll be rendered in the text area.
+	 */
+	protected function _form_prep_encoded($value)
+	{
+		$value = form_prep($value);
+		return ee()->functions->encode_ee_tags($value, TRUE);
+	}
 
 
 	/** ----------------------------------------
@@ -1135,9 +1142,9 @@ class Member_settings extends Member {
 			if (ee()->db->table_exists('comments'))
 			{
 				$d = array(
-						'location'	=> $data['location'],
-						'url'		=> $data['url']
-					);
+					'location'	=> $data['location'],
+					'url'		=> $data['url']
+				);
 
 				ee()->db->where('author_id', ee()->session->userdata('member_id'));
 				ee()->db->update('comments', $d);
@@ -1149,11 +1156,11 @@ class Member_settings extends Member {
 		/** -------------------------------------*/
 
 		return $this->_var_swap($this->_load_element('success'),
-								array(
-										'lang:heading'	=>	ee()->lang->line('profile_updated'),
-										'lang:message'	=>	ee()->lang->line('mbr_profile_has_been_updated')
-									 )
-								);
+			array(
+				'lang:heading' => ee()->lang->line('profile_updated'),
+				'lang:message' => ee()->lang->line('mbr_profile_has_been_updated')
+			)
+		);
 	}
 
 
@@ -2051,7 +2058,7 @@ UNGA;
 					array('action' => $this->_member_path('update_notepad'))
 				),
 				'path:update_notepad'	=> $this->_member_path('update_notepad'),
-				'notepad_data'			=> $query->row('notepad') ,
+				'notepad_data'			=> $this->_form_prep_encoded($query->row('notepad')),
 				'notepad_size'			=> $query->row('notepad_size')
 			)
 		);

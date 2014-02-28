@@ -285,7 +285,7 @@ class Member_memberlist extends Member {
 		return $this->_var_swap(
 			$this->_load_element('aim_console'),
 			array(
-				'aol_im'			=>	$query->row('aol_im') ,
+				'aol_im'			=>	ee()->functions->encode_ee_tags($query->row('aol_im'), TRUE) ,
 				'lang:close_window'	=>	ee()->lang->line('mbr_close_window')
 			 )
 		);
@@ -319,7 +319,7 @@ class Member_memberlist extends Member {
 
 		$data = array(
 			'hidden_fields' => array(
-				'to'		=> $query->row('icq') ,
+				'to'		=> ee()->functions->encode_ee_tags($query->row('icq'), TRUE) ,
 				'from'		=> ee()->session->userdata['screen_name'],
 				'fromemail'	=> ''
 			),
@@ -335,8 +335,8 @@ class Member_memberlist extends Member {
 			array(
 				'form_declaration'	=>	ee()->functions->form_declaration($data),
 				'name'				=>	$query->row('screen_name') ,
-				'icq'				=>	$query->row('icq') ,
-				'icq_im'			=>	$query->row('icq') ,
+				'icq'				=>	ee()->functions->encode_ee_tags($query->row('icq'), TRUE),
+				'icq_im'			=>	ee()->functions->encode_ee_tags($query->row('icq'), TRUE),
 				'lang:recipient'	=>	ee()->lang->line('mbr_icq_recipient'),
 				'lang:subject'		=>	ee()->lang->line('mbr_icq_subject'),
 				'lang:message'		=>	ee()->lang->line('mbr_icq_message')
@@ -750,7 +750,8 @@ class Member_memberlist extends Member {
 				/**  Manual replacements
 				/** ----------------------------------------*/
 
-				$temp = str_replace(LD.'name'.RD, ($row['screen_name'] != '') ? $row['screen_name'] : $row['username'], $temp);
+				$name_replacement = ($row['screen_name'] != '') ? $row['screen_name'] : $row['username'];
+				$temp = $this->_var_swap_single('name', $name_replacement, $temp);
 
 				/** ----------------------------------------
 				/**  1:1 variables

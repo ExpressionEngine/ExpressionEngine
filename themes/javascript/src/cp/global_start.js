@@ -288,6 +288,9 @@ var urlRegex = /(.*?)[?](.*?&)?(D=cp(?:&C=[^&]+(?:&M=[^&]+)?)?)(?:&(.+))?$/,
 EE.cp.cleanUrl = function(i, url) {
 	url = url || i; // i exists if coming from jQuery attr callback
 
+	// Move session to the end
+	url = url.replace(/^(\S*?)S=(\S+?)&(\S*?)$/g, "$1$3&S=$2");
+
 	var result = urlRegex.exec(url);
 
 	if ( ! result) {
@@ -304,7 +307,7 @@ EE.cp.cleanUrl = function(i, url) {
 		postQs = result[4] || '',
 		newUrl = result[1] + '?' + path;
 
-	var QS = postQs + '&' + preQs.replace(removeEmptySession, '');
+	var QS = postQs.replace(removeEmptySession, '') + '&' + preQs.replace(removeEmptySession, '');
 
 	QS = QS.replace(lTrimAmp, '').replace(rTrimAmp, '');
 

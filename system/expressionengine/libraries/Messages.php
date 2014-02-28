@@ -235,11 +235,11 @@ class EE_Messages {
 		/** --------------------------
 		/**  Process any sent data
 		/** --------------------------*/
-
 		if (is_array($data) && count($data) > 0)
 		{
 			foreach($data as $key => $value)
 			{
+				$value = ee()->functions->encode_ee_tags($value, TRUE);
 				$template = str_replace(LD.$key.RD, $value, $template);
 			}
 		}
@@ -260,25 +260,38 @@ class EE_Messages {
 						{
 							foreach($value2 as $key3 => $value3)
 							{
-								$template = str_replace(LD.$key.':'.$key2.':'.$key3.RD, $value3, $template);
+								$template = str_replace(
+									LD.$key.':'.$key2.':'.$key3.RD,
+									$value3,
+									$template
+								);
 							}
 						}
 						else
 						{
-							if ($key == 'input' && $key2 == 'body')
+							$user_input = array('subject', 'body', 'menu_items', 'current_folders', 'folder_name');
+
+							if ($key == 'input' && $key2 != 'body' && $key2 != 'folder_name')
+							{
+								$value2 = htmlspecialchars($value2, ENT_QUOTES);
+							}
+
+							if (in_array($key2, $user_input))
 							{
 								$value2 = ee()->functions->encode_ee_tags($value2, TRUE);
 							}
 
-							$template = str_replace(LD.$key.':'.$key2.RD,
-													 ($key == 'input' && $key2 != 'body' && $key2 != 'folder_name') ? htmlspecialchars($value2, ENT_QUOTES) : $value2,
-													 $template);
+							$template = str_replace(LD.$key.':'.$key2.RD, $value2, $template);
 						}
 					}
 				}
 				elseif( ! is_array($value))
 				{
-					if ($key != 'title' && ! stristr($value, '<option')) $value = htmlspecialchars($value, ENT_QUOTES);  // {title} is link title for message menu
+					if ($key != 'title' && ! stristr($value, '<option'))
+					{
+						// {title} is link title for message menu
+						$value = htmlspecialchars($value, ENT_QUOTES);
+					}
 
 					$template = str_replace(LD.$key.RD, $value, $template);
 				}
@@ -437,7 +450,7 @@ class EE_Messages {
 
 			for($i=3; $i <= $this->max_folders; $i++)
 			{
-				$this->folders[$i] = htmlspecialchars($query->row('folder'.$i.'_name') , ENT_QUOTES);
+				$this->folders[$i] = htmlspecialchars($query->row('folder'.$i.'_name'), ENT_QUOTES);
 			}
 
 			asort($this->folders);
@@ -504,7 +517,7 @@ class EE_Messages {
 
 			$t++;
 			$this->single_parts['lang']['required']		= ($key < 3) ? ee()->lang->line('folder_required') : '';
-			$this->single_parts['input']['folder_name']	= $value['0'];
+			$this->single_parts['input']['folder_name']	= ee()->security->xss_clean($value['0']);
 			$this->single_parts['input']['folder_id']	= $key;
 			$this->single_parts['style']				= ($t % 2) ? 'tableCellOne' : 'tableCellTwo';
 
@@ -569,7 +582,7 @@ class EE_Messages {
 			}
 			else
 			{
-				$data['folder'.$i.'_name'] = ee()->security->xss_clean($_POST['folder_'.$i]);
+				$data['folder'.$i.'_name'] = ee()->input->post('folder_'.$i, TRUE);
 			}
 		}
 
@@ -579,7 +592,7 @@ class EE_Messages {
 
 		if (isset($_POST['folder_new']) && $_POST['folder_new'] != '' && isset($empty))
 		{
-			$data[$empty] = ee()->security->xss_clean($_POST['folder_new']);
+			$data[$empty] = ee()->input->post('folder_new', TRUE);
 		}
 
 		ee()->db->query(ee()->db->update_string('exp_message_folders', $data, "member_id = '{$this->member_id}'"));
@@ -778,7 +791,6 @@ class EE_Messages {
 		$this->single_parts['include']['hide_menu_style'] = $hidden_style;
 		$this->single_parts['include']['hide_menu_link']  = $hidden_link;
 		$this->single_parts['include']['hide_menu_js']	  = $this->showhide_js();
-
 		$this->single_parts['include']['menu_items'] = '';
 
 		foreach($map as $item)
@@ -789,7 +801,6 @@ class EE_Messages {
 				{
 					$this->single_parts['title'] = $item_member['text'];
 					$this->single_parts['link']  = $item_member['link'];
-
 					$this->single_parts['include']['menu_items'] .= $this->_process_template($rows);
 				}
 			}
@@ -797,7 +808,6 @@ class EE_Messages {
 			{
 				$this->single_parts['title'] = $this->menu_items['single_items'][$item]['text'];
 				$this->single_parts['link']  = $this->menu_items['single_items'][$item]['link'];
-
 				$this->single_parts['include']['menu_items'] .= $this->_process_template($rows);
 			}
 		}
@@ -1468,8 +1478,9 @@ class EE_Messages {
 
 				$selected = ($key == $this->current_folder) ? ' selected="selected"' : '';
 
-				$str  .= '<option value="'.$url.'"'.$selected.'>'.$value['0'].'</option>'.NL;
-				$str2 .= '<option value="'.$key.'"'.$selected.'>'.$value['0'].'</option>'.NL;
+				$name	= ee()->functions->encode_ee_tags($value['0'], TRUE);
+				$str	.= '<option value="'.$url.'"'.$selected.'>'.$name.'</option>'.NL;
+				$str2	.= '<option value="'.$key.'"'.$selected.'>'.$name.'</option>'.NL;
 			}
 		}
 
@@ -1505,18 +1516,18 @@ DOH;
 		$this->single_parts['include']['folder_pulldown']['change'] = '<select name="change_folder" class="select" onchange="location.href=this.value">'.$str;
 
 		$this->single_parts['include']['folder_pulldown']['move'] = '<div id="movemenu" class="tableCellOne" style="border: 1px solid #666; position:absolute;visibility:hidden;">'.
-																	'<select name="moveto" class="select" onchange="this.form.submit();">'.
-																	'<option value="none">'.ee()->lang->line('choose_folder').'</option>'.NL.
-																	$str2.
-																	'</div>'.NL.
-																	$move_js;
+			'<select name="moveto" class="select" onchange="this.form.submit();">'.
+			'<option value="none">'.ee()->lang->line('choose_folder').'</option>'.NL.
+			$str2.
+			'</div>'.NL.
+			$move_js;
 
 		$this->single_parts['include']['folder_pulldown']['copy'] = '<div id="copymenu" class="tableCellOne" style="border: 1px solid #666; position:absolute;visibility:hidden;">'.
-																	'<select name="copyto" class="select" onchange="this.form.submit();">'.
-																	'<option value="none">'.ee()->lang->line('choose_folder').'</option>'.NL.
-																	$str2.
-																	'</div>'.NL.
-																	$copy_js;
+			'<select name="copyto" class="select" onchange="this.form.submit();">'.
+			'<option value="none">'.ee()->lang->line('choose_folder').'</option>'.NL.
+			$str2.
+			'</div>'.NL.
+			$copy_js;
 	}
 
 
@@ -2431,10 +2442,10 @@ DOH;
 			}
 		}
 
+
 		/** ----------------------------------------
 		/**  Preview, Reply, Forward or New Entry?
 		/** ----------------------------------------*/
-
 		if ($id != '' && is_numeric($id))
 		{
 			if (ee()->input->post('daction') !== FALSE && (ee()->input->get_post('daction') == 'reply' OR ee()->input->get_post('daction') == 'reply_all' OR ee()->input->get_post('daction') == 'forward'))
@@ -2458,7 +2469,10 @@ DOH;
 				$booger['hidden_fields'] = array('message_id' => $data['id'], 'forward' => 'y');
 
 				$prefix = (ee()->input->post('daction') == 'forward') ? 'forward_prefix' : 'reply_prefix';
-				$prefix = (substr($data['subject'], 0, strlen(ee()->lang->line($prefix))) == ee()->lang->line($prefix)) ? '' : '{lang:'.$prefix.'}';
+				$prefix = lang($prefix);
+
+				// Ensure only one prefix
+				$prefix = (substr($data['subject'], 0, strlen($prefix)) == $prefix) ? '' : $prefix;
 
 				$this->single_parts['input']['subject']				= ($data === FALSE) ? '' : $prefix.$subject;
 				$this->single_parts['input']['body'] 				= '';
@@ -2529,11 +2543,11 @@ DOH;
 				$this->single_parts['input']['body']				= $body;
 				$this->single_parts['input']['recipients']			= ($data === FALSE) ? '' : $this->convert_recipients($data['recipients']);
 				$this->single_parts['input']['cc']					= ($data === FALSE) ? '' : $this->convert_recipients($data['cc']);
-				$this->single_parts['include']['preview_message'] 	= ($data === FALSE OR $this->hide_preview === TRUE) ? '' : $data['preview'];
+				$this->single_parts['include']['preview_message']	= ($data === FALSE OR $this->hide_preview === TRUE) ? '' : $data['preview'];
 
-				$this->single_parts['input']['tracking_checked']  = ($data === FALSE OR $data['tracking'] == 'n') ? '' : "checked='checked'";
+				$this->single_parts['input']['tracking_checked']	= ($data === FALSE OR $data['tracking'] == 'n') ? '' : "checked='checked'";
 				$this->single_parts['input']['sent_copy_checked']	= ($data === FALSE OR $data['sent_copy'] == 'n')  ? '' : "checked='checked'";
-				$this->single_parts['input']['hide_cc_checked']	= ($data === FALSE OR $data['hide_cc'] == 'n')  ? '' : "checked='checked'";
+				$this->single_parts['input']['hide_cc_checked']		= ($data === FALSE OR $data['hide_cc'] == 'n')  ? '' : "checked='checked'";
 
 				if ($data !== FALSE && count($data['attachments']) > 0)
 				{
@@ -2547,11 +2561,11 @@ DOH;
 		}
 		else
 		{
-			$this->single_parts['input']['subject']			  = ( ! ee()->input->get_post('subject')) ? '' : 'sss'.ee()->input->get_post('subject');
-			$this->single_parts['input']['body']			  = ( ! ee()->input->get_post('body')) ? '' :  ee()->input->get_post('body');
-			$this->single_parts['input']['cc']				  = '';
-			$this->single_parts['input']['recipients']		  = ( ! ee()->input->get_post('recipients')) ? '' : $this->convert_recipients(ee()->input->get_post('recipients'));
-			$this->single_parts['include']['preview_message'] = '';
+			$this->single_parts['input']['subject']				= ( ! ee()->input->get_post('subject')) ? '' : ee()->input->get_post('subject', TRUE);
+			$this->single_parts['input']['body']				= ( ! ee()->input->get_post('body')) ? '' : ee()->input->get_post('body', TRUE);
+			$this->single_parts['input']['cc']					= '';
+			$this->single_parts['input']['recipients']			= ( ! ee()->input->get_post('recipients')) ? '' : $this->convert_recipients(ee()->input->get_post('recipients'));
+			$this->single_parts['include']['preview_message']	= '';
 		}
 
 		$details['hidden_fields'] = $hidden;
@@ -2565,9 +2579,9 @@ DOH;
 
 		if ($this->upload_path == '')
 		{
-			$this->conditionals['attachments_allowed']	= 'n';
-			$this->conditionals['attachments_exist']		  = 'n';
-			$this->single_parts['include']['attachments'] = '';
+			$this->conditionals['attachments_allowed']		= 'n';
+			$this->conditionals['attachments_exist']		= 'n';
+			$this->single_parts['include']['attachments']	= '';
 		}
 
 		/** ---------------------------------------
@@ -3297,12 +3311,12 @@ DOH;
 		/**  Nasty Little Hobbits! No Sending!
 		/** -----------------------------------*/
 
-			if (ee()->session->userdata['can_send_bulletins'] != 'y')
-			{
-				return FALSE;
-			}
+		if (ee()->session->userdata['can_send_bulletins'] != 'y')
+		{
+			return FALSE;
+		}
 
-			$this->title = ee()->lang->line('send_bulletin');
+		$this->title = ee()->lang->line('send_bulletin');
 		$this->crumb = ee()->lang->line('send_bulletin');
 
 		/** ----------------------------------------
@@ -3374,12 +3388,12 @@ DOH;
 		/**  Nasty Little Hobbits! No Sending!
 		/** -----------------------------------*/
 
-			if (ee()->session->userdata['can_send_bulletins'] != 'y')
-			{
-				return FALSE;
-			}
+		if (ee()->session->userdata['can_send_bulletins'] != 'y')
+		{
+			return FALSE;
+		}
 
-			if ( ! isset($_POST['group_id']) OR ! is_numeric($_POST['group_id']))
+		if ( ! isset($_POST['group_id']) OR ! is_numeric($_POST['group_id']))
 		{
 			return FALSE;
 		}
@@ -3440,7 +3454,7 @@ DOH;
 						'bulletin_date'		=> $begins,
 						'hash'				=> ee()->functions->random('alnum', 10),
 						'bulletin_expires'	=> $expires,
-						'bulletin_message'	=> $_POST['bulletin_message']
+						'bulletin_message'	=> ee()->input->post('bulletin_message', TRUE)
 					 );
 
 		foreach($groups as $group_id)

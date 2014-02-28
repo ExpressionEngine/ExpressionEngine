@@ -798,18 +798,20 @@ class EE_Messages_send extends EE_Messages {
 		/**  Store Data
 		/** -------------------------------------*/
 
-		$data = array('sender_id' 			=> $this->member_id,
-					  'message_date' 		=> ee()->localize->now,
-					  'message_subject' 	=> ee()->security->xss_clean(ee()->input->get_post('subject')),
-					  'message_body'		=> ee()->security->xss_clean(ee()->input->get_post('body')),
-					  'message_tracking' 	=> ( ! ee()->input->get_post('tracking')) ? 'n' : 'y',
-					  'message_attachments' => (count($this->attachments) > 0) ? 'y' : 'n',
-					  'message_recipients'	=> implode('|', $recipients),
-					  'message_cc'			=> implode('|', $cc),
-					  'message_hide_cc'		=> ( ! ee()->input->get_post('hide_cc')) ? 'n' : 'y',
-					  'message_sent_copy'	=> ( ! ee()->input->get_post('sent_copy')) ? 'n' : 'y',
-					  'total_recipients'	=> (count($recipients) + count($cc)),
-					  'message_status'		=> $status);
+		$data = array(
+			'sender_id'				=> $this->member_id,
+			'message_date'			=> ee()->localize->now,
+			'message_subject'		=> ee()->input->get_post('subject', TRUE),
+			'message_body'			=> ee()->input->get_post('body', TRUE),
+			'message_tracking'		=> ( ! ee()->input->get_post('tracking')) ? 'n' : 'y',
+			'message_attachments'	=> (count($this->attachments) > 0) ? 'y' : 'n',
+			'message_recipients'	=> implode('|', $recipients),
+			'message_cc'			=> implode('|', $cc),
+			'message_hide_cc'		=> ( ! ee()->input->get_post('hide_cc')) ? 'n' : 'y',
+			'message_sent_copy'		=> ( ! ee()->input->get_post('sent_copy')) ? 'n' : 'y',
+			'total_recipients'		=> (count($recipients) + count($cc)),
+			'message_status'		=> $status
+		);
 
 		if (ee()->input->get_post('message_id') && is_numeric(ee()->input->get_post('message_id')))
 		{

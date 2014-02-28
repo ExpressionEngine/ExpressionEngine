@@ -2469,8 +2469,13 @@ class Member {
 	/**
 	 * Swap single variables with final value
 	 */
-	function _var_swap_single($search, $replace, $source)
+	function _var_swap_single($search, $replace, $source, $encode_ee_tags = TRUE)
 	{
+		if ($encode_ee_tags)
+		{
+			$replace = ee()->functions->encode_ee_tags($replace, TRUE);
+		}
+
 		return str_replace(LD.$search.RD, $replace, $source);
 	}
 
@@ -2737,7 +2742,7 @@ class Member {
 				//  {email}
 				if ($key == "email")
 				{
-					ee()->TMPL->tagdata = $this->_var_swap_single($val, ee()->typography->encode_email($default_fields['email']), ee()->TMPL->tagdata);
+					ee()->TMPL->tagdata = $this->_var_swap_single($val, ee()->typography->encode_email($default_fields['email']), ee()->TMPL->tagdata, FALSE);
 				}
 
 				//  {birthday}
@@ -2912,7 +2917,7 @@ class Member {
 
 				if (isset($row[$val]))
 				{
-					$temp = ee()->TMPL->swap_var_single($pre.$val, $row[$val], $temp);
+					$temp = ee()->TMPL->swap_var_single($pre.$val, ee()->functions->encode_ee_tags($row[$val]), $temp);
 				}
 			}
 
