@@ -269,11 +269,18 @@ class EE_Messages {
 						}
 						else
 						{
-							$value2 = ee()->functions->encode_ee_tags($value2, TRUE);
+							$user_input = array('subject', 'body', 'menu_items', 'current_folders');
+
+							if (in_array($key2, $user_input))
+							{
+								$value2 = ee()->functions->encode_ee_tags($value2, TRUE);
+							}
+
 							if ($key == 'input' && $key2 != 'body' && $key2 != 'folder_name')
 							{
 								$value2 = htmlspecialchars($value2, ENT_QUOTES);
 							}
+
 							$template = str_replace(LD.$key.':'.$key2.RD, $value2, $template);
 						}
 					}
