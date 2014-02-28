@@ -260,25 +260,31 @@ class EE_Messages {
 						{
 							foreach($value2 as $key3 => $value3)
 							{
-								$template = str_replace(LD.$key.':'.$key2.':'.$key3.RD, $value3, $template);
+								$template = str_replace(
+									LD.$key.':'.$key2.':'.$key3.RD,
+									$value3,
+									$template
+								);
 							}
 						}
 						else
 						{
-							if ($key == 'input' && $key2 == 'body')
+							$value2 = ee()->functions->encode_ee_tags($value2, TRUE);
+							if ($key == 'input' && $key2 != 'body' && $key2 != 'folder_name')
 							{
-								$value2 = ee()->functions->encode_ee_tags($value2, TRUE);
+								$value2 = htmlspecialchars($value2, ENT_QUOTES);
 							}
-
-							$template = str_replace(LD.$key.':'.$key2.RD,
-													 ($key == 'input' && $key2 != 'body' && $key2 != 'folder_name') ? htmlspecialchars($value2, ENT_QUOTES) : $value2,
-													 $template);
+							$template = str_replace(LD.$key.':'.$key2.RD, $value2, $template);
 						}
 					}
 				}
 				elseif( ! is_array($value))
 				{
-					if ($key != 'title' && ! stristr($value, '<option')) $value = htmlspecialchars($value, ENT_QUOTES);  // {title} is link title for message menu
+					if ($key != 'title' && ! stristr($value, '<option'))
+					{
+						// {title} is link title for message menu
+						$value = htmlspecialchars($value, ENT_QUOTES);
+					}
 
 					$template = str_replace(LD.$key.RD, $value, $template);
 				}
@@ -504,7 +510,7 @@ class EE_Messages {
 
 			$t++;
 			$this->single_parts['lang']['required']		= ($key < 3) ? ee()->lang->line('folder_required') : '';
-			$this->single_parts['input']['folder_name']	= ee()->functions->encode_ee_tags(ee()->security->xss_clean($value['0']), TRUE);
+			$this->single_parts['input']['folder_name']	= ee()->security->xss_clean($value['0']);
 			$this->single_parts['input']['folder_id']	= $key;
 			$this->single_parts['style']				= ($t % 2) ? 'tableCellOne' : 'tableCellTwo';
 
@@ -786,7 +792,7 @@ class EE_Messages {
 			{
 				foreach($this->menu_items['repeat_items'][$item] as $item_member)
 				{
-					$this->single_parts['title'] = ee()->functions->encode_ee_tags($item_member['text'], TRUE);
+					$this->single_parts['title'] = $item_member['text'];
 					$this->single_parts['link']  = $item_member['link'];
 					$this->single_parts['include']['menu_items'] .= $this->_process_template($rows);
 				}
@@ -944,7 +950,7 @@ class EE_Messages {
 			$data['message_date'] = ee()->localize->human_time($data['message_date']);
 			$data['style']		  = ($i % 2) ? 'tableCellTwo' : 'tableCellOne';
 			$data['message_subject']  = ($censor === FALSE) ? $data['message_subject'] : ee()->typography->filter_censored_words($data['message_subject']);
-			$data['message_subject'] = ee()->functions->encode_ee_tags($data['message_subject'], TRUE);
+			$data['message_subject'] = $data['message_subject'];
 
 			if ($this->allegiance == 'user')
 			{
@@ -2439,10 +2445,6 @@ DOH;
 			{
 				$data = $this->_message_data($id, '', $this->member_id);
 
-				// Clean up subject and body
-				$data['subject'] = ee()->functions->encode_ee_tags($data['subject'], TRUE);
-				$data['body'] = ee()->functions->encode_ee_tags($data['body'], TRUE);
-
 				if (ee()->config->item('enable_censoring') == 'y' && ee()->config->item('censored_words') != '')
 				{
 					ee()->load->library('typography');
@@ -2513,10 +2515,6 @@ DOH;
 			{
 				$data = $this->_message_data($id, $this->member_id);
 
-				// Clean up subject and body
-				$data['subject'] = ee()->functions->encode_ee_tags($data['subject'], TRUE);
-				$data['body'] = ee()->functions->encode_ee_tags($data['body'], TRUE);
-
 				if (ee()->config->item('enable_censoring') == 'y' && ee()->config->item('censored_words') != '')
 				{
 					ee()->load->library('typography');
@@ -2535,11 +2533,11 @@ DOH;
 				$this->single_parts['input']['body']				= $body;
 				$this->single_parts['input']['recipients']			= ($data === FALSE) ? '' : $this->convert_recipients($data['recipients']);
 				$this->single_parts['input']['cc']					= ($data === FALSE) ? '' : $this->convert_recipients($data['cc']);
-				$this->single_parts['include']['preview_message'] 	= ($data === FALSE OR $this->hide_preview === TRUE) ? '' : $data['preview'];
+				$this->single_parts['include']['preview_message']	= ($data === FALSE OR $this->hide_preview === TRUE) ? '' : $data['preview'];
 
-				$this->single_parts['input']['tracking_checked']  = ($data === FALSE OR $data['tracking'] == 'n') ? '' : "checked='checked'";
+				$this->single_parts['input']['tracking_checked']	= ($data === FALSE OR $data['tracking'] == 'n') ? '' : "checked='checked'";
 				$this->single_parts['input']['sent_copy_checked']	= ($data === FALSE OR $data['sent_copy'] == 'n')  ? '' : "checked='checked'";
-				$this->single_parts['input']['hide_cc_checked']	= ($data === FALSE OR $data['hide_cc'] == 'n')  ? '' : "checked='checked'";
+				$this->single_parts['input']['hide_cc_checked']		= ($data === FALSE OR $data['hide_cc'] == 'n')  ? '' : "checked='checked'";
 
 				if ($data !== FALSE && count($data['attachments']) > 0)
 				{
@@ -2553,11 +2551,11 @@ DOH;
 		}
 		else
 		{
-			$this->single_parts['input']['subject']			  = ( ! ee()->input->get_post('subject')) ? '' : ee()->input->get_post('subject', TRUE);
-			$this->single_parts['input']['body']			  = ( ! ee()->input->get_post('body')) ? '' : ee()->input->get_post('body', TRUE);
-			$this->single_parts['input']['cc']				  = '';
-			$this->single_parts['input']['recipients']		  = ( ! ee()->input->get_post('recipients')) ? '' : $this->convert_recipients(ee()->input->get_post('recipients'));
-			$this->single_parts['include']['preview_message'] = '';
+			$this->single_parts['input']['subject']				= ( ! ee()->input->get_post('subject')) ? '' : ee()->input->get_post('subject', TRUE);
+			$this->single_parts['input']['body']				= ( ! ee()->input->get_post('body')) ? '' : ee()->input->get_post('body', TRUE);
+			$this->single_parts['input']['cc']					= '';
+			$this->single_parts['input']['recipients']			= ( ! ee()->input->get_post('recipients')) ? '' : $this->convert_recipients(ee()->input->get_post('recipients'));
+			$this->single_parts['include']['preview_message']	= '';
 		}
 
 		$details['hidden_fields'] = $hidden;
@@ -2571,9 +2569,9 @@ DOH;
 
 		if ($this->upload_path == '')
 		{
-			$this->conditionals['attachments_allowed']	= 'n';
-			$this->conditionals['attachments_exist']		  = 'n';
-			$this->single_parts['include']['attachments'] = '';
+			$this->conditionals['attachments_allowed']		= 'n';
+			$this->conditionals['attachments_exist']		= 'n';
+			$this->single_parts['include']['attachments']	= '';
 		}
 
 		/** ---------------------------------------
@@ -2833,9 +2831,6 @@ DOH;
 		{
 			return $this->_error_page('invalid_message');
 		}
-
-		$data['subject'] = ee()->functions->encode_ee_tags($data['subject'], TRUE);
-		$data['body'] = ee()->functions->encode_ee_tags($data['body'], TRUE);
 
 		if (ee()->config->item('enable_censoring') == 'y' && ee()->config->item('censored_words') != '')
 		{
