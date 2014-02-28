@@ -2469,7 +2469,7 @@ DOH;
 				$booger['hidden_fields'] = array('message_id' => $data['id'], 'forward' => 'y');
 
 				$prefix = (ee()->input->post('daction') == 'forward') ? 'forward_prefix' : 'reply_prefix';
-				$prefix = (substr($data['subject'], 0, strlen(ee()->lang->line($prefix))) == ee()->lang->line($prefix)) ? '' : '{lang:'.$prefix.'}';
+				$prefix = lang($prefix);
 
 				$this->single_parts['input']['subject']				= ($data === FALSE) ? '' : $prefix.$subject;
 				$this->single_parts['input']['body'] 				= '';
@@ -2568,6 +2568,8 @@ DOH;
 		$details['hidden_fields'] = $hidden;
 
 		$this->single_parts['form']['form_declaration']['messages'] = ee()->functions->form_declaration($details);
+
+		var_dump($this->single_parts['input']['subject']);
 
 		// --------------------------------------------
 		//  If upload path is not specified we
