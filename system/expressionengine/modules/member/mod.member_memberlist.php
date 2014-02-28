@@ -636,7 +636,7 @@ class Member_memberlist extends Member {
 					array(
 						'aim_console'	=> "onclick=\"window.open('".$this->_member_path('aim_console/'.$row['member_id'])."', '_blank', 'width=240,height=360,scrollbars=yes,resizable=yes,status=yes,screenx=5,screeny=5');\"",
 						'icq_console'	=> "onclick=\"window.open('".$this->_member_path('icq_console/'.$row['member_id'])."', '_blank', 'width=650,height=580,scrollbars=yes,resizable=yes,status=yes,screenx=5,screeny=5');\"",
-						'yahoo_console'	=> "http://edit.yahoo.com/config/send_webmesg?.target=".$row['yahoo_im']."&amp;.src=pg",
+						'yahoo_console'	=> "http://edit.yahoo.com/config/send_webmesg?.target=".ee()->functions->encode_ee_tags($row['yahoo_im'], TRUE)."&amp;.src=pg",
 						'email_console'	=> "onclick=\"window.open('".$this->_member_path('email_console/'.$row['member_id'])."', '_blank', 'width=650,height=600,scrollbars=yes,resizable=yes,status=yes,screenx=5,screeny=5');\"",
 					)
 				);
