@@ -269,7 +269,7 @@ class EE_Messages {
 						}
 						else
 						{
-							$user_input = array('subject', 'body', 'menu_items', 'current_folders');
+							$user_input = array('subject', 'body', 'menu_items', 'current_folders', 'folder_name');
 
 							if (in_array($key2, $user_input))
 							{
@@ -450,7 +450,7 @@ class EE_Messages {
 
 			for($i=3; $i <= $this->max_folders; $i++)
 			{
-				$this->folders[$i] = htmlspecialchars($query->row('folder'.$i.'_name') , ENT_QUOTES);
+				$this->folders[$i] = $query->row('folder'.$i.'_name');
 			}
 
 			asort($this->folders);
@@ -1479,8 +1479,9 @@ class EE_Messages {
 
 				$selected = ($key == $this->current_folder) ? ' selected="selected"' : '';
 
-				$str  .= '<option value="'.$url.'"'.$selected.'>'.$value['0'].'</option>'.NL;
-				$str2 .= '<option value="'.$key.'"'.$selected.'>'.$value['0'].'</option>'.NL;
+				$name	= ee()->functions->encode_ee_tags($value['0'], TRUE);
+				$str	.= '<option value="'.$url.'"'.$selected.'>'.$name.'</option>'.NL;
+				$str2	.= '<option value="'.$key.'"'.$selected.'>'.$name.'</option>'.NL;
 			}
 		}
 
@@ -1516,18 +1517,18 @@ DOH;
 		$this->single_parts['include']['folder_pulldown']['change'] = '<select name="change_folder" class="select" onchange="location.href=this.value">'.$str;
 
 		$this->single_parts['include']['folder_pulldown']['move'] = '<div id="movemenu" class="tableCellOne" style="border: 1px solid #666; position:absolute;visibility:hidden;">'.
-																	'<select name="moveto" class="select" onchange="this.form.submit();">'.
-																	'<option value="none">'.ee()->lang->line('choose_folder').'</option>'.NL.
-																	$str2.
-																	'</div>'.NL.
-																	$move_js;
+			'<select name="moveto" class="select" onchange="this.form.submit();">'.
+			'<option value="none">'.ee()->lang->line('choose_folder').'</option>'.NL.
+			$str2.
+			'</div>'.NL.
+			$move_js;
 
 		$this->single_parts['include']['folder_pulldown']['copy'] = '<div id="copymenu" class="tableCellOne" style="border: 1px solid #666; position:absolute;visibility:hidden;">'.
-																	'<select name="copyto" class="select" onchange="this.form.submit();">'.
-																	'<option value="none">'.ee()->lang->line('choose_folder').'</option>'.NL.
-																	$str2.
-																	'</div>'.NL.
-																	$copy_js;
+			'<select name="copyto" class="select" onchange="this.form.submit();">'.
+			'<option value="none">'.ee()->lang->line('choose_folder').'</option>'.NL.
+			$str2.
+			'</div>'.NL.
+			$copy_js;
 	}
 
 
