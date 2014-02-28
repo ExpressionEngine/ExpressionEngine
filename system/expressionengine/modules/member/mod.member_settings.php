@@ -981,7 +981,7 @@ class Member_settings extends Member {
 				'form:birthday_year'	=> $this->_birthday_year($query->row('bday_y') ),
 				'form:birthday_month'	=> $this->_birthday_month($query->row('bday_m') ),
 				'form:birthday_day'		=> $this->_birthday_day($query->row('bday_d') ),
-				'url'					=> ($query->row('url')  == '') ? 'http://' : $query->row('url') ,
+				'url'					=> ($query->row('url')  == '') ? 'http://' : $this->_form_prep_encoded($query->row('url') ),
 				'location'				=> $this->_form_prep_encoded($query->row('location') ),
 				'occupation'			=> $this->_form_prep_encoded($query->row('occupation') ),
 				'interests'				=> $this->_form_prep_encoded($query->row('interests') ),
