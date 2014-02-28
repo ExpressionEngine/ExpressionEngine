@@ -2471,6 +2471,9 @@ DOH;
 				$prefix = (ee()->input->post('daction') == 'forward') ? 'forward_prefix' : 'reply_prefix';
 				$prefix = lang($prefix);
 
+				// Ensure only one prefix
+				$prefix = (substr($data['subject'], 0, strlen($prefix)) == $prefix) ? '' : $prefix;
+
 				$this->single_parts['input']['subject']				= ($data === FALSE) ? '' : $prefix.$subject;
 				$this->single_parts['input']['body'] 				= '';
 
