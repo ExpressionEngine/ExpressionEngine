@@ -957,7 +957,6 @@ class EE_Messages {
 			$data['message_date'] = ee()->localize->human_time($data['message_date']);
 			$data['style']		  = ($i % 2) ? 'tableCellTwo' : 'tableCellOne';
 			$data['message_subject']  = ($censor === FALSE) ? $data['message_subject'] : ee()->typography->filter_censored_words($data['message_subject']);
-			$data['message_subject'] = $data['message_subject'];
 
 			if ($this->allegiance == 'user')
 			{
