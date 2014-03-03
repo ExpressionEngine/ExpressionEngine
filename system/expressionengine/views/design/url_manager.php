@@ -24,7 +24,12 @@
 						$this->table->set_template(array(
 							'table_open' => '<table class="mainTable" border="0" cellspacing="0" cellpadding="0">'
 						));
-						$this->table->set_heading(array('Group', 'Template', 'Route', 'Segments Required?'));
+						$this->table->set_heading(
+							lang('group'),
+							lang('template'),
+							lang('route'),
+							lang('segments_required')
+						);
 						echo $this->table->generate($table);
 					?>
 					<p><?=form_submit('template', lang('update'), 'class="submit"')?></p>
