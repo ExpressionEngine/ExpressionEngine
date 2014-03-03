@@ -3839,7 +3839,7 @@ class EE_Template {
 
 		$backspace = $this->fetch_param('backspace', FALSE);
 
-		if (is_numeric($backspace) AND $enable_backspace)
+		if ($backspace AND is_numeric($backspace) AND $enable_backspace)
 		{
 			$str = substr($str, 0, -$backspace);
 		}
