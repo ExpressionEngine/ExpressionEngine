@@ -3,7 +3,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -20,7 +20,7 @@ _delete_tab_hide=function(a,b){$(".menu_"+b).parent().fadeOut();$(a).fadeOut();$
 _delete_tab_reveal=function(){tab_to_show=$(this).attr("href").substring(1);$(".menu_"+tab_to_show).parent().fadeIn();$(this).children().attr("src",EE.THEME_URL+"images/content_custom_tab_show.gif");$("#"+tab_to_delete).fadeIn();return!1};
 tab_req_check=function(a){var b=!1,c=[],d=EE.publish.required_fields;$("#"+a).find(".publish_field").each(function(){var a=this.id.replace(/hold_field_/,""),e=0,f="";for(f in d)d[f]==a&&(b=!0,c[e]=a,e++)});return!0===b?($.ee_notice(EE.publish.lang.tab_has_req_field+c.join(","),{type:"error"}),!0):!1};
 function delete_publish_tab(){$("#publish_tab_list").unbind("click.tab_delete");$("#publish_tab_list").bind("click.tab_delete",function(a){a.target!==this&&(a=$(a.target).closest("li"),the_id=a.attr("id").replace(/remove_tab_/,""),tab_req_check(the_id)||_delete_tab_hide(a,the_id));return!1})}delete_publish_tab();
-add_publish_tab=function(){tab_name=$("#tab_name").val();/^[a-zA-Z0-9 _-]+$/.test(tab_name)?""===tab_name?$.ee_notice(EE.lang.tab_name_required):_add_tab(tab_name)?$("#new_tab_dialog").dialog("close"):$.ee_notice(EE.lang.duplicate_tab_name):$.ee_notice(EE.lang.illegal_characters)};
+add_publish_tab=function(){tab_name=$("#tab_name").val();/^[^*>:+()\[\]=|"'.#$]+$/.test(tab_name)?""===tab_name?$.ee_notice(EE.lang.tab_name_required):_add_tab(tab_name)?$("#new_tab_dialog").dialog("close"):$.ee_notice(EE.lang.duplicate_tab_name):$.ee_notice(EE.lang.illegal_tab_name)};
 function _add_tab(a){tab_name_filtered=a.replace(/ /g,"_").toLowerCase();if($("#"+tab_name_filtered).length)return"none"==$("#"+tab_name_filtered).css("display")?($("#remove_tab_"+tab_name_filtered).fadeIn(),$("#menu_"+tab_name_filtered).fadeIn(),$("#tab_menu_tabs li").removeClass("current"),$("#menu_"+tab_name_filtered).addClass("current"),tab_focus(tab_name_filtered),!0):!1;$(".addTabButton").before('<li id="menu_'+tab_name_filtered+'" title="'+a+'" class="content_tab"><a href="#" class="menu_'+
 tab_name_filtered+'" title="menu_'+tab_name_filtered+'">'+a+"</a></li>").fadeIn();$("#publish_tab_list").append('<li id="remove_tab_'+tab_name_filtered+'"><a class="menu_focus" title="menu_+tab_name_filtered+" href="#">'+a+'</a> <a href="#'+tab_name_filtered+'" class="delete delete_tab"><img src="'+EE.THEME_URL+'images/content_custom_tab_delete.png" alt="Delete" width="19" height="18" /></a></li>');new_tab=$('<div class="main_tab"><div class="insertpoint"></div><div class="clear"></div></div>').attr("id",
 tab_name_filtered);new_tab.prependTo("#holder");2>=$("#tab_menu_tabs li:visible").length&&tab_focus(tab_name_filtered);$("#tab_menu_tabs li").removeClass("current");$("#menu_"+tab_name_filtered).addClass("current");setup_tabs();delete_publish_tab();return!0}$("#tab_name").keypress(function(a){if("13"==a.keyCode)return add_publish_tab(),!1});$(".tab_menu").sortable("destroy");

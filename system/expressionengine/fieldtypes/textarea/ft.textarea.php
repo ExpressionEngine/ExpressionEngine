@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -73,7 +73,6 @@ class Textarea_ft extends EE_Fieldtype {
 
 		return form_textarea(array(
 			'name'	=> $this->name(),
-			'id'	=> $this->name(),
 			'value'	=> $data,
 			'rows'	=> $this->settings['field_ta_rows'],
 			'dir'	=> $this->settings['field_text_direction'],

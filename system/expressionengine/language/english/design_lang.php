@@ -154,7 +154,7 @@ $lang = array(
 'duplicate_existing_group' =>
 'Duplicate an Existing Template Group?',
 
-'search_template' => 
+'search_template' =>
 'Search Templates',
 
 'template_access' =>
@@ -289,7 +289,7 @@ $lang = array(
 'export_templates' =>
 'Export Templates',
 
-'export_all' => 
+'export_all' =>
 'Export All',
 
 'export_group' =>
@@ -634,8 +634,30 @@ ExpressionEngine tags, variables, or PHP, consider <a href =\'%s\'>Global Variab
 'Enable HTTP Authentication?',
 
 'enable_http_authentication_subtext' =>
-'If turned on, users from the allowed groups above will have to login via their 
+'If turned on, users from the allowed groups above will have to login via their
 username and password to view the template.',
+
+'template_route' =>
+'Template Route:',
+
+'template_route_subtext' =>
+'If a route is provided here it will override the default group/template URL structure.',
+
+'enable_template_routes' =>
+'Enable Template Routes',
+
+'enable_template_routes_exp' =>
+'Disabling template routes will remove the route options from the access panel
+and templates will only be accesible from the default group/template URL.',
+
+'route_required' =>
+'Require All Segments:',
+
+'route_required_subtext' =>
+'If route segments are required all segments in the template route must be present in the request URI.',
+
+'template_routes_saved' =>
+'Template Routes saved',
 
 'http_auth_protected' =>
 'HTTP Auth Protected',
@@ -660,6 +682,12 @@ username and password to view the template.',
 
 'template_manager' =>
 'Template Manager',
+
+'url_manager' =>
+'Template Route Manager',
+
+'template_route_notice' =>
+'Routes are listed in the order that the Template Router will match your templates.',
 
 'template_id_not_found' =>
 'Invalid template id selected',
@@ -974,10 +1002,10 @@ username and password to view the template.',
 'browse_avatars' =>
 'Browse Avatars Page',
 
-'custom_profile_fields' => 
+'custom_profile_fields' =>
 'Custom Member Fields',
 
-'bulletin_board' => 
+'bulletin_board' =>
 'Bulletin Board',
 
 //----------------------------

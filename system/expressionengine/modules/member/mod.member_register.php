@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -36,7 +36,7 @@ class Member_register extends Member {
 		// Do we allow new member registrations?
 		if (ee()->config->item('allow_member_registration') == 'n')
 		{
-			$data = array(	
+			$data = array(
 				'title' 	=> lang('member_registration'),
 				'heading'	=> lang('notice'),
 				'content'	=> lang('mbr_registration_not_allowed'),
@@ -53,7 +53,7 @@ class Member_register extends Member {
 		if (ee()->session->userdata('member_id') != 0)
 		{
 			return ee()->output->show_user_error(
-				'general', 
+				'general',
 				array(lang('mbr_you_are_registered'))
 			);
 		}
@@ -76,7 +76,7 @@ class Member_register extends Member {
 			// Parse custom field data
 
 			// First separate the chunk between the {custom_fields} variable pairs.
-			$field_chunk = (preg_match("/{custom_fields}(.*?){\/custom_fields}/s", 
+			$field_chunk = (preg_match("/{custom_fields}(.*?){\/custom_fields}/s",
 							$reg_form, $match)) ? $match['1'] : '';
 
 			// Next, separate the chunck between the {required} variable pairs
@@ -95,11 +95,11 @@ class Member_register extends Member {
 
 				if ($row['m_field_description'] == '')
 				{
-					$temp = preg_replace("/{if field_description}.+?{\/if}/s", "", $temp); 
+					$temp = preg_replace("/{if field_description}.+?{\/if}/s", "", $temp);
 				}
 				else
 				{
-					$temp = preg_replace("/{if field_description}(.+?){\/if}/s", "\\1", $temp); 
+					$temp = preg_replace("/{if field_description}(.+?){\/if}/s", "\\1", $temp);
 				}
 
 				$temp = str_replace("{field_description}", $row['m_field_description'], $temp);
@@ -117,7 +117,7 @@ class Member_register extends Member {
 				// Parse input fields
 
 				// Set field width
-				if (strpos($row['m_field_width'], 'px') === FALSE && 
+				if (strpos($row['m_field_width'], 'px') === FALSE &&
 					strpos($row['m_field_width'], '%') === FALSE)
 				{
 					$width = $row['m_field_width'].'px';
@@ -169,14 +169,14 @@ class Member_register extends Member {
 				$str .= $temp;
 			}
 
-			// since $str may have sequences that look like PCRE backreferences, 
-			// the two choices are to escape them and use preg_replace() or to 
-			// match the pattern and use str_replace().  This way happens 
+			// since $str may have sequences that look like PCRE backreferences,
+			// the two choices are to escape them and use preg_replace() or to
+			// match the pattern and use str_replace().  This way happens
 			// to be faster in this case.
-			if (preg_match("/".LD."custom_fields".RD.".*?".LD."\/custom_fields".RD."/s", 
+			if (preg_match("/".LD."custom_fields".RD.".*?".LD."\/custom_fields".RD."/s",
 						   $reg_form, $match))
 			{
-				$reg_form = str_replace($match[0], $str, $reg_form);	
+				$reg_form = str_replace($match[0], $str, $reg_form);
 			}
 		}
 
@@ -197,22 +197,21 @@ class Member_register extends Member {
 			}
 			else
 			{
-				$reg_form = preg_replace("/{if captcha}.+?{\/if}/s", "", $reg_form); 
+				$reg_form = preg_replace("/{if captcha}.+?{\/if}/s", "", $reg_form);
 			}
 		}
 
-		$un_min_len = str_replace("%x", ee()->config->item('un_min_len'), 
+		$un_min_len = str_replace("%x", ee()->config->item('un_min_len'),
 									lang('mbr_username_length'));
-		$pw_min_len = str_replace("%x", ee()->config->item('pw_min_len'), 
+		$pw_min_len = str_replace("%x", ee()->config->item('pw_min_len'),
 									lang('mbr_password_length'));
 
-		// Time format selection menu
-		$tf = "<select name='time_format' class='select'>\n";
-		$tf .= "<option value='us'>".lang('united_states')."</option>\n";
-		$tf .= "<option value='eu'>".lang('european')."</option>\n";
-		$tf .= "</select>\n";
+		// Fetch the admin config values in order to populate the form with
+		// the same options
+		ee()->load->model('admin_model');
+		ee()->load->helper('form');
 
-		ee()->load->helper('date_helper');
+		$config_fields = ee()->config->prep_view_vars('localization_cfg');
 
 		// Parse languge lines
 		$reg_form = $this->_var_swap($reg_form,
@@ -220,7 +219,9 @@ class Member_register extends Member {
 											'lang:username_length'	=> $un_min_len,
 											'lang:password_length'	=> $pw_min_len,
 											'form:localization'		=> ee()->localize->timezone_menu(),
-											'form:time_format'		=> $tf,
+											'form:date_format'		=> form_preference('date_format', $config_fields['fields']['date_format']),
+											'form:time_format'		=> form_preference('time_format', $config_fields['fields']['time_format']),
+											'form:include_seconds'	=> form_preference('include_seconds', $config_fields['fields']['include_seconds']),
 											'form:language'			=> ee()->functions->language_pack_names('english')
 
 										)
@@ -261,17 +262,17 @@ class Member_register extends Member {
 		if (ee()->session->userdata('is_banned') === TRUE)
 		{
 			return ee()->output->show_user_error(
-				'general', 
+				'general',
 				array(lang('not_authorized'))
 			);
 		}
 
 		// Blacklist/Whitelist Check
-		if (ee()->blacklist->blacklisted == 'y' && 
+		if (ee()->blacklist->blacklisted == 'y' &&
 			ee()->blacklist->whitelisted == 'n')
 		{
 			return ee()->output->show_user_error(
-				'general', 
+				'general',
 				array(lang('not_authorized'))
 			);
 		}
@@ -290,7 +291,7 @@ class Member_register extends Member {
 
 		// Set the default globals
 		$default = array(
-			'username', 'password', 'password_confirm', 'email', 
+			'username', 'password', 'password_confirm', 'email',
 			'screen_name', 'url', 'location'
 		);
 
@@ -301,7 +302,7 @@ class Member_register extends Member {
 
 		if ($_POST['screen_name'] == '')
 		{
-			$_POST['screen_name'] = $_POST['username'];			
+			$_POST['screen_name'] = $_POST['username'];
 		}
 
 		// Instantiate validation class
@@ -353,19 +354,19 @@ class Member_register extends Member {
 				if ($row['m_field_required'] == 'y' && ! $valid)
 				{
 					$cust_errors[] = lang('mbr_field_required').'&nbsp;'.$row['m_field_label'];
-				}				
+				}
 				elseif ($row['m_field_type'] == 'select' && $valid)
 				{
 					// Ensure their selection is actually a valid choice
 					$options = explode("\n", $row['m_field_list_items']);
-					
+
 					if (! in_array(htmlentities($_POST[$field_name]), $options))
 					{
 						$valid = FALSE;
 						$cust_errors[] = lang('mbr_field_invalid').'&nbsp;'.$row['m_field_label'];
 					}
-				}				
-				
+				}
+
 				if ($valid)
 				{
 					$cust_fields[$field_name] = ee()->security->xss_clean($_POST[$field_name]);
@@ -394,7 +395,7 @@ class Member_register extends Member {
 			}
 		}
 
- 
+
 		// -------------------------------------------
 		// 'member_member_register_errors' hook.
 		//  - Additional error checking prior to submission
@@ -404,7 +405,7 @@ class Member_register extends Member {
 			if (ee()->extensions->end_script === TRUE) return;
 		//
 		// -------------------------------------------
- 
+
 		$errors = array_merge($VAL->errors, $cust_errors, $this->errors);
 
 		// Display error is there are any
@@ -426,15 +427,8 @@ class Member_register extends Member {
 			ee()->db->query("DELETE FROM exp_captcha WHERE (word='".ee()->db->escape_str($_POST['captcha'])."' AND ip_address = '".ee()->input->ip_address()."') OR date < UNIX_TIMESTAMP()-7200");
 		}
 
-		// Secure Mode Forms?
-		if (ee()->config->item('secure_forms') == 'y'
-			AND ! ee()->security->secure_forms_check(ee()->input->post('XID')))
-		{
-			return ee()->output->show_user_error('general', array(lang('not_authorized')));
-		}
-		
 		ee()->load->helper('security');
-		
+
 		// Assign the base query data
 		$data = array(
 			'username'		=> trim_nbs(ee()->input->post('username')),
@@ -448,16 +442,20 @@ class Member_register extends Member {
 			'location'		=> ee()->input->post('location'),
 
 			// overridden below if used as optional fields
-			'language'		=> (ee()->config->item('deft_lang')) ? 
+			'language'		=> (ee()->config->item('deft_lang')) ?
 									ee()->config->item('deft_lang') : 'english',
-			'time_format'	=> (ee()->config->item('time_format')) ? 
-									ee()->config->item('time_format') : 'us',
+			'date_format'	=> ee()->config->item('date_format') ?
+					 				ee()->config->item('date_format') : '%n/%j/%y',
+			'time_format'	=> ee()->config->item('time_format') ?
+									ee()->config->item('time_format') : '12',
+			'include_seconds' => ee()->config->item('include_seconds') ?
+									ee()->config->item('include_seconds') : 'n',
 			'timezone'		=> ee()->config->item('default_site_timezone')
 		);
-		
+
 		// Set member group
 
-		if (ee()->config->item('req_mbr_activation') == 'manual' OR 
+		if (ee()->config->item('req_mbr_activation') == 'manual' OR
 			ee()->config->item('req_mbr_activation') == 'email')
 		{
 			$data['group_id'] = 4;  // Pending
@@ -473,14 +471,16 @@ class Member_register extends Member {
 				$data['group_id'] = ee()->config->item('default_member_group');
 			}
 		}
-		
+
 		// Optional Fields
 
 		$optional = array(
-			'bio'			=> 'bio',
-			'language'		=> 'deft_lang',
-			'timezone'		=> 'server_timezone',
-			'time_format'	=> 'time_format'
+			'bio'				=> 'bio',
+			'language'			=> 'deft_lang',
+			'timezone'			=> 'server_timezone',
+			'date_format'		=> 'date_format',
+			'time_format'		=> 'time_format',
+			'include_seconds'	=> 'include_seconds'
 		);
 
 		foreach($optional as $key => $value)
@@ -490,7 +490,7 @@ class Member_register extends Member {
 				$data[$key] = $_POST[$value];
 			}
 		}
-		
+
 		// We generate an authorization code if the member needs to self-activate
 		if (ee()->config->item('req_mbr_activation') == 'email')
 		{
@@ -509,10 +509,10 @@ class Member_register extends Member {
 
 
 		// Create a record in the member homepage table
-		// This is only necessary if the user gains CP access, 
+		// This is only necessary if the user gains CP access,
 		// but we'll add the record anyway.
 
-		ee()->db->query(ee()->db->insert_string('exp_member_homepage', 
+		ee()->db->query(ee()->db->insert_string('exp_member_homepage',
 								array('member_id' => $member_id)));
 
 		// Mailinglist Subscribe
@@ -595,7 +595,7 @@ class Member_register extends Member {
 		}
 
 		// Send admin notifications
-		if (ee()->config->item('new_member_notification') == 'y' && 
+		if (ee()->config->item('new_member_notification') == 'y' &&
 			ee()->config->item('mbr_notification_emails') != '')
 		{
 			$name = ($data['screen_name'] != '') ? $data['screen_name'] : $data['username'];
@@ -685,7 +685,7 @@ class Member_register extends Member {
 			// Log user in (the extra query is a little annoying)
 			ee()->load->library('auth');
 			$member_data_q = ee()->db->get_where('members', array('member_id' => $member_id));
-			
+
 			$incoming = new Auth_result($member_data_q->row());
 			$incoming->remember_me();
 			$incoming->start_session();
@@ -722,7 +722,7 @@ class Member_register extends Member {
 
 	private function _do_form_query()
 	{
-		if (ee()->input->get_post('board_id') !== FALSE && 
+		if (ee()->input->get_post('board_id') !== FALSE &&
 			is_numeric(ee()->input->get_post('board_id')))
 		{
 			return ee()->db->select('board_forum_url, board_id, board_label')
@@ -793,7 +793,7 @@ class Member_register extends Member {
 
 		$member_id = $query->row('member_id');
 
-		if (ee()->input->get_post('mailinglist') !== FALSE && 
+		if (ee()->input->get_post('mailinglist') !== FALSE &&
 			is_numeric(ee()->input->get_post('mailinglist')))
 		{
 			$expire = time() - (60*60*48);

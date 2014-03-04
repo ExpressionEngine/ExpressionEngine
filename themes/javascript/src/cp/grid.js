@@ -63,6 +63,10 @@ Grid.Publish.prototype = {
 		this._toggleRowManipulationButtons();
 		this._fieldDisplay();
 
+		// Store the original row count so we can properly increment new
+		// row placeholder IDs in _addRow()
+		this.original_row_count = this._getRows().size();
+
 		// Disable input elements in our blank template container so they
 		// don't get submitted on form submission
 		this.blankRow.find(':input').attr('disabled', 'disabled');
@@ -202,10 +206,11 @@ Grid.Publish.prototype = {
 		el.removeClass('blank_row');
 
 		// Increment namespacing on inputs
+		this.original_row_count++;
 		el.html(
 			el.html().replace(
 				RegExp('new_row_[0-9]{1,}', 'g'),
-				'new_row_' + this.rowContainer.find('tr').size()
+				'new_row_' + this.original_row_count
 			)
 		);
 
@@ -331,7 +336,7 @@ Grid.Settings.prototype = {
 
 		// If this is a new field, bind the automatic column title plugin
 		// to the first column
-		this._bindAutoColName(this.root.find('div.grid_col_settings[data-field-name="new_0"]'));
+		this._bindAutoColName(this.root.find('div.grid_col_settings[data-field-name^="new_"]'));
 
 		// Fire displaySettings event
 		this._settingsDisplay();
@@ -585,11 +590,14 @@ Grid.Settings.prototype = {
 	 *
 	 * @param	{jQuery Object}	el	Column to bind ee_url_title to
 	 */
-	_bindAutoColName: function(column)
+	_bindAutoColName: function(columns)
 	{
-		$(column).find('input.grid_col_field_label').bind("keyup keydown", function()
+		columns.each(function(index, column)
 		{
-			$(this).ee_url_title($(column).find('input.grid_col_field_name'), true);
+			$('input.grid_col_field_label', column).bind("keyup keydown", function()
+			{
+				$(this).ee_url_title($(column).find('input.grid_col_field_name'), true);
+			});
 		});
 	},
 
@@ -616,13 +624,17 @@ Grid.Settings.prototype = {
 		// Clear out column name field in new column because it has to be unique
 		el.find('input[name$="\\[name\\]"]').attr('value', '');
 
-		// Need to make sure the new columns field names are unique
+		// Need to make sure the new column's field names are unique
+		var new_namespace = 'new_' + $('.grid_col_settings', this.root).size();
+
 		el.html(
 			el.html().replace(
 				RegExp('(new_|col_id_)[0-9]{1,}', 'g'),
-				'new_' + $('.grid_col_settings').size()
+				new_namespace
 			)
 		);
+
+		el.attr('data-field-name', new_namespace);
 
 		// Make sure inputs are enabled if creating blank column
 		el.find(':input').removeAttr('disabled').removeClass('grid_settings_error');

@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -23,10 +23,10 @@
  * @link		http://ellislab.com
  */
 class Members {
-	
-	
+
+
 	protected $EE;
-	
+
 	/**
 	 * Constructor
 	 */
@@ -34,8 +34,8 @@ class Members {
 	{
 		$this->EE =& get_instance();
 	}
-	
-	// ------------------------------------------------------------------------	
+
+	// ------------------------------------------------------------------------
 
 	/**
 	 *	Upload Member Images
@@ -50,18 +50,18 @@ class Members {
 	public function upload_member_images($type = 'avatar', $id)
 	{
 		// validate for unallowed blank values
-		if (empty($_POST)) 
+		if (empty($_POST))
 		{
 			if (REQ == 'CP')
 			{
-				show_error(lang('not_authorized'));				
+				show_error(lang('not_authorized'));
 			}
 			else
 			{
 				ee()->output->show_user_error('submission', lang('not_authorized'));
 			}
 		}
-		
+
 		// Load the member model!
 		ee()->load->model('member_model');
 
@@ -102,7 +102,7 @@ class Members {
 			{
 				if (REQ == 'CP')
 				{
-					show_error(lang($not_enabled));					
+					show_error(lang($not_enabled));
 				}
 
 				return array('error', array($not_enabled, $not_enabled));
@@ -145,7 +145,7 @@ class Members {
 
 					return array('redirect', array($edit_image));
 				}
-				
+
 				ee()->member_model->update_member($id, array('photo_filename' => ''));
 
 				@unlink(ee()->config->slash_item('photo_path').$query->row('photo_filename') );
@@ -153,7 +153,7 @@ class Members {
 			else
 			{
 				$query = ee()->member_model->get_member_data($id, array('sig_img_filename'));
-				
+
 				if ($query->row('sig_img_filename')	 == '')
 				{
 					if (REQ == 'CP')
@@ -163,12 +163,12 @@ class Members {
 
 					return array('redirect', array($edit_image));
 				}
-				
+
 				ee()->member_model->update_member($id, array('sig_img_filename' => ''));
 
 				@unlink(ee()->config->slash_item('sig_img_path').$query->row('sig_img_filename') );
 			}
-			
+
 			if (REQ == 'CP')
 			{
 				ee()->session->set_flashdata('message_success', lang($removed));
@@ -180,10 +180,10 @@ class Members {
 							array('success',
 								array(
 									'lang:heading'	=>	lang($remove),
-									'lang:message'	=>	lang($removed)								
+									'lang:message'	=>	lang($removed)
 								)
 							)
-						);				
+						);
 			}
 		}
 
@@ -192,7 +192,7 @@ class Members {
 		{
 			if (REQ == 'CP')
 			{
-				show_error('gd_required');				
+				show_error('gd_required');
 			}
 
 			return array('error', array($edit_image, 'gd_required'));
@@ -231,12 +231,12 @@ class Members {
 		{
 			if (REQ == 'CP')
 			{
-				show_error(sprintf(lang('image_max_size_exceeded'), $max_size));				
+				show_error(sprintf(lang('image_max_size_exceeded'), $max_size));
 			}
 
 			ee()->output->show_user_error('submission',
 											sprintf(
-												lang('image_max_size_exceeded'), 
+												lang('image_max_size_exceeded'),
 												$max_size)
 									);
 		}
@@ -260,7 +260,7 @@ class Members {
 		{
 			if (REQ == 'CP')
 			{
-				show_error('image_assignment_error');				
+				show_error('image_assignment_error');
 			}
 
 			return array('error', array($edit_image, 'image_assignment_error'));
@@ -293,7 +293,7 @@ class Members {
 		{
 			if (REQ == 'CP')
 			{
-				show_error(lang('invalid_image_type'));				
+				show_error(lang('invalid_image_type'));
 			}
 
 			ee()->output->show_user_error('submission', lang('invalid_image_type'));
@@ -364,7 +364,7 @@ class Members {
 		}
 
 		ee()->load->library('upload', $config);
-		
+
 		if (ee()->upload->do_upload() === FALSE)
 		{
 			if (REQ == 'CP')
@@ -380,9 +380,9 @@ class Members {
 		}
 
 		$file_info = ee()->upload->data();
-		
+
 		@chmod($file_info['full_path'], DIR_WRITE_MODE);
-		
+
 		// Do we need to resize?
 		$width	= $file_info['image_width'];
 		$height = $file_info['image_height'];
@@ -422,9 +422,9 @@ class Members {
 
 		ee()->member_model->update_member($id, $data);
 
-		return array('success', $edit_image, $updated);	
+		return array('success', $edit_image, $updated);
 	}
-	
+
 	// ------------------------------------------------------------------------
 
 	/**
@@ -461,11 +461,11 @@ class Members {
 				'source_image'		=> $image_path.$filename,
 				'quality'			=> 75,
 				'width'				=> $max_width,
-				'height'			=> $max_height				
+				'height'			=> $max_height
 			);
-			
+
 		ee()->image_lib->clear();
-		
+
 		ee()->image_lib->initialize($config);
 
 		return ( ! ee()->image_lib->resize()) ? FALSE : TRUE;
@@ -485,14 +485,14 @@ class Members {
 	public function get_member_subscriptions($member_id, $rownum = 0, $perpage = 50)
 	{
 		ee()->load->helper('url');
-		
+
 		// Set some base values
 		$channel_subscriptions	= FALSE;
 		$forum_subscriptions	= FALSE;
 		$result_ids				= array();
 		$total_count			= 0;
 		$qm						= (ee()->config->item('force_query_string') == 'y') ? '' : '?';
-		
+
 		if (ee()->db->table_exists('exp_comment_subscriptions'))
 		{
 			// Fetch Comment Subscriptions
@@ -501,9 +501,9 @@ class Members {
 			ee()->db->from('comment_subscriptions');
 			ee()->db->join('channel_titles', 'comment_subscriptions.entry_id = channel_titles.entry_id', 'left');
 			ee()->db->where('member_id', $member_id);
-			ee()->db->order_by("recent_comment_date", "desc"); 
+			ee()->db->order_by("recent_comment_date", "desc");
 			$query = ee()->db->get();
-			
+
 			if ($query->num_rows() > 0)
 			{
 				$channel_subscriptions = TRUE;
@@ -530,7 +530,7 @@ class Members {
 			ee()->db->from('forum_subscriptions');
 			ee()->db->join('forum_topics', 'forum_subscriptions.topic_id = forum_topics.topic_id', 'left');
 			ee()->db->where('member_id', $member_id);
-			ee()->db->order_by("last_post_date", "desc"); 
+			ee()->db->order_by("last_post_date", "desc");
 			$query = ee()->db->get();
 
 			if ($query->num_rows() > 0)
@@ -542,31 +542,31 @@ class Members {
 					$date_key = str_pad($row['last_post_date'], 14, '0',  STR_PAD_LEFT).
 						str_pad($row['subscription_date'], 14, '0',  STR_PAD_LEFT).
 						'f';
-						
+
 					$result_ids[$date_key] = $row['topic_id'];
 					$total_count++;
 				}
 			}
 		}
 
-		
+
 		krsort($result_ids); // Sort the array
-		
+
 		$result_ids = array_slice($result_ids, $rownum, $perpage);
-		
+
 		// Fetch Channel Titles
 		if ($channel_subscriptions == TRUE)
 		{
 			$sql = "SELECT
-					exp_channel_titles.title, exp_channel_titles.url_title, exp_channel_titles.channel_id, exp_channel_titles.entry_id, exp_channel_titles.recent_comment_date, 
-					exp_channels.comment_url, exp_channels.channel_url 
+					exp_channel_titles.title, exp_channel_titles.url_title, exp_channel_titles.channel_id, exp_channel_titles.entry_id, exp_channel_titles.recent_comment_date,
+					exp_channels.comment_url, exp_channels.channel_url
 					FROM exp_channel_titles
 					LEFT JOIN exp_channels ON exp_channel_titles.channel_id = exp_channels.channel_id
 					WHERE entry_id IN (";
 
 			$idx = '';
 			$channel_keys = array();
-			
+
 			foreach ($result_ids as $key => $val)
 			{
 				if (substr($key, strlen($key)-1) == 'b')
@@ -648,10 +648,10 @@ class Members {
 				}
 			}
 		}
-		
-		return array('total_results' => $total_count, 'result_array' => $result_ids);		
+
+		return array('total_results' => $total_count, 'result_array' => $result_ids);
 	}
-	
+
 }
 /* End of file members.php */
 /* Location: ./system/expressionengine/libraries/members.php */

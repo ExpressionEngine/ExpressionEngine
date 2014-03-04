@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -74,11 +74,17 @@ class Select_ft extends EE_Fieldtype {
 		$text_direction = (isset($this->settings['field_text_direction']))
 			? $this->settings['field_text_direction'] : 'ltr';
 		$field_options = $this->_get_field_options($data);
-		$field_id = (ctype_digit($this->field_id)) ? 'field_id_'.$this->field_id : $this->field_id;
 
-		$field = form_dropdown($this->field_name, $field_options, $data, 'dir="'.$text_direction.'" id="'.$field_id.'"');
+		$field = form_dropdown($this->field_name, $field_options, $data, 'dir="'.$text_direction.'"');
 
 		return $field;
+	}
+
+	// --------------------------------------------------------------------
+
+	function grid_display_field($data)
+	{
+		return $this->display_field(form_prep($data));
 	}
 
 	// --------------------------------------------------------------------
@@ -91,8 +97,8 @@ class Select_ft extends EE_Fieldtype {
 			return ee()->functions->encode_ee_tags($data);
 		}
 
-		$text_format = (isset($this->row['field_ft_'.$this->field_id]))
-			? $this->row['field_ft_'.$this->field_id] : 'none';
+		$text_format = ($this->content_type() == 'grid')
+			? $this->settings['field_fmt'] : $this->row('field_ft_'.$this->field_id);
 
 		ee()->load->library('typography');
 

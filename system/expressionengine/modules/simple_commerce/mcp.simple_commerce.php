@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -70,7 +70,7 @@ class Simple_commerce_mcp {
 		$vars = array(
 			'message' => $message,
 			'cp_page_title'	=> lang('simple_commerce_module_name'),
-			'api_url'		=> 
+			'api_url'		=>
 				ee()->functions->fetch_site_index(0,0).QUERY_MARKER.'ACT='.ee()->cp->fetch_action_id('Simple_commerce', 'incoming_ipn'),
 			'action_url'	=> 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce'.AMP.'method=various_settings',
 			'paypal_account'=> ee()->config->item('sc_paypal_account')
@@ -378,7 +378,7 @@ class Simple_commerce_mcp {
 
 		return ee()->load->view('edit_item', $vars, TRUE);
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	function _items_validate($entry_id = array())
@@ -488,7 +488,7 @@ class Simple_commerce_mcp {
 		.'M=show_module_cp'.AMP.'module=simple_commerce'.AMP.'method=edit_items');
 
 	}
-	
+
 	// --------------------------------------------------------------------
 
 
@@ -528,12 +528,12 @@ class Simple_commerce_mcp {
 							'hidden'	=> array('entry_ids' => implode('|', $entry_ids))
 					));
 			}
-			
+
 			return $this->_items_form($entry_ids, 'n');
 		}
 
 		ee()->load->library('table');
-		
+
 		ee()->table->set_base_url('C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce'.AMP.'method=edit_items');
 		ee()->table->set_columns(array(
 			'title'						=> array('header' => lang('entry_title')),
@@ -548,20 +548,20 @@ class Simple_commerce_mcp {
 				'header' => form_checkbox('select_all', 'true', FALSE, 'class="toggle_all" id="select_all"')
 			)
 		));
-		
+
 		$initial_state = array(
 			'sort'	=> array('title' => 'asc')
 		);
-		
+
 		$params = array(
 			'perpage'	=> $this->perpage
 		);
-		
-		$data = ee()->table->datasource('_edit_items_filter', $initial_state, $params);		
-		
-		
+
+		$data = ee()->table->datasource('_edit_items_filter', $initial_state, $params);
+
+
 		$data['form_hidden'] = NULL;
-		
+
 		$data['cp_page_title']  = lang('edit_items');
 		ee()->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.
 		AMP.'M=show_module_cp'.AMP.'module=simple_commerce', lang('simple_commerce_module_name'));
@@ -588,9 +588,9 @@ class Simple_commerce_mcp {
 
 		return ee()->load->view('edit_items', $data, TRUE);
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	function _edit_items_filter($state, $params)
 	{
 		ee()->load->helper('text');
@@ -611,13 +611,13 @@ class Simple_commerce_mcp {
 			->limit($params['perpage'], $state['offset'])
 			->get()
 			->result_array();
-		
+
 		$rows = array();
-		
+
 		while ($item = array_shift($items))
 		{
 			$subscription_period = ($item['subscription_frequency'] != '') ? $item['subscription_frequency'].' x '.$item['subscription_frequency_unit'] : '--';
-			
+
 			$rows[] = array(
 				'title'					 => '<a href="'.BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce'.AMP.'method=edit_items'.AMP.'entry_id='.$item['entry_id'].'">'.$item['title'].'</a>',
 				'item_regular_price'	 => $item['item_regular_price'],
@@ -658,7 +658,7 @@ class Simple_commerce_mcp {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/** -------------------------------------------
 	/**  Delete Store Items
 	/** -------------------------------------------*/
@@ -681,7 +681,7 @@ class Simple_commerce_mcp {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/** -------------------------------------------
 	/**  Add Email Template
 	/** -------------------------------------------*/
@@ -762,7 +762,7 @@ class Simple_commerce_mcp {
 		return ee()->load->view('email_template', $vars, TRUE);
 
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	function _email_form_validation($email_id = array())
@@ -931,12 +931,12 @@ class Simple_commerce_mcp {
 					)
 				);
 			}
-			
+
 			return $this->_emails_form($email_ids, 'n');
 		}
 
 		ee()->load->library('table');
-		
+
 		ee()->table->set_columns(array(
 			'email_name' => array('header' => lang('template_name')),
 			'_check'	 => array(
@@ -944,16 +944,16 @@ class Simple_commerce_mcp {
 				'header' => form_checkbox('select_all', 'true', FALSE, 'class="toggle_all" id="select_all"')
 			)
 		));
-		
+
 		$params = array('perpage' => $this->perpage);
 		$default = array('sort' => array('email_name' => 'asc'));
-		
+
 		$data = ee()->table->datasource('_edit_emails_filter', $default, $params);
-		
+
 		$data['form_hidden'] = NULL;
 		$data['email_templates'] = array();
 		$data['cp_page_title']  = lang('edit_email_templates');
-		
+
 		ee()->cp->set_breadcrumb(
 			BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce',
 			lang('simple_commerce_module_name')
@@ -997,9 +997,9 @@ class Simple_commerce_mcp {
 			->limit($params['perpage'], $state['offset'])
 			->get('simple_commerce_emails')
 			->result_array();
-		
+
 		$rows = array();
-		
+
 		while ($email = array_shift($emails))
 		{
 			$rows[] = array(
@@ -1082,7 +1082,7 @@ class Simple_commerce_mcp {
 		if ($new == 'y')
 		{
 			$vars['action_url'] = 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce'.AMP.'method=adding_purchase';
-			
+
 			foreach($purchase_ids as $id)
 			{
 				$vars['purchases'][$id]['txn_id'] = '';
@@ -1094,8 +1094,8 @@ class Simple_commerce_mcp {
 				$vars['purchases'][$id]['purchase_id'] =  0;
 
 			ee()->javascript->output('
-			$("#purchase_date_'.$id.'").datepicker({dateFormat: $.datepicker.W3C + date_obj_time, defaultDate: new Date('.ee()->localize->format_date('%D %M %d %Y').')});
-			$("#subscription_end_date_'.$id.'").datepicker({dateFormat: $.datepicker.W3C + date_obj_time, defaultDate: new Date('.ee()->localize->format_date('%D %M %d %Y').')});
+			$("#purchase_date_'.$id.'").datepicker({dateFormat: "'.ee()->localize->datepicker_format().'" + date_obj_time, defaultDate: new Date('.ee()->localize->format_date('%D %M %d %Y').')});
+			$("#subscription_end_date_'.$id.'").datepicker({dateFormat: "'.ee()->localize->datepicker_format().'" + date_obj_time, defaultDate: new Date('.ee()->localize->format_date('%D %M %d %Y').')});
 		');
 
 			}
@@ -1121,12 +1121,12 @@ class Simple_commerce_mcp {
 				$vars['purchases'][$row['purchase_id']]['purchase_id'] = $row['purchase_id'];
 				$vars['purchases'][$row['purchase_id']]['screen_name'] = $row['purchaser'];
 				$vars['purchases'][$row['purchase_id']]['recurring'] = $row['recurring'];
-				
+
 				$now_p_date = ($row['purchase_date'] * 1000);
 
 
 			ee()->javascript->output('
-			$("#purchase_date_'.$row['purchase_id'].'").datepicker({dateFormat: $.datepicker.W3C + date_obj_time, defaultDate: new Date('.$now_p_date.')});
+			$("#purchase_date_'.$row['purchase_id'].'").datepicker({dateFormat: "'.ee()->localize->datepicker_format().'" + date_obj_time, defaultDate: new Date('.$now_p_date.')});
 		');
 
 			}
@@ -1314,7 +1314,7 @@ class Simple_commerce_mcp {
 		if (ee()->input->post('purchase_ids') !== FALSE)
 		{
 			$purchase_ids = explode('|', ee()->input->post('purchase_ids'));
-			
+
 			ee()->db->select('item_id, purchase_id');
 			ee()->db->where_in('purchase_id', $purchase_ids);
 			$query = ee()->db->get('simple_commerce_purchases');
@@ -1394,13 +1394,13 @@ class Simple_commerce_mcp {
 					)
 				);
 			}
-		
+
 			//  Finally!  We can do something!
 			return $this->_purchases_form($purchase_ids, 'n');
 		}
-	
+
 		ee()->load->library('table');
-		
+
 		ee()->table->set_base_url('C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce'.AMP.'method=edit_purchases');
 		ee()->table->set_columns(array(
 			'title'					=> array('header' => lang('item_purchased')),
@@ -1413,14 +1413,14 @@ class Simple_commerce_mcp {
 				'header' => form_checkbox('select_all', 'true', FALSE, 'class="toggle_all" id="select_all"')
 			)
 		));
-		
-		
+
+
 		$params = array('perpage' => $this->perpage);
 		$initial_state = array('sort' => array('purchase_date' => 'desc'));
 
 		$data = ee()->table->datasource('_edit_purchases_filter', $initial_state, $params);
-		
-		
+
+
 		$data['cp_page_title']  = lang('edit_purchases');
 		ee()->cp->set_breadcrumb(
 			BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce',
@@ -1448,7 +1448,7 @@ class Simple_commerce_mcp {
 		ee()->javascript->compile();
 
 		//  Check for pagination
-		
+
 		$data['form_hidden'] = NULL;
 		$data['show_add_button'] = TRUE;
 		$data['action_url'] = 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce'.AMP.'method=edit_purchases';
@@ -1465,7 +1465,7 @@ class Simple_commerce_mcp {
 				ee()->db->order_by($key, $val);
 			}
 		}
-		
+
 		$purchases = ee()->db->from('simple_commerce_purchases scp, simple_commerce_items sci, members m, channel_titles wt')
 			->select('scp.*, m.screen_name, wt.title, recurring')
 			->where('scp.item_id = sci.item_id', NULL, FALSE)
@@ -1479,7 +1479,7 @@ class Simple_commerce_mcp {
 		while ($purchase = array_shift($purchases))
 		{
 			$subscription_end_date =  ' -- ';
-			
+
 			if ($purchase['subscription_end_date'] != 0)
 			{
 				$subscription_end_date = ee()->localize->human_time($purchase['subscription_end_date']);
@@ -1488,7 +1488,7 @@ class Simple_commerce_mcp {
 			{
 				$subscription_end_date = lang('recurring');
 			}
-			
+
 			$rows[] = array(
 				'title'					=> '<a href="'.BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce'.
 					AMP.'method=edit_purchases'.AMP.'purchase_id='.$purchase['purchase_id'].'">'.$purchase['title'].'</a>',
@@ -2255,7 +2255,7 @@ MAGIC;
 			$perpage = 50;
 		}
 
-		ee()->functions->set_cookie('perpage' , $perpage, 60*60*24*182);
+		ee()->input->set_cookie('perpage' , $perpage, 60*60*24*182);
 
 		$vars['perpage_selected'] = $perpage;
 
@@ -2809,19 +2809,7 @@ MAGIC;
 			$name = ($row['screen_name'] != '') ? $row['screen_name'] : $row['username'];
 			$vars['entries'][$row['entry_id']][] = mailto($row['email'], $name);
 
-			// Date
-			$date_fmt = (ee()->session->userdata('time_format') != '') ? ee()->session->userdata('time_format') : ee()->config->item('time_format');
-
-			if ($date_fmt == 'us')
-			{
-				$datestr = '%m/%d/%y %h:%i %a';
-			}
-			else
-			{
-				$datestr = '%Y-%m-%d %H:%i';
-			}
-
-			$vars['entries'][$row['entry_id']][] = ee()->localize->format_date($datestr, $row['entry_date']);
+			$vars['entries'][$row['entry_id']][] = ee()->localize->human_time($row['entry_date']);
 
 			// Channel
 			$vars['entries'][$row['entry_id']][] = (isset($w_array[$row['channel_id']])) ? '<div class="smallNoWrap">'. $w_array[$row['channel_id']].'</div>' : '';

@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -105,7 +105,7 @@ class Blacklist_mcp {
 		{
 			ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=blacklist');
 		}
-		
+
 		ee()->load->library('form_validation');
 		ee()->form_validation->set_rules('htaccess_path', 'lang:htaccess_path', 'callback__check_path');
 
@@ -118,15 +118,15 @@ class Blacklist_mcp {
 		}
 
 		ee()->config->_update_config(array('htaccess_path' => ee()->input->get_post('htaccess_path')));
-		
+
 		if (ee()->input->get_post('htaccess_path') == '' && ! ee()->config->item('htaccess_path'))
 		{
 			ee()->session->set_flashdata('message_success', lang('htaccess_path_removed'));
 			ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=blacklist');
 		}
-		
+
 		$this->write_htaccess(ee()->input->get_post('htaccess_path'));
-		
+
 		ee()->session->set_flashdata('message_success', lang('htaccess_written_successfully'));
 		ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=blacklist');
 	}
@@ -138,7 +138,7 @@ class Blacklist_mcp {
 		{
 			return TRUE;
 		}
-		
+
 		if ( ! file_exists($str) OR ! is_file($str))
 		{
 			ee()->form_validation->set_message('_check_path', lang('invalid_htaccess_path'));
@@ -147,9 +147,9 @@ class Blacklist_mcp {
 		elseif (! is_writeable(ee()->input->get_post('htaccess_path')))
 		{
 				ee()->form_validation->set_message('_check_path', lang('invalid_htaccess_path'));
-			return FALSE;	
+			return FALSE;
 		}
-		
+
 		return TRUE;
 	}
 
@@ -164,7 +164,7 @@ class Blacklist_mcp {
 	function write_htaccess($htaccess_path = '', $return = 'redirect')
 	{
 		$htaccess_path = ($htaccess_path == '') ? ee()->config->item('htaccess_path') : $htaccess_path;
-		
+
 		if (ee()->session->userdata('group_id') != '1' OR $htaccess_path == '')
 		{
 			ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=blacklist');
@@ -176,7 +176,7 @@ class Blacklist_mcp {
 			{
 				return FALSE;
 			}
-			
+
 			show_error(lang('invalid_htaccess_path'));
 		}
 
@@ -337,7 +337,7 @@ class Blacklist_mcp {
 		}
 
 		$write_htaccess = ($write) ? $write : ee()->input->get_post('write_htaccess');
-		
+
 		// Current Blacklisted
 
 		$query 			= ee()->db->get('blacklisted');
@@ -388,13 +388,13 @@ class Blacklist_mcp {
 		if (count($additions) > 0)
 		{
 			$use_post = FALSE;
-			
+
 			$new_data['agent']		= (isset($additions['agent'])) ? array_merge($old['agent'], $additions['agent']) : $old['agent'];
 			$new_data['url']		= (isset($additions['url'])) ? array_merge($old['url'], $additions['url']) : $old['url'];
-			$new_data['ip']		= (isset($additions['ip'])) ? array_merge($old['ip'], $additions['ip']) : array();			
+			$new_data['ip']		= (isset($additions['ip'])) ? array_merge($old['ip'], $additions['ip']) : array();
 
 		}
-		
+
 		foreach ($default as $val)
 		{
 			if (isset($_POST[$val]))
@@ -402,7 +402,7 @@ class Blacklist_mcp {
 				 $_POST[$val] = str_replace('[-]', '', $_POST[$val]);
 				 $_POST[$val] = str_replace('[+]', '', $_POST[$val]);
 				 $_POST[$val] = trim(stripslashes($_POST[$val]));
- 
+
 				 $new_values = explode(NL,strip_tags($_POST[$val]));
 			}
 			elseif (isset($new_data[$val]))
@@ -722,7 +722,7 @@ class Blacklist_mcp {
 			$vars['form_action'] = 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=blacklist'.AMP.'method=write_htaccess';
 			$vars['form_hidden']['htaccess_path'] = ee()->config->item('htaccess_path');
 			$vars['form_hidden']['write_htaccess'] = 'y';
-		
+
 		}
 		else
 		{

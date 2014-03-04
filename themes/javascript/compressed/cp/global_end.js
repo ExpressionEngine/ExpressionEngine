@@ -3,11 +3,11 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
 
-$("table").each(function(){var a;$(this).data("table_config")&&(a=$(this).data("table_config"),$.isPlainObject(a)||(a=$.parseJSON(a)),$(this).table(a));jQuery().toggle_all&&$(this).toggle_all()});
+(function(a){a("table").each(function(){var b;a(this).data("table_config")&&(b=a(this).data("table_config"),a.isPlainObject(b)||(b=a.parseJSON(b)),a(this).table(b));jQuery().toggle_all&&a(this).toggle_all()})})(jQuery);

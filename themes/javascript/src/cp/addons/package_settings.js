@@ -23,7 +23,7 @@ var package_settings = {
 				return false;
 			});
 		};
-	},
+	}
 };
 
 package_settings.init();

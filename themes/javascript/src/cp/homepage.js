@@ -3,27 +3,21 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
-
-/*jslint browser: true, onevar: true, undef: true, nomen: true, eqeqeq: true, plusplus: true, bitwise: true, regexp: false, strict: true, newcap: true, immed: true */
-
-/*global $, jQuery, EE, window, document, console, alert */
-
-"use strict";
-
 $(document).ready(function () {
-	var ajaxContentButtons = {},
-		dialog_div = $('<div id=\"ajaxContent\" />'),
-		msgBoxOpen, msgContainer, save_state, setup_hidden;
+	"use strict";
 
-	ajaxContentButtons[EE.lang.close] = function () {
-											$(this).dialog("close");
-										};
+	var ajaxContentButtons = {},
+		dialog_div = $('<div id=\"ajaxContent\" />');
+
+	ajaxContentButtons[EE.lang.close] = function() {
+		$(this).dialog("close");
+	};
 
 	dialog_div.dialog({
 		autoOpen: false,
@@ -37,9 +31,9 @@ $(document).ready(function () {
 	$("a.submenu").click(function () {
 		if ($(this).data("working")) {
 			return false;
-		} else {
-			$(this).data("working", true);
 		}
+
+		$(this).data("working", true);
 
 		var url = $(this).attr("href"),
 			that = $(this).parent(),

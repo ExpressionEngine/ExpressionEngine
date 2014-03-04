@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -33,7 +33,7 @@ class Pages_upd {
 	}
 
 	// ----------------------------------------------------------------------
-	
+
 	function tabs()
 	{
 		$tabs['pages'] = array(
@@ -43,16 +43,16 @@ class Pages_upd {
 								'htmlbuttons'	=> TRUE,
 								'width'			=> '100%'
 								),
-			
+
 			'pages_uri'		=> array(
 								'visible'		=> TRUE,
 								'collapse'		=> FALSE,
 								'htmlbuttons'	=> TRUE,
 								'width'			=> '100%'
 								)
-				);	
-				
-		return $tabs;	
+				);
+
+		return $tabs;
 	}
 
 
@@ -85,7 +85,7 @@ class Pages_upd {
 		{
 			ee()->db->query($query);
 		}
-		
+
 		ee()->load->library('layout');
 		ee()->layout->add_layout_tabs($this->tabs(), 'pages');
 
@@ -116,7 +116,7 @@ class Pages_upd {
 		{
 			ee()->db->query($query);
 		}
-		
+
 		ee()->load->library('layout');
 		ee()->layout->delete_layout_tabs($this->tabs());
 
@@ -134,19 +134,19 @@ class Pages_upd {
 	 * @return	bool
 	 */
 	function update($current = '')
-	{	
+	{
 
 		if ($current === $this->version)
 		{
 			return FALSE;
 		}
-		
+
 		if (version_compare($current, '2.1', '<'))
 		{
 			ee()->db->where('module_name', 'Pages');
 			ee()->db->update('modules', array('has_publish_fields' => 'y'));
 		}
-		
+
 		if (version_compare($current, '2.2', '<'))
 		{
 			$this->_do_22_update();
@@ -163,20 +163,20 @@ class Pages_upd {
 	private function _do_22_update()
 	{
 		ee()->load->library('layout');
-		
+
 		$layouts = ee()->db->get('layout_publish');
-		
+
 		if ($layouts->num_rows() === 0)
 		{
 			return;
 		}
-		
+
 		$layouts = $layouts->result_array();
-		
+
 		$old_pages_fields = array(
 							'pages_uri',
 							'pages_template_id',
-						);	
+						);
 
 		foreach ($layouts as &$layout)
 		{
@@ -184,7 +184,7 @@ class Pages_upd {
 
 			foreach ($old_layout as $tab => &$fields)
 			{
-				$field_keys = array_keys($fields);				
+				$field_keys = array_keys($fields);
 
 				foreach ($field_keys as &$key)
 				{
@@ -200,9 +200,9 @@ class Pages_upd {
 			$layout['field_layout'] = serialize($old_layout);
 
 		}
-		
+
 		ee()->db->update_batch('layout_publish', $layouts, 'layout_id');
-		
+
 		return TRUE;
 	}
 

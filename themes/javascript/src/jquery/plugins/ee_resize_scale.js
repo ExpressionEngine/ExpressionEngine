@@ -3,7 +3,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -31,18 +31,18 @@
 		"resize_height": 	"#resize_height",
 		"submit_resize": 	"",
 		"cancel_resize": 	"",
-		
+
 		"oversized_class": 	"oversized",
 		"default_height": 	0,
 		"default_width": 	0,
 		"resize_confirm": 	"",
-		
+
 		// Callbacks
 		"callback_resize": 	"",
 		"callback_submit": 	"",
 		"callback_cancel": 	""
 	};
-	
+
 	$.fn.resize_scale = function(passed_options) {
 		return this.each(function() {
 			var options = $.extend({}, default_options, passed_options),
@@ -51,11 +51,11 @@
 				$resize_height = $(options.resize_height, $form),
 				$submit_button = $(options.submit_resize, $form),
 				$cancel_button = $(options.cancel_resize, $form);
-			
+
 			// Ensure default height and width are numbers
 			options.default_height = parseInt(options.default_height, 10);
 			options.default_width = parseInt(options.default_width, 10);
-			
+
 			$resize_width.add($resize_height).keyup(function(event) {
 				// Enable cancel button
 				$cancel_button.show();
@@ -68,7 +68,7 @@
 					image_ratio;
 
 				// Determine ratio
-				if (id === "resize_width") 
+				if (id === "resize_width")
 				{
 					image_ratio = options.default_height / options.default_width;
 
@@ -94,7 +94,7 @@
 
 				if (typeof options.callback_resize === 'function') {
 					options.callback_resize.call(
-						this, 
+						this,
 						{
 							"width": $resize_width.val(),
 							"height": $resize_height.val()
@@ -102,11 +102,11 @@
 					);
 				};
 			});
-			
+
 			$submit_button.off('click', '**').on('click', function(event) {
 				if ($('.'+options.oversized_class).size()) {
 					var confirmation = confirm(options.resize_confirm);
-					
+
 					if (confirmation == false) {
 						event.preventDefault();
 					} else if (typeof options.callback_submit === 'function') {
@@ -126,7 +126,7 @@
 
 					if (typeof options.callback_cancel === 'function') {
 						options.callback_cancel.call(
-							this, 
+							this,
 							{
 								"width": $resize_width.val(),
 								"height": $resize_height.val()

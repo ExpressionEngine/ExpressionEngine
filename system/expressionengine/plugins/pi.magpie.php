@@ -6,7 +6,7 @@
 -----------------------------------------------------
  http://ellislab.com/
 -----------------------------------------------------
- Copyright (c) 2004 - 2013 EllisLab, Inc.
+ Copyright (c) 2004 - 2014 EllisLab, Inc.
 =====================================================
  THIS IS COPYRIGHTED SOFTWARE
  PLEASE READ THE LICENSE AGREEMENT
@@ -27,7 +27,7 @@ $plugin_info = array(
 	'pi_description'	=> 'Retrieves and Parses RSS/Atom Feeds',
 	'pi_usage'			=> Magpie::usage()
 );
-					
+
 
 Class Magpie {
 
@@ -36,13 +36,13 @@ Class Magpie {
 	var $cache_data		= '';									// Data from cache file
 	var $cache_path		= '';									// Path to cache file.
 	var $cache_tpath	= '';									// Path to cache file's time file.
-	
+
 	var $page_url		= '';									// URL being requested
-	
+
 	var $items			= array();								// Information about items returned
-	var $dates			= array('lastupdate','linkcreated');	// Date elements							
+	var $dates			= array('lastupdate','linkcreated');	// Date elements
 	var $return_data	= ''; 									// Data sent back to Template parser
-	
+
 
 	 /** -------------------------------------
 	 /**  Constructor
@@ -51,23 +51,27 @@ Class Magpie {
 	 {
 		// Make a local reference of the ExpressionEngine super object
 		$this->EE =& get_instance();
-	 	
+
+		// Deprecate
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.8', 'pi.rss_parser.php or ee()->rss_parser->create()');
+
 	 	/** -------------------------------
-	 	/**  Set Parameters 
+	 	/**  Set Parameters
 	 	/** -------------------------------*/
-	 	
+
 	 	$this->cache_refresh 	= ( ! ee()->TMPL->fetch_param('refresh')) ? $this->cache_refresh : ee()->TMPL->fetch_param('refresh');
 	 	$this->page_url 		= ( ! ee()->TMPL->fetch_param('url')) ? '' : trim(ee()->TMPL->fetch_param('url'));
 	 	$limit					= ( ! ee()->TMPL->fetch_param('limit')) ? 20 : ee()->TMPL->fetch_param('limit');
 	 	$offset					= ( ! ee()->TMPL->fetch_param('offset')) ? 0 : ee()->TMPL->fetch_param('offset');
 	 	$template				= ee()->TMPL->tagdata;
-	 	
-	 	
+
+
 	 	if ($this->page_url == '')
 	 	{
 	 		return $this->return_data;
-	 	}	 	
-	 	
+	 	}
+
 	 	if (ee()->config->item('debug') == 2 OR (ee()->config->item('debug') == 1 && ee()->session->userdata['group_id'] == 1))
 		{
 			if ( ! defined('MAGPIE_DEBUG'))
@@ -82,69 +86,69 @@ Class Magpie {
 				define('MAGPIE_DEBUG', 0);
 			}
 		}
-		
-		
-	 	
+
+
+
 	 	/** -------------------------------
 	 	/**  Check and Retrive Cache
 	 	/** -------------------------------*/
-	 	
+
 	 	if ( ! defined('MAGPIE_CACHE_DIR'))
 		{
 			define('MAGPIE_CACHE_DIR', APPPATH.'cache/'.$this->cache_name.'/');
 		}
-		
+
 		if ( ! defined('MAGPIE_CACHE_AGE'))
 		{
 			define('MAGPIE_CACHE_AGE',	$this->cache_refresh * 60);
 		}
-		
+
 		$this->RSS = fetch_rss($this->page_url);
-		
+
 		if (count($this->RSS->items) == 0)
 		{
 			return $this->return_data;
 		}
-		
+
 		/** -----------------------------------
 		/**  Parse Template - ITEMS
 		/** -----------------------------------*/
-		
+
 		if (preg_match("/(".LD."items".RD."(.*?)".LD.'\/'.'items'.RD."|".LD."magpie:items".RD."(.*?)".LD.'\/'.'magpie:items'.RD.")/s", $template, $matches))
 		{
 			$items_data = '';
 			$i = 0;
-			
+
 			if (count($this->RSS->items) > 0)
-			{		  	
+			{
 				foreach($this->RSS->items as $item)
 		  		{
 		  			$i++;
 		  			if ($i <= $offset) continue;
-		  			
+
 		  			$temp_data = $matches['1'];
-		
+
 		  			/** ----------------------------------------
 					/**  Quick and Dirty Conditionals
 					/** ----------------------------------------*/
-					
+
 					if (stristr($temp_data, LD.'if'))
 					{
 						$tagdata = ee()->functions->prep_conditionals($temp_data, $item, '', 'magpie:');
 		  			}
-		  			
+
 		  			/** ----------------------------------------
 					/**  Single Variables
 					/** ----------------------------------------*/
-		  			
+
 		  			foreach($item as $key => $value)
-		  			{		  				
+		  			{
 		  				if ( ! is_array($value))
 		  				{
 		  					$temp_data = str_replace(LD.$key.RD, $value, $temp_data);
 		  					$temp_data = str_replace(LD.'magpie:'.$key.RD, $value, $temp_data);
-		  					
-		  					if ($key == 'atom_content') 
+
+		  					if ($key == 'atom_content')
 		  					{
 		  						$temp_data = str_replace(LD.'content'.RD, $value, $temp_data);
 		  						$temp_data = str_replace(LD.'magpie:content'.RD, $value, $temp_data);
@@ -156,7 +160,7 @@ Class Magpie {
 		  					{
 		  						$temp_data = str_replace(LD.$key.'_'.$vk.RD, $vv, $temp_data);
 		  						$temp_data = str_replace(LD.'magpie:'.$key.'_'.$vk.RD, $vv, $temp_data);
-		  						
+
 		  						if ($key == 'dc')
 		  						{
 		  							$temp_data = str_replace(LD.$vk.RD, $vv, $temp_data);
@@ -165,88 +169,88 @@ Class Magpie {
 		  					}
 		  				}
 		  			}
-		
+
 		  			$items_data .= $temp_data;
-		  			
+
 		  			if ($i >= ($limit + $offset))
 		  			{
 		  				break;
 		  			}
 				}
 			}
-			
+
 		  	/** ----------------------------------------
 			/**  Clean up left over variables
 			/** ----------------------------------------*/
-		  	
+
 		  	$items_data = str_replace(LD.'exp:', 'TgB903He0mnv3dd098', $items_data);
 			$items_data = str_replace(LD.'/exp:', 'Mu87ddk2QPoid990iod', $items_data);
-		
+
 			$items_data = preg_replace("/".LD."if.*?".RD.".+?".LD.'\/'."if".RD."/s", '', $items_data);
 			$items_data = preg_replace("/".LD.".+?".RD."/", '', $items_data);
 
 			$items_data = str_replace('TgB903He0mnv3dd098', LD.'exp:', $items_data);
 			$items_data = str_replace('Mu87ddk2QPoid990iod', LD.'/exp:', $items_data);
-		  	
+
 			$template = str_replace($matches['0'], $items_data, $template);
 		}
-					
+
 		/** -----------------------------------
 		/**  Parse Template
 		/** -----------------------------------*/
-		
+
 		$channel_variables = array('title', 'link', 'modified', 'generator',
 									'copyright', 'description', 'language',
 									'pubdate', 'lastbuilddate', 'generator',
 									'tagline', 'creator', 'date', 'rights');
-									
+
 		$image_variables = array('title','url', 'link','description', 'width', 'height');
-		
-		
+
+
 		foreach (ee()->TMPL->var_single as $key => $val)
-		{		  			
-			
+		{
+
 			/** ----------------------------------------
 			/**  {feed_version} - Version of RSS/Atom Feed
 			/** ----------------------------------------*/
-			
+
 			if ($key == "feed_version" OR $key == "magpie:feed_version")
 			{
 				if ( ! isset($this->RSS->feed_version)) $this->RSS->feed_version = '';
-				
+
 				$template = ee()->TMPL->swap_var_single($val, $this->RSS->feed_version, $template);
 			}
-			
+
 			/** ----------------------------------------
 			/**  {feed_type}
 			/** ----------------------------------------*/
-			
+
 			if (($key == "feed_type" OR $key == "magpie:feed_type") && isset($this->RSS->feed_type))
 			{
 				if ( ! isset($this->RSS->feed_type)) $this->RSS->feed_type = '';
-				
+
 				$template = ee()->TMPL->swap_var_single($val, $this->RSS->feed_type, $template);
 			}
-			
+
 			/** ----------------------------------------
 			/**  Image related variables
 			/** ----------------------------------------*/
-			
+
 			foreach ($image_variables as $variable)
 			{
 				if ($key == 'image_'.$variable OR $key == 'magpie:image_'.$variable)
 				{
 					if ( ! isset($this->RSS->image[$variable])) $this->RSS->image[$variable] = '';
-				
+
 					$template = ee()->TMPL->swap_var_single($val, $this->RSS->image[$variable], $template);
 				}
 			}
-			
-			
+
+
 			/** ----------------------------------------
 			/**  Channel related variables
 			/** ----------------------------------------*/
-			
+
 			foreach ($channel_variables as $variable)
 			{
 				if ($key == 'channel_'.$variable OR $key == 'magpie:channel_'.$variable)
@@ -255,40 +259,40 @@ Class Magpie {
 					{
 						$this->RSS->channel[$variable] = ( ! isset($this->RSS->channel['dc'][$variable])) ? '' : $this->RSS->channel['dc'][$variable];
 					}
-				
+
 					$template = ee()->TMPL->swap_var_single($val, $this->RSS->channel[$variable], $template);
 				}
-			}			
-			
+			}
+
 			/** ----------------------------------------
 			/**  {page_url}
 			/** ----------------------------------------*/
-			
+
 			if ($key == 'page_url' OR $key == 'magpie:page_url')
 			{
 				$template = ee()->TMPL->swap_var_single($val, $this->page_url, $template);
-			}	
+			}
 		}
-		
+
 		$this->return_data = &$template;
-		
+
 	}
 
-		 
-	
-	 
+
+
+
 	/** ----------------------------------------
 	/**  Plugin Usage
 	/** ----------------------------------------*/
 	function usage()
 	{
-	ob_start(); 
+	ob_start();
 	?>
 
 STEP ONE:
 Insert plugin tag into your template.  Set parameters and variables.
 
-PARAMETERS: 
+PARAMETERS:
 The tag has three parameters:
 
 1. url - The URL of the RSS or Atom feed.
@@ -379,7 +383,7 @@ Bug Fixes
 Version 1.2.3
 ***************************
 Modified the code so that one can put 'magpie:' as a prefix on all plugin variables,
-which allows the embedding of this plugin in a {exp:channel:entries} tag and using 
+which allows the embedding of this plugin in a {exp:channel:entries} tag and using
 that tag's variables in this plugin's parameter (url="" parameter, specifically).
 
 {exp:magpie url="http://expressionengine.com/feeds/rss/full/" limit="10" refresh="720"}
@@ -414,7 +418,7 @@ introuced in 1.2.
 Version 1.3.1
 ***************************
 New parameter convert_entities="y" which will have any entities in the RSS feed converted
-before being parsed by the PHP XML parser.  This is helpful because sometimes the XML 
+before being parsed by the PHP XML parser.  This is helpful because sometimes the XML
 Parser converts entities incorrectly. You have to empty your Magpie cache after enabling this setting.
 
 New parameter encoding="ISO-8859-1".  Allows you to specify the encoding of the RSS
@@ -424,7 +428,7 @@ feed, which is sometimes helpful when using the convert_encoding="y" parameter.
 Version 1.3.2
 ***************************
 Eliminated all of the darn encoding parameters previously being used and used the
-encoding abilities recently added to the Magpie library that attempts to do all of the 
+encoding abilities recently added to the Magpie library that attempts to do all of the
 converting early on.
 
 ***************************
@@ -447,13 +451,13 @@ Added ability to override caching options when using fetch_rss() directly.
 
 	<?php
 	$buffer = ob_get_contents();
-	
-	ob_end_clean(); 
+
+	ob_end_clean();
 
 	return $buffer;
 	}
 
-	
+
 
 } // END Magpie class
 
@@ -479,7 +483,7 @@ modification, are permitted provided that the following conditions are met:
 - Redistributions in binary form must reproduce the above copyright notice,
   this list of conditions and the following disclaimer in the documentation
   and/or other materials provided with the distribution.
- 
+
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
 CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -516,25 +520,25 @@ POSSIBILITY OF SUCH DAMAGE.
  *	- Magpie is based on expat, an XML parser, and therefore will only parse
  *	  valid XML files.  This includes all properly constructed RSS or Atom.
  *
- *	- Magpie is an inclusive parser.  It will include any elements that 
- *	  it can turn into a key value pair in the parsed feed object it returns. 
- *		
- *	- Magpie supports namespaces, and will return any elements found in a 
- *	  namespace in a sub-array, with the key point to that array being the 
- *	  namespace prefix.  
- *	  (e.g. if an item contains a <dc:date> element, then that date can 
+ *	- Magpie is an inclusive parser.  It will include any elements that
+ *	  it can turn into a key value pair in the parsed feed object it returns.
+ *
+ *	- Magpie supports namespaces, and will return any elements found in a
+ *	  namespace in a sub-array, with the key point to that array being the
+ *	  namespace prefix.
+ *	  (e.g. if an item contains a <dc:date> element, then that date can
  *	  be accessed at $item['dc']['date']
- *		
- *	- Magpie supports nested elements by combining the names.  If an item 
+ *
+ *	- Magpie supports nested elements by combining the names.  If an item
  *	  includes XML like:
  *		<author>
  *		  <name>Kellan</name>
  *		</author>
- *		
+ *
  *	 The name field is accessible at $item['author_name']
- *  
+ *
  *	- Magpie makes no attempt validate a feed beyond insuring that it
- *	  is valid XML.	
+ *	  is valid XML.
  *	  RSS validators are readily available on the web at:
  *		 http://feeds.archive.org/validator/
  *		 http://www.ldodds.com/rss_validator/1.0/validator.html
@@ -555,7 +559,7 @@ POSSIBILITY OF SUCH DAMAGE.
  *	<ev:location>Northampton, MA</ev:location>
  *	<ev:type>Protest</ev:type>
  * </item>
- * 
+ *
  * Would transform it into the following associative array, and push it
  * onto the array $rss-items
  *
@@ -612,9 +616,9 @@ class MagpieRSS {
 	 *
 	 * see: rss_fetch.inc for a simpler interface
 	 */
-	 
+
 	var $parser;
-	
+
 	var $current_item	= array();	// item currently being parsed
 	var $items			= array();	// collection of parsed items
 	var $channel		= array();	// hash of channel fields
@@ -628,43 +632,43 @@ class MagpieRSS {
 	var $stack				= array(); // parser stack
 	var $inchannel			= false;
 	var $initem 			= false;
-	var $incontent			= false; // if in Atom <content mode="xml"> field 
+	var $incontent			= false; // if in Atom <content mode="xml"> field
 	var $intextinput		= false;
 	var $inimage 			= false;
 	var $current_field		= '';
 	var $current_namespace	= false;
 	var $etag				= false;
-	
+
 	var $ERROR = "";
-	
+
 	var $_CONTENT_CONSTRUCTS = array('content', 'summary', 'info', 'title', 'tagline', 'copyright');
 	 var $_KNOWN_ENCODINGS	 = array('UTF-8', 'US-ASCII', 'ISO-8859-1');
-	 
+
 /*======================================================================*\
 	 Function: MagpieRSS
 	 Purpose:  Constructor, sets up XML parser,parses source,
-			  and populates object.. 
+			  and populates object..
 	Input:	  String containing the RSS to be parsed
 \*======================================================================*/
-	function MagpieRSS ($source, $output_encoding='ISO-8859-1', 
+	function MagpieRSS ($source, $output_encoding='ISO-8859-1',
 								$input_encoding=null, $detect_encoding=true)
 	{
 
 		// Make a local reference of the ExpressionEngine super object
 		$this->EE =& get_instance();
-		
+
 		# if PHP xml isn't compiled in, die
 		#
 		if ( ! function_exists('xml_parser_create'))
 		{
-			$this->error( "Failed to load PHP's XML Extension. " . 
+			$this->error( "Failed to load PHP's XML Extension. " .
 						  "http://www.php.net/manual/en/ref.xml.php",
 							E_USER_ERROR );
 		}
-		
-		list($parser, $source) = $this->create_parser($source, 
+
+		list($parser, $source) = $this->create_parser($source,
 					 $output_encoding, $input_encoding, $detect_encoding);
-		
+
 		if ( ! is_resource($parser))
 		{
 			$this->error( "Failed to create an instance of PHP's XML parser. " .
@@ -672,18 +676,18 @@ class MagpieRSS {
 						  E_USER_ERROR );
 		}
 
-		
+
 		# pass in parser, and a reference to this object
 		# setup handlers
 		#
 		xml_set_object( $parser, $this );
-		xml_set_element_handler($parser, 
+		xml_set_element_handler($parser,
 				'feed_start_element', 'feed_end_element' );
-						
-		xml_set_character_data_handler( $parser, 'feed_cdata' ); 
-	
+
+		xml_set_character_data_handler( $parser, 'feed_cdata' );
+
 		$status = @xml_parse($parser, $source);
-		
+
 		if ( ! $status )
 		{
 			$errorcode = xml_get_error_code( $parser );
@@ -695,32 +699,32 @@ class MagpieRSS {
 				$errormsg = "$xml_error at line $error_line, column $error_col";
 
 				$this->error( $errormsg );
-				
+
 				return FALSE;
 			}
 		}
-		
+
 		xml_parser_free( $parser );
 
 		$this->normalize();
 	}
-	
+
 	function change_key_case($array)
 	{
 		$new_array = array();
-		
+
 		foreach($array as $key => $value)
 		{
 			$new_array[strtolower($key)] = $value;
 		}
-		
+
 		return $new_array;
 	}
-	
+
 	function feed_start_element($p, $element, &$attrs)
 	{
 		$el = $element = strtolower($element);
-		
+
 		if ( ! function_exists('array_change_key_case'))
 		{
 			$attrs = $this->change_key_case($attrs);
@@ -729,19 +733,19 @@ class MagpieRSS {
 		{
 			$attrs = array_change_key_case($attrs, CASE_LOWER);
 		}
-		
+
 		// check for a namespace, and split if found
 		$ns	= false;
 		if ( strpos( $element, ':' ) )
 		{
-			list($ns, $el) = explode( ':', $element, 2); 
+			list($ns, $el) = explode( ':', $element, 2);
 		}
-		
+
 		if ( $ns and $ns != 'rdf' )
 		{
 			$this->current_namespace = $ns;
 		}
-			
+
 		# if feed type isn't set, then this is first element of feed
 		# identify feed from root element
 		#
@@ -765,38 +769,38 @@ class MagpieRSS {
 			}
 			return;
 		}
-	
-		if ( $el == 'channel' ) 
+
+		if ( $el == 'channel' )
 		{
 			$this->inchannel = true;
 		}
-		elseif ($el == 'item' or $el == 'entry' ) 
+		elseif ($el == 'item' or $el == 'entry' )
 		{
 			$this->initem = true;
 			if ( isset($attrs['rdf:about']) )
 			{
-				$this->current_item['about'] = $attrs['rdf:about'];	
+				$this->current_item['about'] = $attrs['rdf:about'];
 			}
 		}
-		
+
 		// if we're in the default namespace of an RSS feed,
 		//  record textinput or image fields
-		elseif ( 
-			$this->feed_type == RSS and 
-			$this->current_namespace == '' and 
-			$el == 'textinput' ) 
+		elseif (
+			$this->feed_type == RSS and
+			$this->current_namespace == '' and
+			$el == 'textinput' )
 		{
 			$this->intextinput = true;
 		}
-		
+
 		elseif (
-			$this->feed_type == RSS and 
-			$this->current_namespace == '' and 
-			$el == 'image' ) 
+			$this->feed_type == RSS and
+			$this->current_namespace == '' and
+			$el == 'image' )
 		{
 			$this->inimage = true;
 		}
-		
+
 		# handle atom content constructs
 		elseif ( $this->feed_type == ATOM and in_array($el, $this->_CONTENT_CONSTRUCTS) )
 		{
@@ -805,33 +809,33 @@ class MagpieRSS {
 			{
 				$el = 'atom_content';
 			}
-			
+
 			$this->incontent = $el;
-			
-			
+
+
 		}
-		
+
 		// if inside an Atom content construct (e.g. content or summary) field treat tags as text
-		elseif ($this->feed_type == ATOM and $this->incontent ) 
+		elseif ($this->feed_type == ATOM and $this->incontent )
 		{
 			// if tags are inlined, then flatten
-			$attrs_str = join(' ', 
-					array_map('map_attrs', 
-					array_keys($attrs), 
+			$attrs_str = join(' ',
+					array_map('map_attrs',
+					array_keys($attrs),
 					array_values($attrs) ) );
-			
+
 			$this->append_content( "<$element $attrs_str>"  );
-					
+
 			array_unshift( $this->stack, $el );
 		}
-		
+
 		// Atom support many links per containging element.
 		// Magpie treats link elements of type rel='alternate'
 		// as being equivalent to RSS's simple link element.
 		//
-		elseif ($this->feed_type == ATOM and $el == 'link' ) 
+		elseif ($this->feed_type == ATOM and $el == 'link' )
 		{
-			if ( isset($attrs['rel']) and $attrs['rel'] == 'alternate' ) 
+			if ( isset($attrs['rel']) and $attrs['rel'] == 'alternate' )
 			{
 				$link_el = 'link';
 			}
@@ -839,7 +843,7 @@ class MagpieRSS {
 			{
 				$link_el = 'link_' . $attrs['rel'];
 			}
-			
+
 			$this->append($link_el, $attrs['href']);
 		}
 		// set stack[0] to current element
@@ -848,13 +852,13 @@ class MagpieRSS {
 			array_unshift($this->stack, $el);
 		}
 	}
-	
 
-	
+
+
 	function feed_cdata ($p, $text)
 	{
-		
-		if ($this->feed_type == ATOM and $this->incontent) 
+
+		if ($this->feed_type == ATOM and $this->incontent)
 		{
 			$this->append_content( $text );
 		}
@@ -864,30 +868,30 @@ class MagpieRSS {
 			$this->append($current_el, $text);
 		}
 	}
-	
+
 	function feed_end_element ($p, $el)
 	{
 		$el = strtolower($el);
-		
-		if ( $el == 'item' or $el == 'entry' ) 
+
+		if ( $el == 'item' or $el == 'entry' )
 		{
 			$this->items[] = $this->current_item;
 			$this->current_item = array();
 			$this->initem = false;
 		}
-		elseif ($this->feed_type == RSS and $this->current_namespace == '' and $el == 'textinput' ) 
+		elseif ($this->feed_type == RSS and $this->current_namespace == '' and $el == 'textinput' )
 		{
 			$this->intextinput = false;
 		}
-		elseif ($this->feed_type == RSS and $this->current_namespace == '' and $el == 'image' ) 
+		elseif ($this->feed_type == RSS and $this->current_namespace == '' and $el == 'image' )
 		{
 			$this->inimage = false;
 		}
 		elseif ($this->feed_type == ATOM and in_array($el, $this->_CONTENT_CONSTRUCTS) )
-		{	
+		{
 			$this->incontent = false;
 		}
-		elseif ($el == 'channel' or $el == 'feed' ) 
+		elseif ($el == 'channel' or $el == 'feed' )
 		{
 			$this->inchannel = false;
 		}
@@ -895,7 +899,7 @@ class MagpieRSS {
 		{
 			// balance tags properly
 			// note:  i don't think this is actually neccessary
-			if ( $this->stack[0] == $el ) 
+			if ( $this->stack[0] == $el )
 			{
 				$this->append_content("</$el>");
 			}
@@ -910,10 +914,10 @@ class MagpieRSS {
 		{
 			array_shift( $this->stack );
 		}
-		
+
 		$this->current_namespace = false;
 	}
-	
+
 	function concat (&$str1, $str2="")
 	{
 		if ( ! isset($str1) )
@@ -922,9 +926,9 @@ class MagpieRSS {
 		}
 		$str1 .= $str2;
 	}
-	
-	
-	
+
+
+
 	function append_content($text)
 	{
 		if ( $this->initem )
@@ -936,7 +940,7 @@ class MagpieRSS {
 			$this->concat( $this->channel[ $this->incontent ], $text );
 		}
 	}
-	
+
 	// smart append - field and namespace aware
 	function append($el, $text)
 	{
@@ -944,7 +948,7 @@ class MagpieRSS {
 		{
 			return;
 		}
-		if ( $this->current_namespace ) 
+		if ( $this->current_namespace )
 		{
 			if ( $this->initem )
 			{
@@ -981,10 +985,10 @@ class MagpieRSS {
 			{
 				$this->concat($this->channel[ $el ], $text );
 			}
-			
+
 		}
 	}
-	
+
 	function normalize ()
 	{
 		// if atom populate rss fields
@@ -996,16 +1000,16 @@ class MagpieRSS {
 				$item = $this->items[$i];
 				if ( isset($item['summary']) )
 				{
-					$item['description'] = $item['summary'];	
+					$item['description'] = $item['summary'];
 				}
 
 				if ( isset($item['atom_content']))
 				{
 					$item['content']['encoded'] = $item['atom_content'];
 				}
-				
+
 				$this->items[$i] = $item;
-			}		
+			}
 		}
 		elseif ( $this->is_rss() )
 		{
@@ -1016,29 +1020,29 @@ class MagpieRSS {
 				if ( isset($item['description']))
 				{
 					$item['summary'] = $item['description'];
-				}	
+				}
 
 				if ( isset($item['content']['encoded'] ) )
 				{
 					$item['atom_content'] = $item['content']['encoded'];
 				}
-			
+
 				$this->items[$i] = $item;
 			}
 		}
 	}
-	
+
 	function error ($errormsg, $lvl=E_USER_WARNING)
 	{
-	
+
 		// append PHP's error message if track_errors enabled
 		if ( isset($php_errormsg) )
-		{ 
+		{
 			$errormsg .= " ($php_errormsg)";
 		}
-		
+
 		$this->ERROR = $errormsg;
-		
+
 		if (MAGPIE_DEBUG)
 		{
 			trigger_error($errormsg, $lvl);
@@ -1048,19 +1052,19 @@ class MagpieRSS {
 			error_log($errormsg, 0);
 		}
 	}
-	
+
 	function is_rss ()
 	{
 		if ( $this->feed_type == RSS )
 		{
-			return $this->feed_version;	
+			return $this->feed_version;
 		}
 		else
 		{
 			return false;
 		}
 	}
-	
+
 	function is_atom()
 	{
 		if ( $this->feed_type == ATOM )
@@ -1072,14 +1076,14 @@ class MagpieRSS {
 			return false;
 		}
 	}
-	
-	
+
+
 	/**
 	 * return XML parser, and possibly re-encoded source
 	 *
 	 */
 	function create_parser($source, $out_enc, $in_enc, $detect)
-	{	 	
+	{
 		if ( substr(phpversion(),0,1) == 5)
 		{
 			$parser = $this->php5_create_parser($in_enc, $detect);
@@ -1088,23 +1092,23 @@ class MagpieRSS {
 		{
 			list($parser, $source) = $this->php4_create_parser($source, $in_enc, $detect);
 		}
-		  
+
 		$this->encoding = ee()->config->item('charset');
-		  
-		  
+
+
 		if (in_array(strtolower($this->encoding), array('iso-8859-1', 'us-ascii', 'utf-8')))
 		{
 			xml_parser_set_option($parser, XML_OPTION_TARGET_ENCODING, $this->encoding);
 		}
-		  
+
 		return array($parser, $source);
 	}
-	 
+
 	 /**
 	 * Instantiate an XML parser under PHP5
 	 *
 	 * PHP5 will do a fine job of detecting input encoding
-	 * if passed an empty string as the encoding. 
+	 * if passed an empty string as the encoding.
 	 *
 	 * All hail libxml2!
 	 *
@@ -1121,7 +1125,7 @@ class MagpieRSS {
 				return xml_parser_create('');
 		  }
 	 }
-	 
+
 	 /**
 	 * Instaniate an XML parser under PHP4
 	 *
@@ -1143,7 +1147,7 @@ class MagpieRSS {
 		{
 			return array(xml_parser_create($in_enc), $source);
 		}
-		  
+
 		if ( ! $in_enc)
 		{
 			if (preg_match('/<?xml.*encoding=[\'"](.*?)[\'"].*?>/m', $source, $m))
@@ -1156,17 +1160,17 @@ class MagpieRSS {
 				$in_enc = 'UTF-8';
 			}
 		}
-		  
+
 		if ($this->known_encoding($in_enc))
 		{
 			return array(xml_parser_create($in_enc), $source);
 		}
-		  
+
 		// the dectected encoding is not one of the simple encodings PHP knows
 		// attempt to use the iconv extension to
 		// cast the XML to a known encoding
 		// @see http://php.net/iconv
-		 
+
 		if (function_exists('iconv'))
 		{
 			$encoded_source = iconv($in_enc,'UTF-8', $source);
@@ -1175,7 +1179,7 @@ class MagpieRSS {
 				 return array(xml_parser_create('UTF-8'), $encoded_source);
 			}
 		}
-		  
+
 		// iconv didn't work, try mb_convert_encoding
 		// @see http://php.net/mbstring
 		if (function_exists('mb_convert_encoding'))
@@ -1186,16 +1190,16 @@ class MagpieRSS {
 				return array(xml_parser_create('UTF-8'), $encoded_source);
 			}
 		}
-		  
-		// else 
+
+		// else
 		$this->error("Feed is in an unsupported character encoding. ($in_enc) " .
 			"You may see strange artifacts, and mangled characters.",
 			E_USER_NOTICE
 		);
-				
+
 		return array(xml_parser_create(), $source);
 	}
-	 
+
 	function known_encoding($enc)
 	{
 		$enc = strtoupper($enc);
@@ -1208,8 +1212,8 @@ class MagpieRSS {
 			return false;
 		}
 	 }
-	
-	
+
+
 
 /*======================================================================*\
 	EVERYTHING BELOW HERE IS FOR DEBUGGING PURPOSES
@@ -1223,7 +1227,7 @@ class MagpieRSS {
 		}
 		echo "</ol>";
 	}
-	
+
 	function show_channel ()
 	{
 		echo "channel:<br>";
@@ -1234,7 +1238,7 @@ class MagpieRSS {
 		}
 		echo "</ul>";
 	}
-	
+
 	function show_item ($item)
 	{
 		echo "item: $item[title]";
@@ -1260,9 +1264,9 @@ class MagpieRSS {
 	}
 
 /*======================================================================*\
-	END DEBUGGING FUNCTIONS	
+	END DEBUGGING FUNCTIONS
 \*======================================================================*/
-	
+
 } # end class RSS
 
 function map_attrs($k, $v)
@@ -1287,7 +1291,7 @@ function map_attrs($k, $v)
  * magpierss-general@lists.sourceforge.net
  *
  */
- 
+
 // Setup MAGPIE_DIR for use on hosts that don't include
 // the current path in include_path.
 // with thanks to rajiv and smarty
@@ -1302,18 +1306,18 @@ if ( ! defined('MAGPIE_DIR'))
 }
 
 
-/* 
+/*
  * CONSTANTS - redefine these in your script to change the
  * behaviour of fetch_rss() currently, most options effect the cache
  *
- * MAGPIE_CACHE_ON - Should Magpie cache parsed RSS objects? 
- * For me a built in cache was essential to creating a "PHP-like" 
+ * MAGPIE_CACHE_ON - Should Magpie cache parsed RSS objects?
+ * For me a built in cache was essential to creating a "PHP-like"
  * feel to Magpie, see rss_cache.inc for rationale
  *
  *
  * MAGPIE_CACHE_DIR - Where should Magpie cache parsed RSS objects?
- * This should be a location that the webserver can write to.	If this 
- * directory does not already exist Mapie will try to be smart and create 
+ * This should be a location that the webserver can write to.	If this
+ * directory does not already exist Mapie will try to be smart and create
  * it.  This will often fail for permissions reasons.
  *
  *
@@ -1328,20 +1332,20 @@ if ( ! defined('MAGPIE_DIR'))
 */
 
 /*=======================================================================*\
-	Function: fetch_rss: 
+	Function: fetch_rss:
 	Purpose:  return RSS object for the give url
 			  maintain the cache
 	Input:	  url of RSS file
 	Output:	  parsed RSS object (see rss_parse.inc)
 
-	NOTES ON CACHEING:  
+	NOTES ON CACHEING:
 	If caching is on (MAGPIE_CACHE_ON) fetch_rss will first check the cache.
-	
+
 	NOTES ON RETRIEVING REMOTE FILES:
 	If conditional gets are on (MAGPIE_CONDITIONAL_GET_ON) fetch_rss will
 	return a cached object, and touch the cache object upon recieving a
 	304.
-	
+
 	NOTES ON FAILED REQUESTS:
 	If there is an HTTP error while fetching an RSS object, the cached
 	version will be return, if it exists (and if MAGPIE_CACHE_FRESH_ONLY is off)
@@ -1354,13 +1358,13 @@ function fetch_rss ($url, $cache_age = '')
 {
 	// initialize constants
 	init();
-	
+
 	if ( ! isset($url) )
 	{
 		error("fetch_rss called without a url");
 		return false;
 	}
-	
+
 	// if cache is disabled
 	if ( !MAGPIE_CACHE_ON )
 	{
@@ -1375,7 +1379,7 @@ function fetch_rss ($url, $cache_age = '')
 			error("Failed to fetch $url and cache is off");
 			return false;
 		}
-	} 
+	}
 	// else cache is ON
 	else
 	{
@@ -1384,26 +1388,26 @@ function fetch_rss ($url, $cache_age = '')
 		// 2. if there is a hit, make sure its fresh
 		// 3. if cached obj fails freshness check, fetch remote
 		// 4. if remote fails, return stale object, or error
-		
+
 		$cache = new RSSCache( MAGPIE_CACHE_DIR, ($cache_age != '') ? $cache_age : MAGPIE_CACHE_AGE );
-		
+
 		if (MAGPIE_DEBUG and $cache->ERROR)
 		{
 			debug($cache->ERROR, E_USER_WARNING);
 		}
-		
-		
+
+
 		$cache_status 	 = 0;		// response of check_cache
 		$request_headers = array(); // HTTP headers to send with fetch
 		$rss 			 = 0;		// parsed RSS object
 		$errormsg		 = 0;		// errors, if any
-		
+
 		if ( ! $cache->ERROR)
 		{
 			// return cache HIT, MISS, or STALE
 			$cache_status = $cache->check_cache( $url );
 		}
-		
+
 		// if object cached, and cache is fresh, return cached obj
 		if ( $cache_status == 'HIT' )
 		{
@@ -1411,7 +1415,7 @@ function fetch_rss ($url, $cache_age = '')
 			if ( isset($rss) and $rss )
 			{
 				$rss->from_cache = 1;
-				
+
 				if ( MAGPIE_DEBUG > 1)
 				{
 					debug("MagpieRSS: Cache HIT", E_USER_NOTICE);
@@ -1420,9 +1424,9 @@ function fetch_rss ($url, $cache_age = '')
 				return $rss;
 			}
 		}
-		
+
 		// else attempt a conditional get
-		
+
 		// setup headers
 		if ( $cache_status == 'STALE' )
 		{
@@ -1433,9 +1437,9 @@ function fetch_rss ($url, $cache_age = '')
 				$request_headers['If-Last-Modified'] = $rss->last_modified;
 			}
 		}
-		
+
 		$resp = _fetch_remote_file( $url, $request_headers );
-		
+
 		if (isset($resp) and $resp)
 		{
 			if ($resp->status == '304' )
@@ -1470,7 +1474,7 @@ function fetch_rss ($url, $cache_age = '')
 				{
 					# compensate for Snoopy's annoying habbit to tacking
 					# on '\n'
-					$http_error = substr($resp->error, 0, -2); 
+					$http_error = substr($resp->error, 0, -2);
 					$errormsg .= "(HTTP Error: $http_error)";
 				}
 				else
@@ -1483,9 +1487,9 @@ function fetch_rss ($url, $cache_age = '')
 		{
 			$errormsg = "Unable to retrieve RSS file for unknown reasons.";
 		}
-		
+
 		// else fetch failed
-		
+
 		// attempt to return cached object
 		if ($rss)
 		{
@@ -1495,12 +1499,12 @@ function fetch_rss ($url, $cache_age = '')
 			}
 			return $rss;
 		}
-		
+
 		// else we totally failed
-		error( $errormsg );	
-		
+		error( $errormsg );
+
 		return false;
-		
+
 	} // end if ( !MAGPIE_CACHE_ON )
 } // end fetch_rss()
 
@@ -1511,17 +1515,17 @@ function fetch_rss ($url, $cache_age = '')
 function error ($errormsg, $lvl=E_USER_WARNING)
 {
 		global $MAGPIE_ERROR;
-		
+
 		// append PHP's error message if track_errors enabled
 		if ( isset($php_errormsg) )
-		{ 
+		{
 			$errormsg .= " ($php_errormsg)";
 		}
 		if ( $errormsg )
 		{
 			$errormsg = "MagpieRSS: $errormsg";
 			$MAGPIE_ERROR = $errormsg;
-			
+
 			if (MAGPIE_DEBUG)
 			{
 				trigger_error($errormsg, $lvl);
@@ -1529,7 +1533,7 @@ function error ($errormsg, $lvl=E_USER_WARNING)
 			else
 			{
 				error_log($errormsg, 0);
-			}		
+			}
 		}
 }
 
@@ -1537,7 +1541,7 @@ function debug ($debugmsg, $lvl=E_USER_NOTICE)
 {
 	trigger_error("MagpieRSS [debug] $debugmsg", $lvl);
 }
-			
+
 /*=======================================================================*\
 	Function:	magpie_error
 	Purpose:	accessor for the magpie error variable
@@ -1545,13 +1549,13 @@ function debug ($debugmsg, $lvl=E_USER_NOTICE)
 function magpie_error ($errormsg="")
 {
 	global $MAGPIE_ERROR;
-	
+
 	if ( isset($errormsg) and $errormsg )
-	{ 
+	{
 		$MAGPIE_ERROR = $errormsg;
 	}
-	
-	return $MAGPIE_ERROR;	
+
+	return $MAGPIE_ERROR;
 }
 
 /*=======================================================================*\
@@ -1559,7 +1563,7 @@ function magpie_error ($errormsg="")
 	Purpose:	retrieve an arbitrary remote file
 	Input:		url of the remote file
 				headers to send along with the request (optional)
-	Output:		an HTTP response object (see Snoopy.class.inc)	
+	Output:		an HTTP response object (see Snoopy.class.inc)
 \*=======================================================================*/
 function _fetch_remote_file ($url, $headers = "" )
 {
@@ -1573,7 +1577,7 @@ function _fetch_remote_file ($url, $headers = "" )
 	{
 		$client->rawheaders = $headers;
 	}
-	
+
 	@$client->fetch($url);
 	return $client;
 
@@ -1588,11 +1592,11 @@ function _fetch_remote_file ($url, $headers = "" )
 function _response_to_rss ($resp)
 {
 	$rss = new MagpieRSS( $resp->results );
-	
-	// if RSS parsed successfully		
+
+	// if RSS parsed successfully
 	if ( $rss and ! $rss->ERROR)
 	{
-		
+
 		// find Etag, and Last-Modified
 		foreach($resp->headers as $h)
 		{
@@ -1606,30 +1610,30 @@ function _response_to_rss ($resp)
 				$field = $h;
 				$val = "";
 			}
-			
+
 			if ( $field == 'ETag' )
 			{
 				$rss->etag = $val;
 			}
-			
+
 			if ( $field == 'Last-Modified' )
 			{
 				$rss->last_modified = $val;
 			}
 		}
-		
-		return $rss;	
+
+		return $rss;
 	} // else construct error message
 	else
 	{
 		$errormsg = "Failed to parse RSS file.";
-		
+
 		if ($rss)
 		{
 			$errormsg .= " (" . $rss->ERROR . ")";
 		}
 		error($errormsg);
-		
+
 		return false;
 	} // end if ($rss and ! $rss->error)
 }
@@ -1649,7 +1653,7 @@ function init ()
 	{
 		define('MAGPIE_INITALIZED', 1);
 	}
-	
+
 	if ( ! defined('MAGPIE_CACHE_ON') )
 	{
 		define('MAGPIE_CACHE_ON', 1);
@@ -1674,11 +1678,11 @@ function init ()
 	{
 		define('MAGPIE_DEBUG', 0);
 	}
-	
+
 	if ( ! defined('MAGPIE_USER_AGENT') )
 	{
 		$ua = 'MagpieRSS/'. MAGPIE_VERSION . ' (+http://magpierss.sf.net';
-		
+
 		if ( MAGPIE_CACHE_ON )
 		{
 			$ua = $ua . ')';
@@ -1687,19 +1691,19 @@ function init ()
 		{
 			$ua = $ua . '; No cache)';
 		}
-		
+
 		define('MAGPIE_USER_AGENT', $ua);
 	}
-	
+
 	if ( ! defined('MAGPIE_FETCH_TIME_OUT') )
 	{
 		define('MAGPIE_FETCH_TIME_OUT', 5);	// 5 second timeout
 	}
-	
+
 	// use gzip encoding to fetch rss files if supported?
 	if ( ! defined('MAGPIE_USE_GZIP') )
 	{
-		define('MAGPIE_USE_GZIP', true);	
+		define('MAGPIE_USE_GZIP', true);
 	}
 }
 
@@ -1710,7 +1714,7 @@ function init ()
 	HTTP STATUS CODE PREDICATES
 	These functions attempt to classify an HTTP status code
 	based on RFC 2616 and RFC 2518.
-	
+
 	All of them take an HTTP status code as input, and return true or false
 
 	All this code is adapted from LWP's HTTP::Status.
@@ -1721,8 +1725,8 @@ function init ()
 	Purpose:	return true if Informational status code
 \*=======================================================================*/
 function is_info ($sc)
-{ 
-	return $sc >= 100 && $sc < 200; 
+{
+	return $sc >= 100 && $sc < 200;
 }
 
 /*=======================================================================*\
@@ -1730,8 +1734,8 @@ function is_info ($sc)
 	Purpose:	return true if Successful status code
 \*=======================================================================*/
 function is_success ($sc)
-{ 
-	return $sc >= 200 && $sc < 300; 
+{
+	return $sc >= 200 && $sc < 300;
 }
 
 /*=======================================================================*\
@@ -1739,8 +1743,8 @@ function is_success ($sc)
 	Purpose:	return true if Redirection status code
 \*=======================================================================*/
 function is_redirect ($sc)
-{ 
-	return $sc >= 300 && $sc < 400; 
+{
+	return $sc >= 300 && $sc < 400;
 }
 
 /*=======================================================================*\
@@ -1748,8 +1752,8 @@ function is_redirect ($sc)
 	Purpose:	return true if Error status code
 \*=======================================================================*/
 function is_error ($sc)
-{ 
-	return $sc >= 400 && $sc < 600; 
+{
+	return $sc >= 400 && $sc < 600;
 }
 
 /*=======================================================================*\
@@ -1757,8 +1761,8 @@ function is_error ($sc)
 	Purpose:	return true if Error status code, and its a client error
 \*=======================================================================*/
 function is_client_error ($sc)
-{ 
-	return $sc >= 400 && $sc < 500; 
+{
+	return $sc >= 400 && $sc < 500;
 }
 
 /*=======================================================================*\
@@ -1766,8 +1770,8 @@ function is_client_error ($sc)
 	Purpose:	return true if Error status code, and its a server error
 \*=======================================================================*/
 function is_server_error ($sc)
-{ 
-	return $sc >= 500 && $sc < 600; 
+{
+	return $sc >= 500 && $sc < 600;
 }
 
 
@@ -1783,7 +1787,7 @@ function is_server_error ($sc)
 
 /*
  * Project:	  MagpieRSS: a simple RSS integration tool
- * File:		  rss_cache.inc, a simple, rolling(no GC), cache 
+ * File:		  rss_cache.inc, a simple, rolling(no GC), cache
  *				for RSS objects, keyed on URL.
  * Author:		Kellan Elliott-McCrea <kellan@protest.net>
  * Version:		0.51
@@ -1801,10 +1805,10 @@ class RSSCache {
 	var $BASE_CACHE = './cache';	// where the cache files are stored
 	var $MAX_AGE	= 3600;  		// when are files stale, default one hour
 	var $ERROR 		= "";			// accumulate error messages
-	
+
 	function RSSCache ($base='', $age='')
 	{
-	
+
 		// Make a local reference of the ExpressionEngine super object
 		$this->EE =& get_instance();
 
@@ -1816,14 +1820,14 @@ class RSSCache {
 		{
 			$this->MAX_AGE = $age;
 		}
-		
+
 		// attempt to make the cache directory
 		if ( ! file_exists( $this->BASE_CACHE ) )
 		{
 			$status = @mkdir( $this->BASE_CACHE, DIR_READ_MODE );
 			@chmod($this->BASE_CACHE, DIR_WRITE_MODE);
-			
-			// if make failed 
+
+			// if make failed
 			if ( ! $status )
 			{
 				$this->error(
@@ -1837,19 +1841,19 @@ class RSSCache {
 			@chmod($this->BASE_CACHE, DIR_WRITE_MODE);
 		}
 	}
-	
+
 /*=======================================================================*\
 	Function:	set
 	Purpose:	add an item to the cache, keyed on url
 	Input:		url from wich the rss file was fetched
-	Output:		true on sucess	
+	Output:		true on sucess
 \*=======================================================================*/
 	function set ($url, $rss)
 	{
 		$this->ERROR = "";
 		$cache_file = $this->file_name( $url );
 		$fp = @fopen( $cache_file, 'w' );
-		
+
 		if ( ! $fp )
 		{
 			$this->error(
@@ -1857,36 +1861,36 @@ class RSSCache {
 			);
 			return 0;
 		}
-		
-		
+
+
 		$data = serialize( $rss );
 		fwrite( $fp, $data );
 		fclose( $fp );
-		
+
 		@chmod($cache_file, FILE_WRITE_MODE);
-		
+
 		return $cache_file;
 	}
-	
+
 /*=======================================================================*\
 	Function:	get
 	Purpose:	fetch an item from the cache
 	Input:		url from wich the rss file was fetched
-	Output:		cached object on HIT, false on MISS	
-\*=======================================================================*/	
+	Output:		cached object on HIT, false on MISS
+\*=======================================================================*/
 	function get ($url)
 	{
 		$this->ERROR = "";
 		$cache_file = $this->file_name( $url );
-		
+
 		if ( ! file_exists( $cache_file ) )
 		{
-			$this->debug( 
+			$this->debug(
 				"Cache doesn't contain: $url (cache file: $cache_file)"
 			);
 			return 0;
 		}
-		
+
 		$fp = @fopen($cache_file, 'r');
 		if ( ! $fp )
 		{
@@ -1895,17 +1899,17 @@ class RSSCache {
 			);
 			return 0;
 		}
-		
+
 		if (($file_size = filesize($cache_file)) == 0)
 		{
 			return 0;
 		}
-		
+
 		$data = fread( $fp, $file_size );
 		$rss = unserialize( $data );
-		
+
 		@chmod($cache_file, FILE_WRITE_MODE);
-		
+
 		return $rss;
 	}
 
@@ -1914,13 +1918,13 @@ class RSSCache {
 	Purpose:	check a url for membership in the cache
 				and whether the object is older then MAX_AGE (ie. STALE)
 	Input:		url from wich the rss file was fetched
-	Output:		cached object on HIT, false on MISS	
-\*=======================================================================*/		
+	Output:		cached object on HIT, false on MISS
+\*=======================================================================*/
 	function check_cache ( $url )
 	{
 		$this->ERROR = "";
 		$filename = $this->file_name( $url );
-		
+
 		if ( file_exists( $filename ) )
 		{
 			// find how long ago the file was added to the cache
@@ -1946,15 +1950,15 @@ class RSSCache {
 	}
 
 
-	
+
 /*=======================================================================*\
 	Function:	file_name
 	Purpose:	map url to location in cache
 	Input:		url from wich the rss file was fetched
 	Output:		a file name
-\*=======================================================================*/		
+\*=======================================================================*/
 	function file_name ($url)
-	{		
+	{
 		$filename = md5( $url );
 		return reduce_double_slashes(join( DIRECTORY_SEPARATOR, array( $this->BASE_CACHE, $filename)));
 	}
@@ -1962,12 +1966,12 @@ class RSSCache {
 /*=======================================================================*\
 	Function:	error
 	Purpose:	register error
-\*=======================================================================*/			
+\*=======================================================================*/
 	function error ($errormsg, $lvl=E_USER_WARNING)
 	{
 		// append PHP's error message if track_errors enabled
 		if ( isset($php_errormsg) )
-		{ 
+		{
 			$errormsg .= " ($php_errormsg)";
 		}
 		$this->ERROR = $errormsg;
@@ -1980,7 +1984,7 @@ class RSSCache {
 			error_log( $errormsg, 0);
 		}
 	}
-	
+
 	function debug ($debugmsg, $lvl=E_USER_NOTICE)
 	{
 		if ( MAGPIE_DEBUG )
@@ -2036,7 +2040,7 @@ http://snoopy.sourceforge.net/
 class M_Snoopy
 {
 	/**** Public variables ****/
-	
+
 	/* user definable vars */
 
 	var $host			=	"www.php.net";		// host name we are connecting to
@@ -2045,7 +2049,7 @@ class M_Snoopy
 	var $proxy_port		=	"";					// proxy port to use
 	var $proxy_user		=	"";					// proxy user to use
 	var $proxy_pass		=	"";					// proxy password to use
-	
+
 	var $agent			=	"Snoopy v1.2.4";	// agent we masquerade as
 	var	$referer		=	"";					// referer info to pass
 	var $cookies		=	array();			// array of cookies to pass
@@ -2063,15 +2067,15 @@ class M_Snoopy
 	var $passcookies	=	true;				// pass set cookies back through redirects
 												// NOTE: this currently does not respect
 												// dates, domains or paths.
-	
+
 	var	$user			=	"";					// user for http authentication
 	var	$pass			=	"";					// password for http authentication
-	
+
 	// http accept types
 	var $accept			=	"image/gif, image/x-xbitmap, image/jpeg, image/pjpeg, */*";
-	
+
 	var $results		=	"";					// where the content is put
-		
+
 	var $error			=	"";					// error messages sent here
 	var	$response_code	=	"";					// response code returned from server
 	var	$headers		=	array();			// headers returned from server sent here
@@ -2097,11 +2101,11 @@ class M_Snoopy
 												// library functions built into php,
 												// as these functions are not stable
 												// as of this Snoopy release.
-	
-	/**** Private variables ****/	
-	
+
+	/**** Private variables ****/
+
 	var	$_maxlinelen	=	4096;				// max line length (headers)
-	
+
 	var $_httpmethod	=	"GET";				// default http request method
 	var $_httpversion	=	"HTTP/1.0";			// default http request version
 	var $_submit_method	=	"POST";				// default submit method
@@ -2111,7 +2115,7 @@ class M_Snoopy
 	var $_redirectdepth	=	0;					// increments on an http redirect
 	var $_frameurls		= 	array();			// frame src urls
 	var $_framedepth	=	0;					// increments on frame depth
-	
+
 	var $_isproxy		=	false;				// set if using a proxy server
 	var $_fp_timeout	=	30;					// timeout for socket connection
 
@@ -2126,7 +2130,7 @@ class M_Snoopy
 
 	function fetch($URI)
 	{
-	
+
 		//preg_match("|^([^:]+)://([^:/]+)(:[\d]+)*(.*)|",$URI,$URI_PARTS);
 		$URI_PARTS = parse_url($URI);
 		if ( ! empty($URI_PARTS["user"]))
@@ -2148,26 +2152,26 @@ class M_Snoopy
 		{
 			$URI_PARTS["path"] = '';
 		}
-				
+
 		switch(strtolower($URI_PARTS["scheme"]))
 		{
 			case "http":
 				$this->host = $URI_PARTS["host"];
-				
+
 				// Default to 80, cannot connect without a port
 				$this->port = empty($URI_PARTS["port"]) ? 80 : $URI_PARTS["port"];
-				
+
 				if ($this->_connect($fp))
 				{
 					// We needed port 80 to connect, but we can now switch to empty
 					// for the Host header. Some servers will try to redirect if the
 					// host header contains a port, which would previously create a loop.
-					
+
 					if (empty($URI_PARTS["port"]))
 					{
 						$this->port = '';
 					}
-					
+
 					if ($this->_isproxy)
 					{
 						// using proxy, send entire URI
@@ -2179,7 +2183,7 @@ class M_Snoopy
 						// no proxy, send only the path
 						$this->_httprequest($path, $fp, $URI, $this->_httpmethod);
 					}
-					
+
 					$this->_disconnect($fp);
 
 					if ($this->_redirectaddr)
@@ -2202,7 +2206,7 @@ class M_Snoopy
 					{
 						$frameurls = $this->_frameurls;
 						$this->_frameurls = array();
-						
+
 						while(list(,$frameurl) = each($frameurls))
 						{
 							if ($this->_framedepth < $this->maxframes)
@@ -2212,34 +2216,34 @@ class M_Snoopy
 							}
 							else
 							{
-								break;	
+								break;
 							}
 						}
-					}					
+					}
 				}
 				else
 				{
 					return false;
 				}
 
-				return true;					
+				return true;
 				break;
 			case "https":
 				if ( ! $this->curl_path)
 				{
-					return false;	
+					return false;
 				}
 
 				if (function_exists("is_executable") AND ! is_executable($this->curl_path))
 				{
-					return false;	
+					return false;
 				}
-				
+
 				$this->host = $URI_PARTS["host"];
 
 				if ( ! empty($URI_PARTS["port"]))
 				{
-					$this->port = $URI_PARTS["port"];	
+					$this->port = $URI_PARTS["port"];
 				}
 
 				if ($this->_isproxy)
@@ -2287,24 +2291,24 @@ class M_Snoopy
 							break;
 						}
 					}
-				}					
+				}
 
-				return true;					
+				return true;
 				break;
 			default:
 				// not a valid protocol
 				$this->error	=	'Invalid protocol "'.$URI_PARTS["scheme"].'"\n';
 				return false;
 				break;
-		}		
+		}
 		return true;
 	}
 
 /*======================================================================*\
 	Private functions
 \*======================================================================*/
-	
-	
+
+
 /*======================================================================*\
 	Function:	_striplinks
 	Purpose:	strip the hyperlinks from an html document
@@ -2313,10 +2317,10 @@ class M_Snoopy
 \*======================================================================*/
 
 	function _striplinks($document)
-	{	
+	{
 		/*  1. find <a href=
 			2. find single or double quote
-			3. if quote found, match up to next matching quote, otherwise match 
+			3. if quote found, match up to next matching quote, otherwise match
 			  up to next space
 	    */
 
@@ -2332,18 +2336,18 @@ class M_Snoopy
 		{
 			if ( ! empty($val))
 			{
-				$match[] = $val;	
+				$match[] = $val;
 			}
-		}				
-		
+		}
+
 		while (list($key,$val) = each($links[3]))
 		{
 			if ( ! empty($val))
 			{
-				$match[] = $val;				
+				$match[] = $val;
 			}
-		}		
-		
+		}
+
 		// return the links
 		return $match;
 	}
@@ -2356,18 +2360,18 @@ class M_Snoopy
 \*======================================================================*/
 
 	function _stripform($document)
-	{	
+	{
 		preg_match_all("'<\/?(FORM|INPUT|SELECT|TEXTAREA|(OPTION))[^<>]*>(?(2)(.*(?=<\/?(option|select)[^<>]*>[\r\n]*)|(?=[\r\n]*))|(?=[\r\n]*))'Usi",$document,$elements);
-		
+
 		// catenate the matches
 		$match = implode("\r\n",$elements[0]);
-				
+
 		// return the links
 		return $match;
 	}
 
-	
-	
+
+
 /*======================================================================*\
 	Function:	_striptext
 	Purpose:	strip the text from an html document
@@ -2377,11 +2381,11 @@ class M_Snoopy
 
 	function _striptext($document)
 	{
-		
+
 		// I didn't use preg eval (//e) since that is only available in PHP 4.0.
 		// so, list your entities one by one here. I included some of the
 		// more common ones.
-								
+
 		$search = array(
 			"'<script[^>]*?>.*?</script>'si",	// strip out javascript
 			"'<[\/\!]*?[^<>]*?>'si",			// strip out html tags
@@ -2433,9 +2437,9 @@ class M_Snoopy
 			"Ü",
 			"ß",
 		);
-					
+
 		$text = preg_replace($search, $replace, $document);
-								
+
 		return $text;
 	}
 
@@ -2449,14 +2453,14 @@ class M_Snoopy
 
 	function _expandlinks($links,$URI)
 	{
-		
+
 		preg_match("/^[^\?]+/",$URI,$match);
 
 		$match = preg_replace("|/[^\/\.]+\.[^\/\.]+$|","",$match[0]);
 		$match = preg_replace("|/$|","",$match);
 		$match_part = parse_url($match);
 		$match_root = $match_part["scheme"]."://".$match_part["host"];
-				
+
 		$search = array(
 			"|^http://".preg_quote($this->host)."|i",
 			"|^(\/)|i",
@@ -2464,15 +2468,15 @@ class M_Snoopy
 			"|/\./|",
 			"|/[^\/]+/\.\./|"
 		);
-						
+
 		$replace = array(
 			"",
 			$match_root."/",
 			$match."/",
 			"/",
 			"/"
-		);			
-				
+		);
+
 		$expandedLinks = preg_replace($search, $replace, $links);
 
 		return $expandedLinks;
@@ -2485,95 +2489,95 @@ class M_Snoopy
 				$fp			the current open file pointer
 				$URI		the full URI
 				$body		body contents to send if any (POST)
-	Output:		
+	Output:
 \*======================================================================*/
-	
+
 	function _httprequest($url,$fp,$URI,$http_method,$content_type="",$body="")
 	{
 		$cookie_headers = '';
 		if ($this->passcookies && $this->_redirectaddr)
 		{
-			$this->setcookies();	
+			$this->setcookies();
 		}
-			
+
 		$URI_PARTS = parse_url($URI);
 		if (empty($url))
 		{
-			$url = "/";	
+			$url = "/";
 		}
 
-		$headers = $http_method." ".$url." ".$this->_httpversion."\r\n";		
-		
+		$headers = $http_method." ".$url." ".$this->_httpversion."\r\n";
+
 		if ( ! empty($this->agent))
 		{
-			$headers .= "User-Agent: ".$this->agent."\r\n";			
+			$headers .= "User-Agent: ".$this->agent."\r\n";
 		}
 
 		if ( ! empty($this->host) && !isset($this->rawheaders['Host']))
 		{
 			$headers .= "Host: ".$this->host;
-		
+
 			if ( ! empty($this->port))
 			{
-				$headers .= ":".$this->port;	
+				$headers .= ":".$this->port;
 			}
-		
+
 			$headers .= "\r\n";
 		}
 
 		if ( ! empty($this->accept))
 		{
-			$headers .= "Accept: ".$this->accept."\r\n";			
+			$headers .= "Accept: ".$this->accept."\r\n";
 		}
 
 		if ( ! empty($this->referer))
 		{
-			$headers .= "Referer: ".$this->referer."\r\n";	
+			$headers .= "Referer: ".$this->referer."\r\n";
 		}
-		
+
 		if ( ! empty($this->cookies))
-		{			
+		{
 			if ( ! is_array($this->cookies))
 			{
-				$this->cookies = (array)$this->cookies;	
+				$this->cookies = (array)$this->cookies;
 			}
-	
+
 			reset($this->cookies);
 
 			if (count($this->cookies) > 0)
 			{
-			
+
 				$cookie_headers .= 'Cookie: ';
-			
+
 				foreach ($this->cookies as $cookieKey => $cookieVal)
 				{
 					$cookie_headers .= $cookieKey."=".urlencode($cookieVal)."; ";
 				}
-			
+
 				$headers .= substr($cookie_headers,0,-2) . "\r\n";
-			} 
+			}
 		}
-		
+
 		if ( ! empty($this->rawheaders))
 		{
 			if ( ! is_array($this->rawheaders))
 			{
-				$this->rawheaders = (array)$this->rawheaders;	
+				$this->rawheaders = (array)$this->rawheaders;
 			}
 
 			while (list($headerKey,$headerVal) = each($this->rawheaders))
 			{
-				$headers .= $headerKey.": ".$headerVal."\r\n";	
+				$headers .= $headerKey.": ".$headerVal."\r\n";
 			}
 		}
-		
+
 		if ( ! empty($content_type))
 		{
 			$headers .= "Content-type: $content_type";
 
 			if ($content_type == "multipart/form-data")
 			{
-				$headers .= "; boundary=".$this->_mime_boundary;	
+				$headers .= "; boundary=".$this->_mime_boundary;
 			}
 
 			$headers .= "\r\n";
@@ -2581,14 +2585,14 @@ class M_Snoopy
 
 		if ( ! empty($body))
 		{
-			$headers .= "Content-length: ".strlen($body)."\r\n";	
+			$headers .= "Content-length: ".strlen($body)."\r\n";
 		}
-		
+
 		if ( ! empty($this->user) || !empty($this->pass))
 		{
 			$headers .= "Authorization: Basic ".base64_encode($this->user.":".$this->pass)."\r\n";
 		}
-		
+
 		//add proxy auth headers
 		if ( ! empty($this->proxy_user))
 		{
@@ -2596,20 +2600,20 @@ class M_Snoopy
 		}
 
 		$headers .= "\r\n";
-		
+
 		// set the read timeout if needed
 		if ($this->read_timeout > 0)
 		{
-			socket_set_timeout($fp, $this->read_timeout);	
+			socket_set_timeout($fp, $this->read_timeout);
 		}
-		
+
 		$this->timed_out = false;
-		
+
 		fwrite($fp,$headers.$body,strlen($headers.$body));
-		
+
 		$this->_redirectaddr = false;
 		unset($this->headers);
-						
+
 		while($currentHeader = fgets($fp,$this->_maxlinelen))
 		{
 			if ($this->read_timeout > 0 && $this->_check_timeout($fp))
@@ -2617,12 +2621,12 @@ class M_Snoopy
 				$this->status=-100;
 				return false;
 			}
-				
+
 			if ($currentHeader == "\r\n")
 			{
 				break;
 			}
-						
+
 			// if a header begins with Location: or URI:, set the redirect
 			if (preg_match("/^(Location:|URI:)/i",$currentHeader))
 			{
@@ -2640,24 +2644,24 @@ class M_Snoopy
 					}
 					else
 					{
-						$this->_redirectaddr .= $matches[2];						
+						$this->_redirectaddr .= $matches[2];
 					}
 				}
 				else
 				{
-					$this->_redirectaddr = $matches[2];	
+					$this->_redirectaddr = $matches[2];
 				}
 			}
-		
+
 			if (preg_match("|^HTTP/|",$currentHeader))
 			{
                 if (preg_match("|^HTTP/[^\s]*\s(.*?)\s|",$currentHeader, $status))
 				{
 					$this->status= $status[1];
-                }				
+                }
 				$this->response_code = $currentHeader;
 			}
-				
+
 			$this->headers[] = $currentHeader;
 		}
 
@@ -2665,12 +2669,12 @@ class M_Snoopy
 
 		do {
     		$_data = fread($fp, $this->maxlength);
-    	
+
     		if (strlen($_data) == 0)
     		{
         		break;
     		}
-    	
+
     		$results .= $_data;
 		} while(true);
 
@@ -2679,13 +2683,13 @@ class M_Snoopy
 			$this->status=-100;
 			return false;
 		}
-		
+
 		// check if there is a a redirect meta tag
-		
+
 		if (preg_match("'<meta[\s]*http-equiv[^>]*?content[\s]*=[\s]*[\"\']?\d+;[\s]*URL[\s]*=[\s]*([^\"\']*?)[\"\']?>'i",$results,$match))
 
 		{
-			$this->_redirectaddr = $this->_expandlinks($match[1],$URI);	
+			$this->_redirectaddr = $this->_expandlinks($match[1],$URI);
 		}
 
 		// have we hit our frame depth and is there frame src to fetch?
@@ -2694,20 +2698,20 @@ class M_Snoopy
 			$this->results[] = $results;
 			for($x=0; $x<count($match[1]); $x++)
 			{
-				$this->_frameurls[] = $this->_expandlinks($match[1][$x],$URI_PARTS["scheme"]."://".$this->host);	
+				$this->_frameurls[] = $this->_expandlinks($match[1][$x],$URI_PARTS["scheme"]."://".$this->host);
 			}
 		}
 		// have we already fetched framed content?
 		elseif (is_array($this->results))
 		{
-			$this->results[] = $results;	
+			$this->results[] = $results;
 		}
 		// no framed content
 		else
 		{
-			$this->results = $results;	
+			$this->results = $results;
 		}
-		
+
 		return true;
 	}
 
@@ -2717,30 +2721,30 @@ class M_Snoopy
 	Input:		$url		the url to fetch
 				$URI		the full URI
 				$body		body contents to send if any (POST)
-	Output:		
+	Output:
 \*======================================================================*/
-	
+
 	function _httpsrequest($url,$URI,$http_method,$content_type="",$body="")
-	{  
+	{
 		if ($this->passcookies && $this->_redirectaddr)
 		{
-			$this->setcookies();	
+			$this->setcookies();
 		}
 
-		$headers = array();		
-					
+		$headers = array();
+
 		$URI_PARTS = parse_url($URI);
 
 		if (empty($url))
 		{
-			$url = "/";	
+			$url = "/";
 		}
 
 		// GET ... header not needed for curl
-		//$headers[] = $http_method." ".$url." ".$this->_httpversion;		
+		//$headers[] = $http_method." ".$url." ".$this->_httpversion;
 		if ( ! empty($this->agent))
 		{
-			$headers[] = "User-Agent: ".$this->agent;	
+			$headers[] = "User-Agent: ".$this->agent;
 		}
 
 		if ( ! empty($this->host))
@@ -2752,7 +2756,7 @@ class M_Snoopy
 			else
 			{
 				$headers[] = "Host: ".$this->host;
-			}	
+			}
 		}
 
 		if ( ! empty($this->accept))
@@ -2764,12 +2768,12 @@ class M_Snoopy
 			$headers[] = "Referer: ".$this->referer;
 		}
 		if ( ! empty($this->cookies))
-		{			
+		{
 			if ( ! is_array($this->cookies))
 			{
 				$this->cookies = (array)$this->cookies;
 			}
-	
+
 			reset($this->cookies);
 
 			if (count($this->cookies) > 0)
@@ -2809,50 +2813,50 @@ class M_Snoopy
 			}
 		}
 
-		if ( ! empty($body))	
+		if ( ! empty($body))
 		{
 			$headers[] = "Content-length: ".strlen($body);
 		}
 
-		if ( ! empty($this->user) || !empty($this->pass))	
+		if ( ! empty($this->user) || !empty($this->pass))
 		{
 			$headers[] = "Authorization: BASIC ".base64_encode($this->user.":".$this->pass);
 		}
-			
+
 		for($curr_header = 0; $curr_header < count($headers); $curr_header++)
 		{
 			$safer_header = strtr( $headers[$curr_header], "\"", " " );
 			$cmdline_params .= " -H \"".$safer_header."\"";
 		}
-		
+
 		if ( ! empty($body))
 		{
 			$cmdline_params .= " -d \"$body\"";
 		}
-		
+
 		if ($this->read_timeout > 0)
 		{
 			$cmdline_params .= " -m ".$this->read_timeout;
 		}
-		
+
 		$headerfile = tempnam($temp_dir, "sno");
 
 
 		exec($this->curl_path." -k -D \"$headerfile\"".$cmdline_params." \"".escapeshellcmd($URI)."\"",$results,$return);
-		
+
 		if ($return)
 		{
 			$this->error = "Error: cURL could not retrieve the document, error $return.";
 			return false;
 		}
-			
+
 		$results = implode("\r\n",$results);
-		
+
 		$result_headers = file("$headerfile");
-						
+
 		$this->_redirectaddr = false;
 		unset($this->headers);
-						
+
 		for($currentHeader = 0; $currentHeader < count($result_headers); $currentHeader++)
 		{
 			// if a header begins with Location: or URI:, set the redirect
@@ -2880,7 +2884,7 @@ class M_Snoopy
 					$this->_redirectaddr = $matches[2];
 				}
 			}
-		
+
 			if (preg_match("|^HTTP/|",$result_headers[$currentHeader]))
 			{
 				$this->response_code = $result_headers[$currentHeader];
@@ -2890,10 +2894,10 @@ class M_Snoopy
 		}
 
 		// check if there is a a redirect meta tag
-		
+
 		if (preg_match("'<meta[\s]*http-equiv[^>]*?content[\s]*=[\s]*[\"\']?\d+;[\s]*URL[\s]*=[\s]*([^\"\']*?)[\"\']?>'i",$results,$match))
 		{
-			$this->_redirectaddr = $this->_expandlinks($match[1],$URI);	
+			$this->_redirectaddr = $this->_expandlinks($match[1],$URI);
 		}
 
 		// have we hit our frame depth and is there frame src to fetch?
@@ -2917,7 +2921,7 @@ class M_Snoopy
 		}
 
 		unlink("$headerfile");
-		
+
 		return true;
 	}
 
@@ -2925,7 +2929,7 @@ class M_Snoopy
 	Function:	setcookies()
 	Purpose:	set cookies for a redirection
 \*======================================================================*/
-	
+
 	function setcookies()
 	{
 		for ($x=0; $x<count($this->headers); $x++)
@@ -2937,7 +2941,7 @@ class M_Snoopy
 		}
 	}
 
-	
+
 /*======================================================================*\
 	Function:	_check_timeout
 	Purpose:	checks whether timeout has occurred
@@ -2949,7 +2953,7 @@ class M_Snoopy
 		if ($this->read_timeout > 0)
 		{
 			$fp_status = socket_get_status($fp);
-			
+
 			if ($fp_status["timed_out"])
 			{
 				$this->timed_out = true;
@@ -2964,13 +2968,13 @@ class M_Snoopy
 	Purpose:	make a socket connection
 	Input:		$fp	file pointer
 \*======================================================================*/
-	
+
 	function _connect(&$fp)
 	{
 		if ( ! empty($this->proxy_host) && !empty($this->proxy_port))
 		{
 			$this->_isproxy = true;
-			
+
 			$host = $this->proxy_host;
 			$port = $this->proxy_port;
 		}
@@ -2979,9 +2983,9 @@ class M_Snoopy
 			$host = $this->host;
 			$port = $this->port;
 		}
-	
+
 		$this->status = 0;
-		
+
 		$fp = fsockopen($host, $port, $errno, $errstr, $this->_fp_timeout);
 
 		if ($fp)
@@ -3013,13 +3017,13 @@ class M_Snoopy
 	Purpose:	disconnect a socket connection
 	Input:		$fp	file pointer
 \*======================================================================*/
-	
+
 	function _disconnect($fp)
 	{
 		return(fclose($fp));
 	}
 
-	
+
 /*======================================================================*\
 	Function:	_prepare_post_body
 	Purpose:	Prepare post body according to encoding type
@@ -3027,7 +3031,7 @@ class M_Snoopy
 				$formfiles - form upload files
 	Output:		post body
 \*======================================================================*/
-	
+
 	function _prepare_post_body($formvars, $formfiles)
 	{
 		settype($formvars, "array");
@@ -3038,7 +3042,7 @@ class M_Snoopy
 		{
 			return;
 		}
-		
+
 		switch ($this->_submit_type)
 		{
 			case "application/x-www-form-urlencoded":
@@ -3060,7 +3064,7 @@ class M_Snoopy
 
 			case "multipart/form-data":
 				$this->_mime_boundary = "Snoopy".md5(uniqid(microtime()));
-				
+
 				reset($formvars);
 				while(list($key,$val) = each($formvars))
 				{
@@ -3080,7 +3084,7 @@ class M_Snoopy
 						$postdata .= "$val\r\n";
 					}
 				}
-				
+
 				reset($formfiles);
 
 				while (list($field_name, $file_names) = each($formfiles))

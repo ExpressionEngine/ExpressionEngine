@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -865,11 +865,14 @@ class Member_model extends CI_Model {
 			$this->db->where('author_id', $member_id);
 			$new_stats = $this->db->get('channel_titles')->row_array();
 
+			// Default to 0 if there are no entries to pull back
+			$entry_date = ($new_stats['entry_date']) ? $new_stats['entry_date'] : 0;
+
 			// Update member stats
 			$this->db->where('member_id', $member_id);
 			$this->db->update('members', array(
 				'total_entries' => $new_stats['count'],
-				'last_entry_date' => $new_stats['entry_date']
+				'last_entry_date' => $entry_date
 			));
 		}
 	}

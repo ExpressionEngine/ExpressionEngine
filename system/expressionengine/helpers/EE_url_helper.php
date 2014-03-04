@@ -28,6 +28,38 @@
 // ------------------------------------------------------------------------
 
 /**
+ * Create a CP Path
+ *
+ * @param	string	path
+ * @param	mixed	query string [array|string]
+ * @return	string
+ */
+function cp_url($path, $qs = '')
+{
+	$path = trim($path, '/');
+	$path = preg_replace('#^cp(/|$)#', '', $path);
+
+	if (is_array($qs))
+	{
+		$qs = http_build_query($qs, AMP);
+	}
+
+	$s = ee()->session->session_id();
+
+	if ($s)
+	{
+		// Remove AMP from the beginning of the query string if it exists
+		$qs = preg_replace('#^'.AMP.'#', '', $qs.AMP.'S='.$s);
+	}
+
+	$path = rtrim('?/cp/'.$path, '/');
+
+	return SELF.$path.rtrim('?'.$qs, '?');
+}
+
+// ------------------------------------------------------------------------
+
+/**
  * Create URL Title
  *
  * Takes a "title" string as input and creates a
@@ -35,7 +67,7 @@
  * or an underscore as the word separator.
  *
  * @review maybe roll into CI proper
- * 
+ *
  * @access	public
  * @param	string	the string
  * @param	string	the separator: dash, or underscore
@@ -51,9 +83,9 @@ if ( ! function_exists('url_title'))
 			$CI->load->helper('text');
 
 			$str = utf8_decode($str);
-			$str = preg_replace_callback('/(.)/', 'convert_accented_characters', $str);			
+			$str = preg_replace_callback('/(.)/', 'convert_accented_characters', $str);
 		}
-		
+
 		$separator = ($separator == 'dash') ? '-' : '_';
 
 		$trans = array(
@@ -77,7 +109,7 @@ if ( ! function_exists('url_title'))
 		{
 			$str = strtolower($str);
 		}
-		
+
 		return trim(stripslashes($str));
 	}
 }
@@ -103,9 +135,7 @@ function anchor($uri = '', $title = '', $attributes = '')
 
     if (REQ != 'CP' && ! preg_match('!^\w+://! i', $site_url))
     {
-		$EE =& get_instance();
-	
-        $site_url = $EE->functions->fetch_site_index(TRUE).$site_url;
+        $site_url = ee()->functions->fetch_site_index(TRUE).$site_url;
     }
 
     if ($title == '')
@@ -122,7 +152,6 @@ function anchor($uri = '', $title = '', $attributes = '')
 }
 
 // --------------------------------------------------------------------
-
 
 /* End of file EE_url_helper.php */
 /* Location: ./system/expressionengine/helpers/EE_url_helper.php */

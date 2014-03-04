@@ -1,0 +1,17 @@
+<!-- Simple Search Form: http://ellislab.com/expressionengine/user-guide/modules/search/index.html#simple 
+
+The parameters here help to identify what templates to use and where to search:
+
+Results page - result_page: http://ellislab.com/expressionengine/user-guide/modules/search/simple.html#par_result_page
+
+No Results found: no_result_page: http://ellislab.com/expressionengine/user-guide/modules/search/simple.html#par_no_result_page
+
+search_in - search in titles? titles and entries? titles, entries?  http://ellislab.com/expressionengine/user-guide/modules/search/simple.html#par_search_in-->
+
+{exp:search:simple_form channel="news" result_page="search/results" no_result_page="search/no_results" search_in="everywhere"}
+<fieldset>
+    <label for="search">Search:</label>
+    <input type="text" name="keywords" id="search" value=""  />
+	<input type="image" id="submit" name="submit" class="submit" src="{site_url}themes/site_themes/agile_records/images/spacer.gif" />
+</fieldset>
+{/exp:search:simple_form}

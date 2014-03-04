@@ -1,5 +1,5 @@
 <?php extend_template('default') ?>
-			
+
 <?php if ($no_upload_dirs):?>
 	<?=lang('no_upload_dirs_available')?>
 <?php else: ?>
@@ -23,7 +23,7 @@
 					</div>
 					<div id="cal2" style="width:250px; float:left; text-align:center;">
 						<p style="text-align:left; margin-bottom:5px"><?=lang('end_date', 'custom_date_end')?>:&nbsp; <input type="text" name="custom_date_end" id="custom_date_end" value="yyyy-mm-dd" size="12" tabindex="2" /></p>
-						<span id="custom_date_end_span"></span>          
+						<span id="custom_date_end_span"></span>
 					</div>
 				</div>
 
@@ -37,11 +37,12 @@
 		</fieldset>
 		<?php endif; ?>
 		<div class="clear_left"></div>
-	</div> <!-- filterMenu -->			
+	</div> <!-- filterMenu -->
 	<?=form_open('C=content_files'.AMP.'M=multi_edit_form', array('name'=>'file_form', 'id'=>'file_form'))?>
-	
+	<div class="wide_content">
 		<?=$table_html?>
-	
+	</div>
+
 		<div class="tableSubmit">
 			<?=form_hidden('upload_dir', $selected_dir)?>
 			<?=form_submit('submit', lang('submit'), 'class="submit"').NBS.NBS?>
@@ -49,7 +50,7 @@
 			<?=form_dropdown('action', $action_options).NBS.NBS?>
 			<?php endif;?>
 		</div>
-		
+
 		<script type="text/x-jquery-tmpl" id="filemanager_row">
 			<tr class="new">
 				<td>${file_id}</td>
@@ -63,9 +64,9 @@
 				<td class="file_select"><input type="checkbox" name="toggle[]" value="${file_id}" class="toggle" id="toggle_box_${file_id}" /></td>
 			</tr>
 		</script>
-		
+
 		<?=$pagination_html?>
-		
+
 	<?=form_close()?>
 <?php endif;?>
 

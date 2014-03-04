@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -82,9 +82,9 @@ class Metaweblog_api_mcp {
 		$metaweblogs = ee()->db->get('metaweblog_api');
 
 		ee()->javascript->compile();
-		
+
 		$vars['metaweblogs'] = array();
-		
+
 		if ($metaweblogs->num_rows() == 0)
 		{
 			return ee()->load->view('index', $vars, TRUE);
@@ -135,9 +135,9 @@ class Metaweblog_api_mcp {
 		{
 			ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=metaweblog_api');
 		}
-		
+
 		ee()->load->library('form_validation');
-		
+
 		ee()->form_validation->set_rules('metaweblog_id',			'lang:metaweblog_id',						'required');
 		ee()->form_validation->set_rules('metaweblog_pref_name',	'lang:metaweblog_pref_name',				'required');
 		ee()->form_validation->set_rules('metaweblog_parse_type',	'lang:metaweblog_parse_type',				'required');
@@ -178,7 +178,7 @@ class Metaweblog_api_mcp {
 			}
 		}
 
-		
+
 		if (ee()->form_validation->run() === FALSE)
 		{
 			ee()->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=metaweblog_api', ee()->lang->line('metaweblog_api_module_name'));
@@ -216,7 +216,7 @@ class Metaweblog_api_mcp {
 
 			// FIELD GROUP
 			$vars['field_group_id_options'] = array();
-			
+
 			foreach($this->group_array as $key => $value)
 			{
 				$vars['field_group_id_options'][$key] = $value['0'];
@@ -226,7 +226,7 @@ class Metaweblog_api_mcp {
 			// This field array is used for many of the dropdowns below, so we'll
 			// generate it once, and just array_merge() it into the fold.
 			$fields_array = array();
-			
+
 			foreach($this->field_array as $value)
 			{
 				if ($value['0'] == $vars['field_group_id'])
@@ -402,7 +402,7 @@ class Metaweblog_api_mcp {
 		$allowed_channels = ee()->functions->fetch_assigned_channels();
 		$allowed_groups = array();
 		$groups_exist = TRUE;
-		
+
 		if ( ! ee()->cp->allowed_group('can_edit_other_entries') && count($allowed_channels) == 0)
 		{
 			$groups_exist = FALSE;
@@ -441,12 +441,12 @@ class Metaweblog_api_mcp {
 
 		ee()->db->select('field_group');
 		ee()->db->from('exp_channels');
-		
+
 		if ( ! ee()->cp->allowed_group('can_edit_other_entries'))
 		{
 			ee()->db->where_in('channel_id', $allowed_channels);
-		}	
-		
+		}
+
 		$query = ee()->db->get();
 
 		if ($groups_exist && $query->num_rows() > 0)
@@ -455,17 +455,17 @@ class Metaweblog_api_mcp {
 			{
 				$allowed_groups[] = $row['field_group'];
 			}
-		
+
 			ee()->db->select('group_id, group_name, site_label');
 			ee()->db->from('field_groups');
-			ee()->db->where_in('group_id', $allowed_groups);		
+			ee()->db->where_in('group_id', $allowed_groups);
 			ee()->db->join('sites', 'sites.site_id = field_groups.site_id');
-		
+
 			if (ee()->config->item('multiple_sites_enabled') !== 'y')
 			{
 				ee()->db->where('field_groups.site_id', '1');
 			}
-		
+
 			$query = ee()->db->get();
 
 			if ($query->num_rows() > 0)
@@ -478,10 +478,10 @@ class Metaweblog_api_mcp {
 			}
 		}  // End gather groups
 
-		/** ----------------------------- 
+		/** -----------------------------
 		/**  Entry Statuses
 		/** -----------------------------*/
-		
+
 		ee()->db->select('group_id, status');
 		ee()->db->where_not_in('status', array('open', 'closed'));
 		ee()->db->order_by('status_order');
@@ -495,15 +495,15 @@ class Metaweblog_api_mcp {
 			}
 		}
 
-		/** ----------------------------- 
+		/** -----------------------------
 		/**  Custom Channel Fields
 		/** -----------------------------*/
-				
+
 		ee()->db->select('group_id, field_label, field_id');
 		ee()->db->order_by('field_label');
-		
+
 		ee()->db->where_in('channel_fields.field_type', array('textarea', 'text', 'rte'));
-		
+
 		$query = ee()->db->get('channel_fields');
 
 		if ($query->num_rows() > 0)
@@ -552,13 +552,13 @@ class Metaweblog_api_mcp {
 					}
 				}
 			}
-	
+
 			$channel_info[$key]['fields'] = $fields;
 		}
 
 		$channel_info = json_encode($channel_info);
 		$none_text = ee()->lang->line('none');
-		
+
 		$javascript = <<<MAGIC
 
 // Whee - json
@@ -571,11 +571,11 @@ var empty_select = new Option("{$none_text}", 'none');
 // converting everything into option elements
 (function() {
 	jQuery.each(channel_map, function(key, details) {
-		
+
 		// Go through each of the individual settings and build a proper dom element
 		jQuery.each(details, function(group, values) {
 			var html = new String();
-			
+
 			// Add the new option fields
 			jQuery.each(values, function(a, b) {
 				html += '<option value="' + b[0] + '">' + b[1] + "</option>";
@@ -585,7 +585,7 @@ var empty_select = new Option("{$none_text}", 'none');
 			channel_map[key][group] = html;
 		});
 	});
-	
+
 })();
 
 
@@ -594,7 +594,7 @@ var empty_select = new Option("{$none_text}", 'none');
 function changemenu(index)
 {
 	var channels = 'null';
-	
+
 	if (channel_map[index] === undefined) {
 		$('select[name=excerpt_field_id], select[name=content_field_id], select[name=more_field_id], select[name=keywords_field_id]').empty().append(empty_select);
 	}
@@ -605,7 +605,7 @@ function changemenu(index)
 				$('select[name=excerpt_field_id]').empty().append(val);
 				$('select[name=content_field_id]').empty().append(val);
 				$('select[name=more_field_id]').empty().append(val);
-				$('select[name=keywords_field_id]').empty().append(val);				
+				$('select[name=keywords_field_id]').empty().append(val);
 			}
 		});
 	}

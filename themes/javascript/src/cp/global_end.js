@@ -1,20 +1,17 @@
-/*jslint browser: true, onevar: true, undef: true, nomen: true, eqeqeq: true, plusplus: true, bitwise: true, regexp: true, strict: true, newcap: true, immed: true */
-
-/*global $, jQuery, EE, window, document, console */
-
-"use strict";
-
 /*!
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
+(function($) {
+
+"use strict";
 
 /**
  * This file always runs dead last.
@@ -50,3 +47,6 @@ $('table').each(function() {
 		$(this).toggle_all();
 	}
 });
+
+
+})(jQuery);

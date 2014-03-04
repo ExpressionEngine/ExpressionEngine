@@ -6,7 +6,7 @@
  *
  * @package		CodeIgniter
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc.
  * @license		http://codeigniter.com/user_guide/license.html
  * @link		http://codeigniter.com
  * @since		Version 1.0
@@ -91,13 +91,15 @@ if ( ! function_exists('write_file'))
  * within the supplied base directory will be nuked as well.
  *
  * @access	public
- * @param	string	path to file
- * @param	bool	whether to delete any directories found in the path
+ * @param	string	$path		Path to file
+ * @param	bool	$del_dir	Whether to delete any directories found in the path
+ * @param	int		$level		Levels deep to traverse the file tree to delete files
+ * @param	array	$exclude	Array of file names to exclude from deletion
  * @return	bool
  */
 if ( ! function_exists('delete_files'))
 {
-	function delete_files($path, $del_dir = FALSE, $level = 0)
+	function delete_files($path, $del_dir = FALSE, $level = 0, $exclude = array())
 	{
 		// Trim the trailing slash
 		$path = rtrim($path, DIRECTORY_SEPARATOR);
@@ -107,16 +109,19 @@ if ( ! function_exists('delete_files'))
 			return FALSE;
 		}
 
+		$exclude[] = '.';
+		$exclude[] = '..';
+
 		while(FALSE !== ($filename = @readdir($current_dir)))
 		{
-			if ($filename != "." and $filename != "..")
+			if ( ! in_array($filename, $exclude))
 			{
 				if (is_dir($path.DIRECTORY_SEPARATOR.$filename))
 				{
 					// Ignore empty folders
 					if (substr($filename, 0, 1) != '.')
 					{
-						delete_files($path.DIRECTORY_SEPARATOR.$filename, $del_dir, $level + 1);
+						delete_files($path.DIRECTORY_SEPARATOR.$filename, $del_dir, $level + 1, $exclude);
 					}
 				}
 				else
@@ -133,6 +138,26 @@ if ( ! function_exists('delete_files'))
 		}
 
 		return TRUE;
+	}
+}
+
+// ------------------------------------------------------------------------
+
+/**
+ * Writes an index.html file to a specified path to ensure directories
+ * cannot be indexed
+ *
+ * @access	public
+ * @param	string	$path	Path to write index.html to
+ * @return	bool	Success or failure of file writing
+ */
+if ( ! function_exists('write_index_html'))
+{
+	function write_index_html($path)
+	{
+		$path = rtrim($path, '/').'/';
+
+		return write_file($path.'index.html', 'Directory access is forbidden.');
 	}
 }
 

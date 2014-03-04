@@ -5,13 +5,13 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.5
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -24,18 +24,18 @@
  * @link		http://ellislab.com
  */
 class Image_rte {
-	
+
 	public $info = array(
 		'name'			=> 'Image',
 		'version'		=> '1.0',
 		'description'	=> 'Inserts and manages image alignment in the RTE',
 		'cp_only'		=> 'y'
 	);
-	
+
 	private $EE;
 	private $folders	= array();
 	private $filedirs	= array();
-	
+
 	/**
 	 * Constructor
 	 *
@@ -74,7 +74,7 @@ class Image_rte {
 			)
 		);
 	}
-	
+
 	/** -------------------------------------
 	/**  Libraries we need loaded
 	/** -------------------------------------*/
@@ -90,7 +90,7 @@ class Image_rte {
 		);
 */
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -119,7 +119,7 @@ class Image_rte {
 		# load the external file
 		return file_get_contents( 'rte.image.js', TRUE );
 	}
-	
+
 } // END Image_rte
 
 /* End of file rte.image.php */

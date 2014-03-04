@@ -4,13 +4,13 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -34,23 +34,23 @@ class EE_Accessories {
 	{
 		$this->EE =& get_instance();
 		ee()->load->library('addons');
-	}	
+	}
 
-	// --------------------------------------------------------------------	
+	// --------------------------------------------------------------------
 
 	/**
 	 * Generate Accessories
-	 * 
+	 *
 	 * Builds the Accessories tabs and content menu
 	 *
 	 * @access	public
 	 * @return	void
-	 */	 
+	 */
 	function generate_accessories($permissions = '')
 	{
 		$accessories = array();
 		$ext_len = strlen('.php');
-		
+
 		$controller	= ee()->router->fetch_class();
 		$member_group = ee()->session->userdata('group_id');
 
@@ -58,19 +58,19 @@ class EE_Accessories {
 		$installed = ee()->addons->get_installed('accessories');
 
 		foreach ($files as $name => $info)
-		{						
+		{
 			if (isset($installed[$name]))
 			{
 				$valid_controller = FALSE;
 				$valid_group = FALSE;
-				
+
 				$c = explode('|', $installed[$name]['controllers']);
 				$g = explode('|', $installed[$name]['member_groups']);
 
 				// Make them all arrays
 				$c = is_array($c) ? $c : array($c);
 				$g = is_array($g) ? $g : array($g);
-				
+
 				// Filter out the blanks
 				$c = (current($c) == '') ? array() : $c;
 				$g = (current($g) == '') ? array() : $g;
@@ -80,12 +80,12 @@ class EE_Accessories {
 				{
 					$valid_controller = in_array($controller, $c);
 				}
-				
+
 				if (count($g) > 0)
 				{
 					$valid_group = in_array($member_group, $g);
 				}
-				
+
 				$installed[$name]['controller'] = $c;
 				$installed[$name]['member_groups'] = $g;
 
@@ -102,7 +102,7 @@ class EE_Accessories {
 							$third_party = TRUE;
 							ee()->load->add_package_path(PATH_THIRD.strtolower($name).'/');
 						}
-						
+
 						$obj = new $info['class']();
 
 						// Update Accessory First? Check if an update() function is present, then versions
@@ -119,7 +119,7 @@ class EE_Accessories {
 						$obj->set_sections();
 						$accessories[] = $obj;
 						unset($obj);
-						
+
 						if ($third_party === TRUE)
 						{
 							ee()->load->remove_package_path(PATH_THIRD.strtolower($name).'/');
@@ -137,7 +137,7 @@ class EE_Accessories {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Fetch Accessory by Name
 	 *
@@ -160,9 +160,9 @@ class EE_Accessories {
 			return FALSE;
 		}
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Update the Accessory Display Settings
 	 *
@@ -177,7 +177,7 @@ class EE_Accessories {
 		if ($member_groups === FALSE && $controllers === FALSE)
 		{
 			ee()->load->model('member_model');
-			
+
 			// all member groups by default
 			$member_groups = array();
 			$member_groups_query = ee()->member_model->get_member_groups();
@@ -204,14 +204,14 @@ class EE_Accessories {
 				$controllers[] = str_replace('.php', '', $file);
 			}
 		}
-		
+
 		$data = array('member_groups' => '', 'controllers' => '');
-		
+
 		if (is_array($member_groups))
 		{
 			$data['member_groups'] = implode('|', $member_groups);
 		}
-		
+
 		if (is_array($controllers))
 		{
 			$data['controllers'] = implode('|', $controllers);
@@ -241,7 +241,7 @@ class EE_Accessories {
 		{
 			return FALSE;
 		}
-		
+
 		@include_once($path);
 		$class = ucfirst($name).'_acc';
 
@@ -250,17 +250,17 @@ class EE_Accessories {
 		{
 			return FALSE;
 		}
-		
+
 		if (strncmp($path, PATH_THIRD, strlen(PATH_THIRD)) == 0)
 		{
 			ee()->load->add_package_path(PATH_THIRD.strtolower($name).'/', FALSE);
 		}
-		
+
 		return $class;
 	}
 
 	// --------------------------------------------------------------------
-	
+
 }
 // END CLASS
 

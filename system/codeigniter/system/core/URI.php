@@ -6,7 +6,7 @@
  *
  * @package		CodeIgniter
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc.
  * @license		http://codeigniter.com/user_guide/license.html
  * @link		http://codeigniter.com
  * @since		Version 1.0
@@ -109,7 +109,7 @@ class CI_URI {
 		$path = (isset($_SERVER[$uri])) ? $_SERVER[$uri] : @getenv($uri);
 		$this->_set_uri_string($path);
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -122,7 +122,7 @@ class CI_URI {
 	{
 		// Filter out control characters
 		$str = remove_invisible_characters($str, FALSE);
-		
+
 		// If the URI contains only a slash we'll kill it
 		$this->uri_string = ($str == '/') ? '' : $str;
 	}
@@ -146,7 +146,7 @@ class CI_URI {
 		}
 
 		$uri = $_SERVER['REQUEST_URI'];
-		
+
 		if (strpos($uri, $_SERVER['SCRIPT_NAME']) === 0)
 		{
 			$uri = substr($uri, strlen($_SERVER['SCRIPT_NAME']));
@@ -162,10 +162,10 @@ class CI_URI {
 		{
 			$uri = substr($uri, 2);
 		}
-		
+
 		$parts = preg_split('#\?#i', $uri, 2);
 		$uri = $parts[0];
-		
+
 		if (isset($parts[1]))
 		{
 			$_SERVER['QUERY_STRING'] = $parts[1];
@@ -499,7 +499,7 @@ class CI_URI {
 	{
 		$leading	= '/';
 		$trailing	= '/';
-		
+
 		if ($where == 'trailing')
 		{
 			$leading	= '';
@@ -508,7 +508,7 @@ class CI_URI {
 		{
 			$trailing	= '';
 		}
-		
+
 		return $leading.$this->$which($n).$trailing;
 	}
 

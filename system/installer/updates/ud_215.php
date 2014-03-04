@@ -5,7 +5,7 @@
  *
  * @package     ExpressionEngine
  * @author      EllisLab Dev Team
- * @copyright   Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright   Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license     http://ellislab.com/expressionengine/user-guide/license.html
  * @link        http://ellislab.com
  * @since       Version 2.0
@@ -37,7 +37,7 @@ class Updater {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Do Update
 	 *
@@ -48,7 +48,7 @@ class Updater {
 		ee()->load->dbforge();
 
 		$steps = '';
-		
+
 		// Kill blogger
 		if (ee()->db->table_exists('blogger'))
 		{
@@ -56,22 +56,22 @@ class Updater {
 			$steps[] = '_drop_blogger';
 			// remove blogger
 		}
-		
+
 		// Add batch dir preference to exp_upload_prefs
 		$steps[] = '_do_upload_pref_update';
-		
+
 		// Update category group
 		$steps[] = '_do_cat_group_update';
-		
+
 		// Build file-related tables
 		$steps[] = '_do_build_file_tables';
-		
+
 		// Permission changes
 		$steps[] = '_do_permissions_update';
-		
+
 		// Move field_content_type to the channel_fields settings array
-		$steps[] = '_do_custom_field_update';		
-		
+		$steps[] = '_do_custom_field_update';
+
 		// Add a MySQL index or three to help performance
 		$steps[] = '_do_add_indexes';
 
@@ -84,9 +84,9 @@ class Updater {
 
 		return TRUE;
 	}
-	
+
 	// ------------------------------------------------------------------------
-	
+
 	/**
 	 * Transfer Blogger configurations to the metaweblog api
 	 *
@@ -100,17 +100,17 @@ class Updater {
 			$UPD = new Metaweblog_api_upd();
 			$UPD->install();
 		}
-		
+
 		$qry = ee()->db->get('blogger');
-		
+
 		foreach ($qry->result() as $row)
 		{
 			list($channel_id, $custom_field_id) = explode(':', $row->blogger_field_id);
-			
+
 			$qry = ee()->db->select('field_group')
 								->where('channel_id', $channel_id)
 								->get('channels');
-			
+
 			if ( ! $qry->num_rows())
 			{
 				// nothing we can do here, that config shouldn't work
@@ -118,20 +118,20 @@ class Updater {
 			}
 
 			$fg_id = $qry->row('field_group');
-			
+
 			$data = array(
 				'field_group_id' 		=> $fg_id,
 				'content_field_id' 		=> $custom_field_id,
 				'metaweblog_pref_name' 	=> $row->blogger_pref_name.'_blogger',
 				'metaweblog_parse_type'	=> $row->blogger_parse_type,
 			);
-			
+
 			ee()->db->insert('metaweblog_api', $data);
 		}
 	}
-	
+
 	// ------------------------------------------------------------------------
-	
+
 	/**
 	 * Drop Blogger Data
 	 *
@@ -141,21 +141,21 @@ class Updater {
 	{
 		ee()->db->select('module_id');
 		$query = ee()->db->get_where('modules', array('module_name' => 'Blogger_api'));
-		
+
 		ee()->db->where('module_id', $query->row('module_id'));
 		ee()->db->delete('module_member_groups');
-		
+
 		ee()->db->where('module_name', 'Blogger_api');
 		ee()->db->delete('modules');
-		
+
 		ee()->db->where('class', 'Blogger_api');
 		ee()->db->delete('actions');
-		
+
 		ee()->dbforge->drop_table('blogger');
 	}
 
 	// ------------------------------------------------------------------------
-	
+
 	/**
 	 * Upload pref table update
 	 *
@@ -177,7 +177,7 @@ class Updater {
 		);
 
 		ee()->smartforge->add_column('upload_prefs', $fields);
-		
+
 		$fields = array(
 			'server_path' => array(
 				'name'			=> 'server_path',
@@ -185,10 +185,10 @@ class Updater {
 				'constraint'	=> 255
 			),
 		);
-		
+
 		ee()->smartforge->modify_column('upload_prefs', $fields);
 	}
-	
+
 	// ------------------------------------------------------------------------
 
 	/**
@@ -209,10 +209,10 @@ class Updater {
 			)
 		);
 
-		ee()->smartforge->add_column('category_groups', $fields);		
+		ee()->smartforge->add_column('category_groups', $fields);
 	}
 
-	// ------------------------------------------------------------------------	
+	// ------------------------------------------------------------------------
 
 	/**
 	 * Build the files tables:
@@ -370,7 +370,7 @@ class Updater {
 				'unsigned' => TRUE
 			)
 		);
-		
+
 		ee()->dbforge->add_field($dimension_fields);
 		ee()->dbforge->add_key('id', TRUE);
 		ee()->dbforge->add_key('upload_location_id');
@@ -399,11 +399,11 @@ class Updater {
 				'default'		=> 'n'
 			)
 		);
-		
+
 		ee()->dbforge->add_field($categories_fields);
 		ee()->dbforge->add_key(array('file_id', 'cat_id'));
 		ee()->smartforge->create_table('file_categories');
-		
+
 		$files_fields = array(
 			'file_id' => array(
 				'type'				=> 'int',
@@ -512,15 +512,15 @@ class Updater {
 			'file_hw_original' => array(
 				'type'				=> 'varchar',
 				'constraint'		=> 20
-			),			
+			),
 		);
-		
+
 		ee()->dbforge->add_field($files_fields);
 		ee()->dbforge->add_key('file_id', TRUE);
 		ee()->dbforge->add_key(array('upload_location_id', 'site_id'));
 		ee()->smartforge->create_table('files');
 	}
-	
+
 	// ------------------------------------------------------------------------
 
 	/**
@@ -541,9 +541,9 @@ class Updater {
 			)
 		);
 
-		ee()->smartforge->add_column('member_groups', $fields, 'can_admin_channels');		
+		ee()->smartforge->add_column('member_groups', $fields, 'can_admin_channels');
 	}
-	
+
 	// ------------------------------------------------------------------------
 
 	/**
@@ -558,19 +558,19 @@ class Updater {
 		ee()->db->select('field_id, field_content_type, field_settings');
 		ee()->db->where_in('field_type', array('file', 'text'));
 		$qry = ee()->db->get('channel_fields');
-		
+
 		foreach ($qry->result() as $row)
 		{
 			$settings = unserialize(base64_decode($row->field_settings));
 			$settings['field_content_type'] = $row->field_content_type;
-			
+
 			$settings = base64_encode(serialize($settings));
-			
+
 
 			ee()->db->where('field_id', $row->field_id);
-			ee()->db->update('channel_fields', array('field_settings' => $settings)); 
+			ee()->db->update('channel_fields', array('field_settings' => $settings));
 		}
-	}	
+	}
 
 	// --------------------------------------------------------------------
 
@@ -589,7 +589,7 @@ class Updater {
 		ee()->smartforge->add_key('channel_fields', 'field_type');
 	}
 
-	// --------------------------------------------------------------------	
+	// --------------------------------------------------------------------
 }
 /* END CLASS */
 

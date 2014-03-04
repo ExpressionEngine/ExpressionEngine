@@ -1,0 +1,12 @@
+<div id="featured_band">
+    <h2>Featured Band</h2>
+    {exp:channel:entries channel="news" limit="1" status="featured" rdf="off" disable="trackbacks" category="2" dynamic="no"}
+    <div class="image">
+        <h4><a href="{comment_url_title_auto_path}"><span>{title}</span></a></h4>
+        {if news_image}
+			<img src="{news_image}" alt="{title}"/>
+		{/if}
+    </div>
+    {news_body}
+    {/exp:channel:entries}
+</div>

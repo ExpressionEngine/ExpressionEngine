@@ -3,7 +3,7 @@
 -----------------------------------------------------
  http://ellislab.com/
 -----------------------------------------------------
- Copyright (c) 2003 - 2013, EllisLab, Inc.
+ Copyright (c) 2003 - 2014, EllisLab, Inc.
 =====================================================
  THIS IS COPYRIGHTED SOFTWARE
  PLEASE READ THE LICENSE AGREEMENT
@@ -27,7 +27,7 @@ you start by exploring the themes via the Control Panel. That is the
 easiest way to see the HTML and CSS that the theme uses. From your
 ExpressionEngine Control Panel go to:
 
-Modules › Discussion Forum › Templates › Developer (this theme's files). 
+Modules › Discussion Forum › Templates › Developer (this theme's files).
 
 The majority of your visual design can be accomplished by altering
 just three Template Groups. First is the CSS Templates (the physical
@@ -53,7 +53,7 @@ although many are empty or carry only one or two basic values.
 The stylesheet is devoid of any background images, and uses
 consistent coloring to make find & replace a simpler task.
 Inheritance is used where possible, requiring fewer modifications
-to make broad changes. 
+to make broad changes.
 
 The topic marker images have been replaced with generic GIFs
 indicating what they are for; you will want to replace these with

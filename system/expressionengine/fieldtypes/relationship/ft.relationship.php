@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.6
@@ -460,7 +460,8 @@ class Relationship_ft extends EE_Fieldtype {
 
 		ee()->cp->add_js_script(array(
 			'plugin' => 'ee_interact.event',
-			'file' => 'cp/relationships'
+			'file' => 'cp/relationships',
+			'ui' => 'sortable'
 		));
 
 		if ( ! isset($this->settings['grid_row_id']) && substr($field_name, 7) != 'col_id_' && count($entries))
@@ -944,11 +945,14 @@ class Relationship_ft extends EE_Fieldtype {
 	 *
 	 * @return	array	The SQL definition of the modified field.
 	 */
-	protected function _settings_modify_column($data, $grid=FALSE)
+	protected function _settings_modify_column($data, $grid = FALSE)
 	{
 		if ($data['ee_action'] == 'delete')
 		{
-			$this->_clear_defunct_relationships($data['field_id']);
+			$this->_clear_defunct_relationships(
+				($grid) ? $data['col_id'] : $data['field_id'],
+				$grid
+			);
 		}
 
 		// pretty much a dummy field. Here just for consistency's sake
@@ -971,12 +975,21 @@ class Relationship_ft extends EE_Fieldtype {
 	 *
 	 * @return void
 	 */
-	protected function _clear_defunct_relationships($field_id)
+	protected function _clear_defunct_relationships($field_id, $grid = FALSE)
 	{
 		// remove relationships
-		ee()->db
-			->where('field_id', $field_id)
-			->delete($this->_table);
+		if ($grid)
+		{
+			ee()->db
+				->where('grid_col_id', $field_id)
+				->delete($this->_table);
+		}
+		else
+		{
+			ee()->db
+				->where('field_id', $field_id)
+				->delete($this->_table);
+		}
 	}
 }
 

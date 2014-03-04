@@ -6,7 +6,7 @@
  *
  * @package		CodeIgniter
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc.
  * @license		http://codeigniter.com/user_guide/license.html
  * @link		http://codeigniter.com
  * @since		Version 1.0
@@ -24,88 +24,20 @@
  */
 class CI_DB_Cache {
 
-	var $CI;
-	var $db;	// allows passing of db object so that multiple database connections and returned db objects can be supported
-
-	/**
-	 * Constructor
-	 *
-	 * Grabs the CI super object instance so we can access it.
-	 *
-	 */
-	function CI_DB_Cache(&$db)
-	{
-		// Assign the main CI object to $this->CI
-		// and load the file helper since we use it a lot
-		$this->CI =& get_instance();
-		$this->db =& $db;
-		$this->CI->load->helper('file');
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Set Cache Directory Path
-	 *
-	 * @access	public
-	 * @param	string	the path to the cache directory
-	 * @return	bool
-	 */
-	function check_path($path = '')
-	{
-		if ($path == '')
-		{
-			if ($this->db->cachedir == '')
-			{
-				return $this->db->cache_off();
-			}
-
-			$path = $this->db->cachedir;
-		}
-
-		// Add a trailing slash to the path if needed
-		$path = preg_replace("/(.+?)\/*$/", "\\1/",  $path);
-
-		if ( ! is_dir($path) OR ! is_really_writable($path))
-		{
-			// If the path is wrong we'll turn off caching
-			return $this->db->cache_off();
-		}
-
-		$this->db->cachedir = $path;
-		return TRUE;
-	}
+	// Namespace cache items will be stored in
+	private $_cache_namespace = 'db_cache';
 
 	// --------------------------------------------------------------------
 
 	/**
 	 * Retrieve a cached query
 	 *
-	 * The URI being requested will become the name of the cache sub-folder.
-	 * An MD5 hash of the SQL statement will become the cache file name
-	 *
-	 * @access	public
-	 * @return	string
+	 * @param	string	$sql	SQL as key name to retrieve
+	 * @return	mixed	Object from cache
 	 */
-	function read($sql)
+	public function read($sql)
 	{
-		if ( ! $this->check_path())
-		{
-			return $this->db->cache_off();
-		}
-
-		$segment_one = ($this->CI->uri->segment(1) == FALSE) ? 'default' : $this->CI->uri->segment(1);
-
-		$segment_two = ($this->CI->uri->segment(2) == FALSE) ? 'index' : $this->CI->uri->segment(2);
-
-		$filepath = $this->db->cachedir.$segment_one.'+'.$segment_two.'/'.md5($sql);
-
-		if (FALSE === ($cachedata = read_file($filepath)))
-		{
-			return FALSE;
-		}
-
-		return unserialize($cachedata);
+		return ee()->cache->get('/'.$this->_cache_namespace.'/'.$this->_prefixed_key($sql));
 	}
 
 	// --------------------------------------------------------------------
@@ -113,41 +45,17 @@ class CI_DB_Cache {
 	/**
 	 * Write a query to a cache file
 	 *
-	 * @access	public
-	 * @return	bool
+	 * @param	string	$sql	SQL to use as a key name
+	 * @param	string	$object	Object to store in cache
+	 * @return	bool	Success or failure
 	 */
 	function write($sql, $object)
 	{
-		if ( ! $this->check_path())
-		{
-			return $this->db->cache_off();
-		}
-
-		$segment_one = ($this->CI->uri->segment(1) == FALSE) ? 'default' : $this->CI->uri->segment(1);
-
-		$segment_two = ($this->CI->uri->segment(2) == FALSE) ? 'index' : $this->CI->uri->segment(2);
-
-		$dir_path = $this->db->cachedir.$segment_one.'+'.$segment_two.'/';
-
-		$filename = md5($sql);
-
-		if ( ! @is_dir($dir_path))
-		{
-			if ( ! @mkdir($dir_path, DIR_WRITE_MODE))
-			{
-				return FALSE;
-			}
-
-			@chmod($dir_path, DIR_WRITE_MODE);
-		}
-
-		if (write_file($dir_path.$filename, serialize($object)) === FALSE)
-		{
-			return FALSE;
-		}
-
-		@chmod($dir_path.$filename, FILE_WRITE_MODE);
-		return TRUE;
+		return ee()->cache->save(
+			'/'.$this->_cache_namespace.'/'.$this->_prefixed_key($sql),
+			$object,
+			0 // TTL
+		);
 	}
 
 	// --------------------------------------------------------------------
@@ -155,24 +63,13 @@ class CI_DB_Cache {
 	/**
 	 * Delete cache files within a particular directory
 	 *
-	 * @access	public
-	 * @return	bool
+	 * @deprecated
 	 */
-	function delete($segment_one = '', $segment_two = '')
+	public function delete($segment_one = '', $segment_two = '')
 	{
-		if ($segment_one == '')
-		{
-			$segment_one  = ($this->CI->uri->segment(1) == FALSE) ? 'default' : $this->CI->uri->segment(1);
-		}
-
-		if ($segment_two == '')
-		{
-			$segment_two = ($this->CI->uri->segment(2) == FALSE) ? 'index' : $this->CI->uri->segment(2);
-		}
-
-		$dir_path = $this->db->cachedir.$segment_one.'+'.$segment_two.'/';
-
-		delete_files($dir_path, TRUE);
+		// Can't delete a sub-namespace of a namespace
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.8');
 	}
 
 	// --------------------------------------------------------------------
@@ -180,14 +77,34 @@ class CI_DB_Cache {
 	/**
 	 * Delete all existing cache files
 	 *
-	 * @access	public
-	 * @return	bool
+	 * @return	bool	Success or failure
 	 */
-	function delete_all()
+	public function delete_all()
 	{
-		delete_files($this->db->cachedir, TRUE);
+		return ee()->cache->clear_namespace($this->_cache_namespace);
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Takes a cache key and gets it ready for storage or retrieval, which
+	 * includes prefixing the key name with the two URI segments of the
+	 * request and MD5ing the key name to shorten it since it's likely a
+	 * long SQL query
+	 *
+	 * @param	string	$key	Cache key name
+	 * @return	string	Key prefixed with segments
+	 */
+	private function _prefixed_key($key)
+	{
+		$segment_one = (ee()->uri->segment(1) == FALSE)
+			? 'default' : ee()->uri->segment(1);
+
+		$segment_two = (ee()->uri->segment(2) == FALSE)
+			? 'index' : ee()->uri->segment(2);
+
+		return $segment_one.'+'.$segment_two.'+'.md5($key);
+	}
 }
 
 

@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -41,7 +41,14 @@ class Multi_select_ft extends EE_Fieldtype {
 		$text_direction = (isset($this->settings['field_text_direction']))
 			? $this->settings['field_text_direction'] : 'ltr';
 
-		return form_multiselect($this->field_name.'[]', $field_options, $values, 'dir="'.$text_direction.'" class="multiselect_input" id="field_id_'.$this->field_id.'"');
+		return form_multiselect($this->field_name.'[]', $field_options, $values, 'dir="'.$text_direction.'" class="multiselect_input"');
+	}
+
+	// --------------------------------------------------------------------
+
+	function grid_display_field($data)
+	{
+		return $this->display_field(form_prep($data));
 	}
 
 	// --------------------------------------------------------------------
@@ -101,8 +108,8 @@ class Multi_select_ft extends EE_Fieldtype {
 			return ee()->functions->encode_ee_tags($entry);
 		}
 
-		$text_format = (isset($this->row['field_ft_'.$this->field_id]))
-			? $this->row['field_ft_'.$this->field_id] : 'none';
+		$text_format = ($this->content_type() == 'grid')
+			? $this->settings['field_fmt'] : $this->row('field_ft_'.$this->field_id);
 
 		return ee()->typography->parse_type(
 				ee()->functions->encode_ee_tags($entry),

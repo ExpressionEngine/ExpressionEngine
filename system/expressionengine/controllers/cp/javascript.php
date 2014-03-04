@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -65,10 +65,10 @@ class Javascript extends CI_Controller {
 	function spellcheck_iframe()
 	{
 		$this->output->enable_profiler(FALSE);
-		
+
 		if ( ! class_exists('EE_Spellcheck'))
 		{
-			require APPPATH.'libraries/Spellcheck.php'; 
+			require APPPATH.'libraries/Spellcheck.php';
 		}
 
 		return EE_Spellcheck::iframe();
@@ -90,7 +90,7 @@ class Javascript extends CI_Controller {
 
 		if ( ! class_exists('EE_Spellcheck'))
 		{
-			require APPPATH.'libraries/Spellcheck.php'; 
+			require APPPATH.'libraries/Spellcheck.php';
 		}
 
 		return EE_Spellcheck::check();
@@ -109,20 +109,20 @@ class Javascript extends CI_Controller {
 	function load($loadfile = '')
 	{
 		$this->output->enable_profiler(FALSE);
-		
-		$file = '';		
+
+		$file = '';
 		$cp_theme = $this->input->get_post('theme');
 		$package = $this->input->get_post('package');
 
 		// trying to load a specific js file?
 		$loadfile = $this->input->get_post('file');
 		$loadfile = $this->security->sanitize_filename($loadfile, TRUE);
-		
+
 		if ($loadfile == 'ext_scripts')
 		{
 			return $this->_ext_scripts();
 		}
-		
+
 		if ($package && $loadfile)
 		{
 			$file = PATH_THIRD.$package.'/javascript/'.$loadfile.'.js';
@@ -168,13 +168,13 @@ class Javascript extends CI_Controller {
 		$this->output->set_header('Content-Length: '.strlen($contents));
 		$this->output->set_output($contents);
 	}
-	
-	// --------------------------------------------------------------------	
+
+	// --------------------------------------------------------------------
 
 	/**
 	 * Javascript from extensions
 	 *
-	 * This private method is intended for usage by the 'add_global_cp_js' hook 
+	 * This private method is intended for usage by the 'add_global_cp_js' hook
 	 *
 	 * @access 	private
 	 * @return 	void
@@ -191,10 +191,10 @@ class Javascript extends CI_Controller {
 			$str = $this->extensions->call('cp_js_end');
 		/*
 		/* -------------------------------------------*/
-		
+
 		$this->output->out_type = 'cp_asset';
 		$this->output->set_header("Content-Type: text/javascript");
-		$this->output->set_header("Cache-Control: no-cache, must-revalidate"); 
+		$this->output->set_header("Cache-Control: no-cache, must-revalidate");
 		$this->output->set_header('Content-Length: '.strlen($str));
 		$this->output->set_output($str);
 	}
@@ -203,11 +203,11 @@ class Javascript extends CI_Controller {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Javascript Combo Loader 
+	 * Javascript Combo Loader
 	 *
 	 * Combo load multiple javascript files to reduce HTTP requests
 	 * BASE.AMP.'C=javascript&M=combo&ui=ui,packages&file=another&plugin=plugins&package=third,party,packages'
-	 * 
+	 *
 	 * @access public
 	 * @return string
 	 */

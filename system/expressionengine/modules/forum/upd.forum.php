@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -26,14 +26,14 @@
 
 class Forum_upd {
 
-	var $version			= '3.1.13';
-	
+	var $version			= '3.1.15';
+
 	function Forum_upd()
 	{
 		// Make a local reference to the ExpressionEngine super object
-		$this->EE =& get_instance(); 
+		$this->EE =& get_instance();
 	}
-	
+
 
 	function tabs()
 	{
@@ -55,16 +55,16 @@ class Forum_upd {
 								'collapse'		=> FALSE,
 								'htmlbuttons'	=> TRUE,
 								'width'			=> '100%'
-								),								
+								),
 			'forum_topic_id'	=> array(
 								'visible'		=> TRUE,
 								'collapse'		=> FALSE,
 								'htmlbuttons'	=> TRUE,
 								'width'			=> '100%'
 								)
-				);	
-				
-		return $tabs;	
+				);
+
+		return $tabs;
 	}
 
 	/** ---------------------------------
@@ -73,33 +73,33 @@ class Forum_upd {
 	function update_triggers()
 	{
 		$query = ee()->db->query("SELECT site_id FROM exp_sites");
-		
+
 		foreach($query->result_array() as $row)
 		{
 			$tquery = ee()->db->query("SELECT board_forum_trigger FROM exp_forum_boards WHERE board_site_id = '".ee()->db->escape_str($row['site_id'])."'");
-			
+
 			$triggers = array();
-			
+
 			foreach($tquery->result_array() as $trow)
 			{
 				$triggers[] = $trow['board_forum_trigger'];
 			}
-			
+
 			$pquery = ee()->db->query("SELECT site_system_preferences FROM exp_sites WHERE site_id = '".ee()->db->escape_str($row['site_id'])."'");
-					
+
 			$prefs	 = unserialize(base64_decode($pquery->row('site_system_preferences')));
-			
+
 			$prefs['forum_trigger'] = implode('|', $triggers);
-			
+
 			//print_r($prefs);
-			
-			ee()->db->query(ee()->db->update_string('exp_sites', 
+
+			ee()->db->query(ee()->db->update_string('exp_sites',
 										  array('site_system_preferences' => base64_encode(serialize($prefs))),
 										  "site_id = '".ee()->db->escape_str($row['site_id'])."'"));
 		}
 	}
-	
-	
+
+
 	/** ----------------------------------------
 	/**  Set Base Permissions
 	/** ----------------------------------------*/
@@ -109,17 +109,17 @@ class Forum_upd {
 	function forum_set_base_permissions($is_category = FALSE)
 	{
 		$query = ee()->db->query("SELECT group_id FROM exp_member_groups WHERE site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."' AND group_id > 4");
-		
+
 		$group_ids = '';
-		
+
 		if ($query->num_rows() > 0)
 		{
 			foreach ($query->result_array() as $row)
 			{
 				$group_ids .= '|'.$row['group_id'];
 			}
-		}	
-				
+		}
+
 		/** ------------------------------------
 		/**  Define the permission array
 		/** ------------------------------------*/
@@ -133,7 +133,7 @@ class Forum_upd {
 						'can_upload_files'	=> ($is_category == TRUE) ? '' : '|1'.$group_ids.'|',
 						'can_search'		=> ($is_category == TRUE) ? '' : '|1|3|4'.$group_ids.'|'
 						);
-		
+
 		return $perms;
 	}
 
@@ -145,16 +145,16 @@ class Forum_upd {
 	 *
 	 * @access	public
 	 * @return	bool
-	 */	
+	 */
 	function install()
-	{	
+	{
 		if ( ! is_really_writable(ee()->config->config_path))
 		{
 			ee()->lang->loadfile('forum_cp');
-		
+
 			return ee()->output->fatal_error(ee()->lang->line('config_not_writable'));
 		}
-				
+
 		$sql[] = "INSERT INTO exp_modules (module_name, module_version, has_cp_backend, has_publish_fields) VALUES ('Forum', '$this->version', 'y', 'y')";
 		$sql[] = "INSERT INTO exp_actions (class, method) VALUES ('Forum', 'submit_post')";
 		$sql[] = "INSERT INTO exp_actions (class, method) VALUES ('Forum', 'delete_post')";
@@ -167,7 +167,7 @@ class Forum_upd {
 		$sql[] = "INSERT INTO exp_actions (class, method) VALUES ('Forum', 'set_theme')";
 		$sql[] = "INSERT INTO exp_actions (class, method) VALUES ('Forum', 'do_report')";
 		$sql[] = "INSERT INTO exp_actions (class, method) VALUES ('Forum', 'move_reply')";
-		
+
 		$sql[] = "CREATE TABLE exp_forum_boards (
 			board_id int(5) unsigned NOT NULL auto_increment,
 			board_label varchar(150) NOT NULL,
@@ -187,7 +187,7 @@ class Forum_upd {
 			board_topic_order char(1) NOT NULL default 'r',
 			board_post_order char(1) NOT NULL default 'a',
 			board_hot_topic smallint(4) NOT NULL default 10,
-			board_max_post_chars int(6) unsigned NOT NULL default 6000, 
+			board_max_post_chars int(6) unsigned NOT NULL default 6000,
 			board_post_timelock int(5) unsigned NOT NULL default '0',
 			board_display_edit_date char(1) NOT NULL default 'n',
 			board_text_formatting varchar(50) NOT NULL default 'xhtml',
@@ -197,11 +197,11 @@ class Forum_upd {
 			board_notify_emails varchar(255) NULL,
 			board_notify_emails_topics varchar(255) NULL,
 			board_max_attach_perpost smallint(4) NOT NULL default 3,
-			board_max_attach_size int(6) unsigned NOT NULL default 75, 
+			board_max_attach_size int(6) unsigned NOT NULL default 75,
 			board_max_width int(4) unsigned NOT NULL default 800,
 			board_max_height int(4) unsigned NOT NULL default 600,
 			board_attach_types char(3) NOT NULL default 'img',
-			board_use_img_thumbs char(1) NOT NULL default 'y',			
+			board_use_img_thumbs char(1) NOT NULL default 'y',
 			board_thumb_width int(4) unsigned NOT NULL default 100,
 			board_thumb_height int(4) unsigned NOT NULL default 100,
 			board_forum_permissions text NOT NULL,
@@ -219,8 +219,8 @@ class Forum_upd {
 			forum_name varchar(100) NOT NULL,
 			forum_description text NULL default NULL,
 			forum_is_cat char(1) NOT NULL default 'n',
-			forum_parent int(6) unsigned NULL default NULL, 
-			forum_order int(6) unsigned NULL default NULL, 
+			forum_parent int(6) unsigned NULL default NULL,
+			forum_order int(6) unsigned NULL default NULL,
 			forum_status char(1) NOT NULL default 'o',
 			forum_total_topics mediumint(8) default '0' NOT NULL,
 			forum_total_posts mediumint(8) default '0' NOT NULL,
@@ -236,7 +236,7 @@ class Forum_upd {
 			forum_topic_order char(1) NOT NULL default 'r',
 			forum_post_order char(1) NOT NULL default 'a',
 			forum_hot_topic smallint(4) NOT NULL,
-			forum_max_post_chars int(6) unsigned NOT NULL, 
+			forum_max_post_chars int(6) unsigned NOT NULL,
 			forum_post_timelock int(5) unsigned NOT NULL default '0',
 			forum_display_edit_date char(1) NOT NULL default 'n',
 			forum_text_formatting varchar(50) NOT NULL default 'xhtml',
@@ -307,11 +307,11 @@ class Forum_upd {
 		$sql[] = "CREATE TABLE exp_forum_ranks (
 			rank_id int(6) unsigned NOT NULL auto_increment,
 			rank_title varchar(100) NOT NULL,
-			rank_min_posts int(6) NOT NULL, 
+			rank_min_posts int(6) NOT NULL,
   			rank_stars smallint(3) NOT NULL,
 			PRIMARY KEY `rank_id` (`rank_id`)
 		) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
-		
+
 		$sql[] = "CREATE TABLE exp_forum_administrators (
 			admin_id int(6) unsigned NOT NULL auto_increment,
 			board_id int(6) unsigned NOT NULL DEFAULT '1',
@@ -355,7 +355,7 @@ class Forum_upd {
 			PRIMARY KEY `topic_id_member_id` (`topic_id`, `member_id`),
 			KEY `board_id` (`board_id`)
 			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
-			
+
 
 		$sql[] = "CREATE TABLE exp_forum_attachments (
 			attachment_id int(10) unsigned NOT NULL auto_increment,
@@ -381,7 +381,7 @@ class Forum_upd {
 			KEY `board_id` (`board_id`),
 			KEY `member_id` (`member_id`)
 			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
-			
+
 		$sql[] = "CREATE TABLE exp_forum_search (
 			 search_id varchar(32) NOT NULL,
 			 board_id int(6) unsigned NOT NULL DEFAULT '1',
@@ -395,8 +395,8 @@ class Forum_upd {
 			 PRIMARY KEY `search_id` (`search_id`),
 			 KEY `board_id` (`board_id`)
 			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
-						
-			
+
+
 		$sql[] = "CREATE TABLE exp_forum_polls (
 			poll_id int(10) unsigned NOT NULL auto_increment,
 			topic_id int(10) unsigned NOT NULL,
@@ -419,15 +419,15 @@ class Forum_upd {
 			KEY `member_id` (`member_id`),
 			KEY `topic_id` (`topic_id`)
 			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
-		
+
 		$sql[] = "CREATE TABLE exp_forum_read_topics (
 		 member_id int(10) unsigned NOT NULL,
 		 board_id int(6) unsigned NOT NULL DEFAULT '1',
 		 topics text NOT NULL,
 		 last_visit int(10) NOT NULL,
 		 PRIMARY KEY `member_id_board_id` (`member_id`, `board_id`)
-		) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";				
-						
+		) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
+
 		$sql[] = "INSERT INTO exp_forum_ranks (rank_title, rank_min_posts, rank_stars) VALUES ('Newbie', 0, 1)";
 		$sql[] = "INSERT INTO exp_forum_ranks (rank_title, rank_min_posts, rank_stars) VALUES ('Jr. Member', 30, 2)";
 		$sql[] = "INSERT INTO exp_forum_ranks (rank_title, rank_min_posts, rank_stars) VALUES ('Member', 50, 3)";
@@ -437,11 +437,11 @@ class Forum_upd {
 		{
 			ee()->db->query($query);
 		}
-		
+
 		/** ----------------------------------------
 		/**  Forum Trigger
 		/** ----------------------------------------*/
-		
+
 		// A reserved word must be chosen which, when contained in the URL
 		// (at the template group position), will trigger the foum class.
 		// The forum doesn't use the main template engine so we need a way to
@@ -450,24 +450,24 @@ class Forum_upd {
 		// we can use.
 
 		$forum_triggers = array('forums', 'forum', 'boards', 'discussion_forum', 'myforums', 'myboards');
-		
+
 		$trigger = '';
-		
+
 		foreach ($forum_triggers as $val)
 		{
 			$query = ee()->db->query("SELECT COUNT(*) AS count FROM exp_template_groups WHERE group_name = '{$val}' AND site_id = 1");
-			
+
 			if ($query->row('count')  == 0)
 			{
 				$trigger = $val;
 				break;
 			}
 		}
-		
+
 		/** ----------------------------------------
 		/**  Add a couple items to the config file
 		/** ----------------------------------------*/
-		
+
 		// update the config file based on whether this install is from the CP or the install wizard
 		if (method_exists(ee()->config, 'divination'))
 		{
@@ -475,17 +475,17 @@ class Forum_upd {
 		}
 		else
 		{
-			ee()->config->set_item('forum_is_installed', 'y');			
+			ee()->config->set_item('forum_is_installed', 'y');
 		}
-		
+
 		ee()->load->library('layout');
 		ee()->layout->add_layout_tabs($this->tabs(), 'forum');
 
 		return TRUE;
 	}
 
-	
-	
+
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -493,16 +493,16 @@ class Forum_upd {
 	 *
 	 * @access	public
 	 * @return	bool
-	 */	
+	 */
 	function uninstall()
 	{
-		$query = ee()->db->query("SELECT module_id FROM exp_modules WHERE module_name = 'Forum'"); 
-				
+		$query = ee()->db->query("SELECT module_id FROM exp_modules WHERE module_name = 'Forum'");
+
 		$sql[] = "DELETE FROM exp_specialty_templates WHERE template_name = 'admin_notify_forum_post'";
 		$sql[] = "DELETE FROM exp_specialty_templates WHERE template_name = 'forum_post_notification'";
 		$sql[] = "DELETE FROM exp_specialty_templates WHERE template_name = 'forum_moderation_notification'";
 		$sql[] = "DELETE FROM exp_specialty_templates WHERE template_name = 'forum_report_notification'";
-		$sql[] = "DELETE FROM exp_module_member_groups WHERE module_id = '".$query->row('module_id') ."'";		
+		$sql[] = "DELETE FROM exp_module_member_groups WHERE module_id = '".$query->row('module_id') ."'";
 		$sql[] = "DELETE FROM exp_modules WHERE module_name = 'Forum'";
 		$sql[] = "DELETE FROM exp_actions WHERE class = 'Forum'";
 		$sql[] = "DELETE FROM exp_actions WHERE class = 'Forum_mcp'";
@@ -526,11 +526,11 @@ class Forum_upd {
 		{
 			ee()->db->query($query);
 		}
-		
+
 		/** ----------------------------------------
 		/**  Remove a couple items from the config file
 		/** ----------------------------------------*/
-		
+
 		ee()->config->_update_config(array(), array('forum_is_installed' => '', 'forum_trigger' => ''));
 
 		ee()->load->library('layout');
@@ -547,18 +547,18 @@ class Forum_upd {
 	 *
 	 * @access	public
 	 * @return	bool
-	 */	
-	
+	 */
+
 	function update($current='')
 	{
 		if (version_compare($current, $this->version, '=='))
 		{
 			return FALSE;
 		}
-	
+
 		ee()->load->dbforge();
 		ee()->load->library('smartforge');
-		
+
 		if (version_compare($current, '1.3', '<'))
 		{
 			ee()->db->query("ALTER TABLE exp_forum_moderators ADD COLUMN mod_can_split char(1) NOT NULL default 'n'");
@@ -567,9 +567,9 @@ class Forum_upd {
 			ee()->db->query("ALTER TABLE exp_forum_prefs ADD COLUMN pref_enable_rss char(1) NOT NULL default 'y'");
 			ee()->db->query("INSERT INTO exp_actions (class, method) VALUES ('Forum', 'do_merge')");
 			ee()->db->query("INSERT INTO exp_actions (class, method) VALUES ('Forum', 'do_split')");
-			ee()->db->query("CREATE TABLE exp_forum_read_topics (member_id int(10) unsigned NOT NULL, topics text NOT NULL, last_visit int(10) NOT NULL, KEY `member_id` (`member_id`))");		
+			ee()->db->query("CREATE TABLE exp_forum_read_topics (member_id int(10) unsigned NOT NULL, topics text NOT NULL, last_visit int(10) NOT NULL, KEY `member_id` (`member_id`))");
 		}
-	
+
 		if (version_compare($current, '1.3.1', '<'))
 		{
 			ee()->db->query("INSERT INTO exp_actions (class, method) VALUES ('Forum', 'set_theme')");
@@ -595,51 +595,51 @@ class Forum_upd {
 				}
 			}
 		}
-		
+
 		if (version_compare($current, '1.3.2', '<'))
 		{
 			ee()->db->query("ALTER TABLE `exp_forums` ADD `forum_display_edit_date` CHAR(1) NOT NULL DEFAULT 'n' AFTER `forum_post_timelock`");
 			ee()->db->query("ALTER TABLE `exp_forums` CHANGE `forum_notify_moderators` `forum_notify_moderators_topics` CHAR(1) NOT NULL DEFAULT 'n'");
 			ee()->db->query("ALTER TABLE `exp_forums` ADD `forum_notify_moderators_replies` CHAR(1) NOT NULL DEFAULT 'n' AFTER `forum_notify_moderators_topics`");
-			
+
 			/* Original edit date update code
-			* 
+			*
 			$query = ee()->db->query("SELECT UNIX_TIMESTAMP() as mysql_timestamp");
-		
+
 			$diff = ee()->localize->now - $query->row('mysql_timestamp') ;
-			
+
 			$insert_diff = ($diff > 0) ? "+ ".$diff : "- ".($diff * -1);
-			
+
 			ee()->db->query("ALTER TABLE `exp_forum_posts` CHANGE `post_edit_date` `post_edit_date` VARCHAR( 25 ) NOT NULL");
 			ee()->db->query("UPDATE `exp_forum_posts` SET `post_edit_date` = (UNIX_TIMESTAMP(`post_edit_date`) {$insert_diff})");
 			ee()->db->query("ALTER TABLE `exp_forum_posts` CHANGE `post_edit_date` `post_edit_date` INT( 10 ) UNSIGNED NOT NULL DEFAULT '0'");
-			
+
 			ee()->db->query("ALTER TABLE `exp_forum_topics` CHANGE `topic_edit_date` `topic_edit_date` VARCHAR( 25 ) NOT NULL");
 			ee()->db->query("UPDATE `exp_forum_topics` SET `topic_edit_date` = (UNIX_TIMESTAMP(`topic_edit_date`) {$insert_diff})");
 			ee()->db->query("ALTER TABLE `exp_forum_topics` CHANGE `topic_edit_date` `topic_edit_date` INT( 10 ) UNSIGNED NOT NULL DEFAULT '0'");
-			* 
+			*
 			*/
-			
+
 			ee()->db->query("UPDATE `exp_forum_posts` SET `post_edit_date` = '0'");
 			ee()->db->query("ALTER TABLE `exp_forum_posts` CHANGE `post_edit_date` `post_edit_date` INT( 10 ) UNSIGNED NOT NULL DEFAULT '0'");
-			
+
 			ee()->db->query("UPDATE `exp_forum_topics` SET `topic_edit_date` = '0'");
 			ee()->db->query("ALTER TABLE `exp_forum_topics` CHANGE `topic_edit_date` `topic_edit_date` INT( 10 ) UNSIGNED NOT NULL DEFAULT '0'");
-			
-			
+
+
 			ee()->db->query("ALTER TABLE `exp_forum_posts` ADD `post_edit_author` INT( 10 ) UNSIGNED NOT NULL DEFAULT '0' AFTER `post_edit_date`");
 			ee()->db->query("ALTER TABLE `exp_forum_topics` ADD `topic_edit_author` INT( 10 ) UNSIGNED NOT NULL DEFAULT '0' AFTER `topic_edit_date`");
-			
+
 			ee()->db->query("ALTER TABLE `exp_forum_prefs` ADD `pref_display_edit_date` CHAR(1) NOT NULL DEFAULT 'n' AFTER `pref_post_timelock`");
 
 			ee()->db->query("INSERT INTO exp_actions (class, method) VALUES ('Forum', 'do_report')");
-			
+
 			ee()->db->query("INSERT INTO exp_specialty_templates(template_name, data_title, template_data) VALUES ('forum_report_notification', '".addslashes(trim(forum_report_notification_title()))."', '".addslashes(forum_report_notification())."')");
-			
+
 			/** -------------------------------------
 			/**  Load up group id array
 			/** -------------------------------------*/
-			
+
 			$query = ee()->db->query("SELECT group_id FROM exp_member_groups WHERE group_id > 4");
 
 			$group_ids = '';
@@ -651,39 +651,39 @@ class Forum_upd {
 					$group_ids .= '|'.$row['group_id'];
 				}
 			}
-			
+
 			$query = ee()->db->query("SELECT pref_forum_permissions FROM exp_forum_prefs WHERE pref_id = '1'");
 			$perms = ($query->row('pref_forum_permissions')  != '') ? unserialize(stripslashes($query->row('pref_forum_permissions') )) : $this->forum_set_base_permissions();
 
 			if ( ! isset($perms['can_report']))
-			{				
+			{
 				$perms['can_report'] = '|1'.$group_ids.'|';
 			}
-			
+
 			ee()->db->query("UPDATE exp_forum_prefs SET pref_forum_permissions = '".addslashes(serialize($perms))."' WHERE pref_id = '1'");
-			
+
 			$query = ee()->db->query("SELECT forum_permissions, forum_id FROM exp_forums");
-			
+
 			if ($query->num_rows() > 0)
 			{
 				foreach ($query->result_array() as $row)
 				{
 					$perms = ($row['forum_permissions'] != '') ? unserialize(stripslashes($row['forum_permissions'])) : $this->forum_set_base_permissions();
-					
+
 					if ( ! isset($perms['can_report']))
 					{
 						$perms['can_report'] = '|1'.$group_ids.'|';
 					}
-					
+
 					ee()->db->query("UPDATE exp_forums SET forum_permissions = '".addslashes(serialize($perms))."' WHERE forum_id = '".$row['forum_id']."'");
 				}
 			}
 		}
-		
+
 		/** -------------------------------------------
 		/**  Version 2.0 Update Code
 		/** -------------------------------------------*/
-		
+
 		if (version_compare($current, '2.0', '<'))
 		{
 			ee()->db->query("CREATE TABLE exp_forum_boards (
@@ -705,7 +705,7 @@ class Forum_upd {
 						board_topic_order char(1) NOT NULL default 'r',
 						board_post_order char(1) NOT NULL default 'a',
 						board_hot_topic smallint(4) NOT NULL,
-						board_max_post_chars int(6) unsigned NOT NULL, 
+						board_max_post_chars int(6) unsigned NOT NULL,
 						board_post_timelock int(5) unsigned NOT NULL default '0',
 						board_display_edit_date char(1) NOT NULL default 'n',
 						board_text_formatting varchar(50) NOT NULL default 'xhtml',
@@ -715,11 +715,11 @@ class Forum_upd {
 						board_notify_emails varchar(255) NOT NULL,
 						board_notify_emails_topics varchar(255) NOT NULL,
 						board_max_attach_perpost smallint(4) NOT NULL,
-						board_max_attach_size int(6) unsigned NOT NULL, 
+						board_max_attach_size int(6) unsigned NOT NULL,
 						board_max_width int(4) unsigned NOT NULL,
 						board_max_height int(4) unsigned NOT NULL,
 						board_attach_types char(3) NOT NULL default 'img',
-						board_use_img_thumbs char(1) NOT NULL default 'y',			
+						board_use_img_thumbs char(1) NOT NULL default 'y',
 						board_thumb_width int(4) unsigned NOT NULL,
 						board_thumb_height int(4) unsigned NOT NULL,
 						board_forum_permissions text NOT NULL,
@@ -729,29 +729,29 @@ class Forum_upd {
 						board_enable_rss char(1) NOT NULL default 'y',
 						board_use_http_auth char(1) NOT NULL default 'n',
 						PRIMARY KEY `board_id` (`board_id`))");
-					
+
 			$query = ee()->db->query("SELECT * FROM exp_forum_prefs");
 			$data = array();
-			
+
 			foreach($query->row_array() as $key => $value)
 			{
 				$data['board_'.substr($key, 5)] = $value;
 			}
 
 			$word_separator = ee()->config->item('word_separator');
-				
+
 			$data['board_label']			= $query->row('pref_forum_name') ;
 			$data['board_name']				= url_title($query->row('pref_forum_name'), $word_separator);
 			$data['board_enabled']			= $query->row('pref_forum_enabled') ;
 			$data['board_forum_trigger']	= ee()->config->item('forum_trigger');
-			
+
 			unset($data['board_forum_name']);
 			unset($data['board_forum_enabled']);
-			
+
 			ee()->db->query(ee()->db->insert_string("exp_forum_boards", $data));
-			
+
 			// Tables need board_id added
-			
+
 			$adjust = array('exp_forums' => 'forum_id',
 							'exp_forum_topics' => 'forum_id',
 							'exp_forum_posts' => 'forum_id',
@@ -761,40 +761,40 @@ class Forum_upd {
 							'exp_forum_search' => 'search_id',
 							'exp_forum_read_topics' => 'member_id',
 							'exp_forum_attachments' => 'post_id');
-							
+
 			foreach($adjust as $table => $after)
 			{
 				ee()->db->query("ALTER TABLE `".ee()->db->escape_str($table)."` ADD board_id INT(5) UNSIGNED NOT NULL DEFAULT 1 AFTER `".ee()->db->escape_str($after)."`");
 				ee()->db->query("ALTER TABLE `".ee()->db->escape_str($table)."` ADD INDEX (`board_id`)");
 			}
-			
+
 			// Add Text Formatting to Forum Prefs
 			ee()->db->query("ALTER TABLE `exp_forums` ADD `forum_text_formatting` varchar(50) NOT NULL default 'xhtml' AFTER `forum_display_edit_date`");
-			
+
 			// Add HTTP Auth to Forum Prefs
 			ee()->db->query("ALTER TABLE `exp_forums` ADD `forum_use_http_auth` char(1) NOT NULL default 'n' AFTER `forum_enable_rss`");
-			
+
 			// Add separate list for Topic email notification emails
 			ee()->db->query("ALTER TABLE `exp_forums` ADD `forum_notify_emails_topics` varchar(255) NOT NULL AFTER `forum_notify_emails`");
 			ee()->db->query("UPDATE `exp_forums` SET `forum_notify_emails_topics` = `forum_notify_emails`");
-			
+
 			// Add action for Move Reply
 			ee()->db->query("INSERT INTO exp_actions (class, method) VALUES ('Forum', 'move_reply')");
-			
+
 			// Add field for post_ids in searches, and empty array to prevent errors on existing search data
 			ee()->db->query("ALTER TABLE `exp_forum_search` ADD `post_ids` TEXT NOT NULL AFTER `topic_ids`");
 			ee()->db->query("UPDATE `exp_forum_search` SET `post_ids` = 'a:0:{}'");
-			
+
 			// Remove forum_trigger and put in system prefs for site_id 1
-						
+
 			ee()->config->_update_config(array(), array('forum_trigger'));
-			
+
 			$this->update_triggers();
-			
+
 			// Remove old, no longer needed table
 			ee()->db->query("DROP TABLE exp_forum_prefs");
 		}
-		
+
 		if (version_compare($current, '2.1', '<'))
 		{
 			// nothing to see here
@@ -804,7 +804,7 @@ class Forum_upd {
 		{
 			// nothing to see here either
 		}
-				
+
 		if (version_compare($current, '3.0', '<'))
 		{
 			// the forum subscription table now uses a primary key of topic_id-member_id, so there may be
@@ -836,14 +836,14 @@ class Forum_upd {
 											FROM exp_forum_read_topics
 											GROUP BY member_id, board_id
 											HAVING count > 1
-											ORDER BY count DESC");  
+											ORDER BY count DESC");
 
 			if ($query->num_rows() > 0)
 			{
 				foreach ($query->result_array() as $row)
 				{
 					// delete all but one matching this member_id-board_id combo
-					ee()->db->query("DELETE FROM exp_forum_read_topics WHERE member_id = '{$row['member_id']}' AND board_id = '{$row['board_id']}' LIMIT ".($row['count'] - 1));					
+					ee()->db->query("DELETE FROM exp_forum_read_topics WHERE member_id = '{$row['member_id']}' AND board_id = '{$row['board_id']}' LIMIT ".($row['count'] - 1));
 				}
 			}
 
@@ -866,16 +866,16 @@ class Forum_upd {
 			ee()->db->query("ALTER TABLE `exp_forums` CHANGE `forum_order` `forum_order` INT(6) NULL DEFAULT NULL");
 			ee()->db->query("ALTER TABLE `exp_forum_moderators` CHANGE `mod_member_name` `mod_member_name` VARCHAR(50) NULL DEFAULT NULL");
 		}
-		
+
 		if (version_compare($current, '3.0.1', '<'))
 		{
 			$Q = array();
-			
+
 			$Q[] = 'ALTER TABLE `exp_forum_boards` MODIFY `board_upload_path` VARCHAR(150) NULL';
 			$Q[] = 'ALTER TABLE `exp_forum_boards` MODIFY `board_topics_perpage` SMALLINT(4) NOT NULL DEFAULT 25';
-			$Q[] = 'ALTER TABLE `exp_forum_boards` MODIFY `board_posts_perpage` SMALLINT(4) NOT NULL DEFAULT 10';			
-			$Q[] = 'ALTER TABLE `exp_forum_boards` MODIFY `board_hot_topic` SMALLINT(4) NOT NULL DEFAULT 10';			
-			$Q[] = 'ALTER TABLE `exp_forum_boards` MODIFY `board_max_post_chars` INT(6) UNSIGNED NOT NULL DEFAULT 6000';				
+			$Q[] = 'ALTER TABLE `exp_forum_boards` MODIFY `board_posts_perpage` SMALLINT(4) NOT NULL DEFAULT 10';
+			$Q[] = 'ALTER TABLE `exp_forum_boards` MODIFY `board_hot_topic` SMALLINT(4) NOT NULL DEFAULT 10';
+			$Q[] = 'ALTER TABLE `exp_forum_boards` MODIFY `board_max_post_chars` INT(6) UNSIGNED NOT NULL DEFAULT 6000';
 			$Q[] = 'ALTER TABLE `exp_forum_boards` MODIFY `board_notify_emails` VARCHAR(255) NULL';
 			$Q[] = 'ALTER TABLE `exp_forum_boards` MODIFY `board_notify_emails_topics` VARCHAR(255) NULL';
 			$Q[] = 'ALTER TABLE `exp_forum_boards` MODIFY `board_max_attach_perpost` SMALLINT(4) NOT NULL DEFAULT 3';
@@ -891,7 +891,7 @@ class Forum_upd {
 				ee()->db->query($query);
 			}
 		}
-		
+
 
 		if (version_compare($current, '3.1', '<'))
 		{
@@ -900,7 +900,7 @@ class Forum_upd {
 			// setting of 'mod_member_name' to an empty string. (done - 20100625 - dj)
 			ee()->db->query("ALTER TABLE `exp_forum_moderators` CHANGE `mod_member_name` `mod_member_name` VARCHAR(50) NULL DEFAULT NULL");
 		}
-		
+
 		if (version_compare($current, '3.1.1', '<'))
 		{
 			// Add the publish tab.  wootage!
@@ -908,7 +908,7 @@ class Forum_upd {
 			ee()->db->where('module_name', 'Forum');
 			ee()->db->update('modules', $data);
 		}
-		
+
 		if (version_compare($current, '3.1.2', '<'))
 		{
 			$this->_do_312_update();
@@ -919,7 +919,7 @@ class Forum_upd {
 		if (version_compare($current, '3.1.4', '<')) { }
 
 		if (version_compare($current, '3.1.5', '<')) { }
-		
+
 		if (version_compare($current, '3.1.6', '<')) { }
 
 		if (version_compare($current, '3.1.9', '<'))
@@ -939,23 +939,23 @@ class Forum_upd {
 							'null'			=> FALSE
 						)
 					)
-				);	
+				);
 			}
 		}
-		
+
 		if (version_compare($current, '3.1.11', '<'))
 		{
 			ee()->smartforge->drop_column('forum_topics', 'pentry_id');
 		}
-		
-		return TRUE;		
-		
+
+		return TRUE;
+
 	}
 
 	// --------------------------------------------------------------------
 
 	/**
-	 * The publish page rewrite messed a few things up since we moved the 
+	 * The publish page rewrite messed a few things up since we moved the
 	 * forum/pages tabs into their own proper tab files.  This will correct
 	 * said issues with page layouts.
 	 *
@@ -964,22 +964,22 @@ class Forum_upd {
 	private function _do_312_update()
 	{
 		ee()->load->library('layout');
-		
+
 		$layouts = ee()->db->get('layout_publish');
-		
+
 		if ($layouts->num_rows() === 0)
 		{
 			return;
 		}
-		
+
 		$layouts = $layouts->result_array();
-		
+
 		$old_forum_fields = array(
 							'forum_title',
 							'forum_body',
 							'forum_id',
 							'forum_topic_id',
-						);	
+						);
 
 		foreach ($layouts as &$layout)
 		{
@@ -987,7 +987,7 @@ class Forum_upd {
 
 			foreach ($old_layout as $tab => &$fields)
 			{
-				$field_keys = array_keys($fields);				
+				$field_keys = array_keys($fields);
 
 				foreach ($field_keys as &$key)
 				{
@@ -1003,9 +1003,9 @@ class Forum_upd {
 			$layout['field_layout'] = serialize($old_layout);
 
 		}
-		
+
 		ee()->db->update_batch('layout_publish', $layouts, 'layout_id');
-		
+
 		return TRUE;
 	}
 

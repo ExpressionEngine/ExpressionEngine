@@ -1,0 +1,6 @@
+<!-- CSS -->
+<!-- This makes use of the stylesheet= parameter, which automatically appends a time stamp to allow for the browser's caching mechanism to cache the stylesheet.  This allows for faster page-loads times.
+Stylesheet linking is documented at http://ellislab.com/expressionengine/user-guide/templates/globals/stylesheet.html -->
+    <link href="{stylesheet=global_embeds/site_css}" type="text/css" rel="stylesheet" media="screen" />
+    <!--[if IE 6]><link href="{stylesheet=global_embeds/css_screen-ie6}" type="text/css" rel="stylesheet" media="screen" /><![endif]-->
+    <!--[if IE 7]><link href="{stylesheet=global_embeds/css_screen-ie7}" type="text/css" rel="stylesheet" media="screen" /><![endif]-->

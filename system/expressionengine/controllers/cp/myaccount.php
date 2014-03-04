@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -1194,37 +1194,47 @@ class MyAccount extends CP_Controller {
 
 		$vars['form_hidden']['id'] = $this->id;
 
-		$fields = array('timezone', 'language', 'time_format');
+		$fields = array('timezone', 'language', 'date_format', 'time_format', 'include_seconds');
 
 		// Fetch profile data
 		$query = $this->member_model->get_member_data($this->id, $fields);
 
+		$values = array();
 		foreach ($fields as $val)
 		{
-			$vars[$val] = $query->row($val);
+			$values[$val] = $query->row($val);
 		}
+		$values['default_site_timezone'] = $values['timezone']; // Key differentiation with the config
 
-		if ($vars['timezone'] == '')
+		// Fetch the admin config values in order to populate the form with
+		// the same options
+		$this->load->model('admin_model');
+		$config_fields = ee()->config->prep_view_vars('localization_cfg', $values);
+
+		// Cleaning up some design oddness: removing labels from the radios
+		foreach ($config_fields['fields'] as $field => &$data)
 		{
-			$vars['timezone'] = $this->config->item('default_site_timezone') ? $this->config->item('default_site_timezone') : 'UTC';
+			if ($data['type'] == 'r')
+			{
+				for ($i = 0; $i < count($data['value']); $i++)
+				{
+					$data['value'][$i]['id'] = '';
+				}
+			}
 		}
 
-		if ($vars['time_format'] == '')
-		{
-			$vars['time_format'] = ($this->config->item('time_format') && $this->config->item('time_format') != '') ? $this->config->item('time_format') : 'us';
-		}
+		// Cleanup the key differentiation
+		$vars['timezone'] = str_replace('default_site_timezone', 'timezone', $config_fields['fields']['default_site_timezone']['value']);
+		unset($config_fields['fields']['default_site_timezone']);
 
-		$vars['time_format_options']['us'] = lang('united_states');
-		$vars['time_format_options']['eu'] = lang('european');
+		$vars = array_merge($config_fields, $vars);
 
+		$vars['language'] = $values['language'];
 		if ($vars['language'] == '')
 		{
 			$vars['language'] = ($this->config->item('deft_lang') && $this->config->item('deft_lang') != '') ? $this->config->item('deft_lang') : 'english';
 		}
-
 		$vars['language_options'] = $this->language_model->language_pack_names();
-
-		$vars['timezone_menu'] = $this->localize->timezone_menu($vars['timezone'], 'timezones');
 
 		$this->cp->render('account/localization', $vars);
 	}
@@ -1249,8 +1259,10 @@ class MyAccount extends CP_Controller {
 		$this->load->model('site_model');
 
 		$data['language']	= $this->security->sanitize_filename($this->input->post('language'));
-		$data['timezone']	= $this->input->post('timezones');
+		$data['timezone']	= $this->input->post('timezone');
+		$data['date_format'] = $this->input->post('date_format');
 		$data['time_format'] = $this->input->post('time_format');
+		$data['include_seconds'] = $this->input->post('include_seconds');
 
 		if ( ! is_dir(APPPATH.'language/'.$data['language']))
 		{
@@ -2273,7 +2285,7 @@ class MyAccount extends CP_Controller {
 			$channel_id = $this->input->post('channel_id');
 			$field_id  = 'field_id_'.$this->input->post('field_id');
 
-            $s = ($this->config->item('admin_session_type') != 'c') ? $this->session->userdata('session_id') : 0;
+            $s = ($this->config->item('cp_session_type') != 'c') ? $this->session->userdata('session_id') : 0;
 			$path = $this->config->item('cp_url')."?S={$s}".AMP.'D=cp&C=content_publish&M=entry_form&Z=1&BK=1&channel_id='.$channel_id.'&';
 
 			$type = (isset($_POST['safari'])) ? "window.getSelection()" : "document.selection?document.selection.createRange().text:document.getSelection()";

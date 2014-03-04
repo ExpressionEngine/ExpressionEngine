@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -41,9 +41,9 @@ class Layout_model extends CI_Model {
 		{
 			$channel_id = array($channel_id);
 		}
-		
+
 		$this->db->select('layout_id, field_layout');
-		
+
 		if (count($channel_id) > 0)
 		{
 			$this->db->where_in('channel_id', $channel_id);
@@ -51,7 +51,7 @@ class Layout_model extends CI_Model {
 
 		$query = $this->db->get('layout_publish');
 		$errors = array();
-		
+
 		$valid_actions = array('add_tabs', 'delete_tabs', 'add_fields', 'delete_fields');
 
 		if (! in_array($action, $valid_actions))
@@ -64,20 +64,20 @@ class Layout_model extends CI_Model {
 			foreach($query->result() as $row)
 			{
 				$layout = unserialize($row->field_layout);
-				
+
 				if ($action == 'add_tabs')
 				{
 					foreach($layout_info AS $tab => $fields)
 					{
 						// Check for proper field name
-						
+
 						$check_name = (is_array($fields)) ? key($fields) : $fields;
 						if ($this->clean_field($check_name) !== TRUE)
 						{
 							$errors[] = $check_name;
 							continue;
 						}
-						
+
 						if (array_key_exists($tab, $layout) !== TRUE)
 						{
 							$layout[$tab] = $fields;
@@ -86,7 +86,7 @@ class Layout_model extends CI_Model {
 						{
 							$layout[$tab] = $layout[$tab] + $fields;
 						}
-					}					
+					}
 				}
 				elseif ($action == 'add_fields')
 				{
@@ -112,9 +112,9 @@ class Layout_model extends CI_Model {
 				elseif ($action == 'delete_tabs')
 				{
 					foreach($layout_info AS $tab => $fields)
-					{					
+					{
 						$k_field = (is_array($fields)) ? key($fields) : $fields;
-						
+
 						if ($action == 'delete_tabs' && array_key_exists($tab, $layout) == TRUE)
 						{
 							unset($layout[$tab]);
@@ -127,17 +127,17 @@ class Layout_model extends CI_Model {
 								unset($layout[$existing_tab][$k_field]);
 							}
 						}
-					}					
+					}
 
-					// Replaced below w/code originally in member model				
+					// Replaced below w/code originally in member model
 					/*
 					foreach($layout_info AS $tab => $fields)
-					{					
+					{
 						if (array_key_exists($tab, $layout))
 						{
 							unset($layout[$tab]);
 						}
-						
+
 						foreach ($fields as $field_name => $settings)
 						{
 							foreach ($layout AS $existing_tab => $existing_field)
@@ -168,7 +168,7 @@ class Layout_model extends CI_Model {
 
 				$data = array('field_layout' => serialize($layout));
 				$this->db->where('layout_id', $row->layout_id);
-				$this->db->update('layout_publish', $data); 
+				$this->db->update('layout_publish', $data);
 			}
 		}
 
@@ -179,7 +179,7 @@ class Layout_model extends CI_Model {
 
 		return TRUE;
 	}
-	
+
 	function clean_field($name)
 	{
 		// Check for hinkiness in field names
@@ -191,28 +191,28 @@ class Layout_model extends CI_Model {
 		{
 			return FALSE;
 		}
-		
+
 		return TRUE;
 	}
-	
-	
+
+
 	function edit_layout_fields($layout_info, $action, $channel_id = array(), $alter_tab = FALSE)
 	{
 		if ( ! is_array($channel_id))
 		{
 			$channel_id = array($channel_id);
 		}
-		
+
 		$this->db->select('layout_id, field_layout');
-		
+
 		if (is_array($channel_id) && count($channel_id) > 0)
 		{
 			$this->db->where_in('channel_id', $channel_id);
 		}
-				
+
 		$query = $this->db->get('layout_publish');
 		$errors = 0;
-		
+
 		$valid_actions = array('show_fields', 'hide_fields', 'edit_fields', 'hide_tab_fields', 'show_tab_fields');
 
 		if (! in_array($action, $valid_actions))
@@ -225,7 +225,7 @@ class Layout_model extends CI_Model {
 			foreach($query->result() as $row)
 			{
 				$layout = unserialize($row->field_layout);
-				
+
 				if ($action == 'show_fields')
 				{
 					foreach($layout_info AS $field_name)
@@ -251,7 +251,7 @@ class Layout_model extends CI_Model {
 							}
 						}
 					}
-					
+
 				}
 				elseif ($action == 'edit_fields')
 				{
@@ -266,14 +266,14 @@ class Layout_model extends CI_Model {
 						}
 					}
 				}
-				
+
 				$data = array('field_layout' => serialize($layout));
 				$this->db->where('layout_id', $row->layout_id);
-				$this->db->update('layout_publish', $data); 
+				$this->db->update('layout_publish', $data);
 			}
 		}
 	}
-	
+
 	/**
 	 * Edit one layout group's layout, as opposed to all of the layouts
 	 *
@@ -285,15 +285,15 @@ class Layout_model extends CI_Model {
 		if ( ! ctype_digit($layout_group_id)) {
 			return FALSE;
 		}
-		
+
 		$query = $this->db->get_where('layout_publish', array('layout_id' => $layout_group_id));
-		
+
 		if ($query->num_rows() > 0)
 		{
 			foreach($query->result() as $row)
 			{
 				$layout = unserialize($row->field_layout);
-				
+
 				foreach($layout_info AS $field_name => $settings)
 				{
 					foreach ($layout AS $existing_tab => $existing_field)
@@ -304,10 +304,10 @@ class Layout_model extends CI_Model {
 						}
 					}
 				}
-				
+
 				$data = array('field_layout' => serialize($layout));
 				$this->db->where('layout_id', $row->layout_id);
-				$this->db->update('layout_publish', $data); 
+				$this->db->update('layout_publish', $data);
 			}
 		}
 	}
@@ -315,7 +315,7 @@ class Layout_model extends CI_Model {
 	/**
 	 * Create an array of layout settings for different fields
 	 * The array is a flat array, NOT organized by tab
-	 * 
+	 *
 	 * @param Array $parameters The parameters you want to do WHERE clauses on
 	 * @return datatype description
 	 */
@@ -329,12 +329,12 @@ class Layout_model extends CI_Model {
 		{
 			return FALSE;
 		}
-		
+
 		$layout_settings = array();
-		
+
 		$this->db->select('layout_id, field_layout');
 		$layouts = $this->db->get('layout_publish');
-		
+
 		if ($layouts->num_rows() > 0) // More than one row
 		{
 			foreach ($layouts->result() as $layout)
@@ -343,16 +343,16 @@ class Layout_model extends CI_Model {
 				$layout_settings[$layout->layout_id] = $this->_prep_layout_settings($field_layout, $flatten);
 			}
 		}
-		
+
 		// If there's only one layout, remove the outermost array
 		if (count($layout_settings) == 1)
 		{
 			$layout_settings = array_shift($layout_settings);
 		}
-		
+
 		return $layout_settings;
 	}
-	
+
 	/**
 	 * Sets the WHERE clauses by checking an associative array against an array of valid columns
 	 *
@@ -361,7 +361,7 @@ class Layout_model extends CI_Model {
 	function _where($parameters)
 	{
 		$valid_columns = array('layout_id', 'site_id', 'member_group', 'channel_id');
-		
+
 		foreach ($parameters as $column_name => $value)
 		{
 			if (in_array($column_name, $valid_columns))
@@ -370,7 +370,7 @@ class Layout_model extends CI_Model {
 			}
 		}
 	}
-	
+
 	/**
 	 * Prep layout settings, appending 'field_id_' to numeric keys
 	 * Can optionally flatten the layout settings array
@@ -382,14 +382,14 @@ class Layout_model extends CI_Model {
 	function _prep_layout_settings($field_layout, $flatten = FALSE)
 	{
 		$layout_settings = array();
-		
+
 		foreach ($field_layout as $layout_tab => $layout_fields)
 		{
 			foreach ($layout_fields as $field_key => $field_settings)
 			{
 				// Setup $current_settings as the layout settings with the tab name as the key
 				$current_settings =& $layout_settings[$layout_tab];
-				
+
 				if ($flatten === TRUE)
 				{
 					// Check to see if the key starts with an underscore, we don't need those
@@ -397,11 +397,11 @@ class Layout_model extends CI_Model {
 					{
 						continue;
 					}
-					
+
 					// If we're flattening the array, ditch the tab information
 					$current_settings =& $layout_settings;
 				}
-				
+
 				// If it's numeric, then append 'field_id_'
 				if (is_numeric($field_key))
 				{
@@ -413,7 +413,7 @@ class Layout_model extends CI_Model {
 				}
 			}
 		}
-		
+
 		return $layout_settings;
 	}
 }

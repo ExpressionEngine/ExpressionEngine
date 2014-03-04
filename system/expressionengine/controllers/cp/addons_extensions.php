@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -130,12 +130,12 @@ class Addons_extensions extends CP_Controller {
 					if ($enabled)
 					{
 						$ext['actions'] .= anchor($toggle_enabled_url, lang('disable_extension'));
-						$ext['status'] = '<span class="go_notice">'.lang('installed').' ('.lang('enabled').')</span>';
+						$ext['status'] = '<span class="go_notice">'.lang('installed').' ('.lang('ext_enabled_short').')</span>';
 					}
 					else
 					{
 						$ext['actions'] .= anchor($toggle_enabled_url, lang('enable_extension'));
-						$ext['status'] = '<span class="warning">'.lang('installed').' ('.lang('disabled').')</span>';
+						$ext['status'] = '<span class="warning">'.lang('installed').' ('.lang('ext_disabled_short').')</span>';
 					}
 				}
 				else

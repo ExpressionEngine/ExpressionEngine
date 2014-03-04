@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -73,7 +73,7 @@ class Moblog {
 
 
 	// ------------------------------------------------------------------------
-	
+
 	/**
 	 * 	Constructor
 	 */
@@ -104,7 +104,7 @@ class Moblog {
 	}
 
 	// ------------------------------------------------------------------------
-	
+
 	/**
 	 * 	Check for Expired Moblogs
 	 */
@@ -114,7 +114,7 @@ class Moblog {
 		$silent	= ee()->TMPL->fetch_param('silent', 'yes');
 
 		// Backwards compatible with previously documented "true/false" parameters (now "yes/no")
-		$this->silent = ($silent == 'true' OR $silent == 'yes') ? 'yes' : 'no'; 
+		$this->silent = ($silent == 'true' OR $silent == 'yes') ? 'yes' : 'no';
 
 		if ($which == '')
 		{
@@ -269,22 +269,22 @@ class Moblog {
 	}
 
 	// ------------------------------------------------------------------------
-	
+
 	/**
 	 * 	Check Pop3 Moblog
 	 *
-	 * 	
+	 *
 	 */
-	
+
 	function check_pop_moblog()
 	{
 		/** ------------------------------
 		/**  Email Login Check
 		/** ------------------------------*/
-		
+
 		$port = 110;
 		$ssl = (substr($this->moblog_array['moblog_email_server'], 0, 6) == 'ssl://');
-		
+
 		if ($ssl OR stripos($this->moblog_array['moblog_email_server'], 'gmail') !== FALSE)
 		{
 			if ( ! $ssl)
@@ -325,7 +325,7 @@ class Moblog {
 		}
 
 		if (strncasecmp($this->pop_command("PASS ".base64_decode($this->moblog_array['moblog_email_password'])), '+OK', 3) != 0)
-		{			
+		{
 			$this->message_array[] = 'invalid_password';
 			$line = $this->pop_command("QUIT");
 			@fclose($this->fp);
@@ -620,64 +620,89 @@ class Moblog {
 
 			if ( ! $this->find_boundary($email_data)) // OR $this->moblog_array['moblog_upload_directory'] == '0')
 			{
-				/** -------------------------
-				/**  No files, just text
-				/** -------------------------*/
+				// Figure out content type and subtype
+				$contents		= $this->find_data($email_data, "Content-Type: ", $this->newline);
+				$x				= explode(';',$contents);
+				$content_type	= strtolower($x['0']);
+				$pieces			= explode('/',trim($content_type));
+				$type			= trim($pieces['0']);
+				$subtype		= ( ! isset($pieces['1'])) ? '0' : trim($pieces['1']);
 
-				$duo = $this->newline.$this->newline;
-				$this->body = $this->find_data($email_data, $duo,$duo.'.'.$this->newline);
-
-				if ($this->body == '')
+				if ($type == 'image' OR $type == 'application' OR $type == 'audio' OR $type == 'video')
 				{
-					$this->body = $this->find_data($email_data, $duo,$this->newline.'.'.$this->newline);
-				}
+					/** -------------------------
+					/**  No text, just files
+					/** -------------------------*/
 
-				// Check for Quoted-Printable and Base64 encoding
-				if (stristr($email_data,'Content-Transfer-Encoding'))
-				{
-					$encoding = $this->find_data($email_data, "Content-Transfer-Encoding: ", $this->newline);
+					$this->body = '';
 
-					if ( ! stristr(trim($encoding), "quoted-printable") AND ! stristr(trim($encoding), "base64"))
+					if ( ! $this->_process_attachment($email_data, $type, $subtype))
 					{
-						// try it without the space after the colon...
-						$encoding = $this->find_data($email_data, "Content-Transfer-Encoding:", $this->newline);
-					}
-
-					if(stristr(trim($encoding),"quoted-printable"))
-					{
-						$this->body = str_replace($this->newline,"\n",$this->body);
-						$this->body = quoted_printable_decode($this->body);
-						$this->body = (substr($this->body,0,1) != '=') ? $this->body : substr($this->body,1);
-						$this->body = (substr($this->body,-1) != '=') ? $this->body : substr($this->body,0,-1);
-						$this->body = $this->remove_newlines($this->body,$this->newline);
-					}
-					elseif(stristr(trim($encoding),"base64"))
-					{
-						$this->body = str_replace($this->newline,"\n",$this->body);
-						$this->body = base64_decode(trim($this->body));
-						$this->body = $this->remove_newlines($this->body,$this->newline);
+						$this->message_array[] = 'unable_to_parse';
+						return FALSE;
 					}
 				}
+				else
+				{
+					/** -------------------------
+					/**  No files, just text
+					/** -------------------------*/
 
-				if ($this->charset != ee()->config->item('charset'))
-            	{
-            		if (function_exists('mb_convert_encoding'))
-            		{
-            			$this->body = mb_convert_encoding($this->body, strtoupper(ee()->config->item('charset')), strtoupper($this->charset));
-            		}
-            		elseif(function_exists('iconv') AND ($iconvstr = @iconv(strtoupper($this->charset), strtoupper(ee()->config->item('charset')), $this->body)) !== FALSE)
-            		{
-            			$this->body = $iconvstr;
-            		}
-            		elseif(strtolower(ee()->config->item('charset')) == 'utf-8' && strtolower($this->charset) == 'iso-8859-1')
-            		{
-            			$this->body = utf8_encode($this->body);
-            		}
-            		elseif(strtolower(ee()->config->item('charset')) == 'iso-8859-1' && strtolower($this->charset) == 'utf-8')
-            		{
-            			$this->body = utf8_decode($this->body);
-            		}
-            	}
+					$duo = $this->newline.$this->newline;
+					$this->body = $this->find_data($email_data, $duo,$duo.'.'.$this->newline);
+
+					if ($this->body == '')
+					{
+						$this->body = $this->find_data($email_data, $duo,$this->newline.'.'.$this->newline);
+					}
+
+					// Check for Quoted-Printable and Base64 encoding
+					if (stristr($email_data,'Content-Transfer-Encoding'))
+					{
+						$encoding = $this->find_data($email_data, "Content-Transfer-Encoding: ", $this->newline);
+
+						if ( ! stristr(trim($encoding), "quoted-printable") AND ! stristr(trim($encoding), "base64"))
+						{
+							// try it without the space after the colon...
+							$encoding = $this->find_data($email_data, "Content-Transfer-Encoding:", $this->newline);
+						}
+
+						if(stristr(trim($encoding),"quoted-printable"))
+						{
+							$this->body = str_replace($this->newline,"\n",$this->body);
+							$this->body = quoted_printable_decode($this->body);
+							$this->body = (substr($this->body,0,1) != '=') ? $this->body : substr($this->body,1);
+							$this->body = (substr($this->body,-1) != '=') ? $this->body : substr($this->body,0,-1);
+							$this->body = $this->remove_newlines($this->body,$this->newline);
+						}
+						elseif(stristr(trim($encoding),"base64"))
+						{
+							$this->body = str_replace($this->newline,"\n",$this->body);
+							$this->body = base64_decode(trim($this->body));
+							$this->body = $this->remove_newlines($this->body,$this->newline);
+						}
+					}
+
+					if ($this->charset != ee()->config->item('charset'))
+					{
+						if (function_exists('mb_convert_encoding'))
+						{
+							$this->body = mb_convert_encoding($this->body, strtoupper(ee()->config->item('charset')), strtoupper($this->charset));
+						}
+						elseif(function_exists('iconv') AND ($iconvstr = @iconv(strtoupper($this->charset), strtoupper(ee()->config->item('charset')), $this->body)) !== FALSE)
+						{
+							$this->body = $iconvstr;
+						}
+						elseif(strtolower(ee()->config->item('charset')) == 'utf-8' && strtolower($this->charset) == 'iso-8859-1')
+						{
+							$this->body = utf8_encode($this->body);
+						}
+						elseif(strtolower(ee()->config->item('charset')) == 'iso-8859-1' && strtolower($this->charset) == 'utf-8')
+						{
+							$this->body = utf8_decode($this->body);
+						}
+					}
+				}
 			}
 			else
 			{
@@ -869,7 +894,7 @@ class Moblog {
 				{
 					ee()->db->where('channel_fields.field_type', 'textarea');
 				}
-				
+
 				$results = ee()->db->get();
 
 				if ($results->num_rows() > 0)
@@ -962,16 +987,16 @@ class Moblog {
 	}
 
 	// ------------------------------------------------------------------------
-	
+
 	/**
-	 * 	Post Entry 
+	 * 	Post Entry
 	 */
 	function post_entry()
 	{
 		// Default Channel Data
 
 		$channel_id = $this->moblog_array['moblog_channel_id'];
-		
+
 		ee()->db->select('site_id, channel_title, channel_url, rss_url, comment_url, deft_comments, cat_group, field_group, channel_notify, channel_notify_emails');
 		$query = ee()->db->get_where('channels', array('channel_id' => $channel_id));
 
@@ -986,9 +1011,9 @@ class Moblog {
 
 
 		// Collect the meta data
-		
+
 		$this->post_data['subject'] = strip_tags($this->post_data['subject']);
-		
+
 		$this->moblog_array['moblog_author_id'] = ($this->moblog_array['moblog_author_id'] == 'none') ? '1' : $this->moblog_array['moblog_author_id'];
 		$author_id = ($this->author != '') ? $this->author : $this->moblog_array['moblog_author_id'];
 
@@ -1008,7 +1033,7 @@ class Moblog {
 						'title'				=> (ee()->config->item('auto_convert_high_ascii') == 'y') ? ascii_to_entities($this->post_data['subject']) : $this->post_data['subject'],
 						'ip_address'		=> $this->post_data['ip'],
 						'entry_date'		=> $entry_date,
-						'edit_date'			=> gmdate("YmdHis", $entry_date),						
+						'edit_date'			=> gmdate("YmdHis", $entry_date),
 						'year'				=> gmdate('Y', $entry_date),
 						'month'				=> gmdate('m', $entry_date),
 						'day'				=> gmdate('d', $entry_date),
@@ -1091,8 +1116,8 @@ class Moblog {
 
 					if ($key = array_search($x['0'],$field_name) OR $key = array_search($x['0'],$field_label))
 					{
-						
-						
+
+
 						$format = ( ! isset($x['1']) OR ! stristr($x['1'],"format")) ? $field_format[$key] : preg_replace("/format\=[\"\'](.*?)[\'\"]/","$1",trim($x['1']));
 
 						$matches['2'][$i] = str_replace($this->newline, "\n",$matches['2'][$i]);
@@ -1107,7 +1132,7 @@ class Moblog {
 							$this->entry_data[$key] = array('data' => $matches['2'][$i].$this->entry_data[$key]['data'],
 															'format' => $format);
 						}
-						
+
 						$this->body = str_replace($matches['0'][$i], '', $this->body);
 					}
 				}
@@ -1116,7 +1141,7 @@ class Moblog {
 
 
 		// Return New Lines
-		
+
 		$this->body = str_replace($this->newline, "\n",$this->body);
 
 
@@ -1137,7 +1162,7 @@ class Moblog {
 				$params['format']	= ( ! isset($params['format'])) ? '' : $params['format'];
 				$params['name'] 	= ( ! isset($params['name'])) 	? '' : $params['name'];
 
-				$this->parse_field($params,$matches['2'][$i], $query->row('field_group') ); 
+				$this->parse_field($params,$matches['2'][$i], $query->row('field_group') );
 				$this->template = str_replace($matches['0'],'',$this->template);
 			}
 
@@ -1196,7 +1221,7 @@ class Moblog {
 					}
 				}
 			}
-			
+
 			$data['category'] = array_unique($data['category']);
 		}
 		elseif ($this->post_data['categories'] != 'none')
@@ -1206,7 +1231,7 @@ class Moblog {
 		}
 
 		// forgive me, please.
-		
+
 		// ...
 
 		// ...
@@ -1225,7 +1250,7 @@ class Moblog {
 		ee()->api->instantiate('channel_fields');
 
 		ee()->api_channel_fields->setup_entry_settings($data['channel_id'], $data);
-	
+
 		$result = ee()->api_channel_entries->save_entry($data, $data['channel_id']);
 
 		if ($result)
@@ -1239,7 +1264,7 @@ class Moblog {
 	}
 
 	// ------------------------------------------------------------------------
-	
+
 	/**
 	 * 	Assign Params
 	 *
@@ -1275,17 +1300,17 @@ class Moblog {
 
 			return $result;
 		}
- 
+
 		return FALSE;
 	}
 
 	// ------------------------------------------------------------------------
-	
+
 	/**
 	 * 	parse_field
 	 *
 	 *	@param mixed - params
-	 * 	@param 
+	 * 	@param
 	 *	@param string
 	 */
 	function parse_field($params, $field_data, $field_group)
@@ -1316,26 +1341,26 @@ class Moblog {
 				ee()->db->select('field_id, field_fmt');
 				ee()->db->where('group_id', $field_id);
 				ee()->db->where('(field_name = "'.$params['name'].'" OR field_label = "'.$params['name'].'")', NULL, FALSE);
-				
+
 				if (ee()->config->item('moblog_allow_nontextareas') != 'y')
 				{
 					ee()->db->where('field_type', 'textarea');
 				}
-				
+
 				$results = ee()->db->get('channel_fields');
-									 
+
 				$field_id	= ($results->num_rows() > 0) ? $results->row('field_id')  : $this->moblog_array['moblog_field_id'];
 				$format 	= ($results->num_rows() > 0) ? $results->row('field_fmt')  : 'none';
 			}
 			elseif($params['name'] == '' && $params['format'] == '')
 			{
 				$field_id = $this->moblog_array['moblog_field_id'];
-				
+
 				ee()->db->select('field_fmt');
 				ee()->db->where('field_id', $field_id);
-				
+
 				$results = ee()->db->get('channel_fields');
-													 
+
 				$format	= $results->row('field_fmt') ;
 			}
 			elseif($params['name'] == '' && $params['format'] != '')
@@ -1350,33 +1375,33 @@ class Moblog {
 				ee()->db->select('field_id');
 				ee()->db->where('group_id', $field_group);
 				ee()->db->where('(field_name = "'.$params['name'].'" OR field_label = "'.$params['name'].'")');
-				
+
 				if (ee()->config->item('moblog_allow_nontextareas') != 'y')
 				{
 					ee()->db->where('field_type', 'textarea');
 				}
-				
+
 				$results = ee()->db->get('channel_fields');
-										 
+
 				$field_id	= ($results->num_rows() > 0) ? $results->row('field_id')  : $this->moblog_array['moblog_field_id'];
 				$format		= $params['format'];
 			}
 		}
-		
+
 		$dir_id = $this->moblog_array['moblog_upload_directory'];
-		
+
 		ee()->load->model('file_model');
 		ee()->load->model('file_upload_preferences_model');
-		
+
 		$prefs_q = ee()->file_upload_preferences_model->get_file_upload_preferences(1, $dir_id);
 		$sizes_q = ee()->file_model->get_dimensions_by_dir_id($dir_id);
-		
+
 		$dir_server_path = $prefs_q['server_path'];
-		
+
 		// @todo if 0 skip!!
 		$thumb_data = array();
 		$image_data = array();
-		
+
 		foreach ($sizes_q->result() as $row)
 		{
 			foreach (array('thumb', 'image') as $which)
@@ -1396,7 +1421,7 @@ class Moblog {
 		/**  Parse Content
 		/** -----------------------------*/
 
-		$pair_array = array('images','audio','movie','files'); 
+		$pair_array = array('images','audio','movie','files');
 		$float_data = $this->post_data;
 		$params = array();
 
@@ -1448,7 +1473,7 @@ class Moblog {
 						{
 							continue;
 						}
-						
+
 						foreach ($float_data[$ftype] as $k => $file)
 						{
 							// not an image
@@ -1463,17 +1488,17 @@ class Moblog {
 							$file_rel_path		= empty($image_data) ? $file : $image_data['dir'].$file;
 							$file_dimensions	= @getimagesize($dir_server_path.$file_rel_path);
 							$filename			= $this->upload_dir_code.$file_rel_path;
-						
-							$thumb_replace		= '';	
+
+							$thumb_replace		= '';
 							$thumb_dimensions	= FALSE;
-							
+
 							if ( ! empty($thumb_data))
 							{
 								$thumb_rel_path		= $thumb_data['dir'].$file;
 								$thumb_replace		= $this->upload_dir_code.$thumb_rel_path;
 								$thumb_dimensions	= @getimagesize($dir_server_path.$thumb_rel_path);
 							}
-							
+
 							$details = array(
 								'width'			=> $file_dimensions ? $file_dimensions[0] : '',
 								'height'		=> $file_dimensions ? $file_dimensions[1] : '',
@@ -1503,23 +1528,23 @@ class Moblog {
 							$template_data .= str_replace('{file}',$this->upload_dir_code.$file,$matches['2'][$i]);
 							continue;
 						}
-						
+
 						// It's an image, work out sizes
 						// Figure out sizes
 						$file_rel_path		= empty($image_data) ? $file : $image_data['dir'].$file;
 						$file_dimensions	= @getimagesize($dir_server_path.$file_rel_path);
 						$filename			= $this->upload_dir_code.$file_rel_path;
-						
-						$thumb_replace		= '';	
+
+						$thumb_replace		= '';
 						$thumb_dimensions	= FALSE;
-						
+
 						if ( ! empty($thumb_data))
 						{
 							$thumb_rel_path		= $thumb_data['dir'].$file;
 							$thumb_replace		= $this->upload_dir_code.$thumb_rel_path;
 							$thumb_dimensions	= @getimagesize($dir_server_path.$thumb_rel_path);
 						}
-						
+
 						$details = array(
 							'width'			=> $file_dimensions ? $file_dimensions[0] : '',
 							'height'		=> $file_dimensions ? $file_dimensions[1] : '',
@@ -1527,7 +1552,7 @@ class Moblog {
 							'thumb_width'	=> $thumb_dimensions ? $thumb_dimensions[0] : '',
 							'thumb_height'	=> $thumb_dimensions ? $thumb_dimensions[1] : ''
 						);
-						
+
 						$temp_data = str_replace('{file}',$filename,$matches['2'][$i]);
 
 						foreach ($details as $d => $dv)
@@ -1536,7 +1561,7 @@ class Moblog {
 						}
 
 						$template_data .= $temp_data;
-					}  
+					}
 				}
 
 				// Replace tag pair with template data
@@ -1561,17 +1586,17 @@ class Moblog {
 	}
 
 	// ------------------------------------------------------------------------
-	
+
 	/**
 	 * 	Parse Email
 	 *
 	 *	@param mixed - Email Data
-	 * 	@param 
+	 * 	@param
 	 */
 	function parse_email($email_data,$type='norm')
 	{
 		ee()->load->library('filemanager');
-		
+
 		$boundary = ($type != 'norm') ? $this->multi_boundary : $this->boundary;
 		$email_data = str_replace('boundary='.substr($boundary,2),'BOUNDARY_HERE',$email_data);
 
@@ -1743,249 +1768,10 @@ class Moblog {
 			}
 			elseif ($type == 'image' OR $type == 'application' OR $type == 'audio' OR $type == 'video' OR $subtype == 'appledouble' OR $type == 'text') // image or application
 			{
-				// no upload directory?  skip
-				
-				if ($upload_dir_id == 0)
+				if ($this->_process_attachment($value, $type, $subtype) === FALSE)
 				{
-					continue;
-				}
-
-				if ($subtype == 'appledouble')
-				{
-					if ( ! $data = $this->appledouble($value))
-					{
-						continue;
-					}
-					else
-					{
-						$value 		= $data['value'];
-						$subtype 	= $data['subtype'];
-						$type		= $data['type'];
-						unset($data);
-					}
-				}
-
-				/** ------------------------------
-				/**  Determine Filename
-				/** ------------------------------*/
-				$contents = $this->find_data($value, "name=", $this->newline);
-
-				if ($contents == '')
-				{
-					$contents = $this->find_data($value, 'Content-Location:', $this->newline);
-				}
-
-				if ($contents == '')
-				{
-					$contents = $this->find_data($value, 'Content-ID:', $this->newline);
-					$contents = str_replace('<','', $contents);
-					$contents = str_replace('<','', $contents);
-				}
-
-				$x = explode(';',trim($contents));
-				$filename = ($x['0'] == '') ? 'moblogfile' : $x['0'];
-
-				$filename = trim(str_replace('"','',$filename));
-				$filename = str_replace($this->newline,'',$filename);
-
-				if (stristr($filename, 'dottedline') OR stristr($filename, 'spacer.gif') OR stristr($filename, 'masthead.jpg'))
-				{
-					continue;
-				}
-
-				/** --------------------------------
-				/**  File/Image Code and Cleanup
-				/** --------------------------------*/
-
-				$duo = $this->newline.$this->newline;
-				$file_code = $this->find_data($value, $duo,'');
-
-				if ($file_code == '')
-				{
-					$file_code = $this->find_data($value, $this->newline,'');
-
-					if ($file_code == '')
-					{
-						$this->message_array = 'invalid_file_data';
-						return FALSE;
-					}
-				}
-
-				/** --------------------------------
-				/**  Determine Encoding
-				/** --------------------------------*/
-
-				$contents = $this->find_data($value, "Content-Transfer-Encoding:", $this->newline);
-				$x = explode(';',$contents);
-				$encoding = $x['0'];
-				$encoding = trim(str_replace('"','',$encoding));
-				$encoding = str_replace($this->newline,'',$encoding);
-
-				if ( ! stristr($encoding,"base64") &&  ! stristr($encoding,"7bit") &&  ! stristr($encoding,"8bit") && ! stristr($encoding,"quoted-printable"))
-				{
-					if ($type == 'text')
-					{
-						// RTF and HTML are considered alternative text
-						$subtype = ($subtype != 'html' && $subtype != 'rtf') ? 'plain' : 'alt';
-
-						// Same content type, then join together
-						$this->post_data[$type][$subtype] = (isset($this->post_data[$type][$subtype])) ? $this->post_data[$type][$subtype].' '.$file_code : $file_code;
-
-						// Plain text takes priority for body data.
-						$this->body = ( ! isset($this->post_data[$type]['plain'])) ? $this->post_data[$type]['alt'] : $this->post_data[$type]['plain'];
-					}
-
-					continue;
-				}
-
-				// Eudora and Mail.app use this by default
-				if (stristr($encoding,"quoted-printable"))
-				{
-					$file_code = quoted_printable_decode($file_code);
-				}
-
-				// Base64 gets no space and no line breaks
-				$replace = ( ! stristr($encoding,"base64")) ? "\n" : '';
-				$file_code = trim(str_replace($this->newline,$replace,$file_code));
-
-				// PHP function sometimes misses opening and closing equal signs
-				if (stristr($encoding,"quoted-printable"))
-				{
-					$file_code = (substr($file_code,0,1) != '=') ? $file_code : substr($file_code,1);
-					$file_code = (substr($file_code,-1) != '=') ? $file_code : substr($file_code,0,-1);
-				}
-
-				// Decode so that we can run xss clean on the raw
-				// data once we've determined the file type
-				
-				if (stristr($encoding,"base64"))
-				{
-					$file_code = base64_decode($file_code);
-					$this->message_array[] = 'base64 decoded.';
-				}
-				
-				/** ------------------------------
-				/**  Check and adjust for multiple files with same file name
-				/** ------------------------------*/
-
-				$file_path = ee()->filemanager->clean_filename(
-					$filename,
-					$upload_dir_id, 
-					array('ignore_dupes' => FALSE)
-				);
-				$filename = basename($file_path);
-
-				/** ---------------------------
-				/**  Put Info in Post Data array
-				/** ---------------------------*/
-
-				$ext = trim(strrchr($filename, '.'), '.');
-				$is_image = FALSE; // This is needed for XSS cleaning
-				
-				if (in_array(strtolower($ext), $this->movie)) // Movies
-				{
-					$this->post_data['movie'][] = $filename;
-				}
-				elseif (in_array(strtolower($ext), $this->audio)) // Audio
-				{
-					$this->post_data['audio'][] = $filename;
-				}
-				elseif (in_array(strtolower($ext), $this->image)) // Images
-				{
-					$this->post_data['images'][] = $filename;
-
-					$key = count($this->post_data['images']) - 1;
-
-					$type = 'image'; // For those crazy application/octet-stream images
-					
-					$is_image = TRUE;
-				}
-				elseif (in_array(strtolower($ext), $this->files)) // Files
-				{
-					$this->post_data['files'][] = $filename;
-				}
-				else
-				{
-					continue;
-				}
-				
-				// Clean the file
-				ee()->load->helper('xss');
-				
-				if (xss_check())
-				{
-					$xss_result = ee()->security->xss_clean($file_code, $is_image);
-
-					// XSS Clean Failed - bail out
-					if ($xss_result === FALSE)
-					{
-						$this->message_array[] = 'error_writing_attachment';
-						return FALSE;
-					}
-
-					if ( ! $is_image)
-					{
-						$file_code = $xss_result;
-					}
-				}
-
-
-				// AT&T phones send the message as a .txt file
-				// This checks to see if this email is from an AT&T phone,
-				// not an encoded file, and has a .txt file extension in the filename
-
-				if ($this->attach_as_txt === TRUE && ! stristr($encoding,"base64"))
-				{
-					if($ext == 'txt' && preg_match("/Content-Disposition:\s*inline/i",$headers,$found))
-					{
-						$this->attach_text = $file_code;
-						$this->attach_name = $filename;
-						continue; // No upload of file.
-					}
-				}
-				
-				
-				// Check to see if we're dealing with relative paths
-				if (strncmp($file_path, '..', 2) == 0)
-				{
-					$directory = dirname($file_path);
-					$file_path = realpath(substr($directory, 1)).'/'.$filename;
-				}
-
-				// Upload the file and check for errors
-				if (file_put_contents($file_path, $file_code) === FALSE)
-				{
-					$this->message_array[] = 'error_writing_attachment';
 					return FALSE;
 				}
-
-				// Disable xss cleaning in the filemanager
-				ee()->filemanager->xss_clean_off();
-
-				// Send the file
-				$result = ee()->filemanager->save_file(
-					$file_path, 
-					$upload_dir_id,
-					array(
-						'title'     => $filename,
-						'rel_path'  => dirname($file_path),
-						'file_name' => $filename
-					)
-				);
-				
-				unset($file_code);
-				
-				// Check to see the result
-				if ($result['status'] === FALSE)
-				{
-					// $result['message']
-					$this->message_array[] = 'error_writing_attachment';
-					$this->message_array[] = print_r($result, TRUE);
-					return FALSE;
-				}
-				
-				$this->email_files[] = $filename;
-				$this->uploads++;
 
 			} // End files/images section
 
@@ -1995,7 +1781,275 @@ class Moblog {
 	}
 
 	// ------------------------------------------------------------------------
-	
+
+	/**
+	 * Parses out file data and saves it to moblog upload directory
+	 *
+	 * @param	string	$value		Raw email data
+	 * @param	string	$type		Type of content (first half of MIME)
+	 * @param	string	$subtype	Subtype type of content (second half of MIME)
+	 * @return	boolean	Success or failure
+	 */
+	private function _process_attachment($value, $type, $subtype)
+	{
+		$upload_dir_id = $this->moblog_array['moblog_upload_directory'];
+
+		if ($upload_dir_id != 0)
+		{
+			$this->upload_dir_code = '{filedir_'.$upload_dir_id.'}';
+		}
+
+		// no upload directory?  skip
+
+		if ($upload_dir_id == 0)
+		{
+			continue;
+		}
+
+		if ($subtype == 'appledouble')
+		{
+			if ( ! $data = $this->appledouble($value))
+			{
+				continue;
+			}
+			else
+			{
+				$value 		= $data['value'];
+				$subtype 	= $data['subtype'];
+				$type		= $data['type'];
+				unset($data);
+			}
+		}
+
+		/** ------------------------------
+		/**  Determine Filename
+		/** ------------------------------*/
+		$contents = $this->find_data($value, "name=", $this->newline);
+
+		if ($contents == '')
+		{
+			$contents = $this->find_data($value, 'Content-Location: ', $this->newline);
+		}
+
+		if ($contents == '')
+		{
+			$contents = $this->find_data($value, 'Content-ID: ', $this->newline);
+			$contents = str_replace('<','', $contents);
+			$contents = str_replace('<','', $contents);
+		}
+
+		$x = explode(';',trim($contents));
+		$filename = ($x['0'] == '') ? 'moblogfile' : $x['0'];
+
+		$filename = trim(str_replace('"','',$filename));
+		$filename = str_replace($this->newline,'',$filename);
+
+		if (stristr($filename, 'dottedline') OR stristr($filename, 'spacer.gif') OR stristr($filename, 'masthead.jpg'))
+		{
+			continue;
+		}
+
+		/** --------------------------------
+		/**  File/Image Code and Cleanup
+		/** --------------------------------*/
+
+		$duo = $this->newline.$this->newline;
+		$file_code = $this->find_data($value, $duo,'');
+
+		if ($file_code == '')
+		{
+			$file_code = $this->find_data($value, $this->newline,'');
+
+			if ($file_code == '')
+			{
+				$this->message_array = 'invalid_file_data';
+				return FALSE;
+			}
+		}
+
+		/** --------------------------------
+		/**  Determine Encoding
+		/** --------------------------------*/
+
+		$contents = $this->find_data($value, "Content-Transfer-Encoding: ", $this->newline);
+		$x = explode(';',$contents);
+		$encoding = $x['0'];
+		$encoding = trim(str_replace('"','',$encoding));
+		$encoding = str_replace($this->newline,'',$encoding);
+
+		if ( ! stristr($encoding,"base64") &&  ! stristr($encoding,"7bit") &&  ! stristr($encoding,"8bit") && ! stristr($encoding,"quoted-printable"))
+		{
+			if ($type == 'text')
+			{
+				// RTF and HTML are considered alternative text
+				$subtype = ($subtype != 'html' && $subtype != 'rtf') ? 'plain' : 'alt';
+
+				// Same content type, then join together
+				$this->post_data[$type][$subtype] = (isset($this->post_data[$type][$subtype])) ? $this->post_data[$type][$subtype].' '.$file_code : $file_code;
+
+				// Plain text takes priority for body data.
+				$this->body = ( ! isset($this->post_data[$type]['plain'])) ? $this->post_data[$type]['alt'] : $this->post_data[$type]['plain'];
+			}
+
+			continue;
+		}
+
+		// Eudora and Mail.app use this by default
+		if (stristr($encoding,"quoted-printable"))
+		{
+			$file_code = quoted_printable_decode($file_code);
+		}
+
+		// Base64 gets no space and no line breaks
+		$replace = ( ! stristr($encoding,"base64")) ? "\n" : '';
+		$file_code = trim(str_replace($this->newline,$replace,$file_code));
+
+		// PHP function sometimes misses opening and closing equal signs
+		if (stristr($encoding,"quoted-printable"))
+		{
+			$file_code = (substr($file_code,0,1) != '=') ? $file_code : substr($file_code,1);
+			$file_code = (substr($file_code,-1) != '=') ? $file_code : substr($file_code,0,-1);
+		}
+
+		// Decode so that we can run xss clean on the raw
+		// data once we've determined the file type
+
+		if (stristr($encoding,"base64"))
+		{
+			$file_code = base64_decode($file_code);
+			$this->message_array[] = 'base64 decoded.';
+		}
+
+		/** ------------------------------
+		/**  Check and adjust for multiple files with same file name
+		/** ------------------------------*/
+
+		ee()->load->library('filemanager');
+
+		$file_path = ee()->filemanager->clean_filename(
+			$filename,
+			$upload_dir_id,
+			array('ignore_dupes' => FALSE)
+		);
+		$filename = basename($file_path);
+
+		/** ---------------------------
+		/**  Put Info in Post Data array
+		/** ---------------------------*/
+
+		$ext = trim(strrchr($filename, '.'), '.');
+		$is_image = FALSE; // This is needed for XSS cleaning
+
+		if (in_array(strtolower($ext), $this->movie)) // Movies
+		{
+			$this->post_data['movie'][] = $filename;
+		}
+		elseif (in_array(strtolower($ext), $this->audio)) // Audio
+		{
+			$this->post_data['audio'][] = $filename;
+		}
+		elseif (in_array(strtolower($ext), $this->image)) // Images
+		{
+			$this->post_data['images'][] = $filename;
+
+			$key = count($this->post_data['images']) - 1;
+
+			$type = 'image'; // For those crazy application/octet-stream images
+
+			$is_image = TRUE;
+		}
+		elseif (in_array(strtolower($ext), $this->files)) // Files
+		{
+			$this->post_data['files'][] = $filename;
+		}
+		else
+		{
+			continue;
+		}
+
+		// Clean the file
+		ee()->load->helper('xss');
+
+		if (xss_check())
+		{
+			$xss_result = ee()->security->xss_clean($file_code, $is_image);
+
+			// XSS Clean Failed - bail out
+			if ($xss_result === FALSE)
+			{
+				$this->message_array[] = 'error_writing_attachment';
+				return FALSE;
+			}
+
+			if ( ! $is_image)
+			{
+				$file_code = $xss_result;
+			}
+		}
+
+
+		// AT&T phones send the message as a .txt file
+		// This checks to see if this email is from an AT&T phone,
+		// not an encoded file, and has a .txt file extension in the filename
+
+		if ($this->attach_as_txt === TRUE && ! stristr($encoding,"base64"))
+		{
+			if($ext == 'txt' && preg_match("/Content-Disposition:\s*inline/i",$headers,$found))
+			{
+				$this->attach_text = $file_code;
+				$this->attach_name = $filename;
+				continue; // No upload of file.
+			}
+		}
+
+
+		// Check to see if we're dealing with relative paths
+		if (strncmp($file_path, '..', 2) == 0)
+		{
+			$directory = dirname($file_path);
+			$file_path = realpath(substr($directory, 1)).'/'.$filename;
+		}
+
+		// Upload the file and check for errors
+		if (file_put_contents($file_path, $file_code) === FALSE)
+		{
+			$this->message_array[] = 'error_writing_attachment';
+			return FALSE;
+		}
+
+		// Disable xss cleaning in the filemanager
+		ee()->filemanager->xss_clean_off();
+
+		// Send the file
+		$result = ee()->filemanager->save_file(
+			$file_path,
+			$upload_dir_id,
+			array(
+				'title'     => $filename,
+				'rel_path'  => dirname($file_path),
+				'file_name' => $filename
+			)
+		);
+
+		unset($file_code);
+
+		// Check to see the result
+		if ($result['status'] === FALSE)
+		{
+			// $result['message']
+			$this->message_array[] = 'error_writing_attachment';
+			$this->message_array[] = print_r($result, TRUE);
+			return FALSE;
+		}
+
+		$this->email_files[] = $filename;
+		$this->uploads++;
+
+		return TRUE;
+	}
+
+	// ------------------------------------------------------------------------
+
 	/**
 	 * 	Strip Apple Double Crap
 	 *
@@ -2039,7 +2093,7 @@ class Moblog {
 	}
 
 	// ------------------------------------------------------------------------
-	
+
 	/**
 	 * 	Check Login
 	 */
@@ -2066,9 +2120,9 @@ class Moblog {
 		/** --------------------------------------
 		/**  Check Username and Password, First
 		/** --------------------------------------*/
-		
+
 		ee()->load->helper('security');
-		
+
 		ee()->db->select('member_id, group_id');
 		ee()->db->where('username', $username);
 		ee()->db->where('password', sha1(stripslashes($password)));
@@ -2099,9 +2153,9 @@ class Moblog {
 
 		return TRUE;
 	}
-	
+
 	// ------------------------------------------------------------------------
-	
+
 	/**
 	 * 	Find Boundary
 	 */
@@ -2122,7 +2176,7 @@ class Moblog {
 	}
 
 	// ------------------------------------------------------------------------
-	
+
 	/**
 	 * 	Pop Command.
 	 *
@@ -2149,7 +2203,7 @@ class Moblog {
 	}
 
 	// ------------------------------------------------------------------------
-	
+
 	/**
 	 * 	Remove New Lines
 	 *
@@ -2168,7 +2222,7 @@ class Moblog {
 	}
 
 	// ------------------------------------------------------------------------
-	
+
 	/**
 	 * 	ISO Clean
 	 *
@@ -2247,7 +2301,7 @@ class Moblog {
 	}
 
 	// ------------------------------------------------------------------------
-	
+
 	/**
 	 * 	Find Data
 	 *

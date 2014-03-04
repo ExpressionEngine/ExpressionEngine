@@ -33,6 +33,8 @@ $lang = array(
 'extension_disabled'			=>		'Extension Disabled',
 'extensions_enabled'			=>		'Extensions Enabled',
 'extensions_disabled'			=>		'Extensions Disabled',
+'ext_enabled_short'				=>		'enabled',
+'ext_disabled_short'			=>		'disabled',
 
 'delete_fieldtype_confirm'		=>		'Are you sure you want to remove this fieldtype?',
 'delete_fieldtype'				=>		'Remove Fieldtype',

@@ -1,15 +1,15 @@
 /*!
- * 
+ *
  * TableSorter 2.0 - Client-side table sorting with ease!
  * Version 2.0.3
  * @requires jQuery v1.2.3
- * 
+ *
  * Copyright (c) 2007 Christian Bach
  * Examples and docs at: http://tablesorter.com
  * Dual licensed under the MIT and GPL licenses:
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
- * 
+ *
  */
 
 (function(b){b.extend({tablesorter:new function(){function a(c,a){h(c+","+((new Date).getTime()-a.getTime())+"ms")}function h(c){"undefined"!=typeof console&&"undefined"!=typeof console.debug?console.log(c):alert(c)}function e(c,a){if(c.config.debug)var d="";var q=c.tBodies[0].rows;if(c.tBodies[0].rows[0])for(var f=[],q=q[0].cells,C=q.length,l=0;l<C;l++){var m=!1;b.metadata&&b(a[l]).metadata()&&b(a[l]).metadata().sorter?m=r(b(a[l]).metadata().sorter):c.config.headers[l]&&c.config.headers[l].sorter&&

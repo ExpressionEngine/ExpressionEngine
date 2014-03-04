@@ -4,13 +4,13 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -142,7 +142,7 @@ class Ip_to_nation_upd {
 		ee()->dbforge->drop_table('ip2nation_countries');
 
 		//  Remove a couple items from the file
-		
+
 		ee()->config->_update_config(
 			array(),
 			array(
@@ -213,7 +213,7 @@ class Ip_to_nation_upd {
 				)
 			));
 		}
-		
+
 		return TRUE;
 	}
 

@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.6
@@ -15,7 +15,6 @@
 // ------------------------------------------------------------------------
 
 require_once APPPATH.'libraries/channel_entries_parser/components/Category.php';
-require_once APPPATH.'libraries/channel_entries_parser/components/Custom_date.php';
 require_once APPPATH.'libraries/channel_entries_parser/components/Custom_field.php';
 require_once APPPATH.'libraries/channel_entries_parser/components/Custom_field_pair.php';
 require_once APPPATH.'libraries/channel_entries_parser/components/Custom_member_field.php';
@@ -67,11 +66,10 @@ class EE_Channel_parser_components {
 		$this->register_once('EE_Channel_custom_field_pair_parser');
 		$this->register_once('EE_Channel_relationship_parser');
 		$this->register_once('EE_Channel_switch_parser');
+		$this->register_once('EE_Channel_date_parser');
 
 		$this->register_single('EE_Channel_simple_conditional_parser');
-		$this->register_single('EE_Channel_date_parser');
 		$this->register_single('EE_Channel_simple_variable_parser');
-		$this->register_single('EE_Channel_custom_date_parser');
 		$this->register_single('EE_Channel_custom_field_parser');
 		$this->register_single('EE_Channel_custom_member_field_parser');
 	}

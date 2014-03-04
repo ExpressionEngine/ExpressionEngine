@@ -6,7 +6,7 @@
  *
  * @package		CodeIgniter
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc.
  * @license		http://codeigniter.com/user_guide/license.html
  * @link		http://codeigniter.com
  * @since		Version 1.0
@@ -289,7 +289,59 @@ class CI_DB_driver {
 		// Save the  query for debugging
 		if ($this->save_queries == TRUE)
 		{
-			$this->queries[] = $sql;
+			$source = '';
+			$trace = debug_backtrace();
+
+			// Log file the query came from
+			if (count($trace) >= 2)
+			{
+				ee()->load->helper('array');
+
+				// Get file and line in which query method was called
+				$file = element('file', $trace[1], '');
+				$line = element('line', $trace[1], '');
+
+				$func = '';
+				$class = '';
+
+				if (isset($trace[1]['class']))
+				{
+					$frame = 1;
+
+					// Skip calls to get() or get_where(), get the next stack frame
+					if ($trace[1]['class'] == 'CI_DB_active_record')
+					{
+						$frame = 2;
+					}
+
+					$func = element('function', $trace[$frame], '');
+					$class = element('class', $trace[$frame], '');
+				}
+
+				// Replace path with APP or CI to shorten the string
+				if ($file != '')
+				{
+					if (strpos($file, BASEPATH) === 0)
+					{
+						$file = 'CI/' . str_replace(BASEPATH, '', $file);
+					}
+					elseif (strpos($file, APPPATH) === 0)
+					{
+						$file = 'APP/' . str_replace(APPPATH,'',$file);
+					}
+					else
+					{
+						$file = basename($file);
+					}
+				}
+
+				// Build the caller source info
+				$source = "\n#".$file . ' L:' . $line . '  ';
+				$source .= ($class != '') ? $class . '::' : '';
+				$source .= ($func != '') ? $func . '() ' : '';
+			}
+
+			$this->queries[] = $sql . $source;
 		}
 
 		// Start the Query Timer
@@ -1031,6 +1083,10 @@ class CI_DB_driver {
 	 */
 	function cache_set_path($path = '')
 	{
+		// Query caching now uses caching drivers
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.8');
+
 		$this->cachedir = $path;
 	}
 
@@ -1121,7 +1177,7 @@ class CI_DB_driver {
 			}
 		}
 
-		$this->CACHE = new CI_DB_Cache($this); // pass db object to support multiple db connections and returned db objects
+		$this->CACHE = new CI_DB_Cache(); // pass db object to support multiple db connections and returned db objects
 		return TRUE;
 	}
 
