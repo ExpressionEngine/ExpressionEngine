@@ -287,9 +287,10 @@ var urlRegex = /(.*?)[?](.*?&)?(D=cp(?:&C=[^&]+(?:&M=[^&]+)?)?)(?:&(.+))?$/,
 
 EE.cp.cleanUrl = function(i, url) {
 	url = url || i; // i exists if coming from jQuery attr callback
+	url = url || '';
 
 	// Move session to the end
-	url = url.replace(/^(\S*?)S=(\S+?)&(\S*?)$/g, "$1$3&S=$2");
+	url = url.toString().replace(/^(\S*?)S=(\S+?)&(\S*?)$/g, "$1$3&S=$2");
 
 	var result = urlRegex.exec(url);
 
