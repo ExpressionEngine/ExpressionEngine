@@ -30,27 +30,12 @@ class AutoloaderTest extends \PHPUnit_Framework_TestCase {
 	public function testLoadClass()
 	{
 		$this->autoloader->loadClass('EllisLab\AutoloaderTest\TestFileOne');
-		$this->assertTrue(class_exists('\TestFilseOne'), 'loadClass(): file without namespacing');
+		$this->assertTrue(class_exists('\TestFileOne'), 'loadClass(): file without namespacing');
 
 		$this->autoloader->loadClass('EllisLab\AutoloaderTest\TestFileTwo');
 		$this->assertTrue(class_exists('\EllisLab\AutoloaderTest\TestFileTwo'), 'class file with namespacing');
 	}
 
-	/**
-	 * @expectedException \RuntimeException
-	 */
-	public function testLoadClassThrowsExceptionForBadPath()
-	{
-		$this->autoloader->loadClass('TestFileOne.php');
-	}
-
-	/**
-	 * @expectedException \RuntimeException
-	 */
-	public function testLoadClassThrowsExceptionForBadPathWithValidPrefix()
-	{
-		$this->autoloader->loadClass('Ellislab\BadFileName');
-	}
 
 	public function testRegister()
 	{

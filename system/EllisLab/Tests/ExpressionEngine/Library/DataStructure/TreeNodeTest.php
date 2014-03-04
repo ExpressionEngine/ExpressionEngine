@@ -8,33 +8,39 @@ class TreeNodeTest extends \PHPUnit_Framework_TestCase {
 
 	public function validNodeNames()
 	{
+		$int	= 2;
+		$float	= 3.5;
+		$string = 'testname';
+		$array	= array('a' => 'ok');
+		$object = (object) $array;
+
 		return array(
-			2,
-			3.5,
-			'testname',
-			array('a' => 'ok'),
-			(object) array('b' => 'ok')
+			array($int,    'Integer node name'),
+			array($float,  'Float node name'),
+			array($string, 'String node name'),
+			array($array,  'Array node name'),
+			array($object, 'Object node name')
 		);
 	}
 
 	/**
 	 * @dataProvider validNodeNames
 	 */
-	public function testConstruction($name)
+	public function testConstruction($name, $msg)
 	{
 		// anything goes, ints, strings, arrays, objects, ...
 		$node = new TreeNode($name);
-		$this->assertEquals($name, $node->getName());
+		$this->assertEquals($name, $node->getName(), $msg);
 
 		if (is_object($name))
 		{
-			$this->assertSame(new StdClass(), $node->getName());
+			$this->assertInstanceOf('\StdClass', $node->getName(), $msg);
 		}
 	}
 
 	public function testPayloadIsEmpty()
 	{
-		$node = new TreeNode('test', 's');
+		$node = new TreeNode('test');
 		$this->assertNull($node->data, '->__construct() with no payload');
 		$this->assertNull($node->getData());
 		return $node;
