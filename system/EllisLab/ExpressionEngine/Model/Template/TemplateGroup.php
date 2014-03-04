@@ -5,14 +5,21 @@ use EllisLab\ExpressionEngine\Model\Model as Model;
 
 class TemplateGroup extends Model {
 
-	protected static $meta = array(
+	protected static $_meta = array(
 		'primary_key'	=> 'group_id',
 		'gateway_names'	=> array('TemplateGroupGateway'),
 		'key_map'		=> array(
-			'group_id' => 'TemplateGroupGateway'
+			'group_id' => 'TemplateGroupGateway',
+			'site_id' => 'TemplateGroupGateway'
 		),
 		'cascade' => 'Templates'
 	);
+
+	protected $group_id;
+	protected $site_id;
+	protected $group_name;
+	protected $group_order;
+	protected $is_site_default;
 
 	/**
 	 *
@@ -42,4 +49,17 @@ class TemplateGroup extends Model {
 		$this->setRelated('MemberGroups', $member_groups);
 		return $this;
 	}
+	
+	public function getSite()
+	{
+		return $this->manyToOne('Site', 'Site', 'site_id', 'site_id');
+	}
+
+	public function setSite(Site $site)
+	{
+		$this->setRelated('Site', $site);
+		$this->site_id = $site->site_id;
+		return $this;
+	}
+
 }

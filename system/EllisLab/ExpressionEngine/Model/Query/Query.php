@@ -34,10 +34,9 @@ class Query {
 	public function __construct(ModelBuilder $builder, $model_name)
 	{
 		$this->builder = $builder;
-		$this->db = clone ee()->db; // TODO reset?
+		$this->db = ee()->db; // TODO reset?
 
 		$this->createRoot($model_name);
-
 	}
 
 	protected function createRoot($model_name)
@@ -179,7 +178,7 @@ class Query {
 
 		$table_property = $this->translateProperty($relationship_property);
 
-		if ($operator == 'IN')
+		if (strtolower($operator) == 'in')
 		{
 			$this->db->where_in($table_property, (array) $value);
 		}
@@ -385,7 +384,7 @@ class Query {
 
 		if ( ! method_exists($from_model, $relationship_method))
 		{
-			throw new \Exception('Undefined relationship from ' . $from_model_name . ' to ' . $relationship_name);
+			throw new \Exception('Undefined relationship from ' . $from_model_name . ' to ' . $relationship_name . '.  Could not find ' . $relationship_method . '().');
 		}
 
 		$relationship_meta = $from_model->$relationship_method();
@@ -492,6 +491,13 @@ class Query {
 		}
 	}
 
+
+	public function debug_query()
+	{
+		$query = $this->db->_compile_select();
+		return $query;
+	}
+
 	/**
 	 * Run the query, hydrate the models, and reassemble the relationships
 	 *
@@ -499,10 +505,6 @@ class Query {
 	 */
 	public function all()
 	{
-		//$query = $this->db->_compile_select();
-		//echo $query;
-		//die();
-
 		// Run the query
 		$result_array = $this->db->get()->result_array();
 		$collection = new Collection($this->parseDatabaseResult($result_array));
@@ -648,7 +650,7 @@ class Query {
 	{
 		$model_name = $model_data['__model_name'];
 
-		$model = $this->builder->make($model_name, $model_data);
+		$model = $this->builder->make($model_name, $model_data, FALSE);
 
 		$primary_key_name = $model::getMetaData('primary_key');
 		$primary_key = $model_data[$primary_key_name];
@@ -756,7 +758,6 @@ class Query {
 		}
 
 		$model_class_name = $this->builder->getRegisteredClass($model_name);
-
 		foreach ($model_class_name::getMetaData('gateway_names') as $gateway_name)
 		{
 			$gateway_class_name = $this->builder->getRegisteredClass($gateway_name);

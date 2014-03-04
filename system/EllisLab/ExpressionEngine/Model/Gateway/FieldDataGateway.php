@@ -52,6 +52,7 @@ class FieldDataGateway extends RowDataGateway {
 		if ($key === 'field_list')
 		{
 			$db = clone ee()->db;
+			$db->_reset_select();
 			$db->select(static::getMetaData('field_id_name'));
 			$db->from(static::getMetaData('field_table'));
 
@@ -70,6 +71,7 @@ class FieldDataGateway extends RowDataGateway {
 		return parent::getMetaData($key);
 
 	}
+
 }
 
 

@@ -78,17 +78,4 @@ class Category extends FieldDataContentModel {
 	}
 
 
-	/**
-	 * Validates the channel entry before saving
-	 *
-	 * @return	void
-	 *
-	 * @throws	ContentInvalidException If content fails to validate a
-	 * 						ContentInvalidException will be thrown with errors.
-	 */
-	public function validate()
-	{
-
-	}
-
 }

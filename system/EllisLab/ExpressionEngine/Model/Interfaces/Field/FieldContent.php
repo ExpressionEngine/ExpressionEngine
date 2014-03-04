@@ -1,4 +1,5 @@
-<?PHP
+<?php
+namespace EllisLab\ExpressionEngine\Model\Interfaces\Field;
 
 /**
  * The content for a single field instance.

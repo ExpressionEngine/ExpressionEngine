@@ -1,7 +1,7 @@
 <?php
 namespace EllisLab\ExpressionEngine\Model;
 
-use EllisLab\ExpressionEngine\Service\Validation\ValidationResult;
+use EllisLab\ExpressionEngine\Model\Error\Errors;
 use EllisLab\ExpressionEngine\Core\Dependencies;
 use EllisLab\ExpressionEngine\Model\Query\QueryBuilder;
 use EllisLab\ExpressionEngine\Model\Query\ModelRelationshipMeta;
@@ -35,11 +35,18 @@ abstract class Model {
 	/**
 	 * Initialize this model with a set of data to set on the gateway.
 	 *
-	 * @param	mixed[]	$data	An array of initial property values to
-	 * 						set on this model.  The array indexes must
-	 * 						be valid properties on this model's gateway.
+	 * @param	Dependencies	$dependencies	The dependency injection object
+	 * 		which provides access to things like the database and ModelBuilder.
+	 * @param	mixed[]	$data	An array of initial property values to set on
+	 * 		this model.  The array indexes must be valid properties on this
+	 * 		model's gateway.
+	 * @param	boolean	$dirty	(Optional) Should we mark the initial data as
+	 * 		dirty?  If TRUE, all initial data that the model is sent will be
+	 * 		marked as dirty data that will be validated and saved on the next
+	 * 		save call.  Otherwise, it will be treated as clean and assumed
+	 * 		to have come from the database.
 	 */
-	public function __construct(Dependencies $dependencies, array $data = array())
+	public function __construct(Dependencies $dependencies, array $data = array(), $dirty = TRUE)
 	{
 		$this->_dependencies = $dependencies;
 		$this->_builder = $dependencies->getModelBuilder();
@@ -49,6 +56,10 @@ abstract class Model {
 			if (property_exists($this, $property))
 			{
 				$this->{$property} = $value;
+				if ($dirty)
+				{
+					$this->setDirty($property);
+				}
 			}
 		}
 	}
@@ -77,7 +88,7 @@ abstract class Model {
 			return $this->{$name};
 		}
 
-		throw new \InvalidArgumentException('Attempt to access a non-existent property on ' . __CLASS__);
+		throw new \InvalidArgumentException('Attempt to access a non-existent property, "' . $name . '", on ' . get_called_class());
 	}
 
 	/**
@@ -108,7 +119,18 @@ abstract class Model {
 			return;
 		}
 
-		throw new \InvalidArgumentException('Attempt to access a non-existent property "' . $name . '" on ' . __CLASS__);
+		throw new \InvalidArgumentException('Attempt to access a non-existent property "' . $name . '" on ' . get_called_class());
+	}
+
+	protected function setDirty($property)
+	{
+		$this->_dirty[$property] = TRUE;
+		return $this;
+	}
+
+	protected function isDirty($property)
+	{
+		return (isset($this->_dirty[$property]) && $this->_dirty[$property]);
 	}
 
 	/**
@@ -121,12 +143,23 @@ abstract class Model {
 	{
 		if (empty(static::$_meta))
 		{
-			throw new \UnderflowException('No meta data set for this class!');
+			throw new \UnderflowException('No meta data set for ' . get_called_class());
 		}
 
 		if ( ! isset($key))
 		{
 			return static::$_meta;
+		}
+
+		// If the key is not set, and is not an optional key such as validation_rules,
+		// throw an exception.
+		if ( ! isset (static::$_meta[$key]) && ! in_array($key, array('validation_rules')))
+		{
+			throw new \DomainException('Missing meta data, "' . $key . '", in ' . get_called_class());
+		}
+		else if ( ! isset (static::$_meta[$key]))
+		{
+			return NULL;
 		}
 
 		return static::$_meta[$key];
@@ -178,78 +211,20 @@ abstract class Model {
 
 		$cascade = func_get_args();
 
-		$validation = new ValidationResult();
+		$errors = new Errors();
 
 		foreach ($this->_gateways as $gateway)
 		{
-			$validation->addErrors($gateway->validate());
+			$errors->addErrors($gateway->validate());
 		}
-
-		foreach($cascade as $model_name)
+		
+		$cascade_errors = $this->cascade($cascade, 'validate');
+		foreach($cascade_errors as $cascade_error)
 		{
-			if (is_array($model_name))
-			{
-				$this->cascadeValidate($validation, $model_name);
-			}
-			else
-			{
-				$method = 'get' . $model_name;
-				$models = $this->$method();
-
-				foreach ($models as $model)
-				{
-					$model->validate();
-				}
-			}
+			$errors->addErrors($cascade_error);
 		}
 
-
-		return $validation;
-	}
-
-	/**
-	 * Cascade validation
-	 *
-	 * Cascades validation into related classes.  Gets the array of a cascaded
-	 * relation and recursively walks through that, validating.
-	 *
-	 * @param	Errors	$validation	The validation object to which cascaded
-	 * 				errors should be added.
-	 * @param	string[]	$model_names	The names of the models that you
-	 * 				wish to cascade into in array format.  The array must
-	 * 				be formatted in the following way:
-	 * 					array('Model Related to $this' => 'Model related to <- that model')
-	 *
-	 * @return	Errors	A class containing the errors resulting from validation.
-	 *
-	 */
-	protected function cascadeValidate($validation, $model_names)
-	{
-		foreach ($model_names as $from_model_name => $to_model_name)
-		{
-			$method = 'get' . $from_model_name;
-			$models = $this->$method();
-
-			foreach ($models as $model)
-			{
-				if (is_array($to_model_name))
-				{
-					$validation->addErrors($model->cascadeValidate($to_model_name));
-				}
-				else
-				{
-					$to_method = 'get' . $to_model_name;
-					$to_models = $model->$to_method();
-
-					foreach ($to_models as $to_model)
-					{
-						$validation->addErrors($to_model->validate());
-					}
-				}
-			}
-		}
-
-		return $validation;
+		return $errors;
 	}
 
 	/**
@@ -269,8 +244,8 @@ abstract class Model {
 		$this->map();
 		$cascade = func_get_args();
 
-		$validation = call_user_func_array(array($this, 'validate'), $cascade);
-		if ($validation->failed())
+		$errors = call_user_func_array(array($this, 'validate'), $cascade);
+		if ($errors->exist())
 		{
 			throw new \Exception('Model failed to validate on save call!');
 		}
@@ -280,67 +255,8 @@ abstract class Model {
 			$gateway->save();
 		}
 
-		// Handle Cascade
-		foreach($cascade as $model_name)
-		{
-			if (is_array($model_name))
-			{
-				$this->cascadeSave($model_name);
-			}
-			else
-			{
-				$method = 'get' . $model_name;
-				$models = $this->$method();
-
-				foreach ($models as $model)
-				{
-					$model->save();
-				}
-			}
-		}
+		$this->cascade($cascade, 'save');
 	}
-
-	/**
-	 * Cascade save
- 	 *
-	 * Cascades saving through related Models.  Works the same as
-	 * Model::cascadeValidate(), but doesn't return anything.
-	 *
-	 * @param	string[]	$model_names	An array of Model names to be saved
-	 * 				in the format of array('from_model' => 'to_model').
-	 *
- 	 * @return	void
-	 *
-	 * @throws	Exception	If any of the related models fails to validate
-	 * 				it will throw an exception.
-	 */
-	protected function cascadeSave($model_names)
-	{
-		foreach ($model_names as $from_model_name => $to_model_name)
-		{
-			$method = 'get' . $from_model_name;
-			$models = $this->$method();
-
-			foreach ($models as $model)
-			{
-				if (is_array($to_model_name))
-				{
-					$model->cascadeSave($to_model_name);
-				}
-				else
-				{
-					$to_method = 'get' . $to_model_name;
-					$to_models = $model->$to_method();
-
-					foreach ($to_models as $to_model)
-					{
-						$to_model->save();
-					}
-				}
-			}
-		}
-	}
-
 
 	/**
 	 * Delete this model.
@@ -357,55 +273,8 @@ abstract class Model {
 		{
 			$gateway->delete();
 		}
-
-		// Handle Cascade
-		foreach($cascade as $model_name)
-		{
-			if (is_array($model_name))
-			{
-				$this->cascadeSave($model_name);
-			}
-			else
-			{
-				$method = 'get' . $model_name;
-				$models = $this->$method();
-
-				foreach ($models as $model)
-				{
-					$model->save();
-				}
-			}
-		}
-	}
-
-	/**
-	 *
-	 */
-	protected function cascadeDelete($model_names)
-	{
-		foreach ($model_names as $from_model_name => $to_model_name)
-		{
-			$method = 'get' . $from_model_name;
-			$models = $this->$method();
-
-			foreach ($models as $model)
-			{
-				if (is_array($to_model_name))
-				{
-					$model->cascadeDelete($to_model_name);
-				}
-				else
-				{
-					$to_method = 'get' . $to_model_name;
-					$to_models = $model->$to_method();
-
-					foreach ($to_models as $to_model)
-					{
-						$to_model->delete();
-					}
-				}
-			}
-		}
+		
+		$this->cascade($cascade, 'delete');
 	}
 
 	protected function map()
@@ -414,7 +283,7 @@ abstract class Model {
 		{
 			foreach (static::getMetaData('gateway_names') as $gateway_name)
 			{
-				$this->_gateways[$gateway_name] = $this->_builder->makeGateway($gateway_name, $data);
+				$this->_gateways[$gateway_name] = $this->_builder->makeGateway($gateway_name);
 			}
 		}
 
@@ -428,18 +297,74 @@ abstract class Model {
 
 			foreach($this->_gateways as $gateway)
 			{
-				$gateway->{$property} = $value;
+				if (property_exists($gateway, $property)) 
+				{
+					$gateway->{$property} = $value;
+					if ($this->isDirty($property))
+					{
+						$gateway->setDirty($property);
+					}
+				}
 			}
 		}
+	}
 
-		// Translate the ones that are dirty.
-		foreach ($this->_dirty as $dirty_property)
+	/**
+	 *
+	 * 		'Channel',
+	 *		array('Member' => array('MemberGroup'=>'Members')),
+	 * 		array('Category' => 'CategoryGroup')
+	 */
+	protected function cascade($cascade, $method)
+	{
+		$result = array();
+		foreach($cascade as $model_name)
 		{
-			foreach($this->_gateways as $gateway)
+			if (is_array($model_name))
 			{
-				$gateway->setDirty($dirty_property);
+				$result = array_merge($result, $this->cascadeRecursive($model_name, $method));
+			}
+			else
+			{
+				$relationship_method = 'get' . $model_name;
+				$models = $this->$relationship_method();
+
+				foreach ($models as $model)
+				{
+					$result[] = $model->$method();
+				}
 			}
 		}
+		return $result;
+	}
+
+	protected function cascadeRecursive($cascade, $method)
+	{
+		$result = array();
+		foreach ($relationships as $from_relationship => $to_relationship)
+		{
+			$method = 'get' . $from_model_name;
+			$models = $this->$method();
+
+			foreach ($models as $model)
+			{
+				if (is_array($to_relationship))
+				{
+					$result = array_merge($result, $model->cascadeRecursive($to_relationship, $method));
+				}
+				else
+				{
+					$relationship_method = 'get' . $to_relationship;
+					$to_models = $model->$relationship_method();
+
+					foreach ($to_models as $to_model)
+					{
+						$result[] = $to_model->$method();
+					}
+				}
+			}
+		}
+		return $result;
 	}
 
 	/**
@@ -618,7 +543,18 @@ abstract class Model {
 		$relationship_key = (isset($name) ? $name : $to_model_name);
 		if (array_key_exists($relationship_key, $this->_related_models))
 		{
-			return $this->_related_models[$to_model_name];
+			switch($type)
+			{ 
+				case ModelRelationshipMeta::TYPE_MANY_TO_MANY:
+				case ModelRelationshipMeta::TYPE_ONE_TO_MANY:
+					return $this->_related_models[$to_model_name];
+				case ModelRelationshipMeta::TYPE_MANY_TO_ONE:
+				case ModelRelationshipMeta::TYPE_ONE_TO_ONE:
+					return $this->_related_models[$to_model_name][0];
+				default:
+					throw new \Exception('Unknown type!');
+			}
+
 		}
 
 		// At this point, if we don't have a to_key we'll need to default
@@ -655,7 +591,7 @@ abstract class Model {
 		// Lazy Load
 		// 	Otherwise, if we haven't hit one of the previous cases, then this
 		// 	is a lazy load on an existing model.
-		$query = $this->_dependencies->modelBuilder()->get($to_model_name);
+		$query = $this->_dependencies->getModelBuilder()->get($to_model_name);
 		$query->filter($to_model_name . '.' . $to_key, $this->$this_key);
 
 		if ($type == 'one-to-one' OR $type == 'many-to-one')

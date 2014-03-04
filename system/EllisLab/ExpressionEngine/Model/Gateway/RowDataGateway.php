@@ -5,7 +5,7 @@ use EllisLab\ExpressionEngine\Core\Dependencies;
 use EllisLab\ExpressionEngine\Core\Validation\Validator;
 use EllisLab\ExpressionEngine\Core\Validation\Error\ValidationError;
 
-use EllisLab\ExpressionEngine\Model\Errors;
+use EllisLab\ExpressionEngine\Model\Error\Errors;
 
 
 /**
@@ -115,6 +115,11 @@ abstract class RowDataGateway {
 			return static::$meta;
 		}
 
+		if( ! isset (static::$meta[$key]))
+		{
+			return NULL;
+		}
+
 		return static::$meta[$key];
 	}
 
@@ -134,6 +139,7 @@ abstract class RowDataGateway {
 	public function setDirty($property)
 	{
 		$this->dirty[$property] = TRUE;
+		return $this;
 	}
 
 	/**
@@ -153,10 +159,16 @@ abstract class RowDataGateway {
 		// Nothing to validate!
 		if (empty($this->dirty))
 		{
-			return $result;
+			return $errors;
 		}
 
 		$validation_rules = static::getMetaData('validation_rules');
+		// Nothing to validate.
+		if ($validation_rules === NULL)
+		{
+			return $errors;
+		}
+
 		foreach ($this->dirty as $property => $dirty)
 		{
 			if (isset($validation_rules[$property]))
@@ -172,7 +184,7 @@ abstract class RowDataGateway {
 			}
 		}
 
-		return $result;
+		return $errors;
 	}
 
 	/**

@@ -13,6 +13,10 @@ class ModelBuilder {
 		'TemplateGateway' => '\EllisLab\ExpressionEngine\Model\Gateway\TemplateGateway',
 		'TemplateGroupGateway' => '\EllisLab\ExpressionEngine\Model\Gateway\TemplateGroupGateway',
 		'Channel' => '\EllisLab\ExpressionEngine\Module\Channel\Model\Channel',
+		'ChannelFieldGroup'=> '\EllisLab\ExpressionEngine\Module\Channel\Model\ChannelFieldGroup',
+		'ChannelFieldGroupGateway' => '\EllisLab\ExpressionEngine\Module\Channel\Model\Gateway\ChannelFieldGroupGateway',
+		'ChannelFieldStructure' => '\EllisLab\ExpressionEngine\Module\Channel\Model\ChannelFieldStructure',
+		'ChannelFieldGateway' => '\EllisLab\ExpressionEngine\Module\Channel\Model\Gateway\ChannelFieldGateway',
 		'ChannelEntry' => '\EllisLab\ExpressionEngine\Module\Channel\Model\ChannelEntry',
 		'ChannelGateway' => '\EllisLab\ExpressionEngine\Module\Channel\Model\Gateway\ChannelGateway',
 		'ChannelTitleGateway' => '\EllisLab\ExpressionEngine\Module\Channel\Model\Gateway\ChannelTitleGateway',
@@ -25,7 +29,13 @@ class ModelBuilder {
 		'CategoryFieldDataGateway' => '\EllisLab\ExpressionEngine\Model\Gateway\CategoryFieldDataGateway',
 		'CategoryGateway' => '\EllisLab\ExpressionEngine\Model\Gateway\CategoryGateway',
 		'CategoryGroup' => '\EllisLab\ExpressionEngine\Model\Category\CategoryGroup',
-		'CategoryGroupGateway'=> '\EllisLab\ExpressionEngine\Model\Gateway\CategoryGroupGateway'
+		'CategoryGroupGateway'=> '\EllisLab\ExpressionEngine\Model\Gateway\CategoryGroupGateway',
+		'Status' => '\EllisLab\ExpressionEngine\Model\Status',
+		'StatusGateway' => '\EllisLab\ExpressionEngine\Model\Gateway\StatusGateway',
+		'StatusGroup' => '\EllisLab\ExpressionEngine\Model\StatusGroup',
+		'StatusGroupGateway' => '\EllisLab\ExpressionEngine\Model\Gateway\StatusGroupGateway',
+		'Site' => '\EllisLab\ExpressionEngine\Model\Site',
+		'SiteGateway' => '\EllisLab\ExpressionEngine\Model\Gateway\SiteGateway'
 	);
 
 	public function __construct(Dependencies $di)
@@ -52,7 +62,7 @@ class ModelBuilder {
 		return $query;
 	}
 
-	public function make($model, array $data = array())
+	public function make($model, array $data = array(), $dirty = TRUE)
 	{
 		$class = $this->getRegisteredClass($model);
 
@@ -61,7 +71,7 @@ class ModelBuilder {
 			throw new \InvalidArgumentException('Can only create Models.');
 		}
 
-		return new $class($this->di, $data);
+		return new $class($this->di, $data, $dirty);
 	}
 
 	/**
@@ -73,11 +83,11 @@ class ModelBuilder {
 	 */
 	public function makeGateway($gateway, $data = array())
 	{
-		$class = $this->getRegisteredClass($model);
+		$class = $this->getRegisteredClass($gateway);
 
 		if ( ! is_a($class, '\EllisLab\ExpressionEngine\Model\Gateway\RowDataGateway', TRUE))
 		{
-			throw new \InvalidArgumentException('Can only create Models.');
+			throw new \InvalidArgumentException('Can only create Gateways.');
 		}
 
 		return new $class($this->di, $data);

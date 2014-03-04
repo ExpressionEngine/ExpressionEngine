@@ -32,7 +32,7 @@ class Homepage extends CP_Controller {
 	 */
 	function index()
 	{
-		require APPPATH . '../EllisLab/ExpressionEngine/Core/Autoloader.php';
+/*		require APPPATH . '../EllisLab/ExpressionEngine/Core/Autoloader.php';
 		$loader = new Autoloader();
 		$loader->register();
 
@@ -156,14 +156,7 @@ class Homepage extends CP_Controller {
 			var_dump($template->getTemplateGroup()->group_name.' --- '.$template->template_name);
 		}
 
-
-/* */
-
-
-
-
-/* */
-		exit;
+		exit; */
 
 		$this->cp->get_installed_modules();
 		$this->view->cp_page_title = lang('main_menu');
