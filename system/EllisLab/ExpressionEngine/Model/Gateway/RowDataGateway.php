@@ -226,6 +226,28 @@ abstract class RowDataGateway {
 	}
 
 	/**
+	 *  Like save, but always insert so that we can restore from
+	 *  a database backup.
+	 */
+	public function restore()
+	{
+		// Nothing to save!
+		if (empty($this->dirty))
+		{
+			return;
+		}
+
+		$save_array = array();
+		foreach ($this->dirty as $property => $dirty)
+		{
+			$save_array[$property] = $this->{$property};
+		}
+
+		$id_name = static::getMetaData('primary_key');
+		ee()->db->insert(static::getMetaData('table_name'), $save_array);
+	}
+	
+	/**
 	 *
 	 */
 	public function delete()

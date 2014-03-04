@@ -153,7 +153,7 @@ abstract class Model {
 
 		// If the key is not set, and is not an optional key such as validation_rules,
 		// throw an exception.
-		if ( ! isset (static::$_meta[$key]) && ! in_array($key, array('validation_rules')))
+		if ( ! isset (static::$_meta[$key]) && ! in_array($key, array('validation_rules', 'cascade')))
 		{
 			throw new \DomainException('Missing meta data, "' . $key . '", in ' . get_called_class());
 		}
@@ -218,11 +218,12 @@ abstract class Model {
 			$errors->addErrors($gateway->validate());
 		}
 		
-		$cascade_errors = $this->cascade($cascade, 'validate');
-		foreach($cascade_errors as $cascade_error)
-		{
-			$errors->addErrors($cascade_error);
-		}
+		$this->cascade($cascade, 'validate', 
+			function($relationship_name, $cascade_errors) use ($errors)
+			{
+				$errors->addErrors($cascade_errors);
+			}
+		);
 
 		return $errors;
 	}
@@ -259,6 +260,28 @@ abstract class Model {
 	}
 
 	/**
+	 *  Save but always insert so that we can restore from a database backup.
+	 */
+	public function restore()
+	{
+		$this->map();
+		$cascade = func_get_args();
+
+		$errors = call_user_func_array(array($this, 'validate'), $cascade);
+		if ($errors->exist())
+		{
+			throw new \Exception('Model failed to validate on restore call!');
+		}
+
+		foreach($this->_gateways as $gateway)
+		{
+			$gateway->restore();
+		}
+
+		$this->cascade($cascade, 'restore');
+	}
+
+	/**
 	 * Delete this model.
 	 *
 	 * @return	void
@@ -275,6 +298,113 @@ abstract class Model {
 		}
 		
 		$this->cascade($cascade, 'delete');
+	}
+
+	public function toXml()
+	{
+		$cascade = func_get_args();
+
+		$model_xml = '<model name="' . get_class($this) . '">' . "\n";
+
+		foreach(get_object_vars($this) as $property => $value)
+		{
+			// Ignore meta properties.
+			if (strpos($property, '_') === 0)
+			{
+				continue;
+			}
+
+			$model_xml .= '<property name="' . $property . '">' . $value . '</property>' . "\n";
+		}
+
+		if ( empty ($cascade))
+		{
+			$cascade = self::getMetaData('cascade');
+		}
+		if ( ! empty($cascade))
+		{
+			foreach($cascade as $relationship_name)
+			{
+				if (is_array($relationship_name))
+				{
+					foreach ($relationship_name as $from_relationship => $to_relationship)
+					{
+						$method = 'get' . $from_relationship;
+						$models = $this->$method();
+				
+						if (count ($models) > 0)
+						{
+							$model_xml .= '<related_models relationship="' . $from_relationship . '">' . "\n";	
+							foreach ($models as $model)
+							{
+								if (is_array($to_relationship))
+								{
+									$model_xml .= $model->toXml($to_relationship);
+								}
+								else
+								{
+									$relationship_method = 'get' . $to_relationship;
+									$to_models = $model->$relationship_method();
+
+									if (count($to_models) > 0)
+									{
+										$model_xml .= '<related_models relationship="' . $to_relationship . '"> ' . "\n";
+										foreach ($to_models as $to_model)
+										{
+											$to_model->toXml();
+										}
+										$model_xml .= '</related_models>' . "\n";
+									}
+								}
+							}
+							$model_xml .= '</related_models>' . "\n";
+						}
+					}
+				}
+				else
+				{
+					$relationship_method = 'get' . $relationship_name;
+					$models = $this->$relationship_method();
+
+					if (count($models) > 0)
+					{
+						$model_xml .= '<related_models relationship="' . $relationship_name . '">' . "\n";
+						foreach ($models as $model)
+						{
+							$model_xml .= $model->toXml();
+						}
+						$model_xml .= '</related_models>' . "\n";
+					}
+				}
+			}
+		}
+		$model_xml .= '</model>' . "\n";
+		return $model_xml;
+	}
+
+	public function fromXml($model_xml)
+	{
+		foreach($model_xml->property as $property)
+		{
+			$name = (string) $property['name'];
+			$this->{$name} = (string) $property;
+			$this->setDirty($name);
+		}
+
+		foreach($model_xml->related_models as $related_models_xml)
+		{
+			$models = new Collection();
+			foreach($related_models_xml as $related_model_xml)
+			{
+				$model_class = (string) $related_model_xml['name'];
+				$model = new $model_class($this->_dependencies);
+				$model->fromXml($related_model_xml);
+				$models[] = $model;
+			}
+			$this->setRelated((string) $related_models_xml['relationship'], $models);
+		}
+
+		$this->restore();
 	}
 
 	protected function map()
@@ -315,42 +445,46 @@ abstract class Model {
 	 *		array('Member' => array('MemberGroup'=>'Members')),
 	 * 		array('Category' => 'CategoryGroup')
 	 */
-	protected function cascade($cascade, $method)
+	protected function cascade($cascade, $method, $callback = NULL)
 	{
-		$result = array();
-		foreach($cascade as $model_name)
+		foreach($cascade as $relationship_name)
 		{
-			if (is_array($model_name))
+			if (is_array($relationship_name))
 			{
-				$result = array_merge($result, $this->cascadeRecursive($model_name, $method));
+				$this->cascadeRecursive($relationship_name, $method, $callback);
 			}
 			else
 			{
-				$relationship_method = 'get' . $model_name;
+				$relationship_method = 'get' . $relationship_name;
 				$models = $this->$relationship_method();
 
 				foreach ($models as $model)
 				{
-					$result[] = $model->$method();
+					if ($callback !== NULL)
+					{
+						$callback($relationship_name, $model->$method());
+					}
+					else
+					{
+						$model->$method();
+					}
 				}
 			}
 		}
-		return $result;
 	}
 
-	protected function cascadeRecursive($cascade, $method)
+	protected function cascadeRecursive($cascade, $method, $callback = NULL)
 	{
-		$result = array();
-		foreach ($relationships as $from_relationship => $to_relationship)
+		foreach ($cascade as $from_relationship => $to_relationship)
 		{
-			$method = 'get' . $from_model_name;
+			$method = 'get' . $from_relationship;
 			$models = $this->$method();
 
 			foreach ($models as $model)
 			{
 				if (is_array($to_relationship))
 				{
-					$result = array_merge($result, $model->cascadeRecursive($to_relationship, $method));
+					$model->cascadeRecursive($to_relationship, $method, $callback);
 				}
 				else
 				{
@@ -359,12 +493,18 @@ abstract class Model {
 
 					foreach ($to_models as $to_model)
 					{
-						$result[] = $to_model->$method();
+						if ($callback !== NULL)
+						{
+							$callback($to_relationship, $to_model->$method());
+						}
+						else
+						{
+							$to_model->$method();
+						}
 					}
 				}
 			}
 		}
-		return $result;
 	}
 
 	/**
@@ -547,10 +687,10 @@ abstract class Model {
 			{ 
 				case ModelRelationshipMeta::TYPE_MANY_TO_MANY:
 				case ModelRelationshipMeta::TYPE_ONE_TO_MANY:
-					return $this->_related_models[$to_model_name];
+					return $this->_related_models[$relationship_key];
 				case ModelRelationshipMeta::TYPE_MANY_TO_ONE:
 				case ModelRelationshipMeta::TYPE_ONE_TO_ONE:
-					return $this->_related_models[$to_model_name][0];
+					return $this->_related_models[$relationship_key][0];
 				default:
 					throw new \Exception('Unknown type!');
 			}

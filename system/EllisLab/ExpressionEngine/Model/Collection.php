@@ -17,6 +17,33 @@ class Collection implements \ArrayAccess, \Countable, \IteratorAggregate {
 	}
 
 	/**
+	 * Allow the calling of model methods by the collection.
+	 * First argument is assumed to be a callback to handle
+	 * the return of the methods.
+	 */
+	public function __call($method, $arguments)
+	{
+		if ( empty ($this->elements))
+		{
+			return;
+		}
+		if ( ! method_exists($method, $this->elements[0]))
+		{
+			throw new \Exception('Attempt to call method on collection that does not exist on models.');
+		}
+
+		$callback = array_shift($arguments);
+		foreach($this->elements as $model)
+		{
+			$return = call_user_func_array(array($model, $method), $arguments);
+			if ($callback !== NULL)
+			{
+				$callback($return);
+			}
+		}
+	}
+
+	/**
 	 * Retrieve a list of all ids in this collection
 	 *
 	 * @return Array Ids
@@ -37,32 +64,6 @@ class Collection implements \ArrayAccess, \Countable, \IteratorAggregate {
 	public function first()
 	{
 		return $this->elements[0];
-	}
-
-	/**
-	 * Save all elements in the collection
-	 *
-	 * @return void
-	 */
-	public function save()
-	{
-		foreach ($this->elements as $model)
-		{
-			$model->save();
-		}
-	}
-
-	/**
-	 * Delete all elements in the collection
-	 *
-	 * @return void
-	 */
-	public function delete()
-	{
-		foreach ($this->elements as $model)
-		{
-			$model->delete();
-		}
 	}
 
 	/**

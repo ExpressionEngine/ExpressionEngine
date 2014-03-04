@@ -127,6 +127,10 @@ class EE_Menu {
 				'----',
 				'global_channel_preferences'	=> cp_url('admin_content/global_channel_preferences')
 			),
+			'skeleton' => array(
+				'import'						=> BASE.AMP.'C=skeleton'.AMP.'M=import',
+				'export'						=> BASE.AMP.'C=skeleton'.AMP.'M=export'
+			),
 			'----',
 			'general_configuration'			=> cp_url('admin_system/general_configuration'),
 			'localization_settings'			=> cp_url('admin_system/localization_settings'),

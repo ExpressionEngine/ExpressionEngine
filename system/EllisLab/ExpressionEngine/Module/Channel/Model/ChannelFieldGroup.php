@@ -18,4 +18,10 @@ class ChannelFieldGroup extends Model {
 	protected $site_id;
 	protected $group_name;
 
+	public function getChannelFieldStructures()
+	{
+		return $this->oneToMany(
+			'ChannelFieldStructures', 'ChannelFieldStructure', 'group_id', 'group_id');
+	}
+
 }
