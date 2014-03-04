@@ -2826,7 +2826,7 @@ PAPAYA;
 
 		foreach ($config as $key => $val)
 		{
-			$extra_config .= "\$config['{$key}'] = '{$val}';\n";
+			$extra_config .= '\$config["{$key}"] = "{$val}";\n';
 		}
 
 		$data = str_replace('{extra_config}', $extra_config, $data);
