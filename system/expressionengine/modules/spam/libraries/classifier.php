@@ -24,6 +24,8 @@
  */
 
 include('vectorize.php');
+include('expectation.php');
+include('distribution.php');
 
 class Classifier {
 
@@ -38,24 +40,20 @@ class Classifier {
 	/**
 	 * Train the classifier on the provided training corpus
 	 * 
-	 * @param array $training  A multidimensional array of the training data,
-	 * 						   format is as follows:
-	 * 						       class0 => feature_vector0,
-	 * 						       			 feautre_vector1,
-	 * 						       			 ...
-	 * 						       class1 => feature_vector0,
-	 * 						       			 ...
 	 * @access public
 	 * @return void
 	 */
-	public function __construct($training, $sensitivity = 0.9, $ratio = 0.5)
+	public function __construct($training, $classes, $sensitivity = 0.9, $ratio = 0.5)
 	{
-		$this->training = $training;
 		$this->sensitivity = $sensitivity;
-		$this->ration = $ratio;
-		foreach($training as $class => $vectors)
+		$this->ratio = $ratio;
+		$this->classes = array_unique($classes);
+		$this->corpus = $training;
+		$training = $training->tfidf();
+
+		foreach ($training as $key => $vector)
 		{
-			$this->classes[] = $class;
+			$this->training[$classes[$key]][] = $vector;
 		}
 	}
 
@@ -70,30 +68,34 @@ class Classifier {
 	 */
 	public function classify($source, $class)
 	{
-		$other = array_diff(array($class), $this->classes);
-		$other = $other[0];
-		$class = $this->array_sum($class);
-		$other = $this->array_sum($other);
+		$source = $this->corpus->vectorize($source); 
+		$other = array_diff($this->classes, array($class));
+		$other = array_shift($other);
+		$class = $this->array_zip($class);
+		$other = $this->array_zip($other);
 		$count = count($class);
 		$probabilities = array();
-		$negations = array();
+
 		// We want to calculate Pr(Spam|F) ∀ F ∈ Features
 		// We assume statistical independence for all features and multiply together
-		// to calulcate the probability the source is spam
-		foreach($source as $word => $frequency)
+		// to calculcate the probability the source is spam
+		foreach($source as $feature => $freq)
 		{
+			$class_dist = $this->distribution($class[$feature]);
+			$other_dist = $this->distribution($other[$feature]);
 
-			$class_dist = new Distribution($class[$i]);
-			$other_dist = new Distribution($other[$i]);
-			$spamicity = ($this->ratio * $class_dist->probability($source[$i]));
-			$spamicity = $spamicity /
-						 ($spamicity + (1 - $this->ratio) * $other_dist->probability($source[$i]));
-			$probabilities[] = $spamicity;
-			$negations[] =  1 - $spamicity;
+			// Most calculate the product in the log domain to avoid underflow
+			// so our product becomes a sum of logs
+			$class_prob = log($class_dist->probability($freq));
+			$other_prob = log($other_dist->probability($freq));
+			$ratio = $class_prob - $other_prob;
+			$probabilities[] = $ratio;
 		}
-		$product = array_product($probabilities);
-		$negations_product = array_product($negations);
-		return $product / ($product + $negations_product) > $this->sensitivity;
+		
+		$log_sum = array_sum($probabilities);
+
+		return log($this->sensitivity) + $log_sum > 0;
+
 	}
 
 	/**
@@ -103,15 +105,20 @@ class Classifier {
 	 * @access private
 	 * @return array
 	 */
-	private function array_sum($class)
+	private function array_zip($class)
 	{
-		$count = count($this->training[$class]);
-		$sum = $this->training[$class][0];
-		for($i = 1; $i < $count; $i++)
+		$count = count($this->training[$class][0]);
+		$zipped = array();
+
+		foreach ($this->training[$class] as $row)
 		{
-			$sum = array_map(NULL, $sum, $this->training[$class][$i]);
+			for ($i = 0; $i < $count; $i++)
+			{
+				$zipped[$i][] = $row[$i];
+			}
 		}
-		return $sum;
+
+		return $zipped;
 	}
 
 	/**
