@@ -11,13 +11,13 @@
 |
 */
 
-$config["app_version"] = "{app_version}";
-$config["license_number"] = "{license_number}";
-$config["debug"] = "{debug}";
-$config["cp_url"] = "{cp_url}";
-$config["doc_url"] = "{doc_url}";
-$config["is_system_on"] = "{is_system_on}";
-$config["allow_extensions"] = "{allow_extensions}";
+$config['app_version'] = '{app_version}';
+$config['license_number'] = '{license_number}';
+$config['debug'] = '{debug}';
+$config['cp_url'] = '{cp_url}';
+$config['doc_url'] = '{doc_url}';
+$config['is_system_on'] = '{is_system_on}';
+$config['allow_extensions'] = '{allow_extensions}';
 {extra_config}
 
 /*
@@ -36,7 +36,7 @@ $config["allow_extensions"] = "{allow_extensions}";
 | 'ORIG_PATH_INFO'	Uses the ORIG_PATH_INFO
 |
 */
-$config["uri_protocol"]	= "{uri_protocol}";
+$config['uri_protocol']	= '{uri_protocol}';
 
 /*
 |--------------------------------------------------------------------------
@@ -47,7 +47,7 @@ $config["uri_protocol"]	= "{uri_protocol}";
 | that require a character set to be provided.
 |
 */
-$config["charset"] = "{charset}";
+$config['charset'] = '{charset}';
 
 
 /*
@@ -62,7 +62,7 @@ $config["charset"] = "{charset}";
 | http://codeigniter.com/user_guide/general/creating_libraries.html
 |
 */
-$config["subclass_prefix"] = "{subclass_prefix}";
+$config['subclass_prefix'] = '{subclass_prefix}';
 
 /*
 |--------------------------------------------------------------------------
@@ -82,7 +82,7 @@ $config["subclass_prefix"] = "{subclass_prefix}";
 | your log files will fill up very fast.
 |
 */
-$config["log_threshold"] = {log_threshold};
+$config['log_threshold'] = {log_threshold};
 
 /*
 |--------------------------------------------------------------------------
@@ -97,7 +97,7 @@ $config["log_threshold"] = {log_threshold};
 | create it automatically.
 |
 */
-$config["log_path"] = "{log_path}";
+$config['log_path'] = '{log_path}';
 
 /*
 |--------------------------------------------------------------------------
@@ -108,7 +108,7 @@ $config["log_path"] = "{log_path}";
 | codes to set your own date formatting
 |
 */
-$config["log_date_format"] = "{log_date_format}";
+$config['log_date_format'] = '{log_date_format}';
 
 /*
 |--------------------------------------------------------------------------
@@ -120,7 +120,7 @@ $config["log_date_format"] = "{log_date_format}";
 | with trailing slash.
 |
 */
-$config["cache_path"] = "{cache_path}";
+$config['cache_path'] = '{cache_path}';
 
 /*
 |--------------------------------------------------------------------------
@@ -131,7 +131,7 @@ $config["cache_path"] = "{cache_path}";
 | enabled you MUST set an encryption key.  See the user guide for info.
 |
 */
-$config["encryption_key"] = "{encryption_key}";
+$config['encryption_key'] = '{encryption_key}';
 
 
 /*
@@ -144,7 +144,7 @@ $config["encryption_key"] = "{encryption_key}";
 | in your view files.  Options are TRUE or FALSE (boolean)
 |
 */
-$config["rewrite_short_tags"] = {rewrite_short_tags};
+$config['rewrite_short_tags'] = {rewrite_short_tags};
 
 
 /* End of file config.php */
