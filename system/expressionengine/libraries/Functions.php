@@ -2394,6 +2394,9 @@ class EE_Functions {
 
 		if (preg_match_all("/".preg_quote(LD)."((if:else)*if)\s+(.*?)".preg_quote(RD)."/s", $str, $matches))
 		{
+			// Prevent execution of shell scripts via backticks ``
+			$matches[3] = preg_replace('/(`.*?`)/', 'FALSE', $matches[3]);
+
 			// PROTECT QUOTED TEXT
 			// That which is in quotes should be protected and ignored as it will screw
 			// up the parsing if the variable is found within a string
