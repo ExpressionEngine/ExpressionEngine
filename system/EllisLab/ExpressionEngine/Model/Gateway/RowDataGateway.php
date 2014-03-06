@@ -1,4 +1,4 @@
-<?PHP
+<?php
 namespace EllisLab\ExpressionEngine\Model\Gateway;
 
 use EllisLab\ExpressionEngine\Core\Dependencies;
@@ -31,7 +31,12 @@ abstract class RowDataGateway {
 	/**
 	 * Dependency injection container.
 	 */
-	private $di = NULL;
+	protected $di = NULL;
+
+	/**
+	 * Database connection
+	 */
+	protected $db = NULL;
 
 	/**
 	 * Meta data array, overridden by subclasses.
@@ -64,6 +69,12 @@ abstract class RowDataGateway {
 			{
 				$this->{$property} = $value;
 			}
+		}
+
+		// Temporary to make unit testing easier
+		if (function_exists('ee'))
+		{
+			$this->db = ee()->db;
 		}
 	}
 
@@ -115,7 +126,7 @@ abstract class RowDataGateway {
 			return static::$meta;
 		}
 
-		if( ! isset (static::$meta[$key]))
+		if ( ! isset (static::$meta[$key]))
 		{
 			return NULL;
 		}
@@ -216,12 +227,12 @@ abstract class RowDataGateway {
 		$id_name = static::getMetaData('primary_key');
 		if (isset($this->{$id_name}))
 		{
-			ee()->db->where($id_name, $this->{$id_name});
-			ee()->db->update(static::getMetaData('table_name'), $save_array);
+			$this->db->where($id_name, $this->{$id_name});
+			$this->db->update(static::getMetaData('table_name'), $save_array);
 		}
 		else
 		{
-			ee()->db->insert(static::getMetaData('table_name'), $save_array);
+			$this->db->insert(static::getMetaData('table_name'), $save_array);
 		}
 	}
 
@@ -244,9 +255,9 @@ abstract class RowDataGateway {
 		}
 
 		$id_name = static::getMetaData('primary_key');
-		ee()->db->insert(static::getMetaData('table_name'), $save_array);
+		$this->db->insert(static::getMetaData('table_name'), $save_array);
 	}
-	
+
 	/**
 	 *
 	 */
@@ -258,7 +269,7 @@ abstract class RowDataGateway {
 			throw new ModelException('Attempt to delete an Gateway with out an attached ID!');
 		}
 
-		ee()->db->delete(
+		$this->db->delete(
 			static::getMetaData('table_name'),
 			array($primary_key => $this->{$primary_key})
 		);
