@@ -241,7 +241,7 @@ class Template_model extends CI_Model {
 		{
 			foreach($templates as $template)
 			{
-				$this->_load_template_file($template);
+				$this->_load_template_file($template, TRUE);
 			}
 		}
 		return $templates;
