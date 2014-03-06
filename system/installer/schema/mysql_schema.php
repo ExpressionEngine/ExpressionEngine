@@ -957,7 +957,6 @@ class EE_Schema {
 			site_id INT(4) UNSIGNED NOT NULL DEFAULT 1,
 			group_id int(6) unsigned NOT NULL,
 			template_name varchar(50) NOT NULL,
-			save_template_file char(1) NOT NULL default 'n',
 			template_type varchar(16) NOT NULL default 'webpage',
 			template_data mediumtext NULL,
 			template_notes text NULL,
