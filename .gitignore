@@ -84,4 +84,5 @@ themes/site_themes/agile_records/images/uploads/_thumb/*
 !themes/site_themes/agile_records/images/uploads/_thumb/map*.jpg
 !themes/site_themes/agile_records/images/uploads/_thumb/staff*.png
 
-system/EllisLab/Tests/vendor/
+system/EllisLab/Tests/vendor/*
+composer.lock
