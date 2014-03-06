@@ -75,7 +75,7 @@ class CI_DB_postgre_forge extends CI_DB_forge {
 			}
 		}
 
-		$sql .= $this->db->_escape_identifiers($table)." (";
+		$sql .= $this->db->escape_identifiers($table)." (";
 		$current_field_count = 0;
 
 		foreach ($fields as $field=>$attributes)
@@ -218,7 +218,7 @@ class CI_DB_postgre_forge extends CI_DB_forge {
 	 */
 	function _drop_table($table)
 	{
-		return "DROP TABLE IF EXISTS ".$this->db->_escape_identifiers($table)." CASCADE";
+		return "DROP TABLE IF EXISTS ".$this->db->escape_identifiers($table)." CASCADE";
 	}
 
 	// --------------------------------------------------------------------
