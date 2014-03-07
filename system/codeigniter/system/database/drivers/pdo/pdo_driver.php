@@ -498,6 +498,23 @@ class CI_DB_pdo_driver extends CI_DB {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Delete statement
+	 *
+	 * Generates a platform-specific delete string from the supplied data
+	 *
+	 * @param	string	the table name
+	 * @return	string
+	 */
+	protected function _delete($table)
+	{
+		return 'DELETE FROM '.$table.$this->_compile_wh('ar_where')
+			.($this->ar_limit ? ' LIMIT '.$this->ar_limit : '');
+	}
+
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Compile WHERE, HAVING statements
 	 *
 	 * Escapes identifiers in WHERE and HAVING statements at execution time.
