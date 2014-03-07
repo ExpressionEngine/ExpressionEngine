@@ -60,29 +60,37 @@ class Updater {
 	{
 		ee()->smartforge->drop_column('templates', 'save_template_file');
 
+		$installer_config = ee()->config;
+
+		require_once(APPPATH . 'libraries/Extensions.php');
+		ee()->extensions = new Installer_Extensions();
 		ee()->load->model('template_model');
 
-		$config_override = (ee()->config->item('save_tmpl_files') == 'y' AND ee()->config->item('tmpl_file_basepath') != '');
-
-        $sites = ee()->db->select('site_id, site_template_preferences')
+        $sites = ee()->db->select('site_id')
             ->get('sites')
             ->result_array();
 
+		// Loop through the sites and save to file any templates that are only
+		// in the database
 		foreach ($sites as $site)
 		{
-			$prefs = unserialize(base64_decode($site['site_template_preferences']));
+			ee()->config = new MSM_Config();
+			ee()->config->site_prefs('', $site['site_id']);
 
-			if ($config_override OR ($prefs['save_tmpl_files'] == 'y' AND $prefs['tmpl_file_basepath'] != ''))
-			{
-				$templates = ee()->template_model->fetch_last_edit(array('site_id' => $site['site_id']));
+			if (ee()->config->item('save_tmpl_files') == 'y' AND ee()->config->item('tmpl_file_basepath') != '') {
+				$templates = ee()->template_model->fetch_last_edit(array('templates.site_id' => $site['site_id']), TRUE);
 
 				foreach($templates as $template)
 				{
-					ee()->template_model->save_entity($template);
+					if ( ! $template->loaded_from_file)
+					{
+						ee()->template_model->save_to_file($template);
+					}
 				}
-
 			}
+
 		}
+		ee()->config = $installer_config;
 	}
 
 }
