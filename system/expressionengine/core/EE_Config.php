@@ -1004,7 +1004,7 @@ class EE_Config Extends CI_Config {
 			$new_data = '';
 			foreach ($to_be_added as $key => $val)
 			{
-				$new_data .= "\$config['".$key."'] = ".$val.";".$newline;
+				$new_data .= "\$config['".$key."'] = '".$val."';".$newline;
 			}
 
 			// First we look for our comment marker in the config file. If found, we'll swap
