@@ -31,10 +31,13 @@ class GatewayDBTest extends ActiveRecordTestCase {
 		$this->gateway->shouldDeferMissing();
 
 		$this->gateway->name = 'Visible Ninjas';
+		$this->gateway->founded = 2014;
 		$this->gateway->setDirty('name');
+		$this->gateway->setDirty('founded');
 		$this->gateway->save();
 
 		$this->assertEquals(3, $this->connection->getRowCount('teams'), "Inserting failed");
+		$this->assertDataSetsEqual($this->getPostInsertDataSet(), $this->connection->createDataSet());
 	}
 
 	public function testUpdateExisting()
@@ -49,6 +52,7 @@ class GatewayDBTest extends ActiveRecordTestCase {
 		$this->gateway->save();
 
 		$this->assertEquals(2, $this->connection->getRowCount('teams'), "Updating failed");
+		$this->assertDataSetsEqual($this->getPostUpdateDataSet(), $this->connection->createDataSet());
 	}
 
 	public function testDelete()
@@ -61,21 +65,20 @@ class GatewayDBTest extends ActiveRecordTestCase {
 		$this->gateway->delete();
 
 		$this->assertEquals(1, $this->connection->getRowCount('teams'), "Deleting failed");
+		$this->assertDataSetsEqual($this->getPostDeleteDataSet(), $this->connection->createDataSet());
 	}
 
 	// END TESTS
 
 	public function getTableDefinitions()
 	{
-		$query = "
+		return "
 			CREATE TABLE teams (
-				team_id INT(17) PRIMARY KEY,
+				team_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
 				name VARCHAR(100) NOT NULL DEFAULT '',
 				founded INT(10) NOT NULL DEFAULT 0
 			);
 		";
-
-		return $query;
 	}
 
 	public function getDataSet()
@@ -87,6 +90,37 @@ class GatewayDBTest extends ActiveRecordTestCase {
 			)
 		));
 	}
+
+	public function getPostDeleteDataSet()
+	{
+		return $this->createArrayDataSet(array(
+			'teams' => array(
+				array('team_id' => 1, 'name' => 'Nearsighted Astronomers', 'founded' => 1608)
+			)
+		));
+	}
+
+	public function getPostUpdateDataSet()
+	{
+		return $this->createArrayDataSet(array(
+			'teams' => array(
+				array('team_id' => 1, 'name' => 'Nearsighted Astronomers', 'founded' => 1608),
+				array('team_id' => 2, 'name' => 'Visible Ninjas', 'founded' => 1450),
+			)
+		));
+	}
+
+	public function getPostInsertDataSet()
+	{
+		return $this->createArrayDataSet(array(
+			'teams' => array(
+				array('team_id' => 1, 'name' => 'Nearsighted Astronomers', 'founded' => 1608),
+				array('team_id' => 2, 'name' => 'Farsighted Typesetters', 'founded' => 1450),
+				array('team_id' => 3, 'name' => 'Visible Ninjas', 'founded' => 2014),
+			)
+		));
+	}
+
 	public function setGatewayProperty($name, $value)
 	{
 		$reflected = new \ReflectionObject($this->gateway);
