@@ -4,30 +4,9 @@ namespace EllisLab\Tests\ExpressionEngine\Model\Integration;
 
 use Mockery as m;
 use ReflectionObject;
-use EllisLab\Tests\PHPUnit\Extensions\Database\DataSet\ArrayDataSet;
+use EllisLab\Tests\PHPUnit\Extensions\Database\TestCase\ActiveRecordTestCase;
 
-
-class GatewayDBTest extends \PHPUnit_Extensions_Database_TestCase {
-
-	protected $pdo;
-
-	public function __construct($name = NULL, array $data = array(), $dataName = '')
-	{
-		parent::__construct($name, $data, $dataName);
-
-		$this->database = $this->getCIDBConnection();
-		$this->pdo = $this->database->conn_id;
-
-		$query = "
-			CREATE TABLE teams (
-				team_id INT(17) PRIMARY KEY,
-				name VARCHAR(100) NOT NULL DEFAULT '',
-				founded INT(10) NOT NULL DEFAULT 0
-			);
-		";
-
-		$this->pdo->query($query);
-	}
+class GatewayDBTest extends ActiveRecordTestCase {
 
 	public function setUp()
 	{
@@ -36,7 +15,7 @@ class GatewayDBTest extends \PHPUnit_Extensions_Database_TestCase {
 		$this->di = m::mock('EllisLab\ExpressionEngine\Core\Dependencies');
 		$this->gateway = m::mock('EllisLab\ExpressionEngine\Model\Gateway\RowDataGateway', array($this->di, array()));
 
-		$this->setGatewayProperty('db', $this->database);
+		$this->setGatewayProperty('db', $this->getActiveRecord());
 		$this->setGatewayProperty('meta', array(
 			'table_name' => 'teams',
 			'primary_key' => 'team_id'
@@ -67,7 +46,19 @@ class GatewayDBTest extends \PHPUnit_Extensions_Database_TestCase {
 		$this->gateway->setDirty('name');
 		$this->gateway->save();
 
-		$this->assertEquals(2, $this->getConnection()->getRowCount('teams'), "Inserting failed");
+		$this->assertEquals(2, $this->getConnection()->getRowCount('teams'), "Updating failed");
+	}
+
+	public function testDelete()
+	{
+		$this->assertEquals(2, $this->getConnection()->getRowCount('teams'), "Pre-Condition");
+
+		$this->gateway->shouldDeferMissing();
+
+		$this->gateway->team_id = 2;
+		$this->gateway->delete();
+
+		$this->assertEquals(1, $this->getConnection()->getRowCount('teams'), "Deleting failed");
 	}
 
 	public function setGatewayProperty($name, $value)
@@ -85,35 +76,22 @@ class GatewayDBTest extends \PHPUnit_Extensions_Database_TestCase {
 		$this->gateway = NULL;
 	}
 
-	public function getCIDBConnection()
+	public function getTableDefinitions()
 	{
-		require_once BASEPATH.'database/DB_Driver.php';
-		require_once BASEPATH.'database/DB_active_rec.php';
+		$query = "
+			CREATE TABLE teams (
+				team_id INT(17) PRIMARY KEY,
+				name VARCHAR(100) NOT NULL DEFAULT '',
+				founded INT(10) NOT NULL DEFAULT 0
+			);
+		";
 
-		if ( ! class_exists('CI_DB'))
-		{
-			class_alias('CI_DB_active_record', 'CI_DB');
-		}
-
-		require_once BASEPATH.'database/drivers/pdo/pdo_driver.php';
-		require_once BASEPATH.'database/drivers/pdo/subdrivers/pdo_sqlite_driver.php';
-
-		$db = new \CI_DB_pdo_sqlite_driver(array(
-			'dsn' => 'sqlite::memory:'
-		));
-
-		$db->initialize();
-		return $db;
-	}
-
-	public function getConnection()
-	{
-		return $this->createDefaultDBConnection($this->pdo, 'sqlite');
+		return $query;
 	}
 
 	public function getDataSet()
 	{
-		return new ArrayDataSet(array(
+		return $this->createArrayDataSet(array(
 			'teams' => array(
 				array('team_id' => 1, 'name' => 'Nearsighted Astronomers', 'founded' => 1608),
 				array('team_id' => 2, 'name' => 'Farsighted Typesetters', 'founded' => 1450),
