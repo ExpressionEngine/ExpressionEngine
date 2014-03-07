@@ -16,12 +16,7 @@ abstract class ActiveRecordTestCase extends \PHPUnit_Extensions_Database_TestCas
 		$this->active_record = $this->getCIDBConnection();
 		$this->pdo = $this->active_record->conn_id;
 
-		$query = $this->getTableDefinitions();
-
-		if ( ! is_array($query))
-		{
-			$query = array($query);
-		}
+		$query = (array) $this->getTableDefinitions();
 
 		array_map(array($this->pdo, 'query'), $query);
 	}
@@ -34,16 +29,22 @@ abstract class ActiveRecordTestCase extends \PHPUnit_Extensions_Database_TestCas
 		return array();
 	}
 
+	/**
+	 * Helper to avoid typing that long ArrayDataSet namespace all the time
+	 * and to get parity with DBUnit's create***DataSet functions.
+	 */
 	public function createArrayDataSet(array $data)
 	{
 		return new ArrayDataSet($data);
 	}
 
+	/**
+	 * Get the CI active record object
+	 */
 	public function getActiveRecord()
 	{
 		return $this->active_record;
 	}
-
 
 	/**
 	 * PHPUnit Boilerplate
@@ -52,7 +53,6 @@ abstract class ActiveRecordTestCase extends \PHPUnit_Extensions_Database_TestCas
 	{
 		return $this->createDefaultDBConnection($this->pdo, 'sqlite');
 	}
-
 
 	/**
 	 * Helper function to set up all of the CI db dependencies
