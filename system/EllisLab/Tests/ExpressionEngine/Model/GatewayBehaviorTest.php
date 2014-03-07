@@ -48,12 +48,7 @@ class GatewayBehaviorTest extends \PHPUnit_Framework_TestCase {
 		$database = $this->noopDatabase();
 
 		$database->shouldReceive('update')->never();
-		$database->shouldReceive('insert')
-			->once()
-			->with(
-				identicalTo('dummy'),
-				anArray(array('key' => 'test'))
-			);
+		$database->shouldReceive('insert')->with('dummy', array('key' => 'test'))->once();
 
 		$this->gateway->key = 'test';
 		$this->gateway->setDirty('key');
@@ -65,24 +60,21 @@ class GatewayBehaviorTest extends \PHPUnit_Framework_TestCase {
 		$database = $this->noopDatabase();
 
 		$database->shouldReceive('insert')->never();
-		$database->shouldReceive('where')
-			->once()
-			->with(
-				identicalTo('the_id'),
-				identicalTo(5)
-			);
-		$database->shouldReceive('update')
-			->once()
-			->with(
-				identicalTo('dummy'),
-				anArray(array('key' => 'test'))
-			);
+		$database->shouldReceive('where')->with('the_id', 5)->once();
+		$database->shouldReceive('update')->with('dummy', array('key' => 'test'))->once();
 
 		$this->gateway->the_id = 5;
 		$this->gateway->key = 'test';
 		$this->gateway->setDirty('key');
 		$this->gateway->save();
 	}
+
+	public function testDeleteWithoutIDThrowsException()
+	{
+		$this->markTestIncomplete('Specified Exception has no Implementation.');
+	}
+
+	// END TESTS
 
 	protected function setGatewayProperty($name, $value)
 	{
