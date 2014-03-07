@@ -1,21 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <phpunit backupGlobals="false"
-         backupStaticAttributes="false"
-         colors="true"
-         convertErrorsToExceptions="true"
-         convertNoticesToExceptions="true"
-         convertWarningsToExceptions="true"
-         processIsolation="false"
-         stopOnFailure="false"
-         bootstrap="./bootstrap.php"
+		 backupStaticAttributes="false"
+		 bootstrap="./bootstrap.php"
+		 colors="true"
+		 convertErrorsToExceptions="true"
+		 convertNoticesToExceptions="true"
+		 convertWarningsToExceptions="true"
+		 processIsolation="false"
+		 stopOnFailure="true"
 >
-   <textsuites>
-   	<testsuite name="ExpressionEngine Test Suite">
-   		<directory>ExpressionEngine</directory>
-   	</testsuite>
-   </textsuites>
-   <listeners>
-       <listener class="\Mockery\Adapter\Phpunit\TestListener"></listener>
-   </listeners>
+	<textsuites>
+		<testsuites>
+			<testsuite name="ExpressioEngine Test Suite">
+				<directory suffix=".php">./ExpressionEngine/</directory>
+			</testsuite>
+		</testsuites>
+	</textsuites>
+
+	<listeners>
+		 <listener class="\Mockery\Adapter\Phpunit\TestListener"></listener>
+	</listeners>
 </phpunit>
