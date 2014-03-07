@@ -20,11 +20,13 @@ class GatewayDBTest extends ActiveRecordTestCase {
 			'table_name' => 'teams',
 			'primary_key' => 'team_id'
 		));
+
+		$this->connection = $this->getConnection();
 	}
 
 	public function testSaveNew()
 	{
-		$this->assertEquals(2, $this->getConnection()->getRowCount('teams'), "Pre-Condition");
+		$this->assertEquals(2, $this->connection->getRowCount('teams'), "Pre-Condition");
 
 		$this->gateway->shouldDeferMissing();
 
@@ -32,12 +34,12 @@ class GatewayDBTest extends ActiveRecordTestCase {
 		$this->gateway->setDirty('name');
 		$this->gateway->save();
 
-		$this->assertEquals(3, $this->getConnection()->getRowCount('teams'), "Inserting failed");
+		$this->assertEquals(3, $this->connection->getRowCount('teams'), "Inserting failed");
 	}
 
 	public function testUpdateExisting()
 	{
-		$this->assertEquals(2, $this->getConnection()->getRowCount('teams'), "Pre-Condition");
+		$this->assertEquals(2, $this->connection->getRowCount('teams'), "Pre-Condition");
 
 		$this->gateway->shouldDeferMissing();
 
@@ -46,35 +48,22 @@ class GatewayDBTest extends ActiveRecordTestCase {
 		$this->gateway->setDirty('name');
 		$this->gateway->save();
 
-		$this->assertEquals(2, $this->getConnection()->getRowCount('teams'), "Updating failed");
+		$this->assertEquals(2, $this->connection->getRowCount('teams'), "Updating failed");
 	}
 
 	public function testDelete()
 	{
-		$this->assertEquals(2, $this->getConnection()->getRowCount('teams'), "Pre-Condition");
+		$this->assertEquals(2, $this->connection->getRowCount('teams'), "Pre-Condition");
 
 		$this->gateway->shouldDeferMissing();
 
 		$this->gateway->team_id = 2;
 		$this->gateway->delete();
 
-		$this->assertEquals(1, $this->getConnection()->getRowCount('teams'), "Deleting failed");
+		$this->assertEquals(1, $this->connection->getRowCount('teams'), "Deleting failed");
 	}
 
-	public function setGatewayProperty($name, $value)
-	{
-		$reflected = new \ReflectionObject($this->gateway);
-
-		$prop = $reflected->getProperty($name);
-		$prop->setAccessible(TRUE);
-		$prop->setValue($this->gateway, $value);
-	}
-
-	public function tearDown()
-	{
-		parent::tearDown();
-		$this->gateway = NULL;
-	}
+	// END TESTS
 
 	public function getTableDefinitions()
 	{
@@ -97,5 +86,13 @@ class GatewayDBTest extends ActiveRecordTestCase {
 				array('team_id' => 2, 'name' => 'Farsighted Typesetters', 'founded' => 1450),
 			)
 		));
+	}
+	public function setGatewayProperty($name, $value)
+	{
+		$reflected = new \ReflectionObject($this->gateway);
+
+		$prop = $reflected->getProperty($name);
+		$prop->setAccessible(TRUE);
+		$prop->setValue($this->gateway, $value);
 	}
 }
