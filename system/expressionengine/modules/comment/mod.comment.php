@@ -81,7 +81,7 @@ class Comment {
 	 * the comment module, only pagination may currently be disabled.
 	 *
 	 * NOTE: This code is virtually identical to Channel::_fetch_disable_param()
-     * it should be commonized somehow, but our current program structure
+	 * it should be commonized somehow, but our current program structure
 	 * does not make this easy and putting it in a random cache of common
 	 * functions does not make sense.
 	 *
@@ -1429,7 +1429,7 @@ class Comment {
 			{
 				if ($query->row('comment_expiration')  > 0)
 				{
-				 	$days = $query->row('entry_date')  + ($query->row('comment_expiration')  * 86400);
+					$days = $query->row('entry_date')  + ($query->row('comment_expiration')  * 86400);
 
 					if (ee()->localize->now > $days)
 					{
@@ -1729,10 +1729,10 @@ class Comment {
 
 		ee()->load->library('typography');
 		ee()->typography->initialize(array(
-			'parse_images'		=> FALSE,
-			'allow_headings'	=> FALSE,
-			'encode_email'		=> FALSE,
-			'word_censor'		=> (ee()->config->item('comment_word_censoring') == 'y') ? TRUE : FALSE)
+			'parse_images'   => FALSE,
+			'allow_headings' => FALSE,
+			'encode_email'   => FALSE,
+			'word_censor'    => (ee()->config->item('comment_word_censoring') == 'y') ? TRUE : FALSE)
 		);
 
 		ee()->db->select('channels.comment_text_formatting, channels.comment_html_formatting, channels.comment_allow_img_urls, channels.comment_auto_link_urls, channels.comment_max_chars');
@@ -1784,21 +1784,21 @@ class Comment {
 		//
 		// -------------------------------------------
 
-        /** ----------------------------------------
-        /**  Set defaults based on member data as needed
-        /** ----------------------------------------*/
+		/** ----------------------------------------
+		/**  Set defaults based on member data as needed
+		/** ----------------------------------------*/
 
 		$name		= ee()->input->post('name', TRUE);
 		$email		= ee()->input->post('email', TRUE); // this is just for preview, actual submission will validate the email address
-	 	$url		= ee()->input->post('url', TRUE);
-	 	$location	= ee()->input->post('location', TRUE);
+		$url		= ee()->input->post('url', TRUE);
+		$location	= ee()->input->post('location', TRUE);
 
 		if (ee()->session->userdata('member_id') != 0)
 		{
-			 $name		= ee()->session->userdata('screen_name') ? ee()->session->userdata('screen_name') : ee()->session->userdata('username');
-			 $email		= ee()->session->userdata('email');
-			 $url		= (string) ee()->session->userdata('url');
-			 $location	= (string) ee()->session->userdata('location');
+			$name		= ee()->session->userdata('screen_name') ? ee()->session->userdata('screen_name') : ee()->session->userdata('username');
+			$email		= ee()->session->userdata('email');
+			$url		= (string) ee()->session->userdata('url');
+			$location	= (string) ee()->session->userdata('location');
 		}
 
 		/** ----------------------------------------
@@ -1892,17 +1892,17 @@ class Comment {
 
 			//  {url_as_author}
 
-            elseif ($key == 'url_as_author')
-            {
-                if ($url != '')
-                {
-                    $tagdata = ee()->TMPL->swap_var_single($val, '<a href="'.$url.'">'.$name.'</a>', $tagdata);
-                }
-                else
-                {
-                    $tagdata = ee()->TMPL->swap_var_single($val, $name, $tagdata);
-                }
-            }
+			elseif ($key == 'url_as_author')
+			{
+				if ($url != '')
+				{
+					$tagdata = ee()->TMPL->swap_var_single($val, '<a href="'.$url.'">'.$name.'</a>', $tagdata);
+				}
+				else
+				{
+					$tagdata = ee()->TMPL->swap_var_single($val, $name, $tagdata);
+				}
+			}
 
 			/** ----------------------------------------
 			/**  parse comment field
@@ -2214,7 +2214,7 @@ class Comment {
 		{
 			if ($query->row('comment_expiration') > 0)
 			{
-			 	$days = $query->row('entry_date') + ($query->row('comment_expiration') * 86400);
+				$days = $query->row('entry_date') + ($query->row('comment_expiration') * 86400);
 
 				if (ee()->localize->now > $days)
 				{
@@ -2446,10 +2446,10 @@ class Comment {
 
 		$notify = (ee()->input->post('notify_me')) ? 'y' : 'n';
 
- 		$cmtr_name	= ee()->input->post('name', TRUE);
- 		$cmtr_email	= ee()->input->post('email');
- 		$cmtr_loc	= ee()->input->post('location', TRUE);
- 		$cmtr_url	= ee()->input->post('url', TRUE);
+		$cmtr_name	= ee()->input->post('name', TRUE);
+		$cmtr_email	= ee()->input->post('email');
+		$cmtr_loc	= ee()->input->post('location', TRUE);
+		$cmtr_url	= ee()->input->post('url', TRUE);
 		$cmtr_url	= prep_url($cmtr_url);
 
 		$data = array(
@@ -2996,11 +2996,11 @@ class Comment {
 
 		if ($query->num_rows() != 1)
 		{
- 			return ee()->output->show_user_error('submission', 'invalid_subscription');
+			return ee()->output->show_user_error('submission', 'invalid_subscription');
 		}
 
-  		$row = $query->row();
-  		$entry_title = $row->title;
+		$row = $query->row();
+		$entry_title = $row->title;
 
 		// Are they currently subscribed
 
@@ -3248,7 +3248,7 @@ $.fn.CommentEditor = function(options) {
 
 			$("#comment_"+id).find('.comment_body').html(res.comment);
 			hideEditor(id);
-   		});
+		});
 	}
 };
 
@@ -3338,8 +3338,8 @@ CMT_EDIT_SCR;
 
 			if ($query->num_rows() == 1)
 			{
-   				$row = $query->row();
-  				$entry_id = $row->entry_id;
+				$row = $query->row();
+				$entry_id = $row->entry_id;
 			}
 		}
 
