@@ -2189,12 +2189,39 @@ class EE_Template {
 	 *
 	 * @return	string
 	 */
-	protected function _404()
+	protected function _404($page = '')
 	{
-		$this->log_item("404 Page Returned");
-		ee()->output->set_status_header(404);
-		echo '<html><head><title>404 Page Not Found</title></head><body><h1>Status: 404 Page Not Found</h1></body></html>';
+		show_404($page);
 		exit;
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Show a 404 page whether one is set in the config or not
+	 * @param  string $page Page URL for fallback logging
+	 * @return void
+	 */
+	public function show_404($page = '')
+	{
+		if ($site_404 = ee()->config->item('site_404'))
+		{
+			$this->log_item('Processing "'.$site_404.'" Template as 404 Page');
+
+			$this->template_type = "404";
+			$template = explode('/', $site_404);
+			$this->fetch_and_parse($template[0], $template[1]);
+			$out = ee()->TMPL->parse_globals($this->final_template);
+			ee()->output->out_type = "404";
+			ee()->output->set_output($out);
+			ee()->output->_display();
+		}
+		else
+		{
+			$this->log_item('404 redirect requested, but no 404 page is specified in the Global Template Preferences');
+
+			$this->_404($page);
+		}
 	}
 
 	// --------------------------------------------------------------------
