@@ -2369,7 +2369,7 @@ class EE_Functions {
 		for ($i = 0; $i < $length; $i ++)
 		{
 			// escaped in string is always valid
-			if ($str_open && $escaped)
+			if ($escaped)
 			{
 				$escaped = FALSE;
 				continue;
@@ -2380,7 +2380,11 @@ class EE_Functions {
 			switch ($char)
 			{
 				case '`':
-					return TRUE;
+					if ( ! $str_open )
+					{
+						return TRUE;
+					}
+					break;
 				case '\\':
 					$escaped = TRUE;
 					break;
