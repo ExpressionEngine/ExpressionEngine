@@ -2165,10 +2165,9 @@ class EE_Template {
 
 	/**
 	 * Show a 404 page whether one is set in the config or not
-	 * @param  string $page Page URL for fallback logging
 	 * @return void
 	 */
-	public function show_404($page = '')
+	public function show_404()
 	{
 		if ($site_404 = ee()->config->item('site_404'))
 		{
@@ -2186,7 +2185,7 @@ class EE_Template {
 		{
 			$this->log_item('404 redirect requested, but no 404 page is specified in the Global Template Preferences');
 
-			show_404($page);
+			show_404(ee()->uri->uri_string);
 		}
 	}
 
