@@ -2353,6 +2353,49 @@ class EE_Functions {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Checks a conditional to ensure it isn't trying to do something unsafe:
+	 * e.g looks for unquoted backticks (`)
+	 *
+	 * @access	public
+	 * @param	string	$str	The conditional string for parsig
+	 * @return	boolean	TRUE if the conditional is unsafe, FALSE otherwise
+	 */
+	function conditional_is_unsafe($str)
+	{
+		$length   = strlen($str);
+		$escaped  = FALSE;
+		$str_open = '';
+
+		for ($i = 0; $i < $length; $i ++)
+		{
+			// escaped in string is always valid
+			if ($str_open && $escaped)
+			{
+				$escaped = FALSE;
+				continue;
+			}
+
+			$char = $str[$i];
+
+			switch ($char)
+			{
+				case '`':
+					return TRUE;
+				case '\\':
+					$escaped = TRUE;
+					break;
+				case '"':
+				case "'":
+					$str_open = ($char == $str_open) ? '' : $char;
+					break;
+			}
+		}
+
+		return FALSE;
+	}
+	// --------------------------------------------------------------------
+
+	/**
 	 * Prep conditionals
 	 *
 	 * @access	public
@@ -2394,8 +2437,19 @@ class EE_Functions {
 
 		if (preg_match_all("/".preg_quote(LD)."((if:else)*if)\s+(.*?)".preg_quote(RD)."/s", $str, $matches))
 		{
-			// Prevent execution of shell scripts via backticks ``
-			$matches[3] = preg_replace('/(`.*?`)/', 'FALSE', $matches[3]);
+			foreach ($matches[3] as $match)
+			{
+				if ($this->conditional_is_unsafe($match))
+				{
+					if (ee()->config->item('debug') >= 1)
+					{
+						$error = ee()->lang->line('error_unsafe_conditional');
+						ee()->output->fatal_error($error);
+					}
+
+					exit;
+				}
+			}
 
 			// PROTECT QUOTED TEXT
 			// That which is in quotes should be protected and ignored as it will screw
