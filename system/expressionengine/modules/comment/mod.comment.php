@@ -1978,10 +1978,6 @@ class Comment {
 		ee()->functions->clear_caching('all', $_POST['PRV']);
 		ee()->functions->clear_caching('all', $clean_return);
 
-		require APPPATH.'libraries/Template.php';
-
-		ee()->TMPL = new EE_Template();
-
 		$preview = ( ! ee()->input->post('PRV')) ? '' : ee()->input->get_post('PRV');
 
 		if (strpos($preview, '/') === FALSE)
@@ -2003,6 +1999,7 @@ class Comment {
 
 
 		// this makes sure the query string is seen correctly by tags on the template
+		ee()->load->library('template', NULL, 'TMPL');
 		ee()->TMPL->parse_template_uri();
 		ee()->TMPL->run_template_engine($group, $templ);
 	}
