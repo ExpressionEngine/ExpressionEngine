@@ -4,6 +4,7 @@ namespace EllisLab\Tests\ExpressionEngine\Model\Integration;
 
 use Mockery as m;
 use ReflectionObject;
+
 use EllisLab\Tests\PHPUnit\Extensions\Database\TestCase\ActiveRecordTestCase;
 
 class GatewayDBTest extends ActiveRecordTestCase {
@@ -12,29 +13,41 @@ class GatewayDBTest extends ActiveRecordTestCase {
 	{
 		parent::setUp();
 
-		$this->di = m::mock('EllisLab\ExpressionEngine\Core\Dependencies');
-		$this->gateway = m::mock('EllisLab\ExpressionEngine\Model\Gateway\RowDataGateway', array($this->di, array()));
-
-		$this->setGatewayProperty('db', $this->getActiveRecord());
-		$this->setGatewayProperty('meta', array(
-			'table_name' => 'teams',
-			'primary_key' => 'team_id'
-		));
-
 		$this->connection = $this->getConnection();
+		$this->db = $this->getActiveRecord();
+		$this->di = m::mock('EllisLab\ExpressionEngine\Core\Dependencies');
 	}
 
 	public function testSaveNew()
 	{
 		$this->assertEquals(2, $this->connection->getRowCount('teams'), "Pre-Condition");
 
-		$this->gateway->shouldDeferMissing();
+		$gateway = new TestGateway($this->di);
+		$gateway->setConnection($this->db);
 
-		$this->gateway->name = 'Visible Ninjas';
-		$this->gateway->founded = 2014;
-		$this->gateway->setDirty('name');
-		$this->gateway->setDirty('founded');
-		$this->gateway->save();
+		$gateway->name = 'Visible Ninjas';
+		$gateway->founded = 2014;
+		$gateway->setDirty('name');
+		$gateway->setDirty('founded');
+		$gateway->save();
+
+		$this->assertEquals(3, $this->connection->getRowCount('teams'), "Inserting failed");
+		$this->assertDataSetsEqual($this->getPostInsertDataSet(), $this->connection->createDataSet());
+	}
+
+	public function testSaveNewFromConstructor()
+	{
+		$this->assertEquals(2, $this->connection->getRowCount('teams'), "Pre-Condition");
+
+		$gateway = new TestGateway($this->di, array(
+			'name' => 'Visible Ninjas',
+			'founded' => 2014
+		));
+		$gateway->setConnection($this->db);
+
+		$gateway->setDirty('name');
+		$gateway->setDirty('founded');
+		$gateway->save();
 
 		$this->assertEquals(3, $this->connection->getRowCount('teams'), "Inserting failed");
 		$this->assertDataSetsEqual($this->getPostInsertDataSet(), $this->connection->createDataSet());
@@ -44,12 +57,13 @@ class GatewayDBTest extends ActiveRecordTestCase {
 	{
 		$this->assertEquals(2, $this->connection->getRowCount('teams'), "Pre-Condition");
 
-		$this->gateway->shouldDeferMissing();
+		$gateway = new TestGateway($this->di);
+		$gateway->setConnection($this->db);
 
-		$this->gateway->team_id = 2;
-		$this->gateway->name = 'Visible Ninjas';
-		$this->gateway->setDirty('name');
-		$this->gateway->save();
+		$gateway->team_id = 2;
+		$gateway->name = 'Visible Ninjas';
+		$gateway->setDirty('name');
+		$gateway->save();
 
 		$this->assertEquals(2, $this->connection->getRowCount('teams'), "Updating failed");
 		$this->assertDataSetsEqual($this->getPostUpdateDataSet(), $this->connection->createDataSet());
@@ -59,10 +73,11 @@ class GatewayDBTest extends ActiveRecordTestCase {
 	{
 		$this->assertEquals(2, $this->connection->getRowCount('teams'), "Pre-Condition");
 
-		$this->gateway->shouldDeferMissing();
+		$gateway = new TestGateway($this->di);
+		$gateway->setConnection($this->db);
 
-		$this->gateway->team_id = 2;
-		$this->gateway->delete();
+		$gateway->team_id = 2;
+		$gateway->delete();
 
 		$this->assertEquals(1, $this->connection->getRowCount('teams'), "Deleting failed");
 		$this->assertDataSetsEqual($this->getPostDeleteDataSet(), $this->connection->createDataSet());
@@ -72,13 +87,7 @@ class GatewayDBTest extends ActiveRecordTestCase {
 
 	public function getTableDefinitions()
 	{
-		return "
-			CREATE TABLE teams (
-				team_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-				name VARCHAR(100) NOT NULL DEFAULT '',
-				founded INT(10) NOT NULL DEFAULT 0
-			);
-		";
+		return TestGateway::tableSchema();
 	}
 
 	public function getDataSet()
@@ -120,13 +129,28 @@ class GatewayDBTest extends ActiveRecordTestCase {
 			)
 		));
 	}
+}
 
-	public function setGatewayProperty($name, $value)
+
+class TestGateway extends \EllisLab\ExpressionEngine\Model\Gateway\RowDataGateway {
+
+	protected static $meta = array(
+		'table_name' => 'teams',
+		'primary_key' => 'team_id'
+	);
+
+	public $team_id;
+	public $founded;
+	public $name;
+
+	public static function tableSchema()
 	{
-		$reflected = new \ReflectionObject($this->gateway);
-
-		$prop = $reflected->getProperty($name);
-		$prop->setAccessible(TRUE);
-		$prop->setValue($this->gateway, $value);
+		return "
+			CREATE TABLE teams (
+				team_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+				name VARCHAR(100) NOT NULL DEFAULT '',
+				founded INT(10) NOT NULL DEFAULT 0
+			);
+		";
 	}
 }

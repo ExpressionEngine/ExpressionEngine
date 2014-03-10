@@ -71,10 +71,9 @@ abstract class RowDataGateway {
 			}
 		}
 
-		// Temporary to make unit testing easier
 		if (function_exists('ee'))
 		{
-			$this->db = ee()->db;
+			$this->setConnection(ee()->db);
 		}
 	}
 
@@ -275,4 +274,11 @@ abstract class RowDataGateway {
 		);
 	}
 
+	/**
+	 * Set the current db connection.
+	 */
+	public function setConnection($db)
+	{
+		$this->db = $db;
+	}
 }

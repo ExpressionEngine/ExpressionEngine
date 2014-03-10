@@ -10,14 +10,6 @@ class GatewayBehaviorTest extends \PHPUnit_Framework_TestCase {
 	public function setUp()
 	{
 		$this->di = m::mock('EllisLab\ExpressionEngine\Core\Dependencies');
-		$this->gateway = m::mock('EllisLab\ExpressionEngine\Model\Gateway\RowDataGateway', array($this->di, array()));
-
-		$this->gateway->shouldDeferMissing();
-
-		$this->setGatewayProperty('meta', array(
-			'table_name' => 'dummy',
-			'primary_key' => 'the_id'
-		));
 	}
 
 	public function testGetMetadata()
@@ -27,9 +19,7 @@ class GatewayBehaviorTest extends \PHPUnit_Framework_TestCase {
 			'primary_key' => 'the_id'
 		);
 
-		// conveniently also serves as a test for setGatewayProperty(),
-		// so we know the rest of the tests in this class work are ok.
-		$this->assertEquals($data, $this->gateway->getMetaData());
+		$this->assertEquals($data, TestGateway::getMetaData());
 	}
 
 	public function testSaveDoesNotHitDBWhenClean()
@@ -40,7 +30,10 @@ class GatewayBehaviorTest extends \PHPUnit_Framework_TestCase {
 		$database->shouldReceive('update')->never();
 		$database->shouldReceive('delete')->never();
 
-		$this->gateway->save();
+		$gateway = new TestGateway($this->di);
+		$gateway->setConnection($database);
+
+		$gateway->save();
 	}
 
 	public function testSaveNewCallsInsert()
@@ -50,9 +43,12 @@ class GatewayBehaviorTest extends \PHPUnit_Framework_TestCase {
 		$database->shouldReceive('update')->never();
 		$database->shouldReceive('insert')->with('dummy', array('key' => 'test'))->once();
 
-		$this->gateway->key = 'test';
-		$this->gateway->setDirty('key');
-		$this->gateway->save();
+		$gateway = new TestGateway($this->di);
+		$gateway->setConnection($database);
+
+		$gateway->key = 'test';
+		$gateway->setDirty('key');
+		$gateway->save();
 	}
 
 	public function testSaveExistingCallsUpdateWhere()
@@ -63,10 +59,25 @@ class GatewayBehaviorTest extends \PHPUnit_Framework_TestCase {
 		$database->shouldReceive('where')->with('the_id', 5)->once();
 		$database->shouldReceive('update')->with('dummy', array('key' => 'test'))->once();
 
-		$this->gateway->the_id = 5;
-		$this->gateway->key = 'test';
-		$this->gateway->setDirty('key');
-		$this->gateway->save();
+		$gateway = new TestGateway($this->di);
+		$gateway->setConnection($database);
+
+		$gateway->the_id = 5;
+		$gateway->key = 'test';
+		$gateway->setDirty('key');
+		$gateway->save();
+	}
+
+	public function testConstructorChecksPropertyExists()
+	{
+		$gateway = new TestGateway($this->di, array(
+			'key'	 => 'exists',
+			'random' => 'does not'
+		));
+
+		$this->assertObjectHasAttribute('key', $gateway);
+		$this->assertEquals('exists', $gateway->key);
+		$this->assertFalse(isset($gateway->random));
 	}
 
 	public function testDeleteWithoutIDThrowsException()
@@ -76,24 +87,19 @@ class GatewayBehaviorTest extends \PHPUnit_Framework_TestCase {
 
 	// END TESTS
 
-	protected function setGatewayProperty($name, $value)
-	{
-		$reflected = new ReflectionObject($this->gateway);
-
-		$prop = $reflected->getProperty($name);
-		$prop->setAccessible(TRUE);
-		$prop->setValue($this->gateway, $value);
-	}
-
 	protected function noopDatabase()
 	{
-		$db = NoopQueryBuilder::getMock($this);
-		$this->setGatewayProperty('db', $db);
-		return $db;
+		return NoopQueryBuilder::getMock($this);
 	}
+}
 
-	public function tearDown()
-	{
-		$this->gateway = NULL;
-	}
+
+class TestGateway extends \EllisLab\ExpressionEngine\Model\Gateway\RowDataGateway {
+
+	protected static $meta = array(
+		'table_name' => 'dummy',
+		'primary_key' => 'the_id'
+	);
+
+	public $key;
 }
