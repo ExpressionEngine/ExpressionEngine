@@ -2130,7 +2130,7 @@ class Moblog {
 		// Do they have permission to post to this channel?
 		if ($group_id  != '1')
 		{
-			ee()->db->where('group_id', $query->row('group_id'));
+			ee()->db->where('group_id', $group_id);
 			ee()->db->where('channel_id', $this->moblog_array['moblog_channel_id']);
 			$count = ee()->db->count_all_results('channel_member_groups');
 
