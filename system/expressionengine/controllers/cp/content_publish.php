@@ -479,6 +479,17 @@ class Content_publish extends CP_Controller {
 				{
 					$valid_name_error[] = 'missing_name';
 				}
+
+				$defaults = array(
+				        lang('publish')     => 'publish',
+				        lang('categories')  => 'categories',
+				        lang('options')     => 'options',
+				        lang('date')        => 'date'
+				);
+				
+				if($name == '_tab_label' && ! empty($defaults[$info])) {
+				        $tab['fields'][$name] = $defaults[$info];
+				}
 			}
 
 			$clean_layout[strtolower($tab['name'])] = $tab['fields'];
