@@ -80,19 +80,6 @@ class Localize {
 			return '';
 		}
 
-		// d-m-y formatted dates can be ambiguous, as such we will reformat
-		// them to m/d/y here. I'd much rather use DateTime::createFromFormat
-		// but that was introduced in PHP 5.3.0
-		$date_format = ee()->session->userdata('date_format', ee()->config->item('date_format'));
-		if (
-			(strpos($date_format, '-%y') !== FALSE) AND
-			(preg_match('/^\d{1,2}-\d{1,2}-\d{2,4}/', $human_string) == 1)
-		   )
-		{
-			list($day, $month, $year) = explode('-', $human_string);
-			$human_string = $month.'/'.$day.'/'.$year;
-		}
-
 		$dt = $this->_datetime($human_string, $localized);
 
 		return ($dt) ? $dt->format('U') : FALSE;
@@ -230,11 +217,34 @@ class Localize {
 	 */
 	public function human_time($timestamp = NULL, $localize = TRUE, $seconds = FALSE)
 	{
+		// Override the userdata/config with the parameter only if it was provided
+		$include_seconds = ee()->session->userdata('include_seconds', ee()->config->item('include_seconds'));
+		if (func_num_args() != 3 && $include_seconds == 'y')
+		{
+			$seconds = TRUE;
+		}
+
+		$format_string = $this->_date_format($seconds);
+
+		return $this->format_date($format_string, $timestamp, $localize);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Provides the date format to use for calculating time (both input and output)
+	 *
+	 * @param	bool	Include seconds in the date format string or not
+	 * @return	string	Date format string
+	 */
+	private function _date_format($seconds = FALSE)
+	{
 		$include_seconds = ee()->session->userdata('include_seconds', ee()->config->item('include_seconds'));
 		$date_format = ee()->session->userdata('date_format', ee()->config->item('date_format'));
 		$time_format = ee()->session->userdata('time_format', ee()->config->item('time_format'));
 
-		if (func_num_args() != 3 && $include_seconds == 'y')
+		// Override the userdata/config with the parameter only if it was provided
+		if (func_num_args() != 1 && $include_seconds == 'y')
 		{
 			$seconds = TRUE;
 		}
@@ -251,7 +261,7 @@ class Localize {
 			$format_string .= '%g:%i' . $seconds_format . ' %A';
 		}
 
-		return $this->format_date($format_string, $timestamp, $localize);
+		return $format_string;
 	}
 
 	// --------------------------------------------------------------------
@@ -310,7 +320,10 @@ class Localize {
 			// the timezone later will transform the date
 			else
 			{
-				$dt = new DateTime($date_string, $timezone);
+				$date_format = $this->_date_format();
+				$date_format = str_replace('%', '', $date_format);
+
+				$dt = DateTime::createFromFormat($date_format, $date_string, $timezone);
 			}
 		}
 		catch (Exception $e)
