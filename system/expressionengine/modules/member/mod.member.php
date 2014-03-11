@@ -2493,7 +2493,7 @@ class Member {
 	{
 		// 404 it
 		ee()->load->library('template', NULL, 'TMPL');
-		ee()->TMPL->show_404(ee()->uri->uri_string);
+		ee()->TMPL->show_404();
 	}
 
 	// --------------------------------------------------------------------
