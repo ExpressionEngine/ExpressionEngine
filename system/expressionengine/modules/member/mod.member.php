@@ -2504,7 +2504,7 @@ class Member {
 		}
 		else
 		{
-			$out = ee()->TMPL->_404();
+			show_404(ee()->uri->uri_string);
 		}
 
 		ee()->output->out_type = '404';

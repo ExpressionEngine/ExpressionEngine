@@ -1532,8 +1532,8 @@ class EE_Template {
 						$error .= str_replace('%x', $this->tag_data[$i]['class'], str_replace('%y', $meth_name, ee()->lang->line('error_fix_module_processing')));
 
 						ee()->output->fatal_error($error);
-					 }
-					 else
+					}
+					else
 					{
 						return;
 					}
