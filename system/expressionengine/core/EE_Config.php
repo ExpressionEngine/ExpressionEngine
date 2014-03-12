@@ -968,8 +968,7 @@ class EE_Config Extends CI_Config {
 				}
 				else
 				{
-					$quotes = preg_quote('\'"');
-					$base_regex = '#(\$'."config\[([".$quotes."])".$key."\\2\]\s*=\s*)";
+					$base_regex = '#(\$config\[(\042|\047)'.$key.'\\2\]\s*=\s*)';
 
 					// Here we need to determine which regex to use for matching
 					// the config varable's value; if we're replacing an array,
@@ -986,7 +985,7 @@ class EE_Config Extends CI_Config {
 					else // Otherwise, use the one-liner match
 					{
 						$config_file = preg_replace(
-							$base_regex."(([".$quotes."])[^\\4]*?\\4);#",
+							$base_regex.'((\042|\047)[^\\4]*?\\4);#',
 							"\${1}\${4}{$val}\${4};",
 							$config_file
 						);
