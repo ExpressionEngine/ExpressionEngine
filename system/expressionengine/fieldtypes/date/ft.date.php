@@ -165,12 +165,6 @@ class Date_ft extends EE_Fieldtype {
 			$date = $field_data;
 		}
 
-		ee()->javascript->set_global(array(
-			'date.date_format' => ee()->localize->datepicker_format(),
-			'date.time_format' => ee()->session->userdata('time_format', ee()->config->item('time_format')),
-			'date.include_seconds' => ee()->session->userdata('include_seconds', ee()->config->item('include_seconds'))
-		));
-
 		$date_js_globals = array('date' => array(
 				'date_format' => ee()->localize->datepicker_format(),
 				'time_format' => ee()->session->userdata('time_format', ee()->config->item('time_format')),
@@ -184,7 +178,7 @@ class Date_ft extends EE_Fieldtype {
 		elseif ( ! ee()->session->cache(__CLASS__, 'date_js_loaded'))
 		{
 			// We only want to set the date global once
-			ee()->session->set_cache(__CLASS__, 'date_js_loaded', TRUE);			
+			ee()->session->set_cache(__CLASS__, 'date_js_loaded', TRUE);
 			ee()->javascript->output('EE.date = '.json_encode($date_js_globals));
 		}
 
