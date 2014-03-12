@@ -38,7 +38,7 @@ class Punctuation {
 		$characters  = mb_strlen($source);
 		if ($characters !== 0)
 		{
-			$ratio = $whitespace / $characters;
+			$ratio = $punctuation / $characters;
 		}
 		else
 		{
