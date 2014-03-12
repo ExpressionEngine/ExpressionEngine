@@ -431,8 +431,7 @@ class EE_Typography extends CI_Typography {
 				// Plugin of some sort
 				if ( ! class_exists('EE_Template'))
 				{
-					require APPPATH.'libraries/Template.php';
-					ee()->TMPL = new EE_Template();
+					ee()->load->library('template', NULL, 'TMPL');
 				}
 
 				$plugin = ucfirst($this->text_format);
