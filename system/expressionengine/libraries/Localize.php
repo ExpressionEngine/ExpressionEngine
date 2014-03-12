@@ -73,14 +73,14 @@ class Localize {
 	 * @param	bool	Is the human date prelocalized?
 	 * @return	mixed	int if successful, otherwise FALSE
 	 */
-	public function string_to_timestamp($human_string, $localized = TRUE)
+	public function string_to_timestamp($human_string, $localized = TRUE, $date_format = NULL)
 	{
 		if (trim($human_string) == '')
 		{
 			return '';
 		}
 
-		$dt = $this->_datetime($human_string, $localized);
+		$dt = $this->_datetime($human_string, $localized, $date_format);
 
 		return ($dt) ? $dt->format('U') : FALSE;
 	}
@@ -224,7 +224,7 @@ class Localize {
 			$seconds = TRUE;
 		}
 
-		$format_string = $this->_date_format($seconds);
+		$format_string = $this->date_format($seconds);
 
 		return $this->format_date($format_string, $timestamp, $localize);
 	}
@@ -237,7 +237,7 @@ class Localize {
 	 * @param	bool	Include seconds in the date format string or not
 	 * @return	string	Date format string
 	 */
-	private function _date_format($seconds = FALSE)
+	public function date_format($seconds = FALSE)
 	{
 		$include_seconds = ee()->session->userdata('include_seconds', ee()->config->item('include_seconds'));
 		$date_format = ee()->session->userdata('date_format', ee()->config->item('date_format'));
@@ -276,7 +276,7 @@ class Localize {
 	 * @return	datetime	DateTime object set to the given time and altered
 	 * 						for server offset
 	 */
-	private function _datetime($date_string = NULL, $timezone = TRUE)
+	private function _datetime($date_string = NULL, $timezone = TRUE, $date_format = NULL)
 	{
 		// Fix for some versions of PHP 5.2 where DateTime will throw an
 		// uncaught exception when an invalid date string is passed in
@@ -320,10 +320,15 @@ class Localize {
 			// the timezone later will transform the date
 			else
 			{
-				$date_format = $this->_date_format();
-				$date_format = str_replace('%', '', $date_format);
-
-				$dt = DateTime::createFromFormat($date_format, $date_string, $timezone);
+				if (is_null($date_format))
+				{
+					$dt = new DateTime($date_string, $timezone);
+				}
+				else
+				{
+					$date_format = str_replace('%', '', $date_format);
+					$dt = DateTime::createFromFormat($date_format, $date_string, $timezone);
+				}
 			}
 		}
 		catch (Exception $e)

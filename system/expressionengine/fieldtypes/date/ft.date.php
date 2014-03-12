@@ -35,7 +35,7 @@ class Date_ft extends EE_Fieldtype {
 	{
 		if ( ! is_numeric($data))
 		{
-			$data = ee()->localize->string_to_timestamp($data);
+			$data = ee()->localize->string_to_timestamp($data, TRUE, ee()->localize->date_format());
 		}
 
 		if (empty($data))
@@ -52,7 +52,7 @@ class Date_ft extends EE_Fieldtype {
 	{
 		if ( ! is_numeric($data))
 		{
-			$data = ee()->localize->string_to_timestamp($data);
+			$data = ee()->localize->string_to_timestamp($data, TRUE, ee()->localize->date_format());
 		}
 
 		if ($this->settings['localize'] !== TRUE)
@@ -75,7 +75,7 @@ class Date_ft extends EE_Fieldtype {
 	{
 		if ( ! is_numeric($data) && trim($data) && ! empty($data))
 		{
-			$data = ee()->localize->string_to_timestamp($data);
+			$data = ee()->localize->string_to_timestamp($data, TRUE, ee()->localize->date_format());
 		}
 
 		if ($data === FALSE)
