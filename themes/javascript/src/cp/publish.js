@@ -64,7 +64,7 @@ EE.publish.category_editor = function() {
 
 	// Grab all group ids
 	$(".edit_categories_link").each(function() {
-		var gid = this.href.substr(this.href.lastIndexOf("=") + 1);
+		var gid = this.href.substr(this.href.indexOf("=") + 1);
 		$(this).data("gid", gid);
 		cat_groups.push(gid);
 	});
