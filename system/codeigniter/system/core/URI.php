@@ -47,6 +47,11 @@ class CI_URI {
 	{
 		$this->config =& load_class('Config', 'core');
 		log_message('debug', "URI Class Initialized");
+
+		if (REQ == 'CP')
+		{
+			$this->config->set_item('uri_protocol', 'QUERY_STRING');
+		}
 	}
 
 
