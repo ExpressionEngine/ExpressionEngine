@@ -63,7 +63,7 @@ class CI_URI {
 		if (strtoupper($this->config->item('uri_protocol')) == 'AUTO')
 		{
 			// Let's try the REQUEST_URI first, this will work in most situations
-			if ($uri = $this->_detect_uri())
+			if ($uri = $this->_detect_uri('REQUEST_URI'))
 			{
 				$this->_set_uri_string($uri);
 				return;
@@ -79,7 +79,7 @@ class CI_URI {
 			}
 
 			// No PATH_INFO?... What about QUERY_STRING?
-			$path =  (isset($_SERVER['QUERY_STRING'])) ? $_SERVER['QUERY_STRING'] : @getenv('QUERY_STRING');
+			$path = (isset($_SERVER['QUERY_STRING'])) ? $_SERVER['QUERY_STRING'] : @getenv('QUERY_STRING');
 			if (trim($path, '/') != '')
 			{
 				$this->_set_uri_string($path);
@@ -100,9 +100,9 @@ class CI_URI {
 
 		$uri = strtoupper($this->config->item('uri_protocol'));
 
-		if ($uri == 'REQUEST_URI')
+		if ($uri == 'REQUEST_URI' OR $uri == 'QUERY_STRING')
 		{
-			$this->_set_uri_string($this->_detect_uri());
+			$this->_set_uri_string($this->_detect_uri($uri));
 			return;
 		}
 
@@ -136,28 +136,37 @@ class CI_URI {
 	 * if necessary.
 	 *
 	 * @access	private
+	 * @param string $uri_protocol uri_protocol from the config
 	 * @return	string
 	 */
-	protected function _detect_uri()
+	protected function _detect_uri($uri_protocol)
 	{
-		if ( ! isset($_SERVER['REQUEST_URI']) OR ! isset($_SERVER['SCRIPT_NAME']))
+		if ($uri_protocol == 'REQUEST_URI')
 		{
-			return '';
+			if ( ! isset($_SERVER['REQUEST_URI']) OR ! isset($_SERVER['SCRIPT_NAME']))
+			{
+				return '';
+			}
+
+			$uri = $_SERVER['REQUEST_URI'];
+
+			if (strpos($uri, $_SERVER['SCRIPT_NAME']) === 0)
+			{
+				$uri = substr($uri, strlen($_SERVER['SCRIPT_NAME']));
+			}
+			elseif (strpos($uri, dirname($_SERVER['SCRIPT_NAME'])) === 0)
+			{
+				$uri = substr($uri, strlen(dirname($_SERVER['SCRIPT_NAME'])));
+			}
+		}
+		elseif ($uri_protocol == 'QUERY_STRING')
+		{
+			$uri = (isset($_SERVER['QUERY_STRING'])) ? $_SERVER['QUERY_STRING'] : @getenv('QUERY_STRING');
 		}
 
-		$uri = $_SERVER['REQUEST_URI'];
-
-		if (strpos($uri, $_SERVER['SCRIPT_NAME']) === 0)
-		{
-			$uri = substr($uri, strlen($_SERVER['SCRIPT_NAME']));
-		}
-		elseif (strpos($uri, dirname($_SERVER['SCRIPT_NAME'])) === 0)
-		{
-			$uri = substr($uri, strlen(dirname($_SERVER['SCRIPT_NAME'])));
-		}
-
-		// This section ensures that even on servers that require the URI to be in the query string (Nginx) a correct
-		// URI is found, and also fixes the QUERY_STRING server var and $_GET array.
+		// This section ensures that even on servers that require the URI to be
+		// in the query string (Nginx) a correct URI is found, and also fixes
+		// the QUERY_STRING server var and $_GET array.
 		if (strncmp($uri, '?/', 2) === 0)
 		{
 			$uri = substr($uri, 2);
