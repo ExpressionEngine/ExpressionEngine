@@ -31,7 +31,9 @@ include('vectorizers/Spaces.php');
 class Collection {
 
 	public $documents = array();
+	public $vocabulary = array();
 	public $corpus = "";
+	public $vectorizers = array('ASCII_Printable', 'Entropy', 'Punctuation', 'Spaces');
 	
 	/**
 	 * Get our corpus ready. First we strip out all common words specified in our stop word list,
@@ -45,20 +47,36 @@ class Collection {
 	public function __construct($source, $stop_words = array())
 	{
 		$this->stop_words = $stop_words;
-		foreach($stop_words as $key => $word)
+
+		foreach ($stop_words as $key => $word)
 		{
 			$stop_words[$key] = " " . trim($word) . " ";
 		}
-		foreach($source as $text)
+
+		foreach ($source as $text)
 		{
 			if( ! empty($text))
 			{
-				$text = str_ireplace($stop_words,' ',$text);
+				$text = str_ireplace($stop_words, ' ', $text, $count);
 				$doc = new Document($text);
+
+				foreach($doc->words as $word)
+				{
+					if( ! empty($this->vocabulary[$word]))
+					{
+						$this->vocabulary[$word]++;
+					}
+					else
+					{
+						$this->vocabulary[$word] = 1;
+					}
+				}
+
 				$this->documents[] = $doc;
 				$this->corpus .= ' ' . $doc->text;
 			}
 		}
+
 		$this->corpus = new Document($this->corpus);
 	}
 
@@ -66,7 +84,8 @@ class Collection {
 	{
 		$source = new Document($source);
 		$vector = $this->_tfidf($source);
-		return $vector;
+		$heuristics = $this->_heuristics($source);
+		return array_merge($vector, $heuristics);
 	}
 
 	/**
@@ -78,10 +97,14 @@ class Collection {
 	public function tfidf()
 	{
 		$tfidf = array();
-		foreach($this->documents as $source)
+
+		foreach ($this->documents as $source)
 		{
-			$tfidf[] = $this->_tfidf($source);
+			$vector = $this->_tfidf($source);
+			$heuristics = $this->_heuristics($source);
+			$tfidf[] = array_merge($vector, $heuristics);
 		}
+
 		return $tfidf;
 	}
 
@@ -95,7 +118,7 @@ class Collection {
 	 */
 	public function term_frequency(Document $doc, $term)
 	{
-		return 0.5 + (0.5 * $doc($term)) / $doc->max_frequency;
+		return 0.5 + (0.5 * $doc->frequency($term)) / $doc->max_frequency;
 	}
 
 	/**
@@ -107,7 +130,9 @@ class Collection {
 	 */
 	public function inverse_document_frequency($term)
 	{
-		$freq = $this->corpus->frequency($term);
+		// Normalize frequency if term does not appear anywhere in corpus
+		$freq = empty($this->vocabulary[$term]) ? 1 : $this->vocabulary[$term];
+
 		return log(count($this->documents) / $freq);
 	}
 
@@ -121,13 +146,35 @@ class Collection {
 	private function _tfidf($source)
 	{
 		$vector = array();
-		foreach($this->corpus as $term => $freq)
+
+		foreach ($this->corpus as $term => $freq)
 		{
 			$tf = $this->term_frequency($source, $term);
 			$idf = $this->inverse_document_frequency($term);
 			$vector[] = $tf * $idf;
 		}
+
 		return $vector;
+	}
+
+	/**
+	 * Calculates a feature vector for our heuristics
+	 * 
+	 * @param mixed $source 
+	 * @access private
+	 * @return array Feauture vector of our calculated heuristics
+	 */
+	private function _heuristics($source)
+	{
+		$heuristics = array();
+
+		foreach($this->vectorizers as $vec)
+		{
+			$vec = new $vec();
+			$heuristics[] = $vec->vectorize($source->text);
+		}
+
+		return $heuristics;
 	}
 
 }
@@ -154,9 +201,8 @@ class Document implements Iterator {
 	 */
 	public function __construct($text)
 	{
-		$text = str_replace(array("\n","\r","\t"),'',$text);
 		$text = preg_replace("/[^a-zA-Z0-9\s]/", "", $text);
-		$text = trim(preg_replace('/\s\s+/', ' ', $text));
+		$text = trim($text);
 		$this->text = $text;
 		$this->frequency = $this->_frequency($text);
 		$this->words = array_keys($this->frequency);
@@ -164,7 +210,7 @@ class Document implements Iterator {
 	}
 	
 	/**
-	 * We overide __invoke here to make the frequency easily callable.
+	 * We override __invoke here to make the frequency easily callable.
 	 * 
 	 * @access public
 	 * @param string $word The word you want the frequency of
@@ -184,7 +230,7 @@ class Document implements Iterator {
 	 */
 	public function frequency($word)
 	{
-		if(empty($this->frequency[$word]))
+		if (empty($this->frequency[$word]))
 		{
 			return 0;
 		}
@@ -204,19 +250,26 @@ class Document implements Iterator {
 	private function _frequency($text)
 	{
 		$count = array();
-		$words = explode(' ', $text);
+		$words = preg_split('/\s+/', $text);
 		$num = count($words);
 		$max = 0;
-		foreach($words as $word)
+
+		foreach ($words as $word)
 		{
-			if(isset($count[$word]))
+			$word = strtolower($word);
+
+			if (isset($count[$word]))
 			{
 				$count[$word]++;
-			} else {
+			}
+			else
+			{
 				$count[$word] = 1;
 			}
+
 			$max = max($max, $count[$word]);
 		}
+
 		$this->max_frequency = $max;
 		arsort($count);
 		return $count; 
