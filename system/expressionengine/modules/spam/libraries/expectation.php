@@ -65,7 +65,7 @@ class Expectation {
 	public function variance()
 	{
 		$sum = 0;
-		foreach($this->samples as $samples)
+		foreach($this->samples as $sample)
 		{
 			$sum += pow($sample - $this->mean, 2);
 		}

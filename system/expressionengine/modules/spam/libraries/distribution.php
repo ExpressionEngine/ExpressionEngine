@@ -38,7 +38,8 @@ class Distribution {
 
 	public function probability($x)
 	{
-		return $this->{$this->$distribution}($x);
+		$prob = $this->{$this->distribution}($x);
+		return $prob;
 	}
 
 	/**
@@ -50,7 +51,21 @@ class Distribution {
 	 */
 	public function normal($x)
 	{
-		return 1 / ($this->variance * sqrt(2 * M_PI)) * pow(M_E, -1 * pow($x - $this->mean, 2) / (2 * pow($this->variance, 2))) ;
+		// In the limit when σ -> 0 the normal distribution is infinite at x = μ
+		// and 0 every where else. A classic case for the dirac delta function.
+		if ($this->variance == 0)
+		{
+			if ($x == $this->mean)
+			{
+				return 1;
+			}
+			else
+			{
+				return 0;
+			}
+		}
+
+		return  1 / ($this->variance * sqrt(2 * M_PI)) * pow(M_E, -1 * pow($x - $this->mean, 2) / (2 * pow($this->variance, 2))) ;
 	}
 
 }
