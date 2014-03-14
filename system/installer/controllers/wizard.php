@@ -2394,8 +2394,6 @@ PAPAYA;
 			'website_session_type'			=>	'c',
 			'cp_session_type'				=>	'cs',
 			'cookie_httponly'				=>	'y',
-			'website_session_type'			=>	'c',
-			'cp_session_type'			=>	'cs',
 			'allow_username_change'			=>	'y',
 			'allow_multi_logins'			=>	'y',
 			'password_lockout'				=>	'y',

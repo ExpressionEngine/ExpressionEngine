@@ -507,11 +507,6 @@ If you do not wish to reset your password, ignore this message. It will expire i
 					array('site_id' => $site['site_id'])
 				);
 			}
-
-			if ( ! empty($new_config_items))
-			{
-				ee()->config->update_site_prefs($new_config_items, $site['site_id']);
-			}
 		}
 
 		// Second: update any $config overrides
@@ -520,6 +515,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		{
 			$new_config_items['cp_session_type'] = ee()->config->item('admin_session_type');
 		}
+
 		if (ee()->config->item('user_session_type') !== FALSE)
 		{
 			$new_config_items['website_session_type'] = ee()->config->item('user_session_type');
@@ -529,6 +525,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 			'admin_session_type' => '',
 			'user_session_type'  => '',
 		);
+
 		ee()->config->_update_config($new_config_items, $remove_config_items);
 	}
 
