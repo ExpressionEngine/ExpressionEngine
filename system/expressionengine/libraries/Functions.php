@@ -2388,6 +2388,18 @@ class EE_Functions {
 				case '\\':
 					$escaped = TRUE;
 					break;
+				case '/':
+					if (($str[$i + 1] == '/' || $str[$i + 1] == '*') && ! $str_open)
+					{
+						return TRUE;
+					}
+					break;
+				case '#':
+					if ( ! $str_open )
+					{
+						return TRUE;
+					}
+					break;
 				case '"':
 				case "'":
 					$str_open = ($char == $str_open) ? '' : $char;
