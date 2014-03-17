@@ -152,9 +152,19 @@ class EE_Route {
 	 */
 	public function equals(EE_Route $route)
 	{
+		if(count($this->segments) != count($route->segments))
+		{
+			return FALSE;
+		}
+
 		foreach($this->segments as $index => $segment)
 		{
 			$comparison = $route->segments[$index];
+
+			if (gettype($segment) !== gettype($comparison))
+			{
+				return FALSE;
+			}
 
 			if (is_string($segment))
 			{
@@ -165,11 +175,6 @@ class EE_Route {
 			}
 			else
 			{
-				if (is_string($comparison))
-				{
-					return FALSE;
-				}
-
 				$segment_rules = array_map('serialize', $segment->rules);
 				$comparison_rules = array_map('serialize', $comparison->rules);
 				$diff = array_diff($segment_rules, $comparison_rules);
