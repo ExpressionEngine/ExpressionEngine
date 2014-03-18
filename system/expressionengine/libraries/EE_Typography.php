@@ -697,8 +697,6 @@ class EE_Typography extends CI_Typography {
 	 * Parse content to Markdown
 	 * @param  string $str     String to parse
 	 * @param  array  $options Associative array containing options
-	 *                         - encode_ee_tags (yes/no) can be used to disable
-	 *                         	ee tag encoding
 	 *                         - smartypants (yes/no) enable or disable
 	 *                         	smartypants
 	 *                         - no_markup (TRUE/FALSE) set to TRUE to disable
@@ -708,13 +706,6 @@ class EE_Typography extends CI_Typography {
 	public function markdown($str, $options = array())
 	{
 		require_once(APPPATH.'libraries/typography/Markdown/markdown.php');
-
-		// Encode EE Tags
-		if ( ! isset($options['encode_ee_tags'])
-			OR $options['encode_ee_tags'] == 'yes')
-		{
-			$str = ee()->functions->encode_ee_tags($str);
-		}
 
 		// Ignore [code]
 		$code_blocks = array();
@@ -753,8 +744,9 @@ class EE_Typography extends CI_Typography {
 
 		// Replace <pre><code> with [code]
 		// Only relevant IF being called by typography parser
-		$backtrace = debug_backtrace();
-		if ( ! in_array($backtrace[1]['class'], array('EE_Typography', 'Markdown')))
+		// TODO-WB: Add PHP 5.3 specific items to debug_backtrace when possible
+		$backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 3);
+		if (in_array($backtrace[1]['class'], array('EE_Typography')))
 		{
 			$str = preg_replace(
 				"/<pre><code>(.*?)<\/code><\/pre>/uis",
@@ -769,6 +761,11 @@ class EE_Typography extends CI_Typography {
 			$str = str_replace($hash, $code_block, $str);
 		}
 
+		// Clean up code blocks and BBCodde
+		$str = $this->_protect_bbcode($str);
+		$str = ee()->functions->encode_ee_tags($str, $this->convert_curly);
+		$str = $this->decode_bbcode($str);
+		$str = $this->_convert_code_markers($str);
 		return $str;
 	}
 
