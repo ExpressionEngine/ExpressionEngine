@@ -23,7 +23,6 @@ class Query {
 	private $aliases = array();
 	private $tables = array();
 
-
 	/**
 	 * @var	QueryTreeNode $root	The root of this query's tree of model
 	 * 			relationships.  The model we initiated the query against.
@@ -48,7 +47,6 @@ class Query {
 
 	protected function createRoot($model_name)
 	{
-
 		$this->model_name = $model_name;
 		$this->root = new QueryTreeNode($model_name);
 		$this->root->meta = NULL;

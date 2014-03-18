@@ -35,6 +35,11 @@ abstract class RowDataGateway {
 	protected $db = NULL;
 
 	/**
+	 * Model builder instance.
+	 */
+	protected $validation_factory = NULL;
+
+	/**
 	 * Meta data array, overridden by subclasses.
 	 */
 	protected static $meta = array();
@@ -53,8 +58,10 @@ abstract class RowDataGateway {
 	 * 		initialize the Gateway's public properties.  Of the form
 	 * 		'property_name' => 'value'.
 	 */
-	public function __construct(array $data = array())
+	public function __construct(Validation $validation_factory, array $data = array())
 	{
+		$this->validation_factory = $validation_factory;
+
 		foreach ($data as $property => $value)
 		{
 			if (property_exists($this, $property))
@@ -156,7 +163,7 @@ abstract class RowDataGateway {
 	 * 				validation.  If no errors were generated, then
 	 * 				Errors::hasErrors() will return false.
 	 */
-	public function validate(Validation $validation = NULL, $errors = NULL)
+	public function validate(Validation $validation_factory = NULL, $errors = NULL)
 	{
 		$errors = $errors ?: new Errors();
 
@@ -174,7 +181,7 @@ abstract class RowDataGateway {
 			return $errors;
 		}
 
-		$validation = $validation ?: $this->getValidation();
+		$validation_factory = $validation_factory ?: $this->validation_factory;
 
 		foreach ($this->dirty as $property => $dirty)
 		{
@@ -193,17 +200,6 @@ abstract class RowDataGateway {
 		}
 
 		return $errors;
-	}
-
-	/**
-	 * Get the default validation object
-	 *
-	 * @return \EllisLab\ExpressionEngine\Core\Validation
-	 */
-	protected function getValidation()
-	{
-		$di = new Dependencies();
-		return $di->getValidation();
 	}
 
 	/**

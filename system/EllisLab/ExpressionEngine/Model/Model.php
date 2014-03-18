@@ -15,12 +15,11 @@ use EllisLab\ExpressionEngine\Core\AliasService as CoreAliasService;
  */
 abstract class Model {
 
-
 	protected static $_meta = array();
 
-	protected $alias_service = NULL;
-
 	protected $builder = NULL;
+
+	protected $alias_service = NULL;
 
 	/**
 	 * The database gateway object for the related database table.
@@ -40,6 +39,8 @@ abstract class Model {
 	/**
 	 * Initialize this model with a set of data to set on the gateway.
 	 *
+	 * @param \EllisLab\ExpressionEngine\Model\ModelBuilder
+	 * @param \Ellislab\ExpressionEngine\Core\AliasService
 	 * @param	mixed[]	$data	An array of initial property values to set on
 	 * 		this model.  The array indexes must be valid properties on this
 	 * 		model's gateway.
@@ -49,8 +50,11 @@ abstract class Model {
 	 * 		save call.  Otherwise, it will be treated as clean and assumed
 	 * 		to have come from the database.
 	 */
-	public function __construct(array $data = array(), $dirty = TRUE)
+	public function __construct(ModelBuilder $builder, CoreAliasService $alias_service, array $data = array(), $dirty = TRUE)
 	{
+		$this->builder = $builder;
+		$this->alias_service = $alias_service;
+
 		foreach ($data as $property => $value)
 		{
 			if (property_exists($this, $property))
@@ -384,7 +388,7 @@ abstract class Model {
 
 	public function fromXml($model_xml)
 	{
-		foreach($model_xml->property as $property)
+		foreach ($model_xml->property as $property)
 		{
 			$name = (string) $property['name'];
 			$this->{$name} = (string) $property;
@@ -397,7 +401,7 @@ abstract class Model {
 			foreach($related_models_xml as $related_model_xml)
 			{
 				$model_class = (string) $related_model_xml['name'];
-				$model = new $model_class();
+				$model = $this->builder->make($model_class);
 				$model->fromXml($related_model_xml);
 				$models[] = $model;
 			}
@@ -413,8 +417,7 @@ abstract class Model {
 		{
 			foreach (static::getMetaData('gateway_names') as $gateway_name)
 			{
-				$gateway_class = $this->getAliasService()->getRegisteredClass($gateway_name);
-				$this->gateways[$gateway_name] = new $gateway_class();
+				$this->gateways[$gateway_name] = $this->newGateway($gateway_class);
 			}
 		}
 
@@ -438,6 +441,12 @@ abstract class Model {
 				}
 			}
 		}
+	}
+
+	protected function newGateway($gateway_name)
+	{
+		$gateway_class = $this->alias_service->getRegisteredClass($gateway_name);
+		return new $gateway_class($this->builder->getValidation());
 	}
 
 	/**
@@ -702,7 +711,7 @@ abstract class Model {
 		// to the primary key of the target model.
 		if ( ! isset($to_key))
 		{
-			$to_model_class = $this->getAliasService()->getRegisteredClass($to_model_name);
+			$to_model_class = $this->alias_service->getRegisteredClass($to_model_name);
 			$to_key = $to_model_class::getMetaData('primary_key');
 		}
 
@@ -712,7 +721,7 @@ abstract class Model {
 		if ($this->getId() === NULL)
 		{
 			$relationship = new ModelRelationshipMeta(
-				$this->getAliasService(),
+				$this->alias_service,
 				$type,
 				$relationship_key,
 				array(
@@ -721,7 +730,7 @@ abstract class Model {
 					'key' => $this_key
 				),
 				array(
-					'model_class' => $this->getAliasService()->getRegisteredClass($to_model_name),
+					'model_class' => $this->alias_service->getRegisteredClass($to_model_name),
 					'model_name' => $to_model_name,
 					'key' => $to_key
 				)
@@ -732,7 +741,7 @@ abstract class Model {
 		// Lazy Load
 		// 	Otherwise, if we haven't hit one of the previous cases, then this
 		// 	is a lazy load on an existing model.
-		$query = $this->newModelBuilder()->get($to_model_name);
+		$query = $this->builder->get($to_model_name);
 		$query->filter($to_model_name . '.' . $to_key, $this->$this_key);
 
 		if ($type == 'one-to-one' OR $type == 'many-to-one')
@@ -747,43 +756,6 @@ abstract class Model {
 		$this->setRelated($relationship_key, $result);
 		return $result;
 	}
-
-	/**
-	 * Provide a different alias service
-	 *
-	 * @param \Ellislab\ExpressionEngine\Core\AliasService
-	 */
-	public function setAliasService(CoreAliasService $alias_service)
-	{
-		$this->alias_service = $alias_service;
-	}
-
-	/**
-	 * Get the current alias service. Will default to the model implementation
-	 * if no other option was provided.
-	 *
-	 * @return \Ellislab\ExpressionEngine\Model\AliasService
-	 */
-	protected function getAliasService()
-	{
-		if ( ! isset($this->alias_service))
-		{
-			$this->setAliasService(new ModelAliasService());
-		}
-
-		return $this->alias_service;
-	}
-
-	/**
-	 * Create a new model builder instance.
-	 *
-	 * @return \Ellislab\ExpressionEngine\Model\ModelBuilder
-	 */
-	public function newModelBuilder()
-	{
-		return new ModelBuilder($this->getAliasService());
-	}
-
 
 	public function testPrint($depth='')
 	{

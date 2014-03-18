@@ -17,7 +17,7 @@ class Dependencies extends ServiceProvider {
     {
         return $this->singleton(function($di)
         {
-            return new ModelBuilder(new ModelAliasService());
+            return new ModelBuilder($di, new ModelAliasService());
         });
     }
 
