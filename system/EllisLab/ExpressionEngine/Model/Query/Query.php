@@ -3,10 +3,12 @@
 use EllisLab\ExpressionEngine\Model\Collection;
 use EllisLab\ExpressionEngine\Model\ModelBuilder;
 use EllisLab\ExpressionEngine\Model\Query\QueryTreeNode;
+use EllisLab\ExpressionEngine\Core\AliasService;
 
 class Query {
 
 	private $builder;
+	private $alias_service;
 
 	private $db;
 	private $model_name;
@@ -31,10 +33,15 @@ class Query {
 	private $results = array();
 	private $result_index = array();
 
-	public function __construct(ModelBuilder $builder, $model_name)
+	public function __construct(ModelBuilder $builder, AliasService $alias_service, $model_name)
 	{
 		$this->builder = $builder;
-		$this->db = ee()->db; // TODO reset?
+		$this->alias_service = $alias_service;
+
+		if (function_exists('ee'))
+		{
+			$this->setConnection(ee()->db); // TODO reset?
+		}
 
 		$this->createRoot($model_name);
 	}
@@ -48,11 +55,11 @@ class Query {
 
 		$this->selectFields($this->root);
 
-		$model_class = $this->builder->getRegisteredClass($model_name);
+		$model_class = $this->alias_service->getRegisteredClass($model_name);
 		$gateway_names = $model_class::getMetaData('gateway_names');
 
 		$primary_gateway_name = array_shift($gateway_names);
-		$primary_gateway_class = $this->builder->getRegisteredClass($primary_gateway_name);
+		$primary_gateway_class = $this->alias_service->getRegisteredClass($primary_gateway_name);
 
 		$primary_tablename = $primary_gateway_class::getMetaData('table_name');
 		$primary_aliased_tablename =  $primary_tablename . '_' . $this->root->getId();
@@ -60,7 +67,7 @@ class Query {
 
 		foreach($gateway_names as $gateway_name)
 		{
-			$gateway_class = $this->builder->getRegisteredClass($gateway_name);
+			$gateway_class = $this->alias_service->getRegisteredClass($gateway_name);
 			$tablename = $gateway_class::getMetaData('table_name');
 			$aliased_tablename = $tablename . '_' . $this->root->getId();
 			$this->db->join(
@@ -116,18 +123,18 @@ class Query {
 		}
 		else
 		{
-			$model_class = $this->builder->getRegisteredClass($relationship_name);
+			$model_class = $this->alias_service->getRegisteredClass($relationship_name);
 		}
 
 		if ($property === FALSE)
 		{
 			$property = $model_class::getMetaData('primary_key');
 		}
-		
+
 		$gateway_names = $model_class::getMetaData('gateway_names');
 		foreach($gateway_names as $gateway_name)
 		{
-			$gateway_class = $this->builder->getRegisteredClass($gateway_name);
+			$gateway_class = $this->alias_service->getRegisteredClass($gateway_name);
 			if (array_key_exists($property, $gateway_class::getMetaData('field_list')))
 			{
 				$table = $gateway_class::getMetaData('table_name');
@@ -142,7 +149,7 @@ class Query {
 		$result = $table . '_' . $node->getId() . '.' . $property;
 		return $result;
 	}
-	
+
 	/**
 	 * Apply a filter
 	 *
@@ -191,7 +198,7 @@ class Query {
 
 	public function order($property, $direction = 'DESC')
 	{
-		$this->applyOrder($property, $direction);		
+		$this->applyOrder($property, $direction);
 		return $this;
 	}
 
@@ -364,7 +371,7 @@ class Query {
 			list($relationship_name, $alias) = explode('AS', $relationship_name);
 			$relationship_name = trim($relationship_name);
 			$alias = trim($alias);
-			$this->setAlias($alias, $relationship_name);	
+			$this->setAlias($alias, $relationship_name);
 		}
 
 		$node = new QueryTreeNode($relationship_name);
@@ -419,7 +426,7 @@ class Query {
 		$this->selectFields($node);
 
 		$from_id = $node->getParent()->getId();
-		
+
 
 		switch ($relationship_meta->type)
 		{
@@ -476,7 +483,7 @@ class Query {
 
 	private function buildSubqueryRelationship(QueryTreeNode $node)
 	{
-		$subquery = new Query($node->meta->to_model_name);
+		$subquery = new static($node->meta->to_model_name);
 		$subquery->withSubtree($node->getSubtree());
 
 		$path = $node->getPathString();
@@ -572,7 +579,7 @@ class Query {
 			{
 				// If this is an empty model that happened to have been grabbed due to the join,
 				// move on and don't do anything.
-				$model_class = $this->builder->getRegisteredClass($model_data['__model_name']);
+				$model_class = $this->alias_service->getRegisteredClass($model_data['__model_name']);
 				$primary_key_name = $model_class::getMetaData('primary_key');
 				if ( $row_data[$path][$primary_key_name] === NULL)
 				{
@@ -583,7 +590,7 @@ class Query {
 				$model_name =  $model_data['__model_name'];
 				$relationship_name = $model_data['__relationship_name'];
 
-				$model_class = $this->builder->getRegisteredClass($model_name);
+				$model_class = $this->alias_service->getRegisteredClass($model_name);
 				$primary_key_name = $model_class::getMetaData('primary_key');
 				$primary_key = $model_data[$primary_key_name];
 
@@ -672,7 +679,7 @@ class Query {
 		$model_data = $path_data[$path];
 
 		$model_name = $model_data['__model_name'];
-		$model_class = $this->builder->getRegisteredClass($model_name);
+		$model_class = $this->alias_service->getRegisteredClass($model_name);
 		$primary_key_name = $model_class::getMetaData('primary_key');
 		$primary_key = $model_data[$primary_key_name];
 
@@ -757,10 +764,10 @@ class Query {
 			$model_name = $node->meta->to_model_name;
 		}
 
-		$model_class_name = $this->builder->getRegisteredClass($model_name);
+		$model_class_name = $this->alias_service->getRegisteredClass($model_name);
 		foreach ($model_class_name::getMetaData('gateway_names') as $gateway_name)
 		{
-			$gateway_class_name = $this->builder->getRegisteredClass($gateway_name);
+			$gateway_class_name = $this->alias_service->getRegisteredClass($gateway_name);
 
 			$table = $gateway_class_name::getMetaData('table_name');
 			$properties = $gateway_class_name::getMetaData('field_list');
@@ -784,6 +791,11 @@ class Query {
 			return $this->aliases[$aliased];
 		}
 		return $aliased;
+	}
+
+	public function setConnection($db)
+	{
+		$this->db = $db;
 	}
 
 }
