@@ -148,20 +148,32 @@ class EE_Typography extends CI_Typography {
 
 		// Note: The decoding array is associative, allowing more precise mapping
 
-		$this->safe_encode = array('b', 'i', 'em', 'del', 'ins', 'strong', 'pre', 'code', 'blockquote');
+		$this->safe_encode = array(
+			'b',
+			'i',
+			'em',
+			'del',
+			'ins',
+			'strong',
+			'pre',
+			'code',
+			'blockquote',
+			'abbr' => array('property' => 'title')
+		);
 
 		$this->safe_decode = array(
-			'b'				=> 'b',
-			'i'				=> 'i',
-			'em'			=> 'em',
-			'del'			=> 'del',
-			'ins'			=> 'ins',
-			'strong'		=> 'strong',
-			'pre'			=> 'pre',
-			'code'			=> 'code',
-			'blockquote'	=> 'blockquote',
-			'quote'			=> 'blockquote',
-			'QUOTE'			=> 'blockquote'
+			'b'          => 'b',
+			'i'          => 'i',
+			'em'         => 'em',
+			'del'        => 'del',
+			'ins'        => 'ins',
+			'strong'     => 'strong',
+			'pre'        => 'pre',
+			'code'       => 'code',
+			'abbr'       => array('tag' => 'abbr', 'property' => 'title'),
+			'blockquote' => 'blockquote',
+			'quote'      => 'blockquote',
+			'QUOTE'      => 'blockquote'
 		);
 
 		// enable quote protection within braces for EE {variable="attributes"}
@@ -652,10 +664,21 @@ class EE_Typography extends CI_Typography {
 		}
 
 		// Convert allowed HTML to BBCode
-
-		foreach($this->safe_encode as $val)
+		foreach($this->safe_encode as $key => $val)
 		{
-			if (stristr($str, $val.'>') !== FALSE)
+			if ( ! is_numeric($key) && isset($val['property']))
+			{
+				if (preg_match("/<".$key.".*?".$val['property']."=(\042|\047)(.*?)\\1.*?>(.*?)<\/".$key.">/is", $str, $matches))
+				{
+					$property = ee()->security->xss_clean($matches[2]);
+					$str = preg_replace(
+						"/<".$key.".*?".$val['property']."=(\042|\047).*?\\1.*?>(.*?)<\/".$key.">/is",
+						"[".$key."=\\1".$property."\\1]\\2[/".$key."]",
+						$str
+					);
+				}
+			}
+			elseif (stristr($str, $val.'>') !== FALSE)
 			{
 				$str = preg_replace("#<".$val.">(.+?)</".$val.">#si", "[$val]\\1[/$val]", $str);
 			}
@@ -893,7 +916,23 @@ class EE_Typography extends CI_Typography {
 
 		foreach($this->safe_decode as $key => $val)
 		{
-			$str = str_ireplace(array('['.$key.']', '[/'.$key.']'),	array('<'.$val.'>', '</'.$val.'>'),	$str);
+			if (is_array($val) && isset($val['property']))
+			{
+				$str = preg_replace(
+					'/\['.$key.'=(.*?)\](.*?)\[\/'.$key.'\]/is',
+					"<".$val['tag']." ".$val['property']."=\\1>\\2</".$val['tag'].">",
+					$str
+				);
+			}
+			else
+			{
+				$val = (is_array($val)) ? $val['tag'] : $val;
+				$str = str_ireplace(
+					array('['.$key.']', '[/'.$key.']'),
+					array('<'.$val.'>', '</'.$val.'>'),
+					$str
+				);
+			}
 		}
 
 		/** -------------------------------------
