@@ -1,10 +1,9 @@
 <?php
-
 namespace EllisLab\ExpressionEngine\Model;
 
-use EllisLab\ExpressionEngine\Core\AliasService as CoreAliasService;
+use EllisLab\ExpressionEngine\Core\AliasService;
 
-class AliasService extends CoreAliasService {
+class ModelAliasService extends AliasService {
 
 	protected $identifier = 'Model';
 
