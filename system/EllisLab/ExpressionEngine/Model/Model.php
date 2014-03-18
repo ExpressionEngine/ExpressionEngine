@@ -153,7 +153,7 @@ abstract class Model {
 
 		// If the key is not set, and is not an optional key such as validation_rules,
 		// throw an exception.
-		if ( ! isset (static::$_meta[$key]) && ! in_array($key, array('validation_rules', 'cascade')))
+		if ( ! isset (static::$_meta[$key]) && ! in_array($key, array('validation_rules', 'cascade', 'polymorph')))
 		{
 			throw new \DomainException('Missing meta data, "' . $key . '", in ' . get_called_class());
 		}

@@ -71,6 +71,12 @@ class ModelBuilder {
 			throw new \InvalidArgumentException('Can only create Models.');
 		}
 
+		$polymorph = $class::getMetaData('polymorph');
+		if ($polymorph !== NULL)
+		{
+			$class = $this->getRegisteredClass($polymorph);	
+		}
+
 		return new $class($this->di, $data, $dirty);
 	}
 
