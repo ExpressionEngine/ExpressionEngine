@@ -62,16 +62,6 @@ class ModelBuilder {
 	}
 
 	/**
-	 * Create a new model builder instance.
-	 *
-	 * @return \Ellislab\ExpressionEngine\Model\ModelBuilder
-	 */
-	public function newModelBuilder()
-	{
-		return new static($this->di, $this->alias_service);
-	}
-
-	/**
 	 * Get the external validation.
 	 *
 	 * @return \Ellislab\ExpressionEngine\Core\Validation
