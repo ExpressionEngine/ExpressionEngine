@@ -32,10 +32,10 @@ class Classifier {
 	public $classes = array();
 
 	// Sensitivity of the classifier, are we at least X% sure this is spam?
-	public $sensitivity = .9;
+	public $sensitivity = .5;
 
 	// This is the assumed a priori spam to ham ratio
-	public $ratio = .5;
+	public $ratio = .8;
 
 	/**
 	 * Train the classifier on the provided training corpus
@@ -43,15 +43,14 @@ class Classifier {
 	 * @access public
 	 * @return void
 	 */
-	public function __construct($training, $classes, $sensitivity = 0.9, $ratio = 0.5)
+	public function __construct($training, $classes, $stop_words = array())
 	{
-		$this->sensitivity = $sensitivity;
-		$this->ratio = $ratio;
 		$this->classes = array_unique($classes);
+		$training = new Collection($training, $stop_words);
 		$this->corpus = $training;
-		$training = $training->tfidf();
+		$this->tfidf = $training->tfidf();
 
-		foreach ($training as $key => $vector)
+		foreach ($this->tfidf as $key => $vector)
 		{
 			$this->training[$classes[$key]][] = $vector;
 		}
@@ -59,7 +58,7 @@ class Classifier {
 
 	/**
 	 * Returns the probability that a given text belongs to the specified class.
-	 * This uses a binomial naive bayes classifier.
+	 * This uses a gaussian naive bayes classifier.
 	 * 
 	 * @param string $source  The text to be classified.
 	 * @param string $class   The class to test for.
@@ -71,30 +70,47 @@ class Classifier {
 		$source = $this->corpus->vectorize($source); 
 		$other = array_diff($this->classes, array($class));
 		$other = array_shift($other);
-		$class = $this->array_zip($class);
-		$other = $this->array_zip($other);
+		$class = $this->array_zip($this->training[$class]);
+		$other = $this->array_zip($this->training[$other]);
+		$total = $this->array_zip($this->tfidf);
 		$count = count($class);
 		$probabilities = array();
+		$log_sum = 0;
 
 		// We want to calculate Pr(Spam|F) ∀ F ∈ Features
 		// We assume statistical independence for all features and multiply together
 		// to calculcate the probability the source is spam
 		foreach($source as $feature => $freq)
 		{
+			$sample = new Expectation($total[$feature]);
+
 			$class_dist = $this->distribution($class[$feature]);
 			$other_dist = $this->distribution($other[$feature]);
+			$class_prob = $class_dist->probability($freq);
+			$other_prob = $other_dist->probability($freq);
 
-			// Most calculate the product in the log domain to avoid underflow
+			// If we don't have enough info to compute a prior simply default to the spam ratio
+			$epsilon = 0.01;
+
+			if($class_dist->variance < $epsilon || $other_dist->variance < $epsilon)
+			{
+				$prob = 1 - $this->ratio;
+			}
+			else
+			{
+				// Compute probability Using Paul Graham's formula
+				$prob = $class_prob * $this->ratio;
+				$prob = $prob / ($prob + $other_prob * (1 - $this->ratio));
+			}
+
+			// Must calculate the product in the log domain to avoid underflow
 			// so our product becomes a sum of logs
-			$class_prob = log($class_dist->probability($freq));
-			$other_prob = log($other_dist->probability($freq));
-			$ratio = $class_prob - $other_prob;
-			$probabilities[] = $ratio;
+			$log_sum = log($prob) - log(1 - $prob);
 		}
-		
-		$log_sum = array_sum($probabilities);
 
-		return log($this->sensitivity) + $log_sum > 0;
+		$probability = 1 / (1 + pow(M_E, $log_sum));
+
+		return $probability > $this->sensitivity;
 
 	}
 
@@ -107,10 +123,10 @@ class Classifier {
 	 */
 	private function array_zip($class)
 	{
-		$count = count($this->training[$class][0]);
+		$count = count($class[0]);
 		$zipped = array();
 
-		foreach ($this->training[$class] as $row)
+		foreach ($class as $row)
 		{
 			for ($i = 0; $i < $count; $i++)
 			{
