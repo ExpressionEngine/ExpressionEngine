@@ -417,11 +417,11 @@ abstract class Model {
 		{
 			foreach (static::getMetaData('gateway_names') as $gateway_name)
 			{
-				$this->gateways[$gateway_name] = $this->newGateway($gateway_class);
+				$this->gateways[$gateway_name] = $this->builder->makeGateway($gateway_name);
 			}
 		}
 
-		foreach(get_object_vars($this) as $property => $value)
+		foreach (get_object_vars($this) as $property => $value)
 		{
 			// Ignore the ones we've hidden.
 			if (strpos($property, '_') === 0)
@@ -429,7 +429,7 @@ abstract class Model {
 				continue;
 			}
 
-			foreach($this->gateways as $gateway)
+			foreach ($this->gateways as $gateway)
 			{
 				if (property_exists($gateway, $property))
 				{
@@ -441,12 +441,6 @@ abstract class Model {
 				}
 			}
 		}
-	}
-
-	protected function newGateway($gateway_name)
-	{
-		$gateway_class = $this->alias_service->getRegisteredClass($gateway_name);
-		return new $gateway_class($this->builder->getValidation());
 	}
 
 	/**
