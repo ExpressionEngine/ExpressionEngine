@@ -16,9 +16,9 @@ abstract class ActiveRecordTestCase extends \PHPUnit_Extensions_Database_TestCas
 		$this->active_record = $this->getCIDBConnection();
 		$this->pdo = $this->active_record->conn_id;
 
-		$query = (array) $this->getTableDefinitions();
+		$queries = (array) $this->getTableDefinitions();
 
-		array_map(array($this->pdo, 'query'), $query);
+		array_map(array($this->pdo, 'query'), $queries);
 	}
 
 	/**
