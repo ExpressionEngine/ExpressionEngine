@@ -2,41 +2,45 @@
 namespace EllisLab\ExpressionEngine\Model;
 
 use EllisLab\ExpressionEngine\Model\Error\Errors;
-use EllisLab\ExpressionEngine\Core\Dependencies;
 use EllisLab\ExpressionEngine\Model\Query\QueryBuilder;
 use EllisLab\ExpressionEngine\Model\Query\ModelRelationshipMeta;
 use EllisLab\ExpressionEngine\Model\Collection;
+
+use EllisLab\ExpressionEngine\Model\AliasService as ModelAliasService;
+use EllisLab\ExpressionEngine\Core\AliasService as CoreAliasService;
+
 
 /**
  * The base Model class
  */
 abstract class Model {
 
-	protected $_builder = NULL;
-	protected $_dependencies = NULL;
-
 	protected static $_meta = array();
+
+	protected $builder = NULL;
+
+	protected $alias_service = NULL;
 
 	/**
 	 * The database gateway object for the related database table.
 	 */
-	protected $_gateways = array();
+	protected $gateways = array();
 
 	/**
 	 *
 	 */
-	protected $_related_models = array();
+	protected $related_models = array();
 
 	/**
 	 *
 	 */
-	protected $_dirty = array();
+	protected $dirty = array();
 
 	/**
 	 * Initialize this model with a set of data to set on the gateway.
 	 *
-	 * @param	Dependencies	$dependencies	The dependency injection object
-	 * 		which provides access to things like the database and ModelBuilder.
+	 * @param \EllisLab\ExpressionEngine\Model\ModelBuilder
+	 * @param \Ellislab\ExpressionEngine\Core\AliasService
 	 * @param	mixed[]	$data	An array of initial property values to set on
 	 * 		this model.  The array indexes must be valid properties on this
 	 * 		model's gateway.
@@ -46,10 +50,10 @@ abstract class Model {
 	 * 		save call.  Otherwise, it will be treated as clean and assumed
 	 * 		to have come from the database.
 	 */
-	public function __construct(Dependencies $dependencies, array $data = array(), $dirty = TRUE)
+	public function __construct(ModelBuilder $builder, CoreAliasService $alias_service, array $data = array(), $dirty = TRUE)
 	{
-		$this->_dependencies = $dependencies;
-		$this->_builder = $dependencies->getModelBuilder();
+		$this->builder = $builder;
+		$this->alias_service = $alias_service;
 
 		foreach ($data as $property => $value)
 		{
@@ -124,13 +128,13 @@ abstract class Model {
 
 	protected function setDirty($property)
 	{
-		$this->_dirty[$property] = TRUE;
+		$this->dirty[$property] = TRUE;
 		return $this;
 	}
 
 	protected function isDirty($property)
 	{
-		return (isset($this->_dirty[$property]) && $this->_dirty[$property]);
+		return (isset($this->dirty[$property]) && $this->dirty[$property]);
 	}
 
 	/**
@@ -213,12 +217,12 @@ abstract class Model {
 
 		$errors = new Errors();
 
-		foreach ($this->_gateways as $gateway)
+		foreach ($this->gateways as $gateway)
 		{
 			$errors->addErrors($gateway->validate());
 		}
-		
-		$this->cascade($cascade, 'validate', 
+
+		$this->cascade($cascade, 'validate',
 			function($relationship_name, $cascade_errors) use ($errors)
 			{
 				$errors->addErrors($cascade_errors);
@@ -251,7 +255,7 @@ abstract class Model {
 			throw new \Exception('Model failed to validate on save call!');
 		}
 
-		foreach($this->_gateways as $gateway)
+		foreach($this->gateways as $gateway)
 		{
 			$gateway->save();
 		}
@@ -273,7 +277,7 @@ abstract class Model {
 			throw new \Exception('Model failed to validate on restore call!');
 		}
 
-		foreach($this->_gateways as $gateway)
+		foreach($this->gateways as $gateway)
 		{
 			$gateway->restore();
 		}
@@ -292,11 +296,11 @@ abstract class Model {
 
 		$cascade = func_get_args();
 
-		foreach($this->_gateways as $gateway)
+		foreach($this->gateways as $gateway)
 		{
 			$gateway->delete();
 		}
-		
+
 		$this->cascade($cascade, 'delete');
 	}
 
@@ -331,10 +335,10 @@ abstract class Model {
 					{
 						$method = 'get' . $from_relationship;
 						$models = $this->$method();
-				
+
 						if (count ($models) > 0)
 						{
-							$model_xml .= '<related_models relationship="' . $from_relationship . '">' . "\n";	
+							$model_xml .= '<related_models relationship="' . $from_relationship . '">' . "\n";
 							foreach ($models as $model)
 							{
 								if (is_array($to_relationship))
@@ -384,7 +388,7 @@ abstract class Model {
 
 	public function fromXml($model_xml)
 	{
-		foreach($model_xml->property as $property)
+		foreach ($model_xml->property as $property)
 		{
 			$name = (string) $property['name'];
 			$this->{$name} = (string) $property;
@@ -397,7 +401,7 @@ abstract class Model {
 			foreach($related_models_xml as $related_model_xml)
 			{
 				$model_class = (string) $related_model_xml['name'];
-				$model = new $model_class($this->_dependencies);
+				$model = $this->builder->make($model_class);
 				$model->fromXml($related_model_xml);
 				$models[] = $model;
 			}
@@ -409,15 +413,15 @@ abstract class Model {
 
 	protected function map()
 	{
-		if (empty($this->_gateways))
+		if (empty($this->gateways))
 		{
 			foreach (static::getMetaData('gateway_names') as $gateway_name)
 			{
-				$this->_gateways[$gateway_name] = $this->_builder->makeGateway($gateway_name);
+				$this->gateways[$gateway_name] = $this->builder->makeGateway($gateway_name);
 			}
 		}
 
-		foreach(get_object_vars($this) as $property => $value)
+		foreach (get_object_vars($this) as $property => $value)
 		{
 			// Ignore the ones we've hidden.
 			if (strpos($property, '_') === 0)
@@ -425,9 +429,9 @@ abstract class Model {
 				continue;
 			}
 
-			foreach($this->_gateways as $gateway)
+			foreach ($this->gateways as $gateway)
 			{
-				if (property_exists($gateway, $property)) 
+				if (property_exists($gateway, $property))
 				{
 					$gateway->{$property} = $value;
 					if ($this->isDirty($property))
@@ -606,7 +610,7 @@ abstract class Model {
 		// extract all public vars from our gateways and flatten them
 		$keys = array_keys(call_user_func_array(
 			'array_merge',
-			array_map('get_object_vars', $this->_gateways)
+			array_map('get_object_vars', $this->gateways)
 		));
 
 		// Combine the keys with their value as controlled by __get
@@ -631,20 +635,20 @@ abstract class Model {
 	 */
 	public function setRelated($relationship_key, $value)
 	{
-		$this->_related_models[$relationship_key] = $value;
+		$this->related_models[$relationship_key] = $value;
 		return $this;
 	}
 
 	public function hasRelated($relationship_key, $primary_key=NULL)
 	{
-		if ( ! isset($this->_related_models[$relationship_key]))
+		if ( ! isset($this->related_models[$relationship_key]))
 		{
 			return FALSE;
 		}
 
 		if ($primary_key !== NULL)
 		{
-			$ids = $this->_related_models[$relationship_key]->getIds();
+			$ids = $this->related_models[$relationship_key]->getIds();
 			return in_array($primary_key, $ids);
 		}
 
@@ -653,11 +657,11 @@ abstract class Model {
 
 	public function addRelated($relationship_key, $model)
 	{
-		if ( ! isset($this->_related_models[$relationship_key]))
+		if ( ! isset($this->related_models[$relationship_key]))
 		{
-			$this->_related_models[$relationship_key] = new Collection();
+			$this->related_models[$relationship_key] = new Collection();
 		}
-		$this->_related_models[$relationship_key][] = $model;
+		$this->related_models[$relationship_key][] = $model;
 		return $this;
 	}
 
@@ -677,20 +681,20 @@ abstract class Model {
 	 * @return Relationship object or related data
 	 */
 	private function related(
-		$type, $to_model_name, $this_key, $to_key = NULL, $name=NULL)
+		$type, $to_model_name, $this_key, $to_key = NULL, $name = NULL)
 	{
 		// If we already have data, return it
 		$relationship_key = (isset($name) ? $name : $to_model_name);
-		if (array_key_exists($relationship_key, $this->_related_models))
+		if (array_key_exists($relationship_key, $this->related_models))
 		{
 			switch($type)
-			{ 
+			{
 				case ModelRelationshipMeta::TYPE_MANY_TO_MANY:
 				case ModelRelationshipMeta::TYPE_ONE_TO_MANY:
-					return $this->_related_models[$relationship_key];
+					return $this->related_models[$relationship_key];
 				case ModelRelationshipMeta::TYPE_MANY_TO_ONE:
 				case ModelRelationshipMeta::TYPE_ONE_TO_ONE:
-					return $this->_related_models[$relationship_key][0];
+					return $this->related_models[$relationship_key][0];
 				default:
 					throw new \Exception('Unknown type!');
 			}
@@ -701,7 +705,7 @@ abstract class Model {
 		// to the primary key of the target model.
 		if ( ! isset($to_key))
 		{
-			$to_model_class = $this->_builder->getRegisteredClass($to_model_name);
+			$to_model_class = $this->alias_service->getRegisteredClass($to_model_name);
 			$to_key = $to_model_class::getMetaData('primary_key');
 		}
 
@@ -711,7 +715,7 @@ abstract class Model {
 		if ($this->getId() === NULL)
 		{
 			$relationship = new ModelRelationshipMeta(
-				$this->_dependencies,
+				$this->alias_service,
 				$type,
 				$relationship_key,
 				array(
@@ -720,7 +724,7 @@ abstract class Model {
 					'key' => $this_key
 				),
 				array(
-					'model_class' => $this->_builder->getRegisteredClass($to_model_name),
+					'model_class' => $this->alias_service->getRegisteredClass($to_model_name),
 					'model_name' => $to_model_name,
 					'key' => $to_key
 				)
@@ -731,7 +735,7 @@ abstract class Model {
 		// Lazy Load
 		// 	Otherwise, if we haven't hit one of the previous cases, then this
 		// 	is a lazy load on an existing model.
-		$query = $this->_dependencies->getModelBuilder()->get($to_model_name);
+		$query = $this->builder->get($to_model_name);
 		$query->filter($to_model_name . '.' . $to_key, $this->$this_key);
 
 		if ($type == 'one-to-one' OR $type == 'many-to-one')
@@ -747,7 +751,6 @@ abstract class Model {
 		return $result;
 	}
 
-
 	public function testPrint($depth='')
 	{
 		if ($depth == "\t\t\t")
@@ -757,7 +760,7 @@ abstract class Model {
 		$primary_key = static::getMetaData('primary_key');
 		$model_name = substr(get_class($this), strrpos(get_class($this), '\\')+1);
 		echo $depth . '=====' . $model_name . ': ' . $this->{$primary_key} . ' Obj(' . spl_object_hash($this) . ')'. "=====\n";
-		foreach($this->_related_models as $relationship_name=>$models)
+		foreach($this->related_models as $relationship_name=>$models)
 		{
 			echo $depth . '----Relationship: ' . $relationship_name . "----\n";
 			foreach($models as $model)

@@ -1,7 +1,6 @@
 <?php
 namespace EllisLab\ExpressionEngine\Library\DataStructure\Tree;
 
-
 /**
  * ExpressionEngine Tree Factory Class
  *
@@ -32,7 +31,7 @@ class TreeFactory {
 			array(
 				'id'	 		 => 'id',
 				'parent' 	 	 => 'parent_id',
-				'class_name'	 => 'EE_TreeNode'
+				'class_name'	 => '\EllisLab\ExpressionEngine\Library\DataStructure\Tree\TreeNode'
 			),
 			(array) $conf
 		);

@@ -69,27 +69,39 @@ Request using GitHub to the ExpressionEngine-Reactor repository.
 Unit Testing
 ************
 
-In order to run unit tests you will need PHPUnit and Phing. These can
-be installed with composer or pear::
+In order to run unit tests you will need Composer and PHPUnit. In the
+system/Tests directory run:
 
-  pear config-set auto_discover 1
-  pear install pear.phpunit.de/PHPUnit
+  composer install
 
-  # OR
-  composer global require 'phpunit/phpunit=3.7.*'
-  composer global require phing/phing:2.6.1
+From there you can run the ExpressionEngine tests with::
 
-Make sure that the bin path of the system you're using is in your $PATH.
-For composer this defaults to `~/.composer/vendor/bin`, for PEAR it can
-be found using `pear config-get bin_dir`.
+  phpunit -c phpunit.xml ExpressionEngine/
 
-You can then run all current unit tests using phing::
+Alternatively you can install phing and  run all current unit tests from
+the project root using::
 
   phing tests
 
 ******************
 Writing Unit Tests
 ******************
+
+Before beginning to write tests, please read the documentation for:
+
+* Mockery: https://github.com/padraic/mockery#documentation, especially
+  the sections on expectation declarations, argument validation, and
+  partial mocking.
+
+* PHPUnit: http://phpunit.de/manual/current/en/index.html, especially
+  the sections on assertions and database testing.
+
+General Guidelines:
+
+ - Use mockery for mocks
+ - Prefer the matchesPattern hamcrest matcher instead of the mockery
+   regex default for clarity.
+ - Use array datasets for database tests
 
 Each test case should look as close to a minimal production or
 documentation code sample as possible and should be self documenting.

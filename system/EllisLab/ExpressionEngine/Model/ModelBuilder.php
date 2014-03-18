@@ -4,48 +4,23 @@ namespace EllisLab\ExpressionEngine\Model;
 use EllisLab\ExpressionEngine\Core\Dependencies;
 use EllisLab\ExpressionEngine\Model\Query\Query;
 
+/**
+ * The model builder is our entry point. Any external dependencies should be
+ * explicitly declared here by providing getters similar to getValidation().
+ */
 class ModelBuilder {
 
-	private $di;
-	private $model_namespace_aliases = array(
-		'Template'       => '\EllisLab\ExpressionEngine\Model\Template\Template',
-		'TemplateGroup'  => '\EllisLab\ExpressionEngine\Model\Template\TemplateGroup',
-		'TemplateGateway' => '\EllisLab\ExpressionEngine\Model\Gateway\TemplateGateway',
-		'TemplateGroupGateway' => '\EllisLab\ExpressionEngine\Model\Gateway\TemplateGroupGateway',
-		'Channel' => '\EllisLab\ExpressionEngine\Module\Channel\Model\Channel',
-		'ChannelFieldGroup'=> '\EllisLab\ExpressionEngine\Module\Channel\Model\ChannelFieldGroup',
-		'ChannelFieldGroupGateway' => '\EllisLab\ExpressionEngine\Module\Channel\Model\Gateway\ChannelFieldGroupGateway',
-		'ChannelFieldStructure' => '\EllisLab\ExpressionEngine\Module\Channel\Model\ChannelFieldStructure',
-		'ChannelFieldGateway' => '\EllisLab\ExpressionEngine\Module\Channel\Model\Gateway\ChannelFieldGateway',
-		'ChannelEntry' => '\EllisLab\ExpressionEngine\Module\Channel\Model\ChannelEntry',
-		'ChannelGateway' => '\EllisLab\ExpressionEngine\Module\Channel\Model\Gateway\ChannelGateway',
-		'ChannelTitleGateway' => '\EllisLab\ExpressionEngine\Module\Channel\Model\Gateway\ChannelTitleGateway',
-		'ChannelDataGateway' => '\EllisLab\ExpressionEngine\Module\Channel\Model\Gateway\ChannelDataGateway',
-		'Member' => '\EllisLab\ExpressionEngine\Module\Member\Model\Member',
-		'MemberGroup' => '\EllisLab\ExpressionEngine\Module\Member\Model\MemberGroup',
-		'MemberGateway' => '\EllisLab\ExpressionEngine\Module\Member\Model\Gateway\MemberGateway',
-		'MemberGroupGateway' => '\EllisLab\ExpressionEngine\Module\Member\Model\Gateway\MemberGroupGateway',
-		'Category' => '\EllisLab\ExpressionEngine\Model\Category\Category',
-		'CategoryFieldDataGateway' => '\EllisLab\ExpressionEngine\Model\Gateway\CategoryFieldDataGateway',
-		'CategoryGateway' => '\EllisLab\ExpressionEngine\Model\Gateway\CategoryGateway',
-		'CategoryGroup' => '\EllisLab\ExpressionEngine\Model\Category\CategoryGroup',
-		'CategoryGroupGateway'=> '\EllisLab\ExpressionEngine\Model\Gateway\CategoryGroupGateway',
-		'Status' => '\EllisLab\ExpressionEngine\Model\Status',
-		'StatusGateway' => '\EllisLab\ExpressionEngine\Model\Gateway\StatusGateway',
-		'StatusGroup' => '\EllisLab\ExpressionEngine\Model\StatusGroup',
-		'StatusGroupGateway' => '\EllisLab\ExpressionEngine\Model\Gateway\StatusGroupGateway',
-		'Site' => '\EllisLab\ExpressionEngine\Model\Site',
-		'SiteGateway' => '\EllisLab\ExpressionEngine\Model\Gateway\SiteGateway'
-	);
+	protected $alias_service;
 
-	public function __construct(Dependencies $di)
+	public function __construct(Dependencies $di, AliasService $aliases)
 	{
 		$this->di = $di;
+		$this->alias_service = $aliases;
 	}
 
 	public function get($model_name, $ids = NULL)
 	{
-		$query = new Query($this, $model_name);
+		$query = $this->newQuery($model_name);
 
 		if (isset($ids))
 		{
@@ -64,7 +39,7 @@ class ModelBuilder {
 
 	public function make($model, array $data = array(), $dirty = TRUE)
 	{
-		$class = $this->getRegisteredClass($model);
+		$class = $this->alias_service->getRegisteredClass($model);
 
 		if ( ! is_a($class, '\EllisLab\ExpressionEngine\Model\Model', TRUE))
 		{
@@ -74,60 +49,51 @@ class ModelBuilder {
 		$polymorph = $class::getMetaData('polymorph');
 		if ($polymorph !== NULL)
 		{
-			$class = $this->getRegisteredClass($polymorph);	
+			$class = $this->alias_service->getRegisteredClass($polymorph);	
 		}
 
-		return new $class($this->di, $data, $dirty);
+		return new $class($this, $this->alias_service, $data, $dirty);
 	}
 
-	/**
-	 * Create a gateway instance
-	 *
-	 * @param String $alias  Name to use when interacting with the query builder
-	 * @param String $fully_qualified_name  Fully qualified class name of the model to use
-	 * @return void
-	 */
 	public function makeGateway($gateway, $data = array())
 	{
-		$class = $this->getRegisteredClass($gateway);
+		$class = $this->alias_service->getRegisteredClass($gateway);
 
 		if ( ! is_a($class, '\EllisLab\ExpressionEngine\Model\Gateway\RowDataGateway', TRUE))
 		{
 			throw new \InvalidArgumentException('Can only create Gateways.');
 		}
 
-		return new $class($this->di, $data);
+		return new $class($this->getValidation(), $this->alias_service, $data, $dirty);
 	}
 
 	/**
-	 * Register a model under a given alias.
+	 * Create a new model builder instance.
 	 *
-	 * @param String $alias  Name to use when interacting with the query builder
-	 * @param String $fully_qualified_name  Fully qualified class name of the model to use
-	 * @return void
+	 * @return \Ellislab\ExpressionEngine\Model\ModelBuilder
 	 */
-	public function registerClass($class_name, $fully_qualified_name)
+	public function newModelBuilder()
 	{
-		if (array_key_exists($alias, $this->model_namespace_aliases))
-		{
-			throw new \OverflowException('Model name has already been registered: '. $model);
-		}
-
-		$this->model_namespace_aliases[$alias] = $fully_qualified_name;
+		return new static($this->di, $this->alias_service);
 	}
 
 	/**
-	 * Get an alias's full qualified name.
+	 * Get the external validation.
 	 *
-	 * @param String $name Name of the model
-	 * @return String Fully qualified name of the class
+	 * @return \Ellislab\ExpressionEngine\Core\Validation
 	 */
-	public function getRegisteredClass($class_name)
+	public function getValidation()
 	{
-		if ( ! array_key_exists($class_name, $this->model_namespace_aliases))
-		{
-			throw new \UnderflowException('Model "' . $class_name . '" has not been registered yet!');
-		}
-		return $this->model_namespace_aliases[$class_name];
+		return $this->di->getValidation();
+	}
+
+	/**
+	 * Create a new query object
+	 *
+	 * @return \Ellislab\ExpressionEngine\Model\Query
+	 */
+	protected function newQuery($model_name)
+	{
+		return new Query($this, $this->alias_service, $model_name);
 	}
 }

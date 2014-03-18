@@ -70,7 +70,7 @@ class CI_DB_driver {
 	var $curs_id;
 	var $limit_used;
 
-
+	protected $_escape_char = '"';
 
 	/**
 	 * Constructor.  Accepts one parameter containing the database
@@ -295,7 +295,7 @@ class CI_DB_driver {
 			// Log file the query came from
 			if (count($trace) >= 2)
 			{
-				ee()->load->helper('array');
+				require_once BASEPATH.'helpers/array_helper.php';
 
 				// Get file and line in which query method was called
 				$file = element('file', $trace[1], '');
@@ -958,11 +958,28 @@ class CI_DB_driver {
 
 		foreach($data as $key => $val)
 		{
-			$fields[] = $this->_escape_identifiers($key);
+			$fields[] = $this->escape_identifiers($key);
 			$values[] = $this->escape($val);
 		}
 
 		return $this->_insert($this->_protect_identifiers($table, TRUE, NULL, FALSE), $fields, $values);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Insert statement
+	 *
+	 * Generates a platform-specific insert string from the supplied data
+	 *
+	 * @param	string	the table name
+	 * @param	array	the insert keys
+	 * @param	array	the insert values
+	 * @return	string
+	 */
+	protected function _insert($table, $keys, $values)
+	{
+		return 'INSERT INTO '.$table.' ('.implode(', ', $keys).') VALUES ('.implode(', ', $values).')';
 	}
 
 	// --------------------------------------------------------------------
@@ -1015,6 +1032,30 @@ class CI_DB_driver {
 		}
 
 		return $this->_update($this->_protect_identifiers($table, TRUE, NULL, FALSE), $fields, $dest);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Update statement
+	 *
+	 * Generates a platform-specific update string from the supplied data
+	 *
+	 * @param	string	the table name
+	 * @param	array	the update data
+	 * @return	string
+	 */
+	protected function _update($table, $values)
+	{
+		foreach ($values as $key => $val)
+		{
+			$valstr[] = $key.' = '.$val;
+		}
+
+		return 'UPDATE '.$table.' SET '.implode(', ', $valstr)
+			.$this->_compile_wh('ar_where')
+			.$this->_compile_order_by()
+			.($this->ar_limit ? ' LIMIT '.$this->ar_limit : '');
 	}
 
 	// --------------------------------------------------------------------
@@ -1351,7 +1392,7 @@ class CI_DB_driver {
 					{
 						if ( ! in_array($val, $this->_reserved_identifiers))
 						{
-							$parts[$key] = $this->_escape_identifiers($val);
+							$parts[$key] = $this->escape_identifiers($val);
 						}
 					}
 
@@ -1408,7 +1449,7 @@ class CI_DB_driver {
 
 			if ($protect_identifiers === TRUE)
 			{
-				$item = $this->_escape_identifiers($item);
+				$item = $this->escape_identifiers($item);
 			}
 
 			return $item.$alias;
@@ -1432,13 +1473,109 @@ class CI_DB_driver {
 
 		if ($protect_identifiers === TRUE AND ! in_array($item, $this->_reserved_identifiers))
 		{
-			$item = $this->_escape_identifiers($item);
+			$item = $this->escape_identifiers($item);
 		}
 
 		return $item.$alias;
 	}
 
+	// --------------------------------------------------------------------
 
+	/**
+	 * Escape the SQL Identifiers
+	 *
+	 * This function escapes column and table names
+	 *
+	 * @param	mixed
+	 * @return	mixed
+	 */
+	public function escape_identifiers($item)
+	{
+		if ($this->_escape_char === '' OR empty($item) OR in_array($item, $this->_reserved_identifiers))
+		{
+			return $item;
+		}
+		elseif (is_array($item))
+		{
+			foreach ($item as $key => $value)
+			{
+				$item[$key] = $this->escape_identifiers($value);
+			}
+
+			return $item;
+		}
+		// Avoid breaking functions and literal values inside queries
+		elseif (ctype_digit($item) OR $item[0] === "'" OR ($this->_escape_char !== '"' && $item[0] === '"') OR strpos($item, '(') !== FALSE)
+		{
+			return $item;
+		}
+
+		static $preg_ec = array();
+
+		if (empty($preg_ec))
+		{
+			if (is_array($this->_escape_char))
+			{
+				$preg_ec = array(
+					preg_quote($this->_escape_char[0], '/'),
+					preg_quote($this->_escape_char[1], '/'),
+					$this->_escape_char[0],
+					$this->_escape_char[1]
+				);
+			}
+			else
+			{
+				$preg_ec[0] = $preg_ec[1] = preg_quote($this->_escape_char, '/');
+				$preg_ec[2] = $preg_ec[3] = $this->_escape_char;
+			}
+		}
+
+		foreach ($this->_reserved_identifiers as $id)
+		{
+			if (strpos($item, '.'.$id) !== FALSE)
+			{
+				return preg_replace('/'.$preg_ec[0].'?([^'.$preg_ec[1].'\.]+)'.$preg_ec[1].'?\./i', $preg_ec[2].'$1'.$preg_ec[3].'.', $item);
+			}
+		}
+
+		return preg_replace('/'.$preg_ec[0].'?([^'.$preg_ec[1].'\.]+)'.$preg_ec[1].'?(\.)?/i', $preg_ec[2].'$1'.$preg_ec[3].'$2', $item);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Escape String
+	 *
+	 * @param	string	$str
+	 * @param	bool	$like	Whether or not the string will be used in a LIKE condition
+	 * @return	string
+	 */
+	public function escape_str($str, $like = FALSE)
+	{
+		if (is_array($str))
+		{
+			foreach ($str as $key => $val)
+			{
+				$str[$key] = $this->escape_str($val, $like);
+			}
+
+			return $str;
+		}
+
+		$str = $this->_escape_str($str);
+
+		// escape LIKE condition wildcards
+		if ($like === TRUE)
+		{
+			return str_replace(
+				array($this->_like_escape_chr, '%', '_'),
+				array($this->_like_escape_chr.$this->_like_escape_chr, $this->_like_escape_chr.'%', $this->_like_escape_chr.'_'),
+				$str
+			);
+		}
+
+		return $str;
+	}
 }
 
 

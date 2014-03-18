@@ -1,6 +1,8 @@
 <?php
 namespace EllisLab\ExpressionEngine\Model\Query;
 
+use EllisLab\ExpressionEngine\Core\AliasService;
+
 class ModelRelationshipMeta {
 
 	const METHOD_JOIN = 'join';
@@ -11,7 +13,7 @@ class ModelRelationshipMeta {
 	const TYPE_MANY_TO_ONE = 'manyToOne';
 	const TYPE_MANY_TO_MANY = 'manyToMany';
 
-	protected $builder;
+	protected $alias_service;
 
 	protected $type = NULL;
 	protected $method = self::METHOD_JOIN;
@@ -37,9 +39,9 @@ class ModelRelationshipMeta {
 	protected $pivot_from_key = NULL;
 	protected $pivot_to_key = NULL;
 
-	public function __construct($dependencies, $type, $relationship_name, array $from, array $to)
+	public function __construct(AliasService $alias_service, $type, $relationship_name, array $from, array $to)
 	{
-		$this->builder = $dependencies->getModelBuilder();
+		$this->alias_service = $alias_service;
 
 		$this->type = $type;
 		$this->relationship_name = $relationship_name;
@@ -61,7 +63,7 @@ class ModelRelationshipMeta {
 		$from_model_class = $this->from_model_class;
 		$from_key_map = $from_model_class::getMetaData('key_map');
 		$from_gateway_name = $from_key_map[$this->from_key];
-		$from_gateway_class = $this->builder->getRegisteredClass($from_gateway_name);
+		$from_gateway_class = $this->alias_service->getRegisteredClass($from_gateway_name);
 		$this->from_table = $from_gateway_class::getMetaData('table_name');
 
 		// Poplate to_table
@@ -73,7 +75,7 @@ class ModelRelationshipMeta {
 		}
 
 		$to_gateway_name = $gateway_relationship['gateway'];
-		$to_gateway_class = $this->builder->getRegisteredClass($to_gateway_name);
+		$to_gateway_class = $this->alias_service->getRegisteredClass($to_gateway_name);
 		$this->to_table = $to_gateway_class::getMetaData('table_name');
 		// Assuming we're joining tables in the same model across the main
 		// gateway's primary key.
@@ -86,7 +88,7 @@ class ModelRelationshipMeta {
 		unset($joined_gateway_names[$key]);
 		foreach($joined_gateway_names as $joined_gateway_name)
 		{
-			$joined_gateway_class = $this->builder->getRegisteredClass($joined_gateway_name);
+			$joined_gateway_class = $this->alias_service->getRegisteredClass($joined_gateway_name);
 			$this->joined_tables[$joined_gateway_class::getMetaData('primary_key')] = $joined_gateway_class::getMetaData('table_name');
 		}
 
