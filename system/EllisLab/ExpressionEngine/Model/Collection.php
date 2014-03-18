@@ -1,5 +1,9 @@
 <?php namespace EllisLab\ExpressionEngine\Model;
 
+use Countable;
+use ArrayAccess;
+use IteratorAggregate;
+
 /**
  * Model Collection
  *
@@ -7,7 +11,7 @@
  * in a model collection. A collection acts like an array, with the additional
  * benefit of being able to call save and delete on it.
  */
-class Collection implements \ArrayAccess, \Countable, \IteratorAggregate {
+class Collection implements ArrayAccess, Countable, IteratorAggregate {
 
 	protected $elements = array();
 
