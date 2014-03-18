@@ -2,7 +2,7 @@
 namespace EllisLab\ExpressionEngine\Model\Gateway;
 
 use EllisLab\ExpressionEngine\Core\Dependencies;
-use EllisLab\ExpressionEngine\Core\Validation\Validation;
+use EllisLab\ExpressionEngine\Core\Validation\ValidationFactory;
 use EllisLab\ExpressionEngine\Core\Validation\Error\ValidationError;
 
 use EllisLab\ExpressionEngine\Model\Error\Errors;
@@ -58,7 +58,7 @@ abstract class RowDataGateway {
 	 * 		initialize the Gateway's public properties.  Of the form
 	 * 		'property_name' => 'value'.
 	 */
-	public function __construct(Validation $validation_factory, array $data = array())
+	public function __construct(ValidationFactory $validation_factory, array $data = array())
 	{
 		$this->validation_factory = $validation_factory;
 
@@ -163,7 +163,7 @@ abstract class RowDataGateway {
 	 * 				validation.  If no errors were generated, then
 	 * 				Errors::hasErrors() will return false.
 	 */
-	public function validate(Validation $validation_factory = NULL, $errors = NULL)
+	public function validate(ValidationFactory $validation_factory = NULL, $errors = NULL)
 	{
 		$errors = $errors ?: new Errors();
 

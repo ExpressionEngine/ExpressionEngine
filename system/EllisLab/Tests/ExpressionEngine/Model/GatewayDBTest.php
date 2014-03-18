@@ -13,14 +13,14 @@ class GatewayDBTest extends ActiveRecordTestCase {
 
 		$this->connection = $this->getConnection();
 		$this->db = $this->getActiveRecord();
-		$this->di = m::mock('EllisLab\ExpressionEngine\Core\Dependencies');
+		$this->validation = m::mock('EllisLab\ExpressionEngine\Core\Validation\ValidationFactory');
 	}
 
 	public function testSaveNew()
 	{
 		$this->assertEquals(2, $this->connection->getRowCount('teams'), "Pre-Condition");
 
-		$gateway = new DBTestGateway($this->di);
+		$gateway = new DBTestGateway($this->validation);
 		$gateway->setConnection($this->db);
 
 		$gateway->name = 'Visible Ninjas';
@@ -37,7 +37,7 @@ class GatewayDBTest extends ActiveRecordTestCase {
 	{
 		$this->assertEquals(2, $this->connection->getRowCount('teams'), "Pre-Condition");
 
-		$gateway = new DBTestGateway($this->di, array(
+		$gateway = new DBTestGateway($this->validation, array(
 			'name' => 'Visible Ninjas',
 			'founded' => 2014
 		));
@@ -55,7 +55,7 @@ class GatewayDBTest extends ActiveRecordTestCase {
 	{
 		$this->assertEquals(2, $this->connection->getRowCount('teams'), "Pre-Condition");
 
-		$gateway = new DBTestGateway($this->di);
+		$gateway = new DBTestGateway($this->validation);
 		$gateway->setConnection($this->db);
 
 		$gateway->team_id = 2;
@@ -71,7 +71,7 @@ class GatewayDBTest extends ActiveRecordTestCase {
 	{
 		$this->assertEquals(2, $this->connection->getRowCount('teams'), "Pre-Condition");
 
-		$gateway = new DBTestGateway($this->di);
+		$gateway = new DBTestGateway($this->validation);
 		$gateway->setConnection($this->db);
 
 		$gateway->team_id = 2;
