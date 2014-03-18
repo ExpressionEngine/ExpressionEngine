@@ -1,42 +1,23 @@
 <?php
 namespace EllisLab\ExpressionEngine\Core;
 
+use \EllisLab\ExpressionEngine\Core\ServiceProvider;
+
 use \EllisLab\ExpressionEngine\Model\ModelBuilder;
+use \EllisLab\ExpressionEngine\Model\AliasService as ModelAliasService;
 use \EllisLab\ExpressionEngine\Core\Validation\Validation;
 
-class Dependencies {
-
-    protected $registry;
-
-    public function __construct(Dependencies $old_di = NULL)
-    {
-        if (isset($old_id))
-        {
-            $this->registry =& $old_di->registry;
-        }
-        else
-        {
-            $this->registry = array();
-        }
-    }
-
-    protected function singleton(\Closure $object)
-    {
-        $hash = spl_object_hash($object);
-
-        if ( ! isset($this->registry[$hash]))
-        {
-            $this->registry[$hash] = $object($this);
-        }
-
-        return $this->registry[$hash];
-    }
+/**
+ * Global service provider.
+ *
+ */
+class Dependencies extends ServiceProvider {
 
     public function getModelBuilder()
     {
         return $this->singleton(function($di)
         {
-            return new ModelBuilder($di);
+            return new ModelBuilder(new ModelAliasService());
         });
     }
 
