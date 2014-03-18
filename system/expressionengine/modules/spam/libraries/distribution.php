@@ -57,7 +57,7 @@ class Distribution {
 		{
 			if ($x == $this->mean)
 			{
-				return 1;
+				return INF;
 			}
 			else
 			{
