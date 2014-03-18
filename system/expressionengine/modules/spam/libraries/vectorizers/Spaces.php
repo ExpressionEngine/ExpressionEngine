@@ -23,7 +23,7 @@
  * @link		http://ellislab.com
  */
 
-class Spaces {
+class Spaces implements Vectorizer {
 
 	/**
 	 * Calculates the ratio of whitespace to non-whitespace 
@@ -32,7 +32,7 @@ class Spaces {
 	 * @access public
 	 * @return float The calculated ratio
 	 */
-	public static function vectorize($source)
+	public function vectorize($source)
 	{
 		$whitespace = preg_match_all('/\s/u', $source);
 		$characters  = mb_strlen($source);
@@ -49,4 +49,5 @@ class Spaces {
 
 }
 
-?>
+/* End of file Spaces.php */
+/* Location: ./system/expressionengine/modules/spam/libraries/vectorizers/Spaces.php */

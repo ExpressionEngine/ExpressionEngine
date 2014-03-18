@@ -23,7 +23,7 @@
  * @link		http://ellislab.com
  */
 
-class ASCII_Printable {
+class ASCII_Printable implements Vectorizer {
 
 	/**
 	 * Calculates the ratio of non-ASCII printable characters 
@@ -32,7 +32,7 @@ class ASCII_Printable {
 	 * @access public
 	 * @return float The calculated ratio
 	 */
-	public static function vectorize($source)
+	public function vectorize($source)
 	{
 		$non_ascii  = preg_match_all('/[^\x20-\x7E]/u', $source);
 		$length = mb_strlen($source);
@@ -49,4 +49,5 @@ class ASCII_Printable {
 
 }
 
-?>
+/* End of file ASCII_Printable.php */
+/* Location: ./system/expressionengine/modules/spam/libraries/vectorizers/ASCII_Printable.php */

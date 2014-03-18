@@ -23,7 +23,7 @@
  * @link		http://ellislab.com
  */
 
-class Links {
+class Links implements Vectorizer {
 
 	/**
 	 * Calculates the amount of links in the source
@@ -32,7 +32,7 @@ class Links {
 	 * @access public
 	 * @return float The calculated ratio
 	 */
-	public static function vectorize($source)
+	public function vectorize($source)
 	{
 		$pattern = '#[-a-zA-Z0-9@:%_\+.~\#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~\#?&//=]*)?#si';
 		return preg_match_all($pattern, $source);
@@ -40,4 +40,5 @@ class Links {
 
 }
 
-?>
+/* End of file Links.php */
+/* Location: ./system/expressionengine/modules/spam/libraries/vectorizers/Links.php */

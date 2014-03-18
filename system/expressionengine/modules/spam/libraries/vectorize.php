@@ -23,17 +23,21 @@
  * @link		http://ellislab.com
  */
 
-include('vectorizers/ASCII_Printable.php');
-include('vectorizers/Entropy.php');
-include('vectorizers/Punctuation.php');
-include('vectorizers/Spaces.php');
+require_once('Document.php');
+
+// Include our vectorizer rules
+require_once('vectorizers/ASCII_Printable.php');
+require_once('vectorizers/Entropy.php');
+require_once('vectorizers/Links.php');
+require_once('vectorizers/Punctuation.php');
+require_once('vectorizers/Spaces.php');
 
 class Collection {
 
 	public $documents = array();
 	public $vocabulary = array();
+	public $vectorizers = array();
 	public $corpus = "";
-	public $vectorizers = array('ASCII_Printable', 'Entropy', 'Punctuation', 'Spaces');
 	
 	/**
 	 * Get our corpus ready. First we strip out all common words specified in our stop word list,
@@ -46,6 +50,13 @@ class Collection {
 	 */
 	public function __construct($source, $stop_words = array())
 	{
+		// register our vectorizer rules
+		$this->register('ASCII_Printable');
+		$this->register('Entropy');
+		$this->register('Links');
+		$this->register('Punctuation');
+		$this->register('Spaces');
+
 		$this->stop_words = $stop_words;
 
 		foreach ($stop_words as $key => $word)
@@ -80,6 +91,13 @@ class Collection {
 		$this->corpus = new Document($this->corpus);
 	}
 
+	/**
+	 * Computes a vector of feature values suitable for using with Naive Bayes
+	 * 
+	 * @param string $source The string to vectorize
+	 * @access public
+	 * @return array An array of floats
+	 */
 	public function vectorize($source)
 	{
 		$source = new Document($source);
@@ -137,6 +155,25 @@ class Collection {
 	}
 
 	/**
+	 * Register a vectorizer rule
+	 * 
+	 * @param mixed $class 
+	 * @access public
+	 * @return void
+	 */
+	public function register($class)
+	{
+		$obj = new $class;
+
+		if ( ! $obj instanceOf Vectorizer)
+		{
+			throw new InvalidArgumentException($class.' must implement the Vectorizer interface.');
+		}
+
+		$this->vectorizers[] = $obj;
+	}
+
+	/**
 	 * _tfidf
 	 * 
 	 * @param Document $source 
@@ -170,7 +207,6 @@ class Collection {
 
 		foreach($this->vectorizers as $vec)
 		{
-			$vec = new $vec();
 			$heuristics[] = $vec->vectorize($source->text);
 		}
 
@@ -179,127 +215,28 @@ class Collection {
 
 }
 
+// ------------------------------------------------------------------------
 
 /**
- * Document class. Cleans and generates a frequency table of a document.
- * 
- * @implements Iterator
+ * ExpressionEngine Document Vectorizer Interface
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Core
+ * @category	Core
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
-class Document implements Iterator {
+interface Vectorizer {
 
-	public $frequency = array();
-	public $words = array();
-	public $max_frequency = 0;
-	private $position = 0;
-	
 	/**
-	 * Clean the text, and then generate the frequency table.
-	 * 
-	 * @access public
-	 * @param mixed $text The text of the Document we are getting the frequencies for
-	 * @return void
-	 */
-	public function __construct($text)
-	{
-		$text = preg_replace("/[^a-zA-Z0-9\s]/", "", $text);
-		$text = trim($text);
-		$this->text = $text;
-		$this->frequency = $this->_frequency($text);
-		$this->words = array_keys($this->frequency);
-		$this->size = count(explode(' ',$text));
-	}
-	
-	/**
-	 * We override __invoke here to make the frequency easily callable.
-	 * 
-	 * @access public
-	 * @param string $word The word you want the frequency of
+	 * Return a scalar value computed from the source string
+	 *
+	 * @param string $source
 	 * @return float
 	 */
-	public function __invoke($word)
-	{
-		return $this->frequency($word);
-	}
-	
-	/**
-	 * Return the frequency of a word.
-	 * 
-	 * @access public
-	 * @param string $word The word you want the frequency of
-	 * @return float
-	 */
-	public function frequency($word)
-	{
-		if (empty($this->frequency[$word]))
-		{
-			return 0;
-		}
-		else
-		{
-			return $this->frequency[$word];
-		}
-	}
+	public function vectorize($source);
 
-	/**
-	 * Count and rank the frequency of words
-	 * 
-	 * @access private
-	 * @param mixed $text
-	 * @return array
-	 */
-	private function _frequency($text)
-	{
-		$count = array();
-		$words = preg_split('/\s+/', $text);
-		$num = count($words);
-		$max = 0;
-
-		foreach ($words as $word)
-		{
-			$word = strtolower($word);
-
-			if (isset($count[$word]))
-			{
-				$count[$word]++;
-			}
-			else
-			{
-				$count[$word] = 1;
-			}
-
-			$max = max($max, $count[$word]);
-		}
-
-		$this->max_frequency = $max;
-		arsort($count);
-		return $count; 
-	}
-
-	public function rewind()
-	{
-        $this->position = 0;
-    }
-
-	public function current()
-	{
-        return $this->frequency[$this->words[$this->position]];
-    }
-
-	public function key()
-	{
-        return $this->words[$this->position];
-    }
-
-	public function next()
-	{
-        ++$this->position;
-    }
-
-	public function valid()
-	{
-        return isset($this->words[$this->position]);
-    }
-	
 }
 
-?>
+/* End of file Vectorize.php */
+/* Location: ./system/expressionengine/modules/spam/libraries/Vectorize.php */

@@ -23,7 +23,7 @@
  * @link		http://ellislab.com
  */
 
-class Entropy {
+class Entropy implements Vectorizer {
 
 	/**
 	 * Estimates the entropy of a string by calculating the compression ratio.
@@ -32,7 +32,7 @@ class Entropy {
 	 * @access public
 	 * @return float estimated entropy
 	 */
-	public static function vectorize($source)
+	public function vectorize($source)
 	{
 		$length = mb_strlen($source);
 		$compressed = gzcompress($source);
@@ -43,4 +43,5 @@ class Entropy {
 
 }
 
-?>
+/* End of file Entropy.php */
+/* Location: ./system/expressionengine/modules/spam/libraries/vectorizers/Entropy.php */

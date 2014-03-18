@@ -23,7 +23,7 @@
  * @link		http://ellislab.com
  */
 
-class Punctuation {
+class Punctuation implements Vectorizer {
 
 	/**
 	 * Calculates the ratio of punctuation to non-punctuation 
@@ -32,7 +32,7 @@ class Punctuation {
 	 * @access public
 	 * @return float The calculated ratio
 	 */
-	public static function vectorize($source)
+	public function vectorize($source)
 	{
 		$punctuation = preg_match_all('/[!-~]/u', $source);
 		$characters  = mb_strlen($source);
@@ -49,4 +49,5 @@ class Punctuation {
 
 }
 
-?>
+/* End of file Punctuation.php */
+/* Location: ./system/expressionengine/modules/spam/libraries/vectorizers/Punctuation.php */
