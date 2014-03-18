@@ -1,10 +1,8 @@
 <?php
-
-namespace EllisLab\Tests\ExpressionEngine\Model\Integration;
+namespace EllisLab\Tests\ExpressionEngine\Model;
 
 use Mockery as m;
 use ReflectionObject;
-
 use EllisLab\Tests\PHPUnit\Extensions\Database\TestCase\ActiveRecordTestCase;
 
 class GatewayDBTest extends ActiveRecordTestCase {
@@ -22,7 +20,7 @@ class GatewayDBTest extends ActiveRecordTestCase {
 	{
 		$this->assertEquals(2, $this->connection->getRowCount('teams'), "Pre-Condition");
 
-		$gateway = new TestGateway($this->di);
+		$gateway = new DBTestGateway($this->di);
 		$gateway->setConnection($this->db);
 
 		$gateway->name = 'Visible Ninjas';
@@ -39,7 +37,7 @@ class GatewayDBTest extends ActiveRecordTestCase {
 	{
 		$this->assertEquals(2, $this->connection->getRowCount('teams'), "Pre-Condition");
 
-		$gateway = new TestGateway($this->di, array(
+		$gateway = new DBTestGateway($this->di, array(
 			'name' => 'Visible Ninjas',
 			'founded' => 2014
 		));
@@ -57,7 +55,7 @@ class GatewayDBTest extends ActiveRecordTestCase {
 	{
 		$this->assertEquals(2, $this->connection->getRowCount('teams'), "Pre-Condition");
 
-		$gateway = new TestGateway($this->di);
+		$gateway = new DBTestGateway($this->di);
 		$gateway->setConnection($this->db);
 
 		$gateway->team_id = 2;
@@ -73,7 +71,7 @@ class GatewayDBTest extends ActiveRecordTestCase {
 	{
 		$this->assertEquals(2, $this->connection->getRowCount('teams'), "Pre-Condition");
 
-		$gateway = new TestGateway($this->di);
+		$gateway = new DBTestGateway($this->di);
 		$gateway->setConnection($this->db);
 
 		$gateway->team_id = 2;
@@ -87,7 +85,7 @@ class GatewayDBTest extends ActiveRecordTestCase {
 
 	public function getTableDefinitions()
 	{
-		return TestGateway::tableSchema();
+		return DBTestGateway::tableSchema();
 	}
 
 	public function getDataSet()
@@ -132,7 +130,7 @@ class GatewayDBTest extends ActiveRecordTestCase {
 }
 
 
-class TestGateway extends \EllisLab\ExpressionEngine\Model\Gateway\RowDataGateway {
+class DBTestGateway extends \EllisLab\ExpressionEngine\Model\Gateway\RowDataGateway {
 
 	protected static $meta = array(
 		'table_name' => 'teams',
