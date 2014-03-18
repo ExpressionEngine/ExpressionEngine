@@ -2,6 +2,7 @@
 
 use Countable;
 use ArrayAccess;
+use ArrayIterator;
 use IteratorAggregate;
 
 /**
@@ -173,6 +174,6 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate {
 	 */
 	public function getIterator()
 	{
-		return new \ArrayIterator($this->elements);
+		return new ArrayIterator($this->elements);
 	}
 }

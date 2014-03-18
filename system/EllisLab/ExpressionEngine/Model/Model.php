@@ -6,8 +6,7 @@ use EllisLab\ExpressionEngine\Model\Query\QueryBuilder;
 use EllisLab\ExpressionEngine\Model\Query\ModelRelationshipMeta;
 use EllisLab\ExpressionEngine\Model\Collection;
 
-use EllisLab\ExpressionEngine\Model\AliasService as ModelAliasService;
-use EllisLab\ExpressionEngine\Core\AliasService as CoreAliasService;
+use EllisLab\ExpressionEngine\Model\ModelAliasService;
 
 
 /**
@@ -40,7 +39,7 @@ abstract class Model {
 	 * Initialize this model with a set of data to set on the gateway.
 	 *
 	 * @param \EllisLab\ExpressionEngine\Model\ModelBuilder
-	 * @param \Ellislab\ExpressionEngine\Core\AliasService
+	 * @param \Ellislab\ExpressionEngine\Model\ModelAliasService
 	 * @param	mixed[]	$data	An array of initial property values to set on
 	 * 		this model.  The array indexes must be valid properties on this
 	 * 		model's gateway.
@@ -50,7 +49,7 @@ abstract class Model {
 	 * 		save call.  Otherwise, it will be treated as clean and assumed
 	 * 		to have come from the database.
 	 */
-	public function __construct(ModelBuilder $builder, CoreAliasService $alias_service, array $data = array(), $dirty = TRUE)
+	public function __construct(ModelBuilder $builder, ModelAliasService $alias_service, array $data = array(), $dirty = TRUE)
 	{
 		$this->builder = $builder;
 		$this->alias_service = $alias_service;

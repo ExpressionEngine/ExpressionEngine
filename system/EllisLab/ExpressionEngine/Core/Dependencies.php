@@ -2,10 +2,9 @@
 namespace EllisLab\ExpressionEngine\Core;
 
 use \EllisLab\ExpressionEngine\Core\ServiceProvider;
-
-use \EllisLab\ExpressionEngine\Model\ModelBuilder;
-use \EllisLab\ExpressionEngine\Model\AliasService as ModelAliasService;
 use \EllisLab\ExpressionEngine\Core\Validation\Validation;
+use \EllisLab\ExpressionEngine\Model\ModelAliasService;
+use \EllisLab\ExpressionEngine\Model\ModelBuilder;
 
 /**
  * Global service provider.

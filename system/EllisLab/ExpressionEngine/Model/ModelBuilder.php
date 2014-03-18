@@ -18,6 +18,11 @@ class ModelBuilder {
 		$this->alias_service = $aliases;
 	}
 
+	/**
+	 * Query Factory
+	 *
+	 * @return \Ellislab\ExpressionEngine\Model\Query
+	 */
 	public function get($model_name, $ids = NULL)
 	{
 		$query = $this->newQuery($model_name);
@@ -37,6 +42,11 @@ class ModelBuilder {
 		return $query;
 	}
 
+	/**
+	 * Model factory
+	 *
+	 * @return \Ellislab\ExpressionEngine\Model\Model
+	 */
 	public function make($model, array $data = array(), $dirty = TRUE)
 	{
 		$class = $this->alias_service->getRegisteredClass($model);
@@ -49,6 +59,12 @@ class ModelBuilder {
 		return new $class($this, $this->alias_service, $data, $dirty);
 	}
 
+
+	/**
+	 * Gateway factory
+	 *
+	 * @return \Ellislab\ExpressionEngine\Model\Gateway
+	 */
 	public function makeGateway($gateway, $data = array())
 	{
 		$class = $this->alias_service->getRegisteredClass($gateway);
