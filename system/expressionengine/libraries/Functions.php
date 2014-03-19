@@ -39,7 +39,7 @@ class EE_Functions {
 	/**
 	 * Constructor
 	 */
-	function __construct()
+	public function __construct()
 	{
 		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
@@ -57,7 +57,7 @@ class EE_Functions {
 	 * @param	bool
 	 * @return	string
 	 */
-	function fetch_site_index($add_slash = FALSE, $sess_id = TRUE)
+	public function fetch_site_index($add_slash = FALSE, $sess_id = TRUE)
 	{
 		if (isset($this->cached_index[$add_slash.$sess_id.$this->template_type]))
 		{
@@ -103,7 +103,7 @@ class EE_Functions {
 	 * @param	bool
 	 * @return	string
 	 */
-	function create_route($segment, $sess_id = TRUE)
+	public function create_route($segment, $sess_id = TRUE)
 	{
 		if (is_array($segment))
 		{
@@ -161,7 +161,7 @@ class EE_Functions {
 	 * @param	bool
 	 * @return	string
 	 */
-	function create_url($segment, $sess_id = TRUE)
+	public function create_url($segment, $sess_id = TRUE)
 	{
 		// Since this function can be used via a callback
 		// we'll fetch the segment if it's an array
@@ -213,7 +213,7 @@ class EE_Functions {
 	 * @access	public
 	 * @return	string
 	 */
-	function create_page_url($base_url, $segment, $trailing_slash = FALSE)
+	public function create_page_url($base_url, $segment, $trailing_slash = FALSE)
 	{
 		if (ee()->config->item('force_query_string') == 'y')
 		{
@@ -246,7 +246,7 @@ class EE_Functions {
 	 * @access	public
 	 * @return	string
 	 */
-	function fetch_current_uri()
+	public function fetch_current_uri()
 	{
 		return rtrim(reduce_double_slashes($this->fetch_site_index(1).ee()->uri->uri_string), '/');
 	}
@@ -263,7 +263,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	string
 	 */
-	function prep_query_string($str)
+	public function prep_query_string($str)
 	{
 		if (stristr($str, '.php') && substr($str, -7) == '/index/')
 		{
@@ -295,7 +295,7 @@ class EE_Functions {
 	 * @param	bool
 	 * @return	string
 	 */
-	function encode_ee_tags($str, $convert_curly = FALSE)
+	public function encode_ee_tags($str, $convert_curly = FALSE)
 	{
 		if ($str != '' && strpos($str, '{') !== FALSE)
 		{
@@ -329,7 +329,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	string
 	 */
-	function extract_path($str)
+	public function extract_path($str)
 	{
 		if (preg_match("#=(.*)#", $str, $match))
 		{
@@ -372,7 +372,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	string
 	 */
-	function var_swap($str, $data)
+	public function var_swap($str, $data)
 	{
 		if ( ! is_array($data))
 		{
@@ -396,7 +396,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	void
 	 */
-	function redirect($location, $method = FALSE, $status_code=NULL)
+	public function redirect($location, $method = FALSE, $status_code=NULL)
 	{
 		// Remove hard line breaks and carriage returns
 		$location = str_replace(array("\n", "\r"), '', $location);
@@ -460,7 +460,7 @@ class EE_Functions {
 	 * @param	int
 	 * @return	string
 	 */
-	function random($type = 'encrypt', $len = 8)
+	public function random($type = 'encrypt', $len = 8)
 	{
 		return random_string($type, $len);
 	}
@@ -476,7 +476,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	string
 	 */
-	function form_declaration($data)
+	public function form_declaration($data)
 	{
 		// Load the form helper
 		ee()->load->helper('form');
@@ -593,7 +593,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	string
 	 */
-	function form_backtrack($offset = '')
+	public function form_backtrack($offset = '')
 	{
 		$ret = $this->fetch_site_index();
 
@@ -684,7 +684,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	mixed
 	 */
-	function evaluate($str)
+	public function evaluate($str)
 	{
 		return eval('?'.'>'.$str.'<?php ');
 	}
@@ -698,7 +698,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	string
 	 */
-	function encode_email($str)
+	public function encode_email($str)
 	{
 		if (isset(ee()->session->cache['functions']['emails'][$str]))
 		{
@@ -734,7 +734,7 @@ class EE_Functions {
 	 * @access	public
 	 * @return	void
 	 */
-	function clear_spam_hashes()
+	public function clear_spam_hashes()
 	{
 		ee()->load->library('logger');
 		ee()->logger->deprecated('2.8');
@@ -757,7 +757,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	void
 	 */
-	function set_cookie($name = '', $value = '', $expire = '')
+	public function set_cookie($name = '', $value = '', $expire = '')
 	{
 		ee()->load->library('logger');
 		ee()->logger->deprecated('2.8', 'EE_Input::set_cookie()');
@@ -774,7 +774,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	string
 	 */
-	function char_limiter($str, $num = 500)
+	public function char_limiter($str, $num = 500)
 	{
 		if (strlen($str) < $num)
 		{
@@ -815,7 +815,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	string
 	 */
-	function word_limiter($str, $num = 100)
+	public function word_limiter($str, $num = 100)
 	{
 		if (strlen($str) < $num)
 		{
@@ -856,7 +856,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	string
 	 */
-	function fetch_email_template($name)
+	public function fetch_email_template($name)
 	{
 		$query = ee()->db->query("SELECT template_name, data_title, template_data, enable_template FROM exp_specialty_templates WHERE site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."' AND template_name = '".ee()->db->escape_str($name)."'");
 
@@ -930,7 +930,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	string
 	 */
-	function render_map_as_select_options($zarray, $array_name = '')
+	public function render_map_as_select_options($zarray, $array_name = '')
 	{
 		foreach ($zarray as $key => $val)
 		{
@@ -972,7 +972,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	string
 	 */
-	function language_pack_names($default)
+	public function language_pack_names($default)
 	{
 		$source_dir = APPPATH.'language/';
 
@@ -1016,7 +1016,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	string
 	 */
-	function clear_caching($which, $sub_dir = '')
+	public function clear_caching($which, $sub_dir = '')
 	{
 		$options = array('page', 'db', 'tag', 'sql');
 
@@ -1043,7 +1043,7 @@ class EE_Functions {
 	 * @param	bool
 	 * @return	void
 	 */
-	function delete_directory($path, $del_root = FALSE)
+	public function delete_directory($path, $del_root = FALSE)
 	{
 		$path = rtrim($path, '/');
 		$path_delete = $path.'_delete';
@@ -1121,7 +1121,7 @@ class EE_Functions {
 	 * @param	bool
 	 * @return	array
 	 */
-	function fetch_assigned_channels($all_sites = FALSE)
+	public function fetch_assigned_channels($all_sites = FALSE)
 	{
 		$allowed_channels = array();
 
@@ -1188,7 +1188,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	void
 	 */
-	function log_search_terms($terms = '', $type = 'site')
+	public function log_search_terms($terms = '', $type = 'site')
 	{
 		if ($terms == '' OR ee()->db->table_exists('exp_search_log') === FALSE)
 			return;
@@ -1237,7 +1237,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	string
 	 */
-	function fetch_action_id($class, $method)
+	public function fetch_action_id($class, $method)
 	{
 		if ($class == '' OR $method == '')
 		{
@@ -1258,7 +1258,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	string
 	 */
-	function insert_action_ids($str)
+	public function insert_action_ids($str)
 	{
 		if (count($this->action_ids) == 0)
 		{
@@ -1298,7 +1298,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	array
 	 */
-	function get_categories($cat_group, $entry_id)
+	public function get_categories($cat_group, $entry_id)
 	{
 		// fetch the custom category fields
 		$field_sqla = '';
@@ -1381,7 +1381,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	void
 	 */
-	function process_subcategories($parent_id)
+	public function process_subcategories($parent_id)
 	{
 		foreach($this->temp_array as $key => $val)
 		{
@@ -1402,7 +1402,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	string
 	 */
-	function add_form_security_hash($str)
+	public function add_form_security_hash($str)
 	{
 		// Add security hash. Need to replace the legacy XID one as well.
 		$str = str_replace('{csrf_token}', CSRF_TOKEN, $str);
@@ -1420,7 +1420,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	string
 	 */
-	function create_captcha($old_word = '', $force_word = FALSE)
+	public function create_captcha($old_word = '', $force_word = FALSE)
 	{
 		if (ee()->config->item('captcha_require_members') == 'n' && ee()->session->userdata['member_id'] != 0 && $force_word == FALSE)
 		{
@@ -1646,7 +1646,7 @@ class EE_Functions {
 	 * @param	bool
 	 * @return	string
 	 */
-	function sql_andor_string($str, $field, $prefix = '', $null=FALSE)
+	public function sql_andor_string($str, $field, $prefix = '', $null=FALSE)
 	{
 		if ($str == "" OR $field == "")
 		{
@@ -1731,7 +1731,7 @@ class EE_Functions {
 	 * @param	string
 	 * @param	bool
 	 */
-	function ar_andor_string($str, $field, $prefix = '', $null=FALSE)
+	public function ar_andor_string($str, $field, $prefix = '', $null=FALSE)
 	{
 		if ($str == "" OR $field == "")
 		{
@@ -1828,7 +1828,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	array
 	 */
-	function assign_conditional_variables($str, $slash = '/', $LD = '{', $RD = '}')
+	public function assign_conditional_variables($str, $slash = '/', $LD = '{', $RD = '}')
 	{
 		// The first half of this function simply gathers the openging "if" tags
 		// and a numeric value that corresponds to the depth of nesting.
@@ -2013,7 +2013,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	array
 	 */
-	function assign_variables($str = '', $slash = '/')
+	public function assign_variables($str = '', $slash = '/')
 	{
 		$return['var_single']	= array();
 		$return['var_pair']		= array();
@@ -2176,7 +2176,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	string
 	 */
-	function full_tag($str, $chunk='', $open='', $close='')
+	public function full_tag($str, $chunk='', $open='', $close='')
 	{
 		if ($chunk == '') $chunk = (isset(ee()->TMPL) && is_object(ee()->TMPL)) ? ee()->TMPL->fl_tmpl : '';
 		if ($open == '')  $open  = LD;
@@ -2207,7 +2207,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	string
 	 */
-	function fetch_simple_conditions($str)
+	public function fetch_simple_conditions($str)
 	{
 		if ($str == '')
 		{
@@ -2234,7 +2234,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	string
 	 */
-	function fetch_date_variables($datestr)
+	public function fetch_date_variables($datestr)
 	{
 		if ($datestr == '')
 			return;
@@ -2260,7 +2260,7 @@ class EE_Functions {
 	 * @return Mixed FALSE if there's no matches, otherwise the associative
 	 *               array containing the parameters and their values
 	 */
-	function assign_parameters($str, $defaults = array())
+	public function assign_parameters($str, $defaults = array())
 	{
 		if ($str == "")
 			return FALSE;
@@ -2315,7 +2315,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	string
 	 */
-	function prep_conditional($cond = '')
+	public function prep_conditional($cond = '')
 	{
 		$cond = preg_replace("/^if/", "", $cond);
 
@@ -2348,7 +2348,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	string
 	 */
-	function reverse_key_sort($a, $b) {return strlen($b) > strlen($a);}
+	public function reverse_key_sort($a, $b) {return strlen($b) > strlen($a);}
 
 	// --------------------------------------------------------------------
 
@@ -2362,7 +2362,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	array
 	 */
-	function prep_conditionals($str, $vars, $safety='n', $prefix='')
+	public function prep_conditionals($str, $vars, $safety='n', $prefix='')
 	{
 		if (isset(ee()->TMPL->embed_vars))
 		{
@@ -2672,7 +2672,7 @@ class EE_Functions {
 	 * @access	public
 	 * @return	array
 	 */
-	function fetch_file_paths()
+	public function fetch_file_paths()
 	{
 		ee()->load->library('logger');
 		ee()->logger->deprecated('3.0', 'File_upload_preferences_model::get_paths()');
@@ -2689,7 +2689,7 @@ class EE_Functions {
 	 *
 	 * @param 	string
 	 */
-	function bm_qstr_decode($str)
+	public function bm_qstr_decode($str)
 	{
 		$str = str_replace("%20",	" ",		$str);
 		$str = str_replace("%uFFA5", "&#8226;",	$str);
