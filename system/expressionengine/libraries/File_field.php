@@ -622,12 +622,18 @@ class File_field {
 	 *
 	 * @access	public
 	 * @param	string $data The string to parse {filedir_n} in
+	 * @param   bool   $parse_encoded  Set to TRUE to parse encoded (e.g. &123;)
+	 *                                 tags
 	 * @return	string The original string with all {filedir_n}'s parsed
 	 */
-	public function parse_string($data)
+	public function parse_string($data, $parse_encoded = FALSE)
 	{
+		$pattern = ($parse_encoded)
+			? '/(?:{|&#123;)filedir_(\d+)(?:}|&#125;)/'
+			: '/{filedir_(\d+)}/';
+
 		// Find each instance of {filedir_n}
-		if (preg_match_all('/{filedir_(\d+)}/', $data, $matches, PREG_SET_ORDER))
+		if (preg_match_all($pattern, $data, $matches, PREG_SET_ORDER))
 		{
 			ee()->load->model('file_upload_preferences_model');
 			$file_dirs = ee()->file_upload_preferences_model->get_paths();
@@ -637,11 +643,7 @@ class File_field {
 			{
 				if (isset($file_dirs[$match[1]]))
 				{
-					$data = str_replace(
-						'{filedir_'.$match[1].'}',
-						$file_dirs[$match[1]],
-						$data
-					);
+					$data = preg_replace($pattern, $file_dirs[$match[1]], $data);
 				}
 			}
 		}

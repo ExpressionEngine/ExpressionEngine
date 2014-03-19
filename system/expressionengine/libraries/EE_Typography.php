@@ -238,10 +238,8 @@ class EE_Typography extends CI_Typography {
 			return $str;
 		}
 
-		// TODO-WB: Should we keep parsing for &123;filedir_x&125;? If so, add
-		// it to File_field::parse_string()
 		ee()->load->library('file_field');
-		return ee()->file_field->parse_string($str);
+		return ee()->file_field->parse_string($str, TRUE);
 	}
 
 	// --------------------------------------------------------------------
