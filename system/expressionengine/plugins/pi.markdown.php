@@ -44,13 +44,12 @@ class Markdown {
 	public function __construct($tagdata = '')
 	{
 		$tagdata		= (empty($tagdata)) ? ee()->TMPL->tagdata : $tagdata;
-		$encode_ee_tags	= ee()->TMPL->fetch_param('encode_ee_tags', 'yes');
 		$smartypants	= ee()->TMPL->fetch_param('smartypants', 'yes');
 
 		ee()->load->library('typography');
 		$this->return_data = ee()->typography->markdown(
 			$tagdata,
-			compact('encode_ee_tags', 'smartypants')
+			compact('smartypants')
 		);
 
 		return $this->return_data;
