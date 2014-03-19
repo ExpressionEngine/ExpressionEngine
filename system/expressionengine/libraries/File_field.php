@@ -643,7 +643,7 @@ class File_field {
 			{
 				if (isset($file_dirs[$match[1]]))
 				{
-					$data = preg_replace($pattern, $file_dirs[$match[1]], $data);
+					$data = str_replace($match[0], $file_dirs[$match[1]], $data);
 				}
 			}
 		}
