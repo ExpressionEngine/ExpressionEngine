@@ -74,4 +74,5 @@ class Expectation {
 
 }
 
-?>
+/* End of file Expectation.php */
+/* Location: ./system/expressionengine/modules/spam/libraries/Expectation.php */

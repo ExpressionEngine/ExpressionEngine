@@ -23,9 +23,9 @@
  * @link		http://ellislab.com
  */
 
-include('vectorize.php');
-include('expectation.php');
-include('distribution.php');
+include('Vectorize.php');
+include('Expectation.php');
+include('Distribution.php');
 
 class Classifier {
 
@@ -139,6 +139,7 @@ class Classifier {
 
 	/**
 	 * Calculate the probability distribution for a series of data
+	 * Uses a Maximum-Likelihood estimator for the parameters
 	 * 
 	 * @param array $feature An array of floats
 	 * @access private
@@ -146,10 +147,12 @@ class Classifier {
 	 */
 	private function distribution($feature)
 	{
+		// The MLE for the Gaussian distribution is just the sample mean & variance
 		$sample = new Expectation($feature);
 		return new Distribution($sample->mean, $sample->variance);
 	}
 
 }
 
-?>
+/* End of file Classifier.php */
+/* Location: ./system/expressionengine/modules/spam/libraries/Classifier.php */
