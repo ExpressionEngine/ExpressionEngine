@@ -100,7 +100,7 @@ if ( ! function_exists('encode_php_tags'))
 		                   $str);
 
 		if (stristr($str, '<script') &&
-			preg_match_all("/<script\s+language=(\042|\047)php(\042|\047).*?>.*?<\/script>/is", $str, $matches))
+			preg_match_all("/<script\s+language\s*=\s*(\042|\047)?php(\042|\047|)?.*?>.*?<\/script>/is", $str, $matches))
 		{
 			foreach ($matches[0] as $match)
 			{
