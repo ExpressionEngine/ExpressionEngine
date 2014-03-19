@@ -238,12 +238,10 @@ class EE_Typography extends CI_Typography {
 			return $str;
 		}
 
-		foreach (ee()->functions->fetch_file_paths() as $key => $val)
-		{
-			$str = str_replace(array("{filedir_{$key}}", "&#123;filedir_{$key}&#125;"), $val, $str);
-		}
-
-		return $str;
+		// TODO-WB: Should we keep parsing for &123;filedir_x&125;? If so, add
+		// it to File_field::parse_string()
+		ee()->load->library('file_field');
+		return ee()->file_field->parse_string($str);
 	}
 
 	// --------------------------------------------------------------------
@@ -258,11 +256,6 @@ class EE_Typography extends CI_Typography {
 	 */
 	public function parse_type($str, $prefs = '')
 	{
-		if ($this->parse_images === TRUE)
-		{
-			$this->file_paths = ee()->functions->fetch_file_paths();
-		}
-
 		if ($str == '')
 		{
 			return;
