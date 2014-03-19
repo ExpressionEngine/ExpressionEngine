@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -27,7 +27,7 @@
 class Rss {
 
 	protected $_debug = FALSE;
-	
+
 	/**
 	 * RSS feed
 	 *
@@ -39,14 +39,14 @@ class Rss {
 	function feed()
 	{
 		$this->EE =& get_instance();
-		
+
 		ee()->TMPL->encode_email = FALSE;
-		
+
 		if (ee()->TMPL->fetch_param('debug') == 'yes')
 		{
 			$this->_debug = TRUE;
 		}
-		
+
 		if ( ! $channel = ee()->TMPL->fetch_param('channel'))
 		{
 			ee()->lang->loadfile('rss');
@@ -62,31 +62,31 @@ class Rss {
 			ee()->lang->loadfile('rss');
 			return $this->_empty_feed(ee()->lang->line('rss_invalid_channel'));
 		}
-		
-		$tmp = $this->_setup_meta_query($query);		
+
+		$tmp = $this->_setup_meta_query($query);
 		$query = $tmp[0];
 		$last_update = $tmp[1];
 		$edit_date = $tmp[2];
 		$entry_date = $tmp[3];
-		
+
 		if ($query->num_rows() === 0)
 		{
 			ee()->lang->loadfile('rss');
 			return $this->_empty_feed(ee()->lang->line('no_matching_entries'));
 		}
-		
+
 		$query = $this->_feed_vars_query($query->row('entry_id'));
-		
+
 		$request 		= ee()->input->request_headers(TRUE);
 		$start_on 		= '';
 		$diffe_request 	= FALSE;
 		$feed_request	= FALSE;
-		
+
 		// Check for 'diff -e' request
 		if (isset($request['A-IM']) && stristr($request['A-IM'], 'diffe') !== FALSE)
 		{
 			$items_start = strpos(ee()->TMPL->tagdata, '{exp:channel:entries');
-			
+
 			if ($items_start !== FALSE)
 			{
 				// We add three, for three line breaks added later in the script
@@ -103,8 +103,8 @@ class Rss {
 		}
 
 		//  Check for the 'If-Modified-Since' Header
-		if (ee()->config->item('send_headers') == 'y' 
-			&& isset($request['If-Modified-Since']) 
+		if (ee()->config->item('send_headers') == 'y'
+			&& isset($request['If-Modified-Since'])
 			&& trim($request['If-Modified-Since']) != '')
 		{
 			$x				= explode(';',$request['If-Modified-Since']);
@@ -128,9 +128,9 @@ class Rss {
 		}
 
 		$chunks = array();
-		$marker = 'H94e99Perdkie0393e89vqpp'; 
+		$marker = 'H94e99Perdkie0393e89vqpp';
 
-		if (preg_match_all("/{exp:channel:entries.+?{".'\/'."exp:channel:entries}/s", 
+		if (preg_match_all("/{exp:channel:entries.+?{".'\/'."exp:channel:entries}/s",
 							ee()->TMPL->tagdata, $matches))
 		{
 			for($i = 0; $i < count($matches[0]); $i++)
@@ -150,114 +150,22 @@ class Rss {
 				$chunks[$marker.$i] = $matches[0][$i];
 			}
 		}
-		
-		// Fetch all the date-related variables
-		// We do this here to avoid processing cycles in the foreach loop
-		$entry_date_array 		= array();
-		$gmt_date_array 		= array();
-		$gmt_entry_date_array	= array();
-		$edit_date_array 		= array();
-		$gmt_edit_date_array	= array();
-
-		$date_vars = array('date', 'gmt_date', 'gmt_entry_date', 'edit_date', 'gmt_edit_date');
-
-		foreach ($date_vars as $val)
-		{					
-			if (preg_match_all("/".LD.$val."\s+format=[\"'](.*?)[\"']".RD."/s", ee()->TMPL->tagdata, $matches))
-			{
-				for ($j = 0; $j < count($matches[0]); $j++)
-				{
-					$matches[0][$j] = str_replace(LD, '', $matches[0][$j]);
-					$matches[0][$j] = str_replace(RD, '', $matches[0][$j]);
-
-					switch ($val)
-					{
-						case 'date' 			: $entry_date_array[$matches[0][$j]] = $matches[1][$j];
-							break;
-						case 'gmt_date'			: $gmt_date_array[$matches[0][$j]] = $matches[1][$j];
-							break;
-						case 'gmt_entry_date'	: $gmt_entry_date_array[$matches[0][$j]] = $matches[1][$j];
-							break;
-						case 'edit_date' 		: $edit_date_array[$matches[0][$j]] = $matches[1][$j];
-							break;
-						case 'gmt_edit_date'	: $gmt_edit_date_array[$matches[0][$j]] = $matches[1][$j];
-							break;
-					}
-				}
-			}
-		}
 
 		ee()->load->helper('date');
 
-		foreach (ee()->TMPL->var_single as $key => $val)
-		{
-			//  {date}
-			if (isset($entry_date_array[$key]))
-			{
-				ee()->TMPL->tagdata = ee()->TMPL->swap_var_single(
-					$key,
-					ee()->localize->format_date(
-						$entry_date_array[$key],
-						$entry_date
-					),
-					ee()->TMPL->tagdata
-				);					
-			}
+		$dates = array(
+			'date'      => $entry_date,
+			'edit_date' => mysql_to_unix($edit_date)
+		);
+		ee()->TMPL->tagdata = ee()->TMPL->parse_date_variables(ee()->TMPL->tagdata, $dates);
 
-			//  GMT date - entry date in GMT
-			if (isset($gmt_entry_date_array[$key]))
-			{
-				ee()->TMPL->tagdata = ee()->TMPL->swap_var_single(
-					$key,
-					ee()->localize->format_date(
-						$gmt_entry_date_array[$key],
-						$entry_date,
-						FALSE
-					),
-					ee()->TMPL->tagdata
-				);				
-			}
+		$dates = array(
+			'gmt_date'       => $entry_date,
+			'gmt_entry_date' => $entry_date,
+			'gmt_edit_date'  => mysql_to_unix($edit_date)
+		);
+		ee()->TMPL->tagdata = ee()->TMPL->parse_date_variables(ee()->TMPL->tagdata, $dates, FALSE);
 
-			if (isset($gmt_date_array[$key]))
-			{
-				ee()->TMPL->tagdata = ee()->TMPL->swap_var_single(
-					$key,
-					ee()->localize->format_date(
-						$gmt_date_array[$key],
-						$entry_date,
-						FALSE
-					),
-					ee()->TMPL->tagdata
-				);
-			}
-
-			//  parse "last edit" date
-			if (isset($edit_date_array[$key]))
-			{
-				ee()->TMPL->tagdata = ee()->TMPL->swap_var_single(
-					$key,
-					ee()->localize->format_date(
-						$edit_date_array[$key],
-						mysql_to_unix($edit_date)
-					),
-					ee()->TMPL->tagdata
-				);				
-			}
-
-			//  "last edit" date as GMT
-			if (isset($gmt_edit_date_array[$key]))
-			{
-				ee()->TMPL->tagdata = ee()->TMPL->swap_var_single(
-					$key,
-					ee()->localize->format_date(
-						$gmt_edit_date_array[$key],
-						mysql_to_unix($edit_date)
-					),
-					ee()->TMPL->tagdata
-				);
-			}			
-		}
-		
 		// Setup {trimmed_url}
 		$channel_url = $query->row('channel_url');
 		$trimmed_url = (isset($channel_url) AND $channel_url != '') ? $channel_url : '';
@@ -266,7 +174,7 @@ class Rss {
 		$trimmed_url = str_replace('www.', '', $trimmed_url);
 		$ex = explode("/", $trimmed_url);
 		$trimmed_url = current($ex);
-		
+
 		$vars = array(
 			array(
 				'channel_id'			=> $query->row('channel_id'),
@@ -282,11 +190,11 @@ class Rss {
 				''
 			)
 		);
-		
+
 		ee()->TMPL->tagdata = ee()->TMPL->parse_variables(ee()->TMPL->tagdata, $vars);
 
 		if (count($chunks) > 0)
-		{			
+		{
 			$diff_top = ($start_on != '' && $diffe_request !== false) ? "1,".($diffe_request-1)."c\n" : '';
 
 			// Last Update Time
@@ -301,20 +209,20 @@ class Rss {
 
 			foreach ($chunks as $key => $val)
 			{
-				ee()->TMPL->tagdata = str_replace($key, $val, ee()->TMPL->tagdata);	
+				ee()->TMPL->tagdata = str_replace($key, $val, ee()->TMPL->tagdata);
 			}
 		}
 
 		// 'ed' input mode is terminated by entering a single period  (.) on a line
 		ee()->TMPL->tagdata = ($diffe_request !== false) ? trim(ee()->TMPL->tagdata)."\n.\n" : trim(ee()->TMPL->tagdata);
-		
+
 		return ee()->TMPL->tagdata;
 	}
 
 	// --------------------------------------------------------------------
 
 	/**
-	 * Setup the meta query 
+	 * Setup the meta query
 	 *
 	 * @todo -- Convert the query to active record
 	 * @param 	object		query object
@@ -327,16 +235,16 @@ class Rss {
 		// Since UTC_TIMESTAMP() is what we need, but it is not available until
 		// MySQL 4.1.1, we have to use this ever so clever SQL to figure it out:
 		// DATE_ADD( '1970-01-01', INTERVAL UNIX_TIMESTAMP() SECOND )
-		$sql = "SELECT exp_channel_titles.entry_id, exp_channel_titles.entry_date, exp_channel_titles.edit_date, 
-				GREATEST((UNIX_TIMESTAMP(exp_channel_titles.edit_date) + 
+		$sql = "SELECT exp_channel_titles.entry_id, exp_channel_titles.entry_date, exp_channel_titles.edit_date,
+				GREATEST((UNIX_TIMESTAMP(exp_channel_titles.edit_date) +
 						 (UNIX_TIMESTAMP(DATE_ADD( '1970-01-01', INTERVAL UNIX_TIMESTAMP() SECOND)) - UNIX_TIMESTAMP())),
 						exp_channel_titles.entry_date) AS last_update
 				FROM exp_channel_titles
-				LEFT JOIN exp_channels ON exp_channel_titles.channel_id = exp_channels.channel_id 
+				LEFT JOIN exp_channels ON exp_channel_titles.channel_id = exp_channels.channel_id
 				LEFT JOIN exp_members ON exp_members.member_id = exp_channel_titles.author_id
 				WHERE exp_channel_titles.entry_id !=''
 				AND exp_channels.site_id IN ('".implode("','", ee()->TMPL->site_ids)."') ";
-		
+
 		if ($query->num_rows() == 1)
 		{
 			$sql .= "AND exp_channel_titles.channel_id = '".$query->row('channel_id') ."' ";
@@ -355,7 +263,7 @@ class Rss {
 			$sql .= ") ";
 		}
 
-		//  We only select entries that have not expired 
+		//  We only select entries that have not expired
 		$timestamp = (ee()->TMPL->cache_timestamp != '') ? ee()->TMPL->cache_timestamp : ee()->localize->now;
 
 		if (ee()->TMPL->fetch_param('show_future_entries') != 'yes')
@@ -369,14 +277,19 @@ class Rss {
 		}
 
 		//  Add status declaration
-		$sql .= "AND exp_channel_titles.status != 'closed' ";
-
 		if ($status = ee()->TMPL->fetch_param('status'))
 		{
 			$status = str_replace('Open',	'open',	$status);
 			$status = str_replace('Closed', 'closed', $status);
 
-			$sql .= ee()->functions->sql_andor_string($status, 'exp_channel_titles.status');
+			$status_str = ee()->functions->sql_andor_string($status, 'exp_channel_titles.status');
+
+			if (stristr($status_str, "'closed'") === FALSE)
+			{
+				$status_str .= " AND exp_channel_titles.status != 'closed' ";
+			}
+
+			$sql .= $status_str;
 		}
 		else
 		{
@@ -396,7 +309,7 @@ class Rss {
 				$sql .=  "AND exp_members.member_id != '".ee()->session->userdata['member_id']."' ";
 			}
 			else
-			{				
+			{
 				$sql .= ee()->functions->sql_andor_string($username, 'exp_members.username');
 			}
 		}
@@ -421,7 +334,7 @@ class Rss {
 
 		return array($query, $last_update, $edit_date, $entry_date);
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -432,8 +345,8 @@ class Rss {
 	 */
 	protected function _feed_vars_query($entry_id)
 	{
-		return ee()->db->select('c.channel_id, c.channel_title, c.channel_url, c.channel_lang, 
-									c.channel_description, ct.entry_date, m.email, m.username, 
+		return ee()->db->select('c.channel_id, c.channel_title, c.channel_url, c.channel_lang,
+									c.channel_description, ct.entry_date, m.email, m.username,
 									m.screen_name, m.url')
 							->from('channel_titles ct')
 							->join('channels c', 'ct.channel_id = c.channel_id', 'left')
@@ -457,8 +370,8 @@ class Rss {
 
 		$empty_feed = '';
 
-		if (preg_match("/".LD."if empty_feed".RD."(.*?)".LD.'\/'."if".RD."/s", ee()->TMPL->tagdata, $match)) 
-		{			
+		if (preg_match("/".LD."if empty_feed".RD."(.*?)".LD.'\/'."if".RD."/s", ee()->TMPL->tagdata, $match))
+		{
 			if (stristr($match[1], LD.'if'))
 			{
 				$match[0] = ee()->functions->full_tag($match[0], ee()->TMPL->tagdata, LD.'if', LD.'\/'."if".RD);
@@ -509,7 +422,7 @@ class Rss {
 		<pubDate>{$pubdate}</pubDate>
 	</item>
 	</channel>
-</rss>		
+</rss>
 HUMPTYDANCE;
 	}
 }

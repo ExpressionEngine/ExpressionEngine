@@ -4,13 +4,13 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -32,9 +32,9 @@ class EE_Stylesheet {
 		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Request CSS Template
 	 *
@@ -51,14 +51,14 @@ class EE_Stylesheet {
 		}
 		else
 		{
-			$stylesheet = $_GET['css'];			
+			$stylesheet = $_GET['css'];
 		}
 
 		if (rtrim($stylesheet, '/') == '_ee_channel_form_css')
 		{
 			return $this->_ee_channel_form_css();
 		}
-		
+
 		$stylesheet = preg_replace("/\.v\.[0-9]{10}/", '', $stylesheet);  // Remove version info
 
 		if ($stylesheet == '' OR strpos($stylesheet, '/') === FALSE)
@@ -72,24 +72,24 @@ class EE_Stylesheet {
 
 			if (count($ex) != 2)
 			{
-				exit;				
+				exit;
 			}
 
-			ee()->db->select('templates.template_data, templates.template_name, 
+			ee()->db->select('templates.template_data, templates.template_name,
 									templates.save_template_file, templates.edit_date');
 			ee()->db->from(array('templates', 'template_groups'));
-			ee()->db->where(ee()->db->dbprefix('templates').'.group_id', 
+			ee()->db->where(ee()->db->dbprefix('templates').'.group_id',
 								ee()->db->dbprefix('template_groups').'.group_id', FALSE);
 			ee()->db->where('templates.template_name', $ex[1]);
 			ee()->db->where('template_groups.group_name', $ex[0]);
 			ee()->db->where('templates.template_type', 'css');
 			ee()->db->where('templates.site_id', ee()->config->item('site_id'));
-			
+
 			$query = ee()->db->get();
 
 			if ($query->num_rows() == 0)
 			{
-				exit;				
+				exit;
 			}
 
 			$row = $query->row_array();
@@ -115,7 +115,7 @@ class EE_Stylesheet {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * EE Channel:form CSS
 	 *
@@ -127,25 +127,25 @@ class EE_Stylesheet {
 	{
 		$files[] = PATH_THEMES.'cp_themes/default/css/jquery-ui-1.8.16.custom.css';
 		$files[] = PATH_THEMES.'cp_themes/default/css/channel_form.css';
-		
+
 		$out = '';
-		
+
 		foreach ($files as $file)
 		{
 			if (file_exists($file))
 			{
 				$out .= file_get_contents($file);
-				
+
 				if ($file == PATH_THEMES.'cp_themes/default/css/jquery-ui-1.8.16.custom.css')
 				{
 					$theme_url = ee()->config->item('theme_folder_url').'cp_themes/'.ee()->config->item('cp_theme');
-					
+
 					$out = str_replace('url(images/', 'url('.$theme_url.'/images/', $out);
 				}
 			}
 		}
 
-		$cp_theme  = ee()->config->item('cp_theme'); 
+		$cp_theme  = ee()->config->item('cp_theme');
 		$cp_theme_url = ee()->config->slash_item('theme_folder_url').'cp_themes/'.$cp_theme.'/';
 
 		$out = str_replace('../images', $cp_theme_url.'images', $out);
@@ -156,7 +156,7 @@ class EE_Stylesheet {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Send CSS
 	 *
@@ -200,13 +200,13 @@ class EE_Stylesheet {
 			@header('Expires: '.$expires);
 			@header('Content-Length: '.strlen($stylesheet));
 		}
-		
+
 		header("Content-type: text/css");
 		exit($stylesheet);
 	}
 
 	// --------------------------------------------------------------------
-	
+
 }
 // END CLASS
 

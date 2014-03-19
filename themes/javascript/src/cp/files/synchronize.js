@@ -3,7 +3,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -21,7 +21,7 @@ EE.file_manager.resize_ids = [];
 
 $(document).ready(function() {
 	$.template("sync_complete_template", $('#sync_complete_template'));
-	
+
 	$('table#dimensions').toggle_all();
 	EE.file_manager.sync_listen();
 });
@@ -41,7 +41,7 @@ EE.file_manager.sync_listen = function() {
 
 		// Get upload directory
 		var upload_directory_id = _.keys(EE.file_manager.sync_sizes)[0];
-		
+
 		EE.file_manager.update_progress(0);
 
 		// Send ajax requests
@@ -74,10 +74,10 @@ EE.file_manager.sync = function(upload_directory_id) {
 		if (EE.file_manager.db_sync == 'y') {
 			return;
 		}
-		
+
 		EE.file_manager.db_sync = 'y';
 	};
-	
+
 	// There should only be one place we're splicing the files array and THIS is it
 	var files_to_sync = EE.file_manager.sync_files.splice(0, 5);
 
@@ -100,15 +100,15 @@ EE.file_manager.sync = function(upload_directory_id) {
 		complete: function(xhr, textStatus) {
 			// Decrement the running count
 			EE.file_manager.sync_running -= 1;
-			
+
 			// Fire off another Ajax request
 			EE.file_manager.sync(upload_directory_id);
-			
+
 			// Update the progress bar
 			var total_count       = EE.file_manager.sync_file_count,
 				current_count     = EE.file_manager.sync_files.length,
 				already_processed = total_count - current_count;
-			
+
 			EE.file_manager.update_progress(Math.round(already_processed / total_count * 100));
 			EE.file_manager.finish_sync(upload_directory_id);
 
@@ -130,7 +130,7 @@ EE.file_manager.sync = function(upload_directory_id) {
 };
 
 EE.file_manager.get_directory_name = function(upload_directory_id) {
-	return $('#sync table:first tr[data-id=' + upload_directory_id + '] td:first').text();	
+	return $('#sync table:first tr[data-id=' + upload_directory_id + '] td:first').text();
 };
 
 /**
@@ -141,14 +141,14 @@ EE.file_manager.get_directory_name = function(upload_directory_id) {
 EE.file_manager.finish_sync = function(upload_directory_id) {
 	if (EE.file_manager.sync_running == 0) {
 		$('#progress').hide();
-		
+
 		var sync_complete = {
 			'directory_name':  EE.file_manager.get_directory_name(upload_directory_id),
 			'files_processed': EE.file_manager.sync_file_count - EE.file_manager.sync_errors.length,
 			'errors':          EE.file_manager.sync_errors,
 			'error_count':     EE.file_manager.sync_errors.length
 		};
-		
+
 		$.tmpl('sync_complete_template', sync_complete).appendTo('#sync');
 
         // You can't have a conditional template in a table because Firefox ignores anything in a table that's untablelike
@@ -162,17 +162,17 @@ EE.file_manager.finish_sync = function(upload_directory_id) {
 
 /**
  * Update the progress bar
- * 
+ *
  * @param {Number} progress_percentage The percentage of progress, represented as an integer (e.g. 56 = 56%)
  */
 EE.file_manager.update_progress = function(progress_percentage) {
 	var $progress = $('#progress'),
 		$progress_bar = $('#progress_bar');
-	
+
 	if ($progress.is(':not(:visible)')) {
 		$progress.show();
 	};
-	
+
 	$progress_bar.progressbar({
 		value: progress_percentage
 	});

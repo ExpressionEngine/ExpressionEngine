@@ -5,7 +5,7 @@
  *
  * @package     ExpressionEngine
  * @author      EllisLab Dev Team
- * @copyright   Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright   Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license     http://ellislab.com/expressionengine/user-guide/license.html
  * @link        http://ellislab.com
  * @since       Version 2.0
@@ -37,7 +37,7 @@ class Updater {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Do Update
 	 *
@@ -64,13 +64,13 @@ class Updater {
 
 		return TRUE;
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
 	 * Update Session Table
 	 *
-	 * This method updates the sessions table to add an index on 
+	 * This method updates the sessions table to add an index on
 	 * `last_activity` as it should help speed up session gc on large sites
 	 * secondly, updating `user_agent` to VARCHAR(120) to more closely
 	 * match what's going on in CodeIgniter's session class.
@@ -98,7 +98,7 @@ class Updater {
 	/**
 	 * Update Password lockout Table
 	 *
-	 * This method updates the password_lockout table, updating `user_agent` 
+	 * This method updates the password_lockout table, updating `user_agent`
 	 * to VARCHAR(120) to more closely match what's going on in CodeIgniter's session class.
 	 *
 	 * @return 	void
@@ -122,9 +122,9 @@ class Updater {
 	 * Update members table
 	 *
 	 * Oh this is fun!  So since we're implementing a better password hashing
-	 * scheme, we'll bump up the `password` field in exp_members to 
+	 * scheme, we'll bump up the `password` field in exp_members to
 	 * be able to handle hashing algorithims such as sha256/sha512.
-	 * Additionally, we're adding a salt column to use for salting the 
+	 * Additionally, we're adding a salt column to use for salting the
 	 * users passwords.
 	 */
 	private function _update_members_table()
@@ -152,8 +152,8 @@ class Updater {
 		);
 
 		ee()->smartforge->add_column('members', $field);
-		
-		
+
+
 		// Add a remember_me column VARCHAR(32)
 		$field = array(
 			'remember_me'	=> array(
@@ -168,7 +168,7 @@ class Updater {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Add caption field to files
 	 */
@@ -182,7 +182,7 @@ class Updater {
 
 		ee()->smartforge->add_column('files', $field);
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -204,7 +204,7 @@ class Updater {
 		ee()->smartforge->add_key('template_groups', 'group_order', 'group_order_idx');
 	}
 
-	// --------------------------------------------------------------------	
+	// --------------------------------------------------------------------
 
 	/**
 	 * Alter Sidebar state default
@@ -214,7 +214,7 @@ class Updater {
 		ee()->db->query("ALTER TABLE exp_members ALTER COLUMN show_sidebar SET DEFAULT 'n'");
 	}
 
-	// --------------------------------------------------------------------	
+	// --------------------------------------------------------------------
 
 }
 /* END CLASS */

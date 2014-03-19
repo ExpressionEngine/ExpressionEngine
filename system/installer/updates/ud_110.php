@@ -4,13 +4,13 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -28,45 +28,45 @@ class Updater {
 	function Updater()
 	{
 		$this->EE =& get_instance();
-	
+
 		// Grab the config file
 		if ( ! @include(ee()->config->config_path))
 		{
 			show_error('Your config'.EXT.' file is unreadable. Please make sure the file exists and that the file permissions to 666 on the following file: expressionengine/config/config.php');
 		}
-		
+
 		if (isset($conf))
 		{
 			$config = $conf;
 		}
-		
+
 		// Does the config array exist?
 		if ( ! isset($config) OR ! is_array($config))
 		{
 			show_error('Your config'.EXT.' file does not appear to contain any data.');
 		}
-		
+
 		$this->config =& $config;
 	}
 
 	function do_update()
-	{	
+	{
 		// Safety.  Prevents a problem if the
 		// version indicator was not updated
 		if (isset($this->config['captcha_require_members']))
 		{
 			return TRUE;
 		}
-		
+
 		// New Table Keys
-		
+
 		$Q[] = "ALTER TABLE exp_comments ADD INDEX(status)";
 		$Q[] = "ALTER TABLE exp_weblogs ADD INDEX(is_user_blog)";
 		$Q[] = "ALTER TABLE exp_weblog_data ADD INDEX(weblog_id)";
 		$Q[] = "ALTER TABLE exp_weblog_titles ADD INDEX(status)";
 		$Q[] = "ALTER TABLE exp_weblog_titles ADD INDEX(url_title)";
 		$Q[] = "ALTER TABLE exp_weblog_titles ADD INDEX(entry_date)";
-		$Q[] = "ALTER TABLE exp_weblog_titles ADD INDEX(expiration_date)";	
+		$Q[] = "ALTER TABLE exp_weblog_titles ADD INDEX(expiration_date)";
 
 		// New table alterations
 
@@ -91,10 +91,10 @@ class Updater {
 		$Q[] = "ALTER TABLE exp_categories ADD COLUMN cat_order int(4) unsigned NOT NULL";
 		$Q[] = "ALTER TABLE exp_templates ADD COLUMN save_template_file char(1) NOT NULL default 'n'";
 		$Q[] = "ALTER TABLE exp_category_groups ADD COLUMN sort_order char(1) NOT NULL default 'a'";
-				
-		
+
+
 		// Run the queries
-		
+
 		foreach ($Q as $sql)
 		{
 			ee()->db->query($sql);
@@ -104,7 +104,7 @@ class Updater {
 		/** -----------------------------------------
 		/**  Update config file with new prefs
 		/** -----------------------------------------*/
-		
+
 		$data = array(
 						'captcha_require_members'	=> 'y',
 						'require_ip_for_posting'	=> 'y',
@@ -121,65 +121,65 @@ class Updater {
 						'site_404'					=>	'',
 						'weblog_nomenclature'		=> 'weblog'
 					);
-													
+
 		ee()->config->_append_config_1x($data);
-		
-		
+
+
 		/** -----------------------------
 		/**  Update categories
 		/** -----------------------------*/
-		
+
 		$CO = new Category_Order;
-		
+
 		$CO->add_category_orders();
 
-		
+
 		/** -----------------------------
 		/**  Update skin file
 		/** -----------------------------*/
 
 		update_skin();
 
-		
+
 		return TRUE;
-	}	
-}	
+	}
+}
 // END CLASS
 
 
 
 class Category_Order {
-    
-	var $cat_array = array();   
+
+	var $cat_array = array();
 
     /** ----------------------------------------
     /**  Constructor
     /** ----------------------------------------*/
 
     function Category_Order()
-    {   
+    {
     }
     /* END */
-    
-    
+
+
     /** --------------------------------
     /**  Fix Category Orders
     /** --------------------------------*/
-    
+
     function add_category_orders()
-    {    	
+    {
     	$query = ee()->db->query("SELECT group_id FROM exp_category_groups");
-    	
+
     	if ($query->num_rows() == 0)
     	{
     		return false;
     	}
-    	
+
     	/** --------------------------------
     	/**  Broken up by Category Group
     	/** --------------------------------*/
     	$update_array = array();
-    	
+
     	foreach ($query->result_array() as $row)
     	{
     		if ($data = $this->process_category_group($row['group_id']))
@@ -187,16 +187,16 @@ class Category_Order {
     			$update_array[$row['group_id']] = $data;
     		}
     	}
-    
+
     	if (count($update_array) == 0)
     	{
-    		return false;    	
+    		return false;
     	}
-    	
+
     	/** --------------------------------
     	/**  Update Database with Orders
     	/** --------------------------------*/
-    	
+
     	foreach($update_array as $group_data)
     	{
     		foreach($group_data as $cat_id => $cat_data)
@@ -206,7 +206,7 @@ class Category_Order {
     						WHERE cat_id = '{$cat_id}'");
     		}
     	}
-    	
+
     	return TRUE;
     }
     /* END */
@@ -218,53 +218,53 @@ class Category_Order {
     // This function and the next create a nested, hierarchical category tree
 
     function process_category_group($group_id)
-    {          
+    {
         $sql = "SELECT cat_name, cat_id, parent_id FROM exp_categories WHERE group_id ='$group_id' ORDER BY parent_id, cat_name";
-        
+
         $query = ee()->db->query($sql);
-              
+
         if ($query->num_rows() == 0)
         {
             return false;
         }
-                            
+
         foreach($query->result_array() as $row)
-        {        
+        {
             $this->cat_array[$row['cat_id']]  = array($row['parent_id'], '1', $row['cat_name']);
         }
-     	
+
     		$order = 0;
-    	
-        foreach($this->cat_array as $key => $val) 
+
+        foreach($this->cat_array as $key => $val)
         {
             if (0 == $val['0'])
-            {    
+            {
             	$order++;
             	$this->cat_array[$key]['1'] = $order;
 				$this->process_subcategories($key);  // Sends parent_id
             }
-        } 
-        
+        }
+
         return $this->cat_array;
     }
     /* END */
-    
-    
-    
+
+
+
     /** --------------------------------
     /**  Process Subcategories
     /** --------------------------------*/
-        
+
     function process_subcategories($parent_id)
-    {        
+    {
         $order = 0;
-        
-    	foreach($this->cat_array as $key => $val) 
+
+    	foreach($this->cat_array as $key => $val)
         {
             if ($parent_id == $val['0'])
             {
             	$order++;
-            	$this->cat_array[$key]['1'] = $order;            	            	            	
+            	$this->cat_array[$key]['1'] = $order;
 				$this->process_subcategories($key);
 			}
         }
@@ -283,34 +283,34 @@ class Category_Order {
 
 		if ( ! file_exists($path))
 			return FALSE;
-		
+
 		if ( ! is_really_writable($path))
 			return FALSE;
-				
+
 		include $path;
 
 		$MS = new Member_skin;
-					
+
 		$class_methods = get_class_methods('Member_skin');
-		
+
 		$methods = array();
-		
+
 		foreach ($class_methods as $val)
 		{
 			if ($val == 'menu')
 				$methods[$val] = menu();
 			else
-				$methods[$val] = stripslashes($MS->$val());  
+				$methods[$val] = stripslashes($MS->$val());
 		}
-		
+
 		$methods['subscriptions_form'] 			= subscriptions_form();
 		$methods['no_subscriptions_message']	= no_subscriptions_message();
 		$methods['subscription_result_heading']	= subscription_result_heading();
 		$methods['subscription_result_rows'] 	= subscription_result_rows();
 		$methods['subscription_pagination'] 	= subscription_pagination();
-			
-		
-		
+
+
+
 		$str  = "<?php\n\n";
 		$str .= '/*'."\n";
 		$str .= '====================================================='."\n";
@@ -318,7 +318,7 @@ class Category_Order {
 		$str .= '-----------------------------------------------------'."\n";
 		$str .= ' http://ellislab.com/'."\n";
 		$str .= '-----------------------------------------------------'."\n";
-		$str .= ' Copyright (c) 2003 - 2013, EllisLab, Inc.'."\n";
+		$str .= ' Copyright (c) 2003 - 2014, EllisLab, Inc.'."\n";
 		$str .= '====================================================='."\n";
 		$str .= ' THIS IS COPYRIGHTED SOFTWARE'."\n";
 		$str .= ' PLEASE READ THE LICENSE AGREEMENT'."\n";
@@ -328,8 +328,8 @@ class Category_Order {
 		$str .= '====================================================='."\n";
 		$str .= '*/'."\n\n";
 		$str .= "if ( ! defined('EXT')){\n\texit('Invalid file request');\n}\n\n";
-		$str .= "class Member_skin {\n\n"; 
-		 
+		$str .= "class Member_skin {\n\n";
+
 		foreach ($methods as $key => $val)
 		{
 			$str .= '//-------------------------------------'."\n";
@@ -339,13 +339,13 @@ class Category_Order {
 			$str .= 'function '.$key.'()'."\n{\nreturn <<< EOF\n";
 			$str .= $val;
 			$str .= "\nEOF;\n}\n// END\n\n\n\n\n";
-		} 
-			 
+		}
+
 		$str .= "}\n";
 		$str .= '// END CLASS'."\n";
 		$str .= '?'.'>';
-		   
-			   
+
+
 		if ( ! $fp = @fopen($path, FOPEN_WRITE_CREATE_DESTRUCTIVE))
 		{
 			return FALSE;
@@ -354,7 +354,7 @@ class Category_Order {
 			fwrite($fp, $str);
 			flock($fp, LOCK_UN);
 			fclose($fp);
-			
+
 		return TRUE;
 
 	}
@@ -425,12 +425,12 @@ function subscriptions_form()
 {
 return <<< EOF
 
-<script type="text/javascript"> 
+<script type="text/javascript">
 <!--
 
 function toggle(thebutton)
 {
-	if (thebutton.checked) 
+	if (thebutton.checked)
 	{
 	   val = true;
 	}
@@ -438,21 +438,21 @@ function toggle(thebutton)
 	{
 	   val = false;
 	}
-				
+
 	var len = document.target.elements.length;
 
-	for (var i = 0; i < len; i++) 
+	for (var i = 0; i < len; i++)
 	{
 		var button = document.target.elements[i];
-		
-		var name_array = button.name.split("["); 
-		
-		if (name_array[0] == "toggle") 
+
+		var name_array = button.name.split("[");
+
+		if (name_array[0] == "toggle")
 		{
 			button.checked = val;
 		}
 	}
-	
+
 	document.target.toggleflag.checked = val;
 }
 //-->

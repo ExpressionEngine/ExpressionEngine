@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -27,7 +27,7 @@ class File_category_model extends CI_Model
 	const TABLE_NAME = 'file_categories';
 
 	/**
-	 * Set the file category 
+	 * Set the file category
 	 *
 	 * @param int|string $file_id The id of the file from exp_files
 	 * @param int|string $cat_id The id of the category from exp_categories
@@ -40,7 +40,7 @@ class File_category_model extends CI_Model
 		// Make sure sort is numeric and is not negative
 		if (isset($sort) AND $this->_is_valid_int($sort))
 		{
-			$this->db->set('sort', $sort);	
+			$this->db->set('sort', $sort);
 		}
 
 		// Make sure is_cover is either n or y, though it should be y
@@ -59,13 +59,13 @@ class File_category_model extends CI_Model
 		{
 			return FALSE;
 		}
-		
+
 		// Check to see if parents need to be set and if this category has a parent
 		if ($this->config->item('auto_assign_cat_parents') == 'y')
 		{
 			$this->load->model('category_model');
 			$parent_id = $this->category_model->get_category_parent_id($cat_id);
-			
+
 			if ($parent_id != 0)
 			{
 				$this->set($file_id, $parent_id, $sort, $is_cover);
@@ -79,9 +79,9 @@ class File_category_model extends CI_Model
 
 		return TRUE;
 	}
-	
+
 	// -----------------------------------------------------------------------
-	
+
 	/**
 	 * Get the categories from the database
 	 *
@@ -98,21 +98,21 @@ class File_category_model extends CI_Model
 			'sort' => '',
 			'is_cover' => ''
 		);
-		
+
 		// Remove data that can't exist in the database
 		$data = array_intersect_key($data, $valid_keys);
-		
+
 		return $this->db->get_where('file_categories', $data);
 	}
-	
+
 	// -----------------------------------------------------------------------
-	
+
 	/**
 	 * Deletes category records for a specific file_id and optionally a cat_id as well
 	 *
 	 * @param integer $file_id The ID of the file from exp_files
 	 * @param integer $cat_id (Optional) The ID of the category to delete as well
-	 * 
+	 *
 	 * @return boolean TRUE if successful, FALSE otherwise
 	 */
 	public function delete($file_id, $cat_id = NULL)

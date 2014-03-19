@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -51,10 +51,10 @@ class Channel_model extends CI_Model {
 			{
 				return FALSE;
 			}
-			
+
 			$this->db->where_in('channel_title', $allowed_channels);
 		}
-		
+
 		if (count($fields) > 0)
 		{
 			$this->db->select(implode(',', $fields));
@@ -63,7 +63,7 @@ class Channel_model extends CI_Model {
 		{
 			$this->db->select('channel_title, channel_name, channel_id, cat_group, status_group, field_group');
 		}
-		
+
 		foreach ($additional_where as $where)
 		{
 			foreach ($where as $field => $value)
@@ -83,10 +83,10 @@ class Channel_model extends CI_Model {
 		{
 			$this->db->where('site_id', $site_id);
 		}
-		
+
 		$this->db->order_by('channel_title');
-		
-		return $this->db->get('channels'); 
+
+		return $this->db->get('channels');
 	}
 
 	// --------------------------------------------------------------------
@@ -134,7 +134,7 @@ class Channel_model extends CI_Model {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Get Channel Statuses
 	 *
@@ -152,7 +152,7 @@ class Channel_model extends CI_Model {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Get Channel Fields
 	 *
@@ -177,7 +177,7 @@ class Channel_model extends CI_Model {
 
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Get Required Fields
 	 *
@@ -191,13 +191,13 @@ class Channel_model extends CI_Model {
 	{
 		$this->db->from('channel_fields');
 		$this->db->where('group_id', $field_group);
-		$this->db->where('field_required', 'y');		
+		$this->db->where('field_required', 'y');
 		$this->db->order_by('field_order');
 		return $this->db->get();
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Get most recent entry/comment id
 	 *
@@ -215,7 +215,7 @@ class Channel_model extends CI_Model {
 		// By default we only grab the primary id
 		$fields = array($type.'_id');
 		$sort = $type.'_date';
-		
+
 		switch($type)
 		{
 			case 'comment': $table = 'comments';
@@ -225,11 +225,11 @@ class Channel_model extends CI_Model {
 				$table 		= 'channel_titles';
 				$fields[] 	= 'channel_id';
 		}
-		
+
 		$this->db->select($fields)
 			->order_by($sort, 'DESC')
 			->where('site_id', $this->config->item('site_id'));
-		
+
 		if ($this->session->userdata['can_edit_other_entries'] != 'y')
 		{
 			$this->db->where('author_id', $this->session->userdata('member_id'));
@@ -239,7 +239,7 @@ class Channel_model extends CI_Model {
 		$entry = $this->db
 			->where_in('channel_id', array_keys($allowed_channels))
 			->get($table, 1);
-		
+
 		// Return the result if we found anything
 		if ($entry->num_rows() > 0)
 		{
@@ -247,12 +247,12 @@ class Channel_model extends CI_Model {
 
 			return (count($fields) > 1) ? $entry->row_array() : $entry->row(current($fields));
 		}
-		
+
 		return FALSE;
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Create Channel
 	 *
@@ -302,7 +302,7 @@ class Channel_model extends CI_Model {
 	function delete_channel($channel_id, $entries = array(), $authors = array())
 	{
 		$comments = FALSE;
-		
+
 		$this->db->delete('channel_data', array('channel_id' => $channel_id));
 		$this->db->delete('channel_titles', array('channel_id' => $channel_id));
 		$this->db->delete('channels', array('channel_id' => $channel_id));
@@ -317,7 +317,7 @@ class Channel_model extends CI_Model {
 		if (count($entries) > 0 && $this->config->item('site_pages') !== FALSE)
 		{
 			$pages = $this->config->item('site_pages');
-			
+
 			if (count($pages[$this->config->item('site_id')]) > 0)
 			{
 				foreach($entries as $entry_id)
@@ -325,14 +325,14 @@ class Channel_model extends CI_Model {
 					unset($pages[$this->config->item('site_id')]['uris'][$entry_id]);
 					unset($pages[$this->config->item('site_id')]['templates'][$entry_id]);
 				}
-				
+
 				$this->config->set_item('site_pages', $pages);
-				
+
 				$this->db->where('site_id', $this->config->item('site_id'));
 				$this->db->update('sites', array('site_pages' => base64_encode(serialize($pages))));
 			}
 		}
-		
+
 		// Just like a gossipy so-and-so, we will now destroy relationships! Category is also toast.
 		if (count($entries) > 0)
 		{
@@ -343,7 +343,7 @@ class Channel_model extends CI_Model {
 			// delete parents
 			$this->db->where_in('parent_id', $entries);
 			$this->db->delete('relationships');
-			
+
 			// are there children?
 			$this->db->select('relationship_id');
 			$this->db->where_in('child_id', $entries);
@@ -383,13 +383,13 @@ class Channel_model extends CI_Model {
 			$this->db->where('author_id', $author_id);
 			$total_entries = $this->db->count_all_results('channel_titles');
 			$total_comments = 0;
-			
+
 			if ($comments)
 			{
 				$this->db->where('author_id', $author_id);
 				$total_comments = $this->db->count_all_results('comments');
 			}
-			
+
 			$this->db->where('member_id', $author_id);
 			$this->db->update('members', array( 'total_entries' => $total_entries,'total_comments' => $total_comments));
 		}
@@ -400,7 +400,7 @@ class Channel_model extends CI_Model {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Update Comment Expiration
 	 *
@@ -414,7 +414,7 @@ class Channel_model extends CI_Model {
 	function update_comment_expiration($channel_id, $comment_expiration, $reset_to_zero = FALSE)
 	{
 		$this->db->where('channel_id', $channel_id);
-		
+
 		if ($reset_to_zero)
 		{
 			$this->db->set('comment_expiration_date', 0);
@@ -423,13 +423,13 @@ class Channel_model extends CI_Model {
 		{
 			$this->db->set('comment_expiration_date', "(`entry_date` + {$comment_expiration})", FALSE);
 		}
-		
+
 		$this->db->update('channel_titles');
 		return $this->db->affected_rows();
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Update Allowed Comments
 	 *
@@ -443,7 +443,7 @@ class Channel_model extends CI_Model {
 	function update_comments_allowed($channel_id, $allow_comments)
 	{
 		$this->db->where('channel_id', $channel_id);
-		
+
 		if ($allow_comments == 'y')
 		{
 			$this->db->set('allow_comments', 'y');
@@ -452,14 +452,14 @@ class Channel_model extends CI_Model {
 		{
 			$this->db->set('allow_comments', 'n');
 		}
-		
+
 		$this->db->update('channel_titles');
 		return $this->db->affected_rows();
 	}
 
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Clear Versioning Data
 	 *
@@ -475,10 +475,10 @@ class Channel_model extends CI_Model {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Generates SQL for a field search
-	 * 
+	 *
 	 * @param	string	Search terms from search parameter
 	 * @param	string	Database column name to search
 	 * @param	int		Site ID
@@ -505,7 +505,7 @@ class Channel_model extends CI_Model {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Generate the SQL for a numeric comparison search
 	 * <, >, <=, >= operators
@@ -526,7 +526,7 @@ class Channel_model extends CI_Model {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Generate the SQL for an exact query in field search.
 	 *
@@ -535,14 +535,14 @@ class Channel_model extends CI_Model {
 	private function _exact_field_search($terms, $col_name, $site_id = FALSE)
 	{
 		// Trivial case, we don't have special IS_EMPTY handling.
-		if(strpos($terms, 'IS_EMPTY') === FALSE) 
+		if(strpos($terms, 'IS_EMPTY') === FALSE)
 		{
 			return substr(ee()->functions->sql_andor_string($terms, $col_name), 3).' ';
 		}
 
 		// Did this because I don't like repeatedly checking
 		// the beginning of the string with strncmp for that
-		// 'not', much prefer to do it once and then set a 
+		// 'not', much prefer to do it once and then set a
 		// boolean.  But.. [cont:1]
 		$not = false;
 		if (strncmp($terms, 'not ', 4) == 0)
@@ -552,28 +552,28 @@ class Channel_model extends CI_Model {
 		}
 
 		if (strpos($terms, '|') !== false)
-		{  
+		{
 			$terms = str_replace('IS_EMPTY|', '', $terms);
 		}
-		else 
+		else
 		{
 			$terms = str_replace('IS_EMPTY', '', $terms);
 		}
-		   
+
 		$add_search = '';
-		$conj = ''; 
+		$conj = '';
 
 		$site_id = ($site_id !== FALSE) ? 'wd.site_id=' . $site_id . ' AND ' : '';
-		
+
 		// If we have search terms, then we need to build the search.
-		if ( ! empty($terms)) 
+		if ( ! empty($terms))
 		{
 			// [cont:1]...it makes this a little hacky.  Gonna leave it for the moment,
 			// but may come back to it.
 			$add_search = ee()->functions->sql_andor_string(($not ? 'not ' . $terms : $terms), $col_name);
 			// remove the first AND output by ee()->functions->sql_andor_string() so we can parenthesize this clause
 			$add_search = '('.$site_id . substr($add_search, 3) . ')';
-											
+
 			$conj = ($add_search != '' && ! $not) ? 'OR' : 'AND';
 		}
 
@@ -586,7 +586,7 @@ class Channel_model extends CI_Model {
 
 		return $add_search.' '.$conj.' (' . $site_id . $col_name . ' = "")';
 	}
-	
+
 	// ------------------------------------------------------------------------
 
 	/**
@@ -619,7 +619,7 @@ class Channel_model extends CI_Model {
 		$search_sql = '';
 		foreach ($terms as $term)
 		{
-			if($search_sql !== '') 
+			if($search_sql !== '')
 			{
 				$search_sql .= $andor;
 			}
@@ -633,12 +633,12 @@ class Channel_model extends CI_Model {
 				// Note: MySQL's nutty POSIX regex word boundary is [[:>:]]
 				$term = '([[:<:]]|^)'.preg_quote(str_replace('\W', '', $term)).'([[:>:]]|$)';
 
-				$search_sql .= ' (' . $site_id 
+				$search_sql .= ' (' . $site_id
 					. $col_name . ' ' . $not . ' REGEXP "' . ee()->db->escape_str($term).'") ';
 			}
 			else
-			{	
-				$search_sql .= ' (' . $site_id 
+			{
+				$search_sql .= ' (' . $site_id
 					. $col_name . ' ' . $not . ' LIKE "%' . ee()->db->escape_like_str($term) . '%") ';
 			}
 		}

@@ -1,0 +1,300 @@
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,hr{margin:0;padding:0;border:0;outline:0;font-weight:inherit;font-style:inherit;font-size:100%;font-family:inherit;vertical-align:baseline;}:focus{outline:0;}body{line-height:1;color:black;background:white;}ol,ul{list-style:none;}table{border-collapse:collapse;border-spacing:0;}caption,th,td{text-align:left;font-weight:normal;}blockquote:before,blockquote:after,q:before,q:after{content:"";}blockquote,q{quotes:"""";}@font-face{font-family:'miso';src:url('{site_url}themes/site_themes/agile_records/fonts/miso-bold.ttf');}body{background:#ccc url({site_url}themes/site_themes/agile_records/images/body_bg.jpg) top center;font-size:13px;font-family:Arial,sans-serif;}ul#nav_access{position:absolute;top:-9999px;left:-9999px;}p,ul,dl,ol{margin-bottom:22px;line-height:22px;}ul{list-style:url({site_url}themes/site_themes/agile_records/images/bullet.jpg);}ul li{margin-left:12px;}ol{list-style:decimal;list-style-position:inside;}hr{height:0;border-top:1px solid #ccc;margin-bottom:22px;}abbr{border-bottom:1px dotted;}strong{font-weight:bold;}em{font-style:italic;}h1,h2,h3,h4,h5{font-weight:bold;}h2{color:#48482d;font-size:16px;margin-bottom:10px;}h3{margin-bottom:20px;}h4{margin-bottom:10px;}h5{margin-bottom:10px;}h6{text-transform:uppercase;font-size:11px;color:#666;letter-spacing:1px;margin-bottom:10px;}a:link,a:visited{color:#333;text-decoration:underline;}a:hover,a:focus{color:#111;}h2 a:link,h2 a:visited,h3 a:link,h3 a:visited,h4 a:link,h4 a:visited{text-decoration:none;}
+
+/* Tables */
+/* site_url explanation: http://ellislab.com/expressionengine/user-guide/templates/globals/single_variables.html#var_site_url */
+/* only site_url will be parsed, other variables will not be parsed unless you call the stylesheet using path= instead of stylesheet=:
+
+http://ellislab.com/expressionengine/user-guide/templates/globals/stylesheet.html */
+
+table{background:url({site_url}themes/site_themes/agile_records/images/white_40.png);font-size:12px;}
+tr{border-bottom:1px dotted #999;}
+tr.alt{background:url({site_url}themes/site_themes/agile_records/images/white_20.png);}
+th,td{padding:10px;}
+th{background:url({site_url}themes/site_themes/agile_records/images/white_20.png);color:#666;font-weight:bold;font-size:13px;}
+.member_table{width:60%; margin:10px;}
+.member_console{width:100%;}
+
+/* Page Styles */
+div#branding{height:290px;background:url({site_url}themes/site_themes/agile_records/images/branding_bg.png) repeat-x center top;position:relative;z-index:2;}
+div#branding_sub{width:930px;margin:0 auto;position:relative;}
+div#page{width:950px;padding-top:50px;margin:0 auto;position:relative;top:0px;margin-top:-80px;z-index:1;background:url({site_url}themes/site_themes/agile_records/images/white_40.png);}
+div#content_wrapper{padding-top:30px;}
+div#feature{width:950px;background:url({site_url}themes/site_themes/agile_records/images/white_70.png);float:left;padding-top:30px;position:relative;bottom:30px;margin-bottom:-30px;}
+
+div.feature_end {background:transparent url({site_url}themes/site_themes/agile_records/images/agile_sprite.png) no-repeat scroll left -747px; border:none;outline:none;clear:both;height:35px;margin-top:-6px;margin-bottom:20px;width:950px;}
+
+div#legend{width:950px;background:url({site_url}themes/site_themes/agile_records/images/white_70.png);overflow:hidden;position:relative;top:30px;margin-top:-30px;padding:10px 0 30px 0;font-size:11px;}
+hr.legend_start{width:950px;clear:both;background:url({site_url}themes/site_themes/agile_records/images/white_70_top.png) no-repeat top left;height:35px;margin:0;margin-top:20px;border:none;}
+div#content_pri{width:610px;float:left;margin:0 30px 0 10px;}
+div#content_sec{width:270px;float:left;}
+
+input.input { border:1px solid #aaa; position:relative; left:5px; background:url({site_url}themes/site_themes/agile_records/images/white_50.png);}
+input.input:focus { background:url({site_url}themes/site_themes/agile_records/images/white_70.png); }
+textarea { border:1px solid #aaa; background:url({site_url}themes/site_themes/agile_records/images/white_50.png); }
+textarea:focus { background:url({site_url}themes/site_themes/agile_records/images/white_70.png); }
+
+
+
+
+/* Branding */
+div#branding_logo{background:url({site_url}themes/site_themes/agile_records/images/agile_sprite.png) no-repeat 9px -428px;margin:0 auto;position:relative;left:-80px;margin-bottom:-230px;height:230px;width:950px;}
+div#branding_logo img{display:none;}
+div#branding_sub h1 a {width:182px;height:196px;display:block;text-indent:-9999em;background:url({site_url}themes/site_themes/agile_records/images/agile_sprite.png) no-repeat -264px 15px;  padding-top:15px;}
+div#branding_sub form{position:absolute; right:130px;top:25px;width:240px;height:51px;background:url({site_url}themes/site_themes/agile_records/images/agile_sprite.png) no-repeat -534px -21px;}
+div#branding_sub form fieldset{position:relative;}
+div#branding_sub form label{text-indent:-9999em;margin-top:10px;width:60px;padding:5px;position:absolute;left:0px;display:inline;}
+div#branding_sub form input#search{background:none;border:none;position:absolute;top:13px;left:70px;width:100px;padding:2px 5px;font-size:11px;color:#fff;}
+
+div#branding_sub form input#submit{position:absolute;right:30px;top:6px; background:transparent url({site_url}themes/site_themes/agile_records/images/agile_sprite.png) no-repeat -587px -77px; width:24px; height:24px; display:block; font-size:1px; border:none; outline:none;}
+
+div#branding_sub div#member{position:absolute;right:0;top:20px;background:url({site_url}themes/site_themes/agile_records/images/brown_40.png);border:1px solid #846f65;color:#ccc;font-size:11px;padding:8px;}
+div#branding_sub div#member ul{margin:0;line-height:13px;list-style:disc;}
+div#branding_sub div#member h4{margin-bottom:4px;}
+div#branding_sub div#member a:link, div#branding_sub div#member a:visited{color:#ccc;}
+div#branding_sub div#member a:hover, div#branding_sub div#member a:focus{color:#fff;}
+
+/* Navigation */
+ul#navigation_pri{list-style:none;margin:0 auto;padding:5px 15px;width:340px;max-height:100px;background:#2f261d;position:absolute;right:0;bottom:20px;}
+ul#navigation_pri li{margin:0;float:left;font-size:16px;width:33%;}
+ul#navigation_pri li a{font-family:'Cooper Black',miso,'Georgia',serif;font-weight:bold;color:#999999;text-decoration:none}
+ul#navigation_pri li a:hover{color:#efefef;}
+ul#navigation_pri li.cur a{color:#f47424}
+
+/* Footer */
+div#siteinfo{background:url({site_url}themes/site_themes/agile_records/images/agile_sprite.png) no-repeat left -287px;height:80px;padding-top:40px;position:relative;clear:both;font-size:12px;z-index:3;}
+div#siteinfo p{color:#5b5b42;font-weight:bold;margin:0 0 0 10px;}
+div#siteinfo p.logo{width:65px;height:70px;background:url({site_url}themes/site_themes/agile_records/images/agile_sprite.png); text-indent:-9999em;position:absolute;left:865px;bottom:15px;}
+div#siteinfo a {color:#5b5b42;text-decoration:underline;}
+div#siteinfo a:hover {color:#3B3A25;text-decoration:underline;}
+div#siteinfo p.logo a{display:block;}
+
+
+/* 11.PAGEHEADERS
+---------------------------------------------------------------------- */
+
+div#page_header { background:url({site_url}themes/site_themes/agile_records/images/agile_sprite.png) no-repeat left -205px; height:72px; z-index:3; position:relative; top:-25px; margin-bottom:-15px; }
+
+div#page_header h2 { float:left; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-weight: normal; text-transform:uppercase; color:#ebebeb; letter-spacing: -0.01em; }
+div#page_header h2 a { display:block; }
+
+div#page_header h2 { margin:0; width:400px; height:15px; padding-top:30px; margin-left:10px;}
+
+div#page_header ol#breadcrumbs { float:left; list-style:none; margin:0; margin-left:10px; margin-top:26px; padding:0px 0 0 20px; background:url({site_url}themes/site_themes/agile_records/images/breadcrumbs_bg.png) no-repeat left center; }
+div#page_header ol#breadcrumbs li { margin:0; float:left; font-weight:bold; color:#d6d6d6; text-transform:uppercase; font-size:12px; }
+div#page_header ol#breadcrumbs li a { color:#d6d6d6; text-decoration:none; }
+
+
+/*  Featured Band / Welcome
+-------------------------------- */
+div#featured_band {width:450px; float:left; position:relative; z-index:5; bottom:52px; margin-bottom:-52px;}
+div#welcome {width:450px; float:left; margin:0 30px 0 10px;}
+div#welcome img {float:left; margin:0 30px 10px 0;}
+div#featured_band h2 {margin-bottom:38px; width:135px; height:14px; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-weight: normal; text-transform:uppercase; color:#ebebeb; letter-spacing: -0.01em;}
+
+div#featured_band div.image { float:right; width:323px; height:243px; position:relative; left:50px; bottom:75px; margin: 0 0 -75px -50px; }
+div#featured_band div.image h4 { width:324px; height:243px; background:url({site_url}themes/site_themes/agile_records/images/featuredband_border.png) no-repeat top left; position:absolute; top:0; left:0; z-index:2; }
+div#featured_band div.image h4 span { position:absolute; top:177px; left:30px; background:url({site_url}themes/site_themes/agile_records/images/white_70.png); font-size:11px; padding:2px; padding-left:60px; }
+div#featured_band div.image img { position:absolute; top:20px; left:15px;}
+.green40 {background:transparent url({site_url}themes/site_themes/agile_records/images/green_40.png) repeat scroll 0 0; color:#EEEEEE; float:left; padding:10px;}
+div#feature p {margin-left:10px;}
+
+/* News
+---------------- */
+h3.oldernews {}
+ul#news_listing { list-style:none; }
+ul#news_listing li { margin:0 0 30px 0; overflow:hidden; }
+ul#news_listing li img { float:left; margin:0 10px 10px 0;}
+ul#news_listing li p { margin-bottom:10px; }
+
+div#news_archives { overflow:hidden; }
+div#news_archives div#categories_box {width:120px; float: left;}
+div#news_archives div#months_box {width:120px; float: right;}
+div#news_archives ul#categories { width:120px; float:left; margin-right:30px; }
+div#news_archives ul#months { width:120px; float:left; }
+
+div#news_calendar { padding:10px; background:url({site_url}themes/site_themes/agile_records/images/white_50.png); margin-bottom:40px; }
+
+div#news_calendar a:link,
+div#news_calendar a:visited { color:#666; }
+div#news_calendar a:hover,
+div#news_calendar a:focus { color:#333; }
+
+div#news_calendar h6 { position:relative; text-align:center; text-transform:uppercase; color:#666; padding:0 0 10px 0; }
+div#news_calendar h6 a.prev { position:absolute; left:0; top:-3px; font-size:16px; }
+div#news_calendar h6 a.next { position:absolute; right:0; top:-3px; font-size:16px; }
+
+div#news_calendar table { background:none; font-size:11px; width:250px; color:#666; }
+div#news_calendar table th { background:url({site_url}themes/site_themes/agile_records/images/green_50.png); color:#ccc; }
+div#news_calendar table th,
+div#news_calendar table td  { padding:5px 0; text-align:center; }
+div#news_calendar table tr { border:none; }
+div#news_calendar table td.unused { color:#999; }
+div#news_calendar table td.post { background:url({site_url}themes/site_themes/agile_records/images/white_20.png); }
+div#news_calendar table td.post:hover { background:url({site_url}themes/site_themes/agile_records/images/white_40.png); }
+
+div#news_rss { padding:10px; background:url({site_url}themes/site_themes/agile_records/images/white_50.png); color:#666; }
+div#news_rss ul { list-style:url({site_url}themes/site_themes/agile_records/images/bullet.jpg); margin:0; }
+div#news_rss a:link,
+div#news_rss a:visited { color:#666; }
+div#news_rss a:hover,
+div#news_rss a:focus { color:#333; }
+
+
+/* Staff Profiles */
+div#content_sec.staff_profiles {
+background:transparent url({site_url}themes/site_themes/agile_records/images/staff_bg.jpg) repeat scroll 0 0;float:right;margin-bottom:-110px;padding:10px;position:relative;top:-140px; right:10px; width:430px;}
+
+/* Comments */
+div#news_comments { border-top:#bfbebf 1px solid; padding-top:20px; }
+
+div#news_comments ol { list-style:none; border-top:1px dotted #ccc; margin-bottom:30px; }
+div#news_comments ol li { border-bottom:1px dotted #ccc; background:url({site_url}themes/site_themes/agile_records/images/white_70.png); padding:20px 10px 0 160px; font-size:12px; line-height:20px; }
+div#news_comments ol li.alt { background:url({site_url}themes/site_themes/agile_records/images/white_50.png); }
+
+div#news_comments ol li h5.commentdata { width:120px; float:left; position:relative; left:-150px; margin-right:-150px; font-size:13px; line-height:20px; }
+div#news_comments ol li h5.commentdata span { display:block; font-weight:normal; font-size:11px; }
+div#news_comments ol li h5.commentdata img { margin-top:10px; }
+
+div#news_comments h3.leavecomment {color:#47472C; font-family:'Cooper Black', miso, 'Georgia', serif; font-size:20px;}
+div#news_comments form { position:relative; margin-bottom:30px; }
+
+div#news_comments fieldset#comment_fields label { display:block; overflow:hidden; font-size:12px; margin-bottom:20px; }
+div#news_comments fieldset#comment_fields label span { width:80px; float:left; position:relative; top:5px; }
+div#news_comments fieldset#comment_fields label input { border:1px solid #aaa; width:228px; float:left; background:url({site_url}themes/site_themes/agile_records/images/white_50.png); }
+div#news_comments fieldset#comment_fields label input:focus { background:url({site_url}themes/site_themes/agile_records/images/white_70.png); }
+div#news_comments fieldset#comment_fields label textarea { border:1px solid #aaa; float:left; height:150px; width:438px; background:url({site_url}themes/site_themes/agile_records/images/white_50.png); }
+div#news_comments fieldset#comment_fields label textarea:focus { background:url({site_url}themes/site_themes/agile_records/images/white_70.png); }
+
+div#news_comments div#comment_guidelines { width:418px; padding:10px; margin:10px 0 10px 80px; color:#fff; background:#9f9995; }
+div#news_comments div#comment_guidelines h6 { font-weight:normal; font-size:12px; margin-bottom:0; }
+div#news_comments div#comment_guidelines p { margin:10px 0 0 0 ; font-size:11px; line-height:16px; font-style:italic; }
+
+div#news_comments fieldset#comment_action { background:url({site_url}themes/site_themes/agile_records/images/orange_20.png); padding:10px; font-size:11px; position:relative; }
+div#news_comments fieldset#comment_action label { display:block; padding:5px 0; }
+div#news_comments fieldset#comment_action label input { position:relative; left:5px; }
+div#news_comments fieldset#comment_action input#submit_comment { position:absolute; bottom:10px; right:10px; font-size:12px; }
+
+div#captcha_box img {margin-left: 5px;}
+
+input#captcha {display:block; margin: 5px 0 0 0; border:1px solid #aaa; width:228px; background:url({site_url}themes/site_themes/agile_records/images/white_50.png);}
+input#captcha:focus {background:url({site_url}themes/site_themes/agile_records/images/white_70.png);}
+
+/* News Archive Page */
+div.archive ul#news_listing li img {float:right; margin:auto auto 10px 10px;}
+div.archive ul#news_listing li p {margin-bottom:10px; padding-left:0;}
+
+/* About */
+div#content_pri.about {width:450px;}
+div#feature.about p {color:#666666;font-weight:bold;margin-left:10px;width:450px;}
+div#feature h3.about {font-size:22px; font-family:'Cooper Black',miso,'Georgia',serif;font-weight:bold;color:#47472C;text-decoration:none; margin:10px 0 20px 10px; width:300px;}
+
+
+div#content_sec ul.staff_member li {float:left;height:180px;margin:0 35px 40px 0;overflow:hidden;position:relative;width:120px;}
+
+div#content_sec ul.staff_member { list-style:none; overflow:hidden; margin-bottom:-20px; }
+div#content_sec ul.staff_member li { width:120px; height:180px; overflow:hidden; position:relative; float:left; margin:0 35px 40px 0; }
+div#content_sec ul.staff_member li.end { margin-right:0; }
+div#content_sec ul.staff_member li h4 { font-size:12px; padding:5px 5px; background:#afafa8; position:absolute; bottom:0; left:0; z-index:3; color:#fff; width:110px; height:20px; cursor:pointer; }
+div#content_sec ul.staff_member li h4 a { position:absolute; right:5px; color:#eee; font-family:Georgia, "Times New Roman", Times, serif; font-style:italic; font-weight:bold; }
+div#content_sec ul.staff_member li div.profile { position:absolute; bottom:40px; left:0; background:url({site_url}themes/site_themes/agile_records/images/white_50.png); z-index:2; padding:5px; width:110px; }
+div#content_sec ul.staff_member li img { position:absolute; top:0; left:0; }
+div.profile {color:#000;}
+
+
+/* Contact */
+div#content_pri.contact { width:530px; margin-right:110px; }
+div#content_sec.contact {  width:270px; float:left; padding:10px; padding-bottom:0; background:url({site_url}themes/site_themes/agile_records/images/staff_bg.jpg); position:relative; top:-170px; margin-bottom:-140px; color:#eee; }
+div#feature.contact p {color:#666666;font-weight:bold;margin-left:10px;width:600px;}
+
+/*div#feature { padding-left:10px; padding-right:410px; width:530px; }*/
+div#feature h3.getintouch { width:140px; font-family:'Cooper Black',miso,'Georgia',serif;font-size:20px; color:#47472C;text-decoration:none; margin-left:10px;}
+
+div#content_pri form { position:relative; margin-bottom:30px; }
+
+div#content_pri fieldset#contact_fields label { display:block; overflow:hidden; font-size:12px; margin-bottom:20px; }
+div#content_pri fieldset#contact_fields label span { width:80px; float:left; position:relative; top:5px; }
+div#content_pri fieldset#contact_fields label input { border:1px solid #aaa; width:228px; float:left; background:url({site_url}themes/site_themes/agile_records/images/white_50.png); }
+div#content_pri fieldset#contact_fields label input:focus { background:url({site_url}themes/site_themes/agile_records/images/white_70.png); }
+div#content_pri fieldset#contact_fields label textarea { border:1px solid #aaa; float:left; height:150px; width:438px; background:url({site_url}themes/site_themes/agile_records/images/white_50.png); }
+div#content_pri fieldset#contact_fields label textarea:focus { background:url({site_url}themes/site_themes/agile_records/images/white_70.png); }
+
+div#content_pri div#contact_guidelines { position:absolute; top:0; right:0; width:170px; padding:10px; color:#fff; background:#9f9995; }
+div#content_pri div#contact_guidelines h6 { font-weight:normal; font-size:12px; margin-bottom:10px; }
+div#content_pri div#contact_guidelines p { margin:0; font-size:11px; line-height:16px; font-style:italic; }
+
+div#content_pri fieldset#contact_action { background:url({site_url}themes/site_themes/agile_records/images/orange_20.png); padding:10px; font-size:11px; position:relative; }
+div#content_pri fieldset#contact_action label { display:block; padding:5px 0; }
+div#content_pri fieldset#contact_action label input { position:relative; left:5px; }
+div#content_pri fieldset#contact_action input#contactSubmit { position:absolute; bottom:10px; right:10px; font-size:12px; }
+
+
+
+
+/*  Member Templates */
+/* 22.MEMBERS
+---------------------------------------------------------------------- */
+
+/* CONTROL PANEL */
+div#navigation_sec.member_cp { width:270px; padding:10px; float:left; background:url({site_url}themes/site_themes/agile_records/images/green_40.png); margin:35px 30px 30px 10px; font-size:11px; line-height:16px; }
+/*div#content_pri.member_cp  { width:610px; margin:0 0 0 10px; }*/
+
+div#page_header.member_cp  a.viewprofile { display:block; width:182px; height:22px; background:url({site_url}themes/site_themes/agile_records/images/member_viewprofile.jpg) no-repeat left top; text-indent:-9999em; position:absolute; right:10px; top:25px; }
+.member_cp div#page_header a.viewprofile:hover,
+.member_cp div#page_header a.viewprofile:focus { background-position:left bottom; }
+
+div#navigation_sec.member_cp h4 { color:#fff; border-bottom:1px solid #b1b1a9; font-size:12px; padding-bottom:5px; position:relative; }
+div#navigation_sec.member_cp h4 a.expand { position:absolute; right:0; top:0; display:block; height:14px; width:14px; background:url({site_url}themes/site_themes/agile_records/images/controlpanel_expand.jpg) no-repeat bottom left; text-indent:-9999em; }
+div#navigation_sec.member_cp h4 a.expand.open { background:url({site_url}themes/site_themes/agile_records/images/controlpanel_expand.jpg) no-repeat top left; }
+div#navigation_sec.member_cp a:link,
+div#navigation_sec.member_cp a:visited { color:#ddd; }
+div#navigation_sec.member_cp a:hover,
+div#navigation_sec.member_cp a:focus { color:#fff; }
+
+div#content_pri table { width:610px; background:none;}
+div#content_pri table th { background:none; }
+div#content_pri table tr { background:url({site_url}themes/site_themes/agile_records/images/white_60.png); }
+div#content_pri table tr.alt { background:url({site_url}themes/site_themes/agile_records/images/white_40.png); }
+
+/* PROFILE */
+div#content_pri.member_profile, div#content_pri.member_cp  { width:450px; float:left; margin:0 30px 30px 10px; }
+div#content_sec.member_profile, div#content_sec.member_cp  { width:450px; float:left; margin:0 0 30px 0; }
+
+h3.statistics {height:11px; font-family:'Cooper Black',miso,'Georgia',serif; color:#f47424; font-size:18px; }
+h3.personalinfo {height:11px; color:#47472C; font-family:'Cooper Black',miso,'Georgia',serif; font-size:18px;}
+h3.biography {height:11px; color:#47472C; font-family:'Cooper Black',miso,'Georgia',serif; font-size:18px; margin-top:20px;}
+
+div#memberprofile_main { background:url({site_url}themes/site_themes/agile_records/images/green_20.png); width:300px; padding:10px; margin:40px 0 0 10px; float:left; }
+div#memberprofile_main img { float:left; margin:0 10px 10px 0; }
+div#memberprofile_main h3 { margin:5px 0 10px 0; }
+div#memberprofile_main ul { clear:both; margin:0; padding:10px 0; font-size:12px; }
+div#memberprofile_main ul a { color:#666; }
+
+div#memberprofile_photo { float:left; width:250px; height:220px; background:url({site_url}themes/site_themes/agile_records/images/memberprofile_photo_bg.png) no-repeat center center; position:relative; left:-20px; }
+div#memberprofile_photo img { width:206px; height:176px; border:3px solid #6b5f57; position:absolute; top:20px; left:20px; }
+
+div#memberprofile_communicate { width:270px; padding:10px; margin:20px 10px 0 0; float:right; background:url({site_url}themes/site_themes/agile_records/images/green_40.png); }
+div#memberprofile_communicate h3.communicate { width:83px; height:12px; font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; color:#EBEBEB; text-transform: uppercase; margin-bottom:10px; }
+div#memberprofile_communicate table { width:270px; font-size:10px; background:none; }
+div#memberprofile_communicate table tr { background:url({site_url}themes/site_themes/agile_records/images/white_40.png); }
+div#memberprofile_communicate table tr.alt { background:url({site_url}themes/site_themes/agile_records/images/white_20.png); }
+div#memberprofile_communicate table th { font-weight:normal; font-size:10px; background:none; padding:4px; }
+div#feature div#memberprofile_communicate table td { padding:4px; color:#444;}
+
+div#content_pri.member_cp table,
+div#content_sec.member_cp table { width:100%; background:none; margin-bottom:30px; }
+div#content_pri.member_cp table th,
+div#content_sec.member_cp table th { background:none; }
+div#content_pri.member_cp table tr,
+div#content_sec.member_cp table tr { background:url({site_url}themes/site_themes/agile_records/images/white_60.png); }
+div#content_pri.member_cp table tr.alt,
+div#content_sec.member_cp table tr.alt  { background:url({site_url}themes/site_themes/agile_records/images/white_40.png); }
+
+/* Private Messages: Move and Copy pop-up menu control */
+#movemenu {position: absolute !important; top: 410px !important; left: 390px !important; border: 0 !important;}
+#copymenu {position: absolute !important; top: 410px !important; left: 332px !important; border: 0 !important;}
+
+/* Search Results */
+.pagination ul { overflow: auto; }
+.pagination li { float: left; list-style: none; background: transparent url(http://expressionengine2/themes/site_themes/agile_records/images/green_40.png) repeat scroll 0 0; padding: 1px 7px; margin: 0 3px; }
+.pagination li.active { background: none; }
+.pagination li.active a { text-decoration: none; }

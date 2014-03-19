@@ -5,13 +5,13 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.5.3
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -24,9 +24,9 @@
  * @link		http://ellislab.com
  */
 class Updater {
-	
+
 	var $version_suffix = '';
-	
+
 	/**
 	 * Constructor
 	 */
@@ -34,7 +34,7 @@ class Updater {
 	{
 		$this->EE =& get_instance();
 	}
-	
+
 	/**
 	 * Do Update
 	 *
@@ -53,12 +53,12 @@ class Updater {
 		{
 			$this->$v();
 		}
-		
+
 		return TRUE;
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Changes column type for the `site_system_preferences` column in
 	 * `sites` from TEXT to MEDIUMTEXT
@@ -75,9 +75,9 @@ class Updater {
 			)
 		);
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Truncates `security_hashes` and `throttle` tables in response to bug
 	 * #17795 where these tables may not be emptied regularly. Now that the
@@ -90,7 +90,7 @@ class Updater {
 		ee()->db->truncate('security_hashes');
 		ee()->db->truncate('throttle');
 	}
-}	
+}
 /* END CLASS */
 
 /* End of file ud_253.php */

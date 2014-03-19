@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -24,7 +24,7 @@
  */
 class Wizard extends CI_Controller {
 
-	var $version			= '2.7.3';	// The version being installed
+	var $version			= '2.8.1';	// The version being installed
 	var $installed_version	= ''; 		// The version the user is currently running (assuming they are running EE)
 	var $minimum_php		= '5.2.4';	// Minimum version required to run EE
 	var $schema				= NULL;		// This will contain the schema object with our queries
@@ -44,7 +44,7 @@ class Wizard extends CI_Controller {
 	var $content			= '';
 	var $title				= 'ExpressionEngine Installation and Update Wizard';
 	var $heading			= 'ExpressionEngine Installation and Update Wizard';
-	var $copyright			= 'Copyright 2003 - 2013 EllisLab, Inc. - All Rights Reserved';
+	var $copyright			= 'Copyright 2003 - 2014 EllisLab, Inc. - All Rights Reserved';
 
 	var $now;
 	var $year;
@@ -81,7 +81,6 @@ class Wizard extends CI_Controller {
 	var $userdata = array(
 		'app_version'			=> '',
 		'doc_url'				=> 'http://ellislab.com/expressionengine/user-guide/',
-		'install_lock'			=> '1',
 		'ext'					=> '.php',
 		'ip'					=> '',
 		'database'				=> 'mysql',
@@ -129,29 +128,14 @@ class Wizard extends CI_Controller {
 	// and CI config files are one in the same now we use this data when we write the
 	// initial config file using $this->_write_config_data()
 	var $ci_config = array(
-		'base_url'				=> '',
-		'index_page' 			=> 'index.php',
 		'uri_protocol'			=> 'AUTO',
-		'url_suffix' 			=> '',
-		'language'				=> 'english',
 		'charset' 				=> 'UTF-8',
-		'enable_hooks' 			=> FALSE,
 		'subclass_prefix' 		=> 'EE_',
-		'permitted_uri_chars' 	=> 'a-z 0-9~%.:_\-',
-		'enable_query_strings'	=> FALSE,
-		'directory_trigger' 	=> 'D',
-		'controller_trigger' 	=> 'C',
-		'function_trigger' 		=> 'M',
 		'log_threshold' 		=> 0,
 		'log_path' 				=> '',
 		'log_date_format' 		=> 'Y-m-d H:i:s',
 		'cache_path' 			=> '',
 		'encryption_key' 		=> '',
-		'cookie_prefix'			=> '',
-		'global_xss_filtering'	=> FALSE,
-		'csrf_protection' 		=> FALSE,
-		'compress_output' 		=> FALSE,
-		'time_reference' 		=> 'local',
 		'rewrite_short_tags' 	=> TRUE			// Enabled for cleaner view files and compatibility
 	);
 
@@ -225,6 +209,7 @@ class Wizard extends CI_Controller {
 		}
 
 		$this->root_theme_path = $this->theme_path;
+		define('PATH_THEMES', $this->root_theme_path);
 		$this->theme_path .= 'site_themes/';
 		$this->theme_path = str_replace('//', '/', $this->theme_path);
 		$this->root_theme_path = str_replace('//', '/', $this->root_theme_path);
@@ -329,8 +314,16 @@ class Wizard extends CI_Controller {
 			return FALSE;
 		}
 
+		$cache_path = EE_APPPATH.'cache';
+
+		// Attempt to grab cache_path config if it's set
+		if (ee()->config->item('cache_path'))
+		{
+			$cache_path = ee()->config->item('cache_path');
+		}
+
 		// Is the cache folder writable?
-		if ( ! is_really_writable(EE_APPPATH.'/cache'))
+		if ( ! is_really_writable($cache_path))
 		{
 			$this->_set_output('error', array('error' => $this->lang->line('unwritable_cache_folder')));
 			return FALSE;
@@ -913,6 +906,24 @@ PAPAYA;
 		if ($this->userdata['screen_name'] == '')
 		{
 			$this->userdata['screen_name'] = $this->userdata['username'];
+		}
+
+		// DB Prefix has some character restrictions
+		if ( ! preg_match("/^[0-9a-zA-Z\$_]*$/", $this->userdata['db_prefix']))
+		{
+			$errors[] = $this->lang->line('database_prefix_invalid_characters');
+		}
+
+		// The DB Prefix should not include "exp_"
+		if ( strpos($this->userdata['db_prefix'], 'exp_') !== FALSE)
+		{
+			$errors[] = $this->lang->line('database_prefix_contains_exp_');
+		}
+
+		// Table names cannot be longer than 64 characters, our longest is 26
+		if ( strlen($this->userdata['db_prefix']) > 30)
+		{
+			$errors[] = $this->lang->line('database_prefix_too_long');
 		}
 
 		// Connect to the database.  We pass a multi-dimensional array since
@@ -2380,9 +2391,9 @@ PAPAYA;
 			'cookie_domain'					=>	'',
 			'cookie_path'					=>	'',
 			'cookie_prefix'					=>	'',
+			'website_session_type'			=>	'c',
+			'cp_session_type'				=>	'cs',
 			'cookie_httponly'				=>	'y',
-			'user_session_type'				=>	'c', 
-			'admin_session_type'			=>	'cs',
 			'allow_username_change'			=>	'y',
 			'allow_multi_logins'			=>	'y',
 			'password_lockout'				=>	'y',
@@ -2402,7 +2413,9 @@ PAPAYA;
 			'max_referrers'					=>	'500',
 			'is_system_on'					=>	'y',
 			'allow_extensions'				=>	'y',
-			'time_format'					=>	'us',
+			'date_format'					=>	'%n/%j/%y',
+			'time_format'					=>	'12',
+			'include_seconds'				=>	'n',
 			'server_offset'					=>	'',
 			'default_site_timezone'			=>	$this->userdata['default_site_timezone'],
 			'mail_protocol'					=>	'mail',
@@ -2461,13 +2474,13 @@ PAPAYA;
 			'prv_msg_html_format'			=> 'safe',
 			'prv_msg_auto_links'			=> 'y',
 			'prv_msg_max_chars'				=> '6000',
+			'enable_template_routes'		=>	'y',
 			'strict_urls'					=>	'y',
 			'site_404'						=>	'',
 			'save_tmpl_revisions'			=>	'n',
 			'max_tmpl_revisions'			=>	'5',
 			'save_tmpl_files'				=>	'n',
 			'tmpl_file_basepath'			=>	realpath('./expressionengine/templates/').DIRECTORY_SEPARATOR,
-			'secure_forms'					=>	'y',
 			'deny_duplicate_data'			=>	'y',
 			'redirect_submitted_links'		=>	'n',
 			'enable_censoring'				=>	'n',
@@ -2535,8 +2548,8 @@ PAPAYA;
 			'include_seconds',
 			'cookie_domain',
 			'cookie_path',
-			'user_session_type',
-			'admin_session_type',
+			'website_session_type',
+			'cp_session_type',
 			'allow_username_change',
 			'allow_multi_logins',
 			'password_lockout',
@@ -2554,7 +2567,9 @@ PAPAYA;
 			'gzip_output',
 			'log_referrers',
 			'max_referrers',
+			'date_format',
 			'time_format',
+			'include_seconds',
 			'server_offset',
 			'default_site_timezone',
 			'mail_protocol',
@@ -2572,7 +2587,6 @@ PAPAYA;
 			'cp_theme',
 			'email_module_captchas',
 			'log_search_terms',
-			'secure_forms',
 			'deny_duplicate_data',
 			'redirect_submitted_links',
 			'enable_censoring',
@@ -2686,6 +2700,7 @@ PAPAYA;
 
 		// Default Templates Prefs
 		$template_default = array(
+			'enable_template_routes',
 			'strict_urls',
 			'site_404',
 			'save_tmpl_revisions',
@@ -2819,6 +2834,11 @@ PAPAYA;
 
 		// any unanticipated keys that aren't in our template?
 		$extra_config = '';
+
+		// Remove site_label from $config since we don't want
+		// it showing up in the config file.
+		if ($config['site_label'])
+				unset($config['site_label']);
 
 		foreach ($config as $key => $val)
 		{

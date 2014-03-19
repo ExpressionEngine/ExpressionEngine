@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -25,7 +25,7 @@
 class Jquery {
 
 	var $return_data = '';
-	
+
 	/**
 	 * Constructor
 	 */
@@ -53,7 +53,7 @@ class Jquery {
 
 	/**
 	 * Output Javascript
-	 * 
+	 *
 	 * Outputs Javascript files, triggered most commonly by an action request,
 	 * but also available as a tag if desired.
 	 *
@@ -120,7 +120,7 @@ class Jquery {
 		}
 
 		ee()->output->send_cache_headers(filemtime($file));
-		
+
 		// Grab the file, content length and serve
 		// it up with the proper content type!
 
@@ -136,7 +136,7 @@ class Jquery {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Script Source
 	 *
@@ -154,13 +154,13 @@ class Jquery {
 				return $this->return_data = ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT=jquery&amp;'.$param.'='.${$param};
 			}
 		}
-		
+
 		// nothing?  Just drop a link to the main jQuery file
 		return $this->return_data = ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT=jquery';
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Script Tag
 	 *
@@ -172,7 +172,7 @@ class Jquery {
 	function script_tag()
 	{
 		$src = '';
-		
+
 		foreach (array('file', 'plugin', 'ui', 'effect') as $param)
 		{
 			if ((${$param} = ee()->TMPL->fetch_param($param)) !== FALSE)
@@ -180,15 +180,15 @@ class Jquery {
 				$src = ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT=jquery&amp;'.$param.'='.${$param};
 			}
 		}
-		
+
 		// nothing?  Just drop a link to the main jQuery file
 		$src = ($src == '') ? $this->return_data = ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT=jquery' : $src;
-		
+
 		return $this->return_data = '<script type="text/javascript" charset="utf-8" src="'.$src.'"></script>';
 	}
 
 	// --------------------------------------------------------------------
-	
+
 }
 // End Jquery Class
 

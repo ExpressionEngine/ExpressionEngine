@@ -6,7 +6,7 @@
  *
  * @package		CodeIgniter
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc.
  * @license		http://codeigniter.com/user_guide/license.html
  * @link		http://codeigniter.com
  * @since		Version 1.0
@@ -262,7 +262,7 @@ class CI_DB_driver {
 		// Verify table prefix and replace if necessary
 		if ( ($this->dbprefix != '' AND $this->swap_pre != '') AND ($this->dbprefix != $this->swap_pre) )
 		{
-			$sql = preg_replace("/(\W)".$this->swap_pre."(\S+?)/", "\\1".$this->dbprefix."\\2", $sql);
+			$sql = preg_replace("/(\W)".$this->swap_pre."(\S+?)/", "\${1}".$this->dbprefix."\${2}", $sql);
 		}
 
 		// Is query caching enabled?  If the query is a "read type"
@@ -290,7 +290,7 @@ class CI_DB_driver {
 		if ($this->save_queries == TRUE)
 		{
 			$source = '';
-			$trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 3);
+			$trace = debug_backtrace();
 
 			// Log file the query came from
 			if (count($trace) >= 2)
@@ -1083,6 +1083,10 @@ class CI_DB_driver {
 	 */
 	function cache_set_path($path = '')
 	{
+		// Query caching now uses caching drivers
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.8');
+
 		$this->cachedir = $path;
 	}
 
@@ -1173,7 +1177,7 @@ class CI_DB_driver {
 			}
 		}
 
-		$this->CACHE = new CI_DB_Cache($this); // pass db object to support multiple db connections and returned db objects
+		$this->CACHE = new CI_DB_Cache(); // pass db object to support multiple db connections and returned db objects
 		return TRUE;
 	}
 

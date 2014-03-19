@@ -4,13 +4,13 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -36,7 +36,7 @@ class File_integrity {
 	{
 		$this->EE =& get_instance();
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -49,9 +49,9 @@ class File_integrity {
 		ee()->load->model('site_model');
 		$sites = ee()->site_model->get_site();
 		$sites = $sites->result_array();
-		
+
 		$bootstraps = array();
-		
+
 		// Retrieve all of the bootstrap files
 		foreach($sites as $site)
 		{
@@ -59,14 +59,14 @@ class File_integrity {
 			{
 				continue;
 			}
-			
+
 			$data = base64_decode($site['site_bootstrap_checksums']);
-			
+
 			if ( ! is_string($data) OR substr($data, 0, 2) != 'a:')
 			{
 				continue;
 			}
-			
+
 			$data = unserialize($data);
 
 			if ( ! isset($data['emailed']) OR ! is_array($data['emailed']))
@@ -76,8 +76,8 @@ class File_integrity {
 
 			$bootstraps[$site['site_id']] = $data;
 		}
-		
-		
+
+
 		$altered = array();
 		$removed = array();
 		$update_db = array();
@@ -91,7 +91,7 @@ class File_integrity {
 				{
 					continue;
 				}
-				
+
 				if ( ! file_exists($path))
 				{
 					$removed[$site_id][] = $path;
@@ -99,7 +99,7 @@ class File_integrity {
 				else
 				{
 					$this->checksums[$site_id][$path] = $checksum;
-					
+
 					$current = md5_file($path);
 
 					if ($current != $checksum)
@@ -117,16 +117,16 @@ class File_integrity {
 					{
 						// they were emailed about it and restored it without
 						// hitting the 'accept changes' link on the homepage
-						
+
 						unset($bootstraps[$site_id]['emailed'][$email_key]);
 						$update_db[] = $site_id;
 					}
 				}
 			}
-			
+
 			$this->emailed = array_unique(array_merge($this->emailed, $bootstraps[$site_id]['emailed']));
 		}
-		
+
 		// Remove obsolete files from the db
 		foreach($removed as $site_id => $paths)
 		{
@@ -139,7 +139,7 @@ class File_integrity {
 				}
 			}
 		}
-		
+
 		// Update the db if we detected changes
 		foreach(array_unique($update_db) as $site_id)
 		{
@@ -154,9 +154,9 @@ class File_integrity {
 
 		return FALSE;
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Add a bootstrap file we didn't know about, or explicitly update
 	 * a checksum (when accepting a change).
@@ -171,7 +171,7 @@ class File_integrity {
 		{
 			ee()->load->library('notifications');
 			ee()->notifications->send_checksum_notification($affected_paths);
-			
+
 			// add them to the existing emailed and update
 			$affected_paths = array_unique(array_merge($this->emailed, $affected_paths));
 
@@ -191,9 +191,9 @@ class File_integrity {
 			}
 		}
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Add a bootstrap file we didn't know about, or explicitly update
 	 * a checksum (when accepting a change).
@@ -204,25 +204,25 @@ class File_integrity {
 	{
 		$checksums	= ee()->config->item('site_bootstrap_checksums');
 		$site_id	= ($site_id != '') ? $site_id : ee()->config->item('site_id');
-		
+
 		if (REQ == 'CP' && $path && file_exists($path))
 		{
 			$checksums				= $this->checksums[$site_id];		// should already have called check_bootstrap_files
 			$checksums[$path]		= md5_file($path);
 			$checksums['emailed']	= array();
-			
+
 			$this->_update_config($checksums, $site_id);
 		}
 		elseif (REQ != 'CP' && ! array_key_exists(FCPATH.SELF, $checksums))
 		{
 			$checksums[FCPATH.SELF] = md5_file(FCPATH.SELF);
-			
+
 			$this->_update_config($checksums, $site_id);
 		}
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Update the bootstrap column in the db
 	 *
@@ -235,7 +235,7 @@ class File_integrity {
 			ee()->config->config['site_bootstrap_checksums'] = $checksums;
 		}
 
-		ee()->db->query(ee()->db->update_string('exp_sites', 
+		ee()->db->query(ee()->db->update_string('exp_sites',
 									  array('site_bootstrap_checksums' => base64_encode(serialize($checksums))),
 									  "site_id = '".ee()->db->escape_str($site_id)."'"));
 	}

@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -34,35 +34,35 @@ class Tools_model extends CI_Model {
 	public function get_search_replace_options()
 	{
 		$options = array();
-			
+
 		// site prefs
-		
+
 		foreach ($this->session->userdata('assigned_sites') as $site_id => $site_label)
 		{
 			$prefs["site_preferences_{$site_id}"] = $site_label;
 		}
-		
+
 		$options['preferences'] = array('name' => $this->lang->line('site_preferences'), 'choices' => $prefs);
-				
+
 		// entry titles
 		$options['title'] = array('name' => $this->lang->line('channel_entry_title'));
-		
+
 		// channel fields
-		
+
 		$this->db->select('fg.group_name, cf.field_id, cf.field_label, s.site_label');
 		$this->db->from('field_groups AS fg');
 		$this->db->join('sites AS s', 's.site_id = fg.site_id');
 		$this->db->join('channel_fields AS cf', 'cf.group_id = fg.group_id');
-		
+
 		if ($this->config->item('multiple_sites_enabled') !== 'y')
 		{
 			$this->db->where('cf.site_id', 1);
 		}
-		
+
 		$this->db->order_by('s.site_label, fg.group_id, cf.field_label');
-		
+
 		$query = $this->db->get();
-		
+
 		$site = '';
 
 		$fields = array();
@@ -110,14 +110,14 @@ class Tools_model extends CI_Model {
 			else
 			{
 				$templates["template_{$row->group_id}"] = $row->group_name;
-			}			
+			}
 		}
-		
+
 		$options['template_groups'] = array('name' => $this->lang->line('template_groups'), 'choices' => $templates);
-		
+
 		return $options;
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -140,11 +140,11 @@ class Tools_model extends CI_Model {
 		}
 		else
 		{
-			$this->db->order_by('act_date', 'desc');			
+			$this->db->order_by('act_date', 'desc');
 		}
 
 		$this->db->limit($limit, $offset);
-		return $this->db->get();	
+		return $this->db->get();
 	}
 
 
@@ -170,11 +170,11 @@ class Tools_model extends CI_Model {
 		}
 		else
 		{
-			$this->db->order_by('search_date', 'desc');			
+			$this->db->order_by('search_date', 'desc');
 		}
 
 		$this->db->limit($limit, $offset);
-		
+
 		return $this->db->get();
 	}
 
@@ -202,16 +202,16 @@ class Tools_model extends CI_Model {
 		}
 		else
 		{
-			$this->db->order_by('ip_address', 'desc');			
+			$this->db->order_by('ip_address', 'desc');
 		}
 
 		$this->db->limit($limit, $offset);
-		
+
 		return $this->db->get();
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Get items in the Developer Log
 	 *
@@ -234,16 +234,16 @@ class Tools_model extends CI_Model {
 		// Otherwise, order by latest log item
 		else
 		{
-			$this->db->order_by('timestamp', 'desc');			
+			$this->db->order_by('timestamp', 'desc');
 		}
 
 		$this->db->limit($limit, $offset);
-		
+
 		return $this->db->get('developer_log');
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Returns number of unviewed items in the developer log to display in
 	 * a notice on the CP home screen
@@ -253,12 +253,12 @@ class Tools_model extends CI_Model {
 	public function count_unviewed_developer_logs()
 	{
 		$this->db->where('viewed', 'n');
-		
+
 		return $this->db->count_all_results('developer_log');
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Marks developer logs as viewed
 	 *
@@ -271,7 +271,7 @@ class Tools_model extends CI_Model {
 	public function mark_developer_logs_as_viewed($logs)
 	{
 		$log_ids = array();
-		
+
 		// Build an array of log IDs
 		foreach ($logs as $log)
 		{
@@ -281,7 +281,7 @@ class Tools_model extends CI_Model {
 				$log_ids[] = $log['log_id']['data'];
 			}
 		}
-		
+
 		// Set 'viewed' to 'y' where the ID exists in the $log_ids array
 		if (count($log_ids))
 		{
@@ -289,9 +289,9 @@ class Tools_model extends CI_Model {
 			$this->db->update('developer_log', array('viewed' => 'y'));
 		}
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Delete logs
 	 *
@@ -310,7 +310,7 @@ class Tools_model extends CI_Model {
 		{
 			return FALSE;
 		}
-		
+
 		// If no log IDs were passed, clear out the table
 		if (empty($log_ids))
 		{
@@ -323,9 +323,9 @@ class Tools_model extends CI_Model {
 			$this->db->delete($table);
 		}
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Blacklist IP addresses
 	 *
@@ -337,7 +337,7 @@ class Tools_model extends CI_Model {
 		// Get all previously blacklisted ips
 		$this->db->select('blacklisted_value');
 		$query = $this->db->get_where('blacklisted', array('blacklisted_type' => 'ip'));
-		
+
 		// Merge old and new
 		if ($query->num_rows() > 0)
 		{
@@ -347,7 +347,7 @@ class Tools_model extends CI_Model {
 		// Clear the old data
 		$this->db->where('blacklisted_type', 'ip');
 		$this->db->delete('blacklisted');
-		
+
 		// And put the new data back in
 		$data = array(	'blacklisted_type'	=> 'ip',
 						'blacklisted_value' => implode("|", array_unique($naughty)));
@@ -379,11 +379,11 @@ class Tools_model extends CI_Model {
 		}
 		else
 		{
-			$this->db->order_by('cache_id', 'desc');			
+			$this->db->order_by('cache_id', 'desc');
 		}
 
 		$this->db->limit($limit, $offset);
-		return $this->db->get();	
+		return $this->db->get();
 	}
 
 	// --------------------------------------------------------------------
@@ -398,7 +398,7 @@ class Tools_model extends CI_Model {
 	public function get_language_filelist($language_directory = 'english')
 	{
 		$this->load->helper('file');
-		
+
 		$path = APPPATH.'language/'.$language_directory;
 		$ext_len = strlen('.php');
 
@@ -406,22 +406,22 @@ class Tools_model extends CI_Model {
 		$filename_end_len = strlen($filename_end);
 
 		$languages = array();
-		
+
 		$language_files = get_filenames($path);
 
 		foreach ($language_files as $file)
 		{
 			if ($file == 'email_data.php')
 			{
-				continue; 
+				continue;
 			}
-			
+
 			if (substr($file, -$filename_end_len) && substr($file, -$ext_len) == '.php')
 			{
 				$languages[] = $file;
 			}
 		}
-		
+
 		sort($languages);
 
 		return $languages;
@@ -444,7 +444,7 @@ class Tools_model extends CI_Model {
 		{
 			show_error('no_lang_file');
 		}
-		
+
 		$language_file = $this->security->sanitize_filename($language_file);
 
 		$source_dir = APPPATH.'language/english/';
@@ -458,9 +458,9 @@ class Tools_model extends CI_Model {
 		require($source_dir.$language_file);
 
 		$M = $lang;
-		
+
 		unset($lang);
-			
+
 		if (file_exists($dest_dir.$language_file))
 		{
 			require($dest_dir.$language_file);
@@ -486,7 +486,7 @@ class Tools_model extends CI_Model {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Get Image Properties
 	 *
@@ -496,7 +496,7 @@ class Tools_model extends CI_Model {
 	 */
 	public function image_properties($file)
 	{
-		if (function_exists('getimagesize')) 
+		if (function_exists('getimagesize'))
 		{
 			if ( ! $D = @getimagesize($file))
 			{
@@ -516,7 +516,7 @@ class Tools_model extends CI_Model {
 	}
 
 	// --------------------------------------------------------------------
-		
+
 	/**
 	 * Get SQL Info
 	 *
@@ -527,15 +527,15 @@ class Tools_model extends CI_Model {
 	public function get_sql_info()
 	{
 		$this->load->helper(array('date', 'number'));
-		
+
 		$info = array();
-		
+
 		// database type
 		$info['database_type'] = $this->db->dbdriver;
-		
+
 		// db version
 		$info['sql_version'] = $this->db->version();
-		
+
 		// db records and size
 		$query = $this->db->query("SHOW TABLE STATUS FROM `{$this->db->database}`");
 
@@ -543,22 +543,22 @@ class Tools_model extends CI_Model {
 		$records = 0;
 
 		$prefix_len = strlen($this->db->dbprefix);
-		
+
 		foreach ($query->result_array() as $row)
 		{
 			if (strncmp($row['Name'], $this->db->dbprefix, $prefix_len) != 0)
 			{
 				continue;
 			}
-			
+
 			$totsize += $row['Data_length'] + $row['Index_length'];
 			$records += $row['Rows'];
 		}
-		
-		$info['records'] = $records;	
+
+		$info['records'] = $records;
 		$info['size'] = byte_format($totsize);
-		
-		// db uptime	
+
+		// db uptime
 		$query = $this->db->query("SHOW STATUS");
 
 		$uptime	 = '';
@@ -580,17 +580,17 @@ class Tools_model extends CI_Model {
 				{
 					$queries = $key;
 				}
-			}		
-		}	
+			}
+		}
 
 		$info['database_uptime'] = timespan($this->localize->now - $res[$uptime]['Value']);
-		$info['total_queries'] = number_format($query->result_array[$queries]['Value']);	
-				
+		$info['total_queries'] = number_format($query->result_array[$queries]['Value']);
+
 		return $info;
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Get Table Status
 	 *
@@ -601,7 +601,7 @@ class Tools_model extends CI_Model {
 	public function get_table_status()
 	{
 		$this->load->helper('number');
-		
+
 		$status = array();
 
 		$query = $this->db->query("SHOW TABLE STATUS FROM `{$this->db->database}`");
@@ -610,29 +610,29 @@ class Tools_model extends CI_Model {
 		$records = 0;
 		$tables	 = 0;
 		$totsize = 0;
-		
+
 		$prefix_len = strlen($this->db->dbprefix);
-		
+
 		foreach ($query->result() as $row)
 		{
 			if (strncmp($row->Name, $this->db->dbprefix, $prefix_len) != 0)
 			{
 				continue;
 			}
-					
+
 			$len = $row->Data_length + $row->Index_length;
-			
+
 			$status[$i]['name'] = $row->Name;
 			$status[$i]['rows'] = $row->Rows;
 			$status[$i]['size'] = byte_format($len);
 			$status[$i]['browse_link'] = BASE.AMP.'C=tools_data'.AMP.'M=sql_run_query'.AMP.'thequery='.rawurlencode(base64_encode('SELECT * FROM `'.$row->Name.'`'));
-			
+
 			$records += $row->Rows;
 			$totsize += $len;
 			$tables++;
 			$i++;
 		}
-		
+
 		return array('status' => $status, 'records' => $records, 'total_size' => byte_format($totsize), 'tables' => $tables);
 	}
 

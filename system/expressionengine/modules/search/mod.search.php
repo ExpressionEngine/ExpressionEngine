@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -36,6 +36,7 @@ class Search {
 	var	$cat_array  	= array();
 	var $fields			= array();
 	var $num_rows		= 0;
+	var $hash			= "";
 
 	protected $_meta 	= array();
 
@@ -236,6 +237,8 @@ class Search {
 		$original_keywords = $this->keywords;
 		$mbr = ( ! isset($_GET['mbr'])) ? '' : $_GET['mbr'];
 
+		$this->hash = ee()->functions->random('md5');
+
 		$sql = $this->build_standard_query();
 
 		/** ----------------------------------------
@@ -246,10 +249,8 @@ class Search {
 		{
 			if (isset($this->_meta['no_results_page']) AND $this->_meta['no_results_page'] != '')
 			{
-				$hash = ee()->functions->random('md5');
-
 				$data = array(
-					'search_id'		=> $hash,
+					'search_id'		=> $this->hash,
 					'search_date'	=> time(),
 					'member_id'		=> ee()->session->userdata('member_id'),
 					'keywords'		=> ($original_keywords != '') ? $original_keywords : $mbr,
@@ -264,7 +265,7 @@ class Search {
 
 				ee()->db->query(ee()->db->insert_string('exp_search', $data));
 
-				return ee()->functions->redirect(ee()->functions->create_url(ee()->functions->extract_path("='".$this->_meta['no_results_page']."'")).'/'.$hash.'/');
+				return ee()->functions->redirect(ee()->functions->create_url(ee()->functions->extract_path("='".$this->_meta['no_results_page']."'")).'/'.$this->hash.'/');
 			}
 			else
 			{
@@ -276,8 +277,6 @@ class Search {
 		/**  If we have a result, cache it
 		/** ----------------------------------------*/
 
-		$hash = ee()->functions->random('md5');
-
 		$sql = str_replace("\\", "\\\\", $sql);
 
 		// This fixes a bug that occurs when a different table prefix is used
@@ -285,7 +284,7 @@ class Search {
 		$sql = str_replace('exp_', 'MDBMPREFIX', $sql);
 
 		$data = array(
-			'search_id'		=> $hash,
+			'search_id'		=> $this->hash,
 			'search_date'	=> time(),
 			'member_id'		=> ee()->session->userdata('member_id'),
 			'keywords'		=> ($original_keywords != '') ? $original_keywords : $mbr,
@@ -307,10 +306,9 @@ class Search {
 		$path = reduce_double_slashes(
 			ee()->functions->create_url(
 				trim_slashes($this->_meta['result_page'])
-			).'/'.$hash.'/'
+			).'/'.$this->hash.'/'
 		);
 
-		ee()->security->restore_xid();
 		return ee()->functions->redirect($path);
 	}
 
@@ -507,17 +505,17 @@ class Search {
 			}
 		}
 
-        /** ----------------------------------------------
-        /**  Limit to a specific member? We do this now
-        /**  as there's a potential for this to bring the
-        /**  search to an end if it's not a valid member
-        /** ----------------------------------------------*/
+		/** ----------------------------------------------
+		/**  Limit to a specific member? We do this now
+		/**  as there's a potential for this to bring the
+		/**  search to an end if it's not a valid member
+		/** ----------------------------------------------*/
 
 		$member_array	= array();
 		$member_ids		= '';
 
-        if (isset($_GET['mbr']) AND is_numeric($_GET['mbr']))
-        {
+		if (isset($_GET['mbr']) AND is_numeric($_GET['mbr']))
+		{
 			$query = ee()->db->select('member_id')->get_where('members', array(
 				'member_id' => $_GET['mbr']
 			));
@@ -530,9 +528,9 @@ class Search {
 			{
 				$member_array[] = $query->row('member_id');
 			}
-        }
-        else
-        {
+		}
+		else
+		{
 			if (ee()->input->post('member_name') != '')
 			{
 				ee()->db->select('member_id');
@@ -735,14 +733,14 @@ class Search {
 			if (trim($this->keywords) != '')
 			{
 				$terms = array_merge($terms, preg_split("/\s+/", trim($this->keywords)));
-  			}
+			}
 
-  			$not_and = (count($terms) > 2) ? ') AND (' : 'AND';
-  			rsort($terms);
+			$not_and = (count($terms) > 2) ? ') AND (' : 'AND';
+			rsort($terms);
 			$terms_like = ee()->db->escape_like_str($terms);
 			$terms = ee()->db->escape_str($terms);
 
-  			/** ----------------------------------
+			/** ----------------------------------
 			/**  Search in Title Field
 			/** ----------------------------------*/
 
@@ -1058,6 +1056,39 @@ class Search {
 			}
 		}
 
+		// -------------------------------------------
+		// 'channel_search_modify_search_query' hook.
+		//  - Take the whole query string, do what you wish
+		//  - added 2.8
+		//
+			if (ee()->extensions->active_hook('channel_search_modify_search_query') === TRUE)
+			{
+				$modified_sql = ee()->extensions->call('channel_search_modify_search_query', $sql, $this->hash);
+
+				// Make sure its valid
+				if (is_string($modified_sql) && $modified_sql != '')
+				{
+					$sql = $modified_sql;
+				}
+
+				// This will save the custom query and the total results to exp_search
+				if (ee()->extensions->end_script === TRUE)
+				{
+					$query = ee()->db->query($sql);
+
+					if ($query->num_rows() == 0)
+					{
+						return FALSE;
+					}
+
+					$this->num_rows = $query->num_rows();
+
+					return $sql;
+				}
+			}
+		//
+		// -------------------------------------------
+
 		/** ----------------------------------------------
 		/**  Are there results?
 		/** ----------------------------------------------*/
@@ -1225,22 +1256,8 @@ class Search {
 
 		// Load Pagination Object
 		ee()->load->library('pagination');
-		$pagination = new Pagination_object(__CLASS__);
-
-		// Capture Pagination Template
-		$pagination->get_template();
-
-		// Check to see if we're using old style pagination
-		// TODO: Remove once old pagination is phased out
-		$old_pagination = (strpos(ee()->TMPL->template, LD.'if paginate'.RD) !== FALSE) ? TRUE : FALSE;
-
-		// If we are using old pagination, log it as deprecated
-		// TODO: Remove once old pagination is phased out
-		if ($old_pagination)
-		{
-			ee()->load->library('logger');
-			ee()->logger->developer('Deprecated template tag {if paginate}. Old style pagination in the Search Module has been deprecated in 2.4 and will be removed soon. Switch to the new Channel style pagination.', TRUE);
-		}
+		$pagination = ee()->pagination->create();
+		ee()->TMPL->tagdata = $pagination->prepare(ee()->TMPL->tagdata);
 
 		// Check search ID number
 		// If the QSTR variable is less than 32 characters long we
@@ -1249,8 +1266,8 @@ class Search {
 		if (strlen(ee()->uri->query_string) < 32)
 		{
 			return ee()->output->show_user_error(
-				'general', 
-				array(lang('invalid_action'))
+				'off',
+				array(lang('search_no_result'))
 			);
 		}
 
@@ -1263,25 +1280,9 @@ class Search {
 			)
 		);
 
-		// Fetch ID number and page number
-		$pagination->offset = 0;
-		$qstring = ee()->uri->query_string;
-
-		// Parse page number
-		if (preg_match("#^P(\d+)|/P(\d+)#", $qstring, $match))
-		{
-			$pagination->offset = (isset($match[2])) ? $match[2] : $match[1];
-			$search_id = trim_slashes(str_replace($match[0], '', $qstring));
-		}
-		else
-		{
-			$pagination->offset = 0;
-			$search_id = $qstring;
-		}
-
-		// If there is a slash in the search ID we'll kill everything after it.
-		$search_id = trim($search_id);
-		$search_id = preg_replace("#/.+#", "", $search_id);
+		// Retrieve the search_id
+		$qstring = explode('/', ee()->uri->query_string);
+		$search_id = trim($qstring[0]);
 
 		// Fetch the cached search query
 		$query = ee()->db->get_where('search', array('search_id' => $search_id));
@@ -1290,83 +1291,57 @@ class Search {
 		{
 			// This should be impossible as we already know there are results
 			return ee()->output->show_user_error(
-				'general', 
+				'general',
 				array(lang('invalid_action'))
 			);
 		}
 
-		$fields = ($query->row('custom_fields') == '') ? array() : unserialize(stripslashes($query->row('custom_fields') ));
-		$sql 	= unserialize(stripslashes($query->row('query')));
+		$fields	= ($query->row('custom_fields') == '') ? array() : unserialize(stripslashes($query->row('custom_fields') ));
+		$sql	= unserialize(stripslashes($query->row('query')));
 		$sql	= str_replace('MDBMPREFIX', 'exp_', $sql);
 
 		$pagination->per_page = (int) $query->row('per_page');
 		$res_page = $query->row('result_page');
 
+		// -------------------------------------------
+        // 'channel_search_modify_result_query' hook.
+        //  - Take the whole query string, do what you wish
+        //  - added 2.8
+        //
+            if (ee()->extensions->active_hook('channel_search_modify_result_query') === TRUE)
+            {
+                $modified_sql = ee()->extensions->call('channel_search_modify_result_query', $sql, $search_id);
+
+                // Make sure its valid
+                if (is_string($modified_sql) && $modified_sql != '')
+                {
+                	$sql = $modified_sql;
+                }
+            }
+        //
+        // -------------------------------------------
+
 		// Run the search query
 		$query = ee()->db->query(preg_replace("/SELECT(.*?)\s+FROM\s+/is", 'SELECT COUNT(*) AS count FROM ', $sql));
 
-		if ($query->row('count')  == 0)
+		if ($query->row('count') == 0)
 		{
 			// This should also be impossible
 			return ee()->output->show_user_error(
-				'general', 
+				'general',
 				array(lang('invalid_action'))
 			);
 		}
 
 		// Calculate total number of pages and add total rows
-		$pagination->current_page 	= ($pagination->offset / $pagination->per_page) + 1;
-		$pagination->total_rows 	= $query->row('count');
-
-		// Figure out total number of pages for old style pagination
-		// TODO: Remove once old pagination is phased out
-		if ($old_pagination)
-		{
-			$total_pages = intval($pagination->total_rows / $pagination->per_page);
-
-			if ($pagination->total_rows  % $pagination->per_page)
-			{
-				$total_pages++;
-			}
-
-			$page_count = lang('page').' '.$pagination->current_page.' '.lang('of').' '.$total_pages;
-
-			$pager = '';
-
-			if ($pagination->total_rows > $pagination->per_page)
-			{
-				ee()->load->library('pagination');
-
-				$config = array(
-					'base_url' 		=> ee()->functions->create_url($res_page.'/'.$search_id, 0, 0),
-					'prefix'		=> 'P',
-					'total_rows'	=> $pagination->total_rows,
-					'per_page'		=> $pagination->per_page,
-					'cur_page'		=> $pagination->offset,
-					'first_link'	=> lang('pag_first_link'),
-					'last_link'		=> lang('pag_last_link'),
-					'uri_segment'	=> 0 // Allows $config['cur_page'] to override
-				);
-
-				ee()->pagination->initialize($config);
-				$pager = ee()->pagination->create_links();
-			}
-		}
+		$pagination->total_items = $query->row('count');
 
 		// Build pagination if enabled
+		// If we're paginating limit the query and do it again
 		if ($pagination->paginate === TRUE)
 		{
-			$pagination->build($pagination->total_rows);
-		}
-
-		// If we're paginating, old or new, limit the query and do it again
-		if ($pagination->paginate === TRUE OR $old_pagination)
-		{
+			$pagination->build($pagination->total_items, $pagination->per_page);
 			$sql .= " LIMIT ".$pagination->offset.", ".$pagination->per_page;
-		}
-		else if ($pagination->per_page > 0)
-		{
-			$sql .= " LIMIT 0, ".$pagination->per_page;
 		}
 		else
 		{
@@ -1547,40 +1522,6 @@ class Search {
 		);
 		ee()->TMPL->template = ee()->functions->var_swap(ee()->TMPL->template, $swap);
 
-		// Add Old Style Pagination
-		// TODO: Remove once old pagination is phased out
-		if ($old_pagination)
-		{
-			if ($pager == '')
-			{
-				ee()->TMPL->template = preg_replace(
-					"#".LD."if paginate".RD.".*?".LD."/if".RD."#s",
-					'',
-					ee()->TMPL->template
-				);
-			}
-			else
-			{
-				ee()->TMPL->template = preg_replace(
-					"#".LD."if paginate".RD."(.*?)".LD."/if".RD."#s",
-					"\\1",
-					ee()->TMPL->template
-				);
-			}
-
-			ee()->TMPL->template = str_replace(
-				LD.'paginate'.RD,
-				$pager,
-				ee()->TMPL->template
-			);
-
-			ee()->TMPL->template = str_replace(
-				LD.'page_count'.RD,
-				$page_count,
-				ee()->TMPL->template
-			);
-		}
-
 		return ee()->TMPL->tagdata;
 	}
 
@@ -1609,7 +1550,6 @@ class Search {
 
 		$data['hidden_fields'] = array(
 			'ACT'	=> ee()->functions->fetch_action_id('Search', 'do_search'),
-			'XID'	=> '',
 			'RES'	=> ee()->TMPL->fetch_param('results'),
 			'meta'	=> $meta
 		);
@@ -1777,7 +1717,6 @@ class Search {
 		$data['class'] = ee()->TMPL->form_class;
 		$data['hidden_fields'] = array(
 			'ACT'	=> ee()->functions->fetch_action_id('Search', 'do_search'),
-			'XID'	=> '',
 			'RES'	=> ee()->TMPL->fetch_param('results'),
 			'meta'	=> $meta
 		);

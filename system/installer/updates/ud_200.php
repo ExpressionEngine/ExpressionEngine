@@ -4,13 +4,13 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -24,13 +24,13 @@
  */
 class Updater {
 
-	var $version_suffix			= 'pb01';	
+	var $version_suffix			= 'pb01';
 	var $mylang					= 'english';
 	var $large_db				= FALSE;
 	var $large_db_threshold		= 150;	// database size in megabytes
 	var $errors					= array();
-	
-	
+
+
 	public function Updater()
 	{
 		$this->EE =& get_instance();
@@ -55,7 +55,7 @@ class Updater {
 		ee()->load->library('progress');
 
 		$this->config =& $config;
-		
+
 		// truncate some tables
 		$trunc = array('captcha', 'sessions', 'security_hashes', 'search');
 
@@ -63,7 +63,7 @@ class Updater {
 		{
 			ee()->db->truncate($table_name);
 		}
-		
+
 		// we will use this conditionally to branch the update path
 		if ($this->_fetch_db_size() > $this->large_db_threshold)
 		{
@@ -72,7 +72,7 @@ class Updater {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	public function do_update()
 	{
 		$ignore = FALSE;
@@ -96,26 +96,26 @@ class Updater {
 
 		// turn off extensions
 		ee()->db->update('extensions', array('enabled' => 'n'));
-		
+
 		$this->_update_site_prefs($ignore, $manual_move);
-		
+
 		// step 1, utf8 conversion
 		return ($this->large_db) ? 'large_db_check' : 'convert_db_to_utf8';
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	private function _update_site_prefs($ignore, $manual_move)
-	{		
+	{
 		// Load the string helper
 		ee()->load->helper('string');
-		
+
 		// Change site_preferences column to medium text
 		// We do this in 2.5.3 already.  Adding here to prevent truncating the
 		// site_preferences data and subsequently generating an unserialize
 		// error.  base64 encoding takes about 33% more space, so this should
 		// eliminate that possibility
-		
+
 		$this->_change_site_preferences_column_type();
 
 		$query = ee()->db->query("SELECT es.* FROM exp_sites AS es");
@@ -137,20 +137,20 @@ class Updater {
 					{
 						$data['tmpl_file_basepath'] = EE_APPPATH.'/templates/';
 					}
-					
+
 					// also, make sure they start with the default cp theme
 					if (isset($data['cp_theme']) && $data['cp_theme'] != 'default')
 					{
 						$data['cp_theme'] = 'default';
 					}
-					
+
 					// new name for a debugging preference
 					if (isset($data['show_queries']))
 					{
 						$data['show_profiler'] = $data['show_queries'];
 						unset($data['show_queries']);
 					}
-					
+
 					// docs location
 					if (isset($data['doc_url']))
 					{
@@ -165,9 +165,9 @@ class Updater {
 			ee()->db->query(ee()->db->update_string('exp_sites', $row, "site_id = '".ee()->db->escape_str($row['site_id'])."'"));
 		}
 	}
-	
+
 	// ------------------------------------------------------------------------
-	
+
 	/**
 	 * Look for any templates saved as files, sync them with the database
 	 * And move them out of the way.
@@ -251,7 +251,7 @@ class Updater {
 			}
 
 			// Onward
-			ee()->db->select('templates.template_id, templates.template_name, 
+			ee()->db->select('templates.template_id, templates.template_name,
 									templates.template_data, template_groups.group_name');
 			ee()->db->where('save_template_file', 'y');
 			ee()->db->where('template_groups.site_id', $site['site_id']);
@@ -399,13 +399,13 @@ class Updater {
 	}
 
 	// ------------------------------------------------------------------------
-	
+
 	/**=====================================================================
 	 * Standard Database UTF8/Time Conversion
 	 * - convert_db_to_utf8
 	 * - standardize_datetime
 	 * ===================================================================== */
-	
+
 	public function convert_db_to_utf8()
 	{
 		// this step can be a doozy.  Set time limit to infinity.
@@ -419,13 +419,13 @@ class Updater {
 
 		$tables = ee()->db->list_tables(TRUE); // TRUE prefix limit, only operate on EE tables
 		$batch = 100;
-		
+
 		foreach ($tables as $table)
 		{
 			$progress	= "Converting Database Table {$table}: %s";
 			$count		= ee()->db->count_all($table);
 			$offset	 = 0;
-			
+
 			if ($count > 0)
 			{
 				for ($i = 0; $i < $count; $i = $i + $batch)
@@ -477,7 +477,7 @@ class Updater {
 			// finally, set the table's charset and collation in MySQL to utf8
 			ee()->db->query("ALTER TABLE `{$table}` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci");
 		}
-		
+
 		// And update the database to use utf8 in the future
 		ee()->db->query("ALTER DATABASE `".ee()->db->database."` CHARACTER SET utf8 COLLATE utf8_general_ci;");
 
@@ -486,18 +486,18 @@ class Updater {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	public function standardize_datetime()
 	{
 		$queries = $this->_standardize_datetime_queries();
-		
+
 		$this->_run_queries('Standardizing Timestamps', $queries);
-				
+
 		return 'trackback_check';
 	}
 
 	// ------------------------------------------------------------------------
-	
+
 	/**=====================================================================
 	 * Large Database UTF8/Time Conversion
 	 * - large_db_check
@@ -505,7 +505,7 @@ class Updater {
 	 * - convert_large_db_to_utf8
 	 * - standardize_datetime_large_db
 	 * ===================================================================== */
-	
+
 	/**
 	 * Large Database Gatekeeper
 	 */
@@ -515,11 +515,11 @@ class Updater {
 		{
 			return $this->generate_queries();
 		}
-		
+
 		// This table is only used as an indicator
 		ee()->load->dbforge();
 		ee()->dbforge->drop_table('large_db_update_completed');
-		
+
 		// The sysadmin may not have removed this file
 		if (is_dir(EE_APPPATH.'cache/installer'))
 		{
@@ -528,20 +528,20 @@ class Updater {
 				unlink(EE_APPPATH.'cache/installer/update.sh');
 			}
 		}
-		
+
 		return 'trackback_check';
 	}
 
 	// ------------------------------------------------------------------------
-	
+
 	/**
-	 * Generate queries for the sysadmin to run to update a large EE2 
+	 * Generate queries for the sysadmin to run to update a large EE2
 	 * installation
 	 */
 	public function generate_queries()
 	{
 		// Show commands for converting large_db_to_utf8
-		
+
 		// Queries include:
 		// - Changing datetime to be GMT time (get queries from standardize_datetime)
 		// - Convert database to UTF8 (first part of convert_large_db_to_utf8)
@@ -549,31 +549,31 @@ class Updater {
 
 		// Grab datetime queries
 		$queries = $this->_standardize_datetime_queries();
-		
-		
+
+
 		// Add utf-8 conversion queries
 		foreach (ee()->db->list_tables(TRUE) as $table)
 		{
 			$queries[] = "ALTER TABLE `{$table}` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;";
 		}
-		
+
 		$queries[] = "ALTER DATABASE `".ee()->db->database."` CHARACTER SET utf8 COLLATE utf8_general_ci;";
-		
-		
+
+
 		// Lastly, create a table to indicate a successful update
 		$queries[] = "CREATE TABLE ".ee()->db->dbprefix."large_db_update_completed(`id` int);";
-		
-		
+
+
 		// Write bash file
 		ee()->progress->update_state('Imploding queries.');
-		
-		
+
+
 		$queries = implode("\n", $queries);	// @todo ensure semicolons?
-		
-		
+
+
 		$tables = implode(' ', ee()->db->list_tables(TRUE));
 		$password_parameter = (ee()->db->password != '') ? '-p'.ee()->db->password : '';
-		
+
 		$data = <<<BSH
 #!/bin/sh
 
@@ -601,7 +601,7 @@ rm {$this->EE->db->database}-pre-upgrade-dump.sql
 
 
 ##
-# Rest of the Queries (Datetime and some finalization) 
+# Rest of the Queries (Datetime and some finalization)
 ##
 
 echo "DST Conversion (Step 1: Reading queries)"
@@ -626,7 +626,7 @@ echo "Large Database Conversion Completed: Please return to the browser to finis
 BSH;
 
 		ee()->progress->update_state('Writing large db update file.');
-		
+
 		if ( ! is_dir(EE_APPPATH.'cache/installer'))
 		{
 			mkdir(EE_APPPATH.'cache/installer', DIR_WRITE_MODE);
@@ -639,12 +639,12 @@ BSH;
 		{
 			@chmod($filepath, FILE_WRITE_MODE);
 		}
-		
-		
+
+
 		// We need to wait for them to run the update,
 		// so we'll nudge them in the right direction
 		// and then bail out.
-		
+
 		$this->errors[] = "Your database is too large to perform this part of the upgrade via a web request.
 							Please contact your system administrator and have them run the script located at:
 							<br /><br />
@@ -656,7 +656,7 @@ BSH;
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**=====================================================================
 	 * Normal/Large Database Conversion Tasks
 	 * - trackback_check
@@ -670,7 +670,7 @@ BSH;
 	 * - convert_fresh_variables
 	 * - weblog_terminology_changes
 	 * ===================================================================== */
-	
+
 	public function trackback_check()
 	{
 		// Do we need to consider trackbacks?
@@ -687,9 +687,9 @@ BSH;
 		// update site prefs
 		return 'backup_trackbacks';
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	public function backup_trackbacks()
 	{
 		$next_step = 'database_clean';
@@ -874,12 +874,12 @@ BSH;
 		return 'database_changes_new';
 	}
 
-	// ------------------------------------------------------------------------ 
+	// ------------------------------------------------------------------------
 
 	public function database_changes_new()
 	{
 		ee()->progress->update_state("Creating new database tables");
-		
+
 		// Add exp_snippets table
 		ee()->dbforge->add_field(
 			array(
@@ -889,12 +889,12 @@ BSH;
 				'snippet_contents'	=> array('type' => 'text',		'null' => TRUE)
 			)
 		);
-		
+
 		ee()->dbforge->add_key('snippet_id', TRUE);
 		ee()->dbforge->add_key('site_id');
 		ee()->smartforge->create_table('snippets');
 
-		
+
 		// Add exp_accessories table
 		ee()->dbforge->add_field(
 			array(
@@ -905,13 +905,13 @@ BSH;
 				'accessory_version'	=> array('type' => 'varchar',	'constraint' => 12,	'null' => FALSE),
 			)
 		);
-		
+
 		ee()->dbforge->add_key('accessory_id', TRUE);
 		ee()->smartforge->create_table('accessories');
 
 
 		// Layout Publish
-		// Custom layout for for the publish page.		
+		// Custom layout for for the publish page.
 		// Add layout_publish table
 		ee()->dbforge->add_field(
 			array(
@@ -922,7 +922,7 @@ BSH;
 				'field_layout'	=> array('type' => 'text')
 			)
 		);
-		
+
 		ee()->dbforge->add_key('layout_id', TRUE);
 		ee()->dbforge->add_key('site_id');
 		ee()->dbforge->add_key('member_group');
@@ -933,14 +933,14 @@ BSH;
 		// (Can't use SmartForge because of FULLTEXT and ENGINE)
 		ee()->db->query(
 				"CREATE TABLE IF NOT EXISTS `exp_cp_search_index` (
-					`search_id` int(10) UNSIGNED NOT NULL auto_increment, 
-					`controller` varchar(20) default NULL, 
+					`search_id` int(10) UNSIGNED NOT NULL auto_increment,
+					`controller` varchar(20) default NULL,
 					`method` varchar(50) default NULL,
-					`language` varchar(20) default NULL, 
-					`access` varchar(50) default NULL, 
-					`keywords` text, 
+					`language` varchar(20) default NULL,
+					`access` varchar(50) default NULL,
+					`keywords` text,
 					PRIMARY KEY `search_id` (`search_id`),
-					FULLTEXT(`keywords`) 
+					FULLTEXT(`keywords`)
 			) ENGINE=MyISAM "
 		);
 
@@ -980,7 +980,7 @@ BSH;
 				'entry_data'				=> array('type' => 'text',		'null' => TRUE),
 			)
 		);
-		
+
 		ee()->dbforge->add_key('entry_id', TRUE);
 		ee()->dbforge->add_key('channel_id');
 		ee()->dbforge->add_key('author_id');
@@ -994,12 +994,12 @@ BSH;
 		return 'database_changes_members';
 	}
 
-	// ------------------------------------------------------------------------ 
+	// ------------------------------------------------------------------------
 
 	public function database_changes_members()
 	{
 		ee()->progress->update_state("Updating member tables");
-	
+
 		// Update members table: parse_smileys and crypt_key
 		$add_columns = array(
 			array(
@@ -1063,7 +1063,7 @@ BSH;
 
 		ee()->smartforge->modify_column('members', $fields);
 
-		ee()->db->set('quick_tabs', ''); 
+		ee()->db->set('quick_tabs', '');
 		ee()->db->update('members');
 
 		$add_columns = array(
@@ -1143,7 +1143,7 @@ BSH;
 		return 'database_changes_weblog';
 	}
 
-	// ------------------------------------------------------------------------ 
+	// ------------------------------------------------------------------------
 
 	public function database_changes_weblog()
 	{
@@ -1165,7 +1165,7 @@ BSH;
 		);
 
 		ee()->db->where('template_type', 'rss');
-		ee()->db->update('templates', $data); 
+		ee()->db->update('templates', $data);
 
 		// Channel fields can now have content restrictions
 		ee()->smartforge->add_column(
@@ -1180,7 +1180,7 @@ BSH;
 			)
 		);
 
-		// get rid of 'blog_encoding from exp_weblogs' - everything's utf-8 now	
+		// get rid of 'blog_encoding from exp_weblogs' - everything's utf-8 now
 		ee()->smartforge->drop_column('weblogs', 'blog_encoding');
 
 		// HTML buttons now have an identifying classname
@@ -1211,19 +1211,19 @@ BSH;
 
 		// Remove EE 1.6.X default button set
 		ee()->db->delete('html_buttons', array('member_id' => 0));
-		
+
 		$site_query = ee()->db->query("SELECT site_id FROM `exp_sites`");
 
 		$Q = array();
-		
+
 		foreach ($site_query->result() as $site)
 		{
 			// Add in the EE 2 default button set (as determined by expressionengine/config/html_buttons.php)
 			$buttoncount = 1;
-			
+
 			foreach ($installation_defaults as $button)
 			{
-				$Q[] = "INSERT INTO exp_html_buttons 
+				$Q[] = "INSERT INTO exp_html_buttons
 					(site_id, member_id, tag_name, tag_open, tag_close, accesskey, tag_order, tag_row, classname)
 					values ({$site->site_id}, '0', '".$predefined_buttons[$button]['tag_name']."', '".$predefined_buttons[$button]['tag_open']."', '".$predefined_buttons[$button]['tag_close']."', '".$predefined_buttons[$button]['accesskey']."', '".$buttoncount++."', '1', '".$predefined_buttons[$button]['classname']."')";
 			}
@@ -1306,7 +1306,7 @@ BSH;
 			'reset_password'	=> 'reset_id',
 			'field_formatting'	=> 'formatting_id',
 		);
-		
+
 		$Q = array();
 
 		foreach ($fields as $k => $v)
@@ -1493,14 +1493,14 @@ BSH;
 				if (substr($row->class, -3) == '_CP')
 				{
 					ee()->db->set('class', substr($row->class, 0, -3).'_mcp');
-					ee()->db->where('action_id', $row->action_id);			
+					ee()->db->where('action_id', $row->action_id);
 					ee()->db->update('actions');
 				}
 			}
 		}
 
 		ee()->progress->update_state("Installing default Accessories");
-		ee()->_install_accessories();  
+		ee()->_install_accessories();
 
 		if ( ! empty($has_duplicates))
 		{
@@ -1511,12 +1511,12 @@ BSH;
 		return 'update_custom_fields';
 	}
 
-	// ------------------------------------------------------------------------ 
+	// ------------------------------------------------------------------------
 
 	public function update_custom_fields()
 	{
 		ee()->progress->update_state("Updating custom field tables");
-		
+
 		// Update category custom fields to allow null
 		$query = ee()->db->select('field_id')->get('category_fields');
 
@@ -1575,12 +1575,12 @@ BSH;
 		return 'resync_member_groups';
 	}
 
-	// ------------------------------------------------------------------------ 
+	// ------------------------------------------------------------------------
 
 	public function resync_member_groups()
 	{
 		ee()->progress->update_state("Synchronizing member groups");
-		
+
 		//  Update access priveleges for 2.0
 		// resync member groups.  In 1.x, a bug existed where deleting a member group would only delete it from the currently logged in site,
 		// leaving orphaned member groups in the member groups table.
@@ -1598,13 +1598,13 @@ BSH;
 				$new_privs['can_access_extensions']	= 'y';
 				$new_privs['can_access_plugins']	= 'y';
 				$new_privs['can_access_tools']		= 'y';
-				$new_privs['can_access_utilities']	= 'y'; 
+				$new_privs['can_access_utilities']	= 'y';
 				$new_privs['can_access_data']		= 'y';
 				$new_privs['can_access_logs']		= 'y';
 			}
 			elseif ($row->can_access_comm == 'y')
 			{
-				$new_privs['can_access_tools']	= 'y'; 
+				$new_privs['can_access_tools']	= 'y';
 			}
 
 			if ($row->can_access_modules == 'y')
@@ -1624,13 +1624,13 @@ BSH;
 
 			if ($row->can_admin_preferences == 'y')
 			{
-				$new_privs['can_access_sys_prefs']	= 'y';			 
-				$new_privs['can_admin_design']		= 'y'; 
+				$new_privs['can_access_sys_prefs']	= 'y';
+				$new_privs['can_admin_design']		= 'y';
 			}
 
 			if ($row->can_access_admin == 'y')
 			{
-				$new_privs['can_access_content_prefs']	= 'y';			 
+				$new_privs['can_access_content_prefs']	= 'y';
 			}
 
 			if ($row->group_id == 1)
@@ -1644,7 +1644,7 @@ BSH;
 			if ( ! empty($new_privs))
 			{
 				ee()->db->set($new_privs);
-				ee()->db->where('group_id', $row->group_id);			
+				ee()->db->where('group_id', $row->group_id);
 				ee()->db->update('member_groups');
 			}
 
@@ -1671,13 +1671,13 @@ BSH;
 		return 'convert_fresh_variables';
 	}
 
-	// ------------------------------------------------------------------------ 
+	// ------------------------------------------------------------------------
 
 	public function convert_fresh_variables()
 	{
 		// port over old Fresh Variables to Snippets?
 		ee()->progress->update_state('Checking for Fresh Variables');
-		
+
 		ee()->db->select('settings');
 		ee()->db->where('class', 'Fresh_variables');
 		$query = ee()->db->get('extensions', 1);
@@ -1685,7 +1685,7 @@ BSH;
 		if ($query->num_rows() > 0 && $query->row('settings') != '')
 		{
 			ee()->progress->update_state("Converting Fresh Variables");
-			
+
 			// Load the string helper
 			ee()->load->helper('string');
 
@@ -1716,7 +1716,7 @@ BSH;
 
 			$query = ee()->db->select('module_id')
 				->where('module_name', 'Fresh_variables')
-				->get('modules'); 
+				->get('modules');
 
 			ee()->db->delete('module_member_groups', array('module_id' => $query->row('module_id')));
 			ee()->db->delete('modules', array('module_name' => 'Fresh_variables'));
@@ -1726,7 +1726,7 @@ BSH;
 		return 'weblog_terminology_changes';
 	}
 
-	// ------------------------------------------------------------------------ 
+	// ------------------------------------------------------------------------
 
 	public function weblog_terminology_changes()
 	{
@@ -1829,25 +1829,25 @@ BSH;
 			'{blog_description}'			=> '{channel_description}',
 			'{blog_encoding}'				=> '{channel_encoding}',
 			'{blog_lang}'					=> '{channel_lang}',
-			'{blog_url}'					=> '{channel_url}',			
+			'{blog_url}'					=> '{channel_url}',
 		);
-		
+
 		foreach ($template_replacements as $k => $v)
 		{
 			ee()->db->set('template_data', "REPLACE(`template_data`, '{$k}', '{$v}')", FALSE);
 			ee()->db->update('templates');
 		}
-		
+
 		ee()->db->set('module_name', 'Channel');
 		ee()->db->where('module_name', 'Weblog');
 		ee()->db->update('modules');
-		
+
 		// Finished!
 		return TRUE;
 	}
-	
+
 	// ------------------------------------------------------------------------
-	
+
 	private function _standardize_datetime_queries()
 	{
 		// @todo - doesn't work for entries made in the DST period opposite of that of
@@ -1883,7 +1883,7 @@ BSH;
 		 * EE's default timestamp fields
 		 */
 
-		$tables = ee()->db->list_tables(TRUE); 
+		$tables = ee()->db->list_tables(TRUE);
 
 		// List of known date fields
 		$field_list = array(
@@ -1945,7 +1945,7 @@ BSH;
 		}
 
 		$table_keys = array();
-		
+
 		// Remove any tables we do not have
 		foreach(array_keys($field_list) as $table)
 		{
@@ -1954,13 +1954,13 @@ BSH;
 				unset($field_list[$table]);
 			}
 		}
-		
+
 		// Get a list of our timestamp fields
 		// Use some logic to determine 3rd party
 		foreach(array_keys($field_list) as $table)
 		{
 			$query = ee()->db->query("SHOW FIELDS FROM `".ee()->db->escape_str($table)."`");
-		
+
 			if ($query->num_rows() > 0)
 			{
 				foreach($query->result_array() as $row)
@@ -1976,7 +1976,7 @@ BSH;
 		// Perform the Updates
 
 		$conversion_queries = array();
-		
+
 		foreach($field_list as $table => $fields)
 		{
 			$table = ee()->db->escape_str($table);
@@ -1994,7 +1994,7 @@ BSH;
 
 					// Split up into 50,000 records per update so we don't
 					// run mysql into the ground
-					
+
 					for($i = 0; $i <= $count; $i = $i + 50000)
 					{
 						ee()->progress->update_state("Searching `{$table}.{$field}` for DST discrepancies ({$i} / {$count})");
@@ -2025,7 +2025,7 @@ BSH;
 
 								// add one hour to the field we're converting, for all the
 								// rows we gathered above ($dst_dates == array of primary keys)
-								
+
 								$conversion_queries[] = "UPDATE `{$table}` SET `{$field}` = `{$field}` + 3600
 									WHERE `".ee()->db->escape_str($table_keys[$table])."` IN ('".implode("','", $dst_dates)."');";
 							}
@@ -2037,16 +2037,16 @@ BSH;
 				$conversion_queries[] = "UPDATE `{$table}` SET `{$field}` = `{$field}` + {$add_time} WHERE `{$field}` != 0;";
 			}
 		}
-		
+
 		return $conversion_queries;
 	}
 
 	// ------------------------------------------------------------------------
-	
+
 	private function _run_queries($summary = 'Creating and updating database tables', $queries = array())
 	{
 		$count = count($queries);
-		
+
 		foreach ($queries as $num => $sql)
 		{
 			ee()->progress->update_state("{$summary} (Query {$num} of {$count})");
@@ -2092,7 +2092,7 @@ BSH;
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Fetch DB Size
 	 *
@@ -2110,22 +2110,22 @@ BSH;
 		$records = 0;
 
 		$prefix_len = strlen(ee()->db->dbprefix);
-		
+
 		foreach ($query->result_array() as $row)
 		{
 			if (strncmp($row['Name'], ee()->db->dbprefix, $prefix_len) != 0)
 			{
 				continue;
 			}
-			
+
 			$totsize += $row['Data_length'] + $row['Index_length'];
 		}
-		
+
 		return round($totsize / 1048576);
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Changes column type for the `site_system_preferences` column in
 	 * `sites` from TEXT to MEDIUMTEXT

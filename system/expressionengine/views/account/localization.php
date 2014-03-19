@@ -8,14 +8,16 @@
 	<p class="cf">
 		<?=form_label(lang('timezone'), 'timezone')?>
 		<span class="timezone">
-			<?=$timezone_menu?>
+			<?=$timezone?>
 		</span>
 	</p>
 
-	<p>
-		<?=form_label(lang('time_format'), 'time_format')?>
-		<?=form_dropdown('time_format', $time_format_options, $time_format, 'id="time_format"')?>
-	</p>
+	<?php
+	foreach ($fields as $name => $details)
+	{
+		echo "<p>" . lang($name, $name) . form_preference($name, $details) . "</p>";
+	}
+	?>
 
 	<p>
 		<?=form_label(lang('language'), 'language')?>

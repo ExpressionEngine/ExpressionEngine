@@ -164,6 +164,22 @@
 						</td>
 						<td><?=form_dropdown('enable_http_auth',  array('y' => lang('yes'), 'n' => lang('no')), $enable_http_auth, 'class="enable_http_auth"')?></td>
 					</tr>
+					<?php if ($this->config->item('enable_template_routes') == 'y'): ?>
+					<tr>
+						<td>
+							<?=lang('template_route', 'template_route')?>
+							<div class="subtext"><?=lang('template_route_subtext')?></div>
+						</td>
+						<td><input name="template_route" type="text" value="<?=$template_route?>" /></td>
+					</tr>
+					<tr>
+						<td>
+							<?=lang('route_required', 'route_required')?>
+							<div class="subtext"><?=lang('route_required_subtext')?></div>
+						</td>
+						<td><?=form_dropdown('route_required',  array('y' => lang('yes'), 'n' => lang('no')), $route_required, 'class="route_required"')?></td>
+					</tr>
+					<?php endif ?>
 				</table>
 				</div>
 			</div>
@@ -213,4 +229,3 @@
     </div> <!-- pageContents -->
 	</div> <!-- contents -->
 </div> <!-- mainContent -->
-

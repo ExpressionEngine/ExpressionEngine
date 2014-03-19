@@ -4,13 +4,13 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -40,36 +40,36 @@ class Updater {
 	function Updater()
 	{
 		$this->EE =& get_instance();
-	
+
 		// Grab the config file
 		if ( ! @include(ee()->config->config_path))
 		{
 			show_error('Your config'.EXT.' file is unreadable. Please make sure the file exists and that the file permissions to 666 on the following file: expressionengine/config/config.php');
 		}
-		
+
 		if (isset($conf))
 		{
 			$config = $conf;
 		}
-		
+
 		// Does the config array exist?
 		if ( ! isset($config) OR ! is_array($config))
 		{
 			show_error('Your config'.EXT.' file does not appear to contain any data.');
 		}
-		
+
 		$this->config =& $config;
 	}
 
 	function do_update()
-	{	
+	{
 		// Safety.  Prevents a problem if the
 		// version indicator was not updated
 		if (isset($this->config['encryption_type']))
 		{
 			return TRUE;
 		}
-		
+
 		$Q[] = "ALTER TABLE exp_weblogs ADD COLUMN trackback_use_captcha char(1) NOT NULL default 'n'";
 		$Q[] = "ALTER TABLE exp_weblogs ADD COLUMN comment_notify_authors char(1) NOT NULL default 'n'";
 		$Q[] = "INSERT INTO exp_specialty_templates(template_name, data_title, template_data) values ('gallery_comment_notification', 'Someone just responded to your comment', '".addslashes(gallery_comment_notification())."')";
@@ -86,7 +86,7 @@ class Updater {
 		/** -----------------------------------------
 		/**  Update config file with new prefs
 		/** -----------------------------------------*/
-		
+
 		$data = array(
 						'encryption_type'			=> 'sha1',
 						'email_debug'				=> 'n',
@@ -95,10 +95,10 @@ class Updater {
 						'reserved_category_word'	=> 'category',
                     	'auto_assign_cat_parents'	=> 'y'
 					);
-													
+
 		ee()->config->_append_config_1x($data);
-		
-		
+
+
 		// Update Module Version indicators
 		$this->upate_module_versions();
 
@@ -106,26 +106,26 @@ class Updater {
 		// DONE!!
 		return TRUE;
 	}
-	
-	
+
+
 	/** -----------------------------
 	/**  Update Module Version indicators
 	/** -----------------------------*/
 
 	function upate_module_versions()
-	{		
+	{
 		if (count($this->versions) == 0)
 			return;
-			
+
 		foreach ($this->versions as $key => $val)
 		{
-			ee()->db->query("UPDATE exp_modules SET module_version = '{$val}' WHERE module_name = '{$key}'");		
+			ee()->db->query("UPDATE exp_modules SET module_version = '{$val}' WHERE module_name = '{$key}'");
 		}
 	}
-	
-	
-	
-}	
+
+
+
+}
 // END CLASS
 
 
@@ -153,7 +153,7 @@ You have just received a comment for the following photo gallery:
 The title of the entry is:
 {entry_title}
 
-Located at: 
+Located at:
 {comment_url}
 
 {comment}

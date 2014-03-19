@@ -4,13 +4,13 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -145,7 +145,7 @@ class Blacklist_upd {
 		if (version_compare($current, '3.0.1', '<'))
 		{
 			ee()->load->dbforge();
-			
+
 			foreach (array('blacklisted', 'whitelisted') as $table_name)
 			{
 				if (ee()->db->table_exists($table_name))
@@ -156,12 +156,12 @@ class Blacklist_upd {
 							'type' => 'LONGTEXT'
 						)
 					);
-					
+
 					ee()->dbforge->modify_column($table_name, $fields);
 				}
 			}
 		}
-		
+
 		if (version_compare($current, '3.0', '<'))
 		{
 			ee()->load->dbforge();

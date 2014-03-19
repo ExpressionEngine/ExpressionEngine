@@ -5,13 +5,13 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.5
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -31,9 +31,9 @@ class Italic_rte {
 		'description'	=> 'Italicizes and de-italicizes text',
 		'cp_only'		=> 'n'
 	);
-	
+
 	private $EE;
-	
+
 	/**
 	 * Constructor
 	 *
@@ -62,7 +62,7 @@ class Italic_rte {
 			)
 		);
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -73,14 +73,14 @@ class Italic_rte {
 	function definition()
 	{
 		ob_start(); ?>
-		
+
 		WysiHat.addButton('italic', {
 			label:			EE.rte.italics.add,
 			'toggle-text':	EE.rte.italics.remove
 		});
-		
+
 <?php	$buffer = ob_get_contents();
-		ob_end_clean(); 
+		ob_end_clean();
 		return $buffer;
 	}
 

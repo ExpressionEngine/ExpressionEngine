@@ -7,7 +7,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -478,6 +478,17 @@ class Content_publish extends CP_Controller {
 				elseif (trim($name) == '')
 				{
 					$valid_name_error[] = 'missing_name';
+				}
+
+				$defaults = array(
+				        lang('publish')     => 'publish',
+				        lang('categories')  => 'categories',
+				        lang('options')     => 'options',
+				        lang('date')        => 'date'
+				);
+				
+				if($name == '_tab_label' && ! empty($defaults[$info])) {
+				        $tab['fields'][$name] = $defaults[$info];
 				}
 			}
 

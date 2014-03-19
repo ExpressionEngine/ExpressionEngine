@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -1127,7 +1127,7 @@ class Simple_commerce {
 		ee()->load->helper('typography');
 
 		$str = str_replace('&amp;', '&', $str);
-		$str = urlencode(utf8_decode(entity_decode($str, 'utf-8')));
+		$str = urlencode(entity_decode($str, 'utf-8'));
 
 		return $str;
 	}

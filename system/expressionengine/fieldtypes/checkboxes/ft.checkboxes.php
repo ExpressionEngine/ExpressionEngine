@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -100,7 +100,7 @@ class Checkboxes_ft extends EE_Fieldtype {
 
 	function grid_display_field($data)
 	{
-		return $this->_display_field($data, 'grid');
+		return $this->_display_field(form_prep($data), 'grid');
 	}
 
 	// --------------------------------------------------------------------

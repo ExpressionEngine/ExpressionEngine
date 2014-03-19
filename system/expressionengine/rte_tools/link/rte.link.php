@@ -5,13 +5,13 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.5
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -24,16 +24,16 @@
  * @link		http://ellislab.com
  */
 class Link_rte {
-	
+
 	public $info = array(
 		'name'			=> 'Link',
 		'version'		=> '1.0',
 		'description'	=> 'Triggers the RTE to link the selected text',
 		'cp_only'		=> 'n'
 	);
-	
+
 	private $EE;
-	
+
 	/**
 	 * Constructor
 	 *
@@ -73,7 +73,7 @@ class Link_rte {
 			)
 		);
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -87,7 +87,7 @@ class Link_rte {
 			'ui'	=> array('dialog', 'position')
 		);
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -102,7 +102,7 @@ class Link_rte {
 		#rte-link-dialog p {
 			margin:10px 0;
 		}
-		
+
 		#rte-link-dialog label {
 			display: inline-block;
 		}
@@ -145,7 +145,7 @@ class Link_rte {
 		}
 
 <?php	$buffer = ob_get_contents();
-		ob_end_clean(); 
+		ob_end_clean();
 		return $buffer;
 	}
 

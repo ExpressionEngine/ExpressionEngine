@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -29,7 +29,7 @@ class Site_model extends CI_Model {
 	 *
 	 * @return array An array of integer site ids in no particular order.
 	 */
-	public function get_site_ids() 
+	public function get_site_ids()
 	{
 		if($this->config->item('multiple_sites_enabled') != 'y')
 		{
@@ -38,13 +38,13 @@ class Site_model extends CI_Model {
 
 		$site_query = $this->db->select('site_id')
 				->get('sites');
-		
+
 		$site_ids = array();
 		foreach($site_query->result_array() as $result)
 		{
 			$site_ids[] = $result['site_id'];
 		}
-		return $site_ids;	
+		return $site_ids;
 	}
 
 	/**

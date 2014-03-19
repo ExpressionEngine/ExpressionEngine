@@ -6,7 +6,7 @@
  *
  * @package		CodeIgniter
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc.
  * @license		http://codeigniter.com/user_guide/license.html
  * @link		http://codeigniter.com
  * @since		Version 1.0
@@ -71,7 +71,7 @@ if ( ! function_exists('smiley_js'))
 				var smiley_map = {$m};
 
 				function insert_smiley(smiley, field_id) {
-					var el = document.getElementById(field_id), newStart;
+					var el = document.getElementsByName(field_id)[0], newStart;
 
 					if ( ! el && smiley_map[field_id]) {
 						el = document.getElementById(smiley_map[field_id]);

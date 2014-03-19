@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -42,27 +42,27 @@ class Communicate_model extends CI_Model {
 			{
 				$this->db->order_by($key, $val);
 			}
-		
+
 		}
-		
+
 		if (is_array($id))
 		{
 			$this->db->where_in('cache_id', $id);
 		}
 		elseif ($id != '')
 		{
-			$this->db->where('cache_id', $id);			
+			$this->db->where('cache_id', $id);
 		}
-		
+
 		$this->db->order_by('cache_id', 'desc');
-		
+
 		if ($limit === FALSE)
 		{
-			return $this->db->get('email_cache');			
+			return $this->db->get('email_cache');
 		}
 		else
 		{
-			return $this->db->get('email_cache', $limit, $offset);	
+			return $this->db->get('email_cache', $limit, $offset);
 		}
 	}
 
@@ -118,25 +118,25 @@ class Communicate_model extends CI_Model {
 	function get_mailing_lists($list_id = '')
 	{
 		$this->db->select('list_id, list_title');
-		
+
 		if (is_array($list_id))
 		{
 			$this->db->select('list_template');
-			$this->db->where_in('list_id', $list_id);			
+			$this->db->where_in('list_id', $list_id);
 		}
 		elseif ($list_id != '')
 		{
 			$this->db->select('list_template');
 			$this->db->where('list_id', $list_id);
 		}
-		
+
 		$this->db->order_by('list_title');
-		
+
 		return $this->db->get('mailing_lists');
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Get Mailing List Emails
 	 *
@@ -152,21 +152,21 @@ class Communicate_model extends CI_Model {
 		{
 			$list_ids = array($list_ids);
 		}
-		
+
 		$this->db->select('authcode, email, list_id');
 
 		if ( ! empty($list_ids))
 		{
 			$this->db->where_in('list_id', $list_ids);
 		}
-		
+
 		$this->db->order_by('user_id');
-		
+
 		return $this->db->get('mailing_list');
 	}
 
 	// --------------------------------------------------------------------
-			
+
 	/**
 	 * Save Cache Data
 	 *
@@ -180,7 +180,7 @@ class Communicate_model extends CI_Model {
 	 */
 	function save_cache_data($cache_data, $groups = '', $list_ids = '')
 	{
-		$this->db->query($this->db->insert_string('exp_email_cache', $cache_data)); 
+		$this->db->query($this->db->insert_string('exp_email_cache', $cache_data));
 
 		$cache_id = $this->db->insert_id();
 
@@ -202,8 +202,8 @@ class Communicate_model extends CI_Model {
 
 		return $cache_id;
 	}
-	
-	// --------------------------------------------------------------------	
+
+	// --------------------------------------------------------------------
 
 	/**
 	 * Update Email Cache
@@ -222,14 +222,14 @@ class Communicate_model extends CI_Model {
 		{
 			$recipient_array = serialize($recipient_array);
 		}
-		
+
 		$this->db->where('cache_id', $id);
 		$this->db->update('email_cache', array('total_sent' => $total_sent, 'recipient_array' => $recipient_array));
-		return $this->db->affected_rows();	
+		return $this->db->affected_rows();
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Delete Emails
 	 *
@@ -246,12 +246,12 @@ class Communicate_model extends CI_Model {
 			$cache_ids = array($cache_ids);
 		}
 
-		$this->db->where_in('cache_id', $cache_ids);		
+		$this->db->where_in('cache_id', $cache_ids);
 		$this->db->delete(array('email_cache', 'email_cache_mg', 'email_cache_ml'));
 	}
 
 	// --------------------------------------------------------------------
-	
+
 }
 // End class Communicate_model
 

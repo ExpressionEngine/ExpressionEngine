@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -32,7 +32,7 @@ class Comment_model extends CI_Model {
 	 * @param	array
 	 * @param	array
 	 * @return	array
-	 */	
+	 */
 	public function recount_entry_comments($entry_ids)
 	{
 		foreach(array_unique($entry_ids) as $entry_id)
@@ -46,9 +46,9 @@ class Comment_model extends CI_Model {
 			$this->db->query("UPDATE exp_channel_titles SET comment_total = '".($query->row('count') )."', recent_comment_date = '$comment_date' WHERE entry_id = '".$this->db->escape_str($entry_id)."'");
 		}
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Fetch Email Recipient Array
 	 *
@@ -59,19 +59,19 @@ class Comment_model extends CI_Model {
 	public function fetch_email_recipients($entry_id, $subscriptions = array())
 	{
 		$recipients = array();
-		
+
 		$subscribed_members = array();
 		$subscribed_emails = array();
-	
+
 		// No subscribers - skip!
 		if (count($subscriptions))
 		{
 			// Do some work to figure out the user's name,
 			// either based on their user id or on the comment
 			// data (stored with their email)
-			
+
 			$subscription_map = array();
-		
+
 			foreach($subscriptions as $id => $row)
 			{
 				if ($row['member_id'])
@@ -85,7 +85,7 @@ class Comment_model extends CI_Model {
 					$subscription_map[$row['email']] = $id;
 				}
 			}
-			
+
 			if (count($subscribed_members))
 			{
 				$this->db->select('member_id, email, screen_name, smart_notifications');
@@ -97,7 +97,7 @@ class Comment_model extends CI_Model {
 					foreach ($member_q->result() as $row)
 					{
 						$sub_id = $subscription_map[$row->member_id];
-						
+
 						if ($row->smart_notifications == 'n' OR $subscriptions[$sub_id]['notification_sent'] == 'n')
 						{
 							$recipients[] = array($row->email, $sub_id, $row->screen_name);
@@ -117,7 +117,7 @@ class Comment_model extends CI_Model {
 				$this->db->where_in('email', $subscribed_emails);
 
 				$comment_q = $this->db->get('comments');
-				
+
 				if ($comment_q->num_rows() > 0)
 				{
 					foreach ($comment_q->result() as $row)
@@ -128,24 +128,24 @@ class Comment_model extends CI_Model {
 						{
 							$sub_id = $subscription_map[$row->email];
 							$recipients[] = array($row->email, $sub_id, $row->name);
-						}			
+						}
 					}
 				}
 			}
-			
+
 			unset($subscription_map);
 		}
-		
-		
+
+
 		// Mark it as unread
 		// if smart notifications are turned on, will
 		// will prevent further emails from being sent
-		
+
 		$this->subscription->mark_as_unread(array($subscribed_members, $subscribed_emails), TRUE);
-		
+
 		return $recipients;
 	}
 }
 
 /* End of file comment_model.php */
-/* Location: ./system/expressionengine/modules/comment/models/comment_model.php */	
+/* Location: ./system/expressionengine/modules/comment/models/comment_model.php */

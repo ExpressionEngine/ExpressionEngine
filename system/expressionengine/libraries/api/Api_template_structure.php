@@ -4,13 +4,13 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -23,7 +23,7 @@
  * @link		http://ellislab.com
  */
 class Api_template_structure extends Api {
-	
+
 	/**
 	 * @php4 -- All of the class properties are protected.
 	 * When php4 support is deprecated, make them accessible via __get()
@@ -41,22 +41,22 @@ class Api_template_structure extends Api {
 										'js'		=> '.js',
 										'xml'		=> '.xml'
 									);
-	
+
 	/**
 	 * Constructor
 	 */
 	function __construct()
 	{
 		parent::__construct();
-		
+
 		ee()->load->model('template_model');
-		
+
 		// initialize the reserved names array
 		$this->_load_reserved_groups();
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Get Template Group metadata
 	 *
@@ -71,27 +71,27 @@ class Api_template_structure extends Api {
 			$this->_set_error('channel_id_required');
 			return FALSE;
 		}
-		
+
 		// return cached query object if available
 		if (isset($this->group_info[$group_id]))
 		{
 			return $this->group_info[$group_id];
 		}
-		
+
 		$query = ee()->template_model->get_group_info($group_id);
-		
+
 		if ($query->num_rows() == 0)
 		{
 			$this->_set_error('invalid_group_id');
 			return FALSE;
 		}
-		
+
 		$this->group_info[$group_id] = $query;
-		return $query;		
+		return $query;
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Create Group
 	 *
@@ -107,37 +107,37 @@ class Api_template_structure extends Api {
 		{
 			return FALSE;
 		}
-		
+
 		$group_name	= '';
-		
+
 		// turn our array into variables
 		extract($data);
-		
+
 		if ($site_id === NULL OR ! is_numeric($site_id))
 		{
 			$site_id = $this->config->item('site_id');
 		}
-		
+
 		// validate group name
 		if ($group_name == '')
 		{
 			$this->_set_error('group_required');
 		}
-		
+
 		if ( ! ee()->api->is_url_safe($group_name))
 		{
 			$this->_set_error('illegal_characters');
-		}			
-		
+		}
+
 		if (in_array($group_name, $this->reserved_names))
 		{
 			$this->_set_error('reserved_name');
 		}
-		
+
 		// check if it's taken, too
 		ee()->load->model('super_model');
 		$count = ee()->super_model->count('template_groups', array('site_id' => $site_id, 'group_name' => $group_name));
-		
+
 		if ($count > 0)
 		{
 			$this->_set_error('template_group_taken');
@@ -150,9 +150,9 @@ class Api_template_structure extends Api {
 		}
 
 		$is_site_default = (isset($is_site_default) && $is_site_default == 'y') ? 'y' : 'n';
-		
+
 		$data = array();
-		
+
 		foreach (array('group_name', 'group_order', 'is_site_default', 'site_id') as $field)
 		{
 			if (isset(${$field}))
@@ -160,23 +160,23 @@ class Api_template_structure extends Api {
 				$data[$field] = ${$field};
 			}
 		}
-		
+
 		$group_id = ee()->template_model->create_group($data);
-		
+
 		$duplicate = FALSE;
-					
+
 		if (is_numeric($duplicate_group))
 		{
 			$fields = array('template_name', 'template_data', 'template_type', 'template_notes', 'cache', 'refresh', 'no_auth_bounce', 'allow_php', 'php_parse_location');
 			$query = ee()->template_model->get_templates($site_id, $fields, array('templates.group_id' => $duplicate_group));
-		
+
 			if ($query->num_rows() > 0)
 			{
 				$duplicate = TRUE;
 			}
 		}
-		
-		
+
+
 		if ($duplicate !== TRUE)
 		{
 			// just create the default 'index' template
@@ -187,12 +187,12 @@ class Api_template_structure extends Api {
 									'site_id'		=> $site_id
 								 );
 
-			ee()->template_model->create_template($template_data);			
+			ee()->template_model->create_template($template_data);
 		}
 		else
-		{				
+		{
 			foreach ($query->result() as $row)
-			{				
+			{
 				$data = array(
 								'group_id'				=> $group_id,
 								'template_name'  		=> $row->template_name,
@@ -207,16 +207,16 @@ class Api_template_structure extends Api {
 								'edit_date'				=> ee()->localize->now,
 								'site_id'				=> ee()->config->item('site_id')
 							 );
-				
+
 				ee()->template_model->create_template($data);
 			}
 		}
-		
+
 		return $group_id;
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Load Reserved Groups
 	 *
@@ -276,7 +276,7 @@ class Api_template_structure extends Api {
 			$template_types = ee()->extensions->call('template_types', array());
 			//
 			// -------------------------------------------
-			
+
 			if ($template_types != NULL)
 			{
 				if (isset($template_types[$template_type]['template_file_extension']))
@@ -285,11 +285,11 @@ class Api_template_structure extends Api {
 				}
 			}
 		}
-		
+
 		return '';
 	}
 
-	// --------------------------------------------------------------------	
+	// --------------------------------------------------------------------
 }
 // END CLASS
 

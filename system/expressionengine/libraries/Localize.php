@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -78,6 +78,19 @@ class Localize {
 		if (trim($human_string) == '')
 		{
 			return '';
+		}
+
+		// d-m-y formatted dates can be ambiguous, as such we will reformat
+		// them to m/d/y here. I'd much rather use DateTime::createFromFormat
+		// but that was introduced in PHP 5.3.0
+		$date_format = ee()->session->userdata('date_format', ee()->config->item('date_format'));
+		if (
+			(strpos($date_format, '-%y') !== FALSE) AND
+			(preg_match('/^\d{1,2}-\d{1,2}-\d{2,4}/', $human_string) == 1)
+		   )
+		{
+			list($day, $month, $year) = explode('-', $human_string);
+			$human_string = $month.'/'.$day.'/'.$year;
 		}
 
 		$dt = $this->_datetime($human_string, $localized);
@@ -217,34 +230,25 @@ class Localize {
 	 */
 	public function human_time($timestamp = NULL, $localize = TRUE, $seconds = FALSE)
 	{
-		/* -------------------------------------------
-		/*	Hidden Configuration Variables
-		/*	- include_seconds => Determines whether to include seconds in our human time.
-		/* -------------------------------------------*/
-		if (func_num_args() != 3 && ee()->config->item('include_seconds') == 'y')
+		$include_seconds = ee()->session->userdata('include_seconds', ee()->config->item('include_seconds'));
+		$date_format = ee()->session->userdata('date_format', ee()->config->item('date_format'));
+		$time_format = ee()->session->userdata('time_format', ee()->config->item('time_format'));
+
+		if (func_num_args() != 3 && $include_seconds == 'y')
 		{
 			$seconds = TRUE;
 		}
 
-		$fmt = (ee()->session->userdata('time_format') != '')
-			? ee()->session->userdata('time_format') : ee()->config->item('time_format');
+		$seconds_format = $seconds ? ':%s' : '';
 
-		// 2015-10-21
-		$format_string = '%Y-%m-%d ';
-
-		// 06:30 or 18:30
-		$format_string .= ($fmt == 'us') ? '%h:%i' : '%H:%i';
-
-		// Seconds
-		if ($seconds)
+		$format_string = $date_format . ' ';
+		if ($time_format == 24)
 		{
-			$format_string .= ':%s';
+			$format_string .= '%H:%i' . $seconds_format;
 		}
-
-		// AM/PM
-		if ($fmt == 'us')
+		else
 		{
-			$format_string .= ' %A';
+			$format_string .= '%g:%i' . $seconds_format . ' %A';
 		}
 
 		return $this->format_date($format_string, $timestamp, $localize);
@@ -677,6 +681,36 @@ EOF;
 		{
 			return $months[$month];
 		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Reads the configured date format from either userdata or the site's
+	 * config and returns the string needed to format the JS datepicker
+	 * to match.
+	 *
+	 * @access public
+	 * @return string The string needed for the 'dateFormat:' argument for
+	 *                the jQuery datepicker plugin.
+	 */
+	public function datepicker_format()
+	{
+		$date_format = ee()->session->userdata('date_format', ee()->config->item('date_format'));
+
+		// Days
+		$date_format = str_replace('%d', 'dd', $date_format);
+		$date_format = str_replace('%j', 'd', $date_format);
+
+		// Months
+		$date_format = str_replace('%m', 'mm', $date_format);
+		$date_format = str_replace('%n', 'm', $date_format);
+
+		// Years
+		$date_format = str_replace('%Y', 'yy', $date_format);
+		$date_format = str_replace('%y', 'y', $date_format);
+
+		return $date_format;
 	}
 }
 // END CLASS

@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -284,6 +284,32 @@ class Category_model extends CI_Model {
 
 	// --------------------------------------------------------------------
 
+	public function get_category_id($url_title, $site_ids = array())
+	{
+		ee()->db->select('cat_id')
+			->where('cat_url_title', $url_title);
+
+		if ( ! empty($site_id) && is_array($site_ids))
+		{
+			ee()->db->where_in('site_id', $site_ids);
+		}
+		else
+		{
+			ee()->db->where('site_id', ee()->config->item('site_id'));
+		}
+
+		$result = ee()->db->get('categories');
+
+		if ($result->num_rows() == 0)
+		{
+			return FALSE;
+		}
+
+		return $result->row('cat_id');
+	}
+
+	// --------------------------------------------------------------------
+
 	/**
 	 * Update Category Group
 	 *
@@ -328,10 +354,10 @@ class Category_model extends CI_Model {
 		$this->db->where('group_id', $group_id);
 		$query = $this->db->get('categories');
 
+		$cat_ids = array();
+
 		if ($query->num_rows() > 0)
 		{
-			$cat_ids = array();
-
 			foreach ($query->result() as $row)
 			{
 				$cat_ids[] = $row->cat_id;

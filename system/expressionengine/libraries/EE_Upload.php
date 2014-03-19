@@ -4,13 +4,13 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -22,28 +22,28 @@
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class EE_Upload extends CI_Upload 
+class EE_Upload extends CI_Upload
 {
 	protected $use_temp_dir = FALSE;
 
 	/**
 	 * Constructor
-	 */ 
+	 */
 	function __construct($props = array())
 	{
 		parent::__construct();
 
 		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
-		
+
 		ee()->load->helper('xss');
-		
+
 		$props['xss_clean'] = xss_check();
 
 		$this->initialize($props);
 
 		log_message('debug', "Upload Class Initialized");
-	}	
+	}
 
 	// --------------------------------------------------------------------
 
@@ -59,7 +59,7 @@ class EE_Upload extends CI_Upload
    function file_overwrite($original_file = '', $new = '', $type_match = TRUE)
 	{
 		$this->file_name = $new;
-		
+
 		// If renaming a file, it should have same file type suffix as the original
 		if ($type_match === TRUE)
 		{
@@ -69,26 +69,26 @@ class EE_Upload extends CI_Upload
 				return FALSE;
 			}
 		}
-		
+
 		if ($this->remove_spaces == 1)
 		{
 			$this->file_name = preg_replace("/\s+/", "_", $this->file_name);
 			$original_file = preg_replace("/\s+/", "_", $original_file);
 		}
-		
+
 		// Check to make sure the file doesn't already exist
 		if (file_exists($this->upload_path . $this->file_name))
 		{
 			$this->set_error('file_exists');
 			return FALSE;
 		}
- 		
+
 		if ( ! @copy($this->upload_path.$original_file, $this->upload_path.$this->file_name))
 		{
 			$this->set_error('copy_error');
 			return FALSE;
 		}
-		
+
 		unlink ($this->upload_path.$original_file);
 
 		return TRUE;

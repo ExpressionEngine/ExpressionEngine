@@ -6,7 +6,7 @@
  *
  * @package		CodeIgniter
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc.
  * @license		http://codeigniter.com/user_guide/license.html
  * @link		http://codeigniter.com
  * @since		Version 1.0
@@ -70,6 +70,8 @@ if ( ! function_exists('force_download'))
 			$mime = (is_array($mimes[$extension])) ? $mimes[$extension][0] : $mimes[$extension];
 		}
 
+		$len = (function_exists('mb_strlen')) ? mb_strlen($data, '8bit') : strlen($data);
+
 		// Generate the server headers
 		if (strpos($_SERVER['HTTP_USER_AGENT'], "MSIE") !== FALSE)
 		{
@@ -79,7 +81,7 @@ if ( ! function_exists('force_download'))
 			header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
 			header("Content-Transfer-Encoding: binary");
 			header('Pragma: public');
-			header("Content-Length: ".strlen($data));
+			header("Content-Length: ".$len);
 		}
 		else
 		{
@@ -88,7 +90,7 @@ if ( ! function_exists('force_download'))
 			header("Content-Transfer-Encoding: binary");
 			header('Expires: 0');
 			header('Pragma: no-cache');
-			header("Content-Length: ".strlen($data));
+			header("Content-Length: ".$len);
 		}
 
 		exit($data);

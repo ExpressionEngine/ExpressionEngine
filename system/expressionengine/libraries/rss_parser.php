@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.8
@@ -29,6 +29,7 @@ class EE_RSS_Parser {
 		// Load in the necessary files
 		require_once(APPPATH.'libraries/simplepie/SimplePieAutoloader.php');
 		require_once(APPPATH.'libraries/simplepie/idn/idna_convert.class.php');
+		require_once(APPPATH.'libraries/SimplePie_cache_driver.php');
 	}
 
 	// -------------------------------------------------------------------------
@@ -45,14 +46,11 @@ class EE_RSS_Parser {
 		$feed = new SimplePie();
 		$feed->set_feed_url($url);
 
-		if (empty($cache_name))
-		{
-			$cache_name = md5('rss_parser'.$url);
-		}
+		// Load our own caching driver for SimplePie
+		$feed->registry->call('Cache', 'register', array('ee', 'EE_SimplePie_Cache_driver'));
 
 		// Establish the cache
-		$this->_check_cache($cache_name);
-		$feed->set_cache_location(APPPATH.'cache/'.$cache_name.'/');
+		$feed->set_cache_location('ee:' . $cache_name);
 		$feed->set_cache_duration($duration * 60); // Get parameter to seconds
 
 		// Check to see if the feed was initialized, if so, deal with the type
@@ -65,26 +63,6 @@ class EE_RSS_Parser {
 		}
 
 		throw new Exception("RSS Parser Error: ".$feed->error());
-	}
-
-	// -------------------------------------------------------------------------
-
-	/**
-	 * Check to make sure the cache exists and create it otherwise
-	 * @param string  $cache_name Name of the cache directory within /cache
-	 * @return void
-	 */
-	private function _check_cache($cache_name)
-	{
-		// Make sure the cache directory exists and is writeable
-		if ( ! @is_dir(APPPATH.'cache/'.$cache_name))
-		{
-			if ( ! @mkdir(APPPATH.'cache/'.$cache_name, DIR_WRITE_MODE))
-			{
-				ee()->TMPL->log_item("RSS Parser Error: Cache directory unwritable.");
-				return ee()->TMPL->no_results();
-			}
-		}
 	}
 }
 // END CLASS

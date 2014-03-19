@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -177,7 +177,7 @@ class Relationship_model extends CI_Model {
 					'relationships_query',
 					$node->field_name(),
 					$entry_ids,
-					$depths,
+					array('longest' => $longest_branch_length, 'shortest' => 0),
 					$db->_compile_select(FALSE, FALSE)
 				);
 			}

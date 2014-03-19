@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -133,8 +133,8 @@
  *  EE Control Panel Constants
  * -------------------------------------------------------------------
  *
- * If the "installer" folder exists the $config['install_lock'] is off
- * we will load the installation wizard.  Otherwise we load the CP
+ * If the "installer" folder exists we'll load the installation
+ * wizard. Otherwise, we'll load the CP.
  *
  */
  	// Is the installation folder present?

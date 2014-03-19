@@ -6,7 +6,7 @@
  *
  * @package		CodeIgniter
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc.
  * @license		http://codeigniter.com/user_guide/license.html
  * @link		http://codeigniter.com
  * @since		Version 1.0
@@ -74,10 +74,10 @@ if ( ! function_exists('byte_format'))
 // ------------------------------------------------------------------------
 
 /**
- * Parse INI style size into bytes 
+ * Parse INI style size into bytes
  *
  * @param string $setting	INI formatted size
- * @return int				Size in bytes 
+ * @return int				Size in bytes
  */
 if ( ! function_exists('get_bytes'))
 {

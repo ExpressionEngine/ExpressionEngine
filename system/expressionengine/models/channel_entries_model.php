@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -26,14 +26,14 @@ class Channel_entries_model extends CI_Model {
 
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 *
 	 */
 	public function get_entry_data(array $entries)
 	{
 		$sql = 'SELECT t.entry_id, t.channel_id, t.forum_topic_id, t.author_id, t.ip_address, t.title, t.url_title, t.status, t.view_count_one, t.view_count_two, t.view_count_three, t.view_count_four, t.allow_comments, t.comment_expiration_date, t.sticky, t.entry_date, t.year, t.month, t.day, t.edit_date, t.expiration_date, t.recent_comment_date, t.comment_total, t.site_id as entry_site_id,
-				  w.channel_title, w.channel_name, w.channel_url, w.comment_url, w.comment_moderate, w.channel_html_formatting, w.channel_allow_img_urls, w.channel_auto_link_urls, w.comment_system_enabled, 
+				  w.channel_title, w.channel_name, w.channel_url, w.comment_url, w.comment_moderate, w.channel_html_formatting, w.channel_allow_img_urls, w.channel_auto_link_urls, w.comment_system_enabled,
 				  m.group_id, m.username, m.email, m.url, m.screen_name, m.location, m.occupation, m.interests, m.aol_im, m.yahoo_im, m.msn_im, m.icq, m.signature, m.sig_img_filename, m.sig_img_width, m.sig_img_height, m.avatar_filename, m.avatar_width, m.avatar_height, m.photo_filename, m.photo_width, m.photo_height, m.group_id, m.member_id, m.bday_d, m.bday_m, m.bday_y, m.bio,
 				  md.*,
 				  wd.*
@@ -79,7 +79,7 @@ class Channel_entries_model extends CI_Model {
 		// default just fecth entry id's
 		$this->db->select('entry_id');
 		$this->db->from('channel_titles');
-		
+
 		// which channel id's?
 		if (is_array($channel_id))
 		{
@@ -156,7 +156,7 @@ class Channel_entries_model extends CI_Model {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Get most recent entries
 	 *
@@ -169,41 +169,41 @@ class Channel_entries_model extends CI_Model {
 	function get_recent_entries($limit = '10')
 	{
 		$allowed_channels = $this->functions->fetch_assigned_channels();
-		
+
 		if (count($allowed_channels) == 0)
 		{
 			return FALSE;
 		}
 
 		$this->db->select('
-						channel_titles.channel_id, 
+						channel_titles.channel_id,
 						channel_titles.author_id,
-						channel_titles.entry_id,         
-						channel_titles.title, 
+						channel_titles.entry_id,
+						channel_titles.title,
 						channel_titles.comment_total'
 						);
 		$this->db->from('channel_titles, channels');
 		$this->db->where('channels.channel_id = '.$this->db->dbprefix('channel_titles.channel_id'));
 		$this->db->where('channel_titles.site_id', $this->config->item('site_id'));
-		
+
 		if ( ! $this->cp->allowed_group('can_view_other_entries') AND
 			 ! $this->cp->allowed_group('can_edit_other_entries') AND
 			 ! $this->cp->allowed_group('can_delete_all_entries'))
 		{
 			$this->db->where('channel_titles.author_id', $this->session->userdata('member_id'));
 		}
-		
+
 		$allowed_channels = $this->functions->fetch_assigned_channels();
-		
+
 		$this->db->where_in('channel_titles.channel_id', $allowed_channels);
-			
+
 		$this->db->limit($limit);
 		$this->db->order_by('entry_date', 'DESC');
 		return $this->db->get();
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Get recent commented entries
 	 *
@@ -216,16 +216,16 @@ class Channel_entries_model extends CI_Model {
 	function get_recent_commented($limit = '10')
 	{
 		$this->db->select('
-						channel_titles.channel_id, 
+						channel_titles.channel_id,
 						channel_titles.author_id,
-						channel_titles.entry_id,         
-						channel_titles.title, 
+						channel_titles.entry_id,
+						channel_titles.title,
 						channel_titles.recent_comment_date'
 						);
 		$this->db->from('channel_titles, channels');
 		$this->db->where('channels.channel_id = '.$this->db->dbprefix('channel_titles.channel_id'));
 		$this->db->where('channel_titles.site_id', $this->config->item('site_id'));
-		
+
 		if ( ! $this->cp->allowed_group('can_view_other_comments') AND
 			 ! $this->cp->allowed_group('can_moderate_comments') AND
 			 ! $this->cp->allowed_group('can_delete_all_comments') AND
@@ -233,25 +233,25 @@ class Channel_entries_model extends CI_Model {
 		{
 			$this->db->where('channel_titles.author_id', $this->session->userdata('member_id'));
 		}
-		
+
 		$allowed_channels = $this->functions->fetch_assigned_channels();
-		
+
 		if (count($allowed_channels) > 0)
 		{
 			$this->db->where_in('channel_titles.channel_id', $allowed_channels);
 			$this->db->where("recent_comment_date != ''");
-			
+
 			$this->db->limit($limit);
-			$this->db->order_by("recent_comment_date", "desc"); 
+			$this->db->order_by("recent_comment_date", "desc");
 			return $this->db->get();
 		}
-		
+
 		return FALSE;
 	}
-	
-	
+
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Prune Revisions
 	 *
@@ -265,22 +265,22 @@ class Channel_entries_model extends CI_Model {
 	{
 		$this->db->where('entry_id', $entry_id);
 		$count = $this->db->count_all_results('entry_versioning');
-		
+
 		if ($count > $max)
 		{
 			$this->db->select('version_id');
 			$this->db->where('entry_id', $entry_id);
 			$this->db->order_by('version_id', 'DESC');
 			$this->db->limit($max);
-			
+
 			$query = $this->db->get('entry_versioning');
-			
+
 			$ids = array();
 			foreach ($query->result_array() as $row)
 			{
 				$ids[] = $row['version_id'];
 			}
-			
+
 			$this->db->where('entry_id', $entry_id);
 			$this->db->where_not_in('version_id', $ids);
 			$this->db->delete('entry_versioning');

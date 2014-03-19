@@ -5,7 +5,7 @@
 -----------------------------------------------------
  http://ellislab.com/
 -----------------------------------------------------
- Copyright (c) 2003 - 2013, EllisLab, Inc.
+ Copyright (c) 2003 - 2014, EllisLab, Inc.
 =====================================================
  THIS IS COPYRIGHTED SOFTWARE
  PLEASE READ THE LICENSE AGREEMENT
@@ -32,7 +32,7 @@ class Updater {
 	}
 	/* END */
 
-}	
+}
 /* END CLASS */
 
 

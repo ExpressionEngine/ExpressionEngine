@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -105,8 +105,8 @@ class Field_model extends CI_Model {
 		$this->db->where('exp_field_groups.site_id', $this->config->item('site_id'));
 		$this->db->group_by('exp_field_groups.group_id');
 		$this->db->order_by('exp_field_groups.group_name');
-		
-		return $this->db->get();		
+
+		return $this->db->get();
 	}
 
 	// --------------------------------------------------------------------
@@ -126,7 +126,7 @@ class Field_model extends CI_Model {
 		$this->db->where('site_id', $this->config->item('site_id'));
 		$this->db->where('group_id', $field_group_id);
 		$this->db->order_by('group_id');
-		
+
 		return $this->db->get();
 	}
 
@@ -164,10 +164,10 @@ class Field_model extends CI_Model {
 
 		$this->db->where('field_id', $field_id);
 		$this->db->delete('channel_fields');
-		
+
 		return $field_ids;
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -181,10 +181,10 @@ class Field_model extends CI_Model {
 		$query = $this->get_fields($group_id);
 
 		$field_ids = $this->_remove_fields($query);
-		
+
 		$this->db->where('group_id', $group_id);
-		$this->db->delete('field_groups'); 
-		
+		$this->db->delete('field_groups');
+
 		// Delete associated channel fields
 		$this->db->where('group_id', $group_id);
 		$this->db->delete('channel_fields');
@@ -192,7 +192,7 @@ class Field_model extends CI_Model {
 		// Disassociate field group with channels
 		$this->db->where('field_group', $group_id);
 		$this->db->update('channels', array('field_group' => NULL));
-		
+
 		return $field_ids;
 
 	}
@@ -210,15 +210,15 @@ class Field_model extends CI_Model {
 		$this->load->library('api');
 		$this->api->instantiate('channel_fields');
 		$this->api_channel_fields->fetch_all_fieldtypes();
-		
+
 		$rel_ids = array();
 		$deleted_fields = array();
-		
+
 		if ($results->num_rows() > 0)
 		{
 			foreach ($results->result_array() as $field)
 			{
-			
+
 				$this->api_channel_fields->setup_handler($field['field_type']);
 				$this->api_channel_fields->delete_datatype($field['field_id'], $field);
 
@@ -226,23 +226,23 @@ class Field_model extends CI_Model {
 				$deleted_fields['group_id'] = (isset($field['group_id'])) ? $field['group_id'] : '';
 				$deleted_fields['field_label'] = (isset($field['field_label'])) ? $field['field_label'] : '';
 			}
-			
+
 			// Make sure a deleted field is not assigned as the search excerpt
 			$this->db->where_in('search_excerpt', $deleted_fields['field_ids']);
-			$this->db->update('channels', array('search_excerpt' => NULL)); 		
-		
+			$this->db->update('channels', array('search_excerpt' => NULL));
+
 			// Remove from field formatting
 				$this->db->where_in('field_id', $deleted_fields['field_ids']);
-				$this->db->delete('field_formatting'); 
-				
+				$this->db->delete('field_formatting');
+
 			//  Get rid of any stray relationship data
 			if (count($rel_ids) > 0)
 			{
 				$this->db->where_in('relationship_id', $rel_ids);
-				$this->db->delete('relationships'); 
+				$this->db->delete('relationships');
 			}
 		}
-		
+
 		return $deleted_fields;
 	}
 
@@ -291,15 +291,15 @@ class Field_model extends CI_Model {
 	{
 		$field_types['file'] = array('image');
 		$field_types['text'] = array('integer', 'numeric', 'decimal');
-		
+
 		if ($parent)
 		{
 			return (isset($field_types[$parent])) ? $field_types[$parent] : FALSE;
 		}
-		
+
 		return $field_types;
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -315,10 +315,10 @@ class Field_model extends CI_Model {
 		$this->db->from('channels');
 		$this->db->where('site_id', $this->config->item('site_id'));
 		$this->db->where('field_group', $group_id);
-		
+
 		return $this->db->get();
 	}
-	
+
 
 }
 

@@ -4,14 +4,14 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
 
-// ------------------------------------------------------------------------ 
+// ------------------------------------------------------------------------
 /**
  * ExpressionEngine Snippet Model
  *
@@ -34,7 +34,7 @@ class Snippet_model extends CI_Model {
 	 * 							May be used to get specific Snippet_Entities
 	 *							like ``array('site_id'=>1)`` or
 	 *							``array('snippet_id'=>20, 'site_id'=>1)``.
-	 * 
+	 *
 	 * @return	Snippet_Entity[]	An array of populated Snippet_Entity objects.
 	 */
 	public function fetch(array $fields=array())
@@ -80,8 +80,8 @@ class Snippet_model extends CI_Model {
 
 			$this->db->update('snippets', $data);
 			return TRUE;
-		}		
-		else 
+		}
+		else
 		{
 			$this->db->insert('snippets', $data);
 			$entity->snippet = $this->db->insert_id();
@@ -126,7 +126,7 @@ class Snippet_Entity {
 	 * Constructs a Snippet Entity.  If a database result row is passed in
 	 * associative array form, it is used to initialize the entity.
 	 *
-	 * @param mixed[]	Optional.  A single DB_result associative array. 
+	 * @param mixed[]	Optional.  A single DB_result associative array.
 	 * 					As retrieved from DB_result::result_array()
 	 */
 	public function __construct(array $snippets_row = array())
@@ -144,7 +144,7 @@ class Snippet_Entity {
 	 * Magic Getter for Property Access
 	 *
 	 * Only allows access to properties that exist.
-	 */		
+	 */
 	public function __get($name)
 	{
 		if ( strpos('_', $name) === 0  OR ! property_exists($this, $name))

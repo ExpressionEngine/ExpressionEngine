@@ -6,7 +6,7 @@
  *
  * @package		CodeIgniter
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc.
  * @license		http://codeigniter.com/user_guide/license.html
  * @link		http://codeigniter.com
  * @since		Version 1.0
@@ -93,12 +93,12 @@ if ( ! function_exists('elements'))
 	function elements($items, $array, $default = FALSE)
 	{
 		$return = array();
-		
+
 		if ( ! is_array($items))
 		{
 			$items = array($items);
 		}
-		
+
 		foreach ($items as $item)
 		{
 			if (isset($array[$item]))

@@ -4,13 +4,13 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -23,9 +23,9 @@
  * @link		http://ellislab.com
  */
 class Layout {
-	
+
 	var $custom_layout_fields = array();
-	
+
 	/**
 	 * Constructor
 	 *
@@ -42,28 +42,28 @@ class Layout {
 	function duplicate_layout($dupe_id, $channel_id)
 	{
 		ee()->load->model('member_model');
-		
+
 		$layouts = ee()->member_model->get_all_group_layouts(array($dupe_id));
-		
+
 		if (empty($layouts))
 		{
 			return;
 		}
-		
+
 		// open each one
 		foreach ($layouts as $layout)
 		{
 			$layout['field_layout'];
-			
+
 			ee()->db->set("site_id", $layout['site_id']);
 			ee()->db->set("channel_id", $channel_id);
 			ee()->db->set("field_layout", $layout['field_layout']);
 			ee()->db->set("member_group", $layout['member_group']);
 
 			ee()->db->insert('layout_publish');
-		}			
+		}
 	}
-	
+
 	function delete_channel_layouts($channel_id)
 	{
 		ee()->load->model('member_model');
@@ -73,17 +73,17 @@ class Layout {
 	function edit_layout_fields($field_info, $channel_id)
 	{
 		ee()->load->model('layout_model');
-		
+
 		if ( ! is_array($channel_id))
 		{
 			$channel_id = array($channel_id);
 		}
-		
+
 		ee()->layout_model->edit_layout_fields($field_info, 'edit_fields', $channel_id);
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Updates saved publish layouts
 	 *
@@ -102,16 +102,16 @@ class Layout {
 		$show_fields = '';
 		$show_tab_fields = array();
 		$delete_fields = array();
-		
+
 		$default_settings = array(
 			'visible'		=> TRUE,
 			'collapse'		=> FALSE,
 			'htmlbuttons'	=> FALSE,
 			'width'			=> '100%'
 		);
-		
+
 		$layout_fields = array('enable_versioning', 'comment_system_enabled');
-		
+
 
 		foreach ($layout_fields as $field)
 		{
@@ -120,15 +120,15 @@ class Layout {
 				$new_settings[$field] = $fields[$field];
 			}
 		}
-		
+
 		ee()->db->select('enable_versioning, comment_system_enabled');
 		ee()->db->where('channel_id', $channel_id);
 		$current = ee()->db->get('channels');
-		
+
 		if ($current->num_rows() > 0)
 		{
-			$row = $current->row_array(); 
-			
+			$row = $current->row_array();
+
 			foreach ($new_settings as $field => $val)
 			{
 				if ($val != $row[$field]) // Undefined index: show_author_menu
@@ -137,7 +137,7 @@ class Layout {
 				}
 			}
 		}
-		
+
 		if ( ! empty ($changed))
 		{
 			foreach ($changed as $field => $val)
@@ -170,13 +170,13 @@ class Layout {
 					}
 			}
 		}
-		
+
 		if ( ! empty($hide_tab_fields))
 		{
 			//ee()->layout_model->edit_layout_fields($hide_tab_fields, 'hide_tab_fields', $channel_id, TRUE);
 			ee()->layout_model->update_layouts($hide_tab_fields, 'delete_tabs', $channel_id);
 		}
-		
+
 		if ( ! empty($show_tab_fields))
 		{
 			//ee()->layout_model->edit_layout_fields($show_tab_fields, 'show_tab_fields', $channel_id, TRUE);
@@ -191,9 +191,9 @@ class Layout {
 		return;
 	}
 
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Updates saved publish layouts
 	 *
@@ -207,28 +207,28 @@ class Layout {
 		{
 			return FALSE;
 		}
-		
+
 		foreach ($tabs as $key => $val)
 		{
 			if ($namespace != '')
-			{			
+			{
 				foreach ($val as $field_name => $data)
 				{
 					$tabs[$key][$namespace.'__'.$field_name] = $data;
 					unset($tabs[$key][$field_name]);
 				}
 			}
-			
+
 			$clean_tabs[strtolower($key)] = $tabs[$key];
 		}
-		
+
 		ee()->load->model('layout_model');
 
 		return ee()->layout_model->update_layouts($clean_tabs, 'delete_tabs', $channel_id);
-	}	
+	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Add new tabs and associated fields to saved publish layouts
 	 *
@@ -246,7 +246,7 @@ class Layout {
 		foreach ($tabs as $key => $val)
 		{
 			if ($namespace != '')
-			{			
+			{
 				foreach ($val as $field_name => $data)
 				{
 					$tabs[$key][$namespace.'__'.$field_name] = $data;
@@ -265,7 +265,7 @@ class Layout {
 
 	// --------------------------------------------------------------------
 
-	
+
 	/**
 	 * Adds new fields to the saved publish layouts, creating the default tab if required
 	 *
@@ -280,7 +280,7 @@ class Layout {
 		{
 			$channel_id = array($channel_id);
 		}
-		
+
 		if ( ! is_array($tabs) OR count($tabs) == 0)
 		{
 			return FALSE;
@@ -292,12 +292,12 @@ class Layout {
 		}
 
 		ee()->load->model('layout_model');
-		
+
 		return ee()->layout_model->update_layouts($clean_tabs, 'add_fields', $channel_id);
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Deletes fields from the saved publish layouts
 	 *
@@ -314,9 +314,9 @@ class Layout {
 		}
 
 		$clean_tabs = array();
-		
+
 		// note- this is a simple array of field ids- so let's break them down to that before sending them on
-		
+
 		if ( ! is_array($tabs))
 		{
 			$clean_tabs = array($tabs);
@@ -342,9 +342,9 @@ class Layout {
 				}
 			}
 		}
-		
+
 		ee()->load->model('layout_model');
-	
+
 		return ee()->layout_model->update_layouts($clean_tabs, 'delete_fields', $channel_id);
 	}
 }

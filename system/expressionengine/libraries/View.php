@@ -4,13 +4,13 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -31,7 +31,7 @@ class View {
 	protected $_data = array();
 	protected $_disabled = array();
 	protected $_disable_up = array();
-	
+
 	/**
 	 * Constructor
 	 *
@@ -41,9 +41,9 @@ class View {
 	{
 		$this->EE =& get_instance();
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Set Theme
 	 *
@@ -56,15 +56,15 @@ class View {
 		{
 			return;
 		}
-		
+
 		$this->_theme = $cp_theme;
-		
+
 		ee()->session->userdata['cp_theme'] = $cp_theme;
 		ee()->load->add_theme_cascade(PATH_CP_THEME.$cp_theme.'/');
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Render output (html)
 	 *
@@ -103,7 +103,7 @@ class View {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Extend a template or view
 	 *
@@ -169,15 +169,15 @@ class View {
 	{
 		return '<title>' . $title . ' | ExpressionEngine</title>'.PHP_EOL;
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
 	 * Script tag
 	 *
-	 * This function will return a script tag for use the control panel.  It will 
+	 * This function will return a script tag for use the control panel.  It will
 	 * include a v= query string with the filemtime, so farfuture expires headers
-	 * can be sent 
+	 * can be sent
 	 *
 	 * @param 	string		Javascript File, relative to themes/javascript/<src/compressed>/jquery
 	 * @return 	string 		script tag
@@ -185,23 +185,23 @@ class View {
 	public function script_tag($file)
 	{
 		$src_dir = (ee()->config->item('use_compressed_js') == 'n') ? 'src/' : 'compressed/';
-		
+
 		$path = PATH_THEMES.'javascript/'.$src_dir.$file;
-		
+
 		if ( ! file_exists($path))
 		{
 			return NULL;
 		}
-		
+
 		$filemtime = filemtime($path);
-		
+
 		$url = ee()->config->item('theme_folder_url') . 'javascript/' . $src_dir . $file . '?v=' . $filemtime;
-		
+
 		return '<script type="text/javascript" src="' . $url . '"></script>'.PHP_EOL;
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Head Link
 	 *
@@ -210,23 +210,23 @@ class View {
 	 *
 	 * @param 	string		CSS file, relative to the themes/cp_themes/<theme> directory.
 	 * @param	string		produces "media='screen'" by default
-	 * @return 	string		returns the link string.	
+	 * @return 	string		returns the link string.
 	 */
 	public function head_link($file, $media = 'screen')
 	{
 		$filemtime = NULL;
 		$file_url  = NULL;
-		
+
 		$css_paths = array(
 			PATH_CP_THEME.$this->_theme.'/',
 			PATH_CP_THEME.'default/'
 		);
-		
+
 		if ($this->_theme == 'default')
 		{
 			array_shift($css_paths);
 		}
-				
+
 		foreach($css_paths as $path)
 		{
 			if (file_exists($path.$file))
@@ -246,12 +246,12 @@ class View {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Get themes URL from supplied system path
 	 *
 	 * this function will extract which theme we will be loading the file from.
-	 * 
+	 *
 	 * @access protected
 	 * @param 	string	system path of the file.
 	 * @return 	string	the URL
@@ -259,14 +259,14 @@ class View {
 	protected function _get_theme_from_path($path)
 	{
 		$path = '/'.trim($path, '/');
-		
+
 		$theme_name = ltrim(strrchr($path, '/'), '/');
 
-		return ee()->config->item('theme_folder_url') . 'cp_themes/' . $theme_name . '/';		
+		return ee()->config->item('theme_folder_url') . 'cp_themes/' . $theme_name . '/';
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Clear the class
 	 *
@@ -289,7 +289,7 @@ class View {
 	{
 		$this->_data[$key] = $value;
 	}
-	
+
 	public function __get($key)
 	{
 		return isset($this->_data[$key]) ? $this->_data[$key] : NULL;

@@ -16,15 +16,15 @@ $plugin_info = array(
  * @package			ExpressionEngine
  * @category		Plugin
  * @author			EllisLab Dev Team
- * @copyright		Copyright (c) 2004 - 2013, EllisLab, Inc.
+ * @copyright		Copyright (c) 2004 - 2014, EllisLab, Inc.
  * @link			http://ellislab.com
  */
 
 
 class Xml_encode {
 
-	var $return_data;	
-	
+	var $return_data;
+
 	/**
 	 * Constructor
 	 *
@@ -32,25 +32,25 @@ class Xml_encode {
 	function Xml_encode($str = '')
 	{
 		$this->EE =& get_instance();
-		
+
 		$protect_all = (ee()->TMPL->fetch_param('protect_entities') === 'yes') ? TRUE : FALSE;
-		
+
 		$str = ($str == '') ? ee()->TMPL->tagdata : $str;
-		
+
 		// Load the XML Helper
 		ee()->load->helper('xml');
-		
+
 		$str = xml_convert(strip_tags($str), $protect_all);
-		
+
 		// Strip [email] tags
 		$str = preg_replace("/\[email=(.*?)\](.*?)\[\/email\]/i", '\\2', $str);
 		$str = preg_replace("/\[email\](.*?)\[\/email\]/i", '\\1', $str);
-		
+
 		$this->return_data = trim(str_replace('&nbsp;', '&#160;', $str));
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Usage
 	 *
@@ -61,7 +61,7 @@ class Xml_encode {
 	 */
 	function usage()
 	{
-		ob_start(); 
+		ob_start();
 		?>
 			This plugin converts reserved XML characters to entities.  It is used in the RSS templates.
 
@@ -86,21 +86,21 @@ class Xml_encode {
 			{exp:xml_encode protect_entities="yes"}Text &amp; Entities{/exp:xml_encode}
 
 			results in: Text &amp; Entities
-	
+
 			Version 1.3
 		******************
 		- Updated plugin to be 2.0 compatible
 
 		<?php
 		$buffer = ob_get_contents();
-	
-		ob_end_clean(); 
+
+		ob_end_clean();
 
 		return $buffer;
 	}
 
 	// --------------------------------------------------------------------
-	
+
 }
 // END CLASS
 

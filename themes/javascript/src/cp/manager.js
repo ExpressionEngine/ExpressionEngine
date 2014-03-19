@@ -3,7 +3,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -67,6 +67,28 @@ function access_edit_ajax(element) {
 			payload.push({
 				template_id: template_id,
 				enable_http_auth: el.val()
+			});
+		}
+		// Handle template route
+		else if (el.attr('name').substr(0, 14) === 'template_route')
+		{
+			template_id = (el.attr('name').substr(15))
+				? el.attr('name').substr(15) : $('input:hidden[name=template_id]').val();
+
+			payload.push({
+				template_id: template_id,
+				template_route: el.val()
+			});
+		}
+		// Handle template route required
+		else if (el.attr('name').substr(0, 14) === 'route_required')
+		{
+			template_id = (el.attr('name').substr(15))
+				? el.attr('name').substr(15) : $('input:hidden[name=template_id]').val();
+
+			payload.push({
+				template_id: template_id,
+				route_required: el.val()
 			});
 		}
 		// Handle member group permissions for this template
@@ -307,6 +329,20 @@ function bind_prefs_events() {
 				'name': 'enable_http_auth_' + template_id
 			});
 
+			// template route
+			headerrow.find(".template_route").val(rowdata.template_route);
+			headerrow.find('.template_route').attr({
+				'id': 'template_route_' + template_id,
+				'name': 'template_route_' + template_id
+			});
+
+			// template route required
+			headerrow.find(".route_required").val(rowdata.route_required);
+			headerrow.find('.route_required').attr({
+				'id': 'route_required_' + template_id,
+				'name': 'route_required_' + template_id
+			});
+
 			// Set data, ids, and names
 
 			// Radio Buttons
@@ -386,26 +422,6 @@ function bind_prefs_events() {
 			$(currentrow).after(headerrow);
 		}
 
-		// Template editor page?
-		if (! prefs_template || ! access_template)
-		{
-			tables = $('#templateAccess, #templatePreferences');
-			template_id = $('input:hidden[name=template_id]').val();
-			group_id = $('input:hidden[name=group_id]').val();
-
-			$('#templatePreferences').data('ajax_ids', {'id': template_id, 'group_id': group_id});
-
-			all_checkbox_toggles($('#templateAccess'));
-
-			tables.find('input:text').unbind('blur.manager_updated').bind('blur.manager_updated', template_edit_ajax);
-			tables.find('input:radio').unbind('click.manager_updated').bind('click.manager_updated', template_edit_ajax);
-			tables.find('select').unbind('change.manager_updated').bind('change.manager_updated', template_edit_ajax);
-
-			return;
-		}
-
-		$('#prefRowTemplate, #accessRowTemplate').remove();
-
 		// Expose the three click callback functions - events bound in the controller
 		EE.manager = {
 			refreshPrefs: function (id) {
@@ -438,6 +454,26 @@ function bind_prefs_events() {
 				return false;
 			}
 		};
+
+		// Template editor page?
+		if (! prefs_template || ! access_template)
+		{
+			tables = $('#templateAccess, #templatePreferences');
+			template_id = $('input:hidden[name=template_id]').val();
+			group_id = $('input:hidden[name=group_id]').val();
+
+			$('#templatePreferences').data('ajax_ids', {'id': template_id, 'group_id': group_id});
+
+			all_checkbox_toggles($('#templateAccess'));
+
+			tables.find('input:text').unbind('blur.manager_updated').bind('blur.manager_updated', template_edit_ajax);
+			tables.find('input:radio').unbind('click.manager_updated').bind('click.manager_updated', template_edit_ajax);
+			tables.find('select').unbind('change.manager_updated').bind('change.manager_updated', template_edit_ajax);
+
+			return;
+		}
+
+		$('#prefRowTemplate, #accessRowTemplate').remove();
 	});
 
 	$('.last_edit').css('opacity', 0).show();

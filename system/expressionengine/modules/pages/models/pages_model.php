@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -51,17 +51,17 @@ class Pages_model extends CI_Model {
      *
      * @access public
      * @return array
-     */	
+     */
 	function fetch_site_pages_config()
 	{
         $this->db->select();
         $this->db->where('site_id', $this->config->item('site_id'));
-        
-        return $this->db->get('pages_configuration');   
+
+        return $this->db->get('pages_configuration');
 	}
 
 // ------------------------------------------------------------------------
-	
+
 	/**
 	 * Fetch Site Pages
 	 *
@@ -82,7 +82,7 @@ class Pages_model extends CI_Model {
 // ------------------------------------------------------------------------
 
 	/**
-	 * Update Pages Configuration 
+	 * Update Pages Configuration
 	 *
 	 * @access public
 	 * @param array
@@ -102,7 +102,7 @@ class Pages_model extends CI_Model {
 							);
 
 			$this->db->insert('pages_configuration', $config);
-		}	    
+		}
 	}
 
 // ------------------------------------------------------------------------
@@ -120,12 +120,12 @@ class Pages_model extends CI_Model {
 	    $num = 0;
 
         $pages = $this->fetch_site_pages();
-        
-        if ( ! $pages) 
+
+        if ( ! $pages)
         {
-            return FALSE; 
+            return FALSE;
         }
-        
+
 		foreach($pages[$this->config->item('site_id')]['uris'] as $entry_id => $value)
 		{
 			if (isset($delete_ids[$entry_id]))
@@ -137,11 +137,11 @@ class Pages_model extends CI_Model {
 		}
 
 		$this->config->set_item('site_pages', $pages);
-	    
+
 		$this->db->set('site_pages', base64_encode(serialize($pages)));
 		$this->db->where('site_id', $this->config->item('site_id'));
 		$this->db->update('sites');
-		
+
 		return $num;
 	}
 }

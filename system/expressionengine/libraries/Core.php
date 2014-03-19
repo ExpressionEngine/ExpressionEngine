@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -86,8 +86,8 @@ class EE_Core {
 		// application constants
 		define('IS_CORE',		FALSE);
 		define('APP_NAME',		'ExpressionEngine'.(IS_CORE ? ' Core' : ''));
-		define('APP_BUILD',		'20131210');
-		define('APP_VER',		'2.7.3');
+		define('APP_BUILD',		'20140314');
+		define('APP_VER',		'2.8.1');
 		define('SLASH',			'&#47;');
 		define('LD',			'{');
 		define('RD',			'}');
@@ -118,23 +118,8 @@ class EE_Core {
 
 		ee()->config->site_prefs(ee()->config->item('site_name'));
 
-		// force EE's db cache path - do this AFTER site prefs have been assigned
-		// Due to CI's DB_cache handling- suffix with site id
-		ee()->db->cache_set_path(APPPATH.'cache/db_cache_'.ee()->config->item('site_id'));
-
-		// make sure the DB cache folder exists if we're caching!
-		if (ee()->db->cache_on === TRUE &&
-			! @is_dir(APPPATH.'cache/db_cache_'.ee()->config->item('site_id')))
-		{
-			@mkdir(APPPATH.'cache/db_cache_'.ee()->config->item('site_id'), DIR_WRITE_MODE);
-
-			if ($fp = @fopen(APPPATH.'cache/db_cache_'.ee()->config->item('site_id').'/index.html', FOPEN_WRITE_CREATE_DESTRUCTIVE))
-			{
-				fclose($fp);
-			}
-
-			@chmod(APPPATH.'cache/db_cache_'.ee()->config->item('site_id'), DIR_WRITE_MODE);
-		}
+		// Load the default caching driver
+		ee()->load->driver('cache');
 
 		// this look backwards, but QUERY_MARKER is only used where we MUST
 		// have a ?, and do not want to double up
@@ -153,8 +138,13 @@ class EE_Core {
 		{
 			$cookie_prefix = ee()->config->item('cookie_prefix');
 			$cookie_path  = ee()->config->item('cookie_path');
-			$cookie_domain =  ee()->config->item('cookie_domain');		
+			$cookie_domain =  ee()->config->item('cookie_domain');
 			$cookie_httponly = ee()->config->item('cookie_httponly');
+
+			if ($cookie_prefix)
+			{
+				$cookie_prefix .= '_';
+			}
 
 			if (! empty($last_site_id) && is_numeric($last_site_id) && $last_site_id != ee()->config->item('site_id'))
 			{
@@ -163,7 +153,7 @@ class EE_Core {
 
 			ee()->config->cp_cookie_prefix = $cookie_prefix;
 			ee()->config->cp_cookie_path  = $cookie_path;
-			ee()->config->cp_cookie_domain =  $cookie_domain;	
+			ee()->config->cp_cookie_domain =  $cookie_domain;
 			ee()->config->cp_cookie_httponly = $cookie_httponly;
 		}
 
@@ -177,6 +167,17 @@ class EE_Core {
 		{
 			ee()->config->set_item('index_page', ee()->config->item('site_index'));
 		}
+
+		if (IS_CORE)
+		{
+			ee()->config->set_item('enable_template_routes', 'n');
+		}
+
+		// Backwards compatibility for the removed secure forms setting.
+		// Developers are still checking against this key, so we'll wait some
+		// time before removing it.
+		$secure_forms = (bool_config_item('disable_csrf_protection')) ? 'n' : 'y';
+		ee()->config->set_item('secure_forms', $secure_forms);
 
 		// Set the path to the "themes" folder
 		if (ee()->config->item('theme_folder_path') !== FALSE &&
@@ -426,10 +427,22 @@ class EE_Core {
 
 		// Show the control panel home page in the event that a
 		// controller class isn't found in the URL
-		if (ee()->router->fetch_class() == '' OR
-			! isset($_GET['S']))
+		if (ee()->router->fetch_class() == ''/* OR
+			! isset($_GET['S'])*/)
 		{
 			ee()->functions->redirect(BASE.AMP.'C=homepage');
+		}
+
+		if (ee()->uri->segment(1) == 'cp')
+		{
+			// new url, restore old style get
+			$get = array_filter(array(
+				'D' => 'cp',
+				'C' => ee()->uri->segment(2),
+				'M' => ee()->uri->segment(3)
+			));
+
+			$_GET = array_merge($get, $_GET);
 		}
 
 
@@ -526,19 +539,7 @@ class EE_Core {
 	 */
 	private function _somebody_set_us_up_the_base()
 	{
-		$s = 0;
-
-		switch (ee()->config->item('admin_session_type'))
-		{
-			case 's'	:
-				$s = ee()->session->userdata('session_id', 0);
-				break;
-			case 'cs'	:
-				$s = ee()->session->userdata('fingerprint', 0);
-				break;
-		}
-
-		define('BASE', SELF.'?S='.$s.'&amp;D=cp'); // cp url
+		define('BASE', SELF.'?S='.ee()->session->session_id().'&amp;D=cp'); // cp url
 	}
 
 	// ------------------------------------------------------------------------
@@ -751,7 +752,6 @@ class EE_Core {
 				ee()->db->delete('throttle');
 			}
 
-			ee()->functions->clear_spam_hashes();
 			ee()->functions->clear_caching('all');
 		}
 	}
@@ -771,18 +771,21 @@ class EE_Core {
 	final public function process_secure_forms($flags = EE_Security::CSRF_STRICT)
 	{
 		// Secure forms stuff
-		if( ! ee()->security->have_valid_xid($flags))
+		if ( ! ee()->security->have_valid_xid($flags))
 		{
+			ee()->output->set_status_header(403);
+
 			if (REQ == 'CP')
 			{
-				$this->_somebody_set_us_up_the_base();
-				ee()->session->set_flashdata('message_failure', lang('invalid_action'));
-				ee()->functions->redirect(BASE);
+				if (AJAX_REQUEST)
+				{
+					header('X-EE-Broadcast: modal');
+				}
+
+				show_error(lang('csrf_token_expired'));
 			}
-			else
-			{
-				ee()->output->show_user_error('general', array(lang('invalid_action')));
-			}
+
+			ee()->output->show_user_error('general', array(lang('csrf_token_expired')));
 		}
 	}
 }

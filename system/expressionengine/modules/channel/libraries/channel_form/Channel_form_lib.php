@@ -6,7 +6,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team,
  * 		- Original Development by Barrett Newton -- http://barrettnewton.com
- * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -58,7 +58,6 @@ class Channel_form_lib
 	public $native_variables;
 	public $option_fields;
 	public $parse_variables;
-	public $preserve_checkboxes;
 	public $post_error_callbacks;
 	public $require_save_call;
 	public $settings;
@@ -82,8 +81,8 @@ class Channel_form_lib
 	private $all_params = array(
 		'allow_comments', 'author_only', 'channel', 'class', 'datepicker',
 		'dynamic_title', 'entry_id', 'error_handling', 'id', 'include_jquery',
-		'json', 'logged_out_member_id', 'preserve_checkboxes', 'require_entry',
-		'return', 'return_X', 'rules', 'rte_selector', 'rte_toolset_id', 'include_assets',
+		'json', 'logged_out_member_id', 'require_entry', 'return', 'return_X',
+		'rules', 'rte_selector', 'rte_toolset_id', 'include_assets',
 		'secure_action', 'secure_return', 'site', 'url_title', 'use_live_url'
 	);
 
@@ -238,7 +237,7 @@ class Channel_form_lib
 
 		if ($this->datepicker)
 		{
-			ee()->javascript->output('$.datepicker.setDefaults({dateFormat:$.datepicker.W3C+EE.date_obj_time});');
+			ee()->javascript->output('$.datepicker.setDefaults({dateFormat:"'.ee()->localize->datepicker_format().'"+EE.date_obj_time});');
 		}
 
 		//decide which fields to show, based on pipe delimited list of field id's and/or field short names
@@ -376,10 +375,14 @@ class Channel_form_lib
 			ee()->javascript->output('$.each(EE.markItUpFields,function(a){$("#"+a).markItUp(mySettings);});');
 		}
 
-		// We'll store all checkbox fieldnames in here, so that in case one
-		// has preserve_checkboxes set to "yes" but still needs to edit
-		// checkboxes that have the potential to be blank, the field can be
-		// updated while preserving the checkboxes that aren't on screen
+		// Since empty checkbox arrays don't show up in POST at all, we
+		// fill them in with their old values to preserve them in case they
+		// weren't on screen at all, in the instance someone is using
+		// Channel Form to update a partial entry (not including all fields
+		// in the form); but for the cases where the checkbox fields are
+		// present on screen and are left blank, we need to keep track of
+		// which fields those are here so we don't repopulate them with
+		// their old values
 		$checkbox_fields = array();
 
 		foreach (ee()->TMPL->var_pair as $tag_pair_open => $tagparams)
@@ -575,9 +578,7 @@ class Channel_form_lib
 		{
 			$this->parse_variables['title']		= $this->channel('default_entry_title');
 			$this->parse_variables['url_title'] = $this->channel('url_title_prefix');
-
 			$this->parse_variables['allow_comments'] = ($this->channel('deft_comments') == 'n' OR $this->channel('comment_system_enabled') != 'y') ? '' : "checked='checked'";
-
 
 			if ($this->datepicker)
 			{
@@ -610,6 +611,12 @@ class Channel_form_lib
 
 					$this->parse_variables['comment_expiration_date'] = $comment_expiration_date;
 				}
+			}
+			else
+			{
+				$this->parse_variables['entry_date'] = ee()->localize->human_time();
+				$this->parse_variables['expiration_date'] = '';
+				$this->parse_variables['comment_expiration_date'] = '';
 			}
 
 			foreach ($this->custom_fields as $field)
@@ -729,12 +736,10 @@ class Channel_form_lib
 		// build the form
 
 		$RET = ee()->functions->fetch_current_uri();
-		$XID = ( ! isset($_POST['XID'])) ? '' : $_POST['XID'];
 
 		$hidden_fields = array(
 			'RET'	  				=> $RET,
 			'URI'	  				=> (ee()->uri->uri_string == '') ? 'index' : ee()->uri->uri_string,
-			'XID'	  				=> $XID,
 			'return_url'			=> (isset($_POST['return_url'])) ? $_POST['return_url'] : ee()->TMPL->fetch_param('return'),
 			'author_id'				=> ee()->session->userdata('member_id'),
 			'channel_id'			=> $this->channel('channel_id'),
@@ -944,7 +949,8 @@ class Channel_form_lib
 		{
 			if ($key == 'EE')
 			{
-				$value['XID'] = '{XID_HASH}';
+				$value['XID'] = '{csrf_token}';
+				$value['CSRF_TOKEN'] = '{csrf_token}';
 
 				$this->head .= 'if (typeof EE == "undefined" || ! EE) { '."\n".'var EE = '.json_encode($value).';}'."\n";
 				$this->head .= <<<GRID_FALLBACK
@@ -966,6 +972,7 @@ GRID_FALLBACK;
 		}
 
 		$this->head .= "\n".' // ]]>'."\n".'</script>';
+		$js_file_strings = array();
 
 		$js_defaults = array(
 			'file' => array('underscore'),
@@ -1062,7 +1069,8 @@ GRID_FALLBACK;
 			else
 			{
 				$mtime[] = ee()->cp->_get_js_mtime($type, $files);
-				ee()->cp->js_files[$type] = implode(',', $files);
+				ee()->cp->js_files[$type] = $files;
+				$js_file_strings[$type] = implode(',', $files);
 			}
 		}
 
@@ -1092,7 +1100,7 @@ GRID_FALLBACK;
 			$this->head .= '<script type="text/javascript" src="'.$js_url.'"></script>'."\n";
 		}
 
-		$this->head .= '<script type="text/javascript" charset="utf-8" src="'.ee()->functions->fetch_site_index().QUERY_MARKER.'ACT='.ee()->functions->fetch_action_id('Channel', 'combo_loader').'&'.str_replace(array('%2C', '%2F'), array(',', '/'), http_build_query(ee()->cp->js_files)).'&v='.max($mtime).$use_live_url.$include_jquery.'"></script>'."\n";
+		$this->head .= '<script type="text/javascript" charset="utf-8" src="'.ee()->functions->fetch_site_index().QUERY_MARKER.'ACT='.ee()->functions->fetch_action_id('Channel', 'combo_loader').'&'.str_replace(array('%2C', '%2F'), array(',', '/'), http_build_query($js_file_strings)).'&v='.max($mtime).$use_live_url.$include_jquery.'"></script>'."\n";
 
 		//add fieldtype styles
 		foreach (ee()->cp->its_all_in_your_head as $item)
@@ -1343,7 +1351,7 @@ GRID_FALLBACK;
 		//just to prevent any errors
 		if ( ! defined('BASE'))
 		{
-			$s = (ee()->config->item('admin_session_type') != 'c') ? ee()->session->userdata('session_id') : 0;
+			$s = (ee()->config->item('cp_session_type') != 'c') ? ee()->session->userdata('session_id') : 0;
 			define('BASE', SELF.'?S='.$s.'&amp;D=cp');
 		}
 
@@ -1621,10 +1629,7 @@ GRID_FALLBACK;
 				{
 					if ($this->entry($field) !== FALSE)
 					{
-						if ( ! in_array($field, $this->checkboxes) || $this->_meta['preserve_checkboxes'])
-						{
-							$_POST[$field] = $this->entry($field);
-						}
+						$_POST[$field] = $this->entry($field);
 					}
 				}
 			}
@@ -1811,8 +1816,6 @@ GRID_FALLBACK;
 					$this->entry[$field] = ee()->localize->string_to_timestamp($this->entry($field));
 				}
 			}
-
-			ee()->security->restore_xid();
 
 			ee()->core->generate_page();
 			return;
@@ -2649,8 +2652,6 @@ GRID_FALLBACK;
 			$this->_meta[$name] = (isset($this->_meta[$name])) ? $this->_meta[$name] : FALSE;
 		}
 
-		$this->preserve_checkboxes = (isset($this->_meta['preserve_checkboxes'])) ? $this->_meta['preserve_checkboxes'] : FALSE;
-
 		// Should be y or FALSE for allow_comments
 		// We do this here so they can be set via form input when not specified as a param
 		// This pains me, but go with it for now for consistency
@@ -2767,7 +2768,7 @@ GRID_FALLBACK;
 				{
 					$row = trim($row);
 
-					if ( ! $row)
+					if ($row == '')
 					{
 						continue;
 					}
