@@ -24,17 +24,17 @@
  */
 class EE_Functions {
 
-	var $seed 				= FALSE; // Whether we've seeded our rand() function.  We only seed once per script execution
-	var $cached_url			= array();
-	var $cached_path		= array();
-	var $cached_index		= array();
-	var $cached_captcha		= '';
-	var $template_map		= array();
-	var $template_type		= '';
-	var $action_ids			= array();
-	var $file_paths	 		= array();
-	var $conditional_debug = FALSE;
-	var $catfields			= array();
+	public $seed              = FALSE; // Whether we've seeded our rand() function.  We only seed once per script execution
+	public $cached_url        = array();
+	public $cached_path       = array();
+	public $cached_index      = array();
+	public $cached_captcha    = '';
+	public $template_map      = array();
+	public $template_type     = '';
+	public $action_ids        = array();
+	public $file_paths        = array();
+	public $conditional_debug = FALSE;
+	public $catfields         = array();
 
 	/**
 	 * Constructor
@@ -2674,35 +2674,11 @@ class EE_Functions {
 	 */
 	function fetch_file_paths()
 	{
-		if ( ! empty($this->file_paths))
-		{
-			return $this->file_paths;
-		}
-
-		// if $this->file_paths === FALSE,
-		// we've queried and have nuttin
-		if ($this->file_paths === FALSE)
-		{
-			return array();
-		}
+		ee()->load->library('logger');
+		ee()->logger->deprecated('3.0', 'File_upload_preferences_model::get_paths()');
 
 		ee()->load->model('file_upload_preferences_model');
-		$upload_prefs = ee()->file_upload_preferences_model->get_file_upload_preferences(NULL, NULL, TRUE);
-
-		if (count($upload_prefs) == 0)
-		{
-			// Set $this->file_paths to FALSE so we check for it
-			// the next time through a coupla lines up.
-			// by default it's array().
-			$this->file_paths = FALSE;
-			return array();
-		}
-
-		foreach ($upload_prefs as $row)
-		{
-			$this->file_paths[$row['id']] = $row['url'];
-		}
-
+		$this->file_paths = $this->file_upload_preferences_model->get_paths();
 		return $this->file_paths;
 	}
 
