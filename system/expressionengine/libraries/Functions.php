@@ -2354,7 +2354,7 @@ class EE_Functions {
 
 	/**
 	 * Checks a conditional to ensure it isn't trying to do something unsafe:
-	 * e.g looks for unquoted backticks (`)
+	 * e.g looks for unquoted backticks (`) and PHP comments
 	 *
 	 * @access	public
 	 * @param	string	$str	The conditional string for parsig
@@ -2453,6 +2453,7 @@ class EE_Functions {
 
 		if (preg_match_all("/".preg_quote(LD)."((if:else)*if)\s+(.*?)".preg_quote(RD)."/s", $str, $matches))
 		{
+			// Catch unsafe conditionals and exit with an error
 			foreach ($matches[3] as $match)
 			{
 				if ($this->conditional_is_unsafe($match))
