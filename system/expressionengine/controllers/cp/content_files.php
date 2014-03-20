@@ -848,7 +848,7 @@ class Content_files extends CP_Controller {
 		// Droppable is in here because of publish_tabs
 		$this->cp->add_js_script(array(
 			'ui'		=> array('droppable'),
-			'file'		=> array('cp/publish_tabs')
+			'file'		=> array('cp/publish_tabs', 'cp/category_editor')
 		));
 
 		$this->cp->render('content/files/edit_file', $data);
