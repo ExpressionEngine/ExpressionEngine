@@ -2685,7 +2685,7 @@ class EE_Functions {
 					// Check for unparsed variables
 					if (trim($matches['s'][$i]) != '' && trim($matches['s'][$i]) != '^')
 					{
-						$x = preg_split("/\s+/", trim($matches['s'][$i]));
+						$x = preg_split("/(\.|\s+)/", trim($matches['s'][$i]));
 
 						for($j=0, $sj=count($x); $j < $sj; ++$j)
 						{
@@ -2716,6 +2716,7 @@ class EE_Functions {
 								// Set entire conditional to FALSE since it fails
 								$matches[3][$i] = 'FALSE';
 							}
+							$matches[3][$i] = str_replace('FALSE(', 'FALSE && (', $matches[3][$i]);
 						}
 					}
 				}
