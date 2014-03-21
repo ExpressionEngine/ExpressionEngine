@@ -2476,7 +2476,7 @@ class EE_Functions {
 			{
 				foreach($quote_matches[0] as $ii => $quote_match)
 				{
-					$md5_key = (string) hexdec($prep_id.md5($quote_match));
+					$md5_key = "'".base64_encode($prep_id.md5($quote_match))."'";
 					$protect[$quote_match] = $md5_key;
 
 					// To better protect quotes inside conditional quotes, we need to
@@ -2578,13 +2578,13 @@ class EE_Functions {
 								  '"';
 				}
 
-				$md5_key = (string) hexdec($prep_id.md5($key));
+				$md5_key = "'".base64_encode($prep_id.md5($key))."'";
 				$protect[$key] = $md5_key;
 				$switch[$md5_key] = $value;
 
 				if ($prefix != '')
 				{
-					$md5_key = (string) hexdec($prep_id.md5($prefix.$key));
+					$md5_key = "'".base64_encode($prep_id.md5($prefix.$key))."'";
 					$protect[$prefix.$key] = $md5_key;
 					$switch[$md5_key] = $value;
 				}
@@ -2639,11 +2639,6 @@ class EE_Functions {
 
 			if ($safety == 'y')
 			{
-				$matches['s'] = str_replace($protect, '^', $matches[3]);
-				$matches['s'] = preg_replace('/"(.*?)"/s', '^', $matches['s']);
-				$matches['s'] = preg_replace("/'(.*?)'/s", '^', $matches['s']);
-				$matches['s'] = str_replace($valid, '  ', $matches['s']);
-				$matches['s'] = preg_replace("/(^|\s+)[0-9]+(\s|$)/", ' ', $matches['s']); // Remove unquoted numbers
 				$done = array();
 			}
 
@@ -2668,57 +2663,79 @@ class EE_Functions {
 									  E_USER_WARNING);
 					}
 
-					//  If there are parentheses, then we
-					//  try to make sure they match up correctly.
-					$left  = substr_count($matches[3][$i], '(');
-					$right = substr_count($matches[3][$i], ')');
+					// Now we parse the conditional looking for things we do
+					// want. This should keep our conditionals safe and free
+					// of arbitrary code execution.
 
-					if ($left > $right)
-					{
-						$matches[3][$i] .= str_repeat(')', $left-$right);
-					}
-					elseif ($right > $left)
-					{
-						$matches[3][$i] = str_repeat('(', $right-$left).$matches[3][$i];
-					}
+					// This will show us how PHP will view the conditional.
+					$tokens = token_get_all('<?php ' . $matches[3][$i] . '?>');
 
-					// Check for unparsed variables
-					if (trim($matches['s'][$i]) != '' && trim($matches['s'][$i]) != '^')
-					{
-						$x = preg_split("/(\.|\s+)/", trim($matches['s'][$i]));
+					// Remove the opening and closing PHP tags
+					$tokens = array_slice($tokens, 1, count($tokens) - 2);
 
-						for($j=0, $sj=count($x); $j < $sj; ++$j)
+					$buffer = '';
+					$false_added = FALSE; // Prevent 'FALSEFALSE'
+
+					// We will now parse for allowed tokens, the rest are either
+					// stripped or converted to FALSE
+					foreach ($tokens as $token)
+					{
+						// Some elements of the $tokens array are single
+						// characters. We account for those here.
+						if ( ! is_array($token))
 						{
-							if ($x[$j] == '^') continue;
-
-							if (substr($x[$j], 0, 1) != '^')
+							switch ($token)
 							{
-								// We have an unset variable in the conditional.
-								// Set the unparsed variable to FALSE
-								$matches[3][$i] = str_replace($x[$j], 'FALSE', $matches[3][$i]);
-
-								if ($this->conditional_debug === TRUE)
-								{
-									trigger_error('Unset EE Conditional Variable ('.$x[$j].') : '.$matches[0][$i],
-												  E_USER_WARNING);
-								}
+								case '<':
+								case '>':
+								case '.':
+								case '(':
+								case ')':
+								case '%':
+									$false_added = FALSE;
+									$buffer .= $token;
+									break;
 							}
-							else
+						}
+						else
+						{
+							switch ($token[0])
 							{
-								// There is a partial variable match being done
-								// because they are doing something like segment_11
-								// when there is no such variable but there is a segment_1
-								// echo  $x[$j]."\n<br />\n";
-								trigger_error('Invalid EE Conditional Variable: '.
-											  $matches[0][$i],
-											  E_USER_WARNING);
+								case T_CONSTANT_ENCAPSED_STRING:
+								case T_WHITESPACE:
+								case T_BOOLEAN_AND:
+								case T_BOOLEAN_OR:
+								case T_LOGICAL_AND:
+								case T_LOGICAL_OR:
+								case T_LOGICAL_XOR:
+								case T_LNUMBER:
+								case T_DNUMBER:
+								case T_IS_EQUAL:
+								case T_IS_GREATER_OR_EQUAL:
+								case T_IS_IDENTICAL:
+								case T_IS_NOT_EQUAL:
+								case T_IS_NOT_IDENTICAL:
+								case T_IS_SMALLER_OR_EQUAL:
+									$false_added = FALSE;
+									$buffer .= $token[1];
+									break;
 
-								// Set entire conditional to FALSE since it fails
-								$matches[3][$i] = 'FALSE';
+								default:
+									if ( ! $false_added) {
+										$buffer .= 'FALSE';
+										$false_added = TRUE;
+										if ($this->conditional_debug === TRUE)
+										{
+											trigger_error('Unset EE Conditional Variable ('.$token.') : '.$matches[0][$i],
+														  E_USER_WARNING);
+										}
+									}
 							}
-							$matches[3][$i] = str_replace('FALSE(', 'FALSE && (', $matches[3][$i]);
 						}
 					}
+
+					$matches[3][$i] = str_replace('FALSE(', 'FALSE && (', $buffer);
+
 				}
 
 				$matches[3][$i] = LD.$matches[1][$i].' '.trim($matches[3][$i]).RD;
