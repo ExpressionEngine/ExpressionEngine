@@ -16,6 +16,8 @@ themes/third_party/
 code_coverage/
 system/tests/phpunit/vendor/
 system/tests/phpunit/composer.lock
+system/tests/rspec/config.local.rb
+system/tests/rspec/screenshots/*
 
 images/test1/
 images/design/
