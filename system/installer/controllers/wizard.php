@@ -908,6 +908,24 @@ PAPAYA;
 			$this->userdata['screen_name'] = $this->userdata['username'];
 		}
 
+		// DB Prefix has some character restrictions
+		if ( ! preg_match("/^[0-9a-zA-Z\$_]*$/", $this->userdata['db_prefix']))
+		{
+			$errors[] = $this->lang->line('database_prefix_invalid_characters');
+		}
+
+		// The DB Prefix should not include "exp_"
+		if ( strpos($this->userdata['db_prefix'], 'exp_') !== FALSE)
+		{
+			$errors[] = $this->lang->line('database_prefix_contains_exp_');
+		}
+
+		// Table names cannot be longer than 64 characters, our longest is 26
+		if ( strlen($this->userdata['db_prefix']) > 30)
+		{
+			$errors[] = $this->lang->line('database_prefix_too_long');
+		}
+
 		// Connect to the database.  We pass a multi-dimensional array since
 		// that's what is normally found in the database config file
 
@@ -2376,8 +2394,6 @@ PAPAYA;
 			'website_session_type'			=>	'c',
 			'cp_session_type'				=>	'cs',
 			'cookie_httponly'				=>	'y',
-			'website_session_type'			=>	'c',
-			'cp_session_type'			=>	'cs',
 			'allow_username_change'			=>	'y',
 			'allow_multi_logins'			=>	'y',
 			'password_lockout'				=>	'y',
