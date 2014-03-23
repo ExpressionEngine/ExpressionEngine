@@ -55,10 +55,19 @@ class Pings {
 
 		if ( ! $cached OR $cached != ee()->config->item('license_number'))
 		{
-			// hard fail only when no valid license is entered
-			if ( ! $this->_do_ping() && ee()->config->item('license_number') == '')
+			if ( ! $registration = $this->_do_ping('http://versions.ellislab.com/test.txt'))
 			{
-				return FALSE;
+				// hard fail only when no valid license is entered
+				if (ee()->config->item('license_number') == '')
+				{
+					return FALSE;
+				}
+
+				return TRUE;
+			}
+			else
+			{
+				ee()->cache->save('software_registration', $registration, 60*60*24*7, Cache::GLOBAL_SCOPE);
 			}
 		}
 
@@ -74,12 +83,42 @@ class Pings {
 
 	// --------------------------------------------------------------------
 
-	private function _do_ping()
+	private function _do_ping($url, $payload = null)
 	{
-		$registration = 'wefojwefojseofijsef';
-		ee()->cache->save('software_registration', $registration, 60*60*24*7, Cache::GLOBAL_SCOPE);
+		$target = parse_url($url);
 
-		return TRUE;
+		$fp = @fsockopen($target['host'], 80, $errno, $errstr, 3);
+
+		if ( ! $fp)
+		{
+			return FALSE;
+		}
+
+		fputs($fp,"GET {$url} HTTP/1.1\r\n" );
+		fputs($fp,"Host: {$target['host']}\r\n");
+		fputs($fp,"User-Agent: EE/EllisLab PHP/\r\n");
+		fputs($fp,"If-Modified-Since: Fri, 01 Jan 2004 12:24:04\r\n");
+		fputs($fp,"Connection: close\r\n\r\n");
+
+		$headers = TRUE;
+		$response = '';
+		while ( ! feof($fp))
+		{
+			$line = fgets($fp, 4096);
+
+			if ($headers === FALSE)
+			{
+				$response .= $line;
+			}
+			elseif (trim($line) == '')
+			{
+				$headers = FALSE;
+			}
+		}
+
+		fclose($fp);
+
+		return $response;
 	}
 
 	// --------------------------------------------------------------------
