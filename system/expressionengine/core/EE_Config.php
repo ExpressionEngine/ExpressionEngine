@@ -1217,7 +1217,6 @@ class EE_Config Extends CI_Config {
 				'multiple_sites_enabled'	=> array('r', array('y' => 'yes', 'n' => 'no')),
 				'is_system_on'				=> array('r', array('y' => 'yes', 'n' => 'no')),
 				'is_site_on'				=> array('r', array('y' => 'yes', 'n' => 'no')),
-				'license_number'			=> array('i', ''),
 				'site_name'					=> array('i', '', 'required'),
 				'site_index'				=> array('i', ''),
 				'site_url'					=> array('i', '', 'required'),
@@ -1284,6 +1283,11 @@ class EE_Config Extends CI_Config {
 				'name_of_dictionary_file'	=> array('i', ''),
 				'un_min_len'				=> array('i', ''),
 				'pw_min_len'				=> array('i', '')
+			),
+
+			'software_license'	=> array(
+				'ellislab_username'			=> array('i', ''),
+				'license_number'			=> array('i', '')
 			),
 
 			'throttling_cfg'	=>	array(

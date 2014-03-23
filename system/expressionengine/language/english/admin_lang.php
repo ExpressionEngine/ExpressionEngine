@@ -846,6 +846,12 @@ $lang = array(
 "debug_cfg" =>
 "Debugging Preferences",
 
+"software_license" =>
+"Software License",
+
+"ellislab_username" =>
+"EllisLab.com Username",
+
 "license_number" =>
 "License Number",
 

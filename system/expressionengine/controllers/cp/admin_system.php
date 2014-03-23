@@ -83,6 +83,20 @@ class Admin_system extends CP_Controller {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Software License Configuration
+	 *
+	 * @access	public
+	 * @return	void
+	 */
+	function software_license()
+	{
+		$this->_restrict_prefs_access();
+		$this->_config_manager('software_license', __FUNCTION__);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Config Manager
 	 *
 	 * Used to display the various preference pages
@@ -122,7 +136,7 @@ class Admin_system extends CP_Controller {
 			'throttling_cfg', 'localization_cfg', 'email_cfg', 'cookie_cfg',
 			'image_cfg', 'captcha_cfg', 'template_cfg', 'censoring_cfg',
 			'mailinglist_cfg', 'emoticon_cfg', 'tracking_cfg', 'avatar_cfg',
-			'search_log_cfg', 'recount_prefs'
+			'search_log_cfg', 'recount_prefs', 'software_license'
 		);
 		if ( ! in_array($type, $config_pages))
 		{
