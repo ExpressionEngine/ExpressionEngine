@@ -20,6 +20,10 @@ else
 	<input type="hidden" value="<?=$license_number?>" />
 <?php else: ?>
 	<div class="shade">
+	<h2><?=lang('software_license')?></h2>
+
+	<h5><?=lang('ellislab_username')?></h5>
+	<p><input type='text' name='ellislab_username' value='<?=$ellislab_username?>' size='40' /></p>
 	<h5><?=lang('license_number')?></h5>
 	<p><input type='text' name='license_number' value='<?=$license_number?>' size='40' /></p>
 	<p><?=lang('locate_license_number')?></p>
