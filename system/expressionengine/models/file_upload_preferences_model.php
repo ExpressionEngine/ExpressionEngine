@@ -218,6 +218,17 @@ class File_upload_preferences_model extends CI_Model
 
 	// -------------------------------------------------------------------------
 
+	/**
+	 * Get all file upload paths in a mapped associative array with the keys
+	 * being the file upload directory ID and the value being the URL of the
+	 * directory.
+	 * @return array Associative array containing upload dir IDs and paths
+	 *               Array(
+	 *                 [1] => http://expressionengine/images/uploads/
+	 *                 [3] => http://expressionengine/themes/site_themes/...
+	 *                 ...
+	 *               )
+	 */
 	public function get_paths()
 	{
 		if ( ! ee()->session->cache(__CLASS__, 'paths'))
