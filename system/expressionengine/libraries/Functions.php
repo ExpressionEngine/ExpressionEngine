@@ -2676,6 +2676,8 @@ class EE_Functions {
 					$buffer = '';
 					$false_added = FALSE; // Prevent 'FALSEFALSE'
 
+					$parenthesis_depth = 0;
+
 					// We will now parse for allowed tokens, the rest are either
 					// stripped or converted to FALSE
 					foreach ($tokens as $token)
@@ -2689,13 +2691,18 @@ class EE_Functions {
 								case '<':
 								case '>':
 								case '.':
-								case '(':
-								case ')':
 								case '%':
-									$false_added = FALSE;
-									$buffer .= $token;
 									break;
+								case '(': $parenthesis_depth++;
+									break;
+								case ')': $parenthesis_depth--;
+									break;
+								default:
+									continue; // other tokens don't get anything
 							}
+
+							$false_added = FALSE;
+							$buffer .= $token;
 						}
 						else
 						{
@@ -2732,6 +2739,15 @@ class EE_Functions {
 									}
 							}
 						}
+					}
+
+					if ($parenthesis_depth < 0)
+					{
+						$buffer = str_repeat('(', -$parenthesis_depth).$buffer;
+					}
+					else if ($parenthesis_depth > 0)
+					{
+						$buffer = $buffer.str_repeat(')', $parenthesis_depth);
 					}
 
 					$matches[3][$i] = str_replace('FALSE(', 'FALSE && (', $buffer);
