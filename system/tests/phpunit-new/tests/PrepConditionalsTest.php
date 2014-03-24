@@ -153,8 +153,8 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 	protected function advancedParenthesisEqualizing()
 	{
 		return array(
-			array('To Many Open Parentheses',		'{if (((5 && 6)}out{/if}',	'{if (((5 && 6)))}out{/if}'),
-			array('To Many Closing Parentheses',	'{if (5 && 6)))}out{/if}',	'{if (((5 && 6)))}out{/if}'),
+			array('Too Many Open Parentheses',		'{if (((5 && 6)}out{/if}',	'{if (((5 && 6)))}out{/if}'),
+			array('Too Many Closing Parentheses',	'{if (5 && 6)))}out{/if}',	'{if (((5 && 6)))}out{/if}'),
 		);
 	}
 
