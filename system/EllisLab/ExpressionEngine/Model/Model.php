@@ -17,7 +17,7 @@ abstract class Model {
 
 	protected static $_meta = array();
 
-	protected $builder = NULL;
+	protected $factory = NULL;
 
 	protected $alias_service = NULL;
 
@@ -39,7 +39,7 @@ abstract class Model {
 	/**
 	 * Initialize this model with a set of data to set on the gateway.
 	 *
-	 * @param \EllisLab\ExpressionEngine\Model\ModelBuilder
+	 * @param \EllisLab\ExpressionEngine\Model\ModelFactory
 	 * @param \Ellislab\ExpressionEngine\Core\AliasService
 	 * @param	mixed[]	$data	An array of initial property values to set on
 	 * 		this model.  The array indexes must be valid properties on this
@@ -50,9 +50,9 @@ abstract class Model {
 	 * 		save call.  Otherwise, it will be treated as clean and assumed
 	 * 		to have come from the database.
 	 */
-	public function __construct(ModelBuilder $builder, CoreAliasService $alias_service, array $data = array(), $dirty = TRUE)
+	public function __construct(ModelFactory $factory, CoreAliasService $alias_service, array $data = array(), $dirty = TRUE)
 	{
-		$this->builder = $builder;
+		$this->factory = $factory;
 		$this->alias_service = $alias_service;
 
 		foreach ($data as $property => $value)
@@ -401,7 +401,7 @@ abstract class Model {
 			foreach($related_models_xml as $related_model_xml)
 			{
 				$model_class = (string) $related_model_xml['name'];
-				$model = $this->builder->make($model_class);
+				$model = $this->factory->make($model_class);
 				$model->fromXml($related_model_xml);
 				$models[] = $model;
 			}
@@ -417,7 +417,7 @@ abstract class Model {
 		{
 			foreach (static::getMetaData('gateway_names') as $gateway_name)
 			{
-				$this->gateways[$gateway_name] = $this->builder->makeGateway($gateway_name);
+				$this->gateways[$gateway_name] = $this->factory->makeGateway($gateway_name);
 			}
 		}
 
@@ -735,7 +735,7 @@ abstract class Model {
 		// Lazy Load
 		// 	Otherwise, if we haven't hit one of the previous cases, then this
 		// 	is a lazy load on an existing model.
-		$query = $this->builder->get($to_model_name);
+		$query = $this->factory->get($to_model_name);
 		$query->filter($to_model_name . '.' . $to_key, $this->$this_key);
 
 		if ($type == 'one-to-one' OR $type == 'many-to-one')
