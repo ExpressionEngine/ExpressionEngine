@@ -8,7 +8,7 @@ use EllisLab\ExpressionEngine\Model\Query\Query;
  * The model builder is our entry point. Any external dependencies should be
  * explicitly declared here by providing getters similar to getValidation().
  */
-class ModelBuilder {
+class ModelFactory {
 
 	protected $alias_service;
 
@@ -49,7 +49,7 @@ class ModelBuilder {
 		$polymorph = $class::getMetaData('polymorph');
 		if ($polymorph !== NULL)
 		{
-			$class = $this->alias_service->getRegisteredClass($polymorph);	
+			$class = $this->alias_service->getRegisteredClass($polymorph);
 		}
 
 		return new $class($this, $this->alias_service, $data, $dirty);
@@ -68,11 +68,11 @@ class ModelBuilder {
 	}
 
 	/**
-	 * Create a new model builder instance.
+	 * Create a new model factory instance.
 	 *
-	 * @return \Ellislab\ExpressionEngine\Model\ModelBuilder
+	 * @return \Ellislab\ExpressionEngine\Model\ModelFactory
 	 */
-	public function newModelBuilder()
+	public function newModelFactory()
 	{
 		return new static($this->di, $this->alias_service);
 	}
