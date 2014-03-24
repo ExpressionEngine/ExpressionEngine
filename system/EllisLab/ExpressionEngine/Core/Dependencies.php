@@ -3,7 +3,7 @@ namespace EllisLab\ExpressionEngine\Core;
 
 use \EllisLab\ExpressionEngine\Core\ServiceProvider;
 
-use \EllisLab\ExpressionEngine\Model\ModelBuilder;
+use \EllisLab\ExpressionEngine\Model\ModelFactory;
 use \EllisLab\ExpressionEngine\Model\AliasService as ModelAliasService;
 use \EllisLab\ExpressionEngine\Core\Validation\Validation;
 
@@ -13,11 +13,11 @@ use \EllisLab\ExpressionEngine\Core\Validation\Validation;
  */
 class Dependencies extends ServiceProvider {
 
-    public function getModelBuilder()
+    public function getModelFactory()
     {
         return $this->singleton(function($di)
         {
-            return new ModelBuilder($di, new ModelAliasService());
+            return new ModelFactory($di, new ModelAliasService());
         });
     }
 
