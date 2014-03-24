@@ -53,9 +53,9 @@ class Admin_content extends CP_Controller {
 
 		$di = new \EllisLab\ExpressionEngine\Core\Dependencies();
 
-		// Conveinence links	
+		// Conveinence links
 		$this->dependencies = $di;
-		$this->builder = $this->dependencies->getModelBuilder();
+		$this->factory = $this->dependencies->getModelFactory();
 
 		// Note- no access check here to allow the publish page access to categories
 	}
@@ -144,7 +144,7 @@ class Admin_content extends CP_Controller {
 		');
 		$this->view->cp_page_title = lang('create_new_channel');
 
-		$channels = $this->builder
+		$channels = $this->factory
 			->get('Channel')
 			->filter('site_id', $this->config->item('site_id'))
 			->order('channel_title')
@@ -159,7 +159,7 @@ class Admin_content extends CP_Controller {
 		}
 
 		$vars['cat_group_options'][''] = lang('none');
-		$category_groups = $this->builder->get('CategoryGroup')
+		$category_groups = $this->factory->get('CategoryGroup')
 			->filter('site_id', $this->config->item('site_id'))
 			->order('group_name')
 			->all();
@@ -172,7 +172,7 @@ class Admin_content extends CP_Controller {
 		}
 
 		$vars['status_group_options'][''] = lang('none');
-		$status_groups = $this->builder->get('StatusGroup')
+		$status_groups = $this->factory->get('StatusGroup')
 			->filter('site_id', $this->config->item('site_id'))
 			->order('group_name')
 			->all();
@@ -185,7 +185,7 @@ class Admin_content extends CP_Controller {
 		}
 
 		$vars['field_group_options'][''] = lang('none');
-		$field_groups = $this->builder->get('ChannelFieldGroup')
+		$field_groups = $this->factory->get('ChannelFieldGroup')
 			->filter('site_id', $this->config->item('site_id'))
 			->order('group_name')
 			->all();
@@ -200,7 +200,7 @@ class Admin_content extends CP_Controller {
 		// New themes may contain more than one group, thus naming collisions will happen
 		// unless this is revamped.
 		$vars['themes'] = array();
-		$query = $this->builder->get('TemplateGroup')
+		$query = $this->factory->get('TemplateGroup')
 			->with('Site')
 			->order('TemplateGroup.group_name');
 		if ($this->config->item('multiple_sites_enabled') !== 'y')
@@ -240,7 +240,7 @@ class Admin_content extends CP_Controller {
 		$this->load->model('admin_model');
 
 		$channel_id = $this->input->get_post('channel_id');
-	
+
 		// If we don't have the $channel_id variable, bail out.
 		if ($channel_id == '' OR ! is_numeric($channel_id))
 		{
@@ -256,13 +256,13 @@ class Admin_content extends CP_Controller {
 			return $this->channel_update();
 		}
 
-		$channel = $this->builder->get('Channel')->filter('channel_id', $channel_id)->first();
+		$channel = $this->factory->get('Channel')->filter('channel_id', $channel_id)->first();
 		$vars['channel'] = $channel;
 
 		$vars['form_hidden']['channel_id'] = $channel_id;
 
 		// live_look_template
-		$templates = $this->builder->get('Template')
+		$templates = $this->factory->get('Template')
 			->with('TemplateGroup')
 			->all();
 
@@ -271,13 +271,13 @@ class Admin_content extends CP_Controller {
 		if ( count($templates) > 0)
 		{
 			foreach ($templates as $template)
-			{	
+			{
 				$vars['live_look_template_options'][$template->template_id] = $template->getTemplateGroup()->group_name.'/'.$template->template_name;
 			}
 		}
 
 		// Default status menu
-		$statuses = $this->builder->get('Status')
+		$statuses = $this->factory->get('Status')
 			->with('StatusGroup')
 			->filter('Status.group_id', $channel->status_group)
 			->all();
@@ -303,16 +303,16 @@ class Admin_content extends CP_Controller {
 		$vars['deft_category_options'][''] = lang('none');
 
 		$category_group_ids = $channel->cat_group ? explode('|', $channel->cat_group) : array();
-		
+
 		// Needz moar felineness!
 		if (count($category_group_ids))
 		{
-			$categories = $this->builder->get('Category')
+			$categories = $this->factory->get('Category')
 				->with('CategoryGroup')
 				->filter('CategoryGroup.group_id', 'in', $category_group_ids)
 				->order('CategoryGroup.group_name')
 				->order('Category.cat_name')
-				->all(); 
+				->all();
 
 
 			if (count($categories) > 0)
@@ -324,7 +324,7 @@ class Admin_content extends CP_Controller {
 			}
 		}
 
-		$channel_fields = $this->builder->get('ChannelFieldStructure')
+		$channel_fields = $this->factory->get('ChannelFieldStructure')
 			->filter('group_id', $channel->field_group)
 			->all();
 
@@ -516,16 +516,16 @@ class Admin_content extends CP_Controller {
 			$_POST['default_entry_title'] = '';
 			$_POST['url_title_prefix'] = '';
 
-			$channel = $this->builder->make('Channel', $_POST);
+			$channel = $this->factory->make('Channel', $_POST);
 			$channel->channel_url = $this->functions->fetch_site_index();
 			$channel->channel_lang = $this->config->item('xml_lang');
 			$channel->site_id = $this->config->item('site_id');
 
 			// Assign field group if there is only one
-			if ($dupe_id != '' 
+			if ($dupe_id != ''
 				&& ( $channel->field_group === NULL || ! is_numeric($channel->field_group)))
 			{
-				$field_groups = $this->builder->get('ChannelFieldGroup')
+				$field_groups = $this->factory->get('ChannelFieldGroup')
 					->filter('site_id', $channel->site_id)
 					->all();
 
@@ -536,7 +536,7 @@ class Admin_content extends CP_Controller {
 			}
 
 			// Make sure these are the correct NULL value if they are not set.
-			$channel->status_group = ($channel->status_group !== FALSE 
+			$channel->status_group = ($channel->status_group !== FALSE
 				&& $channel->status_group != '')
 				? $channel->status_group : NULL;
 			$channel->field_group = ($channel->field_group !== FALSE &&
@@ -546,7 +546,7 @@ class Admin_content extends CP_Controller {
 			// duplicating preferences?
 			if ($dupe_id !== FALSE AND is_numeric($dupe_id))
 			{
-				$dupe_channel = $this->builder
+				$dupe_channel = $this->factory
 					->get('Channel')
 					->filter('channel_id', $dupe_id)
 					->first();
@@ -591,9 +591,9 @@ class Admin_content extends CP_Controller {
 			// We treat as installed/not and delete the whole tab.
 
 			$this->layout->sync_layout($_POST, $_POST['channel_id']);
-			
 
-			$channel = $this->builder->make('Channel', $_POST);
+
+			$channel = $this->factory->make('Channel', $_POST);
 			$channel->save();
 
 			$success_msg = lang('channel_updated');
