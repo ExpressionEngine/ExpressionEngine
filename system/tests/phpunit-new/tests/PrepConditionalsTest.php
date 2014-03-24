@@ -10,23 +10,23 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 	 */
 	public function testConditionalsSafetyYesPrefixBlank($description, $str_in, $expected_out, $vars = array(), $php_vars = array())
 	{
+		// variables called int and string are always available unless $vars was explicitly set to FALSE
+		if ($vars !== FALSE)
+		{
+			$vars = array_merge(array(
+				'int' => 5,
+				'string' => 'ee'
+			), $vars);
+		}
+		else
+		{
+			$vars = array();
+		}
+
 		$fns = new FunctionsStub('randomstring');
 		$this->assertEquals(
 			$expected_out,
 			$fns->prep_conditionals($str_in, $vars, $safety = 'y', $prefix = ''),
-			$description
-		);
-	}
-
-	/**
-	 * @dataProvider dataProvider
-	 */
-	public function testConditionalsSafetyNoPrefixBlank($description, $str_in, $expected_out, $vars = array(), $php_vars = array())
-	{
-		$fns = new FunctionsStub('randomstring');
-		$this->assertEquals(
-			$expected_out,
-			$fns->prep_conditionals($str_in, $vars, $safety = 'n', $prefix = ''),
 			$description
 		);
 	}
@@ -58,7 +58,9 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			// we should try to invalidate all of these, so for our new conditional
 			// parsing these tests should be rewriten as failing
 			$this->wonkySpacelessStringLogicOperators(),
-			$this->wonkyRepetitions()
+			$this->wonkyRepetitions(),
+			$this->wonkyEmpty(),
+			$this->wonkyDifferentBehaviorWithoutVariables()
 			// $this->wonkyFalseChains(),
 
 			// evil tests attempt to subvert parsing to get valid php code
@@ -153,17 +155,20 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 	protected function advancedParenthesisEqualizing()
 	{
 		return array(
-			array('Too Many Open Parentheses',		'{if (((5 && 6)}out{/if}',	'{if (((5 && 6)))}out{/if}'),
-			array('Too Many Closing Parentheses',	'{if (5 && 6)))}out{/if}',	'{if (((5 && 6)))}out{/if}'),
+			array('Too Many Open Parentheses',				'{if (((5 && 6)}out{/if}',	'{if (((5 && 6)))}out{/if}'),
+			array('Too Many Closing Parentheses',			'{if (5 && 6)))}out{/if}',	'{if (((5 && 6)))}out{/if}'),
+			array('Difficult Missing Closing Parentheses',	'{if (5 && 6)))}out{/if}',	'{if (((5 && 6)))}out{/if}'),
+			array('Difficult Missing Open Parentheses',		'{if (5 && 6)))}out{/if}',	'{if (((5 && 6)))}out{/if}'),
+			array('Ignore Quoted Parenthesis Mismatch',		'{if (5 && 6)))}out{/if}',	'{if (((5 && 6)))}out{/if}'),
 		);
 	}
 
 	protected function wonkySpacelessStringLogicOperators()
 	{
 		return array(
-			array('Wonky No Space AND',	'{if 7AND5}out{/if}',	'{if 7AND5}out{/if}'),
-			array('Wonky No Space OR',	'{if 5OR7}out{/if}',	'{if 5OR7}out{/if}'),
-			array('Wonky No Space XOR',	'{if 5XOR7}out{/if}',	'{if 5XOR7}out{/if}'),
+			array('Wonky No Space AND',	'{if 7AND5}out{/if}',	'{if 7FALSE}out{/if}'),
+			array('Wonky No Space OR',	'{if 5OR7}out{/if}',	'{if 5FALSE}out{/if}'),
+			array('Wonky No Space XOR',	'{if 5XOR7}out{/if}',	'{if 5FALSE}out{/if}'),
 		);
 	}
 
@@ -174,6 +179,24 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			array('Double AND', 		 '{if 5 && AND 7}out{/if}',	'{if 5 && AND 7}out{/if}'),
 			array('Double No Space AND', '{if 5 &&AND 7}out{/if}',	'{if 5 &&AND 7}out{/if}'),
 			array('Double Comparison',	 '{if 5 > < 7}out{/if}',	'{if 5 > < 7}out{/if}'),
+		);
+	}
+
+	protected function wonkyEmpty()
+	{
+		return array(
+			array('Totally Blank',		'{if }out{/if}',				'{if }out{/if}'),
+			array('Blank Parentheses',	'{if ()}out{/if}',				'{if ()}out{/if}'),
+			array('Compare To Blank',	'{if () == 5}out{/if}',			'{if () == 5}out{/if}'),
+			array('Blank Logic',		'{if () AND 5 || ()}out{/if}',	'{if () AND 5 || ()}out{/if}'),
+		);
+	}
+
+	protected function wonkyDifferentBehaviorWithoutVariables()
+	{
+		return array(
+			array('Total Nonsense Allowed',	'{if fdsk&)(Ijf7)}out{/if}',	'{if fdsk&)(Ijf7)}out{/if}', FALSE),
+			array('No Parenthesis Matching', '{if (((5 && 6)}out{/if}',	'{if (((5 && 6)}out{/if}', FALSE),
 		);
 	}
 }
@@ -191,8 +214,16 @@ class FunctionsStub extends EE_Functions {
 	// remove the random element
 	public function random($type = 'encrypt', $len = 8)
 	{
-		return $this->fixedRandomString;
+		static $i = 0;
+		return $this->fixedRandomString.($i++);
 	}
+}
+
+function surrounding_character($string)
+{
+	$first_char = substr($string, 0, 1);
+
+	return ($first_char == substr($string, -1, 1)) ? $first_char : FALSE;
 }
 
 function unique_marker($ident)
