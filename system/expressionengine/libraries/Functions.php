@@ -2674,9 +2674,6 @@ class EE_Functions {
 	 */
 	public function fetch_file_paths()
 	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('3.0', 'File_upload_preferences_model::get_paths()');
-
 		ee()->load->model('file_upload_preferences_model');
 		$this->file_paths = $this->file_upload_preferences_model->get_paths();
 		return $this->file_paths;

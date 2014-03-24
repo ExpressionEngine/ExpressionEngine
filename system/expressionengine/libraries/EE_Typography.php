@@ -759,7 +759,7 @@ class EE_Typography extends CI_Typography {
 		// Replace <pre><code> with [code]
 		// Only relevant IF being called by typography parser
 		// TODO-WB: Add PHP 5.3 specific items to debug_backtrace when possible
-		$backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 3);
+		$backtrace = debug_backtrace();
 		if (in_array($backtrace[1]['class'], array('EE_Typography')))
 		{
 			$str = preg_replace(
