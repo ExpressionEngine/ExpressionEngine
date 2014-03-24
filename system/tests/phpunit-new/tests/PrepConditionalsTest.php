@@ -61,6 +61,8 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			$this->wonkySpacelessStringLogicOperators(),
 			$this->wonkyRepetitions(),
 			$this->wonkyEmpty(),
+			$this->wonkyFalseExistsButTrueDoesNot(),
+			$this->wonkyMutableBooleans(),
 			$this->wonkyDifferentBehaviorWithoutVariables()
 			// $this->wonkyFalseChains(),
 
@@ -132,7 +134,6 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 
 	protected function simpleVariableReplacementsTest()
 	{
-		$t = '{if xyz}out{/if}';
 		return array(
 			array('Simple TRUE Boolean',	'{if xyz}out{/if}',   '{if "1"}out{/if}',	array('xyz' => TRUE)),
 			array('Simple FALSE Boolean',	'{if xyz}out{/if}',   '{if ""}out{/if}',	array('xyz' => FALSE)),
@@ -146,12 +147,6 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 	protected function simpleVariableComparisonsTest()
 	{
 		return array(
-			array('Simple TRUE Boolean',	$t,   '{if "1"}out{/if}',	array('xyz' => TRUE)),
-			array('Simple FALSE Boolean',	$t,   '{if ""}out{/if}',	array('xyz' => FALSE)),
-			array('Simple Zero Int',		$t,   '{if "0"}out{/if}',	array('xyz' => 0)),
-			array('Simple Positive Int',	$t,   '{if "5"}out{/if}',	array('xyz' => 5)),
-			array('Simple Negative Int',	$t,   '{if "-5"}out{/if}',	array('xyz' => -5)),
-			array('Simple Empty String',	$t,   '{if ""}out{/if}',	array('xyz' => '')),
 			array('Compare FALSE Boolean',	'{if xyz > FALSE}out{/if}',		'{if "" > FALSE}out{/if}',		array('xyz' => FALSE)),
 			array('Compare Zero Int',		'{if xyz < 0}out{/if}',			'{if "0" < 0}out{/if}',		array('xyz' => 0)),
 			array('Compare Positive Int',	'{if xyz <> 5}out{/if}',		'{if "5" <> 5}out{/if}',		array('xyz' => 5)),
@@ -174,9 +169,6 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 		return array(
 			array('Too Many Open Parentheses',				'{if (((5 && 6)}out{/if}',	'{if (((5 && 6)))}out{/if}'),
 			array('Too Many Closing Parentheses',			'{if (5 && 6)))}out{/if}',	'{if (((5 && 6)))}out{/if}'),
-			array('Difficult Missing Closing Parentheses',	'{if (5 && 6)))}out{/if}',	'{if (((5 && 6)))}out{/if}'),
-			array('Difficult Missing Open Parentheses',		'{if (5 && 6)))}out{/if}',	'{if (((5 && 6)))}out{/if}'),
-			array('Ignore Quoted Parenthesis Mismatch',		'{if (5 && 6)))}out{/if}',	'{if (((5 && 6)))}out{/if}'),
 			array('Difficult Missing Open Parentheses',		'{if ((5 || 7 == 8) AND (6 != 6)))}out{/if}',	'{if (((5 || 7 == 8) AND (6 != 6)))}out{/if}'),
 			array('Difficult Missing Closing Parentheses',	'{if ((5 || 7 == 8) AND ((6 != 6))}out{/if}',	'{if ((5 || 7 == 8) AND ((6 != 6)))}out{/if}'),
 			array('Ignore Quoted Parenthesis Mismatch',		'{if "(5 && 6)))"}out{/if}',	'{if "&#40;5 && 6&#41;&#41;&#41;"}out{/if}'),
@@ -209,6 +201,22 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			array('Blank Parentheses',	'{if ()}out{/if}',				'{if ()}out{/if}'),
 			array('Compare To Blank',	'{if () == 5}out{/if}',			'{if () == 5}out{/if}'),
 			array('Blank Logic',		'{if () AND 5 || ()}out{/if}',	'{if () AND 5 || ()}out{/if}'),
+		);
+	}
+
+	protected function wonkyFalseExistsButTrueDoesNot()
+	{
+		return array(
+			array('TRUE becomes FALSE',	'{if xyz == TRUE}out{/if}',		'{if "1" == FALSE}out{/if}',	array('xyz' => TRUE)),
+			array('FALSE stays FALSE',	'{if xyz == FALSE}out{/if}',	'{if "1" == FALSE}out{/if}',		array('xyz' => TRUE)),
+		);
+	}
+
+	protected function wonkyMutableBooleans()
+	{
+		return array(
+			array('TRUE can be a variable',	 '{if xyz == true}out{/if}', '{if "1" == "baz"}out{/if}',	array('xyz' => TRUE, 'true' => "baz")),
+			array('FALSE can be a variable', '{if xyz == false}out{/if}', '{if "1" == "bat"}out{/if}',	array('xyz' => TRUE, 'false' => "bat")),
 		);
 	}
 
