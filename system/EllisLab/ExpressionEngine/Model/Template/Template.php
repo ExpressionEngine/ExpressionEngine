@@ -8,15 +8,14 @@ use EllisLab\ExpressionEngine\Model\Model;
  */
 class Template extends Model {
 
-	protected static $_meta = array(
-		'primary_key'	=> 'template_id',
-		'gateway_names'	=> array('TemplateGateway'),
-		'key_map'		=> array(
-			'template_id' => 'TemplateGateway',
-			'group_id'    => 'TemplateGateway',
-			'last_author_id' => 'TemplateGateway',
-			'site_id' => 'TemplateGateway'
-		)
+	// Meta data
+	protected static $_primary_key = 'template_id';
+	protected static $_gateway_names = array('TemplateGateway');
+	protected static $_key_map = array(
+		'template_id' => 'TemplateGateway',
+		'group_id'    => 'TemplateGateway',
+		'last_author_id' => 'TemplateGateway',
+		'site_id' => 'TemplateGateway'
 	);
 
 	// Properties
@@ -60,7 +59,7 @@ class Template extends Model {
 
 	public function setLastAuthor(Member $member)
 	{
-		$this->setRelated('LastAuthor', $member);	
+		$this->setRelated('LastAuthor', $member);
 		$this->last_author_id = $member->member_id;
 		return $this;
 	}
