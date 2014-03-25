@@ -159,10 +159,10 @@ abstract class Model {
 	/**
 	 * Get the model metadata
 	 *
-	 * @param String $key Metadata key name [optional]
+	 * @param String $key Metadata key name
 	 * @return Mixed Value for $key or full metadata array
 	 */
-	public static function getMetaData($key = NULL)
+	public static function getMetaData($key)
 	{
 		$property = '_' . $key;
 
