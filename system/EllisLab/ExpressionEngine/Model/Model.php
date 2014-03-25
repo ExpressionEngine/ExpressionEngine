@@ -18,17 +18,22 @@ abstract class Model {
 	/**
 	 *
 	 */
-	protected $_primary_key = array();
+	protected static $_primary_key = array();
 
 	/**
 	 *
 	 */
-	protected $_gateway_names = array();
+	protected static $_gateway_names = array();
 
 	/**
 	 *
 	 */
-	protected $_key_map = array();
+	protected static $_key_map = array();
+
+	/**
+	 *
+	 */
+	protected static $_cascade = NULL;
 
 	/**
 	 *
