@@ -25,12 +25,12 @@
  */
 
 $plugin_info = array(
-	'pi_name'		=> 'Markdown',
-	'pi_version'	=> '1.0',
-	'pi_author'		=> 'EllisLab',
-	'pi_author_url'	=> 'http://ellislab.com/',
-	'pi_description'=> 'Parse text using Markdown and Smartypants',
-	'pi_usage'		=> Markdown::usage()
+	'pi_name'        => 'Markdown',
+	'pi_version'     => '1.0',
+	'pi_author'      => 'EllisLab',
+	'pi_author_url'  => 'http://ellislab.com/',
+	'pi_description' => 'Parse text using Markdown and Smartypants',
+	'pi_usage'       => Markdown::usage()
 );
 
 
@@ -43,13 +43,15 @@ class Markdown {
 	 */
 	public function __construct($tagdata = '')
 	{
-		$tagdata		= (empty($tagdata)) ? ee()->TMPL->tagdata : $tagdata;
-		$smartypants	= ee()->TMPL->fetch_param('smartypants', 'yes');
+		$tagdata        = (empty($tagdata)) ? ee()->TMPL->tagdata : $tagdata;
+		$smartypants    = ee()->TMPL->fetch_param('smartypants', 'yes');
+		$encode_ee_tags = ee()->TMPL->fetch_param('encode_ee_tags', 'yes');
 
 		ee()->load->library('typography');
+		ee()->typography->convert_curly = FALSE;
 		$this->return_data = ee()->typography->markdown(
 			$tagdata,
-			compact('smartypants')
+			compact('encode_ee_tags', 'smartypants')
 		);
 
 		return $this->return_data;
