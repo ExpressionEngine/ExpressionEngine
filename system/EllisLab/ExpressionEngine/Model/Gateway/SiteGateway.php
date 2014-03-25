@@ -4,10 +4,8 @@ namespace EllisLab\ExpressionEngine\Model\Gateway;
 use EllisLab\ExpressionEngine\Model\Gateway\RowDataGateway;
 
 class SiteGateway extends RowDataGateway {
-	protected static $meta = array(
-		'table_name' => 'sites',
-		'primary_key' => 'site_id'
-	);
+	protected static $_table_name => 'sites';
+	protected static $_primary_key => 'site_id';
 
 
 	// Properties
