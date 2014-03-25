@@ -63,11 +63,22 @@ class Pings {
 					return FALSE;
 				}
 
+				// save the failed request for a day only
+				$success = ee()->cache->save('software_registration', ee()->config->item('license_number'), 60*60*24, Cache::GLOBAL_SCOPE);
 				return TRUE;
 			}
 			else
 			{
-				$success = ee()->cache->save('software_registration', $registration, 60*60*24*7, Cache::GLOBAL_SCOPE);
+				if ($registration != ee()->config->item('license_number'))
+				{
+					// may have been a server error, save the failed request for a day
+					$success = ee()->cache->save('software_registration', ee()->config->item('license_number'), 60*60*24, Cache::GLOBAL_SCOPE);
+				}
+				else
+				{
+					// keep for a week
+					$success = ee()->cache->save('software_registration', $registration, 60*60*24*7, Cache::GLOBAL_SCOPE);
+				}
 
 				// prevent a bunch of wasted calls and overhead if their cache can't be saved for some reason,
 				// e.g. file driver and bad permissions on the cache folder
