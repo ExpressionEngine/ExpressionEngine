@@ -7,14 +7,13 @@ use EllisLab\ExpressionEngine\Model\Interfaces\Content\ContentStructure
 
 
 class Channel extends Model implements ContentStructure {
-	protected static $_meta = array(
-		'primary_key' => 'channel_id',
-		'gateway_names' => array('ChannelGateway'),
-		'key_map' => array(
-			'channel_id' => 'ChannelGateway',
-			'site_id' => 'ChannelGateway',
-			'field_group' => 'ChannelGateway'
-		)	
+
+	protected static $_primary_key => 'channel_id';
+	protected static $_gateway_names => array('ChannelGateway');
+	protected static $_key_map => array(
+		'channel_id' => 'ChannelGateway',
+		'site_id' => 'ChannelGateway',
+		'field_group' => 'ChannelGateway'
 	);
 
 	// Properties
@@ -23,7 +22,7 @@ class Channel extends Model implements ContentStructure {
 	 * This is the primary key id.
 	 *
 	 * @type int
-	 */	
+	 */
 	protected $channel_id;
 	protected $site_id;
 	protected $channel_name;
@@ -80,7 +79,7 @@ class Channel extends Model implements ContentStructure {
 	public function getChannelFieldGroup()
 	{
 		return $this->manyToOne(
-			'ChannelFieldGroup', 'ChannelFieldGroup', 'field_group', 'group_id');	
+			'ChannelFieldGroup', 'ChannelFieldGroup', 'field_group', 'group_id');
 	}
 
 	/**
@@ -123,7 +122,7 @@ class Channel extends Model implements ContentStructure {
 				continue;
 			}
 
-		
+
 
 			switch ($property)
 			{
