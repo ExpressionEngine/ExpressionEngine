@@ -1280,7 +1280,7 @@ class Sites extends CP_Controller {
 									elseif($row['field_type'] == 'grid')
 									{
 										$this->load->library('api');
-										$this->api->instantiate('channel_fields');
+										$this->legacy_api->instantiate('channel_fields');
 										$this->api_channel_fields->fetch_installed_fieldtypes();
 
 										$this->load->model('grid_model');

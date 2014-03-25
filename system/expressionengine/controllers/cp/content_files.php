@@ -93,7 +93,7 @@ class Content_files extends CP_Controller {
 	{
 		$this->load->library('table');
 		$this->load->helper('search');
-		$this->api->instantiate('channel_categories');
+		$this->legacy_api->instantiate('channel_categories');
 
 		$this->table->set_base_url('C=content_files');
 		$this->table->set_columns(array(
@@ -2501,7 +2501,7 @@ class Content_files extends CP_Controller {
 
 		// Load the channel API
 		$this->load->library('api');
-		$this->api->instantiate('channel_categories');
+		$this->legacy_api->instantiate('channel_categories');
 
 		$this->load->model('category_model');
 

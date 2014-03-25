@@ -147,7 +147,7 @@ class Channel_form_lib
 		ee()->load->library('javascript');
 		ee()->load->library('api');
 		ee()->load->library('form_validation');
-		ee()->api->instantiate('channel_fields');
+		ee()->legacy_api->instantiate('channel_fields');
 
 		ee()->lang->loadfile('content');
 		ee()->lang->loadfile('upload');
@@ -1328,7 +1328,7 @@ GRID_FALLBACK;
 
 		ee()->load->helper(array('url', 'form'));
 		ee()->load->library('api');
-		ee()->api->instantiate('channel_fields');
+		ee()->legacy_api->instantiate('channel_fields');
 		ee()->load->library('filemanager');
 		ee()->load->library('form_validation');
 		ee()->load->library('localize');
@@ -1642,7 +1642,7 @@ GRID_FALLBACK;
 		$this->load_session_override();
 
 		//added for EE2.1.2
-		ee()->api->instantiate('channel_categories');
+		ee()->legacy_api->instantiate('channel_categories');
 		ee()->load->library('api/api_channel_form_channel_entries');
 
 		foreach ($this->form_validation_methods as $method)
@@ -1986,7 +1986,7 @@ GRID_FALLBACK;
 			ee()->javascript->output($this->extra_js[$this->get_field_type($field_name)]);
 		}
 
-		ee()->api->instantiate('channel_fields');
+		ee()->legacy_api->instantiate('channel_fields');
 
 		$fieldtype = ee()->api_channel_fields->setup_handler( $this->get_field_type($field_name), TRUE);
 
@@ -2046,7 +2046,7 @@ GRID_FALLBACK;
 
 		// Load up the library and figure out what belongs and what's selected
 		ee()->load->library(array('api', 'file_field'));
-		ee()->api->instantiate('channel_categories');
+		ee()->legacy_api->instantiate('channel_categories');
 		$category_list = ee()->api_channel_categories->category_tree(
 			$this->channel('cat_group'),
 			$this->entry('categories')
@@ -2188,7 +2188,7 @@ GRID_FALLBACK;
 		//namely save and display_field
 		ee()->load->library('api');
 
-		ee()->api->instantiate('channel_fields');
+		ee()->legacy_api->instantiate('channel_fields');
 
 		foreach ($this->custom_fields as $field)
 		{
@@ -2263,7 +2263,7 @@ GRID_FALLBACK;
 				$row['categories'][] = $cat_row['cat_id'];
 			}
 
-			ee()->api->instantiate('channel_fields');
+			ee()->legacy_api->instantiate('channel_fields');
 
 			foreach ($this->custom_fields as $field=>$definition)
 			{
@@ -3242,7 +3242,7 @@ GRID_FALLBACK;
 
 		ee()->load->helper('custom_field');
 
-		ee()->api->instantiate('channel_fields');
+		ee()->legacy_api->instantiate('channel_fields');
 
 		ee()->api_channel_fields->field_type = $this->get_field_type($field_name);
 

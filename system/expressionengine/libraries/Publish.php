@@ -35,7 +35,7 @@ class Publish
 	public function build_categories_block($cat_group_ids, $entry_id, $selected_categories, $default_category = '', $file = FALSE)
 	{
 		ee()->load->library('api');
-		ee()->api->instantiate('channel_categories');
+		ee()->legacy_api->instantiate('channel_categories');
 
 		$default	= array(
 			'string_override'		=> lang('no_categories'),
@@ -70,7 +70,7 @@ class Publish
 			}
 		}
 
-		ee()->api->instantiate('channel_categories');
+		ee()->legacy_api->instantiate('channel_categories');
 
 		$catlist	= array();
 		$categories	= array();

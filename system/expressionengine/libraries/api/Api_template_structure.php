@@ -124,7 +124,7 @@ class Api_template_structure extends Api {
 			$this->_set_error('group_required');
 		}
 
-		if ( ! ee()->api->is_url_safe($group_name))
+		if ( ! ee()->legacy_api->is_url_safe($group_name))
 		{
 			$this->_set_error('illegal_characters');
 		}

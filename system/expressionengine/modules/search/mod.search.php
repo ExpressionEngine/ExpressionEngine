@@ -1590,7 +1590,7 @@ class Search {
 	{
 		ee()->lang->loadfile('search');
 		ee()->load->library('api');
-		ee()->api->instantiate('channel_categories');
+		ee()->legacy_api->instantiate('channel_categories');
 
 		/** ----------------------------------------
 		/**  Fetch channels and categories
@@ -1759,7 +1759,7 @@ class Search {
 	function search_js_switcher($nested='n',$id='searchform')
 	{
 		ee()->load->library('api');
-		ee()->api->instantiate('channel_categories');
+		ee()->legacy_api->instantiate('channel_categories');
 
 		 $cat_array = ee()->api_channel_categories->category_form_tree(
 			$nested,

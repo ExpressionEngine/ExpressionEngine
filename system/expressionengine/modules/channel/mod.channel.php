@@ -381,7 +381,7 @@ class Channel {
 		}
 
 		ee()->load->library('api');
-		ee()->api->instantiate('channel_fields');
+		ee()->legacy_api->instantiate('channel_fields');
 
 		$fields = ee()->api_channel_fields->fetch_custom_channel_fields();
 
