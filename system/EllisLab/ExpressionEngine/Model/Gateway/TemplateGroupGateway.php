@@ -5,18 +5,16 @@ use EllisLab\ExpressionEngine\Model\Gateway\RowDataGateway;
 
 class TemplateGroupGateway extends RowDataGateway {
 
-	protected static $meta = array(
-		'table_name' 		=> 'template_groups',
-		'primary_key' 		=> 'group_id',
-		'related_gateways' 	=> array(
-			'site_id' => array(
-				'gateway' => 'SiteGateway',
-				'key'    => 'site_id'
-			),
-			'group_id' => array(
-				'gateway' => 'TemplateGateway',
-				'key'    => 'group_id'
-			)
+	protected static $_table_name 		= 'template_groups';
+	protected static $_primary_key 		= 'group_id';
+	protected static $_related_gateways	= array(
+		'site_id' => array(
+			'gateway' => 'SiteGateway',
+			'key'    => 'site_id'
+		),
+		'group_id' => array(
+			'gateway' => 'TemplateGateway',
+			'key'    => 'group_id'
 		)
 	);
 
