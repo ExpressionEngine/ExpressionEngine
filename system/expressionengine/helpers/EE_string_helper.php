@@ -84,29 +84,30 @@ function surrounding_character($string)
  * Get's a boolean value from a string such as 'y', 'yes', 'n', or 'no', if it
  * doesn't find anything like that, return NULL
  * @param  string $value The string to determine the boolean value of
- * @return boolean/NULL  TRUE or FALSE if the string
+ * @return boolean/NULL  TRUE or FALSE if the string indicates yes or no, NULL
+ *                       otherwise
  */
-function get_bool_from_string($value, $return_string = FALSE)
+function get_bool_from_string($value)
 {
-	switch($value)
+	if (is_bool($value))
 	{
-		case TRUE:
+		return $value;
+	}
+
+	switch(strtolower($value))
+	{
 		case 'yes':
 		case 'y':
 		case 'on':
 			return TRUE;
-		break;
 
-		case FALSE:
 		case 'no':
 		case 'n':
 		case 'off':
 			return FALSE;
-		break;
 
 		default:
 			return NULL;
-		break;
 	}
 }
 
