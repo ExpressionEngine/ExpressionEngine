@@ -67,7 +67,14 @@ class Pings {
 			}
 			else
 			{
-				ee()->cache->save('software_registration', $registration, 60*60*24*7, Cache::GLOBAL_SCOPE);
+				$success = ee()->cache->save('software_registration', $registration, 60*60*24*7, Cache::GLOBAL_SCOPE);
+
+				// prevent a bunch of wasted calls and overhead if their cache can't be saved for some reason,
+				// e.g. file driver and bad permissions on the cache folder
+				if ( ! $success OR ee()->cache->get_adapter() == 'dummy')
+				{
+
+				}
 			}
 		}
 
@@ -76,9 +83,109 @@ class Pings {
 
 	// --------------------------------------------------------------------
 
+	/**
+	 * EE Version Check function
+	 *
+	 * Checks the current version of ExpressionEngine available from EllisLab
+	 *
+	 * @access	private
+	 * @return	string
+	 */
 	public function get_version_info()
 	{
+		// Attempt to grab the local cached file
+		$cached = ee()->cache->get('current_version', Cache::GLOBAL_SCOPE);
 
+		if ( ! $cached)
+		{
+			$version_file = array();
+
+			if ( ! $version_info = $this->_do_ping('http://versions.ellislab.com/versions_ee2.txt'))
+			{
+				$version_file['error'] = TRUE;
+			}
+			else
+			{
+				$version_info = explode("\n", trim($version_info));
+
+				if (empty($version_info))
+				{
+					$version_file['error'] = TRUE;
+				}
+				else
+				{
+					foreach ($version_info as $version)
+					{
+						$version_file[] = explode('|', $version);
+					}
+				}
+			}
+
+			// Cache version information for a day
+			ee()->cache->save(
+				'current_version',
+				$version_file,
+				60 * 60 * 24,
+				Cache::GLOBAL_SCOPE
+			);
+		}
+		else
+		{
+			$version_file = $cached;
+		}
+
+		// one final check for good measure
+		if ( ! $this->_is_valid_version_file($version_file))
+		{
+			return FALSE;
+		}
+
+		if (isset($version_file['error']) && $version_file['error'] == TRUE)
+		{
+			return FALSE;
+		}
+
+		return $version_file;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Validate version file
+	 * Prototype:
+	 *  0 =>
+	 *    array
+	 *      0 => string '2.1.0' (length=5)
+	 *      1 => string '20100805' (length=8)
+	 *      2 => string 'normal' (length=6)
+	 *
+	 * @access	private
+	 * @return	bool
+	 */
+	private function _is_valid_version_file($version_file)
+	{
+		if ( ! is_array($version_file))
+		{
+			return FALSE;
+		}
+
+		foreach ($version_file as $version)
+		{
+			if ( ! is_array($version) OR count($version) != 3)
+			{
+				return FALSE;
+			}
+
+			foreach ($version as $val)
+			{
+				if ( ! is_string($val))
+				{
+					return FALSE;
+				}
+			}
+		}
+
+		return TRUE;
 	}
 
 	// --------------------------------------------------------------------

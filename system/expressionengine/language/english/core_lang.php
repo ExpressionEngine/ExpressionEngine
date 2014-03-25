@@ -140,6 +140,9 @@ $lang = array(
 'Unable to load requested field type file:  %s.<br />
 Confirm the fieldtype file is located in the expressionengine/third_party/ directory',
 
+'unwritable_cache_folder' =>
+'Your cache folder does not appear to have proper permissions.  Please set the folder permissions to 777 (or the equivalent write permissions for your server) on the following folder: expressionengine/cache',
+
 //----------------------------
 // Member Groups
 //----------------------------
