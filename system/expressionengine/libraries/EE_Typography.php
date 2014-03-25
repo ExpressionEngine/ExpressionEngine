@@ -711,8 +711,6 @@ class EE_Typography extends CI_Typography {
 	 * Parse content to Markdown
 	 * @param  string $str     String to parse
 	 * @param  array  $options Associative array containing options
-	 *                         - encode_ee_tags (TRUE/FALSE) can be used to
-	 *                           disable ee tag encoding
 	 *                         - smartypants (TRUE/FALSE) enable or disable
 	 *                           smartypants
 	 *                         - no_markup (TRUE/FALSE) set to TRUE to disable
@@ -781,13 +779,7 @@ class EE_Typography extends CI_Typography {
 
 		// Clean up code blocks and BBCodde
 		$str = $this->_protect_bbcode($str);
-
-		if ( ! isset($options['encode_ee_tags'])
-			OR get_bool_from_string($options['encode_ee_tags']) !== FALSE)
-		{
-			$str = ee()->functions->encode_ee_tags($str, $this->convert_curly);
-		}
-
+		$str = ee()->functions->encode_ee_tags($str, $this->convert_curly);
 		$str = $this->decode_bbcode($str);
 		$str = $this->_convert_code_markers($str);
 		return $str;

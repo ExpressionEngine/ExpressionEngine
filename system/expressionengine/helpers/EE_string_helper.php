@@ -100,14 +100,17 @@ function get_bool_from_string($value)
 		case 'y':
 		case 'on':
 			return TRUE;
+		break;
 
 		case 'no':
 		case 'n':
 		case 'off':
 			return FALSE;
+		break;
 
 		default:
 			return NULL;
+		break;
 	}
 }
 
