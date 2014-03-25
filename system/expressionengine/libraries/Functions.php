@@ -2727,6 +2727,15 @@ class EE_Functions {
 									$buffer .= $token[1];
 									break;
 
+								case T_STRING:
+									$value = strtoupper($token[1]);
+									if ($value == 'TRUE' || $value == 'FALSE')
+									{
+										$false_added = FALSE;
+										$buffer .= $token[1];
+										break;
+									}
+
 								default:
 									if ( ! $false_added) {
 										$buffer .= 'FALSE';
