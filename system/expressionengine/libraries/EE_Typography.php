@@ -711,10 +711,12 @@ class EE_Typography extends CI_Typography {
 	 * Parse content to Markdown
 	 * @param  string $str     String to parse
 	 * @param  array  $options Associative array containing options
-	 *                         - smartypants (yes/no) enable or disable
-	 *                         	smartypants
+	 *                         - encode_ee_tags (TRUE/FALSE) can be used to
+	 *                           disable ee tag encoding
+	 *                         - smartypants (TRUE/FALSE) enable or disable
+	 *                           smartypants
 	 *                         - no_markup (TRUE/FALSE) set to TRUE to disable
-	 *                          the parsing of markup in Markdown
+	 *                           the parsing of markup in Markdown
 	 * @return string          Parsed Markdown content
 	 */
 	public function markdown($str, $options = array())
@@ -734,7 +736,8 @@ class EE_Typography extends CI_Typography {
 		$parser = new Markdown_Parser();
 
 		// Disable other markup if this is set
-		if (isset($options['no_markup']) && $options['no_markup'] === TRUE)
+		if (isset($options['no_markup'])
+			&& get_bool_from_string($options['no_markup']))
 		{
 			$parser->no_markup = TRUE;
 		}
@@ -747,7 +750,8 @@ class EE_Typography extends CI_Typography {
 		$str = $parser->transform($str);
 
 		// Run everything through SmartyPants
-		if ( ! isset($options['smartypants']) OR $options['smartypants'] == 'yes')
+		if (isset($options['smartypants'])
+			&& get_bool_from_string($options['smartypants']))
 		{
 			require_once(APPPATH.'libraries/typography/SmartyPants/smartypants.php');
 			$str = SmartyPants($str);
@@ -777,7 +781,13 @@ class EE_Typography extends CI_Typography {
 
 		// Clean up code blocks and BBCodde
 		$str = $this->_protect_bbcode($str);
-		$str = ee()->functions->encode_ee_tags($str, $this->convert_curly);
+
+		if ( ! isset($options['encode_ee_tags'])
+			OR get_bool_from_string($options['encode_ee_tags']) !== FALSE)
+		{
+			$str = ee()->functions->encode_ee_tags($str, $this->convert_curly);
+		}
+
 		$str = $this->decode_bbcode($str);
 		$str = $this->_convert_code_markers($str);
 		return $str;

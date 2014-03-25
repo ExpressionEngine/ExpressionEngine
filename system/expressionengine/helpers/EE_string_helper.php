@@ -78,5 +78,37 @@ function surrounding_character($string)
 	return ($first_char == substr($string, -1, 1)) ? $first_char : FALSE;
 }
 
+// ----------------------------------------------------------------------------
+
+/**
+ * Get's a boolean value from a string such as 'y', 'yes', 'n', or 'no', if it
+ * doesn't find anything like that, return NULL
+ * @param  string $value The string to determine the boolean value of
+ * @return boolean/NULL  TRUE or FALSE if the string
+ */
+function get_bool_from_string($value, $return_string = FALSE)
+{
+	switch($value)
+	{
+		case TRUE:
+		case 'yes':
+		case 'y':
+		case 'on':
+			return TRUE;
+		break;
+
+		case FALSE:
+		case 'no':
+		case 'n':
+		case 'off':
+			return FALSE;
+		break;
+
+		default:
+			return NULL;
+		break;
+	}
+}
+
 /* End of file EE_string_helper.php */
 /* Location: ./system/expressionengine/helpers/EE_string_helper.php */
