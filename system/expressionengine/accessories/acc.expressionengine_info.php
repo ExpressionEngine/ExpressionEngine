@@ -89,9 +89,9 @@ class Expressionengine_info_acc {
 	 */
 	function _fetch_version()
 	{
-		ee()->load->helper('version_helper');
+		ee()->load->library('pings');
+		$details = ee()->pings->get_version_info();
 
-		$details = get_version_info();
 		$download_url = ee()->cp->masked_url('https://store.ellislab.com/manage');
 
 		if ( ! $details)
