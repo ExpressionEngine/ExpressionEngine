@@ -70,6 +70,28 @@ class Login extends CP_Controller {
 		$this->view->username = ($username) ? form_prep($username) : '';
 		$this->view->message = ($this->input->get('auto_expire')) ? lang('session_auto_timeout') : $this->session->flashdata('message');
 
+		// Normal login button state
+		$this->view->btn_class = 'btn';
+		$this->view->btn_label = lang('login');
+
+		// Set lockout message and form state
+		if (ee()->session->check_password_lockout($username) === TRUE)
+		{
+			$this->view->btn_class .= ' disable';
+			$this->view->btn_label = lang('locked');
+			$this->view->message = sprintf(
+				lang('password_lockout_in_effect'),
+				ee()->config->item('password_lockout_interval')
+			);
+		}
+
+		// Show the site label
+		$this->view->site_label = ee()->api
+			->get('Site')
+			->filter('site_id', ee()->config->item('site_id'))
+			->first()
+			->site_label;
+
 		if ($this->input->get('BK'))
 		{
 			$this->view->return_path = base64_encode($this->input->get('BK'));

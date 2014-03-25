@@ -7,22 +7,22 @@ $lang = array(
 //----------------------------
 
 'remember_me' =>
-'Auto log-in on future visits?',
+'Keep me logged in.',
 
 'no_username' =>
-'The username field is required.',
+'The username field is required',
 
 'no_password' =>
-'The password field is required.',
+'The password field is required',
 
 'no_email' =>
 'You must submit your email address.',
 
 'credential_missmatch' =>
-'Invalid username or password.',
+'That is the wrong username or password',
 
 'multi_login_warning' =>
-'Someone is already logged in using this account.',
+'Someone is already logged in using this account',
 
 'return_to_login' =>
 'Return to login',
@@ -30,13 +30,16 @@ $lang = array(
 'password_lockout_in_effect' =>
 'You are only permitted to make four login attempts every %d minute(s)',
 
+'locked' =>
+'Locked',
+
 'unauthorized_request' =>
 'You are not authorized to perform this action',
 
 'new_password_request' =>
 'New Password Request',
 
-'session_auto_timeout' => 
+'session_auto_timeout' =>
 'Your session has timed out due to inactivity',
 
 //-----------------------------------
@@ -44,9 +47,9 @@ $lang = array(
 //-----------------------------------
 
 'forgotten_password' =>
-'Reset Password',
+'I forgot my password',
 
-'no_reset_id' => 
+'no_reset_id' =>
 'The ID number you submitted does not appear to be valid.  Please check the link you followed.',
 
 'id_not_found' =>
@@ -66,6 +69,9 @@ $lang = array(
 
 'enter_new_password' =>
 'Enter a New Password',
+
+'login' =>
+'Log In',
 
 ''=>''
 );
