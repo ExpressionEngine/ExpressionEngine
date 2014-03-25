@@ -291,9 +291,12 @@ class EE_Functions {
 	 * Convert EE Tags to Entities
 	 *
 	 * @access	public
-	 * @param	string
-	 * @param	bool
-	 * @return	string
+	 * @param string $str            String with EE Tags to encode
+	 * @param bool   $convert_curly  Set to TRUE to convert all curly brackets
+	 *                               to entities, otherwise only {exp:..., 
+	 *                               {embed..., {path.., {redirect..., and 
+	 *                               {if... tags are encoded
+	 * @return string String with encoded EE tags
 	 */
 	function encode_ee_tags($str, $convert_curly = FALSE)
 	{
