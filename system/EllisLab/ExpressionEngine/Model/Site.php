@@ -4,9 +4,9 @@ namespace EllisLab\ExpressionEngine\Model;
 use EllisLab\ExpressionEngine\Model\Model;
 
 class Site extends Model {
-	protected static $_primary_key => 'site_id';
-	protected static $_gateway_names => array('SiteGateway');
-	protected static $_key_map => array(
+	protected static $_primary_key = 'site_id';
+	protected static $_gateway_names = array('SiteGateway');
+	protected static $_key_map = array(
 		'site_id' => 'SiteGateway'
 	);
 
