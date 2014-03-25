@@ -32,6 +32,132 @@ class Homepage extends CP_Controller {
 	 */
 	function index()
 	{
+/*		require APPPATH . '../EllisLab/ExpressionEngine/Core/Autoloader.php';
+		$loader = new Autoloader();
+		$loader->register();
+
+		$di = new \EllisLab\ExpressionEngine\Core\Dependencies();
+
+		$mb = $di->getModelBuilder();
+
+		echo 'Query was:<br />
+			qb->get(\'ChannelEntry\')
+				->with(\'Channel\', array(\'Author\'=>array(\'MemberGroup\', \'ChannelEntries\')))
+				->all()<br />';
+		try {
+		$entries = $mb->get('ChannelEntry')
+			->with('Channel',
+				array('Author'=> array('MemberGroup', 'ChannelEntries AS AuthorEntries'))
+			)
+			->order('ChannelEntry.entry_id')
+			->order('AuthorEntries.entry_id')
+			->all();
+		}
+		catch(Exception $ex)
+		{
+			echo '<div>
+					<h1>Exception Caught</h1>
+					<p><strong>' . $ex->getMessage() . '</strong></p>
+					<p><em>'  . $ex->getFile() . ':' . $ex->getLine() . '<em></p>
+					<p>Stack Trace:
+						<pre>' . str_replace('#', "\n#", str_replace(':', ":\n\t\t", $ex->getTraceAsString())) . '</pre>
+					</p>
+				</div>';
+			die('Fatal Error.');
+		}
+
+		echo '<pre>';
+		foreach($entries as $entry)
+		{
+			$entry->testPrint();
+		}
+		echo '</pre>';
+
+
+		echo 'Query was:<br />
+			qb->get(\'Channel\')
+				->with(\'ChannelEntries\' => array(\'Author\'=>\'MemberGroup\'))
+				->all()<br />';
+		try {
+		$channels = $mb->get('Channel')
+			->with(array('ChannelEntries'=>array('Author' => 'MemberGroup')))
+			->all();
+		}
+		catch(Exception $ex)
+		{
+			echo '<div>
+					<h1>Exception Caught</h1>
+					<p><strong>' . $ex->getMessage() . '</strong></p>
+					<p><em>'  . $ex->getFile() . ':' . $ex->getLine() . '<em></p>
+					<p>Stack Trace:
+						<pre>' . str_replace('#', "\n#", str_replace(':', ":\n\t\t", $ex->getTraceAsString())) . '</pre>
+					</p>
+				</div>';
+			die('Fatal Error.');
+		}
+		echo '<pre>';
+		foreach($channels as $channel)
+		{
+			$channel->testPrint();
+		}
+		echo '</pre>';
+
+		echo 'Query was:<br />
+			qb->get(\'ChannelEntry\')
+				->with(\'Channel\', array(\'Author\'=>\'MemberGroup\'), array(\'Catergories\'=>\'CategoryGroup\'))
+				->all()<br />';
+		try {
+		$entries = $mb->get('ChannelEntry')
+			->with('Channel', array('Author' => 'MemberGroup'), array('Categories'=>'CategoryGroup'))
+			->all();
+		}
+		catch(Exception $ex)
+		{
+			echo '<div>
+					<h1>Exception Caught</h1>
+					<p><strong>' . $ex->getMessage() . '</strong></p>
+					<p><em>'  . $ex->getFile() . ':' . $ex->getLine() . '<em></p>
+					<p>Stack Trace:
+						<pre>' . str_replace('#', "\n#", str_replace(':', ":\n\t\t", $ex->getTraceAsString())) . '</pre>
+					</p>
+				</div>';
+			die('Fatal Error.');
+		}
+		echo '<pre>';
+		foreach($entries as $entry)
+		{
+			$entry->testPrint();
+		}
+		echo '</pre>';
+		die('Success!');
+
+/* * /
+		$templates = $mb
+			->get('Template')
+			->with('TemplateGroup')
+			->filter('Template.template_name', 'index')
+			->filter('Template.site_id', 1)
+			->all();
+
+		$t1 = microtime(TRUE);
+
+		$templates = $mb
+			->get('Template')
+			->with('TemplateGroup')
+			->filter('Template.template_name', 'index')
+			->filter('Template.site_id', 1)
+			->all();
+
+		$t2 = microtime(TRUE);
+		var_dump($t2 - $t1);
+
+		foreach ($templates as $template)
+		{
+			var_dump($template->getTemplateGroup()->group_name.' --- '.$template->template_name);
+		}
+
+		exit; */
+
 		$this->cp->get_installed_modules();
 		$this->view->cp_page_title = lang('main_menu');
 

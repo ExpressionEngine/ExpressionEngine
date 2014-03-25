@@ -47,6 +47,16 @@ class Admin_content extends CP_Controller {
 
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content', lang('admin_content'));
 
+		require APPPATH . '../EllisLab/ExpressionEngine/Core/Autoloader.php';
+		$loader = new Autoloader();
+		$loader->register();
+
+		$di = new \EllisLab\ExpressionEngine\Core\Dependencies();
+
+		// Conveinence links
+		$this->dependencies = $di;
+		$this->factory = $this->dependencies->getModelFactory();
+
 		// Note- no access check here to allow the publish page access to categories
 	}
 
@@ -126,70 +136,62 @@ class Admin_content extends CP_Controller {
 		}
 
 		$this->load->helper('snippets');
-		$this->load->model('channel_model');
-		$this->load->model('category_model');
-
 		$this->cp->add_js_script('plugin', 'ee_url_title');
-
 		$this->javascript->output('
 			$("#channel_title").bind("keyup keydown", function() {
 				$(this).ee_url_title("#channel_name");
 			});
 		');
-
 		$this->view->cp_page_title = lang('create_new_channel');
 
-		$channels = $this->channel_model->get_channels($this->config->item('site_id'), array('channel_id', 'channel_title'));
-
+		$channels = $this->factory
+			->get('Channel')
+			->filter('site_id', $this->config->item('site_id'))
+			->order('channel_title')
+			->all();
 		$vars['duplicate_channel_prefs_options'][''] = lang('do_not_duplicate');
-
-		if ($channels != FALSE && $channels->num_rows() > 0)
+		if ( ! empty($channels))
 		{
-			foreach($channels->result() as $channel)
+			foreach($channels as $channel)
 			{
 				$vars['duplicate_channel_prefs_options'][$channel->channel_id] = $channel->channel_title;
 			}
 		}
 
 		$vars['cat_group_options'][''] = lang('none');
-
-		$groups = $this->category_model->get_category_groups('', $this->config->item('site_id'));
-
-		if ($groups->num_rows() > 0)
+		$category_groups = $this->factory->get('CategoryGroup')
+			->filter('site_id', $this->config->item('site_id'))
+			->order('group_name')
+			->all();
+		if ( ! empty($category_groups))
 		{
-			foreach ($groups->result() as $group)
+			foreach ($category_groups as $group)
 			{
 				$vars['cat_group_options'][$group->group_id] = $group->group_name;
 			}
 		}
 
 		$vars['status_group_options'][''] = lang('none');
-
-		$this->db->select('group_id, group_name');
-		$this->db->where('site_id', $this->config->item('site_id'));
-		$this->db->order_by('group_name');
-
-		$groups = $this->db->get('status_groups');
-
-		if ($groups->num_rows() > 0)
+		$status_groups = $this->factory->get('StatusGroup')
+			->filter('site_id', $this->config->item('site_id'))
+			->order('group_name')
+			->all();
+		if ( ! empty($status_groups))
 		{
-			foreach ($groups->result() as $group)
+			foreach ($status_groups as $group)
 			{
 				$vars['status_group_options'][$group->group_id] = $group->group_name;
 			}
 		}
 
 		$vars['field_group_options'][''] = lang('none');
-
-		$this->db->select('group_id, group_name');
-		$this->db->where('site_id', $this->config->item('site_id'));
-		$this->db->order_by('group_name');
-
-		$groups = $this->db->get('field_groups');
-
-		if ($groups->num_rows() > 0)
+		$field_groups = $this->factory->get('ChannelFieldGroup')
+			->filter('site_id', $this->config->item('site_id'))
+			->order('group_name')
+			->all();
+		if ( ! empty($field_groups))
 		{
-			foreach ($groups->result() as $group)
+			foreach ($field_groups as $group)
 			{
 				$vars['field_group_options'][$group->group_id] = $group->group_name;
 			}
@@ -198,24 +200,18 @@ class Admin_content extends CP_Controller {
 		// New themes may contain more than one group, thus naming collisions will happen
 		// unless this is revamped.
 		$vars['themes'] = array();
-
-		$this->db->select('group_id, group_name, s.site_label');
-		$this->db->from('template_groups tg, sites s');
-		$this->db->where('tg.site_id = s.site_id', NULL, FALSE);
-
+		$query = $this->factory->get('TemplateGroup')
+			->with('Site')
+			->order('TemplateGroup.group_name');
 		if ($this->config->item('multiple_sites_enabled') !== 'y')
 		{
-			$this->db->where('tg.site_id', '1');
+			$query->filter('TemplateGroup.site_id', 1);
 		}
-
-		$this->db->order_by('tg.group_name');
-		$query = $this->db->get();
-
+		$template_groups = $query->all();
 		$vars['old_group_id'] = array();
-
-		foreach ($query->result_array() as $row)
+		foreach ($template_groups as $group)
 		{
-			$vars['old_group_id'][$row['group_id']] = ($this->config->item('multiple_sites_enabled') == 'y') ? $row['site_label'].NBS.'-'.NBS.$row['group_name'] : $row['group_name'];
+			$vars['old_group_id'][$group->group_id] = ($this->config->item('multiple_sites_enabled') == 'y') ? $group->getSite()->site_label.NBS.'-'.NBS.$group->group_name : $group->group_name;
 		}
 
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=channel_management', lang('channels'));
@@ -241,10 +237,6 @@ class Admin_content extends CP_Controller {
 
 		$this->load->library('table');
 		$this->load->helper('snippets');
-		$this->load->model('channel_model');
-		$this->load->model('template_model');
-		$this->load->model('status_model');
-		$this->load->model('field_model');
 		$this->load->model('admin_model');
 
 		$channel_id = $this->input->get_post('channel_id');
@@ -264,80 +256,85 @@ class Admin_content extends CP_Controller {
 			return $this->channel_update();
 		}
 
-		$query = $this->channel_model->get_channel_info($channel_id);
-
-		foreach ($query->row_array() as $key => $val)
-		{
-			$vars[$key] = $val;
-		}
+		$channel = $this->factory->get('Channel')->filter('channel_id', $channel_id)->first();
+		$vars['channel'] = $channel;
 
 		$vars['form_hidden']['channel_id'] = $channel_id;
 
 		// live_look_template
-		$query = $this->template_model->get_templates();
+		$templates = $this->factory->get('Template')
+			->with('TemplateGroup')
+			->all();
 
 		$vars['live_look_template_options'][0] = lang('no_live_look_template');
 
-		if ($query->num_rows() > 0)
+		if ( count($templates) > 0)
 		{
-			foreach ($query->result() as $template)
+			foreach ($templates as $template)
 			{
-				$vars['live_look_template_options'][$template->template_id] = $template->group_name.'/'.$template->template_name;
+				$vars['live_look_template_options'][$template->template_id] = $template->getTemplateGroup()->group_name.'/'.$template->template_name;
 			}
 		}
 
 		// Default status menu
-		$query = $this->status_model->get_statuses($vars['status_group']);
+		$statuses = $this->factory->get('Status')
+			->with('StatusGroup')
+			->filter('Status.group_id', $channel->status_group)
+			->all();
 
+		// These will always be there, and also need extra processing.
 		$vars['deft_status_options']['open'] = lang('open');
 		$vars['deft_status_options']['closed'] = lang('closed');
-
-		if ($query->num_rows() > 0)
+		if (count($statuses) > 0)
 		{
-			foreach ($query->result() as $row)
+			foreach ($statuses as $status)
 			{
-				$status_name = ($row->status == 'open' OR $row->status == 'closed') ? lang($row->status) : $row->status;
-				$vars['deft_status_options'][$row->status] = $status_name;
+				// We already did these ones, so skip em.
+				if ($status->status == 'open' || $status->status == 'closed')
+				{
+					continue;
+				}
+
+				$vars['deft_status_options'][$status->status] = $status->status;
 			}
 		}
 
+
 		$vars['deft_category_options'][''] = lang('none');
 
-		$cats = $vars['cat_group'] ? explode('|', $vars['cat_group']) : array();
+		$category_group_ids = $channel->cat_group ? explode('|', $channel->cat_group) : array();
 
 		// Needz moar felineness!
-		if (count($cats))
+		if (count($category_group_ids))
 		{
-			$this->db->select('CONCAT('.$this->db->dbprefix('category_groups').'.group_name, ": ", '.$this->db->dbprefix('categories').'.cat_name) as display_name', FALSE);
-			$this->db->select('categories.cat_id, categories.cat_name, category_groups.group_name');
-			$this->db->from('categories, '.$this->db->dbprefix('category_groups'));
-			$this->db->where($this->db->dbprefix('category_groups').'.group_id = '.$this->db->dbprefix('categories').'.group_id', NULL, FALSE);
-			$this->db->where_in('categories.group_id', $cats);
-			$this->db->order_by('display_name');
+			$categories = $this->factory->get('Category')
+				->with('CategoryGroup')
+				->filter('CategoryGroup.group_id', 'in', $category_group_ids)
+				->order('CategoryGroup.group_name')
+				->order('Category.cat_name')
+				->all();
 
-			$query = $this->db->get();
 
-			if ($query->num_rows() > 0)
+			if (count($categories) > 0)
 			{
-				foreach ($query->result() as $row)
+				foreach ($categories as $category)
 				{
-					$vars['deft_category_options'][$row->cat_id] = $row->display_name;
+					$vars['deft_category_options'][$category->cat_id] = $category->getCategoryGroup()->group_name . ': ' . $category->cat_name;
 				}
 			}
 		}
 
-		// Default field for search excerpt
-		$this->db->select('field_id, field_label');
-		$this->db->where('group_id', $vars['field_group']);
-		$query = $this->db->get('channel_fields');
+		$channel_fields = $this->factory->get('ChannelFieldStructure')
+			->filter('group_id', $channel->field_group)
+			->all();
 
 		$vars['search_excerpt_options'] = array();
 
-		if ($query->num_rows() > 0)
+		if (count($channel_fields) > 0)
 		{
-			foreach ($query->result() as $row)
+			foreach ($channel_fields as $channel_field)
 			{
-				$vars['search_excerpt_options'][$row->field_id] = $row->field_label;
+				$vars['search_excerpt_options'][$channel_field->field_id] = $channel_field->field_label;
 			}
 		}
 
@@ -369,7 +366,7 @@ class Admin_content extends CP_Controller {
 
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=channel_management', lang('channels'));
 
-		$this->view->cp_page_title = lang('channel_prefs').': '.$vars['channel_title'];
+		$this->view->cp_page_title = lang('channel_prefs').': '.$channel->channel_title;
 		$this->cp->render('admin/channel_edit', $vars);
 	}
 
@@ -420,11 +417,13 @@ class Admin_content extends CP_Controller {
 
 		if ($this->form_validation->old_value('channel_id'))
 		{
+			echo 'Have old channel id.';
 			$this->db->where('channel_id != ', $this->form_validation->old_value('channel_id'));
 		}
 
 		if ($this->db->count_all_results('channels') > 0)
 		{
+			echo 'And still fail.';
 			$this->form_validation->set_message('_valid_channel_name', lang('taken_channel_name'));
 			return FALSE;
 		}
@@ -504,11 +503,6 @@ class Admin_content extends CP_Controller {
 
 		if (isset($_POST['cat_group']) && is_array($_POST['cat_group']))
 		{
-			foreach($_POST['cat_group'] as $key => $value)
-			{
-				unset($_POST['cat_group_'.$key]);
-			}
-
 			$_POST['cat_group'] = implode('|', $_POST['cat_group']);
 		}
 
@@ -519,130 +513,62 @@ class Admin_content extends CP_Controller {
 		{
 			unset($_POST['channel_id']);
 			unset($_POST['clear_versioning_data']);
+			$_POST['default_entry_title'] = '';
+			$_POST['url_title_prefix'] = '';
 
-			$_POST['channel_url']	  = $this->functions->fetch_site_index();
-			$_POST['channel_lang']	 = $this->config->item('xml_lang');
+			$channel = $this->factory->make('Channel', $_POST);
+			$channel->channel_url = $this->functions->fetch_site_index();
+			$channel->channel_lang = $this->config->item('xml_lang');
+			$channel->site_id = $this->config->item('site_id');
 
 			// Assign field group if there is only one
-
-			if ($dupe_id != '' && ( ! isset($_POST['field_group']) OR (isset($_POST['field_group']) && ! is_numeric($_POST['field_group']))))
+			if ($dupe_id != ''
+				&& ( $channel->field_group === NULL || ! is_numeric($channel->field_group)))
 			{
-				$this->db->select('group_id');
-				$this->db->where('site_id', $this->config->item('site_id'));
-				$query = $this->db->get('field_groups');
+				$field_groups = $this->factory->get('ChannelFieldGroup')
+					->filter('site_id', $channel->site_id)
+					->all();
 
-				if ($query->num_rows() == 1)
+				if (count($field_groups) === 1)
 				{
-					$_POST['field_group'] = $query->row('group_id');
+					$channel->field_group = $field_groups[0]->group_id;
 				}
 			}
 
-			// Insert data
-
-			$_POST['site_id'] = $this->config->item('site_id');
-			$_POST['status_group'] = ($this->input->post('status_group') !== FALSE &&
-				$this->input->post('status_group') != '')
-				? $this->input->post('status_group') : NULL;
-			$_POST['field_group'] = ($this->input->post('field_group') !== FALSE &&
-				$this->input->post('field_group') != '')
-				? $this->input->post('field_group') : NULL;
+			// Make sure these are the correct NULL value if they are not set.
+			$channel->status_group = ($channel->status_group !== FALSE
+				&& $channel->status_group != '')
+				? $channel->status_group : NULL;
+			$channel->field_group = ($channel->field_group !== FALSE &&
+				$channel->field_group != '')
+				? $channel->field_group : NULL;
 
 			// duplicating preferences?
 			if ($dupe_id !== FALSE AND is_numeric($dupe_id))
 			{
-				$this->db->where('channel_id', $dupe_id);
-				$wquery = $this->db->get('channels');
-
-				if ($wquery->num_rows() == 1)
-				{
-					$exceptions = array('channel_id', 'site_id', 'channel_name', 'channel_title', 'total_entries',
-										'total_comments', 'last_entry_date', 'last_comment_date');
-
-					foreach($wquery->row_array() as $key => $val)
-					{
-						// don't duplicate fields that are unique to each channel
-						if ( ! in_array($key, $exceptions))
-						{
-							switch ($key)
-							{
-								// category, field, and status fields should only be duped
-								// if both channels are assigned to the same group of each
-								case 'cat_group':
-									// allow to implicitly set category group to "None"
-									if ( ! isset($_POST[$key]))
-									{
-										$_POST[$key] = $val;
-									}
-									break;
-								case 'status_group':
-								case 'field_group':
-									if ( ! isset($_POST[$key]))
-									{
-										$_POST[$key] = $val;
-									}
-									elseif ($_POST[$key] == '')
-									{
-										 $_POST[$key] = NULL;
-									}
-									break;
-								case 'deft_status':
-								case 'deft_status':
-									if ( ! isset($_POST['status_group']) OR $_POST['status_group'] == $wquery->row('status_group') )
-									{
-										$_POST[$key] = $val;
-									}
-									break;
-								case 'search_excerpt':
-									if ( ! isset($_POST['field_group']) OR $_POST['field_group'] == $wquery->row('field_group') )
-									{
-										$_POST[$key] = $val;
-									}
-									break;
-								case 'deft_category':
-									if ( ! isset($_POST['cat_group']) OR count(array_diff(explode('|', $_POST['cat_group']), explode('|', $wquery->row('cat_group') ))) == 0)
-									{
-										$_POST[$key] = $val;
-									}
-									break;
-								case 'blog_url':
-								case 'comment_url':
-								case 'search_results_url':
-								case 'rss_url':
-										$_POST[$key] = $val;
-									break;
-								default :
-									$_POST[$key] = $val;
-									break;
-							}
-						}
-					}
-				}
+				$dupe_channel = $this->factory
+					->get('Channel')
+					->filter('channel_id', $dupe_id)
+					->first();
+				$channel->duplicatePreferences($dupe_channel);
 			}
 
-
-			$_POST['default_entry_title'] = '';
-			$_POST['url_title_prefix'] = '';
-
-			$this->db->insert('channels', $_POST);
-
-			$insert_id = $this->db->insert_id();
-			$channel_id = $insert_id;
-
-			// If they made the channel?  Give access to that channel to the member group?
+			$channel->save();
 
 			if ($dupe_id !== FALSE AND is_numeric($dupe_id))
 			{
 				// Duplicate layouts
-				$this->layout->duplicate_layout($dupe_id, $channel_id);
+				$this->layout->duplicate_layout($dupe_id, $channel->channel_id);
 			}
 
+			// If they made the channel?  Give access to that channel to the member group?
 			// If member group has ability to create the channel, they should be
 			// able to access it as well
 			if ($this->session->userdata('group_id') != 1)
 			{
 				$data = array(
 					'group_id'		=> $this->session->userdata('group_id'),
-					'channel_id'	=> $channel_id
+					'channel_id'	=> $channel->channel_id
 				);
 
 				$this->db->insert('channel_member_groups', $data);
@@ -666,10 +592,9 @@ class Admin_content extends CP_Controller {
 
 			$this->layout->sync_layout($_POST, $_POST['channel_id']);
 
-			$sql = $this->db->update_string('exp_channels', $_POST, 'channel_id='.$this->db->escape_str($_POST['channel_id']));
 
-			$this->db->query($sql);
-			$channel_id = $this->db->escape_str($_POST['channel_id']);
+			$channel = $this->factory->make('Channel', $_POST);
+			$channel->save();
 
 			$success_msg = lang('channel_updated');
 		}
@@ -684,7 +609,7 @@ class Admin_content extends CP_Controller {
 		}
 		else
 		{
-			$this->functions->redirect(BASE.AMP.'C=admin_content'.AMP.'M=channel_edit&channel_id='.$channel_id);
+			$this->functions->redirect(BASE.AMP.'C=admin_content'.AMP.'M=channel_edit&channel_id='.$channel->channel_id);
 		}
 	}
 
