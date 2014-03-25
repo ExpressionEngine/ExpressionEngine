@@ -5,9 +5,9 @@ use EllisLab\ExpressionEngine\Model\Gateway\RowDataGateway;
 
 class ChannelGateway extends RowDataGateway {
 	// Meta Data
-	protected static $_table_name => 'channels';
-	protected static $_primary_key => 'channel_id';
-	protected static $_related_gateways => array(
+	protected static $_table_name = 'channels';
+	protected static $_primary_key = 'channel_id';
+	protected static $_related_gateways = array(
 		'channel_id' => array(
 			'gateway' => 'ChannelTitleGateway',
 			'key' => 'channel_id'
