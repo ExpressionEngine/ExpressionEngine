@@ -309,7 +309,7 @@ class Api_channel_entries extends Api {
 	{
 		ee()->load->library('api');
 		ee()->load->library('addons');
-		ee()->api->instantiate('channel_fields');
+		ee()->legacy_api->instantiate('channel_fields');
 
 		if ( ! is_array($entry_ids))
 		{

@@ -51,7 +51,7 @@ class Notifications {
 	 */
 	function send_admin_notification($notify_address, $channel_id, $entry_id)
 	{
-		ee()->api->instantiate('channel_structure');
+		ee()->legacy_api->instantiate('channel_structure');
 		ee()->load->model('channel_entries_model');
 
 		$e = ee()->channel_entries_model->get_entry($entry_id, $channel_id);

@@ -103,6 +103,13 @@ class EE_Core {
 		ee()->db->swap_pre = 'exp_';
 		ee()->db->db_debug = FALSE;
 
+		// Setup API model factory
+		require APPPATH . '../EllisLab/ExpressionEngine/Core/Autoloader.php';
+		$loader = new Autoloader();
+		$loader->register();
+		$di = new \EllisLab\ExpressionEngine\Core\Dependencies();
+		ee()->api = $di->getModelFactory();
+
 		// Note enable_db_caching is a per site setting specified in EE_Config.php
 		// If debug is on we enable the profiler and DB debug
 		if (DEBUG == 1 OR ee()->config->item('debug') == 2)

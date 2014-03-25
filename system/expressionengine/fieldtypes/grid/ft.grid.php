@@ -197,7 +197,7 @@ class Grid_ft extends EE_Fieldtype {
 		if ($this->content_type() != 'channel')
 		{
 			ee()->load->library('api');
-			ee()->api->instantiate('channel_fields');
+			ee()->legacy_api->instantiate('channel_fields');
 			ee()->grid_parser->grid_field_names[$this->id()] = $this->name();
 		}
 

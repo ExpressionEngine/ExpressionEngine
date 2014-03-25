@@ -162,7 +162,7 @@ EOT;
 		ee()->load->helper('form');
 		ee()->load->library('form_validation');
 		ee()->load->library('api');
-		ee()->api->instantiate('channel_categories');
+		ee()->legacy_api->instantiate('channel_categories');
 
 		$id		= ( ! ee()->input->get_post('id')) ? '' : ee()->input->get_post('id');
 		$basis	= ( ! ee()->input->post('basis'))  ? '' : ee()->input->post('basis');

@@ -609,7 +609,7 @@ class Grid_parser {
 		if ( ! isset(ee()->api_channel_fields->field_types[$column['col_type']]))
 		{
 			ee()->load->library('api');
-			ee()->api->instantiate('channel_fields');
+			ee()->legacy_api->instantiate('channel_fields');
 			ee()->api_channel_fields->fetch_installed_fieldtypes();
 		}
 

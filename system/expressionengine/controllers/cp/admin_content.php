@@ -47,16 +47,6 @@ class Admin_content extends CP_Controller {
 
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content', lang('admin_content'));
 
-		require APPPATH . '../EllisLab/ExpressionEngine/Core/Autoloader.php';
-		$loader = new Autoloader();
-		$loader->register();
-
-		$di = new \EllisLab\ExpressionEngine\Core\Dependencies();
-
-		// Conveinence links
-		$this->dependencies = $di;
-		$this->factory = $this->dependencies->getModelFactory();
-
 		// Note- no access check here to allow the publish page access to categories
 	}
 
@@ -144,7 +134,7 @@ class Admin_content extends CP_Controller {
 		');
 		$this->view->cp_page_title = lang('create_new_channel');
 
-		$channels = $this->factory
+		$channels = ee()->api
 			->get('Channel')
 			->filter('site_id', $this->config->item('site_id'))
 			->order('channel_title')
@@ -159,7 +149,7 @@ class Admin_content extends CP_Controller {
 		}
 
 		$vars['cat_group_options'][''] = lang('none');
-		$category_groups = $this->factory->get('CategoryGroup')
+		$category_groups = ee()->api->get('CategoryGroup')
 			->filter('site_id', $this->config->item('site_id'))
 			->order('group_name')
 			->all();
@@ -172,7 +162,7 @@ class Admin_content extends CP_Controller {
 		}
 
 		$vars['status_group_options'][''] = lang('none');
-		$status_groups = $this->factory->get('StatusGroup')
+		$status_groups = ee()->api->get('StatusGroup')
 			->filter('site_id', $this->config->item('site_id'))
 			->order('group_name')
 			->all();
@@ -185,7 +175,7 @@ class Admin_content extends CP_Controller {
 		}
 
 		$vars['field_group_options'][''] = lang('none');
-		$field_groups = $this->factory->get('ChannelFieldGroup')
+		$field_groups = ee()->api->get('ChannelFieldGroup')
 			->filter('site_id', $this->config->item('site_id'))
 			->order('group_name')
 			->all();
@@ -200,7 +190,7 @@ class Admin_content extends CP_Controller {
 		// New themes may contain more than one group, thus naming collisions will happen
 		// unless this is revamped.
 		$vars['themes'] = array();
-		$query = $this->factory->get('TemplateGroup')
+		$query = ee()->api->get('TemplateGroup')
 			->with('Site')
 			->order('TemplateGroup.group_name');
 		if ($this->config->item('multiple_sites_enabled') !== 'y')
@@ -256,13 +246,13 @@ class Admin_content extends CP_Controller {
 			return $this->channel_update();
 		}
 
-		$channel = $this->factory->get('Channel')->filter('channel_id', $channel_id)->first();
+		$channel = ee()->api->get('Channel')->filter('channel_id', $channel_id)->first();
 		$vars['channel'] = $channel;
 
 		$vars['form_hidden']['channel_id'] = $channel_id;
 
 		// live_look_template
-		$templates = $this->factory->get('Template')
+		$templates = ee()->api->get('Template')
 			->with('TemplateGroup')
 			->all();
 
@@ -277,7 +267,7 @@ class Admin_content extends CP_Controller {
 		}
 
 		// Default status menu
-		$statuses = $this->factory->get('Status')
+		$statuses = ee()->api->get('Status')
 			->with('StatusGroup')
 			->filter('Status.group_id', $channel->status_group)
 			->all();
@@ -307,7 +297,7 @@ class Admin_content extends CP_Controller {
 		// Needz moar felineness!
 		if (count($category_group_ids))
 		{
-			$categories = $this->factory->get('Category')
+			$categories = ee()->api->get('Category')
 				->with('CategoryGroup')
 				->filter('CategoryGroup.group_id', 'in', $category_group_ids)
 				->order('CategoryGroup.group_name')
@@ -324,7 +314,7 @@ class Admin_content extends CP_Controller {
 			}
 		}
 
-		$channel_fields = $this->factory->get('ChannelFieldStructure')
+		$channel_fields = ee()->api->get('ChannelFieldStructure')
 			->filter('group_id', $channel->field_group)
 			->all();
 
@@ -516,7 +506,7 @@ class Admin_content extends CP_Controller {
 			$_POST['default_entry_title'] = '';
 			$_POST['url_title_prefix'] = '';
 
-			$channel = $this->factory->make('Channel', $_POST);
+			$channel = ee()->api->make('Channel', $_POST);
 			$channel->channel_url = $this->functions->fetch_site_index();
 			$channel->channel_lang = $this->config->item('xml_lang');
 			$channel->site_id = $this->config->item('site_id');
@@ -525,7 +515,7 @@ class Admin_content extends CP_Controller {
 			if ($dupe_id != ''
 				&& ( $channel->field_group === NULL || ! is_numeric($channel->field_group)))
 			{
-				$field_groups = $this->factory->get('ChannelFieldGroup')
+				$field_groups = ee()->api->get('ChannelFieldGroup')
 					->filter('site_id', $channel->site_id)
 					->all();
 
@@ -546,7 +536,7 @@ class Admin_content extends CP_Controller {
 			// duplicating preferences?
 			if ($dupe_id !== FALSE AND is_numeric($dupe_id))
 			{
-				$dupe_channel = $this->factory
+				$dupe_channel = ee()->api
 					->get('Channel')
 					->filter('channel_id', $dupe_id)
 					->first();
@@ -593,7 +583,7 @@ class Admin_content extends CP_Controller {
 			$this->layout->sync_layout($_POST, $_POST['channel_id']);
 
 
-			$channel = $this->factory->make('Channel', $_POST);
+			$channel = ee()->api->make('Channel', $_POST);
 			$channel->save();
 
 			$success_msg = lang('channel_updated');
@@ -1515,7 +1505,7 @@ class Admin_content extends CP_Controller {
 		$this->load->library('table');
 		$this->load->library('api');
 
-		$this->api->instantiate('channel_categories');
+		$this->legacy_api->instantiate('channel_categories');
 
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=category_management', lang('categories'));
 
@@ -1749,7 +1739,7 @@ class Admin_content extends CP_Controller {
 		$vars['form_hidden']['group_id'] = $group_id;
 
 		$this->load->library('api');
-		$this->api->instantiate('channel_categories');
+		$this->legacy_api->instantiate('channel_categories');
 		$this->api_channel_categories->category_tree($group_id, $vars['parent_id']);
 
 		$vars['parent_id_options'] = $this->api_channel_categories->categories;
@@ -1980,7 +1970,7 @@ class Admin_content extends CP_Controller {
 
 		$this->load->model('category_model');
 		$this->load->library('api');
-		$this->api->instantiate('channel_categories');
+		$this->legacy_api->instantiate('channel_categories');
 
 		// Create and validate Category URL Title
 		// Kill all the extraneous characters. (We want the URL title to be pure alpha text)
@@ -3469,7 +3459,7 @@ class Admin_content extends CP_Controller {
 		if ($custom_fields->num_rows() > 0)
 		{
 			$this->load->library('api');
-			$this->api->instantiate('channel_fields');
+			$this->legacy_api->instantiate('channel_fields');
 			$fts = $this->api_channel_fields->fetch_all_fieldtypes();
 
 			foreach ($custom_fields->result() as $row)
@@ -3509,7 +3499,7 @@ class Admin_content extends CP_Controller {
 		$this->load->library(array('table', 'api', 'form_validation'));
 		$this->load->helper(array('snippets_helper', 'form'));
 
-		$this->api->instantiate('channel_fields');
+		$this->legacy_api->instantiate('channel_fields');
 
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=field_group_management', lang('field_management'));
 
@@ -3703,7 +3693,7 @@ class Admin_content extends CP_Controller {
 		}
 
 		$this->load->library('api');
-		$this->api->instantiate('channel_fields');
+		$this->legacy_api->instantiate('channel_fields');
 
 		// If the $field_id variable has data we are editing an
 		// existing group, otherwise we are creating a new one
