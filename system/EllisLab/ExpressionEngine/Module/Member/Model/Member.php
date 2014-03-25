@@ -8,16 +8,14 @@ use EllisLab\ExpressionEngine\Model\Model;
  *
  * A member of the website.  Represents the user functionality
  * provided by the Member module.  This is a single user of
- * the website.  
+ * the website.
  */
 class Member extends Model {
-	protected static $_meta = array(
-		'primary_key' => 'member_id',
-		'gateway_names' => array('MemberGateway'),
-		'key_map' => array(
-			'member_id' => 'MemberGateway',
-			'group_id' => 'MemberGateway'
-		)
+	protected static $_primary_key = 'member_id';
+	protected static $_gateway_names = array('MemberGateway');
+	protected static $_key_map = array(
+		'member_id' => 'MemberGateway',
+		'group_id' => 'MemberGateway'
 	);
 
 	// Properties
@@ -114,7 +112,7 @@ class Member extends Model {
 	public function setChannelEntries(array $entries)
 	{
 		$this->setRelated('ChannelEntries', $entries);
-		
+
 		foreach($entries as $entry)
 		{
 			$entry->author_id = $this->member_id;

@@ -5,31 +5,29 @@ use EllisLab\ExpressionEngine\Model\Gateway\RowDataGateway;
 
 class ChannelTitleGateway extends RowDataGateway {
 	// Structural definition stuff
-	protected static $meta = array(
-		'table_name' 		=> 'channel_titles',
-		'primary_key' 		=> 'entry_id',
-		'related_gateways' 	=> array(
-			'entry_id' => array(
-				'Categories'=>array(
-					'gateway' => 'CategoryGateway',
-					'key'	 => 'cat_id',
-					'pivot_table' => 'category_posts',
-					'pivot_key' => 'entry_id',
-					'pivot_foreign_key' => 'cat_id'
-				)
-			),
-			'site_id' => array(
-				'gateway' => 'SiteGateway',
-				'key'	 => 'site_id'
-			),
-			'channel_id' => array(
-				'gateway' => 'ChannelGateway',
-				'key'    => 'channel_id'
-			),
-			'author_id' => array(
-				'gateway' => 'MemberGateway',
-				'key'	=> 'member_id'
+	protected static $_table_name 		= 'channel_titles';
+	protected static $_primary_key 		= 'entry_id';
+	protected static $_related_gateways = array(
+		'entry_id' => array(
+			'Categories'=>array(
+				'gateway' => 'CategoryGateway',
+				'key'	 => 'cat_id',
+				'pivot_table' => 'category_posts',
+				'pivot_key' => 'entry_id',
+				'pivot_foreign_key' => 'cat_id'
 			)
+		),
+		'site_id' => array(
+			'gateway' => 'SiteGateway',
+			'key'	 => 'site_id'
+		),
+		'channel_id' => array(
+			'gateway' => 'ChannelGateway',
+			'key'    => 'channel_id'
+		),
+		'author_id' => array(
+			'gateway' => 'MemberGateway',
+			'key'	=> 'member_id'
 		)
 	);
 
@@ -58,6 +56,6 @@ class ChannelTitleGateway extends RowDataGateway {
 	public $comment_expiration_date;
 	public $edit_date;
 	public $recent_comment_date;
-	public $comment_total;						
+	public $comment_total;
 
 }

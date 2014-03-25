@@ -4,13 +4,11 @@ namespace EllisLab\ExpressionEngine\Module\Channel\Model;
 use EllisLab\ExpressionEngine\Model\Model;
 
 class ChannelFieldGroup extends Model {
-	protected static $_meta = array(
-		'primary_key' 	=> 'group_id',
-		'gateway_names' 	=> array('ChannelFieldGroupGateway'),
-		'key_map'		=> array(
-			'group_id' => 'ChannelFieldGroupGateway',
-			'site_id' => 'ChannelFieldGroupGateway'
-		)
+	protected static $_primary_key 	= 'group_id';
+	protected static $_gateway_names 	= array('ChannelFieldGroupGateway');
+	protected static $_key_map		= array(
+		'group_id' => 'ChannelFieldGroupGateway',
+		'site_id' => 'ChannelFieldGroupGateway'
 	);
 
 	// Properties
