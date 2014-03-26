@@ -1,13 +1,13 @@
 <?php namespace EllisLab\ExpressionEngine\Model\Query;
 
 use EllisLab\ExpressionEngine\Model\Collection;
-use EllisLab\ExpressionEngine\Model\ModelBuilder;
+use EllisLab\ExpressionEngine\Model\ModelFactory;
 use EllisLab\ExpressionEngine\Model\Query\QueryTreeNode;
 use EllisLab\ExpressionEngine\Core\AliasService;
 
 class Query {
 
-	private $builder;
+	private $factory;
 	private $alias_service;
 
 	private $db;
@@ -32,9 +32,9 @@ class Query {
 	private $results = array();
 	private $result_index = array();
 
-	public function __construct(ModelBuilder $builder, AliasService $alias_service, $model_name)
+	public function __construct(ModelFactory $factory, AliasService $alias_service, $model_name)
 	{
-		$this->builder = $builder;
+		$this->factory = $factory;
 		$this->alias_service = $alias_service;
 
 		if (function_exists('ee'))
@@ -383,7 +383,7 @@ class Query {
 			$from_model_name = $parent->meta->to_model_name;
 		}
 
-		$from_model = $this->builder->make($from_model_name);
+		$from_model = $this->factory->make($from_model_name);
 
 		$relationship_method = 'get' . $relationship_name;
 
@@ -655,7 +655,7 @@ class Query {
 	{
 		$model_name = $model_data['__model_name'];
 
-		$model = $this->builder->make($model_name, $model_data, FALSE);
+		$model = $this->factory->make($model_name, $model_data, FALSE);
 
 		$primary_key_name = $model::getMetaData('primary_key');
 		$primary_key = $model_data[$primary_key_name];

@@ -32,23 +32,18 @@ abstract class RowDataGateway {
 	/**
 	 * Database connection
 	 */
-	protected $db = NULL;
+	protected $_db = NULL;
 
 	/**
 	 * Model builder instance.
 	 */
-	protected $validation_factory = NULL;
-
-	/**
-	 * Meta data array, overridden by subclasses.
-	 */
-	protected static $meta = array();
+	protected $_validation_factory = NULL;
 
 	/**
 	 * Array to track which properties have been modified, so that we
 	 * only save or validate those that need it.
 	 */
-	protected $dirty = array();
+	protected $_dirty = array();
 
 	/**
 	 * Construct an gateway.  Initialize it with the Depdency Injection object
@@ -60,7 +55,7 @@ abstract class RowDataGateway {
 	 */
 	public function __construct(ValidationFactory $validation_factory, array $data = array())
 	{
-		$this->validation_factory = $validation_factory;
+		$this->_validation_factory = $validation_factory;
 
 		foreach ($data as $property => $value)
 		{
@@ -107,29 +102,20 @@ abstract class RowDataGateway {
 	 *
 	 * @return	mixed[]|mixed	The requested meta data.
 	 */
-	public static function getMetaData($key = NULL)
+	public static function getMetaData($key)
 	{
 		if ($key === 'field_list')
 		{
 			return getFieldList(get_called_class());
 		}
 
-		if (empty(static::$meta))
-		{
-			throw new \UnderflowException('No meta data set for this gateway!');
-		}
-
-		if ( ! isset($key))
-		{
-			return static::$meta;
-		}
-
-		if ( ! isset (static::$meta[$key]))
+		$property = '_' . $key;
+		if ( ! isset (static::$$property))
 		{
 			return NULL;
 		}
 
-		return static::$meta[$key];
+		return static::$$property;
 	}
 
 	/**
@@ -147,7 +133,7 @@ abstract class RowDataGateway {
 	 */
 	public function setDirty($property)
 	{
-		$this->dirty[$property] = TRUE;
+		$this->_dirty[$property] = TRUE;
 		return $this;
 	}
 
@@ -168,7 +154,7 @@ abstract class RowDataGateway {
 		$errors = $errors ?: new Errors();
 
 		// Nothing to validate!
-		if (empty($this->dirty))
+		if (empty($this->_dirty))
 		{
 			return $errors;
 		}
@@ -181,9 +167,9 @@ abstract class RowDataGateway {
 			return $errors;
 		}
 
-		$validation_factory = $validation_factory ?: $this->validation_factory;
+		$validation_factory = $validation_factory ?: $this->_validation_factory;
 
-		foreach ($this->dirty as $property => $dirty)
+		foreach ($this->_dirty as $property => $dirty)
 		{
 			if (isset($validation_rules[$property]))
 			{
@@ -217,13 +203,13 @@ abstract class RowDataGateway {
 	public function save()
 	{
 		// Nothing to save!
-		if (empty($this->dirty))
+		if (empty($this->_dirty))
 		{
 			return;
 		}
 
 		$save_array = array();
-		foreach ($this->dirty as $property => $dirty)
+		foreach ($this->_dirty as $property => $dirty)
 		{
 			$save_array[$property] = $this->{$property};
 		}
@@ -231,12 +217,12 @@ abstract class RowDataGateway {
 		$id_name = static::getMetaData('primary_key');
 		if (isset($this->{$id_name}))
 		{
-			$this->db->where($id_name, $this->{$id_name});
-			$this->db->update(static::getMetaData('table_name'), $save_array);
+			$this->_db->where($id_name, $this->{$id_name});
+			$this->_db->update(static::getMetaData('table_name'), $save_array);
 		}
 		else
 		{
-			$this->db->insert(static::getMetaData('table_name'), $save_array);
+			$this->_db->insert(static::getMetaData('table_name'), $save_array);
 		}
 	}
 
@@ -247,19 +233,19 @@ abstract class RowDataGateway {
 	public function restore()
 	{
 		// Nothing to save!
-		if (empty($this->dirty))
+		if (empty($this->_dirty))
 		{
 			return;
 		}
 
 		$save_array = array();
-		foreach ($this->dirty as $property => $dirty)
+		foreach ($this->_dirty as $property => $dirty)
 		{
 			$save_array[$property] = $this->{$property};
 		}
 
 		$id_name = static::getMetaData('primary_key');
-		$this->db->insert(static::getMetaData('table_name'), $save_array);
+		$this->_db->insert(static::getMetaData('table_name'), $save_array);
 	}
 
 	/**
@@ -273,7 +259,7 @@ abstract class RowDataGateway {
 			throw new ModelException('Attempt to delete an Gateway with out an attached ID!');
 		}
 
-		$this->db->delete(
+		$this->_db->delete(
 			static::getMetaData('table_name'),
 			array($primary_key => $this->{$primary_key})
 		);
@@ -284,6 +270,6 @@ abstract class RowDataGateway {
 	 */
 	public function setConnection($db)
 	{
-		$this->db = $db;
+		$this->_db = $db;
 	}
 }

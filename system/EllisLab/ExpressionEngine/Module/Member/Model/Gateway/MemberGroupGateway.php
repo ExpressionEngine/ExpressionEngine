@@ -7,18 +7,16 @@ use EllisLab\ExpressionEngine\Model\Gateway\RowDataGateway;
  * Member Groups table
  */
 class MemberGroupGateway extends RowDataGateway {
-	protected static $meta = array(
-		'table_name' => 'member_groups',
-		'primary_key' => 'group_id',
-		'related_gateways' => array(
-			'site_id' => array(
-				'gateway' => 'SiteGateway',
-				'key' => 'site_id'
-			)
+	protected static $_table_name => 'member_groups';
+	protected static $_primary_key => 'group_id';
+	protected static $_related_gateways => array(
+		'site_id' => array(
+			'gateway' => 'SiteGateway',
+			'key' => 'site_id'
 		)
 	);
 
-	
+
 	// Properties
 	public $group_id;
 	public $site_id;

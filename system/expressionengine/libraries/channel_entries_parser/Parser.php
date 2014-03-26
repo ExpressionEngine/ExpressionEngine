@@ -421,7 +421,7 @@ class EE_Channel_data_parser {
 		if ( ! empty($custom_field_data))
 		{
 			ee()->load->library('api');
-			ee()->api->instantiate('channel_fields');
+			ee()->legacy_api->instantiate('channel_fields');
 			$ft_api = ee()->api_channel_fields;
 
 			// For each custom field, notify its fieldtype class of the data we collected
@@ -505,7 +505,7 @@ class EE_Channel_data_parser {
 				if (isset($pre->modified_conditionals[$key]) && count($pre->modified_conditionals[$key]))
 				{
 					ee()->load->library('api');
-					ee()->api->instantiate('channel_fields');
+					ee()->legacy_api->instantiate('channel_fields');
 
 					if (ee()->api_channel_fields->setup_handler($value))
 					{

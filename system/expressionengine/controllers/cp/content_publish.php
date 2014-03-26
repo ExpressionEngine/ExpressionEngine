@@ -385,7 +385,7 @@ class Content_publish extends CP_Controller {
 
 		$this->_setup_default_fields($this->_channel_data, $entry_data);
 
-		$this->api->instantiate('channel_entries');
+		$this->legacy_api->instantiate('channel_entries');
 
 		// Editing a non-existant entry?
 		if ($entry_id && ! $this->api_channel_entries->entry_exists($entry_id))
@@ -440,7 +440,7 @@ class Content_publish extends CP_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->api->instantiate('channel_fields');
+		$this->legacy_api->instantiate('channel_fields');
 
 		$this->output->enable_profiler(FALSE);
 		$error 				= array();
@@ -779,7 +779,7 @@ class Content_publish extends CP_Controller {
 		}
 
 		$this->load->library('api');
-		$this->api->instantiate('channel_categories');
+		$this->legacy_api->instantiate('channel_categories');
 
 		$this->load->model('category_model');
 
@@ -866,7 +866,7 @@ class Content_publish extends CP_Controller {
 	 */
 	private function _set_field_settings($entry_id, $entry_data)
 	{
-		$this->api->instantiate('channel_fields');
+		$this->legacy_api->instantiate('channel_fields');
 
 		// Get Channel fields in the field group
 		$channel_fields = $this->channel_model->get_channel_fields($this->_channel_data['field_group']);
@@ -1165,7 +1165,7 @@ class Content_publish extends CP_Controller {
 		/*
 		/* -------------------------------------------*/
 
-		$this->api->instantiate('channel_entries');
+		$this->legacy_api->instantiate('channel_entries');
 
 		// Editing a non-existant entry?
 		if ($entry_id && ! $this->api_channel_entries->entry_exists($entry_id))

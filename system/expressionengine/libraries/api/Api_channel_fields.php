@@ -998,7 +998,7 @@ class Api_channel_fields extends Api {
 	function setup_entry_settings($channel_id, $entry_data, $bookmarklet = FALSE)
 	{
 		// Let's grab our channel data- note should be cached if already called via api
-		ee()->api->instantiate('channel_structure');
+		ee()->legacy_api->instantiate('channel_structure');
 
 		$channel_query = ee()->api_channel_structure->get_channel_info($channel_id);
 

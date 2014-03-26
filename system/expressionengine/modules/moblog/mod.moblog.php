@@ -1246,8 +1246,8 @@ class Moblog {
 
 		// Insert the Entry
 		ee()->load->library('api');
-		ee()->api->instantiate('channel_entries');
-		ee()->api->instantiate('channel_fields');
+		ee()->legacy_api->instantiate('channel_entries');
+		ee()->legacy_api->instantiate('channel_fields');
 
 		ee()->api_channel_fields->setup_entry_settings($data['channel_id'], $data);
 

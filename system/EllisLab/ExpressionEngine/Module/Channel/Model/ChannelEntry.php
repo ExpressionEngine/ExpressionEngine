@@ -4,7 +4,7 @@ namespace EllisLab\ExpressionEngine\Module\Channel\Model;
 use EllisLab\ExpressionEngine\Model\FieldDataContentModel;
 
 /**
- * Channel Entry 
+ * Channel Entry
  *
  * An entry in a content channel.  May have multiple custom fields in
  * addition to a number of built in fields.  Is content and may be
@@ -14,18 +14,17 @@ use EllisLab\ExpressionEngine\Model\FieldDataContentModel;
  * Related to Channel which defines the structure of this content.
  */
 class ChannelEntry extends FieldDataContentModel {
-	protected static $_meta = array(
-		'primary_key' => 'entry_id',
-		'gateway_names' => array('ChannelTitleGateway', 'ChannelDataGateway'),
-		'key_map' => array(
-			'entry_id' => 'ChannelTitleGateway',
-			'channel_id' => 'ChannelTitleGateway',
-			'site_id' => 'ChannelTitleGateway',
-			'author_id' => 'ChannelTitleGateway'
-		),
-		'field_content_class' => 'ChannelFieldContent',
-		'field_content_gateway' => 'ChannelDataGateway'		
+
+	protected static $_primary_key = 'entry_id';
+	protected static $_gateway_names = array('ChannelTitleGateway', 'ChannelDataGateway');
+	protected static $_key_map = array(
+		'entry_id' => 'ChannelTitleGateway',
+		'channel_id' => 'ChannelTitleGateway',
+		'site_id' => 'ChannelTitleGateway',
+		'author_id' => 'ChannelTitleGateway'
 	);
+	protected static $_field_content_class = 'ChannelFieldContent';
+	protected static $_field_content_gateway = 'ChannelDataGateway';
 
 	// Properties
 	protected $entry_id;
@@ -52,7 +51,7 @@ class ChannelEntry extends FieldDataContentModel {
 	protected $comment_expiration_date;
 	protected $edit_date;
 	protected $recent_comment_date;
-	protected $comment_total;						
+	protected $comment_total;
 
 	public function getChannel()
 	{

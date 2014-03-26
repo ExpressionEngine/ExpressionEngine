@@ -4,29 +4,27 @@ namespace EllisLab\ExpressionEngine\Module\Channel\Model\Gateway;
 use EllisLab\ExpressionEngine\Model\Gateway\RowDataGateway;
 
 class ChannelGateway extends RowDataGateway {
-	// Structural definition stuff
-	protected static $meta = array(
-		'table_name' => 'channels',
-		'primary_key' => 'channel_id',
-		'related_gateways' => array(
-			'channel_id' => array(
-				'gateway' => 'ChannelTitleGateway',
-				'key' => 'channel_id'
-			),
-			'site_id' => array(
-				'gateway' => 'SiteGateway',
-				'key'	 => 'site_id'
-			),
-			'field_group' => array(
-				'gateway' => 'FieldGroupGateway',
-				'key'	 => 'group_id'
-			),
-			'status_group' => array(
-				'gateway' => 'StatusGroupGateway',
-				'key' => 'group_id'
-			)
+	// Meta Data
+	protected static $_table_name = 'channels';
+	protected static $_primary_key = 'channel_id';
+	protected static $_related_gateways = array(
+		'channel_id' => array(
+			'gateway' => 'ChannelTitleGateway',
+			'key' => 'channel_id'
+		),
+		'site_id' => array(
+			'gateway' => 'SiteGateway',
+			'key'	 => 'site_id'
+		),
+		'field_group' => array(
+			'gateway' => 'FieldGroupGateway',
+			'key'	 => 'group_id'
+		),
+		'status_group' => array(
+			'gateway' => 'StatusGroupGateway',
+			'key' => 'group_id'
 		)
-	);	
+	);
 
 	// Properties
 	public $channel_id;

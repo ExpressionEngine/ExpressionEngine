@@ -39,7 +39,7 @@ class Addons_fieldtypes extends CP_Controller {
 
 		$this->load->library('api');
 		$this->load->library('table');
-		$this->api->instantiate('channel_fields');
+		$this->legacy_api->instantiate('channel_fields');
 
 		$this->view->cp_page_title = lang('addons_fieldtypes');
 
@@ -221,7 +221,7 @@ class Addons_fieldtypes extends CP_Controller {
 		$this->load->library('api');
 		$this->load->library('addons');
 
-		$this->api->instantiate('channel_fields');
+		$this->legacy_api->instantiate('channel_fields');
 
 		$installed = $this->addons->get_installed('fieldtypes');
 
