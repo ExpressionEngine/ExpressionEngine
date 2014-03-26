@@ -43,7 +43,9 @@ class Template extends Model {
 	 */
 	public function getTemplateGroup()
 	{
-		return $this->manyToOne('TemplateGroup', 'TemplateGroup', 'group_id', 'group_id');
+		return $this->belongsTo('TemplateGroup', 'group_id')
+					->on('group_id')
+					->relate();
 	}
 
 	public function setTemplateGroup(TemplateGroup $template_group)
@@ -55,19 +57,24 @@ class Template extends Model {
 
 	public function getLastAuthor()
 	{
-		return $this->manyToOne('LastAuthor', 'Member', 'last_author_id', 'member_id');
+		return $this->belongsTo('Member', 'member_id')
+					->useAs('LastAuthor')
+					->on('last_author_id')
+					->relate();
 	}
 
 	public function setLastAuthor(Member $member)
 	{
-		$this->setRelated('LastAuthor', $member);	
+		$this->setRelated('LastAuthor', $member);
 		$this->last_author_id = $member->member_id;
 		return $this;
 	}
 
 	public function getSite()
 	{
-		return $this->manyToOne('Site', 'Site', 'site_id', 'site_id');
+		return $this->belongsTo('Site', 'site_id')
+					->on('site_id')
+					->relate();
 	}
 
 	public function setSite(Site $site)
