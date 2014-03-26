@@ -47,7 +47,7 @@ $lang = array(
 //-----------------------------------
 
 'email_address' =>
-'E-mail address',
+'e-mail address',
 
 'forgotten_password' =>
 'I forgot my password',
@@ -64,11 +64,14 @@ $lang = array(
 'successfully_changed_password' =>
 'You have successfully changed your password.  Please login using your new password.',
 
+'reset_password' =>
+'Reset Password',
+
 'new_password' =>
-'New Password',
+'New password',
 
 'new_password_confirm' =>
-'Confirm New Password',
+'Confirm new password',
 
 'enter_new_password' =>
 'Enter a New Password',

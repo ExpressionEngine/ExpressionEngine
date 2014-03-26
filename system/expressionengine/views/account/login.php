@@ -3,7 +3,7 @@
 <div class="box snap">
 	<h1><?=lang('log_into')?> <?=$site_label?> <span class="ico locked"></span></h1>
 	<?php if ($message != ''):?>
-		<div class="error-msg"><p><b>!!</b> <?=$message?></p></div>
+		<div class="alert inline <?=$message_status?>"><p><b>!!</b> <?=$message?></p></div>
 	<?php endif;?>
 	<?=form_open('C=login'.AMP.'M=authenticate', array(), array('return_path' => $return_path))?>
 		<fieldset>

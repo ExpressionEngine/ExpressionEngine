@@ -1,9 +1,9 @@
 <?php extend_template('login'); ?>
 
 <div class="box snap">
-	<h1>Reset Password <span class="ico locked"></span></h1>
+	<h1><?=lang('reset_password')?> <span class="ico locked"></span></h1>
 	<?php if ($message != ''):?>
-		<div class="error-msg"><p><b>!!</b> <?=$message?></p></div>
+		<div class="alert inline <?=$message_status?>"><p><b>!!</b> <?=$message?></p></div>
 	<?php endif;?>
 	<?=form_open('C=login'.AMP.'M=send_reset_token')?>
 		<fieldset class="last">
