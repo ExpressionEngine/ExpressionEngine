@@ -4,7 +4,7 @@ namespace EllisLab\ExpressionEngine\Core;
 use \EllisLab\ExpressionEngine\Core\ServiceProvider;
 
 use \EllisLab\ExpressionEngine\Model\ModelFactory;
-use \EllisLab\ExpressionEngine\Model\AliasService as ModelAliasService;
+use \EllisLab\ExpressionEngine\Model\ModelAliasService;
 use \EllisLab\ExpressionEngine\Core\Validation\Validation;
 
 /**
