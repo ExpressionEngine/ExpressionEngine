@@ -61,7 +61,6 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			$this->wonkySpacelessStringLogicOperators(),
 			$this->wonkyRepetitions(),
 			$this->wonkyEmpty(),
-			$this->wonkyFalseExistsButTrueDoesNot(),
 			$this->wonkyMutableBooleans(),
 			$this->wonkyDifferentBehaviorWithoutVariables(),
 			$this->wonkyPhpOperatorsWorkOnlyWithWhitespace()
@@ -152,8 +151,8 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			array('Compare Positive Int',	'{if xyz <> 5}out{/if}',		'{if "5" <> 5}out{/if}',		array('xyz' => 5)),
 			array('Compare Negative Int',	'{if xyz>-5}out{/if}',			'{if "-5">-5}out{/if}',			array('xyz' => -5)),
 			array('Compare Empty String',	'{if xyz<=""}out{/if}',			'{if ""<=""}out{/if}',			array('xyz' => '')),
-			array('Compare FALSE Booleans',	'{if xyz == FALSE}out{/if}',	'{if FALSE == fALSE}out{/if}',	array('xyz' => FALSE)),
-			array('Compare TRUE Booleans',	'{if xyz == TRUE}out{/if}',		'{if TRUE == TRUE}out{/if}',	array('xyz' => TRUE)),
+			array('Compare FALSE Booleans',	'{if xyz == FALSE}out{/if}',	'{if "" == FALSE}out{/if}',		array('xyz' => FALSE)),
+			array('Compare TRUE Booleans',	'{if xyz == TRUE}out{/if}',		'{if "1" == TRUE}out{/if}',		array('xyz' => TRUE)),
 			array('Compare NoSpace Bools',	'{if FALSE!=TRUE}out{/if}',		'{if FALSE!=TRUE}out{/if}',		array('xyz' => TRUE)),
 		);
 	}
@@ -209,22 +208,14 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 		);
 	}
 
-	protected function wonkyFalseExistsButTrueDoesNot()
-	{
-		return array(
-			array('TRUE becomes FALSE',	'{if xyz == TRUE}out{/if}',		'{if "1" == FALSE}out{/if}',	array('xyz' => TRUE)),
-			array('FALSE stays FALSE',	'{if xyz == FALSE}out{/if}',	'{if "1" == FALSE}out{/if}',		array('xyz' => TRUE)),
-		);
-	}
-
 	protected function wonkyMutableBooleans()
 	{
 		return array(
-			array('TRUE can NOT be a variable',	 '{if xyz == TRUE}out{/if}', '{if "1" == FALSE}out{/if}',	array('xyz' => TRUE, 'TRUE' => "baz")),
+			array('TRUE can NOT be a variable',	 '{if xyz == TRUE}out{/if}', '{if "1" == TRUE}out{/if}',	array('xyz' => TRUE, 'TRUE' => "baz")),
 			array('FALSE can NOT be a variable', '{if xyz == FALSE}out{/if}', '{if "1" == FALSE}out{/if}',	array('xyz' => TRUE, 'FALSE' => "bat")),
 			array('true can be a variable?!',	 '{if xyz == true}out{/if}', '{if "1" == "baz"}out{/if}',	array('xyz' => TRUE, 'true' => "baz")),
 			array('false can be a variable?!',	 '{if xyz == false}out{/if}', '{if "1" == "bat"}out{/if}',	array('xyz' => TRUE, 'false' => "bat")),
-			array('true can equal false',		 '{if true == false}out{/if}', '{if "" == FALSE}out{/if}',	array('xyz' => TRUE, 'true' => ""))
+			array('true can equal false',		 '{if true == false}out{/if}', '{if "" == false}out{/if}',	array('xyz' => TRUE, 'true' => ""))
 		);
 	}
 
