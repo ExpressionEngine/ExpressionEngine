@@ -63,8 +63,8 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			$this->wonkyEmpty(),
 			$this->wonkyFalseExistsButTrueDoesNot(),
 			$this->wonkyMutableBooleans(),
-			$this->wonkyDifferentBehaviorWithoutVariables()
-			// $this->wonkyFalseChains(),
+			$this->wonkyDifferentBehaviorWithoutVariables(),
+			$this->wonkyPhpOperatorsWorkOnlyWithWhitespace()
 
 			// evil tests attempt to subvert parsing to get valid php code
 			// to the eval stage. These should never ever work.
@@ -148,10 +148,13 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 	{
 		return array(
 			array('Compare FALSE Boolean',	'{if xyz > FALSE}out{/if}',		'{if "" > FALSE}out{/if}',		array('xyz' => FALSE)),
-			array('Compare Zero Int',		'{if xyz < 0}out{/if}',			'{if "0" < 0}out{/if}',		array('xyz' => 0)),
+			array('Compare Zero Int',		'{if xyz < 0}out{/if}',			'{if "0" < 0}out{/if}',			array('xyz' => 0)),
 			array('Compare Positive Int',	'{if xyz <> 5}out{/if}',		'{if "5" <> 5}out{/if}',		array('xyz' => 5)),
-			array('Compare Negative Int',	'{if xyz>-5}out{/if}',			'{if "-5">-5}out{/if}',		array('xyz' => -5)),
+			array('Compare Negative Int',	'{if xyz>-5}out{/if}',			'{if "-5">-5}out{/if}',			array('xyz' => -5)),
 			array('Compare Empty String',	'{if xyz<=""}out{/if}',			'{if ""<=""}out{/if}',			array('xyz' => '')),
+			array('Compare FALSE Booleans',	'{if xyz == FALSE}out{/if}',	'{if FALSE == fALSE}out{/if}',	array('xyz' => FALSE)),
+			array('Compare TRUE Booleans',	'{if xyz == TRUE}out{/if}',		'{if TRUE == TRUE}out{/if}',	array('xyz' => TRUE)),
+			array('Compare NoSpace Bools',	'{if FALSE!=TRUE}out{/if}',		'{if FALSE!=TRUE}out{/if}',		array('xyz' => TRUE)),
 		);
 	}
 
@@ -191,6 +194,8 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			array('Double AND', 		 '{if 5 && AND 7}out{/if}',	'{if 5 && AND 7}out{/if}'),
 			array('Double No Space AND', '{if 5 &&AND 7}out{/if}',	'{if 5 &&AND 7}out{/if}'),
 			array('Double Comparison',	 '{if 5 > < 7}out{/if}',	'{if 5 > < 7}out{/if}'),
+			array('Shift by comparison', '{if 5 >>> 7}out{/if}',	'{if 5 FALSE> 7}out{/if}'),
+
 		);
 	}
 
@@ -219,8 +224,7 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			array('FALSE can NOT be a variable', '{if xyz == FALSE}out{/if}', '{if "1" == FALSE}out{/if}',	array('xyz' => TRUE, 'FALSE' => "bat")),
 			array('true can be a variable?!',	 '{if xyz == true}out{/if}', '{if "1" == "baz"}out{/if}',	array('xyz' => TRUE, 'true' => "baz")),
 			array('false can be a variable?!',	 '{if xyz == false}out{/if}', '{if "1" == "bat"}out{/if}',	array('xyz' => TRUE, 'false' => "bat")),
-			array('true can equal false',		 '{if true == false}out{/if}', '{if "" == FALSE}out{/if}',	array('xyz' => TRUE, 'true' => "")),
-			array('TRUE always equals FALSE',	 '{if TRUE == FALSE}out{/if}', '{if FALSE == FALSE}out{/if}'),
+			array('true can equal false',		 '{if true == false}out{/if}', '{if "" == FALSE}out{/if}',	array('xyz' => TRUE, 'true' => ""))
 		);
 	}
 
@@ -229,6 +233,17 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 		return array(
 			array('Total Nonsense Allowed',	'{if fdsk&)(Ijf7)}out{/if}',	'{if fdsk&)(Ijf7)}out{/if}', FALSE),
 			array('No Parenthesis Matching', '{if (((5 && 6)}out{/if}',	'{if (((5 && 6)}out{/if}', FALSE),
+		);
+	}
+
+	protected function wonkyPhpOperatorsWorkOnlyWithWhitespace()
+	{
+		return array(
+			array('Addition works with spaces',				'{if int + int}out{/if}', '{if "5" + "5"}out{/if}'),
+			array('Addition does not work without spaces',	'{if int+int}out{/if}', '{if FALSE+FALSE}out{/if}'),
+			array('Concatenation with spaces',				'{if string . string}out{/if}', '{if "ee" . "ee"}out{/if}'),
+			array('Concatenation without spaces',			'{if string.string}out{/if}', '{if FALSE.FALSE}out{/if}'),
+			array('Subtract dash-words variable',			'{if a-number - int}out{/if}', '{if "15" - "5"}out{/if}', array('a-number' => 15)),
 		);
 	}
 }
