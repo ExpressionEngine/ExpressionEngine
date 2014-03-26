@@ -10,6 +10,21 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 	 */
 	public function testConditionalsSafetyYesPrefixBlank($description, $str_in, $expected_out, $vars = array(), $php_vars = array())
 	{
+		$this->runConditionalTest($description, $str_in, $expected_out, $vars, $php_vars);
+	}
+
+	/**
+	 * @dataProvider unsafeDataProvider
+	 * @expectedException        UnsafeConditionalException
+	 */
+	public function testUnsafeConditionalsSafetyYesPrefixBlank($description, $str_in, $expected_out, $vars = array(), $php_vars = array())
+	{
+		$this->runConditionalTest($description, $str_in, $expected_out, $vars, $php_vars);
+	}
+
+
+	protected function runConditionalTest($description, $str_in, $expected_out, $vars = array(), $php_vars = array())
+	{
 		// variables called int and string are always available unless $vars was explicitly set to FALSE
 		if ($vars !== FALSE)
 		{
@@ -35,11 +50,9 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 
 	public function dataProvider()
 	{
-		$tests = array();
-
 		// assemble all of the tests
 		return array_merge(
-			$tests,
+			array(),
 			// plain tests don't use variables
 			$this->plainComparisonTests(),
 			$this->plainComparisonTestsNoWhitespace(),
@@ -68,14 +81,21 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			// evil tests attempt to subvert parsing to get valid php code
 			// to the eval stage. These should never ever work.
 			/*
-			$this->wonkyBackslashesInVariables(),
-			$this->wonkyBackticksInVariables(),
-			$this->wonkyBackticksInConditional(),
-			$this->wonkyPHPCommentsInVariables(),
-			$this->wonkyPHPCommentsInConditional(),
-			$this->wonkyConditionalSplitWithComments(),
-			$this->wonkyConditionalSplitWithBackticks(),
+			$this->evilBackslashesInVariables(),
+			$this->evilBackticksInVariables(),
+			$this->evilPHPCommentsInVariables(),
+			$this->evilPHPCommentsInConditional(),
+			$this->evilConditionalSplitWithComments(),
+			$this->evilConditionalSplitWithBackticks(),
 			*/
+		);
+	}
+
+	public function unsafeDataProvider()
+	{
+		return array_merge(
+			array(),
+			$this->evilBackticksInConditional()
 		);
 	}
 
@@ -237,6 +257,23 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			array('Subtract dash-words variable',			'{if a-number - int}out{/if}', '{if "15" - "5"}out{/if}', array('a-number' => 15)),
 		);
 	}
+
+	protected function evilBackticksInConditional()
+	{
+		return array(
+			array('Simple Backticks', '{if `echo hello`}out{/if}', '{if}out{/if}'),
+			array('Splitting Backticks', '{if string.`echo hello #}out{/if}{if `== 0}out{/if}', '{if}out{/if}')
+		);
+	}
+
+	protected function evilCommentsInConditional()
+	{
+		return array(
+			array('Simple Comments', '{if php/* test == 5*/info(); }out{/if}', '{if}out{/if}'),
+			array('Splitting Comments', '{if string /* == 5 }out{/if}{if */phpinfo(); == 5}out{/if}', '{if}out{/if}'),
+			array('Splitting s', '{if string == 5 }out{/if}', '{if "ee" == 5 }out{/if}')
+		);
+	}
 }
 
 class FunctionsStub extends EE_Functions {
@@ -255,6 +292,18 @@ class FunctionsStub extends EE_Functions {
 		static $i = 0;
 		return $this->fixedRandomString.($i++);
 	}
+
+	public function conditional_is_unsafe($str)
+	{
+		$result = parent::conditional_is_unsafe($str);
+
+		if ($result === TRUE)
+		{
+			throw new UnsafeConditionalException('Conditional is unsafe.');
+		}
+
+		return $result;
+	}
 }
 
 function surrounding_character($string)
@@ -268,3 +317,5 @@ function unique_marker($ident)
 {
 	return 'randommarker'.$ident;
 }
+
+class UnsafeConditionalException extends Exception {}
