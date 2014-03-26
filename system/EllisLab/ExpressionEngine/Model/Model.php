@@ -4,7 +4,6 @@ namespace EllisLab\ExpressionEngine\Model;
 use EllisLab\ExpressionEngine\Model\Error\Errors;
 use EllisLab\ExpressionEngine\Model\Query\QueryBuilder;
 use EllisLab\ExpressionEngine\Model\Query\ModelRelationshipMeta;
-use EllisLab\ExpressionEngine\Model\Collection;
 
 use EllisLab\ExpressionEngine\Model\ModelAliasService;
 
@@ -65,6 +64,8 @@ abstract class Model {
 				}
 			}
 		}
+
+		$this->related_models = new RelationshipBag();
 	}
 
 	/**
@@ -539,33 +540,24 @@ abstract class Model {
 	 */
 	public function setRelated($relationship_key, $value)
 	{
-		$this->related_models[$relationship_key] = $value;
+		$this->related_models->set($relationship_key, $value);
 		return $this;
 	}
 
-	public function hasRelated($relationship_key, $primary_key=NULL)
+	public function hasRelated($relationship_key, $primary_key = NULL)
 	{
 		if ( ! isset($this->related_models[$relationship_key]))
-		{
 			return FALSE;
 		}
-
-		if ($primary_key !== NULL)
 		{
-			$ids = $this->related_models[$relationship_key]->getIds();
 			return in_array($primary_key, $ids);
-		}
-
 		return TRUE;
+		return $this->related_models->has($relationship_key, $primary_key);
 	}
 
 	public function addRelated($relationship_key, $model)
 	{
-		if ( ! isset($this->related_models[$relationship_key]))
-		{
-			$this->related_models[$relationship_key] = new Collection();
-		}
-		$this->related_models[$relationship_key][] = $model;
+		$this->related_models->add($relationship_key, $model);
 		return $this;
 	}
 
