@@ -50,11 +50,23 @@ class RelationshipBag {
 	 * @param Object  $model Model to add as a related model
 	 * @return void
 	 */
+	public function set($name, $model)
+	{
+		$this->relationships[$name] = $model;
+	}
+
+	/**
+	 * Add a relationship
+	 *
+	 * @param String  $name  Name of the relationship
+	 * @param Object  $model Model to add as a related model
+	 * @return void
+	 */
 	public function add($name, $model)
 	{
 		if ( ! $this->has($name))
 		{
-			$this->relationships[$name] = new Collection();
+			$this->set($name, new Collection());
 		}
 
 		$this->relationships[$name][] = $model;

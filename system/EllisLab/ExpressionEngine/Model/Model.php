@@ -3,7 +3,9 @@ namespace EllisLab\ExpressionEngine\Model;
 
 use EllisLab\ExpressionEngine\Model\Error\Errors;
 use EllisLab\ExpressionEngine\Model\Query\QueryBuilder;
-use EllisLab\ExpressionEngine\Model\Query\ModelRelationshipMeta;
+use EllisLab\ExpressionEngine\Model\Relationship\RelationshipBag;
+use EllisLab\ExpressionEngine\Model\Relationship\RelationshipData;
+use EllisLab\ExpressionEngine\Model\Relationship\RelationshipFluentBuilder;
 
 use EllisLab\ExpressionEngine\Model\ModelAliasService;
 
@@ -426,16 +428,10 @@ abstract class Model {
 	 *
 	 * @return Relationship object or related data
 	 */
-	public function oneToOne(
-		$relationship_name, $to_model_name, $this_key, $that_key)
+	public function oneToOne($to_model_name, $to_key = NULL)
 	{
-		return $this->related(
-			ModelRelationshipMeta::TYPE_ONE_TO_ONE,
-			$to_model_name,
-			$this_key,
-			$that_key,
-			$relationship_name
-		);
+		return $this->newRelationshipBuilder('one-to-one')
+			->to($to_model_name, $to_key);
 	}
 
 	/**
@@ -448,16 +444,10 @@ abstract class Model {
 	 *
 	 * @return Relationship object or related data
 	 */
-	public function manyToOne(
-		$relationship_name, $to_model_name, $this_key, $that_key)
+	public function manyToOne($to_model_name, $to_key = NULL)
 	{
-		return $this->related(
-			ModelRelationshipMeta::TYPE_MANY_TO_ONE,
-			$to_model_name,
-			$this_key,
-			$that_key,
-			$relationship_name
-		);
+		return $this->newRelationshipBuilder('many-to-one')
+			->to($to_model_name, $to_key);
 	}
 
 	/**
@@ -470,16 +460,10 @@ abstract class Model {
 	 *
 	 * @return Relationship object or related data
 	 */
-	public function oneToMany(
-		$relationship_name, $to_model_name, $this_key, $that_key)
+	public function oneToMany($to_model_name, $to_key = NULL)
 	{
-		return $this->related(
-			ModelRelationshipMeta::TYPE_ONE_TO_MANY,
-			$to_model_name,
-			$this_key,
-			$that_key,
-			$relationship_name
-		);
+		return $this->newRelationshipBuilder('one-to-many')
+			->to($to_model_name, $to_key);
 	}
 
 	/**
@@ -492,40 +476,39 @@ abstract class Model {
 	 *
 	 * @return Relationship object or related data
 	 */
-	public function manyToMany(
-		$relationship_name, $to_model_name, $this_key, $that_key)
+	public function manyToMany($to_model_name, $to_key = NULL)
 	{
-		return $this->related(
-			ModelRelationshipMeta::TYPE_MANY_TO_MANY,
-			$to_model_name,
-			$this_key,
-			$that_key,
-			$relationship_name
-		);
-
+		return $this->newRelationshipBuilder('many-to-many')
+			->to($to_model_name, $to_key);
 	}
 
-	/**
-	 * Retrieve the model as an array
-	 *
-	 * @return Array Merged values of all gateways.
-	 */
-	public function toArray()
-	{
-		// extract all public vars from our gateways and flatten them
-		$keys = array_keys(call_user_func_array(
-			'array_merge',
-			array_map('get_object_vars', $this->gateways)
-		));
 
-		// Combine the keys with their value as controlled by __get
-		// Without array_keys the above gives us our values, but we
-		// need to be consistent with any potential getters.
-		return array_combine(
-			$keys,
-			array_map(array($this, '__get'), $keys)
-		);
+	// alias the more human relationship names
+	public function hasOne($to_model, $to_key = NULL)
+	{
+		return $this->oneToOne($to_model, $to_key);
 	}
+
+	public function belongsTo($to_model, $to_key = NULL)
+	{
+		return $this->oneToOne($to_model, $to_key);
+	}
+
+	public function hasMany($to_model, $to_key = NULL)
+	{
+		return $this->oneToMany($to_model, $to_key);
+	}
+
+	public function belongsToMany($to_model, $to_key = NULL)
+	{
+		return $this->manyToOne($to_model, $to_key);
+	}
+
+	public function hasAndBelongsToMany($to_model, $to_key = NULL)
+	{
+		return $this->manyToMany($to_model, $to_key);
+	}
+
 
 	/**
 	 * Set related data for a given relationship.
@@ -546,12 +529,6 @@ abstract class Model {
 
 	public function hasRelated($relationship_key, $primary_key = NULL)
 	{
-		if ( ! isset($this->related_models[$relationship_key]))
-			return FALSE;
-		}
-		{
-			return in_array($primary_key, $ids);
-		return TRUE;
 		return $this->related_models->has($relationship_key, $primary_key);
 	}
 
@@ -561,93 +538,17 @@ abstract class Model {
 		return $this;
 	}
 
-	/**
-	 * Helper method used when setting up a relationship
-	 *
-	 * @param String $type			Relationship type (dash-words)
-	 * @param String $to_model_name	Name of the model to relate to in
-	 * 		StudlyCaps (as you would use it in code). This will be used as
-	 * 		the relationship name if no other name is given.
-	 * @param String $this_key		Name of the relating key
-	 * @param String $to_key		Name of the key on the related model
-	 * @param String $name			The name of the Relationship, when
-	 * 		different from the name of the model.  For example ChannelEntry has
-	 * 		an Author (getAuthor(), setAuthor()).
-	 *
-	 * @return Relationship object or related data
-	 */
-	private function related(
-		$type, $to_model_name, $this_key, $to_key = NULL, $name = NULL)
+	private function newRelationshipBuilder($type)
 	{
-		// If we already have data, return it
-		$relationship_key = (isset($name) ? $name : $to_model_name);
-		if (array_key_exists($relationship_key, $this->related_models))
-		{
-			switch($type)
-			{
-				case ModelRelationshipMeta::TYPE_MANY_TO_MANY:
-				case ModelRelationshipMeta::TYPE_ONE_TO_MANY:
-					return $this->related_models[$relationship_key];
-				case ModelRelationshipMeta::TYPE_MANY_TO_ONE:
-				case ModelRelationshipMeta::TYPE_ONE_TO_ONE:
-					return $this->related_models[$relationship_key][0];
-				default:
-					throw new \Exception('Unknown type!');
-			}
+		$data = new RelationshipData(
+			$this->related_models,
+			$this->alias_service,
+			$this->builder
+		);
 
-		}
-
-		// At this point, if we don't have a to_key we'll need to default
-		// to the primary key of the target model.
-		if ( ! isset($to_key))
-		{
-			$to_model_class = $this->alias_service->getRegisteredClass($to_model_name);
-			$to_key = $to_model_class::getMetaData('primary_key');
-		}
-
-		// Eager Load
-		// 	If no id is set, then we're doing an eager load during a
-		// 	query.  This model is probably mostly empty.
-		if ($this->getId() === NULL)
-		{
-			$relationship = new ModelRelationshipMeta(
-				$this->alias_service,
-				$type,
-				$relationship_key,
-				array(
-					'model_class' => get_class($this),
-					'model_name' => substr(get_class($this), strrpos(get_class($this), '\\')+1),
-					'key' => $this_key
-				),
-				array(
-					'model_class' => $this->alias_service->getRegisteredClass($to_model_name),
-					'model_name' => $to_model_name,
-					'key' => $to_key
-				)
-			);
-			return $relationship;
-		}
-
-		// Lazy Load
-		// 	Otherwise, if we haven't hit one of the previous cases, then this
-		// 	is a lazy load on an existing model.
-		$query = $this->builder->get($to_model_name);
-		$query->filter($to_model_name . '.' . $to_key, $this->$this_key);
-
-		if ($type == 'one-to-one' OR $type == 'many-to-one')
-		{
-			$result = $query->first();
-		}
-		else
-		{
-			$result = $query->all();
-		}
-
-		$this->setRelated($relationship_key, $result);
-		return $result;
+		$fluent = new RelationshipFluentBuilder($this, $data);
+		return $fluent->type($type);
 	}
-
-
 
 	/**
 	 * Retrieve the model as an array
@@ -696,6 +597,7 @@ abstract class Model {
 		$dumper->unserialize($this, $model_xml);
 	}
 
+/*
 	public function testPrint($depth='')
 	{
 		if ($depth == "\t\t\t")
@@ -716,4 +618,5 @@ abstract class Model {
 		}
 		echo $depth . '===== END ' . $model_name . ': ' . $this->{$primary_key} . "=====\n";
 	}
+*/
 }
