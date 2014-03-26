@@ -125,12 +125,24 @@ abstract class Model {
 		throw new \InvalidArgumentException('Attempt to access a non-existent property "' . $name . '" on ' . get_called_class());
 	}
 
+	/**
+	 * Mark a property as dirty
+	 *
+	 * @param String $property Name of the property to mark
+	 * @return $this
+	 */
 	protected function setDirty($property)
 	{
 		$this->dirty[$property] = TRUE;
 		return $this;
 	}
 
+	/**
+	 * Check if a property is marked as dirty
+	 *
+	 * @param String $property Name of the property to mark
+	 * @return Bool  dirty?
+	 */
 	protected function isDirty($property)
 	{
 		return (isset($this->dirty[$property]) && $this->dirty[$property]);
@@ -301,113 +313,6 @@ abstract class Model {
 		}
 
 		$this->cascade($cascade, 'delete');
-	}
-
-	public function toXml()
-	{
-		$cascade = func_get_args();
-
-		$model_xml = '<model name="' . get_class($this) . '">' . "\n";
-
-		foreach(get_object_vars($this) as $property => $value)
-		{
-			// Ignore meta properties.
-			if (strpos($property, '_') === 0)
-			{
-				continue;
-			}
-
-			$model_xml .= '<property name="' . $property . '">' . $value . '</property>' . "\n";
-		}
-
-		if ( empty ($cascade))
-		{
-			$cascade = self::getMetaData('cascade');
-		}
-		if ( ! empty($cascade))
-		{
-			foreach($cascade as $relationship_name)
-			{
-				if (is_array($relationship_name))
-				{
-					foreach ($relationship_name as $from_relationship => $to_relationship)
-					{
-						$method = 'get' . $from_relationship;
-						$models = $this->$method();
-
-						if (count ($models) > 0)
-						{
-							$model_xml .= '<related_models relationship="' . $from_relationship . '">' . "\n";
-							foreach ($models as $model)
-							{
-								if (is_array($to_relationship))
-								{
-									$model_xml .= $model->toXml($to_relationship);
-								}
-								else
-								{
-									$relationship_method = 'get' . $to_relationship;
-									$to_models = $model->$relationship_method();
-
-									if (count($to_models) > 0)
-									{
-										$model_xml .= '<related_models relationship="' . $to_relationship . '"> ' . "\n";
-										foreach ($to_models as $to_model)
-										{
-											$to_model->toXml();
-										}
-										$model_xml .= '</related_models>' . "\n";
-									}
-								}
-							}
-							$model_xml .= '</related_models>' . "\n";
-						}
-					}
-				}
-				else
-				{
-					$relationship_method = 'get' . $relationship_name;
-					$models = $this->$relationship_method();
-
-					if (count($models) > 0)
-					{
-						$model_xml .= '<related_models relationship="' . $relationship_name . '">' . "\n";
-						foreach ($models as $model)
-						{
-							$model_xml .= $model->toXml();
-						}
-						$model_xml .= '</related_models>' . "\n";
-					}
-				}
-			}
-		}
-		$model_xml .= '</model>' . "\n";
-		return $model_xml;
-	}
-
-	public function fromXml($model_xml)
-	{
-		foreach ($model_xml->property as $property)
-		{
-			$name = (string) $property['name'];
-			$this->{$name} = (string) $property;
-			$this->setDirty($name);
-		}
-
-		foreach($model_xml->related_models as $related_models_xml)
-		{
-			$models = new Collection();
-			foreach($related_models_xml as $related_model_xml)
-			{
-				$model_class = (string) $related_model_xml['name'];
-				$model = $this->builder->make($model_class);
-				$model->fromXml($related_model_xml);
-				$models[] = $model;
-			}
-			$this->setRelated((string) $related_models_xml['relationship'], $models);
-		}
-
-		$this->restore();
 	}
 
 	protected function map()
@@ -748,6 +653,55 @@ abstract class Model {
 
 		$this->setRelated($relationship_key, $result);
 		return $result;
+	}
+
+
+
+	/**
+	 * Retrieve the model as an array
+	 *
+	 * @return Array Merged values of all gateways.
+	 */
+	public function toArray()
+	{
+		// extract all public vars from our gateways and flatten them
+		$keys = array_keys(call_user_func_array(
+			'array_merge',
+			array_map('get_object_vars', $this->gateways)
+		));
+
+		// Combine the keys with their value as controlled by __get
+		// Without array_keys the above gives us our values, but we
+		// need to be consistent with any potential getters.
+		return array_combine(
+			$keys,
+			array_map(array($this, '__get'), $keys)
+		);
+	}
+
+	public function toJson()
+	{
+		$dumper = new namespace\Serializers\JsonSerializer();
+		return $dumper->serialize($figure_this_out);
+	}
+
+	public function fromJson($model_json)
+	{
+		$dumper = new namespace\Serializers\JsonSerializer();
+		$dumper->unserialize($this, $model_json);
+	}
+
+	public function toXml()
+	{
+		$cascade = func_get_args(); // don't forget this!
+		$dumper = new namespace\Serializers\XmlSerializer();
+		return $dumper->serialize($figure_this_out); // idea: make toArray cascade compatible?
+	}
+
+	public function fromXml($model_xml)
+	{
+		$dumper = new namespace\Serializers\XmlSerializer();
+		$dumper->unserialize($this, $model_xml);
 	}
 
 	public function testPrint($depth='')
