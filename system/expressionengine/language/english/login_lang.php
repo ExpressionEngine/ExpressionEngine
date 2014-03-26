@@ -46,6 +46,9 @@ $lang = array(
 // Reset Password
 //-----------------------------------
 
+'email_address' =>
+'E-mail address',
+
 'forgotten_password' =>
 'I forgot my password',
 
@@ -72,6 +75,9 @@ $lang = array(
 
 'login' =>
 'Log In',
+
+'log_into' =>
+'Log into',
 
 ''=>''
 );

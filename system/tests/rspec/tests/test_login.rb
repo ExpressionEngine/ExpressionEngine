@@ -43,4 +43,12 @@ feature 'Login Page' do
 
     Login::button.value.should eq 'Locked'
   end
+
+  it 'shows the reset password form when link is clicked' do
+    Login::visit
+
+    click_link 'I forgot my password'
+
+    page.should have_content('Reset Password')
+  end
 end

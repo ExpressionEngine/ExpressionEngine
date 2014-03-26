@@ -451,13 +451,13 @@ class Login extends CP_Controller {
 
 		$message = $this->session->flashdata('message');
 
-		$variables = array(
-			'email'			=> ( ! $this->input->post('email')) ? '' : $this->input->get_post('email'),
-			'message' 		=> $message,
-			'cp_page_title'	=> lang('forgotten_password')
-		);
+		$this->view->email = ( ! $this->input->post('email')) ? '' : $this->input->get_post('email');
+		$this->view->message = $message;
+		$this->view->cp_page_title = lang('forgotten_password');
 
-		$this->load->view('account/forgot_password', $variables);
+		$this->view->focus_field = 'email';
+
+		$this->view->render('account/forgot_password');
 	}
 
 	// --------------------------------------------------------------------
