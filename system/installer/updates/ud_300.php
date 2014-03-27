@@ -66,9 +66,9 @@ class Updater {
 		ee()->extensions = new Installer_Extensions();
 		ee()->load->model('template_model');
 
-        $sites = ee()->db->select('site_id')
-            ->get('sites')
-            ->result_array();
+		$sites = ee()->db->select('site_id')
+			->get('sites')
+			->result_array();
 
 		// Loop through the sites and save to file any templates that are only
 		// in the database
