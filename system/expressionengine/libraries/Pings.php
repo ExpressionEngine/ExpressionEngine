@@ -61,7 +61,13 @@ class Pings {
 
 			if ($class == 'homepage' OR ($class == 'admin_system' && $method == 'software_license'))
 			{
-				if ( ! $registration = $this->_do_ping('http://versions.ellislab.com/test.txt'))
+				$payload = array(
+					'username'			=> ee()->config->item('ellislab_username'),
+					'license_number'	=> ee()->config->item('license_number'),
+					'domain'			=> ee()->config->item('site_url')
+				);
+
+				if ( ! $registration = $this->_do_ping('http://ping.ellislab.com/register.php', $payload))
 				{
 					// hard fail only when no valid license is entered
 					if (ee()->config->item('license_number') == '')
@@ -213,11 +219,26 @@ class Pings {
 			return FALSE;
 		}
 
-		fputs($fp,"GET {$url} HTTP/1.1\r\n" );
-		fputs($fp,"Host: {$target['host']}\r\n");
-		fputs($fp,"User-Agent: EE/EllisLab PHP/\r\n");
-		fputs($fp,"If-Modified-Since: Fri, 01 Jan 2004 12:24:04\r\n");
-		fputs($fp,"Connection: close\r\n\r\n");
+		if ( ! empty($payload))
+		{
+			$postdata = http_build_query($payload);
+
+			fputs($fp, "POST {$target['path']} HTTP/1.1\r\n");
+			fputs($fp, "Host: {$target['host']}\r\n");
+			fputs($fp, "User-Agent: EE/EllisLab PHP/\r\n");
+			fputs($fp, "Content-Type: application/x-www-form-urlencoded\r\n");
+			fputs($fp, "Content-Length: ".strlen($postdata)."\r\n");
+			fputs($fp, "Connection: close\r\n\r\n");
+			fputs($fp, "{$postdata}\r\n\r\n");
+		}
+		else
+		{
+			fputs($fp,"GET {$url} HTTP/1.1\r\n" );
+			fputs($fp,"Host: {$target['host']}\r\n");
+			fputs($fp,"User-Agent: EE/EllisLab PHP/\r\n");
+			fputs($fp,"If-Modified-Since: Fri, 01 Jan 2004 12:24:04\r\n");
+			fputs($fp,"Connection: close\r\n\r\n");
+		}
 
 		$headers = TRUE;
 		$response = '';
