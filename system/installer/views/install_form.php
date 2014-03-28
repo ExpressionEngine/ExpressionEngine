@@ -17,7 +17,7 @@ else
 <form method='post' action='<?=$action?>' id="installForm">
 
 <?php if (IS_CORE): ?>
-	<input type="hidden" value="<?=$license_number?>" />
+	<input type="hidden" name="license_number" value="<?=$license_number?>" />
 <?php else: ?>
 	<div class="shade">
 	<h2><?=lang('software_license')?></h2>

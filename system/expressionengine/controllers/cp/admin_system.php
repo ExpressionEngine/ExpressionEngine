@@ -245,6 +245,31 @@ class Admin_system extends CP_Controller {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Validates format of submitted license number
+	 *
+	 * @return vool
+	 **/
+	public function _valid_license_number($license)
+	{
+		if (IS_CORE && $license == 'CORE LICENSE')
+		{
+			return TRUE;
+		}
+
+		if ( ! preg_match('/^[\d]{4}-[\d]{4}-[\d]{4}-[\d]{4}$/', $license))
+		{
+			$this->form_validation->set_message('_valid_license_number', lang('invalid_license_number'));
+			return FALSE;
+		}
+
+		return TRUE;
+	}
+
+	// --------------------------------------------------------------------
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Control Panel Settings
 	 *
 	 * @access	public
