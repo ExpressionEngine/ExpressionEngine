@@ -1035,6 +1035,12 @@ $lang = array(
 "dictionary_explanation" =>
 "The name of the file containing your word list",
 
+'ellislab_username_explanation' =>
+'The EllisLab.com username that owns this software license.',
+
+'license_number_explanation' =>
+'You can find and manage your software licenses on the EllisLab.com <a href="https://store.ellislab.com/manage">Manage Purchases</a> page,',
+
 "image_path" =>
 "Path to Images Directory",
 
