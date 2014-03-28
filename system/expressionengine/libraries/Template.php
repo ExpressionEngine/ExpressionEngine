@@ -4141,7 +4141,8 @@ class EE_Template {
 					$this->date_vars[] = $match[1];
 				}
 			}
-			elseif ($standard = preg_match_all("/".LD."([\w:\-]+)\s+(format|timezone)=[\"'](.*?)[\"']".RD."/", $str, $matches, PREG_SET_ORDER))
+
+			if ($standard = preg_match_all("/".LD."([\w:\-]+)\s+(format|timezone)=[\"'](.*?)[\"']".RD."/", $str, $matches, PREG_SET_ORDER))
 			{
 				foreach ($matches as $match)
 				{
