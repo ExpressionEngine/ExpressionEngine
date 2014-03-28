@@ -4156,6 +4156,13 @@ class EE_Template {
 			{
 				$this->date_vars = FALSE;
 			}
+
+			// If a date has both the ":relative" modifier and "format=" it will
+			// be present twice. We'll filter this out here.
+			else
+			{
+				$this->date_vars = array_unique($this->date_vars);
+			}
 		}
 	}
 
