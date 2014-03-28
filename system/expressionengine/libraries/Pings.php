@@ -63,7 +63,7 @@ class Pings {
 			{
 				$payload = array(
 					'username'			=> ee()->config->item('ellislab_username'),
-					'license_number'	=> ee()->config->item('license_number'),
+					'license_number'	=> (IS_CORE) ? 'CORE LICENSE' : ee()->config->item('license_number'),
 					'domain'			=> ee()->config->item('site_url')
 				);
 
