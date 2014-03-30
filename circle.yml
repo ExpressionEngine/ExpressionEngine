@@ -26,6 +26,9 @@ checkout:
     - chmod -R 777 system/expressionengine/cache
     - chmod -R 777 system/expressionengine/templates
     - chmod -R 777 images
+
+test:
+  override:
     - chmod +x system/tests/circleci/runtests.sh
 
 test:
