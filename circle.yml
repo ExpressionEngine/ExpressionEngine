@@ -6,6 +6,10 @@ machine:
     version: 2.1.1
   hosts:
     ee2.test: 127.0.0.1
+  environment:
+    php0: 5.3.10
+    php1: 5.4.21
+    php2: 5.5.8
 
 dependencies:
   override:
@@ -24,8 +28,9 @@ checkout:
     - chmod -R 777 system/expressionengine/cache
     - chmod -R 777 system/expressionengine/templates
     - chmod -R 777 images
+    - chmod +x system/tests/circleci/runtests.sh
 
 test:
   override:
-    - chmod +x system/tests/circleci/runtests.sh
-    - "./system/tests/circleci/runtests.sh"
+    - "./system/tests/circleci/runtests.sh":
+        parallel: true

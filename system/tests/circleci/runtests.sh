@@ -6,28 +6,32 @@ cd system/tests/rspec
 # exit with that status at the end
 STATUS=0
 
-# Use PHPbrew to switch PHP versions (have to manually do it for Apache)
-for phpversion in "5.3.10" "5.4.21" "5.5.8"
-do
-	printf "\n\nNow using PHP ${phpversion}\n\n"
-	phpenv global $phpversion
-	echo "LoadModule php5_module /home/ubuntu/.phpenv/versions/${phpversion}/libexec/apache2/libphp5.so" > /etc/apache2/mods-available/php5.load
-	sudo service apache2 restart
-	mkdir -p $CIRCLE_ARTIFACTS/$phpversion/
+# Get the PHP version to test based on the node index; if we want more
+# PHP versions, be sure to add another container
+PHPVERSION=php$CIRCLE_NODE_INDEX
+PHPVERSION=${!PHPVERSION}
 
-	printf "Running tests, outputting results to build artifacts directory\n\n"
-	bundle exec rspec -fh -c -o $CIRCLE_ARTIFACTS/$phpversion/results.html
+# Switch PHP version with phpenv and reload the Apache module
+printf "Testing under PHP ${PHPVERSION}\n\n"
+phpenv global $PHPVERSION
+echo "LoadModule php5_module /home/ubuntu/.phpenv/versions/${PHPVERSION}/libexec/apache2/libphp5.so" > /etc/apache2/mods-available/php5.load
+sudo service apache2 restart
 
-	# Track the status code from the previous test
-	STATUS=$(($STATUS+$?))
+# We'll store our build artifacts under the name of the current PHP version
+mkdir -p $CIRCLE_ARTIFACTS/$PHPVERSION/
 
-	# Move screenshots to the build artifacts directory
-	if [ -d "./screenshots" ]; then
-		printf "Screenshots taken, moved to build artifacts directory\n\n"
-		mv screenshots/* $CIRCLE_ARTIFACTS/$phpversion/
-		rmdir screenshots
-	fi
-done
+# Finally, run the tests, outputting resultss to build artifacts directory
+printf "Running tests, outputting results to build artifacts directory\n\n"
+bundle exec rspec -fh -c -o $CIRCLE_ARTIFACTS/$PHPVERSION/results.html
 
-# Exit with the status codes from the results of the rspec command
+# Capture status for to exit with later
+STATUS=$(($STATUS+$?))
+
+# If screenshots were taken, move them to the build artifacts directory
+if [ -d "./screenshots" ]; then
+	printf "Screenshots taken, moved to build artifacts directory\n\n"
+	mv screenshots/* $CIRCLE_ARTIFACTS/$PHPVERSION/
+	rmdir screenshots
+fi
+
 exit $STATUS
