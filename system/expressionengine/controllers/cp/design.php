@@ -2268,9 +2268,14 @@ class Design extends CP_Controller {
 		return TRUE;
 	}
 
-
+	/**
+	 * @deprecated
+	 */
 	function _delete_template_file($data)
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated('3.0');
+
 		if ( ! isset($data['template_id']) OR ! $this->_template_access_privs(array('template_id' => $data['template_id'])))
 		{
 			return FALSE;
