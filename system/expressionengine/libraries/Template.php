@@ -3083,13 +3083,7 @@ class EE_Template {
 		{
 			if ($this->encode_email == TRUE)
 			{
-				if (preg_match_all("/".LD."encode=(.+?)".RD."/i", $str, $matches))
-				{
-					for ($j = 0; $j < count($matches[0]); $j++)
-					{
-						$str = preg_replace('/'.preg_quote($matches['0'][$j], '/').'/', ee()->functions->encode_email($matches[1][$j]), $str, 1);
-					}
-				}
+				$str = $this->parse_encode_email($str);
 			}
 			else
 			{
@@ -4197,6 +4191,26 @@ class EE_Template {
 		}
 
 		return $tagdata;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Parse {encode=...} tags
+	 * @param  String $str String to parse
+	 * @return String      String with {encode=...} parsed out
+	 */
+	public function parse_encode_email($str)
+	{
+		if (preg_match_all("/".LD."encode=(.+?)".RD."/i", $str, $matches))
+		{
+			for ($j = 0; $j < count($matches[0]); $j++)
+			{
+				$str = preg_replace('/'.preg_quote($matches['0'][$j], '/').'/', ee()->functions->encode_email($matches[1][$j]), $str, 1);
+			}
+		}
+
+		return $str;
 	}
 
 	// --------------------------------------------------------------------
