@@ -29,14 +29,14 @@ class EE_Route {
 	public $subpatterns = array();
 
 	public $segment_regex = "
-		(?P<static>[^{]*)                     # static rule data
-		{	
-		(?P<variable>[^}:]*)  # variable name
+		(?P<static>[^{]*)                         # static rule data
+		({	
+		(?P<variable>[^}:]*)                      # variable name
 		(?:
-			\:                                # variable delimiter
-			(?P<rules>.*?(regex\[.*?\])?.*?)  # rules
+			\:                                    # variable delimiter
+			(?P<rules>.*?(regex\[\(.*?\)\])?.*?)  # rules
 		)?
-		}
+		})?
 	";
 
 	public $rules_regex = "
@@ -81,7 +81,9 @@ class EE_Route {
 
 		foreach ($variables as $key => $val)
 		{
-			$this->variables[$map[$key]]->set($val);
+			if( ! empty($map[$key])) {
+				$this->variables[$map[$key]]->set($val);
+			}
 		}
 
 		foreach($this->segments as $segment)
@@ -163,6 +165,11 @@ class EE_Route {
 			}
 			else
 			{
+				if (is_string($comparison))
+				{
+					return FALSE;
+				}
+
 				$segment_rules = array_map('serialize', $segment->rules);
 				$comparison_rules = array_map('serialize', $comparison->rules);
 				$diff = array_diff($segment_rules, $comparison_rules);
@@ -196,7 +203,7 @@ class EE_Route {
 			{
 				$this->segments[] = $segment['static'];
 			}
-			else
+			elseif ( ! empty($segment['variable']))
 			{
 				if (empty($segment['rules']))
 				{
@@ -239,6 +246,11 @@ class EE_Route {
 				$segment = array();
 				$result = preg_match("/{$this->segment_regex}/ix", $route, $matches, 0, $pos);
 
+				if(empty($matches[0]))
+				{
+					break;
+				}
+
 				if ($result == 0)
 				{
 					break;
@@ -249,30 +261,34 @@ class EE_Route {
 					$segments[] = array('static' => $matches['static']);
 				}
 
-				$variable = $matches['variable'];
-
-				if (preg_match("/^[a-zA-Z0-9_\-]*$/ix", $variable))
+				if ( ! empty($matches['variable']))
 				{
-					$hash = md5($variable);
-					$this->subpatterns[$hash] = $variable;
-					$segment['variable'] = $hash;
-				}
-				else
-				{
-					throw new Exception(lang('invalid_variable') . $variable);
+					$variable = $matches['variable'];
+
+					if (preg_match("/^[a-zA-Z0-9_\-]*$/ix", $variable))
+					{
+						$hash = md5($variable);
+						$this->subpatterns[$hash] = $variable;
+						$segment['variable'] = $hash;
+					}
+					else
+					{
+						throw new Exception(lang('invalid_variable') . $variable);
+					}
+
+					if ( ! empty($matches['rules']))
+					{
+						$segment['rules'] = $matches['rules'];
+					}
+
+					if (in_array($segment['variable'], $used_names))
+					{
+						throw new Exception(lang('variable_in_use') . $segment['variable']);
+					}
+
+					$used_names[] = $segment['variable'];
 				}
 
-				if ( ! empty($matches['rules']))
-				{
-					$segment['rules'] = $matches['rules'];
-				}
-
-				if (in_array($segment['variable'], $used_names))
-				{
-					throw new Exception(lang('variable_in_use') . $segment['variable']);
-				}
-
-				$used_names[] = $segment['variable'];
 				$segments[] = $segment;
 				$pos += strlen($matches[0]);
 			}

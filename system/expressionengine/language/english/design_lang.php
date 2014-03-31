@@ -686,6 +686,18 @@ and templates will only be accesible from the default group/template URL.',
 'template_route_notice' =>
 'Routes are listed in the order that the Template Router will match your templates.',
 
+'route_manager_group' =>
+'Group',
+
+'route_manager_template' =>
+'Template',
+
+'route_manager_route' =>
+'Route',
+
+'route_manager_required' =>
+'Segments Required',
+
 'template_id_not_found' =>
 'Invalid template id selected',
 

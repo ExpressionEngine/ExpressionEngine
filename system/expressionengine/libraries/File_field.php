@@ -126,7 +126,8 @@ class File_field {
 		$vars['dropdown'] = form_dropdown($field_name.'_directory', $upload_dirs, $vars['upload_location_id']);
 
 		// Check to see if they have access to any directories to create an upload link
-		$vars['upload_link'] = (count($upload_dirs) > 0) ? '<a href="#" class="choose_file'.($vars['filename'] ? ' js_hide' : '').'" data-directory="'.$specified_directory.'">'.lang('add_file').'</a>' : lang('directory_no_access');
+		// Note- the count is at least one because first select option is Directory
+		$vars['upload_link'] = (count($upload_dirs) > 1) ? '<a href="#" class="choose_file'.($vars['filename'] ? ' js_hide' : '').'" data-directory="'.$specified_directory.'">'.lang('add_file').'</a>' : lang('directory_no_access');
 		$vars['undo_link'] = '<a href="#" class="undo_remove js_hide">'.lang('file_undo_remove').'</a>';
 
 		// If we have a file, show the thumbnail, filename and remove link
@@ -621,47 +622,33 @@ class File_field {
 	 *
 	 * @access	public
 	 * @param	string $data The string to parse {filedir_n} in
+	 * @param   bool   $parse_encoded  Set to TRUE to parse encoded (e.g. &123;)
+	 *                                 tags
 	 * @return	string The original string with all {filedir_n}'s parsed
 	 */
-	public function parse_string($data)
+	public function parse_string($data, $parse_encoded = FALSE)
 	{
+		$pattern = ($parse_encoded)
+			? '/(?:{|&#123;)filedir_(\d+)(?:}|&#125;)/'
+			: '/{filedir_(\d+)}/';
+
 		// Find each instance of {filedir_n}
-		if (preg_match_all('/{filedir_(\d+)}/', $data, $matches, PREG_SET_ORDER))
+		if (preg_match_all($pattern, $data, $matches, PREG_SET_ORDER))
 		{
-			$file_dirs = $this->_file_dirs();
+			ee()->load->model('file_upload_preferences_model');
+			$file_dirs = ee()->file_upload_preferences_model->get_paths();
 
 			// Replace each match
 			foreach ($matches as $match)
 			{
 				if (isset($file_dirs[$match[1]]))
 				{
-					$data = str_replace('{filedir_'.$match[1].'}', $file_dirs[$match[1]], $data);
+					$data = str_replace($match[0], $file_dirs[$match[1]], $data);
 				}
 			}
 		}
 
 		return $data;
-	}
-
-	// ------------------------------------------------------------------------
-
-	/**
-	 * Get the file directory data and keep it stored in the cache
-	 *
-	 * @return array Array of file directories
-	 */
-	private function _file_dirs()
-	{
-		if ( ! ee()->session->cache(__CLASS__, 'file_dirs'))
-		{
-			ee()->session->set_cache(
-				__CLASS__,
-				'file_dirs',
-				ee()->functions->fetch_file_paths()
-			);
-		}
-
-		return ee()->session->cache(__CLASS__, 'file_dirs');
 	}
 
 	// ------------------------------------------------------------------------
