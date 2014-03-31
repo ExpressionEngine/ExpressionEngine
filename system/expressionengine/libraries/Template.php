@@ -4134,7 +4134,7 @@ class EE_Template {
 			strpos($str, 'timezone=') !== FALSE ||
 			strpos($str, ':relative') !== FALSE)
 		{
-			if ($relative = preg_match_all("/".LD."([\w\-]+):relative(.*?)".RD."/", $str, $matches, PREG_SET_ORDER))
+			if ($relative = preg_match_all("/".LD."([\w:\-]+):relative(?![\w-])(.*?)".RD."/", $str, $matches, PREG_SET_ORDER))
 			{
 				foreach ($matches as $match)
 				{
