@@ -64,7 +64,7 @@ class Pings {
 					}
 
 					// save the failed request for a day only
-					$success = ee()->cache->save('software_registration', ee()->config->item('license_number'), 60*60*24, Cache::GLOBAL_SCOPE);
+					ee()->cache->save('software_registration', ee()->config->item('license_number'), 60*60*24, Cache::GLOBAL_SCOPE);
 					return TRUE;
 				}
 				else
@@ -72,12 +72,12 @@ class Pings {
 					if ($registration != ee()->config->item('license_number'))
 					{
 						// may have been a server error, save the failed request for a day
-						$success = ee()->cache->save('software_registration', ee()->config->item('license_number'), 60*60*24, Cache::GLOBAL_SCOPE);
+						ee()->cache->save('software_registration', ee()->config->item('license_number'), 60*60*24, Cache::GLOBAL_SCOPE);
 					}
 					else
 					{
 						// keep for a week
-						$success = ee()->cache->save('software_registration', $registration, 60*60*24*7, Cache::GLOBAL_SCOPE);
+						ee()->cache->save('software_registration', $registration, 60*60*24*7, Cache::GLOBAL_SCOPE);
 					}
 				}
 
