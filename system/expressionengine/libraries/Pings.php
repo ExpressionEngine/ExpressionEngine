@@ -196,6 +196,13 @@ class Pings {
 
 	// --------------------------------------------------------------------
 
+	/**
+	 * Do the Ping
+	 *
+	 * @param string	The URL to ping
+	 * @param array		The POST payload, if any
+	 * @return bool
+	 **/
 	private function _do_ping($url, $payload = null)
 	{
 		$target = parse_url($url);
