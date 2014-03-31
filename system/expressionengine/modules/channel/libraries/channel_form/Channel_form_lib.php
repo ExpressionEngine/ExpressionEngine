@@ -578,9 +578,7 @@ class Channel_form_lib
 		{
 			$this->parse_variables['title']		= $this->channel('default_entry_title');
 			$this->parse_variables['url_title'] = $this->channel('url_title_prefix');
-
 			$this->parse_variables['allow_comments'] = ($this->channel('deft_comments') == 'n' OR $this->channel('comment_system_enabled') != 'y') ? '' : "checked='checked'";
-
 
 			if ($this->datepicker)
 			{
@@ -613,6 +611,12 @@ class Channel_form_lib
 
 					$this->parse_variables['comment_expiration_date'] = $comment_expiration_date;
 				}
+			}
+			else
+			{
+				$this->parse_variables['entry_date'] = ee()->localize->human_time();
+				$this->parse_variables['expiration_date'] = '';
+				$this->parse_variables['comment_expiration_date'] = '';
 			}
 
 			foreach ($this->custom_fields as $field)
@@ -2764,7 +2768,7 @@ GRID_FALLBACK;
 				{
 					$row = trim($row);
 
-					if ( ! $row)
+					if ($row == '')
 					{
 						continue;
 					}

@@ -24,7 +24,7 @@
  */
 class Wizard extends CI_Controller {
 
-	var $version			= '2.8.0';	// The version being installed
+	var $version			= '2.8.1';	// The version being installed
 	var $installed_version	= ''; 		// The version the user is currently running (assuming they are running EE)
 	var $minimum_php		= '5.2.4';	// Minimum version required to run EE
 	var $schema				= NULL;		// This will contain the schema object with our queries
@@ -906,6 +906,24 @@ PAPAYA;
 		if ($this->userdata['screen_name'] == '')
 		{
 			$this->userdata['screen_name'] = $this->userdata['username'];
+		}
+
+		// DB Prefix has some character restrictions
+		if ( ! preg_match("/^[0-9a-zA-Z\$_]*$/", $this->userdata['db_prefix']))
+		{
+			$errors[] = $this->lang->line('database_prefix_invalid_characters');
+		}
+
+		// The DB Prefix should not include "exp_"
+		if ( strpos($this->userdata['db_prefix'], 'exp_') !== FALSE)
+		{
+			$errors[] = $this->lang->line('database_prefix_contains_exp_');
+		}
+
+		// Table names cannot be longer than 64 characters, our longest is 26
+		if ( strlen($this->userdata['db_prefix']) > 30)
+		{
+			$errors[] = $this->lang->line('database_prefix_too_long');
 		}
 
 		// Connect to the database.  We pass a multi-dimensional array since
@@ -2376,8 +2394,6 @@ PAPAYA;
 			'website_session_type'			=>	'c',
 			'cp_session_type'				=>	'cs',
 			'cookie_httponly'				=>	'y',
-			'website_session_type'			=>	'c',
-			'cp_session_type'			=>	'cs',
 			'allow_username_change'			=>	'y',
 			'allow_multi_logins'			=>	'y',
 			'password_lockout'				=>	'y',

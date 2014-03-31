@@ -87,7 +87,7 @@ class Radio_ft extends EE_Fieldtype {
 
 	function grid_display_field($data)
 	{
-		return $this->_display_field($data, 'grid');
+		return $this->_display_field(form_prep($data), 'grid');
 	}
 
 	// --------------------------------------------------------------------
@@ -105,10 +105,10 @@ class Radio_ft extends EE_Fieldtype {
 
 		$r = '';
 
-		foreach($field_options as $option)
+		foreach($field_options as $key => $value)
 		{
-			$selected = ($option == $data);
-			$r .= '<label>'.form_radio($this->field_name, $option, $selected).NBS.$option.'</label>';
+			$selected = ($key == $data);
+			$r .= '<label>'.form_radio($this->field_name, $value, $selected).NBS.$key.'</label>';
 		}
 
 		switch ($container)
@@ -179,7 +179,7 @@ class Radio_ft extends EE_Fieldtype {
 				foreach (explode("\n", trim($this->settings['field_list_items'])) as $v)
 				{
 					$v = trim($v);
-					$field_options[form_prep($v)] = form_prep($v);
+					$field_options[form_prep($v)] = $v;
 				}
 			}
 			else

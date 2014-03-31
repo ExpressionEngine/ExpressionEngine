@@ -959,8 +959,6 @@ class EE_Config Extends CI_Config {
 					$val = str_replace('\\', '\\\\', $val);
 					$val = str_replace("'", "\\'", $val);
 					$val = str_replace("\"", "\\\"", $val);
-
-					$val = '"'.$val.'"';
 				}
 
 				// Are we adding a brand new item to the config file?
@@ -970,20 +968,28 @@ class EE_Config Extends CI_Config {
 				}
 				else
 				{
-					// Here we need to determine which regex to use for matching the config
-					// varable's value; if we're replacing an array, use regex that spans
-					// multiple lines until hitting a semicolon
+					$base_regex = '#(\$config\[(\042|\047)'.$key.'\\2\]\s*=\s*)';
+
+					// Here we need to determine which regex to use for matching
+					// the config varable's value; if we're replacing an array,
+					// use regex that spans multiple lines until hitting a
+					// semicolon
 					if (is_array($new_values[$key]))
 					{
-						$regex_string = '(.*?;)#s';
+						$config_file = preg_replace(
+							$base_regex.'(.*?;)#s',
+							"\${1}{$val};",
+							$config_file
+						);
 					}
 					else // Otherwise, use the one-liner match
 					{
-						$regex_string = "((['\"])[^\\4]*?\\4);#";
+						$config_file = preg_replace(
+							$base_regex.'((\042|\047)[^\\4]*?\\4);#',
+							"\${1}\${4}{$val}\${4};",
+							$config_file
+						);
 					}
-
-					// Update the value
-					$config_file = preg_replace('#(\$'."config\[(['\"])".$key."\\2\]\s*=\s*)".$regex_string, "\\1$val;", $config_file);
 				}
 			}
 		}
@@ -998,7 +1004,7 @@ class EE_Config Extends CI_Config {
 			$new_data = '';
 			foreach ($to_be_added as $key => $val)
 			{
-				$new_data .= "\$config['".$key."'] = ".$val.";".$newline;
+				$new_data .= "\$config['".$key."'] = '".$val."';".$newline;
 			}
 
 			// First we look for our comment marker in the config file. If found, we'll swap

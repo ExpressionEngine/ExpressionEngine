@@ -1524,6 +1524,7 @@ class Member {
 
 		$data['class'] = ee()->TMPL->form_class;
 
+		$data['action'] = ee()->TMPL->fetch_param('action');
 
 		$res  = ee()->functions->form_declaration($data);
 
@@ -2493,24 +2494,7 @@ class Member {
 	{
 		// 404 it
 		ee()->load->library('template', NULL, 'TMPL');
-
-		$template = explode('/', ee()->config->item('site_404'));
-
-		if (isset($template[1]))
-		{
-			ee()->TMPL->template_type = "404";
-			ee()->TMPL->fetch_and_parse($template[0], $template[1]);
-			$out = ee()->TMPL->parse_globals(ee()->TMPL->final_template);
-		}
-		else
-		{
-			show_404(ee()->uri->uri_string);
-		}
-
-		ee()->output->out_type = '404';
-		ee()->output->set_output($out);
-		ee()->output->_display();
-		exit;
+		ee()->TMPL->show_404();
 	}
 
 	// --------------------------------------------------------------------
