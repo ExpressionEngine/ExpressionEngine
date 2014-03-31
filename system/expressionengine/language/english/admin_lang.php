@@ -318,7 +318,10 @@ $lang = array(
 "Cannot connect to %s, using %s driver instead",
 
 "caching_driver_file_fail" =>
-"Cannot use %s driver, check cache path permissions, using %s driver",
+"Cannot use %s driver, check cache path permissions",
+
+"disable_caching" =>
+"Disable Caching",
 
 "max_caches" =>
 "Maximum Number of Cachable URIs",

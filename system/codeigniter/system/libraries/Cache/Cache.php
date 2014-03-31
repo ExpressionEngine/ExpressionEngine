@@ -311,6 +311,9 @@ class Cache extends CI_Driver_Library {
 			$options[$driver] = ucwords($driver);
 		}
 
+		// Rename dummy driver for presentation
+		$options['dummy'] = lang('disable_caching');
+
 		$output = form_dropdown('cache_driver', $options, $adapter);
 
 		// If the driver we want to use isn't what we are using, build an error
