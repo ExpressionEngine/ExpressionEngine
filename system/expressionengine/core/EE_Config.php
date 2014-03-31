@@ -914,7 +914,7 @@ class EE_Config Extends CI_Config {
 		// Is the config file writable?
 		if ( ! is_really_writable($this->config_path))
 		{
-			show_error('Your config.php file does not appear to have the proper file permissions.  Please set the file permissions to 666 on the following file: expressionengine/config/config.php', 503);
+			show_error(lang('unwritable_config_file'), 503);
 		}
 
 		// Read the config file as PHP

@@ -143,6 +143,9 @@ Confirm the fieldtype file is located in the expressionengine/third_party/ direc
 'unwritable_cache_folder' =>
 'Your cache folder does not appear to have proper permissions.  Please set the folder permissions to 777 (or the equivalent write permissions for your server) on the following folder: expressionengine/cache',
 
+'unwritable_config_file' =>
+'Your config.php file does not appear to have the proper file permissions.  Please set the file permissions to 666 on the following file: expressionengine/config/config.php',
+
 //----------------------------
 // Member Groups
 //----------------------------

@@ -42,6 +42,18 @@ class Homepage extends CP_Controller {
 		// Notices only show for super admins
 		if ($this->session->userdata['group_id'] == 1)
 		{
+			// Show a notice if the cache folder is not writeable
+			if ( ! ee()->cache->file->is_supported())
+			{
+				$message[] = lang('unwritable_cache_folder');
+			}
+
+			// Show a notice if the config file is not writeable
+			if ( ! is_really_writable(ee()->config->config_path))
+			{
+				$message[] = lang('unwritable_config_file');
+			}
+
 			if ($this->config->item('new_version_check') == 'y')
 			{
 				$message[] = $this->_version_check();
