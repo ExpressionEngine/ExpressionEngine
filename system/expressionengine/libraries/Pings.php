@@ -28,18 +28,6 @@ class Pings {
 	protected $ping_result;
 
 	/**
-	 * Constructor
-	 *
-	 * @access	public
-	 */
-	function __construct()
-	{
-		$this->EE =& get_instance();
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Is Registered?
 	 *
 	 * @return bool
