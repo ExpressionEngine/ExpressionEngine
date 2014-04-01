@@ -5,13 +5,11 @@ use EllisLab\ExpressionEngine\Model\Model;
 use EllisLab\ExpressionEngine\Model\Interfaces\Content\ContentStructure;
 
 class CategoryGroup extends Model implements ContentStructure {
-	protected static $_meta = array(
-		'primary_key' => 'group_id',
-		'gateway_names' => array('CategoryGroupGateway'),
-		'key_map' => array(
-			'group_id' => 'CategoryGroupGateway',
-			'site_id' => 'CategoryGroupGateway',
-		)	
+	protected static $_primary_key = 'group_id';
+	protected static $_gateway_names = array('CategoryGroupGateway');
+	protected static $_key_map = array(
+		'group_id' => 'CategoryGroupGateway',
+		'site_id' => 'CategoryGroupGateway',
 	);
 
 	// Properties
@@ -30,7 +28,7 @@ class CategoryGroup extends Model implements ContentStructure {
 	public function getCategoryFieldStructures()
 	{
 		return $this->manyToOne(
-			'CategoryFieldStructures', 'CategoryFieldStructure', 'group_id', 'group_id');	
+			'CategoryFieldStructures', 'CategoryFieldStructure', 'group_id', 'group_id');
 	}
 
 	/**

@@ -17,7 +17,7 @@ class ChannelEntry extends FieldDataContentModel {
 
 	protected static $_primary_key = 'entry_id';
 	protected static $_gateway_names = array('ChannelTitleGateway', 'ChannelDataGateway');
-	protected static $_key_map => array(
+	protected static $_key_map = array(
 		'entry_id' => 'ChannelTitleGateway',
 		'channel_id' => 'ChannelTitleGateway',
 		'site_id' => 'ChannelTitleGateway',

@@ -4,14 +4,12 @@ namespace EllisLab\ExpressionEngine\Model;
 use EllisLab\ExpressionEngine\Model\Model;
 
 class Status extends Model {
-	protected static $_meta = array(
-		'primary_key' => 'status_id',
-		'gateway_names' => array('StatusGateway'),
-		'key_map' => array(
-			'status_id' => 'StatusGateway',
-			'site_id' => 'StatusGateway',
-			'group_id' => 'StatusGateway'
-		)
+	protected static $_primary_key = 'status_id';
+	protected static $_gateway_names = array('StatusGateway');
+	protected static $_key_map = array(
+		'status_id' => 'StatusGateway',
+		'site_id' => 'StatusGateway',
+		'group_id' => 'StatusGateway'
 	);
 
 	public function getStatusGroup()
@@ -25,7 +23,7 @@ class Status extends Model {
 		$this->setRelated('StatusGroup', $status_group);
 		$this->group_id = $status_group->group_id;
 		return $this;
-	}	
+	}
 
 
 	public $status_id;

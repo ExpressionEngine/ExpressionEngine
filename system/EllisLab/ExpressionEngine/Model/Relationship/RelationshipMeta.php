@@ -1,9 +1,9 @@
 <?php
-namespace EllisLab\ExpressionEngine\Model\Query;
+namespace EllisLab\ExpressionEngine\Model\Relationship;
 
 use EllisLab\ExpressionEngine\Core\AliasService;
 
-class ModelRelationshipMeta {
+class RelationshipMeta {
 
 	const METHOD_JOIN = 'join';
 	const METHOD_SUBQUERY = 'subquery';

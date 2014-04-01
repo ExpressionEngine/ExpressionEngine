@@ -4,19 +4,17 @@ namespace EllisLab\ExpressionEngine\Model\Category;
 use EllisLab\ExpressionEngine\Model\FieldDataContentModel;
 
 class Category extends FieldDataContentModel {
-	protected static $_meta = array(
-		'primary_key' => 'cat_id',
-		'gateway_names' => array('CategoryGateway', 'CategoryFieldDataGateway'),
-		'key_map' => array(
-			'cat_id' => 'CategoryGateway',
-			'site_id' => 'CategoryGateway',
-			'group_id' => 'CategoryGateway',
-			'parent_id' => 'CategoryGateway'
-		),
-		'field_content_class' => 'CategoryFieldContent',
-		'field_content_gateway' => 'CategoryFieldDataGateway'
+	protected static $_primary_key = 'cat_id';
+	protected static $_gateway_names = array('CategoryGateway', 'CategoryFieldDataGateway');
+	protected static $_key_map = array(
+		'cat_id' => 'CategoryGateway',
+		'site_id' => 'CategoryGateway',
+		'group_id' => 'CategoryGateway',
+		'parent_id' => 'CategoryGateway'
 	);
-	
+	protected static $_field_content_class = 'CategoryFieldContent';
+	protected static $_field_content_gateway = 'CategoryFieldDataGateway';
+
 	// Properties
 	protected $cat_id;
 	protected $site_id;

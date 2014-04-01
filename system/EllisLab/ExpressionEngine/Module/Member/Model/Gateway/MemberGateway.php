@@ -9,9 +9,9 @@ use EllisLab\ExpressionEngine\Model\Gateway\RowDataGateway;
  * Contains the member info
  */
 class MemberGateway extends RowDataGateway {
-	protected static $_table_name => 'members';
-	protected static $_primary_key => 'member_id';
-	protected static $_related_gateways => array(
+	protected static $_table_name = 'members';
+	protected static $_primary_key = 'member_id';
+	protected static $_related_gateways = array(
 		'group_id' => array(
 			'gateway' => 'MemberGroupGateway',
 			'key' => 'group_id'
