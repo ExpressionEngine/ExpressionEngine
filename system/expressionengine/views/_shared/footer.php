@@ -1,19 +1,68 @@
-</div>
+		</section>
+		<section class="product-bar">
+			<div class="snap">
+				<div class="left">
+					<p><b>ExpressionEngine</b> <span class="version" title="About ExpressionEngine"><?=APP_VER?></span></p>
+					<!-- use class out-of-date on the version link. -->
+					<!-- <div class="version-info">
+						<h3>Installed</h3>
+						<p>ExpressionEngine <b>3</b>.0<br><em>build date: 07.12.2014</em></p>
+						<h3>Latest Version (<a href="" rel="external">download</a>)</h3>
+						<p>ExpressionEngine <b>3</b>.0.1<br><em>build date: 09.16.2014</em></p>
+						<a href="" class="close">&#10006;</a>
+						<div class="status out">out of date</div>
+					</div> -->
+					<div class="version-info">
+						<h3>Installed</h3>
+						<p>ExpressionEngine <?=APP_VER?><br><em><?=lang('build').APP_BUILD?></em></p>
+						<a href="" class="close">&#10006;</a>
+						<div class="status">current</div>
+					</div>
+				</div>
+				<div class="right"><p><a href="/report-bug" rel="external">Report Bug</a> <b class="sep">&middot;</b> <a href="/new-ticket" rel="external">New Ticket</a> <b class="sep">&middot;</b> <a href="/manual" rel="external">Manual</a></p></div>
+			</div>
+		</section>
+		<section class="footer">
+			<div class="snap">
+				<div class="left"><p>&copy;2003&mdash;<?=date('Y')?> <a href="<?=ee()->cp->masked_url('http://ellislab.com/expressionengine')?>" rel="external">EllisLab</a>, Inc.</p></div>
+				<div class="right"><p><a class="scroll" href="#top">scroll to top</a></p></div>
+			</div>
+		</section>
+		<div class="overlay"></div>
+		<!-- <div class="alert warn">
+			<h3>Exclamation!</h3>
+			<p>A message that relates to the above exclamation of success, failure or just a heads up.</p>
+			<a class="close" href=""></a>
+		</div> -->
+		<?=ee()->view->script_tag('jquery/jquery.js')?>
+		<?=ee()->view->script_tag('v3/cmon-ck.js')?>
+		<?php
+		if (isset($cp_global_js))
+		{
+			echo $cp_global_js;
+		}
+		echo $this->cp->render_footer_js();
 
-<div id="footer">
-	<a rel="external" href="<?=$this->cp->masked_url('http://ellislab.com')?>"><img src="<?=$cp_theme_url?>images/ee_logo_footer.gif" alt="<?=APP_NAME?>" width="109" height="15" /></a>
-	<?=(IS_CORE)?' Core':''?> v<?=APP_VER?> <?php echo ' - ';
-	echo lang('build'). '&nbsp;'.APP_BUILD;?> - &copy; <?=lang('copyright')?> 2003 - <?= date('Y') ?> <a href="<?=$this->cp->masked_url('http://ellislab.com/')?>" rel="external">EllisLab, Inc.</a><br />
+		if (isset($library_src))
+		{
+			echo $library_src;
+		}
 
-	<?php
-		echo str_replace("%x", $this->benchmark->elapsed_time('total_execution_time_start', 'total_execution_time_end'), lang('page_rendered'));
-		echo ' - ';
-		echo str_replace("%x", $this->db->query_count, lang('queries_executed'));
-	?>
-</div> <!-- footer -->
+		if (isset($script_foot))
+		{
+			echo $script_foot;
+		}
+
+		foreach ($this->cp->footer_item as $item)
+		{
+			echo $item."\n";
+		}
+		?>
+	</body>
+</html>
 
 
-<div id="idle-modal" class="pageContents">
+<!--<div id="idle-modal" class="pageContents">
 	<p id="idle-description" class="shun"><?=lang('session_idle_description')?></p>
 
 	<p class="idle-fourth"><strong>User:</strong></p>
@@ -61,44 +110,4 @@
 			<span class="notice_info"><img src="<?=$cp_theme_url?>images/info.png" alt="" width="14" height="14" /></span>
 		</p>
 	</div>
-</div>
-
-<?php
-/* Moved to header to give third parties time to deprecate
-
-<?php
-if (isset($cp_global_js))
-{
-	echo $cp_global_js;
-} ?>
-
-<?=$this->view->script_tag('jquery/jquery.js')?>
-
-*/
-?>
-
-<?php
-
-echo $this->cp->render_footer_js();
-
-if (isset($library_src))
-{
-	echo $library_src;
-}
-
-if (isset($script_foot))
-{
-	echo $script_foot;
-}
-
-foreach ($this->cp->footer_item as $item)
-{
-	echo $item."\n";
-}
-?>
-
-</body>
-</html>
-<?php
-/* End of file footer.php */
-/* Location: ./themes/cp_themes/default/_shared/footer.php */
+</div>-->

@@ -320,7 +320,7 @@ class EE_Menu {
 		$menu_string .= $this->_process_menu(array('help' => $this->generate_help_link()), 0, TRUE, '', 'external');
 
 		// Visit Site / MSM Switcher gets an extra class
-		$menu_string .= $this->_process_menu($this->_fetch_site_list(), 0, FALSE, 'msm_sites');
+		$menu_string .= $this->_process_menu($this->site_menu(), 0, FALSE, 'msm_sites');
 
 		ee()->load->vars('menu_string', $menu_string);
 
@@ -773,7 +773,7 @@ class EE_Menu {
 	 * @access	private
 	 * @return	array
 	 */
-	function _fetch_site_list()
+	public function site_menu()
 	{
 		// Add MSM Site Switcher
 		ee()->load->model('site_model');
@@ -790,26 +790,16 @@ class EE_Menu {
 			if ($site_backlink)
 			{
 				$site_backlink = implode('|', explode(AMP, $site_backlink));
-				$site_backlink = AMP."page=".strtr(base64_encode($site_backlink), '+=', '-_');
+				$site_backlink = strtr(base64_encode($site_backlink), '+=', '-_');
 			}
-
-			$menu[ee()->config->item('site_name')][lang('view_site')] = ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'URL='.ee()->functions->fetch_site_index();
-
-			if (ee()->cp->allowed_group('can_admin_sites'))
-			{
-				$menu[ee()->config->item('site_name')][lang('edit_sites')] = BASE.AMP.'C=sites'.AMP.'M=manage_sites';
-			}
-
-			$menu[ee()->config->item('site_name')][] = '----';
 
 			foreach($site_list as $site_id => $site_name)
 			{
-				$menu[ee()->config->item('site_name')][$site_name] = BASE.AMP.'C=sites'.AMP.'site_id='.$site_id.$site_backlink;
+				if ($site_id != ee()->config->item('site_id'))
+				{
+					$menu[$site_name] = cp_url('sites', array('site_id' => $site_id, 'page' => $site_backlink));
+				}
 			}
-		}
-		else
-		{
-			$menu[ee()->config->item('site_name')] = ee()->config->item('base_url').ee()->config->item('site_index').'?URL='.ee()->config->item('base_url').ee()->config->item('site_index');
 		}
 
 		return $menu;

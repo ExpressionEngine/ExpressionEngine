@@ -231,8 +231,8 @@ class Cp {
 	public function render($view, $data = array(), $return = FALSE)
 	{
 		$this->_menu();
-		$this->_accessories();
-		$this->_sidebar();
+		//$this->_accessories();
+		//$this->_sidebar();
 
 		if (isset(ee()->table))
 		{
@@ -288,6 +288,7 @@ class Cp {
 
 		ee()->load->library('menu');
 		ee()->view->cp_menu_items = ee()->menu->generate_menu();
+		ee()->view->site_menu = ee()->menu->site_menu();
 	}
 
 	// --------------------------------------------------------------------
