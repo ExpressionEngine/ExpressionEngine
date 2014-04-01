@@ -29,7 +29,7 @@ do
 		bundle exec rspec -fh -c -o $CIRCLE_ARTIFACTS/$PHPVERSION/results.html
 
 		# Append status code for this test
-		(($STATUS+=$?))
+		((STATUS+=$?))
 
 		# If screenshots were taken, move them to the build artifacts directory
 		if [ -d "./screenshots" ]; then
@@ -45,9 +45,9 @@ do
 		phpunit tests/ > $CIRCLE_ARTIFACTS/$PHPVERSION/phpunit.html
 
 		# Append our exit status code
-		(($STATUS+=$?))
+		((STATUS+=$?))
 	popd
-
+g
 done
 
 exit $STATUS
