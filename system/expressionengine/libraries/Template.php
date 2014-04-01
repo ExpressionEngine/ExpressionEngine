@@ -1532,8 +1532,8 @@ class EE_Template {
 						$error .= str_replace('%x', $this->tag_data[$i]['class'], str_replace('%y', $meth_name, ee()->lang->line('error_fix_module_processing')));
 
 						ee()->output->fatal_error($error);
-					 }
-					 else
+					}
+					else
 					{
 						return;
 					}
@@ -2073,16 +2073,7 @@ class EE_Template {
 					}
 				}
 
-				if (ee()->config->item('site_404'))
-				{
-					$this->log_item($log_message);
-					return $this->fetch_template('', '', FALSE);
-				}
-				else
-				{
-					$this->log_item($log_message);
-					return $this->_404();
-				}
+				$this->show_404();
 			}
 
 			// We we are not enforcing strict URLs, so Let's fetch the the name of the default template group
@@ -2104,17 +2095,7 @@ class EE_Template {
 				// Turn off caching
 				$this->disable_caching = TRUE;
 
-				// Show the user-specified 404
-				if (ee()->config->item('site_404'))
-				{
-					$this->log_item("Template group and template not found, showing 404 page");
-					return $this->fetch_template('', '', FALSE);
-				}
-				else
-				{
-					// Show the default 404
-					return $this->_404();
-				}
+				$this->show_404();
 			}
 
 			// Since the first URI segment isn't a template group name,
@@ -2180,21 +2161,32 @@ class EE_Template {
 	   return $this->fetch_template($template_group, $template, FALSE);
 	}
 
-	// --------------------------------------------------------------------
+	// -------------------------------------------------------------------------
 
 	/**
-	 * 404 Page
-	 *
-	 * If users do not have a 404 template specified this is what gets shown
-	 *
-	 * @return	string
+	 * Show a 404 page whether one is set in the config or not
+	 * @return void
 	 */
-	protected function _404()
+	public function show_404()
 	{
-		$this->log_item("404 Page Returned");
-		ee()->output->set_status_header(404);
-		echo '<html><head><title>404 Page Not Found</title></head><body><h1>Status: 404 Page Not Found</h1></body></html>';
-		exit;
+		if ($site_404 = ee()->config->item('site_404'))
+		{
+			$this->log_item('Processing "'.$site_404.'" Template as 404 Page');
+
+			$this->template_type = "404";
+			$template = explode('/', $site_404);
+			$this->fetch_and_parse($template[0], $template[1]);
+			$out = $this->parse_globals($this->final_template);
+			ee()->output->out_type = "404";
+			ee()->output->set_output($out);
+			ee()->output->_display();
+		}
+		else
+		{
+			$this->log_item('404 redirect requested, but no 404 page is specified in the Global Template Preferences');
+
+			show_404(ee()->uri->uri_string);
+		}
 	}
 
 	// --------------------------------------------------------------------
@@ -2943,22 +2935,7 @@ class EE_Template {
 			{
 				if ($match['2'] == "404")
 				{
-					$template = explode('/', ee()->config->item('site_404'));
-
-					if (isset($template['1']))
-					{
-						$this->log_item('Processing "'.$template['0'].'/'.$template['1'].'" Template as 404 Page');
-						$this->template_type = "404";
-						$this->fetch_and_parse($template['0'], $template['1']);
-						$this->cease_processing = TRUE;
-						// the resulting template will not have globals parsed unless we do this
-						return $this->parse_globals($this->final_template);
-					}
-					else
-					{
-						$this->log_item('404 redirect requested, but no 404 page is specified in the Global Template Preferences');
-						return $this->_404();
-					}
+					$this->show_404();
 				}
 				else
 				{
@@ -3106,13 +3083,7 @@ class EE_Template {
 		{
 			if ($this->encode_email == TRUE)
 			{
-				if (preg_match_all("/".LD."encode=(.+?)".RD."/i", $str, $matches))
-				{
-					for ($j = 0; $j < count($matches[0]); $j++)
-					{
-						$str = preg_replace('/'.preg_quote($matches['0'][$j], '/').'/', ee()->functions->encode_email($matches[1][$j]), $str, 1);
-					}
-				}
+				$str = $this->parse_encode_email($str);
 			}
 			else
 			{
@@ -4157,14 +4128,15 @@ class EE_Template {
 			strpos($str, 'timezone=') !== FALSE ||
 			strpos($str, ':relative') !== FALSE)
 		{
-			if ($relative = preg_match_all("/".LD."([\w\-]+):relative(.*?)".RD."/", $str, $matches, PREG_SET_ORDER))
+			if ($relative = preg_match_all("/".LD."([\w:\-]+):relative(?![\w-])(.*?)".RD."/", $str, $matches, PREG_SET_ORDER))
 			{
 				foreach ($matches as $match)
 				{
 					$this->date_vars[] = $match[1];
 				}
 			}
-			elseif ($standard = preg_match_all("/".LD."([\w:\-]+)\s+(format|timezone)=[\"'](.*?)[\"']".RD."/", $str, $matches, PREG_SET_ORDER))
+
+			if ($standard = preg_match_all("/".LD."([\w:\-]+)\s+(format|timezone)=[\"'](.*?)[\"']".RD."/", $str, $matches, PREG_SET_ORDER))
 			{
 				foreach ($matches as $match)
 				{
@@ -4177,6 +4149,13 @@ class EE_Template {
 			if (empty($standard) && empty($relative))
 			{
 				$this->date_vars = FALSE;
+			}
+
+			// If a date has both the ":relative" modifier and "format=" it will
+			// be present twice. We'll filter this out here.
+			else
+			{
+				$this->date_vars = array_unique($this->date_vars);
 			}
 		}
 	}
@@ -4212,6 +4191,26 @@ class EE_Template {
 		}
 
 		return $tagdata;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Parse {encode=...} tags
+	 * @param  String $str String to parse
+	 * @return String      String with {encode=...} parsed out
+	 */
+	public function parse_encode_email($str)
+	{
+		if (preg_match_all("/".LD."encode=(.+?)".RD."/i", $str, $matches))
+		{
+			for ($j = 0; $j < count($matches[0]); $j++)
+			{
+				$str = preg_replace('/'.preg_quote($matches['0'][$j], '/').'/', ee()->functions->encode_email($matches[1][$j]), $str, 1);
+			}
+		}
+
+		return $str;
 	}
 
 	// --------------------------------------------------------------------

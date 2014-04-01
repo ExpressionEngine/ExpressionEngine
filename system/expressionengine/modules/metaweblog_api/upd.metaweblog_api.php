@@ -24,7 +24,7 @@
  */
 class Metaweblog_api_upd {
 
-	var $version = '2.1';
+	var $version = '2.2';
 
 	function Metaweblog_api_upd()
 	{
@@ -53,7 +53,8 @@ class Metaweblog_api_upd {
 
 		$data = array(
 			'class' 	=> 'Metaweblog_api',
-			'method' 	=> 'incoming'
+			'method' 	=> 'incoming',
+			'csrf_exempt' => 1
 		);
 		ee()->db->insert('actions', $data);
 
@@ -203,9 +204,15 @@ class Metaweblog_api_upd {
 			}
 		}
 
-		if (version_compare($version, '2.1', '<'))
+		if (version_compare($version, '2.2', '<'))
 		{
-			// nothing to see here!
+			$data = array(
+				'csrf_exempt' => 1
+				);
+
+			ee()->db->where('class', 'Metaweblog_api');
+			ee()->db->where('method', 'incoming');
+			ee()->db->update('actions', $data);
 		}
 
 		return TRUE;

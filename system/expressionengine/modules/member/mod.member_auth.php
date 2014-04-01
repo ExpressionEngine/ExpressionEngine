@@ -542,7 +542,7 @@ class Member_auth extends Member {
 		if ( ! $token) $token = ee()->input->get('csrf_token');
 		if ( ! $token) $token = ee()->input->get('XID');
 
-		if ($token != CSRF_TOKEN)
+		if ( ! bool_config_item('disable_csrf_protection') && $token != CSRF_TOKEN)
 		{
 			return ee()->output->show_user_error('general', array(lang('not_authorized')));
 		}
