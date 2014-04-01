@@ -2684,6 +2684,8 @@ class EE_Functions {
 						{
 							switch ($token)
 							{
+								case '-':
+								case '+':
 								case '<':
 								case '>':
 								case '.':
