@@ -12,11 +12,10 @@ use EllisLab\ExpressionEngine\Model\Model;
  */
 class Member extends Model {
 	protected static $_primary_key = 'member_id';
-	protected static $_gateway_names = array('MemberGateway','ResetPasswordGateway');
+	protected static $_gateway_names = array('MemberGateway');
 	protected static $_key_map = array(
 		'member_id' => 'MemberGateway',
 		'group_id' => 'MemberGateway',
-		'reset_id' => 'ResetPasswordGateway'
 	);
 
 	// Properties
@@ -93,10 +92,6 @@ class Member extends Model {
 	protected $show_sidebar;
 	protected $pmember_id;
 
-	// On ResetPasswordGateway
-	protected $reset_id;
-	protected $resetcode;
-	protected $date;
 
 	public function getMemberGroup()
 	{
@@ -109,6 +104,19 @@ class Member extends Model {
 		$this->group_id = $group->group_id;
 		return $this;
 	}
+
+	public function setResetPassword(ResetPassword $reset_code)
+	{
+		$this->setRelated('ResetPassword', $reset_code);
+		$reset_code->member_id = $this->member_id;
+		return $this;
+	}
+
+	public function getResetPassword()
+	{
+		return $this->oneToOne('ResetPassword', 'ResetPassword', 'member_id', 'member_id');
+	}
+
 
 	public function getChannelEntries()
 	{
@@ -125,13 +133,6 @@ class Member extends Model {
 		}
 
 		return $this;
-	}
-
-	public function clearResetToken()
-	{
-		$reset_gateway = $this->_factory->makeGateway('ResetPasswordGateway');
-		$reset_gateway->reset_id = $this->reset_id;
-		$reset_gateway->delete();
 	}
 
 }
