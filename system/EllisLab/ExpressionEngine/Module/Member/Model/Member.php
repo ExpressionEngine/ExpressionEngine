@@ -12,10 +12,11 @@ use EllisLab\ExpressionEngine\Model\Model;
  */
 class Member extends Model {
 	protected static $_primary_key = 'member_id';
-	protected static $_gateway_names = array('MemberGateway');
+	protected static $_gateway_names = array('MemberGateway','ResetPasswordGateway');
 	protected static $_key_map = array(
 		'member_id' => 'MemberGateway',
-		'group_id' => 'MemberGateway'
+		'group_id' => 'MemberGateway',
+		'reset_id' => 'ResetPasswordGateway'
 	);
 
 	// Properties
@@ -92,6 +93,11 @@ class Member extends Model {
 	protected $show_sidebar;
 	protected $pmember_id;
 
+	// On ResetPasswordGateway
+	protected $reset_id;
+	protected $resetcode;
+	protected $date;
+
 	public function getMemberGroup()
 	{
 		return $this->manyToOne('MemberGroup', 'MemberGroup', 'group_id', 'group_id');
@@ -119,6 +125,13 @@ class Member extends Model {
 		}
 
 		return $this;
+	}
+
+	public function clearResetToken()
+	{
+		$reset_gateway = $this->_factory->makeGateway('ResetPasswordGateway');
+		$reset_gateway->reset_id = $this->reset_id;
+		$reset_gateway->delete();
 	}
 
 }
