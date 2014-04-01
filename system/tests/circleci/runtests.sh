@@ -42,10 +42,14 @@ do
 	# PHPUnit tests
 	pushd phpunit-new
 		printf "Running PHPUnit tests\n\n"
-		phpunit tests/ | sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})*)?m//g" > $CIRCLE_ARTIFACTS/$PHPVERSION/phpunit.txt
+		phpunit tests/ > $CIRCLE_ARTIFACTS/$PHPVERSION/phpunit.txt
 
-		# Append our exit status code
+		# Save our exit status code
 		((STATUS+=$?))
+
+		# Remove CLI colors
+		sed -ir "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})*)?m//g" $CIRCLE_ARTIFACTS/$PHPVERSION/phpunit.txt
+
 	popd
 
 done
