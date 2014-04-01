@@ -26,7 +26,7 @@ do
 	pushd rspec
 		# Run the tests, outputting the results in the artifacts directory.
 		printf "Running Rspec tests\n\n"
-		bundle exec rspec -fh -c -o $CIRCLE_ARTIFACTS/$PHPVERSION/results.html
+		bundle exec rspec -fh -c -o $CIRCLE_ARTIFACTS/$PHPVERSION/rspec.html
 
 		# Append status code for this test
 		((STATUS+=$?))
@@ -42,7 +42,7 @@ do
 	# PHPUnit tests
 	pushd phpunit-new
 		printf "Running PHPUnit tests\n\n"
-		phpunit tests/ > $CIRCLE_ARTIFACTS/$PHPVERSION/phpunit.html
+		phpunit tests/ > $CIRCLE_ARTIFACTS/$PHPVERSION/phpunit.txt
 
 		# Append our exit status code
 		((STATUS+=$?))
