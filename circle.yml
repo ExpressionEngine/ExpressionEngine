@@ -31,4 +31,3 @@ checkout:
 test:
   override:
     - "./system/tests/circleci/runtests.sh"
-    - phpunit -c system/tests/phpunit-new/phpunit.xml system/tests/phpunit-new/tests/
