@@ -2533,10 +2533,6 @@ class EE_Functions {
 					{
 						$data[$x[$i]] = $x[$i];
 					}
-					elseif(strncmp($x[$i], 'embed:', 6) == 0)
-					{
-						$data[$x[$i]] = '';
-					}
 
 					if ($i > 500) break; ++$i;
 				}
@@ -2698,7 +2694,7 @@ class EE_Functions {
 								case ')': $parenthesis_depth--;
 									break;
 								default:
-									continue; // other tokens don't get anything
+									continue 2; // other tokens don't get anything
 							}
 
 							$false_added = FALSE;
