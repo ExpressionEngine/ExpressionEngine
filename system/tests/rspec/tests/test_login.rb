@@ -24,7 +24,7 @@ feature 'Login Page' do
   it 'logs in when submitting valid credentials' do
     Login::login
 
-    page.should have_content('CP Home')
+    page.should have_content('Report Bug')
   end
 
   it 'rejects when submitting invalid credentials' do
