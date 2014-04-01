@@ -14,12 +14,36 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 	}
 
 	/**
-	 * @dataProvider unsafeDataProvider
-	 * @expectedException        UnsafeConditionalException
+	 * @expectedException UnsafeConditionalException
 	 */
-	public function testUnsafeConditionalsSafetyYesPrefixBlank($description, $str_in, $expected_out, $vars = array(), $php_vars = array())
+	public function testEvilBackticksInConditional()
 	{
-		$this->runConditionalTest($description, $str_in, $expected_out, $vars, $php_vars);
+	//	$this->runConditionalTest('Simple Backticks', '{if `echo hello`}out{/if}', '{if}out{/if}');
+		$this->runConditionalTest('Simple Backticks', '{if `echo hello`}out{/if}', '{if}out{/if}');
+	}
+
+	/**
+	 * @expectedException UnsafeConditionalException
+	 */
+	public function testEvilBackticksSplittingConditional()
+	{
+		$this->runConditionalTest('Splitting Backticks', '{if string.`echo hello #}out{/if}{if `== 0}out{/if}', '{if}out{/if}');
+	}
+
+	/**
+	 * @expectedException UnsafeConditionalException
+	 */
+	public function testEvilCommentsInConditional()
+	{
+		$this->runConditionalTest('Simple Comments', '{if php/* test == 5*/info(); }out{/if}', '{if}out{/if}');
+	}
+
+	/**
+	 * @expectedException UnsafeConditionalException
+	 */
+	public function testEvilCommentsSplittingConditional()
+	{
+		$this->runConditionalTest('Splitting Comments', '{if string /* == 5 }out{/if}{if */phpinfo(); == 5}out{/if}', '{if}out{/if}');
 	}
 
 
@@ -89,14 +113,6 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			$this->evilConditionalSplitWithComments(),
 			$this->evilConditionalSplitWithBackticks(),
 			*/
-		);
-	}
-
-	public function unsafeDataProvider()
-	{
-		return array_merge(
-			array(),
-			$this->evilBackticksInConditional()
 		);
 	}
 
@@ -265,23 +281,6 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			array('Concatenation with spaces',				'{if string . string}out{/if}', '{if "ee" . "ee"}out{/if}'),
 			array('Concatenation without spaces',			'{if string.string}out{/if}', '{if FALSE.FALSE}out{/if}'),
 			array('Subtract dash-words variable',			'{if a-number - int}out{/if}', '{if "15" - "5"}out{/if}', array('a-number' => 15)),
-		);
-	}
-
-	protected function evilBackticksInConditional()
-	{
-		return array(
-			array('Simple Backticks', '{if `echo hello`}out{/if}', '{if}out{/if}'),
-			array('Splitting Backticks', '{if string.`echo hello #}out{/if}{if `== 0}out{/if}', '{if}out{/if}')
-		);
-	}
-
-	protected function evilCommentsInConditional()
-	{
-		return array(
-			array('Simple Comments', '{if php/* test == 5*/info(); }out{/if}', '{if}out{/if}'),
-			array('Splitting Comments', '{if string /* == 5 }out{/if}{if */phpinfo(); == 5}out{/if}', '{if}out{/if}'),
-			array('Splitting s', '{if string == 5 }out{/if}', '{if "ee" == 5 }out{/if}')
 		);
 	}
 }
