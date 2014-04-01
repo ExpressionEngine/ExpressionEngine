@@ -47,7 +47,7 @@ do
 		# Append our exit status code
 		((STATUS+=$?))
 	popd
-g
+
 done
 
 exit $STATUS
