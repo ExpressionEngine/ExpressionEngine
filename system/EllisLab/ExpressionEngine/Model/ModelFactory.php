@@ -1,6 +1,7 @@
 <?php
 namespace EllisLab\ExpressionEngine\Model;
 
+use EllisLab\ExpressionEngine\Core\AliasService;
 use EllisLab\ExpressionEngine\Core\Dependencies;
 use EllisLab\ExpressionEngine\Model\Query\Query;
 

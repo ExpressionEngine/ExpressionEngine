@@ -168,7 +168,13 @@ class Query {
 		return $this;
 	}
 
-	protected function applyFilter($relationship_property, $operator, $value)
+	public function or_filter($property, $operator, $value = NULL)
+	{
+		$this->applyFilter($property, $operator, $value, TRUE);
+		return $this;
+	}
+
+	protected function applyFilter($relationship_property, $operator, $value, $or = TRUE)
 	{
 		if ( ! isset($value))
 		{
@@ -182,6 +188,18 @@ class Query {
 		}
 
 		$table_property = $this->translateProperty($relationship_property);
+
+		if ($or)
+		{
+			if (strtolower($operator) == 'in')
+			{
+				$this->db->or_where_in($table_property, (array) $value);
+			}
+			else
+			{
+				$this->db->or_where($table_property.' '.$operator, $value);
+			}
+		}
 
 		if (strtolower($operator) == 'in')
 		{
