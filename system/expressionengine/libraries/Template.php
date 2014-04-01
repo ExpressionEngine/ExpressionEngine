@@ -4128,14 +4128,15 @@ class EE_Template {
 			strpos($str, 'timezone=') !== FALSE ||
 			strpos($str, ':relative') !== FALSE)
 		{
-			if ($relative = preg_match_all("/".LD."([\w\-]+):relative(.*?)".RD."/", $str, $matches, PREG_SET_ORDER))
+			if ($relative = preg_match_all("/".LD."([\w:\-]+):relative(?![\w-])(.*?)".RD."/", $str, $matches, PREG_SET_ORDER))
 			{
 				foreach ($matches as $match)
 				{
 					$this->date_vars[] = $match[1];
 				}
 			}
-			elseif ($standard = preg_match_all("/".LD."([\w:\-]+)\s+(format|timezone)=[\"'](.*?)[\"']".RD."/", $str, $matches, PREG_SET_ORDER))
+
+			if ($standard = preg_match_all("/".LD."([\w:\-]+)\s+(format|timezone)=[\"'](.*?)[\"']".RD."/", $str, $matches, PREG_SET_ORDER))
 			{
 				foreach ($matches as $match)
 				{
@@ -4148,6 +4149,13 @@ class EE_Template {
 			if (empty($standard) && empty($relative))
 			{
 				$this->date_vars = FALSE;
+			}
+
+			// If a date has both the ":relative" modifier and "format=" it will
+			// be present twice. We'll filter this out here.
+			else
+			{
+				$this->date_vars = array_unique($this->date_vars);
 			}
 		}
 	}
