@@ -59,6 +59,7 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			$this->plainLogicOperatorTests(),
 			$this->plainLogicOperatorTestsNoWhitespace(),
 			$this->plainModuloTests(),
+			$this->plainUnparsedTurnsFalse(),
 
 			// simple tests don't combine too many things
 			$this->simpleVariableReplacementsTest(),
@@ -148,6 +149,15 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			array('Modulo Strings',					'{if "foo" % "bar"}out{/if}',	'{if "foo" % "bar"}out{/if}'),
 			array('Modulo Integers no Whitespace',	'{if 15%5}out{/if}',			'{if 15%5}out{/if}'),
 			array('Modulo Strings no Whitespace',	'{if "foo"%"bar"}out{/if}',		'{if "foo"%"bar"}out{/if}'),
+		);
+	}
+
+	protected function plainUnparsedTurnsFalse()
+	{
+		return array(
+			array('Unparsed Plain',				'{if notset}out{/if}',			'{if FALSE}out{/if}'),
+			array('Unparsed with Modifier',		'{if notset:modified}out{/if}',	'{if FALSE}out{/if}'),
+			array('Unparsed variable-variable',	'{if a{notset}b}out{/if}',		'{if FALSE}out{/if}'),
 		);
 	}
 
