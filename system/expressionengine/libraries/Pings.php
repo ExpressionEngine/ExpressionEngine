@@ -199,9 +199,9 @@ class Pings {
 	/**
 	 * Do the Ping
 	 *
-	 * @param string	The URL to ping
-	 * @param array		The POST payload, if any
-	 * @return bool
+	 * @param string		$url		The URL to ping
+	 * @param array			$payload	The POST payload, if any
+	 * @return string|bool	The response from the web server or FALSE on failure to connect
 	 **/
 	private function _do_ping($url, $payload = null)
 	{
