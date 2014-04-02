@@ -4,8 +4,7 @@ namespace EllisLab\ExpressionEngine\Model;
 use EllisLab\ExpressionEngine\Model\Error\Errors;
 use EllisLab\ExpressionEngine\Model\Query\QueryBuilder;
 use EllisLab\ExpressionEngine\Model\Relationship\RelationshipBag;
-use EllisLab\ExpressionEngine\Model\Relationship\RelationshipData;
-use EllisLab\ExpressionEngine\Model\Relationship\RelationshipFluentBuilder;
+use EllisLab\ExpressionEngine\Model\Relationship\RelationshipQuery;
 
 use EllisLab\ExpressionEngine\Model\ModelAliasService;
 
@@ -191,7 +190,6 @@ abstract class Model {
 
 		$value = static::$$property;
 
-		$should_be_array = is_array($default);
 		$should_be_array = is_array(self::$$property);
 
 		$parent = get_parent_class(get_called_class());
@@ -457,101 +455,66 @@ abstract class Model {
 	}
 
 	/**
-	 * Create a one-to-one relationship
+	 * Get a relationship
 	 *
-	 * @param String $to_model_name	Name of the model to relate to
-	 * @param String $this_key		Name of the relating key
-	 * @param String $that_key		Name of the key on the related model
-	 * @param String $name			The name of the method on the calling model
+	 * @param String $name		Name of the relationship
+	 * @param Object $model		Object to relate to
 	 *
-	 * @return Relationship object or related data
+	 * @return Object $this
 	 */
-	public function oneToOne($to_model_name, $to_key = NULL)
+	protected function getRelated($to_name)
 	{
-		return $this->newRelationshipBuilder('one-to-one')
-			->to($to_model_name, $to_key);
+		$info = $this->getRelationshipInfo($to_name);
+
+		// if we already have data, we return it.
+		if ($this->_related_models->has($to_name))
+		{
+			return $this->_related_models->get($to_name, $info->is_collection);
+		}
+
+		$query = new RelationshipQuery($this, $info);
+
+		// No data, check if we're in a query
+		if ($this->getId() === NULL)
+		{
+			return $query->eager($this->_alias_service);
+		}
+
+		return $query->lazy($this->_factory);
 	}
 
 	/**
-	 * Create a many-to-one relationship
+	 * Check for a relationship
 	 *
-	 * @param String $to_model_name	Name of the model to relate to
-	 * @param String $this_key		Name of the relating key
-	 * @param String $that_key		Name of the key on the related model
-	 * @param String $name			The name of the method on the calling model
+	 * @param String  $name			Name of the relationship
+	 * @param Integer $primary_key	Optional primary key of the related model
 	 *
-	 * @return Relationship object or related data
+	 * @return Boolean
 	 */
-	public function manyToOne($to_model_name, $to_key = NULL)
+	public function hasRelated($name, $primary_key = NULL)
 	{
-		return $this->newRelationshipBuilder('many-to-one')
-			->to($to_model_name, $to_key);
+		return $this->_related_models->has($name, $primary_key);
 	}
 
 	/**
-	 * Create a one-to-many relationship
+	 * Add a related model
 	 *
-	 * @param String $to_model_name	Name of the model to relate to
-	 * @param String $this_key		Name of the relating key
-	 * @param String $that_key		Name of the key on the related model
-	 * @param String $name			The name of the method on the calling model
+	 * @param String  $name		Name of the relationship
+	 * @param Object $model		Object to relate to
 	 *
-	 * @return Relationship object or related data
+	 * @return Boolean
 	 */
-	public function oneToMany($to_model_name, $to_key = NULL)
+	public function addRelated($name, $model)
 	{
-		return $this->newRelationshipBuilder('one-to-many')
-			->to($to_model_name, $to_key);
+		$this->_related_models->add($name, $model);
+
+		return $this;
 	}
-
-	/**
-	 * Create a many-to-many relationship
-	 *
-	 * @param String $to_model_name	Name of the model to relate to
-	 * @param String $this_key		Name of the relating key
-	 * @param String $that_key		Name of the key on the related model
-	 * @param String $name			The name of the method on the calling model
-	 *
-	 * @return Relationship object or related data
-	 */
-	public function manyToMany($to_model_name, $to_key = NULL)
-	{
-		return $this->newRelationshipBuilder('many-to-many')
-			->to($to_model_name, $to_key);
-	}
-
-
-	// alias the more human relationship names
-	public function hasOne($to_model, $to_key = NULL)
-	{
-		return $this->oneToOne($to_model, $to_key);
-	}
-
-	public function belongsTo($to_model, $to_key = NULL)
-	{
-		return $this->oneToOne($to_model, $to_key);
-	}
-
-	public function hasMany($to_model, $to_key = NULL)
-	{
-		return $this->oneToMany($to_model, $to_key);
-	}
-
-	public function belongsToMany($to_model, $to_key = NULL)
-	{
-		return $this->manyToOne($to_model, $to_key);
-	}
-
-	public function hasAndBelongsToMany($to_model, $to_key = NULL)
-	{
-		return $this->manyToMany($to_model, $to_key);
-	}
-
 
 	/**
 	 * Set related data for a given relationship.
 	 *
-	 * @param String $model_name The name by which this relationship is
+	 * @param String $name The name by which this relationship is
 	 * 		identified.  In most cases this will be the name of the Model, but
 	 * 		sometimes it will be specific to the relationship.  For example,
 	 * 		ChannelEntry has an Author relationship (getAuthor(), setAuthor()).
@@ -559,35 +522,45 @@ abstract class Model {
 	 *
 	 * @return void
 	 */
-	public function setRelated($relationship_key, $value)
+	public function setRelated($name, $value)
 	{
-		$this->_related_models->set($relationship_key, $value);
+		$this->_related_models->set($name, $value);
+
+		$info = $this->getRelationshipInfo($name);
+
+		// update the related key
+		// TODO update on the other end as well?
+		$this->{$info->key} = $value->{$info->to_key};
 
 		return $this;
 	}
 
-	public function hasRelated($relationship_key, $primary_key = NULL)
+	private function getRelationshipInfo($name)
 	{
-		return $this->_related_models->has($relationship_key, $primary_key);
-	}
+		$relationships = static::getMetadata('relationships');
 
-	public function addRelated($relationship_key, $model)
-	{
-		$this->_related_models->add($relationship_key, $model);
-
-		return $this;
-	}
-
-	private function newRelationshipBuilder($type)
-	{
-		$data = new RelationshipData(
-			$this->_related_models,
-			$this->_alias_service,
-			$this->_builder
+		$data = $relationships[$name];
+		$keys = array(
+			'name'  => $name,
+			'model'	=> $name,
+			'type'	=> NULL,
+			'key'	=> NULL,
+			'to_key'=> NULL
 		);
 
-		$fluent = new RelationshipFluentBuilder($this, $data);
-		return $fluent->type($type);
+		// make sure all the keys are there - as null if not given
+		$data = array_merge($keys, $data);
+
+		$to_class = $this->_alias_service->getRegisteredClass($data['model']);
+
+		$data['to_key'] = $data['to_key'] ?: $to_class::getMetadata('primary_key');
+		$data['key']	= $data['key'] ?: $data['to_key'];
+
+		// useful to know
+		$data['to_class'] = $to_class;
+		$data['is_collection'] = (substr($data['type'], -4) == 'many');
+
+		return (object) $data;
 	}
 
 	/**
