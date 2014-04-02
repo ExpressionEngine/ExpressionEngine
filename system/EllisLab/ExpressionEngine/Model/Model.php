@@ -333,6 +333,7 @@ abstract class Model {
 		}
 
 		$this->cascade($cascade, 'restore');
+		return $this;
 	}
 
 	/**
@@ -474,7 +475,8 @@ abstract class Model {
 
 		$query = new RelationshipQuery($this, $info);
 
-		// No data, check if we're in a query
+		// No data, if no id as well, then we're in a query
+		// or importing (@see `fromArray()`). Will just return metadata
 		if ($this->getId() === NULL)
 		{
 			return $query->eager($this->_alias_service);
@@ -633,6 +635,41 @@ abstract class Model {
 		return $export;
 	}
 
+	public function fromArray($data)
+	{
+		unset($data[static::getMetaData('primary_key')]);
+
+		if (isset($data['related_models']))
+		{
+			foreach ($data['related_models'] as $relationship_name => $values)
+			{
+				$models = new Collection();
+
+				$relationship_getter = 'get' . $relationship_name;
+				$relationship_meta = $this->$relationship_getter();
+
+				foreach ($values as $related_data)
+				{
+					$models[] = $this->_factory
+						->make($relationship_meta->to_model_name)
+						->fromArray($related_data);
+				}
+
+				$this->setRelated($relationship_name, $models);
+			}
+
+			unset($data['related_models']);
+		}
+
+		foreach ($data as $key => $value)
+		{
+			// we export with __get, so import with __set
+			$this->__set($key, $value);
+		}
+
+		return $this->restore();
+	}
+
 	public function toJson()
 	{
 		$data = call_user_func_array(array($this, 'toArray'), func_get_args());
@@ -656,7 +693,7 @@ abstract class Model {
 	public function fromXml($model_xml)
 	{
 		$dumper = new namespace\Serializers\XmlSerializer();
-		$dumper->unserialize($this, $model_xml);
+		return $this->fromArray($dumper->unserialize($this, $model_xml));
 	}
 
 /*
