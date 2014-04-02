@@ -531,16 +531,33 @@ abstract class Model {
 		$info = $this->getRelationshipInfo($name);
 
 		// update the related key
-		if (is_array($value))
+		switch ($info->type)
 		{
-			foreach ($value as $model)
-			{
-				$value->{$info->to_key} = $this->{$info->key};
-			}
-		}
-		else
-		{
-			$this->{$info->key} = $value->{$info->to_key};
+			case 'one_to_one':
+				if ($info->key != static::getMetaData('primary_key'))
+				{
+					$this->{$info->key} = $value->{$info->to_key};
+				}
+
+				$to_class = $info->to_class;
+
+				if ($info->to_key != $to_class::getMetaData('primary_key'))
+				{
+					$value->{$info->to_key} = $this->{$info->key};
+				}
+				break;
+			case 'one_to_many':
+				foreach ($value as $model)
+				{
+					$value->{$info->to_key} = $this->{$info->key};
+				}
+				break;
+			case 'many_to_one':
+				$this->{$info->key} = $value->{$info->to_key};
+				break;
+			case 'many_to_many':
+				// nada
+				break;
 		}
 
 		return $this;
