@@ -335,13 +335,7 @@ class EE_Logger {
 				$changed++;
 
 				// save the template
-				ee()->template_model->save_to_database($template);
-
-				// if saving to file, save the file
-				if ($template->save_template_file)
-				{
-					ee()->template_model->save_to_file($template);
-				}
+				ee()->template_model->save_entity($template);
 			}
 		}
 
