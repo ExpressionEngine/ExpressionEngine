@@ -18,7 +18,7 @@ abstract class Model {
 	/**
 	 *
 	 */
-	protected static $_primary_key = array();
+	protected static $_primary_key = '';
 
 	/**
 	 *
@@ -31,9 +31,13 @@ abstract class Model {
 	protected static $_key_map = array();
 
 	/**
-	 *
+	 * Optional keys
 	 */
-	protected static $_cascade = NULL;
+	protected static $_polymorph = NULL;
+	protected static $_cascade = array();
+	protected static $_validation_rules = array();
+	protected static $_relationships = array();
+
 
 	/**
 	 *
@@ -185,18 +189,34 @@ abstract class Model {
 	{
 		$property = '_' . $key;
 
-		// If the key is not set, and is not an optional key such as validation_rules,
-		// throw an exception.
-		if ( ! isset (static::$$property) && ! in_array($key, array('validation_rules', 'cascade', 'polymorph')))
+		$value = self::$property;
+		$default = Model::$property;
+
+		$should_be_array = is_array($default);
+
+		// if there's inheritance on an array or unset value,
+		// then we need to dig through the parent classes. ugh.
+		if (get_parent_class(get_called_class()) && (empty($value) || $should_be_array))
+		{
+			$parent_value = parent::getMetaData($key);
+
+			if ($should_be_array)
+			{
+				$value = array_merge($value, $parent_value);
+			}
+			else
+			{
+				$value = $parent_value;
+			}
+		}
+
+		// empty but not optional? throw error
+		if ( ! empty($value) && ! in_array($key, array('validation_rules', 'cascade', 'polymorph')))
 		{
 			throw new \DomainException('Missing meta data, "' . $key . '", in ' . get_called_class());
 		}
-		else if ( ! isset (static::$$property))
-		{
-			return NULL;
-		}
 
-		return static::$$property;
+		return $value;
 	}
 
 	/**
