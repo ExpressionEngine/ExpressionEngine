@@ -562,8 +562,26 @@ abstract class Model {
 
 		$to_class = $this->_alias_service->getRegisteredClass($data['model']);
 
-		$data['to_key'] = $data['to_key'] ?: $to_class::getMetadata('primary_key');
-		$data['key']	= $data['key'] ?: $data['to_key'];
+		// use a reasonable key structure
+		switch ($data['type'])
+		{
+			case 'one_to_many': // default: primary key of the one side (e.g group_id for template groups and templates)
+				$data['key']	= $data['key'] ?: static::getMetadata('primary_key');
+				$data['to_key']	= $data['to_key'] ?: $data['key'];
+				break;
+			case 'many_to_one': // default: same as one_to_many, but looked up in the other direction
+				$data['to_key'] = $data['to_key'] ?: $to_class::getMetadata('primary_key');
+				$data['key']	= $data['key'] ?: $data['to_key'];
+				break;
+			case 'many_to_many': // default: both primary keys on pivot
+				$data['key']	= $data['key'] ?: static::getMetadata('primary_key');
+				$data['to_key'] = $data['to_key'] ?: $to_class::getMetadata('primary_key');
+				break;
+			case 'one_to_one': // default: opposing keys, typically means one needs to be declared
+				$data['key']	= $data['key'] ?: $to_class::getMetadata('primary_key');
+				$data['to_key']	= $data['to_key'] ?: static::getMetadata('primary_key');
+				break;
+		}
 
 		// useful to know
 		$data['to_class'] = $to_class;
@@ -580,24 +598,47 @@ abstract class Model {
 	public function toArray()
 	{
 		// extract all public vars from our gateways and flatten them
-		$keys = array_keys(call_user_func_array(
-			'array_merge',
-			array_map('get_object_vars', $this->_gateways)
-		));
+		$export = array();
 
-		// Combine the keys with their value as controlled by __get
-		// Without array_keys the above gives us our values, but we
-		// need to be consistent with any potential getters.
-		return array_combine(
-			$keys,
-			array_map(array($this, '__get'), $keys)
-		);
+		foreach (get_object_vars($this) as $key => $value)
+		{
+			if ($key[0] != '_')
+			{
+				// Call get to export the data as it is accessed, not as
+				// it is stored in the database.
+				$export[$key] = $this->__get($key);
+			}
+		}
+
+		$export['related_models'] = array();
+
+		// Allow for cascading export
+		$cascade = func_get_args();
+
+		foreach ($cascade as $relationship)
+		{
+			if ( ! is_array($relationship))
+			{
+				$relationship = array($relationship => array());
+			}
+
+			foreach ($relationship as $related_name => $related_cascade)
+			{
+				$relationship_getter = 'get' . $related_name;
+				$relationship = $this->$relationship_getter();
+				$export['related_models'][$related_name] = $relationship->toArray($related_cascade);
+			}
+		}
+
+		return $export;
 	}
 
 	public function toJson()
 	{
+		$data = call_user_func_array(array($this, 'toArray'), func_get_args());
+
 		$dumper = new namespace\Serializers\JsonSerializer();
-		return $dumper->serialize($figure_this_out);
+		return $dumper->serialize($model, $data); // idea: make toArray cascade compatible?
 	}
 
 	public function fromJson($model_json)
@@ -608,9 +649,8 @@ abstract class Model {
 
 	public function toXml()
 	{
-		$cascade = func_get_args(); // don't forget this!
 		$dumper = new namespace\Serializers\XmlSerializer();
-		return $dumper->serialize($figure_this_out); // idea: make toArray cascade compatible?
+		return $dumper->serialize($this, func_get_args()); // idea: make toArray cascade compatible?
 	}
 
 	public function fromXml($model_xml)
