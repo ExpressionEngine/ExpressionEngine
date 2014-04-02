@@ -3,14 +3,21 @@ namespace EllisLab\ExpressionEngine\Model\Template;
 
 use EllisLab\ExpressionEngine\Model\Model;
 
-class SpecialtyTemplate extends Model
-{
+class SpecialtyTemplate extends Model {
+
 	// Meta data
 	protected static $_primary_key = 'template_id';
 	protected static $_gateway_names = array('SpecialtyTemplateGateway');
+
 	protected static $_key_map = array(
-		'template_id' => 'SpecialtyTemplateGateway',
-		'site_id' => 'SpecialtyTemplateGateway'
+		'template_id'	=> 'SpecialtyTemplateGateway',
+		'site_id'		=> 'SpecialtyTemplateGateway'
+	);
+
+	protected static $_relationships = array(
+		'Site' => array(
+			'type' => 'many_to_one'
+		)
 	);
 
 	// Properties
@@ -23,14 +30,11 @@ class SpecialtyTemplate extends Model
 
 	public function getSite()
 	{
-		return $this->manyToOne('Site', 'Site', 'site_id', 'site_id');
+		return $this->getRelated('Site');
 	}
 
 	public function setSite(Site $site)
 	{
-		$this->setRelated('Site', $site);
-		$this->site_id = $site->site_id;
-		return $this;
+		return $this->setRelated('Site', $site);
 	}
-
 }

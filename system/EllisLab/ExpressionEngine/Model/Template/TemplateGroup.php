@@ -11,19 +11,16 @@ class TemplateGroup extends Model {
 
 	protected static $_key_map = array(
 		'group_id' => 'TemplateGroupGateway',
-		'site_id' => 'TemplateGroupGateway'
+		'site_id'  => 'TemplateGroupGateway'
 	);
 
 	protected static $_relationships = array(
 		'Site' => array(
-			'type' => 'many_to_one',
-			'key'  => 'site_id'
+			'type' => 'many_to_one'
 		),
 		'Templates' => array(
 			'type' => 'one_to_many',
-			'model' => 'Template',
-			'key' => 'group_id',
-			'to_key' => 'group_id'
+			'model' => 'Template'
 		),
 		'MemberGroups' => array(
 			'type' => 'many_to_many',

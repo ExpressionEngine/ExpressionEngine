@@ -11,6 +11,13 @@ class ChannelFieldGroup extends Model {
 		'site_id' => 'ChannelFieldGroupGateway'
 	);
 
+	protected static $_relationships = array(
+		'ChannelFieldStructures' => array(
+			'type' => 'one_to_many',
+			'model' => 'ChannelFieldStructure'
+		)
+	);
+
 	// Properties
 	protected $group_id;
 	protected $site_id;
@@ -18,8 +25,11 @@ class ChannelFieldGroup extends Model {
 
 	public function getChannelFieldStructures()
 	{
-		return $this->oneToMany(
-			'ChannelFieldStructures', 'ChannelFieldStructure', 'group_id', 'group_id');
+		return $this->getRelated('ChannelFieldStructures');
 	}
 
+	public function setChannelFieldStructures(array $structures)
+	{
+		return $this->setRelated('ChannelFieldStructures', $structures);
+	}
 }

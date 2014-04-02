@@ -5,11 +5,28 @@ use EllisLab\ExpressionEngine\Model\Model;
 use EllisLab\ExpressionEngine\Model\Interfaces\Content\ContentStructure;
 
 class CategoryGroup extends Model implements ContentStructure {
+
 	protected static $_primary_key = 'group_id';
 	protected static $_gateway_names = array('CategoryGroupGateway');
+
 	protected static $_key_map = array(
 		'group_id' => 'CategoryGroupGateway',
-		'site_id' => 'CategoryGroupGateway',
+		'site_id'  => 'CategoryGroupGateway',
+	);
+
+	protected static $_relationships = array(
+		'CategoryFieldStructures' => array(
+			'type' => 'many_to_one'
+		),
+		'Categories' => array(
+			'type' => 'one_to_many',
+			'model' => 'Category'
+		),
+		'Parent' => array(
+			'type' => 'many_to_one',
+			'model' => 'Category',
+			'key' => 'parent_id'
+		),
 	);
 
 	// Properties
@@ -27,8 +44,12 @@ class CategoryGroup extends Model implements ContentStructure {
 	 */
 	public function getCategoryFieldStructures()
 	{
-		return $this->manyToOne(
-			'CategoryFieldStructures', 'CategoryFieldStructure', 'group_id', 'group_id');
+		return $this->getRelated('CategoryFieldStructures');
+	}
+
+	public function setCategoryFieldStructures(array $structures)
+	{
+		return $this->setRelated('CategoryFieldStructures', $structures);
 	}
 
 	/**
@@ -36,8 +57,12 @@ class CategoryGroup extends Model implements ContentStructure {
 	 */
 	public function getCategories()
 	{
-		return $this->oneToMany(
-			'Categories', 'Category', 'group_id', 'group_id');
+		return $this->getRelated('Categories');
+	}
+
+	public function setCategories(array $categories)
+	{
+		return $this->setRelated('Categories', $categories);
 	}
 
 	/**

@@ -4,16 +4,34 @@ namespace EllisLab\ExpressionEngine\Model\Category;
 use EllisLab\ExpressionEngine\Model\FieldDataContentModel;
 
 class Category extends FieldDataContentModel {
+
 	protected static $_primary_key = 'cat_id';
 	protected static $_gateway_names = array('CategoryGateway', 'CategoryFieldDataGateway');
-	protected static $_key_map = array(
-		'cat_id' => 'CategoryGateway',
-		'site_id' => 'CategoryGateway',
-		'group_id' => 'CategoryGateway',
-		'parent_id' => 'CategoryGateway'
-	);
+
 	protected static $_field_content_class = 'CategoryFieldContent';
 	protected static $_field_content_gateway = 'CategoryFieldDataGateway';
+
+	protected static $_key_map = array(
+		'cat_id'	=> 'CategoryGateway',
+		'site_id'	=> 'CategoryGateway',
+		'group_id'	=> 'CategoryGateway',
+		'parent_id'	=> 'CategoryGateway'
+	);
+
+	protected static $_relationships = array(
+		'CategoryGroup' => array(
+			'type' => 'many_to_one'
+		),
+		'ChannelEntries' => array(
+			'type' => 'many_to_many',
+			'model' => 'ChannelEntry'
+		),
+		'Parent' => array(
+			'type' => 'many_to_one',
+			'model' => 'Category',
+			'key' => 'parent_id'
+		),
+	);
 
 	// Properties
 	protected $cat_id;
@@ -31,13 +49,22 @@ class Category extends FieldDataContentModel {
 	 */
 	public function getCategoryGroup()
 	{
-		return $this->manyToOne('CategoryGroup', 'CategoryGroup', 'group_id', 'group_id');
+		return $this->getRelated('CategoryGroup');
 	}
 
+	public function setCategoryGroup($group)
+	{
+		return $this->setRelated('CategoryGroup', $group);
+	}
 
 	public function getChannelEntries()
 	{
-		return $this->manyToMany('ChannelEntries', 'ChannelEntry', 'cat_id', 'entry_id');
+		return $this->getRelated('ChannelEntries');
+	}
+
+	public function setChannelEntries(array $entries)
+	{
+		return $this->setRelated('ChannelEntries', $entries);
 	}
 
 	/**
@@ -45,7 +72,12 @@ class Category extends FieldDataContentModel {
 	 */
 	public function getParent()
 	{
-		return $this->manyToOne('Parent', 'Category', 'parent_id', 'cat_id');
+		return $this->getRelated('Parent');
+	}
+
+	public function setParent($parent)
+	{
+		return $this->setRelated('Parent', $parent);
 	}
 
 	/**

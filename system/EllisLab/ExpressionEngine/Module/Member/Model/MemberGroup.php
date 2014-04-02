@@ -4,11 +4,20 @@ namespace EllisLab\ExpressionEngine\Module\Member\Model;
 use EllisLab\ExpressionEngine\Model\Model;
 
 class MemberGroup extends Model {
+
 	protected static $_primary_key = 'group_id';
 	protected static $_gateway_names = array('MemberGroupGateway');
+
 	protected static $_key_map = array(
 		'group_id' => 'MemberGroupGateway',
 		'site_id' => 'MemberGroupGateway'
+	);
+
+	protected static $_relationships = array(
+		'Members' => array(
+			'type' => 'one_to_many',
+			'model' => 'Member'
+		)
 	);
 
 	// Properties
@@ -87,18 +96,12 @@ class MemberGroup extends Model {
 
 	public function getMembers()
 	{
-		return $this->oneToMany('Members', 'Member', 'group_id', 'group_id');
+		return $this->getRelated('Members');
 	}
 
 	public function setMembers(array $members)
 	{
-		$this->setRelated('Members', $members);
-		foreach($members as $member)
-		{
-			$member->group_id = $this->group_id;
-		}
-
-		return $this;
+		return $this->setRelated('Members', $members);
 	}
 
 }

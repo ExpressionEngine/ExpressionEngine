@@ -11,11 +11,27 @@ use EllisLab\ExpressionEngine\Model\Model;
  * the website.
  */
 class Member extends Model {
+
 	protected static $_primary_key = 'member_id';
 	protected static $_gateway_names = array('MemberGateway');
+
 	protected static $_key_map = array(
 		'member_id' => 'MemberGateway',
 		'group_id' => 'MemberGateway',
+	);
+
+	protected static $_relationships = array(
+		'MemberGroup' => array(
+			'type' => 'many_to_one'
+		),
+		'ResetPassword'	=> array(
+			'type' => 'one_to_one'
+		),
+		'ChannelEntries' => array(
+			'type' => 'one_to_many',
+			'model' => 'ChannelEntry',
+			'to_key' => 'author_id'
+		)
 	);
 
 	// Properties
@@ -92,47 +108,35 @@ class Member extends Model {
 	protected $show_sidebar;
 	protected $pmember_id;
 
-
 	public function getMemberGroup()
 	{
-		return $this->manyToOne('MemberGroup', 'MemberGroup', 'group_id', 'group_id');
+		return $this->getRelated('MemberGroup');
 	}
 
 	public function setMemberGroup(MemberGroup $group)
 	{
-		$this->setRelated('MemberGroup', $group);
-		$this->group_id = $group->group_id;
-		return $this;
-	}
-
-	public function setResetPassword(ResetPassword $reset_code)
-	{
-		$this->setRelated('ResetPassword', $reset_code);
-		$reset_code->member_id = $this->member_id;
-		return $this;
+		return $this->setRelated('MemberGroup', $group);
 	}
 
 	public function getResetPassword()
 	{
-		return $this->oneToOne('ResetPassword', 'ResetPassword', 'member_id', 'member_id');
+		return $this->getRelated('ResetPassword');
+	}
+
+	public function setResetPassword(ResetPassword $reset_code)
+	{
+		return $this->setRelated('ResetPassword', $reset_code);
 	}
 
 
 	public function getChannelEntries()
 	{
-		return $this->oneToMany('ChannelEntries', 'ChannelEntry', 'member_id', 'author_id');
+		return $this->getRelated('ChannelEntries');
 	}
 
 	public function setChannelEntries(array $entries)
 	{
-		$this->setRelated('ChannelEntries', $entries);
-
-		foreach($entries as $entry)
-		{
-			$entry->author_id = $this->member_id;
-		}
-
-		return $this;
+		return $this->setRelated('ChannelEntries', $entries);
 	}
 
 }

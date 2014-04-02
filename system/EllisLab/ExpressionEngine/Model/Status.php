@@ -12,17 +12,20 @@ class Status extends Model {
 		'group_id' => 'StatusGateway'
 	);
 
+	protected static $_relationships = array(
+		'StatusGroup' => array(
+			'type' => 'many_to_one'
+		)
+	);
+
 	public function getStatusGroup()
 	{
-		return $this->manyToOne(
-			'StatusGroup', 'StatusGroup', 'group_id', 'group_id');
+		return $this->getRelated('StatusGroup');
 	}
 
 	public function setStatusGroup(StatusGroup $status_group)
 	{
-		$this->setRelated('StatusGroup', $status_group);
-		$this->group_id = $status_group->group_id;
-		return $this;
+		return $this->setRelated('StatusGroup', $status_group);
 	}
 
 

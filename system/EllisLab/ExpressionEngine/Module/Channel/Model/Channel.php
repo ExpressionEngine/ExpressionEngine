@@ -10,10 +10,22 @@ class Channel extends Model implements ContentStructure {
 
 	protected static $_primary_key = 'channel_id';
 	protected static $_gateway_names = array('ChannelGateway');
+
 	protected static $_key_map = array(
-		'channel_id' => 'ChannelGateway',
-		'site_id' => 'ChannelGateway',
+		'channel_id'  => 'ChannelGateway',
+		'site_id'	  => 'ChannelGateway',
 		'field_group' => 'ChannelGateway'
+	);
+
+	protected static $_relationships = array(
+		'ChannelFieldGroup' => array(
+			'type' => 'many_to_one',
+			'key' => 'field_group'
+		),
+		'ChannelEntries'	=> array(
+			'type' => 'one_to_many',
+			'model' => 'ChannelEntry'
+		)
 	);
 
 	// Properties
@@ -73,22 +85,25 @@ class Channel extends Model implements ContentStructure {
 	protected $url_title_prefix;
 	protected $live_look_template;
 
-	/**
-	 * Relationship to the FieldGroup for this Channel.
-	 */
+
 	public function getChannelFieldGroup()
 	{
-		return $this->manyToOne(
-			'ChannelFieldGroup', 'ChannelFieldGroup', 'field_group', 'group_id');
+		return $this->getRelated('ChannelFieldGroup');
 	}
 
-	/**
-	 * Relationship to ChannelEntries for this Channel.
-	 */
+	public function setChannelFieldGroup($field_group)
+	{
+		return $this->setRelated('ChannelFieldGroup', $field_group);
+	}
+
 	public function getChannelEntries()
 	{
-		return $this->oneToMany(
-			'ChannelEntries', 'ChannelEntry', 'channel_id', 'channel_id');
+		return $this->getRelated('ChannelEntries');
+	}
+
+	public function setChannelEntries(array $entries)
+	{
+		return $this->setRelated('ChannelEntries', $entries);
 	}
 
 	/**
@@ -104,7 +119,6 @@ class Channel extends Model implements ContentStructure {
 
 		return $form_elements;
 	}
-
 
 	/**
 	 * Duplicate another Channel's preferences

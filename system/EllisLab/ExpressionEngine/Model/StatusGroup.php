@@ -11,15 +11,21 @@ class StatusGroup extends Model {
 		'site_id' => 'StatusGroupGateway'
 	);
 
+	protected static $_relationships = array(
+		'Statuses' => array(
+			'type' => 'one_to_many',
+			'model' => 'Status'
+		)
+	);
+
 	public function getStatuses()
 	{
-		return $this->oneToMany('Statuses', 'Status', 'group_id', 'group_id');
+		return $this->getRelated('Statuses');
 	}
 
 	public function setStatuses(array $statuses)
 	{
-		$this->setRelated('Statuses', $statuses);
-		return $this;
+		return $this->setRelated('Statuses', $statuses);
 	}
 
 	protected $group_id;

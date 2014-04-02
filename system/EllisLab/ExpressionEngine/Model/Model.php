@@ -529,8 +529,17 @@ abstract class Model {
 		$info = $this->getRelationshipInfo($name);
 
 		// update the related key
-		// TODO update on the other end as well?
-		$this->{$info->key} = $value->{$info->to_key};
+		if (is_array($value))
+		{
+			foreach ($value as $model)
+			{
+				$value->{$info->to_key} = $this->{$info->key};
+			}
+		}
+		else
+		{
+			$this->{$info->key} = $value->{$info->to_key};
+		}
 
 		return $this;
 	}

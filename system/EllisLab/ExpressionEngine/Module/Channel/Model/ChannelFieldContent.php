@@ -4,10 +4,7 @@ namespace EllisLab\ExpressionEngine\Module\Channel\Model;
 use EllisLab\ExpressionEngine\Model\Interfaces\Field\FieldContent;
 use EllisLab\ExpressionEngine\Model\DataTableField\DataTableFieldContent;
 
-class ChannelFieldContent
-	extends DataTableFieldContent
-		 implements FieldContent {
-
+class ChannelFieldContent extends DataTableFieldContent implements FieldContent {
 
 	/**
 	 * Renders this field's content by replacing tags in a template.
@@ -18,8 +15,8 @@ class ChannelFieldContent
 	 *
 	 * @return	ParsedTemplate|string	The ParsedTemplate or tagdata string
 	 *						with the relevant tags replaced.
-	 */	
-	public function render($template) 
+	 */
+	public function render($template)
 	{
 		// TODO
 	}
