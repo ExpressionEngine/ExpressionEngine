@@ -22,8 +22,8 @@ class RelationshipQuery {
 			$alias_service,
 			$this->info->type,
 			$this->info->name,
-			$this->createToArray(),
-			$this->createFromArray()
+			$this->createFromArray(),
+			$this->createToArray()
 		);
 	}
 
@@ -46,15 +46,6 @@ class RelationshipQuery {
 		return $query->first();
 	}
 
-	private function createToArray()
-	{
-		return array(
-			'model_class'	=> $this->info->to_class,
-			'model_name'	=> $this->info->model,
-			'key'			=> $this->info->to_key
-		);
-	}
-
 	private function createFromArray()
 	{
 		$from_class = get_class($this->from_model);
@@ -63,6 +54,15 @@ class RelationshipQuery {
 			'model_class' => $from_class,
 			'model_name'  => substr($from_class, strrpos($from_class, '\\') + 1),
 			'key'		  => $this->info->key
+		);
+	}
+
+	private function createToArray()
+	{
+		return array(
+			'model_class'	=> $this->info->to_class,
+			'model_name'	=> $this->info->model,
+			'key'			=> $this->info->to_key
 		);
 	}
 }
