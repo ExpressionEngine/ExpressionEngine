@@ -1,9 +1,9 @@
 <?php namespace EllisLab\ExpressionEngine\Model\Query;
 
+use EllisLab\ExpressionEngine\Core\AliasService;
 use EllisLab\ExpressionEngine\Model\Collection;
 use EllisLab\ExpressionEngine\Model\ModelFactory;
 use EllisLab\ExpressionEngine\Model\Query\QueryTreeNode;
-use EllisLab\ExpressionEngine\Core\AliasService;
 
 class Query {
 
