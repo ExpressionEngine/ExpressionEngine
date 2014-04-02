@@ -7,30 +7,35 @@ feature 'Login Page' do
     page.should have_content('Username')
     page.should have_content('Password')
     page.should have_content('I forgot my password')
+    no_php_js_errors
   end
 
   it 'rejects when submitting no credentials' do
     Login::login('', '')
 
     page.should have_content('The username field is required')
+    no_php_js_errors
   end
 
   it 'rejects when submitting no password' do
     Login::login('admin', '')
 
     page.should have_content('The password field is required')
+    no_php_js_errors
   end
 
   it 'logs in when submitting valid credentials' do
     Login::login
 
-    page.should have_content('Report Bug')
+    page.should have_content('Overview')
+    no_php_js_errors
   end
 
   it 'rejects when submitting invalid credentials' do
     Login::login('noone', 'nowhere')
 
     page.should have_content('That is the wrong username or password')
+    no_php_js_errors
   end
 
   it 'locks the user out after four login attempts' do
@@ -40,8 +45,8 @@ feature 'Login Page' do
     Login::login('noone', 'nowhere')
 
     page.should have_content('You are only permitted to make four login attempts every 1 minute(s)')
-
     Login::button.value.should eq 'Locked'
+    no_php_js_errors
   end
 
   it 'shows the reset password form when link is clicked' do
@@ -50,5 +55,6 @@ feature 'Login Page' do
     click_link 'I forgot my password'
 
     page.should have_content('Reset Password')
+    no_php_js_errors
   end
 end

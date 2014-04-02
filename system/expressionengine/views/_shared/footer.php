@@ -29,11 +29,30 @@
 			</div>
 		</section>
 		<div class="overlay"></div>
-		<!-- <div class="alert warn">
-			<h3>Exclamation!</h3>
-			<p>A message that relates to the above exclamation of success, failure or just a heads up.</p>
-			<a class="close" href=""></a>
-		</div> -->
+		<?php if ($message OR isset($new_checksums)): ?>
+			<div class="alert warn">
+				<h3>Exclamation!</h3> <!-- Need to make this dynamic -->
+				<?php if ($message): ?>
+					<p><?=$message?></p>
+				<?php endif; ?>
+				<?php // Bootstrap Checksum Failure Notice - this probably needs styles from james?>
+				<?php if (isset($new_checksums)):?>
+					<ul id="checksumFailure">
+						<li><?=lang('checksum_changed_warning')?>
+							<ul>
+								<?php foreach($new_checksums as $path): ?>
+								<li><?=$path; ?></li>
+								<?php endforeach; ?>
+							</ul>
+						</li>
+					</ul>
+					<?php if ($this->session->userdata('group_id') == 1): ?>
+						<a class="submit" href="<?=BASE.AMP.'C=homepage'.AMP.'M=accept_checksums'?>"><?=lang('checksum_changed_accept')?></a>
+					<?php endif; ?>
+				<?php endif; ?>
+				<a class="close" href=""></a>
+			</div>
+		<?php endif ?>
 		<?=ee()->view->script_tag('jquery/jquery.js')?>
 		<?=ee()->view->script_tag('v3/cmon-ck.js')?>
 		<?php
@@ -58,56 +77,44 @@
 			echo $item."\n";
 		}
 		?>
+		<div id="idle-modal" class="modal-wrap modal-timeout">
+			<div class="modal">
+				<div class="col-group snap">
+					<div class="col w-16 last">
+						<a class="m-close" href="#"></a>
+						<div class="box">
+							<h1>Log into <?=ee()->config->item('site_name')?> <span class="required intitle">&#10033; Required Fields</span></h1>
+							<?=form_open('C=login&M=authenticate', array('class' => 'settings'))?>
+							<form class="settings" action="">
+								<div class="alert inline warn">
+									<p>Your administration access session has timed out. Please use the form below to log back into your control panel.</p>
+								</div>
+								<fieldset class="col-group">
+									<div class="setting-txt col w-8">
+										<h3>Username <span class="required" title="required field">&#10033;</span></h3>
+										<em></em>
+									</div>
+									<div class="setting-field col w-8 last">
+										<input class="required" type="text" value="<?=form_prep($this->session->userdata('username'))?>">
+									</div>
+								</fieldset>
+								<fieldset class="col-group last">
+									<div class="setting-txt col w-8">
+										<h3>Password <span class="required" title="required field">&#10033;</span></h3>
+										<em></em>
+									</div>
+									<div class="setting-field col w-8 last">
+										<input class="required" type="password" value="" id="logout-confirm-password">
+									</div>
+								</fieldset>
+								<fieldset class="form-ctrls">
+									<?=form_submit('submit', 'Log In', 'class="btn" data-work-text="authenticating..."')?>
+								</fieldset>
+							<?=form_close()?>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
 	</body>
 </html>
-
-
-<!--<div id="idle-modal" class="pageContents">
-	<p id="idle-description" class="shun"><?=lang('session_idle_description')?></p>
-
-	<p class="idle-fourth"><strong>User:</strong></p>
-
-	<?=form_open('C=login&M=authenticate')?>
-	<div class="idle-three-fourths shun">
-		<p class="idle-fourth">
-			<img src="<?=$cp_avatar_path ? $cp_avatar_path : $cp_theme_url.'images/site_logo.gif'?>" width="50" alt="User Avatar" />
-		</p>
-		<p class="idle-three-fourths">
-			<p id="idle-screen-name"><?=$cp_screen_name?></p>
-			<input type="hidden" name="username" value="<?=form_prep($this->session->userdata('username'))?>" />
-			<span class="idle-member-group"><?=$this->session->userdata('group_title')?></span>
-		</p>
-	</div>
-
-	<div class="idle-fourth">
-		<p><label for="logout-confirm-password">Password:</label></p>
-	</div>
-	<div class="idle-three-fourths shun">
-		<p><input type="password" name="password" class="field" id="logout-confirm-password"/></p>
-	</div>
-
-	<p id="idle-button-group">
-		<a href="<?=BASE.AMP.'C=login&M=logout'?>"><?=sprintf(lang('session_idle_not_name'), $cp_screen_name)?></a> &nbsp;
-		<input type="submit" class="submit" id="idle-login-button" value="<?=lang('login')?>" />
-	</p>
-	<?=form_close()?>
-</div>
-
-<div id="notice_container">
-	<div id="notice_texts_container">
-		<a id="close_notice" href="javascript:jQuery.ee_notice.destroy();">&times;</a>
-
-		<div class="notice_texts notice_success"></div>
-		<div class="notice_texts notice_alert"></div>
-		<div class="notice_texts notice_error"></div>
-		<div class="notice_texts notice_custom"></div>
-	</div>
-	<div id="notice_flag">
-		<p id="notice_counts">
-			<span class="notice_success"><img src="<?=$cp_theme_url?>images/success.png" alt="" width="14" height="14" /></span>
-			<span class="notice_alert"><img src="<?=$cp_theme_url?>images/alert.png" alt="" width="14" height="14" /></span>
-			<span class="notice_error"><img src="<?=$cp_theme_url?>images/error.png" alt="" width="14" height="14" /></span>
-			<span class="notice_info"><img src="<?=$cp_theme_url?>images/info.png" alt="" width="14" height="14" /></span>
-		</p>
-	</div>
-</div>-->
