@@ -548,7 +548,7 @@ abstract class Model {
 
 	private function getRelationshipInfo($name)
 	{
-		$relationships = static::getMetadata('relationships');
+		$relationships = static::getMetaData('relationships');
 
 		$data = $relationships[$name];
 		$keys = array(
@@ -568,20 +568,20 @@ abstract class Model {
 		switch ($data['type'])
 		{
 			case 'one_to_many': // default: primary key of the one side (e.g group_id for template groups and templates)
-				$data['key']	= $data['key'] ?: static::getMetadata('primary_key');
+				$data['key']	= $data['key'] ?: static::getMetaData('primary_key');
 				$data['to_key']	= $data['to_key'] ?: $data['key'];
 				break;
 			case 'many_to_one': // default: same as one_to_many, but looked up in the other direction
-				$data['to_key'] = $data['to_key'] ?: $to_class::getMetadata('primary_key');
+				$data['to_key'] = $data['to_key'] ?: $to_class::getMetaData('primary_key');
 				$data['key']	= $data['key'] ?: $data['to_key'];
 				break;
 			case 'many_to_many': // default: both primary keys on pivot
-				$data['key']	= $data['key'] ?: static::getMetadata('primary_key');
-				$data['to_key'] = $data['to_key'] ?: $to_class::getMetadata('primary_key');
+				$data['key']	= $data['key'] ?: static::getMetaData('primary_key');
+				$data['to_key'] = $data['to_key'] ?: $to_class::getMetaData('primary_key');
 				break;
 			case 'one_to_one': // default: opposing keys, typically means one needs to be declared
-				$data['key']	= $data['key'] ?: $to_class::getMetadata('primary_key');
-				$data['to_key']	= $data['to_key'] ?: static::getMetadata('primary_key');
+				$data['key']	= $data['key'] ?: $to_class::getMetaData('primary_key');
+				$data['to_key']	= $data['to_key'] ?: static::getMetaData('primary_key');
 				break;
 		}
 
