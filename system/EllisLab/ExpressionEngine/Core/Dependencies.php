@@ -5,7 +5,7 @@ use \EllisLab\ExpressionEngine\Core\ServiceProvider;
 
 use \EllisLab\ExpressionEngine\Model\ModelFactory;
 use \EllisLab\ExpressionEngine\Model\ModelAliasService;
-use \EllisLab\ExpressionEngine\Core\Validation\Validation;
+use \EllisLab\ExpressionEngine\Core\Validation\ValidationFactory;
 
 /**
  * Global service provider.
@@ -25,7 +25,7 @@ class Dependencies extends ServiceProvider {
     {
         return $this->singleton(function($di)
         {
-            return new Validation($di);
+            return new ValidationFactory($di);
         });
     }
 }
