@@ -42,7 +42,7 @@ class Date_ft extends EE_Fieldtype {
 	private function _parse_date($date)
 	{
 		// First we try with the configured date format
-		$timestamp = ee()->localize->string_to_timestamp($date, TRUE, ee()->localize->date_format());
+		$timestamp = ee()->localize->string_to_timestamp($date, TRUE, ee()->localize->get_date_format());
 
 		// If the date format didn't work, try something more fuzzy
 		if ($timestamp === FALSE)

@@ -224,7 +224,7 @@ class Localize {
 			$seconds = TRUE;
 		}
 
-		$format_string = $this->date_format($seconds);
+		$format_string = $this->get_date_format($seconds);
 
 		return $this->format_date($format_string, $timestamp, $localize);
 	}
@@ -237,7 +237,7 @@ class Localize {
 	 * @param	bool	Include seconds in the date format string or not
 	 * @return	string	Date format string
 	 */
-	public function date_format($seconds = FALSE)
+	public function get_date_format($seconds = FALSE)
 	{
 		$include_seconds = ee()->session->userdata('include_seconds', ee()->config->item('include_seconds'));
 		$date_format = ee()->session->userdata('date_format', ee()->config->item('date_format'));
