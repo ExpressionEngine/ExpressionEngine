@@ -21,17 +21,18 @@ class Template extends Model {
 
 	protected static $_relationships = array(
 		'Site' => array(
-			'type' => 'one_to_many',
-			'key'  => 'site_id'
-		),
-		'TemplateGroup' => array(
 			'type' => 'many_to_one',
 			'key'  => 'site_id'
 		),
+		'TemplateGroup'	=> array(
+			'type' => 'many_to_one',
+			'key' => 'group_id',
+			'to_key' => 'group_id'
+		),
 		'LastAuthor' => array(
-			'type' => 'one_to_many',
-			'model' => 'Member',
-			'key' => 'last_author_id'
+			'type'	=> 'many_to_one',
+			'model'	=> 'Member',
+			'key'	=> 'last_author_id'
 		)
 	);
 
