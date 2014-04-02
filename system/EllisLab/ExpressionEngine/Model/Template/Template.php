@@ -11,11 +11,28 @@ class Template extends Model {
 	// Meta data
 	protected static $_primary_key = 'template_id';
 	protected static $_gateway_names = array('TemplateGateway');
+
 	protected static $_key_map = array(
-		'template_id' => 'TemplateGateway',
-		'group_id'    => 'TemplateGateway',
+		'template_id'	 => 'TemplateGateway',
+		'group_id'		 => 'TemplateGateway',
 		'last_author_id' => 'TemplateGateway',
-		'site_id' => 'TemplateGateway'
+		'site_id'		 => 'TemplateGateway'
+	);
+
+	protected static $_relationships = array(
+		'Site' => array(
+			'type' => 'one_to_many',
+			'key'  => 'site_id'
+		),
+		'TemplateGroup' => array(
+			'type' => 'many_to_one',
+			'key'  => 'site_id'
+		),
+		'LastAuthor' => array(
+			'type' => 'one_to_many',
+			'model' => 'Member',
+			'key' => 'last_author_id'
+		)
 	);
 
 	// Properties
@@ -42,45 +59,32 @@ class Template extends Model {
 	 */
 	public function getTemplateGroup()
 	{
-		return $this->belongsTo('TemplateGroup', 'group_id')
-					->on('group_id')
-					->relate();
+		return $this->getRelated('TemplateGroup');
 	}
 
 	public function setTemplateGroup(TemplateGroup $template_group)
 	{
-		$this->setRelated('TemplateGroup', $template_group);
-		$this->group_id = $template_group->group_id;
-		return $this;
+		return $this->setRelated('TemplateGroup', $template_group);
 	}
 
 	public function getLastAuthor()
 	{
-		return $this->belongsTo('Member', 'member_id')
-					->useAs('LastAuthor')
-					->on('last_author_id')
-					->relate();
+		return $this->getRelated('LastAuthor');
 	}
 
 	public function setLastAuthor(Member $member)
 	{
-		$this->setRelated('LastAuthor', $member);
-		$this->last_author_id = $member->member_id;
-		return $this;
+		return $this->setRelated('LastAuthor', $member);
 	}
 
 	public function getSite()
 	{
-		return $this->belongsTo('Site', 'site_id')
-					->on('site_id')
-					->relate();
+		return $this->getRelated('LastAuthor');
 	}
 
 	public function setSite(Site $site)
 	{
-		$this->setRelated('Site', $site);
-		$this->site_id = $site->site_id;
-		return $this;
+		return $this->setRelated('Site', $site);
 	}
 }
 
