@@ -189,16 +189,18 @@ abstract class Model {
 	{
 		$property = '_' . $key;
 
-		$value = self::$property;
-		$default = Model::$property;
+		$value = static::$$property;
 
 		$should_be_array = is_array($default);
+		$should_be_array = is_array(self::$$property);
+
+		$parent = get_parent_class(get_called_class());
 
 		// if there's inheritance on an array or unset value,
 		// then we need to dig through the parent classes. ugh.
-		if (get_parent_class(get_called_class()) && (empty($value) || $should_be_array))
+		if ($parent && (empty($value) || $should_be_array))
 		{
-			$parent_value = parent::getMetaData($key);
+			$parent_value = $parent::getMetaData($key);
 
 			if ($should_be_array)
 			{
@@ -210,11 +212,11 @@ abstract class Model {
 			}
 		}
 
-		// empty but not optional? throw error
-		if ( ! empty($value) && ! in_array($key, array('validation_rules', 'cascade', 'polymorph')))
-		{
-			throw new \DomainException('Missing meta data, "' . $key . '", in ' . get_called_class());
-		}
+		// empty but not optional? If at top, throw error
+//		if (empty($value) && ! in_array($key, array('validation_rules', 'cascade', 'polymorph')))
+//		{
+//			throw new \DomainException('Missing meta data, "' . $key . '", in ' . get_called_class());
+//		}
 
 		return $value;
 	}
