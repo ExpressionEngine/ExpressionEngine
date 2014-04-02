@@ -3,6 +3,7 @@
 use EllisLab\ExpressionEngine\Core\AliasService;
 use EllisLab\ExpressionEngine\Model\Collection;
 use EllisLab\ExpressionEngine\Model\ModelFactory;
+use EllisLab\ExpressionEngine\Model\Relationship\RelationshipMeta;
 use EllisLab\ExpressionEngine\Model\Query\QueryTreeNode;
 
 class Query {
@@ -405,11 +406,11 @@ class Query {
 	 */
 	private function buildRelationship(QueryTreeNode $node)
 	{
-		if ($node->meta->method == ModelRelationshipMeta::METHOD_JOIN)
+		if ($node->meta->method == RelationshipMeta::METHOD_JOIN)
 		{
 			$this->buildJoinRelationship($node);
 		}
-		elseif ($node->meta->method == ModelRelationshipMeta::METHOD_SUBQUERY)
+		elseif ($node->meta->method == RelationshipMeta::METHOD_SUBQUERY)
 		{
 			$this->buildSubqueryRelationship($node);
 		}
@@ -425,12 +426,11 @@ class Query {
 
 		$from_id = $node->getParent()->getId();
 
-
 		switch ($relationship_meta->type)
 		{
-			case ModelRelationshipMeta::TYPE_ONE_TO_ONE:
-			case ModelRelationshipMeta::TYPE_ONE_TO_MANY:
-			case ModelRelationshipMeta::TYPE_MANY_TO_ONE:
+			case RelationshipMeta::TYPE_ONE_TO_ONE:
+			case RelationshipMeta::TYPE_ONE_TO_MANY:
+			case RelationshipMeta::TYPE_MANY_TO_ONE:
 				$this->db->join($relationship_meta->to_table . ' AS ' . $relationship_meta->to_table . '_' . $node->getId(),
 					$relationship_meta->from_table . '_' . $from_id . '.' . $relationship_meta->from_key .
 					'=' .
@@ -438,7 +438,7 @@ class Query {
 					'LEFT OUTER');
 				break;
 
-			case ModelRelationshipMeta::TYPE_MANY_TO_MANY:
+			case RelationshipMeta::TYPE_MANY_TO_MANY:
 				$this->db->join($relationship_meta->pivot_table . ' AS ' . $relationship_meta->pivot_table . '_' . $node->getId(),
 					$relationship_meta->from_table . '_' . $from_id . '.' . $relationship_meta->from_key .
 					'=' .
@@ -452,7 +452,7 @@ class Query {
 				break;
 		}
 
-		foreach($relationship_meta->joined_tables as $joined_key => $joined_table)
+		foreach ($relationship_meta->joined_tables as $joined_key => $joined_table)
 		{
 			$this->db->join($joined_table . ' AS ' . $joined_table . '_' . $node->getId(),
 				$relationship_meta->to_table . '_' . $node->getId() . '.' . $relationship_meta->join_key .
@@ -469,7 +469,7 @@ class Query {
 		{
 			// If we encounter a subquery parent with no parent, then that subquery
 			// node is the root and we're in a subquery!
-			if ($n->meta->method == ModelRelationshipMeta::METHOD_SUBQUERY
+			if ($n->meta->method == RelationshipMeta::METHOD_SUBQUERY
 				&& $n->getParent() !== NULL)
 			{
 				return TRUE;
@@ -769,6 +769,7 @@ class Query {
 
 			$table = $gateway_class_name::getMetaData('table_name');
 			$properties = $gateway_class_name::getMetaData('field_list');
+
 			foreach ($properties as $property=>$default_value)
 			{
 				$this->db->select($table . '_' . $node->getId() . '.' . $property . ' AS ' . $node->getPathString() . '__' . $relationship_name . '__' . $model_name . '__' . $property);
