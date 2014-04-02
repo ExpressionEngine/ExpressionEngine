@@ -15,7 +15,7 @@ class Member extends Model {
 	protected static $_gateway_names = array('MemberGateway');
 	protected static $_key_map = array(
 		'member_id' => 'MemberGateway',
-		'group_id' => 'MemberGateway'
+		'group_id' => 'MemberGateway',
 	);
 
 	// Properties
@@ -92,6 +92,7 @@ class Member extends Model {
 	protected $show_sidebar;
 	protected $pmember_id;
 
+
 	public function getMemberGroup()
 	{
 		return $this->manyToOne('MemberGroup', 'MemberGroup', 'group_id', 'group_id');
@@ -103,6 +104,19 @@ class Member extends Model {
 		$this->group_id = $group->group_id;
 		return $this;
 	}
+
+	public function setResetPassword(ResetPassword $reset_code)
+	{
+		$this->setRelated('ResetPassword', $reset_code);
+		$reset_code->member_id = $this->member_id;
+		return $this;
+	}
+
+	public function getResetPassword()
+	{
+		return $this->oneToOne('ResetPassword', 'ResetPassword', 'member_id', 'member_id');
+	}
+
 
 	public function getChannelEntries()
 	{

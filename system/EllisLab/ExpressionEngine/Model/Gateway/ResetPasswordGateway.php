@@ -4,14 +4,12 @@ namespace EllisLab\ExpressionEngine\Model\Gateway;
 use EllisLab\ExpressionEngine\Model\Gateway\RowDataGateway;
 
 class ResetPasswordGateway extends RowDataGateway {
-	protected static $meta = array(
-		'table_name' => 'reset_password',
-		'primary_key' => 'reset_id',
-		'related_gateways' => array(
-			'member_id' => array(
-				'gateway' => 'MemberGateway',
-				'key' => 'member_id'
-			)
+	protected static $_table_name = 'reset_password';
+	protected static $_primary_key = 'reset_id';
+	protected static $_related_gateways = array(
+		'member_id' => array(
+			'gateway' => 'MemberGateway',
+			'key' => 'member_id'
 		)
 	);
 
