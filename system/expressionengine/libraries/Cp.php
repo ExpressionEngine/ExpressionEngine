@@ -234,6 +234,8 @@ class Cp {
 		//$this->_accessories();
 		//$this->_sidebar();
 
+		ee()->view->formatted_version = $this->formatted_version(APP_VER);
+
 		if (isset(ee()->table))
 		{
 			// We have a code order issue with accessories.
@@ -250,6 +252,30 @@ class Cp {
 		$this->add_js_script('file', 'cp/global_end');
 
 		return ee()->view->render($view, $data, $return);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Takes an app version string and formats it for the CP, which entails
+	 * putting bold tags around the first number and dropping the third
+	 * digit if it is a zero
+	 *
+	 * @param	string	$version	App version string, like 3.0.0
+	 * @return	string	Formatted app version string, like <b>3</b>.0
+	 */
+	public function formatted_version($version)
+	{
+		$version = explode('.', $version);
+
+		// Drop the last zero if the version number is 3 digits (there might
+		// be regex to do this as well)
+		if (count($version == 3) && $version[2] == '0')
+		{
+			unset($version[2]);
+		}
+
+		return preg_replace('/^(\d)\./', '<b>$1</b>.', implode('.', $version));
 	}
 
 	// --------------------------------------------------------------------
@@ -287,8 +313,7 @@ class Cp {
 		}
 
 		ee()->load->library('menu');
-		ee()->view->cp_menu_items = ee()->menu->generate_menu();
-		ee()->view->site_menu = ee()->menu->site_menu();
+		ee()->view->cp_main_menu = ee()->menu->generate_menu();
 	}
 
 	// --------------------------------------------------------------------

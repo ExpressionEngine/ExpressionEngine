@@ -2,8 +2,9 @@
 		<section class="product-bar">
 			<div class="snap">
 				<div class="left">
-					<p><b>ExpressionEngine</b> <span class="version" title="About ExpressionEngine"><?=APP_VER?></span></p>
+					<p><b>ExpressionEngine</b> <span class="version" title="About ExpressionEngine"><?=$formatted_version?></span></p>
 					<!-- use class out-of-date on the version link. -->
+					<!-- Waiting to implement until new Pings library is merged -->
 					<!-- <div class="version-info">
 						<h3>Installed</h3>
 						<p>ExpressionEngine <b>3</b>.0<br><em>build date: 07.12.2014</em></p>
@@ -14,12 +15,12 @@
 					</div> -->
 					<div class="version-info">
 						<h3>Installed</h3>
-						<p>ExpressionEngine <?=APP_VER?><br><em><?=lang('build').APP_BUILD?></em></p>
+						<p>ExpressionEngine <?=$formatted_version?><br><em><?=lang('build').' '.APP_BUILD?></em></p>
 						<a href="" class="close">&#10006;</a>
 						<div class="status">current</div>
 					</div>
 				</div>
-				<div class="right"><p><a href="/report-bug" rel="external">Report Bug</a> <b class="sep">&middot;</b> <a href="/new-ticket" rel="external">New Ticket</a> <b class="sep">&middot;</b> <a href="/manual" rel="external">Manual</a></p></div>
+				<div class="right"><p><a href="https://support.ellislab.com/bugs/submit" rel="external">Report Bug</a> <b class="sep">&middot;</b> <a href="https://support.ellislab.com" rel="external">New Ticket</a> <b class="sep">&middot;</b> <a href="http://ellislab.com/expressionengine/user-guide/" rel="external">Manual</a></p></div>
 			</div>
 		</section>
 		<section class="footer">

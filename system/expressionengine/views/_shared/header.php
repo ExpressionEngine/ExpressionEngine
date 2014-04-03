@@ -24,16 +24,18 @@
 		<section class="bar info-wrap">
 			<nav class="snap">
 				<div class="site">
-					<a class="has-sub" href=""><?=ee()->config->item('site_name')?> <span class="ico sub-arrow"></span></a> <a href="<?=ee()->config->item('base_url').ee()->config->item('site_index')?>">view</a>
 					<?php if (ee()->config->item('multiple_sites_enabled') === 'y'): ?>
+						<a class="has-sub" href=""><?=ee()->config->item('site_name')?> <span class="ico sub-arrow"></span></a> <a href="<?=ee()->config->item('base_url').ee()->config->item('site_index')?>">view</a>
 						<ul class="sites-list sub-menu">
-							<?php foreach ($site_menu as $site_name => $link): ?>
+							<?php foreach ($cp_main_menu['sites'] as $site_name => $link): ?>
 								<a href="<?=$link?>"><?=$site_name?></a>
 							<?php endforeach ?>
 							<?php if (ee()->cp->allowed_group('can_admin_sites')): ?>
 								<a class="last add" href="http://localhost/el-projects/ee-cp/views/msm-new.php">&#10010; New Site</a>
 							<?php endif ?>
 						</ul>
+					<?php else: ?>
+						<a href=""><?=ee()->config->item('site_name')?></a>
 					<?php endif ?>
 				</div>
 				<div class="user">
@@ -55,10 +57,10 @@
 						<a class="has-sub" href="">Create <span class="ico sub-arrow"></span></a>
 						<div class="sub-menu">
 							<ul>
-								<li><a href="http://localhost/el-projects/ee-cp/views/publish.php">[Allowed Channel]</a></li>
-								<li><a href="http://localhost/el-projects/ee-cp/views/publish.php">[Allowed Channel]</a></li>
-								<li><a href="http://localhost/el-projects/ee-cp/views/publish.php">[Allowed Channel]</a></li>
-								<li><a href="http://localhost/el-projects/ee-cp/views/publish.php">[Allowed Channel]</a></li>
+								<?php foreach ($cp_main_menu['channels'][
+								'create'] as $channel_name => $link): ?>
+									<li><a href="<?=$link?>"><?=$channel_name?></a></li>
+								<?php endforeach ?>
 								<li class="last"><a class="add" href="http://localhost/el-projects/ee-cp/views/channel-new.php">&#10010; New Channel</a></li>
 							</ul>
 						</div>
@@ -67,10 +69,10 @@
 						<a class="has-sub" href="">Edit <span class="ico sub-arrow"></span></a>
 						<div class="sub-menu">
 							<ul>
-								<li><a href="http://localhost/el-projects/ee-cp/views/publish-edit.php">[Allowed Channel]</a></li>
-								<li><a href="http://localhost/el-projects/ee-cp/views/publish-edit.php">[Allowed Channel]</a></li>
-								<li><a href="http://localhost/el-projects/ee-cp/views/publish-edit.php">[Allowed Channel]</a></li>
-								<li class="last"><a href="http://localhost/el-projects/ee-cp/views/publish-edit.php">[Allowed Channel]</a></li>
+								<?php foreach ($cp_main_menu['channels'][
+								'edit'] as $channel_name => $link): ?>
+									<li><a href="<?=$link?>"><?=$channel_name?></a></li>
+								<?php endforeach ?>
 							</ul>
 						</div>
 					</li>

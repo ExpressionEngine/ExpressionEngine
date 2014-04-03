@@ -40,12 +40,159 @@ class EE_Menu {
 	/**
 	 * Generate Menu
 	 *
+	 * Puts together the links for the main menu header area
+	 *
+	 * @access	public
+	 * @return	void
+	 */
+	public function generate_menu()
+	{
+		$menu = array();
+
+		$menu['sites'] = $this->_site_menu();
+		$menu['channels'] = $this->_channels_menu();
+
+		// CP-TODO: Add back cp_menu_array hook?
+
+		return $menu;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Fetch Site List
+	 *
+	 * Returns array of sites or simply a link to the current site
+	 *
+	 * @access	private
+	 * @return	array
+	 */
+	private function _site_menu()
+	{
+		// Add MSM Site Switcher
+		ee()->load->model('site_model');
+
+		$site_list = ee()->session->userdata('assigned_sites');
+		$site_list = (ee()->config->item('multiple_sites_enabled') === 'y' && ! IS_CORE) ? $site_list : FALSE;
+
+		$menu = array();
+
+		if ($site_list)
+		{
+			$site_backlink = ee()->cp->get_safe_refresh();
+
+			if ($site_backlink)
+			{
+				$site_backlink = implode('|', explode(AMP, $site_backlink));
+				$site_backlink = strtr(base64_encode($site_backlink), '+=', '-_');
+			}
+
+			foreach($site_list as $site_id => $site_name)
+			{
+				if ($site_id != ee()->config->item('site_id'))
+				{
+					$menu[$site_name] = cp_url('sites', array('site_id' => $site_id, 'page' => $site_backlink));
+				}
+			}
+		}
+
+		return $menu;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Get channels the user currently has access to for putting into the
+	 * Create and Edit links in the menu
+	 *
+	 * @access	private
+	 * @return	array	Array of channels and their edit/publish links
+	 */
+	private function _channels_menu()
+	{
+		ee()->legacy_api->instantiate('channel_structure');
+		$channels = ee()->api_channel_structure->get_channels();
+
+		$menu['create'] = array();
+		$menu['edit'] = array();
+
+		if ($channels)
+		{
+			foreach($channels->result() as $channel)
+			{
+				// Create link
+				$menu['create'][$channel->channel_title] = cp_url(
+					'content_publish/entry_form',
+					array('channel_id' => $channel->channel_id)
+				);
+
+				// Edit link
+				$menu['edit'][$channel->channel_title] = cp_url('content_edit', array('channel_id' => $channel->channel_id));
+			}
+		}
+
+		return $menu;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Future home of quick links
+	 *
+	 * @access	private
+	 * @return	array
+	 */
+	private function _quicklinks()
+	{
+		$quicklinks = array();
+
+		return $quicklinks;
+
+		// CP-TODO: Combine quick_links and quick_tabs in updater, make this
+		// method return something
+
+		// OLD CODE FOR GETTING THESE LIINKS:
+
+		$quicklinks = $this->member_model->get_member_quicklinks(
+			ee()->session->userdata('member_id')
+		);
+
+		if (isset(ee()->session->userdata['quick_tabs']) && ee()->session->userdata['quick_tabs'] != '')
+		{
+			foreach (explode("\n", ee()->session->userdata['quick_tabs']) as $row)
+			{
+				$x = explode('|', $row);
+
+				$title = (isset($x['0'])) ? $x['0'] : '';
+				$link  = (isset($x['1'])) ? $x['1'] : '';
+
+				// Look to see if the session is in the link; if so, it was
+				// it was likely stored the old way which made for possibly
+				// broken links, like if it was saved with index.php but is
+				// being accessed through admin.php
+				if (strstr($link, '?S=') === FALSE)
+				{
+					$link = BASE.AMP.$link;
+				}
+
+				$tabs[$title] = $link;
+			}
+		}
+
+		return $tabs;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Generate Menu
+	 *
 	 * Builds the CP menu
 	 *
 	 * @access	public
 	 * @return	void
 	 */
-	function generate_menu($permissions = '')
+	function generate_menu_old($permissions = '')
 	{
 		if ( ! ee()->cp->allowed_group('can_access_cp'))
 		{
@@ -761,48 +908,6 @@ class EE_Menu {
 		}
 
 		return $tabs;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Fetch Site List
-	 *
-	 * Returns array of sites or simply a link to the current site
-	 *
-	 * @access	private
-	 * @return	array
-	 */
-	public function site_menu()
-	{
-		// Add MSM Site Switcher
-		ee()->load->model('site_model');
-
-		$site_list = ee()->session->userdata('assigned_sites');
-		$site_list = (ee()->config->item('multiple_sites_enabled') === 'y' && ! IS_CORE) ? $site_list : FALSE;
-
-		$menu = array();
-
-		if ($site_list)
-		{
-			$site_backlink = ee()->cp->get_safe_refresh();
-
-			if ($site_backlink)
-			{
-				$site_backlink = implode('|', explode(AMP, $site_backlink));
-				$site_backlink = strtr(base64_encode($site_backlink), '+=', '-_');
-			}
-
-			foreach($site_list as $site_id => $site_name)
-			{
-				if ($site_id != ee()->config->item('site_id'))
-				{
-					$menu[$site_name] = cp_url('sites', array('site_id' => $site_id, 'page' => $site_backlink));
-				}
-			}
-		}
-
-		return $menu;
 	}
 
 	// --------------------------------------------------------------------

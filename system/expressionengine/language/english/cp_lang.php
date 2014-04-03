@@ -267,7 +267,7 @@ $lang = array(
 '%x SQL queries used',
 
 'build' =>
-'Build Date:',
+'build date:',
 
 'forgot_password' =>
 'Forgot your password?',
