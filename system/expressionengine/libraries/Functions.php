@@ -2514,10 +2514,13 @@ class EE_Functions {
 			$str = substr_replace($str, $full_conditional, $start, $end - $start);
 		}
 
-		$vars = array_merge(
-			$vars,
-			array_combine($variable_placeholders, $variables)
-		);
+		if (count($variables))
+		{
+			$vars = array_merge(
+				$vars,
+				array_combine($variable_placeholders, $variables)
+			);
+		}
 
 		if (strpos($orig_str, "great")) {
 			$vars['pk'] = TRUE;
