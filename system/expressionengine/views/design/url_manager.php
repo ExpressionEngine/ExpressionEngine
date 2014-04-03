@@ -1,6 +1,7 @@
 <?php extend_template('default') ?>
 		<div class="formArea">
 			<?=form_open('C=design'.AMP.'M=update_template_routes')?>
+				<input type="hidden" name="route_order" id="route_order" />
 				<div id="url_manager">
 					<p><?= lang('template_route_notice'); ?></p>
 					<?php
