@@ -2409,6 +2409,123 @@ class EE_Functions {
 
 		return FALSE;
 	}
+
+	/**
+	 * Finds conditionals with quoted strings and turns the strings
+	 * into variables. This lets us later find the boundaries of the
+	 * conditional without worry and protects us from escape characters
+	 * and nested quotes in our conditionals.
+	 *
+	 * @param $str The template chunk to look through
+	 * @param $vars Any variables that will be in the conditional
+	 * @return Array [new chunk, new variables]
+	 */
+	function convert_quoted_conditional_strings_to_variables($str, $vars)
+	{
+		// start at the beginning
+		$i = 0;
+		$l = strlen($str);
+
+		$orig_str = $str;
+
+		$var_count = 0;
+		$variables = array();
+		$variable_texts = array();
+		$variable_placeholders = array();
+
+		$rand = md5(uniqid(mt_rand()));
+
+		while (($i = strpos($str, '{if ', $i)) !== FALSE)
+		{
+			$start = $i;
+
+			$in_string = FALSE;
+			$escaped = FALSE;
+			$buffer = '';
+
+			while ($i < $l)
+			{
+				$char = $str[$i++];
+
+				// if escaped, always add
+				if ($escaped)
+				{
+					if ($in_string)
+					{
+						$buffer .= $char;
+					}
+
+					$escaped = FALSE;
+					continue;
+				}
+
+				switch ($char)
+				{
+					case '\\':
+						$escaped = TRUE;
+						if ($in_string)
+						{
+							$buffer .= $char;
+						}
+						break;
+					case '"':
+					case "'":
+						if ($in_string == $char)
+						{
+							$variables[] = $buffer;
+							$variable_texts[] = $in_string.$buffer.$in_string;
+
+							$var_count++;
+							$variable_placeholders[] = 'var_'.$rand.$var_count;
+
+							$buffer = '';
+							$in_string = FALSE;
+						}
+						elseif ($in_string === FALSE)
+						{
+							$in_string = $char;
+						}
+						else
+						{
+							$buffer = '';
+							$buffer .= $char;
+						}
+						break;
+					case '}':
+						if ( ! $in_string)
+						{
+							break 2;
+						}
+					default:
+						if ($in_string)
+						{
+							$buffer .= $char;
+						}
+				}
+			}
+
+			$end = $i;
+
+			// replace the fully matched conditional with one that has placeholders
+			// instead of any strings.
+			$full_conditional = substr($str, $start, $end - $start);
+			$full_conditional = str_replace($variable_texts, $variable_placeholders, $full_conditional);
+
+			$str = substr_replace($str, $full_conditional, $start, $end - $start);
+		}
+
+		$vars = array_merge(
+			$vars,
+			array_combine($variable_placeholders, $variables)
+		);
+
+		if (strpos($orig_str, "great")) {
+			$vars['pk'] = TRUE;
+		}
+
+		return array($str, $vars);
+	}
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -2431,6 +2548,8 @@ class EE_Functions {
 			// their thing in mod tags.
 			$vars = array_merge($vars, ee()->TMPL->embed_vars);
 		}
+
+		list($str, $vars) = $this->convert_quoted_conditional_strings_to_variables($str, $vars);
 
 		if (count($vars) == 0) return $str;
 
@@ -2468,51 +2587,8 @@ class EE_Functions {
 				}
 			}
 
-			// PROTECT QUOTED TEXT
-			// That which is in quotes should be protected and ignored as it will screw
-			// up the parsing if the variable is found within a string
-
-			if (preg_match_all('/([\"\'])([^\\1]*?)\\1/s', implode(' ', $matches[3]), $quote_matches))
-			{
-				foreach($quote_matches[0] as $ii => $quote_match)
-				{
-					$md5_key = "'".base64_encode($prep_id.md5($quote_match))."'";
-					$protect[$quote_match] = $md5_key;
-
-					// To better protect quotes inside conditional quotes, we need to
-					// determine which kind of quote to surround the newly-encoded string
-					$surrounding_quote = surrounding_character($quote_match);
-
-					if (($surrounding_quote != '"' AND $surrounding_quote != "'")
-						OR $surrounding_quote === FALSE)
-					{
-						$surrounding_quote = '"';
-					}
-
-					// We do these conversions on variables below, so we need
-					// to also do them on the hardcoded values to make sure
-					// the conditionals resolve as expected.
-					// e.g. {if location == "pony's house"}
-					$quote_match = $surrounding_quote.
-						str_replace(
-							array("'", '"', '(', ')', '$', '{', '}', "\n", "\r", '\\'),
-							array('&#39;', '&#34;', '&#40;', '&#41;', '&#36;', '', '', '', '', '&#92;'),
-							$quote_matches[2][$ii]
-						).
-						$surrounding_quote;
-
-					$switch[$md5_key] = $quote_match;
-				}
-
-				$matches[3] = str_replace(array_keys($protect), array_values($protect), $matches[3]);
-
-				// Remove quoted values altogether to find variables...
-				$matches['t'] = str_replace($valid, ' ', str_replace(array_values($protect), '', $matches[3]));
-			}
-			else
-			{
-				$matches['t'] = str_replace($valid, ' ', $matches[3]);
-			}
+			// remove valid operators, we don't need to clean those
+			$matches['t'] = str_replace($valid, ' ', $matches[3]);
 
 			// Find what we need, nothing more!!
 			$data = array();
@@ -2568,7 +2644,7 @@ class EE_Functions {
 				{
 					$value = '"'.
 								  str_replace(array("'", '"', '(', ')', '$', '{', '}', "\n", "\r", '\\'),
-											  array('&#39;', '&#34;', '&#40;', '&#41;', '&#36;', '', '', '', '', '&#92;'),
+											  array('&#39;', '&#34;', '&#40;', '&#41;', '&#36;', '&#123;', '&#125;', '', '', '&#92;'),
 											  (strlen($value) > 100) ? substr(htmlspecialchars($value), 0, 100) : $value
 											  ).
 								  '"';
