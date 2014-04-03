@@ -93,6 +93,9 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			$this->advancedAndsAndOrs(),
 			$this->advancedParenthesisEqualizing(),
 
+			// testing string protection
+			$this->protectingStrings(),
+
 			// wonky tests parse despite createing php errors
 			// we should try to invalidate all of these, so for our new conditional
 			// parsing these tests should be rewriten as failing
@@ -220,6 +223,20 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			array('Difficult Missing Open Parentheses',		'{if ((5 || 7 == 8) AND (6 != 6)))}out{/if}',	'{if (((5 || 7 == 8) AND (6 != 6)))}out{/if}'),
 			array('Difficult Missing Closing Parentheses',	'{if ((5 || 7 == 8) AND ((6 != 6))}out{/if}',	'{if ((5 || 7 == 8) AND ((6 != 6)))}out{/if}'),
 			array('Ignore Quoted Parenthesis Mismatch',		'{if "(5 && 6)))"}out{/if}',	'{if "&#40;5 && 6&#41;&#41;&#41;"}out{/if}'),
+		);
+	}
+
+	protected function protectingStrings()
+	{
+		return array(
+			array('Protecting Single Quotes',		'{if xyz == "\'"}out{/if}',	'{if "&#39;" == "&#39;"}out{/if}',				array('xyz' => "'")),
+			array('Protecting Double Quotes',		"{if xyz == '\"'}out{/if}",	'{if "&#34;" == \'&#34;\'}out{/if}',			array('xyz' => '"')),
+			array('Protecting Parentheses',			'{if xyz == "()"}out{/if}',	'{if "&#40;&#41;" == "&#40;&#41;"}out{/if}',	array('xyz' => "()")),
+			array('Protecting Dollar Signs',		'{if xyz == "$"}out{/if}',	'{if "&#36;" == "&#36;"}out{/if}',				array('xyz' => "$")),
+			array('Protecting Braces',				'{if xyz == "{}"}out{/if}',	'{if "" ==}"}out{/if}',							array('xyz' => "{}")),
+			array('Protecting New Lines',			"{if xyz == '\n'}out{/if}",	"{if \"\" == ''}out{/if}",						array('xyz' => "\n")),
+			array('Protecting Carriage Returns',	"{if xyz == '\r'}out{/if}",	"{if \"\" == ''}out{/if}",						array('xyz' => "\r")),
+			array('Protecting Backslashes',			"{if xyz == '\\'}out{/if}",	"{if \"&#92;\" == '&#92;'}out{/if}",			array('xyz' => "\\")),
 		);
 	}
 
