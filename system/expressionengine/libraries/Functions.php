@@ -2426,82 +2426,115 @@ class EE_Functions {
 		$i = 0;
 		$l = strlen($str);
 
-		$orig_str = $str;
-
 		$var_count = 0;
 		$variables = array();
-		$variable_texts = array();
 		$variable_placeholders = array();
+
+		// We use a finite state machine to walk through
+		// the conditional and find the correct closing
+		// bracket.
+		//
+		// States:
+		//		OK	- default
+		//		SS	- string single 'str'
+		//		SD	- string double "str"
+		//		ESC	- \escaped				[event]
+		//		EOS	- end of string			[event]
+		//		END	- done					[event]
+
+		$edges = array(
+			'\\' => 0,
+			"'"  => 1,
+			'"'  => 2,
+			'}'  => 3
+		);
+
+		$transitions = array(// \    '     "     }    - matches $edges
+			'OK'	=> array('ESC', 'SS', 'SD', 'END'),
+			'SS'	=> array('ESC', 'EOS', 'SS', 'SS'),
+			'SD'	=> array('ESC', 'SD', 'EOS', 'SD')
+		);
 
 		$rand = md5(uniqid(mt_rand()));
 
-		while (($i = strpos($str, '{if ', $i)) !== FALSE)
+		while (($i = strpos($str, '{if', $i)) !== FALSE)
 		{
-			$start = $i;
+			$variable_texts = array();
 
-			$in_string = FALSE;
-			$escaped = FALSE;
+			$start  = $i;
 			$buffer = '';
+			$state  = 'OK';
 
 			while ($i < $l)
 			{
-				$char = $str[$i++];
-
-				// if escaped, always add
-				if ($escaped)
+				// performance improvement, seek forward to next transition
+				if ($skip = strcspn($str, '\\\'"}', $i))
 				{
-					if ($in_string)
+					if ($state == 'SS' || $state == 'SD')
+					{
+						$buffer .= substr($str, $i, $skip);
+					}
+					$i += $skip;
+				}
+
+				$char = $str[$i++];
+				$old_state = $state;
+
+				// if this is a transition, switch states
+				if (isset($edges[$char]))
+				{
+					$edge  = $edges[$char];
+					$state = $transitions[$old_state][$edge];
+				}
+
+				// On escape, store char and restore previous state
+				if ($state == 'ESC')
+				{
+					$buffer .= $char;
+					$char = $str[$i++];
+					$state = $old_state; // pretend nothing happened
+				}
+
+				// On end, we stop this loop
+				elseif ($state == 'END')
+				{
+					break;
+				}
+
+				// Hitting the end of a string must mean we're back to an OK
+				// state, so store the string in a variable and reset
+				elseif ($state == 'EOS')
+				{
+					$variables[] = $buffer;
+					$variable_texts[] = $char.$buffer.$char;
+
+					$var_count++;
+					$variable_placeholders[] = 'var_'.$rand.$var_count;
+
+					$state = 'OK';
+					$buffer = '';
+				}
+
+				// END Events
+
+				// Handle strings
+				if ($state == 'SS' || $state == 'SD')
+				{
+					if ($state == $old_state)
 					{
 						$buffer .= $char;
 					}
-
-					$escaped = FALSE;
-					continue;
+					else
+					{
+						$buffer = '';
+					}
 				}
+			}
 
-				switch ($char)
-				{
-					case '\\':
-						$escaped = TRUE;
-						if ($in_string)
-						{
-							$buffer .= $char;
-						}
-						break;
-					case '"':
-					case "'":
-						if ($in_string == $char)
-						{
-							$variables[] = $buffer;
-							$variable_texts[] = $in_string.$buffer.$in_string;
-
-							$var_count++;
-							$variable_placeholders[] = 'var_'.$rand.$var_count;
-
-							$buffer = '';
-							$in_string = FALSE;
-						}
-						elseif ($in_string === FALSE)
-						{
-							$in_string = $char;
-						}
-						else
-						{
-							$buffer = '';
-							$buffer .= $char;
-						}
-						break;
-					case '}':
-						if ( ! $in_string)
-						{
-							break 2;
-						}
-					default:
-						if ($in_string)
-						{
-							$buffer .= $char;
-						}
-				}
+			// Not in an end state, manually close it.
+			if ($state != 'END')
+			{
+				$str .= '}';
 			}
 
 			$end = $i;
