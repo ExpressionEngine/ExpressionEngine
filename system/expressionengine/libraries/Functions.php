@@ -2418,7 +2418,7 @@ class EE_Functions {
 	 *
 	 * @param $str The template chunk to look through
 	 * @param $vars Any variables that will be in the conditional
-	 * @return Array [new chunk, new variables]
+	 * @return Array|bool [new chunk, new variables] or FALSE on error
 	 */
 	function convert_quoted_conditional_strings_to_variables($str, $vars)
 	{
@@ -2462,13 +2462,7 @@ class EE_Functions {
 			// No sense continuing if we cannot find a {/if}
 			if (strpos($str, '{/if}', $i+3) === FALSE)
 			{
-				if (ee()->config->item('debug') >= 1)
-				{
-					$error = ee()->lang->line('error_invalid_conditional');
-					ee()->output->fatal_error($error);
-				}
-
-				exit;
+				return FALSE;
 			}
 
 			// Confirm this is a conditional and not some other tag
@@ -2557,13 +2551,7 @@ class EE_Functions {
 			// Not in an end state, manually close it.
 			if ($state != 'END')
 			{
-				if (ee()->config->item('debug') >= 1)
-				{
-					$error = ee()->lang->line('error_invalid_conditional');
-					ee()->output->fatal_error($error);
-				}
-
-				exit;
+				return FALSE;
 			}
 
 			$end = $i;
@@ -2610,7 +2598,24 @@ class EE_Functions {
 			$vars = array_merge($vars, ee()->TMPL->embed_vars);
 		}
 
-		list($str, $vars) = $this->convert_quoted_conditional_strings_to_variables($str, $vars);
+		$return = $this->convert_quoted_conditional_strings_to_variables($str, $vars);
+
+		if ($return === FALSE)
+		{
+			if (ee()->config->item('debug') >= 1)
+			{
+				$error = ee()->lang->line('error_invalid_conditional');
+				ee()->output->fatal_error($error);
+			}
+
+			exit;
+
+		}
+
+		$str = $return[0];
+		$vars = $return[1];
+		unset($return);
+
 
 		if (count($vars) == 0) return $str;
 
