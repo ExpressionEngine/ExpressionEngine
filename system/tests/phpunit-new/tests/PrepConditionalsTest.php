@@ -236,8 +236,8 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			array('Protecting Braces',				'{if xyz == "{}"}out{/if}',	  '{if "&#123;&#125;" == "&#123;&#125;"}out{/if}',	array('xyz' => "{}")),
 			array('Protecting New Lines',			"{if xyz == '\n'}out{/if}",	  "{if \"\" == \"\"}out{/if}",						array('xyz' => "\n")),
 			array('Protecting Carriage Returns',	"{if xyz == '\r'}out{/if}",	  "{if \"\" == \"\"}out{/if}",						array('xyz' => "\r")),
-			array('Protecting Backslashes',			"{if xyz == '\\\\'}out{/if}", "{if \"&#92;\" == \"&#92;&#92;\"}out{/if}",		array('xyz' => "\\")),
-			array('Allowing Escape Characters',		"{if xyz == '\\''}out{/if}",  "{if \"&#92;\" == \"&#92;&#39;\"}out{/if}",		array('xyz' => "\\")),
+			array('Protecting Backslashes',			"{if xyz == '\\\\'}out{/if}", "{if \"&#92;\" == \"&#92;\"}out{/if}",		array('xyz' => "\\")),
+			array('Allowing Escape Characters',		"{if xyz == '\\''}out{/if}",  "{if \"&#92;\" == \"&#39;\"}out{/if}",		array('xyz' => "\\")),
 			array('Nested Quotes',					"{if xyz == '}great'}{/if}",  '{if "" == "&#125;great"}{/if}',					array('xyz' => '')),
 		);
 	}
