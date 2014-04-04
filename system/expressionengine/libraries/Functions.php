@@ -2459,6 +2459,29 @@ class EE_Functions {
 
 		while (($i = strpos($str, '{if', $i)) !== FALSE)
 		{
+			// No sense continuing if we cannot find a {/if}
+			if (strpos($str, '{/if}', $i+3) === FALSE)
+			{
+				if (ee()->config->item('debug') >= 1)
+				{
+					$error = ee()->lang->line('error_invalid_conditional');
+					ee()->output->fatal_error($error);
+				}
+
+				exit;
+			}
+
+			// Confirm this is a conditional and not some other tag
+			$char = $str[$i+1];
+			if ( ! ($char == ' ' || $char == "\t" || $char == "\n" || $char == "\r" ) )
+			{
+				if (substr_compare($str, ':else', $i, 5) === 0)
+				{
+					$i += 3;
+					continue;
+				}
+			}
+
 			$variable_texts = array();
 
 			$start  = $i;
