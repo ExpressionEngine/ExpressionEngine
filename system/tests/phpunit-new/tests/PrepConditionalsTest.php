@@ -228,7 +228,7 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 
 	protected function protectingStrings()
 	{
-		$bs = '\\';
+		$bs = '\\'; // NOTE: this is a _single_ backslash
 
 		return array(
 			array('Protecting Single Quotes',		'{if xyz == "\'"}out{/if}',			'{if "&#39;" == "&#39;"}out{/if}',					array('xyz' => "'")),
