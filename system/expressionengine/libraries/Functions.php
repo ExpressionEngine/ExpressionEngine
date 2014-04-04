@@ -2522,10 +2522,6 @@ class EE_Functions {
 			);
 		}
 
-		if (strpos($orig_str, "great")) {
-			$vars['pk'] = TRUE;
-		}
-
 		return array($str, $vars);
 	}
 
