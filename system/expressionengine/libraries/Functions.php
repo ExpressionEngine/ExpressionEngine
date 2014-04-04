@@ -2534,7 +2534,13 @@ class EE_Functions {
 			// Not in an end state, manually close it.
 			if ($state != 'END')
 			{
-				$str .= '}';
+				if (ee()->config->item('debug') >= 1)
+				{
+					$error = ee()->lang->line('error_invalid_conditional');
+					ee()->output->fatal_error($error);
+				}
+
+				exit;
 			}
 
 			$end = $i;

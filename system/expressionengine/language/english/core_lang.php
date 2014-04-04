@@ -188,6 +188,9 @@ Confirm the fieldtype file is located in the expressionengine/third_party/ direc
 'error_layout_too_late' =>
 'Plugin or module tag found before layout declaration. Please move the layout tag to the top of your template.',
 
+'error_invalid_conditional' =>
+'You have an invalid conditional in your template. Please review your conditionals for an unclosed string or a missing }.',
+
 'error_unsafe_conditional' =>
 'You have an unsafe conditional in your template. Please review your conditionals for the presence of any backticks (`) or comment characters (//, /*, */, or #).',
 
