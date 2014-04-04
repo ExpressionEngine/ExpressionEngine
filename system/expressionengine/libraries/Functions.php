@@ -2505,7 +2505,7 @@ class EE_Functions {
 				// state, so store the string in a variable and reset
 				elseif ($state == 'EOS')
 				{
-					$variables[] = $buffer;
+					$variables[] = stripslashes($buffer);
 					$variable_texts[] = $char.$buffer.$char;
 
 					$var_count++;
