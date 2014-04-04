@@ -46,6 +46,29 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 		$this->runConditionalTest('Splitting Comments', '{if string /* == 5 }out{/if}{if */phpinfo(); == 5}out{/if}', '{if}out{/if}');
 	}
 
+	/**
+	 * @expectedException InvalidConditionalException
+	 */
+	public function testUnclosedSingleQuoteString()
+	{
+		$this->runConditionalTest('Unclosed String (single quotes)', "{if string == 'ee}out{/if}", '{if}out{/if}');
+	}
+
+	/**
+	 * @expectedException InvalidConditionalException
+	 */
+	public function testUnclosedConditional()
+	{
+		$this->runConditionalTest('Unclosed Conditional', '{if string == "ee"}out', '{if}out{/if}');
+	}
+
+	/**
+	 * @expectedException InvalidConditionalException
+	 */
+	public function testUnclosedDoubleQuoteString()
+	{
+		$this->runConditionalTest('Unclosed String (double quotes)', '{if string == "ee}out{/if}', '{if}out{/if}');
+	}
 
 	protected function runConditionalTest($description, $str_in, $expected_out, $vars = array(), $php_vars = array())
 	{
@@ -334,6 +357,18 @@ class FunctionsStub extends EE_Functions {
 
 		return $result;
 	}
+
+	public function convert_quoted_conditional_strings_to_variables($str, $vars)
+	{
+		$result = parent::convert_quoted_conditional_strings_to_variables($str, $vars);
+
+		if ($result === FALSE)
+		{
+			throw new InvalidConditionalException('Conditional is invalid.');
+		}
+
+		return $result;
+	}
 }
 
 function surrounding_character($string)
@@ -349,3 +384,4 @@ function unique_marker($ident)
 }
 
 class UnsafeConditionalException extends Exception {}
+class InvalidConditionalException extends Exception {}
