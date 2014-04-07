@@ -100,6 +100,9 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 		// assemble all of the tests
 		return array_merge(
 			array(),
+			// tests for things that should not be parsed as conditionals
+			$this->notConditionals(),
+
 			// plain tests don't use variables
 			$this->plainComparisonTests(),
 			$this->plainComparisonTestsNoWhitespace(),
@@ -139,6 +142,14 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			$this->evilConditionalSplitWithComments(),
 			$this->evilConditionalSplitWithBackticks(),
 			*/
+		);
+	}
+
+	protected function notConditionals()
+	{
+		return array(
+			array('Just a variable',	'{iffy}',	'{iffy}'),
+			array('Too many spaces',	'{ if }',	'{ if }'),
 		);
 	}
 
