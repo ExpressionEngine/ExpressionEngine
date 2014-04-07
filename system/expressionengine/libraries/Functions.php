@@ -2460,10 +2460,10 @@ class EE_Functions {
 		while (($i = strpos($str, '{if', $i)) !== FALSE)
 		{
 			// Confirm this is a conditional and not some other tag
-			$char = $str[$i+1];
+			$char = $str[$i+3];
 			if ( ! ($char == ' ' || $char == "\t" || $char == "\n" || $char == "\r" ) )
 			{
-				if (substr_compare($str, ':else', $i, 5) === 0)
+				if (substr_compare($str, ':else', $i, 5) != 0)
 				{
 					$i += 3;
 					continue;
