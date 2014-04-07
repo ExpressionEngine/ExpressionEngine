@@ -2463,11 +2463,18 @@ class EE_Functions {
 			$char = $str[$i+3];
 			if ( ! ($char == ' ' || $char == "\t" || $char == "\n" || $char == "\r" ) )
 			{
-				if (substr_compare($str, ':else', $i, 5) != 0)
+				// If the "{if" is not followed by whitespace this might be a
+				// variable (i.e. {iffy}) or an "{if:else..." conditional
+				$substr = substr($str, $i+3);
+				if ($char == ':' && (preg_match('/^:else(\s?}|if\s)/', $substr) != 1))
 				{
-					$i += 3;
-					continue;
+					// This is an invalid conditional because "{if:" is reserved
+					// for conditionals
+					return FALSE;
 				}
+
+				$i += 3;
+				continue;
 			}
 
 			// No sense continuing if we cannot find a {/if}
