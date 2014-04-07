@@ -14,67 +14,12 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 	}
 
 	/**
-	 * @expectedException UnsafeConditionalException
+	 * @dataProvider badDataProvider
 	 */
-	public function testEvilBackticksInConditional()
+	public function testBadConditionals($exception, $description, $str_in)
 	{
-		$this->runConditionalTest('Simple Backticks', '{if `echo hello`}out{/if}', 'UnsafeConditionalException');
-	}
-
-	/**
-	 * @expectedException UnsafeConditionalException
-	 */
-	public function testEvilBackticksSplittingConditional()
-	{
-		$this->runConditionalTest('Splitting Backticks', '{if string.`echo hello #}out{/if}{if `== 0}out{/if}', 'UnsafeConditionalException');
-	}
-
-	/**
-	 * @expectedException UnsafeConditionalException
-	 */
-	public function testEvilCommentsInConditional()
-	{
-		$this->runConditionalTest('Simple Comments', '{if php/* test == 5*/info(); }out{/if}', 'UnsafeConditionalException');
-	}
-
-	/**
-	 * @expectedException UnsafeConditionalException
-	 */
-	public function testEvilCommentsSplittingConditional()
-	{
-		$this->runConditionalTest('Splitting Comments', '{if string /* == 5 }out{/if}{if */phpinfo(); == 5}out{/if}', 'UnsafeConditionalException');
-	}
-
-	/**
-	 * @expectedException InvalidConditionalException
-	 */
-	public function testUnclosedSingleQuoteString()
-	{
-		$this->runConditionalTest('Unclosed String (single quotes)', "{if string == 'ee}out{/if}", 'InvalidConditionalException');
-	}
-
-	/**
-	 * @expectedException InvalidConditionalException
-	 */
-	public function testUnclosedConditional()
-	{
-		$this->runConditionalTest('Unclosed Conditional', '{if string == "ee"}out', 'InvalidConditionalException');
-	}
-
-	/**
-	 * @expectedException InvalidConditionalException
-	 */
-	public function testUnclosedDoubleQuoteString()
-	{
-		$this->runConditionalTest('Unclosed String (double quotes)', '{if string == "ee}out{/if}', 'InvalidConditionalException');
-	}
-
-	/**
-	 * @expectedException InvalidConditionalException
-	 */
-	public function testExtraElse()
-	{
-		$this->runConditionalTest('Ifelse duplicity', '{if 5 == 5}out{if:else:else}out{/if}', 'InvalidConditionalException');
+		$this->setExpectedException($exception);
+		$this->runConditionalTest($description, $str_in, '');
 	}
 
 	protected function runConditionalTest($description, $str_in, $expected_out, $vars = array(), $php_vars = array())
@@ -100,7 +45,20 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 		);
 	}
 
-
+	public function badDataProvider()
+	{
+		return array(
+			array('UnsafeConditionalException',  'Simple Backticks',				'{if `echo hello`}out{/if}'),
+			array('UnsafeConditionalException',  'Splitting Backticks',				'{if string.`echo hello #}out{/if}{if `== 0}out{/if}'),
+			array('UnsafeConditionalException',  'Simple Comments',					'{if php/* test == 5*/info(); }out{/if}'),
+			array('UnsafeConditionalException',  'Splitting Comments',				'{if string /* == 5 }out{/if}{if */phpinfo(); == 5}out{/if}'),
+			array('InvalidConditionalException', 'Unclosed String (single quotes)', "{if string == 'ee}out{/if}"),
+			array('InvalidConditionalException', 'Unclosed Conditional', 			'{if string == "ee"}out'),
+			array('InvalidConditionalException', 'Unclosed String (double quotes)', '{if string == "ee}out{/if}'),
+			array('InvalidConditionalException', 'If as a Prefix', 					'{if:foo}'),
+			array('InvalidConditionalException', 'Ifelse duplicity', 				'{if 5 == 5}out{if:else:else}out{/if}'),
+		);
+	}
 
 	public function dataProvider()
 	{
