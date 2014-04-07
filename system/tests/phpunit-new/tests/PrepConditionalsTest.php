@@ -153,6 +153,7 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			array('If With Tab',		'{if	5 == 5}out{/if}',					'{if 5 == 5}out{/if}'),
 			array('If With Newline',	"{if\n5 == 5}out{/if}",						"{if 5 == 5}out{/if}"),
 			array('If With CRLF',		"{if\r\n5 == 5}out{/if}",					"{if 5 == 5}out{/if}"),
+			array('If With Whitespace',	"{if\n\t5 == 5\n}out{/if}",					"{if 5 == 5}out{/if}"),
 			array('Ifelseif',			'{if 5 == 5}out{if:elseif 5 == 5}out{/if}',	'{if 5 == 5}out{if:elseif 5 == 5}out{/if}'),
 			array('Ifelse',				'{if 5 == 5}out{if:else}out{/if}',			'{if 5 == 5}out{if:else}out{/if}'),
 		);
