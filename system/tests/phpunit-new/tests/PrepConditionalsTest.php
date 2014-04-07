@@ -101,6 +101,7 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 		return array_merge(
 			array(),
 			// tests for things that should not be parsed as conditionals
+			$this->conditionals(),
 			$this->notConditionals(),
 
 			// plain tests don't use variables
@@ -145,11 +146,23 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 		);
 	}
 
+	protected function conditionals()
+	{
+		return array(
+			array('If With Space',		'{if 5 == 5}out{/if}',						'{if 5 == 5}out{/if}'),
+			array('If With Tab',		'{if	5 == 5}out{/if}',					'{if 5 == 5}out{/if}'),
+			array('If With Newline',	"{if\n5 == 5}out{/if}",						"{if 5 == 5}out{/if}"),
+			array('If With CRLF',		"{if\r\n5 == 5}out{/if}",					"{if 5 == 5}out{/if}"),
+			array('Ifelseif',			'{if 5 == 5}out{if:elseif 5 == 5}out{/if}',	'{if 5 == 5}out{if:elseif 5 == 5}out{/if}'),
+			array('Ifelse',				'{if 5 == 5}out{if:else}out{/if}',			'{if 5 == 5}out{if:else}out{/if}'),
+		);
+	}
+
 	protected function notConditionals()
 	{
 		return array(
-			array('Just a variable',	'{iffy}',	'{iffy}'),
-			array('Too many spaces',	'{ if }',	'{ if }'),
+			array('Just a Variable',	'{iffy}',	'{iffy}'),
+			array('Too Many Spaces',	'{ if }',	'{ if }'),
 		);
 	}
 
