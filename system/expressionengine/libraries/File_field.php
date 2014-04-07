@@ -622,47 +622,33 @@ class File_field {
 	 *
 	 * @access	public
 	 * @param	string $data The string to parse {filedir_n} in
+	 * @param   bool   $parse_encoded  Set to TRUE to parse encoded (e.g. &123;)
+	 *                                 tags
 	 * @return	string The original string with all {filedir_n}'s parsed
 	 */
-	public function parse_string($data)
+	public function parse_string($data, $parse_encoded = FALSE)
 	{
+		$pattern = ($parse_encoded)
+			? '/(?:{|&#123;)filedir_(\d+)(?:}|&#125;)/'
+			: '/{filedir_(\d+)}/';
+
 		// Find each instance of {filedir_n}
-		if (preg_match_all('/{filedir_(\d+)}/', $data, $matches, PREG_SET_ORDER))
+		if (preg_match_all($pattern, $data, $matches, PREG_SET_ORDER))
 		{
-			$file_dirs = $this->_file_dirs();
+			ee()->load->model('file_upload_preferences_model');
+			$file_dirs = ee()->file_upload_preferences_model->get_paths();
 
 			// Replace each match
 			foreach ($matches as $match)
 			{
 				if (isset($file_dirs[$match[1]]))
 				{
-					$data = str_replace('{filedir_'.$match[1].'}', $file_dirs[$match[1]], $data);
+					$data = str_replace($match[0], $file_dirs[$match[1]], $data);
 				}
 			}
 		}
 
 		return $data;
-	}
-
-	// ------------------------------------------------------------------------
-
-	/**
-	 * Get the file directory data and keep it stored in the cache
-	 *
-	 * @return array Array of file directories
-	 */
-	private function _file_dirs()
-	{
-		if ( ! ee()->session->cache(__CLASS__, 'file_dirs'))
-		{
-			ee()->session->set_cache(
-				__CLASS__,
-				'file_dirs',
-				ee()->functions->fetch_file_paths()
-			);
-		}
-
-		return ee()->session->cache(__CLASS__, 'file_dirs');
 	}
 
 	// ------------------------------------------------------------------------

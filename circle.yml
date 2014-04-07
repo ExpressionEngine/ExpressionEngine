@@ -1,0 +1,33 @@
+machine:
+  timezone: America/New_York
+  php:
+    version: 5.3.10
+  ruby:
+    version: 2.1.1
+  hosts:
+    ee2.test: 127.0.0.1
+  environment:
+    php_versions: 5.3.10 5.4.21 5.5.8
+
+dependencies:
+  override:
+    - "cd system/tests/rspec && bundle install --without development --deployment"
+  post:
+    - cp system/tests/circleci/circleci-apache /etc/apache2/sites-available
+    - a2ensite circleci-apache
+    - sudo service apache2 restart
+  cache_directories:
+    - "system/tests/rspec/vendor/bundle"
+
+checkout:
+  post:
+    - "cp system/tests/circleci/{config.php,database.php} system/expressionengine/config/"
+    - "chmod 666 system/expressionengine/config/{config.php,database.php}"
+    - chmod -R 777 system/expressionengine/cache
+    - chmod -R 777 system/expressionengine/templates
+    - chmod -R 777 images
+    - chmod +x system/tests/circleci/runtests.sh
+
+test:
+  override:
+    - "./system/tests/circleci/runtests.sh"

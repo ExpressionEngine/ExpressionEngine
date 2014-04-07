@@ -1,0 +1,9 @@
+Listen 8080
+
+<VirtualHost *:8080>
+  DocumentRoot /home/ubuntu/ExpressionEngine
+  ServerName ee2.test
+  <FilesMatch \.php$>
+    SetHandler application/x-httpd-php
+  </FilesMatch>
+</VirtualHost>
