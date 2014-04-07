@@ -141,10 +141,12 @@ $lang = array(
 Confirm the fieldtype file is located in the expressionengine/third_party/ directory',
 
 'unwritable_cache_folder' =>
-'Your cache folder does not appear to have proper permissions.  Please set the folder permissions to 777 (or the equivalent write permissions for your server) on the following folder: expressionengine/cache',
+'Your cache folder does not have proper permissions.<br>
+To fix: Set the cache folder (/expressionengine/cache/) permissions to 777 (or equivalent for your server).',
 
 'unwritable_config_file' =>
-'Your config.php file does not appear to have the proper file permissions.  Please set the file permissions to 666 on the following file: expressionengine/config/config.php',
+'Your configuration file does not have the proper permissions.<br>
+To fix: Set the config file (/expressionengine/config/config.php) permissions to 666 (or equivalent for your server).',
 
 //----------------------------
 // Member Groups

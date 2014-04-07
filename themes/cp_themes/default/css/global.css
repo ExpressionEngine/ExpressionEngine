@@ -1566,6 +1566,13 @@ h2 a:hover {
 	text-shadow:		0 1px 0 #abd8f0;
 }
 
+#ee_homepage_notice.contents hr {
+	background-color: #CCCCCC;
+	border: 0;
+	height: 1px;
+	margin: 0 0 11px;
+}
+
 .bad_path_error_list li {
 	font-weight:		bold;
 	margin-bottom:		5px;color:#F72A58;

@@ -70,7 +70,7 @@ class Homepage extends CP_Controller {
 		}
 
 		$vars = array(
-			'message'			=> implode($message, "\n\n"),
+			'message'			=> array_filter($message),
 			'instructions'		=> lang('select_channel_to_post_in'),
 			'show_page_option'	=> (isset($this->cp->installed_modules['pages'])) ? TRUE : FALSE,
 			'info_message_open'	=> ($this->input->cookie('home_msg_state') != 'closed' && $show_notice) ? TRUE : FALSE,
