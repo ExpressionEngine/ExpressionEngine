@@ -2459,12 +2459,6 @@ class EE_Functions {
 
 		while (($i = strpos($str, '{if', $i)) !== FALSE)
 		{
-			// No sense continuing if we cannot find a {/if}
-			if (strpos($str, '{/if}', $i+3) === FALSE)
-			{
-				return FALSE;
-			}
-
 			// Confirm this is a conditional and not some other tag
 			$char = $str[$i+1];
 			if ( ! ($char == ' ' || $char == "\t" || $char == "\n" || $char == "\r" ) )
@@ -2474,6 +2468,12 @@ class EE_Functions {
 					$i += 3;
 					continue;
 				}
+			}
+
+			// No sense continuing if we cannot find a {/if}
+			if (strpos($str, '{/if}', $i+3) === FALSE)
+			{
+				return FALSE;
 			}
 
 			$variable_texts = array();
