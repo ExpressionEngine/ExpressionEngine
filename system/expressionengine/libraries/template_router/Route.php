@@ -186,6 +186,7 @@ class EE_Route {
 				}
 			}
 		}
+
 		return TRUE;
 	}
 
