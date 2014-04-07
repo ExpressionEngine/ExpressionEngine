@@ -57,6 +57,8 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			array('InvalidConditionalException', 'Unclosed String (double quotes)', '{if string == "ee}out{/if}'),
 			array('InvalidConditionalException', 'If as a Prefix', 					'{if:foo}'),
 			array('InvalidConditionalException', 'Ifelse duplicity', 				'{if 5 == 5}out{if:else:else}out{/if}'),
+			array('InvalidConditionalException', 'Ifelse Prefixing', 				'{if 5 == 5}out{if:elsebeth}out{/if}'),
+			array('InvalidConditionalException', 'Ifelseif Prefixing', 				'{if 5 == 5}out{if:elseiffy}out{/if}'),
 		);
 	}
 
