@@ -18,8 +18,7 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 	 */
 	public function testEvilBackticksInConditional()
 	{
-	//	$this->runConditionalTest('Simple Backticks', '{if `echo hello`}out{/if}', '{if}out{/if}');
-		$this->runConditionalTest('Simple Backticks', '{if `echo hello`}out{/if}', '{if}out{/if}');
+		$this->runConditionalTest('Simple Backticks', '{if `echo hello`}out{/if}', 'UnsafeConditionalException');
 	}
 
 	/**
@@ -27,7 +26,7 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 	 */
 	public function testEvilBackticksSplittingConditional()
 	{
-		$this->runConditionalTest('Splitting Backticks', '{if string.`echo hello #}out{/if}{if `== 0}out{/if}', '{if}out{/if}');
+		$this->runConditionalTest('Splitting Backticks', '{if string.`echo hello #}out{/if}{if `== 0}out{/if}', 'UnsafeConditionalException');
 	}
 
 	/**
@@ -35,7 +34,7 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 	 */
 	public function testEvilCommentsInConditional()
 	{
-		$this->runConditionalTest('Simple Comments', '{if php/* test == 5*/info(); }out{/if}', '{if}out{/if}');
+		$this->runConditionalTest('Simple Comments', '{if php/* test == 5*/info(); }out{/if}', 'UnsafeConditionalException');
 	}
 
 	/**
@@ -43,7 +42,7 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 	 */
 	public function testEvilCommentsSplittingConditional()
 	{
-		$this->runConditionalTest('Splitting Comments', '{if string /* == 5 }out{/if}{if */phpinfo(); == 5}out{/if}', '{if}out{/if}');
+		$this->runConditionalTest('Splitting Comments', '{if string /* == 5 }out{/if}{if */phpinfo(); == 5}out{/if}', 'UnsafeConditionalException');
 	}
 
 	/**
@@ -51,7 +50,7 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 	 */
 	public function testUnclosedSingleQuoteString()
 	{
-		$this->runConditionalTest('Unclosed String (single quotes)', "{if string == 'ee}out{/if}", '{if}out{/if}');
+		$this->runConditionalTest('Unclosed String (single quotes)', "{if string == 'ee}out{/if}", 'InvalidConditionalException');
 	}
 
 	/**
@@ -59,7 +58,7 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 	 */
 	public function testUnclosedConditional()
 	{
-		$this->runConditionalTest('Unclosed Conditional', '{if string == "ee"}out', '{if}out{/if}');
+		$this->runConditionalTest('Unclosed Conditional', '{if string == "ee"}out', 'InvalidConditionalException');
 	}
 
 	/**
@@ -67,7 +66,15 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 	 */
 	public function testUnclosedDoubleQuoteString()
 	{
-		$this->runConditionalTest('Unclosed String (double quotes)', '{if string == "ee}out{/if}', '{if}out{/if}');
+		$this->runConditionalTest('Unclosed String (double quotes)', '{if string == "ee}out{/if}', 'InvalidConditionalException');
+	}
+
+	/**
+	 * @expectedException InvalidConditionalException
+	 */
+	public function testExtraElse()
+	{
+		$this->runConditionalTest('Ifelse duplicity', '{if 5 == 5}out{if:else:else}out{/if}', 'InvalidConditionalException');
 	}
 
 	protected function runConditionalTest($description, $str_in, $expected_out, $vars = array(), $php_vars = array())
