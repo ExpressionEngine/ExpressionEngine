@@ -530,6 +530,9 @@ class EE_Core {
 		// Load the Super Model
 		ee()->load->model('super_model');
 
+		// Laod Menu library
+		ee()->load->library('menu');
+
 		// update documentation URL if site was running the beta and had the old location
 		// @todo remove after 2.1.1's release, move to the update script
 		if (strncmp(ee()->config->item('doc_url'), 'http://expressionengine.com/docs', 32) == 0)
