@@ -44,19 +44,24 @@ class Logs extends CP_Controller {
 		$this->load->vars(array('controller' => 'tools/tools_logs'));
 
 		// Sidebar Menu
-		$menu = array();
+		$menu = array(
+			'logs',
+			array(
+				'developer_log' => cp_url('logs/developer'),
+				'cp_log'        => cp_url('logs/cp'),
+				'throttle_log'  => cp_url('logs/throttle'),
+				'email_log'     => cp_url('logs/email'),
+				'search_log'    => cp_url('logs/search'),
+			)
+		);
 
-		if (ee()->session->userdata('group_id') == 1)
+		if (ee()->session->userdata('group_id') != 1)
 		{
-			$menu['developer_log'] = cp_url('logs/developer');
+			unset($menu[1]['developer_log']);
 		}
 
-		$menu['cp_log'] = cp_url('logs/cp');
-		$menu['throttle_log'] = cp_url('logs/throttle');
-		$menu['email_log'] = cp_url('logs/email');
-		$menu['search_log'] = cp_url('logs/search');
 
-		ee()->menu->register_left_nav(array('logs', $menu));
+		ee()->menu->register_left_nav($menu);
 	}
 
 	// --------------------------------------------------------------------
