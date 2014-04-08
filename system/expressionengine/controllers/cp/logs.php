@@ -75,7 +75,7 @@ class Tools_logs extends CP_Controller {
 	 * @access	public
 	 * @return	mixed
 	 */
-	function view_cp_log()
+	function cp()
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_logs'))
 		{
