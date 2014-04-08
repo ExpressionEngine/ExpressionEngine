@@ -42,7 +42,7 @@
 			<fieldset class="col-group last">
 				<div class="setting-txt col w-8">
 					<h3><?=lang('attachment')?></h3>
-					<em><?=lang('attachement_desc')?></em>
+					<em><?=lang('attachment_desc')?></em>
 				</div>
 				<div class="setting-field col w-8 last">
 					<input type="file" value="">
