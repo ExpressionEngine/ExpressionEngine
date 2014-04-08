@@ -13,21 +13,22 @@
 			$next = array_values(array_slice($nav, $i, 1));
 			$i++;
 
+			// Or if this is the first item, apply a class of 'first'
+			if ($value == $first[0])
+			{
+				$class .= 'first ';
+			}
+
 			// If this the last item, OR this is an H2 but the next
 			// item is an array, apply a class of 'last' to them both
 			if (($value == $last[0]) OR
 				(! is_array($value) && is_array($next) && $next == $last))
 			{
-				$class = 'last';
-			}
-			// Or if this is the first item, apply a class of 'first'
-			elseif ($value == $first[0])
-			{
-				$class = 'first';
+				$class .= 'last ';
 			}
 
 			if ( ! is_array($value)): ?>
-				<h2<?php if ( ! empty($class)):?> class="<?=$class?>"<?php endif ?>>
+				<h2<?php if ( ! empty($class)):?> class="<?=trim($class)?>"<?php endif ?>>
 					<?php if (is_numeric($key)): ?>
 						<?=lang($value)?>
 					<?php else: ?>
