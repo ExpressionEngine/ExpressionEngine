@@ -96,7 +96,7 @@
 				</div>
 			</fieldset>
 			<fieldset class="form-ctrls">
-				<input class="btn" type="submit" value="<?=lang('btn_send_email')?>" data-working-text="<?=lang('btn_send_email_working')?>">
+				<input class="btn" type="submit" value="<?=lang('btn_send_email')?>" data-work-text="<?=lang('btn_send_email_working')?>">
 				<input class="btn disable" type="submit" value="Fix Errors, Please">
 			</fieldset>
 		</form>
