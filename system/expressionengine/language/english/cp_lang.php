@@ -306,7 +306,7 @@ $lang = array(
 'Any',
 
 'required_fields' =>
-'Indicates required fields',
+'Required Fields',
 
 'login' =>
 'Login',
@@ -485,6 +485,9 @@ $lang = array(
 'ee_insider'					=> 'EE Insider',
 'devot_ee'						=> 'Devot-EE',
 'ee_podcast'					=> 'EE Podcast',
+
+'btn_fix_errors' =>
+'Fix Errors, Please',
 
 ''=>''
 );

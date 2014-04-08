@@ -30,7 +30,7 @@
 			</div>
 		</section>
 		<div class="overlay"></div>
-		<?php if ($message OR isset($new_checksums)): ?>
+		<?php if ((isset($message) && ! empty($message)) OR isset($new_checksums)): ?>
 			<div class="alert warn">
 				<h3>Exclamation!</h3> <!-- Need to make this dynamic -->
 				<?php if ($message): ?>

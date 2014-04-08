@@ -312,7 +312,6 @@ class Cp {
 			return;
 		}
 
-		ee()->load->library('menu');
 		ee()->view->cp_main_menu = ee()->menu->generate_menu();
 	}
 
