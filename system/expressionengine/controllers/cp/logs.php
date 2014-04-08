@@ -39,9 +39,6 @@ class Logs extends CP_Controller {
 		}
 
 		$this->load->model('tools_model');
-		$this->lang->loadfile('logs');
-
-		$this->load->vars(array('controller' => 'tools/tools_logs'));
 
 		// Sidebar Menu
 		$menu = array(
@@ -62,6 +59,56 @@ class Logs extends CP_Controller {
 
 
 		ee()->menu->register_left_nav($menu);
+
+		// Filters
+
+		$usernames = array(NULL => '-- '.lang('by_username').' --');
+		ee()->load->model('member_model');
+		$members = ee()->member_model->get_members();
+		if ($members)
+		{
+			foreach ($members->result_array() as $member)
+			{
+				$usernames[$member['member_id']] = $member['username'];
+			}
+		}
+
+		$sites = FALSE;
+		if (ee()->config->item('multiple_sites_enabled') === 'y' && ! IS_CORE)
+		{
+			$sites = array(NULL => '-- '.lang('by_site').' --');
+			$sites = array_merge($sites, ee()->session->userdata('assigned_sites'));
+		}
+
+		$dates = array(
+			NULL        => '-- '.lang('by_date').' --',
+			'86400'     => ucwords(lang('last').' 24 '.lang('hours')),
+			'604800'    => ucwords(lang('last').' 7 '.lang('days')),
+			'2592000'   => ucwords(lang('last').' 30 '.lang('days')),
+			'15552000'  => ucwords(lang('last').' 180 '.lang('days')),
+			'31536000'  => ucwords(lang('last').' 365 '.lang('days')),
+			'cdr'       => lang('custom_date_range')
+		);
+
+		$limits = array(
+			NULL  => '-- '.lang('limit_by').' --',
+			'25'  => '25 '.lang('results'),
+			'50'  => '50 '.lang('results'),
+			'75'  => '75 '.lang('results'),
+			'100' => '100 '.lang('results'),
+			'150' => '150 '.lang('results')
+		);
+
+		$filters = array();
+
+		$filters[] = form_dropdown('filter_by_username', $usernames);
+		if ($sites) {
+			$filters[] = form_dropdown('filter_by_site', $sites);
+		}
+		$filters[] = form_dropdown('filter_by_date', $dates);
+		$filters[] = form_dropdown('limit', $limits, $this->perpage);
+
+		$this->view->filters = $filters;
 	}
 
 	// --------------------------------------------------------------------

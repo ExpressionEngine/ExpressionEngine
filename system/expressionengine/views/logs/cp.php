@@ -9,33 +9,15 @@
 			</fieldset>
 			<h1><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h1>
 			<fieldset class="tbl-filter">
-				<select>
-					<option>-- by username --</option>
-					<option>[username]</option>
-					<option>[username]</option>
-				</select>
-				<select>
-					<option>-- by site --</option>
-					<option>[site_name]</option>
-					<option>[site_name]</option>
-				</select>
-				<select>
-					<option>-- by date --</option>
-					<option>Last 24 hours</option>
-					<option>Last 7 days</option>
-					<option>Last 30 Days</option>
-					<option>Last 180 Days</option>
-					<option>Last 365 Days</option>
-					<option>Custom Date Range</option>
-				</select>
-				<select>
-					<option>-- limit by --</option>
-					<option>25 results</option>
-					<option>50 results</option>
-					<option>75 results</option>
-					<option>100 results</option>
-					<option>150 results</option>
-				</select>
+				<?php
+				if (isset($filters) && is_array($filters))
+				{
+					foreach ($filters as $filter)
+					{
+						echo $filter;
+					}
+				}
+				?>
 			</fieldset>
 			<section class="item-wrap log">
 				<?php if (empty($rows)): ?>
