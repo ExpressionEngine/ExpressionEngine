@@ -2222,7 +2222,7 @@ class EE_Template {
 			The character(s) used to designate a template as "hidden"
 		/* -------------------------------------------*/
 
-		$hidden_indicator = (ee()->config->item('hidden_template_indicator') === FALSE) ? '.' : ee()->config->item('hidden_template_indicator');
+		$hidden_indicator = (ee()->config->item('hidden_template_indicator') === FALSE) ? '_' : ee()->config->item('hidden_template_indicator');
 
 		if ($this->depth == 0
 			AND substr($template, 0, 1) == $hidden_indicator

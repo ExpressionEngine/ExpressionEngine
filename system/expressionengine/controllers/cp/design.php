@@ -3484,7 +3484,7 @@ class Design extends CP_Controller {
 
 		$vars['member_groups'] = $this->_get_member_array();
 
-		$hidden_indicator = ($this->config->item('hidden_template_indicator') != '') ? $this->config->item('hidden_template_indicator') : '.';
+		$hidden_indicator = ($this->config->item('hidden_template_indicator') != '') ? $this->config->item('hidden_template_indicator') : '_';
 		$hidden_indicator_length = strlen($hidden_indicator);
 
 		$query = $this->design_model->fetch_templates();
