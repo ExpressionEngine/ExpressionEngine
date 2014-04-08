@@ -49,8 +49,9 @@ class EE_Menu {
 	{
 		$menu = array();
 
-		$menu['sites'] = $this->_site_menu();
+		$menu['sites']    = $this->_site_menu();
 		$menu['channels'] = $this->_channels_menu();
+		$menu['develop']  = $this->_develop_menu();
 
 		// CP-TODO: Add back cp_menu_array hook?
 
@@ -129,6 +130,32 @@ class EE_Menu {
 				// Edit link
 				$menu['edit'][$channel->channel_title] = cp_url('content_edit', array('channel_id' => $channel->channel_id));
 			}
+		}
+
+		return $menu;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Fetch the develop menu
+	 *
+	 * @access	private
+	 * @return	array
+	 */
+	private function _develop_menu()
+	{
+		$menu = array(
+			'channel_manager'  => cp_url('channel'),
+			'template_manager' => cp_url('design'),
+			'addon_manager'    => cp_url('design'),
+			'utilities'        => cp_url('utilities'),
+			'logs'             => cp_url('logs')
+		);
+
+		if ( ! ee()->cp->allowed_group('can_access_logs'))
+		{
+			unset($menu['logs']);
 		}
 
 		return $menu;

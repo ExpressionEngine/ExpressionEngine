@@ -191,6 +191,16 @@ $lang = array(
 'nav_add_tab'					=> '+ Add',
 
 //----------------------------
+// Develop Menu
+//----------------------------
+
+'channel_manager'  => 'Channel Manager',
+'template_manager' => 'Template Manager',
+'addon_manager'    => 'Add-On Manager',
+'utilities'        => 'Utilities',
+'logs'             => 'Logs',
+
+//----------------------------
 // Control Panel
 //----------------------------
 

@@ -57,8 +57,7 @@
 						<a class="has-sub" href="">Create <span class="ico sub-arrow"></span></a>
 						<div class="sub-menu">
 							<ul>
-								<?php foreach ($cp_main_menu['channels'][
-								'create'] as $channel_name => $link): ?>
+								<?php foreach ($cp_main_menu['channels']['create'] as $channel_name => $link): ?>
 									<li><a href="<?=$link?>"><?=$channel_name?></a></li>
 								<?php endforeach ?>
 								<li class="last"><a class="add" href="http://localhost/el-projects/ee-cp/views/channel-new.php">&#10010; New Channel</a></li>
@@ -69,8 +68,7 @@
 						<a class="has-sub" href="">Edit <span class="ico sub-arrow"></span></a>
 						<div class="sub-menu">
 							<ul>
-								<?php foreach ($cp_main_menu['channels'][
-								'edit'] as $channel_name => $link): ?>
+								<?php foreach ($cp_main_menu['channels']['edit'] as $channel_name => $link): ?>
 									<li><a href="<?=$link?>"><?=$channel_name?></a></li>
 								<?php endforeach ?>
 							</ul>
@@ -85,11 +83,20 @@
 						<a class="has-sub" href=""><b class="ico develop"></b> <span class="ico sub-arrow"></span> <!-- Develop --></a>
 						<div class="sub-menu">
 							<ul>
-								<li><a href="http://localhost/el-projects/ee-cp/views/channel.php">Channel Manager</a></li>
-								<li><a href="http://localhost/el-projects/ee-cp/views/design.php">Template Manager</a></li>
-								<li><a href="http://localhost/el-projects/ee-cp/views/settings-addons.php">Add-On Manager</a></li>
-								<li><a href="http://localhost/el-projects/ee-cp/views/utility-communicate.php">Utilities</a></li>
-								<li class="last"><a href="http://localhost/el-projects/ee-cp/views/logs.php">Logs</a></li>
+								<?php
+								// Grab the first and last items from the menu to determine
+								// which items we need to put 'last' classes on
+								$last = array_values(array_slice($cp_main_menu['develop'], -1, 1));
+
+								foreach ($cp_main_menu['develop'] as $key => $link):
+									$class = '';
+									if ($link == $last[0])
+									{
+										$class = 'last';
+									}
+								?>
+									<li<?php if ( ! empty($class)): ?> class="<?=$class?>"<?php endif; ?>><a href="<?=$link?>"><?=lang($key)?></a></li>
+								<?php endforeach ?>
 							</ul>
 						</div>
 					</li>
