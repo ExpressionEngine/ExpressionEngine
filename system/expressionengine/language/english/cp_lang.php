@@ -398,6 +398,12 @@ $lang = array(
 'ip_address' =>
 'IP Address',
 
+'ip' =>
+'IP',
+
+'internet_protocol' =>
+'Internet Protocol',
+
 'date' =>
 'Date',
 
@@ -446,6 +452,13 @@ $lang = array(
 'select_all'					=> 'Select All',
 
 'name'							=> 'Name',
+
+'by_username'					=> 'by username',
+'by_site'						=> 'by site',
+'by_date'						=> 'by date',
+'custom_date_range'				=> 'Custom Date Range',
+'limit_by'						=> 'limit by',
+'type_phrase'					=> 'type phrase...',
 
 //----------------------------
 // Sites and Channels

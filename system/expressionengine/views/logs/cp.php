@@ -4,8 +4,8 @@
 	<div class="box">
 		<form class="tbl-ctrls">
 			<fieldset class="tbl-search right">
-				<input placeholder="type phrase..." type="text" value="">
-				<input class="btn submit" type="submit" value="search logs">
+				<input placeholder="<?=lang('type_phrase')?>" type="text" value="">
+				<input class="btn submit" type="submit" value="<?=lang('search_logs_button')?>">
 			</fieldset>
 			<h1><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h1>
 			<fieldset class="tbl-filter">
@@ -47,7 +47,7 @@
 						<ul class="toolbar">
 							<li class="solo remove"><a href="http://localhost/el-projects/ee-cp/views/" title="remove"></a></li>
 						</ul>
-						<h3><b>Date logged:</b> <?=$row['act_date']?>, <b>Site:</b> <?=$row['site_label']?><br><b>Username:</b> <?=$row['username']?>, <b><abbr title="Internet Protocol">IP</abbr>:</b> <?=$row['ip_address']?></h3>
+						<h3><b><?=lang('date_logged')?>:</b> <?=$row['act_date']?>, <b><?=lang('site')?>:</b> <?=$row['site_label']?><br><b><?=lang('username')?>:</b> <?=$row['username']?>, <b><abbr title="<?=lang('internet_protocol')?>"><?=lang('ip')?></abbr>:</b> <?=$row['ip_address']?></h3>
 						<div class="message">
 							<p><?=$row['action']?></p>
 						</div>

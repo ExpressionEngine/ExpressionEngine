@@ -26,6 +26,10 @@ $lang = array(
 'searched_in' 			=> 'Searched In',
 'search_terms' 			=> 'Search Terms',
 
+'search_logs_button'	=> 'search logs',
+
+'date_logged'			=> 'Date logged',
+
 /* Developer Log */
 'log_id'				=> 'Log ID',
 'log_message'			=> 'Message',
