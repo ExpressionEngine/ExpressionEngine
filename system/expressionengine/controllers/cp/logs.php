@@ -22,7 +22,7 @@
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Tools_logs extends CP_Controller {
+class Logs extends CP_Controller {
 
 	var $perpage		= 50;
 
@@ -33,15 +33,30 @@ class Tools_logs extends CP_Controller {
 	{
 		parent::__construct();
 
-		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_logs'))
+		if ( ! $this->cp->allowed_group('can_access_logs'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
 
 		$this->load->model('tools_model');
-		$this->lang->loadfile('tools');
+		$this->lang->loadfile('logs');
 
 		$this->load->vars(array('controller' => 'tools/tools_logs'));
+
+		// Sidebar Menu
+		$menu = array();
+
+		if (ee()->session->userdata('group_id') == 1)
+		{
+			$menu['developer_log'] = cp_url('logs/developer');
+		}
+
+		$menu['cp_log'] = cp_url('logs/cp');
+		$menu['throttle_log'] = cp_url('logs/throttle');
+		$menu['email_log'] = cp_url('logs/email');
+		$menu['search_log'] = cp_url('logs/search');
+
+		ee()->menu->register_left_nav(array('logs', $menu));
 	}
 
 	// --------------------------------------------------------------------
@@ -77,14 +92,9 @@ class Tools_logs extends CP_Controller {
 	 */
 	function cp()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_logs'))
-		{
-			show_error(lang('unauthorized_access'));
-		}
-
 		$this->load->library('table');
 
-		$this->table->set_base_url('C=tools_logs'.AMP.'M=view_cp_log');
+		$this->table->set_base_url(cp_url('logs/cp'));
 		$this->table->set_columns(array(
 			'member_id'		=> array('html' => FALSE),
 			'username'		=> array(),
@@ -107,13 +117,7 @@ class Tools_logs extends CP_Controller {
 
 		$this->view->cp_page_title = lang('view_cp_log');
 
-		// a bit of a breadcrumb override is needed
-		$this->view->cp_breadcrumbs = array(
-			BASE.AMP.'C=tools' => lang('tools'),
-			BASE.AMP.'C=tools_logs'=> lang('tools_logs')
-		);
-
-		$this->cp->render('tools/view_cp_log', $vars);
+		$this->cp->render('logs/cp', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -137,7 +141,7 @@ class Tools_logs extends CP_Controller {
 		{
 			$rows[] = array(
 				'member_id'	 => $log['member_id'],
-				'username'	 => "<strong><a href='".BASE.AMP.'C=myaccount'.AMP.'id='.$log['member_id']."'>{$log['username']}</a></strong>",
+				'username'	 => "<a href='".cp_url('myaccount', array('id' => $log['member_id']))."'>{$log['username']}</a>",
 				'ip_address' => $log['ip_address'],
 				'act_date'	 => $this->localize->human_time($log['act_date']),
 				'site_label' => $log['site_label'],
