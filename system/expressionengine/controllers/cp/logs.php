@@ -74,15 +74,12 @@ class Logs extends CP_Controller {
 	 */
 	function index()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_logs'))
+		if (ee()->session->userdata('group_id') == 1)
 		{
-			show_error(lang('unauthorized_access'));
+			$this->developer();
 		}
 
-		$this->cp->set_breadcrumb(BASE.AMP.'C=tools', lang('tools'));
-
-		$this->view->cp_page_title = lang('tools_logs');
-		$this->cp->render('_shared/overview');
+		$this->cp();
 	}
 
 	// --------------------------------------------------------------------
@@ -516,7 +513,7 @@ class Logs extends CP_Controller {
 	 * @access public
 	 * @return void
 	 */
-	function view_developer_log()
+	function developer()
 	{
 		if ($this->session->userdata('group_id') != 1)
 		{
