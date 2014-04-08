@@ -94,7 +94,7 @@ class EE_Relationship_data_parser {
 		}
 
 		ee()->load->library('api');
-		ee()->api->instantiate('channel_fields');
+		ee()->legacy_api->instantiate('channel_fields');
 
 		foreach ($node->children() as $child)
 		{

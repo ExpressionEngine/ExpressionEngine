@@ -110,7 +110,7 @@ class EE_content_types {
 	private function _notify_fieldtypes($fn, $param)
 	{
 		ee()->load->library('api');
-		ee()->api->instantiate('channel_fields');
+		ee()->legacy_api->instantiate('channel_fields');
 		$ft_api = ee()->api_channel_fields;
 
 		$fts = $ft_api->fetch_installed_fieldtypes();

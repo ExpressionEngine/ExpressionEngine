@@ -435,7 +435,7 @@ class CI_DB_odbc_driver extends CI_DB {
 	 * @param	string
 	 * @return	string
 	 */
-	function _escape_identifiers($item)
+	function escape_identifiers($item)
 	{
 		if ($this->_escape_char == '')
 		{

@@ -1592,7 +1592,7 @@ class Simple_commerce_mcp {
 		$channel_array	= array();
 		$status_array = array();
 
-		ee()->api->instantiate('channel_categories');
+		ee()->legacy_api->instantiate('channel_categories');
 
 		$allowed_channels = ee()->functions->fetch_assigned_channels(TRUE);
 
@@ -1825,7 +1825,7 @@ MAGIC;
 		ee()->load->library('pagination');
 		ee()->load->library('table');
 		ee()->load->helper(array('form', 'text', 'url', 'snippets'));
-		ee()->api->instantiate('channel_categories');
+		ee()->legacy_api->instantiate('channel_categories');
 
 		ee()->load->model('channel_model');
 		ee()->load->model('channel_entries_model');

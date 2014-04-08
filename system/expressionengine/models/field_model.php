@@ -208,7 +208,7 @@ class Field_model extends CI_Model {
 	function _remove_fields($results)
 	{
 		$this->load->library('api');
-		$this->api->instantiate('channel_fields');
+		$this->legacy_api->instantiate('channel_fields');
 		$this->api_channel_fields->fetch_all_fieldtypes();
 
 		$rel_ids = array();

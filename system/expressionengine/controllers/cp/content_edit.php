@@ -75,7 +75,7 @@ class Content_edit extends CP_Controller {
 		// Fetch channels
 		// ----------------------------------------------------------------
 
-		$this->api->instantiate('channel_structure');
+		$this->legacy_api->instantiate('channel_structure');
 		$channel_q = $this->api_channel_structure->get_channels();
 
 		$channels = array();
@@ -1207,7 +1207,7 @@ class Content_edit extends CP_Controller {
 			show_error(lang('no_category_group_match'));
 		}
 
-		$this->api->instantiate('channel_categories');
+		$this->legacy_api->instantiate('channel_categories');
 		$this->api_channel_categories->category_tree(($cat_group = implode('|', $valid_cats)));
 		//print_r($this->api_channel_categories->categories);
 		$vars['cats'] = array();
@@ -1284,7 +1284,7 @@ class Content_edit extends CP_Controller {
 		// We do this first so we can destroy the category index from
 		// the $_POST array since we use a separate table to store categories in
 
-		$this->api->instantiate('channel_categories');
+		$this->legacy_api->instantiate('channel_categories');
 
 		foreach ($_POST['category'] as $cat_id)
 		{
@@ -1486,7 +1486,7 @@ class Content_edit extends CP_Controller {
 		/*
 		/* -------------------------------------------*/
 
-		$this->api->instantiate('channel_entries');
+		$this->legacy_api->instantiate('channel_entries');
 		$res = $this->api_channel_entries->delete_entry($this->input->post('delete'));
 
 		if ($res === FALSE)
@@ -1519,12 +1519,12 @@ class Content_edit extends CP_Controller {
 		$channel_array	= array();
 		$status_array = array();
 
-		$this->api->instantiate('channel_categories');
+		$this->legacy_api->instantiate('channel_categories');
 
 		if (count($this->allowed_channels) > 0)
 		{
 			// Fetch channel titles
-			$this->api->instantiate('channel_structure');
+			$this->legacy_api->instantiate('channel_structure');
 			$channel_q = $this->api_channel_structure->get_channels();
 
 			foreach ($channel_q->result_array() as $row)
@@ -1676,7 +1676,7 @@ class Content_edit extends CP_Controller {
 		// ----------------------------------------------------------------
 
 		// We need this for the filter, so grab it now
-		$this->api->instantiate('channel_categories');
+		$this->legacy_api->instantiate('channel_categories');
 		$cat_form_array = $this->api_channel_categories->category_form_tree($this->nest_categories);
 
 		$total_channels = count($this->allowed_channels);
