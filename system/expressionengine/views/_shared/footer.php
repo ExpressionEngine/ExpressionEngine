@@ -30,12 +30,18 @@
 			</div>
 		</section>
 		<div class="overlay"></div>
-		<?php if ((isset($message) && ! empty($message)) OR isset($new_checksums)): ?>
-			<div class="alert warn">
-				<h3>Exclamation!</h3> <!-- Need to make this dynamic -->
-				<?php if ($message): ?>
+
+		<?php if ( ! empty($cp_messages) OR isset($new_checksums)):
+			$class = array_keys($cp_messages);
+			$class = $class[0]; ?>
+			<div class="alert <?=$class?>">
+				<h3><?=lang('cp_message_'.$class);?></h3> <!-- Need to make this dynamic -->
+				<?php foreach ($cp_messages as $key => $message): ?>
 					<p><?=$message?></p>
-				<?php endif; ?>
+					<?php if ($message != end($cp_messages)): ?>
+						<hr>
+					<?php endif;
+				endforeach ?>
 				<?php // Bootstrap Checksum Failure Notice - this probably needs styles from james?>
 				<?php if (isset($new_checksums)):?>
 					<ul id="checksumFailure">
@@ -54,6 +60,7 @@
 				<a class="close" href=""></a>
 			</div>
 		<?php endif ?>
+
 		<?=ee()->view->script_tag('jquery/jquery.js')?>
 		<?=ee()->view->script_tag('v3/cmon-ck.js')?>
 		<?php

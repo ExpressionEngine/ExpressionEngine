@@ -106,11 +106,10 @@ class Cp {
 
 		$cp_messages = array();
 
-		foreach (array('message_success', 'message_notice', 'message_error', 'message_failure') as $flash_key)
+		foreach (array('success', 'warn', 'issue') as $flash_key)
 		{
 			if ($message = ee()->session->flashdata($flash_key))
 			{
-				$flash_key = ($flash_key == 'message_failure') ? 'error' : substr($flash_key, 8);
 				$cp_messages[$flash_key] = $message;
 			}
 		}

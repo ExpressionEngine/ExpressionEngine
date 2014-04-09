@@ -165,19 +165,21 @@ class Utilities extends CP_Controller {
 	 */
 	public function clear_caches()
 	{
-		/*$vars['cleared'] = FALSE;
-
-		if (isset($_POST['type']))
+		if (ee()->input->post('cache_type'))
 		{
-			$this->functions->clear_caching($_POST['type'], '');
-			$this->session->set_flashdata('message_success', lang('cache_deleted'));
-			$this->functions->redirect(BASE.AMP.'C=tools_data'.AMP.'M=clear_caching');
+			foreach (ee()->input->post('cache_type') as $type)
+			{
+				ee()->functions->clear_caching($type);
+			}
+
+			ee()->session->set_flashdata('success', lang('caches_cleared'));
+		}
+		else
+		{
+			ee()->session->set_flashdata('issue', lang('caches_cleared_error'));
 		}
 
-		$this->view->cp_page_title = lang('clear_caching');
-
-		ee()->view->cp_page_title = lang('cache_manager');
-		ee()->cp->render('utility/cache');*/
+		ee()->functions->redirect(cp_url('utilities/cache'));
 	}
 }
 

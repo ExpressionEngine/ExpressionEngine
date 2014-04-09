@@ -499,6 +499,15 @@ $lang = array(
 'btn_fix_errors' =>
 'Fix Errors, Please',
 
+'cp_message_success' =>
+'Action was a success',
+
+'cp_message_warn' =>
+'Warning',
+
+'cp_message_issue' =>
+'An error occurred',
+
 ''=>''
 );
 

@@ -3,7 +3,7 @@
 <div class="col w-12 last">
 	<div class="box">
 		<h1><?=$cp_page_title?></h1>
-		<?=form_open(cp_url('utility/clear_caching'), 'class="settings"')?>
+		<?=form_open(cp_url('utilities/clear_caches'), 'class="settings"')?>
 			<fieldset class="col-group last">
 				<div class="setting-txt col w-8">
 					<h3><?=lang('caches_to_clear')?></h3>
@@ -11,16 +11,16 @@
 				</div>
 				<div class="setting-field col w-8 last">
 					<label class="choice block">
-						<input type="checkbox" value="page"> <?=lang('templates')?>
+						<input type="checkbox" name="cache_type" value="page"> <?=lang('templates')?>
 					</label>
 					<label class="choice block">
-						<input type="checkbox" value="tag"> <?=lang('tags')?>
+						<input type="checkbox" name="cache_type" value="tag"> <?=lang('tags')?>
 					</label>
 					<label class="choice block">
-						<input type="checkbox" value="db"> <?=lang('database')?>
+						<input type="checkbox" name="cache_type" value="db"> <?=lang('database')?>
 					</label>
 					<label class="choice block chosen">
-						<input type="checkbox" value="all" checked="checked"> <?=lang('all')?>
+						<input type="checkbox" name="cache_type" value="all" checked="checked"> <?=lang('all')?>
 					</label>
 				</div>
 			</fieldset>

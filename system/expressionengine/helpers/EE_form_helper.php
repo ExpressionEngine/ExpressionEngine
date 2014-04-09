@@ -47,7 +47,7 @@ if (REQ == 'CP')
 
 		if (strpos($action, '://') === FALSE && strpos($action, BASE) !== 0)
 		{
-			$action = BASE.AMP.$action;
+			//$action = BASE.AMP.$action;
 		}
 
 		$action = ee()->uri->reformat($action);
