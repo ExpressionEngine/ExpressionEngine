@@ -188,7 +188,8 @@ class Cp {
 			'session_idle'		=> lang('session_idle')
 		);
 
-		ee()->load->library('pings');
+		require_once(APPPATH.'libraries/Pings'.EXT);
+		$pings = new Pings();
 
 		ee()->javascript->set_global(array(
 			'BASE'				=> str_replace(AMP, '&', BASE),
@@ -197,7 +198,7 @@ class Cp {
 			'PATH_CP_GBL_IMG'	=> PATH_CP_GBL_IMG,
 			'CP_SIDEBAR_STATE'	=> ee()->session->userdata('show_sidebar'),
 			'username'			=> ee()->session->userdata('username'),
-			'registered'		=> ee()->pings->is_registered(),
+			'registered'		=> $pings->is_registered(),
 			'router_class'		=> ee()->router->class, // advanced css
 			'lang'				=> $js_lang_keys,
 			'THEME_URL'			=> $this->cp_theme_url,
