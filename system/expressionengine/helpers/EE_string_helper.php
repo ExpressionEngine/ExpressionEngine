@@ -65,6 +65,30 @@ function trim_nbs($string)
 
 // ----------------------------------------------------------------------------
 
+
+/**
+ * Validates format of submitted license number, for soft validation
+ *
+ * @param string	$license	the string to run the pattern check on
+ * @return bool		TRUE on pattern math, FALSE on failure
+ **/
+function valid_license_pattern($license)
+{
+	if (IS_CORE && $license == 'CORE LICENSE')
+	{
+		return TRUE;
+	}
+
+	if ( ! preg_match('/^[\d]{4}-[\d]{4}-[\d]{4}-[\d]{4}$/', $license))
+	{
+		return FALSE;
+	}
+
+	return TRUE;
+}
+
+// ----------------------------------------------------------------------------
+
 /**
  * Returns the surrounding character of a string, if it exists
  *

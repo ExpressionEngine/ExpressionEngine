@@ -249,16 +249,13 @@ class Admin_system extends CP_Controller {
 	 *
 	 * @return vool
 	 **/
-	public function _valid_license_number($license)
+	public function _valid_license_pattern($license)
 	{
-		if (IS_CORE && $license == 'CORE LICENSE')
-		{
-			return TRUE;
-		}
+		$valid_pattern = valid_license_pattern($license);
 
-		if ( ! preg_match('/^[\d]{4}-[\d]{4}-[\d]{4}-[\d]{4}$/', $license))
+		if ( ! $valid_pattern)
 		{
-			$this->form_validation->set_message('_valid_license_number', lang('invalid_license_number'));
+			$this->form_validation->set_message('_valid_license_pattern', lang('invalid_license_number'));
 			return FALSE;
 		}
 

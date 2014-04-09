@@ -877,7 +877,7 @@ PAPAYA;
 			$errors[] = $this->lang->line('password_no_match');
 		}
 
-		if ( ! $this->_valid_license_number($this->userdata['license_number']))
+		if ( ! valid_license_pattern($this->userdata['license_number']))
 		{
 			$errors[] = $this->lang->line('invalid_license_number');
 		}
@@ -1134,28 +1134,6 @@ PAPAYA;
 
 		// Woo hoo! Success!
 		$this->_set_output('install_success', $vars);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Validates format of submitted license number
-	 *
-	 * @return vool
-	 **/
-	private function _valid_license_number($license)
-	{
-		if (IS_CORE && $license == 'CORE LICENSE')
-		{
-			return TRUE;
-		}
-
-		if ( ! preg_match('/^[\d]{4}-[\d]{4}-[\d]{4}-[\d]{4}$/', $license))
-		{
-			return FALSE;
-		}
-
-		return TRUE;
 	}
 
 	// --------------------------------------------------------------------

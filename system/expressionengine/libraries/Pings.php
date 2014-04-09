@@ -57,15 +57,8 @@ class Pings {
 
 				if ( ! $registration = $this->_do_ping('http://ping.ellislab.com/register.php', $payload))
 				{
-					// hard fail only when no valid license is entered
-					if (ee()->config->item('license_number') == '')
-					{
-						return FALSE;
-					}
-
 					// save the failed request for a day only
 					ee()->cache->save('software_registration', ee()->config->item('license_number'), 60*60*24, Cache::GLOBAL_SCOPE);
-					return TRUE;
 				}
 				else
 				{
@@ -82,6 +75,12 @@ class Pings {
 				}
 
 			}
+		}
+
+		// hard fail only when no valid license is entered or it doesn't even match a valid pattern
+		if (ee()->config->item('license_number') == '' OR ! valid_license_pattern(ee()->config->item('license_number')))
+		{
+			return FALSE;
 		}
 
 		return TRUE;

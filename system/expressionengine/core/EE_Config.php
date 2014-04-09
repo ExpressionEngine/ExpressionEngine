@@ -1287,7 +1287,7 @@ class EE_Config Extends CI_Config {
 
 			'software_license'	=> array(
 				'ellislab_username'			=> array('i', '', 'required'),
-				'license_number'			=> array('i', '', 'callback__valid_license_number')
+				'license_number'			=> array('i', '', 'callback__valid_license_pattern')
 			),
 
 			'throttling_cfg'	=>	array(
