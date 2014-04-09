@@ -24,6 +24,6 @@
  */
 
 $lang = array(
-	"spam_module_name" 			=> 'Spam',
-	"spam_module_description" 	=> 'Spam filter for comments and forum posts'
+	"spam_module_name" => 'Spam',
+	"spam_module_description" => 'Spam filter for comments and forum posts'
 );

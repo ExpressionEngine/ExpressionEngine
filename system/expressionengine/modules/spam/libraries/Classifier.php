@@ -23,9 +23,9 @@
  * @link		http://ellislab.com
  */
 
-include('Vectorize.php');
-include('Expectation.php');
-include('Distribution.php');
+require_once('Vectorize.php');
+require_once('Expectation.php');
+require_once('Distribution.php');
 
 class Classifier {
 
