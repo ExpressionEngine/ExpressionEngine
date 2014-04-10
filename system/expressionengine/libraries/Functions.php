@@ -2569,6 +2569,10 @@ class EE_Functions {
 			$full_conditional = str_replace($variable_texts, $variable_placeholders, $full_conditional);
 
 			$str = substr_replace($str, $full_conditional, $start, $end - $start);
+
+			$new_length = strlen($str);
+			$i = $i + ($new_length - $l);
+			$l = $new_length;
 		}
 
 		if (count($variables))
