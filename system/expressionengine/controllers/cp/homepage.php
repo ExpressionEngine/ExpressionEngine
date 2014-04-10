@@ -275,8 +275,8 @@ class Homepage extends CP_Controller {
 	{
 		$download_url = $this->cp->masked_url('https://store.ellislab.com/manage');
 
-		$this->load->library('pings');
-		$version_file = ee()->pings->get_version_info();
+		$this->load->library('el_pings');
+		$version_file = ee()->el_pings->get_version_info();
 
 		if ( ! $version_file)
 		{
