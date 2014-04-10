@@ -5,7 +5,7 @@
 	<?php if ($message != ''):?>
 		<div class="alert inline <?=$message_status?>"><p><b>!!</b> <?=$message?></p></div>
 	<?php endif;?>
-	<?=form_open('C=login'.AMP.'M=authenticate', array(), array('return_path' => $return_path))?>
+	<?=form_open(cp_url('login/authenticate'), array(), array('return_path' => $return_path))?>
 		<fieldset>
 			<?=lang('username', 'username')?>
 			<?=form_input(array('dir' => 'ltr', 'name' => "username", 'id' => "username", 'value' => $username, 'maxlength' => 50))?>

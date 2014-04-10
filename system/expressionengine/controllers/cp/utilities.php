@@ -22,7 +22,7 @@
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Utility extends CP_Controller {
+class Utilities extends CP_Controller {
 
 	/**
 	 * Constructor
@@ -33,27 +33,27 @@ class Utility extends CP_Controller {
 
 		// Register our menu
 		ee()->menu->register_left_nav(array(
-			'communicate' => cp_url('utility/communicate'),
+			'communicate' => cp_url('utilities/communicate'),
 			'cp_translation',
 			array(
 				// Show installed languages?
-				'English (Default)' => cp_url('utility/communicate')
+				'English (Default)' => cp_url('utilities/communicate')
 			),
-			'php_info' => cp_url('utility/php'),
+			'php_info' => cp_url('utilities/php'),
 			'import_tools',
 			array(
-				'file_converter' => cp_url('utility/import-converter'),
-				'member_import' => cp_url('utility/member-import')
+				'file_converter' => cp_url('utilities/import-converter'),
+				'member_import' => cp_url('utilities/member-import')
 			),
-			'sql_manager' => cp_url('utility/sql'),
+			'sql_manager' => cp_url('utilities/sql'),
 			array(
-				'query_form' => cp_url('utility/query')
+				'query_form' => cp_url('utilities/query')
 			),
 			'data_operations',
 			array(
-				'cache_manager' => cp_url('utility/cache'),
-				'statistics' => cp_url('utility/stats'),
-				'search_and_replace' => cp_url('utility/sandr')
+				'cache_manager' => cp_url('utilities/cache'),
+				'statistics' => cp_url('utilities/stats'),
+				'search_and_replace' => cp_url('utilities/sandr')
 			)
 		));
 	}
@@ -83,7 +83,7 @@ class Utility extends CP_Controller {
 	public function communicate()
 	{
 		ee()->view->cp_page_title = lang('communicate');
-		ee()->cp->render('utility/communicate');
+		ee()->cp->render('utilities/communicate');
 	}
 
 	// --------------------------------------------------------------------
@@ -133,7 +133,53 @@ class Utility extends CP_Controller {
 		ee()->view->page_title = sprintf(lang('php_info_title'), phpversion());
 
 		ee()->cp->add_to_head($this->view->head_link('css/v3/phpinfo.css'));
-		ee()->cp->render('utility/php-info');
+		ee()->cp->render('utilities/php-info');
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Cache Manager
+	 *
+	 * @access	public
+	 * @return	void
+	 */
+	public function cache()
+	{
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_data'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		ee()->view->cp_page_title = lang('cache_manager');
+		ee()->cp->render('utilities/cache');
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * POST handler for the Cache Manager form
+	 *
+	 * @access	public
+	 * @return	void
+	 */
+	public function clear_caches()
+	{
+		if (ee()->input->post('cache_type'))
+		{
+			foreach (ee()->input->post('cache_type') as $type)
+			{
+				ee()->functions->clear_caching($type);
+			}
+
+			ee()->session->set_flashdata('success', lang('caches_cleared'));
+		}
+		else
+		{
+			ee()->session->set_flashdata('issue', lang('caches_cleared_error'));
+		}
+
+		ee()->functions->redirect(cp_url('utilities/cache'));
 	}
 }
 
