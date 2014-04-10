@@ -62,7 +62,7 @@ class Logs extends CP_Controller {
 
 		// Filters
 
-		$usernames = array(NULL => '-- '.lang('by_username').' --');
+		$usernames = array('' => '-- '.lang('by_username').' --');
 		ee()->load->model('member_model');
 		$members = ee()->member_model->get_members();
 		if ($members)
@@ -76,22 +76,21 @@ class Logs extends CP_Controller {
 		$sites = FALSE;
 		if (ee()->config->item('multiple_sites_enabled') === 'y' && ! IS_CORE)
 		{
-			$sites = array(NULL => '-- '.lang('by_site').' --');
+			$sites = array('' => '-- '.lang('by_site').' --');
 			$sites = array_merge($sites, ee()->session->userdata('assigned_sites'));
 		}
 
 		$dates = array(
-			NULL        => '-- '.lang('by_date').' --',
+			''          => '-- '.lang('by_date').' --',
 			'86400'     => ucwords(lang('last').' 24 '.lang('hours')),
 			'604800'    => ucwords(lang('last').' 7 '.lang('days')),
 			'2592000'   => ucwords(lang('last').' 30 '.lang('days')),
 			'15552000'  => ucwords(lang('last').' 180 '.lang('days')),
 			'31536000'  => ucwords(lang('last').' 365 '.lang('days')),
-			'cdr'       => lang('custom_date_range')
 		);
 
 		$limits = array(
-			NULL  => '-- '.lang('limit_by').' --',
+			''    => '-- '.lang('limit_by').' --',
 			'25'  => '25 '.lang('results'),
 			'50'  => '50 '.lang('results'),
 			'75'  => '75 '.lang('results'),
