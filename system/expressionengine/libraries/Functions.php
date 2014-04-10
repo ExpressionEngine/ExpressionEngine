@@ -2428,6 +2428,7 @@ class EE_Functions {
 
 		$var_count = 0;
 		$variables = array();
+		$variable_texts = array();
 		$variable_placeholders = array();
 
 		// We use a finite state machine to walk through
@@ -2482,8 +2483,6 @@ class EE_Functions {
 			{
 				return FALSE;
 			}
-
-			$variable_texts = array();
 
 			$start  = $i;
 			$buffer = '';
