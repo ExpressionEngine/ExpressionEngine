@@ -70,6 +70,7 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			// tests for things that should not be parsed as conditionals
 			$this->conditionals(),
 			$this->notConditionals(),
+			$this->multipleConditionals(),
 
 			// plain tests don't use variables
 			$this->plainComparisonTests(),
@@ -131,6 +132,15 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 		return array(
 			array('Just a Variable',	'{iffy}',	'{iffy}'),
 			array('Too Many Spaces',	'{ if }',	'{ if }'),
+		);
+	}
+
+	protected function multipleConditionals()
+	{
+		return array(
+			array('Two conditionals', '{if 1 == 1}out{/if} {if 2 == 2}out{/if}', '{if 1 == 1}out{/if} {if 2 == 2}out{/if}'),
+			array('Very long string', '{if "test"}out{/if} {if "long var_a46d7cbbeb2015d076399df72e0e63791 string"}out{/if}', '{if "test"}out{/if} {if "long var_a46d7cbbeb2015d076399df72e0e63791 string"}out{/if}'),
+
 		);
 	}
 
@@ -255,7 +265,7 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			array('Protecting Carriage Returns',	"{if xyz == '\r'}out{/if}",			'{if "" == ""}out{/if}',							array('xyz' => "\r")),
 			array('Protecting Backslashes',			"{if xyz == '{$bs}{$bs}'}out{/if}",	'{if "&#92;" == "&#92;"}out{/if}',					array('xyz' => $bs)),
 			array('Allowing Escape Characters',		"{if xyz == '{$bs}''}out{/if}",		'{if "&#92;" == "&#39;"}out{/if}',					array('xyz' => $bs)),
-			array('Nested Quotes',					"{if xyz == '}great'}{/if}",		'{if "" == "&#125;great"}{/if}',					array('xyz' => '')),
+			array('Nested Braces',					"{if xyz == '}great'}{/if}",		'{if "" == "&#125;great"}{/if}',					array('xyz' => '')),
 		);
 	}
 
