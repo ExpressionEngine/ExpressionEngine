@@ -25,6 +25,7 @@ Unless you have been granted prior, written consent from EllisLab, Inc., you may
 
 *  Use the Software as the basis of a hosted blogging service, or to provide hosting services to others.
 *  Reproduce, distribute, or transfer the Software, or portions thereof, to any third party.
+*  Modify, tamper with, bypass, or in any way impede license registration routines in the Software.
 *  Sell, rent, lease, assign, or sublet the Software or portions thereof.
 *  Grant rights to any other person.
 *  Use the Software in violation of any U.S. or international law or regulation.
