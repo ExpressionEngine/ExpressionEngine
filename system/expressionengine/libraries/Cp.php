@@ -188,8 +188,8 @@ class Cp {
 			'session_idle'		=> lang('session_idle')
 		);
 
-		require_once(APPPATH.'libraries/Pings'.EXT);
-		$pings = new Pings();
+		require_once(APPPATH.'libraries/El_pings'.EXT);
+		$pings = new El_pings();
 
 		ee()->javascript->set_global(array(
 			'BASE'				=> str_replace(AMP, '&', BASE),
