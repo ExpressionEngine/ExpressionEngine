@@ -1,6 +1,6 @@
 This license is a legal agreement between you and EllisLab, Inc. for the use of ExpressionEngine (*all versions*) Software (the "Software"). By downloading any version of ExpressionEngine or any ExpressionEngine Add-ons you agree to be bound by the terms and conditions of this license. EllisLab, Inc. reserves the right to alter this agreement at any time, for any reason, without notice.
 
-Revised on: 1 May, 2013
+Revised on: 11 April, 2014
 
 EXPRESSIONENGINE INSTALLATIONS
 
