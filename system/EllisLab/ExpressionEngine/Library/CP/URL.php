@@ -23,7 +23,7 @@ class URL {
 		}
 		else
 		{
-			$this->qs = parse_str($qs);
+			parse_str(str_replace(AMP, '&', $qs), $this->qs);
 		}
 	}
 
