@@ -59,12 +59,14 @@ class URL {
 		$path = trim($this->path, '/');
 		$path = preg_replace('#^cp(/|$)#', '', $path);
 
+		$qs = $this->qs;
+
 		if ($this->session_id)
 		{
-			$this->setQueryStringVariable('S', $this->session_id);
+			$qs['S'] = $this->session_id;
 		}
 
-		$qs = http_build_query($this->qs, AMP);
+		$qs = http_build_query($qs, AMP);
 
 		$path = rtrim('?/cp/'.$path, '/');
 
