@@ -10,6 +10,10 @@ $project_base = realpath(dirname(__FILE__).'/../../').'/';
 define('BASEPATH', $project_base.'codeigniter/system/');
 define('APPPATH',  $project_base.'expressionengine/');
 
+// application constants
+define('AMP', '&amp;');
+define('SELF', 'index.php');
+
 // Minor CI annoyance
 function log_message() {}
 
