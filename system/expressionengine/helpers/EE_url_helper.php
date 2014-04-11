@@ -36,25 +36,8 @@
  */
 function cp_url($path, $qs = '')
 {
-	$path = trim($path, '/');
-	$path = preg_replace('#^cp(/|$)#', '', $path);
-
-	if (is_array($qs))
-	{
-		$qs = http_build_query($qs, AMP);
-	}
-
-	$s = ee()->session->session_id();
-
-	if ($s)
-	{
-		// Remove AMP from the beginning of the query string if it exists
-		$qs = preg_replace('#^'.AMP.'#', '', $qs.AMP.'S='.$s);
-	}
-
-	$path = rtrim('?/cp/'.$path, '/');
-
-	return SELF.$path.rtrim('?'.$qs, '?');
+	$url = new EllisLab\ExpressionEngine\Library\CP\URL($path, ee()->session->session_id(), $qs);
+	return $url->compile();
 }
 
 // ------------------------------------------------------------------------
