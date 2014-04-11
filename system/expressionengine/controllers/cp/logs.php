@@ -1,4 +1,7 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+use EllisLab\ExpressionEngine\Library\CP;
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -142,7 +145,7 @@ class Logs extends CP_Controller {
 	{
 		$this->load->library('table');
 
-		$this->table->set_base_url(cp_url('logs/cp'));
+		$this->table->set_base_url(new CP\URL('logs/cp', ee()->session->session_id()));
 		$this->table->set_columns(array(
 			'member_id'		=> array('html' => FALSE),
 			'username'		=> array(),

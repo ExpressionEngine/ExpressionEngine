@@ -40,17 +40,23 @@
 
 				<div class="paginate">
 					<ul>
-						<li><a href="">First</a></li>
-						<li><a href="">Prev</a></li>
+						<li><a href="<?=$pagination['first_page'][0]['pagination_url']?>"><?=lang('first')?></a></li>
+						<?php if ( ! empty($pagination['previous_page'][0])): ?>
+						<li><a href="<?=$pagination['previous_page'][0]['pagination_url']?>"><?=lang('prev')?></a></li>
+						<?php endif;?>
 
-						<li><a href="">1</a></li>
-						<li><a class="act" href="">2</a></li>
-						<li><a href="">3</a></li>
+						<?php foreach ($pagination['page'] as $page): ?>
+						<li><a<?php if($page['current_page']): ?> class="act"<?php endif; ?> href="<?=$page['pagination_url']?>"><?=$page['pagination_page_number']?></a></li>
+						<?php endforeach; ?>
 
-						<li><a href="">Next</a></li>
-						<li><a class="last" href="">Last</a></li>
+						<?php if ( ! empty($pagination['next_page'][0])): ?>
+						<li><a href="<?=$pagination['next_page'][0]['pagination_url']?>"><?=lang('next')?></a></li>
+						<?php endif;?>
+						<li><a class="last" href="<?=$pagination['last_page'][0]['pagination_url']?>"><?=lang('last')?></a></li>
 					</ul>
 				</div>
+
+
 				<fieldset class="tbl-bulk-act">
 					<a class="btn remove" href="<?=cp_url('logs/clear_log_files', array('type' => 'cp'))?>"><?=lang('clear_cp_logs')?></a>
 				</fieldset>

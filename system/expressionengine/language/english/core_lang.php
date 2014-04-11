@@ -21,6 +21,12 @@ $lang = array(
 'first' =>
 'First',
 
+'prev' =>
+'Previous',
+
+'next' =>
+'Next',
+
 'last' =>
 'Last',
 
