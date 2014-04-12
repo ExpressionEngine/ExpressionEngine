@@ -182,9 +182,12 @@ class Cp {
 		// Good: EE.unique_foo = "bar"; EE.unique = { foo : "bar"};
 
 		$js_lang_keys = array(
-			'logout'			=> lang('logout'),
-			'search'			=> lang('search'),
-			'session_idle'		=> lang('session_idle')
+			'logout'				=> lang('logout'),
+			'search'				=> lang('search'),
+			'session_idle'			=> lang('session_idle'),
+			'cp_message_issue'		=> lang('cp_message_issue'),
+			'form_validation_error'	=> lang('form_validation_error'),
+			'btn_fix_errors'		=> lang('btn_fix_errors'),
 		);
 
 		ee()->javascript->set_global(array(
@@ -205,7 +208,7 @@ class Cp {
 		$js_scripts = array(
 			'ui'		=> array('core', 'widget', 'mouse', 'position', 'sortable', 'dialog'),
 			'plugin'	=> array('ee_interact.event', 'ee_broadcast.event', 'ee_notice', 'ee_txtarea', 'tablesorter', 'ee_toggle_all'),
-			'file'		=> array('json2', 'underscore', 'cp/global_start')
+			'file'		=> array('json2', 'underscore', 'cp/global_start', 'cp/v3/form_validation')
 		);
 
 		if ($this->cp_theme != 'mobile')
