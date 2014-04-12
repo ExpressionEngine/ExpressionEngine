@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-rvm use 2.1.1
-
 cd system/tests/rspec
 
 # We will increment this as we get bad statuses from RSpec and finally

@@ -1,7 +1,5 @@
 machine:
   timezone: America/New_York
-  php:
-    version: 5.3.10
   ruby:
     version: 2.1.1
   hosts:
@@ -30,4 +28,4 @@ checkout:
 
 test:
   override:
-    - "./system/tests/circleci/runtests.sh"
+    - "rvm use 2.1.1 && ./system/tests/circleci/runtests.sh"
