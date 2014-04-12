@@ -21,7 +21,7 @@
 		</fieldset>
 		<?php endif;?>
 		<fieldset class="form-ctrls">
-			<?=form_submit('submit', $btn_label, 'class="'.$btn_class.'" data-work-text="authenticating..."')?>
+			<?=form_submit('submit', $btn_label, 'class="'.$btn_class.'" data-work-text="authenticating..." '.$btn_disabled)?>
 		</fieldset>
 	<?=form_close()?>
 </div>

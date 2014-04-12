@@ -77,12 +77,14 @@ class Login extends CP_Controller {
 		// Normal login button state
 		$this->view->btn_class = 'btn';
 		$this->view->btn_label = lang('login');
+		$this->view->btn_disabled = '';
 
 		// Set lockout message and form state
 		if (ee()->session->check_password_lockout($username) === TRUE)
 		{
 			$this->view->btn_class .= ' disable';
 			$this->view->btn_label = lang('locked');
+			$this->view->btn_disabled = 'disabled';
 			$this->view->message = sprintf(
 				lang('password_lockout_in_effect'),
 				ee()->config->item('password_lockout_interval')
