@@ -213,7 +213,9 @@ class EE_Route {
 			{
 				if (empty($segment['rules']))
 				{
-					$segment = new EE_Route_segment($segment['variable']);
+					// Segment variable with no rules should be equivalent to alpha-dash
+					$rule = $this->rules->load('alpha_dash'); 
+					$segment = new EE_Route_segment($segment['variable'], array($rule));
 				}
 				else
 				{
