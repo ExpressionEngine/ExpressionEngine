@@ -28,6 +28,8 @@ use EllisLab\ExpressionEngine\Library\CP;
 class Logs extends CP_Controller {
 
 	var $perpage		= 50;
+	var $params			= array();
+	var $base_url;
 
 	/**
 	 * Constructor
@@ -40,6 +42,8 @@ class Logs extends CP_Controller {
 		{
 			show_error(lang('unauthorized_access'));
 		}
+
+		$this->base_url = new CP\URL('logs', ee()->session->session_id());
 
 		$this->load->model('tools_model');
 
@@ -60,11 +64,9 @@ class Logs extends CP_Controller {
 			unset($menu[1]['developer_log']);
 		}
 
-
 		ee()->menu->register_left_nav($menu);
 
 		// Filters
-
 		$usernames = array('' => '-- '.lang('by_username').' --');
 		ee()->load->model('member_model');
 		$members = ee()->member_model->get_members();
@@ -92,7 +94,7 @@ class Logs extends CP_Controller {
 			'31536000'  => ucwords(lang('last').' 365 '.lang('days')),
 		);
 
-		$limits = array(
+		$perpages = array(
 			''    => '-- '.lang('limit_by').' --',
 			'25'  => '25 '.lang('results'),
 			'50'  => '50 '.lang('results'),
@@ -101,14 +103,37 @@ class Logs extends CP_Controller {
 			'150' => '150 '.lang('results')
 		);
 
+		$filter_defaults = array();
+
+		foreach (array('filter_by_username', 'filter_by_site', 'filter_by_date') as $input_var)
+		{
+			if (ee()->input->get_post($input_var) !== FALSE)
+			{
+				$this->params[$input_var] = ee()->input->get_post($input_var);
+				$filter_defaults[$input_var] = ee()->input->get_post($input_var);
+			}
+			else
+			{
+				$filter_defaults[$input_var] = array();
+			}
+		}
+
+		$this->params['perpage'] = ee()->input->get_post('perpage') ? ee()->input->get_post('perpage') : $this->perpage;
+
+		// Maintain the filters in the URL
+		foreach ($this->params as $key => $value)
+		{
+			$this->base_url->setQueryStringVariable($key, $value);
+		}
+
 		$filters = array();
 
-		$filters[] = form_dropdown('filter_by_username', $usernames);
+		$filters[] = form_dropdown('filter_by_username', $usernames, $filter_defaults['filter_by_username']);
 		if ($sites) {
-			$filters[] = form_dropdown('filter_by_site', $sites);
+			$filters[] = form_dropdown('filter_by_site', $sites, $filter_defaults['filter_by_site']);
 		}
-		$filters[] = form_dropdown('filter_by_date', $dates);
-		$filters[] = form_dropdown('limit', $limits, $this->perpage);
+		$filters[] = form_dropdown('filter_by_date', $dates, $filter_defaults['filter_by_date']);
+		$filters[] = form_dropdown('perpage', $perpages, $this->params['perpage']);
 
 		$this->view->filters = $filters;
 	}
@@ -143,9 +168,10 @@ class Logs extends CP_Controller {
 	 */
 	function cp()
 	{
+		$this->base_url->path = 'logs/cp';
 		$this->load->library('table');
 
-		$this->table->set_base_url(new CP\URL('logs/cp', ee()->session->session_id()));
+		$this->table->set_base_url($this->base_url);
 		$this->table->set_columns(array(
 			'member_id'		=> array('html' => FALSE),
 			'username'		=> array(),
@@ -155,16 +181,11 @@ class Logs extends CP_Controller {
 			'action'		=> array('html' => FALSE)
 		));
 
-
 		$initial_state = array(
 			'sort'	=> array('act_date' => 'desc')
 		);
 
-		$params = array(
-			'perpage'	=> $this->perpage
-		);
-
-		$vars = $this->table->datasource('_cp_log_filter', $initial_state, $params);
+		$vars = $this->table->datasource('_cp_log_filter', $initial_state, $this->params);
 
 		$this->view->cp_page_title = lang('view_cp_log');
 

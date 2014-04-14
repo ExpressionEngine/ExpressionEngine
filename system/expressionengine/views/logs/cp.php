@@ -2,7 +2,7 @@
 
 <div class="col w-12 last">
 	<div class="box">
-		<form class="tbl-ctrls">
+		<?=form_open(cp_url('logs/cp'), 'class="tbl-ctrls"')?>
 			<fieldset class="tbl-search right">
 				<input placeholder="<?=lang('type_phrase')?>" type="text" value="">
 				<input class="btn submit" type="submit" value="<?=lang('search_logs_button')?>">
