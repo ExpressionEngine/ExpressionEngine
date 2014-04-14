@@ -2626,7 +2626,6 @@ class EE_Functions {
 		$vars = $return[1];
 		unset($return);
 
-
 		if (count($vars) == 0) return $str;
 
 		$switch  = array();
@@ -2848,6 +2847,7 @@ class EE_Functions {
 								case ')': $parenthesis_depth--;
 									break;
 								default:
+									$buffer .= 'FALSE';
 									continue 2; // other tokens don't get anything
 							}
 
@@ -2909,7 +2909,10 @@ class EE_Functions {
 						$buffer = $buffer.str_repeat(')', $parenthesis_depth);
 					}
 
-					$matches[3][$i] = str_replace('FALSE(', 'FALSE && (', $buffer);
+					$buffer = str_replace('FALSE(', 'FALSE && (', $buffer);
+					$buffer = preg_replace('/(FALSE)+/', 'FALSE', $buffer);
+
+					$matches[3][$i] = $buffer;
 
 				}
 
