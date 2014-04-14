@@ -165,6 +165,19 @@ class Utilities extends CP_Controller {
 	 */
 	public function clear_caches()
 	{
+		// Validation
+		if (AJAX_REQUEST)
+		{
+			if ( ! ee()->input->post('cache_type'))
+			{
+				ee()->output->send_ajax_response(array('error' => lang('caches_cleared_error')));
+			}
+			else
+			{
+				ee()->output->send_ajax_response('success');
+			}
+		}
+
 		if (ee()->input->post('cache_type'))
 		{
 			foreach (ee()->input->post('cache_type') as $type)

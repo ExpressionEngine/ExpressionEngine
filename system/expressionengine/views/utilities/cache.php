@@ -3,7 +3,7 @@
 <div class="col w-12 last">
 	<div class="box">
 		<h1><?=$cp_page_title?></h1>
-		<?=form_open(cp_url('utilities/clear_caches'), 'class="settings"')?>
+		<?=form_open(cp_url('utilities/clear_caches'), 'class="settings ajax-validate"')?>
 			<fieldset class="col-group last">
 				<div class="setting-txt col w-8">
 					<h3><?=lang('caches_to_clear')?></h3>
@@ -26,9 +26,7 @@
 			</fieldset>
 
 			<fieldset class="form-ctrls">
-				<input class="btn" type="submit" value="<?=lang('btn_clear_caches')?>" data-work-text="<?=lang('btn_clear_caches_working')?>">
-				<input class="btn disable" type="submit" value="Fix Errors, Please">
-				<input class="btn work" type="submit" value="Clearing...">
+				<input class="btn" type="submit" value="<?=lang('btn_clear_caches')?>" data-submit-text="<?=lang('btn_clear_caches')?>" data-work-text="<?=lang('btn_clear_caches_working')?>">
 			</fieldset>
 		<?=form_close()?>
 	</div>

@@ -7,6 +7,7 @@ feature 'Login Page' do
     page.should have_content('Username')
     page.should have_content('Password')
     page.should have_content('I forgot my password')
+    Login::button[:disabled].should eq nil
     no_php_js_errors
   end
 
@@ -14,6 +15,7 @@ feature 'Login Page' do
     Login::login('', '')
 
     page.should have_content('The username field is required')
+    Login::button[:disabled].should eq nil
     no_php_js_errors
   end
 
@@ -21,6 +23,7 @@ feature 'Login Page' do
     Login::login('admin', '')
 
     page.should have_content('The password field is required')
+    Login::button[:disabled].should eq nil
     no_php_js_errors
   end
 
@@ -28,6 +31,7 @@ feature 'Login Page' do
     Login::login
 
     page.should have_content('Overview')
+    Login::button[:disabled].should eq nil
     no_php_js_errors
   end
 
@@ -35,6 +39,7 @@ feature 'Login Page' do
     Login::login('noone', 'nowhere')
 
     page.should have_content('That is the wrong username or password')
+    Login::button[:disabled].should eq nil
     no_php_js_errors
   end
 
@@ -46,6 +51,7 @@ feature 'Login Page' do
 
     page.should have_content('You are only permitted to make four login attempts every 1 minute(s)')
     Login::button.value.should eq 'Locked'
+    Login::button[:disabled].should eq 'true'
     no_php_js_errors
   end
 

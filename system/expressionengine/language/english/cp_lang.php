@@ -521,6 +521,9 @@ $lang = array(
 'cp_message_issue' =>
 'An error occurred',
 
+'form_validation_error' =>
+'There was a problem processing your submission, please check below and fix all errors.',
+
 ''=>''
 );
 
