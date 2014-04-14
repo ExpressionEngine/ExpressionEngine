@@ -36,7 +36,7 @@
  */
 function cp_url($path, $qs = '')
 {
-	$url = new EllisLab\ExpressionEngine\Library\CP\URL($path, ee()->session->session_id(), $qs);
+	$url = new \EllisLab\ExpressionEngine\Library\CP\URL($path, ee()->session->session_id(), $qs);
 	return $url->compile();
 }
 
