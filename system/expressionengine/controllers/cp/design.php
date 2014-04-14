@@ -3271,13 +3271,16 @@ class Design extends CP_Controller {
 
 		// Update Template Route order
 		$route_order = json_decode($this->input->post('route_order'));
+		$update = array();
 
 		if ( ! empty($route_order) && $route_order != $template_ids)
 		{
 			foreach ($route_order as $index => $id)
 			{
-				$this->template_model->update_template_route($id, array('order' => $index));
+				$update[] = array('template_id' => $id, 'order' => $index);
 			}
+
+			$this->db->update_batch('template_routes', $update, 'template_id');
 		}
 
 		if (empty($errors))
