@@ -156,57 +156,6 @@ class El_pings {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Is developer environment?
-	 *
-	 * Bypasses registration for non-public / in development sites
-	 *
-	 * @access	private
-	 * @return	bool
-	 */
-	private function _developer_domain_bypass($domains)
-	{
-		if ( ! is_array($domains))
-		{
-			$domains = array($domains);
-		}
-
-		$dev_tlds = 0;
-
-		foreach ($domains as $domain)
-		{
-			// I'd user filter_var() here, but FILTER_VALIDATE_URL will not
-			// validate internationalized URLs that contain non-ASCII characters
-			if (strncasecmp($domain, 'http', 4) !== 0)
-			{
-				$domain = 'http://'.$domain;
-			}
-
-			$parsed_url = parse_url($domain);
-
-			if ($parsed_url === FALSE OR ! isset($parsed_url['host']))
-			{
-				$dev_tlds++;
-				continue;
-			}
-
-			$parts = explode('.', $parsed_url['host']);
-			$tld = strtoupper(end($parts));
-
-			// ignore anything that isn't a valid TLD
-			$valid_tlds = $this->_get_valid_tld_array();
-
-			if ( ! in_array($tld, $valid_tlds))
-			{
-				$dev_tlds++;
-			}
-		}
-
-		return ($dev_tlds == count($domains));
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Validate version file
 	 * Prototype:
 	 *  0 =>
