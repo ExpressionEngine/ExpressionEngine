@@ -26,10 +26,22 @@
 
 class Spam_ext {
 
-	var $name			= 'Spam Filter';
-	var $version		= M_E;
-	var $settings_exist	= 'n';
-	var $docs_url		= '';
+	public $name = 'Spam Filter';
+	public $version = M_E;
+	public $settings_exist = 'n';
+	public $docs_url = '';
+
+	// Naive Bayes parameters
+	public $vocabulary_cutoff = 5000;
+	public $sensitivity = .5;
+	public $spam_ratio = .8;
+	public $stop_words_path = 'training/stopwords.txt';
+
+	// Limits for heuristics
+	public $ascii_printable = .2;
+	public $account_age = 3600;
+	public $entropy = .2;
+	public $entropy_length = 300;
 
 	private $EE;
 	private $module = 'spam';
@@ -40,6 +52,90 @@ class Spam_ext {
 	public function __construct()
 	{
 		$this->EE =& get_instance();
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Returns true if the string is classified as spam
+	 * 
+	 * @param string $source 
+	 * @access public
+	 * @return boolean
+	 */
+	public function classify($source)
+	{
+		$stop_words = explode("\n", file_get_contents($this->stop_words_path));
+		$vocabulary = new Collection('', $this->stop_words);
+		$vocabulary->vocabulary = $this->_get_vocabulary();
+
+		$this->EE->db->select("COUNT(training_id) AS cnt");
+		$this->EE->db->from("spam_training");
+		$query = $this->EE->db->get(); 
+		$row = $query->row();
+		$vocabulary->document_count = $row->cnt;
+
+		// Grab the trained parameters
+		$training = array(
+			'spam' => $this->_get_parameters('spam'),
+			'ham' => $this->_get_parameters('ham'),
+		);
+
+		$classifier = new Classifier($training, $vocabulary);
+		
+		return $classifier->classify($soure, 'spam');
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Returns an array of all the parameters for a class
+	 * 
+	 * @param string The class name
+	 * @access private
+	 * @return array
+	 */
+	private function _get_parameters($class)
+	{
+		$class = ($class == 'spam') ? 1 : 0;
+
+		$this->EE->db->select('mean, variance');
+		$this->EE->db->from('spam_parameters');
+		$this->EE->db->where('class', $class);
+		$query = ee()->db->get();
+
+		$result = array();
+
+		foreach ($query->result() as $parameter)
+		{
+			$result[] = new Distribution($parameter->$mean, $parameter->variance);
+		}
+	
+		return $result;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Returns an array of document counts for every word in the training set
+	 * 
+	 * @access private
+	 * @return array
+	 */
+	private function _get_vocabulary()
+	{
+		select('term, count');
+		from('spam_vocabulary');
+		$query = ee()->db->get();
+
+		$result = array();
+
+		foreach ($query->result() as $word)
+		{
+			$result[$word->term] = $word->count;
+		}
+
+		return $result;
 	}
 
 	// --------------------------------------------------------------------

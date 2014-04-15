@@ -40,20 +40,17 @@ class Classifier {
 	/**
 	 * Train the classifier on the provided training corpus
 	 * 
+	 * @param array $training  An array of feature vectors using classes as keys
+	 * @param Collection  $vocabulary An instantiatied Collection
 	 * @access public
 	 * @return void
 	 */
-	public function __construct($training, $classes, $stop_words = array())
+	public function __construct($training, $vocabulary)
 	{
-		$this->classes = array_unique($classes);
+		$this->classes = array_unique(array_keys($training));
 		$training = new Collection($training, $stop_words);
-		$this->corpus = $training;
-		$this->tfidf = $training->tfidf();
-
-		foreach ($this->tfidf as $key => $vector)
-		{
-			$this->training[$classes[$key]][] = $vector;
-		}
+		$this->corpus = $vocabulary;
+		$this->training = $training;
 	}
 
 	/**
@@ -70,10 +67,8 @@ class Classifier {
 		$source = $this->corpus->vectorize($source); 
 		$other = array_diff($this->classes, array($class));
 		$other = array_shift($other);
-		$class = $this->array_zip($this->training[$class]);
-		$other = $this->array_zip($this->training[$other]);
-		$total = $this->array_zip($this->tfidf);
-		$count = count($class);
+		$class = $this->training[$class];
+		$other = $this->training[$other];
 		$probabilities = array();
 		$log_sum = 0;
 
@@ -82,10 +77,8 @@ class Classifier {
 		// to calculcate the probability the source is spam
 		foreach($source as $feature => $freq)
 		{
-			$sample = new Expectation($total[$feature]);
-
-			$class_dist = $this->distribution($class[$feature]);
-			$other_dist = $this->distribution($other[$feature]);
+			$class_dist =$class[$feature];
+			$other_dist =$other[$feature];
 			$class_prob = $class_dist->probability($freq);
 			$other_prob = $other_dist->probability($freq);
 
@@ -112,44 +105,6 @@ class Classifier {
 
 		return $probability > $this->sensitivity;
 
-	}
-
-	/**
-	 * Zip a series of rows together column wise
-	 * 
-	 * @param array $class 
-	 * @access private
-	 * @return array
-	 */
-	private function array_zip($class)
-	{
-		$count = count($class[0]);
-		$zipped = array();
-
-		foreach ($class as $row)
-		{
-			for ($i = 0; $i < $count; $i++)
-			{
-				$zipped[$i][] = $row[$i];
-			}
-		}
-
-		return $zipped;
-	}
-
-	/**
-	 * Calculate the probability distribution for a series of data
-	 * Uses a Maximum-Likelihood estimator for the parameters
-	 * 
-	 * @param array $feature An array of floats
-	 * @access private
-	 * @return Distribution The initilized probability distribution
-	 */
-	private function distribution($feature)
-	{
-		// The MLE for the Gaussian distribution is just the sample mean & variance
-		$sample = new Expectation($feature);
-		return new Distribution($sample->mean, $sample->variance);
 	}
 
 }

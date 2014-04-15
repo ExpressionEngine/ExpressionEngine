@@ -42,6 +42,31 @@ class Spam_mcp {
 	}
 
 	/**
+	 * Controller for the index view
+	 * 
+	 * @access public
+	 * @return void
+	 */
+	public function index()
+	{
+		$data = array();
+		return ee()->load->view('index', $data, TRUE);
+	}
+
+	/**
+	 * Controller for running the training
+	 * 
+	 * @access public
+	 * @return void
+	 */
+	public function train()
+	{
+		$data = array();
+		$this->_train_parameters();
+		return ee()->load->view('train', $data, TRUE);
+	}
+
+	/**
 	 * Returns an array of sources and classes for training
 	 * 
 	 * @access private

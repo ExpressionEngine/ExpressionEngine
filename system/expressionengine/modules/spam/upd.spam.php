@@ -91,8 +91,6 @@ class Spam_upd {
 
 		// THe hooks where we want to filter content for spam
 		$hooks = array(
-			'insert_comment_end',
-			'forum_submit_post_end',
 			'channel_form_submit_entry_end'
 		);
 
@@ -101,7 +99,7 @@ class Spam_upd {
 			$insert[] = array(
 				'class'    => $this->name.'_ext',
 				'hook'     => $hook,
-				'method'   => 'spam_filter',
+				'method'   => 'filter_spam',
 				'settings' => '',
 				'priority' => 10,
 				'version'  => $this->version,

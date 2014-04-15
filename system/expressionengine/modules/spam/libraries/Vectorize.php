@@ -88,6 +88,7 @@ class Collection {
 			}
 		}
 
+		$this->document_count = count($this->documents);
 		$this->corpus = new Document($this->corpus);
 	}
 
@@ -100,6 +101,7 @@ class Collection {
 	 */
 	public function vectorize($source)
 	{
+		$source = str_ireplace($stop_words, ' ', $source);
 		$source = new Document($source);
 		$vector = $this->_tfidf($source);
 		$heuristics = $this->_heuristics($source);
@@ -151,7 +153,7 @@ class Collection {
 		// Normalize frequency if term does not appear anywhere in corpus
 		$freq = empty($this->vocabulary[$term]) ? 1 : $this->vocabulary[$term];
 
-		return log(count($this->documents) / $freq);
+		return log($this->document_count / $freq);
 	}
 
 	/**
@@ -184,7 +186,7 @@ class Collection {
 	{
 		$vector = array();
 
-		foreach ($this->corpus as $term => $freq)
+		foreach ($this->vocabulary as $term)
 		{
 			$tf = $this->term_frequency($source, $term);
 			$idf = $this->inverse_document_frequency($term);
