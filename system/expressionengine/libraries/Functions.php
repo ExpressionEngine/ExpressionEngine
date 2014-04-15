@@ -2821,7 +2821,6 @@ class EE_Functions {
 					$tokens = array_slice($tokens, 1, count($tokens) - 2);
 
 					$buffer = '';
-					$false_added = FALSE; // Prevent 'FALSEFALSE'
 
 					$parenthesis_depth = 0;
 
@@ -2847,11 +2846,10 @@ class EE_Functions {
 								case ')': $parenthesis_depth--;
 									break;
 								default:
-									$buffer .= 'FALSE';
+									$buffer .= ' FALSE ';
 									continue 2; // other tokens don't get anything
 							}
 
-							$false_added = FALSE;
 							$buffer .= $token;
 						}
 						else
@@ -2873,7 +2871,6 @@ class EE_Functions {
 								case T_IS_NOT_EQUAL:
 								case T_IS_NOT_IDENTICAL:
 								case T_IS_SMALLER_OR_EQUAL:
-									$false_added = FALSE;
 									$buffer .= $token[1];
 									break;
 
@@ -2881,20 +2878,16 @@ class EE_Functions {
 									$value = strtoupper($token[1]);
 									if ($value == 'TRUE' || $value == 'FALSE')
 									{
-										$false_added = FALSE;
 										$buffer .= $token[1];
 										break;
 									}
 
 								default:
-									if ( ! $false_added) {
-										$buffer .= 'FALSE';
-										$false_added = TRUE;
-										if ($this->conditional_debug === TRUE)
-										{
-											trigger_error('Unset EE Conditional Variable ('.$token.') : '.$matches[0][$i],
-														  E_USER_WARNING);
-										}
+									$buffer .= ' FALSE ';
+									if ($this->conditional_debug === TRUE)
+									{
+										trigger_error('Unset EE Conditional Variable ('.$token.') : '.$matches[0][$i],
+													  E_USER_WARNING);
 									}
 							}
 						}
@@ -2910,10 +2903,9 @@ class EE_Functions {
 					}
 
 					$buffer = str_replace('FALSE(', 'FALSE && (', $buffer);
-					$buffer = preg_replace('/(FALSE)+/', 'FALSE', $buffer);
+					$buffer = preg_replace('/FALSE(  FALSE)+/', 'FALSE', $buffer);
 
 					$matches[3][$i] = $buffer;
-
 				}
 
 				$matches[3][$i] = LD.$matches[1][$i].' '.trim($matches[3][$i]).RD;

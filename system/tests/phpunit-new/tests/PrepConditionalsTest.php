@@ -272,9 +272,9 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 	protected function wonkySpacelessStringLogicOperators()
 	{
 		return array(
-			array('Wonky No Space AND',	'{if 7AND5}out{/if}',	'{if 7FALSE}out{/if}'),
-			array('Wonky No Space OR',	'{if 5OR7}out{/if}',	'{if 5FALSE}out{/if}'),
-			array('Wonky No Space XOR',	'{if 5XOR7}out{/if}',	'{if 5FALSE}out{/if}'),
+			array('Wonky No Space AND',	'{if 7AND5}out{/if}',	'{if 7 FALSE}out{/if}'),
+			array('Wonky No Space OR',	'{if 5OR7}out{/if}',	'{if 5 FALSE}out{/if}'),
+			array('Wonky No Space XOR',	'{if 5XOR7}out{/if}',	'{if 5 FALSE}out{/if}'),
 		);
 	}
 
@@ -285,7 +285,7 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			array('Double AND', 		 '{if 5 && AND 7}out{/if}',	'{if 5 && AND 7}out{/if}'),
 			array('Double No Space AND', '{if 5 &&AND 7}out{/if}',	'{if 5 &&AND 7}out{/if}'),
 			array('Double Comparison',	 '{if 5 > < 7}out{/if}',	'{if 5 > < 7}out{/if}'),
-			array('Shift by comparison', '{if 5 >>> 7}out{/if}',	'{if 5 FALSE> 7}out{/if}'),
+			array('Shift by comparison', '{if 5 >>> 7}out{/if}',	'{if 5  FALSE > 7}out{/if}'),
 
 		);
 	}
@@ -323,9 +323,9 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 	{
 		return array(
 			array('Addition works with spaces',				'{if int + int}out{/if}', '{if "5" + "5"}out{/if}'),
-			array('Addition does not work without spaces',	'{if int+int}out{/if}', '{if FALSE+FALSE}out{/if}'),
+			array('Addition does not work without spaces',	'{if int+int}out{/if}', '{if FALSE + FALSE}out{/if}'),
 			array('Concatenation with spaces',				'{if string . string}out{/if}', '{if "ee" . "ee"}out{/if}'),
-			array('Concatenation without spaces',			'{if string.string}out{/if}', '{if FALSE.FALSE}out{/if}'),
+			array('Concatenation without spaces',			'{if string.string}out{/if}', '{if FALSE . FALSE}out{/if}'),
 			array('Subtract dash-words variable',			'{if a-number - int}out{/if}', '{if "15" - "5"}out{/if}', array('a-number' => 15)),
 		);
 	}
