@@ -38,29 +38,12 @@
 					<?php endforeach; ?>
 				<?php endif; ?>
 
-				<div class="paginate">
-					<ul>
-						<li><a href="<?=$pagination['first_page'][0]['pagination_url']?>"><?=lang('first')?></a></li>
-						<?php if ( ! empty($pagination['previous_page'][0])): ?>
-						<li><a href="<?=$pagination['previous_page'][0]['pagination_url']?>"><?=lang('prev')?></a></li>
-						<?php endif;?>
-
-						<?php foreach ($pagination['page'] as $page): ?>
-						<li><a<?php if($page['current_page']): ?> class="act"<?php endif; ?> href="<?=$page['pagination_url']?>"><?=$page['pagination_page_number']?></a></li>
-						<?php endforeach; ?>
-
-						<?php if ( ! empty($pagination['next_page'][0])): ?>
-						<li><a href="<?=$pagination['next_page'][0]['pagination_url']?>"><?=lang('next')?></a></li>
-						<?php endif;?>
-						<li><a class="last" href="<?=$pagination['last_page'][0]['pagination_url']?>"><?=lang('last')?></a></li>
-					</ul>
-				</div>
-
+				<?php $this->view('_shared/pagination'); ?>
 
 				<fieldset class="tbl-bulk-act">
 					<a class="btn remove" href="<?=cp_url('logs/clear_log_files', array('type' => 'cp'))?>"><?=lang('clear_cp_logs')?></a>
 				</fieldset>
 			</section>
-		</form>
+		<?=form_close()?>
 	</div>
 </div>
