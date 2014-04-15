@@ -66,7 +66,7 @@ class Spam_upd {
 		$fields = array(
 			'parameter_id'	=> array('type' => 'int', 'constraint' => '10', 'unsigned' => TRUE, 'auto_increment' => TRUE),
 			'term'			=> array('type' => 'int', 'constraint' => '10', 'unsigned' => TRUE),
-			'spam'			=> array('type' => 'tinyint' , 'constraint' => '1'),
+			'class'			=> array('type' => 'tinyint' , 'constraint' => '1'),
 			'mean'			=> array('type' => 'decimal' , 'constraint' => '16,12'),
 			'variance'		=> array('type' => 'decimal' , 'constraint' => '16,12')
 		);
@@ -75,13 +75,23 @@ class Spam_upd {
 		ee()->dbforge->add_key('parameter_id', TRUE);
 		ee()->dbforge->create_table('spam_parameters');
 
+		$fields = array(
+			'training_id'	=> array('type' => 'int', 'constraint' => '10', 'unsigned' => TRUE, 'auto_increment' => TRUE),
+			'source'		=> array('type' => 'text'),
+			'class'			=> array('type' => 'tinyint' , 'constraint' => '1'),
+		);
+
+		ee()->dbforge->add_field($fields);
+		ee()->dbforge->add_key('parameter_id', TRUE);
+		ee()->dbforge->create_table('spam_training');
+
 		// Install the extension
 
 		$insert = array();
 
 		// THe hooks where we want to filter content for spam
 		$hooks = array(
-			'insert_comment_start',
+			'insert_comment_end',
 			'forum_submit_post_end',
 			'channel_form_submit_entry_end'
 		);
@@ -131,6 +141,7 @@ class Spam_upd {
 
 		ee()->dbforge->drop_table('spam_vocabulary');
 		ee()->dbforge->drop_table('spam_parameters');
+		ee()->dbforge->drop_table('spam_training');
 
 		// Extension
 		ee()->db->delete(
