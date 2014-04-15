@@ -957,8 +957,7 @@ class Forum_upd {
 					'mod_member_name' => 'mod_member_name',
 					'type' => 'varchar',
 					'constraint'	=> '50',
-					'default'	=> '',
-					'null'			=> FALSE)
+					'null'			=> TRUE)
 					);
 
 			ee()->smartforge->modify_column('forum_moderators', $fields);
