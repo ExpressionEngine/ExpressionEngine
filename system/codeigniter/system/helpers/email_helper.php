@@ -37,7 +37,7 @@ if ( ! function_exists('valid_email'))
 {
 	function valid_email($address)
 	{
-		return (bool) filter_var($email, FILTER_VALIDATE_EMAIL);
+		return (bool) filter_var($address, FILTER_VALIDATE_EMAIL);
 	}
 }
 
