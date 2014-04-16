@@ -527,6 +527,8 @@ class Comment {
 
 		if ($enabled['pagination'])
 		{
+			$pagination->build($pagination->total_items, $pagination->per_page);
+
 			ee()->db->limit($pagination->per_page, $pagination->offset);
 		}
 		else
@@ -551,12 +553,6 @@ class Comment {
 		if (count($result_ids) == 0)
 		{
 			return ee()->TMPL->no_results();
-		}
-
-		if ($enabled['pagination'])
-		{
-			// Build pagination
-			$pagination->build($pagination->total_items, $pagination->per_page);
 		}
 
 		/** -----------------------------------

@@ -55,7 +55,7 @@ class Date_ft extends EE_Fieldtype {
 			$data = ee()->localize->string_to_timestamp($data);
 		}
 
-		if ($this->settings['localize'] !== TRUE)
+		if ( ! empty($data) && $this->settings['localize'] !== TRUE)
 		{
 			$data = array($data, ee()->session->userdata('timezone'));
 		}

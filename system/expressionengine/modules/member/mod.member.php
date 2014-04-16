@@ -1524,6 +1524,7 @@ class Member {
 
 		$data['class'] = ee()->TMPL->form_class;
 
+		$data['action'] = ee()->TMPL->fetch_param('action');
 
 		$res  = ee()->functions->form_declaration($data);
 
