@@ -1,6 +1,32 @@
 <?php
 namespace EllisLab\ExpressionEngine\Library\CP;
 
+if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 3.0
+ * @filesource
+ */
+
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine URL Class
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Library
+ * @category	CP
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
+ */
+
 class URL {
 	public $path;
 	public $session_id;
@@ -43,7 +69,7 @@ class URL {
 	 *
 	 * @param $key		string	The name of the query string variable
 	 * @param $value	string	The value of the query string variable
-	 **/
+	 */
 	public function setQueryStringVariable($key, $value)
 	{
 		$this->qs[$key] = $value;
