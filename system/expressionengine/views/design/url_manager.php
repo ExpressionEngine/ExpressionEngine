@@ -22,13 +22,14 @@
 							}
 
 							$required = form_dropdown('required_' . $template->template_id, $options, $template->route_required);
-							$table[] = array($template->group_name, $name, $route, $required);
+							$table[] = array('&nbsp;', $template->group_name, $name, $route, $required);
 						}
 
 						$this->table->set_template(array(
 							'table_open' => '<table class="mainTable" border="0" cellspacing="0" cellpadding="0">'
 						));
 						$this->table->set_heading(array(
+							'&nbsp;',
 							lang('route_manager_group'),
 							lang('route_manager_template'),
 							lang('route_manager_route'),
