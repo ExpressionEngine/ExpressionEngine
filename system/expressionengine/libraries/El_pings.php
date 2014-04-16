@@ -40,8 +40,9 @@ class El_pings {
 		}
 
 		$cached = ee()->cache->get('software_registration', Cache::GLOBAL_SCOPE);
+		$exp_response = md5(ee()->config->item('license_number').ee()->config->item('ellislab_username'));
 
-		if ( ! $cached OR $cached != ee()->config->item('license_number'))
+		if ( ! $cached OR $cached != $exp_response)
 		{
 			// restrict the call to certain pages for performance and user experience
 			$class = ee()->router->fetch_class();
@@ -59,14 +60,14 @@ class El_pings {
 				if ( ! $registration = $this->_do_ping('http://ping.ellislab.com/register.php', $payload))
 				{
 					// save the failed request for a day only
-					ee()->cache->save('software_registration', ee()->config->item('license_number'), 60*60*24, Cache::GLOBAL_SCOPE);
+					ee()->cache->save('software_registration', $exp_response, 60*60*24, Cache::GLOBAL_SCOPE);
 				}
 				else
 				{
-					if ($registration != ee()->config->item('license_number'))
+					if ($registration != $exp_response)
 					{
 						// may have been a server error, save the failed request for a day
-						ee()->cache->save('software_registration', ee()->config->item('license_number'), 60*60*24, Cache::GLOBAL_SCOPE);
+						ee()->cache->save('software_registration', $exp_response, 60*60*24, Cache::GLOBAL_SCOPE);
 					}
 					else
 					{
