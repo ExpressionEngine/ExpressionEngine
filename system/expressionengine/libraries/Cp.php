@@ -869,11 +869,16 @@ class Cp {
 			'parents', 'siblings'
 		);
 
+		$control_structures = array(
+			'if', 'else', 'elseif'
+		);
+
 		return array_unique(array_merge(
 			$channel_vars,
 			$global_vars,
 			$orderby_vars,
-			$prefixes
+			$prefixes,
+			$control_structures
 		));
 	}
 
