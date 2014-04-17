@@ -110,8 +110,8 @@ class Cache extends CI_Driver_Library {
 			if ( ! $this->is_supported($this->_backup_driver))
 			{
 				// Backup isn't supported either. Default to 'Dummy' driver.
-				log_message('error', 'Cache adapter "'.$this->_adapter.'" and backup "'.$this->_backup_driver.'" are both unavailable. Cache is now using "Dummy" adapter.');
-				$this->_adapter = 'dummy';
+				log_message('error', 'Cache adapter "'.$this->_adapter.'" and backup "'.$this->_backup_driver.'" are both unavailable. Cache is using "File" adapter.');
+				$this->_adapter = 'file';
 			}
 			else
 			{
@@ -298,6 +298,7 @@ class Cache extends CI_Driver_Library {
 	{
 		$options = array();
 		$adapter = ee()->config->item('cache_driver');
+		$current_adapter = $this->get_adapter();
 
 		if (empty($adapter))
 		{
@@ -310,11 +311,14 @@ class Cache extends CI_Driver_Library {
 			$options[$driver] = ucwords($driver);
 		}
 
+		// Rename dummy driver for presentation
+		$options['dummy'] = lang('disable_caching');
+
 		$output = form_dropdown('cache_driver', $options, $adapter);
 
 		// If the driver we want to use isn't what we are using, build an error
 		// message
-		if ($adapter !== $this->get_adapter())
+		if ($adapter !== $current_adapter OR ! $this->$current_adapter->is_supported())
 		{
 			$error_key = ($adapter == 'file')
 				? 'caching_driver_file_fail' : 'caching_driver_failover';

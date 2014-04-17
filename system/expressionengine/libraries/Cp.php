@@ -188,6 +188,9 @@ class Cp {
 			'session_idle'		=> lang('session_idle')
 		);
 
+		require_once(APPPATH.'libraries/El_pings'.EXT);
+		$pings = new El_pings();
+
 		ee()->javascript->set_global(array(
 			'BASE'				=> str_replace(AMP, '&', BASE),
 			'XID'				=> CSRF_TOKEN,
@@ -195,6 +198,7 @@ class Cp {
 			'PATH_CP_GBL_IMG'	=> PATH_CP_GBL_IMG,
 			'CP_SIDEBAR_STATE'	=> ee()->session->userdata('show_sidebar'),
 			'username'			=> ee()->session->userdata('username'),
+			'registered'		=> $pings->is_registered(),
 			'router_class'		=> ee()->router->class, // advanced css
 			'lang'				=> $js_lang_keys,
 			'THEME_URL'			=> $this->cp_theme_url,
