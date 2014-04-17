@@ -2669,9 +2669,9 @@ class EE_Functions {
 			// remove valid operators, we don't need to clean those
 			$conditionals_without_operators = str_replace($valid, ' ', $matches[3]);
 
-			// Find what we need, nothing more!!
-			$data = array();
-
+			// Go through and replace valid variables with their cleaned value.
+			// We do some extra work to avoid breaking embedded tags, such as:
+			// {if "{exp:plugin}"}
 			foreach ($conditionals_without_operators as $condition)
 			{
 				$embedded_tags = (stristr($condition, LD.'exp:')) ? TRUE : FALSE;
