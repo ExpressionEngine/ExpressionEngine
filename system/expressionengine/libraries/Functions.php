@@ -2912,7 +2912,7 @@ class EE_Functions {
 						$buffer = $buffer.str_repeat(')', $parenthesis_depth);
 					}
 
-					$buffer = str_replace('FALSE(', 'FALSE && (', $buffer);
+					$buffer = str_replace('FALSE (', 'FALSE && (', $buffer);
 					$buffer = preg_replace('/FALSE(  FALSE)+/', 'FALSE', $buffer);
 
 					$matches[3][$i] = $buffer;
