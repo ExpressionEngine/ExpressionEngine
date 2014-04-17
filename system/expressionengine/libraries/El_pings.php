@@ -54,7 +54,9 @@ class El_pings {
 					'username'			=> ee()->config->item('ellislab_username'),
 					'license_number'	=> (IS_CORE) ? 'CORE LICENSE' : ee()->config->item('license_number'),
 					'domain'			=> ee()->config->item('site_url'),
-					'server_name'		=> (isset($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : ''
+					'server_name'		=> (isset($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : '',
+					'ee_version'		=> ee()->config->item('app_version'),
+					'php_version'		=> PHP_VERSION
 				);
 
 				if ( ! $registration = $this->_do_ping('http://ping.ellislab.com/register.php', $payload))
