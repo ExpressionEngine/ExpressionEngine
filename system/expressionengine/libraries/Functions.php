@@ -2705,12 +2705,15 @@ class EE_Functions {
 
 						if ($value != 'TRUE' && $value != 'FALSE' && ($word != $value OR $embedded_tags !== TRUE))
 						{
-							$value = '"'.
-										  str_replace(array("'", '"', '(', ')', '$', '{', '}', "\n", "\r", '\\'),
-													  array('&#39;', '&#34;', '&#40;', '&#41;', '&#36;', '&#123;', '&#125;', '', '', '&#92;'),
-													  (strlen($value) > 100) ? substr(htmlspecialchars($value), 0, 100) : $value
-													  ).
-										  '"';
+							$value = (strlen($value) > 100) ? substr(htmlspecialchars($value), 0, 100) : $value;
+
+							$value = str_replace(
+								array("'", '"', '(', ')', '$', '{', '}', "\n", "\r", '\\'),
+								array('&#39;', '&#34;', '&#40;', '&#41;', '&#36;', '&#123;', '&#125;', '', '', '&#92;'),
+								$value
+							);
+
+							$value = '"' . $value . '"';
 						}
 
 						$md5_key = "'".base64_encode($prep_id.md5($word))."'";
@@ -2725,7 +2728,7 @@ class EE_Functions {
 						}
 					}
 
-					$data[$word] = $value
+					$data[$word] = $value;
 
 					if ($i > 500)
 					{
