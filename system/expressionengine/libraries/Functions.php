@@ -2634,7 +2634,6 @@ class EE_Functions {
 		$switch  = array();
 		$protect = array();
 		$prep_id = $this->random('alpha', 3);
-		$embedded_tags = (stristr($str, LD.'exp:')) ? TRUE : FALSE;
 
 		$valid = array('!=','==','<=','>=','<','>','<>','%',
 						'AND', 'XOR', 'OR','&&','||',
@@ -2675,6 +2674,7 @@ class EE_Functions {
 
 			foreach ($conditionals_without_operators as $condition)
 			{
+				$embedded_tags = (stristr($condition, LD.'exp:')) ? TRUE : FALSE;
 				$condition = trim($condition);
 
 				if ($condition == '')
@@ -2688,12 +2688,44 @@ class EE_Functions {
 				{
 					if (array_key_exists($word, $vars))
 					{
-						$data[$word] = trim($vars[$word]);
+						$value = trim($vars[$word]);
 					}
 					elseif ($embedded_tags === TRUE && ! is_numeric($word))
 					{
-						$data[$word] = $word;
+						$value = $word;
 					}
+
+					// Prep the data array to remove characters we do not want
+					// And also just add the quotes around the value for good measure.
+					if ( ! is_array($value))
+					{
+						// TRUE AND FALSE values are for short hand conditionals,
+						// like {if logged_in} and so we have no need to remove
+						// unwanted characters and we do not quote it.
+
+						if ($value != 'TRUE' && $value != 'FALSE' && ($word != $value OR $embedded_tags !== TRUE))
+						{
+							$value = '"'.
+										  str_replace(array("'", '"', '(', ')', '$', '{', '}', "\n", "\r", '\\'),
+													  array('&#39;', '&#34;', '&#40;', '&#41;', '&#36;', '&#123;', '&#125;', '', '', '&#92;'),
+													  (strlen($value) > 100) ? substr(htmlspecialchars($value), 0, 100) : $value
+													  ).
+										  '"';
+						}
+
+						$md5_key = "'".base64_encode($prep_id.md5($word))."'";
+						$protect[$word] = $md5_key;
+						$switch[$md5_key] = $value;
+
+						if ($prefix != '')
+						{
+							$md5_key = "'".base64_encode($prep_id.md5($prefix.$word))."'";
+							$protect[$prefix.$word] = $md5_key;
+							$switch[$md5_key] = $value;
+						}
+					}
+
+					$data[$word] = $value
 
 					if ($i > 500)
 					{
@@ -2715,38 +2747,6 @@ class EE_Functions {
 				if ($opening > $closing)
 				{
 					$str .= str_repeat(LD.'/if'.RD, $opening-$closing);
-				}
-			}
-
-			// Prep the data array to remove characters we do not want
-			// And also just add the quotes around the value for good measure.
-			foreach ($data as $key => &$value)
-			{
-				if ( is_array($value)) continue;
-
-				// TRUE AND FALSE values are for short hand conditionals,
-				// like {if logged_in} and so we have no need to remove
-				// unwanted characters and we do not quote it.
-
-				if ($value != 'TRUE' && $value != 'FALSE' && ($key != $value OR $embedded_tags !== TRUE))
-				{
-					$value = '"'.
-								  str_replace(array("'", '"', '(', ')', '$', '{', '}', "\n", "\r", '\\'),
-											  array('&#39;', '&#34;', '&#40;', '&#41;', '&#36;', '&#123;', '&#125;', '', '', '&#92;'),
-											  (strlen($value) > 100) ? substr(htmlspecialchars($value), 0, 100) : $value
-											  ).
-								  '"';
-				}
-
-				$md5_key = "'".base64_encode($prep_id.md5($key))."'";
-				$protect[$key] = $md5_key;
-				$switch[$md5_key] = $value;
-
-				if ($prefix != '')
-				{
-					$md5_key = "'".base64_encode($prep_id.md5($prefix.$key))."'";
-					$protect[$prefix.$key] = $md5_key;
-					$switch[$md5_key] = $value;
 				}
 			}
 
