@@ -2626,7 +2626,10 @@ class EE_Functions {
 		$vars = $return[1];
 		unset($return);
 
-		if (count($vars) == 0) return $str;
+		if (count($vars) == 0)
+		{
+			return $str;
+		}
 
 		$switch  = array();
 		$protect = array();
@@ -2647,6 +2650,8 @@ class EE_Functions {
 
 		if (preg_match_all("/".preg_quote(LD)."((if:else)*if)\s+(.*?)".preg_quote(RD)."/s", $str, $matches))
 		{
+			var_dump($matches);
+
 			// Catch unsafe conditionals and exit with an error
 			foreach ($matches[3] as $match)
 			{
@@ -2663,32 +2668,40 @@ class EE_Functions {
 			}
 
 			// remove valid operators, we don't need to clean those
-			$matches['t'] = str_replace($valid, ' ', $matches[3]);
+			$conditionals_without_operators = str_replace($valid, ' ', $matches[3]);
 
 			// Find what we need, nothing more!!
 			$data = array();
 
-			foreach($matches['t'] as $cond)
+			foreach ($conditionals_without_operators as $condition)
 			{
-				if (trim($cond) == '') continue;
+				$condition = trim($condition);
 
-				$x = preg_split("/\s+/", trim($cond)); $i=0;
-
-				do
+				if ($condition == '')
 				{
-					if (array_key_exists($x[$i], $vars))
+					continue;
+				}
+
+				$words = preg_split("/\s+/", $condition);
+
+				foreach ($words as $i => $word)
+				{
+					if (array_key_exists($word, $vars))
 					{
-						$data[$x[$i]] = trim($vars[$x[$i]]);
+						$data[$word] = trim($vars[$word]);
 					}
-					elseif($embedded_tags === TRUE && ! is_numeric($x[$i]))
+					elseif ($embedded_tags === TRUE && ! is_numeric($word))
 					{
-						$data[$x[$i]] = $x[$i];
+						$data[$word] = $word;
 					}
 
-					if ($i > 500) break; ++$i;
+					if ($i > 500)
+					{
+						break;
+					}
 				}
-				while(isset($x[$i]));
 			}
+
 
 			if ($safety == 'y')
 			{
@@ -2789,7 +2802,7 @@ class EE_Functions {
 				$done = array();
 			}
 
-			for($i=0, $s = count($matches[0]); $i < $s; ++$i)
+			for ($i = 0, $s = count($matches[0]); $i < $s; ++$i)
 			{
 				if ($safety == 'y' && ! in_array($matches[0][$i], $done))
 				{
