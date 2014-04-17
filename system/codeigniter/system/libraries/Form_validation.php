@@ -994,8 +994,7 @@ class CI_Form_validation {
 	 */
 	function valid_email($str)
 	{
-		$this->CI->load->helper('email');
-		return valid_email($str);
+		return (bool) filter_var($str, FILTER_VALIDATE_EMAIL);
 	}
 
 	// --------------------------------------------------------------------

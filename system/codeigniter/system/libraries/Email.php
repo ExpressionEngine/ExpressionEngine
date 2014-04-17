@@ -1025,8 +1025,7 @@ class CI_Email {
 	 */
 	public function valid_email($email)
 	{
-		$this->CI->load->helper('email');
-		return valid_email($email);
+		return (bool) filter_var($email, FILTER_VALIDATE_EMAIL);
 	}
 
 	// --------------------------------------------------------------------
