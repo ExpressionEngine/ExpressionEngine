@@ -2239,6 +2239,20 @@ div#template_keywords_reset span {
 	border-color: 		#f6b5b5;
 }
 
+#url_manager tr th:first-child,
+#url_manager tr td:first-child {
+	width: 2px;
+}
+
+#url_manager tr td:first-child {
+	background: #f5f6f5 url('../images/grid-sprite.png') no-repeat -66px 10px;
+	cursor: move;
+	cursor: hand;
+	cursor: grab !important;
+	cursor: -moz-grab;
+	cursor: -webkit-grab;
+}
+
 /* Edit Page */
 .status_open {
 	color:				#093;
