@@ -2635,10 +2635,12 @@ class EE_Functions {
 		$protect = array();
 		$prep_id = $this->random('alpha', 3);
 
-		$valid = array('!=','==','<=','>=','<','>','<>','%',
-						'AND', 'XOR', 'OR','&&','||',
-						')','(',
-						'TRUE', 'FALSE');
+		$valid = array(
+			'!=','==','<=','>=','<','>','<>','%',
+			'AND', 'XOR', 'OR','&&','||',
+			')','(',
+			'TRUE', 'FALSE'
+		);
 
 		$str = str_replace(LD.'if:else'.RD, unique_marker('if_else_safety'), $str);
 
@@ -2701,7 +2703,6 @@ class EE_Functions {
 					{
 						continue;
 					}
-
 
 					// Prep the data array to remove characters we do not want
 					// And also just add the quotes around the value for good measure.
@@ -2814,10 +2815,11 @@ class EE_Functions {
 						$matches[3][$i] = substr($matches[3][$i], 5);
 						$matches[2][$i] == 'elseif';
 
-						trigger_error('Invalid Conditional, Assumed ElseIf : '.str_replace(' :else',
-																							':else',
-																							$matches[0][$i]),
-									  E_USER_WARNING);
+						trigger_error(
+							'Invalid Conditional, Assumed ElseIf : '.
+								str_replace(' :else', ':else', $matches[0][$i]),
+							E_USER_WARNING
+						);
 					}
 
 					// Now we parse the conditional looking for things we do
