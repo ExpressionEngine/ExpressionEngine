@@ -34,8 +34,11 @@ class Updater {
 	 */
 	public function do_update()
 	{
+		ee()->load->dbforge();
+
 		$steps = new ProgressIterator(
 			array(
+				'_update_template_routes_table',
 				'_set_hidden_template_indicator'
 			)
 		);
@@ -44,6 +47,7 @@ class Updater {
 		{
 			$this->$v();
 		}
+
 		return TRUE;
 	}
 
@@ -62,6 +66,30 @@ class Updater {
 			));
 		}
 	}
+
+	// -------------------------------------------------------------------
+
+	/**
+	 * Add a column to the Template Routes table for storing the parse order
+	 * 
+	 * @access private
+	 * @return void
+	 */
+	private function _update_template_routes_table()
+	{
+		ee()->smartforge->add_column(
+			'template_routes',
+			array(
+				'order' => array(
+					'type'			=> 'int',
+					'constraint'    => 10,
+					'unsigned'		=> TRUE,
+					'null'			=> FALSE
+				)
+			)
+		);
+	}
+
 }
 /* END CLASS */
 
