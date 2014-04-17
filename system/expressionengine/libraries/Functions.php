@@ -2686,6 +2686,11 @@ class EE_Functions {
 
 				foreach ($words as $i => $word)
 				{
+					if ($i > 500)
+					{
+						break;
+					}
+
 					if (array_key_exists($word, $vars))
 					{
 						$value = trim($vars[$word]);
@@ -2716,23 +2721,9 @@ class EE_Functions {
 							$value = '"' . $value . '"';
 						}
 
-						$md5_key = "'".base64_encode($prep_id.md5($word))."'";
-						$protect[$word] = $md5_key;
+						$md5_key = "'".base64_encode($prep_id.md5($prefix.$word))."'";
+						$protect[$prefix.$word] = $md5_key;
 						$switch[$md5_key] = $value;
-
-						if ($prefix != '')
-						{
-							$md5_key = "'".base64_encode($prep_id.md5($prefix.$word))."'";
-							$protect[$prefix.$word] = $md5_key;
-							$switch[$md5_key] = $value;
-						}
-					}
-
-					$data[$word] = $value;
-
-					if ($i > 500)
-					{
-						break;
 					}
 				}
 			}
