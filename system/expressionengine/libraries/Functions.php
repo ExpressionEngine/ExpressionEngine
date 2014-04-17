@@ -2649,8 +2649,6 @@ class EE_Functions {
 
 		if (preg_match_all("/".preg_quote(LD)."((if:else)*if)\s+(.*?)".preg_quote(RD)."/s", $str, $matches))
 		{
-			var_dump($matches);
-
 			// Catch unsafe conditionals and exit with an error
 			foreach ($matches[3] as $match)
 			{
@@ -2699,6 +2697,11 @@ class EE_Functions {
 					{
 						$value = $word;
 					}
+					else
+					{
+						continue;
+					}
+
 
 					// Prep the data array to remove characters we do not want
 					// And also just add the quotes around the value for good measure.
