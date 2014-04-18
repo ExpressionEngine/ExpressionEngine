@@ -3,6 +3,7 @@ namespace EllisLab\ExpressionEngine\Model;
 
 use EllisLab\ExpressionEngine\Model\Error\Errors;
 use EllisLab\ExpressionEngine\Model\Query\QueryBuilder;
+use EllisLab\ExpressionEngine\Model\Relationship\Cascade;
 use EllisLab\ExpressionEngine\Model\Relationship\RelationshipBag;
 use EllisLab\ExpressionEngine\Model\Relationship\RelationshipQuery;
 
@@ -37,7 +38,6 @@ abstract class Model {
 	protected static $_validation_rules = array();
 	protected static $_relationships = array();
 
-
 	/**
 	 *
 	 */
@@ -62,6 +62,7 @@ abstract class Model {
 	 *
 	 */
 	protected $_dirty = array();
+
 
 	/**
 	 * Initialize this model with a set of data to set on the gateway.
@@ -301,21 +302,36 @@ abstract class Model {
 	 */
 	public function save()
 	{
+		// TODO validate
+		// Two options, call it here and have it cascade, or call it
+		// in the callback and use that cascade. Should probably do it
+		// here so that nothing happens if something doesn't validate.
+
 		$this->map();
-		$cascade = func_get_args();
+		$gateways = $this->_gateways;
 
-		$errors = call_user_func_array(array($this, 'validate'), $cascade);
-		if ($errors->exist())
+		$c = $this->getCascade('save', func_get_args());
+
+		/* for delete:
+		$c->stopIf('keysNotEqual'); // require identical keys to traverse
+		*/
+		var_dump(get_called_class());
+
+
+		$c->walk(function($self) use ($gateways)
 		{
-			throw new \Exception('Model failed to validate on save call!');
-		}
+			foreach ($gateways as $gateway)
+			{
+				$gateway->save();
+			}
+		});
 
-		foreach($this->_gateways as $gateway)
-		{
-			$gateway->save();
-		}
+		return $this;
+	}
 
-		$this->cascade($cascade, 'save');
+	protected function getCascade($method, $user_cascade)
+	{
+		return new Cascade($this, $method, $user_cascade);
 	}
 
 	/**
@@ -480,12 +496,15 @@ abstract class Model {
 
 		$query = new RelationshipQuery($this, $info);
 
-		// No data, if no id as well, then we're in a query
-		// or importing (@see `fromArray()`). Will just return metadata
-		if ($this->getId() === NULL)
+		// Object not in the db? That means we're in a query
+		// or importing (@see `fromArray()`). Just return metadata.
+		if ($this->isNew())
 		{
 			return $query->eager($this->_alias_service);
 		}
+
+		var_dump('Lazy Query '.$to_name);
+
 
 		return $query->lazy($this->_factory);
 	}
@@ -533,85 +552,20 @@ abstract class Model {
 	{
 		$this->_related_models->set($name, $value);
 
-		$info = $this->getRelationshipInfo($name);
-
-		// update the related key
-		switch ($info->type)
-		{
-			case 'one_to_one':
-				if ($info->key != static::getMetaData('primary_key'))
-				{
-					$this->{$info->key} = $value->{$info->to_key};
-				}
-
-				$to_class = $info->to_class;
-
-				if ($info->to_key != $to_class::getMetaData('primary_key'))
-				{
-					$value->{$info->to_key} = $this->{$info->key};
-				}
-				break;
-			case 'one_to_many':
-				foreach ($value as $model)
-				{
-					$value->{$info->to_key} = $this->{$info->key};
-				}
-				break;
-			case 'many_to_one':
-				$this->{$info->key} = $value->{$info->to_key};
-				break;
-			case 'many_to_many':
-				// nada
-				break;
-		}
+		$this->getRelationshipInfo($name)->connect($this, $value);
 
 		return $this;
 	}
 
-	private function getRelationshipInfo($name)
+	public function getRelationshipInfo($name)
 	{
-		$relationships = static::getMetaData('relationships');
+		return $this->getGraphNode()->getEdgeByName($name);
+	}
 
-		$data = $relationships[$name];
-		$keys = array(
-			'name'  => $name,
-			'model'	=> $name,
-			'type'	=> NULL,
-			'key'	=> NULL,
-			'to_key'=> NULL
-		);
-
-		// make sure all the keys are there - as null if not given
-		$data = array_merge($keys, $data);
-
-		$to_class = $this->_alias_service->getRegisteredClass($data['model']);
-
-		// use a reasonable key structure
-		switch ($data['type'])
-		{
-			case 'one_to_many': // default: primary key of the one side (e.g group_id for template groups and templates)
-				$data['key']	= $data['key'] ?: static::getMetaData('primary_key');
-				$data['to_key']	= $data['to_key'] ?: $data['key'];
-				break;
-			case 'many_to_one': // default: same as one_to_many, but looked up in the other direction
-				$data['to_key'] = $data['to_key'] ?: $to_class::getMetaData('primary_key');
-				$data['key']	= $data['key'] ?: $data['to_key'];
-				break;
-			case 'many_to_many': // default: both primary keys on pivot
-				$data['key']	= $data['key'] ?: static::getMetaData('primary_key');
-				$data['to_key'] = $data['to_key'] ?: $to_class::getMetaData('primary_key');
-				break;
-			case 'one_to_one': // default: opposing keys, typically means one needs to be declared
-				$data['key']	= $data['key'] ?: $to_class::getMetaData('primary_key');
-				$data['to_key']	= $data['to_key'] ?: static::getMetaData('primary_key');
-				break;
-		}
-
-		// useful to know
-		$data['to_class'] = $to_class;
-		$data['is_collection'] = (substr($data['type'], -4) == 'many');
-
-		return (object) $data;
+	public function getGraphNode()
+	{
+		$graph = $this->_factory->getRelationshipGraph();
+		return $graph->getNode(get_called_class());
 	}
 
 	/**
