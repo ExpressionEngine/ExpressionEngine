@@ -98,6 +98,9 @@ class EE_Core {
 		define('PATH_DICT', 	APPPATH.'config/');
 		define('AJAX_REQUEST',	ee()->input->is_ajax_request());
 
+		// Load the default caching driver
+		ee()->load->driver('cache');
+
 		// Load DB and set DB preferences
 		ee()->load->database();
 		ee()->db->swap_pre = 'exp_';
@@ -117,9 +120,6 @@ class EE_Core {
 		}
 
 		ee()->config->site_prefs(ee()->config->item('site_name'));
-
-		// Load the default caching driver
-		ee()->load->driver('cache');
 
 		// this look backwards, but QUERY_MARKER is only used where we MUST
 		// have a ?, and do not want to double up

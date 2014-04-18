@@ -1563,6 +1563,8 @@ PAPAYA;
 
 		$this->load->database($db[$this->active_group], FALSE, TRUE);
 
+		// Force caching off
+		$this->db->cache_off();
 		$this->db->save_queries	= TRUE;
 
 		if ( ! $this->db->initialize($create_db))
