@@ -1,7 +1,8 @@
 <?php
 namespace EllisLab\ExpressionEngine\Model\Template;
 
-use EllisLab\ExpressionEngine\Model\Model as Model;
+use EllisLab\ExpressionEngine\Model\Model;
+use EllisLab\ExpressionEngine\Model\Collection;
 
 class TemplateGroup extends Model {
 
@@ -43,7 +44,7 @@ class TemplateGroup extends Model {
 		return $this->getRelated('Templates');
 	}
 
-	public function setTemplates(array $templates)
+	public function setTemplates(Collection $templates)
 	{
 		return $this->setRelated('Templates', $templates);
 	}
@@ -53,7 +54,7 @@ class TemplateGroup extends Model {
 		return $this->getRelated('MemberGroups');
 	}
 
-	public function setMemberGroups(array $member_groups)
+	public function setMemberGroups(Collection $member_groups)
 	{
 		return $this->setRelated('MemberGroups', $member_groups);
 	}
