@@ -2915,7 +2915,7 @@ class EE_Functions {
 					}
 
 					$buffer = str_replace('FALSE (', 'FALSE && (', $buffer);
-					$buffer = preg_replace('/FALSE(  FALSE)+/', 'FALSE', $buffer);
+					$buffer = preg_replace('/FALSE(\s+FALSE)+/', 'FALSE', $buffer);
 
 					$matches[3][$i] = $buffer;
 				}
