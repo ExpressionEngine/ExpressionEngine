@@ -91,6 +91,13 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			// testing string protection
 			$this->protectingStrings(),
 
+			// testing embedded tags
+			$this->embeddedTags(),
+
+			// testing that our safety cleanup does its job
+			$this->safteyCleanup(),
+			$this->safetyFalseCleanup(),
+
 			// wonky tests parse despite createing php errors
 			// we should try to invalidate all of these, so for our new conditional
 			// parsing these tests should be rewriten as failing
@@ -140,7 +147,6 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 		return array(
 			array('Two conditionals', '{if 1 == 1}out{/if} {if 2 == 2}out{/if}', '{if 1 == 1}out{/if} {if 2 == 2}out{/if}'),
 			array('Very long string', '{if "test"}out{/if} {if "long var_a46d7cbbeb2015d076399df72e0e63791 string"}out{/if}', '{if "test"}out{/if} {if "long var_a46d7cbbeb2015d076399df72e0e63791 string"}out{/if}'),
-
 		);
 	}
 
@@ -266,6 +272,37 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			array('Protecting Backslashes',			"{if xyz == '{$bs}{$bs}'}out{/if}",	'{if "&#92;" == "&#92;"}out{/if}',					array('xyz' => $bs)),
 			array('Allowing Escape Characters',		"{if xyz == '{$bs}''}out{/if}",		'{if "&#92;" == "&#39;"}out{/if}',					array('xyz' => $bs)),
 			array('Nested Braces',					"{if xyz == '}great'}{/if}",		'{if "" == "&#125;great"}{/if}',					array('xyz' => '')),
+		);
+	}
+
+	protected function embeddedTags()
+	{
+		return array(
+			array('Unqouted Embedded Tag',				'{if {exp:foo:bar}}out{/if}',	'{if {exp:foo:bar}}out{/if}'),
+			array('Double Quoted Embedded Tag',			'{if "{exp:foo:bar}"}out{/if}',	'{if "{exp:foo:bar}"}out{/if}'),
+			array('Single Quoted Embedded Tag',			"{if '{exp:foo:bar}'}out{/if}",	'{if "{exp:foo:bar}"}out{/if}'),
+			array('Embedded Tag Before Conditional',	'{exp:foo:bar}{if 5}out{/if}',	'{exp:foo:bar}{if 5}out{/if}'),
+			array('Embedded Tag After Conditional',		'{if 5}out{/if}{exp:foo:bar}',	'{if 5}out{/if}{exp:foo:bar}'),
+			array('User Supplied Embedded Tag',			'{if baz}out{/if}',				'{if "&#123;exp:foo:bar&#125;"}out{/if}',	array('baz' => '{exp:foo:bar}')),
+		);
+	}
+
+	protected function safteyCleanup()
+	{
+		return array(
+			array('Function Cleaning',				'{if phpinfo()}out{/if}',		'{if FALSE && ()}out{/if}'),
+			array('Single Variable Cleaning',		'{if foo}out{/if}',				'{if FALSE}out{/if}'),
+			array('Double Variable Cleaning',		'{if foo bar}out{/if}',			'{if FALSE}out{/if}'),
+			array('Tripple Variable Cleaning',		'{if foo bar baz}out{/if}',		'{if FALSE}out{/if}'),
+		);
+	}
+
+	protected function safetyFalseCleanup()
+	{
+		return array(
+			array('FALSE ()',				'{if FALSE ()}out{/if}',			'{if FALSE && ()}out{/if}'),
+			array('FALSE  FALSE',			'{if FALSE  FALSE}out{/if}',		'{if FALSE}out{/if}'),
+			array('FALSE  FALSE  FALSE',	'{if FALSE  FALSE  FALSE}out{/if}',	'{if FALSE}out{/if}'),
 		);
 	}
 
