@@ -30,8 +30,6 @@ class Query {
 	 */
 	private $root = NULL;
 	private $model_index = array();
-	private $results = array();
-	private $result_index = array();
 
 	public function __construct(ModelFactory $factory, AliasService $alias_service, $model_name)
 	{
@@ -568,7 +566,8 @@ class Query {
 		//
 		// 	This will allow us to create the models we've pulled and
 		// 	correctly reconstruct the tree.
-		$this->results = array();
+		$results = array();
+		$result_index = array();
 
 		foreach ($database_result as $row)
 		{
@@ -622,10 +621,10 @@ class Query {
 
 				if ($this->isRootModel($path))
 				{
-					if ( ! isset($this->result_index[$primary_key]))
+					if ( ! isset($result_index[$primary_key]))
 					{
-						$this->results[] = $model;
-						$this->result_index[$primary_key] = TRUE;
+						$results[] = $model;
+						$result_index[$primary_key] = TRUE;
 					}
 
 					continue;
@@ -657,7 +656,7 @@ class Query {
 			}
 		}
 
-		return $this->results;
+		return $results;
 	}
 
 	/**
