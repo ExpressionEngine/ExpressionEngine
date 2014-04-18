@@ -2574,15 +2574,7 @@ class EE_Functions {
 			$l = $new_length;
 		}
 
-		if (count($variables))
-		{
-			$vars = array_merge(
-				$vars,
-				array_combine($variable_placeholders, $variables)
-			);
-		}
-
-		return array($str, $vars);
+		return array($str, array_combine($variable_placeholders, $variables));
 	}
 
 	// --------------------------------------------------------------------
@@ -2622,8 +2614,17 @@ class EE_Functions {
 
 		}
 
+		$quoted_embedded_tags = array();
+		foreach ($return[1] as $key => $value)
+		{
+			if (stristr($value, LD.'exp:'))
+			{
+				$quoted_embedded_tags[] = $key;
+			}
+		}
+
 		$str = $return[0];
-		$vars = $return[1];
+		$vars = array_merge($vars, $return[1]);
 		unset($return);
 
 		if (count($vars) == 0)
@@ -2686,6 +2687,7 @@ class EE_Functions {
 
 				foreach ($words as $i => $word)
 				{
+					$do_not_encode_value = FALSE;
 					if ($i > 500)
 					{
 						break;
@@ -2694,6 +2696,10 @@ class EE_Functions {
 					if (array_key_exists($word, $vars))
 					{
 						$value = trim($vars[$word]);
+						if (in_array($word, $quoted_embedded_tags))
+						{
+							$do_not_encode_value = TRUE;
+						}
 					}
 					elseif ($embedded_tags === TRUE && ! is_numeric($word))
 					{
@@ -2708,21 +2714,28 @@ class EE_Functions {
 					// And also just add the quotes around the value for good measure.
 					if ( ! is_array($value))
 					{
-						// TRUE AND FALSE values are for short hand conditionals,
-						// like {if logged_in} and so we have no need to remove
-						// unwanted characters and we do not quote it.
-
-						if ($value != 'TRUE' && $value != 'FALSE' && ($word != $value OR $embedded_tags !== TRUE))
+						if ($do_not_encode_value)
 						{
-							$value = (strlen($value) > 100) ? substr(htmlspecialchars($value), 0, 100) : $value;
-
-							$value = str_replace(
-								array("'", '"', '(', ')', '$', '{', '}', "\n", "\r", '\\'),
-								array('&#39;', '&#34;', '&#40;', '&#41;', '&#36;', '&#123;', '&#125;', '', '', '&#92;'),
-								$value
-							);
-
 							$value = '"' . $value . '"';
+						}
+						else
+						{
+							// TRUE AND FALSE values are for short hand conditionals,
+							// like {if logged_in} and so we have no need to remove
+							// unwanted characters and we do not quote it.
+
+							if ($value != 'TRUE' && $value != 'FALSE' && ($word != $value OR $embedded_tags !== TRUE))
+							{
+								$value = (strlen($value) > 100) ? substr(htmlspecialchars($value), 0, 100) : $value;
+
+								$value = str_replace(
+									array("'", '"', '(', ')', '$', '{', '}', "\n", "\r", '\\'),
+									array('&#39;', '&#34;', '&#40;', '&#41;', '&#36;', '&#123;', '&#125;', '', '', '&#92;'),
+									$value
+								);
+
+								$value = '"' . $value . '"';
+							}
 						}
 
 						$md5_key = "'".base64_encode($prep_id.md5($prefix.$word))."'";
