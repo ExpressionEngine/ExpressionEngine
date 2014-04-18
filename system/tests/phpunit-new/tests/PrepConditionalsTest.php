@@ -53,7 +53,7 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			"Double Prep with vars: ". $description
 		);
 
-		$str = $fns->prep_conditionals($str_in, array(), $safety = 'y', $prefix = '');
+		$str = $fns->prep_conditionals($str_in, array('whatthefoxsay' => 'Ring-ding-ding-ding-dingeringeding!'), $safety = 'y', $prefix = '');
 
 		$this->assertEquals(
 			$expected_out,
