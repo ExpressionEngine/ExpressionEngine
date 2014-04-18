@@ -530,10 +530,8 @@ class Query {
 	{
 		// Run the query
 		$result_array = $this->db->get()->result_array();
-		$collection = new Collection($this->parseDatabaseResult($result_array));
 
-
-		return $collection;
+		return new Collection($this->parseDatabaseResult($result_array));
 	}
 
 	/**
@@ -571,12 +569,15 @@ class Query {
 		// 	This will allow us to create the models we've pulled and
 		// 	correctly reconstruct the tree.
 		$this->results = array();
-		foreach($database_result as $row)
+
+		foreach ($database_result as $row)
 		{
 			$row_data = array();
-			foreach($row as $name=>$value)
+
+			foreach ($row as $name => $value)
 			{
 				list($path, $relationship_name, $model_name, $field_name) = explode('__', $name);
+
 				if ( ! isset($row_data[$path]))
 				{
 					$row_data[$path] = array(
@@ -584,20 +585,20 @@ class Query {
 						'__relationship_name' => $relationship_name
 					);
 				}
+
 				$row_data[$path][$field_name] = $value;
-
-
 			}
 
 			//echo 'Processing Row: <pre>'; var_dump($row_data); //echo '</pre>';
 
-			foreach ($row_data as $path=>$model_data)
+			foreach ($row_data as $path => $model_data)
 			{
 				// If this is an empty model that happened to have been grabbed due to the join,
 				// move on and don't do anything.
 				$model_class = $this->alias_service->getRegisteredClass($model_data['__model_name']);
 				$primary_key_name = $model_class::getMetaData('primary_key');
-				if ( $row_data[$path][$primary_key_name] === NULL)
+
+				if ($row_data[$path][$primary_key_name] === NULL)
 				{
 					unset($row_data[$path]);
 					continue;
@@ -610,7 +611,7 @@ class Query {
 				$primary_key_name = $model_class::getMetaData('primary_key');
 				$primary_key = $model_data[$primary_key_name];
 
-				if ( isset ($this->model_index[$model_name][$primary_key]))
+				if (isset($this->model_index[$model_name][$primary_key]))
 				{
 					$model = $this->model_index[$model_name][$primary_key];
 				}
@@ -626,19 +627,30 @@ class Query {
 						$this->results[] = $model;
 						$this->result_index[$primary_key] = TRUE;
 					}
+
 					continue;
 				}
 
 				$parent_model = $this->findModelParent($row_data, $path);
+
 				if ($parent_model === NULL)
 				{
 					throw new \Exception('Missing model parent!');
 				}
-				else if ($parent_model->hasRelated($relationship_name, $primary_key))
+
+				// Reverse the relationship so we can fill in both sides
+				// TODO we should not do this if $parent_model is really a child!
+				$reverse = $parent_model->getRelationshipInfo($relationship_name)->getInverseOn($model);
+
+				if ($reverse)
 				{
-					continue;
+					if ( ! $model->hasRelated($reverse->name))
+					{
+						$model->addRelated($reverse->name, $parent_model);
+					}
 				}
-				else
+
+				if ( ! $parent_model->hasRelated($relationship_name, $primary_key))
 				{
 					$parent_model->addRelated($relationship_name, $model);
 				}
@@ -696,6 +708,7 @@ class Query {
 
 		$model_name = $model_data['__model_name'];
 		$model_class = $this->alias_service->getRegisteredClass($model_name);
+
 		$primary_key_name = $model_class::getMetaData('primary_key');
 		$primary_key = $model_data[$primary_key_name];
 
@@ -703,6 +716,7 @@ class Query {
 		{
 			return $this->model_index[$model_name][$primary_key];
 		}
+
 		throw new \Exception('Model parent has not been created yet for child path "' . $child_path . '" and model "' . $model_name . '"');
 	}
 
