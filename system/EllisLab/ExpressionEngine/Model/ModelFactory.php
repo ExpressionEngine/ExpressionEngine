@@ -5,6 +5,8 @@ use EllisLab\ExpressionEngine\Core\AliasService;
 use EllisLab\ExpressionEngine\Core\Dependencies;
 use EllisLab\ExpressionEngine\Model\Query\Query;
 
+use EllisLab\ExpressionEngine\Model\Relationship\RelationshipGraph;
+
 /**
  * The model builder is our entry point. Any external dependencies should be
  * explicitly declared here by providing getters similar to getValidation().
@@ -12,6 +14,8 @@ use EllisLab\ExpressionEngine\Model\Query\Query;
 class ModelFactory {
 
 	protected $alias_service;
+	protected $di;
+	protected $relationship_graph;
 
 	public function __construct(Dependencies $di, AliasService $aliases)
 	{
@@ -81,7 +85,7 @@ class ModelFactory {
 			throw new \InvalidArgumentException('Can only create Gateways.');
 		}
 
-		return new $class($this->getValidation(), $this->alias_service, $data, $dirty);
+		return new $class($this->getValidation(), $data);
 	}
 
 	/**
@@ -92,6 +96,30 @@ class ModelFactory {
 	public function getValidation()
 	{
 		return $this->di->getValidation();
+	}
+
+	/**
+	 * Get the external validation.
+	 *
+	 * @return \Ellislab\ExpressionEngine\Core\Validation
+	 */
+	public function getAliasService()
+	{
+		return $this->alias_service;
+	}
+
+	public function getRelationshipGraph()
+	{
+		if ( ! isset($this->relationship_graph))
+		{
+			$this->relationship_graph = $this->newRelationshipGraph();
+		}
+		return $this->relationship_graph;
+	}
+
+	protected function newRelationshipGraph()
+	{
+		 return new RelationshipGraph($this->getAliasService());
 	}
 
 	/**
