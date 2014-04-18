@@ -38,10 +38,27 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 		}
 
 		$fns = new FunctionsStub('randomstring');
+
+		$str = $fns->prep_conditionals($str_in, $vars, $safety = 'y', $prefix = '');
+
 		$this->assertEquals(
 			$expected_out,
-			$fns->prep_conditionals($str_in, $vars, $safety = 'y', $prefix = ''),
+			$str,
 			$description
+		);
+
+		$this->assertEquals(
+			$expected_out,
+			$fns->prep_conditionals($str, $vars, $safety = 'y', $prefix = ''),
+			"Double Prep with vars: ". $description
+		);
+
+		$str = $fns->prep_conditionals($str_in, array(), $safety = 'y', $prefix = '');
+
+		$this->assertEquals(
+			$expected_out,
+			$fns->prep_conditionals($str, $vars, $safety = 'y', $prefix = ''),
+			"Double Prep without vars: ". $description
 		);
 	}
 
