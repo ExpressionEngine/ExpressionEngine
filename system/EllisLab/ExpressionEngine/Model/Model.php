@@ -649,8 +649,9 @@ abstract class Model {
 			foreach ($relationship as $related_name => $related_cascade)
 			{
 				$relationship_getter = 'get' . $related_name;
-				$relationship = $this->$relationship_getter();
-				$export['related_models'][$related_name] = $relationship->toArray($related_cascade);
+				$related_data = $this->$relationship_getter();
+
+				$export['related_models'][$related_name] = $related_data->toArray($related_cascade);
 			}
 		}
 
@@ -659,7 +660,7 @@ abstract class Model {
 
 	public function fromArray($data)
 	{
-		unset($data[static::getMetaData('primary_key')]);
+		$data[static::getMetaData('primary_key')] = NULL;
 
 		if (isset($data['related_models']))
 		{
@@ -677,7 +678,8 @@ abstract class Model {
 						->fromArray($related_data);
 				}
 
-				$this->setRelated($relationship_name, $models);
+				$relationship_setter = 'set' . $relationship_name;
+				$this->$relationship_setter($models);
 			}
 
 			unset($data['related_models']);
@@ -689,7 +691,7 @@ abstract class Model {
 			$this->__set($key, $value);
 		}
 
-		return $this->restore();
+		return $this;
 	}
 
 	public function toJson()
@@ -715,7 +717,7 @@ abstract class Model {
 	public function fromXml($model_xml)
 	{
 		$dumper = new namespace\Serializers\XmlSerializer();
-		return $this->fromArray($dumper->unserialize($this, $model_xml));
+		return $dumper->unserialize($this, $model_xml);
 	}
 
 /*
