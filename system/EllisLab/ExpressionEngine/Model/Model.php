@@ -219,6 +219,11 @@ abstract class Model {
 		return $value;
 	}
 
+	public function isNew()
+	{
+		return ($this->getId() === NULL);
+	}
+
 	/**
 	 * Get the primary id for this model
 	 *
