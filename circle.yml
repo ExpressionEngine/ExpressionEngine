@@ -7,9 +7,7 @@ machine:
   hosts:
     ee2.test: 127.0.0.1
   environment:
-    php0: 5.3.10
-    php1: 5.4.21
-    php2: 5.5.8
+    php_versions: 5.3.10 5.4.21 5.5.8
 
 dependencies:
   override:
@@ -32,5 +30,4 @@ checkout:
 
 test:
   override:
-    - "./system/tests/circleci/runtests.sh":
-        parallel: true
+    - "./system/tests/circleci/runtests.sh"

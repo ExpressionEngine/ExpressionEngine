@@ -527,6 +527,8 @@ class Comment {
 
 		if ($enabled['pagination'])
 		{
+			$pagination->build($pagination->total_items, $pagination->per_page);
+
 			ee()->db->limit($pagination->per_page, $pagination->offset);
 		}
 		else
@@ -551,12 +553,6 @@ class Comment {
 		if (count($result_ids) == 0)
 		{
 			return ee()->TMPL->no_results();
-		}
-
-		if ($enabled['pagination'])
-		{
-			// Build pagination
-			$pagination->build($pagination->total_items, $pagination->per_page);
 		}
 
 		/** -----------------------------------
@@ -2793,19 +2789,19 @@ class Comment {
 
 		if (ee()->input->post('save_info'))
 		{
-			ee()->input->set_cookie('save_info',	'yes',				60*60*24*365);
-			ee()->input->set_cookie('my_name',		$_POST['name'],		60*60*24*365);
-			ee()->input->set_cookie('my_email',	$_POST['email'],	60*60*24*365);
-			ee()->input->set_cookie('my_url',		$_POST['url'],		60*60*24*365);
-			ee()->input->set_cookie('my_location',	$_POST['location'],	60*60*24*365);
+			ee()->input->set_cookie('save_info', 'yes', 60*60*24*365);
+			ee()->input->set_cookie('my_name', $_POST['name'], 60*60*24*365);
+			ee()->input->set_cookie('my_email', $_POST['email'], 60*60*24*365);
+			ee()->input->set_cookie('my_url', $_POST['url'], 60*60*24*365);
+			ee()->input->set_cookie('my_location', $_POST['location'], 60*60*24*365);
 		}
 		else
 		{
-			ee()->input->set_cookie('save_info',	'no', 60*60*24*365);
-			ee()->input->set_cookie('my_name',		'');
-			ee()->input->set_cookie('my_email',	'');
-			ee()->input->set_cookie('my_url',		'');
-			ee()->input->set_cookie('my_location',	'');
+			ee()->input->set_cookie('save_info', 'no', 60*60*24*365);
+			ee()->input->delete_cookie('my_name');
+			ee()->input->delete_cookie('my_email');
+			ee()->input->delete_cookie('my_url');
+			ee()->input->delete_cookie('my_location');
 		}
 
 		// -------------------------------------------

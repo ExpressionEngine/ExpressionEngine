@@ -1288,9 +1288,8 @@ GRID_FALLBACK;
 			{
 				$conditional_errors['error:' . $error['field']] = $error['error'];
 			}
-
-			unset($conditional_errors['field_errors']);
 		}
+
 
 		return $conditional_errors;
 	}
