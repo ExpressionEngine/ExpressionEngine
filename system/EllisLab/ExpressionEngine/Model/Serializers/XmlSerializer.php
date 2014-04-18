@@ -5,7 +5,7 @@ use \SimpleXMLElement;
 
 class XmlSerializer implements SerializerInterface {
 
-	public function serialize($model, $cascade = array())
+	public function serialize($model, array $cascade = array())
 	{
 		$data = call_user_func_array(array($model, 'toArray'), $cascade);
 
@@ -37,12 +37,7 @@ class XmlSerializer implements SerializerInterface {
 		$xml = new SimpleXMLElement($data);
 		$xml_attributes = $xml->attributes();
 
-		if ($xml_attributes != get_class($model))
-		{
-			throw new \Exception('Cannot unserialize: Data was exported for a different model.');
-		}
-
-		return $this->relatedFromXml($xml);
+		return $model->fromArray($this->relatedFromXml($xml));
 	}
 
 	protected function relatedFromXml($xml, $related = FALSE)
