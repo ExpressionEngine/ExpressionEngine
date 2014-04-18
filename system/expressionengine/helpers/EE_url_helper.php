@@ -54,7 +54,7 @@ function cp_url($path, $qs = '')
 
 	$path = rtrim('?/cp/'.$path, '/');
 
-	return SELF.$path.rtrim('?'.$qs, '?');
+	return SELF.$path.rtrim('&'.$qs, '?');
 }
 
 // ------------------------------------------------------------------------

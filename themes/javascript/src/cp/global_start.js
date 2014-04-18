@@ -313,7 +313,7 @@ EE.cp.cleanUrl = function(i, url) {
 	QS = QS.replace(lTrimAmp, '').replace(rTrimAmp, '');
 
 	if (QS) {
-		newUrl += '?' + QS;
+		newUrl += '&' + QS;
 	}
 
 	return newUrl.replace(rTrimAmp, '');
