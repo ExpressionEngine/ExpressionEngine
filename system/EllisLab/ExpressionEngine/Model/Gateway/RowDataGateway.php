@@ -17,7 +17,6 @@ function getFieldList($class)
 {
 	return get_class_vars($class);
 }
-
 /**
  * Base Gateway Class
  *
@@ -166,6 +165,7 @@ abstract class RowDataGateway {
 		{
 			return $errors;
 		}
+			return $errors;
 
 		$validation_factory = $validation_factory ?: $this->_validation_factory;
 
@@ -173,7 +173,7 @@ abstract class RowDataGateway {
 		{
 			if (isset($validation_rules[$property]))
 			{
-				$validator = $validation->getValidator();
+				$validator = $validation_factory->getValidator();
 
 				if ( ! $validator->validate($validation_rules[$property], $this->$property))
 				{
