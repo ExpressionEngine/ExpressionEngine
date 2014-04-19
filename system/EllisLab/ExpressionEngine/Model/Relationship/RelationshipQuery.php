@@ -10,12 +10,22 @@ class RelationshipQuery {
 	private $info;
 	private $from_model;
 
+	/**
+	 * @param Model $from_model model that is running the qyer
+	 * @param AbstractRelationship $info  Relationship information
+	 */
 	public function __construct(Model $from_model, $info)
 	{
 		$this->info = $info;
 		$this->from_model = $from_model;
 	}
 
+	/**
+	 * Grab the information needed for the eager query.
+	 *
+	 * @param AliasService  $alias_service
+	 * @return RelationshipMeta  Database specific metdata
+	 */
 	public function eager(ModelAliasService $alias_service)
 	{
 		return new RelationshipMeta(
@@ -27,6 +37,12 @@ class RelationshipQuery {
 		);
 	}
 
+	/**
+	 * Fetch data with a lazy query.
+	 *
+	 * @param ModelFactory $factory
+	 * @return Model or Collection  query results
+	 */
 	public function lazy(ModelFactory $factory)
 	{
 		$from_key = $this->info->key;
@@ -46,6 +62,9 @@ class RelationshipQuery {
 		return $query->first();
 	}
 
+	/**
+	 * Compile the from data for the
+	 */
 	private function createFromArray()
 	{
 		$from_class = get_class($this->from_model);
