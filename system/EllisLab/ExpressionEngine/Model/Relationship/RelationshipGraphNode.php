@@ -121,6 +121,6 @@ class RelationshipGraphNode {
 				return new ManyToMany($from_class, $to_class, $name);
 		}
 
-		throw new Exception('Invalid or Missing Relationship Type');
+		throw new \Exception('Invalid or Missing Relationship Type for "'. $name. '" in '.$from_class.'.');
 	}
 }
