@@ -5,21 +5,31 @@ namespace EllisLab\ExpressionEngine\Model\Relationship;
  * Implements the primary cascade code.
  *
  * The connections between models can be seen as a directed graph, where
- * vertices go from one to many nodes, or in other language, from parent
- * to child nodes. A parent node must be a one node, otherwise the relation-
- * ship does not resolve.
+ * vertices go from the parent node to the child node(s).
  *
- * When the graph is acyclic, walking the tree is simple, we simply follow
- * the outgoing edges of each node.
+ * For OneToMany and ManyToOne relationships, the parent node is the 'one'
+ * side, so that the edges of the graph will always be One --> Many.
+ *
+ * In a OneToOne the owner relationship is the one that does not contain
+ * the key of the other in its fields. This is similar to the 'one' side
+ * in a ManyToOne/OneToMany relationship.
+ *
+ * ManyToMany is special in that they are both outwards pointing from the
+ * pivot: Many <-- pivot --> Many. While we will essentially ignore the pivot
+ * when traversing as it is not a model concern, this restriction is still in
+ * place so that ManyToMany are only traversed if they are specified in the
+ * cascade
+ *
+ * When the graph is acyclic, walking it is simple, we simply follow the out-
+ * going edges of each node.
  * For cyclic graphs, we need to do a bit more magic. TODO
  *
- * The cascade can be overriden by the user, in which case the edges of the
- * graph are controlled by the user's cascade. This means that native edges
- * can be walked backwards. When a node has non many-to-many relationships that
- * are walked backwards we do not save the node. It is a child, so it needs the
- * ids from all of its parents before being saved.
- *
- * TODO many-to-many and cycles
+ * The developer can choose to specify their own "cascade" which controls the
+ * nodes that are walked. In that case the native edges can be walked backwards.
+ * When a node has non-ManyToMany relationships that are walked backwards, we
+ * do not apply the callback action to the node. Instead, we first walk to the
+ * parent to resolve the dependency, and then let the natural graph result in
+ * the children being traversed.
  *
  */
 /*
@@ -89,15 +99,29 @@ $templates[] = $newtemplate();
 $tg->save();
 
 
+Deleting needs to work differently, we don't want to query for everything
+that we might delete. So we really need to run another join.
+
+
+TODO many-to-many and cycles
+
+If there is a cycle, figure out the multiplicity of the edges between the two
+nodes and choose the edge with the most incoming edges to the fewest
+outgoing edges?
 
 */
 class Cascade {
 
 	private $model;
+	private $method;
 	private $graph_visits;
 	private $user_cascade;
-	private $cached_natives;
 
+	/**
+	 * @param Model $model			The starting model for the cascade
+	 * @param String $method		The method that was called (e.g. save, delete, etc)
+	 * @param Array  $user_cascade	The cascade specified by the user.
+	 */
 	public function __construct($model, $method, $user_cascade)
 	{
 		if (isset($user_cascade[0]) && $user_cascade[0] instanceOf GraphVisited)
@@ -112,9 +136,16 @@ class Cascade {
 		$this->model = $model;
 		$this->method = $method;
 		$this->user_cascade = $this->mapToKeys($user_cascade);
-		$this->cached_natives = $model->getGraphNode()->getAllEdges();
+		$this->graph_node = $model->getGraphNode();
 	}
 
+	/**
+	 * Walk the node tree, and call the action_callback on each in the correct
+	 * order.
+	 *
+	 * @param Closure $action_callback
+	 * @return void
+	 */
 	public function walk($action_callback)
 	{
 		// If there is a user cascade, we may need to walk a node in the wrong
@@ -122,20 +153,18 @@ class Cascade {
 		// case.
 		if ( ! empty($this->user_cascade))
 		{
-			$dependencies = $this->dependenciesFor($this->model);
+			$dependencies = $this->getDependencies();
 			$dependencies = $this->graph_visits->rejectVisited($dependencies);
-
 			$dependencies = array_intersect_key($this->user_cascade, $dependencies);
 
 			if (count($dependencies))
 			{
-				$first_dependency_getter = 'get'.key($dependencies);
+				$dependency_getter = key($dependencies);
 
-				// TODO The parent model isn't actually connected to the child,
-				// so this will query.
-				$this->model->$first_dependency_getter()->save(
+				$this->model->$dependency_getter->save(
 					$this->graph_visits
 				);
+
 				return; // the dependency will walk back down and call save again
 			}
 		}
@@ -147,7 +176,7 @@ class Cascade {
 		$this->graph_visits->addVisited(get_class($this->model));
 
 		// Grab all the children we need to recurse into
-		$child_relationships = $this->childrenFor($this->model);
+		$child_relationships = $this->getChildren();
 
 		foreach ($child_relationships as $name => $collection)
 		{
@@ -164,7 +193,7 @@ class Cascade {
 
 			// Propagate keys
 			// TODO multiple edges? Check this.
-			$reldata = $this->cached_natives[$name];
+			$reldata = $this->graph_node->getEdgeByName($name);
 			$collection->{$reldata->to_key} = $this->model->{$reldata->key};
 
 			// walk down the graph
@@ -172,52 +201,53 @@ class Cascade {
 		}
 	}
 
-	private function childrenFor($model)
+	/**
+	 * Get all children of the current node. Children are at the end of our
+	 * outgoing edges, but we only want those that we actually have data for.
+	 */
+	private function getChildren()
 	{
-		$children = array();
+		$children = $this->graph_node->getAllOutgoingEdges();
 
-		foreach ($this->cached_natives as $name => $info)
+		foreach ($children as $name => $info)
 		{
-			if ($info->is_parent && $this->model->hasRelated($name))
+			if ($this->model->hasRelated($name))
 			{
-				$relationship_getter = 'get'.$name;
 				$children[$name] = $this->model->$name;
+			}
+			else
+			{
+				unset($children[$name]);
 			}
 		}
 
 		return $children;
 	}
 
-	private function dependenciesFor($model)
+	/**
+	 * Get all dependencies by class name. Dependencies are the parent nodes
+	 * or, in other words, the nodes on the incoming edges.
+	 */
+	private function getDependencies()
 	{
-		$deps = array();
+		$dependencies = $this->graph_node->getAllIncomingEdges();
 
-		foreach ($this->cached_natives as $name => $info)
+		foreach ($dependencies as $name => $info)
 		{
-			if ( ! $info->is_parent)
-			{
-				$deps[$name] = $info->to_class;
-			}
+			$dependencies[$name] = $info->to_class;
 		}
 
-		return $deps;
+		return $dependencies;
 	}
 
-	private function collectNatives()
-	{
-		$m = $this->model;
-
-		$natives = array();
-		$names = array_keys($m::getMetaData('relationships'));
-
-		foreach ($names as $name)
-		{
-			$natives[$name] = $this->model->getRelationshipInfo($name);
-		}
-
-		return $natives;
-	}
-
+	/**
+	 * Normalize the user cascade so that all of the numeric keys match the
+	 * array syntax.
+	 *
+	 * In: save('Channel', array('Member' => 'MemberGroup'))
+	 * Out: array('Channel' => array(), 'Member' => array('MemberGroup'))
+	 *
+	 */
 	private function mapToKeys($user_cascade)
 	{
 		$out = array();
