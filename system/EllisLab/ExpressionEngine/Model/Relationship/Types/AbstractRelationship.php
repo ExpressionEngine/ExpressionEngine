@@ -17,6 +17,11 @@ abstract class AbstractRelationship {
 	protected $from;
 	protected $alias_service;
 
+	/**
+	 * @param String  $from_class	fully qualified classname of originating model
+	 * @param String  $to_class		fully qualified classname of target model
+	 * @param String  $name			name of the relationship on $from_class
+	 */
 	public function __construct($from_class, $to_class, $name)
 	{
 		$this->from = $from_class;
@@ -50,6 +55,12 @@ abstract class AbstractRelationship {
 		$this->normalizeKeys();
 	}
 
+	/**
+	 * Reverse a relationship to a given model.
+	 *
+	 * @param Model		$model		 Model to reverse to. TODO accept class name?
+	 * @return AbstractRelationship  Relationship going in the other direction
+	 */
 	public function getInverseOn($model)
 	{
 		$all = $model->getGraphNode()->getAllEdges();
@@ -68,10 +79,34 @@ abstract class AbstractRelationship {
 		return NULL;
 	}
 
+	/**
+	 * Code needed to connect the ids between instances of two models of this
+	 * relationship type.
+	 *
+	 * @param Model  $from_instance  Model that the data is being set on.
+	 * @param Model  $to_model_or_collecion  Related data that is being set.
+	 * @return void
+	 */
 	abstract public function connect($from_instance, $to_model_or_collection);
 
 	/**
-	 * Need to do a whole bunch of work to figure out which key goes where.
+	 * Code to figure out which side is the parent and how the given keys
+	 * connect the models.
+	 *
+	 * Typically this will need to figure out these three:
+	 *
+	 * $this->is_parent
+	 * $this->key
+	 * $this->to_key
+	 *
+	 * For example, in a oneToMany relationship, the current model is always
+	 * the parent, the key is the current primary key, and the to_key is either
+	 * is a column on the other model that is either user specified or matches
+	 * the from_model's primary key.
+	 *
+	 * This allows us to do minimize how much the developer needs to specify.
+	 *
+	 * @return void
 	 */
 	abstract protected function normalizeKeys();
 }

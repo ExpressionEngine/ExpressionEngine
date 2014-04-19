@@ -63,7 +63,7 @@ class RelationshipQuery {
 	}
 
 	/**
-	 * Compile the from data for the
+	 * Compile the from data for the eager query.
 	 */
 	private function createFromArray()
 	{
@@ -76,6 +76,9 @@ class RelationshipQuery {
 		);
 	}
 
+	/**
+	 * Compile the to data for the eager query.
+	 */
 	private function createToArray()
 	{
 		return array(

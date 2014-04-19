@@ -6,6 +6,16 @@ class OneToOne extends AbstractRelationship {
 	public $type	= 'one_to_one';
 	public $inverse	= 'one_to_one';
 
+	/**
+	 * Set the related ids to correclty connect the models.
+	 *
+	 * For oneToOne, either side can be the parent, or they could both have
+	 * each other's keys, so we do some extra work to compare names
+	 *
+	 * @param Model  $from_instance  Model that the data is being set on.
+	 * @param Model  $to_model_or_collecion  Related data that is being set.
+	 * @return void
+	 */
 	public function connect($from_instance, $to_model)
 	{
 		if ($this->key != $from_instance::getMetaData('primary_key'))
@@ -21,7 +31,17 @@ class OneToOne extends AbstractRelationship {
 		}
 	}
 
-	// default: opposite primary key in list or declared
+	/**
+	 * Figure out optional key settings as well as the parent.
+	 *
+	 * The parent must always be a single item, which is ambiguous here, so we
+	 * use the key information to discern the parent. One side must have a reference
+	 * to the other side. The key containing the reference is the child. If both
+	 * sides contain the reference, the developer must specify is_parent on one
+	 * of them. By default, the key used matches the primary key it references.
+	 *
+	 * @return void
+	 */
 	protected function normalizeKeys()
 	{
 		$from = $this->from;
