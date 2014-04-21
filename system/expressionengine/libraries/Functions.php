@@ -75,7 +75,7 @@ class EE_Functions {
 
 		if (ee()->config->item('website_session_type') != 'c' && is_object(ee()->session) && REQ != 'CP' && $sess_id == TRUE && $this->template_type == 'webpage')
 		{
-			$url .= "/S=".ee()->session->session_id('user')."/";
+			$url .= (ee()->session->session_id('user')) ? "/S=".ee()->session->session_id('user')."/" : '';
 		}
 
 		if ($add_slash == TRUE)
