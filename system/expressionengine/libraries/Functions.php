@@ -2574,7 +2574,14 @@ class EE_Functions {
 			$l = $new_length;
 		}
 
-		return array($str, array_combine($variable_placeholders, $variables));
+		$return_vars = array();
+
+		if (count($variables))
+		{
+			$return_vars = array_combine($variable_placeholders, $variables);
+		}
+
+		return array($str, $return_vars);
 	}
 
 	// --------------------------------------------------------------------
