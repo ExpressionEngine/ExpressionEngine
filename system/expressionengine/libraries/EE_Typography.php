@@ -761,7 +761,8 @@ class EE_Typography extends CI_Typography {
 		// Replace <pre><code> with [code]
 		// Only relevant IF being called by typography parser
 		$backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1);
-		if (in_array($backtrace[1]['class'], array('EE_Typography')))
+		if (isset($backtrace[1])
+			&& in_array($backtrace[1]['class'], array('EE_Typography')))
 		{
 			$str = preg_replace(
 				"/<pre><code>(.*?)<\/code><\/pre>/uis",
