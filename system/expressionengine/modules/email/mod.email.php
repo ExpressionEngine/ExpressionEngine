@@ -46,8 +46,8 @@ class Email {
 		}
 		elseif (ee()->config->item('email_module_captchas') == 'y')
 		{
-			$this->use_captchas = (ee()->config->item('captcha_require_members') == 'y'  OR (ee()->config->item('captcha_require_members') == 'n' AND ee()->session->userdata('member_id') == 0))
-				? 'y' : 'n';
+			$this->use_captchas = (ee()->config->item('captcha_require_members') == 'y'  OR
+								  (ee()->config->item('captcha_require_members') == 'n' AND ee()->session->userdata('member_id') == 0)) ? 'y' : 'n';
 		}
 	}
 
@@ -63,17 +63,11 @@ class Email {
 		// Recipient Email Checking
 		$user_recipients = ee()->TMPL->fetch_param('user_recipients', 'no');
 
-		// Backwards compatible with previously documented "true/false"
-		// parameters (now "yes/no")
-		//
-		// TODO: use get_bool_from_string instead of the following conditional
-		// when we're using 2.8.2: https://github.com/EllisLab/ExpressionEngine/
-		// blob/develop/system/expressionengine/helpers/EE_string_helper.php#L83
-		// -L115
+		// Backwards compatible with previously documented "true/false" parameters (now "yes/no")
 		$this->_user_recipients = ($user_recipients == 'true' OR $user_recipients == 'yes') ? 'yes' : 'no';
 
 		$recipients = ee()->TMPL->fetch_param('recipients', '');
-		$channel    = ee()->TMPL->fetch_param('channel', '');
+		$channel = ee()->TMPL->fetch_param('channel', '');
 
 		// No email left behind act
 		if ($this->_user_recipients == 'no' && $recipients == '')
@@ -81,21 +75,20 @@ class Email {
 			$recipients = ee()->config->item('webmaster_email');
 		}
 
-		// Clean and check emails, if any
+		// Clean and check recipient emails, if any
 		if ($recipients != '')
 		{
 			$array = $this->validate_recipients($recipients);
 
 			// Put together into string again
-			$recipients = implode(',', $array['approved']);
+			$recipients = implode(',',$array['approved']);
 		}
 
 		// Conditionals
-		$cond = array(
-			'logged_in'  => (ee()->session->userdata('member_id') != 0),
-			'logged_out' => (ee()->session->userdata('member_id') == 0),
-			'captcha'    => ($this->use_captchas == 'y'),
-		);
+		$cond = array();
+		$cond['logged_in']	= (ee()->session->userdata('member_id') == 0) ? 'FALSE' : 'TRUE';
+		$cond['logged_out']	= (ee()->session->userdata('member_id') != 0) ? 'FALSE' : 'TRUE';
+		$cond['captcha']	= ($this->use_captchas == 'y') ? 'TRUE' : 'FALSE';
 
 		$tagdata = ee()->functions->prep_conditionals($tagdata, $cond);
 
@@ -105,15 +98,6 @@ class Email {
 		// Parse "single" variables
 		foreach (ee()->TMPL->var_single as $key => $val)
 		{
-			if ($key == 'message')
-			{
-				$tagdata = ee()->TMPL->swap_var_single(
-					$key,
-					ee()->input->post('message', ''),
-					$tagdata
-				);
-			}
-
 			// parse {member_name}
 			if ($key == 'member_name')
 			{
@@ -129,6 +113,7 @@ class Email {
 			}
 
 			// {current_time}
+
 			if (strncmp($key, 'current_time', 12) == 0)
 			{
 				$tagdata = ee()->TMPL->swap_var_single($key, ee()->localize->format_date($val), $tagdata);
@@ -149,10 +134,10 @@ class Email {
 					$table = ( ! is_numeric($entry_id)) ? 'ct.url_title' : 'ct.entry_id';
 
 					$query = ee()->db->select('m.username, m.email, m.screen_name')
-						->from(array('channel_titles ct', 'members m'))
-						->where('m.member_id = ct.author_id', '', FALSE)
-						->where($table, $entry_id)
-						->get();
+										  ->from(array('channel_titles ct', 'members m'))
+										  ->where('m.member_id = ct.author_id', '', FALSE)
+										  ->where($table, $entry_id)
+										  ->get();
 
 					if ($query->num_rows() == 0)
 					{
@@ -178,53 +163,7 @@ class Email {
 		}
 
 		// Create form
-		return $this->_setup_form($tagdata, $recipients, array('form_id' => 'contact_form'));
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Show an email preview for different emails
-	 * @return string Parsed tagdata with relevant fields available for parsing
-	 */
-	public function preview()
-	{
-		if (empty($_POST['PRV']) && empty($_POST['message']))
-		{
-			return ee()->TMPL->no_results();
-		}
-
-		ee()->load->library('typography');
-		return ee()->TMPL->parse_variables_row(
-			ee()->TMPL->tagdata,
-			array('message' => ee()->typography->markdown(ee()->input->post('message', TRUE)))
-		);
-	}
-
-	// -------------------------------------------------------------------------
-
-	private function preview_handler()
-	{
-		$return = ee()->input->post('PRV');
-		if (empty($return))
-		{
-			$error[] = ee()->lang->line('cmt_no_preview_template_specified');
-
-			return ee()->output->show_user_error('general', $error);
-		}
-
-		// Clean return value- segments only
-		$clean_return = str_replace(ee()->functions->fetch_site_index(), '', $return);
-		ee()->functions->clear_caching('all', $clean_return);
-
-		$segments = (strpos($clean_return, '/') === FALSE) ? '' : explode('/', $clean_return);
-		$group = ($preview = '') ? 'channel' : $segments[0];
-		$templ = ($preview = '') ? 'preview' : $segments[1];
-
-		// this makes sure the query string is seen correctly by tags on the template
-		ee()->load->library('template', NULL, 'TMPL');
-		ee()->TMPL->parse_template_uri();
-		ee()->TMPL->run_template_engine($group, $templ);
+		return $this->_setup_form($tagdata, $recipients, 'contact_form', FALSE);
 	}
 
 	// --------------------------------------------------------------------
@@ -460,11 +399,6 @@ class Email {
 	 */
 	public function send_email()
 	{
-		if (isset($_POST['preview']))
-		{
-			return $this->preview_handler();
-		}
-
 		$error = array();
 
 		// Blacklist/Whitelist Check
@@ -477,8 +411,10 @@ class Email {
 		ee()->session->nation_ban_check();
 
 		// Check and Set
-		$default = array('subject', 'message', 'from', 'user_recipients', 'to',
-			'recipients', 'name', 'required');
+		$default = array(
+			'subject', 'message', 'from', 'user_recipients', 'to',
+			'recipients', 'name', 'required'
+		);
 
 		foreach ($default as $val)
 		{
@@ -529,8 +465,7 @@ class Email {
 		}
 
 		// Clean incoming
-		$clean = array('subject', 'from', 'user_recipients', 'to', 'recipients',
-			'name');
+		$clean = array('subject', 'from', 'user_recipients', 'to', 'recipients', 'name');
 
 		foreach ($clean as $val)
 		{
@@ -547,7 +482,7 @@ class Email {
 		}
 
 		// Return Variables
-		$x = explode('|', $_POST['RET']);
+		$x = explode('|',$_POST['RET']);
 		unset($_POST['RET']);
 
 		if (is_numeric($x['0']))
@@ -596,17 +531,11 @@ class Email {
 			return ee()->output->show_user_error('general', array(lang('not_authorized')));
 		}
 
-		// Check Form Hash
-		if ( ! ee()->security->secure_forms_check(ee()->input->post('XID')))
-		{
-			return ee()->output->show_user_error('general', array(lang('not_authorized')));
-		}
-
 		// Check Tracking Class
 		$day_ago = ee()->localize->now - 60*60*24;
 		$query = ee()->db->query("DELETE FROM exp_email_tracker WHERE email_date < '{$day_ago}'");
 
-		if (ee()->session->userdata['username'] === FALSE OR ee()->session->userdata['username'] == '')
+		if (ee()->session->userdata['username'] === false OR ee()->session->userdata['username'] == '')
 		{
 			$query = ee()->db->query("SELECT *
 				FROM exp_email_tracker
@@ -827,6 +756,7 @@ class Email {
 			}
 		}
 
+
 		// Store in tracking class
 		$data = array(
 			'email_date'		=> ee()->localize->now,
@@ -899,6 +829,7 @@ class Email {
 		$emails = array_unique($emails);
 
 		// Emails to send email to...
+
 		$error = array();
 		$approved_emails = array();
 
@@ -906,23 +837,23 @@ class Email {
 
 		foreach ($emails as $email)
 		{
-			if (trim($email) == '') continue;
+			 if (trim($email) == '') continue;
 
-			if (valid_email($email))
-			{
-				if ( ! ee()->session->ban_check('email', $email))
-				{
-					$approved_emails[] = $email;
-				}
-				else
-				{
-					$error['ban_recp'] = lang('em_banned_recipient');
-				}
-			}
-			else
-			{
-				$error['bad_recp'] = lang('em_invalid_recipient');
-			}
+			 if (valid_email($email))
+			 {
+				  if ( ! ee()->session->ban_check('email', $email))
+				  {
+						$approved_emails[] = $email;
+				  }
+				  else
+				  {
+						$error['ban_recp'] = lang('em_banned_recipient');
+				  }
+			 }
+			 else
+			 {
+			 	$error['bad_recp'] = lang('em_invalid_recipient');
+			 }
 		}
 
 		return array('approved' => $approved_emails, 'error' => $error);
@@ -933,48 +864,34 @@ class Email {
 	/**
 	 * Setup forms
 	 *
-	 * @param string $tagdata     Template data to parse
-	 * @param string $recipients  Email address for the TO field
-	 * @param array  $options     Associative array for options:
-	 *                            - (string) form_id: ID of the form tag
-	 *                            - (bool) allow_html: Whether or not to allow HTML
-	 * @return string             Fully parsed form
+	 * @param 	string 	$tagdata
+	 * @param 	string 	$recipients
+	 * @param 	string 	$form_id
+	 * @param 	boolean
+	 * @return 	string
 	 */
-	private function _setup_form($tagdata, $recipients, $options = array())
+	private function _setup_form($tagdata, $recipients, $form_id = NULL, $allow_html = FALSE)
 	{
-		// Setup defaults for the $options array
-		$default_options = array('form_id' => NULL, 'allow_html' => FALSE);
-		$options = (empty($options))
-			? $default_options
-			: array_merge($options, $default_options);
-
 		$charset = ee()->TMPL->fetch_param('charset', '');
 
 		$recipients = $this->_encrypt_recipients($recipients);
 
 		$data = array(
-			'id'            => (ee()->TMPL->form_id == '')
-				? $options['form_id']
-				: ee()->TMPL->form_id,
-			'class'         => ee()->TMPL->form_class,
-			'hidden_fields' => array(
-				'ACT'             => ee()->functions->fetch_action_id('Email', 'send_email'),
-				'RET'             => ee()->TMPL->fetch_param('return', ''),
-				'URI'             => (ee()->uri->uri_string == '')
-					? 'index'
-					: ee()->uri->uri_string,
-				'PRV'             => ee()->TMPL->fetch_param('preview', ''),
-				'recipients'      => base64_encode($recipients),
-				'user_recipients' => ($this->_user_recipients == 'yes')
-					? md5(ee()->db->username.ee()->db->password.'y')
-					: md5(ee()->db->username.ee()->db->password.'n'),
-				'charset'         => $charset,
-				'redirect'        => ee()->TMPL->fetch_param('redirect', ''),
-				'replyto'         => ee()->TMPL->fetch_param('replyto', '')
+			'id'			=> (ee()->TMPL->form_id == '') ? $form_id : ee()->TMPL->form_id,
+			'class'			=> ee()->TMPL->form_class,
+			'hidden_fields'	=> array(
+				'ACT'				=> ee()->functions->fetch_action_id('Email', 'send_email'),
+				'RET'				=> ee()->TMPL->fetch_param('return', ''),
+				'URI'				=> (ee()->uri->uri_string == '') ? 'index' : ee()->uri->uri_string,
+				'recipients'		=> base64_encode($recipients),
+				'user_recipients'	=> ($this->_user_recipients == 'yes') ? md5(ee()->db->username.ee()->db->password.'y') : md5(ee()->db->username.ee()->db->password.'n'),
+				'charset'			=> $charset,
+				'redirect'			=> ee()->TMPL->fetch_param('redirect', ''),
+				'replyto'			=> ee()->TMPL->fetch_param('replyto', '')
 			)
 		);
 
-		if ($options['allow_html'])
+		if ($allow_html)
 		{
 			$data['hidden_fields']['allow_html'] = 'y';
 		}
