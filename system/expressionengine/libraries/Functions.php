@@ -2615,11 +2615,16 @@ class EE_Functions {
 		}
 
 		$quoted_embedded_tags = array();
+		$quoted_braces =        array();
 		foreach ($return[1] as $key => $value)
 		{
 			if (stristr($value, LD.'exp:'))
 			{
 				$quoted_embedded_tags[] = $key;
+			}
+			elseif (stristr($value, LD) && stristr($value, RD))
+			{
+				$quoted_braces[] = $key;
 			}
 		}
 
@@ -2687,7 +2692,8 @@ class EE_Functions {
 
 				foreach ($words as $i => $word)
 				{
-					$do_not_encode_value = FALSE;
+					$do_not_encode_value  = FALSE;
+					$encode_braces = TRUE;
 					if ($i > 500)
 					{
 						break;
@@ -2699,6 +2705,10 @@ class EE_Functions {
 						if (in_array($word, $quoted_embedded_tags))
 						{
 							$do_not_encode_value = TRUE;
+						}
+						elseif(in_array($word, $quoted_braces))
+						{
+							$encode_braces = FALSE;
 						}
 					}
 					elseif ($embedded_tags === TRUE && ! is_numeric($word))
@@ -2729,10 +2739,19 @@ class EE_Functions {
 								$value = (strlen($value) > 100) ? substr(htmlspecialchars($value), 0, 100) : $value;
 
 								$value = str_replace(
-									array("'", '"', '(', ')', '$', '{', '}', "\n", "\r", '\\'),
-									array('&#39;', '&#34;', '&#40;', '&#41;', '&#36;', '&#123;', '&#125;', '', '', '&#92;'),
+									array("'", '"', '(', ')', '$', "\n", "\r", '\\'),
+									array('&#39;', '&#34;', '&#40;', '&#41;', '&#36;', '', '', '&#92;'),
 									$value
 								);
+
+								if ($encode_braces)
+								{
+									$value = str_replace(
+										array('{', '}',),
+										array('&#123;', '&#125;',),
+										$value
+									);
+								}
 
 								$value = '"' . $value . '"';
 							}
