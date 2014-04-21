@@ -51,6 +51,56 @@ class EE_Form_validation extends CI_Form_validation {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Handles validations that are performed over AJAX
+	 *
+	 * This ultimately calls our parent run() method where all validation
+	 * happens, but this handles validation of single fields and the
+	 * sending of AJAX responses so our controllers don't have to.
+	 *
+	 * @param	string	$group			Optional name of rule group to run
+	 * @param	bool	$handle_ajax	Whether or not this method should
+	 *		handle the AJAX interactions of form validation
+	 * @return	bool
+	 */
+	function run($group = '', $handle_ajax = TRUE)
+	{
+		if (AJAX_REQUEST && $handle_ajax)
+		{
+			// We should currently only be validating one field at a time,
+			// and this POST field should have the name of it
+			$field = ee()->input->post('ee_fv_field');
+
+			// Unset any other rules that aren't for the field we want to
+			// validate
+			foreach ($this->_field_data as $key => $value)
+			{
+				if ($key != $field)
+				{
+					unset($this->_field_data[$key]);
+				}
+			}
+		}
+
+		// Validate the field
+		$result = parent::run($group);
+
+		if (AJAX_REQUEST && $handle_ajax)
+		{
+			// Send appropriate AJAX response based on validation result
+			if ($result === FALSE)
+			{
+				ee()->output->send_ajax_response(array('error' => form_error($field)));
+			}
+			else
+			{
+				ee()->output->send_ajax_response('success');
+			}
+		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Validate Username
 	 *
 	 * Calls the custom field validation

@@ -28,7 +28,7 @@ feature 'Cache Manager' do
 
     page.should have_text 'An error occurred'
     page.should have_text 'There was a problem processing your submission, please check below and fix all errors.'
-    page.should have_text 'You must select at least one cache type to clear.'
+    page.should have_text 'The Caches to clear field is required.'
     page.should have_css 'fieldset.invalid'
 
     CacheManager::button.value.should eq 'Fix Errors, Please'
@@ -38,7 +38,7 @@ feature 'Cache Manager' do
 
     page.should have_no_text 'An error occurred'
     page.should have_no_text 'There was a problem processing your submission, please check below and fix all errors.'
-    page.should have_no_text 'You must select at least one cache type to clear.'
+    page.should have_no_text 'The Caches to clear field is required.'
     page.should have_no_css 'fieldset.invalid'
 
     CacheManager::button.value.should eq 'Clear Caches'

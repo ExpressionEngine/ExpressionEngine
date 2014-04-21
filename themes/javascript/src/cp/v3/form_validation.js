@@ -93,21 +93,21 @@ EE.cp.formValidation = {
 	 * request differently
 	 *
 	 * @param	{jQuery object}	form	jQuery object of form
-	 * @param	{jQuery object}	fields	jQuery object of fields validating
+	 * @param	{jQuery object}	field	jQuery object of field validating
 	 */
-	_sendAjaxRequest: function(form, fields) {
+	_sendAjaxRequest: function(form, field) {
 
 		var that = this,
 			action = form.attr('action');
-			data = fields.add('input[name=csrf_token]', form).serialize();
+			data = field.add('input[name=csrf_token]', form).serialize();
 
 		$.ajax({
 			url: action,
-			data: data,
+			data: data+'&ee_fv_field='+field.attr('name'),
 			type: 'POST',
 			dataType: 'json',
 			success: function (ret) {
-				that._toggleErrorForFields(form, fields, ret);
+				that._toggleErrorForFields(form, field, ret);
 			}
 		});
 	},
@@ -116,12 +116,12 @@ EE.cp.formValidation = {
 	 * Shows/hides errors for fields based on result of validation
 	 *
 	 * @param	{jQuery object}	form	jQuery object of form
-	 * @param	{jQuery object}	fields	jQuery object of fields validating
+	 * @param	{jQuery object}	field	jQuery object of field validating
 	 * @param	{mixed}			message	Return from AJAX request
 	 */
-	_toggleErrorForFields: function(form, fields, message) {
+	_toggleErrorForFields: function(form, field, message) {
 
-		var fieldset = fields.parents('fieldset'),
+		var fieldset = field.parents('fieldset'),
 			button = form.find('.form-ctrls input.btn');
 
 		// Validation success, return the form to its original, submittable state
