@@ -1286,7 +1286,7 @@ class EE_Config Extends CI_Config {
 			),
 
 			'software_license'	=> array(
-				'ellislab_username'			=> array('i', '', 'required'),
+				'license_contact'			=> array('i', '', 'required'),
 				'license_number'			=> array('i', '', 'callback__valid_license_pattern')
 			),
 
@@ -1651,7 +1651,7 @@ class EE_Config Extends CI_Config {
 			'require_ip_for_login'		=> array('require_ip_explanation'),
 			'allow_multi_logins'		=> array('allow_multi_logins_explanation'),
 			'name_of_dictionary_file'	=> array('dictionary_explanation'),
-			'ellislab_username'			=> array('ellislab_username_explanation'),
+			'license_contact'			=> array('license_contact_explanation'),
 			'license_number'			=> array('license_number_explanation'),
 			'force_query_string'		=> array('force_query_string_explanation'),
 			'image_resize_protocol'		=> array('image_resize_protocol_exp'),

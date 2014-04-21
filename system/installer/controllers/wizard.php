@@ -1158,7 +1158,7 @@ PAPAYA;
 		$this->userdata['cp_url'] = ($self != '') ? $host.$self : $host.SELF;
 
 		// license number
-		$this->userdata['ellislab_username'] = '';
+		$this->userdata['license_contact'] = '';
 		$this->userdata['license_number'] = (IS_CORE) ? 'CORE LICENSE' : '';
 
 		// Since the CP access file can be inside or outside of the "system" folder
@@ -2371,7 +2371,7 @@ PAPAYA;
 
 		$config = array(
 			'app_version'					=>	$this->userdata['app_version'],
-			'ellislab_username'				=>	$this->userdata['ellislab_username'],
+			'license_contact'				=>	$this->userdata['license_contact'],
 			'license_number'				=>	trim($this->userdata['license_number']),
 			'debug'							=>	'1',
 			'cp_url'						=>	$this->userdata['cp_url'],

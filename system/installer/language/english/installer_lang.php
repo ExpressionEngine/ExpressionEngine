@@ -13,7 +13,8 @@ $lang['license_agree'] = 'I agree to abide by the license Terms and Conditions a
 $lang['license_disagree'] = 'I do NOT agree to abide by the license Terms and Conditions as stated above';
 $lang['server_settings'] = 'Server Settings';
 $lang['software_license'] = 'Software License';
-$lang['ellislab_username'] = 'EllisLab.com Username';
+$lang['license_contact'] = 'License Holder Contact Email';
+$lang['license_contact_explanation'] = 'The contact email address for the owner of this software license.';
 $lang['license_number'] = 'ExpressionEngine License Number';
 $lang['locate_license_number'] = 'Available in the <a href="https://store.ellislab.com/manage">download area</a> of the EllisLab.com site.';
 $lang['invalid_license_number'] = 'The license number provided is not a valid license number.';
