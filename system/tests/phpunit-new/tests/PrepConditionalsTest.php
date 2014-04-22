@@ -39,13 +39,13 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 
 		$fns = new FunctionsStub('randomstring');
 
-		$str = $fns->prep_conditionals($str_in, $vars, $safety = 'y', $prefix = '');
-
 		$this->assertEquals(
 			$expected_out,
-			$str,
+			$fns->prep_conditionals($str_in, $vars, $safety = 'y', $prefix = ''),
 			$description
 		);
+
+		$str = $fns->prep_conditionals($str_in, $vars, $safety = 'n', $prefix = '');
 
 		$this->assertEquals(
 			$expected_out,
