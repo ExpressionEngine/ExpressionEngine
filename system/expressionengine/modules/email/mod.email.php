@@ -30,15 +30,13 @@ class Email {
 
 	var $use_captchas = 'n';
 
-	private $_user_recipients = '';
+	private $_user_recipients = FALSE;
 
 	/**
 	 * Constructor
 	 */
 	public function __construct()
 	{
-		$this->EE =& get_instance();
-
 		if (ee()->config->item('email_module_captchas') === FALSE OR
 			ee()->config->item('email_module_captchas') == 'n')
 		{
@@ -49,6 +47,8 @@ class Email {
 			$this->use_captchas = (ee()->config->item('captcha_require_members') == 'y'  OR (ee()->config->item('captcha_require_members') == 'n' AND ee()->session->userdata('member_id') == 0))
 				? 'y' : 'n';
 		}
+
+		ee()->load->helper('string');
 	}
 
 	// --------------------------------------------------------------------
@@ -60,22 +60,16 @@ class Email {
 	{
 		$tagdata = ee()->TMPL->tagdata;
 
-		// Backwards compatible with previously documented "true/false"
-		// parameters (now "yes/no")
-		//
-		// TODO: use get_bool_from_string
-		// ee()->load->helper('string');
-		// $this->_user_recipients = get_bool_from_string(ee()->ee()->TMPL->fetch_param('user_recipients', 'no'));
-
 		// Recipient Email Checking
-		$user_recipients = ee()->TMPL->fetch_param('user_recipients', 'no');
-		$this->_user_recipients = ($user_recipients == 'true' OR $user_recipients == 'yes') ? 'yes' : 'no';
+		$this->_user_recipients = get_bool_from_string(
+			ee()->TMPL->fetch_param('user_recipients', 'no')
+		);
 
 		$recipients = ee()->TMPL->fetch_param('recipients', '');
 		$channel    = ee()->TMPL->fetch_param('channel', '');
 
 		// No email left behind act
-		if ($this->_user_recipients == 'no' && $recipients == '')
+		if ( ! $this->_user_recipients && $recipients == '')
 		{
 			$recipients = ee()->config->item('webmaster_email');
 		}
@@ -183,7 +177,7 @@ class Email {
 			$recipients,
 			array(
 				'form_id' => 'contact_form',
-				'markdown' => (ee()->TMPL->fetch_param('markdown') == 'yes')
+				'markdown' => get_bool_from_string(ee()->TMPL->fetch_param('markdown'))
 			)
 		);
 	}
@@ -202,7 +196,7 @@ class Email {
 		}
 
 		ee()->load->library('typography');
-		$message = (ee()->TMPL->fetch_param('markdown') === 'yes')
+		$message = (get_bool_from_string(ee()->TMPL->fetch_param('markdown')))
 			? ee()->typography->markdown(ee()->input->post('message', TRUE))
 			: ee()->input->post('message', TRUE);
 
@@ -256,7 +250,7 @@ class Email {
 		}
 
 		// Recipient Email Checking
-		$this->_user_recipients = 'yes';  // By default
+		$this->_user_recipients = TRUE;  // By default
 
 		$recipients	= ee()->TMPL->fetch_param('recipients', '');
 		$charset	= ee()->TMPL->fetch_param('charset', '');
@@ -638,9 +632,9 @@ class Email {
 		}
 
 		// Review Recipients
-		$_POST['user_recipients'] = ($_POST['user_recipients'] == md5(ee()->db->username.ee()->db->password.'y')) ? 'y' : 'n';
+		$this->_user_recipients = get_bool_from_string($this->_decrypt($_POST['user_recipients']));
 
-		if ($_POST['user_recipients'] == 'y' && trim($_POST['to']) != '')
+		if ($this->_user_recipients && trim($_POST['to']) != '')
 		{
 			$array = $this->validate_recipients($_POST['to']);
 
@@ -663,7 +657,7 @@ class Email {
 		}
 
 		// If we have no valid emails to send, back they go.
-		if ($_POST['user_recipients'] == 'y' && count($approved_tos) == 0)
+		if ($this->_user_recipients && count($approved_tos) == 0)
 		{
 			$error[] = lang('em_no_valid_recipients');
 		}
@@ -722,7 +716,7 @@ class Email {
 		$message = ee()->security->xss_clean($message);
 
 		// Parse Markdown if necessary
-		if ($this->_decrypt($_POST['markdown']) === 'y')
+		if (get_bool_from_string($this->_decrypt($_POST['markdown'])))
 		{
 			$_POST['allow_html'] = 'y';
 			$message = ee()->typography->markdown($message);
@@ -961,9 +955,7 @@ class Email {
 					: ee()->uri->uri_string,
 				'PRV'             => ee()->TMPL->fetch_param('preview', ''),
 				'recipients'      => $this->_encrypt($recipients),
-				'user_recipients' => ($this->_user_recipients == 'yes')
-					? md5(ee()->db->username.ee()->db->password.'y')
-					: md5(ee()->db->username.ee()->db->password.'n'),
+				'user_recipients' => $this->_encrypt(($this->_user_recipients) ? 'y' : 'n'),
 				'charset'         => $charset,
 				'redirect'        => ee()->TMPL->fetch_param('redirect', ''),
 				'replyto'         => ee()->TMPL->fetch_param('replyto', ''),
@@ -999,7 +991,7 @@ class Email {
 	 */
 	private function _encrypt($data)
 	{
-		if (function_exists('mcrypt_encrypt') OR $force_hash)
+		if (function_exists('mcrypt_encrypt'))
 		{
 			$init_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB);
 			$init_vect = mcrypt_create_iv($init_size, MCRYPT_RAND);
@@ -1027,7 +1019,7 @@ class Email {
 	 */
 	private function _decrypt($data)
 	{
-		if ( function_exists('mcrypt_encrypt') OR $force_hash)
+		if ( function_exists('mcrypt_encrypt'))
 		{
 			$init_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB);
 			$init_vect = mcrypt_create_iv($init_size, MCRYPT_RAND);
