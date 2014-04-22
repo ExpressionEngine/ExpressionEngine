@@ -4,7 +4,6 @@ require_once APPPATH.'libraries/Functions.php';
 
 class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 
-
 	/**
 	 * @dataProvider dataProvider
 	 */
@@ -20,6 +19,29 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 	{
 		$this->setExpectedException($exception);
 		$this->runConditionalTest($description, $str_in, '');
+	}
+
+	public function testMultipassVariable()
+	{
+		$str = '{if string == whatthefoxsay}out{/if}';
+		// First pass is with safety off
+		$fns = new FunctionsStub('randomstring');
+		$str = $fns->prep_conditionals($str, array('whatthefoxsay' => 'Ring-ding-ding-ding-dingeringeding!'), $safety = 'n', $prefix = '');
+
+		$this->assertEquals(
+			'{if string == "Ring-ding-ding-ding-dingeringeding!"}out{/if}',
+			$str,
+			"Prep Conditionals with safetey off"
+		);
+
+		// Second pass is with safety on
+		$str = 	$fns->prep_conditionals($str, array('string' => 'ee'), $safety = 'y', $prefix = '');
+
+		$this->assertEquals(
+			'{if "ee" == "Ring-ding-ding-ding-dingeringeding!"}out{/if}',
+			$str,
+			"Double Prep Variable Buildup"
+		);
 	}
 
 	protected function runConditionalTest($description, $str_in, $expected_out, $vars = array(), $php_vars = array())
