@@ -3372,7 +3372,7 @@ class EE_Template {
 		}
 		else
 		{
-			$pattern = "/<script\s+language\s*=\s*(\042|\047)?php(\042|\047|)?.*?>.*?<\/script>/is";
+			$pattern = "/<script.*?language\s*=\s*(\042|\047)?php(\\1)?.*?>.*?<\/script>/is";
 		}
 
 		if (stristr($str, '<script') &&
