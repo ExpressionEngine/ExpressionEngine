@@ -1,22 +1,19 @@
 <?php
 namespace EllisLab\ExpressionEngine\Model\Gateway;
 
-use EllisLab\ExpressionEngine\Model\Gateway\Gateway extends RowDataGateway;
-
 /**
  * Email Console Cache
  *
  * Emails sent from the member profile email console are saved here.
  */
 class EmailConsoleCacheGateway extends RowDataGateway {
-	protected static $meta = array(
-		'table_name' => 'email_console_cache',
-		'primary_key' => 'cache_id',
-		'related_entites' => array(
-			'member_id' => array(
-				'gateway' => 'MemberGateway',
-				'key' => 'member_id'
-			)
+
+	protected static $_table_name = 'email_console_cache';
+	protected static $_primary_key = 'cache_id';
+	protected static $_related_entites = array(
+		'member_id' => array(
+			'gateway' => 'MemberGateway',
+			'key' => 'member_id'
 		)
 	);
 
