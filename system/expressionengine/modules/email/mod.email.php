@@ -588,12 +588,6 @@ class Email {
 			return ee()->output->show_user_error('general', array(lang('not_authorized')));
 		}
 
-		// Check Form Hash
-		if ( ! ee()->security->secure_forms_check(ee()->input->post('XID')))
-		{
-			return ee()->output->show_user_error('general', array(lang('not_authorized')));
-		}
-
 		// Check Tracking Class
 		$day_ago = ee()->localize->now - 60*60*24;
 		$query = ee()->db->query("DELETE FROM exp_email_tracker WHERE email_date < '{$day_ago}'");
