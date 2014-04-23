@@ -2484,14 +2484,15 @@ class EE_Functions {
 				return FALSE;
 			}
 
-			$start  = $i;
-			$buffer = '';
-			$state  = 'OK';
+			$start   = $i;
+			$buffer  = '';
+			$state   = 'OK';
+			$curlies = 0;
 
 			while ($i < $l)
 			{
 				// performance improvement, seek forward to next transition
-				if ($skip = strcspn($str, '\\\'"}', $i))
+				if ($skip = strcspn($str, '\\\'"{}', $i))
 				{
 					if ($state == 'SS' || $state == 'SD')
 					{
@@ -2503,8 +2504,22 @@ class EE_Functions {
 				$char = $str[$i++];
 				$old_state = $state;
 
-				// if this is a transition, switch states
-				if (isset($edges[$char]))
+				// Checking for balanced curly braces
+				if ($state == 'OK')
+				{
+					if ($char == '{')
+					{
+						$curlies++;
+					}
+					elseif ($char == '}')
+					{
+						$curlies--;
+					}
+				}
+
+				// if this is a transition, switch states, checking for false
+				// '}' transitions
+				if (isset($edges[$char]) && ! ($char == '}' && $curlies > 0))
 				{
 					$edge  = $edges[$char];
 					$state = $transitions[$old_state][$edge];
@@ -2555,7 +2570,7 @@ class EE_Functions {
 			}
 
 			// Not in an end state, manually close it.
-			if ($state != 'END')
+			if ($state != 'END' || $curlies != 0)
 			{
 				return FALSE;
 			}
