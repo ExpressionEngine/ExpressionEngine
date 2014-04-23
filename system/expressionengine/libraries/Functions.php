@@ -2569,7 +2569,7 @@ class EE_Functions {
 				}
 			}
 
-			// Not in an end state, manually close it.
+			// Not in an end state, or curly braces are unbalanced, "error" out
 			if ($state != 'END' || $curlies != 0)
 			{
 				return FALSE;
