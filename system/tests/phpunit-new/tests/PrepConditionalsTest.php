@@ -87,19 +87,18 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 	public function badDataProvider()
 	{
 		return array(
-			array('UnsafeConditionalException',  'Simple Backticks',					'{if `echo hello`}out{/if}'),
-			array('UnsafeConditionalException',  'Splitting Backticks',					'{if string.`echo hello #}out{/if}{if `== 0}out{/if}'),
-			array('UnsafeConditionalException',  'Simple Comments',						'{if php/* test == 5*/info(); }out{/if}'),
-			array('UnsafeConditionalException',  'Splitting Comments',					'{if string /* == 5 }out{/if}{if */phpinfo(); == 5}out{/if}'),
-			array('InvalidConditionalException', 'Unclosed String (single quotes)', 	"{if string == 'ee}out{/if}"),
-			array('InvalidConditionalException', 'Unclosed String (double quotes)', 	'{if string == "ee}out{/if}'),
-			array('InvalidConditionalException', 'Unclosed Conditional', 				'{if string == "ee"}out'),
-			array('InvalidConditionalException', 'Unterminated Conditional (unclosed)', '{if string == "ee"'),
-			array('InvalidConditionalException', 'Unterminated Conditional (closed)', 	'{if string == "ee"out{/if}'),
-			array('InvalidConditionalException', 'If as a Prefix', 						'{if:foo}'),
-			array('InvalidConditionalException', 'Ifelse duplicity', 					'{if 5 == 5}out{if:else:else}out{/if}'),
-			array('InvalidConditionalException', 'Ifelse Prefixing', 					'{if 5 == 5}out{if:elsebeth}out{/if}'),
-			array('InvalidConditionalException', 'Ifelseif Prefixing', 					'{if 5 == 5}out{if:elseiffy}out{/if}'),
+			array('UnsafeConditionalException',  'Simple Backticks',				'{if `echo hello`}out{/if}'),
+			array('UnsafeConditionalException',  'Splitting Backticks',				'{if string.`echo hello #}out{/if}{if `== 0}out{/if}'),
+			array('UnsafeConditionalException',  'Simple Comments',					'{if php/* test == 5*/info(); }out{/if}'),
+			array('UnsafeConditionalException',  'Splitting Comments',				'{if string /* == 5 }out{/if}{if */phpinfo(); == 5}out{/if}'),
+			array('InvalidConditionalException', 'Unclosed String (single quotes)', "{if string == 'ee}out{/if}"),
+			array('InvalidConditionalException', 'Unclosed String (double quotes)', '{if string == "ee}out{/if}'),
+			array('InvalidConditionalException', 'Unclosed Conditional', 			'{if string == "ee"}out'),
+			array('InvalidConditionalException', 'Unterminated Conditional', 		'{if string == "ee"out{/if}'),
+			array('InvalidConditionalException', 'If as a Prefix', 					'{if:foo}'),
+			array('InvalidConditionalException', 'Ifelse duplicity', 				'{if 5 == 5}out{if:else:else}out{/if}'),
+			array('InvalidConditionalException', 'Ifelse Prefixing', 				'{if 5 == 5}out{if:elsebeth}out{/if}'),
+			array('InvalidConditionalException', 'Ifelseif Prefixing', 				'{if 5 == 5}out{if:elseiffy}out{/if}'),
 		);
 	}
 
