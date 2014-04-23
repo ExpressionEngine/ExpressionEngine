@@ -1939,6 +1939,7 @@ class Member {
 							'link'		=> array(ee()->config->item('site_url'), stripslashes(ee()->config->item('site_name')))
 						 );
 
+			set_status_header(404);
 			return ee()->output->show_message($data, 0);
 		}
 
