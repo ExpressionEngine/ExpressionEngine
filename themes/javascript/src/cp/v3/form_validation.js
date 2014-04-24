@@ -23,11 +23,6 @@ EE.cp.formValidation = {
 
 		this._bindButtonStateChange();
 		this._bindForms();
-
-		// Build our alert box element
-		this._alertBox = $('<div>', { class: 'alert inline issue'} );
-		this._alertBox.append($('<h3>', { html: EE.lang.cp_message_issue } ));
-		this._alertBox.append($('<p>', { html: EE.lang.form_validation_error } ));
 	},
 
 	/**
@@ -66,13 +61,51 @@ EE.cp.formValidation = {
 
 		$('form.ajax-validate').each(function(index, el) {
 
-			var form = $(this);
+			var form = $(this),
+				button = form.find('.form-ctrls input.btn');
+
+			that._registerTextInputs(form);
 			that._registerNonTextInputs(form);
+
+			// Set submit button to error state if there are
+			// already errors
+			if (that._errorsExist(form))
+			{
+				button.addClass('disable').attr({
+					value: EE.lang.btn_fix_errors,
+					disabled: 'disabled'
+				});
+			}
 		});
 	},
 
 	/**
-	 * Non-text inputs will trigger a validation request immediately
+	 * Tells us whether or not there are any errors left on the form
+	 *
+	 * @param	{jQuery object}	form	jQuery object of form
+	 */
+	_errorsExist: function(form) {
+
+		return ($('fieldset.invalid', form).size() != 0);
+	},
+
+	/**
+	 * Text inputs will trigger a validation request on blur
+	 *
+	 * @param	{jQuery object}	form	jQuery object of form
+	 */
+	_registerTextInputs: function(form) {
+
+		var that = this;
+
+		$('input[type=text], input[type=password], textarea', form).blur(function() {
+
+			that._sendAjaxRequest(form, $(this));
+		});
+	},
+
+	/**
+	 * Non-text inputs will trigger a validation request on change
 	 *
 	 * @param	{jQuery object}	form	jQuery object of form
 	 */
@@ -80,10 +113,17 @@ EE.cp.formValidation = {
 
 		var that = this;
 
-		$('input[type=checkbox], input[type=radio], input[type=select]', form).change(function() {
+		$('input[type=checkbox], input[type=radio], select', form).change(function() {
 
-			var name = $(this).attr('name');
-			that._sendAjaxRequest(form, $('input[name='+name+']', form));
+			var obj = $(this);
+
+			// If it's a checkbox, grab them all for validation
+			if ($(this).is(':checkbox'))
+			{
+				obj = $('input[name="'+$(this).attr('name')+'"]');
+			}
+
+			that._sendAjaxRequest(form, obj);
 		});
 	},
 
@@ -106,7 +146,7 @@ EE.cp.formValidation = {
 			data: data+'&ee_fv_field='+field.attr('name'),
 			type: 'POST',
 			dataType: 'json',
-			success: function (ret) {
+			success: function (ret) {console.log(ret);
 				that._toggleErrorForFields(form, field, ret);
 			}
 		});
@@ -129,21 +169,19 @@ EE.cp.formValidation = {
 
 			fieldset.removeClass('invalid');
 			fieldset.find('div.setting-field > em').remove();
-			this._alertBox.remove();
 
-			// Re-enable submit button
-			button.removeClass('disable')
-				.attr('value', button.data('submit-text'))
-				.removeAttr('disabled');
+			// Re-enable submit button only if all errors are gone
+			if ( ! this._errorsExist())
+			{
+				button.removeClass('disable')
+					.attr('value', button.data('submit-text'))
+					.removeAttr('disabled');
+			}
+
 		// Validation error
 		} else {
 
 			fieldset.addClass('invalid');
-
-			// Don't double up on alert boxes
-			if (form.has(this._alertBox).length == 0) {
-				form.prepend(this._alertBox);
-			}
 
 			// Don't double up on error messages
 			if (fieldset.has('em.ee-form-error-message').length) {

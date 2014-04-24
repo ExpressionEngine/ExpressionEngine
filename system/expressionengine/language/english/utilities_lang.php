@@ -144,6 +144,52 @@ $lang = array(
 'caches_cleared_error' =>
 'You must select at least one cache type to clear.',
 
+/**
+ * Search and Replace
+ */
+
+'sandr' =>
+'Data Search and Replace',
+
+'sandr_warning' =>
+'<p><b>Warning</b>: <b class="no">Advanced users only.</b> Please be very careful with using this feature.</p>
+<p>Depending on the syntax used, this function can produce undesired results. Consult the user guide and backup your database.</p>',
+
+'sandr_search_text' =>
+'Search for this text',
+
+'sandr_replace_text' =>
+'Replace with this text',
+
+'sandr_in' =>
+'Search and replace in',
+
+'sandr_in_desc' =>
+'Select the field you want to run this search and replace on.',
+
+'rows_replaced' =>
+'Number of database records in which a replacement occurred: %s',
+
+'sandr_password' =>
+'Current password',
+
+'sandr_password_desc' =>
+'You <b>must</b> enter your password to search and replace.',
+
+'site_preferences'		=> 'Site Preferences',
+'channel_entry_title'	=> 'Channel Entry Titles',
+'channel_fields'		=> 'Channel Fields',
+'replace_in_templates'	=> 'In ALL Templates',
+'template_groups'		=> 'Template Groups',
+'rows_replaced'			=> 'Number of database records in which a replacement occurred:',
+'choose_below'			=> '(Choose from the following)',
+
+'btn_sandr' =>
+'Search and Replace',
+
+'btn_sandr_working' =>
+'Replacing...',
+
 ''=>''
 );
 

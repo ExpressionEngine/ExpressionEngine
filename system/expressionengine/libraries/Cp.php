@@ -185,8 +185,6 @@ class Cp {
 			'logout'				=> lang('logout'),
 			'search'				=> lang('search'),
 			'session_idle'			=> lang('session_idle'),
-			'cp_message_issue'		=> lang('cp_message_issue'),
-			'form_validation_error'	=> lang('form_validation_error'),
 			'btn_fix_errors'		=> lang('btn_fix_errors'),
 		);
 

@@ -26,6 +26,8 @@ class EE_Form_validation extends CI_Form_validation {
 
 	var $old_values = array();
 	var $_fieldtype = NULL;
+	var $_error_prefix	= '<em class="ee-form-error-message">';
+	var $_error_suffix	= '</em>';
 
 	/**
 	 * Constructor
@@ -60,7 +62,7 @@ class EE_Form_validation extends CI_Form_validation {
 	 * @param	string	$group			Optional name of rule group to run
 	 * @param	bool	$handle_ajax	Whether or not this method should
 	 *		handle the AJAX interactions of form validation
-	 * @return	bool
+	 * @return	bool	Whether or not validation passed
 	 */
 	function run($group = '', $handle_ajax = TRUE)
 	{
@@ -96,6 +98,8 @@ class EE_Form_validation extends CI_Form_validation {
 				ee()->output->send_ajax_response('success');
 			}
 		}
+
+		return $result;
 	}
 
 	// --------------------------------------------------------------------
@@ -395,6 +399,27 @@ class EE_Form_validation extends CI_Form_validation {
 		}
 
 		return TRUE;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Authorize Password
+	 *
+	 * Checks if the submitted password is valid for the logged-in user
+	 *
+	 * @param	string 	$password 	Password string
+	 * @return	bool
+	 */
+	public function auth_password($password)
+	{
+		ee()->load->library('auth');
+		$validate = ee()->auth->authenticate_id(
+			ee()->session->userdata('member_id'),
+			$password
+		);
+
+		return $validate;
 	}
 
 	// --------------------------------------------------------------------

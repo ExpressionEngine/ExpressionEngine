@@ -866,6 +866,34 @@ if ( ! function_exists('form_error'))
 // ------------------------------------------------------------------------
 
 /**
+ * Form Error Class
+ *
+ * If an error exists for a particular field, returns a bit of text to be
+ * used as a class name for specific styling
+ *
+ * @access	public
+ * @param	string	$field	Field name
+ * @param	string	$class	Class name to return, defaults to 'invalid'
+ * @return	string	Empty string if no error, class name if error
+ */
+if ( ! function_exists('form_error_class'))
+{
+	function form_error_class($field = '', $class = 'invalid')
+	{
+		$error = form_error($field);
+
+		if (empty($error))
+		{
+			return '';
+		}
+
+		return $class;
+	}
+}
+
+// ------------------------------------------------------------------------
+
+/**
  * Validation Error String
  *
  * Returns all the errors associated with a form submission.  This is a helper
