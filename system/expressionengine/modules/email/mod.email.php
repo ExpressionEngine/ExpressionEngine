@@ -396,7 +396,16 @@ class Email {
 
 		$tagdata = ee()->functions->prep_conditionals($tagdata, $cond);
 
-		// Parse tell-a-friend variables
+		// Process default variables
+		$default = array('message', 'name', 'to', 'from', 'subject', 'required');
+		foreach ($default as $field)
+		{
+			$tagdata = ee()->TMPL->swap_var_single(
+				$field,
+				ee()->input->post($field, ''),
+				$tagdata
+			);
+		}
 
 		// {member_name}
 		$tagdata = ee()->TMPL->swap_var_single('member_name', ee()->session->userdata['screen_name'], $tagdata);
@@ -428,7 +437,14 @@ class Email {
 
 		$allow = ($allow_html !== FALSE) ? TRUE : FALSE;
 
-		return $this->_setup_form($tagdata, $recipients, 'tellafriend_form', $allow);
+		return $this->_setup_form(
+			$tagdata,
+			$recipients,
+			array(
+				'form_id' => 'tellafriend_form',
+				'allow_html' => $allow
+			)
+		);
 	}
 
 	// --------------------------------------------------------------------
