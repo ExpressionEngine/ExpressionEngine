@@ -330,10 +330,10 @@ class Email {
 				$channel = ee()->TMPL->fetch_param('channel', '');
 
 				ee()->db->select('entry_id')
-					 ->from(array('channel_titles ct', 'channels c'))
-					 ->where('ct.channel_id = c.channel_id', '', FALSE)
-					 ->where('(ct.expiration_date = 0 OR expiration_date > '.$timestamp.')', '', FALSE)
-					 ->where('ct.status !=', 'closed');
+					->from(array('channel_titles ct', 'channels c'))
+					->where('ct.channel_id = c.channel_id', '', FALSE)
+					->where('(ct.expiration_date = 0 OR expiration_date > '.$timestamp.')', '', FALSE)
+					->where('ct.status !=', 'closed');
 
 				$table = ( ! is_numeric($entry_id)) ? 'ct.url_title' : 'ct.entry_id';
 
@@ -385,7 +385,6 @@ class Email {
 				$channel->fetch_categories();
 				$channel->parse_channel_entries();
 				$tagdata = $channel->return_data;
-
 			}
 		/*
 		/* -------------------------------------*/
@@ -589,14 +588,12 @@ class Email {
 
 		// If the from field is empty, error
 		ee()->load->helper('email');
-
 		if ($_POST['from'] == '' OR ! valid_email($_POST['from']))
 		{
 			return ee()->output->show_user_error('general', array(lang('em_sender_required')));
 		}
 
 		// If no recipients, bounce them back
-
 		if ($_POST['recipients'] == '' && $_POST['to'] == '')
 		{
 			return ee()->output->show_user_error('general', array(lang('em_no_valid_recipients')));
@@ -717,7 +714,7 @@ class Email {
 				AND ip_address = '".ee()->input->ip_address()."'
 				AND date > UNIX_TIMESTAMP()-7200");
 
-			if ($query->row('count')  == 0)
+			if ($query->row('count') == 0)
 			{
 				return ee()->output->show_user_error('submission', array(lang('captcha_incorrect')));
 			}
@@ -1000,7 +997,6 @@ class Email {
 				'markdown'        => $this->_encrypt(($options['markdown']) ? 'y' : 'n')
 			)
 		);
-
 
 		if ($options['allow_html'])
 		{
