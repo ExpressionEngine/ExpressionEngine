@@ -952,14 +952,19 @@ class Email {
 
 		$charset = ee()->TMPL->fetch_param('charset', '');
 
+		// Get the URL
+		$uri_string = (ee()->uri->uri_string == '') ? 'index' : ee()->uri->uri_string;
+		$url = ee()->functions->fetch_site_index(0,0).'/'.$uri_string;
+
 		$data = array(
+			'action'        => reduce_double_slashes($url),
 			'id'            => (ee()->TMPL->form_id == '')
 				? $options['form_id']
 				: ee()->TMPL->form_id,
 			'class'         => ee()->TMPL->form_class,
 			'hidden_fields' => array(
 				'ACT'             => ee()->functions->fetch_action_id('Email', 'send_email'),
-				'RET'             => ee()->TMPL->fetch_param('return', ''),
+				'RET'             => ee()->TMPL->fetch_param('return', ee()->uri->uri_string),
 				'URI'             => (ee()->uri->uri_string == '')
 					? 'index'
 					: ee()->uri->uri_string,
