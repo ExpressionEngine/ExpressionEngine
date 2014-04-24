@@ -735,17 +735,24 @@ class Email {
 		// Load the text helper
 		ee()->load->helper('text');
 
-		$subject = entities_to_ascii($_POST['subject']);
+		$subject = ee()->input->post('subject', TRUE);
+		$subject = entities_to_ascii($subject);
 		$subject = ee()->typography->filter_censored_words($subject);
 
-		$message = ($_POST['required'] != '') ? $_POST['required']."\n".$_POST['message'] : $_POST['message'];
-		$message = ee()->security->xss_clean($message);
+		// Retrieve message
+		$message = ee()->input->post('message', TRUE);
 
 		// Parse Markdown if necessary
 		if (get_bool_from_string($this->_decrypt($_POST['markdown'])))
 		{
 			$_POST['allow_html'] = 'y';
 			$message = ee()->typography->markdown($message);
+		}
+
+		// Prepend required
+		if ($required = ee()->input->post('required', TRUE))
+		{
+			$message = $required."\n".$message;
 		}
 
 		if (isset($_POST['allow_html']) && $_POST['allow_html'] == 'y' &&
