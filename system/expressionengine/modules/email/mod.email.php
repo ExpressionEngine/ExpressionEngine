@@ -47,8 +47,6 @@ class Email {
 			$this->use_captchas = (ee()->config->item('captcha_require_members') == 'y'  OR (ee()->config->item('captcha_require_members') == 'n' AND ee()->session->userdata('member_id') == 0))
 				? 'y' : 'n';
 		}
-
-		ee()->load->helper('string');
 	}
 
 	// --------------------------------------------------------------------
@@ -195,12 +193,23 @@ class Email {
 			return ee()->TMPL->no_results();
 		}
 
-		ee()->load->library('typography');
-		$message = (get_bool_from_string(ee()->TMPL->fetch_param('markdown')))
-			? ee()->typography->markdown(ee()->input->post('message', TRUE))
-			: ee()->input->post('message', TRUE);
+		$data = array();
 
-		return ee()->TMPL->parse_variables_row(ee()->TMPL->tagdata, compact('message'));
+		// Pull in valid POST data, XSS Clean it
+		foreach (array('from', 'name', 'required', 'subject', 'to') as $field)
+		{
+			$data[$field] = ee()->input->post($field, TRUE);
+		}
+
+		if (ee()->input->post('message') !== FALSE)
+		{
+			ee()->load->library('typography');
+			$data['message'] = (get_bool_from_string(ee()->TMPL->fetch_param('markdown')))
+				? ee()->typography->markdown(ee()->input->post('message', TRUE))
+				: ee()->input->post('message', TRUE);
+		}
+
+		return ee()->TMPL->parse_variables_row(ee()->TMPL->tagdata, $data);
 	}
 
 	// -------------------------------------------------------------------------
@@ -211,26 +220,27 @@ class Email {
 	 */
 	private function preview_handler()
 	{
-		$return = ee()->input->post('PRV');
-		if (empty($return))
+		$preview = ee()->input->post('PRV', TRUE);
+		if (empty($preview))
 		{
-			$error[] = ee()->lang->line('cmt_no_preview_template_specified');
-
+			ee()->lang->loadfile('email');
+			$error[] = lang('em_no_preview_template_specified');
 			return ee()->output->show_user_error('general', $error);
 		}
 
-		// Clean return value- segments only
-		$clean_return = str_replace(ee()->functions->fetch_site_index(), '', $return);
+		// Clean return value, segments only
+		$clean_preview = str_replace(ee()->functions->fetch_site_index(), '', $preview);
+		$clean_return = str_replace(ee()->functions->fetch_site_index(), '', ee()->input->post('RET', TRUE));
+
+		ee()->functions->clear_caching('all', $clean_preview);
 		ee()->functions->clear_caching('all', $clean_return);
 
-		$segments = (strpos($clean_return, '/') === FALSE) ? '' : explode('/', $clean_return);
-		$group = ($preview = '') ? 'channel' : $segments[0];
-		$templ = ($preview = '') ? 'preview' : $segments[1];
+		$segments = (strpos($clean_preview, '/') === FALSE) ? '' : explode('/', $clean_preview);
 
 		// this makes sure the query string is seen correctly by tags on the template
 		ee()->load->library('template', NULL, 'TMPL');
 		ee()->TMPL->parse_template_uri();
-		ee()->TMPL->run_template_engine($group, $templ);
+		ee()->TMPL->run_template_engine($segments[0], $segments[1]);
 	}
 
 	// --------------------------------------------------------------------
