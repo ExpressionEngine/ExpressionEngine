@@ -3,7 +3,8 @@
 <div class="col w-12 last">
 	<div class="box">
 		<h1><?=$cp_page_title?></h1>
-		<?=form_open(cp_url('utilities/clear_caches'), 'class="settings ajax-validate"')?>
+		<?=form_open(cp_url('utilities/cache'), 'class="settings ajax-validate"')?>
+			<?php $this->view('_shared/form_messages')?>
 			<fieldset class="col-group last">
 				<div class="setting-txt col w-8">
 					<h3><?=lang('caches_to_clear')?></h3>

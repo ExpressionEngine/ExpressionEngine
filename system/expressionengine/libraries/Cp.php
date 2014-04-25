@@ -104,13 +104,13 @@ class Cp {
 
 		// Success/failure messages
 
-		$cp_messages = array();
+		$form_messages = array();
 
 		foreach (array('success', 'warn', 'issue') as $flash_key)
 		{
 			if ($message = ee()->session->flashdata($flash_key))
 			{
-				$cp_messages[$flash_key] = $message;
+				$form_messages[$flash_key] = $message;
 			}
 		}
 
@@ -139,7 +139,8 @@ class Cp {
 			'cp_page_title'			=> '',
 			'cp_breadcrumbs'		=> array(),
 			'cp_right_nav'			=> array(),
-			'cp_messages'			=> $cp_messages,
+			'cp_messages'			=> array(),
+			'form_messages'			=> $form_messages,
 			'cp_notepad_content'	=> $notepad_content,
 			'cp_table_template'		=> $cp_table_template,
 			'cp_pad_table_template'	=> $cp_pad_table_template,

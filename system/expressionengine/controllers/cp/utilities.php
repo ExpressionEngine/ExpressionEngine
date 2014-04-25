@@ -151,28 +151,10 @@ class Utilities extends CP_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		ee()->view->cp_page_title = lang('cache_manager');
-		ee()->cp->render('utilities/cache');
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * POST handler for the Cache Manager form
-	 *
-	 * @access	public
-	 * @return	void
-	 */
-	public function clear_caches()
-	{
 		ee()->load->library('form_validation');
 		ee()->form_validation->set_rules('cache_type[]', 'lang:caches_to_clear', 'required');
 
-		if (ee()->form_validation->run() === FALSE)
-		{
-			ee()->session->set_flashdata('issue', lang('caches_cleared_error'));
-		}
-		else
+		if (ee()->form_validation->run() !== FALSE)
 		{
 			// Clear each cache type checked
 			foreach (ee()->input->post('cache_type') as $type)
@@ -181,9 +163,11 @@ class Utilities extends CP_Controller {
 			}
 
 			ee()->session->set_flashdata('success', lang('caches_cleared'));
+			ee()->functions->redirect(cp_url('utilities/cache'));
 		}
 
-		ee()->functions->redirect(cp_url('utilities/cache'));
+		ee()->view->cp_page_title = lang('cache_manager');
+		ee()->cp->render('utilities/cache');
 	}
 
 	// --------------------------------------------------------------------
@@ -227,9 +211,13 @@ class Utilities extends CP_Controller {
 
 		if (ee()->form_validation->run() !== FALSE)
 		{
-			$replaced = $this->_do_search_and_replace($search, $replace, $where);
+			$replaced = $this->_do_search_and_replace(
+				ee()->input->post('search_term'),
+				ee()->input->post('replace_term'),
+				ee()->input->post('replace_where')
+			);
 
-			ee()->session->set_flashdata('success', sprintf(lang('rows_replaced'), $replaced));
+			ee()->session->set_flashdata('success', sprintf(lang('rows_replaced'), (int)$replaced));
 
 			ee()->functions->redirect(cp_url('utilities/sandr'));
 		}

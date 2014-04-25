@@ -4,6 +4,7 @@
 	<div class="box">
 		<h1><?=$cp_page_title?></h1>
 		<?=form_open(cp_url('utilities/sandr'), 'class="settings ajax-validate"')?>
+			<?php $this->view('_shared/form_messages')?>
 			<div class="alert inline warn">
 				<?=lang('sandr_warning')?>
 			</div>
@@ -16,7 +17,7 @@
 					<?=form_error('search_term')?>
 				</div>
 			</fieldset>
-			<fieldset class="col-group <?=form_error_class('search_term')?>">
+			<fieldset class="col-group <?=form_error_class('replace_term')?>">
 				<div class="setting-txt col w-16">
 					<h3><?=lang('sandr_replace_text')?></h3>
 				</div>
@@ -25,7 +26,7 @@
 					<?=form_error('replace_term')?>
 				</div>
 			</fieldset>
-			<fieldset class="col-group last <?=form_error_class('search_term')?>">
+			<fieldset class="col-group last <?=form_error_class('replace_where')?>">
 				<div class="setting-txt col w-8">
 					<h3><?=lang('sandr_in')?></h3>
 					<em><?=lang('sandr_in_desc')?></em>
@@ -48,7 +49,7 @@
 				</div>
 			</fieldset>
 
-			<fieldset class="form-ctrls <?=form_error_class('search_term')?>">
+			<fieldset class="form-ctrls <?=form_error_class('password_auth')?>">
 				<div class="password-req">
 					<div class="setting-txt col w-8">
 						<h3><?=lang('sandr_password')?> <span class="required" title="required field">&#10033;</span></h3>

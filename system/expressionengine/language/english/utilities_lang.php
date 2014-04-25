@@ -181,7 +181,6 @@ $lang = array(
 'channel_fields'		=> 'Channel Fields',
 'replace_in_templates'	=> 'In ALL Templates',
 'template_groups'		=> 'Template Groups',
-'rows_replaced'			=> 'Number of database records in which a replacement occurred:',
 'choose_below'			=> '(Choose from the following)',
 
 'btn_sandr' =>

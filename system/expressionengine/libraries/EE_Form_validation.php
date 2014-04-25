@@ -66,7 +66,7 @@ class EE_Form_validation extends CI_Form_validation {
 	 */
 	function run($group = '', $handle_ajax = TRUE)
 	{
-		if (AJAX_REQUEST && $handle_ajax)
+		if (REQ == 'CP' && AJAX_REQUEST && $handle_ajax)
 		{
 			// We should currently only be validating one field at a time,
 			// and this POST field should have the name of it
@@ -86,7 +86,7 @@ class EE_Form_validation extends CI_Form_validation {
 		// Validate the field
 		$result = parent::run($group);
 
-		if (AJAX_REQUEST && $handle_ajax)
+		if (REQ == 'CP' && AJAX_REQUEST && $handle_ajax)
 		{
 			// Send appropriate AJAX response based on validation result
 			if ($result === FALSE)
@@ -97,6 +97,11 @@ class EE_Form_validation extends CI_Form_validation {
 			{
 				ee()->output->send_ajax_response('success');
 			}
+		}
+		// Set validation message on the form for CP non-AJAX requests
+		elseif (REQ == 'CP' && ! AJAX_REQUEST && $result === FALSE && ! empty($_POST))
+		{
+			ee()->view->form_messages = array('issue' => lang('form_validation_error'));
 		}
 
 		return $result;

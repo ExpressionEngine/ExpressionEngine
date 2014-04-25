@@ -1,6 +1,7 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    addressable (2.3.6)
     capybara (2.1.0)
       mime-types (>= 1.16)
       nokogiri (>= 1.3.3)
@@ -47,6 +48,9 @@ GEM
     rspec-expectations (2.14.5)
       diff-lcs (>= 1.1.3, < 2.0)
     rspec-mocks (2.14.6)
+    site_prism (2.6)
+      addressable (~> 2.3.3)
+      capybara (>= 2.1, < 3.0)
     syntax (1.2.0)
     unf (0.1.3)
       unf_ext
@@ -64,4 +68,5 @@ DEPENDENCIES
   capybara-webkit
   mysql2
   rspec
+  site_prism
   syntax
