@@ -13,6 +13,49 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 	}
 
 	/**
+	 * @dataProvider embeddedTags
+	 */
+	public function testEmbeddedTags($description, $str_in, $expected_out_safety_off, $expected_out_safety_on, $vars = array(), $php_vars = array())
+	{
+		// variables called int and string are always available unless $vars was explicitly set to FALSE
+		if ($vars !== FALSE)
+		{
+			$vars = array_merge(array(
+				'int' => 5,
+				'string' => 'ee'
+			), $vars);
+		}
+		else
+		{
+			$vars = array();
+		}
+
+		$fns = new FunctionsStub('randomstring');
+
+		// First pass: safety off
+		$str = $fns->prep_conditionals($str_in, $vars, $safety = 'n', $prefix = '');
+		$this->assertEquals(
+			$expected_out_safety_off,
+			$str,
+			$description . " (safety off)"
+		);
+
+		// Second pass: safety on
+		$this->assertEquals(
+			$expected_out_safety_on,
+			$fns->prep_conditionals($str_in, $vars, $safety = 'y', $prefix = ''),
+			$description . " (safety on)"
+		);
+
+		// Third pass: saftey on fed with result of safety off
+		$this->assertEquals(
+			$expected_out_safety_on,
+			$fns->prep_conditionals($str, $vars, $safety = 'y', $prefix = ''),
+			$description . " (safety off + on)"
+		);
+	}
+
+	/**
 	 * @dataProvider badDataProvider
 	 */
 	public function testBadConditionals($exception, $description, $str_in)
@@ -20,6 +63,7 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 		$this->setExpectedException($exception);
 		$this->runConditionalTest($description, $str_in, '');
 	}
+
 
 	public function testMultipassVariable()
 	{
@@ -130,9 +174,6 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 
 			// testing string protection
 			$this->protectingStrings(),
-
-			// testing embedded tags
-			$this->embeddedTags(),
 
 			// testing that our safety cleanup does its job
 			$this->safteyCleanup(),
@@ -315,15 +356,15 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 		);
 	}
 
-	protected function embeddedTags()
+	public function embeddedTags()
 	{
 		return array(
-			array('Unqouted Embedded Tag',				'{if {exp:foo:bar}}out{/if}',	'{if {exp:foo:bar}}out{/if}'),
-			array('Double Quoted Embedded Tag',			'{if "{exp:foo:bar}"}out{/if}',	'{if "{exp:foo:bar}"}out{/if}'),
-			array('Single Quoted Embedded Tag',			"{if '{exp:foo:bar}'}out{/if}",	'{if "{exp:foo:bar}"}out{/if}'),
-			array('Embedded Tag Before Conditional',	'{exp:foo:bar}{if 5}out{/if}',	'{exp:foo:bar}{if 5}out{/if}'),
-			array('Embedded Tag After Conditional',		'{if 5}out{/if}{exp:foo:bar}',	'{if 5}out{/if}{exp:foo:bar}'),
-			array('User Supplied Embedded Tag',			'{if baz}out{/if}',				'{if "&#123;exp:foo:bar&#125;"}out{/if}',	array('baz' => '{exp:foo:bar}')),
+			array('Unqouted Embedded Tag',				'{if {exp:foo:bar}}out{/if}',	'{if {exp:foo:bar}}out{/if}', 				'{if {exp:foo:bar}}out{/if}'),
+			array('Double Quoted Embedded Tag',			'{if "{exp:foo:bar}"}out{/if}',	'{if "{exp:foo:bar}"}out{/if}', 			'{if "&#123;exp:foo:bar&#125;"}out{/if}'),
+			array('Single Quoted Embedded Tag',			"{if '{exp:foo:bar}'}out{/if}",	'{if "{exp:foo:bar}"}out{/if}', 			'{if "&#123;exp:foo:bar&#125;"}out{/if}'),
+			array('Embedded Tag Before Conditional',	'{exp:foo:bar}{if 5}out{/if}',	'{exp:foo:bar}{if 5}out{/if}', 				'{exp:foo:bar}{if 5}out{/if}'),
+			array('Embedded Tag After Conditional',		'{if 5}out{/if}{exp:foo:bar}',	'{if 5}out{/if}{exp:foo:bar}', 				'{if 5}out{/if}{exp:foo:bar}'),
+			array('User Supplied Embedded Tag',			'{if baz}out{/if}',				'{if "&#123;exp:foo:bar&#125;"}out{/if}',	'{if "&#123;exp:foo:bar&#125;"}out{/if}',	array('baz' => '{exp:foo:bar}')),
 		);
 	}
 
