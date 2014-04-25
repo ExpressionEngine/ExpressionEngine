@@ -2746,7 +2746,10 @@ class EE_Functions {
 					// And also just add the quotes around the value for good measure.
 					if ( ! is_array($value))
 					{
-						if ($do_not_encode_value)
+						// If safety is on, then tags should have already been
+						// processed, thus we should IGNORE the encoding
+						// issues we have with embedded tags.
+						if ($do_not_encode_value && $safety != 'y')
 						{
 							$value = '"' . $value . '"';
 						}
