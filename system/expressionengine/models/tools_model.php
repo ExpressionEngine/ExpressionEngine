@@ -82,7 +82,7 @@ class Tools_model extends CI_Model {
 		$options['channel_fields'] = array('name' => $this->lang->line('channel_fields'), 'choices' => $fields);
 
 		// ALL templates
-		$options['template_data'] = array('name' => $this->lang->line('templates'));
+		$options['template_data'] = array('name' => $this->lang->line('replace_in_templates'));
 
 		// template groups
 

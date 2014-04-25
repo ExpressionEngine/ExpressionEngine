@@ -11,16 +11,16 @@
 				</div>
 				<div class="setting-field col w-8 last">
 					<label class="choice block">
-						<input type="checkbox" name="cache_type" value="page"> <?=lang('templates')?>
+						<input type="checkbox" name="cache_type[]" value="page"> <?=lang('templates')?>
 					</label>
 					<label class="choice block">
-						<input type="checkbox" name="cache_type" value="tag"> <?=lang('tags')?>
+						<input type="checkbox" name="cache_type[]" value="tag"> <?=lang('tags')?>
 					</label>
 					<label class="choice block">
-						<input type="checkbox" name="cache_type" value="db"> <?=lang('database')?>
+						<input type="checkbox" name="cache_type[]" value="db"> <?=lang('database')?>
 					</label>
 					<label class="choice block chosen">
-						<input type="checkbox" name="cache_type" value="all" checked="checked"> <?=lang('all')?>
+						<input type="checkbox" name="cache_type[]" value="all" checked="checked"> <?=lang('all')?>
 					</label>
 				</div>
 			</fieldset>

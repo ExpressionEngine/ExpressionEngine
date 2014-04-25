@@ -26,6 +26,8 @@ class EE_Form_validation extends CI_Form_validation {
 
 	var $old_values = array();
 	var $_fieldtype = NULL;
+	var $_error_prefix	= '<em class="ee-form-error-message">';
+	var $_error_suffix	= '</em>';
 
 	/**
 	 * Constructor
@@ -46,6 +48,58 @@ class EE_Form_validation extends CI_Form_validation {
 			$this->CI->_mcp_reference->security =& $this->CI->security;
 			$this->CI =& $this->CI->_mcp_reference;
 		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Handles validations that are performed over AJAX
+	 *
+	 * This ultimately calls our parent run() method where all validation
+	 * happens, but this handles validation of single fields and the
+	 * sending of AJAX responses so our controllers don't have to.
+	 *
+	 * @param	string	$group			Optional name of rule group to run
+	 * @param	bool	$handle_ajax	Whether or not this method should
+	 *		handle the AJAX interactions of form validation
+	 * @return	bool	Whether or not validation passed
+	 */
+	function run($group = '', $handle_ajax = TRUE)
+	{
+		if (AJAX_REQUEST && $handle_ajax)
+		{
+			// We should currently only be validating one field at a time,
+			// and this POST field should have the name of it
+			$field = ee()->input->post('ee_fv_field');
+
+			// Unset any other rules that aren't for the field we want to
+			// validate
+			foreach ($this->_field_data as $key => $value)
+			{
+				if ($key != $field)
+				{
+					unset($this->_field_data[$key]);
+				}
+			}
+		}
+
+		// Validate the field
+		$result = parent::run($group);
+
+		if (AJAX_REQUEST && $handle_ajax)
+		{
+			// Send appropriate AJAX response based on validation result
+			if ($result === FALSE)
+			{
+				ee()->output->send_ajax_response(array('error' => form_error($field)));
+			}
+			else
+			{
+				ee()->output->send_ajax_response('success');
+			}
+		}
+
+		return $result;
 	}
 
 	// --------------------------------------------------------------------
@@ -345,6 +399,27 @@ class EE_Form_validation extends CI_Form_validation {
 		}
 
 		return TRUE;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Authorize Password
+	 *
+	 * Checks if the submitted password is valid for the logged-in user
+	 *
+	 * @param	string 	$password 	Password string
+	 * @return	bool
+	 */
+	public function auth_password($password)
+	{
+		ee()->load->library('auth');
+		$validate = ee()->auth->authenticate_id(
+			ee()->session->userdata('member_id'),
+			$password
+		);
+
+		return $validate;
 	}
 
 	// --------------------------------------------------------------------
