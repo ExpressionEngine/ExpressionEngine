@@ -288,6 +288,7 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 		return array(
 			array('Unparsed Plain',				'{if notset}out{/if}',			'{if FALSE}out{/if}'),
 			array('Unparsed with Modifier',		'{if notset:modified}out{/if}',	'{if FALSE}out{/if}'),
+			array('Unparsed variable tag',		'{if {notset}}out{/if}',		'{if FALSE}out{/if}'),
 			array('Unparsed variable-variable',	'{if a{notset}b}out{/if}',		'{if FALSE}b}out{/if}'),
 		);
 	}
