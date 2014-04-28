@@ -15,7 +15,7 @@ $lang = array(
 'message_required' =>
 'Email Message is Required',
 
-'em_banned_from_email' => 
+'em_banned_from_email' =>
 'The sender email address you submitted is banned.',
 
 'em_banned_recipient' =>
@@ -41,6 +41,9 @@ $lang = array(
 
 'em_email_sent' =>
 'Your email message has been sent.',
+
+'em_no_preview_template_specified' =>
+'The email tag does not contain the location of your preview template.',
 
 'email_must_be_array' => "The email validation method must be passed an array.",
 'email_invalid_address' => "Invalid email address: %s",

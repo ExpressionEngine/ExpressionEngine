@@ -30,15 +30,13 @@ class Email {
 
 	var $use_captchas = 'n';
 
-	private $_user_recipients = '';
+	private $_user_recipients = FALSE;
 
 	/**
 	 * Constructor
 	 */
 	public function __construct()
 	{
-		$this->EE =& get_instance();
-
 		if (ee()->config->item('email_module_captchas') === FALSE OR
 			ee()->config->item('email_module_captchas') == 'n')
 		{
@@ -46,8 +44,8 @@ class Email {
 		}
 		elseif (ee()->config->item('email_module_captchas') == 'y')
 		{
-			$this->use_captchas = (ee()->config->item('captcha_require_members') == 'y'  OR
-								  (ee()->config->item('captcha_require_members') == 'n' AND ee()->session->userdata('member_id') == 0)) ? 'y' : 'n';
+			$this->use_captchas = (ee()->config->item('captcha_require_members') == 'y'  OR (ee()->config->item('captcha_require_members') == 'n' AND ee()->session->userdata('member_id') == 0))
+				? 'y' : 'n';
 		}
 	}
 
@@ -61,34 +59,34 @@ class Email {
 		$tagdata = ee()->TMPL->tagdata;
 
 		// Recipient Email Checking
-		$user_recipients = ee()->TMPL->fetch_param('user_recipients', 'no');
-
-		// Backwards compatible with previously documented "true/false" parameters (now "yes/no")
-		$this->_user_recipients = ($user_recipients == 'true' OR $user_recipients == 'yes') ? 'yes' : 'no';
+		$this->_user_recipients = get_bool_from_string(
+			ee()->TMPL->fetch_param('user_recipients', 'no')
+		);
 
 		$recipients = ee()->TMPL->fetch_param('recipients', '');
-		$channel = ee()->TMPL->fetch_param('channel', '');
+		$channel    = ee()->TMPL->fetch_param('channel', '');
 
 		// No email left behind act
-		if ($this->_user_recipients == 'no' && $recipients == '')
+		if ( ! $this->_user_recipients && $recipients == '')
 		{
 			$recipients = ee()->config->item('webmaster_email');
 		}
 
-		// Clean and check recipient emails, if any
+		// Clean and check emails, if any
 		if ($recipients != '')
 		{
 			$array = $this->validate_recipients($recipients);
 
 			// Put together into string again
-			$recipients = implode(',',$array['approved']);
+			$recipients = implode(',', $array['approved']);
 		}
 
 		// Conditionals
-		$cond = array();
-		$cond['logged_in']	= (ee()->session->userdata('member_id') == 0) ? 'FALSE' : 'TRUE';
-		$cond['logged_out']	= (ee()->session->userdata('member_id') != 0) ? 'FALSE' : 'TRUE';
-		$cond['captcha']	= ($this->use_captchas == 'y') ? 'TRUE' : 'FALSE';
+		$cond = array(
+			'logged_in'  => (ee()->session->userdata('member_id') != 0),
+			'logged_out' => (ee()->session->userdata('member_id') == 0),
+			'captcha'    => ($this->use_captchas == 'y'),
+		);
 
 		$tagdata = ee()->functions->prep_conditionals($tagdata, $cond);
 
@@ -98,6 +96,16 @@ class Email {
 		// Parse "single" variables
 		foreach (ee()->TMPL->var_single as $key => $val)
 		{
+			// Process default variables
+			if (in_array($key, array('message', 'name', 'to', 'from', 'subject', 'required')))
+			{
+				$tagdata = ee()->TMPL->swap_var_single(
+					$key,
+					ee()->input->post($key, ''),
+					$tagdata
+				);
+			}
+
 			// parse {member_name}
 			if ($key == 'member_name')
 			{
@@ -113,7 +121,6 @@ class Email {
 			}
 
 			// {current_time}
-
 			if (strncmp($key, 'current_time', 12) == 0)
 			{
 				$tagdata = ee()->TMPL->swap_var_single($key, ee()->localize->format_date($val), $tagdata);
@@ -134,10 +141,10 @@ class Email {
 					$table = ( ! is_numeric($entry_id)) ? 'ct.url_title' : 'ct.entry_id';
 
 					$query = ee()->db->select('m.username, m.email, m.screen_name')
-										  ->from(array('channel_titles ct', 'members m'))
-										  ->where('m.member_id = ct.author_id', '', FALSE)
-										  ->where($table, $entry_id)
-										  ->get();
+						->from(array('channel_titles ct', 'members m'))
+						->where('m.member_id = ct.author_id', '', FALSE)
+						->where($table, $entry_id)
+						->get();
 
 					if ($query->num_rows() == 0)
 					{
@@ -163,7 +170,77 @@ class Email {
 		}
 
 		// Create form
-		return $this->_setup_form($tagdata, $recipients, 'contact_form', FALSE);
+		return $this->_setup_form(
+			$tagdata,
+			$recipients,
+			array(
+				'form_id' => 'contact_form',
+				'markdown' => get_bool_from_string(ee()->TMPL->fetch_param('markdown'))
+			)
+		);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Show an email preview for different emails
+	 * @return string Parsed tagdata with relevant fields available for parsing
+	 */
+	public function preview()
+	{
+		if (empty($_POST['PRV']) && empty($_POST['message']))
+		{
+			return ee()->TMPL->no_results();
+		}
+
+		$data = array();
+
+		// Pull in valid POST data, XSS Clean it
+		foreach (array('from', 'name', 'required', 'subject', 'to') as $field)
+		{
+			$data[$field] = ee()->input->post($field, TRUE);
+		}
+
+		if (ee()->input->post('message') !== FALSE)
+		{
+			ee()->load->library('typography');
+			$data['message'] = (get_bool_from_string(ee()->TMPL->fetch_param('markdown')))
+				? ee()->typography->markdown(ee()->input->post('message', TRUE))
+				: ee()->input->post('message', TRUE);
+		}
+
+		return ee()->TMPL->parse_variables_row(ee()->TMPL->tagdata, $data);
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Load up the preview template and render it
+	 * @return void
+	 */
+	private function preview_handler()
+	{
+		$preview = ee()->input->post('PRV', TRUE);
+		if (empty($preview))
+		{
+			ee()->lang->loadfile('email');
+			$error[] = lang('em_no_preview_template_specified');
+			return ee()->output->show_user_error('general', $error);
+		}
+
+		// Clean return value, segments only
+		$clean_preview = str_replace(ee()->functions->fetch_site_index(), '', $preview);
+		$clean_return = str_replace(ee()->functions->fetch_site_index(), '', ee()->input->post('RET', TRUE));
+
+		ee()->functions->clear_caching('all', $clean_preview);
+		ee()->functions->clear_caching('all', $clean_return);
+
+		$segments = (strpos($clean_preview, '/') === FALSE) ? '' : explode('/', $clean_preview);
+
+		// this makes sure the query string is seen correctly by tags on the template
+		ee()->load->library('template', NULL, 'TMPL');
+		ee()->TMPL->parse_template_uri();
+		ee()->TMPL->run_template_engine($segments[0], $segments[1]);
 	}
 
 	// --------------------------------------------------------------------
@@ -183,7 +260,7 @@ class Email {
 		}
 
 		// Recipient Email Checking
-		$this->_user_recipients = 'yes';  // By default
+		$this->_user_recipients = TRUE;  // By default
 
 		$recipients	= ee()->TMPL->fetch_param('recipients', '');
 		$charset	= ee()->TMPL->fetch_param('charset', '');
@@ -253,10 +330,10 @@ class Email {
 				$channel = ee()->TMPL->fetch_param('channel', '');
 
 				ee()->db->select('entry_id')
-					 ->from(array('channel_titles ct', 'channels c'))
-					 ->where('ct.channel_id = c.channel_id', '', FALSE)
-					 ->where('(ct.expiration_date = 0 OR expiration_date > '.$timestamp.')', '', FALSE)
-					 ->where('ct.status !=', 'closed');
+					->from(array('channel_titles ct', 'channels c'))
+					->where('ct.channel_id = c.channel_id', '', FALSE)
+					->where('(ct.expiration_date = 0 OR expiration_date > '.$timestamp.')', '', FALSE)
+					->where('ct.status !=', 'closed');
 
 				$table = ( ! is_numeric($entry_id)) ? 'ct.url_title' : 'ct.entry_id';
 
@@ -308,7 +385,6 @@ class Email {
 				$channel->fetch_categories();
 				$channel->parse_channel_entries();
 				$tagdata = $channel->return_data;
-
 			}
 		/*
 		/* -------------------------------------*/
@@ -319,7 +395,16 @@ class Email {
 
 		$tagdata = ee()->functions->prep_conditionals($tagdata, $cond);
 
-		// Parse tell-a-friend variables
+		// Process default variables
+		$default = array('message', 'name', 'to', 'from', 'subject', 'required');
+		foreach ($default as $field)
+		{
+			$tagdata = ee()->TMPL->swap_var_single(
+				$field,
+				ee()->input->post($field, ''),
+				$tagdata
+			);
+		}
 
 		// {member_name}
 		$tagdata = ee()->TMPL->swap_var_single('member_name', ee()->session->userdata['screen_name'], $tagdata);
@@ -351,7 +436,14 @@ class Email {
 
 		$allow = ($allow_html !== FALSE) ? TRUE : FALSE;
 
-		return $this->_setup_form($tagdata, $recipients, 'tellafriend_form', $allow);
+		return $this->_setup_form(
+			$tagdata,
+			$recipients,
+			array(
+				'form_id' => 'tellafriend_form',
+				'allow_html' => $allow
+			)
+		);
 	}
 
 	// --------------------------------------------------------------------
@@ -399,6 +491,11 @@ class Email {
 	 */
 	public function send_email()
 	{
+		if (isset($_POST['preview']))
+		{
+			return $this->preview_handler();
+		}
+
 		$error = array();
 
 		// Blacklist/Whitelist Check
@@ -411,10 +508,8 @@ class Email {
 		ee()->session->nation_ban_check();
 
 		// Check and Set
-		$default = array(
-			'subject', 'message', 'from', 'user_recipients', 'to',
-			'recipients', 'name', 'required'
-		);
+		$default = array('subject', 'message', 'from', 'user_recipients', 'to',
+			'recipients', 'name', 'required');
 
 		foreach ($default as $val)
 		{
@@ -437,27 +532,7 @@ class Email {
 
 				if ($val == 'recipients')
 				{
-					if ( function_exists('mcrypt_encrypt') )
-					{
-						$init_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB);
-						$init_vect = mcrypt_create_iv($init_size, MCRYPT_RAND);
-
-						$decoded_recipients = rtrim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, md5(ee()->db->username.ee()->db->password), base64_decode($_POST[$val]), MCRYPT_MODE_ECB, $init_vect), "\0");
-					}
-					else
-					{
-						$raw = base64_decode($_POST[$val]);
-
-						$hash = substr($raw, -32);
-						$decoded_recipients = substr($raw, 0, -32);
-
-						if ($hash != md5(ee()->db->username.ee()->db->password.$decoded_recipients))
-						{
-							$decoded_recipients = '';
-						}
-					}
-
-					$_POST[$val] = $decoded_recipients;
+					$_POST[$val] = $this->_decrypt($_POST[$val]);
 				}
 
 				$_POST[$val] = ee()->security->xss_clean(trim(stripslashes($_POST[$val])));
@@ -465,7 +540,8 @@ class Email {
 		}
 
 		// Clean incoming
-		$clean = array('subject', 'from', 'user_recipients', 'to', 'recipients', 'name');
+		$clean = array('subject', 'from', 'user_recipients', 'to', 'recipients',
+			'name');
 
 		foreach ($clean as $val)
 		{
@@ -482,7 +558,7 @@ class Email {
 		}
 
 		// Return Variables
-		$x = explode('|',$_POST['RET']);
+		$x = explode('|', $_POST['RET']);
 		unset($_POST['RET']);
 
 		if (is_numeric($x['0']))
@@ -512,14 +588,12 @@ class Email {
 
 		// If the from field is empty, error
 		ee()->load->helper('email');
-
 		if ($_POST['from'] == '' OR ! valid_email($_POST['from']))
 		{
 			return ee()->output->show_user_error('general', array(lang('em_sender_required')));
 		}
 
 		// If no recipients, bounce them back
-
 		if ($_POST['recipients'] == '' && $_POST['to'] == '')
 		{
 			return ee()->output->show_user_error('general', array(lang('em_no_valid_recipients')));
@@ -535,7 +609,7 @@ class Email {
 		$day_ago = ee()->localize->now - 60*60*24;
 		$query = ee()->db->query("DELETE FROM exp_email_tracker WHERE email_date < '{$day_ago}'");
 
-		if (ee()->session->userdata['username'] === false OR ee()->session->userdata['username'] == '')
+		if (ee()->session->userdata['username'] === FALSE OR ee()->session->userdata['username'] == '')
 		{
 			$query = ee()->db->query("SELECT *
 				FROM exp_email_tracker
@@ -581,9 +655,9 @@ class Email {
 		}
 
 		// Review Recipients
-		$_POST['user_recipients'] = ($_POST['user_recipients'] == md5(ee()->db->username.ee()->db->password.'y')) ? 'y' : 'n';
+		$this->_user_recipients = get_bool_from_string($this->_decrypt($_POST['user_recipients']));
 
-		if ($_POST['user_recipients'] == 'y' && trim($_POST['to']) != '')
+		if ($this->_user_recipients && trim($_POST['to']) != '')
 		{
 			$array = $this->validate_recipients($_POST['to']);
 
@@ -606,7 +680,7 @@ class Email {
 		}
 
 		// If we have no valid emails to send, back they go.
-		if ($_POST['user_recipients'] == 'y' && count($approved_tos) == 0)
+		if ($this->_user_recipients && count($approved_tos) == 0)
 		{
 			$error[] = lang('em_no_valid_recipients');
 		}
@@ -640,7 +714,7 @@ class Email {
 				AND ip_address = '".ee()->input->ip_address()."'
 				AND date > UNIX_TIMESTAMP()-7200");
 
-			if ($query->row('count')  == 0)
+			if ($query->row('count') == 0)
 			{
 				return ee()->output->show_user_error('submission', array(lang('captcha_incorrect')));
 			}
@@ -658,11 +732,25 @@ class Email {
 		// Load the text helper
 		ee()->load->helper('text');
 
-		$subject = entities_to_ascii($_POST['subject']);
+		$subject = ee()->input->post('subject', TRUE);
+		$subject = entities_to_ascii($subject);
 		$subject = ee()->typography->filter_censored_words($subject);
 
-		$message = ($_POST['required'] != '') ? $_POST['required']."\n".$_POST['message'] : $_POST['message'];
-		$message = ee()->security->xss_clean($message);
+		// Retrieve message
+		$message = ee()->input->post('message', TRUE);
+
+		// Parse Markdown if necessary
+		if (get_bool_from_string($this->_decrypt($_POST['markdown'])))
+		{
+			$_POST['allow_html'] = 'y';
+			$message = ee()->typography->markdown($message);
+		}
+
+		// Prepend required
+		if ($required = ee()->input->post('required', TRUE))
+		{
+			$message = $required."\n".$message;
+		}
 
 		if (isset($_POST['allow_html']) && $_POST['allow_html'] == 'y' &&
 			strlen(strip_tags($message)) != strlen($message))
@@ -756,7 +844,6 @@ class Email {
 			}
 		}
 
-
 		// Store in tracking class
 		$data = array(
 			'email_date'		=> ee()->localize->now,
@@ -829,7 +916,6 @@ class Email {
 		$emails = array_unique($emails);
 
 		// Emails to send email to...
-
 		$error = array();
 		$approved_emails = array();
 
@@ -837,23 +923,23 @@ class Email {
 
 		foreach ($emails as $email)
 		{
-			 if (trim($email) == '') continue;
+			if (trim($email) == '') continue;
 
-			 if (valid_email($email))
-			 {
-				  if ( ! ee()->session->ban_check('email', $email))
-				  {
-						$approved_emails[] = $email;
-				  }
-				  else
-				  {
-						$error['ban_recp'] = lang('em_banned_recipient');
-				  }
-			 }
-			 else
-			 {
-			 	$error['bad_recp'] = lang('em_invalid_recipient');
-			 }
+			if (valid_email($email))
+			{
+				if ( ! ee()->session->ban_check('email', $email))
+				{
+					$approved_emails[] = $email;
+				}
+				else
+				{
+					$error['ban_recp'] = lang('em_banned_recipient');
+				}
+			}
+			else
+			{
+				$error['bad_recp'] = lang('em_invalid_recipient');
+			}
 		}
 
 		return array('approved' => $approved_emails, 'error' => $error);
@@ -864,34 +950,55 @@ class Email {
 	/**
 	 * Setup forms
 	 *
-	 * @param 	string 	$tagdata
-	 * @param 	string 	$recipients
-	 * @param 	string 	$form_id
-	 * @param 	boolean
-	 * @return 	string
+	 * @param string $tagdata     Template data to parse
+	 * @param string $recipients  Email address for the TO field
+	 * @param array  $options     Associative array for options:
+	 *                            - (string) form_id: ID of the form tag
+	 *                            - (bool) allow_html: Whether or not to allow HTML
+	 *                            - (bool) markdown: Whether or not to parse Markdown
+	 * @return string             Fully parsed form
 	 */
-	private function _setup_form($tagdata, $recipients, $form_id = NULL, $allow_html = FALSE)
+	private function _setup_form($tagdata, $recipients, $options = array())
 	{
+		// Setup defaults for the $options array
+		$default_options = array(
+			'form_id' => NULL,
+			'allow_html' => FALSE,
+			'markdown' => FALSE
+		);
+		$options = (empty($options))
+			? $default_options
+			: array_merge($default_options, $options);
+
 		$charset = ee()->TMPL->fetch_param('charset', '');
 
-		$recipients = $this->_encrypt_recipients($recipients);
+		// Get the URL
+		$uri_string = (ee()->uri->uri_string == '') ? 'index' : ee()->uri->uri_string;
+		$url = ee()->functions->fetch_site_index(0,0).'/'.$uri_string;
 
 		$data = array(
-			'id'			=> (ee()->TMPL->form_id == '') ? $form_id : ee()->TMPL->form_id,
-			'class'			=> ee()->TMPL->form_class,
-			'hidden_fields'	=> array(
-				'ACT'				=> ee()->functions->fetch_action_id('Email', 'send_email'),
-				'RET'				=> ee()->TMPL->fetch_param('return', ''),
-				'URI'				=> (ee()->uri->uri_string == '') ? 'index' : ee()->uri->uri_string,
-				'recipients'		=> base64_encode($recipients),
-				'user_recipients'	=> ($this->_user_recipients == 'yes') ? md5(ee()->db->username.ee()->db->password.'y') : md5(ee()->db->username.ee()->db->password.'n'),
-				'charset'			=> $charset,
-				'redirect'			=> ee()->TMPL->fetch_param('redirect', ''),
-				'replyto'			=> ee()->TMPL->fetch_param('replyto', '')
+			'action'        => reduce_double_slashes($url),
+			'id'            => (ee()->TMPL->form_id == '')
+				? $options['form_id']
+				: ee()->TMPL->form_id,
+			'class'         => ee()->TMPL->form_class,
+			'hidden_fields' => array(
+				'ACT'             => ee()->functions->fetch_action_id('Email', 'send_email'),
+				'RET'             => ee()->TMPL->fetch_param('return', ee()->uri->uri_string),
+				'URI'             => (ee()->uri->uri_string == '')
+					? 'index'
+					: ee()->uri->uri_string,
+				'PRV'             => ee()->TMPL->fetch_param('preview', ''),
+				'recipients'      => $this->_encrypt($recipients),
+				'user_recipients' => $this->_encrypt(($this->_user_recipients) ? 'y' : 'n'),
+				'charset'         => $charset,
+				'redirect'        => ee()->TMPL->fetch_param('redirect', ''),
+				'replyto'         => ee()->TMPL->fetch_param('replyto', ''),
+				'markdown'        => $this->_encrypt(($options['markdown']) ? 'y' : 'n')
 			)
 		);
 
-		if ($allow_html)
+		if ($options['allow_html'])
 		{
 			$data['hidden_fields']['allow_html'] = 'y';
 		}
@@ -912,25 +1019,61 @@ class Email {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Encrypt Recipients list
+	 * Encrypt a given string of data
+	 * @param string $data Raw data to encrypt
+	 * @return string encrypted and base64 encoded string of data
 	 */
-	private function _encrypt_recipients($recipients)
+	private function _encrypt($data)
 	{
 		if (function_exists('mcrypt_encrypt'))
 		{
 			$init_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB);
 			$init_vect = mcrypt_create_iv($init_size, MCRYPT_RAND);
 
-			return mcrypt_encrypt(
-				MCRYPT_RIJNDAEL_256,
-				md5(ee()->db->username.ee()->db->password),
-				$recipients,
-				MCRYPT_MODE_ECB,
-				$init_vect
+			return base64_encode(
+				mcrypt_encrypt(
+					MCRYPT_RIJNDAEL_256,
+					md5(ee()->db->username.ee()->db->password),
+					$data,
+					MCRYPT_MODE_ECB,
+					$init_vect
+				)
 			);
 		}
 
-		return $recipients.md5(ee()->db->username.ee()->db->password.$recipients);
+		return base64_encode($data.md5(ee()->db->username.ee()->db->password.$data));
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Decrypt a given string of data, assumed to be base64_encoded
+	 * @param string $data Base64 encoded encrypted string of data
+	 * @return string Decrypted data
+	 */
+	private function _decrypt($data)
+	{
+		if ( function_exists('mcrypt_encrypt'))
+		{
+			$init_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB);
+			$init_vect = mcrypt_create_iv($init_size, MCRYPT_RAND);
+
+			$data = rtrim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, md5(ee()->db->username.ee()->db->password), base64_decode($data), MCRYPT_MODE_ECB, $init_vect), "\0");
+		}
+		else
+		{
+			$raw = base64_decode($data);
+
+			$hash = substr($raw, -32);
+			$data = substr($raw, 0, -32);
+
+			if ($hash != md5(ee()->db->username.ee()->db->password.$data))
+			{
+				$data = '';
+			}
+		}
+
+		return $data;
 	}
 }
 // END CLASS

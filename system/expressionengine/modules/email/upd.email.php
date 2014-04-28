@@ -25,7 +25,7 @@
 
 class Email_upd {
 
-	var $version = '2.0';
+	var $version = '2.1';
 
 	function Email_upd()
 	{
