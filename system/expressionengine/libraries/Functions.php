@@ -2427,9 +2427,7 @@ class EE_Functions {
 		$l = strlen($str);
 
 		$var_count = 0;
-		$variables = array();
-		$variable_texts = array();
-		$variable_placeholders = array();
+		$found_conditionals = array();
 
 		// We use a finite state machine to walk through
 		// the conditional and find the correct closing
@@ -2461,12 +2459,14 @@ class EE_Functions {
 		while (($i = strpos($str, '{if', $i)) !== FALSE)
 		{
 			// Confirm this is a conditional and not some other tag
-			$char = $str[$i+3];
+			$char = $str[$i + 3];
+
 			if ( ! ($char == ' ' || $char == "\t" || $char == "\n" || $char == "\r" ) )
 			{
 				// If the "{if" is not followed by whitespace this might be a
 				// variable (i.e. {iffy}) or an "{if:else..." conditional
-				$substr = substr($str, $i+3);
+				$substr = substr($str, $i + 3, 10);
+
 				if ($char == ':' && (preg_match('/^:else(\s?}|if\s)/', $substr) != 1))
 				{
 					// This is an invalid conditional because "{if:" is reserved
@@ -2479,7 +2479,7 @@ class EE_Functions {
 			}
 
 			// No sense continuing if we cannot find a {/if}
-			if (strpos($str, '{/if}', $i+3) === FALSE)
+			if (strpos($str, '{/if}', $i + 3) === FALSE)
 			{
 				return FALSE;
 			}
@@ -2488,6 +2488,10 @@ class EE_Functions {
 			$buffer  = '';
 			$state   = 'OK';
 			$curlies = 0;
+
+			$variables = array();
+			$variable_texts = array();
+			$variable_placeholders = array();
 
 			while ($i < $l)
 			{
@@ -2498,6 +2502,7 @@ class EE_Functions {
 					{
 						$buffer .= substr($str, $i, $skip);
 					}
+
 					$i += $skip;
 				}
 
@@ -2577,26 +2582,38 @@ class EE_Functions {
 
 			$end = $i;
 
-			// replace the fully matched conditional with one that has placeholders
-			// instead of any strings.
+			// Extract the full conditional
+			$strings = array();
 			$full_conditional = substr($str, $start, $end - $start);
-			$full_conditional = str_replace($variable_texts, $variable_placeholders, $full_conditional);
 
-			$str = substr_replace($str, $full_conditional, $start, $end - $start);
+			// If we found strings, we replace the fully matched conditional
+			// with one that has placeholders instead of any of the strings.
+			if (count($variable_placeholders))
+			{
+				$full_conditional = str_replace($variable_texts, $variable_placeholders, $full_conditional);
+				$str = substr_replace($str, $full_conditional, $start, $end - $start);
 
-			$new_length = strlen($str);
-			$i = $i + ($new_length - $l);
-			$l = $new_length;
-		}
+				// Adjust our while loop conditions
+				$new_length = strlen($str);
+				$i = $i + ($new_length - $l);
+				$l = $new_length;
 
 		$return_vars = array();
+				$strings = array_combine($variable_placeholders, $variables);
+			}
 
-		if (count($variables))
-		{
-			$return_vars = array_combine($variable_placeholders, $variables);
+			// TODO this can be sped up by incorporating the valid conditional check above
+			$condition = preg_replace('/(^'.preg_quote(LD).'((if:else)*if)\s+|'.preg_quote(RD).'$)/s', '', $full_conditional);
+			// Save the conditional for further processing.
+			$found_conditionals[] = array(
+				'full_open_tag'	=> $full_conditional,
+				'condition'		=> $condition,
+				'strings'		=> $strings
+				// future: variables, numbers, operators?
+			);
 		}
 
-		return array($str, $return_vars);
+		return array($str, $found_conditionals);
 	}
 
 	// --------------------------------------------------------------------
