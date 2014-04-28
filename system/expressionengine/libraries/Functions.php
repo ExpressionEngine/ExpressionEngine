@@ -2648,40 +2648,57 @@ class EE_Functions {
 			return $value;
 		}
 
-		// If it was a string literal, then we do not encode { or } unless safety
-		// is on. Similarly, if it contains a module tag, we do not encode anything
-		// until saftey is on.
+		// Rules:
+		// 1. Encode all non string literals
+		// 2. Do not encode embedded tags in strings when safety is 'n'
+		// 3. Do not encode braces in strings
 
 		$has_embedded_tag = FALSE;
 		$has_embedded_module_tag = FALSE;
+		$encode_braces = TRUE;
 
-		if ($was_string_literal && $safety == 'n')
+		if ($was_string_literal)
 		{
-			$has_embedded_tag = (stristr($value, LD) || stristr($value, RD));
 			$has_embedded_module_tag = (stristr($value, LD.'exp:') && stristr($value, RD));
+
+			if ($has_embedded_module_tag)
+			{
+				if ($safety == 'n')
+				{
+					// See Rule #2
+					return '"' . $value . '"';
+				}
+			}
+			else
+			{
+				$has_embedded_tag = (stristr($value, LD) || stristr($value, RD));
+			}
 		}
 
-		if ( ! $has_embedded_module_tag)
+		// See Rule #3
+		if ($was_string_literal && $has_embedded_tag)
 		{
-			if (strlen($value) > 100)
-			{
-				$value = substr(htmlspecialchars($value), 0, 100);
-			}
+			$encode_braces = FALSE;
+		}
 
+		if (strlen($value) > 100)
+		{
+			$value = substr(htmlspecialchars($value), 0, 100);
+		}
+
+		$value = str_replace(
+			array("'", '"', '(', ')', '$', "\n", "\r", '\\'),
+			array('&#39;', '&#34;', '&#40;', '&#41;', '&#36;', '', '', '&#92;'),
+			$value
+		);
+
+		if ($encode_braces)
+		{
 			$value = str_replace(
-				array("'", '"', '(', ')', '$', "\n", "\r", '\\'),
-				array('&#39;', '&#34;', '&#40;', '&#41;', '&#36;', '', '', '&#92;'),
+				array('{', '}',),
+				array('&#123;', '&#125;',),
 				$value
 			);
-
-			if ( ! $has_embedded_tag)
-			{
-				$value = str_replace(
-					array('{', '}',),
-					array('&#123;', '&#125;',),
-					$value
-				);
-			}
 		}
 
 		// quote it as a proper string
