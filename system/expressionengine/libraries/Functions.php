@@ -24,17 +24,18 @@
  */
 class EE_Functions {
 
-	public $seed              = FALSE; // Whether we've seeded our rand() function.  We only seed once per script execution
-	public $cached_url        = array();
-	public $cached_path       = array();
-	public $cached_index      = array();
-	public $cached_captcha    = '';
-	public $template_map      = array();
-	public $template_type     = '';
-	public $action_ids        = array();
-	public $file_paths        = array();
-	public $conditional_debug = FALSE;
-	public $catfields         = array();
+	public $seed               = FALSE; // Whether we've seeded our rand() function.  We only seed once per script execution
+	public $cached_url         = array();
+	public $cached_path        = array();
+	public $cached_index       = array();
+	public $cached_captcha     = '';
+	public $template_map       = array();
+	public $template_type      = '';
+	public $action_ids         = array();
+	public $file_paths         = array();
+	public $conditional_debug  = FALSE;
+	public $catfields          = array();
+	public $protect_javascript = TRUE;
 
 	/**
 	 * Constructor
@@ -43,8 +44,12 @@ class EE_Functions {
 	{
 		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
-	}
 
+		if (ee()->config->item('protect_javascript') == 'n')
+		{
+			$this->protect_javascript = FALSE;
+		}
+	}
 
 
 	// --------------------------------------------------------------------
@@ -2643,6 +2648,23 @@ class EE_Functions {
 			$vars = array_merge($vars, ee()->TMPL->embed_vars);
 		}
 
+		// Protect compressed javascript from being mangled or interpreted as invalid
+		if ($this->protect_javascript !== FALSE)
+		{
+			$protected_javascript = array();
+			$js_protect = unique_marker('tmpl_script');
+
+			if (stristr($str, '<script') && preg_match_all('/<script.*?".">.*?<\/script>/is', $str, $matches))
+			{
+				foreach ($matches[0] as $match)
+				{
+					$protected_javascript[$js_protect.$i] = $match;
+				}
+
+				$str = str_replace(array_values($protected_javascript), array_keys($protected_javascript), $str);
+			}
+		}
+
 		$return = $this->extract_conditionals($str, $vars);
 
 		if ($return === FALSE)
@@ -2984,6 +3006,12 @@ class EE_Functions {
 
 		$str = str_replace(array_keys($switch), array_values($switch), $str);
 
+
+		// Unprotect <script> tags
+		if ($this->protect_javascript !== FALSE && count($protected_javascript) > 0)
+		{
+			$str = str_replace(array_keys($protected_javascript), array_values($protected_javascript), $str);
+		}
 
 		unset($switch);
 		unset($protect);
