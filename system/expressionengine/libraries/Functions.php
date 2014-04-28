@@ -2633,47 +2633,59 @@ class EE_Functions {
 	 *							defaults to n so that conditionals are slowly
 	 *							filled and then turned into safely executable
 	 *							ones with the safety on at the end.
-	 * @param	bool   $encode_braces Do we convert them to HTML entities?
+	 * @param	bool   $was_string_literal Was the value part of a template string?
 	 * @return	string The new conditional value to use instead of $str.
 	 */
-	public function encode_conditional_value($str, $safety='n', $encode_braces = TRUE, $do_not_encode_value = FALSE)
+	public function encode_conditional_value($str, $safety = 'n', $was_string_literal = FALSE)
 	{
 		$value = (string) $str; // ONLY strings please
 
-		if ($do_not_encode_value && $safety != 'y')
+		// TRUE AND FALSE values are for short hand conditionals,
+		// like {if logged_in} and so we have no need to remove
+		// unwanted characters and we do not quote it.
+		if ($value == 'TRUE' || $value == 'FALSE')
 		{
-			$value = '"' . $value . '"';
+			return $value;
 		}
-		else
+
+		// If it was a string literal, then we do not encode { or } unless safety
+		// is on. Similarly, if it contains a module tag, we do not encode anything
+		// until saftey is on.
+
+		$has_embedded_tag = FALSE;
+		$has_embedded_module_tag = FALSE;
+
+		if ($was_string_literal && $safety == 'n')
 		{
-			// TRUE AND FALSE values are for short hand conditionals,
-			// like {if logged_in} and so we have no need to remove
-			// unwanted characters and we do not quote it.
+			$has_embedded_tag = (stristr($value, LD) && stristr($value, RD));
+			$has_embedded_module_tag = ($has_embedded_tag && stristr($value, LD.'exp:'));
+		}
 
-			if ($value != 'TRUE' && $value != 'FALSE')
+		if ( ! $has_embedded_module_tag)
+		{
+			if (strlen($value) > 100)
 			{
-				$value = (strlen($value) > 100) ? substr(htmlspecialchars($value), 0, 100) : $value;
+				$value = substr(htmlspecialchars($value), 0, 100);
+			}
 
+			$value = str_replace(
+				array("'", '"', '(', ')', '$', "\n", "\r", '\\'),
+				array('&#39;', '&#34;', '&#40;', '&#41;', '&#36;', '', '', '&#92;'),
+				$value
+			);
+
+			if ( ! $has_embedded_tag)
+			{
 				$value = str_replace(
-					array("'", '"', '(', ')', '$', "\n", "\r", '\\'),
-					array('&#39;', '&#34;', '&#40;', '&#41;', '&#36;', '', '', '&#92;'),
+					array('{', '}',),
+					array('&#123;', '&#125;',),
 					$value
 				);
-
-				if ($encode_braces)
-				{
-					$value = str_replace(
-						array('{', '}',),
-						array('&#123;', '&#125;',),
-						$value
-					);
-				}
-
-				$value = '"' . $value . '"';
 			}
 		}
 
-		return $value;
+		// quote it as a proper string
+		return '"' . $value . '"';
 	}
 
 	// --------------------------------------------------------------------
@@ -2764,14 +2776,14 @@ class EE_Functions {
 		{
 			foreach ($condition['strings'] as $key => $value)
 			{
-				$conditionals[$i]['strings'][$key] = $this->encode_conditional_value($value, $safety, FALSE, TRUE);
+				$conditionals[$i]['strings'][$key] = $this->encode_conditional_value($value, $safety, TRUE);
 			}
 		}
 
 		// Encode the variables
 		foreach ($vars as &$var)
 		{
-			$var = $this->encode_conditional_value($var, $safety, TRUE);
+			$var = $this->encode_conditional_value($var, $safety);
 		}
 
 		foreach ($conditionals as $conditional)
