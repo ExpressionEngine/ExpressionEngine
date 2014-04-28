@@ -2657,8 +2657,8 @@ class EE_Functions {
 
 		if ($was_string_literal && $safety == 'n')
 		{
-			$has_embedded_tag = (stristr($value, LD) && stristr($value, RD));
-			$has_embedded_module_tag = ($has_embedded_tag && stristr($value, LD.'exp:'));
+			$has_embedded_tag = (stristr($value, LD) || stristr($value, RD));
+			$has_embedded_module_tag = (stristr($value, LD.'exp:') && stristr($value, RD));
 		}
 
 		if ( ! $has_embedded_module_tag)
