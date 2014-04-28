@@ -479,9 +479,9 @@ class FunctionsStub extends EE_Functions {
 		return $result;
 	}
 
-	public function convert_quoted_conditional_strings_to_variables($str, $vars)
+	public function extract_conditionals($str, $vars)
 	{
-		$result = parent::convert_quoted_conditional_strings_to_variables($str, $vars);
+		$result = parent::extract_conditionals($str, $vars);
 
 		if ($result === FALSE)
 		{
