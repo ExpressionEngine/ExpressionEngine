@@ -289,7 +289,7 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			array('Unparsed Plain',				'{if notset}out{/if}',			'{if FALSE}out{/if}'),
 			array('Unparsed with Modifier',		'{if notset:modified}out{/if}',	'{if FALSE}out{/if}'),
 			array('Unparsed variable tag',		'{if {notset}}out{/if}',		'{if FALSE}out{/if}'),
-			array('Unparsed variable-variable',	'{if a{notset}b}out{/if}',		'{if FALSE}b}out{/if}'),
+			array('Unparsed variable-variable',	'{if a{notset}b}out{/if}',		'{if FALSE}out{/if}'),
 		);
 	}
 
@@ -360,7 +360,7 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 	public function embeddedTags()
 	{
 		return array(
-			array('Unqouted Embedded Tag',				'{if {exp:foo:bar}}out{/if}',	'{if {exp:foo:bar}}out{/if}', 				'{if {exp:foo:bar}}out{/if}'),
+			array('Unqouted Embedded Tag',				'{if {exp:foo:bar}}out{/if}',	'{if {exp:foo:bar}}out{/if}', 				'{if FALSE}out{/if}'),
 			array('Double Quoted Embedded Tag',			'{if "{exp:foo:bar}"}out{/if}',	'{if "{exp:foo:bar}"}out{/if}', 			'{if "&#123;exp:foo:bar&#125;"}out{/if}'),
 			array('Single Quoted Embedded Tag',			"{if '{exp:foo:bar}'}out{/if}",	'{if "{exp:foo:bar}"}out{/if}', 			'{if "&#123;exp:foo:bar&#125;"}out{/if}'),
 			array('Embedded Tag Before Conditional',	'{exp:foo:bar}{if 5}out{/if}',	'{exp:foo:bar}{if 5}out{/if}', 				'{exp:foo:bar}{if 5}out{/if}'),
@@ -404,7 +404,7 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			array('Double AND', 		 '{if 5 && AND 7}out{/if}',	'{if 5 && AND 7}out{/if}'),
 			array('Double No Space AND', '{if 5 &&AND 7}out{/if}',	'{if 5 &&AND 7}out{/if}'),
 			array('Double Comparison',	 '{if 5 > < 7}out{/if}',	'{if 5 > < 7}out{/if}'),
-			array('Shift by comparison', '{if 5 >>> 7}out{/if}',	'{if 5  FALSE > 7}out{/if}'),
+			array('Shift by comparison', '{if 5 >>> 7}out{/if}',	'{if 5 FALSE > 7}out{/if}'),
 
 		);
 	}
