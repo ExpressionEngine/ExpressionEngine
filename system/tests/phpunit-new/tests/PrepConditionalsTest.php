@@ -58,12 +58,20 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 	/**
 	 * @dataProvider badDataProvider
 	 */
-	public function testBadConditionals($exception, $description, $str_in)
+	public function testBadConditionalsWithVariables($exception, $description, $str_in)
 	{
 		$this->setExpectedException($exception);
 		$this->runConditionalTest($description, $str_in, '');
 	}
 
+	/**
+	 * @dataProvider badDataProvider
+	 */
+	public function testBadConditionalsWithoutVariables($exception, $description, $str_in)
+	{
+		$this->setExpectedException($exception);
+		$this->runConditionalTest($description, $str_in, '', FALSE);
+	}
 
 	public function testMultipassVariable()
 	{
