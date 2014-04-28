@@ -3015,6 +3015,8 @@ PAPAYA;
 
 			if (file_exists($path.'upd.'.$module.EXT))
 			{
+				$this->load->add_package_path($path);
+
 				$class = ucfirst($module).'_upd';
 
 				if ( ! class_exists($class))
@@ -3029,6 +3031,8 @@ PAPAYA;
 				{
 					$this->db->update('modules', array('module_version' => $UPD->version), array('module_name' => ucfirst($module)));
 				}
+
+				$this->load->remove_package_path($path);
 			}
 		}
 	}
