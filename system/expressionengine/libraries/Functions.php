@@ -2678,12 +2678,6 @@ class EE_Functions {
 			exit;
 		}
 
-		// Nothing else to do here
-		if (count($vars) == 0)
-		{
-			return $str;
-		}
-
 		list($str, $conditionals) = $return;
 		unset($return);
 
@@ -2716,6 +2710,12 @@ class EE_Functions {
 					$quoted_braces[] = $key;
 				}
 			}
+		}
+
+		// Nothing else to do here
+		if (count($vars) == 0)
+		{
+			return $str;
 		}
 
 		$switch  = array();
