@@ -179,6 +179,9 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			$this->safteyCleanup(),
 			$this->safetyFalseCleanup(),
 
+			// testing bug reports
+			$this->bug20323(),
+
 			// wonky tests parse despite createing php errors
 			// we should try to invalidate all of these, so for our new conditional
 			// parsing these tests should be rewriten as failing
@@ -447,6 +450,20 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			array('Concatenation with spaces',				'{if string . string}out{/if}', '{if "ee" . "ee"}out{/if}'),
 			array('Concatenation without spaces',			'{if string.string}out{/if}', '{if FALSE . FALSE}out{/if}'),
 			array('Subtract dash-words variable',			'{if a-number - int}out{/if}', '{if "15" - "5"}out{/if}', array('a-number' => 15)),
+		);
+	}
+
+	// See: https://support.ellislab.com/bugs/detail/20323
+	protected function bug20323()
+	{
+		$vars = array(
+			'value' => 'Test with long caption title to test layout',
+			'title' => 'Test article with captions'
+		);
+
+		return array(
+			array('Variable in variable',	'{if value}out{/if}',											'{if "Test with long caption title to test layout"}out{/if}',	$vars),
+			array('Variable in string',		'{if "Test with long caption title to test layout"}out{/if}',	'{if "Test with long caption title to test layout"}out{/if}',	$vars),
 		);
 	}
 }
