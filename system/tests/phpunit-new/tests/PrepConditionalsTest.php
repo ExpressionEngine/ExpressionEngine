@@ -198,7 +198,8 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			$this->wonkyEmpty(),
 			$this->wonkyMutableBooleans(),
 			$this->wonkyDifferentBehaviorWithoutVariables(),
-			$this->wonkyPhpOperatorsWorkOnlyWithWhitespace()
+			$this->wonkyPhpOperatorsWorkOnlyWithWhitespace(),
+			$this->wonkyComparisonOperators()
 
 			// evil tests attempt to subvert parsing to get valid php code
 			// to the eval stage. These should never ever work.
@@ -458,6 +459,16 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			array('Concatenation with spaces',				'{if string . string}out{/if}', '{if "ee" . "ee"}out{/if}'),
 			array('Concatenation without spaces',			'{if string.string}out{/if}', '{if FALSE . FALSE}out{/if}'),
 			array('Subtract dash-words variable',			'{if a-number - int}out{/if}', '{if "15" - "5"}out{/if}', array('a-number' => 15)),
+		);
+	}
+
+	protected function wonkyComparisonOperators()
+	{
+		return array(
+			array('= Instead of ==',	'{if 5 = 5}out{/if}',	'{if 5 FALSE 5}out{/if}'),
+			array('! Instead of !=',	'{if 5 ! 5}out{/if}',	'{if 5 FALSE 5}out{/if}'),
+			array('& Instead of &&',	'{if 5 & 5}out{/if}',	'{if 5 FALSE 5}out{/if}'),
+			array('| Instead of ||',	'{if 5 | 5}out{/if}',	'{if 5 FALSE 5}out{/if}'),
 		);
 	}
 
