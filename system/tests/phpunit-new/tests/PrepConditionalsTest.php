@@ -448,9 +448,9 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 		return array(
 			array('TRUE CANNOT be a variable',	'{if xyz == TRUE}out{/if}', '{if "1" == TRUE}out{/if}',	array('xyz' => TRUE, 'TRUE' => "baz")),
 			array('FALSE CANNOT be a variable',	'{if xyz == FALSE}out{/if}', '{if "1" == FALSE}out{/if}',	array('xyz' => TRUE, 'FALSE' => "bat")),
-			array('true can be a variable?!',	'{if xyz == true}out{/if}', '{if "1" == "baz"}out{/if}',	array('xyz' => TRUE, 'true' => "baz")),
-			array('false can be a variable?!',	'{if xyz == false}out{/if}', '{if "1" == "bat"}out{/if}',	array('xyz' => TRUE, 'false' => "bat")),
-			array('true can equal false',		'{if true == false}out{/if}', '{if "" == false}out{/if}',	array('xyz' => TRUE, 'true' => ""))
+			array('true CANNOT be a variable?!',	'{if xyz == true}out{/if}', '{if "1" == TRUE}out{/if}',	array('xyz' => TRUE, 'true' => "baz")),
+			array('false CANNOT be a variable?!',	'{if xyz == false}out{/if}', '{if "1" == FALSE}out{/if}',	array('xyz' => TRUE, 'false' => "bat")),
+			array('true CANNOT equal false',		'{if true == FALSE}out{/if}', '{if TRUE == FALSE}out{/if}',	array('xyz' => TRUE, 'true' => ""))
 		);
 	}
 
