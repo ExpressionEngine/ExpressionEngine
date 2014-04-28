@@ -377,7 +377,7 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			array('Protecting Carriage Returns',	"{if xyz == '\r'}out{/if}",			'{if "" == ""}out{/if}',							array('xyz' => "\r")),
 			array('Protecting Backslashes',			"{if xyz == '{$bs}{$bs}'}out{/if}",	'{if "&#92;" == "&#92;"}out{/if}',					array('xyz' => $bs)),
 			array('Allowing Escape Characters',		"{if xyz == '{$bs}''}out{/if}",		'{if "&#92;" == "&#39;"}out{/if}',					array('xyz' => $bs)),
-			array('Nested Braces',					"{if xyz == '}great'}{/if}",		'{if "" == "&#125;great"}{/if}',					array('xyz' => '')),
+			array('Nested Braces',					"{if xyz == '}great'}{/if}",		'{if "" == "}great"}{/if}',					array('xyz' => '')),
 		);
 	}
 
