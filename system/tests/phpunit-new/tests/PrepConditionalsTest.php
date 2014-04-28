@@ -7,15 +7,15 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 	/**
 	 * @dataProvider dataProvider
 	 */
-	public function testConditionalsSafetyYesPrefixBlank($description, $str_in, $expected_out, $vars = array(), $php_vars = array())
+	public function testConditionalsSafetyYesPrefixBlank($description, $str_in, $expected_out, $vars = array())
 	{
-		$this->runConditionalTest($description, $str_in, $expected_out, $vars, $php_vars);
+		$this->runConditionalTest($description, $str_in, $expected_out, $vars);
 	}
 
 	/**
 	 * @dataProvider embeddedTags
 	 */
-	public function testEmbeddedTags($description, $str_in, $expected_out_safety_off, $expected_out_safety_on, $vars = array(), $php_vars = array())
+	public function testEmbeddedTags($description, $str_in, $expected_out_safety_off, $expected_out_safety_on, $vars = array())
 	{
 		// variables called int and string are always available unless $vars was explicitly set to FALSE
 		if ($vars !== FALSE)
@@ -88,7 +88,7 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 		);
 	}
 
-	protected function runConditionalTest($description, $str_in, $expected_out, $vars = array(), $php_vars = array())
+	protected function runConditionalTest($description, $str_in, $expected_out, $vars = array())
 	{
 		// variables called int and string are always available unless $vars was explicitly set to FALSE
 		if ($vars !== FALSE)
