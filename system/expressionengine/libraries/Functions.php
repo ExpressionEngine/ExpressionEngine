@@ -2420,7 +2420,7 @@ class EE_Functions {
 	 * @param $vars Any variables that will be in the conditional
 	 * @return Array|bool [new chunk, new variables] or FALSE on error
 	 */
-	function convert_quoted_conditional_strings_to_variables($str, $vars)
+	function extract_conditionals($str, $vars)
 	{
 		// start at the beginning
 		$i = 0;
@@ -2643,7 +2643,7 @@ class EE_Functions {
 			$vars = array_merge($vars, ee()->TMPL->embed_vars);
 		}
 
-		$return = $this->convert_quoted_conditional_strings_to_variables($str, $vars);
+		$return = $this->extract_conditionals($str, $vars);
 
 		if ($return === FALSE)
 		{
@@ -2998,6 +2998,7 @@ class EE_Functions {
 		}
 
 		$str = str_replace(array_keys($switch), array_values($switch), $str);
+
 
 		unset($switch);
 		unset($protect);
