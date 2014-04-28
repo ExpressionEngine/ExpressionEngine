@@ -174,6 +174,7 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 
 			// simple tests don't combine too many things
 			$this->simpleVariableReplacementsTest(),
+			$this->similarVariableNamesTest(),
 			$this->simpleVariableComparisonsTest(),
 
 			// advanced tests are common combinations of lots of things
@@ -309,12 +310,22 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 	protected function simpleVariableReplacementsTest()
 	{
 		return array(
-			array('Simple TRUE Boolean',	'{if xyz}out{/if}',   '{if "1"}out{/if}',	array('xyz' => TRUE)),
-			array('Simple FALSE Boolean',	'{if xyz}out{/if}',   '{if ""}out{/if}',	array('xyz' => FALSE)),
-			array('Simple Zero Int',		'{if xyz}out{/if}',   '{if "0"}out{/if}',	array('xyz' => 0)),
-			array('Simple Positive Int',	'{if xyz}out{/if}',   '{if "5"}out{/if}',	array('xyz' => 5)),
-			array('Simple Negative Int',	'{if xyz}out{/if}',   '{if "-5"}out{/if}',	array('xyz' => -5)),
-			array('Simple Empty String',	'{if xyz}out{/if}',   '{if ""}out{/if}',	array('xyz' => '')),
+			array('Simple TRUE Boolean',		'{if xyz}out{/if}',   '{if "1"}out{/if}',	array('xyz' => TRUE)),
+			array('Simple FALSE Boolean',		'{if xyz}out{/if}',   '{if ""}out{/if}',	array('xyz' => FALSE)),
+			array('Simple Zero Int',			'{if xyz}out{/if}',   '{if "0"}out{/if}',	array('xyz' => 0)),
+			array('Simple Positive Int',		'{if xyz}out{/if}',   '{if "5"}out{/if}',	array('xyz' => 5)),
+			array('Simple Negative Int',		'{if xyz}out{/if}',   '{if "-5"}out{/if}',	array('xyz' => -5)),
+			array('Simple Empty String',		'{if xyz}out{/if}',   '{if ""}out{/if}',	array('xyz' => '')),
+		);
+	}
+
+	protected function similarVariableNamesTest()
+	{
+		return array(
+			array('Identical Variable Names',			'{if foo_bar == foo_bar}out{/if}',		'{if "foobar" == "foobar"}out{/if}',	array('foo_bar' => 'foobar')),
+			array('Identical Beginning Variable Names',	'{if segment_1 == segment_2}out{/if}',	'{if "site" == "index"}out{/if}',		array('segment_1' => 'site', 'segment_2' => 'index')),
+			array('Identical Ending Variable Names',	'{if some_var == another_var}out{/if}',	'{if "foobar" == "foobarbaz"}out{/if}',	array('some_var' => 'foobar', 'another_var' => 'foobarbaz')),
+			array('Subset Variable Names',				'{if foo_bar == foo_bar_baz}out{/if}',	'{if "foobar" == "foobarbaz"}out{/if}',	array('foo_bar' => 'foobar', 'foo_bar_baz' => 'foobarbaz')),
 		);
 	}
 
