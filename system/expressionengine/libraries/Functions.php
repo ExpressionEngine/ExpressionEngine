@@ -2871,7 +2871,7 @@ class EE_Functions {
 								$value = strtoupper($token[1]);
 								if ($value == 'TRUE' || $value == 'FALSE')
 								{
-									$buffer .= $token[1];
+									$buffer .= $value;
 									break;
 								}
 								elseif (isset($condition_vars[$token[1]]))
