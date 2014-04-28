@@ -2598,12 +2598,12 @@ class EE_Functions {
 				$i = $i + ($new_length - $l);
 				$l = $new_length;
 
-		$return_vars = array();
 				$strings = array_combine($variable_placeholders, $variables);
 			}
 
 			// TODO this can be sped up by incorporating the valid conditional check above
 			$condition = preg_replace('/(^'.preg_quote(LD).'((if:else)*if)\s+|'.preg_quote(RD).'$)/s', '', $full_conditional);
+
 			// Save the conditional for further processing.
 			$found_conditionals[] = array(
 				'full_open_tag'	=> $full_conditional,
@@ -2654,30 +2654,61 @@ class EE_Functions {
 			}
 
 			exit;
-
 		}
 
-		$quoted_embedded_tags = array();
-		$quoted_braces =        array();
-		foreach ($return[1] as $key => $value)
+		// Make sure we have the same amount of opening conditional tags
+		// as closing conditional tags.
+		if ($safety == 'y')
 		{
-			if (stristr($value, LD.'exp:'))
+			$tstr = preg_replace("/<script.*?".">.*?<\/script>/is", '', $str);
+
+			$opening = substr_count($tstr, LD.'if') - substr_count($tstr, LD.'if:elseif');
+			$closing = substr_count($tstr, LD.'/if'.RD);
+
+			if ($opening > $closing)
 			{
-				$quoted_embedded_tags[] = $key;
-			}
-			elseif (stristr($value, LD) && stristr($value, RD))
-			{
-				$quoted_braces[] = $key;
+				$str .= str_repeat(LD.'/if'.RD, $opening-$closing);
 			}
 		}
 
-		$str = $return[0];
-		$vars = array_merge($vars, $return[1]);
-		unset($return);
-
+		// Nothing else to do here
 		if (count($vars) == 0)
 		{
 			return $str;
+		}
+
+		list($str, $conditionals) = $return;
+		unset($return);
+
+		$quoted_braces        = array();
+		$quoted_embedded_tags = array();
+
+		// Check conditionals for unsafe characters and mark any conditionals
+		// strings that potential contained EE tags
+		foreach ($conditionals as $condition)
+		{
+			if ($this->conditional_is_unsafe($condition['full_open_tag']))
+			{
+				if (ee()->config->item('debug') >= 1)
+				{
+					$error = ee()->lang->line('error_unsafe_conditional');
+					ee()->output->fatal_error($error);
+				}
+
+				exit;
+			}
+
+			foreach ($condition['strings'] as $key => $value)
+			{
+				if (stristr($value, LD.'exp:'))
+				{
+					$quoted_embedded_tags[] = $key;
+				}
+				elseif (stristr($value, LD) && stristr($value, RD))
+				{
+					$quoted_braces[] = $key;
+				}
+			}
 		}
 
 		$switch  = array();
@@ -2691,140 +2722,106 @@ class EE_Functions {
 			'TRUE', 'FALSE'
 		);
 
-		$str = str_replace(LD.'if:else'.RD, unique_marker('if_else_safety'), $str);
 
-		// The ((else)*if) is actually faster than (elseif|if) in PHP 5.0.4,
-		// but only by a half a thousandth of a second.  However, why not be
-		// as efficient as possible?  It also gives me a chance to catch some
-		// user error mistakes.
-
-		if (preg_match_all("/".preg_quote(LD)."((if:else)*if)\s+(.*?)".preg_quote(RD)."/s", $str, $matches))
+		foreach ($conditionals as $conditional)
 		{
-			// Catch unsafe conditionals and exit with an error
-			foreach ($matches[3] as $match)
-			{
-				if ($this->conditional_is_unsafe($match))
-				{
-					if (ee()->config->item('debug') >= 1)
-					{
-						$error = ee()->lang->line('error_unsafe_conditional');
-						ee()->output->fatal_error($error);
-					}
+			$vars			= array_merge($vars, $conditional['strings']);
+			$condition		= $conditional['condition'];
+			$full_open_tag	= $conditional['full_open_tag'];
 
-					exit;
-				}
-			}
+			$orig_condition	= $condition; // we save this so we can replace it later.
 
 			// remove valid operators, we don't need to clean those
-			$conditionals_without_operators = str_replace($valid, ' ', $matches[3]);
+			$condition_without_operators = trim(str_replace($valid, ' ', $condition));
 
 			// Go through and replace valid variables with their cleaned value.
 			// We do some extra work to avoid breaking embedded tags, such as:
 			// {if "{exp:plugin}"}
-			foreach ($conditionals_without_operators as $condition)
-			{
-				$embedded_tags = (stristr($condition, LD.'exp:')) ? TRUE : FALSE;
-				$condition = trim($condition);
 
-				if ($condition == '')
+			$embedded_tags = stristr($condition_without_operators, LD.'exp:');
+
+			$words = preg_split("/\s+/", $condition_without_operators);
+
+			// Look at all the words (variables and numbers) in the condition
+			// and figure out what, if anything, we need to do with each.
+			foreach ($words as $i => $word)
+			{
+				$do_not_encode_value = FALSE;
+				$encode_braces = TRUE;
+
+				if ($i > 500)
+				{
+					break;
+				}
+
+				if (array_key_exists($word, $vars))
+				{
+					$value = trim($vars[$word]);
+
+					if (in_array($word, $quoted_embedded_tags))
+					{
+						$do_not_encode_value = TRUE;
+					}
+					elseif (in_array($word, $quoted_braces))
+					{
+						$encode_braces = FALSE;
+					}
+				}
+				elseif ($embedded_tags === TRUE && ! is_numeric($word))
+				{
+					$value = $word;
+				}
+				else
 				{
 					continue;
 				}
 
-				$words = preg_split("/\s+/", $condition);
-
-				foreach ($words as $i => $word)
+				// Prep the data array to remove characters we do not want
+				// And also just add the quotes around the value for good measure.
+				if ( ! is_array($value))
 				{
-					$do_not_encode_value  = FALSE;
-					$encode_braces = TRUE;
-					if ($i > 500)
+					// If safety is on, then tags should have already been
+					// processed, thus we should IGNORE the encoding
+					// issues we have with embedded tags.
+					if ($do_not_encode_value && $safety != 'y')
 					{
-						break;
-					}
-
-					if (array_key_exists($word, $vars))
-					{
-						$value = trim($vars[$word]);
-						if (in_array($word, $quoted_embedded_tags))
-						{
-							$do_not_encode_value = TRUE;
-						}
-						elseif(in_array($word, $quoted_braces))
-						{
-							$encode_braces = FALSE;
-						}
-					}
-					elseif ($embedded_tags === TRUE && ! is_numeric($word))
-					{
-						$value = $word;
+						$value = '"' . $value . '"';
 					}
 					else
 					{
-						continue;
-					}
+						// TRUE AND FALSE values are for short hand conditionals,
+						// like {if logged_in} and so we have no need to remove
+						// unwanted characters and we do not quote it.
 
-					// Prep the data array to remove characters we do not want
-					// And also just add the quotes around the value for good measure.
-					if ( ! is_array($value))
-					{
-						// If safety is on, then tags should have already been
-						// processed, thus we should IGNORE the encoding
-						// issues we have with embedded tags.
-						if ($do_not_encode_value && $safety != 'y')
+						if ($value != 'TRUE' && $value != 'FALSE' && ($word != $value OR $embedded_tags !== TRUE))
 						{
-							$value = '"' . $value . '"';
-						}
-						else
-						{
-							// TRUE AND FALSE values are for short hand conditionals,
-							// like {if logged_in} and so we have no need to remove
-							// unwanted characters and we do not quote it.
+							$value = (strlen($value) > 100) ? substr(htmlspecialchars($value), 0, 100) : $value;
 
-							if ($value != 'TRUE' && $value != 'FALSE' && ($word != $value OR $embedded_tags !== TRUE))
+							$value = str_replace(
+								array("'", '"', '(', ')', '$', "\n", "\r", '\\'),
+								array('&#39;', '&#34;', '&#40;', '&#41;', '&#36;', '', '', '&#92;'),
+								$value
+							);
+
+							if ($encode_braces)
 							{
-								$value = (strlen($value) > 100) ? substr(htmlspecialchars($value), 0, 100) : $value;
-
 								$value = str_replace(
-									array("'", '"', '(', ')', '$', "\n", "\r", '\\'),
-									array('&#39;', '&#34;', '&#40;', '&#41;', '&#36;', '', '', '&#92;'),
+									array('{', '}',),
+									array('&#123;', '&#125;',),
 									$value
 								);
-
-								if ($encode_braces)
-								{
-									$value = str_replace(
-										array('{', '}',),
-										array('&#123;', '&#125;',),
-										$value
-									);
-								}
-
-								$value = '"' . $value . '"';
 							}
+
+							$value = '"' . $value . '"';
 						}
-
-						$md5_key = "'".base64_encode($prep_id.md5($prefix.$word))."'";
-						$protect[$prefix.$word] = $md5_key;
-						$switch[$md5_key] = $value;
 					}
+
+					$md5_key = "'".base64_encode($prep_id.md5($prefix.$word))."'";
+					$protect[$prefix.$word] = $md5_key;
+					$switch[$md5_key] = $value;
 				}
 			}
 
-
-			if ($safety == 'y')
-			{
-				// Make sure we have the same amount of opening conditional tags
-				// as closing conditional tags.
-				$tstr = preg_replace("/<script.*?".">.*?<\/script>/is", '', $str);
-
-				$opening = substr_count($tstr, LD.'if') - substr_count($tstr, LD.'if:elseif');
-				$closing = substr_count($tstr, LD.'/if'.RD);
-
-				if ($opening > $closing)
-				{
-					$str .= str_repeat(LD.'/if'.RD, $opening-$closing);
-				}
-			}
 
 			// Example:
 			//
@@ -2849,169 +2846,165 @@ class EE_Functions {
 			//     {if "2" == 1}one{/if}
 			//     {if parent:"2" == 1}one{/if}
 			//
-			foreach ($matches[3] as &$match)
+			foreach ($protect as $key => $value)
 			{
-				foreach ($protect as $key => $value)
+				// Make sure $key doesn't appear as "{$key " or ":$key "
+				if (strpos($condition, LD.$key.' ') === FALSE AND strpos($condition, ':'.$key) === FALSE)
 				{
-					// Make sure $key doesn't appear as "{$key " or ":$key "
-					if (strpos($match, LD.$key.' ') === FALSE AND strpos($match, ':'.$key) === FALSE)
-					{
-						// Replace using word boundaries to avoid variables that
-						// partially include the same name. For example, we have
-						// a global var called "my_var_global" but we are comparing
-						// it to a variable valled "my_var":
-						//
-						//     {if my_var OR my_var_global}Hello world{/if}
-						//
-						// It ends up looking like this:
-						//
-						//     {if "value" OR "value"_global}Hello world{/if}
-						//
-						// ..and triggers our Invalid EE Conditional Variable error.
-						$match = preg_replace("/(?<![\w-])".preg_quote($key, '/')."(?![\w-])/", $value, $match);
-					}
+					// Replace using word boundaries to avoid variables that
+					// partially include the same name. For example, we have
+					// a global var called "my_var_global" but we are comparing
+					// it to a variable valled "my_var":
+					//
+					//     {if my_var OR my_var_global}Hello world{/if}
+					//
+					// It ends up looking like this:
+					//
+					//     {if "value" OR "value"_global}Hello world{/if}
+					//
+					// ..and triggers our Invalid EE Conditional Variable error.
+					$condition = preg_replace("/(?<![\w-])".preg_quote($key, '/')."(?![\w-])/", $value, $condition);
 				}
 			}
 
-			if ($safety == 'y')
-			{
-				$done = array();
-			}
 
-			for ($i = 0, $s = count($matches[0]); $i < $s; ++$i)
+			$done = array();
+
+			if ($safety == 'y' && ! in_array($full_open_tag, $done))
 			{
-				if ($safety == 'y' && ! in_array($matches[0][$i], $done))
+				$done[] = $full_open_tag;
+/*
+				//  Make sure someone did put in an {if:else conditional}
+				//  when they likely meant to have an {if:elseif conditional}
+				if ($matches[2][$i] == '' &&
+					substr($matches[3][$i], 0, 5) == ':else' &&
+					$matches[1][$i] == 'if')
 				{
-					$done[] = $matches[0][$i];
+					$matches[3][$i] = substr($condition, 5);
+					$matches[2][$i] == 'elseif';
 
-					//  Make sure someone did put in an {if:else conditional}
-					//  when they likely meant to have an {if:elseif conditional}
-					if ($matches[2][$i] == '' &&
-						substr($matches[3][$i], 0, 5) == ':else' &&
-						$matches[1][$i] == 'if')
+					trigger_error(
+						'Invalid Conditional, Assumed ElseIf : '.
+							str_replace(' :else', ':else', $full_open_tag),
+						E_USER_WARNING
+					);
+				}
+*/
+
+				// Now we parse the conditional looking for things we do
+				// want. This should keep our conditionals safe and free
+				// of arbitrary code execution.
+
+				// This will show us how PHP will view the conditional.
+				$tokens = token_get_all('<?php ' . $condition . '?>');
+
+				// Remove the opening and closing PHP tags
+				$tokens = array_slice($tokens, 1, count($tokens) - 2);
+
+				$buffer = '';
+
+				$parenthesis_depth = 0;
+
+				// We will now parse for allowed tokens, the rest are either
+				// stripped or converted to FALSE
+				foreach ($tokens as $token)
+				{
+					// Some elements of the $tokens array are single
+					// characters. We account for those here.
+					if ( ! is_array($token))
 					{
-						$matches[3][$i] = substr($matches[3][$i], 5);
-						$matches[2][$i] == 'elseif';
-
-						trigger_error(
-							'Invalid Conditional, Assumed ElseIf : '.
-								str_replace(' :else', ':else', $matches[0][$i]),
-							E_USER_WARNING
-						);
-					}
-
-					// Now we parse the conditional looking for things we do
-					// want. This should keep our conditionals safe and free
-					// of arbitrary code execution.
-
-					// This will show us how PHP will view the conditional.
-					$tokens = token_get_all('<?php ' . $matches[3][$i] . '?>');
-
-					// Remove the opening and closing PHP tags
-					$tokens = array_slice($tokens, 1, count($tokens) - 2);
-
-					$buffer = '';
-
-					$parenthesis_depth = 0;
-
-					// We will now parse for allowed tokens, the rest are either
-					// stripped or converted to FALSE
-					foreach ($tokens as $token)
-					{
-						// Some elements of the $tokens array are single
-						// characters. We account for those here.
-						if ( ! is_array($token))
+						switch ($token)
 						{
-							switch ($token)
-							{
-								case '-':
-								case '+':
-								case '<':
-								case '>':
-								case '.':
-								case '%':
-									break;
-								case '(': $parenthesis_depth++;
-									break;
-								case ')': $parenthesis_depth--;
-									break;
-								default:
-									$buffer .= ' FALSE ';
-									continue 2; // other tokens don't get anything
-							}
-
-							$buffer .= $token;
+							case '-':
+							case '+':
+							case '<':
+							case '>':
+							case '.':
+							case '%':
+								break;
+							case '(': $parenthesis_depth++;
+								break;
+							case ')': $parenthesis_depth--;
+								break;
+							default:
+								$buffer .= ' FALSE ';
+								continue 2; // other tokens don't get anything
 						}
-						else
+
+						$buffer .= $token;
+					}
+					else
+					{
+						switch ($token[0])
 						{
-							switch ($token[0])
-							{
-								case T_CONSTANT_ENCAPSED_STRING:
-								case T_WHITESPACE:
-								case T_BOOLEAN_AND:
-								case T_BOOLEAN_OR:
-								case T_LOGICAL_AND:
-								case T_LOGICAL_OR:
-								case T_LOGICAL_XOR:
-								case T_LNUMBER:
-								case T_DNUMBER:
-								case T_IS_EQUAL:
-								case T_IS_GREATER_OR_EQUAL:
-								case T_IS_IDENTICAL:
-								case T_IS_NOT_EQUAL:
-								case T_IS_NOT_IDENTICAL:
-								case T_IS_SMALLER_OR_EQUAL:
+							case T_CONSTANT_ENCAPSED_STRING:
+							case T_WHITESPACE:
+							case T_BOOLEAN_AND:
+							case T_BOOLEAN_OR:
+							case T_LOGICAL_AND:
+							case T_LOGICAL_OR:
+							case T_LOGICAL_XOR:
+							case T_LNUMBER:
+							case T_DNUMBER:
+							case T_IS_EQUAL:
+							case T_IS_GREATER_OR_EQUAL:
+							case T_IS_IDENTICAL:
+							case T_IS_NOT_EQUAL:
+							case T_IS_NOT_IDENTICAL:
+							case T_IS_SMALLER_OR_EQUAL:
+								$buffer .= $token[1];
+								break;
+
+							case T_STRING:
+								$value = strtoupper($token[1]);
+								if ($value == 'TRUE' || $value == 'FALSE')
+								{
 									$buffer .= $token[1];
 									break;
+								}
 
-								case T_STRING:
-									$value = strtoupper($token[1]);
-									if ($value == 'TRUE' || $value == 'FALSE')
-									{
-										$buffer .= $token[1];
-										break;
-									}
-
-								default:
-									$buffer .= ' FALSE ';
-									if ($this->conditional_debug === TRUE)
-									{
-										trigger_error('Unset EE Conditional Variable ('.$token.') : '.$matches[0][$i],
-													  E_USER_WARNING);
-									}
-							}
+							default:
+								$buffer .= ' FALSE ';
+								if ($this->conditional_debug === TRUE)
+								{
+									trigger_error('Unset EE Conditional Variable ('.$token.') : '.$full_open_tag,
+												  E_USER_WARNING);
+								}
 						}
 					}
-
-					if ($parenthesis_depth < 0)
-					{
-						$buffer = str_repeat('(', -$parenthesis_depth).$buffer;
-					}
-					else if ($parenthesis_depth > 0)
-					{
-						$buffer = $buffer.str_repeat(')', $parenthesis_depth);
-					}
-
-					$buffer = str_replace('FALSE (', 'FALSE && (', $buffer);
-					$buffer = preg_replace('/FALSE(\s+FALSE)+/', 'FALSE', $buffer);
-
-					$matches[3][$i] = $buffer;
 				}
 
-				$matches[3][$i] = LD.$matches[1][$i].' '.trim($matches[3][$i]).RD;
+				if ($parenthesis_depth < 0)
+				{
+					$buffer = str_repeat('(', -$parenthesis_depth).$buffer;
+				}
+				else if ($parenthesis_depth > 0)
+				{
+					$buffer = $buffer.str_repeat(')', $parenthesis_depth);
+				}
+
+				$buffer = str_replace('FALSE (', 'FALSE && (', $buffer);
+				$buffer = preg_replace('/FALSE(\s+FALSE)+/', 'FALSE', $buffer);
+
+				$condition = $buffer;
 			}
 
-			$str = str_replace($matches[0], $matches[3], $str);
+			$condition = trim($condition);
 
-			$str = str_replace(array_keys($switch), array_values($switch), $str);
+			$new_open_tag = str_replace($orig_condition, $condition, $full_open_tag);
+			$new_open_tag = preg_replace('/\s+/s', ' ', $new_open_tag);
+
+			$str = str_replace($full_open_tag, $new_open_tag, $str);
 		}
+
+		$str = str_replace(array_keys($switch), array_values($switch), $str);
 
 		unset($data);
 		unset($switch);
 		unset($matches);
 		unset($protect);
 
-		$str = str_replace(unique_marker('if_else_safety'),LD.'if:else'.RD, $str);
+	//	$str = str_replace(unique_marker('if_else_safety'),LD.'if:else'.RD, $str);
 
 		return $str;
 	}
