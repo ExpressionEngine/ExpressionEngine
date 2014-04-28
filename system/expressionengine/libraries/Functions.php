@@ -2654,9 +2654,9 @@ class EE_Functions {
 			$protected_javascript = array();
 			$js_protect = unique_marker('tmpl_script');
 
-			if (stristr($str, '<script') && preg_match_all('/<script.*?".">.*?<\/script>/is', $str, $matches))
+			if (stristr($str, '<script') && preg_match_all('/<script.*?>.*?<\/script>/is', $str, $matches))
 			{
-				foreach ($matches[0] as $match)
+				foreach ($matches[0] as $i => $match)
 				{
 					$protected_javascript[$js_protect.$i] = $match;
 				}
