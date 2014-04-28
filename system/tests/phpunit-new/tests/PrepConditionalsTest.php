@@ -220,6 +220,7 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 		return array(
 			array('Just a Variable',	'{iffy}',	'{iffy}'),
 			array('Too Many Spaces',	'{ if }',	'{ if }'),
+			array("It's JavaScript",	'<script>function toddler(){if (true) return false}</script>', '<script>function toddler(){if (true) return false}</script>'),
 		);
 	}
 
