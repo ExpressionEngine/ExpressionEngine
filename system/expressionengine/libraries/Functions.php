@@ -2656,21 +2656,6 @@ class EE_Functions {
 			exit;
 		}
 
-		// Make sure we have the same amount of opening conditional tags
-		// as closing conditional tags.
-		if ($safety == 'y')
-		{
-			$tstr = preg_replace("/<script.*?".">.*?<\/script>/is", '', $str);
-
-			$opening = substr_count($tstr, LD.'if') - substr_count($tstr, LD.'if:elseif');
-			$closing = substr_count($tstr, LD.'/if'.RD);
-
-			if ($opening > $closing)
-			{
-				$str .= str_repeat(LD.'/if'.RD, $opening-$closing);
-			}
-		}
-
 		// Nothing else to do here
 		if (count($vars) == 0)
 		{
