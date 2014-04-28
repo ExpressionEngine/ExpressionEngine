@@ -466,9 +466,9 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 	{
 		return array(
 			array('Addition works with spaces',				'{if int + int}out{/if}', '{if "5" + "5"}out{/if}'),
-			array('Addition does not work without spaces',	'{if int+int}out{/if}', '{if FALSE + FALSE}out{/if}'),
+			array('Addition does not work without spaces',	'{if int+int}out{/if}', '{if "5"+"5"}out{/if}'),
 			array('Concatenation with spaces',				'{if string . string}out{/if}', '{if "ee" . "ee"}out{/if}'),
-			array('Concatenation without spaces',			'{if string.string}out{/if}', '{if FALSE . FALSE}out{/if}'),
+			array('Concatenation without spaces',			'{if string.string}out{/if}', '{if "ee"."ee"}out{/if}'),
 			array('Subtract dash-words variable',			'{if a-number - int}out{/if}', '{if "15" - "5"}out{/if}', array('a-number' => 15)),
 		);
 	}
