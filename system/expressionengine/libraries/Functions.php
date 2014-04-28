@@ -2420,7 +2420,7 @@ class EE_Functions {
 	 * @param $vars Any variables that will be in the conditional
 	 * @return Array|bool [new chunk, new variables] or FALSE on error
 	 */
-	function convert_quoted_conditional_strings_to_variables($str, $vars)
+	function extract_conditionals($str, $vars)
 	{
 		// start at the beginning
 		$i = 0;
@@ -2643,7 +2643,7 @@ class EE_Functions {
 			$vars = array_merge($vars, ee()->TMPL->embed_vars);
 		}
 
-		$return = $this->convert_quoted_conditional_strings_to_variables($str, $vars);
+		$return = $this->extract_conditionals($str, $vars);
 
 		if ($return === FALSE)
 		{
@@ -2776,8 +2776,8 @@ class EE_Functions {
 					continue;
 				}
 
-				// Prep the data array to remove characters we do not want
-				// And also just add the quotes around the value for good measure.
+				// Prep the value to remove characters we do not want and add
+				// the quotes around the value for good measure.
 				if ( ! is_array($value))
 				{
 					// If safety is on, then tags should have already been
@@ -2999,9 +2999,8 @@ class EE_Functions {
 
 		$str = str_replace(array_keys($switch), array_values($switch), $str);
 
-		unset($data);
+
 		unset($switch);
-		unset($matches);
 		unset($protect);
 
 	//	$str = str_replace(unique_marker('if_else_safety'),LD.'if:else'.RD, $str);
