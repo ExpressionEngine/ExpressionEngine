@@ -161,7 +161,7 @@ $(document).ready(function(){
 		$('.overlay, .modal-wrap').hide();
 
 		// prevent modals from popping when disabled
-		$('.disable').on('click',function(){
+		$('body').on('click', '.disable', function(){
 			// stop THIS href from loading
 			// in the source window
 			return false;

@@ -27,7 +27,7 @@
 			</fieldset>
 
 			<fieldset class="form-ctrls">
-				<input class="btn" type="submit" value="<?=lang('btn_clear_caches')?>" data-submit-text="<?=lang('btn_clear_caches')?>" data-work-text="<?=lang('btn_clear_caches_working')?>">
+				<?=cp_form_submit('btn_clear_caches', 'btn_clear_caches_working')?>
 			</fieldset>
 		<?=form_close()?>
 	</div>

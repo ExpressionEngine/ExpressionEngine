@@ -60,7 +60,7 @@
 						<?=form_error('password_auth')?>
 					</div>
 				</div>
-				<input class="btn" type="submit" value="<?=lang('btn_sandr')?>" data-submit-text="<?=lang('btn_sandr')?>" data-work-text="<?=lang('btn_sandr_working')?>">
+				<?=cp_form_submit('btn_sandr', 'btn_sandr_working')?>
 			</fieldset>
 		</form>
 	</div>

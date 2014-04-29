@@ -204,5 +204,36 @@ function form_preference($name, $details)
 	return $pref;
 }
 
+// ------------------------------------------------------------------------
+
+/**
+ * Outputs a standard CP form submit button in the current state of the
+ * form validation result. If there are errors, this button will be in a
+ * disabled state on load. Button text will be "Fix Errors, Please" if
+ * there are errors, otherwise the value of $value will be used.
+ *
+ * @param	string	$value		Standard text for the button
+ * @param	string	$work_text	Text to display when form is submitting
+ * @return	string	Button HTML
+ */
+function cp_form_submit($value, $work_text)
+{
+	$class = 'btn';
+	$disable = '';
+	$btn_text = lang($value);
+	$validation_errors = validation_errors();
+
+	// Disabled state
+	if ( ! empty($validation_errors))
+	{
+		$class .= ' disable';
+		$disable = ' disabled="disabled"';
+		$btn_text = lang('btn_fix_errors');
+	}
+
+	return '<input class="'.$class.'" type="submit" value="'.$btn_text.'" data-submit-text="'.lang($value).'" data-work-text="'.lang($work_text).'"'.$disable.'>';
+
+}
+
 /* End of file EE_form_helper.php */
 /* Location: ./system/expressionengine/helpers/EE_form_helper.php */

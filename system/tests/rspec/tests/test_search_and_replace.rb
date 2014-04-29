@@ -20,15 +20,13 @@ feature 'Search and Replace' do
   end
 
   it 'should invalidate on the fly' do
-    @sandr.submit_button.value.should eq 'Search and Replace'
-    @sandr.submit_button[:disabled].should eq nil
+    @sandr.submit_enabled?.should eq true
 
     @sandr.search_term.trigger 'blur'
     @sandr.should have_text 'The "Search for this text" field is required.'
     @sandr.should have_no_text 'The "Replace with this text" field is required.'
 
-    @sandr.submit_button.value.should eq 'Fix Errors, Please'
-    @sandr.submit_button[:disabled].should eq 'true'
+    @sandr.submit_enabled?.should eq false
 
     page.should have_css 'fieldset.invalid'
 
@@ -36,24 +34,21 @@ feature 'Search and Replace' do
     @sandr.should have_text 'The "Search for this text" field is required.'
     @sandr.should have_text 'The "Replace with this text" field is required.'
 
-    @sandr.submit_button.value.should eq 'Fix Errors, Please'
-    @sandr.submit_button[:disabled].should eq 'true'
+    @sandr.submit_enabled?.should eq false
 
     @sandr.search_term.set 'Text'
     @sandr.search_term.trigger 'blur'
     @sandr.should have_no_text 'The "Search for this text" field is required.'
     @sandr.should have_text 'The "Replace with this text" field is required.'
 
-    @sandr.submit_button.value.should eq 'Fix Errors, Please'
-    @sandr.submit_button[:disabled].should eq 'true'
+    @sandr.submit_enabled?.should eq false
 
     @sandr.replace_where.select 'Site Preferences (Choose from the following)'
     @sandr.should have_no_text 'The "Search for this text" field is required.'
     @sandr.should have_text 'The "Replace with this text" field is required.'
     @sandr.should have_text 'The "Search and replace in" field is required.'
 
-    @sandr.submit_button.value.should eq 'Fix Errors, Please'
-    @sandr.submit_button[:disabled].should eq 'true'
+    @sandr.submit_enabled?.should eq false
 
     @sandr.password_auth.trigger 'blur'
     @sandr.should have_text 'The "Current password" field is required.'
@@ -75,8 +70,7 @@ feature 'Search and Replace' do
 
     page.should have_no_css 'fieldset.invalid'
 
-    @sandr.submit_button.value.should eq 'Search and Replace'
-    @sandr.submit_button[:disabled].should eq nil
+    @sandr.submit_enabled?.should eq true
 
     no_php_js_errors
 
@@ -100,10 +94,36 @@ feature 'Search and Replace' do
     @sandr.should have_text 'The "Search and replace in" field is required.'
     @sandr.should have_text 'The "Current password" field is required.'
 
-    @sandr.submit_button.value.should eq 'Fix Errors, Please'
-    @sandr.submit_button[:disabled].should eq 'true'
+    @sandr.submit_enabled?.should eq false
 
     no_php_js_errors
+
+    @sandr.search_term.set 'Text'
+    @sandr.search_term.trigger 'blur'
+    @sandr.replace_term.set 'test'
+    @sandr.replace_term.trigger 'blur'
+    @sandr.replace_where.select 'Channel Entry Titles'
+    @sandr.password_auth.set 'password'
+    @sandr.password_auth.trigger 'blur'
+
+    @sandr.should have_no_text 'The "Search for this text" field is required.'
+    @sandr.should have_no_text 'The "Replace with this text" field is required.'
+    @sandr.should have_no_text 'The "Search and replace in" field is required.'
+    @sandr.should have_no_text 'The "Current password" field is required.'
+    @sandr.should have_no_text 'The password entered is incorrect.'
+
+    @sandr.should have_no_css 'fieldset.invalid'
+
+    @sandr.submit_enabled?.should eq true
+
+    no_php_js_errors
+
+    @sandr.submit_button.click
+
+    no_php_js_errors
+
+    @sandr.should have_text 'Action was a success'
+    @sandr.should have_text 'Number of database records in which a replacement occurred: 0'
   end
 
   it 'should search and replace data' do

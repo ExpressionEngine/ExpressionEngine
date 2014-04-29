@@ -66,16 +66,6 @@ EE.cp.formValidation = {
 
 			that._registerTextInputs(form);
 			that._registerNonTextInputs(form);
-
-			// Set submit button to error state if there are
-			// already errors
-			if (that._errorsExist(form))
-			{
-				button.addClass('disable').attr({
-					value: EE.lang.btn_fix_errors,
-					disabled: 'disabled'
-				});
-			}
 		});
 	},
 
@@ -146,7 +136,7 @@ EE.cp.formValidation = {
 			data: data+'&ee_fv_field='+field.attr('name'),
 			type: 'POST',
 			dataType: 'json',
-			success: function (ret) {console.log(ret);
+			success: function (ret) {
 				that._toggleErrorForFields(form, field, ret);
 			}
 		});
