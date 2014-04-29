@@ -195,13 +195,14 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			// testing bug reports
 			$this->bug20323(),
 
+			$this->mathAndStringOperators(),
+
 			// wonky tests parse despite createing php errors
 			// we should try to invalidate all of these, so for our new conditional
 			// parsing these tests should be rewriten as failing
 			$this->wonkyRepetitions(),
 			$this->wonkyEmpty(),
 			$this->wonkyMutableBooleans(),
-			$this->wonkyPhpOperatorsWorkOnlyWithWhitespace(),
 			$this->wonkyComparisonOperators()
 
 			// evil tests attempt to subvert parsing to get valid php code
@@ -485,7 +486,7 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 		);
 	}
 
-	protected function wonkyPhpOperatorsWorkOnlyWithWhitespace()
+	protected function mathAndStringOperators()
 	{
 		return array(
 			array('Addition works with spaces',				'{if int + int}out{/if}', '{if "5" + "5"}out{/if}'),
@@ -494,6 +495,7 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			array('Concatenation without spaces',			'{if string.string}out{/if}', '{if "ee"."ee"}out{/if}'),
 			array('Subtract dash-words variable',			'{if a-number - int}out{/if}', '{if "15" - "5"}out{/if}', array('a-number' => 15)),
 			array('Mulitple Subtract dash-words variable',	'{if a-bigger-number - int}out{/if}', '{if "23" - "5"}out{/if}', array('a-bigger-number' => 23)),
+			array('Make a variable negative',				'{if -12 < -count}out{/if}', '{if -12 < -"15"}out{/if}', array('count' => 15)),
 		);
 	}
 
