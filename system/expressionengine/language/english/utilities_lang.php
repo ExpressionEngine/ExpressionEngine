@@ -189,6 +189,49 @@ $lang = array(
 'btn_sandr_working' =>
 'Replacing...',
 
+/**
+ * Import Converter
+ */
+
+'import_converter' =>
+'Import File Converter',
+
+'file_location' =>
+'File location',
+
+'file_location_desc' =>
+'Path location of your <mark>delimited</mark> file.',
+
+'delimiting_char' =>
+'Delimiting character',
+
+'delimiting_char_desc' =>
+'Character used to delimit the above file.',
+
+'comma_delimit' =>
+'Comma',
+
+'tab_delimit' =>
+'Tab',
+
+'pipe_delimit' =>
+'Pipe',
+
+'other_delimit' =>
+'Other <i>Type character below</i>',
+
+'enclosing_char' =>
+'Enclosing character',
+
+'enclosing_char_desc' =>
+'Character that encloses your data.',
+
+'import_convert_btn' =>
+'Convert File',
+
+'import_convert_btn_working' =>
+'Converting...',
+
 ''=>''
 );
 

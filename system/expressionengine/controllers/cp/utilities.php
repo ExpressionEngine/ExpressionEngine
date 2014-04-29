@@ -42,8 +42,8 @@ class Utilities extends CP_Controller {
 			'php_info' => cp_url('utilities/php'),
 			'import_tools',
 			array(
-				'file_converter' => cp_url('utilities/import-converter'),
-				'member_import' => cp_url('utilities/member-import')
+				'file_converter' => cp_url('utilities/import_converter'),
+				'member_import' => cp_url('utilities/member_import')
 			),
 			'sql_manager' => cp_url('utilities/sql'),
 			array(
@@ -382,6 +382,17 @@ class Utilities extends CP_Controller {
 		}
 
 		return $rows;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Future home of the member import file converter
+	 */
+	public function import_converter()
+	{
+		ee()->view->cp_page_title = lang('import_converter');
+		ee()->cp->render('utilities/import-converter');
 	}
 }
 
