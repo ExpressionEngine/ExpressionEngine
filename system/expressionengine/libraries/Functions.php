@@ -2429,7 +2429,7 @@ class EE_Functions {
 	{
 		// start at the beginning
 		$i = 0;
-		$l = strlen($str);
+		$str_length = strlen($str);
 
 		$var_count = 0;
 		$found_conditionals = array();
@@ -2498,7 +2498,7 @@ class EE_Functions {
 			$variable_texts = array();
 			$variable_placeholders = array();
 
-			while ($i < $l)
+			while ($i < $str_length)
 			{
 				// performance improvement, seek forward to next transition
 				if ($skip = strcspn($str, '\\\'"{}', $i))
@@ -2600,8 +2600,8 @@ class EE_Functions {
 
 				// Adjust our while loop conditions
 				$new_length = strlen($str);
-				$i = $i + ($new_length - $l);
-				$l = $new_length;
+				$i = $i + ($new_length - $str_length);
+				$str_length = $new_length;
 
 				$strings = array_combine($variable_placeholders, $variables);
 			}
