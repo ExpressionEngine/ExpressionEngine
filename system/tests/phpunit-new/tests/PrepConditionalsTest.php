@@ -188,6 +188,8 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			$this->safteyCleanup(),
 			$this->safetyFalseCleanup(),
 
+			$this->spacelessStringLogicOperatorsAreVariables(),
+
 			// testing bug reports
 			$this->bug20323(),
 
@@ -413,12 +415,12 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 		);
 	}
 
-	protected function wonkySpacelessStringLogicOperators()
+	protected function spacelessStringLogicOperatorsAreVariables()
 	{
 		return array(
-			array('Wonky No Space AND',	'{if 7AND5}out{/if}',	'{if 7 FALSE}out{/if}'),
-			array('Wonky No Space OR',	'{if 5OR7}out{/if}',	'{if 5 FALSE}out{/if}'),
-			array('Wonky No Space XOR',	'{if 5XOR7}out{/if}',	'{if 5 FALSE}out{/if}'),
+			array('Wonky No Space AND',	'{if 7AND5}out{/if}',	'{if FALSE}out{/if}'),
+			array('Wonky No Space OR',	'{if 5OR7}out{/if}',	'{if FALSE}out{/if}'),
+			array('Wonky No Space XOR',	'{if 5XOR7}out{/if}',	'{if FALSE}out{/if}'),
 		);
 	}
 
