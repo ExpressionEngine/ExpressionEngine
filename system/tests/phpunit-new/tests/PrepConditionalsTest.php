@@ -4,25 +4,18 @@ require_once APPPATH.'libraries/Functions.php';
 
 class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 
-
 	/**
 	 * @dataProvider dataProvider
 	 */
-	public function testConditionalsSafetyYesPrefixBlank($description, $str_in, $expected_out, $vars = array(), $php_vars = array())
+	public function testConditionalsSafetyYesPrefixBlank($description, $str_in, $expected_out, $vars = array())
 	{
-		$this->runConditionalTest($description, $str_in, $expected_out, $vars, $php_vars);
+		$this->runConditionalTest($description, $str_in, $expected_out, $vars);
 	}
 
 	/**
-	 * @dataProvider badDataProvider
+	 * @dataProvider embeddedTags
 	 */
-	public function testBadConditionals($exception, $description, $str_in)
-	{
-		$this->setExpectedException($exception);
-		$this->runConditionalTest($description, $str_in, '');
-	}
-
-	protected function runConditionalTest($description, $str_in, $expected_out, $vars = array(), $php_vars = array())
+	public function testEmbeddedTags($description, $str_in, $expected_out_safety_off, $expected_out_safety_on, $vars = array())
 	{
 		// variables called int and string are always available unless $vars was explicitly set to FALSE
 		if ($vars !== FALSE)
@@ -38,10 +31,108 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 		}
 
 		$fns = new FunctionsStub('randomstring');
+
+		// First pass: safety off
+		$str = $fns->prep_conditionals($str_in, $vars, $safety = 'n', $prefix = '');
+		$this->assertEquals(
+			$expected_out_safety_off,
+			$str,
+			$description . " (safety off)"
+		);
+
+		// Second pass: safety on
+		$this->assertEquals(
+			$expected_out_safety_on,
+			$fns->prep_conditionals($str_in, $vars, $safety = 'y', $prefix = ''),
+			$description . " (safety on)"
+		);
+
+		// Third pass: saftey on fed with result of safety off
+		$this->assertEquals(
+			$expected_out_safety_on,
+			$fns->prep_conditionals($str, $vars, $safety = 'y', $prefix = ''),
+			$description . " (safety off + on)"
+		);
+	}
+
+	/**
+	 * @dataProvider badDataProvider
+	 */
+	public function testBadConditionalsWithVariables($exception, $description, $str_in)
+	{
+		$this->setExpectedException($exception);
+		$this->runConditionalTest($description, $str_in, '');
+	}
+
+	/**
+	 * @dataProvider badDataProvider
+	 */
+	public function testBadConditionalsWithoutVariables($exception, $description, $str_in)
+	{
+		$this->setExpectedException($exception);
+		$this->runConditionalTest($description, $str_in, '', FALSE);
+	}
+
+	public function testMultipassVariable()
+	{
+		$str = '{if string == whatthefoxsay}out{/if}';
+		// First pass is with safety off
+		$fns = new FunctionsStub('randomstring');
+		$str = $fns->prep_conditionals($str, array('whatthefoxsay' => 'Ring-ding-ding-ding-dingeringeding!'), $safety = 'n', $prefix = '');
+
+		$this->assertEquals(
+			'{if string == "Ring-ding-ding-ding-dingeringeding!"}out{/if}',
+			$str,
+			"Prep Conditionals with safetey off"
+		);
+
+		// Second pass is with safety on
+		$str = 	$fns->prep_conditionals($str, array('string' => 'ee'), $safety = 'y', $prefix = '');
+
+		$this->assertEquals(
+			'{if "ee" == "Ring-ding-ding-ding-dingeringeding!"}out{/if}',
+			$str,
+			"Double Prep Variable Buildup"
+		);
+	}
+
+	protected function runConditionalTest($description, $str_in, $expected_out, $vars = array())
+	{
+		// variables called int and string are always available unless $vars was explicitly set to FALSE
+		if ($vars !== FALSE)
+		{
+			$vars = array_merge(array(
+				'int' => 5,
+				'string' => 'ee'
+			), $vars);
+		}
+		else
+		{
+			$vars = array();
+		}
+
+		$fns = new FunctionsStub('randomstring');
+
 		$this->assertEquals(
 			$expected_out,
 			$fns->prep_conditionals($str_in, $vars, $safety = 'y', $prefix = ''),
 			$description
+		);
+
+		$str = $fns->prep_conditionals($str_in, $vars, $safety = 'n', $prefix = '');
+
+		$this->assertEquals(
+			$expected_out,
+			$fns->prep_conditionals($str, $vars, $safety = 'y', $prefix = ''),
+			"Double Prep with vars: ". $description
+		);
+
+		$str = $fns->prep_conditionals($str_in, array('whatthefoxsay' => 'Ring-ding-ding-ding-dingeringeding!'), $safety = 'n', $prefix = '');
+
+		$this->assertEquals(
+			$expected_out,
+			$fns->prep_conditionals($str, $vars, $safety = 'y', $prefix = ''),
+			"Double Prep without vars: ". $description
 		);
 	}
 
@@ -53,8 +144,9 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			array('UnsafeConditionalException',  'Simple Comments',					'{if php/* test == 5*/info(); }out{/if}'),
 			array('UnsafeConditionalException',  'Splitting Comments',				'{if string /* == 5 }out{/if}{if */phpinfo(); == 5}out{/if}'),
 			array('InvalidConditionalException', 'Unclosed String (single quotes)', "{if string == 'ee}out{/if}"),
-			array('InvalidConditionalException', 'Unclosed Conditional', 			'{if string == "ee"}out'),
 			array('InvalidConditionalException', 'Unclosed String (double quotes)', '{if string == "ee}out{/if}'),
+			array('InvalidConditionalException', 'Unclosed Conditional', 			'{if string == "ee"}out'),
+			array('InvalidConditionalException', 'Unterminated Conditional', 		'{if string == "ee"out{/if}'),
 			array('InvalidConditionalException', 'If as a Prefix', 					'{if:foo}'),
 			array('InvalidConditionalException', 'Ifelse duplicity', 				'{if 5 == 5}out{if:else:else}out{/if}'),
 			array('InvalidConditionalException', 'Ifelse Prefixing', 				'{if 5 == 5}out{if:elsebeth}out{/if}'),
@@ -82,24 +174,36 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 
 			// simple tests don't combine too many things
 			$this->simpleVariableReplacementsTest(),
+			$this->similarVariableNamesTest(),
 			$this->simpleVariableComparisonsTest(),
+			$this->eeVariableTests(),
 
 			// advanced tests are common combinations of lots of things
 			$this->advancedAndsAndOrs(),
 			$this->advancedParenthesisEqualizing(),
+			$this->advancedSameBehaviorWithoutVariables(),
 
 			// testing string protection
 			$this->protectingStrings(),
 
+			// testing that our safety cleanup does its job
+			$this->safteyCleanup(),
+			$this->safetyFalseCleanup(),
+
+			$this->spacelessStringLogicOperatorsAreVariables(),
+
+			// testing bug reports
+			$this->bug20323(),
+
+			$this->mathAndStringOperators(),
+
 			// wonky tests parse despite createing php errors
 			// we should try to invalidate all of these, so for our new conditional
 			// parsing these tests should be rewriten as failing
-			$this->wonkySpacelessStringLogicOperators(),
 			$this->wonkyRepetitions(),
 			$this->wonkyEmpty(),
 			$this->wonkyMutableBooleans(),
-			$this->wonkyDifferentBehaviorWithoutVariables(),
-			$this->wonkyPhpOperatorsWorkOnlyWithWhitespace()
+			$this->wonkyComparisonOperators()
 
 			// evil tests attempt to subvert parsing to get valid php code
 			// to the eval stage. These should never ever work.
@@ -132,6 +236,7 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 		return array(
 			array('Just a Variable',	'{iffy}',	'{iffy}'),
 			array('Too Many Spaces',	'{ if }',	'{ if }'),
+			array("It's JavaScript",	'<script>function toddler(){if (true) return false}</script>', '<script>function toddler(){if (true) return false}</script>'),
 		);
 	}
 
@@ -140,7 +245,6 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 		return array(
 			array('Two conditionals', '{if 1 == 1}out{/if} {if 2 == 2}out{/if}', '{if 1 == 1}out{/if} {if 2 == 2}out{/if}'),
 			array('Very long string', '{if "test"}out{/if} {if "long var_a46d7cbbeb2015d076399df72e0e63791 string"}out{/if}', '{if "test"}out{/if} {if "long var_a46d7cbbeb2015d076399df72e0e63791 string"}out{/if}'),
-
 		);
 	}
 
@@ -201,19 +305,50 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 		return array(
 			array('Unparsed Plain',				'{if notset}out{/if}',			'{if FALSE}out{/if}'),
 			array('Unparsed with Modifier',		'{if notset:modified}out{/if}',	'{if FALSE}out{/if}'),
-			array('Unparsed variable-variable',	'{if a{notset}b}out{/if}',		'{if FALSE}b}out{/if}'),
+			array('Unparsed variable tag',		'{if {notset}}out{/if}',		'{if FALSE}out{/if}'),
+			array('Unparsed variable-variable',	'{if a{notset}b}out{/if}',		'{if FALSE}out{/if}'),
 		);
 	}
 
 	protected function simpleVariableReplacementsTest()
 	{
 		return array(
-			array('Simple TRUE Boolean',	'{if xyz}out{/if}',   '{if "1"}out{/if}',	array('xyz' => TRUE)),
-			array('Simple FALSE Boolean',	'{if xyz}out{/if}',   '{if ""}out{/if}',	array('xyz' => FALSE)),
-			array('Simple Zero Int',		'{if xyz}out{/if}',   '{if "0"}out{/if}',	array('xyz' => 0)),
-			array('Simple Positive Int',	'{if xyz}out{/if}',   '{if "5"}out{/if}',	array('xyz' => 5)),
-			array('Simple Negative Int',	'{if xyz}out{/if}',   '{if "-5"}out{/if}',	array('xyz' => -5)),
-			array('Simple Empty String',	'{if xyz}out{/if}',   '{if ""}out{/if}',	array('xyz' => '')),
+			array('Simple TRUE Boolean',		'{if xyz}out{/if}',   '{if "1"}out{/if}',	array('xyz' => TRUE)),
+			array('Simple FALSE Boolean',		'{if xyz}out{/if}',   '{if ""}out{/if}',	array('xyz' => FALSE)),
+			array('Simple Zero Int',			'{if xyz}out{/if}',   '{if "0"}out{/if}',	array('xyz' => 0)),
+			array('Simple Positive Int',		'{if xyz}out{/if}',   '{if "5"}out{/if}',	array('xyz' => 5)),
+			array('Simple Negative Int',		'{if xyz}out{/if}',   '{if "-5"}out{/if}',	array('xyz' => -5)),
+			array('Simple Empty String',		'{if xyz}out{/if}',   '{if ""}out{/if}',	array('xyz' => '')),
+			array('Simple Array',				'{if xyz}out{/if}',   '{if FALSE}out{/if}',	array('xyz' => array('foo'))),
+		);
+	}
+
+	protected function eeVariableTests()
+	{
+		return array(
+			array('Underscoreint as variable',		'{if _42}out{/if}',			'{if "foo"}out{/if}',		array('_42' => 'foo')),
+			array('Underscorealpha as variable',	'{if _a}out{/if}',			'{if "foo"}out{/if}',		array('_a' => 'foo')),
+			array('Intdash as variable',			'{if 42-answer}out{/if}',	'{if "foo"}out{/if}',		array('42-answer' => 'foo')),
+			array('Alphadash as variable',			'{if an-answer}out{/if}',	'{if "foo"}out{/if}',		array('an-answer' => 'foo')),
+
+			array('Dash as invalid variable',		'{if -}out{/if}',			'{if -}out{/if}',			array('-' => 'foo')),
+			array('Dashes as invalid variable',		'{if --}out{/if}',			'{if FALSE}out{/if}',		array('--' => 'foo')),
+			array('Smile as invalid variable',		'{if -__-}out{/if}',		'{if - FALSE}out{/if}',		array('-__-' => 'foo')),
+			array('Integer as invalid variable',	'{if 42}out{/if}',			'{if 42}out{/if}',			array('42' => 'foo')),
+			array('Hex as invalid variable',		'{if 0xDEADBEEF}out{/if}',	'{if 0xDEADBEEF}out{/if}',	array('0xDEADBEEF' => 'foo')),
+			array('Float as invalid variable',		'{if 42.7}out{/if}',		'{if 42.7}out{/if}',		array('42.7' => 'foo')),
+			array('Dashint as invalid variable',	'{if -42}out{/if}',			'{if -42}out{/if}',			array('-42' => 'foo')),
+			array('Dashalpha as invalid variable',	'{if -a}out{/if}',			'{if - FALSE}out{/if}',		array('-a' => 'foo')),
+		);
+	}
+
+	protected function similarVariableNamesTest()
+	{
+		return array(
+			array('Identical Variable Names',			'{if foo_bar == foo_bar}out{/if}',		'{if "foobar" == "foobar"}out{/if}',	array('foo_bar' => 'foobar')),
+			array('Identical Beginning Variable Names',	'{if segment_1 == segment_2}out{/if}',	'{if "site" == "index"}out{/if}',		array('segment_1' => 'site', 'segment_2' => 'index')),
+			array('Identical Ending Variable Names',	'{if some_var == another_var}out{/if}',	'{if "foobar" == "foobarbaz"}out{/if}',	array('some_var' => 'foobar', 'another_var' => 'foobarbaz')),
+			array('Subset Variable Names',				'{if foo_bar == foo_bar_baz}out{/if}',	'{if "foobar" == "foobarbaz"}out{/if}',	array('foo_bar' => 'foobar', 'foo_bar_baz' => 'foobarbaz')),
 		);
 	}
 
@@ -251,6 +386,15 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 		);
 	}
 
+	protected function advancedSameBehaviorWithoutVariables()
+	{
+		return array(
+			array('Nonsense Removal',			'{if fdsk&)(Ijf7)}out{/if}',	'{if ( FALSE )( FALSE )}out{/if}', FALSE),
+			array('Parenthesis Matching',		'{if (((5 && 6)}out{/if}',	'{if (((5 && 6)))}out{/if}', FALSE),
+			array('Strings kept intact',		'{if "test"}out{/if}',	'{if "test"}out{/if}', FALSE),
+		);
+	}
+
 	protected function protectingStrings()
 	{
 		$bs = '\\'; // NOTE: this is a _single_ backslash
@@ -260,21 +404,52 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			array('Protecting Double Quotes',		"{if xyz == '\"'}out{/if}",			'{if "&#34;" == "&#34;"}out{/if}',					array('xyz' => '"')),
 			array('Protecting Parentheses',			'{if xyz == "()"}out{/if}',			'{if "&#40;&#41;" == "&#40;&#41;"}out{/if}',		array('xyz' => "()")),
 			array('Protecting Dollar Signs',		'{if xyz == "$"}out{/if}',			'{if "&#36;" == "&#36;"}out{/if}',					array('xyz' => "$")),
-			array('Protecting Braces',				'{if xyz == "{}"}out{/if}',			'{if "&#123;&#125;" == "&#123;&#125;"}out{/if}',	array('xyz' => "{}")),
+			array('Protecting Braces',				'{if xyz == "{}"}out{/if}',			'{if "&#123;&#125;" == "{}"}out{/if}',				array('xyz' => "{}")),
 			array('Protecting New Lines',			"{if xyz == '\n'}out{/if}",			'{if "" == ""}out{/if}',							array('xyz' => "\n")),
 			array('Protecting Carriage Returns',	"{if xyz == '\r'}out{/if}",			'{if "" == ""}out{/if}',							array('xyz' => "\r")),
 			array('Protecting Backslashes',			"{if xyz == '{$bs}{$bs}'}out{/if}",	'{if "&#92;" == "&#92;"}out{/if}',					array('xyz' => $bs)),
 			array('Allowing Escape Characters',		"{if xyz == '{$bs}''}out{/if}",		'{if "&#92;" == "&#39;"}out{/if}',					array('xyz' => $bs)),
-			array('Nested Braces',					"{if xyz == '}great'}{/if}",		'{if "" == "&#125;great"}{/if}',					array('xyz' => '')),
+			array('Nested Braces',					"{if xyz == '}great'}{/if}",		'{if "" == "}great"}{/if}',					array('xyz' => '')),
 		);
 	}
 
-	protected function wonkySpacelessStringLogicOperators()
+	public function embeddedTags()
 	{
 		return array(
-			array('Wonky No Space AND',	'{if 7AND5}out{/if}',	'{if 7 FALSE}out{/if}'),
-			array('Wonky No Space OR',	'{if 5OR7}out{/if}',	'{if 5 FALSE}out{/if}'),
-			array('Wonky No Space XOR',	'{if 5XOR7}out{/if}',	'{if 5 FALSE}out{/if}'),
+			array('Unqouted Embedded Tag',				'{if {exp:foo:bar}}out{/if}',	'{if {exp:foo:bar}}out{/if}', 				'{if FALSE}out{/if}'),
+			array('Double Quoted Embedded Tag',			'{if "{exp:foo:bar}"}out{/if}',	'{if "{exp:foo:bar}"}out{/if}', 			'{if "&#123;exp:foo:bar&#125;"}out{/if}'),
+			array('Single Quoted Embedded Tag',			"{if '{exp:foo:bar}'}out{/if}",	'{if "{exp:foo:bar}"}out{/if}', 			'{if "&#123;exp:foo:bar&#125;"}out{/if}'),
+			array('Embedded Tag Before Conditional',	'{exp:foo:bar}{if 5}out{/if}',	'{exp:foo:bar}{if 5}out{/if}', 				'{exp:foo:bar}{if 5}out{/if}'),
+			array('Embedded Tag After Conditional',		'{if 5}out{/if}{exp:foo:bar}',	'{if 5}out{/if}{exp:foo:bar}', 				'{if 5}out{/if}{exp:foo:bar}'),
+			array('User Supplied Embedded Tag',			'{if baz}out{/if}',				'{if "&#123;exp:foo:bar&#125;"}out{/if}',	'{if "&#123;exp:foo:bar&#125;"}out{/if}',	array('baz' => '{exp:foo:bar}')),
+		);
+	}
+
+	protected function safteyCleanup()
+	{
+		return array(
+			array('Function Cleaning',				'{if phpinfo()}out{/if}',		'{if FALSE && ()}out{/if}'),
+			array('Single Variable Cleaning',		'{if foo}out{/if}',				'{if FALSE}out{/if}'),
+			array('Double Variable Cleaning',		'{if foo bar}out{/if}',			'{if FALSE}out{/if}'),
+			array('Tripple Variable Cleaning',		'{if foo bar baz}out{/if}',		'{if FALSE}out{/if}'),
+		);
+	}
+
+	protected function safetyFalseCleanup()
+	{
+		return array(
+			array('FALSE ()',				'{if FALSE ()}out{/if}',			'{if FALSE && ()}out{/if}'),
+			array('FALSE  FALSE',			'{if FALSE  FALSE}out{/if}',		'{if FALSE}out{/if}'),
+			array('FALSE  FALSE  FALSE',	'{if FALSE  FALSE  FALSE}out{/if}',	'{if FALSE}out{/if}'),
+		);
+	}
+
+	protected function spacelessStringLogicOperatorsAreVariables()
+	{
+		return array(
+			array('Wonky No Space AND',	'{if 7AND5}out{/if}',	'{if FALSE}out{/if}'),
+			array('Wonky No Space OR',	'{if 5OR7}out{/if}',	'{if FALSE}out{/if}'),
+			array('Wonky No Space XOR',	'{if 5XOR7}out{/if}',	'{if FALSE}out{/if}'),
 		);
 	}
 
@@ -285,7 +460,7 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			array('Double AND', 		 '{if 5 && AND 7}out{/if}',	'{if 5 && AND 7}out{/if}'),
 			array('Double No Space AND', '{if 5 &&AND 7}out{/if}',	'{if 5 &&AND 7}out{/if}'),
 			array('Double Comparison',	 '{if 5 > < 7}out{/if}',	'{if 5 > < 7}out{/if}'),
-			array('Shift by comparison', '{if 5 >>> 7}out{/if}',	'{if 5  FALSE > 7}out{/if}'),
+			array('Shift by comparison', '{if 5 >>> 7}out{/if}',	'{if 5 FALSE > 7}out{/if}'),
 
 		);
 	}
@@ -303,30 +478,48 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 	protected function wonkyMutableBooleans()
 	{
 		return array(
-			array('TRUE can NOT be a variable',	 '{if xyz == TRUE}out{/if}', '{if "1" == TRUE}out{/if}',	array('xyz' => TRUE, 'TRUE' => "baz")),
-			array('FALSE can NOT be a variable', '{if xyz == FALSE}out{/if}', '{if "1" == FALSE}out{/if}',	array('xyz' => TRUE, 'FALSE' => "bat")),
-			array('true can be a variable?!',	 '{if xyz == true}out{/if}', '{if "1" == "baz"}out{/if}',	array('xyz' => TRUE, 'true' => "baz")),
-			array('false can be a variable?!',	 '{if xyz == false}out{/if}', '{if "1" == "bat"}out{/if}',	array('xyz' => TRUE, 'false' => "bat")),
-			array('true can equal false',		 '{if true == false}out{/if}', '{if "" == false}out{/if}',	array('xyz' => TRUE, 'true' => ""))
+			array('TRUE CANNOT be a variable',	'{if xyz == TRUE}out{/if}', '{if "1" == TRUE}out{/if}',	array('xyz' => TRUE, 'TRUE' => "baz")),
+			array('FALSE CANNOT be a variable',	'{if xyz == FALSE}out{/if}', '{if "1" == FALSE}out{/if}',	array('xyz' => TRUE, 'FALSE' => "bat")),
+			array('true CANNOT be a variable?!',	'{if xyz == true}out{/if}', '{if "1" == TRUE}out{/if}',	array('xyz' => TRUE, 'true' => "baz")),
+			array('false CANNOT be a variable?!',	'{if xyz == false}out{/if}', '{if "1" == FALSE}out{/if}',	array('xyz' => TRUE, 'false' => "bat")),
+			array('true CANNOT equal false',		'{if true == FALSE}out{/if}', '{if TRUE == FALSE}out{/if}',	array('xyz' => TRUE, 'true' => ""))
 		);
 	}
 
-	protected function wonkyDifferentBehaviorWithoutVariables()
-	{
-		return array(
-			array('Total Nonsense Allowed',	'{if fdsk&)(Ijf7)}out{/if}',	'{if fdsk&)(Ijf7)}out{/if}', FALSE),
-			array('No Parenthesis Matching', '{if (((5 && 6)}out{/if}',	'{if (((5 && 6)}out{/if}', FALSE),
-		);
-	}
-
-	protected function wonkyPhpOperatorsWorkOnlyWithWhitespace()
+	protected function mathAndStringOperators()
 	{
 		return array(
 			array('Addition works with spaces',				'{if int + int}out{/if}', '{if "5" + "5"}out{/if}'),
-			array('Addition does not work without spaces',	'{if int+int}out{/if}', '{if FALSE + FALSE}out{/if}'),
+			array('Addition does not work without spaces',	'{if int+int}out{/if}', '{if "5"+"5"}out{/if}'),
 			array('Concatenation with spaces',				'{if string . string}out{/if}', '{if "ee" . "ee"}out{/if}'),
-			array('Concatenation without spaces',			'{if string.string}out{/if}', '{if FALSE . FALSE}out{/if}'),
+			array('Concatenation without spaces',			'{if string.string}out{/if}', '{if "ee"."ee"}out{/if}'),
 			array('Subtract dash-words variable',			'{if a-number - int}out{/if}', '{if "15" - "5"}out{/if}', array('a-number' => 15)),
+			array('Mulitple Subtract dash-words variable',	'{if a-bigger-number - int}out{/if}', '{if "23" - "5"}out{/if}', array('a-bigger-number' => 23)),
+			array('Make a variable negative',				'{if -12 < -count}out{/if}', '{if -12 < -"15"}out{/if}', array('count' => 15)),
+		);
+	}
+
+	protected function wonkyComparisonOperators()
+	{
+		return array(
+			array('= Instead of ==',	'{if 5 = 5}out{/if}',	'{if 5 FALSE 5}out{/if}'),
+			array('! Instead of !=',	'{if 5 ! 5}out{/if}',	'{if 5 FALSE 5}out{/if}'),
+			array('& Instead of &&',	'{if 5 & 5}out{/if}',	'{if 5 FALSE 5}out{/if}'),
+			array('| Instead of ||',	'{if 5 | 5}out{/if}',	'{if 5 FALSE 5}out{/if}'),
+		);
+	}
+
+	// See: https://support.ellislab.com/bugs/detail/20323
+	protected function bug20323()
+	{
+		$vars = array(
+			'value' => 'Test with long caption title to test layout',
+			'title' => 'Test article with captions'
+		);
+
+		return array(
+			array('Variable in variable',	'{if value}out{/if}',											'{if "Test with long caption title to test layout"}out{/if}',	$vars),
+			array('Variable in string',		'{if "Test with long caption title to test layout"}out{/if}',	'{if "Test with long caption title to test layout"}out{/if}',	$vars),
 		);
 	}
 }
@@ -360,9 +553,9 @@ class FunctionsStub extends EE_Functions {
 		return $result;
 	}
 
-	public function convert_quoted_conditional_strings_to_variables($str, $vars)
+	public function extract_conditionals($str, $vars)
 	{
-		$result = parent::convert_quoted_conditional_strings_to_variables($str, $vars);
+		$result = parent::extract_conditionals($str, $vars);
 
 		if ($result === FALSE)
 		{

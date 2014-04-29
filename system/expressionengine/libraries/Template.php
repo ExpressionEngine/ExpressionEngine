@@ -3364,9 +3364,19 @@ class EE_Template {
 		$front_protect = unique_marker('tmpl_script_open');
 		$back_protect  = unique_marker('tmpl_script_close');
 
-		if ($this->protect_javascript !== FALSE &&
-			stristr($str, '<script') &&
-			preg_match_all("/<script.*?".">.*?<\/script>/is", $str, $matches))
+		// Regardless of protect_javascript we need to protect
+		// <script language="php"> tags.
+		if ($this->protect_javascript !== FALSE)
+		{
+			$pattern = "/<script.*?".">.*?<\/script>/is";
+		}
+		else
+		{
+			$pattern = "/<script.*?language\s*=\s*(\042|\047)?php(\\1)?.*?>.*?<\/script>/is";
+		}
+
+		if (stristr($str, '<script') &&
+			preg_match_all($pattern, $str, $matches))
 		{
 			for($i=0, $s=count($matches[0]); $i < $s; ++$i)
 			{
@@ -3375,7 +3385,6 @@ class EE_Template {
 
 			$str = str_replace(array_values($protected), array_keys($protected), $str);
 		}
-
 		// Convert EE Conditionals to PHP
 		$str = str_replace(array(LD.'/if'.RD, LD.'if:else'.RD), array('<?php endif; ?'.'>','<?php else : ?'.'>'), $str);
 
