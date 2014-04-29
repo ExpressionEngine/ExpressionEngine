@@ -196,7 +196,6 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			// wonky tests parse despite createing php errors
 			// we should try to invalidate all of these, so for our new conditional
 			// parsing these tests should be rewriten as failing
-			$this->wonkySpacelessStringLogicOperators(),
 			$this->wonkyRepetitions(),
 			$this->wonkyEmpty(),
 			$this->wonkyMutableBooleans(),
