@@ -2638,6 +2638,12 @@ class EE_Functions {
 	 */
 	public function encode_conditional_value($str, $safety = 'n', $was_string_literal = FALSE)
 	{
+		// It doesn't make sense to allow array values
+		if (is_array($str))
+		{
+			return 'FALSE';
+		}
+
 		$value = (string) $str; // ONLY strings please
 
 		// TRUE AND FALSE values are for short hand conditionals,

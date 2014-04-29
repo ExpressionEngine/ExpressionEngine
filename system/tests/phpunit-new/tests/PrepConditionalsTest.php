@@ -316,6 +316,7 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			array('Simple Positive Int',		'{if xyz}out{/if}',   '{if "5"}out{/if}',	array('xyz' => 5)),
 			array('Simple Negative Int',		'{if xyz}out{/if}',   '{if "-5"}out{/if}',	array('xyz' => -5)),
 			array('Simple Empty String',		'{if xyz}out{/if}',   '{if ""}out{/if}',	array('xyz' => '')),
+			array('Simple Array',				'{if xyz}out{/if}',   '{if FALSE}out{/if}',	array('xyz' => array('foo'))),
 		);
 	}
 
