@@ -2429,7 +2429,7 @@ class EE_Functions {
 	{
 		// start at the beginning
 		$i = 0;
-		$l = strlen($str);
+		$str_length = strlen($str);
 
 		$var_count = 0;
 		$found_conditionals = array();
@@ -2498,7 +2498,7 @@ class EE_Functions {
 			$variable_texts = array();
 			$variable_placeholders = array();
 
-			while ($i < $l)
+			while ($i < $str_length)
 			{
 				// performance improvement, seek forward to next transition
 				if ($skip = strcspn($str, '\\\'"{}', $i))
@@ -2600,8 +2600,8 @@ class EE_Functions {
 
 				// Adjust our while loop conditions
 				$new_length = strlen($str);
-				$i = $i + ($new_length - $l);
-				$l = $new_length;
+				$i = $i + ($new_length - $str_length);
+				$str_length = $new_length;
 
 				$strings = array_combine($variable_placeholders, $variables);
 			}
@@ -2839,7 +2839,7 @@ class EE_Functions {
 
 				// We will now parse for allowed tokens, the rest are either
 				// stripped or converted to FALSE
-				foreach ($tokens as $token)
+				for (reset($tokens); $token = current($tokens); next($tokens))
 				{
 					// Some elements of the $tokens array are single
 					// characters. We account for those here.
@@ -2891,21 +2891,46 @@ class EE_Functions {
 								break;
 
 							case T_STRING:
-								$value = strtoupper($token[1]);
-								if ($value == 'TRUE' || $value == 'FALSE')
+
+								$value = $token[1];
+
+								// special case. In ee foo-bar is a valid variable, so we
+								// need to fast forward through all combinations of - and T_STRING
+								if (isset($tokens[$i + 1]) && $tokens[$i + 1] === '-')
 								{
-									$buffer .= $value;
+									while ($next = next($tokens))
+									{
+										if ($next == '-')
+										{
+											$value .= '-';
+										}
+										elseif (is_array($next) && $next[0] == T_STRING)
+										{
+											$value .= $next[1];
+										}
+										else
+										{
+											break;
+										}
+									}
+								}
+
+								$uppercase_value = strtoupper($value);
+
+								if ($uppercase_value == 'TRUE' || $uppercase_value == 'FALSE')
+								{
+									$buffer .= $uppercase_value;
 									break;
 								}
-								elseif (isset($condition_vars[$token[1]]))
+								elseif (isset($condition_vars[$value]))
 								{
-									if (is_bool($condition_vars[$token[1]]))
+									if (is_bool($condition_vars[$value]))
 									{
-										$buffer .= ($condition_vars[$token[1]]) ? "TRUE" : "FALSE";
+										$buffer .= ($condition_vars[$value]) ? "TRUE" : "FALSE";
 									}
 									else
 									{
-										$buffer .= $condition_vars[$token[1]];
+										$buffer .= $condition_vars[$value];
 									}
 									break;
 								}
