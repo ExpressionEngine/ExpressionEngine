@@ -2787,13 +2787,6 @@ class EE_Functions {
 			}
 		}
 
-		// If we passed in 0 variables AND all conditionals are both valid AND
-		// safe, then we can safely return $str
-		if (count($vars) == 0)
-		{
-			return $str;
-		}
-
 		// Encode the conditional strings
 		foreach ($conditionals as $i => $condition)
 		{
