@@ -180,6 +180,7 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			// advanced tests are common combinations of lots of things
 			$this->advancedAndsAndOrs(),
 			$this->advancedParenthesisEqualizing(),
+			$this->advancedSameBehaviorWithoutVariables(),
 
 			// testing string protection
 			$this->protectingStrings(),
@@ -199,7 +200,6 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			$this->wonkyRepetitions(),
 			$this->wonkyEmpty(),
 			$this->wonkyMutableBooleans(),
-			$this->wonkyDifferentBehaviorWithoutVariables(),
 			$this->wonkyPhpOperatorsWorkOnlyWithWhitespace(),
 			$this->wonkyComparisonOperators()
 
@@ -365,6 +365,15 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 		);
 	}
 
+	protected function advancedSameBehaviorWithoutVariables()
+	{
+		return array(
+			array('Nonsense Removal',			'{if fdsk&)(Ijf7)}out{/if}',	'{if ( FALSE )( FALSE )}out{/if}', FALSE),
+			array('Parenthesis Matching',		'{if (((5 && 6)}out{/if}',	'{if (((5 && 6)))}out{/if}', FALSE),
+			array('Strings kept intact',		'{if "test"}out{/if}',	'{if "test"}out{/if}', FALSE),
+		);
+	}
+
 	protected function protectingStrings()
 	{
 		$bs = '\\'; // NOTE: this is a _single_ backslash
@@ -453,14 +462,6 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			array('true CANNOT be a variable?!',	'{if xyz == true}out{/if}', '{if "1" == TRUE}out{/if}',	array('xyz' => TRUE, 'true' => "baz")),
 			array('false CANNOT be a variable?!',	'{if xyz == false}out{/if}', '{if "1" == FALSE}out{/if}',	array('xyz' => TRUE, 'false' => "bat")),
 			array('true CANNOT equal false',		'{if true == FALSE}out{/if}', '{if TRUE == FALSE}out{/if}',	array('xyz' => TRUE, 'true' => ""))
-		);
-	}
-
-	protected function wonkyDifferentBehaviorWithoutVariables()
-	{
-		return array(
-			array('Total Nonsense Allowed',		'{if fdsk&)(Ijf7)}out{/if}',	'{if fdsk&)(Ijf7)}out{/if}', FALSE),
-			array('No Parenthesis Matching',	'{if (((5 && 6)}out{/if}',	'{if (((5 && 6)}out{/if}', FALSE),
 		);
 	}
 
