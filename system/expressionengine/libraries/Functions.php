@@ -2828,18 +2828,61 @@ class EE_Functions {
 				// of arbitrary code execution.
 
 				// This will show us how PHP will view the conditional.
-				$tokens = token_get_all('<?php ' . $condition . '?>');
+				$prelim_tokens = token_get_all('<?php ' . $condition . '?>');
 
 				// Remove the opening and closing PHP tags
-				$tokens = array_slice($tokens, 1, count($tokens) - 2);
+				$prelim_tokens = array_slice($prelim_tokens, 1, count($prelim_tokens) - 2);
 
 				$buffer = '';
 
 				$parenthesis_depth = 0;
 
+				// We need to do two passes. The first one is to catch EE's more
+				// esoteric variable naming strategy, where dashes are allowed for
+				// variable characters, negative signs, and subtraction. This loop
+				// will collapse any valid combinations that are interpreted as
+				// variables by the parser.
+				$tokens = array();
+
+				$collapse = '';
+
+				foreach ($prelim_tokens as $token)
+				{
+					if ($collapse !== '' && $token === '-')
+					{
+						$collapse .= $token;
+					}
+					elseif (is_array($token) && in_array($token[0], array(T_STRING, T_LNUMBER, T_DNUMBER)))
+					{
+						$collapse .= $token[1];
+					}
+					else
+					{
+						if (trim($collapse, '-') !== '')
+						{
+							$tokens[] = array(
+								is_numeric($collapse) ? T_LNUMBER : T_STRING,
+								$collapse
+							);
+
+							$collapse = '';
+						}
+
+						$tokens[] = $token;
+					}
+				}
+
+				if ($collapse !== '')
+				{
+					$tokens[] = array(
+						is_numeric($collapse) ? T_LNUMBER : T_STRING,
+						$collapse
+					);
+				}
+
 				// We will now parse for allowed tokens, the rest are either
 				// stripped or converted to FALSE
-				for (reset($tokens); $token = current($tokens); next($tokens))
+				foreach ($tokens as $token)
 				{
 					// Some elements of the $tokens array are single
 					// characters. We account for those here.
@@ -2891,30 +2934,7 @@ class EE_Functions {
 								break;
 
 							case T_STRING:
-
 								$value = $token[1];
-
-								// special case. In ee foo-bar is a valid variable, so we
-								// need to fast forward through all combinations of - and T_STRING
-								if (isset($tokens[$i + 1]) && $tokens[$i + 1] === '-')
-								{
-									while ($next = next($tokens))
-									{
-										if ($next == '-')
-										{
-											$value .= '-';
-										}
-										elseif (is_array($next) && $next[0] == T_STRING)
-										{
-											$value .= $next[1];
-										}
-										else
-										{
-											break;
-										}
-									}
-								}
-
 								$uppercase_value = strtoupper($value);
 
 								if ($uppercase_value == 'TRUE' || $uppercase_value == 'FALSE')
