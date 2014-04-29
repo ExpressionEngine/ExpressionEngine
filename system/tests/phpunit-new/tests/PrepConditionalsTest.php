@@ -176,6 +176,7 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			$this->simpleVariableReplacementsTest(),
 			$this->similarVariableNamesTest(),
 			$this->simpleVariableComparisonsTest(),
+			$this->eeVariableTests(),
 
 			// advanced tests are common combinations of lots of things
 			$this->advancedAndsAndOrs(),
@@ -318,6 +319,25 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			array('Simple Negative Int',		'{if xyz}out{/if}',   '{if "-5"}out{/if}',	array('xyz' => -5)),
 			array('Simple Empty String',		'{if xyz}out{/if}',   '{if ""}out{/if}',	array('xyz' => '')),
 			array('Simple Array',				'{if xyz}out{/if}',   '{if FALSE}out{/if}',	array('xyz' => array('foo'))),
+		);
+	}
+
+	protected function eeVariableTests()
+	{
+		return array(
+			array('Underscoreint as variable',		'{if _42}out{/if}',			'{if "foo"}out{/if}',		array('_42' => 'foo')),
+			array('Underscorealpha as variable',	'{if _a}out{/if}',			'{if "foo"}out{/if}',		array('_a' => 'foo')),
+			array('Intdash as variable',			'{if 42-answer}out{/if}',	'{if "foo"}out{/if}',		array('42-answer' => 'foo')),
+			array('Alphadash as variable',			'{if an-answer}out{/if}',	'{if "foo"}out{/if}',		array('an-answer' => 'foo')),
+
+			array('Dash as invalid variable',		'{if -}out{/if}',			'{if -}out{/if}',			array('-' => 'foo')),
+			array('Dashes as invalid variable',		'{if --}out{/if}',			'{if FALSE}out{/if}',		array('--' => 'foo')),
+			array('Smile as invalid variable',		'{if -__-}out{/if}',		'{if - FALSE}out{/if}',		array('-__-' => 'foo')),
+			array('Integer as invalid variable',	'{if 42}out{/if}',			'{if 42}out{/if}',			array('42' => 'foo')),
+			array('Hex as invalid variable',		'{if 0xDEADBEEF}out{/if}',	'{if 0xDEADBEEF}out{/if}',	array('0xDEADBEEF' => 'foo')),
+			array('Float as invalid variable',		'{if 42.7}out{/if}',		'{if 42.7}out{/if}',		array('42.7' => 'foo')),
+			array('Dashint as invalid variable',	'{if -42}out{/if}',			'{if -42}out{/if}',			array('-42' => 'foo')),
+			array('Dashalpha as invalid variable',	'{if -a}out{/if}',			'{if - FALSE}out{/if}',		array('-a' => 'foo')),
 		);
 	}
 
