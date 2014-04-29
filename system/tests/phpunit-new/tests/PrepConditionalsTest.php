@@ -471,7 +471,7 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			array('Concatenation with spaces',				'{if string . string}out{/if}', '{if "ee" . "ee"}out{/if}'),
 			array('Concatenation without spaces',			'{if string.string}out{/if}', '{if "ee"."ee"}out{/if}'),
 			array('Subtract dash-words variable',			'{if a-number - int}out{/if}', '{if "15" - "5"}out{/if}', array('a-number' => 15)),
-			array('Subtract dash-words variable',			'{if a-bigger-number - int}out{/if}', '{if "23" - "5"}out{/if}', array('a-bigger-number' => 23)),
+			array('Mulitple Subtract dash-words variable',	'{if a-bigger-number - int}out{/if}', '{if "23" - "5"}out{/if}', array('a-bigger-number' => 23)),
 		);
 	}
 
