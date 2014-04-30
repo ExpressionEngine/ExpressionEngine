@@ -304,10 +304,10 @@ $lang = array(
 'Back',
 
 'no' =>
-'No',
+'no',
 
 'yes' =>
-'Yes',
+'yes',
 
 'all' =>
 'All',

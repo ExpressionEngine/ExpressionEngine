@@ -232,6 +232,49 @@ $lang = array(
 'import_convert_btn_working' =>
 'Converting...',
 
+/**
+ * Member Import
+ */
+
+'mbr_xml_file' =>
+'<abbr title="Extensible Markup Language">XML</abbr> file location',
+
+'mbr_xml_file_location' =>
+'<abbr title="Unified Resource Locator">URL</abbr> location of your <abbr title="Extensible Markup Language"><mark>xml</mark></abbr> file.',
+
+'mbr_import_default_options' =>
+'Default Options',
+
+'member_group' =>
+'Member group',
+
+'mbr_language' =>
+'Language',
+
+'mbr_timezone' =>
+'Timezone',
+
+'mbr_timezone_desc' =>
+'Local timezone for any date and time displays.',
+
+'mbr_datetime_fmt' =>
+'Date &amp; time format',
+
+'mbr_datetime_fmt_desc' =>
+'Preferred date and time formats.<br><i>Used in the control panel only.</i>',
+
+'mbr_create_custom_fields' =>
+'Create custom fields?',
+
+'mbr_create_custom_fields_desc' =>
+'When set to <b>yes</b>, import will automatically create custom member fields for any data that does not match a default member field.',
+
+'mbr_import_btn' =>
+'Import Members',
+
+'mbr_import_btn_working' =>
+'Importing...',
+
 ''=>''
 );
 

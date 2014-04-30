@@ -66,8 +66,12 @@ class EE_Form_validation extends CI_Form_validation {
 	 */
 	function run($group = '', $handle_ajax = TRUE)
 	{
+		$result = FALSE;
+
 		if (REQ == 'CP' && AJAX_REQUEST && $handle_ajax)
 		{
+			$result = (count($this->_field_data));
+
 			// We should currently only be validating one field at a time,
 			// and this POST field should have the name of it
 			$field = ee()->input->post('ee_fv_field');
@@ -81,10 +85,20 @@ class EE_Form_validation extends CI_Form_validation {
 					unset($this->_field_data[$key]);
 				}
 			}
+
+			// Skip validation if we've emptied the field_data array,
+			// can happen if we're not validating the requested field
+			if (empty($this->_field_data) && $result)
+			{
+				$result = TRUE;
+			}
 		}
 
 		// Validate the field
-		$result = parent::run($group);
+		if ($result !== TRUE)
+		{
+			$result = parent::run($group);
+		}
 
 		if (REQ == 'CP' && AJAX_REQUEST && $handle_ajax)
 		{
@@ -501,6 +515,21 @@ class EE_Form_validation extends CI_Form_validation {
 	public function valid_date($date)
 	{
 		return (strtotime($date) !== FALSE);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * File exists
+	 *
+	 * Validation callback that checks if a file exits
+	 *
+	 * @param	string	$file	Path to file
+	 * @return	boolean
+	 */
+	public function file_exists($file)
+	{
+		return file_exists($file);
 	}
 
 	// --------------------------------------------------------------------

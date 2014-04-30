@@ -391,8 +391,63 @@ class Utilities extends CP_Controller {
 	 */
 	public function import_converter()
 	{
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		ee()->view->cp_page_title = lang('import_converter');
 		ee()->cp->render('utilities/import-converter');
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Future home of the member import file converter
+	 */
+	public function member_import()
+	{
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		ee()->load->library('form_validation');
+		ee()->form_validation->set_rules(array(
+			array(
+				 'field'   => 'xml_file',
+				 'label'   => 'lang:mbr_xml_file',
+				 'rules'   => 'required|file_exists'
+			)
+		));
+
+		if (ee()->form_validation->run() !== FALSE)
+		{
+			// Do something...
+		}
+
+		$groups = ee()->api->get('MemberGroup')->order('group_id', 'asc')->all();
+
+		$member_groups = array();
+		foreach ($groups as $group)
+		{
+			$member_groups[$group->group_id] = $group->group_title;
+		}
+
+		ee()->lang->load('admin');
+		ee()->load->model('admin_model');
+		$config_fields = ee()->config->prep_view_vars('localization_cfg');
+
+		$vars = array(
+			'language_options' => array('None' => 'None', 'English' => 'English'),
+			'member_groups' => $member_groups,
+			'date_format' => $config_fields['fields']['date_format'],
+			'time_format' => $config_fields['fields']['time_format'],
+			'timezone_menu' => ee()->localize->timezone_menu(set_value('timezones'), 'timezones')
+		);
+
+		ee()->view->cp_page_title = lang('member_import');
+		ee()->cp->render('utilities/member-import', $vars);
 	}
 }
 

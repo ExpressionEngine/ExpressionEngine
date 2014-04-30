@@ -3,8 +3,7 @@
 <div class="col w-12 last">
 	<div class="box">
 		<h1><?=$cp_page_title?></h1>
-		<form class="settings">
-			<?=form_open(cp_url('utilities/import_converter'), 'class="settings ajax-validate"')?>
+		<?=form_open(cp_url('utilities/import_converter'), 'class="settings ajax-validate"')?>
 			<?php $this->view('_shared/form_messages')?>
 			<fieldset class="col-group">
 				<div class="setting-txt col w-8">
