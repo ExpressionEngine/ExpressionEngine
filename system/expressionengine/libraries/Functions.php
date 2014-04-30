@@ -2641,7 +2641,7 @@ class EE_Functions {
 	 * Encodes values for use in conditionals
 	 *
 	 * @access	public
-	 * @param	string $str		The conditional value to encoded
+	 * @param	string $value	The conditional value to encoded
 	 * @param	string $safety	If y, make sure conditionals are fully parseable
 	 *							by replacing unknown variables with FALSE. This
 	 *							defaults to n so that conditionals are slowly
@@ -2650,15 +2650,21 @@ class EE_Functions {
 	 * @param	bool   $was_string_literal Was the value part of a template string?
 	 * @return	string The new conditional value to use instead of $str.
 	 */
-	public function encode_conditional_value($str, $safety = 'n', $was_string_literal = FALSE)
+	public function encode_conditional_value($value, $safety = 'n', $was_string_literal = FALSE)
 	{
 		// It doesn't make sense to allow array values
-		if (is_array($str))
+		if (is_array($value))
 		{
 			return 'FALSE';
 		}
 
-		$value = (string) $str; // ONLY strings please
+		// An object that cannot be converted to a string is a problem
+		if (is_object($value) && ! method_exists($value, '__toString'))
+		{
+			return 'FALSE';
+		}
+
+		$value = (string) $value; // ONLY strings please
 
 		// TRUE AND FALSE values are for short hand conditionals,
 		// like {if logged_in} and so we have no need to remove
