@@ -2841,7 +2841,7 @@ class EE_Functions {
 
 				foreach ($prelim_tokens as $token)
 				{
-					if ($collapse !== '' && $token === '-')
+					if ($collapse !== '' && ($token === '-' || $token === ':'))
 					{
 						$collapse .= $token;
 					}
