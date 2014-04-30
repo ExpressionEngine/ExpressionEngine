@@ -96,6 +96,26 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 		);
 	}
 
+	public function testPrepWithPrefix()
+	{
+		$str = '{if prefix:string == "literal" && notprefixed || prefix:name}out{/if}';
+
+		$fns = new FunctionsStub('randomstring');
+
+		$str = $fns->prep_conditionals(
+			$str,
+			array('string' => 'yep', 'notprefixed' => 'shouldneverseethis'),
+			$safety = 'y',
+			$prefix = 'prefix:'
+		);
+
+		$this->assertEquals(
+			'{if "yep" == "literal" && FALSE || FALSE}out{/if}',
+			$str,
+			"Prep Correct With Prefix"
+		);
+	}
+
 	protected function runConditionalTest($description, $str_in, $expected_out, $vars = array())
 	{
 		// variables called int and string are always available unless $vars was explicitly set to FALSE

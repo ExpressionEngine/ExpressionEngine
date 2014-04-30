@@ -2727,7 +2727,7 @@ class EE_Functions {
 	 * @param	string $prefix	Prefix for the variables in $vars.
 	 * @return	string The new template to use instead of $str.
 	 */
-	public function prep_conditionals($str, $vars, $safety='n', $prefix='')
+	public function prep_conditionals($str, $vars, $safety = 'n', $prefix = '')
 	{
 		if (isset(ee()->TMPL->embed_vars))
 		{
@@ -2796,11 +2796,15 @@ class EE_Functions {
 			}
 		}
 
-		// Encode the variables
-		foreach ($vars as &$var)
+		// Encode the user variables and add a prefix if given
+		$prefixed_vars = array();
+
+		foreach ($vars as $key => $var)
 		{
-			$var = $this->encode_conditional_value($var, $safety);
+			$prefixed_vars[$prefix.$key] = $this->encode_conditional_value($var, $safety);
 		}
+
+		$vars = $prefixed_vars;
 
 		foreach ($conditionals as $conditional)
 		{
@@ -2841,7 +2845,7 @@ class EE_Functions {
 
 				foreach ($prelim_tokens as $token)
 				{
-					if ($collapse !== '' && $token === '-')
+					if ($collapse !== '' && ($token === '-' || $token === ':'))
 					{
 						$collapse .= $token;
 					}
