@@ -333,14 +333,18 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 
 	protected function simpleVariableReplacementsTest()
 	{
+		$no_string_obj = new StdClass();
+		$string_obj = new dummyStringObject();
 		return array(
-			array('Simple TRUE Boolean',		'{if xyz}out{/if}',   '{if "1"}out{/if}',	array('xyz' => TRUE)),
-			array('Simple FALSE Boolean',		'{if xyz}out{/if}',   '{if ""}out{/if}',	array('xyz' => FALSE)),
-			array('Simple Zero Int',			'{if xyz}out{/if}',   '{if "0"}out{/if}',	array('xyz' => 0)),
-			array('Simple Positive Int',		'{if xyz}out{/if}',   '{if "5"}out{/if}',	array('xyz' => 5)),
-			array('Simple Negative Int',		'{if xyz}out{/if}',   '{if "-5"}out{/if}',	array('xyz' => -5)),
-			array('Simple Empty String',		'{if xyz}out{/if}',   '{if ""}out{/if}',	array('xyz' => '')),
-			array('Simple Array',				'{if xyz}out{/if}',   '{if FALSE}out{/if}',	array('xyz' => array('foo'))),
+			array('Simple TRUE Boolean',				'{if xyz}out{/if}',   '{if "1"}out{/if}',	array('xyz' => TRUE)),
+			array('Simple FALSE Boolean',				'{if xyz}out{/if}',   '{if ""}out{/if}',	array('xyz' => FALSE)),
+			array('Simple Zero Int',					'{if xyz}out{/if}',   '{if "0"}out{/if}',	array('xyz' => 0)),
+			array('Simple Positive Int',				'{if xyz}out{/if}',   '{if "5"}out{/if}',	array('xyz' => 5)),
+			array('Simple Negative Int',				'{if xyz}out{/if}',   '{if "-5"}out{/if}',	array('xyz' => -5)),
+			array('Simple Empty String',				'{if xyz}out{/if}',   '{if ""}out{/if}',	array('xyz' => '')),
+			array('Simple Array',						'{if xyz}out{/if}',   '{if FALSE}out{/if}',	array('xyz' => array('foo'))),
+			array('Simple Object without __toString()',	'{if xyz}out{/if}',   '{if FALSE}out{/if}',	array('xyz' => $no_string_obj)),
+			array('Simple Object with __toString()',	'{if xyz}out{/if}',   '{if "foo"}out{/if}',	array('xyz' => $string_obj)),
 		);
 	}
 
@@ -610,3 +614,10 @@ function unique_marker($ident)
 
 class UnsafeConditionalException extends Exception {}
 class InvalidConditionalException extends Exception {}
+
+class dummyStringObject {
+	public function __toString()
+	{
+		return "foo";
+	}
+}
