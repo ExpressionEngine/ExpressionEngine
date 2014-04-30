@@ -2466,21 +2466,35 @@ class EE_Functions {
 			// Confirm this is a conditional and not some other tag
 			$char = $str[$i + 3];
 
-			if ( ! ($char == ' ' || $char == "\t" || $char == "\n" || $char == "\r" ) )
+			// If the "{if" is not followed by whitespace this might be a
+			// variable (i.e. {iffy}) or an "{if:else..." conditional
+			if ( ! ($char == ' ' || $char == "\t" || $char == "\n" || $char == "\r" ))
 			{
-				// If the "{if" is not followed by whitespace this might be a
-				// variable (i.e. {iffy}) or an "{if:else..." conditional
-				$substr = substr($str, $i + 3, 10);
-
-				if ($char == ':' && (preg_match('/^:else(\s?}|if\s)/', $substr) != 1))
+				if ($char == ':')
 				{
-					// This is an invalid conditional because "{if:" is reserved
-					// for conditionals
-					return FALSE;
-				}
+					$substr = substr($str, $i + 3, 10);
 
-				$i += 3;
-				continue;
+					// This is an invalid conditional because "{if:" is reserved
+					// for conditionals.
+					if (preg_match('/^:else(\s?}|if\s)/', $substr, $matches) != 1)
+					{
+						return FALSE;
+					}
+
+					// if it's an else, not an elseif, then it won't have a body,
+					// so we don't need to do any processing on it.
+					if (trim($matches[1]) == '}')
+					{
+						$i += 3;
+						continue;
+					}
+				}
+				else
+				{
+					// valid variable, but not a conditional
+					$i += 3;
+					continue;
+				}
 			}
 
 			// No sense continuing if we cannot find a {/if}
