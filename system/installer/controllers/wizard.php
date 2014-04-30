@@ -3016,6 +3016,7 @@ PAPAYA;
 			if (file_exists($path.'upd.'.$module.EXT))
 			{
 				$this->load->add_package_path($path);
+				$this->load->add_package_path(APPPATH, FALSE);
 
 				$class = ucfirst($module).'_upd';
 
