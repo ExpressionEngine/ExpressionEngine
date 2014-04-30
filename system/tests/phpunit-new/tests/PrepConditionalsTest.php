@@ -202,6 +202,7 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			$this->advancedAndsAndOrs(),
 			$this->advancedParenthesisEqualizing(),
 			$this->advancedSameBehaviorWithoutVariables(),
+			$this->advancedElseIf(),
 
 			// testing string protection
 			$this->protectingStrings(),
@@ -410,8 +411,17 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 	{
 		return array(
 			array('Nonsense Removal',			'{if fdsk&)(Ijf7)}out{/if}',	'{if ( FALSE )( FALSE )}out{/if}', FALSE),
-			array('Parenthesis Matching',		'{if (((5 && 6)}out{/if}',	'{if (((5 && 6)))}out{/if}', FALSE),
-			array('Strings kept intact',		'{if "test"}out{/if}',	'{if "test"}out{/if}', FALSE),
+			array('Parenthesis Matching',		'{if (((5 && 6)}out{/if}',		'{if (((5 && 6)))}out{/if}', FALSE),
+			array('Strings kept intact',		'{if "test"}out{/if}',			'{if "test"}out{/if}', FALSE),
+		);
+	}
+
+	protected function advancedElseIf()
+	{
+		return array(
+			array('Just Else',			'{if string == "a"}out1{if:else}out2{/if}',									'{if "ee" == "a"}out1{if:else}out2{/if}'),
+			array('Just ElseIf',		'{if string == "a"}out1{if:elseif string == "b"}out2{/if}',					'{if "ee" == "a"}out1{if:elseif "ee" == "b"}out2{/if}'),
+			array('Else and Elseif',	'{if string == "a"}out1{if:elseif string == "b"}out2{if:else}out3{/if}',	'{if "ee" == "a"}out1{if:elseif "ee" == "b"}out2{if:else}out3{/if}'),
 		);
 	}
 
@@ -429,7 +439,7 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			array('Protecting Carriage Returns',	"{if xyz == '\r'}out{/if}",			'{if "" == ""}out{/if}',							array('xyz' => "\r")),
 			array('Protecting Backslashes',			"{if xyz == '{$bs}{$bs}'}out{/if}",	'{if "&#92;" == "&#92;"}out{/if}',					array('xyz' => $bs)),
 			array('Allowing Escape Characters',		"{if xyz == '{$bs}''}out{/if}",		'{if "&#92;" == "&#39;"}out{/if}',					array('xyz' => $bs)),
-			array('Nested Braces',					"{if xyz == '}great'}{/if}",		'{if "" == "}great"}{/if}',					array('xyz' => '')),
+			array('Nested Braces',					"{if xyz == '}great'}{/if}",		'{if "" == "}great"}{/if}',							array('xyz' => '')),
 		);
 	}
 
