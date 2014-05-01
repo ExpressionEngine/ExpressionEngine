@@ -39,7 +39,7 @@
 					<?php endif ?>
 				</div>
 				<div class="user">
-					<a href="<?=cp_url('login/logout')?>">sign out</a> <a class="has-sub" href=""><?=$cp_screen_name?> <span class="ico sub-arrow"></span></a>
+					<a href="<?=cp_url('login/logout')?>">log out</a> <a class="has-sub" href=""><?=$cp_screen_name?> <span class="ico sub-arrow"></span></a>
 					<ul class="quick-links sub-menu">
 						<a href="http://localhost/el-projects/ee-cp/views/members-profile.php">My Profile</a>
 						<a href="">Quick Link</a>
