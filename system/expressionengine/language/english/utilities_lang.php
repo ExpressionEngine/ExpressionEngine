@@ -9,6 +9,9 @@ $lang = array(
 'communicate' =>
 'Communicate',
 
+'sent' =>
+'Sent',
+
 'cp_translation' =>
 '<abbr title="Control Panel">CP</abbr> Translation',
 
@@ -170,7 +173,7 @@ $lang = array(
 'rows_replaced' =>
 'Number of database records in which a replacement occurred: %s',
 
-'sandr_password' =>
+'current_password' =>
 'Current password',
 
 'sandr_password_desc' =>
@@ -274,6 +277,41 @@ $lang = array(
 
 'mbr_import_btn_working' =>
 'Importing...',
+
+/**
+ * SQL Query Form
+ */
+
+'sql_query_form' =>
+'SQL Query Form',
+
+'sql_query_form_abbr' =>
+'<abbr title="Structured Query Language">SQL</abbr> Query Form',
+
+'sql_warning' =>
+'<p><b>Warning</b>: <b class="no">Advanced users only.</b> Please be very careful with using this feature.</p>
+<p>Depending on the syntax used, this function can produce undesired results. Consult the user guide and backup your database.</p>',
+
+'common_queries' =>
+'Common queries',
+
+'common_queries_desc' =>
+'Some common queries you can run, to learn more about your database content.',
+
+'sql_query_to_run' =>
+'Query to run',
+
+'enable_sql_errors' =>
+'Enable My<abbr title="Structured Query Language">SQL</abbr> errors',
+
+'sql_password_desc' =>
+'You <b>must</b> enter your password to run queries.',
+
+'query_btn' =>
+'Run Query',
+
+'query_btn_working' =>
+'Running...',
 
 ''=>''
 );

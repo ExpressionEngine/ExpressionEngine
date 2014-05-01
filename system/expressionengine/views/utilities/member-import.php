@@ -12,6 +12,7 @@
 				</div>
 				<div class="setting-field col w-8 last">
 					<input name="xml_file" type="text" value="<?=set_value('xml_file')?>">
+					<?=form_error('xml_file')?>
 				</div>
 			</fieldset>
 

@@ -34,6 +34,9 @@ class Utilities extends CP_Controller {
 		// Register our menu
 		ee()->menu->register_left_nav(array(
 			'communicate' => cp_url('utilities/communicate'),
+			array(
+				'sent' => cp_url('utilities/communicate-sent')
+			),
 			'cp_translation',
 			array(
 				// Show installed languages?
@@ -204,7 +207,7 @@ class Utilities extends CP_Controller {
 			),
 			array(
 				'field' => 'password_auth',
-				'label' => 'lang:sandr_password',
+				'label' => 'lang:current_password',
 				'rules' => 'required|auth_password'
 			)
 		));
@@ -403,7 +406,7 @@ class Utilities extends CP_Controller {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Future home of the member import file converter
+	 * Member import
 	 */
 	public function member_import()
 	{
@@ -448,6 +451,42 @@ class Utilities extends CP_Controller {
 
 		ee()->view->cp_page_title = lang('member_import');
 		ee()->cp->render('utilities/member-import', $vars);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Member import
+	 */
+	public function query()
+	{
+		// Super Admins only, please
+		if (ee()->session->userdata('group_id') != '1')
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		ee()->load->library('form_validation');
+		ee()->form_validation->set_rules(array(
+			array(
+				 'field'   => 'thequery',
+				 'label'   => 'lang:sql_query_to_run',
+				 'rules'   => 'required'
+			),
+			array(
+				'field' => 'password_auth',
+				'label' => 'lang:current_password',
+				'rules' => 'required|auth_password'
+			)
+		));
+
+		if (ee()->form_validation->run() !== FALSE)
+		{
+			// Do something...
+		}
+
+		ee()->view->cp_page_title = lang('sql_query_form');
+		ee()->cp->render('utilities/query');
 	}
 }
 
