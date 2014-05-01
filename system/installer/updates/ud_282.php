@@ -84,7 +84,7 @@ class Updater {
 					'type'			=> 'int',
 					'constraint'    => 10,
 					'unsigned'		=> TRUE,
-					'null'			=> FALSE
+					'null'			=> TRUE
 				)
 			)
 		);
