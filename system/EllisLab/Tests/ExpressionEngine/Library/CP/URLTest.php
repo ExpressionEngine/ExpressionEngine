@@ -37,7 +37,8 @@ class URLTest extends \PHPUnit_Framework_TestCase {
 			array(),
 
 			$this->URLsByConstructor(),
-			$this->URLsBySetters()
+			$this->URLsBySetters(),
+			$this->nonStringArguments()
 		);
 	}
 
@@ -103,4 +104,26 @@ class URLTest extends \PHPUnit_Framework_TestCase {
 		);
 	}
 
+	public function nonStringArguments()
+	{
+		return array(
+			array('Path as integer',	new URL(42),	'index.php?/cp/42'),
+			array('Path as float',		new URL(42.5),	'index.php?/cp/42.5'),
+			array('Path as TRUE',		new URL(TRUE),	'index.php?/cp/1'),
+			array('Path as FALSE',		new URL(FALSE),	'index.php?/cp'),
+			array('Path as NULL',		new URL(NULL),	'index.php?/cp'),
+
+			array('Session Id as integer',	new URL('foo/bar', 42),		'index.php?/cp/foo/bar?S=42'),
+			array('Session Id as float',	new URL('foo/bar', 42.5),	'index.php?/cp/foo/bar?S=42.5'),
+			array('Session Id as TRUE',		new URL('foo/bar', TRUE),	'index.php?/cp/foo/bar?S=1'),
+			array('Session Id as FALSE',	new URL('foo/bar', FALSE),	'index.php?/cp/foo/bar'),
+			array('Session Id as NULL',		new URL('foo/bar', NULL),	'index.php?/cp/foo/bar'),
+
+			array('QS as integer',	new URL('foo/bar', '', 42),		'index.php?/cp/foo/bar?&amp;42='),
+			array('QS as float',	new URL('foo/bar', '', 42.5),	'index.php?/cp/foo/bar?42_5='),
+			array('QS as TRUE',		new URL('foo/bar', '', TRUE),	'index.php?/cp/foo/bar?&amp;1='),
+			array('QS as FALSE',	new URL('foo/bar', '', FALSE),	'index.php?/cp/foo/bar'),
+			array('QS as NULL',		new URL('foo/bar', '', NULL),	'index.php?/cp/foo/bar'),
+		);
+	}
 }
