@@ -3,9 +3,9 @@ namespace EllisLab\ExpressionEngine\Model;
 
 use EllisLab\ExpressionEngine\Model\Error\Errors;
 use EllisLab\ExpressionEngine\Model\Query\QueryBuilder;
+use EllisLab\ExpressionEngine\Model\Relationship\Cascade;
 use EllisLab\ExpressionEngine\Model\Relationship\RelationshipBag;
-use EllisLab\ExpressionEngine\Model\Relationship\RelationshipData;
-use EllisLab\ExpressionEngine\Model\Relationship\RelationshipFluentBuilder;
+use EllisLab\ExpressionEngine\Model\Relationship\RelationshipQuery;
 
 use EllisLab\ExpressionEngine\Model\ModelAliasService;
 
@@ -18,7 +18,7 @@ abstract class Model {
 	/**
 	 *
 	 */
-	protected static $_primary_key = array();
+	protected static $_primary_key = '';
 
 	/**
 	 *
@@ -26,14 +26,13 @@ abstract class Model {
 	protected static $_gateway_names = array();
 
 	/**
-	 *
+	 * Optional keys
 	 */
+	protected static $_polymorph = NULL;
 	protected static $_key_map = array();
-
-	/**
-	 *
-	 */
-	protected static $_cascade = NULL;
+	protected static $_cascade = array();
+	protected static $_validation_rules = array();
+	protected static $_relationships = array();
 
 	/**
 	 *
@@ -59,6 +58,7 @@ abstract class Model {
 	 *
 	 */
 	protected $_dirty = array();
+
 
 	/**
 	 * Initialize this model with a set of data to set on the gateway.
@@ -185,18 +185,40 @@ abstract class Model {
 	{
 		$property = '_' . $key;
 
-		// If the key is not set, and is not an optional key such as validation_rules,
-		// throw an exception.
-		if ( ! isset (static::$$property) && ! in_array($key, array('validation_rules', 'cascade', 'polymorph')))
+		$value = static::$$property;
+
+		$should_be_array = is_array(self::$$property);
+
+		$parent = get_parent_class(get_called_class());
+
+		// if there's inheritance on an array or unset value,
+		// then we need to dig through the parent classes. ugh.
+		if ($parent && (empty($value) || $should_be_array))
 		{
-			throw new \DomainException('Missing meta data, "' . $key . '", in ' . get_called_class());
-		}
-		else if ( ! isset (static::$$property))
-		{
-			return NULL;
+			$parent_value = $parent::getMetaData($key);
+
+			if ($should_be_array)
+			{
+				$value = array_merge($value, $parent_value);
+			}
+			else
+			{
+				$value = $parent_value;
+			}
 		}
 
-		return static::$$property;
+		// empty but not optional? If at top, throw error
+//		if (empty($value) && ! in_array($key, array('validation_rules', 'cascade', 'polymorph')))
+//		{
+//			throw new \DomainException('Missing meta data, "' . $key . '", in ' . get_called_class());
+//		}
+
+		return $value;
+	}
+
+	public function isNew()
+	{
+		return ($this->getId() === NULL);
 	}
 
 	/**
@@ -276,21 +298,36 @@ abstract class Model {
 	 */
 	public function save()
 	{
+		// TODO validate
+		// Two options, call it here and have it cascade, or call it
+		// in the callback and use that cascade. Should probably do it
+		// here so that nothing happens if something doesn't validate.
+
 		$this->map();
-		$cascade = func_get_args();
+		$gateways = $this->_gateways;
 
-		$errors = call_user_func_array(array($this, 'validate'), $cascade);
-		if ($errors->exist())
+		$c = $this->getCascade('save', func_get_args());
+
+		/* for delete:
+		$c->stopIf('keysNotEqual'); // require identical keys to traverse
+		*/
+		var_dump(get_called_class());
+
+
+		$c->walk(function($self) use ($gateways)
 		{
-			throw new \Exception('Model failed to validate on save call!');
-		}
+			foreach ($gateways as $gateway)
+			{
+				$gateway->save();
+			}
+		});
 
-		foreach($this->_gateways as $gateway)
-		{
-			$gateway->save();
-		}
+		return $this;
+	}
 
-		$this->cascade($cascade, 'save');
+	protected function getCascade($method, $user_cascade)
+	{
+		return new Cascade($this, $method, $user_cascade);
 	}
 
 	/**
@@ -313,6 +350,7 @@ abstract class Model {
 		}
 
 		$this->cascade($cascade, 'restore');
+		return $this;
 	}
 
 	/**
@@ -435,101 +473,70 @@ abstract class Model {
 	}
 
 	/**
-	 * Create a one-to-one relationship
+	 * Get a relationship
 	 *
-	 * @param String $to_model_name	Name of the model to relate to
-	 * @param String $this_key		Name of the relating key
-	 * @param String $that_key		Name of the key on the related model
-	 * @param String $name			The name of the method on the calling model
+	 * @param String $name		Name of the relationship
+	 * @param Object $model		Object to relate to
 	 *
-	 * @return Relationship object or related data
+	 * @return Object $this
 	 */
-	public function oneToOne($to_model_name, $to_key = NULL)
+	protected function getRelated($to_name)
 	{
-		return $this->newRelationshipBuilder('one-to-one')
-			->to($to_model_name, $to_key);
+		$info = $this->getRelationshipInfo($to_name);
+
+		// if we already have data, we return it.
+		if ($this->_related_models->has($to_name))
+		{
+			return $this->_related_models->get($to_name, $info->is_collection);
+		}
+
+		$query = new RelationshipQuery($this, $info);
+
+		// Object not in the db? That means we're in a query
+		// or importing (@see `fromArray()`). Just return metadata.
+		if ($this->isNew())
+		{
+			return $query->eager($this->_alias_service);
+		}
+
+		var_dump('Lazy Query '.$to_name);
+
+
+		return $query->lazy($this->_factory);
 	}
 
 	/**
-	 * Create a many-to-one relationship
+	 * Check for a relationship
 	 *
-	 * @param String $to_model_name	Name of the model to relate to
-	 * @param String $this_key		Name of the relating key
-	 * @param String $that_key		Name of the key on the related model
-	 * @param String $name			The name of the method on the calling model
+	 * @param String  $name			Name of the relationship
+	 * @param Integer $primary_key	Optional primary key of the related model
 	 *
-	 * @return Relationship object or related data
+	 * @return Boolean
 	 */
-	public function manyToOne($to_model_name, $to_key = NULL)
+	public function hasRelated($name, $primary_key = NULL)
 	{
-		return $this->newRelationshipBuilder('many-to-one')
-			->to($to_model_name, $to_key);
+		return $this->_related_models->has($name, $primary_key);
 	}
 
 	/**
-	 * Create a one-to-many relationship
+	 * Add a related model
 	 *
-	 * @param String $to_model_name	Name of the model to relate to
-	 * @param String $this_key		Name of the relating key
-	 * @param String $that_key		Name of the key on the related model
-	 * @param String $name			The name of the method on the calling model
+	 * @param String  $name		Name of the relationship
+	 * @param Object $model		Object to relate to
 	 *
-	 * @return Relationship object or related data
+	 * @return Boolean
 	 */
-	public function oneToMany($to_model_name, $to_key = NULL)
+	public function addRelated($name, $model)
 	{
-		return $this->newRelationshipBuilder('one-to-many')
-			->to($to_model_name, $to_key);
+		$this->_related_models->add($name, $model);
+
+		return $this;
 	}
-
-	/**
-	 * Create a many-to-many relationship
-	 *
-	 * @param String $to_model_name	Name of the model to relate to
-	 * @param String $this_key		Name of the relating key
-	 * @param String $that_key		Name of the key on the related model
-	 * @param String $name			The name of the method on the calling model
-	 *
-	 * @return Relationship object or related data
-	 */
-	public function manyToMany($to_model_name, $to_key = NULL)
-	{
-		return $this->newRelationshipBuilder('many-to-many')
-			->to($to_model_name, $to_key);
-	}
-
-
-	// alias the more human relationship names
-	public function hasOne($to_model, $to_key = NULL)
-	{
-		return $this->oneToOne($to_model, $to_key);
-	}
-
-	public function belongsTo($to_model, $to_key = NULL)
-	{
-		return $this->oneToOne($to_model, $to_key);
-	}
-
-	public function hasMany($to_model, $to_key = NULL)
-	{
-		return $this->oneToMany($to_model, $to_key);
-	}
-
-	public function belongsToMany($to_model, $to_key = NULL)
-	{
-		return $this->manyToOne($to_model, $to_key);
-	}
-
-	public function hasAndBelongsToMany($to_model, $to_key = NULL)
-	{
-		return $this->manyToMany($to_model, $to_key);
-	}
-
 
 	/**
 	 * Set related data for a given relationship.
 	 *
-	 * @param String $model_name The name by which this relationship is
+	 * @param String $name The name by which this relationship is
 	 * 		identified.  In most cases this will be the name of the Model, but
 	 * 		sometimes it will be specific to the relationship.  For example,
 	 * 		ChannelEntry has an Author relationship (getAuthor(), setAuthor()).
@@ -537,35 +544,24 @@ abstract class Model {
 	 *
 	 * @return void
 	 */
-	public function setRelated($relationship_key, $value)
+	public function setRelated($name, $value)
 	{
-		$this->_related_models->set($relationship_key, $value);
+		$this->_related_models->set($name, $value);
+
+		$this->getRelationshipInfo($name)->connect($this, $value);
 
 		return $this;
 	}
 
-	public function hasRelated($relationship_key, $primary_key = NULL)
+	public function getRelationshipInfo($name)
 	{
-		return $this->_related_models->has($relationship_key, $primary_key);
+		return $this->getGraphNode()->getEdgeByName($name);
 	}
 
-	public function addRelated($relationship_key, $model)
+	public function getGraphNode()
 	{
-		$this->_related_models->add($relationship_key, $model);
-
-		return $this;
-	}
-
-	private function newRelationshipBuilder($type)
-	{
-		$data = new RelationshipData(
-			$this->_related_models,
-			$this->_alias_service,
-			$this->_builder
-		);
-
-		$fluent = new RelationshipFluentBuilder($this, $data);
-		return $fluent->type($type);
+		$graph = $this->_factory->getRelationshipGraph();
+		return $graph->getNode(get_called_class());
 	}
 
 	/**
@@ -576,24 +572,84 @@ abstract class Model {
 	public function toArray()
 	{
 		// extract all public vars from our gateways and flatten them
-		$keys = array_keys(call_user_func_array(
-			'array_merge',
-			array_map('get_object_vars', $this->_gateways)
-		));
+		$export = array();
 
-		// Combine the keys with their value as controlled by __get
-		// Without array_keys the above gives us our values, but we
-		// need to be consistent with any potential getters.
-		return array_combine(
-			$keys,
-			array_map(array($this, '__get'), $keys)
-		);
+		foreach (get_object_vars($this) as $key => $value)
+		{
+			if ($key[0] != '_')
+			{
+				// Call get to export the data as it is accessed, not as
+				// it is stored in the database.
+				$export[$key] = $this->__get($key);
+			}
+		}
+
+		$export['related_models'] = array();
+
+		// Allow for cascading export
+		$cascade = func_get_args();
+
+		foreach ($cascade as $relationship)
+		{
+			if ( ! is_array($relationship))
+			{
+				$relationship = array($relationship => array());
+			}
+
+			foreach ($relationship as $related_name => $related_cascade)
+			{
+				$relationship_getter = 'get' . $related_name;
+				$related_data = $this->$relationship_getter();
+
+				$export['related_models'][$related_name] = $related_data->toArray($related_cascade);
+			}
+		}
+
+		return $export;
+	}
+
+	public function fromArray($data)
+	{
+		$data[static::getMetaData('primary_key')] = NULL;
+
+		if (isset($data['related_models']))
+		{
+			foreach ($data['related_models'] as $relationship_name => $values)
+			{
+				$models = new Collection();
+
+				$relationship_getter = 'get' . $relationship_name;
+				$relationship_meta = $this->$relationship_getter();
+
+				foreach ($values as $related_data)
+				{
+					$models[] = $this->_factory
+						->make($relationship_meta->to_model_name)
+						->fromArray($related_data);
+				}
+
+				$relationship_setter = 'set' . $relationship_name;
+				$this->$relationship_setter($models);
+			}
+
+			unset($data['related_models']);
+		}
+
+		foreach ($data as $key => $value)
+		{
+			// we export with __get, so import with __set
+			$this->__set($key, $value);
+		}
+
+		return $this;
 	}
 
 	public function toJson()
 	{
+		$data = call_user_func_array(array($this, 'toArray'), func_get_args());
+
 		$dumper = new namespace\Serializers\JsonSerializer();
-		return $dumper->serialize($figure_this_out);
+		return $dumper->serialize($model, $data); // idea: make toArray cascade compatible?
 	}
 
 	public function fromJson($model_json)
@@ -604,15 +660,14 @@ abstract class Model {
 
 	public function toXml()
 	{
-		$cascade = func_get_args(); // don't forget this!
 		$dumper = new namespace\Serializers\XmlSerializer();
-		return $dumper->serialize($figure_this_out); // idea: make toArray cascade compatible?
+		return $dumper->serialize($this, func_get_args()); // idea: make toArray cascade compatible?
 	}
 
 	public function fromXml($model_xml)
 	{
 		$dumper = new namespace\Serializers\XmlSerializer();
-		$dumper->unserialize($this, $model_xml);
+		return $dumper->unserialize($this, $model_xml);
 	}
 
 /*

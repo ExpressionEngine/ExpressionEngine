@@ -1,17 +1,34 @@
 <?php
 namespace EllisLab\ExpressionEngine\Model\Template;
 
-use EllisLab\ExpressionEngine\Model\Model as Model;
+use EllisLab\ExpressionEngine\Model\Model;
+use EllisLab\ExpressionEngine\Model\Collection;
 
 class TemplateGroup extends Model {
 
-	protected static $_primary_key	= 'group_id';
+	protected static $_primary_key = 'group_id';
 	protected static $_gateway_names = array('TemplateGroupGateway');
-	protected static $_key_map		= array(
-		'group_id' => 'TemplateGroupGateway',
-		'site_id' => 'TemplateGroupGateway'
-	);
 	protected static $_cascade = 'Templates';
+
+	protected static $_key_map = array(
+		'group_id' => 'TemplateGroupGateway',
+		'site_id'  => 'TemplateGroupGateway'
+	);
+
+	protected static $_relationships = array(
+		'Site' => array(
+			'type' => 'many_to_one'
+		),
+		'Templates' => array(
+			'type' => 'one_to_many',
+			'model' => 'Template'
+		),
+		'MemberGroups' => array(
+			'type' => 'many_to_many',
+			'model' => 'MemberGroup',
+			'key' => 'fixme'
+		)
+	);
 
 	protected $group_id;
 	protected $site_id;
@@ -24,40 +41,32 @@ class TemplateGroup extends Model {
 	 */
 	public function getTemplates()
 	{
-		return $this->oneToMany('Templates', 'Template', 'group_id', 'group_id');
+		return $this->getRelated('Templates');
 	}
 
-	public function setTemplates(array $templates)
+	public function setTemplates(Collection $templates)
 	{
-		$this->setRelated('Templates', $templates);
-		foreach($templates as $template)
-		{
-			$template->group_id = $this->group_id;
-		}
-		return $this;
+		return $this->setRelated('Templates', $templates);
 	}
 
 	public function getMemberGroups()
 	{
-		return $this->manyToMany('MemberGroup', 'template_group_id', 'group_id', 'MemberGroups');
+		return $this->getRelated('MemberGroups');
 	}
 
-	public function setMemberGroups(array $member_groups)
+	public function setMemberGroups(Collection $member_groups)
 	{
-		$this->setRelated('MemberGroups', $member_groups);
-		return $this;
+		return $this->setRelated('MemberGroups', $member_groups);
 	}
 
 	public function getSite()
 	{
-		return $this->manyToOne('Site', 'Site', 'site_id', 'site_id');
+		return $this->getRelated('Site');
 	}
 
 	public function setSite(Site $site)
 	{
-		$this->setRelated('Site', $site);
-		$this->site_id = $site->site_id;
-		return $this;
+		return $this->setRelated('Site', $site);
 	}
 
 }

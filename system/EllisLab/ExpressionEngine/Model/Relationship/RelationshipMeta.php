@@ -8,10 +8,10 @@ class RelationshipMeta {
 	const METHOD_JOIN = 'join';
 	const METHOD_SUBQUERY = 'subquery';
 
-	const TYPE_ONE_TO_ONE = 'oneToOne';
-	const TYPE_ONE_TO_MANY = 'oneToMany';
-	const TYPE_MANY_TO_ONE = 'manyToOne';
-	const TYPE_MANY_TO_MANY = 'manyToMany';
+	const TYPE_ONE_TO_ONE = 'one_to_one';
+	const TYPE_ONE_TO_MANY = 'one_to_many';
+	const TYPE_MANY_TO_ONE = 'many_to_one';
+	const TYPE_MANY_TO_MANY = 'many_to_many';
 
 	protected $alias_service;
 
@@ -61,8 +61,18 @@ class RelationshipMeta {
 	{
 		// Populate from_table
 		$from_model_class = $this->from_model_class;
+
 		$from_key_map = $from_model_class::getMetaData('key_map');
-		$from_gateway_name = $from_key_map[$this->from_key];
+		if (isset($from_key_map[$this->from_key]))
+		{
+			$from_gateway_name = $from_key_map[$this->from_key];
+		}
+		else
+		{
+			$gateway_names = $from_model_class:;getMetaData('gateway_names');
+			$from_gateway_name = $gateway_names[0];
+		}
+
 		$from_gateway_class = $this->alias_service->getRegisteredClass($from_gateway_name);
 		$this->from_table = $from_gateway_class::getMetaData('table_name');
 
@@ -77,6 +87,7 @@ class RelationshipMeta {
 		$to_gateway_name = $gateway_relationship['gateway'];
 		$to_gateway_class = $this->alias_service->getRegisteredClass($to_gateway_name);
 		$this->to_table = $to_gateway_class::getMetaData('table_name');
+
 		// Assuming we're joining tables in the same model across the main
 		// gateway's primary key.
 		$this->join_key = $to_gateway_class::getMetaData('primary_key');
@@ -86,7 +97,8 @@ class RelationshipMeta {
 
 		$key = array_search($to_gateway_name, $joined_gateway_names);
 		unset($joined_gateway_names[$key]);
-		foreach($joined_gateway_names as $joined_gateway_name)
+
+		foreach ($joined_gateway_names as $joined_gateway_name)
 		{
 			$joined_gateway_class = $this->alias_service->getRegisteredClass($joined_gateway_name);
 			$this->joined_tables[$joined_gateway_class::getMetaData('primary_key')] = $joined_gateway_class::getMetaData('table_name');

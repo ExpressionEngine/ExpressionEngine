@@ -1,13 +1,10 @@
 <?php
 namespace EllisLab\ExpressionEngine\Model\Gateway;
 
-use EllisLab\ExpressionEngine\Model\Gateway\RowDataGateway;
-
 class ThrottleGateway extends RowDataGateway {
-	protected static $meta = array(
-		'table_name' => 'throttle',
-		'primary_key' => 'throttle_id'
-	);
+
+	protected static $_table_name = 'throttle';
+	protected static $_primary_key = 'throttle_id';
 
 	// Properties
 	public $throttle_id;

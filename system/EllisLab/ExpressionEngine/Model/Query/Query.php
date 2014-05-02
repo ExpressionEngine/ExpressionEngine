@@ -1,9 +1,10 @@
 <?php namespace EllisLab\ExpressionEngine\Model\Query;
 
+use EllisLab\ExpressionEngine\Core\AliasService;
 use EllisLab\ExpressionEngine\Model\Collection;
 use EllisLab\ExpressionEngine\Model\ModelFactory;
+use EllisLab\ExpressionEngine\Model\Relationship\RelationshipMeta;
 use EllisLab\ExpressionEngine\Model\Query\QueryTreeNode;
-use EllisLab\ExpressionEngine\Core\AliasService;
 
 class Query {
 
@@ -29,8 +30,6 @@ class Query {
 	 */
 	private $root = NULL;
 	private $model_index = array();
-	private $results = array();
-	private $result_index = array();
 
 	public function __construct(ModelFactory $factory, AliasService $alias_service, $model_name)
 	{
@@ -423,11 +422,11 @@ class Query {
 	 */
 	private function buildRelationship(QueryTreeNode $node)
 	{
-		if ($node->meta->method == ModelRelationshipMeta::METHOD_JOIN)
+		if ($node->meta->method == RelationshipMeta::METHOD_JOIN)
 		{
 			$this->buildJoinRelationship($node);
 		}
-		elseif ($node->meta->method == ModelRelationshipMeta::METHOD_SUBQUERY)
+		elseif ($node->meta->method == RelationshipMeta::METHOD_SUBQUERY)
 		{
 			$this->buildSubqueryRelationship($node);
 		}
@@ -443,12 +442,11 @@ class Query {
 
 		$from_id = $node->getParent()->getId();
 
-
 		switch ($relationship_meta->type)
 		{
-			case ModelRelationshipMeta::TYPE_ONE_TO_ONE:
-			case ModelRelationshipMeta::TYPE_ONE_TO_MANY:
-			case ModelRelationshipMeta::TYPE_MANY_TO_ONE:
+			case RelationshipMeta::TYPE_ONE_TO_ONE:
+			case RelationshipMeta::TYPE_ONE_TO_MANY:
+			case RelationshipMeta::TYPE_MANY_TO_ONE:
 				$this->db->join($relationship_meta->to_table . ' AS ' . $relationship_meta->to_table . '_' . $node->getId(),
 					$relationship_meta->from_table . '_' . $from_id . '.' . $relationship_meta->from_key .
 					'=' .
@@ -456,7 +454,7 @@ class Query {
 					'LEFT OUTER');
 				break;
 
-			case ModelRelationshipMeta::TYPE_MANY_TO_MANY:
+			case RelationshipMeta::TYPE_MANY_TO_MANY:
 				$this->db->join($relationship_meta->pivot_table . ' AS ' . $relationship_meta->pivot_table . '_' . $node->getId(),
 					$relationship_meta->from_table . '_' . $from_id . '.' . $relationship_meta->from_key .
 					'=' .
@@ -470,7 +468,7 @@ class Query {
 				break;
 		}
 
-		foreach($relationship_meta->joined_tables as $joined_key => $joined_table)
+		foreach ($relationship_meta->joined_tables as $joined_key => $joined_table)
 		{
 			$this->db->join($joined_table . ' AS ' . $joined_table . '_' . $node->getId(),
 				$relationship_meta->to_table . '_' . $node->getId() . '.' . $relationship_meta->join_key .
@@ -487,7 +485,7 @@ class Query {
 		{
 			// If we encounter a subquery parent with no parent, then that subquery
 			// node is the root and we're in a subquery!
-			if ($n->meta->method == ModelRelationshipMeta::METHOD_SUBQUERY
+			if ($n->meta->method == RelationshipMeta::METHOD_SUBQUERY
 				&& $n->getParent() !== NULL)
 			{
 				return TRUE;
@@ -530,10 +528,8 @@ class Query {
 	{
 		// Run the query
 		$result_array = $this->db->get()->result_array();
-		$collection = new Collection($this->parseDatabaseResult($result_array));
 
-
-		return $collection;
+		return new Collection($this->parseDatabaseResult($result_array));
 	}
 
 	/**
@@ -570,13 +566,17 @@ class Query {
 		//
 		// 	This will allow us to create the models we've pulled and
 		// 	correctly reconstruct the tree.
-		$this->results = array();
-		foreach($database_result as $row)
+		$results = array();
+		$result_index = array();
+
+		foreach ($database_result as $row)
 		{
 			$row_data = array();
-			foreach($row as $name=>$value)
+
+			foreach ($row as $name => $value)
 			{
 				list($path, $relationship_name, $model_name, $field_name) = explode('__', $name);
+
 				if ( ! isset($row_data[$path]))
 				{
 					$row_data[$path] = array(
@@ -584,20 +584,20 @@ class Query {
 						'__relationship_name' => $relationship_name
 					);
 				}
+
 				$row_data[$path][$field_name] = $value;
-
-
 			}
 
 			//echo 'Processing Row: <pre>'; var_dump($row_data); //echo '</pre>';
 
-			foreach ($row_data as $path=>$model_data)
+			foreach ($row_data as $path => $model_data)
 			{
 				// If this is an empty model that happened to have been grabbed due to the join,
 				// move on and don't do anything.
 				$model_class = $this->alias_service->getRegisteredClass($model_data['__model_name']);
 				$primary_key_name = $model_class::getMetaData('primary_key');
-				if ( $row_data[$path][$primary_key_name] === NULL)
+
+				if ($row_data[$path][$primary_key_name] === NULL)
 				{
 					unset($row_data[$path]);
 					continue;
@@ -610,7 +610,7 @@ class Query {
 				$primary_key_name = $model_class::getMetaData('primary_key');
 				$primary_key = $model_data[$primary_key_name];
 
-				if ( isset ($this->model_index[$model_name][$primary_key]))
+				if (isset($this->model_index[$model_name][$primary_key]))
 				{
 					$model = $this->model_index[$model_name][$primary_key];
 				}
@@ -621,31 +621,42 @@ class Query {
 
 				if ($this->isRootModel($path))
 				{
-					if ( ! isset($this->result_index[$primary_key]))
+					if ( ! isset($result_index[$primary_key]))
 					{
-						$this->results[] = $model;
-						$this->result_index[$primary_key] = TRUE;
+						$results[] = $model;
+						$result_index[$primary_key] = TRUE;
 					}
+
 					continue;
 				}
 
 				$parent_model = $this->findModelParent($row_data, $path);
+
 				if ($parent_model === NULL)
 				{
 					throw new \Exception('Missing model parent!');
 				}
-				else if ($parent_model->hasRelated($relationship_name, $primary_key))
+
+				// Reverse the relationship so we can fill in both sides
+				// TODO we should not do this if $parent_model is really a child!
+				$reverse = $parent_model->getRelationshipInfo($relationship_name)->getInverseOn($model);
+
+				if ($reverse)
 				{
-					continue;
+					if ( ! $model->hasRelated($reverse->name))
+					{
+						$model->addRelated($reverse->name, $parent_model);
+					}
 				}
-				else
+
+				if ( ! $parent_model->hasRelated($relationship_name, $primary_key))
 				{
 					$parent_model->addRelated($relationship_name, $model);
 				}
 			}
 		}
 
-		return $this->results;
+		return $results;
 	}
 
 	/**
@@ -696,6 +707,7 @@ class Query {
 
 		$model_name = $model_data['__model_name'];
 		$model_class = $this->alias_service->getRegisteredClass($model_name);
+
 		$primary_key_name = $model_class::getMetaData('primary_key');
 		$primary_key = $model_data[$primary_key_name];
 
@@ -703,6 +715,7 @@ class Query {
 		{
 			return $this->model_index[$model_name][$primary_key];
 		}
+
 		throw new \Exception('Model parent has not been created yet for child path "' . $child_path . '" and model "' . $model_name . '"');
 	}
 
@@ -787,6 +800,7 @@ class Query {
 
 			$table = $gateway_class_name::getMetaData('table_name');
 			$properties = $gateway_class_name::getMetaData('field_list');
+
 			foreach ($properties as $property=>$default_value)
 			{
 				$this->db->select($table . '_' . $node->getId() . '.' . $property . ' AS ' . $node->getPathString() . '__' . $relationship_name . '__' . $model_name . '__' . $property);

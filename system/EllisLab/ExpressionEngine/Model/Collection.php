@@ -1,5 +1,6 @@
 <?php namespace EllisLab\ExpressionEngine\Model;
 
+use Closure;
 use Countable;
 use ArrayAccess;
 use ArrayIterator;
@@ -28,24 +29,29 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate {
 	 */
 	public function __call($method, $arguments)
 	{
-		if ( empty ($this->elements))
+		if (empty($this->elements))
 		{
 			return;
 		}
-		if ( ! method_exists($method, $this->elements[0]))
+
+		$callback = NULL;
+
+		if (count($arguments) && $arguments[0] instanceOf Closure)
 		{
-			throw new \Exception('Attempt to call method on collection that does not exist on models.');
+			$callback = array_shift($arguments);
 		}
 
-		$callback = array_shift($arguments);
-		foreach($this->elements as $model)
+		return $this->map(function($model) use ($method, $arguments, $callback)
 		{
-			$return = call_user_func_array(array($model, $method), $arguments);
-			if ($callback !== NULL)
+			$result = call_user_func_array(array($model, $method), $arguments);
+
+			if (isset($callback))
 			{
-				$callback($return);
+				$callback($result);
 			}
-		}
+
+			return $result;
+		});
 	}
 
 	/**
@@ -55,10 +61,10 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate {
 	 */
 	public function getIds()
 	{
-		return array_map(function($model)
+		return $this->map(function($model)
 		{
 			return $model->getId();
-		}, $this->elements);
+		});
 	}
 
 	/**
@@ -79,23 +85,35 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate {
 	 */
 	public function pluck($key)
 	{
-		return array_map(function($model) use($key)
+		return $this->map(function($model) use($key)
 		{
 			return $model->$key;
-		}, $this->elements);
+		});
 	}
 
 	/**
-	 * Turn the entire collection into an array
+	 * Applies the given callback to the collection and returns an array
+	 * of the results.
 	 *
-	 * @return Array of data
+	 * @param Closure $callback Function to apply
+	 * @return array  results
 	 */
-	public function toArray()
+	public function map(Closure $callback)
 	{
-		return array_map(function($model)
-		{
-			return $model->toArray();
-		}, $this->elements);
+		return array_map($callback, $this->elements);
+	}
+
+	/**
+	 * Applies the given callback to the collection and returns the
+	 * collection.
+	 *
+	 * @param Closure $callback Function to apply
+	 * @return Collection $this
+	 */
+	public function each(Closure $callback)
+	{
+		array_map($callback, $this->elements);
+		return $this;
 	}
 
 	// Implement Array Access

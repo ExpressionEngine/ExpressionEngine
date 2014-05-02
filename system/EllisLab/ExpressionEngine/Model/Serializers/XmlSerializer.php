@@ -1,112 +1,112 @@
 <?php
 namespace EllisLab\ExpressionEngine\Model\Serializers;
 
-class XmlSerializers implements SerializerInterface {
+use \SimpleXMLElement;
 
-	public function serialize()
+class XmlSerializer implements SerializerInterface {
+
+	public function serialize($model, array $cascade = array())
 	{
-		$cascade = func_get_args();
+		$data = call_user_func_array(array($model, 'toArray'), $cascade);
 
-		$model_xml = '<model name="' . get_class($this) . '">' . "\n";
+		$xml = new SimpleXMLElement("<?xml version=\"1.0\"?><model></model>");
 
-		foreach(get_object_vars($this) as $property => $value)
+		$xml->addAttribute('class', get_class($model));
+
+		// we'll do these separately
+		$related = $data['related_models'];
+		unset($data['related_models']);
+
+		foreach ($data as $key => $value)
 		{
-			// Ignore meta properties.
-			if (strpos($property, '_') === 0)
-			{
-				continue;
-			}
-
-			$model_xml .= '<property name="' . $property . '">' . $value . '</property>' . "\n";
+			$xml->addChild($key, htmlentities($value));
 		}
 
-		if ( empty ($cascade))
-		{
-			$cascade = self::getMetaData('cascade');
-		}
-		if ( ! empty($cascade))
-		{
-			foreach($cascade as $relationship_name)
-			{
-				if (is_array($relationship_name))
-				{
-					foreach ($relationship_name as $from_relationship => $to_relationship)
-					{
-						$method = 'get' . $from_relationship;
-						$models = $this->$method();
+		$this->relatedToXml($xml, $related);
 
-						if (count ($models) > 0)
-						{
-							$model_xml .= '<related_models relationship="' . $from_relationship . '">' . "\n";
-							foreach ($models as $model)
-							{
-								if (is_array($to_relationship))
-								{
-									$model_xml .= $model->toXml($to_relationship);
-								}
-								else
-								{
-									$relationship_method = 'get' . $to_relationship;
-									$to_models = $model->$relationship_method();
+		// xml->asXML() results in output without whitespace. We work
+		// around that by having the dom library clean it up. Silly php.
+		$dom = dom_import_simplexml($xml)->ownerDocument;
+		$dom->formatOutput = TRUE;
 
-									if (count($to_models) > 0)
-									{
-										$model_xml .= '<related_models relationship="' . $to_relationship . '"> ' . "\n";
-										foreach ($to_models as $to_model)
-										{
-											$to_model->toXml();
-										}
-										$model_xml .= '</related_models>' . "\n";
-									}
-								}
-							}
-							$model_xml .= '</related_models>' . "\n";
-						}
-					}
-				}
-				else
-				{
-					$relationship_method = 'get' . $relationship_name;
-					$models = $this->$relationship_method();
-
-					if (count($models) > 0)
-					{
-						$model_xml .= '<related_models relationship="' . $relationship_name . '">' . "\n";
-						foreach ($models as $model)
-						{
-							$model_xml .= $model->toXml();
-						}
-						$model_xml .= '</related_models>' . "\n";
-					}
-				}
-			}
-		}
-		$model_xml .= '</model>' . "\n";
-		return $model_xml;
+		return $dom->saveXML();
 	}
 
 	public function unserialize($model, $data)
 	{
-		foreach ($model_xml->property as $property)
-		{
-			$name = (string) $property['name'];
-			$model->{$name} = (string) $property;
-			$model->setDirty($name);
-		}
+		$xml = new SimpleXMLElement($data);
+		$xml_attributes = $xml->attributes();
 
-		foreach($model_xml->related_models as $related_models_xml)
+		return $model->fromArray($this->relatedFromXml($xml));
+	}
+
+	protected function relatedFromXml($xml, $related = FALSE)
+	{
+		$result = array();
+
+		foreach ($xml->children() as $element)
 		{
-			$models = new Collection();
-			foreach($related_models_xml as $related_model_xml)
+			$key = $element->getName();
+
+			if ($key == 'related_models')
 			{
-				$model_class = (string) $related_model_xml['name'];
-				$model = $this->builder->make($model_class);
-				$model->fromXml($related_model_xml);
-				$models[] = $model;
+				$result['related_models'] = $this->relatedFromXml($element, TRUE);
 			}
-			$model->setRelated((string) $related_models_xml['relationship'], $models);
+			elseif ($related && $key == 'relationship')
+			{
+				$related_name = (string) $element['name'];
+
+				foreach ($element->children() as $child_xml)
+				{
+					$result[$related_name][] = $this->relatedFromXml($child_xml);
+				}
+			}
+			elseif (count($element->children()))
+			{
+				$result[$key] = $this->relatedFromXml($element);
+			}
+			else
+			{
+				$result[$key] = (string) $element;
+			}
 		}
 
-		$model->restore();
+		return $result;
+	}
+
+	protected function relatedToXml($xml, $related)
+	{
+		if ( ! count($related))
+		{
+			return;
+		}
+
+		$related_models_xml = $xml->addChild('related_models');
+
+		foreach ($related as $relationship_name => $related_models)
+		{
+			$relationship_xml = $related_models_xml->addChild('relationship');
+			$relationship_xml->addAttribute('name', $relationship_name);
+
+			if ( ! isset($related_models[0]))
+			{
+				$related_models = array($related_models);
+			}
+
+			foreach ($related_models as $model)
+			{
+				$related_model_xml = $relationship_xml->addChild('model');
+
+				$related_models = $model['related_models'];
+				unset($model['related_models']);
+
+				foreach ($model as $key => $value)
+				{
+					$related_model_xml->addChild($key, htmlentities($value));
+				}
+
+				$this->relatedToXml($xml, $related_models);
+			}
+		}
 	}
 }

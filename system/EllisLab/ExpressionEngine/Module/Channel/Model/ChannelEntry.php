@@ -17,14 +17,32 @@ class ChannelEntry extends FieldDataContentModel {
 
 	protected static $_primary_key = 'entry_id';
 	protected static $_gateway_names = array('ChannelTitleGateway', 'ChannelDataGateway');
+
 	protected static $_key_map = array(
 		'entry_id' => 'ChannelTitleGateway',
 		'channel_id' => 'ChannelTitleGateway',
 		'site_id' => 'ChannelTitleGateway',
 		'author_id' => 'ChannelTitleGateway'
 	);
+
 	protected static $_field_content_class = 'ChannelFieldContent';
 	protected static $_field_content_gateway = 'ChannelDataGateway';
+
+
+	protected static $_relationships = array(
+		'Channel' => array(
+			'type' => 'many_to_one',
+			'key' => 'field_group'
+		),
+		'Author'	=> array(
+			'type' => 'many_to_one',
+			'model' => 'Member'
+		),
+		'Categories' => array(
+			'type' => 'many_to_many',
+			'model' => 'Category'
+		)
+	);
 
 	// Properties
 	protected $entry_id;
@@ -55,37 +73,32 @@ class ChannelEntry extends FieldDataContentModel {
 
 	public function getChannel()
 	{
-		return $this->manyToOne('Channel', 'Channel', 'channel_id', 'channel_id');
+		return $this->getRelated('Channel');
 	}
 
 	public function setChannel(Channel $channel)
 	{
-		$this->setRelated('Channel', $channel);
-		$this->channel_id = $channel->channel_id;
-		return $this;
+		return $this->setRelated('Channel', $channel);
 	}
 
 	public function getAuthor()
 	{
-		return $this->manyToOne('Author', 'Member', 'author_id', 'member_id');
+		return $this->getRelated('Author');
 	}
 
 	public function setAuthor(Member $author)
 	{
-		$this->setRelated('Author', $author);
-		$this->author_id = $author->member_id;
-		return $this;
+		return $this->setRelated('Author', $author);
 	}
 
 	public function getCategories()
 	{
-		return $this->manyToMany('Categories', 'Category', 'entry_id', 'cat_id');
+		return $this->getRelated('getCategories');
 	}
 
 	public function setCategories(array $categories)
 	{
-		$this->setRelated('Categories', $categories);
-		return $this;
+		return $this->setRelated('Categories', $categories);
 	}
 
 	/**

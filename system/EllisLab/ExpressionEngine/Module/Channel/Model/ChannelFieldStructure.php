@@ -5,21 +5,17 @@ use EllisLab\ExpressionEngine\Model\Model;
 use EllisLab\ExpressionEngine\Model\Interfaces\Field\FieldStructure;
 use EllisLab\ExpressoinEngine\Model\Interfaces\Field\FieldContent;
 
-class ChannelFieldStructure 
-	extends Model 
-		implements FieldStructure {
+class ChannelFieldStructure extends Model implements FieldStructure {
 
-	protected static $_meta = array(
-		'primary_key' => 'field_id',
-		'gateway_names' => array('ChannelFieldGateway'),
-		'key_map' => array(
-			'field_id' => 'ChannelFieldGateway',
-			'site_id' => 'ChannelFieldGateway',
-			'group_id' => 'ChannelFieldGateway'
-		)
-	);	
+	protected static $_primary_key = 'field_id';
+	protected static $_gateway_names = array('ChannelFieldGateway');
+	protected static $_key_map = array(
+		'field_id' => 'ChannelFieldGateway',
+		'site_id' => 'ChannelFieldGateway',
+		'group_id' => 'ChannelFieldGateway'
+	);
 
-	// Properties	
+	// Properties
 	protected $field_id;
 	protected $site_id;
 	protected $group_id;
@@ -46,7 +42,7 @@ class ChannelFieldStructure
 	/**
      * Display the settings form for this field
 	 *
-	 * @return	string|View		Either the HTML string of the form partial, or 
+	 * @return	string|View		Either the HTML string of the form partial, or
 	 * 							a view object representing it.
 	 */
 	public function getForm()
@@ -62,6 +58,6 @@ class ChannelFieldStructure
     public function getPublishForm($field_content = NULL)
 	{}
 
-	
+
 }
 

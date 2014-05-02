@@ -4,6 +4,7 @@ namespace EllisLab\ExpressionEngine\Model\Query;
 use EllisLab\ExpressionEngine\Library\DataStructure\Tree\TreeNode;
 
 class QueryTreeNode extends TreeNode {
+
 	public static $top_id = 0;
 
 	protected $id = 0;
@@ -47,14 +48,15 @@ class QueryTreeNode extends TreeNode {
 	{
 		if ( ! isset($this->path_string))
 		{
+			$node = $this;
 			$path = $this->getId();
 
-			$node = $this;
 			while ( ! $node->isRoot())
 			{
 				$path = $node->getParent()->getId() . '_' . $path;
 				$node = $node->getParent();
 			}
+
 			$this->path_string = $path;
 		}
 

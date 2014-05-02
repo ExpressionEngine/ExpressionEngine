@@ -3,8 +3,8 @@ namespace EllisLab\ExpressionEngine\Model\Template;
 
 use EllisLab\ExpressionEngine\Model\Model;
 
-class Snippet extends Model
-{
+class Snippet extends Model {
+
 	// Meta data
 	protected static $_primary_key = 'snippet_id';
 	protected static $_gateway_names = array('SnippetGateway');
@@ -12,6 +12,13 @@ class Snippet extends Model
 		'snippet_id' => 'SnippetGateway',
 		'site_id' => 'SnippetGateway'
 	);
+
+	protected static $_relationships = array(
+		'Site' => array(
+			'type' => 'many_to_one'
+		)
+	);
+
 
 	// Properties
 	public $snippet_id;
@@ -21,13 +28,11 @@ class Snippet extends Model
 
 	public function getSite()
 	{
-		return $this->manyToOne('Site', 'Site', 'site_id', 'site_id');
+		return $this->getRelated('Site');
 	}
 
 	public function setSite(Site $site)
 	{
-		$this->setRelated('Site', $site);
-		$this->site_id = $site->site_id;
-		return $this;
+		return $this->setRelated('Site', $site);
 	}
 }

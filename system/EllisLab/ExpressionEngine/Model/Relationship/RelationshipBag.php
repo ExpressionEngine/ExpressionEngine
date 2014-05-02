@@ -38,9 +38,15 @@ class RelationshipBag {
 	 * @param String  $name  Name of the relationship
 	 * @return Related Model Collection
 	 */
-	public function get($name)
+	public function get($name, $as_collection = TRUE)
 	{
-		return $this->has($name) ? $this->relationships[$name] : NULL;
+		if ( ! $this->has($name))
+		{
+			return NULL;
+		}
+
+		$collection = $this->relationships[$name];
+		return $as_collection ? $collection : $collection[0];
 	}
 
 	/**
