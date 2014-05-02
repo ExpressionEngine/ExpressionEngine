@@ -111,6 +111,6 @@ class URL {
 
 		$path = rtrim('?/cp/'.$path, '/');
 
-		return SELF.$path.rtrim('?'.$qs, '?');
+		return SELF.$path.rtrim('&'.$qs, '&');
 	}
 }

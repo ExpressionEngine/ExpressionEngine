@@ -58,17 +58,17 @@ class URLTest extends \PHPUnit_Framework_TestCase {
 		$session_id = '7594769f19d82af2af30c72fee7e4183';
 		return array(
 			array('Constructor URL',												new URL('foo/bar'),														'index.php?/cp/foo/bar'),
-			array('Constructor URL with Session',									new URL('foo/bar', $session_id),										'index.php?/cp/foo/bar?S='.$session_id),
-			array('Constructor URL with one QS by array',							new URL('foo/bar', '', array('sort' => 'asc')),							'index.php?/cp/foo/bar?sort=asc'),
-			array('Constructor URL with many QS by array',							new URL('foo/bar', '', array('sort' => 'asc', 'limit' => 25)),			'index.php?/cp/foo/bar?sort=asc&limit=25'),
-			array('Constructor URL with Session and one QS by array',				new URL('foo/bar', $session_id, array('sort' => 'asc')),				'index.php?/cp/foo/bar?sort=asc&S='.$session_id),
-			array('Constructor URL with Session and many QS by array',				new URL('foo/bar', $session_id, array('sort' => 'asc', 'limit' => 25)),	'index.php?/cp/foo/bar?sort=asc&limit=25&S='.$session_id),
-			array('Constructor URL with one QS by string',							new URL('foo/bar', '', 'sort=asc'),										'index.php?/cp/foo/bar?sort=asc'),
-			array('Constructor URL with many QS by string with &',					new URL('foo/bar', '', 'sort=asc&limit=25'),							'index.php?/cp/foo/bar?sort=asc&limit=25'),
-			array('Constructor URL with many QS by string with AMP',				new URL('foo/bar', '', 'sort=asc'.AMP.'limit=25'),						'index.php?/cp/foo/bar?sort=asc&limit=25'),
-			array('Constructor URL with Session and one QS by string',				new URL('foo/bar', $session_id, 'sort=asc'),							'index.php?/cp/foo/bar?sort=asc&S='.$session_id),
-			array('Constructor URL with Session and many QS by string with &',		new URL('foo/bar', $session_id, 'sort=asc&limit=25'),					'index.php?/cp/foo/bar?sort=asc&limit=25&S='.$session_id),
-			array('Constructor URL with Session and many QS by string with AMP',	new URL('foo/bar', $session_id, 'sort=asc'.AMP.'limit=25'),				'index.php?/cp/foo/bar?sort=asc&limit=25&S='.$session_id),
+			array('Constructor URL with Session',									new URL('foo/bar', $session_id),										'index.php?/cp/foo/bar&S='.$session_id),
+			array('Constructor URL with one QS by array',							new URL('foo/bar', '', array('sort' => 'asc')),							'index.php?/cp/foo/bar&sort=asc'),
+			array('Constructor URL with many QS by array',							new URL('foo/bar', '', array('sort' => 'asc', 'limit' => 25)),			'index.php?/cp/foo/bar&sort=asc&limit=25'),
+			array('Constructor URL with Session and one QS by array',				new URL('foo/bar', $session_id, array('sort' => 'asc')),				'index.php?/cp/foo/bar&sort=asc&S='.$session_id),
+			array('Constructor URL with Session and many QS by array',				new URL('foo/bar', $session_id, array('sort' => 'asc', 'limit' => 25)),	'index.php?/cp/foo/bar&sort=asc&limit=25&S='.$session_id),
+			array('Constructor URL with one QS by string',							new URL('foo/bar', '', 'sort=asc'),										'index.php?/cp/foo/bar&sort=asc'),
+			array('Constructor URL with many QS by string with &',					new URL('foo/bar', '', 'sort=asc&limit=25'),							'index.php?/cp/foo/bar&sort=asc&limit=25'),
+			array('Constructor URL with many QS by string with AMP',				new URL('foo/bar', '', 'sort=asc'.AMP.'limit=25'),						'index.php?/cp/foo/bar&sort=asc&limit=25'),
+			array('Constructor URL with Session and one QS by string',				new URL('foo/bar', $session_id, 'sort=asc'),							'index.php?/cp/foo/bar&sort=asc&S='.$session_id),
+			array('Constructor URL with Session and many QS by string with &',		new URL('foo/bar', $session_id, 'sort=asc&limit=25'),					'index.php?/cp/foo/bar&sort=asc&limit=25&S='.$session_id),
+			array('Constructor URL with Session and many QS by string with AMP',	new URL('foo/bar', $session_id, 'sort=asc'.AMP.'limit=25'),				'index.php?/cp/foo/bar&sort=asc&limit=25&S='.$session_id),
 		);
 	}
 
@@ -96,11 +96,11 @@ class URLTest extends \PHPUnit_Framework_TestCase {
 		$url_with_session_and_many_qs->session_id = $session_id;
 
 		return array(
-			array('Setter URL with Session',				$url_with_session,				'index.php?/cp/foo/bar?S='.$session_id),
-			array('Setter URL with one QS',					$url_with_one_qs,				'index.php?/cp/foo/bar?sort=asc'),
-			array('Setter URL with many QS',				$url_with_many_qs,				'index.php?/cp/foo/bar?sort=asc&limit=25'),
-			array('Setter URL with Session and one QS',		$url_with_session_and_one_qs,	'index.php?/cp/foo/bar?sort=asc&S='.$session_id),
-			array('Setter URL with Session and many QS',	$url_with_session_and_many_qs,	'index.php?/cp/foo/bar?sort=asc&limit=25&S='.$session_id),
+			array('Setter URL with Session',				$url_with_session,				'index.php?/cp/foo/bar&S='.$session_id),
+			array('Setter URL with one QS',					$url_with_one_qs,				'index.php?/cp/foo/bar&sort=asc'),
+			array('Setter URL with many QS',				$url_with_many_qs,				'index.php?/cp/foo/bar&sort=asc&limit=25'),
+			array('Setter URL with Session and one QS',		$url_with_session_and_one_qs,	'index.php?/cp/foo/bar&sort=asc&S='.$session_id),
+			array('Setter URL with Session and many QS',	$url_with_session_and_many_qs,	'index.php?/cp/foo/bar&sort=asc&limit=25&S='.$session_id),
 		);
 	}
 
@@ -113,15 +113,15 @@ class URLTest extends \PHPUnit_Framework_TestCase {
 			array('Path as FALSE',		new URL(FALSE),	'index.php?/cp'),
 			array('Path as NULL',		new URL(NULL),	'index.php?/cp'),
 
-			array('Session Id as integer',	new URL('foo/bar', 42),		'index.php?/cp/foo/bar?S=42'),
-			array('Session Id as float',	new URL('foo/bar', 42.5),	'index.php?/cp/foo/bar?S=42.5'),
-			array('Session Id as TRUE',		new URL('foo/bar', TRUE),	'index.php?/cp/foo/bar?S=1'),
+			array('Session Id as integer',	new URL('foo/bar', 42),		'index.php?/cp/foo/bar&S=42'),
+			array('Session Id as float',	new URL('foo/bar', 42.5),	'index.php?/cp/foo/bar&S=42.5'),
+			array('Session Id as TRUE',		new URL('foo/bar', TRUE),	'index.php?/cp/foo/bar&S=1'),
 			array('Session Id as FALSE',	new URL('foo/bar', FALSE),	'index.php?/cp/foo/bar'),
 			array('Session Id as NULL',		new URL('foo/bar', NULL),	'index.php?/cp/foo/bar'),
 
-			array('QS as integer',	new URL('foo/bar', '', 42),		'index.php?/cp/foo/bar?&amp;42='),
-			array('QS as float',	new URL('foo/bar', '', 42.5),	'index.php?/cp/foo/bar?42_5='),
-			array('QS as TRUE',		new URL('foo/bar', '', TRUE),	'index.php?/cp/foo/bar?&amp;1='),
+			array('QS as integer',	new URL('foo/bar', '', 42),		'index.php?/cp/foo/bar&&amp;42='),
+			array('QS as float',	new URL('foo/bar', '', 42.5),	'index.php?/cp/foo/bar&42_5='),
+			array('QS as TRUE',		new URL('foo/bar', '', TRUE),	'index.php?/cp/foo/bar&&amp;1='),
 			array('QS as FALSE',	new URL('foo/bar', '', FALSE),	'index.php?/cp/foo/bar'),
 			array('QS as NULL',		new URL('foo/bar', '', NULL),	'index.php?/cp/foo/bar'),
 		);
