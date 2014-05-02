@@ -39,7 +39,7 @@
 					<?php endif ?>
 				</div>
 				<div class="user">
-					<a href="<?=cp_url('login/logout')?>">log out</a> <a class="has-sub" href=""><?=$cp_screen_name?> <span class="ico sub-arrow"></span></a>
+					<a href="<?=cp_url('login/logout')?>"><?=lang('log_out')?></a> <a class="has-sub" href=""><?=$cp_screen_name?> <span class="ico sub-arrow"></span></a>
 					<ul class="quick-links sub-menu">
 						<a href="http://localhost/el-projects/ee-cp/views/members-profile.php">My Profile</a>
 						<a href="">Quick Link</a>
@@ -54,18 +54,18 @@
 			<nav class="snap">
 				<ul class="author-menu">
 					<li>
-						<a class="has-sub" href="">Create <span class="ico sub-arrow"></span></a>
+						<a class="has-sub" href=""><?=lang('menu_create')?> <span class="ico sub-arrow"></span></a>
 						<div class="sub-menu">
 							<ul>
 								<?php foreach ($cp_main_menu['channels']['create'] as $channel_name => $link): ?>
 									<li><a href="<?=$link?>"><?=$channel_name?></a></li>
 								<?php endforeach ?>
-								<li class="last"><a class="add" href="http://localhost/el-projects/ee-cp/views/channel-new.php">&#10010; New Channel</a></li>
+								<li class="last"><a class="add" href="http://localhost/el-projects/ee-cp/views/channel-new.php">&#10010; <?=lang('new_channel')?></a></li>
 							</ul>
 						</div>
 					</li>
 					<li>
-						<a class="has-sub" href="">Edit <span class="ico sub-arrow"></span></a>
+						<a class="has-sub" href=""><?=lang('menu_edit')?> <span class="ico sub-arrow"></span></a>
 						<div class="sub-menu">
 							<ul>
 								<?php foreach ($cp_main_menu['channels']['edit'] as $channel_name => $link): ?>
@@ -74,8 +74,8 @@
 							</ul>
 						</div>
 					</li>
-					<li><a href="http://localhost/el-projects/ee-cp/views/files.php">Files</a></li>
-					<li><a href="http://localhost/el-projects/ee-cp/views/members.php">Members</a></li>
+					<li><a href="http://localhost/el-projects/ee-cp/views/files.php"><?=lang('menu_files')?></a></li>
+					<li><a href="http://localhost/el-projects/ee-cp/views/members.php"><?=lang('menu_members')?></a></li>
 				</ul>
 				<ul class="dev-menu">
 					<!-- <li><a href="http://localhost/el-projects/ee-cp/views/design.php">Design</a></li> -->

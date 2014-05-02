@@ -509,6 +509,10 @@ $lang = array(
 'devot_ee'						=> 'Devot-EE',
 'ee_podcast'					=> 'EE Podcast',
 
+/**
+ * 3.0
+ */
+
 'btn_fix_errors' =>
 'Fix Errors, Please',
 
@@ -523,6 +527,24 @@ $lang = array(
 
 'form_validation_error' =>
 'There was a problem processing your submission, please check below and fix all errors.',
+
+'log_out' =>
+'log out',
+
+'menu_create' =>
+'Create',
+
+'new_channel' =>
+'New Channel',
+
+'menu_edit' =>
+'Edit',
+
+'menu_files' =>
+'Files',
+
+'menu_members' =>
+'Members',
 
 ''=>''
 );
