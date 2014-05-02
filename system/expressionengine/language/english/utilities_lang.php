@@ -94,6 +94,12 @@ $lang = array(
 'bcc_recipients_desc' =>
 '<abbr title="Blind Carbon Copied">BCC</abbr> e-mail(s). Separate multiple recipients with a comma.',
 
+'mailing_lists' =>
+'Mailing list(s)',
+
+'mailing_lists_desc' =>
+'Send e-mail to <b>all</b> members in chosen list(s).',
+
 'add_member_groups' =>
 'Add member group(s)',
 
@@ -105,6 +111,10 @@ $lang = array(
 
 'btn_send_email_working' =>
 'Sending...',
+
+'none'		=> 'Plain Text',
+'auto_br'	=> 'Auto &lt;br /&gt;',
+'xhtml'		=> 'XHTML',
 
 /**
  * PHP Info
