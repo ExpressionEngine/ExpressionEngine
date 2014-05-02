@@ -1373,6 +1373,7 @@ class EE_Template {
 									ee()->TMPL->var_pair	= array();
 									ee()->TMPL->plugins = $TMPL2->plugins;
 									ee()->TMPL->modules = $TMPL2->modules;
+									ee()->TMPL->module_data = $TMPL2->module_data;
 									ee()->TMPL->parse_tags();
 									ee()->TMPL->process_tags();
 									ee()->TMPL->loop_count = 0;
@@ -1414,6 +1415,7 @@ class EE_Template {
 							ee()->TMPL->var_pair	= array();
 							ee()->TMPL->plugins = $TMPL2->plugins;
 							ee()->TMPL->modules = $TMPL2->modules;
+							ee()->TMPL->module_data = $TMPL2->module_data;
 							ee()->TMPL->parse_tags();
 							ee()->TMPL->process_tags();
 							ee()->TMPL->loop_count = 0;
