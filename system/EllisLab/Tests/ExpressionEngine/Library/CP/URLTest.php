@@ -21,6 +21,15 @@ class URLTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals($expected_out, (string) $cpUrl, $description);
 	}
 
+	/**
+	 * @dataProvider exceptionalDataProvider
+	 * @expectedException \InvalidArgumentException
+	 */
+	public function testExceptions($path, $session_id, $qs)
+	{
+		new URL($path, $session_id, $qs);
+	}
+
 	public function dataProvider()
 	{
 		// Assemble the tests
@@ -29,6 +38,17 @@ class URLTest extends \PHPUnit_Framework_TestCase {
 
 			$this->URLsByConstructor(),
 			$this->URLsBySetters()
+		);
+	}
+
+	public function exceptionalDataProvider()
+	{
+		return array(
+			array(array('foo'), '', ''),
+			array(new \StdClass(), '', ''),
+			array('foo', array('foo'), ''),
+			array('foo', new \StdClass(), ''),
+			array('foo', '', new \StdClass()),
 		);
 	}
 
@@ -82,4 +102,5 @@ class URLTest extends \PHPUnit_Framework_TestCase {
 			array('Setter URL with Session and many QS',	$url_with_session_and_many_qs,	'index.php?/cp/foo/bar?sort=asc&limit=25&S='.$session_id),
 		);
 	}
+
 }
