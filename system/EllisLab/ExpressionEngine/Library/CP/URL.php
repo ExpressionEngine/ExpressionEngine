@@ -34,6 +34,7 @@ class URL {
 
 	/**
 	 * Create a CP Path
+	 *
 	 * @param	string	$path		The path (i.e. 'logs/cp')
 	 * @param	string	$session_id The session id
 	 * @param	mixed	$qs			Query string parameters [array|string]
@@ -116,3 +117,8 @@ class URL {
 		return SELF.$path;
 	}
 }
+
+// END CLASS
+
+/* End of file URL.php */
+/* Location: ./system/EllisLab/ExpressionEngine/Library/CP/URL.php */
