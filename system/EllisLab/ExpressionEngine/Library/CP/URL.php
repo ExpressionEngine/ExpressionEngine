@@ -35,13 +35,28 @@ class URL {
 	/**
 	 * Create a CP Path
 	 * @param	string	$path		The path (i.e. 'logs/cp')
-	 * @param	mixed	$qs			Query string parameters [array|string]
 	 * @param	string	$session_id The session id
+	 * @param	mixed	$qs			Query string parameters [array|string]
 	 */
-	public function __construct($path, $session_id = NULL, $qs = array())
+	public function __construct($path, $session_id = '', $qs = array())
 	{
-		$this->path = $path;
-		$this->session_id = $session_id;
+		if (is_array($path) || (is_object($path) && ! method_exists($path, '__toString')))
+		{
+			throw new \InvalidArgumentException('The path argument must be a string.');
+		}
+
+		if (is_array($session_id) || (is_object($session_id) && ! method_exists($session_id, '__toString')))
+		{
+			throw new \InvalidArgumentException('The session_id argument must be a string.');
+		}
+
+		if (is_object($qs) && ! method_exists($qs, '__toString'))
+		{
+			throw new \InvalidArgumentException('The qs argument must be a string or an array.');
+		}
+
+		$this->path = (string) $path;
+		$this->session_id = (string) $session_id;
 
 		if (is_array($qs))
 		{
@@ -84,6 +99,7 @@ class URL {
 	{
 		$path = trim($this->path, '/');
 		$path = preg_replace('#^cp(/|$)#', '', $path);
+		$path = rtrim('?/cp/'.$path, '/');
 
 		$qs = $this->qs;
 
@@ -92,10 +108,11 @@ class URL {
 			$qs['S'] = $this->session_id;
 		}
 
-		$qs = http_build_query($qs, AMP);
+		if ( ! empty($qs))
+		{
+			$path .= '&'.http_build_query($qs);
+		}
 
-		$path = rtrim('?/cp/'.$path, '/');
-
-		return SELF.$path.rtrim('?'.$qs, '?');
+		return SELF.$path;
 	}
 }
