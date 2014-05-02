@@ -106,6 +106,9 @@ $lang = array(
 'error' =>
 'Error',
 
+'generic_fatal_error' =>
+'Something has gone wrong and this URL cannot be processed at this time.',
+
 'invalid_url' =>
 'The URL you submitted is not valid.',
 

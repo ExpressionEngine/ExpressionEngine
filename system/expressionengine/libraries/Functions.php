@@ -2759,11 +2759,16 @@ class EE_Functions {
 
 		if ($return === FALSE)
 		{
-			if (ee()->config->item('debug') >= 1)
+			if (ee()->config->item('debug') >= 1 AND ee()->session->userdata('group_id') == 1))
 			{
 				$error = ee()->lang->line('error_invalid_conditional');
-				ee()->output->fatal_error($error);
 			}
+			else
+			{
+				$error = ee()->lang->line('generic_fatal_error');
+			}
+			ee()->output->set_status_header(500);
+			ee()->output->fatal_error($error);
 
 			exit;
 		}
@@ -2777,11 +2782,16 @@ class EE_Functions {
 		{
 			if ($this->conditional_is_unsafe($condition['full_open_tag']))
 			{
-				if (ee()->config->item('debug') >= 1)
+				if (ee()->config->item('debug') >= 1 AND ee()->session->userdata('group_id') == 1))
 				{
 					$error = ee()->lang->line('error_unsafe_conditional');
-					ee()->output->fatal_error($error);
 				}
+				else
+				{
+					$error = ee()->lang->line('generic_fatal_error');
+				}
+				ee()->output->set_status_header(500);
+				ee()->output->fatal_error($error);
 
 				exit;
 			}
