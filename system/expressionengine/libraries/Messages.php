@@ -287,7 +287,14 @@ class EE_Messages {
 				}
 				elseif( ! is_array($value))
 				{
-					if ($key != 'title' && ! stristr($value, '<option'))
+					$user_input = array('member_description');
+
+					if (in_array($key, $user_input))
+					{
+						$value = ee()->functions->encode_ee_tags($value, TRUE);
+					}
+
+					elseif ($key != 'title' && ! stristr($value, '<option'))
 					{
 						// {title} is link title for message menu
 						$value = htmlspecialchars($value, ENT_QUOTES);

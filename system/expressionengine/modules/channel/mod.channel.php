@@ -3465,15 +3465,10 @@ class Channel {
 								$chunk = str_replace($tkey, reduce_double_slashes($tval.'/'.$trow['entry_id']), $chunk);
 							}
 
+							$chunk = ee()->TMPL->parse_date_variables($chunk, array('entry_date' => $trow['entry_date']));
+
 							foreach(ee()->TMPL->var_single as $key => $val)
 							{
-								if (isset($entry_date[$key]))
-								{
-									$val = str_replace($entry_date[$key], ee()->localize->format_date($entry_date[$key], $trow['entry_date']), $val);
-
-									$chunk = ee()->TMPL->swap_var_single($key, $val, $chunk);
-								}
-
 								if ($key == 'entry_id')
 								{
 									$chunk = ee()->TMPL->swap_var_single($key, $trow['entry_id'], $chunk);

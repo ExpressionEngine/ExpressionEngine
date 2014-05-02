@@ -1373,6 +1373,7 @@ class EE_Template {
 									ee()->TMPL->var_pair	= array();
 									ee()->TMPL->plugins = $TMPL2->plugins;
 									ee()->TMPL->modules = $TMPL2->modules;
+									ee()->TMPL->module_data = $TMPL2->module_data;
 									ee()->TMPL->parse_tags();
 									ee()->TMPL->process_tags();
 									ee()->TMPL->loop_count = 0;
@@ -1414,6 +1415,7 @@ class EE_Template {
 							ee()->TMPL->var_pair	= array();
 							ee()->TMPL->plugins = $TMPL2->plugins;
 							ee()->TMPL->modules = $TMPL2->modules;
+							ee()->TMPL->module_data = $TMPL2->module_data;
 							ee()->TMPL->parse_tags();
 							ee()->TMPL->process_tags();
 							ee()->TMPL->loop_count = 0;
@@ -2222,7 +2224,7 @@ class EE_Template {
 			The character(s) used to designate a template as "hidden"
 		/* -------------------------------------------*/
 
-		$hidden_indicator = (ee()->config->item('hidden_template_indicator') === FALSE) ? '.' : ee()->config->item('hidden_template_indicator');
+		$hidden_indicator = (ee()->config->item('hidden_template_indicator') === FALSE) ? '_' : ee()->config->item('hidden_template_indicator');
 
 		if ($this->depth == 0
 			AND substr($template, 0, 1) == $hidden_indicator
@@ -3364,9 +3366,19 @@ class EE_Template {
 		$front_protect = unique_marker('tmpl_script_open');
 		$back_protect  = unique_marker('tmpl_script_close');
 
-		if ($this->protect_javascript !== FALSE &&
-			stristr($str, '<script') &&
-			preg_match_all("/<script.*?".">.*?<\/script>/is", $str, $matches))
+		// Regardless of protect_javascript we need to protect
+		// <script language="php"> tags.
+		if ($this->protect_javascript !== FALSE)
+		{
+			$pattern = "/<script.*?".">.*?<\/script>/is";
+		}
+		else
+		{
+			$pattern = "/<script.*?language\s*=\s*(\042|\047)?php(\\1)?.*?>.*?<\/script>/is";
+		}
+
+		if (stristr($str, '<script') &&
+			preg_match_all($pattern, $str, $matches))
 		{
 			for($i=0, $s=count($matches[0]); $i < $s; ++$i)
 			{
@@ -3375,7 +3387,6 @@ class EE_Template {
 
 			$str = str_replace(array_values($protected), array_keys($protected), $str);
 		}
-
 		// Convert EE Conditionals to PHP
 		$str = str_replace(array(LD.'/if'.RD, LD.'if:else'.RD), array('<?php endif; ?'.'>','<?php else : ?'.'>'), $str);
 
@@ -4128,14 +4139,15 @@ class EE_Template {
 			strpos($str, 'timezone=') !== FALSE ||
 			strpos($str, ':relative') !== FALSE)
 		{
-			if ($relative = preg_match_all("/".LD."([\w\-]+):relative(.*?)".RD."/", $str, $matches, PREG_SET_ORDER))
+			if ($relative = preg_match_all("/".LD."([\w:\-]+):relative(?![\w-])(.*?)".RD."/", $str, $matches, PREG_SET_ORDER))
 			{
 				foreach ($matches as $match)
 				{
 					$this->date_vars[] = $match[1];
 				}
 			}
-			elseif ($standard = preg_match_all("/".LD."([\w:\-]+)\s+(format|timezone)=[\"'](.*?)[\"']".RD."/", $str, $matches, PREG_SET_ORDER))
+
+			if ($standard = preg_match_all("/".LD."([\w:\-]+)\s+(format|timezone)=[\"'](.*?)[\"']".RD."/", $str, $matches, PREG_SET_ORDER))
 			{
 				foreach ($matches as $match)
 				{
@@ -4148,6 +4160,13 @@ class EE_Template {
 			if (empty($standard) && empty($relative))
 			{
 				$this->date_vars = FALSE;
+			}
+
+			// If a date has both the ":relative" modifier and "format=" it will
+			// be present twice. We'll filter this out here.
+			else
+			{
+				$this->date_vars = array_unique($this->date_vars);
 			}
 		}
 	}

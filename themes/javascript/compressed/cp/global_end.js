@@ -9,5 +9,4 @@
  * @since		Version 2.0
  * @filesource
  */
-
-(function(a){a("table").each(function(){var b;a(this).data("table_config")&&(b=a(this).data("table_config"),a.isPlainObject(b)||(b=a.parseJSON(b)),a(this).table(b));jQuery().toggle_all&&a(this).toggle_all()})})(jQuery);
+!function(e){"use strict";e("table").each(function(){var t;e(this).data("table_config")&&(t=e(this).data("table_config"),e.isPlainObject(t)||(t=e.parseJSON(t)),e(this).table(t)),jQuery().toggle_all&&e(this).toggle_all()}),EE.registered===!1&&!function(e){e("#mainMenu").length&&e("body").prepend('<div class="nanner"><p>This copy of ExpressionEngine is <strong>unregistered</strong>. Please visit the <a href="#" onclick="location.href=EE.BASE + \'&C=admin_system&M=software_license\'">Software License</a> page to enter your license information.</p></div>')}(jQuery,this)}(jQuery);

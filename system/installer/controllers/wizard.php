@@ -850,7 +850,7 @@ PAPAYA;
 		$errors = array();
 
 		// Blank fields?
-		foreach (array('db_hostname', 'db_username', 'db_name', 'site_label', 'webmaster_email', 'username', 'password', 'email_address') as $val)
+		foreach (array('license_number', 'db_hostname', 'db_username', 'db_name', 'site_label', 'webmaster_email', 'username', 'password', 'email_address') as $val)
 		{
 			if ($this->userdata[$val] == '')
 			{
@@ -875,6 +875,11 @@ PAPAYA;
 		if ($this->userdata['password'] != $this->userdata['password_confirm'])
 		{
 			$errors[] = $this->lang->line('password_no_match');
+		}
+
+		if ( ! valid_license_pattern($this->userdata['license_number']))
+		{
+			$errors[] = $this->lang->line('invalid_license_number');
 		}
 
 		//  Is password the same as username?
@@ -1153,6 +1158,7 @@ PAPAYA;
 		$this->userdata['cp_url'] = ($self != '') ? $host.$self : $host.SELF;
 
 		// license number
+		$this->userdata['license_contact'] = '';
 		$this->userdata['license_number'] = (IS_CORE) ? 'CORE LICENSE' : '';
 
 		// Since the CP access file can be inside or outside of the "system" folder
@@ -2365,6 +2371,7 @@ PAPAYA;
 
 		$config = array(
 			'app_version'					=>	$this->userdata['app_version'],
+			'license_contact'				=>	$this->userdata['license_contact'],
 			'license_number'				=>	trim($this->userdata['license_number']),
 			'debug'							=>	'1',
 			'cp_url'						=>	$this->userdata['cp_url'],
@@ -3008,6 +3015,8 @@ PAPAYA;
 
 			if (file_exists($path.'upd.'.$module.EXT))
 			{
+				$this->load->add_package_path($path);
+
 				$class = ucfirst($module).'_upd';
 
 				if ( ! class_exists($class))
@@ -3022,6 +3031,8 @@ PAPAYA;
 				{
 					$this->db->update('modules', array('module_version' => $UPD->version), array('module_name' => ucfirst($module)));
 				}
+
+				$this->load->remove_package_path($path);
 			}
 		}
 	}
