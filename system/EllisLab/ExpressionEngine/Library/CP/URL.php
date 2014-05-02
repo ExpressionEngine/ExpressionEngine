@@ -107,7 +107,7 @@ class URL {
 			$qs['S'] = $this->session_id;
 		}
 
-		$qs = http_build_query($qs, AMP);
+		$qs = http_build_query($qs);
 
 		$path = rtrim('?/cp/'.$path, '/');
 

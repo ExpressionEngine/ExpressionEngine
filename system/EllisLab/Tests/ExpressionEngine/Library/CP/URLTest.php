@@ -119,9 +119,9 @@ class URLTest extends \PHPUnit_Framework_TestCase {
 			array('Session Id as FALSE',	new URL('foo/bar', FALSE),	'index.php?/cp/foo/bar'),
 			array('Session Id as NULL',		new URL('foo/bar', NULL),	'index.php?/cp/foo/bar'),
 
-			array('QS as integer',	new URL('foo/bar', '', 42),		'index.php?/cp/foo/bar&&amp;42='),
+			array('QS as integer',	new URL('foo/bar', '', 42),		'index.php?/cp/foo/bar&42='),
 			array('QS as float',	new URL('foo/bar', '', 42.5),	'index.php?/cp/foo/bar&42_5='),
-			array('QS as TRUE',		new URL('foo/bar', '', TRUE),	'index.php?/cp/foo/bar&&amp;1='),
+			array('QS as TRUE',		new URL('foo/bar', '', TRUE),	'index.php?/cp/foo/bar&1='),
 			array('QS as FALSE',	new URL('foo/bar', '', FALSE),	'index.php?/cp/foo/bar'),
 			array('QS as NULL',		new URL('foo/bar', '', NULL),	'index.php?/cp/foo/bar'),
 		);
