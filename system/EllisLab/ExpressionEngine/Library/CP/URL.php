@@ -99,6 +99,7 @@ class URL {
 	{
 		$path = trim($this->path, '/');
 		$path = preg_replace('#^cp(/|$)#', '', $path);
+		$path = rtrim('?/cp/'.$path, '/');
 
 		$qs = $this->qs;
 
@@ -107,10 +108,11 @@ class URL {
 			$qs['S'] = $this->session_id;
 		}
 
-		$qs = http_build_query($qs);
+		if ( ! empty($qs))
+		{
+			$path .= '&'.http_build_query($qs);
+		}
 
-		$path = rtrim('?/cp/'.$path, '/');
-
-		return SELF.$path.rtrim('&'.$qs, '&');
+		return SELF.$path;
 	}
 }
