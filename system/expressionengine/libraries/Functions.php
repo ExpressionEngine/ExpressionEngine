@@ -2937,7 +2937,7 @@ class EE_Functions {
 							case T_DNUMBER:
 							case T_IS_EQUAL:
 							case T_IS_GREATER_OR_EQUAL:
-							case T_IS_IDENTICAL:
+							// case T_IS_IDENTICAL:
 							case T_IS_NOT_EQUAL:
 							case T_IS_NOT_IDENTICAL:
 							case T_IS_SMALLER_OR_EQUAL:
