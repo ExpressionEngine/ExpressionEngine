@@ -1,19 +1,19 @@
 <?php if ( ! empty($pagination)): ?>
 <div class="paginate">
 	<ul>
-		<li><a href="<?=$pagination['first_page'][0]['pagination_url']?>"><?=lang('first')?></a></li>
-		<?php if ( ! empty($pagination['previous_page'][0])): ?>
-		<li><a href="<?=$pagination['previous_page'][0]['pagination_url']?>"><?=lang('prev')?></a></li>
+		<li><a href="<?=$pagination['first']?>"><?=lang('first')?></a></li>
+		<?php if ( isset($pagination['prev'])): ?>
+		<li><a href="<?=$pagination['prev']?>"><?=lang('prev')?></a></li>
 		<?php endif;?>
 
-		<?php foreach ($pagination['page'] as $page): ?>
-		<li><a<?php if($page['current_page']): ?> class="act"<?php endif; ?> href="<?=$page['pagination_url']?>"><?=$page['pagination_page_number']?></a></li>
+		<?php foreach ($pagination['pages'] as $page => $link): ?>
+		<li><a<?php if($pagination['current_page'] == $page): ?> class="act"<?php endif; ?> href="<?=$link?>"><?=$page?></a></li>
 		<?php endforeach; ?>
 
-		<?php if ( ! empty($pagination['next_page'][0])): ?>
-		<li><a href="<?=$pagination['next_page'][0]['pagination_url']?>"><?=lang('next')?></a></li>
+		<?php if ( isset($pagination['next'])): ?>
+		<li><a href="<?=$pagination['next']?>"><?=lang('next')?></a></li>
 		<?php endif;?>
-		<li><a class="last" href="<?=$pagination['last_page'][0]['pagination_url']?>"><?=lang('last')?></a></li>
+		<li><a class="last" href="<?=$pagination['last']?>"><?=lang('last')?></a></li>
 	</ul>
 </div>
 <?php endif; ?>

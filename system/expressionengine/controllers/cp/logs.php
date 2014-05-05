@@ -1,6 +1,7 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use EllisLab\ExpressionEngine\Library\CP;
+use EllisLab\ExpressionEngine\Library\Pagination;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -118,7 +119,7 @@ class Logs extends CP_Controller {
 			}
 		}
 
-		$this->params['perpage'] = ee()->input->get_post('perpage') ? ee()->input->get_post('perpage') : $this->perpage;
+		$this->params['perpage'] = ee()->input->get_post('perpage') ? (int) ee()->input->get_post('perpage') : $this->perpage;
 
 		// Maintain the filters in the URL
 		foreach ($this->params as $key => $value)
@@ -169,25 +170,38 @@ class Logs extends CP_Controller {
 	function cp()
 	{
 		$this->base_url->path = 'logs/cp';
-		$this->load->library('table');
-
-		$this->table->set_base_url($this->base_url);
-		$this->table->set_columns(array(
-			'member_id'		=> array('html' => FALSE),
-			'username'		=> array(),
-			'ip_address'	=> array('html' => FALSE),
-			'act_date'		=> array('html' => FALSE, 'header' => lang('date')),
-			'site_label'	=> array('html' => FALSE, 'header' => lang('site_search')),
-			'action'		=> array('html' => FALSE)
-		));
-
-		$initial_state = array(
-			'sort'	=> array('act_date' => 'desc')
-		);
-
-		$vars = $this->table->datasource('_cp_log_filter', $initial_state, $this->params);
-
 		$this->view->cp_page_title = lang('view_cp_log');
+
+		$page = ee()->input->get('page') ? ee()->input->get('page') : 1;
+		$page = ($page > 0) ? $page : 1;
+
+		$offset = ($page - 1) * $this->params['perpage']; // Offset is 0 indexed
+
+		$log_q = $this->tools_model->get_cp_log($this->params['perpage'], $offset, array('act_date' => 'desc'));
+
+		$rows = array();
+		$logs = $log_q->result_array();
+
+		while ($log = array_shift($logs))
+		{
+			$rows[] = array(
+				'member_id'	 => $log['member_id'],
+				'username'	 => "<a href='".cp_url('myaccount', array('id' => $log['member_id']))."'>{$log['username']}</a>",
+				'ip_address' => $log['ip_address'],
+				'act_date'	 => $this->localize->human_time($log['act_date']),
+				'site_label' => $log['site_label'],
+				'action'	 => $log['action']
+			);
+		}
+
+		$pagination = new Pagination($this->params['perpage'], $this->db->count_all('cp_log'), $page);
+		$links = $pagination->cp_links($this->base_url);
+
+		$vars = array(
+			'rows' => $rows,
+			'no_results' => '<p>'.lang('no_search_results').'</p>',
+			'pagination' => $links
+		);
 
 		$this->cp->render('logs/cp', $vars);
 	}
