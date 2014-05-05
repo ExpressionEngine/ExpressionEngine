@@ -277,6 +277,7 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			array('Plain > Integer',	'{if 7 > 5}out{/if}',	'{if 7 > 5}out{/if}'),
 			array('Plain < Integer',	'{if 5 < 7}out{/if}',	'{if 5 < 7}out{/if}'),
 			array('Plain <> Integer',	'{if 5 <> 7}out{/if}',	'{if 5 <> 7}out{/if}'),
+			array('Plain === Integer',	'{if 5 === 5}out{/if}',	'{if 5 === 5}out{/if}'),
 		);
 	}
 
@@ -388,6 +389,8 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			array('Compare FALSE Booleans',	'{if xyz == FALSE}out{/if}',	'{if "" == FALSE}out{/if}',		array('xyz' => FALSE)),
 			array('Compare TRUE Booleans',	'{if xyz == TRUE}out{/if}',		'{if "1" == TRUE}out{/if}',		array('xyz' => TRUE)),
 			array('Compare NoSpace Bools',	'{if FALSE!=TRUE}out{/if}',		'{if FALSE!=TRUE}out{/if}',		array('xyz' => TRUE)),
+			array('Compare Not Bool',		'{if !TRUE}out{/if}',			'{if FALSE TRUE}out{/if}',		array('xyz' => TRUE)),
+			array('Compare Not Bool Space',	'{if ! TRUE}out{/if}',			'{if FALSE TRUE}out{/if}',		array('xyz' => TRUE)),
 		);
 	}
 
@@ -495,6 +498,8 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			array('Double No Space AND', '{if 5 &&AND 7}out{/if}',	'{if 5 &&AND 7}out{/if}'),
 			array('Double Comparison',	 '{if 5 > < 7}out{/if}',	'{if 5 > < 7}out{/if}'),
 			array('Shift by comparison', '{if 5 >>> 7}out{/if}',	'{if 5 FALSE > 7}out{/if}'),
+			array('Double ! bool cast',  '{if !!5}out{/if}',		'{if FALSE 5}out{/if}'),
+			array('Double ! with space', '{if !! 5}out{/if}',		'{if FALSE 5}out{/if}'),
 
 		);
 	}
