@@ -2937,6 +2937,9 @@ class EE_Functions {
 							case T_DNUMBER:
 							case T_IS_EQUAL:
 							case T_IS_GREATER_OR_EQUAL:
+							// This is new functionality for conditionals
+							// (=== operator) so I am diabling it for now
+							// (SCB 5-5-2014)
 							// case T_IS_IDENTICAL:
 							case T_IS_NOT_EQUAL:
 							case T_IS_NOT_IDENTICAL:
