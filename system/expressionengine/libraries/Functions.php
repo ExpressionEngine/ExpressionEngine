@@ -2763,11 +2763,11 @@ class EE_Functions {
 				OR (ee()->config->item('debug') == 1
 					&& ee()->session->userdata('group_id') == 1))
 			{
-				$error = ee()->lang->line('error_invalid_conditional');
+				$error = lang('error_invalid_conditional');
 			}
 			else
 			{
-				$error = ee()->lang->line('generic_fatal_error');
+				$error = lang('generic_fatal_error');
 			}
 			ee()->output->set_status_header(500);
 			ee()->output->fatal_error($error);
@@ -2788,11 +2788,11 @@ class EE_Functions {
 					OR (ee()->config->item('debug') == 1
 						&& ee()->session->userdata('group_id') == 1))
 				{
-					$error = ee()->lang->line('error_unsafe_conditional');
+					$error = lang('error_unsafe_conditional');
 				}
 				else
 				{
-					$error = ee()->lang->line('generic_fatal_error');
+					$error = lang('generic_fatal_error');
 				}
 				ee()->output->set_status_header(500);
 				ee()->output->fatal_error($error);
