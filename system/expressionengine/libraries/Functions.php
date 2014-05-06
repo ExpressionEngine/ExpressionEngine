@@ -2761,7 +2761,7 @@ class EE_Functions {
 		{
 			if (ee()->config->item('debug') == 2
 				OR (ee()->config->item('debug') == 1
-					AND ee()->session->userdata('group_id') == 1))
+					&& ee()->session->userdata('group_id') == 1))
 			{
 				$error = ee()->lang->line('error_invalid_conditional');
 			}
@@ -2786,7 +2786,7 @@ class EE_Functions {
 			{
 				if (ee()->config->item('debug') == 2
 					OR (ee()->config->item('debug') == 1
-						AND ee()->session->userdata('group_id') == 1))
+						&& ee()->session->userdata('group_id') == 1))
 				{
 					$error = ee()->lang->line('error_unsafe_conditional');
 				}
