@@ -277,7 +277,7 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			array('Plain > Integer',	'{if 7 > 5}out{/if}',	'{if 7 > 5}out{/if}'),
 			array('Plain < Integer',	'{if 5 < 7}out{/if}',	'{if 5 < 7}out{/if}'),
 			array('Plain <> Integer',	'{if 5 <> 7}out{/if}',	'{if 5 <> 7}out{/if}'),
-			array('Plain === Integer',	'{if 5 === 5}out{/if}',	'{if 5 === 5}out{/if}'),
+			array('Plain === Integer',	'{if 5 === 5}out{/if}',	'{if 5 FALSE 5}out{/if}'),
 		);
 	}
 
