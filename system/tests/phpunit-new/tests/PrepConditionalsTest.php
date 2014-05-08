@@ -30,7 +30,7 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			$vars = array();
 		}
 
-		$util = new ConditionalStub();
+		$util = new Conditional_util();
 
 		// First pass: safety off
 		$str = $util->prep_conditionals($str_in, $vars, $safety = FALSE, $prefix = '');
@@ -77,7 +77,7 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 	{
 		$str = '{if string == whatthefoxsay}out{/if}';
 		// First pass is with safety off
-		$util = new ConditionalStub('randomstring');
+		$util = new Conditional_util('randomstring');
 		$str = $util->prep_conditionals($str, array('whatthefoxsay' => 'Ring-ding-ding-ding-dingeringeding!'), $safety = FALSE, $prefix = '');
 
 		$this->assertEquals(
@@ -100,7 +100,7 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 	{
 		$str = '{if prefix:string == "literal" && notprefixed || prefix:name}out{/if}';
 
-		$util = new ConditionalStub('randomstring');
+		$util = new Conditional_util('randomstring');
 
 		$str = $util->prep_conditionals(
 			$str,
@@ -131,7 +131,7 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			$vars = array();
 		}
 
-		$util = new ConditionalStub('randomstring');
+		$util = new Conditional_util('randomstring');
 
 		$this->assertEquals(
 			$expected_out,
@@ -563,46 +563,11 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 	}
 }
 
-class ConditionalStub extends Conditional_util {
-
-	public function __construct()
-	{
-
-	}
-
-
-	public function conditional_is_unsafe($str)
-	{
-		$result = parent::conditional_is_unsafe($str);
-
-		if ($result === TRUE)
-		{
-			throw new UnsafeConditionalException('Conditional is unsafe.');
-		}
-
-		return $result;
-	}
-
-	public function extract_conditionals($str, $vars)
-	{
-		$result = parent::extract_conditionals($str, $vars);
-
-		if ($result === FALSE)
-		{
-			throw new InvalidConditionalException('Conditional is invalid.');
-		}
-
-		return $result;
-	}
-}
-
 function unique_marker($ident)
 {
 	return 'randommarker'.$ident;
 }
 
-class UnsafeConditionalException extends Exception {}
-class InvalidConditionalException extends Exception {}
 
 class dummyStringObject {
 	public function __toString()
