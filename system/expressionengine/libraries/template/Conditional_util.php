@@ -414,47 +414,42 @@ class Conditional_util {
 			$curlies = 0;
 
 			// Confirm this is a conditional and not some other tag
-			$char = $str[$i + 3];
+			$i = $i + 3;
+
+			$chr = ord($str[$i]);
+			$char_name = ($chr >= 128) ? 'C_ABC' : $ascii_map[$chr];
 
 			// If the "{if" is not followed by whitespace this might be a
 			// variable (i.e. {iffy}) or an "{if:else..." conditional
-			if ( ! ($char == ' ' || $char == "\t" || $char == "\n" || $char == "\r" ))
+			if ($char_name != 'C_WHITE')
 			{
-				if ($char == ':')
-				{
-					$substr = substr($str, $i + 3, 10);
-
-					// This is an invalid conditional because "{if:" is reserved
-					// for conditionals.
-					if (preg_match('/^:else(\s?}|if\s)/', $substr, $matches) != 1)
-					{
-						throw new InvalidConditionalException('Conditional is invalid: "{if:" is reserverd for conditionals.');
-					}
-
-					// if it's an else, not an elseif, then it won't have a body,
-					// so we don't need to do any processing on it.
-					if (trim($matches[1]) == '}')
-					{
-						$i += 3;
-						continue;
-					}
-
-					$i += strlen($matches[0]);
-				}
-				else
+				if ($char_name != 'C_COLON')
 				{
 					// valid variable, but not a conditional
-					$i += 3;
 					continue;
 				}
-			}
-			else
-			{
-				$i += 3;
+
+				$substr = substr($str, $i, 10);
+
+				// This is an invalid conditional because "{if:" is reserved
+				// for conditionals.
+				if (preg_match('/^:else(\s?}|if\s)/', $substr, $matches) != 1)
+				{
+					throw new InvalidConditionalException('Conditional is invalid: "{if:" is reserverd for conditionals.');
+				}
+
+				// if it's an else, not an elseif, then it won't have a body,
+				// so we don't need to do any processing on it.
+				if (trim($matches[1]) == '}')
+				{
+					continue;
+				}
+
+				$i += strlen($matches[0]);
 			}
 
 			// No sense continuing if we cannot find a {/if}
-			if (strpos($str, '{/if}', $i + 3) === FALSE)
+			if (strpos($str, '{/if}', $i) === FALSE)
 			{
 				throw new InvalidConditionalException('Conditional is invalid: missing a "{/if}".');
 			}
