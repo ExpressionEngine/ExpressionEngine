@@ -2381,35 +2381,24 @@ class EE_Functions {
 		{
 			$prepped_string = $util->prep_conditionals($str, $vars, $bool_safety, $prefix);
 		}
-		catch (UnsafeConditionalException $e)
+		catch (ConditionalException $e)
 		{
-			if (ee()->config->item('debug') == 2
-				OR (ee()->config->item('debug') == 1
-					&& ee()->session->userdata('group_id') == 1))
-			{
-				$error = lang('error_unsafe_conditional');
-			}
-			else
-			{
-				$error = lang('generic_fatal_error');
-			}
-			ee()->output->set_status_header(500);
-			ee()->output->fatal_error($error);
+			$error_keys = array(
+				'UnsafeConditionalException' => 'error_unsafe_conditional',
+				'InvalidConditionalException' => 'error_invalid_conditional'
+			);
 
-			exit;
-		}
-		catch (InvalidConditionalException $e)
-		{
 			if (ee()->config->item('debug') == 2
 				OR (ee()->config->item('debug') == 1
 					&& ee()->session->userdata('group_id') == 1))
 			{
-				$error = lang('error_invalid_conditional');
+				$error = lang($error_keys[get_class($e)]);
 			}
 			else
 			{
 				$error = lang('generic_fatal_error');
 			}
+
 			ee()->output->set_status_header(500);
 			ee()->output->fatal_error($error);
 
