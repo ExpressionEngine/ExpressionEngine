@@ -1,6 +1,6 @@
 <?php
 
-require_once APPPATH.'libraries/Functions.php';
+require_once APPPATH.'libraries/template/Conditional_util.php';
 
 class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 
@@ -30,10 +30,10 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			$vars = array();
 		}
 
-		$fns = new FunctionsStub('randomstring');
+		$util = new ConditionalStub();
 
 		// First pass: safety off
-		$str = $fns->prep_conditionals($str_in, $vars, $safety = 'n', $prefix = '');
+		$str = $util->prep_conditionals($str_in, $vars, $safety = FALSE, $prefix = '');
 		$this->assertEquals(
 			$expected_out_safety_off,
 			$str,
@@ -43,14 +43,14 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 		// Second pass: safety on
 		$this->assertEquals(
 			$expected_out_safety_on,
-			$fns->prep_conditionals($str_in, $vars, $safety = 'y', $prefix = ''),
+			$util->prep_conditionals($str_in, $vars, $safety = TRUE, $prefix = ''),
 			$description . " (safety on)"
 		);
 
 		// Third pass: saftey on fed with result of safety off
 		$this->assertEquals(
 			$expected_out_safety_on,
-			$fns->prep_conditionals($str, $vars, $safety = 'y', $prefix = ''),
+			$util->prep_conditionals($str, $vars, $safety = TRUE, $prefix = ''),
 			$description . " (safety off + on)"
 		);
 	}
@@ -77,8 +77,8 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 	{
 		$str = '{if string == whatthefoxsay}out{/if}';
 		// First pass is with safety off
-		$fns = new FunctionsStub('randomstring');
-		$str = $fns->prep_conditionals($str, array('whatthefoxsay' => 'Ring-ding-ding-ding-dingeringeding!'), $safety = 'n', $prefix = '');
+		$util = new ConditionalStub('randomstring');
+		$str = $util->prep_conditionals($str, array('whatthefoxsay' => 'Ring-ding-ding-ding-dingeringeding!'), $safety = FALSE, $prefix = '');
 
 		$this->assertEquals(
 			'{if string == "Ring-ding-ding-ding-dingeringeding!"}out{/if}',
@@ -87,7 +87,7 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 		);
 
 		// Second pass is with safety on
-		$str = 	$fns->prep_conditionals($str, array('string' => 'ee'), $safety = 'y', $prefix = '');
+		$str = 	$util->prep_conditionals($str, array('string' => 'ee'), $safety = TRUE, $prefix = '');
 
 		$this->assertEquals(
 			'{if "ee" == "Ring-ding-ding-ding-dingeringeding!"}out{/if}',
@@ -100,12 +100,12 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 	{
 		$str = '{if prefix:string == "literal" && notprefixed || prefix:name}out{/if}';
 
-		$fns = new FunctionsStub('randomstring');
+		$util = new ConditionalStub('randomstring');
 
-		$str = $fns->prep_conditionals(
+		$str = $util->prep_conditionals(
 			$str,
 			array('string' => 'yep', 'notprefixed' => 'shouldneverseethis'),
-			$safety = 'y',
+			$safety = TRUE,
 			$prefix = 'prefix:'
 		);
 
@@ -131,27 +131,27 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			$vars = array();
 		}
 
-		$fns = new FunctionsStub('randomstring');
+		$util = new ConditionalStub('randomstring');
 
 		$this->assertEquals(
 			$expected_out,
-			$fns->prep_conditionals($str_in, $vars, $safety = 'y', $prefix = ''),
+			$util->prep_conditionals($str_in, $vars, $safety = TRUE, $prefix = ''),
 			$description
 		);
 
-		$str = $fns->prep_conditionals($str_in, $vars, $safety = 'n', $prefix = '');
+		$str = $util->prep_conditionals($str_in, $vars, $safety = FALSE, $prefix = '');
 
 		$this->assertEquals(
 			$expected_out,
-			$fns->prep_conditionals($str, $vars, $safety = 'y', $prefix = ''),
+			$util->prep_conditionals($str, $vars, $safety = TRUE, $prefix = ''),
 			"Double Prep with vars: ". $description
 		);
 
-		$str = $fns->prep_conditionals($str_in, array('whatthefoxsay' => 'Ring-ding-ding-ding-dingeringeding!'), $safety = 'n', $prefix = '');
+		$str = $util->prep_conditionals($str_in, array('whatthefoxsay' => 'Ring-ding-ding-ding-dingeringeding!'), $safety = FALSE, $prefix = '');
 
 		$this->assertEquals(
 			$expected_out,
-			$fns->prep_conditionals($str, $vars, $safety = 'y', $prefix = ''),
+			$util->prep_conditionals($str, $vars, $safety = TRUE, $prefix = ''),
 			"Double Prep without vars: ". $description
 		);
 	}
@@ -563,22 +563,13 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 	}
 }
 
-class FunctionsStub extends EE_Functions {
+class ConditionalStub extends Conditional_util {
 
-	private $fixedRandomString = '';
-
-	public function __construct($randomString)
+	public function __construct()
 	{
-		$this->EE = new StdClass();
-		$this->fixedRandomString = $randomString;
+
 	}
 
-	// remove the random element
-	public function random($type = 'encrypt', $len = 8)
-	{
-		static $i = 0;
-		return $this->fixedRandomString.($i++);
-	}
 
 	public function conditional_is_unsafe($str)
 	{
@@ -603,13 +594,6 @@ class FunctionsStub extends EE_Functions {
 
 		return $result;
 	}
-}
-
-function surrounding_character($string)
-{
-	$first_char = substr($string, 0, 1);
-
-	return ($first_char == substr($string, -1, 1)) ? $first_char : FALSE;
 }
 
 function unique_marker($ident)
