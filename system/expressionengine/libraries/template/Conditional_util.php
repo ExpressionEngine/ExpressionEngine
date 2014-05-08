@@ -61,11 +61,20 @@ class Conditional_util {
 
 		if ($return === FALSE)
 		{
-			if (ee()->config->item('debug') >= 1)
+			if (ee()->config->item('debug') == 2
+				OR (ee()->config->item('debug') == 1
+					&& ee()->session->userdata('group_id') == 1))
 			{
-				$error = ee()->lang->line('error_invalid_conditional');
-				ee()->output->fatal_error($error);
+				$error = lang('error_invalid_conditional');
 			}
+			else
+			{
+				$error = lang('generic_fatal_error');
+			}
+			ee()->output->set_status_header(500);
+			ee()->output->fatal_error($error);
+
+			exit;
 
 			exit;
 		}
@@ -79,11 +88,18 @@ class Conditional_util {
 		{
 			if ($this->conditional_is_unsafe($condition['full_open_tag']))
 			{
-				if (ee()->config->item('debug') >= 1)
+				if (ee()->config->item('debug') == 2
+					OR (ee()->config->item('debug') == 1
+						&& ee()->session->userdata('group_id') == 1))
 				{
-					$error = ee()->lang->line('error_unsafe_conditional');
-					ee()->output->fatal_error($error);
+					$error = lang('error_unsafe_conditional');
 				}
+				else
+				{
+					$error = lang('generic_fatal_error');
+				}
+				ee()->output->set_status_header(500);
+				ee()->output->fatal_error($error);
 
 				exit;
 			}
@@ -225,7 +241,10 @@ class Conditional_util {
 							case T_DNUMBER:
 							case T_IS_EQUAL:
 							case T_IS_GREATER_OR_EQUAL:
-							case T_IS_IDENTICAL:
+							// This is new functionality for conditionals
+							// (=== operator) so I am disabling it for now
+							// (SCB 5-5-2014)
+							// case T_IS_IDENTICAL:
 							case T_IS_NOT_EQUAL:
 							case T_IS_NOT_IDENTICAL:
 							case T_IS_SMALLER_OR_EQUAL:
