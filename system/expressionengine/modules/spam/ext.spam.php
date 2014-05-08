@@ -24,6 +24,8 @@
  * @link		http://ellislab.com
  */
 
+require_once PATH_MOD . 'spam/libraries/Classifier.php';
+
 class Spam_ext {
 
 	public $name = 'Spam Filter';

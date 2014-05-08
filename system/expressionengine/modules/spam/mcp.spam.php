@@ -23,11 +23,11 @@
  * @link		http://ellislab.com
  */
 
-require_once('libraries/Classifier.php');
+require_once PATH_MOD . 'spam/libraries/Classifier.php';
 
 class Spam_mcp {
 
-	public $stop_words_path = 'training/stopwords.txt';
+	public $stop_words_path = "spam/training/stopwords.txt";
 	public $stop_words = array();
 
 	/**
@@ -76,6 +76,8 @@ class Spam_mcp {
 	{
 		$this->EE->db->select('source, class');
 		$this->EE->db->from('spam_training');
+		$this->EE->db->order_by('RAND()');
+		$this->EE->db->limit(50);
 		$query = ee()->db->get();
 
 		$sources = array();
@@ -168,11 +170,12 @@ class Spam_mcp {
 	 */
 	private function _train_parameters()
 	{
-		$stop_words = explode("\n", file_get_contents($this->stop_words_path));
+		ini_set('memory_limit', '4G');
+		set_time_limit(0);
+		$stop_words = explode("\n", file_get_contents(PATH_MOD . $this->stop_words_path));
 		$training_data = $this->_get_training_data();
 		$classes = $training_data[1];
 		$training_collection = new Collection($training_data[0], $stop_words);
-		$training_collection = $training_collection->tfidf();
 		$training_classes = array();
 		$training = array();
 
@@ -194,10 +197,12 @@ class Spam_mcp {
 
 		// Loop through and calculate the parameters for each feature and class
 
-		foreach ($trainging->collection as $key => $vector)
+		foreach ($training_collection->tfidf() as $key => $vector)
 		{
 			$training_classes[$classes[$key]][] = $vector;
 		}
+		var_dump($training_classes);
+		die();
 
 		foreach ($training_classes as $class => $sources)
 		{
@@ -229,8 +234,8 @@ class Spam_mcp {
 			);
 		}
 
-		$this->EE->db->empty_table('spam_paramters'); 
-		$this->EE->db->insert_batch('spam_paramters', $training); 
+		$this->EE->db->empty_table('spam_parameters'); 
+		$this->EE->db->insert_batch('spam_parameters', $training); 
 
 		return TRUE;
 	}

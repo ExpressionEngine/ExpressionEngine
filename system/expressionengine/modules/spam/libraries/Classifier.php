@@ -23,9 +23,9 @@
  * @link		http://ellislab.com
  */
 
-require_once('Vectorize.php');
-require_once('Expectation.php');
-require_once('Distribution.php');
+require_once PATH_MOD . 'spam/libraries/Vectorize.php';
+require_once PATH_MOD . 'spam/libraries/Expectation.php';
+require_once PATH_MOD . 'spam/libraries/Distribution.php';
 
 class Classifier {
 

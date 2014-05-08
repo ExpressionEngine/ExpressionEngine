@@ -82,7 +82,7 @@ class Spam_upd {
 		);
 
 		ee()->dbforge->add_field($fields);
-		ee()->dbforge->add_key('parameter_id', TRUE);
+		ee()->dbforge->add_key('training_id', TRUE);
 		ee()->dbforge->create_table('spam_training');
 
 		// Install the extension

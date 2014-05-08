@@ -23,14 +23,14 @@
  * @link		http://ellislab.com
  */
 
-require_once('Document.php');
+require_once PATH_MOD . 'spam/libraries/Document.php';
 
 // Include our vectorizer rules
-require_once('vectorizers/ASCII_Printable.php');
-require_once('vectorizers/Entropy.php');
-require_once('vectorizers/Links.php');
-require_once('vectorizers/Punctuation.php');
-require_once('vectorizers/Spaces.php');
+require_once PATH_MOD . 'spam/libraries/vectorizers/ASCII_Printable.php';
+require_once PATH_MOD . 'spam/libraries/vectorizers/Entropy.php';
+require_once PATH_MOD . 'spam/libraries/vectorizers/Links.php';
+require_once PATH_MOD . 'spam/libraries/vectorizers/Punctuation.php';
+require_once PATH_MOD . 'spam/libraries/vectorizers/Spaces.php';
 
 class Collection {
 
@@ -184,10 +184,9 @@ class Collection {
 	 */
 	private function _tfidf($source)
 	{
-		$vector = array();
-
-		foreach ($this->vocabulary as $term)
+		foreach ($source as $term => $freq)
 		{
+			$vector = array();
 			$tf = $this->term_frequency($source, $term);
 			$idf = $this->inverse_document_frequency($term);
 			$vector[] = $tf * $idf;
