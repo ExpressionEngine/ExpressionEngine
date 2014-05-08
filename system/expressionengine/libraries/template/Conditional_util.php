@@ -353,7 +353,7 @@ class Conditional_util {
 					// for conditionals.
 					if (preg_match('/^:else(\s?}|if\s)/', $substr, $matches) != 1)
 					{
-						throw new InvalidConditionalException('Conditional is invalid.');
+						throw new InvalidConditionalException('Conditional is invalid: "{if:" is reserverd for conditionals.');
 					}
 
 					// if it's an else, not an elseif, then it won't have a body,
@@ -375,7 +375,7 @@ class Conditional_util {
 			// No sense continuing if we cannot find a {/if}
 			if (strpos($str, '{/if}', $i + 3) === FALSE)
 			{
-				throw new InvalidConditionalException('Conditional is invalid.');
+				throw new InvalidConditionalException('Conditional is invalid: missing a "{/if}".');
 			}
 
 			$start   = $i;
@@ -471,7 +471,7 @@ class Conditional_util {
 			// Not in an end state, or curly braces are unbalanced, "error" out
 			if ($state != 'END' || $curlies != 0)
 			{
-				throw new InvalidConditionalException('Conditional is invalid.');
+				throw new InvalidConditionalException('Conditional is invalid: not in an end state or unbalanced curly braces.');
 			}
 
 			$end = $i;
