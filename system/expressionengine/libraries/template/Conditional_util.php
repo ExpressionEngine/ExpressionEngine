@@ -383,9 +383,9 @@ class Conditional_util {
 			$state   = 'OK';
 			$curlies = 0;
 
-			$variables = array();
-			$variable_texts = array();
-			$variable_placeholders = array();
+			$string_literal_values = array();
+			$quoted_string_literals = array();
+			$string_literal_placeholders = array();
 
 			while ($i < $str_length)
 			{
@@ -442,11 +442,11 @@ class Conditional_util {
 				// state, so store the string in a variable and reset
 				elseif ($state == 'EOS')
 				{
-					$variables[] = stripslashes($buffer);
-					$variable_texts[] = $char.$buffer.$char;
+					$string_literal_values[] = stripslashes($buffer);
+					$quoted_string_literals[] = $char.$buffer.$char;
 
 					$var_count++;
-					$variable_placeholders[] = 'var_'.$rand.$var_count;
+					$string_literal_placeholders[] = 'var_'.$rand.$var_count;
 
 					$state = 'OK';
 					$buffer = '';
@@ -482,9 +482,9 @@ class Conditional_util {
 
 			// If we found strings, we replace the fully matched conditional
 			// with one that has placeholders instead of any of the strings.
-			if (count($variable_placeholders))
+			if (count($string_literal_placeholders))
 			{
-				$full_conditional = str_replace($variable_texts, $variable_placeholders, $full_conditional);
+				$full_conditional = str_replace($quoted_string_literals, $string_literal_placeholders, $full_conditional);
 				$str = substr_replace($str, $full_conditional, $start, $end - $start);
 
 				// Adjust our while loop conditions
@@ -492,7 +492,7 @@ class Conditional_util {
 				$i = $i + ($new_length - $str_length);
 				$str_length = $new_length;
 
-				$strings = array_combine($variable_placeholders, $variables);
+				$strings = array_combine($string_literal_placeholders, $string_literal_values);
 			}
 
 			// TODO this can be sped up by incorporating the valid conditional check above
