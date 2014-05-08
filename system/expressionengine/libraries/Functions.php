@@ -2377,7 +2377,46 @@ class EE_Functions {
 
 		$bool_safety = ($safety == 'n') ? FALSE : TRUE;
 
-		return $util->prep_conditionals($str, $vars, $bool_safety, $prefix);
+		try
+		{
+			$prepped_string = $util->prep_conditionals($str, $vars, $bool_safety, $prefix);
+		}
+		catch (UnsafeConditionalException $e)
+		{
+			if (ee()->config->item('debug') == 2
+				OR (ee()->config->item('debug') == 1
+					&& ee()->session->userdata('group_id') == 1))
+			{
+				$error = lang('error_unsafe_conditional');
+			}
+			else
+			{
+				$error = lang('generic_fatal_error');
+			}
+			ee()->output->set_status_header(500);
+			ee()->output->fatal_error($error);
+
+			exit;
+		}
+		catch (InvalidConditionalException $e)
+		{
+			if (ee()->config->item('debug') == 2
+				OR (ee()->config->item('debug') == 1
+					&& ee()->session->userdata('group_id') == 1))
+			{
+				$error = lang('error_invalid_conditional');
+			}
+			else
+			{
+				$error = lang('generic_fatal_error');
+			}
+			ee()->output->set_status_header(500);
+			ee()->output->fatal_error($error);
+
+			exit;
+		}
+
+		return $prepped_string;
 	}
 
 	private function get_conditional_util()

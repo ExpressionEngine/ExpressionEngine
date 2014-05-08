@@ -61,22 +61,7 @@ class Conditional_util {
 
 		if ($return === FALSE)
 		{
-			if (ee()->config->item('debug') == 2
-				OR (ee()->config->item('debug') == 1
-					&& ee()->session->userdata('group_id') == 1))
-			{
-				$error = lang('error_invalid_conditional');
-			}
-			else
-			{
-				$error = lang('generic_fatal_error');
-			}
-			ee()->output->set_status_header(500);
-			ee()->output->fatal_error($error);
-
-			exit;
-
-			exit;
+			throw new InvalidConditionalException('Conditional is invalid.');
 		}
 
 		list($str, $conditionals) = $return;
@@ -88,20 +73,7 @@ class Conditional_util {
 		{
 			if ($this->conditional_is_unsafe($condition['full_open_tag']))
 			{
-				if (ee()->config->item('debug') == 2
-					OR (ee()->config->item('debug') == 1
-						&& ee()->session->userdata('group_id') == 1))
-				{
-					$error = lang('error_unsafe_conditional');
-				}
-				else
-				{
-					$error = lang('generic_fatal_error');
-				}
-				ee()->output->set_status_header(500);
-				ee()->output->fatal_error($error);
-
-				exit;
+				throw new UnsafeConditionalException('Conditional is unsafe.');
 			}
 		}
 
@@ -700,6 +672,8 @@ class Conditional_util {
 		// quote it as a proper string
 		return '"' . $value . '"';
 	}
-
-
 }
+
+class ConditionalException extends Exception {}
+class UnsafeConditionalException extends ConditionalException {}
+class InvalidConditionalException extends ConditionalException {}
