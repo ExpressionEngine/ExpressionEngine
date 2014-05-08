@@ -57,15 +57,7 @@ class Conditional_util {
 			}
 		}
 
-		$return = $this->extract_conditionals($str, $vars);
-
-		if ($return === FALSE)
-		{
-			throw new InvalidConditionalException('Conditional is invalid.');
-		}
-
-		list($str, $conditionals) = $return;
-		unset($return);
+		list($str, $conditionals) = $this->extract_conditionals($str, $vars);
 
 		// Check conditionals for unsafe characters and mark any conditionals
 		// strings that potential contained EE tags
@@ -306,7 +298,7 @@ class Conditional_util {
 	 *
 	 * @param $str The template chunk to look through
 	 * @param $vars Any variables that will be in the conditional
-	 * @return Array|bool [new chunk, new variables] or FALSE on error
+	 * @return Array [new chunk, new variables]
 	 */
 	public function extract_conditionals($str, $vars)
 	{
@@ -361,7 +353,7 @@ class Conditional_util {
 					// for conditionals.
 					if (preg_match('/^:else(\s?}|if\s)/', $substr, $matches) != 1)
 					{
-						return FALSE;
+						throw new InvalidConditionalException('Conditional is invalid.');
 					}
 
 					// if it's an else, not an elseif, then it won't have a body,
@@ -383,7 +375,7 @@ class Conditional_util {
 			// No sense continuing if we cannot find a {/if}
 			if (strpos($str, '{/if}', $i + 3) === FALSE)
 			{
-				return FALSE;
+				throw new InvalidConditionalException('Conditional is invalid.');
 			}
 
 			$start   = $i;
@@ -479,7 +471,7 @@ class Conditional_util {
 			// Not in an end state, or curly braces are unbalanced, "error" out
 			if ($state != 'END' || $curlies != 0)
 			{
-				return FALSE;
+				throw new InvalidConditionalException('Conditional is invalid.');
 			}
 
 			$end = $i;
