@@ -910,13 +910,20 @@ class EE_Typography extends CI_Typography {
 
 		foreach($this->safe_decode as $key => $val)
 		{
-			if (is_array($val) && isset($val['property']))
+			if (is_array($val)
+				&& isset($val['property'])
+				&& preg_match_all('/\['.$key.'=(.*?)\](.*?)\[\/'.$key.'\]/is', $str, $matches, PREG_SET_ORDER))
 			{
-				$str = preg_replace(
-					'/\['.$key.'=(.*?)\](.*?)\[\/'.$key.'\]/is',
-					"<".$val['tag']." ".$val['property']."=\\1>\\2</".$val['tag'].">",
-					$str
-				);
+				foreach ($matches as $tag_match)
+				{
+					$tag_match[1] = ee()->security->xss_clean($tag_match[1]);
+
+					$str = str_replace(
+						$tag_match[0],
+						"<".$val['tag']." ".$val['property']."=".$tag_match[1].">".$tag_match[2]."</".$val['tag'].">",
+						$str
+					);
+				}
 			}
 			else
 			{
