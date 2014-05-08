@@ -309,7 +309,25 @@ class Conditional_util {
 		$var_count = 0;
 		$found_conditionals = array();
 
-		$ascii = array(
+		// We use a finite state machine to walk through
+		// the conditional and find the correct closing
+		// bracket.
+		//
+		// The following arrays describe the state machine as
+		// a list of character classes, edges, and transitions.
+
+
+		// An array of 128 elements, one for each ascii character at its ordinal
+		// index. We use this to define character classes.
+		//
+		// For example, all of these will result in C_WHITE:
+		//
+		// $ascii_map[ord(' ')]
+		// $ascii_map[ord("\n")]
+		// $ascii_map[ord("\t")]
+		// $ascii_map[ord("\r")]
+
+		$ascii_map = array(
 			'__',		'__',		'__',		'__',		'__',		'__',		'__',		'__',
 			'__',		'C_WHITE',	'C_WHITE',	'__',		'__',		'C_WHITE',	'__',		'__',
 			'__',		'__',		'__',		'__',		'__',		'__',		'__',		'__',
@@ -331,17 +349,8 @@ class Conditional_util {
 			'C_ABC',	'C_ABC',	'C_ABC',	'C_LD',		'C_PIPE',	'C_RD',		'C_ETC',	'C_ETC'
 		);
 
-		// We use a finite state machine to walk through
-		// the conditional and find the correct closing
-		// bracket.
-		//
-		// States:
-		//		OK	- default
-		//		SS	- string single 'str'
-		//		SD	- string double "str"
-		//		ESC	- \escaped				[event]
-		//		EOS	- end of string			[event]
-		//		END	- done					[event]
+		// Hitting an edge causes a transition to happen. The edges are
+		// named after the ascii group that causes the transition.
 
 		$edges = array(
 			'C_BACKS'	=> 0,	// \
@@ -355,6 +364,9 @@ class Conditional_util {
 			'C_COLON'	=> 8,	// :
 		);
 
+		// Hitting an edge triggers a lookup in the transition table to see
+		// if the current state needs to change.
+
 		// Some notes on these transitions:
 		//
 		// • Numbers can transition to variables, but variables can never transition
@@ -367,6 +379,22 @@ class Conditional_util {
 		//
 		// NUM + : -> ERR
 		// OK +  : -> ERR
+
+		// Available States:
+		//
+		// Any labelled as events do not have transitions of their own and are
+		// handled in the loop directly.
+		//
+		//		OK	- default
+		//		SS	- string single 'str'
+		//		SD	- string double "str"
+		//		VAR - inside a variable
+		//		NUM	- inside a number
+		//		ESC	- \escaped				[event]
+		//		LD	- {						[event]
+		//		RD	- }						[event]
+		//		EOS	- end of string			[event]
+		//		END	- done					[event]
 
 		$transitions = array(// \	'		"		{		}		ABC		DIGIT	-		:	indexes match $edges
 			'OK'	=> array('ESC',	'SS',	'SD',	'LD',	'RD',	'VAR',	'NUM',	'OK',	'OK'),
@@ -448,7 +476,7 @@ class Conditional_util {
 				// This should hold true because all control characters and php
 				// operators are in the ascii map.
 				$chr = ord($char);
-				$edge_name = ($chr >= 128) ? 'C_ABC' : $ascii[$chr];
+				$edge_name = ($chr >= 128) ? 'C_ABC' : $ascii_map[$chr];
 
 				// If the edge exists, we transition. Otherwise we stay in
 				// our current state.
