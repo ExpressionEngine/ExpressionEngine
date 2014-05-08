@@ -309,6 +309,28 @@ class Conditional_util {
 		$var_count = 0;
 		$found_conditionals = array();
 
+		$ascii = array(
+			'__',		'__',		'__',		'__',		'__',		'__',		'__',		'__',
+			'__',		'C_WHITE',	'C_WHITE',	'__',		'__',		'C_WHITE',	'__',		'__',
+			'__',		'__',		'__',		'__',		'__',		'__',		'__',		'__',
+			'__',		'__',		'__',		'__',		'__',		'__',		'__',		'__',
+
+			'C_SPACE',	'C_NOT',	'C_DQUOTE',	'C_HASH',	'C_DOLLAR',	'C_MOD',	'C_AMP',	'C_SQUOTE',
+			'C_LPAREN',	'C_RPAREN',	'C_STAR',	'C_PLUS',	'C_ETC',	'C_MINUS',	'C_POINT',	'C_SLASH',
+			'C_DIGIT',	'C_DIGIT',	'C_DIGIT',	'C_DIGIT',	'C_DIGIT',	'C_DIGIT',	'C_DIGIT',	'C_DIGIT',
+			'C_DIGIT',	'C_DIGIT',	'C_COLON',	'C_SMICOL',	'C_LT',		'C_EQ',		'C_GT',		'C_QUESTION',
+
+			'C_ETC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',
+			'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',
+			'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',
+			'C_ABC',	'C_ABC',	'C_ABC',	'C_LSQRB',	'C_BACKS',	'C_RSRQB',	'C_HAT',	'C_ABC', // underscore is a letter for our needs
+
+			'C_BTICK',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',
+			'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',
+			'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',
+			'C_ABC',	'C_ABC',	'C_ABC',	'C_LD',		'C_PIPE',	'C_RD',		'C_ETC',	'C_ETC'
+		);
+
 		// We use a finite state machine to walk through
 		// the conditional and find the correct closing
 		// bracket.
@@ -322,22 +344,47 @@ class Conditional_util {
 		//		END	- done					[event]
 
 		$edges = array(
-			'\\' => 0,
-			"'"  => 1,
-			'"'  => 2,
-			'}'  => 3
+			'C_BACKS'	=> 0,	// \
+			"C_SQUOTE"	=> 1,	// '
+			'C_DQUOTE'	=> 2,	// "
+			'C_LD'		=> 3,	// {
+			'C_RD'		=> 4,	// },
+			'C_ABC'		=> 5,	// letters
+			'C_DIGIT'	=> 6,	// numbers
+			'C_MINUS'	=> 8,	// -
+			'C_COLON'	=> 8,	// :
 		);
 
-		$transitions = array(// \    '     "     }    - matches $edges
-			'OK'	=> array('ESC', 'SS', 'SD', 'END'),
-			'SS'	=> array('ESC', 'EOS', 'SS', 'SS'),
-			'SD'	=> array('ESC', 'SD', 'EOS', 'SD')
+		// Some notes on these transitions:
+		//
+		// • Numbers can transition to variables, but variables can never transition
+		//   to numbers. So if we're in a variable state, then we remain there.
+		// • A period in a number state currently transitions back to an OK state
+		//   since we don't want the above rule to trigger variables with dots in them
+		//
+		// Potential error transitions:
+		// (currently transition to OK and get caught later)
+		//
+		// NUM + : -> ERR
+		// OK +  : -> ERR
+
+		$transitions = array(// \	'		"		{		}		ABC		DIGIT	-		:	indexes match $edges
+			'OK'	=> array('ESC',	'SS',	'SD',	'LD',	'RD',	'VAR',	'NUM',	'OK',	'OK'),
+			'SS'	=> array('ESC',	'EOS',	'SS',	'SS',	'SS',	'SS',	'SS',	'SS',	'SS'),
+			'SD'	=> array('ESC',	'SD',	'EOS',	'SD',	'SD',	'SD',	'SD',	'SD',	'SD'),
+			'VAR'	=> array('ESC',	'SS',	'SD',	'LD',	'RD',	'VAR',	'VAR',	'VAR',	'VAR'),
+			'NUM'	=> array('ESC',	'SS',	'SD',	'LD',	'RD',	'VAR',	'NUM',	'OK',	'OK'),
 		);
 
 		$rand = md5(uniqid(mt_rand()));
 
 		while (($i = strpos($str, '{if', $i)) !== FALSE)
 		{
+			$start   = $i;
+			$buffer  = '';
+			$state   = 'OK';
+			$curlies = 0;
+
 			// Confirm this is a conditional and not some other tag
 			$char = $str[$i + 3];
 
@@ -363,6 +410,8 @@ class Conditional_util {
 						$i += 3;
 						continue;
 					}
+
+					$i += strlen($matches[0]);
 				}
 				else
 				{
@@ -371,6 +420,10 @@ class Conditional_util {
 					continue;
 				}
 			}
+			else
+			{
+				$i += 3;
+			}
 
 			// No sense continuing if we cannot find a {/if}
 			if (strpos($str, '{/if}', $i + 3) === FALSE)
@@ -378,51 +431,73 @@ class Conditional_util {
 				throw new InvalidConditionalException('Conditional is invalid: missing a "{/if}".');
 			}
 
-			$start   = $i;
-			$buffer  = '';
-			$state   = 'OK';
-			$curlies = 0;
 
+			$variables = array();
 			$string_literal_values = array();
 			$quoted_string_literals = array();
 			$string_literal_placeholders = array();
 
 			while ($i < $str_length)
 			{
-				// performance improvement, seek forward to next transition
-				if ($skip = strcspn($str, '\\\'"{}', $i))
-				{
-					if ($state == 'SS' || $state == 'SD')
-					{
-						$buffer .= substr($str, $i, $skip);
-					}
-
-					$i += $skip;
-				}
-
+				// Grab the new character and save the old state.
 				$char = $str[$i++];
 				$old_state = $state;
 
-				// Checking for balanced curly braces
-				if ($state == 'OK')
+				// If it's an ascii character we get its name from the ascii
+				// map, otherwise we simply assume that it's safe for strings.
+				// This should hold true because all control characters and php
+				// operators are in the ascii map.
+				$chr = ord($char);
+				$edge_name = ($chr >= 128) ? 'C_ABC' : $ascii[$chr];
+
+				// If the edge exists, we transition. Otherwise we stay in
+				// our current state.
+				if (isset($edges[$edge_name]))
 				{
-					if ($char == '{')
+					$edge  = $edges[$edge_name];
+					$state = $transitions[$old_state][$edge];
+				}
+
+				// Track variables
+				if ($state == 'VAR' || $state == 'NUM')
+				{
+					// Manually transition out of state and store the buffer
+					if ($edge_name != 'C_ABC' && $edge_name != 'C_DIGIT' &&
+						$edge_name != 'C_COLON' && $edge_name != 'C_MINUS')
 					{
-						$curlies++;
+						if ($state == 'VAR')
+						{
+							$variables[] = $buffer;
+						}
+
+						$buffer = '';
+						$state = 'OK';
 					}
-					elseif ($char == '}')
+					else
 					{
-						$curlies--;
+						$buffer .= $char;
 					}
 				}
 
-				// if this is a transition, switch states, checking for false
-				// '}' transitions
-				if (isset($edges[$char]) && ! ($char == '}' && $curlies > 0))
+
+				// Checking for balanced curly braces
+				if ($state == 'RD')
 				{
-					$edge  = $edges[$char];
-					$state = $transitions[$old_state][$edge];
+					if ($curlies == 0)
+					{
+						$state = 'END';
+						break;
+					}
+
+					$curlies--;
+					$state = 'OK';
 				}
+				elseif ($state == 'LD')
+				{
+					$curlies++;
+					$state = 'OK';
+				}
+
 
 				// On escape, store char and restore previous state
 				if ($state == 'ESC')
@@ -430,12 +505,6 @@ class Conditional_util {
 					$buffer .= $char;
 					$char = $str[$i++];
 					$state = $old_state; // pretend nothing happened
-				}
-
-				// On end, we stop this loop
-				elseif ($state == 'END')
-				{
-					break;
 				}
 
 				// Hitting the end of a string must mean we're back to an OK
@@ -454,7 +523,7 @@ class Conditional_util {
 
 				// END Events
 
-				// Handle strings
+				// Handle buffers
 				if ($state == 'SS' || $state == 'SD')
 				{
 					if ($state == $old_state)
@@ -502,8 +571,9 @@ class Conditional_util {
 			$found_conditionals[] = array(
 				'full_open_tag'	=> $full_conditional,
 				'condition'		=> $condition,
-				'strings'		=> $strings
-				// future: variables, numbers, operators?
+				'strings'		=> $strings,
+				'variables'		=> $variables
+				// future: numbers, operators?
 			);
 		}
 
