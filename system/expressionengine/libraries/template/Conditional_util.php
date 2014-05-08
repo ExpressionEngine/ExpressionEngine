@@ -217,8 +217,8 @@ class Conditional_util {
 							// (=== operator) so I am disabling it for now
 							// (SCB 5-5-2014)
 							// case T_IS_IDENTICAL:
+							// case T_IS_NOT_IDENTICAL:
 							case T_IS_NOT_EQUAL:
-							case T_IS_NOT_IDENTICAL:
 							case T_IS_SMALLER_OR_EQUAL:
 								$buffer .= $token[1];
 								break;
