@@ -363,7 +363,7 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			array('Integer as invalid variable',	'{if 42}out{/if}',			'{if 42}out{/if}',			array('42' => 'foo')),
 			array('Hex as invalid variable',		'{if 0xDEADBEEF}out{/if}',	'{if 0xDEADBEEF}out{/if}',	array('0xDEADBEEF' => 'foo')),
 			array('Float as invalid variable',		'{if 42.7}out{/if}',		'{if 42.7}out{/if}',		array('42.7' => 'foo')),
-			array('Dashint as invalid variable',	'{if -42}out{/if}',			'{if - 42}out{/if}',			array('-42' => 'foo')),
+			array('Dashint as invalid variable',	'{if -42}out{/if}',			'{if -42}out{/if}',			array('-42' => 'foo')),
 			array('Dashalpha as invalid variable',	'{if -a}out{/if}',			'{if - FALSE}out{/if}',		array('-a' => 'foo')),
 		);
 	}
@@ -384,7 +384,7 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			array('Compare FALSE Boolean',	'{if xyz > FALSE}out{/if}',		'{if "" > FALSE}out{/if}',		array('xyz' => FALSE)),
 			array('Compare Zero Int',		'{if xyz < 0}out{/if}',			'{if "0" < 0}out{/if}',			array('xyz' => 0)),
 			array('Compare Positive Int',	'{if xyz <> 5}out{/if}',		'{if "5" <> 5}out{/if}',		array('xyz' => 5)),
-			array('Compare Negative Int',	'{if xyz>-5}out{/if}',			'{if "-5" >- 5}out{/if}',		array('xyz' => -5)),
+			array('Compare Negative Int',	'{if xyz>-5}out{/if}',			'{if "-5" > -5}out{/if}',		array('xyz' => -5)),
 			array('Compare Empty String',	'{if xyz<=""}out{/if}',			'{if "" <= ""}out{/if}',		array('xyz' => '')),
 			array('Compare FALSE Booleans',	'{if xyz == FALSE}out{/if}',	'{if "" == FALSE}out{/if}',		array('xyz' => FALSE)),
 			array('Compare TRUE Booleans',	'{if xyz == TRUE}out{/if}',		'{if "1" == TRUE}out{/if}',		array('xyz' => TRUE)),
@@ -534,7 +534,7 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			array('Concatenation without spaces',			'{if string.string}out{/if}', '{if "ee" . "ee"}out{/if}'),
 			array('Subtract dash-words variable',			'{if a-number - int}out{/if}', '{if "15" - "5"}out{/if}', array('a-number' => 15)),
 			array('Mulitple Subtract dash-words variable',	'{if a-bigger-number - int}out{/if}', '{if "23" - "5"}out{/if}', array('a-bigger-number' => 23)),
-			array('Make a variable negative',				'{if -12 < -count}out{/if}', '{if - 12 < - "15"}out{/if}', array('count' => 15)),
+			array('Make a variable negative',				'{if -12 < -count}out{/if}', '{if -12 < - "15"}out{/if}', array('count' => 15)),
 		);
 	}
 

@@ -230,12 +230,28 @@ class Conditional_lexer {
 					$state = $transitions[$old_state][$edge];
 				}
 
+				if ($char == '-')
+				{
+					$next_chr = ord($this->peek());
+					$next_char_class = ($next_chr >= 128) ? 'C_ABC' : $ascii_map[$next_chr];
+
+					if (($old_state == 'VAR' || $old_state == 'NUM') && $next_char_class == 'C_ABC')
+					{
+						$state = 'VAR';
+					}
+					elseif ($old_state == 'OK' && $next_char_class == 'C_DIGIT')
+					{
+						$state = 'NUM';
+					}
+				}
+
 				// Track variables
 				if ($state == 'VAR' || $state == 'NUM')
 				{
 					if ($old_state != 'NUM' && $old_state != 'VAR')
 					{
 						$token_type = in_array($buffer, $this->operators) ? 'OPERATOR' : 'MISC';
+						var_dump(array('state' => $state, 'old_state' => $old_state, 'buffer' => $buffer, 'token_type' => $token_type));
 						$this->addToken($token_type, $buffer);
 						$buffer = '';
 					}
