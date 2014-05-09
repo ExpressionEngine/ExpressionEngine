@@ -24,6 +24,14 @@ class Conditional_lexer {
 		'MISC',				// other stuff such as operators, whitespace, and numbers
 	);
 
+	private $operators = array(
+		'(', ')',
+		'||', '&&',
+		'==', '!=', '<=', '>=', '<>', '<', '>',
+		'%', '+', '-',
+		'.',
+	);
+
 	private $token_values;
 
 	private $patterns = array();
@@ -227,7 +235,8 @@ class Conditional_lexer {
 				{
 					if ($old_state != 'NUM' && $old_state != 'VAR')
 					{
-						$this->addToken('MISC', $buffer);
+						$token_type = in_array($buffer, $this->operators) ? 'OPERATOR' : 'MISC';
+						$this->addToken($token_type, $buffer);
 						$buffer = '';
 					}
 
@@ -424,17 +433,11 @@ class Conditional_lexer {
 	// get operator regex in a peekRegex compatible format
 	private function getOperatorRegex()
 	{
-		$operators = array(
-			'(', ')',
-			'||', '&&',
-			'==', '!=', '<=', '>=', '<>', '<', '>',
-			'%', '+', '-',
-			'.',
-		);
+		$operators = array();
 
-		foreach ($operators as &$operator)
+		foreach ($this->operators as $operator)
 		{
-			$operator = preg_quote($operator, '/');
+			$operators[] = preg_quote($operator, '/');
 		}
 
 		return '('.implode('|', $operators).')';
