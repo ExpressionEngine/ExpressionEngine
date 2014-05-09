@@ -248,7 +248,7 @@ class Conditional_lexer {
 				// Track variables
 				if ($state == 'VAR' || $state == 'NUM')
 				{
-					if ($old_state != 'NUM' && $old_state != 'VAR')
+					if ($old_state != 'VAR' && $old_state != 'NUM')
 					{
 						$token_type = in_array($buffer, $this->operators) ? 'OPERATOR' : 'MISC';
 						var_dump(array('state' => $state, 'old_state' => $old_state, 'buffer' => $buffer, 'token_type' => $token_type));
