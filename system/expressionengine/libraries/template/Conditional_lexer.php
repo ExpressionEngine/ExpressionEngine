@@ -396,7 +396,7 @@ class Conditional_lexer {
 	// Seek to the first character in char mask
 	private function seekTo($charMask)
 	{
-		$n = strcspn($this->str, '{}');
+		$n = strcspn($this->str, $charMask);
 		return $this->move($n);
 	}
 
