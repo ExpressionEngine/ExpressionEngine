@@ -177,7 +177,7 @@ class Conditional_lexer {
 					// something else
 					if ($this->peek(4) == '{if:') // sanity check, could be in a better place
 					{
-						throw new InvalidConditionalException('Conditional is invalid: "{if:" is reserverd for conditionals.');
+						throw new InvalidConditionalException('Conditional is invalid: "{if:" is reserverd for conditionals. Found: ' . $potential_if);
 					}
 
 					$this->addToken('TEMPLATE_STRING', $this->next());
@@ -335,7 +335,7 @@ class Conditional_lexer {
 			// Not in an end state, or curly braces are unbalanced, "error" out
 			if ($state != 'END' || $curlies != 0)
 			{
-				throw new InvalidConditionalException('Conditional is invalid: not in an end state or unbalanced curly braces.');
+				throw new InvalidConditionalException('Conditional is invalid: not in an end state or unbalanced curly braces. State is '.$state.'. Curly count is '.$curlies.'.');
 			}
 
 			// Handle any buffer contents from before we hit the closing brace
