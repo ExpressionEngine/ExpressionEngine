@@ -257,14 +257,15 @@ class Conditional_lexer {
 
 						$buffer = '';
 						$state = 'OK';
-
-						// We need to put this back because we've not used it
-						$this->str = $char.$this->str;
 					}
 				}
 
 				if ($state == 'OK')
 				{
+					// $this->next() consumes a character, but we need it for
+					// this operator check
+					$this->str = $char.$this->str;
+
 					$regex = $this->patterns['operators'];
 
 					$operator = $this->peekRegex($regex);
@@ -293,6 +294,12 @@ class Conditional_lexer {
 
 						$buffer = '';
 						continue;
+					}
+					else
+					{
+						// Remove the character we put back; we didn't find
+						// anything
+						$this->next();
 					}
 
 				}
