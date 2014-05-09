@@ -257,6 +257,9 @@ class Conditional_lexer {
 
 						$buffer = '';
 						$state = 'OK';
+
+						// We need to put this back because we've not used it
+						$this->str = $char.$this->str;
 					}
 				}
 
