@@ -167,9 +167,9 @@ class Conditional_lexer {
 				case "{if":
 					$this->addToken('IF', $this->move(strlen($potential_if)));
 					break;;
-				case "{if:else":
+				case "{if:else}":
 					$this->addToken('ELSE', $this->move(strlen($potential_if)));
-					break;
+					continue 2;
 				case "{if:elseif":
 					$this->addToken('ELSEIF', $this->move(strlen($potential_if)));
 					break;
