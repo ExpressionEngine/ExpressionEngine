@@ -184,6 +184,12 @@ class Conditional_lexer {
 					continue 2;
 			}
 
+			// No sense continuing if we cannot find a {/if}
+			if (strpos($this->str, '{/if}') === FALSE)
+			{
+				throw new InvalidConditionalException('Conditional is invalid: missing a "{/if}".');
+			}
+
 			$buffer  = '';
 			$state   = 'OK';
 			$curlies = 0;
