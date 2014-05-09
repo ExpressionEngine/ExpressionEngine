@@ -270,7 +270,7 @@ class Conditional_lexer {
 						// todo this needs work
 						if ($char == $operator[$oplength - 1] && $char != ')' && $char != '(')
 						{
-							$tokens[] = array('MISC', $buffer.$operator.$char);
+							$tokens[] = $this->addToken('MISC', $buffer.$operator.$char);
 							$this->next();
 						}
 						else
