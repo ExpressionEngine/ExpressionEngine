@@ -395,7 +395,8 @@ class Conditional_lexer {
 	// add token to the token stream
 	public function addToken($type, $value)
 	{
-		if ($value != '')
+		// Always store strings, even empty ones
+		if ($type == 'STRING' || $value != '')
 		{
 			$this->tokens[] = array($type, $value);
 		}
