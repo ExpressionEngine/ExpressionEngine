@@ -284,11 +284,11 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 	protected function plainComparisonTestsNoWhitespace()
 	{
 		return array(
-			array('Plain == Integer No Space',	'{if 5==5}out{/if}',	'{if 5==5}out{/if}'),
-			array('Plain != Integer No Space',	'{if 5!=7}out{/if}',	'{if 5!=7}out{/if}'),
-			array('Plain > Integer No Space',	'{if 7>5}out{/if}',		'{if 7>5}out{/if}'),
-			array('Plain < Integer No Space',	'{if 5<7}out{/if}',		'{if 5<7}out{/if}'),
-			array('Plain <> Integer No Space',	'{if 5<>7}out{/if}',	'{if 5<>7}out{/if}'),
+			array('Plain == Integer No Space',	'{if 5==5}out{/if}',	'{if 5 == 5}out{/if}'),
+			array('Plain != Integer No Space',	'{if 5!=7}out{/if}',	'{if 5 != 7}out{/if}'),
+			array('Plain > Integer No Space',	'{if 7>5}out{/if}',		'{if 7 > 5}out{/if}'),
+			array('Plain < Integer No Space',	'{if 5<7}out{/if}',		'{if 5 < 7}out{/if}'),
+			array('Plain <> Integer No Space',	'{if 5<>7}out{/if}',	'{if 5 <> 7}out{/if}'),
 		);
 	}
 
@@ -306,8 +306,8 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 	protected function plainLogicOperatorTestsNoWhitespace()
 	{
 		return array(
-			array('Plain && Integer No Space',	'{if 5&&5}out{/if}',	'{if 5&&5}out{/if}'),
-			array('Plain || Integer No Space',	'{if 5||7}out{/if}',	'{if 5||7}out{/if}'),
+			array('Plain && Integer No Space',	'{if 5&&5}out{/if}',	'{if 5 && 5}out{/if}'),
+			array('Plain || Integer No Space',	'{if 5||7}out{/if}',	'{if 5 || 7}out{/if}'),
 			// the string ones are in wonkySpacelessStringLogicOperators as they generate invalid php
 		);
 	}
@@ -317,8 +317,8 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 		return array(
 			array('Modulo Integers',				'{if 15 % 5}out{/if}',			'{if 15 % 5}out{/if}'),
 			array('Modulo Strings',					'{if "foo" % "bar"}out{/if}',	'{if "foo" % "bar"}out{/if}'),
-			array('Modulo Integers no Whitespace',	'{if 15%5}out{/if}',			'{if 15%5}out{/if}'),
-			array('Modulo Strings no Whitespace',	'{if "foo"%"bar"}out{/if}',		'{if "foo"%"bar"}out{/if}'),
+			array('Modulo Integers no Whitespace',	'{if 15%5}out{/if}',			'{if 15 % 5}out{/if}'),
+			array('Modulo Strings no Whitespace',	'{if "foo"%"bar"}out{/if}',		'{if "foo" % "bar"}out{/if}'),
 		);
 	}
 
@@ -363,7 +363,7 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			array('Integer as invalid variable',	'{if 42}out{/if}',			'{if 42}out{/if}',			array('42' => 'foo')),
 			array('Hex as invalid variable',		'{if 0xDEADBEEF}out{/if}',	'{if 0xDEADBEEF}out{/if}',	array('0xDEADBEEF' => 'foo')),
 			array('Float as invalid variable',		'{if 42.7}out{/if}',		'{if 42.7}out{/if}',		array('42.7' => 'foo')),
-			array('Dashint as invalid variable',	'{if -42}out{/if}',			'{if -42}out{/if}',			array('-42' => 'foo')),
+			array('Dashint as invalid variable',	'{if -42}out{/if}',			'{if - 42}out{/if}',			array('-42' => 'foo')),
 			array('Dashalpha as invalid variable',	'{if -a}out{/if}',			'{if - FALSE}out{/if}',		array('-a' => 'foo')),
 		);
 	}
@@ -384,11 +384,11 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			array('Compare FALSE Boolean',	'{if xyz > FALSE}out{/if}',		'{if "" > FALSE}out{/if}',		array('xyz' => FALSE)),
 			array('Compare Zero Int',		'{if xyz < 0}out{/if}',			'{if "0" < 0}out{/if}',			array('xyz' => 0)),
 			array('Compare Positive Int',	'{if xyz <> 5}out{/if}',		'{if "5" <> 5}out{/if}',		array('xyz' => 5)),
-			array('Compare Negative Int',	'{if xyz>-5}out{/if}',			'{if "-5">-5}out{/if}',			array('xyz' => -5)),
-			array('Compare Empty String',	'{if xyz<=""}out{/if}',			'{if ""<=""}out{/if}',			array('xyz' => '')),
+			array('Compare Negative Int',	'{if xyz>-5}out{/if}',			'{if "-5" >- 5}out{/if}',		array('xyz' => -5)),
+			array('Compare Empty String',	'{if xyz<=""}out{/if}',			'{if "" <= ""}out{/if}',		array('xyz' => '')),
 			array('Compare FALSE Booleans',	'{if xyz == FALSE}out{/if}',	'{if "" == FALSE}out{/if}',		array('xyz' => FALSE)),
 			array('Compare TRUE Booleans',	'{if xyz == TRUE}out{/if}',		'{if "1" == TRUE}out{/if}',		array('xyz' => TRUE)),
-			array('Compare NoSpace Bools',	'{if FALSE!=TRUE}out{/if}',		'{if FALSE!=TRUE}out{/if}',		array('xyz' => TRUE)),
+			array('Compare NoSpace Bools',	'{if FALSE!=TRUE}out{/if}',		'{if FALSE != TRUE}out{/if}',	array('xyz' => TRUE)),
 			array('Compare Not Bool',		'{if !TRUE}out{/if}',			'{if FALSE TRUE}out{/if}',		array('xyz' => TRUE)),
 			array('Compare Not Bool Space',	'{if ! TRUE}out{/if}',			'{if FALSE TRUE}out{/if}',		array('xyz' => TRUE)),
 		);
@@ -397,9 +397,9 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 	protected function advancedAndsAndOrs()
 	{
 		return array(
-			array('All ANDs',			'{if "foo" && "bar" && 5 && 7&&"baz" AND "bat"}out{/if}',	'{if "foo" && "bar" && 5 && 7&&"baz" AND "bat"}out{/if}'),
-			array('All ORs',			'{if "foo" || "bar" || 5 || 7||"baz" OR "bat"}out{/if}',	'{if "foo" || "bar" || 5 || 7||"baz" OR "bat"}out{/if}'),
-			array('Mixed ORs and ANDs',	'{if "foo" OR "bar" && 5 || 7||"baz" AND "bat"}out{/if}',	'{if "foo" OR "bar" && 5 || 7||"baz" AND "bat"}out{/if}'),
+			array('All ANDs',			'{if "foo" && "bar" && 5 && 7&&"baz" AND "bat"}out{/if}',	'{if "foo" && "bar" && 5 && 7 && "baz" AND "bat"}out{/if}'),
+			array('All ORs',			'{if "foo" || "bar" || 5 || 7||"baz" OR "bat"}out{/if}',	'{if "foo" || "bar" || 5 || 7 || "baz" OR "bat"}out{/if}'),
+			array('Mixed ORs and ANDs',	'{if "foo" OR "bar" && 5 || 7||"baz" AND "bat"}out{/if}',	'{if "foo" OR "bar" && 5 || 7 || "baz" AND "bat"}out{/if}'),
 		);
 	}
 
@@ -408,8 +408,8 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 		return array(
 			array('Too Many Open Parentheses',				'{if (((5 && 6)}out{/if}',	'{if (((5 && 6)))}out{/if}'),
 			array('Too Many Closing Parentheses',			'{if (5 && 6)))}out{/if}',	'{if (((5 && 6)))}out{/if}'),
-			array('Difficult Missing Open Parentheses',		'{if ((5 || 7 == 8) AND (6 != 6)))}out{/if}',	'{if (((5 || 7 == 8) AND (6 != 6)))}out{/if}'),
-			array('Difficult Missing Closing Parentheses',	'{if ((5 || 7 == 8) AND ((6 != 6))}out{/if}',	'{if ((5 || 7 == 8) AND ((6 != 6)))}out{/if}'),
+			array('Difficult Missing Open Parentheses',		'{if ((5 || 7 == 8) AND (6 != 6)))}out{/if}',	'{if ((( 5 || 7 == 8 ) AND ( 6 != 6 )))}out{/if}'),
+			array('Difficult Missing Closing Parentheses',	'{if ((5 || 7 == 8) AND ((6 != 6))}out{/if}',	'{if (( 5 || 7 == 8 ) AND (( 6 != 6 )))}out{/if}'),
 			array('Ignore Quoted Parenthesis Mismatch',		'{if "(5 && 6)))"}out{/if}',	'{if "&#40;5 && 6&#41;&#41;&#41;"}out{/if}'),
 		);
 	}
@@ -417,8 +417,8 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 	protected function advancedSameBehaviorWithoutVariables()
 	{
 		return array(
-			array('Nonsense Removal',			'{if fdsk&)(Ijf7)}out{/if}',	'{if ( FALSE )( FALSE )}out{/if}', FALSE),
-			array('Parenthesis Matching',		'{if (((5 && 6)}out{/if}',		'{if (((5 && 6)))}out{/if}', FALSE),
+			array('Nonsense Removal',			'{if fdsk&)(Ijf7)}out{/if}',	'{if (FALSE )( FALSE )}out{/if}', FALSE),
+			array('Parenthesis Matching',		'{if (((5 && 6)}out{/if}',		'{if ((( 5 && 6 )))}out{/if}', FALSE),
 			array('Strings kept intact',		'{if "test"}out{/if}',			'{if "test"}out{/if}', FALSE),
 		);
 	}
@@ -495,7 +495,7 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 		return array(
 			array('Double Modulo',		 '{if 5 %% 7}out{/if}',		'{if 5 %% 7}out{/if}'),
 			array('Double AND', 		 '{if 5 && AND 7}out{/if}',	'{if 5 && AND 7}out{/if}'),
-			array('Double No Space AND', '{if 5 &&AND 7}out{/if}',	'{if 5 &&AND 7}out{/if}'),
+			array('Double No Space AND', '{if 5 &&AND 7}out{/if}',	'{if 5 && AND 7}out{/if}'),
 			array('Double Comparison',	 '{if 5 > < 7}out{/if}',	'{if 5 > < 7}out{/if}'),
 			array('Shift by comparison', '{if 5 >>> 7}out{/if}',	'{if 5 FALSE > 7}out{/if}'),
 			array('Double ! bool cast',  '{if !!5}out{/if}',		'{if FALSE 5}out{/if}'),
@@ -529,12 +529,12 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 	{
 		return array(
 			array('Addition works with spaces',				'{if int + int}out{/if}', '{if "5" + "5"}out{/if}'),
-			array('Addition does not work without spaces',	'{if int+int}out{/if}', '{if "5"+"5"}out{/if}'),
+			array('Addition does not work without spaces',	'{if int+int}out{/if}', '{if "5" + "5"}out{/if}'),
 			array('Concatenation with spaces',				'{if string . string}out{/if}', '{if "ee" . "ee"}out{/if}'),
-			array('Concatenation without spaces',			'{if string.string}out{/if}', '{if "ee"."ee"}out{/if}'),
+			array('Concatenation without spaces',			'{if string.string}out{/if}', '{if "ee" . "ee"}out{/if}'),
 			array('Subtract dash-words variable',			'{if a-number - int}out{/if}', '{if "15" - "5"}out{/if}', array('a-number' => 15)),
 			array('Mulitple Subtract dash-words variable',	'{if a-bigger-number - int}out{/if}', '{if "23" - "5"}out{/if}', array('a-bigger-number' => 23)),
-			array('Make a variable negative',				'{if -12 < -count}out{/if}', '{if -12 < -"15"}out{/if}', array('count' => 15)),
+			array('Make a variable negative',				'{if -12 < -count}out{/if}', '{if - 12 < - "15"}out{/if}', array('count' => 15)),
 		);
 	}
 

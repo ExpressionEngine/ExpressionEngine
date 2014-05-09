@@ -57,28 +57,7 @@ class Conditional_util {
 			}
 		}
 
-		list($str, $conditionals) = $this->extract_conditionals($str, $vars);
-
-		// Check conditionals for unsafe characters and mark any conditionals
-		// strings that potential contained EE tags
-		foreach ($conditionals as $condition)
-		{
-			if ($this->conditional_is_unsafe($condition['full_open_tag']))
-			{
-				throw new UnsafeConditionalException('Conditional is unsafe.');
-			}
-		}
-
-		// Encode the conditional strings
-		foreach ($conditionals as $i => $condition)
-		{
-			foreach ($condition['strings'] as $key => $value)
-			{
-				$conditionals[$i]['strings'][$key] = $this->encode_conditional_value($value, $safety, TRUE);
-			}
-		}
-
-		// Encode the user variables and add a prefix if given
+		// Prefix passed in variables
 		$prefixed_vars = array();
 
 		foreach ($vars as $key => $var)
@@ -88,206 +67,213 @@ class Conditional_util {
 
 		$vars = $prefixed_vars;
 
-		foreach ($conditionals as $conditional)
+		// Get the token stream
+		$tokens = $this->extract_conditionals($str, $vars);
+
+		$output = '';
+		$condition = '';
+		$condition_branch = '';
+		$parenthesis_depth = 0;
+
+		foreach ($tokens as $token)
 		{
-			$condition_vars = array_merge($vars, $conditional['strings']);
-			$condition		= $conditional['condition'];
-			$full_open_tag 	= $conditional['full_open_tag'];
+			list($type, $value) = $token;
 
-			$orig_condition	= $condition; // we save this so we can replace it later.
-
-			$done = array();
-
-			if ( ! in_array($full_open_tag, $done))
+			switch ($type)
 			{
-				$done[] = $full_open_tag;
-
-				// Now we parse the conditional looking for things we do
-				// want. This should keep our conditionals safe and free
-				// of arbitrary code execution.
-
-				// This will show us how PHP will view the conditional.
-				$prelim_tokens = token_get_all('<?php ' . $condition . '?>');
-
-				// Remove the opening and closing PHP tags
-				$prelim_tokens = array_slice($prelim_tokens, 1, count($prelim_tokens) - 2);
-
-				$buffer = '';
-
-				$parenthesis_depth = 0;
-
-				// We need to do two passes. The first one is to catch EE's more
-				// esoteric variable naming strategy, where dashes are allowed for
-				// variable characters, negative signs, and subtraction. This loop
-				// will collapse any valid combinations that are interpreted as
-				// variables by the parser.
-				$tokens = array();
-
-				$collapse = '';
-
-				foreach ($prelim_tokens as $token)
-				{
-					if ($collapse !== '' && ($token === '-' || $token === ':'))
+				case 'IF':
+					$condition = '';
+					$condition_branch = 'if';
+					break;
+				case 'ELSEIF':
+					$condition = '';
+					$condition_branch = 'if:elseif';
+					break;
+				case 'ELSE':
+					$output .= '{if:else}';
+					break;
+				case 'ENDIF':
+					$output .= '{/if}';
+					break;
+				case 'STRING':
+					$condition .= $this->encode_conditional_value($value, $safety, TRUE);
+					break;
+				case 'NUMBER':
+					$condition .= ' '.$value.' ';
+					break;
+				case 'OPERATOR':
+					if ($value == '(')
 					{
-						$collapse .= $token;
+						$parenthesis_depth++;
 					}
-					elseif (is_array($token) && in_array($token[0], array(T_STRING, T_LNUMBER, T_DNUMBER)))
+					elseif ($value == ')')
 					{
-						$collapse .= $token[1];
+						$parenthesis_depth--;
+					}
+
+					$condition .= $value;
+					break;
+				case 'VARIABLE':
+					$uppercase_value = strtoupper($value);
+
+					if ($uppercase_value == 'TRUE' || $uppercase_value == 'FALSE' ||
+						$uppercase_value == 'OR' || $uppercase_value == 'AND' ||
+						$uppercase_value == 'XOR')
+					{
+						$condition .= ' '.$uppercase_value.' ';
+					}
+					elseif (isset($vars[$value]))
+					{
+						if (is_bool($vars[$value]))
+						{
+							$condition .= ($vars[$value]) ? ' TRUE ' : ' FALSE ';
+						}
+						else
+						{
+							$condition .= $vars[$value];
+						}
+					}
+					elseif ($safety === FALSE)
+					{
+						$condition .= ' '.$value.' ';
 					}
 					else
 					{
-						if (trim($collapse, '-') !== '')
-						{
-							$tokens[] = array(
-								is_numeric($collapse) ? T_LNUMBER : T_STRING,
-								$collapse
-							);
-
-							$collapse = '';
-						}
-
-						$tokens[] = $token;
+						$condition .= ' FALSE ';
 					}
-				}
+					break;
+				case 'ENDCOND':
+					$condition = preg_replace('/\s+/', ' ', $condition);
+					$condition = str_replace('FALSE (', 'FALSE && (', $condition);
+					$condition = preg_replace('/FALSE(\s+FALSE)+/', 'FALSE', $condition);
+					$condition = trim($condition);
 
-				if ($collapse !== '')
-				{
-					$tokens[] = array(
-						is_numeric($collapse) ? T_LNUMBER : T_STRING,
-						$collapse
+					if ($parenthesis_depth < 0)
+					{
+						$condition = str_repeat('(', -$parenthesis_depth).$condition;
+					}
+					else if ($parenthesis_depth > 0)
+					{
+						$condition = $condition.str_repeat(')', $parenthesis_depth);
+					}
+
+					$full_tag = '{'.$condition_branch.' '.$condition.'}';
+
+					if ($this->conditional_is_unsafe($full_tag))
+					{
+						throw new UnsafeConditionalException('Conditional is unsafe.');
+					}
+
+					$output .= $full_tag;
+
+					$condition = '';
+					$condition_branch = '';
+					break;
+				case 'MISC':
+
+					// there are also AND and OR which are currently mislabeled
+					// as words
+					$unsafe_operators = array(
+						'/*',
+						'//',
+						'*/',
+						'`'
 					);
-				}
 
-				// We will now parse for allowed tokens, the rest are either
-				// stripped or converted to FALSE
-				foreach ($tokens as $token)
-				{
-					// Some elements of the $tokens array are single
-					// characters. We account for those here.
-					if ( ! is_array($token))
+					foreach ($unsafe_operators as &$operator)
 					{
-						switch ($token)
-						{
-							case '-':
-							case '+':
-							case '<':
-							case '>':
-							case '.':
-							case '%':
-								break;
-							case '(': $parenthesis_depth++;
-								break;
-							case ')': $parenthesis_depth--;
-								break;
-							default:
-								if ($safety === TRUE)
-								{
-									$buffer .= ' FALSE ';
-									continue 2; // other tokens don't get anything
-								}
-						}
+						$operator = preg_quote($operator, '/');
+					}
 
-						$buffer .= $token;
+					if (preg_match('/'.implode('|', $unsafe_operators).'/', $value))
+					{
+						throw new UnsafeConditionalException('Conditional is unsafe.');
+					}
+
+					if (trim($value) != '')
+					{
+						$condition .= ' FALSE ';
 					}
 					else
 					{
-						switch ($token[0])
+						$condition .= ' ';
+					}
+/*
+					$operators = array(
+						'||',
+						'&&',
+						'==',
+						'!=',
+						'<>',
+						'%',
+						'+',
+						'-',
+						'.',
+						'<',
+						'>',
+						'(',
+						')',
+					);
+
+					foreach ($operators as &$operator)
+					{
+						$operator = preg_quote($operator, '/');
+					}
+
+					$invalid = '';
+					$regex = '/^('.implode('|', $operators).'|\s+)/';
+
+					while ($value != '')
+					{
+						if (preg_match($regex, $value, $match))
 						{
-							case T_CONSTANT_ENCAPSED_STRING:
-							case T_WHITESPACE:
-							case T_BOOLEAN_AND:
-							case T_BOOLEAN_OR:
-							case T_LOGICAL_AND:
-							case T_LOGICAL_OR:
-							case T_LOGICAL_XOR:
-							case T_LNUMBER:
-							case T_DNUMBER:
-							case T_IS_EQUAL:
-							case T_IS_GREATER_OR_EQUAL:
-							// This is new functionality for conditionals
-							// (=== operator) so I am disabling it for now
-							// (SCB 5-5-2014)
-							// case T_IS_IDENTICAL:
-							// case T_IS_NOT_IDENTICAL:
-							case T_IS_NOT_EQUAL:
-							case T_IS_SMALLER_OR_EQUAL:
-								$buffer .= $token[1];
-								break;
+							if ($invalid != '')
+							{
+								$condition .= ' FALSE ';
+								$invalid = '';
+							}
 
-							case T_STRING:
-								$value = $token[1];
-								$uppercase_value = strtoupper($value);
+							$condition .= ''.$match[1].'';
 
-								if ($uppercase_value == 'TRUE' || $uppercase_value == 'FALSE')
-								{
-									$buffer .= $uppercase_value;
-									break;
-								}
-								elseif (isset($condition_vars[$value]))
-								{
-									if (is_bool($condition_vars[$value]))
-									{
-										$buffer .= ($condition_vars[$value]) ? "TRUE" : "FALSE";
-									}
-									else
-									{
-										$buffer .= $condition_vars[$value];
-									}
-									break;
-								}
+							$value = substr($value, strlen($match[1]));
+						}
+						elseif ($value != '')
+						{
+							if ($value == ' ')
+							{
+								$condition .= ' ';
+								$invalid = '';
+							}
+							else
+							{
+								$invalid .= $value[0];
+							}
 
-							default:
-								if ($safety === TRUE)
-								{
-									$buffer .= ' FALSE ';
-									if ($this->debug === TRUE)
-									{
-										trigger_error('Unset EE Conditional Variable ('.$token[1].') : '.$full_open_tag,
-													  E_USER_WARNING);
-									}
-								}
-								else
-								{
-									$buffer .= $token[1];
-								}
+							$value = substr($value, 1);
 						}
 					}
-				}
 
-				if ($parenthesis_depth < 0)
-				{
-					$buffer = str_repeat('(', -$parenthesis_depth).$buffer;
-				}
-				else if ($parenthesis_depth > 0)
-				{
-					$buffer = $buffer.str_repeat(')', $parenthesis_depth);
-				}
-
-				$buffer = str_replace('FALSE (', 'FALSE && (', $buffer);
-				$buffer = preg_replace('/FALSE(\s+FALSE)+/', 'FALSE', $buffer);
-
-				$condition = $buffer;
+					if ($invalid != '')
+					{
+						$condition .= ' FALSE ';
+					}
+*/
+					break;
+				case 'TEMPLATE_STRING':
+					$output .= $value;
+					break;
+				default:
+					$condition .= $value;
 			}
-
-			$condition = trim($condition);
-
-			$new_open_tag = str_replace($orig_condition, $condition, $full_open_tag);
-			$new_open_tag = preg_replace('/\s+/s', ' ', $new_open_tag);
-
-			$str = str_replace($full_open_tag, $new_open_tag, $str);
 		}
 
 		// Unprotect <script> tags
 		if ($this->protect_javascript !== FALSE && count($protected_javascript) > 0)
 		{
-			$str = str_replace(array_keys($protected_javascript), array_values($protected_javascript), $str);
+			$output = str_replace(array_keys($protected_javascript), array_values($protected_javascript), $output);
 		}
 
-		unset($switch);
-		unset($protect);
-
-		return $str;
+		return $output;
 	}
 
 	/**
@@ -302,6 +288,22 @@ class Conditional_util {
 	 */
 	public function extract_conditionals($str, $vars)
 	{
+		$available_tokens = array(
+			'TEMPLATE_STRING',	// generic
+			'IF',				// {if
+			'ELSE',				// {if:else
+			'ELSEIF',			// {if:elseif
+			'ENDIF',			// {/if}
+			'ENDCOND',			// } at the end of an if
+			'COND_VAR',			// Variable as used in conditionals (no wrapping curlies)
+			'STRING',			// literal string "foo", or 'foo'. The value does not include quotes
+			'OPERATOR',
+			'MISC',				// other stuff such as operators, whitespace, and numbers
+		);
+
+		$tokens = array();
+
+
 		// start at the beginning
 		$i = 0;
 		$str_length = strlen($str);
@@ -404,17 +406,45 @@ class Conditional_util {
 			'NUM'	=> array('ESC',	'SS',	'SD',	'LD',	'RD',	'VAR',	'NUM',	'OK',	'OK'),
 		);
 
-		$rand = md5(uniqid(mt_rand()));
+		$end = 0;
+		$closest_closing = INF;
 
 		while (($i = strpos($str, '{if', $i)) !== FALSE)
 		{
+			if ($i > $closest_closing)
+			{
+				$before = substr($str, $end, $closest_closing - $end);
+				$after = substr($str, $closest_closing + 5, $i - $closest_closing - 5);
+
+				if ($before != '')
+				{
+					$tokens[] = array('TEMPLATE_STRING', $before);
+				}
+
+				$tokens[] = array('ENDIF', '{/if}');
+
+				if ($after != '')
+				{
+					$tokens[] = array('TEMPLATE_STRING', $after);
+				}
+			}
+			elseif ($i > $end)
+			{
+				$tokens[] = array('TEMPLATE_STRING', substr($str, $end, $i - $end));
+			}
+
+
 			$start   = $i;
 			$buffer  = '';
 			$state   = 'OK';
 			$curlies = 0;
 
-			// Confirm this is a conditional and not some other tag
+			// Skip past the "{if"
 			$i = $i + 3;
+
+			// A valid {if is either followed by whitespace or by a colon.
+			// The easiest way to check that is to find the class this character
+			// belongs to.
 
 			$chr = ord($str[$i]);
 			$char_name = ($chr >= 128) ? 'C_ABC' : $ascii_map[$chr];
@@ -426,9 +456,11 @@ class Conditional_util {
 				if ($char_name != 'C_COLON')
 				{
 					// valid variable, but not a conditional
+				//	$end = $i;
 					continue;
 				}
 
+				// Substringing lets us use an anchored regex below
 				$substr = substr($str, $i, 10);
 
 				// This is an invalid conditional because "{if:" is reserved
@@ -438,32 +470,37 @@ class Conditional_util {
 					throw new InvalidConditionalException('Conditional is invalid: "{if:" is reserverd for conditionals.');
 				}
 
+				// Skip past any :else or :elseif
+				$i += strlen($matches[0]);
+
 				// if it's an else, not an elseif, then it won't have a body,
 				// so we don't need to do any processing on it.
 				if (trim($matches[1]) == '}')
 				{
+					$end = $i;
+					$tokens[] = array('ELSE', '{if:else}');
 					continue;
 				}
 
-				$i += strlen($matches[0]);
+				$tokens[] = array('ELSEIF', '{if:elseif ');
+			}
+			else
+			{
+				$tokens[] = array('IF', '{if ');
 			}
 
 			// No sense continuing if we cannot find a {/if}
-			if (strpos($str, '{/if}', $i) === FALSE)
+			$closest_closing = strpos($str, '{/if}', $i);
+
+			if ($closest_closing === FALSE)
 			{
 				throw new InvalidConditionalException('Conditional is invalid: missing a "{/if}".');
 			}
 
-
-			$variables = array();
-			$string_literal_values = array();
-			$quoted_string_literals = array();
-			$string_literal_placeholders = array();
-
 			while ($i < $str_length)
 			{
 				// Grab the new character and save the old state.
-				$char = $str[$i++];
+				$char = $str[$i];
 				$old_state = $state;
 
 				// If it's an ascii character we get its name from the ascii
@@ -471,34 +508,90 @@ class Conditional_util {
 				// This should hold true because all control characters and php
 				// operators are in the ascii map.
 				$chr = ord($char);
-				$edge_name = ($chr >= 128) ? 'C_ABC' : $ascii_map[$chr];
+				$char_class = ($chr >= 128) ? 'C_ABC' : $ascii_map[$chr];
 
-				// If the edge exists, we transition. Otherwise we stay in
-				// our current state.
-				if (isset($edges[$edge_name]))
+				// Don't bother with control characters.
+				if ($char_class == '__')
 				{
-					$edge  = $edges[$edge_name];
+					$i++;
+					continue;
+				}
+
+				// If an edge exists, we transition. Otherwise we stay in
+				// our current state.
+				if (isset($edges[$char_class]))
+				{
+					$edge  = $edges[$char_class];
 					$state = $transitions[$old_state][$edge];
 				}
 
 				// Track variables
 				if ($state == 'VAR' || $state == 'NUM')
 				{
+					if ($old_state != 'NUM' && $old_state != 'VAR')
+					{
+						$tokens[] = array('MISC', $buffer);
+						$buffer = '';
+					}
+
 					// Manually transition out of state and store the buffer
-					if ($edge_name != 'C_ABC' && $edge_name != 'C_DIGIT' &&
-						$edge_name != 'C_COLON' && $edge_name != 'C_MINUS')
+					if ($char_class != 'C_ABC' && $char_class != 'C_DIGIT' &&
+						$char_class != 'C_COLON' && $char_class != 'C_MINUS')
 					{
 						if ($state == 'VAR')
 						{
-							$variables[] = $buffer;
+							$tokens[] = array('VARIABLE', $buffer);
+						}
+						else
+						{
+							$tokens[] = array('NUMBER', $buffer);
 						}
 
 						$buffer = '';
 						$state = 'OK';
 					}
-					else
+				}
+
+				if ($state == 'OK')
+				{
+					$operators = array(
+						'\(', '\)',
+						'\|\|', '&&',
+						'==', '!=', '<=', '>=', '<>', '<', '>',
+						'%', '\+', '-',
+						'\.',
+					);
+
+					$temp = substr($str, $i, 5);
+
+					$invalid = '';
+					$regex = '/^('.implode('|', $operators).')/';
+
+					if (preg_match($regex, $temp, $match))
 					{
-						$buffer .= $char;
+						if ($buffer != '')
+						{
+							$tokens[] = array('MISC', $buffer);
+						}
+
+						$i += strlen($match[1]);
+
+						// If the next character is the same as the last one in
+						// this match then we have a weird repetition that we do
+						// not allow: >>>, ===, !==, <<, etc.
+						if ($str[$i] == $match[1][0] && $str[$i] != ')' && $str[$i] != '(')
+						{
+							$tokens[] = array('MISC', $match[1].$str[$i]);
+							$i++;
+						}
+						else
+						{
+							$tokens[] = array('OPERATOR', $match[1]);
+						}
+
+
+						$buffer = '';
+						continue;
 					}
 				}
 
@@ -508,6 +601,7 @@ class Conditional_util {
 				{
 					if ($curlies == 0)
 					{
+						$i++;
 						$state = 'END';
 						break;
 					}
@@ -534,30 +628,33 @@ class Conditional_util {
 				// state, so store the string in a variable and reset
 				elseif ($state == 'EOS')
 				{
-					$string_literal_values[] = stripslashes($buffer);
-					$quoted_string_literals[] = $char.$buffer.$char;
-
-					$var_count++;
-					$string_literal_placeholders[] = 'var_'.$rand.$var_count;
+					$tokens[] = array('STRING', $buffer);
 
 					$state = 'OK';
 					$buffer = '';
+					$i++;
+					continue; // do not put trailing quotes in the buffer
 				}
 
 				// END Events
 
 				// Handle buffers
-				if ($state == 'SS' || $state == 'SD')
+				if (($state == 'SS' || $state == 'SD') && $state != $old_state)
 				{
-					if ($state == $old_state)
+					// reset the buffer if we're starting a string
+					if ($buffer != '')
 					{
-						$buffer .= $char;
+						$tokens[] = array('MISC', $buffer);
 					}
-					else
-					{
-						$buffer = '';
-					}
+
+					$buffer = '';
 				}
+				else
+				{
+					$buffer .= $char;
+				}
+
+				$i++;
 			}
 
 			// Not in an end state, or curly braces are unbalanced, "error" out
@@ -566,41 +663,47 @@ class Conditional_util {
 				throw new InvalidConditionalException('Conditional is invalid: not in an end state or unbalanced curly braces.');
 			}
 
-			$end = $i;
-
-			// Extract the full conditional
-			$strings = array();
-			$full_conditional = substr($str, $start, $end - $start);
-
-			// If we found strings, we replace the fully matched conditional
-			// with one that has placeholders instead of any of the strings.
-			if (count($string_literal_placeholders))
+			// Handle any buffer contents from before we hit the closing brace
+			if ($buffer != '')
 			{
-				$full_conditional = str_replace($quoted_string_literals, $string_literal_placeholders, $full_conditional);
-				$str = substr_replace($str, $full_conditional, $start, $end - $start);
-
-				// Adjust our while loop conditions
-				$new_length = strlen($str);
-				$i = $i + ($new_length - $str_length);
-				$str_length = $new_length;
-
-				$strings = array_combine($string_literal_placeholders, $string_literal_values);
+				switch ($old_state)
+				{
+					case 'VAR': $tokens[] = array('VARIABLE', $buffer);
+						break;
+					case 'NUM': $tokens[] = array('NUMBER', $buffer);
+						break;
+					default:	$tokens[] = array('MISC', $buffer);
+						break;
+				}
 			}
 
-			// TODO this can be sped up by incorporating the valid conditional check above
-			$condition = preg_replace('/(^'.preg_quote(LD).'((if:else)*if)\s+|'.preg_quote(RD).'$)/s', '', $full_conditional);
+			$tokens[] = array('ENDCOND', '}');
 
-			// Save the conditional for further processing.
-			$found_conditionals[] = array(
-				'full_open_tag'	=> $full_conditional,
-				'condition'		=> $condition,
-				'strings'		=> $strings,
-				'variables'		=> $variables
-				// future: numbers, operators?
-			);
+			$end = $i;
 		}
 
-		return array($str, $found_conditionals);
+		// Find any leftover closing tags
+		while ($closest_closing = strpos($str, '{/if}', $end))
+		{
+			$before = substr($str, $end, $closest_closing - $end);
+
+			if ($before != '')
+			{
+				$tokens[] = array('TEMPLATE_STRING', $before);
+			}
+
+			$tokens[] = array('ENDIF', '{/if}');
+
+			$end += ($closest_closing - $end) + 5;
+		}
+
+		// Grab the rest of the template
+		if ($str_length > $end)
+		{
+			$tokens[] = array('TEMPLATE_STRING', substr($str, $end, $str_length - $end));
+		}
+
+		return $tokens;
 	}
 
 
@@ -682,13 +785,13 @@ class Conditional_util {
 		// It doesn't make sense to allow array values
 		if (is_array($value))
 		{
-			return 'FALSE';
+			return ' FALSE ';
 		}
 
 		// An object that cannot be converted to a string is a problem
 		if (is_object($value) && ! method_exists($value, '__toString'))
 		{
-			return 'FALSE';
+			return ' FALSE ';
 		}
 
 		$value = (string) $value; // ONLY strings please
@@ -698,7 +801,7 @@ class Conditional_util {
 		// unwanted characters and we do not quote it.
 		if ($value == 'TRUE' || $value == 'FALSE')
 		{
-			return $value;
+			return ' '.$value.' ';
 		}
 
 		// Rules:
@@ -719,7 +822,7 @@ class Conditional_util {
 				if ($safety === FALSE)
 				{
 					// See Rule #2
-					return '"' . $value . '"';
+					return ' "' . $value . '" ';
 				}
 			}
 			else
@@ -755,7 +858,7 @@ class Conditional_util {
 		}
 
 		// quote it as a proper string
-		return '"' . $value . '"';
+		return ' "' . $value . '" ';
 	}
 }
 
