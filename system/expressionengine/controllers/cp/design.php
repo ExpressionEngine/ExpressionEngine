@@ -3197,14 +3197,12 @@ class Design extends CP_Controller {
 		$errors = array();
 		$error_ids = array();
 		$updated_routes = array();
-		$template_ids = array();
 		$query = $this->template_model->get_templates();
 
 		foreach ($query->result() as $template)
 		{
 			$error = FALSE;
 			$id = $template->template_id;
-			$template_ids[] = $id;
 			$route_required = $this->input->post('required_' . $id);
 			$route = $this->input->post('route_' . $id);
 			$ee_route = NULL;
@@ -3273,12 +3271,13 @@ class Design extends CP_Controller {
 		$route_order = json_decode($this->input->post('route_order'));
 		$update = array();
 
-		if ( ! empty($route_order) && $route_order != $template_ids)
+		if ( ! empty($route_order))
 		{
 			foreach ($route_order as $index => $id)
 			{
 				$update[] = array('template_id' => $id, 'order' => $index);
 			}
+
 
 			$this->db->update_batch('template_routes', $update, 'template_id');
 		}
