@@ -134,24 +134,25 @@ class Conditional_lexer {
 		// Any labelled as events do not have transitions of their own and are
 		// handled in the loop directly.
 		//
-		//		OK	- default
-		//		SS	- string single 'str'
-		//		SD	- string double "str"
-		//		VAR - inside a variable
-		//		NUM	- inside a number
+		//		OK		- default
+		//		SS		- string single 'str'
+		//		SD		- string double "str"
+		//		VAR 	- inside a variable
+		//		NUM		- inside a number
+		//		POINT	- ambiguous point
 		//		FLOAT	- inside a floating point number
-		//		ESC	- \escaped				[event]
-		//		LD	- {						[event]
-		//		RD	- }						[event]
-		//		EOS	- end of string			[event]
-		//		END	- done					[event]
+		//		ESC		- \escaped				[event]
+		//		LD		- {						[event]
+		//		RD		- }						[event]
+		//		EOS		- end of string			[event]
+		//		END		- done					[event]
 
 		$transitions = array(// \	'		"		{		}		ABC		DIGIT	-		:		.	indexes match $edges
-			'OK'	=> array('ESC',	'SS',	'SD',	'LD',	'RD',	'VAR',	'NUM',	'OK',	'ERR',	'FLOAT'),
+			'OK'	=> array('ESC',	'SS',	'SD',	'LD',	'RD',	'VAR',	'NUM',	'OK',	'ERR',	'POINT'),
 			'SS'	=> array('ESC',	'EOS',	'SS',	'SS',	'SS',	'SS',	'SS',	'SS',	'SS',	'SS'),
 			'SD'	=> array('ESC',	'SD',	'EOS',	'SD',	'SD',	'SD',	'SD',	'SD',	'SD',	'SD'),
 			'VAR'	=> array('ESC',	'SS',	'SD',	'LD',	'RD',	'VAR',	'VAR',	'VAR',	'VAR',	'OK'),
-			'NUM'	=> array('ESC',	'SS',	'SD',	'LD',	'RD',	'VAR',	'NUM',	'OK',	'ERR',	'FLOAT'),
+			'NUM'	=> array('ESC',	'SS',	'SD',	'LD',	'RD',	'VAR',	'NUM',	'OK',	'ERR',	'POINT'),
 			'FLOAT'	=> array('ESC',	'SS',	'SD',	'LD',	'RD',	'VAR',	'FLOAT','OK',	'ERR',	'ERR'),
 		);
 
@@ -238,6 +239,22 @@ class Conditional_lexer {
 				if ($state == 'ERR')
 				{
 					throw new InvalidConditionalException('In an ERROR state. Buffer: '.$buffer.$char);
+				}
+
+				if ($state == 'POINT')
+				{
+					$next_chr = ord($this->peek());
+					$next_char_class = ($next_chr >= 128) ? 'C_ABC' : $ascii_map[$next_chr];
+
+					// We may may be in a FLOAT state
+					if ($next_char_class == 'C_DIGIT')
+					{
+						$state = 'FLOAT';
+					}
+					else
+					{
+						$state = 'OK';
+					}
 				}
 
 				// Manually handle "int-alpha" variables and negative numbers
