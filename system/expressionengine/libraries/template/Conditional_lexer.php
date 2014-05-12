@@ -106,8 +106,9 @@ class Conditional_lexer {
 			'C_RD'		=> 4,	// },
 			'C_ABC'		=> 5,	// letters
 			'C_DIGIT'	=> 6,	// numbers
-			'C_MINUS'	=> 8,	// -
+			'C_MINUS'	=> 7,	// -
 			'C_COLON'	=> 8,	// :
+			'C_POINT'	=> 9,	// .
 		);
 
 		// Hitting an edge triggers a lookup in the transition table to see
@@ -125,6 +126,8 @@ class Conditional_lexer {
 		//
 		// NUM + : -> ERR
 		// OK +  : -> ERR
+		// FLOAT + . -> ERR
+		// FLOAT + : -> ERR
 
 		// Available States:
 		//
@@ -136,18 +139,20 @@ class Conditional_lexer {
 		//		SD	- string double "str"
 		//		VAR - inside a variable
 		//		NUM	- inside a number
+		//		FLOAT	- inside a floating point number
 		//		ESC	- \escaped				[event]
 		//		LD	- {						[event]
 		//		RD	- }						[event]
 		//		EOS	- end of string			[event]
 		//		END	- done					[event]
 
-		$transitions = array(// \	'		"		{		}		ABC		DIGIT	-		:	indexes match $edges
-			'OK'	=> array('ESC',	'SS',	'SD',	'LD',	'RD',	'VAR',	'NUM',	'OK',	'OK'),
-			'SS'	=> array('ESC',	'EOS',	'SS',	'SS',	'SS',	'SS',	'SS',	'SS',	'SS'),
-			'SD'	=> array('ESC',	'SD',	'EOS',	'SD',	'SD',	'SD',	'SD',	'SD',	'SD'),
-			'VAR'	=> array('ESC',	'SS',	'SD',	'LD',	'RD',	'VAR',	'VAR',	'VAR',	'VAR'),
-			'NUM'	=> array('ESC',	'SS',	'SD',	'LD',	'RD',	'VAR',	'NUM',	'OK',	'OK'),
+		$transitions = array(// \	'		"		{		}		ABC		DIGIT	-		:		.	indexes match $edges
+			'OK'	=> array('ESC',	'SS',	'SD',	'LD',	'RD',	'VAR',	'NUM',	'OK',	'ERR',	'FLOAT'),
+			'SS'	=> array('ESC',	'EOS',	'SS',	'SS',	'SS',	'SS',	'SS',	'SS',	'SS',	'SS'),
+			'SD'	=> array('ESC',	'SD',	'EOS',	'SD',	'SD',	'SD',	'SD',	'SD',	'SD',	'SD'),
+			'VAR'	=> array('ESC',	'SS',	'SD',	'LD',	'RD',	'VAR',	'VAR',	'VAR',	'VAR',	'OK'),
+			'NUM'	=> array('ESC',	'SS',	'SD',	'LD',	'RD',	'VAR',	'NUM',	'OK',	'ERR',	'FLOAT'),
+			'FLOAT'	=> array('ESC',	'SS',	'SD',	'LD',	'RD',	'VAR',	'FLOAT','OK',	'ERR',	'ERR'),
 		);
 
 		$this->str = $str;
@@ -230,6 +235,12 @@ class Conditional_lexer {
 					$state = $transitions[$old_state][$edge];
 				}
 
+				if ($state == 'ERR')
+				{
+					throw new InvalidConditionalException('In an ERROR state. Buffer: '.$buffer.$char);
+				}
+
+				// Manually handle "int-alpha" variables and negative numbers
 				if ($char == '-')
 				{
 					$next_chr = ord($this->peek());
@@ -251,15 +262,13 @@ class Conditional_lexer {
 					if ($old_state != 'VAR' && $old_state != 'NUM')
 					{
 						$token_type = in_array($buffer, $this->operators) ? 'OPERATOR' : 'MISC';
-						var_dump(array('state' => $state, 'old_state' => $old_state, 'buffer' => $buffer, 'token_type' => $token_type));
 						$this->addToken($token_type, $buffer);
 						$buffer = '';
 					}
 
 					// Manually transition out of state and store the buffer
 					if ($char_class != 'C_ABC' && $char_class != 'C_DIGIT' &&
-						$char_class != 'C_COLON' && $char_class != 'C_MINUS' &&
-						! ($char_class == 'C_POINT' && $state == 'NUM'))
+						$char_class != 'C_COLON' && $char_class != 'C_MINUS')
 					{
 						if ($state == 'VAR')
 						{
@@ -387,6 +396,8 @@ class Conditional_lexer {
 					case 'VAR': $this->addToken('VARIABLE', $buffer);
 						break;
 					case 'NUM': $this->addToken('NUMBER', $buffer);
+						break;
+					case 'FLOAT': $this->addToken('NUMBER', $buffer);
 						break;
 					default:	$this->addToken('MISC', $buffer);
 						break;
