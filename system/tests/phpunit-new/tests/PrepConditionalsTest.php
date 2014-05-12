@@ -192,7 +192,6 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 
 			// plain tests don't use variables
 			$this->plainComparisonTests(),
-			$this->plainComparisonTestsNoWhitespace(),
 			$this->plainLogicOperatorTests(),
 			$this->plainLogicOperatorTestsNoWhitespace(),
 			$this->plainModuloTests(),
@@ -277,25 +276,50 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 
 	protected function plainComparisonTests()
 	{
-		return array(
-			array('Plain == Integer',	'{if 5 == 5}out{/if}',	'{if 5 == 5}out{/if}'),
-			array('Plain != Integer',	'{if 5 != 7}out{/if}',	'{if 5 != 7}out{/if}'),
-			array('Plain > Integer',	'{if 7 > 5}out{/if}',	'{if 7 > 5}out{/if}'),
-			array('Plain < Integer',	'{if 5 < 7}out{/if}',	'{if 5 < 7}out{/if}'),
-			array('Plain <> Integer',	'{if 5 <> 7}out{/if}',	'{if 5 <> 7}out{/if}'),
-			array('Plain === Integer',	'{if 5 === 5}out{/if}',	'{if 5 FALSE 5}out{/if}'),
-		);
-	}
+		$return = array();
+		$operators = array('==', '!=', '<=', '>=', '<>', '<', '>');
 
-	protected function plainComparisonTestsNoWhitespace()
-	{
-		return array(
-			array('Plain == Integer No Space',	'{if 5==5}out{/if}',	'{if 5 == 5}out{/if}'),
-			array('Plain != Integer No Space',	'{if 5!=7}out{/if}',	'{if 5 != 7}out{/if}'),
-			array('Plain > Integer No Space',	'{if 7>5}out{/if}',		'{if 7 > 5}out{/if}'),
-			array('Plain < Integer No Space',	'{if 5<7}out{/if}',		'{if 5 < 7}out{/if}'),
-			array('Plain <> Integer No Space',	'{if 5<>7}out{/if}',	'{if 5 <> 7}out{/if}'),
-		);
+		// Valid uses
+		foreach ($operators as $operator)
+		{
+			$return[] = array(
+				"{$operator} Operator",
+				"{if 5 {$operator} 7}out{/if}",
+				"{if 5 {$operator} 7}out{/if}"
+			);
+			$return[] = array(
+				"{$operator} Operator (no space)",
+				"{if 5{$operator}7}out{/if}",
+				"{if 5 {$operator} 7}out{/if}"
+			);
+		}
+
+		// Invalid uses
+		foreach ($operators as $first)
+		{
+			foreach ($operators as $second)
+			{
+				$operator = $first.$second;
+				$return[] = array(
+					"{$operator} Operator",
+					"{if 5 {$operator} 7}out{/if}",
+					"{if 5 FALSE 7}out{/if}"
+				);
+				$return[] = array(
+					"{$operator} Operator (no space)",
+					"{if 5{$operator}7}out{/if}",
+					"{if 5 FALSE 7}out{/if}"
+				);
+
+			}
+		}
+
+		$return[] = array('Plain === Integer',				'{if 5 === 5}out{/if}',	'{if 5 FALSE 5}out{/if}');
+		$return[] = array('Plain === Integer (no space)',	'{if 5===5}out{/if}',	'{if 5 FALSE 5}out{/if}');
+		$return[] = array('Plain !== Integer',				'{if 5 !== 5}out{/if}',	'{if 5 FALSE 5}out{/if}');
+		$return[] = array('Plain !== Integer (no space)',	'{if 5!==5}out{/if}',	'{if 5 FALSE 5}out{/if}');
+
+		return $return;
 	}
 
 	protected function plainLogicOperatorTests()
@@ -507,7 +531,6 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			array('Double AND', 		 '{if 5 && AND 7}out{/if}',	'{if 5 && AND 7}out{/if}'),
 			array('Double No Space AND', '{if 5 &&AND 7}out{/if}',	'{if 5 && AND 7}out{/if}'),
 			array('Double Comparison',	 '{if 5 > < 7}out{/if}',	'{if 5 > < 7}out{/if}'),
-			array('Shift by comparison', '{if 5 >>> 7}out{/if}',	'{if 5 FALSE > 7}out{/if}'),
 			array('Double ! bool cast',  '{if !!5}out{/if}',		'{if FALSE 5}out{/if}'),
 			array('Double ! with space', '{if !! 5}out{/if}',		'{if FALSE 5}out{/if}'),
 
