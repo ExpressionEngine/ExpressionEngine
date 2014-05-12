@@ -539,11 +539,15 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 		return array(
 			array('Addition works with spaces',				'{if int + int}out{/if}', '{if "5" + "5"}out{/if}'),
 			array('Addition does not work without spaces',	'{if int+int}out{/if}', '{if "5" + "5"}out{/if}'),
-			array('Concatenation with spaces',				'{if string . string}out{/if}', '{if "ee" . "ee"}out{/if}'),
-			array('Concatenation without spaces',			'{if string.string}out{/if}', '{if "ee" . "ee"}out{/if}'),
 			array('Subtract dash-words variable',			'{if a-number - int}out{/if}', '{if "15" - "5"}out{/if}', array('a-number' => 15)),
 			array('Mulitple Subtract dash-words variable',	'{if a-bigger-number - int}out{/if}', '{if "23" - "5"}out{/if}', array('a-bigger-number' => 23)),
 			array('Make a variable negative',				'{if -12 < -count}out{/if}', '{if -12 < - "15"}out{/if}', array('count' => 15)),
+
+			array('String Concatenation with spaces',		'{if string . string}out{/if}', '{if "ee" . "ee"}out{/if}'),
+			array('String Concatenation without spaces',	'{if string.string}out{/if}', '{if "ee" . "ee"}out{/if}'),
+			array('Null Concatenation without spaces',		'{if .string}out{/if}', '{if . "ee"}out{/if}'),
+			array('Int + string concatentaion',				'{if 5.string}out{/if}', '{if 5 . "ee"}out{/if}'),
+			array('String + int concatentaion',				'{if string.5}out{/if}', '{if "ee" . 5}out{/if}'),
 		);
 	}
 
