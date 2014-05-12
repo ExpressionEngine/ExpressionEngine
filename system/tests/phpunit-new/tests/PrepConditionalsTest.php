@@ -366,7 +366,8 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 
 			array('Dash as invalid variable',		'{if -}out{/if}',			'{if -}out{/if}',			array('-' => 'foo')),
 			array('Dashes as invalid variable',		'{if --}out{/if}',			'{if FALSE}out{/if}',		array('--' => 'foo')),
-			array('Smile as invalid variable',		'{if -__-}out{/if}',		'{if - FALSE}out{/if}',		array('-__-' => 'foo')),
+			array('Smile as invalid variable',		'{if -__-}out{/if}',		'{if - FALSE -}out{/if}',	array('-__-' => 'foo')),
+			array('Smile as invalid variable',		'{if +__+}out{/if}',		'{if + FALSE +}out{/if}',	array('+__+' => 'foo')),
 			array('Integer as invalid variable',	'{if 42}out{/if}',			'{if 42}out{/if}',			array('42' => 'foo')),
 			array('Big Float as invalid variable',	'{if 42.7}out{/if}',		'{if 42.7}out{/if}',		array('42.7' => 'foo')),
 			array('Small Float as invalid variable','{if .7}out{/if}',			'{if .7}out{/if}',			array('.7' => 'foo')),
