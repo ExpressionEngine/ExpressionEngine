@@ -258,7 +258,8 @@ class Conditional_lexer {
 
 					// Manually transition out of state and store the buffer
 					if ($char_class != 'C_ABC' && $char_class != 'C_DIGIT' &&
-						$char_class != 'C_COLON' && $char_class != 'C_MINUS')
+						$char_class != 'C_COLON' && $char_class != 'C_MINUS' &&
+						! ($char_class == 'C_POINT' && $state == 'NUM'))
 					{
 						if ($state == 'VAR')
 						{
