@@ -455,12 +455,13 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 	public function embeddedTags()
 	{
 		return array(
-			array('Unqouted Embedded Tag',				'{if {exp:foo:bar}}out{/if}',	'{if {exp:foo:bar}}out{/if}', 				'{if FALSE}out{/if}'),
-			array('Double Quoted Embedded Tag',			'{if "{exp:foo:bar}"}out{/if}',	'{if "{exp:foo:bar}"}out{/if}', 			'{if "&#123;exp:foo:bar&#125;"}out{/if}'),
-			array('Single Quoted Embedded Tag',			"{if '{exp:foo:bar}'}out{/if}",	'{if "{exp:foo:bar}"}out{/if}', 			'{if "&#123;exp:foo:bar&#125;"}out{/if}'),
-			array('Embedded Tag Before Conditional',	'{exp:foo:bar}{if 5}out{/if}',	'{exp:foo:bar}{if 5}out{/if}', 				'{exp:foo:bar}{if 5}out{/if}'),
-			array('Embedded Tag After Conditional',		'{if 5}out{/if}{exp:foo:bar}',	'{if 5}out{/if}{exp:foo:bar}', 				'{if 5}out{/if}{exp:foo:bar}'),
-			array('User Supplied Embedded Tag',			'{if baz}out{/if}',				'{if "&#123;exp:foo:bar&#125;"}out{/if}',	'{if "&#123;exp:foo:bar&#125;"}out{/if}',	array('baz' => '{exp:foo:bar}')),
+			array('Unqouted Embedded Tag',					'{if {exp:foo:bar}}out{/if}',			'{if {exp:foo:bar}}out{/if}', 				'{if FALSE}out{/if}'),
+			array('Unqouted Embedded Tag with Parameters',	'{if {exp:foo:bar foo="bar"}}out{/if}',	'{if {exp:foo:bar foo="bar"}}out{/if}', 	'{if FALSE}out{/if}'),
+			array('Double Quoted Embedded Tag',				'{if "{exp:foo:bar}"}out{/if}',			'{if "{exp:foo:bar}"}out{/if}', 			'{if "&#123;exp:foo:bar&#125;"}out{/if}'),
+			array('Single Quoted Embedded Tag',				"{if '{exp:foo:bar}'}out{/if}",			'{if "{exp:foo:bar}"}out{/if}', 			'{if "&#123;exp:foo:bar&#125;"}out{/if}'),
+			array('Embedded Tag Before Conditional',		'{exp:foo:bar}{if 5}out{/if}',			'{exp:foo:bar}{if 5}out{/if}', 				'{exp:foo:bar}{if 5}out{/if}'),
+			array('Embedded Tag After Conditional',			'{if 5}out{/if}{exp:foo:bar}',			'{if 5}out{/if}{exp:foo:bar}', 				'{if 5}out{/if}{exp:foo:bar}'),
+			array('User Supplied Embedded Tag',				'{if baz}out{/if}',						'{if "&#123;exp:foo:bar&#125;"}out{/if}',	'{if "&#123;exp:foo:bar&#125;"}out{/if}',	array('baz' => '{exp:foo:bar}')),
 		);
 	}
 
