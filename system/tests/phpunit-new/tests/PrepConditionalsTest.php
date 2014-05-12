@@ -295,6 +295,12 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 		}
 
 		// Invalid uses
+		$operators = array(
+			'||', '&&',
+			'==', '!=', '<=', '>=', '<>', '<', '>',
+			'%', '+', '-',
+			'.',
+		);
 		foreach ($operators as $first)
 		{
 			foreach ($operators as $second)
