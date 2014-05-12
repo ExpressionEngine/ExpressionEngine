@@ -171,6 +171,12 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			array('InvalidConditionalException', 'Ifelse duplicity', 				'{if 5 == 5}out{if:else:else}out{/if}'),
 			array('InvalidConditionalException', 'Ifelse Prefixing', 				'{if 5 == 5}out{if:elsebeth}out{/if}'),
 			array('InvalidConditionalException', 'Ifelseif Prefixing', 				'{if 5 == 5}out{if:elseiffy}out{/if}'),
+			array('InvalidConditionalException', 'NUMBER + :', 						'{if 1:2}out{/if}'),
+			array('InvalidConditionalException', 'OK + :',	 						'{if :foo}out{/if}'),
+			array('InvalidConditionalException', 'OK + :',	 						'{if "foo":bar}out{/if}'),
+			array('InvalidConditionalException', 'OK + :',	 						"{if 'foo':bar}out{/if}"),
+			array('InvalidConditionalException', 'FLOAT + .', 						'{if 1.2.3}out{/if}'),
+			array('InvalidConditionalException', 'FLOAT + :', 						'{if 1.2:3}out{/if}'),
 		);
 	}
 
@@ -367,7 +373,6 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			array('Dashint as invalid variable',	'{if -42}out{/if}',			'{if -42}out{/if}',			array('-42' => 'foo')),
 			array('Dashalpha as invalid variable',	'{if -a}out{/if}',			'{if - FALSE}out{/if}',		array('-a' => 'foo')),
 			array('Alphadash as invalid variable',	'{if a-}out{/if}',			'{if FALSE -}out{/if}',		array('a-' => 'foo')),
-			array('Version as invalid variable',	'{if 1.2.3}out{/if}',		'{if FALSE}out{/if}',		array('1.2.3' => 'foo')),
 		);
 	}
 
