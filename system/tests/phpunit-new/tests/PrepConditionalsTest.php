@@ -306,6 +306,7 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			foreach ($operators as $second)
 			{
 				$operator = $first.$second;
+				if ($operator == '<>') continue;
 				$return[] = array(
 					"{$operator} Operator",
 					"{if 5 {$operator} 7}out{/if}",
