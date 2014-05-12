@@ -140,6 +140,7 @@ class Conditional_lexer {
 		//		VAR 	- inside a variable
 		//		NUM		- inside a number
 		//		POINT	- ambiguous point
+		//		MINUS	- ambiguous minus
 		//		FLOAT	- inside a floating point number
 		//		ESC		- \escaped				[event]
 		//		LD		- {						[event]
@@ -148,11 +149,11 @@ class Conditional_lexer {
 		//		END		- done					[event]
 
 		$transitions = array(// \	'		"		{		}		ABC		DIGIT	-		:		.	indexes match $edges
-			'OK'	=> array('ESC',	'SS',	'SD',	'LD',	'RD',	'VAR',	'NUM',	'OK',	'ERR',	'POINT'),
+			'OK'	=> array('ESC',	'SS',	'SD',	'LD',	'RD',	'VAR',	'NUM',	'MINUS',	'ERR',	'POINT'),
 			'SS'	=> array('ESC',	'EOS',	'SS',	'SS',	'SS',	'SS',	'SS',	'SS',	'SS',	'SS'),
 			'SD'	=> array('ESC',	'SD',	'EOS',	'SD',	'SD',	'SD',	'SD',	'SD',	'SD',	'SD'),
-			'VAR'	=> array('ESC',	'SS',	'SD',	'LD',	'RD',	'VAR',	'VAR',	'VAR',	'VAR',	'OK'),
-			'NUM'	=> array('ESC',	'SS',	'SD',	'LD',	'RD',	'VAR',	'NUM',	'OK',	'ERR',	'POINT'),
+			'VAR'	=> array('ESC',	'SS',	'SD',	'LD',	'RD',	'VAR',	'VAR',	'MINUS',	'VAR',	'OK'),
+			'NUM'	=> array('ESC',	'SS',	'SD',	'LD',	'RD',	'VAR',	'NUM',	'MINUS',	'ERR',	'POINT'),
 			'FLOAT'	=> array('ESC',	'SS',	'SD',	'LD',	'RD',	'VAR',	'FLOAT','OK',	'ERR',	'ERR'),
 		);
 
@@ -258,7 +259,7 @@ class Conditional_lexer {
 				}
 
 				// Manually handle "int-alpha" variables and negative numbers
-				if ($char == '-')
+				if ($state == 'MINUS')
 				{
 					$next_chr = ord($this->peek());
 					$next_char_class = ($next_chr >= 128) ? 'C_ABC' : $ascii_map[$next_chr];
@@ -270,6 +271,10 @@ class Conditional_lexer {
 					elseif ($old_state == 'OK' && $next_char_class == 'C_DIGIT')
 					{
 						$state = 'NUM';
+					}
+					else
+					{
+						$state = 'OK';
 					}
 				}
 
