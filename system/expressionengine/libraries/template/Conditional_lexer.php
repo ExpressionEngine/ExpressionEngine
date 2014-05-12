@@ -35,6 +35,7 @@ class Conditional_lexer {
 	private $token_values;
 
 	private $ascii_map = array();
+	private $symbols = array();
 	private $patterns = array();
 
 	public function __construct()
@@ -73,6 +74,20 @@ class Conditional_lexer {
 			'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',
 			'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',
 			'C_ABC',	'C_ABC',	'C_ABC',	'C_LD',		'C_PIPE',	'C_RD',		'C_ETC',	'C_ETC'
+		);
+
+		// Purposefully leaving off parenthesis
+		$this->symbols = array(
+			'C_PIPE',  // |
+			'C_AMP',   // &
+			'C_EQ',    // =
+			'C_NOT',   // !
+			'C_LT',    // <
+			'C_GT',    // >
+			'C_MOD',   // %
+			'C_PLUS',  // +
+			'C_MINUS', // -
+			'C_POINT'  // .
 		);
 	}
 
@@ -311,57 +326,42 @@ class Conditional_lexer {
 
 				if ($state == 'OK')
 				{
-					// $this->next() consumes a character, but we need it for
-					// this operator check
-					$this->str = $char.$this->str;
-
-					$regex = $this->patterns['operators'];
-
-					$operator = $this->peekRegex($regex);
-
-					if ($operator != '')
+					// Check for operators
+					if (in_array($char_class, $this->symbols))
 					{
-						// Found something, but first save the buffer.
-
-						$oplength = strlen($operator);
-						$operator = $this->move($oplength);
-
-						$char = $this->peek();
-
-						// check for invalid ===, <<, etc
-						// todo this needs work
-						if ($char == $operator[$oplength - 1] && $char != ')' && $char != '(')
+						// Found one, so we will save the buffer based on the
+						// previous state
+						switch ($old_state)
 						{
-							$tokens[] = $this->addToken('MISC', $buffer.$operator.$char);
-							$this->next();
+							case "VAR": $token_type = 'VARIABLE';
+								break;
+							case "NUM": $token_type = 'NUMBER';
+								break;
+							default: $token_type = 'MISC';
+								break;
+						}
+						$this->addToken($token_type, $buffer);
+						$buffer = '';
+
+						$operator_buffer = $char;
+						// Consume the array until we stop seeing operator stuff
+						while (in_array($this->ascii_map[ord($this->peek())], $this->symbols))
+						{
+							$operator_buffer .= $this->next();
+						}
+
+						if (in_array($operator_buffer, $this->operators))
+						{
+							$this->addToken('OPERATOR', $operator_buffer);
 						}
 						else
 						{
-							switch ($old_state)
-							{
-								case "VAR": $token_type = 'VARIABLE';
-									break;
-								case "NUM": $token_type = 'NUMBER';
-									break;
-								default: $token_type = 'MISC';
-									break;
-							}
-							$this->addToken($token_type, $buffer);
-							$this->addToken('OPERATOR', $operator);
+							$this->addToken('MISC', $operator_buffer);
 						}
 
-						$buffer = '';
 						continue;
 					}
-					else
-					{
-						// Remove the character we put back; we didn't find
-						// anything
-						$this->next();
-					}
-
 				}
-
 
 				// Checking for balanced curly braces
 				if ($state == 'RD')
