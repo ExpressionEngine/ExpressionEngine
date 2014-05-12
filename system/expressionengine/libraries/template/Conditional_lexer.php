@@ -331,7 +331,16 @@ class Conditional_lexer {
 						}
 						else
 						{
-							$this->addToken('MISC', $buffer);
+							switch ($old_state)
+							{
+								case "VAR": $token_type = 'VARIABLE';
+									break;
+								case "NUM": $token_type = 'NUMBER';
+									break;
+								default: $token_type = 'MISC';
+									break;
+							}
+							$this->addToken($token_type, $buffer);
 							$this->addToken('OPERATOR', $operator);
 						}
 
