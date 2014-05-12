@@ -34,6 +34,7 @@ class Conditional_lexer {
 
 	private $token_values;
 
+	private $ascii_map = array();
 	private $patterns = array();
 
 	public function __construct()
@@ -41,6 +42,38 @@ class Conditional_lexer {
 		$this->token_values = array_flip($this->token_names);
 
 		$this->patterns['operators'] = $this->getOperatorRegex();
+
+		// An array of 128 elements, one for each ascii character at its ordinal
+		// index. We use this to define character classes.
+		//
+		// For example, all of these will result in C_WHITE:
+		//
+		// $this->ascii_map[ord(' ')]
+		// $this->ascii_map[ord("\n")]
+		// $this->ascii_map[ord("\t")]
+		// $this->ascii_map[ord("\r")]
+
+		$this->ascii_map = array(
+			'__',		'__',		'__',		'__',		'__',		'__',		'__',		'__',
+			'__',		'C_WHITE',	'C_WHITE',	'__',		'__',		'C_WHITE',	'__',		'__',
+			'__',		'__',		'__',		'__',		'__',		'__',		'__',		'__',
+			'__',		'__',		'__',		'__',		'__',		'__',		'__',		'__',
+
+			'C_WHITE',	'C_NOT',	'C_DQUOTE',	'C_HASH',	'C_DOLLAR',	'C_MOD',	'C_AMP',	'C_SQUOTE',
+			'C_LPAREN',	'C_RPAREN',	'C_STAR',	'C_PLUS',	'C_ETC',	'C_MINUS',	'C_POINT',	'C_SLASH',
+			'C_DIGIT',	'C_DIGIT',	'C_DIGIT',	'C_DIGIT',	'C_DIGIT',	'C_DIGIT',	'C_DIGIT',	'C_DIGIT',
+			'C_DIGIT',	'C_DIGIT',	'C_COLON',	'C_SMICOL',	'C_LT',		'C_EQ',		'C_GT',		'C_QUESTION',
+
+			'C_ETC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',
+			'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',
+			'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',
+			'C_ABC',	'C_ABC',	'C_ABC',	'C_LSQRB',	'C_BACKS',	'C_RSRQB',	'C_HAT',	'C_ABC', // underscore is a letter for our needs
+
+			'C_BTICK',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',
+			'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',
+			'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',
+			'C_ABC',	'C_ABC',	'C_ABC',	'C_LD',		'C_PIPE',	'C_RD',		'C_ETC',	'C_ETC'
+		);
 	}
 
 
@@ -62,38 +95,6 @@ class Conditional_lexer {
 		// The following arrays describe the state machine as
 		// a list of character classes, edges, and transitions.
 
-
-		// An array of 128 elements, one for each ascii character at its ordinal
-		// index. We use this to define character classes.
-		//
-		// For example, all of these will result in C_WHITE:
-		//
-		// $ascii_map[ord(' ')]
-		// $ascii_map[ord("\n")]
-		// $ascii_map[ord("\t")]
-		// $ascii_map[ord("\r")]
-
-		$ascii_map = array(
-			'__',		'__',		'__',		'__',		'__',		'__',		'__',		'__',
-			'__',		'C_WHITE',	'C_WHITE',	'__',		'__',		'C_WHITE',	'__',		'__',
-			'__',		'__',		'__',		'__',		'__',		'__',		'__',		'__',
-			'__',		'__',		'__',		'__',		'__',		'__',		'__',		'__',
-
-			'C_WHITE',	'C_NOT',	'C_DQUOTE',	'C_HASH',	'C_DOLLAR',	'C_MOD',	'C_AMP',	'C_SQUOTE',
-			'C_LPAREN',	'C_RPAREN',	'C_STAR',	'C_PLUS',	'C_ETC',	'C_MINUS',	'C_POINT',	'C_SLASH',
-			'C_DIGIT',	'C_DIGIT',	'C_DIGIT',	'C_DIGIT',	'C_DIGIT',	'C_DIGIT',	'C_DIGIT',	'C_DIGIT',
-			'C_DIGIT',	'C_DIGIT',	'C_COLON',	'C_SMICOL',	'C_LT',		'C_EQ',		'C_GT',		'C_QUESTION',
-
-			'C_ETC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',
-			'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',
-			'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',
-			'C_ABC',	'C_ABC',	'C_ABC',	'C_LSQRB',	'C_BACKS',	'C_RSRQB',	'C_HAT',	'C_ABC', // underscore is a letter for our needs
-
-			'C_BTICK',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',
-			'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',
-			'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',	'C_ABC',
-			'C_ABC',	'C_ABC',	'C_ABC',	'C_LD',		'C_PIPE',	'C_RD',		'C_ETC',	'C_ETC'
-		);
 
 		// Hitting an edge causes a transition to happen. The edges are
 		// named after the ascii group that causes the transition.
@@ -221,7 +222,7 @@ class Conditional_lexer {
 				// This should hold true because all control characters and php
 				// operators are in the ascii map.
 				$chr = ord($char);
-				$char_class = ($chr >= 128) ? 'C_ABC' : $ascii_map[$chr];
+				$char_class = ($chr >= 128) ? 'C_ABC' : $this->ascii_map[$chr];
 
 				// Don't bother with control characters.
 				if ($char_class == '__')
@@ -245,7 +246,7 @@ class Conditional_lexer {
 				if ($state == 'POINT')
 				{
 					$next_chr = ord($this->peek());
-					$next_char_class = ($next_chr >= 128) ? 'C_ABC' : $ascii_map[$next_chr];
+					$next_char_class = ($next_chr >= 128) ? 'C_ABC' : $this->ascii_map[$next_chr];
 
 					// We may may be in a FLOAT state
 					if ($next_char_class == 'C_DIGIT')
@@ -262,7 +263,7 @@ class Conditional_lexer {
 				if ($state == 'MINUS')
 				{
 					$next_chr = ord($this->peek());
-					$next_char_class = ($next_chr >= 128) ? 'C_ABC' : $ascii_map[$next_chr];
+					$next_char_class = ($next_chr >= 128) ? 'C_ABC' : $this->ascii_map[$next_chr];
 
 					if (($old_state == 'VAR' || $old_state == 'NUM') && $next_char_class == 'C_ABC')
 					{
