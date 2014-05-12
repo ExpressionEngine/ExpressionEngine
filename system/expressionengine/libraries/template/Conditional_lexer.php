@@ -343,7 +343,6 @@ class Conditional_lexer {
 				// On escape, store char and restore previous state
 				if ($state == 'ESC')
 				{
-					$buffer .= $char;
 					$char = $this->next();
 					$state = $old_state; // pretend nothing happened
 				}
