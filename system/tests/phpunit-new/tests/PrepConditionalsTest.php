@@ -356,15 +356,17 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 			array('Underscorealpha as variable',	'{if _a}out{/if}',			'{if "foo"}out{/if}',		array('_a' => 'foo')),
 			array('Intdash as variable',			'{if 42-answer}out{/if}',	'{if "foo"}out{/if}',		array('42-answer' => 'foo')),
 			array('Alphadash as variable',			'{if an-answer}out{/if}',	'{if "foo"}out{/if}',		array('an-answer' => 'foo')),
+			array('Hex as variable',				'{if 0xDEADBEEF}out{/if}',	'{if "foo"}out{/if}',		array('0xDEADBEEF' => 'foo')),
 
 			array('Dash as invalid variable',		'{if -}out{/if}',			'{if -}out{/if}',			array('-' => 'foo')),
 			array('Dashes as invalid variable',		'{if --}out{/if}',			'{if FALSE}out{/if}',		array('--' => 'foo')),
 			array('Smile as invalid variable',		'{if -__-}out{/if}',		'{if - FALSE}out{/if}',		array('-__-' => 'foo')),
 			array('Integer as invalid variable',	'{if 42}out{/if}',			'{if 42}out{/if}',			array('42' => 'foo')),
-			array('Hex as invalid variable',		'{if 0xDEADBEEF}out{/if}',	'{if 0xDEADBEEF}out{/if}',	array('0xDEADBEEF' => 'foo')),
-			array('Float as invalid variable',		'{if 42.7}out{/if}',		'{if 42.7}out{/if}',		array('42.7' => 'foo')),
+			array('Big Float as invalid variable',	'{if 42.7}out{/if}',		'{if 42.7}out{/if}',		array('42.7' => 'foo')),
+			array('Small Float as invalid variable','{if .7}out{/if}',			'{if .7}out{/if}',			array('.7' => 'foo')),
 			array('Dashint as invalid variable',	'{if -42}out{/if}',			'{if -42}out{/if}',			array('-42' => 'foo')),
 			array('Dashalpha as invalid variable',	'{if -a}out{/if}',			'{if - FALSE}out{/if}',		array('-a' => 'foo')),
+			array('Alphadash as invalid variable',	'{if a-}out{/if}',			'{if FALSE -}out{/if}',		array('a-' => 'foo')),
 		);
 	}
 
@@ -493,7 +495,7 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 	protected function wonkyRepetitions()
 	{
 		return array(
-			array('Double Modulo',		 '{if 5 %% 7}out{/if}',		'{if 5 %% 7}out{/if}'),
+			array('Double Modulo',		 '{if 5 %% 7}out{/if}',		'{if 5 FALSE 7}out{/if}'),
 			array('Double AND', 		 '{if 5 && AND 7}out{/if}',	'{if 5 && AND 7}out{/if}'),
 			array('Double No Space AND', '{if 5 &&AND 7}out{/if}',	'{if 5 && AND 7}out{/if}'),
 			array('Double Comparison',	 '{if 5 > < 7}out{/if}',	'{if 5 > < 7}out{/if}'),
