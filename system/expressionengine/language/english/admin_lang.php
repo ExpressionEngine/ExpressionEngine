@@ -849,8 +849,8 @@ $lang = array(
 "debug_cfg" =>
 "Debugging Preferences",
 
-"software_license" =>
-"Software License",
+"software_registration" =>
+"Software Registration",
 
 "license_contact" =>
 "License Holder Contact Email",

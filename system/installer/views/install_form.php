@@ -20,7 +20,7 @@ else
 	<input type="hidden" name="license_number" value="<?=$license_number?>" />
 <?php else: ?>
 	<div class="shade">
-	<h2><?=lang('software_license')?></h2>
+	<h2><?=lang('software_registration')?></h2>
 
 	<h5><?=lang('license_contact')?></h5>
 	<p><input type='text' name='license_contact' value='<?=$license_contact?>' size='40' /></p>

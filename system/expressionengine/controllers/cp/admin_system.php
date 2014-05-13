@@ -83,15 +83,15 @@ class Admin_system extends CP_Controller {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Software License Configuration
+	 * Software Registration
 	 *
 	 * @access	public
 	 * @return	void
 	 */
-	function software_license()
+	function software_registration()
 	{
 		$this->_restrict_prefs_access();
-		$this->_config_manager('software_license', __FUNCTION__);
+		$this->_config_manager('software_registration', __FUNCTION__);
 	}
 
 	// --------------------------------------------------------------------
@@ -136,7 +136,7 @@ class Admin_system extends CP_Controller {
 			'throttling_cfg', 'localization_cfg', 'email_cfg', 'cookie_cfg',
 			'image_cfg', 'captcha_cfg', 'template_cfg', 'censoring_cfg',
 			'mailinglist_cfg', 'emoticon_cfg', 'tracking_cfg', 'avatar_cfg',
-			'search_log_cfg', 'recount_prefs', 'software_license'
+			'search_log_cfg', 'recount_prefs', 'software_registration'
 		);
 		if ( ! in_array($type, $config_pages))
 		{
