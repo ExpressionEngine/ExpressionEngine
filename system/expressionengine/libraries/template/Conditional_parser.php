@@ -117,6 +117,9 @@ class Conditional_parser extends RecursiveDescentParser {
 
 	/**
 	 * Boolean Expressions
+	 *
+	 * This does the left side of the expression and recurses if it finds an
+	 * operator, which indicates that there is a right side.
 	 */
 	protected function expression()
 	{
@@ -124,7 +127,7 @@ class Conditional_parser extends RecursiveDescentParser {
 		{
 			$this->output('(');
 
-			$this->output($this->expression());
+			$this->expression();
 			$this->expect('RP');
 
 			$this->output(')');
@@ -154,7 +157,7 @@ class Conditional_parser extends RecursiveDescentParser {
 		{
 			$this->output($this->value());
 			$this->next();
-			$this->output($this->expression());
+			$this->expression();
 		}
 	}
 
