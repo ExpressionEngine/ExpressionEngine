@@ -36,13 +36,10 @@ class Conditional_lexer {
 
 	private $ascii_map = array();
 	private $symbols = array();
-	private $patterns = array();
 
 	public function __construct()
 	{
 		$this->token_values = array_flip($this->token_names);
-
-		$this->patterns['operators'] = $this->getOperatorRegex();
 
 		// An array of 128 elements, one for each ascii character at its ordinal
 		// index. We use this to define character classes.
@@ -491,19 +488,6 @@ class Conditional_lexer {
 		$this->str = substr($this->str, $n);
 
 		return $buffer;
-	}
-
-	// get operator regex in a peekRegex compatible format
-	private function getOperatorRegex()
-	{
-		$operators = array();
-
-		foreach ($this->operators as $operator)
-		{
-			$operators[] = preg_quote($operator, '/');
-		}
-
-		return '('.implode('|', $operators).')';
 	}
 
 	/**
