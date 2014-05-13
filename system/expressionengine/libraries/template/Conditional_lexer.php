@@ -265,6 +265,7 @@ class Conditional_lexer {
 					{
 						$buffer .= $this->peek();
 					}
+
 					$this->addToken('WHITESPACE', $buffer);
 
 					$buffer = '';
