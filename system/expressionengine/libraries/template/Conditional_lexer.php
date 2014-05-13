@@ -232,12 +232,7 @@ class Conditional_lexer {
 				// Save the old state.
 				$old_state = $state;
 
-				// If it's an ascii character we get its name from the ascii
-				// map, otherwise we simply assume that it's safe for strings.
-				// This should hold true because all control characters and php
-				// operators are in the ascii map.
-				$chr = ord($char);
-				$char_class = ($chr >= 128) ? 'C_ABC' : $this->ascii_map[$chr];
+				$char_class = $this->charClass($char);
 
 				// Don't bother with control characters.
 				if ($char_class == '__')
@@ -260,8 +255,7 @@ class Conditional_lexer {
 
 				if ($state == 'POINT')
 				{
-					$next_chr = ord($this->peek());
-					$next_char_class = ($next_chr >= 128) ? 'C_ABC' : $this->ascii_map[$next_chr];
+					$next_char_class = $this->charClass($this->peek());
 
 					// We may may be in a FLOAT state
 					if ($next_char_class == 'C_DIGIT')
@@ -277,8 +271,7 @@ class Conditional_lexer {
 				// Manually handle "int-alpha" variables and negative numbers
 				if ($state == 'MINUS')
 				{
-					$next_chr = ord($this->peek());
-					$next_char_class = ($next_chr >= 128) ? 'C_ABC' : $this->ascii_map[$next_chr];
+					$next_char_class = $this->charClass($this->peek());
 
 					if (($old_state == 'VAR' || $old_state == 'NUM') && $next_char_class == 'C_ABC')
 					{
@@ -345,7 +338,7 @@ class Conditional_lexer {
 
 						$operator_buffer = $char;
 						// Consume the array until we stop seeing operator stuff
-						while (in_array($this->ascii_map[ord($this->peek())], $this->symbols))
+						while (in_array($this->charClass($this->peek()), $this->symbols))
 						{
 							$operator_buffer .= $this->next();
 						}
@@ -511,5 +504,26 @@ class Conditional_lexer {
 		}
 
 		return '('.implode('|', $operators).')';
+	}
+
+	/**
+	 * Retrieves the class of a character from our ASCII Map
+	 *
+	 * @param	string	$char	A single character
+	 * @return	string	The value from our ASCII Map
+	 */
+	private function charClass($char)
+	{
+		if ($char === FALSE || $char == '')
+		{
+			throw new InvalidConditionalException('No character given.');
+		}
+
+		// If it's an ascii character we get its name from the ascii
+		// map, otherwise we simply assume that it's safe for strings.
+		// This should hold true because all control characters and php
+		// operators are in the ascii map.
+		$chr = ord($char);
+		return ($chr >= 128) ? 'C_ABC' : $this->ascii_map[$chr];
 	}
 }
