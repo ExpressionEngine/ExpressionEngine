@@ -378,7 +378,7 @@ class Pagination_object {
 			// Last check to make sure we actually need to paginate
 			if ($this->total_items > $this->per_page)
 			{
-				if (strpos($this->basepath, SELF) === FALSE && ee()->config->item('site_index') != '')
+				if (strpos($this->basepath, SELF) === FALSE && ee()->config->item('site_index') != '' && strpos($this->basepath, ee()->config->item('site_index')) === FALSE)
 				{
 					$this->basepath .= SELF;
 				}
