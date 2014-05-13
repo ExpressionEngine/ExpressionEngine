@@ -9,20 +9,23 @@ class Conditional_lexer {
 
 	/**
 	 * Available tokens
+	 *
+	 * This is for the future where we will build tokens by number
+	 *
+	 * private $token_names = array(
+	 * 	'TEMPLATE_STRING',	// generic
+	 * 	'IF',				// {if
+	 * 	'ELSE',				// {if:else
+	 * 	'ELSEIF',			// {if:elseif
+	 * 	'ENDIF',			// {/if}
+	 * 	'ENDCOND',			// } at the end of an if
+	 * 	'STRING',			// literal string "foo", or 'foo'. The value does not include quotes
+	 * 	'NUMBER',
+	 * 	'VARIABLE',
+	 * 	'OPERATOR',
+	 * 	'MISC',				// other stuff such as operators, whitespace, and numbers
+	 * );
 	 */
-	private $token_names = array(
-		'TEMPLATE_STRING',	// generic
-		'IF',				// {if
-		'ELSE',				// {if:else
-		'ELSEIF',			// {if:elseif
-		'ENDIF',			// {/if}
-		'ENDCOND',			// } at the end of an if
-		'STRING',			// literal string "foo", or 'foo'. The value does not include quotes
-		'NUMBER',
-		'VARIABLE',
-		'OPERATOR',
-		'MISC',				// other stuff such as operators, whitespace, and numbers
-	);
 
 	private $operators = array(
 		'(', ')',
@@ -39,7 +42,8 @@ class Conditional_lexer {
 
 	public function __construct()
 	{
-		$this->token_values = array_flip($this->token_names);
+		// This is for the future where we will build tokens by number
+		// $this->token_values = array_flip($this->token_names);
 
 		// An array of 128 elements, one for each ascii character at its ordinal
 		// index. We use this to define character classes.
@@ -435,11 +439,13 @@ class Conditional_lexer {
 		return $this->tokens;
 	}
 
+	/*
 	// get token name. For the future where we don't put strings in as the token name.
 	public function getTokenName($int)
 	{
 		return $this->token_names[$int];
 	}
+	*/
 
 	// add token to the token stream
 	public function addToken($type, $value)
