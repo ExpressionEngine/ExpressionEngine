@@ -20,15 +20,17 @@ class Conditional_lexer {
 	 * 	'ENDIF',			// {/if}
 	 * 	'ENDCOND',			// } at the end of an if
 	 * 	'STRING',			// literal string "foo", or 'foo'. The value does not include quotes
-	 * 	'NUMBER',
+	 * 	'NUMBER',			// literal number
 	 * 	'VARIABLE',
-	 * 	'OPERATOR',
+	 * 	'OPERATOR',			// an operator from the $operators array
 	 * 	'MISC',				// other stuff such as operators, whitespace, and numbers
+	 * 	'LP',				// (
+	 * 	'RP',				// )
+	 * 	'WHITESPACE',		// \s\r\n\t
 	 * );
 	 */
 
 	private $operators = array(
-		'(', ')',
 		'||', '&&',
 		'==', '!=', '<=', '>=', '<>', '<', '>',
 		'%', '+', '-',
@@ -235,6 +237,40 @@ class Conditional_lexer {
 
 				$char_class = $this->charClass($char);
 
+				// Tokenize parenthesis
+				if ($char_class == 'C_LPAREN')
+				{
+					$this->addTokenByState($old_state, $buffer);
+					$buffer = '';
+
+					$this->addToken('LP', '(');
+					continue;
+				}
+				elseif ($char_class == 'C_RPAREN')
+				{
+					$this->addTokenByState($old_state, $buffer);
+					$buffer = '';
+
+					$this->addToken('RP', ')');
+					continue;
+				}
+
+				// Consume and tokenize whitespace
+				if ($char_class == 'C_WHITE')
+				{
+					$this->addTokenByState($old_state, $buffer);
+					$buffer = $char;
+
+					while ($this->charClass($this->peek()) == 'C_WHITE')
+					{
+						$buffer .= $this->peek();
+					}
+					$this->addToken('WHITESPACE', $buffer);
+
+					$buffer = '';
+					continue;
+				}
+
 				// Don't bother with control characters.
 				if ($char_class == '__')
 				{
@@ -323,18 +359,7 @@ class Conditional_lexer {
 					// Check for operators
 					if (in_array($char_class, $this->symbols))
 					{
-						// Found one, so we will save the buffer based on the
-						// previous state
-						switch ($old_state)
-						{
-							case "VAR": $token_type = 'VARIABLE';
-								break;
-							case "NUM": $token_type = 'NUMBER';
-								break;
-							default: $token_type = 'MISC';
-								break;
-						}
-						$this->addToken($token_type, $buffer);
+						$this->addTokenByState($old_state, $buffer);
 						$buffer = '';
 
 						$operator_buffer = $char;
@@ -436,6 +461,8 @@ class Conditional_lexer {
 
 		$this->addToken('TEMPLATE_STRING', $this->str);
 
+		var_dump($this->tokens);
+
 		return $this->tokens;
 	}
 
@@ -515,5 +542,25 @@ class Conditional_lexer {
 		// operators are in the ascii map.
 		$chr = ord($char);
 		return ($chr >= 128) ? 'C_ABC' : $this->ascii_map[$chr];
+	}
+
+	/**
+	 * Determines the token by the state and adds the value to the token stream
+	 *
+	 * @param	string	$state	The state which decides the token
+	 * @param	string	$value	The value to be added to the token stream
+	 **/
+	private function addTokenByState($state, $value)
+	{
+		switch ($state)
+		{
+			case "VAR": $token_type = 'VARIABLE';
+				break;
+			case "NUM": $token_type = 'NUMBER';
+				break;
+			default: $token_type = 'MISC';
+				break;
+		}
+		$this->addToken($token_type, $value);
 	}
 }
