@@ -451,8 +451,94 @@ class Utilities extends CP_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
+		ee()->lang->loadfile('member_import');
+
+		ee()->load->library('form_validation');
+		ee()->form_validation->set_rules(array(
+			array(
+				 'field'   => 'member_file',
+				 'label'   => 'lang:file_location',
+				 'rules'   => 'required|file_exists'
+			),
+			array(
+				 'field'   => 'delimiter',
+				 'label'   => 'lang:delimiting_char',
+				 'rules'   => 'required|enum[tab,other,comma,pipe]'
+			),
+			array(
+				 'field'   => 'delimiter_special',
+				 'label'   => 'lang:delimiting_char',
+				 'rules'   => 'trim|callback__not_alphanu'
+			),
+			array(
+				 'field'   => 'enclosure',
+				 'label'   => 'lang:enclosing_char',
+				 'rules'   => 'callback__prep_enclosure'
+			),
+		));
+
+		if (ee()->form_validation->run() !== FALSE)
+		{
+			$this->_pair_fields();
+		}
+
 		ee()->view->cp_page_title = lang('import_converter');
 		ee()->cp->render('utilities/import-converter');
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Not Alpha or Numeric
+	 *
+	 * Validation callback that makes sure that no alphanumeric chars are submitted
+	 *
+	 * @param	string
+	 * @return	boolean
+	 */
+	public function _not_alphanu($str = '')
+	{
+		if (ee()->input->post('delimiter') == 'other')
+		{
+			if ($str == '')
+			{
+				ee()->form_validation->set_message('_not_alphanu', str_replace('%x', lang('other'), lang('no_delimiter')));
+				return FALSE;
+			}
+
+			preg_match("/[\w\d]*/", $str, $matches);
+
+			if ($matches[0] != '')
+			{
+				ee()->form_validation->set_message('_not_alphanu', lang('alphanumeric_not_allowed'));
+				return FALSE;
+			}
+		}
+
+		return TRUE;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Prep Enclosure
+	 *
+	 * Undo changes made by form prep
+	 *
+	 * @return	string
+	 */
+	public function _prep_enclosure($enclosure)
+	{
+		// undo changes made by form prep as we need the literal characters
+		// and htmlspecialchars_decode() doesn't exist until PHP 5, so...
+		$enclosure = str_replace('&#39;', "'", $enclosure);
+		$enclosure = str_replace('&amp;', "&", $enclosure);
+		$enclosure = str_replace('&lt;', "<", $enclosure);
+		$enclosure = str_replace('&gt;', ">", $enclosure);
+		$enclosure = str_replace('&quot;', '"', $enclosure);
+		$enclosure = stripslashes($enclosure);
+
+		return $enclosure;
 	}
 
 	// --------------------------------------------------------------------
