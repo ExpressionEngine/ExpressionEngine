@@ -81,13 +81,11 @@ class Conditional_parser extends RecursiveDescentParser {
 	 */
 	protected function conditional()
 	{
-		$cond = '';
 		$this->openBuffer();
 
 		$this->condition();
 
 		$this->output('{if ' . $this->closeBuffer() . '}');
-
 		$this->template();
 
 		while ($this->accept('ELSEIF'))
@@ -96,7 +94,6 @@ class Conditional_parser extends RecursiveDescentParser {
 			$this->condition();
 
 			$this->output('{if:elseif ' . $this->closeBuffer() . '}');
-
 			$this->template();
 		}
 
@@ -105,7 +102,6 @@ class Conditional_parser extends RecursiveDescentParser {
 			$this->output('{if:else}');
 			$this->template();
 		}
-
 	}
 
 	/**
@@ -169,14 +165,14 @@ class Conditional_parser extends RecursiveDescentParser {
 	{
 		if ($this->is('BOOL'))
 		{
-			return ($value == 'TRUE') ? 'TRUE' : 'FALSE';
+			return (strtoupper($value) == 'TRUE') ? 'TRUE' : 'FALSE';
 		}
 		elseif ($this->is('NUMBER'))
 		{
 			return $value;
 		}
 
-		return '"' . $value . '"';
+		return $this->encodeString($value);
 	}
 
 	/**
@@ -186,8 +182,10 @@ class Conditional_parser extends RecursiveDescentParser {
 	{
 		if (array_key_exists($name, $this->variables))
 		{
-			return $this->scalar(
-				$this->encode(
+			$value = $this->variables[$name];
+
+			return $this->encode(
+				$this->safeCastToString(
 					$this->variables[$name]
 				)
 			);
@@ -228,21 +226,79 @@ class Conditional_parser extends RecursiveDescentParser {
 	}
 
 	/*
+	 * Encode a string literal
+	 */
+	protected function encodeString($value)
+	{
+		$has_braces = (stristr($value, LD) || stristr($value, RD));
+
+		if (stristr($value, LD.'exp:') && stristr($value, RD) && $this->safety === FALSE)
+		{
+			// Do not encode embedded tags in strings when safety is FALSE
+			return '"' . $value . '"';
+		}
+
+		// If it has braces we do not want to encode them
+		return $this->encode($value, ! $has_braces);
+	}
+
+	/**
 	 * Encode a variable
 	 */
-	protected function encode($value)
+	protected function encode($value, $encode_braces = TRUE)
 	{
+		// TRUE AND FALSE values are for short hand conditionals,
+		// like {if logged_in} and so we have no need to remove
+		// unwanted characters and we do not quote it.
+		if ($value == 'TRUE' || $value == 'FALSE')
+		{
+			return $value;
+		}
+
+		if (strlen($value) > 100)
+		{
+			$value = substr(htmlspecialchars($value), 0, 100);
+		}
+
 		$value = str_replace(
 			array("'", '"', '(', ')', '$', "\n", "\r", '\\'),
 			array('&#39;', '&#34;', '&#40;', '&#41;', '&#36;', '', '', '&#92;'),
 			$value
 		);
 
-		return str_replace(
-			array('{', '}',),
-			array('&#123;', '&#125;',),
-			$value
-		);
+		if ($encode_braces || $this->safety === TRUE)
+		{
+			$value = str_replace(
+				array('{', '}',),
+				array('&#123;', '&#125;',),
+				$value
+			);
+		}
+
+		// quote it as a proper string
+		return '"' . $value . '"';
+	}
+
+	/**
+	 * Take a user variable and cast it to a string, taking
+	 * into account that some developers pass arrays, and
+	 * objects.
+	 */
+	protected function safeCastToString($value)
+	{
+		// It doesn't make sense to allow array values
+		if (is_array($value))
+		{
+			return 'FALSE';
+		}
+
+		// An object that cannot be converted to a string is a problem
+		if (is_object($value) && ! method_exists($value, '__toString'))
+		{
+			return 'FALSE';
+		}
+
+		return (string) $value;
 	}
 
 	/**
