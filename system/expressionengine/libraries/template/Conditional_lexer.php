@@ -28,6 +28,7 @@ class Conditional_lexer {
 	 * 	'RP',				// )
 	 * 	'WHITESPACE',		// \s\r\n\t
 	 * 	'BOOL',				// TRUE or FALSE (case insensitive)
+	 * 	'TAG',				// {exp:foo:bar}
 	 * );
 	 */
 
@@ -159,6 +160,7 @@ class Conditional_lexer {
 		//		SD		- string double "str"
 		//		VAR 	- inside a variable
 		//		NUM		- inside a number
+		//		TAG		- inside a tag
 		//		POINT	- ambiguous point
 		//		MINUS	- ambiguous minus
 		//		FLOAT	- inside a floating point number
@@ -175,6 +177,7 @@ class Conditional_lexer {
 			'VAR'	=> array('ESC',	'SS',	'SD',	'LD',	'RD',	'VAR',	'VAR',	'MINUS',	'VAR',	'OK'),
 			'NUM'	=> array('ESC',	'SS',	'SD',	'LD',	'RD',	'VAR',	'NUM',	'MINUS',	'ERR',	'POINT'),
 			'FLOAT'	=> array('ESC',	'SS',	'SD',	'LD',	'RD',	'VAR',	'FLOAT','OK',	'ERR',	'ERR'),
+			'TAG'	=> array('ESC',	'TAG',	'TAG',	'TAG',	'RD',	'TAG',	'TAG',	'TAG',	'TAG',	'TAG'),
 		);
 
 		$this->str = $str;
@@ -244,7 +247,7 @@ class Conditional_lexer {
 					continue;
 				}
 
-				if ($state != 'SS' && $state != 'SD')
+				if ($state != 'SS' && $state != 'SD' && $state != 'TAG')
 				{
 					// Tokenize parenthesis
 					if ($char_class == 'C_LPAREN')
@@ -409,11 +412,18 @@ class Conditional_lexer {
 
 					$curlies--;
 					$state = 'OK';
+
+					if ($old_state == 'TAG')
+					{
+						$this->addToken('TAG', $buffer.$char);
+						$buffer = '';
+						continue;
+					}
 				}
 				elseif ($state == 'LD')
 				{
 					$curlies++;
-					$state = 'OK';
+					$state = 'TAG';
 				}
 
 				// On escape, store char and restore previous state
