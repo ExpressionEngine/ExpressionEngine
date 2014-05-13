@@ -38,6 +38,7 @@ class Collection {
 	public $vocabulary = array();
 	public $vectorizers = array();
 	public $corpus = "";
+	public $idf_lookup = array();
 	
 	/**
 	 * Get our corpus ready. First we strip out all common words specified in our stop word list,
@@ -90,6 +91,22 @@ class Collection {
 
 		$this->document_count = count($this->documents);
 		$this->corpus = new Document($this->corpus);
+
+		// Create a lookup table of IDFs for our vocabulary
+		$tfidf_row = array();
+		$vocabulary_index = array();
+
+		$count = count($this->vocabulary);
+		$i = 0;
+		foreach ($this->vocabulary as $term => $freq)
+		{
+			$tfidf_row[$i] = .5 * $this->inverse_document_frequency($term);
+			$vocabulary_index[$term] = $i;
+			$i++;
+		}
+
+		$this->tfidf_row = $tfidf_row;
+		$this->vocabulary_index = $vocabulary_index;
 	}
 
 	/**
@@ -153,7 +170,15 @@ class Collection {
 		// Normalize frequency if term does not appear anywhere in corpus
 		$freq = empty($this->vocabulary[$term]) ? 1 : $this->vocabulary[$term];
 
-		return log($this->document_count / $freq);
+		if( ! empty($this->idf_lookup[$freq]))
+		{
+			return $this->idf_lookup[$freq];
+		}
+
+		$idf = log($this->document_count / $freq);
+		$this->idf_lookup[$freq] = $idf;
+
+		return $idf;
 	}
 
 	/**
@@ -184,12 +209,13 @@ class Collection {
 	 */
 	private function _tfidf($source)
 	{
+		$vector = $this->tfidf_row;
+		
 		foreach ($source as $term => $freq)
 		{
-			$vector = array();
 			$tf = $this->term_frequency($source, $term);
 			$idf = $this->inverse_document_frequency($term);
-			$vector[] = $tf * $idf;
+			$vector[$this->vocabulary_index[$term]] = $tf * $idf;
 		}
 
 		return $vector;
