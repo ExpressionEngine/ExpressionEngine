@@ -463,8 +463,6 @@ class Conditional_lexer {
 
 		$this->addToken('TEMPLATE_STRING', $this->str);
 
-		var_dump($this->tokens);
-
 		return $this->tokens;
 	}
 
