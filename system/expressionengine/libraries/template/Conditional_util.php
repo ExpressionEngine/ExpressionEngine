@@ -62,7 +62,7 @@ class Conditional_util {
 
 		foreach ($vars as $key => $var)
 		{
-			$prefixed_vars[$prefix.$key] = $this->encode_conditional_value($var, $safety);
+			$prefixed_vars[$prefix.$key] = $var;// $this->encode_conditional_value($var, $safety);
 		}
 
 		$vars = $prefixed_vars;
@@ -74,6 +74,18 @@ class Conditional_util {
 		// Get the token stream
 		$tokens = $lexer->tokenize($str);
 
+		require_once APPPATH.'libraries/template/Conditional_parser.php';
+
+		$parser = new Conditional_parser($tokens);
+		$parser->setVariables($vars);
+
+		if ($safety === TRUE)
+		{
+			$parser->safetyOn();
+		}
+
+		return $parser->parse();
+/*
 		$output = '';
 		$condition = '';
 		$condition_branch = '';
@@ -180,7 +192,7 @@ class Conditional_util {
 					$unsafe_operators = array(
 						'/*',
 						'//',
-						'*/',
+						'*'.'/',
 						'`'
 					);
 
@@ -202,66 +214,7 @@ class Conditional_util {
 					{
 						$condition .= ' ';
 					}
-/*
-					$operators = array(
-						'||',
-						'&&',
-						'==',
-						'!=',
-						'<>',
-						'%',
-						'+',
-						'-',
-						'.',
-						'<',
-						'>',
-						'(',
-						')',
-					);
 
-					foreach ($operators as &$operator)
-					{
-						$operator = preg_quote($operator, '/');
-					}
-
-					$invalid = '';
-					$regex = '/^('.implode('|', $operators).'|\s+)/';
-
-					while ($value != '')
-					{
-						if (preg_match($regex, $value, $match))
-						{
-							if ($invalid != '')
-							{
-								$condition .= ' FALSE ';
-								$invalid = '';
-							}
-
-							$condition .= ''.$match[1].'';
-
-							$value = substr($value, strlen($match[1]));
-						}
-						elseif ($value != '')
-						{
-							if ($value == ' ')
-							{
-								$condition .= ' ';
-								$invalid = '';
-							}
-							else
-							{
-								$invalid .= $value[0];
-							}
-
-							$value = substr($value, 1);
-						}
-					}
-
-					if ($invalid != '')
-					{
-						$condition .= ' FALSE ';
-					}
-*/
 					break;
 				case 'TEMPLATE_STRING':
 					$output .= $value;
@@ -278,6 +231,7 @@ class Conditional_util {
 		}
 
 		return $output;
+*/
 	}
 
 	/**
