@@ -27,6 +27,7 @@ class Conditional_lexer {
 	 * 	'LP',				// (
 	 * 	'RP',				// )
 	 * 	'WHITESPACE',		// \s\r\n\t
+	 * 	'BOOL',				// TRUE or FALSE (case insensitive)
 	 * );
 	 */
 
@@ -478,6 +479,25 @@ class Conditional_lexer {
 	// add token to the token stream
 	public function addToken($type, $value)
 	{
+		// Special cases for Variables
+		if ($type == 'VARIABLE')
+		{
+			$uppercase_value = strtoupper($value);
+
+			switch ($uppercase_value)
+			{
+				case 'TRUE':
+				case 'FALSE':
+					$type = 'BOOL';
+					break;
+				case 'AND':
+				case 'XOR':
+				case 'OR':
+					$type = 'OPERATOR';
+					break;
+			}
+		}
+
 		// Always store strings, even empty ones
 		if ($type == 'STRING' || $value != '')
 		{
