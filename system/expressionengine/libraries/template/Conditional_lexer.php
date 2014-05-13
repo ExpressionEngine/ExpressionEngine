@@ -263,7 +263,7 @@ class Conditional_lexer {
 
 					while ($this->charClass($this->peek()) == 'C_WHITE')
 					{
-						$buffer .= $this->peek();
+						$buffer .= $this->next();
 					}
 
 					$this->addToken('WHITESPACE', $buffer);
