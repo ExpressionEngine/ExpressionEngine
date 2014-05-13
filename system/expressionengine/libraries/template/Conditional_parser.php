@@ -128,9 +128,10 @@ class Conditional_parser extends RecursiveDescentParser {
 			$this->output('(');
 
 			$this->expression();
-			$this->expect('RP');
 
 			$this->output(')');
+			$this->expect('RP');
+
 		}
 		elseif ($this->is('STRING') || $this->is('NUMBER') || $this->is('BOOL'))
 		{
