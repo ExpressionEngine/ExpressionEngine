@@ -1,5 +1,28 @@
-<?php
+<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 2.0
+ * @filesource
+ */
+
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine Config Class
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Core
+ * @category	Core
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
+ */
 class Conditional_lexer {
 
 	/**
@@ -247,6 +270,8 @@ class Conditional_lexer {
 					continue;
 				}
 
+				// If we are inside a string or a tag we don't want to tokenize
+				// parenthesis or whitespace
 				if ($state != 'SS' && $state != 'SD' && $state != 'TAG')
 				{
 					// Tokenize parenthesis
@@ -498,7 +523,12 @@ class Conditional_lexer {
 	}
 	*/
 
-	// add token to the token stream
+	/**
+	 * Add token to the token stream
+	 *
+	 * @param string $type The type of token being added
+	 * @param string $$value The value of the token being added
+	 */
 	public function addToken($type, $value)
 	{
 		// Special cases for Variables
@@ -527,13 +557,23 @@ class Conditional_lexer {
 		}
 	}
 
-	// peek ahead n characters without moving
+	/**
+	 * Peek ahead n characters without moving
+	 *
+	 * @param int $n The number of characters to peek ahead
+	 * @return string The next $n characters
+	 */
 	private function peek($n = 1)
 	{
 		return substr($this->str, 0, $n);
 	}
 
-	// peek ahead on an anchored regex
+	/**
+	 * Peek ahead on an anchored regex
+	 *
+	 * @param string $regex A regular expression
+	 * @return array|string The result of the match or an empty string
+	 */
 	private function peekRegex($regex)
 	{
 		if (preg_match('/^'.$regex.'/s', $this->str, $matches))
@@ -544,20 +584,34 @@ class Conditional_lexer {
 		return '';
 	}
 
-	// Seek to the first character in char mask
+	/**
+	 * Seek to the first character in char mask
+	 *
+	 * @param string $charMask The characters we are seeking
+	 * @return string The characters lost in the move
+	 */
 	private function seekTo($charMask)
 	{
 		$n = strcspn($this->str, $charMask);
 		return $this->move($n);
 	}
 
-	// move to the next character
+	/**
+	 * Move to the next character
+	 *
+	 * @return string The consumed character
+	 */
 	private function next()
 	{
 		return $this->move(1);
 	}
 
-	// Move ahead n characters in the string, returning the consumed bit
+	/**
+	 * Move ahead n characters in the string, returning the consumed bit
+	 *
+	 * @param int $n The number of characters to move ahead
+	 * @return string The characters lost in the move
+	 */
 	private function move($n)
 	{
 		$buffer = substr($this->str, 0, $n);
@@ -607,3 +661,6 @@ class Conditional_lexer {
 		$this->addToken($token_type, $value);
 	}
 }
+
+/* End of file Conditional_lexer.php */
+/* Location: ./system/expressionengine/libraries/template/Conditional_lexer.php */
