@@ -167,12 +167,11 @@ class Conditional_parser extends RecursiveDescentParser {
 	 */
 	protected function scalar($value)
 	{
-		if (is_bool($value))
+		if ($this->is('BOOL'))
 		{
-			return $value ? 'TRUE' : 'FALSE';
+			return ($value == 'TRUE') ? 'TRUE' : 'FALSE';
 		}
-
-		if (is_numeric($value))
+		elseif ($this->is('NUMBER'))
 		{
 			return $value;
 		}
@@ -345,7 +344,7 @@ abstract class RecursiveDescentParser {
 			return TRUE;
 		}
 
-		throw new Exception('Unexpected ' . $this->token[0] . ' expected ' . $token_name . '.');
+		throw new Exception('Unexpected ' . $this->token[0] . '(' . $this->token[1] . ')' . ' expected ' . $token_name . '.');
 	}
 
 	protected function next()
