@@ -238,45 +238,51 @@ class Conditional_lexer {
 
 				$char_class = $this->charClass($char);
 
-				// Tokenize parenthesis
-				if ($char_class == 'C_LPAREN')
-				{
-					$this->addTokenByState($old_state, $buffer);
-					$buffer = '';
-
-					$this->addToken('LP', '(');
-					continue;
-				}
-				elseif ($char_class == 'C_RPAREN')
-				{
-					$this->addTokenByState($old_state, $buffer);
-					$buffer = '';
-
-					$this->addToken('RP', ')');
-					continue;
-				}
-
-				// Consume and tokenize whitespace
-				if ($char_class == 'C_WHITE')
-				{
-					$this->addTokenByState($old_state, $buffer);
-					$buffer = $char;
-
-					while ($this->charClass($this->peek()) == 'C_WHITE')
-					{
-						$buffer .= $this->next();
-					}
-
-					$this->addToken('WHITESPACE', $buffer);
-
-					$buffer = '';
-					continue;
-				}
-
 				// Don't bother with control characters.
 				if ($char_class == '__')
 				{
 					continue;
+				}
+
+				if ($state != 'SS' && $state != 'SD')
+				{
+					// Tokenize parenthesis
+					if ($char_class == 'C_LPAREN')
+					{
+						$this->addTokenByState($old_state, $buffer);
+						$buffer = '';
+						$state = 'OK';
+
+						$this->addToken('LP', '(');
+						continue;
+					}
+					elseif ($char_class == 'C_RPAREN')
+					{
+						$this->addTokenByState($old_state, $buffer);
+						$buffer = '';
+						$state = 'OK';
+
+						$this->addToken('RP', ')');
+						continue;
+					}
+
+					// Consume and tokenize whitespace
+					if ($char_class == 'C_WHITE')
+					{
+						$this->addTokenByState($old_state, $buffer);
+						$buffer = $char;
+
+						while ($this->charClass($this->peek()) == 'C_WHITE')
+						{
+							$buffer .= $this->next();
+						}
+
+						$this->addToken('WHITESPACE', $buffer);
+
+						$buffer = '';
+						$state = 'OK';
+						continue;
+					}
 				}
 
 				// If an edge exists, we transition. Otherwise we stay in
@@ -342,12 +348,10 @@ class Conditional_lexer {
 					{
 						if ($state == 'VAR')
 						{
-
 							$this->addToken('VARIABLE', $buffer);
 						}
 						else
 						{
-
 							$this->addToken('NUMBER', $buffer);
 						}
 
