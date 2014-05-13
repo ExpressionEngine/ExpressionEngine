@@ -312,12 +312,29 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 					"{if 5 {$operator} 7}out{/if}",
 					"{if 5 FALSE 7}out{/if}"
 				);
-				$return[] = array(
-					"{$operator} Operator (no space)",
-					"{if 5{$operator}7}out{/if}",
-					"{if 5 FALSE 7}out{/if}"
-				);
-
+				if ($second == '-')
+				{
+					if (in_array($first, $operators))
+					{
+						$expected = $first;
+					}
+					else
+					{
+						$expected = 'FALSE';
+					}
+					$return[] = array(
+						"{$operator} Operator (no space)",
+						"{if 5{$operator}7}out{/if}",
+						"{if 5 {$expected} -7}out{/if}"
+					);
+				}
+				else {
+					$return[] = array(
+						"{$operator} Operator (no space)",
+						"{if 5{$operator}7}out{/if}",
+						"{if 5 FALSE 7}out{/if}"
+					);
+				}
 			}
 		}
 
