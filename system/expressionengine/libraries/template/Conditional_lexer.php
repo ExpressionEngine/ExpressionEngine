@@ -371,6 +371,16 @@ class Conditional_lexer {
 							$operator_buffer .= $this->next();
 						}
 
+						// Check for any trailing - meant to indicate negativity
+						if ($this->charClass(substr($operator_buffer, -1)) == 'C_MINUS')
+						{
+							if ($this->charClass($this->peek()) == 'C_DIGIT')
+							{
+								$this->str = substr($operator_buffer, -1).$this->str; // Put it back.
+								$operator_buffer = substr($operator_buffer, 0, -1);
+							}
+						}
+
 						if (in_array($operator_buffer, $this->operators))
 						{
 							$this->addToken('OPERATOR', $operator_buffer);
