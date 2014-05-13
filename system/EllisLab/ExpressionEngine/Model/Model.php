@@ -26,14 +26,10 @@ abstract class Model {
 	protected static $_gateway_names = array();
 
 	/**
-	 *
-	 */
-	protected static $_key_map = array();
-
-	/**
 	 * Optional keys
 	 */
 	protected static $_polymorph = NULL;
+	protected static $_key_map = array();
 	protected static $_cascade = array();
 	protected static $_validation_rules = array();
 	protected static $_relationships = array();

@@ -61,8 +61,18 @@ class RelationshipMeta {
 	{
 		// Populate from_table
 		$from_model_class = $this->from_model_class;
+
 		$from_key_map = $from_model_class::getMetaData('key_map');
-		$from_gateway_name = $from_key_map[$this->from_key];
+		if (isset($from_key_map[$this->from_key]))
+		{
+			$from_gateway_name = $from_key_map[$this->from_key];
+		}
+		else
+		{
+			$gateway_names = $from_model_class:;getMetaData('gateway_names');
+			$from_gateway_name = $gateway_names[0];
+		}
+
 		$from_gateway_class = $this->alias_service->getRegisteredClass($from_gateway_name);
 		$this->from_table = $from_gateway_class::getMetaData('table_name');
 
