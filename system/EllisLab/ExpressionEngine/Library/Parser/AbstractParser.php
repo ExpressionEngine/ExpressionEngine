@@ -88,7 +88,6 @@ abstract class AbstractParser {
 	 *
 	 * @param String $token_name The name to check against
 	 * @return Bool  Expected token was found
-	 * @throws ConditionalParserException If expected token is not found
 	 */
 	protected function expect($token_name)
 	{
@@ -97,7 +96,7 @@ abstract class AbstractParser {
 			return TRUE;
 		}
 
-		throw new ConditionalParserException('Unexpected ' . $this->token[0] . ' (' . $this->token[1] . ') expected ' . $token_name . '.');
+		return FALSE;
 	}
 
 	/**

@@ -3,7 +3,7 @@
 namespace EllisLab\ExpressionEngine\Library\Parser\Conditional;
 
 use EllisLab\ExpressionEngine\Library\Parser\AbstractParser;
-use EllisLab\ExpressionEngine\Library\Parser\Conditional\Exceptions;
+use EllisLab\ExpressionEngine\Library\Parser\Conditional\Exceptions\ConditionalParserException;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -500,5 +500,24 @@ class ConditionalParser extends AbstractParser {
 	protected function initBuffer()
 	{
 		$this->output =& $this->output_buffers[count($this->output_buffers) - 1];
+	}
+
+	/**
+	 * Enforce an expected token.
+	 *
+	 * Overrides the abstract one to throw an exception.
+	 *
+	 * @param String $token_name The name to check against
+	 * @return Bool  Expected token was found
+	 * @throws ConditionalParserException If expected token is not found
+	 */
+	protected function expect($token_name)
+	{
+		if (parent::expect($token_name) === FALSE)
+		{
+			throw new ConditionalParserException('Unexpected ' . $this->token[0] . ' (' . $this->token[1] . ') expected ' . $token_name . '.');
+		}
+
+		return TRUE;
 	}
 }
