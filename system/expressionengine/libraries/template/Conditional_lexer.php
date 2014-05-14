@@ -8,7 +8,7 @@
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
- * @since		Version 2.8.8
+ * @since		Version 2.8.2
  * @filesource
  */
 
