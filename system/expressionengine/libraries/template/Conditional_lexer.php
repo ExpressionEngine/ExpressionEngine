@@ -194,11 +194,11 @@ class Conditional_lexer {
 		//		END		- done					[event]
 
 		$transitions = array(// \	'		"		{		}		ABC		DIGIT	-		:		.	indexes match $edges
-			'OK'	=> array('ESC',	'SS',	'SD',	'LD',	'RD',	'VAR',	'NUM',	'MINUS',	'ERR',	'POINT'),
+			'OK'	=> array('ESC',	'SS',	'SD',	'LD',	'RD',	'VAR',	'NUM',	'MINUS','ERR',	'POINT'),
 			'SS'	=> array('ESC',	'EOS',	'SS',	'SS',	'SS',	'SS',	'SS',	'SS',	'SS',	'SS'),
 			'SD'	=> array('ESC',	'SD',	'EOS',	'SD',	'SD',	'SD',	'SD',	'SD',	'SD',	'SD'),
-			'VAR'	=> array('ESC',	'SS',	'SD',	'LD',	'RD',	'VAR',	'VAR',	'MINUS',	'VAR',	'OK'),
-			'NUM'	=> array('ESC',	'SS',	'SD',	'LD',	'RD',	'VAR',	'NUM',	'MINUS',	'ERR',	'POINT'),
+			'VAR'	=> array('ESC',	'SS',	'SD',	'LD',	'RD',	'VAR',	'VAR',	'MINUS','VAR',	'OK'),
+			'NUM'	=> array('ESC',	'SS',	'SD',	'LD',	'RD',	'VAR',	'NUM',	'MINUS','ERR',	'POINT'),
 			'FLOAT'	=> array('ESC',	'SS',	'SD',	'LD',	'RD',	'VAR',	'FLOAT','OK',	'ERR',	'ERR'),
 			'TAG'	=> array('ESC',	'TAG',	'TAG',	'TAG',	'RD',	'TAG',	'TAG',	'TAG',	'TAG',	'TAG'),
 		);
