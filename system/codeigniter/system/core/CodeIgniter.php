@@ -67,6 +67,17 @@
 		@set_magic_quotes_runtime(0); // Kill magic quotes
 	}
 
+
+/*
+ * ------------------------------------------------------
+ *  Load the autoloader and register it
+ * ------------------------------------------------------
+ */
+	require(APPPATH.'../EllisLab/ExpressionEngine/Core/Autoloader.php');
+
+	$AUTO = new Autoloader();
+	$AUTO->register();
+
 /*
  * ------------------------------------------------------
  *  Set the subclass_prefix
