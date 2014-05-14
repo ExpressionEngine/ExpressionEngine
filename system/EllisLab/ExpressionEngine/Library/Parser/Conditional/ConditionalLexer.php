@@ -1,4 +1,9 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
+
+namespace EllisLab\ExpressionEngine\Library\Parser\Conditional;
+
+use EllisLab\ExpressionEngine\Library\Parser\AbstractLexer;
+use EllisLab\ExpressionEngine\Library\Parser\Conditional\Exceptions;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -8,7 +13,7 @@
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
- * @since		Version 2.8.2
+ * @since		Version 2.9.0
  * @filesource
  */
 
@@ -23,7 +28,7 @@
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Conditional_lexer {
+class ConditionalLexer extends AbstractLexer {
 
 	/**
 	 * The main token array
@@ -561,69 +566,6 @@ class Conditional_lexer {
 	}
 
 	/**
-	 * Peek ahead n characters without moving
-	 *
-	 * @param int $n The number of characters to peek ahead
-	 * @return string The next $n characters
-	 */
-	private function peek($n = 1)
-	{
-		return substr($this->str, 0, $n);
-	}
-
-	/**
-	 * Peek ahead on an anchored regex
-	 *
-	 * @param string $regex A regular expression
-	 * @return array|string The result of the match or an empty string
-	 */
-	private function peekRegex($regex)
-	{
-		if (preg_match('/^'.$regex.'/s', $this->str, $matches))
-		{
-			return $matches[0];
-		}
-
-		return '';
-	}
-
-	/**
-	 * Seek to the first character in char mask
-	 *
-	 * @param string $charMask The characters we are seeking
-	 * @return string The characters lost in the move
-	 */
-	private function seekTo($charMask)
-	{
-		$n = strcspn($this->str, $charMask);
-		return $this->move($n);
-	}
-
-	/**
-	 * Move to the next character
-	 *
-	 * @return string The consumed character
-	 */
-	private function next()
-	{
-		return $this->move(1);
-	}
-
-	/**
-	 * Move ahead n characters in the string, returning the consumed bit
-	 *
-	 * @param int $n The number of characters to move ahead
-	 * @return string The characters lost in the move
-	 */
-	private function move($n)
-	{
-		$buffer = substr($this->str, 0, $n);
-		$this->str = substr($this->str, $n);
-
-		return $buffer;
-	}
-
-	/**
 	 * Retrieves the class of a character from our ASCII Map
 	 *
 	 * @param	string	$char	A single character
@@ -661,9 +603,10 @@ class Conditional_lexer {
 			default: $token_type = 'MISC';
 				break;
 		}
+
 		$this->addToken($token_type, $value);
 	}
 }
 
-/* End of file Conditional_lexer.php */
-/* Location: ./system/expressionengine/libraries/template/Conditional_lexer.php */
+/* End of file ConditionalLexer.php */
+/* Location: ./system/expressionengine/libraries/template/ConditionalLexer.php */

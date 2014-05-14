@@ -1,4 +1,10 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
+
+namespace EllisLab\ExpressionEngine\Library\Parser\Conditional;
+
+use EllisLab\ExpressionEngine\Library\Parser\AbstractParser;
+use EllisLab\ExpressionEngine\Library\Parser\Conditional\Exceptions;
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -7,7 +13,7 @@
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
- * @since		Version 2.8.2
+ * @since		Version 2.9.0
  * @filesource
  */
 
@@ -36,7 +42,7 @@
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Conditional_parser extends AbstractParser {
+class ConditionalParser extends AbstractParser {
 
 	protected $output = '';
 	protected $output_buffers = array();
@@ -94,11 +100,11 @@ class Conditional_parser extends AbstractParser {
 			}
 			elseif ($this->accept('IF'))
 			{
-				$conditional = new Conditional_statement($this);
+				$conditional = new ConditionalStatement($this);
 
 				$this->conditional($conditional);
 				$this->expect('ENDIF');
-				$conditional->end_if();
+				$conditional->closeIf();
 			}
 			else
 			{
@@ -124,13 +130,13 @@ class Conditional_parser extends AbstractParser {
 
 		$can_evaluate = $this->condition();
 
-		if ($conditional->add_if($this->closeBuffer(), $can_evaluate))
+		if ($conditional->addIf($this->closeBuffer(), $can_evaluate))
 		{
 			$this->template();
 		}
 		else
 		{
-			$this->skip_conditional_body();
+			$this->skipConditionalBody();
 		}
 
 		while ($this->accept('ELSEIF'))
@@ -138,25 +144,25 @@ class Conditional_parser extends AbstractParser {
 			$this->openBuffer();
 			$can_evaluate = $this->condition();
 
-			if ($conditional->add_elseif($this->closeBuffer(), $can_evaluate))
+			if ($conditional->addElseIf($this->closeBuffer(), $can_evaluate))
 			{
 				$this->template();
 			}
 			else
 			{
-				$this->skip_conditional_body();
+				$this->skipConditionalBody();
 			}
 		}
 
 		if ($this->accept('ELSE'))
 		{
-			if ($conditional->add_else())
+			if ($conditional->addElse())
 			{
 				$this->template();
 			}
 			else
 			{
-				$this->skip_conditional_body();
+				$this->skipConditionalBody();
 			}
 		}
 	}
@@ -166,7 +172,7 @@ class Conditional_parser extends AbstractParser {
 	 * will also skip any nested conditionals since we don't
 	 * need to evaluate those if they are not going to be output.
 	 */
-	protected function skip_conditional_body()
+	protected function skipConditionalBody()
 	{
 		$conditional_depth = 0;
 

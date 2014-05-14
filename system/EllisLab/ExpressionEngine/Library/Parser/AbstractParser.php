@@ -1,4 +1,7 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
+
+namespace EllisLab\ExpressionEngine\Library\Parser;
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -7,7 +10,7 @@
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
- * @since		Version 2.8.2
+ * @since		Version 2.9.0
  * @filesource
  */
 

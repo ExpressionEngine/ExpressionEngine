@@ -1,4 +1,7 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
+
+namespace EllisLab\ExpressionEngine\Library\Parser\Conditional;
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -7,7 +10,7 @@
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
- * @since		Version 2.8.2
+ * @since		Version 2.9.0
  * @filesource
  */
 
@@ -22,7 +25,7 @@
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Conditional_statement {
+class ConditionalStatement {
 
 	protected $parser;
 
@@ -33,7 +36,7 @@ class Conditional_statement {
 	protected $output_has_if = FALSE;
 	protected $done = FALSE; // true if no more should be printed
 
-	public function __construct(Conditional_parser $parser)
+	public function __construct(ConditionalParser $parser)
 	{
 		$this->parser = $parser;
 	}
@@ -45,7 +48,7 @@ class Conditional_statement {
 	 * @param Bool   $can_eval	Is evaluatable?
 	 * @return Bool  Should the body of this branch be output?
 	 */
-	public function add_if($condition, $can_eval)
+	public function addIf($condition, $can_eval)
 	{
 		if ($can_eval)
 		{
@@ -53,12 +56,12 @@ class Conditional_statement {
 		}
 		else
 		{
-			$this->output_condition($condition);
+			$this->outputCondition($condition);
 		}
 
-		$this->set_last_could_eval($can_eval);
+		$this->setLastCouldEval($can_eval);
 
-		return $this->should_add_body();
+		return $this->shouldAddBody();
 	}
 
 	/**
@@ -68,9 +71,9 @@ class Conditional_statement {
 	 * @param Bool   $can_eval	Is evaluatable?
 	 * @return Bool  Should the body of this branch be output?
 	 */
-	public function add_elseif($condition, $can_eval)
+	public function addElseIf($condition, $can_eval)
 	{
-		if ($this->is_done())
+		if ($this->isDone())
 		{
 			return;
 		}
@@ -85,17 +88,17 @@ class Conditional_statement {
 			// alternative for the next pass
 			if ( ! $this->all_previous_could_eval && $result == TRUE)
 			{
-				$this->output_condition('TRUE');
+				$this->outputCondition('TRUE');
 			}
 		}
 		else
 		{
-			$this->output_condition($condition);
+			$this->outputCondition($condition);
 		}
 
-		$this->set_last_could_eval($can_eval);
+		$this->setLastCouldEval($can_eval);
 
-		return $this->should_add_body();
+		return $this->shouldAddBody();
 	}
 
 	/**
@@ -103,10 +106,10 @@ class Conditional_statement {
 	 *
 	 * @return Bool  Should the body of this branch be output?
 	 */
-	public function add_else()
+	public function addElse()
 	{
 		// done? don't process
-		if ($this->is_done())
+		if ($this->isDone())
 		{
 			return;
 		}
@@ -117,9 +120,9 @@ class Conditional_statement {
 		}
 
 		$this->last_result = TRUE;
-		$this->set_last_could_eval(TRUE);
+		$this->setLastCouldEval(TRUE);
 
-		return $this->should_add_body();
+		return $this->shouldAddBody();
 	}
 
 	/**
@@ -128,7 +131,7 @@ class Conditional_statement {
 	 *
 	 * @return Bool  Should the body of this branch be output?
 	 */
-	public function should_add_body()
+	public function shouldAddBody()
 	{
 		// done? definitely don't add the body
 		if ($this->done)
@@ -150,7 +153,7 @@ class Conditional_statement {
 	 *
 	 * @return void
 	 */
-	public function end_if()
+	public function closeIf()
 	{
 		if ($this->output_has_if)
 		{
@@ -168,7 +171,7 @@ class Conditional_statement {
 	 * @param String $condition The boolean expression
 	 * @return void
 	 */
-	protected function output_condition($condition)
+	protected function outputCondition($condition)
 	{
 		// otherwise we print it.
 		if ( ! $this->output_has_if)
@@ -188,7 +191,7 @@ class Conditional_statement {
 	 *
 	 * @return bool No further work needed?
 	 */
-	protected function is_done()
+	protected function isDone()
 	{
 		// Everything has eval'd and we've hit a true one?
 		// That means we're done here.
@@ -208,7 +211,7 @@ class Conditional_statement {
 	 *
 	 * @return bool No further work needed?
 	 */
-	protected function set_last_could_eval($value)
+	protected function setLastCouldEval($value)
 	{
 		$this->last_could_eval = $value;
 
