@@ -234,16 +234,15 @@ class Conditional_parser extends RecursiveDescentParser {
 	 */
 	protected function encodeString($value)
 	{
-		$has_braces = (stristr($value, LD) || stristr($value, RD));
-
 		if (stristr($value, LD.'exp:') && stristr($value, RD) && $this->safety === FALSE)
 		{
 			// Do not encode embedded tags in strings when safety is FALSE
 			return '"' . $value . '"';
 		}
 
-		// If it has braces we do not want to encode them
-		return $this->encode($value, ! $has_braces);
+		// If it has braces we do not want to encode them except
+		// when the safety is on (which is enforced in `encode()`).
+		return $this->encode($value, FALSE);
 	}
 
 	/**
