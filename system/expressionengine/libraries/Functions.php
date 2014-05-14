@@ -2373,13 +2373,32 @@ class EE_Functions {
 	 */
 	public function prep_conditionals($str, $vars, $safety = 'n', $prefix = '')
 	{
-		$util = $this->get_conditional_util();
+		if (isset(ee()->TMPL->embed_vars))
+		{
+			// If this is being called from a module tag, embedded variables
+			// aren't going to be available yet.  So this is a quick workaround
+			// to ensure advanced conditionals using embedded variables can do
+			// their thing in mod tags.
+			$vars = array_merge($vars, ee()->TMPL->embed_vars);
+		}
 
 		$bool_safety = ($safety == 'n') ? FALSE : TRUE;
 
+		$runner = \EllisLab\ExpressionEngine\Library\Parser\ParserFactory::createConditionalRunner();
+
+		if ($bool_safety === TRUE)
+		{
+			$runner->safetyOn();
+		}
+
+		if ($prefix)
+		{
+			$runner->setPrefix($prefix);
+		}
+
 		try
 		{
-			$prepped_string = $util->prep_conditionals($str, $vars, $bool_safety, $prefix);
+			return $runner->processConditionals($str, $vars);
 		}
 		catch (ConditionalException $e)
 		{
