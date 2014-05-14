@@ -68,6 +68,7 @@ class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 			array('Plain AND Integer',	'{if 7 AND 5}yes{if:else}no{/if}',	'yes'),
 			array('Plain OR Integer',	'{if 5 OR 7}yes{if:else}no{/if}',	'yes'),
 			array('Plain XOR Integer',	'{if 5 XOR 0}yes{if:else}no{/if}',	'yes'),
+			array('Plain ! Integer',	'{if ! 0}yes{if:else}no{/if}',		'yes'),
 
 			// and now false
 			array('Plain && False',		'{if 5 && 0}no{if:else}yes{/if}',	'yes'),
@@ -75,6 +76,7 @@ class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 			array('Plain AND False',	'{if 7 AND 0}no{if:else}yes{/if}',	'yes'),
 			array('Plain OR False',		'{if 0 OR 0}no{if:else}yes{/if}',	'yes'),
 			array('Plain XOR False',	'{if 5 XOR 7}no{if:else}yes{/if}',	'yes'),
+			array('Plain ! False',		'{if ! 7}no{if:else}yes{/if}',		'yes'),
 		);
 	}
 }
