@@ -31,9 +31,9 @@ class Conditional_parser extends RecursiveDescentParser {
 	{
 		$this->openBuffer();
 
-		$this->next(); // go go go
+		$this->next();
 		$this->template();
-		// $this->expect('EOS'); // todo?
+		$this->expect('EOS');
 
 		return $this->closeBuffer();
 	}

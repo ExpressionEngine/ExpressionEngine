@@ -46,12 +46,13 @@ class Conditional_lexer {
 	 * 	'NUMBER',			// literal number
 	 * 	'VARIABLE',
 	 * 	'OPERATOR',			// an operator from the $operators array
-	 * 	'MISC',				// other stuff such as operators, whitespace, and numbers
+	 * 	'MISC',				// other stuff, usually illegal when safety on
 	 * 	'LP',				// (
 	 * 	'RP',				// )
 	 * 	'WHITESPACE',		// \s\r\n\t
 	 * 	'BOOL',				// TRUE or FALSE (case insensitive)
 	 * 	'TAG',				// {exp:foo:bar}
+	 * 	'EOS'				// end of string
 	 * );
 	 */
 
@@ -511,6 +512,7 @@ class Conditional_lexer {
 		}
 
 		$this->addToken('TEMPLATE_STRING', $this->str);
+		$this->addToken('EOS', TRUE);
 
 		return $this->tokens;
 	}
