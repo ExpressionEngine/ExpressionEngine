@@ -135,6 +135,20 @@ class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 			'{if 5 == var}maybe{if:else}maybe2{/if}',
 			'If evaluated to false, if is pruned, elseif is promoted'
 		);
+
+		// now the big one
+		$string = '{if 5 == 7}nope';
+		$string .= '{if:elseif "bob" == "mary"}never';
+		$string .= '{if:elseif 7 == var}maybe';
+		$string .= '{if:elseif 7 == 7}quitepossibly';
+		$string .= '{if:elseif 8 == 0}nah';
+		$string .= '{if:else}nope{/if}';
+
+		$this->assertEquals(
+			$runner->processConditionals($string, array()),
+			'{if 7 == var}maybe{if:elseif TRUE}quitepossibly{/if}',
+			'Double elseif promotion and else pruning'
+		);
 	}
 
 	public function testProgressivePruning()
