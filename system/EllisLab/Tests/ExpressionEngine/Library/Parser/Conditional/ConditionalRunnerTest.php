@@ -108,10 +108,6 @@ class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 		$runner = new ConditionalRunner();
 		$runner->disableProtectJavascript();
 
-		// In this test the else can't be executed, but the elseif
-		// will take on a valid value. Using that value we can intelligently
-		// prune the other branches even before evaluating the whole thing.
-
 		$string = '{if 5 == var}yes{if:elseif 5 == 5}maybe{if:else}no{/if}';
 
 		$this->assertEquals(
@@ -147,14 +143,8 @@ class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals(
 			$runner->processConditionals($string, array()),
 			'{if 7 == var}maybe{if:elseif TRUE}quitepossibly{/if}',
-			'Double elseif promotion and else pruning'
+			'Double elseif promotion, true rewriting, and branch pruning'
 		);
-	}
-
-	public function testProgressivePruning()
-	{
-		$nested = '{if 5 == var}yes{if:else 5 == 5}maybe{if:else}definitelynot{/if}';
-
 	}
 
 	public function plainDataProvider()
@@ -164,6 +154,7 @@ class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 			array(),
 			$this->conditionals(),
 			$this->basicMaths(),
+			$this->basicBranching(),
 			$this->plainLogicOperatorTests()
 		);
 	}
@@ -197,19 +188,29 @@ class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 		);
 	}
 
-
 	protected function conditionals()
 	{
 		return array(
-			array('If With Space',		'{if 5 == 5}out{/if}',						'out'),
-			array('If With Tab',		'{if	5 == 5}out{/if}',					'out'),
-			array('If With Newline',	"{if\n5 == 5}out{/if}",						"out"),
-			array('If With CRLF',		"{if\r\n5 == 5}out{/if}",					"out"),
-			array('If With Whitespace',	"{if\n\t5 == 5\n}out{/if}",					"out"),
-			array('Ifelseif, if true',	'{if 5 == 5}yes{if:elseif 5 == 5}no{/if}',	'yes'),
-			array('Ifelse, if true',	'{if 5 == 5}yes{if:else}no{/if}',			'yes'),
-			array('Ifelseif, if false',	'{if 5 == 6}no{if:elseif 5 == 5}yes{/if}',	'yes'),
-			array('Ifelse, if false',	'{if 5 == 6}no{if:else}yes{/if}',			'yes'),
+			// evaluation
+			array('Evaluate If With Space',		 '{if 5 == 5}out{/if}',			'out'),
+			array('Evaluate If With Tab',		 '{if	5 == 5}out{/if}',		'out'),
+			array('Evaluate If With Newline',	 "{if\n5 == 5}out{/if}",		'out'),
+			array('Evaluate If With CRLF',		 "{if\r\n5 == 5}out{/if}",		'out'),
+			array('Evaluate If With Whitespace', "{if\n\t5 == 5\n}out{/if}",	'out'),
+		);
+	}
+
+	protected function whitespaceRewriting()
+	{
+		// rewriting is forced by the unparsed variable
+		// the test here is mostly make sure whitespace isn't lost. The
+		// beautification is merely a side-effect
+		return array(
+			array('Rewrite: If With Space',		 '{if 5 == 5 && var}out{/if}',			'{if 5 == 5 && var}out{/if}'),
+			array('Rewrite: If With Tab',		 '{if	5 == 5 && var}out{/if}',		'{if 5 == 5 && var}out{/if}'),
+			array('Rewrite: If With Newline',	 "{if\n5 == 5 && var}out{/if}",			'{if 5 == 5 && var}out{/if}'),
+			array('Rewrite: If With CRLF',		 "{if\r\n5 == 5 && var}out{/if}",		'{if 5 == 5 && var}out{/if}'),
+			array('Rewrite: If With Whitespace', "{if\n\t5 == 5\n&& var\n}out{/if}",	'{if 5 == 5 && var}out{/if}'),
 		);
 	}
 
@@ -220,6 +221,16 @@ class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 			array('Math minus', '{if 7 - 9 == -2}yes{if:else}no{/if}', 'yes'),
 			array('Math star', '{if 5 * 5 == 25}yes{if:else}no{/if}', 'yes'),
 			array('Math slash', '{if 12 / 4 == 3}yes{if:else}no{/if}', 'yes'),
+		);
+	}
+
+	protected function basicBranching()
+	{
+		return array(
+			array('Evaluate Ifelseif, if true',	'{if 5 == 5}yes{if:elseif 5 == 5}no{/if}',	'yes'),
+			array('Evaluate Ifelse, if true',	'{if 5 == 5}yes{if:else}no{/if}',			'yes'),
+			array('Evaluate Ifelseif, if false','{if 5 == 6}no{if:elseif 5 == 5}yes{/if}',	'yes'),
+			array('Evaluate Ifelse, if false',	'{if 5 == 6}no{if:else}yes{/if}',			'yes'),
 		);
 	}
 
