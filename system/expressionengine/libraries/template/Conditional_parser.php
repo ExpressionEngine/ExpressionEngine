@@ -283,6 +283,11 @@ class Conditional_parser extends AbstractParser {
 			}
 		}
 
+		if ($this->safety === TRUE)
+		{
+			return TRUE;
+		}
+
 		return $can_evaluate;
 	}
 
