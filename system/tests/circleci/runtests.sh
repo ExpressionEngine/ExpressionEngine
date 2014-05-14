@@ -38,7 +38,7 @@ do
 	popd
 
 	# PHPUnit tests
-	pushd system/EllisLab/tests/
+	pushd system/EllisLab/Tests/
 		printf "Running PHPUnit tests\n\n"
 		phpunit ExpressionEngine/ > $CIRCLE_ARTIFACTS/$PHPVERSION/phpunit.txt
 
