@@ -3314,14 +3314,18 @@ class EE_Template {
 			$this->protect_javascript = FALSE;
 		}
 
-		$user_vars	= array('member_id', 'group_id', 'group_description', 'group_title', 'username', 'screen_name',
-							'email', 'ip_address', 'location', 'total_entries',
-							'total_comments', 'private_messages', 'total_forum_posts', 'total_forum_topics', 'total_forum_replies');
+		$user_vars	= array(
+			'member_id', 'group_id', 'group_description', 'group_title', 'username', 'screen_name',
+			'email', 'ip_address', 'location', 'total_entries',
+			'total_comments', 'private_messages', 'total_forum_posts', 'total_forum_topics', 'total_forum_replies'
+		);
 
-		for($i=0,$s=count($user_vars), $data = array(); $i < $s; ++$i)
+		$data = array();
+
+		foreach ($user_vars as $user_var)
 		{
-			$data[$user_vars[$i]] = ee()->session->userdata[$user_vars[$i]];
-			$data['logged_in_'.$user_vars[$i]] = ee()->session->userdata[$user_vars[$i]];
+			$data[$user_var] = ee()->session->userdata[$user_var];
+			$data['logged_in_'.$user_var] = ee()->session->userdata[$user_var];
 		}
 
 		// Define an alternate variable for {group_id} since some tags use
@@ -3341,7 +3345,7 @@ class EE_Template {
 		{
 			$groups = (is_array(ee()->session->userdata['group_id'])) ? ee()->session->userdata['group_id'] : array(ee()->session->userdata['group_id']);
 
-			for($i=0, $s=count($matches[0]); $i < $s; ++$i)
+			for($i = 0, $s = count($matches[0]); $i < $s; ++$i)
 			{
 				$check = explode('|', str_replace(array('"', "'"), '', $matches[1][$i]));
 
@@ -3350,65 +3354,7 @@ class EE_Template {
 		}
 
 		// Final Prep, Safety On
-		$str = ee()->functions->prep_conditionals($str, array_merge($this->segment_vars, $this->template_route_vars, $this->embed_vars, $this->layout_conditionals, ee()->config->_global_vars, $data), 'y');
-
-		// Protect Already Existing Unparsed PHP
-
-		$opener = unique_marker('tmpl_php_open');
-		$closer = unique_marker('tmpl_php_close');
-
-		$str = str_replace(array('<?', '?'.'>'),
-							array($opener.'?', '?'.$closer),
-							$str);
-
-		// Protect <script> tags
-		$protected = array();
-		$front_protect = unique_marker('tmpl_script_open');
-		$back_protect  = unique_marker('tmpl_script_close');
-
-		// Regardless of protect_javascript we need to protect
-		// <script language="php"> tags.
-		if ($this->protect_javascript !== FALSE)
-		{
-			$pattern = "/<script.*?".">.*?<\/script>/is";
-		}
-		else
-		{
-			$pattern = "/<script.*?language\s*=\s*(\042|\047)?php(\\1)?.*?>.*?<\/script>/is";
-		}
-
-		if (stristr($str, '<script') &&
-			preg_match_all($pattern, $str, $matches))
-		{
-			for($i=0, $s=count($matches[0]); $i < $s; ++$i)
-			{
-				$protected[$front_protect.$i.$back_protect] = $matches[0][$i];
-			}
-
-			$str = str_replace(array_values($protected), array_keys($protected), $str);
-		}
-		// Convert EE Conditionals to PHP
-		$str = str_replace(array(LD.'/if'.RD, LD.'if:else'.RD), array('<?php endif; ?'.'>','<?php else : ?'.'>'), $str);
-
-		if (strpos($str, LD.'if') !== FALSE)
-		{
-			$str = preg_replace("/".preg_quote(LD)."((if:(else))*if)\s+(.*?)".preg_quote(RD)."/s", '<?php \\3if(\\4) : ?'.'>', $str);
-		}
-
-		$str = $this->parse_template_php($str);
-
-		// Unprotect <script> tags
-		if (count($protected) > 0)
-		{
-			$str = str_replace(array_keys($protected), array_values($protected), $str);
-		}
-
-		// Unprotect Already Existing Unparsed PHP
-		$str = str_replace(array($opener.'?', '?'.$closer),
-							array('<'.'?', '?'.'>'),
-							$str);
-
-		return $str;
+		return ee()->functions->prep_conditionals($str, array_merge($this->segment_vars, $this->template_route_vars, $this->embed_vars, $this->layout_conditionals, ee()->config->_global_vars, $data), 'y');
 	}
 
 	// --------------------------------------------------------------------
