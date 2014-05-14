@@ -441,7 +441,7 @@ class EE_Template {
 		// Smite Our Enemies:  Conditionals
 		$this->log_item("Parsing Segment, Embed, Layout, and Global Vars Conditionals");
 
-		$this->template = $this->parse_simple_segment_conditionals($this->template);
+		$this->template = $this->simple_conditionals($this->template, $this->segment_vars);
 		$this->template = $this->simple_conditionals($this->template, $this->embed_vars);
 		$this->template = $this->simple_conditionals($this->template, $layout_conditionals);
 		$this->template = $this->simple_conditionals($this->template, ee()->config->_global_vars);
@@ -3373,78 +3373,6 @@ class EE_Template {
 	 */
 	public function parse_simple_segment_conditionals($str)
 	{
-		if ( ! preg_match("/".LD."if\s+segment_.+".RD."/", $str))
-		{
-			return $str;
-		}
-
-		$this->var_cond = ee()->functions->assign_conditional_variables($str);
-
-		foreach ($this->var_cond as $val)
-		{
-			// Make sure this is for a segment conditional
-			// And that this is not an advanced conditional
-
-				if ( ! preg_match('/^segment_\d+$/i', $val['3']) OR
-				strpos($val[2], 'if:else') !== FALSE OR
-				strpos($val[0], 'if:else') !== FALSE OR
-				count(preg_split("/(\!=|==|<=|>=|<>|<|>|%|AND|XOR|OR|&&|\|\|)/", $val[0])) > 2)
-			{
-				continue;
-			}
-
-			$cond = ee()->functions->prep_conditional($val[0]);
-
-			$lcond	= substr($cond, 0, strpos($cond, ' '));
-			$rcond	= substr($cond, strpos($cond, ' '));
-
-			if (strpos($rcond, '"') == FALSE && strpos($rcond, "'") === FALSE) continue;
-
-			$n = substr($val[3], 8);
-			$temp = (isset(ee()->uri->segments[$n])) ? ee()->uri->segments[$n] : '';
-
-			$lcond = str_replace($val[3], "\$temp", $lcond);
-
-			if (stristr($rcond, '\|') !== FALSE OR stristr($rcond, '&') !== FALSE)
-			{
-				$rcond	  = trim($rcond);
-				$operator = trim(substr($rcond, 0, strpos($rcond, ' ')));
-				$check	  = trim(substr($rcond, strpos($rcond, ' ')));
-
-				$quote = substr($check, 0, 1);
-
-				if (stristr($rcond, '\|') !== FALSE)
-				{
-					$array =  explode('\|', str_replace($quote, '', $check));
-					$break_operator = ' OR ';
-				}
-				else
-				{
-					$array =  explode('&', str_replace($quote, '', $check));
-					$break_operator = ' && ';
-				}
-
-				$rcond  = $operator.' '.$quote;
-
-				$rcond .= implode($quote.$break_operator.$lcond.' '.$operator.' '.$quote, $array).$quote;
-			}
-
-			$cond = $lcond.' '.$rcond;
-
-			$cond = str_replace("\|", "|", $cond);
-
-			eval("\$result = (".$cond.");");
-
-			if ($result)
-			{
-				$str = str_replace($val[1], $val[2], $str);
-			}
-			else
-			{
-				$str = str_replace($val[1], '', $str);
-			}
-		}
-
 		return $str;
 	}
 
