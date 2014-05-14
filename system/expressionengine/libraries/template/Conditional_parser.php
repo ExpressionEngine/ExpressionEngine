@@ -156,7 +156,9 @@ class Conditional_parser extends RecursiveDescentParser {
 
 		if ($this->is('OPERATOR'))
 		{
+			$this->whitespace();
 			$this->output($this->value());
+			$this->whitespace();
 			$this->next();
 			$this->expression();
 		}
@@ -321,8 +323,19 @@ class Conditional_parser extends RecursiveDescentParser {
 
 		if ($this->token[0] == 'WHITESPACE')
 		{
-			$this->output(' ');//$this->token[1]);
+			$this->whitespace();
 			$this->next();
+		}
+	}
+
+	/**
+	 * Add whitespace
+	 */
+	protected function whitespace()
+	{
+		if (substr($this->output, -1) != ' ')
+		{
+			$this->output(' ');
 		}
 	}
 
@@ -342,7 +355,7 @@ class Conditional_parser extends RecursiveDescentParser {
 	{
 		$out = array_pop($this->output_buffers);
 		$this->initBuffer();
-		return $out;
+		return trim($out);
 	}
 
 	/**
