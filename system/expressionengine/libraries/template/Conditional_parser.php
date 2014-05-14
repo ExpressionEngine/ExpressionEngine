@@ -142,15 +142,24 @@ class Conditional_parser extends RecursiveDescentParser {
 	{
 		$conditional_depth = 0;
 
-		while ($this->is('TEMPLATE_STRING') || $conditional_depth > 0)
+		while (TRUE)
 		{
-			if ($this->is('IF'))
+			if ($this->is('ENDIF'))
+			{
+				if ($conditional_depth == 0)
+				{
+					break;
+				}
+
+				$conditional_depth--;
+			}
+			elseif ($this->is('IF'))
 			{
 				$conditional_depth++;
 			}
-			if ($this->is('ENDIF'))
+			elseif ( ! $this->is('TEMPLATE_STRING') && $conditional_depth == 0)
 			{
-				$conditional_depth--;
+				break;
 			}
 
 			$this->next();
