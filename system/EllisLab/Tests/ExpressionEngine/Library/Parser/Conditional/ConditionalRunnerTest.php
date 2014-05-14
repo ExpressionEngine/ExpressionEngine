@@ -127,11 +127,14 @@ class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 			'{if 5 == var}yes{if:else}no{/if}',
 			'Elseif branch evaluated to FALSE and is pruned'
 		);
-	}
 
-	public function testElseIfPromotion()
-	{
+		$string = '{if 5 == 7}nope{if:elseif 5 == var}maybe{if:else}maybe2{/if}';
 
+		$this->assertEquals(
+			$runner->processConditionals($string, array()),
+			'{if 5 == var}maybe{if:else}maybe2{/if}',
+			'If evaluated to false, if is pruned, elseif is promoted'
+		);
 	}
 
 	public function testProgressivePruning()
