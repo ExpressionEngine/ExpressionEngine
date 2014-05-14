@@ -70,11 +70,11 @@ class Conditional_parser extends RecursiveDescentParser {
 		}
 		elseif ($this->accept('IF'))
 		{
-			$if = new If_statement($this);
+			$conditional = new Conditional_statement($this);
 
-			$this->conditional($if);
+			$this->conditional($conditional);
 			$this->expect('ENDIF');
-			$if->end_if();
+			$conditional->end_if();
 			$this->template();
 		}
 	}
@@ -506,10 +506,9 @@ abstract class RecursiveDescentParser {
 	}
 }
 
-class If_statement {
+class Conditional_statement {
 
 	protected $parser;
-	protected $output = '';
 
 	protected $last_could_eval = TRUE;
 	protected $all_previous_could_eval = TRUE;
@@ -612,8 +611,6 @@ class If_statement {
 		{
 			$this->parser->output('{/if}');
 		}
-
-		return $this->output;
 	}
 
 	protected function output_condition($condition)
