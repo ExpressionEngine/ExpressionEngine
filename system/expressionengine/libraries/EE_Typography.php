@@ -916,15 +916,24 @@ class EE_Typography extends CI_Typography {
 			{
 				foreach ($matches as $tag_match)
 				{
+					// Clean up the contents of the property
 					$tag_match[1] = htmlspecialchars(
 						ee()->security->xss_clean($tag_match[1])
 					);
 
-					$str = str_replace(
-						$tag_match[0],
-						"<".$val['tag']." ".$val['property']."='".$tag_match[1]."''>".$tag_match[2]."</".$val['tag'].">",
-						$str
-					);
+					// If there's any evidence of XSS then don't add anything
+					if (stripos($tag_match[0], '[removed]') !== FALSE)
+					{
+						$str = str_replace($tag_match[0], '', $str);
+					}
+					else
+					{
+						$str = str_replace(
+							$tag_match[0],
+							"<".$val['tag']." ".$val['property']."='".$tag_match[1]."''>".$tag_match[2]."</".$val['tag'].">",
+							$str
+						);
+					}
 				}
 			}
 			else
