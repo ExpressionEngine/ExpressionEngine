@@ -312,7 +312,7 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 					"{if 5 {$operator} 7}out{/if}",
 					"{if 5 FALSE 7}out{/if}"
 				);
-				if ($second == '-')
+				if ($second == '-' || $second == '.')
 				{
 					if (in_array($first, $operators))
 					{
@@ -325,7 +325,7 @@ class PrepConditionalsTest extends PHPUnit_Framework_TestCase {
 					$return[] = array(
 						"{$operator} Operator (no space)",
 						"{if 5{$operator}7}out{/if}",
-						"{if 5 {$expected} -7}out{/if}"
+						"{if 5 {$expected} {$second}7}out{/if}"
 					);
 				}
 				else {
