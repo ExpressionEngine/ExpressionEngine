@@ -38,6 +38,13 @@ class Conditional_statement {
 		$this->parser = $parser;
 	}
 
+	/**
+	 * Add the if portion of the statement
+	 *
+	 * @param String $condition	The boolean condition
+	 * @param Bool   $can_eval	Is evaluatable?
+	 * @return Bool  Should the body of this branch be output?
+	 */
 	public function add_if($condition, $can_eval)
 	{
 		if ($can_eval)
@@ -54,6 +61,13 @@ class Conditional_statement {
 		return $this->should_add_body();
 	}
 
+	/**
+	 * Add the elseif portion of the statement
+	 *
+	 * @param String $condition	The boolean condition
+	 * @param Bool   $can_eval	Is evaluatable?
+	 * @return Bool  Should the body of this branch be output?
+	 */
 	public function add_elseif($condition, $can_eval)
 	{
 		if ($this->is_done())
@@ -84,7 +98,11 @@ class Conditional_statement {
 		return $this->should_add_body();
 	}
 
-
+	/**
+	 * Add the else portion of the statement
+	 *
+	 * @return Bool  Should the body of this branch be output?
+	 */
 	public function add_else()
 	{
 		// done? don't process
@@ -104,6 +122,12 @@ class Conditional_statement {
 		return $this->should_add_body();
 	}
 
+	/**
+	 * Check our state to figure out if this last statement resulted in
+	 * the branch being pruned. If so, we won't output.
+	 *
+	 * @return Bool  Should the body of this branch be output?
+	 */
 	public function should_add_body()
 	{
 		// done? definitely don't add the body
@@ -121,6 +145,11 @@ class Conditional_statement {
 		return TRUE;
 	}
 
+	/**
+	 * Close the conditional
+	 *
+	 * @return void
+	 */
 	public function end_if()
 	{
 		if ($this->output_has_if)
@@ -129,6 +158,16 @@ class Conditional_statement {
 		}
 	}
 
+	/**
+	 * Re-output an EE condition
+	 *
+	 * Re-outputs a boolean expression as an ee conditional, with
+	 * a check to see if the if branch was pruned. In that case the
+	 * first elseif beomes an if.
+	 *
+	 * @param String $condition The boolean expression
+	 * @return void
+	 */
 	protected function output_condition($condition)
 	{
 		// otherwise we print it.
@@ -143,6 +182,12 @@ class Conditional_statement {
 		}
 	}
 
+	/**
+	 * Check if a branch evaluated as true. If so, we don't need to
+	 * output anything else.
+	 *
+	 * @return bool No further work needed?
+	 */
 	protected function is_done()
 	{
 		// Everything has eval'd and we've hit a true one?
@@ -155,6 +200,14 @@ class Conditional_statement {
 		return $this->done;
 	}
 
+	/**
+	 * Set the evaluation state of the last expression.
+	 *
+	 * Also track if all previous expressions could evaluate. This
+	 * metric lets us know if we can prune branches.
+	 *
+	 * @return bool No further work needed?
+	 */
 	protected function set_last_could_eval($value)
 	{
 		$this->last_could_eval = $value;
@@ -165,6 +218,12 @@ class Conditional_statement {
 		}
 	}
 
+	/**
+	 * Evaluate a boolean expression
+	 *
+	 * @param String $condition The expression to evaluate
+	 * @return Bool  The result
+	 */
 	protected function evaluate($condition)
 	{
 		$result = FALSE;
