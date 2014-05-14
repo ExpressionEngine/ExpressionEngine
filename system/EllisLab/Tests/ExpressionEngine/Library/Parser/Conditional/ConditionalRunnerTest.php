@@ -32,6 +32,114 @@ class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals($result, '', $description);
 	}
 
+	public function testBasicVariableReplacement()
+	{
+		$runner = new ConditionalRunner();
+		$runner->disableProtectJavascript();
+
+		// var1 is in there to prevent execution
+		$string = '{if var1 && var2 == "bob"}yes{/if}';
+
+		$this->assertEquals(
+			$runner->processConditionals($string, array('var2' => 3)),
+			'{if var1 && "3" == "bob"}yes{/if}',
+			'Integer Variable Replacement'
+		);
+
+		$this->assertEquals(
+			$runner->processConditionals($string, array('var2' => "mary")),
+			'{if var1 && "mary" == "bob"}yes{/if}',
+			'String Variable Replacement'
+		);
+
+		$this->assertEquals(
+			$runner->processConditionals($string, array('var2' => TRUE)),
+			'{if var1 && "1" == "bob"}yes{/if}',
+			'Bool TRUE Variable Replacement'
+		);
+
+		$this->assertEquals(
+			$runner->processConditionals($string, array('var2' => FALSE)),
+			'{if var1 && "" == "bob"}yes{/if}',
+			'Bool FALSE Variable Replacement'
+		);
+	}
+
+	public function testProgressiveConstruction()
+	{
+		$runner = new ConditionalRunner();
+		$runner->disableProtectJavascript();
+
+		$inital = '{if var1 && var2 && var3 == "bob"}yes{if:else}no{/if}';
+
+		$var2 = $runner->processConditionals($inital, array('var1' => 3));
+
+		$this->assertEquals(
+			$var2,
+			'{if "3" && var2 && var3 == "bob"}yes{if:else}no{/if}',
+			'Integer Variable Replacement'
+		);
+
+		$var3 = $runner->processConditionals($var2, array('var3' => 'bob'));
+
+		$this->assertEquals(
+			$var3,
+			'{if "3" && var2 && "bob" == "bob"}yes{if:else}no{/if}',
+			'String Variable Replacement'
+		);
+
+		// Adding var2 completes the conditional and causes evaluation
+		$this->assertEquals(
+			$runner->processConditionals($var3, array('var2' => 4)),
+			'yes',
+			'Last variable triggers evaluation'
+		);
+
+		// Do it again with a falsey value to sanity check it
+		$this->assertEquals(
+			$runner->processConditionals($var3, array('var2' => 0)),
+			'no',
+			'Last variable triggers evaluation to false'
+		);
+	}
+
+	public function testBranchConditionRewritingAndPruning()
+	{
+		$runner = new ConditionalRunner();
+		$runner->disableProtectJavascript();
+
+		// In this test the else can't be executed, but the elseif
+		// will take on a valid value. Using that value we can intelligently
+		// prune the other branches even before evaluating the whole thing.
+
+		$string = '{if 5 == var}yes{if:elseif 5 == 5}maybe{if:else}no{/if}';
+
+		$this->assertEquals(
+			$runner->processConditionals($string, array()),
+			'{if 5 == var}yes{if:elseif TRUE}maybe{if:else}no{/if}',
+			'Elseif branch rewritten to TRUE and else pruned'
+		);
+
+		$string = '{if 5 == var}yes{if:elseif 5 == 6}maybe{if:else}no{/if}';
+
+		$this->assertEquals(
+			$runner->processConditionals($string, array()),
+			'{if 5 == var}yes{if:else}no{/if}',
+			'Elseif branch rewritten to FALSE and pruned'
+		);
+	}
+
+	public function testElseIfPromotion()
+	{
+
+	}
+
+	public function testProgressivePruning()
+	{
+		$nested = '{if 5 == var}yes{if:else 5 == 5}maybe{if:else}definitelynot{/if}';
+
+	}
+
 	public function plainDataProvider()
 	{
 		// assemble all of the tests
