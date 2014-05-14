@@ -34,7 +34,9 @@ class ConditionalStatement {
 
 	protected $last_result = TRUE;
 	protected $output_has_if = FALSE;
-	protected $done = FALSE; // true if no more should be printed
+	protected $encountered_true_condition = FALSE;
+
+	protected $done = FALSE;
 
 	public function __construct(ConditionalParser $parser)
 	{
@@ -75,7 +77,7 @@ class ConditionalStatement {
 	{
 		if ($this->isDone())
 		{
-			return;
+			return FALSE;
 		}
 
 		if ($can_eval)
@@ -108,10 +110,13 @@ class ConditionalStatement {
 	 */
 	public function addElse()
 	{
-		// done? don't process
-		if ($this->isDone())
+		// Don't process if done or we've encountered a condition
+		// that evaluated to TRUE. Even if other ones have not been
+		// evaluated, that one will shortcut our else, so we prune
+		// the else branch.
+		if ($this->isDone() || $this->encountered_true_condition)
 		{
-			return;
+			return FALSE;
 		}
 
 		if ( ! $this->all_previous_could_eval)
@@ -233,6 +238,12 @@ class ConditionalStatement {
 		eval("\$result = ((".$condition.") != '');");
 
 		$this->last_result = (bool) $result;
+
+		if ($this->last_result === TRUE)
+		{
+			$this->encountered_true_condition = TRUE;
+		}
+
 		return $this->last_result;
 	}
 }
