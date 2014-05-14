@@ -216,8 +216,14 @@ class Conditional_parser extends RecursiveDescentParser {
 		}
 		elseif ($this->is('VARIABLE'))
 		{
-			$can_evaluate = FALSE;
-			$this->output($this->variable($this->value()));
+			list($can_eval, $value) = $this->variable($this->value());
+
+			if ($can_eval === FALSE)
+			{
+				$can_evaluate = FALSE;
+			}
+
+			$this->output($value);
 			$this->next();
 		}
 		elseif ($this->is('TAG'))
@@ -277,20 +283,21 @@ class Conditional_parser extends RecursiveDescentParser {
 		if (array_key_exists($name, $this->variables))
 		{
 			$value = $this->variables[$name];
-
-			return $this->encode(
+			$value = $this->encode(
 				$this->safeCastToString(
 					$this->variables[$name]
 				)
 			);
+
+			return array(TRUE, $value);
 		}
 
 		if ($this->safety === TRUE)
 		{
-			return 'FALSE';
+			return array(TRUE, 'FALSE');
 		}
 
-		return $name;
+		return array(FALSE, $name);
 	}
 
 	/**
