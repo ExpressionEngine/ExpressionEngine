@@ -31,8 +31,13 @@ class Conditional_parser extends RecursiveDescentParser {
 	{
 		$this->openBuffer();
 
-		$this->next();
-		$this->template();
+		do
+		{
+			$this->next();
+			$this->template();
+		}
+		while (count($this->tokens));
+
 		$this->expect('EOS');
 
 		return $this->closeBuffer();
@@ -62,20 +67,25 @@ class Conditional_parser extends RecursiveDescentParser {
 	 */
 	protected function template()
 	{
-		if ($this->is('TEMPLATE_STRING'))
+		while (TRUE)
 		{
-			$this->output($this->value());
-			$this->next();
-			$this->template();
-		}
-		elseif ($this->accept('IF'))
-		{
-			$conditional = new Conditional_statement($this);
+			if ($this->is('TEMPLATE_STRING'))
+			{
+				$this->output($this->value());
+				$this->next();
+			}
+			elseif ($this->accept('IF'))
+			{
+				$conditional = new Conditional_statement($this);
 
-			$this->conditional($conditional);
-			$this->expect('ENDIF');
-			$conditional->end_if();
-			$this->template();
+				$this->conditional($conditional);
+				$this->expect('ENDIF');
+				$conditional->end_if();
+			}
+			else
+			{
+				break;
+			}
 		}
 	}
 
