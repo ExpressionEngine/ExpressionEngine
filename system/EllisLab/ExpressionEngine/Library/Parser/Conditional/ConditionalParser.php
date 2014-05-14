@@ -3,7 +3,7 @@
 namespace EllisLab\ExpressionEngine\Library\Parser\Conditional;
 
 use EllisLab\ExpressionEngine\Library\Parser\AbstractParser;
-use EllisLab\ExpressionEngine\Library\Parser\Conditional\Exceptions\ConditionalParserException;
+use EllisLab\ExpressionEngine\Library\Parser\Conditional\Exception\ConditionalParserException;
 
 /**
  * ExpressionEngine - by EllisLab

@@ -9,19 +9,27 @@ class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * @dataProvider plainDataProvider
 	 */
-	public function testPlainConditionals($description, $problem, $result)
+	public function testPlainConditionalsWithoutVariables($description, $problem, $result)
 	{
 		$runner = new ConditionalRunner();
-
 		$runner->disableProtectJavascript();
 
-		$vars = array(
-			'int' => 5,
-			'string' => 'ee'
-		);
-
-		$out = $runner->processConditionals($problem, $vars);
+		$out = $runner->processConditionals($problem, array());
 		$this->assertEquals($result, $out, $description);
+	}
+
+	/**
+	 * @dataProvider badDataProvider
+	 */
+	public function testBadConditionalsWithoutVariables($exception, $description, $str_in)
+	{
+		$this->setExpectedException($exception);
+
+		$runner = new ConditionalRunner();
+		$runner->disableProtectJavascript();
+
+		$out = $runner->processConditionals($str_in, array());
+		$this->assertEquals($result, '', $description);
 	}
 
 	public function plainDataProvider()
@@ -34,6 +42,36 @@ class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 			$this->plainLogicOperatorTests()
 		);
 	}
+
+	public function badDataProvider()
+	{
+		$parser_exception = 'EllisLab\ExpressionEngine\Library\Parser\Conditional\Exception\ConditionalParserException';
+		$lexer_exception = 'EllisLab\ExpressionEngine\Library\Parser\Conditional\Exception\ConditionalLexerException';
+
+		return array(
+			array($parser_exception, 'Simple Backticks',				'{if `echo hello`}out{/if}'),
+			array($parser_exception, 'Splitting Backticks',				'{if string.`echo hello #}out{/if}{if `== 0}out{/if}'),
+			array($parser_exception, 'Simple Comments',					'{if php/* test == 5*/info(); }out{/if}'),
+			array($parser_exception, 'Comment Looks Like Math',			'{if 7 /* 5 }out{/if}'),
+			array($parser_exception, 'Inline Comment Looks Like Math',	'{if 7 // 5 }out{/if}'),
+			array($parser_exception, 'Splitting Comments',				'{if string /* == 5 }out{/if}{if */phpinfo(); == 5}out{/if}'),
+			array($lexer_exception,  'Unclosed String (single quotes)', "{if string == 'ee}out{/if}"),
+			array($lexer_exception,  'Unclosed String (double quotes)', '{if string == "ee}out{/if}'),
+			array($lexer_exception,  'Unclosed Conditional', 			'{if string == "ee"}out'),
+			array($lexer_exception,  'Unterminated Conditional', 		'{if string == "ee"out{/if}'),
+			array($lexer_exception,  'If as a Prefix', 					'{if:foo}'),
+			array($lexer_exception,  'Ifelse duplicity', 				'{if 5 == 5}out{if:else:else}out{/if}'),
+			array($lexer_exception,  'Ifelse Prefixing', 				'{if 5 == 5}out{if:elsebeth}out{/if}'),
+			array($lexer_exception,  'Ifelseif Prefixing', 				'{if 5 == 5}out{if:elseiffy}out{/if}'),
+			array($lexer_exception,  'NUMBER + :', 						'{if 1:2}out{/if}'),
+			array($lexer_exception,  'OK + :',	 						'{if :foo}out{/if}'),
+			array($lexer_exception,  'OK + :',	 						'{if "foo":bar}out{/if}'),
+			array($lexer_exception,  'OK + :',	 						"{if 'foo':bar}out{/if}"),
+			array($lexer_exception,  'FLOAT + .', 						'{if 1.2.3}out{/if}'),
+			array($lexer_exception,  'FLOAT + :', 						'{if 1.2:3}out{/if}'),
+		);
+	}
+
 
 	protected function conditionals()
 	{
