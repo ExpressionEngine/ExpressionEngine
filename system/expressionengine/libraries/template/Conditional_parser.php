@@ -193,7 +193,16 @@ class Conditional_parser extends RecursiveDescentParser {
 		}
 		elseif ($this->is('STRING') || $this->is('NUMBER') || $this->is('BOOL'))
 		{
-			$this->output($this->scalar($this->value()));
+			$prepped = $this->scalar($this->value());
+
+			// If there's a potential tag inside a string, we can't risk
+			// evaluating. This will have to wait for safety on.
+			if ($this->is('STRING') && stristr($prepped, LD))
+			{
+				$can_evaluate = FALSE;
+			}
+
+			$this->output($prepped);
 			$this->next();
 		}
 		elseif ($this->is('VARIABLE'))
