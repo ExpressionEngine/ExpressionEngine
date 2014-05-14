@@ -239,7 +239,7 @@ class Conditional_lexer {
 					// something else
 					if ($this->peek(4) == '{if:') // sanity check, could be in a better place
 					{
-						throw new InvalidConditionalException('Conditional is invalid: "{if:" is reserverd for conditionals. Found: ' . $potential_if);
+						throw new ConditionalLexerException('Conditional is invalid: "{if:" is reserverd for conditionals. Found: ' . $potential_if);
 					}
 
 					$this->addToken('TEMPLATE_STRING', $this->next());
@@ -249,7 +249,7 @@ class Conditional_lexer {
 			// No sense continuing if we cannot find a {/if}
 			if (strpos($this->str, '{/if}') === FALSE)
 			{
-				throw new InvalidConditionalException('Conditional is invalid: missing a "{/if}".');
+				throw new ConditionalLexerException('Conditional is invalid: missing a "{/if}".');
 			}
 
 			$buffer  = '';
@@ -324,7 +324,7 @@ class Conditional_lexer {
 
 				if ($state == 'ERR')
 				{
-					throw new InvalidConditionalException('In an ERROR state. Buffer: '.$buffer.$char);
+					throw new ConditionalLexerException('In an ERROR state. Buffer: '.$buffer.$char);
 				}
 
 				// Manually handle "int-alpha" variables and negative numbers
@@ -489,7 +489,7 @@ class Conditional_lexer {
 			// Not in an end state, or curly braces are unbalanced, "error" out
 			if ($state != 'END' || $curlies != 0)
 			{
-				throw new InvalidConditionalException('Conditional is invalid: not in an end state or unbalanced curly braces. State is '.$state.'. Curly count is '.$curlies.'.');
+				throw new ConditionalLexerException('Conditional is invalid: not in an end state or unbalanced curly braces. State is '.$state.'. Curly count is '.$curlies.'.');
 			}
 
 			// Handle any buffer contents from before we hit the closing brace
@@ -633,7 +633,7 @@ class Conditional_lexer {
 	{
 		if ($char === FALSE || $char == '')
 		{
-			throw new InvalidConditionalException('No character given.');
+			throw new ConditionalLexerException('No character given.');
 		}
 
 		// If it's an ascii character we get its name from the ascii

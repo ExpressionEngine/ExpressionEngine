@@ -529,7 +529,7 @@ abstract class RecursiveDescentParser {
 			return TRUE;
 		}
 
-		throw new UnsafeConditionalException('Unexpected ' . $this->token[0] . '(' . $this->token[1] . ')' . ' expected ' . $token_name . '.');
+		throw new ConditionalParserException('Unexpected ' . $this->token[0] . ' (' . $this->token[1] . ') expected ' . $token_name . '.');
 	}
 
 	/**

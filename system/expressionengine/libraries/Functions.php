@@ -2383,16 +2383,18 @@ class EE_Functions {
 		}
 		catch (ConditionalException $e)
 		{
-			$error_keys = array(
-				'UnsafeConditionalException' => 'error_unsafe_conditional',
-				'InvalidConditionalException' => 'error_invalid_conditional'
+			$thrower = str_replace(
+				array('Conditional', 'Exception'),
+				'',
+				get_class($e)
 			);
 
 			if (ee()->config->item('debug') == 2
 				OR (ee()->config->item('debug') == 1
 					&& ee()->session->userdata('group_id') == 1))
 			{
-				$error = lang($error_keys[get_class($e)]);
+				$error = lang('error_invalid_conditional') . "\n\n";
+				$error .= '<strong>' . $thrower . ' State:</strong> ' . $e->getMessage();
 			}
 			else
 			{
