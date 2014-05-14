@@ -116,8 +116,8 @@ class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 
 		$this->assertEquals(
 			$runner->processConditionals($string, array()),
-			'{if 5 == var}yes{if:elseif TRUE}maybe{if:else}no{/if}',
-			'Elseif branch rewritten to TRUE and else pruned'
+			'{if 5 == var}yes{if:elseif TRUE}maybe{/if}',
+			'Elseif branch rewritten to TRUE and else branch pruned'
 		);
 
 		$string = '{if 5 == var}yes{if:elseif 5 == 6}maybe{if:else}no{/if}';
@@ -125,7 +125,7 @@ class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals(
 			$runner->processConditionals($string, array()),
 			'{if 5 == var}yes{if:else}no{/if}',
-			'Elseif branch rewritten to FALSE and pruned'
+			'Elseif branch evaluated to FALSE and is pruned'
 		);
 	}
 
