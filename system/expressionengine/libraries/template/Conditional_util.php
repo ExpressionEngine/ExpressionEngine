@@ -96,7 +96,9 @@ class Conditional_util {
 		// Get the token stream
 		$tokens = $lexer->tokenize($str);
 
+		require_once APPPATH.'libraries/template/AbstractParser.php';
 		require_once APPPATH.'libraries/template/Conditional_parser.php';
+		require_once APPPATH.'libraries/template/Conditional_statement.php';
 
 		$parser = new Conditional_parser($tokens);
 		$parser->setVariables($vars);
