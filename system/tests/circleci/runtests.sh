@@ -39,6 +39,9 @@ do
 
 	# PHPUnit tests
 	pushd system/EllisLab/Tests/
+		printf "Installing Dependencies\n\n"
+		composer install
+
 		printf "Running PHPUnit tests\n\n"
 		phpunit ExpressionEngine/ > $CIRCLE_ARTIFACTS/$PHPVERSION/phpunit.txt
 
