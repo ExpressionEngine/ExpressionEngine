@@ -3523,78 +3523,7 @@ class EE_Template {
 			return $str;
 		}
 
-		$this->var_cond = ee()->functions->assign_conditional_variables($str);
-
-		if (count($this->var_cond) == 0)
-		{
-			return $str;
-		}
-
-		foreach ($this->var_cond as $val)
-		{
-			// Make sure there is such a $global_var
-			// And that this is not an advanced conditional
-
-			if ( ! isset($vars[$val[3]]) OR
-				strpos($val[2], 'if:else') !== FALSE OR
-				strpos($val[0], 'if:else') !== FALSE OR
-				count(preg_split("/(\!=|==|<=|>=|<>|<|>|%|AND|XOR|OR|&&|\|\|)/", $val[0])) > 2)
-			{
-				continue;
-			}
-
-			$cond = ee()->functions->prep_conditional($val[0]);
-
-			$lcond	= substr($cond, 0, strpos($cond, ' '));
-			$rcond	= substr($cond, strpos($cond, ' '));
-
-			if (strpos($rcond, '"') == FALSE && strpos($rcond, "'") === FALSE) continue;
-
-			$temp = $vars[$val[3]];
-
-			$lcond = str_replace($val[3], "\$temp", $lcond);
-
-			if (stristr($rcond, '\|') !== FALSE OR stristr($rcond, '&') !== FALSE)
-			{
-				$rcond	  = trim($rcond);
-				$operator = trim(substr($rcond, 0, strpos($rcond, ' ')));
-				$check	  = trim(substr($rcond, strpos($rcond, ' ')));
-
-				$quote = substr($check, 0, 1);
-
-				if (stristr($rcond, '\|') !== FALSE)
-				{
-					$array =  explode('\|', str_replace($quote, '', $check));
-					$break_operator = ' OR ';
-				}
-				else
-				{
-					$array =  explode('&', str_replace($quote, '', $check));
-					$break_operator = ' && ';
-				}
-
-				$rcond  = $operator.' '.$quote;
-
-				$rcond .= implode($quote.$break_operator.$lcond.' '.$operator.' '.$quote, $array).$quote;
-			}
-
-			$cond = $lcond.' '.$rcond;
-
-			$cond = str_replace("\|", "|", $cond);
-
-			eval("\$result = (".$cond.");");
-
-			if ($result)
-			{
-				$str = str_replace($val[1], $val[2], $str);
-			}
-			else
-			{
-				$str = str_replace($val[1], '', $str);
-			}
-		}
-
-		return $str;
+		return ee()->functions->prep_conditionals($str, $vars);
 	}
 
 	// --------------------------------------------------------------------
