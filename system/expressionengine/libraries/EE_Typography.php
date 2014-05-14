@@ -916,8 +916,8 @@ class EE_Typography extends CI_Typography {
 			{
 				foreach ($matches as $tag_match)
 				{
-					$tag_match[1] = ee()->security->xss_clean(
-						htmlspecialchars($tag_match[1])
+					$tag_match[1] = htmlspecialchars(
+						ee()->security->xss_clean($tag_match[1])
 					);
 
 					$str = str_replace(
