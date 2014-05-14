@@ -670,7 +670,7 @@ class Conditional_statement {
 	protected function evaluate($condition)
 	{
 		$result = FALSE;
-		eval("\$result = (".$condition.");");
+		eval("\$result = ((".$condition.") != '');");
 
 		$this->last_result = (bool) $result;
 		return $this->last_result;
