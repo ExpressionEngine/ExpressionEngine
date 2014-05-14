@@ -326,21 +326,6 @@ class Conditional_lexer {
 					throw new InvalidConditionalException('In an ERROR state. Buffer: '.$buffer.$char);
 				}
 
-				if ($state == 'POINT')
-				{
-					$next_char_class = $this->charClass($this->peek());
-
-					// We may may be in a FLOAT state
-					if ($next_char_class == 'C_DIGIT')
-					{
-						$state = 'FLOAT';
-					}
-					else
-					{
-						$state = 'OK';
-					}
-				}
-
 				// Manually handle "int-alpha" variables and negative numbers
 				if ($state == 'MINUS')
 				{
@@ -361,9 +346,9 @@ class Conditional_lexer {
 				}
 
 				// Track variables
-				if ($state == 'VAR' || $state == 'NUM')
+				if ($state == 'VAR' || $state == 'NUM' || $state == 'FLOAT')
 				{
-					if ($old_state != 'VAR' && $old_state != 'NUM')
+					if ($old_state != 'VAR' && $old_state != 'NUM' && $old_state != 'FLOAT')
 					{
 						$token_type = in_array($buffer, $this->operators) ? 'OPERATOR' : 'MISC';
 						$this->addToken($token_type, $buffer);
@@ -388,6 +373,21 @@ class Conditional_lexer {
 					}
 				}
 
+				if ($state == 'POINT')
+				{
+					$next_char_class = $this->charClass($this->peek());
+
+					// We may may be in a FLOAT state
+					if ($next_char_class == 'C_DIGIT')
+					{
+						$state = 'FLOAT';
+					}
+					else
+					{
+						$state = 'OK';
+					}
+				}
+
 				if ($state == 'OK')
 				{
 					// Check for operators
@@ -404,7 +404,8 @@ class Conditional_lexer {
 						}
 
 						// Check for any trailing - meant to indicate negativity
-						if ($this->charClass(substr($operator_buffer, -1)) == 'C_MINUS')
+						$last_char_class = $this->charClass(substr($operator_buffer, -1));
+						if ($last_char_class == 'C_MINUS' || $last_char_class == 'C_POINT')
 						{
 							if ($this->charClass($this->peek()) == 'C_DIGIT')
 							{
