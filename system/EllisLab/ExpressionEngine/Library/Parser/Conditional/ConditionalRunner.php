@@ -7,60 +7,60 @@ class ConditionalRunner {
 	private $prefix = '';
 	private $safety = FALSE;
 	private $protect_javascript = TRUE;
+	private $protected_javascript = array();
 
+	/**
+	 * Disable Javascript Protection
+	 *
+	 * By default all javascript is protected before the parser is run
+	 * so that we don't end up mangling javascript that looks like it
+	 * might be a conditional:
+	 *
+	 *  function() {if prompt('is this javascript?')} alert('yes');}
+	 */
 	public function disableProtectJavascript()
 	{
 		$this->protect_javascript = FALSE;
 	}
 
+	/**
+	 * Turn safety on
+	 *
+	 * When the safety is on, all conditionals are evaluatable. This means
+	 * that unknown / suspicious things are removed or turned to FALSE.
+	 * Typically this is done in the last pass to make sure no conditionals
+	 * are left in the template.
+	 */
 	public function safetyOn()
 	{
 		$this->safety = TRUE;
 	}
 
+	/**
+	 * Set prefix
+	 *
+	 * Set a prefix to apply to all variables passed to the parser.
+	 */
 	public function setPrefix($prefix)
 	{
 		$this->prefix = $prefix;
 	}
 
-
 	/**
-	 * Prep conditionals
+	 * Process conditionals
 	 *
-	 * @access	public
 	 * @param	string $str		The template string containing conditionals
 	 * @param	string $vars	The variables to look for in the conditionals
-	 * @param	string $safety	If TRUE, make sure conditionals are fully
-	 *							parseable by replacing unknown variables with
-	 *							FALSE. This defaults to FALSE so that conditionals
-	 *							are slowly filled and then turned into safely
-	 *							executable ones with the safety on at the end.
-	 * @param	string $prefix	Prefix for the variables in $vars.
 	 * @return	string The new template to use instead of $str.
 	 */
 	public function processConditionals($str, $vars)
 	{
-		// Protect compressed javascript from being mangled or interpreted as invalid
-		if ($this->protect_javascript !== FALSE)
-		{
-			$protected_javascript = array();
-			$js_protect = unique_marker('tmpl_script');
-
-			if (stristr($str, '<script') && preg_match_all('/<script.*?>.*?<\/script>/is', $str, $matches))
-			{
-				foreach ($matches[0] as $i => $match)
-				{
-					$protected_javascript[$js_protect.$i] = $match;
-				}
-
-				$str = str_replace(array_values($protected_javascript), array_keys($protected_javascript), $str);
-			}
-		}
-
 		$lexer = new ConditionalLexer();
 
 		// Get the token stream
-		$tokens = $lexer->tokenize($str);
+		$tokens = $lexer->tokenize(
+			$this->protectJavascript($str)
+		);
 
 		$parser = new ConditionalParser($tokens);
 
@@ -75,15 +75,15 @@ class ConditionalRunner {
 
 		$output = $parser->parse();
 
-		// Unprotect <script> tags
-		if ($this->protect_javascript !== FALSE && count($protected_javascript) > 0)
-		{
-			$output = str_replace(array_keys($protected_javascript), array_values($protected_javascript), $output);
-		}
-
-		return $output;
+		return $this->unProtectJavascript($output);
 	}
 
+	/**
+	 * Apply our prefix to all variables
+	 *
+	 * @param Array $vars  All passed in variables
+	 * @return Array       $vars but with the keys prefixed
+	 */
 	private function prefixVariables(array $vars)
 	{
 		$prefixed_vars = array();
@@ -94,6 +94,63 @@ class ConditionalRunner {
 		}
 
 		return $prefixed_vars;
+	}
+
+	/**
+	 * Protect compressed javascript.
+	 *
+	 * @see `$this->disableProtectJavascript()` for why we do this.
+	 *
+	 * @param String $str The raw template string
+	 * @return String     The template string with javascript escaped
+	 */
+	private function protectJavascript($str)
+	{
+		if ($this->protect_javascript === FALSE)
+		{
+			return $str;
+		}
+
+		$js_protect = unique_marker('tmpl_script');
+
+		if (stristr($str, '<script') && preg_match_all('/<script.*?>.*?<\/script>/is', $str, $matches))
+		{
+			foreach ($matches[0] as $i => $match)
+			{
+				$this->protected_javascript[$js_protect.$i] = $match;
+			}
+
+			$str = str_replace(
+				array_values($this->protected_javascript),
+				array_keys($this->protected_javascript),
+				$str
+			);
+		}
+
+		return $str;
+	}
+
+	/**
+	 * Remove compressed javascript protection
+	 *
+	 * @see `$this->disableProtectJavascript()` for why we do this.
+	 *
+	 * @param String $str The parsed template string
+	 * @return String     The template string with the javascript put back
+	 */
+	private function unProtectJavascript($str)
+	{
+		// Unprotect <script> tags
+		if ($this->protect_javascript !== FALSE && count($this->protected_javascript) > 0)
+		{
+			$str = str_replace(
+				array_keys($this->protected_javascript),
+				array_values($this->protected_javascript),
+				$str
+			);
+		}
+
+		return $str;
 	}
 
 }
