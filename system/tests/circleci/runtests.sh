@@ -40,7 +40,7 @@ do
 	# PHPUnit tests
 	pushd system/EllisLab/Tests/
 		printf "Installing Dependencies\n\n"
-		composer install
+		composer install --prefer-source --no-interaction
 
 		printf "Running PHPUnit tests\n\n"
 		phpunit ExpressionEngine/ > $CIRCLE_ARTIFACTS/$PHPVERSION/phpunit.txt
