@@ -402,7 +402,6 @@ class ConditionalParser extends AbstractParser {
 			$value = substr(htmlspecialchars($value), 0, 100);
 		}
 
-
 		$value = preg_replace('/\s+/', ' ', $value);
 
 		if ($encode_braces || $this->safety === TRUE)

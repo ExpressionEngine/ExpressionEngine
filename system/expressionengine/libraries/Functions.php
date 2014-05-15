@@ -2373,6 +2373,11 @@ class EE_Functions {
 	 */
 	public function prep_conditionals($str, $vars, $safety = 'n', $prefix = '')
 	{
+		if ( ! stristr($str, LD.'if'))
+		{
+			return $str;
+		}
+
 		if (isset(ee()->TMPL->embed_vars))
 		{
 			// If this is being called from a module tag, embedded variables
@@ -2394,6 +2399,16 @@ class EE_Functions {
 		if ($prefix)
 		{
 			$runner->setPrefix($prefix);
+		}
+
+		/* ---------------------------------
+		/*	Hidden Configuration Variables
+		/*  - protect_javascript => Prevents advanced conditional parser from processing anything in <script> tags
+		/* ---------------------------------*/
+
+		if (ee()->config->item('protect_javascript') == 'n')
+		{
+			$runner->disableProtectJavascript();
 		}
 
 		try
@@ -2427,28 +2442,6 @@ class EE_Functions {
 		}
 
 		return $prepped_string;
-	}
-
-	private function get_conditional_util()
-	{
-		if ( ! isset(ee()->conditional_util))
-		{
-			ee()->load->library('template/conditional_util');
-
-			$util = ee()->conditional_util;
-
-			if ($this->protect_javascript === FALSE)
-			{
-				$util->disable_protect_javascript();
-			}
-
-			if ($this->conditional_debug === TRUE)
-			{
-				$util->enable_debug();
-			}
-		}
-
-		return ee()->conditional_util;
 	}
 
 	// --------------------------------------------------------------------

@@ -313,6 +313,11 @@ class EE_Template {
 			$this->template = $this->remove_ee_comments($this->template);
 		}
 
+		// have to handle the silly in_group() conditionals before we
+		// get to a real prep_ponditionals which does not like these.
+		$this->template = $this->replace_special_group_conditional($this->template);
+
+
 		// Parse URI segments
 		// This code lets admins fetch URI segments which become
 		// available as:  {segment_1} {segment_2}
@@ -441,10 +446,16 @@ class EE_Template {
 		// Smite Our Enemies:  Conditionals
 		$this->log_item("Parsing Segment, Embed, Layout, and Global Vars Conditionals");
 
-		$this->template = $this->simple_conditionals($this->template, $this->segment_vars);
-		$this->template = $this->simple_conditionals($this->template, $this->embed_vars);
-		$this->template = $this->simple_conditionals($this->template, $layout_conditionals);
-		$this->template = $this->simple_conditionals($this->template, ee()->config->_global_vars);
+		$this->template = ee()->functions->prep_conditionals(
+			$this->template,
+			array_merge(
+				$this->segment_vars,
+				$this->template_route_vars,
+				$this->embed_vars,
+				$layout_conditionals,
+				ee()->config->_global_vars
+			)
+		);
 
 		// Assign Variables
 		if (strpos($this->template, 'preload_replace') !== FALSE)
@@ -3304,16 +3315,6 @@ class EE_Template {
 			return $str;
 		}
 
-		/* ---------------------------------
-		/*	Hidden Configuration Variables
-		/*  - protect_javascript => Prevents advanced conditional parser from processing anything in <script> tags
-		/* ---------------------------------*/
-
-		if (ee()->config->item('protect_javascript') == 'n')
-		{
-			$this->protect_javascript = FALSE;
-		}
-
 		$user_vars	= array(
 			'member_id', 'group_id', 'group_description', 'group_title', 'username', 'screen_name',
 			'email', 'ip_address', 'location', 'total_entries',
@@ -3334,24 +3335,11 @@ class EE_Template {
 		$data['member_group'] = $data['logged_in_member_group'] = ee()->session->userdata['group_id'];
 
 		// Logged in and logged out variables
-		$data['logged_in'] = (ee()->session->userdata['member_id'] == 0) ? 'FALSE' : 'TRUE';
-		$data['logged_out'] = (ee()->session->userdata['member_id'] != 0) ? 'FALSE' : 'TRUE';
+		$data['logged_in'] = (ee()->session->userdata['member_id'] != 0);
+		$data['logged_out'] = (ee()->session->userdata['member_id'] == 0);
 
 		// current time
 		$data['current_time'] = ee()->localize->now;
-
-		// Member Group in_group('1') function, Super Secret!  Shhhhh!
-		if (preg_match_all("/in_group\(([^\)]+)\)/", $str, $matches))
-		{
-			$groups = (is_array(ee()->session->userdata['group_id'])) ? ee()->session->userdata['group_id'] : array(ee()->session->userdata['group_id']);
-
-			for($i = 0, $s = count($matches[0]); $i < $s; ++$i)
-			{
-				$check = explode('|', str_replace(array('"', "'"), '', $matches[1][$i]));
-
-				$str = str_replace($matches[0][$i], (count(array_intersect($check, $groups)) > 0) ? 'TRUE' : 'FALSE', $str);
-			}
-		}
 
 		// Final Prep, Safety On
 		return ee()->functions->prep_conditionals($str, array_merge($this->segment_vars, $this->template_route_vars, $this->embed_vars, $this->layout_conditionals, ee()->config->_global_vars, $data), 'y');
@@ -3373,7 +3361,7 @@ class EE_Template {
 	 */
 	public function parse_simple_segment_conditionals($str)
 	{
-		return $str;
+		return ee()->functions->prep_conditionals($str, $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -3392,11 +3380,6 @@ class EE_Template {
 	 */
 	public function simple_conditionals($str, $vars = array())
 	{
-		if (count($vars) == 0 OR ! stristr($str, LD.'if'))
-		{
-			return $str;
-		}
-
 		return ee()->functions->prep_conditionals($str, $vars);
 	}
 
@@ -4163,6 +4146,26 @@ class EE_Template {
 		}
 
 		return $dt;
+	}
+
+	// --------------------------------------------------------------------
+
+	private function replace_special_group_conditional($str)
+	{
+		// Member Group in_group('1') function, Super Secret!  Shhhhh!
+		if (preg_match_all("/in_group\(([^\)]+)\)/", $str, $matches))
+		{
+			$groups = (is_array(ee()->session->userdata['group_id'])) ? ee()->session->userdata['group_id'] : array(ee()->session->userdata['group_id']);
+
+			for($i = 0, $s = count($matches[0]); $i < $s; ++$i)
+			{
+				$check = explode('|', str_replace(array('"', "'"), '', $matches[1][$i]));
+
+				$str = str_replace($matches[0][$i], (count(array_intersect($check, $groups)) > 0) ? 'TRUE' : 'FALSE', $str);
+			}
+		}
+
+		return $str;
 	}
 }
 // END CLASS
