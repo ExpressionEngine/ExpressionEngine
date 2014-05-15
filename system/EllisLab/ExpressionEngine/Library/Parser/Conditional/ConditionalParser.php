@@ -404,8 +404,8 @@ class ConditionalParser extends AbstractParser {
 
 
 		$value = str_replace(
-			array('\\', "\t", "\n", "\r", "'"),
-			array('\\\\', ' ', ' ', ' ', "\\'"),
+			array("\t", "\n", "\r"),
+			array(' ', ' ', ' '),
 			$value
 		);
 
@@ -418,7 +418,6 @@ class ConditionalParser extends AbstractParser {
 			);
 		}
 
-		// quote it as a proper string
 		return $value;
 	}
 

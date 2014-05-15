@@ -84,7 +84,8 @@ class BooleanExpression {
 		{
 			if ($token[3] === TRUE)
 			{
-				$str .= "'" . $token[1] . "'";
+				$value = (string) $token[1];
+				$str .= var_export($value, TRUE);
 			}
 			elseif ($token[0] == 'OPERATOR')
 			{
