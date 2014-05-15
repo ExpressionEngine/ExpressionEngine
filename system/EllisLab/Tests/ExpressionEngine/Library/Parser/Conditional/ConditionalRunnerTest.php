@@ -55,26 +55,26 @@ class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 		$string = '{if var1 && var2 == \'bob\'}yes{/if}';
 
 		$this->assertEquals(
-			$runner->processConditionals($string, array('var2' => 3)),
 			'{if var1 && \'3\' == \'bob\'}yes{/if}',
+			$runner->processConditionals($string, array('var2' => 3)),
 			'Integer Variable Replacement'
 		);
 
 		$this->assertEquals(
-			$runner->processConditionals($string, array('var2' => 'mary')),
 			'{if var1 && \'mary\' == \'bob\'}yes{/if}',
+			$runner->processConditionals($string, array('var2' => 'mary')),
 			'String Variable Replacement'
 		);
 
 		$this->assertEquals(
-			$runner->processConditionals($string, array('var2' => TRUE)),
 			'{if var1 && \'1\' == \'bob\'}yes{/if}',
+			$runner->processConditionals($string, array('var2' => TRUE)),
 			'Bool TRUE Variable Replacement'
 		);
 
 		$this->assertEquals(
-			$runner->processConditionals($string, array('var2' => FALSE)),
 			'{if var1 && \'\' == \'bob\'}yes{/if}',
+			$runner->processConditionals($string, array('var2' => FALSE)),
 			'Bool FALSE Variable Replacement'
 		);
 	}
@@ -89,30 +89,30 @@ class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 		$var2 = $runner->processConditionals($inital, array('var1' => 3));
 
 		$this->assertEquals(
-			$var2,
 			'{if \'3\' && var2 && var3 == \'bob\'}yes{if:else}no{/if}',
+			$var2,
 			'Integer Variable Replacement'
 		);
 
 		$var3 = $runner->processConditionals($var2, array('var3' => 'bob'));
 
 		$this->assertEquals(
-			$var3,
 			'{if \'3\' && var2 && \'bob\' == \'bob\'}yes{if:else}no{/if}',
+			$var3,
 			'String Variable Replacement'
 		);
 
 		// Adding var2 completes the conditional and causes evaluation
 		$this->assertEquals(
-			$runner->processConditionals($var3, array('var2' => 4)),
 			'yes',
+			$runner->processConditionals($var3, array('var2' => 4)),
 			'Last variable triggers evaluation'
 		);
 
 		// Do it again with a falsey value to sanity check it
 		$this->assertEquals(
-			$runner->processConditionals($var3, array('var2' => 0)),
 			'no',
+			$runner->processConditionals($var3, array('var2' => 0)),
 			'Last variable triggers evaluation to false'
 		);
 	}
@@ -125,24 +125,24 @@ class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 		$string = '{if 5 == var}yes{if:elseif 5 == 5}maybe{if:else}no{/if}';
 
 		$this->assertEquals(
-			$runner->processConditionals($string, array()),
 			'{if 5 == var}yes{if:elseif TRUE}maybe{/if}',
+			$runner->processConditionals($string, array()),
 			'Elseif branch rewritten to TRUE and else branch pruned'
 		);
 
 		$string = '{if 5 == var}yes{if:elseif 5 == 6}maybe{if:else}no{/if}';
 
 		$this->assertEquals(
-			$runner->processConditionals($string, array()),
 			'{if 5 == var}yes{if:else}no{/if}',
+			$runner->processConditionals($string, array()),
 			'Elseif branch evaluated to FALSE and is pruned'
 		);
 
 		$string = '{if 5 == 7}nope{if:elseif 5 == var}maybe{if:else}maybe2{/if}';
 
 		$this->assertEquals(
-			$runner->processConditionals($string, array()),
 			'{if 5 == var}maybe{if:else}maybe2{/if}',
+			$runner->processConditionals($string, array()),
 			'If evaluated to false, if is pruned, elseif is promoted'
 		);
 
@@ -155,8 +155,8 @@ class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 		$string .= '{if:else}nope{/if}';
 
 		$this->assertEquals(
-			$runner->processConditionals($string, array()),
 			'{if 7 == var}maybe{if:elseif TRUE}quitepossibly{/if}',
+			$runner->processConditionals($string, array()),
 			'Double elseif promotion, true rewriting, and branch pruning'
 		);
 	}
