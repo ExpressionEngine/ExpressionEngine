@@ -503,17 +503,7 @@ class ConditionalLexer extends AbstractLexer {
 			// Handle any buffer contents from before we hit the closing brace
 			if ($buffer != '')
 			{
-				switch ($old_state)
-				{
-					case 'VAR': $this->addToken('VARIABLE', $buffer);
-						break;
-					case 'NUM': $this->addToken('NUMBER', $buffer);
-						break;
-					case 'FLOAT': $this->addToken('NUMBER', $buffer);
-						break;
-					default:	$this->addToken('MISC', $buffer);
-						break;
-				}
+				$this->addTokenByState($old_state, $buffer);
 			}
 
 			$this->addToken('ENDCOND', '}');
@@ -602,6 +592,8 @@ class ConditionalLexer extends AbstractLexer {
 			case "VAR": $token_type = 'VARIABLE';
 				break;
 			case "NUM": $token_type = 'NUMBER';
+				break;
+			case "FLOAT": $token_type = 'NUMBER';
 				break;
 			default: $token_type = 'MISC';
 				break;
