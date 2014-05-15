@@ -209,8 +209,10 @@ class ConditionalLexer extends AbstractLexer {
 			'VAR'	=> array('ESC',	'SS',	'SD',	'LD',	'RD',	'VAR',	'VAR',	'MINUS','VAR',	'OK'),
 			'NUM'	=> array('ESC',	'SS',	'SD',	'LD',	'RD',	'VAR',	'NUM',	'MINUS','ERR',	'POINT'),
 			'FLOAT'	=> array('ESC',	'SS',	'SD',	'LD',	'RD',	'VAR',	'FLOAT','OK',	'ERR',	'ERR'),
-			'TAG'	=> array('ESC',	'TAG',	'TAG',	'TAG',	'RD',	'TAG',	'TAG',	'TAG',	'TAG',	'TAG'),
+		//	'TAG'	=> array('ESC',	'TAG',	'TAG',	'TAG',	'RD',	'TAG',	'TAG',	'TAG',	'TAG',	'TAG'),
 		);
+
+		$this->stack = array('OK');
 
 		$this->str = $str;
 
@@ -448,9 +450,12 @@ class ConditionalLexer extends AbstractLexer {
 					$curlies--;
 					$state = 'OK';
 
-					if ($old_state == 'TAG')
+					array_pop($this->stack);
+
+					if (end($this->stack) == 'OK')
 					{
-						$this->addToken('TAG', $buffer.$char);
+						$this->addToken('TAG', $this->tag_buffer.$buffer.$char);
+						$this->tag_buffer = '';
 						$buffer = '';
 						continue;
 					}
@@ -458,7 +463,14 @@ class ConditionalLexer extends AbstractLexer {
 				elseif ($state == 'LD')
 				{
 					$curlies++;
-					$state = 'TAG';
+
+					if (end($this->stack) != 'TAG')
+					{
+						$this->tag_buffer = '';
+					}
+
+					$this->stack[] = 'TAG';
+					$state = 'OK';
 				}
 
 				// On escape, store char and restore previous state
@@ -487,6 +499,12 @@ class ConditionalLexer extends AbstractLexer {
 					// reset the buffer if we're starting a string
 					$this->addToken('MISC', $buffer);
 					$buffer = '';
+
+					// if we're in a tag we need to keep quotes
+					if (end($this->stack) == 'TAG')
+					{
+						$buffer = ($state == 'SS') ? "'" : '"';
+					}
 				}
 				else
 				{
@@ -532,6 +550,18 @@ class ConditionalLexer extends AbstractLexer {
 	 */
 	public function addToken($type, $value)
 	{
+		if (end($this->stack) == 'TAG')
+		{
+			// if we're in a tag we need to keep quotes
+			if ($type == 'STRING')
+			{
+				$value = $value.$value[0]; // we keep the open quote in the loop above
+			}
+
+			$this->tag_buffer .= $value;
+			return;
+		}
+
 		// Special cases for Variables
 		if ($type == 'VARIABLE')
 		{
