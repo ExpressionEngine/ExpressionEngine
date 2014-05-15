@@ -213,6 +213,8 @@ class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 		return array(
 			array('Unparsed Tags to false',		'{if {tag} == FALSE}yes{if:else}no{/if}',	'yes'),
 			array('Unparsed Tags to false 2',	'{if {tag} != FALSE}no{if:else}yes{/if}',	'yes'),
+			array('Unparsed Vars to false',		'{if var1 == FALSE}yes{if:else}no{/if}',	'yes'),
+			array('Unparsed Vars to false 2',	'{if var1 || var2}no{if:else}yes{/if}',		'yes'),
 			array('Junk String to false',		'{if ` != FALSE}no{if:else}yes{/if}',		'yes'),
 			array('Junk String to false 2',		'{if ` == FALSE}yes{if:else}no{/if}',		'yes'),
 		);
@@ -325,11 +327,6 @@ class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 			array('Integer Concat',			'{if "te". 12 == "te12"}yes{if:else}no{/if}',		'yes'),
 			array('Float Concat',			'{if "te". 1.2 == "te1.2"}yes{if:else}no{/if}',		'yes'),
 		);
-	}
-
-	protected function stringTests()
-	{
-
 	}
 
 	protected function eeTagTests()
