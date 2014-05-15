@@ -247,11 +247,13 @@ class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 	protected function basicMaths()
 	{
 		return array(
-			array('Math plus',	'{if 5 + 5 == 10}yes{if:else}no{/if}', 'yes'),
-			array('Math minus',	'{if 7 - 9 == -2}yes{if:else}no{/if}', 'yes'),
-			array('Math star',	'{if 5 * 5 == 25}yes{if:else}no{/if}', 'yes'),
-			array('Math slash',	'{if 12 / 4 == 3}yes{if:else}no{/if}', 'yes'),
-			array('Math mod',	'{if 12 % 5 == 2}yes{if:else}no{/if}', 'yes'),
+			array('Math plus',	'{if 5 + 5 == 10}yes{if:else}no{/if}',			'yes'),
+			array('Math minus',	'{if 7 - 9 == -2}yes{if:else}no{/if}',			'yes'),
+			array('Math star',	'{if 5 * 5 == 25}yes{if:else}no{/if}',			'yes'),
+			array('Math slash',	'{if 12 / 4 == 3}yes{if:else}no{/if}',			'yes'),
+			array('Math mod',	'{if 12 % 5 == 2}yes{if:else}no{/if}',			'yes'),
+			array('Power hat',	'{if 2 ^ 3 ^ 2 == 512}yes{if:else}no{/if}',		'yes'),
+			array('Power star',	'{if 2 ** 3 ** 2 == 512}yes{if:else}no{/if}',	'yes'),
 		);
 	}
 
