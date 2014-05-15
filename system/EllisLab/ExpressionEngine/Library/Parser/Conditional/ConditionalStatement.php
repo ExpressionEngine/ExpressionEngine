@@ -50,15 +50,17 @@ class ConditionalStatement {
 	 * @param Bool   $can_eval	Is evaluatable?
 	 * @return Bool  Should the body of this branch be output?
 	 */
-	public function addIf($condition, $can_eval)
+	public function addIf(BooleanExpression $expression)
 	{
+		$can_eval = $expression->canEvaluate();
+
 		if ($can_eval)
 		{
-			$this->evaluate($condition);
+			$this->evaluate($expression);
 		}
 		else
 		{
-			$this->outputCondition($condition);
+			$this->outputCondition($expression->stringify());
 		}
 
 		$this->setLastCouldEval($can_eval);
@@ -73,16 +75,18 @@ class ConditionalStatement {
 	 * @param Bool   $can_eval	Is evaluatable?
 	 * @return Bool  Should the body of this branch be output?
 	 */
-	public function addElseIf($condition, $can_eval)
+	public function addElseIf(BooleanExpression $expression)
 	{
 		if ($this->isDone())
 		{
 			return FALSE;
 		}
 
+		$can_eval = $expression->canEvaluate();
+
 		if ($can_eval)
 		{
-			$result = $this->evaluate($condition);
+			$result = $this->evaluate($expression);
 
 			// If not all previous ones have evaluated, then we can't
 			// make a determination on a true branch since a previous may also
@@ -95,7 +99,7 @@ class ConditionalStatement {
 		}
 		else
 		{
-			$this->outputCondition($condition);
+			$this->outputCondition($expression->stringify());
 		}
 
 		$this->setLastCouldEval($can_eval);
@@ -232,18 +236,17 @@ class ConditionalStatement {
 	 * @param String $condition The expression to evaluate
 	 * @return Bool  The result
 	 */
-	protected function evaluate($condition)
+	protected function evaluate($expression)
 	{
-		$result = FALSE;
-		eval("\$result = ((".$condition.") != '');");
+		$result = (bool) $expression->evaluate();
 
-		$this->last_result = (bool) $result;
-
-		if ($this->last_result === TRUE)
+		if ($result === TRUE)
 		{
 			$this->encountered_true_condition = TRUE;
 		}
 
-		return $this->last_result;
+		$this->last_result = $result;
+
+		return $result;
 	}
 }

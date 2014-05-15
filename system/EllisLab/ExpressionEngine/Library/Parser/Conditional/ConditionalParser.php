@@ -128,11 +128,9 @@ class ConditionalParser extends AbstractParser {
 	 */
 	protected function conditional($conditional)
 	{
-		$this->openBuffer();
+		$if_expression = $this->condition();
 
-		$can_evaluate = $this->condition();
-
-		if ($conditional->addIf($this->closeBuffer(), $can_evaluate))
+		if ($conditional->addIf($if_expression))
 		{
 			$this->template();
 		}
@@ -143,10 +141,9 @@ class ConditionalParser extends AbstractParser {
 
 		while ($this->accept('ELSEIF'))
 		{
-			$this->openBuffer();
-			$can_evaluate = $this->condition();
+			$elseif_expression = $this->condition();
 
-			if ($conditional->addElseIf($this->closeBuffer(), $can_evaluate))
+			if ($conditional->addElseIf($elseif_expression))
 			{
 				$this->template();
 			}
@@ -209,10 +206,14 @@ class ConditionalParser extends AbstractParser {
 	 */
 	protected function condition()
 	{
-		$can_evaluate = $this->expression();
+		$this->openBuffer();
+
+		$expression = $this->expression();
 		$this->expect('ENDCOND');
 
-		return $can_evaluate;
+		$this->closeBuffer(); // discard whitespace added by next()
+
+		return $expression;
 	}
 
 	/**
@@ -223,9 +224,7 @@ class ConditionalParser extends AbstractParser {
 	 */
 	protected function expression()
 	{
-		// An empty conditional can technically evaluate, so by default
-		// everything is true.
-		$can_evaluate = TRUE;
+		$expression = new BooleanExpression();
 
 		do
 		{
@@ -233,55 +232,46 @@ class ConditionalParser extends AbstractParser {
 
 			while ($this->accept('LP'))
 			{
-				$this->output('(');
+				$expression->add('LP', '(');
 			}
 
-			if ($this->is('STRING') || $this->is('NUMBER') || $this->is('BOOL'))
+			if ($this->is('BOOL'))
 			{
-				$prepped = $this->scalar($this->value());
-
-				// If there's a potential tag inside a string, we can't risk
-				// evaluating. This will have to wait for safety on.
-				if ($this->is('STRING') && stristr($prepped, LD))
-				{
-					$can_evaluate = FALSE;
-				}
-
-				$this->output($prepped);
+				$expression->add('BOOL', ($this->value() == 'TRUE'));
+				$this->next();
+			}
+			elseif ($this->is('NUMBER'))
+			{
+				$expression->add('NUMBER', $this->value());
+				$this->next();
+			}
+			elseif ($this->is('STRING'))
+			{
+				$this->string($expression);
 				$this->next();
 			}
 			elseif ($this->is('VARIABLE'))
 			{
-				list($can_eval, $value) = $this->variable($this->value());
-
-				if ($can_eval === FALSE)
-				{
-					$can_evaluate = FALSE;
-				}
-
-				$this->output($value);
+				$this->variable($expression);
 				$this->next();
 			}
 			elseif ($this->is('MISC'))
 			{
-				$can_evaluate = FALSE;
-				$this->output($this->misc($this->value()));
+				$this->misc($expression);
 				$this->next();
 			}
 
 			// A closing parenthesis would be before the operator
 			while ($this->accept('RP'))
 			{
-				$this->output(')');
+				$expression->add('RP', ')');
 			}
 
 			// If we hit an operator, we need to go around again
 			// looking for the right hand value.
 			if ($this->is('OPERATOR'))
 			{
-				$this->whitespace();
-				$this->output($this->value());
-				$this->whitespace();
+				$expression->add('OPERATOR', $this->value());
 				$this->next();
 
 				$continue_loop = TRUE;
@@ -294,44 +284,39 @@ class ConditionalParser extends AbstractParser {
 			// evaluate to.
 			while ($this->is('TAG'))
 			{
-				$this->output($this->tag($this->value()));
+				$this->tag($expression);
 				$this->next();
-				$can_evaluate = FALSE;
 				$continue_loop = TRUE;
 			}
 		}
 		while ($continue_loop == TRUE);
 
-		if ($this->safety === TRUE)
-		{
-			return TRUE;
-		}
-
-		return $can_evaluate;
+		return $expression;
 	}
 
 	/**
-	 * Scalar Values
+	 * String Values
 	 */
-	protected function scalar($value)
+	protected function string($expression)
 	{
-		if ($this->is('BOOL'))
-		{
-			return (strtoupper($value) == 'TRUE') ? 'TRUE' : 'FALSE';
-		}
-		elseif ($this->is('NUMBER'))
-		{
-			return $value;
-		}
+		$value = $this->value();
 
-		return $this->encodeString($value);
+		$value = $this->encodeString($value);
+		$can_eval = (stristr($value, LD) === FALSE);
+
+		$expression->add('STRING', $value, $can_eval, TRUE);
 	}
 
 	/**
 	 * Variable Values
 	 */
-	protected function variable($name)
+	protected function variable($expression)
 	{
+		$quote = FALSE;
+		$can_eval = FALSE;
+
+		$value = $name = $this->value();
+
 		if (array_key_exists($name, $this->variables))
 		{
 			$value = $this->variables[$name];
@@ -341,41 +326,46 @@ class ConditionalParser extends AbstractParser {
 				)
 			);
 
-			return array(TRUE, $value);
+			$quote = TRUE;
+			$can_eval = TRUE;
 		}
-
-		if ($this->safety === TRUE)
+		elseif ($this->safety === TRUE)
 		{
-			return array(TRUE, 'FALSE');
+			$value = FALSE;
+			$can_eval = TRUE;
 		}
 
-		return array(FALSE, $name);
+		$expression->add('VARIABLE', $value, $can_eval, $quote);
 	}
 
 	/**
 	 * Embedded Tags
 	 */
-	protected function tag($value)
+	protected function tag($expression)
 	{
 		if ($this->safety === TRUE)
 		{
-			return 'FALSE';
+			$expression->add('BOOL', FALSE);
 		}
-
-		return $value;
+		else
+		{
+			$expression->add('TAG', $this->value(), FALSE);
+		}
 	}
 
 	/*
 	 * Miscellaneous Junk
 	 */
-	protected function misc($value)
+	protected function misc($expression)
 	{
 		if ($this->safety === TRUE)
 		{
-			return 'FALSE';
+			$expression->add('BOOL', FALSE);
 		}
-
-		return $value;
+		else
+		{
+			$expression->add('MISC', $this->value(), FALSE);
+		}
 	}
 
 	/*
@@ -386,7 +376,7 @@ class ConditionalParser extends AbstractParser {
 		if (stristr($value, LD.'exp:') && stristr($value, RD) && $this->safety === FALSE)
 		{
 			// Do not encode embedded tags in strings when safety is FALSE
-			return '"' . $value . '"';
+			return $value;
 		}
 
 		// If it has braces we do not want to encode them except
@@ -429,7 +419,7 @@ class ConditionalParser extends AbstractParser {
 		}
 
 		// quote it as a proper string
-		return "'" . $value . "'";
+		return $value;
 	}
 
 	/**
