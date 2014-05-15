@@ -157,8 +157,9 @@ class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 			$this->basicMaths(),
 			$this->basicBranching(),
 			$this->plainLogicOperatorTests(),
+			$this->comparisonOperatorTests(),
 			$this->concatenationTests(),
-			$this->comparisonOperatorTests()
+			$this->operatorPrecedenceTests(),
 		);
 	}
 
@@ -295,6 +296,32 @@ class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 			array('Three String Concat',	'{if "te"."st"."s" == "tests"}yes{if:else}no{/if}',	'yes'),
 			array('Integer Concat',			'{if "te". 12 == "te12"}yes{if:else}no{/if}',		'yes'),
 			array('Float Concat',			'{if "te". 1.2 == "te1.2"}yes{if:else}no{/if}',		'yes'),
+		);
+	}
+
+	protected function operatorPrecedenceTests()
+	{
+		// expressions in this array should be written in such a way that
+		// a precdence reversal would result in a different result.
+		return array(
+			array('== before math', '{if 2 + 5 == 9 - 2}yes{if:else}no{/if}',		'yes'),
+
+			// same precedence -> left to right
+			array('* and / ltr',	'{if 5/5 * 2 == 2}yes{if:else}no{/if}',		'yes'),
+			array('/ and * ltr',	'{if 5 * 2 / 5 == 2}yes{if:else}no{/if}',	'yes'),
+			array('/ and % ltr',	'{if 5 * 2 % 6 == 4}yes{if:else}no{/if}',	'yes'),
+
+			// basic math precendence
+			array('* before +',		'{if 5 + 5 * 2 == 15}yes{if:else}no{/if}',	'yes'),
+			array('/ before -',		'{if 12 - 4 / 2 == 10}yes{if:else}no{/if}',	'yes'),
+
+			// ! has the highest precedence we support
+			array('! before all',	'{if ! 5 + 5 == 5}yes{if:else}no{/if}',		'yes'),
+			array('! before all 2',	'{if 5 + ! 5 == 5}yes{if:else}no{/if}',		'yes'),
+			array('! before all 3',	'{if 5 - 5 * 1 == ! 5}yes{if:else}no{/if}',	'yes'),
+
+			// comparisons before boolean logic
+			array('== before &&',	'{if FALSE == TRUE && TRUE == FALSE}no{if:else}yes{/if}',	'yes'),
 		);
 	}
 }
