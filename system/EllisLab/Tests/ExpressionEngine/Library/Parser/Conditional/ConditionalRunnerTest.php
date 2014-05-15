@@ -160,6 +160,7 @@ class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 			$this->comparisonOperatorTests(),
 			$this->concatenationTests(),
 			$this->operatorPrecedenceTests(),
+			$this->parenthesisTests()
 		);
 	}
 
@@ -322,6 +323,14 @@ class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 
 			// comparisons before boolean logic
 			array('== before &&',	'{if FALSE == TRUE && TRUE == FALSE}no{if:else}yes{/if}',	'yes'),
+		);
+	}
+
+	protected function parenthesisTests()
+	{
+		return array(
+			array('Single Parentheses', '{if (5 + 5) * 2 == 20}yes{if:else}no{/if}', 'yes'),
+			array('Double Parentheses', '{if ((5 + 5) * 3 * (2 + 2)) == 120}yes{if:else}no{/if}', 'yes'),
 		);
 	}
 }
