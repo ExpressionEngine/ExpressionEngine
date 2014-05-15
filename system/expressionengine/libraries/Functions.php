@@ -2400,12 +2400,12 @@ class EE_Functions {
 		{
 			return $runner->processConditionals($str, $vars);
 		}
-		catch (ConditionalException $e)
+		catch (\EllisLab\ExpressionEngine\Library\Parser\Conditional\Exception\ConditionalException $e)
 		{
 			$thrower = str_replace(
-				array('Conditional', 'Exception'),
+				array('\\', 'Conditional', 'Exception'),
 				'',
-				get_class($e)
+				strrchr(get_class($e), '\\')
 			);
 
 			if (ee()->config->item('debug') == 2

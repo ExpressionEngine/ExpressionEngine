@@ -2,6 +2,8 @@
 
 namespace EllisLab\ExpressionEngine\Library\Parser\Conditional;
 
+use EllisLab\ExpressionEngine\Library\Parser\Conditional\Exception\ConditionalParserException;
+
 /**
  * ExpressionEngine - by EllisLab
  *
