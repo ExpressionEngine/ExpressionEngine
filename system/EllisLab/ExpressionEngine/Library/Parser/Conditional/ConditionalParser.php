@@ -91,6 +91,8 @@ class ConditionalParser extends AbstractParser {
 	 */
 	protected function template()
 	{
+		// this loop is identical to calling $this->template() at the
+		// end of both if branches, but avoids the added weight on the stack
 		while (TRUE)
 		{
 			if ($this->is('TEMPLATE_STRING'))
@@ -216,8 +218,8 @@ class ConditionalParser extends AbstractParser {
 	/**
 	 * Boolean Expressions
 	 *
-	 * This does the left side of the expression and recurses if it finds an
-	 * operator, which indicates that there is a right side.
+	 * This does the left side of the expression and then loops if that ends
+	 * in an operator. Parenthetical subexpressions are done recursively.
 	 */
 	protected function expression()
 	{
@@ -225,69 +227,73 @@ class ConditionalParser extends AbstractParser {
 		// everything is true.
 		$can_evaluate = TRUE;
 
-		if ($this->accept('LP'))
+		do
 		{
-			$this->output('(');
+			$ends_in_operator = FALSE;
 
-			$can_evaluate = $this->expression();
+			while ($this->accept('LP'))
+			{
+				$this->output('(');
+			}
 
-			$this->output(')');
-			$this->expect('RP');
-		}
-		elseif ($this->is('STRING') || $this->is('NUMBER') || $this->is('BOOL'))
-		{
-			$prepped = $this->scalar($this->value());
+			if ($this->is('STRING') || $this->is('NUMBER') || $this->is('BOOL'))
+			{
+				$prepped = $this->scalar($this->value());
 
-			// If there's a potential tag inside a string, we can't risk
-			// evaluating. This will have to wait for safety on.
-			if ($this->is('STRING') && stristr($prepped, LD))
+				// If there's a potential tag inside a string, we can't risk
+				// evaluating. This will have to wait for safety on.
+				if ($this->is('STRING') && stristr($prepped, LD))
+				{
+					$can_evaluate = FALSE;
+				}
+
+				$this->output($prepped);
+				$this->next();
+			}
+			elseif ($this->is('VARIABLE'))
+			{
+				list($can_eval, $value) = $this->variable($this->value());
+
+				if ($can_eval === FALSE)
+				{
+					$can_evaluate = FALSE;
+				}
+
+				$this->output($value);
+				$this->next();
+			}
+			elseif ($this->is('TAG'))
 			{
 				$can_evaluate = FALSE;
+				$this->output($this->tag($this->value()));
+				$this->next();
 			}
-
-			$this->output($prepped);
-			$this->next();
-		}
-		elseif ($this->is('VARIABLE'))
-		{
-			list($can_eval, $value) = $this->variable($this->value());
-
-			if ($can_eval === FALSE)
+			elseif ($this->is('MISC'))
 			{
 				$can_evaluate = FALSE;
+				$this->output($this->misc($this->value()));
+				$this->next();
 			}
 
-			$this->output($value);
-			$this->next();
-		}
-		elseif ($this->is('TAG'))
-		{
-			$can_evaluate = FALSE;
-			$this->output($this->tag($this->value()));
-			$this->next();
-		}
-		elseif ($this->is('MISC'))
-		{
-			$can_evaluate = FALSE;
-			$this->output($this->misc($this->value()));
-			$this->next();
-		}
-
-		if ($this->is('OPERATOR'))
-		{
-			$this->whitespace();
-			$this->output($this->value());
-			$this->whitespace();
-			$this->next();
-			$sub_expression_can_eval = $this->expression();
-
-			// If we already cannot evaluate, the sub expression result
-			// does not matter and might accidental flip us to false.
-			if ($can_evaluate === TRUE)
+			// A closing parenthesis would be before the operator
+			while ($this->accept('RP'))
 			{
-				$can_evaluate = $sub_expression_can_eval;
+				$this->output(')');
+			}
+
+			// If we hit an operator, we need to go around again
+			// looking for the right hand value.
+			if ($this->is('OPERATOR'))
+			{
+				$this->whitespace();
+				$this->output($this->value());
+				$this->whitespace();
+				$this->next();
+
+				$ends_in_operator = TRUE;
 			}
 		}
+		while ($ends_in_operator == TRUE);
 
 		if ($this->safety === TRUE)
 		{
