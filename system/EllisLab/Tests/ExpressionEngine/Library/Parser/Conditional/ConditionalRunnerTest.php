@@ -6,16 +6,21 @@ use EllisLab\ExpressionEngine\Library\Parser\Conditional\ConditionalRunner;
 
 class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 
-	/**
-	 * @dataProvider plainDataProvider
-	 */
-	public function testPlainConditionalsWithoutVariables($description, $problem, $result)
+	protected function runCondition($description, $str_in, $expected, $vars = array())
 	{
 		$runner = new ConditionalRunner();
 		$runner->disableProtectJavascript();
 
-		$out = $runner->processConditionals($problem, array());
-		$this->assertEquals($result, $out, $description);
+		$result = $runner->processConditionals($str_in, $vars);
+		$this->assertEquals($result, $expected, $description);
+	}
+
+	/**
+	 * @dataProvider plainDataProvider
+	 */
+	public function testPlainConditionalsWithoutVariables($description, $str_in, $expected_out, $vars = array())
+	{
+		$this->runCondition($description, $str_in, $expected_out, $vars);
 	}
 
 	/**
@@ -24,12 +29,7 @@ class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 	public function testBadConditionalsWithoutVariables($exception, $description, $str_in)
 	{
 		$this->setExpectedException($exception);
-
-		$runner = new ConditionalRunner();
-		$runner->disableProtectJavascript();
-
-		$out = $runner->processConditionals($str_in, array());
-		$this->assertEquals($result, '', $description);
+		$this->runCondition($description, $str_in, '');
 	}
 
 	public function testBasicVariableReplacement()
@@ -153,9 +153,11 @@ class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 		return array_merge(
 			array(),
 			$this->conditionals(),
+			$this->whitespaceRewriting(),
 			$this->basicMaths(),
 			$this->basicBranching(),
-			$this->plainLogicOperatorTests()
+			$this->plainLogicOperatorTests(),
+			$this->comparisonOperatorTests()
 		);
 	}
 
@@ -217,10 +219,11 @@ class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 	protected function basicMaths()
 	{
 		return array(
-			array('Math plus', '{if 5 + 5 == 10}yes{if:else}no{/if}', 'yes'),
-			array('Math minus', '{if 7 - 9 == -2}yes{if:else}no{/if}', 'yes'),
-			array('Math star', '{if 5 * 5 == 25}yes{if:else}no{/if}', 'yes'),
-			array('Math slash', '{if 12 / 4 == 3}yes{if:else}no{/if}', 'yes'),
+			array('Math plus',	'{if 5 + 5 == 10}yes{if:else}no{/if}', 'yes'),
+			array('Math minus',	'{if 7 - 9 == -2}yes{if:else}no{/if}', 'yes'),
+			array('Math star',	'{if 5 * 5 == 25}yes{if:else}no{/if}', 'yes'),
+			array('Math slash',	'{if 12 / 4 == 3}yes{if:else}no{/if}', 'yes'),
+			array('Math mod',	'{if 12 % 5 == 2}yes{if:else}no{/if}', 'yes'),
 		);
 	}
 
@@ -251,6 +254,33 @@ class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 			array('Plain OR False',		'{if 0 OR 0}no{if:else}yes{/if}',	'yes'),
 			array('Plain XOR False',	'{if 5 XOR 7}no{if:else}yes{/if}',	'yes'),
 			array('Plain ! False',		'{if ! 7}no{if:else}yes{/if}',		'yes'),
+		);
+	}
+
+	protected function comparisonOperatorTests()
+	{
+		return array(
+			array('Plain == Integer',	'{if 5 == 5}yes{if:else}no{/if}',		'yes'),
+			array('Plain != Integer',	'{if 3 != 6}yes{if:else}no{/if}',		'yes'),
+			array('Plain == String',	'{if "a" == "a"}yes{if:else}no{/if}',	'yes'),
+			array('Plain != String',	'{if "a" != "b"}yes{if:else}no{/if}',	'yes'),
+			array('Plain <= Integer',	'{if 3 <= 5}yes{if:else}no{/if}',		'yes'),
+			array('Plain <= Integer 2',	'{if 5 <= 5}yes{if:else}no{/if}',		'yes'),
+			array('Plain >= Integer',	'{if 7 >= 5}yes{if:else}no{/if}',		'yes'),
+			array('Plain >= Integer 2',	'{if 5 >= 5}yes{if:else}no{/if}',		'yes'),
+			array('Plain <> Integer',	'{if 7 <> 5}yes{if:else}no{/if}',		'yes'),
+			array('Plain > Integer',	'{if 7 > 5}yes{if:else}no{/if}',		'yes'),
+			array('Plain < Integer',	'{if 5 < 7}yes{if:else}no{/if}',		'yes'),
+
+			array('False == Integer',	'{if 5 == 2}no{if:else}yes{/if}',		'yes'),
+			array('False != Integer',	'{if 6 != 6}no{if:else}yes{/if}',		'yes'),
+			array('False == String',	'{if "a" == "b"}no{if:else}yes{/if}',	'yes'),
+			array('False != String',	'{if "a" != "a"}no{if:else}yes{/if}',	'yes'),
+			array('False <= Integer',	'{if 5 <= 3}no{if:else}yes{/if}',		'yes'),
+			array('False >= Integer',	'{if 5 >= 7}no{if:else}yes{/if}',		'yes'),
+			array('False <> Integer',	'{if 7 <> 7}no{if:else}yes{/if}',		'yes'),
+			array('False > Integer',	'{if 5 > 7}no{if:else}yes{/if}',		'yes'),
+			array('False < Integer',	'{if 7 < 5}no{if:else}yes{/if}',		'yes'),
 		);
 	}
 }
