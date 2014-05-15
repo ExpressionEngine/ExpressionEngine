@@ -159,6 +159,7 @@ class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 			$this->plainLogicOperatorTests(),
 			$this->comparisonOperatorTests(),
 			$this->concatenationTests(),
+			$this->eeTagTests(),
 			$this->operatorPrecedenceTests(),
 			$this->parenthesisTests()
 		);
@@ -297,6 +298,24 @@ class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 			array('Three String Concat',	'{if "te"."st"."s" == "tests"}yes{if:else}no{/if}',	'yes'),
 			array('Integer Concat',			'{if "te". 12 == "te12"}yes{if:else}no{/if}',		'yes'),
 			array('Float Concat',			'{if "te". 1.2 == "te1.2"}yes{if:else}no{/if}',		'yes'),
+		);
+	}
+
+	protected function stringTests()
+	{
+
+	}
+
+	protected function eeTagTests()
+	{
+		return array(
+			array('Raw ee tag',			'{if {tag1} == {tag2}"yup"{tag3}}yes{if:else}no{/if}', '{if {tag1} == {tag2}"yup"{tag3}}yes{if:else}no{/if}'),
+			array('Raw exp: tag',		'{if {exp:plugin}{tag}{/exp:plugin} == "yup"}yes{if:else}no{/if}', '{if {exp:plugin}{tag}{/exp:plugin} == "yup"}yes{if:else}no{/if}'),
+			array('Raw ee w/ params',	'{if {tag1 foo="bar"} == {tag2}"yup"{tag3 baz="bat" dog="cat"}}yes{if:else}no{/if}', '{if {tag1 foo="bar"} == {tag2}"yup"{tag3 baz="bat" dog="cat"}}yes{if:else}no{/if}'),
+			array('Raw exp: w/ params',	'{if {exp:plugin a="b" c="d" d="{nested}"}{tag}{/exp:plugin} == "yup"}yes{if:else}no{/if}', '{if {exp:plugin a="b" c="d" d="{nested}"}{tag}{/exp:plugin} == "yup"}yes{if:else}no{/if}'),
+
+			array('Quoted tag',				'{if "{tag1}"."{tag2}" == "dog"}yes{if:else}no{/if}', '{if "{tag1}" . "{tag2}" == "dog"}yes{if:else}no{/if}'),
+			array('Quoted with params',		'{if "{tag param=\'quotes\'}"}yes{if:else}no{/if}', '{if "{tag param=\'quotes\'}"}yes{if:else}no{/if}'),
 		);
 	}
 
