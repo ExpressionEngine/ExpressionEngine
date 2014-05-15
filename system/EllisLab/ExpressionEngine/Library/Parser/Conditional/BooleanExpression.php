@@ -141,6 +141,9 @@ class BooleanExpression {
 
 				switch ($token[1])
 				{
+					case '^':
+					case '**': array_push($evaluate_stack, pow($left, $right));
+						break;
 					case '*': array_push($evaluate_stack, $left * $right);
 						break;
 					case '*': array_push($evaluate_stack, $left * $right);
@@ -281,6 +284,9 @@ class BooleanExpression {
 		// http://php.net/manual/en/language.operators.precedence.php
 
 		return array(
+			'^' => array(60, self::RIGHT_ASSOC),
+			'**' => array(60, self::RIGHT_ASSOC),
+
 			'!' => array(50, self::RIGHT_ASSOC),
 
 			'*' => array(40, self::LEFT_ASSOC),

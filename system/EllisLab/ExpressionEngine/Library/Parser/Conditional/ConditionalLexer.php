@@ -62,10 +62,10 @@ class ConditionalLexer extends AbstractLexer {
 	 */
 
 	private $operators = array(
-		'||', '&&',
+		'||', '&&', '**',
 		'==', '!=', '<=', '>=', '<>', '<', '>',
 		'%', '+', '-', '*', '/',
-		'.', '!'
+		'.', '!', '^'
 	);
 
 	private $token_values;
@@ -124,7 +124,8 @@ class ConditionalLexer extends AbstractLexer {
 			'C_POINT', // .
 			'C_STAR',  // *
 			'C_SLASH', // /
-			'C_NOT'    // !
+			'C_NOT',   // !
+			'C_HAT'    // ^
 		);
 	}
 
