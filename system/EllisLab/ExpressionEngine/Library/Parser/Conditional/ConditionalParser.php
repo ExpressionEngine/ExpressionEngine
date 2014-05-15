@@ -412,9 +412,10 @@ class ConditionalParser extends AbstractParser {
 			$value = substr(htmlspecialchars($value), 0, 100);
 		}
 
+
 		$value = str_replace(
-			array("'", '"', '(', ')', '$', "\n", "\r", '\\'),
-			array('&#39;', '&#34;', '&#40;', '&#41;', '&#36;', '', '', '&#92;'),
+			array('\\', "\t", "\n", "\r", "'"),
+			array('\\\\', "", "", "", "\\'"),
 			$value
 		);
 
@@ -428,7 +429,7 @@ class ConditionalParser extends AbstractParser {
 		}
 
 		// quote it as a proper string
-		return '"' . $value . '"';
+		return "'" . $value . "'";
 	}
 
 	/**

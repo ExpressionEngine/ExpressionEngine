@@ -38,29 +38,29 @@ class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 		$runner->disableProtectJavascript();
 
 		// var1 is in there to prevent execution
-		$string = '{if var1 && var2 == "bob"}yes{/if}';
+		$string = '{if var1 && var2 == \'bob\'}yes{/if}';
 
 		$this->assertEquals(
 			$runner->processConditionals($string, array('var2' => 3)),
-			'{if var1 && "3" == "bob"}yes{/if}',
+			'{if var1 && \'3\' == \'bob\'}yes{/if}',
 			'Integer Variable Replacement'
 		);
 
 		$this->assertEquals(
-			$runner->processConditionals($string, array('var2' => "mary")),
-			'{if var1 && "mary" == "bob"}yes{/if}',
+			$runner->processConditionals($string, array('var2' => 'mary')),
+			'{if var1 && \'mary\' == \'bob\'}yes{/if}',
 			'String Variable Replacement'
 		);
 
 		$this->assertEquals(
 			$runner->processConditionals($string, array('var2' => TRUE)),
-			'{if var1 && "1" == "bob"}yes{/if}',
+			'{if var1 && \'1\' == \'bob\'}yes{/if}',
 			'Bool TRUE Variable Replacement'
 		);
 
 		$this->assertEquals(
 			$runner->processConditionals($string, array('var2' => FALSE)),
-			'{if var1 && "" == "bob"}yes{/if}',
+			'{if var1 && \'\' == \'bob\'}yes{/if}',
 			'Bool FALSE Variable Replacement'
 		);
 	}
@@ -70,13 +70,13 @@ class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 		$runner = new ConditionalRunner();
 		$runner->disableProtectJavascript();
 
-		$inital = '{if var1 && var2 && var3 == "bob"}yes{if:else}no{/if}';
+		$inital = '{if var1 && var2 && var3 == \'bob\'}yes{if:else}no{/if}';
 
 		$var2 = $runner->processConditionals($inital, array('var1' => 3));
 
 		$this->assertEquals(
 			$var2,
-			'{if "3" && var2 && var3 == "bob"}yes{if:else}no{/if}',
+			'{if \'3\' && var2 && var3 == \'bob\'}yes{if:else}no{/if}',
 			'Integer Variable Replacement'
 		);
 
@@ -84,7 +84,7 @@ class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 
 		$this->assertEquals(
 			$var3,
-			'{if "3" && var2 && "bob" == "bob"}yes{if:else}no{/if}',
+			'{if \'3\' && var2 && \'bob\' == \'bob\'}yes{if:else}no{/if}',
 			'String Variable Replacement'
 		);
 
@@ -134,7 +134,7 @@ class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 
 		// now the big one
 		$string = '{if 5 == 7}nope';
-		$string .= '{if:elseif "bob" == "mary"}never';
+		$string .= '{if:elseif \'bob\' == \'mary\'}never';
 		$string .= '{if:elseif 7 == var}maybe';
 		$string .= '{if:elseif 7 == 7}quitepossibly';
 		$string .= '{if:elseif 8 == 0}nah';
@@ -309,13 +309,13 @@ class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 	protected function eeTagTests()
 	{
 		return array(
-			array('Raw ee tag',			'{if {tag1} == {tag2}"yup"{tag3}}yes{if:else}no{/if}', '{if {tag1} == {tag2}"yup"{tag3}}yes{if:else}no{/if}'),
-			array('Raw exp: tag',		'{if {exp:plugin}{tag}{/exp:plugin} == "yup"}yes{if:else}no{/if}', '{if {exp:plugin}{tag}{/exp:plugin} == "yup"}yes{if:else}no{/if}'),
-			array('Raw ee w/ params',	'{if {tag1 foo="bar"} == {tag2}"yup"{tag3 baz="bat" dog="cat"}}yes{if:else}no{/if}', '{if {tag1 foo="bar"} == {tag2}"yup"{tag3 baz="bat" dog="cat"}}yes{if:else}no{/if}'),
-			array('Raw exp: w/ params',	'{if {exp:plugin a="b" c="d" d="{nested}"}{tag}{/exp:plugin} == "yup"}yes{if:else}no{/if}', '{if {exp:plugin a="b" c="d" d="{nested}"}{tag}{/exp:plugin} == "yup"}yes{if:else}no{/if}'),
+			array('Raw ee tag',			'{if {tag1} == {tag2}"yup"{tag3}}yes{if:else}no{/if}', '{if {tag1} == {tag2}\'yup\'{tag3}}yes{if:else}no{/if}'),
+			array('Raw exp: tag',		'{if {exp:plugin}{tag}{/exp:plugin} == "yup"}yes{if:else}no{/if}', '{if {exp:plugin}{tag}{/exp:plugin} == \'yup\'}yes{if:else}no{/if}'),
+			array('Raw ee w/ params',	'{if {tag1 foo="bar"} == {tag2}"yup"{tag3 baz="bat" dog="cat"}}yes{if:else}no{/if}', '{if {tag1 foo="bar"} == {tag2}\'yup\'{tag3 baz="bat" dog="cat"}}yes{if:else}no{/if}'),
+			array('Raw exp: w/ params',	'{if {exp:plugin a="b" c="d" d="{nested}"}{tag}{/exp:plugin} == "yup"}yes{if:else}no{/if}', '{if {exp:plugin a="b" c="d" d="{nested}"}{tag}{/exp:plugin} == \'yup\'}yes{if:else}no{/if}'),
 
-			array('Quoted tag',				'{if "{tag1}"."{tag2}" == "dog"}yes{if:else}no{/if}', '{if "{tag1}" . "{tag2}" == "dog"}yes{if:else}no{/if}'),
-			array('Quoted with params',		'{if "{tag param=\'quotes\'}"}yes{if:else}no{/if}', '{if "{tag param=\'quotes\'}"}yes{if:else}no{/if}'),
+			array('Quoted tag',				'{if "{tag1}"."{tag2}" == "dog"}yes{if:else}no{/if}', '{if \'{tag1}\' . \'{tag2}\' == \'dog\'}yes{if:else}no{/if}'),
+			array('Quoted with params',		'{if "{tag param=\'quotes\'}"}yes{if:else}no{/if}', '{if \'{tag param=\\\'quotes\\\'}\'}yes{if:else}no{/if}'),
 		);
 	}
 
