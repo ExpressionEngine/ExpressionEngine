@@ -210,7 +210,6 @@ class ConditionalLexer extends AbstractLexer {
 			'VAR'	=> array('ESC',	'SS',	'SD',	'LD',	'RD',	'VAR',	'VAR',	'MINUS','VAR',	'OK'),
 			'NUM'	=> array('ESC',	'SS',	'SD',	'LD',	'RD',	'VAR',	'NUM',	'MINUS','ERR',	'POINT'),
 			'FLOAT'	=> array('ESC',	'SS',	'SD',	'LD',	'RD',	'VAR',	'FLOAT','OK',	'ERR',	'ERR'),
-		//	'TAG'	=> array('ESC',	'TAG',	'TAG',	'TAG',	'RD',	'TAG',	'TAG',	'TAG',	'TAG',	'TAG'),
 		);
 
 		$this->stack = array('OK');
@@ -478,6 +477,13 @@ class ConditionalLexer extends AbstractLexer {
 				if ($state == 'ESC')
 				{
 					$char = $this->next();
+					$escapable = array('\\', "'", '"');
+
+					if ( ! in_array($char, $escapable))
+					{
+						$buffer .= '\\';
+					}
+
 					$state = $old_state; // pretend nothing happened
 				}
 

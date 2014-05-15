@@ -174,6 +174,7 @@ class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 			$this->comparisonOperatorTests(),
 			$this->concatenationTests(),
 			$this->eeTagTests(),
+			$this->stringTests(),
 			$this->operatorPrecedenceTests(),
 			$this->parenthesisTests()
 		);
@@ -339,6 +340,22 @@ class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 
 			array('Quoted tag',				'{if "{tag1}"."{tag2}" == "dog"}yes{if:else}no{/if}', '{if \'{tag1}\' . \'{tag2}\' == \'dog\'}yes{if:else}no{/if}'),
 			array('Quoted with params',		'{if "{tag param=\'quotes\'}"}yes{if:else}no{/if}', '{if \'{tag param=\\\'quotes\\\'}\'}yes{if:else}no{/if}'),
+		);
+	}
+
+	protected function stringTests()
+	{
+		$bs = '\\'; // SINGLE backslash
+		$sq = "'"; // single quote
+		$dq = '"'; // dairy queen
+
+		return array(
+			array('Esc Single quote in double',		'{if "ee'.$bs.$sq.'s parser" == var}yes{if:else}no{/if}',		'yes', array('var' => "ee's parser")),
+			array('Esc Double quote in double',		'{if "ee'.$bs.$dq.'s parser" == var}yes{if:else}no{/if}',		'yes', array('var' => 'ee"s parser')),
+			array('Esc Single quote in single',		"{if 'ee".$bs.$sq."s parser' == var}yes{if:else}no{/if}",		'yes', array('var' => "ee's parser")),
+			array('Esc Double qutote in single',	"{if 'ee".$bs.$dq."s parser' == var}yes{if:else}no{/if}",		'yes', array('var' => 'ee"s parser')),
+			array('Double backslash',				"{if 'this is ".$bs.$bs." the end' == var}yes{if:else}no{/if}",	'yes', array('var' => 'this is '.$bs.' the end')),
+			array('Letters not escapable',			'{if "/'.$bs.'d+/" == var}yes{if:else}no{/if}',						'yes', array('var' => '/'.$bs.'d+/')),
 		);
 	}
 
