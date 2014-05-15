@@ -8,7 +8,7 @@
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
- * @since		Version 2.8.2
+ * @since		Version 2.9.0
  * @filesource
  */
 
@@ -71,7 +71,7 @@ class Updater {
 
 	/**
 	 * Add a column to the Template Routes table for storing the parse order
-	 * 
+	 *
 	 * @access private
 	 * @return void
 	 */
@@ -93,5 +93,5 @@ class Updater {
 }
 /* END CLASS */
 
-/* End of file ud_282.php */
-/* Location: ./system/expressionengine/installer/updates/ud_282.php */
+/* End of file ud_290.php */
+/* Location: ./system/expressionengine/installer/updates/ud_290.php */
