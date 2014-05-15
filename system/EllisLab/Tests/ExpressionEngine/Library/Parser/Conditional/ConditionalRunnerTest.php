@@ -12,7 +12,7 @@ class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 		$runner->disableProtectJavascript();
 
 		$result = $runner->processConditionals($str_in, $vars);
-		$this->assertEquals($result, $expected, $description);
+		$this->assertEquals($expected, $result, $description);
 	}
 
 	/**
@@ -157,6 +157,7 @@ class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 			$this->basicMaths(),
 			$this->basicBranching(),
 			$this->plainLogicOperatorTests(),
+			$this->concatenationTests(),
 			$this->comparisonOperatorTests()
 		);
 	}
@@ -281,6 +282,19 @@ class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 			array('False <> Integer',	'{if 7 <> 7}no{if:else}yes{/if}',		'yes'),
 			array('False > Integer',	'{if 5 > 7}no{if:else}yes{/if}',		'yes'),
 			array('False < Integer',	'{if 7 < 5}no{if:else}yes{/if}',		'yes'),
+		);
+	}
+
+	protected function concatenationTests()
+	{
+		return array(
+			array('Basic Concatenation',	'{if "te"."st" == "test"}yes{if:else}no{/if}',		'yes'),
+			array('Space Concatenation',	'{if "te" . "st" == "test"}yes{if:else}no{/if}',	'yes'),
+			array('Single Variable Concat',	'{if var . "st" == "test"}yes{if:else}no{/if}',		'yes', array('var' => 'te')),
+			array('Two Variable Concat',	'{if var . iable == "test"}yes{if:else}no{/if}',	'yes', array('var' => 'te', 'iable' => 'st')),
+			array('Three String Concat',	'{if "te"."st"."s" == "tests"}yes{if:else}no{/if}',	'yes'),
+			array('Integer Concat',			'{if "te". 12 == "te12"}yes{if:else}no{/if}',		'yes'),
+			array('Float Concat',			'{if "te". 1.2 == "te1.2"}yes{if:else}no{/if}',		'yes'),
 		);
 	}
 }
