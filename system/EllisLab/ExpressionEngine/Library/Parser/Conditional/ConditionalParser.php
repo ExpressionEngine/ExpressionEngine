@@ -229,7 +229,7 @@ class ConditionalParser extends AbstractParser {
 
 		do
 		{
-			$ends_in_operator = FALSE;
+			$continue_loop = FALSE;
 
 			while ($this->accept('LP'))
 			{
@@ -262,12 +262,6 @@ class ConditionalParser extends AbstractParser {
 				$this->output($value);
 				$this->next();
 			}
-			elseif ($this->is('TAG'))
-			{
-				$can_evaluate = FALSE;
-				$this->output($this->tag($this->value()));
-				$this->next();
-			}
 			elseif ($this->is('MISC'))
 			{
 				$can_evaluate = FALSE;
@@ -290,10 +284,23 @@ class ConditionalParser extends AbstractParser {
 				$this->whitespace();
 				$this->next();
 
-				$ends_in_operator = TRUE;
+				$continue_loop = TRUE;
+			}
+
+			// Seek past tags, adding them to output, but pretending that
+			// they are basically not there. This allows for arbitrary tag
+			// embedding in places where we would otherwise consider variables
+			// illegal. This is fine because we don't know what those tags will
+			// evaluate to.
+			while ($this->is('TAG'))
+			{
+				$this->output($this->tag($this->value()));
+				$this->next();
+				$can_evaluate = FALSE;
+				$continue_loop = TRUE;
 			}
 		}
-		while ($ends_in_operator == TRUE);
+		while ($continue_loop == TRUE);
 
 		if ($this->safety === TRUE)
 		{
