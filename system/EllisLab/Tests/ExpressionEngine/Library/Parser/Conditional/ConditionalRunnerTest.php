@@ -6,12 +6,14 @@ use EllisLab\ExpressionEngine\Library\Parser\Conditional\ConditionalRunner;
 
 class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 
+	public function setUp()
+	{
+		$this->runner = new ConditionalRunner();
+	}
+
 	protected function runCondition($description, $str_in, $expected, $vars = array())
 	{
-		$runner = new ConditionalRunner();
-		$runner->disableProtectJavascript();
-
-		$result = $runner->processConditionals($str_in, $vars);
+		$result = $this->runner->processConditionals($str_in, $vars);
 		$this->assertEquals($expected, $result, $description);
 	}
 
@@ -20,6 +22,7 @@ class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testPlainConditionalsWithoutVariables($description, $str_in, $expected_out, $vars = array())
 	{
+		$this->runner->disableProtectJavascript();
 		$this->runCondition($description, $str_in, $expected_out, $vars);
 	}
 
@@ -29,7 +32,18 @@ class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 	public function testBadConditionalsWithoutVariables($exception, $description, $str_in)
 	{
 		$this->setExpectedException($exception);
+		$this->runner->disableProtectJavascript();
 		$this->runCondition($description, $str_in, '');
+	}
+
+	/**
+	 * @dataProvider safetyOnDataProvider
+	 */
+	public function testSafetyOn($description, $str_in, $expected_out)
+	{
+		$this->runner->safetyOn();
+		$this->runner->disableProtectJavascript();
+		$this->runCondition($description, $str_in, $expected_out);
 	}
 
 	public function testBasicVariableReplacement()
@@ -191,6 +205,16 @@ class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 			array($lexer_exception,  'OK + :',	 						"{if 'foo':bar}out{/if}"),
 			array($lexer_exception,  'FLOAT + .', 						'{if 1.2.3}out{/if}'),
 			array($lexer_exception,  'FLOAT + :', 						'{if 1.2:3}out{/if}'),
+		);
+	}
+
+	public function safetyOnDataProvider()
+	{
+		return array(
+			array('Unparsed Tags to false',		'{if {tag} == FALSE}yes{if:else}no{/if}',	'yes'),
+			array('Unparsed Tags to false 2',	'{if {tag} != FALSE}no{if:else}yes{/if}',	'yes'),
+			array('Junk String to false',		'{if ` != FALSE}no{if:else}yes{/if}',		'yes'),
+			array('Junk String to false 2',		'{if ` == FALSE}yes{if:else}no{/if}',		'yes'),
 		);
 	}
 
