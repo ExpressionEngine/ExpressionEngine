@@ -403,11 +403,7 @@ class ConditionalParser extends AbstractParser {
 		}
 
 
-		$value = str_replace(
-			array("\t", "\n", "\r"),
-			array(' ', ' ', ' '),
-			$value
-		);
+		$value = preg_replace('/\s+/', ' ', $value);
 
 		if ($encode_braces || $this->safety === TRUE)
 		{
