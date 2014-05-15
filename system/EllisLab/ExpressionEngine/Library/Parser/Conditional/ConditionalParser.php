@@ -405,7 +405,7 @@ class ConditionalParser extends AbstractParser {
 
 		$value = str_replace(
 			array('\\', "\t", "\n", "\r", "'"),
-			array('\\\\', "", "", "", "\\'"),
+			array('\\\\', ' ', ' ', ' ', "\\'"),
 			$value
 		);
 
