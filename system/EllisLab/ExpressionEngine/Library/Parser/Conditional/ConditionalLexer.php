@@ -143,15 +143,46 @@ class ConditionalLexer extends AbstractLexer {
 	 */
 	public function tokenize($str)
 	{
+		if ($str == '')
+		{
+			return array();
+		}
+
+		$this->str = $str;
 		$this->tokens = array();
 
+		$this->stack = array('OK');
+
+		while ($this->str != '')
+		{
+			// go to the next LD
+			$this->buffer = $this->seekTo('{');
+
+			// anything we hit in the meantime is template string
+			$this->addBufferAsToken('TEMPLATE_STRING');
+
+			// if we can create an {if or {if:elseif token from this point,
+			// then we need to move into the statement.
+			if ($this->tokenizeIfTags())
+			{
+				$this->tokenizeIFStatement();
+			}
+		}
+
+		$this->addToken('TEMPLATE_STRING', $this->str);
+		$this->addToken('EOS', TRUE);
+
+		return $this->tokens;
+	}
+
+	private function tokenizeIfStatement()
+	{
 		// We use a finite state machine to walk through
 		// the conditional and find the correct closing
 		// bracket.
 		//
 		// The following arrays describe the state machine as
 		// a list of character classes, edges, and transitions.
-
 
 		// Hitting an edge causes a transition to happen. The edges are
 		// named after the ascii group that causes the transition.
@@ -216,329 +247,244 @@ class ConditionalLexer extends AbstractLexer {
 			'FLOAT'	=> array('ESC',	'SS',	'SD',	'LD',	'RD',	'VAR',	'FLOAT','OK',	'ERR',	'ERR'),
 		);
 
-		$this->stack = array('OK');
+		// No sense continuing if we cannot find a {/if}
+		if (strpos($this->str, '{/if}') === FALSE)
+		{
+			throw new ConditionalLexerException('Conditional is invalid: missing a "{/if}".');
+		}
 
-		$this->str = $str;
+		// reset everything
+		$this->buffer  = '';
+		$this->state   = 'OK';
+		$curlies = 0;
 
 		while ($this->str != '')
 		{
-			// go to the next LD/RD
-			$this->buffer = $this->seekTo('{');
+			$char = $this->next();
 
-			// anything we hit in the meantime is template string
-			$this->addToken('TEMPLATE_STRING', $this->buffer);
+			// Save the old state.
+			$old_state = $this->state;
 
-			// handle closing if's
-			if ($this->peek(5) == '{/if}')
+			$char_class = $this->charClass($char);
+
+			// Don't bother with control characters.
+			if ($char_class == '__')
 			{
-				$this->addToken('ENDIF', $this->move(5));
 				continue;
 			}
 
-			// potential opening ifs
-			$potential_if = $this->peekRegex('{if(:else(\s?}|if\s)|\s)');
-
-			switch (trim($potential_if))
+			// If we are inside a string or a tag we don't want to tokenize
+			// parenthesis or whitespace
+			if ($this->state != 'SS' && $this->state != 'SD' && $this->state != 'TAG')
 			{
-				case "{if":
-					$this->addToken('IF', $this->move(strlen($potential_if)));
-					break;;
-				case "{if:else}":
-					$this->addToken('ELSE', $this->move(strlen($potential_if)));
-					continue 2;
-				case "{if:elseif":
-					$this->addToken('ELSEIF', $this->move(strlen($potential_if)));
-					break;
-				default:
-					// something else
-					if ($this->peek(4) == '{if:') // sanity check, could be in a better place
-					{
-						throw new ConditionalLexerException('Conditional is invalid: "{if:" is reserverd for conditionals. Found: ' . $potential_if);
-					}
-
-					$this->addToken('TEMPLATE_STRING', $this->next());
-					continue 2;
-			}
-
-			// No sense continuing if we cannot find a {/if}
-			if (strpos($this->str, '{/if}') === FALSE)
-			{
-				throw new ConditionalLexerException('Conditional is invalid: missing a "{/if}".');
-			}
-
-			$this->buffer  = '';
-			$this->state   = 'OK';
-			$curlies = 0;
-
-			while ($this->str != '')
-			{
-				$char = $this->next();
-
-				// Save the old state.
-				$old_state = $this->state;
-
-				$char_class = $this->charClass($char);
-
-				// Don't bother with control characters.
-				if ($char_class == '__')
+				// Tokenize parenthesis
+				if ($char_class == 'C_LPAREN')
 				{
+					$this->addTokenByState($old_state);
+					$this->state = 'OK';
+
+					$this->addToken('LP', '(');
+					continue;
+				}
+				elseif ($char_class == 'C_RPAREN')
+				{
+					$this->addTokenByState($old_state);
+					$this->state = 'OK';
+
+					$this->addToken('RP', ')');
 					continue;
 				}
 
-				// If we are inside a string or a tag we don't want to tokenize
-				// parenthesis or whitespace
-				if ($this->state != 'SS' && $this->state != 'SD' && $this->state != 'TAG')
+				// Consume and tokenize whitespace
+				if ($char_class == 'C_WHITE')
 				{
-					// Tokenize parenthesis
-					if ($char_class == 'C_LPAREN')
-					{
-						$this->addTokenByState($old_state);
-						$this->state = 'OK';
+					$this->addTokenByState($old_state);
+					$this->buffer = $char;
 
-						$this->addToken('LP', '(');
-						continue;
-					}
-					elseif ($char_class == 'C_RPAREN')
+					while ($this->charClass($this->peek()) == 'C_WHITE')
 					{
-						$this->addTokenByState($old_state);
-						$this->state = 'OK';
-
-						$this->addToken('RP', ')');
-						continue;
+						$this->buffer .= $this->next();
 					}
 
-					// Consume and tokenize whitespace
-					if ($char_class == 'C_WHITE')
-					{
-						$this->addTokenByState($old_state);
-						$this->buffer = $char;
-
-						while ($this->charClass($this->peek()) == 'C_WHITE')
-						{
-							$this->buffer .= $this->next();
-						}
-
-						$this->addToken('WHITESPACE', $this->buffer);
-
-						$this->state = 'OK';
-						continue;
-					}
-				}
-
-				// If an edge exists, we transition. Otherwise we stay in
-				// our current state.
-				if (isset($edges[$char_class]))
-				{
-					$edge  = $edges[$char_class];
-					$this->state = $transitions[$old_state][$edge];
-				}
-
-				if ($this->state == 'ERR')
-				{
-					throw new ConditionalLexerException('In an ERROR state. Buffer: '.$this->buffer.$char);
-				}
-
-				// Manually handle "int-alpha" variables and negative numbers
-				if ($this->state == 'MINUS')
-				{
-					$next_char_class = $this->charClass($this->peek());
-
-					if (($old_state == 'VAR' || $old_state == 'NUM') && $next_char_class == 'C_ABC')
-					{
-						$this->state = 'VAR';
-					}
-					elseif ($old_state == 'OK' && $next_char_class == 'C_DIGIT')
-					{
-						$this->state = 'NUM';
-					}
-					else
-					{
-						$this->state = 'OK';
-					}
-				}
-
-				// Track variables
-				if ($this->state == 'VAR' || $this->state == 'NUM' || $this->state == 'FLOAT')
-				{
-					if ($old_state != 'VAR' && $old_state != 'NUM' && $old_state != 'FLOAT')
-					{
-						$token_type = in_array($this->buffer, $this->operators) ? 'OPERATOR' : 'MISC';
-						$this->addToken($token_type, $this->buffer);
-					}
-
-					// Manually transition out of state and store the buffer
-					if ($char_class != 'C_ABC' && $char_class != 'C_DIGIT' &&
-						$char_class != 'C_COLON' && $char_class != 'C_MINUS')
-					{
-						if ($this->state == 'VAR')
-						{
-							$this->addToken('VARIABLE', $this->buffer);
-						}
-						else
-						{
-							$this->addToken('NUMBER', $this->buffer);
-						}
-
-						$this->state = 'OK';
-					}
-				}
-
-				if ($this->state == 'POINT')
-				{
-					$next_char_class = $this->charClass($this->peek());
-
-					// We may may be in a FLOAT state
-					if ($next_char_class == 'C_DIGIT')
-					{
-						$this->state = 'FLOAT';
-					}
-					else
-					{
-						$this->state = 'OK';
-					}
-				}
-
-				if ($this->state == 'OK')
-				{
-					// Check for operators
-					if (in_array($char_class, $this->symbols))
-					{
-						$this->addTokenByState($old_state);
-
-						$operator_buffer = $char;
-						// Consume the array until we stop seeing operator stuff
-						while (in_array($this->charClass($this->peek()), $this->symbols))
-						{
-							$operator_buffer .= $this->next();
-						}
-
-						// Check for any trailing - meant to indicate negativity
-						// but only if it is trailing and not standalone, a -
-						// on its own is subtraction
-						if (strlen($operator_buffer) > 1)
-						{
-							$last_char_class = $this->charClass(substr($operator_buffer, -1));
-							if ($last_char_class == 'C_MINUS' || $last_char_class == 'C_POINT')
-							{
-								if ($this->charClass($this->peek()) == 'C_DIGIT')
-								{
-									$this->str = substr($operator_buffer, -1).$this->str; // Put it back.
-									$operator_buffer = substr($operator_buffer, 0, -1);
-								}
-							}
-						}
-
-						if (in_array($operator_buffer, $this->operators))
-						{
-							$this->addToken('OPERATOR', $operator_buffer);
-						}
-						else
-						{
-							$this->addToken('MISC', $operator_buffer);
-						}
-
-						continue;
-					}
-				}
-
-				// Checking for balanced curly braces
-				if ($this->state == 'RD')
-				{
-					if ($curlies == 0)
-					{
-						$this->state = 'END';
-						break;
-					}
-
-					$curlies--;
-					$this->state = 'OK';
-
-					array_pop($this->stack);
-
-					if (end($this->stack) == 'OK')
-					{
-						$this->addToken('TAG', $this->tag_buffer.$this->buffer.$char);
-						$this->tag_buffer = '';
-						continue;
-					}
-				}
-				elseif ($this->state == 'LD')
-				{
-					$curlies++;
-
-					if (end($this->stack) != 'TAG')
-					{
-						$this->tag_buffer = '';
-					}
-
-					$this->stack[] = 'TAG';
-					$this->state = 'OK';
-				}
-
-				// On escape, store char and restore previous state
-				if ($this->state == 'ESC')
-				{
-					$char = $this->next();
-					$escapable = array('\\', "'", '"');
-
-					if ( ! in_array($char, $escapable))
-					{
-						$this->buffer .= '\\';
-					}
-
-					$this->state = $old_state; // pretend nothing happened
-				}
-
-				// Hitting the end of a string must mean we're back to an OK
-				// state, so store the string in a variable and reset
-				elseif ($this->state == 'EOS')
-				{
-					$this->addToken('STRING', $this->buffer);
+					$this->addBufferAsToken('WHITESPACE');
 
 					$this->state = 'OK';
-					continue; // do not put trailing quotes in the buffer
+					continue;
 				}
+			}
 
-				// END Events
+			// If an edge exists, we transition. Otherwise we stay in
+			// our current state.
+			if (isset($edges[$char_class]))
+			{
+				$edge  = $edges[$char_class];
+				$this->state = $transitions[$old_state][$edge];
+			}
 
-				// Handle buffers
-				if (($this->state == 'SS' || $this->state == 'SD') && $this->state != $old_state)
+			if ($this->state == 'ERR')
+			{
+				throw new ConditionalLexerException('In an ERROR state. Buffer: '.$this->buffer.$char);
+			}
+
+			// Manually handle "int-alpha" variables and negative numbers
+			if ($this->state == 'MINUS')
+			{
+				$next_char_class = $this->charClass($this->peek());
+
+				if (($old_state == 'VAR' || $old_state == 'NUM') && $next_char_class == 'C_ABC')
 				{
-					// reset the buffer if we're starting a string
-					$this->addToken('MISC', $this->buffer);
-
-					// if we're in a tag we need to keep quotes
-					if (end($this->stack) == 'TAG')
-					{
-						$this->buffer = ($this->state == 'SS') ? "'" : '"';
-					}
+					$this->state = 'VAR';
+				}
+				elseif ($old_state == 'OK' && $next_char_class == 'C_DIGIT')
+				{
+					$this->state = 'NUM';
 				}
 				else
 				{
-					$this->buffer .= $char;
+					$this->state = 'OK';
 				}
 			}
 
-			// Not in an end state, or curly braces are unbalanced, "error" out
-			if ($this->state != 'END' || $curlies != 0)
+			// Track variables
+			if ($this->state == 'VAR' || $this->state == 'NUM' || $this->state == 'FLOAT')
 			{
-				throw new ConditionalLexerException('Conditional is invalid: not in an end state or unbalanced curly braces. State is '.$this->state.'. Curly count is '.$curlies.'.');
+				if ($old_state != 'VAR' && $old_state != 'NUM' && $old_state != 'FLOAT')
+				{
+					$token_type = in_array($this->buffer, $this->operators) ? 'OPERATOR' : 'MISC';
+					$this->addBufferAsToken($token_type);
+				}
+
+				// Manually transition out of state and store the buffer
+				if ($char_class != 'C_ABC' && $char_class != 'C_DIGIT' &&
+					$char_class != 'C_COLON' && $char_class != 'C_MINUS')
+				{
+					if ($this->state == 'VAR')
+					{
+						$this->addBufferAsToken('VARIABLE');
+					}
+					else
+					{
+						$this->addBufferAsToken('NUMBER');
+					}
+
+					$this->state = 'OK';
+				}
 			}
 
-			// Handle any buffer contents from before we hit the closing brace
-			if ($this->buffer != '')
+			if ($this->state == 'POINT')
 			{
-				$this->addTokenByState($old_state);
+				$next_char_class = $this->charClass($this->peek());
+
+				// We may may be in a FLOAT state
+				if ($next_char_class == 'C_DIGIT')
+				{
+					$this->state = 'FLOAT';
+				}
+				else
+				{
+					$this->state = 'OK';
+				}
 			}
 
-			$this->addToken('ENDCOND', '}');
+			if ($this->state == 'OK')
+			{
+				if ($this->handleOperators($char, $char_class, $old_state))
+				{
+					continue;
+				}
+			}
 
+			// Checking for balanced curly braces
+			if ($this->state == 'RD')
+			{
+				if ($curlies == 0)
+				{
+					$this->state = 'END';
+					break;
+				}
+
+				$curlies--;
+				$this->state = 'OK';
+
+				array_pop($this->stack);
+
+				if (end($this->stack) == 'OK')
+				{
+					$this->addToken('TAG', $this->tag_buffer.$this->buffer.$char);
+					$this->tag_buffer = '';
+					continue;
+				}
+			}
+
+			if ($this->state == 'LD')
+			{
+				$curlies++;
+
+				if (end($this->stack) != 'TAG')
+				{
+					$this->tag_buffer = '';
+				}
+
+				$this->stack[] = 'TAG';
+				$this->state = 'OK';
+			}
+
+			// On escape, store char and restore previous state
+			if ($this->state == 'ESC')
+			{
+				$char = $this->next();
+				$escapable = array('\\', "'", '"');
+
+				if ( ! in_array($char, $escapable))
+				{
+					$this->buffer .= '\\';
+				}
+
+				$this->state = $old_state; // pretend nothing happened
+			}
+
+			// Hitting the end of a string must mean we're back to an OK
+			// state, so store the string in a variable and reset
+			if ($this->state == 'EOS')
+			{
+				$this->addBufferAsToken('STRING');
+				$this->state = 'OK';
+				continue; // do not put trailing quotes in the buffer
+			}
+
+			// END Events
+
+			// Handle buffers
+			if (($this->state == 'SS' || $this->state == 'SD') && $this->state != $old_state)
+			{
+				// reset the buffer if we're starting a string
+				$this->addBufferAsToken('MISC');
+
+				// if we're in a tag we need to keep quotes
+				if (end($this->stack) == 'TAG')
+				{
+					$this->buffer = ($this->state == 'SS') ? "'" : '"';
+				}
+			}
+			else
+			{
+				$this->buffer .= $char;
+			}
 		}
 
-		$this->addToken('TEMPLATE_STRING', $this->str);
-		$this->addToken('EOS', TRUE);
+		// Not in an end state, or curly braces are unbalanced, "error" out
+		if ($this->state != 'END' || $curlies != 0)
+		{
+			throw new ConditionalLexerException('Conditional is invalid: not in an end state or unbalanced curly braces. State is '.$this->state.'. Curly count is '.$curlies.'.');
+		}
 
-		return $this->tokens;
+		// Handle any buffer contents from before we hit the closing brace
+		if ($this->buffer != '')
+		{
+			$this->addTokenByState($old_state);
+		}
+
+		$this->addToken('ENDCOND', '}');
 	}
 
 	/*
@@ -644,6 +590,104 @@ class ConditionalLexer extends AbstractLexer {
 		}
 
 		$this->addToken($token_type, $value);
+	}
+
+
+	/**
+	 * Add token to the token stream using the current buffer
+	 * as the value.
+	 *
+	 * @param string $type The type of token being added
+	 */
+	private function addBufferAsToken($type)
+	{
+		$this->addToken($type, $this->buffer);
+	}
+
+	private function tokenizeIfTags()
+	{
+		// if we hit a closing if, we need to deal with that
+		if ($this->peek(5) == '{/if}')
+		{
+			$this->addToken('ENDIF', $this->move(5));
+			return FALSE;
+		}
+
+		// potential opening ifs
+		$potential_if = trim($this->peekRegex('{if(:else(\s?}|if\s)|\s)'));
+
+		$parts = array(
+			'{if'			=> 'IF',
+			'{if:elseif'	=> 'ELSEIF',
+			'{if:else}'		=> 'ELSE'
+		);
+
+		if (isset($parts[$potential_if]))
+		{
+			$token = $parts[$potential_if];
+
+			$this->addToken(
+				$token,
+				$this->move(strlen($potential_if))
+			);
+
+			return ($token !== 'ELSE');
+		}
+
+		// {if: is a reserved prefix
+		if ($this->peek(4) == '{if:')
+		{
+			throw new ConditionalLexerException('Conditional is invalid: "{if:" is reserverd for conditionals. Found: ' . $potential_if);
+		}
+
+		$this->addToken('TEMPLATE_STRING', $this->next());
+		return FALSE;
+	}
+
+	private function handleOperators($char, $char_class, $old_state)
+	{
+		// Check for operators
+		if ( ! in_array($char_class, $this->symbols))
+		{
+			return FALSE;
+		}
+
+		$this->addTokenByState($old_state);
+
+		$operator_buffer = $char;
+
+		// Consume the array until we stop seeing operator stuff
+		while (in_array($this->charClass($this->peek()), $this->symbols))
+		{
+			$operator_buffer .= $this->next();
+		}
+
+		// Check for any trailing - meant to indicate negativity
+		// but only if it is trailing and not standalone, a -
+		// on its own is subtraction
+		if (strlen($operator_buffer) > 1)
+		{
+			$last_char_class = $this->charClass(substr($operator_buffer, -1));
+			if ($last_char_class == 'C_MINUS' || $last_char_class == 'C_POINT')
+			{
+				if ($this->charClass($this->peek()) == 'C_DIGIT')
+				{
+					$this->str = substr($operator_buffer, -1).$this->str; // Put it back.
+					$operator_buffer = substr($operator_buffer, 0, -1);
+				}
+			}
+		}
+
+		if (in_array($operator_buffer, $this->operators))
+		{
+			$this->addToken('OPERATOR', $operator_buffer);
+		}
+		else
+		{
+			$this->addToken('MISC', $operator_buffer);
+		}
+
+		return TRUE;
 	}
 }
 
