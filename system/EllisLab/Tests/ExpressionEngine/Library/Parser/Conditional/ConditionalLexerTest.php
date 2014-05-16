@@ -7,17 +7,20 @@ use EllisLab\ExpressionEngine\Library\Parser\Conditional\ConditionalLexer;
 class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 
 	protected $valueTypes = array(
-		'bool'			=> array('token' => array('BOOL', 'TRUE'),				'value' => 'TRUE'),
-		'int'			=> array('token' => array('NUMBER', '5'),				'value' => 5),
-		'negative'		=> array('token' => array('NUMBER', '-5'),				'value' => -5),
-		'bigfloat'		=> array('token' => array('NUMBER', '5.1'),				'value' => 5.1),
-		'littlefloat'	=> array('token' => array('NUMBER', '.1'),				'value' => .1),
-		'string'		=> array('token' => array('STRING', 'string'),			'value' => '"string"'),
-		'dash-string'	=> array('token' => array('STRING', 'dash-string'),		'value' => '"dash-string"'),
-		'dot.string'	=> array('token' => array('STRING', 'dot.string'),		'value' => '"dot.string"'),
-		'intstring'		=> array('token' => array('STRING', '5'),				'value' => '"5"'),
-		'variable'		=> array('token' => array('VARIABLE', 'variable'),		'value' => 'variable'),
-		'dash-variable'	=> array('token' => array('VARIABLE', 'dash-variable'),	'value' => 'dash-variable'),
+		'bool'				=> array('token' => array('BOOL', 'TRUE'),							'value' => 'TRUE'),
+		'int'				=> array('token' => array('NUMBER', '5'),							'value' => 5),
+		'negative'			=> array('token' => array('NUMBER', '-5'),							'value' => -5),
+		'bigfloat'			=> array('token' => array('NUMBER', '5.1'),							'value' => 5.1),
+		'littlefloat'		=> array('token' => array('NUMBER', '.1'),							'value' => .1),
+		'string'			=> array('token' => array('STRING', 'string'),						'value' => '"string"'),
+		'dash-string'		=> array('token' => array('STRING', 'dash-string'),					'value' => '"dash-string"'),
+		'dot.string'		=> array('token' => array('STRING', 'dot.string'),					'value' => '"dot.string"'),
+		'intstring'			=> array('token' => array('STRING', '5'),							'value' => '"5"'),
+		'variable'			=> array('token' => array('VARIABLE', 'variable'),					'value' => 'variable'),
+		'dash-variable'		=> array('token' => array('VARIABLE', 'dash-variable'),				'value' => 'dash-variable'),
+		'simpletag'			=> array('token' => array('TAG', '{simpletag}'),					'value' => '{simpletag}'),
+		'moduletag'			=> array('token' => array('TAG', '{exp:foo:bar}'),					'value' => '{exp:foo:bar}'),
+		'tag_with_params'	=> array('token' => array('TAG', '{exp:foo:bar param="value"}'),	'value' => '{exp:foo:bar param="value"}'),
 	);
 
 	public function setUp()
