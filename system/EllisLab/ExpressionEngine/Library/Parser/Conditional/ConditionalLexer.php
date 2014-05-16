@@ -219,7 +219,7 @@ class ConditionalLexer extends AbstractLexer {
 		while ($this->str != '')
 		{
 			// go to the next LD/RD
-			$this->buffer = $this->seekTo('{}');
+			$this->buffer = $this->seekTo('{');
 
 			// anything we hit in the meantime is template string
 			$this->addToken('TEMPLATE_STRING', $this->buffer);
