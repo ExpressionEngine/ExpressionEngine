@@ -40,6 +40,11 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 		$this->lexer = new ConditionalLexer();
 	}
 
+	public function tearDown()
+	{
+		$this->lexer = NULL;
+	}
+
 	protected function runLexer($description, $str_in, $expected)
 	{
 		$result = $this->lexer->tokenize($str_in);
@@ -74,7 +79,8 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 		return array_merge(
 			array(),
 			$this->validOperatorsWithSpaces(),
-			$this->validOperatorsWithoutSpaces()
+			$this->validOperatorsWithoutSpaces(),
+			$this->invalidOperatorsWithSpaces()
 		);
 	}
 
@@ -231,4 +237,77 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 
 		return $return;
 	}
+
+	protected function invalidOperatorsWithSpaces()
+	{
+		$return = array();
+
+		$valid_operators = array(
+			'||', '&&', '**',
+			'==', '!=', '<=', '>=', '<>', '<', '>',
+			'%', '+', '-', '*', '/',
+			'.', '!', '^'
+		);
+
+		// Manual invalid operator assignments
+		$invalid_operators = array(
+			'===', '!=='
+		);
+
+		$edge_cases = array();
+
+		// Build out some combinations
+		foreach ($valid_operators as $first)
+		{
+			foreach ($valid_operators as $second)
+			{
+				$operator = $first.$second;
+
+				if (in_array($operator, $valid_operators))
+				{
+					continue;
+				}
+
+				// We'll be handling these edge cases later
+				if ($second == '.' || $second == '-')
+				{
+					$edge_cases[] = $operator;
+				}
+				else
+				{
+					$invalid_operators[] = $operator;
+				}
+			}
+		}
+
+		$invalid_operators = array_unique($invalid_operators);
+		$edge_cases = array_unique($edge_cases);
+
+		foreach ($invalid_operators as $operator)
+		{
+			// Testing our common value types for edge-cases.
+			// We don't need to care about permutations here just combinations
+			// because we need to ensure that these value types are found
+			// on both sides of an operator.
+			foreach ($this->valueTypes as $type => $value)
+			{
+				$expected = array(
+					$value['token'],
+					array('WHITESPACE',	' '),
+					array('MISC',	$operator),
+					array('WHITESPACE',	' '),
+					$value['token']
+				);
+
+				$return[] = array(
+					"The \"{$operator}\" operator with {$type} values",
+					$this->assembleCommonCondition($value['value']." ".$operator." ".$value['value']),
+					$this->assembleCommonTokens($expected)
+				);
+			}
+		}
+
+		return $return;
+	}
+
 }
