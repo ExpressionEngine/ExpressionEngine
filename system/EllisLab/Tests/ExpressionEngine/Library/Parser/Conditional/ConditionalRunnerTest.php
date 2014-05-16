@@ -11,6 +11,11 @@ class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 		$this->runner = new ConditionalRunner();
 	}
 
+	public function tearDown()
+	{
+		$this->runner = NULL;
+	}
+
 	protected function runCondition($description, $str_in, $expected, $vars = array())
 	{
 		$result = $this->runner->processConditionals($str_in, $vars);

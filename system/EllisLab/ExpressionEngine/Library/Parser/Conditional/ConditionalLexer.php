@@ -35,9 +35,20 @@ class ConditionalLexer extends AbstractLexer {
 	 */
 	private $tokens;
 
-	private $buffer = '';
+	/**
+	 * The state stack
+	 */
+	private $stack;
 
+	/**
+	 * The current state / top of the stack
+	 */
 	private $state = '';
+
+	/**
+	 * The current running buffer
+	 */
+	private $buffer = '';
 
 	/**
 	 * Available tokens
@@ -151,7 +162,7 @@ class ConditionalLexer extends AbstractLexer {
 		$this->str = $str;
 		$this->tokens = array();
 
-		$this->stack = array('OK');
+		$this->pushState('OK');
 
 		while ($this->str != '')
 		{
@@ -175,6 +186,57 @@ class ConditionalLexer extends AbstractLexer {
 		return $this->tokens;
 	}
 
+	/**
+	 * Finds tokens specific to conditional boolean statements.
+	 *
+	 * @param $str The template chunk to look through
+	 * @return Array [new chunk, new variables]
+	 */
+	private function tokenizeIfTags()
+	{
+		// if we hit a closing if, we need to deal with that
+		if ($this->peek(5) == '{/if}')
+		{
+			$this->addToken('ENDIF', $this->move(5));
+			return FALSE;
+		}
+
+		// potential opening ifs
+		$potential_if = $this->peekRegex('{if(:else(\s?}|if\s)|\s)');
+		$trimmed_if = trim($potential_if);
+
+		$parts = array(
+			'{if'			=> 'IF',
+			'{if:elseif'	=> 'ELSEIF',
+			'{if:else}'		=> 'ELSE'
+		);
+
+		if (isset($parts[$trimmed_if]))
+		{
+			$token = $parts[$trimmed_if];
+
+			$this->addToken(
+				$token,
+				$this->move(strlen($potential_if))
+			);
+
+			return ($token !== 'ELSE');
+		}
+
+		// {if: is a reserved prefix
+		if ($this->peek(4) == '{if:')
+		{
+			throw new ConditionalLexerException('Conditional is invalid: "{if:" is reserverd for conditionals. Found: ' . $potential_if);
+		}
+
+		$this->addToken('TEMPLATE_STRING', $this->next());
+		return FALSE;
+	}
+
+	/**
+	 * Finds tokens specific to conditional boolean statements.
+	 *
+	 */
 	private function tokenizeIfStatement()
 	{
 		// We use a finite state machine to walk through
@@ -397,18 +459,17 @@ class ConditionalLexer extends AbstractLexer {
 			// Checking for balanced curly braces
 			if ($this->state == 'RD')
 			{
-				if ($curlies == 0)
+				$this->popState();
+				$top = $this->topState();
+
+				$this->state = 'OK';
+
+				if ($top === FALSE)
 				{
 					$this->state = 'END';
 					break;
 				}
-
-				$curlies--;
-				$this->state = 'OK';
-
-				array_pop($this->stack);
-
-				if (end($this->stack) == 'OK')
+				elseif ($top == 'OK')
 				{
 					$this->addToken('TAG', $this->tag_buffer.$this->buffer.$char);
 					$this->tag_buffer = '';
@@ -418,14 +479,12 @@ class ConditionalLexer extends AbstractLexer {
 
 			if ($this->state == 'LD')
 			{
-				$curlies++;
-
-				if (end($this->stack) != 'TAG')
+				if ($this->topState() != 'TAG')
 				{
 					$this->tag_buffer = '';
 				}
 
-				$this->stack[] = 'TAG';
+				$this->pushState('TAG');
 				$this->state = 'OK';
 			}
 
@@ -461,7 +520,7 @@ class ConditionalLexer extends AbstractLexer {
 				$this->addBufferAsToken('MISC');
 
 				// if we're in a tag we need to keep quotes
-				if (end($this->stack) == 'TAG')
+				if ($this->topState() == 'TAG')
 				{
 					$this->buffer = ($this->state == 'SS') ? "'" : '"';
 				}
@@ -505,7 +564,7 @@ class ConditionalLexer extends AbstractLexer {
 	{
 		$this->buffer = '';
 
-		if (end($this->stack) == 'TAG')
+		if ($this->topState() == 'TAG')
 		{
 			// if we're in a tag we need to keep quotes
 			if ($type == 'STRING')
@@ -604,44 +663,26 @@ class ConditionalLexer extends AbstractLexer {
 		$this->addToken($type, $this->buffer);
 	}
 
-	private function tokenizeIfTags()
+	private function pushState($state)
 	{
-		// if we hit a closing if, we need to deal with that
-		if ($this->peek(5) == '{/if}')
+		$this->stack[] = $state;
+	}
+
+	private function popState($expected = NULL)
+	{
+		$popped = array_pop($this->stack);
+
+		if (isset($expected) && $popped != $expected)
 		{
-			$this->addToken('ENDIF', $this->move(5));
-			return FALSE;
+			throw new ConditionalLexerException('Conditional is invalid: Unexpected stack state '.$popped.', expected '.$expected.'.');
 		}
 
-		// potential opening ifs
-		$potential_if = trim($this->peekRegex('{if(:else(\s?}|if\s)|\s)'));
+		return $this->topState();
+	}
 
-		$parts = array(
-			'{if'			=> 'IF',
-			'{if:elseif'	=> 'ELSEIF',
-			'{if:else}'		=> 'ELSE'
-		);
-
-		if (isset($parts[$potential_if]))
-		{
-			$token = $parts[$potential_if];
-
-			$this->addToken(
-				$token,
-				$this->move(strlen($potential_if))
-			);
-
-			return ($token !== 'ELSE');
-		}
-
-		// {if: is a reserved prefix
-		if ($this->peek(4) == '{if:')
-		{
-			throw new ConditionalLexerException('Conditional is invalid: "{if:" is reserverd for conditionals. Found: ' . $potential_if);
-		}
-
-		$this->addToken('TEMPLATE_STRING', $this->next());
-		return FALSE;
+	private function topState()
+	{
+		return end($this->stack);
 	}
 
 	private function handleOperators($char, $char_class, $old_state)
