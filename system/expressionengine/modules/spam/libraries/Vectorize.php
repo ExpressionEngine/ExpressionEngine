@@ -37,8 +37,9 @@ class Collection {
 	public $documents = array();
 	public $vocabulary = array();
 	public $vectorizers = array();
-	public $corpus = "";
 	public $idf_lookup = array();
+	public $corpus = "";
+	public $limit = 1000;
 	
 	/**
 	 * Get our corpus ready. First we strip out all common words specified in our stop word list,
@@ -49,8 +50,9 @@ class Collection {
 	 * @param array $stop_words
 	 * @return void
 	 */
-	public function __construct($source, $stop_words = array())
+	public function __construct($source, $stop_words = array(), $limit = 1000)
 	{
+		$this->time_pre = microtime(true);
 		// register our vectorizer rules
 		$this->register('ASCII_Printable');
 		$this->register('Entropy');
@@ -58,6 +60,7 @@ class Collection {
 		$this->register('Punctuation');
 		$this->register('Spaces');
 
+		$this->limit = $limit;
 		$this->stop_words = $stop_words;
 
 		foreach ($stop_words as $key => $word)
@@ -91,6 +94,9 @@ class Collection {
 
 		$this->document_count = count($this->documents);
 		$this->corpus = new Document($this->corpus);
+
+		arsort($this->vocabulary);
+		$this->vocabulary = array_slice($this->vocabulary, 0, $this->limit);
 
 		// Create a lookup table of IDFs for our vocabulary
 		$tfidf_row = array();
@@ -213,9 +219,12 @@ class Collection {
 		
 		foreach ($source as $term => $freq)
 		{
-			$tf = $this->term_frequency($source, $term);
-			$idf = $this->inverse_document_frequency($term);
-			$vector[$this->vocabulary_index[$term]] = $tf * $idf;
+			if ( ! empty($this->vocabulary[$term]))
+			{
+				$tf = $this->term_frequency($source, $term);
+				$idf = $this->inverse_document_frequency($term);
+				$vector[$this->vocabulary_index[$term]] = $tf * $idf;
+			}
 		}
 
 		return $vector;
