@@ -93,7 +93,7 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			'||', '&&', '**',
 			'==', '!=', '<=', '>=', '<>', '<', '>',
 			'%', '+', '-', '*', '/',
-			'.', '!', '^'
+			'!', '^'
 		);
 
 		foreach ($operators as $operator)
@@ -105,6 +105,21 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 				$expected
 			);
 		}
+
+		// The '.' "operator"
+		$operator = '.';
+		$return[] = array(
+			"{$operator} Operator",
+			"{if 5{$operator}7}out{/if}",
+			array(
+				array('IF',					'{if '),
+				array('NUMBER',				'5.7'),
+				array('ENDCOND',			'}'),
+				array('TEMPLATE_STRING',	'out'),
+				array('ENDIF',				'{/if}'),
+				array('EOS',				TRUE)
+			)
+		);
 
 		return $return;
 	}
