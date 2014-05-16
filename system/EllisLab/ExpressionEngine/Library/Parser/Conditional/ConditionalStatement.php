@@ -94,7 +94,7 @@ class ConditionalStatement {
 			// alternative for the next pass
 			if ( ! $this->all_previous_could_eval && $result == TRUE)
 			{
-				$this->outputCondition('TRUE');
+				$this->parser->output('{if:else}');
 			}
 		}
 		else
