@@ -117,8 +117,8 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 		$operators = array(
 			'||', '&&', '**',
 			'==', '!=', '<=', '>=', '<>', '<', '>',
-			'%', '+', '*', '/',
-			'!', '^'
+			'%', '+', '-', '*', '/',
+			'.', '!', '^'
 		);
 
 		// Test each operator (duh)
@@ -130,6 +130,22 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			// on both sides of an operator.
 			foreach ($this->valueTypes as $type => $value)
 			{
+				// Some exceptions for exceptional operators
+				if ($operator == '-')
+				{
+					if ($type == 'bool' || $type == 'negative' || $type == 'variable' || $type == 'dash-variable')
+					{
+						continue;
+					}
+				}
+				elseif ($operator == '.')
+				{
+					if ($type == 'int' || $type == 'bigfloat' || $type == 'littlefloat')
+					{
+						continue;
+					}
+				}
+
 				$expected[1] = $value['token'];
 				$expected[2][1] = $operator;
 				$expected[3] = $value['token'];
@@ -142,20 +158,8 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 		}
 
 		// Manual tests for the '.' operator
-		// TODO: build all the tests....
+		// TODO: build all the tests.... (need int.negative and negative.int)
 		$operator = '.';
-		$return[] = array(
-			"{$operator} Operator",
-			"{if 5{$operator}7}out{/if}",
-			array(
-				array('IF',					'{if '),
-				array('NUMBER',				'5.7'),
-				array('ENDCOND',			'}'),
-				array('TEMPLATE_STRING',	'out'),
-				array('ENDIF',				'{/if}'),
-				array('EOS',				TRUE)
-			)
-		);
 
 		// Manual tests for the '.' operator
 		// TODO: build all the tests....
