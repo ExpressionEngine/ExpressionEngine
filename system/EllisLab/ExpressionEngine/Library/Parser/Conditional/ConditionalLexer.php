@@ -219,10 +219,10 @@ class ConditionalLexer extends AbstractLexer {
 		while ($this->str != '')
 		{
 			// go to the next LD/RD
-			$buffer = $this->seekTo('{}');
+			$this->buffer = $this->seekTo('{}');
 
 			// anything we hit in the meantime is template string
-			$this->addToken('TEMPLATE_STRING', $buffer);
+			$this->addToken('TEMPLATE_STRING', $this->buffer);
 
 			// handle closing if's
 			if ($this->peek(5) == '{/if}')
@@ -262,7 +262,7 @@ class ConditionalLexer extends AbstractLexer {
 				throw new ConditionalLexerException('Conditional is invalid: missing a "{/if}".');
 			}
 
-			$buffer  = '';
+			$this->buffer  = '';
 			$state   = 'OK';
 			$curlies = 0;
 
@@ -288,8 +288,7 @@ class ConditionalLexer extends AbstractLexer {
 					// Tokenize parenthesis
 					if ($char_class == 'C_LPAREN')
 					{
-						$this->addTokenByState($old_state, $buffer);
-						$buffer = '';
+						$this->addTokenByState($old_state, $this->buffer);
 						$state = 'OK';
 
 						$this->addToken('LP', '(');
@@ -297,8 +296,7 @@ class ConditionalLexer extends AbstractLexer {
 					}
 					elseif ($char_class == 'C_RPAREN')
 					{
-						$this->addTokenByState($old_state, $buffer);
-						$buffer = '';
+						$this->addTokenByState($old_state, $this->buffer);
 						$state = 'OK';
 
 						$this->addToken('RP', ')');
@@ -308,17 +306,16 @@ class ConditionalLexer extends AbstractLexer {
 					// Consume and tokenize whitespace
 					if ($char_class == 'C_WHITE')
 					{
-						$this->addTokenByState($old_state, $buffer);
-						$buffer = $char;
+						$this->addTokenByState($old_state, $this->buffer);
+						$this->buffer = $char;
 
 						while ($this->charClass($this->peek()) == 'C_WHITE')
 						{
-							$buffer .= $this->next();
+							$this->buffer .= $this->next();
 						}
 
-						$this->addToken('WHITESPACE', $buffer);
+						$this->addToken('WHITESPACE', $this->buffer);
 
-						$buffer = '';
 						$state = 'OK';
 						continue;
 					}
@@ -334,7 +331,7 @@ class ConditionalLexer extends AbstractLexer {
 
 				if ($state == 'ERR')
 				{
-					throw new ConditionalLexerException('In an ERROR state. Buffer: '.$buffer.$char);
+					throw new ConditionalLexerException('In an ERROR state. Buffer: '.$this->buffer.$char);
 				}
 
 				// Manually handle "int-alpha" variables and negative numbers
@@ -361,9 +358,8 @@ class ConditionalLexer extends AbstractLexer {
 				{
 					if ($old_state != 'VAR' && $old_state != 'NUM' && $old_state != 'FLOAT')
 					{
-						$token_type = in_array($buffer, $this->operators) ? 'OPERATOR' : 'MISC';
-						$this->addToken($token_type, $buffer);
-						$buffer = '';
+						$token_type = in_array($this->buffer, $this->operators) ? 'OPERATOR' : 'MISC';
+						$this->addToken($token_type, $this->buffer);
 					}
 
 					// Manually transition out of state and store the buffer
@@ -372,14 +368,13 @@ class ConditionalLexer extends AbstractLexer {
 					{
 						if ($state == 'VAR')
 						{
-							$this->addToken('VARIABLE', $buffer);
+							$this->addToken('VARIABLE', $this->buffer);
 						}
 						else
 						{
-							$this->addToken('NUMBER', $buffer);
+							$this->addToken('NUMBER', $this->buffer);
 						}
 
-						$buffer = '';
 						$state = 'OK';
 					}
 				}
@@ -404,8 +399,7 @@ class ConditionalLexer extends AbstractLexer {
 					// Check for operators
 					if (in_array($char_class, $this->symbols))
 					{
-						$this->addTokenByState($old_state, $buffer);
-						$buffer = '';
+						$this->addTokenByState($old_state, $this->buffer);
 
 						$operator_buffer = $char;
 						// Consume the array until we stop seeing operator stuff
@@ -459,9 +453,8 @@ class ConditionalLexer extends AbstractLexer {
 
 					if (end($this->stack) == 'OK')
 					{
-						$this->addToken('TAG', $this->tag_buffer.$buffer.$char);
+						$this->addToken('TAG', $this->tag_buffer.$this->buffer.$char);
 						$this->tag_buffer = '';
-						$buffer = '';
 						continue;
 					}
 				}
@@ -486,7 +479,7 @@ class ConditionalLexer extends AbstractLexer {
 
 					if ( ! in_array($char, $escapable))
 					{
-						$buffer .= '\\';
+						$this->buffer .= '\\';
 					}
 
 					$state = $old_state; // pretend nothing happened
@@ -496,10 +489,9 @@ class ConditionalLexer extends AbstractLexer {
 				// state, so store the string in a variable and reset
 				elseif ($state == 'EOS')
 				{
-					$this->addToken('STRING', $buffer);
+					$this->addToken('STRING', $this->buffer);
 
 					$state = 'OK';
-					$buffer = '';
 					continue; // do not put trailing quotes in the buffer
 				}
 
@@ -509,18 +501,17 @@ class ConditionalLexer extends AbstractLexer {
 				if (($state == 'SS' || $state == 'SD') && $state != $old_state)
 				{
 					// reset the buffer if we're starting a string
-					$this->addToken('MISC', $buffer);
-					$buffer = '';
+					$this->addToken('MISC', $this->buffer);
 
 					// if we're in a tag we need to keep quotes
 					if (end($this->stack) == 'TAG')
 					{
-						$buffer = ($state == 'SS') ? "'" : '"';
+						$this->buffer = ($state == 'SS') ? "'" : '"';
 					}
 				}
 				else
 				{
-					$buffer .= $char;
+					$this->buffer .= $char;
 				}
 			}
 
@@ -531,9 +522,9 @@ class ConditionalLexer extends AbstractLexer {
 			}
 
 			// Handle any buffer contents from before we hit the closing brace
-			if ($buffer != '')
+			if ($this->buffer != '')
 			{
-				$this->addTokenByState($old_state, $buffer);
+				$this->addTokenByState($old_state, $this->buffer);
 			}
 
 			$this->addToken('ENDCOND', '}');
@@ -562,6 +553,8 @@ class ConditionalLexer extends AbstractLexer {
 	 */
 	public function addToken($type, $value)
 	{
+		$this->buffer = '';
+
 		if (end($this->stack) == 'TAG')
 		{
 			// if we're in a tag we need to keep quotes
