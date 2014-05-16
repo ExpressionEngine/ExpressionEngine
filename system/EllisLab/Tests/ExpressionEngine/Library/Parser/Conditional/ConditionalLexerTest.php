@@ -133,7 +133,7 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 				// Some exceptions for exceptional operators
 				if ($operator == '-')
 				{
-					if ($type == 'bool' || $type == 'negative' || $type == 'variable' || $type == 'dash-variable')
+					if ($type == 'bool' || $type == 'variable' || $type == 'dash-variable')
 					{
 						continue;
 					}
@@ -157,13 +157,82 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			}
 		}
 
-		// Manual tests for the '.' operator
-		// TODO: build all the tests.... (need int.negative and negative.int)
+		// Manual tests for the '.' operator's exceptions
 		$operator = '.';
 
-		// Manual tests for the '.' operator
-		// TODO: build all the tests....
+		// int.int -> NUMBER
+		$value = $this->valueTypes['int']['value'];
+		$return[] = array(
+			"The \"{$operator}\" operator with int values",
+			"{if {$value}{$operator}{$value}}out{/if}",
+			array(
+				array('IF',					'{if '),
+				array('NUMBER',				$value.'.'.$value),
+				array('ENDCOND',			'}'),
+				array('TEMPLATE_STRING',	'out'),
+				array('ENDIF',				'{/if}'),
+				array('EOS',				TRUE)
+			)
+		);
+
+		// int.negative -> OPERATOR
+		$int = $this->valueTypes['int'];
+		$negative = $this->valueTypes['negative'];
+		$return[] = array(
+			"The \"{$operator}\" operator with int and negative values",
+			"{if {$int['value']}{$operator}{$negative['value']}}out{/if}",
+			array(
+				array('IF',					'{if '),
+				$int['token'],
+				array('OPERATOR',			'.'),
+				$negative['token'],
+				array('ENDCOND',			'}'),
+				array('TEMPLATE_STRING',	'out'),
+				array('ENDIF',				'{/if}'),
+				array('EOS',				TRUE)
+			)
+		);
+
+		// negative.int -> NUMBER
+		$int = $this->valueTypes['int'];
+		$negative = $this->valueTypes['negative'];
+		$return[] = array(
+			"The \"{$operator}\" operator with int and negative values",
+			"{if {$negative['value']}{$operator}{$int['value']}}out{/if}",
+			array(
+				array('IF',					'{if '),
+				array('NUMBER',				$negative['value'].'.'.$int['value']),
+				array('ENDCOND',			'}'),
+				array('TEMPLATE_STRING',	'out'),
+				array('ENDIF',				'{/if}'),
+				array('EOS',				TRUE)
+			)
+		);
+
+		// *float.* -> EXCEPTION (this is covered in our exceptions test)
+
+		// Manual tests for the '-' operator's exceptions
 		$operator = '-';
+
+		// bool-bool -> variable
+		// variable-variable -> variable
+		// dash-variable-dash-variable -> variable
+		foreach (array('bool', 'variable', 'dash-variable') as $type)
+		{
+			$value = $this->valueTypes[$type]['value'];
+			$return[] = array(
+				"The \"{$operator}\" operator with {$type} values",
+				"{if {$value}{$operator}{$value}}out{/if}",
+				array(
+					array('IF',					'{if '),
+					array('VARIABLE',			$value.'-'.$value),
+					array('ENDCOND',			'}'),
+					array('TEMPLATE_STRING',	'out'),
+					array('ENDIF',				'{/if}'),
+					array('EOS',				TRUE)
+				)
+			);
+		}
 
 		return $return;
 	}
