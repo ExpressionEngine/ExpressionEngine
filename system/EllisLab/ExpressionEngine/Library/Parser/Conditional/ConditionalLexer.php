@@ -415,13 +415,18 @@ class ConditionalLexer extends AbstractLexer {
 						}
 
 						// Check for any trailing - meant to indicate negativity
-						$last_char_class = $this->charClass(substr($operator_buffer, -1));
-						if ($last_char_class == 'C_MINUS' || $last_char_class == 'C_POINT')
+						// but only if it is trailing and not standalone, a -
+						// on its own is subtraction
+						if (strlen($operator_buffer) > 1)
 						{
-							if ($this->charClass($this->peek()) == 'C_DIGIT')
+							$last_char_class = $this->charClass(substr($operator_buffer, -1));
+							if ($last_char_class == 'C_MINUS' || $last_char_class == 'C_POINT')
 							{
-								$this->str = substr($operator_buffer, -1).$this->str; // Put it back.
-								$operator_buffer = substr($operator_buffer, 0, -1);
+								if ($this->charClass($this->peek()) == 'C_DIGIT')
+								{
+									$this->str = substr($operator_buffer, -1).$this->str; // Put it back.
+									$operator_buffer = substr($operator_buffer, 0, -1);
+								}
 							}
 						}
 
