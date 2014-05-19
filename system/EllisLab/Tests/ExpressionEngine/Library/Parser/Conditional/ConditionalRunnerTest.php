@@ -188,7 +188,6 @@ class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 	public function badDataProvider()
 	{
 		$parser_exception = 'EllisLab\ExpressionEngine\Library\Parser\Conditional\Exception\ConditionalParserException';
-		$lexer_exception = 'EllisLab\ExpressionEngine\Library\Parser\Conditional\Exception\ConditionalLexerException';
 
 		return array(
 			array($parser_exception, 'Simple Backticks',				'{if `echo hello`}out{/if}'),
@@ -197,20 +196,6 @@ class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 			array($parser_exception, 'Comment Looks Like Math',			'{if 7 /* 5 }out{/if}'),
 			array($parser_exception, 'Inline Comment Looks Like Math',	'{if 7 // 5 }out{/if}'),
 			array($parser_exception, 'Splitting Comments',				'{if string /* == 5 }out{/if}{if */phpinfo(); == 5}out{/if}'),
-			array($lexer_exception,  'Unclosed String (single quotes)', "{if string == 'ee}out{/if}"),
-			array($lexer_exception,  'Unclosed String (double quotes)', '{if string == "ee}out{/if}'),
-			array($lexer_exception,  'Unclosed Conditional', 			'{if string == "ee"}out'),
-			array($lexer_exception,  'Unterminated Conditional', 		'{if string == "ee"out{/if}'),
-			array($lexer_exception,  'If as a Prefix', 					'{if:foo}'),
-			array($lexer_exception,  'Ifelse duplicity', 				'{if 5 == 5}out{if:else:else}out{/if}'),
-			array($lexer_exception,  'Ifelse Prefixing', 				'{if 5 == 5}out{if:elsebeth}out{/if}'),
-			array($lexer_exception,  'Ifelseif Prefixing', 				'{if 5 == 5}out{if:elseiffy}out{/if}'),
-			array($lexer_exception,  'NUMBER + :', 						'{if 1:2}out{/if}'),
-			array($lexer_exception,  'OK + :',	 						'{if :foo}out{/if}'),
-			array($lexer_exception,  'OK + :',	 						'{if "foo":bar}out{/if}'),
-			array($lexer_exception,  'OK + :',	 						"{if 'foo':bar}out{/if}"),
-			array($lexer_exception,  'FLOAT + .', 						'{if 1.2.3}out{/if}'),
-			array($lexer_exception,  'FLOAT + :', 						'{if 1.2:3}out{/if}'),
 		);
 	}
 

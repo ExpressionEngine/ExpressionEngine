@@ -59,6 +59,15 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 		$this->runLexer($description, $str_in, $expected);
 	}
 
+	/**
+	 * @dataProvider badDataProvider
+	 */
+	public function testBadDataProvider($description, $str_in, $code)
+	{
+		$this->setExpectedException('EllisLab\ExpressionEngine\Library\Parser\Conditional\Exception\ConditionalLexerException', $code);
+		$this->lexer->tokenize($str_in);
+	}
+
 	protected function assembleCommonCondition($expression)
 	{
 		return "{if ".$expression."}out{/if}";
@@ -85,6 +94,27 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			$this->edgyInvalidOperatorsWithoutSpaces()
 		);
 	}
+
+	public function badDataProvider()
+	{
+		return array(
+			array('Unclosed String (single quotes)',	"{if string == 'ee}out{/if}", 30),
+			array('Unclosed String (double quotes)',	'{if string == "ee}out{/if}', 30),
+			array('Unclosed Conditional', 				'{if string == "ee"}out', 21),
+			array('Unterminated Conditional', 			'{if string == "ee"out{/if}', 30),
+			array('If as a Prefix', 					'{if:foo}', 20),
+			array('Ifelse duplicity', 					'{if 5 == 5}out{if:else:else}out{/if}', 20),
+			array('Ifelse Prefixing', 					'{if 5 == 5}out{if:elsebeth}out{/if}', 20),
+			array('Ifelseif Prefixing', 				'{if 5 == 5}out{if:elseiffy}out{/if}', 20),
+			array('NUMBER + :', 						'{if 1:2}out{/if}', 10),
+			array('OK + :',	 							'{if :foo}out{/if}', 10),
+			array('OK + :',	 							'{if "foo":bar}out{/if}', 10),
+			array('OK + :',	 							"{if 'foo':bar}out{/if}", 10),
+			array('FLOAT + .', 							'{if 1.2.3}out{/if}', 10),
+			array('FLOAT + :', 							'{if 1.2:3}out{/if}', 10),
+		);
+	}
+
 
 	protected function validOperatorsWithSpaces()
 	{
