@@ -303,6 +303,7 @@ class BooleanExpression {
 			'>' => array(20, self::NON_ASSOC),
 			'>=' => array(20, self::NON_ASSOC),
 
+			'<>' => array(10, self::NON_ASSOC),
 			'==' => array(10, self::NON_ASSOC),
 			'!=' => array(10, self::NON_ASSOC),
 
