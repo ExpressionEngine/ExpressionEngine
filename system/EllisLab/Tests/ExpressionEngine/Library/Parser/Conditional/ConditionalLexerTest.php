@@ -48,7 +48,7 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 	protected function runLexer($description, $str_in, $expected)
 	{
 		$result = $this->lexer->tokenize($str_in);
-		$this->assertEquals($expected, $result, $description);
+		$this->assertSame($expected, $result, $description);
 	}
 
 	/**
