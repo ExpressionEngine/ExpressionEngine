@@ -91,6 +91,10 @@ class BooleanExpression {
 			{
 				$str .= ' '.$token[1].' ';
 			}
+			elseif ($token[0] == 'BOOL')
+			{
+				$str .= $token[1] ? 'TRUE' : 'FALSE';
+			}
 			else
 			{
 				$str .= $token[1];
