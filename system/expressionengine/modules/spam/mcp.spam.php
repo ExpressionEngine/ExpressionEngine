@@ -39,6 +39,8 @@ class Spam_mcp {
 	{
 		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
+		ini_set('memory_limit', '16G');
+		set_time_limit(0);
 	}
 
 	/**
@@ -51,6 +53,56 @@ class Spam_mcp {
 	{
 		$data = array();
 		return ee()->load->view('index', $data, TRUE);
+	}
+
+	/**
+	 * Controller for running the testing
+	 * 
+	 * @access public
+	 * @return void
+	 */
+	public function test()
+	{
+		require_once PATH_MOD . 'spam/ext.spam.php';
+
+		$start_time = microtime(true);
+		$bayes = new Spam_ext();
+		$limit = 1000;
+
+		$this->EE->db->select('source, class');
+		$this->EE->db->from('spam_training');
+		$this->EE->db->order_by('RAND()');
+		$this->EE->db->limit($limit);
+		$query = ee()->db->get();
+
+		$data = array();
+		$negatives = 0;
+		$positives = 0;
+		$total = $query->num_rows();
+
+		foreach ($query->result() as $document)
+		{
+			$classification = (int) $bayes->classify($document->source);
+
+			if($classification > $document->class)
+			{
+				$positives++;
+			}
+
+			if($classification < $document->class)
+			{
+				$negatives++;
+			}
+		}
+
+		$data['accuracy'] = ($total - ($negatives + $positives)) / $total;
+		$data['total'] = $total;
+		$data['positives'] = $positives;
+		$data['negatives'] = $negatives;
+		$data['time'] = (microtime(true) - $start_time);
+		$data['per'] = $data['time'] / $total;
+
+		return ee()->load->view('test', $data, TRUE);
 	}
 
 	/**
@@ -72,12 +124,12 @@ class Spam_mcp {
 	 * @access private
 	 * @return array
 	 */
-	private function _get_training_data()
+	private function _get_training_data($limit = 1000)
 	{
 		$this->EE->db->select('source, class');
 		$this->EE->db->from('spam_training');
 		$this->EE->db->order_by('RAND()');
-		$this->EE->db->limit(1000);
+		$this->EE->db->limit($limit);
 		$query = ee()->db->get();
 
 		$sources = array();
@@ -170,10 +222,8 @@ class Spam_mcp {
 	 */
 	private function _train_parameters()
 	{
-		ini_set('memory_limit', '4G');
-		set_time_limit(0);
 		$stop_words = explode("\n", file_get_contents(PATH_MOD . $this->stop_words_path));
-		$training_data = $this->_get_training_data();
+		$training_data = $this->_get_training_data(5000);
 		$classes = $training_data[1];
 		$training_collection = new Collection($training_data[0], $stop_words);
 		$training_classes = array();

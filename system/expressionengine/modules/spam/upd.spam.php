@@ -78,7 +78,8 @@ class Spam_upd {
 		$fields = array(
 			'training_id'	=> array('type' => 'int', 'constraint' => '10', 'unsigned' => TRUE, 'auto_increment' => TRUE),
 			'source'		=> array('type' => 'text'),
-			'class'			=> array('type' => 'tinyint' , 'constraint' => '1'),
+			'type'			=> array('type' => 'varchar', 'constraint' => '32'),
+			'class'			=> array('type' => 'tinyint', 'constraint' => '1'),
 		);
 
 		ee()->dbforge->add_field($fields);
