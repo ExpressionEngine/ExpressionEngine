@@ -77,7 +77,7 @@ class Spam_mcp {
 		$this->EE->db->select('source, class');
 		$this->EE->db->from('spam_training');
 		$this->EE->db->order_by('RAND()');
-		$this->EE->db->limit(50);
+		$this->EE->db->limit(1000);
 		$query = ee()->db->get();
 
 		$sources = array();
@@ -201,8 +201,6 @@ class Spam_mcp {
 		{
 			$training_classes[$classes[$key]][] = $vector;
 		}
-		var_dump($training_classes);
-		die();
 
 		foreach ($training_classes as $class => $sources)
 		{
@@ -217,21 +215,20 @@ class Spam_mcp {
 				}
 			}
 
-		}
+			foreach ($zipped as $index => $feature)
+			{
+				// Zipped is now an array of values for a particular feature and 
+				// class. Time to do some estimates.
 
-		foreach ($zipped as $index => $feature)
-		{
-			// Zipped is now an array of values for a particular feature and 
-			// class. Time to do some estimates.
+				$sample = new Expectation($feature);
 
-			$sample = new Expectation($feature);
-
-			$training[] = array(
-				'class' => $class,
-				'term' => $index,
-				'mean' => $sample->mean,
-				'variance' => $sample->variance
-			);
+				$training[] = array(
+					'class' => $class,
+					'term' => $index,
+					'mean' => $sample->mean,
+					'variance' => $sample->variance
+				);
+			}
 		}
 
 		$this->EE->db->empty_table('spam_parameters'); 
