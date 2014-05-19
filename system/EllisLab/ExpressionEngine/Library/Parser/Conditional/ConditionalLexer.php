@@ -226,7 +226,7 @@ class ConditionalLexer extends AbstractLexer {
 		// {if: is a reserved prefix
 		if ($this->peek(4) == '{if:')
 		{
-			throw new ConditionalLexerException('Conditional is invalid: "{if:" is reserverd for conditionals. Found: ' . $potential_if);
+			throw new ConditionalLexerException('Conditional is invalid: "{if:" is reserverd for conditionals. Found: ' . $potential_if, 20);
 		}
 
 		$this->addToken('TEMPLATE_STRING', $this->next());
@@ -312,7 +312,7 @@ class ConditionalLexer extends AbstractLexer {
 		// No sense continuing if we cannot find a {/if}
 		if (strpos($this->str, '{/if}') === FALSE)
 		{
-			throw new ConditionalLexerException('Conditional is invalid: missing a "{/if}".');
+			throw new ConditionalLexerException('Conditional is invalid: missing a "{/if}".', 21);
 		}
 
 		// reset everything
@@ -385,7 +385,7 @@ class ConditionalLexer extends AbstractLexer {
 
 			if ($this->state == 'ERR')
 			{
-				throw new ConditionalLexerException('In an ERROR state. Buffer: '.$this->buffer.$char);
+				throw new ConditionalLexerException('In an ERROR state. Buffer: '.$this->buffer.$char, 10);
 			}
 
 			// Manually handle "int-alpha" variables and negative numbers
@@ -534,7 +534,7 @@ class ConditionalLexer extends AbstractLexer {
 		// Not in an end state, or curly braces are unbalanced, "error" out
 		if ($this->state != 'END' || $curlies != 0)
 		{
-			throw new ConditionalLexerException('Conditional is invalid: not in an end state or unbalanced curly braces. State is '.$this->state.'. Curly count is '.$curlies.'.');
+			throw new ConditionalLexerException('Conditional is invalid: not in an end state or unbalanced curly braces. State is '.$this->state.'. Curly count is '.$curlies.'.', 30);
 		}
 
 		// Handle any buffer contents from before we hit the closing brace
@@ -612,7 +612,7 @@ class ConditionalLexer extends AbstractLexer {
 	{
 		if ($char === FALSE || $char == '')
 		{
-			throw new ConditionalLexerException('No character given.');
+			throw new ConditionalLexerException('No character given.', 50);
 		}
 
 		// If it's an ascii character we get its name from the ascii
@@ -674,7 +674,7 @@ class ConditionalLexer extends AbstractLexer {
 
 		if (isset($expected) && $popped != $expected)
 		{
-			throw new ConditionalLexerException('Conditional is invalid: Unexpected stack state '.$popped.', expected '.$expected.'.');
+			throw new ConditionalLexerException('Conditional is invalid: Unexpected stack state '.$popped.', expected '.$expected.'.', 40);
 		}
 
 		return $this->topState();
