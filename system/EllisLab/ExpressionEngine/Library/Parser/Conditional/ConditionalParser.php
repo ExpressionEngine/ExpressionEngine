@@ -331,8 +331,8 @@ class ConditionalParser extends AbstractParser {
 		}
 		elseif ($this->safety === TRUE)
 		{
-			$value = FALSE;
-			$can_eval = TRUE;
+			$expression->add('BOOL', FALSE);
+			return;
 		}
 
 		$expression->add('VARIABLE', $value, $can_eval, $quote);
