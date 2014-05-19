@@ -35,9 +35,16 @@ class Entropy implements Vectorizer {
 	public function vectorize($source)
 	{
 		$length = mb_strlen($source);
-		$compressed = gzcompress($source);
-		$compressed_length = mb_strlen($compressed) - 8; // 8 bytes of gzip overhead
-		$ratio = $compressed_length / $length;
+
+		if ($length > 0)
+		{
+			$compressed = gzcompress($source);
+			$compressed_length = mb_strlen($compressed) - 8; // 8 bytes of gzip overhead
+			$ratio = $compressed_length / $length;
+		} else {
+			$ratio = 0;
+		}	
+
 		return $ratio;
 	}
 

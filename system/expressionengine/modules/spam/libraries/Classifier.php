@@ -32,7 +32,7 @@ class Classifier {
 	public $classes = array();
 
 	// Sensitivity of the classifier, are we at least X% sure this is spam?
-	public $sensitivity = .5;
+	public $sensitivity = .999;
 
 	// This is the assumed a priori spam to ham ratio
 	public $ratio = .8;
@@ -45,10 +45,9 @@ class Classifier {
 	 * @access public
 	 * @return void
 	 */
-	public function __construct($training, $vocabulary)
+	public function __construct($training, $vocabulary, $stop_words = array())
 	{
 		$this->classes = array_unique(array_keys($training));
-		$training = new Collection($training, $stop_words);
 		$this->corpus = $vocabulary;
 		$this->training = $training;
 	}

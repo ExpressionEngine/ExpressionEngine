@@ -34,10 +34,10 @@ class Spam_ext {
 	public $docs_url = '';
 
 	// Naive Bayes parameters
-	public $vocabulary_cutoff = 5000;
+	public $vocabulary_cutoff = 1000;
 	public $sensitivity = .5;
 	public $spam_ratio = .8;
-	public $stop_words_path = 'training/stopwords.txt';
+	public $stop_words_path = 'spam/training/stopwords.txt';
 
 	// Limits for heuristics
 	public $ascii_printable = .2;
@@ -67,8 +67,8 @@ class Spam_ext {
 	 */
 	public function classify($source)
 	{
-		$stop_words = explode("\n", file_get_contents($this->stop_words_path));
-		$vocabulary = new Collection('', $this->stop_words);
+		$stop_words = explode("\n", file_get_contents(PATH_MOD . $this->stop_words_path));
+		$vocabulary = new Collection(array(), $stop_words);
 		$vocabulary->vocabulary = $this->_get_vocabulary();
 
 		$this->EE->db->select("COUNT(training_id) AS cnt");
@@ -83,9 +83,9 @@ class Spam_ext {
 			'ham' => $this->_get_parameters('ham'),
 		);
 
-		$classifier = new Classifier($training, $vocabulary);
+		$classifier = new Classifier($training, $vocabulary, $stop_words);
 		
-		return $classifier->classify($soure, 'spam');
+		return $classifier->classify($source, 'spam');
 	}
 
 	// --------------------------------------------------------------------
@@ -110,7 +110,7 @@ class Spam_ext {
 
 		foreach ($query->result() as $parameter)
 		{
-			$result[] = new Distribution($parameter->$mean, $parameter->variance);
+			$result[] = new Distribution($parameter->mean, $parameter->variance);
 		}
 	
 		return $result;
@@ -126,8 +126,8 @@ class Spam_ext {
 	 */
 	private function _get_vocabulary()
 	{
-		select('term, count');
-		from('spam_vocabulary');
+		$this->EE->db->select('term, count');
+		$this->EE->db->from('spam_vocabulary');
 		$query = ee()->db->get();
 
 		$result = array();

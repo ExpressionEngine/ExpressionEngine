@@ -124,7 +124,7 @@ class Collection {
 	 */
 	public function vectorize($source)
 	{
-		$source = str_ireplace($stop_words, ' ', $source);
+		$source = str_ireplace($this->stop_words, ' ', $source);
 		$source = new Document($source);
 		$vector = $this->_tfidf($source);
 		$heuristics = $this->_heuristics($source);
@@ -219,7 +219,7 @@ class Collection {
 		
 		foreach ($source as $term => $freq)
 		{
-			if ( ! empty($this->vocabulary[$term]))
+			if ( ! empty($this->vocabulary_index[$term]))
 			{
 				$tf = $this->term_frequency($source, $term);
 				$idf = $this->inverse_document_frequency($term);
