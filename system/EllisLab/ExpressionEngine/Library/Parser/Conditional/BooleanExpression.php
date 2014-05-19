@@ -149,8 +149,6 @@ class BooleanExpression {
 						break;
 					case '*': array_push($evaluate_stack, $left * $right);
 						break;
-					case '*': array_push($evaluate_stack, $left * $right);
-						break;
 					case '/': array_push($evaluate_stack, $left / $right);
 						break;
 					case '%': array_push($evaluate_stack, $left % $right);
