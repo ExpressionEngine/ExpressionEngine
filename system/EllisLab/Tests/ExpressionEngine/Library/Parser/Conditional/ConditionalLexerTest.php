@@ -99,6 +99,8 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			$this->invalidOperatorsWithoutSpaces(),
 			$this->edgyInvalidOperatorsWithoutSpaces(),
 			$this->edgyDoubleDashWithoutSpaces(),
+			$this->edgyDotDashWithNumbersAndNoSpaces(),
+			$this->edgyDoubleDotWithNumbersAndNoSpaces()
 
 			array() // non trailing comma thing for covienence
 		);
@@ -385,7 +387,7 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 					continue;
 				}
 
-				if ($second == '.' || $second == '-')
+				if ($first == '.' || $second == '.' || $second == '-')
 				{
 					$edge_cases[] = $operator;
 				}
@@ -459,7 +461,7 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 
 		$negative_edgy_operators = array(
 			'||-', '&&-', '**-', '==-', '!=-', '<=-', '>=-', '<>-', '<-', '>-',
-			'%-', '+-', '--', '*-', '/-', '.-', '!-', '^-',
+			'%-', '+-', '--', '*-', '/-', '!-', '^-',
 		);
 
 		foreach ($negative_edgy_operators as $operator)
@@ -467,11 +469,6 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			// First the cases where these things are MISC
 			foreach (array('negative', 'littlefloat') as $type)
 			{
-				if ($type == 'littlefloat' && $operator == '.-')
-				{
-					continue; // this an exception
-				}
-
 				$value = $this->valueTypes[$type];
 				$expected = array(
 					$value['token'],
@@ -489,11 +486,6 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			// Now what to do when these things were followed by a digit
 			foreach (array('int', 'bigfloat') as $type)
 			{
-				if ($type == 'bigfloat' && $operator == '.-')
-				{
-					continue; // this an exception
-				}
-
 				$value = $this->valueTypes[$type];
 				$left = $value['token'];
 				$right = array(
@@ -515,12 +507,12 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			}
 		}
 
-		$float_edgy_operators = array(
+		$right_float_edgy_operators = array(
 			'||.', '&&.', '**.', '==.', '!=.', '<=.', '>=.', '<>.', '<.', '>.',
-			'%.', '+.', '-.', '*.', '/.', '..', '!.', '^.'
+			'%.', '+.', '-.', '*.', '/.', '!.', '^.'
 		);
 
-		foreach ($float_edgy_operators as $operator)
+		foreach ($right_float_edgy_operators as $operator)
 		{
 			// First the cases where these things are MISC
 			foreach (array('negative', 'littlefloat') as $type)
@@ -568,10 +560,58 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			);
 		}
 
+		$left_float_edgy_operators = array(
+		   '.||', '.&&', '.**', '.==', '.!=', '.<=', '.>=', '.<>', '.<', '.>',
+		   '.%', '.+', '.*', './', '.!', '.^'
+		);
+
+		foreach ($left_float_edgy_operators as $operator)
+		{
+			// First the cases where these things are MISC
+			foreach (array('bigfloat', 'littlefloat') as $type)
+			{
+				$value = $this->valueTypes[$type];
+				$expected = array(
+					$value['token'],
+					array('MISC', $operator),
+					$value['token']
+				);
+
+				$return[] = array(
+					"The \"{$operator}\" operator with {$type} values",
+					$this->assembleCommonCondition($value['value'].$operator.$value['value']),
+					$this->assembleCommonTokens($expected)
+				);
+			}
+
+			// Now when they are preceded by a non-float number
+			foreach (array('int', 'negative') as $type)
+			{
+				$value = $this->valueTypes[$type];
+				$expected = array(
+					array($value['token'][0], $value['token'][1].'.'),
+					array('OPERATOR', substr($operator, 1)),
+					array($value['token'][0], $value['token'][1]),
+				);
+
+				$return[] = array(
+					"The \"{$operator}\" operator with {$type} values",
+					$this->assembleCommonCondition($value['value'].$operator.$value['value']),
+					$this->assembleCommonTokens($expected)
+				);
+			}
+		}
+
+
 		return $return;
 	}
 
-	// Note: the number cases are covered in edgyInvalidOperatorsWithoutSpaces()
+	/**
+	 * Tests when encountering "--" in a conditional without whitespace
+	 * surrounding it.
+	 *
+	 * Note: the number cases are covered in edgyInvalidOperatorsWithoutSpaces()
+	 */
 	protected function edgyDoubleDashWithoutSpaces()
 	{
 		$return = array();
@@ -610,6 +650,157 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 				$this->assembleCommonTokens($expected)
 			);
 		}
+
+		return $return;
+	}
+
+	/**
+	 * Tests when encountering ".-" in a conditional surrounded by numbers
+	 */
+	protected function edgyDotDashWithNumbersAndNoSpaces()
+	{
+		$return = array();
+
+		// 5.-5 -> NUMBER(5.), OPERATOR(-), NUMBER(5)
+		$expected = array(
+			array('NUMBER', '5.'),
+			array('OPERATOR', '-'),
+			array('NUMBER', '5'),
+		);
+
+		$return[] = array(
+			"The \".-\" operator with int values",
+			$this->assembleCommonCondition("5.-5"),
+			$this->assembleCommonTokens($expected)
+		);
+
+		// -5.--5 -> NUMBER(-5.), OPERATOR(-), NUMBER(-5)
+		$expected = array(
+			array('NUMBER', '-5.'),
+			array('OPERATOR', '-'),
+			array('NUMBER', '-5'),
+		);
+
+		$return[] = array(
+			"The \".-\" operator with negative int values",
+			$this->assembleCommonCondition("-5.--5"),
+			$this->assembleCommonTokens($expected)
+		);
+
+		// 5.1.-5.1 -> NUMBER(5.1), OPERATOR(.), NUMBER(-5.1)
+		$expected = array(
+			array('NUMBER', '5.1'),
+			array('OPERATOR', '.'),
+			array('NUMBER', '-5.1'),
+		);
+
+		$return[] = array(
+			"The \".-\" operator with bigfloat values",
+			$this->assembleCommonCondition("5.1.-5.1"),
+			$this->assembleCommonTokens($expected)
+		);
+
+		// -5.1.--5.1 -> NUMBER(-5.1), OPERATOR(.), MISC(-), NUMBER(-5.1)
+		$expected = array(
+			array('NUMBER', '-5.1'),
+			array('OPERATOR', '.'),
+			array('MISC', '-'),
+			array('NUMBER', '-5.1'),
+		);
+
+		$return[] = array(
+			"The \".-\" operator with negative bigfloat values",
+			$this->assembleCommonCondition("-5.1.--5.1"),
+			$this->assembleCommonTokens($expected)
+		);
+
+		// .1.-.1 -> NUMBER(.1), OPERATOR(.), NUMBER(-.1)
+		$expected = array(
+			array('NUMBER', '.1'),
+			array('OPERATOR', '.'),
+			array('NUMBER', '-.1'),
+		);
+
+		$return[] = array(
+			"The \".-\" operator with int values",
+			$this->assembleCommonCondition(".1.-.1"),
+			$this->assembleCommonTokens($expected)
+		);
+
+		return $return;
+	}
+
+	/**
+	 * Tests when encountering ".." in a conditional surrounded by numbers
+	 */
+	protected function edgyDoubleDotWithNumbersAndNoSpaces()
+	{
+		$return = array();
+
+		// 5..5 -> NUMBER(5.), OPERATOR(.), NUMBER(5)
+		$expected = array(
+			array('NUMBER', '5.'),
+			array('OPERATOR', '.'),
+			array('NUMBER', '5'),
+		);
+
+		$return[] = array(
+			"The \"..\" operator with int values",
+			$this->assembleCommonCondition("5..5"),
+			$this->assembleCommonTokens($expected)
+		);
+
+		// -5..-5 -> NUMBER(-5.), OPERATOR(.), NUMBER(-5)
+		$expected = array(
+			array('NUMBER', '-5.'),
+			array('OPERATOR', '.'),
+			array('NUMBER', '-5'),
+		);
+
+		$return[] = array(
+			"The \"..\" operator with negative int values",
+			$this->assembleCommonCondition("-5..-5"),
+			$this->assembleCommonTokens($expected)
+		);
+
+		// 5.1..5.1 -> NUMBER(5.1), MISC(..), NUMBER(5.1)
+		$expected = array(
+			array('NUMBER', '5.1'),
+			array('MISC', '..'),
+			array('NUMBER', '5.1'),
+		);
+
+		$return[] = array(
+			"The \"..\" operator with bigfloat values",
+			$this->assembleCommonCondition("5.1..5.1"),
+			$this->assembleCommonTokens($expected)
+		);
+
+		// -5.1..-5.1 -> NUMBER(5.1), MISC(..), NUMBER(-5.1)
+		$expected = array(
+			array('NUMBER', '-5.1'),
+			array('MISC', '..'),
+			array('NUMBER', '-5.1'),
+		);
+
+		$return[] = array(
+			"The \"..\" operator with negative bigfloat values",
+			$this->assembleCommonCondition("-5.1..-5.1"),
+			$this->assembleCommonTokens($expected)
+		);
+
+		// .1...1 -> NUMBER(.1), MISC(.), NUMBER(-.1)
+		$expected = array(
+			array('NUMBER', '.1'),
+			array('MISC', '..'),
+			array('NUMBER', '.1'),
+		);
+
+		$return[] = array(
+			"The \"..\" operator with int values",
+			$this->assembleCommonCondition(".1...1"),
+			$this->assembleCommonTokens($expected)
+		);
 
 		return $return;
 	}
