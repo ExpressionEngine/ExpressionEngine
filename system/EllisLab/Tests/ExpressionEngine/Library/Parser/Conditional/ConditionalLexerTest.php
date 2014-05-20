@@ -91,7 +91,8 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			$this->validOperatorsWithoutSpaces(),
 			$this->invalidOperatorsWithSpaces(),
 			$this->invalidOperatorsWithoutSpaces(),
-			$this->edgyInvalidOperatorsWithoutSpaces()
+			$this->edgyInvalidOperatorsWithoutSpaces(),
+			$this->edgyDoubleDashWithoutSpaces()
 		);
 	}
 
@@ -114,7 +115,6 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			array('FLOAT + :', 							'{if 1.2:3}out{/if}', 10),
 		);
 	}
-
 
 	protected function validOperatorsWithSpaces()
 	{
@@ -199,7 +199,7 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 				);
 
 				$return[] = array(
-					"The \"{$operator}\" operator with {$type} values",
+					"The \"{$operator}\" operator with {$type} values (no spaces)",
 					$this->assembleCommonCondition($value['value'].$operator.$value['value']),
 					$this->assembleCommonTokens($expected)
 				);
@@ -215,7 +215,7 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			array('NUMBER',	$value.'.'.$value)
 		);
 		$return[] = array(
-			"The \"{$operator}\" operator with int values",
+			"The \"{$operator}\" operator with int values (no spaces)",
 			$this->assembleCommonCondition($value.$operator.$value),
 			$this->assembleCommonTokens($expected)
 		);
@@ -229,7 +229,7 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			$negative['token'],
 		);
 		$return[] = array(
-			"The \"{$operator}\" operator with int and negative values",
+			"The \"{$operator}\" operator with int and negative values (no spaces)",
 			$this->assembleCommonCondition($int['value'].$operator.$negative['value']),
 			$this->assembleCommonTokens($expected)
 		);
@@ -241,7 +241,7 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			array('NUMBER',	$negative['value'].'.'.$int['value'])
 		);
 		$return[] = array(
-			"The \"{$operator}\" operator with int and negative values",
+			"The \"{$operator}\" operator with int and negative values (no spaces)",
 			$this->assembleCommonCondition($negative['value'].$operator.$int['value']),
 			$this->assembleCommonTokens($expected)
 		);
@@ -261,7 +261,7 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 				array('VARIABLE', $value.'-'.$value)
 			);
 			$return[] = array(
-				"The \"{$operator}\" operator with {$type} values",
+				"The \"{$operator}\" operator with {$type} values (no spaces)",
 				$this->assembleCommonCondition($value.$operator.$value),
 				$this->assembleCommonTokens($expected)
 			);
@@ -358,6 +358,12 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 					continue;
 				}
 
+				// We will handle this edge case by hand see: edgyDoubleDashWithoutSpaces()
+				if ($operator == '--')
+				{
+					continue;
+				}
+
 				if ($second == '.' || $second == '-')
 				{
 					$edge_cases[] = $operator;
@@ -390,7 +396,7 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 				);
 
 				$return[] = array(
-					"The \"{$operator}\" operator with {$type} values",
+					"The \"{$operator}\" operator with {$type} values (no spaces)",
 					$this->assembleCommonCondition($value['value'].$operator.$value['value']),
 					$this->assembleCommonTokens($expected)
 				);
@@ -403,7 +409,7 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 		{
 			foreach ($this->valueTypes as $type => $value)
 			{
-				// To avoid confusing code these will be done "by hand"
+				// To avoid confusing code these will be done "by hand" see: edgyInvalidOperatorsWithoutSpaces()
 				if ($value['token'][0] == 'NUMBER')
 				{
 					continue;
@@ -416,7 +422,7 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 				);
 
 				$return[] = array(
-					"The \"{$operator}\" operator with {$type} values",
+					"The \"{$operator}\" operator with {$type} values (no spaces)",
 					$this->assembleCommonCondition($value['value'].$operator.$value['value']),
 					$this->assembleCommonTokens($expected)
 				);
@@ -453,7 +459,7 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 				);
 
 				$return[] = array(
-					"The \"{$operator}\" operator with {$type} values",
+					"The \"{$operator}\" operator with {$type} values (no spaces)",
 					$this->assembleCommonCondition($value['value'].$operator.$value['value']),
 					$this->assembleCommonTokens($expected)
 				);
@@ -481,7 +487,7 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 				);
 
 				$return[] = array(
-					"The \"{$operator}\" operator with {$type} values",
+					"The \"{$operator}\" operator with {$type} values (no spaces)",
 					$this->assembleCommonCondition($value['value'].$operator.$value['value']),
 					$this->assembleCommonTokens($expected)
 				);
@@ -544,4 +550,46 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 		return $return;
 	}
 
+	// Note: the number cases are covered in edgyInvalidOperatorsWithoutSpaces()
+	protected function edgyDoubleDashWithoutSpaces()
+	{
+		$return = array();
+
+		$operator = '--';
+
+		// These become variables
+		foreach(array('bool', 'variable', 'dash-variable') as $type)
+		{
+			$value = $this->valueTypes[$type];
+			$token = $value['token'];
+			$expected = array(
+				array('VARIABLE', $token[1].$operator.$token[1]),
+			);
+
+			$return[] = array(
+				"The \"{$operator}\" operator with {$type} values (no spaces)",
+				$this->assembleCommonCondition($value['value'].$operator.$value['value']),
+				$this->assembleCommonTokens($expected)
+			);
+		}
+
+		// These see '--' as MISC
+		foreach(array('string', 'dash-string', 'dot.string', 'intstring', 'simpletag', 'moduletag', 'tag_with_params') as $type)
+		{
+			$value = $this->valueTypes[$type];
+			$expected = array(
+				$value['token'],
+				array('MISC', $operator),
+				$value['token']
+			);
+
+			$return[] = array(
+				"The \"{$operator}\" operator with {$type} values (no spaces)",
+				$this->assembleCommonCondition($value['value'].$operator.$value['value']),
+				$this->assembleCommonTokens($expected)
+			);
+		}
+
+		return $return;
+	}
 }
