@@ -409,12 +409,11 @@ class ConditionalLexer extends AbstractLexer {
 
 		$operator_buffer = $this->move($operator_length);
 
-		// Check for any trailing - meant to indicate negativity
-		// but only if it is trailing and not standalone, a -
-		// on its own is subtraction
-
 		$last_char = substr($operator_buffer, -1);
 
+		// We want 1.2.3 to turn into number (1.2), number (.3). So
+		// concatenation with a trailing number is not a valid operation
+		// unless there's whitespace. This is consistent with how php does it.
 		if (strlen($operator_buffer) == 1 && $last_char == '.')
 		{
 			if (ctype_digit($this->peek()))
@@ -423,6 +422,9 @@ class ConditionalLexer extends AbstractLexer {
 				return FALSE;
 			}
 		}
+		// Check for any trailing - meant to indicate negativity
+		// but only if it is trailing and not standalone, a -
+		// on its own is subtraction
 		elseif (strlen($operator_buffer) > 1)
 		{
 			if ($last_char == '-' || $last_char == '.')
