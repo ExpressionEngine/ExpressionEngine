@@ -13,6 +13,8 @@
 
 // ------------------------------------------------------------------------
 
+use EllisLab\ExpressionEngine\Module\Member\Model\Gateway\MemberGateway;
+
 /**
  * ExpressionEngine CP Home Page Class
  *
@@ -442,7 +444,7 @@ class Utilities extends CP_Controller {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Future home of the member import file converter
+	 * Member import file converter
 	 */
 	public function import_converter()
 	{
@@ -479,7 +481,7 @@ class Utilities extends CP_Controller {
 
 		if (ee()->form_validation->run() !== FALSE)
 		{
-			$this->_pair_fields();
+			return $this->import_fieldmap();
 		}
 
 		ee()->view->cp_page_title = lang('import_converter');
@@ -539,6 +541,221 @@ class Utilities extends CP_Controller {
 		$enclosure = stripslashes($enclosure);
 
 		return $enclosure;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * For mapping to existing member fields
+	 */
+	public function import_fieldmap()
+	{
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		//  Snag form POST data
+		switch (ee()->input->post('delimiter'))
+		{
+			case 'tab'	:	$delimiter = "\t";
+				break;
+			case 'pipe'	:	$delimiter = "|";
+				break;
+			case 'other':	$delimiter = ee()->input->post('delimiter_special');
+				break;
+			case 'comma':
+			default:		$delimiter = ",";
+		}
+
+		$member_file = ee()->input->post('member_file');
+		$enclosure = ee()->input->post('enclosure') ?: '';
+
+		//  Read data file into an array
+		$fields = $this->_datafile_to_array($member_file, $delimiter, $enclosure);
+
+		if ( ! isset($fields[0]) OR count($fields[0]) < 3)
+		{
+			// No point going further if there aren't even the minimum required
+			ee()->session->set_flashdata('issue', lang('not_enough_fields'));
+			ee()->functions->redirect(cp_url('utilities/import_converter'));
+		}
+
+		// Get member table fields
+		$this->default_fields = array_keys(MemberGateway::getMetaData('field_list'));
+
+		// we do not allow <unique_id> in our XML format
+		unset($this->default_fields['unique_id']);
+		ksort($this->default_fields);
+
+		$vars['select_options'][''] = lang('select');
+
+		foreach ($this->default_fields as $key => $val)
+		{
+			$vars['select_options'][$val] = $val;
+		}
+
+		// When MemberField model is ready
+		//$m_fields = ee()->api->get('MemberField')->order('m_field_name', 'asc')->all();
+		$m_fields = ee()->db->order_by('m_field_name', 'asc')->get('member_fields');
+
+		if ($m_fields->num_rows() > 0)
+		{
+			foreach ($m_fields->result() as $field)
+			{
+				$vars['select_options'][$field->m_field_name] = $field->m_field_name;
+			}
+		}
+
+		$vars['fields'] = $fields;
+
+		$vars['form_hidden'] = array(
+			'member_file'		=> ee()->input->post('member_file'),
+			'delimiter'			=> ee()->input->post('delimiter'),
+			'enclosure'			=> $enclosure,
+			'delimiter_special'	=> $delimiter
+		);
+
+		$vars['encrypt'] = '';
+
+		ee()->view->cp_page_title = lang('import_converter') . ' - ' . lang('assign_fields');
+
+		ee()->cp->render('utilities/import-fieldmap', $vars);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Datafile to Array
+	 *
+	 * Read delimited data file into an array
+	 *
+	 * @return	array
+	 */
+	private function _datafile_to_array($file, $delimiter, $enclosure)
+	{
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		$contents = file($file);
+		$fields = array();
+
+		//  Parse file into array
+		if ($enclosure == '')
+		{
+			foreach ($contents as $line)
+			{
+				$fields[] = explode($delimiter, $line);
+			}
+		}
+		else
+		{
+			foreach ($contents as $line)
+			{
+				preg_match_all("/".preg_quote($enclosure)."(.*?)".preg_quote($enclosure)."/si", $line, $matches);
+				$fields[] = $matches[1];
+			}
+		}
+
+		return $fields;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Pair Fields Form
+	 *
+	 * For mapping to existing custom fields
+	 *
+	 * @return	void
+	 */
+	public function import_fieldmap_confirm()
+	{
+		// Validate selected fields
+		foreach ($_POST as $key => $val)
+		{
+			if (substr($key, 0, 5) == 'field')
+			{
+				$_POST['unique_check'][$key] = $val;
+			}
+		}
+
+		ee()->load->library('form_validation');
+		ee()->form_validation->set_rules(array(
+			array(
+				 'field'   => 'unique_check',
+				 'label'   => 'lang:other',
+				 'rules'   => 'callback__unique_required'
+			),
+			array(
+				 'field'   => 'encrypt',
+				 'label'   => 'lang:plain_text_passwords',
+				 'rules'   => 'required'
+			)
+		));
+
+		if (ee()->form_validation->run() === FALSE)
+		{
+			return $this->import_fieldmap();
+		}
+
+		echo "ok";
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Unique Required
+	 *
+	 * Check for uniqueness and required values
+	 *
+	 * @return	void
+	 */
+	public function _unique_required($selected_fields)
+	{
+		//  Get field pairings
+		$paired = array();
+		$mssg = array();
+
+		if (is_array($selected_fields))
+		{
+			foreach ($selected_fields as $val)
+			{
+
+				if ($val != '' && in_array($val, $paired))
+				{
+					$mssg[] = str_replace("%x", $val, lang('duplicate_field_assignment'));
+				}
+
+				$paired[] = $val;
+			}
+		}
+
+		if ( ! in_array('username', $paired))
+		{
+			$mssg[] = lang('missing_username_field');
+		}
+
+		if ( ! in_array('screen_name', $paired))
+		{
+			$mssg[] = lang('missing_screen_name_field');
+		}
+
+		if ( ! in_array('email', $paired))
+		{
+			$mssg[] = lang('missing_email_field');
+		}
+
+		if (count($mssg) > 0)
+		{
+			$out = implode('<br>', $mssg);
+			$this->form_validation->set_message('_unique_required', $out);
+			return FALSE;
+		}
+
+		return TRUE;
 	}
 
 	// --------------------------------------------------------------------

@@ -245,6 +245,51 @@ $lang = array(
 'import_convert_btn_working' =>
 'Converting...',
 
+'assign_fields' =>
+'Assign Fields',
+
+'import_password_warning' =>
+'<b>Warning</b>: If you don\'t map one of your data points to "Password", a random encrypted password will be assigned to each imported user. These users will need to reset their password via the "Forgot Password" link.',
+
+'plain_text_passwords' =>
+'Plain text passwords?',
+
+'plain_text_passwords_desc' =>
+'When set to <b>yes</b>, passwords will be imported in plain text.',
+
+'btn_assign_fields' =>
+'Assign Fields',
+
+'btn_assign_fields_working' =>
+'Saving...',
+
+'duplicate_field_assignment' =>
+'Duplicate field assignment: %x',
+
+'duplicate_member_id' =>
+'Duplicate Member ID: "%x"<br />It is recommended that you do not use a &lt;member_id&gt; tag and allow ExpressionEngine to auto-increment member_id',
+
+'duplicate_screen_name' =>
+'Duplicate screen_name: ',
+
+'duplicate_username' =>
+'Duplicate username: ',
+
+'member_id_warning' =>
+'WARNING: If you have &lt;member_id&gt; tags in your XML, existing members with the same member_id will be OVERWRITTEN!  Proceed with caution!',
+
+'missing_email_field' =>
+'You must assign a field to "email"',
+
+'missing_screen_name_field' =>
+'You must assign a field to "screen_name"',
+
+'missing_username_field' =>
+'You must assign a field to "username"',
+
+'not_enough_fields' =>
+'You must have at least 3 fields: username, screen_name, and email address',
+
 /**
  * Member Import
  */
