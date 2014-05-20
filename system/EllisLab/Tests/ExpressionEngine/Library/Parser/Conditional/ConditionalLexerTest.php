@@ -87,12 +87,20 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 		// assemble all of the tests
 		return array_merge(
 			array(),
+
+			// Individual Tokens
+			$this->validNumberTokens(),
+			$this->validVariableTokens(),
+
+			// Operators
 			$this->validOperatorsWithSpaces(),
 			$this->validOperatorsWithoutSpaces(),
 			$this->invalidOperatorsWithSpaces(),
 			$this->invalidOperatorsWithoutSpaces(),
 			$this->edgyInvalidOperatorsWithoutSpaces(),
-			$this->edgyDoubleDashWithoutSpaces()
+			$this->edgyDoubleDashWithoutSpaces(),
+
+			array() // non trailing comma thing for covienence
 		);
 	}
 
@@ -586,6 +594,75 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			$return[] = array(
 				"The \"{$operator}\" operator with {$type} values (no spaces)",
 				$this->assembleCommonCondition($value['value'].$operator.$value['value']),
+				$this->assembleCommonTokens($expected)
+			);
+		}
+
+		return $return;
+	}
+
+	protected function validNumberTokens()
+	{
+		$return = array();
+
+		$numbers = array(
+			'0', '1', '10', '100',
+			'0.', '1.', '10.', '100.',
+			'.0', '.1', '.01', '.001',
+			'0.1', '1.1', '10.01', '100.001'
+		);
+
+		foreach ($numbers as $number)
+		{
+			// Positive
+			$expected = array(
+				array('NUMBER', $number)
+			);
+
+			$return[] = array(
+				"\"{$number}\" is a NUMBER token",
+				$this->assembleCommonCondition($number),
+				$this->assembleCommonTokens($expected)
+			);
+
+			// Negative
+			$number = '-'.$number;
+			$expected = array(
+				array('NUMBER', $number)
+			);
+
+			$return[] = array(
+				"\"{$number}\" is a NUMBER token",
+				$this->assembleCommonCondition($number),
+				$this->assembleCommonTokens($expected)
+			);
+
+		}
+
+		return $return;
+	}
+
+	protected function validVariableTokens()
+	{
+		$return = array();
+
+		$variables = array(
+			'var', 'var-dash', 'var-two-dashes',
+			'var--double', 'var---tripple',
+			'var--double-plus', 'var---tripple--plus', 'var---tripple--plus-plus',
+			'var_underscore', '_underscore_var', 'var_', 'var_underscore-dash',
+			'var_-_rav', 's-__-s'
+		);
+
+		foreach ($variables as $variable)
+		{
+			$expected = array(
+				array('VARIABLE', $variable)
+			);
+
+			$return[] = array(
+				"\"{$variable}\" is a VARIABLE token",
+				$this->assembleCommonCondition($variable),
 				$this->assembleCommonTokens($expected)
 			);
 		}
