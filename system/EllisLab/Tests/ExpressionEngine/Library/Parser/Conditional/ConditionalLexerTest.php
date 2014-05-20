@@ -100,7 +100,7 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			$this->edgyInvalidOperatorsWithoutSpaces(),
 			$this->edgyDoubleDashWithoutSpaces(),
 			$this->edgyDotDashWithNumbersAndNoSpaces(),
-			$this->edgyDoubleDotWithNumbersAndNoSpaces()
+			$this->edgyDoubleDotWithNumbersAndNoSpaces(),
 
 			array() // non trailing comma thing for covienence
 		);
@@ -700,11 +700,10 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			$this->assembleCommonTokens($expected)
 		);
 
-		// -5.1.--5.1 -> NUMBER(-5.1), OPERATOR(.), MISC(-), NUMBER(-5.1)
+		// -5.1.--5.1 -> NUMBER(-5.1), MISC(.-), NUMBER(-5.1)
 		$expected = array(
 			array('NUMBER', '-5.1'),
-			array('OPERATOR', '.'),
-			array('MISC', '-'),
+			array('MISC', '.-'),
 			array('NUMBER', '-5.1'),
 		);
 
@@ -789,7 +788,7 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			$this->assembleCommonTokens($expected)
 		);
 
-		// .1...1 -> NUMBER(.1), MISC(.), NUMBER(-.1)
+		// .1...1 -> NUMBER(.1), MISC(..), NUMBER(-.1)
 		$expected = array(
 			array('NUMBER', '.1'),
 			array('MISC', '..'),
