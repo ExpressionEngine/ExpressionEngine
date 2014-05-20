@@ -48,12 +48,12 @@ abstract class AbstractLexer {
 	 */
 	protected function peekRegex($regex)
 	{
-		if (preg_match('/^'.$regex.'/s', $this->str, $matches))
+		if (preg_match('/^'.$regex.'/us', $this->str, $matches))
 		{
 			return $matches[0];
 		}
 
-		return '';
+		return NULL;
 	}
 
 	/**
@@ -62,9 +62,9 @@ abstract class AbstractLexer {
 	 * @param string $charMask The characters we are seeking
 	 * @return string The characters lost in the move
 	 */
-	protected function seekTo($charMask)
+	protected function seekTo($char_mask)
 	{
-		$n = strcspn($this->str, $charMask);
+		$n = strcspn($this->str, $char_mask);
 		return $this->move($n);
 	}
 
