@@ -9,15 +9,6 @@ use EllisLab\ExpressionEngine\Model\Error\Errors;
 
 
 /**
- * Helper function to list fields. We need to be
- * able to get all publicly declared fields. This
- * is the easiest way I can think of.
- */
-function getFieldList($class)
-{
-	return get_class_vars($class);
-}
-/**
  * Base Gateway Class
  *
  * This is the base class for all database table Gateways in ExpressionEngine.
@@ -105,7 +96,17 @@ abstract class RowDataGateway {
 	{
 		if ($key === 'field_list')
 		{
-			return getFieldList(get_called_class());
+			$raw_fields = get_class_vars((get_called_class());
+			$fields = array();
+			foreach($raw_fields as $field)
+			{
+				if (strpos('_', $field) === 0)
+				{
+					continue;
+				}
+				$fields[] = $field;
+			}
+			return $fields;
 		}
 
 		$property = '_' . $key;
