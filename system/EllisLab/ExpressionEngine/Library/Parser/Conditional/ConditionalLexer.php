@@ -32,26 +32,8 @@ class ConditionalLexer extends AbstractLexer {
 
 	/**
 	 * The main token array
-	 */
-	private $tokens;
-
-	/**
-	 * The state stack
-	 */
-	private $stack;
-
-	/**
-	 * The current state / top of the stack
-	 */
-	private $patterns = array(
-		'variable'	=> '\w*([a-zA-Z]([\w:-]+\w)?|(\w[\w:-]+)?[a-zA-Z])\w*',
-		'number'	=> '-?([0-9]*\.[0-9]+|[0-9]+\.[0-9]*|[0-9]+)'
-	);
-
-	/**
-	 * Available tokens
 	 *
-	 * This is for the future where we will build tokens by number
+	 * Available tokens:
 	 *
 	 * private $token_names = array(
 	 * 	'TEMPLATE_STRING',	// generic
@@ -73,21 +55,32 @@ class ConditionalLexer extends AbstractLexer {
 	 * 	'EOS'				// end of string
 	 * );
 	 */
+	private $tokens;
 
+	/**
+	 * The state stack
+	 */
+	private $stack;
+
+	/**
+	 * The current state / top of the stack
+	 */
+	private $patterns = array(
+		'variable'	=> '\w*([a-zA-Z]([\w:-]+\w)?|(\w[\w:-]+)?[a-zA-Z])\w*',
+		'number'	=> '-?([0-9]*\.[0-9]+|[0-9]+\.[0-9]*|[0-9]+)'
+	);
+
+	/**
+	 * Valid operators. Should be sorted by length.
+	 * If you add one here, you must also add it to the boolean
+	 * expression handler.
+	 */
 	private $operators = array(
 		'||', '&&', '**',
 		'==', '!=', '<=', '>=', '<>', '<', '>',
 		'%', '+', '-', '*', '/',
 		'.', '!', '^'
 	);
-
-	private $ascii_map = array();
-
-	public function __construct()
-	{
-
-	}
-
 
 	/**
 	 * Finds conditionals an returns a token stream for the entire template, with
@@ -209,7 +202,7 @@ class ConditionalLexer extends AbstractLexer {
 
 			if ($char == '"' || $char == "'")
 			{
-				$this->tokenizeString($char);
+				$this->tokenizeString();
 			}
 			elseif ($char == '(')
 			{
@@ -267,6 +260,9 @@ class ConditionalLexer extends AbstractLexer {
 		$this->addToken('ENDCOND', '}');
 	}
 
+	/**
+	 * Try to create a variable token at the current offset
+	 */
 	public function variable()
 	{
 		$result = $this->peekRegex($this->patterns['variable']);
@@ -281,6 +277,9 @@ class ConditionalLexer extends AbstractLexer {
 		return FALSE;
 	}
 
+	/**
+	 * Try to create a number token at the current offset
+	 */
 	public function number()
 	{
 		$result = $this->peekRegex($this->patterns['number']);
@@ -295,6 +294,9 @@ class ConditionalLexer extends AbstractLexer {
 		return FALSE;
 	}
 
+	/**
+	 * Try to create a whitespace token at the current offset
+	 */
 	public function whitespace()
 	{
 		if ($ws = $this->peekRegex('\s+'))
@@ -304,7 +306,10 @@ class ConditionalLexer extends AbstractLexer {
 		}
 	}
 
-	public function tokenizeString($open_quote)
+	/**
+	 * Build and add a string token
+	 */
+	public function tokenizeString()
 	{
 		$open_quote = $this->next();
 
@@ -312,25 +317,33 @@ class ConditionalLexer extends AbstractLexer {
 		$backslash = '\\';
 		$escapable = array('\\', "'", '"');
 
-		// Add everything up to the next backslash or closing quote
-		// and then check if we're done or just escaping.
-		while ($add = $this->seekTo($open_quote.$backslash))
+		// empty? easy.
+		if ($this->peek() != $open_quote)
 		{
-			$str .= $add;
-
-			if ($open_quote == $this->next())
+			// Add everything up to the next backslash or closing quote
+			// and then check if we're done or just escaping.
+			while (($add = $this->seekTo($open_quote.$backslash)) !== 0)
 			{
-				break;
+				$str .= $add;
+
+				if ($open_quote == $this->next())
+				{
+					break;
+				}
+
+				$next = $this->next();
+
+				if ( ! in_array($next, $escapable))
+				{
+					$str .= $backslash;
+				}
+
+				$str .= $next;
 			}
-
-			$next = $this->next();
-
-			if ( ! in_array($next, $escapable))
-			{
-				$str .= $backslash;
-			}
-
-			$str .= $next;
+		}
+		else
+		{
+			$this->next();
 		}
 
 		// if we're in a tag we need to keep the quotes

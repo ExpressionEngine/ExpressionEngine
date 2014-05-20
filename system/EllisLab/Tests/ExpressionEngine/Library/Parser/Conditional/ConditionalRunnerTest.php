@@ -340,6 +340,8 @@ class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 		$dq = '"'; // dairy queen
 
 		return array(
+			array('Zero string is true',			'{if "0"}yes{if:else}no{/if}',									'yes'),
+			array('Empty string is false',			'{if ""}no{if:else}yes{/if}',									'yes'),
 			array('Esc Single quote in double',		'{if "ee'.$bs.$sq.'s parser" == var}yes{if:else}no{/if}',		'yes', array('var' => "ee's parser")),
 			array('Esc Double quote in double',		'{if "ee'.$bs.$dq.'s parser" == var}yes{if:else}no{/if}',		'yes', array('var' => 'ee"s parser')),
 			array('Esc Single quote in single',		"{if 'ee".$bs.$sq."s parser' == var}yes{if:else}no{/if}",		'yes', array('var' => "ee's parser")),

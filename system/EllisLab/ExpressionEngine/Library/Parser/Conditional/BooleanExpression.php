@@ -62,7 +62,7 @@ class BooleanExpression {
 	public function evaluate()
 	{
 		$rpn = $this->convertToRPN($this->tokens);
-		return $this->evaluateRPN($rpn);
+		return ($this->evaluateRPN($rpn) != '');
 	}
 
 	/**
