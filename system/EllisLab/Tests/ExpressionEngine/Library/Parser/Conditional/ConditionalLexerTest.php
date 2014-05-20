@@ -194,7 +194,7 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 				}
 				elseif ($operator == '.')
 				{
-					if ($type == 'int' || $type == 'bigfloat' || $type == 'littlefloat')
+					if ($type == 'int' || $type == 'bigfloat' || $type == 'littlefloat' || $type == 'negative')
 					{
 						continue;
 					}
@@ -232,13 +232,26 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 		$int = $this->valueTypes['int'];
 		$negative = $this->valueTypes['negative'];
 		$expected = array(
-			$int['token'],
-			array('OPERATOR', '.'),
-			$negative['token'],
+			array($int['token'][0], $int['token'][1].'.'),
+			array('OPERATOR', '-'),
+			array($negative['token'][0], substr($negative['token'][1], 1))
 		);
 		$return[] = array(
 			"The \"{$operator}\" operator with int and negative values (no spaces)",
 			$this->assembleCommonCondition($int['value'].$operator.$negative['value']),
+			$this->assembleCommonTokens($expected)
+		);
+
+		// negative.negative -> OPERATOR
+		$negative = $this->valueTypes['negative'];
+		$expected = array(
+			array($negative['token'][0], $negative['token'][1].'.'),
+			array('OPERATOR', '-'),
+			array($negative['token'][0], substr($negative['token'][1], 1))
+		);
+		$return[] = array(
+			"The \"{$operator}\" operator with int and negative values (no spaces)",
+			$this->assembleCommonCondition($negative['value'].$operator.$negative['value']),
 			$this->assembleCommonTokens($expected)
 		);
 
