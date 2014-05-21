@@ -113,8 +113,6 @@ class ConditionalLexer extends AbstractLexer {
 		$this->str = $str;
 		$this->tokens = array();
 
-		$this->pushState('OK');
-
 		while ($this->str != '')
 		{
 			// go to the next LD
@@ -123,69 +121,67 @@ class ConditionalLexer extends AbstractLexer {
 			// anything we hit in the meantime is template string
 			$this->addToken('TEMPLATE_STRING', $buffer);
 
-			// if we can create an {if or {if:elseif token from this point,
-			// then we need to move into the statement.
-			if ($this->tokenizeIfTags())
-			{
-				$this->pushState('IF');
-				$this->expression();
-				$this->popStateAndExpect('IF');
-			}
+			// check for template tags
+			$this->templateTags();
 		}
 
 		$this->addToken('TEMPLATE_STRING', $this->str);
 		$this->addToken('EOS', TRUE);
 
-		$this->popStateAndExpect('OK');
-
 		return $this->tokens;
 	}
 
-	/**
-	 * Finds tokens specific to conditional boolean statements.
-	 *
-	 * @param $str The template chunk to look through
-	 * @return Array [new chunk, new variables]
-	 */
-	private function tokenizeIfTags()
+	public function templateTags()
 	{
-		// if we hit a closing if, we need to deal with that
 		if ($this->peek(5) == '{/if}')
 		{
-			$this->addToken('ENDIF', $this->move(5));
-			return FALSE;
+			$this->addToken('LD', '{');
+			$this->addToken('ENDIF', '/if');
+			$this->move(4);
 		}
-
-		// potential opening ifs
-		$potential_if = (string) $this->peekRegex('{if(:else(\s?}|if\s)|\s)');
-		$trimmed_if = trim($potential_if);
-
-		$parts = array(
-			'{if'			=> 'IF',
-			'{if:elseif'	=> 'ELSEIF',
-			'{if:else}'		=> 'ELSE'
-		);
-
-		if (isset($parts[$trimmed_if]))
+		elseif ($this->peek(9) == '{if:else}')
 		{
-			$token = $parts[$trimmed_if];
-
-			$this->addToken(
-				$token,
-				$this->move(strlen($potential_if))
-			);
-
-			return ($token !== 'ELSE');
+			$this->addToken('LD', '{');
+			$this->addToken('ELSE', 'if:else');
+			$this->move(8);
 		}
-
-		// {if: is a reserved prefix
-		if ($this->peek(4) == '{if:')
+		elseif ($if = $this->peekRegex('{(if(:elseif)?\s)'))
 		{
-			throw new ConditionalLexerException('Conditional is invalid: "{if:" is reserverd for conditionals. Found: ' . $potential_if, 20);
+			$this->addToken('LD', '{');
+
+			if (strlen($if) == 4)
+			{
+				$this->move(3);
+				$this->addToken('IF', 'if');
+			}
+			else
+			{
+				$this->addToken('ELSEIF', 'if:elseif');
+				$this->move(10);
+			}
+
+			$this->whitespace();
+			$this->expression();
+		}
+		else
+		{
+			$this->addToken('TEMPLATE_STRING', $this->next());
+
+			// future: $this->tag();
+
+			if ($this->peek(3) == 'if:')
+			{
+				throw new ConditionalLexerException('if: is a reserved prefix.');
+			}
 		}
 
-		$this->addToken('TEMPLATE_STRING', $this->next());
-		return FALSE;
+		$this->whitespace();
+
+		if ($this->peek() == '}')
+		{
+			$this->next();
+			$this->addToken('RD', '}');
+		}
 	}
 
 	/**
@@ -193,8 +189,6 @@ class ConditionalLexer extends AbstractLexer {
 	 */
 	private function expression()
 	{
-		$this->pushState('EXPR');
-
 		// No sense continuing if we cannot find a {/if}
 		if (strpos($this->str, '{/if}') === FALSE)
 		{
@@ -224,16 +218,14 @@ class ConditionalLexer extends AbstractLexer {
 			{
 				$this->parenthesis();
 			}
-			elseif ($char == '{' || $char == '}')  // Checking for balanced curly braces
+			elseif ($char == '{')
 			{
-				// tag returns false when the action wasn't on a tag.
-				// typically that means we hit our closing } and need to stop
-				if ( ! $this->tag())
-				{
-					// If this fails something else wasn't closed (tag, string)
-					$this->popStateAndExpect('EXPR');
-					break;
-				}
+				$this->next();
+				$this->tag();
+			}
+			elseif ($char == '}' && $this->tag_depth == 0)  // Checking for balanced curly braces
+			{
+				break;
 			}
 			else
 			{
@@ -245,6 +237,41 @@ class ConditionalLexer extends AbstractLexer {
 				$this->next();
 				$this->addToken('MISC', $char);
 			}
+		}
+	}
+
+	public function tag()
+	{
+		$this->tag_depth++;
+		$this->tag_buffer .= '{';
+
+		while (($char = $this->peek()) !== FALSE)
+		{
+			switch ($char)
+			{
+				case '}':
+					$this->next();
+					break 2;
+				case '"':
+				case "'":
+					$this->string();
+					break;
+				case '{':
+					$this->next();
+					$this->tag();
+					break;
+				default:
+					$this->tag_buffer .= $this->next();
+			}
+		}
+
+		$this->tag_buffer .= '}';
+		$this->tag_depth--;
+
+		if ($this->tag_depth == 0)
+		{
+			$this->addToken('TAG', $this->tag_buffer);
+			$this->tag_buffer = '';
 		}
 	}
 
@@ -315,7 +342,6 @@ class ConditionalLexer extends AbstractLexer {
 	 */
 	public function string()
 	{
-		$this->pushState('STRING');
 		$open_quote = $this->next();
 
 		$str = '';
@@ -362,7 +388,6 @@ class ConditionalLexer extends AbstractLexer {
 		}
 
 		$this->addToken('STRING', $str);
-		$this->popStateAndExpect('STRING');
 	}
 
 	/**
@@ -382,48 +407,6 @@ class ConditionalLexer extends AbstractLexer {
 			$this->addToken('RP', ')');
 			$this->next();
 		}
-	}
-
-	/**
-	 * Try to create a tag token at the current offset
-	 */
-	public function tag()
-	{
-		$char = $this->peek();
-
-		if ($char == '{')
-		{
-			$this->next();
-			$this->tag_depth++;
-			$this->tag_buffer .= $char;
-
-			$this->pushState('TAG');
-			return TRUE;
-		}
-		elseif ($char == '}')
-		{
-			$this->next();
-
-			if ($this->tag_depth == 0)
-			{
-				$this->addToken('ENDCOND', '}');
-				return FALSE;
-			}
-
-			$this->tag_depth--;
-			$this->popStateAndExpect('TAG');
-
-			// nested tags are collapsed. Only add when we're definitely out.
-			if ($this->topState() == 'EXPR')
-			{
-				$this->addToken('TAG', $this->tag_buffer.$char);
-				$this->tag_buffer = '';
-			}
-
-			return TRUE;
-		}
-
-		return FALSE;
 	}
 
 	/**
@@ -496,27 +479,6 @@ class ConditionalLexer extends AbstractLexer {
 		if ($value != '' || $type == 'STRING')
 		{
 			$this->tokens[] = array($type, $value);
-		}
-	}
-
-	/**
-	 * Pop the stack state and ensure that we popped what we expected.
-	 *
-	 * @param String $expected Expected popped state.
-	 * @return String popped state
-	 */
-	protected function popStateAndExpect($expected)
-	{
-		$out = $this->popState();
-
-		if ($out !== $expected)
-		{
-			// This message seems backwards, but it isn't. This is called when
-			// we hit the end of a certain section of code. So if we've hit the
-			// end of an if, but the stack is still in string, that means there
-			// is an unclosed string somewhere. The message is written to point
-			// the user in that direction.
-			throw new ConditionalLexerException('Invalid stack state: Reached end of '.$expected.', expected end of '.$out.'.');
 		}
 	}
 }
