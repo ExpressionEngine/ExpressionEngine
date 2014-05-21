@@ -125,6 +125,11 @@ class ConditionalLexer extends AbstractLexer {
 			$this->templateTags();
 		}
 
+		if ($this->tag_depth !== 0)
+		{
+			throw new ConditionalLexerException('Unclosed tag.');
+		}
+
 		$this->addToken('TEMPLATE_STRING', $this->str);
 		$this->addToken('EOS', TRUE);
 
@@ -358,7 +363,7 @@ class ConditionalLexer extends AbstractLexer {
 			{
 				if ($this->str == '')
 				{
-					return;
+					throw new ConditionalLexerException('Unclosed string.');
 				}
 
 				break;
