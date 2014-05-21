@@ -66,7 +66,14 @@ class ConditionalLexer extends AbstractLexer {
 	 * The current state / top of the stack
 	 */
 	private $patterns = array(
+		// Variables can be any word character, but at least one char must
+		// be a letter. This could be expressed as \w*[a-zA-Z]\w*, but we
+		// also need to allow : and -, hence the two sided inner expression.
 		'variable'	=> '\w*([a-zA-Z]([\w:-]+\w)?|(\w[\w:-]+)?[a-zA-Z])\w*',
+
+		// Numbers can be positive or negative. They can contain a dot at
+		// any location, but if there is one there must also be at least
+		// one digit: 15, .6, 25., 2.6
 		'number'	=> '-?([0-9]*\.[0-9]+|[0-9]+\.[0-9]*|[0-9]+)'
 	);
 
