@@ -122,6 +122,10 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			array('OK + :',	 							'{if "foo":bar}out{/if}', 10),
 			array('OK + :',	 							"{if 'foo':bar}out{/if}", 10),
 			array('FLOAT + :', 							'{if 1.2:3}out{/if}', 10),
+			array('Simple Backticks',					'{if `echo hello`}out{/if}', 5),
+			array('Splitting Backticks',				'{if string.`echo hello #}out{/if}{if `== 0}out{/if}', 5),
+			array('Simple Comments',					'{if php/* test == 5*/info(); }out{/if}', 5),
+			array('Splitting Comments',					'{if string /* == 5 }out{/if}{if */phpinfo(); == 5}out{/if}', 5),
 		);
 	}
 

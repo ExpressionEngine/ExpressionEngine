@@ -190,12 +190,10 @@ class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 		$parser_exception = 'EllisLab\ExpressionEngine\Library\Parser\Conditional\Exception\ConditionalParserException';
 
 		return array(
-			array($parser_exception, 'Simple Backticks',				'{if `echo hello`}out{/if}'),
-			array($parser_exception, 'Splitting Backticks',				'{if string.`echo hello #}out{/if}{if `== 0}out{/if}'),
-			array($parser_exception, 'Simple Comments',					'{if php/* test == 5*/info(); }out{/if}'),
-			array($parser_exception, 'Comment Looks Like Math',			'{if 7 /* 5 }out{/if}'),
-			array($parser_exception, 'Inline Comment Looks Like Math',	'{if 7 // 5 }out{/if}'),
-			array($parser_exception, 'Splitting Comments',				'{if string /* == 5 }out{/if}{if */phpinfo(); == 5}out{/if}'),
+			array($parser_exception,	'Double float',						'{if 1.2.3 }out{/if}'),
+			array($parser_exception,	'Comment Looks Like Math',			'{if 7 /* 5 }out{/if}'),
+			array($parser_exception,	'Inline Comment Looks Like Math',	'{if 7 // 5 }out{/if}'),
+
 		);
 	}
 
@@ -206,8 +204,6 @@ class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 			array('Unparsed Tags to false 2',	'{if {tag} != FALSE}no{if:else}yes{/if}',	'yes'),
 			array('Unparsed Vars to false',		'{if var1 == FALSE}yes{if:else}no{/if}',	'yes'),
 			array('Unparsed Vars to false 2',	'{if var1 || var2}no{if:else}yes{/if}',		'yes'),
-			array('Junk String to false',		'{if ` != FALSE}no{if:else}yes{/if}',		'yes'),
-			array('Junk String to false 2',		'{if ` == FALSE}yes{if:else}no{/if}',		'yes'),
 		);
 	}
 
