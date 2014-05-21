@@ -290,6 +290,33 @@ $lang = array(
 'not_enough_fields' =>
 'You must have at least 3 fields: username, screen_name, and email address',
 
+'select' =>
+'Select field',
+
+'confirm_assignments' =>
+'Confirm Assignments',
+
+'plaintext_passwords' =>
+'Passwords are plain text.',
+
+'encrypted_passwords' =>
+'Passwords are encrypted.',
+
+'btn_create_file' =>
+'Create [file]',
+
+'btn_create_file_working' =>
+'Creating...',
+
+'xml_code' =>
+'XML Code',
+
+'btn_download_file' =>
+'Download File',
+
+'btn_copy_to_clipboard' =>
+'Copy to Clipboard',
+
 /**
  * Member Import
  */

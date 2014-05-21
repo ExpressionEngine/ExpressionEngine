@@ -26,7 +26,7 @@
 						<h3><?=$field?></h3>
 					</div>
 					<div class="setting-field col w-8 last">
-						<?=form_dropdown('field_'.$i, $select_options)?>
+						<?=form_dropdown('field_'.$i, $select_options, set_value('field_'.$i, ''))?>
 					</div>
 				</fieldset>
 			<?php $i++; endforeach ?>
@@ -36,8 +36,8 @@
 					<em><?=lang('plain_text_passwords_desc')?></em>
 				</div>
 				<div class="setting-field col w-8 last">
-					<label class="choice mr chosen yes"><input type="radio" name="encrypt" value="y" checked="checked"> <?=lang('yes')?></label>
-					<label class="choice no"><input type="radio" name="encrypt" value="n"> <?=lang('no')?></label>
+					<label class="choice mr chosen yes"><input type="radio" name="encrypt" value="y" <?=set_radio('encrypt', 'y', TRUE)?>> <?=lang('yes')?></label>
+					<label class="choice no"><input type="radio" name="encrypt" value="n" <?=set_radio('encrypt', 'n')?>> <?=lang('no')?></label>
 				</div>
 			</fieldset>
 			<fieldset class="form-ctrls">

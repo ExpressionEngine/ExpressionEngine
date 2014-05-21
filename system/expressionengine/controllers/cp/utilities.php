@@ -673,12 +673,20 @@ class Utilities extends CP_Controller {
 	 */
 	public function import_fieldmap_confirm()
 	{
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		$paired = array();
+
 		// Validate selected fields
 		foreach ($_POST as $key => $val)
 		{
 			if (substr($key, 0, 5) == 'field')
 			{
 				$_POST['unique_check'][$key] = $val;
+				$paired[$key] = $val;
 			}
 		}
 
@@ -701,7 +709,124 @@ class Utilities extends CP_Controller {
 			return $this->import_fieldmap();
 		}
 
-		echo "ok";
+		//  Snag form POST data
+		switch (ee()->input->post('delimiter'))
+		{
+			case 'tab'	:	$delimiter = "\t";
+				break;
+			case 'pipe'	:	$delimiter = "|";
+				break;
+			case 'other':	$delimiter = ee()->input->post('delimiter_special');
+				break;
+			case 'comma':
+			default:		$delimiter = ",";
+		}
+
+		$member_file = ee()->input->post('member_file');
+		$enclosure = ee()->input->post('enclosure') ?: '';
+
+		//  Read data file into an array
+		$fields = $this->_datafile_to_array($member_file, $delimiter, $enclosure);
+
+		$vars['fields'] = $fields;
+		$vars['paired'] = $paired;
+
+		$vars['form_hidden'] = array(
+			'member_file'		=> $member_file,
+			'delimiter'			=> ee()->input->post('delimiter'),
+			'enclosure'			=> $enclosure,
+			'delimiter_special'	=> $delimiter,
+			'encrypt'			=> ee()->input->post('encrypt')
+		);
+
+		$vars['form_hidden'] = array_merge($vars['form_hidden'], $paired);
+
+		ee()->view->cp_page_title = lang('confirm_assignments');
+		ee()->cp->render('utilities/import-fieldmap-confirm', $vars);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Create XML File
+	 *
+	 * Creates and XML file from delimited data
+	 *
+	 * @return	mixed
+	 */
+	public function import_code_output()
+	{
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		//  Snag form POST data
+		switch (ee()->input->post('delimiter'))
+		{
+			case 'tab'	:	$delimiter = "\t";
+				break;
+			case 'pipe'	:	$delimiter = "|";
+				break;
+			case 'other':	$delimiter = ee()->input->post('delimiter_special');
+				break;
+			case 'comma':
+			default:		$delimiter = ",";
+		}
+
+		$member_file = ee()->input->post('member_file');
+		$enclosure = ee()->input->post('enclosure') ?: '';
+		$encrypt = ($this->input->post('encrypt') == 'y');
+
+		ee()->load->helper(array('file', 'xml'));
+
+		//  Read file contents
+		$contents = read_file($member_file);
+
+		//  Get structure
+		$structure = array();
+
+		foreach ($_POST as $key => $val)
+		{
+			if (substr($key, 0, 5) == 'field')
+			{
+				$structure[] = $val;
+			}
+		}
+
+		ee()->load->library('xmlparser');
+
+		// parse XML data
+		$xml = ee()->xmlparser->parse_xml($contents);
+
+		$params = array(
+			'data'			=> $contents,
+			'structure'		=> $structure,
+			'root'			=> 'members',
+			'element'		=> 'member',
+			'delimiter'		=> $delimiter,
+			'enclosure'		=> $enclosure
+		);
+
+		$xml = ee()->xmlparser->delimited_to_xml($params, 1);
+
+		//  Add type="text" parameter for plaintext passwords
+		if ($encrypt === TRUE)
+		{
+			$xml = str_replace('<password>', '<password type="text">', $xml);
+		}
+
+		if ( ! empty(ee()->xmlparser->errors))
+		{
+			return show_error($this->xmlparser->errors);
+		}
+
+		$vars['code'] = $xml;
+		$vars['generated'] = ee()->localize->human_time();
+		$vars['username'] = ee()->session->userdata('username');
+
+		ee()->view->cp_page_title = lang('xml_code');
+		ee()->cp->render('utilities/import-code-output', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -723,7 +848,6 @@ class Utilities extends CP_Controller {
 		{
 			foreach ($selected_fields as $val)
 			{
-
 				if ($val != '' && in_array($val, $paired))
 				{
 					$mssg[] = str_replace("%x", $val, lang('duplicate_field_assignment'));

@@ -59,7 +59,7 @@ EE.cp.formValidation = {
 
 		var that = this;
 
-		$('form.ajax-validate').each(function(index, el) {
+		$('form').has('.form-ctrls input.btn').each(function(index, el) {
 
 			var form = $(this),
 				button = form.find('.form-ctrls input.btn');
@@ -126,6 +126,12 @@ EE.cp.formValidation = {
 	 * @param	{jQuery object}	field	jQuery object of field validating
 	 */
 	_sendAjaxRequest: function(form, field) {
+
+		// Just reset the button for forms that don't validate over AJAX
+		if ( ! form.hasClass('ajax-validate')) {
+			this._toggleErrorForFields(form, field, 'success');
+			return;
+		}
 
 		var that = this,
 			action = form.attr('action');
