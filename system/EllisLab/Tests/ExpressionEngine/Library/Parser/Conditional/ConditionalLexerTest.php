@@ -121,7 +121,6 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			array('OK + :',	 							'{if :foo}out{/if}', 10),
 			array('OK + :',	 							'{if "foo":bar}out{/if}', 10),
 			array('OK + :',	 							"{if 'foo':bar}out{/if}", 10),
-			array('FLOAT + .', 							'{if 1.2.3}out{/if}', 10),
 			array('FLOAT + :', 							'{if 1.2:3}out{/if}', 10),
 		);
 	}
@@ -227,6 +226,18 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 		$return[] = array(
 			"The \"{$operator}\" operator with int values (no spaces)",
 			$this->assembleCommonCondition($value.$operator.$value),
+			$this->assembleCommonTokens($expected)
+		);
+
+		// int.int.int -> NUMBER(int.int), NUMBER(.int)
+		$value = $this->valueTypes['int']['value'];
+		$expected = array(
+			array('NUMBER',	$value.'.'.$value),
+			array('NUMBER',	'.'.$value)
+		);
+		$return[] = array(
+			"The \"{$operator}\" operator with three int values (no spaces)",
+			$this->assembleCommonCondition($value.$operator.$value.$operator.$value),
 			$this->assembleCommonTokens($expected)
 		);
 
@@ -713,11 +724,11 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			$this->assembleCommonTokens($expected)
 		);
 
-		// .1.-.1 -> NUMBER(.1), OPERATOR(.), NUMBER(-.1)
+		// .1.-.1 -> NUMBER(.1), MISC(.-), NUMBER(-.1)
 		$expected = array(
 			array('NUMBER', '.1'),
-			array('OPERATOR', '.'),
-			array('NUMBER', '-.1'),
+			array('MISC', '.-'),
+			array('NUMBER', '.1'),
 		);
 
 		$return[] = array(
@@ -736,11 +747,10 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 	{
 		$return = array();
 
-		// 5..5 -> NUMBER(5.), OPERATOR(.), NUMBER(5)
+		// 5..5 -> NUMBER(5.), NUMBER(.5)
 		$expected = array(
 			array('NUMBER', '5.'),
-			array('OPERATOR', '.'),
-			array('NUMBER', '5'),
+			array('NUMBER', '.5'),
 		);
 
 		$return[] = array(
@@ -765,8 +775,9 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 		// 5.1..5.1 -> NUMBER(5.1), MISC(..), NUMBER(5.1)
 		$expected = array(
 			array('NUMBER', '5.1'),
-			array('MISC', '..'),
-			array('NUMBER', '5.1'),
+			array('OPERATOR', '.'),
+			array('NUMBER', '.5'),
+			array('NUMBER', '.1'),
 		);
 
 		$return[] = array(
@@ -794,13 +805,13 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			array('MISC', '..'),
 			array('NUMBER', '.1'),
 		);
-
+/*
 		$return[] = array(
 			"The \"..\" operator with int values",
 			$this->assembleCommonCondition(".1...1"),
 			$this->assembleCommonTokens($expected)
 		);
-
+*/
 		return $return;
 	}
 
