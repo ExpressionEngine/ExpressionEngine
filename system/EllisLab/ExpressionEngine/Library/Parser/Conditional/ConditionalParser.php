@@ -27,7 +27,7 @@ use EllisLab\ExpressionEngine\Library\Parser\Conditional\Exception\ConditionalPa
  * The Grammar, written without left recursion for clarity.
  *
  *  template = [TEMPLATE_STRING | conditional]*
- *  conditional = IF expr ENDCOND template (ELSEIF expr ENDCOND template)* (ELSE template)? ENDIF
+ *  conditional = LD IF expr RD template (ELSEIF expr RD template)* (ELSE template)? ENDIF
  *  expr = bool_expr | value
  *  bool_expr = value OPERATOR expr | parenthetical_expr OPERATOR expr
  *  parenthetical_expr = LP expr RP
@@ -100,13 +100,15 @@ class ConditionalParser extends AbstractParser {
 				$this->output($this->value());
 				$this->next();
 			}
-			elseif ($this->accept('IF'))
+			elseif ($this->acceptTag('IF'))
 			{
-				$conditional = new ConditionalStatement($this);
+					$conditional = new ConditionalStatement($this);
+					$this->conditional($conditional);
 
-				$this->conditional($conditional);
-				$this->expect('ENDIF');
-				$conditional->closeIf();
+					$this->expectTag('ENDIF');
+					$this->expect('RD');
+
+					$conditional->closeIf();
 			}
 			else
 			{
@@ -139,7 +141,7 @@ class ConditionalParser extends AbstractParser {
 			$this->skipConditionalBody();
 		}
 
-		while ($this->accept('ELSEIF'))
+		while ($this->acceptTag('ELSEIF'))
 		{
 			$elseif_expression = $this->condition();
 
@@ -153,8 +155,10 @@ class ConditionalParser extends AbstractParser {
 			}
 		}
 
-		if ($this->accept('ELSE'))
+		if ($this->acceptTag('ELSE'))
 		{
+			$this->expect('RD');
+
 			if ($conditional->addElse())
 			{
 				$this->template();
@@ -209,7 +213,7 @@ class ConditionalParser extends AbstractParser {
 		$this->openBuffer();
 
 		$expression = $this->expression();
-		$this->expect('ENDCOND');
+		$this->expect('RD');
 
 		$this->closeBuffer(); // discard whitespace added by next()
 
@@ -514,6 +518,42 @@ class ConditionalParser extends AbstractParser {
 		if (parent::expect($token_name) === FALSE)
 		{
 			throw new ConditionalParserException('Unexpected ' . $this->token[0] . ' (' . $this->token[1] . ') expected ' . $token_name . '.');
+		}
+
+		return TRUE;
+	}
+
+	/**
+	 * Accept a tag token.
+	 *
+	 * Works like accept, but assumes that the token is preceded by an LD.
+	 */
+	protected function acceptTag($token_name)
+	{
+		$next = current($this->tokens);
+
+		if ( ! $this->is('LD') || $next[0] != $token_name)
+		{
+			return FALSE;
+		}
+
+		$this->openBuffer();
+		$this->next();
+		$this->next();
+		$this->closeBuffer(); // discard next()'s whitespace
+		return TRUE;
+	}
+
+	/**
+	 * Expect a tag token
+	 *
+	 * Works like expect, but assumes that the token is preceded by an LD.
+	 */
+	protected function expectTag($token_name)
+	{
+		if ( ! $this->acceptTag($token_name))
+		{
+			throw new ConditionalParserException('Unexpected tag ' . $this->token[0] . ' (' . $this->token[1] . ') expected ' . $token_name . '.');
 		}
 
 		return TRUE;
