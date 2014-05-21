@@ -71,12 +71,14 @@ class ConditionalLexer extends AbstractLexer {
 	);
 
 	/**
-	 * Valid operators. Should be sorted by length.
-	 * If you add one here, you must also add it to the boolean
-	 * expression handler.
+	 * Valid operators.
+	 *
+	 * If you add one here, you must also add its logict to the boolean
+	 * expression class.
 	 */
 	private $operators = array(
-		'||', '&&', '**',
+		'**',
+		'||', '&&',
 		'==', '!=', '<=', '>=', '<>', '<', '>',
 		'%', '+', '-', '*', '/',
 		'.', '!', '^'
@@ -119,7 +121,6 @@ class ConditionalLexer extends AbstractLexer {
 
 		$this->addToken('TEMPLATE_STRING', $this->str);
 		$this->addToken('EOS', TRUE);
-
 		return $this->tokens;
 	}
 
@@ -172,7 +173,6 @@ class ConditionalLexer extends AbstractLexer {
 
 	/**
 	 * Finds tokens specific to conditional boolean statements.
-	 *
 	 */
 	private function tokenizeIfStatement()
 	{
@@ -181,9 +181,6 @@ class ConditionalLexer extends AbstractLexer {
 		{
 			throw new ConditionalLexerException('Conditional is invalid: missing a "{/if}".', 21);
 		}
-
-		// must be true at the end
-		$valid_end = FALSE;
 
 		$last_count = 0;
 
@@ -202,40 +199,19 @@ class ConditionalLexer extends AbstractLexer {
 
 			if ($char == '"' || $char == "'")
 			{
-				$this->tokenizeString();
+				$this->string();
 			}
-			elseif ($char == '(')
+			elseif ($char == '(' || $char == ')')
 			{
-				$this->next();
-				$this->addToken('LP', '(');
+				$this->parenthesis();
 			}
-			elseif ($char == ')')
+			elseif ($char == '{' || $char == '}')  // Checking for balanced curly braces
 			{
-				$this->next();
-				$this->addToken('RP', ')');
-			}
-			elseif ($char == '{')  // Checking for balanced curly braces
-			{
-				$this->tag_buffer .= '{';
+				$this->tag();
 
-				$this->pushState('TAG');
-				$this->next();
-			}
-			elseif ($char == '}')
-			{
-				$this->next();
-				$this->popState();
-				$top = $this->topState();
-
-				if ($top === FALSE)
+				if ($this->topState() == 'END')
 				{
-					$valid_end = TRUE;
 					break;
-				}
-				elseif ($top == 'OK')
-				{
-					$this->addToken('TAG', $this->tag_buffer.$char);
-					$this->tag_buffer = '';
 				}
 			}
 
@@ -245,6 +221,7 @@ class ConditionalLexer extends AbstractLexer {
 			// todo: save as misc?
 			if ($last_count == $new_count && $this->topState() != 'TAG')
 			{
+				throw new ConditionalLexerException('Unexpected character: '.$char);
 				$this->next();
 			}
 
@@ -252,7 +229,7 @@ class ConditionalLexer extends AbstractLexer {
 		}
 
 		// Not in an end state, or curly braces are unbalanced, "error" out
-		if ( ! $valid_end)
+		if ($this->topState() != 'END')
 		{
 			throw new ConditionalLexerException('Conditional is invalid: not in an end state or unbalanced curly braces.');
 		}
@@ -309,7 +286,7 @@ class ConditionalLexer extends AbstractLexer {
 	/**
 	 * Build and add a string token
 	 */
-	public function tokenizeString()
+	public function string()
 	{
 		$open_quote = $this->next();
 
@@ -317,43 +294,91 @@ class ConditionalLexer extends AbstractLexer {
 		$backslash = '\\';
 		$escapable = array('\\', "'", '"');
 
-		// empty? easy.
-		if ($this->peek() != $open_quote)
+		// Add everything up to the next backslash or closing quote
+		// and then check if we're done or just escaping.
+		while (TRUE)
 		{
-			// Add everything up to the next backslash or closing quote
-			// and then check if we're done or just escaping.
-			while (($add = $this->seekTo($open_quote.$backslash)) !== 0)
+			$add = $this->seekTo($open_quote.$backslash);
+
+			if ($add === FALSE || $add === 0) // allows ''
 			{
-				$str .= $add;
-
-				if ($open_quote == $this->next())
-				{
-					break;
-				}
-
-				$next = $this->next();
-
-				if ( ! in_array($next, $escapable))
-				{
-					$str .= $backslash;
-				}
-
-				$str .= $next;
+				break;
 			}
-		}
-		else
-		{
-			$this->next();
+
+			$str .= $add;
+
+			if ($open_quote == $this->next())
+			{
+				break;
+			}
+
+			$next = $this->next();
+
+			if ( ! in_array($next, $escapable))
+			{
+				$str .= $backslash;
+			}
+
+			$str .= $next;
 		}
 
 		// if we're in a tag we need to keep the quotes
 		if ($this->topState() == 'TAG')
 		{
-			$this->tag_buffer .= $open_quote.$str.$open_quote;
+			$str = $open_quote.$str.$open_quote;
 		}
-		else
+
+		$this->addToken('STRING', $str);
+	}
+
+	/**
+	 * Try to create a parenthesis token at the current offset
+	 */
+	public function parenthesis()
+	{
+		$char = $this->peek();
+
+		if ($char == '(')
 		{
-			$this->addToken('STRING', $str);
+			$this->addToken('LP', '(');
+			$this->next();
+		}
+		elseif ($char == ')')
+		{
+			$this->addToken('RP', ')');
+			$this->next();
+		}
+	}
+
+	/**
+	 * Try to create a tag token at the current offset
+	 */
+	public function tag()
+	{
+		$char = $this->peek();
+
+		if ($char == '{')
+		{
+			$this->tag_buffer .= '{';
+
+			$this->pushState('TAG');
+			$this->next();
+		}
+		elseif ($char == '}')
+		{
+			$this->next();
+			$this->popState();
+			$top = $this->topState();
+
+			if ($top === FALSE)
+			{
+				$this->pushState('END');
+			}
+			elseif ($top == 'OK')
+			{
+				$this->addToken('TAG', $this->tag_buffer.$char);
+				$this->tag_buffer = '';
+			}
 		}
 	}
 
@@ -397,6 +422,9 @@ class ConditionalLexer extends AbstractLexer {
 		}
 	}
 
+	/**
+	 * Try to create an operator token at the current offset
+	 */
 	private function operators()
 	{
 		// Consume until we stop seeing operators
@@ -411,30 +439,30 @@ class ConditionalLexer extends AbstractLexer {
 
 		$last_char = substr($operator_buffer, -1);
 
-		// We want 1.2.3 to turn into number (1.2), number (.3). So
-		// concatenation with a trailing number is not a valid operation
-		// unless there's whitespace. This is consistent with how php does it.
-		if (strlen($operator_buffer) == 1 && $last_char == '.')
+		// Handle some edge cases where the next character is a digit
+		if (ctype_digit($this->peek()))
 		{
-			if (ctype_digit($this->peek()))
+			// We want 1.2.3 to turn into number (1.2), number (.3). So
+			// concatenation with a trailing number is not a valid operation
+			// unless there's whitespace. This is consistent with how php does it.
+			if (strlen($operator_buffer) > 0 && $last_char == '.')
 			{
 				$this->str = substr($operator_buffer, -1).$this->str; // Put it back.
-				return FALSE;
+				$operator_buffer = substr($operator_buffer, 0, -1);
+			}
+			// Check for any trailing - meant to indicate negativity
+			// but only if it is trailing and not standalone, a -
+			// on its own is subtraction
+			elseif (strlen($operator_buffer) > 1 && $last_char == '-')
+			{
+				$this->str = substr($operator_buffer, -1).$this->str; // Put it back.
+				$operator_buffer = substr($operator_buffer, 0, -1);
 			}
 		}
-		// Check for any trailing - meant to indicate negativity
-		// but only if it is trailing and not standalone, a -
-		// on its own is subtraction
-		elseif (strlen($operator_buffer) > 1)
+
+		if ($operator_buffer == '')
 		{
-			if ($last_char == '-' || $last_char == '.')
-			{
-				if (ctype_digit($this->peek()))
-				{
-					$this->str = substr($operator_buffer, -1).$this->str; // Put it back.
-					$operator_buffer = substr($operator_buffer, 0, -1);
-				}
-			}
+			return FALSE;
 		}
 
 		if (in_array($operator_buffer, $this->operators))
