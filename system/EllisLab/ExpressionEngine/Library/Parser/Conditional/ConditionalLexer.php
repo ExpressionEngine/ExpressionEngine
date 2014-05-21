@@ -442,18 +442,15 @@ class ConditionalLexer extends AbstractLexer {
 		// Handle some edge cases where the next character is a digit
 		if (ctype_digit($this->peek()))
 		{
-			// We want 1.2.3 to turn into number (1.2), number (.3). So
-			// concatenation with a trailing number is not a valid operation
-			// unless there's whitespace. This is consistent with how php does it.
-			if (strlen($operator_buffer) > 0 && $last_char == '.')
-			{
-				$this->str = substr($operator_buffer, -1).$this->str; // Put it back.
-				$operator_buffer = substr($operator_buffer, 0, -1);
-			}
-			// Check for any trailing - meant to indicate negativity
-			// but only if it is trailing and not standalone, a -
-			// on its own is subtraction
-			elseif (strlen($operator_buffer) > 1 && $last_char == '-')
+			// 1.2 is a number, not two concatenated numbers. To be consistent
+			// with that, 1.2.3 should turn into number (1.2), number (.3). So
+			// any concatenation with a trailing number is not a valid operation
+			// unless there's whitespace. This is also how PHP's token_get_all()
+			// handles it.
+			// In a similar vein, a '-' at the end of the operator is most likely
+			// meant to indicate negativity. Unless its on its own, then it's
+			// subtraction, of course.
+			if (($last_char == '.') || ($operator_length > 1 && $last_char == '-'))
 			{
 				$this->str = substr($operator_buffer, -1).$this->str; // Put it back.
 				$operator_buffer = substr($operator_buffer, 0, -1);

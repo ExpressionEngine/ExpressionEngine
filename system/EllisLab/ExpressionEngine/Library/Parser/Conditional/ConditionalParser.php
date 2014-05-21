@@ -79,7 +79,7 @@ class ConditionalParser extends AbstractParser {
 	 * Turn safety on.
 	 *
 	 * When safety is on, any non-scalars are turned into FALSE so that
-	 * they can't be used to muck with our eval.
+	 * the conditional can fully execute
 	 */
 	public function safetyOn()
 	{
