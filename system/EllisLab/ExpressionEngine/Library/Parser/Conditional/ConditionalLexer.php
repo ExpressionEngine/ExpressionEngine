@@ -58,14 +58,14 @@ class ConditionalLexer extends AbstractLexer {
 	private $tokens;
 
 	/**
-	 * The state stack
-	 */
-	private $stack;
-
-	/**
 	 * Tag contents
 	 */
 	private $tag_buffer;
+
+	/**
+	 * Tag depth
+	 */
+	private $tag_depth = 0;
 
 	/**
 	 * The current state / top of the stack
@@ -127,12 +127,17 @@ class ConditionalLexer extends AbstractLexer {
 			// then we need to move into the statement.
 			if ($this->tokenizeIfTags())
 			{
-				$this->tokenizeIFStatement();
+				$this->pushState('IF');
+				$this->expression();
+				$this->popStateAndExpect('IF');
 			}
 		}
 
 		$this->addToken('TEMPLATE_STRING', $this->str);
 		$this->addToken('EOS', TRUE);
+
+		$this->popStateAndExpect('OK');
+
 		return $this->tokens;
 	}
 
@@ -186,30 +191,32 @@ class ConditionalLexer extends AbstractLexer {
 	/**
 	 * Finds tokens specific to conditional boolean statements.
 	 */
-	private function tokenizeIfStatement()
+	private function expression()
 	{
+		$this->pushState('EXPR');
+
 		// No sense continuing if we cannot find a {/if}
 		if (strpos($this->str, '{/if}') === FALSE)
 		{
 			throw new ConditionalLexerException('Conditional is invalid: missing a "{/if}".', 21);
 		}
 
-		$last_count = 0;
-
 		while ($this->str != '')
 		{
 			$this->whitespace();
 
+			$char = $this->peek();
+
 			if ($this->variable() || $this->number())
 			{
 				$this->whitespace();
+				$this->operators();
 			}
-
-			$this->operators();
-
-			$char = $this->peek();
-
-			if ($char == '"' || $char == "'")
+			elseif ($this->operators())
+			{
+				continue;
+			}
+			elseif ($char == '"' || $char == "'")
 			{
 				$this->string();
 			}
@@ -219,34 +226,26 @@ class ConditionalLexer extends AbstractLexer {
 			}
 			elseif ($char == '{' || $char == '}')  // Checking for balanced curly braces
 			{
-				$this->tag();
-
-				if ($this->topState() == 'END')
+				// tag returns false when the action wasn't on a tag.
+				// typically that means we hit our closing } and need to stop
+				if ( ! $this->tag())
 				{
+					// If this fails something else wasn't closed (tag, string)
+					$this->popStateAndExpect('EXPR');
 					break;
 				}
 			}
-
-			$new_count = count($this->tokens);
-
-			// when we don't know what to do with a character, we skip it
-			// todo: save as misc?
-			if ($last_count == $new_count && $this->topState() != 'TAG')
+			else
 			{
-				throw new ConditionalLexerException('Unexpected character: '.$char);
+				if ($this->tag_depth == 0)
+				{
+					throw new ConditionalLexerException('Unexpected character: '.$char);
+				}
+
 				$this->next();
+				$this->addToken('MISC', $char);
 			}
-
-			$last_count = $new_count;
 		}
-
-		// Not in an end state, or curly braces are unbalanced, "error" out
-		if ($this->topState() != 'END')
-		{
-			throw new ConditionalLexerException('Conditional is invalid: not in an end state or unbalanced curly braces.');
-		}
-
-		$this->addToken('ENDCOND', '}');
 	}
 
 	/**
@@ -258,8 +257,24 @@ class ConditionalLexer extends AbstractLexer {
 
 		if (isset($result))
 		{
+			$type = 'VARIABLE';
+			$uppercase_value = strtoupper($result);
+
+			switch ($uppercase_value)
+			{
+				case 'TRUE':
+				case 'FALSE':
+					$type = 'BOOL';
+					break;
+				case 'XOR':
+				case 'AND':
+				case 'OR':
+					$type = 'OPERATOR';
+					break;
+			}
+
 			$this->move(strlen($result));
-			$this->addToken('VARIABLE', $result);
+			$this->addToken($type, $result);
 			return TRUE;
 		}
 
@@ -300,6 +315,7 @@ class ConditionalLexer extends AbstractLexer {
 	 */
 	public function string()
 	{
+		$this->pushState('STRING');
 		$open_quote = $this->next();
 
 		$str = '';
@@ -314,6 +330,11 @@ class ConditionalLexer extends AbstractLexer {
 
 			if ($add === FALSE || $add === 0) // allows ''
 			{
+				if ($this->str == '')
+				{
+					return;
+				}
+
 				break;
 			}
 
@@ -335,12 +356,13 @@ class ConditionalLexer extends AbstractLexer {
 		}
 
 		// if we're in a tag we need to keep the quotes
-		if ($this->topState() == 'TAG')
+		if ($this->tag_depth > 0)
 		{
 			$str = $open_quote.$str.$open_quote;
 		}
 
 		$this->addToken('STRING', $str);
+		$this->popStateAndExpect('STRING');
 	}
 
 	/**
@@ -371,67 +393,37 @@ class ConditionalLexer extends AbstractLexer {
 
 		if ($char == '{')
 		{
-			$this->tag_buffer .= '{';
+			$this->next();
+			$this->tag_depth++;
+			$this->tag_buffer .= $char;
 
 			$this->pushState('TAG');
-			$this->next();
+			return TRUE;
 		}
 		elseif ($char == '}')
 		{
 			$this->next();
-			$this->popState();
-			$top = $this->topState();
 
-			if ($top === FALSE)
+			if ($this->tag_depth == 0)
 			{
-				$this->pushState('END');
+				$this->addToken('ENDCOND', '}');
+				return FALSE;
 			}
-			elseif ($top == 'OK')
+
+			$this->tag_depth--;
+			$this->popStateAndExpect('TAG');
+
+			// nested tags are collapsed. Only add when we're definitely out.
+			if ($this->topState() == 'EXPR')
 			{
 				$this->addToken('TAG', $this->tag_buffer.$char);
 				$this->tag_buffer = '';
 			}
-		}
-	}
 
-	/**
-	 * Add token to the token stream
-	 *
-	 * @param string $type The type of token being added
-	 * @param string $$value The value of the token being added
-	 */
-	public function addToken($type, $value)
-	{
-		if ($this->topState() == 'TAG')
-		{
-			$this->tag_buffer .= $value;
-			return;
+			return TRUE;
 		}
 
-		// Special cases for Variables
-		if ($type == 'VARIABLE')
-		{
-			$uppercase_value = strtoupper($value);
-
-			switch ($uppercase_value)
-			{
-				case 'TRUE':
-				case 'FALSE':
-					$type = 'BOOL';
-					break;
-				case 'XOR':
-				case 'AND':
-				case 'OR':
-					$type = 'OPERATOR';
-					break;
-			}
-		}
-
-		// Always store strings, even empty ones
-		if ($value != '' || $type == 'STRING')
-		{
-			$this->tokens[] = array($type, $value);
-		}
+		return FALSE;
 	}
 
 	/**
@@ -487,37 +479,45 @@ class ConditionalLexer extends AbstractLexer {
 	}
 
 	/**
-	 * Push a state onto the stack
+	 * Add token to the token stream
 	 *
-	 * We use this to keep track of when we're in a tag state.
-	 *
-	 * @param string $state Name of the state to push
+	 * @param string $type The type of token being added
+	 * @param string $$value The value of the token being added
 	 */
-	private function pushState($state)
+	public function addToken($type, $value)
 	{
-		$this->stack[] = $state;
+		if ($this->tag_depth > 0)
+		{
+			$this->tag_buffer .= $value;
+			return;
+		}
+
+		// Always store strings, even empty ones
+		if ($value != '' || $type == 'STRING')
+		{
+			$this->tokens[] = array($type, $value);
+		}
 	}
 
 	/**
-	 * Pop a state off the stack
+	 * Pop the stack state and ensure that we popped what we expected.
 	 *
-	 * @return The popped state
+	 * @param String $expected Expected popped state.
+	 * @return String popped state
 	 */
-	private function popState()
+	protected function popStateAndExpect($expected)
 	{
-		return array_pop($this->stack);
-	}
+		$out = $this->popState();
 
-	/**
-	 * Get the top state.
-	 *
-	 * We use this to keep track of when we're in a tag state.
-	 *
-	 * @param string $state Name of the state to push
-	 */
-	private function topState()
-	{
-		return end($this->stack);
+		if ($out !== $expected)
+		{
+			// This message seems backwards, but it isn't. This is called when
+			// we hit the end of a certain section of code. So if we've hit the
+			// end of an if, but the stack is still in string, that means there
+			// is an unclosed string somewhere. The message is written to point
+			// the user in that direction.
+			throw new ConditionalLexerException('Invalid stack state: Reached end of '.$expected.', expected end of '.$out.'.');
+		}
 	}
 }
 

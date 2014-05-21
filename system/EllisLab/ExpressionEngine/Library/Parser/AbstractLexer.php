@@ -2,6 +2,8 @@
 
 namespace EllisLab\ExpressionEngine\Library\Parser;
 
+use SplStack;
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -27,7 +29,22 @@ namespace EllisLab\ExpressionEngine\Library\Parser;
  */
 abstract class AbstractLexer {
 
+	/**
+	 * The string being worked on
+	 */
+	protected $str;
+
+	/**
+	 * A stack for convenience
+	 */
+	protected $stack;
+
 	abstract public function tokenize($str);
+
+	public function __construct()
+	{
+		$this->stack = new SplStack();
+	}
 
 	/**
 	 * Peek ahead n characters without moving
@@ -37,6 +54,10 @@ abstract class AbstractLexer {
 	 */
 	protected function peek($n = 1)
 	{
+		if ($n == 1)
+		{
+			return $this->str[0];
+		}
 		return substr($this->str, 0, $n);
 	}
 
@@ -90,5 +111,35 @@ abstract class AbstractLexer {
 		$this->str = substr($this->str, $n);
 
 		return $buffer;
+	}
+
+	/**
+	 * Add a state to the stack
+	 *
+	 * @param String $state state to add
+	 */
+	protected function pushState($state)
+	{
+		$this->stack->push($state);
+	}
+
+	/**
+	 * Remove a state from the stack
+	 *
+	 * @return The removed state
+	 */
+	protected function popState()
+	{
+		return $this->stack->pop();
+	}
+
+	/**
+	 * Check the top of the stack
+	 *
+	 * @return The current state
+	 */
+	protected function topState()
+	{
+		return $this->stack->top();
 	}
 }
