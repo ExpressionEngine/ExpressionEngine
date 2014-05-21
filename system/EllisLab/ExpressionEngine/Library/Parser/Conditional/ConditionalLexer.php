@@ -63,6 +63,11 @@ class ConditionalLexer extends AbstractLexer {
 	private $stack;
 
 	/**
+	 * Tag contents
+	 */
+	private $tag_buffer;
+
+	/**
 	 * The current state / top of the stack
 	 */
 	private $patterns = array(
