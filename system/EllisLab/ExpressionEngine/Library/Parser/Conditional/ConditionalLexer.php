@@ -67,34 +67,73 @@ class ConditionalLexer extends AbstractLexer {
 	 */
 	private $tag_depth = 0;
 
-	/**
-	 * The current state / top of the stack
-	 */
-	private $patterns = array(
-		// Variables can be any word character, but at least one char must
-		// be a letter. This could be expressed as \w*[a-zA-Z]\w*, but we
-		// also need to allow : and -, hence the two sided inner expression.
-		'variable'	=> '\w*([a-zA-Z]([\w:-]+\w)?|(\w[\w:-]+)?[a-zA-Z])\w*',
 
-		// Numbers can be positive or negative. They can contain a dot at
-		// any location, but if there is one there must also be at least
-		// one digit: 15, .6, 25., 2.6
-		'number'	=> '-?([0-9]*\.[0-9]+|[0-9]+\.[0-9]*|[0-9]+)'
-	);
+	/**
+	 * Regex for boolean values
+	 */
+	const BOOL_PATTERN = "
+		\b									# must be its own word
+		(TRUE|True|true|FALSE|False|false)	# PHP allows all possible capitalizations. We don't allow things like faLsE.
+		(?!(-+)?\w)							# simulate \b with -
+        ";
+
+	/**
+	 * Regex for variables
+	 */
+	const VARIABLE_PATTERN = "
+		\w*(								# word characters on both ends are ok
+			[a-zA-Z]([\w:-]+\w)?			# we need at least one alpha in there
+			|								# to avoid things like 5-5, and it can't
+			(\w[\w:-]+)?[a-zA-Z]			# begin or end in : or -
+		)\w*
+	";
+
+	/**
+	 * Regex for numbers
+	 */
+	const NUMBER_PATTERN = "
+		-?									# any number can be negative
+		(
+			[0-9]*\.[0-9]+					# You must have a number either
+			|								# before or after the dot. The other
+			[0-9]+\.[0-9]*					# side is then optional: .5, 5., 1.2
+			|
+			[0-9]+							# Integers are cool, too
+		)
+	";
+
+	/**
+	 * Pattern used for all of the above patterns. Run as one
+	 * to improve performance.
+	 */
+	private $compiled_pattern;
+
+	/**
+	 * Pattern used to match operators. Automatically generated
+	 * from the operators array below.
+	 */
+	private $operator_pattern;
 
 	/**
 	 * Valid operators.
 	 *
-	 * If you add one here, you must also add its logict to the boolean
-	 * expression class.
+	 * If you add one here, you must also add its logic to the boolean
+	 * expression class. If an operator is the same as the beginning of
+	 * another, the longer must be first. (e.g. ** before *).
 	 */
 	private $operators = array(
-		'**',
-		'||', '&&',
+		'**', '%', '+', '-', '*', '/',
 		'==', '!=', '<=', '>=', '<>', '<', '>',
-		'%', '+', '-', '*', '/',
-		'.', '!', '^'
+		'.', '!', '^',
+		'||', '&&',
+		'AND', 'OR', 'XOR'
 	);
+
+	public function __construct()
+	{
+		$this->compiled_pattern = $this->compilePattern();
+		$this->operator_pattern = $this->getOperatorPattern();
+	}
 
 	/**
 	 * Finds conditionals an returns a token stream for the entire template, with
@@ -105,15 +144,10 @@ class ConditionalLexer extends AbstractLexer {
 	 */
 	public function tokenize($str)
 	{
-		if ($str == '')
-		{
-			return array();
-		}
-
 		$this->str = $str;
 		$this->tokens = array();
 
-		while ($this->str != '')
+		while ( ! $this->eof())
 		{
 			// go to the next LD
 			$buffer = $this->seekTo('{');
@@ -130,12 +164,17 @@ class ConditionalLexer extends AbstractLexer {
 			throw new ConditionalLexerException('Unclosed tag.');
 		}
 
-		$this->addToken('TEMPLATE_STRING', $this->str);
+		$this->addToken('TEMPLATE_STRING', $this->rest());
 		$this->addToken('EOS', TRUE);
+
+		unset($this->str);
 
 		return $this->tokens;
 	}
 
+	/**
+	 * We saw a {, check if it's an ee tag that we can use.
+	 */
 	public function templateTags()
 	{
 		if ($this->peek(5) == '{/if}')
@@ -150,7 +189,7 @@ class ConditionalLexer extends AbstractLexer {
 			$this->addToken('ELSE', 'if:else');
 			$this->move(8);
 		}
-		elseif ($if = $this->peekRegex('{(if(:elseif)?\s)'))
+		elseif ($if = $this->peekRegex('\{(if(:elseif)?\s)'))
 		{
 			$this->addToken('LD', '{');
 
@@ -161,8 +200,8 @@ class ConditionalLexer extends AbstractLexer {
 			}
 			else
 			{
-				$this->addToken('ELSEIF', 'if:elseif');
 				$this->move(10);
+				$this->addToken('ELSEIF', 'if:elseif');
 			}
 
 			$this->whitespace();
@@ -194,30 +233,15 @@ class ConditionalLexer extends AbstractLexer {
 	 */
 	private function expression()
 	{
-		// No sense continuing if we cannot find a {/if}
-		if (strpos($this->str, '{/if}') === FALSE)
-		{
-			throw new ConditionalLexerException('Conditional is invalid: missing a "{/if}".', 21);
-		}
-
-		while ($this->str != '')
+		while ( ! $this->eof())
 		{
 			$this->whitespace();
 
 			$char = $this->peek();
 
-			if ($this->variable() || $this->number())
+			if ($char == '}' && $this->tag_depth == 0)  // Checking for balanced curly braces
 			{
-				$this->whitespace();
-				$this->operators();
-			}
-			elseif ($this->operators())
-			{
-				continue;
-			}
-			elseif ($char == '"' || $char == "'")
-			{
-				$this->string();
+				return;
 			}
 			elseif ($char == '(' || $char == ')')
 			{
@@ -228,23 +252,22 @@ class ConditionalLexer extends AbstractLexer {
 				$this->next();
 				$this->tag();
 			}
-			elseif ($char == '}' && $this->tag_depth == 0)  // Checking for balanced curly braces
+			elseif ($this->value())
 			{
-				break;
+				$this->whitespace();
+				$this->operator();
 			}
-			else
+			elseif ( ! $this->operator())
 			{
-				if ($this->tag_depth == 0)
-				{
-					throw new ConditionalLexerException('Unexpected character: '.$char);
-				}
-
 				$this->next();
 				$this->addToken('MISC', $char);
 			}
 		}
 	}
 
+	/**
+	 * We've entered a tag, find the end while respecting proper quoting.
+	 */
 	public function tag()
 	{
 		$this->tag_depth++;
@@ -281,56 +304,6 @@ class ConditionalLexer extends AbstractLexer {
 	}
 
 	/**
-	 * Try to create a variable token at the current offset
-	 */
-	public function variable()
-	{
-		$result = $this->peekRegex($this->patterns['variable']);
-
-		if (isset($result))
-		{
-			$type = 'VARIABLE';
-			$uppercase_value = strtoupper($result);
-
-			switch ($uppercase_value)
-			{
-				case 'TRUE':
-				case 'FALSE':
-					$type = 'BOOL';
-					break;
-				case 'XOR':
-				case 'AND':
-				case 'OR':
-					$type = 'OPERATOR';
-					break;
-			}
-
-			$this->move(strlen($result));
-			$this->addToken($type, $result);
-			return TRUE;
-		}
-
-		return FALSE;
-	}
-
-	/**
-	 * Try to create a number token at the current offset
-	 */
-	public function number()
-	{
-		$result = $this->peekRegex($this->patterns['number']);
-
-		if (isset($result))
-		{
-			$this->move(strlen($result));
-			$this->addToken('NUMBER', $result);
-			return TRUE;
-		}
-
-		return FALSE;
-	}
-
-	/**
 	 * Try to create a whitespace token at the current offset
 	 */
 	public function whitespace()
@@ -340,6 +313,54 @@ class ConditionalLexer extends AbstractLexer {
 			$this->move(strlen($ws));
 			$this->addToken('WHITESPACE', $ws);
 		}
+	}
+
+	/**
+	 * Variables and Scalars
+	 */
+	public function value()
+	{
+		if (preg_match($this->compiled_pattern, $this->str, $matches))
+		{
+			foreach (array_reverse($matches) as $type => $value)
+			{
+				if (is_string($type))
+				{
+					$match = TRUE;
+					$this->addToken($type, $value);
+					$this->move(strlen($value));
+					$this->whitespace();
+					return TRUE;
+				}
+			}
+		}
+
+		$char = $this->peek();
+
+		if ($char == '"' || $char == "'")
+		{
+			$this->string();
+			return TRUE;
+		}
+
+		return FALSE;
+	}
+
+	/**
+	 * Operators
+	 */
+	public function operator()
+	{
+		$operator = $this->peekRegex($this->operator_pattern);
+
+		if (isset($operator))
+		{
+			$this->move(strlen($operator));
+			$this->addToken('OPERATOR', $operator);
+			return TRUE;
+		}
+
+		return FALSE;
 	}
 
 	/**
@@ -361,7 +382,7 @@ class ConditionalLexer extends AbstractLexer {
 
 			if ($add === FALSE || $add === 0) // allows ''
 			{
-				if ($this->str == '')
+				if ($this->eof())
 				{
 					throw new ConditionalLexerException('Unclosed string.');
 				}
@@ -389,10 +410,12 @@ class ConditionalLexer extends AbstractLexer {
 		// if we're in a tag we need to keep the quotes
 		if ($this->tag_depth > 0)
 		{
-			$str = $open_quote.$str.$open_quote;
+			$this->tag_buffer .= $open_quote.$str.$open_quote;
 		}
-
-		$this->addToken('STRING', $str);
+		else
+		{
+			$this->addToken('STRING', $str);
+		}
 	}
 
 	/**
@@ -415,55 +438,44 @@ class ConditionalLexer extends AbstractLexer {
 	}
 
 	/**
-	 * Try to create an operator token at the current offset
+	 * Create the pattern that matches operators.
 	 */
-	private function operators()
+	private function getOperatorPattern()
 	{
-		// Consume until we stop seeing operators
-		$operator_length = strspn($this->str, implode('', $this->operators));
+		$pattern = '';
 
-		if ($operator_length == 0)
+		foreach ($this->operators as $operator)
 		{
-			return FALSE;
-		}
+			$operator = preg_quote($operator, '/');
 
-		$operator_buffer = $this->move($operator_length);
-
-		$last_char = substr($operator_buffer, -1);
-
-		// Handle some edge cases where the next character is a digit
-		if (ctype_digit($this->peek()))
-		{
+			// Special negative lookahead addition for concatenation
 			// 1.2 is a number, not two concatenated numbers. To be consistent
 			// with that, 1.2.3 should turn into number (1.2), number (.3). So
 			// any concatenation with a trailing number is not a valid operation
 			// unless there's whitespace. This is also how PHP's token_get_all()
 			// handles it.
-			// In a similar vein, a '-' at the end of the operator is most likely
-			// meant to indicate negativity. Unless its on its own, then it's
-			// subtraction, of course.
-			if (($last_char == '.') || ($operator_length > 1 && $last_char == '-'))
+			if ($operator == '\.')
 			{
-				$this->str = substr($operator_buffer, -1).$this->str; // Put it back.
-				$operator_buffer = substr($operator_buffer, 0, -1);
+				$operator = $operator.'(?!\d)';
 			}
+
+			$pattern .= $operator.'|';
 		}
 
-		if ($operator_buffer == '')
-		{
-			return FALSE;
-		}
+		return substr($pattern, 0, -1);
+	}
 
-		if (in_array($operator_buffer, $this->operators))
-		{
-			$this->addToken('OPERATOR', $operator_buffer);
-		}
-		else
-		{
-			$this->addToken('MISC', $operator_buffer);
-		}
-
-		return TRUE;
+	/**
+	 * Compile the regular expressions into one big
+	 * matching pattern.
+	 */
+	private function compilePattern()
+	{
+		return '/('.
+			'(?P<BOOL>'.self::BOOL_PATTERN.')|'.
+			'(?P<VARIABLE>'.self::VARIABLE_PATTERN.')|'.
+			'(?P<NUMBER>'.self::NUMBER_PATTERN.')'.
+			')/Ausx';
 	}
 
 	/**
