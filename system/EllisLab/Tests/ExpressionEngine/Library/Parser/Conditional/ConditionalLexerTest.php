@@ -939,7 +939,7 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			'var--double', 'var---tripple',
 			'var--double-plus', 'var---tripple--plus', 'var---tripple--plus-plus',
 			'var_underscore', '_underscore_var', 'var_', 'var_underscore-dash',
-			'var_-_rav', 's-__-s'
+			'var_-_rav', 's-__-s', 'TRUE-var', 'var-TRUE'
 		);
 
 		foreach ($variables as $variable)
