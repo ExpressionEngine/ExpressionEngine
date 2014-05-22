@@ -427,7 +427,7 @@ class ConditionalParser extends AbstractParser {
 	 */
 	protected function safeCastToString($value)
 	{
-		// It doesn't make sense to allow array values
+		// It doesn't currently make sense to allow array values
 		if (is_array($value))
 		{
 			return 'FALSE';
