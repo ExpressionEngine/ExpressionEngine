@@ -116,20 +116,20 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			array('Unclosed String (single quotes)',	"{if string == 'ee}out{/if}", 30),
 			array('Unclosed String (double quotes)',	'{if string == "ee}out{/if}', 30),
 			array('Unclosed Conditional', 				'{if string == "ee"}out', 21),
-		//	array('Unterminated Conditional', 			'{if string == "ee"out{/if}', 30),
 			array('If as a Prefix', 					'{if:foo}', 20),
 			array('Ifelse duplicity', 					'{if 5 == 5}out{if:else:else}out{/if}', 20),
 			array('Ifelse Prefixing', 					'{if 5 == 5}out{if:elsebeth}out{/if}', 20),
 			array('Ifelseif Prefixing', 				'{if 5 == 5}out{if:elseiffy}out{/if}', 20),
-			array('NUMBER + :', 						'{if 1:2}out{/if}', 10),
-			array('OK + :',	 							'{if :foo}out{/if}', 10),
-			array('OK + :',	 							'{if "foo":bar}out{/if}', 10),
-			array('OK + :',	 							"{if 'foo':bar}out{/if}", 10),
-			array('FLOAT + :', 							'{if 1.2:3}out{/if}', 10),
-			array('Simple Backticks',					'{if `echo hello`}out{/if}', 5),
-			array('Splitting Backticks',				'{if string.`echo hello #}out{/if}{if `== 0}out{/if}', 5),
-			array('Simple Comments',					'{if php/* test == 5*/info(); }out{/if}', 5),
-			array('Splitting Comments',					'{if string /* == 5 }out{/if}{if */phpinfo(); == 5}out{/if}', 5),
+		//	array('Unterminated Conditional', 			'{if string == "ee"out{/if}', 30),
+		//	array('NUMBER + :', 						'{if 1:2}out{/if}', 10),
+		//	array('OK + :',	 							'{if :foo}out{/if}', 10),
+		//	array('OK + :',	 							'{if "foo":bar}out{/if}', 10),
+		//	array('OK + :',	 							"{if 'foo':bar}out{/if}", 10),
+		//	array('FLOAT + :', 							'{if 1.2:3}out{/if}', 10),
+		//	array('Simple Backticks',					'{if `echo hello`}out{/if}', 5),
+		//	array('Splitting Backticks',				'{if string.`echo hello #}out{/if}{if `== 0}out{/if}', 5),
+		//	array('Simple Comments',					'{if php/* test == 5*/info(); }out{/if}', 5),
+		//	array('Splitting Comments',					'{if string /* == 5 }out{/if}{if */phpinfo(); == 5}out{/if}', 5),
 		);
 	}
 
@@ -325,7 +325,10 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 
 		// Manual invalid operator assignments
 		$invalid_operators = array(
-			'===', '!=='
+			'===' => array(
+				array('OPERATOR', '=='),
+				array('MISC', '=')
+			)
 		);
 
 		// Build out some combinations
@@ -335,25 +338,49 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			{
 				$operator = $first.$second;
 
-				if (in_array($operator, $valid_operators))
+				if (in_array($operator, $valid_operators) ||
+					isset($invalid_operators[$operator]))
 				{
 					continue;
 				}
 
-				$invalid_operators[] = $operator;
+				// Handle the case where first.second create a valid
+				// operator in the first half: ! + == => !== => OP(!=) MISC(=)
+				if (in_array($first.$second[0], $valid_operators))
+				{
+					$first = $first.$second[0];
+					$second = substr($second, 1);
+				}
+
+				// If the second part is an operator, it will be lexed as
+				// such, otherwise it just becomes misc
+				if (in_array($second, $valid_operators))
+				{
+					$invalid_operators[$operator] = array(
+						array('OPERATOR', $first),
+						array('OPERATOR', $second)
+					);
+				}
+				else
+				{
+					$invalid_operators[$operator] = array(
+						array('OPERATOR', $first),
+						array('MISC', $second)
+					);
+				}
 			}
 		}
 
-		$invalid_operators = array_unique($invalid_operators);
 
-		foreach ($invalid_operators as $operator)
+		foreach ($invalid_operators as $operator => $tokens)
 		{
 			foreach ($this->valueTypes as $type => $value)
 			{
 				$expected = array(
 					$value['token'],
 					array('WHITESPACE',	' '),
-					array('MISC', $operator),
+					$tokens[0],
+					$tokens[1],
 					array('WHITESPACE',	' '),
 					$value['token']
 				);
@@ -383,7 +410,10 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 
 		// Manual invalid operator assignments
 		$invalid_operators = array(
-			'===', '!=='
+			'===' => array(
+				array('OPERATOR', '=='),
+				array('MISC', '=')
+			)
 		);
 
 		$edge_cases = array();
@@ -395,7 +425,8 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			{
 				$operator = $first.$second;
 
-				if (in_array($operator, $valid_operators))
+				if (in_array($operator, $valid_operators) ||
+					isset($invalid_operators[$operator]))
 				{
 					continue;
 				}
@@ -408,19 +439,41 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 
 				if ($first == '.' || $second == '.' || $second == '-')
 				{
-					$edge_cases[] = $operator;
+					$edge_cases[$operator] = array(
+						array('OPERATOR', $first),
+						array('OPERATOR', $second)
+					);
+					continue;
+				}
+
+				// Handle the case where first.second create a valid
+				// operator in the first half: ! + == => !== => OP(!=) MISC(=)
+				if (in_array($first.$second[0], $valid_operators))
+				{
+					$first = $first.$second[0];
+					$second = substr($second, 1);
+				}
+
+				// If the second part is an operator, it will be lexed as
+				// such, otherwise it just becomes misc
+				if (in_array($second, $valid_operators))
+				{
+					$invalid_operators[$operator] = array(
+						array('OPERATOR', $first),
+						array('OPERATOR', $second)
+					);
 				}
 				else
 				{
-					$invalid_operators[] = $operator;
+					$invalid_operators[$operator] = array(
+						array('OPERATOR', $first),
+						array('MISC', $second)
+					);
 				}
 			}
 		}
 
-		$invalid_operators = array_unique($invalid_operators);
-		$edge_cases = array_unique($edge_cases);
-
-		foreach ($invalid_operators as $operator)
+		foreach ($invalid_operators as $operator => $tokens)
 		{
 			foreach ($this->valueTypes as $type => $value)
 			{
@@ -433,7 +486,8 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 
 				$expected = array(
 					$value['token'],
-					array('MISC', $operator),
+					$tokens[0],
+					$tokens[1],
 					$value['token']
 				);
 
@@ -447,7 +501,7 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 
 		// When a period or dash end an operator and the next character is
 		// a digit then it's not an operator any longer
-		foreach ($edge_cases as $operator)
+		foreach ($edge_cases as $operator => $tokens)
 		{
 			foreach ($this->valueTypes as $type => $value)
 			{
@@ -459,7 +513,8 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 
 				$expected = array(
 					$value['token'],
-					array('MISC', $operator),
+					$tokens[0],
+					$tokens[1],
 					$value['token']
 				);
 
@@ -485,22 +540,34 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 
 		foreach ($negative_edgy_operators as $operator)
 		{
-			// First the cases where these things are MISC
-			foreach (array('negative', 'littlefloat') as $type)
-			{
-				$value = $this->valueTypes[$type];
-				$expected = array(
-					$value['token'],
-					array('MISC', $operator),
-					$value['token']
-				);
+			// First the case where the - is misc
+			$value = $this->valueTypes['negative'];
+			$expected = array(
+				$value['token'],
+				array('OPERATOR', substr($operator, 0, -1)),
+				array('OPERATOR', substr($operator, -1)),
+				$value['token']
+			);
 
-				$return[] = array(
-					"The \"{$operator}\" operator with {$type} values (no spaces)",
-					$this->assembleCommonCondition($value['value'].$operator.$value['value']),
-					$this->assembleCommonTokens($expected)
-				);
-			}
+			$return[] = array(
+				"The \"{$operator}\" operator with negative values (no spaces)",
+				$this->assembleCommonCondition($value['value'].$operator.$value['value']),
+				$this->assembleCommonTokens($expected)
+			);
+
+			// Now the case where its trailed by a negative float
+			$value = $this->valueTypes['littlefloat'];
+			$expected = array(
+				$value['token'],
+				array('OPERATOR', substr($operator, 0, -1)),
+				array('NUMBER', '-.1')
+			);
+
+			$return[] = array(
+				"The \"{$operator}\" operator with littlefloat values (no spaces)",
+				$this->assembleCommonCondition($value['value'].$operator.$value['value']),
+				$this->assembleCommonTokens($expected)
+			);
 
 			// Now what to do when these things were followed by a digit
 			foreach (array('int', 'bigfloat') as $type)
@@ -544,7 +611,8 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 				$value = $this->valueTypes[$type];
 				$expected = array(
 					$value['token'],
-					array('MISC', $operator),
+					array('OPERATOR', substr($operator, 0, -1)),
+					array('OPERATOR', substr($operator, -1)),
 					$value['token']
 				);
 
@@ -592,7 +660,8 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 				$value = $this->valueTypes[$type];
 				$expected = array(
 					$value['token'],
-					array('MISC', $operator),
+					array('OPERATOR', substr($operator, 0, 1)),
+					array('OPERATOR', substr($operator, 1)),
 					$value['token']
 				);
 
@@ -653,13 +722,14 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			);
 		}
 
-		// These see '--' as MISC
+		// These see '--' as two operators
 		foreach(array('string', 'dash-string', 'dot.string', 'intstring', 'simpletag', 'moduletag', 'tag_with_params') as $type)
 		{
 			$value = $this->valueTypes[$type];
 			$expected = array(
 				$value['token'],
-				array('MISC', $operator),
+				array('OPERATOR', '-'),
+				array('OPERATOR', '-'),
 				$value['token']
 			);
 
@@ -719,10 +789,11 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			$this->assembleCommonTokens($expected)
 		);
 
-		// -5.1.--5.1 -> NUMBER(-5.1), MISC(.-), NUMBER(-5.1)
+		// -5.1.--5.1 -> NUMBER(-5.1), OPERATOR(.), OPERATOR(-), NUMBER(-5.1)
 		$expected = array(
 			array('NUMBER', '-5.1'),
-			array('MISC', '.-'),
+			array('OPERATOR', '.'),
+			array('OPERATOR', '-'),
 			array('NUMBER', '-5.1'),
 		);
 
@@ -732,11 +803,11 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			$this->assembleCommonTokens($expected)
 		);
 
-		// .1.-.1 -> NUMBER(.1), MISC(.-), NUMBER(-.1)
+		// .1.-.1 -> NUMBER(.1), OPERATOR(.), NUMBER(-.1)
 		$expected = array(
 			array('NUMBER', '.1'),
-			array('MISC', '.-'),
-			array('NUMBER', '.1'),
+			array('OPERATOR', '.'),
+			array('NUMBER', '-.1'),
 		);
 
 		$return[] = array(
@@ -797,7 +868,8 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 		// -5.1..-5.1 -> NUMBER(5.1), MISC(..), NUMBER(-5.1)
 		$expected = array(
 			array('NUMBER', '-5.1'),
-			array('MISC', '..'),
+			array('OPERATOR', '.'),
+			array('OPERATOR', '.'),
 			array('NUMBER', '-5.1'),
 		);
 
@@ -810,16 +882,17 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 		// .1...1 -> NUMBER(.1), MISC(..), NUMBER(-.1)
 		$expected = array(
 			array('NUMBER', '.1'),
-			array('MISC', '..'),
+			array('OPERATOR', '.'),
+			array('OPERATOR', '.'),
 			array('NUMBER', '.1'),
 		);
-/*
+
 		$return[] = array(
 			"The \"..\" operator with int values",
 			$this->assembleCommonCondition(".1...1"),
 			$this->assembleCommonTokens($expected)
 		);
-*/
+
 		return $return;
 	}
 
