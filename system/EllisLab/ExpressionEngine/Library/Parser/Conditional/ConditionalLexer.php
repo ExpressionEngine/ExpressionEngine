@@ -55,12 +55,11 @@ class ConditionalLexer extends AbstractLexer {
 	 * 	'EOS'				// end of string
 	 * );
 	 */
-	private $tokens;
 
 	/**
 	 * Tag contents
 	 */
-	private $tag_buffer;
+	private $tag_buffer = '';
 
 	/**
 	 * Tag depth
@@ -75,7 +74,7 @@ class ConditionalLexer extends AbstractLexer {
 		\b									# must be its own word
 		(TRUE|True|true|FALSE|False|false)	# PHP allows all possible capitalizations. We don't allow things like faLsE.
 		(?!(-+)?\w)							# simulate \b with -
-        ";
+	";
 
 	/**
 	 * Regex for variables
@@ -326,7 +325,6 @@ class ConditionalLexer extends AbstractLexer {
 			{
 				if (is_string($type))
 				{
-					$match = TRUE;
 					$this->addToken($type, $value);
 					$this->move(strlen($value));
 					return TRUE;
@@ -480,12 +478,6 @@ class ConditionalLexer extends AbstractLexer {
 	 */
 	public function addToken($type, $value)
 	{
-		if ($this->tag_depth > 0)
-		{
-			$this->tag_buffer .= $value;
-			return;
-		}
-
 		// Always store strings, even empty ones
 		if ($value != '' || $type == 'STRING')
 		{

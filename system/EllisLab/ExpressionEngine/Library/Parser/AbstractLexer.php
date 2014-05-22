@@ -34,6 +34,18 @@ abstract class AbstractLexer {
 	 */
 	protected $str;
 
+	/**
+	 * Final token array
+	 */
+	protected $tokens = array();
+
+
+	/**
+	 * Main tokenizing method.
+	 *
+	 * @param String $str The string to tokenize
+	 * @return Array of tokens
+	 */
 	abstract public function tokenize($str);
 
 	/**
