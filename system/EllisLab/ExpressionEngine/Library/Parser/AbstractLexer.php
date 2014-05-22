@@ -55,7 +55,7 @@ abstract class AbstractLexer {
 	 */
 	protected function peekRegex($regex)
 	{
-		if (preg_match('/^'.$regex.'/us', $this->str, $matches))
+		if (preg_match('/'.$regex.'/Aus', $this->str, $matches))
 		{
 			return $matches[0];
 		}
@@ -97,5 +97,25 @@ abstract class AbstractLexer {
 		$this->str = substr($this->str, $n);
 
 		return $buffer;
+	}
+
+	/**
+	 * Check if end of string reached.
+	 *
+	 * @return Bool End reached
+	 */
+	protected function eof()
+	{
+		return $this->str == '';
+	}
+
+	/**
+	 * Get the remaining string to be lexed
+	 *
+	 * @return Remaining string
+	 */
+	protected function rest()
+	{
+		return $this->str;
 	}
 }
