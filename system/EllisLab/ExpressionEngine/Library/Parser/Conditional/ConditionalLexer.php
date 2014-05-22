@@ -329,7 +329,6 @@ class ConditionalLexer extends AbstractLexer {
 					$match = TRUE;
 					$this->addToken($type, $value);
 					$this->move(strlen($value));
-					$this->whitespace();
 					return TRUE;
 				}
 			}
@@ -380,14 +379,9 @@ class ConditionalLexer extends AbstractLexer {
 		{
 			$add = $this->seekTo($open_quote.$backslash);
 
-			if ($add === FALSE || $add === 0) // allows ''
+			if ($this->eof())
 			{
-				if ($this->eof())
-				{
-					throw new ConditionalLexerException('Unclosed string.');
-				}
-
-				break;
+				throw new ConditionalLexerException('Unclosed string.');
 			}
 
 			$str .= $add;
