@@ -115,11 +115,11 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 		return array(
 			array('Unclosed String (single quotes)',	"{if string == 'ee}out{/if}", 30),
 			array('Unclosed String (double quotes)',	'{if string == "ee}out{/if}', 30),
-			array('Unclosed Conditional', 				'{if string == "ee"}out', 21),
 			array('If as a Prefix', 					'{if:foo}', 20),
 			array('Ifelse duplicity', 					'{if 5 == 5}out{if:else:else}out{/if}', 20),
 			array('Ifelse Prefixing', 					'{if 5 == 5}out{if:elsebeth}out{/if}', 20),
 			array('Ifelseif Prefixing', 				'{if 5 == 5}out{if:elseiffy}out{/if}', 20),
+		//	array('Unclosed Conditional', 				'{if string == "ee"}out', 21),
 		//	array('Unterminated Conditional', 			'{if string == "ee"out{/if}', 30),
 		//	array('NUMBER + :', 						'{if 1:2}out{/if}', 10),
 		//	array('OK + :',	 							'{if :foo}out{/if}', 10),
