@@ -27,7 +27,14 @@ namespace EllisLab\ExpressionEngine\Library\Parser;
  */
 abstract class AbstractParser {
 
+	/**
+	 * Current token
+	 */
 	protected $token;
+
+	/**
+	 * All tokens
+	 */
 	protected $tokens;
 
 	/**
