@@ -8,7 +8,7 @@
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
- * @since		Version 2.5
+ * @since		Version 3.0 
  * @filesource
  */
 
@@ -29,7 +29,7 @@ require_once PATH_MOD . 'spam/libraries/Classifier.php';
 class Spam_ext {
 
 	public $name = 'Spam Filter';
-	public $version = M_E;
+	public $version = '1.0.0';
 	public $settings_exist = 'n';
 	public $docs_url = '';
 
@@ -45,7 +45,6 @@ class Spam_ext {
 	public $entropy = .2;
 	public $entropy_length = 300;
 
-	private $EE;
 	private $module = 'spam';
 
 	/**
@@ -53,7 +52,6 @@ class Spam_ext {
 	 */
 	public function __construct()
 	{
-		$this->EE =& get_instance();
 	}
 
 	// --------------------------------------------------------------------
@@ -71,9 +69,9 @@ class Spam_ext {
 		$vocabulary = new Collection(array(), $stop_words);
 		$vocabulary->vocabulary = $this->_get_vocabulary();
 
-		$this->EE->db->select("COUNT(training_id) AS cnt");
-		$this->EE->db->from("spam_training");
-		$query = $this->EE->db->get(); 
+		ee()->db->select("COUNT(training_id) AS cnt");
+		ee()->db->from("spam_training");
+		$query = ee()->db->get(); 
 		$row = $query->row();
 		$vocabulary->document_count = $row->cnt;
 
@@ -101,9 +99,9 @@ class Spam_ext {
 	{
 		$class = ($class == 'spam') ? 1 : 0;
 
-		$this->EE->db->select('mean, variance');
-		$this->EE->db->from('spam_parameters');
-		$this->EE->db->where('class', $class);
+		ee()->db->select('mean, variance');
+		ee()->db->from('spam_parameters');
+		ee()->db->where('class', $class);
 		$query = ee()->db->get();
 
 		$result = array();
@@ -126,8 +124,8 @@ class Spam_ext {
 	 */
 	private function _get_vocabulary()
 	{
-		$this->EE->db->select('term, count');
-		$this->EE->db->from('spam_vocabulary');
+		ee()->db->select('term, count');
+		ee()->db->from('spam_vocabulary');
 		$query = ee()->db->get();
 
 		$result = array();

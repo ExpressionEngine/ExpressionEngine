@@ -120,28 +120,28 @@ class Document implements Iterator {
 
 	public function rewind()
 	{
-        $this->position = 0;
-    }
+		$this->position = 0;
+	}
 
 	public function current()
 	{
-        return $this->frequency[$this->words[$this->position]];
-    }
+		return $this->frequency[$this->words[$this->position]];
+	}
 
 	public function key()
 	{
-        return $this->words[$this->position];
-    }
+		return $this->words[$this->position];
+	}
 
 	public function next()
 	{
-        ++$this->position;
-    }
+		++$this->position;
+	}
 
 	public function valid()
 	{
-        return isset($this->words[$this->position]);
-    }
+		return isset($this->words[$this->position]);
+	}
 	
 }
 // END CLASS

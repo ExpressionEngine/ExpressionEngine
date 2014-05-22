@@ -38,7 +38,6 @@ class Spam_mcp {
 	public function __construct()
 	{
 		// Make a local reference to the ExpressionEngine super object
-		$this->EE =& get_instance();
 		ini_set('memory_limit', '16G');
 		set_time_limit(0);
 	}
@@ -69,10 +68,10 @@ class Spam_mcp {
 		$bayes = new Spam_ext();
 		$limit = 1000;
 
-		$this->EE->db->select('source, class');
-		$this->EE->db->from('spam_training');
-		$this->EE->db->order_by('RAND()');
-		$this->EE->db->limit($limit);
+		ee()->db->select('source, class');
+		ee()->db->from('spam_training');
+		ee()->db->order_by('RAND()');
+		ee()->db->limit($limit);
 		$query = ee()->db->get();
 
 		$data = array();
@@ -94,7 +93,9 @@ class Spam_mcp {
 				$negatives++;
 			}
 		}
-
+ 
+		$data['memory'] = memory_get_usage();
+		$data['memory_per'] = $data['memory'] / $total;
 		$data['accuracy'] = ($total - ($negatives + $positives)) / $total;
 		$data['total'] = $total;
 		$data['positives'] = $positives;
@@ -126,10 +127,10 @@ class Spam_mcp {
 	 */
 	private function _get_training_data($limit = 1000)
 	{
-		$this->EE->db->select('source, class');
-		$this->EE->db->from('spam_training');
-		$this->EE->db->order_by('RAND()');
-		$this->EE->db->limit($limit);
+		ee()->db->select('source, class');
+		ee()->db->from('spam_training');
+		ee()->db->order_by('RAND()');
+		ee()->db->limit($limit);
 		$query = ee()->db->get();
 
 		$sources = array();
@@ -157,21 +158,21 @@ class Spam_mcp {
 		
 		foreach ($document->words as $word)
 		{
-			$this->EE->db->select('count');
-			$this->EE->db->from('spam_vocabulary');
-			$this->EE->db->where('term', $word);
+			ee()->db->select('count');
+			ee()->db->from('spam_vocabulary');
+			ee()->db->where('term', $word);
 			$query = ee()->db->get();
 
 			if ($query->num_rows() > 0)
 			{
-				$this->EE->db->where('term', $word);
-				$this->EE->db->set('count', 'count+1', FALSE);
-				$this->EE->db->update('spam_vocabulary');
+				ee()->db->where('term', $word);
+				ee()->db->set('count', 'count+1', FALSE);
+				ee()->db->update('spam_vocabulary');
 			}
 			else
 			{
 				$data = array('term' => $word, 'count' => 1);
-				$this->EE->db->insert('spam_vocabulary', $data);
+				ee()->db->insert('spam_vocabulary', $data);
 			}
 		}
 	}
@@ -190,17 +191,17 @@ class Spam_mcp {
 	{
 		$class = ($class == 'spam') ? 1 : 0;
 
-		$this->EE->db->select('mean');
-		$this->EE->db->from('spam_parameters');
-		$this->EE->db->where('term', $term);
-		$this->EE->db->where('class', $class);
+		ee()->db->select('mean');
+		ee()->db->from('spam_parameters');
+		ee()->db->where('term', $term);
+		ee()->db->where('class', $class);
 		$query = ee()->db->get();
 
 		if ($query->num_rows() > 0)
 		{
-			$this->EE->db->where('term', $term);
-			$this->EE->db->where('class', $class);
-			$this->EE->db->update('spam_parameters', array('mean' => $mean, 'variance' => $variance));
+			ee()->db->where('term', $term);
+			ee()->db->where('class', $class);
+			ee()->db->update('spam_parameters', array('mean' => $mean, 'variance' => $variance));
 		}
 		else
 		{
@@ -210,7 +211,7 @@ class Spam_mcp {
 				'mean' => $mean,
 				'variance' => $variance
 			);
-			$this->EE->db->insert('spam_parameters', $data);
+			ee()->db->insert('spam_parameters', $data);
 		}
 	}
 
@@ -242,8 +243,8 @@ class Spam_mcp {
 			$vocabulary[] = $data;
 		}
 
-		$this->EE->db->empty_table('spam_vocabulary'); 
-		$this->EE->db->insert_batch('spam_vocabulary', $vocabulary); 
+		ee()->db->empty_table('spam_vocabulary'); 
+		ee()->db->insert_batch('spam_vocabulary', $vocabulary); 
 
 		// Loop through and calculate the parameters for each feature and class
 
@@ -281,8 +282,8 @@ class Spam_mcp {
 			}
 		}
 
-		$this->EE->db->empty_table('spam_parameters'); 
-		$this->EE->db->insert_batch('spam_parameters', $training); 
+		ee()->db->empty_table('spam_parameters'); 
+		ee()->db->insert_batch('spam_parameters', $training); 
 
 		return TRUE;
 	}

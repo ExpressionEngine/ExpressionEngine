@@ -25,7 +25,7 @@
 
 class Spam_upd {
 
-	public $version = M_E;
+	public $version = '1.0.0';
 	private $name = 'Spam';
 
 	function Spam_upd()
