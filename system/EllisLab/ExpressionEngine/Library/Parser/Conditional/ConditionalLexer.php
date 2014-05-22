@@ -132,7 +132,7 @@ class ConditionalLexer extends AbstractLexer {
 	public function __construct()
 	{
 		$this->compiled_pattern = $this->compilePattern();
-		$this->operator_pattern = $this->getOperatorPattern();
+		$this->operator_pattern = $this->compileOperatorPattern();
 	}
 
 	/**
@@ -440,7 +440,7 @@ class ConditionalLexer extends AbstractLexer {
 	/**
 	 * Create the pattern that matches operators.
 	 */
-	private function getOperatorPattern()
+	private function compileOperatorPattern()
 	{
 		$pattern = '';
 
