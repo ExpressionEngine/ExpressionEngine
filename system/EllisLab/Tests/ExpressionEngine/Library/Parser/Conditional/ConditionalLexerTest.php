@@ -477,13 +477,6 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 		{
 			foreach ($this->valueTypes as $type => $value)
 			{
-				// Float followed by a period is an error state and throws an
-				// exception.
-				if ((strpos($type, 'float') !== FALSE) && (strpos($operator, '.') === 0))
-				{
-					continue;
-				}
-
 				$expected = array(
 					$value['token'],
 					$tokens[0],
