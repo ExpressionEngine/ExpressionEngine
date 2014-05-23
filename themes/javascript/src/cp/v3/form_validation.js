@@ -105,15 +105,7 @@ EE.cp.formValidation = {
 
 		$('input[type=checkbox], input[type=radio], select', form).change(function() {
 
-			var obj = $(this);
-
-			// If it's a checkbox, grab them all for validation
-			if ($(this).is(':checkbox'))
-			{
-				obj = $('input[name="'+$(this).attr('name')+'"]');
-			}
-
-			that._sendAjaxRequest(form, obj);
+			that._sendAjaxRequest(form, $(this));
 		});
 	},
 
@@ -135,7 +127,7 @@ EE.cp.formValidation = {
 
 		var that = this,
 			action = form.attr('action');
-			data = field.add('input[name=csrf_token]', form).serialize();
+			data = form.serialize();
 
 		$.ajax({
 			url: action,
