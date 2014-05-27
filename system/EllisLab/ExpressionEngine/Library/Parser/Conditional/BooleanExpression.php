@@ -34,13 +34,15 @@ class BooleanExpression {
 	const LEFT_ASSOC = 1;
 	const RIGHT_ASSOC = 2;
 
-	private $operators;
 	private $tokens;
+	private $operators;
+	private $unary_operators;
 	private $can_eval = TRUE;
 
 	public function __construct()
 	{
 		$this->operators = $this->getOperators();
+		$this->unary_operators = array('!', 'u-');
 	}
 
 	/**
@@ -89,6 +91,11 @@ class BooleanExpression {
 			}
 			elseif ($token[0] == 'OPERATOR')
 			{
+				if ($token[1] == 'u-')
+				{
+					$token[1] = '-';
+				}
+
 				$str .= ' '.$token[1].' ';
 			}
 			elseif ($token[0] == 'BOOL')
@@ -111,17 +118,13 @@ class BooleanExpression {
 	{
 		$evaluate_stack = array();
 
-		// may want to split these out entirely, but we currently
-		// only have one so I don't see the point.
-		$unary_operators = array('!', 'u-');
-
 		while ($token = array_shift($rpn_queue))
 		{
 			if ( ! $this->isOperator($token))
 			{
 				$evaluate_stack[] = $token[1];
 			}
-			elseif (in_array($token[1], $unary_operators))
+			elseif ($this->isUnary($token))
 			{
 				if (count($evaluate_stack) < 1)
 				{
@@ -199,27 +202,34 @@ class BooleanExpression {
 	/**
 	 * Shunting yard algorithm to convert to RPN
 	 *
+	 * Will drop parentheses (RPN does not require them) and
+	 * also converts unary minuses to a special 'u-' identifier
+	 * for easier evaluation.
+	 *
 	 * @param Array $tokens List of tokens in the expression
+	 * @return Array of tokens in RPN format.
 	 */
 	protected function convertToRPN($tokens)
 	{
 		$output = array();
 		$stack = array();
 
-		foreach ($tokens as $token)
+		$prev_token = NULL;
+
+		foreach ($tokens as $i => $token)
 		{
 			if ($this->isOperator($token))
 			{
 				// unary -, flip it with our special unary minus operator
 				// to promote its precedence.
-				if ($token[1] == '-' && $this->isOperator(end($stack)))
+				if ($token[1] == '-' && $this->validPrefixOperator($prev_token))
 				{
 					$token[1] = 'u-';
 				}
 
 				while (count($stack) && $this->isOperator(end($stack)))
 				{
-					if (
+					if ((
 						(
 							($this->isAssociative($token, self::LEFT_ASSOC) ||
 							 $this->isAssociative($token, self::NON_ASSOC)) &&
@@ -229,6 +239,9 @@ class BooleanExpression {
 							$this->isAssociative($token, self::RIGHT_ASSOC) &&
 						 	$this->precedence($token, end($stack)) < 0)
 						)
+						// unary operators can only pop other unary operators
+						&& ( ! $this->isUnary($token) || $this->isUnary(end($stack)))
+					)
 					{
 						$output[] = array_pop($stack);
 						continue;
@@ -256,6 +269,8 @@ class BooleanExpression {
 			{
 				$output[] = $token;
 			}
+
+			$prev_token = $token;
 		}
 
 		while ($leftover = array_pop($stack))
@@ -264,6 +279,26 @@ class BooleanExpression {
 		}
 
 		return $output;
+	}
+
+	/**
+	 * Unary operators
+	 */
+	private function isUnary($token)
+	{
+		return in_array($token[1], $this->unary_operators);
+	}
+
+	/**
+	 * Determine if the current operator is a valid unary prefix.
+	 *
+	 * This is the case if there is no previous token, the previous
+	 * token is another operator, or the previous token is a left
+	 * parenthesis.
+	 */
+	private function validPrefixOperator($previous)
+	{
+		return ($previous == NULL || $previous[0] == 'LP' || $this->isOperator($previous));
 	}
 
 	/**
@@ -300,8 +335,8 @@ class BooleanExpression {
 		return array(
 			'^' => array(60, self::RIGHT_ASSOC),
 			'**' => array(60, self::RIGHT_ASSOC),
-			'u-' => array(60, self::RIGHT_ASSOC),
 
+			'u-' => array(50, self::RIGHT_ASSOC),
 			'!' => array(50, self::RIGHT_ASSOC),
 
 			'*' => array(40, self::LEFT_ASSOC),
