@@ -113,7 +113,7 @@ class BooleanExpression {
 
 		// may want to split these out entirely, but we currently
 		// only have one so I don't see the point.
-		$unary_operators = array('!');
+		$unary_operators = array('!', 'u-');
 
 		while ($token = array_shift($rpn_queue))
 		{
@@ -133,6 +133,8 @@ class BooleanExpression {
 				switch ($token[1])
 				{
 					case '!': array_push($evaluate_stack, ! $right);
+						break;
+					case 'u-': array_push($evaluate_stack, - $right);
 						break;
 				}
 			}
@@ -208,6 +210,13 @@ class BooleanExpression {
 		{
 			if ($this->isOperator($token))
 			{
+				// unary -, flip it with our special unary minus operator
+				// to promote its precedence.
+				if ($token[1] == '-' && $this->isOperator(end($stack)))
+				{
+					$token[1] = 'u-';
+				}
+
 				while (count($stack) && $this->isOperator(end($stack)))
 				{
 					if (
@@ -291,6 +300,7 @@ class BooleanExpression {
 		return array(
 			'^' => array(60, self::RIGHT_ASSOC),
 			'**' => array(60, self::RIGHT_ASSOC),
+			'u-' => array(60, self::RIGHT_ASSOC),
 
 			'!' => array(50, self::RIGHT_ASSOC),
 
