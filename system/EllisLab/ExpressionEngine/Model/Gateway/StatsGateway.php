@@ -1,27 +1,23 @@
 <?php
 namespace EllisLab\ExpressionEngine\Model\Gateway;
 
-use EllisLab\ExpressionEngine\Model\Gateway\RowDataGateway;
-
 /**
- * @todo Move me!  File is current StatsGateway.
+ *
  */
-class StatGateway extends RowDataGateway {
-	protected static $meta = array(
-		'table_name' => 'stats',
-		'primary_key' => 'stat_id',
-		'related_gateways' => array(
-			'site_id' => array(
-				'gateway' => 'SiteGateway',
-				'key' => 'site_id'
-			),
-			'member_member_id' => array(
-				'gateway' => 'MemberGateway',
-				'key' => 'member_id'
-			)
+class StatsGateway extends RowDataGateway {
+	protected static $_table_name = 'stats';
+	protected static $_primary_key = 'stat_id';
+
+	protected static $_related_gateways = array(
+		'site_id' => array(
+			'gateway' => 'SiteGateway',
+			'key' => 'site_id'
+		),
+		'member_member_id' => array(
+			'gateway' => 'MemberGateway',
+			'key' => 'member_id'
 		)
 	);
-
 
 	// Properties
 	public $stat_id;
@@ -41,4 +37,4 @@ class StatGateway extends RowDataGateway {
 	public $most_visitor_date;
 	public $last_cache_clear;
 
-}	
+}
