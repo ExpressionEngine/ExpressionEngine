@@ -316,63 +316,395 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 	{
 		$return = array();
 
-		$valid_operators = array(
-			'||', '&&', '**',
-			'==', '!=', '<=', '>=', '<>', '<', '>',
-			'%', '+', '-', '*', '/',
-			'.', '!', '^'
-		);
-
 		// Manual invalid operator assignments
-		$invalid_operators = array(
-			'===' => array(
-				array('OPERATOR', '=='),
-				array('MISC', '=')
-			)
+		$operator_combinations = array(
+			'==='	=> array(array('OPERATOR', '=='),	array('MISC', '=')),
+
+			/**
+			 * The following array elements were generated with this code:
+			 *
+			 * $valid_operators = array(
+			 * 	'||', '&&', '**',
+			 * 	'==', '!=', '<=', '>=', '<>', '<', '>',
+			 * 	'%', '+', '-', '*', '/',
+			 * 	'.', '!', '^'
+			 * );
+             *
+			 * $out = array();
+             *
+			 * // Build out some combinations
+			 * foreach ($valid_operators as $first)
+			 * {
+			 * 	foreach ($valid_operators as $second)
+			 * 	{
+			 * 		$operator = $first.$second;
+             *
+			 * 		if (in_array($operator, $valid_operators) ||
+			 * 			isset($invalid_operators[$operator]))
+			 * 		{
+			 * 			continue;
+			 * 		}
+             *
+			 * 		// Handle the case where first.second create a valid
+			 * 		// operator in the first half: ! + == => !== => OP(!=) MISC(=)
+			 * 		if (in_array($first.$second[0], $valid_operators))
+			 * 		{
+			 * 			$first = $first.$second[0];
+			 * 			$second = substr($second, 1);
+			 * 		}
+             *
+			 * 		$token = (in_array($second, $valid_operators)) ? 'OPERATOR' : 'MISC';
+             *
+			 * 		printf("'%s'\t=> array(array('OPERATOR', '%s'),\tarray('%s', '%s')),\n", $operator, $first, $token, $second);
+			 * 	}
+			 * 	print "\n";
+			 * }
+			 */
+
+			'||||'	=> array(array('OPERATOR', '||'),	array('OPERATOR', '||')),
+			'||&&'	=> array(array('OPERATOR', '||'),	array('OPERATOR', '&&')),
+			'||**'	=> array(array('OPERATOR', '||'),	array('OPERATOR', '**')),
+			'||=='	=> array(array('OPERATOR', '||'),	array('OPERATOR', '==')),
+			'||!='	=> array(array('OPERATOR', '||'),	array('OPERATOR', '!=')),
+			'||<='	=> array(array('OPERATOR', '||'),	array('OPERATOR', '<=')),
+			'||>='	=> array(array('OPERATOR', '||'),	array('OPERATOR', '>=')),
+			'||<>'	=> array(array('OPERATOR', '||'),	array('OPERATOR', '<>')),
+			'||<'	=> array(array('OPERATOR', '||'),	array('OPERATOR', '<')),
+			'||>'	=> array(array('OPERATOR', '||'),	array('OPERATOR', '>')),
+			'||%'	=> array(array('OPERATOR', '||'),	array('OPERATOR', '%')),
+			'||+'	=> array(array('OPERATOR', '||'),	array('OPERATOR', '+')),
+			'||-'	=> array(array('OPERATOR', '||'),	array('OPERATOR', '-')),
+			'||*'	=> array(array('OPERATOR', '||'),	array('OPERATOR', '*')),
+			'||/'	=> array(array('OPERATOR', '||'),	array('OPERATOR', '/')),
+			'||.'	=> array(array('OPERATOR', '||'),	array('OPERATOR', '.')),
+			'||!'	=> array(array('OPERATOR', '||'),	array('OPERATOR', '!')),
+			'||^'	=> array(array('OPERATOR', '||'),	array('OPERATOR', '^')),
+
+			'&&||'	=> array(array('OPERATOR', '&&'),	array('OPERATOR', '||')),
+			'&&&&'	=> array(array('OPERATOR', '&&'),	array('OPERATOR', '&&')),
+			'&&**'	=> array(array('OPERATOR', '&&'),	array('OPERATOR', '**')),
+			'&&=='	=> array(array('OPERATOR', '&&'),	array('OPERATOR', '==')),
+			'&&!='	=> array(array('OPERATOR', '&&'),	array('OPERATOR', '!=')),
+			'&&<='	=> array(array('OPERATOR', '&&'),	array('OPERATOR', '<=')),
+			'&&>='	=> array(array('OPERATOR', '&&'),	array('OPERATOR', '>=')),
+			'&&<>'	=> array(array('OPERATOR', '&&'),	array('OPERATOR', '<>')),
+			'&&<'	=> array(array('OPERATOR', '&&'),	array('OPERATOR', '<')),
+			'&&>'	=> array(array('OPERATOR', '&&'),	array('OPERATOR', '>')),
+			'&&%'	=> array(array('OPERATOR', '&&'),	array('OPERATOR', '%')),
+			'&&+'	=> array(array('OPERATOR', '&&'),	array('OPERATOR', '+')),
+			'&&-'	=> array(array('OPERATOR', '&&'),	array('OPERATOR', '-')),
+			'&&*'	=> array(array('OPERATOR', '&&'),	array('OPERATOR', '*')),
+			'&&/'	=> array(array('OPERATOR', '&&'),	array('OPERATOR', '/')),
+			'&&.'	=> array(array('OPERATOR', '&&'),	array('OPERATOR', '.')),
+			'&&!'	=> array(array('OPERATOR', '&&'),	array('OPERATOR', '!')),
+			'&&^'	=> array(array('OPERATOR', '&&'),	array('OPERATOR', '^')),
+
+			'**||'	=> array(array('OPERATOR', '**'),	array('OPERATOR', '||')),
+			'**&&'	=> array(array('OPERATOR', '**'),	array('OPERATOR', '&&')),
+			'****'	=> array(array('OPERATOR', '**'),	array('OPERATOR', '**')),
+			'**=='	=> array(array('OPERATOR', '**'),	array('OPERATOR', '==')),
+			'**!='	=> array(array('OPERATOR', '**'),	array('OPERATOR', '!=')),
+			'**<='	=> array(array('OPERATOR', '**'),	array('OPERATOR', '<=')),
+			'**>='	=> array(array('OPERATOR', '**'),	array('OPERATOR', '>=')),
+			'**<>'	=> array(array('OPERATOR', '**'),	array('OPERATOR', '<>')),
+			'**<'	=> array(array('OPERATOR', '**'),	array('OPERATOR', '<')),
+			'**>'	=> array(array('OPERATOR', '**'),	array('OPERATOR', '>')),
+			'**%'	=> array(array('OPERATOR', '**'),	array('OPERATOR', '%')),
+			'**+'	=> array(array('OPERATOR', '**'),	array('OPERATOR', '+')),
+			'**-'	=> array(array('OPERATOR', '**'),	array('OPERATOR', '-')),
+			'***'	=> array(array('OPERATOR', '**'),	array('OPERATOR', '*')),
+			'**/'	=> array(array('OPERATOR', '**'),	array('OPERATOR', '/')),
+			'**.'	=> array(array('OPERATOR', '**'),	array('OPERATOR', '.')),
+			'**!'	=> array(array('OPERATOR', '**'),	array('OPERATOR', '!')),
+			'**^'	=> array(array('OPERATOR', '**'),	array('OPERATOR', '^')),
+
+			'==||'	=> array(array('OPERATOR', '=='),	array('OPERATOR', '||')),
+			'==&&'	=> array(array('OPERATOR', '=='),	array('OPERATOR', '&&')),
+			'==**'	=> array(array('OPERATOR', '=='),	array('OPERATOR', '**')),
+			'===='	=> array(array('OPERATOR', '=='),	array('OPERATOR', '==')),
+			'==!='	=> array(array('OPERATOR', '=='),	array('OPERATOR', '!=')),
+			'==<='	=> array(array('OPERATOR', '=='),	array('OPERATOR', '<=')),
+			'==>='	=> array(array('OPERATOR', '=='),	array('OPERATOR', '>=')),
+			'==<>'	=> array(array('OPERATOR', '=='),	array('OPERATOR', '<>')),
+			'==<'	=> array(array('OPERATOR', '=='),	array('OPERATOR', '<')),
+			'==>'	=> array(array('OPERATOR', '=='),	array('OPERATOR', '>')),
+			'==%'	=> array(array('OPERATOR', '=='),	array('OPERATOR', '%')),
+			'==+'	=> array(array('OPERATOR', '=='),	array('OPERATOR', '+')),
+			'==-'	=> array(array('OPERATOR', '=='),	array('OPERATOR', '-')),
+			'==*'	=> array(array('OPERATOR', '=='),	array('OPERATOR', '*')),
+			'==/'	=> array(array('OPERATOR', '=='),	array('OPERATOR', '/')),
+			'==.'	=> array(array('OPERATOR', '=='),	array('OPERATOR', '.')),
+			'==!'	=> array(array('OPERATOR', '=='),	array('OPERATOR', '!')),
+			'==^'	=> array(array('OPERATOR', '=='),	array('OPERATOR', '^')),
+
+			'!=||'	=> array(array('OPERATOR', '!='),	array('OPERATOR', '||')),
+			'!=&&'	=> array(array('OPERATOR', '!='),	array('OPERATOR', '&&')),
+			'!=**'	=> array(array('OPERATOR', '!='),	array('OPERATOR', '**')),
+			'!==='	=> array(array('OPERATOR', '!='),	array('OPERATOR', '==')),
+			'!=!='	=> array(array('OPERATOR', '!='),	array('OPERATOR', '!=')),
+			'!=<='	=> array(array('OPERATOR', '!='),	array('OPERATOR', '<=')),
+			'!=>='	=> array(array('OPERATOR', '!='),	array('OPERATOR', '>=')),
+			'!=<>'	=> array(array('OPERATOR', '!='),	array('OPERATOR', '<>')),
+			'!=<'	=> array(array('OPERATOR', '!='),	array('OPERATOR', '<')),
+			'!=>'	=> array(array('OPERATOR', '!='),	array('OPERATOR', '>')),
+			'!=%'	=> array(array('OPERATOR', '!='),	array('OPERATOR', '%')),
+			'!=+'	=> array(array('OPERATOR', '!='),	array('OPERATOR', '+')),
+			'!=-'	=> array(array('OPERATOR', '!='),	array('OPERATOR', '-')),
+			'!=*'	=> array(array('OPERATOR', '!='),	array('OPERATOR', '*')),
+			'!=/'	=> array(array('OPERATOR', '!='),	array('OPERATOR', '/')),
+			'!=.'	=> array(array('OPERATOR', '!='),	array('OPERATOR', '.')),
+			'!=!'	=> array(array('OPERATOR', '!='),	array('OPERATOR', '!')),
+			'!=^'	=> array(array('OPERATOR', '!='),	array('OPERATOR', '^')),
+
+			'<=||'	=> array(array('OPERATOR', '<='),	array('OPERATOR', '||')),
+			'<=&&'	=> array(array('OPERATOR', '<='),	array('OPERATOR', '&&')),
+			'<=**'	=> array(array('OPERATOR', '<='),	array('OPERATOR', '**')),
+			'<==='	=> array(array('OPERATOR', '<='),	array('OPERATOR', '==')),
+			'<=!='	=> array(array('OPERATOR', '<='),	array('OPERATOR', '!=')),
+			'<=<='	=> array(array('OPERATOR', '<='),	array('OPERATOR', '<=')),
+			'<=>='	=> array(array('OPERATOR', '<='),	array('OPERATOR', '>=')),
+			'<=<>'	=> array(array('OPERATOR', '<='),	array('OPERATOR', '<>')),
+			'<=<'	=> array(array('OPERATOR', '<='),	array('OPERATOR', '<')),
+			'<=>'	=> array(array('OPERATOR', '<='),	array('OPERATOR', '>')),
+			'<=%'	=> array(array('OPERATOR', '<='),	array('OPERATOR', '%')),
+			'<=+'	=> array(array('OPERATOR', '<='),	array('OPERATOR', '+')),
+			'<=-'	=> array(array('OPERATOR', '<='),	array('OPERATOR', '-')),
+			'<=*'	=> array(array('OPERATOR', '<='),	array('OPERATOR', '*')),
+			'<=/'	=> array(array('OPERATOR', '<='),	array('OPERATOR', '/')),
+			'<=.'	=> array(array('OPERATOR', '<='),	array('OPERATOR', '.')),
+			'<=!'	=> array(array('OPERATOR', '<='),	array('OPERATOR', '!')),
+			'<=^'	=> array(array('OPERATOR', '<='),	array('OPERATOR', '^')),
+
+			'>=||'	=> array(array('OPERATOR', '>='),	array('OPERATOR', '||')),
+			'>=&&'	=> array(array('OPERATOR', '>='),	array('OPERATOR', '&&')),
+			'>=**'	=> array(array('OPERATOR', '>='),	array('OPERATOR', '**')),
+			'>==='	=> array(array('OPERATOR', '>='),	array('OPERATOR', '==')),
+			'>=!='	=> array(array('OPERATOR', '>='),	array('OPERATOR', '!=')),
+			'>=<='	=> array(array('OPERATOR', '>='),	array('OPERATOR', '<=')),
+			'>=>='	=> array(array('OPERATOR', '>='),	array('OPERATOR', '>=')),
+			'>=<>'	=> array(array('OPERATOR', '>='),	array('OPERATOR', '<>')),
+			'>=<'	=> array(array('OPERATOR', '>='),	array('OPERATOR', '<')),
+			'>=>'	=> array(array('OPERATOR', '>='),	array('OPERATOR', '>')),
+			'>=%'	=> array(array('OPERATOR', '>='),	array('OPERATOR', '%')),
+			'>=+'	=> array(array('OPERATOR', '>='),	array('OPERATOR', '+')),
+			'>=-'	=> array(array('OPERATOR', '>='),	array('OPERATOR', '-')),
+			'>=*'	=> array(array('OPERATOR', '>='),	array('OPERATOR', '*')),
+			'>=/'	=> array(array('OPERATOR', '>='),	array('OPERATOR', '/')),
+			'>=.'	=> array(array('OPERATOR', '>='),	array('OPERATOR', '.')),
+			'>=!'	=> array(array('OPERATOR', '>='),	array('OPERATOR', '!')),
+			'>=^'	=> array(array('OPERATOR', '>='),	array('OPERATOR', '^')),
+
+			'<>||'	=> array(array('OPERATOR', '<>'),	array('OPERATOR', '||')),
+			'<>&&'	=> array(array('OPERATOR', '<>'),	array('OPERATOR', '&&')),
+			'<>**'	=> array(array('OPERATOR', '<>'),	array('OPERATOR', '**')),
+			'<>=='	=> array(array('OPERATOR', '<>'),	array('OPERATOR', '==')),
+			'<>!='	=> array(array('OPERATOR', '<>'),	array('OPERATOR', '!=')),
+			'<><='	=> array(array('OPERATOR', '<>'),	array('OPERATOR', '<=')),
+			'<>>='	=> array(array('OPERATOR', '<>'),	array('OPERATOR', '>=')),
+			'<><>'	=> array(array('OPERATOR', '<>'),	array('OPERATOR', '<>')),
+			'<><'	=> array(array('OPERATOR', '<>'),	array('OPERATOR', '<')),
+			'<>>'	=> array(array('OPERATOR', '<>'),	array('OPERATOR', '>')),
+			'<>%'	=> array(array('OPERATOR', '<>'),	array('OPERATOR', '%')),
+			'<>+'	=> array(array('OPERATOR', '<>'),	array('OPERATOR', '+')),
+			'<>-'	=> array(array('OPERATOR', '<>'),	array('OPERATOR', '-')),
+			'<>*'	=> array(array('OPERATOR', '<>'),	array('OPERATOR', '*')),
+			'<>/'	=> array(array('OPERATOR', '<>'),	array('OPERATOR', '/')),
+			'<>.'	=> array(array('OPERATOR', '<>'),	array('OPERATOR', '.')),
+			'<>!'	=> array(array('OPERATOR', '<>'),	array('OPERATOR', '!')),
+			'<>^'	=> array(array('OPERATOR', '<>'),	array('OPERATOR', '^')),
+
+			'<||'	=> array(array('OPERATOR', '<'),	array('OPERATOR', '||')),
+			'<&&'	=> array(array('OPERATOR', '<'),	array('OPERATOR', '&&')),
+			'<**'	=> array(array('OPERATOR', '<'),	array('OPERATOR', '**')),
+			'<=='	=> array(array('OPERATOR', '<='),	array('MISC', '=')),
+			'<=!='	=> array(array('OPERATOR', '<='),	array('OPERATOR', '!=')),
+			'<=<='	=> array(array('OPERATOR', '<='),	array('OPERATOR', '<=')),
+			'<=>='	=> array(array('OPERATOR', '<='),	array('OPERATOR', '>=')),
+			'<=<>'	=> array(array('OPERATOR', '<='),	array('OPERATOR', '<>')),
+			'<=<'	=> array(array('OPERATOR', '<='),	array('OPERATOR', '<')),
+			'<=>'	=> array(array('OPERATOR', '<='),	array('OPERATOR', '>')),
+			'<=%'	=> array(array('OPERATOR', '<='),	array('OPERATOR', '%')),
+			'<=+'	=> array(array('OPERATOR', '<='),	array('OPERATOR', '+')),
+			'<=-'	=> array(array('OPERATOR', '<='),	array('OPERATOR', '-')),
+			'<=*'	=> array(array('OPERATOR', '<='),	array('OPERATOR', '*')),
+			'<=/'	=> array(array('OPERATOR', '<='),	array('OPERATOR', '/')),
+			'<=.'	=> array(array('OPERATOR', '<='),	array('OPERATOR', '.')),
+			'<=!'	=> array(array('OPERATOR', '<='),	array('OPERATOR', '!')),
+			'<=^'	=> array(array('OPERATOR', '<='),	array('OPERATOR', '^')),
+
+			'>||'	=> array(array('OPERATOR', '>'),	array('OPERATOR', '||')),
+			'>&&'	=> array(array('OPERATOR', '>'),	array('OPERATOR', '&&')),
+			'>**'	=> array(array('OPERATOR', '>'),	array('OPERATOR', '**')),
+			'>=='	=> array(array('OPERATOR', '>='),	array('MISC', '=')),
+			'>=!='	=> array(array('OPERATOR', '>='),	array('OPERATOR', '!=')),
+			'>=<='	=> array(array('OPERATOR', '>='),	array('OPERATOR', '<=')),
+			'>=>='	=> array(array('OPERATOR', '>='),	array('OPERATOR', '>=')),
+			'>=<>'	=> array(array('OPERATOR', '>='),	array('OPERATOR', '<>')),
+			'>=<'	=> array(array('OPERATOR', '>='),	array('OPERATOR', '<')),
+			'>=>'	=> array(array('OPERATOR', '>='),	array('OPERATOR', '>')),
+			'>=%'	=> array(array('OPERATOR', '>='),	array('OPERATOR', '%')),
+			'>=+'	=> array(array('OPERATOR', '>='),	array('OPERATOR', '+')),
+			'>=-'	=> array(array('OPERATOR', '>='),	array('OPERATOR', '-')),
+			'>=*'	=> array(array('OPERATOR', '>='),	array('OPERATOR', '*')),
+			'>=/'	=> array(array('OPERATOR', '>='),	array('OPERATOR', '/')),
+			'>=.'	=> array(array('OPERATOR', '>='),	array('OPERATOR', '.')),
+			'>=!'	=> array(array('OPERATOR', '>='),	array('OPERATOR', '!')),
+			'>=^'	=> array(array('OPERATOR', '>='),	array('OPERATOR', '^')),
+
+			'%||'	=> array(array('OPERATOR', '%'),	array('OPERATOR', '||')),
+			'%&&'	=> array(array('OPERATOR', '%'),	array('OPERATOR', '&&')),
+			'%**'	=> array(array('OPERATOR', '%'),	array('OPERATOR', '**')),
+			'%=='	=> array(array('OPERATOR', '%'),	array('OPERATOR', '==')),
+			'%!='	=> array(array('OPERATOR', '%'),	array('OPERATOR', '!=')),
+			'%<='	=> array(array('OPERATOR', '%'),	array('OPERATOR', '<=')),
+			'%>='	=> array(array('OPERATOR', '%'),	array('OPERATOR', '>=')),
+			'%<>'	=> array(array('OPERATOR', '%'),	array('OPERATOR', '<>')),
+			'%<'	=> array(array('OPERATOR', '%'),	array('OPERATOR', '<')),
+			'%>'	=> array(array('OPERATOR', '%'),	array('OPERATOR', '>')),
+			'%%'	=> array(array('OPERATOR', '%'),	array('OPERATOR', '%')),
+			'%+'	=> array(array('OPERATOR', '%'),	array('OPERATOR', '+')),
+			'%-'	=> array(array('OPERATOR', '%'),	array('OPERATOR', '-')),
+			'%*'	=> array(array('OPERATOR', '%'),	array('OPERATOR', '*')),
+			'%/'	=> array(array('OPERATOR', '%'),	array('OPERATOR', '/')),
+			'%.'	=> array(array('OPERATOR', '%'),	array('OPERATOR', '.')),
+			'%!'	=> array(array('OPERATOR', '%'),	array('OPERATOR', '!')),
+			'%^'	=> array(array('OPERATOR', '%'),	array('OPERATOR', '^')),
+
+			'+||'	=> array(array('OPERATOR', '+'),	array('OPERATOR', '||')),
+			'+&&'	=> array(array('OPERATOR', '+'),	array('OPERATOR', '&&')),
+			'+**'	=> array(array('OPERATOR', '+'),	array('OPERATOR', '**')),
+			'+=='	=> array(array('OPERATOR', '+'),	array('OPERATOR', '==')),
+			'+!='	=> array(array('OPERATOR', '+'),	array('OPERATOR', '!=')),
+			'+<='	=> array(array('OPERATOR', '+'),	array('OPERATOR', '<=')),
+			'+>='	=> array(array('OPERATOR', '+'),	array('OPERATOR', '>=')),
+			'+<>'	=> array(array('OPERATOR', '+'),	array('OPERATOR', '<>')),
+			'+<'	=> array(array('OPERATOR', '+'),	array('OPERATOR', '<')),
+			'+>'	=> array(array('OPERATOR', '+'),	array('OPERATOR', '>')),
+			'+%'	=> array(array('OPERATOR', '+'),	array('OPERATOR', '%')),
+			'++'	=> array(array('OPERATOR', '+'),	array('OPERATOR', '+')),
+			'+-'	=> array(array('OPERATOR', '+'),	array('OPERATOR', '-')),
+			'+*'	=> array(array('OPERATOR', '+'),	array('OPERATOR', '*')),
+			'+/'	=> array(array('OPERATOR', '+'),	array('OPERATOR', '/')),
+			'+.'	=> array(array('OPERATOR', '+'),	array('OPERATOR', '.')),
+			'+!'	=> array(array('OPERATOR', '+'),	array('OPERATOR', '!')),
+			'+^'	=> array(array('OPERATOR', '+'),	array('OPERATOR', '^')),
+
+			'-||'	=> array(array('OPERATOR', '-'),	array('OPERATOR', '||')),
+			'-&&'	=> array(array('OPERATOR', '-'),	array('OPERATOR', '&&')),
+			'-**'	=> array(array('OPERATOR', '-'),	array('OPERATOR', '**')),
+			'-=='	=> array(array('OPERATOR', '-'),	array('OPERATOR', '==')),
+			'-!='	=> array(array('OPERATOR', '-'),	array('OPERATOR', '!=')),
+			'-<='	=> array(array('OPERATOR', '-'),	array('OPERATOR', '<=')),
+			'->='	=> array(array('OPERATOR', '-'),	array('OPERATOR', '>=')),
+			'-<>'	=> array(array('OPERATOR', '-'),	array('OPERATOR', '<>')),
+			'-<'	=> array(array('OPERATOR', '-'),	array('OPERATOR', '<')),
+			'->'	=> array(array('OPERATOR', '-'),	array('OPERATOR', '>')),
+			'-%'	=> array(array('OPERATOR', '-'),	array('OPERATOR', '%')),
+			'-+'	=> array(array('OPERATOR', '-'),	array('OPERATOR', '+')),
+			'--'	=> array(array('OPERATOR', '-'),	array('OPERATOR', '-')),
+			'-*'	=> array(array('OPERATOR', '-'),	array('OPERATOR', '*')),
+			'-/'	=> array(array('OPERATOR', '-'),	array('OPERATOR', '/')),
+			'-.'	=> array(array('OPERATOR', '-'),	array('OPERATOR', '.')),
+			'-!'	=> array(array('OPERATOR', '-'),	array('OPERATOR', '!')),
+			'-^'	=> array(array('OPERATOR', '-'),	array('OPERATOR', '^')),
+
+			'*||'	=> array(array('OPERATOR', '*'),	array('OPERATOR', '||')),
+			'*&&'	=> array(array('OPERATOR', '*'),	array('OPERATOR', '&&')),
+			'***'	=> array(array('OPERATOR', '**'),	array('OPERATOR', '*')),
+			'**=='	=> array(array('OPERATOR', '**'),	array('OPERATOR', '==')),
+			'**!='	=> array(array('OPERATOR', '**'),	array('OPERATOR', '!=')),
+			'**<='	=> array(array('OPERATOR', '**'),	array('OPERATOR', '<=')),
+			'**>='	=> array(array('OPERATOR', '**'),	array('OPERATOR', '>=')),
+			'**<>'	=> array(array('OPERATOR', '**'),	array('OPERATOR', '<>')),
+			'**<'	=> array(array('OPERATOR', '**'),	array('OPERATOR', '<')),
+			'**>'	=> array(array('OPERATOR', '**'),	array('OPERATOR', '>')),
+			'**%'	=> array(array('OPERATOR', '**'),	array('OPERATOR', '%')),
+			'**+'	=> array(array('OPERATOR', '**'),	array('OPERATOR', '+')),
+			'**-'	=> array(array('OPERATOR', '**'),	array('OPERATOR', '-')),
+			'***'	=> array(array('OPERATOR', '**'),	array('OPERATOR', '*')),
+			'**/'	=> array(array('OPERATOR', '**'),	array('OPERATOR', '/')),
+			'**.'	=> array(array('OPERATOR', '**'),	array('OPERATOR', '.')),
+			'**!'	=> array(array('OPERATOR', '**'),	array('OPERATOR', '!')),
+			'**^'	=> array(array('OPERATOR', '**'),	array('OPERATOR', '^')),
+
+			'/||'	=> array(array('OPERATOR', '/'),	array('OPERATOR', '||')),
+			'/&&'	=> array(array('OPERATOR', '/'),	array('OPERATOR', '&&')),
+			'/**'	=> array(array('OPERATOR', '/'),	array('OPERATOR', '**')),
+			'/=='	=> array(array('OPERATOR', '/'),	array('OPERATOR', '==')),
+			'/!='	=> array(array('OPERATOR', '/'),	array('OPERATOR', '!=')),
+			'/<='	=> array(array('OPERATOR', '/'),	array('OPERATOR', '<=')),
+			'/>='	=> array(array('OPERATOR', '/'),	array('OPERATOR', '>=')),
+			'/<>'	=> array(array('OPERATOR', '/'),	array('OPERATOR', '<>')),
+			'/<'	=> array(array('OPERATOR', '/'),	array('OPERATOR', '<')),
+			'/>'	=> array(array('OPERATOR', '/'),	array('OPERATOR', '>')),
+			'/%'	=> array(array('OPERATOR', '/'),	array('OPERATOR', '%')),
+			'/+'	=> array(array('OPERATOR', '/'),	array('OPERATOR', '+')),
+			'/-'	=> array(array('OPERATOR', '/'),	array('OPERATOR', '-')),
+			'/*'	=> array(array('OPERATOR', '/'),	array('OPERATOR', '*')),
+			'//'	=> array(array('OPERATOR', '/'),	array('OPERATOR', '/')),
+			'/.'	=> array(array('OPERATOR', '/'),	array('OPERATOR', '.')),
+			'/!'	=> array(array('OPERATOR', '/'),	array('OPERATOR', '!')),
+			'/^'	=> array(array('OPERATOR', '/'),	array('OPERATOR', '^')),
+
+			'.||'	=> array(array('OPERATOR', '.'),	array('OPERATOR', '||')),
+			'.&&'	=> array(array('OPERATOR', '.'),	array('OPERATOR', '&&')),
+			'.**'	=> array(array('OPERATOR', '.'),	array('OPERATOR', '**')),
+			'.=='	=> array(array('OPERATOR', '.'),	array('OPERATOR', '==')),
+			'.!='	=> array(array('OPERATOR', '.'),	array('OPERATOR', '!=')),
+			'.<='	=> array(array('OPERATOR', '.'),	array('OPERATOR', '<=')),
+			'.>='	=> array(array('OPERATOR', '.'),	array('OPERATOR', '>=')),
+			'.<>'	=> array(array('OPERATOR', '.'),	array('OPERATOR', '<>')),
+			'.<'	=> array(array('OPERATOR', '.'),	array('OPERATOR', '<')),
+			'.>'	=> array(array('OPERATOR', '.'),	array('OPERATOR', '>')),
+			'.%'	=> array(array('OPERATOR', '.'),	array('OPERATOR', '%')),
+			'.+'	=> array(array('OPERATOR', '.'),	array('OPERATOR', '+')),
+			'.-'	=> array(array('OPERATOR', '.'),	array('OPERATOR', '-')),
+			'.*'	=> array(array('OPERATOR', '.'),	array('OPERATOR', '*')),
+			'./'	=> array(array('OPERATOR', '.'),	array('OPERATOR', '/')),
+			'..'	=> array(array('OPERATOR', '.'),	array('OPERATOR', '.')),
+			'.!'	=> array(array('OPERATOR', '.'),	array('OPERATOR', '!')),
+			'.^'	=> array(array('OPERATOR', '.'),	array('OPERATOR', '^')),
+
+			'!||'	=> array(array('OPERATOR', '!'),	array('OPERATOR', '||')),
+			'!&&'	=> array(array('OPERATOR', '!'),	array('OPERATOR', '&&')),
+			'!**'	=> array(array('OPERATOR', '!'),	array('OPERATOR', '**')),
+			'!=='	=> array(array('OPERATOR', '!='),	array('MISC', '=')),
+			'!=!='	=> array(array('OPERATOR', '!='),	array('OPERATOR', '!=')),
+			'!=<='	=> array(array('OPERATOR', '!='),	array('OPERATOR', '<=')),
+			'!=>='	=> array(array('OPERATOR', '!='),	array('OPERATOR', '>=')),
+			'!=<>'	=> array(array('OPERATOR', '!='),	array('OPERATOR', '<>')),
+			'!=<'	=> array(array('OPERATOR', '!='),	array('OPERATOR', '<')),
+			'!=>'	=> array(array('OPERATOR', '!='),	array('OPERATOR', '>')),
+			'!=%'	=> array(array('OPERATOR', '!='),	array('OPERATOR', '%')),
+			'!=+'	=> array(array('OPERATOR', '!='),	array('OPERATOR', '+')),
+			'!=-'	=> array(array('OPERATOR', '!='),	array('OPERATOR', '-')),
+			'!=*'	=> array(array('OPERATOR', '!='),	array('OPERATOR', '*')),
+			'!=/'	=> array(array('OPERATOR', '!='),	array('OPERATOR', '/')),
+			'!=.'	=> array(array('OPERATOR', '!='),	array('OPERATOR', '.')),
+			'!=!'	=> array(array('OPERATOR', '!='),	array('OPERATOR', '!')),
+			'!=^'	=> array(array('OPERATOR', '!='),	array('OPERATOR', '^')),
+
+			'^||'	=> array(array('OPERATOR', '^'),	array('OPERATOR', '||')),
+			'^&&'	=> array(array('OPERATOR', '^'),	array('OPERATOR', '&&')),
+			'^**'	=> array(array('OPERATOR', '^'),	array('OPERATOR', '**')),
+			'^=='	=> array(array('OPERATOR', '^'),	array('OPERATOR', '==')),
+			'^!='	=> array(array('OPERATOR', '^'),	array('OPERATOR', '!=')),
+			'^<='	=> array(array('OPERATOR', '^'),	array('OPERATOR', '<=')),
+			'^>='	=> array(array('OPERATOR', '^'),	array('OPERATOR', '>=')),
+			'^<>'	=> array(array('OPERATOR', '^'),	array('OPERATOR', '<>')),
+			'^<'	=> array(array('OPERATOR', '^'),	array('OPERATOR', '<')),
+			'^>'	=> array(array('OPERATOR', '^'),	array('OPERATOR', '>')),
+			'^%'	=> array(array('OPERATOR', '^'),	array('OPERATOR', '%')),
+			'^+'	=> array(array('OPERATOR', '^'),	array('OPERATOR', '+')),
+			'^-'	=> array(array('OPERATOR', '^'),	array('OPERATOR', '-')),
+			'^*'	=> array(array('OPERATOR', '^'),	array('OPERATOR', '*')),
+			'^/'	=> array(array('OPERATOR', '^'),	array('OPERATOR', '/')),
+			'^.'	=> array(array('OPERATOR', '^'),	array('OPERATOR', '.')),
+			'^!'	=> array(array('OPERATOR', '^'),	array('OPERATOR', '!')),
+			'^^'	=> array(array('OPERATOR', '^'),	array('OPERATOR', '^'))
 		);
 
-		// Build out some combinations
-		foreach ($valid_operators as $first)
-		{
-			foreach ($valid_operators as $second)
-			{
-				$operator = $first.$second;
-
-				if (in_array($operator, $valid_operators) ||
-					isset($invalid_operators[$operator]))
-				{
-					continue;
-				}
-
-				// Handle the case where first.second create a valid
-				// operator in the first half: ! + == => !== => OP(!=) MISC(=)
-				if (in_array($first.$second[0], $valid_operators))
-				{
-					$first = $first.$second[0];
-					$second = substr($second, 1);
-				}
-
-				// If the second part is an operator, it will be lexed as
-				// such, otherwise it just becomes misc
-				if (in_array($second, $valid_operators))
-				{
-					$invalid_operators[$operator] = array(
-						array('OPERATOR', $first),
-						array('OPERATOR', $second)
-					);
-				}
-				else
-				{
-					$invalid_operators[$operator] = array(
-						array('OPERATOR', $first),
-						array('MISC', $second)
-					);
-				}
-			}
-		}
-
-
-		foreach ($invalid_operators as $operator => $tokens)
+		foreach ($operator_combinations as $operator => $tokens)
 		{
 			foreach ($this->valueTypes as $type => $value)
 			{
