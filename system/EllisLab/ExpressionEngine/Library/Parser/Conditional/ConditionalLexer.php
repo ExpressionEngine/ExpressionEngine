@@ -31,8 +31,6 @@ use EllisLab\ExpressionEngine\Library\Parser\Conditional\Exception\ConditionalLe
 class ConditionalLexer extends AbstractLexer {
 
 	/**
-	 * The main token array
-	 *
 	 * Available tokens:
 	 *
 	 * private $token_names = array(
