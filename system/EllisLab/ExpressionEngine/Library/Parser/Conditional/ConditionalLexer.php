@@ -89,7 +89,6 @@ class ConditionalLexer extends AbstractLexer {
 	 * Regex for numbers
 	 */
 	const NUMBER_PATTERN = "
-		-?									# any number can be negative
 		(
 			[0-9]*\.[0-9]+					# You must have a number either
 			|								# before or after the dot. The other
