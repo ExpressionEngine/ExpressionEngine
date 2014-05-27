@@ -2,8 +2,6 @@
 
 namespace EllisLab\ExpressionEngine\Library\Parser;
 
-use SplStack;
-
 /**
  * ExpressionEngine - by EllisLab
  *
