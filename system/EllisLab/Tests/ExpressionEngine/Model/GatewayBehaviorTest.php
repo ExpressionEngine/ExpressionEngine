@@ -19,7 +19,10 @@ class GatewayBehaviorTest extends \PHPUnit_Framework_TestCase {
 			'primary_key' => 'the_id'
 		);
 
-		$this->assertEquals($data, TestGateway::getMetaData());
+		foreach($data as $key => $value)
+		{
+			$this->assertEquals($value, TestGateway::getMetaData($key));
+		}
 	}
 
 	public function testSaveDoesNotHitDBWhenClean()
@@ -96,10 +99,8 @@ class GatewayBehaviorTest extends \PHPUnit_Framework_TestCase {
 
 class TestGateway extends \EllisLab\ExpressionEngine\Model\Gateway\RowDataGateway {
 
-	protected static $meta = array(
-		'table_name' => 'dummy',
-		'primary_key' => 'the_id'
-	);
+	protected static $_table_name = 'dummy';
+	protected static $_primary_key = 'the_id';
 
 	public $key;
 }
