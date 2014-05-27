@@ -39,9 +39,8 @@ abstract class AbstractLexer {
 	 */
 	protected $tokens = array();
 
-
 	/**
-	 * Main tokenizing method.
+	 * All lexers must implement their own tokenizing method.
 	 *
 	 * @param String $str The string to tokenize
 	 * @return Array of tokens
