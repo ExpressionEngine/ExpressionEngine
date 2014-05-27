@@ -8,11 +8,6 @@ class MemberGroup extends Model {
 	protected static $_primary_key = 'group_id';
 	protected static $_gateway_names = array('MemberGroupGateway');
 
-	protected static $_key_map = array(
-		'group_id' => 'MemberGroupGateway',
-		'site_id' => 'MemberGroupGateway'
-	);
-
 	protected static $_relationships = array(
 		'Members' => array(
 			'type' => 'one_to_many',
