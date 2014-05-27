@@ -107,8 +107,8 @@ class EE_Core {
 		require APPPATH . '../EllisLab/ExpressionEngine/Core/Autoloader.php';
 		$loader = new Autoloader();
 		$loader->register();
-		$di = new \EllisLab\ExpressionEngine\Core\Dependencies();
-		ee()->api = $di->getModelFactory();
+		ee()->dependencies = new \EllisLab\ExpressionEngine\Core\Dependencies();
+		ee()->api = ee()->dependencies->getModelFactory();
 
 		// Note enable_db_caching is a per site setting specified in EE_Config.php
 		// If debug is on we enable the profiler and DB debug
