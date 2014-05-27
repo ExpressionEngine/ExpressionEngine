@@ -4,141 +4,141 @@ feature 'Search and Replace' do
 
   before(:each) do
     cp_session
-    @sandr = SearchAndReplace.new
-    @sandr.load
+    @page = SearchAndReplace.new
+    @page.load
     no_php_js_errors
   end
 
   it 'shows the Search and Replace page' do
-    @sandr.should have_text 'Data Search and Replace'
-    @sandr.should have_text 'Advanced users only.'
-    @sandr.should have_search_term
-    @sandr.should have_replace_term
-    @sandr.should have_replace_where
-    @sandr.should have_password_auth
-    @sandr.should have_submit_button
+    @page.should have_text 'Data Search and Replace'
+    @page.should have_text 'Advanced users only.'
+    @page.should have_search_term
+    @page.should have_replace_term
+    @page.should have_replace_where
+    @page.should have_password_auth
+    @page.should have_submit_button
   end
 
-  it 'should invalidate on the fly' do
-    @sandr.submit_enabled?.should eq true
+  it 'should validate the form' do
+    @page.submit_enabled?.should eq true
 
-    @sandr.search_term.trigger 'blur'
-    @sandr.should have_text 'The "Search for this text" field is required.'
-    @sandr.should have_no_text 'The "Replace with this text" field is required.'
+    @page.search_term.trigger 'blur'
+    @page.should have_text 'The "Search for this text" field is required.'
+    @page.should have_no_text 'The "Replace with this text" field is required.'
 
-    @sandr.submit_enabled?.should eq false
+    @page.submit_enabled?.should eq false
 
     page.should have_css 'fieldset.invalid'
 
-    @sandr.replace_term.trigger 'blur'
-    @sandr.should have_text 'The "Search for this text" field is required.'
-    @sandr.should have_text 'The "Replace with this text" field is required.'
+    @page.replace_term.trigger 'blur'
+    @page.should have_text 'The "Search for this text" field is required.'
+    @page.should have_text 'The "Replace with this text" field is required.'
 
-    @sandr.submit_enabled?.should eq false
+    @page.submit_enabled?.should eq false
 
-    @sandr.search_term.set 'Text'
-    @sandr.search_term.trigger 'blur'
-    @sandr.should have_no_text 'The "Search for this text" field is required.'
-    @sandr.should have_text 'The "Replace with this text" field is required.'
+    @page.search_term.set 'Text'
+    @page.search_term.trigger 'blur'
+    @page.should have_no_text 'The "Search for this text" field is required.'
+    @page.should have_text 'The "Replace with this text" field is required.'
 
-    @sandr.submit_enabled?.should eq false
+    @page.submit_enabled?.should eq false
 
-    @sandr.replace_where.select 'Site Preferences (Choose from the following)'
-    @sandr.should have_no_text 'The "Search for this text" field is required.'
-    @sandr.should have_text 'The "Replace with this text" field is required.'
-    @sandr.should have_text 'The "Search and replace in" field is required.'
+    @page.replace_where.select 'Site Preferences (Choose from the following)'
+    @page.should have_no_text 'The "Search for this text" field is required.'
+    @page.should have_text 'The "Replace with this text" field is required.'
+    @page.should have_text 'The "Search and replace in" field is required.'
 
-    @sandr.submit_enabled?.should eq false
+    @page.submit_enabled?.should eq false
 
-    @sandr.password_auth.trigger 'blur'
-    @sandr.should have_text 'The "Current password" field is required.'
+    @page.password_auth.trigger 'blur'
+    @page.should have_text 'The "Current password" field is required.'
 
-    @sandr.password_auth.set 'test'
-    @sandr.password_auth.trigger 'blur'
-    @sandr.should have_text 'The password entered is incorrect.'
+    @page.password_auth.set 'test'
+    @page.password_auth.trigger 'blur'
+    @page.should have_text 'The password entered is incorrect.'
 
-    @sandr.password_auth.set 'password'
-    @sandr.replace_term.set 'test'
-    @sandr.replace_term.trigger 'blur'
-    @sandr.replace_where.select 'Channel Entry Titles'
+    @page.password_auth.set 'password'
+    @page.replace_term.set 'test'
+    @page.replace_term.trigger 'blur'
+    @page.replace_where.select 'Channel Entry Titles'
 
-    @sandr.should have_no_text 'The "Search for this text" field is required.'
-    @sandr.should have_no_text 'The "Replace with this text" field is required.'
-    @sandr.should have_no_text 'The "Search and replace in" field is required.'
-    @sandr.should have_no_text 'The "Current password" field is required.'
-    @sandr.should have_no_text 'The password entered is incorrect.'
+    @page.should have_no_text 'The "Search for this text" field is required.'
+    @page.should have_no_text 'The "Replace with this text" field is required.'
+    @page.should have_no_text 'The "Search and replace in" field is required.'
+    @page.should have_no_text 'The "Current password" field is required.'
+    @page.should have_no_text 'The password entered is incorrect.'
 
     page.should have_no_css 'fieldset.invalid'
 
-    @sandr.submit_enabled?.should eq true
+    @page.submit_enabled?.should eq true
 
     no_php_js_errors
 
-    @sandr.submit_button.click
+    @page.submit_button.click
 
     no_php_js_errors
 
-    @sandr.should have_text 'Action was a success'
-    @sandr.should have_text 'Number of database records in which a replacement occurred: 0'
+    @page.should have_text 'Action was a success'
+    @page.should have_text 'Number of database records in which a replacement occurred: 0'
   end
 
   it 'should fail validation without AJAX too' do
-    @sandr.submit_button.click
+    @page.submit_button.click
 
     page.should have_css 'fieldset.invalid'
 
-    @sandr.should have_text 'An error occurred'
-    @sandr.should have_text 'There was a problem processing your submission, please check below and fix all errors.'
-    @sandr.should have_text 'The "Search for this text" field is required.'
-    @sandr.should have_text 'The "Replace with this text" field is required.'
-    @sandr.should have_text 'The "Search and replace in" field is required.'
-    @sandr.should have_text 'The "Current password" field is required.'
+    @page.should have_text 'An error occurred'
+    @page.should have_text 'There was a problem processing your submission, please check below and fix all errors.'
+    @page.should have_text 'The "Search for this text" field is required.'
+    @page.should have_text 'The "Replace with this text" field is required.'
+    @page.should have_text 'The "Search and replace in" field is required.'
+    @page.should have_text 'The "Current password" field is required.'
 
-    @sandr.submit_enabled?.should eq false
-
-    no_php_js_errors
-
-    @sandr.search_term.set 'Text'
-    @sandr.search_term.trigger 'blur'
-    @sandr.replace_term.set 'test'
-    @sandr.replace_term.trigger 'blur'
-    @sandr.replace_where.select 'Channel Entry Titles'
-    @sandr.password_auth.set 'password'
-    @sandr.password_auth.trigger 'blur'
-
-    @sandr.should have_no_text 'The "Search for this text" field is required.'
-    @sandr.should have_no_text 'The "Replace with this text" field is required.'
-    @sandr.should have_no_text 'The "Search and replace in" field is required.'
-    @sandr.should have_no_text 'The "Current password" field is required.'
-    @sandr.should have_no_text 'The password entered is incorrect.'
-
-    @sandr.should have_no_css 'fieldset.invalid'
-
-    @sandr.submit_enabled?.should eq true
+    @page.submit_enabled?.should eq false
 
     no_php_js_errors
 
-    @sandr.submit_button.click
+    @page.search_term.set 'Text'
+    @page.search_term.trigger 'blur'
+    @page.replace_term.set 'test'
+    @page.replace_term.trigger 'blur'
+    @page.replace_where.select 'Channel Entry Titles'
+    @page.password_auth.set 'password'
+    @page.password_auth.trigger 'blur'
+
+    @page.should have_no_text 'The "Search for this text" field is required.'
+    @page.should have_no_text 'The "Replace with this text" field is required.'
+    @page.should have_no_text 'The "Search and replace in" field is required.'
+    @page.should have_no_text 'The "Current password" field is required.'
+    @page.should have_no_text 'The password entered is incorrect.'
+
+    @page.should have_no_css 'fieldset.invalid'
+
+    @page.submit_enabled?.should eq true
 
     no_php_js_errors
 
-    @sandr.should have_text 'Action was a success'
-    @sandr.should have_text 'Number of database records in which a replacement occurred: 0'
+    @page.submit_button.click
+
+    no_php_js_errors
+
+    @page.should have_text 'Action was a success'
+    @page.should have_text 'Number of database records in which a replacement occurred: 0'
   end
 
   it 'should search and replace data' do
 
-    @sandr.search_term.set 'Welcome'
-    @sandr.replace_term.set 'test'
-    @sandr.replace_where.select 'Channel Entry Titles'
-    @sandr.password_auth.set 'password'
+    @page.search_term.set 'Welcome'
+    @page.replace_term.set 'test'
+    @page.replace_where.select 'Channel Entry Titles'
+    @page.password_auth.set 'password'
 
-    @sandr.submit_button.click
+    @page.submit_button.click
 
     no_php_js_errors
 
-    @sandr.should have_text 'Action was a success'
-    @sandr.should have_text 'Number of database records in which a replacement occurred: 1'
+    @page.should have_text 'Action was a success'
+    @page.should have_text 'Number of database records in which a replacement occurred: 1'
   end
 
 end
