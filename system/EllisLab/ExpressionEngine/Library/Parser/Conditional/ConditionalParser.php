@@ -224,7 +224,7 @@ class ConditionalParser extends AbstractParser {
 	 * Boolean Expressions
 	 *
 	 * This does the left side of the expression and then loops if that ends
-	 * in an operator. Parenthetical subexpressions are done recursively.
+	 * in an operator.
 	 */
 	protected function expression()
 	{
@@ -241,7 +241,7 @@ class ConditionalParser extends AbstractParser {
 
 			if ($this->is('BOOL'))
 			{
-				$expression->add('BOOL', ($this->value() == 'TRUE'));
+				$expression->add('BOOL', (strtoupper($this->value()) == 'TRUE'));
 				$this->next();
 			}
 			elseif ($this->is('NUMBER'))
