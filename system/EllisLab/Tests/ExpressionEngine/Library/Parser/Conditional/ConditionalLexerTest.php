@@ -99,9 +99,9 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			// Operators
 			$this->validOperatorsWithSpaces(),
 			$this->validOperatorsWithoutSpaces(),
-			$this->invalidOperatorsWithSpaces(),
-			$this->invalidOperatorsWithoutSpaces(),
-			$this->edgyInvalidOperatorsWithoutSpaces(),
+			$this->operatorCombinationsWithSpaces(),
+			$this->operatorCombinationsWithoutSpaces(),
+			$this->edgyOperatorCombinationsWithoutSpaces(),
 			$this->edgyDoubleDashWithoutSpaces(),
 			$this->edgyDotDashWithNumbersAndNoSpaces(),
 			$this->edgyDoubleDotWithNumbersAndNoSpaces(),
@@ -312,7 +312,7 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 		return $return;
 	}
 
-	protected function invalidOperatorsWithSpaces()
+	protected function operatorCombinationsWithSpaces()
 	{
 		$return = array();
 
@@ -729,7 +729,7 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	// Things change without spaces around the operator
-	protected function invalidOperatorsWithoutSpaces()
+	protected function operatorCombinationsWithoutSpaces()
 	{
 		$return = array();
 
@@ -830,7 +830,7 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 		{
 			foreach ($this->valueTypes as $type => $value)
 			{
-				// To avoid confusing code these will be done "by hand" see: edgyInvalidOperatorsWithoutSpaces()
+				// To avoid confusing code these will be done "by hand" see: edgyOperatorCombinationsWithoutSpaces()
 				if ($value['token'][0] == 'NUMBER')
 				{
 					continue;
@@ -854,7 +854,7 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 		return $return;
 	}
 
-	protected function edgyInvalidOperatorsWithoutSpaces()
+	protected function edgyOperatorCombinationsWithoutSpaces()
 	{
 		$return = array();
 
@@ -1023,7 +1023,7 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 	 * Tests when encountering "--" in a conditional without whitespace
 	 * surrounding it.
 	 *
-	 * Note: the number cases are covered in edgyInvalidOperatorsWithoutSpaces()
+	 * Note: the number cases are covered in edgyOperatorCombinationsWithoutSpaces()
 	 */
 	protected function edgyDoubleDashWithoutSpaces()
 	{
