@@ -35,11 +35,12 @@ class ConditionalLexer extends AbstractLexer {
 	 *
 	 * private $token_names = array(
 	 * 	'TEMPLATE_STRING',	// generic
-	 * 	'IF',				// {if
-	 * 	'ELSE',				// {if:else
-	 * 	'ELSEIF',			// {if:elseif
-	 * 	'ENDIF',			// {/if}
-	 * 	'ENDCOND',			// } at the end of an if
+	 *  'LD'				// {
+	 *  'RD'				// }
+	 * 	'IF',				// if
+	 * 	'ELSE',				// if:else
+	 * 	'ELSEIF',			// if:elseif
+	 * 	'ENDIF',			// /if
 	 * 	'STRING',			// literal string "foo", or 'foo'. The value does not include quotes
 	 * 	'NUMBER',			// literal number
 	 * 	'VARIABLE',
