@@ -42,7 +42,7 @@ class BooleanExpression {
 	public function __construct()
 	{
 		$this->operators = $this->getOperators();
-		$this->unary_operators = array('!', 'u-');
+		$this->unary_operators = $this->getUnaryOperators();
 	}
 
 	/**
@@ -91,11 +91,6 @@ class BooleanExpression {
 			}
 			elseif ($token[0] == 'OPERATOR')
 			{
-				if ($token[1] == 'u-')
-				{
-					$token[1] = '-';
-				}
-
 				$str .= ' '.$token[1].' ';
 			}
 			elseif ($token[0] == 'BOOL')
@@ -124,7 +119,7 @@ class BooleanExpression {
 			{
 				$evaluate_stack[] = $token[1];
 			}
-			elseif ($this->isUnary($token))
+			elseif ($this->isUnaryToken($token))
 			{
 				if (count($evaluate_stack) < 1)
 				{
@@ -137,7 +132,9 @@ class BooleanExpression {
 				{
 					case '!': array_push($evaluate_stack, ! $right);
 						break;
-					case 'u-': array_push($evaluate_stack, - $right);
+					case '+': array_push($evaluate_stack, +$right);
+						break;
+					case '-': array_push($evaluate_stack, -$right);
 						break;
 				}
 			}
@@ -222,9 +219,9 @@ class BooleanExpression {
 			{
 				// unary -, flip it with our special unary minus operator
 				// to promote its precedence.
-				if ($token[1] == '-' && $this->validPrefixOperator($prev_token))
+				if ($this->inPrefixPosition($prev_token) && $this->isValidUnaryOperator($token))
 				{
-					$token[1] = 'u-';
+					$token = $this->markAsUnary($token);
 				}
 
 				while (count($stack) && $this->isOperator(end($stack)))
@@ -240,7 +237,7 @@ class BooleanExpression {
 						 	$this->precedence($token, end($stack)) < 0)
 						)
 						// unary operators can only pop other unary operators
-						&& ( ! $this->isUnary($token) || $this->isUnary(end($stack)))
+						&& ( ! $this->isUnaryToken($token) || $this->isUnaryToken(end($stack)))
 					)
 					{
 						$output[] = array_pop($stack);
@@ -282,21 +279,43 @@ class BooleanExpression {
 	}
 
 	/**
-	 * Unary operators
+	 * Set the unary flag on the token
 	 */
-	private function isUnary($token)
+	private function markAsUnary($token)
 	{
-		return in_array($token[1], $this->unary_operators);
+		$token['unary'] = TRUE;
+		return $token;
 	}
 
 	/**
-	 * Determine if the current operator is a valid unary prefix.
+	 * Unary token?
+	 *
+	 * Decides based on the token flag if it is a valid unary token.
+	 */
+	private function isUnaryToken($token)
+	{
+		return isset($token['unary']);
+	}
+
+	/**
+	 * Unary operators?
+	 *
+	 * Decides based on the symbol if the token *can* be used as a
+	 * unary operator. Does not mean it must be used as such.
+	 */
+	private function isValidUnaryOperator($token)
+	{
+		return array_key_exists($token[1], $this->unary_operators);
+	}
+
+	/**
+	 * Determine if the current operator could be a prefix.
 	 *
 	 * This is the case if there is no previous token, the previous
 	 * token is another operator, or the previous token is a left
 	 * parenthesis.
 	 */
-	private function validPrefixOperator($previous)
+	private function inPrefixPosition($previous)
 	{
 		return ($previous == NULL || $previous[0] == 'LP' || $this->isOperator($previous));
 	}
@@ -306,15 +325,18 @@ class BooleanExpression {
 	 */
 	private function precedence($first, $second)
 	{
-		return ($this->operators[$first[1]][0] - $this->operators[$second[1]][0]);
+		$first_operator = $this->getOperator($first);
+		$second_operator = $this->getOperator($second);
+		return ($first_operator[0] - $second_operator[0]);
 	}
 
 	/**
-	 * Associateiveness check
+	 * Associativeness check
 	 */
 	private function isAssociative($token, $dir)
 	{
-		return ($this->operators[$token[1]][1] == $dir);
+		$operator = $this->getOperator($token);
+		return ($operator[1] == $dir);
 	}
 
 	/**
@@ -326,7 +348,22 @@ class BooleanExpression {
 	}
 
 	/**
-	 * List of operators
+	 * Get an operator based on a token
+	 *
+	 * Decides based on the token flag if the token is unary.
+	 */
+	private function getOperator($token)
+	{
+		if ($this->isUnaryToken($token))
+		{
+			return $this->unary_operators[$token[1]];
+		}
+
+		return $this->operators[$token[1]];
+	}
+
+	/**
+	 * List of binary operators
 	 */
 	private function getOperators()
 	{
@@ -335,9 +372,6 @@ class BooleanExpression {
 		return array(
 			'^' => array(60, self::RIGHT_ASSOC),
 			'**' => array(60, self::RIGHT_ASSOC),
-
-			'u-' => array(50, self::RIGHT_ASSOC),
-			'!' => array(50, self::RIGHT_ASSOC),
 
 			'*' => array(40, self::LEFT_ASSOC),
 			'/' => array(40, self::LEFT_ASSOC),
@@ -361,6 +395,18 @@ class BooleanExpression {
 			'AND' => array(4, self::NON_ASSOC),
 			'XOR' => array(3, self::NON_ASSOC),
 			'OR' => array(2, self::NON_ASSOC),
+		);
+	}
+
+	/**
+	 * List of unary operators
+	 */
+	private function getUnaryOperators()
+	{
+		return array(
+			'-' => array(50, self::RIGHT_ASSOC),
+			'+' => array(50, self::RIGHT_ASSOC),
+			'!' => array(50, self::RIGHT_ASSOC),
 		);
 	}
 }
