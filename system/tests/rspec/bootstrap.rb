@@ -25,11 +25,6 @@ Capybara.javascript_driver = :webkit
 Capybara.app_host = $test_config[:app_host]
 Capybara.run_server = false
 
-# Wait 20 second at most for AJAX to finish; it's a lot, but
-# there were some intermittent failings maybe due to requests
-# getting backed up due to the speed of the tests
-Capybara.default_wait_time = 20
-
 # Configure hook to run after each example
 RSpec.configure do |config|
 

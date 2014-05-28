@@ -63,7 +63,7 @@ feature 'Import File Converter' do
     @page.delimiter_special.set ''
     @page.delimiter_special.trigger 'blur'
 
-    @page.should have_text custom_delimit_required
+    @page.should have_content custom_delimit_required
     should_have_form_errors(@page)
 
     # Invalid custom delimiter
