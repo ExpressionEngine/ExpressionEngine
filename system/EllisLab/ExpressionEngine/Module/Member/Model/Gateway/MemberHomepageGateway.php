@@ -9,10 +9,8 @@ use EllisLab\ExpressionEngine\Model\Gateway\RowDataGateway;
  * We store their preferences here.
  */
 class MemberHomepageGateway extends RowDataGateway {
-	protected static $meta = array(
-		'table_name' => 'member_homepage',
-		'primary_id' => 'member_id'
-	);
+	protected static $_table_name = 'member_homepage';
+	protected static $_primary_id = 'member_id';
 
 	// Properties
 	public $member_id;
