@@ -176,6 +176,12 @@ class BooleanExpression {
 						break;
 					case '>=': array_push($evaluate_stack, $left >= $right);
 						break;
+					case '^=': array_push($evaluate_stack, (strpos($left, $right) === 0));
+						break;
+					case '*=': array_push($evaluate_stack, (strpos($left, $right) !== FALSE));
+						break;
+					case '$=': array_push($evaluate_stack, (substr($left, -strlen($right)) == $right));
+						break;
 					case '<>': array_push($evaluate_stack, $left <> $right);
 						break;
 					case '==': array_push($evaluate_stack, $left == $right);
@@ -193,7 +199,7 @@ class BooleanExpression {
 					case 'OR': array_push($evaluate_stack, $left OR $right);
 						break;
 					default:
-						throw new ConditionalParserException('Invalid Operator: '.$token[1]);
+						throw new ConditionalParserException('Invalid Binary Operator: '.$token[1]);
 				}
 			}
 		}
@@ -389,6 +395,10 @@ class BooleanExpression {
 			'<=' => array(20, self::NON_ASSOC),
 			'>' => array(20, self::NON_ASSOC),
 			'>=' => array(20, self::NON_ASSOC),
+
+			'^=' => array(20, self::NON_ASSOC),
+			'*=' => array(20, self::NON_ASSOC),
+			'$=' => array(20, self::NON_ASSOC),
 
 			'<>' => array(10, self::NON_ASSOC),
 			'==' => array(10, self::NON_ASSOC),
