@@ -112,6 +112,7 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			// Individual Tokens
 			$this->validNumberTokens(),
 			$this->validVariableTokens(),
+			$this->whitespaceTokens(),
 
 			// Operators
 			$this->validOperatorsWithSpaces(),
@@ -2098,6 +2099,99 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			"TAG tokens",
 			$this->assembleCommonCondition('{exp:foo:bar}'),
 			$this->assembleCommonTokens(array(array('TAG', '{exp:foo:bar}')))
+		);
+
+		return $return;
+	}
+
+	protected function whitespaceTokens()
+	{
+		$return = array();
+
+		$return[] = array(
+			"Double Whitespace",
+			"{if  TRUE}out{/if}",
+			array(
+				array('LD', 				'{'),
+				array('IF', 				'if'),
+				array('WHITESPACE', 		'  '),
+				array('BOOL',				'TRUE'),
+				array('RD',					'}'),
+				array('TEMPLATE_STRING',	'out'),
+				array('LD', 				'{'),
+				array('ENDIF',				'/if'),
+				array('RD',					'}'),
+				array('EOS',				TRUE)
+			)
+		);
+
+		$return[] = array(
+			"Tab",
+			"{if\tTRUE}out{/if}",
+			array(
+				array('LD', 				'{'),
+				array('IF', 				'if'),
+				array('WHITESPACE', 		"\t"),
+				array('BOOL',				'TRUE'),
+				array('RD',					'}'),
+				array('TEMPLATE_STRING',	'out'),
+				array('LD', 				'{'),
+				array('ENDIF',				'/if'),
+				array('RD',					'}'),
+				array('EOS',				TRUE)
+			)
+		);
+
+		$return[] = array(
+			"Newline",
+			"{if\nTRUE}out{/if}",
+			array(
+				array('LD', 				'{'),
+				array('IF', 				'if'),
+				array('WHITESPACE', 		"\n"),
+				array('BOOL',				'TRUE'),
+				array('RD',					'}'),
+				array('TEMPLATE_STRING',	'out'),
+				array('LD', 				'{'),
+				array('ENDIF',				'/if'),
+				array('RD',					'}'),
+				array('EOS',				TRUE)
+			)
+		);
+
+		$return[] = array(
+			"CRLF",
+			"{if\r\nTRUE}out{/if}",
+			array(
+				array('LD', 				'{'),
+				array('IF', 				'if'),
+				array('WHITESPACE', 		"\r\n"),
+				array('BOOL',				'TRUE'),
+				array('RD',					'}'),
+				array('TEMPLATE_STRING',	'out'),
+				array('LD', 				'{'),
+				array('ENDIF',				'/if'),
+				array('RD',					'}'),
+				array('EOS',				TRUE)
+			)
+		);
+
+		$return[] = array(
+			"Various Whitespace",
+			"{if\n\tTRUE\n}\nout\n{/if}",
+			array(
+				array('LD', 				'{'),
+				array('IF', 				'if'),
+				array('WHITESPACE', 		"\n\t"),
+				array('BOOL',				'TRUE'),
+				array('WHITESPACE', 		"\n"),
+				array('RD',					'}'),
+				array('TEMPLATE_STRING',	"\nout\n"),
+				array('LD', 				'{'),
+				array('ENDIF',				'/if'),
+				array('RD',					'}'),
+				array('EOS',				TRUE)
+			)
 		);
 
 		return $return;
