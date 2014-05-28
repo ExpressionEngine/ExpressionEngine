@@ -113,6 +113,7 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			$this->validNumberTokens(),
 			$this->validVariableTokens(),
 			$this->whitespaceTokens(),
+			$this->booleanTokens(),
 
 			// Operators
 			$this->validOperatorsWithSpaces(),
@@ -123,6 +124,7 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			$this->edgyDoubleDashWithoutSpaces(),
 			$this->edgyDotDashWithNumbersAndNoSpaces(),
 			$this->edgyDoubleDotWithNumbersAndNoSpaces(),
+			$this->englishBooleanOperators(),
 
 			array() // non trailing comma thing for covienence
 		);
@@ -2193,6 +2195,55 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 				array('EOS',				TRUE)
 			)
 		);
+
+		return $return;
+	}
+
+	protected function englishBooleanOperators()
+	{
+		$return = array();
+
+		$operators = array(
+			'and', 'And', 'aNd', 'ANd', 'anD', 'AnD', 'aND', 'AND',
+			'or', 'Or', 'oR', 'OR',
+			'xor', 'Xor', 'xOr', 'XOr', 'xoR', 'XoR', 'xOR', 'XOR'
+		);
+
+		foreach ($operators as $operator)
+		{
+			$return[] = array(
+				"The {$operator} operator",
+				$this->assembleCommonCondition($operator),
+				$this->assembleCommonTokens(array(array('OPERATOR', $operator)))
+			);
+		}
+
+		return $return;
+	}
+
+	protected function booleanTokens()
+	{
+		$return = array();
+
+		$booleans = array(
+			'true', 'True', 'tRue', 'TRue', 'trUe', 'TrUe', 'tRUe', 'TRUe',
+			'truE', 'TruE', 'tRuE', 'TRuE', 'trUE', 'TrUE', 'tRUE', 'TRUE',
+
+			'false', 'False', 'fAlse', 'FAlse', 'faLse', 'FaLse', 'fALse',
+			'FALse', 'falSe', 'FalSe', 'fAlSe', 'FAlSe', 'faLSe', 'FaLSe',
+			'fALSe', 'FALSe', 'falsE', 'FalsE', 'fAlsE', 'FAlsE', 'faLsE',
+			'FaLsE', 'fALsE', 'FALsE', 'falSE', 'FalSE', 'fAlSE', 'FAlSE',
+			'faLSE', 'FaLSE', 'fALSE', 'FALSE'
+		);
+
+		foreach ($booleans as $boolean)
+		{
+			$return[] = array(
+				"The {$boolean} token",
+				$this->assembleCommonCondition($boolean),
+				$this->assembleCommonTokens(array(array('BOOL', $operator)))
+			);
+		}
 
 		return $return;
 	}
