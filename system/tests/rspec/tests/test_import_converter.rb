@@ -60,10 +60,13 @@ feature 'Import File Converter' do
 
     # "Other" selected but no custom delimiter entered
     @page.find('input[value=other]').click
-    @page.delimiter_special.set ''
+
+    # Avoid triggering another request so quickly in succession,
+    # seems to be causing some intermittent errors
+    sleep 1
     @page.delimiter_special.trigger 'blur'
 
-    @page.should have_content custom_delimit_required
+    @page.should have_text custom_delimit_required
     should_have_form_errors(@page)
 
     # Invalid custom delimiter
