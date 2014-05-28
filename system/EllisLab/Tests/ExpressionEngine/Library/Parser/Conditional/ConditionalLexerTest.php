@@ -106,6 +106,9 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 		return array_merge(
 			array(),
 
+			// Insure coverage for each token type
+			$this->basicTokens(),
+
 			// Individual Tokens
 			$this->validNumberTokens(),
 			$this->validVariableTokens(),
@@ -1972,6 +1975,130 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 				$this->assembleCommonTokens($expected)
 			);
 		}
+
+		return $return;
+	}
+
+	/**
+	 * The idea is to ensure that each token type is tested.
+	 */
+	protected function basicTokens()
+	{
+		$return = array();
+
+		/**
+		 * Available tokens:
+		 *
+		 * private $token_names = array(
+		 * 	'TEMPLATE_STRING',	// generic
+		 *  'LD'				// {
+		 *  'RD'				// }
+		 * 	'IF',				// if
+		 * 	'ELSE',				// if:else
+		 * 	'ELSEIF',			// if:elseif
+		 * 	'ENDIF',			// /if
+		 * 	'STRING',			// literal string "foo", or 'foo'. The value does not include quotes
+		 * 	'NUMBER',			// literal number
+		 * 	'VARIABLE',
+		 * 	'OPERATOR',			// an operator from the $operators array
+		 * 	'MISC',				// other stuff, usually illegal when safety on
+		 * 	'LP',				// (
+		 * 	'RP',				// )
+		 * 	'WHITESPACE',		// \s\r\n\t
+		 * 	'BOOL',				// TRUE or FALSE (case insensitive)
+		 * 	'TAG',				// {exp:foo:bar}
+		 * 	'EOS'				// end of string
+		 * );
+		 */
+
+		// $this->commonTokens covers LD, IF, WHITESPACE, RD, TEMPLATE_STRING, LD, ENDIF, RD, and EOS.
+
+		// ELSE
+		// ELSIF
+		$expected = array(
+			array('LD', 				'{'),
+			array('IF', 				'if'),
+			array('WHITESPACE', 		' '),
+			array('BOOL',				'TRUE'),
+			array('RD',					'}'),
+			array('TEMPLATE_STRING',	'out'),
+			array('LD', 				'{'),
+			array('ELSEIF', 			'if:elseif'),
+			array('WHITESPACE', 		' '),
+			array('BOOL',				'TRUE'),
+			array('RD',					'}'),
+			array('TEMPLATE_STRING',	'out'),
+			array('LD', 				'{'),
+			array('ELSE', 				'if:else'),
+			array('RD',					'}'),
+			array('TEMPLATE_STRING',	'out'),
+			array('LD',					'{'),
+			array('ENDIF',				'/if'),
+			array('RD',					'}'),
+			array('EOS',				TRUE)
+		);
+		$return[] = array(
+			"ELSEIF & ELSE tokens",
+			"{if TRUE}out{if:elseif TRUE}out{if:else}out{/if}",
+			$expected
+		);
+
+		// STRING
+		$return[] = array(
+			"STRING tokens",
+			$this->assembleCommonCondition('"foo"'),
+			$this->assembleCommonTokens(array(array('STRING', 'foo')))
+		);
+
+		// NUMBER
+		$return[] = array(
+			"NUMBER tokens",
+			$this->assembleCommonCondition('5'),
+			$this->assembleCommonTokens(array(array('NUMBER', '5')))
+		);
+
+		// VARIABLE
+		$return[] = array(
+			"VARIABLE tokens",
+			$this->assembleCommonCondition('foo'),
+			$this->assembleCommonTokens(array(array('VARIABLE', 'foo')))
+		);
+
+		// OPERATOR
+		$return[] = array(
+			"OPERATOR tokens",
+			$this->assembleCommonCondition('=='),
+			$this->assembleCommonTokens(array(array('OPERATOR', '==')))
+		);
+
+		// MISC
+		$return[] = array(
+			"MISC tokens",
+			$this->assembleCommonCondition('@'),
+			$this->assembleCommonTokens(array(array('MISC', '@')))
+		);
+
+		// LP
+		// RP
+		$return[] = array(
+			"LP & RP tokens",
+			$this->assembleCommonCondition('()'),
+			$this->assembleCommonTokens(array(array('LP', '('), array('RP', ')')))
+		);
+
+		// BOOL
+		$return[] = array(
+			"BOOL tokens",
+			$this->assembleCommonCondition('TRUE'),
+			$this->assembleCommonTokens(array(array('BOOL', 'TRUE')))
+		);
+
+		// TAG
+		$return[] = array(
+			"TAG tokens",
+			$this->assembleCommonCondition('{exp:foo:bar}'),
+			$this->assembleCommonTokens(array(array('TAG', '{exp:foo:bar}')))
+		);
 
 		return $return;
 	}
