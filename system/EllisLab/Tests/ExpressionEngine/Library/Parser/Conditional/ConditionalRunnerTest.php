@@ -244,6 +244,8 @@ class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 			array('Math mod',		'{if 12 % 5 == 2}yes{if:else}no{/if}',			'yes'),
 			array('Power hat',		'{if 2 ^ 3 ^ 2 == 512}yes{if:else}no{/if}',		'yes'),
 			array('Power star',		'{if 2 ** 3 ** 2 == 512}yes{if:else}no{/if}',	'yes'),
+			array('2-nd root',		'{if 9 ^ .5 == 3}yes{if:else}no{/if}',			'yes'),
+			array('3-rd root',		'{if 27 ** (1/3) == 3}yes{if:else}no{/if}',		'yes'),
 		);
 	}
 
