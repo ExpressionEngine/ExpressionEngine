@@ -14,8 +14,4 @@ class ControlPanelPage < SitePrism::Page
 		submit_button[:disabled] != true &&
 		self.has_submit_button_disabled? == false
 	end
-
-	def has_errors?
-		self.has_fieldset_errors?
-	end
 end
