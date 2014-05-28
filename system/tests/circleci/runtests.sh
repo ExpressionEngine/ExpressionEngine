@@ -15,7 +15,7 @@ PHP_VERSIONS_ARRAY_SLICED=${PHP_VERSIONS_ARRAY[@]:$((CIRCLE_NODE_INDEX * CIRCLE_
 
 printf "Starting tests. Outputting results to build artifacts directory\n\n"
 
-for PHPVERSION in "${PHP_VERSIONS_ARRAY_SLICED[@]}"
+for PHPVERSION in ${PHP_VERSIONS_ARRAY_SLICED[@]}
 do
 	# Switch PHP version with phpenv and reload the Apache module
 	printf "Testing under PHP ${PHPVERSION}\n\n"
