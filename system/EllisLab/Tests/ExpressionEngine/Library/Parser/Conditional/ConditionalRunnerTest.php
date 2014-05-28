@@ -174,6 +174,7 @@ class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 			$this->conditionals(),
 			$this->whitespaceRewriting(),
 			$this->basicMaths(),
+			$this->negation(),
 			$this->basicBranching(),
 			$this->plainLogicOperatorTests(),
 			$this->comparisonOperatorTests(),
@@ -236,13 +237,28 @@ class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 	protected function basicMaths()
 	{
 		return array(
-			array('Math plus',	'{if 5 + 5 == 10}yes{if:else}no{/if}',			'yes'),
-			array('Math minus',	'{if 7 - 9 == -2}yes{if:else}no{/if}',			'yes'),
-			array('Math star',	'{if 5 * 5 == 25}yes{if:else}no{/if}',			'yes'),
-			array('Math slash',	'{if 12 / 4 == 3}yes{if:else}no{/if}',			'yes'),
-			array('Math mod',	'{if 12 % 5 == 2}yes{if:else}no{/if}',			'yes'),
-			array('Power hat',	'{if 2 ^ 3 ^ 2 == 512}yes{if:else}no{/if}',		'yes'),
-			array('Power star',	'{if 2 ** 3 ** 2 == 512}yes{if:else}no{/if}',	'yes'),
+			array('Math plus',		'{if 5 + 5 == 10}yes{if:else}no{/if}',			'yes'),
+			array('Math minus',		'{if 7 - 9 == -2}yes{if:else}no{/if}',			'yes'),
+			array('Math star',		'{if 5 * 5 == 25}yes{if:else}no{/if}',			'yes'),
+			array('Math slash',		'{if 12 / 4 == 3}yes{if:else}no{/if}',			'yes'),
+			array('Math mod',		'{if 12 % 5 == 2}yes{if:else}no{/if}',			'yes'),
+			array('Power hat',		'{if 2 ^ 3 ^ 2 == 512}yes{if:else}no{/if}',		'yes'),
+			array('Power star',		'{if 2 ** 3 ** 2 == 512}yes{if:else}no{/if}',	'yes'),
+			array('2-nd root',		'{if 9 ^ .5 == 3}yes{if:else}no{/if}',			'yes'),
+			array('3-rd root',		'{if 27 ** (1/3) == 3}yes{if:else}no{/if}',		'yes'),
+		);
+	}
+
+	protected function negation()
+	{
+		return array(
+			array('Negate parens',		'{if 5 + -(5*3 - 0) == -10}yes{if:else}no{/if}',	'yes'),
+			array('Negate exponent',	'{if 5 ^ -2 == .04}yes{if:else}no{/if}',			'yes'),
+			array('Negate base',		'{if -5 ^ 2 == -25}yes{if:else}no{/if}',			'yes'),
+			array('Square of negative',	'{if (-5) ^ 2 == 25}yes{if:else}no{/if}',			'yes'),
+			array('Negate not zero',	'{if -!0 == -1}yes{if:else}no{/if}',				'yes'),
+			array('Not negated zero',	'{if !-0 == TRUE}yes{if:else}no{/if}',				'yes'),
+
 		);
 	}
 
@@ -279,27 +295,53 @@ class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 	protected function comparisonOperatorTests()
 	{
 		return array(
-			array('Plain == Integer',	'{if 5 == 5}yes{if:else}no{/if}',		'yes'),
-			array('Plain != Integer',	'{if 3 != 6}yes{if:else}no{/if}',		'yes'),
-			array('Plain == String',	'{if "a" == "a"}yes{if:else}no{/if}',	'yes'),
-			array('Plain != String',	'{if "a" != "b"}yes{if:else}no{/if}',	'yes'),
-			array('Plain <= Integer',	'{if 3 <= 5}yes{if:else}no{/if}',		'yes'),
-			array('Plain <= Integer 2',	'{if 5 <= 5}yes{if:else}no{/if}',		'yes'),
-			array('Plain >= Integer',	'{if 7 >= 5}yes{if:else}no{/if}',		'yes'),
-			array('Plain >= Integer 2',	'{if 5 >= 5}yes{if:else}no{/if}',		'yes'),
-			array('Plain <> Integer',	'{if 7 <> 5}yes{if:else}no{/if}',		'yes'),
-			array('Plain > Integer',	'{if 7 > 5}yes{if:else}no{/if}',		'yes'),
-			array('Plain < Integer',	'{if 5 < 7}yes{if:else}no{/if}',		'yes'),
+			array('Plain == Integer',			'{if 5 == 5}yes{if:else}no{/if}',					'yes'),
+			array('Plain != Integer',			'{if 3 != 6}yes{if:else}no{/if}',					'yes'),
+			array('Plain == String',			'{if "a" == "a"}yes{if:else}no{/if}',				'yes'),
+			array('Plain != String',			'{if "a" != "b"}yes{if:else}no{/if}',				'yes'),
+			array('Plain <= Integer',			'{if 3 <= 5}yes{if:else}no{/if}',					'yes'),
+			array('Plain <= Integer 2',			'{if 5 <= 5}yes{if:else}no{/if}',					'yes'),
+			array('Plain >= Integer',			'{if 7 >= 5}yes{if:else}no{/if}',					'yes'),
+			array('Plain >= Integer 2',			'{if 5 >= 5}yes{if:else}no{/if}',					'yes'),
+			array('Plain <> Integer',			'{if 7 <> 5}yes{if:else}no{/if}',					'yes'),
+			array('Plain > Integer',			'{if 7 > 5}yes{if:else}no{/if}',					'yes'),
+			array('Plain < Integer',			'{if 5 < 7}yes{if:else}no{/if}',					'yes'),
 
-			array('False == Integer',	'{if 5 == 2}no{if:else}yes{/if}',		'yes'),
-			array('False != Integer',	'{if 6 != 6}no{if:else}yes{/if}',		'yes'),
-			array('False == String',	'{if "a" == "b"}no{if:else}yes{/if}',	'yes'),
-			array('False != String',	'{if "a" != "a"}no{if:else}yes{/if}',	'yes'),
-			array('False <= Integer',	'{if 5 <= 3}no{if:else}yes{/if}',		'yes'),
-			array('False >= Integer',	'{if 5 >= 7}no{if:else}yes{/if}',		'yes'),
-			array('False <> Integer',	'{if 7 <> 7}no{if:else}yes{/if}',		'yes'),
-			array('False > Integer',	'{if 5 > 7}no{if:else}yes{/if}',		'yes'),
-			array('False < Integer',	'{if 7 < 5}no{if:else}yes{/if}',		'yes'),
+			array('String Begins With',			'{if "testing" ^= "test"}yes{if:else}no{/if}',		'yes'),
+			array('Integer Begins With',		'{if 123456 ^= 123}yes{if:else}no{/if}',			'yes'),
+			array('Float Begins With',			'{if 42.7 ^= 42}yes{if:else}no{/if}',				'yes'),
+			array('String Contains',			'{if "testing" *= "sti"}yes{if:else}no{/if}',		'yes'),
+			array('Integer Contains',			'{if 123456 *= 345}yes{if:else}no{/if}',			'yes'),
+			array('Float Contains',				'{if 42.7 *= 42}yes{if:else}no{/if}',				'yes'),
+			array('Mix Contains',				'{if 42.7 *= "42"}yes{if:else}no{/if}',				'yes'),
+			array('Mix Contains 2',				'{if "42.7" *= 42}yes{if:else}no{/if}',				'yes'),
+			array('Contains Period',			'{if 42.7 *= "."}yes{if:else}no{/if}',				'yes'),
+			array('String Ends With',			'{if "testing" $= "ing"}yes{if:else}no{/if}',		'yes'),
+			array('Integer Ends With',			'{if 123456 $= 456}yes{if:else}no{/if}',			'yes'),
+			array('Float Ends With',			'{if 42.7 $= .7}yes{if:else}no{/if}',				'yes'),
+
+			array('False String Begins With',	'{if "testing" ^= "ing"}no{if:else}yes{/if}',		'yes'),
+			array('False Integer Begins With',	'{if 123456 ^= 456}no{if:else}yes{/if}',			'yes'),
+			array('False Float Begins With',	'{if 42.7 ^= .7}no{if:else}yes{/if}',				'yes'),
+			array('False String Contains',		'{if "testing" *= "hello"}no{if:else}yes{/if}',		'yes'),
+			array('False Integer Contains',		'{if 123456 *= 321}no{if:else}yes{/if}',			'yes'),
+			array('False Float Contains',		'{if 42.7 *= 24}no{if:else}yes{/if}',				'yes'),
+			array('False Mix Contains',			'{if 42.7 *= "24"}no{if:else}yes{/if}',				'yes'),
+			array('False Mix Contains 2',		'{if "42.7" *= 24}no{if:else}yes{/if}',				'yes'),
+			array('False Contains Period',		'{if 42 *= "."}no{if:else}yes{/if}',				'yes'),
+			array('False String Ends With',		'{if "testing" $= "test"}no{if:else}yes{/if}',		'yes'),
+			array('False Integer Ends With',	'{if 123456 $= 123}no{if:else}yes{/if}',			'yes'),
+			array('False Float Ends With',		'{if 42.7 $= 42}no{if:else}yes{/if}',				'yes'),
+
+			array('False == Integer',			'{if 5 == 2}no{if:else}yes{/if}',					'yes'),
+			array('False != Integer',			'{if 6 != 6}no{if:else}yes{/if}',					'yes'),
+			array('False == String',			'{if "a" == "b"}no{if:else}yes{/if}',				'yes'),
+			array('False != String',			'{if "a" != "a"}no{if:else}yes{/if}',				'yes'),
+			array('False <= Integer',			'{if 5 <= 3}no{if:else}yes{/if}',					'yes'),
+			array('False >= Integer',			'{if 5 >= 7}no{if:else}yes{/if}',					'yes'),
+			array('False <> Integer',			'{if 7 <> 7}no{if:else}yes{/if}',					'yes'),
+			array('False > Integer',			'{if 5 > 7}no{if:else}yes{/if}',					'yes'),
+			array('False < Integer',			'{if 7 < 5}no{if:else}yes{/if}',					'yes'),
 		);
 	}
 

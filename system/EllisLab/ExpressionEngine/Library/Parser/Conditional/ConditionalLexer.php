@@ -116,11 +116,12 @@ class ConditionalLexer extends AbstractLexer {
 	 *
 	 * If you add one here, you must also add its logic to the boolean
 	 * expression class. If an operator is the same as the beginning of
-	 * another, the longer must be first. (e.g. ** before *).
+	 * another, the longer must be first. (e.g. ^= before ^).
 	 */
 	private $operators = array(
-		'**', '%', '+', '-', '*', '/',
+		'^=', '*=', '$=',
 		'==', '!=', '<=', '>=', '<>', '<', '>',
+		'**', '%', '+', '-', '*', '/',
 		'.', '!', '^',
 		'||', '&&',
 		'AND', 'OR', 'XOR'
