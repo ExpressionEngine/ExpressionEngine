@@ -137,6 +137,8 @@ class BooleanExpression {
 						break;
 					case '-': array_push($evaluate_stack, -$right);
 						break;
+					default:
+						throw new ConditionalParserException('Invalid Unary Operator: '.$token[1]);
 				}
 			}
 			else
@@ -190,6 +192,8 @@ class BooleanExpression {
 						break;
 					case 'OR': array_push($evaluate_stack, $left OR $right);
 						break;
+					default:
+						throw new ConditionalParserException('Invalid Operator: '.$token[1]);
 				}
 			}
 		}
@@ -201,8 +205,8 @@ class BooleanExpression {
 	 * Shunting yard algorithm to convert to RPN
 	 *
 	 * Will drop parentheses (RPN does not require them) and
-	 * also converts unary minuses to a special 'u-' identifier
-	 * for easier evaluation.
+	 * also marks all unary operators so we can treat them
+	 * correctly in the evaluation phase.
 	 *
 	 * @param Array $tokens List of tokens in the expression
 	 * @return Array of tokens in RPN format.
@@ -218,8 +222,7 @@ class BooleanExpression {
 		{
 			if ($this->isOperator($token))
 			{
-				// unary -, flip it with our special unary minus operator
-				// to promote its precedence.
+				// unary operators need to be marked as such for the next step
 				if ($this->inPrefixPosition($prev_token) && $this->isValidUnaryOperator($token))
 				{
 					$token = $this->markAsUnary($token);
