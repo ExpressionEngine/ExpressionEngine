@@ -7,8 +7,8 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
 
 	public function setUp()
 	{
-		$this->mb = m::mock('EllisLab\ExpressionEngine\Model\ModelBuilder');
-		$this->as = m::mock('EllisLab\ExpressionEngine\Core\AliasService');
+		$this->mb = m::mock('EllisLab\ExpressionEngine\Model\ModelFactory');
+		$this->as = m::mock('EllisLab\ExpressionEngine\Model\ModelAliasService');
 		$this->gateway = m::mock(__NAMESPACE__.'\\GatewayStub');
 	}
 
@@ -33,10 +33,8 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
 
 class GatewayStub extends \EllisLab\ExpressionEngine\Model\Gateway\RowDataGateway {
 
-	protected static $meta = array(
-		'table_name' => 'teams',
-		'primary_key' => 'team_id'
-	);
+	protected static $_table_name = 'teams';
+	protected static $_primary_key = 'team_id';
 
 	public $the_id;
 	public $another_id;
@@ -46,15 +44,8 @@ class GatewayStub extends \EllisLab\ExpressionEngine\Model\Gateway\RowDataGatewa
 
 class TestModel extends \EllisLab\ExpressionEngine\Model\Model {
 
-	protected static $_meta = array(
-		'primary_key'	=> 'the_id',
-	//	'cascade'		=> 'Templates',
-		'gateway_names' => array('GatewayStub'),
-		'key_map'		=> array(
-			'the_id'		=> 'GatewayStub',
-			'another_id'	=> 'GatewayStub'
-		),
-	);
+	protected static $_primary_key	= 'the_id';
+	protected static $_gateway_names = array('GatewayStub');
 
 	protected $the_id;
 	protected $another_id;
