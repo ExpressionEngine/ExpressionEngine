@@ -10,9 +10,12 @@ STATUS=0
 # arrays in the YML
 PHP_VERSIONS_ARRAY=(${php_versions// / })
 
+# Slice the PHP versions array based on available parallelism
+PHP_VERSIONS_ARRAY_SLICED=${PHP_VERSIONS_ARRAY[@]:$((CIRCLE_NODE_INDEX * CIRCLE_NODE_TOTAL)):$CIRCLE_NODE_TOTAL}
+
 printf "Starting tests. Outputting results to build artifacts directory\n\n"
 
-for PHPVERSION in "${PHP_VERSIONS_ARRAY[@]}"
+for PHPVERSION in "${PHP_VERSIONS_ARRAY_SLICED[@]}"
 do
 	# Switch PHP version with phpenv and reload the Apache module
 	printf "Testing under PHP ${PHPVERSION}\n\n"
