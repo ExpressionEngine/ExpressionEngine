@@ -7,20 +7,20 @@ use EllisLab\ExpressionEngine\Library\Parser\Conditional\ConditionalLexer;
 class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 
 	protected $valueTypes = array(
-		'bool'				=> array('token' => array('BOOL', 'TRUE'),							'value' => 'TRUE'),
-		'int'				=> array('token' => array('NUMBER', '5'),							'value' => '5'),
-		'negative'			=> array('token' => array('NUMBER', '-5'),							'value' => '-5'),
-		'bigfloat'			=> array('token' => array('NUMBER', '5.1'),							'value' => '5.1'),
-		'littlefloat'		=> array('token' => array('NUMBER', '.1'),							'value' => '.1'),
-		'string'			=> array('token' => array('STRING', 'string'),						'value' => '"string"'),
-		'dash-string'		=> array('token' => array('STRING', 'dash-string'),					'value' => '"dash-string"'),
-		'dot.string'		=> array('token' => array('STRING', 'dot.string'),					'value' => '"dot.string"'),
-		'intstring'			=> array('token' => array('STRING', '5'),							'value' => '"5"'),
-		'variable'			=> array('token' => array('VARIABLE', 'variable'),					'value' => 'variable'),
-		'dash-variable'		=> array('token' => array('VARIABLE', 'dash-variable'),				'value' => 'dash-variable'),
-		'simpletag'			=> array('token' => array('TAG', '{simpletag}'),					'value' => '{simpletag}'),
-		'moduletag'			=> array('token' => array('TAG', '{exp:foo:bar}'),					'value' => '{exp:foo:bar}'),
-		'tag_with_params'	=> array('token' => array('TAG', '{exp:foo:bar param="value"}'),	'value' => '{exp:foo:bar param="value"}')
+		'bool'				=> array('token' => array('BOOL', 'TRUE'),									'value' => 'TRUE'),
+		'int'				=> array('token' => array('NUMBER', '5'),									'value' => '5'),
+		'negative'			=> array('token' => array(array('OPERATOR', '-'), array('NUMBER', '5')),	'value' => '-5'),
+		'bigfloat'			=> array('token' => array('NUMBER', '5.1'),									'value' => '5.1'),
+		'littlefloat'		=> array('token' => array('NUMBER', '.1'),									'value' => '.1'),
+		'string'			=> array('token' => array('STRING', 'string'),								'value' => '"string"'),
+		'dash-string'		=> array('token' => array('STRING', 'dash-string'),							'value' => '"dash-string"'),
+		'dot.string'		=> array('token' => array('STRING', 'dot.string'),							'value' => '"dot.string"'),
+		'intstring'			=> array('token' => array('STRING', '5'),									'value' => '"5"'),
+		'variable'			=> array('token' => array('VARIABLE', 'variable'),							'value' => 'variable'),
+		'dash-variable'		=> array('token' => array('VARIABLE', 'dash-variable'),						'value' => 'dash-variable'),
+		'simpletag'			=> array('token' => array('TAG', '{simpletag}'),							'value' => '{simpletag}'),
+		'moduletag'			=> array('token' => array('TAG', '{exp:foo:bar}'),							'value' => '{exp:foo:bar}'),
+		'tag_with_params'	=> array('token' => array('TAG', '{exp:foo:bar param="value"}'),			'value' => '{exp:foo:bar param="value"}')
 	);
 
 	protected $commonTokens = array(
@@ -153,13 +153,28 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			// on both sides of an operator.
 			foreach ($this->valueTypes as $type => $value)
 			{
-				$expected = array(
-					$value['token'],
-					array('WHITESPACE',	' '),
-					array('OPERATOR',	$operator),
-					array('WHITESPACE',	' '),
-					$value['token']
-				);
+				if ($type == 'negative')
+				{
+					$expected = array(
+						$value['token'][0],
+						$value['token'][1],
+						array('WHITESPACE',	' '),
+						array('OPERATOR',	$operator),
+						array('WHITESPACE',	' '),
+						$value['token'][0],
+						$value['token'][1]
+					);
+				}
+				else
+				{
+					$expected = array(
+						$value['token'],
+						array('WHITESPACE',	' '),
+						array('OPERATOR',	$operator),
+						array('WHITESPACE',	' '),
+						$value['token']
+					);
+				}
 
 				$return[] = array(
 					"The \"{$operator}\" operator with {$type} values",
@@ -209,11 +224,25 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 					}
 				}
 
-				$expected = array(
-					$value['token'],
-					array('OPERATOR', $operator),
-					$value['token']
-				);
+				if ($type == 'negative')
+				{
+					$expected = array(
+						$value['token'][0],
+						$value['token'][1],
+						array('OPERATOR', $operator),
+						$value['token'][0],
+						$value['token'][1]
+					);
+				}
+				else
+				{
+					$expected = array(
+						$value['token'],
+						array('OPERATOR', $operator),
+						$value['token']
+					);
+				}
+
 
 				$return[] = array(
 					"The \"{$operator}\" operator with {$type} values (no spaces)",
@@ -255,7 +284,7 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 		$expected = array(
 			array($int['token'][0], $int['token'][1].'.'),
 			array('OPERATOR', '-'),
-			array($negative['token'][0], substr($negative['token'][1], 1))
+			$negative['token'][1]
 		);
 		$return[] = array(
 			"The \"{$operator}\" operator with int and negative values (no spaces)",
@@ -266,9 +295,10 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 		// negative.negative -> OPERATOR
 		$negative = $this->valueTypes['negative'];
 		$expected = array(
-			array($negative['token'][0], $negative['token'][1].'.'),
+			$negative['token'][0],
+			array($negative['token'][1][0], $negative['token'][1][1].'.'),
 			array('OPERATOR', '-'),
-			array($negative['token'][0], substr($negative['token'][1], 1))
+			$negative['token'][1]
 		);
 		$return[] = array(
 			"The \"{$operator}\" operator with int and negative values (no spaces)",
@@ -280,7 +310,8 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 		$int = $this->valueTypes['int'];
 		$negative = $this->valueTypes['negative'];
 		$expected = array(
-			array('NUMBER',	$negative['value'].'.'.$int['value'])
+			array('OPERATOR', '-'),
+			array('NUMBER',	$negative['token'][1][1].'.'.$int['value'])
 		);
 		$return[] = array(
 			"The \"{$operator}\" operator with int and negative values (no spaces)",
@@ -707,14 +738,30 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 		{
 			foreach ($this->valueTypes as $type => $value)
 			{
-				$expected = array(
-					$value['token'],
-					array('WHITESPACE',	' '),
-					$tokens[0],
-					$tokens[1],
-					array('WHITESPACE',	' '),
-					$value['token']
-				);
+				if ($type == 'negative')
+				{
+					$expected = array(
+						$value['token'][0],
+						$value['token'][1],
+						array('WHITESPACE',	' '),
+						$tokens[0],
+						$tokens[1],
+						array('WHITESPACE',	' '),
+						$value['token'][0],
+						$value['token'][1]
+					);
+				}
+				else
+				{
+					$expected = array(
+						$value['token'],
+						array('WHITESPACE',	' '),
+						$tokens[0],
+						$tokens[1],
+						array('WHITESPACE',	' '),
+						$value['token']
+					);
+				}
 
 				$return[] = array(
 					"The \"{$operator}\" operator with {$type} values",
@@ -1088,12 +1135,27 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 		{
 			foreach ($this->valueTypes as $type => $value)
 			{
-				$expected = array(
-					$value['token'],
-					$tokens[0],
-					$tokens[1],
-					$value['token']
-				);
+				if ($type == 'negative')
+				{
+					$expected = array(
+						$value['token'][0],
+						$value['token'][1],
+						$tokens[0],
+						$tokens[1],
+						$value['token'][0],
+						$value['token'][1]
+					);
+				}
+				else
+				{
+					$expected = array(
+						$value['token'],
+						$tokens[0],
+						$tokens[1],
+						$value['token']
+					);
+				}
+
 
 				$return[] = array(
 					"The \"{$operator}\" operator with {$type} values (no spaces)",
@@ -1224,7 +1286,7 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			foreach ($this->valueTypes as $type => $value)
 			{
 				// To avoid confusing code these will be done "by hand" see: edgyOperatorCombinationsWithoutSpaces()
-				if ($value['token'][0] == 'NUMBER')
+				if ($type == 'negative' || $value['token'][0] == 'NUMBER')
 				{
 					continue;
 				}
@@ -1258,13 +1320,15 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 
 		foreach ($negative_edgy_operators as $operator)
 		{
-			// First the case where the - is misc
+			// First the case where the - is a duplicate
 			$value = $this->valueTypes['negative'];
 			$expected = array(
-				$value['token'],
+				$value['token'][0],
+				$value['token'][1],
 				array('OPERATOR', substr($operator, 0, -1)),
 				array('OPERATOR', substr($operator, -1)),
-				$value['token']
+				$value['token'][0],
+				$value['token'][1]
 			);
 
 			$return[] = array(
@@ -1278,7 +1342,8 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			$expected = array(
 				$value['token'],
 				array('OPERATOR', substr($operator, 0, -1)),
-				array('NUMBER', '-.1')
+				array('OPERATOR', '-'),
+				array('NUMBER', '.1')
 			);
 
 			$return[] = array(
@@ -1291,16 +1356,12 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			foreach (array('int', 'bigfloat') as $type)
 			{
 				$value = $this->valueTypes[$type];
-				$left = $value['token'];
-				$right = array(
-					$left[0],
-					'-'.$left[1]
-				);
 
 				$expected = array(
-					$left,
+					$value['token'],
 					array('OPERATOR', substr($operator, 0, -1)),
-					$right
+					array('OPERATOR', substr($operator, -1)),
+					$value['token']
 				);
 
 				$return[] = array(
@@ -1318,15 +1379,27 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 
 		foreach ($right_float_edgy_operators as $operator)
 		{
-			// First the cases where these things are MISC
-			foreach (array('negative', 'littlefloat') as $type)
-			{
-				if ($type == 'littlefloat' && $operator == '..')
-				{
-					continue; // this an exception
-				}
+			// With a negative
+			$value = $this->valueTypes['negative'];
+			$expected = array(
+				$value['token'][0],
+				$value['token'][1],
+				array('OPERATOR', substr($operator, 0, -1)),
+				array('OPERATOR', substr($operator, -1)),
+				$value['token'][0],
+				$value['token'][1]
+			);
 
-				$value = $this->valueTypes[$type];
+			$return[] = array(
+				"The \"{$operator}\" operator with negative values",
+				$this->assembleCommonCondition($value['value'].$operator.$value['value']),
+				$this->assembleCommonTokens($expected)
+			);
+
+			// this is an exception for littlefloat
+			if ($operator != '..')
+			{
+				$value = $this->valueTypes['littlefloat'];
 				$expected = array(
 					$value['token'],
 					array('OPERATOR', substr($operator, 0, -1)),
@@ -1335,7 +1408,7 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 				);
 
 				$return[] = array(
-					"The \"{$operator}\" operator with {$type} values",
+					"The \"{$operator}\" operator with littlefloat values",
 					$this->assembleCommonCondition($value['value'].$operator.$value['value']),
 					$this->assembleCommonTokens($expected)
 				);
@@ -1390,22 +1463,35 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 				);
 			}
 
-			// Now when they are preceded by a non-float number
-			foreach (array('int', 'negative') as $type)
-			{
-				$value = $this->valueTypes[$type];
-				$expected = array(
-					array($value['token'][0], $value['token'][1].'.'),
-					array('OPERATOR', substr($operator, 1)),
-					array($value['token'][0], $value['token'][1]),
-				);
+			// Now when they are preceded by an int
+			$value = $this->valueTypes['int'];
+			$expected = array(
+				array($value['token'][0], $value['token'][1].'.'),
+				array('OPERATOR', substr($operator, 1)),
+				$value['token']
+			);
 
-				$return[] = array(
-					"The \"{$operator}\" operator with {$type} values",
-					$this->assembleCommonCondition($value['value'].$operator.$value['value']),
-					$this->assembleCommonTokens($expected)
-				);
-			}
+			$return[] = array(
+				"The \"{$operator}\" operator with {$type} values",
+				$this->assembleCommonCondition($value['value'].$operator.$value['value']),
+				$this->assembleCommonTokens($expected)
+			);
+
+			// And when they are preceded by a negative non-float
+			$value = $this->valueTypes['negative'];
+			$expected = array(
+				$value['token'][0],
+				array($value['token'][1][0], $value['token'][1][1].'.'),
+				array('OPERATOR', substr($operator, 1)),
+				$value['token'][0],
+				$value['token'][1]
+			);
+
+			$return[] = array(
+				"The \"{$operator}\" operator with {$type} values",
+				$this->assembleCommonCondition($value['value'].$operator.$value['value']),
+				$this->assembleCommonTokens($expected)
+			);
 		}
 
 
@@ -1483,9 +1569,11 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 
 		// -5.--5 -> NUMBER(-5.), OPERATOR(-), NUMBER(-5)
 		$expected = array(
-			array('NUMBER', '-5.'),
 			array('OPERATOR', '-'),
-			array('NUMBER', '-5'),
+			array('NUMBER', '5.'),
+			array('OPERATOR', '-'),
+			array('OPERATOR', '-'),
+			array('NUMBER', '5'),
 		);
 
 		$return[] = array(
@@ -1498,7 +1586,8 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 		$expected = array(
 			array('NUMBER', '5.1'),
 			array('OPERATOR', '.'),
-			array('NUMBER', '-5.1'),
+			array('OPERATOR', '-'),
+			array('NUMBER', '5.1'),
 		);
 
 		$return[] = array(
@@ -1509,10 +1598,12 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 
 		// -5.1.--5.1 -> NUMBER(-5.1), OPERATOR(.), OPERATOR(-), NUMBER(-5.1)
 		$expected = array(
-			array('NUMBER', '-5.1'),
+			array('OPERATOR', '-'),
+			array('NUMBER', '5.1'),
 			array('OPERATOR', '.'),
 			array('OPERATOR', '-'),
-			array('NUMBER', '-5.1'),
+			array('OPERATOR', '-'),
+			array('NUMBER', '5.1'),
 		);
 
 		$return[] = array(
@@ -1525,7 +1616,8 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 		$expected = array(
 			array('NUMBER', '.1'),
 			array('OPERATOR', '.'),
-			array('NUMBER', '-.1'),
+			array('OPERATOR', '-'),
+			array('NUMBER', '.1'),
 		);
 
 		$return[] = array(
@@ -1558,9 +1650,11 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 
 		// -5..-5 -> NUMBER(-5.), OPERATOR(.), NUMBER(-5)
 		$expected = array(
-			array('NUMBER', '-5.'),
+			array('OPERATOR', '-'),
+			array('NUMBER', '5.'),
 			array('OPERATOR', '.'),
-			array('NUMBER', '-5'),
+			array('OPERATOR', '-'),
+			array('NUMBER', '5'),
 		);
 
 		$return[] = array(
@@ -1585,10 +1679,12 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 
 		// -5.1..-5.1 -> NUMBER(5.1), MISC(..), NUMBER(-5.1)
 		$expected = array(
-			array('NUMBER', '-5.1'),
+			array('OPERATOR', '-'),
+			array('NUMBER', '5.1'),
 			array('OPERATOR', '.'),
 			array('OPERATOR', '.'),
-			array('NUMBER', '-5.1'),
+			array('OPERATOR', '-'),
+			array('NUMBER', '5.1'),
 		);
 
 		$return[] = array(
@@ -1639,14 +1735,14 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			);
 
 			// Negative
-			$number = '-'.$number;
 			$expected = array(
+				array('OPERATOR', '-'),
 				array('NUMBER', $number)
 			);
 
 			$return[] = array(
 				"\"{$number}\" is a NUMBER token",
-				$this->assembleCommonCondition($number),
+				$this->assembleCommonCondition('-'.$number),
 				$this->assembleCommonTokens($expected)
 			);
 
