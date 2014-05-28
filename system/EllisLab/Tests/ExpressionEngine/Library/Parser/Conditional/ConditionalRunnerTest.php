@@ -174,6 +174,7 @@ class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 			$this->conditionals(),
 			$this->whitespaceRewriting(),
 			$this->basicMaths(),
+			$this->negation(),
 			$this->basicBranching(),
 			$this->plainLogicOperatorTests(),
 			$this->comparisonOperatorTests(),
@@ -236,13 +237,26 @@ class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 	protected function basicMaths()
 	{
 		return array(
-			array('Math plus',	'{if 5 + 5 == 10}yes{if:else}no{/if}',			'yes'),
-			array('Math minus',	'{if 7 - 9 == -2}yes{if:else}no{/if}',			'yes'),
-			array('Math star',	'{if 5 * 5 == 25}yes{if:else}no{/if}',			'yes'),
-			array('Math slash',	'{if 12 / 4 == 3}yes{if:else}no{/if}',			'yes'),
-			array('Math mod',	'{if 12 % 5 == 2}yes{if:else}no{/if}',			'yes'),
-			array('Power hat',	'{if 2 ^ 3 ^ 2 == 512}yes{if:else}no{/if}',		'yes'),
-			array('Power star',	'{if 2 ** 3 ** 2 == 512}yes{if:else}no{/if}',	'yes'),
+			array('Math plus',		'{if 5 + 5 == 10}yes{if:else}no{/if}',			'yes'),
+			array('Math minus',		'{if 7 - 9 == -2}yes{if:else}no{/if}',			'yes'),
+			array('Math star',		'{if 5 * 5 == 25}yes{if:else}no{/if}',			'yes'),
+			array('Math slash',		'{if 12 / 4 == 3}yes{if:else}no{/if}',			'yes'),
+			array('Math mod',		'{if 12 % 5 == 2}yes{if:else}no{/if}',			'yes'),
+			array('Power hat',		'{if 2 ^ 3 ^ 2 == 512}yes{if:else}no{/if}',		'yes'),
+			array('Power star',		'{if 2 ** 3 ** 2 == 512}yes{if:else}no{/if}',	'yes'),
+		);
+	}
+
+	protected function negation()
+	{
+		return array(
+			array('Negate parens',		'{if 5 + -(5*3 - 0) == -10}yes{if:else}no{/if}',	'yes'),
+			array('Negate exponent',	'{if 5 ^ -2 == .04}yes{if:else}no{/if}',			'yes'),
+			array('Negate base',		'{if -5 ^ 2 == -25}yes{if:else}no{/if}',			'yes'),
+			array('Square of negative',	'{if (-5) ^ 2 == 25}yes{if:else}no{/if}',			'yes'),
+			array('Negate not zero',	'{if -!0 == -1}yes{if:else}no{/if}',				'yes'),
+			array('Not negated zero',	'{if !-0 == TRUE}yes{if:else}no{/if}',				'yes'),
+
 		);
 	}
 
