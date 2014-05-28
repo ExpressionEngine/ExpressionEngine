@@ -115,10 +115,10 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			$this->validOperatorsWithoutSpaces(),
 			$this->operatorCombinationsWithSpaces(),
 			$this->operatorCombinationsWithoutSpaces(),
-			// $this->edgyOperatorCombinationsWithoutSpaces(),
-			// $this->edgyDoubleDashWithoutSpaces(),
-			// $this->edgyDotDashWithNumbersAndNoSpaces(),
-			// $this->edgyDoubleDotWithNumbersAndNoSpaces(),
+			$this->edgyOperatorCombinationsWithoutSpaces(),
+			$this->edgyDoubleDashWithoutSpaces(),
+			$this->edgyDotDashWithNumbersAndNoSpaces(),
+			$this->edgyDoubleDotWithNumbersAndNoSpaces(),
 
 			array() // non trailing comma thing for covienence
 		);
@@ -1449,7 +1449,6 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			'.-'	=> array(array('OPERATOR', '.'),	array('OPERATOR', '-')),
 			'.*'	=> array(array('OPERATOR', '.'),	array('OPERATOR', '*')),
 			'./'	=> array(array('OPERATOR', '.'),	array('OPERATOR', '/')),
-			'..'	=> array(array('OPERATOR', '.'),	array('OPERATOR', '.')),
 			'.!'	=> array(array('OPERATOR', '.'),	array('OPERATOR', '!')),
 			'.^'	=> array(array('OPERATOR', '.'),	array('OPERATOR', '^')),
 			'.^='	=> array(array('OPERATOR', '.'),	array('OPERATOR', '^=')),
@@ -1540,7 +1539,6 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			'.-'	=> array(array('OPERATOR', '.'),	array('OPERATOR', '-')),
 			'.*'	=> array(array('OPERATOR', '.'),	array('OPERATOR', '*')),
 			'./'	=> array(array('OPERATOR', '.'),	array('OPERATOR', '/')),
-			'..'	=> array(array('OPERATOR', '.'),	array('OPERATOR', '.')),
 			'.!'	=> array(array('OPERATOR', '.'),	array('OPERATOR', '!')),
 			'.^'	=> array(array('OPERATOR', '.'),	array('OPERATOR', '^')),
 			'.^='	=> array(array('OPERATOR', '.'),	array('OPERATOR', '^=')),
