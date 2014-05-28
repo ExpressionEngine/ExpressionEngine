@@ -172,7 +172,7 @@ class ConditionalLexer extends AbstractLexer {
 	/**
 	 * We saw a {, check if it's an ee tag that we can use.
 	 */
-	public function templateTags()
+	private function templateTags()
 	{
 		if ($this->peek(5) == '{/if}')
 		{
@@ -265,7 +265,7 @@ class ConditionalLexer extends AbstractLexer {
 	/**
 	 * We've entered a tag, find the end while respecting proper quoting.
 	 */
-	public function tag()
+	private function tag()
 	{
 		$this->tag_depth++;
 		$this->tag_buffer .= '{';
@@ -303,7 +303,7 @@ class ConditionalLexer extends AbstractLexer {
 	/**
 	 * Try to create a whitespace token at the current offset
 	 */
-	public function whitespace()
+	private function whitespace()
 	{
 		if ($ws = $this->peekRegex('\s+'))
 		{
@@ -315,7 +315,7 @@ class ConditionalLexer extends AbstractLexer {
 	/**
 	 * Variables and Scalars
 	 */
-	public function value()
+	private function value()
 	{
 		if (preg_match($this->compiled_pattern, $this->str, $matches))
 		{
@@ -344,7 +344,7 @@ class ConditionalLexer extends AbstractLexer {
 	/**
 	 * Operators
 	 */
-	public function operator()
+	private function operator()
 	{
 		$operator = $this->peekRegex($this->operator_pattern);
 
@@ -361,7 +361,7 @@ class ConditionalLexer extends AbstractLexer {
 	/**
 	 * Build and add a string token
 	 */
-	public function string()
+	private function string()
 	{
 		$open_quote = $this->next();
 
@@ -411,7 +411,7 @@ class ConditionalLexer extends AbstractLexer {
 	/**
 	 * Try to create a parenthesis token at the current offset
 	 */
-	public function parenthesis()
+	private function parenthesis()
 	{
 		$char = $this->peek();
 
@@ -474,7 +474,7 @@ class ConditionalLexer extends AbstractLexer {
 	 * @param string $type The type of token being added
 	 * @param string $$value The value of the token being added
 	 */
-	public function addToken($type, $value)
+	private function addToken($type, $value)
 	{
 		// Always store strings, even empty ones
 		if ($value != '' || $type == 'STRING')
