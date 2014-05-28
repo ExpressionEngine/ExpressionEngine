@@ -118,6 +118,7 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			// Operators
 			$this->validOperatorsWithSpaces(),
 			$this->validOperatorsWithoutSpaces(),
+			$this->invalidOperators(),
 			$this->operatorCombinationsWithSpaces(),
 			$this->operatorCombinationsWithoutSpaces(),
 			$this->edgyOperatorCombinationsWithoutSpaces(),
@@ -2247,4 +2248,51 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 
 		return $return;
 	}
+
+	/**
+	 * These cover the cases where someone made a typo and left off a crucial
+	 * character in their operator. Need to make sure these are MISC.
+	 */
+	protected function invalidOperators()
+	{
+		$return = array();
+
+		$operators = array('=', '&', '|', '$');
+
+		// Test each operator (duh)
+		foreach ($operators as $operator)
+		{
+			foreach ($this->valueTypes as $type => $value)
+			{
+				$expected = array(
+					$value['token'],
+					array('WHITESPACE',	' '),
+					array('MISC',	$operator),
+					array('WHITESPACE',	' '),
+					$value['token']
+				);
+
+				$return[] = array(
+					"The \"{$operator}\" operator with {$type} values",
+					$this->assembleCommonCondition($value['value']." ".$operator." ".$value['value']),
+					$this->assembleCommonTokens($expected)
+				);
+
+				$expected = array(
+					$value['token'],
+					array('MISC',	$operator),
+					$value['token']
+				);
+
+				$return[] = array(
+					"The \"{$operator}\" operator with {$type} values (no spaces)",
+					$this->assembleCommonCondition($value['value'].$operator.$value['value']),
+					$this->assembleCommonTokens($expected)
+				);
+			}
+		}
+
+		return $return;
+	}
+
 }
