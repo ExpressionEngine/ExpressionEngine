@@ -35,14 +35,15 @@ class BooleanExpression {
 	const RIGHT_ASSOC = 2;
 
 	private $tokens;
-	private $operators;
 	private $unary_operators;
+	private $binary_operators;
+
 	private $can_eval = TRUE;
 
 	public function __construct()
 	{
-		$this->operators = $this->getOperators();
 		$this->unary_operators = $this->getUnaryOperators();
+		$this->binary_operators = $this->getBinaryOperators();
 	}
 
 	/**
@@ -359,13 +360,13 @@ class BooleanExpression {
 			return $this->unary_operators[$token[1]];
 		}
 
-		return $this->operators[$token[1]];
+		return $this->binary_operators[$token[1]];
 	}
 
 	/**
 	 * List of binary operators
 	 */
-	private function getOperators()
+	private function getBinaryOperators()
 	{
 		// http://php.net/manual/en/language.operators.precedence.php
 
