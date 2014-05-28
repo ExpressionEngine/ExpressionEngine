@@ -115,10 +115,10 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			$this->validOperatorsWithoutSpaces(),
 			$this->operatorCombinationsWithSpaces(),
 			$this->operatorCombinationsWithoutSpaces(),
-			$this->edgyOperatorCombinationsWithoutSpaces(),
-			$this->edgyDoubleDashWithoutSpaces(),
-			$this->edgyDotDashWithNumbersAndNoSpaces(),
-			$this->edgyDoubleDotWithNumbersAndNoSpaces(),
+			// $this->edgyOperatorCombinationsWithoutSpaces(),
+			// $this->edgyDoubleDashWithoutSpaces(),
+			// $this->edgyDotDashWithNumbersAndNoSpaces(),
+			// $this->edgyDoubleDotWithNumbersAndNoSpaces(),
 
 			array() // non trailing comma thing for covienence
 		);
@@ -155,7 +155,8 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			'||', '&&', '**',
 			'==', '!=', '<=', '>=', '<>', '<', '>',
 			'%', '+', '-', '*', '/',
-			'.', '!', '^'
+			'.', '!', '^',
+			'^=', '*=', '$=',
 		);
 
 		// Test each operator (duh)
@@ -195,7 +196,8 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			'||', '&&', '**',
 			'==', '!=', '<=', '>=', '<>', '<', '>',
 			'%', '+', '-', '*', '/',
-			'.', '!', '^'
+			'.', '!', '^',
+			'^=', '*=', '$=',
 		);
 
 		// Test each operator (duh)
@@ -342,10 +344,9 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			 * 	'||', '&&', '**',
 			 * 	'==', '!=', '<=', '>=', '<>', '<', '>',
 			 * 	'%', '+', '-', '*', '/',
-			 * 	'.', '!', '^'
+			 *	'.', '!', '^',
+			 *	'^=', '*=', '$=',
 			 * );
-             *
-			 * $out = array();
              *
 			 * // Build out some combinations
 			 * foreach ($valid_operators as $first)
@@ -394,6 +395,9 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			'||.'	=> array(array('OPERATOR', '||'),	array('OPERATOR', '.')),
 			'||!'	=> array(array('OPERATOR', '||'),	array('OPERATOR', '!')),
 			'||^'	=> array(array('OPERATOR', '||'),	array('OPERATOR', '^')),
+			'||^='	=> array(array('OPERATOR', '||'),	array('OPERATOR', '^=')),
+			'||*='	=> array(array('OPERATOR', '||'),	array('OPERATOR', '*=')),
+			'||$='	=> array(array('OPERATOR', '||'),	array('OPERATOR', '$=')),
 
 			'&&||'	=> array(array('OPERATOR', '&&'),	array('OPERATOR', '||')),
 			'&&&&'	=> array(array('OPERATOR', '&&'),	array('OPERATOR', '&&')),
@@ -413,6 +417,9 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			'&&.'	=> array(array('OPERATOR', '&&'),	array('OPERATOR', '.')),
 			'&&!'	=> array(array('OPERATOR', '&&'),	array('OPERATOR', '!')),
 			'&&^'	=> array(array('OPERATOR', '&&'),	array('OPERATOR', '^')),
+			'&&^='	=> array(array('OPERATOR', '&&'),	array('OPERATOR', '^=')),
+			'&&*='	=> array(array('OPERATOR', '&&'),	array('OPERATOR', '*=')),
+			'&&$='	=> array(array('OPERATOR', '&&'),	array('OPERATOR', '$=')),
 
 			'**||'	=> array(array('OPERATOR', '**'),	array('OPERATOR', '||')),
 			'**&&'	=> array(array('OPERATOR', '**'),	array('OPERATOR', '&&')),
@@ -432,6 +439,9 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			'**.'	=> array(array('OPERATOR', '**'),	array('OPERATOR', '.')),
 			'**!'	=> array(array('OPERATOR', '**'),	array('OPERATOR', '!')),
 			'**^'	=> array(array('OPERATOR', '**'),	array('OPERATOR', '^')),
+			'**^='	=> array(array('OPERATOR', '**'),	array('OPERATOR', '^=')),
+			'***='	=> array(array('OPERATOR', '**'),	array('OPERATOR', '*=')),
+			'**$='	=> array(array('OPERATOR', '**'),	array('OPERATOR', '$=')),
 
 			'==||'	=> array(array('OPERATOR', '=='),	array('OPERATOR', '||')),
 			'==&&'	=> array(array('OPERATOR', '=='),	array('OPERATOR', '&&')),
@@ -451,6 +461,9 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			'==.'	=> array(array('OPERATOR', '=='),	array('OPERATOR', '.')),
 			'==!'	=> array(array('OPERATOR', '=='),	array('OPERATOR', '!')),
 			'==^'	=> array(array('OPERATOR', '=='),	array('OPERATOR', '^')),
+			'==^='	=> array(array('OPERATOR', '=='),	array('OPERATOR', '^=')),
+			'==*='	=> array(array('OPERATOR', '=='),	array('OPERATOR', '*=')),
+			'==$='	=> array(array('OPERATOR', '=='),	array('OPERATOR', '$=')),
 
 			'!=||'	=> array(array('OPERATOR', '!='),	array('OPERATOR', '||')),
 			'!=&&'	=> array(array('OPERATOR', '!='),	array('OPERATOR', '&&')),
@@ -470,6 +483,9 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			'!=.'	=> array(array('OPERATOR', '!='),	array('OPERATOR', '.')),
 			'!=!'	=> array(array('OPERATOR', '!='),	array('OPERATOR', '!')),
 			'!=^'	=> array(array('OPERATOR', '!='),	array('OPERATOR', '^')),
+			'!=^='	=> array(array('OPERATOR', '!='),	array('OPERATOR', '^=')),
+			'!=*='	=> array(array('OPERATOR', '!='),	array('OPERATOR', '*=')),
+			'!=$='	=> array(array('OPERATOR', '!='),	array('OPERATOR', '$=')),
 
 			'<=||'	=> array(array('OPERATOR', '<='),	array('OPERATOR', '||')),
 			'<=&&'	=> array(array('OPERATOR', '<='),	array('OPERATOR', '&&')),
@@ -489,6 +505,9 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			'<=.'	=> array(array('OPERATOR', '<='),	array('OPERATOR', '.')),
 			'<=!'	=> array(array('OPERATOR', '<='),	array('OPERATOR', '!')),
 			'<=^'	=> array(array('OPERATOR', '<='),	array('OPERATOR', '^')),
+			'<=^='	=> array(array('OPERATOR', '<='),	array('OPERATOR', '^=')),
+			'<=*='	=> array(array('OPERATOR', '<='),	array('OPERATOR', '*=')),
+			'<=$='	=> array(array('OPERATOR', '<='),	array('OPERATOR', '$=')),
 
 			'>=||'	=> array(array('OPERATOR', '>='),	array('OPERATOR', '||')),
 			'>=&&'	=> array(array('OPERATOR', '>='),	array('OPERATOR', '&&')),
@@ -508,6 +527,9 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			'>=.'	=> array(array('OPERATOR', '>='),	array('OPERATOR', '.')),
 			'>=!'	=> array(array('OPERATOR', '>='),	array('OPERATOR', '!')),
 			'>=^'	=> array(array('OPERATOR', '>='),	array('OPERATOR', '^')),
+			'>=^='	=> array(array('OPERATOR', '>='),	array('OPERATOR', '^=')),
+			'>=*='	=> array(array('OPERATOR', '>='),	array('OPERATOR', '*=')),
+			'>=$='	=> array(array('OPERATOR', '>='),	array('OPERATOR', '$=')),
 
 			'<>||'	=> array(array('OPERATOR', '<>'),	array('OPERATOR', '||')),
 			'<>&&'	=> array(array('OPERATOR', '<>'),	array('OPERATOR', '&&')),
@@ -527,6 +549,9 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			'<>.'	=> array(array('OPERATOR', '<>'),	array('OPERATOR', '.')),
 			'<>!'	=> array(array('OPERATOR', '<>'),	array('OPERATOR', '!')),
 			'<>^'	=> array(array('OPERATOR', '<>'),	array('OPERATOR', '^')),
+			'<>^='	=> array(array('OPERATOR', '<>'),	array('OPERATOR', '^=')),
+			'<>*='	=> array(array('OPERATOR', '<>'),	array('OPERATOR', '*=')),
+			'<>$='	=> array(array('OPERATOR', '<>'),	array('OPERATOR', '$=')),
 
 			'<||'	=> array(array('OPERATOR', '<'),	array('OPERATOR', '||')),
 			'<&&'	=> array(array('OPERATOR', '<'),	array('OPERATOR', '&&')),
@@ -546,6 +571,9 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			'<=.'	=> array(array('OPERATOR', '<='),	array('OPERATOR', '.')),
 			'<=!'	=> array(array('OPERATOR', '<='),	array('OPERATOR', '!')),
 			'<=^'	=> array(array('OPERATOR', '<='),	array('OPERATOR', '^')),
+			'<=^='	=> array(array('OPERATOR', '<='),	array('OPERATOR', '^=')),
+			'<=*='	=> array(array('OPERATOR', '<='),	array('OPERATOR', '*=')),
+			'<=$='	=> array(array('OPERATOR', '<='),	array('OPERATOR', '$=')),
 
 			'>||'	=> array(array('OPERATOR', '>'),	array('OPERATOR', '||')),
 			'>&&'	=> array(array('OPERATOR', '>'),	array('OPERATOR', '&&')),
@@ -565,6 +593,9 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			'>=.'	=> array(array('OPERATOR', '>='),	array('OPERATOR', '.')),
 			'>=!'	=> array(array('OPERATOR', '>='),	array('OPERATOR', '!')),
 			'>=^'	=> array(array('OPERATOR', '>='),	array('OPERATOR', '^')),
+			'>=^='	=> array(array('OPERATOR', '>='),	array('OPERATOR', '^=')),
+			'>=*='	=> array(array('OPERATOR', '>='),	array('OPERATOR', '*=')),
+			'>=$='	=> array(array('OPERATOR', '>='),	array('OPERATOR', '$=')),
 
 			'%||'	=> array(array('OPERATOR', '%'),	array('OPERATOR', '||')),
 			'%&&'	=> array(array('OPERATOR', '%'),	array('OPERATOR', '&&')),
@@ -584,6 +615,9 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			'%.'	=> array(array('OPERATOR', '%'),	array('OPERATOR', '.')),
 			'%!'	=> array(array('OPERATOR', '%'),	array('OPERATOR', '!')),
 			'%^'	=> array(array('OPERATOR', '%'),	array('OPERATOR', '^')),
+			'%^='	=> array(array('OPERATOR', '%'),	array('OPERATOR', '^=')),
+			'%*='	=> array(array('OPERATOR', '%'),	array('OPERATOR', '*=')),
+			'%$='	=> array(array('OPERATOR', '%'),	array('OPERATOR', '$=')),
 
 			'+||'	=> array(array('OPERATOR', '+'),	array('OPERATOR', '||')),
 			'+&&'	=> array(array('OPERATOR', '+'),	array('OPERATOR', '&&')),
@@ -603,6 +637,9 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			'+.'	=> array(array('OPERATOR', '+'),	array('OPERATOR', '.')),
 			'+!'	=> array(array('OPERATOR', '+'),	array('OPERATOR', '!')),
 			'+^'	=> array(array('OPERATOR', '+'),	array('OPERATOR', '^')),
+			'+^='	=> array(array('OPERATOR', '+'),	array('OPERATOR', '^=')),
+			'+*='	=> array(array('OPERATOR', '+'),	array('OPERATOR', '*=')),
+			'+$='	=> array(array('OPERATOR', '+'),	array('OPERATOR', '$=')),
 
 			'-||'	=> array(array('OPERATOR', '-'),	array('OPERATOR', '||')),
 			'-&&'	=> array(array('OPERATOR', '-'),	array('OPERATOR', '&&')),
@@ -622,6 +659,9 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			'-.'	=> array(array('OPERATOR', '-'),	array('OPERATOR', '.')),
 			'-!'	=> array(array('OPERATOR', '-'),	array('OPERATOR', '!')),
 			'-^'	=> array(array('OPERATOR', '-'),	array('OPERATOR', '^')),
+			'-^='	=> array(array('OPERATOR', '-'),	array('OPERATOR', '^=')),
+			'-*='	=> array(array('OPERATOR', '-'),	array('OPERATOR', '*=')),
+			'-$='	=> array(array('OPERATOR', '-'),	array('OPERATOR', '$=')),
 
 			'*||'	=> array(array('OPERATOR', '*'),	array('OPERATOR', '||')),
 			'*&&'	=> array(array('OPERATOR', '*'),	array('OPERATOR', '&&')),
@@ -641,6 +681,9 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			'**.'	=> array(array('OPERATOR', '**'),	array('OPERATOR', '.')),
 			'**!'	=> array(array('OPERATOR', '**'),	array('OPERATOR', '!')),
 			'**^'	=> array(array('OPERATOR', '**'),	array('OPERATOR', '^')),
+			'**^='	=> array(array('OPERATOR', '**'),	array('OPERATOR', '^=')),
+			'***='	=> array(array('OPERATOR', '**'),	array('OPERATOR', '*=')),
+			'**$='	=> array(array('OPERATOR', '**'),	array('OPERATOR', '$=')),
 
 			'/||'	=> array(array('OPERATOR', '/'),	array('OPERATOR', '||')),
 			'/&&'	=> array(array('OPERATOR', '/'),	array('OPERATOR', '&&')),
@@ -660,6 +703,9 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			'/.'	=> array(array('OPERATOR', '/'),	array('OPERATOR', '.')),
 			'/!'	=> array(array('OPERATOR', '/'),	array('OPERATOR', '!')),
 			'/^'	=> array(array('OPERATOR', '/'),	array('OPERATOR', '^')),
+			'/^='	=> array(array('OPERATOR', '/'),	array('OPERATOR', '^=')),
+			'/*='	=> array(array('OPERATOR', '/'),	array('OPERATOR', '*=')),
+			'/$='	=> array(array('OPERATOR', '/'),	array('OPERATOR', '$=')),
 
 			'.||'	=> array(array('OPERATOR', '.'),	array('OPERATOR', '||')),
 			'.&&'	=> array(array('OPERATOR', '.'),	array('OPERATOR', '&&')),
@@ -679,6 +725,9 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			'..'	=> array(array('OPERATOR', '.'),	array('OPERATOR', '.')),
 			'.!'	=> array(array('OPERATOR', '.'),	array('OPERATOR', '!')),
 			'.^'	=> array(array('OPERATOR', '.'),	array('OPERATOR', '^')),
+			'.^='	=> array(array('OPERATOR', '.'),	array('OPERATOR', '^=')),
+			'.*='	=> array(array('OPERATOR', '.'),	array('OPERATOR', '*=')),
+			'.$='	=> array(array('OPERATOR', '.'),	array('OPERATOR', '$=')),
 
 			'!||'	=> array(array('OPERATOR', '!'),	array('OPERATOR', '||')),
 			'!&&'	=> array(array('OPERATOR', '!'),	array('OPERATOR', '&&')),
@@ -698,25 +747,97 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			'!=.'	=> array(array('OPERATOR', '!='),	array('OPERATOR', '.')),
 			'!=!'	=> array(array('OPERATOR', '!='),	array('OPERATOR', '!')),
 			'!=^'	=> array(array('OPERATOR', '!='),	array('OPERATOR', '^')),
+			'!=^='	=> array(array('OPERATOR', '!='),	array('OPERATOR', '^=')),
+			'!=*='	=> array(array('OPERATOR', '!='),	array('OPERATOR', '*=')),
+			'!=$='	=> array(array('OPERATOR', '!='),	array('OPERATOR', '$=')),
 
 			'^||'	=> array(array('OPERATOR', '^'),	array('OPERATOR', '||')),
 			'^&&'	=> array(array('OPERATOR', '^'),	array('OPERATOR', '&&')),
 			'^**'	=> array(array('OPERATOR', '^'),	array('OPERATOR', '**')),
-			'^=='	=> array(array('OPERATOR', '^'),	array('OPERATOR', '==')),
-			'^!='	=> array(array('OPERATOR', '^'),	array('OPERATOR', '!=')),
-			'^<='	=> array(array('OPERATOR', '^'),	array('OPERATOR', '<=')),
-			'^>='	=> array(array('OPERATOR', '^'),	array('OPERATOR', '>=')),
-			'^<>'	=> array(array('OPERATOR', '^'),	array('OPERATOR', '<>')),
-			'^<'	=> array(array('OPERATOR', '^'),	array('OPERATOR', '<')),
-			'^>'	=> array(array('OPERATOR', '^'),	array('OPERATOR', '>')),
-			'^%'	=> array(array('OPERATOR', '^'),	array('OPERATOR', '%')),
-			'^+'	=> array(array('OPERATOR', '^'),	array('OPERATOR', '+')),
-			'^-'	=> array(array('OPERATOR', '^'),	array('OPERATOR', '-')),
-			'^*'	=> array(array('OPERATOR', '^'),	array('OPERATOR', '*')),
-			'^/'	=> array(array('OPERATOR', '^'),	array('OPERATOR', '/')),
-			'^.'	=> array(array('OPERATOR', '^'),	array('OPERATOR', '.')),
-			'^!'	=> array(array('OPERATOR', '^'),	array('OPERATOR', '!')),
-			'^^'	=> array(array('OPERATOR', '^'),	array('OPERATOR', '^'))
+			'^=='	=> array(array('OPERATOR', '^='),	array('MISC', '=')),
+			'^=!='	=> array(array('OPERATOR', '^='),	array('OPERATOR', '!=')),
+			'^=<='	=> array(array('OPERATOR', '^='),	array('OPERATOR', '<=')),
+			'^=>='	=> array(array('OPERATOR', '^='),	array('OPERATOR', '>=')),
+			'^=<>'	=> array(array('OPERATOR', '^='),	array('OPERATOR', '<>')),
+			'^=<'	=> array(array('OPERATOR', '^='),	array('OPERATOR', '<')),
+			'^=>'	=> array(array('OPERATOR', '^='),	array('OPERATOR', '>')),
+			'^=%'	=> array(array('OPERATOR', '^='),	array('OPERATOR', '%')),
+			'^=+'	=> array(array('OPERATOR', '^='),	array('OPERATOR', '+')),
+			'^=-'	=> array(array('OPERATOR', '^='),	array('OPERATOR', '-')),
+			'^=*'	=> array(array('OPERATOR', '^='),	array('OPERATOR', '*')),
+			'^=/'	=> array(array('OPERATOR', '^='),	array('OPERATOR', '/')),
+			'^=.'	=> array(array('OPERATOR', '^='),	array('OPERATOR', '.')),
+			'^=!'	=> array(array('OPERATOR', '^='),	array('OPERATOR', '!')),
+			'^=^'	=> array(array('OPERATOR', '^='),	array('OPERATOR', '^')),
+			'^=^='	=> array(array('OPERATOR', '^='),	array('OPERATOR', '^=')),
+			'^=*='	=> array(array('OPERATOR', '^='),	array('OPERATOR', '*=')),
+			'^=$='	=> array(array('OPERATOR', '^='),	array('OPERATOR', '$=')),
+
+			'^=||'	=> array(array('OPERATOR', '^='),	array('OPERATOR', '||')),
+			'^=&&'	=> array(array('OPERATOR', '^='),	array('OPERATOR', '&&')),
+			'^=**'	=> array(array('OPERATOR', '^='),	array('OPERATOR', '**')),
+			'^==='	=> array(array('OPERATOR', '^='),	array('OPERATOR', '==')),
+			'^=!='	=> array(array('OPERATOR', '^='),	array('OPERATOR', '!=')),
+			'^=<='	=> array(array('OPERATOR', '^='),	array('OPERATOR', '<=')),
+			'^=>='	=> array(array('OPERATOR', '^='),	array('OPERATOR', '>=')),
+			'^=<>'	=> array(array('OPERATOR', '^='),	array('OPERATOR', '<>')),
+			'^=<'	=> array(array('OPERATOR', '^='),	array('OPERATOR', '<')),
+			'^=>'	=> array(array('OPERATOR', '^='),	array('OPERATOR', '>')),
+			'^=%'	=> array(array('OPERATOR', '^='),	array('OPERATOR', '%')),
+			'^=+'	=> array(array('OPERATOR', '^='),	array('OPERATOR', '+')),
+			'^=-'	=> array(array('OPERATOR', '^='),	array('OPERATOR', '-')),
+			'^=*'	=> array(array('OPERATOR', '^='),	array('OPERATOR', '*')),
+			'^=/'	=> array(array('OPERATOR', '^='),	array('OPERATOR', '/')),
+			'^=.'	=> array(array('OPERATOR', '^='),	array('OPERATOR', '.')),
+			'^=!'	=> array(array('OPERATOR', '^='),	array('OPERATOR', '!')),
+			'^=^'	=> array(array('OPERATOR', '^='),	array('OPERATOR', '^')),
+			'^=^='	=> array(array('OPERATOR', '^='),	array('OPERATOR', '^=')),
+			'^=*='	=> array(array('OPERATOR', '^='),	array('OPERATOR', '*=')),
+			'^=$='	=> array(array('OPERATOR', '^='),	array('OPERATOR', '$=')),
+
+			'*=||'	=> array(array('OPERATOR', '*='),	array('OPERATOR', '||')),
+			'*=&&'	=> array(array('OPERATOR', '*='),	array('OPERATOR', '&&')),
+			'*=**'	=> array(array('OPERATOR', '*='),	array('OPERATOR', '**')),
+			'*==='	=> array(array('OPERATOR', '*='),	array('OPERATOR', '==')),
+			'*=!='	=> array(array('OPERATOR', '*='),	array('OPERATOR', '!=')),
+			'*=<='	=> array(array('OPERATOR', '*='),	array('OPERATOR', '<=')),
+			'*=>='	=> array(array('OPERATOR', '*='),	array('OPERATOR', '>=')),
+			'*=<>'	=> array(array('OPERATOR', '*='),	array('OPERATOR', '<>')),
+			'*=<'	=> array(array('OPERATOR', '*='),	array('OPERATOR', '<')),
+			'*=>'	=> array(array('OPERATOR', '*='),	array('OPERATOR', '>')),
+			'*=%'	=> array(array('OPERATOR', '*='),	array('OPERATOR', '%')),
+			'*=+'	=> array(array('OPERATOR', '*='),	array('OPERATOR', '+')),
+			'*=-'	=> array(array('OPERATOR', '*='),	array('OPERATOR', '-')),
+			'*=*'	=> array(array('OPERATOR', '*='),	array('OPERATOR', '*')),
+			'*=/'	=> array(array('OPERATOR', '*='),	array('OPERATOR', '/')),
+			'*=.'	=> array(array('OPERATOR', '*='),	array('OPERATOR', '.')),
+			'*=!'	=> array(array('OPERATOR', '*='),	array('OPERATOR', '!')),
+			'*=^'	=> array(array('OPERATOR', '*='),	array('OPERATOR', '^')),
+			'*=^='	=> array(array('OPERATOR', '*='),	array('OPERATOR', '^=')),
+			'*=*='	=> array(array('OPERATOR', '*='),	array('OPERATOR', '*=')),
+			'*=$='	=> array(array('OPERATOR', '*='),	array('OPERATOR', '$=')),
+
+			'$=||'	=> array(array('OPERATOR', '$='),	array('OPERATOR', '||')),
+			'$=&&'	=> array(array('OPERATOR', '$='),	array('OPERATOR', '&&')),
+			'$=**'	=> array(array('OPERATOR', '$='),	array('OPERATOR', '**')),
+			'$==='	=> array(array('OPERATOR', '$='),	array('OPERATOR', '==')),
+			'$=!='	=> array(array('OPERATOR', '$='),	array('OPERATOR', '!=')),
+			'$=<='	=> array(array('OPERATOR', '$='),	array('OPERATOR', '<=')),
+			'$=>='	=> array(array('OPERATOR', '$='),	array('OPERATOR', '>=')),
+			'$=<>'	=> array(array('OPERATOR', '$='),	array('OPERATOR', '<>')),
+			'$=<'	=> array(array('OPERATOR', '$='),	array('OPERATOR', '<')),
+			'$=>'	=> array(array('OPERATOR', '$='),	array('OPERATOR', '>')),
+			'$=%'	=> array(array('OPERATOR', '$='),	array('OPERATOR', '%')),
+			'$=+'	=> array(array('OPERATOR', '$='),	array('OPERATOR', '+')),
+			'$=-'	=> array(array('OPERATOR', '$='),	array('OPERATOR', '-')),
+			'$=*'	=> array(array('OPERATOR', '$='),	array('OPERATOR', '*')),
+			'$=/'	=> array(array('OPERATOR', '$='),	array('OPERATOR', '/')),
+			'$=.'	=> array(array('OPERATOR', '$='),	array('OPERATOR', '.')),
+			'$=!'	=> array(array('OPERATOR', '$='),	array('OPERATOR', '!')),
+			'$=^'	=> array(array('OPERATOR', '$='),	array('OPERATOR', '^')),
+			'$=^='	=> array(array('OPERATOR', '$='),	array('OPERATOR', '^=')),
+			'$=*='	=> array(array('OPERATOR', '$='),	array('OPERATOR', '*=')),
+			'$=$='	=> array(array('OPERATOR', '$='),	array('OPERATOR', '$='))
 		);
 
 		foreach ($operator_combinations as $operator => $tokens)
@@ -748,13 +869,6 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 	{
 		$return = array();
 
-		$valid_operators = array(
-			'||', '&&', '**',
-			'==', '!=', '<=', '>=', '<>', '<', '>',
-			'%', '+', '-', '*', '/',
-			'.', '!', '^'
-		);
-
 		$operator_combinations = array(
 			'==='	=> array(array('OPERATOR', '=='),	array('MISC', '=')),
 
@@ -765,10 +879,9 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			 * 	'||', '&&', '**',
 			 * 	'==', '!=', '<=', '>=', '<>', '<', '>',
 			 * 	'%', '+', '-', '*', '/',
-			 * 	'.', '!', '^'
+			 * 	'.', '!', '^',
+			 *	'^=', '*=', '$=',
 			 * );
-             *
-			 * $out = array();
              *
 			 * // Build out some combinations
 			 * foreach ($valid_operators as $first)
@@ -807,7 +920,6 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			 * 	}
 			 * 	print "\n";
 			 * }
-			 * }
 			 */
 
 			'||||'	=> array(array('OPERATOR', '||'),	array('OPERATOR', '||')),
@@ -827,6 +939,9 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			'||/'	=> array(array('OPERATOR', '||'),	array('OPERATOR', '/')),
 			'||!'	=> array(array('OPERATOR', '||'),	array('OPERATOR', '!')),
 			'||^'	=> array(array('OPERATOR', '||'),	array('OPERATOR', '^')),
+			'||^='	=> array(array('OPERATOR', '||'),	array('OPERATOR', '^=')),
+			'||*='	=> array(array('OPERATOR', '||'),	array('OPERATOR', '*=')),
+			'||$='	=> array(array('OPERATOR', '||'),	array('OPERATOR', '$=')),
 
 			'&&||'	=> array(array('OPERATOR', '&&'),	array('OPERATOR', '||')),
 			'&&&&'	=> array(array('OPERATOR', '&&'),	array('OPERATOR', '&&')),
@@ -845,6 +960,9 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			'&&/'	=> array(array('OPERATOR', '&&'),	array('OPERATOR', '/')),
 			'&&!'	=> array(array('OPERATOR', '&&'),	array('OPERATOR', '!')),
 			'&&^'	=> array(array('OPERATOR', '&&'),	array('OPERATOR', '^')),
+			'&&^='	=> array(array('OPERATOR', '&&'),	array('OPERATOR', '^=')),
+			'&&*='	=> array(array('OPERATOR', '&&'),	array('OPERATOR', '*=')),
+			'&&$='	=> array(array('OPERATOR', '&&'),	array('OPERATOR', '$=')),
 
 			'**||'	=> array(array('OPERATOR', '**'),	array('OPERATOR', '||')),
 			'**&&'	=> array(array('OPERATOR', '**'),	array('OPERATOR', '&&')),
@@ -863,6 +981,9 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			'**/'	=> array(array('OPERATOR', '**'),	array('OPERATOR', '/')),
 			'**!'	=> array(array('OPERATOR', '**'),	array('OPERATOR', '!')),
 			'**^'	=> array(array('OPERATOR', '**'),	array('OPERATOR', '^')),
+			'**^='	=> array(array('OPERATOR', '**'),	array('OPERATOR', '^=')),
+			'***='	=> array(array('OPERATOR', '**'),	array('OPERATOR', '*=')),
+			'**$='	=> array(array('OPERATOR', '**'),	array('OPERATOR', '$=')),
 
 			'==||'	=> array(array('OPERATOR', '=='),	array('OPERATOR', '||')),
 			'==&&'	=> array(array('OPERATOR', '=='),	array('OPERATOR', '&&')),
@@ -881,6 +1002,9 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			'==/'	=> array(array('OPERATOR', '=='),	array('OPERATOR', '/')),
 			'==!'	=> array(array('OPERATOR', '=='),	array('OPERATOR', '!')),
 			'==^'	=> array(array('OPERATOR', '=='),	array('OPERATOR', '^')),
+			'==^='	=> array(array('OPERATOR', '=='),	array('OPERATOR', '^=')),
+			'==*='	=> array(array('OPERATOR', '=='),	array('OPERATOR', '*=')),
+			'==$='	=> array(array('OPERATOR', '=='),	array('OPERATOR', '$=')),
 
 			'!=||'	=> array(array('OPERATOR', '!='),	array('OPERATOR', '||')),
 			'!=&&'	=> array(array('OPERATOR', '!='),	array('OPERATOR', '&&')),
@@ -899,6 +1023,9 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			'!=/'	=> array(array('OPERATOR', '!='),	array('OPERATOR', '/')),
 			'!=!'	=> array(array('OPERATOR', '!='),	array('OPERATOR', '!')),
 			'!=^'	=> array(array('OPERATOR', '!='),	array('OPERATOR', '^')),
+			'!=^='	=> array(array('OPERATOR', '!='),	array('OPERATOR', '^=')),
+			'!=*='	=> array(array('OPERATOR', '!='),	array('OPERATOR', '*=')),
+			'!=$='	=> array(array('OPERATOR', '!='),	array('OPERATOR', '$=')),
 
 			'<=||'	=> array(array('OPERATOR', '<='),	array('OPERATOR', '||')),
 			'<=&&'	=> array(array('OPERATOR', '<='),	array('OPERATOR', '&&')),
@@ -917,6 +1044,9 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			'<=/'	=> array(array('OPERATOR', '<='),	array('OPERATOR', '/')),
 			'<=!'	=> array(array('OPERATOR', '<='),	array('OPERATOR', '!')),
 			'<=^'	=> array(array('OPERATOR', '<='),	array('OPERATOR', '^')),
+			'<=^='	=> array(array('OPERATOR', '<='),	array('OPERATOR', '^=')),
+			'<=*='	=> array(array('OPERATOR', '<='),	array('OPERATOR', '*=')),
+			'<=$='	=> array(array('OPERATOR', '<='),	array('OPERATOR', '$=')),
 
 			'>=||'	=> array(array('OPERATOR', '>='),	array('OPERATOR', '||')),
 			'>=&&'	=> array(array('OPERATOR', '>='),	array('OPERATOR', '&&')),
@@ -935,6 +1065,9 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			'>=/'	=> array(array('OPERATOR', '>='),	array('OPERATOR', '/')),
 			'>=!'	=> array(array('OPERATOR', '>='),	array('OPERATOR', '!')),
 			'>=^'	=> array(array('OPERATOR', '>='),	array('OPERATOR', '^')),
+			'>=^='	=> array(array('OPERATOR', '>='),	array('OPERATOR', '^=')),
+			'>=*='	=> array(array('OPERATOR', '>='),	array('OPERATOR', '*=')),
+			'>=$='	=> array(array('OPERATOR', '>='),	array('OPERATOR', '$=')),
 
 			'<>||'	=> array(array('OPERATOR', '<>'),	array('OPERATOR', '||')),
 			'<>&&'	=> array(array('OPERATOR', '<>'),	array('OPERATOR', '&&')),
@@ -953,6 +1086,9 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			'<>/'	=> array(array('OPERATOR', '<>'),	array('OPERATOR', '/')),
 			'<>!'	=> array(array('OPERATOR', '<>'),	array('OPERATOR', '!')),
 			'<>^'	=> array(array('OPERATOR', '<>'),	array('OPERATOR', '^')),
+			'<>^='	=> array(array('OPERATOR', '<>'),	array('OPERATOR', '^=')),
+			'<>*='	=> array(array('OPERATOR', '<>'),	array('OPERATOR', '*=')),
+			'<>$='	=> array(array('OPERATOR', '<>'),	array('OPERATOR', '$=')),
 
 			'<||'	=> array(array('OPERATOR', '<'),	array('OPERATOR', '||')),
 			'<&&'	=> array(array('OPERATOR', '<'),	array('OPERATOR', '&&')),
@@ -971,6 +1107,9 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			'<=/'	=> array(array('OPERATOR', '<='),	array('OPERATOR', '/')),
 			'<=!'	=> array(array('OPERATOR', '<='),	array('OPERATOR', '!')),
 			'<=^'	=> array(array('OPERATOR', '<='),	array('OPERATOR', '^')),
+			'<=^='	=> array(array('OPERATOR', '<='),	array('OPERATOR', '^=')),
+			'<=*='	=> array(array('OPERATOR', '<='),	array('OPERATOR', '*=')),
+			'<=$='	=> array(array('OPERATOR', '<='),	array('OPERATOR', '$=')),
 
 			'>||'	=> array(array('OPERATOR', '>'),	array('OPERATOR', '||')),
 			'>&&'	=> array(array('OPERATOR', '>'),	array('OPERATOR', '&&')),
@@ -989,6 +1128,9 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			'>=/'	=> array(array('OPERATOR', '>='),	array('OPERATOR', '/')),
 			'>=!'	=> array(array('OPERATOR', '>='),	array('OPERATOR', '!')),
 			'>=^'	=> array(array('OPERATOR', '>='),	array('OPERATOR', '^')),
+			'>=^='	=> array(array('OPERATOR', '>='),	array('OPERATOR', '^=')),
+			'>=*='	=> array(array('OPERATOR', '>='),	array('OPERATOR', '*=')),
+			'>=$='	=> array(array('OPERATOR', '>='),	array('OPERATOR', '$=')),
 
 			'%||'	=> array(array('OPERATOR', '%'),	array('OPERATOR', '||')),
 			'%&&'	=> array(array('OPERATOR', '%'),	array('OPERATOR', '&&')),
@@ -1007,6 +1149,9 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			'%/'	=> array(array('OPERATOR', '%'),	array('OPERATOR', '/')),
 			'%!'	=> array(array('OPERATOR', '%'),	array('OPERATOR', '!')),
 			'%^'	=> array(array('OPERATOR', '%'),	array('OPERATOR', '^')),
+			'%^='	=> array(array('OPERATOR', '%'),	array('OPERATOR', '^=')),
+			'%*='	=> array(array('OPERATOR', '%'),	array('OPERATOR', '*=')),
+			'%$='	=> array(array('OPERATOR', '%'),	array('OPERATOR', '$=')),
 
 			'+||'	=> array(array('OPERATOR', '+'),	array('OPERATOR', '||')),
 			'+&&'	=> array(array('OPERATOR', '+'),	array('OPERATOR', '&&')),
@@ -1025,6 +1170,9 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			'+/'	=> array(array('OPERATOR', '+'),	array('OPERATOR', '/')),
 			'+!'	=> array(array('OPERATOR', '+'),	array('OPERATOR', '!')),
 			'+^'	=> array(array('OPERATOR', '+'),	array('OPERATOR', '^')),
+			'+^='	=> array(array('OPERATOR', '+'),	array('OPERATOR', '^=')),
+			'+*='	=> array(array('OPERATOR', '+'),	array('OPERATOR', '*=')),
+			'+$='	=> array(array('OPERATOR', '+'),	array('OPERATOR', '$=')),
 
 			'-||'	=> array(array('OPERATOR', '-'),	array('OPERATOR', '||')),
 			'-&&'	=> array(array('OPERATOR', '-'),	array('OPERATOR', '&&')),
@@ -1042,6 +1190,9 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			'-/'	=> array(array('OPERATOR', '-'),	array('OPERATOR', '/')),
 			'-!'	=> array(array('OPERATOR', '-'),	array('OPERATOR', '!')),
 			'-^'	=> array(array('OPERATOR', '-'),	array('OPERATOR', '^')),
+			'-^='	=> array(array('OPERATOR', '-'),	array('OPERATOR', '^=')),
+			'-*='	=> array(array('OPERATOR', '-'),	array('OPERATOR', '*=')),
+			'-$='	=> array(array('OPERATOR', '-'),	array('OPERATOR', '$=')),
 
 			'*||'	=> array(array('OPERATOR', '*'),	array('OPERATOR', '||')),
 			'*&&'	=> array(array('OPERATOR', '*'),	array('OPERATOR', '&&')),
@@ -1060,6 +1211,9 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			'**/'	=> array(array('OPERATOR', '**'),	array('OPERATOR', '/')),
 			'**!'	=> array(array('OPERATOR', '**'),	array('OPERATOR', '!')),
 			'**^'	=> array(array('OPERATOR', '**'),	array('OPERATOR', '^')),
+			'**^='	=> array(array('OPERATOR', '**'),	array('OPERATOR', '^=')),
+			'***='	=> array(array('OPERATOR', '**'),	array('OPERATOR', '*=')),
+			'**$='	=> array(array('OPERATOR', '**'),	array('OPERATOR', '$=')),
 
 			'/||'	=> array(array('OPERATOR', '/'),	array('OPERATOR', '||')),
 			'/&&'	=> array(array('OPERATOR', '/'),	array('OPERATOR', '&&')),
@@ -1078,6 +1232,9 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			'//'	=> array(array('OPERATOR', '/'),	array('OPERATOR', '/')),
 			'/!'	=> array(array('OPERATOR', '/'),	array('OPERATOR', '!')),
 			'/^'	=> array(array('OPERATOR', '/'),	array('OPERATOR', '^')),
+			'/^='	=> array(array('OPERATOR', '/'),	array('OPERATOR', '^=')),
+			'/*='	=> array(array('OPERATOR', '/'),	array('OPERATOR', '*=')),
+			'/$='	=> array(array('OPERATOR', '/'),	array('OPERATOR', '$=')),
 
 
 			'!||'	=> array(array('OPERATOR', '!'),	array('OPERATOR', '||')),
@@ -1097,24 +1254,93 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			'!=/'	=> array(array('OPERATOR', '!='),	array('OPERATOR', '/')),
 			'!=!'	=> array(array('OPERATOR', '!='),	array('OPERATOR', '!')),
 			'!=^'	=> array(array('OPERATOR', '!='),	array('OPERATOR', '^')),
+			'!=^='	=> array(array('OPERATOR', '!='),	array('OPERATOR', '^=')),
+			'!=*='	=> array(array('OPERATOR', '!='),	array('OPERATOR', '*=')),
+			'!=$='	=> array(array('OPERATOR', '!='),	array('OPERATOR', '$=')),
 
 			'^||'	=> array(array('OPERATOR', '^'),	array('OPERATOR', '||')),
 			'^&&'	=> array(array('OPERATOR', '^'),	array('OPERATOR', '&&')),
 			'^**'	=> array(array('OPERATOR', '^'),	array('OPERATOR', '**')),
-			'^=='	=> array(array('OPERATOR', '^'),	array('OPERATOR', '==')),
-			'^!='	=> array(array('OPERATOR', '^'),	array('OPERATOR', '!=')),
-			'^<='	=> array(array('OPERATOR', '^'),	array('OPERATOR', '<=')),
-			'^>='	=> array(array('OPERATOR', '^'),	array('OPERATOR', '>=')),
-			'^<>'	=> array(array('OPERATOR', '^'),	array('OPERATOR', '<>')),
-			'^<'	=> array(array('OPERATOR', '^'),	array('OPERATOR', '<')),
-			'^>'	=> array(array('OPERATOR', '^'),	array('OPERATOR', '>')),
-			'^%'	=> array(array('OPERATOR', '^'),	array('OPERATOR', '%')),
-			'^+'	=> array(array('OPERATOR', '^'),	array('OPERATOR', '+')),
-			'^-'	=> array(array('OPERATOR', '^'),	array('OPERATOR', '-')),
-			'^*'	=> array(array('OPERATOR', '^'),	array('OPERATOR', '*')),
-			'^/'	=> array(array('OPERATOR', '^'),	array('OPERATOR', '/')),
-			'^!'	=> array(array('OPERATOR', '^'),	array('OPERATOR', '!')),
-			'^^'	=> array(array('OPERATOR', '^'),	array('OPERATOR', '^'))
+			'^=='	=> array(array('OPERATOR', '^='),	array('MISC', '=')),
+			'^=!='	=> array(array('OPERATOR', '^='),	array('OPERATOR', '!=')),
+			'^=<='	=> array(array('OPERATOR', '^='),	array('OPERATOR', '<=')),
+			'^=>='	=> array(array('OPERATOR', '^='),	array('OPERATOR', '>=')),
+			'^=<>'	=> array(array('OPERATOR', '^='),	array('OPERATOR', '<>')),
+			'^=<'	=> array(array('OPERATOR', '^='),	array('OPERATOR', '<')),
+			'^=>'	=> array(array('OPERATOR', '^='),	array('OPERATOR', '>')),
+			'^=%'	=> array(array('OPERATOR', '^='),	array('OPERATOR', '%')),
+			'^=+'	=> array(array('OPERATOR', '^='),	array('OPERATOR', '+')),
+			'^=-'	=> array(array('OPERATOR', '^='),	array('OPERATOR', '-')),
+			'^=*'	=> array(array('OPERATOR', '^='),	array('OPERATOR', '*')),
+			'^=/'	=> array(array('OPERATOR', '^='),	array('OPERATOR', '/')),
+			'^=!'	=> array(array('OPERATOR', '^='),	array('OPERATOR', '!')),
+			'^=^'	=> array(array('OPERATOR', '^='),	array('OPERATOR', '^')),
+			'^=^='	=> array(array('OPERATOR', '^='),	array('OPERATOR', '^=')),
+			'^=*='	=> array(array('OPERATOR', '^='),	array('OPERATOR', '*=')),
+			'^=$='	=> array(array('OPERATOR', '^='),	array('OPERATOR', '$=')),
+
+			'^=||'	=> array(array('OPERATOR', '^='),	array('OPERATOR', '||')),
+			'^=&&'	=> array(array('OPERATOR', '^='),	array('OPERATOR', '&&')),
+			'^=**'	=> array(array('OPERATOR', '^='),	array('OPERATOR', '**')),
+			'^==='	=> array(array('OPERATOR', '^='),	array('OPERATOR', '==')),
+			'^=!='	=> array(array('OPERATOR', '^='),	array('OPERATOR', '!=')),
+			'^=<='	=> array(array('OPERATOR', '^='),	array('OPERATOR', '<=')),
+			'^=>='	=> array(array('OPERATOR', '^='),	array('OPERATOR', '>=')),
+			'^=<>'	=> array(array('OPERATOR', '^='),	array('OPERATOR', '<>')),
+			'^=<'	=> array(array('OPERATOR', '^='),	array('OPERATOR', '<')),
+			'^=>'	=> array(array('OPERATOR', '^='),	array('OPERATOR', '>')),
+			'^=%'	=> array(array('OPERATOR', '^='),	array('OPERATOR', '%')),
+			'^=+'	=> array(array('OPERATOR', '^='),	array('OPERATOR', '+')),
+			'^=-'	=> array(array('OPERATOR', '^='),	array('OPERATOR', '-')),
+			'^=*'	=> array(array('OPERATOR', '^='),	array('OPERATOR', '*')),
+			'^=/'	=> array(array('OPERATOR', '^='),	array('OPERATOR', '/')),
+			'^=!'	=> array(array('OPERATOR', '^='),	array('OPERATOR', '!')),
+			'^=^'	=> array(array('OPERATOR', '^='),	array('OPERATOR', '^')),
+			'^=^='	=> array(array('OPERATOR', '^='),	array('OPERATOR', '^=')),
+			'^=*='	=> array(array('OPERATOR', '^='),	array('OPERATOR', '*=')),
+			'^=$='	=> array(array('OPERATOR', '^='),	array('OPERATOR', '$=')),
+
+			'*=||'	=> array(array('OPERATOR', '*='),	array('OPERATOR', '||')),
+			'*=&&'	=> array(array('OPERATOR', '*='),	array('OPERATOR', '&&')),
+			'*=**'	=> array(array('OPERATOR', '*='),	array('OPERATOR', '**')),
+			'*==='	=> array(array('OPERATOR', '*='),	array('OPERATOR', '==')),
+			'*=!='	=> array(array('OPERATOR', '*='),	array('OPERATOR', '!=')),
+			'*=<='	=> array(array('OPERATOR', '*='),	array('OPERATOR', '<=')),
+			'*=>='	=> array(array('OPERATOR', '*='),	array('OPERATOR', '>=')),
+			'*=<>'	=> array(array('OPERATOR', '*='),	array('OPERATOR', '<>')),
+			'*=<'	=> array(array('OPERATOR', '*='),	array('OPERATOR', '<')),
+			'*=>'	=> array(array('OPERATOR', '*='),	array('OPERATOR', '>')),
+			'*=%'	=> array(array('OPERATOR', '*='),	array('OPERATOR', '%')),
+			'*=+'	=> array(array('OPERATOR', '*='),	array('OPERATOR', '+')),
+			'*=-'	=> array(array('OPERATOR', '*='),	array('OPERATOR', '-')),
+			'*=*'	=> array(array('OPERATOR', '*='),	array('OPERATOR', '*')),
+			'*=/'	=> array(array('OPERATOR', '*='),	array('OPERATOR', '/')),
+			'*=!'	=> array(array('OPERATOR', '*='),	array('OPERATOR', '!')),
+			'*=^'	=> array(array('OPERATOR', '*='),	array('OPERATOR', '^')),
+			'*=^='	=> array(array('OPERATOR', '*='),	array('OPERATOR', '^=')),
+			'*=*='	=> array(array('OPERATOR', '*='),	array('OPERATOR', '*=')),
+			'*=$='	=> array(array('OPERATOR', '*='),	array('OPERATOR', '$=')),
+
+			'$=||'	=> array(array('OPERATOR', '$='),	array('OPERATOR', '||')),
+			'$=&&'	=> array(array('OPERATOR', '$='),	array('OPERATOR', '&&')),
+			'$=**'	=> array(array('OPERATOR', '$='),	array('OPERATOR', '**')),
+			'$==='	=> array(array('OPERATOR', '$='),	array('OPERATOR', '==')),
+			'$=!='	=> array(array('OPERATOR', '$='),	array('OPERATOR', '!=')),
+			'$=<='	=> array(array('OPERATOR', '$='),	array('OPERATOR', '<=')),
+			'$=>='	=> array(array('OPERATOR', '$='),	array('OPERATOR', '>=')),
+			'$=<>'	=> array(array('OPERATOR', '$='),	array('OPERATOR', '<>')),
+			'$=<'	=> array(array('OPERATOR', '$='),	array('OPERATOR', '<')),
+			'$=>'	=> array(array('OPERATOR', '$='),	array('OPERATOR', '>')),
+			'$=%'	=> array(array('OPERATOR', '$='),	array('OPERATOR', '%')),
+			'$=+'	=> array(array('OPERATOR', '$='),	array('OPERATOR', '+')),
+			'$=-'	=> array(array('OPERATOR', '$='),	array('OPERATOR', '-')),
+			'$=*'	=> array(array('OPERATOR', '$='),	array('OPERATOR', '*')),
+			'$=/'	=> array(array('OPERATOR', '$='),	array('OPERATOR', '/')),
+			'$=!'	=> array(array('OPERATOR', '$='),	array('OPERATOR', '!')),
+			'$=^'	=> array(array('OPERATOR', '$='),	array('OPERATOR', '^')),
+			'$=^='	=> array(array('OPERATOR', '$='),	array('OPERATOR', '^=')),
+			'$=*='	=> array(array('OPERATOR', '$='),	array('OPERATOR', '*=')),
+			'$=$='	=> array(array('OPERATOR', '$='),	array('OPERATOR', '$='))
 		);
 
 		foreach ($operator_combinations as $operator => $tokens)
@@ -1145,10 +1371,9 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			 * 	'||', '&&', '**',
 			 * 	'==', '!=', '<=', '>=', '<>', '<', '>',
 			 * 	'%', '+', '-', '*', '/',
-			 * 	'.', '!', '^'
+			 *	'.', '!', '^',
+			 *	'^=', '*=', '$=',
 			 * );
-             *
-			 * $out = array();
              *
 			 * // Build out some combinations
 			 * foreach ($valid_operators as $first)
@@ -1178,6 +1403,7 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			 * 	print "\n";
 			 * }
 			 */
+
 			'||.'	=> array(array('OPERATOR', '||'),	array('OPERATOR', '.')),
 
 			'&&.'	=> array(array('OPERATOR', '&&'),	array('OPERATOR', '.')),
@@ -1226,10 +1452,19 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			'..'	=> array(array('OPERATOR', '.'),	array('OPERATOR', '.')),
 			'.!'	=> array(array('OPERATOR', '.'),	array('OPERATOR', '!')),
 			'.^'	=> array(array('OPERATOR', '.'),	array('OPERATOR', '^')),
+			'.^='	=> array(array('OPERATOR', '.'),	array('OPERATOR', '^=')),
+			'.*='	=> array(array('OPERATOR', '.'),	array('OPERATOR', '*=')),
+			'.$='	=> array(array('OPERATOR', '.'),	array('OPERATOR', '$=')),
 
 			'!.'	=> array(array('OPERATOR', '!'),	array('OPERATOR', '.')),
 
-			'^.'	=> array(array('OPERATOR', '^'),	array('OPERATOR', '.'))
+			'^.'	=> array(array('OPERATOR', '^'),	array('OPERATOR', '.')),
+
+			'^=.'	=> array(array('OPERATOR', '^='),	array('OPERATOR', '.')),
+
+			'*=.'	=> array(array('OPERATOR', '*='),	array('OPERATOR', '.')),
+
+			'$=.'	=> array(array('OPERATOR', '$='),	array('OPERATOR', '.'))
 		);
 
 		// When a period or dash end an operator and the next character is
@@ -1283,7 +1518,10 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			'*.'	=> array(array('OPERATOR', '*'),	array('OPERATOR', '.')),
 			'/.'	=> array(array('OPERATOR', '/'),	array('OPERATOR', '.')),
 			'!.'	=> array(array('OPERATOR', '!'),	array('OPERATOR', '.')),
-			'^.'	=> array(array('OPERATOR', '^'),	array('OPERATOR', '.'))
+			'^.'	=> array(array('OPERATOR', '^'),	array('OPERATOR', '.')),
+			'^=.'	=> array(array('OPERATOR', '^='),	array('OPERATOR', '.')),
+			'*=.'	=> array(array('OPERATOR', '*='),	array('OPERATOR', '.')),
+			'$=.'	=> array(array('OPERATOR', '$='),	array('OPERATOR', '.'))
 		);
 
 		$left_hand_dot_combinations = array(
@@ -1302,8 +1540,12 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			'.-'	=> array(array('OPERATOR', '.'),	array('OPERATOR', '-')),
 			'.*'	=> array(array('OPERATOR', '.'),	array('OPERATOR', '*')),
 			'./'	=> array(array('OPERATOR', '.'),	array('OPERATOR', '/')),
+			'..'	=> array(array('OPERATOR', '.'),	array('OPERATOR', '.')),
 			'.!'	=> array(array('OPERATOR', '.'),	array('OPERATOR', '!')),
-			'.^'	=> array(array('OPERATOR', '.'),	array('OPERATOR', '^'))
+			'.^'	=> array(array('OPERATOR', '.'),	array('OPERATOR', '^')),
+			'.^='	=> array(array('OPERATOR', '.'),	array('OPERATOR', '^=')),
+			'.*='	=> array(array('OPERATOR', '.'),	array('OPERATOR', '*=')),
+			'.$='	=> array(array('OPERATOR', '.'),	array('OPERATOR', '$=')),
 		);
 
 		// int: '.' in NUMBER token
