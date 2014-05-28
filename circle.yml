@@ -29,4 +29,4 @@ checkout:
 test:
   override:
     - "rvm use 2.1.1 && ./system/tests/circleci/runtests.sh"
-        parellel: true
+        parallel: true
