@@ -131,7 +131,10 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 			$this->edgyDoubleDashWithoutSpaces(),
 			$this->edgyDotDashWithNumbersAndNoSpaces(),
 			$this->edgyDoubleDotWithNumbersAndNoSpaces(),
-			$this->englishBooleanOperators(),
+
+			// AND, OR, XOR
+			$this->validEnglishBooleanOperators(),
+			$this->edgyEnglishBooleanOperatorsWithoutSpaces(),
 
 			array() // non trailing comma thing for covienence
 		);
@@ -328,7 +331,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 		return $return;
 	}
 
-	protected function operatorCombinationsWithSpaces()
+	protected function operatorCombinations()
 	{
 		$return = array();
 
@@ -2184,7 +2187,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 		return $return;
 	}
 
-	protected function englishBooleanOperators()
+	protected function validEnglishBooleanOperators()
 	{
 		$return = array();
 
@@ -2203,6 +2206,102 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 			);
 		}
 
+		return $return;
+	}
+
+	protected function edgyEnglishBooleanOperatorsWithoutSpaces()
+	{
+		$return = array();
+
+		$operators = array(
+			'and', 'And', 'aNd', 'ANd', 'anD', 'AnD', 'aND', 'AND',
+			'or', 'Or', 'oR', 'OR',
+			'xor', 'Xor', 'xOr', 'XOr', 'xoR', 'XoR', 'xOR', 'XOR'
+		);
+
+		// Cases where these are operators
+		$operator_cases = array(
+			'littlefloat',
+			'string', 'dash-string', 'dot.string', 'intstring',
+			'simpletag', 'moduletag', 'tag_with_params'
+		);
+
+		foreach ($operators as $operator)
+		{
+			foreach ($operator_cases as $type)
+			{
+				$value = $this->valueTypes[$type]['value'];
+				$token = $this->valueTypes[$type]['token'];
+
+				$expected = array(
+					$token,
+					array('OPERATOR', $operator),
+					$token
+				);
+
+				$return[] = array(
+					"The {$operator} operator with {$type} values (no spaces)",
+					$this->assembleCommonCondition($value.$operator.$value),
+					$this->assembleCommonTokens($expected)
+				);
+			}
+		}
+
+		// Cases where these are variables
+		$variable_cases = array(
+			'bool', 'int', 'variable', 'dash-variable'
+		);
+
+		foreach ($operators as $operator)
+		{
+			foreach ($variable_cases as $type)
+			{
+				$value = $this->valueTypes[$type]['value'];
+				$return[] = array(
+					"The {$operator} operator with {$type} values (no spaces)",
+					$this->assembleCommonCondition($value.$operator.$value),
+					$this->assembleCommonTokens(array(array('VARIABLE', $value.$operator.$value)))
+				);
+			}
+		}
+
+		// Sepcial case: negative numbers
+		foreach ($operators as $operator)
+		{
+			$value = '-5';
+
+			$expected = array(
+				array('OPERATOR', '-'),
+				array('VARIABLE', '5'.$operator.$value),
+			);
+
+			$return[] = array(
+				"The {$operator} operator with negative values (no spaces)",
+				$this->assembleCommonCondition($value.$operator.$value),
+				$this->assembleCommonTokens($expected)
+			);
+		}
+
+		// Sepcial case: bigfloat numbers
+		foreach ($operators as $operator)
+		{
+			$value = '5.1';
+
+			$expected = array(
+				array('NUMBER', '5.1'),
+				array('VARIABLE', $operator.'5'),
+				array('NUMBER', '.1')
+			);
+
+			$return[] = array(
+				"The {$operator} operator with bigfloat values (no spaces)",
+				$this->assembleCommonCondition($value.$operator.$value),
+				$this->assembleCommonTokens($expected)
+			);
+		}
+
+		return $return;
+	}
 		return $return;
 	}
 
