@@ -122,10 +122,10 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 			$this->booleanTokens(),
 
 			// Operators
-			$this->validOperatorsWithSpaces(),
+			$this->validOperators(),
 			$this->validOperatorsWithoutSpaces(),
 			$this->invalidOperators(),
-			$this->operatorCombinationsWithSpaces(),
+			$this->operatorCombinations(),
 			$this->operatorCombinationsWithoutSpaces(),
 			$this->edgyOperatorCombinationsWithoutSpaces(),
 			$this->edgyDoubleDashWithoutSpaces(),
@@ -160,7 +160,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 		);
 	}
 
-	protected function validOperatorsWithSpaces()
+	protected function validOperators()
 	{
 		$return = array();
 
@@ -175,26 +175,11 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 		// Test each operator (duh)
 		foreach ($operators as $operator)
 		{
-			// Testing our common value types for edge-cases.
-			// We don't need to care about permutations here just combinations
-			// because we need to ensure that these value types are found
-			// on both sides of an operator.
-			foreach ($this->valueTypes as $type => $value)
-			{
-				$expected = array(
-					$value['token'],
-					array('WHITESPACE',	' '),
-					array('OPERATOR',	$operator),
-					array('WHITESPACE',	' '),
-					$value['token']
-				);
-
-				$return[] = array(
-					"The \"{$operator}\" operator with {$type} values",
-					$this->assembleCommonCondition($value['value']." ".$operator." ".$value['value']),
-					$this->assembleCommonTokens($expected)
-				);
-			}
+			$return[] = array(
+				"The \"{$operator}\" operator",
+				$this->assembleCommonCondition($operator),
+				$this->assembleCommonTokens(array(array('OPERATOR', $operator)))
+			);
 		}
 
 		return $return;
@@ -855,23 +840,16 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 
 		foreach ($operator_combinations as $operator => $tokens)
 		{
-			foreach ($this->valueTypes as $type => $value)
-			{
-				$expected = array(
-					$value['token'],
-					array('WHITESPACE',	' '),
-					$tokens[0],
-					$tokens[1],
-					array('WHITESPACE',	' '),
-					$value['token']
-				);
+			$expected = array(
+				$tokens[0],
+				$tokens[1],
+			);
 
-				$return[] = array(
-					"The \"{$operator}\" operator with {$type} values",
-					$this->assembleCommonCondition($value['value']." ".$operator." ".$value['value']),
-					$this->assembleCommonTokens($expected)
-				);
-			}
+			$return[] = array(
+				"The \"{$operator}\" operator combination",
+				$this->assembleCommonCondition($operator),
+				$this->assembleCommonTokens($expected)
+			);
 		}
 
 		return $return;
@@ -1368,7 +1346,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 				);
 
 				$return[] = array(
-					"The \"{$operator}\" operator with {$type} values (no spaces)",
+					"The \"{$operator}\" operator combination with {$type} values (no spaces)",
 					$this->assembleCommonCondition($value['value'].$operator.$value['value']),
 					$this->assembleCommonTokens($expected)
 				);
@@ -2265,33 +2243,24 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 
 		$operators = array('=', '&', '|', '$');
 
-		// Test each operator (duh)
 		foreach ($operators as $operator)
 		{
+			$return[] = array(
+				"The \"{$operator}\" symbol",
+				$this->assembleCommonCondition($operator),
+				$this->assembleCommonTokens(array(array('MISC', $operator)))
+			);
+
 			foreach ($this->valueTypes as $type => $value)
 			{
 				$expected = array(
 					$value['token'],
-					array('WHITESPACE',	' '),
-					array('MISC',	$operator),
-					array('WHITESPACE',	' '),
-					$value['token']
-				);
-
-				$return[] = array(
-					"The \"{$operator}\" operator with {$type} values",
-					$this->assembleCommonCondition($value['value']." ".$operator." ".$value['value']),
-					$this->assembleCommonTokens($expected)
-				);
-
-				$expected = array(
-					$value['token'],
 					array('MISC',	$operator),
 					$value['token']
 				);
 
 				$return[] = array(
-					"The \"{$operator}\" operator with {$type} values (no spaces)",
+					"The \"{$operator}\" symbol with {$type} values (no spaces)",
 					$this->assembleCommonCondition($value['value'].$operator.$value['value']),
 					$this->assembleCommonTokens($expected)
 				);
