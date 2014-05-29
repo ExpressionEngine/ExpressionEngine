@@ -135,6 +135,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 			// AND, OR, XOR
 			$this->validEnglishBooleanOperators(),
 			$this->edgyEnglishBooleanOperatorsWithoutSpaces(),
+			$this->englishBooleanSubstringsAsVariables(),
 
 			array() // non trailing comma thing for covienence
 		);
@@ -2302,6 +2303,29 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 
 		return $return;
 	}
+
+	protected function englishBooleanSubstringsAsVariables()
+	{
+		$return = array();
+
+		// Not worrying about case sensitivity here, that should be adequately
+		// tested elsewhere.
+		$variables = array(
+			'ANDAND', 'ANDOR', 'ANDXOR',
+			'OROR', 'ORAND', 'ORXOR',
+			'XORXOR', 'XORAND', 'XORAND',
+			'XORG', 'ORNAMENT', 'ANDERSON'
+		);
+
+		foreach ($variables as $variable)
+		{
+			$return[] = array(
+				"\"{$variable}\" is a variable",
+				$this->assembleCommonCondition($variable),
+				$this->assembleCommonTokens(array(array('VARIABLE', $variable)))
+			);
+		}
+
 		return $return;
 	}
 
