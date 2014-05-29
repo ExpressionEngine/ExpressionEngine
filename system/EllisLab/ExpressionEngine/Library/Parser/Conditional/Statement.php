@@ -19,6 +19,10 @@ namespace EllisLab\ExpressionEngine\Library\Parser\Conditional;
 /**
  * ExpressionEngine Core Conditional Statement Class
  *
+ * This class is used to correctly group the different parts of an if
+ * statement and to allow for intelligent removal of any branch where
+ * possible.
+ *
  * @package		ExpressionEngine
  * @subpackage	Core
  * @category	Core
