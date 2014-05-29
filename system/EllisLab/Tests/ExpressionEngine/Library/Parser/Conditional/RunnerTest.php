@@ -4,7 +4,7 @@ namespace EllisLab\Tests\ExpressionEngine\Library\Parser\Conditional;
 
 use EllisLab\ExpressionEngine\Library\Parser\Conditional\Runner;
 
-class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
+class RunnerTest extends \PHPUnit_Framework_TestCase {
 
 	public function setUp()
 	{
