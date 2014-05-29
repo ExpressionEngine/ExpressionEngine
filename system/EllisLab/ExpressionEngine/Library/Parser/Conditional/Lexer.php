@@ -3,8 +3,16 @@
 namespace EllisLab\ExpressionEngine\Library\Parser\Conditional;
 
 use EllisLab\ExpressionEngine\Library\Parser\AbstractLexer;
-use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token;
 use EllisLab\ExpressionEngine\Library\Parser\Conditional\Exception\LexerException;
+
+use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\Token;
+use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\Bool;
+use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\Number;
+use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\Operator;
+use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\Other;
+use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\String;
+use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\Tag;
+use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\Variable;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -480,7 +488,27 @@ class Lexer extends AbstractLexer {
 		// Always store strings, even empty ones
 		if ($lexeme != '' || $type == 'STRING')
 		{
-			$this->tokens[] = new Token($type, $lexeme);
+			switch ($type)
+			{
+				case 'BOOL':	 $obj = new Bool($lexeme);
+					break;
+				case 'NUMBER':	 $obj = new Number($lexeme);
+					break;
+				case 'STRING':	 $obj = new String($lexeme);
+					break;
+				case 'OPERATOR': $obj = new Operator($lexeme);
+					break;
+				case 'TAG':		 $obj = new Tag($lexeme);
+					break;
+				case 'VARIABLE': $obj = new Variable($lexeme);
+					break;
+				case 'OTHER':	 $obj = new Other($lexeme);
+					break;
+				default:
+					$obj = new Token($type, $lexeme);
+			}
+
+			$this->tokens[] = $obj;
 		}
 	}
 }

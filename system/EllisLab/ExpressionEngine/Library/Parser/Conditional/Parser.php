@@ -4,6 +4,7 @@ namespace EllisLab\ExpressionEngine\Library\Parser\Conditional;
 
 use EllisLab\ExpressionEngine\Library\Parser\AbstractParser;
 use EllisLab\ExpressionEngine\Library\Parser\Conditional\Exception\ParserException;
+use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\Bool;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -235,24 +236,17 @@ class Parser extends AbstractParser {
 		{
 			$continue_loop = FALSE;
 
-			while ($this->accept('LP'))
+			while ($this->is('LP'))
 			{
-				$expression->add('LP', '(');
+				$expression->add($this->token);
+				$this->next();
 			}
 
-			if ($this->is('BOOL'))
+			if ($this->is('BOOL') ||
+				$this->is('NUMBER') ||
+				$this->is('STRING'))
 			{
-				$expression->add('BOOL', (strtoupper($this->value()) == 'TRUE'));
-				$this->next();
-			}
-			elseif ($this->is('NUMBER'))
-			{
-				$expression->add('NUMBER', 0 + $this->value());
-				$this->next();
-			}
-			elseif ($this->is('STRING'))
-			{
-				$this->string($expression);
+				$expression->add($this->token);
 				$this->next();
 			}
 			elseif ($this->is('VARIABLE'))
@@ -262,21 +256,22 @@ class Parser extends AbstractParser {
 			}
 			elseif ($this->is('MISC'))
 			{
-				$this->misc($expression);
+				$this->addSafely($expression);
 				$this->next();
 			}
 
 			// A closing parenthesis would be before the operator
-			while ($this->accept('RP'))
+			while ($this->is('RP'))
 			{
-				$expression->add('RP', ')');
+				$expression->add($this->token);
+				$this->next();
 			}
 
 			// If we hit an operator, we need to go around again
 			// looking for the right hand value.
 			if ($this->is('OPERATOR'))
 			{
-				$expression->add('OPERATOR', $this->value());
+				$expression->add($this->token);
 				$this->next();
 
 				$continue_loop = TRUE;
@@ -289,7 +284,7 @@ class Parser extends AbstractParser {
 			// evaluate to.
 			while ($this->is('TAG'))
 			{
-				$this->tag($expression);
+				$this->addSafely($expression);
 				$this->next();
 				$continue_loop = TRUE;
 			}
@@ -299,17 +294,9 @@ class Parser extends AbstractParser {
 		return $expression;
 	}
 
-	/**
-	 * String Values
-	 */
-	protected function string($expression)
+	protected function addFalse($expression)
 	{
-		$value = $this->value();
-
-		$value = $this->encodeString($value);
-		$can_eval = (stristr($value, LD) === FALSE);
-
-		$expression->add('STRING', $value, $can_eval, TRUE);
+		$expression->add(new Bool(FALSE));
 	}
 
 	/**
@@ -317,130 +304,48 @@ class Parser extends AbstractParser {
 	 */
 	protected function variable($expression)
 	{
-		$quote = FALSE;
-		$can_eval = FALSE;
-
-		$value = $name = $this->value();
+		$name = $this->value();
 
 		if (array_key_exists($name, $this->variables))
 		{
 			$value = $this->variables[$name];
-			$value = $this->encode(
-				$this->safeCastToString(
-					$this->variables[$name]
-				)
-			);
 
-			$quote = TRUE;
-			$can_eval = TRUE;
+			// can't do arrays
+			if (is_array($value))
+			{
+				return $this->addFalse($expression);
+			}
+
+			// can't do
+			if (is_object($value) AND ! method_exists($value, '__toString'))
+			{
+				return $this->addFalse($expression);
+			}
+
+			$this->token->setValue($value);
 		}
 		elseif ($this->safety === TRUE)
 		{
-			$expression->add('BOOL', FALSE);
-			return;
+			return $this->addFalse($expression);
 		}
 
-		$expression->add('VARIABLE', $value, $can_eval, $quote);
+		$expression->add($this->token);
 	}
 
 	/**
-	 * Embedded Tags
+	 * Embedded Tags and Miscellaneous Junk
 	 */
-	protected function tag($expression)
+	protected function addSafely($expression)
 	{
 		if ($this->safety === TRUE)
 		{
-			$expression->add('BOOL', FALSE);
+			$expression->add(new Bool(FALSE));
 		}
 		else
 		{
-			$expression->add('TAG', $this->value(), FALSE);
+
+			$expression->add($this->token);
 		}
-	}
-
-	/*
-	 * Miscellaneous Junk
-	 */
-	protected function misc($expression)
-	{
-		if ($this->safety === TRUE)
-		{
-			$expression->add('BOOL', FALSE);
-		}
-		else
-		{
-			$expression->add('MISC', $this->value(), FALSE);
-		}
-	}
-
-	/*
-	 * Encode a string literal
-	 */
-	protected function encodeString($value)
-	{
-		if (stristr($value, LD.'exp:') && stristr($value, RD) && $this->safety === FALSE)
-		{
-			// Do not encode embedded tags in strings when safety is FALSE
-			return $value;
-		}
-
-		// If it has braces we do not want to encode them except
-		// when the safety is on (which is enforced in `encode()`).
-		return $this->encode($value, FALSE);
-	}
-
-	/**
-	 * Encode a variable
-	 */
-	protected function encode($value, $encode_braces = TRUE)
-	{
-		// TRUE AND FALSE values are for short hand conditionals,
-		// like {if logged_in} and so we have no need to remove
-		// unwanted characters and we do not quote it.
-		if ($value == 'TRUE' || $value == 'FALSE')
-		{
-			return $value;
-		}
-
-		if (strlen($value) > 100)
-		{
-			$value = substr(htmlspecialchars($value), 0, 100);
-		}
-
-		$value = preg_replace('/\s+/', ' ', $value);
-
-		if ($encode_braces || $this->safety === TRUE)
-		{
-			$value = str_replace(
-				array('{', '}',),
-				array('&#123;', '&#125;',),
-				$value
-			);
-		}
-
-		return $value;
-	}
-
-	/**
-	 * Take a user variable and cast it to a string, taking
-	 * into account that some developers pass arrays, and
-	 * objects.
-	 */
-	protected function safeCastToString($value)
-	{
-		// It doesn't currently make sense to allow array values
-		if (is_array($value))
-		{
-			return 'FALSE';
-		}
-
-		// An object that cannot be converted to a string is a problem
-		if (is_object($value) && ! method_exists($value, '__toString'))
-		{
-			return 'FALSE';
-		}
-
-		return (string) $value;
 	}
 
 	/**

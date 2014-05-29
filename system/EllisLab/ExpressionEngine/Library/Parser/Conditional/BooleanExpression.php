@@ -49,14 +49,14 @@ class BooleanExpression {
 	/**
 	 * Add a token for evaluation
 	 */
-	public function add($type, $value, $eval = TRUE, $quote = FALSE)
+	public function add($token)
 	{
-		if ($eval == FALSE)
+		if ( ! $token->canEvaluate())
 		{
 			$this->can_eval = FALSE;
 		}
 
-		$this->tokens[] = array($type, $value, $eval, $quote);
+		$this->tokens[] = $token;
 	}
 
 	/**
@@ -81,30 +81,7 @@ class BooleanExpression {
 	 */
 	public function stringify()
 	{
-		$str = '';
-
-		while ($token = array_shift($this->tokens))
-		{
-			if ($token[3] === TRUE)
-			{
-				$value = (string) $token[1];
-				$str .= var_export($value, TRUE);
-			}
-			elseif ($token[0] == 'OPERATOR')
-			{
-				$str .= ' '.$token[1].' ';
-			}
-			elseif ($token[0] == 'BOOL')
-			{
-				$str .= $token[1] ? 'TRUE' : 'FALSE';
-			}
-			else
-			{
-				$str .= $token[1];
-			}
-		}
-
-		return $str;
+		return implode('', $this->tokens);
 	}
 
 	/**
@@ -118,9 +95,9 @@ class BooleanExpression {
 		{
 			if ( ! $this->isOperator($token))
 			{
-				$evaluate_stack[] = $token[1];
+				$evaluate_stack[] = $token->value();
 			}
-			elseif ($this->isUnaryToken($token))
+			elseif ($token->isUnary())
 			{
 				if (count($evaluate_stack) < 1)
 				{
@@ -129,7 +106,7 @@ class BooleanExpression {
 
 				$right = array_pop($evaluate_stack);
 
-				switch ($token[1])
+				switch ($token->value())
 				{
 					case '!': array_push($evaluate_stack, ! $right);
 						break;
@@ -151,7 +128,7 @@ class BooleanExpression {
 				$right = array_pop($evaluate_stack);
 				$left = array_pop($evaluate_stack);
 
-				switch (strtoupper($token[1]))
+				switch (strtoupper($token->value()))
 				{
 					case '^':
 					case '**': array_push($evaluate_stack, pow($left, $right));
@@ -236,25 +213,27 @@ class BooleanExpression {
 			if ($this->isOperator($token))
 			{
 				// unary operators need to be marked as such for the next step
-				if ($this->inPrefixPosition($prev_token) && $this->isValidUnaryOperator($token))
+				if ($this->inPrefixPosition($prev_token) && $this->isValidUnaryOperator($token->value()))
 				{
-					$token = $this->markAsUnary($token);
+					$token->markAsUnary();
 				}
 
 				while (count($stack) && $this->isOperator(end($stack)))
 				{
+					$top_token = end($stack);
+
 					if ((
 						(
 							($this->isAssociative($token, self::LEFT_ASSOC) ||
 							 $this->isAssociative($token, self::NON_ASSOC)) &&
-							$this->precedence($token, end($stack)) <= 0
+							$this->precedence($token, $top_token) <= 0
 						) ||
 						(
 							$this->isAssociative($token, self::RIGHT_ASSOC) &&
-						 	$this->precedence($token, end($stack)) < 0)
+						 	$this->precedence($token, $top_token) < 0)
 						)
 						// unary operators can only pop other unary operators
-						&& ( ! $this->isUnaryToken($token) || $this->isUnaryToken(end($stack)))
+						&& ( ! $token->isUnary() || $top_token->isUnary())
 					)
 					{
 						$output[] = array_pop($stack);
@@ -266,13 +245,13 @@ class BooleanExpression {
 
 				array_push($stack, $token);
 			}
-			elseif ($token[0] == 'LP')
+			elseif ($token->type == 'LP')
 			{
 				array_push($stack, $token);
 			}
-			elseif ($token[0] == 'RP')
+			elseif ($token->type == 'RP')
 			{
-				while (count($stack) && $stack[count($stack) - 1][0] != 'LP')
+				while (count($stack) && end($stack)->type != 'LP')
 				{
 					$output[] = array_pop($stack);
 				}
@@ -296,33 +275,14 @@ class BooleanExpression {
 	}
 
 	/**
-	 * Set the unary flag on the token
-	 */
-	private function markAsUnary($token)
-	{
-		$token['unary'] = TRUE;
-		return $token;
-	}
-
-	/**
-	 * Unary token?
-	 *
-	 * Decides based on the token flag if it is a valid unary token.
-	 */
-	private function isUnaryToken($token)
-	{
-		return isset($token['unary']);
-	}
-
-	/**
 	 * Unary operators?
 	 *
 	 * Decides based on the symbol if the token *can* be used as a
 	 * unary operator. Does not mean it must be used as such.
 	 */
-	private function isValidUnaryOperator($token)
+	private function isValidUnaryOperator($value)
 	{
-		return array_key_exists($token[1], $this->unary_operators);
+		return array_key_exists($value, $this->unary_operators);
 	}
 
 	/**
@@ -334,7 +294,7 @@ class BooleanExpression {
 	 */
 	private function inPrefixPosition($previous)
 	{
-		return ($previous == NULL || $previous[0] == 'LP' || $this->isOperator($previous));
+		return ($previous == NULL || $previous->type == 'LP' || $this->isOperator($previous));
 	}
 
 	/**
@@ -361,7 +321,7 @@ class BooleanExpression {
 	 */
 	private function isOperator($token)
 	{
-		return ($token[0] == 'OPERATOR');
+		return ($token->type == 'OPERATOR');
 	}
 
 	/**
@@ -371,12 +331,12 @@ class BooleanExpression {
 	 */
 	private function getOperator($token)
 	{
-		if ($this->isUnaryToken($token))
+		if ($token->isUnary())
 		{
-			return $this->unary_operators[$token[1]];
+			return $this->unary_operators[$token->value()];
 		}
 
-		return $this->binary_operators[$token[1]];
+		return $this->binary_operators[$token->value()];
 	}
 
 	/**

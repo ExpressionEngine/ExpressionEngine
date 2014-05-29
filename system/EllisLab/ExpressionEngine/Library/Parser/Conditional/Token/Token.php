@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Library\Parser\Conditional;
+namespace EllisLab\ExpressionEngine\Library\Parser\Conditional\Token;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -28,17 +28,32 @@ namespace EllisLab\ExpressionEngine\Library\Parser\Conditional;
 class Token {
 
 	public $type;
-	public $lexeme;
+	public $lexeme;	// as written in the template
+
+	protected $value; // the real value
 
 	public function __construct($type, $lexeme)
 	{
 		$this->type = $type;
 		$this->lexeme = $lexeme;
+
+		// for most tokens the template representation is their value
+		$this->value = $lexeme;
+	}
+
+	public function canEvaluate()
+	{
+		return TRUE;
+	}
+
+	public function value()
+	{
+		return $this->value;
 	}
 
 	public function __toString()
 	{
-		return $this->type.' ('.$this->lexeme.')';
+		return $this->lexeme;
 	}
 
 	public function toArray()
