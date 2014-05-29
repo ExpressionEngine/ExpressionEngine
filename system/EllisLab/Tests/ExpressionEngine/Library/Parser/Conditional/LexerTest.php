@@ -120,6 +120,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 			$this->validVariableTokens(),
 			$this->whitespaceTokens(),
 			$this->booleanTokens(),
+			$this->booleanSubstringsAsVariables(),
 
 			// Operators
 			$this->validOperators(),
@@ -2350,6 +2351,30 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 				"The {$boolean} token",
 				$this->assembleCommonCondition($boolean),
 				$this->assembleCommonTokens(array(array('BOOL', $boolean)))
+			);
+		}
+
+		return $return;
+	}
+
+	protected function booleanSubstringsAsVariables()
+	{
+		$return = array();
+
+		// Not worrying about case sensitivity here, that should be adequately
+		// tested elsewhere.
+		$variables = array(
+			'TRUETRUE', 'TRUEFALSE',
+			'FALSEFALSE', 'FALSETRUE',
+			'TRUELY', 'FALSELY'
+		);
+
+		foreach ($variables as $variable)
+		{
+			$return[] = array(
+				"\"{$variable}\" is a variable",
+				$this->assembleCommonCondition($variable),
+				$this->assembleCommonTokens(array(array('VARIABLE', $variable)))
 			);
 		}
 
