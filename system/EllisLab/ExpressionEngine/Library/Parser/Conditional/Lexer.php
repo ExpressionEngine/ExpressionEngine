@@ -445,7 +445,7 @@ class Lexer extends AbstractLexer {
 			{
 				$operator = $operator.'(?!\d)';
 			}
-			elseif (ctype_digit($operator[0]))
+			elseif (ctype_alpha($operator[0]))
 			{
 				$operator = '\b'.$operator.'(?!(-+)?\w)';
 			}
