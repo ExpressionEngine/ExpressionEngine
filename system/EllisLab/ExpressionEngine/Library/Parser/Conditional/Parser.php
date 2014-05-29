@@ -179,7 +179,7 @@ class Parser extends AbstractParser {
 	{
 		$conditional_depth = 0;
 
-		while (TRUE)
+		do
 		{
 			if ($this->is('ENDIF'))
 			{
@@ -201,6 +201,7 @@ class Parser extends AbstractParser {
 
 			$this->next();
 		}
+		while ($this->valid());
 	}
 
 	/**

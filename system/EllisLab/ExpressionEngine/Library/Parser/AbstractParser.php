@@ -60,12 +60,12 @@ abstract class AbstractParser {
 	 */
 	protected function is($type)
 	{
-		if ($this->token === NULL)
+		if ($this->valid())
 		{
-			return FALSE;
+			return ($this->token->type == $type);
 		}
 
-		return ($this->token->type == $type);
+		return FALSE;
 	}
 
 	/**
@@ -119,5 +119,17 @@ abstract class AbstractParser {
 	protected function next()
 	{
 		$this->token = array_shift($this->tokens);
+	}
+
+	/**
+	 * Current token is valid.
+	 *
+	 * Used to stop the parser when we run out of tokens
+	 *
+	 * @return bool Token exists?
+	 */
+	protected function valid()
+	{
+		return ($this->token !== NULL);
 	}
 }
