@@ -247,7 +247,7 @@ class Parser extends AbstractParser {
 			}
 			elseif ($this->is('NUMBER'))
 			{
-				$expression->add('NUMBER', $this->value());
+				$expression->add('NUMBER', 0 + $this->value());
 				$this->next();
 			}
 			elseif ($this->is('STRING'))
