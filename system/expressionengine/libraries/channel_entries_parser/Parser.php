@@ -456,8 +456,8 @@ class EE_Channel_data_parser {
 		$pre = $this->_preparser;
 
 		$cond = $row;
-		$cond['logged_in']			= (ee()->session->userdata('member_id') == 0) ? 'FALSE' : 'TRUE';
-		$cond['logged_out']			= (ee()->session->userdata('member_id') != 0) ? 'FALSE' : 'TRUE';
+		$cond['logged_in']			= (ee()->session->userdata('member_id') == 0) ? FALSE : TRUE;
+		$cond['logged_out']			= (ee()->session->userdata('member_id') != 0) ? FALSE : TRUE;
 
 		foreach (array('avatar_filename', 'photo_filename', 'sig_img_filename') as $pv)
 		{
@@ -467,14 +467,14 @@ class EE_Channel_data_parser {
 			}
 		}
 
-		$cond['allow_comments']			= $this->_commenting_allowed($row) ? 'TRUE' : 'FALSE';
-		$cond['signature_image']		= ($row['sig_img_filename'] == '' OR ee()->config->item('enable_signatures') == 'n' OR ee()->session->userdata('display_signatures') == 'n') ? 'FALSE' : 'TRUE';
-		$cond['avatar']					= ($row['avatar_filename'] == '' OR ee()->config->item('enable_avatars') == 'n' OR ee()->session->userdata('display_avatars') == 'n') ? 'FALSE' : 'TRUE';
-		$cond['photo']					= ($row['photo_filename'] == '' OR ee()->config->item('enable_photos') == 'n' OR ee()->session->userdata('display_photos') == 'n') ? 'FALSE' : 'TRUE';
-		$cond['forum_topic']			= (empty($row['forum_topic_id'])) ? 'FALSE' : 'TRUE';
-		$cond['not_forum_topic']		= ( ! empty($row['forum_topic_id'])) ? 'FALSE' : 'TRUE';
-		$cond['category_request']		= ($channel->cat_request === FALSE) ? 'FALSE' : 'TRUE';
-		$cond['not_category_request']	= ($channel->cat_request !== FALSE) ? 'FALSE' : 'TRUE';
+		$cond['allow_comments']			= $this->_commenting_allowed($row) ? TRUE : FALSE;
+		$cond['signature_image']		= ($row['sig_img_filename'] == '' OR ee()->config->item('enable_signatures') == 'n' OR ee()->session->userdata('display_signatures') == 'n') ? FALSE : TRUE;
+		$cond['avatar']					= ($row['avatar_filename'] == '' OR ee()->config->item('enable_avatars') == 'n' OR ee()->session->userdata('display_avatars') == 'n') ? FALSE : TRUE;
+		$cond['photo']					= ($row['photo_filename'] == '' OR ee()->config->item('enable_photos') == 'n' OR ee()->session->userdata('display_photos') == 'n') ? FALSE : TRUE;
+		$cond['forum_topic']			= (empty($row['forum_topic_id'])) ? FALSE : TRUE;
+		$cond['not_forum_topic']		= ( ! empty($row['forum_topic_id'])) ? FALSE : TRUE;
+		$cond['category_request']		= ($channel->cat_request === FALSE) ? FALSE : TRUE;
+		$cond['not_category_request']	= ($channel->cat_request !== FALSE) ? FALSE : TRUE;
 		$cond['channel']				= $row['channel_title'];
 		$cond['channel_short_name']		= $row['channel_name'];
 		$cond['author']					= ($row['screen_name'] != '') ? $row['screen_name'] : $row['username'];

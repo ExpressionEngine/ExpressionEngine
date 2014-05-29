@@ -436,8 +436,8 @@ class File {
 
 			//  More Variables, Mostly for Conditionals
 			$row['absolute_count']	= (int) ee()->TMPL->fetch_param('limit') + $count + 1;
-			$row['logged_in']		= (ee()->session->userdata('member_id') == 0) ? 'FALSE' : 'TRUE';
-			$row['logged_out']		= (ee()->session->userdata('member_id') != 0) ? 'FALSE' : 'TRUE';
+			$row['logged_in']		= (ee()->session->userdata('member_id') == 0) ? FALSE : TRUE;
+			$row['logged_out']		= (ee()->session->userdata('member_id') != 0) ? FALSE : TRUE;
 			$row['entry_date']		= $row['upload_date'];
 			$row['edit_date']		= $row['modified_date'];
 			$row['directory_id']	= $row['id'];
