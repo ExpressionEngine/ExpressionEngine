@@ -120,7 +120,7 @@ class Lexer extends AbstractLexer {
 	 * another, the longer must be first. (e.g. ^= before ^).
 	 */
 	private $operators = array(
-		'^=', '*=', '$=',
+		'^=', '*=', '$=', '~',
 		'==', '!=', '<=', '>=', '<>', '<', '>',
 		'**', '%', '+', '-', '*', '/',
 		'.', '!', '^',

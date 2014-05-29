@@ -182,6 +182,13 @@ class BooleanExpression {
 						break;
 					case '$=': array_push($evaluate_stack, (substr($left, -strlen($right)) == $right));
 						break;
+					case '~':
+						if (($value = @preg_match($right, $left)) === FALSE)
+						{
+							throw new ParserException('Invalid Regular Expression: '.$right);
+						}
+						array_push($evaluate_stack, ($value > 0));
+						break;
 					case '<>': array_push($evaluate_stack, $left <> $right);
 						break;
 					case '==': array_push($evaluate_stack, $left == $right);
@@ -399,6 +406,7 @@ class BooleanExpression {
 			'^=' => array(20, self::NON_ASSOC),
 			'*=' => array(20, self::NON_ASSOC),
 			'$=' => array(20, self::NON_ASSOC),
+			'~' => array(20, self::NON_ASSOC),
 
 			'<>' => array(10, self::NON_ASSOC),
 			'==' => array(10, self::NON_ASSOC),

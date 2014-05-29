@@ -319,6 +319,9 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 			array('String Ends With',			'{if "testing" $= "ing"}yes{if:else}no{/if}',		'yes'),
 			array('Integer Ends With',			'{if 123456 $= 456}yes{if:else}no{/if}',			'yes'),
 			array('Float Ends With',			'{if 42.7 $= .7}yes{if:else}no{/if}',				'yes'),
+			array('String Regex Compare',	'{if "P25" ~ "/^P[0-9]+/"}yes{if:else}no{/if}',	'yes'),
+			array('Integer Regex Compare',	'{if 1234 ~ "/\d+/"}yes{if:else}no{/if}',			'yes'),
+			array('Float Regex Compare',	'{if 42.7 ~ "/\d+\.\d/"}yes{if:else}no{/if}',		'yes'),
 
 			array('False String Begins With',	'{if "testing" ^= "ing"}no{if:else}yes{/if}',		'yes'),
 			array('False Integer Begins With',	'{if 123456 ^= 456}no{if:else}yes{/if}',			'yes'),
@@ -332,6 +335,9 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 			array('False String Ends With',		'{if "testing" $= "test"}no{if:else}yes{/if}',		'yes'),
 			array('False Integer Ends With',	'{if 123456 $= 123}no{if:else}yes{/if}',			'yes'),
 			array('False Float Ends With',		'{if 42.7 $= 42}no{if:else}yes{/if}',				'yes'),
+			array('False String Regex',			'{if "C25" ~ "/^P[0-9]+/"}no{if:else}yes{/if}',	'yes'),
+			array('False Integer Regex',		'{if 1234 ~ "/[^\d]+/"}no{if:else}yes{/if}',		'yes'),
+			array('False Float Regex',			'{if 42.7 ~ "/[^\d+\.\d]/"}no{if:else}yes{/if}',	'yes'),
 
 			array('False == Integer',			'{if 5 == 2}no{if:else}yes{/if}',					'yes'),
 			array('False != Integer',			'{if 6 != 6}no{if:else}yes{/if}',					'yes'),

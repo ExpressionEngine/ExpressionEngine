@@ -174,7 +174,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 			'==', '!=', '<=', '>=', '<>', '<', '>',
 			'%', '+', '-', '*', '/',
 			'.', '!', '^',
-			'^=', '*=', '$=',
+			'^=', '*=', '$=', '~'
 		);
 
 		// Test each operator (duh)
@@ -200,7 +200,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 			'==', '!=', '<=', '>=', '<>', '<', '>',
 			'%', '+', '-', '*', '/',
 			'.', '!', '^',
-			'^=', '*=', '$=',
+			'^=', '*=', '$=', '~'
 		);
 
 		// Test each operator (duh)
@@ -348,7 +348,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 			 * 	'==', '!=', '<=', '>=', '<>', '<', '>',
 			 * 	'%', '+', '-', '*', '/',
 			 *	'.', '!', '^',
-			 *	'^=', '*=', '$=',
+			 *	'^=', '*=', '$=', '~'
 			 * );
              *
 			 * // Build out some combinations
@@ -401,6 +401,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 			'||^='	=> array(array('OPERATOR', '||'),	array('OPERATOR', '^=')),
 			'||*='	=> array(array('OPERATOR', '||'),	array('OPERATOR', '*=')),
 			'||$='	=> array(array('OPERATOR', '||'),	array('OPERATOR', '$=')),
+			'||~'	=> array(array('OPERATOR', '||'),	array('OPERATOR', '~')),
 
 			'&&||'	=> array(array('OPERATOR', '&&'),	array('OPERATOR', '||')),
 			'&&&&'	=> array(array('OPERATOR', '&&'),	array('OPERATOR', '&&')),
@@ -423,6 +424,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 			'&&^='	=> array(array('OPERATOR', '&&'),	array('OPERATOR', '^=')),
 			'&&*='	=> array(array('OPERATOR', '&&'),	array('OPERATOR', '*=')),
 			'&&$='	=> array(array('OPERATOR', '&&'),	array('OPERATOR', '$=')),
+			'&&~'	=> array(array('OPERATOR', '&&'),	array('OPERATOR', '~')),
 
 			'**||'	=> array(array('OPERATOR', '**'),	array('OPERATOR', '||')),
 			'**&&'	=> array(array('OPERATOR', '**'),	array('OPERATOR', '&&')),
@@ -445,6 +447,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 			'**^='	=> array(array('OPERATOR', '**'),	array('OPERATOR', '^=')),
 			'***='	=> array(array('OPERATOR', '**'),	array('OPERATOR', '*=')),
 			'**$='	=> array(array('OPERATOR', '**'),	array('OPERATOR', '$=')),
+			'**~'	=> array(array('OPERATOR', '**'),	array('OPERATOR', '~')),
 
 			'==||'	=> array(array('OPERATOR', '=='),	array('OPERATOR', '||')),
 			'==&&'	=> array(array('OPERATOR', '=='),	array('OPERATOR', '&&')),
@@ -467,6 +470,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 			'==^='	=> array(array('OPERATOR', '=='),	array('OPERATOR', '^=')),
 			'==*='	=> array(array('OPERATOR', '=='),	array('OPERATOR', '*=')),
 			'==$='	=> array(array('OPERATOR', '=='),	array('OPERATOR', '$=')),
+			'==~'	=> array(array('OPERATOR', '=='),	array('OPERATOR', '~')),
 
 			'!=||'	=> array(array('OPERATOR', '!='),	array('OPERATOR', '||')),
 			'!=&&'	=> array(array('OPERATOR', '!='),	array('OPERATOR', '&&')),
@@ -489,6 +493,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 			'!=^='	=> array(array('OPERATOR', '!='),	array('OPERATOR', '^=')),
 			'!=*='	=> array(array('OPERATOR', '!='),	array('OPERATOR', '*=')),
 			'!=$='	=> array(array('OPERATOR', '!='),	array('OPERATOR', '$=')),
+			'!=~'	=> array(array('OPERATOR', '!='),	array('OPERATOR', '~')),
 
 			'<=||'	=> array(array('OPERATOR', '<='),	array('OPERATOR', '||')),
 			'<=&&'	=> array(array('OPERATOR', '<='),	array('OPERATOR', '&&')),
@@ -511,6 +516,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 			'<=^='	=> array(array('OPERATOR', '<='),	array('OPERATOR', '^=')),
 			'<=*='	=> array(array('OPERATOR', '<='),	array('OPERATOR', '*=')),
 			'<=$='	=> array(array('OPERATOR', '<='),	array('OPERATOR', '$=')),
+			'<=~'	=> array(array('OPERATOR', '<='),	array('OPERATOR', '~')),
 
 			'>=||'	=> array(array('OPERATOR', '>='),	array('OPERATOR', '||')),
 			'>=&&'	=> array(array('OPERATOR', '>='),	array('OPERATOR', '&&')),
@@ -533,6 +539,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 			'>=^='	=> array(array('OPERATOR', '>='),	array('OPERATOR', '^=')),
 			'>=*='	=> array(array('OPERATOR', '>='),	array('OPERATOR', '*=')),
 			'>=$='	=> array(array('OPERATOR', '>='),	array('OPERATOR', '$=')),
+			'>=~'	=> array(array('OPERATOR', '>='),	array('OPERATOR', '~')),
 
 			'<>||'	=> array(array('OPERATOR', '<>'),	array('OPERATOR', '||')),
 			'<>&&'	=> array(array('OPERATOR', '<>'),	array('OPERATOR', '&&')),
@@ -555,6 +562,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 			'<>^='	=> array(array('OPERATOR', '<>'),	array('OPERATOR', '^=')),
 			'<>*='	=> array(array('OPERATOR', '<>'),	array('OPERATOR', '*=')),
 			'<>$='	=> array(array('OPERATOR', '<>'),	array('OPERATOR', '$=')),
+			'<>~'	=> array(array('OPERATOR', '<>'),	array('OPERATOR', '~')),
 
 			'<||'	=> array(array('OPERATOR', '<'),	array('OPERATOR', '||')),
 			'<&&'	=> array(array('OPERATOR', '<'),	array('OPERATOR', '&&')),
@@ -577,6 +585,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 			'<=^='	=> array(array('OPERATOR', '<='),	array('OPERATOR', '^=')),
 			'<=*='	=> array(array('OPERATOR', '<='),	array('OPERATOR', '*=')),
 			'<=$='	=> array(array('OPERATOR', '<='),	array('OPERATOR', '$=')),
+			'<=~'	=> array(array('OPERATOR', '<='),	array('OPERATOR', '~')),
 
 			'>||'	=> array(array('OPERATOR', '>'),	array('OPERATOR', '||')),
 			'>&&'	=> array(array('OPERATOR', '>'),	array('OPERATOR', '&&')),
@@ -599,6 +608,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 			'>=^='	=> array(array('OPERATOR', '>='),	array('OPERATOR', '^=')),
 			'>=*='	=> array(array('OPERATOR', '>='),	array('OPERATOR', '*=')),
 			'>=$='	=> array(array('OPERATOR', '>='),	array('OPERATOR', '$=')),
+			'>=~'	=> array(array('OPERATOR', '>='),	array('OPERATOR', '~')),
 
 			'%||'	=> array(array('OPERATOR', '%'),	array('OPERATOR', '||')),
 			'%&&'	=> array(array('OPERATOR', '%'),	array('OPERATOR', '&&')),
@@ -621,6 +631,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 			'%^='	=> array(array('OPERATOR', '%'),	array('OPERATOR', '^=')),
 			'%*='	=> array(array('OPERATOR', '%'),	array('OPERATOR', '*=')),
 			'%$='	=> array(array('OPERATOR', '%'),	array('OPERATOR', '$=')),
+			'%~'	=> array(array('OPERATOR', '%'),	array('OPERATOR', '~')),
 
 			'+||'	=> array(array('OPERATOR', '+'),	array('OPERATOR', '||')),
 			'+&&'	=> array(array('OPERATOR', '+'),	array('OPERATOR', '&&')),
@@ -643,6 +654,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 			'+^='	=> array(array('OPERATOR', '+'),	array('OPERATOR', '^=')),
 			'+*='	=> array(array('OPERATOR', '+'),	array('OPERATOR', '*=')),
 			'+$='	=> array(array('OPERATOR', '+'),	array('OPERATOR', '$=')),
+			'+~'	=> array(array('OPERATOR', '+'),	array('OPERATOR', '~')),
 
 			'-||'	=> array(array('OPERATOR', '-'),	array('OPERATOR', '||')),
 			'-&&'	=> array(array('OPERATOR', '-'),	array('OPERATOR', '&&')),
@@ -665,6 +677,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 			'-^='	=> array(array('OPERATOR', '-'),	array('OPERATOR', '^=')),
 			'-*='	=> array(array('OPERATOR', '-'),	array('OPERATOR', '*=')),
 			'-$='	=> array(array('OPERATOR', '-'),	array('OPERATOR', '$=')),
+			'-~'	=> array(array('OPERATOR', '-'),	array('OPERATOR', '~')),
 
 			'*||'	=> array(array('OPERATOR', '*'),	array('OPERATOR', '||')),
 			'*&&'	=> array(array('OPERATOR', '*'),	array('OPERATOR', '&&')),
@@ -687,6 +700,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 			'**^='	=> array(array('OPERATOR', '**'),	array('OPERATOR', '^=')),
 			'***='	=> array(array('OPERATOR', '**'),	array('OPERATOR', '*=')),
 			'**$='	=> array(array('OPERATOR', '**'),	array('OPERATOR', '$=')),
+			'**~'	=> array(array('OPERATOR', '**'),	array('OPERATOR', '~')),
 
 			'/||'	=> array(array('OPERATOR', '/'),	array('OPERATOR', '||')),
 			'/&&'	=> array(array('OPERATOR', '/'),	array('OPERATOR', '&&')),
@@ -709,6 +723,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 			'/^='	=> array(array('OPERATOR', '/'),	array('OPERATOR', '^=')),
 			'/*='	=> array(array('OPERATOR', '/'),	array('OPERATOR', '*=')),
 			'/$='	=> array(array('OPERATOR', '/'),	array('OPERATOR', '$=')),
+			'/~'	=> array(array('OPERATOR', '/'),	array('OPERATOR', '~')),
 
 			'.||'	=> array(array('OPERATOR', '.'),	array('OPERATOR', '||')),
 			'.&&'	=> array(array('OPERATOR', '.'),	array('OPERATOR', '&&')),
@@ -731,6 +746,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 			'.^='	=> array(array('OPERATOR', '.'),	array('OPERATOR', '^=')),
 			'.*='	=> array(array('OPERATOR', '.'),	array('OPERATOR', '*=')),
 			'.$='	=> array(array('OPERATOR', '.'),	array('OPERATOR', '$=')),
+			'.~'	=> array(array('OPERATOR', '.'),	array('OPERATOR', '~')),
 
 			'!||'	=> array(array('OPERATOR', '!'),	array('OPERATOR', '||')),
 			'!&&'	=> array(array('OPERATOR', '!'),	array('OPERATOR', '&&')),
@@ -753,6 +769,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 			'!=^='	=> array(array('OPERATOR', '!='),	array('OPERATOR', '^=')),
 			'!=*='	=> array(array('OPERATOR', '!='),	array('OPERATOR', '*=')),
 			'!=$='	=> array(array('OPERATOR', '!='),	array('OPERATOR', '$=')),
+			'!=~'	=> array(array('OPERATOR', '!='),	array('OPERATOR', '~')),
 
 			'^||'	=> array(array('OPERATOR', '^'),	array('OPERATOR', '||')),
 			'^&&'	=> array(array('OPERATOR', '^'),	array('OPERATOR', '&&')),
@@ -775,6 +792,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 			'^=^='	=> array(array('OPERATOR', '^='),	array('OPERATOR', '^=')),
 			'^=*='	=> array(array('OPERATOR', '^='),	array('OPERATOR', '*=')),
 			'^=$='	=> array(array('OPERATOR', '^='),	array('OPERATOR', '$=')),
+			'^=~'	=> array(array('OPERATOR', '^='),	array('OPERATOR', '~')),
 
 			'^=||'	=> array(array('OPERATOR', '^='),	array('OPERATOR', '||')),
 			'^=&&'	=> array(array('OPERATOR', '^='),	array('OPERATOR', '&&')),
@@ -797,6 +815,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 			'^=^='	=> array(array('OPERATOR', '^='),	array('OPERATOR', '^=')),
 			'^=*='	=> array(array('OPERATOR', '^='),	array('OPERATOR', '*=')),
 			'^=$='	=> array(array('OPERATOR', '^='),	array('OPERATOR', '$=')),
+			'^=~'	=> array(array('OPERATOR', '^='),	array('OPERATOR', '~')),
 
 			'*=||'	=> array(array('OPERATOR', '*='),	array('OPERATOR', '||')),
 			'*=&&'	=> array(array('OPERATOR', '*='),	array('OPERATOR', '&&')),
@@ -819,6 +838,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 			'*=^='	=> array(array('OPERATOR', '*='),	array('OPERATOR', '^=')),
 			'*=*='	=> array(array('OPERATOR', '*='),	array('OPERATOR', '*=')),
 			'*=$='	=> array(array('OPERATOR', '*='),	array('OPERATOR', '$=')),
+			'*=~'	=> array(array('OPERATOR', '*='),	array('OPERATOR', '~')),
 
 			'$=||'	=> array(array('OPERATOR', '$='),	array('OPERATOR', '||')),
 			'$=&&'	=> array(array('OPERATOR', '$='),	array('OPERATOR', '&&')),
@@ -840,7 +860,31 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 			'$=^'	=> array(array('OPERATOR', '$='),	array('OPERATOR', '^')),
 			'$=^='	=> array(array('OPERATOR', '$='),	array('OPERATOR', '^=')),
 			'$=*='	=> array(array('OPERATOR', '$='),	array('OPERATOR', '*=')),
-			'$=$='	=> array(array('OPERATOR', '$='),	array('OPERATOR', '$='))
+			'$=$='	=> array(array('OPERATOR', '$='),	array('OPERATOR', '$=')),
+			'$=~'	=> array(array('OPERATOR', '$='),	array('OPERATOR', '~')),
+
+			'~||'	=> array(array('OPERATOR', '~'),	array('OPERATOR', '||')),
+			'~&&'	=> array(array('OPERATOR', '~'),	array('OPERATOR', '&&')),
+			'~**'	=> array(array('OPERATOR', '~'),	array('OPERATOR', '**')),
+			'~=='	=> array(array('OPERATOR', '~'),	array('OPERATOR', '==')),
+			'~!='	=> array(array('OPERATOR', '~'),	array('OPERATOR', '!=')),
+			'~<='	=> array(array('OPERATOR', '~'),	array('OPERATOR', '<=')),
+			'~>='	=> array(array('OPERATOR', '~'),	array('OPERATOR', '>=')),
+			'~<>'	=> array(array('OPERATOR', '~'),	array('OPERATOR', '<>')),
+			'~<'	=> array(array('OPERATOR', '~'),	array('OPERATOR', '<')),
+			'~>'	=> array(array('OPERATOR', '~'),	array('OPERATOR', '>')),
+			'~%'	=> array(array('OPERATOR', '~'),	array('OPERATOR', '%')),
+			'~+'	=> array(array('OPERATOR', '~'),	array('OPERATOR', '+')),
+			'~-'	=> array(array('OPERATOR', '~'),	array('OPERATOR', '-')),
+			'~*'	=> array(array('OPERATOR', '~'),	array('OPERATOR', '*')),
+			'~/'	=> array(array('OPERATOR', '~'),	array('OPERATOR', '/')),
+			'~.'	=> array(array('OPERATOR', '~'),	array('OPERATOR', '.')),
+			'~!'	=> array(array('OPERATOR', '~'),	array('OPERATOR', '!')),
+			'~^'	=> array(array('OPERATOR', '~'),	array('OPERATOR', '^')),
+			'~^='	=> array(array('OPERATOR', '~'),	array('OPERATOR', '^=')),
+			'~*='	=> array(array('OPERATOR', '~'),	array('OPERATOR', '*=')),
+			'~$='	=> array(array('OPERATOR', '~'),	array('OPERATOR', '$=')),
+			'~~'	=> array(array('OPERATOR', '~'),	array('OPERATOR', '~'))
 		);
 
 		foreach ($operator_combinations as $operator => $tokens)
@@ -876,7 +920,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 			 * 	'==', '!=', '<=', '>=', '<>', '<', '>',
 			 * 	'%', '+', '-', '*', '/',
 			 * 	'.', '!', '^',
-			 *	'^=', '*=', '$=',
+			 *	'^=', '*=', '$=', '~'
 			 * );
              *
 			 * // Build out some combinations
@@ -938,6 +982,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 			'||^='	=> array(array('OPERATOR', '||'),	array('OPERATOR', '^=')),
 			'||*='	=> array(array('OPERATOR', '||'),	array('OPERATOR', '*=')),
 			'||$='	=> array(array('OPERATOR', '||'),	array('OPERATOR', '$=')),
+			'||~'	=> array(array('OPERATOR', '||'),	array('OPERATOR', '~')),
 
 			'&&||'	=> array(array('OPERATOR', '&&'),	array('OPERATOR', '||')),
 			'&&&&'	=> array(array('OPERATOR', '&&'),	array('OPERATOR', '&&')),
@@ -959,6 +1004,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 			'&&^='	=> array(array('OPERATOR', '&&'),	array('OPERATOR', '^=')),
 			'&&*='	=> array(array('OPERATOR', '&&'),	array('OPERATOR', '*=')),
 			'&&$='	=> array(array('OPERATOR', '&&'),	array('OPERATOR', '$=')),
+			'&&~'	=> array(array('OPERATOR', '&&'),	array('OPERATOR', '~')),
 
 			'**||'	=> array(array('OPERATOR', '**'),	array('OPERATOR', '||')),
 			'**&&'	=> array(array('OPERATOR', '**'),	array('OPERATOR', '&&')),
@@ -980,6 +1026,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 			'**^='	=> array(array('OPERATOR', '**'),	array('OPERATOR', '^=')),
 			'***='	=> array(array('OPERATOR', '**'),	array('OPERATOR', '*=')),
 			'**$='	=> array(array('OPERATOR', '**'),	array('OPERATOR', '$=')),
+			'**~'	=> array(array('OPERATOR', '**'),	array('OPERATOR', '~')),
 
 			'==||'	=> array(array('OPERATOR', '=='),	array('OPERATOR', '||')),
 			'==&&'	=> array(array('OPERATOR', '=='),	array('OPERATOR', '&&')),
@@ -1001,6 +1048,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 			'==^='	=> array(array('OPERATOR', '=='),	array('OPERATOR', '^=')),
 			'==*='	=> array(array('OPERATOR', '=='),	array('OPERATOR', '*=')),
 			'==$='	=> array(array('OPERATOR', '=='),	array('OPERATOR', '$=')),
+			'==~'	=> array(array('OPERATOR', '=='),	array('OPERATOR', '~')),
 
 			'!=||'	=> array(array('OPERATOR', '!='),	array('OPERATOR', '||')),
 			'!=&&'	=> array(array('OPERATOR', '!='),	array('OPERATOR', '&&')),
@@ -1022,6 +1070,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 			'!=^='	=> array(array('OPERATOR', '!='),	array('OPERATOR', '^=')),
 			'!=*='	=> array(array('OPERATOR', '!='),	array('OPERATOR', '*=')),
 			'!=$='	=> array(array('OPERATOR', '!='),	array('OPERATOR', '$=')),
+			'!=~'	=> array(array('OPERATOR', '!='),	array('OPERATOR', '~')),
 
 			'<=||'	=> array(array('OPERATOR', '<='),	array('OPERATOR', '||')),
 			'<=&&'	=> array(array('OPERATOR', '<='),	array('OPERATOR', '&&')),
@@ -1043,6 +1092,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 			'<=^='	=> array(array('OPERATOR', '<='),	array('OPERATOR', '^=')),
 			'<=*='	=> array(array('OPERATOR', '<='),	array('OPERATOR', '*=')),
 			'<=$='	=> array(array('OPERATOR', '<='),	array('OPERATOR', '$=')),
+			'<=~'	=> array(array('OPERATOR', '<='),	array('OPERATOR', '~')),
 
 			'>=||'	=> array(array('OPERATOR', '>='),	array('OPERATOR', '||')),
 			'>=&&'	=> array(array('OPERATOR', '>='),	array('OPERATOR', '&&')),
@@ -1064,6 +1114,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 			'>=^='	=> array(array('OPERATOR', '>='),	array('OPERATOR', '^=')),
 			'>=*='	=> array(array('OPERATOR', '>='),	array('OPERATOR', '*=')),
 			'>=$='	=> array(array('OPERATOR', '>='),	array('OPERATOR', '$=')),
+			'>=~'	=> array(array('OPERATOR', '>='),	array('OPERATOR', '~')),
 
 			'<>||'	=> array(array('OPERATOR', '<>'),	array('OPERATOR', '||')),
 			'<>&&'	=> array(array('OPERATOR', '<>'),	array('OPERATOR', '&&')),
@@ -1085,6 +1136,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 			'<>^='	=> array(array('OPERATOR', '<>'),	array('OPERATOR', '^=')),
 			'<>*='	=> array(array('OPERATOR', '<>'),	array('OPERATOR', '*=')),
 			'<>$='	=> array(array('OPERATOR', '<>'),	array('OPERATOR', '$=')),
+			'<>~'	=> array(array('OPERATOR', '<>'),	array('OPERATOR', '~')),
 
 			'<||'	=> array(array('OPERATOR', '<'),	array('OPERATOR', '||')),
 			'<&&'	=> array(array('OPERATOR', '<'),	array('OPERATOR', '&&')),
@@ -1106,6 +1158,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 			'<=^='	=> array(array('OPERATOR', '<='),	array('OPERATOR', '^=')),
 			'<=*='	=> array(array('OPERATOR', '<='),	array('OPERATOR', '*=')),
 			'<=$='	=> array(array('OPERATOR', '<='),	array('OPERATOR', '$=')),
+			'<=~'	=> array(array('OPERATOR', '<='),	array('OPERATOR', '~')),
 
 			'>||'	=> array(array('OPERATOR', '>'),	array('OPERATOR', '||')),
 			'>&&'	=> array(array('OPERATOR', '>'),	array('OPERATOR', '&&')),
@@ -1127,6 +1180,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 			'>=^='	=> array(array('OPERATOR', '>='),	array('OPERATOR', '^=')),
 			'>=*='	=> array(array('OPERATOR', '>='),	array('OPERATOR', '*=')),
 			'>=$='	=> array(array('OPERATOR', '>='),	array('OPERATOR', '$=')),
+			'>=~'	=> array(array('OPERATOR', '>='),	array('OPERATOR', '~')),
 
 			'%||'	=> array(array('OPERATOR', '%'),	array('OPERATOR', '||')),
 			'%&&'	=> array(array('OPERATOR', '%'),	array('OPERATOR', '&&')),
@@ -1148,6 +1202,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 			'%^='	=> array(array('OPERATOR', '%'),	array('OPERATOR', '^=')),
 			'%*='	=> array(array('OPERATOR', '%'),	array('OPERATOR', '*=')),
 			'%$='	=> array(array('OPERATOR', '%'),	array('OPERATOR', '$=')),
+			'%~'	=> array(array('OPERATOR', '%'),	array('OPERATOR', '~')),
 
 			'+||'	=> array(array('OPERATOR', '+'),	array('OPERATOR', '||')),
 			'+&&'	=> array(array('OPERATOR', '+'),	array('OPERATOR', '&&')),
@@ -1169,6 +1224,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 			'+^='	=> array(array('OPERATOR', '+'),	array('OPERATOR', '^=')),
 			'+*='	=> array(array('OPERATOR', '+'),	array('OPERATOR', '*=')),
 			'+$='	=> array(array('OPERATOR', '+'),	array('OPERATOR', '$=')),
+			'+~'	=> array(array('OPERATOR', '+'),	array('OPERATOR', '~')),
 
 			'-||'	=> array(array('OPERATOR', '-'),	array('OPERATOR', '||')),
 			'-&&'	=> array(array('OPERATOR', '-'),	array('OPERATOR', '&&')),
@@ -1189,6 +1245,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 			'-^='	=> array(array('OPERATOR', '-'),	array('OPERATOR', '^=')),
 			'-*='	=> array(array('OPERATOR', '-'),	array('OPERATOR', '*=')),
 			'-$='	=> array(array('OPERATOR', '-'),	array('OPERATOR', '$=')),
+			'-~'	=> array(array('OPERATOR', '-'),	array('OPERATOR', '~')),
 
 			'*||'	=> array(array('OPERATOR', '*'),	array('OPERATOR', '||')),
 			'*&&'	=> array(array('OPERATOR', '*'),	array('OPERATOR', '&&')),
@@ -1210,6 +1267,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 			'**^='	=> array(array('OPERATOR', '**'),	array('OPERATOR', '^=')),
 			'***='	=> array(array('OPERATOR', '**'),	array('OPERATOR', '*=')),
 			'**$='	=> array(array('OPERATOR', '**'),	array('OPERATOR', '$=')),
+			'**~'	=> array(array('OPERATOR', '**'),	array('OPERATOR', '~')),
 
 			'/||'	=> array(array('OPERATOR', '/'),	array('OPERATOR', '||')),
 			'/&&'	=> array(array('OPERATOR', '/'),	array('OPERATOR', '&&')),
@@ -1231,6 +1289,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 			'/^='	=> array(array('OPERATOR', '/'),	array('OPERATOR', '^=')),
 			'/*='	=> array(array('OPERATOR', '/'),	array('OPERATOR', '*=')),
 			'/$='	=> array(array('OPERATOR', '/'),	array('OPERATOR', '$=')),
+			'/~'	=> array(array('OPERATOR', '/'),	array('OPERATOR', '~')),
 
 
 			'!||'	=> array(array('OPERATOR', '!'),	array('OPERATOR', '||')),
@@ -1253,6 +1312,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 			'!=^='	=> array(array('OPERATOR', '!='),	array('OPERATOR', '^=')),
 			'!=*='	=> array(array('OPERATOR', '!='),	array('OPERATOR', '*=')),
 			'!=$='	=> array(array('OPERATOR', '!='),	array('OPERATOR', '$=')),
+			'!=~'	=> array(array('OPERATOR', '!='),	array('OPERATOR', '~')),
 
 			'^||'	=> array(array('OPERATOR', '^'),	array('OPERATOR', '||')),
 			'^&&'	=> array(array('OPERATOR', '^'),	array('OPERATOR', '&&')),
@@ -1274,6 +1334,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 			'^=^='	=> array(array('OPERATOR', '^='),	array('OPERATOR', '^=')),
 			'^=*='	=> array(array('OPERATOR', '^='),	array('OPERATOR', '*=')),
 			'^=$='	=> array(array('OPERATOR', '^='),	array('OPERATOR', '$=')),
+			'^=~'	=> array(array('OPERATOR', '^='),	array('OPERATOR', '~')),
 
 			'^=||'	=> array(array('OPERATOR', '^='),	array('OPERATOR', '||')),
 			'^=&&'	=> array(array('OPERATOR', '^='),	array('OPERATOR', '&&')),
@@ -1295,6 +1356,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 			'^=^='	=> array(array('OPERATOR', '^='),	array('OPERATOR', '^=')),
 			'^=*='	=> array(array('OPERATOR', '^='),	array('OPERATOR', '*=')),
 			'^=$='	=> array(array('OPERATOR', '^='),	array('OPERATOR', '$=')),
+			'^=~'	=> array(array('OPERATOR', '^='),	array('OPERATOR', '~')),
 
 			'*=||'	=> array(array('OPERATOR', '*='),	array('OPERATOR', '||')),
 			'*=&&'	=> array(array('OPERATOR', '*='),	array('OPERATOR', '&&')),
@@ -1316,6 +1378,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 			'*=^='	=> array(array('OPERATOR', '*='),	array('OPERATOR', '^=')),
 			'*=*='	=> array(array('OPERATOR', '*='),	array('OPERATOR', '*=')),
 			'*=$='	=> array(array('OPERATOR', '*='),	array('OPERATOR', '$=')),
+			'*=~'	=> array(array('OPERATOR', '*='),	array('OPERATOR', '~')),
 
 			'$=||'	=> array(array('OPERATOR', '$='),	array('OPERATOR', '||')),
 			'$=&&'	=> array(array('OPERATOR', '$='),	array('OPERATOR', '&&')),
@@ -1336,7 +1399,30 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 			'$=^'	=> array(array('OPERATOR', '$='),	array('OPERATOR', '^')),
 			'$=^='	=> array(array('OPERATOR', '$='),	array('OPERATOR', '^=')),
 			'$=*='	=> array(array('OPERATOR', '$='),	array('OPERATOR', '*=')),
-			'$=$='	=> array(array('OPERATOR', '$='),	array('OPERATOR', '$='))
+			'$=$='	=> array(array('OPERATOR', '$='),	array('OPERATOR', '$=')),
+			'$=~'	=> array(array('OPERATOR', '$='),	array('OPERATOR', '~')),
+
+			'~||'	=> array(array('OPERATOR', '~'),	array('OPERATOR', '||')),
+			'~&&'	=> array(array('OPERATOR', '~'),	array('OPERATOR', '&&')),
+			'~**'	=> array(array('OPERATOR', '~'),	array('OPERATOR', '**')),
+			'~=='	=> array(array('OPERATOR', '~'),	array('OPERATOR', '==')),
+			'~!='	=> array(array('OPERATOR', '~'),	array('OPERATOR', '!=')),
+			'~<='	=> array(array('OPERATOR', '~'),	array('OPERATOR', '<=')),
+			'~>='	=> array(array('OPERATOR', '~'),	array('OPERATOR', '>=')),
+			'~<>'	=> array(array('OPERATOR', '~'),	array('OPERATOR', '<>')),
+			'~<'	=> array(array('OPERATOR', '~'),	array('OPERATOR', '<')),
+			'~>'	=> array(array('OPERATOR', '~'),	array('OPERATOR', '>')),
+			'~%'	=> array(array('OPERATOR', '~'),	array('OPERATOR', '%')),
+			'~+'	=> array(array('OPERATOR', '~'),	array('OPERATOR', '+')),
+			'~-'	=> array(array('OPERATOR', '~'),	array('OPERATOR', '-')),
+			'~*'	=> array(array('OPERATOR', '~'),	array('OPERATOR', '*')),
+			'~/'	=> array(array('OPERATOR', '~'),	array('OPERATOR', '/')),
+			'~!'	=> array(array('OPERATOR', '~'),	array('OPERATOR', '!')),
+			'~^'	=> array(array('OPERATOR', '~'),	array('OPERATOR', '^')),
+			'~^='	=> array(array('OPERATOR', '~'),	array('OPERATOR', '^=')),
+			'~*='	=> array(array('OPERATOR', '~'),	array('OPERATOR', '*=')),
+			'~$='	=> array(array('OPERATOR', '~'),	array('OPERATOR', '$=')),
+			'~~'	=> array(array('OPERATOR', '~'),	array('OPERATOR', '~'))
 		);
 
 		foreach ($operator_combinations as $operator => $tokens)
@@ -1445,11 +1531,13 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 			'.-'	=> array(array('OPERATOR', '.'),	array('OPERATOR', '-')),
 			'.*'	=> array(array('OPERATOR', '.'),	array('OPERATOR', '*')),
 			'./'	=> array(array('OPERATOR', '.'),	array('OPERATOR', '/')),
+			'..'	=> array(array('OPERATOR', '.'),	array('OPERATOR', '.')),
 			'.!'	=> array(array('OPERATOR', '.'),	array('OPERATOR', '!')),
 			'.^'	=> array(array('OPERATOR', '.'),	array('OPERATOR', '^')),
 			'.^='	=> array(array('OPERATOR', '.'),	array('OPERATOR', '^=')),
 			'.*='	=> array(array('OPERATOR', '.'),	array('OPERATOR', '*=')),
 			'.$='	=> array(array('OPERATOR', '.'),	array('OPERATOR', '$=')),
+			'.~'	=> array(array('OPERATOR', '.'),	array('OPERATOR', '~')),
 
 			'!.'	=> array(array('OPERATOR', '!'),	array('OPERATOR', '.')),
 
@@ -1459,7 +1547,9 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 
 			'*=.'	=> array(array('OPERATOR', '*='),	array('OPERATOR', '.')),
 
-			'$=.'	=> array(array('OPERATOR', '$='),	array('OPERATOR', '.'))
+			'$=.'	=> array(array('OPERATOR', '$='),	array('OPERATOR', '.')),
+
+			'~.'	=> array(array('OPERATOR', '~'),	array('OPERATOR', '.'))
 		);
 
 		// When a period or dash end an operator and the next character is
@@ -1516,7 +1606,8 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 			'^.'	=> array(array('OPERATOR', '^'),	array('OPERATOR', '.')),
 			'^=.'	=> array(array('OPERATOR', '^='),	array('OPERATOR', '.')),
 			'*=.'	=> array(array('OPERATOR', '*='),	array('OPERATOR', '.')),
-			'$=.'	=> array(array('OPERATOR', '$='),	array('OPERATOR', '.'))
+			'$=.'	=> array(array('OPERATOR', '$='),	array('OPERATOR', '.')),
+			'~.'	=> array(array('OPERATOR', '~'),	array('OPERATOR', '.'))
 		);
 
 		$left_hand_dot_combinations = array(
@@ -1540,6 +1631,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 			'.^='	=> array(array('OPERATOR', '.'),	array('OPERATOR', '^=')),
 			'.*='	=> array(array('OPERATOR', '.'),	array('OPERATOR', '*=')),
 			'.$='	=> array(array('OPERATOR', '.'),	array('OPERATOR', '$=')),
+			'.~'	=> array(array('OPERATOR', '.'),	array('OPERATOR', '~')),
 		);
 
 		// int: '.' in NUMBER token
