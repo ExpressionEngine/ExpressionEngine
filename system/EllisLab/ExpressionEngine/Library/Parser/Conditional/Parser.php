@@ -3,7 +3,7 @@
 namespace EllisLab\ExpressionEngine\Library\Parser\Conditional;
 
 use EllisLab\ExpressionEngine\Library\Parser\AbstractParser;
-use EllisLab\ExpressionEngine\Library\Parser\Conditional\Exception\ConditionalParserException;
+use EllisLab\ExpressionEngine\Library\Parser\Conditional\Exception\ParserException;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -42,7 +42,7 @@ use EllisLab\ExpressionEngine\Library\Parser\Conditional\Exception\ConditionalPa
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class ConditionalParser extends AbstractParser {
+class Parser extends AbstractParser {
 
 	protected $output = '';
 	protected $output_buffers = array();
@@ -102,7 +102,7 @@ class ConditionalParser extends AbstractParser {
 			}
 			elseif ($this->acceptTag('IF'))
 			{
-					$conditional = new ConditionalStatement($this);
+					$conditional = new Statement($this);
 					$this->conditional($conditional);
 
 					$this->expectTag('ENDIF');
@@ -457,7 +457,7 @@ class ConditionalParser extends AbstractParser {
 	{
 		parent::next();
 
-		if ($this->token[0] == 'WHITESPACE')
+		if ($this->is('WHITESPACE'))
 		{
 			$this->whitespace();
 			$this->next();
@@ -509,15 +509,15 @@ class ConditionalParser extends AbstractParser {
 	 *
 	 * Overrides the abstract one to throw an exception.
 	 *
-	 * @param String $token_name The name to check against
+	 * @param String $type The type to check against
 	 * @return Bool  Expected token was found
-	 * @throws ConditionalParserException If expected token is not found
+	 * @throws ParserException If expected token is not found
 	 */
-	protected function expect($token_name)
+	protected function expect($type)
 	{
-		if (parent::expect($token_name) === FALSE)
+		if (parent::expect($type) === FALSE)
 		{
-			throw new ConditionalParserException('Unexpected ' . $this->token[0] . ' (' . $this->token[1] . ') expected ' . $token_name . '.');
+			throw new ParserException('Unexpected ' . $this->token . ' expected ' . $type . '.');
 		}
 
 		return TRUE;
@@ -528,11 +528,11 @@ class ConditionalParser extends AbstractParser {
 	 *
 	 * Works like accept, but assumes that the token is preceded by an LD.
 	 */
-	protected function acceptTag($token_name)
+	protected function acceptTag($type)
 	{
 		$next = current($this->tokens);
 
-		if ( ! $this->is('LD') || $next[0] != $token_name)
+		if ( ! $this->is('LD') || $next->type != $type)
 		{
 			return FALSE;
 		}
@@ -549,11 +549,11 @@ class ConditionalParser extends AbstractParser {
 	 *
 	 * Works like expect, but assumes that the token is preceded by an LD.
 	 */
-	protected function expectTag($token_name)
+	protected function expectTag($type)
 	{
-		if ( ! $this->acceptTag($token_name))
+		if ( ! $this->acceptTag($type))
 		{
-			throw new ConditionalParserException('Unexpected tag ' . $this->token[0] . ' (' . $this->token[1] . ') expected ' . $token_name . '.');
+			throw new ParserException('Unexpected ' . $this->token . ' expected ' . $type . '.');
 		}
 
 		return TRUE;

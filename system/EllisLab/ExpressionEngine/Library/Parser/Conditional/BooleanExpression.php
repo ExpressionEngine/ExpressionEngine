@@ -2,7 +2,7 @@
 
 namespace EllisLab\ExpressionEngine\Library\Parser\Conditional;
 
-use EllisLab\ExpressionEngine\Library\Parser\Conditional\Exception\ConditionalParserException;
+use EllisLab\ExpressionEngine\Library\Parser\Conditional\Exception\ParserException;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -124,7 +124,7 @@ class BooleanExpression {
 			{
 				if (count($evaluate_stack) < 1)
 				{
-					throw new ConditionalParserException('Invalid Boolean Expression');
+					throw new ParserException('Invalid Boolean Expression');
 				}
 
 				$right = array_pop($evaluate_stack);
@@ -138,20 +138,20 @@ class BooleanExpression {
 					case '-': array_push($evaluate_stack, -$right);
 						break;
 					default:
-						throw new ConditionalParserException('Invalid Unary Operator: '.$token[1]);
+						throw new ParserException('Invalid Unary Operator: '.$token[1]);
 				}
 			}
 			else
 			{
 				if (count($evaluate_stack) < 2)
 				{
-					throw new ConditionalParserException('Invalid Boolean Expression');
+					throw new ParserException('Invalid Boolean Expression');
 				}
 
 				$right = array_pop($evaluate_stack);
 				$left = array_pop($evaluate_stack);
 
-				switch ($token[1])
+				switch (strtoupper($token[1]))
 				{
 					case '^':
 					case '**': array_push($evaluate_stack, pow($left, $right));
@@ -199,7 +199,7 @@ class BooleanExpression {
 					case 'OR': array_push($evaluate_stack, $left OR $right);
 						break;
 					default:
-						throw new ConditionalParserException('Invalid Binary Operator: '.$token[1]);
+						throw new ParserException('Invalid Binary Operator: '.$token[1]);
 				}
 			}
 		}

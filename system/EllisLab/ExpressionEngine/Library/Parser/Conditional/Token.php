@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Library\Parser;
+namespace EllisLab\ExpressionEngine\Library\Parser\Conditional;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -17,7 +17,7 @@ namespace EllisLab\ExpressionEngine\Library\Parser;
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Core Parser Factory Class
+ * ExpressionEngine Conditional Token Class
  *
  * @package		ExpressionEngine
  * @subpackage	Core
@@ -25,11 +25,27 @@ namespace EllisLab\ExpressionEngine\Library\Parser;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class ParserFactory {
+class Token {
 
-	public static function createConditionalRunner()
+	public $type;
+	public $lexeme;
+
+	public function __construct($type, $lexeme)
 	{
-		return new Conditional\Runner();
+		$this->type = $type;
+		$this->lexeme = $lexeme;
+	}
+
+	public function __toString()
+	{
+		return $this->type.' ('.$this->lexeme.')';
+	}
+
+	public function toArray()
+	{
+		return array(
+			$this->type,
+			$this->lexeme
+		);
 	}
 }
-

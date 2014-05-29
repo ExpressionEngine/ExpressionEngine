@@ -2,7 +2,7 @@
 
 namespace EllisLab\Tests\ExpressionEngine\Library\Parser\Conditional;
 
-use EllisLab\ExpressionEngine\Library\Parser\Conditional\ConditionalLexer;
+use EllisLab\ExpressionEngine\Library\Parser\Conditional\Lexer;
 
 class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 
@@ -41,7 +41,7 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 
 	public function setUp()
 	{
-		$this->lexer = new ConditionalLexer();
+		$this->lexer = new Lexer();
 	}
 
 	public function tearDown()
@@ -52,6 +52,12 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 	protected function runLexer($description, $str_in, $expected)
 	{
 		$result = $this->lexer->tokenize($str_in);
+
+		foreach ($result as &$r)
+		{
+			$r = $r->toArray();
+		}
+
 		$this->assertSame($expected, $result, $description);
 	}
 
@@ -68,7 +74,7 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testBadDataProvider($description, $str_in, $code)
 	{
-		$this->setExpectedException('EllisLab\ExpressionEngine\Library\Parser\Conditional\Exception\ConditionalLexerException', $code);
+		$this->setExpectedException('EllisLab\ExpressionEngine\Library\Parser\Conditional\Exception\LexerException', $code);
 		$this->lexer->tokenize($str_in);
 	}
 
@@ -2242,7 +2248,7 @@ class ConditionalLexerTest extends \PHPUnit_Framework_TestCase {
 			$return[] = array(
 				"The {$boolean} token",
 				$this->assembleCommonCondition($boolean),
-				$this->assembleCommonTokens(array(array('BOOL', $operator)))
+				$this->assembleCommonTokens(array(array('BOOL', $boolean)))
 			);
 		}
 

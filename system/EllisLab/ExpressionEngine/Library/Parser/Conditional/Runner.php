@@ -25,7 +25,7 @@ namespace EllisLab\ExpressionEngine\Library\Parser\Conditional;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class ConditionalRunner {
+class Runner {
 
 	private $prefix = '';
 	private $safety = FALSE;
@@ -78,14 +78,14 @@ class ConditionalRunner {
 	 */
 	public function processConditionals($str, $vars)
 	{
-		$lexer = new ConditionalLexer();
+		$lexer = new Lexer();
 
 		// Get the token stream
 		$tokens = $lexer->tokenize(
 			$this->protectJavascript($str)
 		);
 
-		$parser = new ConditionalParser($tokens);
+		$parser = new Parser($tokens);
 
 		$parser->setVariables(
 			$this->prefixVariables($vars)

@@ -2,13 +2,13 @@
 
 namespace EllisLab\Tests\ExpressionEngine\Library\Parser\Conditional;
 
-use EllisLab\ExpressionEngine\Library\Parser\Conditional\ConditionalRunner;
+use EllisLab\ExpressionEngine\Library\Parser\Conditional\Runner;
 
 class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 
 	public function setUp()
 	{
-		$this->runner = new ConditionalRunner();
+		$this->runner = new Runner();
 	}
 
 	public function tearDown()
@@ -53,7 +53,7 @@ class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 
 	public function testBasicVariableReplacement()
 	{
-		$runner = new ConditionalRunner();
+		$runner = new Runner();
 		$runner->disableProtectJavascript();
 
 		// var1 is in there to prevent execution
@@ -86,7 +86,7 @@ class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 
 	public function testProgressiveConstruction()
 	{
-		$runner = new ConditionalRunner();
+		$runner = new Runner();
 		$runner->disableProtectJavascript();
 
 		$inital = '{if var1 && var2 && var3 == \'bob\'}yes{if:else}no{/if}';
@@ -124,7 +124,7 @@ class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 
 	public function testBranchConditionRewritingAndPruning()
 	{
-		$runner = new ConditionalRunner();
+		$runner = new Runner();
 		$runner->disableProtectJavascript();
 
 		$string = '{if 5 == var}yes{if:elseif 5 == 5}maybe{if:else}no{/if}';
@@ -188,7 +188,7 @@ class ConditionalRunnerTest extends \PHPUnit_Framework_TestCase {
 
 	public function badDataProvider()
 	{
-		$parser_exception = 'EllisLab\ExpressionEngine\Library\Parser\Conditional\Exception\ConditionalParserException';
+		$parser_exception = 'EllisLab\ExpressionEngine\Library\Parser\Conditional\Exception\ParserException';
 
 		return array(
 			array($parser_exception,	'Double float',						'{if 1.2.3 }out{/if}'),

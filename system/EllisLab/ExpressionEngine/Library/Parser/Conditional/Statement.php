@@ -25,7 +25,7 @@ namespace EllisLab\ExpressionEngine\Library\Parser\Conditional;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class ConditionalStatement {
+class Statement {
 
 	protected $parser;
 
@@ -38,7 +38,7 @@ class ConditionalStatement {
 
 	protected $done = FALSE;
 
-	public function __construct(ConditionalParser $parser)
+	public function __construct(Parser $parser)
 	{
 		$this->parser = $parser;
 	}

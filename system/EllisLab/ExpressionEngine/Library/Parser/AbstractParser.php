@@ -53,14 +53,19 @@ abstract class AbstractParser {
 	abstract public function parse();
 
 	/**
-	 * Compare the current token to a token name
+	 * Compare the current token to a given type
 	 *
-	 * @param String $token_name The name to check against
-	 * @return bool  Current token is of name $token_name.
+	 * @param String $type The type to check against
+	 * @return bool  Current token is of type $type.
 	 */
-	protected function is($token_name)
+	protected function is($type)
 	{
-		return ($this->token[0] == $token_name);
+		if ($this->token === NULL)
+		{
+			return FALSE;
+		}
+
+		return ($this->token->type == $type);
 	}
 
 	/**
@@ -70,18 +75,18 @@ abstract class AbstractParser {
 	 */
 	protected function value()
 	{
-		return $this->token[1];
+		return $this->token->lexeme;
 	}
 
 	/**
-	 * Compare the current token to a token name, and advance if it matches.
+	 * Compare the current token to a type, and advance if it matches.
 	 *
-	 * @param String $token_name The name to check against
+	 * @param String $type The type to check against
 	 * @return Bool  Token was accepted
 	 */
-	protected function accept($token_name)
+	protected function accept($type)
 	{
-		if ($this->is($token_name))
+		if ($this->is($type))
 		{
 			$this->next();
 			return TRUE;
@@ -93,12 +98,12 @@ abstract class AbstractParser {
 	/**
 	 * Enforce an expected token.
 	 *
-	 * @param String $token_name The name to check against
+	 * @param String $type The name to check against
 	 * @return Bool  Expected token was found
 	 */
-	protected function expect($token_name)
+	protected function expect($type)
 	{
-		if ($this->accept($token_name))
+		if ($this->accept($type))
 		{
 			return TRUE;
 		}

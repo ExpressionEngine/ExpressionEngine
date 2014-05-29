@@ -3,7 +3,8 @@
 namespace EllisLab\ExpressionEngine\Library\Parser\Conditional;
 
 use EllisLab\ExpressionEngine\Library\Parser\AbstractLexer;
-use EllisLab\ExpressionEngine\Library\Parser\Conditional\Exception\ConditionalLexerException;
+use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token;
+use EllisLab\ExpressionEngine\Library\Parser\Conditional\Exception\LexerException;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -28,12 +29,12 @@ use EllisLab\ExpressionEngine\Library\Parser\Conditional\Exception\ConditionalLe
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class ConditionalLexer extends AbstractLexer {
+class Lexer extends AbstractLexer {
 
 	/**
 	 * Available tokens:
 	 *
-	 * private $token_names = array(
+	 * private $token_types = array(
 	 * 	'TEMPLATE_STRING',	// generic
 	 *  'LD'				// {
 	 *  'RD'				// }
@@ -70,9 +71,9 @@ class ConditionalLexer extends AbstractLexer {
 	 * Regex for boolean values
 	 */
 	const BOOL_PATTERN = "
-		\b									# must be its own word
-		(TRUE|True|true|FALSE|False|false)	# PHP allows all possible capitalizations. We don't allow things like faLsE.
-		(?!(-+)?\w)							# simulate \b with -
+		\b					# must be its own word
+		(true|false)		# The pattern is case insensitive
+		(?!(-+)?\w)			# simulate \b with -
 	";
 
 	/**
@@ -129,8 +130,8 @@ class ConditionalLexer extends AbstractLexer {
 
 	public function __construct()
 	{
-		$this->compiled_pattern = $this->compilePattern();
 		$this->operator_pattern = $this->compileOperatorPattern();
+		$this->compiled_pattern = $this->compilePattern();
 	}
 
 	/**
@@ -159,7 +160,7 @@ class ConditionalLexer extends AbstractLexer {
 
 		if ($this->tag_depth !== 0)
 		{
-			throw new ConditionalLexerException('Unclosed tag.');
+			throw new LexerException('Unclosed tag.');
 		}
 
 		$this->addToken('TEMPLATE_STRING', $this->rest());
@@ -213,7 +214,7 @@ class ConditionalLexer extends AbstractLexer {
 
 			if ($this->peek(3) == 'if:')
 			{
-				throw new ConditionalLexerException('if: is a reserved prefix.');
+				throw new LexerException('if: is a reserved prefix.');
 			}
 		}
 
@@ -250,12 +251,7 @@ class ConditionalLexer extends AbstractLexer {
 				$this->next();
 				$this->tag();
 			}
-			elseif ($this->value())
-			{
-				$this->whitespace();
-				$this->operator();
-			}
-			elseif ( ! $this->operator())
+			elseif ( ! $this->operator() && ! $this->value())
 			{
 				$this->next();
 				$this->addToken('MISC', $char);
@@ -347,7 +343,7 @@ class ConditionalLexer extends AbstractLexer {
 	 */
 	private function operator()
 	{
-		$operator = $this->peekRegex($this->operator_pattern);
+		$operator = $this->peekRegex($this->operator_pattern, 'usi');
 
 		if (isset($operator))
 		{
@@ -378,7 +374,7 @@ class ConditionalLexer extends AbstractLexer {
 
 			if ($this->eof())
 			{
-				throw new ConditionalLexerException('Unclosed string.');
+				throw new LexerException('Unclosed string.');
 			}
 
 			$str .= $add;
@@ -449,11 +445,15 @@ class ConditionalLexer extends AbstractLexer {
 			{
 				$operator = $operator.'(?!\d)';
 			}
+			elseif (ctype_digit($operator[0]))
+			{
+				$operator = '\b'.$operator.'(?!(-+)?\w)';
+			}
 
 			$pattern .= $operator.'|';
 		}
 
-		return substr($pattern, 0, -1);
+		return $pattern = substr($pattern, 0, -1);
 	}
 
 	/**
@@ -466,24 +466,21 @@ class ConditionalLexer extends AbstractLexer {
 			'(?P<BOOL>'.self::BOOL_PATTERN.')|'.
 			'(?P<VARIABLE>'.self::VARIABLE_PATTERN.')|'.
 			'(?P<NUMBER>'.self::NUMBER_PATTERN.')'.
-			')/Ausx';
+			')/Aiusx';
 	}
 
 	/**
 	 * Add token to the token stream
 	 *
-	 * @param string $type The type of token being added
-	 * @param string $$value The value of the token being added
+	 * @param string $type	 The type of token being added
+	 * @param string $lexeme The value of the token being added
 	 */
-	private function addToken($type, $value)
+	private function addToken($type, $lexeme)
 	{
 		// Always store strings, even empty ones
-		if ($value != '' || $type == 'STRING')
+		if ($lexeme != '' || $type == 'STRING')
 		{
-			$this->tokens[] = array($type, $value);
+			$this->tokens[] = new Token($type, $lexeme);
 		}
 	}
 }
-
-/* End of file ConditionalLexer.php */
-/* Location: ./system/expressionengine/libraries/template/ConditionalLexer.php */

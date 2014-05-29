@@ -60,11 +60,12 @@ abstract class AbstractLexer {
 	 * Peek ahead on an anchored regex
 	 *
 	 * @param string $regex A regular expression
+	 * @param string $flags Optionally change the regex flags
 	 * @return array|string The result of the match or an empty string
 	 */
-	protected function peekRegex($regex)
+	protected function peekRegex($regex, $flags = 'us')
 	{
-		if (preg_match('/'.$regex.'/Aus', $this->str, $matches))
+		if (preg_match('/'.$regex.'/A'.$flags, $this->str, $matches))
 		{
 			return $matches[0];
 		}
