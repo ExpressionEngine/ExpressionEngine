@@ -304,8 +304,9 @@ class EE_Template {
 			$this->log_item("Snippets (Keys): ".implode('|', array_keys(ee()->config->_global_vars)));
 			$this->log_item("Snippets (Values): ".trim(implode('|', ee()->config->_global_vars)));
 
-			foreach (ee()->config->_global_vars as $key => $val)
+			foreach (ee()->config->_global_vars as $key =>& $val)
 			{
+				$val = $this->remove_ee_comments($val);
 				$this->template = str_replace(LD.$key.RD, $val, $this->template);
 			}
 
