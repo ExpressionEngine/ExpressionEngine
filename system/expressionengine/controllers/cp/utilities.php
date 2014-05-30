@@ -832,6 +832,23 @@ class Utilities extends CP_Controller {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Downloads generated XML from import converter
+	 *
+	 * @return	void
+	 */
+	public function download_xml()
+	{
+		ee()->load->helper('download');
+		force_download(
+			'member_'.ee()->localize->format_date('%y%m%d').'.xml',
+			ee()->input->post('xml')
+		);
+		exit;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Unique Required
 	 *
 	 * Check for uniqueness and required values
