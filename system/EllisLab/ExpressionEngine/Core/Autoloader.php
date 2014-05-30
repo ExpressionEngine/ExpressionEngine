@@ -31,9 +31,24 @@ class Autoloader {
 
 	protected $prefixes = array();
 
+	protected static $instance;
+
 	public function __construct()
 	{
 		$this->prefixes['EllisLab'] = APPPATH . '../EllisLab/';
+	}
+
+	/**
+	 * Use as a singleton
+	 */
+	public static function getInstance()
+	{
+		if ( ! isset(static::$instance))
+		{
+			static::$instance = new static();
+		}
+
+		return static::$instance;
 	}
 
 	/**
