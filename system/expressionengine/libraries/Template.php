@@ -4155,13 +4155,21 @@ class EE_Template {
 		// Member Group in_group('1') function, Super Secret!  Shhhhh!
 		if (preg_match_all("/in_group\(([^\)]+)\)/", $str, $matches))
 		{
-			$groups = (is_array(ee()->session->userdata['group_id'])) ? ee()->session->userdata['group_id'] : array(ee()->session->userdata['group_id']);
+			// Template pattern used to match against pipe, comma, or space
+			// delimited member groups.
+			// By rewriting the pattern instead of trying to evaluate it here,
+			// we open it up for variables to be a parameter. This allows for
+			// reuse and easier member group management by keeping the group ids
+			// in a global variable or snippet.
+			$in_member_group_regex = "'/\b'.logged_in_member_group.'\b/'";
 
-			for($i = 0, $s = count($matches[0]); $i < $s; ++$i)
+			foreach ($matches[0] as $i => $full_match)
 			{
-				$check = explode('|', str_replace(array('"', "'"), '', $matches[1][$i]));
-
-				$str = str_replace($matches[0][$i], (count(array_intersect($check, $groups)) > 0) ? 'TRUE' : 'FALSE', $str);
+				$str = str_replace(
+					$full_match,
+					$matches[1][$i].' ~ '.$in_member_group_regex,
+					$str
+				);
 			}
 		}
 
