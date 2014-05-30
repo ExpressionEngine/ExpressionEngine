@@ -75,8 +75,7 @@
  */
 	require(APPPATH.'../EllisLab/ExpressionEngine/Core/Autoloader.php');
 
-	$AUTO = new Autoloader();
-	$AUTO->register();
+	Autoloader::getInstance()->register();
 
 /*
  * ------------------------------------------------------
