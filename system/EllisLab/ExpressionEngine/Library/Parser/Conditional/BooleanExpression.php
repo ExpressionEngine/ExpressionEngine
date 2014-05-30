@@ -153,11 +153,13 @@ class BooleanExpression {
 						break;
 					case '>=': array_push($evaluate_stack, $left >= $right);
 						break;
-					case '^=': array_push($evaluate_stack, (strpos($left, $right) === 0));
+					case '^=': array_push($evaluate_stack, (strpos($left, (string) $right) === 0));
 						break;
-					case '*=': array_push($evaluate_stack, (strpos($left, $right) !== FALSE));
+					case '*=': array_push($evaluate_stack, (strpos($left, (string) $right) !== FALSE));
 						break;
-					case '$=': array_push($evaluate_stack, (substr($left, -strlen($right)) == $right));
+					case '$=':
+						$right = (string) $right;
+						array_push($evaluate_stack, (substr($left, -strlen($right)) == $right));
 						break;
 					case '~':
 						if (($value = @preg_match($right, $left)) === FALSE)
