@@ -65,8 +65,8 @@
 					<em><?=lang('mbr_create_custom_fields_desc')?></em>
 				</div>
 				<div class="setting-field col w-8 last">
-					<label class="choice mr chosen yes"><input type="radio" name="auto_custom_field" value="y" checked="checked"> <?=lang('yes')?></label>
-					<label class="choice no"><input name="auto_custom_field" value="n" type="radio"> <?=lang('no')?></label>
+					<label class="choice mr chosen yes"><input type="radio" name="auto_custom_field" value="y" <?=set_radio('auto_custom_field', 'y', TRUE)?>> <?=lang('yes')?></label>
+					<label class="choice no"><input name="auto_custom_field" value="n" type="radio" <?=set_radio('auto_custom_field', 'n')?>> <?=lang('no')?></label>
 				</div>
 			</fieldset>
 

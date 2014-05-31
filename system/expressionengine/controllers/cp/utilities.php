@@ -584,16 +584,17 @@ class Utilities extends CP_Controller {
 		// Get member table fields
 		$this->default_fields = array_keys(MemberGateway::getMetaData('field_list'));
 
-		// we do not allow <unique_id> in our XML format
-		unset($this->default_fields['unique_id']);
 		ksort($this->default_fields);
-
 		$vars['select_options'][''] = lang('select');
 
 		foreach ($this->default_fields as $key => $val)
 		{
 			$vars['select_options'][$val] = $val;
 		}
+
+		// we do not allow <unique_id> or <member_id> in our XML format
+		unset($vars['select_options']['unique_id']);
+		unset($vars['select_options']['member_id']);
 
 		// When MemberField model is ready
 		//$m_fields = ee()->api->get('MemberField')->order('m_field_name', 'asc')->all();
@@ -917,12 +918,17 @@ class Utilities extends CP_Controller {
 				 'field'   => 'xml_file',
 				 'label'   => 'lang:mbr_xml_file',
 				 'rules'   => 'required|file_exists'
+			),
+			array(
+				 'field'   => 'auto_custom_field',
+				 'label'   => 'lang:auto_custom_field',
+				 'rules'   => ''
 			)
 		));
 
 		if (ee()->form_validation->run() !== FALSE)
 		{
-			// Do something...
+			return $this->member_import_confirm();
 		}
 
 		$groups = ee()->api->get('MemberGroup')->order('group_id', 'asc')->all();
@@ -936,17 +942,258 @@ class Utilities extends CP_Controller {
 		ee()->lang->load('admin');
 		ee()->load->model('admin_model');
 		$config_fields = ee()->config->prep_view_vars('localization_cfg');
+		$date_format = $config_fields['fields']['date_format'];
+		$time_format = $config_fields['fields']['time_format'];
+
+		// Restore some values on validation fail
+		if (set_value('date_format'))
+		{
+			$date_format['selected'] = set_value('date_format');
+		}
+
+		if (set_value('time_format'))
+		{
+			$time_format['selected'] = set_value('time_format');
+		}
 
 		$vars = array(
+			// TODO: Show installed languages
 			'language_options' => array('None' => 'None', 'English' => 'English'),
 			'member_groups' => $member_groups,
-			'date_format' => $config_fields['fields']['date_format'],
-			'time_format' => $config_fields['fields']['time_format'],
+			'date_format' => $date_format,
+			'time_format' => $time_format,
 			'timezone_menu' => ee()->localize->timezone_menu(set_value('timezones'), 'timezones')
 		);
 
 		ee()->view->cp_page_title = lang('member_import');
 		ee()->cp->render('utilities/member-import', $vars);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Confirm Import Member Data from XML
+	 *
+	 * Confirmation page for Member Data import
+	 *
+	 * @return	mixed
+	 */
+	public function member_import_confirm()
+	{
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		ee()->lang->loadfile('member_import');
+
+		ee()->load->library('table');
+		ee()->load->helper('date');
+		ee()->lang->loadfile('member_import');
+		ee()->load->model('member_model');
+
+		$member_group = ee()->api
+			->get('MemberGroup')
+			->filter('group_id', ee()->input->post('group_id'))
+			->first();
+
+		$group_title = '';
+		$group_name = ' -- ';
+
+		if ( ! empty($member_group))
+		{
+			$group_name = $member_group->group_title;
+		}
+
+		$data = array(
+			'xml_file'   		=> ee()->input->post('xml_file'),
+			'group_id' 			=> ee()->input->post('group_id'),
+			'language' 			=> (ee()->input->post('language') == lang('none')) ? '' : ee()->input->post('language'),
+			'timezones' 		=> ee()->input->post('timezones'),
+			'date_format' 		=> ee()->input->post('date_format'),
+			'time_format' 		=> ee()->input->post('time_format'),
+			'auto_custom_field' => (ee()->input->post('auto_custom_field') == 'y') ? 'y' : 'n'
+		);
+
+		$localization_cfg = ee()->config->get_config_fields('localization_cfg');
+
+		$vars = array(
+			'xml_file'   		=> $data['xml_file'],
+			'default_group_id'	=> $group_name,
+			'language' 			=> ($data['language'] == '') ? lang('none') : ucfirst($data['language']),
+			'timezones' 		=> $data['timezones'],
+			'date_format' 		=> lang($localization_cfg['date_format'][1][$data['date_format']]),
+			'time_format' 		=> lang($localization_cfg['time_format'][1][$data['time_format']]),
+			'auto_custom_field' => ($data['auto_custom_field'] == 'y') ? lang('yes') : lang('no')
+		);
+
+		$vars['form_hidden'] = $data;
+		$vars['added_fields'] = array();
+
+		// Branch off here if we need to create a new custom field
+		if ($data['auto_custom_field'] == 'y')
+		{
+			$new_custom_fields = $this->_custom_field_check($data['xml_file']);
+
+			if ($new_custom_fields !== FALSE && count($new_custom_fields) > 0)
+			{
+				return $this->_new_custom_fields_form($data, $vars, $new_custom_fields);
+			}
+
+			$vars['message'] = lang('unable_to_parse_custom_fields');
+		}
+
+		ee()->view->cp_page_title = lang('confirm_import');
+
+		ee()->cp->render('utilities/member-import-confirm', $vars);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Custom Field Check
+	 *
+	 * Finds the fields in the first XML record that do not already exist
+	 *
+	 * @return	array
+	 */
+	private function _custom_field_check($xml_file)
+	{
+		//  Read XML file contents
+		$this->load->helper('file');
+		$contents = read_file($xml_file);
+		$new_custom_fields = array();
+
+		if ($contents === FALSE)
+		{
+			return;
+		}
+
+		$this->load->library('xmlparser');
+
+		// parse XML data
+		$xml = $this->xmlparser->parse_xml($contents);
+
+		if ($xml == FALSE)
+		{
+			return FALSE;
+		}
+
+		//  Retreive Valid fields from database
+		$query = $this->db->query("SHOW COLUMNS FROM exp_members");
+		$existing_fields['birthday'] = '';
+
+		foreach ($query->result_array() as $row)
+		{
+			$existing_fields[$row['Field']] = '';
+		}
+
+		$this->db->select('m_field_name');
+		$m_custom_fields = $this->db->get('member_fields');
+
+		if ($m_custom_fields->num_rows() > 0)
+		{
+			foreach ($m_custom_fields->result() as $row)
+			{
+				$existing_c_fields[$row->m_field_name] = '';
+			}
+		}
+
+		// We go through a single iteration to find the fields
+		if (is_array($xml->children[0]->children))
+		{
+			$member = $xml->children['0'];
+
+			if ($member->tag == "member")
+			{
+				foreach($member->children as $tag)
+				{
+					$i = 0;
+
+					// Is the XML tag an allowed database field
+					if ( ! isset($existing_fields[$tag->tag]) && ! isset($existing_c_fields[$tag->tag]))
+					{
+						$new_custom_fields['new'][] = $tag->tag;
+						$new_custom_fields['xml_fields'][] = $tag->tag;
+					}
+					elseif (isset($existing_c_fields[$tag->tag]))
+					{
+						while($i < 100)
+						{
+							$i++;
+
+							if ( ! isset($existing_c_fields[$tag->tag.'_'.$i]))
+							{
+								$new_custom_fields['new'][] = $tag->tag.'_'.$i;
+								$new_custom_fields['xml_fields'][] = $tag->tag;
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return $new_custom_fields; //array_unique($new_custom_fields);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * New Custom Fields Form
+	 *
+	 * Generates the form for new custom field settings
+	 *
+	 * @return	void
+	 */
+	private function _new_custom_fields_form($data, $vars, $new_custom_fields)
+	{
+		$this->load->helper('date');
+		$this->lang->loadfile('member_import');
+
+		$this->javascript->output(array(
+				'$(".toggle_all").toggle(
+					function(){
+						$("input.toggle").each(function() {
+							this.checked = true;
+						});
+					}, function (){
+						var checked_status = this.checked;
+						$("input.toggle").each(function() {
+							this.checked = false;
+						});
+					}
+				);')
+			);
+
+		$vars['form_hidden']['new'] = $new_custom_fields['new'];
+		$vars['xml_fields'] = $new_custom_fields['xml_fields'];
+
+		$vars['new_fields'] = $new_custom_fields['new'];
+
+		$query = $this->member_model->count_records('member_fields');
+
+		$vars['order_start'] = $query + 1;
+
+		/**  Create the pull-down menu **/
+
+		$vars['m_field_type_options'] = array(
+									'text'=>lang('text_input'),
+									'textarea'=>lang('textarea')
+									);
+		$vars['m_field_type'] = '';
+
+		/**  Field formatting **/
+
+		$vars['m_field_fmt_options'] = array(
+									'none'=>lang('none'),
+									'br'=>lang('auto_br'),
+									'xhtml'=>lang('xhtml')
+									);
+		$vars['m_field_fmt'] = '';
+
+
+		return $this->cp->render('utilities/member-import-custom', $vars);
 	}
 
 	// --------------------------------------------------------------------

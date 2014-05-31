@@ -360,6 +360,22 @@ $lang = array(
 'mbr_import_btn_working' =>
 'Importing...',
 
+'confirm_import' =>
+'Confirm Import',
+
+'confirm_import_warning' =>
+'<p class="caution"><span title="excercise caution"></span> <b>Caution</b>: If your <abbr title="Extensible Markup Language">XML</abbr> file contains a tag named "<b>member_id</b>", stop.</p>
+<p>Members in your database with matching <abbr title="Identifier">ID</abbr>s will be <b>overwritten</b> if you confirm this import.</p>',
+
+'option' =>
+'Option',
+
+'value' =>
+'Value',
+
+'btn_confirm_import_working' =>
+'Importing...',
+ 
 /**
  * SQL Query Form
  */
