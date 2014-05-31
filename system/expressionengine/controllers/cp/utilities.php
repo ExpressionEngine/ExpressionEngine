@@ -620,7 +620,7 @@ class Utilities extends CP_Controller {
 		$vars['encrypt'] = '';
 
 		ee()->view->cp_page_title = lang('import_converter') . ' - ' . lang('assign_fields');
-
+		ee()->cp->set_breadcrumb(cp_url('utilities/import_converter'), lang('import_converter'));
 		ee()->cp->render('utilities/import-fieldmap', $vars);
 	}
 
@@ -743,6 +743,7 @@ class Utilities extends CP_Controller {
 		$vars['form_hidden'] = array_merge($vars['form_hidden'], $paired);
 
 		ee()->view->cp_page_title = lang('confirm_assignments');
+		ee()->cp->set_breadcrumb(cp_url('utilities/import_converter'), lang('import_converter'));
 		ee()->cp->render('utilities/import-fieldmap-confirm', $vars);
 	}
 
@@ -827,6 +828,7 @@ class Utilities extends CP_Controller {
 		$vars['username'] = ee()->session->userdata('username');
 
 		ee()->view->cp_page_title = lang('xml_code');
+		ee()->cp->set_breadcrumb(cp_url('utilities/import_converter'), lang('import_converter'));
 		ee()->cp->render('utilities/import-code-output', $vars);
 	}
 
@@ -1044,6 +1046,7 @@ class Utilities extends CP_Controller {
 		}
 
 		ee()->view->cp_page_title = lang('confirm_import');
+		ee()->cp->set_breadcrumb(cp_url('utilities/member-import'), lang('member_import'));
 
 		ee()->cp->render('utilities/member-import-confirm', $vars);
 	}

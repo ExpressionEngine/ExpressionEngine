@@ -168,11 +168,6 @@ class Cp {
 						  ->set_cache('cp_sidebar', 'cp_avatar_width', $vars['cp_avatar_width'])
 						  ->set_cache('cp_sidebar', 'cp_avatar_height', $vars['cp_avatar_height']);
 
-		if (ee()->router->method != 'index')
-		{
-			$this->set_breadcrumb(BASE.AMP.'C='.ee()->router->class, lang(ee()->router->class));
-		}
-
 		// The base javascript variables that will be available globally through EE.varname
 		// this really could be made easier - ideally it would show up right below the main
 		// jQuery script tag - before the plugins, so that it has access to jQuery.
