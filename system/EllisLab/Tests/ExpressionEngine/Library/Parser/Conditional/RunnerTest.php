@@ -172,6 +172,7 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 		return array_merge(
 			array(),
 			$this->conditionals(),
+			$this->nestedConditionals(),
 			$this->whitespaceRewriting(),
 			$this->basicMaths(),
 			$this->negation(),
@@ -217,6 +218,15 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 			array('Evaluate If With Newline',	 "{if\n5 == 5}out{/if}",		'out'),
 			array('Evaluate If With CRLF',		 "{if\r\n5 == 5}out{/if}",		'out'),
 			array('Evaluate If With Whitespace', "{if\n\t5 == 5\n}out{/if}",	'out'),
+		);
+	}
+
+	protected function nestedConditionals()
+	{
+		return array(
+			// evaluation
+			array('Nested in TRUE',		'{if 5 == 5}{if var == "foo"}out{/if}{/if}',				"{if var == 'foo'}out{/if}"),
+			array('Nested in FALSE',	'{if 2 == 1}{if var2 == "foo"}no{/if}{if:else}out{/if}',	'out'),
 		);
 	}
 

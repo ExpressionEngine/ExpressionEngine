@@ -182,7 +182,7 @@ class Parser extends AbstractParser {
 
 		do
 		{
-			if ($this->is('ENDIF'))
+			if ($this->isTag('ENDIF'))
 			{
 				if ($conditional_depth == 0)
 				{
@@ -190,10 +190,18 @@ class Parser extends AbstractParser {
 				}
 
 				$conditional_depth--;
+
+				// skip the LD and ENDIF and expect an RD
+				// to form {/if}.
+				$this->next();
+				$this->next();
+				$this->expect('RD');
+				continue;
 			}
-			elseif ($this->is('IF'))
+			elseif ($this->isTag('IF'))
 			{
 				$conditional_depth++;
+				$this->next();
 			}
 			elseif ( ! $this->is('TEMPLATE_STRING') && $conditional_depth == 0)
 			{
@@ -203,6 +211,8 @@ class Parser extends AbstractParser {
 			$this->next();
 		}
 		while ($this->valid());
+
+	//	var_dump($this->tokens);
 	}
 
 	/**
@@ -410,6 +420,21 @@ class Parser extends AbstractParser {
 		$this->output =& $this->output_buffers[count($this->output_buffers) - 1];
 	}
 
+	protected function isTag($type)
+	{
+		if ($this->is('LD'))
+		{
+			$next = current($this->tokens);
+
+			if ($next->type == $type)
+			{
+				return TRUE;
+			}
+		}
+
+		return FALSE;
+	}
+
 	/**
 	 * Enforce an expected token.
 	 *
@@ -436,9 +461,7 @@ class Parser extends AbstractParser {
 	 */
 	protected function acceptTag($type)
 	{
-		$next = current($this->tokens);
-
-		if ( ! $this->is('LD') || $next->type != $type)
+		if ( ! $this->isTag($type))
 		{
 			return FALSE;
 		}
