@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-cd system/tests
-
 # We will increment this as we get bad statuses from RSpec and finally
 # exit with that status at the end
 STATUS=0
@@ -23,7 +21,7 @@ do
 	# We'll store our build artifacts under the name of the current PHP version
 	mkdir -p $CIRCLE_ARTIFACTS/$PHPVERSION/
 
-	pushd rspec
+	pushd system/tests/rspec
 		# Run the tests, outputting the results in the artifacts directory.
 		printf "Running Rspec tests\n\n"
 		bundle exec rspec -fh -c -o $CIRCLE_ARTIFACTS/$PHPVERSION/rspec.html
@@ -40,9 +38,9 @@ do
 	popd
 
 	# PHPUnit tests
-	pushd phpunit-new
+	pushd system/EllisLab/Tests/
 		printf "Running PHPUnit tests\n\n"
-		phpunit tests/ > $CIRCLE_ARTIFACTS/$PHPVERSION/phpunit.txt
+		phpunit ExpressionEngine/ > $CIRCLE_ARTIFACTS/$PHPVERSION/phpunit.txt
 
 		# Save our exit status code
 		((STATUS+=$?))

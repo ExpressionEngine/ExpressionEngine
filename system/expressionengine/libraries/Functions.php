@@ -2373,33 +2373,75 @@ class EE_Functions {
 	 */
 	public function prep_conditionals($str, $vars, $safety = 'n', $prefix = '')
 	{
-		$util = $this->get_conditional_util();
+		if ( ! stristr($str, LD.'if'))
+		{
+			return $str;
+		}
+
+		if (isset(ee()->TMPL->embed_vars))
+		{
+			// If this is being called from a module tag, embedded variables
+			// aren't going to be available yet.  So this is a quick workaround
+			// to ensure advanced conditionals using embedded variables can do
+			// their thing in mod tags.
+			$vars = array_merge($vars, ee()->TMPL->embed_vars);
+		}
 
 		$bool_safety = ($safety == 'n') ? FALSE : TRUE;
 
-		return $util->prep_conditionals($str, $vars, $bool_safety, $prefix);
-	}
+		$runner = \EllisLab\ExpressionEngine\Library\Parser\ParserFactory::createConditionalRunner();
 
-	private function get_conditional_util()
-	{
-		if ( ! isset(ee()->conditional_util))
+		if ($bool_safety === TRUE)
 		{
-			ee()->load->library('template/conditional_util');
-
-			$util = ee()->conditional_util;
-
-			if ($this->protect_javascript === FALSE)
-			{
-				$util->disable_protect_javascript();
-			}
-
-			if ($this->conditional_debug === TRUE)
-			{
-				$util->enable_debug();
-			}
+			$runner->safetyOn();
 		}
 
-		return ee()->conditional_util;
+		if ($prefix)
+		{
+			$runner->setPrefix($prefix);
+		}
+
+		/* ---------------------------------
+		/*	Hidden Configuration Variables
+		/*  - protect_javascript => Prevents advanced conditional parser from processing anything in <script> tags
+		/* ---------------------------------*/
+
+		if (ee()->config->item('protect_javascript') == 'n')
+		{
+			$runner->disableProtectJavascript();
+		}
+
+		try
+		{
+			return $runner->processConditionals($str, $vars);
+		}
+		catch (\EllisLab\ExpressionEngine\Library\Parser\Conditional\Exception\ConditionalException $e)
+		{
+			$thrower = str_replace(
+				array('\\', 'Conditional', 'Exception'),
+				'',
+				strrchr(get_class($e), '\\')
+			);
+
+			if (ee()->config->item('debug') == 2
+				OR (ee()->config->item('debug') == 1
+					&& ee()->session->userdata('group_id') == 1))
+			{
+				$error = lang('error_invalid_conditional') . "\n\n";
+				$error .= '<strong>' . $thrower . ' State:</strong> ' . $e->getMessage();
+			}
+			else
+			{
+				$error = lang('generic_fatal_error');
+			}
+
+			ee()->output->set_status_header(500);
+			ee()->output->fatal_error($error);
+
+			exit;
+		}
+
+		return $prepped_string;
 	}
 
 	// --------------------------------------------------------------------
