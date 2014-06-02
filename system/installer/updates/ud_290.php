@@ -39,7 +39,8 @@ class Updater {
 		$steps = new ProgressIterator(
 			array(
 				'_update_template_routes_table',
-				'_set_hidden_template_indicator'
+				'_set_hidden_template_indicator',
+				'_ensure_channel_combo_loader_action_integrity',
 			)
 		);
 
@@ -89,6 +90,32 @@ class Updater {
 			)
 		);
 	}
+
+	/**
+	 * If this was a pre-2.7 install and never had Safecracker installed,
+	 * there could be a missing action for the Channel class. So let's
+	 * make sure it exists and add it if it doesn't.
+	 *
+	 * @access private
+	 * @return void
+	 **/
+	private function _ensure_channel_combo_loader_action_integrity()
+	{
+		$row_data = array(
+			'class' => 'Channel',
+			'method' => 'combo_loader'
+		);
+
+		ee()->db->where($row_data);
+		$count = ee()->db->count_all_results('actions');
+
+		if ($count == 0)
+		{
+			ee()->db->insert('actions', $row_data);
+		}
+	}
+
+	// -------------------------------------------------------------------
 
 }
 /* END CLASS */
