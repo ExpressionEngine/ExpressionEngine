@@ -1,5 +1,5 @@
 <?php
-namespace EllisLab\ExpressionEngine\Library;
+namespace EllisLab\ExpressionEngine\Library\CP;
 
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
