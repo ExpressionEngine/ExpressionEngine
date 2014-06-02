@@ -1,0 +1,21 @@
+/**
+ * Override some code mirror styles to better fit ee
+ */
+.cm-s-default {
+	font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
+	line-height: 1.5;
+}
+
+/* remove brown comments */
+.cm-s-default .cm-comment {
+	color: #AAA;
+}
+
+/* remove purple highlighting */
+.CodeMirror-focused .CodeMirror-selected {
+	background: #c4daff;
+}
+
+.CodeMirror-gutters {
+	background: #F5F6F7;
+}
