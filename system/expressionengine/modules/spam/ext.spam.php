@@ -141,13 +141,86 @@ class Spam_ext {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Filter content for spam
+	 * Filter comments for spam
 	 * 
 	 * @access public
 	 * @return void
 	 */
-	public function filter_spam()
+	public function filter_comment($data)
 	{
+		if ($this->classify($data['comment']) === TRUE)
+		{
+			$this->moderate_content('comment', $data);
+			ee()->extensions->end_script = TRUE;
+		}
+
+		return $data;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Filter channel form submissions for spam
+	 * 
+	 * @access public
+	 * @return void
+	 */
+	public function filter_channel_form($data)
+	{
+		// Channel form entries are tricky because we can have an arbitrary 
+		// number of fields. Since we're using Naive Bayes, our assumption
+		// of statistical independece means classifying all the content lumped 
+		// together should give the same result as classifying each separately.
+		$i = 1;
+		$content = array();
+
+		while ( ! empty($data->entry['field_id_' . $i]))
+		{
+			$content[] = $data->entry['field_id_' . $i];
+			$i++;
+		}
+
+		$content = implode(' ', $content);
+
+		if ($this->classify($content) === TRUE)
+		{
+			$this->moderate_content('comment', $data);
+			ee()->extensions->end_script = TRUE;
+		}
+
+		return $data;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Filter forum posts for spam
+	 * 
+	 * @access public
+	 * @return void
+	 */
+	public function filter_forum_post($data)
+	{
+		ee()->extensions->end_script = TRUE;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Store flagged spam to await moderation.
+	 * 
+	 * @param string $type     The content type (comment, post, etc..)
+	 * @param string $content  Array of content data
+	 * @access public
+	 * @return void
+	 */
+	public function moderate_content($type, $content)
+	{
+		$data = array(
+			'type' => $type,
+			'content' => serialize($content)
+		);
+		ee()->db->insert('spam_trap', $data);
 	}
 
 	// --------------------------------------------------------------------
