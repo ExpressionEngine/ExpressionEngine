@@ -95,7 +95,7 @@ class Runtime {
 	{
 		// We store an object so we can easily return a reference
 		// for editing annotation data without creating a new one.
-		$obj = new RuntimeData($data);
+		$obj = (object) $data;
 		$key = spl_object_hash($obj);
 
 		$this->store[$key] = $obj;
@@ -106,7 +106,7 @@ class Runtime {
 	 * Retrieve an annotation object from a key
 	 *
 	 * @param String $key Annotation key
-	 * @return Object RuntimeData object
+	 * @return Object<StdClass> Data object
 	 */
 	protected function get($key)
 	{
