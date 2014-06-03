@@ -4,8 +4,14 @@
 	<fieldset class="tbl-search right">
 	</fieldset>
 	<h1><?=$cp_page_title?></h1>
+	<?php if ($added_fields && count($added_fields) > 0):?>
+		<div class="alert inline success">
+			<h3><?=lang('new_fields_success')?></h3>
+			<p><?=implode('<br />', $added_fields)?></p>
+		</div>
+	<?php endif;?>
 	<div class="alert inline warn">
-		<?=lang(lang('confirm_import'))?>
+		<?=lang(lang('confirm_import_warning'))?>
 	</div>
 	<table cellspacing="0">
 		<tr>

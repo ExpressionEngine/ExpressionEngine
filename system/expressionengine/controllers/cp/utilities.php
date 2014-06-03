@@ -987,11 +987,6 @@ class Utilities extends CP_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		ee()->lang->loadfile('member_import');
-
-		ee()->load->library('table');
-		ee()->load->helper('date');
-		ee()->lang->loadfile('member_import');
 		ee()->load->model('member_model');
 
 		$member_group = ee()->api
@@ -1017,36 +1012,45 @@ class Utilities extends CP_Controller {
 			'auto_custom_field' => (ee()->input->post('auto_custom_field') == 'y') ? 'y' : 'n'
 		);
 
+		ee()->lang->load('admin');
 		$localization_cfg = ee()->config->get_config_fields('localization_cfg');
+		$added_fields = ee()->input->post('added_fields');
 
 		$vars = array(
+			'added_fields'		=> $added_fields,
 			'xml_file'   		=> $data['xml_file'],
 			'default_group_id'	=> $group_name,
 			'language' 			=> ($data['language'] == '') ? lang('none') : ucfirst($data['language']),
 			'timezones' 		=> $data['timezones'],
 			'date_format' 		=> lang($localization_cfg['date_format'][1][$data['date_format']]),
 			'time_format' 		=> lang($localization_cfg['time_format'][1][$data['time_format']]),
-			'auto_custom_field' => ($data['auto_custom_field'] == 'y') ? lang('yes') : lang('no')
+			'auto_custom_field' => ($data['auto_custom_field'] == 'y' || ($added_fields && count($added_fields) > 0)) ? lang('yes') : lang('no')
 		);
 
-		$vars['form_hidden'] = $data;
-		$vars['added_fields'] = array();
+		$map = FALSE;
+
+		if (isset($_POST['field_map']))
+		{
+			$map = TRUE;
+		}
+
+		$vars['form_hidden'] = ($map) ? array_merge($data, $_POST['field_map']) : $data;
 
 		// Branch off here if we need to create a new custom field
-		if ($data['auto_custom_field'] == 'y')
+		if ($data['auto_custom_field'] == 'y' && ee()->input->post('added_fields') === FALSE)
 		{
 			$new_custom_fields = $this->_custom_field_check($data['xml_file']);
 
 			if ($new_custom_fields !== FALSE && count($new_custom_fields) > 0)
 			{
-				return $this->_new_custom_fields_form($data, $vars, $new_custom_fields);
+				return $this->_new_custom_fields_form($vars, $new_custom_fields);
 			}
 
 			$vars['message'] = lang('unable_to_parse_custom_fields');
 		}
 
 		ee()->view->cp_page_title = lang('confirm_import');
-		ee()->cp->set_breadcrumb(cp_url('utilities/member-import'), lang('member_import'));
+		ee()->cp->set_breadcrumb(cp_url('utilities/member_import'), lang('member_import'));
 
 		ee()->cp->render('utilities/member-import-confirm', $vars);
 	}
@@ -1137,7 +1141,7 @@ class Utilities extends CP_Controller {
 			}
 		}
 
-		return $new_custom_fields; //array_unique($new_custom_fields);
+		return $new_custom_fields;
 	}
 
 	// --------------------------------------------------------------------
@@ -1149,54 +1153,145 @@ class Utilities extends CP_Controller {
 	 *
 	 * @return	void
 	 */
-	private function _new_custom_fields_form($data, $vars, $new_custom_fields)
+	private function _new_custom_fields_form($vars, $new_custom_fields)
 	{
-		$this->load->helper('date');
-		$this->lang->loadfile('member_import');
-
-		$this->javascript->output(array(
-				'$(".toggle_all").toggle(
-					function(){
-						$("input.toggle").each(function() {
-							this.checked = true;
-						});
-					}, function (){
-						var checked_status = this.checked;
-						$("input.toggle").each(function() {
-							this.checked = false;
-						});
-					}
-				);')
-			);
+		ee()->javascript->output(array(
+			'$(".toggle_all").toggle(
+				function(){
+					$("input.toggle").each(function() {
+						this.checked = true;
+					});
+				}, function (){
+					var checked_status = this.checked;
+					$("input.toggle").each(function() {
+						this.checked = false;
+					});
+				}
+			);')
+		);
 
 		$vars['form_hidden']['new'] = $new_custom_fields['new'];
-		$vars['xml_fields'] = $new_custom_fields['xml_fields'];
-
 		$vars['new_fields'] = $new_custom_fields['new'];
 
 		$query = $this->member_model->count_records('member_fields');
 
 		$vars['order_start'] = $query + 1;
 
-		/**  Create the pull-down menu **/
+		ee()->view->cp_page_title = lang('custom_fields');
+		ee()->cp->set_breadcrumb(cp_url('utilities/member_import'), lang('member_import'));
+		ee()->cp->render('utilities/member-import-custom', $vars);
+	}
 
-		$vars['m_field_type_options'] = array(
-									'text'=>lang('text_input'),
-									'textarea'=>lang('textarea')
-									);
-		$vars['m_field_type'] = '';
+	// --------------------------------------------------------------------
 
-		/**  Field formatting **/
+	/**
+	 * Create Custom Fields
+	 *
+	 * Creates the custom field form
+	 *
+	 * @return	mixed
+	 */
+	public function create_custom_fields()
+	{
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
 
-		$vars['m_field_fmt_options'] = array(
-									'none'=>lang('none'),
-									'br'=>lang('auto_br'),
-									'xhtml'=>lang('xhtml')
-									);
-		$vars['m_field_fmt'] = '';
+		$this->_create_custom_validation();
 
+		if ($this->form_validation->run() === FALSE)
+		{
+			return $this->member_import_confirm();
+		}
 
-		return $this->cp->render('utilities/member-import-custom', $vars);
+		$error = array();
+		$taken = array();
+
+		$total_fields = count($this->input->post('create_ids'));
+
+		foreach ($_POST['create_ids'] as $k => $v)
+		{
+			$data['m_field_name'] 		= $_POST['m_field_name'][$k];
+			$data['m_field_label'] 		= $_POST['m_field_label'][$k];
+			$data['m_field_description']= (isset($_POST['m_field_description'][$k])) ? $_POST['m_field_description'][$k]	: '';
+			$data['m_field_type'] 		= (isset($_POST['m_field_type'][$k])) ? $_POST['m_field_type'][$k] : 'text';
+			$data['m_field_list_items'] = (isset($_POST['m_field_list_items'][$k])) ? $_POST['m_field_list_items'][$k] : '';
+			$data['m_field_ta_rows'] 	= (isset($_POST['m_field_ta_rows'][$k])) ? $_POST['m_field_ta_rows'][$k] : '100';
+			$data['m_field_maxl'] 		= (isset($_POST['m_field_maxl'][$k])) ? $_POST['m_field_maxl'][$k] : '100';
+			$data['m_field_width'] 		= (isset($_POST['m_field_width'][$k])) ? $_POST['m_field_width'][$k] : '100%';
+			$data['m_field_search'] 	= 'y';
+			$data['m_field_required'] 	= (isset($_POST['required'][$k])) ? 'y' : 'n';
+			$data['m_field_public'] 	= (isset($_POST['public'][$k])) ? 'y' : 'n';
+			$data['m_field_reg'] 		= (isset($_POST['reg_form'][$k])) ? 'y' : 'n';
+			$data['m_field_fmt'] 		= (isset($_POST['m_field_fmt'][$k])) ? $_POST['m_field_fmt'][$k] : 'xhtml';
+			$data['m_field_order'] 		= (isset($_POST['m_field_order'][$k])) ? $_POST['m_field_order'][$k] : '';
+
+			$this->db->insert('member_fields', $data);
+			$field_id = $this->db->insert_id();
+			$this->db->query('ALTER table exp_member_data add column m_field_id_'.$field_id.' text NULL DEFAULT NULL');
+
+			$_POST['added_fields'][$_POST['m_field_name'][$k]] = $_POST['m_field_label'][$k];
+			//$_POST['xml_custom_fields'][$_POST['xml_field_name'][$k]] = $field_id;
+
+			if ($_POST['new'][$k] != $_POST['m_field_name'][$k])
+			{
+				$_POST['field_map']['map'][$_POST['m_field_name'][$k]] = $_POST['new'][$k];
+			}
+			//$this->default_custom_fields[$_POST['m_field_name'][$k]] = 'm_field_id_'.$this->db->insert_id();
+
+		}
+
+		$_POST['auto_custom_field'] = 'n';
+		unset($_POST['new']);
+		unset($_POST['m_field_name']);
+		unset($_POST['m_field_label']);
+		unset($_POST['create_ids']);
+
+		return $this->member_import_confirm();
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Create Custom Field Validation
+	 *
+	 * Validates new custom field submission
+	 *
+	 * @return	mixed
+	 */
+	private function _create_custom_validation()
+	{
+		ee()->load->library('form_validation');
+
+		ee()->invalid_names = $this->cp->invalid_custom_field_names();
+
+		// Gather existing field names
+		ee()->db->select('m_field_name');
+		$m_custom_fields = $this->db->get('member_fields');
+
+		if ($m_custom_fields->num_rows() > 0)
+		{
+			foreach ($m_custom_fields->result() as $row)
+			{
+				$this->taken[] = $row->m_field_name;
+			}
+		}
+
+		if (isset($_POST['create_ids']))
+		{
+			foreach($_POST['create_ids'] as $key => $val)
+			{
+				ee()->form_validation->set_rules("m_field_name[".$key."]", '', 'required|callback__valid_name');
+				ee()->form_validation->set_rules("m_field_label[".$key."]", '', 'required');
+				ee()->form_validation->set_rules("required[".$key."]", '', '');
+				ee()->form_validation->set_rules("public[".$key."]", '', '');
+				ee()->form_validation->set_rules("reg_form[".$key."]", '', '');
+				ee()->form_validation->set_rules("xml_field_name[".$key."]", '', '');
+			}
+		}
+
+		ee()->form_validation->set_message('required', lang('s_required'));
 	}
 
 	// --------------------------------------------------------------------

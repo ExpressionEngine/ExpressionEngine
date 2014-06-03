@@ -375,6 +375,45 @@ $lang = array(
 
 'btn_confirm_import_working' =>
 'Importing...',
+
+'custom_fields' =>
+'Custom Fields',
+
+'map_custom_fields' =>
+'Map Custom Fields',
+
+'map_custom_fields_desc' =>
+'Your <abbr title="Extensible Markup Language">XML</abbr> file has fields that don\'t map directly to our importer, please review and assign custom fields as needed.',
+
+'field_name' =>
+'Field Name',
+
+'field_label' =>
+'Field Label',
+
+'field_required' =>
+'Required?',
+
+'field_public' =>
+'Public?',
+
+'field_registration' =>
+'Registration?',
+
+'btn_add_fields' =>
+'Add Fields',
+
+'btn_add_fields_working' =>
+'Adding...',
+
+'new_fields_success' =>
+'The following custom member fields were successfully added:',
+
+'24_hour' =>
+'24 Hour',
+
+'12_hour' =>
+'12 Hour with AM/PM',
  
 /**
  * SQL Query Form
