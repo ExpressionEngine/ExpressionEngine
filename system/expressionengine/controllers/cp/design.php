@@ -676,6 +676,24 @@ class Design extends CP_Controller {
 		$this->cp->set_breadcrumb(cp_url('design/manager'), lang('template_manager'));
 		$this->cp->set_breadcrumb(cp_url('design/snippets'), lang('snippets'));
 
+		$this->cp->add_to_head($this->view->head_link('css/codemirror.css'));
+		$this->cp->add_to_head($this->view->head_link('css/codemirror-additions.css'));
+
+		$this->cp->add_js_script(array(
+				'file'		=> array(
+					'codemirror/codemirror',
+					'codemirror/overlay',
+					'codemirror/xml',
+					'codemirror/css',
+					'codemirror/javascript',
+					'codemirror/htmlmixed',
+					'codemirror/ee-mode',
+
+					'cp/snippet_editor',
+				)
+			)
+		);
+
 		$this->cp->render('design/snippets_edit', $vars);
 	}
 
