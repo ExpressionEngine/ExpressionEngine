@@ -488,7 +488,7 @@ class Parser extends AbstractParser {
 			$location = "\n\nIn ".$this->context;
 
 			throw new ParserException(
-				'Unexpected ' . $this->token->type . '(' . $this->value() .' ) '.
+				'Unexpected ' . $this->token->type . '(' . $this->value() .') '.
 				'expected ' . $type . '. ' .
 				$location
 			);
@@ -525,8 +525,13 @@ class Parser extends AbstractParser {
 	{
 		if ( ! $this->acceptTag($type))
 		{
-			throw new ParserException('Unexpected ' . $this->token->type . ' expected ' . $type . '.');
-		}
+			$location = "\n\nIn ".$this->context;
+
+			throw new ParserException(
+				'Unexpected ' . $this->token->type . '(' . $this->value() .') '.
+				'expected ' . $type . ' tag. ' .
+				$location
+			);		}
 
 		return TRUE;
 	}
