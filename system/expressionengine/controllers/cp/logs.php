@@ -240,46 +240,6 @@ class Logs extends CP_Controller {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Ajax filter for CP log
-	 *
-	 * Filters CP log data
-	 *
-	 * @access	public
-	 * @return	void
-	 */
-	public function _cp_log_filter($state, $params)
-	{
-		$log_q = $this->tools_model->get_cp_log($params['perpage'], $state['offset'], $state['sort']);
-
-		$rows = array();
-		$logs = $log_q->result_array();
-
-		while ($log = array_shift($logs))
-		{
-			$rows[] = array(
-				'member_id'	 => $log['member_id'],
-				'username'	 => "<a href='".cp_url('myaccount', array('id' => $log['member_id']))."'>{$log['username']}</a>",
-				'ip_address' => $log['ip_address'],
-				'act_date'	 => $this->localize->human_time($log['act_date']),
-				'site_label' => $log['site_label'],
-				'action'	 => $log['action']
-			);
-		}
-
-		return array(
-			'rows' => $rows,
-			'no_results' => '<p>'.lang('no_search_results').'</p>',
-			'pagination' => array(
-				'per_page' => $params['perpage'],
-				'total_rows' => $this->db->count_all('cp_log')
-			)
-		);
-	}
-
-	// --------------------------------------------------------------------
-
-
-	/**
 	 * View Search Log
 	 *
 	 * Shows a log of recent search terms
