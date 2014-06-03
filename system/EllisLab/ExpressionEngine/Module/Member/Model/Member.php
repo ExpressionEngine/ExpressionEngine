@@ -15,11 +15,6 @@ class Member extends Model {
 	protected static $_primary_key = 'member_id';
 	protected static $_gateway_names = array('MemberGateway');
 
-	protected static $_key_map = array(
-		'member_id' => 'MemberGateway',
-		'group_id' => 'MemberGateway',
-	);
-
 	protected static $_relationships = array(
 		'MemberGroup' => array(
 			'type' => 'many_to_one'

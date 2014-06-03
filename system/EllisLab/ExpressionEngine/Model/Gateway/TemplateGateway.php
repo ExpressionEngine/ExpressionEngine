@@ -23,7 +23,7 @@ class TemplateGateway extends RowDataGateway {
 		'template_id' => 'required|isNatural',
 		'site_id' => 'required|isNatural',
 		'group_id' => 'required|isNatural',
-	'template_name' => 'required|alphaDash'
+		'template_name' => 'required|alphaDash'
 	);
 
 

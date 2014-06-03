@@ -59,7 +59,7 @@ abstract class ActiveRecordTestCase extends \PHPUnit_Extensions_Database_TestCas
 	 */
 	public function getCIDBConnection()
 	{
-		require_once BASEPATH.'database/DB_Driver.php';
+		require_once BASEPATH.'database/DB_driver.php';
 		require_once BASEPATH.'database/DB_active_rec.php';
 
 		if ( ! class_exists('CI_DB'))
