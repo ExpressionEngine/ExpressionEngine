@@ -220,6 +220,18 @@ class Lexer extends AbstractLexer {
 		}
 		elseif ($if = $this->peekRegex('\{(if(:elseif)?\s)'))
 		{
+			$last = end($this->tokens);
+
+			if ($last->type != 'COMMENT')
+			{
+				$this->tokens[] = new Comment(
+					$this->annotations->create(array(
+						'context' => $this->context,
+						'lineno' => $this->lineno
+					))
+				);
+			}
+
 			$this->addToken('LD', '{');
 
 			if (strlen($if) == 4)
