@@ -1,17 +1,15 @@
 <?php
 namespace EllisLab\ExpressionEngine\Model\Gateway;
 
-use EllisLab\ExpressionEngine\Model\Gateway\RowDataGateway;
 
 class SecurityHashGateway extends RowDataGateway {
-	protected static $meta = array(
-		'table_name' => 'security_hashes',
-		'primary_key' => 'hash_id',
-		'related_gateways' => array(
-			'session_id' => array(
-				'gateway' => 'SessionGateway',
-				'key' => 'session_id'
-			)
+	protected static $_table_name = 'security_hashes';
+	protected static $_primary_key = 'hash_id';
+
+	protected static $_related_gateways = array(
+		'session_id' => array(
+			'gateway' => 'SessionGateway',
+			'key' => 'session_id'
 		)
 	);
 

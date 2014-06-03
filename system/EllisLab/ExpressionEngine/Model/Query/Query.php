@@ -211,13 +211,13 @@ class Query {
 	}
 
 
-	public function order($property, $direction = 'DESC')
+	public function order($property, $direction = '')
 	{
 		$this->applyOrder($property, $direction);
 		return $this;
 	}
 
-	protected function applyOrder($relationship_property, $direction = 'DESC')
+	protected function applyOrder($relationship_property, $direction = '')
 	{
 		$table_property = $this->translateProperty($relationship_property);
 		$this->db->order_by($table_property, $direction);
