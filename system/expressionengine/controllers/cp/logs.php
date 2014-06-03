@@ -191,7 +191,7 @@ class Logs extends CP_Controller {
 
 		if (isset($this->params['filter_by_date']))
 		{
-			$logs = $logs->filter('act_date', $this->params['filter_by_date']);
+			$logs = $logs->filter('act_date', '>=', ee()->localize->now - $this->params['filter_by_date']);
 		}
 
 		$count = $logs->count();
