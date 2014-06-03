@@ -2,7 +2,7 @@
 
 namespace EllisLab\ExpressionEngine\Library\Parser\Conditional;
 
-use EllisLab\ExpressionEngine\Library\Parser\Conditional\Exception\ParserException;
+use EllisLab\ExpressionEngine\Library\Parser\Conditional\Exception\BooleanExpressionException;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -101,7 +101,7 @@ class BooleanExpression {
 			{
 				if (count($evaluate_stack) < 1)
 				{
-					throw new ParserException('Invalid Boolean Expression');
+					throw new BooleanExpressionException('Invalid Boolean Expression');
 				}
 
 				$right = array_pop($evaluate_stack);
@@ -115,14 +115,14 @@ class BooleanExpression {
 					case '-': array_push($evaluate_stack, -$right);
 						break;
 					default:
-						throw new ParserException('Invalid Unary Operator: '.$token[1]);
+						throw new BooleanExpressionException('Invalid Unary Operator: '.$token[1]);
 				}
 			}
 			else
 			{
 				if (count($evaluate_stack) < 2)
 				{
-					throw new ParserException('Invalid Boolean Expression');
+					throw new BooleanExpressionException('Invalid Boolean Expression');
 				}
 
 				$right = array_pop($evaluate_stack);
@@ -164,7 +164,7 @@ class BooleanExpression {
 					case '~':
 						if (($value = @preg_match($right, $left)) === FALSE)
 						{
-							throw new ParserException('Invalid Regular Expression: '.$right);
+							throw new BooleanExpressionException('Invalid Regular Expression: '.$right);
 						}
 						array_push($evaluate_stack, ($value > 0));
 						break;
@@ -185,7 +185,7 @@ class BooleanExpression {
 					case 'OR': array_push($evaluate_stack, $left OR $right);
 						break;
 					default:
-						throw new ParserException('Invalid Binary Operator: '.$token[1]);
+						throw new BooleanExpressionException('Invalid Binary Operator: '.$token[1]);
 				}
 			}
 		}
@@ -336,6 +336,11 @@ class BooleanExpression {
 		if ($token->isUnary())
 		{
 			return $this->unary_operators[$token->value()];
+		}
+
+		if ( ! isset($this->binary_operators[$token->value()]))
+		{
+			throw new BooleanExpressionException('Invalid boolean expression.');
 		}
 
 		return $this->binary_operators[$token->value()];
