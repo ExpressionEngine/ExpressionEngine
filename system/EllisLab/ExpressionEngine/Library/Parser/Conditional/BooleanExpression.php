@@ -101,7 +101,7 @@ class BooleanExpression {
 			{
 				if (count($evaluate_stack) < 1)
 				{
-					throw new BooleanExpressionException('Invalid Boolean Expression');
+					throw new BooleanExpressionException('Invalid Condition: Not enough operands.');
 				}
 
 				$right = array_pop($evaluate_stack);
@@ -115,14 +115,14 @@ class BooleanExpression {
 					case '-': array_push($evaluate_stack, -$right);
 						break;
 					default:
-						throw new BooleanExpressionException('Invalid Unary Operator: '.$token[1]);
+						throw new BooleanExpressionException('Invalid Unary Operator: '.$token);
 				}
 			}
 			else
 			{
 				if (count($evaluate_stack) < 2)
 				{
-					throw new BooleanExpressionException('Invalid Boolean Expression');
+					throw new BooleanExpressionException('Invalid Condition: Not enough operands.');
 				}
 
 				$right = array_pop($evaluate_stack);
@@ -185,7 +185,7 @@ class BooleanExpression {
 					case 'OR': array_push($evaluate_stack, $left OR $right);
 						break;
 					default:
-						throw new BooleanExpressionException('Invalid Binary Operator: '.$token[1]);
+						throw new BooleanExpressionException('Invalid Binary Operator: '.$token);
 				}
 			}
 		}
@@ -340,7 +340,7 @@ class BooleanExpression {
 
 		if ( ! isset($this->binary_operators[$token->value()]))
 		{
-			throw new BooleanExpressionException('Invalid boolean expression.');
+			throw new BooleanExpressionException('Invalid Binary Operator: '. $token);
 		}
 
 		return $this->binary_operators[$token->value()];
