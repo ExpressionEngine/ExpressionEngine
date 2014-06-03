@@ -682,6 +682,7 @@ class Design extends CP_Controller {
 		$this->cp->add_js_script(array(
 				'file'		=> array(
 					'codemirror/codemirror',
+					'codemirror/closebrackets',
 					'codemirror/overlay',
 					'codemirror/xml',
 					'codemirror/css',
@@ -1897,6 +1898,7 @@ class Design extends CP_Controller {
 		$this->cp->add_js_script(array(
 				'file'		=> array(
 					'codemirror/codemirror',
+					'codemirror/closebrackets',
 					'codemirror/overlay',
 					'codemirror/xml',
 					'codemirror/css',

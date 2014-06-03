@@ -33,6 +33,7 @@ $(document).ready(function () {
 
 	var myCodeMirror = CodeMirror.fromTextArea(code_textarea[0], {
 		lineNumbers: true,
+		autoCloseBrackets: true,
 		mode: "ee",
 		smartIndent: false,
 		indentWithTabs: usetabs
