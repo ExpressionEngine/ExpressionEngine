@@ -523,39 +523,15 @@ class Lexer extends AbstractLexer {
 		// Always store strings, even empty ones
 		if ($lexeme != '' || $type == 'STRING')
 		{
+			$this->lineno += substr_count($lexeme, "\n");
+
 			// check comments for annotations
 			if ($type == 'COMMENT')
 			{
 				if ($annotation = $this->annotations->read($lexeme))
 				{
-					if (isset($annotation->context))
-					{
-						if ($annotation->context == end($this->context_stack))
-						{
-							// returning to a previous context
-							$this->context = array_pop($this->context_stack);
-							$this->lineno = array_pop($this->lineno_stack);
-						}
-						else
-						{
-							// entering a new context
-							$this->context_stack[] = $this->context;
-							$this->lineno_stack[] = $this->lineno;
-
-							$this->lineno = 1;
-							$this->context = $annotation->context;
-						}
-					}
+					$this->syncWithAnnotation($annotation);
 				}
-			}
-
-			$this->lineno += substr_count($lexeme, "\n");
-
-			// If the annotation did not yet have a linenumber, then this is
-			// the best guess we have, so we assign it here.
-			if (isset($annotation) && ! isset($annotation->lineno))
-			{
-				$annotation->lineno = $this->lineno;
 			}
 
 			switch ($type)
@@ -584,6 +560,50 @@ class Lexer extends AbstractLexer {
 			$obj->context = $this->context;
 
 			$this->tokens[] = $obj;
+		}
+	}
+
+	/**
+	 * Sync the lexer line number state and context with
+	 * a given annotation.
+	 *
+	 * @param Object $annotation The annotation to sync with
+	 */
+	private function syncWithAnnotation($annotation)
+	{
+		if (isset($annotation->context))
+		{
+			if ($annotation->context == $this->context)
+			{
+				// just a line number marker
+				if (isset($annotation->lineno))
+				{
+					$this->lineno = $annotation->lineno;
+				}
+			}
+			elseif ($annotation->context == end($this->context_stack))
+			{
+				// returning to a previous context
+				$this->context = array_pop($this->context_stack);
+				$this->lineno = array_pop($this->lineno_stack);
+			}
+			else
+			{
+				// entering a new context
+				$this->context_stack[] = $this->context;
+				$this->lineno_stack[] = $this->lineno;
+
+				$this->lineno = 1;
+				$this->context = $annotation->context;
+			}
+		}
+
+
+		// If the annotation did not yet have a linenumber, then this is
+		// the best guess we have, so we assign it here.
+		if ( ! isset($annotation->lineno))
+		{
+			$annotation->lineno = $this->lineno;
 		}
 	}
 }
