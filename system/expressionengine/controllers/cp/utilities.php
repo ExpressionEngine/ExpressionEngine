@@ -582,7 +582,7 @@ class Utilities extends CP_Controller {
 		}
 
 		// Get member table fields
-		$this->default_fields = array_keys(MemberGateway::getMetaData('field_list'));
+		$this->default_fields = array_values(MemberGateway::getMetaData('field_list'));
 
 		ksort($this->default_fields);
 		$vars['select_options'][''] = lang('select');
