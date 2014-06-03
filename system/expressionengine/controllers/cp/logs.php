@@ -142,6 +142,7 @@ class Logs extends CP_Controller {
 		$filters[] = form_dropdown('perpage', $perpages, $this->params['perpage']);
 
 		$this->view->filters = $filters;
+		$this->view->filter_by_phrase_value = ee()->input->get_post('filter_by_phrase');
 	}
 
 	// --------------------------------------------------------------------
@@ -184,19 +185,24 @@ class Logs extends CP_Controller {
 
 		$logs = ee()->api->get('CpLog')->with('Site');
 
-		if (! empty($this->params['filter_by_username']))
+		if ( ! empty($this->params['filter_by_username']))
 		{
 			$logs = $logs->filter('member_id', $this->params['filter_by_username']);
 		}
 
-		if (! empty($this->params['filter_by_site']))
+		if ( ! empty($this->params['filter_by_site']))
 		{
 			$logs = $logs->filter('site_id', $this->params['filter_by_site']);
 		}
 
-		if (! empty($this->params['filter_by_date']))
+		if ( ! empty($this->params['filter_by_date']))
 		{
 			$logs = $logs->filter('act_date', '>=', ee()->localize->now - $this->params['filter_by_date']);
+		}
+
+		if ( ! empty($this->view->filter_by_phrase_value))
+		{
+			$logs = $logs->filter('action', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%');
 		}
 
 		$count = $logs->count();
