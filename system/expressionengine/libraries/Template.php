@@ -313,7 +313,7 @@ class EE_Template {
 				// removing from the value makes snippets more usable in conditionals
 				$val = $this->remove_ee_comments($val);
 
-				$replace = $this->markContext('Snippet: '.$key);
+				$replace = $this->markContext('Snippet "'.$key.'"');
 				$replace .= $val;
 				$replace .= $this->markContext();
 
@@ -453,9 +453,6 @@ class EE_Template {
 
 		// Smite Our Enemies:  Conditionals
 		$this->log_item("Parsing Segment, Embed, Layout, and Global Vars Conditionals");
-
-		$this->template .= $this->createAnnotation(array('a' => 'b'));
-		$this->template .= $this->createAnnotation(array('b' => 'c'));
 
 		$this->template = ee()->functions->prep_conditionals(
 			$this->template,
@@ -4197,7 +4194,7 @@ class EE_Template {
 	{
 		if ( ! isset($context))
 		{
-			$context = 'Template: '.$this->group_name.'/'.$this->template_name;
+			$context = 'Template "'.$this->group_name.'/'.$this->template_name.'"';
 		}
 
 		return $this->createAnnotation(array('context' => $context));

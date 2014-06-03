@@ -5,7 +5,6 @@ namespace EllisLab\ExpressionEngine\Library\Parser\Conditional;
 use EllisLab\ExpressionEngine\Library\Parser\AbstractParser;
 use EllisLab\ExpressionEngine\Library\Parser\Conditional\Exception\ParserException;
 use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\Bool;
-use EllisLab\ExpressionEngine\Library\Template\Annotation\Runtime as RuntimeAnnotations;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -52,17 +51,6 @@ class Parser extends AbstractParser {
 	protected $variables = array();
 
 	protected $safety = FALSE;
-
-	protected $context;
-	protected $annotations;
-
-	public function __construct($tokens)
-	{
-		parent::__construct($tokens);
-
-		$this->annotations = new RuntimeAnnotations();
-		$this->annotations->useSharedStore();
-	}
 
 	public function parse()
 	{
@@ -115,13 +103,15 @@ class Parser extends AbstractParser {
 			}
 			elseif ($this->acceptTag('IF'))
 			{
-					$conditional = new Statement($this);
-					$this->conditional($conditional);
+				$open = $this->token;
 
-					$this->expectTag('ENDIF');
-					$this->expect('RD');
+				$conditional = new Statement($this);
+				$this->conditional($conditional);
 
-					$conditional->closeIf();
+				$this->expectTag('ENDIF', $open);
+				$this->expect('RD');
+
+				$conditional->closeIf();
 			}
 			else
 			{
@@ -384,7 +374,7 @@ class Parser extends AbstractParser {
 	/**
 	 * Move to the next token
 	 */
-	protected function next()
+	protected function next($skip_and_output_comments = TRUE)
 	{
 		parent::next();
 
@@ -394,16 +384,9 @@ class Parser extends AbstractParser {
 			$this->next();
 		}
 
-		if ($this->is('COMMENT'))
+		if ($skip_and_output_comments && $this->is('COMMENT'))
 		{
-			if ($annotation = $this->annotations->read($this->value()))
-			{
-				if ($annotation->context)
-				{
-					$this->context = $annotation->context;
-				}
-			}
-
+			$this->output($this->value());
 			$this->next();
 		}
 	}
@@ -477,20 +460,16 @@ class Parser extends AbstractParser {
 	 *
 	 * Overrides the abstract one to throw an exception.
 	 *
-	 * @param String $type The type to check against
+	 * @param String $expect_type The type to check against
 	 * @return Bool  Expected token was found
 	 * @throws ParserException If expected token is not found
 	 */
-	protected function expect($type)
+	protected function expect($expect_type, $open = NULL)
 	{
-		if (parent::expect($type) === FALSE)
+		if (parent::expect($expect_type) === FALSE)
 		{
-			$location = "\n\nIn ".$this->context;
-
 			throw new ParserException(
-				'Unexpected ' . $this->token->type . '(' . $this->value() .') '.
-				'expected ' . $type . '. ' .
-				$location
+				$this->expectedMessage($expect_type, $open)
 			);
 		}
 
@@ -521,18 +500,53 @@ class Parser extends AbstractParser {
 	 *
 	 * Works like expect, but assumes that the token is preceded by an LD.
 	 */
-	protected function expectTag($type)
+	protected function expectTag($expect_type, $open = NULL)
 	{
-		if ( ! $this->acceptTag($type))
+		if ( ! $this->acceptTag($expect_type))
 		{
-			$location = "\n\nIn ".$this->context;
-
 			throw new ParserException(
-				'Unexpected ' . $this->token->type . '(' . $this->value() .') '.
-				'expected ' . $type . ' tag. ' .
-				$location
-			);		}
+				$this->expectedMessage($expect_type.' tag', $open)
+			);
+		}
 
 		return TRUE;
+	}
+
+	private function expectedMessage($expected, $open = NULL)
+	{
+		$value		= $this->value();
+		$found_type	= $this->token->type;
+		$location	= $this->token->context;
+		$lineno		= $this->token->lineno;
+
+		if ($found_type != 'VARIABLE' && strlen($value) > 23)
+		{
+			$value = substr($value, 0, 20).'...';
+		}
+
+		if ($found_type == 'EOS')
+		{
+			$found_description = "end of $location on line $lineno";
+			$expected_description = "$expected";
+
+			if ($open)
+			{
+				$expected_description .= " for opening on line ".$open->lineno;
+
+				if ($open->context != $location)
+				{
+					$expected_description .= ' in '.$open->context;
+				}
+			}
+		}
+		else
+		{
+			$found_description = "'$value' ($found_type)";
+			$expected_description = "$expected in $location on line $lineno";
+		}
+
+		$message = "Unexpected $found_description; expected $expected_description.";
+
+		return $message;
 	}
 }

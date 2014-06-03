@@ -30,6 +30,9 @@ class Token {
 	public $type;
 	public $lexeme;	// as written in the template
 
+	public $context;
+	public $lineno;
+
 	protected $value; // the real value
 
 	public function __construct($type, $lexeme)

@@ -15,6 +15,9 @@ use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\String;
 use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\Tag;
 use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\Variable;
 
+use EllisLab\ExpressionEngine\Library\Template\Annotation\Runtime as RuntimeAnnotations;
+
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -142,10 +145,23 @@ class Lexer extends AbstractLexer {
 		'AND', 'OR', 'XOR'
 	);
 
+	protected $lineno_stack = array();
+	protected $context_stack = array();
+
+	protected $lineno;
+	protected $context;
+	protected $annotations;
+
 	public function __construct()
 	{
+		$this->lineno = 1;
+		$this->context = '';
+
 		$this->operator_pattern = $this->compileOperatorPattern();
 		$this->compiled_pattern = $this->compilePattern();
+
+		$this->annotations = new RuntimeAnnotations();
+		$this->annotations->useSharedStore();
 	}
 
 	/**
@@ -507,6 +523,41 @@ class Lexer extends AbstractLexer {
 		// Always store strings, even empty ones
 		if ($lexeme != '' || $type == 'STRING')
 		{
+			// check comments for annotations
+			if ($type == 'COMMENT')
+			{
+				if ($annotation = $this->annotations->read($lexeme))
+				{
+					if (isset($annotation->context))
+					{
+						if ($annotation->context == end($this->context_stack))
+						{
+							// returning to a previous context
+							$this->context = array_pop($this->context_stack);
+							$this->lineno = array_pop($this->lineno_stack);
+						}
+						else
+						{
+							// entering a new context
+							$this->context_stack[] = $this->context;
+							$this->lineno_stack[] = $this->lineno;
+
+							$this->lineno = 1;
+							$this->context = $annotation->context;
+						}
+					}
+				}
+			}
+
+			$this->lineno += substr_count($lexeme, "\n");
+
+			// If the annotation did not yet have a linenumber, then this is
+			// the best guess we have, so we assign it here.
+			if (isset($annotation) && ! isset($annotation->lineno))
+			{
+				$annotation->lineno = $this->lineno;
+			}
+
 			switch ($type)
 			{
 				case 'COMMENT':	 $obj = new Comment($lexeme);
@@ -528,6 +579,9 @@ class Lexer extends AbstractLexer {
 				default:
 					$obj = new Token($type, $lexeme);
 			}
+
+			$obj->lineno = $this->lineno;
+			$obj->context = $this->context;
 
 			$this->tokens[] = $obj;
 		}
