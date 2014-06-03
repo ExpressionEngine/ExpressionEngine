@@ -100,7 +100,7 @@ abstract class RowDataGateway {
 			$fields = array();
 			foreach($raw_fields as $field)
 			{
-				if (strpos('_', $field) === 0)
+				if (strpos($field, '_') === 0)
 				{
 					continue;
 				}
