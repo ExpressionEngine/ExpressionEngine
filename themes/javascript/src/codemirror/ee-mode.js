@@ -131,11 +131,11 @@
 			return function(stream, state) {
 				stream.eatWhile(/\s+/);
 
-				if (stream.match(/"(\\|\"|[^"])*"/)) {
+				if (stream.match(/^"(\\|\"|[^"])*?"/)) {
 					return 'string';
 				}
 
-				if (stream.match(/'(\\|\'|[^'])*'/)) {
+				if (stream.match(/^'(\\|\'|[^'])*?'/)) {
 					return 'string';
 				}
 
@@ -179,11 +179,11 @@
 					return 'operator';
 				}
 
-				if (stream.match(/"(\\|\"|[^"])*"/)) {
+				if (stream.match(/"(\\|\"|[^"])*?"/)) {
 					return 'string';
 				}
 
-				if (stream.match(/'(\\|\'|[^'])*'/)) {
+				if (stream.match(/'(\\|\'|[^'])*?'/)) {
 					return 'string';
 				}
 
