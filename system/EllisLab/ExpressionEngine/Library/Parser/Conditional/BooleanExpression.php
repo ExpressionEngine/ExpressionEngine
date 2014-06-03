@@ -101,7 +101,7 @@ class BooleanExpression {
 			{
 				if (count($evaluate_stack) < 1)
 				{
-					throw new BooleanExpressionException('Invalid Condition: Not enough operands.');
+					throw new BooleanExpressionException('Invalid Condition: Not enough operands for operator "'.$token.'".');
 				}
 
 				$right = array_pop($evaluate_stack);
@@ -122,7 +122,7 @@ class BooleanExpression {
 			{
 				if (count($evaluate_stack) < 2)
 				{
-					throw new BooleanExpressionException('Invalid Condition: Not enough operands.');
+					throw new BooleanExpressionException('Invalid Condition: Not enough operands for operator "'.$token.'".');
 				}
 
 				$right = array_pop($evaluate_stack);
