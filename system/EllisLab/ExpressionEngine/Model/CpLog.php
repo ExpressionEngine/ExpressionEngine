@@ -5,6 +5,9 @@ class CpLog extends Model {
 	// Meta data
 	protected static $_primary_key = 'id';
 	protected static $_gateway_names = array('CpLogGateway');
+	protected static $_key_map = array(
+		'site_id' => 'CpLogGateway'
+	);
 
 	protected static $_relationships = array(
 		'Site' => array(
@@ -22,4 +25,9 @@ class CpLog extends Model {
 	protected $ip_address;
 	protected $act_date;
 	protected $action;
+
+	public function getSite()
+	{
+		return $this->getRelated('Site');
+	}
 }

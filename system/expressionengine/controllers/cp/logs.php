@@ -177,20 +177,37 @@ class Logs extends CP_Controller {
 
 		$offset = ($page - 1) * $this->params['perpage']; // Offset is 0 indexed
 
-		$log_q = $this->tools_model->get_cp_log($this->params['perpage'], $offset, array('act_date' => 'desc'));
+		$logs = ee()->api->get('CpLog')->with('Site');
+
+		if (isset($this->params['filter_by_username']))
+		{
+			$logs = $logs->filter('member_id', $this->params['filter_by_username']);
+		}
+
+		if (isset($this->params['filter_by_site']))
+		{
+			$logs = $logs->filter('site_id', $this->params['filter_by_site']);
+		}
+
+		if (isset($this->params['filter_by_date']))
+		{
+			$logs = $logs->filter('act_date', $this->params['filter_by_date']);
+		}
+
+		$logs = $logs->order('act_date', 'desc')
+			->limit($this->params['perpage'], $offset)
+			->all();
 
 		$rows = array();
-		$logs = $log_q->result_array();
-
-		while ($log = array_shift($logs))
+		foreach ($logs as $log)
 		{
 			$rows[] = array(
-				'member_id'	 => $log['member_id'],
-				'username'	 => "<a href='".cp_url('myaccount', array('id' => $log['member_id']))."'>{$log['username']}</a>",
-				'ip_address' => $log['ip_address'],
-				'act_date'	 => $this->localize->human_time($log['act_date']),
-				'site_label' => $log['site_label'],
-				'action'	 => $log['action']
+				'member_id'	 => $log->member_id,
+				'username'	 => "<a href='" . cp_url('myaccount', array('id' => $log->member_id)) . "'>{$log->username}</a>",
+				'ip_address' => $log->ip_address,
+				'act_date'	 => $this->localize->human_time($log->act_date),
+				'site_label' => $log->getSite()->site_label,
+				'action'	 => $log->action
 			);
 		}
 
