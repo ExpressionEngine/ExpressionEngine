@@ -35,7 +35,7 @@ class Logs extends CP_Controller {
 	/**
 	 * Constructor
 	 */
-	function __construct()
+	public function __construct()
 	{
 		parent::__construct();
 
@@ -147,7 +147,7 @@ class Logs extends CP_Controller {
 	 * @access	public
 	 * @return	void
 	 */
-	function index()
+	public function index()
 	{
 		if (ee()->session->userdata('group_id') == 1)
 		{
@@ -167,7 +167,7 @@ class Logs extends CP_Controller {
 	 * @access	public
 	 * @return	mixed
 	 */
-	function cp()
+	public function cp()
 	{
 		$this->base_url->path = 'logs/cp';
 		$this->view->cp_page_title = lang('view_cp_log');
@@ -236,7 +236,7 @@ class Logs extends CP_Controller {
 	 * @access	public
 	 * @return	void
 	 */
-	function _cp_log_filter($state, $params)
+	public function _cp_log_filter($state, $params)
 	{
 		$log_q = $this->tools_model->get_cp_log($params['perpage'], $state['offset'], $state['sort']);
 
@@ -276,7 +276,7 @@ class Logs extends CP_Controller {
 	 * @access	public
 	 * @return	mixed
 	 */
-	function view_search_log()
+	public function view_search_log()
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_logs'))
 		{
@@ -326,7 +326,7 @@ class Logs extends CP_Controller {
 	 * @access	public
 	 * @return	void
 	 */
-	function _search_log_filter($state, $params)
+	public function _search_log_filter($state, $params)
 	{
 		$search_q = $this->tools_model->get_search_log(
 			$params['perpage'], $state['offset'], $state['sort']
@@ -369,7 +369,7 @@ class Logs extends CP_Controller {
 	 * @access	public
 	 * @return	mixed
 	 */
-	function view_throttle_log()
+	public function view_throttle_log()
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_logs'))
 		{
@@ -435,7 +435,7 @@ class Logs extends CP_Controller {
 	 * @access	public
 	 * @return	void
 	 */
-	function _throttle_log_filter($state, $params)
+	public function _throttle_log_filter($state, $params)
 	{
 		$max_page_loads = 10;
 		$lockout_time	= 30;
@@ -491,7 +491,7 @@ class Logs extends CP_Controller {
 	 * @access	public
 	 * @return	mixed
 	 */
-	function view_email_log()
+	public function view_email_log()
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_logs'))
 		{
@@ -572,7 +572,7 @@ class Logs extends CP_Controller {
 	 * @access	public
 	 * @return	void
 	 */
-	function _email_log_filter($state, $params)
+	public function _email_log_filter($state, $params)
 	{
 		$email_q = $this->tools_model->get_email_logs(
 			FALSE, $params['perpage'], $state['offset'], $state['sort']
@@ -617,7 +617,7 @@ class Logs extends CP_Controller {
 	 * @access public
 	 * @return void
 	 */
-	function developer()
+	public function developer()
 	{
 		if ($this->session->userdata('group_id') != 1)
 		{
@@ -691,7 +691,7 @@ class Logs extends CP_Controller {
 	 * @access	public
 	 * @return	void
 	 */
-	function _developer_log_filter($state, $params)
+	public function _developer_log_filter($state, $params)
 	{
 		$dev_logs_query = $this->tools_model->get_developer_log(
 			$params['perpage'], $state['offset'], $state['sort']
@@ -752,7 +752,7 @@ class Logs extends CP_Controller {
 	 * @access	public
 	 * @return	mixed
 	 */
-	function clear_log_files()
+	public function clear_log_files()
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_logs'))
 		{
@@ -824,7 +824,7 @@ class Logs extends CP_Controller {
 	 * @access	public
 	 * @return	mixed
 	 */
-	function view_email()
+	public function view_email()
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_logs'))
 		{
@@ -852,7 +852,7 @@ class Logs extends CP_Controller {
 	 * @access	public
 	 * @return	mixed
 	 */
-	function blacklist_throttled_ips()
+	public function blacklist_throttled_ips()
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_logs'))
 		{
