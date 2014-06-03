@@ -752,7 +752,7 @@ class Query {
 		// we can continue building on the query.  Or, you know, actually
 		// get the query's results.
 		$db = clone $this->db;
-		return $this->db->count_all_results();
+		return $db->count_all_results();
 	}
 
 	/**
