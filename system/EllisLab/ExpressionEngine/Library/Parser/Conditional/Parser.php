@@ -485,9 +485,13 @@ class Parser extends AbstractParser {
 	{
 		if (parent::expect($type) === FALSE)
 		{
-			$state = "\n\n".$this->context;
+			$location = "\n\nIn ".$this->context;
 
-			throw new ParserException('Unexpected ' . $this->token->type . ' expected ' . $type . ' in '. $state);
+			throw new ParserException(
+				'Unexpected ' . $this->token->type . '(' . $this->value() .' ) '.
+				'expected ' . $type . '. ' .
+				$location
+			);
 		}
 
 		return TRUE;
