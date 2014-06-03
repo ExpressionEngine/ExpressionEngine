@@ -313,7 +313,7 @@ class EE_Template {
 				// removing from the value makes snippets more usable in conditionals
 				$val = $this->remove_ee_comments($val);
 
-				$replace = $this->markContext('snippet: '.$key);
+				$replace = $this->markContext('Snippet: '.$key);
 				$replace .= $val;
 				$replace .= $this->markContext();
 
@@ -4187,7 +4187,13 @@ class EE_Template {
 		return $str;
 	}
 
-	private function markContext($context = NULL)
+	/**
+	 * Mark a template context
+	 *
+	 * @param String $context Context name, current template if not given
+	 * @return String Annotation to insert
+	 */
+	public function markContext($context = NULL)
 	{
 		if ( ! isset($context))
 		{
@@ -4197,7 +4203,15 @@ class EE_Template {
 		return $this->createAnnotation(array('context' => $context));
 	}
 
-	private function createAnnotation($data)
+	/**
+	 * Create a template annotation
+	 *
+	 * Lazily sets up the annotation object if it does not exist.
+	 *
+	 * @param $data Initial annotation data
+	 * @return String Annotation comment string
+	 */
+	protected function createAnnotation($data)
 	{
 		if ( ! isset($this->annotations))
 		{
