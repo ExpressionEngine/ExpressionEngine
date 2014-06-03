@@ -69,7 +69,7 @@ class RelationshipMeta {
 		}
 		else
 		{
-			$gateway_names = $from_model_class:;getMetaData('gateway_names');
+			$gateway_names = $from_model_class::getMetaData('gateway_names');
 			$from_gateway_name = $gateway_names[0];
 		}
 
