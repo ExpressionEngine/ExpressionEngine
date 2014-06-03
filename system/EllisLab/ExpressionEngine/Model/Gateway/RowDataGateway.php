@@ -98,7 +98,7 @@ abstract class RowDataGateway {
 		{
 			$raw_fields = get_class_vars(get_called_class());
 			$fields = array();
-			foreach($raw_fields as $field)
+			foreach($raw_fields as $field => $default)
 			{
 				if (strpos($field, '_') === 0)
 				{
