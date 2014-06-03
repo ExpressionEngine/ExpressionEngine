@@ -174,7 +174,7 @@ class Query {
 		return $this;
 	}
 
-	protected function applyFilter($relationship_property, $operator, $value, $or = TRUE)
+	protected function applyFilter($relationship_property, $operator, $value, $or = FALSE)
 	{
 		if ( ! isset($value))
 		{
@@ -200,14 +200,16 @@ class Query {
 				$this->db->or_where($table_property.' '.$operator, $value);
 			}
 		}
-
-		if (strtolower($operator) == 'in')
-		{
-			$this->db->where_in($table_property, (array) $value);
-		}
 		else
 		{
-			$this->db->where($table_property.' '.$operator, $value);
+			if (strtolower($operator) == 'in')
+			{
+				$this->db->where_in($table_property, (array) $value);
+			}
+			else
+			{
+				$this->db->where($table_property.' '.$operator, $value);
+			}
 		}
 	}
 
