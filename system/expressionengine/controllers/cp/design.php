@@ -1911,7 +1911,6 @@ class Design extends CP_Controller {
 					'codemirror/htmlmixed',
 					'codemirror/ee-mode',
 
-					'ee_txtarea',
 					'cp/template_editor',
 					'cp/manager'
 				)
