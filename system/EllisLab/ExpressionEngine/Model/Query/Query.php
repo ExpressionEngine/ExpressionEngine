@@ -747,6 +747,11 @@ class Query {
 	 */
 	public function count()
 	{
+		// count_all_results() is destructive (it calls _reset_select())
+		// so we're going to clone the db before calling it so that
+		// we can continue building on the query.  Or, you know, actually
+		// get the query's results.
+		$db = clone $this->db;
 		return $this->db->count_all_results();
 	}
 
