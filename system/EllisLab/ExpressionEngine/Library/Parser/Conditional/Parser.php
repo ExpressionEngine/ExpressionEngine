@@ -4,6 +4,7 @@ namespace EllisLab\ExpressionEngine\Library\Parser\Conditional;
 
 use EllisLab\ExpressionEngine\Library\Parser\AbstractParser;
 use EllisLab\ExpressionEngine\Library\Parser\Conditional\Exception\ParserException;
+use EllisLab\ExpressionEngine\Library\Parser\Conditional\Exception\BooleanExpressionException;
 use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\Bool;
 
 /**
@@ -103,12 +104,22 @@ class Parser extends AbstractParser {
 			}
 			elseif ($this->acceptTag('IF'))
 			{
-				$open = $this->token;
+				$token = $this->token;
 
 				$conditional = new Statement($this);
-				$this->conditional($conditional);
 
-				$this->expectTag('ENDIF', $open);
+				try
+				{
+					$this->conditional($conditional);
+				}
+				catch (BooleanExpressionException $e)
+				{
+					throw new ParserException(
+						$this->getRethrowMessage($e, $token)
+					);
+				}
+
+				$this->expectTag('ENDIF', $token);
 				$this->expect('RD');
 
 				$conditional->closeIf();
@@ -205,7 +216,12 @@ class Parser extends AbstractParser {
 				$conditional_depth++;
 				$this->next();
 			}
-			elseif ( ! ($this->is('TEMPLATE_STRING') || $this->is('COMMENT')) && $conditional_depth == 0)
+			elseif ($this->is('TEMPLATE_STRING') || $this->is('COMMENT'))
+			{
+				$this->next(FALSE);
+				continue;
+			}
+			elseif ($conditional_depth == 0)
 			{
 				break;
 			}
@@ -510,6 +526,22 @@ class Parser extends AbstractParser {
 		}
 
 		return TRUE;
+	}
+
+	/**
+	 * Rethrow an error message.
+	 *
+	 * Since a rethrow can happen after tokens have been consumed,
+	 * we require that a token is given for state information.
+	 */
+	private function getRethrowMessage($exception, $token = NULL)
+	{
+		$message = $exception->getMessage();
+
+		$location	= $token->context;
+		$lineno		= $token->lineno;
+
+		return $message . "\n\nIn $location on line $lineno";
 	}
 
 	/**
