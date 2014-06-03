@@ -113,7 +113,7 @@ abstract class Model {
 			return $this->$method();
 		}
 
-		if (property_exists($this, $name) && strpos('_', $name) !== 0)
+		if (property_exists($this, $name) && strpos($name, '_') !== 0)
 		{
 			return $this->{$name};
 		}
@@ -142,7 +142,7 @@ abstract class Model {
 			return $this->$method($value);
 		}
 
-		if (property_exists($this, $name) && strpos('_', $name) !== 0)
+		if (property_exists($this, $name) && strpos($name, '_') !== 0)
 		{
 			$this->{$name} = $value;
 			$this->setDirty($name);
