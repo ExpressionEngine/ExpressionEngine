@@ -70,7 +70,7 @@ class Template extends Model {
 
 	public function getSite()
 	{
-		return $this->getRelated('LastAuthor');
+		return $this->getRelated('Site');
 	}
 
 	public function setSite(Site $site)
