@@ -512,6 +512,16 @@ class Parser extends AbstractParser {
 		return TRUE;
 	}
 
+	/**
+	 * Construct an error message for when we find ourselves in a state
+	 * we can't resolve.
+	 *
+	 * We try to be as verbose and intelligent as possible. This is not
+	 * hit during regular execution, so it can be pretty heavy.
+	 *
+	 * @param String $expected Expected token type
+	 * @param Token $open The token that last opened a tag
+	 */
 	private function expectedMessage($expected, $open = NULL)
 	{
 		$value		= $this->value();
