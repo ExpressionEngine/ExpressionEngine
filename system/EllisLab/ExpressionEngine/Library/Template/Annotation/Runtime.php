@@ -3,7 +3,21 @@
 namespace EllisLab\ExpressionEngine\Library\Template\Annotation;
 
 /**
- * Class that handles runtime template annotations.
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 2.9.0
+ * @filesource
+ */
+
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine Template Runtime Annotation Class
  *
  * Sometimes, at runtime, you want to mark a piece of template code and
  * maybe store some metadata about that marked bit. For example, on a
@@ -21,6 +35,12 @@ namespace EllisLab\ExpressionEngine\Library\Template\Annotation;
  *
  * So when you see a comment in a template, you can then check if it's an
  * annotation and retrieve the related data again.
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Core
+ * @category	Core
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 class Runtime {
 

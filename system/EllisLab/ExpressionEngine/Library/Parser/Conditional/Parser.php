@@ -337,7 +337,7 @@ class Parser extends AbstractParser {
 				return $this->addFalse($expression);
 			}
 
-			// can't do
+			// can't do objects
 			if (is_object($value) AND ! method_exists($value, '__toString'))
 			{
 				return $this->addFalse($expression);
