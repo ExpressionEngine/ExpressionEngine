@@ -205,12 +205,12 @@ class Parser extends AbstractParser {
 				$conditional_depth++;
 				$this->next();
 			}
-			elseif ( ! $this->is('TEMPLATE_STRING') && $conditional_depth == 0)
+			elseif ( ! ($this->is('TEMPLATE_STRING') || $this->is('COMMENT')) && $conditional_depth == 0)
 			{
 				break;
 			}
 
-			$this->next();
+			$this->next(FALSE);
 		}
 		while ($this->valid());
 	}

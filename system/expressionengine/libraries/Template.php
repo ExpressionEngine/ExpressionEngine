@@ -3199,7 +3199,8 @@ class EE_Template {
 		// Add Action IDs form forms and links
 		$str = ee()->functions->insert_action_ids($str);
 
-		// and once again just in case global vars introduce EE comments
+		// and once again just in case global vars introduce EE comments,
+		// and to remove any runtime annotations.
 		return $this->remove_ee_comments($str);
 	}
 
