@@ -132,7 +132,8 @@ class Query {
 		foreach($gateway_names as $gateway_name)
 		{
 			$gateway_class = $this->alias_service->getRegisteredClass($gateway_name);
-			if (array_key_exists($property, $gateway_class::getMetaData('field_list')))
+			$field_list = $gateway_class::getMetaData('field_list');
+			if (in_array($property, $gateway_class::getMetaData('field_list')))
 			{
 				$table = $gateway_class::getMetaData('table_name');
 				break;
@@ -801,7 +802,7 @@ class Query {
 			$table = $gateway_class_name::getMetaData('table_name');
 			$properties = $gateway_class_name::getMetaData('field_list');
 
-			foreach ($properties as $property=>$default_value)
+			foreach ($properties as $property)
 			{
 				$this->db->select($table . '_' . $node->getId() . '.' . $property . ' AS ' . $node->getPathString() . '__' . $relationship_name . '__' . $model_name . '__' . $property);
 			}
