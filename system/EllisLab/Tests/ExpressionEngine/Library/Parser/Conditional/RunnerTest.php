@@ -16,9 +16,20 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 		$this->runner = NULL;
 	}
 
-	protected function runCondition($description, $str_in, $expected, $vars = array())
+	protected function runCondition($str, $vars = array(), $runner = NULL)
 	{
-		$result = $this->runner->processConditionals($str_in, $vars);
+		if ( ! isset($runner))
+		{
+			$runner = $this->runner;
+		}
+
+		$result = $runner->processConditionals($str, $vars);
+		return preg_replace("/\{!--.*?--\}/s", '', $result);
+	}
+
+	protected function runConditionTest($description, $str_in, $expected, $vars = array())
+	{
+		$result = $this->runCondition($str_in, $vars);
 		$this->assertEquals($expected, $result, $description);
 	}
 
@@ -28,7 +39,7 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 	public function testPlainConditionalsWithoutVariables($description, $str_in, $expected_out, $vars = array())
 	{
 		$this->runner->disableProtectJavascript();
-		$this->runCondition($description, $str_in, $expected_out, $vars);
+		$this->runConditionTest($description, $str_in, $expected_out, $vars);
 	}
 
 	/**
@@ -38,7 +49,7 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 	{
 		$this->setExpectedException($exception);
 		$this->runner->disableProtectJavascript();
-		$this->runCondition($description, $str_in, '');
+		$this->runConditionTest($description, $str_in, '');
 	}
 
 	/**
@@ -48,7 +59,7 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 	{
 		$this->runner->safetyOn();
 		$this->runner->disableProtectJavascript();
-		$this->runCondition($description, $str_in, $expected_out);
+		$this->runConditionTest($description, $str_in, $expected_out);
 	}
 
 	public function testBasicVariableReplacement()
@@ -61,25 +72,25 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 
 		$this->assertEquals(
 			'{if var1 && \'3\' == \'bob\'}yes{/if}',
-			$runner->processConditionals($string, array('var2' => 3)),
+			$this->runCondition($string, array('var2' => 3), $runner),
 			'Integer Variable Replacement'
 		);
 
 		$this->assertEquals(
 			'{if var1 && \'mary\' == \'bob\'}yes{/if}',
-			$runner->processConditionals($string, array('var2' => 'mary')),
+			$this->runCondition($string, array('var2' => 'mary'), $runner),
 			'String Variable Replacement'
 		);
 
 		$this->assertEquals(
 			'{if var1 && \'1\' == \'bob\'}yes{/if}',
-			$runner->processConditionals($string, array('var2' => TRUE)),
+			$this->runCondition($string, array('var2' => TRUE), $runner),
 			'Bool TRUE Variable Replacement'
 		);
 
 		$this->assertEquals(
 			'{if var1 && \'\' == \'bob\'}yes{/if}',
-			$runner->processConditionals($string, array('var2' => FALSE)),
+			$this->runCondition($string, array('var2' => FALSE), $runner),
 			'Bool FALSE Variable Replacement'
 		);
 	}
@@ -91,7 +102,7 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 
 		$inital = '{if var1 && var2 && var3 == \'bob\'}yes{if:else}no{/if}';
 
-		$var2 = $runner->processConditionals($inital, array('var1' => 3));
+		$var2 = $this->runCondition($inital, array('var1' => 3), $runner);
 
 		$this->assertEquals(
 			'{if \'3\' && var2 && var3 == \'bob\'}yes{if:else}no{/if}',
@@ -99,7 +110,7 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 			'Integer Variable Replacement'
 		);
 
-		$var3 = $runner->processConditionals($var2, array('var3' => 'bob'));
+		$var3 = $this->runCondition($var2, array('var3' => 'bob'), $runner);
 
 		$this->assertEquals(
 			'{if \'3\' && var2 && \'bob\' == \'bob\'}yes{if:else}no{/if}',
@@ -110,14 +121,14 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 		// Adding var2 completes the conditional and causes evaluation
 		$this->assertEquals(
 			'yes',
-			$runner->processConditionals($var3, array('var2' => 4)),
+			$this->runCondition($var3, array('var2' => 4), $runner),
 			'Last variable triggers evaluation'
 		);
 
 		// Do it again with a falsey value to sanity check it
 		$this->assertEquals(
 			'no',
-			$runner->processConditionals($var3, array('var2' => 0)),
+			$this->runCondition($var3, array('var2' => 0), $runner),
 			'Last variable triggers evaluation to false'
 		);
 	}
@@ -131,7 +142,7 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 
 		$this->assertEquals(
 			'{if 5 == var}yes{if:else}maybe{/if}',
-			$runner->processConditionals($string, array()),
+			$this->runCondition($string, array(), $runner),
 			'Elseif branch rewritten to else and old else pruned'
 		);
 
@@ -139,7 +150,7 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 
 		$this->assertEquals(
 			'{if 5 == var}yes{if:else}no{/if}',
-			$runner->processConditionals($string, array()),
+			$this->runCondition($string, array(), $runner),
 			'Elseif branch evaluated to FALSE and is pruned'
 		);
 
@@ -147,7 +158,7 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 
 		$this->assertEquals(
 			'{if 5 == var}maybe{if:else}maybe2{/if}',
-			$runner->processConditionals($string, array()),
+			$this->runCondition($string, array(), $runner),
 			'If evaluated to false, if is pruned, elseif is promoted'
 		);
 
@@ -161,7 +172,7 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 
 		$this->assertEquals(
 			'{if 7 == var}maybe{if:else}quitepossibly{/if}',
-			$runner->processConditionals($string, array()),
+			$this->runCondition($string, array(), $runner),
 			'Double elseif promotion, true rewriting, and branch pruning'
 		);
 	}

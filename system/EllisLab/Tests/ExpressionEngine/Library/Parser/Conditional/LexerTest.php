@@ -52,13 +52,17 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 	protected function runLexer($description, $str_in, $expected)
 	{
 		$result = $this->lexer->tokenize($str_in);
+		$result_array = array();
 
-		foreach ($result as &$r)
+		foreach ($result as $r)
 		{
-			$r = $r->toArray();
+			if ($r->type != 'COMMENT')
+			{
+				$result_array[] = array($r->type, $r->lexeme);
+			}
 		}
 
-		$this->assertSame($expected, $result, $description);
+		$this->assertSame($expected, $result_array, $description);
 	}
 
 	/**
