@@ -1895,10 +1895,15 @@ class Design extends CP_Controller {
 		$this->cp->add_to_head($this->view->head_link('css/codemirror.css'));
 		$this->cp->add_to_head($this->view->head_link('css/codemirror-additions.css'));
 
+		$this->javascript->set_global(
+			'editor.lint', $this->_get_installed_plugins_and_modules()
+		);
+
 		$this->cp->add_js_script(array(
 				'file'		=> array(
 					'codemirror/codemirror',
 					'codemirror/closebrackets',
+					'codemirror/lint',
 					'codemirror/overlay',
 					'codemirror/xml',
 					'codemirror/css',
@@ -2098,11 +2103,7 @@ class Design extends CP_Controller {
 		/*
 		/* -------------------------------------*/
 
-		// Check submitted tags (valid modules / plugins)
-
-		$this->_validate_tags();
-
-		if (isset($_POST['update_and_return']) && ( ! count($this->warnings) OR $this->input->post('warnings')))
+		if (isset($_POST['update_and_return']) && $this->input->post('warnings'))
 		{
 			$this->session->set_flashdata($cp_message);
 			$this->db->select('group_id');
@@ -2110,10 +2111,6 @@ class Design extends CP_Controller {
 			$query = $this->db->get('templates');
 
 			$this->functions->redirect(cp_url('design/manager', 'tgpref='.$query->row('group_id')));
-		}
-		elseif (count($this->warnings))
-		{
-			$this->edit_template($template_id, $message, $this->warnings);
 		}
 		else
 		{
@@ -2131,22 +2128,8 @@ class Design extends CP_Controller {
 	 * @access	private
 	 * @return	void
 	 */
-	function _validate_tags()
+	function _get_installed_plugins_and_modules()
 	{
-		$this->warnings = array();
-
-		$str = $_POST['template_data'];
-
-		// Don't trigger inside EE comments
-		$str = preg_replace('/{!--(.*?)--}/is', '', $str);
-
-		if (strpos($str, '{exp:') === FALSE)
-		{
-			return;
-		}
-
-		$tags = $this->functions->assign_variables($str);
-
 		$this->load->library('template');
 		$this->load->model('addons_model');
 		$this->template->fetch_addons();
@@ -2162,118 +2145,10 @@ class Design extends CP_Controller {
 		$installed = array_map('array_pop', $query->result_array());
 		$installed = array_map('strtolower', $installed);
 
-		$this->info = array_merge($modules, $plugins);
-
-		// Go through the single variables and check if they match installed plugins
-
-		foreach($tags['var_single'] as $tag)
-		{
-			if (strncmp($tag, 'exp:', 4) === 0)
-			{
-				$name = substr($tag, 4, strcspn($tag, ': ', 4));
-
-				if ( ! in_array($name, $plugins))
-				{
-					if (in_array($name, $modules))
-					{
-						$this->_add_warning($name, $tag, 'no_closing_tag');
-						$this->_add_warning($name, $tag, 'docs_link');
-					}
-					else
-					{
-						$this->_add_warning($name, $tag, 'class');
-					}
-				}
-			}
-		}
-
-		// And now the variable pairs
-
-		foreach($tags['var_pair'] as $tag => $inner)
-		{
-			if (strncmp($tag, 'exp:', 4) === 0)
-			{
-				$name = substr($tag, 4, strcspn($tag, ': ', 4));	// :<space>, leave the space in there!
-
-				if ( ! in_array($name, $installed) && ! in_array($name, $plugins))
-				{
-					if (in_array($name, $modules))
-					{
-						$this->_add_warning($name, $tag, 'install');
-					}
-					else
-					{
-						$this->_add_warning($name, $tag, 'class');
-					}
-				}
-			}
-		}
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Tag suggestion
-	 *
-	 * Takes a tag's class name and finds the closest matching tag using
-	 * a character swap count (up to 3 changes).
-	 *
-	 * @access	private
-	 * @param	string	tag class name
-	 * @return	void
-	 */
-	function _tag_suggestion($tag_name)
-	{
-		$weight = 3;
-		$suggestion = '';
-
-		if ($tag_name == 'weblog')
-		{
-			return 'channel';
-		}
-
-		foreach($this->info as $name)
-		{
-			$new_weight = levenshtein($name, $tag_name);
-			if ($new_weight != -1 && $new_weight < $weight)
-			{
-				$suggestion = $name;
-				$weight = $new_weight;
-			}
-		}
-
-		return $suggestion;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Add Warning
-	 *
-	 * Utility method used by _validate_tags to build an array of warnings
-	 *
-	 * @access	private
-	 * @return	void
-	 */
-	function _add_warning($name, $tag, $type)
-	{
-		if ( ! isset($this->warnings[$name]))
-		{
-			$this->warnings[$name] = array(
-				'suggestion'	=> ($type == 'class') ? $this->_tag_suggestion($name) : '',
-				'errors'		=> array('tag_'.$type.'_error'),
-				'full_tags'		=> array($tag)
-			);
-		}
-		else
-		{
-			$this->warnings[$name]['errors'][] = 'tag_'.$type.'_error';
-
-			if ( ! in_array($tag, $this->warnings[$name]['full_tags']))
-			{
-				$this->warnings[$name]['full_tags'][] = $tag;
-			}
-		}
+		return array(
+			'available' => array_merge($modules, $plugins),
+			'not_installed' => array_values(array_diff($modules, $installed))
+		);
 	}
 
 	// --------------------------------------------------------------------

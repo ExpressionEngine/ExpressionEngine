@@ -1,4 +1,76 @@
 /**
+ * EE codemirror linter.
+ */
+(function() {
+	"use strict";
+
+	function tagError(tagname) {
+
+		var addon_exists = (jQuery.inArray(tagname, EE.editor.lint.available) >= 0),
+			addon_not_installed = (jQuery.inArray(tagname, EE.editor.lint.not_installed) >= 0);
+
+		if ( ! addon_exists || addon_not_installed) {
+
+			if ( ! addon_exists) {
+				return 'Addon "' + tagname + '" does not exist.';
+			}
+
+			return 'Module "' + tagname + '" exists, but is not installed.';
+		}
+
+		return '';
+	}
+
+	EE.codemirror_linter = {
+		getAnnotations: function(text) {
+	 		var found = [],
+	 			regex = /(\{\/?exp:)([\w]+)/i,
+	 			skipped_lines = 0,
+	 			last_ch = 0,
+	 			tag;
+
+	 		while (tag = regex.exec(text)) {
+
+	 			// find the line and character of the match
+	 			var skipped_text = text.substr(0, tag.index),
+	 				lines = skipped_text.split("\n"),
+	 				line = lines.length - 1,
+	 				ch = lines[line].length + tag[1].length;
+
+	 			// adjust line to absolute position in the textarea
+	 			line += skipped_lines;
+	 			skipped_lines = line;
+
+	 			// adjust character for same-line tags
+	 			if (lines.length == 1) {
+	 				ch += last_ch;
+	 			}
+
+	 			// check tag for validity
+	 			var error = tagError(tag[2]);
+
+	 			if (error) {
+	 				found.push({
+	 					from: CodeMirror.Pos(line, ch),
+	 					to: CodeMirror.Pos(line, ch + tag[2].length),
+	 					message: error
+	 				});
+	 			}
+
+	 			// store ch for next search
+	 			last_ch = ch + tag[2].length;
+
+	 			// trim text for next search
+	 			text = text.substr(tag.index + tag[0].length);
+	 		}
+
+	 		return found;
+	 	}
+	 };
+
+ })();
+
+/**
  * An EE textmirror "mode". Basically a lexer.
  */
 (function(CodeMirror) {

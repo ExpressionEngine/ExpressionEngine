@@ -69,22 +69,31 @@ $(document).ready(function () {
 
 	// Hook up codemirror
 
+	function detectUseTabs(code)
+	{
+		var code = code_textarea[0].value,
+			tabs = code.match(/^\t+/gm),
+			spaces = code.match(/^[ ]+/gm),
+			tablength = tabs ? tabs.length : 0,
+			spacelength = spaces ? spaces.length : 0;
+
+		// default for new documents is tabs
+		return (spacelength > tablength) ? false : true;
+	}
+
 	var code_textarea = $('#template_data'),
 		orig_height = code_textarea.height();
 
 	var code = code_textarea[0].value,
-		tabs = code.match(/^\t+/gm),
-		spaces = code.match(/^[ ]+/gm),
-		tablength = tabs ? tabs.length : 0,
-		spacelength = spaces ? spaces.length : 0,
-		usetabs = (spacelength > tablength) ? false : true; // this makes the default for new documents tabs
+		usetabs = detectUseTabs(code);
 
 	var myCodeMirror = CodeMirror.fromTextArea(code_textarea[0], {
 		lineNumbers: true,
 		autoCloseBrackets: true,
 		mode: "ee",
 		smartIndent: false,
-		indentWithTabs: usetabs
+		indentWithTabs: usetabs,
+		lint: EE.codemirror_linter
 	});
 
 	myCodeMirror.setSize(null, orig_height);
