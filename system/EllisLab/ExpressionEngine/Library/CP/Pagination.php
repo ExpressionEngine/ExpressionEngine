@@ -100,7 +100,7 @@ class Pagination {
 		}
 		else
 		{
-			$end = $pagination['pages'];
+			$end = $pages;
 			if ($end - $pages > 1)
 			{
 				$start = $end - $pages;
