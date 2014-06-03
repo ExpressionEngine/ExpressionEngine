@@ -194,8 +194,11 @@ class Logs extends CP_Controller {
 			$logs = $logs->filter('act_date', $this->params['filter_by_date']);
 		}
 
+		$count = $logs->count();
+
 		$logs = $logs->order('act_date', 'desc')
-			->limit($this->params['perpage'], $offset)
+			->limit($this->params['perpage'])
+			->offset($offset)
 			->all();
 
 		$rows = array();
@@ -211,7 +214,7 @@ class Logs extends CP_Controller {
 			);
 		}
 
-		$pagination = new Pagination($this->params['perpage'], $this->db->count_all('cp_log'), $page);
+		$pagination = new Pagination($this->params['perpage'], $count, $page);
 		$links = $pagination->cp_links($this->base_url);
 
 		$vars = array(
