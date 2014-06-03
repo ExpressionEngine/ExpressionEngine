@@ -83,7 +83,12 @@ class Logs extends CP_Controller {
 		if (ee()->config->item('multiple_sites_enabled') === 'y' && ! IS_CORE)
 		{
 			$sites = array('' => '-- '.lang('by_site').' --');
-			$sites = array_merge($sites, ee()->session->userdata('assigned_sites'));
+
+			// Since the keys are numeric array_merge() is the wrong solution
+			foreach (ee()->session->userdata('assigned_sites') as $site_id => $site_label)
+			{
+				$sites[$site_id] = $site_label;
+			}
 		}
 
 		$dates = array(
@@ -179,17 +184,17 @@ class Logs extends CP_Controller {
 
 		$logs = ee()->api->get('CpLog')->with('Site');
 
-		if (isset($this->params['filter_by_username']))
+		if (! empty($this->params['filter_by_username']))
 		{
 			$logs = $logs->filter('member_id', $this->params['filter_by_username']);
 		}
 
-		if (isset($this->params['filter_by_site']))
+		if (! empty($this->params['filter_by_site']))
 		{
 			$logs = $logs->filter('site_id', $this->params['filter_by_site']);
 		}
 
-		if (isset($this->params['filter_by_date']))
+		if (! empty($this->params['filter_by_date']))
 		{
 			$logs = $logs->filter('act_date', '>=', ee()->localize->now - $this->params['filter_by_date']);
 		}
