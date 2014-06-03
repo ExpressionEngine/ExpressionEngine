@@ -213,11 +213,12 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 	{
 		return array(
 			// evaluation
-			array('Evaluate If With Space',		 '{if 5 == 5}out{/if}',			'out'),
-			array('Evaluate If With Tab',		 '{if	5 == 5}out{/if}',		'out'),
-			array('Evaluate If With Newline',	 "{if\n5 == 5}out{/if}",		'out'),
-			array('Evaluate If With CRLF',		 "{if\r\n5 == 5}out{/if}",		'out'),
-			array('Evaluate If With Whitespace', "{if\n\t5 == 5\n}out{/if}",	'out'),
+			array('Evaluate If With Space',		 '{if 5 == 5}out{/if}',					'out'),
+			array('Evaluate If With Tab',		 '{if	5 == 5}out{/if}',				'out'),
+			array('Evaluate If With Newline',	 "{if\n5 == 5}out{/if}",				'out'),
+			array('Evaluate If With CRLF',		 "{if\r\n5 == 5}out{/if}",				'out'),
+			array('Evaluate If With Whitespace', "{if\n\t5 == 5\n}out{/if}",			'out'),
+			array('Evaluate If With Comment',	 "{if {!-- cool --}5 == 5\n}out{/if}",	'out'),
 		);
 	}
 
@@ -225,8 +226,9 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 	{
 		return array(
 			// evaluation
-			array('Nested in TRUE',		'{if 5 == 5}{if var == "foo"}out{/if}{/if}',				"{if var == 'foo'}out{/if}"),
-			array('Nested in FALSE',	'{if 2 == 1}{if var2 == "foo"}no{/if}{if:else}out{/if}',	'out'),
+			array('Nested in TRUE',			'{if 5 == 5}{if var == "foo"}out{/if}{/if}',								"{if var == 'foo'}out{/if}"),
+			array('Nested in FALSE',		'{if 2 == 1}{if var2 == "foo"}no{/if}{if:else}out{/if}',					'out'),
+			array('Nested in with comment',	'{if 2 == 1}{if var2 == "foo"}no{!-- never --}nope{/if}{if:else}out{/if}',	'out'),
 		);
 	}
 

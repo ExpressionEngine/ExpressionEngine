@@ -2268,7 +2268,12 @@ class EE_Functions {
 	public function assign_parameters($str, $defaults = array())
 	{
 		if ($str == "")
+		{
 			return FALSE;
+		}
+
+		// remove comments before assigning
+		$str = preg_replace("/\{!--.*?--\}/s", '', $str);
 
 		// \047 - Single quote octal
 		// \042 - Double quote octal

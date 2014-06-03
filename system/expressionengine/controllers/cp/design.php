@@ -1873,35 +1873,25 @@ class Design extends CP_Controller {
 
 		$vars['can_save_file'] = ($this->config->item('save_tmpl_files') == 'y' && $this->config->item('tmpl_file_basepath') != '') ? TRUE : FALSE;
 
+		$this->cp->add_to_head($this->view->head_link('css/codemirror.css'));
+		$this->cp->add_to_head($this->view->head_link('css/codemirror-additions.css'));
+
 		$this->cp->add_js_script(array(
-				'plugin'	=> 'markitup',
 				'file'		=> array(
-								'ee_txtarea',
-								'cp/template_editor',
-								'cp/manager'
+					'codemirror/codemirror',
+					'codemirror/overlay',
+					'codemirror/xml',
+					'codemirror/css',
+					'codemirror/javascript',
+					'codemirror/htmlmixed',
+					'codemirror/ee-mode',
+
+					'ee_txtarea',
+					'cp/template_editor',
+					'cp/manager'
 				)
 			)
 		);
-
-		$markItUp = array(
-			'nameSpace'	=> "html",
-			'onShiftEnter'	=> array('keepDefault' => FALSE, 'replaceWith' => "<br />\n"),
-			'onCtrlEnter'	=> array('keepDefault' => FALSE, 'openWith' => "\n<p>", 'closeWith' => "</p>\n")
-		);
-
-		/* -------------------------------------------
-		/*	Hidden Configuration Variable
-		/*	- allow_textarea_tabs => Preserve tabs in all textareas or disable completely
-		/* -------------------------------------------*/
-
-		if($this->config->item('allow_textarea_tabs') != 'n')
-		{
-			$markItUp['onTab'] = array('keepDefault' => FALSE, 'replaceWith' => "\t");
-		}
-
-		$this->javascript->set_global('template.markitup', $markItUp);
-		$this->javascript->set_global('template.url',
-										str_replace(AMP, '&', BASE).'&C=design&M=template_revision_history&template='.$template_id.'&revision_id=');
 
 		$vars['table_template'] = array(
 					'table_open'			=> '<table class="templateTable templateEditorTable" border="0" cellspacing="0" cellpadding="0">'
@@ -3347,7 +3337,7 @@ class Design extends CP_Controller {
 					$("#url_manager tbody > tr:even").addClass("even").removeClass("odd");
 
 					var order = Array();
-					$("#url_manager input[type='text']").each(function(){	
+					$("#url_manager input[type='text']").each(function(){
 						order.push($(this).attr("name").replace("route_", ""));
 					});
 

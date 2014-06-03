@@ -296,6 +296,9 @@ class EE_Template {
 
 		ee()->config->_global_vars['is_core'] = (IS_CORE) ? TRUE : FALSE;
 
+		// Mark our template better errors
+		$this->template = $this->markContext().$this->template;
+
 		// Parse manual variables and Snippets
 		// These are variables that can be set in the path.php file
 
@@ -304,14 +307,18 @@ class EE_Template {
 			$this->log_item("Snippets (Keys): ".implode('|', array_keys(ee()->config->_global_vars)));
 			$this->log_item("Snippets (Values): ".trim(implode('|', ee()->config->_global_vars)));
 
-			foreach (ee()->config->_global_vars as $key =>& $val)
+			foreach (ee()->config->_global_vars as $key => &$val)
 			{
+				// in case any of these variables have EE comments of their own
+				// removing from the value makes snippets more usable in conditionals
 				$val = $this->remove_ee_comments($val);
-				$this->template = str_replace(LD.$key.RD, $val, $this->template);
-			}
 
-			// in case any of these variables have EE comments of their own
-			$this->template = $this->remove_ee_comments($this->template);
+				$replace = $this->markContext('snippet: '.$key);
+				$replace .= $val;
+				$replace .= $this->markContext();
+
+				$this->template = str_replace(LD.$key.RD, $replace, $this->template);
+			}
 		}
 
 		// have to handle the silly in_group() conditionals before we
@@ -446,6 +453,9 @@ class EE_Template {
 
 		// Smite Our Enemies:  Conditionals
 		$this->log_item("Parsing Segment, Embed, Layout, and Global Vars Conditionals");
+
+		$this->template .= $this->createAnnotation(array('a' => 'b'));
+		$this->template .= $this->createAnnotation(array('b' => 'c'));
 
 		$this->template = ee()->functions->prep_conditionals(
 			$this->template,
@@ -4175,6 +4185,27 @@ class EE_Template {
 		}
 
 		return $str;
+	}
+
+	private function markContext($context = NULL)
+	{
+		if ( ! isset($context))
+		{
+			$context = 'Template: '.$this->group_name.'/'.$this->template_name;
+		}
+
+		return $this->createAnnotation(array('context' => $context));
+	}
+
+	private function createAnnotation($data)
+	{
+		if ( ! isset($this->annotations))
+		{
+			$this->annotations = new \EllisLab\ExpressionEngine\Library\Template\Annotation\Runtime();
+			$this->annotations->useSharedStore();
+		}
+
+		return $this->annotations->create($data);
 	}
 }
 // END CLASS

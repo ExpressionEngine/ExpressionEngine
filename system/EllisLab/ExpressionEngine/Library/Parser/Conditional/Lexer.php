@@ -7,6 +7,7 @@ use EllisLab\ExpressionEngine\Library\Parser\Conditional\Exception\LexerExceptio
 
 use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\Token;
 use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\Bool;
+use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\Comment;
 use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\Number;
 use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\Operator;
 use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\Other;
@@ -74,6 +75,11 @@ class Lexer extends AbstractLexer {
 	 */
 	private $tag_depth = 0;
 
+	const COMMENT_PATTERN = "
+		\{!--		# open tag
+		(.*?)		# anything inbetween
+		--\}		# closing tag
+	";
 
 	/**
 	 * Regex for boolean values
@@ -214,6 +220,10 @@ class Lexer extends AbstractLexer {
 			$this->whitespace();
 			$this->expression();
 		}
+		elseif ($comment = $this->peekRegex(self::COMMENT_PATTERN, 'usx'))
+		{
+			$this->addToken('COMMENT', $this->move(strlen($comment)));
+		}
 		else
 		{
 			$this->addToken('TEMPLATE_STRING', $this->next());
@@ -254,12 +264,20 @@ class Lexer extends AbstractLexer {
 			{
 				$this->parenthesis();
 			}
+			elseif ($this->operator())
+			{
+				; // nothing
+			}
+			elseif ($this->value())
+			{
+				; // nothing
+			}
 			elseif ($char == '{')
 			{
 				$this->next();
 				$this->tag();
 			}
-			elseif ( ! $this->operator() && ! $this->value())
+			else
 			{
 				$this->next();
 				$this->addToken('MISC', $char);
@@ -471,6 +489,7 @@ class Lexer extends AbstractLexer {
 	private function compilePattern()
 	{
 		return '/('.
+			'(?P<COMMENT>'.self::COMMENT_PATTERN.')|'.
 			'(?P<BOOL>'.self::BOOL_PATTERN.')|'.
 			'(?P<VARIABLE>'.self::VARIABLE_PATTERN.')|'.
 			'(?P<NUMBER>'.self::NUMBER_PATTERN.')'.
@@ -490,6 +509,8 @@ class Lexer extends AbstractLexer {
 		{
 			switch ($type)
 			{
+				case 'COMMENT':	 $obj = new Comment($lexeme);
+					break;
 				case 'BOOL':	 $obj = new Bool($lexeme);
 					break;
 				case 'NUMBER':	 $obj = new Number($lexeme);

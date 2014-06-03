@@ -5,6 +5,7 @@ namespace EllisLab\ExpressionEngine\Library\Parser\Conditional;
 use EllisLab\ExpressionEngine\Library\Parser\AbstractParser;
 use EllisLab\ExpressionEngine\Library\Parser\Conditional\Exception\ParserException;
 use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\Bool;
+use EllisLab\ExpressionEngine\Library\Template\Annotation\Runtime as RuntimeAnnotations;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -51,6 +52,17 @@ class Parser extends AbstractParser {
 	protected $variables = array();
 
 	protected $safety = FALSE;
+
+	protected $context;
+	protected $annotations;
+
+	public function __construct($tokens)
+	{
+		parent::__construct($tokens);
+
+		$this->annotations = new RuntimeAnnotations();
+		$this->annotations->useSharedStore();
+	}
 
 	public function parse()
 	{
@@ -211,8 +223,6 @@ class Parser extends AbstractParser {
 			$this->next();
 		}
 		while ($this->valid());
-
-	//	var_dump($this->tokens);
 	}
 
 	/**
@@ -304,11 +314,6 @@ class Parser extends AbstractParser {
 		return $expression;
 	}
 
-	protected function addFalse($expression)
-	{
-		$expression->add(new Bool(FALSE));
-	}
-
 	/**
 	 * Variable Values
 	 */
@@ -359,6 +364,16 @@ class Parser extends AbstractParser {
 	}
 
 	/**
+	 * Add a false token
+	 *
+	 * These are used to replace invalid values.
+	 */
+	protected function addFalse($expression)
+	{
+		$expression->add(new Bool(FALSE));
+	}
+
+	/**
 	 * Add to the current output buffer
 	 */
 	public function output($value)
@@ -376,6 +391,19 @@ class Parser extends AbstractParser {
 		if ($this->is('WHITESPACE'))
 		{
 			$this->whitespace();
+			$this->next();
+		}
+
+		if ($this->is('COMMENT'))
+		{
+			if ($annotation = $this->annotations->read($this->value()))
+			{
+				if ($annotation->context)
+				{
+					$this->context = $annotation->context;
+				}
+			}
+
 			$this->next();
 		}
 	}
@@ -420,6 +448,15 @@ class Parser extends AbstractParser {
 		$this->output =& $this->output_buffers[count($this->output_buffers) - 1];
 	}
 
+	/**
+	 * Check if there is a tag at the current offset
+	 *
+	 * Works like is() but enforces an LD and then compares
+	 * to the next token.
+	 *
+	 * @param String $type The type to check against
+	 * @return Bool  Current token is LD and next is type
+	 */
 	protected function isTag($type)
 	{
 		if ($this->is('LD'))
@@ -448,7 +485,9 @@ class Parser extends AbstractParser {
 	{
 		if (parent::expect($type) === FALSE)
 		{
-			throw new ParserException('Unexpected ' . $this->token . ' expected ' . $type . '.');
+			$state = "\n\n".$this->context;
+
+			throw new ParserException('Unexpected ' . $this->token->type . ' expected ' . $type . ' in '. $state);
 		}
 
 		return TRUE;
@@ -482,7 +521,7 @@ class Parser extends AbstractParser {
 	{
 		if ( ! $this->acceptTag($type))
 		{
-			throw new ParserException('Unexpected ' . $this->token . ' expected ' . $type . '.');
+			throw new ParserException('Unexpected ' . $this->token->type . ' expected ' . $type . '.');
 		}
 
 		return TRUE;
