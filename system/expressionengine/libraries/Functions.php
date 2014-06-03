@@ -2441,7 +2441,7 @@ class EE_Functions {
 			}
 
 			ee()->output->set_status_header(500);
-			ee()->output->fatal_error($error);
+			ee()->output->fatal_error(nl2br($error));
 
 			exit;
 		}
