@@ -731,7 +731,7 @@ class EE_Typography extends CI_Typography {
 			$str = str_replace($match, $hash, $str);
 		}
 
-		$parser = new Markdown_Parser();
+		$parser = new MarkdownExtra_Parser();
 
 		// Disable other markup if this is set
 		if (isset($options['no_markup'])
@@ -748,11 +748,12 @@ class EE_Typography extends CI_Typography {
 		$str = $parser->transform($str);
 
 		// Run everything through SmartyPants
-		if (isset($options['smartypants'])
-			&& get_bool_from_string($options['smartypants']))
+		if ( ! isset($options['smartypants'])
+			OR get_bool_from_string($options['smartypants']) == FALSE)
 		{
 			require_once(APPPATH.'libraries/typography/SmartyPants/smartypants.php');
-			$str = SmartyPants($str);
+			// 2  ->  "---" for em-dashes; "--" for en-dashes
+			$str = SmartyPants($str, 2);
 		}
 
 		// Restore the quotes we protected earlier.
