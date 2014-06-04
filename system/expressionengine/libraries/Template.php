@@ -451,8 +451,24 @@ class EE_Template {
 			$this->template = $this->parse_template_php($this->template);
 		}
 
+
+		// Set up logged_in_* variables for early conditional evaluation
+		$user_vars	= array(
+			'member_id', 'group_id', 'group_description', 'group_title', 'username', 'screen_name',
+			'email', 'ip_address', 'location', 'total_entries',
+			'total_comments', 'private_messages', 'total_forum_posts', 'total_forum_topics', 'total_forum_replies'
+		);
+
+		$logged_in_user_cond = array();
+
+		foreach ($user_vars as $user_var)
+		{
+			$logged_in_user_cond['logged_in_'.$user_var] = ee()->session->userdata[$user_var];
+		}
+
+
 		// Smite Our Enemies:  Conditionals
-		$this->log_item("Parsing Segment, Embed, Layout, and Global Vars Conditionals");
+		$this->log_item("Parsing Segment, Embed, Layout, logged_in_*, and Global Vars Conditionals");
 
 		$this->template = ee()->functions->prep_conditionals(
 			$this->template,
@@ -461,6 +477,7 @@ class EE_Template {
 				$this->template_route_vars,
 				$this->embed_vars,
 				$layout_conditionals,
+				$logged_in_user_cond,
 				ee()->config->_global_vars
 			)
 		);
