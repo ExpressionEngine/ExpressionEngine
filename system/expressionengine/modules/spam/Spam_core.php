@@ -141,54 +141,29 @@ class Spam_ext {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Filter comments for spam
+	 * Filter content for spam
 	 * 
+	 * @param  array  An array of strings to classify
 	 * @access public
-	 * @return void
+	 * @return bool   Returns true if spam
 	 */
-	public function filter_comment($data)
+	public function filter_content($data)
 	{
-		if ($this->classify($data['comment']) === TRUE)
-		{
-			$this->moderate_content('comment', $data);
-			ee()->extensions->end_script = TRUE;
-		}
-
-		return $data;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Filter channel form submissions for spam
-	 * 
-	 * @access public
-	 * @return void
-	 */
-	public function filter_channel_form($data)
-	{
-		// Channel form entries are tricky because we can have an arbitrary 
-		// number of fields. Since we're using Naive Bayes, our assumption
+		// Since we're using Naive Bayes, our assumption
 		// of statistical independece means classifying all the content lumped 
 		// together should give the same result as classifying each separately.
-		$i = 1;
-		$content = array();
+		$content = implode(' ', $data);
 
-		while ( ! empty($data->entry['field_id_' . $i]))
+		if ( ! empty($content))
 		{
-			$content[] = $data->entry['field_id_' . $i];
-			$i++;
+			if ($this->classify($content) === TRUE)
+			{
+				$this->moderate_content('comment', $data);
+				return TRUE;
+			}
 		}
 
-		$content = implode(' ', $content);
-
-		if ($this->classify($content) === TRUE)
-		{
-			$this->moderate_content('comment', $data);
-			ee()->extensions->end_script = TRUE;
-		}
-
-		return $data;
+		return FALSE;
 	}
 
 	// --------------------------------------------------------------------
@@ -201,6 +176,8 @@ class Spam_ext {
 	 */
 	public function filter_forum_post($data)
 	{
+		var_dump($data);
+		die();
 		ee()->extensions->end_script = TRUE;
 	}
 

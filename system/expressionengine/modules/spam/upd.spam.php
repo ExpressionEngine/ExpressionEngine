@@ -96,31 +96,6 @@ class Spam_upd {
 		ee()->dbforge->add_key('trap_id', TRUE);
 		ee()->dbforge->create_table('spam_trap');
 
-		// Install the extension
-
-		$insert = array();
-
-		// The hooks where we want to filter content for spam
-		$hooks = array(
-			'channel_form_submit_entry_end' => 'filter_channel_form',
-			'insert_coment_insert_array' => 'filter_comment'
-		);
-
-		foreach ($hooks as $hooks => $method)
-		{
-			$insert[] = array(
-				'class'    => $this->name.'_ext',
-				'hook'     => $hook,
-				'method'   => $method,
-				'settings' => '',
-				'priority' => 10,
-				'version'  => $this->version,
-				'enabled'  => 'y'
-			);
-		}
-
-		ee()->db->insert_batch('extensions',$insert);
-
 		return TRUE;
 	}
 
@@ -152,12 +127,6 @@ class Spam_upd {
 		ee()->dbforge->drop_table('spam_vocabulary');
 		ee()->dbforge->drop_table('spam_parameters');
 		ee()->dbforge->drop_table('spam_training');
-
-		// Extension
-		ee()->db->delete(
-			'extensions',
-			array('class' => $this->name.'_ext')
-		);
 
 		return TRUE;
 	}
