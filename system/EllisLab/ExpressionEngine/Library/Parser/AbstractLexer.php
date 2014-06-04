@@ -24,6 +24,8 @@ namespace EllisLab\ExpressionEngine\Library\Parser;
  * @category	Core
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
+ *
+ * THIRD PARTY DEVS: Extend at your own risk before it's documented
  */
 abstract class AbstractLexer {
 
