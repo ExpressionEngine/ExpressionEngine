@@ -410,8 +410,11 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 
 		return array(
 			array('Zero string is true',			'{if "0" == TRUE}yes{if:else}no{/if}',							'yes'),
+			array('Zero string is true',			'{if TRUE == "0"}yes{if:else}no{/if}',							'yes'),
 			array('Zero string var is true',		'{if var == TRUE}yes{if:else}no{/if}',							'yes', array('var' => '0')),
 			array('Empty string is false',			'{if "" == FALSE}yes{if:else}no{/if}',							'yes'),
+			array('Strings with #s are not #s',		'{if 5 == "5yep"}no{if:else}yes{/if}',							'yes'),
+			array('Strings with #s are not #s',		'{if "5yep" == 5}no{if:else}yes{/if}',							'yes'),
 			array('Esc Single quote in double',		'{if "ee'.$bs.$sq.'s parser" == var}yes{if:else}no{/if}',		'yes', array('var' => "ee's parser")),
 			array('Esc Double quote in double',		'{if "ee'.$bs.$dq.'s parser" == var}yes{if:else}no{/if}',		'yes', array('var' => 'ee"s parser')),
 			array('Esc Single quote in single',		"{if 'ee".$bs.$sq."s parser' == var}yes{if:else}no{/if}",		'yes', array('var' => "ee's parser")),
