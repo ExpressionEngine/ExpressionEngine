@@ -65,7 +65,7 @@ class BooleanExpression {
 	public function evaluate()
 	{
 		$rpn = $this->convertToRPN($this->tokens);
-		return ($this->evaluateRPN($rpn) != '');
+		return $this->bool($this->evaluateRPN($rpn));
 	}
 
 	/**
@@ -128,65 +128,10 @@ class BooleanExpression {
 				$right = array_pop($evaluate_stack);
 				$left = array_pop($evaluate_stack);
 
-				switch (strtoupper($token->value()))
-				{
-					case '^':
-					case '**': array_push($evaluate_stack, pow($left, $right));
-						break;
-					case '*': array_push($evaluate_stack, $left * $right);
-						break;
-					case '/': array_push($evaluate_stack, $left / $right);
-						break;
-					case '%': array_push($evaluate_stack, $left % $right);
-						break;
-					case '+': array_push($evaluate_stack, $left + $right);
-						break;
-					case '-': array_push($evaluate_stack, $left - $right);
-						break;
-					case '.': array_push($evaluate_stack, $left . $right);
-						break;
-					case '<': array_push($evaluate_stack, $left < $right);
-						break;
-					case '<=': array_push($evaluate_stack, $left <= $right);
-						break;
-					case '>': array_push($evaluate_stack, $left > $right);
-						break;
-					case '>=': array_push($evaluate_stack, $left >= $right);
-						break;
-					case '^=': array_push($evaluate_stack, (strpos($left, (string) $right) === 0));
-						break;
-					case '*=': array_push($evaluate_stack, (strpos($left, (string) $right) !== FALSE));
-						break;
-					case '$=':
-						$right = (string) $right;
-						array_push($evaluate_stack, (substr($left, -strlen($right)) == $right));
-						break;
-					case '~':
-						if (($value = @preg_match($right, $left)) === FALSE)
-						{
-							throw new BooleanExpressionException('Invalid Regular Expression: '.$right);
-						}
-						array_push($evaluate_stack, ($value > 0));
-						break;
-					case '<>': array_push($evaluate_stack, $left <> $right);
-						break;
-					case '==': array_push($evaluate_stack, $left == $right);
-						break;
-					case '!=': array_push($evaluate_stack, $left != $right);
-						break;
-					case '&&': array_push($evaluate_stack, $left && $right);
-						break;
-					case '||': array_push($evaluate_stack, $left || $right);
-						break;
-					case 'AND': array_push($evaluate_stack, $left AND $right);
-						break;
-					case 'XOR': array_push($evaluate_stack, $left XOR $right);
-						break;
-					case 'OR': array_push($evaluate_stack, $left OR $right);
-						break;
-					default:
-						throw new BooleanExpressionException('Invalid Binary Operator: '.$token);
-				}
+				array_push(
+					$evaluate_stack,
+					$this->evaluateBinary($token, $left, $right)
+				);
 			}
 		}
 
@@ -215,7 +160,8 @@ class BooleanExpression {
 			if ($this->isOperator($token))
 			{
 				// unary operators need to be marked as such for the next step
-				if ($this->inPrefixPosition($prev_token) && $this->isValidUnaryOperator($token->value()))
+				if ($this->inPrefixPosition($prev_token) &&
+					$this->isValidUnaryOperator($token->value()))
 				{
 					$token->markAsUnary();
 				}
@@ -296,7 +242,11 @@ class BooleanExpression {
 	 */
 	private function inPrefixPosition($previous)
 	{
-		return ($previous == NULL || $previous->type == 'LP' || $this->isOperator($previous));
+		return (
+			$previous == NULL OR
+			$previous->type == 'LP' OR
+			$this->isOperator($previous)
+		);
 	}
 
 	/**
@@ -347,14 +297,103 @@ class BooleanExpression {
 	}
 
 	/**
+	 * Cast to EE boolean
+	 */
+	private function bool($value)
+	{
+		// We do *not* follow the string 0 php casting rule.
+		// {if field} should be true if the user entered
+		// something. Doesn't matter what it is.
+		if ($value === '0')
+		{
+			return TRUE;
+		}
+
+		return (bool) $value;
+	}
+
+	/**
+	 * Evaluate a binary operator
+	 */
+	private function evaluateBinary($op_token, $left, $right)
+	{
+		switch (strtoupper($op_token->value()))
+		{
+			// numbers
+			case '^':
+			case '**':
+				return pow($left, $right);
+			case '*':
+				return $left * $right;
+			case '/':
+				return $left / $right;
+			case '%':
+				return $left % $right;
+			case '+':
+				return $left + $right;
+			case '-':
+				return $left - $right;
+
+			// comparisons
+			case '<>':
+				return $left <> $right;
+			case '==':
+				return $left == $right;
+			case '!=':
+				return $left != $right;
+			case '<':
+				return $left < $right;
+			case '<=':
+				return $left <= $right;
+			case '>':
+				return $left > $right;
+			case '>=':
+				return $left >= $right;
+
+			// boolean logic
+			case '&&':
+				return $this->bool($left) && $this->bool($right);
+			case '||':
+				return $this->bool($left) || $this->bool($right);
+			case 'AND':
+				return $this->bool($left) AND $this->bool($right);
+			case 'XOR':
+				return $this->bool($left) XOR $this->bool($right);
+			case 'OR':
+				return $this->bool($left) OR $this->bool($right);
+
+			// strings
+			case '.':
+				return $left . $right;
+			case '^=':
+				return strpos($left, (string) $right) === 0;
+			case '*=':
+				return strpos($left, (string) $right) !== FALSE;
+			case '$=':
+				$right = (string) $right;
+				return substr($left, -strlen($right)) == $right;
+			case '~':
+				if (($value = @preg_match($right, $left)) === FALSE)
+				{
+					throw new BooleanExpressionException('Invalid Regular Expression: '.$right);
+				}
+
+				return ($value > 0);
+		}
+
+		throw new BooleanExpressionException('Invalid Binary Operator: '.$token);
+	}
+
+	/**
 	 * List of binary operators
 	 */
 	private function getBinaryOperators()
 	{
 		// http://php.net/manual/en/language.operators.precedence.php
 
+		// operator => array(precedence, associativity, [cast])
 		return array(
-			'^' => array(60, self::RIGHT_ASSOC),
+			'^'  => array(60, self::RIGHT_ASSOC),
 			'**' => array(60, self::RIGHT_ASSOC),
 
 			'*' => array(40, self::LEFT_ASSOC),
@@ -365,25 +404,25 @@ class BooleanExpression {
 			'-' => array(30, self::LEFT_ASSOC),
 			'.' => array(30, self::LEFT_ASSOC),
 
-			'<' => array(20, self::NON_ASSOC),
+			'<'  => array(20, self::NON_ASSOC),
 			'<=' => array(20, self::NON_ASSOC),
-			'>' => array(20, self::NON_ASSOC),
+			'>'  => array(20, self::NON_ASSOC),
 			'>=' => array(20, self::NON_ASSOC),
 
 			'^=' => array(20, self::NON_ASSOC),
 			'*=' => array(20, self::NON_ASSOC),
 			'$=' => array(20, self::NON_ASSOC),
-			'~' => array(20, self::NON_ASSOC),
+			'~'  => array(20, self::NON_ASSOC),
 
 			'<>' => array(10, self::NON_ASSOC),
 			'==' => array(10, self::NON_ASSOC),
 			'!=' => array(10, self::NON_ASSOC),
 
-			'&&' => array(6, self::NON_ASSOC),
-			'||' => array(5, self::NON_ASSOC),
+			'&&'  => array(6, self::NON_ASSOC),
+			'||'  => array(5, self::NON_ASSOC),
 			'AND' => array(4, self::NON_ASSOC),
 			'XOR' => array(3, self::NON_ASSOC),
-			'OR' => array(2, self::NON_ASSOC),
+			'OR'  => array(2, self::NON_ASSOC),
 		);
 	}
 
