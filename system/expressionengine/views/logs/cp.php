@@ -25,7 +25,7 @@
 
 			<div class="item">
 				<ul class="toolbar">
-					<li class="solo remove"><a href="http://localhost/el-projects/ee-cp/views/" title="remove"></a></li>
+					<li class="solo remove"><a href="<?=cp_url('logs/delete/cp/'.$row['id'])?>" title="remove"></a></li>
 				</ul>
 				<h3><b><?=lang('date_logged')?>:</b> <?=$row['act_date']?>, <b><?=lang('site')?>:</b> <?=$row['site_label']?><br><b><?=lang('username')?>:</b> <?=$row['username']?>, <b><abbr title="<?=lang('internet_protocol')?>"><?=lang('ip')?></abbr>:</b> <?=$row['ip_address']?></h3>
 				<div class="message">
@@ -39,7 +39,7 @@
 		<?php $this->view('_shared/pagination'); ?>
 
 		<fieldset class="tbl-bulk-act">
-			<a class="btn remove" href="<?=cp_url('logs/clear_log_files', array('type' => 'cp'))?>"><?=lang('clear_cp_logs')?></a>
+			<a class="btn remove" href="<?=cp_url('logs/delete/cp')?>"><?=lang('clear_cp_logs')?></a>
 		</fieldset>
 	</section>
 <?=form_close()?>

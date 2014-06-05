@@ -216,6 +216,7 @@ class Logs extends CP_Controller {
 		foreach ($logs as $log)
 		{
 			$rows[] = array(
+				'id'		 => $log->id,
 				'member_id'	 => $log->member_id,
 				'username'	 => "<a href='" . cp_url('myaccount', array('id' => $log->member_id)) . "'>{$log->username}</a>",
 				'ip_address' => $log->ip_address,
@@ -718,73 +719,62 @@ class Logs extends CP_Controller {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Clear Logs Files, or deletes individual logs if given log IDs
+	 * Deletes log entries, either all at once, or one at a time
 	 *
-	 * @access	public
-	 * @return	mixed
+	 * @param string $type	The type of log (developer, cp, throttle, email, search)
+	 * @param mixed  $id	Either the id to delete or "all"
 	 */
-	public function clear_log_files()
+	public function delete($type = NULL, $id = 'all')
 	{
+		if (is_null($type))
+		{
+			show_404();
+		}
+
 		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_logs'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
 
-		$type = $this->input->get_post('type');
-		$toggle = $this->input->get_post('toggle');
-
-		$table = FALSE;
-		$id_field = FALSE;
+		$model = '';
 
 		switch($type)
 		{
-			case 'cp':
-				$table = 'cp_log';
-				$id_field = 'id';
-				break;
-			case 'search':
-				$table = 'search_log';
-				$id_field = 'id';
-				break;
-			case 'email':
-				$table = 'email_console_cache';
-				$id_field = 'cache_id';
-				break;
 			case 'developer':
-				$table = 'developer_log';
+				$model = 'DeveloperLog';
 				$id_field = 'log_id';
 				break;
-			default: //nothing
+			case 'cp':
+				$model = 'CpLog';
+				$id_field = 'id';
+				break;
+			case 'throttle':
+				$model = 'Throttle';
+				$id_field = 'throttle_id';
+				break;
+			case 'email':
+				$model = 'EmailConsoleCache';
+				$id_field = 'cache_id';
+				break;
+			case 'search':
+				$model = 'SearchLog';
+				$id_field = 'id';
+				break;
 		}
 
-		if ($table)
+		$query = ee()->api->get($model);
+
+		$success_flashdata = lang('cleared_logs');
+		if (strtolower($id) != 'all')
 		{
-			$success_flashdata = lang('cleared_logs');
-			$log_ids = array();
-
-			// If we were passed any log IDs, create an array of those
-			if ( ! empty($toggle))
-			{
-				foreach ($_POST['toggle'] as $key => $val)
-				{
-					$log_ids[] = $this->db->escape_str($val);
-				}
-
-				$success_flashdata = lang('logs_deleted');
-			}
-
-			// Clear logs, or delete logs if $log_ids is populated
-			$this->tools_model->delete_logs($table, $id_field, $log_ids);
-
-			// Redirect to where we came from
-			$view_page = 'view_'.$type.'_log';
-
-			$this->session->set_flashdata('message_success', $success_flashdata);
-			$this->functions->redirect(BASE.AMP.'C=tools_logs'.AMP.'M='.$view_page);
+			$query = $query->filter($id_field, $id);
+			$success_flashdata = lang('logs_deleted');
 		}
 
-		// No log type selected - page doesn't exist
-		show_404();
+		$query->all()->delete();
+
+		$this->session->set_flashdata('message_success', $success_flashdata);
+		$this->functions->redirect(cp_url('logs/'.$type));
 	}
 
 	// --------------------------------------------------------------------
