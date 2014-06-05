@@ -219,7 +219,7 @@ class Utilities extends CP_Controller {
 				ee()->functions->clear_caching($type);
 			}
 
-			ee()->session->set_flashdata('success', lang('caches_cleared'));
+			ee()->view->set_message('success', lang('cp_message_success'), lang('caches_cleared'), TRUE);
 			ee()->functions->redirect(cp_url('utilities/cache'));
 		}
 
@@ -265,7 +265,7 @@ class Utilities extends CP_Controller {
 				'rules' => 'required|auth_password'
 			)
 		));
-
+		
 		if (ee()->form_validation->run() !== FALSE)
 		{
 			$replaced = $this->_do_search_and_replace(
@@ -274,8 +274,7 @@ class Utilities extends CP_Controller {
 				ee()->input->post('replace_where')
 			);
 
-			ee()->session->set_flashdata('success', sprintf(lang('rows_replaced'), (int)$replaced));
-
+			ee()->view->set_message('success', lang('cp_message_success'), sprintf(lang('rows_replaced'), (int)$replaced), TRUE);
 			ee()->functions->redirect(cp_url('utilities/sandr'));
 		}
 
@@ -577,7 +576,7 @@ class Utilities extends CP_Controller {
 		if ( ! isset($fields[0]) OR count($fields[0]) < 3)
 		{
 			// No point going further if there aren't even the minimum required
-			ee()->session->set_flashdata('issue', lang('not_enough_fields'));
+			ee()->view->set_message('issue', lang('not_enough_fields'), lang('not_enough_fields_desc'), TRUE);
 			ee()->functions->redirect(cp_url('utilities/import_converter'));
 		}
 
@@ -1081,8 +1080,8 @@ class Utilities extends CP_Controller {
 
 		if ($contents === FALSE)
 		{
-			ee()->view->form_messages = array('issue' => lang('unable_to_read_file'));
-			return $this->view_xml_errors(lang('unable_to_read_file'));
+			ee()->view->set_message('issue', lang('file_read_error'), lang('file_read_error_desc'));
+			return $this->member_import_confirm();
 		}
 
 		$this->load->library('xmlparser');
@@ -1092,7 +1091,7 @@ class Utilities extends CP_Controller {
 
 		if ($xml === FALSE)
 		{
-			ee()->view->form_messages = array('issue' => lang('unable_to_parse_xml'));
+			ee()->view->set_message('issue', lang('xml_parse_error'), lang('xml_parse_error_desc'));
 			return $this->member_import_confirm();
 		}
 
@@ -1133,7 +1132,7 @@ class Utilities extends CP_Controller {
 				}
 			}
 
-			ee()->view->form_messages = array('issue' => $out);
+			ee()->view->set_message('issue', lang('cp_message_issue'), $out);
 			return $this->member_import_confirm();
 		}
 
@@ -1144,7 +1143,8 @@ class Utilities extends CP_Controller {
 		$imports = $this->do_import();
 
 		$msg = lang('import_success_blurb').'<br>'.str_replace('%x', $imports, lang('total_members_imported'));
-		$this->session->set_flashdata('success', $msg);
+		
+		ee()->view->set_message('success', lang('import_success'), $msg, TRUE);
 
 		$this->functions->redirect(cp_url('utilities/member_import'));
 	}
