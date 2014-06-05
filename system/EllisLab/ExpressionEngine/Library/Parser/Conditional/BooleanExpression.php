@@ -106,17 +106,10 @@ class BooleanExpression {
 
 				$right = array_pop($evaluate_stack);
 
-				switch ($token->value())
-				{
-					case '!': array_push($evaluate_stack, ! $right);
-						break;
-					case '+': array_push($evaluate_stack, +$right);
-						break;
-					case '-': array_push($evaluate_stack, -$right);
-						break;
-					default:
-						throw new BooleanExpressionException('Invalid Unary Operator: '.$token);
-				}
+				array_push(
+					$evaluate_stack,
+					$this->evaluateUnary($token, $right)
+				);
 			}
 			else
 			{
@@ -382,6 +375,24 @@ class BooleanExpression {
 		}
 
 		throw new BooleanExpressionException('Invalid Binary Operator: '.$token);
+	}
+
+	/**
+	 * Evaluate a unary operator
+	 */
+	private function evaluateUnary($token, $right)
+	{
+		switch ($token->value())
+		{
+			case '!':
+				return ! $this->bool($right);
+			case '+':
+				return +$right;
+			case '-':
+				return -$right;
+		}
+
+		throw new BooleanExpressionException('Invalid Unary Operator: '.$token);
 	}
 
 	/**
