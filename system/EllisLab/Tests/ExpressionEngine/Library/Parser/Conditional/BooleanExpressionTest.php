@@ -24,12 +24,60 @@ class BooleanExpressionTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	/**
+	 * @dataProvider truthyDataProvider
+	 */
+	public function testTruthyEquals($token)
+	{
+		$this->expr->add($token);
+		$this->expr->add(new Token\Operator('=='));
+		$this->expr->add(new Token\Bool('TRUE'));
+
+		$this->assertTrue($this->expr->evaluate());
+	}
+
+	/**
+	 * @dataProvider truthyDataProvider
+	 */
+	public function testTruthyNotEquals($token)
+	{
+		$this->expr->add($token);
+		$this->expr->add(new Token\Operator('!='));
+		$this->expr->add(new Token\Bool('FALSE'));
+
+		$this->assertTrue($this->expr->evaluate());
+	}
+
+	/**
 	 * @dataProvider falseyDataProvider
 	 */
 	public function testFalsey($token)
 	{
 		$this->expr->add($token);
 		$this->assertFalse($this->expr->evaluate());
+	}
+
+	/**
+	 * @dataProvider falseyDataProvider
+	 */
+	public function testFalseyEquals($token)
+	{
+		$this->expr->add($token);
+		$this->expr->add(new Token\Operator('=='));
+		$this->expr->add(new Token\Bool('FALSE'));
+
+		$this->assertTrue($this->expr->evaluate());
+	}
+
+	/**
+	 * @dataProvider falseyDataProvider
+	 */
+	public function testFalseyNotEquals($token)
+	{
+		$this->expr->add($token);
+		$this->expr->add(new Token\Operator('!='));
+		$this->expr->add(new Token\Bool('TRUE'));
+
+		$this->assertTrue($this->expr->evaluate());
 	}
 
 	public function truthyDataProvider()
