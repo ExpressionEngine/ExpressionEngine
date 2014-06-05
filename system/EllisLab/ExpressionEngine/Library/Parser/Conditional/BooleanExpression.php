@@ -307,10 +307,15 @@ class BooleanExpression {
 	 */
 	private function equals($left, $right)
 	{
-		if (($left === '0' && ((bool) $right == TRUE)) OR
-			($right === '0' && ((bool) $left == TRUE)))
+		if ($left === '0' || $right === '0')
 		{
-			return TRUE;
+			// one is '0', so if the other is php true, then we're in business
+			if ((bool) $right == TRUE OR (bool) $left == TRUE)
+			{
+				return TRUE;
+			}
+
+			return FALSE;
 		}
 
 		return $left == $right;
