@@ -71,7 +71,7 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 		$string = '{if var1 && var2 == \'bob\'}yes{/if}';
 
 		$this->assertEquals(
-			'{if var1 && \'3\' == \'bob\'}yes{/if}',
+			'{if var1 && 3 == \'bob\'}yes{/if}',
 			$this->runCondition($string, array('var2' => 3), $runner),
 			'Integer Variable Replacement'
 		);
@@ -83,13 +83,13 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 		);
 
 		$this->assertEquals(
-			'{if var1 && \'1\' == \'bob\'}yes{/if}',
+			'{if var1 && true == \'bob\'}yes{/if}',
 			$this->runCondition($string, array('var2' => TRUE), $runner),
 			'Bool TRUE Variable Replacement'
 		);
 
 		$this->assertEquals(
-			'{if var1 && \'\' == \'bob\'}yes{/if}',
+			'{if var1 && false == \'bob\'}yes{/if}',
 			$this->runCondition($string, array('var2' => FALSE), $runner),
 			'Bool FALSE Variable Replacement'
 		);
@@ -105,7 +105,7 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 		$var2 = $this->runCondition($inital, array('var1' => 3), $runner);
 
 		$this->assertEquals(
-			'{if \'3\' && var2 && var3 == \'bob\'}yes{if:else}no{/if}',
+			'{if 3 && var2 && var3 == \'bob\'}yes{if:else}no{/if}',
 			$var2,
 			'Integer Variable Replacement'
 		);
@@ -113,7 +113,7 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 		$var3 = $this->runCondition($var2, array('var3' => 'bob'), $runner);
 
 		$this->assertEquals(
-			'{if \'3\' && var2 && \'bob\' == \'bob\'}yes{if:else}no{/if}',
+			'{if 3 && var2 && \'bob\' == \'bob\'}yes{if:else}no{/if}',
 			$var3,
 			'String Variable Replacement'
 		);
@@ -193,6 +193,7 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 			$this->concatenationTests(),
 			$this->eeTagTests(),
 			$this->stringTests(),
+			$this->numberTests(),
 			$this->operatorPrecedenceTests(),
 			$this->parenthesisTests()
 		);
@@ -408,6 +409,7 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 
 		return array(
 			array('Zero string is true',			'{if "0"}yes{if:else}no{/if}',									'yes'),
+			array('Zero string var is true',		'{if var}yes{if:else}no{/if}',									'yes', array('var' => '0')),
 			array('Empty string is false',			'{if ""}no{if:else}yes{/if}',									'yes'),
 			array('Esc Single quote in double',		'{if "ee'.$bs.$sq.'s parser" == var}yes{if:else}no{/if}',		'yes', array('var' => "ee's parser")),
 			array('Esc Double quote in double',		'{if "ee'.$bs.$dq.'s parser" == var}yes{if:else}no{/if}',		'yes', array('var' => 'ee"s parser')),
@@ -415,6 +417,15 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 			array('Esc Double qutote in single',	"{if 'ee".$bs.$dq."s parser' == var}yes{if:else}no{/if}",		'yes', array('var' => 'ee"s parser')),
 			array('Double backslash',				"{if 'this is ".$bs.$bs." the end' == var}yes{if:else}no{/if}",	'yes', array('var' => 'this is '.$bs.' the end')),
 			array('Letters not escapable',			'{if "/'.$bs.'d+/" == var}yes{if:else}no{/if}',						'yes', array('var' => '/'.$bs.'d+/')),
+		);
+	}
+
+	protected function numberTests()
+	{
+		return array(
+			array('Zero int is false',		'{if 0}no{if:else}yes{/if}',		'yes'),
+			array('Zero float is false',	'{if 0.0}no{if:else}yes{/if}',		'yes'),
+			array('Zero int var is false',	'{if var}no{if:else}yes{/if}',		'yes', array('var' => 0)),
 		);
 	}
 
