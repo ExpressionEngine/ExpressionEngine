@@ -18,7 +18,7 @@ class Variable extends Token {
 
 	public function setValue($value)
 	{
-		$this->value = (string) $value;
+		$this->value = $value;
 		$this->has_value = TRUE;
 	}
 
