@@ -773,8 +773,8 @@ class Logs extends CP_Controller {
 
 		$query->all()->delete();
 
-		$this->session->set_flashdata('message_success', $success_flashdata);
-		$this->functions->redirect(cp_url('logs/'.$type));
+		ee()->session->set_flashdata('success', $success_flashdata);
+		ee()->functions->redirect(cp_url('logs/'.$type));
 	}
 
 	// --------------------------------------------------------------------
