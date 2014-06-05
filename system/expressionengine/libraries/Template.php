@@ -461,9 +461,12 @@ class EE_Template {
 
 		$logged_in_user_cond = array();
 
-		foreach ($user_vars as $user_var)
+		if ($this->cache_status != 'EXPIRED')
 		{
-			$logged_in_user_cond['logged_in_'.$user_var] = ee()->session->userdata[$user_var];
+			foreach ($user_vars as $user_var)
+			{
+				$logged_in_user_cond['logged_in_'.$user_var] = ee()->session->userdata[$user_var];
+			}
 		}
 
 
