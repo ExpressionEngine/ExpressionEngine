@@ -144,7 +144,7 @@ class BooleanExpression {
 	protected function convertToRPN($tokens)
 	{
 		$output = array();
-		$stack = array();
+		$operator_stack = array();
 
 		$prev_token = NULL;
 
@@ -159,45 +159,42 @@ class BooleanExpression {
 					$token->markAsUnary();
 				}
 
-				while (count($stack) && $this->isOperator(end($stack)))
+				while (count($operator_stack) && $this->isOperator(end($operator_stack)))
 				{
-					$top_token = end($stack);
+					$top_token = end($operator_stack);
 
-					if ((
-						(
-							($this->isAssociative($token, self::LEFT_ASSOC) ||
-							 $this->isAssociative($token, self::NON_ASSOC)) &&
-							$this->precedence($token, $top_token) <= 0
-						) ||
-						(
-							$this->isAssociative($token, self::RIGHT_ASSOC) &&
-						 	$this->precedence($token, $top_token) < 0)
-						)
+					$precedence = $this->precedence($token, $top_token);
+					$right_assoc = $this->isAssociative($token, self::RIGHT_ASSOC);
+
+					if (
+						(( ! $right_assoc && $precedence == 0) ||
+						($precedence < 0))
+						&&
 						// unary operators can only pop other unary operators
-						&& ( ! $token->isUnary() || $top_token->isUnary())
+						( ! $token->isUnary() || $top_token->isUnary())
 					)
 					{
-						$output[] = array_pop($stack);
+						$output[] = array_pop($operator_stack);
 						continue;
 					}
 
 					break;
 				}
 
-				array_push($stack, $token);
+				array_push($operator_stack, $token);
 			}
 			elseif ($token->type == 'LP')
 			{
-				array_push($stack, $token);
+				array_push($operator_stack, $token);
 			}
 			elseif ($token->type == 'RP')
 			{
-				while (count($stack) && end($stack)->type != 'LP')
+				while (count($operator_stack) && end($operator_stack)->type != 'LP')
 				{
-					$output[] = array_pop($stack);
+					$output[] = array_pop($operator_stack);
 				}
 
-				array_pop($stack);
+				array_pop($operator_stack);
 			}
 			else
 			{
@@ -207,7 +204,7 @@ class BooleanExpression {
 			$prev_token = $token;
 		}
 
-		while ($leftover = array_pop($stack))
+		while ($leftover = array_pop($operator_stack))
 		{
 			$output[] = $leftover;
 		}
@@ -306,6 +303,20 @@ class BooleanExpression {
 	}
 
 	/**
+	 * Compare equality with the '0' is not FALSE consideration.
+	 */
+	private function equals($left, $right)
+	{
+		if (($left === '0' && ((bool) $right == TRUE)) OR
+			($right === '0' && ((bool) $left == TRUE)))
+		{
+			return TRUE;
+		}
+
+		return $left == $right;
+	}
+
+	/**
 	 * Evaluate a binary operator
 	 */
 	private function evaluateBinary($op_token, $left, $right)
@@ -329,11 +340,10 @@ class BooleanExpression {
 
 			// comparisons
 			case '<>':
-				return $left <> $right;
-			case '==':
-				return $left == $right;
 			case '!=':
-				return $left != $right;
+				return ! $this->equals($left, $right);
+			case '==':
+				return $this->equals($left, $right);
 			case '<':
 				return $left < $right;
 			case '<=':
