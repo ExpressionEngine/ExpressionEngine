@@ -1,9 +1,8 @@
 <?php extend_template('default-nav'); ?>
 
-<form class="tbl-ctrls">
-	<fieldset class="tbl-search right">
-	</fieldset>
+<?=form_open(cp_url('utilities/process_xml'), 'class="tbl-ctrls"', $form_hidden)?>
 	<h1><?=$cp_page_title?></h1>
+	<?php $this->view('_shared/form_messages')?>
 	<?php if ($added_fields && count($added_fields) > 0):?>
 		<div class="alert inline success">
 			<h3><?=lang('new_fields_success')?></h3>
