@@ -507,8 +507,8 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 			array('Boolean value comparison: 0 == "0"',			'{if 0 == "0"}yes{if:else}no{/if}',	   		'yes'),
 			array('Boolean value comparison: 0 == "-1"',		'{if 0 == "-1"}yes{if:else}no{/if}',   		'no'),
 
-			array('Boolean value comparison: -1 == TRUE',		'{if -1 == TRUE}yes{if:else}no{/if}',  		'no'),
-			array('Boolean value comparison: -1 == FALSE',		'{if -1 == FALSE}yes{if:else}no{/if}', 		'yes'),
+			array('Boolean value comparison: -1 == TRUE',		'{if -1 == TRUE}yes{if:else}no{/if}',  		'yes'),
+			array('Boolean value comparison: -1 == FALSE',		'{if -1 == FALSE}yes{if:else}no{/if}', 		'no'),
 			array('Boolean value comparison: -1 == 1',			'{if -1 == 1}yes{if:else}no{/if}',	   		'no'),
 			array('Boolean value comparison: -1 == 0',			'{if -1 == 0}yes{if:else}no{/if}',	   		'no'),
 			array('Boolean value comparison: -1 == -1',			'{if -1 == -1}yes{if:else}no{/if}',	   		'yes'),
@@ -525,8 +525,8 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 			array('Boolean value comparison: "1" == "0"',		'{if "1" == "0"}yes{if:else}no{/if}',  		'no'),
 			array('Boolean value comparison: "1" == "-1"',		'{if "1" == "-1"}yes{if:else}no{/if}', 		'no'),
 
-			array('Boolean value comparison: "0" == TRUE',		'{if "0" == TRUE}yes{if:else}no{/if}', 		'no'),
-			array('Boolean value comparison: "0" == FALSE',		'{if "0" == FALSE}yes{if:else}no{/if}',		'yes'),
+			array('Boolean value comparison: "0" == TRUE',		'{if "0" == TRUE}yes{if:else}no{/if}', 		'yes'),
+			array('Boolean value comparison: "0" == FALSE',		'{if "0" == FALSE}yes{if:else}no{/if}',		'no'),
 			array('Boolean value comparison: "0" == 1',			'{if "0" == 1}yes{if:else}no{/if}',	   		'no'),
 			array('Boolean value comparison: "0" == 0',			'{if "0" == 0}yes{if:else}no{/if}',	   		'yes'),
 			array('Boolean value comparison: "0" == -1',		'{if "0" == -1}yes{if:else}no{/if}',   		'no'),
@@ -534,8 +534,8 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 			array('Boolean value comparison: "0" == "0"',		'{if "0" == "0"}yes{if:else}no{/if}',  		'yes'),
 			array('Boolean value comparison: "0" == "-1"',		'{if "0" == "-1"}yes{if:else}no{/if}', 		'no'),
 
-			array('Boolean value comparison: "-1" == TRUE',		'{if "-1" == TRUE}yes{if:else}no{/if}',		'no'),
-			array('Boolean value comparison: "-1" == FALSE',	'{if "-1" == FALSE}yes{if:else}no{/if}',	'yes'),
+			array('Boolean value comparison: "-1" == TRUE',		'{if "-1" == TRUE}yes{if:else}no{/if}',		'yes'),
+			array('Boolean value comparison: "-1" == FALSE',	'{if "-1" == FALSE}yes{if:else}no{/if}',	'no'),
 			array('Boolean value comparison: "-1" == 1',		'{if "-1" == 1}yes{if:else}no{/if}',		'no'),
 			array('Boolean value comparison: "-1" == 0',		'{if "-1" == 0}yes{if:else}no{/if}',		'no'),
 			array('Boolean value comparison: "-1" == -1',		'{if "-1" == -1}yes{if:else}no{/if}',		'yes'),
