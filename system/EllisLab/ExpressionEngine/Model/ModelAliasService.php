@@ -38,5 +38,7 @@ class ModelAliasService extends AliasService {
 		'SiteGateway' => '\EllisLab\ExpressionEngine\Model\Gateway\SiteGateway',
 		'CpLog' => '\EllisLab\ExpressionEngine\Model\CpLog',
 		'CpLogGateway' => '\EllisLab\ExpressionEngine\Model\Gateway\CpLogGateway'
+		'EmailConsoleCache' => '\EllisLab\ExpressionEngine\Model\EmailConsoleCache',
+		'EmailConsoleCacheGateway' => '\EllisLab\ExpressionEngine\Model\Gateway\EmailConsoleCacheGateway'
 	);
 }
