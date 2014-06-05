@@ -35,7 +35,6 @@ class ModelAliasService extends AliasService {
 		'StatusGroup' => '\EllisLab\ExpressionEngine\Model\StatusGroup',
 		'StatusGroupGateway' => '\EllisLab\ExpressionEngine\Model\Gateway\StatusGroupGateway',
 		'Site' => '\EllisLab\ExpressionEngine\Model\Site',
-		'SiteGateway' => '\EllisLab\ExpressionEngine\Model\Gateway\SiteGateway'
 		'SiteGateway' => '\EllisLab\ExpressionEngine\Model\Gateway\SiteGateway',
 		'CpLog' => '\EllisLab\ExpressionEngine\Model\CpLog',
 		'CpLogGateway' => '\EllisLab\ExpressionEngine\Model\Gateway\CpLogGateway',
