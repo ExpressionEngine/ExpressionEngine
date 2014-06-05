@@ -24,25 +24,13 @@
  */
 class View {
 
-	private $EE;
+	public $form_messages = array();
 
 	protected $_theme = 'default';
 	protected $_extend = '';
 	protected $_data = array();
 	protected $_disabled = array();
 	protected $_disable_up = array();
-
-	/**
-	 * Constructor
-	 *
-	 * @access public
-	 */
-	public function __construct()
-	{
-		$this->EE =& get_instance();
-	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set Theme
@@ -243,6 +231,41 @@ class View {
 		}
 
 		return '<link rel="stylesheet" href="'.$file_url.'?v='.$filemtime.'" type="text/css" media="'.$media.'" />'.PHP_EOL;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Sets success or error message to display on page load
+	 *
+	 * This function will gather messages that need to appear in the inline
+	 * alert box in the CP. Think of the messages like a git commit: summary
+	 * in the headline (title), more detail in the body (description).
+	 *
+	 * @param 	string	$type			'success', 'warn', or 'issue'
+	 * @param	string	$title			Title of message
+	 * @param 	string	$description	More detailed message
+	 * @param 	bool	$flashdata		Whether or not to persist this message
+	 * 		                      		in flashdata for the next page load
+	 * @return 	void
+	 */
+	public function set_message($type, $title, $description = '', $flashdata = FALSE)
+	{
+		if (is_array($description))
+		{
+			$description = implode('<br>', $description);
+		}
+
+		$message_array = array('title' => $title, 'description' => $description);
+
+		if ($flashdata)
+		{
+			ee()->session->set_flashdata($type, $message_array);
+		}
+		else
+		{
+			ee()->view->form_messages[$type] = array('title' => $title, 'description' => $description);
+		}
 	}
 
 	// --------------------------------------------------------------------

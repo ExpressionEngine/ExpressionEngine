@@ -288,6 +288,9 @@ $lang = array(
 'You must assign a field to "username"',
 
 'not_enough_fields' =>
+'Not enough fields',
+
+'not_enough_fields_desc' =>
 'You must have at least 3 fields: username, screen_name, and email address',
 
 'select' =>
@@ -409,11 +412,20 @@ $lang = array(
 'new_fields_success' =>
 'The following custom member fields were successfully added:',
 
-'24_hour' =>
-'24 Hour',
+'import_success' =>
+'Import was successful',
 
-'12_hour' =>
-'12 Hour with AM/PM',
+'file_read_error' =>
+'Unable to read file',
+
+'file_read_error_desc' =>
+'The XML file was not able to be read, check that the file exists and has proper read permissions.',
+
+'xml_parse_error' =>
+'Unable to parse XML',
+
+'xml_parse_error_desc' =>
+'Check the XML file for any incorrect syntax.',
  
 /**
  * SQL Query Form

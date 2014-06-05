@@ -115,7 +115,7 @@ class EE_Form_validation extends CI_Form_validation {
 		// Set validation message on the form for CP non-AJAX requests
 		elseif (REQ == 'CP' && ! AJAX_REQUEST && $result === FALSE && ! empty($_POST))
 		{
-			ee()->view->form_messages = array('issue' => lang('form_validation_error'));
+			ee()->view->set_message('issue', lang('cp_message_issue'), lang('form_validation_error'));
 		}
 
 		return $result;
