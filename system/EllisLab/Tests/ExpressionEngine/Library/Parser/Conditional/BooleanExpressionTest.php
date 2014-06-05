@@ -26,7 +26,7 @@ class BooleanExpressionTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * @dataProvider truthyDataProvider
 	 */
-	public function testTruthyEquals($token)
+	public function testTruthyEqualsTrue($token)
 	{
 		$this->expr->add($token);
 		$this->expr->add(new Token\Operator('=='));
@@ -38,7 +38,7 @@ class BooleanExpressionTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * @dataProvider truthyDataProvider
 	 */
-	public function testTruthyNotEquals($token)
+	public function testTruthyNotEqualsFalse($token)
 	{
 		$this->expr->add($token);
 		$this->expr->add(new Token\Operator('!='));
@@ -59,7 +59,7 @@ class BooleanExpressionTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * @dataProvider falseyDataProvider
 	 */
-	public function testFalseyEquals($token)
+	public function testFalseyEqualsFalse($token)
 	{
 		$this->expr->add($token);
 		$this->expr->add(new Token\Operator('=='));
@@ -71,7 +71,7 @@ class BooleanExpressionTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * @dataProvider falseyDataProvider
 	 */
-	public function testFalseyNotEquals($token)
+	public function testFalseyNotEqualsTrue($token)
 	{
 		$this->expr->add($token);
 		$this->expr->add(new Token\Operator('!='));
