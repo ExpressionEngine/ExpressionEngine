@@ -463,122 +463,53 @@ class Logs extends CP_Controller {
 	 * @access	public
 	 * @return	mixed
 	 */
-	public function view_email_log()
+	public function email()
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_logs'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->load->library('table');
-		$this->lang->loadfile('members');
-
-
-		$this->table->set_base_url('C=tools_logs'.AMP.'M=view_email_log');
-		$this->table->set_columns(array(
-			'subject'		=> array('header' => lang('email_title')),
-			'member_name'	=> array('header' => lang('from')),
-			'recipient_name'=> array('header' => lang('to'), 'html' => FALSE),
-			'cache_date'	=> array('header' => lang('date')),
-			'_check'		=> array(
-				'header' => form_checkbox(
-					array(
-						'id'		=>'toggle_all',
-						'name'		=>'toggle_all',
-						'value'		=>'toggle_all',
-						'checked'	=> FALSE
-					)
-				)
-			)
-		));
-
-		$initial_state = array(
-			'sort'	=> array('cache_date' => 'desc')
-		);
-
-		$params = array(
-			'perpage'	=> $this->perpage
-		);
-
-		$data = $this->table->datasource('_email_log_filter', $initial_state, $params);
-
+		$this->base_url->path = 'logs/email';
 		$this->view->cp_page_title = lang('view_email_logs');
 
-		// a bit of a breadcrumb override is needed
-		$this->view->cp_breadcrumbs = array(
-			BASE.AMP.'C=tools' => lang('tools'),
-			BASE.AMP.'C=tools_logs'=> lang('tools_logs')
-		);
+		$page = ee()->input->get('page') ? ee()->input->get('page') : 1;
+		$page = ($page > 0) ? $page : 1;
 
-		$this->javascript->output('
-			$("#toggle_all").toggle(
-				function(){
-					$("input[class=toggle_email]").each(function() {
-						this.checked = true;
-					});
-				}, function (){
-					$("input[class=toggle_email]").each(function() {
-						this.checked = false;
-					});
-				}
-			);
-		');
+		$offset = ($page - 1) * $this->params['perpage']; // Offset is 0 indexed
 
-		if (count($data['rows']))
-		{
-			$this->cp->set_right_nav(array(
-				'clear_logs' => BASE.AMP.'C=tools_logs'.AMP.'M=clear_log_files'.AMP.'type=email'
-			));
-		}
+		$logs = ee()->api->get('EmailConsoleCache');
 
-		$this->cp->render('tools/view_email_log', $data);
-	}
+		$count = $logs->count();
 
-	// --------------------------------------------------------------------
-
-	/**
-	 * Ajax filter for Email log
-	 *
-	 * Filters Email log data
-	 *
-	 * @access	public
-	 * @return	void
-	 */
-	public function _email_log_filter($state, $params)
-	{
-		$email_q = $this->tools_model->get_email_logs(
-			FALSE, $params['perpage'], $state['offset'], $state['sort']
-		);
-
-		$emails = $email_q->result_array();
+		$logs = $logs->order('cache_date', 'desc')
+			->limit($this->params['perpage'])
+			->offset($offset)
+			->all();
 
 		$rows = array();
-
-		while ($log = array_shift($emails))
+		foreach ($logs as $log)
 		{
 			$rows[] = array(
-				'subject'		 => '<a href="'.BASE.AMP.'C=tools_logs'.AMP.'M=view_email'.AMP.'id='.$log['cache_id'].'">'.$log['subject'].'</a>',
-				'member_name'	 => '<a href="'.BASE.AMP.'C=myaccount'.AMP.'id='. $log['member_id'].'">'.$log['member_name'].'</a>',
-				'recipient_name' => $log['recipient_name'],
-				'cache_date'	 => $this->localize->human_time($log['cache_date']),
-				'_check'		 => form_checkbox(array(
-					'id'	=>'delete_box_'.$log['cache_id'],
-					'name'	=>'toggle[]',
-					'value'	=>$log['cache_id'],
-					'class'	=>'toggle_email',
-					'checked' =>FALSE
-				))
+				'cache_id'			=> $log->cache_id,
+				'username'			=> "<a href='" . cp_url('myaccount', array('id' => $log->member_id)) . "'>{$log->member_name}</a>",
+				'ip_address'		=> $log->ip_address,
+				'cache_date'		=> $this->localize->human_time($log->cache_date),
+				'subject' 			=> $log->subject,
+				'recipient_name'	=> $log->recipient_name
 			);
 		}
 
-		return array(
+		$pagination = new Pagination($this->params['perpage'], $count, $page);
+		$links = $pagination->cp_links($this->base_url);
+
+		$vars = array(
 			'rows' => $rows,
-			'no_results' => '<p>'.lang('no_cached_email').'</p>',
-			'pagination' => array(
-				'per_page' => $params['perpage'],
-				'total_rows' => $this->db->count_all('email_console_cache')
-			)
+			'no_results' => '<p>'.lang('no_search_results').'</p>',
+			'pagination' => $links
 		);
+
+		$this->cp->render('logs/email', $vars);
 	}
 
 	// --------------------------------------------------------------------

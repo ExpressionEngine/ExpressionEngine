@@ -18,6 +18,7 @@ $lang = array(
 'logs_deleted'			=> 'Logs deleted',
 
 'clear_cp_logs'			=> 'Remove all CP Access Logs',
+'clear_email_logs'		=> 'Remove all e-mail Logs',
 
 'no_search_results'	 	=> 'No Results Found',
 
@@ -54,6 +55,10 @@ $lang = array(
 	<li>Make sure you have the latest version of all your installed add-ons</li>
 	<li>Contact the developer of the offending add-on to make sure they\'re aware of the problem and plans to issue an update</li>
 </ul>',
+
+/* Email Log */
+'sent_to'				=> 'Sent e-mail to',
+'subject'				=> 'Subject',
 
 ''=>''
 );
