@@ -195,7 +195,8 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 			$this->stringTests(),
 			$this->numberTests(),
 			$this->operatorPrecedenceTests(),
-			$this->parenthesisTests()
+			$this->parenthesisTests(),
+			$this->userGuideTestsBooleanValueComparisons()
 		);
 	}
 
@@ -460,6 +461,87 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 		return array(
 			array('Single Parentheses', '{if (5 + 5) * 2 == 20}yes{if:else}no{/if}', 'yes'),
 			array('Double Parentheses', '{if ((5 + 5) * 3 * (2 + 2)) == 120}yes{if:else}no{/if}', 'yes'),
+		);
+	}
+
+	/**
+	 * These comparisons are documented in our user guide. Any changes here
+	 * also need to be reflected in the user guide.
+	 */
+	protected function userGuideTestsBooleanValueComparisons()
+	{
+		return array(
+			array('Boolean value comparison: TRUE == TRUE',		'{if TRUE == TRUE}yes{if:else}no{/if}',		'yes'),
+			array('Boolean value comparison: TRUE == FALSE',	'{if TRUE == FALSE}yes{if:else}no{/if}',	'no'),
+			array('Boolean value comparison: TRUE == 1',		'{if TRUE == 1}yes{if:else}no{/if}',		'yes'),
+			array('Boolean value comparison: TRUE == 0',		'{if TRUE == 0}yes{if:else}no{/if}',		'no'),
+			array('Boolean value comparison: TRUE == -1',		'{if TRUE == -1}yes{if:else}no{/if}',		'yes'),
+			array('Boolean value comparison: TRUE == "1"',		'{if TRUE == "1"}yes{if:else}no{/if}',		'yes'),
+			array('Boolean value comparison: TRUE == "0"',		'{if TRUE == "0"}yes{if:else}no{/if}',		'yes'),
+			array('Boolean value comparison: TRUE == "-1"',		'{if TRUE == "-1"}yes{if:else}no{/if}',		'yes'),
+
+			array('Boolean value comparison: FALSE == TRUE',	'{if FALSE == TRUE}yes{if:else}no{/if}',	'no'),
+			array('Boolean value comparison: FALSE == FALSE',	'{if FALSE == FALSE}yes{if:else}no{/if}',	'yes'),
+			array('Boolean value comparison: FALSE == 1',		'{if FALSE == 1}yes{if:else}no{/if}',		'no'),
+			array('Boolean value comparison: FALSE == 0',		'{if FALSE == 0}yes{if:else}no{/if}',		'yes'),
+			array('Boolean value comparison: FALSE == -1',		'{if FALSE == -1}yes{if:else}no{/if}',		'no'),
+			array('Boolean value comparison: FALSE == "1"',		'{if FALSE == "1"}yes{if:else}no{/if}',		'no'),
+			array('Boolean value comparison: FALSE == "0"',		'{if FALSE == "0"}yes{if:else}no{/if}',		'no'),
+			array('Boolean value comparison: FALSE == "-1"',	'{if FALSE == "-1"}yes{if:else}no{/if}',	'no'),
+
+			array('Boolean value comparison: 1 == TRUE',		'{if 1 == TRUE}yes{if:else}no{/if}',   		'yes'),
+			array('Boolean value comparison: 1 == FALSE',		'{if 1 == FALSE}yes{if:else}no{/if}',  		'no'),
+			array('Boolean value comparison: 1 == 1',			'{if 1 == 1}yes{if:else}no{/if}',	   		'yes'),
+			array('Boolean value comparison: 1 == 0',			'{if 1 == 0}yes{if:else}no{/if}',	   		'no'),
+			array('Boolean value comparison: 1 == -1',			'{if 1 == -1}yes{if:else}no{/if}',	   		'no'),
+			array('Boolean value comparison: 1 == "1"',			'{if 1 == "1"}yes{if:else}no{/if}',	   		'yes'),
+			array('Boolean value comparison: 1 == "0"',			'{if 1 == "0"}yes{if:else}no{/if}',	   		'no'),
+			array('Boolean value comparison: 1 == "-1"',		'{if 1 == "-1"}yes{if:else}no{/if}',   		'no'),
+
+			array('Boolean value comparison: 0 == TRUE',		'{if 0 == TRUE}yes{if:else}no{/if}',   		'no'),
+			array('Boolean value comparison: 0 == FALSE',		'{if 0 == FALSE}yes{if:else}no{/if}',  		'yes'),
+			array('Boolean value comparison: 0 == 1',			'{if 0 == 1}yes{if:else}no{/if}',	   		'no'),
+			array('Boolean value comparison: 0 == 0',			'{if 0 == 0}yes{if:else}no{/if}',	   		'yes'),
+			array('Boolean value comparison: 0 == -1',			'{if 0 == -1}yes{if:else}no{/if}',	   		'no'),
+			array('Boolean value comparison: 0 == "1"',			'{if 0 == "1"}yes{if:else}no{/if}',	   		'no'),
+			array('Boolean value comparison: 0 == "0"',			'{if 0 == "0"}yes{if:else}no{/if}',	   		'yes'),
+			array('Boolean value comparison: 0 == "-1"',		'{if 0 == "-1"}yes{if:else}no{/if}',   		'no'),
+
+			array('Boolean value comparison: -1 == TRUE',		'{if -1 == TRUE}yes{if:else}no{/if}',  		'no'),
+			array('Boolean value comparison: -1 == FALSE',		'{if -1 == FALSE}yes{if:else}no{/if}', 		'yes'),
+			array('Boolean value comparison: -1 == 1',			'{if -1 == 1}yes{if:else}no{/if}',	   		'no'),
+			array('Boolean value comparison: -1 == 0',			'{if -1 == 0}yes{if:else}no{/if}',	   		'no'),
+			array('Boolean value comparison: -1 == -1',			'{if -1 == -1}yes{if:else}no{/if}',	   		'yes'),
+			array('Boolean value comparison: -1 == "1"',		'{if -1 == "1"}yes{if:else}no{/if}',   		'no'),
+			array('Boolean value comparison: -1 == "0"',		'{if -1 == "0"}yes{if:else}no{/if}',   		'no'),
+			array('Boolean value comparison: -1 == "-1"',		'{if -1 == "-1"}yes{if:else}no{/if}',  		'yes'),
+
+			array('Boolean value comparison: "1" == TRUE',		'{if "1" == TRUE}yes{if:else}no{/if}', 		'yes'),
+			array('Boolean value comparison: "1" == FALSE',		'{if "1" == FALSE}yes{if:else}no{/if}',		'no'),
+			array('Boolean value comparison: "1" == 1',			'{if "1" == 1}yes{if:else}no{/if}',	   		'yes'),
+			array('Boolean value comparison: "1" == 0',			'{if "1" == 0}yes{if:else}no{/if}',	   		'no'),
+			array('Boolean value comparison: "1" == -1',		'{if "1" == -1}yes{if:else}no{/if}',   		'no'),
+			array('Boolean value comparison: "1" == "1"',		'{if "1" == "1"}yes{if:else}no{/if}',  		'yes'),
+			array('Boolean value comparison: "1" == "0"',		'{if "1" == "0"}yes{if:else}no{/if}',  		'no'),
+			array('Boolean value comparison: "1" == "-1"',		'{if "1" == "-1"}yes{if:else}no{/if}', 		'no'),
+
+			array('Boolean value comparison: "0" == TRUE',		'{if "0" == TRUE}yes{if:else}no{/if}', 		'no'),
+			array('Boolean value comparison: "0" == FALSE',		'{if "0" == FALSE}yes{if:else}no{/if}',		'yes'),
+			array('Boolean value comparison: "0" == 1',			'{if "0" == 1}yes{if:else}no{/if}',	   		'no'),
+			array('Boolean value comparison: "0" == 0',			'{if "0" == 0}yes{if:else}no{/if}',	   		'yes'),
+			array('Boolean value comparison: "0" == -1',		'{if "0" == -1}yes{if:else}no{/if}',   		'no'),
+			array('Boolean value comparison: "0" == "1"',		'{if "0" == "1"}yes{if:else}no{/if}',  		'no'),
+			array('Boolean value comparison: "0" == "0"',		'{if "0" == "0"}yes{if:else}no{/if}',  		'yes'),
+			array('Boolean value comparison: "0" == "-1"',		'{if "0" == "-1"}yes{if:else}no{/if}', 		'no'),
+
+			array('Boolean value comparison: "-1" == TRUE',		'{if "-1" == TRUE}yes{if:else}no{/if}',		'no'),
+			array('Boolean value comparison: "-1" == FALSE',	'{if "-1" == FALSE}yes{if:else}no{/if}',	'yes'),
+			array('Boolean value comparison: "-1" == 1',		'{if "-1" == 1}yes{if:else}no{/if}',		'no'),
+			array('Boolean value comparison: "-1" == 0',		'{if "-1" == 0}yes{if:else}no{/if}',		'no'),
+			array('Boolean value comparison: "-1" == -1',		'{if "-1" == -1}yes{if:else}no{/if}',		'yes'),
+			array('Boolean value comparison: "-1" == "1"',		'{if "-1" == "1"}yes{if:else}no{/if}',		'no'),
+			array('Boolean value comparison: "-1" == "0"',		'{if "-1" == "0"}yes{if:else}no{/if}',		'no'),
+			array('Boolean value comparison: "-1" == "-1"',		'{if "-1" == "-1"}yes{if:else}no{/if}',		'yes'),
 		);
 	}
 }
