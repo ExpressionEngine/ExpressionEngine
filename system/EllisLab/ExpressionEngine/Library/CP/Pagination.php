@@ -80,6 +80,12 @@ class Pagination {
 	 */
 	public function cp_links($base_url, $pages = 3, $page_variable = 'page')
 	{
+		// Show no pagination unless we have at least 2 pages
+		if ($this->pages < 2)
+		{
+			return array();
+		}
+
 		$pages--; // Remove the current page from the count.
 
 		$links['current_page'] = $this->current_page;
@@ -100,7 +106,7 @@ class Pagination {
 		}
 		else
 		{
-			$end = $pages;
+			$end = $this->pages;
 			if ($end - $pages > 1)
 			{
 				$start = $end - $pages;
