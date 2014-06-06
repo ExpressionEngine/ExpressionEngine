@@ -689,6 +689,9 @@ class Design extends CP_Controller {
 					'codemirror/javascript',
 					'codemirror/htmlmixed',
 					'codemirror/ee-mode',
+					'codemirror/dialog',
+					'codemirror/searchcursor',
+					'codemirror/search',
 
 					'cp/snippet_editor',
 				)
@@ -1910,6 +1913,9 @@ class Design extends CP_Controller {
 					'codemirror/javascript',
 					'codemirror/htmlmixed',
 					'codemirror/ee-mode',
+					'codemirror/dialog',
+					'codemirror/searchcursor',
+					'codemirror/search',
 
 					'cp/template_editor',
 					'cp/manager'
