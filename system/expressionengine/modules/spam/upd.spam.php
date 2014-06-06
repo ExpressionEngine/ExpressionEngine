@@ -79,7 +79,7 @@ class Spam_upd {
 			'training_id'	=> array('type' => 'int', 'constraint' => '10', 'unsigned' => TRUE, 'auto_increment' => TRUE),
 			'source'		=> array('type' => 'text'),
 			'type'			=> array('type' => 'varchar', 'constraint' => '32'),
-			'class'			=> array('type' => 'tinyint', 'constraint' => '1'),
+			'class'			=> array('type' => 'tinyint', 'constraint' => '1')
 		);
 
 		ee()->dbforge->add_field($fields);
@@ -88,8 +88,9 @@ class Spam_upd {
 
 		$fields = array(
 			'trap_id'	=> array('type' => 'int', 'constraint' => '10', 'unsigned' => TRUE, 'auto_increment' => TRUE),
-			'type'		=> array('type' => 'varchar', 'constraint' => '32'),
-			'data'		=> array('type' => 'text'),
+			'class'		=> array('type' => 'varchar', 'constraint' => '64'),
+			'method'	=> array('type' => 'varchar', 'constraint' => '64'),
+			'data'		=> array('type' => 'text')
 		);
 
 		ee()->dbforge->add_field($fields);
@@ -127,6 +128,7 @@ class Spam_upd {
 		ee()->dbforge->drop_table('spam_vocabulary');
 		ee()->dbforge->drop_table('spam_parameters');
 		ee()->dbforge->drop_table('spam_training');
+		ee()->dbforge->drop_table('spam_trap');
 
 		return TRUE;
 	}

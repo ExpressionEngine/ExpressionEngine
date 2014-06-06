@@ -169,32 +169,23 @@ class Spam_ext {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Filter forum posts for spam
+	 * Store flagged spam to await moderation. We store a serialized array of any
+	 * data we might need as well as a class and method name. If an entry that was
+	 * caught by the spam filter is manually flagged as ham, the spam module will
+	 * call the stored method with the unserialzed data as the argument. You must
+	 * provide a method to handle re-inserting this data.
 	 * 
-	 * @access public
-	 * @return void
-	 */
-	public function filter_forum_post($data)
-	{
-		var_dump($data);
-		die();
-		ee()->extensions->end_script = TRUE;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Store flagged spam to await moderation.
-	 * 
-	 * @param string $type     The content type (comment, post, etc..)
+	 * @param string $class    The class to call when re-inserting a false positive
+	 * @param string $method   The method to call when re-inserting a false positive
 	 * @param string $content  Array of content data
 	 * @access public
 	 * @return void
 	 */
-	public function moderate_content($type, $content)
+	public function moderate_content($class, $method, $content)
 	{
 		$data = array(
-			'type' => $type,
+			'class' => $class,
+			'method' => $method,
 			'content' => serialize($content)
 		);
 		ee()->db->insert('spam_trap', $data);
