@@ -222,14 +222,21 @@ class Lexer extends AbstractLexer {
 		{
 			$last = end($this->tokens);
 
-			if ($last && $last->type != 'COMMENT')
+			if ($last && ($last->type != 'COMMENT' || ! $last->conditional_annotation))
 			{
-				$this->tokens[] = new Comment(
+				$annotation_token = new Comment(
 					$this->annotations->create(array(
 						'context' => $this->context,
-						'lineno' => $this->lineno
+						'lineno' => $this->lineno,
+						'conditional' => TRUE
 					))
 				);
+
+				// mark for the parser to remove when the conditional
+				// is resolved
+				$annotation_token->conditional_annotation = TRUE;
+
+				$this->tokens[] = $annotation_token;
 			}
 
 			$this->addToken('LD', '{');
@@ -566,6 +573,14 @@ class Lexer extends AbstractLexer {
 					break;
 				default:
 					$obj = new Token($type, $lexeme);
+			}
+
+			// (Re-)Mark conditional annotation comments so the parser
+			// knows that it can remove them after dealing with the
+			// conditional.
+			if (isset($annotation) && isset($annotation->conditional))
+			{
+				$obj->conditional_annotation = TRUE;
 			}
 
 			$obj->lineno = $this->lineno;
