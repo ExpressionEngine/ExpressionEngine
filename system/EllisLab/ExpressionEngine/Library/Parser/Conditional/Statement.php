@@ -84,6 +84,7 @@ class Statement {
 	{
 		if ($this->isDone())
 		{
+			$this->parser->removeLastAnnotation();
 			return FALSE;
 		}
 
