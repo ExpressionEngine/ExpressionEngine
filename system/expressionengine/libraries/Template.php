@@ -296,7 +296,7 @@ class EE_Template {
 
 		ee()->config->_global_vars['is_core'] = (IS_CORE) ? TRUE : FALSE;
 
-		// Mark our template better errors
+		// Mark our template for better errors
 		$this->template = $this->markContext().$this->template;
 
 		// Parse manual variables and Snippets
@@ -313,9 +313,10 @@ class EE_Template {
 				// removing from the value makes snippets more usable in conditionals
 				$val = $this->remove_ee_comments($val);
 
-				$replace = $this->markContext('Snippet "'.$key.'"');
-				$replace .= $val;
-				$replace .= $this->markContext();
+				$replace = $this->wrapInContextAnnotations(
+					$val,
+					'Snippet "'.$key.'"'
+				);
 
 				$this->template = str_replace(LD.$key.RD, $replace, $this->template);
 			}
@@ -4203,6 +4204,42 @@ class EE_Template {
 		}
 
 		return $str;
+	}
+
+	/**
+	 * Content aware version of markContext()
+	 *
+	 * Mark content in such a way as to reduce the total number of annotations
+	 * in the template.
+	 *
+	 * @param String $var_content Content from a different context to annotate
+	 * @param String $var_context Context of the content
+	 * @param String $current_context Context to flip back into after var_content
+	 * @return String Context marked string
+	 */
+	public function wrapInContextAnnotations($var_content, $var_context, $current_context = NULL)
+	{
+		$is_multiline = (bool) substr_count($var_content, "\n");
+		$has_ifs = (bool) preg_match('/\{if(:elseif)?/i', $var_content);
+
+		if ( ! $has_ifs)
+		{
+			if (  ! $is_multiline)
+			{
+				// don't annotate single line without conditonals
+				return $var_content;
+			}
+			else
+			{
+				// multiline only mark the end to sync lines
+				return $var_content.$this->markContext($current_context);
+			}
+		}
+
+		// has ifs and more than one line, can't avoid annotations
+		return $this->markContext($var_context)
+			.$var_content
+			.$this->markContext($current_context);
 	}
 
 	/**
