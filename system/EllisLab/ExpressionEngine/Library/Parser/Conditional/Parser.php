@@ -53,6 +53,8 @@ class Parser extends AbstractParser {
 
 	protected $safety = FALSE;
 
+	protected $last_conditional_annotation;
+
 	public function parse()
 	{
 		$this->openBuffer();
@@ -86,6 +88,27 @@ class Parser extends AbstractParser {
 	public function safetyOn()
 	{
 		$this->safety = TRUE;
+	}
+
+	/**
+	 * Remove the last conditional annotation.
+	 *
+	 * Do *NOT* call this unless you know why. It's used by the conditional
+	 * statement class to remove the conditonal annotation when one of its
+	 * branches resolves.
+	 */
+	public function removeLastAnnotation()
+	{
+		if ( ! isset($this->last_conditional_annotation))
+		{
+			return;
+		}
+
+		$this->output = str_replace(
+			$this->last_conditional_annotation->lexeme,
+			'',
+			$this->output
+		);
 	}
 
 	/**
@@ -400,10 +423,18 @@ class Parser extends AbstractParser {
 			$this->next();
 		}
 
-		if ($skip_and_output_comments && $this->is('COMMENT'))
+		if ($this->is('COMMENT'))
 		{
-			$this->output($this->value());
-			$this->next();
+			if ($this->token->conditional_annotation)
+			{
+				$this->last_conditional_annotation = $this->token;
+			}
+
+			if ($skip_and_output_comments)
+			{
+				$this->output($this->value());
+				$this->next();
+			}
 		}
 	}
 
