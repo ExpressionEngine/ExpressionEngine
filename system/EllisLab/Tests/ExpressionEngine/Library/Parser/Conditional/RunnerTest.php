@@ -16,6 +16,15 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 		$this->runner = NULL;
 	}
 
+	protected function runConditionWithoutAnnotations($str, $vars = array(), $runner = NULL)
+	{
+		return preg_replace(
+			"/\{!--.*?--\}/s",
+			'',
+			$this->runCondition($str, $vars, $runner)
+		);
+	}
+
 	protected function runCondition($str, $vars = array(), $runner = NULL)
 	{
 		if ( ! isset($runner))
@@ -23,8 +32,7 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 			$runner = $this->runner;
 		}
 
-		$result = $runner->processConditionals($str, $vars);
-		return preg_replace("/\{!--.*?--\}/s", '', $result);
+		return $runner->processConditionals($str, $vars);
 	}
 
 	protected function runConditionTest($description, $str_in, $expected, $vars = array())
@@ -72,25 +80,25 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 
 		$this->assertEquals(
 			'{if var1 && 3 == \'bob\'}yes{/if}',
-			$this->runCondition($string, array('var2' => 3), $runner),
+			$this->runConditionWithoutAnnotations($string, array('var2' => 3), $runner),
 			'Integer Variable Replacement'
 		);
 
 		$this->assertEquals(
 			'{if var1 && \'mary\' == \'bob\'}yes{/if}',
-			$this->runCondition($string, array('var2' => 'mary'), $runner),
+			$this->runConditionWithoutAnnotations($string, array('var2' => 'mary'), $runner),
 			'String Variable Replacement'
 		);
 
 		$this->assertEquals(
 			'{if var1 && true == \'bob\'}yes{/if}',
-			$this->runCondition($string, array('var2' => TRUE), $runner),
+			$this->runConditionWithoutAnnotations($string, array('var2' => TRUE), $runner),
 			'Bool TRUE Variable Replacement'
 		);
 
 		$this->assertEquals(
 			'{if var1 && false == \'bob\'}yes{/if}',
-			$this->runCondition($string, array('var2' => FALSE), $runner),
+			$this->runConditionWithoutAnnotations($string, array('var2' => FALSE), $runner),
 			'Bool FALSE Variable Replacement'
 		);
 	}
@@ -102,7 +110,7 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 
 		$inital = '{if var1 && var2 && var3 == \'bob\'}yes{if:else}no{/if}';
 
-		$var2 = $this->runCondition($inital, array('var1' => 3), $runner);
+		$var2 = $this->runConditionWithoutAnnotations($inital, array('var1' => 3), $runner);
 
 		$this->assertEquals(
 			'{if 3 && var2 && var3 == \'bob\'}yes{if:else}no{/if}',
@@ -110,7 +118,7 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 			'Integer Variable Replacement'
 		);
 
-		$var3 = $this->runCondition($var2, array('var3' => 'bob'), $runner);
+		$var3 = $this->runConditionWithoutAnnotations($var2, array('var3' => 'bob'), $runner);
 
 		$this->assertEquals(
 			'{if 3 && var2 && \'bob\' == \'bob\'}yes{if:else}no{/if}',
@@ -142,7 +150,7 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 
 		$this->assertEquals(
 			'{if 5 == var}yes{if:else}maybe{/if}',
-			$this->runCondition($string, array(), $runner),
+			$this->runConditionWithoutAnnotations($string, array(), $runner),
 			'Elseif branch rewritten to else and old else pruned'
 		);
 
@@ -150,7 +158,7 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 
 		$this->assertEquals(
 			'{if 5 == var}yes{if:else}no{/if}',
-			$this->runCondition($string, array(), $runner),
+			$this->runConditionWithoutAnnotations($string, array(), $runner),
 			'Elseif branch evaluated to FALSE and is pruned'
 		);
 
@@ -158,7 +166,7 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 
 		$this->assertEquals(
 			'{if 5 == var}maybe{if:else}maybe2{/if}',
-			$this->runCondition($string, array(), $runner),
+			$this->runConditionWithoutAnnotations($string, array(), $runner),
 			'If evaluated to false, if is pruned, elseif is promoted'
 		);
 
@@ -172,7 +180,7 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 
 		$this->assertEquals(
 			'{if 7 == var}maybe{if:else}quitepossibly{/if}',
-			$this->runCondition($string, array(), $runner),
+			$this->runConditionWithoutAnnotations($string, array(), $runner),
 			'Double elseif promotion, true rewriting, and branch pruning'
 		);
 	}
