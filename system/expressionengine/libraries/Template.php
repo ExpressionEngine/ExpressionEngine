@@ -4229,11 +4229,9 @@ class EE_Template {
 				// don't annotate single line without conditonals
 				return $var_content;
 			}
-			else
-			{
-				// multiline only mark the end to sync lines
-				return $var_content.$this->markContext($current_context);
-			}
+
+			// multiline only mark the end to sync lines
+			return $var_content.$this->markContext($current_context);
 		}
 
 		// has ifs and more than one line, can't avoid annotations
