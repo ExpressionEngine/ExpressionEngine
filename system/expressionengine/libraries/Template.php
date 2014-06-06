@@ -4224,7 +4224,7 @@ class EE_Template {
 
 		if ( ! $has_ifs)
 		{
-			if (  ! $is_multiline)
+			if ( ! $is_multiline)
 			{
 				// don't annotate single line without conditonals
 				return $var_content;
