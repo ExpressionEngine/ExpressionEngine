@@ -99,11 +99,18 @@ class Email {
 			// Process default variables
 			if (in_array($key, array('message', 'name', 'to', 'from', 'subject', 'required')))
 			{
-				$tagdata = ee()->TMPL->swap_var_single(
-					$key,
-					ee()->input->post($key, ''),
-					$tagdata
+				// Adding slashes since they removed in _setup_form
+				$var = addslashes(
+					form_prep(
+						ee()->functions->encode_ee_tags(
+							ee()->input->post($key, TRUE),
+							TRUE
+						),
+						$key
+					)
 				);
+
+				$tagdata = ee()->TMPL->swap_var_single($key, $var, $tagdata);
 			}
 
 			// parse {member_name}
@@ -399,11 +406,18 @@ class Email {
 		$default = array('message', 'name', 'to', 'from', 'subject', 'required');
 		foreach ($default as $field)
 		{
-			$tagdata = ee()->TMPL->swap_var_single(
-				$field,
-				ee()->input->post($field, ''),
-				$tagdata
+			// Adding slashes since they removed in _setup_form
+			$var = addslashes(
+				form_prep(
+					ee()->functions->encode_ee_tags(
+						ee()->input->post($key, TRUE),
+						TRUE
+					),
+					$key
+				)
 			);
+
+			$tagdata = ee()->TMPL->swap_var_single($key, $var, $tagdata);
 		}
 
 		// {member_name}
