@@ -35,7 +35,6 @@ class EE_Functions {
 	public $file_paths         = array();
 	public $conditional_debug  = FALSE;
 	public $catfields          = array();
-	public $protect_javascript = TRUE;
 
 	/**
 	 * Constructor
@@ -44,11 +43,6 @@ class EE_Functions {
 	{
 		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
-
-		if (ee()->config->item('protect_javascript') == 'n')
-		{
-			$this->protect_javascript = FALSE;
-		}
 	}
 
 
@@ -2411,9 +2405,9 @@ class EE_Functions {
 		/*  - protect_javascript => Prevents advanced conditional parser from processing anything in <script> tags
 		/* ---------------------------------*/
 
-		if (ee()->config->item('protect_javascript') == 'n')
+		if (ee()->config->item('protect_javascript') == 'y')
 		{
-			$runner->disableProtectJavascript();
+			$runner->enableProtectJavascript();
 		}
 
 		try

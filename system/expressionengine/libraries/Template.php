@@ -45,7 +45,6 @@ class EE_Template {
 	public $hit_lock_override	= FALSE;		// Set to TRUE if you want hits tracked on sub-templates
 	public $hit_lock			= FALSE;		// Lets us lock the hit counter if sub-templates are contained in a template
 	public $parse_php			= FALSE;		// Whether to parse PHP or not
-	public $protect_javascript 	= TRUE;		// Protect javascript in conditionals
     public $strict_urls			= FALSE;		// Whether to make URLs operate strictly or not.  This is set via a template global pref
 
 	public $group_name			= '';			// Group of template being parsed
