@@ -96,9 +96,10 @@ class Statement {
 			$this->parser->removeLastAnnotation();
 
 			// If not all previous ones have evaluated, then we can't
-			// make a determination on a true branch since a previous may also
-			// be true, rendering this one moot. We'll output an easily parsable
-			// alternative for the next pass
+			// make a determination on a true branch since a previous one may
+			// also be true. However, we do know that subsequent ones cannot be
+			// reached, so we can remove them. This then becomes the else branch,
+			// making it easy to parse on subsequent passes.
 			if ( ! $this->all_previous_could_eval && $result == TRUE)
 			{
 				$this->parser->output('{if:else}');
