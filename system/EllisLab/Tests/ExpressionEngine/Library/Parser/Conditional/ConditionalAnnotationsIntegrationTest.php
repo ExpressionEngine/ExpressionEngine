@@ -16,7 +16,6 @@ class ConditionalAnnotationsIntegrationTest extends \PHPUnit_Framework_TestCase 
 		$this->runner = new ConditionalRunner();
 
 		$this->annotations->useSharedStore();
-		$this->runner->disableProtectJavascript();
 	}
 
 	public function tearDown()
@@ -33,19 +32,19 @@ class ConditionalAnnotationsIntegrationTest extends \PHPUnit_Framework_TestCase 
 		$in = $anno.'{if 5 == 5}out{/if}';
 		$this->assertEquals(
 			'out',
-			$this->process($in)
+			$this->runner->processConditionals($in, array())
 		);
 
 		$in = $anno.'{if 5 == 6}blanks{/if}';
 		$this->assertEquals(
 			'',
-			$this->process($in)
+			$this->runner->processConditionals($in, array())
 		);
 
 		$in = $anno.'{if 5 == 7}no{if:else}yes{/if}';
 		$this->assertEquals(
 			'yes',
-			$this->process($in)
+			$this->runner->processConditionals($in, array())
 		);
 	}
 
@@ -129,12 +128,6 @@ class ConditionalAnnotationsIntegrationTest extends \PHPUnit_Framework_TestCase 
 			$out,
 			$in1.$in3.$body.$end3.$end1
 		);
-	}
-
-
-	private function process($in, $vars = array())
-	{
-		return $this->runner->processConditionals($in, $vars);
 	}
 
 	private function createTestAnnotation()

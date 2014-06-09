@@ -54,7 +54,6 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testPlainConditionalsWithoutVariables($description, $str_in, $expected_out, $vars = array())
 	{
-		$this->runner->disableProtectJavascript();
 		$this->runConditionTest($description, $str_in, $expected_out, $vars);
 	}
 
@@ -64,7 +63,6 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 	public function testBadConditionalsWithoutVariables($exception, $description, $str_in)
 	{
 		$this->setExpectedException($exception);
-		$this->runner->disableProtectJavascript();
 		$this->runConditionTest($description, $str_in, '');
 	}
 
@@ -74,14 +72,12 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 	public function testSafetyOn($description, $str_in, $expected_out)
 	{
 		$this->runner->safetyOn();
-		$this->runner->disableProtectJavascript();
 		$this->runConditionTest($description, $str_in, $expected_out);
 	}
 
 	public function testBasicVariableReplacement()
 	{
 		$runner = new Runner();
-		$runner->disableProtectJavascript();
 
 		// var1 is in there to prevent execution
 		$string = '{if var1 && var2 == \'bob\'}yes{/if}';
@@ -114,7 +110,6 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 	public function testProgressiveConstruction()
 	{
 		$runner = new Runner();
-		$runner->disableProtectJavascript();
 
 		$inital = '{if var1 && var2 && var3 == \'bob\'}yes{if:else}no{/if}';
 
@@ -152,7 +147,6 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 	public function testBranchConditionRewritingAndPruning()
 	{
 		$runner = new Runner();
-		$runner->disableProtectJavascript();
 
 		$string = '{if 5 == var}yes{if:elseif 5 == 5}maybe{if:else}no{/if}';
 
@@ -210,6 +204,7 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 			$this->eeTagTests(),
 			$this->stringTests(),
 			$this->numberTests(),
+			$this->variableTests(),
 			$this->operatorPrecedenceTests(),
 			$this->parenthesisTests(),
 			$this->userGuideTestsBooleanValueComparisons()
@@ -360,9 +355,9 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 			array('String Ends With',			'{if "testing" $= "ing"}yes{if:else}no{/if}',		'yes'),
 			array('Integer Ends With',			'{if 123456 $= 456}yes{if:else}no{/if}',			'yes'),
 			array('Float Ends With',			'{if 42.7 $= ".7"}yes{if:else}no{/if}',				'yes'),
-			array('String Regex Compare',	'{if "P25" ~ "/^P[0-9]+/"}yes{if:else}no{/if}',	'yes'),
-			array('Integer Regex Compare',	'{if 1234 ~ "/\d+/"}yes{if:else}no{/if}',			'yes'),
-			array('Float Regex Compare',	'{if 42.7 ~ "/\d+\.\d/"}yes{if:else}no{/if}',		'yes'),
+			array('String Regex Compare',		'{if "P25" ~ "/^P[0-9]+/"}yes{if:else}no{/if}',	'yes'),
+			array('Integer Regex Compare',		'{if 1234 ~ "/\d+/"}yes{if:else}no{/if}',			'yes'),
+			array('Float Regex Compare',		'{if 42.7 ~ "/\d+\.\d/"}yes{if:else}no{/if}',		'yes'),
 
 			array('False String Begins With',	'{if "testing" ^= "ing"}no{if:else}yes{/if}',		'yes'),
 			array('False Integer Begins With',	'{if 123456 ^= 456}no{if:else}yes{/if}',			'yes'),
@@ -446,6 +441,13 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 			array('Zero int is false',		'{if 0 == FALSE}yes{if:else}no{/if}',		'yes'),
 			array('Zero float is false',	'{if 0.0 == FALSE}yes{if:else}no{/if}',		'yes'),
 			array('Zero int var is false',	'{if var == FALSE}yes{if:else}no{/if}',		'yes', array('var' => 0)),
+		);
+	}
+
+	protected function variableTests()
+	{
+		return array(
+			array('prefixed',	'{if foo:bar == 7}out{/if}',	'out', array('foo:bar' => TRUE))
 		);
 	}
 
