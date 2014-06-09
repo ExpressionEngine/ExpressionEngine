@@ -480,6 +480,26 @@ class Logs extends CP_Controller {
 
 		$logs = ee()->api->get('EmailConsoleCache');
 
+		if ( ! empty($this->params['filter_by_username']))
+		{
+			$logs = $logs->filter('member_id', $this->params['filter_by_username']);
+		}
+
+		// if ( ! empty($this->params['filter_by_site']))
+		// {
+		// 	$logs = $logs->filter('site_id', $this->params['filter_by_site']);
+		// }
+
+		if ( ! empty($this->params['filter_by_date']))
+		{
+			$logs = $logs->filter('cache_date', '>=', ee()->localize->now - $this->params['filter_by_date']);
+		}
+
+		// if ( ! empty($this->view->filter_by_phrase_value))
+		// {
+		// 	$logs = $logs->filter('action', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%');
+		// }
+
 		$count = $logs->count();
 
 		$logs = $logs->order('cache_date', 'desc')
