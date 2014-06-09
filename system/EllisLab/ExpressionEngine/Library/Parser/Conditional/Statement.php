@@ -102,6 +102,7 @@ class Statement {
 			// making it easy to parse on subsequent passes.
 			if ( ! $this->all_previous_could_eval && $result == TRUE)
 			{
+				$this->parser->removeLastAnnotation(); // else's can't error, don't annotate
 				$this->parser->output('{if:else}');
 			}
 		}
