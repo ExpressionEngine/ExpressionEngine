@@ -61,10 +61,10 @@ class Statement {
 		if ($can_eval)
 		{
 			$this->evaluate($expression);
-			$this->parser->removeLastAnnotation();
 		}
 		else
 		{
+			$this->parser->outputLastAnnotation();
 			$this->outputCondition($expression->stringify());
 		}
 
@@ -84,7 +84,6 @@ class Statement {
 	{
 		if ($this->isDone())
 		{
-			$this->parser->removeLastAnnotation();
 			return FALSE;
 		}
 
@@ -93,7 +92,6 @@ class Statement {
 		if ($can_eval)
 		{
 			$result = $this->evaluate($expression);
-			$this->parser->removeLastAnnotation();
 
 			// If not all previous ones have evaluated, then we can't
 			// make a determination on a true branch since a previous one may
@@ -107,6 +105,7 @@ class Statement {
 		}
 		else
 		{
+			$this->parser->outputLastAnnotation();
 			$this->outputCondition($expression->stringify());
 		}
 

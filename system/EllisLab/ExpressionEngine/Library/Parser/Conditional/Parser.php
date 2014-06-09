@@ -91,24 +91,20 @@ class Parser extends AbstractParser {
 	}
 
 	/**
-	 * Remove the last conditional annotation.
+	 * Output the last conditional annotation.
 	 *
 	 * Do *NOT* call this unless you know why. It's used by the conditional
-	 * statement class to remove the conditonal annotation when one of its
-	 * branches resolves.
+	 * statement class to re-insert conditional annotations when it has to
+	 * write a conditional back out.
 	 */
-	public function removeLastAnnotation()
+	public function outputLastAnnotation()
 	{
 		if ( ! isset($this->last_conditional_annotation))
 		{
 			return;
 		}
 
-		$this->output = str_replace(
-			$this->last_conditional_annotation->lexeme,
-			'',
-			$this->output
-		);
+		$this->output($this->last_conditional_annotation->lexeme);
 	}
 
 	/**
