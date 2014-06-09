@@ -680,6 +680,7 @@ class Design extends CP_Controller {
 		$this->cp->add_to_head($this->view->head_link('css/codemirror-additions.css'));
 
 		$this->cp->add_js_script(array(
+				'plugin'	=> 'ee_codemirror',
 				'file'		=> array(
 					'codemirror/codemirror',
 					'codemirror/closebrackets',
@@ -697,6 +698,10 @@ class Design extends CP_Controller {
 				)
 			)
 		);
+
+		$this->cp->set_action_nav(array(
+			'Toggle Editor' => 'javascript:$(\'#snippet_contents\').toggleCodeMirror();'
+		));
 
 		$this->cp->render('design/snippets_edit', $vars);
 	}
@@ -1903,6 +1908,7 @@ class Design extends CP_Controller {
 		);
 
 		$this->cp->add_js_script(array(
+				'plugin'	=> 'ee_codemirror',
 				'file'		=> array(
 					'codemirror/codemirror',
 					'codemirror/closebrackets',
@@ -1922,6 +1928,10 @@ class Design extends CP_Controller {
 				)
 			)
 		);
+
+		$this->cp->set_action_nav(array(
+			'Toggle Editor' => 'javascript:$(\'#template_data\').toggleCodeMirror();'
+		));
 
 		$vars['table_template'] = array(
 					'table_open'			=> '<table class="templateTable templateEditorTable" border="0" cellspacing="0" cellpadding="0">'
