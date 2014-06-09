@@ -37,7 +37,15 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 
 	protected function runConditionTest($description, $str_in, $expected, $vars = array())
 	{
-		$result = $this->runCondition($str_in, $vars);
+		if (strpos($expected, '{if') !== FALSE)
+		{
+			$result = $this->runConditionWithoutAnnotations($str_in, $vars);
+		}
+		else
+		{
+			$result = $this->runCondition($str_in, $vars);
+		}
+
 		$this->assertEquals($expected, $result, $description);
 	}
 
