@@ -231,7 +231,7 @@ class Member_memberlist extends Member {
 			$swap['lang:message']	= ee()->lang->line('mbr_good_email');
 			$swap['css_class'] 		= 'success';
 
-			ee()->db->query("UPDATE exp_members SET last_email_date = '{ee()->localize->now}' WHERE member_id = '".ee()->session->userdata('member_id')."'");
+			ee()->db->query("UPDATE exp_members SET last_email_date = '".ee()->localize->now."' WHERE member_id = '".ee()->session->userdata('member_id')."'");
 
 		}
 
