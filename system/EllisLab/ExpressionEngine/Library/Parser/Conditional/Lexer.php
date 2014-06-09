@@ -222,7 +222,7 @@ class Lexer extends AbstractLexer {
 		{
 			$last = end($this->tokens);
 
-			if ($last && ($last->type != 'COMMENT' || ! $last->conditional_annotation))
+			if ( ! $last || $last->type != 'COMMENT' || ! $last->conditional_annotation)
 			{
 				$annotation_token = new Comment(
 					$this->annotations->create(array(
