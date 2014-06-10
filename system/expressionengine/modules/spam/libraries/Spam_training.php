@@ -15,7 +15,7 @@
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Rich Text Editor Module
+ * ExpressionEngine Spam Module
  *
  * @package		ExpressionEngine
  * @subpackage	Extensions
@@ -26,7 +26,7 @@
 
 require_once PATH_MOD . 'spam/libraries/Classifier.php';
 
-class Spam_ext {
+class Spam_training {
 
 	public $name = 'Spam Filter';
 	public $version = '1.0.0';
@@ -45,8 +45,6 @@ class Spam_ext {
 	public $entropy = .2;
 	public $entropy_length = 300;
 
-	private $module = 'spam';
-
 	/**
 	 * Constructor
 	 */
@@ -57,13 +55,33 @@ class Spam_ext {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Returns true if the string is classified as spam
+	 * Load the classifier object from memory if available, otherwise construct
+	 * a new classifier from the database.
+	 * 
+	 * @access public
+	 * @return void
+	 */
+	public function load_classifier()
+	{
+		if (function_exists('shmop_open'))
+		{
+		}
+		else
+		{
+			return $this->classifier();
+		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Returns a new classifier based on our training dataa.
 	 * 
 	 * @param string $source 
 	 * @access public
 	 * @return boolean
 	 */
-	public function classify($source)
+	public function classifier()
 	{
 		$stop_words = explode("\n", file_get_contents(PATH_MOD . $this->stop_words_path));
 		$vocabulary = new Collection(array(), $stop_words);
@@ -82,8 +100,6 @@ class Spam_ext {
 		);
 
 		$classifier = new Classifier($training, $vocabulary, $stop_words);
-		
-		return $classifier->classify($source, 'spam');
 	}
 
 	// --------------------------------------------------------------------
@@ -138,104 +154,7 @@ class Spam_ext {
 		return $result;
 	}
 
-	// --------------------------------------------------------------------
-
-	/**
-	 * Filter content for spam
-	 * 
-	 * @param  array  An array of strings to classify
-	 * @access public
-	 * @return bool   Returns true if spam
-	 */
-	public function filter_content($data)
-	{
-		// Since we're using Naive Bayes, our assumption
-		// of statistical independece means classifying all the content lumped 
-		// together should give the same result as classifying each separately.
-		$content = implode(' ', $data);
-
-		if ( ! empty($content))
-		{
-			if ($this->classify($content) === TRUE)
-			{
-				$this->moderate_content('comment', $data);
-				return TRUE;
-			}
-		}
-
-		return FALSE;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Store flagged spam to await moderation. We store a serialized array of any
-	 * data we might need as well as a class and method name. If an entry that was
-	 * caught by the spam filter is manually flagged as ham, the spam module will
-	 * call the stored method with the unserialzed data as the argument. You must
-	 * provide a method to handle re-inserting this data.
-	 * 
-	 * @param string $class    The class to call when re-inserting a false positive
-	 * @param string $method   The method to call when re-inserting a false positive
-	 * @param string $content  Array of content data
-	 * @access public
-	 * @return void
-	 */
-	public function moderate_content($class, $method, $content)
-	{
-		$data = array(
-			'class' => $class,
-			'method' => $method,
-			'content' => serialize($content)
-		);
-		ee()->db->insert('spam_trap', $data);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Activate Extension
-	 * This extension is automatically installed with the Rich Text Editor module
-	 */
-	public function activate_extension()
-	{
-		return TRUE;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Update Extension
-	 * This extension is automatically updated with the Rich Text Editor module
-	 */
-	public function update_extension( $current = FALSE )
-	{
-		return TRUE;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Disable Extension
-	 * This extension is automatically disabled with the Rich Text Editor module
-	 */
-	public function disable_extension()
-	{
-		return TRUE;
-	}
-
-		// --------------------------------------------------------------------
-
-	/**
-	 * Uninstall Extension
-	 * This extension is automatically uninstalled with the Rich Text Editor module
-	 */
-	public function uninstall_extension()
-	{
-		return TRUE;
-	}
-
 }
 
-/* End of file ext.spam.php */
-/* Location: ./system/expressionengine/modules/spam/ext.spam.php */
+/* End of file Spam_training.php */
+/* Location: ./system/expressionengine/modules/spam/Spam_training.php */
