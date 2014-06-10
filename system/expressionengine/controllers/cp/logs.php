@@ -229,7 +229,6 @@ class Logs extends CP_Controller {
 
 		$vars = array(
 			'rows' => $rows,
-			'no_results' => '<p>'.lang('no_search_results').'</p>',
 			'pagination' => $links
 		);
 
@@ -309,7 +308,6 @@ class Logs extends CP_Controller {
 
 		$vars = array(
 			'rows' => $rows,
-			'no_results' => '<p>'.lang('no_search_results').'</p>',
 			'pagination' => $links
 		);
 
@@ -387,7 +385,6 @@ class Logs extends CP_Controller {
 
 		$vars = array(
 			'rows' => $rows,
-			'no_results' => '<p>'.lang('no_search_results').'</p>',
 			'pagination' => $links
 		);
 
@@ -466,7 +463,6 @@ class Logs extends CP_Controller {
 
 		$vars = array(
 			'rows' => $rows,
-			'no_results' => '<p>'.lang('no_search_results').'</p>',
 			'pagination' => $links
 		);
 
@@ -605,7 +601,6 @@ class Logs extends CP_Controller {
 
 		$vars = array(
 			'rows' => $rows,
-			'no_results' => '<p>'.lang('no_search_results').'</p>',
 			'pagination' => $links
 		);
 

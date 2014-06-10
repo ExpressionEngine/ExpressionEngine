@@ -35,12 +35,12 @@
 			</div>
 
 			<?php endforeach; ?>
+
+			<?php $this->view('_shared/pagination'); ?>
+
+			<fieldset class="tbl-bulk-act">
+				<a class="btn remove" href="<?=cp_url('logs/delete/throttle')?>"><?=lang('clear_throttle_logs')?></a>
+			</fieldset>
 		<?php endif; ?>
-
-		<?php $this->view('_shared/pagination'); ?>
-
-		<fieldset class="tbl-bulk-act">
-			<a class="btn remove" href="<?=cp_url('logs/delete/throttle')?>"><?=lang('clear_throttle_logs')?></a>
-		</fieldset>
 	</section>
 <?=form_close()?>

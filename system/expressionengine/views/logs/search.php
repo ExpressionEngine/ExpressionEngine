@@ -20,7 +20,7 @@
 	</fieldset>
 	<section class="item-wrap log">
 		<?php if (empty($rows)): ?>
-			<?=$no_results?>
+			<p class="no-results"><?=lang('no_search_results')?></p>
 		<?php else: ?>
 			<?php foreach($rows as $row): ?>
 
@@ -35,12 +35,12 @@
 			</div>
 
 			<?php endforeach; ?>
+
+			<?php $this->view('_shared/pagination'); ?>
+
+			<fieldset class="tbl-bulk-act">
+				<a class="btn remove" href="<?=cp_url('logs/delete/search')?>"><?=lang('clear_search_logs')?></a>
+			</fieldset>
 		<?php endif; ?>
-
-		<?php $this->view('_shared/pagination'); ?>
-
-		<fieldset class="tbl-bulk-act">
-			<a class="btn remove" href="<?=cp_url('logs/delete/search')?>"><?=lang('clear_search_logs')?></a>
-		</fieldset>
 	</section>
 <?=form_close()?>
