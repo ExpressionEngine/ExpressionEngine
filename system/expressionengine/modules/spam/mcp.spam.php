@@ -24,6 +24,7 @@
  */
 
 require_once PATH_MOD . 'spam/libraries/Classifier.php';
+require_once PATH_MOD . 'spam/libraries/Spam_training.php';
 
 class Spam_mcp {
 
@@ -62,8 +63,6 @@ class Spam_mcp {
 	 */
 	public function test()
 	{
-		require_once PATH_MOD . 'spam/libraries/Spam_training.php';
-
 		$start_time = microtime(true);
 		$limit = 1000;
 
@@ -285,6 +284,11 @@ class Spam_mcp {
 
 		ee()->db->empty_table('spam_parameters'); 
 		ee()->db->insert_batch('spam_parameters', $training); 
+
+		// Delete any existing shared memory segments if we're using them
+		// This will get re-cached the next time we call the classifier
+		$spam_training = new Spam_training();
+		$Spam_training->delete_classifier();
 
 		return TRUE;
 	}
