@@ -1493,12 +1493,6 @@ GRID_FALLBACK;
 
 		foreach ($this->custom_fields as $i => $field)
 		{
-			$isset = (
-				isset($_POST['field_id_'.$field['field_id']]) ||
-				isset($_POST[$field['field_name']]) ||
-				isset($_POST[$field['field_name'].'_hidden_file']) // always call the fieldtype if a file field was on the page
-			);
-
 			if (in_array($field['field_type'], $this->file_fields))
 			{
 				// trick validation into calling the file fieldtype
@@ -1507,6 +1501,13 @@ GRID_FALLBACK;
 					$_POST[$field['field_name']] = $_FILES[$field['field_name']]['name'];
 				}
 			}
+
+			$isset = (
+				isset($_POST['field_id_'.$field['field_id']]) ||
+				isset($_POST[$field['field_name']]) ||
+				// always call the fieldtype if a file field was on the page
+				isset($_POST[$field['field_name'].'_hidden_file'])
+			);
 
 			$this->custom_fields[$i]['isset'] = $isset;
 
