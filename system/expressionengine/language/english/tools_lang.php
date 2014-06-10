@@ -1,4 +1,4 @@
-<?php
+<a href="tools_lang.php" id="" title="tools_lang">tools_lang</a><?php
 
 $lang = array(
 
@@ -20,12 +20,6 @@ $lang = array(
 'translation_tool' 		=> 'Translation Utility',
 'english'				=> 'English',
 'translation'			=> 'Translation',
-
-'hits' 					=> 'Hits',
-'last_activity' 		=> 'Last Activity',
-'no_throttle_logs' 		=> 'No IPs are currently being throttled by the system.',
-'throttling_disabled'	=> 'Throttling Disabled',
-'blacklist_all_ips'		=> 'Blacklist All IPs',
 
 'no_search_results'	 	=> 'No Results Found',
 

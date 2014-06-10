@@ -326,116 +326,72 @@ class Logs extends CP_Controller {
 	 * @access	public
 	 * @return	mixed
 	 */
-	public function view_throttle_log()
+	public function throttle()
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_logs'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
 
-		$max_page_loads = 10;
-		$lockout_time	= 30;
-
-		if (is_numeric($this->config->item('max_page_loads')))
-		{
-			$max_page_loads = $this->config->item('max_page_loads');
-		}
-
-		if (is_numeric($this->config->item('lockout_time')))
-		{
-			$lockout_time = $this->config->item('lockout_time');
-		}
-
-		$this->load->library('table');
-
-		$this->table->set_base_url('C=tools_logs'.AMP.'M=view_throttle_log');
-		$this->table->set_columns(array(
-			'ip_address'	=> array('html' => FALSE),
-			'hits'			=> array('html' => FALSE),
-			'last_activity'	=> array('html' => FALSE)
-		));
-
-		$initial_state = array(
-			'sort'	=> array('ip_address' => 'desc')
-		);
-
-		$params = array(
-			'perpage'	=> $this->perpage
-		);
-
-		$data = $this->table->datasource('_throttle_log_filter', $initial_state, $params);
-
+		$this->base_url->path = 'logs/throttle';
 		$this->view->cp_page_title = lang('view_throttle_log');
 
-		// a bit of a breadcrumb override is needed
-		$this->view->cp_breadcrumbs = array(
-			BASE.AMP.'C=tools' => lang('tools'),
-			BASE.AMP.'C=tools_logs'=> lang('tools_logs')
-		);
+		$page = ee()->input->get('page') ? ee()->input->get('page') : 1;
+		$page = ($page > 0) ? $page : 1;
 
-		// Blacklist Installed?
-		$this->db->where('module_name', 'Blacklist');
-		$count = $this->db->count_all_results('modules');
+		$offset = ($page - 1) * $this->params['perpage']; // Offset is 0 indexed
 
-		$data['blacklist_installed'] = ($count > 0);
+		$logs = ee()->api->get('Throttle');
 
-		$this->cp->render('tools/view_throttle_log', $data);
-	}
+		// if ( ! empty($this->params['filter_by_username']))
+		// {
+		// 	$logs = $logs->filter('member_id', $this->params['filter_by_username']);
+		// }
+		//
+		// if ( ! empty($this->params['filter_by_site']))
+		// {
+		// 	$logs = $logs->filter('site_id', $this->params['filter_by_site']);
+		// }
+		//
+		// if ( ! empty($this->params['filter_by_date']))
+		// {
+		// 	$logs = $logs->filter('search_date', '>=', ee()->localize->now - $this->params['filter_by_date']);
+		// }
+		//
+		// if ( ! empty($this->view->filter_by_phrase_value))
+		// {
+		// 	$logs = $logs->filter('action', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%');
+		// }
 
-	// --------------------------------------------------------------------
+		$count = $logs->count();
 
-	/**
-	 * Ajax filter for Throttle log
-	 *
-	 * Filters Throttle log data
-	 *
-	 * @access	public
-	 * @return	void
-	 */
-	public function _throttle_log_filter($state, $params)
-	{
-		$max_page_loads = 10;
-		$lockout_time	= 30;
-
-		if (is_numeric($this->config->item('max_page_loads')))
-		{
-			$max_page_loads = $this->config->item('max_page_loads');
-		}
-
-		if (is_numeric($this->config->item('lockout_time')))
-		{
-			$lockout_time = $this->config->item('lockout_time');
-		}
-
-		$throttle_q = $this->tools_model->get_throttle_log(
-			$max_page_loads, $lockout_time, $params['perpage'], $state['offset'], $state['sort']
-		);
-
-		$throttled = $throttle_q->result_array();
+		$logs = $logs->order('last_activity', 'desc')
+			->limit($this->params['perpage'])
+			->offset($offset)
+			->all();
 
 		$rows = array();
-
-		while ($log = array_shift($throttled))
+		foreach ($logs as $log)
 		{
 			$rows[] = array(
-				'ip_address'	=> $log['ip_address'],
-				'hits'			=> $log['hits'],
-				'last_activity'	=> $this->localize->human_time($log['last_activity'])
+				'throttle_id'		=> $log->throttle_id,
+				'ip_address'		=> $log->ip_address,
+				'last_activity'		=> $this->localize->human_time($log->last_activity),
+				'hits'				=> $log->hits,
+				'locked_out'		=> $log->locked_out
 			);
 		}
 
-		$this->db->where('(hits >= "'.$max_page_loads.'" OR (locked_out = "y" AND last_activity > "'.$lockout_time.'"))', NULL, FALSE);
-		$this->db->from('throttle');
-		$total = $this->db->count_all_results();
+		$pagination = new Pagination($this->params['perpage'], $count, $page);
+		$links = $pagination->cp_links($this->base_url);
 
-		return array(
+		$vars = array(
 			'rows' => $rows,
-			'no_results' => '<p>'.lang('no_throttle_logs').'</p>',
-			'pagination' => array(
-				'per_page' => $params['perpage'],
-				'total_rows' => $total
-			)
+			'no_results' => '<p>'.lang('no_search_results').'</p>',
+			'pagination' => $links
 		);
+
+		$this->cp->render('logs/throttle', $vars);
 	}
 
 	// --------------------------------------------------------------------

@@ -9,7 +9,7 @@ $lang = array(
 'email_log' 			=> 'e-mail',
 'search_log' 			=> 'Search',
 
-'view_throttle_log' 	=> 'View Throttle Log',
+'view_throttle_log' 	=> 'Access Throttling Logs',
 'view_search_log' 		=> 'View Search Log',
 'view_email_logs' 		=> 'View Email Console Log',
 'view_cp_log' 			=> 'Control Panel Access Logs',
@@ -18,7 +18,6 @@ $lang = array(
 'logs_deleted'			=> 'Logs deleted',
 
 'clear_cp_logs'			=> 'Remove all CP Access Logs',
-'clear_email_logs'		=> 'Remove all e-mail Logs',
 
 'no_search_results'	 	=> 'No Results Found',
 
@@ -60,10 +59,19 @@ $lang = array(
 /* Email Log */
 'sent_to'				=> 'Sent e-mail to',
 'subject'				=> 'Subject',
+'clear_email_logs'		=> 'Remove all e-mail Logs',
 
 /* Search Log */
 'clear_search_logs'		=> 'Remove all Search Logs',
 'searched_for'			=> 'Searched for',
+
+/* Throttle Log */
+'enable_throttling'		=> 'Turn Throttling On',
+'throttling_disabled'	=> '<b>Throttling</b> Disabled',
+'hits' 					=> 'Hits',
+'last_activity' 		=> 'Last Activity',
+'no_throttle_logs' 		=> 'No IPs are currently being throttled by the system.',
+'blacklist_all_ips'		=> 'Blacklist All IPs',
 
 ''=>''
 );
