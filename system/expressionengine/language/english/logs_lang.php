@@ -10,10 +10,10 @@ $lang = array(
 'search_log' 			=> 'Search',
 
 'view_throttle_log' 	=> 'Access Throttling Logs',
-'view_search_log' 		=> 'View Search Log',
-'view_email_logs' 		=> 'View Email Console Log',
+'view_search_log' 		=> 'Search Logs',
+'view_email_logs' 		=> 'e-mail Logs',
 'view_cp_log' 			=> 'Control Panel Access Logs',
-'view_developer_log'	=> 'View Developer Log',
+'view_developer_log'	=> 'Developer Logs',
 
 'logs_deleted'			=> 'Logs deleted',
 
