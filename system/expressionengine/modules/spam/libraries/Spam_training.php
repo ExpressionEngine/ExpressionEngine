@@ -122,6 +122,28 @@ class Spam_training {
 	 */
 	public function delete_classifier()
 	{
+		if (function_exists('shmop_open'))
+		{
+			if ( ! empty($this->shm_id) && is_int($this->shm_id))
+			{
+				$shm_id = $this->shm_id;
+				unset($this->shm_id);
+			}
+			else
+			{
+				$id = ftok(__FILE__, 't');
+				$shm_id = @shmop_open($id, 'a', 0, 0);
+
+				if ($shm_id === FALSE)
+				{
+					// No memory segment exists
+					return; 
+				}
+			}
+
+			shmop_delete($shm_id);
+			shmop_close($shm_id);
+		}
 	}
 
 	// --------------------------------------------------------------------
