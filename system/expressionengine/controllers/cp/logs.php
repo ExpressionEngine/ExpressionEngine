@@ -246,87 +246,74 @@ class Logs extends CP_Controller {
 	 * @access	public
 	 * @return	mixed
 	 */
-	public function view_search_log()
+	public function search()
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_logs'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->load->library('table');
-
-		$this->table->set_base_url('C=tools_logs'.AMP.'M=view_search_log');
-		$this->table->set_columns(array(
-			'screen_name'	=> array(),
-			'ip_address'	=> array(),
-			'search_date'	=> array('html' => FALSE, 'header' => lang('date')),
-			'site_label'	=> array('html' => FALSE, 'header' => lang('site')),
-			'search_type'	=> array('html' => FALSE, 'header' => lang('searched_in')),
-			'search_terms'	=> array('html' => FALSE, 'header' => lang('search_terms'))
-		));
-
-		$initial_state = array(
-			'sort'	=> array('search_date' => 'desc')
-		);
-
-		$params = array(
-			'perpage'	=> $this->perpage
-		);
-
-		$vars = $this->table->datasource('_search_log_filter', $initial_state, $params);
-
+		$this->base_url->path = 'logs/search';
 		$this->view->cp_page_title = lang('view_search_log');
 
-		// a bit of a breadcrumb override is needed
-		$this->view->cp_breadcrumbs = array(
-			BASE.AMP.'C=tools' => lang('tools'),
-			BASE.AMP.'C=tools_logs'=> lang('tools_logs')
-		);
+		$page = ee()->input->get('page') ? ee()->input->get('page') : 1;
+		$page = ($page > 0) ? $page : 1;
 
-		$this->cp->render('tools/view_search_log', $vars);
-	}
+		$offset = ($page - 1) * $this->params['perpage']; // Offset is 0 indexed
 
-	// --------------------------------------------------------------------
+		$logs = ee()->api->get('SearchLog')->with('Site');
 
-	/**
-	 * Ajax filter for Search log
-	 *
-	 * Filters Search log data
-	 *
-	 * @access	public
-	 * @return	void
-	 */
-	public function _search_log_filter($state, $params)
-	{
-		$search_q = $this->tools_model->get_search_log(
-			$params['perpage'], $state['offset'], $state['sort']
-		);
-		$searches = $search_q->result_array();
+		if ( ! empty($this->params['filter_by_username']))
+		{
+			$logs = $logs->filter('member_id', $this->params['filter_by_username']);
+		}
+
+		if ( ! empty($this->params['filter_by_site']))
+		{
+			$logs = $logs->filter('site_id', $this->params['filter_by_site']);
+		}
+
+		if ( ! empty($this->params['filter_by_date']))
+		{
+			$logs = $logs->filter('search_date', '>=', ee()->localize->now - $this->params['filter_by_date']);
+		}
+
+		// if ( ! empty($this->view->filter_by_phrase_value))
+		// {
+		// 	$logs = $logs->filter('action', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%');
+		// }
+
+		$count = $logs->count();
+
+		$logs = $logs->order('search_date', 'desc')
+			->limit($this->params['perpage'])
+			->offset($offset)
+			->all();
 
 		$rows = array();
-
-		while ($log = array_shift($searches))
+		foreach ($logs as $log)
 		{
-			$screen_name = ($log['screen_name'] != '') ? '<a href="'.BASE.AMP.'C=myaccount'.AMP.'id='. $log['member_id'].'">'.$log['screen_name'].'</a>' : ' -- ';
-
 			$rows[] = array(
-				'screen_name'	=> $screen_name,
-				'ip_address'	=> $log['ip_address'],
-				'search_date'	=> $this->localize->human_time($log['search_date']),
-				'site_label'	=> $log['site_label'],
-				'search_type'	=> $log['search_type'],
-				'search_terms'	=> $log['search_terms']
+				'id'				=> $log->id,
+				'username'			=> "<a href='" . cp_url('myaccount', array('id' => $log->member_id)) . "'>{$log->screen_name}</a>",
+				'ip_address'		=> $log->ip_address,
+				'site_label' 		=> $log->getSite()->site_label,
+				'search_date'		=> $this->localize->human_time($log->search_date),
+				'search_type' 		=> $log->search_type,
+				'search_terms'		=> $log->search_terms
 			);
 		}
 
-		return array(
+		$pagination = new Pagination($this->params['perpage'], $count, $page);
+		$links = $pagination->cp_links($this->base_url);
+
+		$vars = array(
 			'rows' => $rows,
 			'no_results' => '<p>'.lang('no_search_results').'</p>',
-			'pagination' => array(
-				'per_page' => $params['perpage'],
-				'total_rows' => $this->db->count_all('search_log')
-			)
+			'pagination' => $links
 		);
+
+		$this->cp->render('logs/search', $vars);
 	}
 
 	// --------------------------------------------------------------------

@@ -61,6 +61,10 @@ $lang = array(
 'sent_to'				=> 'Sent e-mail to',
 'subject'				=> 'Subject',
 
+/* Search Log */
+'clear_search_logs'		=> 'Remove all Search Logs',
+'searched_for'			=> 'Searched for',
+
 ''=>''
 );
 
