@@ -1,7 +1,7 @@
 <?php
 namespace EllisLab\ExpressionEngine\Module\Search\Model;
 
-use EllisLab\ExpressionEngione\Model\Model;
+use EllisLab\ExpressionEngine\Model\Model;
 
 class SearchLog extends Model {
 	// Meta data
@@ -25,4 +25,9 @@ class SearchLog extends Model {
 	protected $search_date;
 	protected $search_type;
 	protected $search_terms;
+
+	public function getSite()
+	{
+		return $this->getRelated('Site');
+	}
 }

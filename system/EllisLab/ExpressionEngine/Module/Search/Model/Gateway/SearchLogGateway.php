@@ -1,6 +1,8 @@
 <?php
 namespace EllisLab\ExpressionEngine\Module\Search\Model\Gateway;
 
+use EllisLab\ExpressionEngine\Model\Gateway\RowDataGateway;
+
 class SearchLogGateway extends RowDataGateway {
 	protected static $_table_name 		= 'search_log';
 	protected static $_primary_key 		= 'id';
