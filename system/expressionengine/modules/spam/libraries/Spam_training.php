@@ -55,18 +55,34 @@ class Spam_training {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Close the shared memory segment if we're using it.
+	 * 
+	 * @access public
+	 * @return void
+	 */
+	public function __destruct()
+	{
+		if ( ! empty($this->shm_id))
+		{
+			shmop_close($this->shm_id);
+		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Load the classifier object from memory if available, otherwise construct
 	 * a new classifier from the database.
 	 * 
 	 * @access public
-	 * @return void
+	 * @return The prepared classifier
 	 */
 	public function load_classifier()
 	{
 		if (function_exists('shmop_open'))
 		{
 			// Generate System V IPC key to identify out shared memory segment
-			$id = ftok(__FILE__, 'ee');
+			$id = ftok(__FILE__, 't');
 
 			// It's as if millions of Daniel Binghams suddenly cried out in terror
 			$this->shm_id = @shmop_open($id, 'a', 0, 0);
@@ -78,7 +94,7 @@ class Spam_training {
 				$classifier = $this->classifier();
 				$data = serialize($classifier);
 				$size = strlen($data);
-				$this->shm_id = shmop_open($id, 'c', '755', $size);
+				$this->shm_id = shmop_open($id, 'c', 0644, $size);
 				shmop_write($this->shm_id, $data, 0);
 				return $classifier;
 			}
@@ -94,6 +110,18 @@ class Spam_training {
 		{
 			return $this->classifier();
 		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Deletes the shared memory segment containing our classifier
+	 * 
+	 * @access public
+	 * @return void
+	 */
+	public function delete_classifier()
+	{
 	}
 
 	// --------------------------------------------------------------------
@@ -123,7 +151,7 @@ class Spam_training {
 			'ham' => $this->_get_parameters('ham'),
 		);
 
-		$classifier = new Classifier($training, $vocabulary, $stop_words);
+		return new Classifier($training, $vocabulary, $stop_words);
 	}
 
 	// --------------------------------------------------------------------

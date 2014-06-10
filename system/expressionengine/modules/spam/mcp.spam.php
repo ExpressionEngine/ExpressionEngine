@@ -62,10 +62,11 @@ class Spam_mcp {
 	 */
 	public function test()
 	{
-		require_once PATH_MOD . 'spam/ext.spam.php';
+		require_once PATH_MOD . 'spam/libraries/Spam_training.php';
 
 		$start_time = microtime(true);
-		$bayes = new Spam_ext();
+		$bayes = new Spam_training();
+		$bayes = $bayes->load_classifier();
 		$limit = 1000;
 
 		ee()->db->select('source, class');
@@ -81,7 +82,7 @@ class Spam_mcp {
 
 		foreach ($query->result() as $document)
 		{
-			$classification = (int) $bayes->classify($document->source);
+			$classification = (int) $bayes->classify($document->source, 'spam');
 
 			if($classification > $document->class)
 			{
