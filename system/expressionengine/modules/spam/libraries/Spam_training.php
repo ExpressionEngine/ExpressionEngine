@@ -65,6 +65,30 @@ class Spam_training {
 	{
 		if (function_exists('shmop_open'))
 		{
+			// Generate System V IPC key to identify out shared memory segment
+			$id = ftok(__FILE__, 'ee');
+
+			// It's as if millions of Daniel Binghams suddenly cried out in terror
+			$this->shm_id = @shmop_open($id, 'a', 0, 0);
+
+			// first check if we already have a memory segment
+			if ($this->shm_id === FALSE)
+			{
+				// No memory segment, serialize and write classifier from database
+				$classifier = $this->classifier();
+				$data = serialize($classifier);
+				$size = strlen($data);
+				$this->shm_id = shmop_open($id, 'c', '755', $size);
+				shmop_write($this->shm_id, $data, 0);
+				return $classifier;
+			}
+			else
+			{
+				// Read from the memory segment and unserialize
+				$size = shmop_size($this->shm_id);
+				$data = shmop_read($this->shm_id, 0, $size);
+				return unserialize($data);
+			}
 		}
 		else
 		{
