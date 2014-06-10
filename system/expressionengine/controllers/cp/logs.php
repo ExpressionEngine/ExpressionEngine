@@ -46,8 +46,6 @@ class Logs extends CP_Controller {
 
 		$this->base_url = new CP\URL('logs', ee()->session->session_id());
 
-		$this->load->model('tools_model');
-
 		// Sidebar Menu
 		$menu = array(
 			'logs',
@@ -547,124 +545,128 @@ class Logs extends CP_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->load->library('table');
-		$this->table->set_base_url('C=tools_logs'.AMP.'M=view_developer_log');
-		$this->table->set_columns(array(
-			'log_id'		=> array('header' => lang('log_id')),
-			'timestamp'		=> array('header' => lang('date')),
-			'description'	=> array('header' => lang('log_message')),
-			'_check'		=> array(
-				'header' => form_checkbox(
-					array(
-						'id'		=>'toggle_all',
-						'name'		=>'toggle_all',
-						'value'		=>'toggle_all',
-						'checked'	=> FALSE
-					)
-				)
-			)
-		));
-
-		$initial_state = array(
-			'sort'	=> array('timestamp' => 'desc')
-		);
-
-		$params = array(
-			'perpage'	=> $this->perpage
-		);
-
-		$vars = $this->table->datasource('_developer_log_filter', $initial_state, $params);
-
+		$this->base_url->path = 'logs/developer';
 		$this->view->cp_page_title = lang('view_developer_log');
 
-		// a bit of a breadcrumb override is needed
-		$this->view->cp_breadcrumbs = array(
-			BASE.AMP.'C=tools' => lang('tools'),
-			BASE.AMP.'C=tools_logs'=> lang('tools_logs')
-		);
+		$page = ee()->input->get('page') ? ee()->input->get('page') : 1;
+		$page = ($page > 0) ? $page : 1;
 
-		$this->load->library('logger');
+		$offset = ($page - 1) * $this->params['perpage']; // Offset is 0 indexed
 
-		// Now that we've gotten the logs we're going to show, mark them as viewed;
-		// note since we already have the logs array, this change won't be visible on
-		// this particular page load, which is what we want. Next time the page loads,
-		// the logs will appear as viewed.
-		$this->tools_model->mark_developer_logs_as_viewed($vars['rows']);
+		$logs = ee()->api->get('DeveloperLog');
 
-		// Set JS globals for "What does this mean?" modal
-		$this->javascript->set_global(
-			array(
-				'developer_log' => array(
-					'dev_log_help'			=> lang('dev_log_help'),
-					'deprecation_meaning'	=> lang('deprecated_meaning')
-				)
-			)
-		);
+		// if ( ! empty($this->params['filter_by_username']))
+		// {
+		// 	$logs = $logs->filter('member_id', $this->params['filter_by_username']);
+		// }
+		//
+		// if ( ! empty($this->params['filter_by_site']))
+		// {
+		// 	$logs = $logs->filter('site_id', $this->params['filter_by_site']);
+		// }
 
-		$this->cp->render('tools/view_developer_log', $vars);
-	}
+		if ( ! empty($this->params['filter_by_date']))
+		{
+			$logs = $logs->filter('timestamp', '>=', ee()->localize->now - $this->params['filter_by_date']);
+		}
 
-	// --------------------------------------------------------------------
+		// if ( ! empty($this->view->filter_by_phrase_value))
+		// {
+		// 	$logs = $logs->filter('action', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%');
+		// }
 
-	/**
-	 * Ajax filter for Email log
-	 *
-	 * Filters Email log data
-	 *
-	 * @access	public
-	 * @return	void
-	 */
-	public function _developer_log_filter($state, $params)
-	{
-		$dev_logs_query = $this->tools_model->get_developer_log(
-			$params['perpage'], $state['offset'], $state['sort']
-		);
+		$count = $logs->count();
 
-		$dev_logs = $dev_logs_query->result_array();
+		$logs = $logs->order('timestamp', 'desc')
+			->limit($this->params['perpage'])
+			->offset($offset)
+			->all();
 
 		$rows = array();
-
-		while ($log = array_shift($dev_logs))
+		foreach ($logs as $log)
 		{
-			$new = ($log['viewed'] == 'n') ? 'new' : '';
+			if ( ! $log->function)
+			{
+				$description = '<p>'.$log->description.'</p>';
+			}
+			else
+			{
+				$description = '<p>';
+
+				// "Deprecated function %s called"
+				$description .= sprintf(lang('deprecated_function'), $log->function);
+
+				// "in %s on line %d."
+				if ($log->file && $log->line)
+				{
+					$description .= NBS.sprintf(lang('deprecated_on_line'), '<code>'.$log->file.'</code>', $log->line);
+				}
+
+				$description .= '</p>';
+
+				// "from template tag: %s in template %s"
+				if ($log->addon_module && $log->addon_method)
+				{
+					$description .= '<p>';
+					$description .= sprintf(
+						lang('deprecated_template'),
+						'<code>exp:'.strtolower($log->addon_module).':'.$log->addon_method.'</code>',
+						'<a href="'.cp_url('design/edit_template/'.$log->template_id).'">'.$log->template_group.'/'.$log->template_name.'</a>'
+					);
+
+					if ($log->snippets)
+					{
+						$snippets = explode('|', $log->snippets);
+
+						foreach ($snippets as &$snip)
+						{
+							$snip = '<a href="'.cp_url('design/snippets_edit', array('snippet' => $snip)).'">{'.$snip.'}</a>';
+						}
+
+						$description .= '<br>';
+						$description .= sprintf(lang('deprecated_snippets'), implode(', ', $snippets));
+					}
+					$description .= '</p>';
+				}
+
+				if ($log->deprecated_since
+					|| $log->deprecated_use_instead)
+				{
+					// Add a line break if there is additional information
+					$description .= '<p>';
+
+					// "Deprecated since %s."
+					if ($log->deprecated_since)
+					{
+						$description .= sprintf(lang('deprecated_since'), $log->deprecated_since);
+					}
+
+					// "Use %s instead."
+					if ($log->use_instead)
+					{
+						$description .= NBS.sprintf(lang('deprecated_use_instead'), $log->use_instead);
+					}
+					$description .= '</p>';
+				}
+			}
 
 			$rows[] = array(
-				'log_id' => array(
-					'data' 	=> $log['log_id'],
-					'class'	=> $new
-				),
-				'timestamp' => array(
-					'data'	=> date('Y-m-d h:i A', $log['timestamp']),
-					'class'	=> $new
-				),
-				'description' => array(
-					'data'	=> $this->logger->build_deprecation_language($log),
-					'class'	=> $new
-				),
-				'viewed' => $log['viewed'],
-				'_check' => array(
-					'data' => form_checkbox(
-						array(
-							'id'		=>'delete_box_'.$log['log_id'],
-							'name'		=>'toggle[]',
-							'value'		=>$log['log_id'],
-							'class'		=>'toggle_email',
-							'checked'	=> FALSE
-						)
-					),
-					'class'	=> $new
-				)
+				'log_id'			=> $log->log_id,
+				'timestamp'			=> $this->localize->human_time($log->timestamp),
+				'description' 		=> $description
 			);
 		}
 
-		return array(
+		$pagination = new Pagination($this->params['perpage'], $count, $page);
+		$links = $pagination->cp_links($this->base_url);
+
+		$vars = array(
 			'rows' => $rows,
 			'no_results' => '<p>'.lang('no_search_results').'</p>',
-			'pagination' => array(
-				'per_page' => $params['perpage'],
-				'total_rows' => $this->db->count_all('developer_log')
-			)
+			'pagination' => $links
 		);
+
+		$this->cp->render('logs/developer', $vars);
 	}
 
 	// --------------------------------------------------------------------

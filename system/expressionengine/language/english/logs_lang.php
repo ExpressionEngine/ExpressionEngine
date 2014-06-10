@@ -32,6 +32,7 @@ $lang = array(
 'date_logged'			=> 'Date logged',
 
 /* Developer Log */
+'clear_developer_logs'	=> 'Remove all Developer Logs',
 'log_id'				=> 'Log ID',
 'log_message'			=> 'Message',
 'deprecated_function'	=> 'Deprecated function %s called',
