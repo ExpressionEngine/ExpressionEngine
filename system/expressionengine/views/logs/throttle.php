@@ -1,6 +1,6 @@
 <?php extend_template('default-nav') ?>
 
-<?=form_open(cp_url('logs/cp'), 'class="tbl-ctrls"')?>
+<?=form_open(cp_url('logs/throttle'), 'class="tbl-ctrls"')?>
 	<fieldset class="tbl-search right">
 		<input placeholder="<?=lang('type_phrase')?>" type="text" name="filter_by_phrase" value="<?=$filter_by_phrase_value?>">
 		<input class="btn submit" type="submit" value="<?=lang('search_logs_button')?>">
