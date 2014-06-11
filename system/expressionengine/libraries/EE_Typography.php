@@ -10,8 +10,10 @@
  * @since		Version 2.0
  * @filesource
  */
-use \Michelf\MarkdownExtra;
+
 // ------------------------------------------------------------------------
+
+use \Michelf\MarkdownExtra;
 
 /**
  * ExpressionEngine Core Typography Class
