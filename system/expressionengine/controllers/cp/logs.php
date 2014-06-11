@@ -64,65 +64,96 @@ class Logs extends CP_Controller {
 		}
 
 		ee()->menu->register_left_nav($menu);
+	}
 
-		// Filters
-		$usernames = array('' => '-- '.lang('by_username').' --');
-		ee()->load->model('member_model');
-		$members = ee()->member_model->get_members();
-		if ($members)
+	// --------------------------------------------------------------------
+
+	/**
+	 * Adds filters to the view and sets parameter values for the models
+	 *
+	 * @param array $filters	A list of filters to show, defaults to:
+	 *    'username',
+	 *    'site',
+	 *    'date',
+	 *    'perpage'
+	 * @return void
+	 */
+	private function filters($filters = NULL)
+	{
+		if ( ! is_array($filters))
 		{
-			foreach ($members->result_array() as $member)
-			{
-				$usernames[$member['member_id']] = $member['username'];
-			}
+			$filters = array();
 		}
 
-		$sites = FALSE;
-		if (ee()->config->item('multiple_sites_enabled') === 'y' && ! IS_CORE)
-		{
-			$sites = array('' => '-- '.lang('by_site').' --');
+		$view_filters = array();
 
-			// Since the keys are numeric array_merge() is the wrong solution
-			foreach (ee()->session->userdata('assigned_sites') as $site_id => $site_label)
+		// By Username
+		if (in_array('username', $filters))
+		{
+			$usernames = array('' => '-- '.lang('by_username').' --');
+			ee()->load->model('member_model');
+			$members = ee()->member_model->get_members();
+			if ($members)
 			{
-				$sites[$site_id] = $site_label;
+				foreach ($members->result_array() as $member)
+				{
+					$usernames[$member['member_id']] = $member['username'];
+				}
 			}
+
+			$this->params['filter_by_username'] = ee()->input->get_post('filter_by_username');
+			$view_filters[] = form_dropdown('filter_by_username', $usernames, $this->params['filter_by_username']);
 		}
 
-		$dates = array(
-			''          => '-- '.lang('by_date').' --',
-			'86400'     => ucwords(lang('last').' 24 '.lang('hours')),
-			'604800'    => ucwords(lang('last').' 7 '.lang('days')),
-			'2592000'   => ucwords(lang('last').' 30 '.lang('days')),
-			'15552000'  => ucwords(lang('last').' 180 '.lang('days')),
-			'31536000'  => ucwords(lang('last').' 365 '.lang('days')),
-		);
-
-		$perpages = array(
-			''    => '-- '.lang('limit_by').' --',
-			'25'  => '25 '.lang('results'),
-			'50'  => '50 '.lang('results'),
-			'75'  => '75 '.lang('results'),
-			'100' => '100 '.lang('results'),
-			'150' => '150 '.lang('results')
-		);
-
-		$filter_defaults = array();
-
-		foreach (array('filter_by_username', 'filter_by_site', 'filter_by_date') as $input_var)
+		// By Site
+		if (in_array('site', $filters))
 		{
-			if (ee()->input->get_post($input_var) !== FALSE)
+			if (ee()->config->item('multiple_sites_enabled') === 'y' && ! IS_CORE)
 			{
-				$this->params[$input_var] = ee()->input->get_post($input_var);
-				$filter_defaults[$input_var] = ee()->input->get_post($input_var);
+				$sites = array('' => '-- '.lang('by_site').' --');
+
+				// Since the keys are numeric array_merge() is the wrong solution
+				foreach (ee()->session->userdata('assigned_sites') as $site_id => $site_label)
+				{
+					$sites[$site_id] = $site_label;
+				}
 			}
-			else
-			{
-				$filter_defaults[$input_var] = array();
-			}
+
+			$this->params['filter_by_site'] = ee()->input->get_post('filter_by_site');
+			$view_filters[] = form_dropdown('filter_by_site', $sites, $this->params['filter_by_site']);
 		}
 
-		$this->params['perpage'] = ee()->input->get_post('perpage') ? (int) ee()->input->get_post('perpage') : $this->perpage;
+		// By Date
+		if (in_array('date', $filters))
+		{
+			$dates = array(
+				''          => '-- '.lang('by_date').' --',
+				'86400'     => ucwords(lang('last').' 24 '.lang('hours')),
+				'604800'    => ucwords(lang('last').' 7 '.lang('days')),
+				'2592000'   => ucwords(lang('last').' 30 '.lang('days')),
+				'15552000'  => ucwords(lang('last').' 180 '.lang('days')),
+				'31536000'  => ucwords(lang('last').' 365 '.lang('days')),
+			);
+
+			$this->params['filter_by_date'] = ee()->input->get_post('filter_by_date');
+			$view_filters[] = form_dropdown('filter_by_date', $dates, $this->params['filter_by_date']);
+		}
+
+		// Limit per page
+		if (in_array('perpage', $filters))
+		{
+			$perpages = array(
+				''    => '-- '.lang('limit_by').' --',
+				'25'  => '25 '.lang('results'),
+				'50'  => '50 '.lang('results'),
+				'75'  => '75 '.lang('results'),
+				'100' => '100 '.lang('results'),
+				'150' => '150 '.lang('results')
+			);
+
+			$this->params['perpage'] = ee()->input->get_post('perpage') ? (int) ee()->input->get_post('perpage') : $this->perpage;
+			$view_filters[] = form_dropdown('perpage', $perpages, $this->params['perpage']);
+		}
 
 		// Maintain the filters in the URL
 		foreach ($this->params as $key => $value)
@@ -130,20 +161,12 @@ class Logs extends CP_Controller {
 			$this->base_url->setQueryStringVariable($key, $value);
 		}
 
-		$filters = array();
+		// Make the filters available to the view
+		$this->view->filters = $view_filters;
 
-		$filters[] = form_dropdown('filter_by_username', $usernames, $filter_defaults['filter_by_username']);
-		if ($sites) {
-			$filters[] = form_dropdown('filter_by_site', $sites, $filter_defaults['filter_by_site']);
-		}
-		$filters[] = form_dropdown('filter_by_date', $dates, $filter_defaults['filter_by_date']);
-		$filters[] = form_dropdown('perpage', $perpages, $this->params['perpage']);
-
-		$this->view->filters = $filters;
+		// Add in any submitted search phrase
 		$this->view->filter_by_phrase_value = ee()->input->get_post('filter_by_phrase');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Index function
@@ -175,6 +198,7 @@ class Logs extends CP_Controller {
 	{
 		$this->base_url->path = 'logs/cp';
 		$this->view->cp_page_title = lang('view_cp_log');
+		$this->filters(array('username', 'site', 'date', 'perpage'));
 
 		$page = ee()->input->get('page') ? ee()->input->get('page') : 1;
 		$page = ($page > 0) ? $page : 1;
@@ -254,6 +278,7 @@ class Logs extends CP_Controller {
 
 		$this->base_url->path = 'logs/search';
 		$this->view->cp_page_title = lang('view_search_log');
+		$this->filters(array('username', 'site', 'date', 'perpage'));
 
 		$page = ee()->input->get('page') ? ee()->input->get('page') : 1;
 		$page = ($page > 0) ? $page : 1;
@@ -333,6 +358,7 @@ class Logs extends CP_Controller {
 
 		$this->base_url->path = 'logs/throttle';
 		$this->view->cp_page_title = lang('view_throttle_log');
+		$this->filters(array('perpage'));
 
 		$rows = array();
 		$links = array();
@@ -347,26 +373,6 @@ class Logs extends CP_Controller {
 			$offset = ($page - 1) * $this->params['perpage']; // Offset is 0 indexed
 
 			$logs = ee()->api->get('Throttle');
-
-			// if ( ! empty($this->params['filter_by_username']))
-			// {
-			// 	$logs = $logs->filter('member_id', $this->params['filter_by_username']);
-			// }
-			//
-			// if ( ! empty($this->params['filter_by_site']))
-			// {
-			// 	$logs = $logs->filter('site_id', $this->params['filter_by_site']);
-			// }
-			//
-			if ( ! empty($this->params['filter_by_date']))
-			{
-				$logs = $logs->filter('last_activity', '>=', ee()->localize->now - $this->params['filter_by_date']);
-			}
-			//
-			// if ( ! empty($this->view->filter_by_phrase_value))
-			// {
-			// 	$logs = $logs->filter('action', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%');
-			// }
 
 			$count = $logs->count();
 
@@ -418,6 +424,7 @@ class Logs extends CP_Controller {
 
 		$this->base_url->path = 'logs/email';
 		$this->view->cp_page_title = lang('view_email_logs');
+		$this->filters(array('username', 'date', 'perpage'));
 
 		$page = ee()->input->get('page') ? ee()->input->get('page') : 1;
 		$page = ($page > 0) ? $page : 1;
@@ -430,11 +437,6 @@ class Logs extends CP_Controller {
 		{
 			$logs = $logs->filter('member_id', $this->params['filter_by_username']);
 		}
-
-		// if ( ! empty($this->params['filter_by_site']))
-		// {
-		// 	$logs = $logs->filter('site_id', $this->params['filter_by_site']);
-		// }
 
 		if ( ! empty($this->params['filter_by_date']))
 		{
@@ -494,6 +496,7 @@ class Logs extends CP_Controller {
 
 		$this->base_url->path = 'logs/developer';
 		$this->view->cp_page_title = lang('view_developer_log');
+		$this->filters(array('date', 'perpage'));
 
 		$page = ee()->input->get('page') ? ee()->input->get('page') : 1;
 		$page = ($page > 0) ? $page : 1;
@@ -501,16 +504,6 @@ class Logs extends CP_Controller {
 		$offset = ($page - 1) * $this->params['perpage']; // Offset is 0 indexed
 
 		$logs = ee()->api->get('DeveloperLog');
-
-		// if ( ! empty($this->params['filter_by_username']))
-		// {
-		// 	$logs = $logs->filter('member_id', $this->params['filter_by_username']);
-		// }
-		//
-		// if ( ! empty($this->params['filter_by_site']))
-		// {
-		// 	$logs = $logs->filter('site_id', $this->params['filter_by_site']);
-		// }
 
 		if ( ! empty($this->params['filter_by_date']))
 		{
