@@ -334,58 +334,66 @@ class Logs extends CP_Controller {
 		$this->base_url->path = 'logs/throttle';
 		$this->view->cp_page_title = lang('view_throttle_log');
 
-		$page = ee()->input->get('page') ? ee()->input->get('page') : 1;
-		$page = ($page > 0) ? $page : 1;
-
-		$offset = ($page - 1) * $this->params['perpage']; // Offset is 0 indexed
-
-		$logs = ee()->api->get('Throttle');
-
-		// if ( ! empty($this->params['filter_by_username']))
-		// {
-		// 	$logs = $logs->filter('member_id', $this->params['filter_by_username']);
-		// }
-		//
-		// if ( ! empty($this->params['filter_by_site']))
-		// {
-		// 	$logs = $logs->filter('site_id', $this->params['filter_by_site']);
-		// }
-		//
-		// if ( ! empty($this->params['filter_by_date']))
-		// {
-		// 	$logs = $logs->filter('search_date', '>=', ee()->localize->now - $this->params['filter_by_date']);
-		// }
-		//
-		// if ( ! empty($this->view->filter_by_phrase_value))
-		// {
-		// 	$logs = $logs->filter('action', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%');
-		// }
-
-		$count = $logs->count();
-
-		$logs = $logs->order('last_activity', 'desc')
-			->limit($this->params['perpage'])
-			->offset($offset)
-			->all();
-
 		$rows = array();
-		foreach ($logs as $log)
-		{
-			$rows[] = array(
-				'throttle_id'		=> $log->throttle_id,
-				'ip_address'		=> $log->ip_address,
-				'last_activity'		=> $this->localize->human_time($log->last_activity),
-				'hits'				=> $log->hits,
-				'locked_out'		=> $log->locked_out
-			);
-		}
+		$links = array();
+		$throttling_disabled = TRUE;
 
-		$pagination = new Pagination($this->params['perpage'], $count, $page);
-		$links = $pagination->cp_links($this->base_url);
+		if (ee()->config->item('enable_throttling') == 'y')
+		{
+			$throttling_disabled = FALSE;
+			$page = ee()->input->get('page') ? ee()->input->get('page') : 1;
+			$page = ($page > 0) ? $page : 1;
+
+			$offset = ($page - 1) * $this->params['perpage']; // Offset is 0 indexed
+
+			$logs = ee()->api->get('Throttle');
+
+			// if ( ! empty($this->params['filter_by_username']))
+			// {
+			// 	$logs = $logs->filter('member_id', $this->params['filter_by_username']);
+			// }
+			//
+			// if ( ! empty($this->params['filter_by_site']))
+			// {
+			// 	$logs = $logs->filter('site_id', $this->params['filter_by_site']);
+			// }
+			//
+			if ( ! empty($this->params['filter_by_date']))
+			{
+				$logs = $logs->filter('last_activity', '>=', ee()->localize->now - $this->params['filter_by_date']);
+			}
+			//
+			// if ( ! empty($this->view->filter_by_phrase_value))
+			// {
+			// 	$logs = $logs->filter('action', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%');
+			// }
+
+			$count = $logs->count();
+
+			$logs = $logs->order('last_activity', 'desc')
+				->limit($this->params['perpage'])
+				->offset($offset)
+				->all();
+
+			foreach ($logs as $log)
+			{
+				$rows[] = array(
+					'throttle_id'		=> $log->throttle_id,
+					'ip_address'		=> $log->ip_address,
+					'last_activity'		=> $this->localize->human_time($log->last_activity),
+					'hits'				=> $log->hits,
+					'locked_out'		=> $log->locked_out
+				);
+			}
+
+			$pagination = new Pagination($this->params['perpage'], $count, $page);
+			$links = $pagination->cp_links($this->base_url);
+		}
 
 		$vars = array(
 			'rows' => $rows,
-			'pagination' => $links
+			'pagination' => $links,
+			'disabled' => $throttling_disabled
 		);
 
 		$this->cp->render('logs/throttle', $vars);

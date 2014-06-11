@@ -72,6 +72,7 @@ $lang = array(
 'last_activity' 		=> 'Last Activity',
 'no_throttle_logs' 		=> 'No IPs are currently being throttled by the system.',
 'blacklist_all_ips'		=> 'Blacklist All IPs',
+'clear_throttle_logs'	=> 'Remove all Throttling Logs',
 
 ''=>''
 );

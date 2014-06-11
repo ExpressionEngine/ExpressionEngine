@@ -19,28 +19,32 @@
 		?>
 	</fieldset>
 	<section class="item-wrap log">
-		<?php if (empty($rows)): ?>
+		<?php if ($disabled): ?>
 			<p class="no-results"><?=lang('throttling_disabled')?> <a class="btn action" href="<?=cp_url('settings/throttling')?>"><?=lang('enable_throttling')?></a></p>
 		<?php else: ?>
-			<?php foreach($rows as $row): ?>
+			<?php if (empty($rows)): ?>
+				<p class="no-results"><?=lang('no_search_results')?></p>
+			<?php else: ?>
+				<?php foreach($rows as $row): ?>
 
-			<div class="item">
-				<ul class="toolbar">
-					<li class="remove"><a href="<?=cp_url('logs/throttle/cp/'.$row['throttle_id'])?>" title="remove"></a></li>
-				</ul>
-				<h3><b><?=lang('date_logged')?>:</b> <?=$row['last_activity']?>, <b><abbr title="<?=lang('internet_protocol')?>"><?=lang('ip')?></abbr>:</b> <?=$row['ip_address']?></h3>
-				<div class="message">
-					<p><?=lang('hits')?>: <?=$row['hits']?></p>
+				<div class="item">
+					<ul class="toolbar">
+						<li class="remove"><a href="<?=cp_url('logs/delete/throttle/'.$row['throttle_id'])?>" title="remove"></a></li>
+					</ul>
+					<h3><b><?=lang('date_logged')?>:</b> <?=$row['last_activity']?>, <b><abbr title="<?=lang('internet_protocol')?>"><?=lang('ip')?></abbr>:</b> <?=$row['ip_address']?></h3>
+					<div class="message">
+						<p><?=lang('hits')?>: <?=$row['hits']?></p>
+					</div>
 				</div>
-			</div>
 
-			<?php endforeach; ?>
+				<?php endforeach; ?>
 
-			<?php $this->view('_shared/pagination'); ?>
+				<?php $this->view('_shared/pagination'); ?>
 
-			<fieldset class="tbl-bulk-act">
-				<a class="btn remove" href="<?=cp_url('logs/delete/throttle')?>"><?=lang('clear_throttle_logs')?></a>
-			</fieldset>
+				<fieldset class="tbl-bulk-act">
+					<a class="btn remove" href="<?=cp_url('logs/delete/throttle')?>"><?=lang('clear_throttle_logs')?></a>
+				</fieldset>
+			<?php endif; ?>
 		<?php endif; ?>
 	</section>
 <?=form_close()?>
