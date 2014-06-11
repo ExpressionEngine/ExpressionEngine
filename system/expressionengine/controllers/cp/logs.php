@@ -664,7 +664,7 @@ class Logs extends CP_Controller {
 
 		$query->all()->delete();
 
-		ee()->session->set_flashdata('success', $success_flashdata);
+		ee()->view->set_message('success', $success_flashdata, '', TRUE);
 		ee()->functions->redirect(cp_url('logs/'.$type));
 	}
 
