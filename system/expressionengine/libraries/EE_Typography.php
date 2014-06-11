@@ -10,7 +10,7 @@
  * @since		Version 2.0
  * @filesource
  */
-
+use \Michelf\MarkdownExtra;
 // ------------------------------------------------------------------------
 
 /**
@@ -719,7 +719,7 @@ class EE_Typography extends CI_Typography {
 	 */
 	public function markdown($str, $options = array())
 	{
-		require_once(APPPATH.'libraries/typography/Markdown/markdown.php');
+		require_once APPPATH.'libraries/typography/Markdown/Michelf/MarkdownExtra.inc.php';
 
 		// Ignore [code]
 		$code_blocks = array();
@@ -731,15 +731,15 @@ class EE_Typography extends CI_Typography {
 			$str = str_replace($match, $hash, $str);
 		}
 
-		$parser = new MarkdownExtra_Parser();
+		$parser = new MarkdownExtra;
 
 		// Disable other markup if this is set
 		if (isset($options['no_markup'])
 			&& get_bool_from_string($options['no_markup']))
 		{
-			$parser->no_markup = TRUE;
 		}
 
+			$parser->no_markup = TRUE;
 		// Protect any quotes in EE tags from the Markdown and SmartyPants
 		// processors.
 		$str = $this->protect_quotes_in_tags($str);
