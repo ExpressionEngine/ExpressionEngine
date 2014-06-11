@@ -317,9 +317,18 @@ class Logs extends CP_Controller {
 		$rows = array();
 		foreach ($logs as $log)
 		{
+			if ($log->member_id == 0)
+			{
+				$username = '--';
+			}
+			else
+			{
+				$username = "<a href='" . cp_url('myaccount', array('id' => $log->member_id)) . "'>{$log->screen_name}</a>";
+			}
+
 			$rows[] = array(
 				'id'				=> $log->id,
-				'username'			=> "<a href='" . cp_url('myaccount', array('id' => $log->member_id)) . "'>{$log->screen_name}</a>",
+				'username'			=> $username,
 				'ip_address'		=> $log->ip_address,
 				'site_label' 		=> $log->getSite()->site_label,
 				'search_date'		=> $this->localize->human_time($log->search_date),
