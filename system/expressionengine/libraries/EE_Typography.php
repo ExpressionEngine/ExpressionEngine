@@ -1,4 +1,7 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+use \Michelf\MarkdownExtra;
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -12,8 +15,6 @@
  */
 
 // ------------------------------------------------------------------------
-
-use \Michelf\MarkdownExtra;
 
 /**
  * ExpressionEngine Core Typography Class
