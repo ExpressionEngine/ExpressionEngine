@@ -49,7 +49,6 @@ class PaginationTest extends \PHPUnit_Framework_TestCase {
 			array("Object: current_page",	1, 1, $obj),
 
 			array("Zero per_page",			0, 1, 1),
-			array("Zero total_count",		1, 0, 1),
 			array("Zero current_page",		1, 1, 0),
 
 			array("Negative per_page",		-1, 1, 1),
@@ -93,5 +92,19 @@ class PaginationTest extends \PHPUnit_Framework_TestCase {
 			array('Array for $page_variable',	$url, 1, array('page')),
 			array('Object for $page_variable',	$url, 1, $obj),
 		);
+	}
+
+	/**
+	 * Test that pagination for 0 or 1 pages will return an empty array()
+	 */
+	public function testNothingToPaginate()
+	{
+		$url = new \EllisLab\ExpressionEngine\Library\CP\Url('foo/bar');
+
+		$links = Pagination::create(10, 10, 1)->cp_links($url);
+		$this->assertEquals(array(), $links, "1 Page creates no links");
+
+		$links = Pagination::create(10, 0, 1)->cp_links($url);
+		$this->assertEquals(array(), $links, "0 Pages creates no links");
 	}
 }
