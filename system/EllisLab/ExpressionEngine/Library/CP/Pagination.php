@@ -46,6 +46,24 @@ class Pagination {
 	 */
 	public function __construct($per_page, $total_count, $current_page = 1)
 	{
+		foreach (array('per_page', 'total_count', 'current_page') as $param)
+		{
+			if ( ! is_numeric($$param))
+			{
+				throw new \InvalidArgumentException("The {$param} argument must be a number.");
+			}
+
+			if ($$param < 1)
+			{
+				throw new \InvalidArgumentException("The {$param} argument must be greater than 0. \"{$$param}\" was passed.");
+			}
+		}
+
+		// Cast any floats or numeric strings to integers
+		$per_page = (int) $per_page;
+		$total_count = (int) $total_count;
+		$current_page = (int) $current_page;
+
 		$this->current_page = $current_page;
 		$this->prev         = ($current_page - 1 >= 1) ? ($current_page - 1) : NULL;
 		$this->pages        = (int) ceil($total_count / $per_page);
@@ -86,7 +104,29 @@ class Pagination {
 			return array();
 		}
 
-		$pages--; // Remove the current page from the count.
+		if ( ! ($base_url instanceof \EllisLab\ExpressionEngine\Library\CP\Url))
+		{
+			throw new \InvalidArgumentException('The base_url argument must be a EllisLab\ExpressionEngine\Library\CP\Url object.');
+		}
+
+		// Check for exceptions (i.e. invalid arguments)
+		if ( ! is_numeric($pages))
+		{
+			throw new \InvalidArgumentException('The pages argument must be a number.');
+		}
+
+		if ($pages < 1)
+		{
+			throw new \InvalidArgumentException("The pages argument must be greater than 0. \"{$pages}\" was passed.");
+		}
+
+		if (is_array($page_variable) || (is_object($page_variable) && ! method_exists($page_variable, '__toString')))
+		{
+			throw new \InvalidArgumentException('The page_variable argument must be a string.');
+		}
+
+		// Remove the current page from the count and force an integer instead of a float.
+		$pages = (int) $pages - 1;
 
 		$links['current_page'] = $this->current_page;
 		$links['first'] = $base_url->compile();
@@ -95,7 +135,7 @@ class Pagination {
 			if ($this->{$key} === NULL) continue;
 
 			$url = clone $base_url;
-			$url->setQueryStringVariable($page_variable, $this->{$key});
+			$url->setQueryStringVariable((string) $page_variable, $this->{$key});
 			$links[$key] = $url->compile();
 		}
 
