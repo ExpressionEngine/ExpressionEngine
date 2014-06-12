@@ -52,11 +52,20 @@ class Pagination {
 			{
 				throw new \InvalidArgumentException("The {$param} argument must be a number.");
 			}
+		}
 
+		foreach (array('per_page', 'current_page') as $param)
+		{
 			if ($$param < 1)
 			{
 				throw new \InvalidArgumentException("The {$param} argument must be greater than 0. \"{$$param}\" was passed.");
 			}
+		}
+
+		// Total count can be 0
+		if ($total_count < 0)
+		{
+			throw new \InvalidArgumentException("The total_count argument must be greater than 0. \"{$total_count}\" was passed.");
 		}
 
 		// Cast any floats or numeric strings to integers
