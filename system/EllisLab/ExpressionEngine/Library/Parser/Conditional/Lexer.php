@@ -269,6 +269,8 @@ class Lexer extends AbstractLexer {
 			{
 				throw new LexerException('if: is a reserved prefix.');
 			}
+
+			return;
 		}
 
 		$this->whitespace();
