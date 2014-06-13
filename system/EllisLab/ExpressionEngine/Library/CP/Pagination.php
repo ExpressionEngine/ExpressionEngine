@@ -105,17 +105,12 @@ class Pagination {
 	 *            '2'  => 'http://ee3/admin.php?/cp/logs/cp?page=2',
 	 *            '3'  => 'http://ee3/admin.php?/cp/logs/cp?page=3',
 	 */
-	public function cp_links($base_url, $pages = 3, $page_variable = 'page')
+	public function cp_links(Url $base_url, $pages = 3, $page_variable = 'page')
 	{
 		// Show no pagination unless we have at least 2 pages
 		if ($this->pages < 2)
 		{
 			return array();
-		}
-
-		if ( ! ($base_url instanceof \EllisLab\ExpressionEngine\Library\CP\Url))
-		{
-			throw new \InvalidArgumentException('The base_url argument must be a EllisLab\ExpressionEngine\Library\CP\Url object.');
 		}
 
 		// Check for exceptions (i.e. invalid arguments)

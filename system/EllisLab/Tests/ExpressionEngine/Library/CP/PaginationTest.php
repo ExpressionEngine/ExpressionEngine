@@ -75,13 +75,6 @@ class PaginationTest extends \PHPUnit_Framework_TestCase {
 		$obj = new \stdClass;
 
 		return array(
-			array('Int for $base_url',		1,			3, 'page'),
-			array('Float for $base_url',	1.1,		3, 'page'),
-			array('Array for $base_url',	array(1),	3, 'page'),
-			array('String for $base_url',	"foo/bar",	3, 'page'),
-			array('Boolean for $base_url',	FALSE,		3, 'page'),
-			array('stdClass for $base_url',	$obj,		3, 'page'),
-
 			array('Array for $pages',		$url, array(1),	'page'),
 			array('String for $pages',		$url, "foo",	'page'),
 			array('Boolean for $pages',		$url, FALSE,	'page'),
