@@ -46,6 +46,7 @@ class EE_Template {
 	public $hit_lock			= FALSE;		// Lets us lock the hit counter if sub-templates are contained in a template
 	public $parse_php			= FALSE;		// Whether to parse PHP or not
     public $strict_urls			= FALSE;		// Whether to make URLs operate strictly or not.  This is set via a template global pref
+	public $protect_javascript	= FALSE;		// Protect js blocks from conditional parsing?
 
 	public $group_name			= '';			// Group of template being parsed
 	public $template_name		= '';			// Name of template being parsed
@@ -98,6 +99,7 @@ class EE_Template {
 
 	public $realm				= 'Restricted Content';  // Localize?
 	public $marker				= '0o93H7pQ09L8X1t49cHY01Z5j4TT91fGfr'; // Temporary marker used as a place-holder for template data
+
 
 	protected $_tag_cache_prefix	= 'tag_cache';	// Tag cache key namespace
 	protected $_page_cache_prefix	= 'page_cache'; // Page cache key namespace
@@ -2437,7 +2439,8 @@ class EE_Template {
 					$query = ee()->db->select('a.template_id, a.template_data,
 						a.template_name, a.template_type, a.edit_date,
 						a.save_template_file, a.cache, a.refresh, a.hits,
-						a.allow_php, a.php_parse_location, b.group_name')
+						a.allow_php, a.php_parse_location, a.protect_javascript,
+						b.group_name')
 						->from('templates a')
 						->join('template_groups b', 'a.group_id = b.group_id')
 						->where('template_id', $query->row('no_auth_bounce'))
@@ -2477,6 +2480,7 @@ class EE_Template {
 
 		// Set template edit date
 		$this->template_edit_date = $row['edit_date'];
+		$this->protect_javascript = ($row['protect_javascript'] == 'y') ? TRUE : FALSE;
 
 		// Set template type for our page headers
 		if ($this->template_type == '')
