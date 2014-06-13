@@ -41,6 +41,7 @@ class Updater {
 				'_update_template_routes_table',
 				'_set_hidden_template_indicator',
 				'_ensure_channel_combo_loader_action_integrity',
+				'_convert_template_conditional_flag',
 			)
 		);
 
@@ -117,6 +118,158 @@ class Updater {
 
 	// -------------------------------------------------------------------
 
+	/**
+	 * Remove the protect_javascript config item and make it a per-template
+	 * setting.
+	 *
+	 * @access private
+	 * @return void
+	 **/
+	private function _convert_template_conditional_flag()
+	{
+		ee()->update_notices->setVersion('2.9');
+		ee()->update_notices->header('The behavior of conditionals in JavaScript has changed.');
+		ee()->update_notices->item(' Checking for templates to review ...');
+
+		$changes = FALSE;
+
+		// remove from config, but remember that they disabled it
+		// for the template default.
+		$old_config_value = ee()->config->item('protect_javascript');
+
+		if ($old_config_value !== FALSE)
+		{
+			ee()->config->_update_config(
+				array(),
+				array('protect_javascript' => '')
+			);
+		}
+
+		// add a yes/no column, and flip the all to no by default
+		ee()->smartforge->add_column(
+			'templates',
+			array(
+				'protect_javascript' => array(
+					'type'			=> 'char',
+					'constraint'    => 1,
+					'null'			=> FALSE,
+					'default'		=> 'n'
+				)
+			)
+		);
+
+		// loop through templates
+
+		if ( ! defined('LD')) define('LD', '{');
+		if ( ! defined('RD')) define('RD', '}');
+
+		// We're gonna need this to be already loaded.
+		require_once(APPPATH . 'libraries/Functions.php');
+		ee()->functions = new Installer_Functions();
+
+		require_once(APPPATH . 'libraries/Extensions.php');
+		ee()->extensions = new Installer_Extensions();
+
+		require_once(APPPATH . 'libraries/Addons.php');
+		ee()->addons = new Installer_Addons();
+
+		$installer_config = ee()->config;
+		ee()->config = new MSM_Config();
+
+		// We need to figure out which template to load.
+		// Need to check the edit date.
+		ee()->load->model('template_model');
+		$templates = ee()->template_model->fetch_last_edit(array(), TRUE);
+
+		foreach ($templates as $template)
+		{
+			// only check in webpages and js
+			if ($template->template_type != 'webpage' && $template->template_type == 'js')
+			{
+				continue;
+			}
+
+			// In webpages, we must have script tags to check
+			if ($template->template_type == 'webpage' && strpos($template->template_data, '<script') === FALSE)
+			{
+				continue;
+			}
+
+			// If there aren't any conditional tags, then we don't need to continue.
+			if (strpos($template->template_data, LD.'if') === FALSE)
+			{
+				continue;
+			}
+
+			$has_conditional_in_script = FALSE;
+			$path = $template->get_group()->group_name.'/'.$template->template_name;
+
+			$regex = '/([()]|do|with|)\s*\{if\b/is';
+
+			if ($template->template_type == 'js')
+			{
+				if (preg_match($regex, $template->template_data))
+				{
+					$has_conditional_in_scripts = TRUE;
+				}
+			}
+			elseif ($template->template_type == 'template_data')
+			{
+				if (preg_match('/<script\s+(.*?)<\/script/is', $template->template_data, $matches))
+				{
+					foreach ($matches as $match)
+					{
+						if (preg_match($regex, $match[0]))
+						{
+							$has_conditional_in_scripts = TRUE;
+						}
+					}
+				}
+			}
+
+			// if there are conditionals in a js template and they did
+			// not disable the protection previously, we're going to flip
+			// it for them.
+			// regular templates, we will not change automatically since
+			// they are more likely to contain simple conditionals
+			if ($has_conditional_in_scripts && $template->template_type == 'js' && $old_config_value !== 'n')
+			{
+				$template->protect_javascript = 'y';
+
+				ee()->update_notices->item('Automatically protecting JavaScript conditionals in '.$path);
+				$changes = TRUE;
+			}
+			elseif ($has_conditionals_in_scripts && $template->template_type == 'template_data')
+			{
+				ee()->update_notices->item('Conditionals found in JavaScript in '.$path. '.');
+				$changes = TRUE;
+			}
+
+			// save the template
+			// if saving to file, save the file
+			if ($template->loaded_from_file)
+			{
+				ee()->template_model->save_to_file($template);
+			}
+			else
+			{
+				ee()->template_model->save_to_database($template);
+			}
+		}
+
+		if ($changes)
+		{
+			ee()->update_notices->item('Done. Please double check these templates for expected output.');
+		}
+		else
+		{
+			ee()->update_notices->item('Done.');
+		}
+
+		ee()->config = $installer_config;
+
+
+	}
 }
 /* END CLASS */
 
