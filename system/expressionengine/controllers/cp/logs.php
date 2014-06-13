@@ -158,7 +158,10 @@ class Logs extends CP_Controller {
 		// Maintain the filters in the URL
 		foreach ($this->params as $key => $value)
 		{
-			$this->base_url->setQueryStringVariable($key, $value);
+			if ( ! empty($value))
+			{
+				$this->base_url->setQueryStringVariable($key, $value);
+			}
 		}
 
 		// Make the filters available to the view
