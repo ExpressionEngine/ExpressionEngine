@@ -428,7 +428,8 @@ class Template_model extends CI_Model {
 			'enable_http_auth' => $entity->enable_http_auth,
 			'allow_php' => $entity->allow_php,
 			'php_parse_location' => $entity->php_parse_location,
-			'hits' => $entity->hits
+			'hits' => $entity->hits,
+			'protect_javascript' => $entity->protect_javascript
 		);
 		return $data;
 	}
@@ -1244,6 +1245,8 @@ class Template_Entity {
 	 *
 	 */
 	protected $hits;
+
+	protected $protect_javascript;
 
 
 	// ----------------------------------------------------

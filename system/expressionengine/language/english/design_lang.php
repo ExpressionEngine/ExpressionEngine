@@ -184,6 +184,9 @@ $lang = array(
 'parse_stage' =>
 'PHP Parsing Stage',
 
+'protect_javascript' =>
+'Protect Javascript',
+
 'access' =>
 'Access',
 

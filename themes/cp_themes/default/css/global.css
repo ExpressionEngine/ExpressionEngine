@@ -2116,9 +2116,12 @@ a.less_important_link:hover {
   overflow:				hidden;
 }
 
-.templateTable tr.accessRowHeader td .accessTable th.template_manager_template_type,
 .templateTable tr.accessRowHeader td .accessTable th.template_manager_template_name {
-	width:				25%;
+	width:				20%;
+}
+
+.templateTable tr.accessRowHeader td .accessTable th.template_manager_template_type {
+	width:				15%;
 }
 
 .templateTable tr.accessRowHeader td .accessTable th.template_manager_enable_caching,
@@ -2132,6 +2135,10 @@ a.less_important_link:hover {
 
 .templateTable tr.accessRowHeader td .accessTable th.template_manager_parse_stage {
 	width:				12%;
+}
+
+.templateTable tr.accessRowHeader td .accessTable th.protect_javascript {
+	width:				10%;
 }
 
 div.tableRowLeft {

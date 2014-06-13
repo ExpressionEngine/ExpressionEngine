@@ -107,6 +107,7 @@
 							<th><?=lang('parse_stage')?></th>
 							<th><?=lang('hit_counter')?></th>
 							<th><?=lang('template_size')?></th>
+							<th><?=lang('protect_javascript')?></th>
 						</tr>
 						<tr>
 							<td><input name="template_name" class="template_name" type="text" size="15" value="<?=$template_name?>" <?=($template_name == 'index') ? 'readonly="readonly"' : ''?>/></td>
@@ -129,6 +130,9 @@
 							</td>
 							<td><input name="hits" class="hits" type="text" size="8" value="<?=$prefs['hits']?>" /></td>
 							<td><input name="template_size" class="template_size" type="text" size="4" value="<?=$prefs['template_size']?>" /></td>
+							<td>
+								<?=form_dropdown('protect_javascript', array('y' => lang('yes'), 'n' => lang('no')), $prefs['protect_javascript'])?>
+							</td>
 						</tr>
 					</table>
 				</div>
