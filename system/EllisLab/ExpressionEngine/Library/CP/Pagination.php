@@ -169,7 +169,7 @@ class Pagination {
 		for ($i = $start; $i <= $end; $i++)
 		{
 			$url = clone $base_url;
-			$url->setQueryStringVariable($page_variable, $i - 1);
+			$url->setQueryStringVariable($page_variable, $i);
 			$links['pages'][$i] = $url->compile();
 		}
 
