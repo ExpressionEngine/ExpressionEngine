@@ -187,6 +187,10 @@ class Wizard extends CI_Controller {
 		$this->load->library('localize');
 		$this->load->library('cp');
 
+		// Update notices are used to print info at the end of
+		// the update
+		$this->load->library('update_notices');
+
 		// Set the image URL
 		$this->image_path = $this->_set_image_path();
 
@@ -516,6 +520,9 @@ class Wizard extends CI_Controller {
 
 			$this->logger->updater("Update complete. Now running version {$this->version}.");
 
+			// List any update notices we have
+			$vars['update_notices'] = $this->update_notices->get();
+
 			$this->_set_output('uptodate', $vars);
 			return FALSE;
 		}
@@ -629,6 +636,9 @@ class Wizard extends CI_Controller {
 	function _license($show_error = FALSE)
 	{
 		$data['show_error'] = $show_error;
+
+		// clear the update notices if we have any from last time
+		$this->update_notices->clear();
 
 		if ($this->is_installed == FALSE)
 		{
