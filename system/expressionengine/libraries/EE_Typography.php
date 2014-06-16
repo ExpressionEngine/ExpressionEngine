@@ -273,21 +273,6 @@ class EE_Typography extends CI_Typography {
 		// Set up preferences
 		$this->_set_preferences($prefs);
 
-		// Encode PHP Tags
-		// Separate parsers handle this later
-		ee()->load->helper('security');
-		if ( ! $this->separate_parser)
-		{
-			$str = encode_php_tags($str);
-		}
-
-		// Encode EE Tags
-		// Separate parsers should handle this on their end
-		if ( ! $this->separate_parser)
-		{
-			$str = ee()->functions->encode_ee_tags($str, $this->convert_curly);
-		}
-
 		// Handle single line paragraphs
 		if ($this->single_line_pgfs != TRUE)
 		{
@@ -368,12 +353,6 @@ class EE_Typography extends CI_Typography {
 				break;
 		}
 
-		// Encode PHP post-Markdown parsing
-		if ($this->separate_parser)
-		{
-			$str = encode_php_tags($str);
-		}
-
 		//  Parse emoticons
 		$str = $this->emoticon_replace($str);
 
@@ -408,6 +387,15 @@ class EE_Typography extends CI_Typography {
 			}
 		//
 		// -------------------------------------------
+
+		// Encode PHP Tags
+		// Separate parsers handle this later
+		ee()->load->helper('security');
+		$str = encode_php_tags($str);
+
+		// Encode EE Tags
+		// Separate parsers should handle this on their end
+		$str = ee()->functions->encode_ee_tags($str, $this->convert_curly);
 
 		return $str;
 	}
