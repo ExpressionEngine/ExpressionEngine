@@ -136,8 +136,25 @@ class Content_publish extends CP_Controller {
         // here for now.  -Daniel B.
         $this->lang->loadfile('publish_tabs_custom');
 
-		$entry_id	= (int) $this->input->get_post('entry_id');
-		$channel_id	= (int) $this->input->get_post('channel_id');
+		$entry_id	= (int) ee()->input->get_post('entry_id');
+		$channel_id	= (int) ee()->input->get_post('channel_id');
+		$site_id	= (int) ee()->input->get_post('site_id');
+
+		// If an entry or channel on a different site is requested, try
+		// to switch sites and reload the publish form
+		if ($site_id != 0 && $site_id != ee()->config->item('site_id') && empty($_POST))
+		{
+			ee()->cp->switch_site(
+				$site_id,
+				cp_url(
+					'content_publish/entry_form',
+					array(
+						'channel_id'	=> $channel_id,
+						'entry_id'		=> $entry_id,
+					)
+				)
+			);
+		}
 
 		// Prevent publishing new entries if disallowed
 		if ( ! $this->cp->allowed_group('can_access_content', 'can_access_publish') AND $entry_id == 0)
