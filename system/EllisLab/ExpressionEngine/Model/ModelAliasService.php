@@ -35,6 +35,16 @@ class ModelAliasService extends AliasService {
 		'StatusGroup' => '\EllisLab\ExpressionEngine\Model\StatusGroup',
 		'StatusGroupGateway' => '\EllisLab\ExpressionEngine\Model\Gateway\StatusGroupGateway',
 		'Site' => '\EllisLab\ExpressionEngine\Model\Site',
-		'SiteGateway' => '\EllisLab\ExpressionEngine\Model\Gateway\SiteGateway'
+		'SiteGateway' => '\EllisLab\ExpressionEngine\Model\Gateway\SiteGateway',
+		'CpLog' => '\EllisLab\ExpressionEngine\Model\CpLog',
+		'CpLogGateway' => '\EllisLab\ExpressionEngine\Model\Gateway\CpLogGateway',
+		'EmailConsoleCache' => '\EllisLab\ExpressionEngine\Model\EmailConsoleCache',
+		'EmailConsoleCacheGateway' => '\EllisLab\ExpressionEngine\Model\Gateway\EmailConsoleCacheGateway',
+		'DeveloperLog' => '\EllisLab\ExpressionEngine\Model\DeveloperLog',
+		'DeveloperLogGateway' => '\EllisLab\ExpressionEngine\Model\Gateway\DeveloperLogGateway',
+		'SearchLog' => '\EllisLab\ExpressionEngine\Module\Search\Model\SearchLog',
+		'SearchLogGateway' => '\EllisLab\ExpressionEngine\Module\Search\Model\Gateway\SearchLogGateway',
+		'Throttle' => '\EllisLab\ExpressionEngine\Model\Throttle',
+		'ThrottleGateway' => '\EllisLab\ExpressionEngine\Model\Gateway\ThrottleGateway'
 	);
 }
