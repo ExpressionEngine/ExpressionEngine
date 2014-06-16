@@ -320,7 +320,7 @@ add_publish_tab = function() {
 
 
 function _add_tab(tab_name) {
-	tab_name_filtered = tab_name.replace(/ /g, "_").toLowerCase();
+	tab_name_filtered = tab_name.replace(/ /g, "_").replace(/&/g, "and").toLowerCase();
 
 	// ensure there are no duplicate ids provided
 	if ($("#"+tab_name_filtered).length) {

@@ -344,9 +344,7 @@ class MyAccount extends CP_Controller {
 				}
 			}
 
-			$resrow = $result->result_array();
-
-			$resrow = $resrow[0]; // @confirrm: end of a long, long, long stretch of work, but not sure why its returning into index 0...
+			$resrow = $result->row_array();
 
 			$vars['custom_profile_fields'] = array();
 

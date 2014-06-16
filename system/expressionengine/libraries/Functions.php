@@ -24,27 +24,32 @@
  */
 class EE_Functions {
 
-	var $seed 				= FALSE; // Whether we've seeded our rand() function.  We only seed once per script execution
-	var $cached_url			= array();
-	var $cached_path		= array();
-	var $cached_index		= array();
-	var $cached_captcha		= '';
-	var $template_map		= array();
-	var $template_type		= '';
-	var $action_ids			= array();
-	var $file_paths	 		= array();
-	var $conditional_debug = FALSE;
-	var $catfields			= array();
+	public $seed               = FALSE; // Whether we've seeded our rand() function.  We only seed once per script execution
+	public $cached_url         = array();
+	public $cached_path        = array();
+	public $cached_index       = array();
+	public $cached_captcha     = '';
+	public $template_map       = array();
+	public $template_type      = '';
+	public $action_ids         = array();
+	public $file_paths         = array();
+	public $conditional_debug  = FALSE;
+	public $catfields          = array();
+	public $protect_javascript = TRUE;
 
 	/**
 	 * Constructor
 	 */
-	function __construct()
+	public function __construct()
 	{
 		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
-	}
 
+		if (ee()->config->item('protect_javascript') == 'n')
+		{
+			$this->protect_javascript = FALSE;
+		}
+	}
 
 
 	// --------------------------------------------------------------------
@@ -57,7 +62,7 @@ class EE_Functions {
 	 * @param	bool
 	 * @return	string
 	 */
-	function fetch_site_index($add_slash = FALSE, $sess_id = TRUE)
+	public function fetch_site_index($add_slash = FALSE, $sess_id = TRUE)
 	{
 		if (isset($this->cached_index[$add_slash.$sess_id.$this->template_type]))
 		{
@@ -103,7 +108,7 @@ class EE_Functions {
 	 * @param	bool
 	 * @return	string
 	 */
-	function create_route($segment, $sess_id = TRUE)
+	public function create_route($segment, $sess_id = TRUE)
 	{
 		if (is_array($segment))
 		{
@@ -161,7 +166,7 @@ class EE_Functions {
 	 * @param	bool
 	 * @return	string
 	 */
-	function create_url($segment, $sess_id = TRUE)
+	public function create_url($segment, $sess_id = TRUE)
 	{
 		// Since this function can be used via a callback
 		// we'll fetch the segment if it's an array
@@ -213,7 +218,7 @@ class EE_Functions {
 	 * @access	public
 	 * @return	string
 	 */
-	function create_page_url($base_url, $segment, $trailing_slash = FALSE)
+	public function create_page_url($base_url, $segment, $trailing_slash = FALSE)
 	{
 		if (ee()->config->item('force_query_string') == 'y')
 		{
@@ -246,7 +251,7 @@ class EE_Functions {
 	 * @access	public
 	 * @return	string
 	 */
-	function fetch_current_uri()
+	public function fetch_current_uri()
 	{
 		return rtrim(reduce_double_slashes($this->fetch_site_index(1).ee()->uri->uri_string), '/');
 	}
@@ -263,7 +268,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	string
 	 */
-	function prep_query_string($str)
+	public function prep_query_string($str)
 	{
 		if (stristr($str, '.php') && substr($str, -7) == '/index/')
 		{
@@ -295,7 +300,7 @@ class EE_Functions {
 	 * @param	bool
 	 * @return	string
 	 */
-	function encode_ee_tags($str, $convert_curly = FALSE)
+	public function encode_ee_tags($str, $convert_curly = FALSE)
 	{
 		if ($str != '' && strpos($str, '{') !== FALSE)
 		{
@@ -329,7 +334,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	string
 	 */
-	function extract_path($str)
+	public function extract_path($str)
 	{
 		if (preg_match("#=(.*)#", $str, $match))
 		{
@@ -372,7 +377,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	string
 	 */
-	function var_swap($str, $data)
+	public function var_swap($str, $data)
 	{
 		if ( ! is_array($data))
 		{
@@ -396,7 +401,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	void
 	 */
-	function redirect($location, $method = FALSE, $status_code=NULL)
+	public function redirect($location, $method = FALSE, $status_code=NULL)
 	{
 		// Remove hard line breaks and carriage returns
 		$location = str_replace(array("\n", "\r"), '', $location);
@@ -460,7 +465,7 @@ class EE_Functions {
 	 * @param	int
 	 * @return	string
 	 */
-	function random($type = 'encrypt', $len = 8)
+	public function random($type = 'encrypt', $len = 8)
 	{
 		return random_string($type, $len);
 	}
@@ -476,7 +481,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	string
 	 */
-	function form_declaration($data)
+	public function form_declaration($data)
 	{
 		// Load the form helper
 		ee()->load->helper('form');
@@ -593,7 +598,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	string
 	 */
-	function form_backtrack($offset = '')
+	public function form_backtrack($offset = '')
 	{
 		$ret = $this->fetch_site_index();
 
@@ -684,7 +689,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	mixed
 	 */
-	function evaluate($str)
+	public function evaluate($str)
 	{
 		return eval('?'.'>'.$str.'<?php ');
 	}
@@ -698,7 +703,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	string
 	 */
-	function encode_email($str)
+	public function encode_email($str)
 	{
 		if (isset(ee()->session->cache['functions']['emails'][$str]))
 		{
@@ -734,7 +739,7 @@ class EE_Functions {
 	 * @access	public
 	 * @return	void
 	 */
-	function clear_spam_hashes()
+	public function clear_spam_hashes()
 	{
 		ee()->load->library('logger');
 		ee()->logger->deprecated('2.8');
@@ -757,7 +762,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	void
 	 */
-	function set_cookie($name = '', $value = '', $expire = '')
+	public function set_cookie($name = '', $value = '', $expire = '')
 	{
 		ee()->load->library('logger');
 		ee()->logger->deprecated('2.8', 'EE_Input::set_cookie()');
@@ -774,7 +779,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	string
 	 */
-	function char_limiter($str, $num = 500)
+	public function char_limiter($str, $num = 500)
 	{
 		if (strlen($str) < $num)
 		{
@@ -815,7 +820,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	string
 	 */
-	function word_limiter($str, $num = 100)
+	public function word_limiter($str, $num = 100)
 	{
 		if (strlen($str) < $num)
 		{
@@ -856,7 +861,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	string
 	 */
-	function fetch_email_template($name)
+	public function fetch_email_template($name)
 	{
 		$query = ee()->db->query("SELECT template_name, data_title, template_data, enable_template FROM exp_specialty_templates WHERE site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."' AND template_name = '".ee()->db->escape_str($name)."'");
 
@@ -930,7 +935,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	string
 	 */
-	function render_map_as_select_options($zarray, $array_name = '')
+	public function render_map_as_select_options($zarray, $array_name = '')
 	{
 		foreach ($zarray as $key => $val)
 		{
@@ -972,7 +977,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	string
 	 */
-	function language_pack_names($default)
+	public function language_pack_names($default)
 	{
 		$source_dir = APPPATH.'language/';
 
@@ -1016,7 +1021,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	string
 	 */
-	function clear_caching($which, $sub_dir = '')
+	public function clear_caching($which, $sub_dir = '')
 	{
 		$options = array('page', 'db', 'tag', 'sql');
 
@@ -1043,7 +1048,7 @@ class EE_Functions {
 	 * @param	bool
 	 * @return	void
 	 */
-	function delete_directory($path, $del_root = FALSE)
+	public function delete_directory($path, $del_root = FALSE)
 	{
 		$path = rtrim($path, '/');
 		$path_delete = $path.'_delete';
@@ -1121,7 +1126,7 @@ class EE_Functions {
 	 * @param	bool
 	 * @return	array
 	 */
-	function fetch_assigned_channels($all_sites = FALSE)
+	public function fetch_assigned_channels($all_sites = FALSE)
 	{
 		$allowed_channels = array();
 
@@ -1188,7 +1193,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	void
 	 */
-	function log_search_terms($terms = '', $type = 'site')
+	public function log_search_terms($terms = '', $type = 'site')
 	{
 		if ($terms == '' OR ee()->db->table_exists('exp_search_log') === FALSE)
 			return;
@@ -1237,7 +1242,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	string
 	 */
-	function fetch_action_id($class, $method)
+	public function fetch_action_id($class, $method)
 	{
 		if ($class == '' OR $method == '')
 		{
@@ -1258,7 +1263,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	string
 	 */
-	function insert_action_ids($str)
+	public function insert_action_ids($str)
 	{
 		if (count($this->action_ids) == 0)
 		{
@@ -1298,7 +1303,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	array
 	 */
-	function get_categories($cat_group, $entry_id)
+	public function get_categories($cat_group, $entry_id)
 	{
 		// fetch the custom category fields
 		$field_sqla = '';
@@ -1381,7 +1386,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	void
 	 */
-	function process_subcategories($parent_id)
+	public function process_subcategories($parent_id)
 	{
 		foreach($this->temp_array as $key => $val)
 		{
@@ -1402,7 +1407,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	string
 	 */
-	function add_form_security_hash($str)
+	public function add_form_security_hash($str)
 	{
 		// Add security hash. Need to replace the legacy XID one as well.
 		$str = str_replace('{csrf_token}', CSRF_TOKEN, $str);
@@ -1420,7 +1425,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	string
 	 */
-	function create_captcha($old_word = '', $force_word = FALSE)
+	public function create_captcha($old_word = '', $force_word = FALSE)
 	{
 		if (ee()->config->item('captcha_require_members') == 'n' && ee()->session->userdata['member_id'] != 0 && $force_word == FALSE)
 		{
@@ -1646,7 +1651,7 @@ class EE_Functions {
 	 * @param	bool
 	 * @return	string
 	 */
-	function sql_andor_string($str, $field, $prefix = '', $null=FALSE)
+	public function sql_andor_string($str, $field, $prefix = '', $null=FALSE)
 	{
 		if ($str == "" OR $field == "")
 		{
@@ -1731,7 +1736,7 @@ class EE_Functions {
 	 * @param	string
 	 * @param	bool
 	 */
-	function ar_andor_string($str, $field, $prefix = '', $null=FALSE)
+	public function ar_andor_string($str, $field, $prefix = '', $null=FALSE)
 	{
 		if ($str == "" OR $field == "")
 		{
@@ -1828,7 +1833,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	array
 	 */
-	function assign_conditional_variables($str, $slash = '/', $LD = '{', $RD = '}')
+	public function assign_conditional_variables($str, $slash = '/', $LD = '{', $RD = '}')
 	{
 		// The first half of this function simply gathers the openging "if" tags
 		// and a numeric value that corresponds to the depth of nesting.
@@ -2013,7 +2018,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	array
 	 */
-	function assign_variables($str = '', $slash = '/')
+	public function assign_variables($str = '', $slash = '/')
 	{
 		$return['var_single']	= array();
 		$return['var_pair']		= array();
@@ -2176,7 +2181,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	string
 	 */
-	function full_tag($str, $chunk='', $open='', $close='')
+	public function full_tag($str, $chunk='', $open='', $close='')
 	{
 		if ($chunk == '') $chunk = (isset(ee()->TMPL) && is_object(ee()->TMPL)) ? ee()->TMPL->fl_tmpl : '';
 		if ($open == '')  $open  = LD;
@@ -2207,7 +2212,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	string
 	 */
-	function fetch_simple_conditions($str)
+	public function fetch_simple_conditions($str)
 	{
 		if ($str == '')
 		{
@@ -2234,7 +2239,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	string
 	 */
-	function fetch_date_variables($datestr)
+	public function fetch_date_variables($datestr)
 	{
 		if ($datestr == '')
 			return;
@@ -2260,10 +2265,15 @@ class EE_Functions {
 	 * @return Mixed FALSE if there's no matches, otherwise the associative
 	 *               array containing the parameters and their values
 	 */
-	function assign_parameters($str, $defaults = array())
+	public function assign_parameters($str, $defaults = array())
 	{
 		if ($str == "")
+		{
 			return FALSE;
+		}
+
+		// remove comments before assigning
+		$str = preg_replace("/\{!--.*?--\}/s", '', $str);
 
 		// \047 - Single quote octal
 		// \042 - Double quote octal
@@ -2315,7 +2325,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	string
 	 */
-	function prep_conditional($cond = '')
+	public function prep_conditional($cond = '')
 	{
 		$cond = preg_replace("/^if/", "", $cond);
 
@@ -2348,7 +2358,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	string
 	 */
-	function reverse_key_sort($a, $b) {return strlen($b) > strlen($a);}
+	public function reverse_key_sort($a, $b) {return strlen($b) > strlen($a);}
 
 	// --------------------------------------------------------------------
 
@@ -2356,14 +2366,23 @@ class EE_Functions {
 	 * Prep conditionals
 	 *
 	 * @access	public
-	 * @param	string
-	 * @param	string
-	 * @param	string
-	 * @param	string
-	 * @return	array
+	 * @param	string $str		The template string containing conditionals
+	 * @param	string $vars	The variables to look for in the conditionals
+	 * @param	string $safety	If y, make sure conditionals are fully parseable
+	 *							by replacing unknown variables with FALSE. This
+	 *							defaults to n so that conditionals are slowly
+	 *							filled and then turned into safely executable
+	 *							ones with the safety on at the end.
+	 * @param	string $prefix	Prefix for the variables in $vars.
+	 * @return	string The new template to use instead of $str.
 	 */
-	function prep_conditionals($str, $vars, $safety='n', $prefix='')
+	public function prep_conditionals($str, $vars, $safety = 'n', $prefix = '')
 	{
+		if ( ! stristr($str, LD.'if'))
+		{
+			return $str;
+		}
+
 		if (isset(ee()->TMPL->embed_vars))
 		{
 			// If this is being called from a module tag, embedded variables
@@ -2373,295 +2392,61 @@ class EE_Functions {
 			$vars = array_merge($vars, ee()->TMPL->embed_vars);
 		}
 
-		if (count($vars) == 0) return $str;
+		$bool_safety = ($safety == 'n') ? FALSE : TRUE;
 
-		$switch  = array();
-		$protect = array();
-		$prep_id = $this->random('alpha', 3);
-		$embedded_tags = (stristr($str, LD.'exp:')) ? TRUE : FALSE;
+		$runner = \EllisLab\ExpressionEngine\Library\Parser\ParserFactory::createConditionalRunner();
 
-		$valid = array('!=','==','<=','>=','<','>','<>','%',
-						'AND', 'XOR', 'OR','&&','||',
-						')','(',
-						'TRUE', 'FALSE');
-
-		$str = str_replace(LD.'if:else'.RD, unique_marker('if_else_safety'), $str);
-
-		// The ((else)*if) is actually faster than (elseif|if) in PHP 5.0.4,
-		// but only by a half a thousandth of a second.  However, why not be
-		// as efficient as possible?  It also gives me a chance to catch some
-		// user error mistakes.
-
-		if (preg_match_all("/".preg_quote(LD)."((if:else)*if)\s+(.*?)".preg_quote(RD)."/s", $str, $matches))
+		if ($bool_safety === TRUE)
 		{
-			// PROTECT QUOTED TEXT
-			// That which is in quotes should be protected and ignored as it will screw
-			// up the parsing if the variable is found within a string
+			$runner->safetyOn();
+		}
 
-			if (preg_match_all('/([\"\'])([^\\1]*?)\\1/s', implode(' ', $matches[3]), $quote_matches))
+		if ($prefix)
+		{
+			$runner->setPrefix($prefix);
+		}
+
+		/* ---------------------------------
+		/*	Hidden Configuration Variables
+		/*  - protect_javascript => Prevents advanced conditional parser from processing anything in <script> tags
+		/* ---------------------------------*/
+
+		if (ee()->config->item('protect_javascript') == 'n')
+		{
+			$runner->disableProtectJavascript();
+		}
+
+		try
+		{
+			return $runner->processConditionals($str, $vars);
+		}
+		catch (\EllisLab\ExpressionEngine\Library\Parser\Conditional\Exception\ConditionalException $e)
+		{
+			$thrower = str_replace(
+				array('\\', 'Conditional', 'Exception'),
+				'',
+				strrchr(get_class($e), '\\')
+			);
+
+			if (ee()->config->item('debug') == 2
+				OR (ee()->config->item('debug') == 1
+					&& ee()->session->userdata('group_id') == 1))
 			{
-				foreach($quote_matches[0] as $ii => $quote_match)
-				{
-					$md5_key = (string) hexdec($prep_id.md5($quote_match));
-					$protect[$quote_match] = $md5_key;
-
-					// To better protect quotes inside conditional quotes, we need to
-					// determine which kind of quote to surround the newly-encoded string
-					$surrounding_quote = surrounding_character($quote_match);
-
-					if (($surrounding_quote != '"' AND $surrounding_quote != "'")
-						OR $surrounding_quote === FALSE)
-					{
-						$surrounding_quote = '"';
-					}
-
-					// We do these conversions on variables below, so we need
-					// to also do them on the hardcoded values to make sure
-					// the conditionals resolve as expected.
-					// e.g. {if location == "pony's house"}
-					$quote_match = $surrounding_quote.
-						str_replace(
-							array("'", '"', '(', ')', '$', '{', '}', "\n", "\r", '\\'),
-							array('&#39;', '&#34;', '&#40;', '&#41;', '&#36;', '', '', '', '', '&#92;'),
-							$quote_matches[2][$ii]
-						).
-						$surrounding_quote;
-
-					$switch[$md5_key] = $quote_match;
-				}
-
-				$matches[3] = str_replace(array_keys($protect), array_values($protect), $matches[3]);
-
-				// Remove quoted values altogether to find variables...
-				$matches['t'] = str_replace($valid, ' ', str_replace(array_values($protect), '', $matches[3]));
+				$error = lang('error_invalid_conditional') . "\n\n";
+				$error .= '<strong>' . $thrower . ' State:</strong> ' . $e->getMessage();
 			}
 			else
 			{
-				$matches['t'] = str_replace($valid, ' ', $matches[3]);
+				$error = lang('generic_fatal_error');
 			}
 
-			// Find what we need, nothing more!!
-			$data = array();
+			ee()->output->set_status_header(500);
+			ee()->output->fatal_error(nl2br($error));
 
-			foreach($matches['t'] as $cond)
-			{
-				if (trim($cond) == '') continue;
-
-				$x = preg_split("/\s+/", trim($cond)); $i=0;
-
-				do
-				{
-					if (array_key_exists($x[$i], $vars))
-					{
-						$data[$x[$i]] = trim($vars[$x[$i]]);
-					}
-					elseif($embedded_tags === TRUE && ! is_numeric($x[$i]))
-					{
-						$data[$x[$i]] = $x[$i];
-					}
-					elseif(strncmp($x[$i], 'embed:', 6) == 0)
-					{
-						$data[$x[$i]] = '';
-					}
-
-					if ($i > 500) break; ++$i;
-				}
-				while(isset($x[$i]));
-			}
-
-			if ($safety == 'y')
-			{
-				// Make sure we have the same amount of opening conditional tags
-				// as closing conditional tags.
-				$tstr = preg_replace("/<script.*?".">.*?<\/script>/is", '', $str);
-
-				$opening = substr_count($tstr, LD.'if') - substr_count($tstr, LD.'if:elseif');
-				$closing = substr_count($tstr, LD.'/if'.RD);
-
-				if ($opening > $closing)
-				{
-					$str .= str_repeat(LD.'/if'.RD, $opening-$closing);
-				}
-			}
-
-			// Prep the data array to remove characters we do not want
-			// And also just add the quotes around the value for good measure.
-			foreach ($data as $key => &$value)
-			{
-				if ( is_array($value)) continue;
-
-				// TRUE AND FALSE values are for short hand conditionals,
-				// like {if logged_in} and so we have no need to remove
-				// unwanted characters and we do not quote it.
-
-				if ($value != 'TRUE' && $value != 'FALSE' && ($key != $value OR $embedded_tags !== TRUE))
-				{
-					$value = '"'.
-								  str_replace(array("'", '"', '(', ')', '$', '{', '}', "\n", "\r", '\\'),
-											  array('&#39;', '&#34;', '&#40;', '&#41;', '&#36;', '', '', '', '', '&#92;'),
-											  (strlen($value) > 100) ? substr(htmlspecialchars($value), 0, 100) : $value
-											  ).
-								  '"';
-				}
-
-				$md5_key = (string) hexdec($prep_id.md5($key));
-				$protect[$key] = $md5_key;
-				$switch[$md5_key] = $value;
-
-				if ($prefix != '')
-				{
-					$md5_key = (string) hexdec($prep_id.md5($prefix.$key));
-					$protect[$prefix.$key] = $md5_key;
-					$switch[$md5_key] = $value;
-				}
-			}
-
-			// Example:
-			//
-			//     {if entry_date < current_time}FUTURE{/if}
-			//     {if "{entry_date format='%Y%m%d'}" ==  "{current_time format='%Y%m%d'}"}Today{/if}
-			//
-			// The above used to fail because the second conditional would turn into something like:
-			//
-			//     {if "{"1343930801" format='%Y%m%d'}
-			//
-			// So here, we make sure the value we're replacing doesn't ALSO happen to appear in the
-			// middle of something that looks like a date field with a format parameter
-			//
-			// It also failed on conditionals with similar prefixes, which tends to happen with
-			// relationship fields, e.g:
-			//
-			//     {if parent:count == 1}one{/if}
-			//     {if parent:parent:count == 1}one{/if}
-			//
-			// In the second parent loop, this would evaluate as:
-			//
-			//     {if "2" == 1}one{/if}
-			//     {if parent:"2" == 1}one{/if}
-			//
-			foreach ($matches[3] as &$match)
-			{
-				foreach ($protect as $key => $value)
-				{
-					// Make sure $key doesn't appear as "{$key " or ":$key "
-					if (strpos($match, LD.$key.' ') === FALSE AND strpos($match, ':'.$key) === FALSE)
-					{
-						// Replace using word boundaries to avoid variables that
-						// partially include the same name. For example, we have
-						// a global var called "my_var_global" but we are comparing
-						// it to a variable valled "my_var":
-						//
-						//     {if my_var OR my_var_global}Hello world{/if}
-						//
-						// It ends up looking like this:
-						//
-						//     {if "value" OR "value"_global}Hello world{/if}
-						//
-						// ..and triggers our Invalid EE Conditional Variable error.
-						$match = preg_replace("/(?<![\w-])".preg_quote($key, '/')."(?![\w-])/", $value, $match);
-					}
-				}
-			}
-
-			if ($safety == 'y')
-			{
-				$matches['s'] = str_replace($protect, '^', $matches[3]);
-				$matches['s'] = preg_replace('/"(.*?)"/s', '^', $matches['s']);
-				$matches['s'] = preg_replace("/'(.*?)'/s", '^', $matches['s']);
-				$matches['s'] = str_replace($valid, '  ', $matches['s']);
-				$matches['s'] = preg_replace("/(^|\s+)[0-9]+(\s|$)/", ' ', $matches['s']); // Remove unquoted numbers
-				$done = array();
-			}
-
-			for($i=0, $s = count($matches[0]); $i < $s; ++$i)
-			{
-				if ($safety == 'y' && ! in_array($matches[0][$i], $done))
-				{
-					$done[] = $matches[0][$i];
-
-					//  Make sure someone did put in an {if:else conditional}
-					//  when they likely meant to have an {if:elseif conditional}
-					if ($matches[2][$i] == '' &&
-						substr($matches[3][$i], 0, 5) == ':else' &&
-						$matches[1][$i] == 'if')
-					{
-						$matches[3][$i] = substr($matches[3][$i], 5);
-						$matches[2][$i] == 'elseif';
-
-						trigger_error('Invalid Conditional, Assumed ElseIf : '.str_replace(' :else',
-																							':else',
-																							$matches[0][$i]),
-									  E_USER_WARNING);
-					}
-
-					//  If there are parentheses, then we
-					//  try to make sure they match up correctly.
-					$left  = substr_count($matches[3][$i], '(');
-					$right = substr_count($matches[3][$i], ')');
-
-					if ($left > $right)
-					{
-						$matches[3][$i] .= str_repeat(')', $left-$right);
-					}
-					elseif ($right > $left)
-					{
-						$matches[3][$i] = str_repeat('(', $right-$left).$matches[3][$i];
-					}
-
-					// Check for unparsed variables
-					if (trim($matches['s'][$i]) != '' && trim($matches['s'][$i]) != '^')
-					{
-						$x = preg_split("/\s+/", trim($matches['s'][$i]));
-
-						for($j=0, $sj=count($x); $j < $sj; ++$j)
-						{
-							if ($x[$j] == '^') continue;
-
-							if (substr($x[$j], 0, 1) != '^')
-							{
-								// We have an unset variable in the conditional.
-								// Set the unparsed variable to FALSE
-								$matches[3][$i] = str_replace($x[$j], 'FALSE', $matches[3][$i]);
-
-								if ($this->conditional_debug === TRUE)
-								{
-									trigger_error('Unset EE Conditional Variable ('.$x[$j].') : '.$matches[0][$i],
-												  E_USER_WARNING);
-								}
-							}
-							else
-							{
-								// There is a partial variable match being done
-								// because they are doing something like segment_11
-								// when there is no such variable but there is a segment_1
-								// echo  $x[$j]."\n<br />\n";
-								trigger_error('Invalid EE Conditional Variable: '.
-											  $matches[0][$i],
-											  E_USER_WARNING);
-
-								// Set entire conditional to FALSE since it fails
-								$matches[3][$i] = 'FALSE';
-							}
-						}
-					}
-				}
-
-				$matches[3][$i] = LD.$matches[1][$i].' '.trim($matches[3][$i]).RD;
-			}
-
-			$str = str_replace($matches[0], $matches[3], $str);
-
-			$str = str_replace(array_keys($switch), array_values($switch), $str);
+			exit;
 		}
 
-		unset($data);
-		unset($switch);
-		unset($matches);
-		unset($protect);
-
-		$str = str_replace(unique_marker('if_else_safety'),LD.'if:else'.RD, $str);
-
-		return $str;
+		return $prepped_string;
 	}
 
 	// --------------------------------------------------------------------
@@ -2672,37 +2457,10 @@ class EE_Functions {
 	 * @access	public
 	 * @return	array
 	 */
-	function fetch_file_paths()
+	public function fetch_file_paths()
 	{
-		if ( ! empty($this->file_paths))
-		{
-			return $this->file_paths;
-		}
-
-		// if $this->file_paths === FALSE,
-		// we've queried and have nuttin
-		if ($this->file_paths === FALSE)
-		{
-			return array();
-		}
-
 		ee()->load->model('file_upload_preferences_model');
-		$upload_prefs = ee()->file_upload_preferences_model->get_file_upload_preferences(NULL, NULL, TRUE);
-
-		if (count($upload_prefs) == 0)
-		{
-			// Set $this->file_paths to FALSE so we check for it
-			// the next time through a coupla lines up.
-			// by default it's array().
-			$this->file_paths = FALSE;
-			return array();
-		}
-
-		foreach ($upload_prefs as $row)
-		{
-			$this->file_paths[$row['id']] = $row['url'];
-		}
-
+		$this->file_paths = $this->file_upload_preferences_model->get_paths();
 		return $this->file_paths;
 	}
 
@@ -2713,7 +2471,7 @@ class EE_Functions {
 	 *
 	 * @param 	string
 	 */
-	function bm_qstr_decode($str)
+	public function bm_qstr_decode($str)
 	{
 		$str = str_replace("%20",	" ",		$str);
 		$str = str_replace("%uFFA5", "&#8226;",	$str);

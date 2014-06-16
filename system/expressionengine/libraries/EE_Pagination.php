@@ -167,7 +167,7 @@ class Pagination_object {
 			//
 				if (ee()->extensions->active_hook('channel_module_fetch_pagination_data') === TRUE)
 				{
-					ee()->load->libary('logger');
+					ee()->load->library('logger');
 					ee()->logger->developer('The channel_module_fetch_pagination_data hook has been renamed to pagination_fetch_data as of 2.8', TRUE, 604800);
 
 					ee()->extensions->universal_call('channel_module_fetch_pagination_data', $this);
@@ -234,7 +234,7 @@ class Pagination_object {
 		//
 			if (ee()->extensions->active_hook('channel_module_create_pagination') === TRUE)
 			{
-				ee()->load->libary('logger');
+				ee()->load->library('logger');
 				ee()->logger->developer('The channel_module_create_pagination hook has been renamed to pagination_create as of 2.8', TRUE, 604800);
 
 				ee()->extensions->universal_call('channel_module_create_pagination', $this, $this->total_items);
@@ -378,7 +378,7 @@ class Pagination_object {
 			// Last check to make sure we actually need to paginate
 			if ($this->total_items > $this->per_page)
 			{
-				if (strpos($this->basepath, SELF) === FALSE && ee()->config->item('site_index') != '')
+				if (strpos($this->basepath, SELF) === FALSE && ee()->config->item('site_index') != '' && strpos($this->basepath, ee()->config->item('site_index')) === FALSE)
 				{
 					$this->basepath .= SELF;
 				}

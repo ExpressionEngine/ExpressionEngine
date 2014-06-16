@@ -2173,6 +2173,9 @@ class Forum_Core extends Forum {
 				$str = $this->allow_if('can_post', $str);
 			}
 
+			// Rendering the pagination will remove the {pagination_marker}
+			$str = $pagination->render($str);
+
 			return $this->var_swap( $str,
 									array(
 											'forum_name'		=> $this->_convert_special_chars($fdata[$this->current_id]['forum_name'], TRUE),
@@ -10544,8 +10547,8 @@ class Forum_Core extends Forum {
 
 			// Conditionals
 			$cond = $row;
-			$cond['logged_in']	= (ee()->session->userdata('member_id') == 0) ? 'FALSE' : 'TRUE';
-			$cond['logged_out']	= (ee()->session->userdata('member_id') != 0) ? 'FALSE' : 'TRUE';
+			$cond['logged_in']	= (ee()->session->userdata('member_id') == 0) ? FALSE : TRUE;
+			$cond['logged_out']	= (ee()->session->userdata('member_id') != 0) ? FALSE : TRUE;
 			$cond['post_total']	= $row['thread_total'];  // this variable makes me want raisin bran
 			$cond['views'] = $row['thread_views'];
 

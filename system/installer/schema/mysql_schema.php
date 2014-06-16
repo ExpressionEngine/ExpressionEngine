@@ -981,6 +981,7 @@ class EE_Schema {
 		$Q[] = "CREATE TABLE `exp_template_routes` (
 			`route_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 			`template_id` int(10) unsigned NOT NULL,
+			`order` int(10) unsigned DEFAULT NULL,
 			`route` varchar(512) DEFAULT NULL,
 			`route_parsed` varchar(512) DEFAULT NULL,
 			`route_required` char(1) NOT NULL DEFAULT 'n',

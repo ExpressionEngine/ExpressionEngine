@@ -153,7 +153,7 @@ class Publish
 				foreach ($link_info as $val)
 				{
 					$edit_links[] = array(
-						'url' => BASE.AMP.'C=admin_content'.AMP.'M=category_editor'.AMP.'group_id='.$val['group_id'],
+						'url' =>  cp_url('admin_content/category_editor', array('group_id' => $val['group_id'])), 
 						'group_name' => $val['group_name']
 					);
 				}

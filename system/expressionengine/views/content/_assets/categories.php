@@ -67,7 +67,7 @@ if (count($edit_links) > count($categories))
 			<?=$this->lang->line('edit_categories')?>: 
 			
 			<?php foreach ($edit_links as $i => $link):?>
-				<a href="<?=BASE.$link['url']?>" class="edit_categories_link"><?=$link['group_name']?><?=($i < count($edit_links) - 1) ? ',' : ''?></a>&nbsp;
+				<a href="<?=$link['url']?>" class="edit_categories_link"><?=$link['group_name']?><?=($i < count($edit_links) - 1) ? ',' : ''?></a>&nbsp;
 			<?php endforeach;?>
 			
 		<?php endif;?>

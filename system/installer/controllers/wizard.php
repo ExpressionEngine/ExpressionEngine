@@ -24,7 +24,7 @@
  */
 class Wizard extends CI_Controller {
 
-	var $version			= '2.8.0';	// The version being installed
+	var $version			= '2.9.0';	// The version being installed
 	var $installed_version	= ''; 		// The version the user is currently running (assuming they are running EE)
 	var $minimum_php		= '5.2.4';	// Minimum version required to run EE
 	var $schema				= NULL;		// This will contain the schema object with our queries
@@ -850,7 +850,7 @@ PAPAYA;
 		$errors = array();
 
 		// Blank fields?
-		foreach (array('db_hostname', 'db_username', 'db_name', 'site_label', 'webmaster_email', 'username', 'password', 'email_address') as $val)
+		foreach (array('license_number', 'db_hostname', 'db_username', 'db_name', 'site_label', 'webmaster_email', 'username', 'password', 'email_address') as $val)
 		{
 			if ($this->userdata[$val] == '')
 			{
@@ -875,6 +875,11 @@ PAPAYA;
 		if ($this->userdata['password'] != $this->userdata['password_confirm'])
 		{
 			$errors[] = $this->lang->line('password_no_match');
+		}
+
+		if ( ! valid_license_pattern($this->userdata['license_number']))
+		{
+			$errors[] = $this->lang->line('invalid_license_number');
 		}
 
 		//  Is password the same as username?
@@ -906,6 +911,24 @@ PAPAYA;
 		if ($this->userdata['screen_name'] == '')
 		{
 			$this->userdata['screen_name'] = $this->userdata['username'];
+		}
+
+		// DB Prefix has some character restrictions
+		if ( ! preg_match("/^[0-9a-zA-Z\$_]*$/", $this->userdata['db_prefix']))
+		{
+			$errors[] = $this->lang->line('database_prefix_invalid_characters');
+		}
+
+		// The DB Prefix should not include "exp_"
+		if ( strpos($this->userdata['db_prefix'], 'exp_') !== FALSE)
+		{
+			$errors[] = $this->lang->line('database_prefix_contains_exp_');
+		}
+
+		// Table names cannot be longer than 64 characters, our longest is 26
+		if ( strlen($this->userdata['db_prefix']) > 30)
+		{
+			$errors[] = $this->lang->line('database_prefix_too_long');
 		}
 
 		// Connect to the database.  We pass a multi-dimensional array since
@@ -1135,6 +1158,7 @@ PAPAYA;
 		$this->userdata['cp_url'] = ($self != '') ? $host.$self : $host.SELF;
 
 		// license number
+		$this->userdata['license_contact'] = '';
 		$this->userdata['license_number'] = (IS_CORE) ? 'CORE LICENSE' : '';
 
 		// Since the CP access file can be inside or outside of the "system" folder
@@ -1342,50 +1366,50 @@ PAPAYA;
 			}
 		}
 
-		// // is there a survey for this version?
-		// if (file_exists(APPPATH.'views/surveys/survey_'.$this->next_update.EXT))
-		// {
-		// 	$this->load->library('survey');
+		// is there a survey for this version?
+		if (file_exists(APPPATH.'views/surveys/survey_'.$this->next_update.EXT))
+		{
+			$this->load->library('survey');
 
-		// 	// if we have data, send it on to the updater, otherwise, ask permission and show the survey
-		// 	if ( ! $this->input->get_post('participate_in_survey'))
-		// 	{
-		// 		$this->load->helper('language');
-		// 		$data = array(
-		// 			'action_url'			=> $this->set_qstr('do_update&agree=yes'),
-		// 			'participate_in_survey'	=> array(
-		// 				'name'		=> 'participate_in_survey',
-		// 				'id'		=> 'participate_in_survey',
-		// 				'value'		=> 'y',
-		// 				'checked'	=> TRUE
-		// 			),
-		// 			'ee_version'			=> $this->next_update
-		// 		);
+			// if we have data, send it on to the updater, otherwise, ask permission and show the survey
+			if ( ! $this->input->get_post('participate_in_survey'))
+			{
+				$this->load->helper('language');
+				$data = array(
+					'action_url'			=> $this->set_qstr('do_update&agree=yes'),
+					'participate_in_survey'	=> array(
+						'name'		=> 'participate_in_survey',
+						'id'		=> 'participate_in_survey',
+						'value'		=> 'y',
+						'checked'	=> TRUE
+					),
+					'ee_version'			=> $this->next_update
+				);
 
-		// 		foreach ($this->survey->fetch_anon_server_data() as $key => $val)
-		// 		{
-		// 			if (in_array($key, array('php_extensions', 'addons')))
-		// 			{
-		// 				$val = implode(', ', json_decode($val));
-		// 			}
+				foreach ($this->survey->fetch_anon_server_data() as $key => $val)
+				{
+					if (in_array($key, array('php_extensions', 'addons')))
+					{
+						$val = implode(', ', json_decode($val));
+					}
 
-		// 			$data['anonymous_server_data'][$key] = $val;
-		// 		}
+					$data['anonymous_server_data'][$key] = $val;
+				}
 
-		// 		$this->_set_output('surveys/survey_'.$this->next_update, $data);
-		// 		return FALSE;
-		// 	}
-		// 	elseif ($this->input->get_post('participate_in_survey') == 'y')
-		// 	{
-		// 		// if any preprocessing needs to be done on the POST data, we do it here
-		// 		if (method_exists($UD, 'pre_process_survey'))
-		// 		{
-		// 			$UD->pre_process_survey();
-		// 		}
+				$this->_set_output('surveys/survey_'.$this->next_update, $data);
+				return FALSE;
+			}
+			elseif ($this->input->get_post('participate_in_survey') == 'y')
+			{
+				// if any preprocessing needs to be done on the POST data, we do it here
+				if (method_exists($UD, 'pre_process_survey'))
+				{
+					$UD->pre_process_survey();
+				}
 
-		// 		$this->survey->send_survey($this->next_update);
-		// 	}
-		// }
+				$this->survey->send_survey($this->next_update);
+			}
+		}
 
 		if (($status = $UD->{$method}()) === FALSE)
 		{
@@ -2347,6 +2371,7 @@ PAPAYA;
 
 		$config = array(
 			'app_version'					=>	$this->userdata['app_version'],
+			'license_contact'				=>	$this->userdata['license_contact'],
 			'license_number'				=>	trim($this->userdata['license_number']),
 			'debug'							=>	'1',
 			'cp_url'						=>	$this->userdata['cp_url'],
@@ -2376,8 +2401,6 @@ PAPAYA;
 			'website_session_type'			=>	'c',
 			'cp_session_type'				=>	'cs',
 			'cookie_httponly'				=>	'y',
-			'website_session_type'			=>	'c',
-			'cp_session_type'			=>	'cs',
 			'allow_username_change'			=>	'y',
 			'allow_multi_logins'			=>	'y',
 			'password_lockout'				=>	'y',
@@ -2992,6 +3015,8 @@ PAPAYA;
 
 			if (file_exists($path.'upd.'.$module.EXT))
 			{
+				$this->load->add_package_path($path);
+
 				$class = ucfirst($module).'_upd';
 
 				if ( ! class_exists($class))
@@ -3006,6 +3031,8 @@ PAPAYA;
 				{
 					$this->db->update('modules', array('module_version' => $UPD->version), array('module_name' => ucfirst($module)));
 				}
+
+				$this->load->remove_package_path($path);
 			}
 		}
 	}

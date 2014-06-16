@@ -55,7 +55,7 @@ class Date_ft extends EE_Fieldtype {
 			$data = ee()->localize->string_to_timestamp($data);
 		}
 
-		if ($this->settings['localize'] !== TRUE)
+		if ( ! empty($data) && $this->settings['localize'] !== TRUE)
 		{
 			$data = array($data, ee()->session->userdata('timezone'));
 		}
@@ -165,11 +165,22 @@ class Date_ft extends EE_Fieldtype {
 			$date = $field_data;
 		}
 
-		ee()->javascript->set_global(array(
-			'date.date_format' => ee()->localize->datepicker_format(),
-			'date.time_format' => ee()->session->userdata('time_format', ee()->config->item('time_format')),
-			'date.include_seconds' => ee()->session->userdata('include_seconds', ee()->config->item('include_seconds'))
-		));
+		$date_js_globals = array(
+			'date_format'     => ee()->localize->datepicker_format(),
+			'time_format'     => ee()->session->userdata('time_format', ee()->config->item('time_format')),
+			'include_seconds' => ee()->session->userdata('include_seconds', ee()->config->item('include_seconds'))
+		);
+
+		if (REQ == 'CP')
+		{
+			ee()->javascript->set_global('date', $date_js_globals);
+		}
+		elseif ( ! ee()->session->cache(__CLASS__, 'date_js_loaded'))
+		{
+			// We only want to set the date global once
+			ee()->session->set_cache(__CLASS__, 'date_js_loaded', TRUE);
+			ee()->javascript->output('EE.date = '.json_encode($date_js_globals).';');
+		}
 
 		ee()->cp->add_js_script(array(
 			'ui' => 'datepicker',

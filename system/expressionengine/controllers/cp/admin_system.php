@@ -83,6 +83,20 @@ class Admin_system extends CP_Controller {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Software Registration
+	 *
+	 * @access	public
+	 * @return	void
+	 */
+	function software_registration()
+	{
+		$this->_restrict_prefs_access();
+		$this->_config_manager('software_registration', __FUNCTION__);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Config Manager
 	 *
 	 * Used to display the various preference pages
@@ -122,7 +136,7 @@ class Admin_system extends CP_Controller {
 			'throttling_cfg', 'localization_cfg', 'email_cfg', 'cookie_cfg',
 			'image_cfg', 'captcha_cfg', 'template_cfg', 'censoring_cfg',
 			'mailinglist_cfg', 'emoticon_cfg', 'tracking_cfg', 'avatar_cfg',
-			'search_log_cfg', 'recount_prefs'
+			'search_log_cfg', 'recount_prefs', 'software_registration'
 		);
 		if ( ! in_array($type, $config_pages))
 		{
@@ -222,6 +236,26 @@ class Admin_system extends CP_Controller {
 		if ($this->input->post('mail_protocol') == 'smtp' && trim($str) == '')
 		{
 			$this->form_validation->set_message('_smtp_required_field', lang('empty_stmp_fields'));
+			return FALSE;
+		}
+
+		return TRUE;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Validates format of submitted license number
+	 *
+	 * @return vool
+	 **/
+	public function _valid_license_pattern($license)
+	{
+		$valid_pattern = valid_license_pattern($license);
+
+		if ( ! $valid_pattern)
+		{
+			$this->form_validation->set_message('_valid_license_pattern', lang('invalid_license_number'));
 			return FALSE;
 		}
 

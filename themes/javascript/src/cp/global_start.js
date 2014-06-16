@@ -290,7 +290,7 @@ EE.cp.cleanUrl = function(i, url) {
 	url = url || '';
 
 	// Move session to the end
-	url = url.replace(/^(\S*?)S=(\S+?)&(\S*?)$/g, "$1$3&S=$2");
+	url = url.toString().replace(/^(\S*?)S=(\S+?)&(\S*?)$/g, "$1$3&S=$2");
 
 	var result = urlRegex.exec(url);
 
@@ -313,7 +313,7 @@ EE.cp.cleanUrl = function(i, url) {
 	QS = QS.replace(lTrimAmp, '').replace(rTrimAmp, '');
 
 	if (QS) {
-		newUrl += '?' + QS;
+		newUrl += '&' + QS;
 	}
 
 	return newUrl.replace(rTrimAmp, '');

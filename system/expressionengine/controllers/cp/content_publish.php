@@ -262,7 +262,7 @@ class Content_publish extends CP_Controller {
 		// they contain. Then work through the details of how
 		// they are show.
 
-		$this->cp->add_js_script('file', 'cp/publish');
+		$this->cp->add_js_script('file', array('cp/publish', 'cp/category_editor'));
 
 		$tab_hierarchy	= $this->_setup_tab_hierarchy($field_data, $layout_info);
 		$layout_styles	= $this->_setup_layout_styles($field_data, $layout_info);
@@ -478,6 +478,17 @@ class Content_publish extends CP_Controller {
 				elseif (trim($name) == '')
 				{
 					$valid_name_error[] = 'missing_name';
+				}
+
+				$defaults = array(
+				        lang('publish')     => 'publish',
+				        lang('categories')  => 'categories',
+				        lang('options')     => 'options',
+				        lang('date')        => 'date'
+				);
+
+				if($name == '_tab_label' && ! empty($defaults[$info])) {
+				        $tab['fields'][$name] = $defaults[$info];
 				}
 			}
 

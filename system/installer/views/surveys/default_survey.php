@@ -5,15 +5,15 @@
 <p><?=lang('help_with_survey')?></p>
 
 
-<form action="<?=$action_url?>" method="post" accept-charset="utf-8">	
-	
+<form action="<?=$action_url?>" method="post" accept-charset="utf-8">
+
 	<div>
 	<p><?=lang('participate_in_survey', 'participate_in_survey')?></p>
 	<?=form_radio('participate_in_survey', 'y', TRUE, 'id="participate_in_survey_y" onclick="document.getElementById(\'survey_body\').style.display=\'block\'"')?>
 		<label for="participate_in_survey_y"><?=lang('yes')?></label> &nbsp;&nbsp;&nbsp;&nbsp;
 	<?=form_radio('participate_in_survey', 'n', FALSE, 'id="participate_in_survey_n" onclick="document.getElementById(\'survey_body\').style.display=\'none\'"')?> <label for="participate_in_survey_n"><?=lang('no')?></label>
 	</div>
-	
+
 	<div id="survey_body">
 		<hr />
 
@@ -25,7 +25,7 @@
 			<span style="font-size:smaller"><?=lang('what_server_data_is_sent')?>
 				<a href="#" onclick="toggle_server_data();return false;"><?=lang('show_hide_to_see_server_data')?></a>
 			</span>
-			
+
 			<div id="server_data" style="display:none;font-size:smaller;">
 				<dl>
 			<?php foreach ($anonymous_server_data as $key => $val):?>
@@ -35,13 +35,13 @@
 				</dl>
 			</div>
 		</div>
-		
+
 	</div>
-	
+
 	<p>
 		<?=form_submit('submit', lang('submit'), 'class="submit"')?>
 	</p>
-	
+
 </form>
 
 </div>
@@ -50,7 +50,7 @@
 		if (document.getElementById('server_data').style.display == 'block') {
 			document.getElementById('server_data').style.display='none';
 		} else {
-			document.getElementById('server_data').style.display='block';	
+			document.getElementById('server_data').style.display='block';
 		}
 	}
 </script>

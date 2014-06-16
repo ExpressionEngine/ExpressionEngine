@@ -676,6 +676,25 @@ class Design extends CP_Controller {
 		$this->cp->set_breadcrumb(cp_url('design/manager'), lang('template_manager'));
 		$this->cp->set_breadcrumb(cp_url('design/snippets'), lang('snippets'));
 
+		$this->cp->add_to_head($this->view->head_link('css/codemirror.css'));
+		$this->cp->add_to_head($this->view->head_link('css/codemirror-additions.css'));
+
+		$this->cp->add_js_script(array(
+				'file'		=> array(
+					'codemirror/codemirror',
+					'codemirror/closebrackets',
+					'codemirror/overlay',
+					'codemirror/xml',
+					'codemirror/css',
+					'codemirror/javascript',
+					'codemirror/htmlmixed',
+					'codemirror/ee-mode',
+
+					'cp/snippet_editor',
+				)
+			)
+		);
+
 		$this->cp->render('design/snippets_edit', $vars);
 	}
 
@@ -1873,35 +1892,30 @@ class Design extends CP_Controller {
 
 		$vars['can_save_file'] = ($this->config->item('save_tmpl_files') == 'y' && $this->config->item('tmpl_file_basepath') != '') ? TRUE : FALSE;
 
+		$this->cp->add_to_head($this->view->head_link('css/codemirror.css'));
+		$this->cp->add_to_head($this->view->head_link('css/codemirror-additions.css'));
+
+		$this->javascript->set_global(
+			'editor.lint', $this->_get_installed_plugins_and_modules()
+		);
+
 		$this->cp->add_js_script(array(
-				'plugin'	=> 'markitup',
 				'file'		=> array(
-								'ee_txtarea',
-								'cp/template_editor',
-								'cp/manager'
+					'codemirror/codemirror',
+					'codemirror/closebrackets',
+					'codemirror/lint',
+					'codemirror/overlay',
+					'codemirror/xml',
+					'codemirror/css',
+					'codemirror/javascript',
+					'codemirror/htmlmixed',
+					'codemirror/ee-mode',
+
+					'cp/template_editor',
+					'cp/manager'
 				)
 			)
 		);
-
-		$markItUp = array(
-			'nameSpace'	=> "html",
-			'onShiftEnter'	=> array('keepDefault' => FALSE, 'replaceWith' => "<br />\n"),
-			'onCtrlEnter'	=> array('keepDefault' => FALSE, 'openWith' => "\n<p>", 'closeWith' => "</p>\n")
-		);
-
-		/* -------------------------------------------
-		/*	Hidden Configuration Variable
-		/*	- allow_textarea_tabs => Preserve tabs in all textareas or disable completely
-		/* -------------------------------------------*/
-
-		if($this->config->item('allow_textarea_tabs') != 'n')
-		{
-			$markItUp['onTab'] = array('keepDefault' => FALSE, 'replaceWith' => "\t");
-		}
-
-		$this->javascript->set_global('template.markitup', $markItUp);
-		$this->javascript->set_global('template.url',
-										str_replace(AMP, '&', BASE).'&C=design&M=template_revision_history&template='.$template_id.'&revision_id=');
 
 		$vars['table_template'] = array(
 					'table_open'			=> '<table class="templateTable templateEditorTable" border="0" cellspacing="0" cellpadding="0">'
@@ -2088,11 +2102,7 @@ class Design extends CP_Controller {
 		/*
 		/* -------------------------------------*/
 
-		// Check submitted tags (valid modules / plugins)
-
-		$this->_validate_tags();
-
-		if (isset($_POST['update_and_return']) && ( ! count($this->warnings) OR $this->input->post('warnings')))
+		if (isset($_POST['update_and_return']) && $this->input->post('warnings'))
 		{
 			$this->session->set_flashdata($cp_message);
 			$this->db->select('group_id');
@@ -2100,10 +2110,6 @@ class Design extends CP_Controller {
 			$query = $this->db->get('templates');
 
 			$this->functions->redirect(cp_url('design/manager', 'tgpref='.$query->row('group_id')));
-		}
-		elseif (count($this->warnings))
-		{
-			$this->edit_template($template_id, $message, $this->warnings);
 		}
 		else
 		{
@@ -2121,22 +2127,8 @@ class Design extends CP_Controller {
 	 * @access	private
 	 * @return	void
 	 */
-	function _validate_tags()
+	function _get_installed_plugins_and_modules()
 	{
-		$this->warnings = array();
-
-		$str = $_POST['template_data'];
-
-		// Don't trigger inside EE comments
-		$str = preg_replace('/{!--(.*?)--}/is', '', $str);
-
-		if (strpos($str, '{exp:') === FALSE)
-		{
-			return;
-		}
-
-		$tags = $this->functions->assign_variables($str);
-
 		$this->load->library('template');
 		$this->load->model('addons_model');
 		$this->template->fetch_addons();
@@ -2152,118 +2144,10 @@ class Design extends CP_Controller {
 		$installed = array_map('array_pop', $query->result_array());
 		$installed = array_map('strtolower', $installed);
 
-		$this->info = array_merge($modules, $plugins);
-
-		// Go through the single variables and check if they match installed plugins
-
-		foreach($tags['var_single'] as $tag)
-		{
-			if (strncmp($tag, 'exp:', 4) === 0)
-			{
-				$name = substr($tag, 4, strcspn($tag, ': ', 4));
-
-				if ( ! in_array($name, $plugins))
-				{
-					if (in_array($name, $modules))
-					{
-						$this->_add_warning($name, $tag, 'no_closing_tag');
-						$this->_add_warning($name, $tag, 'docs_link');
-					}
-					else
-					{
-						$this->_add_warning($name, $tag, 'class');
-					}
-				}
-			}
-		}
-
-		// And now the variable pairs
-
-		foreach($tags['var_pair'] as $tag => $inner)
-		{
-			if (strncmp($tag, 'exp:', 4) === 0)
-			{
-				$name = substr($tag, 4, strcspn($tag, ': ', 4));	// :<space>, leave the space in there!
-
-				if ( ! in_array($name, $installed) && ! in_array($name, $plugins))
-				{
-					if (in_array($name, $modules))
-					{
-						$this->_add_warning($name, $tag, 'install');
-					}
-					else
-					{
-						$this->_add_warning($name, $tag, 'class');
-					}
-				}
-			}
-		}
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Tag suggestion
-	 *
-	 * Takes a tag's class name and finds the closest matching tag using
-	 * a character swap count (up to 3 changes).
-	 *
-	 * @access	private
-	 * @param	string	tag class name
-	 * @return	void
-	 */
-	function _tag_suggestion($tag_name)
-	{
-		$weight = 3;
-		$suggestion = '';
-
-		if ($tag_name == 'weblog')
-		{
-			return 'channel';
-		}
-
-		foreach($this->info as $name)
-		{
-			$new_weight = levenshtein($name, $tag_name);
-			if ($new_weight != -1 && $new_weight < $weight)
-			{
-				$suggestion = $name;
-				$weight = $new_weight;
-			}
-		}
-
-		return $suggestion;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Add Warning
-	 *
-	 * Utility method used by _validate_tags to build an array of warnings
-	 *
-	 * @access	private
-	 * @return	void
-	 */
-	function _add_warning($name, $tag, $type)
-	{
-		if ( ! isset($this->warnings[$name]))
-		{
-			$this->warnings[$name] = array(
-				'suggestion'	=> ($type == 'class') ? $this->_tag_suggestion($name) : '',
-				'errors'		=> array('tag_'.$type.'_error'),
-				'full_tags'		=> array($tag)
-			);
-		}
-		else
-		{
-			$this->warnings[$name]['errors'][] = 'tag_'.$type.'_error';
-
-			if ( ! in_array($tag, $this->warnings[$name]['full_tags']))
-			{
-				$this->warnings[$name]['full_tags'][] = $tag;
-			}
-		}
+		return array(
+			'available' => array_merge($modules, $plugins),
+			'not_installed' => array_values(array_diff($modules, $installed))
+		);
 	}
 
 	// --------------------------------------------------------------------
@@ -3267,6 +3151,21 @@ class Design extends CP_Controller {
 			}
 		}
 
+		// Update Template Route order
+		$route_order = json_decode($this->input->post('route_order'));
+		$update = array();
+
+		if ( ! empty($route_order))
+		{
+			foreach ($route_order as $index => $id)
+			{
+				$update[] = array('template_id' => $id, 'order' => $index);
+			}
+
+
+			$this->db->update_batch('template_routes', $update, 'template_id');
+		}
+
 		if (empty($errors))
 		{
 			$this->session->set_flashdata('message_success', lang('template_routes_saved'));
@@ -3319,8 +3218,29 @@ class Design extends CP_Controller {
 		$this->db->join('template_routes AS tr', 'tr.template_id = t.template_id', 'left');
 		$this->db->join('template_groups AS tg', 'tg.group_id = t.group_id');
 		$this->db->where('t.site_id', $this->config->item('site_id'));
-		$this->db->order_by('LENGTH(tr.route_parsed), tg.group_name, t.template_name', 'ASC');
+		$this->db->order_by('tr.order, tg.group_name, t.template_name', 'ASC');
 		$vars['templates'] = $this->db->get();
+
+		$outputjs = <<<EOT
+			$("#url_manager tbody td").each(function(){
+        		$(this).css("width", $(this).width() +"px");
+			});
+			$("#url_manager tbody").sortable({
+				update: function(event, ui) {
+					$("#url_manager tbody > tr:odd").addClass("odd").removeClass("even");
+					$("#url_manager tbody > tr:even").addClass("even").removeClass("odd");
+
+					var order = Array();
+					$("#url_manager input[type='text']").each(function(){
+						order.push($(this).attr("name").replace("route_", ""));
+					});
+
+					$("#route_order").val(JSON.stringify(order));
+				}
+			});
+EOT;
+
+		$this->javascript->output(str_replace(array("\n", "\t"), '', $outputjs));
 
 		$this->cp->render('design/url_manager', $vars);
 	}
@@ -3484,7 +3404,7 @@ class Design extends CP_Controller {
 
 		$vars['member_groups'] = $this->_get_member_array();
 
-		$hidden_indicator = ($this->config->item('hidden_template_indicator') != '') ? $this->config->item('hidden_template_indicator') : '.';
+		$hidden_indicator = ($this->config->item('hidden_template_indicator') != '') ? $this->config->item('hidden_template_indicator') : '_';
 		$hidden_indicator_length = strlen($hidden_indicator);
 
 		$query = $this->design_model->fetch_templates();
