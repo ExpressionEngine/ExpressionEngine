@@ -494,6 +494,38 @@ class Logs extends CP_Controller {
 	// --------------------------------------------------------------------
 
 	/**
+	 * View Single Email
+	 *
+	 * @access	public
+	 * @return	mixed
+	 */
+	public function view_email($id)
+	{
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_logs'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		$email = ee()->api->get('EmailConsoleCache', $id)->first();
+
+		if (is_null($email))
+		{
+			ee()->lang->load('communicate');
+			ee()->view->set_message('issue', lang('no_cached_email'), '', TRUE);
+			$this->functions->redirect(cp_url('logs/email'));
+		}
+
+		$this->view->cp_page_title = lang('email_log') . ': ' . $email->subject;
+		$this->view->cp_breadcrumbs = array(
+			cp_url('logs/email') => lang('view_email_logs')
+		);
+		$this->view->email = $email;
+		$this->cp->render('logs/email/detail');
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Shows Developer Log page
 	 *
 	 * @access public
@@ -679,98 +711,6 @@ class Logs extends CP_Controller {
 
 		ee()->view->set_message('success', $success_flashdata, '', TRUE);
 		ee()->functions->redirect(cp_url('logs/'.$type));
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * View Single Email
-	 *
-	 * @access	public
-	 * @return	mixed
-	 */
-	public function view_email()
-	{
-		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_logs'))
-		{
-			show_error(lang('unauthorized_access'));
-		}
-
-		$id = $this->input->get_post('id');
-
-		$query = $this->db->query("SELECT subject, message, recipient, recipient_name, member_name, ip_address FROM exp_email_console_cache WHERE cache_id = '$id' ");
-
-		if ($query->num_rows() == 0)
-		{
-			$this->session->set_flashdata('message_failure', lang('no_cached_email'));
-			$this->functions->redirect(BASE.AMP.'C=tools_logs'.AMP.'M=view_email_log');
-		}
-
-		$this->cp->render('tools/view_email', $query->row_array());
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Blacklist Throttled IPs
-	 *
-	 * @access	public
-	 * @return	mixed
-	 */
-	public function blacklist_throttled_ips()
-	{
-		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_logs'))
-		{
-			show_error(lang('unauthorized_access'));
-		}
-
-		if ($this->config->item('enable_throttling') == 'n')
-		{
-			show_error(lang('throttling_disabled'));
-		}
-
-        $max_page_loads = 10;
-		$lockout_time	= 30;
-
-		if (is_numeric($this->config->item('max_page_loads')))
-		{
-			$max_page_loads = $this->config->item('max_page_loads');
-		}
-
-		if (is_numeric($this->config->item('lockout_time')))
-		{
-			$lockout_time = $this->config->item('lockout_time');
-		}
-
-		$throttled = $this->tools_model->get_throttle_log($max_page_loads, $lockout_time);
-
-		$ips = array();
-
-		foreach($throttled->result() as $row)
-		{
-			$ips[] = $row->ip_address;
-		}
-
-		$this->tools_model->blacklist_ips($ips);
-
-		$this->lang->loadfile('blacklist');
-
-		// The blacklist module takes care of the htaccess
-		if ($this->session->userdata['group_id'] == 1 && $this->config->item('htaccess_path') !== FALSE && file_exists($this->config->item('htaccess_path')) && is_writable($this->config->item('htaccess_path')))
- 		{
-			if ( ! class_exists('Blacklist'))
-	 		{
-	 			require PATH_MOD.'blacklist/mcp.blacklist.php';
-	 		}
-
-	 		$MOD = new Blacklist_mcp();
-
- 			$_POST['htaccess_path'] = $this->config->item('htaccess_path');
- 			$MOD->write_htaccess(FALSE);
- 		}
-
-		$this->session->set_flashdata('message_success', lang('blacklist_updated'));
-		$this->functions->redirect(BASE.AMP.'C=tools_logs'.AMP.'M=view_throttle_log');
 	}
 }
 // END CLASS
