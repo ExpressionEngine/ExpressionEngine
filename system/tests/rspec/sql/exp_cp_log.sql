@@ -140,25 +140,25 @@ VALUES
 	(269,1,1,'admin','192.168.0.90',1395167123,'Member profile created:&nbsp;&nbsp;t_admin'),
 	(270,1,1,'admin','192.168.0.90',1395167208,'Category Group Created:&nbsp;&nbsp;Secondary Upload Types'),
 	(271,1,1,'admin','192.168.0.90',1395167267,'Member Group Updated:&nbsp;&nbsp;Admins'),
-	(272,1,3,'t_admin','192.168.0.90',1395167454,'Logged in'),
+	(272,1,2,'johndoe','192.168.0.90',1395167454,'Logged in'),
 	(273,1,1,'admin','192.168.0.90',1395167499,'Member Group Updated:&nbsp;&nbsp;Admins'),
-	(274,1,3,'t_admin','192.168.0.90',1395167511,'Logged out'),
-	(275,1,3,'t_admin','192.168.0.90',1395167514,'Logged in'),
+	(274,1,2,'johndoe','192.168.0.90',1395167511,'Logged out'),
+	(275,1,2,'johndoe','192.168.0.90',1395167514,'Logged in'),
 	(276,1,1,'admin','192.168.0.90',1395173948,'Logged in'),
-	(277,1,3,'t_admin','192.168.0.90',1395173957,'Logged in'),
-	(278,1,3,'t_admin','192.168.0.90',1395174144,'Logged out'),
-	(279,1,3,'t_admin','192.168.0.90',1395174167,'Logged in'),
+	(277,1,2,'johndoe','192.168.0.90',1395173957,'Logged in'),
+	(278,1,2,'johndoe','192.168.0.90',1395174144,'Logged out'),
+	(279,1,2,'johndoe','192.168.0.90',1395174167,'Logged in'),
 	(280,1,1,'admin','192.168.0.90',1395174554,'Member Group Updated:&nbsp;&nbsp;Admins'),
 	(281,1,1,'admin','192.168.0.90',1395175013,'Member Group Updated:&nbsp;&nbsp;Admins'),
 	(282,1,1,'admin','192.168.0.90',1395175337,'Member Group Updated:&nbsp;&nbsp;Admins'),
-	(283,1,3,'t_admin','192.168.0.90',1395175355,'Logged out'),
-	(284,1,3,'t_admin','192.168.0.90',1395175359,'Logged in'),
+	(283,1,2,'johndoe','192.168.0.90',1395175355,'Logged out'),
+	(284,1,2,'johndoe','192.168.0.90',1395175359,'Logged in'),
 	(285,1,1,'admin','192.168.0.90',1395175423,'Member Group Updated:&nbsp;&nbsp;Admins'),
 	(286,1,1,'admin','192.168.0.90',1395176583,'Member Group Updated:&nbsp;&nbsp;Admins'),
 	(287,1,1,'admin','192.168.0.90',1395177646,'Member Group Updated:&nbsp;&nbsp;Admins'),
 	(288,1,1,'admin','192.168.0.90',1395177670,'Member Group Updated:&nbsp;&nbsp;Admins'),
 	(289,1,1,'admin','192.168.0.90',1395246058,'Logged in'),
-	(290,1,3,'t_admin','192.168.0.90',1395347158,'Logged in'),
+	(290,1,2,'johndoe','192.168.0.90',1395347158,'Logged in'),
 	(291,1,1,'admin','192.168.0.90',1395347803,'Logged in'),
 	(292,1,1,'admin','192.168.0.90',1395672824,'Logged in'),
 	(293,1,1,'admin','192.168.0.90',1395695372,'Logged in'),
@@ -193,8 +193,8 @@ VALUES
 	(322,1,1,'admin','192.168.0.90',1397499396,'Logged in'),
 	(323,1,1,'admin','192.168.0.90',1397499782,'Logged in'),
 	(324,1,1,'admin','192.168.0.90',1397580737,'Logged in'),
-	(325,1,3,'t_admin','192.168.0.90',1397667267,'Logged in'),
-	(326,1,3,'t_admin','192.168.0.90',1397667323,'Logged out'),
+	(325,1,2,'johndoe','192.168.0.90',1397667267,'Logged in'),
+	(326,1,2,'johndoe','192.168.0.90',1397667323,'Logged out'),
 	(327,1,1,'admin','192.168.0.90',1397667326,'Logged in'),
 	(328,1,1,'admin','192.168.0.90',1397680668,'Logged in'),
 	(329,1,1,'admin','192.168.0.90',1397686028,'Logged in'),
@@ -225,8 +225,13 @@ VALUES
 	(360,1,1,'admin','192.168.0.90',1402591696,'Logged in'),
 	(361,1,1,'admin','192.168.0.90',1402681493,'Logged in');
 
-/*!40000 ALTER TABLE `exp_cp_log` ENABLE KEYS */;
-UNLOCK TABLES;
+	/*!40000 ALTER TABLE `exp_cp_log` ENABLE KEYS */;
+	UNLOCK TABLES;
+
+	INSERT INTO `exp_members` (`member_id`, `group_id`, `username`, `screen_name`, `password`, `salt`, `unique_id`, `crypt_key`, `authcode`, `email`, `url`, `location`, `occupation`, `interests`, `bday_d`, `bday_m`, `bday_y`, `aol_im`, `yahoo_im`, `msn_im`, `icq`, `bio`, `signature`, `avatar_filename`, `avatar_width`, `avatar_height`, `photo_filename`, `photo_width`, `photo_height`, `sig_img_filename`, `sig_img_width`, `sig_img_height`, `ignore_list`, `private_messages`, `accept_messages`, `last_view_bulletins`, `last_bulletin_date`, `ip_address`, `join_date`, `last_visit`, `last_activity`, `total_entries`, `total_comments`, `total_forum_topics`, `total_forum_posts`, `last_entry_date`, `last_comment_date`, `last_forum_post_date`, `last_email_date`, `in_authorlist`, `accept_admin_email`, `accept_user_email`, `notify_by_default`, `notify_of_pm`, `display_avatars`, `display_signatures`, `parse_smileys`, `smart_notifications`, `language`, `timezone`, `time_format`, `include_seconds`, `date_format`, `cp_theme`, `profile_theme`, `forum_theme`, `tracker`, `template_size`, `notepad`, `notepad_size`, `quick_links`, `quick_tabs`, `show_sidebar`, `pmember_id`, `rte_enabled`, `rte_toolset_id`)
+	VALUES
+		(2, 5, 'johndoe', 'John Doe', 'c0e1e7f78f10339b59cb6927d990b7f4414a25d9f9d7de81a118602f24fbbea027c57607b607fc6a1d0d1a9764c2399dd09474a75472b0a9611326b1e0a6b5ee', '|E+?k?*xnbb&sGiN(7,0*e!*]w3Yk7q>m!Oq\'o\"_9FEQ-j=t_}4*3|2m#-tgzc,HEl..Lp3|\\\"X&UFQQ:SqM41AzP{0)wPfcbQh3Xtz)KkF[S3\'lJ`j|>+%>Lb^YD}Hy', 'f570193102508f250be970308b62d9cf398efd50', 'e8bacc597bf943a1dedfa6ac697673f4b6ce6084', NULL, 'johndoe@nomail.com', '', '', '', '', NULL, NULL, NULL, '', '', '', '', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 'y', 0, 0, '192.168.0.90', 1395167123, 1395347485, 1397667267, 0, 0, 0, 0, 0, 0, 0, 0, 'n', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'english', 'America/Los_Angeles', '24', 'n', '%j-%n-%y', NULL, NULL, NULL, NULL, '28', NULL, '18', NULL, NULL, 'n', 0, 'y', 0);
+
 
 
 
