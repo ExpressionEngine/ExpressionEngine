@@ -73,6 +73,8 @@ class EE_Typography extends CI_Typography {
 	{
 		$this->EE =& get_instance();
 		$this->initialize();
+
+		Autoloader::getInstance()->addPrefix('Michelf', APPPATH.'libraries/typography/Markdown/Michelf/');
 	}
 
 	// --------------------------------------------------------------------
@@ -722,8 +724,6 @@ class EE_Typography extends CI_Typography {
 	 */
 	public function markdown($str, $options = array())
 	{
-		require_once APPPATH.'libraries/typography/Markdown/Michelf/MarkdownExtra.inc.php';
-
 		// Ignore [code]
 		$code_blocks = array();
 		preg_match_all("/\[code\](.*?)\[\/code\]/uis", $str, $matches);
