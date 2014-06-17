@@ -15,6 +15,7 @@ class CpLog < ControlPanelPage
 
 	def load
     $db.query(IO.read('sql/exp_cp_log.sql'))
+    clear_db_result
 
 		self.open_dev_menu
 		click_link 'Logs'
