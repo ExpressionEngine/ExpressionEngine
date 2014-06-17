@@ -45,9 +45,9 @@ RSpec.configure do |config|
 			no_php_js_errors
 		rescue => error
 			# Raise another exception so that RSpec sees the example as a failure
-			raise StandardError, error.message
 			page.save_screenshot('screenshots/'+example.description+'.png');
 			puts 'Screenshot taken: ' + example.description+'.png'
+			raise StandardError, error.message
 		end
 	end
 end
