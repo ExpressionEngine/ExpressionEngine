@@ -7,6 +7,9 @@ class CpLog < ControlPanelPage
 	element :site_filter, 'select[name=filter_by_site]'
 	element :date_filter, 'select[name=filter_by_date]'
 	element :perpage_filter, 'select[name=perpage]'
+
+  element :alert, 'div.alert'
+  element :no_results, 'p.no-results'
   element :remove_all, 'a.btn.remove'
   element :pagination, 'div.paginate'
 

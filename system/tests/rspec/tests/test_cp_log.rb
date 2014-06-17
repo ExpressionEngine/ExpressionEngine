@@ -97,6 +97,25 @@ feature 'CP Log' do
   # it 'can combine phrase search with filters' do
   # end
 
+  # Confirming the log deletion action
+  it 'can remove a single entry' do
+    click_link "Last"
+
+    # the last item in the list
+    @page.items[-1].find('li.remove a').click
+
+    @page.should have_alert
+    @page.should_not have_text "1/30/14 3:05 PM"
+  end
+
+  it 'can remove all entries' do
+    @page.remove_all.click
+
+    @page.should have_alert
+    @page.should have_no_results
+    @page.should_not have_pagination
+  end
+
   # Confirming Pagination behavior
   it 'shows the Prev button when on page 2' do
     click_link "Next"
