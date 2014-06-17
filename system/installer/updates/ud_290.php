@@ -201,7 +201,7 @@ class Updater {
 				continue;
 			}
 
-			$has_conditional_in_script = FALSE;
+			$has_conditional_in_scripts = FALSE;
 			$path = $template->get_group()->group_name.'/'.$template->template_name;
 
 			$regex = '/([()]|do|with|)\s*\{if\b/is';
