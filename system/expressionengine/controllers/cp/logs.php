@@ -614,7 +614,7 @@ class Logs extends CP_Controller {
 				}
 
 				if ($log->deprecated_since
-					|| $log->deprecated_use_instead)
+					|| $log->use_instead)
 				{
 					// Add a line break if there is additional information
 					$description .= '<p>';
