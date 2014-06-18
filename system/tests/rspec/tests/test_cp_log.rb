@@ -14,7 +14,7 @@ feature 'CP Log' do
     @page.should have_phrase_search
     @page.should have_submit_button
     @page.should have_username_filter
-    @page.should have_site_filter
+    # @page.should have_site_filter # This will not be present if MSM is diabled or we are running Core
     @page.should have_date_filter
     @page.should have_perpage_filter
   end
