@@ -117,10 +117,10 @@ class Logs extends CP_Controller {
 				{
 					$sites[$site_id] = $site_label;
 				}
-			}
 
-			$this->params['filter_by_site'] = ee()->input->get_post('filter_by_site');
-			$view_filters[] = form_dropdown('filter_by_site', $sites, $this->params['filter_by_site']);
+				$this->params['filter_by_site'] = ee()->input->get_post('filter_by_site');
+				$view_filters[] = form_dropdown('filter_by_site', $sites, $this->params['filter_by_site']);
+			}
 		}
 
 		// By Date
