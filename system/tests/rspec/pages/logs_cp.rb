@@ -1,6 +1,8 @@
 class CpLog < ControlPanelPage
   set_url_matcher /logs\/cp/
 
+  element :title, 'div.box form h1'
+
 	element :phrase_search, 'input[name=filter_by_phrase]'
 	element :submit_button, 'input.submit'
 	element :username_filter, 'select[name=filter_by_username]'

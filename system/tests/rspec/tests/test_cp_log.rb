@@ -10,7 +10,7 @@ feature 'CP Log' do
 
     # These should always be true at all times if not something has gone wrong
     @page.displayed?
-    @page.should have_text 'Control Panel Access Logs'
+    @page.title.text.should eq 'Control Panel Access Logs'
     @page.should have_phrase_search
     @page.should have_submit_button
     @page.should have_username_filter
