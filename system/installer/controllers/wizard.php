@@ -637,9 +637,6 @@ class Wizard extends CI_Controller {
 	{
 		$data['show_error'] = $show_error;
 
-		// clear the update notices if we have any from last time
-		$this->update_notices->clear();
-
 		if ($this->is_installed == FALSE)
 		{
 			$data['action'] = $this->set_qstr('install_form');
@@ -1286,6 +1283,9 @@ PAPAYA;
 		// Did they agree to the license?
 		if ($this->input->get_post('agree') != 'yes')
 		{
+			// clear the update notices if we have any from last time
+			$this->update_notices->clear();
+
 			return $this->_license(TRUE);
 		}
 
