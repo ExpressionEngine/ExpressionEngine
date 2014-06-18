@@ -17,7 +17,7 @@ class CpLog < ControlPanelPage
   elements :items, 'section.item-wrap div.item'
 
 	def load
-    $db.query(IO.read('sql/exp_cp_log.sql'))
+    $db.query(IO.read('support/logs/exp_cp_log.sql'))
     clear_db_result
 
 		self.open_dev_menu
