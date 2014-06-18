@@ -183,8 +183,10 @@ class Logs extends CP_Controller {
 		{
 			$this->developer();
 		}
-
-		$this->cp();
+		else
+		{
+			$this->cp();
+		}
 	}
 
 	// --------------------------------------------------------------------
