@@ -8,7 +8,8 @@ end
 # PHP or JavaScript errors are present
 def no_php_js_errors
 	# Search for "on line" or "Line Number:" since they're in pretty much
-  unless page.has_selector?('h1', :text => 'Developer Logs')
+  # in every PHP error 
+  if page.has_no_selector?('h1', :text => 'Developer Logs')
     page.should have_no_content('on line')
   end
   page.should have_no_content('Line Number:')
