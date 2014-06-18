@@ -28,7 +28,7 @@
 				<ul class="toolbar">
 					<li class="remove"><a href="<?=cp_url('logs/delete/developer/'.$row['log_id'])?>" title="remove"></a></li>
 				</ul>
-				<h3><?=lang('date_logged')?>:</b> <?=$row['timestamp']?></h3>
+				<h3><b><?=lang('date_logged')?>:</b> <?=$row['timestamp']?></h3>
 				<div class="message">
 					<?=$row['description']?>
 				</div>
