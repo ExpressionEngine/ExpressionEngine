@@ -288,7 +288,7 @@ class Spam_mcp {
 		// Delete any existing shared memory segments if we're using them
 		// This will get re-cached the next time we call the classifier
 		$spam_training = new Spam_training();
-		$Spam_training->delete_classifier();
+		$spam_training->delete_classifier();
 
 		return TRUE;
 	}

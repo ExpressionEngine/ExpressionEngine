@@ -313,6 +313,9 @@ class EE_Core {
 		ee()->load->library('session');
 		ee()->load->library('user_agent');
 
+		// Make spam helper library available
+		ee()->load->library('spam');
+
 		// Get timezone to set as PHP timezone
 		$timezone = ee()->session->userdata('timezone');
 

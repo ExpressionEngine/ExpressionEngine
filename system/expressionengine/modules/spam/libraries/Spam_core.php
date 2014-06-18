@@ -54,34 +54,6 @@ class Spam_core {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Filter content for spam
-	 * 
-	 * @param  array  An array of strings to classify
-	 * @access public
-	 * @return bool   Returns true if spam
-	 */
-	public function filter_content($data)
-	{
-		// Since we're using Naive Bayes, our assumption
-		// of statistical independece means classifying all the content lumped 
-		// together should give the same result as classifying each separately.
-		$content = implode(' ', $data);
-
-		if ( ! empty($content))
-		{
-			if ($this->classify($content) === TRUE)
-			{
-				$this->moderate_content('comment', $data);
-				return TRUE;
-			}
-		}
-
-		return FALSE;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Store flagged spam to await moderation. We store a serialized array of any
 	 * data we might need as well as a class and method name. If an entry that was
 	 * caught by the spam filter is manually flagged as ham, the spam module will
