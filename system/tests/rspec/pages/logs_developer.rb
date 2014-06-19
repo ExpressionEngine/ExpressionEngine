@@ -32,7 +32,7 @@ class DeveloperLog < ControlPanelPage
     end
 
     if description
-      command += " --description " + description.to_s
+      command += " --description '" + description.to_s + "'"
     end
 
     command += " > /dev/null 2>&1"
