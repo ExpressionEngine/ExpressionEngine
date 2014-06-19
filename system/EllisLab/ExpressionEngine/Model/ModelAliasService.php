@@ -25,6 +25,8 @@ class ModelAliasService extends AliasService {
 		'MemberGroup' => '\EllisLab\ExpressionEngine\Module\Member\Model\MemberGroup',
 		'MemberGateway' => '\EllisLab\ExpressionEngine\Module\Member\Model\Gateway\MemberGateway',
 		'MemberGroupGateway' => '\EllisLab\ExpressionEngine\Module\Member\Model\Gateway\MemberGroupGateway',
+		'ResetPassword' => '\EllisLab\ExpressionEngine\Module\Member\Model\ResetPassword',
+		'ResetPasswordGateway' => '\EllisLab\ExpressionEngine\Module\Member\Model\Gateway\ResetPasswordGateway',
 		'Category' => '\EllisLab\ExpressionEngine\Model\Category\Category',
 		'CategoryFieldDataGateway' => '\EllisLab\ExpressionEngine\Model\Gateway\CategoryFieldDataGateway',
 		'CategoryGateway' => '\EllisLab\ExpressionEngine\Model\Gateway\CategoryGateway',

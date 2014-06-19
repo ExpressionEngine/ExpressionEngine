@@ -1,6 +1,8 @@
 <?php
 namespace EllisLab\ExpressionEngine\Module\Member\Model;
 
+use EllisLab\ExpressionEngine\Model\Model;
+
 class ResetPassword extends Model
 {
 	protected static $_primary_key = 'reset_id';
