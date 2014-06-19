@@ -1719,21 +1719,33 @@ GRID_FALLBACK;
 				// Lastly we check for spam before inserting the data
 				$is_spam = ee()->spam->classify($spam_content);
 
-				if ($this->entry('entry_id'))
+				if($is_spam === FALSE)
 				{
-					$submit = ee()->api_channel_form_channel_entries->save_entry($_POST, NULL, $this->entry('entry_id'));
-					$spam_data = array($_POST, NULL, $this->entry('entry_id'));
+					if ($this->entry('entry_id'))
+					{
+						$submit = ee()->api_channel_form_channel_entries->save_entry($_POST, NULL, $this->entry('entry_id'));
+					}
+					else
+					{
+						$submit = ee()->api_channel_form_channel_entries->save_entry($_POST, $this->channel('channel_id'));
+					}
+
+					if ( ! $submit)
+					{
+						$this->errors = ee()->api_channel_form_channel_entries->errors;
+					}
 				}
 				else
 				{
-					$submit = ee()->api_channel_form_channel_entries->save_entry($_POST, $this->channel('channel_id'));
-					$spam_data = array($_POST, $this->entry('entry_id'));
-				}
+					if($this->entry('entry_id'))
+					{
+						$spam_data = array($_POST, NULL, $this->entry('entry_id'));
+					}
+					else
+					{
+						$spam_data = array($_POST, $this->channel('channel_id'));
+					}
 
-				if ( ! $submit)
-				{
-					$this->errors = ee()->api_channel_form_channel_entries->errors;
-				} elseif($is_spam) {
 					ee()->spam->moderate('api_channel_form_channel_entries', 'save_entry', $data);
 				}
 			}
