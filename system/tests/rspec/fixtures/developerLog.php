@@ -16,7 +16,7 @@ if (isset($options['h']) || isset($options['help']))
 {
 	print <<<EOF
 Usage: developerLog.php [options]
-	--help                     This help message
+	--help                   This help message
 	--count         <number> The number of developer logs to generate
 	--timestamp-min <number> The minimum number of hours to subtract from "now"
 	--timestamp-max <number> The maximum number of hours to subtract from "now"
