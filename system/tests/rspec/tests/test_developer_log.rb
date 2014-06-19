@@ -49,6 +49,7 @@ feature 'Developer Log' do
 
     @page.date_filter.has_select?('filter_by_date', :selected => "Last 24 Hours")
     @page.should have(23).items
+    @page.should_not have_pagination
   end
 
   it 'can change page size' do
@@ -66,27 +67,29 @@ feature 'Developer Log' do
     @page.pages.map {|name| name.text}.should == ["First", "1", "2", "3", "Next", "Last"]
   end
 
-  # @TODO when we can add these via a fixture we can test the relative date filter
   # Confirming combining filters work
-  # it 'can combine date and page size filters' do
-  #   @page.perpage_filter.select "150 results"
-  #   @page.submit_button.click
-  #
-  #   @page.perpage_filter.has_select?('perpage', :selected => "150 results")
-  #   @page.should have(150).items
-  #   @page.should have_pagination
-  #   @page.should have_text "johndoe"
-  #
-  #   @page.perpage_filter.select "150 results"
-  #   @page.username_filter.select "admin"
-  #   @page.submit_button.click
-  #
-  #   @page.perpage_filter.has_select?('perpage', :selected => "150 results")
-  #   @page.username_filter.has_select?('filter_by_username', :selected => "admin")
-  #   @page.should have(150).items
-  #   @page.should have_pagination
-  #   @page.should_not have_text "johndoe"
-  # end
+  it 'can combine date and page size filters' do
+    @page.generate_data(count: 23, timestamp_max: 22)
+    @page.generate_data(count: 42, timestamp_min: 36, timestamp_max: 60)
+    @page.load
+    confirm @page
+
+    @page.perpage_filter.select "25 results"
+    @page.submit_button.click
+
+    @page.perpage_filter.has_select?('perpage', :selected => "25 results")
+    @page.should have(25).items
+    @page.should have_pagination
+
+    @page.perpage_filter.select "25 results"
+    @page.date_filter.select "Last 24 Hours"
+    @page.submit_button.click
+
+    @page.perpage_filter.has_select?('perpage', :selected => "25 results")
+    @page.date_filter.has_select?('filter_by_date', :selected => "Last 24 Hours")
+    @page.should have(23).items
+    @page.should_not have_pagination
+  end
 
   # @TODO pending phrase search working
   # it 'can combine phrase search with filters' do
