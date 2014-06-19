@@ -2,7 +2,41 @@
 
 require('bootstrap.php');
 
-$count = isset($argv[1]) && is_numeric($argv[1]) ? (int) $argv[1] : 125;
+$longopts = array(
+	"count:",
+	"timestamp-min:",
+	"timestamp-max:",
+	"description:",
+	"help",
+);
+
+$options = getopt('h', $longopts);
+
+if (isset($options['h']) || isset($options['help']))
+{
+	print <<<EOF
+Usage: developerLog.php [options]
+	--help                     This help message
+	--count         <number> The number of developer logs to generate
+	--timestamp-min <number> The minimum number of hours to subtract from "now"
+	--timestamp-max <number> The maximum number of hours to subtract from "now"
+	--description   <string> The description to use (forces description only logs)
+EOF;
+	exit();
+}
+
+$count = isset($options['count']) && is_numeric($options['count']) ? (int) $options['count'] : 20;
+$timestamp_min = isset($options['timestamp-min']) && is_numeric($options['timestamp-min']) ? (int) $options['timestamp-min'] : 0;
+$timestamp_max = isset($options['timestamp-max']) && is_numeric($options['timestamp-max']) ? (int) $options['timestamp-max'] : 24*60; // 2 months
+
+$description = "Gibberish";
+$description_only = FALSE;
+
+if (isset($options['description']))
+{
+	$description = $options['description'];
+	$description_only = TRUE;
+}
 
 /**
  * Types of Logs:
@@ -20,11 +54,11 @@ for ($x = 0; $x < $count; $x++)
 	$type = rand(0, 6);
 
 	$fixture = $api->make('DeveloperLog');
-	$fixture->timestamp = strtotime("-" . rand(0, 24*60) . " hours");
+	$fixture->timestamp = strtotime("-" . rand($timestamp_min*60, $timestamp_max*60) . " minutes");
 
-	if ($type == 0)
+	if ($type == 0 || $description_only)
 	{
-		$fixture->description = "Gibberish";
+		$fixture->description = $description;
 	}
 	else
 	{

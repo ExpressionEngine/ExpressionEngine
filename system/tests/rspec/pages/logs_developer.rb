@@ -16,13 +16,31 @@ class DeveloperLog < ControlPanelPage
   elements :pages, 'div.paginate ul li a'
   elements :items, 'section.item-wrap div.item'
 
-  def generate_data (count=250)
-    system "cd fixtures && php developerLog.php " + count.to_s + " > /dev/null 2>&1"
+  def generate_data (count: 250, timestamp_min: nil, timestamp_max: nil, description: nil)
+    command = "cd fixtures && php developerLog.php"
+
+    if count
+      command += " --count " + count.to_s
+    end
+
+    if timestamp_min
+      command += " --timestamp-min " + timestamp_min.to_s
+    end
+
+    if timestamp_max
+      command += " --timestamp-max " + timestamp_max.to_s
+    end
+
+    if description
+      command += " --description " + description.to_s
+    end
+
+    command += " > /dev/null 2>&1"
+
+    system(command)
   end
 
 	def load
-    self.generate_data
-
 		self.open_dev_menu
 		click_link 'Logs'
 		click_link 'Developer'
