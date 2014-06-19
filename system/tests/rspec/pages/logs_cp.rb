@@ -18,10 +18,43 @@ class CpLog < ControlPanelPage
   elements :pages, 'div.paginate ul li a'
   elements :items, 'section.item-wrap div.item'
 
-	def load
-    $db.query(IO.read('support/logs/exp_cp_log.sql'))
-    clear_db_result
+  def generate_data (count: 250, site_id: nil, member_id: nil, username: nil, ip_address: nil, timestamp_min: nil, timestamp_max: nil)
+    command = "cd fixtures && php cpLog.php"
 
+    if count
+      command += " --count " + count.to_s
+    end
+
+    if site_id
+      command += " --site-id " + site_id.to_s
+    end
+
+    if member_id
+      command += " --member-id " + member_id.to_s
+    end
+
+    if username
+      command += " --username '" + username.to_s + "'"
+    end
+
+    if ip_address
+      command += " --ip-address '" + ip_address.to_s + "'"
+    end
+
+    if timestamp_min
+      command += " --timestamp-min " + timestamp_min.to_s
+    end
+
+    if timestamp_max
+      command += " --timestamp-max " + timestamp_max.to_s
+    end
+
+    command += " > /dev/null 2>&1"
+
+    system(command)
+  end
+
+	def load
 		self.open_dev_menu
 		click_link 'Logs'
 		click_link 'Control Panel'

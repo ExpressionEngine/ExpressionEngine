@@ -6,6 +6,9 @@ feature 'CP Log' do
     cp_session
 
     @page = CpLog.new
+    @page.generate_data(count: 150, timestamp_min: 26)
+    @page.generate_data(count: 35, member_id: 2, username: 'johndoe', timestamp_min: 25)
+    add_member(username: 'johndoe')
     @page.load
 
     # These should always be true at all times if not something has gone wrong
@@ -40,7 +43,7 @@ feature 'CP Log' do
     @page.submit_button.click
 
     @page.username_filter.has_select?('filter_by_username', :selected => "johndoe")
-    @page.should have(11).items
+    @page.should have(35).items
     @page.should_not have_pagination
   end
 
@@ -77,20 +80,23 @@ feature 'CP Log' do
     @page.perpage_filter.select "150 results"
     @page.submit_button.click
 
+    # First, confirm we have both 'admin' and 'johndoe' on same page
     @page.perpage_filter.has_select?('perpage', :selected => "150 results")
     @page.should have(150).items
     @page.should have_pagination
     @page.should have_text "johndoe"
+    @page.should have_text "admin"
 
+    # Now, combine the filters
     @page.perpage_filter.select "150 results"
-    @page.username_filter.select "admin"
+    @page.username_filter.select "johndoe"
     @page.submit_button.click
 
     @page.perpage_filter.has_select?('perpage', :selected => "150 results")
-    @page.username_filter.has_select?('filter_by_username', :selected => "admin")
-    @page.should have(150).items
-    @page.should have_pagination
-    @page.should_not have_text "johndoe"
+    @page.username_filter.has_select?('filter_by_username', :selected => "johndoe")
+    @page.should have(35).items
+    @page.should_not have_pagination
+    @page.should_not have_text "admin"
   end
 
   # @TODO pending phrase search working
