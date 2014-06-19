@@ -8,7 +8,7 @@ end
 # PHP or JavaScript errors are present
 def no_php_js_errors
 	# Search for "on line" or "Line Number:" since they're in pretty much
-  # in every PHP error 
+  # in every PHP error
   if page.has_no_selector?('h1', :text => 'Developer Logs')
     page.should have_no_content('on line')
   end
@@ -71,4 +71,24 @@ def capybaraify_string(str)
   str = str.gsub('>', '&gt;')
   str = str.gsub('/\s+/', ' ')
   return str
+end
+
+def add_member(group_id: 5, username: 'johndoe', screen_name: 'John Doe')
+  command = "cd fixtures && php member.php"
+
+  if group_id
+    command += " --group-id " + group_id.to_s
+  end
+
+  if username
+    command += " --username '" + username.to_s + "'"
+  end
+
+  if screen_name
+    command += " --screen-name '" + screen_name.to_s + "'"
+  end
+
+  command += " > /dev/null 2>&1"
+
+  system(command)
 end
