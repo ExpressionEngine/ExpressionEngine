@@ -2291,6 +2291,15 @@ class Comment {
 		$notify_address = ($query->row('comment_notify')  == 'y' AND $query->row('comment_notify_emails')  != '') ? $query->row('comment_notify_emails')  : '';
 
 
+		// Force comment moderation if spam
+		$is_spam = ee()->spam->classify($spam_content);
+
+		if ($is_spam === TRUE)
+		{
+			$comment_moderate = 'y';
+		}
+
+
 		/** ----------------------------------------
 		/**  Start error trapping
 		/** ----------------------------------------*/
@@ -2485,6 +2494,12 @@ class Comment {
 		$sql = ee()->db->insert_string('exp_comments', $data);
 		ee()->db->query($sql);
 		$comment_id = ee()->db->insert_id();
+
+		if ($is_spam == TRUE)
+		{
+			$spam_data = array($comment_id, 'y');
+			ee()->spam->moderate('comment', 'moderate_comment', $spam_data);
+		}
 
 		if ($notify == 'y')
 		{
