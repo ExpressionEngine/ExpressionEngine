@@ -105,13 +105,16 @@ feature 'CP Log' do
 
   # Confirming the log deletion action
   it 'can remove a single entry' do
-    click_link "Last"
+    our_action = "Rspec entry to be deleted"
 
-    # the last item in the list
-    @page.items[-1].find('li.remove a').click
+    @page.generate_data(count: 1, timestamp_max: 0, action: our_action)
+    @page.load
+
+    log = @page.find('section.item-wrap div.item', :text => our_action)
+    log.find('li.remove a').click
 
     @page.should have_alert
-    @page.should_not have_text "1/30/14 3:05 PM"
+    @page.should have_no_content our_action
   end
 
   it 'can remove all entries' do
