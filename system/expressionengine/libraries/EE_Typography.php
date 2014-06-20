@@ -714,7 +714,7 @@ class EE_Typography extends CI_Typography {
 	{
 		// Ignore [code]
 		$code_blocks = array();
-		preg_match_all("/\[code\](.*?)\[\/code\]/uis", $str, $matches);
+		preg_match_all('/\<div class="codeblock">(.*?)\<\/div>/uis', $str, $matches);
 		foreach ($matches[0] as $match)
 		{
 			$hash = random_string('md5');
@@ -750,6 +750,8 @@ class EE_Typography extends CI_Typography {
 		// Restore the quotes we protected earlier.
 		$str = $this->restore_quotes_in_tags($str);
 
+		/* I don't think this is necessary anymore since we are syntax highlighting
+		 before Markdown is involved now
 		// Replace <pre><code> with [code]
 		// Only relevant IF being called by typography parser
 		// TODO-WB: Add PHP 5.3 specific items to debug_backtrace when possible
@@ -763,18 +765,14 @@ class EE_Typography extends CI_Typography {
 				$str
 			);
 		}
+		*/
 
-		// Replace [code]
+		// Replace <div class="codeblock"> ([code]) blocks.
 		foreach ($code_blocks as $hash => $code_block)
 		{
 			$str = str_replace($hash, $code_block, $str);
 		}
 
-		// Clean up code blocks and BBCodde
-		$str = $this->_protect_bbcode($str);
-		$str = ee()->functions->encode_ee_tags($str, $this->convert_curly);
-		$str = $this->decode_bbcode($str);
-		$str = $this->_convert_code_markers($str);
 		return $str;
 	}
 
@@ -1621,6 +1619,11 @@ while (--j >= 0)
 	 */
 	private function _protect_bbcode($str)
 	{
+		if ($this->text_format == 'markdown')
+		{
+			$str = preg_replace('/```(.*?)```/s', '[code]$1[/code]', $str);
+		}
+
 		if (strpos($str, '[code]') !== FALSE)
 		{
 			if (preg_match_all("/\[code\](.+?)\[\/code\]/si", $str, $matches))
