@@ -289,13 +289,6 @@ class Channel {
 
 		$this->query = ee()->db->query($this->sql);
 
-		if ($this->enable['categories'] == TRUE)
-		{
-			$this->fetch_categories();
-		}
-
-		$this->parse_channel_entries();
-
 		// -------------------------------------
 		//  "Relaxed" View Tracking
 		//
@@ -312,6 +305,13 @@ class Channel {
 		{
 			$this->hit_tracking_id = $this->query->row('entry_id') ;
 		}
+
+		if ($this->enable['categories'] == TRUE)
+		{
+			$this->fetch_categories();
+		}
+
+		$this->parse_channel_entries();
 
 		$this->track_views();
 
