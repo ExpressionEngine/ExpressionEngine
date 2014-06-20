@@ -2,6 +2,8 @@
 
 require('bootstrap.php');
 
+$command = array_shift($argv);
+
 $longopts = array(
 	"count:",
 	"site-id:",
@@ -19,7 +21,7 @@ $options = getopt('h', $longopts);
 if (isset($options['h']) || isset($options['help']))
 {
 	print <<<EOF
-Usage: developerLog.php [options]
+Usage: {$command} [options]
 	--help                   This help message
 	--count         <number> The number of developer logs to generate
 	--site-id       <number> The site_id to use

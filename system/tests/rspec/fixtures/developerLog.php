@@ -2,6 +2,8 @@
 
 require('bootstrap.php');
 
+$command = array_shift($argv);
+
 $longopts = array(
 	"count:",
 	"timestamp-min:",
@@ -15,7 +17,7 @@ $options = getopt('h', $longopts);
 if (isset($options['h']) || isset($options['help']))
 {
 	print <<<EOF
-Usage: developerLog.php [options]
+Usage: {$command} [options]
 	--help                   This help message
 	--count         <number> The number of developer logs to generate
 	--timestamp-min <number> The minimum number of hours to subtract from "now"

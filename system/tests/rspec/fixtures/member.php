@@ -2,6 +2,8 @@
 
 require('bootstrap.php');
 
+$command = array_shift($argv);
+
 $longopts = array(
 	"group-id:",
 	"username:",
@@ -15,7 +17,7 @@ $options = getopt('h', $longopts);
 if (isset($options['h']) || isset($options['help']))
 {
 	print <<<EOF
-Usage: developerLog.php [options]
+Usage: {$command} [options]
 	--help                   This help message
 	--group-id      <number> The group_id to use
 	--username      <string> The username to use
