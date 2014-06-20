@@ -10,6 +10,7 @@ $longopts = array(
 	"ip-address:",
 	"timestamp-min:",
 	"timestamp-max:",
+	"action:",
 	"help",
 );
 
@@ -27,6 +28,7 @@ Usage: developerLog.php [options]
 	--ip-address    <string> The ip_address to use
 	--timestamp-min <number> The minimum number of hours to subtract from "now"
 	--timestamp-max <number> The maximum number of hours to subtract from "now"
+	--action        <string> The action to use
 EOF;
 	exit();
 }
@@ -38,6 +40,7 @@ $username = isset($options['username']) ? $options['username'] : 'admin';
 $ip_address = isset($options['ip-address']) ? $options['ip-address'] : '127.0.0.1';
 $timestamp_min = isset($options['timestamp-min']) && is_numeric($options['timestamp-min']) ? (int) $options['timestamp-min'] : 0;
 $timestamp_max = isset($options['timestamp-max']) && is_numeric($options['timestamp-max']) ? (int) $options['timestamp-max'] : 24*60; // 2 months
+$action = isset($options['action']) ? $options['action'] : FALSE;
 
 $actions = array(
 	'Category Group Created:&nbsp;&nbsp;Foo',
@@ -58,6 +61,6 @@ for ($x = 0; $x < $count; $x++)
 	$fixture->username = $username;
 	$fixture->ip_address = $ip_address;
 	$fixture->act_date = strtotime("-" . rand($timestamp_min*60, $timestamp_max*60) . " minutes");
-	$fixture->action = $actions[rand(0, count($actions)-1)];
+	$fixture->action = ($action !== FALSE) ? $action : $actions[rand(0, count($actions)-1)];
 	$fixture->save();
 }
