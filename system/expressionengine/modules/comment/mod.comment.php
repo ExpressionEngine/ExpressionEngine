@@ -2860,6 +2860,22 @@ class Comment {
 	// --------------------------------------------------------------------
 
 	/**
+	 * moderate_comment
+	 * 
+	 * @param integer $comment_id  The ID of the comment
+	 * @param string  $status  The status to set
+	 * @access public
+	 * @return void
+	 */
+	function moderate_comment($comment_id, $status)
+	{
+		$this->db->where('comment_id', $comment_id);
+		$this->db->update('comments', array('status' => $status));
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Comment subscription tag
 	 *
 	 *
