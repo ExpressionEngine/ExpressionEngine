@@ -63,15 +63,17 @@ class Spam_core {
 	 * @param string $class    The class to call when re-inserting a false positive
 	 * @param string $method   The method to call when re-inserting a false positive
 	 * @param string $content  Array of content data
+	 * @param string $doc      The document that was classified as spam
 	 * @access public
 	 * @return void
 	 */
-	public function moderate_content($class, $method, $content)
+	public function moderate_content($class, $method, $content, $doc)
 	{
 		$data = array(
 			'class' => $class,
 			'method' => $method,
-			'content' => serialize($content)
+			'content' => serialize($content),
+			'document' => $doc
 		);
 		ee()->db->insert('spam_trap', $data);
 	}

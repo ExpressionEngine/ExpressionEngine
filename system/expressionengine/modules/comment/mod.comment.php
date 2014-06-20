@@ -2292,7 +2292,8 @@ class Comment {
 
 
 		// Force comment moderation if spam
-		$is_spam = ee()->spam->classify($spam_content);
+		$comment_string = ee()->security->xss_clean($_POST['comment']);
+		$is_spam = ee()->spam->classify($comment_string);
 
 		if ($is_spam === TRUE)
 		{
@@ -2469,7 +2470,7 @@ class Comment {
 			'email'			=> $cmtr_email,
 			'url'			=> $cmtr_url,
 			'location'		=> $cmtr_loc,
-			'comment'		=> ee()->security->xss_clean($_POST['comment']),
+			'comment'		=> $comment_string,
 			'comment_date'	=> ee()->localize->now,
 			'ip_address'	=> ee()->input->ip_address(),
 			'status'		=> ($comment_moderate == 'y') ? 'p' : 'o',
@@ -2498,7 +2499,7 @@ class Comment {
 		if ($is_spam == TRUE)
 		{
 			$spam_data = array($comment_id, 'y');
-			ee()->spam->moderate('comment', 'moderate_comment', $spam_data);
+			ee()->spam->moderate('comment', 'moderate_comment', $spam_data, $comment_string);
 		}
 
 		if ($notify == 'y')
@@ -2869,8 +2870,8 @@ class Comment {
 	 */
 	function moderate_comment($comment_id, $status)
 	{
-		$this->db->where('comment_id', $comment_id);
-		$this->db->update('comments', array('status' => $status));
+		ee()->db->where('comment_id', $comment_id);
+		ee()->db->update('comments', array('status' => $status));
 	}
 
 	// --------------------------------------------------------------------

@@ -1746,7 +1746,7 @@ GRID_FALLBACK;
 						$spam_data = array($_POST, $this->channel('channel_id'));
 					}
 
-					ee()->spam->moderate('api_channel_form_channel_entries', 'save_entry', $spam_data);
+					ee()->spam->moderate('api_channel_form_channel_entries', 'save_entry', $spam_data, $spam_content);
 				}
 			}
 			else

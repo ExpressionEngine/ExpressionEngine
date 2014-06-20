@@ -90,7 +90,8 @@ class Spam_upd {
 			'trap_id'	=> array('type' => 'int', 'constraint' => '10', 'unsigned' => TRUE, 'auto_increment' => TRUE),
 			'class'		=> array('type' => 'varchar', 'constraint' => '64'),
 			'method'	=> array('type' => 'varchar', 'constraint' => '64'),
-			'data'		=> array('type' => 'text')
+			'data'		=> array('type' => 'text'),
+			'document'	=> array('type' => 'text')
 		);
 
 		ee()->dbforge->add_field($fields);
