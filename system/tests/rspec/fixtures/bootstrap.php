@@ -8,6 +8,9 @@ define('APPPATH',  $project_base.'expressionengine/');
 define('LD', '{');
 define('RD', '}');
 
+define('IS_CORE', FALSE);
+define('DEBUG', 1);
+
 // Minor CI annoyance
 function log_message() {}
 function ee()

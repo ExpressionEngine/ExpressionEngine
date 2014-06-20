@@ -92,3 +92,21 @@ def add_member(group_id: 5, username: 'johndoe', screen_name: 'John Doe')
 
   system(command)
 end
+
+def ee_config(site_id: nil, item: nil, value: nil)
+  if item
+    command = "cd fixtures && php config.php " + item.to_s
+
+    if value
+      command += " '" + value.to_s + "'"
+    end
+
+    if site_id
+      command += " --site-id " + site_id.to_s
+    end
+
+    command += " > /dev/null 2>&1"
+
+    system(command)
+  end
+end
