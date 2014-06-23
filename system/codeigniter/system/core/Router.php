@@ -224,47 +224,34 @@ class CI_Router {
 			return $segments;
 		}
 
-		// Is the controller in a sub-folder?
-		if (is_dir(APPPATH.'controllers/'.$segments[0]))
+		$last = end($segments);
+		reset($segments);
+
+		$c = count($segments);
+		// Loop through our segments and return as soon as a controller
+		// is found or when such a directory doesn't exist
+		while ($c-- > 0)
 		{
-			// Set the directory and remove it from the segment array
-			$this->set_directory($segments[0]);
-			$segments = array_slice($segments, 1);
+			$test = $this->directory
+				.str_replace('-', '_', $segments[0]);
 
-			if (count($segments) > 0)
+			if ( ! file_exists(APPPATH.'controllers/'.$test.'.php') && is_dir(APPPATH.'controllers/'.$this->directory.$segments[0]))
 			{
-				// Does the requested controller exist in the sub-folder?
-				if ( ! file_exists(APPPATH.'controllers/'.$this->fetch_directory().$segments[0].'.php'))
-				{
-					show_404($this->fetch_directory().$segments[0]);
-				}
-			}
-			else
-			{
-				// Is the method being specified in the route?
-				if (strpos($this->default_controller, '/') !== FALSE)
-				{
-					$x = explode('/', $this->default_controller);
-
-					$this->set_class($x[0]);
-					$this->set_method($x[1]);
-				}
-				else
-				{
-					$this->set_class($this->default_controller);
-					$this->set_method('index');
-				}
-
-				// Does the default controller exist in the sub-folder?
-				if ( ! file_exists(APPPATH.'controllers/'.$this->fetch_directory().$this->default_controller.'.php'))
-				{
-					$this->directory = '';
-					return array();
-				}
-
+				$this->set_directory(array_shift($segments), TRUE);
+				continue;
 			}
 
 			return $segments;
+		}
+
+		// If the final segment is a directory check for a file matching the
+		// directory's name inside the directory. Use its index method.
+		if (empty($segments))
+		{
+			if (file_exists(APPPATH.'controllers/'.$this->directory.$last.'.php'))
+			{
+				return array($last, 'index');
+			}
 		}
 
 		// If we've gotten this far it means that the URI does not correlate to a valid
@@ -398,13 +385,20 @@ class CI_Router {
 	/**
 	 *  Set the directory name
 	 *
-	 * @access	public
-	 * @param	string
+	 * @param	string	$dir	Directory name
+	 * @param	bool	$appent Whether we're appending rather then setting the full value
 	 * @return	void
 	 */
-	function set_directory($dir)
+	public function set_directory($dir, $append = FALSE)
 	{
-		$this->directory = str_replace(array('/', '.'), '', $dir).'/';
+		if ($append !== TRUE OR empty($this->directory))
+		{
+			$this->directory = str_replace('.', '', trim($dir, '/')).'/';
+		}
+		else
+		{
+			$this->directory .= str_replace('.', '', trim($dir, '/')).'/';
+		}
 	}
 
 	// --------------------------------------------------------------------
