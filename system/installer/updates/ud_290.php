@@ -239,7 +239,7 @@ class Updater {
 				ee()->update_notices->item('Automatically protecting JavaScript conditionals in '.$path);
 				$changes = TRUE;
 			}
-			elseif ($has_conditionals_in_scripts && $template->template_type == 'template_data')
+			elseif ($has_conditional_in_scripts && $template->template_type == 'template_data')
 			{
 				ee()->update_notices->item('Conditionals found in JavaScript in '.$path. '.');
 				$changes = TRUE;
