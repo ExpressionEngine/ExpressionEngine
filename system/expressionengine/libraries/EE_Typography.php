@@ -740,9 +740,9 @@ class EE_Typography extends CI_Typography {
 		if (isset($options['no_markup'])
 			&& get_bool_from_string($options['no_markup']))
 		{
+			$parser->no_markup = TRUE;
 		}
 
-			$parser->no_markup = TRUE;
 		// Protect any quotes in EE tags from the Markdown and SmartyPants
 		// processors.
 		$str = $this->protect_quotes_in_tags($str);
