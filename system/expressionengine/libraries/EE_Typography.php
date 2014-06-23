@@ -772,7 +772,7 @@ class EE_Typography extends CI_Typography {
 		}
 
 		$str = $this->_protect_bbcode($str);
-		$str = $this->decode_bbcode($str);
+		$str = $this->_decode_code_tags($str);
 
 		return $str;
 	}
@@ -942,13 +942,7 @@ class EE_Typography extends CI_Typography {
 		/**  Decode codeblock division for code tag
 		/** -------------------------------------*/
 
-		if (count($this->code_chunks) > 0)
-		{
-			foreach ($this->code_chunks as $key => $val)
-			{
-				$str = str_replace('[div class="codeblock"]{'.$key.'yH45k02wsSdrp}[/div]', '<div class="codeblock">{'.$key.'yH45k02wsSdrp}</div>', $str);
-			}
-		}
+		$str = $this->_decode_code_tags($str);
 
 		/** -------------------------------------
 		/**  Decode color tags
@@ -1149,6 +1143,26 @@ class EE_Typography extends CI_Typography {
 		if (stripos($str, '[quote') !== FALSE)
 		{
 			$str = preg_replace('/\[quote\s+(author=".*?"\s+date=".*?")\]/si', '<blockquote \\1>', $str);
+		}
+
+		return $str;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Replace [div class="codeblock"] with <div class="codeblock">
+	 * @param  String $str The string to parse
+	 * @return String      The resulsting parsed string
+	 */
+	private function _decode_code_tags($str)
+	{
+		if (count($this->code_chunks) > 0)
+		{
+			foreach ($this->code_chunks as $key => $val)
+			{
+				$str = str_replace('[div class="codeblock"]{'.$key.'yH45k02wsSdrp}[/div]', '<div class="codeblock">{'.$key.'yH45k02wsSdrp}</div>', $str);
+			}
 		}
 
 		return $str;
