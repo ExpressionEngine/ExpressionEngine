@@ -752,12 +752,9 @@ class EE_Typography extends CI_Typography {
 		// Restore the quotes we protected earlier.
 		$str = $this->restore_quotes_in_tags($str);
 
-		/* I don't think this is necessary anymore since we are syntax highlighting
-		 before Markdown is involved now
 		// Replace <pre><code> with [code]
 		// Only relevant IF being called by typography parser
-		// TODO-WB: Add PHP 5.3 specific items to debug_backtrace when possible
-		$backtrace = debug_backtrace();
+		$backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
 		if (isset($backtrace[1])
 			&& in_array($backtrace[1]['class'], array('EE_Typography')))
 		{
@@ -767,13 +764,15 @@ class EE_Typography extends CI_Typography {
 				$str
 			);
 		}
-		*/
 
 		// Replace <div class="codeblock"> ([code]) blocks.
 		foreach ($code_blocks as $hash => $code_block)
 		{
 			$str = str_replace($hash, $code_block, $str);
 		}
+
+		$str = $this->_protect_bbcode($str);
+		$str = $this->decode_bbcode($str);
 
 		return $str;
 	}
