@@ -657,6 +657,9 @@ class Wizard extends CI_Controller {
 				$data['action'] = $this->set_qstr('do_update');
 			}
 
+			// clear the update notices if we have any from last time
+			$this->update_notices->clear();
+
 			$this->logger->updater("Preparing to update from {$this->installed_version} to {$this->version}. Awaiting acceptance of license terms.");
 		}
 
@@ -1283,9 +1286,6 @@ PAPAYA;
 		// Did they agree to the license?
 		if ($this->input->get_post('agree') != 'yes')
 		{
-			// clear the update notices if we have any from last time
-			$this->update_notices->clear();
-
 			return $this->_license(TRUE);
 		}
 
