@@ -18,7 +18,16 @@ class CpLog < ControlPanelPage
 	elements :pages, 'div.paginate ul li a'
 	elements :items, 'section.item-wrap div.item'
 
-	def generate_data(count: 250, site_id: nil, member_id: nil, username: nil, ip_address: nil, timestamp_min: nil, timestamp_max: nil, action: nil)
+	def generate_data(
+		count: 250,
+		site_id: nil,
+		member_id: nil,
+		username: nil,
+		ip_address: nil,
+		timestamp_min: nil,
+		timestamp_max: nil,
+		action: nil
+		)
 		command = "cd fixtures && php cpLog.php"
 
 		if count

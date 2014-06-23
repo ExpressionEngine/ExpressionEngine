@@ -16,7 +16,12 @@ class DeveloperLog < ControlPanelPage
 	elements :pages, 'div.paginate ul li a'
 	elements :items, 'section.item-wrap div.item'
 
-	def generate_data(count: 250, timestamp_min: nil, timestamp_max: nil, description: nil)
+	def generate_data(
+		count: 250,
+		timestamp_min: nil,
+		timestamp_max: nil,
+		description: nil
+		)
 		command = "cd fixtures && php developerLog.php"
 
 		if count

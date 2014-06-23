@@ -15,7 +15,14 @@ class ThrottleLog < ControlPanelPage
 	elements :pages, 'div.paginate ul li a'
 	elements :items, 'section.item-wrap div.item'
 
-	def generate_data(count: 250, ip_address: nil, timestamp_min: nil, timestamp_max: nil, hits: nil, locked_out: nil)
+	def generate_data(
+		count: 250,
+		ip_address: nil,
+		timestamp_min: nil,
+		timestamp_max: nil,
+		hits: nil,
+		locked_out: nil
+    )
 		command = "cd fixtures && php throttlingLog.php"
 
 		if count
