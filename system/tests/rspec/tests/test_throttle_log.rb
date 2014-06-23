@@ -71,16 +71,16 @@ feature 'Throttling Log' do
 
   # Confirming the log deletion action
   # it '(enabled) can remove a single entry', :enabled => true do
-  #   our_action = "Rspec entry to be deleted"
+  #	  our_action = "Rspec entry to be deleted"
   #
-  #   @page.generate_data(count: 1, timestamp_max: 0, action: our_action)
-  #   @page.load
+  #	  @page.generate_data(count: 1, timestamp_max: 0, action: our_action)
+  #	  @page.load
   #
-  #   log = @page.find('section.item-wrap div.item', :text => our_action)
-  #   log.find('li.remove a').click
+  #	  log = @page.find('section.item-wrap div.item', :text => our_action)
+  #	  log.find('li.remove a').click
   #
-  #   @page.should have_alert
-  #   @page.should have_no_content our_action
+  #	  @page.should have_alert
+  #	  @page.should have_no_content our_action
   # end
 
   it '(enabled) can remove all entries', :enabled => true do

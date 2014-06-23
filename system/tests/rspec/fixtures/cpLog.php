@@ -22,15 +22,15 @@ if (isset($options['h']) || isset($options['help']))
 {
 	print <<<EOF
 Usage: {$command} [options]
-	--help                   This help message
-	--count         <number> The number of developer logs to generate
-	--site-id       <number> The site_id to use
-	--member-id     <number> The member_id to use
-	--username      <string> The username to use
-	--ip-address    <string> The ip_address to use
+	--help					 This help message
+	--count			<number> The number of developer logs to generate
+	--site-id		<number> The site_id to use
+	--member-id		<number> The member_id to use
+	--username		<string> The username to use
+	--ip-address	<string> The ip_address to use
 	--timestamp-min <number> The minimum number of hours to subtract from "now"
 	--timestamp-max <number> The maximum number of hours to subtract from "now"
-	--action        <string> The action to use
+	--action		<string> The action to use
 EOF;
 	exit();
 }

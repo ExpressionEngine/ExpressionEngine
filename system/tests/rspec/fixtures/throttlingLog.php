@@ -20,13 +20,13 @@ if (isset($options['h']) || isset($options['help']))
 {
 	print <<<EOF
 Usage: {$command} [options]
-	--help                   This help message
-	--count         <number> The number of developer logs to generate
-	--ip-address    <string> The ip_address to use
+	--help					 This help message
+	--count			<number> The number of developer logs to generate
+	--ip-address	<string> The ip_address to use
 	--timestamp-min <number> The minimum number of hours to subtract from "now"
 	--timestamp-max <number> The maximum number of hours to subtract from "now"
-	--hits          <number> The site_id to use
-	--locked-out             If used this will mark the entry as locked out
+	--hits			<number> The site_id to use
+	--locked-out			 If used this will mark the entry as locked out
 EOF;
 	exit();
 }
