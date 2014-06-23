@@ -34,6 +34,8 @@ Usage: {$command} [options]
 	--timestamp-max  <number> The maximum number of hours to subtract from "now"
 	--recipient      <string> The recipient to use
 	--recipient-name <string> The recipient_name to use
+	--subject        <string> The subject to use
+	--message        <string> The message to use
 EOF;
 	exit();
 }
