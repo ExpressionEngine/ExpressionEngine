@@ -756,9 +756,9 @@ class EE_Typography extends CI_Typography {
 		if (isset($backtrace[1])
 			&& in_array($backtrace[1]['class'], array('EE_Typography')))
 		{
-			$str = preg_replace_callback(
+			$str = preg_replace(
 				"/<pre><code>(.*?)<\/code><\/pre>/uis",
-				function ($matches) { return '[code]'.str_replace('&amp;', '&', $matches[0]).'[/code]'; },
+				"[code]$1[/code]",
 				$str
 			);
 		}
