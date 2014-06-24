@@ -40,7 +40,7 @@ abstract class AbstractParser {
 	protected $tokens;
 
 	/**
-	 * @param Array $tokens List of [tokenname, tokenvalue]
+	 * @param Array $tokens List of Token's
 	 */
 	public function __construct($tokens)
 	{
