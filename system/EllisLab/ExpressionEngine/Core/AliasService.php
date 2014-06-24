@@ -9,6 +9,15 @@ class AliasService {
 	protected $identifier = 'Class';
 	protected $aliases = array();
 
+	public function __construct($identifier, $aliases_path)
+	{
+		$this->identifier = $identifier;
+
+		require_once($aliases_path);
+
+		$this->aliases = $aliases;
+	}
+
 	/**
 	 * Register a class under a given alias.
 	 *

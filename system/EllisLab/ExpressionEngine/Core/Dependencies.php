@@ -15,9 +15,12 @@ class Dependencies extends ServiceProvider {
 
     public function getModelFactory()
     {
+		$model_alias_path = APPPATH . 'config/model_aliases.php';
+		$model_alias_service = new AliasService('Model', $model_alias_path);
+
         return $this->singleton(function($di)
         {
-            return new ModelFactory($di, new ModelAliasService());
+            return new ModelFactory($di, $model_alias_service);
         });
     }
 

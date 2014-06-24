@@ -104,9 +104,6 @@ class EE_Core {
 		ee()->db->db_debug = FALSE;
 
 		// Setup API model factory
-		require APPPATH . '../EllisLab/ExpressionEngine/Core/Autoloader.php';
-		$loader = new Autoloader();
-		$loader->register();
 		ee()->dependencies = new \EllisLab\ExpressionEngine\Core\Dependencies();
 		ee()->api = ee()->dependencies->getModelFactory();
 
