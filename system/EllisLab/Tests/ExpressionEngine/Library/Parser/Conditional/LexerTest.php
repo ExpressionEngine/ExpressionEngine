@@ -142,6 +142,8 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 			$this->edgyEnglishBooleanOperatorsWithoutSpaces(),
 			$this->englishBooleanSubstringsAsVariables(),
 
+			// From the bug tracker
+			$this->bugs(),
 			array() // non trailing comma thing for covienence
 		);
 	}
@@ -2514,4 +2516,21 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 		return $return;
 	}
 
+	/**
+	 * These are tests based on bugs from our bug tracker
+	 */
+	protected function bugs()
+	{
+		$return = array();
+
+		// From Bug #15654; redundant but regression-insurance
+		$value = 'FLXORS_44';
+		$return[] = array(
+			"Fieldnames with XOR substrings are still variables",
+			$this->assembleCommonCondition($value),
+			$this->assembleCommonTokens(array(array('VARIABLE', $value)))
+		);
+
+		return $return;
+	}
 }
