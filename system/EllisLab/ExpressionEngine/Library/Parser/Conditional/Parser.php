@@ -305,7 +305,15 @@ class Parser extends AbstractParser {
 				$this->is('NUMBER') ||
 				$this->is('STRING'))
 			{
-				$expression->add($this->token);
+				if ( ! $this->token->canEvaluate())
+				{
+					$this->addSafely($expression);
+				}
+				else
+				{
+					$expression->add($this->token);
+				}
+
 				$this->next();
 			}
 			elseif ($this->is('VARIABLE'))

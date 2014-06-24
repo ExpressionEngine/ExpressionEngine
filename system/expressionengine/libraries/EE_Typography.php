@@ -730,9 +730,9 @@ class EE_Typography extends CI_Typography {
 		if (isset($options['no_markup'])
 			&& get_bool_from_string($options['no_markup']))
 		{
+			$parser->no_markup = TRUE;
 		}
 
-			$parser->no_markup = TRUE;
 		// Protect any quotes in EE tags from the Markdown and SmartyPants
 		// processors.
 		$str = $this->protect_quotes_in_tags($str);
@@ -744,7 +744,9 @@ class EE_Typography extends CI_Typography {
 		if ( ! isset($options['smartypants'])
 			OR get_bool_from_string($options['smartypants']) == FALSE)
 		{
-			require_once(APPPATH.'libraries/typography/SmartyPants/smartypants.php');
+			if ( ! class_exists('SmartyPants_Parser')){
+				require_once(APPPATH.'libraries/typography/SmartyPants/smartypants.php');
+			}
 			// 2  ->  "---" for em-dashes; "--" for en-dashes
 			$str = SmartyPants($str, 2);
 		}

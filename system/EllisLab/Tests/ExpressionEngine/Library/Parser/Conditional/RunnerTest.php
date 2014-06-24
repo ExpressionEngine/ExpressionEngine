@@ -226,10 +226,16 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 	public function safetyOnDataProvider()
 	{
 		return array(
-			array('Unparsed Tags to false',		'{if {tag} == FALSE}yes{if:else}no{/if}',	'yes'),
-			array('Unparsed Tags to false 2',	'{if {tag} != FALSE}no{if:else}yes{/if}',	'yes'),
-			array('Unparsed Vars to false',		'{if var1 == FALSE}yes{if:else}no{/if}',	'yes'),
-			array('Unparsed Vars to false 2',	'{if var1 || var2}no{if:else}yes{/if}',		'yes'),
+			array('Unparsed Tags to false',			'{if {tag} == FALSE}yes{if:else}no{/if}',		'yes'),
+			array('Unparsed Tags to false 2',		'{if {tag} != FALSE}no{if:else}yes{/if}',		'yes'),
+			array('Unparsed Tag with param',		'{if {tag a="b"} == FALSE}yes{if:else}no{/if}',	'yes'),
+			array('Unparsed Tag with param 2',		'{if {tag b="c"} != FALSE}no{if:else}yes{/if}',	'yes'),
+			array('Unparsed Vars to false',			'{if var1 == FALSE}yes{if:else}no{/if}',		'yes'),
+			array('Unparsed Vars to false 2',		'{if var1 || var2}no{if:else}yes{/if}',			'yes'),
+			array('Unparsed quoted to false',		'{if "{tag}" == FALSE}yes{if:else}no{/if}',		'yes'),
+			array('Unparsed quoted to false 2',		'{if "{tag}" != FALSE}no{if:else}yes{/if}',		'yes'),
+			array('Unparsed quoted with param',		'{if "{tag a=\"b\"}" == FALSE}yes{if:else}no{/if}',		'yes'),
+			array('Unparsed quoted with param 2',	'{if "{tag a=\'c\'}" != FALSE}no{if:else}yes{/if}',		'yes'),
 		);
 	}
 
@@ -441,6 +447,9 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 			array('Zero int is false',		'{if 0 == FALSE}yes{if:else}no{/if}',		'yes'),
 			array('Zero float is false',	'{if 0.0 == FALSE}yes{if:else}no{/if}',		'yes'),
 			array('Zero int var is false',	'{if var == FALSE}yes{if:else}no{/if}',		'yes', array('var' => 0)),
+			array('Scientific notation',	'{if 1E2 == 100}yes{if:else}no{/if}',		'yes', array('var' => 0)),
+			array('Scientific notation',	'{if 1E+2 == 100}yes{if:else}no{/if}',		'yes', array('var' => 0)),
+			array('Scientific notation',	'{if 1000E-2 == 10}yes{if:else}no{/if}',		'yes', array('var' => 0)),
 		);
 	}
 
