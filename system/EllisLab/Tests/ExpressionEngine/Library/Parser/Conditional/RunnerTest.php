@@ -230,6 +230,8 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 			array('Unparsed Tags to false 2',	'{if {tag} != FALSE}no{if:else}yes{/if}',	'yes'),
 			array('Unparsed Vars to false',		'{if var1 == FALSE}yes{if:else}no{/if}',	'yes'),
 			array('Unparsed Vars to false 2',	'{if var1 || var2}no{if:else}yes{/if}',		'yes'),
+			array('Unparsed quoted to false',	'{if "{tag}" == FALSE}yes{if:else}no{/if}',	'yes'),
+			array('Unparsed quoted to false 2',	'{if "{tag}" != FALSE}no{if:else}yes{/if}',	'yes'),
 		);
 	}
 
