@@ -448,13 +448,14 @@ class EE_Relationship_data_parser {
 
 				$value = trim($value,  " |\t\n\r");
 				$value = explode('|', $value);
+				$value = array_map('strtolower', $value);
 
 				if ($p == 'channel')
 				{
 					$p = 'channel_name';
 				}
 
-				$data_matches = in_array($data[$p], $value);
+				$data_matches = in_array(strtolower($data[$p]), $value);
 
 				if (($data_matches && $not) OR
 					( ! $data_matches && ! $not))
