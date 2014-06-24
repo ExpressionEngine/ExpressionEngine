@@ -447,6 +447,8 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 			array('Zero int is false',		'{if 0 == FALSE}yes{if:else}no{/if}',		'yes'),
 			array('Zero float is false',	'{if 0.0 == FALSE}yes{if:else}no{/if}',		'yes'),
 			array('Zero int var is false',	'{if var == FALSE}yes{if:else}no{/if}',		'yes', array('var' => 0)),
+			array('Scientific notation',	'{if 100E-2 == 1}yes{if:else}no{/if}',		'yes', array('var' => 0)),
+			array('Scientific notation',	'{if 1000E-2 == 10}yes{if:else}no{/if}',		'yes', array('var' => 0)),
 		);
 	}
 
