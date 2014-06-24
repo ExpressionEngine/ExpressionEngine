@@ -398,7 +398,6 @@ class EE_Typography extends CI_Typography {
 		$str = encode_php_tags($str);
 
 		// Encode EE Tags
-		// Separate parsers should handle this on their end
 		$str = ee()->functions->encode_ee_tags($str, $this->convert_curly);
 
 		return $str;
