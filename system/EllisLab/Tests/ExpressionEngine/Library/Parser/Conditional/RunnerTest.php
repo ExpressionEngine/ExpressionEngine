@@ -317,12 +317,15 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 	protected function plainLogicOperatorTests()
 	{
 		return array(
-			array('Plain && Integer',	'{if 5 && 5}yes{if:else}no{/if}',	'yes'),
-			array('Plain || Integer',	'{if 5 || 7}yes{if:else}no{/if}',	'yes'),
-			array('Plain AND Integer',	'{if 7 AND 5}yes{if:else}no{/if}',	'yes'),
-			array('Plain OR Integer',	'{if 5 OR 7}yes{if:else}no{/if}',	'yes'),
-			array('Plain XOR Integer',	'{if 5 XOR 0}yes{if:else}no{/if}',	'yes'),
-			array('Plain ! Integer',	'{if ! 0}yes{if:else}no{/if}',		'yes'),
+			array('Plain && Integer',		'{if 5 && 5}yes{if:else}no{/if}',	'yes'),
+			array('Plain || Integer',		'{if 5 || 7}yes{if:else}no{/if}',	'yes'),
+			array('Plain AND Integer',		'{if 7 AND 5}yes{if:else}no{/if}',	'yes'),
+			array('Plain OR Integer',		'{if 5 OR 7}yes{if:else}no{/if}',	'yes'),
+			array('Plain XOR Integer',		'{if 5 XOR 0}yes{if:else}no{/if}',	'yes'),
+			array('Plain OR Lowercase',		'{if 5 or 7}yes{if:else}no{/if}',	'yes'),
+			array('Plain AND Lowercase',	'{if 7 and 5}yes{if:else}no{/if}',	'yes'),
+			array('Plain XOR Lowercase',	'{if 5 xor 0}yes{if:else}no{/if}',	'yes'),
+			array('Plain ! Integer',		'{if ! 0}yes{if:else}no{/if}',		'yes'),
 
 			// and now false
 			array('Plain && False',		'{if 5 && 0}no{if:else}yes{/if}',	'yes'),
