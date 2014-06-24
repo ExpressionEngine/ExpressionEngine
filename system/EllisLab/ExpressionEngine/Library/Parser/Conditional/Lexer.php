@@ -557,21 +557,21 @@ class Lexer extends AbstractLexer {
 
 			switch ($type)
 			{
-				case 'COMMENT':	 $obj = new Comment($lexeme);
-					break;
 				case 'BOOL':	 $obj = new Bool($lexeme);
+					break;
+				case 'COMMENT':	 $obj = new Comment($lexeme);
 					break;
 				case 'NUMBER':	 $obj = new Number($lexeme);
 					break;
-				case 'STRING':	 $obj = new String($lexeme);
-					break;
 				case 'OPERATOR': $obj = new Operator($lexeme);
+					break;
+				case 'OTHER':	 $obj = new Other($lexeme);
+					break;
+				case 'STRING':	 $obj = new String($lexeme);
 					break;
 				case 'TAG':		 $obj = new Tag($lexeme);
 					break;
 				case 'VARIABLE': $obj = new Variable($lexeme);
-					break;
-				case 'OTHER':	 $obj = new Other($lexeme);
 					break;
 				default:
 					$obj = new Token($type, $lexeme);
