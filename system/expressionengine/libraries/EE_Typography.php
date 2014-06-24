@@ -744,7 +744,9 @@ class EE_Typography extends CI_Typography {
 		if ( ! isset($options['smartypants'])
 			OR get_bool_from_string($options['smartypants']) == FALSE)
 		{
-			require_once(APPPATH.'libraries/typography/SmartyPants/smartypants.php');
+			if ( ! class_exists('SmartyPants_Parser')){
+				require_once(APPPATH.'libraries/typography/SmartyPants/smartypants.php');
+			}
 			// 2  ->  "---" for em-dashes; "--" for en-dashes
 			$str = SmartyPants($str, 2);
 		}

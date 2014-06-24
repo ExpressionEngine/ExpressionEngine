@@ -582,7 +582,7 @@ class EE_Template {
 			$error = '';
 
 			// layout tag after exp tag? No good can come of this.
-			if ($tag_pos > $first_tag)
+			if ($tag_pos > $first_tag && $first_tag !== FALSE)
 			{
 				if (ee()->config->item('debug') >= 1)
 				{
