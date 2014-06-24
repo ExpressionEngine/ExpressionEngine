@@ -168,7 +168,7 @@ class Query {
 		return $this;
 	}
 
-	public function or_filter($property, $operator, $value = NULL)
+	public function orFilter($property, $operator, $value = NULL)
 	{
 		$this->applyFilter($property, $operator, $value, TRUE);
 		return $this;
