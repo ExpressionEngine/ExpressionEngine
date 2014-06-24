@@ -756,9 +756,9 @@ class EE_Typography extends CI_Typography {
 		if (isset($backtrace[1])
 			&& in_array($backtrace[1]['class'], array('EE_Typography')))
 		{
-			$str = preg_replace(
+			$str = preg_replace_callback(
 				"/<pre><code>(.*?)<\/code><\/pre>/uis",
-				"[code]$1[/code]",
+				function ($matches) { return '[code]'.str_replace('&amp;', '&', $matches[0]).'[/code]'; },
 				$str
 			);
 		}
@@ -1632,11 +1632,6 @@ while (--j >= 0)
 	 */
 	private function _protect_bbcode($str)
 	{
-		if ($this->text_format == 'markdown')
-		{
-			$str = preg_replace('/```(.*?)```/s', '[code]$1[/code]', $str);
-		}
-
 		if (strpos($str, '[code]') !== FALSE)
 		{
 			if (preg_match_all("/\[code\](.+?)\[\/code\]/si", $str, $matches))
