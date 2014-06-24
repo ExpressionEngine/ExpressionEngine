@@ -309,10 +309,7 @@ class EE_Typography extends CI_Typography {
 		}
 
 		//  Format HTML
-		if ( ! $this->separate_parser)
-		{
-			$str = $this->format_html($str);
-		}
+		$str = $this->format_html($str);
 
 		//  Auto-link URLs and email addresses
 		if ($this->auto_links == 'y' && ! $this->separate_parser)
