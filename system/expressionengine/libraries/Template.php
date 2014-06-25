@@ -51,7 +51,6 @@ class EE_Template {
 	public $group_name			= '';			// Group of template being parsed
 	public $template_name		= '';			// Name of template being parsed
 	public $template_id			= 0;
-	public $layout_contents		= '';
 
 	public $tag_data			= array();		// Data contained in tags
 	public $modules		 		= array();		// List of installed modules
@@ -104,6 +103,8 @@ class EE_Template {
 
 	protected $_tag_cache_prefix	= 'tag_cache';	// Tag cache key namespace
 	protected $_page_cache_prefix	= 'page_cache'; // Page cache key namespace
+
+	private $layout_contents		= '';
 
 	// --------------------------------------------------------------------
 
