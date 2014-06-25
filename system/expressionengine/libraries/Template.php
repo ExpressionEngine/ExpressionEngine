@@ -51,6 +51,7 @@ class EE_Template {
 	public $group_name			= '';			// Group of template being parsed
 	public $template_name		= '';			// Name of template being parsed
 	public $template_id			= 0;
+	public $layout_contents		= '';
 
 	public $tag_data			= array();		// Data contained in tags
 	public $modules		 		= array();		// List of installed modules
@@ -471,7 +472,6 @@ class EE_Template {
 			}
 		}
 
-
 		// Smite Our Enemies:  Conditionals
 		$this->log_item("Parsing Segment, Embed, Layout, logged_in_*, and Global Vars Conditionals");
 
@@ -482,6 +482,7 @@ class EE_Template {
 				$this->template_route_vars,
 				$this->embed_vars,
 				$layout_conditionals,
+				array('layout:contents' => $this->layout_contents),
 				$logged_in_user_cond,
 				ee()->config->_global_vars
 			)
@@ -656,6 +657,8 @@ class EE_Template {
 		{
 			return $template;
 		}
+
+		$this->layout_contents = trim($this->remove_ee_comments($template)); // for use in conditionals
 
 		$this->log_item("Processing Layout Templates");
 
