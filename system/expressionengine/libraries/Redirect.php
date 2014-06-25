@@ -13,6 +13,7 @@
 
 // ------------------------------------------------------------------------
 
+
 /**
  * URL Redirect
  *
@@ -27,14 +28,16 @@ if ( ! isset($_GET['URL']))
 	exit();
 }
 
-$_GET['URL'] = str_replace(array("\r", "\r\n", "\n", '%3A','%3a','%2F','%2f'), array('', '', '', ':', ':', '/', '/'), $_GET['URL']);
+// $_GET['URL'] = str_replace(array("\r", "\r\n", "\n", '%3A','%3a','%2F','%2f'), array('', '', '', ':', ':', '/', '/'), $_GET['URL']);
 
 if (strncmp($_GET['URL'], 'http', 4) != 0 && strpos($_GET['URL'], '://') === FALSE && substr($_GET['URL'], 0, 1) != '/')
 {
 	$_GET['URL'] = "http://".$_GET['URL'];
 }
 
-$_GET['URL'] = str_replace( array('"', "'", ')', '(', ';', '}', '{', 'script%', 'script&', '&#40', '&#41'), '', strip_tags($_GET['URL']));
+// $_GET['URL'] = str_replace( array('"', "'", ')', '(', ';', '}', '{', 'script%', 'script&', '&#40', '&#41'), '', strip_tags($_GET['URL']));
+
+$_GET['URL'] = ee()->security->xss_clean($_GET['URL']);
 
 $host = ( ! isset($_SERVER['HTTP_HOST'])) ? '' : (substr($_SERVER['HTTP_HOST'],0,4) == 'www.' ? substr($_SERVER['HTTP_HOST'], 4) : $_SERVER['HTTP_HOST']);
 
