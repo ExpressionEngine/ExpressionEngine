@@ -72,7 +72,7 @@ class Spam_core {
 		$data = array(
 			'class' => $class,
 			'method' => $method,
-			'content' => serialize($content),
+			'data' => serialize($content),
 			'document' => $doc
 		);
 		ee()->db->insert('spam_trap', $data);

@@ -52,7 +52,22 @@ class Spam_mcp {
 	public function index()
 	{
 		$data = array();
+		$data['moderation'] = $this->_get_spam_trap();
+		ee()->load->library('table');
 		return ee()->load->view('index', $data, TRUE);
+	}
+
+	/**
+	 * Moderate content. Will insert record into training table and either delete
+	 * or reinsert the data if it's spam or ham respectively.
+	 * 
+	 * @param integer $id    ID of the content to moderate
+	 * @param boolean $spam  True if content is spa,
+	 * @access public
+	 * @return void
+	 */
+	public function moderate($id, $spam)
+	{
 	}
 
 	/**
@@ -117,6 +132,38 @@ class Spam_mcp {
 		$data = array();
 		$this->_train_parameters();
 		return ee()->load->view('train', $data, TRUE);
+	}
+
+	/**
+	 * Returns an array of content flagged as spam
+	 * 
+	 * @param  integer $limit The number of entries to grab  
+	 * @access private
+	 * @return array   Array of content to moderate
+	 */
+	private function _get_spam_trap($limit = 1000)
+	{
+		ee()->db->select('trap_id, document');
+		ee()->db->from('spam_trap');
+		ee()->db->limit($limit);
+		$query = ee()->db->get();
+
+		$result = array();
+
+		foreach ($query->result() as $spam)
+		{
+			$spam_url = "<a href='#'>Spam</a>";
+			$ham_url = "<a href='#'>Ham</a>";
+			$moderation_url = "$spam_url / $ham_url";
+
+			$result[] = array(
+				$spam->trap_id,
+				$spam->document,
+				$moderation_url
+			);
+		}
+
+		return $result;
 	}
 
 	/**

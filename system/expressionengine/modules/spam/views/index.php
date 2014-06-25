@@ -10,3 +10,14 @@
 		<?=form_submit(array('value'=>'Train Spam Filter','class'=>'submit'));?>
 	</form>
 </p>
+<?php
+$this->table->set_template(array(
+	'table_open' => '<table class="mainTable" border="0" cellspacing="0" cellpadding="0">'
+));
+$this->table->set_heading(array(
+	'Spam ID',
+	'Content',
+	'Moderate'
+));
+echo $this->table->generate($moderation);
+?>
