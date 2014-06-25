@@ -708,8 +708,49 @@ class EE_Typography extends CI_Typography {
 
 	// --------------------------------------------------------------------
 
-	public function markdown_pre_process($str)
+	/**
+	 * Run the Mardown code through a pre processor so we can convert all code
+	 * blocks (not inline) to bbcode blocks for highlighting
+	 * @param  String $str The string to pre-process
+	 * @return String      The pre-processed string
+	 */
+	private function markdown_pre_process($str)
 	{
+		// First, get the fenced code blocks. Fenced code blocks consist of
+		// three tildes or backticks in a row on their own line, followed by
+		// some code, followed by a matching set of three or more tildes or
+		// backticks on their own line again
+		$str = preg_replace(
+			"/(^(?:`{3,}|~{3,})\\n)(.*?)\\1/ism",
+			"[code]\n$2[/code]\n",
+			$str
+		);
+
+		// TODO-WB: Might need to pull out the fenced code blocks and replace
+		// with hashes and replace after the next bit since that code can be
+		// indented as well and you end up with
+		//     [code]...[code]...[/code]...[/code]
+
+		// Replace tabs with spaces
+		$str = preg_replace("/^\t/m", "    ", $str);
+
+		// Now process tab indented code blocks
+		$str = preg_replace_callback(
+			// TODO-WB: Document this monster, it came from
+			// Markdown::doCodeblocks()
+			"/(?:\n|\A\n?)((?>[ ]{4}.*\n+)+)((?=^[ ]{0,4}\S)|\Z)/m",
+			function ($matches) {
+				$codeblock = $matches[1];
+
+				// Outdent these code blocks
+				$codeblock = preg_replace("/^[ ]{4}(.*)$/m", "$1", $codeblock);
+
+				// Trim the whole string and wrap it in [code]
+				return "[code]\n".trim($codeblock)."\n[/code]\n\n";
+			},
+			$str
+		);
+
 		return $str;
 	}
 
@@ -766,19 +807,6 @@ class EE_Typography extends CI_Typography {
 
 		// Restore the quotes we protected earlier.
 		$str = $this->restore_quotes_in_tags($str);
-
-		// Replace <pre><code> with [code]
-		// Only relevant IF being called by typography parser
-		$backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
-		if (isset($backtrace[1])
-			&& in_array($backtrace[1]['class'], array('EE_Typography')))
-		{
-			$str = preg_replace(
-				"/<pre><code>(.*?)<\/code><\/pre>/uis",
-				"[code]$1[/code]",
-				$str
-			);
-		}
 
 		// Replace <div class="codeblock"> ([code]) blocks.
 		foreach ($code_blocks as $hash => $code_block)
