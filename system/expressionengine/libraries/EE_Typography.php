@@ -278,6 +278,16 @@ class EE_Typography extends CI_Typography {
 		// Set up preferences
 		$this->_set_preferences($prefs);
 
+		// Parser-specific pre_process
+		if ($this->separate_parser
+			&& method_exists($this, $this->text_format.'_pre_process'))
+		{
+			$str = call_user_func(
+				array($this, $this->text_format.'_pre_process'),
+				$str
+			);
+		}
+
 		// Handle single line paragraphs
 		if ($this->single_line_pgfs != TRUE)
 		{
@@ -698,6 +708,13 @@ class EE_Typography extends CI_Typography {
 		}
 
 		return $this->encode_tags($str);
+	}
+
+	// --------------------------------------------------------------------
+
+	public function markdown_pre_process($str)
+	{
+		return $str;
 	}
 
 	// --------------------------------------------------------------------
