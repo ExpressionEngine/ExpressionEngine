@@ -207,7 +207,8 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 			$this->variableTests(),
 			$this->operatorPrecedenceTests(),
 			$this->parenthesisTests(),
-			$this->userGuideTestsBooleanValueComparisons()
+			$this->userGuideTestsBooleanValueComparisons(),
+			$this->bug20323()
 		);
 	}
 
@@ -572,6 +573,20 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 			array('Boolean value comparison: "-1" == "1"',		'{if "-1" == "1"}yes{if:else}no{/if}',		'no'),
 			array('Boolean value comparison: "-1" == "0"',		'{if "-1" == "0"}yes{if:else}no{/if}',		'no'),
 			array('Boolean value comparison: "-1" == "-1"',		'{if "-1" == "-1"}yes{if:else}no{/if}',		'yes'),
+		);
+	}
+
+	// See: https://support.ellislab.com/bugs/detail/20323
+	protected function bug20323()
+	{
+		$vars = array(
+			'value' => 'Test with long caption title to test layout',
+			'title' => 'Test article with captions'
+		);
+
+		return array(
+			array('Variable in variable',	'{if value == "' . $vars['value'] . '"}yes{if:else}no{/if}',											'yes',	$vars),
+			array('Variable in string',		'{if "Test with long caption title to test layout" == "' . $vars['value'] . '"}yes{if:else}no{/if}',	'yes',	$vars),
 		);
 	}
 }
