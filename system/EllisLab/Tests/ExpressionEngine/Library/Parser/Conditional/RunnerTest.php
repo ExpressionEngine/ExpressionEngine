@@ -207,7 +207,8 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 			$this->variableTests(),
 			$this->operatorPrecedenceTests(),
 			$this->parenthesisTests(),
-			$this->userGuideTestsBooleanValueComparisons()
+			$this->userGuideTestsBooleanValueComparisons(),
+			$this->bug20323()
 		);
 	}
 
@@ -317,12 +318,15 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 	protected function plainLogicOperatorTests()
 	{
 		return array(
-			array('Plain && Integer',	'{if 5 && 5}yes{if:else}no{/if}',	'yes'),
-			array('Plain || Integer',	'{if 5 || 7}yes{if:else}no{/if}',	'yes'),
-			array('Plain AND Integer',	'{if 7 AND 5}yes{if:else}no{/if}',	'yes'),
-			array('Plain OR Integer',	'{if 5 OR 7}yes{if:else}no{/if}',	'yes'),
-			array('Plain XOR Integer',	'{if 5 XOR 0}yes{if:else}no{/if}',	'yes'),
-			array('Plain ! Integer',	'{if ! 0}yes{if:else}no{/if}',		'yes'),
+			array('Plain && Integer',		'{if 5 && 5}yes{if:else}no{/if}',	'yes'),
+			array('Plain || Integer',		'{if 5 || 7}yes{if:else}no{/if}',	'yes'),
+			array('Plain AND Integer',		'{if 7 AND 5}yes{if:else}no{/if}',	'yes'),
+			array('Plain OR Integer',		'{if 5 OR 7}yes{if:else}no{/if}',	'yes'),
+			array('Plain XOR Integer',		'{if 5 XOR 0}yes{if:else}no{/if}',	'yes'),
+			array('Plain OR Lowercase',		'{if 5 or 7}yes{if:else}no{/if}',	'yes'),
+			array('Plain AND Lowercase',	'{if 7 and 5}yes{if:else}no{/if}',	'yes'),
+			array('Plain XOR Lowercase',	'{if 5 xor 0}yes{if:else}no{/if}',	'yes'),
+			array('Plain ! Integer',		'{if ! 0}yes{if:else}no{/if}',		'yes'),
 
 			// and now false
 			array('Plain && False',		'{if 5 && 0}no{if:else}yes{/if}',	'yes'),
@@ -444,12 +448,9 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 	protected function numberTests()
 	{
 		return array(
-			array('Zero int is false',		'{if 0 == FALSE}yes{if:else}no{/if}',		'yes'),
-			array('Zero float is false',	'{if 0.0 == FALSE}yes{if:else}no{/if}',		'yes'),
-			array('Zero int var is false',	'{if var == FALSE}yes{if:else}no{/if}',		'yes', array('var' => 0)),
-			array('Scientific notation',	'{if 1E2 == 100}yes{if:else}no{/if}',		'yes', array('var' => 0)),
-			array('Scientific notation',	'{if 1E+2 == 100}yes{if:else}no{/if}',		'yes', array('var' => 0)),
-			array('Scientific notation',	'{if 1000E-2 == 10}yes{if:else}no{/if}',		'yes', array('var' => 0)),
+			array('Zero int is false',		'{if 0 == FALSE}yes{if:else}no{/if}',			'yes'),
+			array('Zero float is false',	'{if 0.0 == FALSE}yes{if:else}no{/if}',			'yes'),
+			array('Zero int var is false',	'{if var == FALSE}yes{if:else}no{/if}',			'yes', array('var' => 0)),
 		);
 	}
 
@@ -572,6 +573,20 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 			array('Boolean value comparison: "-1" == "1"',		'{if "-1" == "1"}yes{if:else}no{/if}',		'no'),
 			array('Boolean value comparison: "-1" == "0"',		'{if "-1" == "0"}yes{if:else}no{/if}',		'no'),
 			array('Boolean value comparison: "-1" == "-1"',		'{if "-1" == "-1"}yes{if:else}no{/if}',		'yes'),
+		);
+	}
+
+	// See: https://support.ellislab.com/bugs/detail/20323
+	protected function bug20323()
+	{
+		$vars = array(
+			'value' => 'Test with long caption title to test layout',
+			'title' => 'Test article with captions'
+		);
+
+		return array(
+			array('Variable in variable',	'{if value == "' . $vars['value'] . '"}yes{if:else}no{/if}',											'yes',	$vars),
+			array('Variable in string',		'{if "Test with long caption title to test layout" == "' . $vars['value'] . '"}yes{if:else}no{/if}',	'yes',	$vars),
 		);
 	}
 }
