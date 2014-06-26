@@ -208,7 +208,9 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 			$this->operatorPrecedenceTests(),
 			$this->parenthesisTests(),
 			$this->userGuideTestsBooleanValueComparisons(),
-			$this->bug20323()
+
+			// From the bug tracker
+			$this->bug20323_variables_in_strings()
 		);
 	}
 
@@ -577,7 +579,7 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	// See: https://support.ellislab.com/bugs/detail/20323
-	protected function bug20323()
+	protected function bug20323_variables_in_strings()
 	{
 		$vars = array(
 			'value' => 'Test with long caption title to test layout',

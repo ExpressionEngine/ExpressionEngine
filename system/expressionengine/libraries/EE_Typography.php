@@ -71,9 +71,7 @@ class EE_Typography extends CI_Typography {
 	 */
 	public function __construct()
 	{
-		$this->EE =& get_instance();
 		$this->initialize();
-
 		Autoloader::getInstance()->addPrefix('Michelf', APPPATH.'libraries/typography/Markdown/Michelf/');
 	}
 
