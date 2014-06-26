@@ -716,42 +716,90 @@ class EE_Typography extends CI_Typography {
 	 */
 	private function markdown_pre_process($str)
 	{
+		// Must use a named group of codeblock for this to work properly
+		$hashes = array();
+		$codeblocks = array();
+		$extract = function ($matches) use (&$hashes, &$codeblocks) {
+			$hash = random_string('md5');
+			$hashes[] = $hash;
+			$codeblocks[] = "[code]\n".trim($matches['codeblock'])."\n[/code]\n\n";
+			return $hash;
+		};
+
 		// First, get the fenced code blocks. Fenced code blocks consist of
 		// three tildes or backticks in a row on their own line, followed by
 		// some code, followed by a matching set of three or more tildes or
 		// backticks on their own line again
-		$str = preg_replace(
-			"/(^(?:`{3,}|~{3,})\\n)(.*?)\\1/ism",
-			"[code]\n$2[/code]\n",
-			$str
-		);
+		if (strpos($str, '```') !== FALSE
+			OR strpos($str, '~~~') !== FALSE)
+		{
+			$str = preg_replace_callback(
+				"/
+				# We only care about fences that are the beginning of their line
+				(^
 
-		// TODO-WB: Might need to pull out the fenced code blocks and replace
-		// with hashes and replace after the next bit since that code can be
-		// indented as well and you end up with
-		//     [code]...[code]...[/code]...[/code]
+				# Must start with ~~~ or ``` and only contain that character
+				(?:`{3,}|~{3,})\\n)
+
+				# Capture the codeblock AND name it
+				(?P<codeblock>.*?)
+
+				# Find the matching bunch of ~ or `
+				\\1
+				/ixsm",
+				$extract,
+				$str
+			);
+		}
+
+		// Second, extract actual code blocks
+		if (strpos($str, '[code]') !== FALSE
+			&& strpos($str, '[/code]') !== FALSE)
+		{
+			$str = preg_replace_callback(
+				"/\\[code\\](?P<codeblock>.*?)\\[\\/code\\]/s",
+				$extract,
+				$str
+			);
+		}
 
 		// Replace tabs with spaces
-		$str = preg_replace("/^\t/m", "    ", $str);
+		if (strpos($str, "\t") !== FALSE)
+		{
+			$str = preg_replace("/^\t/m", "    ", $str);
+		}
 
 		// Now process tab indented code blocks
-		$str = preg_replace_callback(
-			// TODO-WB: Document this monster, it came from
-			// Markdown::doCodeblocks()
-			"/(?:\n|\A\n?)((?>[ ]{4}.*\n+)+)((?=^[ ]{0,4}\S)|\Z)/m",
-			function ($matches) {
-				$codeblock = $matches[1];
+		if (strpos($str, '    ') !== FALSE)
+		{
+			$str = preg_replace_callback(
+				'/
+				# Must be beginning of line OR file
+				(?:\n\n|\A\n?)
 
-				// Outdent these code blocks
-				$codeblock = preg_replace("/^[ ]{4}(.*)$/m", "$1", $codeblock);
+				# Lines must start with four spaces, using atomic groups here so
+				# the regular expression parser can not backtrack. Capture all
+				# lines like this in a row.
+				((?>[ ]{4}.*\n+)+)
 
-				// Trim the whole string and wrap it in [code]
-				return "[code]\n".trim($codeblock)."\n[/code]\n\n";
-			},
-			$str
-		);
+				# Lookahead for non space at the start or end of string
+				((?=^[ ]{0,4}\S)|\Z)
+				/xm',
+				function ($matches) {
+					$codeblock = $matches[1];
 
-		return $str;
+					// Outdent these code blocks
+					$codeblock = preg_replace("/^[ ]{4}(.*)$/m", "$1", $codeblock);
+
+					// Trim the whole string and wrap it in [code]
+					return "[code]\n".trim($codeblock)."\n[/code]\n\n";
+				},
+				$str
+			);
+		}
+
+		// Put everything back in to place
+		return str_replace($hashes, $codeblocks, $str);
 	}
 
 	// --------------------------------------------------------------------
