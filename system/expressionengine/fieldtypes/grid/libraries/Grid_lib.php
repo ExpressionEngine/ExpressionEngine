@@ -171,6 +171,25 @@ class Grid_lib {
 	 */
 	public function validate($data)
 	{
+		// Get row data for this entry
+		$rows = ee()->grid_model->get_entry_rows($this->entry_id, $this->field_id, $this->content_type);
+		$rows = $rows[$this->entry_id];
+
+		// Check that we're editing a row that actually belongs to this entry
+		$valid_rows = array_keys($rows);
+
+		if ( ! empty($data['rows']))
+		{
+			foreach ($data['rows'] as $key => $row)
+			{
+				$key = str_replace('row_id_', '', $key);
+				if ( ! in_array($key, $valid_rows))
+				{
+					return array('value' => '', 'error' => lang('not_authorized'));
+				}
+			}
+		}
+
 		// Empty field
 		if ( ! isset($data['rows']))
 		{
