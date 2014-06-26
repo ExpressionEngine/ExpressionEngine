@@ -712,7 +712,7 @@ class EE_Typography extends CI_Typography {
 	 * @param  String $str The string to pre-process
 	 * @return String      The pre-processed string
 	 */
-	private function markdown_pre_process($str)
+	protected function markdown_pre_process($str)
 	{
 		// Must use a named group of codeblock for this to work properly
 		$hashes = array();

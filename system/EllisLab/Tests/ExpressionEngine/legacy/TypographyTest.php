@@ -19,7 +19,8 @@ class TypographyTest extends \PHPUnit_Framework_TestCase {
 
 	public function testCodeFence()
 	{
-
+		$str = $this->typography->markdown_pre_process_bypass('abc');
+		$str = $this->typography->markdown($str);
 		return TRUE;
 	}
 
@@ -54,43 +55,5 @@ class TypographyStub extends EE_Typography
 	public function markdown_pre_process_bypass($text)
 	{
 		return $this->markdown_pre_process($text);
-	}
-}
-
-function ee()
-{
-	$ee = new stdClass();
-	$ee->config = new ConfigStub();
-	return $ee;
-}
-
-class ConfigStub
-{
-	public function item($name)
-	{
-		switch ($name)
-		{
-			case 'enable_emoticons':
-				return 'y';
-				break;
-
-			default:
-				return FALSE;
-				break;
-		}
-	}
-
-	public function slash_item($name)
-	{
-		switch ($name)
-		{
-			case 'emoticon_url':
-				return '/images/smileys/';
-				break;
-
-			default:
-				return FALSE;
-				break;
-		}
 	}
 }
