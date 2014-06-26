@@ -143,7 +143,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 			$this->englishBooleanSubstringsAsVariables(),
 
 			// From the bug tracker
-			$this->bugs(),
+			$this->bug15654_boolean_operator_substring(),
 			array() // non trailing comma thing for covienence
 		);
 	}
@@ -2516,10 +2516,8 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 		return $return;
 	}
 
-	/**
-	 * These are tests based on bugs from our bug tracker
-	 */
-	protected function bugs()
+	// See: https://support.ellislab.com/bugs/detail/15654
+	protected function bug15654_boolean_operator_substring()
 	{
 		$return = array();
 
