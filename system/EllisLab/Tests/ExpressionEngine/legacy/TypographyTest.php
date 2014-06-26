@@ -6,6 +6,10 @@ require_once BASEPATH.'helpers/string_helper.php';
 require_once APPPATH.'libraries/EE_Typography.php';
 require_once APPPATH.'helpers/EE_string_helper.php';
 
+require_once APPPATH.'libraries/typography/Markdown/Michelf/MarkdownInterface.php';
+require_once APPPATH.'libraries/typography/Markdown/Michelf/Markdown.php';
+require_once APPPATH.'libraries/typography/Markdown/Michelf/MarkdownExtra.php';
+
 define('PATH_MOD', APPPATH.'modules/');
 
 class TypographyTest extends \PHPUnit_Framework_TestCase {
@@ -47,9 +51,7 @@ class TypographyStub extends EE_Typography
 {
 	public function __construct()
 	{
-		// Skipping initialize...
-		require_once __DIR__.'/../../../ExpressionEngine/Core/Autoloader.php';
-		Autoloader::getInstance()->addPrefix('Michelf', APPPATH.'libraries/typography/Markdown/Michelf/');
+		// Skipping initialize and autoloader
 	}
 
 	public function markdown_pre_process_bypass($text)
