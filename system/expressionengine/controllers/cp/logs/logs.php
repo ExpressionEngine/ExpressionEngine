@@ -1,4 +1,8 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
+
+namespace EllisLab\ExpressionEngine\Controllers;
+
+if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use EllisLab\ExpressionEngine\Library\CP;
 use EllisLab\ExpressionEngine\Library\CP\Pagination;
@@ -26,7 +30,7 @@ use EllisLab\ExpressionEngine\Library\CP\Pagination;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Logs extends CP_Controller {
+class Logs extends \CP_Controller {
 
 	var $perpage		= 50;
 	var $params			= array();
@@ -38,6 +42,8 @@ class Logs extends CP_Controller {
 	public function __construct()
 	{
 		parent::__construct();
+
+		ee()->lang->load('logs');
 
 		if ( ! $this->cp->allowed_group('can_access_logs'))
 		{
@@ -78,7 +84,7 @@ class Logs extends CP_Controller {
 	 *    'perpage'
 	 * @return void
 	 */
-	private function filters($filters = NULL)
+	protected function filters($filters = NULL)
 	{
 		if ( ! is_array($filters))
 		{
