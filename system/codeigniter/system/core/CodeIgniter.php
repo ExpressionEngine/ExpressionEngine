@@ -260,8 +260,14 @@
  *  loader class can be called via the URI, nor can
  *  controller functions that begin with an underscore
  */
-	$class  = $RTR->fetch_class();
+	$class  = $RTR->fetch_class(TRUE);
 	$method = $RTR->fetch_method();
+
+	// First try a fully namespaced class, then try without
+	if ( ! class_exists($class))
+	{
+		$class  = $RTR->fetch_class();
+	}
 
 	if ( ! class_exists($class)
 		OR strncmp($method, '_', 1) == 0
@@ -330,7 +336,7 @@
 				</div>';
 			die('Fatal Error.');
 		}
-	
+
 	}
 
 

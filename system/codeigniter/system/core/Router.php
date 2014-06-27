@@ -34,6 +34,7 @@ class CI_Router {
 	var $method			= 'index';
 	var $directory		= '';
 	var $default_controller;
+	var $namespace_prefix = '';
 
 	/**
 	 * Constructor
@@ -343,8 +344,13 @@ class CI_Router {
 	 * @access	public
 	 * @return	string
 	 */
-	function fetch_class()
+	function fetch_class($prepend_namespace = FALSE)
 	{
+		if ($prepend_namespace && ! empty($this->namespace_prefix))
+		{
+			return $this->namespace_prefix . '\\' . ucfirst($this->class);
+		}
+
 		return $this->class;
 	}
 
@@ -391,6 +397,11 @@ class CI_Router {
 	 */
 	public function set_directory($dir, $append = FALSE)
 	{
+		if ($dir == 'cp')
+		{
+			$this->namespace_prefix = '\EllisLab\ExpressionEngine\Controllers';
+		}
+
 		if ($append !== TRUE OR empty($this->directory))
 		{
 			$this->directory = str_replace('.', '', trim($dir, '/')).'/';
@@ -398,6 +409,7 @@ class CI_Router {
 		else
 		{
 			$this->directory .= str_replace('.', '', trim($dir, '/')).'/';
+			$this->namespace_prefix .= '\\' . ucfirst($dir);
 		}
 	}
 
