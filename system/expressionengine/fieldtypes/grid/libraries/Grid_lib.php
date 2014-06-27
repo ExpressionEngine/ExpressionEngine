@@ -178,7 +178,7 @@ class Grid_lib {
 		// Check that we're editing a row that actually belongs to this entry
 		$valid_rows = array_keys($rows);
 
-		if ( ! isset($data['rows']))
+		if (isset($data['rows']))
 		{
 			foreach ($data['rows'] as $key => $row)
 			{
