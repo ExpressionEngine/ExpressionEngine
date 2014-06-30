@@ -676,6 +676,10 @@ class EE_Template {
 		{
 			$layout_vars = array();
 		}
+		elseif (isset($layout_vars['contents']))
+		{
+			show_error(lang('layout_contents_reserved'));
+		}
 
 		$this->layout_vars = array_merge($this->layout_vars, $layout_vars);
 
@@ -693,6 +697,11 @@ class EE_Template {
 		{
 			$tag = ee()->functions->full_tag(substr($template, $pos, $open_tag_len), $template);
 			$params = ee()->functions->assign_parameters(substr($tag, $open_tag_len));
+
+			if ($params['name'] == 'contents')
+			{
+				show_error(lang('layout_contents_reserved'));
+			}
 
 			// If there is a closing tag and it's before the next open, then this will
 			// be treated as a tag pair.

@@ -202,6 +202,9 @@ To fix: Set the config file (/expressionengine/config/config.php) permissions to
 'error_invalid_conditional' =>
 'You have an invalid conditional in your template. Please review your conditionals for an unclosed string, invalid operators, a missing }, or a missing {/if}.',
 
+'layout_contents_reserved' =>
+'The name "contents" is reserved for the template data and cannot be used as a layout variable (i.e. {layout:set name="contents"} or {layout="foo/bar" contents=""}).',
+
 //----------------------------
 // Email
 //----------------------------
