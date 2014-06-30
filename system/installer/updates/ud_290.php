@@ -42,6 +42,7 @@ class Updater {
 				'_set_hidden_template_indicator',
 				'_ensure_channel_combo_loader_action_integrity',
 				'_convert_template_conditional_flag',
+				'_warn_about_layout_contents'
 			)
 		);
 
@@ -267,8 +268,65 @@ class Updater {
 		}
 
 		ee()->config = $installer_config;
+	}
 
+	// -------------------------------------------------------------------
 
+	/**
+	 * We are strictly enforcing the reserved variable `layout:contents`,
+	 * so we need to loop though the templates and warn about any
+	 * instances where it is being overwritten
+	 *
+	 * @access private
+	 * @return void
+	 **/
+	private function _warn_about_layout_contents()
+	{
+		ee()->update_notices->setVersion('2.9');
+		ee()->update_notices->header('{layout:contents} reserved variable is strictly enforced.');
+		ee()->update_notices->item(' Checking for templates to review ...');
+
+		require_once(APPPATH . 'libraries/Template.php');
+		ee()->template = new Installer_Template();
+
+		$installer_config = ee()->config;
+		ee()->config = new MSM_Config();
+
+		ee()->load->model('template_model');
+		$templates = ee()->template_model->fetch_last_edit(array(), TRUE);
+
+		$warnings = array();
+		foreach ($templates as $template)
+		{
+			$path = $template->get_group()->group_name.'/'.$template->template_name;
+
+			// This catches any {layout=} and {layout:set} tags
+			if (preg_match_all('/('.LD.'layout\s*)(.*?)'.RD.'/s', $template->template_data, $matches, PREG_SET_ORDER))
+			{
+				foreach ($matches as $match)
+				{
+					$params = ee()->functions->assign_parameters($match[2]);
+
+					// If any of the parameters indicate it's trying to
+					// set the contents variable, log the template name
+					if (isset($params['contents']) OR
+						(isset($params['name']) && $params['name'] == 'contents'))
+					{
+						$warnings[] = $path;
+					}
+				}
+			}
+		}
+
+		// Output a list of templates that are setting layout:contents
+		if ( ! empty($warnings))
+		{
+			ee()->update_notices->item('The following templates are manually setting the {layout:contents} variable, please use a different variable name.<br>'.implode('<br>', $warnings));
+		}
+
+		ee()->update_notices->item('Done.');
+
+		ee()->config = $installer_config;
 	}
 }
 /* END CLASS */
