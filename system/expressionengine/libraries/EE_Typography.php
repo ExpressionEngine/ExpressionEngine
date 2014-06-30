@@ -280,10 +280,7 @@ class EE_Typography extends CI_Typography {
 		if ($this->separate_parser
 			&& method_exists($this, $this->text_format.'_pre_process'))
 		{
-			$str = call_user_func(
-				array($this, $this->text_format.'_pre_process'),
-				$str
-			);
+			$str = $this->{$this->text_format.'_pre_process'}($str);
 		}
 
 		// Handle single line paragraphs
