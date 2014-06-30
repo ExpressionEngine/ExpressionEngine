@@ -298,8 +298,6 @@ class Updater {
 		$warnings = array();
 		foreach ($templates as $template)
 		{
-			$path = $template->get_group()->group_name.'/'.$template->template_name;
-
 			// This catches any {layout=} and {layout:set} tags
 			if (preg_match_all('/('.LD.'layout\s*)(.*?)'.RD.'/s', $template->template_data, $matches, PREG_SET_ORDER))
 			{
@@ -312,7 +310,7 @@ class Updater {
 					if (isset($params['contents']) OR
 						(isset($params['name']) && $params['name'] == 'contents'))
 					{
-						$warnings[] = $path;
+						$warnings[] = $template->get_group()->group_name.'/'.$template->template_name;
 					}
 				}
 			}
