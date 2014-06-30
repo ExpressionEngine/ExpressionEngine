@@ -857,9 +857,6 @@ class EE_Typography extends CI_Typography {
 			$str = str_replace($hash, $code_block, $str);
 		}
 
-		// $str = $this->_protect_bbcode($str);
-		// $str = $this->_decode_code_tags($str);
-
 		return $str;
 	}
 
