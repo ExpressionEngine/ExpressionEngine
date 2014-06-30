@@ -108,9 +108,9 @@ class Template_model extends CI_Model {
 		// Get the filepath to the template's saved file.
 		$this->load->library('api');
 		$this->api->instantiate('template_structure');
-		$basepath = rtrim($this->config->item('tmpl_file_basepath'), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+		$basepath = $this->config->slash_item('tmpl_file_basepath');
 
-		$filepath = $basepath . $this->config->item('site_short_name') . DIRECTORY_SEPARATOR
+		$filepath = $basepath . $this->config->slash_item('site_short_name')
 			. $template->get_group()->group_name . '.group' . DIRECTORY_SEPARATOR . $template->template_name
 			. $this->api_template_structure->file_extensions($template->template_type);
 
