@@ -6,9 +6,7 @@ require_once BASEPATH.'helpers/string_helper.php';
 require_once APPPATH.'libraries/EE_Typography.php';
 require_once APPPATH.'helpers/EE_string_helper.php';
 
-require_once APPPATH.'libraries/typography/Markdown/Michelf/MarkdownInterface.php';
-require_once APPPATH.'libraries/typography/Markdown/Michelf/Markdown.php';
-require_once APPPATH.'libraries/typography/Markdown/Michelf/MarkdownExtra.php';
+require_once APPPATH.'libraries/typography/Markdown/Michelf/MarkdownExtra.inc.php';
 
 define('PATH_MOD', APPPATH.'modules/');
 

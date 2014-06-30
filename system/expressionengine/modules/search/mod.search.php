@@ -1345,7 +1345,7 @@ class Search {
 		}
 		else
 		{
-			$sql .= " LIMIT 0, 100";
+			$sql .= " LIMIT 0, 2";
 		}
 
 		$query = ee()->db->query($sql);
