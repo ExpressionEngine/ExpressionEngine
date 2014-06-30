@@ -104,6 +104,8 @@ class EE_Template {
 	protected $_tag_cache_prefix	= 'tag_cache';	// Tag cache key namespace
 	protected $_page_cache_prefix	= 'page_cache'; // Page cache key namespace
 
+	private $layout_contents		= '';
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -471,7 +473,6 @@ class EE_Template {
 			}
 		}
 
-
 		// Smite Our Enemies:  Conditionals
 		$this->log_item("Parsing Segment, Embed, Layout, logged_in_*, and Global Vars Conditionals");
 
@@ -482,6 +483,7 @@ class EE_Template {
 				$this->template_route_vars,
 				$this->embed_vars,
 				$layout_conditionals,
+				array('layout:contents' => $this->layout_contents),
 				$logged_in_user_cond,
 				ee()->config->_global_vars
 			)
@@ -657,6 +659,8 @@ class EE_Template {
 			return $template;
 		}
 
+		$this->layout_contents = trim($this->remove_ee_comments($template)); // for use in conditionals
+
 		$this->log_item("Processing Layout Templates");
 
 		$this->depth++;
@@ -671,6 +675,10 @@ class EE_Template {
 		if ($layout_vars === FALSE)
 		{
 			$layout_vars = array();
+		}
+		elseif (isset($layout_vars['contents']))
+		{
+			show_error(lang('layout_contents_reserved'));
 		}
 
 		$this->layout_vars = array_merge($this->layout_vars, $layout_vars);
@@ -689,6 +697,11 @@ class EE_Template {
 		{
 			$tag = ee()->functions->full_tag(substr($template, $pos, $open_tag_len), $template);
 			$params = ee()->functions->assign_parameters(substr($tag, $open_tag_len));
+
+			if ($params['name'] == 'contents')
+			{
+				show_error(lang('layout_contents_reserved'));
+			}
 
 			// If there is a closing tag and it's before the next open, then this will
 			// be treated as a tag pair.
