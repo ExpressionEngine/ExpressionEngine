@@ -151,6 +151,10 @@ To fix: Set the cache folder (/expressionengine/cache/) permissions to 777 (or e
 'Your configuration file does not have the proper permissions.<br>
 To fix: Set the config file (/expressionengine/config/config.php) permissions to 666 (or equivalent for your server).',
 
+'redirect_xss_fail' => 'The link you are being redirected to contained some
+potentially malicious or dangerous code. We recommend you hit the back button
+and email %s to report the link that generated this message.',
+
 //----------------------------
 // Member Groups
 //----------------------------

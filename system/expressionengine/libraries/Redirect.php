@@ -48,7 +48,8 @@ $link = "<a rel=\"nofollow\" href='".$_GET['URL']."'>".$_GET['URL']."</a>";
 
 if ( $link !== ee()->security->xss_clean($link) )
 {
-	show_error('The link you are being redirected to contained some potentially malicious or dangerous code. We recommend you hit the back button and report the link that generated this message.');
+	ee()->load->library('typography');
+	show_error(sprintf(lang('redirect_xss_fail'), ee()->typography->encode_email(ee()->config->item('webmaster_email'))));
 }
 
 
