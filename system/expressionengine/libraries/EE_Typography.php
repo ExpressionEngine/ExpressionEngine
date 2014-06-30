@@ -734,7 +734,7 @@ class EE_Typography extends CI_Typography {
 				(^
 
 				# Must start with ~~~ or ``` and only contain that character
-				(?:`{3,}|~{3,})\\n)
+				(?:`{3,}|~{3,}))
 
 				# Capture the codeblock AND name it
 				(?P<codeblock>.*?)
@@ -775,7 +775,7 @@ class EE_Typography extends CI_Typography {
 				# Lines must start with four spaces, using atomic groups here so
 				# the regular expression parser can not backtrack. Capture all
 				# lines like this in a row.
-				((?>[ ]{4}.*\n+)+)
+				((?>[ ]{4}.*\n*)+)
 
 				# Lookahead for non space at the start or end of string
 				((?=^[ ]{0,4}\S)|\Z)
@@ -839,7 +839,7 @@ class EE_Typography extends CI_Typography {
 
 		// Run everything through SmartyPants
 		if ( ! isset($options['smartypants'])
-			OR get_bool_from_string($options['smartypants']) == FALSE)
+			OR get_bool_from_string($options['smartypants']) == TRUE)
 		{
 			if ( ! class_exists('SmartyPants_Parser')){
 				require_once(APPPATH.'libraries/typography/SmartyPants/smartypants.php');
