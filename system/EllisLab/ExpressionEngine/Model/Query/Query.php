@@ -174,6 +174,24 @@ class Query {
 		return $this;
 	}
 
+	public function filterGroup()
+	{
+		$this->db->start_group();
+		return $this;
+	}
+
+	public function orFilterGroup()
+	{
+		$this->db->or_start_group();
+		return $this;
+	}
+
+	public function endFilterGroup()
+	{
+		$this->db->end_group();
+		return $this;
+	}
+
 	protected function applyFilter($relationship_property, $operator, $value, $or = FALSE)
 	{
 		if ( ! isset($value))

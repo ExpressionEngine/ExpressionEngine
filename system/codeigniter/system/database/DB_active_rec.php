@@ -46,6 +46,9 @@ class CI_DB_active_record extends CI_DB_driver {
 	var $ar_aliased_tables		= array();
 	var $ar_store_array			= array();
 
+	private $ar_group_count 	= 0;
+	protected $ar_empty_group	= TRUE;
+
 	// Active Record Caching variables
 	var $ar_caching				= FALSE;
 	var $ar_cache_exists		= array();
@@ -402,7 +405,7 @@ class CI_DB_active_record extends CI_DB_driver {
 	/**
 	 * Where
 	 *
-	 * Called by where() or orwhere()
+	 * Called by where() or or_where()
 	 *
 	 * @access	private
 	 * @param	mixed
@@ -410,7 +413,7 @@ class CI_DB_active_record extends CI_DB_driver {
 	 * @param	string
 	 * @return	object
 	 */
-	function _where($key, $value = NULL, $type = 'AND ', $escape = NULL)
+	function _where($key, $value = NULL, $boolean_operator = 'AND ', $escape = NULL)
 	{
 		if ( ! is_array($key))
 		{
@@ -425,7 +428,12 @@ class CI_DB_active_record extends CI_DB_driver {
 
 		foreach ($key as $k => $v)
 		{
-			$prefix = (count($this->ar_where) == 0 AND count($this->ar_cache_where) == 0) ? '' : $type;
+			// If the group is empty (or we don't have any where statements yet)
+			// then ar_empty_group will be true and we don't need the boolean
+			// operator.  When we're done, set it to FALSE to indicate that we
+			// need boolean operators.  At least until a new group is opened.
+			$boolean_operator = ($this->ar_empty_group) ? '' : $boolean_operator;
+			$this->ar_empty_group = FALSE;
 
 			if (is_null($v) && ! $this->_has_operator($k))
 			{
@@ -452,16 +460,52 @@ class CI_DB_active_record extends CI_DB_driver {
 				$k = $this->_protect_identifiers($k, FALSE, $escape);
 			}
 
-			$this->ar_where[] = $prefix.$k.$v;
+			$this->ar_where[] = $boolean_operator.$k.$v;
 
 			if ($this->ar_caching === TRUE)
 			{
-				$this->ar_cache_where[] = $prefix.$k.$v;
+				$this->ar_cache_where[] = $boolean_operator.$k.$v;
 				$this->ar_cache_exists[] = 'where';
 			}
 
 		}
 
+		return $this;
+	}
+
+	// --------------------------------------------------------------------
+
+	public function start_group()
+	{
+		return $this->_start_group('AND');
+	}
+
+	public function or_start_group()
+	{
+		return $this->_start_group('OR');
+	}
+
+	protected function _start_group($boolean_operator = 'AND')
+	{
+		// If we're starting with a group, then we don't need the boolean operator.  Any other time, we do.
+		$boolean_operator = (count($this->ar_where) == 0 AND count($this->ar_cache_where) == 0) ? '' : $boolean_operator;
+
+		// The str_repeat() is just for pretty spacing and readable queries.
+		$this->ar_where[] = $boolean_operator . str_repeat(' ', ++$this->ar_group_count) . ' ( ';
+
+		// We now have an empty group again and don't need the next boolean operator.  Used by _where().
+		$this->ar_empty_group = TRUE;
+		return $this;
+	}
+
+	public function end_group()
+	{
+		$this->ar_where[] = str_repeat(' ', --$this->ar_group_count) . ' ) ';
+
+		// Unless the user opens a group and immediately closes it, this should
+		// be superfluous.  ar_empty_group should already be FALSE from a previous
+		// call to _where().  But just in case...
+		$this->ar_empty_group = FALSE;
 		return $this;
 	}
 
