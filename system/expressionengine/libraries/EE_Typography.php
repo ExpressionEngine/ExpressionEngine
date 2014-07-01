@@ -714,7 +714,7 @@ class EE_Typography extends CI_Typography {
 		// Must use a named group of codeblock for this to work properly
 		$hashes = array();
 		$codeblocks = array();
-		$extract = function ($matches) use (&$hashes, &$codeblocks) {
+		$extract_callback = function ($matches) use (&$hashes, &$codeblocks) {
 			$hash = random_string('md5');
 			$hashes[] = $hash;
 			$codeblocks[] = "[code]\n".trim($matches['codeblock'])."\n[/code]\n\n";
@@ -742,7 +742,7 @@ class EE_Typography extends CI_Typography {
 				# Find the matching bunch of ~ or `
 				\\1
 				/ixsm",
-				$extract,
+				$extract_callback,
 				$str
 			);
 		}
@@ -753,7 +753,7 @@ class EE_Typography extends CI_Typography {
 		{
 			$str = preg_replace_callback(
 				"/\\[code\\](?P<codeblock>.*?)\\[\\/code\\]/s",
-				$extract,
+				$extract_callback,
 				$str
 			);
 		}
