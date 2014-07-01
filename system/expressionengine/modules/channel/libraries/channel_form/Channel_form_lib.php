@@ -404,7 +404,7 @@ class Channel_form_lib
 			//custom field pair parsing with replace_tag
 			elseif (isset($this->custom_fields[$tag_name]))
 			{
-				if (preg_match_all('/'.LD.preg_quote($tag_pair_open).RD.'(.*)'.LD.'\/'.$tag_name.RD.'/s', ee()->TMPL->tagdata, $matches))
+				if (preg_match_all('/'.LD.preg_quote($tag_pair_open).RD.'(.*?)'.LD.'\/'.$tag_name.RD.'/s', ee()->TMPL->tagdata, $matches))
 				{
 					foreach ($matches[1] as $match_index => $var_pair_tagdata)
 					{
