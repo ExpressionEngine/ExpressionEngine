@@ -46,7 +46,7 @@ class CI_DB_active_record extends CI_DB_driver {
 	var $ar_aliased_tables		= array();
 	var $ar_store_array			= array();
 
-	private $ar_group_count 	= 0;
+	protected $ar_group_count 	= 0;
 	protected $ar_empty_group	= TRUE;
 
 	// Active Record Caching variables
@@ -432,7 +432,7 @@ class CI_DB_active_record extends CI_DB_driver {
 			// then ar_empty_group will be true and we don't need the boolean
 			// operator.  When we're done, set it to FALSE to indicate that we
 			// need boolean operators.  At least until a new group is opened.
-			$boolean_operator = ($this->ar_empty_group) ? '' : $boolean_operator;
+			$boolean_operator_prefix = ($this->ar_empty_group) ? '' : $boolean_operator;
 			$this->ar_empty_group = FALSE;
 
 			if (is_null($v) && ! $this->_has_operator($k))
@@ -460,11 +460,11 @@ class CI_DB_active_record extends CI_DB_driver {
 				$k = $this->_protect_identifiers($k, FALSE, $escape);
 			}
 
-			$this->ar_where[] = $boolean_operator.$k.$v;
+			$this->ar_where[] = $boolean_operator_prefix.$k.$v;
 
 			if ($this->ar_caching === TRUE)
 			{
-				$this->ar_cache_where[] = $boolean_operator.$k.$v;
+				$this->ar_cache_where[] = $boolean_operator_prefix.$k.$v;
 				$this->ar_cache_exists[] = 'where';
 			}
 
@@ -2086,6 +2086,8 @@ class CI_DB_active_record extends CI_DB_driver {
 								'ar_limit'			=> FALSE,
 								'ar_offset'			=> FALSE,
 								'ar_order'			=> FALSE,
+								'ar_empty_group'	=> TRUE,
+								'ar_group_count'	=> 0
 							);
 
 		$this->_reset_run($ar_reset_items);
@@ -2111,7 +2113,9 @@ class CI_DB_active_record extends CI_DB_driver {
 								'ar_orderby'	=> array(),
 								'ar_keys'		=> array(),
 								'ar_limit'		=> FALSE,
-								'ar_order'		=> FALSE
+								'ar_order'		=> FALSE,
+								'ar_empty_group'	=> TRUE,
+								'ar_group_count'	=> 0
 								);
 
 		$this->_reset_run($ar_reset_items);
