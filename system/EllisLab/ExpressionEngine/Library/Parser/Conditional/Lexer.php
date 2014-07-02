@@ -258,6 +258,7 @@ class Lexer extends AbstractLexer {
 		elseif ($comment = $this->peekRegex(self::COMMENT_PATTERN, 'usx'))
 		{
 			$this->addToken('COMMENT', $this->move(strlen($comment)));
+			return;
 		}
 		else
 		{
