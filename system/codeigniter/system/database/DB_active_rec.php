@@ -595,7 +595,7 @@ class CI_DB_active_record extends CI_DB_driver {
 	 * @param	string
 	 * @return	object
 	 */
-	function _where_in($key = NULL, $values = NULL, $not = FALSE, $type = 'AND ')
+	function _where_in($key = NULL, $values = NULL, $not = FALSE, $boolean_operator = 'AND ')
 	{
 		if ($key === NULL OR $values === NULL)
 		{
@@ -614,9 +614,10 @@ class CI_DB_active_record extends CI_DB_driver {
 			$this->ar_wherein[] = $this->escape($value);
 		}
 
-		$prefix = (count($this->ar_where) == 0 AND count($this->ar_cache_where) == 0) ? '' : $type;
+		$boolean_operator_prefix = ($this->ar_empty_group) ? '' : $boolean_operator;
+		$this->ar_empty_group = FALSE;
 
-		$where_in = $prefix . $this->_protect_identifiers($key) . $not . " IN (" . implode(", ", $this->ar_wherein) . ") ";
+		$where_in = $boolean_operator_prefix . $this->_protect_identifiers($key) . $not . " IN (" . implode(", ", $this->ar_wherein) . ") ";
 
 		$this->ar_where[] = $where_in;
 
