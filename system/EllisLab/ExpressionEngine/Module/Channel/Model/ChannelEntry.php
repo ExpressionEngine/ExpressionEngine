@@ -32,11 +32,12 @@ class ChannelEntry extends FieldDataContentModel {
 	protected static $_relationships = array(
 		'Channel' => array(
 			'type' => 'many_to_one',
-			'key' => 'field_group'
+			'key' => 'channel_id'
 		),
 		'Author'	=> array(
 			'type' => 'many_to_one',
-			'model' => 'Member'
+			'model' => 'Member',
+			'key' 	=> 'author_id'
 		),
 		'Categories' => array(
 			'type' => 'many_to_many',
