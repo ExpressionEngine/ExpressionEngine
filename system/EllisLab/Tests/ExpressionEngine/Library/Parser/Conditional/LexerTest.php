@@ -82,6 +82,15 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 		$this->lexer->tokenize($str_in);
 	}
 
+	/**
+	 * In the event that a comment (commonly an annotation) immemdiately
+	 * preceeds a '}' in a TEMPLATE_STRING context, that '}' should not
+	 * be an 'RD' token, but rather a TEMPLATE_STRING token. This test
+	 * confirms that.
+	 *
+	 * See: https://github.com/EllisLab/ExpressionEngine/pull/208
+	 *      http://ellislab.com/forums/viewthread/245744/#1066847
+	 */
 	public function testCommentsAtEndOfTag()
 	{
 		$description = "A '}' in a TEMPLATE_STRING context not seen as RD";
