@@ -2530,7 +2530,7 @@ class EE_Template {
 
 			$this->log_item("Retrieving Template from File");
 			ee()->load->library('api');
-			ee()->api->instantiate('template_structure');
+			ee()->legacy_api->instantiate('template_structure');
 
 			$basepath = rtrim(ee()->config->item('tmpl_file_basepath'), '/').'/';
 
