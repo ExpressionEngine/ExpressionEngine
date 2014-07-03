@@ -495,7 +495,7 @@ class Grid_lib {
 		}
 
 		ee()->load->library('api');
-		ee()->api->instantiate('channel_fields');
+		ee()->legacy_api->instantiate('channel_fields');
 
 		// Shorten some line lengths
 		$ft_api = ee()->api_channel_fields;

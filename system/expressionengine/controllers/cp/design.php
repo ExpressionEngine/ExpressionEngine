@@ -717,7 +717,7 @@ class Design extends CP_Controller {
 		{
 			show_error(lang('all_fields_required'));
 		}
-		elseif ($this->api->is_url_safe($snippet_name) === FALSE)
+		elseif ($this->legacy_api->is_url_safe($snippet_name) === FALSE)
 		{
 			show_error(lang('illegal_characters'));
 		}
@@ -1565,7 +1565,7 @@ class Design extends CP_Controller {
 				$basepath .= (substr($basepath, -1) != '/') ? '/' : '';
 
 				$this->load->library('api');
-				$this->api->instantiate('template_structure');
+				$this->legacy_api->instantiate('template_structure');
 				$ext = $this->api_template_structure->file_extensions($qry->row('template_type'));
 
 				$basepath .= $this->config->item('site_short_name').'/';
@@ -1662,7 +1662,7 @@ class Design extends CP_Controller {
 		$this->output->set_header("X-XSS-Protection: 0");
 
 		$this->load->library('api');
-		$this->api->instantiate('template_structure');
+		$this->legacy_api->instantiate('template_structure');
 		$this->load->model('design_model');
 
 		$this->load->helper('file');
@@ -2223,7 +2223,7 @@ class Design extends CP_Controller {
 		}
 
 		$this->load->library('api');
-		$this->api->instantiate('template_structure');
+		$this->legacy_api->instantiate('template_structure');
 
 		// add a site short name folder, in case MSM uses the same template path, and repeat
 		$basepath .= $this->config->item('site_short_name');
@@ -2282,7 +2282,7 @@ class Design extends CP_Controller {
 		}
 
 		$this->load->library('api');
-		$this->api->instantiate('template_structure');
+		$this->legacy_api->instantiate('template_structure');
 
 		$basepath = $this->config->slash_item('tmpl_file_basepath');
 
@@ -2326,7 +2326,7 @@ class Design extends CP_Controller {
 		$item_id = $this->input->get_post('template');
 
 		$this->load->library('api');
-		$this->api->instantiate('template_structure');
+		$this->legacy_api->instantiate('template_structure');
 
 		$vars = array();
 
@@ -2447,7 +2447,7 @@ class Design extends CP_Controller {
 		}
 
 		$this->load->library('api');
-		$this->api->instantiate('template_structure');
+		$this->legacy_api->instantiate('template_structure');
 
 		$query = $this->template_model->get_template_info($template_id, array('group_id', 'template_name', 'template_type'));
 
@@ -2541,7 +2541,7 @@ class Design extends CP_Controller {
 		if ($this->config->item('save_tmpl_files') == 'y' && $this->config->item('tmpl_file_basepath') != '')
 		{
 			$this->load->library('api');
-			$this->api->instantiate('template_structure');
+			$this->legacy_api->instantiate('template_structure');
 
 			$this->db->select('group_name');
 			$result = $this->db->get_where('template_groups', array('group_id' => $group_id));
@@ -3590,7 +3590,7 @@ class Design extends CP_Controller {
 		$this->load->model('design_model');
 
 		$this->load->library('api');
-		$this->api->instantiate('template_structure');
+		$this->legacy_api->instantiate('template_structure');
 
 		$templates = $this->design_model->export_tmpl_group($this->input->get_post('group_id'));
 
@@ -4356,7 +4356,7 @@ class Design extends CP_Controller {
 		$vars['form_hidden']['confirm'] = 'confirm';
 
 		$this->load->library('api');
-		$this->api->instantiate('template_structure');
+		$this->legacy_api->instantiate('template_structure');
 		$this->load->helper('file');
 
 		$this->db->select(array('group_name', 'templates.group_id', 'template_name', 'template_type', 'template_id', 'edit_date'));
@@ -4550,7 +4550,7 @@ class Design extends CP_Controller {
 		}
 
 		$this->load->library('api');
-		$this->api->instantiate('template_structure');
+		$this->legacy_api->instantiate('template_structure');
 		$this->load->helper('file');
 
 		$this->db->select(array('group_name', 'templates.group_id', 'template_name', 'template_type', 'template_id', 'edit_date'));
@@ -4721,7 +4721,7 @@ class Design extends CP_Controller {
 		}
 
 		$this->load->library('api');
-		$this->api->instantiate('template_structure');
+		$this->legacy_api->instantiate('template_structure');
 
 		$this->db->select(array('group_name', 'template_name', 'template_type'));
 		$this->db->join('template_groups', 'template_groups.group_id = templates.group_id');
@@ -4770,7 +4770,7 @@ class Design extends CP_Controller {
 				// if the template group doesn't exist, make it!
 				if ( ! isset($existing[$group]))
 				{
-					if ( ! $this->api->is_url_safe($group_name))
+					if ( ! $this->legacy_api->is_url_safe($group_name))
 					{
 						continue;
 					}
@@ -4839,7 +4839,7 @@ class Design extends CP_Controller {
 						continue;
 					}
 
-					if ( ! $this->api->is_url_safe($template_name))
+					if ( ! $this->legacy_api->is_url_safe($template_name))
 					{
 						continue;
 					}

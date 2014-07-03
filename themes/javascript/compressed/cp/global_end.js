@@ -9,5 +9,4 @@
  * @since		Version 2.0
  * @filesource
  */
-
-(function(a){a("table").each(function(){var b;a(this).data("table_config")&&(b=a(this).data("table_config"),a.isPlainObject(b)||(b=a.parseJSON(b)),a(this).table(b));jQuery().toggle_all&&a(this).toggle_all()})})(jQuery);
+!function(t){"use strict";t("table").each(function(){var a;t(this).data("table_config")&&(a=t(this).data("table_config"),t.isPlainObject(a)||(a=t.parseJSON(a)),t(this).table(a)),jQuery().toggle_all&&t(this).toggle_all()})}(jQuery);

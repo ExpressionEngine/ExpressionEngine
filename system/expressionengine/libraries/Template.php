@@ -2613,7 +2613,7 @@ class EE_Template {
 		}
 
 		ee()->load->library('api');
-		ee()->api->instantiate('template_structure');
+		ee()->legacy_api->instantiate('template_structure');
 		ee()->load->model('template_model');
 
 		$basepath = ee()->config->slash_item('tmpl_file_basepath').ee()->config->item('site_short_name').'/'.$template_group.'.group';
@@ -2645,7 +2645,7 @@ class EE_Template {
 			return FALSE;
 		}
 
-		if ( ! ee()->api->is_url_safe($template))
+		if ( ! ee()->legacy_api->is_url_safe($template))
 		{
 			// bail out
 			return FALSE;
@@ -2663,7 +2663,7 @@ class EE_Template {
 		else
 		{
 			// we have a new group to create!
-			if ( ! ee()->api->is_url_safe($template_group))
+			if ( ! ee()->legacy_api->is_url_safe($template_group))
 			{
 				// bail out
 				return FALSE;

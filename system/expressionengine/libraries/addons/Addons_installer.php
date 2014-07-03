@@ -223,7 +223,7 @@ class Addons_installer {
 	 */
 	function install_fieldtype($fieldtype)
 	{
-		ee()->api->instantiate('channel_fields');
+		ee()->legacy_api->instantiate('channel_fields');
 
 		if (ee()->api_channel_fields->include_handler($fieldtype))
 		{
@@ -262,7 +262,7 @@ class Addons_installer {
 	 */
 	function uninstall_fieldtype($fieldtype)
 	{
-		ee()->api->instantiate('channel_fields');
+		ee()->legacy_api->instantiate('channel_fields');
 
 		if (ee()->api_channel_fields->include_handler($fieldtype))
 		{

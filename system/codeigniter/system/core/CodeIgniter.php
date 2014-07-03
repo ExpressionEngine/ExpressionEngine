@@ -313,10 +313,24 @@
 		{
 			show_404("{$class}/{$method}");
 		}
-
-		// Call the requested method.
-		// Any URI segments present (besides the class/function) will be passed to the method for convenience
-		call_user_func_array(array(&$CI, $method), array_slice($URI->rsegments, 2));
+		try {
+			// Call the requested method.
+			// Any URI segments present (besides the class/function) will be passed to the method for convenience
+			call_user_func_array(array(&$CI, $method), array_slice($URI->rsegments, 2));
+		}
+		catch(Exception $ex)
+		{
+			echo '<div>
+					<h1>Exception Caught</h1>
+					<p><strong>' . $ex->getMessage() . '</strong></p>
+					<p><em>'  . $ex->getFile() . ':' . $ex->getLine() . '<em></p>
+					<p>Stack Trace:
+						<pre>' . str_replace('#', "\n#", str_replace(':', ":\n\t\t", $ex->getTraceAsString())) . '</pre>
+					</p>
+				</div>';
+			die('Fatal Error.');
+		}
+	
 	}
 
 

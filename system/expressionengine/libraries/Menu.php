@@ -192,7 +192,7 @@ class EE_Menu {
 
 		// Add channels
 
-		ee()->api->instantiate('channel_structure');
+		ee()->legacy_api->instantiate('channel_structure');
 		$channels = ee()->api_channel_structure->get_channels();
 
 		if ($channels != FALSE AND $channels->num_rows() > 0)

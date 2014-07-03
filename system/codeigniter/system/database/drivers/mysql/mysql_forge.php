@@ -160,7 +160,7 @@ class CI_DB_mysql_forge extends CI_DB_forge {
 			$sql .= 'IF NOT EXISTS ';
 		}
 
-		$sql .= $this->db->_escape_identifiers($table)." (";
+		$sql .= $this->db->escape_identifiers($table)." (";
 
 		$sql .= $this->_process_fields($fields);
 
@@ -207,7 +207,7 @@ class CI_DB_mysql_forge extends CI_DB_forge {
 	 */
 	function _drop_table($table)
 	{
-		return "DROP TABLE IF EXISTS ".$this->db->_escape_identifiers($table);
+		return "DROP TABLE IF EXISTS ".$this->db->escape_identifiers($table);
 	}
 
 	// --------------------------------------------------------------------

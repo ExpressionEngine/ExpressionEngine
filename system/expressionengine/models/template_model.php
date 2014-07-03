@@ -107,7 +107,7 @@ class Template_model extends CI_Model {
 
 		// Get the filepath to the template's saved file.
 		$this->load->library('api');
-		$this->api->instantiate('template_structure');
+		$this->legacy_api->instantiate('template_structure');
 		$basepath = rtrim($this->config->item('tmpl_file_basepath'), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
 
 		$filepath = $basepath . $this->config->item('site_short_name') . DIRECTORY_SEPARATOR
@@ -311,7 +311,7 @@ class Template_model extends CI_Model {
 
 		$this->load->library('extensions');
 		$this->load->library('api');
-		$this->api->instantiate('template_structure');
+		$this->legacy_api->instantiate('template_structure');
 
 		// add a site short name folder, in case MSM uses the same template path, and repeat
 		$basepath .= $this->config->item('site_short_name');
@@ -627,7 +627,7 @@ class Template_model extends CI_Model {
 	function rename_template_file($template_group, $template_type, $old_name, $new_name)
 	{
 		$this->load->library('api');
-		$this->api->instantiate('template_structure');
+		$this->legacy_api->instantiate('template_structure');
 		$ext = $this->api_template_structure->file_extensions($template_type);
 
 		$basepath  = $this->config->slash_item('tmpl_file_basepath');

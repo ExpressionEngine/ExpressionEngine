@@ -393,8 +393,8 @@ class Metaweblog_api {
 		);
 
 		ee()->load->library('api');
-		ee()->api->instantiate('channel_entries');
-		ee()->api->instantiate('channel_fields');
+		ee()->legacy_api->instantiate('channel_entries');
+		ee()->legacy_api->instantiate('channel_fields');
 
 		ee()->api_channel_fields->setup_entry_settings($this->channel_id, $data);
 
@@ -1549,7 +1549,7 @@ class Metaweblog_api {
 
 		// Delete the entry
 		ee()->load->library('api');
-		ee()->api->instantiate('channel_entries');
+		ee()->legacy_api->instantiate('channel_entries');
 
 		$r = ee()->api_channel_entries->delete_entry($parameters['1']);
 
@@ -1887,7 +1887,7 @@ class Metaweblog_api {
 	{
 		ee()->load->model('channel_model');
 		ee()->load->library('api');
-		ee()->api->instantiate('channel_fields');
+		ee()->legacy_api->instantiate('channel_fields');
 
 		ee()->db->select('field_group');
 		ee()->db->where('channel_id', $channel_id);

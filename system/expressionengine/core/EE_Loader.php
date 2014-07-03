@@ -89,6 +89,11 @@ class EE_Loader extends CI_Loader {
 			return;
 		}
 
+		if (strtolower($library) == 'api')
+		{
+			$object_name = 'legacy_api';
+		}
+
 		// Security is always loaded
 		if (strtolower($library) == 'security')
 		{
