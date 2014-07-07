@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Controllers;
+namespace EllisLab\ExpressionEngine\Controllers\Logs;
 
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
@@ -187,7 +187,7 @@ class Logs extends \CP_Controller {
 	{
 		if (ee()->session->userdata('group_id') == 1)
 		{
-			$this->developer();
+			ee()->functions->redirect(cp_url('logs/developer'));
 		}
 		else
 		{

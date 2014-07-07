@@ -4,7 +4,6 @@ namespace EllisLab\ExpressionEngine\Controllers\Logs;
 
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-use EllisLab\ExpressionEngine\Controllers\Logs;
 use EllisLab\ExpressionEngine\Library\CP;
 use EllisLab\ExpressionEngine\Library\CP\Pagination;
 
