@@ -43,7 +43,7 @@ class Logs extends \CP_Controller {
 	{
 		parent::__construct();
 
-		ee()->lang->load('logs');
+		ee()->lang->loadfile('logs');
 
 		if ( ! $this->cp->allowed_group('can_access_logs'))
 		{
