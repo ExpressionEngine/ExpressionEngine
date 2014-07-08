@@ -4,6 +4,7 @@ namespace EllisLab\ExpressionEngine\Controllers\Logs;
 
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
+use CP_Controller;
 use EllisLab\ExpressionEngine\Library\CP;
 use EllisLab\ExpressionEngine\Library\CP\Pagination;
 
@@ -30,7 +31,7 @@ use EllisLab\ExpressionEngine\Library\CP\Pagination;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Logs extends \CP_Controller {
+class Logs extends CP_Controller {
 
 	var $perpage		= 50;
 	var $params			= array();
