@@ -4,7 +4,6 @@ namespace EllisLab\ExpressionEngine\Controllers\Logs;
 
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-use EllisLab\ExpressionEngine\Library\CP;
 use EllisLab\ExpressionEngine\Library\CP\Pagination;
 
 /**
@@ -164,16 +163,10 @@ class Developer extends Logs {
 	/**
 	 * Deletes log entries, either all at once, or one at a time
 	 *
-	 * @param string $type	The type of log (developer, cp, throttle, email, search)
 	 * @param mixed  $id	Either the id to delete or "all"
 	 */
-	public function delete($type = NULL, $id = 'all')
+	public function delete($id = 'all')
 	{
-		if (is_null($type))
-		{
-			show_404();
-		}
-
 		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_logs'))
 		{
 			show_error(lang('unauthorized_access'));
@@ -191,10 +184,10 @@ class Developer extends Logs {
 		$query->all()->delete();
 
 		ee()->view->set_message('success', $success_flashdata, '', TRUE);
-		ee()->functions->redirect(cp_url('logs/'.$type));
+		ee()->functions->redirect(cp_url('logs/developer'));
 	}
 }
 // END CLASS
 
-/* End of file developer.php */
-/* Location: ./system/expressionengine/controllers/cp/logs/developer.php */
+/* End of file Developer.php */
+/* Location: ./system/expressionengine/controllers/cp/Logs/Developer.php */
