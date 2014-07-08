@@ -76,7 +76,7 @@ class RelationshipMeta {
 		$from_gateway_class = $this->alias_service->getRegisteredClass($from_gateway_name);
 		$this->from_table = $from_gateway_class::getMetaData('table_name');
 
-		// Poplate to_table
+		// Populate to_table
 		$gateway_relationships = $from_gateway_class::getMetaData('related_gateways');
 
 		if ( ! isset ($gateway_relationships[$this->from_key]))
