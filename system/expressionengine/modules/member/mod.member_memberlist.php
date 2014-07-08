@@ -415,10 +415,8 @@ class Member_memberlist extends Member {
 			$row_limit = ee()->config->item('memberlist_row_limit');
 		}
 
-		if (ee()->input->post('order_by'))
+		if ($order_by = ee()->input->post('order_by', 'post'))
 		{
-			$order_by = ee()->input->post('order_by', 'post');
-
 			if ( ! in_array($order_by, $valid_order_bys))
 			{
 				$order_by = ee()->config->item('memberlist_order_by');
@@ -467,23 +465,15 @@ class Member_memberlist extends Member {
 		/** ----------------------------------------*/
 
 		$path = '';
-		$pag_uri_segment = 0;
-
-		  if (preg_match("#^[0-9]{1,}\-[0-9a-z_]{1,}\-[0-9a-z]{1,}\-[0-9]{1,}\-[0-9]{1,}$#i", $this->cur_id))
+		if (preg_match('#/G([0-9]+)/(.*?)/(.*?)/L([0-9]+)(?:/|\Z)#', ee()->uri->query_string, $matches))
 		{
-			$x = explode("-", $this->cur_id);
-
-			$group_id	= $x['0'];
-			$order_by 	= $x['1'];
-			$sort_order	= $x['2'];
-			$row_limit	= $x['3'];
-			$row_count	= $x['4'];
-
-			// Which segment is this?  We need the NEXT segment to pass to pagination
-			$pag_uri_segment = array_search($this->cur_id, ee()->uri->segment_array()) + 1;
+			$group_id   = $matches[1];
+			$order_by   = $matches[2];
+			$sort_order = $matches[3];
+			$row_limit  = $matches[4];
 		}
 
-		$path = '/'.$group_id.'-'.$order_by.'-'.$sort_order.'-'.$row_limit;
+		$path = '/G'.$group_id.'/'.$order_by.'/'.$sort_order.'/L'.$row_limit;
 
 		/** ----------------------------------------
 		/**  Build the query
@@ -598,12 +588,13 @@ class Member_memberlist extends Member {
 		ee()->load->library('pagination');
 		$pagination = ee()->pagination->create();
 		$pagination->position = 'inline';
+		$pagination->basepath = $this->_member_path('memberlist').$path;
 		$template = $pagination->prepare($template);
 
 		if ($query->row('count') > $row_limit && $pagination->paginate === TRUE)
 		{
 			$pagination->build($query->row('count'), $row_limit);
-			$sql .= " LIMIT ".$row_count.", ".$row_limit;
+			$sql .= " LIMIT ".$pagination->offset.", ".$row_limit;
 		}
 
 		/** ----------------------------------------
