@@ -406,14 +406,14 @@ class Member_memberlist extends Member {
 			$group_id = 0;
 		}
 
-		$sort_order = ( ! in_array(ee()->input->post('sort_order'), $sort_orders)) ? ee()->config->item('memberlist_sort_order') : ee()->input->post('sort_order', 'post');
+		$sort_order = ( ! in_array(ee()->input->post('sort_order'), $sort_orders)) ? ee()->config->item('memberlist_sort_order') : ee()->input->post('sort_order');
 
 		if (($row_limit = (int) ee()->input->post('row_limit')) === 0)
 		{
 			$row_limit = ee()->config->item('memberlist_row_limit');
 		}
 
-		if ( ! ($order_by = ee()->input->post('order_by', 'post')))
+		if ( ! ($order_by = ee()->input->post('order_by')))
 		{
 			$order_by = ee()->config->item('memberlist_order_by');
 		}
