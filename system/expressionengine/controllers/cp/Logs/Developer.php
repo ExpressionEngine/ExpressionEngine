@@ -7,8 +7,6 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 use EllisLab\ExpressionEngine\Library\CP;
 use EllisLab\ExpressionEngine\Library\CP\Pagination;
 
-require_once "logs.php";
-
 /**
  * ExpressionEngine - by EllisLab
  *

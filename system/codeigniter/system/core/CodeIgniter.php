@@ -69,6 +69,15 @@
 
 /*
  * ------------------------------------------------------
+ *  Load the autoloader and register it
+ * ------------------------------------------------------
+ */
+	require(APPPATH.'../EllisLab/ExpressionEngine/Core/Autoloader.php');
+
+	Autoloader::getInstance()->register();
+
+/*
+ * ------------------------------------------------------
  *  Set the subclass_prefix
  * ------------------------------------------------------
  *
@@ -246,8 +255,6 @@
 		show_error('Unable to load your default controller. Please make sure the controller specified in your Routes.php file is valid.');
 	}
 
-	include(APPPATH.'controllers/'.$RTR->fetch_directory().$RTR->fetch_class().'.php');
-
 	// Set a mark point for benchmarking
 	$BM->mark('loading_time:_base_classes_end');
 
@@ -267,9 +274,15 @@
 	if ( ! class_exists($class))
 	{
 		$class  = $RTR->fetch_class();
+
+		// Check to see if we autoloaded it, but it wasn't actually namespaced
+		if ( ! class_exists($class, FALSE))
+		{
+			include_once (APPPATH.'controllers/'.$RTR->fetch_directory().$RTR->fetch_class().'.php');
+		}
 	}
 
-	if ( ! class_exists($class)
+	if ( ! class_exists($class, FALSE)
 		OR strncmp($method, '_', 1) == 0
 		OR in_array(strtolower($method), array_map('strtolower', get_class_methods('CI_Controller')))
 		)

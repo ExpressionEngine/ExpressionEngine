@@ -1,19 +1,55 @@
 <?php
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 2.9.0
+ * @filesource
+ */
+
+// ------------------------------------------------------------------------
 
 /**
- * Really basic autoloader using the PSR-4 proposal autoloading rules.
+ * ExpressionEngine Autoloader
+ *
+ * Really basic autoloader using the PSR-4 autoloading rules.
  *
  * I think that makes more sense in a namespaced application than PSR-0. Those
  * underscore rules seem to just be dead weight from the pre-5.3 days.
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Core
+ * @category	Core
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 class Autoloader {
 
 	protected $prefixes = array();
 
+	protected static $instance;
 
 	public function __construct()
 	{
+		$this->prefixes['EllisLab\ExpressionEngine\Controllers'] = APPPATH . 'controllers/cp';
 		$this->prefixes['EllisLab'] = APPPATH . '../EllisLab/';
+	}
+
+	/**
+	 * Use as a singleton
+	 */
+	public static function getInstance()
+	{
+		if ( ! isset(static::$instance))
+		{
+			static::$instance = new static();
+		}
+
+		return static::$instance;
 	}
 
 	/**
@@ -66,6 +102,7 @@ class Autoloader {
 			}
 		}
 
+		// Keep this commented out until we're fully namespaced. PHP will handle it.
 		//throw new \RuntimeException('Failed to load class: ' . $class . '!');
 	}
 }
