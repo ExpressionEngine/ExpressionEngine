@@ -1,69 +1,60 @@
-########################
-ExpressionEngine Reactor
-########################
+###############################
+Setting Up a Development Branch
+###############################
 
-Welcome to the ExpressionEngine Reactor project, the home of community
-contribution to EllisLab's premier web publishing platform.
+* Naming branches
+* Javascript
+* Testing
+* Releasing
 
-**************************
-Setting Up Your Local Fork
-**************************
+***************
+Naming Branches
+***************
 
-1. Fork ExpressionEngine Reactor by clicking the Fork button above
-2. Clone your fork locally and make sure you're in the ``develop``
-   branch (and if you're using Git-Flow, initialize it now)::
+ExpressionEngine follows the Git Flow naming conventions. The primary
+branches are:
 
-    git clone git@github.com:<your_name>/ExpressionEngine-Reactor.git expressionengine-reactor
-    cd expressionengine-reactor
-    git checkout develop
-    (git flow init)
+* stability - development for bug fixes (next minor release)
+* develop - development for features (the next major release)
+* master - no development, matches the last release
 
-3. Add teams to your fork. Go to your fork in GitHub, click Admin at the
-   top right, choose Teams from the left menu and make sure that Owners,
-   Admins, EllisLab Engineers, and ExpressionEngine Reactor are in that
-   list.
+Feature development should take place in feature branches. These should
+be prefixed with `feature/`:
 
-4. After installing, add the following line to your config.php to make
-   sure you're using the uncompressed javascript::
+* feature/commerce
+* feature/pandora-accessory
 
-    $config['use_compressed_js'] = 'n';
+THese should typically be turned into pull-requests before they are
+merged in.
 
-.. important:: These repositories must remain private and all work under
-    NDA.  Any violation of this policy will result in immediate removal
-    from the ExpressionEngine Reactor program.  Keep in mind that making
-    any of these files public by way of GitHub or any other mechanism
-    would be tantamount to unlawfully redistributing the application.
+When code for a release is frozen, a branch prefixed with `release/`
+should be created. Version numbers should follow
+[semver](http://semver.org) conventions.
 
-*****************************
-Making and Submitting Changes
-*****************************
+* release/2.9.0
+* release/2.22.0-dp.15+intrepid-earwig
 
-In your fork, you'll typically always want to start on a feature branch
-for a change, to refine it until you are happy with it::
+*************************
+Development Configuration
+*************************
 
-  git checkout develop
-  git checkout -b feature/<feature_name>
+Use uncompressed JavaScript:
 
-  OR
+```
+$config['use_compressed_js'] = 'n';
+```
 
-  git branch feature/<feature_name> develop
-  git co feature/<feature_name>
+Force MySQL strict mode:
 
-  OR
+```
+$db['expressionengine']['stricton'] = TRUE;
+```
 
-  git flow feature start <feature_name>
+Turn debug on:
 
-
-Push your changes up whenever you're ready to::
-
-  git push origin feature/<feature_name>
-
-  OR
-
-  git flow feature publish <feature_name>
-
-When you are ready to send us the code or solicit feedback, send a Pull
-Request using GitHub to the ExpressionEngine-Reactor repository.
+```
+$debug = 1;
+```
 
 ************
 Unit Testing
@@ -74,11 +65,15 @@ system/Tests directory run:
 
   composer install
 
+This will install the versions listed in the composer.lock file. If you
+wish to update phpunit, mockery, or any of the others, run `composer
+update` instead and commit the new lock file after testing.
+
 From there you can run the ExpressionEngine tests with::
 
-  phpunit -c phpunit.xml ExpressionEngine/
+  phpunit ExpressionEngine/
 
-Alternatively you can install phing and  run all current unit tests from
+Alternatively you can install phing and run all current unit tests from
 the project root using::
 
   phing tests
@@ -147,9 +142,12 @@ The Bad:
 - Never assume that the test is wrong. A bug has probably been
   introduced.
 - Never commit a new test that is broken unless it tests new code.
+- Never commit a test that you did not see fail first. It may not be
+  running.
 - Avoid control structures (if/while/try/foreach).
   - Loops can be avoided by using @dataProvider
   - Try statements can be avoided using @expectedException
+  - If statements can be avoided by creating multiple methods
 - Avoid needless comments
     - They obscure the annotations, making the test harder to follow
     - They increase the perceived effort of adding a test, resulting in
@@ -160,7 +158,7 @@ The Bad:
       parameter, then you should reconsider the test case or the code it
       is testing.
 - If you're stubbing a lot, take a step back and consider if you can
-  decouple your class more cleanly
+  decouple your class more cleanly.
 
 
 Example of a class to test:
