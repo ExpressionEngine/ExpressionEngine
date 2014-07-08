@@ -340,7 +340,7 @@ class Member_memberlist extends Member {
 				'lang:recipient'	=>	ee()->lang->line('mbr_icq_recipient'),
 				'lang:subject'		=>	ee()->lang->line('mbr_icq_subject'),
 				'lang:message'		=>	ee()->lang->line('mbr_icq_message')
-			 )
+			)
 		);
 	}
 
@@ -373,9 +373,9 @@ class Member_memberlist extends Member {
 		$mvars = ee()->functions->assign_variables($memberlist_rows, '/');
 		$mvar_cond = ee()->functions->assign_conditional_variables($memberlist_rows, '/');
 
-		$this->var_cond		= array_merge($var_cond, $mvar_cond);
-		$this->var_single	= array_merge($vars['var_single'], $mvars['var_single']);
-		$this->var_pair		= array_merge($vars['var_pair'], $mvars['var_pair']);
+		$this->var_cond   = array_merge($var_cond, $mvar_cond);
+		$this->var_single = array_merge($vars['var_single'], $mvars['var_single']);
+		$this->var_pair   = array_merge($vars['var_pair'], $mvars['var_pair']);
 
 		/** ----------------------------------------
 		/**  Fetch the custom member field definitions
@@ -397,9 +397,7 @@ class Member_memberlist extends Member {
 		/**  Assign default variables
 		/** ----------------------------------------*/
 
-		$valid_order_bys = array(
-				'screen_name','total_posts', 'join_date'
-			);
+		$valid_order_bys = array('screen_name','total_posts', 'join_date');
 
 		$sort_orders = array('asc', 'desc');
 
@@ -535,16 +533,14 @@ class Member_memberlist extends Member {
 
 		$query = ee()->db->query($p_sql.$sql);
 
-
- 		if ($order_by == 'total_posts')
- 		{
+		if ($order_by == 'total_posts')
+		{
 			$sql .= " ORDER BY ".$order_by." ".$sort_order;
- 		}
+		}
 		else
 		{
 			$sql .= " ORDER BY m.".$order_by." ".$sort_order;
 		}
-
 
 		/** -----------------------------
 		/**  Build Pagination
@@ -558,7 +554,6 @@ class Member_memberlist extends Member {
 			ee()->load->library('logger');
 			ee()->logger->developer('{if paginate} has been deprecated, use normal {paginate} tags in your Member List template.', TRUE, 604800);
 			$config['last_link'] = ee()->lang->line('last');
-			//$config['uri_segment'] = $pag_uri_segment;
 			$config['suffix'] = ($first_letter != '') ? $first_letter.'/' : '';
 			$config['first_url'] = $this->_member_path('memberlist'.$search_path.$path.'-0');
 			$config['cur_page']	= ($row_count == '') ? '0' : $row_count;
