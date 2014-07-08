@@ -8,7 +8,7 @@
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
- * @since		Version 2.8.2
+ * @since		Version 2.9.0
  * @filesource
  */
 
@@ -39,7 +39,8 @@ class Updater {
 		$steps = new ProgressIterator(
 			array(
 				'_update_template_routes_table',
-				'_set_hidden_template_indicator'
+				'_set_hidden_template_indicator',
+				'_ensure_channel_combo_loader_action_integrity',
 			)
 		);
 
@@ -71,7 +72,7 @@ class Updater {
 
 	/**
 	 * Add a column to the Template Routes table for storing the parse order
-	 * 
+	 *
 	 * @access private
 	 * @return void
 	 */
@@ -90,8 +91,34 @@ class Updater {
 		);
 	}
 
+	/**
+	 * If this was a pre-2.7 install and never had Safecracker installed,
+	 * there could be a missing action for the Channel class. So let's
+	 * make sure it exists and add it if it doesn't.
+	 *
+	 * @access private
+	 * @return void
+	 **/
+	private function _ensure_channel_combo_loader_action_integrity()
+	{
+		$row_data = array(
+			'class' => 'Channel',
+			'method' => 'combo_loader'
+		);
+
+		ee()->db->where($row_data);
+		$count = ee()->db->count_all_results('actions');
+
+		if ($count == 0)
+		{
+			ee()->db->insert('actions', $row_data);
+		}
+	}
+
+	// -------------------------------------------------------------------
+
 }
 /* END CLASS */
 
-/* End of file ud_282.php */
-/* Location: ./system/expressionengine/installer/updates/ud_282.php */
+/* End of file ud_290.php */
+/* Location: ./system/expressionengine/installer/updates/ud_290.php */

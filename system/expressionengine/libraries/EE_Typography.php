@@ -731,7 +731,7 @@ class EE_Typography extends CI_Typography {
 			$str = str_replace($match, $hash, $str);
 		}
 
-		$parser = new Markdown_Parser();
+		$parser = new MarkdownExtra_Parser();
 
 		// Disable other markup if this is set
 		if (isset($options['no_markup'])
@@ -748,11 +748,12 @@ class EE_Typography extends CI_Typography {
 		$str = $parser->transform($str);
 
 		// Run everything through SmartyPants
-		if (isset($options['smartypants'])
-			&& get_bool_from_string($options['smartypants']))
+		if ( ! isset($options['smartypants'])
+			OR get_bool_from_string($options['smartypants']) == FALSE)
 		{
 			require_once(APPPATH.'libraries/typography/SmartyPants/smartypants.php');
-			$str = SmartyPants($str);
+			// 2  ->  "---" for em-dashes; "--" for en-dashes
+			$str = SmartyPants($str, 2);
 		}
 
 		// Restore the quotes we protected earlier.
@@ -910,13 +911,31 @@ class EE_Typography extends CI_Typography {
 
 		foreach($this->safe_decode as $key => $val)
 		{
-			if (is_array($val) && isset($val['property']))
+			if (is_array($val)
+				&& isset($val['property'])
+				&& preg_match_all('/\['.$key.'=(.*?)\](.*?)\[\/'.$key.'\]/is', $str, $matches, PREG_SET_ORDER))
 			{
-				$str = preg_replace(
-					'/\['.$key.'=(.*?)\](.*?)\[\/'.$key.'\]/is',
-					"<".$val['tag']." ".$val['property']."=\\1>\\2</".$val['tag'].">",
-					$str
-				);
+				foreach ($matches as $tag_match)
+				{
+					// Clean up the contents of the property
+					$tag_match[1] = htmlspecialchars(
+						ee()->security->xss_clean($tag_match[1])
+					);
+
+					// If there's any evidence of XSS then don't add anything
+					if (stripos($tag_match[0], '[removed]') !== FALSE)
+					{
+						$str = str_replace($tag_match[0], '', $str);
+					}
+					else
+					{
+						$str = str_replace(
+							$tag_match[0],
+							"<".$val['tag']." ".$val['property']."='".$tag_match[1]."''>".$tag_match[2]."</".$val['tag'].">",
+							$str
+						);
+					}
+				}
 			}
 			else
 			{

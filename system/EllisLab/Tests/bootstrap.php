@@ -13,6 +13,8 @@ define('APPPATH',  $project_base.'expressionengine/');
 // application constants
 define('AMP', '&amp;');
 define('SELF', 'index.php');
+define('LD', '{');
+define('RD', '}');
 
 // Minor CI annoyance
 function log_message() {}

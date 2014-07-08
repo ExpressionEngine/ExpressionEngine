@@ -168,9 +168,27 @@ class Query {
 		return $this;
 	}
 
-	public function or_filter($property, $operator, $value = NULL)
+	public function orFilter($property, $operator, $value = NULL)
 	{
 		$this->applyFilter($property, $operator, $value, TRUE);
+		return $this;
+	}
+
+	public function filterGroup()
+	{
+		$this->db->start_group();
+		return $this;
+	}
+
+	public function orFilterGroup()
+	{
+		$this->db->or_start_group();
+		return $this;
+	}
+
+	public function endFilterGroup()
+	{
+		$this->db->end_group();
 		return $this;
 	}
 

@@ -1285,7 +1285,7 @@ class EE_Config Extends CI_Config {
 				'pw_min_len'				=> array('i', '')
 			),
 
-			'software_license'	=> array(
+			'software_registration'	=> array(
 				'license_contact'			=> array('i', '', 'required'),
 				'license_number'			=> array('i', '', 'callback__valid_license_pattern')
 			),

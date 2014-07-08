@@ -1,13 +1,12 @@
 <?php
 namespace EllisLab\ExpressionEngine\Model;
 
+use EllisLab\ExpressionEngine\Core\AliasService;
 use EllisLab\ExpressionEngine\Model\Error\Errors;
 use EllisLab\ExpressionEngine\Model\Query\QueryBuilder;
 use EllisLab\ExpressionEngine\Model\Relationship\Cascade;
 use EllisLab\ExpressionEngine\Model\Relationship\RelationshipBag;
 use EllisLab\ExpressionEngine\Model\Relationship\RelationshipQuery;
-
-use EllisLab\ExpressionEngine\Model\ModelAliasService;
 
 
 /**
@@ -64,7 +63,7 @@ abstract class Model {
 	 * Initialize this model with a set of data to set on the gateway.
 	 *
 	 * @param \EllisLab\ExpressionEngine\Model\ModelFactory
-	 * @param \Ellislab\ExpressionEngine\Model\ModelAliasService
+	 * @param \Ellislab\ExpressionEngine\Core\AliasService
 	 * @param	mixed[]	$data	An array of initial property values to set on
 	 * 		this model.  The array indexes must be valid properties on this
 	 * 		model's gateway.
@@ -74,7 +73,7 @@ abstract class Model {
 	 * 		save call.  Otherwise, it will be treated as clean and assumed
 	 * 		to have come from the database.
 	 */
-	public function __construct(ModelFactory $factory, ModelAliasService $alias_service, array $data = array(), $dirty = TRUE)
+	public function __construct(ModelFactory $factory, AliasService $alias_service, array $data = array(), $dirty = TRUE)
 	{
 		$this->_factory = $factory;
 		$this->_alias_service = $alias_service;

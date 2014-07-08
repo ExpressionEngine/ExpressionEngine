@@ -32,26 +32,21 @@ class Homepage extends CP_Controller {
 	 */
 	function index()
 	{
-/*		require APPPATH . '../EllisLab/ExpressionEngine/Core/Autoloader.php';
-		$loader = new Autoloader();
-		$loader->register();
-
-		$di = new \EllisLab\ExpressionEngine\Core\Dependencies();
-
-		$mb = $di->getModelBuilder();
-
-		echo 'Query was:<br />
+/*		echo 'Query was:<br />
 			qb->get(\'ChannelEntry\')
 				->with(\'Channel\', array(\'Author\'=>array(\'MemberGroup\', \'ChannelEntries\')))
 				->all()<br />';
 		try {
-		$entries = $mb->get('ChannelEntry')
+		$sql = ee()->api->get('ChannelEntry')
 			->with('Channel',
 				array('Author'=> array('MemberGroup', 'ChannelEntries AS AuthorEntries'))
 			)
-			->order('ChannelEntry.entry_id')
-			->order('AuthorEntries.entry_id')
-			->all();
+			->filterGroup()
+				->filter('Channel.channel_id', 1)
+				->filter('ChannelEntry.entry_id', 1)
+			->endFilterGroup()
+			->orFilter('ChannelEntry.entry_id', 2)
+			->debug_query();
 		}
 		catch(Exception $ex)
 		{
@@ -66,12 +61,9 @@ class Homepage extends CP_Controller {
 			die('Fatal Error.');
 		}
 
-		echo '<pre>';
-		foreach($entries as $entry)
-		{
-			$entry->testPrint();
-		}
-		echo '</pre>';
+		echo '<pre>'; echo ($sql); echo '</pre>';
+
+		die('Success!');
 
 
 		echo 'Query was:<br />

@@ -8,8 +8,9 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
 	public function setUp()
 	{
 		$this->mb = m::mock('EllisLab\ExpressionEngine\Model\ModelFactory');
-		$this->as = m::mock('EllisLab\ExpressionEngine\Model\ModelAliasService');
+		$this->as = m::mock('EllisLab\ExpressionEngine\Core\AliasService');
 		$this->gateway = m::mock(__NAMESPACE__.'\\GatewayStub');
+		$this->rg = new \EllisLab\ExpressionEngine\Model\Relationship\RelationshipGraph($this->as);
 	}
 
 	public function testConstructor()
@@ -21,8 +22,10 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
 	{
 		$this->as->shouldReceive('getRegisteredClass')->with('GatewayStub')->andReturn(__NAMESPACE__.'\\GatewayStub');
 		$this->mb->shouldReceive('makeGateway')->with('GatewayStub')->andReturn($this->gateway);
+		$this->mb->shouldReceive('getRelationshipGraph')->andReturn($this->rg);
 
 		$this->gateway->shouldReceive('setDirty')->with('title');
+		$this->gateway->shouldReceive('save');
 
 		$model = new TestModel($this->mb, $this->as);
 		$model->title = 'The Template';

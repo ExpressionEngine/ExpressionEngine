@@ -354,7 +354,7 @@ class EE_Menu {
 				'throttling_configuration'		=> cp_url('admin_system/throttling_configuration')
 			),
 			'----',
-			'software_license'			=>  cp_url('admin_system/software_license')
+			'software_registration'			=>  cp_url('admin_system/software_registration')
 		);
 
 

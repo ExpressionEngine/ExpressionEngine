@@ -48,7 +48,7 @@ class El_pings {
 			$class = ee()->router->fetch_class();
 			$method = ee()->router->fetch_method();
 
-			if ($class == 'homepage' OR ($class == 'admin_system' && $method == 'software_license'))
+			if ($class == 'homepage' OR ($class == 'admin_system' && $method == 'software_registration'))
 			{
 				$payload = array(
 					'contact'			=> ee()->config->item('license_contact'),

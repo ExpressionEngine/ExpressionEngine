@@ -296,6 +296,9 @@ class EE_Template {
 
 		ee()->config->_global_vars['is_core'] = (IS_CORE) ? TRUE : FALSE;
 
+		// Mark our template better errors
+		$this->template = $this->markContext().$this->template;
+
 		// Parse manual variables and Snippets
 		// These are variables that can be set in the path.php file
 
@@ -304,14 +307,24 @@ class EE_Template {
 			$this->log_item("Snippets (Keys): ".implode('|', array_keys(ee()->config->_global_vars)));
 			$this->log_item("Snippets (Values): ".trim(implode('|', ee()->config->_global_vars)));
 
-			foreach (ee()->config->_global_vars as $key => $val)
+			foreach (ee()->config->_global_vars as $key => &$val)
 			{
-				$this->template = str_replace(LD.$key.RD, $val, $this->template);
-			}
+				// in case any of these variables have EE comments of their own
+				// removing from the value makes snippets more usable in conditionals
+				$val = $this->remove_ee_comments($val);
 
-			// in case any of these variables have EE comments of their own
-			$this->template = $this->remove_ee_comments($this->template);
+				$replace = $this->markContext('Snippet "'.$key.'"');
+				$replace .= $val;
+				$replace .= $this->markContext();
+
+				$this->template = str_replace(LD.$key.RD, $replace, $this->template);
+			}
 		}
+
+		// have to handle the silly in_group() conditionals before we
+		// get to a real prep_ponditionals which does not like these.
+		$this->template = $this->replace_special_group_conditional($this->template);
+
 
 		// Parse URI segments
 		// This code lets admins fetch URI segments which become
@@ -438,13 +451,39 @@ class EE_Template {
 			$this->template = $this->parse_template_php($this->template);
 		}
 
-		// Smite Our Enemies:  Conditionals
-		$this->log_item("Parsing Segment, Embed, Layout, and Global Vars Conditionals");
 
-		$this->template = $this->parse_simple_segment_conditionals($this->template);
-		$this->template = $this->simple_conditionals($this->template, $this->embed_vars);
-		$this->template = $this->simple_conditionals($this->template, $layout_conditionals);
-		$this->template = $this->simple_conditionals($this->template, ee()->config->_global_vars);
+		// Set up logged_in_* variables for early conditional evaluation
+		$user_vars	= array(
+			'member_id', 'group_id', 'group_description', 'group_title', 'username', 'screen_name',
+			'email', 'ip_address', 'location', 'total_entries',
+			'total_comments', 'private_messages', 'total_forum_posts', 'total_forum_topics', 'total_forum_replies'
+		);
+
+		$logged_in_user_cond = array();
+
+		if ($this->cache_status != 'EXPIRED')
+		{
+			foreach ($user_vars as $user_var)
+			{
+				$logged_in_user_cond['logged_in_'.$user_var] = ee()->session->userdata[$user_var];
+			}
+		}
+
+
+		// Smite Our Enemies:  Conditionals
+		$this->log_item("Parsing Segment, Embed, Layout, logged_in_*, and Global Vars Conditionals");
+
+		$this->template = ee()->functions->prep_conditionals(
+			$this->template,
+			array_merge(
+				$this->segment_vars,
+				$this->template_route_vars,
+				$this->embed_vars,
+				$layout_conditionals,
+				$logged_in_user_cond,
+				ee()->config->_global_vars
+			)
+		);
 
 		// Assign Variables
 		if (strpos($this->template, 'preload_replace') !== FALSE)
@@ -3180,7 +3219,8 @@ class EE_Template {
 		// Add Action IDs form forms and links
 		$str = ee()->functions->insert_action_ids($str);
 
-		// and once again just in case global vars introduce EE comments
+		// and once again just in case global vars introduce EE comments,
+		// and to remove any runtime annotations.
 		return $this->remove_ee_comments($str);
 	}
 
@@ -3304,24 +3344,18 @@ class EE_Template {
 			return $str;
 		}
 
-		/* ---------------------------------
-		/*	Hidden Configuration Variables
-		/*  - protect_javascript => Prevents advanced conditional parser from processing anything in <script> tags
-		/* ---------------------------------*/
+		$user_vars	= array(
+			'member_id', 'group_id', 'group_description', 'group_title', 'username', 'screen_name',
+			'email', 'ip_address', 'location', 'total_entries',
+			'total_comments', 'private_messages', 'total_forum_posts', 'total_forum_topics', 'total_forum_replies'
+		);
 
-		if (ee()->config->item('protect_javascript') == 'n')
+		$data = array();
+
+		foreach ($user_vars as $user_var)
 		{
-			$this->protect_javascript = FALSE;
-		}
-
-		$user_vars	= array('member_id', 'group_id', 'group_description', 'group_title', 'username', 'screen_name',
-							'email', 'ip_address', 'location', 'total_entries',
-							'total_comments', 'private_messages', 'total_forum_posts', 'total_forum_topics', 'total_forum_replies');
-
-		for($i=0,$s=count($user_vars), $data = array(); $i < $s; ++$i)
-		{
-			$data[$user_vars[$i]] = ee()->session->userdata[$user_vars[$i]];
-			$data['logged_in_'.$user_vars[$i]] = ee()->session->userdata[$user_vars[$i]];
+			$data[$user_var] = ee()->session->userdata[$user_var];
+			$data['logged_in_'.$user_var] = ee()->session->userdata[$user_var];
 		}
 
 		// Define an alternate variable for {group_id} since some tags use
@@ -3330,85 +3364,14 @@ class EE_Template {
 		$data['member_group'] = $data['logged_in_member_group'] = ee()->session->userdata['group_id'];
 
 		// Logged in and logged out variables
-		$data['logged_in'] = (ee()->session->userdata['member_id'] == 0) ? 'FALSE' : 'TRUE';
-		$data['logged_out'] = (ee()->session->userdata['member_id'] != 0) ? 'FALSE' : 'TRUE';
+		$data['logged_in'] = (ee()->session->userdata['member_id'] != 0);
+		$data['logged_out'] = (ee()->session->userdata['member_id'] == 0);
 
 		// current time
 		$data['current_time'] = ee()->localize->now;
 
-		// Member Group in_group('1') function, Super Secret!  Shhhhh!
-		if (preg_match_all("/in_group\(([^\)]+)\)/", $str, $matches))
-		{
-			$groups = (is_array(ee()->session->userdata['group_id'])) ? ee()->session->userdata['group_id'] : array(ee()->session->userdata['group_id']);
-
-			for($i=0, $s=count($matches[0]); $i < $s; ++$i)
-			{
-				$check = explode('|', str_replace(array('"', "'"), '', $matches[1][$i]));
-
-				$str = str_replace($matches[0][$i], (count(array_intersect($check, $groups)) > 0) ? 'TRUE' : 'FALSE', $str);
-			}
-		}
-
 		// Final Prep, Safety On
-		$str = ee()->functions->prep_conditionals($str, array_merge($this->segment_vars, $this->template_route_vars, $this->embed_vars, $this->layout_conditionals, ee()->config->_global_vars, $data), 'y');
-
-		// Protect Already Existing Unparsed PHP
-
-		$opener = unique_marker('tmpl_php_open');
-		$closer = unique_marker('tmpl_php_close');
-
-		$str = str_replace(array('<?', '?'.'>'),
-							array($opener.'?', '?'.$closer),
-							$str);
-
-		// Protect <script> tags
-		$protected = array();
-		$front_protect = unique_marker('tmpl_script_open');
-		$back_protect  = unique_marker('tmpl_script_close');
-
-		// Regardless of protect_javascript we need to protect
-		// <script language="php"> tags.
-		if ($this->protect_javascript !== FALSE)
-		{
-			$pattern = "/<script.*?".">.*?<\/script>/is";
-		}
-		else
-		{
-			$pattern = "/<script.*?language\s*=\s*(\042|\047)?php(\\1)?.*?>.*?<\/script>/is";
-		}
-
-		if (stristr($str, '<script') &&
-			preg_match_all($pattern, $str, $matches))
-		{
-			for($i=0, $s=count($matches[0]); $i < $s; ++$i)
-			{
-				$protected[$front_protect.$i.$back_protect] = $matches[0][$i];
-			}
-
-			$str = str_replace(array_values($protected), array_keys($protected), $str);
-		}
-		// Convert EE Conditionals to PHP
-		$str = str_replace(array(LD.'/if'.RD, LD.'if:else'.RD), array('<?php endif; ?'.'>','<?php else : ?'.'>'), $str);
-
-		if (strpos($str, LD.'if') !== FALSE)
-		{
-			$str = preg_replace("/".preg_quote(LD)."((if:(else))*if)\s+(.*?)".preg_quote(RD)."/s", '<?php \\3if(\\4) : ?'.'>', $str);
-		}
-
-		$str = $this->parse_template_php($str);
-
-		// Unprotect <script> tags
-		if (count($protected) > 0)
-		{
-			$str = str_replace(array_keys($protected), array_values($protected), $str);
-		}
-
-		// Unprotect Already Existing Unparsed PHP
-		$str = str_replace(array($opener.'?', '?'.$closer),
-							array('<'.'?', '?'.'>'),
-							$str);
-
-		return $str;
+		return ee()->functions->prep_conditionals($str, array_merge($this->segment_vars, $this->template_route_vars, $this->embed_vars, $this->layout_conditionals, ee()->config->_global_vars, $data), 'y');
 	}
 
 	// --------------------------------------------------------------------
@@ -3427,79 +3390,7 @@ class EE_Template {
 	 */
 	public function parse_simple_segment_conditionals($str)
 	{
-		if ( ! preg_match("/".LD."if\s+segment_.+".RD."/", $str))
-		{
-			return $str;
-		}
-
-		$this->var_cond = ee()->functions->assign_conditional_variables($str);
-
-		foreach ($this->var_cond as $val)
-		{
-			// Make sure this is for a segment conditional
-			// And that this is not an advanced conditional
-
-				if ( ! preg_match('/^segment_\d+$/i', $val['3']) OR
-				strpos($val[2], 'if:else') !== FALSE OR
-				strpos($val[0], 'if:else') !== FALSE OR
-				count(preg_split("/(\!=|==|<=|>=|<>|<|>|%|AND|XOR|OR|&&|\|\|)/", $val[0])) > 2)
-			{
-				continue;
-			}
-
-			$cond = ee()->functions->prep_conditional($val[0]);
-
-			$lcond	= substr($cond, 0, strpos($cond, ' '));
-			$rcond	= substr($cond, strpos($cond, ' '));
-
-			if (strpos($rcond, '"') == FALSE && strpos($rcond, "'") === FALSE) continue;
-
-			$n = substr($val[3], 8);
-			$temp = (isset(ee()->uri->segments[$n])) ? ee()->uri->segments[$n] : '';
-
-			$lcond = str_replace($val[3], "\$temp", $lcond);
-
-			if (stristr($rcond, '\|') !== FALSE OR stristr($rcond, '&') !== FALSE)
-			{
-				$rcond	  = trim($rcond);
-				$operator = trim(substr($rcond, 0, strpos($rcond, ' ')));
-				$check	  = trim(substr($rcond, strpos($rcond, ' ')));
-
-				$quote = substr($check, 0, 1);
-
-				if (stristr($rcond, '\|') !== FALSE)
-				{
-					$array =  explode('\|', str_replace($quote, '', $check));
-					$break_operator = ' OR ';
-				}
-				else
-				{
-					$array =  explode('&', str_replace($quote, '', $check));
-					$break_operator = ' && ';
-				}
-
-				$rcond  = $operator.' '.$quote;
-
-				$rcond .= implode($quote.$break_operator.$lcond.' '.$operator.' '.$quote, $array).$quote;
-			}
-
-			$cond = $lcond.' '.$rcond;
-
-			$cond = str_replace("\|", "|", $cond);
-
-			eval("\$result = (".$cond.");");
-
-			if ($result)
-			{
-				$str = str_replace($val[1], $val[2], $str);
-			}
-			else
-			{
-				$str = str_replace($val[1], '', $str);
-			}
-		}
-
-		return $str;
+		return ee()->functions->prep_conditionals($str, $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -3518,83 +3409,7 @@ class EE_Template {
 	 */
 	public function simple_conditionals($str, $vars = array())
 	{
-		if (count($vars) == 0 OR ! stristr($str, LD.'if'))
-		{
-			return $str;
-		}
-
-		$this->var_cond = ee()->functions->assign_conditional_variables($str);
-
-		if (count($this->var_cond) == 0)
-		{
-			return $str;
-		}
-
-		foreach ($this->var_cond as $val)
-		{
-			// Make sure there is such a $global_var
-			// And that this is not an advanced conditional
-
-			if ( ! isset($vars[$val[3]]) OR
-				strpos($val[2], 'if:else') !== FALSE OR
-				strpos($val[0], 'if:else') !== FALSE OR
-				count(preg_split("/(\!=|==|<=|>=|<>|<|>|%|AND|XOR|OR|&&|\|\|)/", $val[0])) > 2)
-			{
-				continue;
-			}
-
-			$cond = ee()->functions->prep_conditional($val[0]);
-
-			$lcond	= substr($cond, 0, strpos($cond, ' '));
-			$rcond	= substr($cond, strpos($cond, ' '));
-
-			if (strpos($rcond, '"') == FALSE && strpos($rcond, "'") === FALSE) continue;
-
-			$temp = $vars[$val[3]];
-
-			$lcond = str_replace($val[3], "\$temp", $lcond);
-
-			if (stristr($rcond, '\|') !== FALSE OR stristr($rcond, '&') !== FALSE)
-			{
-				$rcond	  = trim($rcond);
-				$operator = trim(substr($rcond, 0, strpos($rcond, ' ')));
-				$check	  = trim(substr($rcond, strpos($rcond, ' ')));
-
-				$quote = substr($check, 0, 1);
-
-				if (stristr($rcond, '\|') !== FALSE)
-				{
-					$array =  explode('\|', str_replace($quote, '', $check));
-					$break_operator = ' OR ';
-				}
-				else
-				{
-					$array =  explode('&', str_replace($quote, '', $check));
-					$break_operator = ' && ';
-				}
-
-				$rcond  = $operator.' '.$quote;
-
-				$rcond .= implode($quote.$break_operator.$lcond.' '.$operator.' '.$quote, $array).$quote;
-			}
-
-			$cond = $lcond.' '.$rcond;
-
-			$cond = str_replace("\|", "|", $cond);
-
-			eval("\$result = (".$cond.");");
-
-			if ($result)
-			{
-				$str = str_replace($val[1], $val[2], $str);
-			}
-			else
-			{
-				$str = str_replace($val[1], '', $str);
-			}
-		}
-
-		return $str;
+		return ee()->functions->prep_conditionals($str, $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -4360,6 +4175,69 @@ class EE_Template {
 		}
 
 		return $dt;
+	}
+
+	// --------------------------------------------------------------------
+
+	private function replace_special_group_conditional($str)
+	{
+		// Member Group in_group('1') function, Super Secret!  Shhhhh!
+		if (preg_match_all("/in_group\(([^\)]+)\)/", $str, $matches))
+		{
+			// Template pattern used to match against pipe, comma, or space
+			// delimited member groups.
+			// By rewriting the pattern instead of trying to evaluate it here,
+			// we open it up for variables to be a parameter. This allows for
+			// reuse and easier member group management by keeping the group ids
+			// in a global variable or snippet.
+			$in_member_group_regex = "'/\b'.logged_in_member_group.'\b/'";
+
+			foreach ($matches[0] as $i => $full_match)
+			{
+				$str = str_replace(
+					$full_match,
+					$matches[1][$i].' ~ '.$in_member_group_regex,
+					$str
+				);
+			}
+		}
+
+		return $str;
+	}
+
+	/**
+	 * Mark a template context
+	 *
+	 * @param String $context Context name, current template if not given
+	 * @return String Annotation to insert
+	 */
+	public function markContext($context = NULL)
+	{
+		if ( ! isset($context))
+		{
+			$context = 'Template "'.$this->group_name.'/'.$this->template_name.'"';
+		}
+
+		return $this->createAnnotation(array('context' => $context));
+	}
+
+	/**
+	 * Create a template annotation
+	 *
+	 * Lazily sets up the annotation object if it does not exist.
+	 *
+	 * @param $data Initial annotation data
+	 * @return String Annotation comment string
+	 */
+	protected function createAnnotation($data)
+	{
+		if ( ! isset($this->annotations))
+		{
+			$this->annotations = new \EllisLab\ExpressionEngine\Library\Template\Annotation\Runtime();
+			$this->annotations->useSharedStore();
+		}
+
+		return $this->annotations->create($data);
 	}
 }
 // END CLASS

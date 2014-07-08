@@ -86,8 +86,8 @@ class EE_Core {
 		// application constants
 		define('IS_CORE',		FALSE);
 		define('APP_NAME',		'ExpressionEngine'.(IS_CORE ? ' Core' : ''));
-		define('APP_BUILD',		'04.03.2014');
-		define('APP_VER',		'3.0.0');
+		define('APP_BUILD',		'20140604');
+		define('APP_VER',		'2.9.0');
 		define('SLASH',			'&#47;');
 		define('LD',			'{');
 		define('RD',			'}');
@@ -104,9 +104,6 @@ class EE_Core {
 		ee()->db->db_debug = FALSE;
 
 		// Setup API model factory
-		require APPPATH . '../EllisLab/ExpressionEngine/Core/Autoloader.php';
-		$loader = new Autoloader();
-		$loader->register();
 		ee()->dependencies = new \EllisLab\ExpressionEngine\Core\Dependencies();
 		ee()->api = ee()->dependencies->getModelFactory();
 

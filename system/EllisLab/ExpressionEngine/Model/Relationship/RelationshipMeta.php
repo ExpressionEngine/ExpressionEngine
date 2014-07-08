@@ -78,7 +78,14 @@ class RelationshipMeta {
 
 		// Poplate to_table
 		$gateway_relationships = $from_gateway_class::getMetaData('related_gateways');
+
+		if ( ! isset ($gateway_relationships[$this->from_key]))
+		{
+			throw new \RuntimeException ('Missing relationship from ' . $this->from_model_name . '::$' . $this->from_key . ' to ' . $this->to_model_name . '::$' . $this->to_key);
+		}
+
 		$gateway_relationship = $gateway_relationships[$this->from_key];
+
 		if ( ! isset ($gateway_relationship['gateway']))
 		{
 			$gateway_relationship = $gateway_relationship[$this->relationship_name];

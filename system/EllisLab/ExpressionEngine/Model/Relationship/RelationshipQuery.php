@@ -2,8 +2,8 @@
 namespace EllisLab\ExpressionEngine\Model\Relationship;
 
 use EllisLab\ExpressionEngine\Model\Model;
-use EllisLab\ExpressionEngine\Model\ModelAliasService;
 use EllisLab\ExpressionEngine\Model\ModelFactory;
+use EllisLab\ExpressionEngine\Core\AliasService;
 
 class RelationshipQuery {
 
@@ -26,7 +26,7 @@ class RelationshipQuery {
 	 * @param AliasService  $alias_service
 	 * @return RelationshipMeta  Database specific metdata
 	 */
-	public function eager(ModelAliasService $alias_service)
+	public function eager(AliasService $alias_service)
 	{
 		return new RelationshipMeta(
 			$alias_service,
