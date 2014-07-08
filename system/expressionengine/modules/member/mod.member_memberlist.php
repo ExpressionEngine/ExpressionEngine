@@ -413,14 +413,7 @@ class Member_memberlist extends Member {
 			$row_limit = ee()->config->item('memberlist_row_limit');
 		}
 
-		if ($order_by = ee()->input->post('order_by', 'post'))
-		{
-			if ( ! in_array($order_by, $valid_order_bys))
-			{
-				$order_by = ee()->config->item('memberlist_order_by');
-			}
-		}
-		else
+		if ( ! ($order_by = ee()->input->post('order_by', 'post')))
 		{
 			$order_by = ee()->config->item('memberlist_order_by');
 		}
@@ -469,6 +462,12 @@ class Member_memberlist extends Member {
 			$order_by   = $matches[2];
 			$sort_order = $matches[3];
 			$row_limit  = $matches[4];
+		}
+
+		// Ensure $order_by is valid
+		if ( ! in_array($order_by, $valid_order_bys))
+		{
+			$order_by = ee()->config->item('memberlist_order_by');
 		}
 
 		$path = '/G'.$group_id.'/'.$order_by.'/'.$sort_order.'/L'.$row_limit;
