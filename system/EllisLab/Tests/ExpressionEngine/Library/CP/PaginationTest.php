@@ -71,7 +71,7 @@ class PaginationTest extends \PHPUnit_Framework_TestCase {
 
 	public function badCpLinksDataProvider()
 	{
-		$url = new \EllisLab\ExpressionEngine\Library\CP\Url('foo/bar');
+		$url = new \EllisLab\ExpressionEngine\Library\CP\URL('foo/bar');
 		$obj = new \stdClass;
 
 		return array(
@@ -92,7 +92,7 @@ class PaginationTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testNothingToPaginate()
 	{
-		$url = new \EllisLab\ExpressionEngine\Library\CP\Url('foo/bar');
+		$url = new \EllisLab\ExpressionEngine\Library\CP\URL('foo/bar');
 
 		$links = Pagination::create(10, 10, 1)->cp_links($url);
 		$this->assertEquals(array(), $links, "1 Page creates no links");
@@ -120,7 +120,7 @@ class PaginationTest extends \PHPUnit_Framework_TestCase {
 
 	public function cpLinksDataProvider()
 	{
-		$url = new \EllisLab\ExpressionEngine\Library\CP\Url('foo/bar');
+		$url = new \EllisLab\ExpressionEngine\Library\CP\URL('foo/bar');
 
 		$return = array();
 
