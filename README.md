@@ -1,4 +1,4 @@
-# Setting Up a Development Branch
+# ExpressionEngine
 
 **These repositories must remain private and all work under NDA.**
 
@@ -62,14 +62,14 @@ This will install the versions listed in the composer.lock file. If you
 wish to update phpunit, mockery, or any of the others, run `composer
 update` instead and commit the new lock file after testing.
 
-From there you can run the ExpressionEngine tests with::
+From there you can run the ExpressionEngine tests with:
 
 ```
 phpunit ExpressionEngine/
 ```
 
 Alternatively you can install phing and run all current unit tests from
-the project root using::
+the project root using:
 
 ```
 phing tests
