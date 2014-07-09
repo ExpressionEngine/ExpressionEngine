@@ -6,6 +6,7 @@ Setting Up a Development Branch
 * Javascript
 * Testing
 * Releasing
+**These repositories must remain private and all work under NDA.**
 
 ***************
 Naming Branches
