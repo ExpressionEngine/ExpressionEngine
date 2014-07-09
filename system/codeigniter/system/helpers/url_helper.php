@@ -542,7 +542,16 @@ if ( ! function_exists('redirect'))
 
 		if ( ! preg_match('#^https?://#i', $uri))
 		{
-			$uri = site_url($uri);
+			if (strpos($uri, site_url()) === FALSE)
+			{
+				$uri = site_url($uri);
+			}
+
+			if (strpos($uri, 'http') !== 0)
+			{
+				$uri = ltrim($uri, ':/');
+				$uri = 'http://'.$uri;
+			}
 		}
 
 		// IIS environment likely? Use 'refresh' for better compatibility
