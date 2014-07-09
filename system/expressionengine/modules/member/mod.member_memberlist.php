@@ -455,6 +455,19 @@ class Member_memberlist extends Member {
 		/**  Parse the request URI
 		/** ----------------------------------------*/
 
+		// Redirect for old URI styles
+		if (preg_match('/^([0-9]{1,})\-([0-9a-z_]{1,})\-([0-9a-z]{1,})\-([0-9]{1,})\-([0-9]{1,})/i', $this->cur_id, $matches))
+		{
+			$group_id   = $matches[1];
+			$order_by   = $matches[2];
+			$sort_order = $matches[3];
+			$row_limit  = $matches[4];
+			$row_count  = $matches[5];
+
+			ee()->load->helper('url');
+			return redirect($this->_member_path('memberlist').'/G'.$group_id.'/'.$order_by.'/'.$sort_order.'/L'.$row_limit.'/P'.$row_count, 'auto', 301);
+		}
+
 		$path = '';
 		if (preg_match('#/G([0-9]+)/(.*?)/(.*?)/L([0-9]+)(?:/|\Z)#', ee()->uri->query_string, $matches))
 		{
