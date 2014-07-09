@@ -29,7 +29,7 @@ use EllisLab\ExpressionEngine\Library\CP\Pagination;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class CP extends Logs {
+class Cp extends Logs {
 
 	/**
 	 * View Control Panel Log Files
