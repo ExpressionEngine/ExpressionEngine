@@ -1,16 +1,8 @@
-###############################
-Setting Up a Development Branch
-###############################
+# Setting Up a Development Branch
 
-* Naming branches
-* Javascript
-* Testing
-* Releasing
 **These repositories must remain private and all work under NDA.**
 
-***************
-Naming Branches
-***************
+## Naming Branches
 
 ExpressionEngine follows the Git Flow naming conventions. The primary
 branches are:
@@ -25,8 +17,8 @@ be prefixed with `feature/`:
 * feature/commerce
 * feature/pandora-accessory
 
-THese should typically be turned into pull-requests before they are
-merged in.
+Feature branches should be turned into pull-requests before they are
+merged into develop.
 
 When code for a release is frozen, a branch prefixed with `release/`
 should be created. Version numbers should follow
@@ -35,9 +27,8 @@ should be created. Version numbers should follow
 * release/2.9.0
 * release/2.22.0-dp.15+intrepid-earwig
 
-*************************
-Development Configuration
-*************************
+
+## Development Configuration
 
 Use uncompressed JavaScript:
 
@@ -57,14 +48,15 @@ Turn debug on:
 $debug = 1;
 ```
 
-************
-Unit Testing
-************
+
+## Unit Testing
 
 In order to run unit tests you will need Composer and PHPUnit. In the
 system/Tests directory run:
 
-  composer install
+```
+composer install
+```
 
 This will install the versions listed in the composer.lock file. If you
 wish to update phpunit, mockery, or any of the others, run `composer
@@ -72,16 +64,19 @@ update` instead and commit the new lock file after testing.
 
 From there you can run the ExpressionEngine tests with::
 
-  phpunit ExpressionEngine/
+```
+phpunit ExpressionEngine/
+```
 
 Alternatively you can install phing and run all current unit tests from
 the project root using::
 
-  phing tests
+```
+phing tests
+```
 
-******************
-Writing Unit Tests
-******************
+
+### Writing Unit Tests
 
 Before beginning to write tests, please read the documentation for:
 
@@ -108,31 +103,31 @@ test writing than what you might be used to in regular code.
 
 The Good:
 
-- Write tests for bugs
-- Write tests while building a feature
-- Mirror the existing folder structure for your test
-- Name your class test files <ClassName>Test.php
-- Name your test methods tests<MethodName>
-- Use annotations wherever possible.
-- Use separate methods to test exceptions
-  - Call them tests<MethodName>ThrowsException<condition> and use the
+* Write tests for bugs
+* Write tests while building a feature
+* Mirror the existing folder structure for your test
+* Name your class test files <ClassName>Test.php
+* Name your test methods tests<MethodName>
+* Use annotations wherever possible.
+* Use separate methods to test exceptions
+  * Call them tests<MethodName>ThrowsException<condition> and use the
     @expectedException annotation.
-- Use the `$message` parameter on assertions to help document the tests
-  - This helps pinpoint the failing assertion. Use this when there are a
+* Use the `$message` parameter on assertions to help document the tests
+  * This helps pinpoint the failing assertion. Use this when there are a
     lot of assertions in your method or when it is not immediately clear
     from the `$expected`/`$actual` pair which assertion failed. Try
     failing a few assertions on purpose to get a feel for how to find
     them.
-  - This field is a comment to your assertion. It should describe the
+  * This field is a comment to your assertion. It should describe the
     expected behavior. Keep it short, it is not documentation for the
     code -- that belongs with the code.
-  - If your class has a lot of methods, especially if they are similar
+  * If your class has a lot of methods, especially if they are similar
     consider prefixing the message. `func() accepts no arguments`
-- For testing a range of options, use dataProviders to keep the test
+* For testing a range of options, use dataProviders to keep the test
   short.
-- Include the $message parameter in your dataProvider array
-- Use tearDown to cleanup your setUp
-- Use @covers on methods that you cannot fully isolate or on
+* Include the $message parameter in your dataProvider array
+* Use tearDown to cleanup your setUp
+* Use @covers on methods that you cannot fully isolate or on
   constructors. Always set it on constructor tests as they may grow to
   include things that are verified in a separate test.
 
@@ -140,83 +135,87 @@ The Good:
 
 The Bad:
 
-- Never assume that the test is wrong. A bug has probably been
+* Never assume that the test is wrong. A bug has probably been
   introduced.
-- Never commit a new test that is broken unless it tests new code.
-- Never commit a test that you did not see fail first. It may not be
+* Never commit a new test that is broken unless it tests new code.
+* Never commit a test that you did not see fail first. It may not be
   running.
-- Avoid control structures (if/while/try/foreach).
-  - Loops can be avoided by using @dataProvider
-  - Try statements can be avoided using @expectedException
-  - If statements can be avoided by creating multiple methods
-- Avoid needless comments
-    - They obscure the annotations, making the test harder to follow
-    - They increase the perceived effort of adding a test, resulting in
+* Avoid control structures (if/while/try/foreach).
+  * Loops can be avoided by using @dataProvider
+  * Try statements can be avoided using @expectedException
+  * If statements can be avoided by creating multiple methods
+* Avoid needless comments
+    * They obscure the annotations, making the test harder to follow
+    * They increase the perceived effort of adding a test, resulting in
       lower coverage
-    - Consider putting the comment on the code you're testing instead.
+    * Consider putting the comment on the code you're testing instead.
       Do not duplicate code documentation in the test.
-    - If your test needs more explanation than fits into the `$message`
+    * If your test needs more explanation than fits into the `$message`
       parameter, then you should reconsider the test case or the code it
       is testing.
-- If you're stubbing a lot, take a step back and consider if you can
+* If you're stubbing a lot, take a step back and consider if you can
   decouple your class more cleanly.
 
 
 Example of a class to test:
 
-  class Math {
+```php
+class Math {
 
-    function divide($a, $b)
+  function divide($a, $b)
+  {
+    if ($b == 0)
     {
-      if ($b == 0)
-      {
-        throw new InvalidArgumentException('Cannot divide by 0');
-      }
-
-      return $a / $b;
+      throw new InvalidArgumentException('Cannot divide by 0');
     }
+
+    return $a / $b;
   }
+}
+```
 
 
 Example of a good test:
 
-  class MathTest {
+```php
+class MathTest {
 
-    protected function setUp()
-    {
-      $this->math = new Math();
-    }
-
-    protected function tearDown()
-    {
-      $this->math = NULL;
-    }
-
-    public function validDivisons()
-    {
-      return array(
-        array(6, 2, 3, 'divide() handles positive numbers'),
-        array(-6, -2, 3, 'divide() handles negative numbers'),
-        array(10, 2.5, 4, 'divide() handles floats'),
-        array(INF, 2, INF, 'divide() is infinite with infinity in the dividend'),
-        array(6, INF, 0, 'divide() is 0 with infinity in the divisor'),
-        array(INF, INF, NAN, 'divide() is NotANumber with infinity in both arguments')
-      )
-    }
-
-    /**
-     * @dataProvider validDivisions
-     */
-    public function testDivide($a, $b, $result, $message)
-    {
-      $this->assertEquals($result, $this->math->divide($a, $b), $message);
-    }
-
-    /**
-     * @expectedException InvalidArgumentException
-     */
-    public function testDivideThrowsExceptionForDivisonByZero()
-    {
-      $this->math->divide(10, 0);
-    }
+  protected function setUp()
+  {
+    $this->math = new Math();
   }
+
+  protected function tearDown()
+  {
+    $this->math = NULL;
+  }
+
+  public function validDivisons()
+  {
+    return array(
+      array(6, 2, 3, 'divide() handles positive numbers'),
+      array(-6, -2, 3, 'divide() handles negative numbers'),
+      array(10, 2.5, 4, 'divide() handles floats'),
+      array(INF, 2, INF, 'divide() is infinite with infinity in the dividend'),
+      array(6, INF, 0, 'divide() is 0 with infinity in the divisor'),
+      array(INF, INF, NAN, 'divide() is NotANumber with infinity in both arguments')
+    )
+  }
+
+  /**
+   * @dataProvider validDivisions
+   */
+  public function testDivide($a, $b, $result, $message)
+  {
+    $this->assertEquals($result, $this->math->divide($a, $b), $message);
+  }
+
+  /**
+   * @expectedException InvalidArgumentException
+   */
+  public function testDivideThrowsExceptionForDivisonByZero()
+  {
+    $this->math->divide(10, 0);
+  }
+}
+```
