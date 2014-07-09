@@ -550,7 +550,10 @@ if ( ! function_exists('redirect'))
 			if (strpos($uri, 'http') !== 0)
 			{
 				$uri = ltrim($uri, ':/');
-				$uri = 'http://'.$uri;
+				$protocol = (isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on")
+					? "https://"
+					: "http://";
+				$uri = $protocol.$uri;
 			}
 		}
 
