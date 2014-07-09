@@ -542,7 +542,8 @@ if ( ! function_exists('redirect'))
 
 		if ( ! preg_match('#^https?://#i', $uri))
 		{
-			if (strpos($uri, site_url()) === FALSE)
+			if (strpos($uri, site_url()) === FALSE
+				&& strpos($uri, '//') !== 0)
 			{
 				$uri = site_url($uri);
 			}
@@ -565,9 +566,11 @@ if ( ! function_exists('redirect'))
 
 		switch($method)
 		{
-			case 'refresh'	: header("Refresh:0;url=".$uri);
+			case 'refresh':
+				header("Refresh:0;url=".$uri);
 				break;
-			default			: header("Location: ".$uri, TRUE, $http_response_code);
+			default:
+				header("Location: ".$uri, TRUE, $http_response_code);
 				break;
 		}
 		exit;
