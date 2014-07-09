@@ -86,9 +86,7 @@ class Template_model extends CI_Model {
 	 */
 	protected function _load_template_file(Template_Entity $template, $only_load_last_edit=FALSE)
 	{
-		// FIXME  Why on EARTH was this done in the Template parser and not
-		// originally written right into EE_Config?  Why is EE_Config not
-		// itself capable of caching preferences when used with MSM
+		// Fetch the site config if we need it
 		$site_switch = FALSE;
 		if ($this->config->item('site_id') != $template->site_id)
 		{
