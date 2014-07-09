@@ -233,12 +233,20 @@ class CI_Router {
 		// is found or when such a directory doesn't exist
 		while ($c-- > 0)
 		{
-			$test = $this->directory
-				.str_replace('-', '_', $segments[0]);
+			$test = $this->directory.str_replace('-', '_', $segments[0]);
 
+			// First lowercase
 			if ( ! file_exists(APPPATH.'controllers/'.$test.'.php') && is_dir(APPPATH.'controllers/'.$this->directory.$segments[0]))
 			{
 				$this->set_directory(array_shift($segments), TRUE);
+				continue;
+			}
+
+			// Now ucfirst()ed
+			$test = $this->directory.str_replace('-', '_', ucfirst($segments[0]));
+			if ( ! file_exists(APPPATH.'controllers/'.$test.'.php') && is_dir(APPPATH.'controllers/'.$this->directory.ucfirst($segments[0])))
+			{
+				$this->set_directory(ucfirst(array_shift($segments)), TRUE);
 				continue;
 			}
 
@@ -249,7 +257,8 @@ class CI_Router {
 		// directory's name inside the directory. Use its index method.
 		if (empty($segments))
 		{
-			if (file_exists(APPPATH.'controllers/'.$this->directory.$last.'.php'))
+			if (file_exists(APPPATH.'controllers/'.$this->directory.$last.'.php')
+				|| file_exists(APPPATH.'controllers/'.$this->directory.ucfirst($last).'.php'))
 			{
 				return array($last, 'index');
 			}
