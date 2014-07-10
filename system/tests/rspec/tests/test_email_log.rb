@@ -89,7 +89,7 @@ feature 'Email Log' do
 	@page.username_filter.has_select?('filter_by_username', :selected => "johndoe")
 	@page.should have(35).items
 	@page.should_not have_pagination
-	@page.should_not have_text "admin"
+	@page.items.should_not have_text "admin"
   end
 
   # @TODO pending phrase search working
