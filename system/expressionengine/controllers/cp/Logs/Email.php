@@ -67,10 +67,17 @@ class Email extends Logs {
 			$logs = $logs->filter('cache_date', '>=', ee()->localize->now - $this->params['filter_by_date']);
 		}
 
-		// if ( ! empty($this->view->filter_by_phrase_value))
-		// {
-		// 	$logs = $logs->filter('action', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%');
-		// }
+		if ( ! empty($this->view->filter_by_phrase_value))
+		{
+			$logs = $logs->filterGroup()
+			               ->filter('member_name', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%')
+			               ->orFilter('ip_address', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%')
+			               ->orFilter('recipient', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%')
+			               ->orFilter('recipient_name', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%')
+			               ->orFilter('subject', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%')
+			               ->orFilter('message', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%')
+						 ->endFilterGroup();
+		}
 
 		$count = $logs->count();
 

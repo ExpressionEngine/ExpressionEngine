@@ -69,7 +69,12 @@ class Cp extends Logs {
 
 		if ( ! empty($this->view->filter_by_phrase_value))
 		{
-			$logs = $logs->filter('action', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%');
+			$logs = $logs->filterGroup()
+			               ->filter('action', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%')
+			               ->orFilter('username', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%')
+			               ->orFilter('ip_address', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%')
+			               ->orFilter('Site.site_label', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%')
+						 ->endFilterGroup();
 		}
 
 		$count = $logs->count();

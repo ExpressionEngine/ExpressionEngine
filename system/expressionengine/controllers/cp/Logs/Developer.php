@@ -60,10 +60,22 @@ class Developer extends Logs {
 			$logs = $logs->filter('timestamp', '>=', ee()->localize->now - $this->params['filter_by_date']);
 		}
 
-		// if ( ! empty($this->view->filter_by_phrase_value))
-		// {
-		// 	$logs = $logs->filter('action', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%');
-		// }
+		if ( ! empty($this->view->filter_by_phrase_value))
+		{
+			$logs = $logs->filterGroup()
+			               ->filter('description', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%')
+			               ->orFilter('function', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%')
+			               ->orFilter('line', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%')
+			               ->orFilter('file', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%')
+			               ->orFilter('deprecated_since', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%')
+			               ->orFilter('use_instead', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%')
+			               ->orFilter('template_name', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%')
+			               ->orFilter('template_group', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%')
+			               ->orFilter('addon_module', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%')
+			               ->orFilter('addon_method', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%')
+			               ->orFilter('snippets', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%')
+						 ->endFilterGroup();
+		}
 
 		$count = $logs->count();
 

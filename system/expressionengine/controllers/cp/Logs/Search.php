@@ -72,10 +72,16 @@ class Search extends Logs {
 			$logs = $logs->filter('search_date', '>=', ee()->localize->now - $this->params['filter_by_date']);
 		}
 
-		// if ( ! empty($this->view->filter_by_phrase_value))
-		// {
-		// 	$logs = $logs->filter('action', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%');
-		// }
+		if ( ! empty($this->view->filter_by_phrase_value))
+		{
+			$logs = $logs->filterGroup()
+			               ->filter('screen_name', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%')
+			               ->orFilter('ip_address', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%')
+			               ->orFilter('search_type', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%')
+			               ->orFilter('search_terms', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%')
+			               ->orFilter('Site.site_label', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%')
+						 ->endFilterGroup();
+		}
 
 		$count = $logs->count();
 
