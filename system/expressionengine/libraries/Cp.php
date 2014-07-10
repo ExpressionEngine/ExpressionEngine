@@ -99,7 +99,7 @@ class Cp {
 
 		ee()->load->model('member_model'); // for screen_name, quicklinks
 
-		ee()->lang->loadfile($langfile);
+		ee()->lang->loadfile($langfile, '', FALSE);
 
 
 		// Success/failure messages

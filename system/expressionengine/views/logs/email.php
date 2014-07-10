@@ -26,11 +26,11 @@
 
 			<div class="item">
 				<ul class="toolbar">
-					<li class="remove"><a href="<?=cp_url('logs/delete/email/'.$row['cache_id'])?>" title="remove"></a></li>
+					<li class="remove"><a href="<?=cp_url('logs/email/delete/'.$row['cache_id'])?>" title="remove"></a></li>
 				</ul>
 				<h3><b><?=lang('date_logged')?>:</b> <?=$row['cache_date']?><br><b><?=lang('username')?>:</b> <?=$row['username']?>, <b><abbr title="<?=lang('internet_protocol')?>"><?=lang('ip')?></abbr>:</b> <?=$row['ip_address']?></h3>
 				<div class="message">
-					<p><?=lang('sent_to')?> <b><?=$row['recipient_name']?></b>, <?=lang('subject')?>: <a href="<?=cp_url('logs/view_email/'.$row['cache_id'])?>"><?=$row['subject']?></a></p>
+					<p><?=lang('sent_to')?> <b><?=$row['recipient_name']?></b>, <?=lang('subject')?>: <a href="<?=cp_url('logs/email/view/'.$row['cache_id'])?>"><?=$row['subject']?></a></p>
 				</div>
 			</div>
 			<?php endforeach; ?>
@@ -38,7 +38,7 @@
 			<?php $this->view('_shared/pagination'); ?>
 
 			<fieldset class="tbl-bulk-act">
-				<a class="btn remove" href="<?=cp_url('logs/delete/email')?>"><?=lang('clear_email_logs')?></a>
+				<a class="btn remove" href="<?=cp_url('logs/email/delete')?>"><?=lang('clear_email_logs')?></a>
 			</fieldset>
 		<?php endif; ?>
 	</section>

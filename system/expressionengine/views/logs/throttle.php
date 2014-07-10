@@ -29,7 +29,7 @@
 
 				<div class="item">
 					<ul class="toolbar">
-						<li class="remove"><a href="<?=cp_url('logs/delete/throttle/'.$row['throttle_id'])?>" title="remove"></a></li>
+						<li class="remove"><a href="<?=cp_url('logs/throttle/delete/'.$row['throttle_id'])?>" title="remove"></a></li>
 					</ul>
 					<h3><b><?=lang('date_logged')?>:</b> <?=$row['last_activity']?>, <b><abbr title="<?=lang('internet_protocol')?>"><?=lang('ip')?></abbr>:</b> <?=$row['ip_address']?></h3>
 					<div class="message">
@@ -42,7 +42,7 @@
 				<?php $this->view('_shared/pagination'); ?>
 
 				<fieldset class="tbl-bulk-act">
-					<a class="btn remove" href="<?=cp_url('logs/delete/throttle')?>"><?=lang('clear_throttle_logs')?></a>
+					<a class="btn remove" href="<?=cp_url('logs/throttle/delete')?>"><?=lang('clear_throttle_logs')?></a>
 				</fieldset>
 			<?php endif; ?>
 		<?php endif; ?>

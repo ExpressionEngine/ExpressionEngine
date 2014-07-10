@@ -26,7 +26,7 @@
 			<?php foreach($rows as $row): ?>
 			<div class="item">
 				<ul class="toolbar">
-					<li class="remove"><a href="<?=cp_url('logs/delete/developer/'.$row['log_id'])?>" title="remove"></a></li>
+					<li class="remove"><a href="<?=cp_url('logs/developer/delete/'.$row['log_id'])?>" title="remove"></a></li>
 				</ul>
 				<h3><b><?=lang('date_logged')?>:</b> <?=$row['timestamp']?></h3>
 				<div class="message">
@@ -38,7 +38,7 @@
 			<?php $this->view('_shared/pagination'); ?>
 
 			<fieldset class="tbl-bulk-act">
-				<a class="btn remove" href="<?=cp_url('logs/delete/developer')?>"><?=lang('clear_developer_logs')?></a>
+				<a class="btn remove" href="<?=cp_url('logs/developer/delete')?>"><?=lang('clear_developer_logs')?></a>
 			</fieldset>
 		<?php endif; ?>
 	</section>
