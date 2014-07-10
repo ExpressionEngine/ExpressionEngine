@@ -402,6 +402,12 @@ class Wizard extends CI_Controller {
 				}
 			}
 
+			// We'll switch the default if MySQLi is available
+			if (function_exists('mysqli_connect'))
+			{
+					$this->userdata['dbdriver'] = 'mysqli';
+			}
+
 			// At this point we are reasonably sure that this is a first time installation.
 			// We will set the flag and bail out since we're done
 			$this->is_installed = FALSE;
@@ -1868,7 +1874,7 @@ PAPAYA;
 	 */
 	function _get_supported_dbs()
 	{
-		$names = array('mysql' => 'MySQL', 'mysqli' => 'MySQLi', 'mssql' => 'MS SQL', 'postgre' => 'Postgre SQL');
+		$names = array('mysqli' => 'MySQLi', 'mysql' => 'MySQL');
 
 		$dbs = array();
 		foreach (get_filenames(APPPATH.'schema/') as $val)
@@ -1877,7 +1883,10 @@ PAPAYA;
 
 			if (isset($names[$val]))
 			{
-				$dbs[$val] = $names[$val];
+				if (function_exists($names[$val].'_connect'))
+				{
+					$dbs[$val] = $names[$val];
+				}
 			}
 		}
 
