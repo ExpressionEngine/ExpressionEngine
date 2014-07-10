@@ -67,16 +67,6 @@
 		@set_magic_quotes_runtime(0); // Kill magic quotes
 	}
 
-
-/*
- * ------------------------------------------------------
- *  Load the autoloader and register it
- * ------------------------------------------------------
- */
-	require(APPPATH.'../EllisLab/ExpressionEngine/Core/Autoloader.php');
-
-	Autoloader::getInstance()->register();
-
 /*
  * ------------------------------------------------------
  *  Load the autoloader and register it
