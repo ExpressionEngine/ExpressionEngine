@@ -62,7 +62,35 @@ class Throttle extends Logs {
 
 			$offset = ($page - 1) * $this->params['perpage']; // Offset is 0 indexed
 
-			$logs = ee()->api->get('Throttle');
+			$max_page_loads = 10;
+			$lockout_time	= 30;
+
+			if (is_numeric($this->config->item('max_page_loads')))
+			{
+				$max_page_loads = $this->config->item('max_page_loads');
+			}
+
+			if (is_numeric($this->config->item('lockout_time')))
+			{
+				$lockout_time = $this->config->item('lockout_time');
+			}
+
+			$logs = ee()->api->get('Throttle')
+				->filterGroup()
+				->filter('hits', '>=', $max_page_loads)
+				->orFilterGroup()
+					->filter('locked_out', 'y')
+					->filter('last_activity', '>', $lockout_time)
+				->endFilterGroup()
+				->endFilterGroup();
+
+			if ( ! empty($this->view->filter_by_phrase_value))
+			{
+				$logs = $logs->filterGroup()
+				               ->filter('ip_address', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%')
+				               ->orFilter('hits', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%')
+							 ->endFilterGroup();
+			}
 
 			$count = $logs->count();
 
