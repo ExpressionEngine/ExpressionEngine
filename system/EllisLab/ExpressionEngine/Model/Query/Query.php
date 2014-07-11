@@ -62,7 +62,7 @@ class Query {
 		$primary_aliased_tablename =  $primary_tablename . '_' . $this->root->getId();
 		$this->db->from($primary_tablename . ' AS ' . $primary_aliased_tablename);
 
-		foreach($gateway_names as $gateway_name)
+		foreach ($gateway_names as $gateway_name)
 		{
 			$gateway_class = $this->alias_service->getRegisteredClass($gateway_name);
 			$tablename = $gateway_class::getMetaData('table_name');
@@ -87,7 +87,8 @@ class Query {
 	protected function getNodeForRelationship($relationship_name)
 	{
 		$relationship_name = $this->getAlias($relationship_name);
-		foreach($this->root->getBreadthFirstIterator() as $node)
+
+		foreach ($this->root->getBreadthFirstIterator() as $node)
 		{
 			if ($node->getName() == $relationship_name)
 			{
@@ -129,23 +130,25 @@ class Query {
 		}
 
 		$gateway_names = $model_class::getMetaData('gateway_names');
-		foreach($gateway_names as $gateway_name)
+
+		foreach ($gateway_names as $gateway_name)
 		{
 			$gateway_class = $this->alias_service->getRegisteredClass($gateway_name);
 			$field_list = $gateway_class::getMetaData('field_list');
+
 			if (in_array($property, $gateway_class::getMetaData('field_list')))
 			{
 				$table = $gateway_class::getMetaData('table_name');
 				break;
 			}
 		}
+
 		if ( ! isset($table))
 		{
 			throw new \Exception('Property ' . $property . ' was not found on model ' . $model_class);
 		}
 
-		$result = $table . '_' . $node->getId() . '.' . $property;
-		return $result;
+		return $table . '_' . $node->getId() . '.' . $property;
 	}
 
 	/**
@@ -164,7 +167,6 @@ class Query {
 		// We'll use this to mask the application.  We'll need it
 		// when we do subquerying.
 		$this->applyFilter($property, $operator, $value);
-
 		return $this;
 	}
 
@@ -287,12 +289,13 @@ class Query {
 			$this->buildRelationshipTree($this->root, $relationship);
 		}
 
-		foreach($this->root->getBreadthFirstIterator() as $node)
+		foreach ($this->root->getBreadthFirstIterator() as $node)
 		{
 			if ($node->isRoot() || $this->hasParentSubquery($node))
 			{
 				continue;
 			}
+
 			$this->buildRelationship($node);
 		}
 
@@ -313,12 +316,13 @@ class Query {
 			// If the 'to' key exists, then we're specifying meta data, but
 			// we could still have another level below this one in the
 			// relationship tree.  So we need to check for a 'with' key.
-			if ( isset($relationship['to']))
+			if (isset($relationship['to']))
 			{
 				// Build the relationship, pass the meta data through.
 				$to = $relationship['to'];
 				unset($relationship['to']);
-				if ( isset ($relationship['with']))
+
+				if (isset($relationship['with']))
 				{
 					$with = $relationship['with'];
 					unset($relationship['with']);
@@ -327,7 +331,7 @@ class Query {
 				$parent->add($this->createNode($parent, $to, $relationship));
 
 				// If we have a with key, then recurse.
-				if ( isset ($with))
+				if (isset($with))
 				{
 					$this->buildRelationshipTree($to_node, $with);
 				}
@@ -710,7 +714,7 @@ class Query {
 		$primary_key_name = $model::getMetaData('primary_key');
 		$primary_key = $model_data[$primary_key_name];
 
-		if ( ! isset ($this->model_index[$model_name]))
+		if ( ! isset($this->model_index[$model_name]))
 		{
 			$this->model_index[$model_name] = array();
 		}
@@ -820,6 +824,7 @@ class Query {
 		}
 
 		$model_class_name = $this->alias_service->getRegisteredClass($model_name);
+
 		foreach ($model_class_name::getMetaData('gateway_names') as $gateway_name)
 		{
 			$gateway_class_name = $this->alias_service->getRegisteredClass($gateway_name);
@@ -846,6 +851,7 @@ class Query {
 		{
 			return $this->aliases[$aliased];
 		}
+
 		return $aliased;
 	}
 
