@@ -28,7 +28,6 @@ class Query {
 	 * 			relationships.  The model we initiated the query against.
 	 */
 	private $root = NULL;
-	private $model_index = array();
 
 	public function __construct(ModelFactory $factory, AliasService $alias_service, $model_name)
 	{
