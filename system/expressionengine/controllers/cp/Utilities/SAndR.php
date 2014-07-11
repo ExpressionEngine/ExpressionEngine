@@ -27,7 +27,7 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class SAndR extends Utilities {
+class Sandr extends Utilities {
 
 	/**
 	 * Search and Replace utility
@@ -243,5 +243,5 @@ class SAndR extends Utilities {
 }
 // END CLASS
 
-/* End of file SAndR.php */
-/* Location: ./system/expressionengine/controllers/cp/Utilities/SAndR.php */
+/* End of file Sandr.php */
+/* Location: ./system/expressionengine/controllers/cp/Utilities/Sandr.php */

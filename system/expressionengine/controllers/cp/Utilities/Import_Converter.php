@@ -29,7 +29,7 @@ use EllisLab\ExpressionEngine\Module\Member\Model\Gateway\MemberGateway;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Import_Converter extends Utilities {
+class Import_converter extends Utilities {
 
 	/**
 	 * Member import file converter
@@ -493,5 +493,5 @@ class Import_Converter extends Utilities {
 }
 // END CLASS
 
-/* End of file Import_Converter.php */
-/* Location: ./system/expressionengine/controllers/cp/Utilities/Import_Converter.php */
+/* End of file Import_converter.php */
+/* Location: ./system/expressionengine/controllers/cp/Utilities/Import_converter.php */
