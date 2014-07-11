@@ -302,6 +302,23 @@ class Query {
 		return $this;
 	}
 
+
+	private function hasParentSubquery(QueryTreeNode $node)
+	{
+		for($n = $node; ! $n->isRoot(); $n = $n->getParent())
+		{
+			// If we encounter a subquery parent with no parent, then that subquery
+			// node is the root and we're in a subquery!
+			if ($n->meta->method == RelationshipMeta::METHOD_SUBQUERY
+				&& $n->getParent() !== NULL)
+			{
+				return TRUE;
+			}
+		}
+
+		return FALSE;
+	}
+
 	/**
 	 *
 	 */
@@ -404,7 +421,7 @@ class Query {
 	 * 		leading to the attached vertex from which this node (representing an edge)
 	 * 		spawns.
 	 */
-	private function createNode(QueryTreeNode $parent, $relationship_name, array $meta=array())
+	private function createNode(QueryTreeNode $parent, $relationship_name, array $meta = array())
 	{
 		if (strpos($relationship_name, 'AS'))
 		{
@@ -502,22 +519,6 @@ class Query {
 				'LEFT OUTER');
 		}
 
-	}
-
-	private function hasParentSubquery(QueryTreeNode $node)
-	{
-		for($n = $node; ! $n->isRoot(); $n = $n->getParent())
-		{
-			// If we encounter a subquery parent with no parent, then that subquery
-			// node is the root and we're in a subquery!
-			if ($n->meta->method == RelationshipMeta::METHOD_SUBQUERY
-				&& $n->getParent() !== NULL)
-			{
-				return TRUE;
-			}
-		}
-
-		return FALSE;
 	}
 
 	private function buildSubqueryRelationship(QueryTreeNode $node)
