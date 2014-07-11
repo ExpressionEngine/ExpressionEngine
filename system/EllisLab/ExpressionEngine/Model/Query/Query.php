@@ -620,7 +620,8 @@ class Query {
 			{
 				// If this is an empty model that happened to have been grabbed due to the join,
 				// move on and don't do anything.
-				$model_class = $this->alias_service->getRegisteredClass($model_data['__model_name']);
+				$model_name = $model_data['__model_name'];
+				$model_class = $this->alias_service->getRegisteredClass($model_name);
 				$primary_key_name = $model_class::getMetaData('primary_key');
 
 				if ($row_data[$path][$primary_key_name] === NULL)
@@ -629,11 +630,6 @@ class Query {
 					continue;
 				}
 
-				$model_name =  $model_data['__model_name'];
-				$relationship_name = $model_data['__relationship_name'];
-
-				$model_class = $this->alias_service->getRegisteredClass($model_name);
-				$primary_key_name = $model_class::getMetaData('primary_key');
 				$primary_key = $model_data[$primary_key_name];
 
 				if (isset($this->model_index[$model_name][$primary_key]))
@@ -662,6 +658,8 @@ class Query {
 				{
 					throw new \Exception('Missing model parent!');
 				}
+
+				$relationship_name = $model_data['__relationship_name'];
 
 				// Reverse the relationship so we can fill in both sides
 				// TODO we should not do this if $parent_model is really a child!
