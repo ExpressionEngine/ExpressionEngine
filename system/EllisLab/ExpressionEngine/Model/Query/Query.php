@@ -11,17 +11,12 @@ class Query {
 	private $alias_service;
 
 	private $db;
-	private $model_name;
 
 	private $limit = '18446744073709551615'; // 2^64
 	private $offset = 0;
 
-	private $filters = array();
-	private $selected = array();
-	private $subqueries = array();
-
 	private $aliases = array();
-	private $tables = array();
+	private $subqueries = array();
 
 	/**
 	 * @var	QueryTreeNode $root	The root of this query's tree of model
@@ -44,7 +39,6 @@ class Query {
 
 	protected function createRoot($model_name)
 	{
-		$this->model_name = $model_name;
 		$this->root = new QueryTreeNode($model_name);
 		$this->root->meta = NULL;
 
@@ -75,7 +69,6 @@ class Query {
 				'.' .
 				$gateway_class::getMetaData('primary_key')
 			);
-
 		}
 	}
 
@@ -657,7 +650,7 @@ class Query {
 
 	protected function getAlias($aliased)
 	{
-		if ( isset ($this->aliases[$aliased]))
+		if (isset($this->aliases[$aliased]))
 		{
 			return $this->aliases[$aliased];
 		}
