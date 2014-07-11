@@ -38,7 +38,6 @@ class Spam_mcp {
 	 */
 	public function __construct()
 	{
-		// Make a local reference to the ExpressionEngine super object
 		ini_set('memory_limit', '16G');
 		set_time_limit(0);
 	}
@@ -66,8 +65,45 @@ class Spam_mcp {
 	 * @access public
 	 * @return void
 	 */
-	public function moderate($id, $spam)
+	public function moderate()
 	{
+		foreach ($_POST as $key => $class)
+		{
+			if (substr($key, 0, 5) == 'spam_')
+			{
+				$id = str_replace('spam_', '', $key);
+
+				ee()->db->select('file, class, method, data, document');
+				ee()->db->from('spam_trap');
+				ee()->db->where('trap_id', $id);
+				$query = ee()->db->get();
+
+				if ($query->num_rows() > 0)
+				{
+					$spam = $query->row();
+
+					if ($class == 'ham')
+					{
+						ee()->load->file($spam->file);
+						$class = $spam->class;
+						$class = new $class();
+
+						$data = unserialize($spam->data);
+						call_user_func_array(array($class, $spam->method), $data);
+					}
+
+					// Insert into the training table
+					$data = array(
+						'source' => $spam->document,
+						'class' => (int)($class == 'spam')
+					);
+					ee()->db->insert('spam_training', $data);
+
+					// Delete from the spam trap
+					ee()->db->delete('spam_trap', array('trap_id' => $id));
+				}
+			}
+		}
 	}
 
 	/**
@@ -152,14 +188,14 @@ class Spam_mcp {
 
 		foreach ($query->result() as $spam)
 		{
-			$spam_url = "<a href='#'>Spam</a>";
-			$ham_url = "<a href='#'>Ham</a>";
-			$moderation_url = "$spam_url / $ham_url";
+			$spam_form = "Spam: <input type='radio' name='spam_{$spam->trap_id}' value='spam'>";
+			$ham_form = "Ham: <input type='radio' name='spam_{$spam->trap_id}' value='ham'>";
+			$moderation_form = "$spam_form $ham_form";
 
 			$result[] = array(
 				$spam->trap_id,
 				$spam->document,
-				$moderation_url
+				$moderation_form
 			);
 		}
 

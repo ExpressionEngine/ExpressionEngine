@@ -2498,8 +2498,8 @@ class Comment {
 
 		if ($is_spam == TRUE)
 		{
-			$spam_data = array($comment_id, 'y');
-			ee()->spam->moderate('comment', 'moderate_comment', $spam_data, $comment_string);
+			$spam_data = array($comment_id, 'o');
+			ee()->spam->moderate(__FILE__, 'Comment', 'moderate_comment', $spam_data, $comment_string);
 		}
 
 		if ($notify == 'y')

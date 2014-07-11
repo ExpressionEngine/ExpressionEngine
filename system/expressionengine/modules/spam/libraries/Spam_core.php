@@ -67,9 +67,10 @@ class Spam_core {
 	 * @access public
 	 * @return void
 	 */
-	public function moderate_content($class, $method, $content, $doc)
+	public function moderate_content($file, $class, $method, $content, $doc)
 	{
 		$data = array(
+			'file' => $file,
 			'class' => $class,
 			'method' => $method,
 			'data' => serialize($content),

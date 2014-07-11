@@ -71,14 +71,14 @@ class EE_Spam {
 	 * @access public
 	 * @return void
 	 */
-	public function moderate($class, $method, $data, $doc)
+	public function moderate($file, $class, $method, $data, $doc)
 	{
 		if ($this->installed === FALSE)
 		{
 			return;
 		}
 
-		return $this->spam->moderate_content($class, $method, $data, $doc);
+		return $this->spam->moderate_content($file, $class, $method, $data, $doc);
 	}
 
 }

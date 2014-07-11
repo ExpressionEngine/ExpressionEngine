@@ -19,5 +19,8 @@ $this->table->set_heading(array(
 	'Content',
 	'Moderate'
 ));
+echo form_open('C=addons_modules'. AMP . 'M=show_module_cp' . AMP . 'module=spam' . AMP. 'method=moderate');
 echo $this->table->generate($moderation);
+echo form_submit(array('value'=>'Submit','class'=>'submit'));
 ?>
+</form>

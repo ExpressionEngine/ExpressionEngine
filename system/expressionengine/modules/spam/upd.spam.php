@@ -88,6 +88,7 @@ class Spam_upd {
 
 		$fields = array(
 			'trap_id'	=> array('type' => 'int', 'constraint' => '10', 'unsigned' => TRUE, 'auto_increment' => TRUE),
+			'file'		=> array('type' => 'varchar', 'constraint' => '129'),
 			'class'		=> array('type' => 'varchar', 'constraint' => '64'),
 			'method'	=> array('type' => 'varchar', 'constraint' => '64'),
 			'data'		=> array('type' => 'text'),
