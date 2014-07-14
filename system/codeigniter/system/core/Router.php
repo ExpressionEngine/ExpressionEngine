@@ -355,12 +355,18 @@ class CI_Router {
 	 */
 	function fetch_class($prepend_namespace = FALSE)
 	{
+		$class = str_replace('-', '_', $this->class);
+
+		// If we are in a namespaced controller the class is PascalCased
 		if ($prepend_namespace && ! empty($this->namespace_prefix))
 		{
-			return $this->namespace_prefix . '\\' . ucfirst($this->class);
+			$words = explode('_', $class);
+			$words = array_map('ucfirst', $words);
+			$class = implode('', $words);
+			return $this->namespace_prefix . '\\' . $class;
 		}
 
-		return $this->class;
+		return $class;
 	}
 
 	// --------------------------------------------------------------------
@@ -392,7 +398,18 @@ class CI_Router {
 			return 'index';
 		}
 
-		return $this->method;
+		$method = str_replace('-', '_', $this->method);
+
+		// If we are in a namespaced controller the method is camelCased
+		if ( ! empty($this->namespace_prefix))
+		{
+			$words = explode('_', $method);
+			$method = strtolower(array_shift($words));
+			$words = array_map('ucfirst', $words);
+			$method .= implode('', $words);
+		}
+
+		return $method;
 	}
 
 	// --------------------------------------------------------------------
