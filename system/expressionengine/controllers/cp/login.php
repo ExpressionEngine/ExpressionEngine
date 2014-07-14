@@ -281,7 +281,7 @@ class Login extends CP_Controller {
 	 * @access	public
 	 * @return	mixed
 	 */
-	public function update_un_pw()
+	public function updateUnPw()
 	{
 		$this->lang->loadfile('member');
 
@@ -453,7 +453,7 @@ class Login extends CP_Controller {
 	 * @access	public
 	 * @return	null
 	 */
-	public function forgotten_password_form()
+	public function forgottenPasswordForm()
 	{
 		if ($this->session->userdata('member_id') !== 0)
 		{
@@ -485,7 +485,7 @@ class Login extends CP_Controller {
 	 * @access	public
 	 * @return	mixed
 	 */
-	public function send_reset_token()
+	public function sendResetToken()
 	{
 		if ($this->session->userdata('member_id') !== 0)
 		{
@@ -560,7 +560,7 @@ class Login extends CP_Controller {
 			$this->view->message_status = 'success';
 		}
 
-		$this->forgotten_password_form();
+		$this->forgottenPasswordForm();
 	}
 
 	// --------------------------------------------------------------------
@@ -581,7 +581,7 @@ class Login extends CP_Controller {
 	 * @param	string
 	 * @return	mixed
 	 */
-	public function reset_password()
+	public function resetPassword()
 	{
 		if ($this->session->userdata('member_id') !== 0)
 		{

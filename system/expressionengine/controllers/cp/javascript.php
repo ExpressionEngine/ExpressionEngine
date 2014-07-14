@@ -211,7 +211,7 @@ class Javascript extends CI_Controller {
 	 * @access public
 	 * @return string
 	 */
-	function combo_load()
+	function comboLoad()
 	{
 		$this->javascript_loader->combo_load();
 	}
