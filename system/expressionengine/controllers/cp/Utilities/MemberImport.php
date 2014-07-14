@@ -27,7 +27,7 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Member_import extends Utilities {
+class MemberImport extends Utilities {
 
 	/**
 	 * Member import
@@ -105,7 +105,7 @@ class Member_import extends Utilities {
 	 *
 	 * @return	mixed
 	 */
-	public function member_import_confirm()
+	public function memberImportConfirm()
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
@@ -189,7 +189,7 @@ class Member_import extends Utilities {
 	 *
 	 * @return	void
 	 */
-	public function process_xml()
+	public function processXml()
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
@@ -269,7 +269,7 @@ class Member_import extends Utilities {
 		$imports = $this->do_import();
 
 		$msg = lang('import_success_blurb').'<br>'.str_replace('%x', $imports, lang('total_members_imported'));
-		
+
 		ee()->view->set_message('success', lang('import_success'), $msg, TRUE);
 
 		$this->functions->redirect(cp_url('utilities/member_import'));
@@ -284,7 +284,7 @@ class Member_import extends Utilities {
 	 *
 	 * @return	mixed
 	 */
-	public function validate_xml($xml)
+	public function validateXml($xml)
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
@@ -533,7 +533,7 @@ class Member_import extends Utilities {
 	 *
 	 * @return	number
 	 */
-	public function do_import()
+	public function doImport()
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
@@ -810,7 +810,7 @@ class Member_import extends Utilities {
 	 *
 	 * @return	mixed
 	 */
-	public function create_custom_fields()
+	public function createCustomFields()
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{

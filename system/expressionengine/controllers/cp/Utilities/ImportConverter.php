@@ -29,7 +29,7 @@ use EllisLab\ExpressionEngine\Module\Member\Model\Gateway\MemberGateway;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Import_converter extends Utilities {
+class ImportConverter extends Utilities {
 
 	/**
 	 * Member import file converter
@@ -260,7 +260,7 @@ class Import_converter extends Utilities {
 	 *
 	 * @return	void
 	 */
-	public function import_fieldmap_confirm()
+	public function importFieldmapConfirm()
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
@@ -344,7 +344,7 @@ class Import_converter extends Utilities {
 	 *
 	 * @return	mixed
 	 */
-	public function import_code_output()
+	public function importCodeOutput()
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
@@ -427,7 +427,7 @@ class Import_converter extends Utilities {
 	 *
 	 * @return	void
 	 */
-	public function download_xml()
+	public function downloadXml()
 	{
 		ee()->load->helper('download');
 		force_download(
