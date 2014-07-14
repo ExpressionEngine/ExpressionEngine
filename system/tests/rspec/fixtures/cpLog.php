@@ -52,7 +52,7 @@ $actions = array(
 	'Logged out',
 	'Member Group Crated:&nbsp;&nbsp;Group One',
 	'Member Group Updated:&nbsp;&nbsp;Group Two',
-	'Member profile created:&nbsp;&nbsp;johndoe'
+	'Member profile created:&nbsp;&nbsp;jdoe'
 );
 
 for ($x = 0; $x < $count; $x++)
