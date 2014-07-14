@@ -38,7 +38,9 @@ feature 'Developer Log' do
   	our_desc = "Rspec entry for search"
 
   	@page.generate_data(count: 1, timestamp_max: 0, description: our_desc)
-  	@page.load
+	@page.generate_data
+	@page.load
+	confirm @page
 
 	# Be sane and make sure it's there before we search for it
 	@page.should have_text our_desc
@@ -106,9 +108,25 @@ feature 'Developer Log' do
 	@page.should_not have_pagination
   end
 
-  # @TODO pending phrase search working
-  # it 'can combine phrase search with filters' do
-  # end
+  it 'can combine phrase search with filters' do
+	our_desc = "Rspec entry for search"
+  	@page.generate_data(count: 18, timestamp_max: 22)
+  	@page.generate_data(count: 5, timestamp_max: 22, description: our_desc)
+  	@page.generate_data(count: 42, timestamp_min: 36, timestamp_max: 60)
+  	@page.generate_data(count: 10, timestamp_min: 36, timestamp_max: 60, description: our_desc)
+  	@page.load
+  	confirm @page
+
+  	@page.date_filter.select "Last 24 Hours"
+	@page.phrase_search.set "Rspec"
+  	@page.submit_button.click
+
+  	@page.date_filter.has_select?('filter_by_date', :selected => "Last 24 Hours")
+	@page.phrase_search.value.should eq "Rspec"
+	@page.should have_text our_desc
+  	@page.should have(5).items
+  	@page.should_not have_pagination
+  end
 
   # Confirming the log deletion action
   it 'can remove a single entry' do

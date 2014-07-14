@@ -69,7 +69,6 @@ feature 'Throttling Log' do
 	@page.should have(1).items
   end
 
-
   it '(enabled) can change page size', :enabled => true do
     @page.perpage_filter.select "25 results"
     @page.submit_button.click
@@ -81,9 +80,24 @@ feature 'Throttling Log' do
     @page.pages.map {|name| name.text}.should == ["First", "1", "2", "3", "Next", "Last"]
   end
 
-  # @TODO pending phrase search working
-  # it '(enabled) can combine phrase search with filters', :enabled => true do
-  # end
+  it '(enabled) can combine phrase search with filters', :enabled => true do
+	our_ip = "172.16.10.42"
+
+	@page.generate_data(count: 27, timestamp_max: 0, ip_address: our_ip)
+	@page.load
+
+	@page.perpage_filter.select "25 results"
+	@page.phrase_search.set "172.16"
+	@page.submit_button.click
+
+	@page.perpage_filter.has_select?('perpage', :selected => "25 results")
+	@page.phrase_search.value.should eq "172.16"
+	@page.should have_text our_ip
+	@page.should have(25).items
+    @page.should have_pagination
+	@page.should have(5).pages
+	@page.pages.map {|name| name.text}.should == ["First", "1", "2", "Next", "Last"]
+  end
 
   # Confirming the log deletion action
   # it '(enabled) can remove a single entry', :enabled => true do

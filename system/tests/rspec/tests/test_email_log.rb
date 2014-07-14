@@ -107,9 +107,28 @@ feature 'Email Log' do
 	@page.items.should_not have_text "admin"
   end
 
-  # @TODO pending phrase search working
-  # it 'can combine phrase search with filters' do
-  # end
+  it 'can combine phrase search with filters' do
+	@page.perpage_filter.select "150 results"
+	@page.submit_button.click
+
+	# First, confirm we have both 'admin' and 'johndoe' on same page
+	@page.perpage_filter.has_select?('perpage', :selected => "150 results")
+	@page.should have(150).items
+	@page.should have_pagination
+	@page.should have_text "johndoe"
+	@page.should have_text "admin"
+
+  	# Now, combine the filters
+  	@page.perpage_filter.select "150 results"
+  	@page.phrase_search.set "johndoe"
+  	@page.submit_button.click
+
+  	@page.perpage_filter.has_select?('perpage', :selected => "150 results")
+  	@page.phrase_search.value.should eq "johndoe"
+  	@page.should have(35).items
+  	@page.should_not have_pagination
+  	@page.items.should_not have_text "admin"
+  end
 
   # Confirming the log deletion action
   it 'can remove a single entry' do
