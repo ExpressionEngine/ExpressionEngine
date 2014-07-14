@@ -35,7 +35,22 @@ feature 'CP Log' do
   end
 
   # Confirming phrase search
-  # @TODO pending phrase search working
+  it 'searches by phrases' do
+  	our_action = "Rspec entry for search"
+
+  	@page.generate_data(count: 1, timestamp_max: 0, action: our_action)
+  	@page.load
+
+	# Be sane and make sure it's there before we search for it
+	@page.should have_text our_action
+
+	@page.phrase_search.set "Rspec"
+	@page.submit_button.click
+
+	@page.phrase_search.value.should eq "Rspec"
+	@page.should have_text our_action
+	@page.should have(1).items
+  end
 
   # Confirming individual filter behavior
   it 'filters by username' do

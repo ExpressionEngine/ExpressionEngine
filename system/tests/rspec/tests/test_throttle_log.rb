@@ -52,7 +52,23 @@ feature 'Throttling Log' do
   end
 
   # Confirming phrase search
-  # @TODO pending phrase search working
+  it '(enabled) searches by phrases', :enabled => true do
+  	our_ip = "172.16.10.42"
+
+  	@page.generate_data(count: 1, timestamp_max: 0, ip_address: our_ip)
+  	@page.load
+
+	# Be sane and make sure it's there before we search for it
+	@page.should have_text our_ip
+
+	@page.phrase_search.set "172.16"
+	@page.submit_button.click
+
+	@page.phrase_search.value.should eq "172.16"
+	@page.should have_text our_ip
+	@page.should have(1).items
+  end
+
 
   it '(enabled) can change page size', :enabled => true do
     @page.perpage_filter.select "25 results"

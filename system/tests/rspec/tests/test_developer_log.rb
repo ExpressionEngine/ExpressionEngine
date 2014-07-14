@@ -34,7 +34,22 @@ feature 'Developer Log' do
   end
 
   # Confirming phrase search
-  # @TODO pending phrase search working
+  it 'searches by phrases' do
+  	our_desc = "Rspec entry for search"
+
+  	@page.generate_data(count: 1, timestamp_max: 0, description: our_desc)
+  	@page.load
+
+	# Be sane and make sure it's there before we search for it
+	@page.should have_text our_desc
+
+	@page.phrase_search.set "Rspec"
+	@page.submit_button.click
+
+	@page.phrase_search.value.should eq "Rspec"
+	@page.should have_text our_desc
+	@page.should have(1).items
+  end
 
   it 'filters by date' do
 	@page.generate_data(count: 23, timestamp_max: 22)
