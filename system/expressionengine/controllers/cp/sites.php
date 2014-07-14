@@ -25,7 +25,7 @@
 class Sites extends CP_Controller {
 
 	var $version 			= '2.1.7';
-	var $build_number		= '20140626';
+	var $build_number		= '20140615';
 	var $allow_new_sites 	= FALSE;
 
 	/**
