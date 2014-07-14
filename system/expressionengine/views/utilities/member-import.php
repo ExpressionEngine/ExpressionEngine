@@ -1,7 +1,7 @@
 <?php extend_template('default-nav'); ?>
 
 <h1><?=$cp_page_title?></h1>
-<?=form_open(cp_url('utilities/member_import'), 'class="settings ajax-validate"')?>
+<?=form_open(cp_url('utilities/member-import'), 'class="settings ajax-validate"')?>
 	<?php $this->view('_shared/form_messages')?>
 	<fieldset class="col-group last <?=form_error_class('xml_file')?>">
 		<div class="setting-txt col w-8">

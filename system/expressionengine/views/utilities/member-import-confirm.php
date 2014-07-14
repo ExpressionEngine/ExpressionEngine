@@ -1,6 +1,6 @@
 <?php extend_template('default-nav'); ?>
 
-<?=form_open(cp_url('utilities/member_import/process_xml'), 'class="tbl-ctrls"', $form_hidden)?>
+<?=form_open(cp_url('utilities/member-import/process-xml'), 'class="tbl-ctrls"', $form_hidden)?>
 	<h1><?=$cp_page_title?></h1>
 	<?php $this->view('_shared/form_messages')?>
 	<?php if ($added_fields && count($added_fields) > 0):?>
