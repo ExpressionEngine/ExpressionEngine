@@ -13,9 +13,7 @@ class AliasService {
 	{
 		$this->identifier = $identifier;
 
-		require_once($aliases_path);
-
-		$this->aliases = $aliases;
+		$this->aliases = require_once($aliases_path);
 	}
 
 	/**
