@@ -16,7 +16,7 @@ class RelationshipGraphNode {
 
 	protected $relationship_infos = array();
 
-	public function __construct($model_class, $alias_service)
+	public function __construct($alias_service, $model_class)
 	{
 		$this->alias_service = $alias_service;
 		$this->model_class = $model_class;

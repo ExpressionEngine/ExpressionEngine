@@ -40,6 +40,6 @@ class RelationshipGraph {
 	 */
 	public function addNode($class_name)
 	{
-		$this->nodes[$class_name] = new RelationshipGraphNode($class_name, $this->alias_service);
+		$this->nodes[$class_name] = new RelationshipGraphNode($this->alias_service, $class_name);
 	}
 }
