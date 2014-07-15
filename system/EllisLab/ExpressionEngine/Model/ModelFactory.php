@@ -8,8 +8,9 @@ use EllisLab\ExpressionEngine\Model\Query\Query;
 use EllisLab\ExpressionEngine\Model\Relationship\RelationshipGraph;
 
 /**
- * The model builder is our entry point. Any external dependencies should be
- * explicitly declared here by providing getters similar to getValidation().
+ * The model builder is our composition root for all models and queries.
+ * Any external dependencies should be explicitly declared here by providing
+ * getters similar to getValidation() to avoid breaking the law of demeter.
  */
 class ModelFactory {
 
@@ -62,6 +63,7 @@ class ModelFactory {
 		}
 
 		$polymorph = $class::getMetaData('polymorph');
+
 		if ($polymorph !== NULL)
 		{
 			$class = $this->alias_service->getRegisteredClass($polymorph);
@@ -69,7 +71,6 @@ class ModelFactory {
 
 		return new $class($this, $this->alias_service, $data, $dirty);
 	}
-
 
 	/**
 	 * Gateway factory

@@ -18,7 +18,7 @@ namespace EllisLab\ExpressionEngine\Model\Relationship;
  * pivot: Many <-- pivot --> Many. While we will essentially ignore the pivot
  * when traversing as it is not a model concern, this restriction is still in
  * place so that ManyToMany are only traversed if they are specified in the
- * cascade
+ * cascade.
  *
  * When the graph is acyclic, walking it is simple, we simply follow the out-
  * going edges of each node.
