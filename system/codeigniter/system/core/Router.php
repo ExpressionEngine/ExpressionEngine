@@ -229,6 +229,60 @@ class CI_Router {
 		reset($segments);
 
 		$c = count($segments);
+
+		// First check for a namespaced situation
+		$saved_segments = $segments;
+		$directory = APPPATH.'../EllisLab/ExpressionEngine/Controllers/';
+		$namespace = '';
+		if (strtolower($segments[0]) == 'cp')
+		{
+			array_shift($segments); // This will not factor into the path for namespaced stuff
+			$c--;
+		}
+
+		while ($c-- > 0)
+		{
+			$segment = str_replace('-', '_', $segments[0]);
+			$words = explode('_', $segment);
+			$words = array_map('ucfirst', $words);
+			$segment = implode('', $words);
+
+			if ( ! file_exists($directory . $segment . '.php') && is_dir($directory . $segment))
+			{
+				$directory .= $segment . '/';
+				$namespace .= '\\' . $segment;
+				array_shift($segments);
+				continue;
+			}
+
+			break;
+		}
+
+		if ($namespace != '')
+		{
+			$this->set_directory($directory);
+			$this->namespace_prefix = '\EllisLab\ExpressionEngine\Controllers' . $namespace;
+
+			// If the final segment is a directory check for a file matching the
+			// directory's name inside the directory. Use its index method.
+			if (empty($segments))
+			{
+				$segment = str_replace('-', '_', $last);
+				$words = explode('_', $segment);
+				$words = array_map('ucfirst', $words);
+				$segment = implode('', $words);
+
+				if (file_exists($directory . $segment . '.php'))
+				{
+					return array($last, 'index');
+				}
+			}
+			return $segments;
+		}
+
+		$segments = $saved_segments;
+		$c = count($segments);
+
 		// Loop through our segments and return as soon as a controller
 		// is found or when such a directory doesn't exist
 		while ($c-- > 0)
@@ -242,14 +296,6 @@ class CI_Router {
 				continue;
 			}
 
-			// Now ucfirst()ed
-			$test = $this->directory.str_replace('-', '_', ucfirst($segments[0]));
-			if ( ! file_exists(APPPATH.'controllers/'.$test.'.php') && is_dir(APPPATH.'controllers/'.$this->directory.ucfirst($segments[0])))
-			{
-				$this->set_directory(ucfirst(array_shift($segments)), TRUE);
-				continue;
-			}
-
 			return $segments;
 		}
 
@@ -257,8 +303,7 @@ class CI_Router {
 		// directory's name inside the directory. Use its index method.
 		if (empty($segments))
 		{
-			if (file_exists(APPPATH.'controllers/'.$this->directory.$last.'.php')
-				|| file_exists(APPPATH.'controllers/'.$this->directory.ucfirst($last).'.php'))
+			if (file_exists(APPPATH.'controllers/'.$this->directory.$last.'.php'))
 			{
 				return array($last, 'index');
 			}
@@ -423,11 +468,6 @@ class CI_Router {
 	 */
 	public function set_directory($dir, $append = FALSE)
 	{
-		if ($dir == 'cp')
-		{
-			$this->namespace_prefix = '\EllisLab\ExpressionEngine\Controllers';
-		}
-
 		if ($append !== TRUE OR empty($this->directory))
 		{
 			$this->directory = str_replace('.', '', trim($dir, '/')).'/';
@@ -435,7 +475,6 @@ class CI_Router {
 		else
 		{
 			$this->directory .= str_replace('.', '', trim($dir, '/')).'/';
-			$this->namespace_prefix .= '\\' . ucfirst($dir);
 		}
 	}
 

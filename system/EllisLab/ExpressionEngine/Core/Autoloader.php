@@ -35,7 +35,6 @@ class Autoloader {
 
 	public function __construct()
 	{
-		$this->prefixes['EllisLab\ExpressionEngine\Controllers'] = APPPATH . 'controllers/cp';
 		$this->prefixes['EllisLab'] = APPPATH . '../EllisLab/';
 	}
 
