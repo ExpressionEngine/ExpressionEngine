@@ -10,6 +10,4 @@
  * Depends:
  *	jquery.effects.core.js
  */
-
-(function(b,l){b.effects.blind=function(c){return this.queue(function(){var a=b(this),g=["position","top","bottom","left","right"],f=b.effects.setMode(a,c.options.mode||"hide"),d=c.options.direction||"vertical";b.effects.save(a,g);a.show();var e=b.effects.createWrapper(a).css({overflow:"hidden"}),h="vertical"==d?"height":"width",d="vertical"==d?e.height():e.width();"show"==f&&e.css(h,0);var k={};k[h]="show"==f?d:0;e.animate(k,c.duration,c.options.easing,function(){"hide"==f&&a.hide();b.effects.restore(a,
-g);b.effects.removeWrapper(a);c.callback&&c.callback.apply(a[0],arguments);a.dequeue()})})}})(jQuery);
+!function(e){e.effects.blind=function(t){return this.queue(function(){var i=e(this),o=["position","top","bottom","left","right"],s=e.effects.setMode(i,t.options.mode||"hide"),r=t.options.direction||"vertical";e.effects.save(i,o),i.show();var c=e.effects.createWrapper(i).css({overflow:"hidden"}),a="vertical"==r?"height":"width",n="vertical"==r?c.height():c.width();"show"==s&&c.css(a,0);var f={};f[a]="show"==s?n:0,c.animate(f,t.duration,t.options.easing,function(){"hide"==s&&i.hide(),e.effects.restore(i,o),e.effects.removeWrapper(i),t.callback&&t.callback.apply(i[0],arguments),i.dequeue()})})}}(jQuery);

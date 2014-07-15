@@ -215,6 +215,9 @@ $lang = array(
 'your_profile' =>
 'Your Public Profile',
 
+'update_preferences' =>
+'Preferences Updated',
+
 'edit_signature' =>
 'Edit Signature',
 
@@ -302,7 +305,7 @@ $lang = array(
 'size' =>
 'Size',
 
-'search_glass' => 
+'search_glass' =>
 'Search Glass',
 
 'small' =>
@@ -379,7 +382,7 @@ $lang = array(
 'Login Required',
 
 'sign_in' =>
-'Sign into your account', 
+'Sign into your account',
 
 'must_be_logged_in' =>
 'This page is only accessible to logged-in users with proper access privileges',
@@ -475,7 +478,7 @@ content associated with your account will also be deleted.',
 'mbr_of' =>
 'of',
 
-'mbr_passwd_email_sent' => 
+'mbr_passwd_email_sent' =>
 'Password Reset Email Sent',
 
 
@@ -695,7 +698,7 @@ content associated with your account will also be deleted.',
 'terms_of_service_text' =>
 'All messages posted at this site express the views of the author, and do not necessarily reflect the views of the owners and administrators of this site.
 
-By registering at this site you agree not to post any messages that are obscene, vulgar, slanderous, hateful, threatening, or that violate any laws.   We will permanently ban all users who do so.   
+By registering at this site you agree not to post any messages that are obscene, vulgar, slanderous, hateful, threatening, or that violate any laws.   We will permanently ban all users who do so.
 
 We reserve the right to remove, edit, or move any messages for any reason.',
 
@@ -909,7 +912,7 @@ We reserve the right to remove, edit, or move any messages for any reason.',
 'powered_by_ee' =>
 'Powered by ExpressionEngine',
 
-// Used Primarily in the Member_auth::forgot_password() 
+// Used Primarily in the Member_auth::forgot_password()
 // through Member_auth::process_reset_password() call chain
 
 'mbr_reset_password' =>

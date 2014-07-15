@@ -48,7 +48,7 @@ class CI_URI {
 		$this->config =& load_class('Config', 'core');
 		log_message('debug', "URI Class Initialized");
 
-		if (REQ == 'CP')
+		if (defined('REQ') && REQ == 'CP')
 		{
 			$this->config->set_item('uri_protocol', 'QUERY_STRING');
 		}
@@ -172,6 +172,7 @@ class CI_URI {
 		// This section ensures that even on servers that require the URI to be
 		// in the query string (Nginx) a correct URI is found, and also fixes
 		// the QUERY_STRING server var and $_GET array.
+
 		if (strncmp($uri, '?/', 2) === 0)
 		{
 			$uri = substr($uri, 2);
@@ -184,6 +185,11 @@ class CI_URI {
 		{
 			$_SERVER['QUERY_STRING'] = $parts[1];
 			parse_str($_SERVER['QUERY_STRING'], $_GET);
+		}
+		elseif (defined('REQ') && REQ == 'CP' && reset($_GET) === '')
+		{
+			$uri = $_SERVER['QUERY_STRING'] = key($_GET);
+			array_shift($_GET);
 		}
 		else
 		{

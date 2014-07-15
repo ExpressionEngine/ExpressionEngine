@@ -12,7 +12,7 @@
 */
 
 $config['app_version'] = '{app_version}';
-$config['ellislab_username'] = '{ellislab_username}';
+$config['license_contact'] = '{license_contact}';
 $config['license_number'] = '{license_number}';
 $config['debug'] = '{debug}';
 $config['cp_url'] = '{cp_url}';

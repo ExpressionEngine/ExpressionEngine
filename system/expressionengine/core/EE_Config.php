@@ -344,11 +344,13 @@ class EE_Config Extends CI_Config {
 		// Loop through each site and decode Pages information
 		foreach ($sites as $site)
 		{
-			$data = base64_decode($site['site_pages']);
+			$data = (isset($site['site_pages'])) ? base64_decode($site['site_pages']) : '';
 
+			// No Pages data
 			if ( ! is_string($data) OR substr($data, 0, 2) != 'a:')
 			{
 				$site_pages[$site['site_id']] = array('uris' => array(), 'templates' => array());
+				continue;
 			}
 
 			$data = unserialize($data);
@@ -1285,8 +1287,8 @@ class EE_Config Extends CI_Config {
 				'pw_min_len'				=> array('i', '')
 			),
 
-			'software_license'	=> array(
-				'ellislab_username'			=> array('i', '', 'required'),
+			'software_registration'	=> array(
+				'license_contact'			=> array('i', '', 'required'),
 				'license_number'			=> array('i', '', 'callback__valid_license_pattern')
 			),
 
@@ -1651,7 +1653,7 @@ class EE_Config Extends CI_Config {
 			'require_ip_for_login'		=> array('require_ip_explanation'),
 			'allow_multi_logins'		=> array('allow_multi_logins_explanation'),
 			'name_of_dictionary_file'	=> array('dictionary_explanation'),
-			'ellislab_username'			=> array('ellislab_username_explanation'),
+			'license_contact'			=> array('license_contact_explanation'),
 			'license_number'			=> array('license_number_explanation'),
 			'force_query_string'		=> array('force_query_string_explanation'),
 			'image_resize_protocol'		=> array('image_resize_protocol_exp'),

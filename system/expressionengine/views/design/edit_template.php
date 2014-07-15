@@ -5,12 +5,15 @@
 	</div>
 	<div class="contents">
         <div class="heading">
-            <h2 class="edit"><?=lang('edit_template')?>: <?=$template_group?>/<span id="templateId_<?=$template_id?>"><?=$template_name?></span></h2>
+            <h2 class="edit">
+            	<?=lang('edit_template')?>: <?=$template_group?>/<span id="templateId_<?=$template_id?>"><?=$template_name?></span>
+            	<?php enabled('ee_action_nav') && $this->view('_shared/action_nav') ?>
+            </h2>
         </div>
-        
+
         <div class="pageContents">
 	<?php $this->view('_shared/message')?>
-		
+
 	<div id="templateEditor" class="formArea">
 		<?php if ($message):?>
 			<span class="notice"><?=$message?></span>
@@ -21,10 +24,10 @@
 		<div class="clear_left" id="template_details" style="margin-bottom: 0">
 			<?php if ($this->config->item('save_tmpl_revisions') == 'y'):?>
 			<span class="button" style="margin-top:-6px">
-			<?=form_open('C=design'.AMP.'M=template_revision_history'.AMP.'tgpref='.$group_id, array('id' => 'revisions', 'name' => 'revisions', 'template_id' => $template_id, 'target' => 'Revisions'))?>	
-			
+			<?=form_open('C=design'.AMP.'M=template_revision_history'.AMP.'tgpref='.$group_id, array('id' => 'revisions', 'name' => 'revisions', 'template_id' => $template_id, 'target' => 'Revisions'))?>
+
 			<?=form_dropdown('revision_id', $revision_options, '', 'id="revision_id"')?>
-			
+
 			<?=form_submit('submit', lang('view'), 'class="submit" id="revision_button"')?>
 			<?=form_close()?>
 			</span>
@@ -88,8 +91,8 @@
 				</div>
 			</div>
 		<?php endif; ?>
-		
-		<?php if ($can_admin_design): ?>	
+
+		<?php if ($can_admin_design): ?>
 
 			<div class="editAccordion">
 				<h3><?=lang('preferences')?></h3>
@@ -104,6 +107,7 @@
 							<th><?=lang('parse_stage')?></th>
 							<th><?=lang('hit_counter')?></th>
 							<th><?=lang('template_size')?></th>
+							<th><?=lang('protect_javascript')?></th>
 						</tr>
 						<tr>
 							<td><input name="template_name" class="template_name" type="text" size="15" value="<?=$template_name?>" <?=($template_name == 'index') ? 'readonly="readonly"' : ''?>/></td>
@@ -126,11 +130,14 @@
 							</td>
 							<td><input name="hits" class="hits" type="text" size="8" value="<?=$prefs['hits']?>" /></td>
 							<td><input name="template_size" class="template_size" type="text" size="4" value="<?=$prefs['template_size']?>" /></td>
+							<td>
+								<?=form_dropdown('protect_javascript', array('y' => lang('yes'), 'n' => lang('no')), $prefs['protect_javascript'])?>
+							</td>
 						</tr>
 					</table>
 				</div>
 			</div>
-			
+
 			<div class="editAccordion">
 				<h3><?=lang('access')?></h3>
 				<div>
@@ -183,7 +190,7 @@
 				</table>
 				</div>
 			</div>
-			
+
 		<?php endif; ?>
 
 
@@ -208,12 +215,12 @@
 					</table>
 				</div>
 			</div>
-			
+
 			<?php if ($save_template_revision): ?>
 			<p><?=form_checkbox('save_template_revision', 'y', $save_template_revision, 'id="save_template_revision"')?> &nbsp;
 			<?=form_label(lang('save_template_revision'), 'save_template_revision')?></p>
 			<?php endif; ?>
-			
+
 			<input type="hidden" name="columns" id="columns" value = "" />
 
 			<?php if ($can_save_file): ?>

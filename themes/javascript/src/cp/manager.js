@@ -134,7 +134,7 @@ function template_edit_ajax() {
 		holder_data,
 		template_id, group_id, template_name, template_type,
 		cache, refresh, allow_php, php_parse_location, hits,
-		template_size, str;
+		template_size, protect_javascript, str;
 
 	if (holder.length < 1) {
 		holder = $(this).closest('.templateEditorTable');
@@ -160,6 +160,7 @@ function template_edit_ajax() {
 	php_parse_location = holder.find("select[name^=php_parse_location]").val();
 	hits = holder.find(".hits").val();
 	template_size = holder.find(".template_size").val();
+	protect_javascript = holder.find("select[name^=protect_javascript]").val();
 
 	str = jQuery.param({
 		'template_id': template_id,
@@ -171,7 +172,8 @@ function template_edit_ajax() {
 		'hits': hits,
 		'allow_php': allow_php,
 		'php_parse_location': php_parse_location,
-		'template_size': template_size
+		'template_size': template_size,
+		'protect_javascript': protect_javascript
 	});
 
 	$.ajax({
@@ -397,6 +399,9 @@ function bind_prefs_events() {
 				case 'php_parse_location':
 					field.val(rowdata.php_parsing);
 					break;
+				case 'protect_javascript':
+					field.val(rowdata.protect_javascript);
+					break;
 				}
 
 				field.attr("name", this.name + '_' + rowdata.id);
@@ -485,131 +490,10 @@ function bind_prefs_events() {
 	});
 
 
-	// Find and replace template stuff
-	$(document).ready(function () {
-
-		if (! EE.manager || ! EE.manager.warnings) {
-			return;
-		}
-
-		$('.warning_details').hide();
-		$('.toggle_warning_details').click(function () {
-			$('.warning_details').hide();
-			$('#wd_' + this.id.substr(3)).show();
-			return false;
-		});
-
-		var txtarea = $('#template_data'),
-			selection, find_and_replace;
-
-		find_and_replace = function (find, replace, dropdown) {
-			var text, select = '';
-
-			if (dropdown && dropdown.length > 1) {
-				select = '<select name="fr_options" id="fr_options"></select>';
-			}
-
-			text = '<div style="padding: 5px;"><label>Find:</label> <input name="fr_find" id="fr_find" type="text" value="" /> <label>Replace:</label> <input type="text" name="fr_replace" id="fr_replace" value=""/> ' + select + '</div>';
-			text +=	'<div style="padding: 5px;"><button class="submit" id="fr_find_btn">Find Next</button> <button class="submit" id="fr_replace_btn">Replace</button> <button class="submit" id="fr_replace_all_btn">Replace All</button> <label><input name="fr_replace_closing_tags" id="fr_replace_closing_tags" type="checkbox" /> Include Closing Tags</label></div>';
-
-			$.ee_notice(text, {
-				type: "custom",
-				open: true,
-				close_on_click: false
-			});
-
-			$('#fr_find').val(find);
-			$('#fr_replace').val(replace);
-			$('#fr_replace_closing_tags').attr('checked', false);
-
-			if (select !== '') {
-				$('#fr_options').append($(dropdown));
-				$('#fr_options').click(function () {
-					$('#fr_find').val($(this).val());
-					$('#fr_find_btn').click();
-				});
-			}
-
-			if (find) {
-				$('#fr_find_btn').click();
-			}
-		};
-
-		$('#fr_find_btn').live('click', function () {
-			var find = $('#fr_find').val();
-			selection = txtarea.selectNext(find).scrollToCursor();
-		});
-
-		$('#fr_replace_btn').live('click', function () {
-			var find = $('#fr_find').val(),
-				replace = $('#fr_replace').val();
-
-			if (selection.getSelectedText() === find) {
-				selection.replaceWith(replace);
-			}
-		});
-
-		$('#fr_replace_all_btn').live('click', function () {
-			var find = $('#fr_find').val(),
-				replace = $('#fr_replace').val();
-
-			// Sanity check
-			if (jQuery.trim(find) === '') {
-				return;
-			}
-
-			// str.replace can only do one item at a time - or a regex ... might consider
-			// the latter as an option in the future, but for now we'll split and rejoin.
-
-			txtarea.val(txtarea.val().split(find).join(replace));
-
-			if ($('#fr_replace_closing_tags').attr('checked')) {
-
-				if (find[0] === '{' && find.substr(0, 2) !== '{/') {
-					find = '{/' + find.substr(1);
-				}
-				if (replace[0] === '{' && replace.substr(0, 2) !== '{/') {
-					replace = '{/' + replace.substr(1);
-				}
-
-				if (jQuery.trim(find) === '') {
-					return;
-				}
-
-				txtarea.val(txtarea.val().split(find).join(replace));
-			}
-		});
-
-		$('.find_and_replace').click(function () {
-			var tag_name = this.id.substr(8),
-				find = '{exp:' + tag_name,
-				suggest = '{exp:' + EE.manager.warnings[tag_name].suggestion,
-				full_tags = EE.manager.warnings[tag_name].full_tags,
-				tags = new Array(new Option(find, find)),
-				i;
-
-			if (full_tags && full_tags.length > 1) {
-				for (i = 0; i < full_tags.length; i++) {
-					tag_name = '{' + full_tags[i] + '}';
-					tags.push(new Option(tag_name, tag_name));
-				}
-			}
-
-			if (suggest === '{exp:') {
-				suggest = '';
-			}
-
-			find_and_replace(find, suggest, tags);
-			return false;
-		});
-	});
-
-
 	// Template search reset
 	$('#template_keywords_reset').click(function(){
 		$('#template_keywords').val('');
 		$('.search form').submit();
 	});
-
 
 })(jQuery);

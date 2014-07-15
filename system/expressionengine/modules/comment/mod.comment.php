@@ -711,14 +711,14 @@ class Comment {
 			/**  Conditionals
 			/** ----------------------------------------*/
 			$cond = array_merge($member_cond_vars, $row);
-			$cond['comments']			= (substr($id, 0, 1) == 't') ? 'FALSE' : 'TRUE';
-			$cond['logged_in']			= (ee()->session->userdata('member_id') == 0) ? 'FALSE' : 'TRUE';
-			$cond['logged_out']			= (ee()->session->userdata('member_id') != 0) ? 'FALSE' : 'TRUE';
-			$cond['allow_comments'] 	= (isset($row['allow_comments']) AND $row['allow_comments'] == 'n') ? 'FALSE' : 'TRUE';
-			$cond['signature_image']	= ( ! isset($row['sig_img_filename']) OR $row['sig_img_filename'] == '' OR ee()->config->item('enable_signatures') == 'n' OR ee()->session->userdata('display_signatures') == 'n') ? 'FALSE' : 'TRUE';
-			$cond['avatar']				= ( ! isset($row['avatar_filename']) OR $row['avatar_filename'] == '' OR ee()->config->item('enable_avatars') == 'n' OR ee()->session->userdata('display_avatars') == 'n') ? 'FALSE' : 'TRUE';
-			$cond['photo']				= ( ! isset($row['photo_filename']) OR $row['photo_filename'] == '' OR ee()->config->item('enable_photos') == 'n' OR ee()->session->userdata('display_photos') == 'n') ? 'FALSE' : 'TRUE';
-			$cond['is_ignored']			= ( ! isset($row['member_id']) OR ! in_array($row['member_id'], ee()->session->userdata['ignore_list'])) ? 'FALSE' : 'TRUE';
+			$cond['comments']			= (substr($id, 0, 1) == 't') ? FALSE : TRUE;
+			$cond['logged_in']			= (ee()->session->userdata('member_id') == 0) ? FALSE : TRUE;
+			$cond['logged_out']			= (ee()->session->userdata('member_id') != 0) ? FALSE : TRUE;
+			$cond['allow_comments'] 	= (isset($row['allow_comments']) AND $row['allow_comments'] == 'n') ? FALSE : TRUE;
+			$cond['signature_image']	= ( ! isset($row['sig_img_filename']) OR $row['sig_img_filename'] == '' OR ee()->config->item('enable_signatures') == 'n' OR ee()->session->userdata('display_signatures') == 'n') ? FALSE : TRUE;
+			$cond['avatar']				= ( ! isset($row['avatar_filename']) OR $row['avatar_filename'] == '' OR ee()->config->item('enable_avatars') == 'n' OR ee()->session->userdata('display_avatars') == 'n') ? FALSE : TRUE;
+			$cond['photo']				= ( ! isset($row['photo_filename']) OR $row['photo_filename'] == '' OR ee()->config->item('enable_photos') == 'n' OR ee()->session->userdata('display_photos') == 'n') ? FALSE : TRUE;
+			$cond['is_ignored']			= ( ! isset($row['member_id']) OR ! in_array($row['member_id'], ee()->session->userdata['ignore_list'])) ? FALSE : TRUE;
 
 			$cond['editable'] = FALSE;
 			$cond['can_moderate_comment'] = FALSE;
@@ -1480,17 +1480,17 @@ class Comment {
 		/** ----------------------------------------*/
 
 		$cond = array();
-		$cond['logged_in']	= (ee()->session->userdata('member_id') == 0) ? 'FALSE' : 'TRUE';
-		$cond['logged_out']	= (ee()->session->userdata('member_id') != 0) ? 'FALSE' : 'TRUE';
+		$cond['logged_in']	= (ee()->session->userdata('member_id') == 0) ? FALSE : TRUE;
+		$cond['logged_out']	= (ee()->session->userdata('member_id') != 0) ? FALSE : TRUE;
 
 		if ($query->row('comment_use_captcha')  == 'n')
 		{
-			$cond['captcha'] = 'FALSE';
+			$cond['captcha'] = FALSE;
 		}
 		elseif ($query->row('comment_use_captcha')  == 'y')
 		{
 			$cond['captcha'] =  (ee()->config->item('captcha_require_members') == 'y'  OR
-								(ee()->config->item('captcha_require_members') == 'n' AND ee()->session->userdata('member_id') == 0)) ? 'TRUE' : 'FALSE';
+								(ee()->config->item('captcha_require_members') == 'n' AND ee()->session->userdata('member_id') == 0)) ? TRUE : FALSE;
 		}
 
 		$tagdata = ee()->functions->prep_conditionals($tagdata, $cond);
@@ -1802,8 +1802,8 @@ class Comment {
 		/** ----------------------------------------*/
 
 		$cond = $_POST; // Sanitized on input and also in prep_conditionals, so no real worries here
-		$cond['logged_in']	= (ee()->session->userdata('member_id') == 0) ? 'FALSE' : 'TRUE';
-		$cond['logged_out']	= (ee()->session->userdata('member_id') != 0) ? 'FALSE' : 'TRUE';
+		$cond['logged_in']	= (ee()->session->userdata('member_id') == 0) ? FALSE : TRUE;
+		$cond['logged_out']	= (ee()->session->userdata('member_id') != 0) ? FALSE : TRUE;
 		$cond['name']		= $name;
 		$cond['email']		= $email;
 		$cond['url']		= ($url == 'http://') ? '' : $url;
