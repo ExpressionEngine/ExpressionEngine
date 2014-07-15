@@ -10,6 +10,15 @@ class MemberImport < ControlPanelPage
 	element :custom_yes, 'input[name=auto_custom_field][value=y]'
 	element :custom_no, 'input[name=auto_custom_field][value=n]'
 
+	element :table, 'table'
+
+	# Custom field creation
+	element :select_all, 'input[name=select_all]'
+	element :custom_field_1, 'input[name="create_ids[0]"]'
+	element :custom_field_2, 'input[name="create_ids[1]"]'
+	element :custom_field_1_name, 'input[name="m_field_name[0]"]'
+	element :custom_field_2_name, 'input[name="m_field_name[1]"]'
+
 	def load
 		self.open_dev_menu
 		click_link 'Utilities'

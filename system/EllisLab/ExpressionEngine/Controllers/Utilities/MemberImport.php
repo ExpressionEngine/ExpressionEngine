@@ -4,6 +4,8 @@ namespace EllisLab\ExpressionEngine\Controllers\Utilities;
 
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
+use EllisLab\ExpressionEngine\Module\Member\Model\Gateway\MemberGateway;
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -55,7 +57,7 @@ class MemberImport extends Utilities {
 
 		if (ee()->form_validation->run() !== FALSE)
 		{
-			return $this->member_import_confirm();
+			return $this->memberImportConfirm();
 		}
 
 		$groups = ee()->api->get('MemberGroup')->order('group_id', 'asc')->all();
@@ -207,7 +209,7 @@ class MemberImport extends Utilities {
 		if ($contents === FALSE)
 		{
 			ee()->view->set_message('issue', lang('file_read_error'), lang('file_read_error_desc'));
-			return $this->member_import_confirm();
+			return $this->memberImportConfirm();
 		}
 
 		$this->load->library('xmlparser');
@@ -218,7 +220,7 @@ class MemberImport extends Utilities {
 		if ($xml === FALSE)
 		{
 			ee()->view->set_message('issue', lang('xml_parse_error'), lang('xml_parse_error_desc'));
-			return $this->member_import_confirm();
+			return $this->memberImportConfirm();
 		}
 
 		// Any custom fields exist
@@ -243,14 +245,14 @@ class MemberImport extends Utilities {
 			}
 		}
 
-		$this->validate_xml($xml);
+		$errors = $this->validateXml($xml);
 
 		//  Show Errors
-		if (count($this->errors) > 0)
+		if (count($errors) > 0)
 		{
 			$out = array();
 
-			foreach($this->errors as $error)
+			foreach($errors as $error)
 			{
 				foreach($error as $val)
 				{
@@ -259,14 +261,14 @@ class MemberImport extends Utilities {
 			}
 
 			ee()->view->set_message('issue', lang('cp_message_issue'), $out);
-			return $this->member_import_confirm();
+			return $this->memberImportConfirm();
 		}
 
 		/** -------------------------------------
 		/**  Ok! Cross Fingers and do it!
 		/** -------------------------------------*/
 
-		$imports = $this->do_import();
+		$imports = $this->doImport();
 
 		$msg = lang('import_success_blurb').'<br>'.str_replace('%x', $imports, lang('total_members_imported'));
 
@@ -331,6 +333,7 @@ class MemberImport extends Utilities {
 		$s = array(); // screen_name garbage array
 		$e = array(); // email garbage array
 		$m = array(); // member_id garbage array
+		$errors = array(); // Collect errors in here
 
 		if (is_array($xml->children[0]->children))
 		{
@@ -362,7 +365,7 @@ class MemberImport extends Utilities {
 											$this->members[$i]['bday_y'] = $birthday->value;
 											break;
 										default:
-											$this->errors[] = array(lang('invalid_tag')." '&lt;".$birthday->tag."&gt;'");
+											$errors[] = array(lang('invalid_tag')." '&lt;".$birthday->tag."&gt;'");
 											break;
 									}
 							}
@@ -370,7 +373,7 @@ class MemberImport extends Utilities {
 
 							if ( ! isset($this->members[$i]['bday_d']) || ! isset($this->members[$i]['bday_m']) || ! isset($this->members[$i]['bday_y']))
 							{
-								$this->errors[] = array(lang('missing_birthday_child'));
+								$errors[] = array(lang('missing_birthday_child'));
 							}
 
 							$this->members[$i][$tag->tag] = $tag->value;
@@ -382,7 +385,7 @@ class MemberImport extends Utilities {
 						else
 						{
 							// not a database field and not a <birthday> so club it like a baby seal!
-							//$this->errors[] = array(lang('invalid_tag')." '&lt;".$tag->tag."&gt;'");
+							//$errors[] = array(lang('invalid_tag')." '&lt;".$tag->tag."&gt;'");
 						}
 
 						/* -------------------------------------
@@ -400,7 +403,7 @@ class MemberImport extends Utilities {
 								}
 								else
 								{
-									$this->errors[] = array(lang('duplicate_username').$tag->value);
+									$errors[] = array(lang('duplicate_username').$tag->value);
 								}
 								break;
 							case 'screen_name':
@@ -411,7 +414,7 @@ class MemberImport extends Utilities {
 								}
 								else
 								{
-									$this->errors[] = array(lang('duplicate_screen_name').$tag->value);
+									$errors[] = array(lang('duplicate_screen_name').$tag->value);
 								}
 								break;
 							case 'email':
@@ -421,7 +424,7 @@ class MemberImport extends Utilities {
 								}
 								else
 								{
-									$this->errors[] = array(lang('duplicate_email').$tag->value);
+									$errors[] = array(lang('duplicate_email').$tag->value);
 								}
 								$this->validate->email = $tag->value;
 								break;
@@ -432,7 +435,7 @@ class MemberImport extends Utilities {
 								}
 								else
 								{
-									$this->errors[] = array(str_replace("%x", $tag->value, lang('duplicate_member_id')));
+									$errors[] = array(str_replace("%x", $tag->value, lang('duplicate_member_id')));
 								}
 								break;
 							case 'password':
@@ -466,7 +469,7 @@ class MemberImport extends Utilities {
 						{
 							$this->validate->errors[$key] = $val." (Username: '".$username."' - ".lang('within_user_record')." '".$username."')";
 						}
-						$this->errors[] = $this->validate->errors;
+						$errors[] = $this->validate->errors;
 						unset($this->validate->errors);
 					}
 
@@ -478,7 +481,7 @@ class MemberImport extends Utilities {
 						{
 							$this->validate->errors[$key] = $val." (Screen Name: '".$screen_name."' - ".lang('within_user_record')." '".$username."')";
 						}
-						$this->errors[] = $this->validate->errors;
+						$errors[] = $this->validate->errors;
 						unset($this->validate->errors);
 					}
 
@@ -490,7 +493,7 @@ class MemberImport extends Utilities {
 						{
 							$this->validate->errors[$key] = $val." (Email: '".$email."' - ".lang('within_user_record')." '".$username."')";
 						}
-						$this->errors[] = $this->validate->errors;
+						$errors[] = $this->validate->errors;
 						unset($this->validate->errors);
 					}
 
@@ -510,7 +513,7 @@ class MemberImport extends Utilities {
 					/**  Element isn't <member>
 					/** -------------------------------------*/
 
-					$this->errors[] = array(lang('invalid_element'));
+					$errors[] = array(lang('invalid_element'));
 				}
 			}
 		}
@@ -520,8 +523,10 @@ class MemberImport extends Utilities {
 			/**  No children of the root element
 			/** -------------------------------------*/
 
-			$this->errors[] = array(lang('invalid_xml'));
+			$errors[] = array(lang('invalid_xml'));
 		}
+
+		return $errors;
 	}
 
 	// --------------------------------------------------------------------
@@ -867,7 +872,7 @@ class MemberImport extends Utilities {
 		unset($_POST['m_field_label']);
 		unset($_POST['create_ids']);
 
-		return $this->member_import_confirm();
+		return $this->memberImportConfirm();
 	}
 
 	// --------------------------------------------------------------------

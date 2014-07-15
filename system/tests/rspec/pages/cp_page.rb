@@ -9,6 +9,10 @@ class ControlPanelPage < SitePrism::Page
 		main_menu.dev_menu.click
 	end
 
+	def submit
+		submit_button.click
+	end
+
 	def submit_enabled?
 		submit_button.value != 'Fix Errors, Please' &&
 		submit_button[:disabled] != true &&
