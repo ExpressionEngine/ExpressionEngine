@@ -1,6 +1,8 @@
 <?php
 namespace EllisLab\ExpressionEngine\Model\Query;
 
+use InvalidArgumentException;
+
 use EllisLab\ExpressionEngine\Library\DataStructure\Tree\TreeNode;
 
 class QueryTreeNode extends TreeNode {

@@ -1,6 +1,8 @@
 <?php
 namespace EllisLab\ExpressionEngine\Model;
 
+use InvalidArgumentException;
+
 use EllisLab\ExpressionEngine\Core\AliasService;
 use EllisLab\ExpressionEngine\Model\Error\Errors;
 use EllisLab\ExpressionEngine\Model\Query\QueryBuilder;
@@ -117,7 +119,7 @@ abstract class Model {
 			return $this->{$name};
 		}
 
-		throw new \InvalidArgumentException('Attempt to access a non-existent property, "' . $name . '", on ' . get_called_class());
+		throw new InvalidArgumentException('Attempt to access a non-existent property, "' . $name . '", on ' . get_called_class());
 	}
 
 	/**
@@ -148,7 +150,7 @@ abstract class Model {
 			return;
 		}
 
-		throw new \InvalidArgumentException('Attempt to access a non-existent property "' . $name . '" on ' . get_called_class());
+		throw new InvalidArgumentException('Attempt to access a non-existent property "' . $name . '" on ' . get_called_class());
 	}
 
 	/**

@@ -1,6 +1,9 @@
 <?php
 namespace EllisLab\ExpressionEngine\Model\Relationship;
 
+use Exception;
+use RuntimeException;
+
 use EllisLab\ExpressionEngine\Core\AliasService;
 
 class RelationshipMeta {
@@ -81,7 +84,7 @@ class RelationshipMeta {
 
 		if ( ! isset ($gateway_relationships[$this->from_key]))
 		{
-			throw new \RuntimeException ('Missing relationship from ' . $this->from_model_name . '::$' . $this->from_key . ' to ' . $this->to_model_name . '::$' . $this->to_key);
+			throw new RuntimeException('Missing relationship from ' . $this->from_model_name . '::$' . $this->from_key . ' to ' . $this->to_model_name . '::$' . $this->to_key);
 		}
 
 		$gateway_relationship = $gateway_relationships[$this->from_key];
@@ -113,7 +116,7 @@ class RelationshipMeta {
 
 		if ($this->to_key !== $gateway_relationship['key'])
 		{
-			throw new \Exception('Foreign keys in relationship are not equal.  In "' . $this->relationship_name . '" from "' . $this->from_model_name
+			throw new Exception('Foreign keys in relationship are not equal.  In "' . $this->relationship_name . '" from "' . $this->from_model_name
 				. '" to "' . $this->to_model_name . '", to_key "' . $this->to_key . '" does not equal the key in the Gateway "' . $from_gateway_name . '", "' . $gateway_relationship['key'] . '"');
 		}
 
@@ -133,7 +136,7 @@ class RelationshipMeta {
 			$this->{$name} = $value;
 			return;
 		}
-		throw new \Exception('Property "' . $name . '" does not exist!');
+		throw new Exception('Property "' . $name . '" does not exist!');
 	}
 
 	public function __get($name)
@@ -142,7 +145,7 @@ class RelationshipMeta {
 		{
 			return $this->{$name};
 		}
-		throw new \Exception('Property "' . $name . '" does not exist!');
+		throw new Exception('Property "' . $name . '" does not exist!');
 	}
 
 	public function override(array $meta)
