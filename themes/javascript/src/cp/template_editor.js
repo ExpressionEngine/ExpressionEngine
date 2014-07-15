@@ -47,8 +47,6 @@ $(document).ready(function () {
 		$(this).removeClass("collapsed").parent().removeClass("collapsed");
 	});
 
-	template_data.markItUp(EE.template.markitup);
-
 	// Just like calling focus(), but forces FF to move
 	// the cursor to the beginning of the field
 	template_data.createSelection(0, 0);
@@ -68,4 +66,8 @@ $(document).ready(function () {
 			return false;
 		}
 	);
+
+	// Hook up codemirror
+	$('#template_data').toggleCodeMirror();
+
 });

@@ -404,7 +404,7 @@ class Channel_form_lib
 			//custom field pair parsing with replace_tag
 			elseif (isset($this->custom_fields[$tag_name]))
 			{
-				if (preg_match_all('/'.LD.preg_quote($tag_pair_open).RD.'(.*)'.LD.'\/'.$tag_name.RD.'/s', ee()->TMPL->tagdata, $matches))
+				if (preg_match_all('/'.LD.preg_quote($tag_pair_open).RD.'(.*?)'.LD.'\/'.$tag_name.RD.'/s', ee()->TMPL->tagdata, $matches))
 				{
 					foreach ($matches[1] as $match_index => $var_pair_tagdata)
 					{
@@ -1288,9 +1288,8 @@ GRID_FALLBACK;
 			{
 				$conditional_errors['error:' . $error['field']] = $error['error'];
 			}
-
-			unset($conditional_errors['field_errors']);
 		}
+
 
 		return $conditional_errors;
 	}
@@ -1494,12 +1493,6 @@ GRID_FALLBACK;
 
 		foreach ($this->custom_fields as $i => $field)
 		{
-			$isset = (
-				isset($_POST['field_id_'.$field['field_id']]) ||
-				isset($_POST[$field['field_name']]) ||
-				isset($_POST[$field['field_name'].'_hidden_file']) // always call the fieldtype if a file field was on the page
-			);
-
 			if (in_array($field['field_type'], $this->file_fields))
 			{
 				// trick validation into calling the file fieldtype
@@ -1508,6 +1501,13 @@ GRID_FALLBACK;
 					$_POST[$field['field_name']] = $_FILES[$field['field_name']]['name'];
 				}
 			}
+
+			$isset = (
+				isset($_POST['field_id_'.$field['field_id']]) ||
+				isset($_POST[$field['field_name']]) ||
+				// always call the fieldtype if a file field was on the page
+				isset($_POST[$field['field_name'].'_hidden_file'])
+			);
 
 			$this->custom_fields[$i]['isset'] = $isset;
 

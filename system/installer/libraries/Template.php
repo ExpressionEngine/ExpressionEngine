@@ -11,8 +11,8 @@
  * @filesource
  */
 
-define('LD', '{');
-define('RD', '}');
+if ( ! defined('LD')) define('LD', '{');
+if ( ! defined('RD')) define('RD', '}');
 
 // ------------------------------------------------------------------------
 

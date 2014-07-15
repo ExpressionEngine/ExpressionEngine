@@ -106,6 +106,9 @@ $lang = array(
 'error' =>
 'Error',
 
+'generic_fatal_error' =>
+'Something has gone wrong and this URL cannot be processed at this time.',
+
 'invalid_url' =>
 'The URL you submitted is not valid.',
 
@@ -139,6 +142,18 @@ $lang = array(
 'unable_to_load_field_type' =>
 'Unable to load requested field type file:  %s.<br />
 Confirm the fieldtype file is located in the expressionengine/third_party/ directory',
+
+'unwritable_cache_folder' =>
+'Your cache folder does not have proper permissions.<br>
+To fix: Set the cache folder (/expressionengine/cache/) permissions to 777 (or equivalent for your server).',
+
+'unwritable_config_file' =>
+'Your configuration file does not have the proper permissions.<br>
+To fix: Set the config file (/expressionengine/config/config.php) permissions to 666 (or equivalent for your server).',
+
+'redirect_xss_fail' => 'The link you are being redirected to contained some
+potentially malicious or dangerous code. We recommend you hit the back button
+and email %s to report the link that generated this message.',
 
 //----------------------------
 // Member Groups
@@ -187,6 +202,12 @@ Confirm the fieldtype file is located in the expressionengine/third_party/ direc
 
 'error_layout_too_late' =>
 'Plugin or module tag found before layout declaration. Please move the layout tag to the top of your template.',
+
+'error_invalid_conditional' =>
+'You have an invalid conditional in your template. Please review your conditionals for an unclosed string, invalid operators, a missing }, or a missing {/if}.',
+
+'layout_contents_reserved' =>
+'The name "contents" is reserved for the template data and cannot be used as a layout variable (i.e. {layout:set name="contents"} or {layout="foo/bar" contents=""}).',
 
 //----------------------------
 // Email

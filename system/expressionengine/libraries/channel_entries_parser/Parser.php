@@ -220,6 +220,7 @@ class EE_Channel_data_parser {
 		));
 
 		ee()->load->helper('date');
+		ee()->load->helper('url');
 
 		foreach ($entries as $row)
 		{
@@ -234,6 +235,14 @@ class EE_Channel_data_parser {
 			$row['absolute_count']		= $absolute_offset + $row['count'];
 			$row['absolute_results']	= ($absolute_results === NULL) ? $total_results : $absolute_results;
 			$row['comment_subscriber_total'] = (isset($subscriber_totals[$row['entry_id']])) ? $subscriber_totals[$row['entry_id']] : 0;
+			$row['cp_edit_entry_url']	= cp_url(
+				'content_publish/entry_form',
+				array(
+					'site_id'		=> $row['site_id'],
+					'channel_id'	=> $row['channel_id'],
+					'entry_id'		=> $row['entry_id'],
+				)
+			);
 
 			if ($site_pages !== FALSE && isset($site_pages[$row['site_id']]['uris'][$row['entry_id']]))
 			{
@@ -456,8 +465,8 @@ class EE_Channel_data_parser {
 		$pre = $this->_preparser;
 
 		$cond = $row;
-		$cond['logged_in']			= (ee()->session->userdata('member_id') == 0) ? 'FALSE' : 'TRUE';
-		$cond['logged_out']			= (ee()->session->userdata('member_id') != 0) ? 'FALSE' : 'TRUE';
+		$cond['logged_in']			= (ee()->session->userdata('member_id') == 0) ? FALSE : TRUE;
+		$cond['logged_out']			= (ee()->session->userdata('member_id') != 0) ? FALSE : TRUE;
 
 		foreach (array('avatar_filename', 'photo_filename', 'sig_img_filename') as $pv)
 		{
@@ -467,14 +476,14 @@ class EE_Channel_data_parser {
 			}
 		}
 
-		$cond['allow_comments']			= $this->_commenting_allowed($row) ? 'TRUE' : 'FALSE';
-		$cond['signature_image']		= ($row['sig_img_filename'] == '' OR ee()->config->item('enable_signatures') == 'n' OR ee()->session->userdata('display_signatures') == 'n') ? 'FALSE' : 'TRUE';
-		$cond['avatar']					= ($row['avatar_filename'] == '' OR ee()->config->item('enable_avatars') == 'n' OR ee()->session->userdata('display_avatars') == 'n') ? 'FALSE' : 'TRUE';
-		$cond['photo']					= ($row['photo_filename'] == '' OR ee()->config->item('enable_photos') == 'n' OR ee()->session->userdata('display_photos') == 'n') ? 'FALSE' : 'TRUE';
-		$cond['forum_topic']			= (empty($row['forum_topic_id'])) ? 'FALSE' : 'TRUE';
-		$cond['not_forum_topic']		= ( ! empty($row['forum_topic_id'])) ? 'FALSE' : 'TRUE';
-		$cond['category_request']		= ($channel->cat_request === FALSE) ? 'FALSE' : 'TRUE';
-		$cond['not_category_request']	= ($channel->cat_request !== FALSE) ? 'FALSE' : 'TRUE';
+		$cond['allow_comments']			= $this->_commenting_allowed($row) ? TRUE : FALSE;
+		$cond['signature_image']		= ($row['sig_img_filename'] == '' OR ee()->config->item('enable_signatures') == 'n' OR ee()->session->userdata('display_signatures') == 'n') ? FALSE : TRUE;
+		$cond['avatar']					= ($row['avatar_filename'] == '' OR ee()->config->item('enable_avatars') == 'n' OR ee()->session->userdata('display_avatars') == 'n') ? FALSE : TRUE;
+		$cond['photo']					= ($row['photo_filename'] == '' OR ee()->config->item('enable_photos') == 'n' OR ee()->session->userdata('display_photos') == 'n') ? FALSE : TRUE;
+		$cond['forum_topic']			= (empty($row['forum_topic_id'])) ? FALSE : TRUE;
+		$cond['not_forum_topic']		= ( ! empty($row['forum_topic_id'])) ? FALSE : TRUE;
+		$cond['category_request']		= ($channel->cat_request === FALSE) ? FALSE : TRUE;
+		$cond['not_category_request']	= ($channel->cat_request !== FALSE) ? FALSE : TRUE;
 		$cond['channel']				= $row['channel_title'];
 		$cond['channel_short_name']		= $row['channel_name'];
 		$cond['author']					= ($row['screen_name'] != '') ? $row['screen_name'] : $row['username'];

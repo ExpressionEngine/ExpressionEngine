@@ -505,10 +505,10 @@ class Filemanager {
 		}
 
 		// If the original is smaller than the thumb hxw, we'll make a copy rather than upsize
-		if (($force_master_dim == 'height' && $prefs['height'] < $prefs['max_height']) OR
-				($force_master_dim == 'width' && $prefs['width'] < $prefs['max_width']) OR
-				($force_master_dim == FALSE && $prefs['width'] < $prefs['max_width']) OR
-				($force_master_dim == FALSE && $prefs['height'] < $prefs['max_height']))
+		if (($force_master_dim == 'height' && $prefs['height'] <= $prefs['max_height']) OR
+				($force_master_dim == 'width' && $prefs['width'] <= $prefs['max_width']) OR
+				($force_master_dim == FALSE && $prefs['width'] <= $prefs['max_width']) OR
+				($force_master_dim == FALSE && $prefs['height'] <= $prefs['max_height']))
 		{
 			return $prefs;
 		}
