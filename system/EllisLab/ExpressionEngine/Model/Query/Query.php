@@ -509,7 +509,6 @@ class Query {
 				$joined_table . '_' . $node->getId() . '.' . $joined_key,
 				'LEFT OUTER');
 		}
-
 	}
 
 	private function buildSubqueryRelationship(QueryTreeNode $node)
@@ -535,7 +534,7 @@ class Query {
 	}
 
 	/**
-	 * Run the query, hydrate the models, and reassemble the relationships
+	 * Run the query and return a collection.
 	 *
 	 * @return Collection
 	 */
@@ -544,6 +543,33 @@ class Query {
 		return $this->getResult()->collection();
 	}
 
+	/**
+	 * Run the query and get the results, but only return the first.
+	 *
+	 * @return Model Instance
+	 */
+	public function first()
+	{
+		$this->limit(1);
+		return $this->getResult()->first();
+	}
+
+	/**
+	 * Delete all the items selected by the query
+	 *
+	 * @return Number of deleted rows
+	 */
+	public function delete()
+	{
+		$this->db->delete();
+		return $this->db->affected_rows();
+	}
+
+	/**
+	 * Get the query result. This de-aliases the fields, hydrates the models
+	 * and hooks up all of the relationships. That's a lot of work, so it's
+	 * done in a separate class.
+	 */
 	protected function getResult()
 	{
 		// Run the query and return
@@ -552,18 +578,6 @@ class Query {
 			$this->alias_service,
 			$this->db->get()->result_array()
 		);
-	}
-
-	/**
-	 * Run the query, hydrate the models, and reassemble the relationships, but
-	 * limit it to just one.
-	 *
-	 * @return Model Instance
-	 */
-	public function first()
-	{
-		$this->limit(1);
-		return $this->getResult()->first();
 	}
 
 	/**
