@@ -41,6 +41,22 @@ class Utilities extends CP_Controller {
 
 		ee()->lang->loadfile('utilities');
 
+		ee()->load->model('language_model');
+		$default_language = (ee()->config->item('deft_lang') && ee()->config->item('deft_lang') != '') ? ee()->config->item('deft_lang') : 'english';
+		$languages = array();
+
+		foreach (ee()->language_model->language_pack_names() as $key => $value)
+		{
+			$menu_title = $value;
+
+			if ($key == $default_language)
+			{
+				$menu_title .= ' (' . lang('default') . ')';
+			}
+
+			$languages[$menu_title] = cp_url('utilities/translate/' . $key);
+		}
+
 		// Register our menu
 		ee()->menu->register_left_nav(array(
 			'communicate' => cp_url('utilities/communicate'),
@@ -48,10 +64,7 @@ class Utilities extends CP_Controller {
 				'sent' => cp_url('utilities/communicate-sent')
 			),
 			'cp_translation',
-			array(
-				// Show installed languages?
-				'English (Default)' => cp_url('utilities/communicate')
-			),
+			$languages,
 			'php_info' => cp_url('utilities/php'),
 			'import_tools',
 			array(
