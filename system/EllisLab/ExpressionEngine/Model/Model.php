@@ -235,7 +235,7 @@ abstract class Model {
 	 */
 	public function getId()
 	{
-		$primary_key = static::getMetaData('primary_key');
+		$primary_key = $this->getMetaData('primary_key');
 		return $this->{$primary_key};
 	}
 
@@ -382,7 +382,7 @@ abstract class Model {
 	{
 		if (empty($this->_gateways))
 		{
-			foreach (static::getMetaData('gateway_names') as $gateway_name)
+			foreach ($this->getMetaData('gateway_names') as $gateway_name)
 			{
 				$gateway = $this->_factory->makeGateway($gateway_name);
 
@@ -623,7 +623,7 @@ abstract class Model {
 
 	public function fromArray($data)
 	{
-		$data[static::getMetaData('primary_key')] = NULL;
+		$data[$this->getMetaData('primary_key')] = NULL;
 
 		if (isset($data['related_models']))
 		{
