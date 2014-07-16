@@ -328,7 +328,9 @@
 	{
 		// is_callable() returns TRUE on some versions of PHP 5 for private and protected
 		// methods, so we'll use this workaround for consistent behavior
-		if ( ! in_array(strtolower($method), array_map('strtolower', get_class_methods($CI))))
+		if ( ! in_array(strtolower($method), array_map('strtolower', get_class_methods($CI)))
+			&& ! method_exists($CI, '__call')
+			)
 		{
 			show_404("{$class}/{$method}");
 		}
