@@ -416,10 +416,7 @@ class Query {
 	{
 		if (strpos($relationship_name, 'AS'))
 		{
-			list($relationship_name, $alias) = explode('AS', $relationship_name);
-			$relationship_name = trim($relationship_name);
-			$alias = trim($alias);
-			$this->setAlias($alias, $relationship_name);
+			$relationship_name = $this->removeAlias($relationship_name);
 		}
 
 		$node = new QueryTreeNode($relationship_name);
@@ -656,10 +653,20 @@ class Query {
 		}
 	}
 
-	protected function setAlias($alias, $relationship_name)
+
+	protected function removeAlias($str)
 	{
-		$this->aliases[$alias] = $relationship_name;
-		return $this;
+		$str = trim($str);
+
+		if ( ! strpos($str, 'AS'))
+		{
+			return $str;
+		}
+
+		list($model_name, $alias) = preg_split('\s+AS\s+', $str);
+
+		$this->aliases[$alias] = $model_name;
+		return $model_name;
 	}
 
 	protected function getAlias($aliased)
