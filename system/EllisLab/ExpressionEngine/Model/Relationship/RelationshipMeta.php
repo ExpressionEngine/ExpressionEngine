@@ -21,7 +21,6 @@ class RelationshipMeta {
 	protected $type = NULL;
 	protected $method = self::METHOD_JOIN;
 	protected $relationship_name = NULL;
-	protected $relationship_alias = NULL;
 
 	protected $from_model_name = NULL;
 	protected $from_model_class = NULL;
