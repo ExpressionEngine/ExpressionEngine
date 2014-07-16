@@ -117,6 +117,15 @@ $lang = array(
 'xhtml'		=> 'XHTML',
 
 /**
+ * CP Translation
+ */
+
+'language_files'		=>	'Language Files',
+'search_files_button'	=>	'Search Files',
+'file_name'				=>	'File Name',
+'export_download'		=>	'Export (Download)',
+
+/**
  * PHP Info
  */
 
@@ -426,7 +435,7 @@ $lang = array(
 
 'xml_parse_error_desc' =>
 'Check the XML file for any incorrect syntax.',
- 
+
 /**
  * SQL Query Form
  */

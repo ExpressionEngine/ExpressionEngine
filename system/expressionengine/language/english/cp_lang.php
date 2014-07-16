@@ -434,6 +434,8 @@ $lang = array(
 'or_delete' 					=>	'or delete',
 'view' 							=>	'View',
 'switch'						=>	'Switch',
+'manage'						=>	'Manage',
+'edit'							=>	'Edit',
 
 'entry' 						=>	'Entry',
 'template' 						=>	'Template',
@@ -461,6 +463,7 @@ $lang = array(
 'custom_date_range'				=> 'Custom Date Range',
 'limit_by'						=> 'limit by',
 'type_phrase'					=> 'type phrase...',
+'with_selected'					=> 'with selected',
 
 //----------------------------
 // Sites and Channels
