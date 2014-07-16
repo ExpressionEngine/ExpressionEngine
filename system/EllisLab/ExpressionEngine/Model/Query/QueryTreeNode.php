@@ -10,8 +10,6 @@ class QueryTreeNode extends TreeNode {
 	public static $top_id = 0;
 
 	protected $id = 0;
-
-	protected $children_by_id = array();
 	protected $path_string = NULL;
 
 	public function __construct($name)
