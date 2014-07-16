@@ -4,6 +4,9 @@ namespace EllisLab\ExpressionEngine\Controllers\Utilities;
 
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
+use EllisLab\ExpressionEngine\Library\CP\Pagination;
+use EllisLab\ExpressionEngine\Library\CP\URL;
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -91,6 +94,86 @@ class Translate extends Utilities {
 	{
 		ee()->view->cp_page_title = ucfirst($language) . ' ' . lang('language_files');
 		ee()->view->language = $language;
+
+		$base_url = new URL('utilities/translate/' . $language, ee()->session->session_id());
+		if ( ! empty($this->view->filter_by_phrase_value))
+		{
+			$base_url->setQueryStringVariable('filter_by_phrase', $this->view->filter_by_phrase_value);
+		}
+
+		$files = array();
+
+		$this->load->helper('file');
+
+		$path = APPPATH.'language/'.$language;
+		$ext_len = strlen('.php');
+
+		$filename_end = '_lang.php';
+		$filename_end_len = strlen($filename_end);
+
+		$languages = array();
+
+		$language_files = get_filenames($path);
+
+		foreach ($language_files as $file)
+		{
+			if ($file == 'email_data.php')
+			{
+				continue;
+			}
+
+			if (substr($file, -$filename_end_len) && substr($file, -$ext_len) == '.php')
+			{
+				if ( ! empty($this->view->filter_by_phrase_value))
+				{
+					if (strpos($file, $this->view->filter_by_phrase_value) === FALSE)
+					{
+						continue;
+					}
+				}
+
+				$files[] = array(
+					'filename'	=> $file,
+					'name'		=> str_replace('_lang.php', '', $file)
+				);
+			}
+		}
+
+		if (ee()->input->get('file_name_direction') == 'desc')
+		{
+			rsort($files);
+
+			// Set the new sort URL
+			$base_url->setQueryStringVariable('file_name_direction', 'asc');
+			ee()->view->file_name_sort_url = $base_url->compile();
+
+			// Reset the base to reflect our actual direction
+			$base_url->setQueryStringVariable('file_name_direction', 'desc');
+			ee()->view->file_name_direction = 'desc';
+		}
+		else
+		{
+			sort($files);
+
+			// Set the new sort URL
+			$base_url->setQueryStringVariable('file_name_direction', 'desc');
+			ee()->view->file_name_sort_url = $base_url->compile();
+
+			// Reset the base to reflect our actual direction
+			$base_url->setQueryStringVariable('file_name_direction', 'asc');
+			ee()->view->file_name_direction = 'asc';
+		}
+
+		$chunks = array_chunk($files, 50);
+
+		// Paginate!
+		$page = ee()->input->get('page') ? ee()->input->get('page') : 1;
+		$page = ($page > 0) ? $page : 1;
+		$pagination = new Pagination(50, count($files), $page);
+		ee()->view->pagination = $pagination->cp_links($base_url);
+
+		ee()->view->files = $chunks[$page - 1];
+
 		ee()->cp->render('utilities/translate/list');
 	}
 
