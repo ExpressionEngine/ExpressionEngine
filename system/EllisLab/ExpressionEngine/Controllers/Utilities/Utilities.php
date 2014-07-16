@@ -48,13 +48,18 @@ class Utilities extends CP_Controller {
 		foreach (ee()->language_model->language_pack_names() as $key => $value)
 		{
 			$menu_title = $value;
+			$url = cp_url('utilities/translate/' . $key);
 
 			if ($key == $default_language)
 			{
 				$menu_title .= ' (' . lang('default') . ')';
+
+				// Make the default language first
+				$languages = array_merge(array($menu_title => $url), $languages);
+				continue;
 			}
 
-			$languages[$menu_title] = cp_url('utilities/translate/' . $key);
+			$languages[$menu_title] = $url;
 		}
 
 		// Register our menu
