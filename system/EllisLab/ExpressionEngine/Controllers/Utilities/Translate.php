@@ -4,6 +4,7 @@ namespace EllisLab\ExpressionEngine\Controllers\Utilities;
 
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
+use ZipArchive;
 use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\URL;
 
@@ -90,8 +91,18 @@ class Translate extends Utilities {
 		$this->listFiles($language);
 	}
 
+	/**
+	 * List the "*_lang.php" files in a $language directory
+	 *
+	 * @param string $language	The language directory (i.e. 'english')
+	 */
 	private function listFiles($language)
 	{
+		if (ee()->input->get_post('bulk_action') == 'export')
+		{
+			$this->export($language, ee()->input->get_post('selection'));
+		}
+
 		ee()->view->cp_page_title = ucfirst($language) . ' ' . lang('language_files');
 		ee()->view->language = $language;
 
@@ -175,6 +186,55 @@ class Translate extends Utilities {
 		ee()->view->files = $chunks[$page - 1];
 
 		ee()->cp->render('utilities/translate/list');
+	}
+
+	/**
+	 * Zip and send the selected language files
+	 *
+	 * @param string $language	The language directory (i.e. 'english')
+	 * @param array  $files		The list of files to export
+	 */
+	private function export($language, $files)
+	{
+		if (empty($files))
+		{
+			ee()->view->set_message('issue', lang('no_files_selected'), '', TRUE);
+			return;
+		}
+
+		$path = APPPATH . 'language/' . $language . '/';
+
+		// Confirm the files exist
+		foreach($files as $file)
+		{
+			if ( ! is_readable($path . $file . '_lang.php'))
+			{
+				$message = $path . $file . '_lang.php ' . lang('cannot_access') . '.';
+				ee()->view->set_message('issue', $message, '', TRUE);
+				return;
+			}
+		}
+
+		$tmpfilename = tempnam('', '');
+		$zip = new ZipArchive();
+		if ($zip->open($tmpfilename, ZipArchive::CREATE) !== TRUE)
+		{
+			ee()->view->set_message('issue', lang('cannot_create_zip'), '', TRUE);
+			return;
+		}
+
+		foreach($files as $file)
+		{
+			$zip->addFile($path . $file . '_lang.php', $file . '_lang.php');
+		}
+		$zip->close();
+
+		$data = file_get_contents($tmpfilename);
+		unlink($tmpfilename);
+
+		ee()->load->helper('download');
+		force_download('ExpressionEngine-language-export-' . $language . '.zip', $data);
+		exit;
 	}
 
 	private function edit($language, $file)

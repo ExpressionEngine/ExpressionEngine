@@ -28,16 +28,16 @@
 					<li class="edit"><a href="<?=cp_url('utilities/translate/' . $language . '/edit/' . $file['name'])?>" title="<?=strtolower(lang('edit'))?>"></a></li>
 				</ul>
 			</td>
-			<td<?php if ($i == count($files) - 1): ?> class="last"<?php endif; ?>><input type="checkbox" name="<?=$file['name']?>"></td>
+			<td<?php if ($i == count($files) - 1): ?> class="last"<?php endif; ?>><input type="checkbox" name="selection[]" value="<?=$file['name']?>"></td>
 		</tr>
 	<?php endforeach; ?>
 
 	</table>
 	<?php $this->view('_shared/pagination'); ?>
 	<fieldset class="tbl-bulk-act">
-		<select>
-			<option>-- <?=lang('with_selected')?> --</option>
-			<option><?=lang('export_download')?></option>
+		<select name="bulk_action">
+			<option value="">-- <?=lang('with_selected')?> --</option>
+			<option value="export"><?=lang('export_download')?></option>
 		</select>
 		<input class="btn submit" type="submit" value="<?=lang('submit')?>">
 	</fieldset>

@@ -124,6 +124,9 @@ $lang = array(
 'search_files_button'	=>	'Search Files',
 'file_name'				=>	'File Name',
 'export_download'		=>	'Export (Download)',
+'cannot_access'			=>	'cannot be accessed',
+'cannot_create_zip'		=>	'Cannot create a .zip file',
+'no_files_selected'		=>	'No files were selected for export',
 
 /**
  * PHP Info
