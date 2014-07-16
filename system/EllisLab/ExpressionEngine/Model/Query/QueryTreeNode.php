@@ -9,18 +9,49 @@ class QueryTreeNode extends TreeNode {
 
 	public static $top_id = 0;
 
-	protected $id = 0;
 	protected $path_string = NULL;
 
-	public function __construct($name)
+	protected $id;
+	protected $model;
+	protected $gateways;
+	protected $relationship_name;
+
+	public function __construct($name, $model)
 	{
 		parent::__construct($name, array());
+
 		$this->id = ++self::$top_id;
+		$this->model = $model;
 	}
 
 	public function getId()
 	{
 		return $this->id;
+	}
+
+	public function getGateways()
+	{
+		if ( ! isset($this->gateways))
+		{
+			$this->gateways = $this->model->getGateways();
+		}
+
+		return $this->gateways;
+	}
+
+	public function getModel()
+	{
+		return $this->model;
+	}
+
+	public function setRelationshipName($name)
+	{
+		$this->relationship_name = $name;
+	}
+
+	public function getRelationshipName()
+	{
+		return $this->relationship_name;
 	}
 
 	/**

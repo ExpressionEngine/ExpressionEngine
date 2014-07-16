@@ -239,6 +239,20 @@ abstract class Model {
 		return $this->{$primary_key};
 	}
 
+	public function getGateways()
+	{
+		$gateways = array();
+
+		$gateway_names = $this->getMetaData('gateway_names');
+
+		foreach ($gateway_names as $name)
+		{
+			$gateways[$name] = $this->_alias_service->getRegisteredClass($name);
+		}
+
+		return $gateways;
+	}
+
 	/**
 	 * Validate this model's data for saving.  May cascade the validation
 	 * through any set of related models using the same grouping language

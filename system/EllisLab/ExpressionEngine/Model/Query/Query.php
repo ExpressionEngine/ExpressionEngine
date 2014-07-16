@@ -3,7 +3,6 @@
 use EllisLab\ExpressionEngine\Core\AliasServiceInterface;
 use EllisLab\ExpressionEngine\Model\ModelFactory;
 use EllisLab\ExpressionEngine\Model\Relationship\RelationshipMeta;
-use EllisLab\ExpressionEngine\Model\Query\QueryTreeNode;
 
 class Query {
 
@@ -39,31 +38,30 @@ class Query {
 
 	protected function createRoot($model_name)
 	{
-		$this->root = new QueryTreeNode($model_name);
+		$model = $this->factory->make($model_name);
+
+		$this->root = new QueryTreeNode($model_name, $model);
 		$this->root->meta = NULL;
 
 		$this->selectFields($this->root);
 
-		$model_class = $this->alias_service->getRegisteredClass($model_name);
-		$gateway_names = $model_class::getMetaData('gateway_names');
+		$gateways = $this->root->getGateways();
 
-		$primary_gateway_name = array_shift($gateway_names);
-		$primary_gateway_class = $this->alias_service->getRegisteredClass($primary_gateway_name);
-
-		$primary_tablename = $primary_gateway_class::getMetaData('table_name');
+		$primary_gateway = array_shift($gateways);
+		$primary_tablename = $primary_gateway::getMetaData('table_name');
 		$primary_aliased_tablename =  $primary_tablename . '_' . $this->root->getId();
+
 		$this->db->from($primary_tablename . ' AS ' . $primary_aliased_tablename);
 
-		foreach ($gateway_names as $gateway_name)
+		foreach ($gateways as $gateway_name => $gateway_class)
 		{
-			$gateway_class = $this->alias_service->getRegisteredClass($gateway_name);
 			$tablename = $gateway_class::getMetaData('table_name');
 			$aliased_tablename = $tablename . '_' . $this->root->getId();
 			$this->db->join(
 				$tablename . ' AS ' . $aliased_tablename,
 				$primary_aliased_tablename.
 				'.' .
-				$primary_gateway_class::getMetaData('primary_key') .
+				$primary_gateway::getMetaData('primary_key') .
 				' = ' .
 				$aliased_tablename .
 				'.' .
@@ -106,25 +104,15 @@ class Query {
 			$node = $this->root;
 		}
 
-		if ( ! $node->isRoot())
-		{
-			$model_class = $node->meta->to_model_class;
-		}
-		else
-		{
-			$model_class = $this->alias_service->getRegisteredClass($relationship_name);
-		}
+		$model = $node->getModel();
 
 		if ($property === FALSE)
 		{
-			$property = $model_class::getMetaData('primary_key');
+			$property = $model->getMetaData('primary_key');
 		}
 
-		$gateway_names = $model_class::getMetaData('gateway_names');
-
-		foreach ($gateway_names as $gateway_name)
+		foreach ($node->getGateways() as $gateway_name => $gateway_class)
 		{
-			$gateway_class = $this->alias_service->getRegisteredClass($gateway_name);
 			$field_list = $gateway_class::getMetaData('field_list');
 
 			if (in_array($property, $gateway_class::getMetaData('field_list')))
@@ -419,18 +407,7 @@ class Query {
 			$relationship_name = $this->removeAlias($relationship_name);
 		}
 
-		$node = new QueryTreeNode($relationship_name);
-
-		if ($parent->isRoot())
-		{
-			$from_model_name = $parent->getName();
-		}
-		else
-		{
-			$from_model_name = $parent->meta->to_model_name;
-		}
-
-		$from_model = $this->factory->make($from_model_name);
+		$from_model = $parent->getModel();
 
 		$relationship_method = 'get' . $relationship_name;
 
@@ -441,7 +418,11 @@ class Query {
 
 		$relationship_meta = $from_model->$relationship_method();
 		$relationship_meta->override($meta);
-		$relationship_meta->from_model_name = $from_model_name;
+
+		$to_model = $this->factory->make($relationship_meta->to_model_name);
+
+		$node = new QueryTreeNode($relationship_meta->to_model_name, $to_model);
+		$node->setRelationshipName($relationship_name);
 
 		$node->meta = $relationship_meta;
 		return $node;
@@ -467,8 +448,9 @@ class Query {
 	 */
 	private function buildJoinRelationship(QueryTreeNode $node)
 	{
-		$relationship_meta = $node->meta;
 		$this->selectFields($node);
+
+		$relationship_meta = $node->meta;
 
 		$from_id = $node->getParent()->getId();
 
@@ -510,7 +492,7 @@ class Query {
 
 	private function buildSubqueryRelationship(QueryTreeNode $node)
 	{
-		$subquery = new static($node->meta->to_model_name);
+		$subquery = new static($node->getName());
 		$subquery->withSubtree($node->getSubtree());
 
 		$path = $node->getPathString();
@@ -525,7 +507,7 @@ class Query {
 		}
 	}
 
-	public function debug_query()
+	public function debugQuery()
 	{
 		return $this->db->_compile_select();
 	}
@@ -626,29 +608,14 @@ class Query {
 	 */
 	protected function selectFields(QueryTreeNode $node)
 	{
-		if ($node->isRoot())
+		foreach ($node->getGateways() as $name => $gateway_class)
 		{
-			$relationship_name = 'root';
-			$model_name = $node->getName();
-		}
-		else
-		{
-			$relationship_name = $node->meta->relationship_name;
-			$model_name = $node->meta->to_model_name;
-		}
-
-		$model_class_name = $this->alias_service->getRegisteredClass($model_name);
-
-		foreach ($model_class_name::getMetaData('gateway_names') as $gateway_name)
-		{
-			$gateway_class_name = $this->alias_service->getRegisteredClass($gateway_name);
-
-			$table = $gateway_class_name::getMetaData('table_name');
-			$properties = $gateway_class_name::getMetaData('field_list');
+			$table = $gateway_class::getMetaData('table_name');
+			$properties = $gateway_class::getMetaData('field_list');
 
 			foreach ($properties as $property)
 			{
-				$this->db->select($table . '_' . $node->getId() . '.' . $property . ' AS ' . $node->getPathString() . '__' . $relationship_name . '__' . $model_name . '__' . $property);
+				$this->db->select($table . '_' . $node->getId() . '.' . $property . ' AS ' . $node->getPathString() . '__' . $node->getRelationshipName() . '__' . $node->getName() . '__' . $property);
 			}
 		}
 	}
