@@ -4,8 +4,8 @@ namespace EllisLab\ExpressionEngine\Model;
 use InvalidArgumentException;
 
 use EllisLab\ExpressionEngine\Core\AliasService;
+use EllisLab\ExpressionEngine\Core\Validation\ValidationFactory;
 use EllisLab\ExpressionEngine\Model\Error\Errors;
-use EllisLab\ExpressionEngine\Model\Query\QueryBuilder;
 use EllisLab\ExpressionEngine\Model\Relationship\Cascade;
 use EllisLab\ExpressionEngine\Model\Relationship\RelationshipBag;
 use EllisLab\ExpressionEngine\Model\Relationship\RelationshipQuery;
@@ -44,6 +44,11 @@ abstract class Model {
 	 *
 	 */
 	protected $_alias_service = NULL;
+
+	/**
+	 *
+	 */
+	protected $_validation_factory = NULL;
 
 	/**
 	 * The database gateway object for the related database table.
@@ -85,6 +90,7 @@ abstract class Model {
 			if (property_exists($this, $property))
 			{
 				$this->{$property} = $value;
+
 				if ($dirty)
 				{
 					$this->setDirty($property);
@@ -312,7 +318,6 @@ abstract class Model {
 		/* for delete:
 		$c->stopIf('keysNotEqual'); // require identical keys to traverse
 		*/
-		var_dump(get_called_class());
 
 
 		$c->walk(function($self) use ($gateways)
@@ -379,7 +384,14 @@ abstract class Model {
 		{
 			foreach (static::getMetaData('gateway_names') as $gateway_name)
 			{
-				$this->_gateways[$gateway_name] = $this->_factory->makeGateway($gateway_name);
+				$gateway = $this->_factory->makeGateway($gateway_name);
+
+				if ( ! is_null($this->_validation_factory))
+				{
+					$gateway->setValidationFactory($this->_validation_factory);
+				}
+
+				$this->_gateways[$gateway_name] = $gateway;
 			}
 		}
 
@@ -669,6 +681,15 @@ abstract class Model {
 	{
 		$dumper = new namespace\Serializers\XmlSerializer();
 		return $dumper->unserialize($this, $model_xml);
+	}
+
+	/**
+	 * Using setter injection allows third parties and tests to flip out the
+	 * validation. This is automatically passed on to the gateways.
+	 */
+	public function setValidationFactory(ValidationFactory $validation_factory = NULL)
+	{
+		$this->_validation_factory = $validation_factory;
 	}
 
 /*
