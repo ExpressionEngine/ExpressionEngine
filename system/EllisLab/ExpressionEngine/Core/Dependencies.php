@@ -10,12 +10,22 @@ use \EllisLab\ExpressionEngine\Model\ModelFactory;
  *
  * Provides easy access to the individual services.
  *
- * This should not contain anything specific to the internals of a service!
- * Service dependencies should always be implemented against an interface,
- * to avoid any coupling between the application and the service.
- * This means that you will typically end up with a configurable service
- * factory.
+ * This class should not contain anything specific to the internals of any given
+ * service, and correspondingly a service should not itself instantiate anything
+ * from the outside (service, library, model, *anything!*), but instead ask for
+ * external dependencies to be injected. Ideally this should be in form of a
+ * type-hint to a specific interface.
  *
+ * This also means that you will typically want a configurable service factory
+ * that allows third parties to flip out parts on their own instances without
+ * affecting anyone else's implementations.
+ *
+ * Following these rules allows you to avoid any coupling between the
+ * application and the service, which improves testability dramatically. It also
+ * makes third party changes easy while maintaining strict isolation.
+ *
+ * In this class we will always inject EE's default implementation for a given
+ * interface.
  */
 class Dependencies extends ServiceProvider {
 
