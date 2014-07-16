@@ -25,19 +25,8 @@ class QueryTreeNode extends TreeNode {
 		return $this->id;
 	}
 
-	public function getChildById($id)
+	public function add(QueryTreeNode $child)
 	{
-		return $this->children_by_id[$id];
-	}
-
-	public function add(TreeNode $child)
-	{
-		if ( ! ($child instanceof QueryTreeNode))
-		{
-			throw new InvalidArgumentException('QueryTreeNodes can only be used with other QueryTreeNodes.');
-		}
-
-		$this->children_by_id[$child->getId()] = $child;
 		parent::add($child);
 	}
 
