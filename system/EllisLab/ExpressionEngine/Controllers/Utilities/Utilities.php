@@ -68,8 +68,8 @@ class Utilities extends CP_Controller {
 			'php_info' => cp_url('utilities/php'),
 			'import_tools',
 			array(
-				'file_converter' => cp_url('utilities/import_converter'),
-				'member_import' => cp_url('utilities/member_import')
+				'file_converter' => cp_url('utilities/import-converter'),
+				'member_import' => cp_url('utilities/member-import')
 			),
 			'sql_manager' => cp_url('utilities/sql'),
 			array(
