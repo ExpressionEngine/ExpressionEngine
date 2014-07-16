@@ -25,6 +25,9 @@ class QueryTreeNode extends TreeNode {
 		return $this->id;
 	}
 
+	/**
+	 * Overriden for the type hint
+	 */
 	public function add(QueryTreeNode $child)
 	{
 		parent::add($child);
