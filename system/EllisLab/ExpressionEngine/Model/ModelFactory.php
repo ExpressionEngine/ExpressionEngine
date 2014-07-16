@@ -2,15 +2,21 @@
 namespace EllisLab\ExpressionEngine\Model;
 
 use InvalidArgumentException;
-use EllisLab\ExpressionEngine\Core\AliasService;
-use EllisLab\ExpressionEngine\Core\Validation\ValidationFactory;
+use EllisLab\ExpressionEngine\Core\AliasServiceInterface;
+use EllisLab\ExpressionEngine\Core\Validation\ValidationFactoryInterface;
 use EllisLab\ExpressionEngine\Model\Relationship\RelationshipGraph;
 use EllisLab\ExpressionEngine\Model\Query\Query;
 
 /**
  * The model builder is our composition root for all models and queries.
- * Any external dependencies should be explicitly declared here. Optional
- * dependencies should be set on the constructed models using setters.
+ * Any external dependencies should be explicitly declared here as interfaces.
+ *
+ * Optional dependencies should be set on the constructed models using setters.
+ *
+ * Technically Validation should be an optional dependency on this class and
+ * it should bubble down from there, but that would mean that it can be flipped
+ * out globally, which we don't want. The alternative is to go full java and
+ * create a configurator class. No thanks.
  */
 class ModelFactory {
 
@@ -18,7 +24,7 @@ class ModelFactory {
 	protected $validation_factory;
 	protected $relationship_graph;
 
-	public function __construct(AliasService $aliases, ValidationFactory $validation_factory)
+	public function __construct(AliasServiceInterface $aliases, ValidationFactoryInterface $validation_factory)
 	{
 		$this->alias_service = $aliases;
 		$this->validation_factory = $validation_factory;

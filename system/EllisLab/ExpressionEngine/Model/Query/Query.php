@@ -1,6 +1,6 @@
 <?php namespace EllisLab\ExpressionEngine\Model\Query;
 
-use EllisLab\ExpressionEngine\Core\AliasService;
+use EllisLab\ExpressionEngine\Core\AliasServiceInterface;
 use EllisLab\ExpressionEngine\Model\ModelFactory;
 use EllisLab\ExpressionEngine\Model\Relationship\RelationshipMeta;
 use EllisLab\ExpressionEngine\Model\Query\QueryTreeNode;
@@ -24,7 +24,7 @@ class Query {
 	 */
 	private $root = NULL;
 
-	public function __construct(ModelFactory $factory, AliasService $alias_service, $model_name)
+	public function __construct(ModelFactory $factory, AliasServiceInterface $alias_service, $model_name)
 	{
 		$this->factory = $factory;
 		$this->alias_service = $alias_service;

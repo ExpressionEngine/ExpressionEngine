@@ -1,6 +1,7 @@
 <?php
 namespace EllisLab\ExpressionEngine\Model\Relationship;
 
+use EllisLab\ExpressionEngine\Core\AliasServiceInterface;
 /**
  *
  */
@@ -9,9 +10,9 @@ class RelationshipGraph {
 	protected $nodes = array();
 
 	/**
-	 * @param AliasService $alias_service
+	 * @param $alias_service EllisLab\ExpressionEngine\Core\AliasServiceInterface
 	 */
-	public function __construct($alias_service)
+	public function __construct(AliasServiceInterface $alias_service)
 	{
 		$this->alias_service = $alias_service;
 	}
