@@ -87,7 +87,7 @@ class Translate extends Utilities {
 	 */
 	public function index()
 	{
-		$language = (ee()->config->item('deft_lang') && ee()->config->item('deft_lang') != '') ? ee()->config->item('deft_lang') : 'english';
+		$language = ee()->config->item('deft_lang') ? ee()->config->item('deft_lang') : 'english';
 		$this->listFiles($language);
 	}
 
