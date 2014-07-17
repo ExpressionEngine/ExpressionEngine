@@ -16,9 +16,9 @@ class MailingListQueueGateway extends RowDataGateway
 		)
 	);
 
-	protected $queue_id;
-	protected $email;
-	protected $list_id;
-	protected $authcode;
-	protected $date;
+	public $queue_id;
+	public $email;
+	public $list_id;
+	public $authcode;
+	public $date;
 }

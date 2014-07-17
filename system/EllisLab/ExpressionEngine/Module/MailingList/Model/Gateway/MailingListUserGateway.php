@@ -15,11 +15,11 @@ class MailingListUserGateway extends RowDataGateway
 		)
 	);
 
-	protected $user_id;
-	protected $list_id;
-	protected $authcode;
-	protected $email;
-	protected $ip_address;
+	public $user_id;
+	public $list_id;
+	public $authcode;
+	public $email;
+	public $ip_address;
 
 
 }

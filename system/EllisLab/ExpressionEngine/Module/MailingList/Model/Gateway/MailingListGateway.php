@@ -15,9 +15,9 @@ class MailingListGateway extends RowDataGateway
 		)
 	);
 
-	protected $list_id;
-	protected $list_name;
-	protected $list_title;
-	protected $list_template;
+	public $list_id;
+	public $list_name;
+	public $list_title;
+	public $list_template;
 
 }
