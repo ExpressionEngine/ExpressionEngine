@@ -114,10 +114,10 @@ class EE_Logger {
 
 		$log_data = array();
 
-		// If we were passed an array, add its contents to $log_data
+		// If we were passed an array, place its contents to $log_data
 		if (is_array($data))
 		{
-			$log_data = array_merge($log_data, $data);
+			$log_data = $data;
 		}
 		// Otherwise it's probably a string, stick it in the 'description' field
 		else
