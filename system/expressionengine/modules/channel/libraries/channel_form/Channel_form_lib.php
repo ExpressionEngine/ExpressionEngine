@@ -118,7 +118,7 @@ class Channel_form_lib
 		if (ee()->extensions->active_hook('safecracker_entry_form_absolute_start') === TRUE)
 		{
 			ee()->load->library('logger');
-			ee()->logger->deprecated('safecracker_entry_form_absolute_start', '2.7', 'channel_form_entry_form_absolute_start');
+			ee()->logger->deprecated_hook('safecracker_entry_form_absolute_start', '2.7', 'channel_form_entry_form_absolute_start');
 
 			ee()->extensions->call('safecracker_entry_form_absolute_start');
 			if (ee()->extensions->end_script === TRUE) return;
@@ -291,7 +291,7 @@ class Channel_form_lib
 		if (ee()->extensions->active_hook('safecracker_entry_form_tagdata_start') === TRUE)
 		{
 			ee()->load->library('logger');
-			ee()->logger->deprecated('safecracker_entry_form_tagdata_start', '2.7', 'channel_form_entry_form_tagdata_start');
+			ee()->logger->deprecated_hook('safecracker_entry_form_tagdata_start', '2.7', 'channel_form_entry_form_tagdata_start');
 
 			ee()->TMPL->tagdata = ee()->extensions->call('safecracker_entry_form_tagdata_start', ee()->TMPL->tagdata, $this);
 			if (ee()->extensions->end_script === TRUE) return;
