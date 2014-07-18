@@ -677,96 +677,23 @@ class Email {
 		$message = entities_to_ascii($message);
 		$message = ee()->typography->filter_censored_words($message);
 
-		// Send email
-		ee()->load->library('email');
-		ee()->email->wordwrap = true;
-		ee()->email->mailtype = $mail_type;
-		ee()->email->priority = '3';
+		// Check for spam
+		$text = "$subject $message";
 
-		if (isset($_POST['charset']) && $_POST['charset'] != '')
+		if (ee()->spam->classify($text))
 		{
-			ee()->email->charset = $_POST['charset'];
+			$args = array(
+				$subject,
+				$message,
+				$approved_recipients,
+				$approved_tos,
+				$_POST
+			);
+			ee()->spam->moderate(__FILE__, 'Email', 'mail_recipients', $args, $text);
+		} else {
+			// Send mail
+			$this->mail_recipients($subject, $message, $approved_recipients, $approved_tos, $_POST);
 		}
-
-		if ( count($approved_recipients) == 0 && count($approved_tos) > 0) // No Hidden Recipients
-		{
-			foreach ($approved_tos as $val)
-			{
-				ee()->email->EE_initialize();
-				ee()->email->to($val);
-
-				if (isset($_POST['replyto']) && $_POST['replyto'] == 'yes')
-				{
-					ee()->email->from(ee()->config->item('webmaster_email'), ee()->config->item('webmaster_name'));
-					ee()->email->reply_to($_POST['from'], $_POST['name']);
-				}
-				else
-				{
-					ee()->email->from($_POST['from'],$_POST['name']);
-				}
-
-				ee()->email->subject($subject);
-				ee()->email->message($message);
-				ee()->email->send();
-			}
-		}
-		elseif ( count($approved_recipients) > 0 && count($approved_tos) == 0) // Hidden Recipients Only
-		{
-			foreach ($approved_recipients as $val)
-			{
-				ee()->email->EE_initialize();
-				ee()->email->to($val);
-
-				if (isset($_POST['replyto']) && $_POST['replyto'] == 'yes')
-				{
-					ee()->email->from(ee()->config->item('webmaster_email'), ee()->config->item('webmaster_name'));
-					ee()->email->reply_to($_POST['from'], $_POST['name']);
-				}
-				else
-				{
-					ee()->email->from($_POST['from'],$_POST['name']);
-				}
-
-				ee()->email->subject($subject);
-				ee()->email->message($message);
-				ee()->email->send();
-			}
-		}
-		else // Combination of Hidden and Regular Recipients, BCC hidden on every regular recipient email
-		{
-			foreach ($approved_tos as $val)
-			{
-				ee()->email->EE_initialize();
-				ee()->email->to($val);
-				ee()->email->bcc(implode(',', $approved_recipients));
-
-				if (isset($_POST['replyto']) && $_POST['replyto'] == 'yes')
-				{
-					ee()->email->from(ee()->config->item('webmaster_email'), ee()->config->item('webmaster_name'));
-					ee()->email->reply_to($_POST['from'], $_POST['name']);
-				}
-				else
-				{
-					ee()->email->from($_POST['from'], $_POST['name']);
-				}
-
-				ee()->email->subject($subject);
-				ee()->email->message($message);
-				ee()->email->send();
-			}
-		}
-
-
-		// Store in tracking class
-		$data = array(
-			'email_date'		=> ee()->localize->now,
-			'sender_ip'			=> ee()->input->ip_address(),
-			'sender_email'		=> $_POST['from'],
-			'sender_username'	=> ee()->session->userdata['username'],
-			'number_recipients'	=> count($approved_tos) + count($approved_recipients)
-		);
-
-		ee()->db->query(ee()->db->insert_string('exp_email_tracker', $data));
 
 		/* -------------------------------------
 		/*  'email_module_send_email_end' hook.
@@ -796,13 +723,121 @@ class Email {
 			{
 				$data['rate'] = ee()->input->get_post('redirect');
 			}
-			elseif(ee()->input->get_post('redirect') == 'none')
+			elseif(ee()->nput->get_post('redirect') == 'none')
 			{
 				$data['redirect'] = '';
 			}
 		}
 
+		var_dump($data);
+		die();
 		ee()->output->show_message($data);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * mail_recipients
+	 * 
+	 * @param mixed $subject
+	 * @param mixed $message 
+	 * @param mixed $approved_recipients Array of all recipients
+	 * @param mixed $approved_tos Array of non-BCC recipients
+	 * @param mixed $data The POST data from the email form
+	 * @access public
+	 * @return void
+	 */
+	function mail_recipients($subject, $message, $approved_recipients, $approved_tos, $data)
+	{
+		ee()->load->library('email');
+		ee()->email->wordwrap = true;
+		ee()->email->mailtype = $mail_type;
+		ee()->email->priority = '3';
+
+		if (isset($data['charset']) && $data['charset'] != '')
+		{
+			ee()->email->charset = $data['charset'];
+		}
+
+		if ( count($approved_recipients) == 0 && count($approved_tos) > 0) // No Hidden Recipients
+		{
+			foreach ($approved_tos as $val)
+			{
+				ee()->email->EE_initialize();
+				ee()->email->to($val);
+
+				if (isset($data['replyto']) && $data['replyto'] == 'yes')
+				{
+					ee()->email->from(ee()->config->item('webmaster_email'), ee()->config->item('webmaster_name'));
+					ee()->email->reply_to($data['from'], $data['name']);
+				}
+				else
+				{
+					ee()->email->from($data['from'],$data['name']);
+				}
+
+				ee()->email->subject($subject);
+				ee()->email->message($message);
+				ee()->email->send();
+			}
+		}
+		elseif ( count($approved_recipients) > 0 && count($approved_tos) == 0) // Hidden Recipients Only
+		{
+			foreach ($approved_recipients as $val)
+			{
+				ee()->email->EE_initialize();
+				ee()->email->to($val);
+
+				if (isset($data['replyto']) && $data['replyto'] == 'yes')
+				{
+					ee()->email->from(ee()->config->item('webmaster_email'), ee()->config->item('webmaster_name'));
+					ee()->email->reply_to($data['from'], $data['name']);
+				}
+				else
+				{
+					ee()->email->from($data['from'],$data['name']);
+				}
+
+				ee()->email->subject($subject);
+				ee()->email->message($message);
+				ee()->email->send();
+			}
+		}
+		else // Combination of Hidden and Regular Recipients, BCC hidden on every regular recipient email
+		{
+			foreach ($approved_tos as $val)
+			{
+				ee()->email->EE_initialize();
+				ee()->email->to($val);
+				ee()->email->bcc(implode(',', $approved_recipients));
+
+				if (isset($data['replyto']) && $data['replyto'] == 'yes')
+				{
+					ee()->email->from(ee()->config->item('webmaster_email'), ee()->config->item('webmaster_name'));
+					ee()->email->reply_to($data['from'], $data['name']);
+				}
+				else
+				{
+					ee()->email->from($data['from'], $data['name']);
+				}
+
+				ee()->email->subject($subject);
+				ee()->email->message($message);
+				ee()->email->send();
+			}
+		}
+
+
+		// Store in tracking class
+		$data = array(
+			'email_date'		=> ee()->localize->now,
+			'sender_ip'			=> ee()->input->ip_address(),
+			'sender_email'		=> $data['from'],
+			'sender_username'	=> ee()->session->userdata['username'],
+			'number_recipients'	=> count($approved_tos) + count($approved_recipients)
+		);
+
+		ee()->db->query(ee()->db->insert_string('exp_email_tracker', $data));
 	}
 
 	// --------------------------------------------------------------------
