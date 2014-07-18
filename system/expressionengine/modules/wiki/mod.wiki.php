@@ -119,6 +119,9 @@ class Wiki {
 		/*  to read for what.
 		/* ----------------------------------------*/
 
+		ee()->load->library('template');
+		var_dump($this->EE->TMPL);
+		die('test');
 		if (($this->base_path = ee()->TMPL->fetch_param('base_path')) === FALSE)
 		{
 			return $this->return_data = lang('basepath_unset');
@@ -3770,9 +3773,30 @@ class Wiki {
 			$revision['revision_status'] = 'open';
 		}
 
+		// Check for spam
+		if ( ! in_array(ee()->session->userdata['group_id'], $this->admins))
+		{
+			$is_spam = ee()->spam->classify($content);
+
+			if ($is_spam)
+			{
+				$revision['revision_status'] = 'closed';
+			}
+		}
+
 		ee()->db->query(ee()->db->insert_string('exp_wiki_revisions', $revision));
 
 		$revision['revision_id'] = ee()->db->insert_id();
+
+		if ($is_spam)
+		{
+			$data = array(
+				NULL,
+				$revision['revision_id'],
+				'open'
+			);
+			ee()->spam->moderate(__FILE__, 'Wiki', 'open_close_revision', serialize($data), $content);
+		}
 
 		/** -------------------------------------
 		/**  Check and Add Categories - But Not For Categories Namespace
@@ -5017,7 +5041,10 @@ class Wiki {
 		// Clear wiki cache
 		ee()->functions->clear_caching('db');
 
-		$this->redirect('', $title);
+		if ( ! empty($title))
+		{
+			$this->redirect('', $title);
+		}
 	}
 
 
