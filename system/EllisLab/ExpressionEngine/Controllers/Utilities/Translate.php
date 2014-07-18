@@ -76,6 +76,10 @@ class Translate extends Utilities {
 		{
 			$this->edit($name, $arguments[1]);
 		}
+		elseif (strtolower($arguments[0]) == 'save' && isset($arguments[1]))
+		{
+			$this->save($name, $arguments[1]);
+		}
 		else
 		{
 			show_404();
@@ -304,6 +308,54 @@ class Translate extends Utilities {
 		);
 
 		ee()->cp->render('utilities/translate/edit', $vars);
+	}
+
+	private function save($language, $file)
+	{
+		$file = ee()->security->sanitize_filename($file);
+
+		$dest_dir = APPPATH . 'translations/';
+		$filename =  $file . '_lang.php';
+		$dest_log = $dest_dir . $filename;
+
+		$str = '<?php'."\n".'$lang = array('."\n\n\n";
+
+		foreach ($_POST as $key => $val)
+		{
+			$val = str_replace('<script', '', $val);
+			$val = str_replace('<iframe', '', $val);
+			$val = str_replace(array("\\", "'"), array("\\\\", "\'"), $val);
+
+			$str .= '\''.$key.'\' => '."\n".'\''.$val.'\''.",\n\n";
+		}
+
+		$str .= "''=>''\n);\n\n";
+		$str .= "// End of File";
+
+		// Make sure any existing file is writeable
+		if (file_exists($dest_loc))
+		{
+			@chmod($dest_loc, FILE_WRITE_MODE);
+
+			if ( ! is_really_writable($dest_loc))
+			{
+				exit($dest_loc);
+				ee()->view->set_message('issue', lang('trans_file_not_writable'), '', TRUE);
+				ee()->functions->redirect(cp_url('utilities/translate/' . $language . '/edit/' . $file));
+			}
+		}
+
+		$this->load->helper('file');
+
+		if (write_file($dest_loc, $str))
+		{
+			ee()->view->set_message('success', lang('file_saved').$filename, '', TRUE);
+		}
+		else
+		{
+			ee()->view->set_message('issue', lang('invalid_path'), '', TRUE);
+		}
+		ee()->functions->redirect(cp_url('utilities/translate/' . $language . '/edit/' . $file));
 	}
 }
 // END CLASS
