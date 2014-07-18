@@ -198,4 +198,29 @@ feature 'Email Log' do
 	@page.pages.map {|name| name.text}.should == ["First", "Previous", "1", "2", "3", "Next", "Last"]
   end
 
+  it 'will paginate phrase search results' do
+	@page.perpage_filter.select "25 results"
+	@page.phrase_search.set "johndoe"
+	@page.submit_button.click
+
+	# Page 1
+	@page.phrase_search.value.should eq "johndoe"
+	@page.items.should_not have_text "admin"
+	@page.perpage_filter.has_select?('perpage', :selected => "25 results")
+	@page.should have(25).items
+	@page.should have_pagination
+	@page.should have(5).pages
+	@page.pages.map {|name| name.text}.should == ["First", "1", "2", "Next", "Last"]
+
+	click_link "Next"
+
+	# Page 2
+	@page.phrase_search.value.should eq "johndoe"
+	@page.items.should_not have_text "admin"
+	@page.perpage_filter.has_select?('perpage', :selected => "25 results")
+	@page.should have(10).items
+	@page.should have_pagination
+	@page.should have(5).pages
+	@page.pages.map {|name| name.text}.should == ["First", "Previous", "1", "2", "Last"]
+  end
 end

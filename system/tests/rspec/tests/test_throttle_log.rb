@@ -53,7 +53,7 @@ feature 'Throttling Log' do
 
   # Confirming phrase search
   it '(enabled) searches by phrases', :enabled => true do
-  	our_ip = "172.16.10.42"
+  	our_ip = "172.16.11.42"
 
   	@page.generate_data(count: 1, timestamp_max: 0, ip_address: our_ip)
   	@page.load
@@ -81,17 +81,17 @@ feature 'Throttling Log' do
   end
 
   it '(enabled) can combine phrase search with filters', :enabled => true do
-	our_ip = "172.16.10.42"
+	our_ip = "172.16.11.42"
 
 	@page.generate_data(count: 27, timestamp_max: 0, ip_address: our_ip)
 	@page.load
 
 	@page.perpage_filter.select "25 results"
-	@page.phrase_search.set "172.16"
+	@page.phrase_search.set "172.16.11"
 	@page.submit_button.click
 
 	@page.perpage_filter.has_select?('perpage', :selected => "25 results")
-	@page.phrase_search.value.should eq "172.16"
+	@page.phrase_search.value.should eq "172.16.11"
 	@page.should have_text our_ip
 	@page.should have(25).items
     @page.should have_pagination
@@ -154,4 +154,31 @@ feature 'Throttling Log' do
     @page.pages.map {|name| name.text}.should == ["First", "Previous", "1", "2", "3", "Next", "Last"]
   end
 
+  it '(enabled) will paginate phrase search results', :enabled => true do
+  	@page.generate_data(count: 35, timestamp_max: 0, ip_address: "172.16.11.42")
+  	@page.load
+	@page.perpage_filter.select "25 results"
+	@page.phrase_search.set "172.16.11"
+	@page.submit_button.click
+
+	# Page 1
+	@page.phrase_search.value.should eq "172.16.11"
+	@page.items.should_not have_text "10.0"
+	@page.perpage_filter.has_select?('perpage', :selected => "25 results")
+	@page.should have(25).items
+	@page.should have_pagination
+	@page.should have(5).pages
+	@page.pages.map {|name| name.text}.should == ["First", "1", "2", "Next", "Last"]
+
+	click_link "Next"
+
+	# Page 2
+	@page.phrase_search.value.should eq "172.16.11"
+	@page.items.should_not have_text "10.0"
+	@page.perpage_filter.has_select?('perpage', :selected => "25 results")
+	@page.should have(10).items
+	@page.should have_pagination
+	@page.should have(5).pages
+	@page.pages.map {|name| name.text}.should == ["First", "Previous", "1", "2", "Last"]
+  end
 end
