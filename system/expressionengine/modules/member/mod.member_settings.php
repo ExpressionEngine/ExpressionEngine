@@ -1106,11 +1106,6 @@ class Member_settings extends Member {
 
 		unset($_POST['HTTP_REFERER']);
 
-		if (count($data) > 0)
-		{
-			ee()->member_model->update_member(ee()->session->userdata('member_id'), $data);
-		}
-
 		/** -------------------------------------
 		/**  Update the custom fields
 		/** -------------------------------------*/
@@ -1126,30 +1121,47 @@ class Member_settings extends Member {
 					$m_data[$key] = ee()->security->xss_clean($val);
 				}
 			}
+		}
 
+		$text = implode(' ', array_merge($data, $m_data));
+
+		// Check for spam
+		if (ee()->spam->classify($text))
+		{
+			ee()->spam->moderate(NULL, NULL, NULL, NULL, $text);
+			return ee()->output->show_user_error('general', array(ee()->lang->line('invalid_action')));
+		}
+		else
+		{
 			if (count($m_data) > 0)
 			{
 				ee()->member_model->update_member_data(ee()->session->userdata('member_id'), $m_data);
 			}
-		}
 
-		/** -------------------------------------
-		/**  Update comments
-		/** -------------------------------------*/
-
-		if ($data['location'] != "" OR $data['url'] != "")
-		{
-			if (ee()->db->table_exists('comments'))
+			if (count($data) > 0)
 			{
-				$d = array(
-					'location'	=> $data['location'],
-					'url'		=> $data['url']
-				);
-
-				ee()->db->where('author_id', ee()->session->userdata('member_id'));
-				ee()->db->update('comments', $d);
+				ee()->member_model->update_member(ee()->session->userdata('member_id'), $data);
 			}
-	  	}
+
+
+			/** -------------------------------------
+			/**  Update comments
+			/** -------------------------------------*/
+
+			if ($data['location'] != "" OR $data['url'] != "")
+			{
+				if (ee()->db->table_exists('comments'))
+				{
+					$d = array(
+						'location'	=> $data['location'],
+						'url'		=> $data['url']
+					);
+
+					ee()->db->where('author_id', ee()->session->userdata('member_id'));
+					ee()->db->update('comments', $d);
+				}
+	  		}
+		}
 
 		/** -------------------------------------
 		/**  Success message
