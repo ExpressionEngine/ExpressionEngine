@@ -847,6 +847,9 @@ $lang = array(
 "no_custom_profile_fields" =>
 "There are currently no member fields.",
 
+"delete_profile_field_confirmation" =>
+"Are you sure you want to permanently delete this Member Profile Field?",
+
 "member_search" =>
 "Member Search",
 

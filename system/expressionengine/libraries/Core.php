@@ -86,7 +86,7 @@ class EE_Core {
 		// application constants
 		define('IS_CORE',		FALSE);
 		define('APP_NAME',		'ExpressionEngine'.(IS_CORE ? ' Core' : ''));
-		define('APP_BUILD',		'20140626');
+		define('APP_BUILD',		'20140715');
 		define('APP_VER',		'2.9.0');
 		define('SLASH',			'&#47;');
 		define('LD',			'{');
@@ -97,6 +97,9 @@ class EE_Core {
 		define('NL',			"\n");
 		define('PATH_DICT', 	APPPATH.'config/');
 		define('AJAX_REQUEST',	ee()->input->is_ajax_request());
+
+		// Load the default caching driver
+		ee()->load->driver('cache');
 
 		// Load DB and set DB preferences
 		ee()->load->database();
@@ -117,9 +120,6 @@ class EE_Core {
 		}
 
 		ee()->config->site_prefs(ee()->config->item('site_name'));
-
-		// Load the default caching driver
-		ee()->load->driver('cache');
 
 		// this look backwards, but QUERY_MARKER is only used where we MUST
 		// have a ?, and do not want to double up

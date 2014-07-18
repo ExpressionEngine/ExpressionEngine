@@ -3407,6 +3407,13 @@ class EE_Template {
 	 */
 	public function parse_simple_segment_conditionals($str)
 	{
+		$vars = array();
+
+		for ($i = 1; $i < 10; $i++)
+		{
+			$vars['segment_'.$i] = ee()->uri->segment($i);
+		}
+
 		return ee()->functions->prep_conditionals($str, $vars);
 	}
 

@@ -227,6 +227,7 @@ class File {
 
 		// Run the query and pass it to the final query
 		$query = ee()->db->get();
+		ee()->db->flush_cache();
 
 		if ($query->num_rows() == 0)
 		{
@@ -239,7 +240,6 @@ class File {
 		}
 
 		//  Build the full SQL query
-		ee()->db->flush_cache();
 		ee()->db->select('*')
 			->join('upload_prefs', 'upload_prefs.id = files.upload_location_id', 'LEFT')
 			->where_in('file_id', $file_ids)

@@ -3053,7 +3053,7 @@ class Forum_mcp {
 			}
 			else
 			{
-				$crumb[] = array($url.key(end($crumb)).'/'.$new_val => ucfirst(str_replace('_', ' ', $new_val)));
+				$crumb[] = array(key(end($crumb)).'/'.$new_val => ucfirst(str_replace('_', ' ', $new_val)));
 			}
 
 			$parts[] = $new_val;
