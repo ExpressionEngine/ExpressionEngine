@@ -45,7 +45,7 @@ class Logs extends CP_Controller {
 
 		ee()->lang->loadfile('logs');
 
-		if ( ! $this->cp->allowed_group('can_access_logs'))
+		if ( ! ee()->cp->allowed_group('can_access_logs'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -171,10 +171,10 @@ class Logs extends CP_Controller {
 		}
 
 		// Make the filters available to the view
-		$this->view->filters = $view_filters;
+		ee()->view->filters = $view_filters;
 
 		// Add in any submitted search phrase
-		$this->view->filter_by_phrase_value = ee()->input->get_post('filter_by_phrase');
+		ee()->view->filter_by_phrase_value = ee()->input->get_post('filter_by_phrase');
 	}
 
 	/**

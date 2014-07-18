@@ -36,7 +36,7 @@ class MemberImport extends Utilities {
 	 */
 	public function index()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
+		if ( ! ee()->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -109,7 +109,7 @@ class MemberImport extends Utilities {
 	 */
 	public function memberImportConfirm()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
+		if ( ! ee()->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -193,7 +193,7 @@ class MemberImport extends Utilities {
 	 */
 	public function processXml()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
+		if ( ! ee()->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -288,7 +288,7 @@ class MemberImport extends Utilities {
 	 */
 	public function validateXml($xml)
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
+		if ( ! ee()->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -540,7 +540,7 @@ class MemberImport extends Utilities {
 	 */
 	public function doImport()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
+		if ( ! ee()->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -817,7 +817,7 @@ class MemberImport extends Utilities {
 	 */
 	public function createCustomFields()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
+		if ( ! ee()->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -888,7 +888,7 @@ class MemberImport extends Utilities {
 	{
 		ee()->load->library('form_validation');
 
-		ee()->invalid_names = $this->cp->invalid_custom_field_names();
+		ee()->invalid_names = ee()->cp->invalid_custom_field_names();
 
 		// Gather existing field names
 		ee()->db->select('m_field_name');

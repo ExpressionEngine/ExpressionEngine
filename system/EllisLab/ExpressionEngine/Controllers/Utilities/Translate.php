@@ -40,7 +40,7 @@ class Translate extends Utilities {
 	{
 		parent::__construct();
 
-		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
+		if ( ! ee()->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -51,7 +51,7 @@ class Translate extends Utilities {
 		}
 
 		// Add in any submitted search phrase
-		$this->view->filter_by_phrase_value = ee()->input->get_post('filter_by_phrase');
+		ee()->view->filter_by_phrase_value = ee()->input->get_post('filter_by_phrase');
 	}
 
 	/**
@@ -107,9 +107,9 @@ class Translate extends Utilities {
 		ee()->view->language = $language;
 
 		$base_url = new URL('utilities/translate/' . $language, ee()->session->session_id());
-		if ( ! empty($this->view->filter_by_phrase_value))
+		if ( ! empty(ee()->view->filter_by_phrase_value))
 		{
-			$base_url->setQueryStringVariable('filter_by_phrase', $this->view->filter_by_phrase_value);
+			$base_url->setQueryStringVariable('filter_by_phrase', ee()->view->filter_by_phrase_value);
 		}
 
 		$files = array();
@@ -135,9 +135,9 @@ class Translate extends Utilities {
 
 			if (substr($file, -$filename_end_len) && substr($file, -$ext_len) == '.php')
 			{
-				if ( ! empty($this->view->filter_by_phrase_value))
+				if ( ! empty(ee()->view->filter_by_phrase_value))
 				{
-					if (strpos($file, $this->view->filter_by_phrase_value) === FALSE)
+					if (strpos($file, ee()->view->filter_by_phrase_value) === FALSE)
 					{
 						continue;
 					}

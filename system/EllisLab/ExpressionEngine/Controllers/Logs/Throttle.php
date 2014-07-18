@@ -41,13 +41,13 @@ class Throttle extends Logs {
 	 */
 	public function index()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_logs'))
+		if ( ! ee()->cp->allowed_group('can_access_tools', 'can_access_logs'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
 
 		$this->base_url->path = 'logs/throttle';
-		$this->view->cp_page_title = lang('view_throttle_log');
+		ee()->view->cp_page_title = lang('view_throttle_log');
 		$this->filters(array('perpage'));
 
 		$rows = array();
@@ -84,11 +84,11 @@ class Throttle extends Logs {
 				->endFilterGroup()
 				->endFilterGroup();
 
-			if ( ! empty($this->view->filter_by_phrase_value))
+			if ( ! empty(ee()->view->filter_by_phrase_value))
 			{
 				$logs = $logs->filterGroup()
-				               ->filter('ip_address', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%')
-				               ->orFilter('hits', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%')
+				               ->filter('ip_address', 'LIKE', '%' . ee()->view->filter_by_phrase_value . '%')
+				               ->orFilter('hits', 'LIKE', '%' . ee()->view->filter_by_phrase_value . '%')
 							 ->endFilterGroup();
 			}
 
@@ -120,7 +120,7 @@ class Throttle extends Logs {
 			'disabled' => $throttling_disabled
 		);
 
-		$this->cp->render('logs/throttle', $vars);
+		ee()->cp->render('logs/throttle', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -132,7 +132,7 @@ class Throttle extends Logs {
 	 */
 	public function delete($id = 'all')
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_logs'))
+		if ( ! ee()->cp->allowed_group('can_access_tools', 'can_access_logs'))
 		{
 			show_error(lang('unauthorized_access'));
 		}

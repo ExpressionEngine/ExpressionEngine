@@ -45,7 +45,7 @@ class Developer extends Logs {
 		}
 
 		$this->base_url->path = 'logs/developer';
-		$this->view->cp_page_title = lang('view_developer_log');
+		ee()->view->cp_page_title = lang('view_developer_log');
 		$this->filters(array('date', 'perpage'));
 
 		$page = ee()->input->get('page') ? ee()->input->get('page') : 1;
@@ -60,20 +60,20 @@ class Developer extends Logs {
 			$logs = $logs->filter('timestamp', '>=', ee()->localize->now - $this->params['filter_by_date']);
 		}
 
-		if ( ! empty($this->view->filter_by_phrase_value))
+		if ( ! empty(ee()->view->filter_by_phrase_value))
 		{
 			$logs = $logs->filterGroup()
-			               ->filter('description', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%')
-			               ->orFilter('function', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%')
-			               ->orFilter('line', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%')
-			               ->orFilter('file', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%')
-			               ->orFilter('deprecated_since', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%')
-			               ->orFilter('use_instead', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%')
-			               ->orFilter('template_name', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%')
-			               ->orFilter('template_group', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%')
-			               ->orFilter('addon_module', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%')
-			               ->orFilter('addon_method', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%')
-			               ->orFilter('snippets', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%')
+			               ->filter('description', 'LIKE', '%' . ee()->view->filter_by_phrase_value . '%')
+			               ->orFilter('function', 'LIKE', '%' . ee()->view->filter_by_phrase_value . '%')
+			               ->orFilter('line', 'LIKE', '%' . ee()->view->filter_by_phrase_value . '%')
+			               ->orFilter('file', 'LIKE', '%' . ee()->view->filter_by_phrase_value . '%')
+			               ->orFilter('deprecated_since', 'LIKE', '%' . ee()->view->filter_by_phrase_value . '%')
+			               ->orFilter('use_instead', 'LIKE', '%' . ee()->view->filter_by_phrase_value . '%')
+			               ->orFilter('template_name', 'LIKE', '%' . ee()->view->filter_by_phrase_value . '%')
+			               ->orFilter('template_group', 'LIKE', '%' . ee()->view->filter_by_phrase_value . '%')
+			               ->orFilter('addon_module', 'LIKE', '%' . ee()->view->filter_by_phrase_value . '%')
+			               ->orFilter('addon_method', 'LIKE', '%' . ee()->view->filter_by_phrase_value . '%')
+			               ->orFilter('snippets', 'LIKE', '%' . ee()->view->filter_by_phrase_value . '%')
 						 ->endFilterGroup();
 		}
 
@@ -167,7 +167,7 @@ class Developer extends Logs {
 			'pagination' => $links
 		);
 
-		$this->cp->render('logs/developer', $vars);
+		ee()->cp->render('logs/developer', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -179,7 +179,7 @@ class Developer extends Logs {
 	 */
 	public function delete($id = 'all')
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_logs'))
+		if ( ! ee()->cp->allowed_group('can_access_tools', 'can_access_logs'))
 		{
 			show_error(lang('unauthorized_access'));
 		}

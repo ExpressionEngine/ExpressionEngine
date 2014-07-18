@@ -41,13 +41,13 @@ class Search extends Logs {
 	 */
 	public function index()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_logs'))
+		if ( ! ee()->cp->allowed_group('can_access_tools', 'can_access_logs'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
 
 		$this->base_url->path = 'logs/search';
-		$this->view->cp_page_title = lang('view_search_log');
+		ee()->view->cp_page_title = lang('view_search_log');
 		$this->filters(array('username', 'site', 'date', 'perpage'));
 
 		$page = ee()->input->get('page') ? ee()->input->get('page') : 1;
@@ -72,14 +72,14 @@ class Search extends Logs {
 			$logs = $logs->filter('search_date', '>=', ee()->localize->now - $this->params['filter_by_date']);
 		}
 
-		if ( ! empty($this->view->filter_by_phrase_value))
+		if ( ! empty(ee()->view->filter_by_phrase_value))
 		{
 			$logs = $logs->filterGroup()
-			               ->filter('screen_name', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%')
-			               ->orFilter('ip_address', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%')
-			               ->orFilter('search_type', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%')
-			               ->orFilter('search_terms', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%')
-			               ->orFilter('Site.site_label', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%')
+			               ->filter('screen_name', 'LIKE', '%' . ee()->view->filter_by_phrase_value . '%')
+			               ->orFilter('ip_address', 'LIKE', '%' . ee()->view->filter_by_phrase_value . '%')
+			               ->orFilter('search_type', 'LIKE', '%' . ee()->view->filter_by_phrase_value . '%')
+			               ->orFilter('search_terms', 'LIKE', '%' . ee()->view->filter_by_phrase_value . '%')
+			               ->orFilter('Site.site_label', 'LIKE', '%' . ee()->view->filter_by_phrase_value . '%')
 						 ->endFilterGroup();
 		}
 
@@ -121,7 +121,7 @@ class Search extends Logs {
 			'pagination' => $links
 		);
 
-		$this->cp->render('logs/search', $vars);
+		ee()->cp->render('logs/search', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -133,7 +133,7 @@ class Search extends Logs {
 	 */
 	public function delete($id = 'all')
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_logs'))
+		if ( ! ee()->cp->allowed_group('can_access_tools', 'can_access_logs'))
 		{
 			show_error(lang('unauthorized_access'));
 		}

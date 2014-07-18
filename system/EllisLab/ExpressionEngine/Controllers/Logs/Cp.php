@@ -42,7 +42,7 @@ class Cp extends Logs {
 	public function index()
 	{
 		$this->base_url->path = 'logs/cp';
-		$this->view->cp_page_title = lang('view_cp_log');
+		ee()->view->cp_page_title = lang('view_cp_log');
 		$this->filters(array('username', 'site', 'date', 'perpage'));
 
 		$page = ee()->input->get('page') ? ee()->input->get('page') : 1;
@@ -67,13 +67,13 @@ class Cp extends Logs {
 			$logs = $logs->filter('act_date', '>=', ee()->localize->now - $this->params['filter_by_date']);
 		}
 
-		if ( ! empty($this->view->filter_by_phrase_value))
+		if ( ! empty(ee()->view->filter_by_phrase_value))
 		{
 			$logs = $logs->filterGroup()
-			               ->filter('action', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%')
-			               ->orFilter('username', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%')
-			               ->orFilter('ip_address', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%')
-			               ->orFilter('Site.site_label', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%')
+			               ->filter('action', 'LIKE', '%' . ee()->view->filter_by_phrase_value . '%')
+			               ->orFilter('username', 'LIKE', '%' . ee()->view->filter_by_phrase_value . '%')
+			               ->orFilter('ip_address', 'LIKE', '%' . ee()->view->filter_by_phrase_value . '%')
+			               ->orFilter('Site.site_label', 'LIKE', '%' . ee()->view->filter_by_phrase_value . '%')
 						 ->endFilterGroup();
 		}
 
@@ -106,7 +106,7 @@ class Cp extends Logs {
 			'pagination' => $links
 		);
 
-		$this->cp->render('logs/cp', $vars);
+		ee()->cp->render('logs/cp', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -118,7 +118,7 @@ class Cp extends Logs {
 	 */
 	public function delete($id = 'all')
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_logs'))
+		if ( ! ee()->cp->allowed_group('can_access_tools', 'can_access_logs'))
 		{
 			show_error(lang('unauthorized_access'));
 		}

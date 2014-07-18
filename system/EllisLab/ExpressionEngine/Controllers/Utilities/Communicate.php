@@ -78,7 +78,7 @@ class Communicate extends Utilities {
 		}
 
 		// Set up mailing list options
-		if ( ! $this->cp->allowed_group('can_email_mailinglist')
+		if ( ! ee()->cp->allowed_group('can_email_mailinglist')
 			OR ! isset($this->mailinglist_exists)
 			OR $this->mailinglist_exists == FALSE)
 		{
@@ -103,7 +103,7 @@ class Communicate extends Utilities {
 		}
 
 		// Set up member group emailing options
-		if ( ! $this->cp->allowed_group('can_email_member_groups'))
+		if ( ! ee()->cp->allowed_group('can_email_member_groups'))
 		{
 			$vars['member_groups'] = FALSE;
 		}

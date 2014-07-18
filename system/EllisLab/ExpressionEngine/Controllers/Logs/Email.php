@@ -41,13 +41,13 @@ class Email extends Logs {
 	 */
 	public function index()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_logs'))
+		if ( ! ee()->cp->allowed_group('can_access_tools', 'can_access_logs'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
 
 		$this->base_url->path = 'logs/email';
-		$this->view->cp_page_title = lang('view_email_logs');
+		ee()->view->cp_page_title = lang('view_email_logs');
 		$this->filters(array('username', 'date', 'perpage'));
 
 		$page = ee()->input->get('page') ? ee()->input->get('page') : 1;
@@ -67,15 +67,15 @@ class Email extends Logs {
 			$logs = $logs->filter('cache_date', '>=', ee()->localize->now - $this->params['filter_by_date']);
 		}
 
-		if ( ! empty($this->view->filter_by_phrase_value))
+		if ( ! empty(ee()->view->filter_by_phrase_value))
 		{
 			$logs = $logs->filterGroup()
-			               ->filter('member_name', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%')
-			               ->orFilter('ip_address', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%')
-			               ->orFilter('recipient', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%')
-			               ->orFilter('recipient_name', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%')
-			               ->orFilter('subject', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%')
-			               ->orFilter('message', 'LIKE', '%' . $this->view->filter_by_phrase_value . '%')
+			               ->filter('member_name', 'LIKE', '%' . ee()->view->filter_by_phrase_value . '%')
+			               ->orFilter('ip_address', 'LIKE', '%' . ee()->view->filter_by_phrase_value . '%')
+			               ->orFilter('recipient', 'LIKE', '%' . ee()->view->filter_by_phrase_value . '%')
+			               ->orFilter('recipient_name', 'LIKE', '%' . ee()->view->filter_by_phrase_value . '%')
+			               ->orFilter('subject', 'LIKE', '%' . ee()->view->filter_by_phrase_value . '%')
+			               ->orFilter('message', 'LIKE', '%' . ee()->view->filter_by_phrase_value . '%')
 						 ->endFilterGroup();
 		}
 
@@ -107,7 +107,7 @@ class Email extends Logs {
 			'pagination' => $links
 		);
 
-		$this->cp->render('logs/email', $vars);
+		ee()->cp->render('logs/email', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -120,7 +120,7 @@ class Email extends Logs {
 	 */
 	public function view($id)
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_logs'))
+		if ( ! ee()->cp->allowed_group('can_access_tools', 'can_access_logs'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -134,12 +134,12 @@ class Email extends Logs {
 			$this->functions->redirect(cp_url('logs/email'));
 		}
 
-		$this->view->cp_page_title = lang('email_log') . ': ' . $email->subject;
-		$this->view->cp_breadcrumbs = array(
+		ee()->view->cp_page_title = lang('email_log') . ': ' . $email->subject;
+		ee()->view->cp_breadcrumbs = array(
 			cp_url('logs/email') => lang('view_email_logs')
 		);
-		$this->view->email = $email;
-		$this->cp->render('logs/email/detail');
+		ee()->view->email = $email;
+		ee()->cp->render('logs/email/detail');
 	}
 
 	// --------------------------------------------------------------------
@@ -151,7 +151,7 @@ class Email extends Logs {
 	 */
 	public function delete($id = 'all')
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_logs'))
+		if ( ! ee()->cp->allowed_group('can_access_tools', 'can_access_logs'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
