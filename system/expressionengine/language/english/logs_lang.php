@@ -19,8 +19,6 @@ $lang = array(
 
 'clear_cp_logs'			=> 'Remove all CP Access Logs',
 
-'no_search_results'	 	=> 'No Results Found',
-
 'search_results' 		=> 'Search Results',
 'site_search' 			=> 'Site',
 'searched_in' 			=> 'Searched In',

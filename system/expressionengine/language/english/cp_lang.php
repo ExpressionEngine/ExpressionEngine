@@ -465,6 +465,8 @@ $lang = array(
 'type_phrase'					=> 'type phrase...',
 'with_selected'					=> 'with selected',
 
+'no_search_results'	 			=> 'No Results Found',
+
 //----------------------------
 // Sites and Channels
 //----------------------------

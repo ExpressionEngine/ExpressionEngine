@@ -77,9 +77,6 @@ $lang = array(
 'search_preferences' =>
 "Search Preferences",
 
-'no_search_results' =>
-"No Results Found",
-
 'search_results' =>
 "Search Results",
 
