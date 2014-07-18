@@ -642,7 +642,9 @@ EE.cp.zebra_tables = function(table) {
 	$(table)
 		.find('tr')
 		.removeClass('alt')
-		.filter(':even').addClass('alt');
+		.filter(':even').addClass('alt')
+		.end()
+		.filter(':first').removeClass('alt');
 };
 
 /**
