@@ -246,21 +246,64 @@ class Translate extends Utilities {
 
 	private function edit($language, $file)
 	{
-		$path = APPPATH . 'language/' . $language . '/';
-		$filename = $file . '_lang.php';
+		$file = ee()->security->sanitize_filename($file);
 
-		if ( ! is_readable($path . $file . '_lang.php'))
+		$path = APPPATH . 'language/' . $language . '/';
+		$filename =  $file . '_lang.php';
+
+		if ( ! is_readable($path . $filename))
 		{
 			$message = $path . $file . '_lang.php ' . lang('cannot_access') . '.';
 			ee()->view->set_message('issue', $message, '', TRUE);
 			ee()->functions->redirect(cp_url('utilities/translate/' . $language));
 		}
 
+		ee()->view->cp_page_title = $filename . ' ' . ucfirst(lang('translation'));
+
 		$vars['language'] = $language;
-		$vars['filenaem'] = $filename;
+		$vars['filename'] = $filename;
 
+		$source_dir = APPPATH . 'language/english/';
+		$dest_dir = APPPATH . 'translations/';
 
-		ee()->cp->render('utilities/translate/edit');
+		require($source_dir . $filename);
+
+		$M = $lang;
+
+		unset($lang);
+
+		if (file_exists($dest_dir . $filename))
+		{
+			require($dest_dir . $filename);
+		}
+		else
+		{
+			$lang = $M;
+		}
+
+		$keys = array();
+
+		foreach ($M as $key => $val)
+		{
+			if ($key != '')
+			{
+				$trans = ( ! isset($lang[$key])) ? '' : $lang[$key];
+				$keys[$key]['original'] = $val;
+				$keys[$key]['trans'] = $trans;
+			}
+		}
+
+		$vars = array(
+			'language'  => $language,
+			'file'		=> $file,
+			'keys'		=> $keys
+		);
+
+		ee()->view->cp_breadcrumbs = array(
+			cp_url('utilities/translate/' . $language) => ucfirst($language) . ' ' . lang('language_files')
+		);
+
+		ee()->cp->render('utilities/translate/edit', $vars);
 	}
 }
 // END CLASS
