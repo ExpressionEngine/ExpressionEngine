@@ -104,7 +104,7 @@ class Translate extends Utilities {
 		}
 
 		ee()->view->cp_page_title = ucfirst($language) . ' ' . lang('language_files');
-		ee()->view->language = $language;
+		$vars['language'] = $language;
 
 		$base_url = new URL('utilities/translate/' . $language, ee()->session->session_id());
 		if ( ! empty(ee()->view->filter_by_phrase_value))
@@ -156,11 +156,11 @@ class Translate extends Utilities {
 
 			// Set the new sort URL
 			$base_url->setQueryStringVariable('file_name_direction', 'asc');
-			ee()->view->file_name_sort_url = $base_url->compile();
+			$vars['file_name_sort_url'] = $base_url->compile();
 
 			// Reset the base to reflect our actual direction
 			$base_url->setQueryStringVariable('file_name_direction', 'desc');
-			ee()->view->file_name_direction = 'desc';
+			$vars['file_name_direction'] = 'desc';
 		}
 		else
 		{
@@ -168,11 +168,11 @@ class Translate extends Utilities {
 
 			// Set the new sort URL
 			$base_url->setQueryStringVariable('file_name_direction', 'desc');
-			ee()->view->file_name_sort_url = $base_url->compile();
+			$vars['file_name_sort_url'] = $base_url->compile();
 
 			// Reset the base to reflect our actual direction
 			$base_url->setQueryStringVariable('file_name_direction', 'asc');
-			ee()->view->file_name_direction = 'asc';
+			$vars['file_name_direction'] = 'asc';
 		}
 
 		if ( ! empty($files))
@@ -183,16 +183,16 @@ class Translate extends Utilities {
 			$page = ee()->input->get('page') ? ee()->input->get('page') : 1;
 			$page = ($page > 0) ? $page : 1;
 			$pagination = new Pagination(50, count($files), $page);
-			ee()->view->pagination = $pagination->cp_links($base_url);
+			$vars['pagination'] = $pagination->cp_links($base_url);
 
-			ee()->view->files = $chunks[$page - 1];
+			$vars['files'] = $chunks[$page - 1];
 		}
 		else
 		{
-			ee()->view->files = array();
+			$vars['files'] = array();
 		}
 
-		ee()->cp->render('utilities/translate/list');
+		ee()->cp->render('utilities/translate/list', $vars);
 	}
 
 	/**
@@ -246,6 +246,20 @@ class Translate extends Utilities {
 
 	private function edit($language, $file)
 	{
+		$path = APPPATH . 'language/' . $language . '/';
+		$filename = $file . '_lang.php';
+
+		if ( ! is_readable($path . $file . '_lang.php'))
+		{
+			$message = $path . $file . '_lang.php ' . lang('cannot_access') . '.';
+			ee()->view->set_message('issue', $message, '', TRUE);
+			ee()->functions->redirect(cp_url('utilities/translate/' . $language));
+		}
+
+		$vars['language'] = $language;
+		$vars['filenaem'] = $filename;
+
+
 		ee()->cp->render('utilities/translate/edit');
 	}
 }
