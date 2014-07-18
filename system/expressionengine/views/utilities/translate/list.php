@@ -14,7 +14,12 @@
 			<th class="check-ctrl"><input type="checkbox" title="<?=strtolower(lang('select_all'))?>"></th>
 		</tr>
 
-	<?php foreach($files as $i => $file): ?>
+	<?php if (empty($files)): ?>
+		<tr class="no-results">
+			<td colspan="3"><?=lang('no_search_results')?></td>
+		</tr>
+	<?php else: ?>
+		<?php foreach($files as $i => $file): ?>
 		<tr>
 			<td><?=$file['filename']?></td>
 			<td>
@@ -24,9 +29,11 @@
 			</td>
 			<td><input type="checkbox" name="selection[]" value="<?=$file['name']?>"></td>
 		</tr>
-	<?php endforeach; ?>
+		<?php endforeach; ?>
+	<?php endif; ?>
 
 	</table>
+
 	<?php $this->view('_shared/pagination'); ?>
 	<fieldset class="tbl-bulk-act">
 		<select name="bulk_action">

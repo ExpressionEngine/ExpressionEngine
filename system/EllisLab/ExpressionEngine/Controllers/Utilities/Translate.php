@@ -175,15 +175,22 @@ class Translate extends Utilities {
 			ee()->view->file_name_direction = 'asc';
 		}
 
-		$chunks = array_chunk($files, 50);
+		if ( ! empty($files))
+		{
+			$chunks = array_chunk($files, 50);
 
-		// Paginate!
-		$page = ee()->input->get('page') ? ee()->input->get('page') : 1;
-		$page = ($page > 0) ? $page : 1;
-		$pagination = new Pagination(50, count($files), $page);
-		ee()->view->pagination = $pagination->cp_links($base_url);
+			// Paginate!
+			$page = ee()->input->get('page') ? ee()->input->get('page') : 1;
+			$page = ($page > 0) ? $page : 1;
+			$pagination = new Pagination(50, count($files), $page);
+			ee()->view->pagination = $pagination->cp_links($base_url);
 
-		ee()->view->files = $chunks[$page - 1];
+			ee()->view->files = $chunks[$page - 1];
+		}
+		else
+		{
+			ee()->view->files = array();
+		}
 
 		ee()->cp->render('utilities/translate/list');
 	}
