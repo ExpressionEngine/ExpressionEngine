@@ -2407,7 +2407,7 @@ class EE_Functions {
 		/*  - protect_javascript => Prevents advanced conditional parser from processing anything in <script> tags
 		/* ---------------------------------*/
 
-		if (ee()->TMPL->protect_javascript)
+		if (isset(ee()->TMPL) && ee()->TMPL->protect_javascript)
 		{
 			$runner->enableProtectJavascript();
 		}
