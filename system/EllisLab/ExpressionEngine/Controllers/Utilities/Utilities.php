@@ -42,7 +42,7 @@ class Utilities extends CP_Controller {
 		ee()->lang->loadfile('utilities');
 
 		ee()->load->model('language_model');
-		$default_language = ee()->config->item('deft_lang') ? ee()->config->item('deft_lang') : 'english';
+		$default_language = ee()->config->item('deft_lang') ?: 'english';
 		$languages = array();
 
 		foreach (ee()->language_model->language_pack_names() as $key => $value)
