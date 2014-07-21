@@ -82,7 +82,7 @@ class Spam_mcp {
 				{
 					$spam = $query->row();
 
-					if ($class == 'ham')
+					if ($class == 'ham' && ! empty($spam->file))
 					{
 						ee()->load->file($spam->file);
 						$class = $spam->class;
