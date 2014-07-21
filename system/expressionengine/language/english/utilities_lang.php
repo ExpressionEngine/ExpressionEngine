@@ -127,6 +127,9 @@ $lang = array(
 'cannot_access'			=>	'cannot be accessed',
 'cannot_create_zip'		=>	'Cannot create a .zip file',
 'no_files_selected'		=>	'No files were selected for export',
+'invalid_path' 			=> 'The path you submitted is not valid:',
+'file_saved'			=> 'The translation file has been saved to system/expressionengine/translations/',
+'trans_file_not_writable'=> 'Translation file is not writeable.',
 
 /**
  * PHP Info
