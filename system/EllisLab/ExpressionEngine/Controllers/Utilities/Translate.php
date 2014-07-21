@@ -267,10 +267,9 @@ class Translate extends Utilities {
 		$vars['language'] = $language;
 		$vars['filename'] = $filename;
 
-		$source_dir = APPPATH . 'language/english/';
 		$dest_dir = APPPATH . 'translations/';
 
-		require($source_dir . $filename);
+		require($path . $filename);
 
 		$M = $lang;
 
