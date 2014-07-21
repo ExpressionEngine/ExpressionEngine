@@ -315,7 +315,7 @@ class Translate extends Utilities {
 
 		$dest_dir = APPPATH . 'translations/';
 		$filename =  $file . '_lang.php';
-		$dest_log = $dest_dir . $filename;
+		$dest_loc = $dest_dir . $filename;
 
 		$str = '<?php'."\n".'$lang = array('."\n\n\n";
 
@@ -348,7 +348,7 @@ class Translate extends Utilities {
 
 		if (write_file($dest_loc, $str))
 		{
-			ee()->view->set_message('success', lang('file_saved').$filename, '', TRUE);
+			ee()->view->set_message('success', lang('file_saved') . $filename, '', TRUE);
 		}
 		else
 		{
