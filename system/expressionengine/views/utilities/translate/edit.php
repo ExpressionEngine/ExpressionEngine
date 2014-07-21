@@ -17,8 +17,6 @@
 <?php endforeach;?>
 
 	<fieldset class="form-ctrls">
-		<input class="btn" type="submit" value="Save Translations">
-		<input class="btn disable" type="submit" value="Fix Errors, Please">
-		<input class="btn work" type="submit" value="Saving...">
+		<?=cp_form_submit('translate_btn', 'translate_btn_working')?>
 	</fieldset>
 <?=form_close()?>

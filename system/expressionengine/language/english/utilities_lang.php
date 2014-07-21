@@ -130,6 +130,8 @@ $lang = array(
 'invalid_path' 			=> 'The path you submitted is not valid:',
 'file_saved'			=> 'The translation file has been saved to system/expressionengine/translations/',
 'trans_file_not_writable'=> 'Translation file is not writeable.',
+'translate_btn' 		=>	'Save Translations',
+'translate_btn_working' =>	'Saving...',
 
 /**
  * PHP Info
