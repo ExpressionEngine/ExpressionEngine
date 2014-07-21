@@ -1,8 +1,8 @@
 <?php extend_template('default-nav'); ?>
 
 <h1><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h1>
-<?php $this->view('_shared/form_messages')?>
 <?=form_open(cp_url('utilities/translate/' . $language . '/save/' . $file), 'class="settings"')?>
+<?php $this->view('_shared/form_messages')?>
 <?php foreach ($keys as $key => $value):?>
 	<fieldset class="col-group">
 		<div class="setting-txt col w-8">
