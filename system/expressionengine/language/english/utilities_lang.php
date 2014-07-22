@@ -479,6 +479,15 @@ $lang = array(
 'query_btn_working' =>
 'Running...',
 
+'query_results' =>
+'Query Results',
+
+'total_results' =>
+'Total Results',
+
+'affected_rows' =>
+'Affected Rows',
+
 ''=>''
 );
 

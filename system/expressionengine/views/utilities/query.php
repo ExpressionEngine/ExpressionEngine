@@ -8,7 +8,10 @@
 	<fieldset class="col-group">
 		<div class="setting-txt col w-16">
 			<h3><?=lang('common_queries')?></h3>
-			<em><?=lang('common_queries_desc')?><br><a href="">SHOW STATUS</a>, <a href="">SHOW VARIABLES</a>, <a href="">SHOW PROCESSLIST</a></em>
+			<em><?=lang('common_queries_desc')?><br>
+				<a href="<?=cp_url('utilities/query/run-query', array('thequery' => rawurlencode(base64_encode('SHOW STATUS'))))?>">SHOW STATUS</a>,
+				<a href="<?=cp_url('utilities/query/run-query', array('thequery' => rawurlencode(base64_encode('SHOW VARIABLES'))))?>">SHOW VARIABLES</a>,
+				<a href="<?=cp_url('utilities/query/run-query', array('thequery' => rawurlencode(base64_encode('SHOW PROCESSLIST'))))?>">SHOW PROCESSLIST</a></em>
 		</div>
 	</fieldset>
 	<fieldset class="col-group <?=form_error_class('thequery')?>">
