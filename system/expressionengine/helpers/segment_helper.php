@@ -73,9 +73,10 @@
 	 * Parse category ID from query string
 	 *
 	 * @param	string	$qstring Query string
+	 * @param	mixed	$group_ids Optional category group ids
 	 * @return	string	ID of the category regardless of type being used
 	 */
-	function parse_category($query_string)
+	function parse_category($query_string, $group_ids = '')
 	{
 		$reserved_category_word = (string) ee()->config->item("reserved_category_word");
 
@@ -100,7 +101,8 @@
 			}
 
 			ee()->load->model('category_model');
-			return ee()->category_model->get_category_id($category_name);
+
+			return ee()->category_model->get_category_id($category_name, '', $group_ids);
 		}
 		// Parse out category ID in the format of CXX
 		else if (preg_match("#(^|\/)C(\d+)#", $query_string, $match))

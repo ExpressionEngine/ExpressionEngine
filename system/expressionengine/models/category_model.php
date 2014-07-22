@@ -284,10 +284,28 @@ class Category_model extends CI_Model {
 
 	// --------------------------------------------------------------------
 
-	public function get_category_id($url_title, $site_ids = array())
+	/**
+	 * Get Category ID
+	 *
+	 * @access	public
+	 * @param	string	$url_title
+	 * @param	array	$site_id
+	 * @param	mixed	$group_ids
+	 * @return	mixed FALSE if no category is found, a single category ID
+	 * number otherwise
+	 */
+
+	public function get_category_id($url_title, $site_ids = array(), $group_ids = array())
 	{
 		ee()->db->select('cat_id')
 			->where('cat_url_title', $url_title);
+
+		$group_ids = ( ! is_array($group_ids)) ? array($group_ids) : $group_ids;
+
+		if ( ! empty($group_ids))
+		{
+			ee()->db->where_in('group_id', $group_ids);
+		}
 
 		if ( ! empty($site_id) && is_array($site_ids))
 		{
