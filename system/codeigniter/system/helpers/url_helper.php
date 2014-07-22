@@ -540,23 +540,23 @@ if ( ! function_exists('redirect'))
 			$uri = str_ireplace(array('%0d', '%0a'), '', $uri);
 		}
 
-		// Ensure that there is a host
-		if (strpos($uri, site_url()) === FALSE
-			&& strpos($uri, '//') !== 0)
+		if ( ! preg_match('#^(https?)?://#i', $uri))
 		{
-			//Append the current script if it's relative
-			if (strpos($uri, '/') !== 0)
+			// Ensure that there is a host
+			if (strpos($uri, site_url()) === FALSE
+				&& strpos($uri, '//') !== 0)
 			{
-				$querystring = parse_url($uri, PHP_URL_QUERY);
-				$uri = $_SERVER['PHP_SELF'].'?'.$querystring;
+				// Prepend the current script if it's relative
+				if (strpos($uri, '/') !== 0)
+				{
+					$querystring = parse_url($uri, PHP_URL_QUERY);
+					$uri = $_SERVER['PHP_SELF'].'?'.$querystring;
+				}
+
+				$uri = site_url($uri);
 			}
 
-			$uri = site_url($uri);
-		}
-
-		// Ensure that there's a protocol
-		if (strpos($uri, 'http') !== 0)
-		{
+			// Ensure that there's a protocol
 			$uri = ltrim($uri, ':/');
 			$protocol = (isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on")
 				? "https://"
