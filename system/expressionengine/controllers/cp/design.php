@@ -2129,7 +2129,7 @@ class Design extends CP_Controller {
 		/*
 		/* -------------------------------------*/
 
-		if (isset($_POST['update_and_return']) && $this->input->post('warnings'))
+		if (isset($_POST['update_and_return']))
 		{
 			$this->session->set_flashdata($cp_message);
 			$this->db->select('group_id');
@@ -2140,7 +2140,6 @@ class Design extends CP_Controller {
 		}
 		else
 		{
-			//$this->edit_template($template_id, $message);
 			$this->session->set_flashdata($cp_message);
 			$this->functions->redirect(cp_url('design/edit_template', 'id='.$template_id));
 		}
