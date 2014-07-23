@@ -22,7 +22,7 @@ feature 'Translate Tool' do
 	end
 
 	after(:all) do
-		FileUtils.remove_dir('../../expressionengine/language/rspectlingo', true)
+		FileUtils.remove_dir('../../expressionengine/language/rspeclingo', true)
 	end
 
 	it 'displays 2 languages in the sidebar' do
