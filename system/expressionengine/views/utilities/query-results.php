@@ -16,9 +16,9 @@
 	</div>
 </div>
 <div class="box">
-	<form class="tbl-ctrls">
+	<?=form_open($base_url, 'class="tbl-ctrls"')?>
 		<fieldset class="tbl-search right">
-			<input placeholder="type phrase..." type="text" value="">
+			<input placeholder="type phrase..." type="text" name="search" value="<?=$search?>">
 			<input class="btn submit" type="submit" value="search table">
 		</fieldset>
 		<h1><?=$cp_page_title?></h1>

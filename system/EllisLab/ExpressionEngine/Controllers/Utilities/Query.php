@@ -74,7 +74,7 @@ class Query extends Utilities {
 	public function runQuery()
 	{
 		// defaults in the house!
-		$row_limit	= 5;
+		$row_limit	= 100;
 		$title		= lang('query_result');
 		$vars['write'] = FALSE;
 		ee()->db->db_debug = (ee()->input->post('debug') !== FALSE);
@@ -121,15 +121,37 @@ class Query extends Utilities {
 			}
 		}
 
+		// Search the table after query has ran
+		if ($search = ee()->input->get_post('search'))
+		{
+			if ($query = ee()->db->query($sql))
+			{
+				$data = $query->result_array();
+				$keys = array_keys($data[0]);
+
+				$new_sql = 'SELECT * FROM ('.$sql.') AS search WHERE';
+				foreach ($keys as $index => $key)
+				{
+					if ($index > 0)
+					{
+						$new_sql .= ' OR';
+					}
+					$new_sql .= ' '.$key.' LIKE \'%'.ee()->db->escape_like_str($search).'%\'';
+				}
+			}
+		}
+
 		// If it's a SELECT query we'll see if we need to limit
 		// the result total and add pagination links
 		if (strpos(strtoupper($sql), 'SELECT') !== FALSE)
 		{
 			if ($sort !== FALSE && $sort_dir !== FALSE)
 			{
+				$new_sql = ( ! isset($new_sql)) ? '('.$sql.')' : '('.$new_sql.')';
+				
 				// Wrap query in parenthesis in case query already has a
 				// limit on it, we can't put an ORDER BY after a LIMIT
-				$new_sql = '('.$sql.') ORDER BY '.$sort.' '.$sort_dir;
+				$new_sql .= ' ORDER BY '.$sort.' '.$sort_dir;
 			}
 
 			if ( ! preg_match("/LIMIT\s+[0-9]/i", $sql))
@@ -158,7 +180,7 @@ class Query extends Utilities {
 				$total_results = ee()->db->query($sql)->num_rows();
 			}
 		}
-
+		
 		if ( ! isset($new_sql))
 		{
 			if ( ! $query = ee()->db->query($sql))
@@ -187,9 +209,8 @@ class Query extends Utilities {
 		// no results?  Wasted efforts!
 		if ($query->num_rows() == 0)
 		{
-			$vars['no_results'] = lang('sql_no_result');
-			ee()->cp->render('utilities/query-results', $vars);
-			return;
+			ee()->view->set_message('warn', lang('sql_no_result'), '', TRUE);
+			return ee()->functions->redirect(cp_url('utilities/query'));
 		}
 
 		$vars['thequery'] = ee()->security->xss_clean($sql);
@@ -198,7 +219,10 @@ class Query extends Utilities {
 		$base_url = new CP\URL(
 			'utilities/query/run-query',
 			ee()->session->session_id(),
-			array('thequery' => rawurlencode(base64_encode($sql)))
+			array(
+				'thequery' 	=> rawurlencode(base64_encode($sql)),
+				'search' 	=> $search
+			)
 		);
 
 		$data = $query->result_array();
@@ -225,6 +249,8 @@ class Query extends Utilities {
 		}
 
 		$vars['table'] = ee()->load->view('_shared/table', $table, TRUE);
+		$vars['base_url'] = $base_url;
+		$vars['search'] = $search;
 		
 		ee()->cp->render('utilities/query-results', $vars);
 	}
