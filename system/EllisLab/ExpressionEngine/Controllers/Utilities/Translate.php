@@ -209,7 +209,7 @@ class Translate extends Utilities {
 	{
 		if (empty($files))
 		{
-			ee()->view->set_message('issue', lang('no_files_selected'), '', TRUE);
+			ee()->view->set_message('issue', lang('no_files_selected'));
 			return;
 		}
 
@@ -221,7 +221,7 @@ class Translate extends Utilities {
 			if ( ! is_readable($path . $file . '_lang.php'))
 			{
 				$message = $path . $file . '_lang.php ' . lang('cannot_access') . '.';
-				ee()->view->set_message('issue', $message, '', TRUE);
+				ee()->view->set_message('issue', $message);
 				return;
 			}
 		}
@@ -230,7 +230,7 @@ class Translate extends Utilities {
 		$zip = new ZipArchive();
 		if ($zip->open($tmpfilename, ZipArchive::CREATE) !== TRUE)
 		{
-			ee()->view->set_message('issue', lang('cannot_create_zip'), '', TRUE);
+			ee()->view->set_message('issue', lang('cannot_create_zip'));
 			return;
 		}
 
