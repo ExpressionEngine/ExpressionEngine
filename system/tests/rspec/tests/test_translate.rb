@@ -98,6 +98,16 @@ feature 'Translate Tool' do
 	it 'uses the default language when language is not specified in the URL' do
 	end
 
+	it 'can use multiple languages' do
+		click_link "Rspeclingo"
+		@page.title.text.should eq 'Rspeclingo Language Files'
+		@page.should have_pagination
+		@page.should have(5).pages
+		@page.pages.map {|name| name.text}.should == ["First", "1", "2", "Next", "Last"]
+
+		@page.should have(51).rows # 50 rows per page + header row
+	end
+
 	it 'returns a 404 for an invalid language' do
 	end
 end
