@@ -391,26 +391,35 @@ class EE_Functions {
 	/**
 	 * Redirect
 	 *
-	 * Ensures that action IDs are in place and cleans up ugly URLs before
-	 * dealing with it. Also ensures flashdata is not redirected.
-	 *
 	 * @access	public
 	 * @param	string
 	 * @return	void
 	 */
-	public function redirect($location, $method = FALSE, $status_code = NULL)
+	public function redirect($location, $method = FALSE, $status_code=NULL)
 	{
+		// Remove hard line breaks and carriage returns
+		$location = str_replace(array("\n", "\r"), '', $location);
+
+		// Remove any and all line breaks
+		while (stripos($location, '%0d') !== FALSE OR stripos($location, '%0a') !== FALSE)
+		{
+			$location = str_ireplace(array('%0d', '%0a'), '', $location);
+		}
+
 		$location = $this->insert_action_ids($location);
 		$location = ee()->uri->reformat($location);
 
-		// Ajax requests don't redirect - serve the flashdata
-		if (count(ee()->session->flashdata)
-			&& ee()->input->is_ajax_request())
+		if (count(ee()->session->flashdata))
 		{
-			// We want the data that would be available for the next request
-			ee()->session->_age_flashdata();
+			// Ajax requests don't redirect - serve the flashdata
 
-			die(json_encode(ee()->session->flashdata));
+			if (ee()->input->is_ajax_request())
+			{
+				// We want the data that would be available for the next request
+				ee()->session->_age_flashdata();
+
+				die(json_encode(ee()->session->flashdata));
+			}
 		}
 
 		if ($method === FALSE)
@@ -418,8 +427,26 @@ class EE_Functions {
 			$method = ee()->config->item('redirect_method');
 		}
 
-		ee()->load->helper('url');
-		redirect($location, $method, $status_code);
+		switch($method)
+		{
+			case 'refresh':
+				$header = "Refresh: 0;url=$location";
+				break;
+			default:
+				$header = "Location: $location";
+				break;
+		}
+
+		if($status_code !== NULL && $status_code >= 300 && $status_code <= 308)
+		{
+			header($header, TRUE, $status_code);
+		}
+		else
+		{
+			header($header);
+		}
+
+		exit;
 	}
 
 	// --------------------------------------------------------------------

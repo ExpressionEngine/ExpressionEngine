@@ -540,32 +540,9 @@ if ( ! function_exists('redirect'))
 			$uri = str_ireplace(array('%0d', '%0a'), '', $uri);
 		}
 
-		if ( ! preg_match('#^(https?:)?//#i', $uri))
+		if ( ! preg_match('#^https?://#i', $uri))
 		{
-			// Ensure that there is a host
-			if (strpos($uri, site_url()) === FALSE
-				&& strpos($uri, '//') !== 0)
-			{
-				// Prepend the current script if it's relative
-				if (strpos($uri, '/') !== 0)
-				{
-					$parsed_uri = parse_url($uri);
-					$php_self = str_replace($parsed_uri['path'], '', $_SERVER['PHP_SELF']);
-					$uri = $php_self.$uri;
-				}
-
-				$uri = site_url($uri);
-			}
-
-			// Ensure that there's a protocol
-			if (strpos($uri, 'http') !== 0)
-			{
-				$uri = ltrim($uri, ':/');
-				$protocol = (isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on")
-					? "https://"
-					: "http://";
-				$uri = $protocol.$uri;
-			}
+			$uri = site_url($uri);
 		}
 
 		// IIS environment likely? Use 'refresh' for better compatibility
