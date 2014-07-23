@@ -29,6 +29,10 @@ feature 'Translate Tool' do
 		@page.should have(2).languages
 		@page.languages.map {|lang| lang.text}.should == ["English (default)", 'Rspeclingo']
 	end
+
+	it 'displays the default language first in the sidebar' do
+	end
+
 	it 'shows the English Language files' do
 		@page.should have_pagination
 		@page.should have(5).pages
@@ -37,4 +41,24 @@ feature 'Translate Tool' do
 		@page.should have(51).rows # 50 rows per page + header row
 	end
 
+	it 'can search by phrases' do
+	end
+
+	it 'reports "no results" when a search fails' do
+	end
+
+	it 'paginates' do
+	end
+
+	it 'sorts by file name' do
+	end
+
+	it 'can export language files' do
+	end
+
+	it 'uses the default language when language is not specified in the URL' do
+	end
+
+	it 'returns a 404 for an invalid language' do
+	end
 end
