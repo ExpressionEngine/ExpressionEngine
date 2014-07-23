@@ -464,8 +464,7 @@ class Member_memberlist extends Member {
 			$row_limit  = $matches[4];
 			$row_count  = $matches[5];
 
-			ee()->load->helper('url');
-			return redirect($this->_member_path('memberlist').'/G'.$group_id.'/'.$order_by.'/'.$sort_order.'/L'.$row_limit.'/P'.$row_count, 'auto', 301);
+			return ee()->functions->redirect($this->_member_path('memberlist').'/G'.$group_id.'/'.$order_by.'/'.$sort_order.'/L'.$row_limit.'/P'.$row_count, FALSE, 301);
 		}
 
 		$path = '';
