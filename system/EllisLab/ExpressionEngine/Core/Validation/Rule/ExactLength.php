@@ -12,7 +12,8 @@ use EllisLab\ExpressionEngine\Core\Validation\ValidationRule as ValidationRule;
  * @return	bool
  */
 class ExactLength extends ValidationRule {
-	protected $length=0;
+
+	protected $length = 0;
 
 	public function __construct(array $parameters)
 	{
