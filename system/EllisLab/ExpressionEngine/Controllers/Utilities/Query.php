@@ -82,6 +82,9 @@ class Query extends Utilities {
 		$page = ee()->input->get('page') ? ee()->input->get('page') : 1;
 		$page = ($page > 0) ? $page : 1;
 
+		$sort = ee()->input->get('sort');
+		$sort_dir = ee()->input->get('sort_dir');
+
 		// Fetch the query.  It can either come from a
 		// POST request or a url encoded GET request
 		if ( ! $sql = ee()->input->post('thequery'))
@@ -122,12 +125,28 @@ class Query extends Utilities {
 		// the result total and add pagination links
 		if (strpos(strtoupper($sql), 'SELECT') !== FALSE)
 		{
+			if ($sort !== FALSE && $sort_dir !== FALSE)
+			{
+				// Wrap query in parenthesis in case query already has a
+				// limit on it, we can't put an ORDER BY after a LIMIT
+				$new_sql = '('.$sql.') ORDER BY '.$sort.' '.$sort_dir;
+			}
+
 			if ( ! preg_match("/LIMIT\s+[0-9]/i", $sql))
 			{
 				// Modify the query so we get the total sans LIMIT
 				$row = ($page - 1) * $row_limit; // Offset is 0 indexed
-				$new_sql = $sql." LIMIT ".$row.", ".$row_limit;
 
+				if ( ! isset($new_sql))
+				{
+					$new_sql = $sql;
+				}
+
+				$new_sql .= " LIMIT ".$row.", ".$row_limit;
+			}
+
+			if (isset($new_sql))
+			{
 				if ( ! $query = ee()->db->query($new_sql))
 				{
 					$vars['no_results'] = lang('sql_no_result');
@@ -176,14 +195,22 @@ class Query extends Utilities {
 		$vars['thequery'] = ee()->security->xss_clean($sql);
 		$vars['total_results'] = (isset($total_results)) ? $total_results : 0;
 
-		$table['wrap'] = TRUE; // Wrap table in scroll view
-		$table['encode'] = TRUE; // Encode HTML
-		$table['data'] = $query->result_array();
-
 		$base_url = new CP\URL(
 			'utilities/query/run-query',
 			ee()->session->session_id(),
 			array('thequery' => rawurlencode(base64_encode($sql)))
+		);
+
+		$data = $query->result_array();
+		$keys = array_keys($data[0]);
+
+		$table = array(
+			'base_url' 	=> $base_url,
+			'sort'		=> ($sort !== FALSE) ? $sort : $keys[0],
+			'sort_dir'	=> ($sort_dir !== FALSE) ? $sort_dir : 'asc',
+			'wrap' 		=> TRUE, // Wrap table in scroll view
+			'encode' 	=> TRUE, // Encode HTML
+			'data' 		=> $data
 		);
 
 		$pagination = new Pagination($row_limit, $vars['total_results'], $page);
@@ -194,6 +221,7 @@ class Query extends Utilities {
 		if ($vars['total_results'] == 0 && count($query->result_array()) > 0)
 		{
 			$vars['total_results'] = count($query->result_array());
+			unset($table['sort']); // These queries aren't sortable
 		}
 
 		$vars['table'] = ee()->load->view('_shared/table', $table, TRUE);

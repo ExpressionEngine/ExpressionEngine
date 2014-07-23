@@ -19,7 +19,7 @@
 			<h3><?=lang('sql_query_to_run')?></h3>
 		</div>
 		<div class="setting-field col w-16 last">
-			<textarea class="has-format-options" name="thequery" cols="" rows=""></textarea>
+			<textarea class="has-format-options" name="thequery" cols="" rows=""><?=set_value('thequery')?></textarea>
 			<div class="format-options txt-left">
 				<input type="checkbox" checked="checked" name="debug" value="y">
 				<label><?=lang('enable_sql_errors')?></label>

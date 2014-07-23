@@ -5,7 +5,17 @@
 <table cellspacing="0">
 	<tr>
 		<?php foreach ($data[0] as $key => $value): ?>
-			<th class="highlight"><?=$key?> <a href="#" class="ico sort asc right"></a></th>
+			<th<?php if (isset($sort) && $sort == $key): ?> class="highlight"<?php endif ?>>
+				<?=$key?>
+				<?php if (isset($sort)):
+					$arrow_dir = ($sort == $key) ? $sort_dir : 'desc';
+					$link_dir = ($arrow_dir == 'asc') ? 'desc' : 'asc';
+					$base_url->setQueryStringVariable('sort', $key);
+					$base_url->setQueryStringVariable('sort_dir', $link_dir);
+				?>
+					<a href="<?=$base_url?>" class="ico sort <?=$arrow_dir?> right"></a>
+				<?php endif ?>
+			</th>
 		<?php endforeach ?>
 	</tr>
 	<?php foreach ($data as $row): ?>
