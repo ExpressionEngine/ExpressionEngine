@@ -79,6 +79,10 @@ feature 'Translate Tool' do
 	end
 
 	it 'sorts by file name' do
+		@page.find('a.sort').click
+		@page.should have_css('a.desc')
+		@page.should_not have_css('a.asc')
+	end
 	end
 
 	it 'can export language files' do
