@@ -69,6 +69,13 @@ feature 'Translate Tool' do
 	end
 
 	it 'paginates' do
+		click_link "Next"
+
+		@page.should have_pagination
+		@page.should have(5).pages
+		@page.pages.map {|name| name.text}.should == ["First", "Previous", "1", "2", "Last"]
+
+		@page.should have(8).rows # 7 rows + header row
 	end
 
 	it 'sorts by file name' do
