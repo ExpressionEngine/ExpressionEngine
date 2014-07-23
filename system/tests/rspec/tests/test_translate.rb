@@ -2,6 +2,12 @@ require './bootstrap.rb'
 
 feature 'Translate Tool' do
 
+	before(:all) do
+		path = '../../expressionengine/language/'
+		FileUtils.mkdir(path + 'rspeclingo')
+		FileUtils.cp_r(Dir.glob(path + 'english/*'), path + 'rspeclingo/')
+	end
+
 	before(:each) do
 		cp_session
 		@page = Translate.new
@@ -15,6 +21,9 @@ feature 'Translate Tool' do
 		@page.should have_action_submit_button
 	end
 
+	after(:all) do
+		FileUtils.remove_dir('../../expressionengine/language/rspectlingo', true)
+	end
 	it 'shows the English Language files' do
 		@page.should have_pagination
 		@page.should have(5).pages
