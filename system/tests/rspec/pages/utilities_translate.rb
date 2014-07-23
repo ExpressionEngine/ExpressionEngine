@@ -9,6 +9,7 @@ class Translate < ControlPanelPage
 	element :search_submit_button, 'form fieldset.tbl-search input.submit'
 
 	element :table, 'div.box form table'
+	element :no_results, 'div.box form table tr.no-results'
 	elements :rows, 'div.box form table tr'
 
 	element :pagination, 'div.paginate'

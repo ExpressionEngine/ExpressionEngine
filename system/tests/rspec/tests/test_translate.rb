@@ -58,6 +58,14 @@ feature 'Translate Tool' do
 	end
 
 	it 'reports "no results" when a search fails' do
+		my_phrase = 'foobarbaz'
+		@page.should_not have_text my_phrase
+		@page.phrase_search.set my_phrase
+		@page.search_submit_button.click
+
+		@page.phrase_search.value.should eq my_phrase
+		@page.should_not have_pagination
+		@page.should have_no_results
 	end
 
 	it 'paginates' do
