@@ -31,6 +31,10 @@ feature 'Translate Tool' do
 	end
 
 	it 'displays the default language first in the sidebar' do
+		ee_config(item: 'deft_lang', value: 'rspeclingo')
+		@page.load
+		@page.languages.map {|lang| lang.text}.should == ["Rspeclingo (default)", 'English']
+		ee_config(item: 'deft_lang', value: 'english')
 	end
 
 	it 'shows the English Language files' do
