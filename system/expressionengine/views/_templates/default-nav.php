@@ -11,8 +11,12 @@
 				<li class="last"><?=$cp_page_title?></li>
 			</ul>
 		<?php endif ?>
-		<div class="box">
+		<?php if (enabled('outer_box')) :?>
+			<div class="box">
+		<?php endif ?>
 			<?=$EE_rendered_view?>
-		</div>
+		<?php if (enabled('outer_box')) :?>
+			</div>
+		<?php endif ?>
 	</div>
 </div>
