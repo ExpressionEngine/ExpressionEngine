@@ -24,6 +24,11 @@ feature 'Translate Tool' do
 	after(:all) do
 		FileUtils.remove_dir('../../expressionengine/language/rspectlingo', true)
 	end
+
+	it 'displays 2 languages in the sidebar' do
+		@page.should have(2).languages
+		@page.languages.map {|lang| lang.text}.should == ["English (default)", 'Rspeclingo']
+	end
 	it 'shows the English Language files' do
 		@page.should have_pagination
 		@page.should have(5).pages

@@ -1,6 +1,8 @@
 class Translate < ControlPanelPage
 	set_url_matcher /utilities\/translate/
 
+	elements :languages, 'div.sidebar ul:nth-child(4) li'
+
 	element :title, 'div.box form h1'
 
 	element :phrase_search, 'form fieldset.tbl-search input[name=filter_by_phrase]'
