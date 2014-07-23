@@ -96,6 +96,11 @@ feature 'Translate Tool' do
 	end
 
 	it 'uses the default language when language is not specified in the URL' do
+		new_url = @page.current_url.gsub('/english', '')
+
+		visit(new_url)
+
+		@page.title.text.should eq 'English Language Files'
 	end
 
 	it 'can use multiple languages' do
