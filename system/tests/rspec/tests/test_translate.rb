@@ -109,5 +109,10 @@ feature 'Translate Tool' do
 	end
 
 	it 'returns a 404 for an invalid language' do
+		new_url = @page.current_url.gsub('english', 'gibberish')
+
+		visit(new_url)
+
+		@page.should have_text "404 Page Not Found"
 	end
 end
