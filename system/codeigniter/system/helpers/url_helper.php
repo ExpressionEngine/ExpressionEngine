@@ -549,8 +549,9 @@ if ( ! function_exists('redirect'))
 				// Prepend the current script if it's relative
 				if (strpos($uri, '/') !== 0)
 				{
-					$querystring = parse_url($uri, PHP_URL_QUERY);
-					$uri = $_SERVER['PHP_SELF'].'?'.$querystring;
+					$parsed_uri = parse_url($uri);
+					$php_self = str_replace($parsed_uri['path'], '', $_SERVER['PHP_SELF']);
+					$uri = $php_self.$uri;
 				}
 
 				$uri = site_url($uri);
