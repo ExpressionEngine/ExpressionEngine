@@ -1,9 +1,9 @@
 require './bootstrap.rb'
 
 feature 'Translate Tool' do
+	path = '../../expressionengine/language/'
 
 	before(:all) do
-		path = '../../expressionengine/language/'
 		FileUtils.mkdir(path + 'rspeclingo')
 		FileUtils.cp_r(Dir.glob(path + 'english/*'), path + 'rspeclingo/')
 	end
@@ -22,7 +22,7 @@ feature 'Translate Tool' do
 	end
 
 	after(:all) do
-		FileUtils.remove_dir('../../expressionengine/language/rspeclingo', true)
+		FileUtils.remove_dir(path + 'rspeclingo/', true)
 	end
 
 	it 'displays 2 languages in the sidebar' do
@@ -92,8 +92,38 @@ feature 'Translate Tool' do
 		@page.should_not have_css('a.asc')
 	end
 
-	it 'can export language files' do
+	# The capybara/webkit driver is munging headers.
+	# it 'can export language files' do
+	# 	@page.find('input[type="checkbox"][title="select all"]').set(true)
+	# 	@page.bulk_action.select "Export (Download)"
+	# 	@page.action_submit_button.click
+	# 	@page.response_headers['Content-Disposition'].should include 'attachment; filename='
+	# end
+
+	it 'shows an error if nothing is selected when exporting' do
+		@page.bulk_action.select "Export (Download)"
+		@page.action_submit_button.click
+		@page.should have_alert
 	end
+
+	it 'shows an error if any of the selected files is not readable' do
+		FileUtils.chmod 0000, path + 'rspeclingo/admin_lang.php'
+
+		click_link "Rspeclingo"
+		@page.find('input[type="checkbox"][title="select all"]').set(true)
+		@page.bulk_action.select "Export (Download)"
+		@page.action_submit_button.click
+		@page.should have_alert
+
+		FileUtils.chmod 0755, path + 'rspeclingo/admin_lang.php'
+	end
+
+	# Not sure how to force this error
+	# it 'shows an error if a ZipArchive cannot be created' do
+	# 	@page.find('input[type="checkbox"][title="select all"]').set(true)
+	# 	@page.bulk_action.select "Export (Download)"
+	# 	@page.action_submit_button.click
+	# end
 
 	it 'uses the default language when language is not specified in the URL' do
 		new_url = @page.current_url.gsub('/english', '')
