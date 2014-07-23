@@ -83,6 +83,13 @@ feature 'Translate Tool' do
 		@page.should have_css('a.desc')
 		@page.should_not have_css('a.asc')
 	end
+
+	it 'keeps sort while paginating' do
+		@page.find('a.sort').click
+		click_link "Next"
+
+		@page.should have_css('a.desc')
+		@page.should_not have_css('a.asc')
 	end
 
 	it 'can export language files' do
