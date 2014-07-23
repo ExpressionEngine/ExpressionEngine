@@ -46,6 +46,15 @@ feature 'Translate Tool' do
 	end
 
 	it 'can search by phrases' do
+		my_phrase = 'admin'
+		@page.should have_text my_phrase
+		@page.phrase_search.set my_phrase
+		@page.search_submit_button.click
+
+		@page.phrase_search.value.should eq my_phrase
+		@page.should have_text my_phrase
+		@page.should have(3).rows # 2 rows + header row
+		@page.should_not have_pagination
 	end
 
 	it 'reports "no results" when a search fails' do
