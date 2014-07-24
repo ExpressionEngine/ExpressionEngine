@@ -25,7 +25,7 @@ require './pages/_section_menu.rb'
 require './pages/cp_page.rb'
 
 # Include the rest of our pages
-Dir.glob(File.dirname(__FILE__) + '/pages/*', &method(:require))
+Dir.glob(File.dirname(__FILE__) + '/pages/**/*.rb', &method(:require))
 
 Capybara.default_driver = :webkit
 Capybara.javascript_driver = :webkit
