@@ -503,6 +503,40 @@ $lang = array(
 'type_phrase' =>
 'type phrase...',
 
+/**
+ * Statistics
+ */
+
+'manage_stats' =>
+'Manage Statistics',
+
+'source' =>
+'Source',
+
+'record_count' =>
+'Record Count',
+
+'members' =>
+'Members',
+
+'channel_titles' =>
+'Channel Entries',
+
+'sites' =>
+'Sites',
+
+'forums' =>
+'Forums',
+
+'forum_topics' =>
+'Forum Topics',
+
+'sync' =>
+'Sync',
+
+'sync_completed' =>
+'Synchronization Completed',
+
 ''=>''
 );
 
