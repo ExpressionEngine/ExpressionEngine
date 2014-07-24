@@ -73,6 +73,11 @@ class Query extends Utilities {
 	 */
 	public function runQuery()
 	{
+		if (isset($_POST['password_auth']))
+		{
+			unset($_POST['password_auth']);
+		}
+
 		// defaults in the house!
 		$row_limit	= 100;
 		$title		= lang('query_result');
@@ -109,7 +114,8 @@ class Query extends Utilities {
 
 		if (preg_match("/(^|\s)(".implode('|', $qtypes).")\s/si", $sql))
 		{
-			show_error(lang('sql_not_allowed'));
+			ee()->view->set_message('issue', lang('sql_not_allowed'), lang('sql_not_allowed_desc'), TRUE);
+			return ee()->functions->redirect(cp_url('utilities/query'));
 		}
 
 		// If it's a DELETE query, require that a Super Admin be the one submitting it
@@ -122,9 +128,9 @@ class Query extends Utilities {
 		}
 
 		// Search the table after query has ran
-		if ($search = ee()->input->get_post('search'))
+		if ($search = ee()->input->get_post('search') && $query = ee()->db->query($sql))
 		{
-			if ($query = ee()->db->query($sql))
+			if ($query->num_rows() > 0)
 			{
 				$data = $query->result_array();
 				$keys = array_keys($data[0]);
@@ -169,12 +175,7 @@ class Query extends Utilities {
 
 			if (isset($new_sql))
 			{
-				if ( ! $query = ee()->db->query($new_sql))
-				{
-					$vars['no_results'] = lang('sql_no_result');
-					ee()->cp->render('utilities/query-results', $vars);
-					return;
-				}
+				$query = ee()->db->query($new_sql);
 
 				// Get total results
 				$total_results = ee()->db->query($sql)->num_rows();
@@ -183,12 +184,7 @@ class Query extends Utilities {
 		
 		if ( ! isset($new_sql))
 		{
-			if ( ! $query = ee()->db->query($sql))
-			{
-				$vars['no_results'] = lang('sql_no_result');
-				ee()->cp->render('utilities/query-results', $vars);
-				return;
-			}
+			$query = ee()->db->query($sql);
 		}
 
 		$qtypes = array('INSERT', 'UPDATE', 'DELETE', 'ALTER', 'CREATE', 'DROP', 'TRUNCATE');
@@ -197,20 +193,11 @@ class Query extends Utilities {
 		{
 			if (strncasecmp($sql, $type, strlen($type)) == 0)
 			{
-				$vars['affected'] = (ee()->db->affected_rows() > 0) ? lang('total_affected_rows').NBS.ee()->db->affected_rows() : lang('sql_good_query');
-				$vars['thequery'] = ee()->security->xss_clean($sql);
+				$vars['affected'] = ee()->db->affected_rows();
 				$vars['write'] = TRUE;
 
-				ee()->cp->render('utilities/query-results', $vars);
-				return;
+				break;
 			}
-		}
-
-		// no results?  Wasted efforts!
-		if ($query->num_rows() == 0)
-		{
-			ee()->view->set_message('warn', lang('sql_no_result'), '', TRUE);
-			return ee()->functions->redirect(cp_url('utilities/query'));
 		}
 
 		$vars['thequery'] = ee()->security->xss_clean($sql);
@@ -226,16 +213,20 @@ class Query extends Utilities {
 		);
 
 		$data = $query->result_array();
-		$keys = array_keys($data[0]);
 
 		$table = array(
 			'base_url' 	=> $base_url,
-			'sort'		=> ($sort !== FALSE) ? $sort : $keys[0],
 			'sort_dir'	=> ($sort_dir !== FALSE) ? $sort_dir : 'asc',
 			'wrap' 		=> TRUE, // Wrap table in scroll view
 			'encode' 	=> TRUE, // Encode HTML
 			'data' 		=> $data
 		);
+
+		if ( ! empty($data))
+		{
+			$keys = array_keys($data[0]);
+			$table['sort'] = ($sort !== FALSE) ? $sort : $keys[0];
+		}
 
 		$pagination = new Pagination($row_limit, $vars['total_results'], $page);
 		$vars['pagination'] = $pagination->cp_links($base_url);

@@ -488,6 +488,12 @@ $lang = array(
 'affected_rows' =>
 'Affected Rows',
 
+'sql_not_allowed' =>
+'Query type not allowed',
+
+'sql_not_allowed_desc' =>
+'You cannot run FLUSH, REPLACE, GRANT, REVOKE, LOCK or UNLOCK queries.',
+
 ''=>''
 );
 

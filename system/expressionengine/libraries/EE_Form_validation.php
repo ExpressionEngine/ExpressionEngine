@@ -438,7 +438,7 @@ class EE_Form_validation extends CI_Form_validation {
 			$password
 		);
 
-		return $validate;
+		return ($validate !== FALSE);
 	}
 
 	// --------------------------------------------------------------------
