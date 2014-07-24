@@ -89,6 +89,8 @@ class Query extends Utilities {
 
 		$sort = ee()->input->get('sort');
 		$sort_dir = ee()->input->get('sort_dir');
+		$search = ee()->input->post('search') ?: ee()->input->get('search');
+		$search = empty($search) ? '' : $search;
 
 		// Fetch the query.  It can either come from a
 		// POST request or a url encoded GET request
@@ -128,7 +130,7 @@ class Query extends Utilities {
 		}
 
 		// Search the table after query has ran
-		if ($search = ee()->input->get_post('search') && $query = ee()->db->query($sql))
+		if ( ! empty($search) && $query = ee()->db->query($sql))
 		{
 			if ($query->num_rows() > 0)
 			{
@@ -146,6 +148,10 @@ class Query extends Utilities {
 				}
 			}
 		}
+
+		// Get the total results on the orignal query before we paginate it
+		$query = (isset($new_sql)) ? ee()->db->query($new_sql) : ee()->db->query($sql);
+		$total_results = (is_object($query)) ? $query->num_rows() : 0;
 
 		// If it's a SELECT query we'll see if we need to limit
 		// the result total and add pagination links
@@ -176,9 +182,6 @@ class Query extends Utilities {
 			if (isset($new_sql))
 			{
 				$query = ee()->db->query($new_sql);
-
-				// Get total results
-				$total_results = ee()->db->query($sql)->num_rows();
 			}
 		}
 		
@@ -212,7 +215,7 @@ class Query extends Utilities {
 			)
 		);
 
-		$data = $query->result_array();
+		$data = (is_object($query)) ? $query->result_array() : array();
 
 		$table = array(
 			'base_url' 	=> $base_url,
@@ -233,15 +236,15 @@ class Query extends Utilities {
 
 		// For things like SHOW queries, they show as having zero rows
 		// and we can't paginate them
-		if ($vars['total_results'] == 0 && count($query->result_array()) > 0)
+		if ($vars['total_results'] == 0 && count($data) > 0)
 		{
-			$vars['total_results'] = count($query->result_array());
+			$vars['total_results'] = count($data);
 			unset($table['sort']); // These queries aren't sortable
 		}
 
-		$vars['table'] = ee()->load->view('_shared/table', $table, TRUE);
-		$vars['base_url'] = $base_url;
+		$vars['base_url'] = $base_url->compile();
 		$vars['search'] = $search;
+		$vars['table'] = ee()->load->view('_shared/table', $table, TRUE);
 		
 		ee()->cp->render('utilities/query-results', $vars);
 	}

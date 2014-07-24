@@ -454,6 +454,9 @@ $lang = array(
 'sql_query_form_abbr' =>
 '<abbr title="Structured Query Language">SQL</abbr> Query Form',
 
+'sql_query_abbr' =>
+'<abbr title="Structured Query Language">SQL</abbr> Query',
+
 'sql_warning' =>
 '<p><b>Warning</b>: <b class="no">Advanced users only.</b> Please be very careful with using this feature.</p>
 <p>Depending on the syntax used, this function can produce undesired results. Consult the user guide and backup your database.</p>',
@@ -493,6 +496,12 @@ $lang = array(
 
 'sql_not_allowed_desc' =>
 'You cannot run FLUSH, REPLACE, GRANT, REVOKE, LOCK or UNLOCK queries.',
+
+'search_table' =>
+'search table',
+
+'type_phrase' =>
+'type phrase...',
 
 ''=>''
 );
