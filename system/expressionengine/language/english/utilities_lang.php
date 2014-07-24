@@ -16,7 +16,7 @@ $lang = array(
 '<abbr title="Control Panel">CP</abbr> Translation',
 
 'php_info' =>
-'PHP Info',
+'<abbr title="PHP: Hypertext Processor">PHP</abbr> Info',
 
 'import_tools' =>
 'Import Tools',
@@ -29,6 +29,9 @@ $lang = array(
 
 'sql_manager' =>
 'SQL Manager',
+
+'sql_manager_abbr' =>
+'<abbr title="Structured Query Language">SQL</abbr> Manager',
 
 'query_form' =>
 'Query Form',
@@ -536,6 +539,37 @@ $lang = array(
 
 'sync_completed' =>
 'Synchronization Completed',
+
+/**
+ * SQL Manager
+ */
+
+'mysql' =>
+'My<abbr title="Structured Query Language">SQL</abbr>',
+
+'total_records' =>
+'Total Records',
+
+'uptime' =>
+'Uptime',
+
+'database_tables' =>
+'Database Tables',
+
+'search_tables' =>
+'search tables',
+
+'table_name' =>
+'Table Name',
+
+'records' =>
+'Records',
+
+'size' =>
+'Size',
+
+'manage' =>
+'Manage',
 
 ''=>''
 );

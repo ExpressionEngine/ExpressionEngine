@@ -76,7 +76,7 @@ class Utilities extends CP_Controller {
 				'file_converter' => cp_url('utilities/import-converter'),
 				'member_import' => cp_url('utilities/member-import')
 			),
-			'sql_manager' => cp_url('utilities/sql'),
+			'sql_manager_abbr' => cp_url('utilities/sql'),
 			array(
 				'query_form' => cp_url('utilities/query')
 			),
