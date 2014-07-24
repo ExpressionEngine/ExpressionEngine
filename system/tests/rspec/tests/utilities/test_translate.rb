@@ -182,6 +182,19 @@ feature 'Translate Tool' do
 		@edit_page.should_not be_displayed
 	end
 
+	it 'displays an error when it cannot create a new translation file', :edit => true do
+		t_stat = File::Stat.new(translations_path)
+		FileUtils.chmod 0000, translations_path
+
+		@edit_page.items[1].find('input').set('Rspeced!')
+		@edit_page.submit_button.click
+
+		@edit_page.should have_alert
+		@edit_page.should have_css('div.alert.issue')
+
+		FileUtils.chmod t_stat.mode, translations_path
+	end
+
 	it 'displays a flash message after saving a translation', :edit => true do
 		@edit_page.items[1].find('input').set('Rspeced!')
 		@edit_page.submit_button.click
@@ -189,6 +202,19 @@ feature 'Translate Tool' do
 		@edit_page.should have_alert
 		@edit_page.should have_css('div.alert.success')
 		File.exists?(translations_path + 'addons_lang.php')
+	end
+
+	it 'displays an error when it cannot write to the translations directory (update a translation)', :edit => true do
+		t_stat = File::Stat.new(translations_path)
+		FileUtils.chmod 0000, translations_path
+
+		@edit_page.items[1].find('input').set('Rspeced!')
+		@edit_page.submit_button.click
+
+		@edit_page.should have_alert
+		@edit_page.should have_css('div.alert.issue')
+
+		FileUtils.chmod t_stat.mode, translations_path
 	end
 
 	it 'displays an error when trying to edit a file that is not readable', :edit => true do
@@ -205,18 +231,5 @@ feature 'Translate Tool' do
 		@edit_page.should have_css('div.alert.issue')
 
 		FileUtils.chmod 0644, language_path + 'rspeclingo/addons_lang.php'
-	end
-
-	it 'displays an error when it cannot write to the translations directory', :edit => true do
-		t_stat = File::Stat.new(translations_path)
-		FileUtils.chmod 0000, translations_path
-
-		@edit_page.items[1].find('input').set('Rspeced!')
-		@edit_page.submit_button.click
-
-		@edit_page.should have_alert
-		@edit_page.should have_css('div.alert.issue')
-
-		FileUtils.chmod t_stat.mode, translations_path
 	end
 end
