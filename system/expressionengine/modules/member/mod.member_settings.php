@@ -1123,10 +1123,51 @@ class Member_settings extends Member {
 			}
 		}
 
+		// Check for spam. Profile spam is tricky, just using our bayesian 
+		// filter isn't good enough since our training set isn't based on 
+		// profile data. So we'll use a couple rules and then if we have to
+		// run the filter on the bio field.
+
+		$spam = FALSE;
 		$text = implode(' ', array_merge($data, $m_data));
 
-		// Check for spam
-		if (ee()->spam->classify($text))
+		// First check if this is a duplicate of existing profile data
+		$select = "email, url, location, occupation, interests, bday_d, bday_m, bday_y, aol_im, yahoo_im, msn_im, icq, bio, signature, avatar_filename, photo_filename, sig_img_filename";
+		ee()->db->select($select);
+		ee()->db->where('member_id !=', ee()->session->userdata('member_id'));
+		ee()->db->where($data);
+		$members = ee()->db->get('members');
+
+		// We have an exact duplicate!
+		if ($members->num_rows() > 0)
+		{
+			$spam = TRUE;
+		}
+		else
+		{
+			// No exact match, we use the edit distance now to look for almost 
+			// exact duplicates.
+			ee()->db->select($select);
+			ee()->db->where('member_id !=', ee()->session->userdata('member_id'));
+			$members = ee()->db->get('members');
+			$text = implode('', $data);
+			$filter = ee()->spam->classify($text);
+
+			foreach ($members->result_array() as $member)
+			{
+				$length = max(array_map('str_len', array($member, $text)));
+				$distance = levenshtein($val, $member[$key]);
+				$difference = $distance / $length;
+				
+				// Run through the filter if we're over the theshold
+				if ($difference < 0.2 AND $filter)
+				{
+					$spam = TRUE;
+				}
+			}
+		}
+
+		if ($spam)
 		{
 			ee()->spam->moderate(NULL, NULL, NULL, NULL, $text);
 			return ee()->output->show_user_error('general', array(ee()->lang->line('invalid_action')));
