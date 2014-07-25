@@ -94,6 +94,8 @@ class Stats extends Utilities {
 
 		// Determine and set the record count sort
 		$base_url = new URL('utilities/stats', ee()->session->session_id());
+		$base_url->setQueryStringVariable('record_count_direction', 'desc');
+
 		if (ee()->input->get('record_count_direction'))
 		{
 			$vars['highlight'] = 'record_count';
@@ -107,7 +109,6 @@ class Stats extends Utilities {
 		}
 		elseif (ee()->input->get('record_count_direction') == 'asc')
 		{
-			$base_url->setQueryStringVariable('record_count_direction', 'desc');
 			asort($vars['sources']);
 		}
 		$vars['record_count_sort_url'] = $base_url->compile();
