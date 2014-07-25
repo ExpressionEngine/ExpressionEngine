@@ -700,7 +700,7 @@ class Design extends CP_Controller {
 		);
 
 		$this->cp->set_action_nav(array(
-			'Toggle Editor' => 'javascript:$(\'#snippet_contents\').toggleCodeMirror();'
+			'toggle_editor' => 'javascript:$(\'#snippet_contents\').toggleCodeMirror();'
 		));
 
 		$this->cp->render('design/snippets_edit', $vars);
@@ -1941,7 +1941,7 @@ class Design extends CP_Controller {
 		);
 
 		$this->cp->set_action_nav(array(
-			'Toggle Editor' => 'javascript:$(\'#template_data\').toggleCodeMirror();'
+			'toggle_editor' => 'javascript:$(\'#template_data\').toggleCodeMirror();'
 		));
 
 		$vars['table_template'] = array(

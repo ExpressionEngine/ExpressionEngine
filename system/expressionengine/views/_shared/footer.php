@@ -16,12 +16,12 @@
 <div id="idle-modal" class="pageContents">
 	<p id="idle-description" class="shun"><?=lang('session_idle_description')?></p>
 
-	<p class="idle-fourth"><strong>User:</strong></p>
+	<p class="idle-fourth"><strong><?=lang('user_label')?></strong></p>
 
 	<?=form_open('C=login&M=authenticate')?>
 	<div class="idle-three-fourths shun">
 		<p class="idle-fourth">
-			<img src="<?=$cp_avatar_path ? $cp_avatar_path : $cp_theme_url.'images/site_logo.gif'?>" width="50" alt="User Avatar" />
+			<img src="<?=$cp_avatar_path ? $cp_avatar_path : $cp_theme_url.'images/site_logo.gif'?>" width="50" alt="<?=lang('user_avatar_alt')?>" />
 		</p>
 		<p class="idle-three-fourths">
 			<p id="idle-screen-name"><?=$cp_screen_name?></p>
@@ -31,7 +31,7 @@
 	</div>
 
 	<div class="idle-fourth">
-		<p><label for="logout-confirm-password">Password:</label></p>
+		<p><label for="logout-confirm-password"><?=lang('password_label')?></label></p>
 	</div>
 	<div class="idle-three-fourths shun">
 		<p><input type="password" name="password" class="field" id="logout-confirm-password"/></p>
