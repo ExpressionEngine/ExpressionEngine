@@ -297,6 +297,9 @@ class EE_Extensions {
 	 */
 	function active_hook($which)
 	{
+		// Hop out if extensions are disabled
+		if (ee()->config->item('allow_extensions') != 'y') return FALSE;
+
 		return (isset($this->extensions[$which])) ? TRUE : FALSE;
 	}
 
