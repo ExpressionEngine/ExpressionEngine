@@ -40,6 +40,15 @@ feature 'Statistics' do
 		@page.content_table.find('th.highlight').text.should eq 'Record Count'
 	end
 
+	it "reports accurate record count after adding a member" do
+		add_member(username: 'johndoe')
+		@page.load
+
+		@page.should have(4).rows # 3 rows + header
+		@page.sources.map {|source| source.text}.should == ["Channel Entries", "Members", "Sites"]
+		@page.counts.map {|count| count.text}.should == ["10", "2", "1"]
+	end
+
 	it "can sync one source" do
 		@page.content_table.find('tr:nth-child(2) li.sync a').click
 
