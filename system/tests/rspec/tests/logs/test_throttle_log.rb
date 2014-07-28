@@ -61,10 +61,10 @@ feature 'Throttling Log' do
 	# Be sane and make sure it's there before we search for it
 	@page.should have_text our_ip
 
-	@page.phrase_search.set "172.16"
+	@page.phrase_search.set "172.16.11"
 	@page.submit_button.click
 
-	@page.phrase_search.value.should eq "172.16"
+	@page.phrase_search.value.should eq "172.16.11"
 	@page.should have_text our_ip
 	@page.should have(1).items
   end
