@@ -166,7 +166,6 @@ abstract class RowDataGateway {
 		{
 			return $errors;
 		}
-			return $errors;
 
 		$validation_factory = $validation_factory ?: $this->_validation_factory;
 

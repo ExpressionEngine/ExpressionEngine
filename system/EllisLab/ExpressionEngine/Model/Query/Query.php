@@ -1,7 +1,6 @@
 <?php namespace EllisLab\ExpressionEngine\Model\Query;
 
 use EllisLab\ExpressionEngine\Core\AliasService;
-use EllisLab\ExpressionEngine\Model\Collection;
 use EllisLab\ExpressionEngine\Model\ModelFactory;
 use EllisLab\ExpressionEngine\Model\Relationship\RelationshipMeta;
 use EllisLab\ExpressionEngine\Model\Query\QueryTreeNode;
@@ -12,24 +11,18 @@ class Query {
 	private $alias_service;
 
 	private $db;
-	private $model_name;
 
 	private $limit = '18446744073709551615'; // 2^64
 	private $offset = 0;
 
-	private $filters = array();
-	private $selected = array();
-	private $subqueries = array();
-
 	private $aliases = array();
-	private $tables = array();
+	private $subqueries = array();
 
 	/**
 	 * @var	QueryTreeNode $root	The root of this query's tree of model
 	 * 			relationships.  The model we initiated the query against.
 	 */
 	private $root = NULL;
-	private $model_index = array();
 
 	public function __construct(ModelFactory $factory, AliasService $alias_service, $model_name)
 	{
@@ -46,7 +39,6 @@ class Query {
 
 	protected function createRoot($model_name)
 	{
-		$this->model_name = $model_name;
 		$this->root = new QueryTreeNode($model_name);
 		$this->root->meta = NULL;
 
@@ -62,7 +54,7 @@ class Query {
 		$primary_aliased_tablename =  $primary_tablename . '_' . $this->root->getId();
 		$this->db->from($primary_tablename . ' AS ' . $primary_aliased_tablename);
 
-		foreach($gateway_names as $gateway_name)
+		foreach ($gateway_names as $gateway_name)
 		{
 			$gateway_class = $this->alias_service->getRegisteredClass($gateway_name);
 			$tablename = $gateway_class::getMetaData('table_name');
@@ -77,7 +69,6 @@ class Query {
 				'.' .
 				$gateway_class::getMetaData('primary_key')
 			);
-
 		}
 	}
 
@@ -87,7 +78,8 @@ class Query {
 	protected function getNodeForRelationship($relationship_name)
 	{
 		$relationship_name = $this->getAlias($relationship_name);
-		foreach($this->root->getBreadthFirstIterator() as $node)
+
+		foreach ($this->root->getBreadthFirstIterator() as $node)
 		{
 			if ($node->getName() == $relationship_name)
 			{
@@ -129,23 +121,25 @@ class Query {
 		}
 
 		$gateway_names = $model_class::getMetaData('gateway_names');
-		foreach($gateway_names as $gateway_name)
+
+		foreach ($gateway_names as $gateway_name)
 		{
 			$gateway_class = $this->alias_service->getRegisteredClass($gateway_name);
 			$field_list = $gateway_class::getMetaData('field_list');
+
 			if (in_array($property, $gateway_class::getMetaData('field_list')))
 			{
 				$table = $gateway_class::getMetaData('table_name');
 				break;
 			}
 		}
+
 		if ( ! isset($table))
 		{
 			throw new \Exception('Property ' . $property . ' was not found on model ' . $model_class);
 		}
 
-		$result = $table . '_' . $node->getId() . '.' . $property;
-		return $result;
+		return $table . '_' . $node->getId() . '.' . $property;
 	}
 
 	/**
@@ -164,7 +158,6 @@ class Query {
 		// We'll use this to mask the application.  We'll need it
 		// when we do subquerying.
 		$this->applyFilter($property, $operator, $value);
-
 		return $this;
 	}
 
@@ -287,16 +280,34 @@ class Query {
 			$this->buildRelationshipTree($this->root, $relationship);
 		}
 
-		foreach($this->root->getBreadthFirstIterator() as $node)
+		foreach ($this->root->getBreadthFirstIterator() as $node)
 		{
 			if ($node->isRoot() || $this->hasParentSubquery($node))
 			{
 				continue;
 			}
+
 			$this->buildRelationship($node);
 		}
 
 		return $this;
+	}
+
+
+	private function hasParentSubquery(QueryTreeNode $node)
+	{
+		for($n = $node; ! $n->isRoot(); $n = $n->getParent())
+		{
+			// If we encounter a subquery parent with no parent, then that subquery
+			// node is the root and we're in a subquery!
+			if ($n->meta->method == RelationshipMeta::METHOD_SUBQUERY
+				&& $n->getParent() !== NULL)
+			{
+				return TRUE;
+			}
+		}
+
+		return FALSE;
 	}
 
 	/**
@@ -313,12 +324,13 @@ class Query {
 			// If the 'to' key exists, then we're specifying meta data, but
 			// we could still have another level below this one in the
 			// relationship tree.  So we need to check for a 'with' key.
-			if ( isset($relationship['to']))
+			if (isset($relationship['to']))
 			{
 				// Build the relationship, pass the meta data through.
 				$to = $relationship['to'];
 				unset($relationship['to']);
-				if ( isset ($relationship['with']))
+
+				if (isset($relationship['with']))
 				{
 					$with = $relationship['with'];
 					unset($relationship['with']);
@@ -327,7 +339,7 @@ class Query {
 				$parent->add($this->createNode($parent, $to, $relationship));
 
 				// If we have a with key, then recurse.
-				if ( isset ($with))
+				if (isset($with))
 				{
 					$this->buildRelationshipTree($to_node, $with);
 				}
@@ -400,7 +412,7 @@ class Query {
 	 * 		leading to the attached vertex from which this node (representing an edge)
 	 * 		spawns.
 	 */
-	private function createNode(QueryTreeNode $parent, $relationship_name, array $meta=array())
+	private function createNode(QueryTreeNode $parent, $relationship_name, array $meta = array())
 	{
 		if (strpos($relationship_name, 'AS'))
 		{
@@ -500,22 +512,6 @@ class Query {
 
 	}
 
-	private function hasParentSubquery(QueryTreeNode $node)
-	{
-		for($n = $node; ! $n->isRoot(); $n = $n->getParent())
-		{
-			// If we encounter a subquery parent with no parent, then that subquery
-			// node is the root and we're in a subquery!
-			if ($n->meta->method == RelationshipMeta::METHOD_SUBQUERY
-				&& $n->getParent() !== NULL)
-			{
-				return TRUE;
-			}
-		}
-
-		return FALSE;
-	}
-
 	private function buildSubqueryRelationship(QueryTreeNode $node)
 	{
 		$subquery = new static($node->meta->to_model_name);
@@ -527,17 +523,15 @@ class Query {
 
 	private function withSubtree(QueryTreeNode $root)
 	{
-		foreach($root->getChildren() as $node)
+		foreach ($root->getChildren() as $node)
 		{
 			$this->root->add($node);
 		}
 	}
 
-
 	public function debug_query()
 	{
-		$query = $this->db->_compile_select();
-		return $query;
+		return $this->db->_compile_select();
 	}
 
 	/**
@@ -547,197 +541,17 @@ class Query {
 	 */
 	public function all()
 	{
-		// Run the query
-		$result_array = $this->db->get()->result_array();
-
-		return new Collection($this->parseDatabaseResult($result_array));
+		return $this->getResult()->collection();
 	}
 
-	/**
-	 * Need to take aliased results in the form of joined query rows and
-	 * build the model tree out of them.
-	 */
-	protected function parseDatabaseResult($database_result)
+	protected function getResult()
 	{
-		// Each row holds field=>value data for the full joined query's tree.
-		// In order to take this flat row data and reconstruct it into a tree,
-		// the field names of each field=>value pair have been aliased with the
-		// path to the correct node (in ids), and the model to which the field
-		// belongs.  Each field name looks like this: path__model__fieldName
-		//
-		// Where path, model and fieldName may have single underscores in them.
-		// The path is a series of underscore separated integers corresponding
-		// to the unique ids of nodes in this query's relationship tree.  The
-		// tree might look something like this:
-		//
-		// 				ChannelEntry(1)
-		// 			/			|			\
-		// 	Channel (2)		Author (3)		Categories (4)
-		//						|				|
-		// 					MemberGroup (5)	CategoryGroup (6)
-		//
-		// 	So a field in the CategoryGroup model would be aliased like so:
-		//
-		// 	1_4_6__CategoryGroup__group_id
-		//
-		// 	A field in the Author relationship (Member model) might be
-		// 	aliased:
-		//
-		// 	1_3__Member__member_id
-		//
-		// 	This will allow us to create the models we've pulled and
-		// 	correctly reconstruct the tree.
-		$results = array();
-		$result_index = array();
-
-		foreach ($database_result as $row)
-		{
-			$row_data = array();
-
-			foreach ($row as $name => $value)
-			{
-				list($path, $relationship_name, $model_name, $field_name) = explode('__', $name);
-
-				if ( ! isset($row_data[$path]))
-				{
-					$row_data[$path] = array(
-						'__model_name' => $model_name,
-						'__relationship_name' => $relationship_name
-					);
-				}
-
-				$row_data[$path][$field_name] = $value;
-			}
-
-			//echo 'Processing Row: <pre>'; var_dump($row_data); //echo '</pre>';
-
-			foreach ($row_data as $path => $model_data)
-			{
-				// If this is an empty model that happened to have been grabbed due to the join,
-				// move on and don't do anything.
-				$model_class = $this->alias_service->getRegisteredClass($model_data['__model_name']);
-				$primary_key_name = $model_class::getMetaData('primary_key');
-
-				if ($row_data[$path][$primary_key_name] === NULL)
-				{
-					unset($row_data[$path]);
-					continue;
-				}
-
-				$model_name =  $model_data['__model_name'];
-				$relationship_name = $model_data['__relationship_name'];
-
-				$model_class = $this->alias_service->getRegisteredClass($model_name);
-				$primary_key_name = $model_class::getMetaData('primary_key');
-				$primary_key = $model_data[$primary_key_name];
-
-				if (isset($this->model_index[$model_name][$primary_key]))
-				{
-					$model = $this->model_index[$model_name][$primary_key];
-				}
-				else
-				{
-					$model = $this->createResultModel($model_data);
-				}
-
-				if ($this->isRootModel($path))
-				{
-					if ( ! isset($result_index[$primary_key]))
-					{
-						$results[] = $model;
-						$result_index[$primary_key] = TRUE;
-					}
-
-					continue;
-				}
-
-				$parent_model = $this->findModelParent($row_data, $path);
-
-				if ($parent_model === NULL)
-				{
-					throw new \Exception('Missing model parent!');
-				}
-
-				// Reverse the relationship so we can fill in both sides
-				// TODO we should not do this if $parent_model is really a child!
-				$reverse = $parent_model->getRelationshipInfo($relationship_name)->getInverseOn($model);
-
-				if ($reverse)
-				{
-					if ( ! $model->hasRelated($reverse->name))
-					{
-						$model->addRelated($reverse->name, $parent_model);
-					}
-				}
-
-				if ( ! $parent_model->hasRelated($relationship_name, $primary_key))
-				{
-					$parent_model->addRelated($relationship_name, $model);
-				}
-			}
-		}
-
-		return $results;
-	}
-
-	/**
-	 * Determine if this is a Root Model
-	 *
-	 * Is this a root model?  One of the ones we're get()ing.
-	 *
-	 * @param 	string	$path	The path to the model's node in the
-	 * 		relationship tree.
-	 *
-	 * @return	boolean	TRUE if this is a root model, FALSE otherwise.
-	 */
-	protected function isRootModel($path)
-	{
-		// If it's an integer, then it's a
-		// root node, because it doesn't have
-		// any children.
-		return is_int($path);
-	}
-
-	/**
-	 *
-	 */
-	protected function createResultModel($model_data)
-	{
-		$model_name = $model_data['__model_name'];
-
-		$model = $this->factory->make($model_name, $model_data, FALSE);
-
-		$primary_key_name = $model::getMetaData('primary_key');
-		$primary_key = $model_data[$primary_key_name];
-
-		if ( ! isset ($this->model_index[$model_name]))
-		{
-			$this->model_index[$model_name] = array();
-		}
-
-		$this->model_index[$model_name][$primary_key] = $model;
-
-		return $this->model_index[$model_name][$primary_key];
-	}
-
-	protected function findModelParent($path_data, $child_path)
-	{
-		$path = substr($child_path, 0, strrpos($child_path, '_'));
-
-		$model_data = $path_data[$path];
-
-		$model_name = $model_data['__model_name'];
-		$model_class = $this->alias_service->getRegisteredClass($model_name);
-
-		$primary_key_name = $model_class::getMetaData('primary_key');
-		$primary_key = $model_data[$primary_key_name];
-
-		if (isset($this->model_index[$model_name][$primary_key]))
-		{
-			return $this->model_index[$model_name][$primary_key];
-		}
-
-		throw new \Exception('Model parent has not been created yet for child path "' . $child_path . '" and model "' . $model_name . '"');
+		// Run the query and return
+		return new QueryResult(
+			$this->factory,
+			$this->alias_service,
+			$this->db->get()->result_array()
+		);
 	}
 
 	/**
@@ -749,14 +563,7 @@ class Query {
 	public function first()
 	{
 		$this->limit(1);
-		$collection = $this->all();
-
-		if (count($collection))
-		{
-			return $collection->first();
-		}
-
-		return NULL;
+		return $this->getResult()->first();
 	}
 
 	/**
@@ -820,6 +627,7 @@ class Query {
 		}
 
 		$model_class_name = $this->alias_service->getRegisteredClass($model_name);
+
 		foreach ($model_class_name::getMetaData('gateway_names') as $gateway_name)
 		{
 			$gateway_class_name = $this->alias_service->getRegisteredClass($gateway_name);
@@ -842,10 +650,11 @@ class Query {
 
 	protected function getAlias($aliased)
 	{
-		if ( isset ($this->aliases[$aliased]))
+		if (isset($this->aliases[$aliased]))
 		{
 			return $this->aliases[$aliased];
 		}
+
 		return $aliased;
 	}
 

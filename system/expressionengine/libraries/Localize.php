@@ -453,7 +453,7 @@ EOF;
 
 		// Get ready to load preselected values into the dropdowns if one exists
 		$selected_country = NULL;
-		$timezone_prepoplated = array('' => lang('no_timezones'));
+		$timezone_prepopulated = array('' => lang('no_timezones'));
 
 		if ( ! empty($default))
 		{
@@ -470,7 +470,7 @@ EOF;
 			// Preselect timezone if we got a valid country back
 			if ($selected_country)
 			{
-				$timezone_prepoplated = $timezones[$selected_country];
+				$timezone_prepopulated = $timezones[$selected_country];
 			}
 		}
 
@@ -478,7 +478,7 @@ EOF;
 		ee()->load->helper('form');
 		$output .= form_dropdown('tz_country', $countries, $selected_country, 'onchange="ee_tz_change(this)"');
 		$output .= '&nbsp;&nbsp;'; // NBS constant doesn't work in installer
-		$output .= form_dropdown($name, $timezone_prepoplated, $default, 'id="timezone_select"');
+		$output .= form_dropdown($name, $timezone_prepopulated, $default, 'id="timezone_select"');
 
 		return $output;
 	}
