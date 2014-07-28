@@ -707,8 +707,17 @@ class Member_auth extends Member {
 		// Kill old data from the reset_password field
 		$a_day_ago = time() - (60*60*24);
 		ee()->db->where('date <', $a_day_ago)
-			->or_where('member_id', $member_id)
 			->delete('reset_password');
+
+		// Check flood control
+		$max_requests_in_a_day = 3;
+		$requests = ee()->db->where('member_id', $member_id)
+			->count_all_results('reset_password');
+
+		if ($requests >= $max_requests_in_a_day)
+		{
+			return ee()->output->show_user_error('submission', array(lang('password_reset_flood_lock')));
+		}
 
 		// Create a new DB record with the temporary reset code
 		$rand = ee()->functions->random('alnum', 8);
@@ -813,6 +822,18 @@ class Member_auth extends Member {
 		if ( ! ($resetcode = ee()->input->get_post('id')))
 		{
 			return ee()->output->show_user_error('submission', array(lang('mbr_no_reset_id')));
+		}
+
+		// Make sure the token is valid and belongs to a member.
+		$a_day_ago = time() - (60*60*24);
+		$member_id_query = ee()->db->select('member_id')
+			->where('resetcode', $resetcode)
+			->where('date >', $a_day_ago)
+			->get('reset_password');
+
+		if ($member_id_query->num_rows() === 0)
+		{
+			return ee()->output->show_user_error('submission', array(lang('mbr_id_not_found')));
 		}
 
 		// Check to see whether we're in the forum or not.
