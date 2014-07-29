@@ -112,7 +112,7 @@ class Member_images extends Member {
 		}
 
 		// Do we have what we need in $_POST?
-		if (empty($_POST) OR ! ee()->input->post('body'))
+		if ( ! ee()->input->post('body'))
 		{
 			return ee()->functions->redirect($this->_member_path('edit_signature'));
 		}

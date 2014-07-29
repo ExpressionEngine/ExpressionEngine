@@ -1328,7 +1328,7 @@ class MyAccount extends CP_Controller {
 		$signature = $this->input->post('signature');
 
 		// Do we have what we need in $_POST?
-		if (empty($_POST) OR ! ee()->input->post('signature'))
+		if ( ! ee()->input->post('signature'))
 		{
 			return ee()->functions->redirect(cp_url('myaccount/edit_signature'));
 		}
