@@ -206,12 +206,16 @@ class Query extends Utilities {
 		$vars['thequery'] = ee()->security->xss_clean($sql);
 		$vars['total_results'] = (isset($total_results)) ? $total_results : 0;
 
+		$sort_dir = ($sort_dir !== FALSE) ? $sort_dir : 'asc';
+
 		$base_url = new CP\URL(
 			'utilities/query/run-query',
 			ee()->session->session_id(),
 			array(
 				'thequery' 	=> rawurlencode(base64_encode($sql)),
-				'search' 	=> $search
+				'search' 	=> $search,
+				'sort'		=> $sort,
+				'sort_dir'	=> $sort_dir
 			)
 		);
 
@@ -219,7 +223,7 @@ class Query extends Utilities {
 
 		$table = array(
 			'base_url' 	=> $base_url,
-			'sort_dir'	=> ($sort_dir !== FALSE) ? $sort_dir : 'asc',
+			'sort_dir'	=> $sort_dir,
 			'wrap' 		=> TRUE, // Wrap table in scroll view
 			'encode' 	=> TRUE, // Encode HTML
 			'data' 		=> $data
@@ -229,6 +233,7 @@ class Query extends Utilities {
 		{
 			$keys = array_keys($data[0]);
 			$table['sort'] = ($sort !== FALSE) ? $sort : $keys[0];
+			$base_url->setQueryStringVariable('sort', $table['sort']);
 		}
 
 		$pagination = new Pagination($row_limit, $vars['total_results'], $page);

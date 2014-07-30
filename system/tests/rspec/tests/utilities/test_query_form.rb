@@ -244,6 +244,25 @@ feature 'Query Form' do
     results.pages.map {|name| name.text}.should == ["First", "Previous", "1", "2", "Last"]
   end
 
+  it 'should paginate sorted query results' do
+    cp_log = CpLog.new
+    cp_log.generate_data(count: 150)
+
+    @page.query_form.set 'select * from exp_cp_log'
+    @page.password.set 'password'
+    @page.submit
+
+    no_php_js_errors
+    results = QueryResults.new
+    results.sort_links[0].click
+    results.table.find('tr:nth-child(2) td:nth-child(1)').should have_text '151'
+
+    no_php_js_errors
+    click_link "Next"
+
+    results.table.find('tr:nth-child(2) td:nth-child(1)').should have_text '51'
+  end
+
   it 'should show no results when there are no results' do
     @page.query_form.set 'select * from exp_channels where channel_id = 1000'
     @page.password.set 'password'
