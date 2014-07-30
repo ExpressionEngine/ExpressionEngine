@@ -1,6 +1,6 @@
 <?php
 $lang = array(
-	
+
 'your_name'				=> 'Your Name',
 'your_email'			=> 'Your Email',
 'recipient'				=> 'Recipient',
@@ -53,7 +53,7 @@ $lang = array(
 'email_sent_message'	=> 'Your email has been sent',
 'all_email_sent_message'	=> 'All emails have been sent',
 'email_success'			=> 'Email Sent',
-'view_email_cache'		=> 'View Previously Sent Email',
+'view_email_cache'		=> 'Sent e-mails',
 'previous_email'		=> 'Previously Sent Email',
 'email_title'			=> 'Email Title',
 'email_date'			=> 'Date Sent',
@@ -73,6 +73,8 @@ $lang = array(
 'finish_sending'		=> 'Finish Sending',
 'on'					=> 'On',
 'off'					=> 'Off',
+'total_sent'			=> 'Total Sent',
+'remove'				=> 'Remove',
 
 ''=>''
 );

@@ -66,7 +66,7 @@ class Utilities extends CP_Controller {
 		ee()->menu->register_left_nav(array(
 			'communicate' => cp_url('utilities/communicate'),
 			array(
-				'sent' => cp_url('utilities/communicate-sent')
+				'sent' => cp_url('utilities/communicate/sent')
 			),
 			'cp_translation',
 			$languages,

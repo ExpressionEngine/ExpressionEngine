@@ -1,7 +1,7 @@
 <?php extend_template('default-nav'); ?>
 
 <h1><?=$cp_page_title?> <span class="required intitle">&#10033; <?=lang('required_fields')?></span></h1>
-<?=form_open(cp_url('utilities/sandr'), 'class="settings"')?>
+<?=form_open(cp_url('utilities/communicate/send'), 'class="settings"')?>
 	<?php $this->view('_shared/form_messages')?>
 	<fieldset class="col-group <?=form_error_class('subject')?>">
 		<div class="setting-txt col w-16">
@@ -20,7 +20,7 @@
 			<textarea class="has-format-options required" name="message" cols="" rows=""><?=set_value('message', $message)?></textarea>
 			<div class="format-options">
 				<label><?=lang('send_as')?></label>
-				<?=form_dropdown('text_fmt', $text_formatting_options, $text_fmt, 'id="text_fmt"')?>
+				<?=form_dropdown('mailtype', $mailtype_options, $mailtype, 'id="mailtype"')?>
 				<label><?=lang('word_wrap')?></label>
 				<input type="checkbox" name="wordwrap" value="y" <?=set_checkbox('wordwrap', 'y', TRUE)?>>
 			</div>
@@ -76,23 +76,6 @@
 			<?=form_error('bcc')?>
 		</div>
 	</fieldset>
-	<?php if ($mailing_lists !== FALSE): ?>
-		<fieldset class="col-group">
-			<div class="setting-txt col w-8">
-				<h3><?=lang('mailing_lists')?></h3>
-				<em><?=lang('mailing_lists_desc')?></em>
-			</div>
-			<div class="setting-field col w-8 last">
-				<div class="scroll-wrap">
-					<?php foreach ($mailing_lists as $list => $details): ?>
-					<label class="choice block">
-						<?=form_checkbox($details)?> <?=$list?>
-					</label>
-					<?php endforeach; ?>
-				</div>
-			</div>
-		</fieldset>
-	<?php endif ?>
 	<?php if ($member_groups !== FALSE): ?>
 	<fieldset class="col-group last">
 		<div class="setting-txt col w-8">
