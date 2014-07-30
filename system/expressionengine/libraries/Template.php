@@ -2236,6 +2236,7 @@ class EE_Template {
 			ee()->output->out_type = "404";
 			ee()->output->set_output($out);
 			ee()->output->_display();
+			exit;
 		}
 		else
 		{
