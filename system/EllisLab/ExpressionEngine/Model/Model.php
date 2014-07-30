@@ -309,9 +309,8 @@ abstract class Model {
 
 		/* for delete:
 		$c->stopIf('keysNotEqual'); // require identical keys to traverse
-		*/
 		var_dump(get_called_class());
-
+		*/
 
 		$c->walk(function($self) use ($gateways)
 		{
