@@ -1155,12 +1155,11 @@ class Member_settings extends Member {
 
 			foreach ($members->result_array() as $member)
 			{
-				$length = max(array_map('str_len', array($member, $text)));
-				$distance = levenshtein($val, $member[$key]);
-				$difference = $distance / $length;
+				$member = implode('', $member);
+				$similarity = similar_text($text, $member);
 				
 				// Run through the filter if we're over the theshold
-				if ($difference < 0.2 AND $filter)
+				if ($similarity > 20.0 AND $filter)
 				{
 					$spam = TRUE;
 				}
