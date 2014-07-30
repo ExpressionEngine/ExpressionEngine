@@ -8,10 +8,12 @@ class EmailCache extends Model
 
 	protected static $_relationships = array(
 		'MailingLists' => array(
-			'type' => 'many_to_many'
+			'type' => 'many_to_many',
+			'model' => 'MailingList'
 		),
 		'MemberGroups' => array(
-			'type' => 'many_to_many'
+			'type' => 'many_to_many',
+			'model' => 'MemberGroup'
 		)
 	);
 
