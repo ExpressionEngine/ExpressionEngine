@@ -185,15 +185,12 @@ class File {
 		{
 			if ($$variable)
 			{
-				if (substr($$variable, 0, 3) == 'not'
-					&& ee()->TMPL->fetch_param('uncategorized_entries') !== 'n')
-				{
-					ee()->functions->ar_andor_string($$variable, 'exp_categories.cat_id', '', TRUE);
-				}
-				else
-				{
-					ee()->functions->ar_andor_string($$variable, 'exp_categories.cat_id');
-				}
+				$cat_field_name = ($param == 'category') ? 'exp_categories.cat_id' : 'exp_categories.group_id';
+
+				$include_uncategorized = (substr($$variable, 0, 3) == 'not'
+					&& ee()->TMPL->fetch_param('uncategorized_entries') !== 'n') ? TRUE : FALSE;
+
+				ee()->functions->ar_andor_string($$variable, $cat_field_name, '', $include_uncategorized);
 			}
 		}
 

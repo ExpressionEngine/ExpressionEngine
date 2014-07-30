@@ -182,17 +182,20 @@ class Grid_lib {
 		{
 			foreach ($data['rows'] as $key => $row)
 			{
-				$row_key = str_replace('row_id_', '', $key);
-
-				if ( ! in_array($row_key, $valid_rows))
+				if (substr($key, 0, 6) == 'row_id')
 				{
-					if (ee()->session->userdata['group_id'] == 1)
+					$row_key = str_replace('row_id_', '', $key);
+
+					if ( ! in_array($row_key, $valid_rows))
 					{
-						return array('value' => '', 'error' => lang('not_authorized'));
-					}
-					else
-					{
-						unset($data['rows'][$key]);
+						if (ee()->session->userdata['group_id'] == 1)
+						{
+							return array('value' => '', 'error' => lang('not_authorized'));
+						}
+						else
+						{
+							unset($data['rows'][$key]);
+						}
 					}
 				}
 			}
