@@ -39,6 +39,45 @@ class Sql extends Utilities {
 			show_error(lang('unauthorized_access'));
 		}
 
+		if ($action = ee()->input->post('table_action'))
+		{
+			$tables = ee()->input->post('table');
+
+			// Must select an action
+			if ($action == 'none')
+			{
+				ee()->view->set_message('issue', lang('cp_message_issue'), lang('no_action_selected'));
+			}
+			// Must be either OPTIMIZE or REPAIR
+			elseif ( ! in_array($action, array('OPTIMIZE', 'REPAIR')))
+			{
+				show_error(lang('unauthorized_access'));
+			}
+			// Must have selected tables
+			elseif (empty($tables))
+			{
+				ee()->view->set_message('issue', lang('cp_message_issue'), lang('no_tables_selected'));
+			}
+			else
+			{
+				// Perform the action on each selected table and store the results
+				foreach ($tables as $table)
+				{
+					$query = ee()->db->query("{$action} TABLE ".ee()->db->escape_str($table));
+
+					foreach ($query->result_array() as $row)
+					{
+						foreach ($row as $k => $v)
+						{
+							$vars['results'][$table][] = $v;
+						}
+					}
+				}
+				// TODO: Need to know what James wants to do with the
+				// results from the table action
+			}
+		}
+
 		ee()->load->model('tools_model');
 		$vars = ee()->tools_model->get_sql_info();
 		$vars += ee()->tools_model->get_table_status();

@@ -10,7 +10,8 @@
 	</div>
 </div>
 <div class="box">
-	<form class="tbl-ctrls">
+	<?=form_open(cp_url('utilities/sql'), 'class="tbl-ctrls"')?>
+	<?php $this->view('_shared/form_messages')?>
 		<fieldset class="tbl-search right">
 			<input placeholder="<?=lang('type_phrase')?>" type="text" value="">
 			<input class="btn submit" type="submit" value="<?=lang('search_tables')?>">
@@ -35,16 +36,16 @@
 								<li class="view"><a href="<?=cp_url('utilities/query/run-query', array('thequery' => rawurlencode(base64_encode('SELECT * FROM '.$table['name']))))?>" title="view"></a></li>
 							</ul>
 						</td>
-						<td><input type="checkbox"></td>
+						<td><input name="table[]" value="<?=$table['name']?>" type="checkbox"></td>
 					</tr>
 				<?php endforeach ?>
 			</table>
 		</div>
 		<fieldset class="tbl-bulk-act">
-			<select>
-				<option>-- with selected --</option>
-				<option>Repair</option>
-				<option>Optimize</option>
+			<select name="table_action">
+				<option value="none">-- with selected --</option>
+				<option value="REPAIR">Repair</option>
+				<option value="OPTIMIZE">Optimize</option>
 			</select>
 			<input class="btn submit" type="submit" value="submit">
 		</fieldset>

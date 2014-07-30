@@ -571,6 +571,12 @@ $lang = array(
 'manage' =>
 'Manage',
 
+'no_tables_selected' =>
+'You must select the tables in which to perform this action.',
+
+'no_action_selected' =>
+'You must select an action to perform on the selected tables.',
+
 ''=>''
 );
 
