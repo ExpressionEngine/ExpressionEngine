@@ -40,7 +40,7 @@ class El_pings {
 		}
 
 		$cached = ee()->cache->get('software_registration', Cache::GLOBAL_SCOPE);
-		$exp_response = md5(ee()->config->item('license_number').ee()->config->item('ellislab_username'));
+		$exp_response = md5(ee()->config->item('license_number').ee()->config->item('license_contact'));
 
 		if ( ! $cached OR $cached != $exp_response)
 		{
@@ -48,10 +48,10 @@ class El_pings {
 			$class = ee()->router->fetch_class();
 			$method = ee()->router->fetch_method();
 
-			if ($class == 'homepage' OR ($class == 'admin_system' && $method == 'software_license'))
+			if ($class == 'homepage' OR ($class == 'admin_system' && $method == 'software_registration'))
 			{
 				$payload = array(
-					'username'			=> ee()->config->item('ellislab_username'),
+					'contact'			=> ee()->config->item('license_contact'),
 					'license_number'	=> (IS_CORE) ? 'CORE LICENSE' : ee()->config->item('license_number'),
 					'domain'			=> ee()->config->item('site_url'),
 					'server_name'		=> (isset($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : '',

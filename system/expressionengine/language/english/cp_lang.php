@@ -117,7 +117,7 @@ $lang = array(
 
 'nav_security_and_privacy'		=> 'Security and Privacy',
 
-'nav_software_license'		=> 'Software License',
+'nav_software_registration'		=> 'Software Registration',
 
 'nav_admin_system'				=> 'System Administration',
 	'nav_general_configuration'			=> 'General Configuration',
@@ -249,6 +249,15 @@ $lang = array(
 
 'session_idle_not_name' =>
 'Not %s?',
+
+'password_label' =>
+'Password:',
+
+'user_label' =>
+'User:',
+
+'user_avatar_alt' =>
+'User Avatar',
 
 'login' =>
 'Log-in',

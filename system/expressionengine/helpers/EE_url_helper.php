@@ -30,11 +30,12 @@
 /**
  * Create a CP Path
  *
- * @param	string	path
- * @param	mixed	query string [array|string]
+ * @param	string	$path				controller/method path
+ * @param	mixed	$qs					query string [array|string]
+ * @param	bool	$force_base_cp_url	whether to force the 'cp_url' base address on CP generated URLs
  * @return	string
  */
-function cp_url($path, $qs = '')
+function cp_url($path, $qs = '', $force_base_cp_url = FALSE)
 {
 	$path = trim($path, '/');
 	$path = preg_replace('#^cp(/|$)#', '', $path);
@@ -54,7 +55,9 @@ function cp_url($path, $qs = '')
 
 	$path = rtrim('?/cp/'.$path, '/');
 
-	return SELF.$path.rtrim('?'.$qs, '?');
+	$base = (REQ == 'CP' && ! $force_base_cp_url) ? SELF : ee()->config->item('cp_url');
+
+	return $base.$path.rtrim('&'.$qs, '&');
 }
 
 // ------------------------------------------------------------------------
