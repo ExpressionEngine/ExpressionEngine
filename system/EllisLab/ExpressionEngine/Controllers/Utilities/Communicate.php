@@ -205,7 +205,7 @@ class Communicate extends Utilities {
 
 		//  Apply text formatting if necessary
 
-		if ($mailtype != 'none' && $mailtype != '')
+		if ($mailtype != 'text' && $mailtype != '')
 		{
 			ee()->load->library('typography');
 			ee()->typography->initialize(array(

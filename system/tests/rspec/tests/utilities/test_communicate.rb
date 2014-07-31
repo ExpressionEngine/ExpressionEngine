@@ -1,6 +1,19 @@
 require './bootstrap.rb'
+require 'gmail'
 
 feature 'Communicate' do
+
+	before(:all) do
+		@gmail = Gmail.new('ellislab.developers@gmail.com', '2Xm3727]2)7337sK')
+
+		@test_subject = 'Rspec utilities/communicate test'
+		@test_from = 'seth.barber@ellislab.com'
+		@test_recipient = 'ellislab.developers@gmail.com'
+	end
+
+	after(:all) do
+		@gmail.logout
+	end
 
 	before(:each) do
 		cp_session
@@ -96,7 +109,7 @@ feature 'Communicate' do
 
 		@page.should have_alert
 		@page.should have_css 'div.alert.issue'
-		@page.alert.should have_text "An error occurred"
+		@page.alert.should have_text 'An error occurred'
 
 		@page.from_email.value.should eq my_email
 		@page.from_email.first(:xpath, ".//../..")[:class].should include 'invalid'
@@ -134,5 +147,25 @@ feature 'Communicate' do
 		@page.recipient.first(:xpath, ".//../..")[:class].should_not include 'invalid'
 		@page.recipient.first(:xpath, ".//..").should_not have_css 'em.ee-form-error-message'
 		@page.recipient.first(:xpath, ".//..").should_not have_text 'You left some fields empty.'
+	end
+
+	it "sends a plain text email" do
+		my_subject = @test_subject + ' plain text email'
+		my_body = "This a test email sent from the communicate tool."
+
+		@page.subject.set my_subject
+		@page.from_email.set @test_from
+		@page.recipient.set @test_recipient
+		@page.body.set my_body
+		@page.submit_button.click
+
+		@page.should have_alert
+		@page.should have_css 'div.alert.success'
+		@page.alert.should have_text 'Your email has been sent'
+		@page.current_url.should include 'utilities/communicate/sent'
+
+		email = @gmail.inbox.emails(:from => @test_from, :subject => my_subject)[0]
+		expect(email.message.body.decoded).to eq(my_body + "\n\n")
+		email.delete!
 	end
 end
