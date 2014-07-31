@@ -18,6 +18,7 @@
 		</div>
 		<div class="setting-field col w-16 last">
 			<textarea class="has-format-options required" name="message" cols="" rows=""><?=set_value('message', $message)?></textarea>
+			<?=form_error('message')?>
 			<div class="format-options">
 				<label><?=lang('send_as')?></label>
 				<?=form_dropdown('mailtype', $mailtype_options, $mailtype, 'id="mailtype"')?>
@@ -26,13 +27,14 @@
 			</div>
 		</div>
 	</fieldset>
-	<fieldset class="col-group <?=form_error_class('your_email')?>">
+	<fieldset class="col-group <?=form_error_class('from')?>">
 		<div class="setting-txt col w-8">
 			<h3><?=lang('your_email')?> <span class="required" title="required field">&#10033;</span></h3>
 			<em><?=lang('from_email')?>.</em>
 		</div>
 		<div class="setting-field col w-8 last">
 			<input class="required" type="text" name="from" value="<?=set_value('from', $from)?>">
+			<?=form_error('from')?>
 		</div>
 	</fieldset>
 	<fieldset class="col-group last <?=form_error_class('attachment')?>">
