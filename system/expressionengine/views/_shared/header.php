@@ -5,7 +5,7 @@
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" lang="en-us" dir="ltr">
 		<meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-		<?=ee()->view->head_link('css/v3/common.css'); ?>
+		<?=ee()->view->head_link('css/v3/common.min.css'); ?>
 		<?=ee()->view->head_link('css/jquery-ui-1.8.16.custom.css'); ?>
 		<?php if (ee()->extensions->active_hook('cp_css_end') === TRUE):?>
 		<link rel="stylesheet" href="<?=cp_url('css/cp_global_ext', array('theme' => ee()->cp->cp_theme))?>" type="text/css" />
