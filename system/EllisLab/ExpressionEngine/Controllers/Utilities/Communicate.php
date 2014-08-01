@@ -101,15 +101,22 @@ class Communicate extends Utilities {
 		}
 		else
 		{
-			$addt_where = array('include_in_mailinglists' => 'y');
+			$groups = ee()->api->get('MemberGroup')
+				->with('Members')
+				->filter('include_in_mailinglists', 'y')
+				->all();
 
-			$query = ee()->member_model->get_member_groups('', $addt_where);
-
-			foreach ($query->result() as $row)
+			foreach ($groups as $group)
 			{
-				$checked = (ee()->input->post('group_'.$row->group_id) !== FALSE OR in_array($row->group_id, $member_groups));
+				$checked = (ee()->input->post('group_'.$group->group_id) !== FALSE OR in_array($group->group_id, $member_groups));
 
-				$vars['member_groups'][$row->group_title] = array('name' => 'group_'.$row->group_id, 'value' => $row->group_id, 'checked' => $checked);
+				$vars['member_groups'][$group->group_title] = array('name' => 'group_'.$group->group_id, 'value' => $group->group_id, 'checked' => $checked);
+				$vars['member_groups'][$group->group_title]['members'] = count($group->getMembers());
+				if ($vars['member_groups'][$group->group_title]['members'] == 0)
+				{
+					$vars['member_groups'][$group->group_title]['class'] = 'disable';
+					$vars['member_groups'][$group->group_title]['disabled'] = 'disabled';
+				}
 			}
 		}
 

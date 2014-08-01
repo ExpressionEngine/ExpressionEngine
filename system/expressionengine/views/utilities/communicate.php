@@ -88,7 +88,7 @@
 			<div class="scroll-wrap">
 				<?php foreach ($member_groups as $group => $details): ?>
 				<label class="choice block">
-					<?=form_checkbox($details)?> <?=$group?>
+					<?=form_checkbox($details)?> <?=$group?> (<?=$details['members']?>)
 				</label>
 				<?php endforeach; ?>
 			</div>
