@@ -1,7 +1,7 @@
 <?php extend_template('default-nav'); ?>
 
 <h1><?=$cp_page_title?> <span class="required intitle">&#10033; <?=lang('required_fields')?></span></h1>
-<?=form_open(cp_url('utilities/communicate/send'), 'class="settings"')?>
+<?=form_open_multipart(cp_url('utilities/communicate/send'), 'class="settings"')?>
 	<?php $this->view('_shared/form_messages')?>
 	<fieldset class="col-group <?=form_error_class('subject')?>">
 		<div class="setting-txt col w-16">

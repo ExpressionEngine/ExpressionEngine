@@ -142,6 +142,9 @@ feature 'Communicate' do
 		@page.recipient.first(:xpath, ".//..").should_not have_text 'You left some fields empty.'
 	end
 
+	# With the following tests it would be ideal to check the sent email
+	# to confirm the various settings. Right now all we are confirming
+	# is a lack of errors
 	it "wraps words" do
 		my_subject = @test_subject + ' word wrapping'
 		my_body = "Facillimum id quidem est, inquam. Non est ista, inquam, Piso, magna dissensio. Non autem hoc: igitur ne illud quidem. Sed quid sentiat, non videtis."
@@ -160,7 +163,7 @@ feature 'Communicate' do
 		@page.current_url.should include 'utilities/communicate/sent'
 	end
 
-	it "sends a plain text email" do
+	it "can send a plain text email" do
 		my_subject = @test_subject + ' plain text email'
 		my_body = "This a test email sent from the communicate tool."
 
@@ -176,7 +179,7 @@ feature 'Communicate' do
 		@page.current_url.should include 'utilities/communicate/sent'
 	end
 
-	it "sends markdown email" do
+	it "can send markdown email" do
 		my_subject = @test_subject + ' markdown email'
 		my_body = "#This is Markdown\n\n[This](http://ellislab.com) is a link.\n**Nice huh?**"
 
@@ -193,7 +196,7 @@ feature 'Communicate' do
 		@page.current_url.should include 'utilities/communicate/sent'
 	end
 
-	it "sends html email" do
+	it "can send html email" do
 		my_subject = @test_subject + ' html email'
 		my_body = "<h1>HTML Email</h1><p>A <strong>strong</strong><em>emphasis</em> on <a href='http://www.ellislab.com'>anchors</a></p>"
 
@@ -202,6 +205,23 @@ feature 'Communicate' do
 		@page.recipient.set @test_recipient
 		@page.body.set my_body
 		@page.mailtype.set "html"
+		@page.submit_button.click
+
+		@page.should have_alert
+		@page.should have_css 'div.alert.success'
+		@page.alert.should have_text 'Your email has been sent'
+		@page.current_url.should include 'utilities/communicate/sent'
+	end
+
+	it "can send an attachment" do
+		my_subject = @test_subject + ' attachment email'
+		my_body = "This a test email sent from the communicate tool."
+
+		@page.subject.set my_subject
+		@page.from_email.set @test_from
+		@page.recipient.set @test_recipient
+		@page.body.set my_body
+		@page.attach_file('attachment', 'readme.md')
 		@page.submit_button.click
 
 		@page.should have_alert

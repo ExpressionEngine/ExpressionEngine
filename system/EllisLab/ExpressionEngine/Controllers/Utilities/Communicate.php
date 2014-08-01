@@ -160,6 +160,8 @@ class Communicate extends Utilities {
 			show_error(lang('not_allowed_to_email_member_groups'));
 		}
 
+		ee()->load->library('email');
+
 		// Set to allow a check for at least one recipient
 		$_POST['total_gl_recipients'] = count($groups);
 
@@ -181,7 +183,6 @@ class Communicate extends Utilities {
 
 		ee()->load->model('communicate_model');
 
-		ee()->load->library('email');
 		ee()->view->cp_page_title = lang('email_success');
 		$debug_msg = '';
 
