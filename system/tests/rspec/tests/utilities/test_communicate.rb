@@ -229,4 +229,38 @@ feature 'Communicate' do
 		@page.alert.should have_text 'Your email has been sent'
 		@page.current_url.should include 'utilities/communicate/sent'
 	end
+
+	it "can CC an address" do
+		my_subject = @test_subject + ' CC email'
+		my_body = "This a test email sent from the communicate tool."
+
+		@page.subject.set my_subject
+		@page.from_email.set @test_from
+		@page.recipient.set @test_recipient
+		@page.cc.set 'ellislab.developers.cc@mailinator.com'
+		@page.body.set my_body
+		@page.submit_button.click
+
+		@page.should have_alert
+		@page.should have_css 'div.alert.success'
+		@page.alert.should have_text 'Your email has been sent'
+		@page.current_url.should include 'utilities/communicate/sent'
+	end
+
+	it "can BCC an address" do
+		my_subject = @test_subject + ' BCC email'
+		my_body = "This a test email sent from the communicate tool."
+
+		@page.subject.set my_subject
+		@page.from_email.set @test_from
+		@page.recipient.set @test_recipient
+		@page.bcc.set 'ellislab.developers.bcc@mailinator.com'
+		@page.body.set my_body
+		@page.submit_button.click
+
+		@page.should have_alert
+		@page.should have_css 'div.alert.success'
+		@page.alert.should have_text 'Your email has been sent'
+		@page.current_url.should include 'utilities/communicate/sent'
+	end
 end
