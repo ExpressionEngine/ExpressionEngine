@@ -158,10 +158,10 @@ class Relationships_ft_cp {
 		ee()->db->select('member_id, group_id, username, screen_name');
 		ee()->db->where('in_authorlist', 'y');
 
-        if (count($groups))
-        {
-            ee()->db->or_where_in('group_id', $group_ids);
-        }
+		if (count($groups))
+		{
+			ee()->db->or_where_in('group_id', $group_ids);
+		}
 
 		ee()->db->order_by('screen_name, username', 'ASC');
 		$members = ee()->db->get('members')->result();

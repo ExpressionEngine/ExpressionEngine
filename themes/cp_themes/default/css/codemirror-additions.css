@@ -80,3 +80,40 @@
  .CodeMirror-lint-marker-error, .CodeMirror-lint-message-error {
    background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAHlBMVEW7AAC7AACxAAC7AAC7AAAAAAC4AAC5AAD///+7AAAUdclpAAAABnRSTlMXnORSiwCK0ZKSAAAATUlEQVR42mWPOQ7AQAgDuQLx/z8csYRmPRIFIwRGnosRrpamvkKi0FTIiMASR3hhKW+hAN6/tIWhu9PDWiTGNEkTtIOucA5Oyr9ckPgAWm0GPBog6v4AAAAASUVORK5CYII=");
  }
+
+
+/**
+ * Codemirror/dialog.css
+ */
+ .CodeMirror-dialog {
+   position: absolute;
+   left: 0; right: 0;
+   background: white;
+   z-index: 15;
+   padding: .1em .8em;
+   overflow: hidden;
+   color: #333;
+ }
+
+ .CodeMirror-dialog-top {
+   border-bottom: 1px solid #eee;
+   top: 0;
+ }
+
+ .CodeMirror-dialog-bottom {
+   border-top: 1px solid #eee;
+   bottom: 0;
+ }
+
+ .CodeMirror-dialog input {
+   border: none;
+   outline: none;
+   background: transparent;
+   width: 20em;
+   color: inherit;
+   font-family: monospace;
+ }
+
+ .CodeMirror-dialog button {
+   font-size: 70%;
+ }

@@ -577,6 +577,21 @@ $lang = array(
 'no_action_selected' =>
 'You must select an action to perform on the selected tables.',
 
+'optimize_tables_results' =>
+'Optimized Table Results',
+
+'repair_tables_results' =>
+'Repair Table Results',
+
+'table' =>
+'Table',
+
+'status' =>
+'Status',
+
+'message' =>
+'Message',
+
 ''=>''
 );
 

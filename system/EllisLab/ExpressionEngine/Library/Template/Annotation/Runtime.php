@@ -100,9 +100,9 @@ class Runtime {
 	 * know who else might be using the shared store, so you don't
 	 * want to clear it.
 	 */
-	public static function clearSharedStore()
+	public function clearSharedStore()
 	{
-		unset(static::$shared_store);
+		static::$shared_store = NULL;
 	}
 
 	/**

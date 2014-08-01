@@ -108,7 +108,7 @@ class Template_model extends CI_Model {
 		// Get the filepath to the template's saved file.
 		$this->load->library('api');
 		$this->legacy_api->instantiate('template_structure');
-		$basepath = rtrim($this->config->item('tmpl_file_basepath'), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+		$basepath = $this->config->slash_item('tmpl_file_basepath');
 
 		$filepath = $basepath . $this->config->item('site_short_name') . DIRECTORY_SEPARATOR
 			. $template->get_group()->group_name . '.group' . DIRECTORY_SEPARATOR . $template->template_name
@@ -428,7 +428,8 @@ class Template_model extends CI_Model {
 			'enable_http_auth' => $entity->enable_http_auth,
 			'allow_php' => $entity->allow_php,
 			'php_parse_location' => $entity->php_parse_location,
-			'hits' => $entity->hits
+			'hits' => $entity->hits,
+			'protect_javascript' => $entity->protect_javascript
 		);
 		return $data;
 	}
@@ -1244,6 +1245,8 @@ class Template_Entity {
 	 *
 	 */
 	protected $hits;
+
+	protected $protect_javascript;
 
 
 	// ----------------------------------------------------

@@ -73,8 +73,10 @@ class Sql extends Utilities {
 						}
 					}
 				}
-				// TODO: Need to know what James wants to do with the
-				// results from the table action
+
+				ee()->view->cp_page_title = lang(strtolower($action).'_tables_results');
+				ee()->cp->set_breadcrumb(cp_url('utilities/sql'), lang('sql_manager'));
+				return ee()->cp->render('utilities/sql-ops', $vars);
 			}
 		}
 

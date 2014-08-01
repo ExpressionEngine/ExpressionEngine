@@ -45,8 +45,8 @@ class EE_Template {
 	public $hit_lock_override	= FALSE;		// Set to TRUE if you want hits tracked on sub-templates
 	public $hit_lock			= FALSE;		// Lets us lock the hit counter if sub-templates are contained in a template
 	public $parse_php			= FALSE;		// Whether to parse PHP or not
-	public $protect_javascript 	= TRUE;		// Protect javascript in conditionals
     public $strict_urls			= FALSE;		// Whether to make URLs operate strictly or not.  This is set via a template global pref
+	public $protect_javascript	= FALSE;		// Protect js blocks from conditional parsing?
 
 	public $group_name			= '';			// Group of template being parsed
 	public $template_name		= '';			// Name of template being parsed
@@ -100,8 +100,11 @@ class EE_Template {
 	public $realm				= 'Restricted Content';  // Localize?
 	public $marker				= '0o93H7pQ09L8X1t49cHY01Z5j4TT91fGfr'; // Temporary marker used as a place-holder for template data
 
+
 	protected $_tag_cache_prefix	= 'tag_cache';	// Tag cache key namespace
 	protected $_page_cache_prefix	= 'page_cache'; // Page cache key namespace
+
+	private $layout_contents		= '';
 
 	// --------------------------------------------------------------------
 
@@ -296,7 +299,7 @@ class EE_Template {
 
 		ee()->config->_global_vars['is_core'] = (IS_CORE) ? TRUE : FALSE;
 
-		// Mark our template better errors
+		// Mark our template for better errors
 		$this->template = $this->markContext().$this->template;
 
 		// Parse manual variables and Snippets
@@ -313,9 +316,10 @@ class EE_Template {
 				// removing from the value makes snippets more usable in conditionals
 				$val = $this->remove_ee_comments($val);
 
-				$replace = $this->markContext('Snippet "'.$key.'"');
-				$replace .= $val;
-				$replace .= $this->markContext();
+				$replace = $this->wrapInContextAnnotations(
+					$val,
+					'Snippet "'.$key.'"'
+				);
 
 				$this->template = str_replace(LD.$key.RD, $replace, $this->template);
 			}
@@ -469,7 +473,6 @@ class EE_Template {
 			}
 		}
 
-
 		// Smite Our Enemies:  Conditionals
 		$this->log_item("Parsing Segment, Embed, Layout, logged_in_*, and Global Vars Conditionals");
 
@@ -480,6 +483,7 @@ class EE_Template {
 				$this->template_route_vars,
 				$this->embed_vars,
 				$layout_conditionals,
+				array('layout:contents' => $this->layout_contents),
 				$logged_in_user_cond,
 				ee()->config->_global_vars
 			)
@@ -580,7 +584,7 @@ class EE_Template {
 			$error = '';
 
 			// layout tag after exp tag? No good can come of this.
-			if ($tag_pos > $first_tag)
+			if ($tag_pos > $first_tag && $first_tag !== FALSE)
 			{
 				if (ee()->config->item('debug') >= 1)
 				{
@@ -655,6 +659,8 @@ class EE_Template {
 			return $template;
 		}
 
+		$this->layout_contents = trim($this->remove_ee_comments($template)); // for use in conditionals
+
 		$this->log_item("Processing Layout Templates");
 
 		$this->depth++;
@@ -669,6 +675,10 @@ class EE_Template {
 		if ($layout_vars === FALSE)
 		{
 			$layout_vars = array();
+		}
+		elseif (isset($layout_vars['contents']))
+		{
+			show_error(lang('layout_contents_reserved'));
 		}
 
 		$this->layout_vars = array_merge($this->layout_vars, $layout_vars);
@@ -687,6 +697,11 @@ class EE_Template {
 		{
 			$tag = ee()->functions->full_tag(substr($template, $pos, $open_tag_len), $template);
 			$params = ee()->functions->assign_parameters(substr($tag, $open_tag_len));
+
+			if ($params['name'] == 'contents')
+			{
+				show_error(lang('layout_contents_reserved'));
+			}
 
 			// If there is a closing tag and it's before the next open, then this will
 			// be treated as a tag pair.
@@ -2437,7 +2452,8 @@ class EE_Template {
 					$query = ee()->db->select('a.template_id, a.template_data,
 						a.template_name, a.template_type, a.edit_date,
 						a.save_template_file, a.cache, a.refresh, a.hits,
-						a.allow_php, a.php_parse_location, b.group_name')
+						a.allow_php, a.php_parse_location, a.protect_javascript,
+						b.group_name')
 						->from('templates a')
 						->join('template_groups b', 'a.group_id = b.group_id')
 						->where('template_id', $query->row('no_auth_bounce'))
@@ -2477,6 +2493,7 @@ class EE_Template {
 
 		// Set template edit date
 		$this->template_edit_date = $row['edit_date'];
+		$this->protect_javascript = ($row['protect_javascript'] == 'y') ? TRUE : FALSE;
 
 		// Set template type for our page headers
 		if ($this->template_type == '')
@@ -4203,6 +4220,40 @@ class EE_Template {
 		}
 
 		return $str;
+	}
+
+	/**
+	 * Content aware version of markContext()
+	 *
+	 * Mark content in such a way as to reduce the total number of annotations
+	 * in the template.
+	 *
+	 * @param String $var_content Content from a different context to annotate
+	 * @param String $var_context Context of the content
+	 * @param String $current_context Context to flip back into after var_content
+	 * @return String Context marked string
+	 */
+	public function wrapInContextAnnotations($var_content, $var_context, $current_context = NULL)
+	{
+		$is_multiline = (bool) substr_count($var_content, "\n");
+		$has_ifs = (bool) preg_match('/\{if(:elseif)?/i', $var_content);
+
+		if ( ! $has_ifs)
+		{
+			if ( ! $is_multiline)
+			{
+				// don't annotate single line without conditonals
+				return $var_content;
+			}
+
+			// multiline only mark the end to sync lines
+			return $var_content.$this->markContext($current_context);
+		}
+
+		// has ifs and more than one line, can't avoid annotations
+		return $this->markContext($var_context)
+			.$var_content
+			.$this->markContext($current_context);
 	}
 
 	/**

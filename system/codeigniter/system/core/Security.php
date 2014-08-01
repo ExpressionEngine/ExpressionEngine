@@ -100,15 +100,25 @@ class CI_Security {
 	 * be used for general runtime processing.
 	 *
 	 * This function was based in part on some code and ideas I
-	 * got from Bitflux: http://channel.bitflux.ch/wiki/XSS_Prevention
+	 * got from Bitflux: http://wiki.flux-cms.org/display/BLOG/XSS+Prevention
 	 *
 	 * To help develop this script I used this great list of
 	 * vulnerabilities along with a few other hacks I've
 	 * harvested from examining vulnerabilities in other programs:
 	 * http://ha.ckers.org/xss.html
 	 *
-	 * @param	mixed	string or array
-	 * @return	string
+	 * @param	string|array[string]	$str	The string to be cleaned or an
+	 * 		array of strings to be cleaned.  This needs to contain enough of the
+	 * 		context to allow it to properly be cleaned, but shouldn't be the whole
+	 * 		final output.  For example, if the data to be cleaned is going to wind
+	 * 		up in the href attribute of a link (<a> tag) then the string needs to
+	 * 		include the full anchor tag.  If attributes of the tag contain dangerous
+	 * 		javascript, the whole attribute will be removed.
+	 * @param	boolean	$is_image	If the data is an image file it requires some special
+	 * 		processing to preserve the meta data.
+	 * @return	string	The string cleaned of dangerous code.  If an attribute contains dangerous
+	 * 		code it will be removed entirely.  Certain HTML tags will be encoded (html and body
+	 * 		among them).
 	 */
 	public function xss_clean($str, $is_image = FALSE)
 	{
