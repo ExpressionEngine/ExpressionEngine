@@ -1,18 +1,11 @@
 require './bootstrap.rb'
-require 'gmail'
 
 feature 'Communicate' do
 
 	before(:all) do
-		@gmail = Gmail.new('ellislab.developers@gmail.com', '2Xm3727]2)7337sK')
-
 		@test_subject = 'Rspec utilities/communicate test'
-		@test_from = 'seth.barber@ellislab.com'
-		@test_recipient = 'ellislab.developers@gmail.com'
-	end
-
-	after(:all) do
-		@gmail.logout
+		@test_from = 'ellislab.developers@gmail.com'
+		@test_recipient = 'seth.barber@ellislab.com'
 	end
 
 	before(:each) do
@@ -163,9 +156,23 @@ feature 'Communicate' do
 		@page.should have_css 'div.alert.success'
 		@page.alert.should have_text 'Your email has been sent'
 		@page.current_url.should include 'utilities/communicate/sent'
+	end
 
-		email = @gmail.inbox.emails(:from => @test_from, :subject => my_subject)[0]
-		expect(email.message.body.decoded).to eq(my_body + "\n\n")
-		email.delete!
+	it "wraps words" do
+		my_subject = @test_subject + ' word wrapping'
+		my_body = "Facillimum id quidem est, inquam. Non est ista, inquam, Piso, magna dissensio. Non autem hoc: igitur ne illud quidem. Sed quid sentiat, non videtis."
+
+		# body_wrapped = "Facillimum id quidem est, inquam. Non est ista, inquam, Piso, magna\ndissensio. Non autem hoc: igitur ne illud quidem. Sed quid sentiat, non\nvidetis."
+
+		@page.subject.set my_subject
+		@page.from_email.set @test_from
+		@page.recipient.set @test_recipient
+		@page.body.set my_body
+		@page.submit_button.click
+
+		@page.should have_alert
+		@page.should have_css 'div.alert.success'
+		@page.alert.should have_text 'Your email has been sent'
+		@page.current_url.should include 'utilities/communicate/sent'
 	end
 end
