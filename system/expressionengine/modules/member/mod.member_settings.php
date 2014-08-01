@@ -1132,8 +1132,9 @@ class Member_settings extends Member {
 		$text = implode(' ', array_merge($data, $m_data));
 
 		// First check if this is a duplicate of existing profile data
-		$select = "email, url, location, occupation, interests, bday_d, bday_m, bday_y, aol_im, yahoo_im, msn_im, icq, bio, signature, avatar_filename, photo_filename, sig_img_filename";
-		ee()->db->select($select);
+		$select = array_keys($data);
+		$select_stmt = implode(', ', $select);
+		ee()->db->select($select_stmt);
 		ee()->db->where('member_id !=', ee()->session->userdata('member_id'));
 		ee()->db->where($data);
 		$members = ee()->db->get('members');
@@ -1147,21 +1148,50 @@ class Member_settings extends Member {
 		{
 			// No exact match, we use the edit distance now to look for almost 
 			// exact duplicates.
-			ee()->db->select($select);
+			ee()->db->select($select_stmt);
 			ee()->db->where('member_id !=', ee()->session->userdata('member_id'));
 			$members = ee()->db->get('members');
+
 			$text = implode('', $data);
 			$filter = ee()->spam->classify($text);
 
-			foreach ($members->result_array() as $member)
+			// The edit distance is acurate but slow O(n^3), so for member lists 
+			// larger than 1000 we'll use soundex
+			if ($members->num_rows() < 1000)
 			{
-				$member = implode('', $member);
-				$similarity = similar_text($text, $member);
-				
-				// Run through the filter if we're over the theshold
-				if ($similarity > 20.0 AND $filter)
+				foreach ($members->result_array() as $member)
 				{
-					$spam = TRUE;
+					$length = max(array_map('str_len', array($member, $text)));
+					$distance = levenshtein($val, $member[$key]);
+					$difference = $distance / $length;
+
+					if ($difference < 0.2 AND $filter)
+					{
+						$spam = TRUE;
+						break;
+					}
+				}
+			}
+			else
+			{
+				foreach ($members->result_array() as $member)
+				{
+					$difference = 0;
+					$threshold = count(array_filter($data)) / 2;
+
+					foreach ($data as $key => $val)
+					{
+						if ( ! empty($val) AND soundex($member[$key]) !== soundex($val))
+						{
+							$difference++;
+						}
+					}
+
+					if ($difference < $threshold AND $filter)
+					{
+						$spam = TRUE;
+						break;
+					}
 				}
 			}
 		}
