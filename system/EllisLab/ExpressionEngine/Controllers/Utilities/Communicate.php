@@ -185,6 +185,22 @@ class Communicate extends Utilities {
 		ee()->view->cp_page_title = lang('email_success');
 		$debug_msg = '';
 
+		switch ($mailtype)
+		{
+			case 'text':
+				$text_fmt = 'none';
+				break;
+
+			case 'markdown':
+				$text_fmt = 'markdown';
+				$mailtype = 'html';
+				break;
+
+			case 'html':
+				$text_fmt = 'xhtml';
+				break;
+		}
+
 		// Assign data for caching
 		$cache_data = array(
 			'cache_date'		=> ee()->localize->now,
@@ -199,13 +215,13 @@ class Communicate extends Utilities {
 			'message'			=> $message,
 			'mailtype'			=> $mailtype,
 			'wordwrap'	  		=> $wordwrap,
+			'text_fmt'			=> $text_fmt,
 			'plaintext_alt'		=> '',	// Relic of the past
-			'text_fmt'			=> ''	// Relic of the past
 		);
 
 		//  Apply text formatting if necessary
 
-		if ($mailtype != 'text' && $mailtype != '')
+		if ($text_fmt != 'none' && $text_fmt != '')
 		{
 			ee()->load->library('typography');
 			ee()->typography->initialize(array(
@@ -220,7 +236,7 @@ class Communicate extends Utilities {
 			}
 
 			$message = ee()->typography->parse_type($message, array(
-				'text_format'   => $mailtype,
+				'text_format'   => $text_fmt,
 				'html_format'   => 'all',
 				'auto_links'	=> 'n',
 				'allow_img_url' => 'y'
