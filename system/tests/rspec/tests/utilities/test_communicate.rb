@@ -142,6 +142,24 @@ feature 'Communicate' do
 		@page.recipient.first(:xpath, ".//..").should_not have_text 'You left some fields empty.'
 	end
 
+	it "wraps words" do
+		my_subject = @test_subject + ' word wrapping'
+		my_body = "Facillimum id quidem est, inquam. Non est ista, inquam, Piso, magna dissensio. Non autem hoc: igitur ne illud quidem. Sed quid sentiat, non videtis."
+
+		# body_wrapped = "Facillimum id quidem est, inquam. Non est ista, inquam, Piso, magna\ndissensio. Non autem hoc: igitur ne illud quidem. Sed quid sentiat, non\nvidetis."
+
+		@page.subject.set my_subject
+		@page.from_email.set @test_from
+		@page.recipient.set @test_recipient
+		@page.body.set my_body
+		@page.submit_button.click
+
+		@page.should have_alert
+		@page.should have_css 'div.alert.success'
+		@page.alert.should have_text 'Your email has been sent'
+		@page.current_url.should include 'utilities/communicate/sent'
+	end
+
 	it "sends a plain text email" do
 		my_subject = @test_subject + ' plain text email'
 		my_body = "This a test email sent from the communicate tool."
@@ -158,16 +176,32 @@ feature 'Communicate' do
 		@page.current_url.should include 'utilities/communicate/sent'
 	end
 
-	it "wraps words" do
-		my_subject = @test_subject + ' word wrapping'
-		my_body = "Facillimum id quidem est, inquam. Non est ista, inquam, Piso, magna dissensio. Non autem hoc: igitur ne illud quidem. Sed quid sentiat, non videtis."
-
-		# body_wrapped = "Facillimum id quidem est, inquam. Non est ista, inquam, Piso, magna\ndissensio. Non autem hoc: igitur ne illud quidem. Sed quid sentiat, non\nvidetis."
+	it "sends markdown email" do
+		my_subject = @test_subject + ' markdown email'
+		my_body = "#This is Markdown\n\n[This](http://ellislab.com) is a link.\n**Nice huh?**"
 
 		@page.subject.set my_subject
 		@page.from_email.set @test_from
 		@page.recipient.set @test_recipient
 		@page.body.set my_body
+		@page.mailtype.set "markdown"
+		@page.submit_button.click
+
+		@page.should have_alert
+		@page.should have_css 'div.alert.success'
+		@page.alert.should have_text 'Your email has been sent'
+		@page.current_url.should include 'utilities/communicate/sent'
+	end
+
+	it "sends html email" do
+		my_subject = @test_subject + ' html email'
+		my_body = "<h1>HTML Email</h1><p>A <strong>strong</strong><em>emphasis</em> on <a href='http://www.ellislab.com'>anchors</a></p>"
+
+		@page.subject.set my_subject
+		@page.from_email.set @test_from
+		@page.recipient.set @test_recipient
+		@page.body.set my_body
+		@page.mailtype.set "html"
 		@page.submit_button.click
 
 		@page.should have_alert
