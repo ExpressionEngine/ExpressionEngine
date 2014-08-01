@@ -40,7 +40,7 @@ function cp_url($path, $qs = '')
 		$path,
 		ee()->session->session_id(),
 		$qs,
-		ee()->config->item('cp_url')
+		(REQ != 'CP') ? ee()->config->item('cp_url') : ''
 	);
 	return $url->compile();
 }

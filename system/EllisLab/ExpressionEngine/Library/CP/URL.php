@@ -31,7 +31,7 @@ class URL {
 	public $path;
 	public $session_id;
 	public $qs = array();
-	public $cp_url = array();
+	public $base;
 
 	/**
 	 * Create a CP Path
@@ -62,7 +62,7 @@ class URL {
 
 		$this->path = (string) $path;
 		$this->session_id = (string) $session_id;
-		$this->cp_url = (string) $cp_url;
+		$this->base = (empty($cp_url)) ? SELF : (string) $cp_url;
 
 		if (is_array($qs))
 		{
@@ -119,9 +119,7 @@ class URL {
 		// Remove AMP from the beginning of the query string if it exists
 		$qs = preg_replace('#^'.AMP.'#', '', $qs);
 
-		$base = (REQ == 'CP') ? SELF : $this->cp_url;
-
-		return $base.$path.rtrim('&'.$qs, '&');
+		return $this->base.$path.rtrim('&'.$qs, '&');
 	}
 }
 
