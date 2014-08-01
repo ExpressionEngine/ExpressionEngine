@@ -497,7 +497,7 @@ abstract class Model {
 			return $query->eager($this->_alias_service);
 		}
 
-		var_dump('Lazy Query '.$to_name);
+		// var_dump('Lazy Query '.$to_name);
 
 
 		return $query->lazy($this->_factory);
