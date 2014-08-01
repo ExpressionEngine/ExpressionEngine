@@ -20,24 +20,6 @@ $(document).ready(function () {
 	"use strict";
 
 	// Hook up codemirror
+	$('#snippet_contents').toggleCodeMirror();
 
-	var code_textarea = $('#snippet_contents'),
-		orig_height = code_textarea.height();
-
-	var code = code_textarea[0].value,
-		tabs = code.match(/^\t+/gm),
-		spaces = code.match(/^[ ]+/gm),
-		tablength = tabs ? tabs.length : 0,
-		spacelength = spaces ? spaces.length : 0,
-		usetabs = (spacelength > tablength) ? false : true; // this makes the default for new documents tabs
-
-	var myCodeMirror = CodeMirror.fromTextArea(code_textarea[0], {
-		lineNumbers: true,
-		autoCloseBrackets: true,
-		mode: "ee",
-		smartIndent: false,
-		indentWithTabs: usetabs
-	});
-
-	myCodeMirror.setSize(null, orig_height);
 });

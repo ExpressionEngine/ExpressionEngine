@@ -82,6 +82,49 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 		$this->lexer->tokenize($str_in);
 	}
 
+	/**
+	 * In the event that a comment (commonly an annotation) immemdiately
+	 * preceeds a '}' in a TEMPLATE_STRING context, that '}' should not
+	 * be an 'RD' token, but rather a TEMPLATE_STRING token. This test
+	 * confirms that.
+	 *
+	 * See: https://github.com/EllisLab/ExpressionEngine/pull/208
+	 *      http://ellislab.com/forums/viewthread/245744/#1066847
+	 */
+	public function testCommentsAtEndOfTag()
+	{
+		$description = "A '}' in a TEMPLATE_STRING context not seen as RD";
+		$template = "{if foo}{exp:channel:entries {!-- comment --}}{/if}";
+		$tokens = array(
+			array('LD',					'{'),
+			array('IF',					'if'),
+			array('WHITESPACE',			' '),
+			array('VARIABLE',			'foo'),
+			array('RD',					'}'),
+			array('TEMPLATE_STRING',	'{'),
+			array('TEMPLATE_STRING',	'exp:channel:entries '),
+			array('COMMENT',			'{!-- comment --}'),
+			array('TEMPLATE_STRING',	'}'),
+			array('LD',					'{'),
+			array('ENDIF',				'/if'),
+			array('RD',					'}'),
+			array('EOS',				TRUE)
+		);
+
+		$result = $this->lexer->tokenize($template);
+
+		$result_array = array();
+
+		foreach ($result as $r)
+		{
+			$result_array[] = array($r->type, $r->lexeme);
+		}
+
+		array_shift($result_array); // The first element is an annotation
+
+		$this->assertSame($tokens, $result_array, $description);
+	}
+
 	protected function assembleCommonCondition($expression)
 	{
 		return "{if ".$expression."}out{/if}";
@@ -142,6 +185,8 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 			$this->edgyEnglishBooleanOperatorsWithoutSpaces(),
 			$this->englishBooleanSubstringsAsVariables(),
 
+			// From the bug tracker
+			$this->bug15654_boolean_operator_substring(),
 			array() // non trailing comma thing for covienence
 		);
 	}
@@ -2514,4 +2559,19 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 		return $return;
 	}
 
+	// See: https://support.ellislab.com/bugs/detail/15654
+	protected function bug15654_boolean_operator_substring()
+	{
+		$return = array();
+
+		// From Bug #15654; redundant but regression-insurance
+		$value = 'FLXORS_44';
+		$return[] = array(
+			"Fieldnames with XOR substrings are still variables",
+			$this->assembleCommonCondition($value),
+			$this->assembleCommonTokens(array(array('VARIABLE', $value)))
+		);
+
+		return $return;
+	}
 }

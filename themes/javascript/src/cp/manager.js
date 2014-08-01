@@ -134,7 +134,7 @@ function template_edit_ajax() {
 		holder_data,
 		template_id, group_id, template_name, template_type,
 		cache, refresh, allow_php, php_parse_location, hits,
-		template_size, str;
+		template_size, protect_javascript, str;
 
 	if (holder.length < 1) {
 		holder = $(this).closest('.templateEditorTable');
@@ -160,6 +160,7 @@ function template_edit_ajax() {
 	php_parse_location = holder.find("select[name^=php_parse_location]").val();
 	hits = holder.find(".hits").val();
 	template_size = holder.find(".template_size").val();
+	protect_javascript = holder.find("select[name^=protect_javascript]").val();
 
 	str = jQuery.param({
 		'template_id': template_id,
@@ -171,7 +172,8 @@ function template_edit_ajax() {
 		'hits': hits,
 		'allow_php': allow_php,
 		'php_parse_location': php_parse_location,
-		'template_size': template_size
+		'template_size': template_size,
+		'protect_javascript': protect_javascript
 	});
 
 	$.ajax({
@@ -396,6 +398,9 @@ function bind_prefs_events() {
 					break;
 				case 'php_parse_location':
 					field.val(rowdata.php_parsing);
+					break;
+				case 'protect_javascript':
+					field.val(rowdata.protect_javascript);
 					break;
 				}
 

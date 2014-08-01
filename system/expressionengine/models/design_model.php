@@ -26,7 +26,7 @@ class Design_model extends CI_Model {
 
 	function fetch_templates($group_id = array())
 	{
-		$this->db->select(array('t.template_id', 't.group_id', 't.template_name', 't.template_type', 't.cache', 't.refresh', 't.no_auth_bounce', 't.enable_http_auth', 'tr.route', 'tr.route_required', 't.allow_php', 't.php_parse_location', 't.hits', 'tg.group_name'));
+		$this->db->select(array('t.template_id', 't.group_id', 't.template_name', 't.template_type', 't.cache', 't.refresh', 't.no_auth_bounce', 't.enable_http_auth', 'tr.route', 'tr.route_required', 't.allow_php', 't.php_parse_location', 't.hits', 'tg.group_name', 't.protect_javascript'));
 		$this->db->from('templates AS t');
 		$this->db->join('template_groups AS tg', 'tg.group_id = t.group_id');
 		$this->db->join('template_routes AS tr', 'tr.template_id = t.template_id', 'left');

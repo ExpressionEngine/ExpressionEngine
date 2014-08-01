@@ -16,6 +16,15 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 		$this->runner = NULL;
 	}
 
+	protected function runConditionWithoutAnnotations($str, $vars = array(), $runner = NULL)
+	{
+		return preg_replace(
+			"/\{!--.*?--\}/s",
+			'',
+			$this->runCondition($str, $vars, $runner)
+		);
+	}
+
 	protected function runCondition($str, $vars = array(), $runner = NULL)
 	{
 		if ( ! isset($runner))
@@ -23,13 +32,20 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 			$runner = $this->runner;
 		}
 
-		$result = $runner->processConditionals($str, $vars);
-		return preg_replace("/\{!--.*?--\}/s", '', $result);
+		return $runner->processConditionals($str, $vars);
 	}
 
 	protected function runConditionTest($description, $str_in, $expected, $vars = array())
 	{
-		$result = $this->runCondition($str_in, $vars);
+		if (strpos($expected, '{if') !== FALSE)
+		{
+			$result = $this->runConditionWithoutAnnotations($str_in, $vars);
+		}
+		else
+		{
+			$result = $this->runCondition($str_in, $vars);
+		}
+
 		$this->assertEquals($expected, $result, $description);
 	}
 
@@ -38,7 +54,6 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testPlainConditionalsWithoutVariables($description, $str_in, $expected_out, $vars = array())
 	{
-		$this->runner->disableProtectJavascript();
 		$this->runConditionTest($description, $str_in, $expected_out, $vars);
 	}
 
@@ -48,7 +63,6 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 	public function testBadConditionalsWithoutVariables($exception, $description, $str_in)
 	{
 		$this->setExpectedException($exception);
-		$this->runner->disableProtectJavascript();
 		$this->runConditionTest($description, $str_in, '');
 	}
 
@@ -58,39 +72,37 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 	public function testSafetyOn($description, $str_in, $expected_out)
 	{
 		$this->runner->safetyOn();
-		$this->runner->disableProtectJavascript();
 		$this->runConditionTest($description, $str_in, $expected_out);
 	}
 
 	public function testBasicVariableReplacement()
 	{
 		$runner = new Runner();
-		$runner->disableProtectJavascript();
 
 		// var1 is in there to prevent execution
 		$string = '{if var1 && var2 == \'bob\'}yes{/if}';
 
 		$this->assertEquals(
 			'{if var1 && 3 == \'bob\'}yes{/if}',
-			$this->runCondition($string, array('var2' => 3), $runner),
+			$this->runConditionWithoutAnnotations($string, array('var2' => 3), $runner),
 			'Integer Variable Replacement'
 		);
 
 		$this->assertEquals(
 			'{if var1 && \'mary\' == \'bob\'}yes{/if}',
-			$this->runCondition($string, array('var2' => 'mary'), $runner),
+			$this->runConditionWithoutAnnotations($string, array('var2' => 'mary'), $runner),
 			'String Variable Replacement'
 		);
 
 		$this->assertEquals(
 			'{if var1 && true == \'bob\'}yes{/if}',
-			$this->runCondition($string, array('var2' => TRUE), $runner),
+			$this->runConditionWithoutAnnotations($string, array('var2' => TRUE), $runner),
 			'Bool TRUE Variable Replacement'
 		);
 
 		$this->assertEquals(
 			'{if var1 && false == \'bob\'}yes{/if}',
-			$this->runCondition($string, array('var2' => FALSE), $runner),
+			$this->runConditionWithoutAnnotations($string, array('var2' => FALSE), $runner),
 			'Bool FALSE Variable Replacement'
 		);
 	}
@@ -98,11 +110,10 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 	public function testProgressiveConstruction()
 	{
 		$runner = new Runner();
-		$runner->disableProtectJavascript();
 
 		$inital = '{if var1 && var2 && var3 == \'bob\'}yes{if:else}no{/if}';
 
-		$var2 = $this->runCondition($inital, array('var1' => 3), $runner);
+		$var2 = $this->runConditionWithoutAnnotations($inital, array('var1' => 3), $runner);
 
 		$this->assertEquals(
 			'{if 3 && var2 && var3 == \'bob\'}yes{if:else}no{/if}',
@@ -110,7 +121,7 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 			'Integer Variable Replacement'
 		);
 
-		$var3 = $this->runCondition($var2, array('var3' => 'bob'), $runner);
+		$var3 = $this->runConditionWithoutAnnotations($var2, array('var3' => 'bob'), $runner);
 
 		$this->assertEquals(
 			'{if 3 && var2 && \'bob\' == \'bob\'}yes{if:else}no{/if}',
@@ -136,13 +147,12 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 	public function testBranchConditionRewritingAndPruning()
 	{
 		$runner = new Runner();
-		$runner->disableProtectJavascript();
 
 		$string = '{if 5 == var}yes{if:elseif 5 == 5}maybe{if:else}no{/if}';
 
 		$this->assertEquals(
 			'{if 5 == var}yes{if:else}maybe{/if}',
-			$this->runCondition($string, array(), $runner),
+			$this->runConditionWithoutAnnotations($string, array(), $runner),
 			'Elseif branch rewritten to else and old else pruned'
 		);
 
@@ -150,7 +160,7 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 
 		$this->assertEquals(
 			'{if 5 == var}yes{if:else}no{/if}',
-			$this->runCondition($string, array(), $runner),
+			$this->runConditionWithoutAnnotations($string, array(), $runner),
 			'Elseif branch evaluated to FALSE and is pruned'
 		);
 
@@ -158,7 +168,7 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 
 		$this->assertEquals(
 			'{if 5 == var}maybe{if:else}maybe2{/if}',
-			$this->runCondition($string, array(), $runner),
+			$this->runConditionWithoutAnnotations($string, array(), $runner),
 			'If evaluated to false, if is pruned, elseif is promoted'
 		);
 
@@ -172,7 +182,7 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 
 		$this->assertEquals(
 			'{if 7 == var}maybe{if:else}quitepossibly{/if}',
-			$this->runCondition($string, array(), $runner),
+			$this->runConditionWithoutAnnotations($string, array(), $runner),
 			'Double elseif promotion, true rewriting, and branch pruning'
 		);
 	}
@@ -194,9 +204,13 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 			$this->eeTagTests(),
 			$this->stringTests(),
 			$this->numberTests(),
+			$this->variableTests(),
 			$this->operatorPrecedenceTests(),
 			$this->parenthesisTests(),
-			$this->userGuideTestsBooleanValueComparisons()
+			$this->userGuideTestsBooleanValueComparisons(),
+
+			// From the bug tracker
+			$this->bug20323_variables_in_strings()
 		);
 	}
 
@@ -215,10 +229,16 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 	public function safetyOnDataProvider()
 	{
 		return array(
-			array('Unparsed Tags to false',		'{if {tag} == FALSE}yes{if:else}no{/if}',	'yes'),
-			array('Unparsed Tags to false 2',	'{if {tag} != FALSE}no{if:else}yes{/if}',	'yes'),
-			array('Unparsed Vars to false',		'{if var1 == FALSE}yes{if:else}no{/if}',	'yes'),
-			array('Unparsed Vars to false 2',	'{if var1 || var2}no{if:else}yes{/if}',		'yes'),
+			array('Unparsed Tags to false',			'{if {tag} == FALSE}yes{if:else}no{/if}',		'yes'),
+			array('Unparsed Tags to false 2',		'{if {tag} != FALSE}no{if:else}yes{/if}',		'yes'),
+			array('Unparsed Tag with param',		'{if {tag a="b"} == FALSE}yes{if:else}no{/if}',	'yes'),
+			array('Unparsed Tag with param 2',		'{if {tag b="c"} != FALSE}no{if:else}yes{/if}',	'yes'),
+			array('Unparsed Vars to false',			'{if var1 == FALSE}yes{if:else}no{/if}',		'yes'),
+			array('Unparsed Vars to false 2',		'{if var1 || var2}no{if:else}yes{/if}',			'yes'),
+			array('Unparsed quoted to false',		'{if "{tag}" == FALSE}yes{if:else}no{/if}',		'yes'),
+			array('Unparsed quoted to false 2',		'{if "{tag}" != FALSE}no{if:else}yes{/if}',		'yes'),
+			array('Unparsed quoted with param',		'{if "{tag a=\"b\"}" == FALSE}yes{if:else}no{/if}',		'yes'),
+			array('Unparsed quoted with param 2',	'{if "{tag a=\'c\'}" != FALSE}no{if:else}yes{/if}',		'yes'),
 		);
 	}
 
@@ -300,12 +320,15 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 	protected function plainLogicOperatorTests()
 	{
 		return array(
-			array('Plain && Integer',	'{if 5 && 5}yes{if:else}no{/if}',	'yes'),
-			array('Plain || Integer',	'{if 5 || 7}yes{if:else}no{/if}',	'yes'),
-			array('Plain AND Integer',	'{if 7 AND 5}yes{if:else}no{/if}',	'yes'),
-			array('Plain OR Integer',	'{if 5 OR 7}yes{if:else}no{/if}',	'yes'),
-			array('Plain XOR Integer',	'{if 5 XOR 0}yes{if:else}no{/if}',	'yes'),
-			array('Plain ! Integer',	'{if ! 0}yes{if:else}no{/if}',		'yes'),
+			array('Plain && Integer',		'{if 5 && 5}yes{if:else}no{/if}',	'yes'),
+			array('Plain || Integer',		'{if 5 || 7}yes{if:else}no{/if}',	'yes'),
+			array('Plain AND Integer',		'{if 7 AND 5}yes{if:else}no{/if}',	'yes'),
+			array('Plain OR Integer',		'{if 5 OR 7}yes{if:else}no{/if}',	'yes'),
+			array('Plain XOR Integer',		'{if 5 XOR 0}yes{if:else}no{/if}',	'yes'),
+			array('Plain OR Lowercase',		'{if 5 or 7}yes{if:else}no{/if}',	'yes'),
+			array('Plain AND Lowercase',	'{if 7 and 5}yes{if:else}no{/if}',	'yes'),
+			array('Plain XOR Lowercase',	'{if 5 xor 0}yes{if:else}no{/if}',	'yes'),
+			array('Plain ! Integer',		'{if ! 0}yes{if:else}no{/if}',		'yes'),
 
 			// and now false
 			array('Plain && False',		'{if 5 && 0}no{if:else}yes{/if}',	'yes'),
@@ -344,9 +367,9 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 			array('String Ends With',			'{if "testing" $= "ing"}yes{if:else}no{/if}',		'yes'),
 			array('Integer Ends With',			'{if 123456 $= 456}yes{if:else}no{/if}',			'yes'),
 			array('Float Ends With',			'{if 42.7 $= ".7"}yes{if:else}no{/if}',				'yes'),
-			array('String Regex Compare',	'{if "P25" ~ "/^P[0-9]+/"}yes{if:else}no{/if}',	'yes'),
-			array('Integer Regex Compare',	'{if 1234 ~ "/\d+/"}yes{if:else}no{/if}',			'yes'),
-			array('Float Regex Compare',	'{if 42.7 ~ "/\d+\.\d/"}yes{if:else}no{/if}',		'yes'),
+			array('String Regex Compare',		'{if "P25" ~ "/^P[0-9]+/"}yes{if:else}no{/if}',	'yes'),
+			array('Integer Regex Compare',		'{if 1234 ~ "/\d+/"}yes{if:else}no{/if}',			'yes'),
+			array('Float Regex Compare',		'{if 42.7 ~ "/\d+\.\d/"}yes{if:else}no{/if}',		'yes'),
 
 			array('False String Begins With',	'{if "testing" ^= "ing"}no{if:else}yes{/if}',		'yes'),
 			array('False Integer Begins With',	'{if 123456 ^= 456}no{if:else}yes{/if}',			'yes'),
@@ -410,8 +433,11 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 
 		return array(
 			array('Zero string is true',			'{if "0" == TRUE}yes{if:else}no{/if}',							'yes'),
+			array('Zero string is true',			'{if TRUE == "0"}yes{if:else}no{/if}',							'yes'),
 			array('Zero string var is true',		'{if var == TRUE}yes{if:else}no{/if}',							'yes', array('var' => '0')),
 			array('Empty string is false',			'{if "" == FALSE}yes{if:else}no{/if}',							'yes'),
+			array('Strings with #s are not #s',		'{if 5 == "5yep"}no{if:else}yes{/if}',							'yes'),
+			array('Strings with #s are not #s',		'{if "5yep" == 5}no{if:else}yes{/if}',							'yes'),
 			array('Esc Single quote in double',		'{if "ee'.$bs.$sq.'s parser" == var}yes{if:else}no{/if}',		'yes', array('var' => "ee's parser")),
 			array('Esc Double quote in double',		'{if "ee'.$bs.$dq.'s parser" == var}yes{if:else}no{/if}',		'yes', array('var' => 'ee"s parser')),
 			array('Esc Single quote in single',		"{if 'ee".$bs.$sq."s parser' == var}yes{if:else}no{/if}",		'yes', array('var' => "ee's parser")),
@@ -424,9 +450,16 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 	protected function numberTests()
 	{
 		return array(
-			array('Zero int is false',		'{if 0 == FALSE}yes{if:else}no{/if}',		'yes'),
-			array('Zero float is false',	'{if 0.0 == FALSE}yes{if:else}no{/if}',		'yes'),
-			array('Zero int var is false',	'{if var == FALSE}yes{if:else}no{/if}',		'yes', array('var' => 0)),
+			array('Zero int is false',		'{if 0 == FALSE}yes{if:else}no{/if}',			'yes'),
+			array('Zero float is false',	'{if 0.0 == FALSE}yes{if:else}no{/if}',			'yes'),
+			array('Zero int var is false',	'{if var == FALSE}yes{if:else}no{/if}',			'yes', array('var' => 0)),
+		);
+	}
+
+	protected function variableTests()
+	{
+		return array(
+			array('prefixed',	'{if foo:bar == 7}out{/if}',	'out', array('foo:bar' => TRUE))
 		);
 	}
 
@@ -542,6 +575,20 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 			array('Boolean value comparison: "-1" == "1"',		'{if "-1" == "1"}yes{if:else}no{/if}',		'no'),
 			array('Boolean value comparison: "-1" == "0"',		'{if "-1" == "0"}yes{if:else}no{/if}',		'no'),
 			array('Boolean value comparison: "-1" == "-1"',		'{if "-1" == "-1"}yes{if:else}no{/if}',		'yes'),
+		);
+	}
+
+	// See: https://support.ellislab.com/bugs/detail/20323
+	protected function bug20323_variables_in_strings()
+	{
+		$vars = array(
+			'value' => 'Test with long caption title to test layout',
+			'title' => 'Test article with captions'
+		);
+
+		return array(
+			array('Variable in variable',	'{if value == "' . $vars['value'] . '"}yes{if:else}no{/if}',											'yes',	$vars),
+			array('Variable in string',		'{if "Test with long caption title to test layout" == "' . $vars['value'] . '"}yes{if:else}no{/if}',	'yes',	$vars),
 		);
 	}
 }

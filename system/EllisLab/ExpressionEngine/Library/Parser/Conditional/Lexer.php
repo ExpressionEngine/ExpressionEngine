@@ -222,14 +222,21 @@ class Lexer extends AbstractLexer {
 		{
 			$last = end($this->tokens);
 
-			if ($last && $last->type != 'COMMENT')
+			if ( ! $last || $last->type != 'COMMENT' || ! $last->conditional_annotation)
 			{
-				$this->tokens[] = new Comment(
+				$annotation_token = new Comment(
 					$this->annotations->create(array(
 						'context' => $this->context,
-						'lineno' => $this->lineno
+						'lineno' => $this->lineno,
+						'conditional' => TRUE
 					))
 				);
+
+				// mark for the parser to remove when the conditional
+				// is resolved
+				$annotation_token->conditional_annotation = TRUE;
+
+				$this->tokens[] = $annotation_token;
 			}
 
 			$this->addToken('LD', '{');
@@ -251,6 +258,7 @@ class Lexer extends AbstractLexer {
 		elseif ($comment = $this->peekRegex(self::COMMENT_PATTERN, 'usx'))
 		{
 			$this->addToken('COMMENT', $this->move(strlen($comment)));
+			return;
 		}
 		else
 		{
@@ -262,6 +270,8 @@ class Lexer extends AbstractLexer {
 			{
 				throw new LexerException('if: is a reserved prefix.');
 			}
+
+			return;
 		}
 
 		$this->whitespace();
@@ -548,24 +558,32 @@ class Lexer extends AbstractLexer {
 
 			switch ($type)
 			{
-				case 'COMMENT':	 $obj = new Comment($lexeme);
-					break;
 				case 'BOOL':	 $obj = new Bool($lexeme);
+					break;
+				case 'COMMENT':	 $obj = new Comment($lexeme);
 					break;
 				case 'NUMBER':	 $obj = new Number($lexeme);
 					break;
-				case 'STRING':	 $obj = new String($lexeme);
-					break;
 				case 'OPERATOR': $obj = new Operator($lexeme);
+					break;
+				case 'OTHER':	 $obj = new Other($lexeme);
+					break;
+				case 'STRING':	 $obj = new String($lexeme);
 					break;
 				case 'TAG':		 $obj = new Tag($lexeme);
 					break;
 				case 'VARIABLE': $obj = new Variable($lexeme);
 					break;
-				case 'OTHER':	 $obj = new Other($lexeme);
-					break;
 				default:
 					$obj = new Token($type, $lexeme);
+			}
+
+			// (Re-)Mark conditional annotation comments so the parser
+			// knows that it can remove them after dealing with the
+			// conditional.
+			if (isset($annotation) && isset($annotation->conditional))
+			{
+				$obj->conditional_annotation = TRUE;
 			}
 
 			$obj->lineno = $this->lineno;

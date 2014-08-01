@@ -31,6 +31,7 @@ class URL {
 	public $path;
 	public $session_id;
 	public $qs = array();
+	public $cp_url = array();
 
 	/**
 	 * Create a CP Path
@@ -38,8 +39,11 @@ class URL {
 	 * @param	string	$path		The path (i.e. 'logs/cp')
 	 * @param	string	$session_id The session id
 	 * @param	mixed	$qs			Query string parameters [array|string]
+	 * @param	string	$cp_url		Optional value of cp_url config item,
+	 *                        		include when creating CP URLs that are to
+	 *                        		be used on the front end
 	 */
-	public function __construct($path, $session_id = '', $qs = array())
+	public function __construct($path, $session_id = '', $qs = array(), $cp_url = '')
 	{
 		if (is_array($path) || (is_object($path) && ! method_exists($path, '__toString')))
 		{
@@ -58,6 +62,7 @@ class URL {
 
 		$this->path = (string) $path;
 		$this->session_id = (string) $session_id;
+		$this->cp_url = (string) $cp_url;
 
 		if (is_array($qs))
 		{
@@ -109,12 +114,14 @@ class URL {
 			$qs['S'] = $this->session_id;
 		}
 
-		if ( ! empty($qs))
-		{
-			$path .= '&'.http_build_query($qs);
-		}
+		$qs = ( ! empty($qs)) ? http_build_query($qs, AMP) : '';
 
-		return SELF.$path;
+		// Remove AMP from the beginning of the query string if it exists
+		$qs = preg_replace('#^'.AMP.'#', '', $qs);
+
+		$base = (REQ == 'CP') ? SELF : $this->cp_url;
+
+		return $base.$path.rtrim('&'.$qs, '&');
 	}
 }
 

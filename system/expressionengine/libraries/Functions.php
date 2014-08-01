@@ -35,7 +35,6 @@ class EE_Functions {
 	public $file_paths         = array();
 	public $conditional_debug  = FALSE;
 	public $catfields          = array();
-	public $protect_javascript = TRUE;
 
 	/**
 	 * Constructor
@@ -44,11 +43,6 @@ class EE_Functions {
 	{
 		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
-
-		if (ee()->config->item('protect_javascript') == 'n')
-		{
-			$this->protect_javascript = FALSE;
-		}
 	}
 
 
@@ -2290,7 +2284,9 @@ class EE_Functions {
 		// matches[1] => attribute name
 		// matches[2] => single or double quote
 		// matches[3] => attribute value
-		preg_match_all("/(\S+?)\s*=\s*(\042|\047)([^\\2]*?)\\2/is", $str, $matches, PREG_SET_ORDER);
+
+		$bs = '\\'; // single backslash
+		preg_match_all("/(\S+?)\s*=\s*($bs$bs?)(\042|\047)([^\\3]*?)\\2\\3/is", $str, $matches, PREG_SET_ORDER);
 
 		if (count($matches) > 0)
 		{
@@ -2298,7 +2294,7 @@ class EE_Functions {
 
 			foreach($matches as $match)
 			{
-				$result[$match[1]] = (trim($match[3]) == '') ? $match[3] : trim($match[3]);
+				$result[$match[1]] = (trim($match[4]) == '') ? $match[4] : trim($match[4]);
 			}
 
 			foreach ($defaults as $name => $default_value)
@@ -2414,9 +2410,9 @@ class EE_Functions {
 		/*  - protect_javascript => Prevents advanced conditional parser from processing anything in <script> tags
 		/* ---------------------------------*/
 
-		if (ee()->config->item('protect_javascript') == 'n')
+		if (ee()->TMPL->protect_javascript)
 		{
-			$runner->disableProtectJavascript();
+			$runner->enableProtectJavascript();
 		}
 
 		try
@@ -2466,7 +2462,7 @@ class EE_Functions {
 		ee()->logger->deprecated('3.0', 'File_upload_preferences_model::get_paths()');
 
 		ee()->load->model('file_upload_preferences_model');
-		$this->file_paths = $this->file_upload_preferences_model->get_paths();
+		$this->file_paths = ee()->file_upload_preferences_model->get_paths();
 		return $this->file_paths;
 	}
 

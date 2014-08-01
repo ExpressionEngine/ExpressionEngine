@@ -344,11 +344,13 @@ class EE_Config Extends CI_Config {
 		// Loop through each site and decode Pages information
 		foreach ($sites as $site)
 		{
-			$data = base64_decode($site['site_pages']);
+			$data = (isset($site['site_pages'])) ? base64_decode($site['site_pages']) : '';
 
+			// No Pages data
 			if ( ! is_string($data) OR substr($data, 0, 2) != 'a:')
 			{
 				$site_pages[$site['site_id']] = array('uris' => array(), 'templates' => array());
+				continue;
 			}
 
 			$data = unserialize($data);

@@ -29,21 +29,21 @@ class Runner {
 
 	private $prefix = '';
 	private $safety = FALSE;
-	private $protect_javascript = TRUE;
+	private $protect_javascript = FALSE;
 	private $protected_javascript = array();
 
 	/**
-	 * Disable Javascript Protection
+	 * Enable Javascript Protection
 	 *
-	 * By default all javascript is protected before the parser is run
-	 * so that we don't end up mangling javascript that looks like it
-	 * might be a conditional:
+	 * Protect javascript before the parser is run so that we don't
+	 * end up mangling javascript that looks like it might be a
+	 * conditional:
 	 *
 	 *  function() {if prompt('is this javascript?')} alert('yes');}
 	 */
-	public function disableProtectJavascript()
+	public function enableProtectJavascript()
 	{
-		$this->protect_javascript = FALSE;
+		$this->protect_javascript = TRUE;
 	}
 
 	/**
@@ -122,7 +122,7 @@ class Runner {
 	/**
 	 * Protect compressed javascript.
 	 *
-	 * @see `$this->disableProtectJavascript()` for why we do this.
+	 * @see `$this->enableProtectJavascript()` for why we do this.
 	 *
 	 * @param String $str The raw template string
 	 * @return String     The template string with javascript escaped
@@ -156,7 +156,7 @@ class Runner {
 	/**
 	 * Remove compressed javascript protection
 	 *
-	 * @see `$this->disableProtectJavascript()` for why we do this.
+	 * @see `$this->enableProtectJavascript()` for why we do this.
 	 *
 	 * @param String $str The parsed template string
 	 * @return String     The template string with the javascript put back

@@ -8,7 +8,10 @@ class String extends Token {
 	{
 		parent::__construct('STRING', $lexeme);
 
+		// if there's a comment in the literal string, it needs to go
+		$lexeme = preg_replace('/^\{!--.*?--\}$/', '', $lexeme);
 		$this->value = preg_replace('/\s+/', ' ', $lexeme);
+
 	}
 
 	public function canEvaluate()

@@ -53,6 +53,8 @@ class Parser extends AbstractParser {
 
 	protected $safety = FALSE;
 
+	protected $last_conditional_annotation;
+
 	public function parse()
 	{
 		$this->openBuffer();
@@ -86,6 +88,23 @@ class Parser extends AbstractParser {
 	public function safetyOn()
 	{
 		$this->safety = TRUE;
+	}
+
+	/**
+	 * Output the last conditional annotation.
+	 *
+	 * Do *NOT* call this unless you know why. It's used by the conditional
+	 * statement class to re-insert conditional annotations when it has to
+	 * write a conditional back out.
+	 */
+	public function outputLastAnnotation()
+	{
+		if ( ! isset($this->last_conditional_annotation))
+		{
+			return;
+		}
+
+		$this->output($this->last_conditional_annotation->lexeme);
 	}
 
 	/**
@@ -148,10 +167,12 @@ class Parser extends AbstractParser {
 
 		if ($conditional->addIf($if_expression))
 		{
+			$this->next();
 			$this->template();
 		}
 		else
 		{
+			$this->next(FALSE);
 			$this->skipConditionalBody();
 		}
 
@@ -161,10 +182,12 @@ class Parser extends AbstractParser {
 
 			if ($conditional->addElseIf($elseif_expression))
 			{
+				$this->next();
 				$this->template();
 			}
 			else
 			{
+				$this->next(FALSE);
 				$this->skipConditionalBody();
 			}
 		}
@@ -241,7 +264,17 @@ class Parser extends AbstractParser {
 		$this->openBuffer();
 
 		$expression = $this->expression();
-		$this->expect('RD');
+
+		// Expect an RD, but don't move to the next token
+		// as it may be a comment annotating the next conditional
+		// when we're not actually there yet
+		// e.g. {if current}{!-- don't touch this yet --}{if nested}...
+		if ( ! $this->is('RD'))
+		{
+			throw new ParserException(
+				$this->expectedMessage('RD')
+			);
+		}
 
 		$this->closeBuffer(); // discard whitespace added by next()
 
@@ -272,7 +305,15 @@ class Parser extends AbstractParser {
 				$this->is('NUMBER') ||
 				$this->is('STRING'))
 			{
-				$expression->add($this->token);
+				if ( ! $this->token->canEvaluate())
+				{
+					$this->addSafely($expression);
+				}
+				else
+				{
+					$expression->add($this->token);
+				}
+
 				$this->next();
 			}
 			elseif ($this->is('VARIABLE'))
@@ -400,10 +441,23 @@ class Parser extends AbstractParser {
 			$this->next();
 		}
 
-		if ($skip_and_output_comments && $this->is('COMMENT'))
+		if ($this->is('COMMENT'))
 		{
-			$this->output($this->value());
-			$this->next();
+			if ($this->token->conditional_annotation)
+			{
+				$this->last_conditional_annotation = $this->token;
+
+				if ($skip_and_output_comments)
+				{
+					return $this->next();
+				}
+			}
+
+			if ($skip_and_output_comments)
+			{
+				$this->output($this->value());
+				$this->next();
+			}
 		}
 	}
 

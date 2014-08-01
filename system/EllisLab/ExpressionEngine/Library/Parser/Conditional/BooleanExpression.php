@@ -307,9 +307,9 @@ class BooleanExpression {
 	 */
 	private function equals($left, $right)
 	{
-		// '0' == FALSE		-> false
-		// '0' == TRUE		-> true
-
+		// only empty strings are false
+		// '0' == FALSE		-> no
+		// '0' == TRUE		-> yes
 		if ($left === '0' && is_bool($right))
 		{
 			return $right;
@@ -318,6 +318,16 @@ class BooleanExpression {
 		if ($right === '0' && is_bool($left))
 		{
 			return $left;
+		}
+
+		// 5 == "5anything" is definitely not true
+		if (is_numeric($left) && is_string($right))
+		{
+			$left = (string) $left;
+		}
+		elseif (is_numeric($right) && is_string($left))
+		{
+			$right = (string) $right;
 		}
 
 		return $left == $right;

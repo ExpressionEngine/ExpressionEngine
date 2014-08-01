@@ -680,6 +680,7 @@ class Design extends CP_Controller {
 		$this->cp->add_to_head($this->view->head_link('css/codemirror-additions.css'));
 
 		$this->cp->add_js_script(array(
+				'plugin'	=> 'ee_codemirror',
 				'file'		=> array(
 					'codemirror/codemirror',
 					'codemirror/closebrackets',
@@ -689,11 +690,18 @@ class Design extends CP_Controller {
 					'codemirror/javascript',
 					'codemirror/htmlmixed',
 					'codemirror/ee-mode',
+					'codemirror/dialog',
+					'codemirror/searchcursor',
+					'codemirror/search',
 
 					'cp/snippet_editor',
 				)
 			)
 		);
+
+		$this->cp->set_action_nav(array(
+			'Toggle Editor' => 'javascript:$(\'#snippet_contents\').toggleCodeMirror();'
+		));
 
 		$this->cp->render('design/snippets_edit', $vars);
 	}
@@ -1207,12 +1215,14 @@ class Design extends CP_Controller {
 			$headings[] = array('php_parse_location', lang('parse_stage'));
 		}
 
+
 		if ($this->config->item('save_tmpl_files') == 'y' AND $this->config->item('tmpl_file_basepath') != '')
 		{
 			$headings[] = array('save_template_file', lang('save_template_file'));
 		}
 
 		$headings[] = array('hits', lang('hit_counter'));
+		$headings[] = array('protect_javascript', lang('protect_javascript'));
 
 		$vars['headings'] = $headings;
 
@@ -1256,6 +1266,7 @@ class Design extends CP_Controller {
 		}
 
 		$vars['template_prefs']['hits'] = form_input(array('name'=>'hits', 'value'=>'', 'size'=>5));
+		$vars['template_prefs']['protect_javascript'] = form_dropdown('protect_javascript', $yes_no_options, 'null', 'id="protect_javascript"');
 
 		// Template Access Restrictions
 		$this->db->select('group_id, group_title');
@@ -1388,10 +1399,16 @@ class Design extends CP_Controller {
 		$template_route = $this->input->post('template_route');
 		$route_required = $this->input->post('route_required');
 		$no_auth_bounce = $this->input->post('no_auth_bounce');
+		$protect_javascript = $this->input->post('protect_javascript');
 
 		if ($template_type !== FALSE && $template_type != 'null')
 		{
 			$data['template_type'] = $template_type;
+		}
+
+		if (in_array($protect_javascript, array('y', 'n')))
+		{
+			$data['protect_javascript'] = $protect_javascript;
 		}
 
 		if (in_array($cache, array('y', 'n')))
@@ -1616,7 +1633,7 @@ class Design extends CP_Controller {
 			$qry = $this->db->select('tg.group_name, template_name,
 									template_data, template_type,
 									template_notes, cache, refresh,
-									no_auth_bounce, allow_php,
+									no_auth_bounce, allow_php, protect_javascript,
 									php_parse_location, save_template_file')
 							->from('templates t, template_groups tg')
 							->where('t.template_id',
@@ -1659,6 +1676,7 @@ class Design extends CP_Controller {
 							'refresh'				=> $qry->row('refresh') ,
 							'no_auth_bounce'		=> $qry->row('no_auth_bounce') ,
 							'php_parse_location'	=> $qry->row('php_parse_location') ,
+							'protect_javascript'	=> $qry->row('protect_javascript') ,
 							'allow_php'				=> ($this->session->userdata('group_id') === 1) ? $qry->row('allow_php')  : 'n',
 							'template_type'			=> $template_type,
 							'template_data'			=> $template_data,
@@ -1766,10 +1784,11 @@ class Design extends CP_Controller {
 		$vars['save_template_file'] = ($query->row('save_template_file') != 'y') ? FALSE : TRUE ;
 		$vars['no_auth_bounce']		= $query->row('no_auth_bounce');
 		$vars['enable_http_auth']	= $query->row('enable_http_auth');
+		$vars['protect_javascript']	= $query->row('protect_javascript');
 		$vars['template_route'] 	= $query->row('route');
 		$vars['route_required'] 	= $query->row('route_required');
 
-		foreach(array('template_type', 'cache', 'refresh', 'allow_php', 'php_parse_location', 'hits') as $pref)
+		foreach(array('template_type', 'cache', 'refresh', 'allow_php', 'php_parse_location', 'hits', 'protect_javascript') as $pref)
 		{
 			$vars['prefs'][$pref] = $query->row($pref);
 		}
@@ -1900,6 +1919,7 @@ class Design extends CP_Controller {
 		);
 
 		$this->cp->add_js_script(array(
+				'plugin'	=> 'ee_codemirror',
 				'file'		=> array(
 					'codemirror/codemirror',
 					'codemirror/closebrackets',
@@ -1910,12 +1930,19 @@ class Design extends CP_Controller {
 					'codemirror/javascript',
 					'codemirror/htmlmixed',
 					'codemirror/ee-mode',
+					'codemirror/dialog',
+					'codemirror/searchcursor',
+					'codemirror/search',
 
 					'cp/template_editor',
 					'cp/manager'
 				)
 			)
 		);
+
+		$this->cp->set_action_nav(array(
+			'Toggle Editor' => 'javascript:$(\'#template_data\').toggleCodeMirror();'
+		));
 
 		$vars['table_template'] = array(
 					'table_open'			=> '<table class="templateTable templateEditorTable" border="0" cellspacing="0" cellpadding="0">'
@@ -3458,6 +3485,7 @@ EOT;
 					'cache' => $row['cache'],
 					'refresh' => $row['refresh'],
 					'allow_php' => $row['allow_php'],
+					'protect_javascript' => $row['protect_javascript'],
 					'php_parsing' => $row['php_parse_location'],
 					'hits' => $row['hits'],
 					'access' => $access,
@@ -3480,6 +3508,7 @@ EOT;
 			$vars['templates'][$row['group_id']][$row['template_id']]['template_route'] = $row['route'];
 			$vars['templates'][$row['group_id']][$row['template_id']]['route_required'] = $row['route_required'];
 			$vars['templates'][$row['group_id']][$row['template_id']]['enable_http_auth'] = $row['enable_http_auth'];  // needed for display
+			$vars['templates'][$row['group_id']][$row['template_id']]['protect_javascript'] = $row['protect_javascript'];
 
 			$vars['templates'][$row['group_id']][$row['template_id']]['hidden'] = (strncmp($row['template_name'], $hidden_indicator, $hidden_indicator_length) == 0) ? TRUE : FALSE;
 
@@ -3672,6 +3701,7 @@ EOT;
 				'refresh' => $row['refresh'],
 				'allow_php' => $row['allow_php'],
 				'php_parsing' => $row['php_parse_location'],
+				'protect_javascript' => $row['protect_javascript'],
 				'hits' => $row['hits'],
 				'access' => $access,
 				'no_auth_bounce' => $row['no_auth_bounce'],
@@ -3747,6 +3777,7 @@ EOT;
 						'cache' 				=> ($this->input->get_post('cache') == 'y') ? 'y' : 'n',
 						'refresh' 				=> ($this->input->get_post('refresh') == '') ? 0 : $this->input->get_post('refresh'),
 						'allow_php' 			=> ($this->input->get_post('allow_php') == 'y') ? 'y' : 'n',
+						'protect_javascript'	=> ($this->input->get_post('protect_javascript') == 'y') ? 'y' : 'n',
 						'php_parse_location' 	=> ($this->input->get_post('php_parse_location') == 'i') ? 'i' : 'o',
 						'hits'					=> $this->input->get_post('hits')
 		);
@@ -4109,7 +4140,7 @@ EOT;
 
 			if (is_numeric($_POST['duplicate_group']))
 			{
-				$query = $this->db->query("SELECT template_name, save_template_file, template_data, template_type, template_notes, cache, refresh, no_auth_bounce, allow_php, php_parse_location FROM exp_templates WHERE group_id = '".$this->db->escape_str($_POST['duplicate_group'])."'");
+				$query = $this->db->query("SELECT template_name, save_template_file, template_data, template_type, template_notes, cache, refresh, no_auth_bounce, allow_php, php_parse_location, protect_javascript FROM exp_templates WHERE group_id = '".$this->db->escape_str($_POST['duplicate_group'])."'");
 
 				if ($query->num_rows() > 0)
 				{
@@ -4143,6 +4174,7 @@ EOT;
 									'refresh'				=> $row['refresh'],
 									'no_auth_bounce'		=> $row['no_auth_bounce'],
 									'php_parse_location'	=> $row['php_parse_location'],
+									'protect_javascript'	=> $row['protect_javascript'],
 									'allow_php'				=> ($this->session->userdata['group_id'] == 1) ? $row['allow_php'] : 'n',
 									'template_type'			=> $row['template_type'],
 									'template_data'			=> $row['template_data'],
