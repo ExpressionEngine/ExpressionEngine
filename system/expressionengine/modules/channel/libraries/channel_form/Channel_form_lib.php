@@ -118,7 +118,7 @@ class Channel_form_lib
 		if (ee()->extensions->active_hook('safecracker_entry_form_absolute_start') === TRUE)
 		{
 			ee()->load->library('logger');
-			ee()->logger->deprecated('2.7', 'Renamed to: channel_form_entry_form_absolute_start');
+			ee()->logger->deprecated_hook('safecracker_entry_form_absolute_start', '2.7', 'channel_form_entry_form_absolute_start');
 
 			ee()->extensions->call('safecracker_entry_form_absolute_start');
 			if (ee()->extensions->end_script === TRUE) return;
@@ -291,7 +291,7 @@ class Channel_form_lib
 		if (ee()->extensions->active_hook('safecracker_entry_form_tagdata_start') === TRUE)
 		{
 			ee()->load->library('logger');
-			ee()->logger->deprecated('2.7', 'Renamed to: channel_form_entry_form_tagdata_start');
+			ee()->logger->deprecated_hook('safecracker_entry_form_tagdata_start', '2.7', 'channel_form_entry_form_tagdata_start');
 
 			ee()->TMPL->tagdata = ee()->extensions->call('safecracker_entry_form_tagdata_start', ee()->TMPL->tagdata, $this);
 			if (ee()->extensions->end_script === TRUE) return;
@@ -824,7 +824,7 @@ class Channel_form_lib
 		if (ee()->extensions->active_hook('safecracker_entry_form_tagdata_end') === TRUE)
 		{
 			ee()->load->library('logger');
-			ee()->logger->deprecated('2.7', 'Renamed to: channel_form_entry_form_tagdata_end');
+			ee()->logger->deprecated_hook('safecracker_entry_form_tagdata_end', '2.7', 'channel_form_entry_form_tagdata_end');
 
 			$return = ee()->extensions->call('safecracker_entry_form_tagdata_end', $return, $this);
 			if (ee()->extensions->end_script === TRUE) return;
@@ -1366,7 +1366,7 @@ GRID_FALLBACK;
 		if (ee()->extensions->active_hook('safecracker_submit_entry_start') === TRUE)
 		{
 			ee()->load->library('logger');
-			ee()->logger->deprecated('2.7', 'Renamed to: channel_form_submit_entry_start');
+			ee()->logger->deprecated_hook('safecracker_submit_entry_start', '2.7', 'channel_form_submit_entry_start');
 
 			ee()->extensions->call('safecracker_submit_entry_start', $this);
 			if (ee()->extensions->end_script === TRUE) return;
@@ -1754,7 +1754,7 @@ GRID_FALLBACK;
 		if (ee()->extensions->active_hook('safecracker_submit_entry_end') === TRUE)
 		{
 			ee()->load->library('logger');
-			ee()->logger->deprecated('2.7', 'Renamed to: channel_form_submit_entry_end');
+			ee()->logger->deprecated_hook('safecracker_submit_entry_end', '2.7', 'channel_form_submit_entry_end');
 
 			ee()->extensions->call('safecracker_submit_entry_end', $this);
 			if (ee()->extensions->end_script === TRUE) return;
