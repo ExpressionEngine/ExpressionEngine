@@ -223,6 +223,7 @@ abstract class RowDataGateway {
 		else
 		{
 			$this->_db->insert(static::getMetaData('table_name'), $save_array);
+			$this->{$id_name} = $this->_db->insert_id();
 		}
 	}
 
