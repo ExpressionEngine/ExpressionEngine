@@ -1304,23 +1304,13 @@ class Channel {
 			}
 			else
 			{
-				if ($query->num_rows() == 1)
+				$channel_ids = array();
+				foreach ($query->result_array() as $row)
 				{
-					$sql .= "AND t.channel_id = '".$query->row('channel_id') ."' ";
+					$channel_ids[] = $row['channel_id'];
 				}
-				else
-				{
-					$sql .= "AND (";
 
-					foreach ($query->result_array() as $row)
-					{
-						$sql .= "t.channel_id = '".$row['channel_id']."' OR ";
-					}
-
-					$sql = substr($sql, 0, - 3);
-
-					$sql .= ") ";
-				}
+				$sql .= "AND t.channel_id IN (".implode(',', $channel_ids).") ";
 			}
 		}
 
