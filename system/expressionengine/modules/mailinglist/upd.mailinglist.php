@@ -29,8 +29,7 @@ class Mailinglist_upd {
 
 	function Mailinglist_upd()
 	{
-		$this->EE =& get_instance();
-		ee()->load->dbforge();
+		ee()->load->library('smartforge');
 	}
 
 	// --------------------------------------------------------------------
@@ -236,21 +235,48 @@ class Mailinglist_upd {
 	{
 		if (version_compare($current, '3.0', '<'))
 		{
-			ee()->db->query("ALTER TABLE `exp_mailing_list` MODIFY COLUMN `user_id` int(10) unsigned NOT NULL PRIMARY KEY auto_increment");
-			ee()->db->query("ALTER TABLE `exp_mailing_list` DROP KEY `user_id`");
-			ee()->db->query("ALTER TABLE `exp_mailing_list_queue` ADD COLUMN `queue_id` int(10) UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY FIRST");
+			ee()->smartforge->modify_column('mailing_list', array(
+				'user_id' => array(
+					'name'           => 'user_id',
+					'type'           => 'int',
+					'constraint'     => 10,
+					'unsigned'       => TRUE,
+					'auto_increment' => TRUE
+				)
+			));
+			ee()->smartforge->add_key('mailing_list', 'user_id', 'PRIMARY');
+
+			// Add queue_id
+			ee()->smartforge->add_column('mailing_list_queue', array(
+				'queue_id' => array(
+					'name'       => 'queue_id',
+					'type'       => 'int',
+					'constraint' => '10',
+					'unsigned'   => TRUE
+				)
+			));
+			ee()->smartforge->add_key('mailing_list_queue', 'queue_id', 'PRIMARY');
+
+			// Add ip_address
+			ee()->smartforge->add_column('mailing_list', array(
+				'ip_address' => array(
+					'name'       => 'ip_address',
+					'type'       => 'varchar',
+					'constraint' => '45'
+				)
+			));
 		}
 
 		if (version_compare($current, '3.1', '<'))
 		{
 			// Update ip_address column
-			ee()->dbforge->modify_column(
+			ee()->smartforge->modify_column(
 				'mailing_list',
 				array(
 					'ip_address' => array(
-						'name' 			=> 'ip_address',
-						'type' 			=> 'varchar',
-						'constraint'	=> '45'
+						'name'       => 'ip_address',
+						'type'       => 'varchar',
+						'constraint' => '45'
 					)
 				)
 			);
@@ -260,14 +286,14 @@ class Mailinglist_upd {
 		{
 			foreach (array('mailing_list', 'mailing_list_queue') as $table)
 			{
-				ee()->dbforge->modify_column(
+				ee()->smartforge->modify_column(
 					$table,
 					array(
 						'email' => array(
-							'name' 			=> 'email',
-							'type' 			=> 'varchar',
-							'constraint'	=> '75',
-							'null'			=> FALSE
+							'name'       => 'email',
+							'type'       => 'varchar',
+							'constraint' => '75',
+							'null'       => FALSE
 						)
 					)
 				);
