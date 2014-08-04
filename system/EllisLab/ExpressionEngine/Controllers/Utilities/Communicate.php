@@ -110,12 +110,11 @@ class Communicate extends Utilities {
 			{
 				$checked = (ee()->input->post('group_'.$group->group_id) !== FALSE OR in_array($group->group_id, $member_groups));
 
-				$vars['member_groups'][$group->group_title] = array('name' => 'group_'.$group->group_id, 'value' => $group->group_id, 'checked' => $checked);
+				$vars['member_groups'][$group->group_title]['attrs'] = array('name' => 'group_'.$group->group_id, 'value' => $group->group_id, 'checked' => $checked);
 				$vars['member_groups'][$group->group_title]['members'] = count($group->getMembers());
 				if ($vars['member_groups'][$group->group_title]['members'] == 0)
 				{
-					$vars['member_groups'][$group->group_title]['class'] = 'disable';
-					$vars['member_groups'][$group->group_title]['disabled'] = 'disabled';
+					$vars['member_groups'][$group->group_title]['attrs']['disabled'] = 'disabled';
 				}
 			}
 		}
