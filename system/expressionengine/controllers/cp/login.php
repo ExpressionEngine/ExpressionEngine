@@ -485,8 +485,17 @@ class Login extends CP_Controller {
 		// Clean out any old reset codes.
 		$a_day_ago = time() - (60*60*24);
 		$this->db->where('date <', $a_day_ago);
-		$this->db->or_where('member_id', $member_id);
 		$this->db->delete('reset_password');
+
+		// Check flood control
+		$max_requests_in_a_day = 3;
+		$requests = $this->db->where('member_id', $member_id)
+			->count_all_results('reset_password');
+
+		if ($requests >= $max_requests_in_a_day)
+		{
+			show_error(lang('password_reset_flood_lock'));
+		}
 
 		// Create a new DB record with the temporary reset code
 		$rand = $this->functions->random('alnum', 8);

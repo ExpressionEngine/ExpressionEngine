@@ -689,33 +689,6 @@ class Member_auth extends Member {
 			return ee()->output->show_user_error('submission', array(lang('invalid_email_address')));
 		}
 
-		$address = strip_tags($address);
-
-		$memberQuery = ee()->db->select('member_id, username, screen_name')
-			->where('email', $address)
-			->get('members');
-
-		if ($memberQuery->num_rows() == 0)
-		{
-			return ee()->output->show_user_error('submission', array(lang('no_email_found')));
-		}
-
-		$member_id = $memberQuery->row('member_id');
-		$username  = $memberQuery->row('username');
-		$name  = ($memberQuery->row('screen_name') == '') ? $memberQuery->row('username') : $memberQuery->row('screen_name');
-
-		// Kill old data from the reset_password field
-		$a_day_ago = time() - (60*60*24);
-		ee()->db->where('date <', $a_day_ago)
-			->or_where('member_id', $member_id)
-			->delete('reset_password');
-
-		// Create a new DB record with the temporary reset code
-		$rand = ee()->functions->random('alnum', 8);
-		$data = array('member_id' => $member_id, 'resetcode' => $rand, 'date' => time());
-		ee()->db->query(ee()->db->insert_string('exp_reset_password', $data));
-
-		// Build the email message
 		if (ee()->input->get_post('FROM') == 'forum')
 		{
 			if (ee()->input->get_post('board_id') !== FALSE &&
@@ -744,6 +717,50 @@ class Member_auth extends Member {
 
 		$forum_id = (ee()->input->get_post('FROM') == 'forum') ? '&r=f&board_id='.$board_id : '';
 
+		$address = strip_tags($address);
+
+		$memberQuery = ee()->db->select('member_id, username, screen_name')
+			->where('email', $address)
+			->get('members');
+
+		if ($memberQuery->num_rows() == 0)
+		{
+			// Build success message
+			$data = array(
+				'title' 	=> lang('mbr_passwd_email_sent'),
+				'heading'	=> lang('thank_you'),
+				'content'	=> lang('forgotten_email_sent'),
+				'link'		=> array($return, $site_name)
+			);
+
+			ee()->output->show_message($data);
+		}
+
+		$member_id = $memberQuery->row('member_id');
+		$username  = $memberQuery->row('username');
+		$name  = ($memberQuery->row('screen_name') == '') ? $memberQuery->row('username') : $memberQuery->row('screen_name');
+
+		// Kill old data from the reset_password field
+		$a_day_ago = time() - (60*60*24);
+		ee()->db->where('date <', $a_day_ago)
+			->delete('reset_password');
+
+		// Check flood control
+		$max_requests_in_a_day = 3;
+		$requests = ee()->db->where('member_id', $member_id)
+			->count_all_results('reset_password');
+
+		if ($requests >= $max_requests_in_a_day)
+		{
+			return ee()->output->show_user_error('submission', array(lang('password_reset_flood_lock')));
+		}
+
+		// Create a new DB record with the temporary reset code
+		$rand = ee()->functions->random('alnum', 8);
+		$data = array('member_id' => $member_id, 'resetcode' => $rand, 'date' => time());
+		ee()->db->query(ee()->db->insert_string('exp_reset_password', $data));
+
+		// Build the email message
 		$swap = array(
 			'name'		=> $name,
 			'username'    => $username,
@@ -813,6 +830,18 @@ class Member_auth extends Member {
 		if ( ! ($resetcode = ee()->input->get_post('id')))
 		{
 			return ee()->output->show_user_error('submission', array(lang('mbr_no_reset_id')));
+		}
+
+		// Make sure the token is valid and belongs to a member.
+		$a_day_ago = time() - (60*60*24);
+		$member_id_query = ee()->db->select('member_id')
+			->where('resetcode', $resetcode)
+			->where('date >', $a_day_ago)
+			->get('reset_password');
+
+		if ($member_id_query->num_rows() === 0)
+		{
+			return ee()->output->show_user_error('submission', array(lang('mbr_id_not_found')));
 		}
 
 		// Check to see whether we're in the forum or not.

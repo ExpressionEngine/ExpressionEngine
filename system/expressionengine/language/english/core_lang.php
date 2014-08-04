@@ -222,6 +222,9 @@ and email %s to report the link that generated this message.',
 'no_email_found' =>
 'The email address you submitted was not found in the database.',
 
+'password_reset_flood_lock' =>
+'You have tried to reset your password too many times today. Please check your inbox and spam folders for previous requests, or contact the site administrator.',
+
 'your_new_login_info' =>
 'Login information',
 
