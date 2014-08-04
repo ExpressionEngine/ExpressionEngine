@@ -187,8 +187,6 @@ class Communicate extends Utilities {
 
 		$name = ee()->session->userdata('screen_name');
 
-		ee()->load->model('communicate_model');
-
 		ee()->view->cp_page_title = lang('email_success');
 		$debug_msg = '';
 
@@ -404,7 +402,9 @@ class Communicate extends Utilities {
 		$cache_data['total_sent'] = 0;
 		$cache_data['recipient_array'] = serialize($emails);
 		$cache = ee()->api->make('EmailCache', $cache_data);
-		$id = $this->communicate_model->save_cache_data($cache_data, $groups, $list_ids);
+		$cache->setMemberGroups(ee()->api->get('MemberGroup', $groups)->all());
+		$cache = $cache->save();
+		$id = $cache->cache_id;
 
 		/** ----------------------------------------
 		/**  If batch-mode is not set, send emails
@@ -460,7 +460,10 @@ class Communicate extends Utilities {
 					// Let's adjust the recipient array up to this point
 					reset($emails);
 					$emails = array_slice($emails, $total_sent);
-					$this->communicate_model->update_email_cache($total_sent, $emails, $id);
+
+					$cache->total_sent = $total_sent;
+					$cache->recipient_array = serialize($emails);
+					$cache->save();
 
 					$debug_msg = ee()->email->print_debugger(array());
 
@@ -475,14 +478,12 @@ class Communicate extends Utilities {
 			$this->_delete_attachments(); // Remove attachments now
 
 			//  Update email cache
-			$this->communicate_model->update_email_cache($total_sent, '', $id);
+			$cache->total_sent = $total_sent;
+			$cache->recipient_array = "";
+			$cache->save();
 
-			ee()->cp->render('tools/email_sent', array(
-				'debug' => $debug_msg,
-				'total_sent' => $total_sent
-			));
-
-			return;
+			ee()->view->set_message('success', lang('total_emails_sent') . ' ' . $total_sent, $debug_msg, TRUE);
+			ee()->functions->redirect(cp_url('utilities/communicate/sent'));
 		}
 
 		/** ----------------------------------------
