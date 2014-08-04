@@ -33,6 +33,11 @@ feature 'Communicate' do
 		@page.wordwrap.checked?.should eq true
 	end
 
+	it "disables groups with no members" do
+		input = @page.find('input.disable')
+		input.first(:xpath, ".//..").should have_text '(0)'
+	end
+
 	it "shows errors when required fields are not populated" do
 		@page.from_email.set ''
 		@page.submit_button.click
