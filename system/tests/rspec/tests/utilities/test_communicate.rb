@@ -34,7 +34,7 @@ feature 'Communicate' do
 	end
 
 	it "disables groups with no members" do
-		input = @page.find('input.disable')
+		input = @page.find('input[disabled="disabled"]')
 		input.first(:xpath, ".//..").should have_text '(0)'
 	end
 
@@ -266,6 +266,28 @@ feature 'Communicate' do
 		@page.should have_alert
 		@page.should have_css 'div.alert.success'
 		@page.alert.should have_text 'Your email has been sent'
+		@page.current_url.should include 'utilities/communicate/sent'
+	end
+
+	it "can send to groups" do
+		add_member(username: 'memberone', email: 'ellislab.developers.memberone@mailinator.com')
+		add_member(username: 'membertwo', email: 'ellislab.developers.membertwo@mailinator.com')
+		@page.load
+
+		@page.should have_text "Members (2)"
+
+		my_subject = @test_subject + ' member group email'
+		my_body = "This a test email sent from the communicate tool."
+
+		@page.subject.set my_subject
+		@page.from_email.set @test_from
+		@page.find('input[name="group_5"]').set true
+		@page.body.set my_body
+		@page.submit_button.click
+
+		@page.should have_alert
+		@page.should have_css 'div.alert.success'
+		@page.alert.should have_text 'Total number of emails sent: 2'
 		@page.current_url.should include 'utilities/communicate/sent'
 	end
 end
