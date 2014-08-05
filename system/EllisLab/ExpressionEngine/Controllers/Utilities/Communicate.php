@@ -118,11 +118,12 @@ class Communicate extends Utilities {
 	 */
 	public function send()
 	{
+		ee()->load->library('email');
+
 		// Fetch $_POST data
 		// We'll turn the $_POST data into variables for simplicity
 
 		$groups = array();
-		$emails = array();
 
 		$form_fields = array(
 			'subject',
@@ -155,8 +156,6 @@ class Communicate extends Utilities {
 		{
 			show_error(lang('not_allowed_to_email_member_groups'));
 		}
-
-		ee()->load->library('email');
 
 		// Set to allow a check for at least one recipient
 		$_POST['total_gl_recipients'] = count($groups);
@@ -211,117 +210,41 @@ class Communicate extends Utilities {
 			'mailtype'			=> $mailtype,
 			'wordwrap'	  		=> $wordwrap,
 			'text_fmt'			=> $text_fmt,
+			'total_sent'		=> 0,
 			'plaintext_alt'		=> '',	// Relic of the past
 		);
 
-		//  Apply text formatting if necessary
-
-		if ($text_fmt != 'none' && $text_fmt != '')
-		{
-			ee()->load->library('typography');
-			ee()->typography->initialize(array(
-				'parse_images'	=> FALSE,
-				'parse_smileys'	=> FALSE
-			));
-
-			if (ee()->config->item('enable_censoring') == 'y' &&
-				ee()->config->item('censored_words') != '')
-        	{
-				$subject = ee()->typography->filter_censored_words($subject);
-			}
-
-			$message = ee()->typography->parse_type($message, array(
-				'text_format'   => $text_fmt,
-				'html_format'   => 'all',
-				'auto_links'	=> 'n',
-				'allow_img_url' => 'y'
-			));
-		}
+		$email = ee()->api->make('EmailCache', $cache_data);
+		$email->save();
 
 		//  Send a single email
-
 		if (count($groups) == 0)
 		{
-			$to = $recipient;
-
-			ee()->email->wordwrap  = ($wordwrap == 'y') ? TRUE : FALSE;
-			ee()->email->mailtype  = $mailtype;
-			ee()->email->from($from, $name);
-			ee()->email->to($to);
-			ee()->email->cc($cc);
-			ee()->email->bcc($bcc);
-			ee()->email->subject($subject);
-			ee()->email->message($message);
-
-			$error = FALSE;
-
-			if ( ! ee()->email->send(FALSE))
-			{
-				$error = TRUE;
-			}
-
-			$debug_msg = ee()->email->print_debugger(array());
-
-			$this->_delete_attachments(); // Remove attachments now
-
-			if ($error == TRUE)
-			{
-				show_error(lang('error_sending_email').BR.BR.$debug_msg);
-			}
-
-			// Save cache data
-
-			$cache_data['total_sent'] = $this->_fetch_total($to, $cc, $bcc);
-
-			ee()->api->make('EmailCache', $cache_data)->save();
+			$debug_msg = $this->deliverOneEmail($email, $recipient);
 
 			ee()->view->set_message('success', lang('email_sent_message'), $debug_msg, TRUE);
 			ee()->functions->redirect(cp_url('utilities/communicate/sent'));
 		}
 
-		// Is Batch Mode set?
+		// Get member group emails
+		$groups = ee()->api->get('MemberGroup', $groups)
+			->with('Members')
+			->filter('include_in_mailinglists', 'y')
+			->all();
 
-		$batch_mode = ee()->config->item('email_batchmode');
-		$batch_size = (string) ee()->config->item('email_batch_size');
-
-		if ( ! ctype_digit($batch_size))
+		$email_addresses = array();
+		foreach ($groups as $group)
 		{
-			$batch_mode = 'n';
-		}
-
-		/** ---------------------------------
-		/**  Fetch member group emails
-		/** ---------------------------------*/
-		if (count($groups) > 0)
-		{
-			$where = array();
-
-			$where['mg.include_in_mailinglists'] = 'y';
-
-			if (isset($_POST['accept_admin_email']))
+			foreach ($group->getMembers() as $member)
 			{
-				$where['m.accept_admin_email'] = 'y';
-			}
-
-			$where['mg.group_id'] = $groups;
-
-			$query = ee()->member_model->get_member_emails('', $where);
-
-			if ($query->num_rows() > 0)
-			{
-				foreach ($query->result_array() as $row)
-				{
-					$emails['m'.$row['member_id']] = array(
-						$row['email'],
-						$row['screen_name']
-					);
-				}
+				$email_addresses['m' . $member->member_id] = array(
+					$member->email,
+					$member->screen_name
+				);
 			}
 		}
 
-		// After all that, do we have any emails?
-
-		if (count($emails) == 0 AND $recipient == '')
+		if (empty($email_addresses) AND $recipient == '')
 		{
 			show_error(lang('no_email_matching_criteria'));
 		}
@@ -337,36 +260,7 @@ class Communicate extends Utilities {
 		if ($cc != '' OR $bcc != '')
 		{
 			$to = ($recipient == '') ? ee()->session->userdata['email'] : $recipient;
-
-			ee()->email->wordwrap  = ($wordwrap == 'y') ? TRUE : FALSE;
-			ee()->email->mailtype  = $mailtype;
-			ee()->email->from($from, $name);
-			ee()->email->to($to);
-			ee()->email->cc($cc);
-			ee()->email->bcc($bcc);
-			ee()->email->subject($subject);
-			ee()->email->message($message);
-
-			$error = FALSE;
-
-			if ( ! ee()->email->send(FALSE))
-			{
-				$error = TRUE;
-			}
-
-			$debug_msg = ee()->email->print_debugger(array());
-
-			// Remove attachments only if member groups or mailing lists
-			// don't need them
-			if (empty($emails))
-			{
-				$this->_delete_attachments();
-			}
-
-			if ($error == TRUE)
-			{
-				show_error(lang('error_sending_email').BR.BR.$debug_msg);
-			}
+			$debug_msg = $this->deliverOneEmail($email, $to, empty($email_addresses));
 
 			$total_sent = $this->_fetch_total($to, $cc, $bcc);
 		}
@@ -382,95 +276,44 @@ class Communicate extends Utilities {
 
 					if ( ! empty($address))
 					{
-						$emails['r'][] = $address;
+						$email_addresses['r'][] = $address;
 					}
 				}
 			}
 		}
 
 		//  Store email cache
-		$cache_data['total_sent'] = 0;
-		$cache_data['recipient_array'] = serialize($emails);
-		$cache = ee()->api->make('EmailCache', $cache_data);
-		$cache->setMemberGroups(ee()->api->get('MemberGroup', $groups)->all());
-		$cache = $cache->save();
-		$id = $cache->cache_id;
+		$email->recipient_array = serialize($email_addresses);
+		$email->setMemberGroups(ee()->api->get('MemberGroup', $groups)->all());
+		$email->save();
+		$id = $email->cache_id;
+
+		// Is Batch Mode set?
+
+		$batch_mode = ee()->config->item('email_batchmode');
+		$batch_size = (string) ee()->config->item('email_batch_size');
+
+		if (! ctype_digit($batch_size) OR count($email_addresses) <= $batch_size)
+		{
+			$batch_mode = 'n';
+		}
 
 		/** ----------------------------------------
 		/**  If batch-mode is not set, send emails
 		/** ----------------------------------------*/
 
-		if (count($emails) <= $batch_size)
-		{
-			$batch_mode = 'n';
-		}
-
 		if ($batch_mode == 'n')
 		{
-			ee()->email->wordwrap  = ($wordwrap == 'y') ? TRUE : FALSE;
-			ee()->email->mailtype  = $mailtype;
-
-			foreach ($emails as $key => $val)
-			{
-				$screen_name = '';
-				$list_id = FALSE;
-
-				if (is_array($val) AND substr($key, 0, 1) == 'm')
-				{
-					$screen_name = $val['1'];
-					$val = $val['0'];
-				}
-				elseif (is_array($val) AND substr($key, 0, 1) == 'l')
-				{
-					$list_id = $val['1'];
-					$val = $val['0'];
-				}
-
-				ee()->email->clear();
-				ee()->email->to($val);
-				ee()->email->from($from, $name);
-				ee()->email->subject($subject);
-
-				// We need to add the unsubscribe link to emails - but only ones
-				// from the mailing list.  When we gathered the email addresses
-				// above, we added one of three prefixes to the array key:
-				//
-				// m = member id
-				// r = general recipient
-
-				// Make a copy so we don't mess up the original
-				$msg = $message;
-
-				$msg = str_replace('{name}', $screen_name, $msg);
-
-				ee()->email->message($msg);
-
-				if ( ! ee()->email->send(FALSE))
-				{
-					// Let's adjust the recipient array up to this point
-					reset($emails);
-					$emails = array_slice($emails, $total_sent);
-
-					$cache->total_sent = $total_sent;
-					$cache->recipient_array = serialize($emails);
-					$cache->save();
-
-					$debug_msg = ee()->email->print_debugger(array());
-
-					show_error(lang('error_sending_email').BR.BR.$debug_msg);
-				}
-
-				$total_sent++;
-			}
+			$total_sent = $this->deliverManyEmails($email);
 
 			$debug_msg = ee()->email->print_debugger(array());
 
 			$this->_delete_attachments(); // Remove attachments now
 
 			//  Update email cache
-			$cache->total_sent = $total_sent;
-			$cache->recipient_array = "";
-			$cache->save();
+			$email->total_sent = $total_sent;
+			$email->recipient_array = "";
+			$email->save();
 
 			ee()->view->set_message('success', lang('total_emails_sent') . ' ' . $total_sent, $debug_msg, TRUE);
 			ee()->functions->redirect(cp_url('utilities/communicate/sent'));
@@ -493,6 +336,163 @@ class Communicate extends Utilities {
 		ee()->view->cp_page_title = lang('sending_email');
 
 		ee()->load->view('_shared/refresh_message', $data);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Batch Email Send
+	 *
+	 * Sends email in batch mode
+	 *
+	 * @param int $id	The cache_id to send
+	 */
+	public function batch($id)
+	{
+		if ( ! ctype_digit($id))
+		{
+			show_error(lang('problem_with_id'));
+		}
+
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Sends a single email handling errors
+	 */
+	private function deliverOneEmail($email, $to, $delete = TRUE)
+	{
+		if ( ! $this->deliverEmail($email, $to, $email->cc, $email->bcc))
+		{
+			$error = TRUE;
+		}
+
+		if ($delete)
+		{
+			$this->_delete_attachments(); // Remove attachments now
+		}
+
+		$debug_msg = ee()->email->print_debugger(array());
+
+		if ($error == TRUE)
+		{
+			show_error(lang('error_sending_email').BR.BR.$debug_msg);
+		}
+
+		// Save cache data
+		$email->total_sent = $this->_fetch_total($to, $email->cc, $email->bcc);
+		$email->save();
+		return $debug_msg;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Sends multiple emails handling errors
+	 */
+	private function deliverManyEmails($email)
+	{
+		$recipient_array = deserialize($email->recipient_array);
+		$total_sent = $email->total_sent;
+		foreach ($recipient_array as $key => $val)
+		{
+			if ( ! $this->deliverEmail($email, $val['0']))
+			{
+				// Let's adjust the recipient array up to this point
+				reset($recipient_array);
+				$recipient_array = array_slice($recipient_array, $total_sent);
+
+				$email->total_sent = $total_sent;
+				$email->recipient_array = serialize($recipient_array);
+				$email->save();
+
+				$debug_msg = ee()->email->print_debugger(array());
+
+				show_error(lang('error_sending_email').BR.BR.$debug_msg);
+			}
+			$total_sent++;
+		}
+		return $total_sent;
+	}
+
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Delivers an email
+	 */
+	private function deliverEmail($email, $to, $cc = NULL, $bcc = NULL)
+	{
+		$subject = $email->subject;
+		$message = $email->message;
+
+		//  Apply text formatting if necessary
+		if ($email->text_fmt != 'none' && $email->text_fmt != '')
+		{
+			ee()->load->library('typography');
+			ee()->typography->initialize(array(
+				'parse_images'	=> FALSE,
+				'parse_smileys'	=> FALSE
+			));
+
+			if (ee()->config->item('enable_censoring') == 'y' &&
+				ee()->config->item('censored_words') != '')
+        	{
+				$subject = ee()->typography->filter_censored_words($email->subject);
+			}
+
+			$message = ee()->typography->parse_type($email->message, array(
+				'text_format'   => $email->text_fmt,
+				'html_format'   => 'all',
+				'auto_links'	=> 'n',
+				'allow_img_url' => 'y'
+			));
+		}
+
+		ee()->email->wordwrap  = ($email->wordwrap == 'y') ? TRUE : FALSE;
+		ee()->email->mailtype  = $email->mailtype;
+		ee()->email->from($email->from_email, $email->from_name);
+		ee()->email->to($to);
+
+		if ( ! is_null($cc))
+		{
+			ee()->email->cc($email->cc);
+		}
+
+		if ( ! is_null($bcc))
+		{
+			ee()->email->bcc($email->bcc);
+		}
+
+		ee()->email->subject($subject);
+		ee()->email->message($message);
+
+		return ee()->email->send(FALSE);
+
+		$error = FALSE;
+
+		if ( ! ee()->email->send(FALSE))
+		{
+			$error = TRUE;
+		}
+
+		if ($delete)
+		{
+			$this->_delete_attachments(); // Remove attachments now
+		}
+
+		$debug_msg = ee()->email->print_debugger(array());
+
+		if ($error == TRUE)
+		{
+			show_error(lang('error_sending_email').BR.BR.$debug_msg);
+		}
+
+		// Save cache data
+		$email->total_sent = $this->_fetch_total($to, $email->cc, $email->bcc);
+		$email->save();
+		return $debug_msg;
 	}
 
 	// --------------------------------------------------------------------
