@@ -45,6 +45,7 @@ class GatewayBehaviorTest extends \PHPUnit_Framework_TestCase {
 
 		$database->shouldReceive('update')->never();
 		$database->shouldReceive('insert')->with('dummy', array('key' => 'test'))->once();
+		$database->shouldReceive('insert_id')->once();
 
 		$gateway = new TestGateway($this->validation);
 		$gateway->setConnection($database);

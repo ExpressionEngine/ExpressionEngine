@@ -36,8 +36,8 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
 
 class GatewayStub extends \EllisLab\ExpressionEngine\Model\Gateway\RowDataGateway {
 
-	protected static $_table_name = 'teams';
-	protected static $_primary_key = 'team_id';
+	protected static $_table_name = 'the_table';
+	protected static $_primary_key = 'the_id';
 
 	public $the_id;
 	public $another_id;
