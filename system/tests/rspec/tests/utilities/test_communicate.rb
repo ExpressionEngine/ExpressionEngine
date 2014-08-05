@@ -290,4 +290,28 @@ feature 'Communicate' do
 		@page.alert.should have_text 'Total number of emails sent: 2'
 		@page.current_url.should include 'utilities/communicate/sent'
 	end
+
+	it "can send in batches" do
+		(1..5).each do |n|
+			add_member(username: 'member' + n.to_s, email: 'ellislab.developers.member' + n.to_s + '@mailinator.com')
+		end
+		ee_config(item: 'email_batchmode', value: 'y')
+		ee_config(item: 'email_batch_size', value: '4') # Must be less than the number of emails
+		@page.load
+
+		@page.should have_text "Members (5)"
+
+		my_subject = @test_subject + ' batch member group email'
+		my_body = "This a test email sent from the communicate tool."
+
+		@page.subject.set my_subject
+		@page.from_email.set @test_from
+		@page.find('input[name="group_5"]').set true
+		@page.body.set my_body
+		@page.submit_button.click
+
+		@page.should have_alert
+		@page.should have_css 'div.alert.warn'
+		@page.alert.should have_text 'The email sending routine will begin in'
+	end
 end
