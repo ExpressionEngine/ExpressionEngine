@@ -73,7 +73,7 @@ def capybaraify_string(str)
   return str
 end
 
-def add_member(group_id: 5, username: 'johndoe', screen_name: 'John Doe')
+def add_member(group_id: 5, username: 'johndoe', screen_name: 'John Doe', email: nil)
   command = "cd fixtures && php member.php"
 
   if group_id
@@ -86,6 +86,10 @@ def add_member(group_id: 5, username: 'johndoe', screen_name: 'John Doe')
 
   if screen_name
     command += " --screen-name '" + screen_name.to_s + "'"
+  end
+
+  if email
+    command += " --email '" + email.to_s + "'"
   end
 
   command += " > /dev/null 2>&1"
