@@ -1939,6 +1939,8 @@ class EE_Template {
 	{
 		if ($this->disable_caching == FALSE && ee()->cache->get_adapter() == 'file')
 		{
+			$this->log_item(" - Beginning Page Cache Garbage Collection - ");
+
 			$cache_info = ee()->cache->cache_info();
 
 			// Find the directory holding our page cache
@@ -1961,6 +1963,7 @@ class EE_Template {
 			// Bail if we couldn't find the directory
 			if (empty($path))
 			{
+				$this->log_item(" - End Page Cache Garbage Collection - ");
 				return;
 			}
 
@@ -1982,6 +1985,8 @@ class EE_Template {
 			{
 				ee()->cache->delete('/page_cache/');
 			}
+
+			$this->log_item(" - End Page Cache Garbage Collection - ");
 		}
 	}
 
