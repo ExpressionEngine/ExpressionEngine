@@ -929,6 +929,17 @@ PAPAYA;
 			$this->userdata['screen_name'] = $this->userdata['username'];
 		}
 
+		// check screen name and username for valid format
+		if (strlen($this->userdata['username']) > 50 OR preg_match("/[\|'\"!<>\{\}]/", $this->userdata['username']))
+		{
+			$errors[] = "Username is invalid. Must be less than 50 characters and cannot include the following characters: ".htmlentities('|\'"!<>{}');
+		}
+
+		if (preg_match('/[\{\}<>]/', $this->userdata['screen_name']))
+		{
+			$errors[] = "Screen Name is invalid. Must not include the following characters: ".htmlentities('{}<>');
+		}
+
 		// DB Prefix has some character restrictions
 		if ( ! preg_match("/^[0-9a-zA-Z\$_]*$/", $this->userdata['db_prefix']))
 		{
