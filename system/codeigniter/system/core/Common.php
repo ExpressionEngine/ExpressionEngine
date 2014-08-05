@@ -290,16 +290,7 @@
 			$value = config_item($item);
 		}
 
-		if ($value === 'y')
-		{
-			$value = TRUE;
-		}
-		elseif ($value === 'n')
-		{
-			$value = FALSE;
-		}
-
-		return (bool) $value;
+		return (get_bool_from_string($value)) ?: (bool) $value;
 	}
 
 // ------------------------------------------------------------------------
