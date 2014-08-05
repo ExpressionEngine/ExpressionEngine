@@ -320,6 +320,9 @@ abstract class Model {
 			}
 		});
 
+		$key = static::getMetaData('primary_key');
+		$gateway_names = static::getMetaData('gateway_names');
+		$this->{$key} = $gateways[$gateway_names[0]]->{$key};
 		return $this;
 	}
 

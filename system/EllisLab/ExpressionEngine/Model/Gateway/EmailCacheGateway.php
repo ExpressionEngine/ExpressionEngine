@@ -22,7 +22,7 @@ class EmailCacheGateway extends RowDataGateway {
 		),
 		'cache_id' => array(
 			'gateway' => 'MemberGroupGateway',
-			'key' => 'member_id',
+			'key' => 'group_id',
 			'pivot_table' => 'email_cache_mg',
 			'pivot_key' => 'cache_id',
 			'pivot_foreign_key' => 'group_id'
