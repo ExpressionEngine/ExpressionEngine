@@ -77,21 +77,11 @@ class Communicate extends Utilities {
 		/** -----------------------------*/
 		if ($id)
 		{
-			$cache = ee()->api->get('EmailCache', $id)
-				->with('MemberGroup')
+			$caches = ee()->api->get('EmailCache', $id)
+				->with('MemberGroups')
 				->all();
 
-			$groups = $cache->getMemberGroups();
-
-			$query = ee()->communicate_model->get_cached_member_groups($id);
-
-			if ($query->num_rows() > 0)
-			{
-				foreach ($query->result_array() as $row)
-				{
-					$member_groups[] = $row['group_id'];
-				}
-			}
+			$member_groups = $caches[0]->getMemberGroups()->getIds();
 		}
 
 		// Set up member group emailing options
