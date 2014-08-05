@@ -1170,6 +1170,7 @@ PAPAYA;
 		}
 
 		$self = ( ! isset($_SERVER['PHP_SELF']) OR $_SERVER['PHP_SELF'] == '') ? '' : substr($_SERVER['PHP_SELF'], 1);
+		$self = htmlspecialchars($self, ENT_QUOTES);
 
 		$this->userdata['cp_url'] = ($self != '') ? $host.$self : $host.SELF;
 
