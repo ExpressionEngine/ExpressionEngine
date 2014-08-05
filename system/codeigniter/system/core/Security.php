@@ -397,11 +397,11 @@ class CI_Security {
 					array_values($this->_html5_entites),
 					$str
 				);
-				$str = html_entity_decode($str, ENT_COMPAT, $charset);
+				$str = html_entity_decode($str, ENT_COMPAT | ENT_QUOTES, $charset);
 			}
 			else
 			{
-				$str = html_entity_decode($str, ENT_COMPAT | ENT_HTML5, $charset);
+				$str = html_entity_decode($str, ENT_COMPAT | ENT_QUOTES | ENT_HTML5, $charset);
 
 			}
 		}
