@@ -641,6 +641,10 @@ class Member_auth extends Member {
 			$data['hidden_fields']['board_id'] = $this->board_id;
 		}
 
+		// keep this page out of the tracker so login/reset requests don't bounce back here
+		array_shift(ee()->session->tracker);
+		ee()->input->set_cookie('tracker', serialize(ee()->session->tracker), '0');
+
 		$this->_set_page_title(lang('mbr_forgotten_password'));
 
 		return $this->_var_swap(
@@ -961,9 +965,9 @@ class Member_auth extends Member {
 
 		// If we can get their last URL from the tracker,
 		// then we'll use it.
-		if (isset(ee()->session->tracker[3]))
+		if (isset(ee()->session->tracker[2]))
 		{
-			$seg = (ee()->session->tracker[3] != 'index') ? ee()->session->tracker[3] : '';
+			$seg = (ee()->session->tracker[2] != 'index') ? ee()->session->tracker[2] : '';
 			$site_name = stripslashes(ee()->config->item('site_name'));
 			$return = reduce_double_slashes(ee()->functions->fetch_site_index() . '/' . $seg);
 		}
