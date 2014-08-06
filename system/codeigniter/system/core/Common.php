@@ -290,7 +290,8 @@
 			$value = config_item($item);
 		}
 
-		return (get_bool_from_string($value)) ?: (bool) $value;
+		$setting = get_bool_from_string($value);
+		return (is_bool($setting)) ? $setting : (bool) $value;
 	}
 
 // ------------------------------------------------------------------------
