@@ -298,6 +298,21 @@ class View {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Sets variables for defining a meta-refresh tag
+	 *
+	 * @param	string	$url	The URL to refresh to
+	 * @param	int		$rate	The refresh rate
+	 *
+	 * @return void
+	 */
+	public function set_refresh($url, $rate)
+	{
+		ee()->view->meta_refresh = array('url' => $url, 'rate' => $rate);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Get themes URL from supplied system path
 	 *
 	 * this function will extract which theme we will be loading the file from.
