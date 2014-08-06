@@ -2013,7 +2013,8 @@ class Channel {
 						break;
 
 						case 'random' :
-								$end = "ORDER BY rand()";
+								$random_seed = ($this->pagination->paginate === TRUE) ? (int) ee()->session->userdata('last_visit') : '';
+								$end = "ORDER BY rand({$random_seed})";
 								$sort_array[$key] = FALSE;
 						break;
 
@@ -2081,6 +2082,14 @@ class Channel {
 				if ($total >= $offset)
 				{
 					$total = $total - $offset;
+				}
+
+				// do a little dance to remove the seed if we have random order
+				// and only one page of results. Random order should only be
+				// sticky across pages.
+				if (isset($random_seed) && $total <= $this->pagination->per_page)
+				{
+					$end = str_replace($random_seed, '', $end);
 				}
 
 				$this->pagination->build($total, $this->pagination->per_page);
