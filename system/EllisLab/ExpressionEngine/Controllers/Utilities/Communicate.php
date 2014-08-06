@@ -367,7 +367,7 @@ class Communicate extends Utilities {
 
 			$this->_delete_attachments(); // Remove attachments now
 
-			ee()->view->set_message('success', lang('total_emails_sent') . ' ' . $$email->total_sent, $debug_msg, TRUE);
+			ee()->view->set_message('success', lang('total_emails_sent') . ' ' . $email->total_sent, $debug_msg, TRUE);
 			ee()->functions->redirect(cp_url('utilities/communicate/sent'));
 		}
 		else
@@ -375,7 +375,7 @@ class Communicate extends Utilities {
 			$stats = str_replace("%x", ($start + 1), lang('currently_sending_batch'));
 			$stats = str_replace("%y", ($email->total_sent), $stats);
 
-			$message = $stats.BR.BR.lang('emails_remaining').NBS.NBS.count($email->recipient_array);
+			$message = $stats.BR.BR.lang('emails_remaining').NBS.NBS.count(unserialize($email->recipient_array));
 
 			ee()->view->set_refresh(cp_url('utilities/communicate/batch/' . $email->cache_id), 6, TRUE);
 
@@ -428,7 +428,7 @@ class Communicate extends Utilities {
 	private function deliverManyEmails($email)
 	{
 		$recipient_array = unserialize($email->recipient_array);
-		if ( ! is_array($recipient_array))
+		if ( ! is_array($recipient_array) OR count($recipient_array) < 1)
 		{
 			return 0;
 		}
@@ -438,7 +438,7 @@ class Communicate extends Utilities {
 			count($recipient_array) : $batch_size;
 
 		$total_sent = $email->total_sent;
-		for ($x = 0; $x <= $number_to_send; $x++)
+		for ($x = 0; $x < $number_to_send; $x++)
 		{
 			$email_address = array_shift($recipient_array);
 			if ( ! $this->deliverEmail($email, $email_address))
@@ -457,7 +457,7 @@ class Communicate extends Utilities {
 			$total_sent++;
 		}
 
-		$email->total_sent += $total_sent;
+		$email->total_sent = $total_sent;
 		$email->recipient_array = (count($recipient_array)) ? serialize($recipient_array) : "";
 		$email->save();
 		return $total_sent;
