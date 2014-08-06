@@ -23,6 +23,7 @@ $lang = array(
 'sending_email'			=> 'Sending Email',
 'batchmode_ready_to_begin'	=> 'The email sending routine will begin in five seconds',
 'batchmode_warning'		=> 'Do not touch your browser until the process is completely finished!',
+'batchmode_disabled'	=> 'Batch Mode is disabled',
 'problem_with_id'		=> 'A problem was encountered with the ID number needed to send emails',
 'cache_data_missing'	=> 'The email cache data was not located.',
 'currently_sending_batch'	=> 'Now sending emails %x through %y',
