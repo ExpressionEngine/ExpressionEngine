@@ -11,7 +11,7 @@ use EllisLab\ExpressionEngine\Model\Gateway\RowDataGateway;
 class EmailCacheGateway extends RowDataGateway {
 
 	protected static $_table_name = 'email_cache';
-	protected static $_primary_id = 'cache_id';
+	protected static $_primary_key = 'cache_id';
 	protected static $_related_gateways = array(
 		'cache_id' => array(
 			'gateway' => 'MailingListGateway',
