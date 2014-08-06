@@ -315,17 +315,16 @@ class Communicate extends Utilities {
 		/**  Start Batch-Mode
 		/** ----------------------------------------*/
 
-		ee()->view->set_refresh(cp_url('utilities/communicate/batch/' . $email->cache_id), 6);
+		ee()->view->set_refresh(cp_url('utilities/communicate/batch/' . $email->cache_id), 6, TRUE);
 
 		$alert = array(
 			'type' => 'warn',
 			'title' => lang('batchmode_ready_to_begin'),
 			'description' => lang('batchmode_warning')
 		);
-		ee()->view->set_alert('standard', $alert);
+		ee()->view->set_alert('standard', $alert, TRUE);
 
-		$this->index();
-		// ee()->functions->redirect(cp_url('utilities/communicate'));
+		ee()->functions->redirect(cp_url('utilities/communicate'));
 	}
 
 	// --------------------------------------------------------------------
@@ -378,17 +377,16 @@ class Communicate extends Utilities {
 
 			$message = $stats.BR.BR.lang('emails_remaining').NBS.NBS.count($email->recipient_array);
 
-			ee()->view->set_refresh(cp_url('utilities/communicate/batch/' . $email->cache_id), 6);
+			ee()->view->set_refresh(cp_url('utilities/communicate/batch/' . $email->cache_id), 6, TRUE);
 
 			$alert = array(
 				'type' => 'warn',
 				'title' => $message,
 				'description' => lang('batchmode_warning')
 			);
-			ee()->view->set_alert('standard', $alert);
+			ee()->view->set_alert('standard', $alert, TRUE);
 
-			$this->index();
-			// ee()->functions->redirect(cp_url('utilities/communicate'));
+			ee()->functions->redirect(cp_url('utilities/communicate'));
 		}
 	}
 
