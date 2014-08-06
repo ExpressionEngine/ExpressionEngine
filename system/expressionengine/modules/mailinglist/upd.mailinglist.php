@@ -238,7 +238,6 @@ class Mailinglist_upd {
 			// Add queue_id
 			ee()->smartforge->add_column('mailing_list_queue', array(
 				'queue_id' => array(
-					'name'       => 'queue_id',
 					'type'       => 'int',
 					'constraint' => '10',
 					'unsigned'   => TRUE
@@ -249,7 +248,6 @@ class Mailinglist_upd {
 			// Add ip_address
 			ee()->smartforge->add_column('mailing_list', array(
 				'ip_address' => array(
-					'name'       => 'ip_address',
 					'type'       => 'varchar',
 					'constraint' => '45'
 				)
