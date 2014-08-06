@@ -227,13 +227,13 @@ class Communicate extends Utilities {
 		}
 
 		// Get member group emails
-		$groups = ee()->api->get('MemberGroup', $groups)
+		$member_groups = ee()->api->get('MemberGroup', $groups)
 			->with('Members')
-			->filter('include_in_mailinglists', 'y')
+			->filter('include_in_mailinglists', 'y') // for safety
 			->all();
 
 		$email_addresses = array();
-		foreach ($groups as $group)
+		foreach ($member_groups as $group)
 		{
 			foreach ($group->getMembers() as $member)
 			{
@@ -393,7 +393,7 @@ class Communicate extends Utilities {
 	 */
 	private function deliverManyEmails($email)
 	{
-		$recipient_array = deserialize($email->recipient_array);
+		$recipient_array = unserialize($email->recipient_array);
 		$total_sent = $email->total_sent;
 		foreach ($recipient_array as $key => $val)
 		{
