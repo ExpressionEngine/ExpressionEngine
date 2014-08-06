@@ -237,10 +237,7 @@ class Communicate extends Utilities {
 		{
 			foreach ($group->getMembers() as $member)
 			{
-				$email_addresses['m' . $member->member_id] = array(
-					$member->email,
-					$member->screen_name
-				);
+				$email_addresses[] = $member->email;
 			}
 		}
 
@@ -276,7 +273,7 @@ class Communicate extends Utilities {
 
 					if ( ! empty($address))
 					{
-						$email_addresses['r'][] = $address;
+						$email_addresses[] = $address;
 					}
 				}
 			}
@@ -291,7 +288,7 @@ class Communicate extends Utilities {
 		// Is Batch Mode set?
 
 		$batch_mode = ee()->config->item('email_batchmode');
-		$batch_size = (string) ee()->config->item('email_batch_size');
+		$batch_size = (int) ee()->config->item('email_batch_size');
 
 		if (! ctype_digit($batch_size) OR count($email_addresses) <= $batch_size)
 		{
@@ -310,11 +307,6 @@ class Communicate extends Utilities {
 
 			$this->_delete_attachments(); // Remove attachments now
 
-			//  Update email cache
-			$email->total_sent = $total_sent;
-			$email->recipient_array = "";
-			$email->save();
-
 			ee()->view->set_message('success', lang('total_emails_sent') . ' ' . $total_sent, $debug_msg, TRUE);
 			ee()->functions->redirect(cp_url('utilities/communicate/sent'));
 		}
@@ -322,6 +314,9 @@ class Communicate extends Utilities {
 		/** ----------------------------------------
 		/**  Start Batch-Mode
 		/** ----------------------------------------*/
+
+		ee()->view->set_message('warn', lang('batchmode_ready_to_begin'), lang('batchmode_warning'), TRUE);
+		ee()->functions->redirect(cp_url('utilities/communicate'));
 
 		$data = array(
 			'redirect_url'		=> BASE.AMP.'C=tools_communicate'.AMP.'M=batch_send'.AMP.'id='.$id,
@@ -349,11 +344,53 @@ class Communicate extends Utilities {
 	 */
 	public function batch($id)
 	{
+		ee()->load->library('email');
+
+		if (ee()->config->item('email_batchmode') != 'y')
+		{
+			show_error(lang('batchmode_disabled'));
+		}
+
 		if ( ! ctype_digit($id))
 		{
 			show_error(lang('problem_with_id'));
 		}
 
+		$caches = ee()->api->get('EmailCache', $id)
+			->with('MemberGroups')
+			->all();
+
+		if (count($caches) < 1)
+		{
+			show_error(lang('cache_data_missing'));
+		}
+
+		$email = $caches[0];
+
+		$total_sent = $this->deliverManyEmails($email);
+		if (empty($email->recipient_array))
+		{
+			$debug_msg = ee()->email->print_debugger(array());
+
+			$this->_delete_attachments(); // Remove attachments now
+
+			ee()->view->set_message('success', lang('total_emails_sent') . ' ' . $$email->total_sent, $debug_msg, TRUE);
+			ee()->functions->redirect(cp_url('utilities/communicate/sent'));
+		}
+		else
+		{
+			$batch_size = (int) ee()->config->item('email_batch_size');
+			$next_batch_size = ($batch_size > count($email->recipient_array)) ?
+				count($email->recipient_array) : $batch_size;
+
+			$stats = str_replace("%x", ($total_sent + 1), lang('currently_sending_batch'));
+			$stats = str_replace("%y", ($total_sent + $next_batch_size), $stats);
+
+			$message = $stats.BR.BR.lang('emails_remaining').NBS.NBS.count($email->recipient_array);
+
+			ee()->view->set_message('warn', $message, lang('batchmode_warning'), TRUE);
+			ee()->functions->redirect(cp_url('utilities/communicate'));
+		}
 	}
 
 	// --------------------------------------------------------------------
@@ -394,16 +431,21 @@ class Communicate extends Utilities {
 	private function deliverManyEmails($email)
 	{
 		$recipient_array = unserialize($email->recipient_array);
+		$batch_size = (int) ee()->config->item('email_batch_size');
+
+		$number_to_send = ($batch_size > count($recipient_array)) ?
+			count($recipient_array) : $batch_size;
+
 		$total_sent = $email->total_sent;
-		foreach ($recipient_array as $key => $val)
+		for ($x = 0; $x < $number_to_send; $x++)
 		{
-			if ( ! $this->deliverEmail($email, $val['0']))
+			$email_address = array_shift($recipient_array);
+			if ( ! $this->deliverEmail($email, $email_address))
 			{
 				// Let's adjust the recipient array up to this point
-				reset($recipient_array);
-				$recipient_array = array_slice($recipient_array, $total_sent);
+				$recipient_array = array_unshift($recipient_array, $email_address);
 
-				$email->total_sent = $total_sent;
+				$email->total_sent += $total_sent;
 				$email->recipient_array = serialize($recipient_array);
 				$email->save();
 
@@ -413,6 +455,10 @@ class Communicate extends Utilities {
 			}
 			$total_sent++;
 		}
+
+		$email->total_sent += $total_sent;
+		$email->recipient_array = (count($recipient_array)) ? serialize($recipient_array) : "";
+		$email->save();
 		return $total_sent;
 	}
 
