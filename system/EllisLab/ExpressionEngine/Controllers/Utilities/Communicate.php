@@ -315,22 +315,17 @@ class Communicate extends Utilities {
 		/**  Start Batch-Mode
 		/** ----------------------------------------*/
 
-		ee()->view->set_message('warn', lang('batchmode_ready_to_begin'), lang('batchmode_warning'), TRUE);
-		ee()->functions->redirect(cp_url('utilities/communicate'));
+		ee()->view->set_refresh(cp_url('utilities/communicate/batch/' . $email->cache_id), 6);
 
-		$data = array(
-			'redirect_url'		=> BASE.AMP.'C=tools_communicate'.AMP.'M=batch_send'.AMP.'id='.$id,
-			'refresh_rate'		=> 6,
-			'refresh_message'	=> lang('batchmode_ready_to_begin'),
-			'refresh_notice'	=> lang('batchmode_warning'),
-			'refresh_heading'	=> lang('sending_email'),
-			'EE_view_disable'	=> TRUE,
-			'maincontent_state'	=> ' style="width:100%; display:block"'
+		$alert = array(
+			'type' => 'warn',
+			'title' => lang('batchmode_ready_to_begin'),
+			'description' => lang('batchmode_warning')
 		);
+		ee()->view->set_alert('standard', $alert);
 
-		ee()->view->cp_page_title = lang('sending_email');
-
-		ee()->load->view('_shared/refresh_message', $data);
+		$this->index();
+		// ee()->functions->redirect(cp_url('utilities/communicate'));
 	}
 
 	// --------------------------------------------------------------------
@@ -383,8 +378,17 @@ class Communicate extends Utilities {
 
 			$message = $stats.BR.BR.lang('emails_remaining').NBS.NBS.count($email->recipient_array);
 
-			ee()->view->set_message('warn', $message, lang('batchmode_warning'), TRUE);
-			ee()->functions->redirect(cp_url('utilities/communicate'));
+			ee()->view->set_refresh(cp_url('utilities/communicate/batch/' . $email->cache_id), 6);
+
+			$alert = array(
+				'type' => 'warn',
+				'title' => $message,
+				'description' => lang('batchmode_warning')
+			);
+			ee()->view->set_alert('standard', $alert);
+
+			$this->index();
+			// ee()->functions->redirect(cp_url('utilities/communicate'));
 		}
 	}
 
