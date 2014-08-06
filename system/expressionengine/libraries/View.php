@@ -24,7 +24,7 @@
  */
 class View {
 
-	public $form_messages = array();
+	public $alerts = array();
 
 	protected $_theme = 'default';
 	protected $_extend = '';
@@ -256,15 +256,42 @@ class View {
 			$description = implode('<br>', $description);
 		}
 
-		$message_array = array('title' => $title, 'description' => $description);
+		$message_array = array('type' => $type, 'title' => $title, 'description' => $description);
+		$this->set_alert('inline', $message_array, $flashdata);
+	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Populates the alerts view array based on the alert type
+	 *
+	 * @param	string	$type		'standard', 'inline', or 'banner'
+	 * @param	array	$alert_data	An array with keys 'type', 'title', and 'description'
+	 * @param 	bool	$flashdata	Whether or not to persist this message
+	 * 		                      	in flashdata for the next page load
+	 * @return 	void
+	 */
+	public function set_alert($type, array $alert_data, $flashdata = FALSE)
+	{
 		if ($flashdata)
 		{
-			ee()->session->set_flashdata($type, $message_array);
+			ee()->session->set_flashdata('alert-' . $type, $alert_data);
 		}
 		else
 		{
-			ee()->view->form_messages[$type] = array('title' => $title, 'description' => $description);
+			if ($type == 'inline')
+			{
+				if ( ! array_key_exists('inline', ee()->view->alerts))
+				{
+					ee()->view->alerts['inline'] = array();
+				}
+
+				ee()->view->alerts['inline'][] = $alert_data;
+			}
+			else
+			{
+				ee()->view->alerts[$type] = $alert_data;
+			}
 		}
 	}
 

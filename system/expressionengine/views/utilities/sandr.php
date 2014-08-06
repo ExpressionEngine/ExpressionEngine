@@ -2,7 +2,7 @@
 
 <h1><?=$cp_page_title?></h1>
 <?=form_open(cp_url('utilities/sandr'), 'class="settings ajax-validate"')?>
-	<?php $this->view('_shared/form_messages')?>
+	<?php $this->view('_shared/alerts')?>
 	<div class="alert inline warn">
 		<?=lang('sandr_warning')?>
 	</div>

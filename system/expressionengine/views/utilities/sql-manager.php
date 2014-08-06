@@ -11,7 +11,7 @@
 </div>
 <div class="box">
 	<?=form_open(cp_url('utilities/sql'), 'class="tbl-ctrls"')?>
-	<?php $this->view('_shared/form_messages')?>
+	<?php $this->view('_shared/alerts')?>
 		<fieldset class="tbl-search right">
 			<input placeholder="<?=lang('type_phrase')?>" type="text" value="">
 			<input class="btn submit" type="submit" value="<?=lang('search_tables')?>">

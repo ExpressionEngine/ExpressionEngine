@@ -1,7 +1,7 @@
 <?php extend_template('default-nav'); ?>
 
 <?=form_open(cp_url('utilities/query'), 'class="settings ajax-validate"')?>
-	<?php $this->view('_shared/form_messages')?>
+	<?php $this->view('_shared/alerts')?>
 	<div class="alert inline warn">
 		<?=lang('sql_warning')?>
 	</div>

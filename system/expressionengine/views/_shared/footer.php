@@ -124,5 +124,15 @@
 				</div>
 			</div>
 		</div>-->
+		<?php if (isset(ee()->view->alerts['standard'])): ?>
+			<div class="alert <?=ee()->view->alerts['standard']['type']?>">
+				<?php if (isset(ee()->view->alerts['standard']['title'])): ?>
+				<h3><?=ee()->view->alerts['standard']['title']?></h3>
+				<?php endif; ?>
+				<?php if (isset(ee()->view->alerts['standard']['description'])): ?>
+				<p><?=ee()->view->alerts['standard']['description']?></p>
+				<?php endif; ?>
+			</div>
+		<?php endif; ?>
 	</body>
 </html>

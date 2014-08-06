@@ -2,7 +2,7 @@
 
 <?=form_open(cp_url('utilities/member-import/process-xml'), 'class="tbl-ctrls"', $form_hidden)?>
 	<h1><?=$cp_page_title?></h1>
-	<?php $this->view('_shared/form_messages')?>
+	<?php $this->view('_shared/alerts')?>
 	<?php if ($added_fields && count($added_fields) > 0):?>
 		<div class="alert inline success">
 			<h3><?=lang('new_fields_success')?></h3>

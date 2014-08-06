@@ -2,7 +2,7 @@
 
 <?=form_open(cp_url('utilities/communicate/sent'), 'class="tbl-ctrls"')?>
 	<h1><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h1>
-	<?php $this->view('_shared/form_messages')?>
+	<?php $this->view('_shared/alerts')?>
 	<table cellspacing="0">
 		<tr>
 			<th<?php if($highlight == 'subject'): ?> class="highlight"<?php endif; ?>><?=lang('subject')?> <a href="<?=$subject_sort_url?>" class="ico sort <?=$subject_direction?> right"></a></th>

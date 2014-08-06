@@ -103,11 +103,11 @@ class Cp {
 
 
 		// Success/failure messages
-		foreach (array('success', 'warn', 'issue') as $flash_key)
+		foreach (array('alert-standard', 'alert-inline', 'alert-banner') as $flash_key)
 		{
 			if ($message = ee()->session->flashdata($flash_key))
 			{
-				ee()->view->form_messages[$flash_key] = $message;
+				ee()->view->set_alert(str_replace('alert-', '', $flash_key), $message);
 			}
 		}
 

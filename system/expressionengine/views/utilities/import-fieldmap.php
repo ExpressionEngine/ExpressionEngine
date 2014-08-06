@@ -2,7 +2,7 @@
 
 <h1><?=$cp_page_title?></h1>
 <?=form_open(cp_url('utilities/import-converter/import-fieldmap-confirm'), 'class="settings"', $form_hidden)?>
-	<?php $this->view('_shared/form_messages')?>
+	<?php $this->view('_shared/alerts')?>
 	<?php if (form_error('unique_check')): ?>
 		<div class="alert inline issue">
 			<p><?=form_error('unique_check')?></p>

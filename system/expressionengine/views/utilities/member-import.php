@@ -2,7 +2,7 @@
 
 <h1><?=$cp_page_title?></h1>
 <?=form_open(cp_url('utilities/member-import'), 'class="settings ajax-validate"')?>
-	<?php $this->view('_shared/form_messages')?>
+	<?php $this->view('_shared/alerts')?>
 	<fieldset class="col-group last <?=form_error_class('xml_file')?>">
 		<div class="setting-txt col w-8">
 			<h3><?=lang('mbr_xml_file')?></h3>

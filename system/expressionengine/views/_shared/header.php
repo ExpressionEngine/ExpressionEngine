@@ -4,6 +4,9 @@
 		<?=ee()->view->head_title($cp_page_title)?>
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" lang="en-us" dir="ltr">
 		<meta content="width=device-width, initial-scale=1.0" name="viewport">
+		<?php if (isset($meta_refresh)): ?>
+		<meta http-equiv='refresh' content='<?=$meta_refresh['rate']?>; url=<?=$meta_refresh['url']?>'>
+		<?php endif;?>
 
 		<?=ee()->view->head_link('css/v3/common.min.css'); ?>
 		<?=ee()->view->head_link('css/jquery-ui-1.8.16.custom.css'); ?>
@@ -21,6 +24,16 @@
 		?>
 	</head>
 	<body id="top">
+		<?php if (isset(ee()->view->alerts['banner'])): ?>
+			<div class="alert banner <?=ee()->view->alerts['banner']['type']?>">
+				<?php if (isset(ee()->view->alerts['banner']['title'])): ?>
+				<h3><?=ee()->view->alerts['banner']['title']?></h3>
+				<?php endif; ?>
+				<?php if (isset(ee()->view->alerts['banner']['description'])): ?>
+				<p><?=ee()->view->alerts['banner']['description']?></p>
+				<?php endif; ?>
+			</div>
+		<?php endif; ?>
 		<section class="bar info-wrap">
 			<nav class="snap">
 				<div class="site">

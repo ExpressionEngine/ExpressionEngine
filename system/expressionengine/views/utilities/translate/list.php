@@ -6,7 +6,7 @@
 		<input class="btn submit" type="submit" value="<?=lang('search_files_button')?>">
 	</fieldset>
 	<h1><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h1>
-	<?php $this->view('_shared/form_messages')?>
+	<?php $this->view('_shared/alerts')?>
 	<table cellspacing="0">
 		<tr>
 			<th class="highlight"><?=lang('file_name')?> <a href="<?=$file_name_sort_url?>" class="ico sort <?=$file_name_direction?> right"></a></th>
