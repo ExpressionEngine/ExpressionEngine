@@ -62,6 +62,63 @@ abstract class RowDataGateway {
 	}
 
 	/**
+	 * Pass through getter that allows properties to be gotten from this model
+	 * but stored in the wrapped gateway.
+	 *
+	 * @param	string	$name	The name of the property to be retrieved.
+	 *
+	 * @return	mixed	The property being retrieved.
+	 *
+	 * @throws	NonExistentPropertyException	If the property doesn't exist,
+	 * 					an appropriate exception is thrown.
+	 */
+	public function __get($name)
+	{
+		$method = 'get' . ucfirst($name);
+		if (method_exists($this, $method))
+		{
+			return $this->$method();
+		}
+
+		if (property_exists($this, $name) && strpos($name, '_') !== 0)
+		{
+			return $this->{$name};
+		}
+
+		throw new \InvalidArgumentException('Attempt to access a non-existent property, "' . $name . '", on ' . get_called_class());
+	}
+
+	/**
+	 * Pass through setter that allows properties to be set on this model,
+	 * but stored in the wrapped gateway.
+	 *
+	 * @param	string	$name	The name of the property being set. Must be
+	 * 						a valid property on the wrapped gateway.
+	 * @param	mixed	$value	The value to set the property to.
+	 *
+	 * @return	void
+	 *
+	 * @throws	NonExistentPropertyException	If the property doesn't exist,
+	 * 					and appropriate exception is thrown.
+	 */
+	public function __set($name, $value)
+	{
+		$method = 'set' . ucfirst($name);
+		if (method_exists($this, $method))
+		{
+			return $this->$method($value);
+		}
+
+		if (property_exists($this, $name) && strpos($name, '_') !== 0)
+		{
+			$this->{$name} = $value;
+			return;
+		}
+
+		throw new \InvalidArgumentException('Attempt to access a non-existent property "' . $name . '" on ' . get_called_class());
+	}
+
+	/**
 	 * Get Meta Data
 	 *
 	 * Get a piece of meta data on this gateway.  If no key is given, then all

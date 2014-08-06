@@ -78,17 +78,34 @@ abstract class Model {
 		$this->_factory = $factory;
 		$this->_alias_service = $alias_service;
 
+
+		// Map them coming out of the database by passing them through the
+		// gateways.  We'll grab them from the first gateway that has them,
+		// so that will be the gateway that does the mapping.
+		foreach (static::getMetaData('gateway_names') as $gateway_name)
+		{
+			$gateways[$gateway_name] = $this->_factory->makeGateway($gateway_name, $data);
+		}
+
 		foreach ($data as $property => $value)
 		{
 			if (property_exists($this, $property))
 			{
-				$this->{$property} = $value;
-				if ($dirty)
+				foreach($gateways as $gateway)
 				{
-					$this->setDirty($property);
+					if (isset($gateway->{$property}))
+					{
+						$this->{$property} = $gateway->{$property};
+						if ($dirty)
+						{
+							$this->setDirty($property);
+						}
+						break;
+					}
 				}
 			}
 		}
+
 
 		$this->_related_models = new RelationshipBag();
 	}
