@@ -290,7 +290,7 @@ class Communicate extends Utilities {
 		$batch_mode = ee()->config->item('email_batchmode');
 		$batch_size = (int) ee()->config->item('email_batch_size');
 
-		if (! ctype_digit($batch_size) OR count($email_addresses) <= $batch_size)
+		if (count($email_addresses) <= $batch_size)
 		{
 			$batch_mode = 'n';
 		}
@@ -356,19 +356,18 @@ class Communicate extends Utilities {
 			show_error(lang('problem_with_id'));
 		}
 
-		$caches = ee()->api->get('EmailCache', $id)
-			->with('MemberGroups')
-			->all();
+		$email = ee()->api->get('EmailCache', $id)->first();
 
-		if (count($caches) < 1)
+		if (is_null($email))
 		{
 			show_error(lang('cache_data_missing'));
 		}
 
-		$email = $caches[0];
+		$start = $email->total_sent;
 
-		$total_sent = $this->deliverManyEmails($email);
-		if (empty($email->recipient_array))
+		$this->deliverManyEmails($email);
+
+		if ($email->recipient_array == '')
 		{
 			$debug_msg = ee()->email->print_debugger(array());
 
@@ -379,12 +378,8 @@ class Communicate extends Utilities {
 		}
 		else
 		{
-			$batch_size = (int) ee()->config->item('email_batch_size');
-			$next_batch_size = ($batch_size > count($email->recipient_array)) ?
-				count($email->recipient_array) : $batch_size;
-
-			$stats = str_replace("%x", ($total_sent + 1), lang('currently_sending_batch'));
-			$stats = str_replace("%y", ($total_sent + $next_batch_size), $stats);
+			$stats = str_replace("%x", ($start + 1), lang('currently_sending_batch'));
+			$stats = str_replace("%y", ($email->total_sent), $stats);
 
 			$message = $stats.BR.BR.lang('emails_remaining').NBS.NBS.count($email->recipient_array);
 
@@ -431,13 +426,17 @@ class Communicate extends Utilities {
 	private function deliverManyEmails($email)
 	{
 		$recipient_array = unserialize($email->recipient_array);
+		if ( ! is_array($recipient_array))
+		{
+			return 0;
+		}
 		$batch_size = (int) ee()->config->item('email_batch_size');
 
 		$number_to_send = ($batch_size > count($recipient_array)) ?
 			count($recipient_array) : $batch_size;
 
 		$total_sent = $email->total_sent;
-		for ($x = 0; $x < $number_to_send; $x++)
+		for ($x = 0; $x <= $number_to_send; $x++)
 		{
 			$email_address = array_shift($recipient_array);
 			if ( ! $this->deliverEmail($email, $email_address))
@@ -496,6 +495,7 @@ class Communicate extends Utilities {
 			));
 		}
 
+		ee()->email->clear();
 		ee()->email->wordwrap  = ($email->wordwrap == 'y') ? TRUE : FALSE;
 		ee()->email->mailtype  = $email->mailtype;
 		ee()->email->from($email->from_email, $email->from_name);
@@ -515,30 +515,6 @@ class Communicate extends Utilities {
 		ee()->email->message($message);
 
 		return ee()->email->send(FALSE);
-
-		$error = FALSE;
-
-		if ( ! ee()->email->send(FALSE))
-		{
-			$error = TRUE;
-		}
-
-		if ($delete)
-		{
-			$this->_delete_attachments(); // Remove attachments now
-		}
-
-		$debug_msg = ee()->email->print_debugger(array());
-
-		if ($error == TRUE)
-		{
-			show_error(lang('error_sending_email').BR.BR.$debug_msg);
-		}
-
-		// Save cache data
-		$email->total_sent = $this->_fetch_total($to, $email->cc, $email->bcc);
-		$email->save();
-		return $debug_msg;
 	}
 
 	// --------------------------------------------------------------------
