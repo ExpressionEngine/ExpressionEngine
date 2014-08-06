@@ -45,7 +45,7 @@ class GatewayBehaviorTest extends \PHPUnit_Framework_TestCase {
 
 		$database->shouldReceive('update')->never();
 		$database->shouldReceive('insert')->with('dummy', array('key' => 'test'))->once();
-		$database->shouldReceive('insert_id')->once();
+		$database->shouldReceive('insert_id')->andReturn(1)->once();
 
 		$gateway = new TestGateway($this->validation);
 		$gateway->setConnection($database);
@@ -53,6 +53,9 @@ class GatewayBehaviorTest extends \PHPUnit_Framework_TestCase {
 		$gateway->key = 'test';
 		$gateway->setDirty('key');
 		$gateway->save();
+
+		$this->assertEquals(1, $gateway->the_id);
+		$this->assertEquals('test', $gateway->key);
 	}
 
 	public function testSaveExistingCallsUpdateWhere()
@@ -104,4 +107,5 @@ class TestGateway extends \EllisLab\ExpressionEngine\Model\Gateway\RowDataGatewa
 	protected static $_primary_key = 'the_id';
 
 	protected $the_id;
+	protected $key;
 }
