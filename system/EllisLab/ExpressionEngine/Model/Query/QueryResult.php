@@ -177,7 +177,8 @@ class QueryResult {
 	{
 		$model_name = $model_data['__model_name'];
 
-		$model = $this->factory->make($model_name, $model_data, FALSE);
+		$model = $this->factory->make($model_name);
+		$model->populateFromDatabase($model_data);
 
 		$primary_key_name = $model::getMetaData('primary_key');
 		$primary_key = $model_data[$primary_key_name];
