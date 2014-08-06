@@ -111,6 +111,12 @@ class Cp {
 			}
 		}
 
+		// Meta-refresh tag
+		if ($refresh = ee()->session->flashdata('meta-refresh'))
+		{
+			ee()->view->set_refresh($refresh['url'], $refresh['rate']);
+		}
+
 		$cp_table_template = array(
 			'table_open' => '<table class="mainTable" border="0" cellspacing="0" cellpadding="0">'
 		);

@@ -305,9 +305,17 @@ class View {
 	 *
 	 * @return void
 	 */
-	public function set_refresh($url, $rate)
+	public function set_refresh($url, $rate, $flashdata = FALSE)
 	{
-		ee()->view->meta_refresh = array('url' => $url, 'rate' => $rate);
+		$refresh = array('url' => $url, 'rate' => $rate);
+		if ($flashdata)
+		{
+			ee()->session->set_flashdata('meta-refresh', $refresh);
+		}
+		else
+		{
+			ee()->view->meta_refresh = $refresh;
+		}
 	}
 
 	// --------------------------------------------------------------------
