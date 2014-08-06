@@ -103,5 +103,5 @@ class TestGateway extends \EllisLab\ExpressionEngine\Model\Gateway\RowDataGatewa
 	protected static $_table_name = 'dummy';
 	protected static $_primary_key = 'the_id';
 
-	public $key;
+	protected $the_id;
 }
