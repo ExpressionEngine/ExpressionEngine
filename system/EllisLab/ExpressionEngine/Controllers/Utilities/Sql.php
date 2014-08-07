@@ -79,7 +79,7 @@ class Sql extends Utilities {
 				array('toolbar_items' => array(
 					'view' =>
 					cp_url(
-						'utilities/query/run-query',
+						'utilities/query/run-query/'.$table['name'],
 						array('thequery' => rawurlencode(base64_encode('SELECT * FROM '.$table['name'])))
 					)
 				)),

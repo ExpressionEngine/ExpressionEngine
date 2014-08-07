@@ -5,6 +5,10 @@ class ControlPanelPage < SitePrism::Page
 	element :submit_button_disabled, '.form-ctrls input.btn.disable'
 	element :fieldset_errors, 'fieldset.invalid'
 
+	# Tables
+	element :select_all, 'th.check-ctrl input'
+	elements :sort_links, 'table a.sort'
+
 	def open_dev_menu
 		main_menu.dev_menu.click
 	end

@@ -70,8 +70,11 @@ class Query extends Utilities {
 
 	/**
 	 * Query handler
+	 *
+	 * @param string	$table	Table name, used when coming from SQL Manager
+	 *                      	for proper page-naming and breadcrumb-setting
 	 */
-	public function runQuery()
+	public function runQuery($table_name = '')
 	{
 		if (isset($_POST['password_auth']))
 		{
@@ -100,8 +103,18 @@ class Query extends Utilities {
 			}
 		}
 
-		ee()->cp->set_breadcrumb(cp_url('utilities/query'), lang('query_form'));
-		ee()->view->cp_page_title = lang('query_results');
+		// If no table, keep query form labeling
+		if (empty($table_name))
+		{
+			ee()->cp->set_breadcrumb(cp_url('utilities/query'), lang('query_form'));
+			ee()->view->cp_page_title = lang('query_results');
+		}
+		// Otherwise, we're coming from the SQL Manager
+		else
+		{
+			ee()->cp->set_breadcrumb(cp_url('utilities/query'), lang('sql_manager_abbr'));
+			ee()->view->cp_page_title = $table_name . ' ' . lang('table');
+		}
 
 		$sql = trim(str_replace(";", "", $sql));
 
@@ -223,7 +236,7 @@ class Query extends Utilities {
 		});
 
 		$base_url = new CP\URL(
-			'utilities/query/run-query',
+			'utilities/query/run-query/'.$table_name,
 			ee()->session->session_id(),
 			array('thequery' => rawurlencode(base64_encode($sql)))
 		);

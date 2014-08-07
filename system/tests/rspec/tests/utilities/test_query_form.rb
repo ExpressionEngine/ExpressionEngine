@@ -170,6 +170,7 @@ feature 'Query Form' do
 
     no_php_js_errors
     results = QueryResults.new
+    results.should have_text 'Query FormQuery Results' # How Capybara sees the breadcrumb
     results.should have_text 'SELECT * FROM exp_channels'
     results.should have_text 'Total Results: 2'
     results.should have_no_text 'No rows returned'
