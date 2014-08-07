@@ -60,6 +60,7 @@ class Communicate extends Utilities {
 			'bcc'			=> '',
 			'subject' 		=> '',
 			'message'		=> '',
+			'plaintext_alt'	=> '',
 			'mailtype'		=> ee()->config->item('mail_format'),
 			'wordwrap'		=> ee()->config->item('word_wrap')
 		);
@@ -110,6 +111,19 @@ class Communicate extends Utilities {
 		}
 
 		ee()->view->cp_page_title = lang('communicate');
+
+		ee()->javascript->output('$("textarea[name=\'plaintext_alt\']").parents("fieldset").eq(0).hide();');
+		ee()->javascript->change("select[name=\'mailtype\']", '
+			if ($("select[name=\'mailtype\']").val() == "html")
+			{
+				$("textarea[name=\'plaintext_alt\']").parents("fieldset").eq(0).slideDown();
+			}
+			else
+			{
+				$("textarea[name=\'plaintext_alt\']").parents("fieldset").eq(0).slideUp();
+			}
+		');
+
 		ee()->cp->render('utilities/communicate', $vars + $default);
 	}
 
@@ -128,6 +142,7 @@ class Communicate extends Utilities {
 		$form_fields = array(
 			'subject',
 			'message',
+			'plaintext_alt',
 			'mailtype',
 			'wordwrap',
 			'from',
@@ -183,11 +198,13 @@ class Communicate extends Utilities {
 		{
 			case 'text':
 				$text_fmt = 'none';
+				$plaintext_alt = '';
 				break;
 
 			case 'markdown':
 				$text_fmt = 'markdown';
 				$mailtype = 'html';
+				$plaintext_alt = $message;
 				break;
 
 			case 'html':
@@ -211,7 +228,7 @@ class Communicate extends Utilities {
 			'wordwrap'	  		=> $wordwrap,
 			'text_fmt'			=> $text_fmt,
 			'total_sent'		=> 0,
-			'plaintext_alt'		=> '',	// Relic of the past
+			'plaintext_alt'		=> $plaintext_alt
 		);
 
 		$email = ee()->api->make('EmailCache', $cache_data);
@@ -514,7 +531,7 @@ class Communicate extends Utilities {
 		}
 
 		ee()->email->subject($subject);
-		ee()->email->message($message);
+		ee()->email->message($message, $email->plaintext_alt);
 
 		return ee()->email->send(FALSE);
 	}

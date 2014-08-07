@@ -27,6 +27,15 @@
 			</div>
 		</div>
 	</fieldset>
+	<fieldset class="col-group">
+		<div class="setting-txt col w-16">
+			<h3><?=lang('plaintext_body')?> <span class="required" title="required field">&#10033;</span></h3>
+			<em><?=lang('plaintext_alt')?></em>
+		</div>
+		<div class="setting-field col w-16 last">
+			<textarea class="required" name="plaintext_alt" cols="" rows=""><?=set_value('plaintext_alt', $plaintext_alt)?></textarea>
+		</div>
+	</fieldset>
 	<fieldset class="col-group <?=form_error_class('from')?>">
 		<div class="setting-txt col w-8">
 			<h3><?=lang('your_email')?> <span class="required" title="required field">&#10033;</span></h3>

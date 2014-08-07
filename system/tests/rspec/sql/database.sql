@@ -498,11 +498,10 @@ CREATE TABLE `exp_email_cache` (
   `subject` varchar(120) NOT NULL,
   `message` mediumtext NOT NULL,
   `plaintext_alt` mediumtext NOT NULL,
-  `mailinglist` char(1) NOT NULL DEFAULT 'n',
   `mailtype` varchar(6) NOT NULL,
   `text_fmt` varchar(40) NOT NULL,
   `wordwrap` char(1) NOT NULL DEFAULT 'y',
-  `priority` char(1) NOT NULL DEFAULT '3',
+  `attachments` mediumtext,
   PRIMARY KEY (`cache_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
