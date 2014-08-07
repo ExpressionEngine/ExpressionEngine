@@ -1,23 +1,14 @@
 <?php
 namespace EllisLab\ExpressionEngine\Model\Site\Preferences;
 
-class ConcretePreferences
+class ConcretePreferences extends Preferences
 {
-
-	public function __construct($preferences)
+	public function __construct($preferences = NULL)
 	{
-		$this->populateFromCompressed($prerences);
-
-	}
-
-	public function compress($preferences)
-	{
-		return base64_encode(serialize($preferences));
-	}
-
-	public function decompress($preferences)
-	{
-		return base64_decode(unserialize($preferences));
+		if ( isset($preferences))
+		{
+			$this->populateFromCompressed($preferences);
+		}
 	}
 
 	public function getCompressed()

@@ -20,4 +20,15 @@ class SiteGateway extends RowDataGateway {
 	public $site_channel_preferences;
 	public $site_bootstrap_checksums;
 
+	public function getSiteBootstrapChecksums()
+	{
+		return unserialize(base64_decode($this->site_bootstrap_checksums));
+	}
+
+	public function setSiteBootstrapChecksums(array $site_bootstrap_checksums)
+	{
+		$this->site_bootstrap_checksums = base64_encode(serialize($site_bootstrap_checksums));
+		return $this;
+	}
+
 }

@@ -3,6 +3,13 @@ namespace EllisLab\ExpressionEngine\Model\Site;
 
 use EllisLab\ExpressionEngine\Model\Model;
 
+
+
+/**
+ * The Site model stores preference sets for each site in this installation
+ * of ExpressionEngine.  Each site can have a completely different set of
+ * settings and prefereces.
+ */
 class Site extends Model {
 	protected static $_primary_key = 'site_id';
 	protected static $_gateway_names = array('SiteGateway');
@@ -26,31 +33,49 @@ class Site extends Model {
 	protected $site_channel_preferences;
 	protected $site_bootstrap_checksums;
 
+	/**
+	 *
+	 */
 	public function getSystemPreferences()
 	{
 		return $this->getPreferences('SystemPreferences');
 	}
 
+	/**
+	 *
+	 */
 	public function getMailingListPreferences()
 	{
 		return $this->getPreferences('MailingListPreferences');
 	}
 
+	/**
+	 *
+	 */
 	public function getMemberPreferences()
 	{
 		return $this->getPreferences('MemberPreferences');
 	}
 
+	/**
+	 *
+	 */
 	public function getTemplatePreferences()
 	{
 		return $this->getPreferences('TemplatePreferences');
 	}
 
+	/**
+	 *
+	 */
 	public function getChannelPreferences()
 	{
 		return $this->getPreferences('ChannelPreferences');
 	}
 
+	/**
+	 *
+	 */
 	protected function getPreferences($name)
 	{
 		$preferences = self::getMetaData('preferences');
@@ -63,6 +88,9 @@ class Site extends Model {
 		return $this->getRelated($name);
 	}
 
+	/**
+	 *
+	 */
 	protected function map()
 	{
 		$preferences = self::getMetaData('preferences');
