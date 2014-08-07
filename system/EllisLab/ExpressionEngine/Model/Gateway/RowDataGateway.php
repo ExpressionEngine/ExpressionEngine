@@ -74,7 +74,7 @@ abstract class RowDataGateway {
 	 */
 	public function __get($name)
 	{
-		$method = 'get' . ucfirst($name);
+		$method = $this->propertyToMethod($name, 'get');
 		if (method_exists($this, $method))
 		{
 			return $this->$method();
@@ -103,7 +103,7 @@ abstract class RowDataGateway {
 	 */
 	public function __set($name, $value)
 	{
-		$method = 'set' . ucfirst($name);
+		$method = $this->propertyToMethod($name, 'set');
 		if (method_exists($this, $method))
 		{
 			return $this->$method($value);
@@ -116,6 +116,17 @@ abstract class RowDataGateway {
 		}
 
 		throw new \InvalidArgumentException('Attempt to access a non-existent property "' . $name . '" on ' . get_called_class());
+	}
+
+	private function propertyToMethod($name, $method)
+	{
+		$split_name = explode('_', $name);
+		foreach($split_name as $key => $name_part)
+		{
+			$split_name[$key] = ucfirst($name_part);
+		}
+		$name = implode($split_name);
+		return $method . $name;
 	}
 
 	/**
