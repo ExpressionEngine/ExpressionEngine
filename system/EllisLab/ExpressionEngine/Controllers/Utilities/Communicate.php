@@ -449,12 +449,19 @@ class Communicate extends Utilities {
 		{
 			return 0;
 		}
-		$batch_size = (int) ee()->config->item('email_batch_size');
 
-		$number_to_send = ($batch_size > count($recipient_array)) ?
-			count($recipient_array) : $batch_size;
+		$number_to_send = count($recipient_array);
 
-		$total_sent = $email->total_sent;
+		if (ee()->config->item('email_batchmode') == 'y')
+		{
+			$batch_size = (int) ee()->config->item('email_batch_size');
+
+			if ($batch_size > count($recipient_array))
+			{
+				$number_to_send = $batch_size;
+			}
+		}
+
 		for ($x = 0; $x < $number_to_send; $x++)
 		{
 			$email_address = array_shift($recipient_array);
@@ -463,7 +470,6 @@ class Communicate extends Utilities {
 				// Let's adjust the recipient array up to this point
 				$recipient_array = array_unshift($recipient_array, $email_address);
 
-				$email->total_sent += $total_sent;
 				$email->recipient_array = serialize($recipient_array);
 				$email->save();
 
@@ -471,13 +477,12 @@ class Communicate extends Utilities {
 
 				show_error(lang('error_sending_email').BR.BR.$debug_msg);
 			}
-			$total_sent++;
+			$email->total_sent++;
 		}
 
-		$email->total_sent = $total_sent;
 		$email->recipient_array = (count($recipient_array)) ? serialize($recipient_array) : "";
 		$email->save();
-		return $total_sent;
+		return $email->total_sent;
 	}
 
 
