@@ -299,9 +299,11 @@ class Table {
 	 */
 	private function sortData()
 	{
-		usort($this->data, function ($a, $b)
+		$columns = $this->columns;
+
+		usort($this->data, function ($a, $b) use ($columns)
 		{
-			$search = array_keys($this->columns);
+			$search = array_keys($columns);
 			$index = array_search($this->getSortCol(), $search);
 			$a = $a[$index]['content'];
 			$b = $b[$index]['content'];
