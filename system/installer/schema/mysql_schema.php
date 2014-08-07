@@ -232,6 +232,7 @@ class EE_Schema {
 			recipient_array mediumtext NOT NULL,
 			subject varchar(120) NOT NULL,
 			message mediumtext NOT NULL,
+			`plaintext_alt` MEDIUMTEXT NOT NULL,
 			mailtype varchar(6) NOT NULL,
 			text_fmt varchar(40) NOT NULL,
 			wordwrap char(1) NOT NULL default 'y',

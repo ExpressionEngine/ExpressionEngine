@@ -60,7 +60,6 @@ class Updater {
 	 */
 	private function _update_email_cache_table()
 	{
-		ee()->smartforge->drop_column('email_cache', 'plaintext_alt');
 		ee()->smartforge->drop_column('email_cache', 'mailinglist');
 		ee()->smartforge->drop_column('email_cache', 'priority');
 

@@ -34,6 +34,7 @@ class EmailCacheGateway extends RowDataGateway {
 	protected $recipient_array;
 	protected $subject;
 	protected $message;
+	protected $plaintext_alt;
 	protected $mailtype;
 	protected $text_fmt;
 	protected $wordwrap;
