@@ -37,7 +37,7 @@ class EmailCache extends Model
 		return $this->getRelated('MemberGroups');
 	}
 
-	public function setMemberGroups(array $member_groups)
+	public function setMemberGroups($member_groups)
 	{
 		return $this->setRelated('MemberGroups', $member_groups);
 	}

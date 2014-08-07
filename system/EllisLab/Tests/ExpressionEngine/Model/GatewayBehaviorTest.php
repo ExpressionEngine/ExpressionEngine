@@ -87,7 +87,8 @@ class GatewayBehaviorTest extends \PHPUnit_Framework_TestCase {
 				'dummy',
 				array(
 					'key' => 'test',
-					'serialized' => serialize(array('key' => 'value'))
+					'serialized' => serialize(array('key' => 'value')),
+					'under_score_mapped' => 'Lower'
 				)
 			)
 			->once();
@@ -100,11 +101,14 @@ class GatewayBehaviorTest extends \PHPUnit_Framework_TestCase {
 		$gateway->setDirty('key');
 		$gateway->serialized = array('key' => 'value');
 		$gateway->setDirty('serialized');
+		$gateway->under_score_mapped = 'lower';
+		$gateway->setDirty('under_score_mapped');
 		$gateway->save();
 
 		$this->assertEquals(1, $gateway->the_id);
 		$this->assertEquals('test', $gateway->key);
 		$this->assertEquals(array('key'=>'value'), $gateway->serialized);
+		$this->assertEquals('lower', $gateway->under_score_mapped);
 	}
 
 	public function testInitializingWithMapping()
@@ -158,6 +162,7 @@ class TestGateway extends \EllisLab\ExpressionEngine\Model\Gateway\RowDataGatewa
 	protected $the_id;
 	protected $key;
 	protected $serialized;
+	protected $under_score_mapped;
 
 	public function setSerialized(array $serialized)
 	{
@@ -170,5 +175,15 @@ class TestGateway extends \EllisLab\ExpressionEngine\Model\Gateway\RowDataGatewa
 		return unserialize($this->serialized);
 	}
 
+	public function setUnderScoreMapped($mapped)
+	{
+		$this->under_score_mapped = ucfirst($mapped);
+		return $this;
+	}
+
+	public function getUnderScoreMapped()
+	{
+		return lcfirst($this->under_score_mapped);
+	}
 
 }
