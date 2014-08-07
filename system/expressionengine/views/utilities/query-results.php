@@ -16,13 +16,15 @@
 	</div>
 </div>
 <div class="box">
-	<?=form_open($base_url, 'class="tbl-ctrls"')?>
-		<fieldset class="tbl-search right">
-			<input placeholder="<?=lang('type_phrase')?>" type="text" name="search" value="<?=$search?>">
-			<input class="btn submit" type="submit" value="<?=lang('search_table')?>">
-		</fieldset>
+	<?=form_open($table['base_url'], 'class="tbl-ctrls"')?>
+		<?php if ( ! $write): ?>
+			<fieldset class="tbl-search right">
+				<input placeholder="<?=lang('type_phrase')?>" type="text" name="search" value="<?=$table['search']?>">
+				<input class="btn submit" type="submit" value="<?=lang('search_table')?>">
+			</fieldset>
+		<?php endif ?>
 		<h1><?=$cp_page_title?></h1>
-		<?=$table?>
+		<?php $this->view('_shared/table', $table); ?>
 		<?php $this->view('_shared/pagination'); ?>
 	</form>
 </div>

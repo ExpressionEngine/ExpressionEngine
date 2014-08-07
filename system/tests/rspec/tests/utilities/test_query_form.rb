@@ -277,7 +277,7 @@ feature 'Query Form' do
     @page.password.set 'password'
     @page.submit
 
-    @page.should have_text 'Affected Rows: 0'
+    @page.should have_text 'Affected Rows: 1'
     @page.should have_no_text 'Total Results: 0'
     @page.should have_text 'No rows returned'
   end

@@ -78,7 +78,6 @@ class Query extends Utilities {
 			unset($_POST['password_auth']);
 		}
 
-		// defaults in the house!
 		$row_limit	= 100;
 		$title		= lang('query_result');
 		$vars['write'] = FALSE;
@@ -86,11 +85,6 @@ class Query extends Utilities {
 
 		$page = ee()->input->get('page') ? ee()->input->get('page') : 1;
 		$page = ($page > 0) ? $page : 1;
-
-		$sort = ee()->input->get('sort');
-		$sort_dir = ee()->input->get('sort_dir');
-		$search = ee()->input->post('search') ?: ee()->input->get('search');
-		$search = empty($search) ? '' : $search;
 
 		// Fetch the query.  It can either come from a
 		// POST request or a url encoded GET request
@@ -129,66 +123,7 @@ class Query extends Utilities {
 			}
 		}
 
-		// Search the table after query has ran
-		if ( ! empty($search) && $query = ee()->db->query($sql))
-		{
-			if ($query->num_rows() > 0)
-			{
-				$data = $query->result_array();
-				$keys = array_keys($data[0]);
-
-				$new_sql = 'SELECT * FROM ('.$sql.') AS search WHERE';
-				foreach ($keys as $index => $key)
-				{
-					if ($index > 0)
-					{
-						$new_sql .= ' OR';
-					}
-					$new_sql .= ' '.$key.' LIKE \'%'.ee()->db->escape_like_str($search).'%\'';
-				}
-			}
-		}
-
-		// Get the total results on the orignal query before we paginate it
-		$query = (isset($new_sql)) ? ee()->db->query($new_sql) : ee()->db->query($sql);
-		$total_results = (is_object($query)) ? $query->num_rows() : 0;
-
-		// If it's a SELECT query we'll see if we need to limit
-		// the result total and add pagination links
-		if (strpos(strtoupper($sql), 'SELECT') !== FALSE)
-		{
-			if ($sort !== FALSE && $sort_dir !== FALSE)
-			{
-				$new_sql = ( ! isset($new_sql)) ? '('.$sql.')' : '('.$new_sql.')';
-				
-				// Wrap query in parenthesis in case query already has a
-				// limit on it, we can't put an ORDER BY after a LIMIT
-				$new_sql .= ' ORDER BY '.$sort.' '.$sort_dir;
-			}
-
-			if ( ! preg_match("/LIMIT\s+[0-9]/i", $sql))
-			{
-				// Modify the query so we get the total sans LIMIT
-				$row = ($page - 1) * $row_limit; // Offset is 0 indexed
-
-				if ( ! isset($new_sql))
-				{
-					$new_sql = $sql;
-				}
-
-				$new_sql .= " LIMIT ".$row.", ".$row_limit;
-			}
-
-			if (isset($new_sql))
-			{
-				$query = ee()->db->query($new_sql);
-			}
-		}
-		
-		if ( ! isset($new_sql))
-		{
-			$query = ee()->db->query($sql);
-		}
+		$query = ee()->db->query($sql);
 
 		$qtypes = array('INSERT', 'UPDATE', 'DELETE', 'ALTER', 'CREATE', 'DROP', 'TRUNCATE');
 
@@ -203,53 +138,111 @@ class Query extends Utilities {
 			}
 		}
 
-		$vars['thequery'] = ee()->security->xss_clean($sql);
-		$vars['total_results'] = (isset($total_results)) ? $total_results : 0;
+		$columns = array();
+		if ($query && $vars['write'] == FALSE)
+		{
+			foreach ($query->row_array() as $col_name => $value)
+			{
+				$columns[$col_name] = array('encode' => TRUE);
+			}
+		}
 
-		$sort_dir = ($sort_dir !== FALSE) ? $sort_dir : 'asc';
+		$table = CP\Table::create();
+		$table->setColumns($columns);
+
+		$total_results = 0;
+
+		$table->setFilteredData(function($sort_col, $sort_dir, $search) use ($sql, &$query, $row_limit, $page, &$total_results, $vars)
+		{
+			if ($vars['write'])
+			{
+				return array();
+			}
+
+			if ( ! empty($search) && $query)
+			{
+				if ($query->num_rows() > 0)
+				{
+					$data = $query->result_array();
+					$keys = array_keys($data[0]);
+
+					$new_sql = 'SELECT * FROM ('.$sql.') AS search WHERE';
+					foreach ($keys as $index => $key)
+					{
+						if ($index > 0)
+						{
+							$new_sql .= ' OR';
+						}
+						$new_sql .= ' '.$key.' LIKE \'%'.ee()->db->escape_like_str($search).'%\'';
+					}
+				}
+			}
+
+			// Get the total results on the orignal query before we paginate it
+			$query = (isset($new_sql)) ? ee()->db->query($new_sql) : ee()->db->query($sql);
+			$total_results = (is_object($query)) ? $query->num_rows() : 0;
+
+			// If it's a SELECT query we'll see if we need to limit
+			// the result total and add pagination links
+			if (strpos(strtoupper($sql), 'SELECT') !== FALSE)
+			{
+				if ( ! empty($sort_col))
+				{
+					$new_sql = ( ! isset($new_sql)) ? '('.$sql.')' : '('.$new_sql.')';
+										
+					// Wrap query in parenthesis in case query already has a
+					// limit on it, we can't put an ORDER BY after a LIMIT
+					$new_sql .= ' ORDER BY '.$sort_col.' '.$sort_dir;
+				}
+
+				if ( ! preg_match("/LIMIT\s+[0-9]/i", $sql))
+				{
+					// Modify the query so we get the total sans LIMIT
+					$row = ($page - 1) * $row_limit; // Offset is 0 indexed
+
+					if ( ! isset($new_sql))
+					{
+						$new_sql = $sql;
+					}
+
+					$new_sql .= " LIMIT ".$row.", ".$row_limit;
+				}
+
+				if (isset($new_sql))
+				{
+					$query = ee()->db->query($new_sql);
+				}
+			}
+
+			if ( ! isset($new_sql))
+			{
+				$query = ee()->db->query($sql);
+			}
+
+			return (is_object($query)) ? $query->result_array() : array();
+		});
 
 		$base_url = new CP\URL(
 			'utilities/query/run-query',
 			ee()->session->session_id(),
-			array(
-				'thequery' 	=> rawurlencode(base64_encode($sql)),
-				'search' 	=> $search,
-				'sort'		=> $sort,
-				'sort_dir'	=> $sort_dir
-			)
+			array('thequery' => rawurlencode(base64_encode($sql)))
 		);
+		$view_data = $table->viewData($base_url);
+		$data = $view_data['data'];
+		$vars['table'] = $view_data;
 
-		$data = (is_object($query)) ? $query->result_array() : array();
-
-		$table = array(
-			'base_url' 	=> $base_url,
-			'sort_dir'	=> $sort_dir,
-			'wrap' 		=> TRUE, // Wrap table in scroll view
-			'encode' 	=> TRUE, // Encode HTML
-			'data' 		=> $data
-		);
-
-		if ( ! empty($data))
-		{
-			$keys = array_keys($data[0]);
-			$table['sort'] = ($sort !== FALSE) ? $sort : $keys[0];
-			$base_url->setQueryStringVariable('sort', $table['sort']);
-		}
+		$vars['thequery'] = ee()->security->xss_clean($sql);
+		$vars['total_results'] = (isset($total_results)) ? $total_results : 0;
 
 		$pagination = new Pagination($row_limit, $vars['total_results'], $page);
-		$vars['pagination'] = $pagination->cp_links($base_url);
+		$vars['pagination'] = $pagination->cp_links($view_data['base_url']);
 
 		// For things like SHOW queries, they show as having zero rows
 		// and we can't paginate them
 		if ($vars['total_results'] == 0 && count($data) > 0)
 		{
 			$vars['total_results'] = count($data);
-			unset($table['sort']); // These queries aren't sortable
 		}
-
-		$vars['base_url'] = $base_url->compile();
-		$vars['search'] = $search;
-		$vars['table'] = ee()->load->view('_shared/table', $table, TRUE);
 		
 		ee()->cp->render('utilities/query-results', $vars);
 	}

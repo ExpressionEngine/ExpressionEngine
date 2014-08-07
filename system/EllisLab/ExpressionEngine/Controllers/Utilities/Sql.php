@@ -4,6 +4,8 @@ namespace EllisLab\ExpressionEngine\Controllers\Utilities;
 
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
+use EllisLab\ExpressionEngine\Library\CP;
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -39,7 +41,7 @@ class Sql extends Utilities {
 			show_error(lang('unauthorized_access'));
 		}
 
-		if ($action = ee()->input->post('table_action'))
+		if (($action = ee()->input->post('table_action')) && ! ee()->input->post('search_form'))
 		{
 			$tables = ee()->input->post('table');
 
@@ -60,32 +62,126 @@ class Sql extends Utilities {
 			}
 			else
 			{
-				// Perform the action on each selected table and store the results
-				foreach ($tables as $table)
-				{
-					$query = ee()->db->query("{$action} TABLE ".ee()->db->escape_str($table));
-
-					foreach ($query->result_array() as $row)
-					{
-						foreach ($row as $k => $v)
-						{
-							$vars['results'][$table][] = $v;
-						}
-					}
-				}
-
-				ee()->view->cp_page_title = lang(strtolower($action).'_tables_results');
-				ee()->cp->set_breadcrumb(cp_url('utilities/sql'), lang('sql_manager'));
-				return ee()->cp->render('utilities/sql-ops', $vars);
+				return $this->opResults();
 			}
 		}
 
 		ee()->load->model('tools_model');
 		$vars = ee()->tools_model->get_sql_info();
 		$vars += ee()->tools_model->get_table_status();
+
+		foreach ($vars['status'] as $table)
+		{
+			$data[] = array(
+				$table['name'],
+				$table['rows'],
+				$table['size'],
+				array('toolbar_items' => array(
+					'view' =>
+					cp_url(
+						'utilities/query/run-query',
+						array('thequery' => rawurlencode(base64_encode('SELECT * FROM '.$table['name'])))
+					)
+				)),
+				array(
+					'name' => 'table[]',
+					'value' => $table['name']
+				)
+			);
+		}
+
+		$table = CP\Table::create(array('autosort' => TRUE));
+		$table->setColumns(
+			array(
+				lang('table_name'),
+				lang('records'),
+				lang('size'),
+				lang('manage') => array(
+					'type'	=> CP\Table::COL_TOOLBAR
+				),
+				array(
+					'type'	=> CP\Table::COL_CHECKBOX
+				)
+			)
+		);
+		$table->setData($data);
+
+		$base_url = new CP\URL('utilities/sql', ee()->session->session_id());
+		$vars['table'] = $table->viewData($base_url);
 		
 		ee()->view->cp_page_title = lang('sql_manager');
 		ee()->cp->render('utilities/sql-manager', $vars);
+	}
+
+	public function opResults()
+	{
+		$action = ee()->input->post('table_action');
+		$tables = ee()->input->post('table');
+
+		// This page can be invoked from a GET request due various ways to
+		// sort and filter the table, so we need to check for cached data
+		// from the original request
+		if ($action == FALSE && $tables == FALSE)
+		{
+			$cache = ee()->cache->get('sql-op-results', \Cache::GLOBAL_SCOPE);
+
+			if (empty($cache))
+			{
+				return $this->index();
+			}
+			else
+			{
+				$action = $cache['action'];
+				$data = $cache['data'];
+			}
+		}
+		else
+		{
+			// Perform the action on each selected table and store the results
+			foreach ($tables as $table)
+			{
+				$query = ee()->db->query("{$action} TABLE ".ee()->db->escape_str($table));
+
+				foreach ($query->result_array() as $row)
+				{
+					$row = array_values($row);
+					$row[0] = $table;
+					$data[] = array(
+						$row[0],
+						$row[2],
+						$row[3]
+					);
+				}
+			}
+
+			$cache = array(
+				'action' => $action,
+				'data' => $data
+			);
+
+			// Cache it so we can access it on subsequent page requests due
+			// to sorting and searching of the table
+			ee()->cache->save('sql-op-results', $cache, 3600, \Cache::GLOBAL_SCOPE);
+		}
+
+		// Base URL for filtering
+		$base_url = new CP\URL('utilities/sql/op-results', ee()->session->session_id());
+
+		// Set up our table with automatic sorting and search capability
+		$table = CP\Table::create(array('autosort' => TRUE));
+		$table->setColumns(array(
+			lang('table'),
+			lang('status') => array(
+				'type' => CP\Table::COL_STATUS
+			),
+			lang('message')
+		));
+		$table->setData($data);
+		$vars['table'] = $table->viewData($base_url);
+
+		ee()->view->cp_page_title = lang(strtolower($action).'_tables_results');
+		ee()->cp->set_breadcrumb(cp_url('utilities/sql'), lang('sql_manager'));
+		return ee()->cp->render('utilities/sql-ops', $vars);
 	}
 }
 // END CLASS
