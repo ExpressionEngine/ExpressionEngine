@@ -78,7 +78,7 @@ abstract class Model {
 		$this->_factory = $factory;
 		$this->_alias_service = $alias_service;
 
-		foreach ($data as $property => $value)
+		foreach($data as $property => $value)
 		{
 			if (property_exists($this, $property))
 			{
@@ -149,6 +149,37 @@ abstract class Model {
 		}
 
 		throw new \InvalidArgumentException('Attempt to access a non-existent property "' . $name . '" on ' . get_called_class());
+	}
+
+	public function populateFromDatabase(array $data, $dirty = FALSE)
+	{
+		// Map them coming out of the database by passing them through the
+		// gateways.  We'll grab them from the first gateway that has them,
+		// so that will be the gateway that does the mapping.
+		foreach (static::getMetaData('gateway_names') as $gateway_name)
+		{
+			$gateways[$gateway_name] = $this->_factory->makeGateway($gateway_name, $data);
+		}
+
+		foreach ($data as $property => $value)
+		{
+			if (property_exists($this, $property))
+			{
+				foreach($gateways as $gateway)
+				{
+					if (isset($gateway->{$property}))
+					{
+						$this->{$property} = $gateway->{$property};
+						if ($dirty)
+						{
+							$this->setDirty($property);
+						}
+						break;
+					}
+				}
+			}
+		}
+
 	}
 
 	/**

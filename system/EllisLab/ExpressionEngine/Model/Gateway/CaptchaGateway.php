@@ -9,9 +9,9 @@ class CaptchaGateway extends RowDataGateway {
 
 
 	// Properties
-	public $captcha_id;
-	public $date;
-	public $ip_address;
-	public $word;
+	protected $captcha_id;
+	protected $date;
+	protected $ip_address;
+	protected $word;
 
 }

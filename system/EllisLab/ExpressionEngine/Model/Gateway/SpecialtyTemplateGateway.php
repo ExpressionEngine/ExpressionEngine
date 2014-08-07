@@ -13,11 +13,11 @@ class SpecialtyTemplateGateway extends RowDataGateway
 	);
 
 
-	public $template_id;
-	public $site_id;
-	public $enable_template;
-	public $template_name;
-	public $data_title;
-	public $template_data;
+	protected $template_id;
+	protected $site_id;
+	protected $enable_template;
+	protected $template_name;
+	protected $data_title;
+	protected $template_data;
 
 }

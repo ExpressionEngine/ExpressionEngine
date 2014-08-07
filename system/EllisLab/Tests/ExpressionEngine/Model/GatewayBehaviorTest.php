@@ -45,7 +45,7 @@ class GatewayBehaviorTest extends \PHPUnit_Framework_TestCase {
 
 		$database->shouldReceive('update')->never();
 		$database->shouldReceive('insert')->with('dummy', array('key' => 'test'))->once();
-		$database->shouldReceive('insert_id')->once();
+		$database->shouldReceive('insert_id')->andReturn(1)->once();
 
 		$gateway = new TestGateway($this->validation);
 		$gateway->setConnection($database);
@@ -53,6 +53,9 @@ class GatewayBehaviorTest extends \PHPUnit_Framework_TestCase {
 		$gateway->key = 'test';
 		$gateway->setDirty('key');
 		$gateway->save();
+
+		$this->assertEquals(1, $gateway->the_id);
+		$this->assertEquals('test', $gateway->key);
 	}
 
 	public function testSaveExistingCallsUpdateWhere()
@@ -61,7 +64,9 @@ class GatewayBehaviorTest extends \PHPUnit_Framework_TestCase {
 
 		$database->shouldReceive('insert')->never();
 		$database->shouldReceive('where')->with('the_id', 5)->once();
-		$database->shouldReceive('update')->with('dummy', array('key' => 'test'))->once();
+		$database->shouldReceive('update')
+			->with('dummy', array('key' => 'test'))
+			->once();
 
 		$gateway = new TestGateway($this->validation);
 		$gateway->setConnection($database);
@@ -70,6 +75,53 @@ class GatewayBehaviorTest extends \PHPUnit_Framework_TestCase {
 		$gateway->key = 'test';
 		$gateway->setDirty('key');
 		$gateway->save();
+	}
+
+	public function testSaveNewWithMapping()
+	{
+		$database = $this->noopDatabase();
+
+		$database->shouldReceive('update')->never();
+		$database->shouldReceive('insert')
+			->with(
+				'dummy',
+				array(
+					'key' => 'test',
+					'serialized' => serialize(array('key' => 'value'))
+				)
+			)
+			->once();
+		$database->shouldReceive('insert_id')->andReturn(1)->once();
+
+		$gateway = new TestGateway($this->validation);
+		$gateway->setConnection($database);
+
+		$gateway->key = 'test';
+		$gateway->setDirty('key');
+		$gateway->serialized = array('key' => 'value');
+		$gateway->setDirty('serialized');
+		$gateway->save();
+
+		$this->assertEquals(1, $gateway->the_id);
+		$this->assertEquals('test', $gateway->key);
+		$this->assertEquals(array('key'=>'value'), $gateway->serialized);
+	}
+
+	public function testInitializingWithMapping()
+	{
+		$gateway = new TestGateway(
+			$this->validation,
+			array(
+				'the_id' => 5,
+				'key' => 'value',
+				'serialized' => serialize(array('key' => 'value'))
+			)
+		);
+
+		$this->assertEquals(5, $gateway->the_id);
+		$this->assertEquals('value', $gateway->key);
+		$this->assertEquals(array('key'=>'value'), $gateway->serialized);
+
 	}
 
 	public function testConstructorChecksPropertyExists()
@@ -103,5 +155,20 @@ class TestGateway extends \EllisLab\ExpressionEngine\Model\Gateway\RowDataGatewa
 	protected static $_table_name = 'dummy';
 	protected static $_primary_key = 'the_id';
 
-	public $key;
+	protected $the_id;
+	protected $key;
+	protected $serialized;
+
+	public function setSerialized(array $serialized)
+	{
+		$this->serialized = serialize($serialized);
+		return $this;
+	}
+
+	public function getSerialized()
+	{
+		return unserialize($this->serialized);
+	}
+
+
 }

@@ -24,8 +24,8 @@ class CategoryFieldDataGateway extends FieldDataGateway {
 	);
 
 	// Properties
-	public $cat_id;
-	public $site_id;
-	public $group_id;
+	protected $cat_id;
+	protected $site_id;
+	protected $group_id;
 
 }
