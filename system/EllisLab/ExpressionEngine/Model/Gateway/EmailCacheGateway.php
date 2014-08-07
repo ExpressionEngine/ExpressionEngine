@@ -14,13 +14,6 @@ class EmailCacheGateway extends RowDataGateway {
 	protected static $_primary_key = 'cache_id';
 	protected static $_related_gateways = array(
 		'cache_id' => array(
-			'gateway' => 'MailingListGateway',
-			'key' => 'list_id',
-			'pivot_table' => 'email_cache_ml',
-			'pivot_key' => 'cache_id',
-			'pivot_foreign_key' => 'list_id'
-		),
-		'cache_id' => array(
 			'gateway' => 'MemberGroupGateway',
 			'key' => 'group_id',
 			'pivot_table' => 'email_cache_mg',
@@ -41,11 +34,9 @@ class EmailCacheGateway extends RowDataGateway {
 	public $recipient_array;
 	public $subject;
 	public $message;
-	public $plaintext_alt;
-	public $mailinglist;
 	public $mailtype;
 	public $text_fmt;
 	public $wordwrap;
-	public $priority;
+	public $attachments;
 
 }

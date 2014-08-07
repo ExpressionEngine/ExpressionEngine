@@ -232,12 +232,10 @@ class EE_Schema {
 			recipient_array mediumtext NOT NULL,
 			subject varchar(120) NOT NULL,
 			message mediumtext NOT NULL,
-			`plaintext_alt` MEDIUMTEXT NOT NULL,
-			mailinglist char(1) NOT NULL default 'n',
 			mailtype varchar(6) NOT NULL,
 			text_fmt varchar(40) NOT NULL,
 			wordwrap char(1) NOT NULL default 'y',
-			priority char(1) NOT NULL default '3',
+			attachments MEDIUMTEXT,
 			PRIMARY KEY `cache_id` (`cache_id`)
 		)";
 
