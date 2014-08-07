@@ -35,8 +35,7 @@ class Table {
 	const COL_STATUS = 3;
 	const COL_TOOLBAR = 4;
 
-	public $columns = array();
-
+	private $columns = array();
 	private $config = array();
 	private $data = array();
 
@@ -209,7 +208,7 @@ class Table {
 		{
 			if (count($data[0]) != count($this->columns))
 			{
-				// complain
+				throw new \InvalidArgumentException('Data must have the same number of columns as the set columns.');
 			}
 
 			$this->data = array();
@@ -246,25 +245,26 @@ class Table {
 						$settings = array_merge($defaults, $item);
 						$settings['type'] = $col_settings[0]['type'];
 
-						switch ($settings['type'])
-						{
-							case self::COL_CHECKBOX:
-								if ( ! isset($settings['name']) OR ! isset($settings['value']))
-								{
-									// complain
-								}
-								break;
-							case self::COL_TOOLBAR:
-								if ( ! isset($settings['toolbar_items']))
-								{
-									// complain
-								}
-								break;
-							default:
-								break;
-						}
-
 						$data_row[] = array_merge(array('content' => ''), $settings);
+					}
+
+					// Validate the some of the types
+					switch ($settings['type'])
+					{
+						case self::COL_CHECKBOX:
+							if ( ! isset($settings['name']) OR ! isset($settings['value']))
+							{
+								throw new \InvalidArgumentException('Checkboxes require a name and value.');
+							}
+							break;
+						case self::COL_TOOLBAR:
+							if ( ! isset($settings['toolbar_items']))
+							{
+								throw new \InvalidArgumentException('No toolbar items set for toolbar column type.');
+							}
+							break;
+						default:
+							break;
 					}
 
 					$i++;
@@ -276,54 +276,93 @@ class Table {
 			// If this table is not paginated, handle sorting automatically
 			if ($this->config['autosort'])
 			{
-				usort($this->data, function ($a, $b)
-				{
-					$search = array_keys($this->columns);
-					$index = array_search($this->getSortCol(), $search);
-					$a = $a[$index]['content'];
-					$b = $b[$index]['content'];
-
-					// Sort numbers as numbers
-					if (is_numeric($a) && is_numeric($b))
-					{
-						$cmp = $a - $b;
-					}
-					// String sorting
-					else
-					{
-						$cmp = strcmp($a, $b);
-					}
-
-					return ($this->getSortDir() == 'asc') ? $cmp : -$cmp;
-				});
+				$this->sortData();
 			}
 
 			// Handle search with a simple strpos()
 			if ( ! empty($this->config['search']))
 			{
-				foreach ($this->data as $key => $row)
+				$this->searchData();
+			}
+		}
+	}
+
+	/**
+	 * For data that is only ever contained to one table, likely
+	 * non-paginated data, we can automatically handle the sorting by
+	 * sorting the given array by the item corresponding to the current
+	 * sort column. But if data is paginated and changing the sort also
+	 * changes the data, it's best not to use this and instead handle
+	 * it with setFilteredData().
+	 * 
+	 * @return  void
+	 */
+	private function sortData()
+	{
+		usort($this->data, function ($a, $b)
+		{
+			$search = array_keys($this->columns);
+			$index = array_search($this->getSortCol(), $search);
+			$a = $a[$index]['content'];
+			$b = $b[$index]['content'];
+
+			// Sort numbers as numbers
+			if (is_numeric($a) && is_numeric($b))
+			{
+				$cmp = $a - $b;
+			}
+			// String sorting
+			else
+			{
+				$cmp = strcmp($a, $b);
+			}
+
+			return ($this->getSortDir() == 'asc') ? $cmp : -$cmp;
+		});
+	}
+
+	/**
+	 * For data that is only ever contained to one table, likely
+	 * non-paginated data, we can automatically handle table searching
+	 * by using a strpos() search on each row and column. But if data
+	 * is paginated and searching can add extra data to the table not
+	 * in the current table scope, it's best not to use this and
+	 * instead handle it with setFilteredData().
+	 * 
+	 * @return  void
+	 */
+	private function searchData()
+	{
+		// Bail if there's no search data
+		if (empty($this->config['search']))
+		{
+			return;
+		}
+
+		foreach ($this->data as $key => $row)
+		{
+			$match = FALSE;
+
+			foreach ($row as $column)
+			{
+				// Only search searchable columns
+				if ($column['type'] == self::COL_TEXT OR
+					$column['type'] == self::COL_STATUS)
 				{
-					$match = FALSE;
-
-					foreach ($row as $column)
+					if (strpos(strtolower($column['content']), strtolower($this->config['search'])) !== FALSE)
 					{
-						// Only search searchable columns
-						if ($column['type'] == self::COL_TEXT OR
-							$column['type'] == self::COL_STATUS)
-						{
-							if (strpos(strtolower($column['content']), strtolower($this->config['search'])) !== FALSE)
-							{
-								$match = TRUE;
-								continue 2;
-							}
-						}
-					}
-
-					if ( ! $match)
-					{
-						unset($this->data[$key]);
+						// Found a match, move on to the next row
+						$match = TRUE;
+						continue 2;
 					}
 				}
+			}
+
+			// Finally, remove the row if no match was found in any
+			// searchable columns
+			if ( ! $match)
+			{
+				unset($this->data[$key]);
 			}
 		}
 	}
