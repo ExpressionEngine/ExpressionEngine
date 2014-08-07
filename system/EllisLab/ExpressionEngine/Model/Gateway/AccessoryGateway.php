@@ -10,11 +10,11 @@ class AccessoryGateway extends RowDataGateway {
 	);
 
 	// Propeties
-	public $accessory_id;
-	public $class;
-	public $member_groups;
-	public $controllers;
-	public $accessory_version;
+	protected $accessory_id;
+	protected $class;
+	protected $member_groups;
+	protected $controllers;
+	protected $accessory_version;
 
 
 }

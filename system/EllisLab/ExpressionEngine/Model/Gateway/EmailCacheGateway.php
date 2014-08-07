@@ -23,20 +23,20 @@ class EmailCacheGateway extends RowDataGateway {
 	);
 
 	// Properties
-	public $cache_id;
-	public $cache_date;
-	public $total_sent;
-	public $from_name;
-	public $from_email;
-	public $recipient;
-	public $cc;
-	public $bcc;
-	public $recipient_array;
-	public $subject;
-	public $message;
-	public $mailtype;
-	public $text_fmt;
-	public $wordwrap;
-	public $attachments;
+	protected $cache_id;
+	protected $cache_date;
+	protected $total_sent;
+	protected $from_name;
+	protected $from_email;
+	protected $recipient;
+	protected $cc;
+	protected $bcc;
+	protected $recipient_array;
+	protected $subject;
+	protected $message;
+	protected $mailtype;
+	protected $text_fmt;
+	protected $wordwrap;
+	protected $attachments;
 
 }

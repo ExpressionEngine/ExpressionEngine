@@ -28,23 +28,23 @@ class TemplateGateway extends RowDataGateway {
 
 
 	// Properties
-	public $template_id;
-	public $site_id;
-	public $group_id;
-	public $template_name;
-	public $save_template_file;
-	public $template_type;
-	public $template_data;
-	public $template_notes;
-	public $edit_date;
-	public $last_author_id;
-	public $cache;
-	public $refresh;
-	public $no_auth_bounce;
-	public $enable_http_auth;
-	public $allow_php;
-	public $php_parse_location;
-	public $hits;
+	protected $template_id;
+	protected $site_id;
+	protected $group_id;
+	protected $template_name;
+	protected $save_template_file;
+	protected $template_type;
+	protected $template_data;
+	protected $template_notes;
+	protected $edit_date;
+	protected $last_author_id;
+	protected $cache;
+	protected $refresh;
+	protected $no_auth_bounce;
+	protected $enable_http_auth;
+	protected $allow_php;
+	protected $php_parse_location;
+	protected $hits;
 
 
 }

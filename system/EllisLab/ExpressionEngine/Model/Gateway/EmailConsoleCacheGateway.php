@@ -18,13 +18,13 @@ class EmailConsoleCacheGateway extends RowDataGateway {
 	);
 
 	// Properties
-	public $cache_id;
-	public $cache_date;
-	public $member_id;
-	public $member_name;
-	public $ip_address;
-	public $recipient;
-	public $recipient_name;
-	public $subject;
-	public $message;
+	protected $cache_id;
+	protected $cache_date;
+	protected $member_id;
+	protected $member_name;
+	protected $ip_address;
+	protected $recipient;
+	protected $recipient_name;
+	protected $subject;
+	protected $message;
 }
