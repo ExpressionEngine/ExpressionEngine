@@ -14,7 +14,11 @@ if ($wrap): ?>
 		<tr>
 			<?php foreach ($columns as $label => $settings): ?>
 				<?php if ($settings['type'] == Table::COL_CHECKBOX): ?>
-					<th class="check-ctrl"><input type="checkbox" title="select all"></th>
+					<th class="check-ctrl">
+						<?php if ( ! empty($data)): // Hide checkbox if no data ?>
+							<input type="checkbox" title="select all">
+						<?php endif ?>
+					</th>
 				<?php else: ?>
 					<th<?php if ($settings['sort'] && $sort_col == $label): ?> class="highlight"<?php endif ?>>
 						<?=$label?>
