@@ -300,11 +300,13 @@ class Table {
 	private function sortData()
 	{
 		$columns = $this->columns;
+		$sort_col = $this->getSortCol();
+		$sort_dir = $this->getSortDir();
 
-		usort($this->data, function ($a, $b) use ($columns)
+		usort($this->data, function ($a, $b) use ($columns, $sort_col, $sort_dir)
 		{
 			$search = array_keys($columns);
-			$index = array_search($this->getSortCol(), $search);
+			$index = array_search($sort_col, $search);
 			$a = $a[$index]['content'];
 			$b = $b[$index]['content'];
 
@@ -319,7 +321,7 @@ class Table {
 				$cmp = strcmp($a, $b);
 			}
 
-			return ($this->getSortDir() == 'asc') ? $cmp : -$cmp;
+			return ($sort_dir == 'asc') ? $cmp : -$cmp;
 		});
 	}
 
