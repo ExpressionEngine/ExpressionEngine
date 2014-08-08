@@ -221,7 +221,7 @@ class Communicate extends Utilities {
 			'recipient'			=> $recipient,
 			'cc'				=> $cc,
 			'bcc'				=> $bcc,
-			'recipient_array'	=> '',
+			'recipient_array'	=> array(),
 			'subject'			=> $subject,
 			'message'			=> $message,
 			'mailtype'			=> $mailtype,
@@ -297,7 +297,7 @@ class Communicate extends Utilities {
 		}
 
 		//  Store email cache
-		$email->recipient_array = serialize($email_addresses);
+		$email->recipient_array = $email_addresses;
 		$email->setMemberGroups(ee()->api->get('MemberGroup', $groups)->all());
 		$email->save();
 		$id = $email->cache_id;
@@ -378,7 +378,7 @@ class Communicate extends Utilities {
 
 		$this->deliverManyEmails($email);
 
-		if ($email->recipient_array == '')
+		if (empty($email->recipient_array))
 		{
 			$debug_msg = ee()->email->print_debugger(array());
 
@@ -392,7 +392,7 @@ class Communicate extends Utilities {
 			$stats = str_replace("%x", ($start + 1), lang('currently_sending_batch'));
 			$stats = str_replace("%y", ($email->total_sent), $stats);
 
-			$message = $stats.BR.BR.lang('emails_remaining').NBS.NBS.count(unserialize($email->recipient_array));
+			$message = $stats.BR.BR.lang('emails_remaining').NBS.NBS.count($email->recipient_array);
 
 			ee()->view->set_refresh(cp_url('utilities/communicate/batch/' . $email->cache_id), 6, TRUE);
 
@@ -444,19 +444,18 @@ class Communicate extends Utilities {
 	 */
 	private function deliverManyEmails($email)
 	{
-		$recipient_array = unserialize($email->recipient_array);
-		if ( ! is_array($recipient_array) OR count($recipient_array) < 1)
+		if (count($email->recipient_array) < 1)
 		{
 			return 0;
 		}
 
-		$number_to_send = count($recipient_array);
+		$number_to_send = count($email->recipient_array);
 
 		if (ee()->config->item('email_batchmode') == 'y')
 		{
 			$batch_size = (int) ee()->config->item('email_batch_size');
 
-			if ($batch_size > count($recipient_array))
+			if ($batch_size > count($email->recipient_array))
 			{
 				$number_to_send = $batch_size;
 			}
@@ -464,13 +463,12 @@ class Communicate extends Utilities {
 
 		for ($x = 0; $x < $number_to_send; $x++)
 		{
-			$email_address = array_shift($recipient_array);
+			$email_address = array_shift($email->recipient_array);
 			if ( ! $this->deliverEmail($email, $email_address))
 			{
 				// Let's adjust the recipient array up to this point
-				$recipient_array = array_unshift($recipient_array, $email_address);
+				$email->recipient_array = array_unshift($email->recipient_array, $email_address);
 
-				$email->recipient_array = serialize($recipient_array);
 				$email->save();
 
 				$debug_msg = ee()->email->print_debugger(array());
@@ -480,7 +478,6 @@ class Communicate extends Utilities {
 			$email->total_sent++;
 		}
 
-		$email->recipient_array = (count($recipient_array)) ? serialize($recipient_array) : "";
 		$email->save();
 		return $email->total_sent;
 	}
