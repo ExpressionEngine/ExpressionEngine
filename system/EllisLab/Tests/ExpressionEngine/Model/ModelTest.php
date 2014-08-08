@@ -18,6 +18,34 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
 		$model = new TestModel($this->mb, $this->as);
 	}
 
+	public function testPopulateFromDatabase()
+	{
+		// The data we're going to "recieve" from the database.
+		$data = array(
+			'the_id' => 1,
+			'another_id' => 5,
+			'title' => 'The Title',
+			'description' => 'The description of this object.'
+		);
+
+		// Go ahead and put it on our mock gateway ahead of time.
+		foreach ($data as $property => $value)
+		{
+			$this->gateway->{$property} = $value;
+		}
+
+		$this->as->shouldReceive('getRegisteredClass')->with('GatewayStub')->andReturn(__NAMESPACE__.'\\GatewayStub');
+		$this->mb->shouldReceive('makeGateway')->with('GatewayStub', $data)->andReturn($this->gateway);
+		$model = new TestModel($this->mb, $this->as);
+		$model->populateFromDatabase($data);
+
+		foreach($data as $property => $value)
+		{
+			$this->assertEquals($data[$property], $model->{$property});
+		}
+
+	}
+
 	public function testSaveNew()
 	{
 		$this->as->shouldReceive('getRegisteredClass')->with('GatewayStub')->andReturn(__NAMESPACE__.'\\GatewayStub');
@@ -39,10 +67,10 @@ class GatewayStub extends \EllisLab\ExpressionEngine\Model\Gateway\RowDataGatewa
 	protected static $_table_name = 'the_table';
 	protected static $_primary_key = 'the_id';
 
-	public $the_id;
-	public $another_id;
-	public $title;
-	public $description;
+	protected $the_id;
+	protected $another_id;
+	protected $title;
+	protected $description;
 }
 
 class TestModel extends \EllisLab\ExpressionEngine\Model\Model {
