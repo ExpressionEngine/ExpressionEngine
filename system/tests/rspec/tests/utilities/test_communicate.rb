@@ -1,14 +1,25 @@
 require './bootstrap.rb'
+require 'mail'
 
 feature 'Communicate' do
 
+	def get_mail
+		@page.alert.text.should include "The email was output to:"
+		@page.alert.text.should include "protocol: dummy"
+		match = @page.alert.text.match(/The email was output to: (?<file>\S*)\s/)
+		mail = Mail.read(match[:file])
+		return mail
+	end
+
 	before(:all) do
 		@test_subject = 'Rspec utilities/communicate test'
-		@test_from = 'ellislab.developers@gmail.com'
-		@test_recipient = 'seth.barber@ellislab.com'
+		@test_from = 'ellislab.developers.rspec@mailinator.com'
+		@test_recipient = 'ellislab.developers@mailinator.com'
 	end
 
 	before(:each) do
+		ee_config(item: 'mail_protocol', value: 'dummy')
+
 		cp_session
 		@page = Communicate.new
 		@page.load
@@ -26,6 +37,10 @@ feature 'Communicate' do
 		@page.should have_bcc
 		@page.should have_member_groups
 		@page.should have_submit_button
+	end
+
+	after(:each) do
+		# FileUtils.rm Dir.glob('/tmp/mail-*')
 	end
 
 	it "shows the Communicate page" do
@@ -147,14 +162,11 @@ feature 'Communicate' do
 		@page.recipient.first(:xpath, ".//..").should_not have_text 'You left some fields empty.'
 	end
 
-	# With the following tests it would be ideal to check the sent email
-	# to confirm the various settings. Right now all we are confirming
-	# is a lack of errors
 	it "wraps words" do
 		my_subject = @test_subject + ' word wrapping'
 		my_body = "Facillimum id quidem est, inquam. Non est ista, inquam, Piso, magna dissensio. Non autem hoc: igitur ne illud quidem. Sed quid sentiat, non videtis."
 
-		# body_wrapped = "Facillimum id quidem est, inquam. Non est ista, inquam, Piso, magna\ndissensio. Non autem hoc: igitur ne illud quidem. Sed quid sentiat, non\nvidetis."
+		body_wrapped = "Facillimum id quidem est, inquam. Non est ista, inquam, Piso, magna\ndissensio. Non autem hoc: igitur ne illud quidem. Sed quid sentiat, non\nvidetis."
 
 		@page.subject.set my_subject
 		@page.from_email.set @test_from
@@ -166,6 +178,13 @@ feature 'Communicate' do
 		@page.should have_css 'div.alert.success'
 		@page.alert.should have_text 'Your email has been sent'
 		@page.current_url.should include 'utilities/communicate/sent'
+
+		mail = get_mail
+
+		expect(mail.subject).to eq(my_subject)
+		expect(mail.from[0]).to eq(@test_from)
+		expect(mail.to[0]).to eq(@test_recipient)
+		expect(mail.body.decoded).to eq(body_wrapped)
 	end
 
 	it "can send a plain text email" do
@@ -182,11 +201,19 @@ feature 'Communicate' do
 		@page.should have_css 'div.alert.success'
 		@page.alert.should have_text 'Your email has been sent'
 		@page.current_url.should include 'utilities/communicate/sent'
+
+		mail = get_mail
+
+		expect(mail.subject).to eq(my_subject)
+		expect(mail.from[0]).to eq(@test_from)
+		expect(mail.to[0]).to eq(@test_recipient)
+		expect(mail.body.decoded).to eq(my_body)
 	end
 
 	it "can send markdown email" do
 		my_subject = @test_subject + ' markdown email'
 		my_body = "#This is Markdown\n\n[This](http://ellislab.com) is a link.\n**Nice huh?**"
+		html_body = "<h1>This is Markdown</h1>\n\n<p><a href=\"http://ellislab.com\">This</a> is a link.\n<strong>Nice huh?</strong></p>\n"
 
 		@page.subject.set my_subject
 		@page.from_email.set @test_from
@@ -199,23 +226,44 @@ feature 'Communicate' do
 		@page.should have_css 'div.alert.success'
 		@page.alert.should have_text 'Your email has been sent'
 		@page.current_url.should include 'utilities/communicate/sent'
+
+		mail = get_mail
+
+		expect(mail.subject).to eq(my_subject)
+		expect(mail.from[0]).to eq(@test_from)
+		expect(mail.to[0]).to eq(@test_recipient)
+		expect(mail.multipart?).to eq(true)
+		expect(mail.parts[0].decoded).to eq(my_body + "\n\n")
+		expect(mail.parts[1].decoded).to eq(html_body)
 	end
 
 	it "can send html email" do
 		my_subject = @test_subject + ' html email'
-		my_body = "<h1>HTML Email</h1><p>A <strong>strong</strong><em>emphasis</em> on <a href='http://www.ellislab.com'>anchors</a></p>"
+		html_body = "<h1>HTML Email</h1>\n<p>A <strong>strong</strong> <em>emphasis</em> on <a href='http://www.ellislab.com'>anchors</a></p>"
+		plain_body = "This is an HTML email and this is the plaintext alternative"
 
 		@page.subject.set my_subject
 		@page.from_email.set @test_from
 		@page.recipient.set @test_recipient
-		@page.body.set my_body
+		@page.body.set html_body
 		@page.mailtype.set "html"
+		@page.wait_until_plaintext_alt_visible
+		@page.plaintext_alt.set plain_body
 		@page.submit_button.click
 
 		@page.should have_alert
 		@page.should have_css 'div.alert.success'
 		@page.alert.should have_text 'Your email has been sent'
 		@page.current_url.should include 'utilities/communicate/sent'
+
+		mail = get_mail
+
+		expect(mail.subject).to eq(my_subject)
+		expect(mail.from[0]).to eq(@test_from)
+		expect(mail.to[0]).to eq(@test_recipient)
+		expect(mail.multipart?).to eq(true)
+		expect(mail.parts[0].decoded).to eq(plain_body + "\n\n")
+		expect(mail.parts[1].decoded).to eq(html_body + "\n\n")
 	end
 
 	it "can send an attachment" do
@@ -233,6 +281,15 @@ feature 'Communicate' do
 		@page.should have_css 'div.alert.success'
 		@page.alert.should have_text 'Your email has been sent'
 		@page.current_url.should include 'utilities/communicate/sent'
+
+		mail = get_mail
+
+		expect(mail.subject).to eq(my_subject)
+		expect(mail.from[0]).to eq(@test_from)
+		expect(mail.to[0]).to eq(@test_recipient)
+		expect(mail.multipart?).to eq(true)
+		expect(mail.parts[0].decoded).to eq(my_body + "\n\n")
+		expect(mail.attachments[0].filename).to eq('readme.md')
 	end
 
 	it "can CC an address" do
@@ -250,6 +307,14 @@ feature 'Communicate' do
 		@page.should have_css 'div.alert.success'
 		@page.alert.should have_text 'Your email has been sent'
 		@page.current_url.should include 'utilities/communicate/sent'
+
+		mail = get_mail
+
+		expect(mail.subject).to eq(my_subject)
+		expect(mail.from[0]).to eq(@test_from)
+		expect(mail.to[0]).to eq(@test_recipient)
+		expect(mail.cc[0]).to eq('ellislab.developers.cc@mailinator.com')
+		expect(mail.body.decoded).to eq(my_body + "\n")
 	end
 
 	it "can BCC an address" do
@@ -267,6 +332,14 @@ feature 'Communicate' do
 		@page.should have_css 'div.alert.success'
 		@page.alert.should have_text 'Your email has been sent'
 		@page.current_url.should include 'utilities/communicate/sent'
+
+		mail = get_mail
+
+		expect(mail.subject).to eq(my_subject)
+		expect(mail.from[0]).to eq(@test_from)
+		expect(mail.to[0]).to eq(@test_recipient)
+		expect(mail.bcc[0]).to eq('ellislab.developers.bcc@mailinator.com')
+		expect(mail.body.decoded).to eq(my_body + "\n")
 	end
 
 	it "can send to groups" do
@@ -289,6 +362,20 @@ feature 'Communicate' do
 		@page.should have_css 'div.alert.success'
 		@page.alert.should have_text 'Total number of emails sent: 2'
 		@page.current_url.should include 'utilities/communicate/sent'
+
+		# This isn't ideal as there could be name conflicts but for now
+		# it will have to do since email debug array is being reset with
+		# each call.
+		expect(Dir.glob('/tmp/mail-*').count).to eq(2)
+
+		Dir.glob('/tmp/mail-*').each do |file|
+			mail = Mail.read(file)
+
+			expect(mail.subject).to eq(my_subject)
+			expect(mail.from[0]).to eq(@test_from)
+			expect(mail.to[0]).to match(/ellislab.developers.member(one|two)/)
+			expect(mail.body.decoded).to eq(my_body + "\n")
+		end
 	end
 
 	it "can send in batches" do
@@ -313,5 +400,24 @@ feature 'Communicate' do
 		@page.should have_alert
 		@page.should have_css 'div.alert.warn'
 		@page.alert.should have_text 'The email sending routine will begin in'
+
+		# Manually "follow" the meta-refresh URL
+		meta = @page.first(:xpath, "//meta[@http-equiv='refresh']", visible: false)
+		refresh_url = meta[:content].to_s.gsub('6; url=', '')
+		visit(@page.current_url.gsub(/index.*/, refresh_url))
+
+		# This isn't ideal as there could be name conflicts but for now
+		# it will have to do since email debug array is being reset with
+		# each call.
+		expect(Dir.glob('/tmp/mail-*').count).to eq(5)
+
+		Dir.glob('/tmp/mail-*').each do |file|
+			mail = Mail.read(file)
+
+			expect(mail.subject).to eq(my_subject)
+			expect(mail.from[0]).to eq(@test_from)
+			expect(mail.to[0]).to match(/ellislab.developers.member[12345]/)
+			expect(mail.body.decoded).to eq(my_body + "\n")
+		end
 	end
 end

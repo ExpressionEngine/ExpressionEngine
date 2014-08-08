@@ -6,6 +6,7 @@ class Communicate < ControlPanelPage
 
 	element :subject, 'input[name="subject"]'
 	element :body , 'textarea[name="message"]'
+	element :plaintext_alt , 'textarea[name="plaintext_alt"]'
 	element :mailtype, 'select[name="mailtype"]'
 	element :wordwrap, 'input[name="wordwrap"]'
 	element :from_email, 'input[name="from"]'
