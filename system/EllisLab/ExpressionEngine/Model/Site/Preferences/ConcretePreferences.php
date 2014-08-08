@@ -1,33 +1,19 @@
 <?php
 namespace EllisLab\ExpressionEngine\Model\Site\Preferences;
 
-class ConcretePreferences extends Preferences
+class ConcretePreferences
 {
-	public function __construct($preferences = NULL)
+	public function __construct(array $preferences = NULL)
 	{
-		if ( isset($preferences))
+		foreach($preferences as $preference => $value)
 		{
-			$this->populateFromCompressed($preferences);
-		}
-	}
-
-	public function getCompressed()
-	{
-		return $this->compress($this->toArray());
-	}
-
-	public function populateFromCompressed($preferences)
-	{
-		$preferences = $this->decompress($preferences);
-		foreach($preferences as $pref=>$value)
-		{
-			$this->$pref = $value;
+			$this->{$preferences} = $value;
 		}
 	}
 
 	public function __get($name)
 	{
-		if ( ! property_exists($this))
+		if ( ! property_exists($this, $name))
 		{
 			throw new \Exception('Attempt to access non-existent preference, ' . $name);
 		}
@@ -37,7 +23,7 @@ class ConcretePreferences extends Preferences
 
 	public function __set($name, $value)
 	{
-		if ( ! property_exists($this))
+		if ( ! property_exists($this, $name))
 		{
 			throw new \Exception('Attempt to access non-existent preference, ' . $name);
 		}

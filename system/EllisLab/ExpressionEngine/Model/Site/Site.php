@@ -79,7 +79,7 @@ class Site extends Model {
 	protected function getPreferences($name)
 	{
 		$preferences = self::getMetaData('preferences');
-		$field = $preferences[$name];
+		$field = '\EllisLab\ExpressionEngine\Model\Site\Preferences' . $preferences[$name];
 
 		if ( ! $this->hasRelated($name)
 		{
@@ -96,7 +96,7 @@ class Site extends Model {
 		$preferences = self::getMetaData('preferences');
 		foreach($preferences as $preference_set => $field)
 		{
-			$this->$field = $this->getPreference($preference_set)->getCompressed();
+			$this->$field = $this->getPreference($preference_set)->toArray();
 		}
 
 		return parent::map();
