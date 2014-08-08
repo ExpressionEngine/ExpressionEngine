@@ -19,8 +19,8 @@ class StatusGroupGateway extends RowDataGateway {
 
 
 	// Properties
-	public $group_id;
-	public $site_id;
-	public $group_name;
+	protected $group_id;
+	protected $site_id;
+	protected $group_name;
 
 }

@@ -9,16 +9,16 @@ class SiteGateway extends RowDataGateway {
 
 
 	// Properties
-	public $site_id;
-	public $site_label;
-	public $site_name;
-	public $site_description;
-	public $site_system_preferences;
-	public $site_mailinglist_preferences;
-	public $site_member_preferences;
-	public $site_template_preferences;
-	public $site_channel_preferences;
-	public $site_bootstrap_checksums;
+	protected $site_id;
+	protected $site_label;
+	protected $site_name;
+	protected $site_description;
+	protected $site_system_preferences;
+	protected $site_mailinglist_preferences;
+	protected $site_member_preferences;
+	protected $site_template_preferences;
+	protected $site_channel_preferences;
+	protected $site_bootstrap_checksums;
 
 	public function getSiteBootstrapChecksums()
 	{

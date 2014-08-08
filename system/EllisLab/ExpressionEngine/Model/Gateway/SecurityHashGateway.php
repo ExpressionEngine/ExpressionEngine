@@ -14,10 +14,10 @@ class SecurityHashGateway extends RowDataGateway {
 	);
 
 	// Properties
-	public $hash_id;
-	public $date;
-	public $session_id;
-	public $hash;
-	public $used;
+	protected $hash_id;
+	protected $date;
+	protected $session_id;
+	protected $hash;
+	protected $used;
 
 }

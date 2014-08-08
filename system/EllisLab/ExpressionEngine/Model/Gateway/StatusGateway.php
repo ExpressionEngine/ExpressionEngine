@@ -18,10 +18,10 @@ class StatusGateway extends RowDataGateway {
 	);
 
 
-	public $status_id;
-	public $group_id;
-	public $site_id;
-	public $status;
-	public $status_order;
-	public $highlight;
+	protected $status_id;
+	protected $group_id;
+	protected $site_id;
+	protected $status;
+	protected $status_order;
+	protected $highlight;
 }

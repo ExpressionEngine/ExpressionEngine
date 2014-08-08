@@ -20,21 +20,21 @@ class StatsGateway extends RowDataGateway {
 	);
 
 	// Properties
-	public $stat_id;
-	public $site_id;
-	public $total_members;
-	public $recent_member_id;
-	public $recent_member;
-	public $total_entries;
-	public $total_forum_topics;
-	public $total_forum_posts;
-	public $total_comments;
-	public $last_entry_date;
-	public $last_forum_post_date;
-	public $last_comment_date;
-	public $last_visitor_date;
-	public $most_visitors;
-	public $most_visitor_date;
-	public $last_cache_clear;
+	protected $stat_id;
+	protected $site_id;
+	protected $total_members;
+	protected $recent_member_id;
+	protected $recent_member;
+	protected $total_entries;
+	protected $total_forum_topics;
+	protected $total_forum_posts;
+	protected $total_comments;
+	protected $last_entry_date;
+	protected $last_forum_post_date;
+	protected $last_comment_date;
+	protected $last_visitor_date;
+	protected $most_visitors;
+	protected $most_visitor_date;
+	protected $last_cache_clear;
 
 }

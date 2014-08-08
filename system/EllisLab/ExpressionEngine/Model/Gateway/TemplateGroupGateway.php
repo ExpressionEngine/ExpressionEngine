@@ -18,10 +18,10 @@ class TemplateGroupGateway extends RowDataGateway {
 		)
 	);
 
-	public $group_id;
-	public $site_id;
-	public $group_name;
-	public $group_order;
-	public $is_site_default;
+	protected $group_id;
+	protected $site_id;
+	protected $group_name;
+	protected $group_order;
+	protected $is_site_default;
 
 }

@@ -7,11 +7,9 @@ class EmailCache extends Model
 	protected static $_gateway_names = array('EmailCacheGateway');
 
 	protected static $_relationships = array(
-		'MailingLists' => array(
-			'type' => 'many_to_many'
-		),
 		'MemberGroups' => array(
-			'type' => 'many_to_many'
+			'type' => 'many_to_many',
+			'model' => 'MemberGroup'
 		)
 	);
 
@@ -29,28 +27,17 @@ class EmailCache extends Model
 	protected $subject;
 	protected $message;
 	protected $plaintext_alt;
-	protected $mailinglist;
 	protected $mailtype;
 	protected $text_fmt;
 	protected $wordwrap;
-	protected $priority;
-
-	public function getMailingLists()
-	{
-		return $this->getRelated('MailingLists');
-	}
-
-	public function setMailingLists(array $mailing_lists)
-	{
-		return $this->setRelated('MailingLists', $mailing_lists);
-	}
+	protected $attachments;
 
 	public function getMemberGroups()
 	{
 		return $this->getRelated('MemberGroups');
 	}
 
-	public function setMemberGroups(array $member_groups)
+	public function setMemberGroups($member_groups)
 	{
 		return $this->setRelated('MemberGroups', $member_groups);
 	}
