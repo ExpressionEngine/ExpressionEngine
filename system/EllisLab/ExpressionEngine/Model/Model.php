@@ -165,9 +165,9 @@ abstract class Model {
 		{
 			if (property_exists($this, $property))
 			{
-				foreach($gateways as $gateway)
+				foreach($gateways as $name => $gateway)
 				{
-					if (isset($gateway->{$property}))
+					if (property_exists($gateway, $property))
 					{
 						$this->{$property} = $gateway->{$property};
 						if ($dirty)
