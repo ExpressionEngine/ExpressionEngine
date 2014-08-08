@@ -18,6 +18,13 @@ class TemplateGateway extends RowDataGateway {
 			'gateway' => 'MemberGateway',
 			'key'	 => 'member_id'
 		),
+		'template_id' => array(
+			'gateway' => 'MemberGroupGateway',
+			'key' => 'group_id',
+			'pivot_table' => 'template_no_access',
+			'pivot_key' => 'template_id',
+			'pivot_foreign_key' => 'group_id'
+		)
 	);
 	protected static $_validation_rules = array(
 		'template_id' => 'required|isNatural',

@@ -23,6 +23,10 @@ class Template extends Model {
 			'type'	=> 'many_to_one',
 			'model'	=> 'Member',
 			'key'	=> 'last_author_id'
+		),
+		'NoAccess' => array(
+			'type' => 'many_to_many',
+			'model' => 'MemberGroup'
 		)
 	);
 
@@ -76,6 +80,16 @@ class Template extends Model {
 	public function setSite(Site $site)
 	{
 		return $this->setRelated('Site', $site);
+	}
+
+	public function getNoAccess()
+	{
+		return $this->getRelated('NoAccess');
+	}
+
+	public function setNoAccess($no_access)
+	{
+		return $this->setRelated('NoAccess', $no_access);
 	}
 }
 
