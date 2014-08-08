@@ -228,7 +228,8 @@ class Communicate extends Utilities {
 			'wordwrap'	  		=> $wordwrap,
 			'text_fmt'			=> $text_fmt,
 			'total_sent'		=> 0,
-			'plaintext_alt'		=> $plaintext_alt
+			'plaintext_alt'		=> $plaintext_alt,
+			'attachments'		=> $this->attachments,
 		);
 
 		$email = ee()->api->make('EmailCache', $cache_data);
@@ -322,7 +323,7 @@ class Communicate extends Utilities {
 
 			$debug_msg = ee()->email->print_debugger(array());
 
-			$this->_delete_attachments(); // Remove attachments now
+			$this->deleteAttachments($email); // Remove attachments now
 
 			ee()->view->set_message('success', lang('total_emails_sent') . ' ' . $total_sent, $debug_msg, TRUE);
 			ee()->functions->redirect(cp_url('utilities/communicate/sent'));
@@ -382,7 +383,7 @@ class Communicate extends Utilities {
 		{
 			$debug_msg = ee()->email->print_debugger(array());
 
-			$this->_delete_attachments(); // Remove attachments now
+			$this->deleteAttachments($email); // Remove attachments now
 
 			ee()->view->set_message('success', lang('total_emails_sent') . ' ' . $email->total_sent, $debug_msg, TRUE);
 			ee()->functions->redirect(cp_url('utilities/communicate/sent'));
@@ -421,7 +422,7 @@ class Communicate extends Utilities {
 
 		if ($delete)
 		{
-			$this->_delete_attachments(); // Remove attachments now
+			$this->deleteAttachments($email); // Remove attachments now
 		}
 
 		$debug_msg = ee()->email->print_debugger(array());
@@ -516,7 +517,7 @@ class Communicate extends Utilities {
 			));
 		}
 
-		ee()->email->clear();
+		ee()->email->clear(TRUE);
 		ee()->email->wordwrap  = ($email->wordwrap == 'y') ? TRUE : FALSE;
 		ee()->email->mailtype  = $email->mailtype;
 		ee()->email->from($email->from_email, $email->from_name);
@@ -534,6 +535,11 @@ class Communicate extends Utilities {
 
 		ee()->email->subject($subject);
 		ee()->email->message($message, $email->plaintext_alt);
+
+ 		foreach ($email->attachments as $attachment)
+		{
+			ee()->email->attach($attachment);
+		}
 
 		return ee()->email->send(FALSE);
 	}
@@ -654,7 +660,6 @@ class Communicate extends Utilities {
 		$data = ee()->upload->data();
 
 		$this->attachments[] = $data['full_path'];
-		ee()->email->attach($data['full_path']);
 
 		return TRUE;
 	}
@@ -691,15 +696,18 @@ class Communicate extends Utilities {
 	/**
 	 * Delete Attachments
 	 */
-	private function _delete_attachments()
+	private function deleteAttachments($email)
 	{
-		foreach ($this->attachments as $file)
+		foreach ($email->attachments as $file)
 		{
 			if (file_exists($file))
 			{
 				unlink($file);
 			}
 		}
+
+		$email->attachments = array();
+		$email->save();
 	}
 
 }
