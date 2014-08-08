@@ -78,6 +78,7 @@ $lang = array(
 'off'					=> 'Off',
 'total_sent'			=> 'Total Sent',
 'remove'				=> 'Remove',
+'dummy_location'		=> 'The email was output to: %s',
 
 ''=>''
 );

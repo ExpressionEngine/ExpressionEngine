@@ -24,6 +24,7 @@
  */
 class EE_Email extends CI_Email {
 
+	protected $_protocols		= array('dummy', 'mail', 'sendmail', 'smtp');
 
 	/**
 	 * Constructor
@@ -145,6 +146,29 @@ class EE_Email extends CI_Email {
 
 		return parent::_spool_email();
 	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Dummy protocol: write the message out to disk (this is helpful for testing)
+	 *
+	 * @return	bool
+	 */
+	protected function _send_with_dummy()
+	{
+		$tmpfname = tempnam("/tmp", "mail-");
+		$fp = file_put_contents($tmpfname, $this->_header_str . $this->_finalbody);
+
+		if ($fp === FALSE)
+		{
+			return FALSE;
+		}
+
+		$this->_set_error_message('lang:dummy_location', $tmpfname);
+
+		return TRUE;
+	}
+
 }
 // END CLASS
 
