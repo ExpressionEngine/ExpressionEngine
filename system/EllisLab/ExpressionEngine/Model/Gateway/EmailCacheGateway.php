@@ -40,4 +40,25 @@ class EmailCacheGateway extends RowDataGateway {
 	protected $wordwrap;
 	protected $attachments;
 
+	public function setRecipientArray(array $recipients)
+	{
+		$this->recipient_array = serialize($recipients);
+		return $this;
+	}
+
+	public function getRecipientArray()
+	{
+		return unserialize($this->recipient_array);
+	}
+
+	public function setAttachments(array $attachments)
+	{
+		$this->attachments = serialize($attachments);
+		return $this;
+	}
+
+	public function getAttachments()
+	{
+		return unserialize($this->attachments);
+	}
 }
