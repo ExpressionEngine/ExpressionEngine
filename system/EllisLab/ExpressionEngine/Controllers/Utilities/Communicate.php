@@ -462,13 +462,15 @@ class Communicate extends Utilities {
 			}
 		}
 
+		$recipient_array = $email->recipient_array;
+
 		for ($x = 0; $x < $number_to_send; $x++)
 		{
-			$email_address = array_shift($email->recipient_array);
+			$email_address = array_shift($recipient_array);
 			if ( ! $this->deliverEmail($email, $email_address))
 			{
 				// Let's adjust the recipient array up to this point
-				$email->recipient_array = array_unshift($email->recipient_array, $email_address);
+				$email->recipient_array = array_unshift($recipient_array, $email_address);
 
 				$email->save();
 
