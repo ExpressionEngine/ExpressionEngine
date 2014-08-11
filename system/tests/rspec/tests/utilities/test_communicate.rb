@@ -246,7 +246,7 @@ feature 'Communicate' do
 		@page.from_email.set @test_from
 		@page.recipient.set @test_recipient
 		@page.body.set html_body
-		@page.mailtype.set "html"
+		@page.mailtype.set "xhtml"
 		@page.mailtype.trigger('change')
 		@page.wait_until_plaintext_alt_visible
 		@page.plaintext_alt.set plain_body
