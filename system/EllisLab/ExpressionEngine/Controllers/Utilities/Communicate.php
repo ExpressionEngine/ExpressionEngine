@@ -630,6 +630,18 @@ class Communicate extends Utilities {
 
 		$emails = ee()->api->get('EmailCache');
 
+		if ( ! empty($vars['search']))
+		{
+			$emails = $emails->filterGroup()
+				               ->filter('subject', 'LIKE', '%' . $vars['search'] . '%')
+				               ->orFilter('message', 'LIKE', '%' . $vars['search'] . '%')
+				               ->orFilter('from_email', 'LIKE', '%' . $vars['search'] . '%')
+				               ->orFilter('recipient', 'LIKE', '%' . $vars['search'] . '%')
+				               ->orFilter('cc', 'LIKE', '%' . $vars['search'] . '%')
+				               ->orFilter('bcc', 'LIKE', '%' . $vars['search'] . '%')
+						     ->endFilterGroup();
+		}
+
 		$count = $emails->count();
 
 		$emails = $emails->order($order_by, $order_direction)
