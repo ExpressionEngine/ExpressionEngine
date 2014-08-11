@@ -277,7 +277,7 @@ class Communicate extends Utilities {
 			$to = ($recipient == '') ? ee()->session->userdata['email'] : $recipient;
 			$debug_msg = $this->deliverOneEmail($email, $to, empty($email_addresses));
 
-			$total_sent = $this->_fetch_total($to, $cc, $bcc);
+			$total_sent = $email->total_sent;
 		}
 		else
 		{
@@ -432,9 +432,20 @@ class Communicate extends Utilities {
 			show_error(lang('error_sending_email').BR.BR.$debug_msg);
 		}
 
+		$total_sent = 0;
+
+		foreach (array($to, $email->cc, $email->bcc) as $string)
+		{
+			if ($string != '')
+			{
+				$total_sent += substr_count($string, ',') + 1;
+			}
+		}
+
 		// Save cache data
-		$email->total_sent = $this->_fetch_total($to, $email->cc, $email->bcc);
+		$email->total_sent = $total_sent;
 		$email->save();
+
 		return $debug_msg;
 	}
 
@@ -665,33 +676,6 @@ class Communicate extends Utilities {
 		$this->attachments[] = $data['full_path'];
 
 		return TRUE;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Fetch Total
-	 *
-	 * Returns a total of email addresses from an undetermined number of strings
-	 * containing comma-delimited addresses
-	 *
-	 * @param	string 	// any number of comma delimited strings
-	 * @return	string
-	 */
-	private function _fetch_total()
-	{
-		$strings = func_get_args();
-		$total = 0;
-
-		foreach ($strings as $string)
-		{
-			if ($string != '')
-			{
-				$total += substr_count($string, ',') + 1;
-			}
-		}
-
-		return $total;
 	}
 
 	// --------------------------------------------------------------------
