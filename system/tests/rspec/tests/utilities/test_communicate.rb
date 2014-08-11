@@ -421,4 +421,50 @@ feature 'Communicate' do
 			expect(mail.body.decoded).to eq(my_body + "\n")
 		end
 	end
+
+	it "can send attachments in batches" do
+		(1..5).each do |n|
+			add_member(username: 'member' + n.to_s, email: 'ellislab.developers.member' + n.to_s + '@mailinator.com')
+		end
+		ee_config(item: 'email_batchmode', value: 'y')
+		ee_config(item: 'email_batch_size', value: '4') # Must be less than the number of emails
+		@page.load
+
+		@page.should have_text "Members (5)"
+
+		my_subject = @test_subject + ' batch member group email'
+		my_body = "This a test email sent from the communicate tool."
+
+		@page.subject.set my_subject
+		@page.from_email.set @test_from
+		@page.find('input[name="group_5"]').set true
+		@page.body.set my_body
+		@page.attach_file('attachment', 'readme.md')
+		@page.submit_button.click
+
+		@page.should have_alert
+		@page.should have_css 'div.alert.warn'
+		@page.alert.should have_text 'The email sending routine will begin in'
+
+		# Manually "follow" the meta-refresh URL
+		meta = @page.first(:xpath, "//meta[@http-equiv='refresh']", visible: false)
+		refresh_url = meta[:content].to_s.gsub('6; url=', '')
+		visit(@page.current_url.gsub(/index.*/, refresh_url))
+
+		# This isn't ideal as there could be name conflicts but for now
+		# it will have to do since email debug array is being reset with
+		# each call.
+		expect(Dir.glob('/tmp/mail-*').count).to eq(5)
+
+		Dir.glob('/tmp/mail-*').each do |file|
+			mail = Mail.read(file)
+
+			expect(mail.subject).to eq(my_subject)
+			expect(mail.from[0]).to eq(@test_from)
+			expect(mail.to[0]).to match(/ellislab.developers.member[12345]/)
+			expect(mail.multipart?).to eq(true)
+			expect(mail.parts[0].decoded).to eq(my_body + "\n\n")
+			expect(mail.attachments[0].filename).to eq('readme.md')
+		end
+	end
 end
