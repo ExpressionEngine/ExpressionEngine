@@ -68,7 +68,7 @@ class Communicate extends Utilities {
 		$vars['mailtype_options'] = array(
 			'text'		=> lang('plain_text'),
 			'markdown'	=> lang('markdown'),
-			'xhtml'		=> lang('html')
+			'html'		=> lang('html')
 		);
 
 		$member_groups = array();
