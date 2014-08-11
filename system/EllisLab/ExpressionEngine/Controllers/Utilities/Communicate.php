@@ -501,6 +501,7 @@ class Communicate extends Utilities {
 		{
 			ee()->load->library('typography');
 			ee()->typography->initialize(array(
+				'bbencode_links' => FALSE,
 				'parse_images'	=> FALSE,
 				'parse_smileys'	=> FALSE
 			));
@@ -512,10 +513,10 @@ class Communicate extends Utilities {
 			}
 
 			$message = ee()->typography->parse_type($email->message, array(
-				'text_format'   => $email->text_fmt,
-				'html_format'   => 'all',
-				'auto_links'	=> 'n',
-				'allow_img_url' => 'y'
+				'text_format'    => $email->text_fmt,
+				'html_format'    => 'all',
+				'auto_links'	 => 'n',
+				'allow_img_url'  => 'y'
 			));
 		}
 

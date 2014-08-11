@@ -32,6 +32,7 @@ class EE_Typography extends CI_Typography {
 	public $html_format      = 'safe';	// safe, all, none
 	public $auto_links       = 'y';
 	public $allow_img_url    = 'n';
+	public $bbencode_links   = TRUE;
 	public $separate_parser  = FALSE;
 	public $parse_images     = TRUE;
 	public $allow_headings   = TRUE;
@@ -113,6 +114,7 @@ class EE_Typography extends CI_Typography {
 		$this->html_format      = 'safe';	// safe, all, none
 		$this->auto_links       = 'y';
 		$this->allow_img_url    = 'n';
+		$this->bbencode_links   = TRUE;
 		$this->separate_parser  = FALSE;
 		$this->parse_images     = TRUE;
 		$this->allow_headings   = TRUE;
@@ -331,7 +333,7 @@ class EE_Typography extends CI_Typography {
 		// be formatted as redirects, to prevent the control panel address from
 		// showing up in referrer logs except when sending emails, where we
 		// don't want created links piped through the site
-		if (REQ == 'CP' && ee()->input->get('M') != 'send_email' && strpos($str, 'href=') !== FALSE)
+		if (REQ == 'CP' && $this->bbencode_links && strpos($str, 'href=') !== FALSE)
 		{
 			$str = preg_replace("#<a\s+(.*?)href=(\042|\047)([^\\2]*?)\\2(.*?)\>(.*?)</a>#si", "[url=\"\\3\"\\1\\4]\\5[/url]", $str);
 		}
