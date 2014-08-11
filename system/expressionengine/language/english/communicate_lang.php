@@ -79,6 +79,7 @@ $lang = array(
 'total_sent'			=> 'Total Sent',
 'remove'				=> 'Remove',
 'dummy_location'		=> 'The email was output to: %s',
+'search_emails_button'	=> 'Search e-mails',
 
 ''=>''
 );

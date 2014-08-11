@@ -618,6 +618,8 @@ class Communicate extends Utilities {
 			'emails'				=> array()
 		);
 
+		$vars['search'] = ee()->input->get_post('search') ?: '';
+
 		$order_by = 'subject';
 		$order_direction = 'asc';
 
