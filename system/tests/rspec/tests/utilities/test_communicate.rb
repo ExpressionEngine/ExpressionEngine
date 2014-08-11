@@ -40,7 +40,7 @@ feature 'Communicate' do
 	end
 
 	after(:each) do
-		# FileUtils.rm Dir.glob('/tmp/mail-*')
+		FileUtils.rm Dir.glob('/tmp/mail-*')
 	end
 
 	it "shows the Communicate page" do
@@ -247,6 +247,7 @@ feature 'Communicate' do
 		@page.recipient.set @test_recipient
 		@page.body.set html_body
 		@page.mailtype.set "html"
+		@page.mailtype.trigger('change')
 		@page.wait_until_plaintext_alt_visible
 		@page.plaintext_alt.set plain_body
 		@page.submit_button.click
@@ -263,7 +264,7 @@ feature 'Communicate' do
 		expect(mail.to[0]).to eq(@test_recipient)
 		expect(mail.multipart?).to eq(true)
 		expect(mail.parts[0].decoded).to eq(plain_body + "\n\n")
-		expect(mail.parts[1].decoded).to eq(html_body + "\n\n")
+		expect(mail.parts[1].decoded).to eq(html_body + "\n")
 	end
 
 	it "can send an attachment" do
