@@ -164,6 +164,8 @@ class EE_Email extends CI_Email {
 			return FALSE;
 		}
 
+		chmod($tmpfname, '0644');
+
 		$this->_set_error_message('lang:dummy_location', $tmpfname);
 
 		return TRUE;
