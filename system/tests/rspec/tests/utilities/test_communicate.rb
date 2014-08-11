@@ -184,7 +184,7 @@ feature 'Communicate' do
 		expect(mail.subject).to eq(my_subject)
 		expect(mail.from[0]).to eq(@test_from)
 		expect(mail.to[0]).to eq(@test_recipient)
-		expect(mail.body.decoded).to eq(body_wrapped)
+		expect(mail.body.decoded).to eq(body_wrapped + "\n")
 	end
 
 	it "can send a plain text email" do
@@ -207,7 +207,7 @@ feature 'Communicate' do
 		expect(mail.subject).to eq(my_subject)
 		expect(mail.from[0]).to eq(@test_from)
 		expect(mail.to[0]).to eq(@test_recipient)
-		expect(mail.body.decoded).to eq(my_body)
+		expect(mail.body.decoded).to eq(my_body + "\n")
 	end
 
 	it "can send markdown email" do
