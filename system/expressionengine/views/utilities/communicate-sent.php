@@ -22,7 +22,7 @@
 			<td>
 				<ul class="toolbar">
 					<li class="view"><a class="m-link" rel="modal-email" href="" title="<?=lang('view_email')?>"></a></li>
-					<li class="sync"><a href="<?=cp_url('utilities/communicate/' . $email['id'])?>" title="<?=lang('resend')?>"></a></li>
+					<li class="sync"><a href="<?=cp_url('utilities/communicate/resend/' . $email['id'])?>" title="<?=lang('resend')?>"></a></li>
 				</ul>
 			</td>
 			<td><input type="checkbox" name="selection[]" value="<?=$email['id']?>"></td>

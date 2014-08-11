@@ -6,6 +6,7 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use EllisLab\ExpressionEngine\Library\CP\URL;
 use EllisLab\ExpressionEngine\Library\CP\Pagination;
+use EllisLab\ExpressionEngine\Model\EmailCache;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -51,7 +52,7 @@ class Communicate extends Utilities {
 	/**
 	 * Index
 	 */
-	public function index($id = NULL)
+	public function index(EmailCache $email = NULL)
 	{
 		$default = array(
 			'from'		 	=> ee()->session->userdata('email'),
@@ -73,16 +74,18 @@ class Communicate extends Utilities {
 
 		$member_groups = array();
 
-		/** -----------------------------
-		/**  Fetch form data from cache
-		/** -----------------------------*/
-		if ($id)
+		if ( ! is_null($email))
 		{
-			$caches = ee()->api->get('EmailCache', $id)
-				->with('MemberGroups')
-				->all();
-
-			$member_groups = $caches[0]->getMemberGroups()->getIds();
+			$default['from'] = $email->from_email;
+			$default['recipient'] = $email->recipient;
+			$default['cc'] = $email->cc;
+			$default['bcc'] = $email->bcc;
+			$default['subject'] = $email->subject;
+			$default['message'] = $email->message;
+			$default['plaintext_alt'] = $email->plaintext_alt;
+			$default['mailtype'] = $email->mailtype;
+			$default['wordwrap'] = $email->wordwrap;
+			$member_groups = $email->getMemberGroups()->getIds();
 		}
 
 		// Set up member group emailing options
@@ -112,7 +115,11 @@ class Communicate extends Utilities {
 
 		ee()->view->cp_page_title = lang('communicate');
 
-		ee()->javascript->output('$("textarea[name=\'plaintext_alt\']").parents("fieldset").eq(0).hide();');
+		if ($default['mailtype'] != 'html')
+		{
+			ee()->javascript->output('$("textarea[name=\'plaintext_alt\']").parents("fieldset").eq(0).hide();');
+		}
+
 		ee()->javascript->change("select[name=\'mailtype\']", '
 			if ($("select[name=\'mailtype\']").val() == "html")
 			{
@@ -406,6 +413,32 @@ class Communicate extends Utilities {
 
 			ee()->functions->redirect(cp_url('utilities/communicate'));
 		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 *
+	 */
+	public function resend($id)
+	{
+		if ( ! ctype_digit($id))
+		{
+			show_error(lang('problem_with_id'));
+		}
+
+		$caches = ee()->api->get('EmailCache', $id)
+			->with('MemberGroups')
+			->all();
+
+		$email = $caches[0];
+
+		if (is_null($email))
+		{
+			show_error(lang('cache_data_missing'));
+		}
+
+		$this->index($email);
 	}
 
 	// --------------------------------------------------------------------
