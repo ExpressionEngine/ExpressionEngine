@@ -4,11 +4,33 @@ namespace EllisLab\ExpressionEngine\Model\Template;
 use EllisLab\ExpressionEngine\Model\Model;
 
 /**
+ * ExpressionEngine - by EllisLab
  *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 3.0
+ * @filesource
+ */
+
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine Template Model
+ *
+ * A model representing a template.  Templates contain a mix of EECode and HTML
+ * and are parsed to become the front end pages of sites built with
+ * ExpressionEngine.
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Core
+ * @category	Model
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 class Template extends Model {
-
-	// Meta data
 	protected static $_primary_key = 'template_id';
 	protected static $_gateway_names = array('TemplateGateway');
 
@@ -30,7 +52,6 @@ class Template extends Model {
 		)
 	);
 
-	// Properties
 	protected $template_id;
 	protected $site_id;
 	protected $group_id;
@@ -49,9 +70,6 @@ class Template extends Model {
 	protected $php_parse_location;
 	protected $hits;
 
-	/**
-	 *
-	 */
 	public function getTemplateGroup()
 	{
 		return $this->getRelated('TemplateGroup');
