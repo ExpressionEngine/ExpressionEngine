@@ -262,10 +262,30 @@
 	$class  = $RTR->fetch_class(TRUE);
 	$method = $RTR->fetch_method();
 
-	// First try a fully namespaced class, then try without
+	// First try a fully namespaced class, with fallback
 	if ( ! class_exists($class))
 	{
+		// If that didn't work try a fallback class matching the directory name
+		$old_class = $RTR->fetch_class();
+		$old_method = $method;
+
+		$RTR->set_method($RTR->fetch_class());
+
+		$directories = explode('/', rtrim($RTR->fetch_directory(), '/'));
+		$RTR->set_class(array_pop($directories));
+
+		$class  = $RTR->fetch_class(TRUE);
+		$method = $RTR->fetch_method();
+	}
+
+	// Try again with the fallback class
+	if ( ! class_exists($class))
+	{
+		$RTR->set_class($old_class);
+		$RTR->set_method($old_method);
+
 		$class  = $RTR->fetch_class();
+		$method = $RTR->fetch_method();
 
 		// Check to see if we autoloaded it, but it wasn't actually namespaced
 		if ( ! class_exists($class, FALSE))
