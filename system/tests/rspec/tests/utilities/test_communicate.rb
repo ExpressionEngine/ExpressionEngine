@@ -219,7 +219,7 @@ feature 'Communicate' do
 		@page.from_email.set @test_from
 		@page.recipient.set @test_recipient
 		@page.body.set my_body
-		@page.mailtype.set "markdown"
+		@page.mailtype.select "Markdown"
 		@page.submit_button.click
 
 		@page.should have_alert
@@ -246,8 +246,7 @@ feature 'Communicate' do
 		@page.from_email.set @test_from
 		@page.recipient.set @test_recipient
 		@page.body.set html_body
-		@page.mailtype.set "html"
-		@page.mailtype.trigger 'change'
+		@page.mailtype.select "HTML"
 		@page.wait_until_plaintext_alt_visible
 		@page.plaintext_alt.set plain_body
 		@page.submit_button.click
