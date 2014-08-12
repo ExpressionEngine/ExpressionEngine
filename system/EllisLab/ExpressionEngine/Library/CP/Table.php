@@ -47,6 +47,7 @@ class Table {
 	 * 'search' - Search text
 	 * 'wrap' - Whether or not to wrap the table in a div that allows overflow scrolling
 	 * 'autosort' - Handle sorting automatically, this is good for non-paginated data
+	 * 'lang_cols' - Run column names though lang() on the front end
 	 * 
 	 * @param	array 	$config	See above for options
 	 */
@@ -57,7 +58,8 @@ class Table {
 			'sort_col'	=> NULL,
 			'sort_dir'	=> 'asc',
 			'search'	=> NULL,
-			'autosort'	=> FALSE
+			'autosort'	=> FALSE,
+			'lang_cols'	=> TRUE
 		);
 
 		$this->config = array_merge($defaults, $config);
@@ -430,6 +432,7 @@ class Table {
 
 		return array(
 			'base_url'	=> $base_url,
+			'lang_cols'	=> $this->config['lang_cols'],
 			'search'	=> $this->config['search'],
 			'wrap'		=> $this->config['wrap'],
 			'sort_col'	=> $this->getSortCol(),

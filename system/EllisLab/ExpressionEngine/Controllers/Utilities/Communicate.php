@@ -607,11 +607,11 @@ class Communicate extends Utilities {
 		$table = Table::create();
 		$table->setColumns(
 			array(
-				lang('subject'),
-				lang('date'),
-				lang('total_sent'),
-				lang('status'),
-				lang('manage') => array(
+				'subject',
+				'date',
+				'total_sent',
+				'status',
+				'manage' => array(
 					'type'	=> Table::COL_TOOLBAR
 				),
 				array(
@@ -645,7 +645,14 @@ class Communicate extends Utilities {
 
 			$count = $emails->count();
 
-			$emails = $emails->order(strtolower($sort_col), $sort_dir)
+			$sort_map = array(
+				'subject' => 'subject',
+				'date' => 'cache_date',
+				'total_sent' => 'total_sent',
+				'status' => 'status',
+			);
+
+			$emails = $emails->order($sort_map[$sort_col], $sort_dir)
 				->limit(50)
 				->offset($offset)
 				->all();

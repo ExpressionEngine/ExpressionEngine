@@ -93,10 +93,10 @@ class Sql extends Utilities {
 		$table = CP\Table::create(array('autosort' => TRUE));
 		$table->setColumns(
 			array(
-				lang('table_name'),
-				lang('records'),
-				lang('size'),
-				lang('manage') => array(
+				'table_name',
+				'records',
+				'size',
+				'manage' => array(
 					'type'	=> CP\Table::COL_TOOLBAR
 				),
 				array(
@@ -170,11 +170,11 @@ class Sql extends Utilities {
 		// Set up our table with automatic sorting and search capability
 		$table = CP\Table::create(array('autosort' => TRUE));
 		$table->setColumns(array(
-			lang('table'),
-			lang('status') => array(
+			'table',
+			'status' => array(
 				'type' => CP\Table::COL_STATUS
 			),
-			lang('message')
+			'message'
 		));
 		$table->setData($data);
 		$vars['table'] = $table->viewData($base_url);

@@ -21,7 +21,7 @@ if ($wrap): ?>
 					</th>
 				<?php else: ?>
 					<th<?php if ($settings['sort'] && $sort_col == $label): ?> class="highlight"<?php endif ?>>
-						<?=$label?>
+						<?=($lang_cols) ? lang($label) : $label ?>
 						<?php if ($settings['sort']): ?>
 							<?php 
 							$arrow_dir = ($sort_col == $label) ? $sort_dir : 'desc';

@@ -160,7 +160,8 @@ class Query extends Utilities {
 			}
 		}
 
-		$table = CP\Table::create();
+		// Don't run column names though lang()
+		$table = CP\Table::create(array('lang_cols' => FALSE));
 		$table->setColumns($columns);
 
 		$total_results = 0;

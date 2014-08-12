@@ -119,6 +119,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 		// the table's view data
 		$expected = array(
 			'base_url'	=> NULL,
+			'lang_cols'	=> TRUE,
 			'search'	=> NULL,
 			'wrap'		=> TRUE,
 			'sort_col'	=> 'Name',
@@ -202,6 +203,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 
 		$expected = array(
 			'base_url'	=> NULL,
+			'lang_cols'	=> TRUE,
 			'search'	=> NULL,
 			'wrap'		=> TRUE,
 			'sort_col'	=> NULL,
@@ -214,6 +216,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 
 		$expected = array(
 			'base_url'	=> NULL,
+			'lang_cols'	=> TRUE,
 			'search'	=> NULL,
 			'wrap'		=> TRUE,
 			'sort_col'	=> 'Name',
@@ -233,6 +236,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 
 		$expected = array(
 			'base_url'	=> NULL,
+			'lang_cols'	=> TRUE,
 			'search'	=> 'My search',
 			'wrap'		=> FALSE,
 			'sort_col'	=> 'Some column',
@@ -245,12 +249,14 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 
 		$config = array(
 			'autosort'	=> FALSE,
+			'lang_cols'	=> FALSE,
 			'sort_col'	=> 'Name',
 			'sort_dir'	=> 'desc'
 		);
 
 		$expected = array(
 			'base_url'	=> NULL,
+			'lang_cols'	=> FALSE,
 			'search'	=> NULL,
 			'wrap'		=> TRUE,
 			'sort_col'	=> 'Name',
@@ -336,6 +342,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 
 		$expected = array(
 			'base_url'	=> NULL,
+			'lang_cols'	=> FALSE,
 			'search'	=> NULL,
 			'wrap'		=> TRUE,
 			'sort_col'	=> 'Name',
@@ -421,6 +428,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 
 		$expected = array(
 			'base_url'	=> NULL,
+			'lang_cols'	=> FALSE,
 			'search'	=> 'data 2',
 			'wrap'		=> TRUE,
 			'sort_col'	=> 'Name',
