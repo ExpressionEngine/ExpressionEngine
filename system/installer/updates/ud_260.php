@@ -463,7 +463,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 
 		// We need to figure out which template to load.
 		// Need to check the edit date.
-		ee()->load->model('template_model');
+		ee()->load->model('installer_template_model', 'template_model');
 		$templates = ee()->template_model->fetch_last_edit(array(), TRUE);
 
 		// related_entries

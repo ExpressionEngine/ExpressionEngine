@@ -14,7 +14,7 @@
 // ------------------------------------------------------------------------
 
 
-require_once(EE_APPPATH.'model/template_model'.EXT);
+require_once(EE_APPPATH.'models/template_model'.EXT);
 
 
 // ------------------------------------------------------------------------
@@ -28,7 +28,7 @@ require_once(EE_APPPATH.'model/template_model'.EXT);
  * @link		http://ellislab.com
  */
 
-class Installer_Template_model Extends Template_model {
+class Installer_template_model Extends Template_model {
 
 	/**
 	 *   Save to database
@@ -60,9 +60,10 @@ class Installer_Template_model Extends Template_model {
 				)
 			)
 		);
+
 	}
 
 }
 
-/* End of file template_model.php */
-/* Location: ./system/expressionengine/installer/model/template_model.php */
+/* End of file installer_template_model.php */
+/* Location: ./system/expressionengine/installer/model/installer_template_model.php */
