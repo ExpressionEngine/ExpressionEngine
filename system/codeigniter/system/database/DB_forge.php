@@ -284,6 +284,9 @@ class CI_DB_forge {
 			}
 		}
 
+		// Cached field names have changed
+		unset($this->db->data_cache['field_names'][$table]);
+
 		return TRUE;
 
 	}
