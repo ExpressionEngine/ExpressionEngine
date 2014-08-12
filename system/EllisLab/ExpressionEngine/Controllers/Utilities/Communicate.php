@@ -610,7 +610,6 @@ class Communicate extends Utilities {
 				'subject',
 				'date',
 				'total_sent',
-				'status',
 				'manage' => array(
 					'type'	=> Table::COL_TOOLBAR
 				),
@@ -664,7 +663,6 @@ class Communicate extends Utilities {
 					$email->subject,
 					ee()->localize->human_time($email->cache_date),
 					$email->total_sent,
-					'',
 					array('toolbar_items' => array(
 						'view' => '',
 						'sync' => cp_url('utilities/communicate/resend/' . $email->cache_id)
@@ -679,7 +677,7 @@ class Communicate extends Utilities {
 
 			return $data;
 		});
-		
+
 		$base_url = new URL('utilities/communicate/sent', ee()->session->session_id());
 		$vars['table'] = $table->viewData($base_url);
 
