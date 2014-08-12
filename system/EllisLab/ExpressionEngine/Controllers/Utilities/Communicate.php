@@ -6,6 +6,7 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use EllisLab\ExpressionEngine\Library\CP\URL;
 use EllisLab\ExpressionEngine\Library\CP\Pagination;
+use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Model\EmailCache;
 
 /**
@@ -603,25 +604,42 @@ class Communicate extends Utilities {
 			show_error(lang('not_allowed_to_email_cache'));
 		}
 
-		$base_url = new URL('utilities/communicate/sent', ee()->session->session_id());
-
-		$vars = array(
-			'highlight'				=> 'subject',
-			'subject_sort_url'		=> '',
-			'subject_direction'		=> 'asc',
-			'date_sort_url'			=> '',
-			'date_direction'		=> 'asc',
-			'total_sent_sort_url'	=> '',
-			'total_sent_direction'	=> 'asc',
-			'status_sort_url'		=> '',
-			'status_direction'		=> 'asc',
-			'emails'				=> array()
+		$defaults = array(
+			'sort_col' => ee()->input->get('sort_col') ?: 'subject',
+			'sort_dir' => ee()->input->get('sort_dir') ?: 'asc',
 		);
 
-		$vars['search'] = ee()->input->get_post('search') ?: '';
+		$search = NULL;
 
-		$order_by = 'subject';
-		$order_direction = 'asc';
+		if (ee()->input->post('search') !== FALSE)
+		{
+			$search = ee()->input->post('search');
+			$defaults['search'] = $search;
+		}
+		elseif (ee()->input->get('search') !== FALSE)
+		{
+			$search = ee()->input->get('search');
+			$defaults['search'] = $search;
+		}
+
+		$table = new Table($defaults);
+		$table->setColumns(
+			array(
+				lang('subject'),
+				lang('date'),
+				lang('total_sent'),
+				lang('status'),
+				lang('manage') => array(
+					'type'	=> Table::COL_TOOLBAR
+				),
+				array(
+					'type'	=> Table::COL_CHECKBOX
+				)
+			)
+		);
+		// var_dump($table); die();
+
+		$base_url = new URL('utilities/communicate/sent', ee()->session->session_id());
 
 		$page = ee()->input->get('page') ? ee()->input->get('page') : 1;
 		$page = ($page > 0) ? $page : 1;
@@ -630,34 +648,60 @@ class Communicate extends Utilities {
 
 		$emails = ee()->api->get('EmailCache');
 
-		if ( ! empty($vars['search']))
+		if ( ! is_null($search))
 		{
 			$emails = $emails->filterGroup()
-				               ->filter('subject', 'LIKE', '%' . $vars['search'] . '%')
-				               ->orFilter('message', 'LIKE', '%' . $vars['search'] . '%')
-				               ->orFilter('from_email', 'LIKE', '%' . $vars['search'] . '%')
-				               ->orFilter('recipient', 'LIKE', '%' . $vars['search'] . '%')
-				               ->orFilter('cc', 'LIKE', '%' . $vars['search'] . '%')
-				               ->orFilter('bcc', 'LIKE', '%' . $vars['search'] . '%')
+				               ->filter('subject', 'LIKE', '%' . $search . '%')
+				               ->orFilter('message', 'LIKE', '%' . $search . '%')
+				               ->orFilter('from_email', 'LIKE', '%' . $search . '%')
+				               ->orFilter('recipient', 'LIKE', '%' . $search . '%')
+				               ->orFilter('cc', 'LIKE', '%' . $search . '%')
+				               ->orFilter('bcc', 'LIKE', '%' . $search . '%')
 						     ->endFilterGroup();
 		}
 
 		$count = $emails->count();
 
-		$emails = $emails->order($order_by, $order_direction)
+		$emails = $emails->order($defaults['sort_col'], $defaults['sort_dir'])
 			->limit(50)
 			->offset($offset)
 			->all();
 
+		$data = array();
 		foreach ($emails as $email)
 		{
-			$vars['emails'][] = array(
-				'id'			=> $email->cache_id,
-				'subject'		=> $email->subject,
-				'date'			=> ee()->localize->human_time($email->cache_date),
-				'total_sent'	=> $email->total_sent,
-				'status'		=> ''
+			$data[] = array(
+				$email->subject,
+				ee()->localize->human_time($email->cache_date),
+				$email->total_sent,
+				'',
+				array('toolbar_items' => array(
+					'view' => '',
+					'sync' => cp_url('utilities/communicate/resend/' . $email->cache_id)
+					)
+				),
+				array(
+					'name'  => 'selection[]',
+					'value' => $email->cache_id
+				)
 			);
+		}
+		$table->setData($data);
+		$vars['table'] = $table->viewData($base_url);
+
+		if ( ! is_null($search))
+		{
+			$base_url->setQueryStringVariable('search', $search);
+		}
+
+		if (ee()->input->get('sort_col'))
+		{
+			$base_url->setQueryStringVariable('sort_col', ee()->input->get('sort_col'));
+		}
+
+		if (ee()->input->get('sort_dir'))
+		{
+			$base_url->setQueryStringVariable('sort_dir', ee()->input->get('sort_dir'));
 		}
 
 		$pagination = new Pagination(50, $count, $page);
