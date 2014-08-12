@@ -26,6 +26,7 @@ checkout:
     - chmod -R 777 system/expressionengine/cache
     - chmod -R 777 system/expressionengine/templates
     - chmod -R 777 system/expressionengine/translations
+    - chmod 777 system/tests/rspec/support/tmp
     - chmod -R 777 images
     - chmod +x system/tests/circleci/runtests.sh
 

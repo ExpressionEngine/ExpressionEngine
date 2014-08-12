@@ -15,12 +15,13 @@ feature 'Communicate' do
 		@test_subject = 'Rspec utilities/communicate test'
 		@test_from = 'ellislab.developers.rspec@mailinator.com'
 		@test_recipient = 'ellislab.developers@mailinator.com'
-		@mail_files = 'support/tmp/mail-*'
+		@tmp_path = File.expand_path('support/tmp')
+		@mail_files = @tmp_path + '/mail-*'
 	end
 
 	before(:each) do
 		ee_config(item: 'mail_protocol', value: 'dummy')
-		ee_config(item: 'dummy_mail_path', value: asset_path('tmp/'))
+		ee_config(item: 'dummy_mail_path', value: @tmp_path)
 
 		cp_session
 		@page = Communicate.new
