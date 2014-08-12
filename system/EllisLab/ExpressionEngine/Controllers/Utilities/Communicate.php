@@ -604,25 +604,7 @@ class Communicate extends Utilities {
 			show_error(lang('not_allowed_to_email_cache'));
 		}
 
-		$defaults = array(
-			'sort_col' => ee()->input->get('sort_col') ?: 'subject',
-			'sort_dir' => ee()->input->get('sort_dir') ?: 'asc',
-		);
-
-		$search = NULL;
-
-		if (ee()->input->post('search') !== FALSE)
-		{
-			$search = ee()->input->post('search');
-			$defaults['search'] = $search;
-		}
-		elseif (ee()->input->get('search') !== FALSE)
-		{
-			$search = ee()->input->get('search');
-			$defaults['search'] = $search;
-		}
-
-		$table = new Table($defaults);
+		$table = Table::create();
 		$table->setColumns(
 			array(
 				lang('subject'),
@@ -637,75 +619,65 @@ class Communicate extends Utilities {
 				)
 			)
 		);
-		// var_dump($table); die();
-
-		$base_url = new URL('utilities/communicate/sent', ee()->session->session_id());
 
 		$page = ee()->input->get('page') ? ee()->input->get('page') : 1;
 		$page = ($page > 0) ? $page : 1;
 
 		$offset = ($page - 1) * 50; // Offset is 0 indexed
 
-		$emails = ee()->api->get('EmailCache');
+		$count = 0;
 
-		if ( ! is_null($search))
+		$table->setFilteredData(function($sort_col, $sort_dir, $search) use (&$count, $offset)
 		{
-			$emails = $emails->filterGroup()
-				               ->filter('subject', 'LIKE', '%' . $search . '%')
-				               ->orFilter('message', 'LIKE', '%' . $search . '%')
-				               ->orFilter('from_email', 'LIKE', '%' . $search . '%')
-				               ->orFilter('recipient', 'LIKE', '%' . $search . '%')
-				               ->orFilter('cc', 'LIKE', '%' . $search . '%')
-				               ->orFilter('bcc', 'LIKE', '%' . $search . '%')
-						     ->endFilterGroup();
-		}
+			$emails = ee()->api->get('EmailCache');
 
-		$count = $emails->count();
+			if ( ! empty($search))
+			{
+				$emails = $emails->filterGroup()
+					               ->filter('subject', 'LIKE', '%' . $search . '%')
+					               ->orFilter('message', 'LIKE', '%' . $search . '%')
+					               ->orFilter('from_email', 'LIKE', '%' . $search . '%')
+					               ->orFilter('recipient', 'LIKE', '%' . $search . '%')
+					               ->orFilter('cc', 'LIKE', '%' . $search . '%')
+					               ->orFilter('bcc', 'LIKE', '%' . $search . '%')
+							     ->endFilterGroup();
+			}
 
-		$emails = $emails->order($defaults['sort_col'], $defaults['sort_dir'])
-			->limit(50)
-			->offset($offset)
-			->all();
+			$count = $emails->count();
 
-		$data = array();
-		foreach ($emails as $email)
-		{
-			$data[] = array(
-				$email->subject,
-				ee()->localize->human_time($email->cache_date),
-				$email->total_sent,
-				'',
-				array('toolbar_items' => array(
-					'view' => '',
-					'sync' => cp_url('utilities/communicate/resend/' . $email->cache_id)
+			$emails = $emails->order(strtolower($sort_col), $sort_dir)
+				->limit(50)
+				->offset($offset)
+				->all();
+
+			$data = array();
+			foreach ($emails as $email)
+			{
+				$data[] = array(
+					$email->subject,
+					ee()->localize->human_time($email->cache_date),
+					$email->total_sent,
+					'',
+					array('toolbar_items' => array(
+						'view' => '',
+						'sync' => cp_url('utilities/communicate/resend/' . $email->cache_id)
+						)
+					),
+					array(
+						'name'  => 'selection[]',
+						'value' => $email->cache_id
 					)
-				),
-				array(
-					'name'  => 'selection[]',
-					'value' => $email->cache_id
-				)
-			);
-		}
-		$table->setData($data);
+				);
+			}
+
+			return $data;
+		});
+		
+		$base_url = new URL('utilities/communicate/sent', ee()->session->session_id());
 		$vars['table'] = $table->viewData($base_url);
 
-		if ( ! is_null($search))
-		{
-			$base_url->setQueryStringVariable('search', $search);
-		}
-
-		if (ee()->input->get('sort_col'))
-		{
-			$base_url->setQueryStringVariable('sort_col', ee()->input->get('sort_col'));
-		}
-
-		if (ee()->input->get('sort_dir'))
-		{
-			$base_url->setQueryStringVariable('sort_dir', ee()->input->get('sort_dir'));
-		}
-
 		$pagination = new Pagination(50, $count, $page);
-		$vars['links'] = $pagination->cp_links($base_url);
+		$vars['pagination'] = $pagination->cp_links($vars['table']['base_url']);
 
 		ee()->view->cp_page_title = lang('view_email_cache');
 		ee()->cp->render('utilities/communicate-sent', $vars);
