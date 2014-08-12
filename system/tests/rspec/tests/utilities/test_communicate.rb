@@ -15,10 +15,12 @@ feature 'Communicate' do
 		@test_subject = 'Rspec utilities/communicate test'
 		@test_from = 'ellislab.developers.rspec@mailinator.com'
 		@test_recipient = 'ellislab.developers@mailinator.com'
+		@mail_files = 'support/tmp/mail-*'
 	end
 
 	before(:each) do
 		ee_config(item: 'mail_protocol', value: 'dummy')
+		ee_config(item: 'dummy_mail_path', value: asset_path('tmp/'))
 
 		cp_session
 		@page = Communicate.new
@@ -40,7 +42,11 @@ feature 'Communicate' do
 	end
 
 	after(:each) do
-		FileUtils.rm Dir.glob('/tmp/mail-*')
+		FileUtils.rm Dir.glob(@mail_files)
+	end
+
+	after(:all) do
+		ee_config(item: 'dummy_mail_path', value: '')
 	end
 
 	it "shows the Communicate page" do
@@ -366,9 +372,9 @@ feature 'Communicate' do
 		# This isn't ideal as there could be name conflicts but for now
 		# it will have to do since email debug array is being reset with
 		# each call.
-		expect(Dir.glob('/tmp/mail-*').count).to eq(2)
+		expect(Dir.glob(@mail_files).count).to eq(2)
 
-		Dir.glob('/tmp/mail-*').each do |file|
+		Dir.glob(@mail_files).each do |file|
 			mail = Mail.read(file)
 
 			expect(mail.subject).to eq(my_subject)
@@ -409,9 +415,9 @@ feature 'Communicate' do
 		# This isn't ideal as there could be name conflicts but for now
 		# it will have to do since email debug array is being reset with
 		# each call.
-		expect(Dir.glob('/tmp/mail-*').count).to eq(5)
+		expect(Dir.glob(@mail_files).count).to eq(5)
 
-		Dir.glob('/tmp/mail-*').each do |file|
+		Dir.glob(@mail_files).each do |file|
 			mail = Mail.read(file)
 
 			expect(mail.subject).to eq(my_subject)
@@ -453,9 +459,9 @@ feature 'Communicate' do
 		# This isn't ideal as there could be name conflicts but for now
 		# it will have to do since email debug array is being reset with
 		# each call.
-		expect(Dir.glob('/tmp/mail-*').count).to eq(5)
+		expect(Dir.glob(@mail_files).count).to eq(5)
 
-		Dir.glob('/tmp/mail-*').each do |file|
+		Dir.glob(@mail_files).each do |file|
 			mail = Mail.read(file)
 
 			expect(mail.subject).to eq(my_subject)

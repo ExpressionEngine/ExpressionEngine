@@ -6,6 +6,7 @@ function is_really_writable($file)
 }
 
 require('bootstrap.php');
+require(APPPATH.'config/constants.php');
 require(BASEPATH.'core/Config.php');
 require(APPPATH.'core/EE_Config.php');
 

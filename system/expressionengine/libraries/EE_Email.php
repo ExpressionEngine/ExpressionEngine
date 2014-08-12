@@ -156,7 +156,8 @@ class EE_Email extends CI_Email {
 	 */
 	protected function _send_with_dummy()
 	{
-		$tmpfname = tempnam("/tmp", "mail-");
+		$tmppath = ee()->config->item('dummy_mail_path') ?: '/tmp';
+		$tmpfname = tempnam($tmppath, "mail-");
 		$fp = file_put_contents($tmpfname, $this->_header_str . $this->_finalbody);
 
 		if ($fp === FALSE)
