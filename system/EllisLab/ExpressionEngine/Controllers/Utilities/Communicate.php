@@ -463,6 +463,7 @@ class Communicate extends Utilities {
 
 		if ($error == TRUE)
 		{
+			$email->delete();
 			show_error(lang('error_sending_email').BR.BR.$debug_msg);
 		}
 
@@ -514,10 +515,7 @@ class Communicate extends Utilities {
 			$email_address = array_shift($recipient_array);
 			if ( ! $this->deliverEmail($email, $email_address))
 			{
-				// Let's adjust the recipient array up to this point
-				$email->recipient_array = array_unshift($recipient_array, $email_address);
-
-				$email->save();
+				$email->delete();
 
 				$debug_msg = ee()->email->print_debugger(array());
 
