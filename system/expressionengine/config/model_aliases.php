@@ -1,14 +1,13 @@
 <?php
 
 $aliases = array(
-		// Category
+		'Accessory' => '\EllisLab\ExpressionEngine\Model\Accessory',
+		'AccessoryGateway' => '\EllisLab\ExpressionEngine\Model\AccessoryGateway',
 		'Category' => '\EllisLab\ExpressionEngine\Model\Category\Category',
 		'CategoryFieldDataGateway' => '\EllisLab\ExpressionEngine\Model\Gateway\CategoryFieldDataGateway',
 		'CategoryGateway' => '\EllisLab\ExpressionEngine\Model\Gateway\CategoryGateway',
 		'CategoryGroup' => '\EllisLab\ExpressionEngine\Model\Category\CategoryGroup',
 		'CategoryGroupGateway'=> '\EllisLab\ExpressionEngine\Model\Gateway\CategoryGroupGateway',
-
-		// Channel
 		'Channel' => '\EllisLab\ExpressionEngine\Module\Channel\Model\Channel',
 		'ChannelFieldGroup'=> '\EllisLab\ExpressionEngine\Module\Channel\Model\ChannelFieldGroup',
 		'ChannelFieldGroupGateway' => '\EllisLab\ExpressionEngine\Module\Channel\Model\Gateway\ChannelFieldGroupGateway',
@@ -18,6 +17,10 @@ $aliases = array(
 		'ChannelGateway' => '\EllisLab\ExpressionEngine\Module\Channel\Model\Gateway\ChannelGateway',
 		'ChannelTitleGateway' => '\EllisLab\ExpressionEngine\Module\Channel\Model\Gateway\ChannelTitleGateway',
 		'ChannelDataGateway' => '\EllisLab\ExpressionEngine\Module\Channel\Model\Gateway\ChannelDataGateway',
+		'Comment' => '\EllisLab\ExpressionEngine\Module\Comment\Model\Comment',
+		'CommentGateway' => '\EllisLab\ExpressionEngine\Module\Comment\Model\Gateway\CommentGateway',
+		'CommentSubscription' => '\EllisLab\ExpressionEngine\Module\Comment\Model\CommentSubscription',
+		'CommentSubscriptionGateway' => '\EllisLab\ExpressionEngine\Module\Comment\Model\Gateway\CommentSubscriptionGateway',
 		'CpLog' => '\EllisLab\ExpressionEngine\Model\CpLog',
 		'CpLogGateway' => '\EllisLab\ExpressionEngine\Model\Gateway\CpLogGateway',
 		'DeveloperLog' => '\EllisLab\ExpressionEngine\Model\DeveloperLog',
@@ -26,6 +29,8 @@ $aliases = array(
 		'EmailCacheGateway' => '\EllisLab\ExpressionEngine\Model\Gateway\EmailCacheGateway',
 		'EmailConsoleCache' => '\EllisLab\ExpressionEngine\Model\EmailConsoleCache',
 		'EmailConsoleCacheGateway' => '\EllisLab\ExpressionEngine\Model\Gateway\EmailConsoleCacheGateway',
+		'Extension' => '\EllisLab\ExpressionEngine\Model\Extension',
+		'ExtensionGateway' => '\EllisLab\ExpressionEngine\Model\Gateway\Extension',
 		'MailingList' => '\EllisLab\ExpressionEngine\Module\MailingList\Model\MailingList',
 		'MailingListGateway' => '\EllisLab\ExpressionEngine\Module\MailingList\Model\Gateway\MailingListGateway',
 		'MailingListQueue' => '\EllisLab\ExpressionEngine\Module\MailingList\Model\MailingListQueue',
@@ -36,8 +41,14 @@ $aliases = array(
 		'MemberGroup' => '\EllisLab\ExpressionEngine\Module\Member\Model\MemberGroup',
 		'MemberGateway' => '\EllisLab\ExpressionEngine\Module\Member\Model\Gateway\MemberGateway',
 		'MemberGroupGateway' => '\EllisLab\ExpressionEngine\Module\Member\Model\Gateway\MemberGroupGateway',
+		'Module' => '\EllisLab\ExpressionEngine\Model\Module',
+		'ModuleGateway' => '\EllisLab\ExpressionEngine\Model\Gateway\ModuleGateway',
 		'ResetPassword' => '\EllisLab\ExpressionEngine\Module\Member\Model\ResetPassword',
 		'ResetPasswordGateway' => '\EllisLab\ExpressionEngine\Module\Member\Model\Gateway\ResetPasswordGateway',
+		'RichTextEditorTool' => '\EllisLab\ExpressionEngine\Module\RichTextEditor\Model\RichTextEditorTool',
+		'RichTextEditorToolGateway' => '\EllisLab\ExpressionEngine\Module\RichTextEditor\Model\Gateway\RichTextEditorGateway',
+		'RichTextEditorToolset' => '\EllisLab\ExpressionEngine\Module\RichTextEditor\Model\RichTextEditorToolset',
+		'RichTextEditorToolsetGateway' => '\EllisLab\ExpressionEngine\Module\RichTextEditorToolset\Model\Gateway\RichTextEditorToolsetGateway',
 		'SearchLog' => '\EllisLab\ExpressionEngine\Module\Search\Model\SearchLog',
 		'SearchLogGateway' => '\EllisLab\ExpressionEngine\Module\Search\Model\Gateway\SearchLogGateway',
 		'Status' => '\EllisLab\ExpressionEngine\Model\Status',
@@ -51,7 +62,9 @@ $aliases = array(
 		'TemplateGateway' => '\EllisLab\ExpressionEngine\Model\Gateway\TemplateGateway',
 		'TemplateGroupGateway' => '\EllisLab\ExpressionEngine\Model\Gateway\TemplateGroupGateway',
 		'Throttle' => '\EllisLab\ExpressionEngine\Model\Throttle',
-		'ThrottleGateway' => '\EllisLab\ExpressionEngine\Model\Gateway\ThrottleGateway'
+		'ThrottleGateway' => '\EllisLab\ExpressionEngine\Model\Gateway\ThrottleGateway',
+		'UploadDestination' => '\EllisLab\ExpressionEngine\Model\UploadDestination',
+		'UploadPrefGateway' => '\EllisLab\ExpressionEngine\Model\Gateway\UploadPrefGateway',
 
 
 );
