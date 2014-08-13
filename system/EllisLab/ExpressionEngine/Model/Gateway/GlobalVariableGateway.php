@@ -14,9 +14,9 @@ class GlobalVariableGateway extends RowDataGateway
 	);
 
 	// Properties
-	public $variable_id;
-	public $site_id;
-	public $variable_name;
-	public $variable_data;
+	protected $variable_id;
+	protected $site_id;
+	protected $variable_name;
+	protected $variable_data;
 
 }

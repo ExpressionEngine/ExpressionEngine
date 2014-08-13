@@ -8,9 +8,9 @@ class PasswordLockoutGateway extends RowDataGateway {
 	protected static $_primary_id = 'lockout_id';
 
 	// Properties
-	public $lockout_id;
-	public $login_date;
-	public $ip_address;
-	public $user_agent;
-	public $username;
+	protected $lockout_id;
+	protected $login_date;
+	protected $ip_address;
+	protected $user_agent;
+	protected $username;
 }

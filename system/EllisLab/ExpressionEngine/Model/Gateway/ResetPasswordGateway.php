@@ -14,8 +14,8 @@ class ResetPasswordGateway extends RowDataGateway {
 	);
 
 	// Properties
-	public $reset_id;
-	public $member_id;
-	public $resetcode;
-	public $date;
+	protected $reset_id;
+	protected $member_id;
+	protected $resetcode;
+	protected $date;
 }

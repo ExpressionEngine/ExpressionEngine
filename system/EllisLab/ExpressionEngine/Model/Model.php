@@ -85,7 +85,7 @@ abstract class Model {
 		$this->_factory = $factory;
 		$this->_alias_service = $alias_service;
 
-		foreach ($data as $property => $value)
+		foreach($data as $property => $value)
 		{
 			if (property_exists($this, $property))
 			{
@@ -157,6 +157,37 @@ abstract class Model {
 		}
 
 		throw new InvalidArgumentException('Attempt to access a non-existent property "' . $name . '" on ' . get_called_class());
+	}
+
+	public function populateFromDatabase(array $data, $dirty = FALSE)
+	{
+		// Map them coming out of the database by passing them through the
+		// gateways.  We'll grab them from the first gateway that has them,
+		// so that will be the gateway that does the mapping.
+		foreach (static::getMetaData('gateway_names') as $gateway_name)
+		{
+			$gateways[$gateway_name] = $this->_factory->makeGateway($gateway_name, $data);
+		}
+
+		foreach ($data as $property => $value)
+		{
+			if (property_exists($this, $property))
+			{
+				foreach($gateways as $name => $gateway)
+				{
+					if (property_exists($gateway, $property))
+					{
+						$this->{$property} = $gateway->{$property};
+						if ($dirty)
+						{
+							$this->setDirty($property);
+						}
+						break;
+					}
+				}
+			}
+		}
+
 	}
 
 	/**
@@ -333,7 +364,6 @@ abstract class Model {
 		$c->stopIf('keysNotEqual'); // require identical keys to traverse
 		*/
 
-
 		$c->walk(function($self) use ($gateways)
 		{
 			foreach ($gateways as $gateway)
@@ -342,6 +372,9 @@ abstract class Model {
 			}
 		});
 
+		$key = static::getMetaData('primary_key');
+		$gateway_names = static::getMetaData('gateway_names');
+		$this->{$key} = $gateways[$gateway_names[0]]->{$key};
 		return $this;
 	}
 

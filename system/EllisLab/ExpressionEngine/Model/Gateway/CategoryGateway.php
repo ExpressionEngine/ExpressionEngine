@@ -29,13 +29,13 @@ class CategoryGateway extends RowDataGateway {
 	);
 
 	// Properties
-	public $cat_id;
-	public $site_id;
-	public $group_id;
-	public $parent_id;
-	public $cat_name;
-	public $cat_url_title;
-	public $cat_description;
-	public $cat_image;
-	public $cat_order;
+	protected $cat_id;
+	protected $site_id;
+	protected $group_id;
+	protected $parent_id;
+	protected $cat_name;
+	protected $cat_url_title;
+	protected $cat_description;
+	protected $cat_image;
+	protected $cat_order;
 }
