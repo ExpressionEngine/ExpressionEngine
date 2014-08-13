@@ -64,9 +64,37 @@ feature 'Communicate > Sent' do
 	end
 
 	it 'sorts by total sent (asc)' do
+		sent = []
+
+		('1'..'25').each do |n|
+			sent.push(n)
+			@page.generate_data(total_sent: n, count: 1)
+		end
+		load_page
+		@page.total_sent_header.find('a.sort').click
+
+		@page.find('th.highlight').text.should eq 'Total Sent'
+		@page.find('th.highlight').should have_css 'a.sort.asc'
+		@page.total_sents.map {|sent| sent.text}.should == sent
+		@page.should have(26).rows # +1 for the header
 	end
 
 	it 'sorts by total sent (desc)' do
+		sent = []
+
+		('1'..'25').each do |n|
+			sent.push(n)
+			@page.generate_data(total_sent: n, count: 1)
+		end
+		sent.reverse!
+		load_page
+		@page.total_sent_header.find('a.sort').click # To sort by total sent
+		@page.total_sent_header.find('a.sort').click # DESC sort
+
+		@page.find('th.highlight').text.should eq 'Total Sent'
+		@page.find('th.highlight').should have_css 'a.sort.desc'
+		@page.total_sents.map {|sent| sent.text}.should == sent
+		@page.should have(26).rows # +1 for the header
 	end
 
 	it 'can search' do
