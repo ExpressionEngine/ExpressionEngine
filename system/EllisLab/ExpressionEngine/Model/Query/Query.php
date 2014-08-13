@@ -6,25 +6,34 @@ use EllisLab\ExpressionEngine\Model\Relationship\RelationshipMeta;
 
 class Query {
 
+	const DELETE_BATCH_SIZE = 100;
+
 	private $factory;
 	private $alias_service;
 
 	private $db;
+	private $graph;
 
 	private $limit = '18446744073709551615'; // 2^64
 	private $offset = 0;
 
+	private $model = '';
+	private $filters = array();
+	private $orders = array();
+	private $withs = array();
+	private $only_fields = array();
+
 	private $aliases = array();
 	private $subqueries = array();
+	private $filter_stack = array();
+	private $cached_metadata = array();
 
 	/**
-	 * @var	QueryTreeNode $root	The root of this query's tree of model
-	 * 			relationships.  The model we initiated the query against.
+	 * Constructor
 	 */
-	private $root = NULL;
-
 	public function __construct(ModelFactory $factory, AliasServiceInterface $alias_service, $model_name)
 	{
+		$this->model = $model_name;
 		$this->factory = $factory;
 		$this->alias_service = $alias_service;
 
@@ -33,101 +42,425 @@ class Query {
 			$this->setConnection(ee()->db); // TODO reset?
 		}
 
-		$this->createRoot($model_name);
+		// TODO move this, don't ask for things!
+		$this->graph = $factory->getRelationshipGraph();
 	}
 
-	protected function createRoot($model_name)
+	/**
+	 * Run the query and return a collection.
+	 *
+	 * @return Collection
+	 */
+	public function all()
 	{
-		$model = $this->factory->make($model_name);
+		return $this->getResult()->collection();
+	}
 
-		$this->root = new QueryTreeNode($model_name, $model);
-		$this->root->meta = NULL;
+	/**
+	 * Run the query and get the results, but only return the first.
+	 *
+	 * @return Model Instance
+	 */
+	public function first()
+	{
+		$this->limit(1);
+		return $this->getResult()->first();
+	}
 
-		$this->selectFields($this->root);
+	/**
+	 * Get the query result. This de-aliases the fields, hydrates the models
+	 * and hooks up all of the relationships. That's a lot of work, so it's
+	 * done in a separate class.
+	 */
+	protected function getResult()
+	{
+		$this->buildSelect();
 
-		$gateways = $this->root->getGateways();
+		// Run the query and return
+		return new QueryResult(
+			$this->factory,
+			$this->alias_service,
+			$this->db->get()->result_array()
+		);
+	}
 
-		$primary_gateway = array_shift($gateways);
-		$primary_tablename = $primary_gateway::getMetaData('table_name');
-		$primary_aliased_tablename =  $primary_tablename . '_' . $this->root->getId();
+	/**
+	 * Build the select query with all of the filters, relationships,
+	 * as well as the standard limit, offset, and sort.
+	 *
+	 * Should be called right before getting the result.
+	 */
+	private function buildSelect()
+	{
+		// reset our aliasing
+		$this->sql_alias_id = 1;
+		$this->sql_alias_ids = array();
 
-		$this->db->from($primary_tablename . ' AS ' . $primary_aliased_tablename);
+		// retrieve root model metadata and relationship info
+		$meta = $this->getMeta($this->model);
+		$node = $this->graph->getNode($meta->getClass());
 
-		foreach ($gateways as $gateway_name => $gateway_class)
+		// store the mapping information so we can associate filters
+		// on the root model with the correct tables
+		$this->storeSqlId($this->model);
+
+		// FROM the root table
+		$root_table = $meta->getPrimaryTable();
+		$this->db->from("{$root_table} AS {$root_table}_{$this->sql_alias_id}");
+
+		// SELECT all root model fields on all gateways
+		$this->selectFields($meta, 'root');
+		$this->joinSecondaryTables($meta);
+
+		// JOIN related models that were in "with"
+		$node->setModelName($this->model);
+		$this->joinGraph($node, $this->withs, $this->sql_alias_id);
+
+		// WHERE filters
+		$this->applyFilters($this->filters);
+
+		// ORDER BY something
+		$this->applyOrders();
+
+		// LIMIT and OFFSET
+		$this->db->limit($this->limit, $this->offset);
+	}
+
+	public function delete()
+	{
+		$parent_meta = $this->getMeta($this->model);
+
+		// Get the parent ids for quick batching
+		// queries on all the little children.
+		// @todo TODO batch this as well? if no filters?
+
+		$parent_ids = $this
+			->onlyFields($this->model.'.'.$parent_meta->getPrimaryKey())
+			->all()
+			->pluck($parent_meta->getPrimaryKey());
+
+		if (empty($parent_ids))
 		{
-			$tablename = $gateway_class::getMetaData('table_name');
-			$aliased_tablename = $tablename . '_' . $this->root->getId();
+			return;
+		}
+
+		// find the order to delete in so we don't end up with
+		// orphans
+		list($deleteOrder, $deletePaths) = $this->getDeleteGraph($parent_meta);
+
+		// go through them in the correct order and process our delete
+		foreach ($deleteOrder as $name)
+		{
+			$edges = $deletePaths[$name];
+			$from_meta = $this->getMeta($name);
+
+			// recreate the nested with() from our deletePath. Ugh.
+			$with = array();
+			$with_pointer =& $with;
+
+			while ($edge = array_pop($edges))
+			{
+				$with_pointer[$edge->name] = array();
+				$with_pointer =& $with_pointer[$edge->name];
+			}
+
+			$offset = 0;
+			$batch_size = self::DELETE_BATCH_SIZE; // TODO change depending on model
+
+			do {
+				// grab the delete ids and process in batches
+				$delete_ids = $this->factory->get($name)
+					->with($with)
+					->onlyFields($name.'.'.$from_meta->getPrimaryKey())
+					->filter($parent_meta->getName().'.'.$parent_meta->getPrimaryKey(), 'IN', $parent_ids)
+					->offset($offset)
+					->limit($batch_size)
+					->all()
+					->pluck($from_meta->getPrimaryKey());
+
+				$offset += $batch_size;
+
+				if ( ! count($delete_ids))
+				{
+					continue;
+				}
+
+				/* @pk TODO put this back
+				$collection = $this->factory->get($name)
+					->filter($name.'.'.$from_meta->getPrimaryKey(), 'IN', $delete_ids)
+					->all();
+
+				$collection->triggerEvent('delete');
+				*/
+
+				$this->deleteAsLeaf($from_meta, $delete_ids);
+			}
+			while (count($delete_ids) == $batch_size);
+
+		}
+
+		$this->deleteAsLeaf($parent_meta, $parent_ids);
+	}
+
+	/**
+	 * Delete the model and its tables, ignoring any relationships
+	 * that might exist. This is a utility function for the main
+	 * delete which *is* aware of relationships.
+	 *
+	 * @param MetaCache $meta Metadata cache for the model to delete
+	 * @param Int[] $delete_ids Array of ids to remove
+	 * @param void
+	 */
+	private function deleteAsLeaf($meta, $delete_ids)
+	{
+		$tables = $meta->getTables();
+
+		$this->db
+			->where_in($meta->getPrimaryKey(), $delete_ids)
+			->delete($tables);
+	}
+
+	/**
+	 * Given a node to delete, returns all of the other
+	 * nodes that need to be deleted in reverse topological
+	 * order. This means leaves first and then upwards from
+	 * there. Basically a topsort with the results reversed
+	 * and edges returned instead of nodes
+	 *
+	 * For many-to-many, the pivot table entries are removed
+	 * before the nodes are. This helps prevent new conflicts
+	 * from being created during the batching process.
+	 */
+	private function getDeleteGraph($meta)
+	{
+		// get all the edges that need to be removed,
+		// where we first remove the child and then the
+		// parent. Except many to many where the pivot
+		// is cleared.
+		$node = $this->graph->getNode($meta->getClass());
+
+		$delete_order = array();
+		$roots = array($node);
+		$edges_visited = array();
+		$paths = array(
+			$meta->getName() => array()
+		);
+
+		$node->setModelName($meta->getName());
+
+		while ($node = array_shift($roots))
+		{
+			foreach ($node->getAllOutgoingEdges() as $e)
+			{
+				$reverse = $e->getInverseOn($this->factory->make($e->model));
+
+				if ( ! isset($reverse))
+				{
+					throw new \Exception('Could not reverse relationship ' . $e->model.' for '.$e->from.'.');
+				}
+
+				$delete_order[] = $e->model;
+
+				$paths[$e->model] = $paths[$node->model];
+				$paths[$e->model][] = $reverse;
+
+				$to_node = $this->graph->getNode($e->to_class);
+				$to_node->setModelName($e->model);
+
+				$to_node_key = spl_object_hash($to_node);
+
+				if ( ! isset($edges_visited[$to_node_key]))
+				{
+					$edges_visited[$to_node_key] = 0;
+				}
+
+				$edges_visited[$to_node_key]++;
+
+				if ($edges_visited[$to_node_key] == count($to_node->getAllIncomingEdges()))
+				{
+					$roots[] = $to_node;
+				}
+			}
+		}
+
+		return array(
+			array_reverse($delete_order),
+			$paths
+		);
+	}
+
+	private function joinGraph($node, $related, $path)
+	{
+		$parent_id = trim(strrchr($path, '_'), '_') ?: $path;
+
+		foreach ($related as $name => $children)
+		{
+			// todo: skip subqueries
+			$this->sql_alias_id++;
+
+			// get('ChannelEntries')->with("Authors as Peeps")
+			// Peeps is the alias
+			// Authors is the relationship name
+			// Members is the model
+			list($name, $alias) = $this->splitAtAlias($name);
+
+			$edge = $node->getEdgeByName($name);
+			$meta = $this->getMeta($edge->model);
+
+			$this->storeSqlId($alias, $name);
+			$this->selectFields($meta, $name, $path.'_');
+
+			$from_table = $this->getTable($node->model, $edge->key);
+			$to_table = $this->getTable($edge->model, $edge->to_key);
+
+			$to_table_alias = $to_table . '_' . $this->sql_alias_id;
+			$from_table_alias = $from_table . '_' . $parent_id;
+
+			// ALL EXCEPT MANY TO MANY
 			$this->db->join(
-				$tablename . ' AS ' . $aliased_tablename,
-				$primary_aliased_tablename.
-				'.' .
-				$primary_gateway::getMetaData('primary_key') .
-				' = ' .
-				$aliased_tablename .
-				'.' .
-				$gateway_class::getMetaData('primary_key')
+				"{$to_table} AS {$to_table_alias}",
+				"{$from_table_alias}.{$edge->key} = {$to_table_alias}.{$edge->to_key}",
+				"LEFT OUTER"
 			);
+
+			$this->joinSecondaryTables($meta, $to_table);
+
+/*
+$this->db->join($relationship_meta->pivot_table . ' AS ' . $relationship_meta->pivot_table . '_' . $node->getId(),
+	$relationship_meta->from_table . '_' . $from_id . '.' . $relationship_meta->from_key .
+	'=' .
+	$relationship_meta->pivot_table . '_' . $node->getId() . '.' . $relationship_meta->pivot_from_key,
+	'LEFT OUTER');
+$this->db->join($relationship_meta->to_table . ' AS ' . $relationship_meta->to_table . '_' . $node->getId(),
+	$relationship_meta->pivot_table . '_' . $node->getId() . '.' . $relationship_meta->pivot_to_key .
+	'=' .
+	$relationship_meta->to_table . '_' . $node->getId() . '.' . $relationship_meta->to_key,
+	'LEFT OUTER');
+*/
+
+			// recurse
+			if (count($children))
+			{
+				$child_node = $this->graph->getNode($edge->to_class);
+				$child_node->setModelName($edge->model);
+
+				$this->joinGraph($child_node, $children, $path.'_'.$this->sql_alias_id);
+			}
+		}
+	}
+
+	private function selectFields($meta, $relationship_name, $id_path = '')
+	{
+		// if check if we only need to select a subset
+		$this->translateOnlyFields();
+
+		$all_fields = empty($this->only_fields);
+
+		$uniqid = $this->sql_alias_id;
+
+		foreach ($meta->getFields() as $table => $fields)
+		{
+			$table_alias = $table . '_' . $uniqid;
+			$table_path = $id_path . $uniqid . '__' . $relationship_name . '__' . $meta->getName();
+
+			foreach ($fields as $field)
+			{
+				if ( ! isset($field) || $field == 'fields')
+				{
+					continue; // TODO channel is weird, the field list is all messed up, returns NULLs
+				}
+
+				$select = "{$table_alias}.{$field}";
+
+				if ( ! $all_fields && ! in_array($select, $this->only_fields))
+				{
+					continue;
+				}
+
+				$this->db->select("{$select} AS {$table_path}__{$field}");
+			}
 		}
 	}
 
 	/**
-	 * Get the node for a given relationship name from the relationship tree
+	 * Join the other gateways related to the model represented
+	 * by the cached `$meta`.
+	 *
+	 * @param MetaCache $meta Model meta to delete from
+	 * @param String $known_table The table to join on. We expect this
+	 *			to be in the query already. Defaults to the first gateway.
+	 * @return void
 	 */
-	protected function getNodeForRelationship($relationship_name)
+	private function joinSecondaryTables($meta, $known_table = NULL)
 	{
-		$relationship_name = $this->getAlias($relationship_name);
+		$join_type = '';
 
-		foreach ($this->root->getBreadthFirstIterator() as $node)
+		$tables = $meta->getTables();
+		$primary_key = $meta->getPrimaryKey();
+
+		// If they specified a known table then this is a joined model
+		// where the to gateway was known from the relationship. In those
+		// cases we want the join to be outer left. Otherwise it's the
+		// main table of this model, which is the first gateway.
+		if (isset($known_table))
 		{
-			if ($node->getName() == $relationship_name)
-			{
-				return $node;
-			}
+			$join_type = 'LEFT OUTER';
+		}
+		else
+		{
+			$known_table = current($tables);
 		}
 
-		return NULL;
+		foreach ($tables as $table)
+		{
+			if ($table != $known_table)
+			{
+				$table_alias = $table . '_' . $this->sql_alias_id;
+				$known_table_alias = $known_table.'_'.$this->sql_alias_id;
+
+				$this->db->join(
+					"{$table} AS {$table_alias}",
+					"{$known_table_alias}.{$primary_key} = {$table_alias}.{$primary_key}",
+					$join_type
+				);
+			}
+		}
+	}
+
+
+	private function getTable($model, $field)
+	{
+		return $this->getMeta($model)->findTable($field);
 	}
 
 	/**
 	 * Take Relationship.property and translate it to table.property
 	 */
-	protected function translateProperty($relationship_property)
+	protected function translateProperty($property)
 	{
-		$relationship_name = strtok($relationship_property, '.');
-		$property = strtok('.');
-		$node = $this->getNodeForRelationship($relationship_name);
-
-		if ($node === NULL && $property === FALSE)
+		// set model-less filters on the main model
+		if ( ! strpos($property, '.'))
 		{
-			$property = $relationship_name;
-			$relationship_name = $this->root->getName();
-			$node = $this->root;
+			$property = $this->model.'.'.$property;
 		}
 
-		$model = $node->getModel();
+		list($name, $column) = explode('.', $property);
+		list($model, $sql_id) = $this->getSqlId($name);
 
-		if ($property === FALSE)
+		if ( ! isset($sql_id))
 		{
-			$property = $model->getMetaData('primary_key');
+			// table doesn't exist. This usually means the model was not selected
+			return NULL;
 		}
 
-		foreach ($node->getGateways() as $gateway_name => $gateway_class)
-		{
-			$field_list = $gateway_class::getMetaData('field_list');
-
-			if (in_array($property, $gateway_class::getMetaData('field_list')))
-			{
-				$table = $gateway_class::getMetaData('table_name');
-				break;
-			}
-		}
+		$table = $this->getTable($model, $column);
 
 		if ( ! isset($table))
 		{
-			throw new \Exception('Property ' . $property . ' was not found on model ' . $model_class);
+			throw new \Exception("Property {$column} was not found on model {$model}.");
 		}
 
-		return $table . '_' . $node->getId() . '.' . $property;
+		return "{$table}_{$sql_id}.{$column}";
 	}
 
 	/**
@@ -143,34 +476,78 @@ class Query {
 	 */
 	public function filter($property, $operator, $value = NULL)
 	{
-		// We'll use this to mask the application.  We'll need it
-		// when we do subquerying.
-		$this->applyFilter($property, $operator, $value);
+		$this->filters[] = array($property, $operator, $value, FALSE);
 		return $this;
 	}
 
 	public function orFilter($property, $operator, $value = NULL)
 	{
-		$this->applyFilter($property, $operator, $value, TRUE);
+		$this->filters[] = array($property, $operator, $value, TRUE);
 		return $this;
 	}
 
 	public function filterGroup()
 	{
-		$this->db->start_group();
+		// open group
+		$filter_stack[] = $this->filters;
+		$filter_stack[] = 'and'; // nesting type
+
+		$this->filters = array();
 		return $this;
 	}
 
 	public function orFilterGroup()
 	{
-		$this->db->or_start_group();
+		$filter_stack[] = $this->filters;
+		$filter_stack[] = 'or'; // nesting type
+
+		$this->filters = array();
 		return $this;
 	}
 
 	public function endFilterGroup()
 	{
-		$this->db->end_group();
+		// end group
+		$nested = $this->filters;
+		$prefix = array_pop($filter_stack);
+
+		$this->filters = array_pop($filter_stack);
+		$this->filters[] = array($prefix, $nested);
+
 		return $this;
+	}
+
+	protected function applyFilters($filters)
+	{
+		foreach ($filters as $filter_data)
+		{
+			// it's nested!
+			if (count($filter_data) == 2)
+			{
+				list($prefix, $nested) = $filter_data;
+
+				if ($prefix == 'and')
+				{
+					ee()->db->start_group();
+				}
+				else
+				{
+					ee()->db->or_start_group();
+				}
+
+				$this->applyFilters($nested);
+				ee()->db->end_group();
+			}
+			else
+			{
+				$this->applyFilter(
+					$filter_data[0],
+					$filter_data[1],
+					$filter_data[2],
+					$filter_data[3]
+				);
+			}
+		}
 	}
 
 	protected function applyFilter($relationship_property, $operator, $value, $or = FALSE)
@@ -187,6 +564,11 @@ class Query {
 		}
 
 		$table_property = $this->translateProperty($relationship_property);
+
+		if ( ! isset($table_property))
+		{
+			return;
+		}
 
 		if ($or)
 		{
@@ -215,348 +597,60 @@ class Query {
 
 	public function order($property, $direction = '')
 	{
-		$this->applyOrder($property, $direction);
+		$this->orders[] = array($property, $direction);
 		return $this;
 	}
 
-	protected function applyOrder($relationship_property, $direction = '')
+	protected function applyOrders()
 	{
-		$table_property = $this->translateProperty($relationship_property);
-		$this->db->order_by($table_property, $direction);
+		foreach ($this->orders as $info)
+		{
+			list($property, $direction) = $info;
+
+			$table_column = $this->translateProperty($property);
+
+			if ( ! isset($table_column))
+			{
+				return;
+			}
+
+			$this->db->order_by($table_column, $direction);
+		}
 	}
 
-	/**
-	 * Eager load a relationship
-	 *
-	 * @param Mixed Any combination of either a direct relationship name or
-	 * an array of (parent > child).
-	 *
-	 * For example:
-	 *
-	 * get('ChannelEntry')
-	 * 	->with(
-	 * 		'Channel',
-	 * 		array(
-	 * 			'Member' => array(
-	 * 				array('MemberGroup'=>'Member'),
-	 * 				'MemberCustomFields')),
-	 * 		array('Categories' => 'CategoryGroup'))
-	 * OR
-	 *
-	 * get('ChannelEntry')
-	 * 	->with(
-	 * 		array(
-	 * 			'to' => 'Channel',
-	 * 			'method' => 'join'
-	 * 		)
-	 * 		array(
-	 * 			'to' => 'Member',
-	 * 			'method' => 'subquery',
-	 * 			'with'  => array(
-	 * 				'to' => array('MemberGroup', 'MemberCustomFields')
-	 * 				'method' => 'join'),
-	 * 		array('Categories' => array(
-	 * 			'CategoryCustomFields',
-	 * 			'CategoryGroup'))
-	 */
 	public function with()
 	{
-		$relationships = func_get_args();
+		$relateds = func_get_args();
 
-		foreach ($relationships as $relationship)
-		{
-			$this->buildRelationshipTree($this->root, $relationship);
-		}
-
-		foreach ($this->root->getBreadthFirstIterator() as $node)
-		{
-			if ($node->isRoot() || $this->hasParentSubquery($node))
-			{
-				continue;
-			}
-
-			$this->buildRelationship($node);
-		}
+		$this->withs = $this->addToWith($this->withs, $relateds);
 
 		return $this;
 	}
 
-
-	private function hasParentSubquery(QueryTreeNode $node)
+	private function addToWith($withs, $relateds)
 	{
-		for($n = $node; ! $n->isRoot(); $n = $n->getParent())
+		foreach ($relateds as $parent => $children)
 		{
-			// If we encounter a subquery parent with no parent, then that subquery
-			// node is the root and we're in a subquery!
-			if ($n->meta->method == RelationshipMeta::METHOD_SUBQUERY
-				&& $n->getParent() !== NULL)
+			if (is_numeric($parent) && ! is_array($children))
 			{
-				return TRUE;
+				$withs[$children] = array();
 			}
-		}
-
-		return FALSE;
-	}
-
-	/**
-	 *
-	 */
-	private function buildRelationshipTree(QueryTreeNode $parent, $relationship)
-	{
-		// An array could be one or two things:
-		// 	- We're specifying meta data for this node of the tree
-		// 		where meta data could be things like join vs subquery
-		// 	- The relationship tree has another level below this one
-		if (is_array($relationship))
-		{
-			// If the 'to' key exists, then we're specifying meta data, but
-			// we could still have another level below this one in the
-			// relationship tree.  So we need to check for a 'with' key.
-			if (isset($relationship['to']))
+			elseif (is_numeric($parent) && is_array($children) && count($children))
 			{
-				// Build the relationship, pass the meta data through.
-				$to = $relationship['to'];
-				unset($relationship['to']);
-
-				if (isset($relationship['with']))
-				{
-					$with = $relationship['with'];
-					unset($relationship['with']);
-				}
-
-				$parent->add($this->createNode($parent, $to, $relationship));
-
-				// If we have a with key, then recurse.
-				if (isset($with))
-				{
-					$this->buildRelationshipTree($to_node, $with);
-				}
+				$withs = $this->addToWith($withs, $children);
 			}
-			// If we don't have a 'to' key, then each element of the
-			// array is just a model from => to.
 			else
 			{
-				foreach ($relationship as $from => $to)
+				if ( ! isset($withs[$parent]))
 				{
-					// If the key is numeric, then we have the case of
-					// 	'Member' => array(
-					// 		'MemberCustomField',
-					// 		'MemberGroup
-					// 	)
-					//
-					// 	Where a related model needs multiple child models
-					// 	eager loaded.  In that case, the "from" model is
-					// 	not the key (which is numeric), but rather the
-					// 	from model we were called with last time.  We'll
-					// 	recurse and pass the from model with each to
-					// 	model.
-					if (is_numeric($from))
-					{
-						$parent->add($this->createNode($parent, $to));
-					}
-					// Otherwise, if the key is not numeric, then
-					// we have the case of
-					// 	'Member' => array(
-					// 		'MemberGroup' => array('Member')
-					// 	)
-					// 	We'll need to build the 'Member' => 'MemberGroup'
-					// 	relationship and then recurse into the
-					// 	'MemberGroup' => 'Member' relationship.
-					else
-					{
-						// 'Member' => 'MemberGroup'
-						$from_node = $this->createNode($parent, $from);
-						$parent->add($from_node);
-						// 'MemberGroup' => array('Member')
-						// where $to might be an array and could result
-						// in more recursing.  The call will deal
-						// with that.
-						$this->buildRelationshipTree($from_node, $to);
-					}
+					$withs[$parent] = array();
 				}
+
+				$withs[$parent] = $this->addToWith($withs[$parent], $children);
 			}
-			// If we had an array, then we definitely recursed, and the
-			// recursive calls will eventually boil down to a single from
-			// and to.  The call with a non-array to will handle the building
-			// and that is not this call.
-			return;
 		}
 
-		// If there's no more tree walking to do, then we have bubbled
-		// down to a single edge in the tree (From_Model -> To_Model), build it.
-		$parent->add($this->createNode($parent, $relationship));
-	}
-
-	/**
-	 * Create Node in the Relationship Tree
-	 *
-	 * Create a node in our relationship tree with the given parent.  In our
-	 * relationship tree, nodes are actually the edges in the Relationship graph.
-	 * They are named for the relationship, the name of the method used to
-	 * retrieve the relationship on the "from" object, and carry a "from" and
-	 * "to".
-	 *
-	 * @param	QueryTreeNode	$parent	The parent node to this one, represents the edge
-	 * 		leading to the attached vertex from which this node (representing an edge)
-	 * 		spawns.
-	 */
-	private function createNode(QueryTreeNode $parent, $relationship_name, array $meta = array())
-	{
-		if (strpos($relationship_name, 'AS'))
-		{
-			$relationship_name = $this->removeAlias($relationship_name);
-		}
-
-		$from_model = $parent->getModel();
-
-		$relationship_method = 'get' . $relationship_name;
-
-		if ( ! method_exists($from_model, $relationship_method))
-		{
-			throw new \Exception('Undefined relationship from ' . $from_model_name . ' to ' . $relationship_name . '.  Could not find ' . $relationship_method . '().');
-		}
-
-		$relationship_meta = $from_model->$relationship_method();
-		$relationship_meta->override($meta);
-
-		$to_model = $this->factory->make($relationship_meta->to_model_name);
-
-		$node = new QueryTreeNode($relationship_meta->to_model_name, $to_model);
-		$node->setRelationshipName($relationship_name);
-
-		$node->meta = $relationship_meta;
-		return $node;
-	}
-
-	/**
-	 *
-	 */
-	private function buildRelationship(QueryTreeNode $node)
-	{
-		if ($node->meta->method == RelationshipMeta::METHOD_JOIN)
-		{
-			$this->buildJoinRelationship($node);
-		}
-		elseif ($node->meta->method == RelationshipMeta::METHOD_SUBQUERY)
-		{
-			$this->buildSubqueryRelationship($node);
-		}
-	}
-
-	/**
-	 *
-	 */
-	private function buildJoinRelationship(QueryTreeNode $node)
-	{
-		$this->selectFields($node);
-
-		$relationship_meta = $node->meta;
-
-		$from_id = $node->getParent()->getId();
-
-		switch ($relationship_meta->type)
-		{
-			case RelationshipMeta::TYPE_ONE_TO_ONE:
-			case RelationshipMeta::TYPE_ONE_TO_MANY:
-			case RelationshipMeta::TYPE_MANY_TO_ONE:
-				$this->db->join($relationship_meta->to_table . ' AS ' . $relationship_meta->to_table . '_' . $node->getId(),
-					$relationship_meta->from_table . '_' . $from_id . '.' . $relationship_meta->from_key .
-					'=' .
-					$relationship_meta->to_table . '_' . $node->getId() . '.' . $relationship_meta->to_key,
-					'LEFT OUTER');
-				break;
-
-			case RelationshipMeta::TYPE_MANY_TO_MANY:
-				$this->db->join($relationship_meta->pivot_table . ' AS ' . $relationship_meta->pivot_table . '_' . $node->getId(),
-					$relationship_meta->from_table . '_' . $from_id . '.' . $relationship_meta->from_key .
-					'=' .
-					$relationship_meta->pivot_table . '_' . $node->getId() . '.' . $relationship_meta->pivot_from_key,
-					'LEFT OUTER');
-				$this->db->join($relationship_meta->to_table . ' AS ' . $relationship_meta->to_table . '_' . $node->getId(),
-					$relationship_meta->pivot_table . '_' . $node->getId() . '.' . $relationship_meta->pivot_to_key .
-					'=' .
-					$relationship_meta->to_table . '_' . $node->getId() . '.' . $relationship_meta->to_key,
-					'LEFT OUTER');
-				break;
-		}
-
-		foreach ($relationship_meta->joined_tables as $joined_key => $joined_table)
-		{
-			$this->db->join($joined_table . ' AS ' . $joined_table . '_' . $node->getId(),
-				$relationship_meta->to_table . '_' . $node->getId() . '.' . $relationship_meta->join_key .
-				'=' .
-				$joined_table . '_' . $node->getId() . '.' . $joined_key,
-				'LEFT OUTER');
-		}
-	}
-
-	private function buildSubqueryRelationship(QueryTreeNode $node)
-	{
-		$subquery = new static($node->getName());
-		$subquery->withSubtree($node->getSubtree());
-
-		$path = $node->getPathString();
-		$this->subqueries[$path] = $subquery;
-	}
-
-	private function withSubtree(QueryTreeNode $root)
-	{
-		foreach ($root->getChildren() as $node)
-		{
-			$this->root->add($node);
-		}
-	}
-
-	public function debugQuery()
-	{
-		return $this->db->_compile_select();
-	}
-
-	/**
-	 * Run the query and return a collection.
-	 *
-	 * @return Collection
-	 */
-	public function all()
-	{
-		return $this->getResult()->collection();
-	}
-
-	/**
-	 * Run the query and get the results, but only return the first.
-	 *
-	 * @return Model Instance
-	 */
-	public function first()
-	{
-		$this->limit(1);
-		return $this->getResult()->first();
-	}
-
-	/**
-	 * Delete all the items selected by the query
-	 *
-	 * @return Number of deleted rows
-	 */
-	public function delete()
-	{
-		$this->db->delete();
-		return $this->db->affected_rows();
-	}
-
-	/**
-	 * Get the query result. This de-aliases the fields, hydrates the models
-	 * and hooks up all of the relationships. That's a lot of work, so it's
-	 * done in a separate class.
-	 */
-	protected function getResult()
-	{
-		// Run the query and return
-		return new QueryResult(
-			$this->factory,
-			$this->alias_service,
-			$this->db->get()->result_array()
-		);
+		return $withs;
 	}
 
 	/**
@@ -583,7 +677,6 @@ class Query {
 	 */
 	public function limit($n = NULL)
 	{
-		$this->db->limit($n, $this->offset);
 		$this->limit = $n;
 		return $this;
 	}
@@ -596,44 +689,56 @@ class Query {
 	 */
 	public function offset($n)
 	{
-		$this->db->limit($this->limit, $n);
 		$this->offset = $n;
 		return $this;
 	}
 
 	/**
-	 * Add selects for all fields to the query.
-	 *
-	 * @param String $model Model name to select.
+	 * Only select and return a subset of fields.
 	 */
-	protected function selectFields(QueryTreeNode $node)
+	protected function onlyFields()
 	{
-		foreach ($node->getGateways() as $name => $gateway_class)
-		{
-			$table = $gateway_class::getMetaData('table_name');
-			$properties = $gateway_class::getMetaData('field_list');
+		$this->only_fields = array_merge(
+			$this->only_fields,
+			func_get_args()
+		);
 
-			foreach ($properties as $property)
+		return $this;
+	}
+
+	/**
+	 * Translate limited fields. This is similar to `translateProperty`,
+	 * but keeps the old property name in case it's found in a later
+	 * gateway.
+	 */
+	private function translateOnlyFields()
+	{
+		foreach ($this->only_fields as &$field)
+		{
+			$result = $this->translateProperty($field);
+
+			if (isset($result))
 			{
-				$this->db->select($table . '_' . $node->getId() . '.' . $property . ' AS ' . $node->getPathString() . '__' . $node->getRelationshipName() . '__' . $node->getName() . '__' . $property);
+				$field = $result;
 			}
 		}
 	}
 
 
-	protected function removeAlias($str)
+	protected function splitAtAlias($str)
 	{
 		$str = trim($str);
 
 		if ( ! strpos($str, 'AS'))
 		{
-			return $str;
+			return array($str, $str);
 		}
 
-		list($model_name, $alias) = preg_split('\s+AS\s+', $str);
+		$parts = preg_split('\s+AS\s+', $str);
 
-		$this->aliases[$alias] = $model_name;
-		return $model_name;
+		$this->aliases[$parts[1]] = $parts[0];
+
+		return $parts;
 	}
 
 	protected function getAlias($aliased)
@@ -644,6 +749,50 @@ class Query {
 		}
 
 		return $aliased;
+	}
+
+	/**
+	 * We store based on name, because that is what we get
+	 * in the filter function.
+	 */
+	protected function storeSqlId($name, $model = NULL)
+	{
+		if ( ! isset($model))
+		{
+			$model = $name;
+		}
+
+		$this->sql_alias_ids[$name] = array($model, $this->sql_alias_id);
+	}
+
+	protected function getSqlId($name)
+	{
+		if ( ! array_key_exists($name, $this->sql_alias_ids))
+		{
+			return NULL;
+		}
+
+		return $this->sql_alias_ids[$name];
+	}
+
+
+	private function getMeta($model)
+	{
+		if ( ! isset($this->cached_metadata[$model]))
+		{
+			$this->cached_metadata[$model] = new MetaCache(
+				$this->alias_service,
+				$model
+			);
+		}
+
+		return $this->cached_metadata[$model];
+	}
+
+	public function debugQuery()
+	{
+		$this->buildSelect();
+		return $this->db->_compile_select();
 	}
 
 	public function setConnection($db)
