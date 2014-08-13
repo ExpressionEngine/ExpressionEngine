@@ -254,6 +254,16 @@ feature 'Communicate > Sent' do
 	end
 
 	it 'displays "no results" when searching returns nothing' do
+		phrase = "Zeppelins"
+
+		@page.generate_data
+		load_page
+
+		@page.phrase_search.set phrase
+		@page.search_submit_button.click
+		@page.should have_no_results
+		@page.should_not have_bulk_action
+		@page.should_not have_action_submit_button
 	end
 
 	it 'maintains sort when searching' do
