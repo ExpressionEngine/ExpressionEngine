@@ -1,7 +1,7 @@
 <?php extend_template('default-nav'); ?>
 
 <div class="tbl-ctrls">
-<?=form_open(cp_url('utilities/communicate/sent'))?>
+<?=form_open($table['base_url'])?>
 	<fieldset class="tbl-search right">
 		<input placeholder="<?=lang('type_phrase')?>" type="text" name="search" value="<?=$table['search']?>">
 		<input class="btn submit" type="submit" value="<?=lang('search_emails_button')?>">
