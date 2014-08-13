@@ -287,7 +287,7 @@ class Table {
 			}
 
 			// Handle search with a simple strpos()
-			if ($this->config['autosearch'] && ! empty($this->config['search']))
+			if ($this->config['autosearch'])
 			{
 				$this->searchData();
 			}
