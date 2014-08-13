@@ -48,18 +48,19 @@ class Table {
 	 * 'wrap' - Whether or not to wrap the table in a div that allows overflow scrolling
 	 * 'autosort' - Handle sorting automatically, this is good for non-paginated data
 	 * 'lang_cols' - Run column names though lang() on the front end
-	 * 
+	 *
 	 * @param	array 	$config	See above for options
 	 */
 	public function __construct($config = array())
 	{
 		$defaults = array(
-			'wrap'		=> TRUE,
-			'sort_col'	=> NULL,
-			'sort_dir'	=> 'asc',
-			'search'	=> NULL,
-			'autosort'	=> FALSE,
-			'lang_cols'	=> TRUE
+			'wrap'		 => TRUE,
+			'sort_col'	 => NULL,
+			'sort_dir'	 => 'asc',
+			'search'	 => NULL,
+			'autosort'	 => FALSE,
+			'autosearch' => TRUE,
+			'lang_cols'	 => TRUE
 		);
 
 		$this->config = array_merge($defaults, $config);
@@ -68,7 +69,7 @@ class Table {
 	/**
 	 * Convenience method for initializing a Table object with current
 	 * sort parameters within an EE controller
-	 * 
+	 *
 	 * @param	array 	$columns	Column names and settings
 	 * @return  object	New Table object
 	 */
@@ -108,7 +109,7 @@ class Table {
 	 *	'type': The type of column, derived from the constants above
 	 *
 	 * If no column name is needed, just pass an array with your settings
-	 * 
+	 *
 	 * @param	array 	$columns	Column names and settings
 	 * @return  void
 	 */
@@ -204,7 +205,7 @@ class Table {
 	 * the toolbar icon assocated to the URL it should go to upon click
 	 *
 	 * COL_CHECKBOX: Needs the name and value of the checkbox
-	 * 
+	 *
 	 * @param	array 	$columns	Table data
 	 * @return  void
 	 */
@@ -286,7 +287,7 @@ class Table {
 			}
 
 			// Handle search with a simple strpos()
-			if ( ! empty($this->config['search']))
+			if ($this->config['autosearch'])
 			{
 				$this->searchData();
 			}
@@ -300,7 +301,7 @@ class Table {
 	 * sort column. But if data is paginated and changing the sort also
 	 * changes the data, it's best not to use this and instead handle
 	 * it with setFilteredData().
-	 * 
+	 *
 	 * @return  void
 	 */
 	private function sortData()
@@ -338,7 +339,7 @@ class Table {
 	 * is paginated and searching can add extra data to the table not
 	 * in the current table scope, it's best not to use this and
 	 * instead handle it with setFilteredData().
-	 * 
+	 *
 	 * @return  void
 	 */
 	private function searchData()
@@ -398,7 +399,7 @@ class Table {
 	 * method gives you want to need to sort and search your data so
 	 * you can return the data to the table, whether or not any
 	 * database work is involved
-	 * 
+	 *
 	 * @param	callback 	$method	Callable method that accepts three
 	 *                          	arguments: $sort_col, $sort_dir, $search
 	 * @return  void
@@ -407,6 +408,7 @@ class Table {
 	{
 		if (is_callable($method))
 		{
+			$this->config['autosearch'] = FALSE;
 			$this->setData($method($this->getSortCol(), $this->getSortDir(), $this->config['search']));
 		}
 	}
@@ -414,7 +416,7 @@ class Table {
 	/**
 	 * Returns the table configuration and data in a format ready to be
 	 * processed by the _shared/table view
-	 * 
+	 *
 	 * @param	URL	$base_url	URL object of the base URL used for setting
 	 *                      	the search and sort criteria for sorting and
 	 *                      	pagination URLs
@@ -428,7 +430,7 @@ class Table {
 			{
 				$this->config['search'] = '';
 			}
-			
+
 			$base_url->setQueryStringVariable('search', $this->config['search']);
 			$base_url->setQueryStringVariable('sort_col', $this->getSortCol());
 			$base_url->setQueryStringVariable('sort_dir', $this->getSortDir());
@@ -449,7 +451,7 @@ class Table {
 	/**
 	 * Returns the current sorting column, or the first column if none is
 	 * specified in the config
-	 * 
+	 *
 	 * @return  string	Name of column to sort by
 	 */
 	private function getSortCol()
@@ -465,7 +467,7 @@ class Table {
 
 	/**
 	 * Returns the current sorting direction
-	 * 
+	 *
 	 * @return  string	Sort direction, either 'asc' or 'desc'
 	 */
 	private function getSortDir()
