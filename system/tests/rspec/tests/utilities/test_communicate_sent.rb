@@ -102,7 +102,7 @@ feature 'Communicate > Sent' do
 		sent = []
 
 		(1..25).each do |n|
-			sent.push(n)
+			sent.push(n.to_s)
 			@page.generate_data(total_sent: n, count: 1)
 		end
 		load_page
@@ -118,7 +118,7 @@ feature 'Communicate > Sent' do
 		sent = []
 
 		(1..25).each do |n|
-			sent.push(n)
+			sent.push(n.to_s)
 			@page.generate_data(total_sent: n, count: 1)
 		end
 		sent.reverse!
