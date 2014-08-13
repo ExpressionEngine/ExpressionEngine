@@ -633,6 +633,7 @@ class Communicate extends Utilities {
 				$emails = $emails->filterGroup()
 					               ->filter('subject', 'LIKE', '%' . $search . '%')
 					               ->orFilter('message', 'LIKE', '%' . $search . '%')
+					               ->orFilter('from_name', 'LIKE', '%' . $search . '%')
 					               ->orFilter('from_email', 'LIKE', '%' . $search . '%')
 					               ->orFilter('recipient', 'LIKE', '%' . $search . '%')
 					               ->orFilter('cc', 'LIKE', '%' . $search . '%')
