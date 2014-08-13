@@ -14,6 +14,8 @@ use EllisLab\ExpressionEngine\Model\Relationship\Types\ManyToMany;
 
 class RelationshipGraphNode {
 
+	protected $model_class;
+	protected $alias_service;
 	protected $relationship_infos = array();
 
 	public function __construct($alias_service, $model_class)
@@ -91,6 +93,11 @@ class RelationshipGraphNode {
 		});
 	}
 
+	public function setModelName($name)
+	{
+		$this->model = $name;
+	}
+
 	/**
 	 * Use the relationship name to lazily fetch all of the related
 	 * metadata for this edge. Currently an edge is drawn from the reference
@@ -106,19 +113,19 @@ class RelationshipGraphNode {
 		$relationships = $from_class::getMetaData('relationships');
 		$relationship = $relationships[$name];
 
-		$model = isset($relationship['model']) ? $relationship['model'] : $name;
-		$to_class = $this->alias_service->getRegisteredClass($model);
+		$to_model = isset($relationship['model']) ? $relationship['model'] : $name;
+		$to_class = $this->alias_service->getRegisteredClass($to_model);
 
 		switch ($relationship['type'])
 		{
 			case 'one_to_one':
-				return new OneToOne($from_class, $to_class, $name);
+				return new OneToOne($from_class, $to_class, $to_model, $name);
 			case 'one_to_many':
-				return new OneToMany($from_class, $to_class, $name);
+				return new OneToMany($from_class, $to_class, $to_model, $name);
 			case 'many_to_one':
-				return new ManyToOne($from_class, $to_class, $name);
+				return new ManyToOne($from_class, $to_class, $to_model, $name);
 			case 'many_to_many':
-				return new ManyToMany($from_class, $to_class, $name);
+				return new ManyToMany($from_class, $to_class, $to_model, $name);
 		}
 
 		throw new \Exception('Invalid or Missing Relationship Type for "'. $name. '" in '.$from_class.'.');
