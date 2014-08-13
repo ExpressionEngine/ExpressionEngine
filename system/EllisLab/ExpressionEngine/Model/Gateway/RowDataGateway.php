@@ -62,6 +62,74 @@ abstract class RowDataGateway {
 	}
 
 	/**
+	 * Pass through getter that allows properties to be gotten from this model
+	 * but stored in the wrapped gateway.
+	 *
+	 * @param	string	$name	The name of the property to be retrieved.
+	 *
+	 * @return	mixed	The property being retrieved.
+	 *
+	 * @throws	NonExistentPropertyException	If the property doesn't exist,
+	 * 					an appropriate exception is thrown.
+	 */
+	public function __get($name)
+	{
+		$method = $this->propertyToMethod($name, 'get');
+		if (method_exists($this, $method))
+		{
+			return $this->$method();
+		}
+
+		if (property_exists($this, $name) && strpos($name, '_') !== 0)
+		{
+			return $this->{$name};
+		}
+
+		throw new \InvalidArgumentException('Attempt to access a non-existent property, "' . $name . '", on ' . get_called_class());
+	}
+
+	/**
+	 * Pass through setter that allows properties to be set on this model,
+	 * but stored in the wrapped gateway.
+	 *
+	 * @param	string	$name	The name of the property being set. Must be
+	 * 						a valid property on the wrapped gateway.
+	 * @param	mixed	$value	The value to set the property to.
+	 *
+	 * @return	void
+	 *
+	 * @throws	NonExistentPropertyException	If the property doesn't exist,
+	 * 					and appropriate exception is thrown.
+	 */
+	public function __set($name, $value)
+	{
+		$method = $this->propertyToMethod($name, 'set');
+		if (method_exists($this, $method))
+		{
+			return $this->$method($value);
+		}
+
+		if (property_exists($this, $name) && strpos($name, '_') !== 0)
+		{
+			$this->{$name} = $value;
+			return;
+		}
+
+		throw new \InvalidArgumentException('Attempt to access a non-existent property "' . $name . '" on ' . get_called_class());
+	}
+
+	private function propertyToMethod($name, $method)
+	{
+		$split_name = explode('_', $name);
+		foreach($split_name as $key => $name_part)
+		{
+			$split_name[$key] = ucfirst($name_part);
+		}
+		$name = implode($split_name);
+		return $method . $name;
+	}
+
+	/**
 	 * Get Meta Data
 	 *
 	 * Get a piece of meta data on this gateway.  If no key is given, then all
@@ -166,7 +234,6 @@ abstract class RowDataGateway {
 		{
 			return $errors;
 		}
-			return $errors;
 
 		$validation_factory = $validation_factory ?: $this->_validation_factory;
 
@@ -224,6 +291,7 @@ abstract class RowDataGateway {
 		else
 		{
 			$this->_db->insert(static::getMetaData('table_name'), $save_array);
+			$this->{$id_name} = $this->_db->insert_id();
 		}
 	}
 

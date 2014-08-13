@@ -19,12 +19,12 @@ class CategoryGroupGateway extends RowDataGateway {
 
 
 	// Properties
-	public $group_id;
-	public $site_id;
-	public $group_name;
-	public $sort_order;
-	public $exclude_group;
-	public $field_html_formatting;
-	public $can_edit_categories;
-	public $can_delete_categories;
+	protected $group_id;
+	protected $site_id;
+	protected $group_name;
+	protected $sort_order;
+	protected $exclude_group;
+	protected $field_html_formatting;
+	protected $can_edit_categories;
+	protected $can_delete_categories;
 }

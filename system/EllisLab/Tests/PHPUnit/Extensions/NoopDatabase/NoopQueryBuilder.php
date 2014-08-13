@@ -162,6 +162,7 @@ class NoopActiveRecord {
 	protected function dbprefix($table = '') {}
 	protected function empty_table($table = '') {}
 	protected function count_all_results($table = '') {}
+	protected function insert_id() {return 1;}
 
 	protected function from($from) { return $this; }
 	protected function offset($offset) { return $this; }

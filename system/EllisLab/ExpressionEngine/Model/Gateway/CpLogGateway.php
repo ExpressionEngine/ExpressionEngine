@@ -16,11 +16,11 @@ class CpLogGateway extends RowDataGateway {
 	);
 
 
-	public $id;
-	public $site_id;
-	public $member_id;
-	public $username;
-	public $ip_address;
-	public $act_date;
-	public $action;
+	protected $id;
+	protected $site_id;
+	protected $member_id;
+	protected $username;
+	protected $ip_address;
+	protected $act_date;
+	protected $action;
 }

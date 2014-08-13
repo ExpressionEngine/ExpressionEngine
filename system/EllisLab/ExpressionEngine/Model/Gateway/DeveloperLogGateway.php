@@ -13,21 +13,21 @@ class DeveloperLogGateway extends RowDataGateway {
 	);
 
 
-	public $log_id;
-	public $timestamp;
-	public $viewed;
-	public $description;
-	public $function;
-	public $line;
-	public $file;
-	public $deprecated_since;
-	public $use_instead;
-	public $template_id;
-	public $template_name;
-	public $template_group;
-	public $addon_module;
-	public $addon_method;
-	public $snippets;
-	public $hash;
+	protected $log_id;
+	protected $timestamp;
+	protected $viewed;
+	protected $description;
+	protected $function;
+	protected $line;
+	protected $file;
+	protected $deprecated_since;
+	protected $use_instead;
+	protected $template_id;
+	protected $template_name;
+	protected $template_group;
+	protected $addon_module;
+	protected $addon_method;
+	protected $snippets;
+	protected $hash;
 
 }
