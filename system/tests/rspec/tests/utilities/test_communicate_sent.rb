@@ -18,6 +18,65 @@ feature 'Communicate > Sent' do
 
 	it 'shows the sent e-mails page (with no results)' do
 		@page.should have_no_results
+		@page.should_not have_rows
+		@page.should_not have_pagination
+	end
+
+	it 'sorts by subject (asc)' do
+	end
+
+	it 'sorts by subject (desc)' do
+	end
+
+	it 'sorts by date (asc)' do
+	end
+
+	it 'sorts by date (desc)' do
+	end
+
+	it 'sorts by total sent (asc)' do
+	end
+
+	it 'sorts by total sent (desc)' do
+	end
+
+	it 'can search' do
+	end
+
+	it 'displays "no results" when searching returns nothing' do
+	end
+
+	it 'maintains sort when searching' do
+	end
+
+	it 'will not pagingate at 50 or under' do
+	end
+
+	it 'will paginate at over 50 emails' do
+	end
+
+	it 'maintains sort while paging' do
+	end
+
+	it 'maintains search while paging' do
+	end
+
+	it 'maintains sort and search while paging' do
+	end
+
+	it 'resets the page on a new sort' do
+	end
+
+	it 'resets the page on a new search' do
+	end
+
+	it 'can view an email' do
+	end
+
+	it 'can resend an email' do
+	end
+
+	it 'can remove emails in bulk' do
 	end
 
 end
