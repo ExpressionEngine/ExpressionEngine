@@ -9,7 +9,13 @@ class CommunicateSent < ControlPanelPage
 
 	element :email_table, 'div.box div.tbl-ctrls form div.tbl-wrap table'
 	element :no_results, 'div.box div.tbl-ctrls form div.tbl-wrap table tr.no-results'
+	element :subject_header, 'div.box div.tbl-ctrls form div.tbl-wrap table tr th:first-child'
+	element :date_header, 'div.box div.tbl-ctrls form div.tbl-wrap table tr th:nth-child(2)'
+	element :total_sent_header, 'div.box div.tbl-ctrls form div.tbl-wrap table tr th:nth-child(3)'
 	elements :rows, 'div.box div.tbl-ctrls form div.tbl-wrap table tr'
+	elements :subjects, 'div.box div.tbl-ctrls form div.tbl-wrap table tr td:first-child'
+	elements :dates, 'div.box div.tbl-ctrls form div.tbl-wrap table tr td:nth-child(2)'
+	elements :total_sents, 'div.box div.tbl-ctrls form div.tbl-wrap table tr td:nth-child(3)'
 
 	element :pagination, 'div.paginate'
 	elements :pages, 'div.paginate ul li a'
