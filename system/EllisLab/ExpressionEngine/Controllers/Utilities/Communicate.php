@@ -628,8 +628,9 @@ class Communicate extends Utilities {
 		$offset = ($page - 1) * 50; // Offset is 0 indexed
 
 		$count = 0;
+		$modals = array();
 
-		$table->setFilteredData(function($sort_col, $sort_dir, $search) use (&$count, $offset)
+		$table->setFilteredData(function($sort_col, $sort_dir, $search) use (&$count, &$modals, $offset)
 		{
 			$emails = ee()->api->get('EmailCache');
 
@@ -671,7 +672,7 @@ class Communicate extends Utilities {
 						'view' => array(
 							'title' => lang('view_email'),
 							'href' => '',
-							'rel' => 'modal-email',
+							'rel' => 'modal-email-' . $email->cache_id,
 							'class' => 'm-link'
 						),
 						'sync' => array(
@@ -684,6 +685,8 @@ class Communicate extends Utilities {
 						'value' => $email->cache_id
 					)
 				);
+
+				$modals['modal-email-' . $email->cache_id] = ee()->view->render('utilities/communicate-email-modal', array('email' => $email), TRUE);
 			}
 
 			return $data;
@@ -691,6 +694,11 @@ class Communicate extends Utilities {
 
 		$base_url = new URL('utilities/communicate/sent', ee()->session->session_id());
 		$vars['table'] = $table->viewData($base_url);
+
+		if ( ! empty($modals))
+		{
+			$vars['modals'] = $modals;
+		}
 
 		$pagination = new Pagination(50, $count, $page);
 		$vars['pagination'] = $pagination->cp_links($vars['table']['base_url']);

@@ -23,6 +23,9 @@ class CommunicateSent < ControlPanelPage
 	element :bulk_action, 'form fieldset.tbl-bulk-act select[name="bulk_action"]'
 	element :action_submit_button, 'form fieldset.tbl-bulk-act input.submit'
 
+	element :modal, 'div.modal'
+	element :modal_title, 'div.modal div.box h1'
+
 	def generate_data(
 		count: 250,
 		timestamp: nil,

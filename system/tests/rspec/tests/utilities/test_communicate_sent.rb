@@ -421,6 +421,18 @@ feature 'Communicate > Sent' do
 	end
 
 	it 'can view an email' do
+		my_subject = 'Rspec utilities/communicate test plain text email'
+		my_body = "This a test email sent from the communicate tool."
+		test_from = 'ellislab.developers.rspec@mailinator.com'
+		email = 'ferdinand.von.zeppelin@airships.de'
+
+		@page.generate_data(subject: my_subject, from_email: test_from, recipient: email, cc: email, bcc: email, message: my_body, count: 1)
+		load_page
+
+		@page.first('ul.toolbar li.view a').click
+		@page.should have_modal
+		@page.modal_title.text.should eq my_subject
+		@page.modal.text.should include my_body
 	end
 
 	it 'can resend an email' do

@@ -20,3 +20,10 @@
 		<?php endif ?>
 	</div>
 </div>
+
+<?php
+if (isset($modals))
+{
+	$this->view('_shared/modals', $modals);
+}
+?>
