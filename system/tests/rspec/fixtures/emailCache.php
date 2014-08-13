@@ -7,6 +7,7 @@ $command = array_shift($argv);
 $longopts = array(
 	"count:",
 	"ip-address:",
+	"timestamp:",
 	"timestamp-min:",
 	"timestamp-max:",
 	"from-name:",
@@ -28,6 +29,7 @@ if (isset($options['h']) || isset($options['help']))
 Usage: {$command} [options]
 	--help                    This help message
 	--count          <number> The number of developer logs to generate
+	--timestamp      <number> The unix timestamp to use for cache_date
 	--timestamp-min  <number> The minimum number of hours to subtract from "now"
 	--timestamp-max  <number> The maximum number of hours to subtract from "now"
 	--from-name      <string> The from_name to use
@@ -43,6 +45,7 @@ EOF;
 }
 
 $count = isset($options['count']) && is_numeric($options['count']) ? (int) $options['count'] : 20;
+$timestamp = isset($options['timestamp']) && is_numeric($options['timestamp']) ? (int) $options['timestamp'] : FALSE;
 $timestamp_min = isset($options['timestamp-min']) && is_numeric($options['timestamp-min']) ? (int) $options['timestamp-min'] : 0;
 $timestamp_max = isset($options['timestamp-max']) && is_numeric($options['timestamp-max']) ? (int) $options['timestamp-max'] : 24*60; // 2 months
 $from_name = isset($options['from-name']) ? $options['from-name'] : FALSE;
@@ -98,7 +101,14 @@ for ($x = 0; $x < $count; $x++)
 	$mailtype = $mailtypes[$text_fmt];
 
 	$fixture = $api->make('EmailCache');
-	$fixture->cache_date = strtotime("-" . rand($timestamp_min*60, $timestamp_max*60) . " minutes");
+	if ($timestamp !== FALSE)
+	{
+		$fixture->cache_date = $timestamp;
+	}
+	else
+	{
+		$fixture->cache_date = strtotime("-" . rand($timestamp_min*60, $timestamp_max*60) . " minutes");
+	}
 	$fixture->from_name = ($from_name !== FALSE) ? $from_name : $f_name;
 	$fixture->from_email = ($from_email !== FALSE) ? $from_email : $f_email;
 	$fixture->recipient = ($recipient !== FALSE) ? $recipient : array_rand($emails);

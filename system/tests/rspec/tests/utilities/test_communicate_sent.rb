@@ -1,4 +1,7 @@
 require './bootstrap.rb'
+require 'date'
+
+ENV['TZ'] = 'US/Eastern' # For date/time calculations
 
 feature 'Communicate > Sent' do
 
@@ -58,15 +61,47 @@ feature 'Communicate > Sent' do
 	end
 
 	it 'sorts by date (asc)' do
+		now = DateTime.now
+		dates = []
+
+		(0...25).each do |n|
+			my_date = now - n
+			dates.push(my_date.strftime("%-m/%-d/%y %-l:%M %p"))
+			@page.generate_data(timestamp: my_date.to_time.to_i, count: 1)
+		end
+		dates.reverse!
+		load_page
+		@page.date_header.find('a.sort').click
+
+		@page.find('th.highlight').text.should eq 'Date'
+		@page.find('th.highlight').should have_css 'a.sort.asc'
+		@page.dates.map {|date| date.text}.should == dates
+		@page.should have(26).rows # +1 for the header
 	end
 
 	it 'sorts by date (desc)' do
+		now = DateTime.now
+		dates = []
+
+		(0...25).each do |n|
+			my_date = now - n
+			dates.push(my_date.strftime("%-m/%-d/%y %-l:%M %p"))
+			@page.generate_data(timestamp: my_date.to_time.to_i, count: 1)
+		end
+		load_page
+		@page.date_header.find('a.sort').click # To sort by date
+		@page.date_header.find('a.sort').click # DESC sort
+
+		@page.find('th.highlight').text.should eq 'Date'
+		@page.find('th.highlight').should have_css 'a.sort.desc'
+		@page.dates.map {|date| date.text}.should == dates
+		@page.should have(26).rows # +1 for the header
 	end
 
 	it 'sorts by total sent (asc)' do
 		sent = []
 
-		('1'..'25').each do |n|
+		(1..25).each do |n|
 			sent.push(n)
 			@page.generate_data(total_sent: n, count: 1)
 		end
@@ -82,7 +117,7 @@ feature 'Communicate > Sent' do
 	it 'sorts by total sent (desc)' do
 		sent = []
 
-		('1'..'25').each do |n|
+		(1..25).each do |n|
 			sent.push(n)
 			@page.generate_data(total_sent: n, count: 1)
 		end

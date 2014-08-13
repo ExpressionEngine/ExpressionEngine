@@ -25,6 +25,7 @@ class CommunicateSent < ControlPanelPage
 
 	def generate_data(
 		count: 250,
+		timestamp: nil,
 		timestamp_min: nil,
 		timestamp_max: nil,
 		from_name: nil,
@@ -40,6 +41,10 @@ class CommunicateSent < ControlPanelPage
 
 		if count
 			command += " --count " + count.to_s
+		end
+
+		if timestamp
+			command += " --timestamp " + timestamp.to_s
 		end
 
 		if timestamp_min
