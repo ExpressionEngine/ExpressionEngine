@@ -48,8 +48,13 @@ if ($wrap): ?>
 					<?php elseif ($column['type'] == Table::COL_TOOLBAR): ?> 
 						<td>
 							<ul class="toolbar">
-								<?php foreach ($column['toolbar_items'] as $type => $link): ?>
-									<li class="<?=$type?>"><a href="<?=$link?>" title="<?=$type?>"></a></li>
+								<?php foreach ($column['toolbar_items'] as $type => $attributes):
+									$attr = '';
+									foreach ($attributes as $key => $val)
+									{
+										$attr .= ' ' . $key . '="' . $val . '"';
+									} ?>
+									<li class="<?=$type?>"><a <?=$attr?>></a></li>
 								<?php endforeach ?>
 							</ul>
 						</td>

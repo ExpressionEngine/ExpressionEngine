@@ -77,10 +77,12 @@ class Sql extends Utilities {
 				$table['rows'],
 				$table['size'],
 				array('toolbar_items' => array(
-					'view' =>
-					cp_url(
-						'utilities/query/run-query/'.$table['name'],
-						array('thequery' => rawurlencode(base64_encode('SELECT * FROM '.$table['name'])))
+					'view' => array(
+						'href' => cp_url(
+							'utilities/query/run-query/'.$table['name'],
+							array('thequery' => rawurlencode(base64_encode('SELECT * FROM '.$table['name'])))
+						),
+						'title' => lang('view')
 					)
 				)),
 				array(

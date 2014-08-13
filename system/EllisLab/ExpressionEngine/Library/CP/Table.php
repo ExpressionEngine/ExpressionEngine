@@ -185,9 +185,13 @@ class Table {
 	 * 			'col 1 data 2',
 	 * 			'col 2 data 2',
 	 * 			NULL, // Can have null values
-	 * 			array('toolbar_items' =>
-	 * 				array('view' => 'http://test/2')
-	 * 			),
+	 * 			array('toolbar_items' => array(
+	 * 				'view' => array( // Button class name
+	 * 					// HTML attributes for anchor
+	 * 					'href' => 'http://test/2',
+	 * 					'title' => 'view'
+	 * 				)
+	 * 			)),
 	 * 			'status',
 	 * 			array('name' => 'table[]', 'value' => 'test2')
 	 * 		)

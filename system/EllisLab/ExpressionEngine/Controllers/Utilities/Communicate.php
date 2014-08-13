@@ -662,10 +662,17 @@ class Communicate extends Utilities {
 					ee()->localize->human_time($email->cache_date),
 					$email->total_sent,
 					array('toolbar_items' => array(
-						'view' => '',
-						'sync' => cp_url('utilities/communicate/resend/' . $email->cache_id)
+						'view' => array(
+							'title' => lang('view_email'),
+							'href' => '',
+							'rel' => 'modal-email',
+							'class' => 'm-link'
+						),
+						'sync' => array(
+							'title' => lang('resend'),
+							'href' => cp_url('utilities/communicate/resend/' . $email->cache_id)
 						)
-					),
+					)),
 					array(
 						'name'  => 'selection[]',
 						'value' => $email->cache_id
