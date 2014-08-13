@@ -448,6 +448,24 @@ feature 'Communicate > Sent' do
 	end
 
 	it 'can remove emails in bulk' do
+		phrase = "Zeppelins"
+		data = phrase + " are cool"
+
+		@page.generate_data(count: 25, subject: data)
+		@page.generate_data(count: 25)
+		load_page
+
+		# We should be sorted ASCending by Subject so these should be all our
+		# Zeppelins emails.
+		(26..50).each do |n|
+			@page.rows[n].find('input[type="checkbox"]').set true
+		end
+
+		@page.bulk_action.select "Remove"
+		@page.action_submit_button.click
+
+		@page.should have(26).rows # +1 for the header
+		@page.should_not have_text data
 	end
 
 end
