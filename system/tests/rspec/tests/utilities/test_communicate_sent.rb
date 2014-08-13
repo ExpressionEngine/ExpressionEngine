@@ -267,6 +267,32 @@ feature 'Communicate > Sent' do
 	end
 
 	it 'maintains sort when searching' do
+		@page.generate_data
+
+		phrase = "Zeppelins"
+		data = phrase + " are cool"
+
+		sent = []
+
+		(1..25).each do |n|
+			total_sent = n + Random.rand(42)
+			sent.push(total_sent)
+			@page.generate_data(subject: data, total_sent: total_sent, count: 1)
+		end
+		sent.sort!
+		load_page
+		@page.total_sent_header.find('a.sort').click
+
+		@page.phrase_search.set phrase
+		@page.search_submit_button.click
+
+		@page.find('th.highlight').text.should eq 'Total Sent'
+		@page.find('th.highlight').should have_css 'a.sort.asc'
+		@page.should_not have_no_results
+		@page.phrase_search.value.should eq phrase
+		@page.should have_text data
+		@page.total_sents.map {|sent| sent.text}.should == sent.map {|n| n.to_s}
+		@page.should have(26).rows # +1 for the header
 	end
 
 	it 'will not pagingate at 50 or under' do
