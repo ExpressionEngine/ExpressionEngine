@@ -132,7 +132,117 @@ feature 'Communicate > Sent' do
 		@page.should have(26).rows # +1 for the header
 	end
 
-	it 'can search' do
+	it 'can search by subject' do
+		phrase = "Zeppelins"
+		data = phrase + " are cool"
+
+		@page.generate_data
+		@page.generate_data(count: 5, subject: data)
+		load_page
+
+		@page.phrase_search.set phrase
+		@page.search_submit_button.click
+
+		@page.should_not have_no_results
+		@page.phrase_search.value.should eq phrase
+		@page.should have_text data
+		@page.should have(6).rows #+1 for the header
+	end
+
+	it 'can search by message' do
+		phrase = "Zeppelins"
+		data = phrase + " are cool"
+
+		@page.generate_data
+		@page.generate_data(count: 5, message: data)
+		load_page
+
+		@page.phrase_search.set phrase
+		@page.search_submit_button.click
+
+		@page.should_not have_no_results
+		@page.phrase_search.value.should eq phrase
+		@page.should have(6).rows #+1 for the header
+	end
+
+	it 'can search by from name' do
+		phrase = "Zeppelin"
+		data = "Ferdinand von Zeppelin"
+
+		@page.generate_data
+		@page.generate_data(count: 5, from_name: data)
+		load_page
+
+		@page.phrase_search.set phrase
+		@page.search_submit_button.click
+
+		@page.should_not have_no_results
+		@page.phrase_search.value.should eq phrase
+		@page.should have(6).rows #+1 for the header
+	end
+
+	it 'can search by from email' do
+		phrase = "zeppelin"
+		data = "ferdinand.von.zeppelin@airships.de"
+
+		@page.generate_data
+		@page.generate_data(count: 5, from_email: data)
+		load_page
+
+		@page.phrase_search.set phrase
+		@page.search_submit_button.click
+
+		@page.should_not have_no_results
+		@page.phrase_search.value.should eq phrase
+		@page.should have(6).rows #+1 for the header
+	end
+
+	it 'can search by recipient' do
+		phrase = "zeppelin"
+		data = "ferdinand.von.zeppelin@airships.de"
+
+		@page.generate_data
+		@page.generate_data(count: 5, recipient: data)
+		load_page
+
+		@page.phrase_search.set phrase
+		@page.search_submit_button.click
+
+		@page.should_not have_no_results
+		@page.phrase_search.value.should eq phrase
+		@page.should have(6).rows #+1 for the header
+	end
+
+	it 'can search by cc' do
+		phrase = "zeppelin"
+		data = "ferdinand.von.zeppelin@airships.de"
+
+		@page.generate_data
+		@page.generate_data(count: 5, cc: data)
+		load_page
+
+		@page.phrase_search.set phrase
+		@page.search_submit_button.click
+
+		@page.should_not have_no_results
+		@page.phrase_search.value.should eq phrase
+		@page.should have(6).rows #+1 for the header
+	end
+
+	it 'can search by bcc' do
+		phrase = "zeppelin"
+		data = "ferdinand.von.zeppelin@airships.de"
+
+		@page.generate_data
+		@page.generate_data(count: 5, bcc: data)
+		load_page
+
+		@page.phrase_search.set phrase
+		@page.search_submit_button.click
+
+		@page.should_not have_no_results
+		@page.phrase_search.value.should eq phrase
+		@page.should have(6).rows #+1 for the header
 	end
 
 	it 'displays "no results" when searching returns nothing' do
