@@ -23,9 +23,17 @@ feature 'Communicate > Sent' do
 	end
 
 	it 'shows the sent e-mails page (with no results)' do
-		load_page
+		@page.load
+
+		@page.should be_displayed
+		@page.title.text.should eq 'Sent e-mails'
+		@page.should have_phrase_search
+		@page.should have_search_submit_button
+		@page.should have_email_table
 		@page.should have_no_results
 		@page.should_not have_pagination
+		@page.should_not have_bulk_action
+		@page.should_not have_action_submit_button
 	end
 
 	it 'sorts by subject (asc)' do
