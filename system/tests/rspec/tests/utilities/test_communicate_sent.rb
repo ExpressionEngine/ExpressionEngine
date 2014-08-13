@@ -296,24 +296,128 @@ feature 'Communicate > Sent' do
 	end
 
 	it 'will not pagingate at 50 or under' do
+		@page.generate_data(count: 50)
+		load_page
+
+		@page.should_not have_pagination
 	end
 
 	it 'will paginate at over 50 emails' do
+		@page.generate_data(count: 51)
+		load_page
+
+		@page.should have_pagination
+	    @page.should have(5).pages
+	    @page.pages.map {|name| name.text}.should == ["First", "1", "2", "Next", "Last"]
+	end
+
+	it 'will show the Prev button when on page 2' do
+		@page.generate_data
+		load_page
+
+	    click_link "Next"
+
+		@page.should have_pagination
+	    @page.should have(7).pages
+	    @page.pages.map {|name| name.text}.should == ["First", "Previous", "1", "2", "3", "Next", "Last"]
+	end
+
+	it 'will now show Next on the last page' do
+		@page.generate_data
+		load_page
+
+	    click_link "Last"
+
+		@page.should have_pagination
+	    @page.should have(6).pages
+	    @page.pages.map {|name| name.text}.should == ["First", "Previous", "3", "4", "5", "Last"]
 	end
 
 	it 'maintains sort while paging' do
+		@page.generate_data
+		load_page
+
+		@page.total_sent_header.find('a.sort').click
+	    click_link "Next"
+		@page.find('th.highlight').text.should eq 'Total Sent'
+		@page.find('th.highlight').should have_css 'a.sort.asc'
 	end
 
 	it 'maintains search while paging' do
+		phrase = "Zeppelins"
+		data = phrase + " are cool"
+		@page.generate_data(subject: "Albatross")
+		@page.generate_data(subject: data)
+		load_page
+
+		@page.phrase_search.set phrase
+		@page.search_submit_button.click
+	    click_link "Next"
+
+		@page.should_not have_no_results
+		@page.phrase_search.value.should eq phrase
+		@page.should have_text data
+		@page.should_not have_text "Albatross"
 	end
 
 	it 'maintains sort and search while paging' do
+		phrase = "Zeppelins"
+		data = phrase + " are cool"
+		@page.generate_data(subject: "Albatross")
+		@page.generate_data(subject: data)
+		load_page
+
+		@page.phrase_search.set phrase
+		@page.search_submit_button.click
+		@page.total_sent_header.find('a.sort').click
+	    click_link "Next"
+
+		@page.should_not have_no_results
+		@page.phrase_search.value.should eq phrase
+		@page.should have_text data
+		@page.should_not have_text "Albatross"
+		@page.find('th.highlight').text.should eq 'Total Sent'
+		@page.find('th.highlight').should have_css 'a.sort.asc'
 	end
 
 	it 'resets the page on a new sort' do
+		@page.generate_data
+		load_page
+
+		@page.should have_pagination
+	    @page.should have(6).pages
+	    @page.pages.map {|name| name.text}.should == ["First", "1", "2", "3", "Next", "Last"]
+		@page.pagination.find('a.act').text.should eq '1'
+
+		click_link "Next"
+	    @page.pages.map {|name| name.text}.should == ["First", "Previous", "1", "2", "3", "Next", "Last"]
+		@page.pagination.find('a.act').text.should eq '2'
+
+		@page.total_sent_header.find('a.sort').click
+	    @page.pages.map {|name| name.text}.should == ["First", "1", "2", "3", "Next", "Last"]
+		@page.pagination.find('a.act').text.should eq '1'
 	end
 
 	it 'resets the page on a new search' do
+		phrase = "Zeppelins"
+		data = phrase + " are cool"
+
+		@page.generate_data(subject: data)
+		load_page
+
+		@page.should have_pagination
+	    @page.should have(6).pages
+	    @page.pages.map {|name| name.text}.should == ["First", "1", "2", "3", "Next", "Last"]
+		@page.pagination.find('a.act').text.should eq '1'
+
+		click_link "Next"
+	    @page.pages.map {|name| name.text}.should == ["First", "Previous", "1", "2", "3", "Next", "Last"]
+		@page.pagination.find('a.act').text.should eq '2'
+
+		@page.phrase_search.set phrase
+		@page.search_submit_button.click
+	    @page.pages.map {|name| name.text}.should == ["First", "1", "2", "3", "Next", "Last"]
+		@page.pagination.find('a.act').text.should eq '1'
 	end
 
 	it 'can view an email' do
