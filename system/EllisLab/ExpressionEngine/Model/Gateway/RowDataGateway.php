@@ -1,7 +1,7 @@
 <?php
 namespace EllisLab\ExpressionEngine\Model\Gateway;
 
-use EllisLab\ExpressionEngine\Core\Validation\ValidationFactoryInterface;
+use EllisLab\ExpressionEngine\Core\Validation\ValidationFactory;
 use EllisLab\ExpressionEngine\Core\Validation\Error\ValidationError;
 
 use EllisLab\ExpressionEngine\Model\Error\Errors;
@@ -209,7 +209,7 @@ abstract class RowDataGateway {
 	 * @param   Optional validation object that implements the validation
 	 * 			factory interface
 	 */
-	public function setValidationFactory(ValidationFactoryInterface $validation_factory)
+	public function setValidationFactory(ValidationFactory $validation_factory)
 	{
 		$this->_validation_factory = $validation_factory;
 	}

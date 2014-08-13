@@ -3,7 +3,7 @@ namespace EllisLab\ExpressionEngine\Model;
 
 use InvalidArgumentException;
 use EllisLab\ExpressionEngine\Core\AliasServiceInterface;
-use EllisLab\ExpressionEngine\Core\Validation\ValidationFactoryInterface;
+use EllisLab\ExpressionEngine\Core\Validation\ValidationFactory;
 use EllisLab\ExpressionEngine\Model\Relationship\RelationshipGraph;
 use EllisLab\ExpressionEngine\Model\Query\Query;
 
@@ -24,7 +24,7 @@ class ModelFactory {
 	protected $validation_factory;
 	protected $relationship_graph;
 
-	public function __construct(AliasServiceInterface $aliases, ValidationFactoryInterface $validation_factory)
+	public function __construct(AliasServiceInterface $aliases, ValidationFactory $validation_factory)
 	{
 		$this->alias_service = $aliases;
 		$this->validation_factory = $validation_factory;

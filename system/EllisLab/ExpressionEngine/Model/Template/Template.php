@@ -14,7 +14,7 @@ class Template extends Model {
 
 	protected static $_relationships = array(
 		'Site' => array(
-			'type' => 'many_to_one'
+			'type' => 'many_to_one',
 		),
 		'TemplateGroup'	=> array(
 			'type' => 'many_to_one'
@@ -25,6 +25,33 @@ class Template extends Model {
 			'key'	=> 'last_author_id'
 		)
 	);
+
+/*
+//	protected $_lifecycle_events = array(
+	protected $_bind_events = array(
+		'delete', // fetch the whole object and fire onDelete
+		'update'  // fetch the whole object and fire onUpdate
+	);
+
+	protected $_bind_events = array(
+		'update',
+		'delete'
+	);
+	// Batch size: 100
+
+	// all events fire *before*
+	protected $_bind_events = array(
+		'delete.one',	// fetch objects one at a time
+		'delete.all',	// [default] fetch everything being deleted and fire onDelete on all
+		'update.batch'  // fetch the objects in batches of 100 and fire onUpdate
+	);
+
+	public function onBeforeUpdate($set)
+	{
+		$this->set($set);
+		return FALSE;
+	}
+*/
 
 	// Properties
 	protected $template_id;

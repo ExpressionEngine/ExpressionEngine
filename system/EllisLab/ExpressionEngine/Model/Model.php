@@ -4,7 +4,7 @@ namespace EllisLab\ExpressionEngine\Model;
 use InvalidArgumentException;
 
 use EllisLab\ExpressionEngine\Core\AliasServiceInterface;
-use EllisLab\ExpressionEngine\Core\Validation\ValidationFactoryInterface;
+use EllisLab\ExpressionEngine\Core\Validation\ValidationFactory;
 use EllisLab\ExpressionEngine\Model\Error\Errors;
 use EllisLab\ExpressionEngine\Model\Relationship\Cascade;
 use EllisLab\ExpressionEngine\Model\Relationship\RelationshipBag;
@@ -64,6 +64,8 @@ abstract class Model {
 	 *
 	 */
 	protected $_dirty = array();
+
+	protected $_deleted = FALSE;
 
 
 	/**
@@ -734,7 +736,7 @@ abstract class Model {
 	 * Using setter injection allows third parties and tests to flip out the
 	 * validation. This is automatically passed on to the gateways.
 	 */
-	public function setValidationFactory(ValidationFactoryInterface $validation_factory = NULL)
+	public function setValidationFactory(ValidationFactory $validation_factory = NULL)
 	{
 		$this->_validation_factory = $validation_factory;
 	}

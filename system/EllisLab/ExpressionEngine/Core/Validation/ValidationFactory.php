@@ -8,7 +8,7 @@ namespace EllisLab\ExpressionEngine\Core\Validation;
  * allows the registration of new Validation rule namespaces by third parties.
  * Also acts as a factory for Validator objects.
  */
-class ValidationFactory implements ValidationFactoryInterface {
+class ValidationFactory {
 
 	/**
 	 * Validation rule namespaces that have been registered.  Initialized with

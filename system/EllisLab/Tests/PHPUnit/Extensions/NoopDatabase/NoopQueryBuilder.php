@@ -43,7 +43,7 @@ class NoopQueryBuilder {
 
 		return m::mock(get_called_class(), $methods);
 		*/
-		return m::mock('NoopQuery');
+		return m::mock('\CI_DB_active_record');
 	}
 
 	public function __call($method, $args)
