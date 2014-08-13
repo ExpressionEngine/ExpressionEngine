@@ -424,6 +424,27 @@ feature 'Communicate > Sent' do
 	end
 
 	it 'can resend an email' do
+		my_subject = 'Rspec utilities/communicate test plain text email'
+		my_body = "This a test email sent from the communicate tool."
+		test_from = 'ellislab.developers.rspec@mailinator.com'
+		email = 'ferdinand.von.zeppelin@airships.de'
+
+		@page.generate_data(subject: my_subject, from_email: test_from, recipient: email, cc: email, bcc: email, message: my_body, count: 1)
+		load_page
+
+		@page.first('ul.toolbar li.sync a').click
+
+		communicate = Communicate.new
+
+		communicate.should be_displayed
+		communicate.title.text.should eq 'Communicate ✱ Required Fields'
+
+		communicate.subject.value.should eq my_subject
+		communicate.from_email.value.should eq test_from
+		communicate.recipient.value.should eq email
+		communicate.cc.value.should eq email
+		communicate.bcc.value.should eq email
+		communicate.body.value.should eq my_body
 	end
 
 	it 'can remove emails in bulk' do
