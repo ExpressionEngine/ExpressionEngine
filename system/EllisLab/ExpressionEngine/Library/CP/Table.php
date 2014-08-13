@@ -404,11 +404,11 @@ class Table {
 	 *                          	arguments: $sort_col, $sort_dir, $search
 	 * @return  void
 	 */
-	public function setFilteredData($method)
+	public function setFilteredData($method, $autosearch = FALSE)
 	{
 		if (is_callable($method))
 		{
-			$this->config['autosearch'] = FALSE;
+			$this->config['autosearch'] = $autosearch;
 			$this->setData($method($this->getSortCol(), $this->getSortDir(), $this->config['search']));
 		}
 	}

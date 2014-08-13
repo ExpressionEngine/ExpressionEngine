@@ -29,7 +29,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 		$this->table->setFilteredData(function($sort_col, $sort_dir, $search) use ($data)
 		{
 			return $data;
-		});
+		}, TRUE);
 		$this->assertEquals($expected, $this->table->viewData(), $description);
 	}
 
