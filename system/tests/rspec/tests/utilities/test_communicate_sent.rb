@@ -32,7 +32,7 @@ feature 'Communicate > Sent' do
 		@page.should have_email_table
 		@page.should have_no_results
 		@page.should have_text 'No e-mails availble'
-		@page.should have_text 'Create new e-mail'
+		@page.should have_text 'CREATE NEW E-MAIL'
 		@page.should_not have_pagination
 		@page.should_not have_bulk_action
 		@page.should_not have_action_submit_button
