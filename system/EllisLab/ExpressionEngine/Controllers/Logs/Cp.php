@@ -67,13 +67,13 @@ class Cp extends Logs {
 			$logs = $logs->filter('act_date', '>=', ee()->localize->now - $this->params['filter_by_date']);
 		}
 
-		if ( ! empty(ee()->view->filter_by_phrase_value))
+		if ( ! empty(ee()->view->search_value))
 		{
 			$logs = $logs->filterGroup()
-			               ->filter('action', 'LIKE', '%' . ee()->view->filter_by_phrase_value . '%')
-			               ->orFilter('username', 'LIKE', '%' . ee()->view->filter_by_phrase_value . '%')
-			               ->orFilter('ip_address', 'LIKE', '%' . ee()->view->filter_by_phrase_value . '%')
-			               ->orFilter('Site.site_label', 'LIKE', '%' . ee()->view->filter_by_phrase_value . '%')
+			               ->filter('action', 'LIKE', '%' . ee()->view->search_value . '%')
+			               ->orFilter('username', 'LIKE', '%' . ee()->view->search_value . '%')
+			               ->orFilter('ip_address', 'LIKE', '%' . ee()->view->search_value . '%')
+			               ->orFilter('Site.site_label', 'LIKE', '%' . ee()->view->search_value . '%')
 						 ->endFilterGroup();
 		}
 

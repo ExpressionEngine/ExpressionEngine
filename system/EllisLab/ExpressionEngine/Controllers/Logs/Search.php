@@ -72,14 +72,14 @@ class Search extends Logs {
 			$logs = $logs->filter('search_date', '>=', ee()->localize->now - $this->params['filter_by_date']);
 		}
 
-		if ( ! empty(ee()->view->filter_by_phrase_value))
+		if ( ! empty(ee()->view->search_value))
 		{
 			$logs = $logs->filterGroup()
-			               ->filter('screen_name', 'LIKE', '%' . ee()->view->filter_by_phrase_value . '%')
-			               ->orFilter('ip_address', 'LIKE', '%' . ee()->view->filter_by_phrase_value . '%')
-			               ->orFilter('search_type', 'LIKE', '%' . ee()->view->filter_by_phrase_value . '%')
-			               ->orFilter('search_terms', 'LIKE', '%' . ee()->view->filter_by_phrase_value . '%')
-			               ->orFilter('Site.site_label', 'LIKE', '%' . ee()->view->filter_by_phrase_value . '%')
+			               ->filter('screen_name', 'LIKE', '%' . ee()->view->search_value . '%')
+			               ->orFilter('ip_address', 'LIKE', '%' . ee()->view->search_value . '%')
+			               ->orFilter('search_type', 'LIKE', '%' . ee()->view->search_value . '%')
+			               ->orFilter('search_terms', 'LIKE', '%' . ee()->view->search_value . '%')
+			               ->orFilter('Site.site_label', 'LIKE', '%' . ee()->view->search_value . '%')
 						 ->endFilterGroup();
 		}
 

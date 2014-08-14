@@ -51,7 +51,7 @@ class Translate extends Utilities {
 		}
 
 		// Add in any submitted search phrase
-		ee()->view->filter_by_phrase_value = ee()->input->get_post('filter_by_phrase');
+		ee()->view->search_value = ee()->input->get_post('search');
 	}
 
 	/**
@@ -111,9 +111,9 @@ class Translate extends Utilities {
 		$vars['language'] = $language;
 
 		$base_url = new URL('utilities/translate/' . $language, ee()->session->session_id());
-		if ( ! empty(ee()->view->filter_by_phrase_value))
+		if ( ! empty(ee()->view->search_value))
 		{
-			$base_url->setQueryStringVariable('filter_by_phrase', ee()->view->filter_by_phrase_value);
+			$base_url->setQueryStringVariable('search', ee()->view->search_value);
 		}
 
 		$files = array();
@@ -139,9 +139,9 @@ class Translate extends Utilities {
 
 			if (substr($file, -$filename_end_len) && substr($file, -$ext_len) == '.php')
 			{
-				if ( ! empty(ee()->view->filter_by_phrase_value))
+				if ( ! empty(ee()->view->search_value))
 				{
-					if (strpos($file, ee()->view->filter_by_phrase_value) === FALSE)
+					if (strpos($file, ee()->view->search_value) === FALSE)
 					{
 						continue;
 					}

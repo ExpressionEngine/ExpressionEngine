@@ -84,11 +84,11 @@ class Throttle extends Logs {
 				->endFilterGroup()
 				->endFilterGroup();
 
-			if ( ! empty(ee()->view->filter_by_phrase_value))
+			if ( ! empty(ee()->view->search_value))
 			{
 				$logs = $logs->filterGroup()
-				               ->filter('ip_address', 'LIKE', '%' . ee()->view->filter_by_phrase_value . '%')
-				               ->orFilter('hits', 'LIKE', '%' . ee()->view->filter_by_phrase_value . '%')
+				               ->filter('ip_address', 'LIKE', '%' . ee()->view->search_value . '%')
+				               ->orFilter('hits', 'LIKE', '%' . ee()->view->search_value . '%')
 							 ->endFilterGroup();
 			}
 

@@ -60,20 +60,20 @@ class Developer extends Logs {
 			$logs = $logs->filter('timestamp', '>=', ee()->localize->now - $this->params['filter_by_date']);
 		}
 
-		if ( ! empty(ee()->view->filter_by_phrase_value))
+		if ( ! empty(ee()->view->search_value))
 		{
 			$logs = $logs->filterGroup()
-			               ->filter('description', 'LIKE', '%' . ee()->view->filter_by_phrase_value . '%')
-			               ->orFilter('function', 'LIKE', '%' . ee()->view->filter_by_phrase_value . '%')
-			               ->orFilter('line', 'LIKE', '%' . ee()->view->filter_by_phrase_value . '%')
-			               ->orFilter('file', 'LIKE', '%' . ee()->view->filter_by_phrase_value . '%')
-			               ->orFilter('deprecated_since', 'LIKE', '%' . ee()->view->filter_by_phrase_value . '%')
-			               ->orFilter('use_instead', 'LIKE', '%' . ee()->view->filter_by_phrase_value . '%')
-			               ->orFilter('template_name', 'LIKE', '%' . ee()->view->filter_by_phrase_value . '%')
-			               ->orFilter('template_group', 'LIKE', '%' . ee()->view->filter_by_phrase_value . '%')
-			               ->orFilter('addon_module', 'LIKE', '%' . ee()->view->filter_by_phrase_value . '%')
-			               ->orFilter('addon_method', 'LIKE', '%' . ee()->view->filter_by_phrase_value . '%')
-			               ->orFilter('snippets', 'LIKE', '%' . ee()->view->filter_by_phrase_value . '%')
+			               ->filter('description', 'LIKE', '%' . ee()->view->search_value . '%')
+			               ->orFilter('function', 'LIKE', '%' . ee()->view->search_value . '%')
+			               ->orFilter('line', 'LIKE', '%' . ee()->view->search_value . '%')
+			               ->orFilter('file', 'LIKE', '%' . ee()->view->search_value . '%')
+			               ->orFilter('deprecated_since', 'LIKE', '%' . ee()->view->search_value . '%')
+			               ->orFilter('use_instead', 'LIKE', '%' . ee()->view->search_value . '%')
+			               ->orFilter('template_name', 'LIKE', '%' . ee()->view->search_value . '%')
+			               ->orFilter('template_group', 'LIKE', '%' . ee()->view->search_value . '%')
+			               ->orFilter('addon_module', 'LIKE', '%' . ee()->view->search_value . '%')
+			               ->orFilter('addon_method', 'LIKE', '%' . ee()->view->search_value . '%')
+			               ->orFilter('snippets', 'LIKE', '%' . ee()->view->search_value . '%')
 						 ->endFilterGroup();
 		}
 

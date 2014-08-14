@@ -174,11 +174,11 @@ class Logs extends CP_Controller {
 		ee()->view->filters = $view_filters;
 
 		// Add in any submitted search phrase
-		ee()->view->filter_by_phrase_value = ee()->input->get_post('filter_by_phrase');
+		ee()->view->search_value = ee()->input->get_post('search');
 
-		if ( ! empty(ee()->view->filter_by_phrase_value))
+		if ( ! empty(ee()->view->search_value))
 		{
-			$this->base_url->setQueryStringVariable('filter_by_phrase', ee()->view->filter_by_phrase_value);
+			$this->base_url->setQueryStringVariable('search', ee()->view->search_value);
 		}
 	}
 

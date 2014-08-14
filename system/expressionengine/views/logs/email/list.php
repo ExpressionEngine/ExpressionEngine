@@ -1,13 +1,14 @@
 <?php extend_template('default-nav') ?>
 
-<?=form_open(cp_url('logs/email'), 'class="tbl-ctrls"')?>
+<div class="tbl-ctrls">
+<?=form_open(cp_url('logs/email'))?>
 	<fieldset class="tbl-search right">
-		<input placeholder="<?=lang('type_phrase')?>" type="text" name="filter_by_phrase" value="<?=$filter_by_phrase_value?>">
+		<input placeholder="<?=lang('type_phrase')?>" type="text" name="search" value="<?=$search_value?>">
 		<input class="btn submit" type="submit" value="<?=lang('search_logs_button')?>">
 	</fieldset>
 	<h1><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h1>
 	<?php $this->view('_shared/alerts')?>
-	<fieldset class="tbl-filter">
+	<div class="filters">
 		<?php
 		if (isset($filters) && is_array($filters))
 		{
@@ -17,7 +18,7 @@
 			}
 		}
 		?>
-	</fieldset>
+	</div>
 	<section class="item-wrap log">
 		<?php if (empty($rows)): ?>
 			<p class="no-results"><?=lang('no_search_results')?></p>
@@ -43,3 +44,4 @@
 		<?php endif; ?>
 	</section>
 <?=form_close()?>
+</div>

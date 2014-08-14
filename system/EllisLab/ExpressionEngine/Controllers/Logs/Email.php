@@ -67,15 +67,15 @@ class Email extends Logs {
 			$logs = $logs->filter('cache_date', '>=', ee()->localize->now - $this->params['filter_by_date']);
 		}
 
-		if ( ! empty(ee()->view->filter_by_phrase_value))
+		if ( ! empty(ee()->view->search_value))
 		{
 			$logs = $logs->filterGroup()
-			               ->filter('member_name', 'LIKE', '%' . ee()->view->filter_by_phrase_value . '%')
-			               ->orFilter('ip_address', 'LIKE', '%' . ee()->view->filter_by_phrase_value . '%')
-			               ->orFilter('recipient', 'LIKE', '%' . ee()->view->filter_by_phrase_value . '%')
-			               ->orFilter('recipient_name', 'LIKE', '%' . ee()->view->filter_by_phrase_value . '%')
-			               ->orFilter('subject', 'LIKE', '%' . ee()->view->filter_by_phrase_value . '%')
-			               ->orFilter('message', 'LIKE', '%' . ee()->view->filter_by_phrase_value . '%')
+			               ->filter('member_name', 'LIKE', '%' . ee()->view->search_value . '%')
+			               ->orFilter('ip_address', 'LIKE', '%' . ee()->view->search_value . '%')
+			               ->orFilter('recipient', 'LIKE', '%' . ee()->view->search_value . '%')
+			               ->orFilter('recipient_name', 'LIKE', '%' . ee()->view->search_value . '%')
+			               ->orFilter('subject', 'LIKE', '%' . ee()->view->search_value . '%')
+			               ->orFilter('message', 'LIKE', '%' . ee()->view->search_value . '%')
 						 ->endFilterGroup();
 		}
 

@@ -2,7 +2,7 @@
 
 <?=form_open(cp_url('logs/cp'), 'class="tbl-ctrls"')?>
 	<fieldset class="tbl-search right">
-		<input placeholder="<?=lang('type_phrase')?>" type="text" name="filter_by_phrase" value="<?=$filter_by_phrase_value?>">
+		<input placeholder="<?=lang('type_phrase')?>" type="text" name="search" value="<?=$search_value?>">
 		<input class="btn submit" type="submit" value="<?=lang('search_logs_button')?>">
 	</fieldset>
 	<h1><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h1>
