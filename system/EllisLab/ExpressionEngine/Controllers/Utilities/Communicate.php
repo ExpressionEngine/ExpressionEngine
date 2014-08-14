@@ -622,6 +622,8 @@ class Communicate extends Utilities {
 			)
 		);
 
+		$table->setNoResultsText('no_cached_emails', 'create_new_email', cp_url('utilities/communicate'));
+
 		$page = ee()->input->get('page') ? ee()->input->get('page') : 1;
 		$page = ($page > 0) ? $page : 1;
 

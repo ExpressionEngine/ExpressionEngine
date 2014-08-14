@@ -60,7 +60,12 @@ class Table {
 			'search'	 => NULL,
 			'autosort'	 => FALSE,
 			'autosearch' => TRUE,
-			'lang_cols'	 => TRUE
+			'lang_cols'	 => TRUE,
+			'no_results' => array(
+				'text'			=> 'no_rows_returned',
+				'action_text'	=> '',
+				'action_link'	=> ''
+			)
 		);
 
 		$this->config = array_merge($defaults, $config);
@@ -437,14 +442,15 @@ class Table {
 		}
 
 		return array(
-			'base_url'	=> $base_url,
-			'lang_cols'	=> $this->config['lang_cols'],
-			'search'	=> $this->config['search'],
-			'wrap'		=> $this->config['wrap'],
-			'sort_col'	=> $this->getSortCol(),
-			'sort_dir'	=> $this->getSortDir(),
-			'columns'	=> $this->columns,
-			'data'		=> $this->data
+			'base_url'		=> $base_url,
+			'lang_cols'		=> $this->config['lang_cols'],
+			'search'		=> $this->config['search'],
+			'wrap'			=> $this->config['wrap'],
+			'no_results'	=> $this->config['no_results'],
+			'sort_col'		=> $this->getSortCol(),
+			'sort_dir'		=> $this->getSortDir(),
+			'columns'		=> $this->columns,
+			'data'			=> $this->data
 		);
 	}
 
@@ -474,6 +480,27 @@ class Table {
 	{
 		return ( ! in_array($this->config['sort_dir'], array('asc', 'desc')))
 			? 'asc' : $this->config['sort_dir'];
+	}
+
+	/**
+	 * Set the "no results" text for the table along with an optional action
+	 * button and link to create a new whatever is supposed to be displayed.
+	 * Text is typically in the format of "No {item} available" with button
+	 * text being "Create new {item}"
+	 *
+	 * @param	string	$text			Text to be shown in the table when there
+	 *                       			are no results
+	 * @param	string	$action_text	Text for action button to create a new item
+	 * @param	string	$action_link	Link for action button to create a new item
+	 * @return  void
+	 */
+	public function setNoResultsText($text, $action_text = '', $action_link = '')
+	{
+		$this->config['no_results'] = array(
+			'text'			=> $text,
+			'action_text'	=> $action_text,
+			'action_link'	=> $action_link
+		);
 	}
 }
 

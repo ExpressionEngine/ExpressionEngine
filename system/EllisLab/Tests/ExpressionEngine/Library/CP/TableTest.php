@@ -40,6 +40,8 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 		// Empty table config for now
 		$config = array();
 
+		$no_results_empty = array('text' => 'no_rows_returned', 'action_text' => '', 'action_link' => '');
+
 		// Given these columns of input...
 		$columns = array(
 			'Name',
@@ -118,14 +120,15 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 		// We should get this entire array back when we ask for
 		// the table's view data
 		$expected = array(
-			'base_url'	=> NULL,
-			'lang_cols'	=> TRUE,
-			'search'	=> NULL,
-			'wrap'		=> TRUE,
-			'sort_col'	=> 'Name',
-			'sort_dir'	=> 'asc',
-			'columns'	=> $expected_cols,
-			'data'		=> array(
+			'base_url'		=> NULL,
+			'lang_cols'		=> TRUE,
+			'search'		=> NULL,
+			'wrap'			=> TRUE,
+			'no_results'	=> $no_results_empty,
+			'sort_col'		=> 'Name',
+			'sort_dir'		=> 'asc',
+			'columns'		=> $expected_cols,
+			'data'			=> array(
 				array(
 					array(
 						'content' 	=> 'col 1 data',
@@ -202,47 +205,53 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 		$return[] = array($config, $data, $expected, $columns, 'Test sample table creation');
 
 		$expected = array(
-			'base_url'	=> NULL,
-			'lang_cols'	=> TRUE,
-			'search'	=> NULL,
-			'wrap'		=> TRUE,
-			'sort_col'	=> NULL,
-			'sort_dir'	=> 'asc',
-			'columns'	=> array(),
-			'data'		=> array()
+			'base_url'		=> NULL,
+			'lang_cols'		=> TRUE,
+			'search'		=> NULL,
+			'wrap'			=> TRUE,
+			'no_results'	=> $no_results_empty,
+			'sort_col'		=> NULL,
+			'sort_dir'		=> 'asc',
+			'columns'		=> array(),
+			'data'			=> array()
 		);
 
 		$return[] = array($config, array(), $expected, array(), 'Test empty table');
 
 		$expected = array(
-			'base_url'	=> NULL,
-			'lang_cols'	=> TRUE,
-			'search'	=> NULL,
-			'wrap'		=> TRUE,
-			'sort_col'	=> 'Name',
-			'sort_dir'	=> 'asc',
-			'columns'	=> $expected_cols,
-			'data'		=> array()
+			'base_url'		=> NULL,
+			'lang_cols'		=> TRUE,
+			'search'		=> NULL,
+			'wrap'			=> TRUE,
+			'no_results'	=> $no_results_empty,
+			'sort_col'		=> 'Name',
+			'sort_dir'		=> 'asc',
+			'columns'		=> $expected_cols,
+			'data'			=> array()
 		);
 
 		$return[] = array($config, array(), $expected, $columns, 'Test table with columns but no data');
 
+		$no_results = array('text' => 'no_results', 'action_text' => 'test', 'action_link' => 'test');
+
 		$config = array(
-			'wrap'		=> FALSE,
-			'sort_col'	=> 'Some column',
-			'sort_dir'	=> 'desc',
-			'search'	=> 'My search'
+			'wrap'			=> FALSE,
+			'sort_col'		=> 'Some column',
+			'sort_dir'		=> 'desc',
+			'search'		=> 'My search',
+			'no_results'	=> $no_results
 		);
 
 		$expected = array(
-			'base_url'	=> NULL,
-			'lang_cols'	=> TRUE,
-			'search'	=> 'My search',
-			'wrap'		=> FALSE,
-			'sort_col'	=> 'Some column',
-			'sort_dir'	=> 'desc',
-			'columns'	=> $expected_cols,
-			'data'		=> array()
+			'base_url'		=> NULL,
+			'lang_cols'		=> TRUE,
+			'search'		=> 'My search',
+			'wrap'			=> FALSE,
+			'no_results'	=> $no_results,
+			'sort_col'		=> 'Some column',
+			'sort_dir'		=> 'desc',
+			'columns'		=> $expected_cols,
+			'data'			=> array()
 		);
 
 		$return[] = array($config, array(), $expected, $columns, 'Test with alternate config');
@@ -255,14 +264,15 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 		);
 
 		$expected = array(
-			'base_url'	=> NULL,
-			'lang_cols'	=> FALSE,
-			'search'	=> NULL,
-			'wrap'		=> TRUE,
-			'sort_col'	=> 'Name',
-			'sort_dir'	=> 'desc',
-			'columns'	=> $expected_cols,
-			'data'		=> array(
+			'base_url'		=> NULL,
+			'lang_cols'		=> FALSE,
+			'search'		=> NULL,
+			'wrap'			=> TRUE,
+			'no_results'	=> $no_results_empty,
+			'sort_col'		=> 'Name',
+			'sort_dir'		=> 'desc',
+			'columns'		=> $expected_cols,
+			'data'			=> array(
 				array(
 					array(
 						'content' 	=> 'col 1 data',
@@ -341,13 +351,14 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 		$config['autosort'] = TRUE;
 
 		$expected = array(
-			'base_url'	=> NULL,
-			'lang_cols'	=> FALSE,
-			'search'	=> NULL,
-			'wrap'		=> TRUE,
-			'sort_col'	=> 'Name',
-			'sort_dir'	=> 'desc',
-			'columns'	=> $expected_cols,
+			'base_url'		=> NULL,
+			'lang_cols'		=> FALSE,
+			'search'		=> NULL,
+			'wrap'			=> TRUE,
+			'no_results'	=> $no_results_empty,
+			'sort_col'		=> 'Name',
+			'sort_dir'		=> 'desc',
+			'columns'		=> $expected_cols,
 			'data'		=> array(
 				array(
 					array(
@@ -427,14 +438,15 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 		$config['search'] = 'data 2';
 
 		$expected = array(
-			'base_url'	=> NULL,
-			'lang_cols'	=> FALSE,
-			'search'	=> 'data 2',
-			'wrap'		=> TRUE,
-			'sort_col'	=> 'Name',
-			'sort_dir'	=> 'desc',
-			'columns'	=> $expected_cols,
-			'data'		=> array(
+			'base_url'		=> NULL,
+			'lang_cols'		=> FALSE,
+			'search'		=> 'data 2',
+			'wrap'			=> TRUE,
+			'no_results'	=> $no_results_empty,
+			'sort_col'		=> 'Name',
+			'sort_dir'		=> 'desc',
+			'columns'		=> $expected_cols,
+			'data'			=> array(
 				array(
 					array(
 						'content' 	=> 'col 1 data 2',
