@@ -6,6 +6,7 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use ZipArchive;
 use EllisLab\ExpressionEngine\Library\CP\Pagination;
+use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Library\CP\URL;
 
 /**
@@ -49,9 +50,6 @@ class Translate extends Utilities {
 		{
 			$not_writeable = lang('translation_dir_unwritable');
 		}
-
-		// Add in any submitted search phrase
-		ee()->view->search_value = ee()->input->get_post('search');
 	}
 
 	/**
@@ -111,12 +109,8 @@ class Translate extends Utilities {
 		$vars['language'] = $language;
 
 		$base_url = new URL('utilities/translate/' . $language, ee()->session->session_id());
-		if ( ! empty(ee()->view->search_value))
-		{
-			$base_url->setQueryStringVariable('search', ee()->view->search_value);
-		}
 
-		$files = array();
+		$data = array();
 
 		$this->load->helper('file');
 
@@ -139,61 +133,52 @@ class Translate extends Utilities {
 
 			if (substr($file, -$filename_end_len) && substr($file, -$ext_len) == '.php')
 			{
-				if ( ! empty(ee()->view->search_value))
-				{
-					if (strpos($file, ee()->view->search_value) === FALSE)
-					{
-						continue;
-					}
-				}
-
-				$files[] = array(
+				$name = str_replace('_lang.php', '', $file);
+				$data[] = array(
 					'filename'	=> $file,
-					'name'		=> str_replace('_lang.php', '', $file)
+					array('toolbar_items' => array(
+						'edit' => array(
+							'href' => cp_url('utilities/translate/' . $language . '/edit/' . $name),
+							'title' => strtolower(lang('edit'))
+						)
+					)),
+					array(
+						'name' => 'selection[]',
+						'value' => $name
+					)
 				);
 			}
 		}
 
-		if (ee()->input->get('file_name_direction') == 'desc')
+		$table = Table::create(array('autosort' => TRUE));
+		$table->setColumns(
+			array(
+				'file_name',
+				'manage' => array(
+					'type'	=> Table::COL_TOOLBAR
+				),
+				array(
+					'type'	=> Table::COL_CHECKBOX
+				)
+			)
+		);
+		$table->setNoResultsText('no_search_results');
+		$table->setData($data);
+		$vars['table'] = $table->viewData($base_url);
+
+		$base_url = $vars['table']['base_url'];
+
+		if ( ! empty($vars['table']['data']))
 		{
-			rsort($files);
-
-			// Set the new sort URL
-			$base_url->setQueryStringVariable('file_name_direction', 'asc');
-			$vars['file_name_sort_url'] = $base_url->compile();
-
-			// Reset the base to reflect our actual direction
-			$base_url->setQueryStringVariable('file_name_direction', 'desc');
-			$vars['file_name_direction'] = 'desc';
-		}
-		else
-		{
-			sort($files);
-
-			// Set the new sort URL
-			$base_url->setQueryStringVariable('file_name_direction', 'desc');
-			$vars['file_name_sort_url'] = $base_url->compile();
-
-			// Reset the base to reflect our actual direction
-			$base_url->setQueryStringVariable('file_name_direction', 'asc');
-			$vars['file_name_direction'] = 'asc';
-		}
-
-		if ( ! empty($files))
-		{
-			$chunks = array_chunk($files, 50);
+			$chunks = array_chunk($vars['table']['data'], 50);
 
 			// Paginate!
 			$page = ee()->input->get('page') ? ee()->input->get('page') : 1;
 			$page = ($page > 0) ? $page : 1;
-			$pagination = new Pagination(50, count($files), $page);
+			$pagination = new Pagination(50, count($vars['table']['data']), $page);
 			$vars['pagination'] = $pagination->cp_links($base_url);
 
-			$vars['files'] = $chunks[$page - 1];
-		}
-		else
-		{
-			$vars['files'] = array();
+			$vars['table']['data'] = $chunks[$page - 1];
 		}
 
 		ee()->cp->render('utilities/translate/list', $vars);
