@@ -118,7 +118,8 @@ class Search extends Logs {
 
 		$vars = array(
 			'rows' => $rows,
-			'pagination' => $links
+			'pagination' => $links,
+			'form_url' => $this->base_url->compile()
 		);
 
 		ee()->cp->render('logs/search', $vars);

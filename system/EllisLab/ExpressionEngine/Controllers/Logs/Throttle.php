@@ -117,7 +117,8 @@ class Throttle extends Logs {
 		$vars = array(
 			'rows' => $rows,
 			'pagination' => $links,
-			'disabled' => $throttling_disabled
+			'disabled' => $throttling_disabled,
+			'form_url' => $this->base_url->compile()
 		);
 
 		ee()->cp->render('logs/throttle', $vars);

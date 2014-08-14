@@ -92,23 +92,66 @@ class Logs extends CP_Controller {
 		}
 
 		$view_filters = array();
+		$this->params['perpage'] = $this->perpage; // Set a default
+
+		// Maintain the search if necissary
+		if (ee()->input->get_post('search'))
+		{
+			$this->base_url->setQueryStringVariable('search', ee()->input->get_post('search'));
+		}
+
+		// Maintain the filters in the URL
+		$all_filters = array(
+			'filter_by_username'	=> 'username',
+			'filter_by_site'		=> 'site',
+			'filter_by_date'		=> 'date',
+			'perpage'				=> 'perpage'
+		);
+
+		foreach ($all_filters as $key => $filter)
+		{
+			if (in_array($filter, $filters))
+			{
+
+				$value = (ee()->input->post($key)) ?: ee()->input->get($key);
+				if ($value)
+				{
+					$this->base_url->setQueryStringVariable($key, $value);
+					$this->params[$key] = $value;
+				}
+			}
+		}
 
 		// By Username
 		if (in_array('username', $filters))
 		{
-			$usernames = array('' => '-- '.lang('by_username').' --');
+			$base_url = clone $this->base_url;
+
+			$filter = array(
+				'label'		=> 'username',
+				'name'		=> 'filter_by_username',
+				'value'		=> '',
+				'options'	=> array()
+			);
+
 			ee()->load->model('member_model');
 			$members = ee()->member_model->get_members();
 			if ($members)
 			{
 				foreach ($members->result_array() as $member)
 				{
-					$usernames[$member['member_id']] = $member['username'];
+					if (isset($this->params['filter_by_username']) &&
+						$this->params['filter_by_username'] == $member['member_id'])
+					{
+						$filter['value'] = $member['username'];
+					}
+
+					$base_url->setQueryStringVariable('filter_by_username', $member['member_id']);
+					$filter['options'][$base_url->compile()] = $member['username'];
 				}
 			}
 
-			$this->params['filter_by_username'] = ee()->input->get_post('filter_by_username');
-			$view_filters[] = form_dropdown('filter_by_username', $usernames, $this->params['filter_by_username']);
+			$view_filters[] = $filter;
 		}
 
 		// By Site
@@ -116,24 +159,44 @@ class Logs extends CP_Controller {
 		{
 			if (ee()->config->item('multiple_sites_enabled') === 'y' && ! IS_CORE)
 			{
-				$sites = array('' => '-- '.lang('by_site').' --');
+				$base_url = clone $this->base_url;
 
-				// Since the keys are numeric array_merge() is the wrong solution
+				$filter = array(
+					'label'		=> 'site',
+					'name'		=> 'filter_by_site',
+					'value'		=> '',
+					'options'	=> array()
+				);
+
 				foreach (ee()->session->userdata('assigned_sites') as $site_id => $site_label)
 				{
-					$sites[$site_id] = $site_label;
+					if (isset($this->params['filter_by_site']) &&
+						$this->params['filter_by_site'] == $site_id)
+					{
+						$filter['value'] = $site_label;
+					}
+
+					$base_url->setQueryStringVariable('filter_by_site', $site_id);
+					$filter['options'][$base_url->compile()] = $site_label;
 				}
 
-				$this->params['filter_by_site'] = ee()->input->get_post('filter_by_site');
-				$view_filters[] = form_dropdown('filter_by_site', $sites, $this->params['filter_by_site']);
+				$view_filters[] = $filter;
 			}
 		}
 
 		// By Date
 		if (in_array('date', $filters))
 		{
+			$base_url = clone $this->base_url;
+
+			$filter = array(
+				'label'		=> 'date',
+				'name'		=> 'filter_by_date',
+				'value'		=> '',
+				'options'	=> array()
+			);
+
 			$dates = array(
-				''          => '-- '.lang('by_date').' --',
 				'86400'     => ucwords(lang('last').' 24 '.lang('hours')),
 				'604800'    => ucwords(lang('last').' 7 '.lang('days')),
 				'2592000'   => ucwords(lang('last').' 30 '.lang('days')),
@@ -141,15 +204,33 @@ class Logs extends CP_Controller {
 				'31536000'  => ucwords(lang('last').' 365 '.lang('days')),
 			);
 
-			$this->params['filter_by_date'] = ee()->input->get_post('filter_by_date');
-			$view_filters[] = form_dropdown('filter_by_date', $dates, $this->params['filter_by_date']);
+			if (isset($this->params['filter_by_date']))
+			{
+				$filter['value'] = $dates[$this->params['filter_by_date']];
+			}
+
+			foreach ($dates as $seconds => $label)
+			{
+				$base_url->setQueryStringVariable('filter_by_date', $seconds);
+				$filter['options'][$base_url->compile()] = $label;
+			}
+
+			$view_filters[] = $filter;
 		}
 
 		// Limit per page
 		if (in_array('perpage', $filters))
 		{
+			$base_url = clone $this->base_url;
+
+			$filter = array(
+				'label'		=> 'show',
+				'name'		=> 'perpage',
+				'value'		=> $this->params['perpage'],
+				'options'	=> array()
+			);
+
 			$perpages = array(
-				''    => '-- '.lang('limit_by').' --',
 				'25'  => '25 '.lang('results'),
 				'50'  => '50 '.lang('results'),
 				'75'  => '75 '.lang('results'),
@@ -157,17 +238,13 @@ class Logs extends CP_Controller {
 				'150' => '150 '.lang('results')
 			);
 
-			$this->params['perpage'] = ee()->input->get_post('perpage') ? (int) ee()->input->get_post('perpage') : $this->perpage;
-			$view_filters[] = form_dropdown('perpage', $perpages, $this->params['perpage']);
-		}
-
-		// Maintain the filters in the URL
-		foreach ($this->params as $key => $value)
-		{
-			if ( ! empty($value))
+			foreach ($perpages as $show => $label)
 			{
-				$this->base_url->setQueryStringVariable($key, $value);
+				$base_url->setQueryStringVariable('perpage', $show);
+				$filter['options'][$base_url->compile()] = $label;
 			}
+
+			$view_filters[] = $filter;
 		}
 
 		// Make the filters available to the view
