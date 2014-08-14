@@ -25,7 +25,7 @@ feature 'Developer Log' do
 	@page.should have_remove_all
 	@page.should have_pagination
 
-	@page.perpage_filter.value.should eq "50"
+	@page.perpage_filter.text.should eq "show (50)"
 
 	@page.should have(6).pages
 	@page.pages.map {|name| name.text}.should == ["First", "1", "2", "3", "Next", "Last"]
@@ -47,6 +47,7 @@ feature 'Developer Log' do
 
 	@page.phrase_search.set "Rspec"
 	@page.submit_button.click
+	no_php_js_errors
 
 	@page.phrase_search.value.should eq "Rspec"
 	@page.should have_text our_desc
@@ -61,10 +62,12 @@ feature 'Developer Log' do
 
 	@page.should have(50).items # Default is 50 per page
 
-	@page.date_filter.select "Last 24 Hours"
-	@page.submit_button.click
+	@page.date_filter.click
+	@page.wait_until_date_filter_menu_visible
+	@page.date_filter_menu.click_link "Last 24 Hours"
+	no_php_js_errors
 
-	@page.date_filter.has_select?('filter_by_date', :selected => "Last 24 Hours")
+	@page.date_filter.text.should eq "date (Last 24 Hours)"
 	@page.should have(23).items
 	@page.should_not have_pagination
   end
@@ -74,10 +77,12 @@ feature 'Developer Log' do
 	@page.load
 	confirm @page
 
-	@page.perpage_filter.select "25 results"
-	@page.submit_button.click
+	@page.perpage_filter.click
+	@page.wait_until_perpage_filter_menu_visible
+	@page.perpage_filter_menu.click_link "25"
+	no_php_js_errors
 
-	@page.perpage_filter.has_select?('perpage', :selected => "25 results")
+	@page.perpage_filter.text.should eq "show (25)"
 	@page.should have(25).items
 	@page.should have_pagination
 	@page.should have(6).pages
@@ -91,19 +96,22 @@ feature 'Developer Log' do
 	@page.load
 	confirm @page
 
-	@page.perpage_filter.select "25 results"
-	@page.submit_button.click
+	@page.perpage_filter.click
+	@page.wait_until_perpage_filter_menu_visible
+	@page.perpage_filter_menu.click_link "25"
+	no_php_js_errors
 
-	@page.perpage_filter.has_select?('perpage', :selected => "25 results")
+	@page.perpage_filter.text.should eq "show (25)"
 	@page.should have(25).items
 	@page.should have_pagination
 
-	@page.perpage_filter.select "25 results"
-	@page.date_filter.select "Last 24 Hours"
-	@page.submit_button.click
+	@page.date_filter.click
+	@page.wait_until_date_filter_menu_visible
+	@page.date_filter_menu.click_link "Last 24 Hours"
+	no_php_js_errors
 
-	@page.perpage_filter.has_select?('perpage', :selected => "25 results")
-	@page.date_filter.has_select?('filter_by_date', :selected => "Last 24 Hours")
+	@page.perpage_filter.text.should eq "show (25)"
+	@page.date_filter.text.should eq "date (Last 24 Hours)"
 	@page.should have(23).items
 	@page.should_not have_pagination
   end
@@ -117,11 +125,16 @@ feature 'Developer Log' do
   	@page.load
   	confirm @page
 
-  	@page.date_filter.select "Last 24 Hours"
+	@page.date_filter.click
+	@page.wait_until_date_filter_menu_visible
+	@page.date_filter_menu.click_link "Last 24 Hours"
+	no_php_js_errors
+
 	@page.phrase_search.set "Rspec"
   	@page.submit_button.click
+	no_php_js_errors
 
-  	@page.date_filter.has_select?('filter_by_date', :selected => "Last 24 Hours")
+	@page.date_filter.text.should eq "date (Last 24 Hours)"
 	@page.phrase_search.value.should eq "Rspec"
 	@page.should have_text our_desc
   	@page.should have(5).items
@@ -139,6 +152,7 @@ feature 'Developer Log' do
 
 	log = @page.find('section.item-wrap div.item', :text => our_desc)
 	log.find('li.remove a').click
+	no_php_js_errors
 
 	@page.should have_alert
 	@page.should have_no_content our_desc
@@ -150,6 +164,7 @@ feature 'Developer Log' do
 	confirm @page
 
 	@page.remove_all.click
+	no_php_js_errors
 
 	@page.should have_alert
 	@page.should have_no_results
@@ -163,6 +178,7 @@ feature 'Developer Log' do
 	confirm @page
 
 	click_link "Next"
+	no_php_js_errors
 
 	@page.should have_pagination
 	@page.should have(7).pages
@@ -175,6 +191,7 @@ feature 'Developer Log' do
 	confirm @page
 
 	click_link "Last"
+	no_php_js_errors
 
 	@page.should have_pagination
 	@page.should have(6).pages
@@ -186,15 +203,18 @@ feature 'Developer Log' do
 	@page.load
 	confirm @page
 
-	@page.perpage_filter.select "25 results"
-	@page.submit_button.click
+	@page.perpage_filter.click
+	@page.wait_until_perpage_filter_menu_visible
+	@page.perpage_filter_menu.click_link "25"
+	no_php_js_errors
 
-	@page.perpage_filter.has_select?('perpage', :selected => "25 results")
+	@page.perpage_filter.text.should eq "show (25)"
 	@page.should have(25).items
 
 	click_link "Next"
+	no_php_js_errors
 
-	@page.perpage_filter.has_select?('perpage', :selected => "25 results")
+	@page.perpage_filter.text.should eq "show (25)"
 	@page.should have(25).items
 	@page.should have_pagination
 	@page.should have(7).pages
@@ -207,25 +227,31 @@ feature 'Developer Log' do
 	@page.load
 	confirm @page
 
-	@page.perpage_filter.select "25 results"
+	@page.perpage_filter.click
+	@page.wait_until_perpage_filter_menu_visible
+	@page.perpage_filter_menu.click_link "25"
+	no_php_js_errors
+
 	@page.phrase_search.set "Visible"
 	@page.submit_button.click
+	no_php_js_errors
 
 	# Page 1
 	@page.phrase_search.value.should eq "Visible"
 	@page.items.should_not have_text "Hidden"
-	@page.perpage_filter.has_select?('perpage', :selected => "25 results")
+	@page.perpage_filter.text.should eq "show (25)"
 	@page.should have(25).items
 	@page.should have_pagination
 	@page.should have(5).pages
 	@page.pages.map {|name| name.text}.should == ["First", "1", "2", "Next", "Last"]
 
 	click_link "Next"
+	no_php_js_errors
 
 	# Page 2
 	@page.phrase_search.value.should eq "Visible"
 	@page.items.should_not have_text "Hidden"
-	@page.perpage_filter.has_select?('perpage', :selected => "25 results")
+	@page.perpage_filter.text.should eq "show (25)"
 	@page.should have(10).items
 	@page.should have_pagination
 	@page.should have(5).pages

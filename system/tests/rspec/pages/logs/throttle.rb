@@ -3,9 +3,12 @@ class ThrottleLog < ControlPanelPage
 
 	element :title, 'div.box form h1'
 
-	element :phrase_search, 'input[name=filter_by_phrase]'
+	element :phrase_search, 'input[name=search]'
 	element :submit_button, 'input.submit'
-	element :perpage_filter, 'select[name=perpage]'
+
+	element :perpage_filter, 'div.filters ul li:first-child'
+	element :perpage_filter_menu, 'div.filters ul li:first-child div.sub-menu ul', visible: false
+	element :perpage_manual_filter, 'input[name="filter_by_username"]', visible: false
 
 	element :alert, 'div.alert'
 	element :no_results, 'p.no-results'

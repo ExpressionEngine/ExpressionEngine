@@ -43,7 +43,7 @@ feature 'Throttling Log' do
     @page.should have_remove_all
     @page.should have_pagination
 
-    @page.perpage_filter.value.should eq "50"
+	@page.perpage_filter.text.should eq "show (50)"
 
     @page.should have(6).pages
     @page.pages.map {|name| name.text}.should == ["First", "1", "2", "3", "Next", "Last"]
@@ -63,6 +63,7 @@ feature 'Throttling Log' do
 
 	@page.phrase_search.set "172.16.11"
 	@page.submit_button.click
+	no_php_js_errors
 
 	@page.phrase_search.value.should eq "172.16.11"
 	@page.should have_text our_ip
@@ -70,10 +71,12 @@ feature 'Throttling Log' do
   end
 
   it '(enabled) can change page size', :enabled => true do
-    @page.perpage_filter.select "25 results"
-    @page.submit_button.click
+	@page.perpage_filter.click
+	@page.wait_until_perpage_filter_menu_visible
+	@page.perpage_filter_menu.click_link "25"
+	no_php_js_errors
 
-    @page.perpage_filter.has_select?('perpage', :selected => "25 results")
+	@page.perpage_filter.text.should eq "show (25)"
     @page.should have(25).items
     @page.should have_pagination
     @page.should have(6).pages
@@ -86,11 +89,16 @@ feature 'Throttling Log' do
 	@page.generate_data(count: 27, timestamp_max: 0, ip_address: our_ip)
 	@page.load
 
-	@page.perpage_filter.select "25 results"
+	@page.perpage_filter.click
+	@page.wait_until_perpage_filter_menu_visible
+	@page.perpage_filter_menu.click_link "25"
+	no_php_js_errors
+
 	@page.phrase_search.set "172.16.11"
 	@page.submit_button.click
+	no_php_js_errors
 
-	@page.perpage_filter.has_select?('perpage', :selected => "25 results")
+	@page.perpage_filter.text.should eq "show (25)"
 	@page.phrase_search.value.should eq "172.16.11"
 	@page.should have_text our_ip
 	@page.should have(25).items
@@ -115,6 +123,7 @@ feature 'Throttling Log' do
 
   it '(enabled) can remove all entries', :enabled => true do
     @page.remove_all.click
+	no_php_js_errors
 
     @page.should have_alert
     @page.should have_no_results
@@ -124,6 +133,7 @@ feature 'Throttling Log' do
   # Confirming Pagination behavior
   it '(enabled) shows the Prev button when on page 2', :enabled => true do
     click_link "Next"
+	no_php_js_errors
 
     @page.should have_pagination
     @page.should have(7).pages
@@ -132,6 +142,7 @@ feature 'Throttling Log' do
 
   it '(enabled) does not show Next on the last page', :enabled => true do
     click_link "Last"
+	no_php_js_errors
 
     @page.should have_pagination
     @page.should have(6).pages
@@ -139,43 +150,53 @@ feature 'Throttling Log' do
   end
 
   it '(enabled) does not lose a filter value when paginating', :enabled => true do
-    @page.perpage_filter.select "25 results"
-    @page.submit_button.click
+	@page.perpage_filter.click
+	@page.wait_until_perpage_filter_menu_visible
+	@page.perpage_filter_menu.click_link "25"
+	no_php_js_errors
 
-    @page.perpage_filter.has_select?('perpage', :selected => "25 results")
-    @page.should have(25).items
+	@page.perpage_filter.text.should eq "show (25)"
+	@page.should have(25).items
 
-    click_link "Next"
+	click_link "Next"
+	no_php_js_errors
 
-    @page.perpage_filter.has_select?('perpage', :selected => "25 results")
-    @page.should have(25).items
-    @page.should have_pagination
-    @page.should have(7).pages
-    @page.pages.map {|name| name.text}.should == ["First", "Previous", "1", "2", "3", "Next", "Last"]
+	@page.perpage_filter.text.should eq "show (25)"
+	@page.should have(25).items
+	@page.should have_pagination
+	@page.should have(7).pages
+	@page.pages.map {|name| name.text}.should == ["First", "Previous", "1", "2", "3", "Next", "Last"]
   end
 
   it '(enabled) will paginate phrase search results', :enabled => true do
   	@page.generate_data(count: 35, timestamp_max: 0, ip_address: "172.16.11.42")
   	@page.load
-	@page.perpage_filter.select "25 results"
+
+	@page.perpage_filter.click
+	@page.wait_until_perpage_filter_menu_visible
+	@page.perpage_filter_menu.click_link "25"
+	no_php_js_errors
+
 	@page.phrase_search.set "172.16.11"
 	@page.submit_button.click
+	no_php_js_errors
 
 	# Page 1
 	@page.phrase_search.value.should eq "172.16.11"
 	@page.items.should_not have_text "10.0"
-	@page.perpage_filter.has_select?('perpage', :selected => "25 results")
+	@page.perpage_filter.text.should eq "show (25)"
 	@page.should have(25).items
 	@page.should have_pagination
 	@page.should have(5).pages
 	@page.pages.map {|name| name.text}.should == ["First", "1", "2", "Next", "Last"]
 
 	click_link "Next"
+	no_php_js_errors
 
 	# Page 2
 	@page.phrase_search.value.should eq "172.16.11"
 	@page.items.should_not have_text "10.0"
-	@page.perpage_filter.has_select?('perpage', :selected => "25 results")
+	@page.perpage_filter.text.should eq "show (25)"
 	@page.should have(10).items
 	@page.should have_pagination
 	@page.should have(5).pages
