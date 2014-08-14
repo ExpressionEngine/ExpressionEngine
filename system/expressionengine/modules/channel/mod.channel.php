@@ -62,7 +62,6 @@ class Channel {
 	public $cat_array				= array();
 	public $temp_array				= array();
 	public $category_count			= 0;
-	public $active_cat				= FALSE;
 
 	public $pagination;
 	public $pager_sql 				= '';
@@ -2638,7 +2637,7 @@ class Channel {
 		// Set the active category
 		// Get category ID from URL for {if active} conditional
 		ee()->load->helper('segment');
-		$this->active_cat = parse_category($this->query_string, explode('|', $group_ids));
+		$active_cat = parse_category($this->query_string, explode('|', $group_ids));
 
 		if (ee()->TMPL->fetch_param('style') == '' OR ee()->TMPL->fetch_param('style') == 'nested')
 		{
@@ -2650,7 +2649,8 @@ class Channel {
 				'channel_array'	=> '',
 				'parent_only'	=> $parent_only,
 				'show_empty'	=> ee()->TMPL->fetch_param('show_empty'),
-				'strict_empty'	=> $strict_empty
+				'strict_empty'	=> $strict_empty,
+				'active_cat'	=> $active_cat
 			));
 
 
@@ -2907,7 +2907,7 @@ class Channel {
 					'category_image'		=> $cat_image['url'],
 					'category_id'			=> $val[0],
 					'parent_id'				=> $val[1],
-					'active'				=> ($this->active_cat == $val[0] || $this->active_cat == $val[6])
+					'active'				=> ($active_cat == $val[0] || $active_cat == $val[6])
 				);
 
 				// add custom fields for conditionals prep
@@ -3069,7 +3069,7 @@ class Channel {
 
 		// Set the active category or {if active} conditional
 		ee()->load->helper('segment');
-		$this->active_cat = parse_category($this->query_string, $group_ids);
+		$active_cat = parse_category($this->query_string, $group_ids);
 
 		// Combine the group IDs from multiple channels into a string
 		$group_ids = implode('|', $group_ids);
@@ -3243,7 +3243,8 @@ class Channel {
 				'channel_array' => $channel_array,
 				'parent_only'	=> $parent_only,
 				'show_empty'	=> ee()->TMPL->fetch_param('show_empty'),
-				'strict_empty'	=> 'yes'
+				'strict_empty'	=> 'yes', 
+				'active_cat'	=> $active_cat
 			));
 
 			if (count($this->category_list) > 0)
@@ -3376,7 +3377,7 @@ class Channel {
 							'category_image'		=> $cat_image['url'],
 							'category_id'			=> $row['cat_id'],
 							'parent_id'				=> $row['parent_id'],
-							'active'				=> ($this->active_cat == $row['cat_id'] || $this->active_cat == $row['cat_url_title'])
+							'active'				=> ($active_cat == $row['cat_id'] || $active_cat == $row['cat_url_title'])
 						);
 
 						foreach ($this->catfields as $v)
@@ -3779,7 +3780,8 @@ class Channel {
 			'parent_id'		=> '0',
 			'path'			=> $path,
 			'template'		=> $template,
-			'channel_array'	=> $channel_array
+			'channel_array'	=> $channel_array,
+			'active_cat'	=> (isset($cdata['active_cat'])) ? $cdata['active_cat'] : ''
 		));
 	}
 
@@ -3790,7 +3792,7 @@ class Channel {
 	  */
 	public function category_subtree($cdata = array())
 	{
-		$default = array('parent_id', 'path', 'template', 'depth', 'channel_array', 'show_empty');
+		$default = array('parent_id', 'path', 'template', 'depth', 'channel_array', 'show_empty', 'active_cat');
 
 		foreach ($default as $val)
 		{
@@ -3832,7 +3834,7 @@ class Channel {
 					'category_image'		=> $cat_image['url'],
 					'category_id'			=> $key,
 					'parent_id'				=> $val[0],
-					'active'				=> ($this->active_cat == $key || $this->active_cat == $val[4])
+					'active'				=> ($active_cat == $key || $active_cat == $val[4])
 				);
 
 				// add custom fields for conditionals prep

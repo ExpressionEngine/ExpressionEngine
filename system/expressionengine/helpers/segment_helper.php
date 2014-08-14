@@ -76,7 +76,7 @@
 	 * @param	mixed	$group_ids Optional category group ids
 	 * @return	string	ID of the category regardless of type being used
 	 */
-	function parse_category($query_string, $group_ids = '')
+	function parse_category($query_string, $group_ids = array())
 	{
 		$reserved_category_word = (string) ee()->config->item("reserved_category_word");
 
