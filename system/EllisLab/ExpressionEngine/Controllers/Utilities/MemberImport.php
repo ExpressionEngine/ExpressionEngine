@@ -95,7 +95,7 @@ class MemberImport extends Utilities {
 		);
 
 		ee()->view->cp_page_title = lang('member_import');
-		ee()->cp->render('utilities/member-import', $vars);
+		ee()->cp->render('utilities/member-import/index', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -179,7 +179,7 @@ class MemberImport extends Utilities {
 		ee()->view->cp_page_title = lang('confirm_import');
 		ee()->cp->set_breadcrumb(cp_url('utilities/member_import'), lang('member_import'));
 
-		ee()->cp->render('utilities/member-import-confirm', $vars);
+		ee()->cp->render('utilities/member-import/confirm', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -803,7 +803,7 @@ class MemberImport extends Utilities {
 
 		ee()->view->cp_page_title = lang('custom_fields');
 		ee()->cp->set_breadcrumb(cp_url('utilities/member_import'), lang('member_import'));
-		ee()->cp->render('utilities/member-import-custom', $vars);
+		ee()->cp->render('utilities/member-import/custom', $vars);
 	}
 
 	// --------------------------------------------------------------------

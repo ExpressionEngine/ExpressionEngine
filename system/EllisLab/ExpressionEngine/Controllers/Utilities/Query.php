@@ -63,7 +63,7 @@ class Query extends Utilities {
 		}
 
 		ee()->view->cp_page_title = lang('sql_query_form');
-		ee()->cp->render('utilities/query');
+		ee()->cp->render('utilities/query/index');
 	}
 
 	// --------------------------------------------------------------------
@@ -203,7 +203,7 @@ class Query extends Utilities {
 				if ( ! empty($sort_col))
 				{
 					$new_sql = ( ! isset($new_sql)) ? '('.$sql.')' : '('.$new_sql.')';
-										
+
 					// Wrap query in parenthesis in case query already has a
 					// limit on it, we can't put an ORDER BY after a LIMIT
 					$new_sql .= ' ORDER BY '.$sort_col.' '.$sort_dir;
@@ -257,8 +257,8 @@ class Query extends Utilities {
 		{
 			$vars['total_results'] = count($data);
 		}
-		
-		ee()->cp->render('utilities/query-results', $vars);
+
+		ee()->cp->render('utilities/query/results', $vars);
 	}
 }
 // END CLASS

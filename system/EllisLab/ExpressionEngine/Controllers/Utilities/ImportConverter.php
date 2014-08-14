@@ -73,7 +73,7 @@ class ImportConverter extends Utilities {
 		}
 
 		ee()->view->cp_page_title = lang('import_converter');
-		ee()->cp->render('utilities/import-converter');
+		ee()->cp->render('utilities/import/index');
 	}
 
 	// --------------------------------------------------------------------
@@ -209,7 +209,7 @@ class ImportConverter extends Utilities {
 
 		ee()->view->cp_page_title = lang('import_converter') . ' - ' . lang('assign_fields');
 		ee()->cp->set_breadcrumb(cp_url('utilities/import_converter'), lang('import_converter'));
-		ee()->cp->render('utilities/import-fieldmap', $vars);
+		ee()->cp->render('utilities/import/fieldmap', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -332,7 +332,7 @@ class ImportConverter extends Utilities {
 
 		ee()->view->cp_page_title = lang('confirm_assignments');
 		ee()->cp->set_breadcrumb(cp_url('utilities/import_converter'), lang('import_converter'));
-		ee()->cp->render('utilities/import-fieldmap-confirm', $vars);
+		ee()->cp->render('utilities/import/fieldmap-confirm', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -417,7 +417,7 @@ class ImportConverter extends Utilities {
 
 		ee()->view->cp_page_title = lang('xml_code');
 		ee()->cp->set_breadcrumb(cp_url('utilities/import_converter'), lang('import_converter'));
-		ee()->cp->render('utilities/import-code-output', $vars);
+		ee()->cp->render('utilities/import/code-output', $vars);
 	}
 
 	// --------------------------------------------------------------------

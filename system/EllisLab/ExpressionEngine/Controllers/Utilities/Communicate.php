@@ -132,7 +132,7 @@ class Communicate extends Utilities {
 			}
 		');
 
-		ee()->cp->render('utilities/communicate', $vars + $default);
+		ee()->cp->render('utilities/communicate/index', $vars + $default);
 	}
 
 	/**
@@ -688,7 +688,7 @@ class Communicate extends Utilities {
 					)
 				);
 
-				$modals['modal-email-' . $email->cache_id] = ee()->view->render('utilities/communicate-email-modal', array('email' => $email), TRUE);
+				$modals['modal-email-' . $email->cache_id] = ee()->view->render('utilities/communicate/email-modal', array('email' => $email), TRUE);
 			}
 
 			return $data;
@@ -706,7 +706,7 @@ class Communicate extends Utilities {
 		$vars['pagination'] = $pagination->cp_links($vars['table']['base_url']);
 
 		ee()->view->cp_page_title = lang('view_email_cache');
-		ee()->cp->render('utilities/communicate-sent', $vars);
+		ee()->cp->render('utilities/communicate/sent', $vars);
 	}
 
 	// --------------------------------------------------------------------
