@@ -119,6 +119,12 @@ $lang = array(
 'auto_br'	=> 'Auto &lt;br /&gt;',
 'xhtml'		=> 'XHTML',
 
+'no_cached_emails' =>
+'No e-mails availble',
+
+'create_new_email' =>
+'Create new e-mail',
+
 /**
  * CP Translation
  */
@@ -221,6 +227,9 @@ $lang = array(
 
 'btn_sandr_working' =>
 'Replacing...',
+
+'no_tables_match' =>
+'No tables match the search criteria',
 
 /**
  * Import Converter
@@ -505,6 +514,9 @@ $lang = array(
 
 'type_phrase' =>
 'type phrase...',
+
+'no_rows_returned' =>
+'No rows returned',
 
 /**
  * Statistics

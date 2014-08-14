@@ -6,7 +6,12 @@ if ($wrap): ?>
 <?php if (empty($columns) && empty($data)): ?>
 	<table cellspacing="0" class="empty no-results">
 		<tr>
-			<td>No rows returned</td>
+			<td>
+				<?=lang($no_results['text'])?>
+				<?php if ( ! empty($no_results['action_text'])): ?>
+					<a class="btn action" href="<?=$no_results['action_link']?>"><?=lang($no_results['action_text'])?></a>>
+				<?php endif ?>
+			</td>
 		</tr>
 	</table>
 <?php else: ?>
@@ -37,7 +42,12 @@ if ($wrap): ?>
 		</tr>
 		<?php if (empty($data)): ?>
 			<tr class="no-results">
-				<td class="solo" colspan="<?=count($columns)?>">No rows returned</td>
+				<td class="solo" colspan="<?=count($columns)?>">
+					<?=lang($no_results['text'])?>
+					<?php if ( ! empty($no_results['action_text'])): ?>
+						<a class="btn action" href="<?=$no_results['action_link']?>"><?=lang($no_results['action_text'])?></a>
+					<?php endif ?>
+				</td>
 			</tr>
 		<?php endif ?>
 		<?php foreach ($data as $row): ?>

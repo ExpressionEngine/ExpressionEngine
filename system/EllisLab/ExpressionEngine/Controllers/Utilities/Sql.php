@@ -106,6 +106,7 @@ class Sql extends Utilities {
 				)
 			)
 		);
+		$table->setNoResultsText('no_tables_match');
 		$table->setData($data);
 
 		$base_url = new CP\URL('utilities/sql', ee()->session->session_id());
@@ -115,6 +116,9 @@ class Sql extends Utilities {
 		ee()->cp->render('utilities/sql-manager', $vars);
 	}
 
+	/**
+	 * Results of table operation
+	 */
 	public function opResults()
 	{
 		$action = ee()->input->post('table_action');
@@ -179,6 +183,7 @@ class Sql extends Utilities {
 			'message'
 		));
 		$table->setData($data);
+		$table->setNoResultsText('no_tables_match');
 		$vars['table'] = $table->viewData($base_url);
 
 		ee()->view->cp_page_title = lang(strtolower($action).'_tables_results');
