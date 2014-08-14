@@ -141,10 +141,24 @@ class Logs extends CP_Controller {
 			{
 				foreach ($members->result_array() as $member)
 				{
-					if (isset($this->params['filter_by_username']) &&
-						$this->params['filter_by_username'] == $member['member_id'])
+					if (isset($this->params['filter_by_username']))
 					{
-						$filter['value'] = $member['username'];
+						// Do a little dance to compare member id or username
+						if (is_numeric($this->params['filter_by_username']))
+						{
+	   						if ($this->params['filter_by_username'] == $member['member_id'])
+							{
+								$filter['value'] = $member['username'];
+							}
+						}
+						else
+						{
+	   						if ($this->params['filter_by_username'] == $member['username'])
+							{
+								$filter['value'] = $member['username'];
+								$this->params['filter_by_username'] = $member['member_id'];
+							}
+						}
 					}
 
 					$base_url->setQueryStringVariable('filter_by_username', $member['member_id']);
