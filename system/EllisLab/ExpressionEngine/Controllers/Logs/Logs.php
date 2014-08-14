@@ -128,10 +128,11 @@ class Logs extends CP_Controller {
 			$base_url = clone $this->base_url;
 
 			$filter = array(
-				'label'		=> 'username',
-				'name'		=> 'filter_by_username',
-				'value'		=> '',
-				'options'	=> array()
+				'label'			=> 'username',
+				'name'			=> 'filter_by_username',
+				'value'			=> '',
+				'placeholder'	=> lang('filter_by_username'),
+				'options'		=> array()
 			);
 
 			ee()->load->model('member_model');
@@ -162,10 +163,11 @@ class Logs extends CP_Controller {
 				$base_url = clone $this->base_url;
 
 				$filter = array(
-					'label'		=> 'site',
-					'name'		=> 'filter_by_site',
-					'value'		=> '',
-					'options'	=> array()
+					'label'			=> 'site',
+					'name'			=> 'filter_by_site',
+					'value'			=> '',
+					'placeholder'	=> lang('filter_by_site'),
+					'options'		=> array()
 				);
 
 				foreach (ee()->session->userdata('assigned_sites') as $site_id => $site_label)
@@ -190,10 +192,11 @@ class Logs extends CP_Controller {
 			$base_url = clone $this->base_url;
 
 			$filter = array(
-				'label'		=> 'date',
-				'name'		=> 'filter_by_date',
-				'value'		=> '',
-				'options'	=> array()
+				'label'			=> 'date',
+				'name'			=> 'filter_by_date',
+				'value'			=> '',
+				'placeholder'	=> lang('custom_date'),
+				'options'		=> array()
 			);
 
 			$dates = array(
@@ -224,10 +227,11 @@ class Logs extends CP_Controller {
 			$base_url = clone $this->base_url;
 
 			$filter = array(
-				'label'		=> 'show',
-				'name'		=> 'perpage',
-				'value'		=> $this->params['perpage'],
-				'options'	=> array()
+				'label'			=> 'show',
+				'name'			=> 'perpage',
+				'value'			=> $this->params['perpage'],
+				'placeholder'	=> lang('custom_limit'),
+				'options'		=> array()
 			);
 
 			$perpages = array(

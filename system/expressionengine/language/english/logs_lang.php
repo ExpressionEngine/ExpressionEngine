@@ -72,6 +72,17 @@ $lang = array(
 'blacklist_all_ips'		=> 'Blacklist All IPs',
 'clear_throttle_logs'	=> 'Remove all Throttling Logs',
 
+/* Filters */
+'filters'				=> 'Filters',
+'username'				=> 'username',
+'filter_by_username'	=> 'filter username',
+'site'					=> 'site',
+'filter_by_site'		=> 'filter sites',
+'date'					=> 'date',
+'custom_date'			=> 'custom date',
+'show'					=> 'show',
+'custom_limit'			=> 'custom limit',
+
 ''=>''
 );
 
