@@ -107,7 +107,7 @@ class Email extends Logs {
 			'pagination' => $links
 		);
 
-		ee()->cp->render('logs/email', $vars);
+		ee()->cp->render('logs/email/list.php', $vars);
 	}
 
 	// --------------------------------------------------------------------
