@@ -140,7 +140,6 @@ class Logs extends CP_Controller {
 			{
 				if (isset($this->params['filter_by_username']))
 				{
-					// If we
 					if (is_numeric($this->params['filter_by_username']))
 					{
 						$member = ee()->api->get('Member', $this->params['filter_by_username'])->first();
@@ -153,7 +152,6 @@ class Logs extends CP_Controller {
 					{
 						$filter['value'] = $this->params['filter_by_username'];
 						$member = ee()->api->get('Member')->filter('username', $this->params['filter_by_username'])->first();
-						$member = ee()->api->get('Member', $this->params['filter_by_username'])->first();
 						if ($member)
 						{
 							$this->params['filter_by_username'] = $member->member_id;
