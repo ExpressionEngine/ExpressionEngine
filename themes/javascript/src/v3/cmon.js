@@ -91,15 +91,18 @@ $(document).ready(function(){
 		});
 
 		// listen for clicks to the document
-		$(document).on('click',function(){
-			// close OTHER open sub menus
-			// when clicking outside ANY sub menu trigger
-			// thanks me :D
-			$('.open')
-				// remove the class of open
-				.removeClass('open')
-				// hide all siblings of open with a class of sub-menu
-				.siblings('.sub-menu').hide();
+		$(document).on('click',function(e){
+			// check to see if we are inside a sub-menu or not.
+			if(!$(e.target).closest('.sub-menu').length){
+				// close OTHER open sub menus
+				// when clicking outside ANY sub menu trigger
+				// thanks me :D
+				$('.open')
+					// remove the class of open
+					.removeClass('open')
+					// hide all siblings of open with a class of sub-menu
+					.siblings('.sub-menu').hide();
+			}
 		});
 
 	// ====
@@ -161,7 +164,7 @@ $(document).ready(function(){
 		$('.overlay, .modal-wrap').hide();
 
 		// prevent modals from popping when disabled
-		$('body').on('click', '.disable', function(){
+		$('body').on('click','.disable',function(){
 			// stop THIS href from loading
 			// in the source window
 			return false;
