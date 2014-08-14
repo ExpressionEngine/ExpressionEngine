@@ -5,7 +5,7 @@ class Translate < ControlPanelPage
 
 	element :title, 'div.box form h1'
 
-	element :phrase_search, 'form fieldset.tbl-search input[name=filter_by_phrase]'
+	element :phrase_search, 'form fieldset.tbl-search input[name=search]'
 	element :search_submit_button, 'form fieldset.tbl-search input.submit'
 
 	element :alert, 'div.alert'
