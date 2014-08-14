@@ -12,7 +12,7 @@ class DeveloperLog < ControlPanelPage
 
 	element :perpage_filter, 'div.filters ul li:nth-child(2)'
 	element :perpage_filter_menu, 'div.filters ul li:nth-child(2) div.sub-menu ul', visible: false
-	element :perpage_manual_filter, 'input[name="filter_by_date"]', visible: false
+	element :perpage_manual_filter, 'input[name="perpage"]', visible: false
 
 	element :alert, 'div.alert'
 	element :no_results, 'p.no-results'

@@ -83,6 +83,20 @@ feature 'Throttling Log' do
     @page.pages.map {|name| name.text}.should == ["First", "1", "2", "3", "Next", "Last"]
   end
 
+  it '(enabled) can set a custom limit', :enabled => true do
+	@page.perpage_filter.click
+	@page.wait_until_perpage_manual_filter_visible
+	@page.perpage_manual_filter.set "42"
+	@page.submit_button.click
+	no_php_js_errors
+
+	@page.perpage_filter.text.should eq "show (42)"
+	@page.should have(42).items
+	@page.should have_pagination
+	@page.should have(6).pages
+	@page.pages.map {|name| name.text}.should == ["First", "1", "2", "3", "Next", "Last"]
+  end
+
   it '(enabled) can combine phrase search with filters', :enabled => true do
 	our_ip = "172.16.11.42"
 

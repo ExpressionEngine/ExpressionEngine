@@ -65,6 +65,18 @@ feature 'CP Log' do
 	@page.should_not have_pagination
   end
 
+  it 'filters by custom username' do
+	@page.username_filter.click
+	@page.wait_until_username_manual_filter_visible
+	@page.username_manual_filter.set "johndoe"
+	@page.submit_button.click
+	no_php_js_errors
+
+	@page.username_filter.text.should eq "username (johndoe)"
+	@page.should have(35).items
+	@page.should_not have_pagination
+  end
+
   # @TODO Need data for extra site in order to filter by it
   # it 'filters by site' do
   #	  @page.site_filter.select "foobarbaz"
@@ -92,6 +104,20 @@ feature 'CP Log' do
 
 	@page.perpage_filter.text.should eq "show (25)"
 	@page.should have(25).items
+	@page.should have_pagination
+	@page.should have(6).pages
+	@page.pages.map {|name| name.text}.should == ["First", "1", "2", "3", "Next", "Last"]
+  end
+
+  it 'can set a custom limit' do
+	@page.perpage_filter.click
+	@page.wait_until_perpage_manual_filter_visible
+	@page.perpage_manual_filter.set "42"
+	@page.submit_button.click
+	no_php_js_errors
+
+	@page.perpage_filter.text.should eq "show (42)"
+	@page.should have(42).items
 	@page.should have_pagination
 	@page.should have(6).pages
 	@page.pages.map {|name| name.text}.should == ["First", "1", "2", "3", "Next", "Last"]

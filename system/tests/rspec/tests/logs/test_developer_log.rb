@@ -89,6 +89,24 @@ feature 'Developer Log' do
 	@page.pages.map {|name| name.text}.should == ["First", "1", "2", "3", "Next", "Last"]
   end
 
+  it 'can set a custom limit' do
+  	@page.generate_data
+  	@page.load
+  	confirm @page
+
+	@page.perpage_filter.click
+	@page.wait_until_perpage_manual_filter_visible
+	@page.perpage_manual_filter.set "42"
+	@page.submit_button.click
+	no_php_js_errors
+
+	@page.perpage_filter.text.should eq "show (42)"
+	@page.should have(42).items
+	@page.should have_pagination
+	@page.should have(6).pages
+	@page.pages.map {|name| name.text}.should == ["First", "1", "2", "3", "Next", "Last"]
+  end
+
   # Confirming combining filters work
   it 'can combine date and page size filters' do
 	@page.generate_data(count: 23, timestamp_max: 22)

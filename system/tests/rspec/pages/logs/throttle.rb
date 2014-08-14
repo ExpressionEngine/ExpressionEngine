@@ -8,7 +8,7 @@ class ThrottleLog < ControlPanelPage
 
 	element :perpage_filter, 'div.filters ul li:first-child'
 	element :perpage_filter_menu, 'div.filters ul li:first-child div.sub-menu ul', visible: false
-	element :perpage_manual_filter, 'input[name="filter_by_username"]', visible: false
+	element :perpage_manual_filter, 'input[name="perpage"]', visible: false
 
 	element :alert, 'div.alert'
 	element :no_results, 'p.no-results'
