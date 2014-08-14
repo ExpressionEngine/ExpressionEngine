@@ -135,34 +135,36 @@ class Logs extends CP_Controller {
 				'options'		=> array()
 			);
 
-			ee()->load->model('member_model');
-			$members = ee()->member_model->get_members();
+			$members = ee()->api->get('Member')->all();
 			if ($members)
 			{
-				foreach ($members->result_array() as $member)
+				if (isset($this->params['filter_by_username']))
 				{
-					if (isset($this->params['filter_by_username']))
+					// If we
+					if (is_numeric($this->params['filter_by_username']))
 					{
-						// Do a little dance to compare member id or username
-						if (is_numeric($this->params['filter_by_username']))
+						$member = ee()->api->get('Member', $this->params['filter_by_username'])->first();
+						if ($member)
 						{
-	   						if ($this->params['filter_by_username'] == $member['member_id'])
-							{
-								$filter['value'] = $member['username'];
-							}
-						}
-						else
-						{
-	   						if ($this->params['filter_by_username'] == $member['username'])
-							{
-								$filter['value'] = $member['username'];
-								$this->params['filter_by_username'] = $member['member_id'];
-							}
+							$filter['value'] = $member->username;
 						}
 					}
+					else
+					{
+						$filter['value'] = $this->params['filter_by_username'];
+						$member = ee()->api->get('Member')->filter('username', $this->params['filter_by_username'])->first();
+						$member = ee()->api->get('Member', $this->params['filter_by_username'])->first();
+						if ($member)
+						{
+							$this->params['filter_by_username'] = $member->member_id;
+						}
+					}
+				}
 
-					$base_url->setQueryStringVariable('filter_by_username', $member['member_id']);
-					$filter['options'][$base_url->compile()] = $member['username'];
+				foreach ($members as $member)
+				{
+					$base_url->setQueryStringVariable('filter_by_username', $member->member_id);
+					$filter['options'][$base_url->compile()] = $member->username;
 				}
 			}
 
