@@ -1941,35 +1941,35 @@ class EE_Template {
 		{
 			$this->log_item(" - Beginning Page Cache Garbage Collection - ");
 
-			$cache_info = ee()->cache->cache_info();
+			// Build the path to the page cache and get the number of files we have in
+			// the cache; this is more memory-efficient than using Cache::cache_info
+			$cache_path = APPPATH.'cache'.DIRECTORY_SEPARATOR;
 
-			// Find the directory holding our page cache
-			foreach ($cache_info as $item)
+			// Attempt to grab cache_path config if it's set
+			if ($path = ee()->config->item('cache_path'))
 			{
-				// Explode the path by directory separator
-				$path = explode(
-					DIRECTORY_SEPARATOR,
-					trim($item['relative_path'], DIRECTORY_SEPARATOR)
-				);
-
-				// See if the last item in the path is page_cache
-				if ('page_cache' == array_pop($path))
-				{
-					$path = $item['relative_path'];
-					break;
-				}
+				$path = ee()->config->item('cache_path');
+				$cache_path = rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
 			}
 
-			// Bail if we couldn't find the directory
-			if (empty($path))
+			// Build the path to the page cache, should be site_short_name/page_cache
+			// as no page cache is set globally
+			$cache_path .= ee()->config->item('site_short_name') . DIRECTORY_SEPARATOR;
+			$cache_path .= 'page_cache' . DIRECTORY_SEPARATOR;
+			
+			try
 			{
-				$this->log_item(" - End Page Cache Garbage Collection - ");
-				return;
+				$fi = new FilesystemIterator($cache_path, FilesystemIterator::SKIP_DOTS);
 			}
-
+			catch (Exception $e)
+			{
+				return $this->log_item(" - End Page Cache Garbage Collection - " . $e->getMessage());
+			}
+			
 			// Count files in the directory
-			$count = count(get_filenames($path));
-
+			$count = iterator_count($fi);
+			
+			// Default max
 			$max = 1000;
 
 			// Figure out what our max number of page cache files should be
@@ -1985,7 +1985,7 @@ class EE_Template {
 			{
 				ee()->cache->delete('/page_cache/');
 			}
-
+			
 			$this->log_item(" - End Page Cache Garbage Collection - ");
 		}
 	}
