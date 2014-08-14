@@ -35,6 +35,8 @@
 	</table>
 
 	<?php $this->view('_shared/pagination'); ?>
+
+	<?php if ( ! empty($files)): ?>
 	<fieldset class="tbl-bulk-act">
 		<select name="bulk_action">
 			<option value="">-- <?=lang('with_selected')?> --</option>
@@ -42,4 +44,5 @@
 		</select>
 		<input class="btn submit" type="submit" value="<?=lang('submit')?>">
 	</fieldset>
+	<?php endif; ?>
 <?=form_close()?>
