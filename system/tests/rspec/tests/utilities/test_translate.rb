@@ -97,7 +97,9 @@ feature 'Translate Tool' do
 		@list_page.should have(5).pages
 		@list_page.pages.map {|name| name.text}.should == ["First", "Previous", "1", "2", "Last"]
 
-		@list_page.should have(8).rows # 7 rows + header row
+		files = Dir.glob(language_path + 'english/*_lang.php')
+		count = files.count - 50
+		@list_page.should have(count + 1).rows # +1 for header row
 	end
 
 	it 'sorts by file name', :edit => false do
