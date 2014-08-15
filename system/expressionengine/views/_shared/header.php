@@ -113,7 +113,7 @@
 							</ul>
 						</div>
 					</li>
-					<li class="settings"><a href="http://localhost/el-projects/ee-cp/views/settings-general.php"><b class="ico settings"></b> <!-- Settings --></a></li>
+					<li class="settings"><a href="<?=cp_url('settings/general')?>"><b class="ico settings"></b> <!-- Settings --></a></li>
 				</ul>
 			</nav>
 		</section>

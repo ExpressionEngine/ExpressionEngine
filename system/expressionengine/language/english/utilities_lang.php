@@ -607,5 +607,5 @@ $lang = array(
 ''=>''
 );
 
-/* End of file tools_lang.php */
-/* Location: ./system/expressionengine/language/english/tools_lang.php */
+/* End of file utilities_lang.php */
+/* Location: ./system/expressionengine/language/english/utilities_lang.php */
