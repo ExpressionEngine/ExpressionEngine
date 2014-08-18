@@ -96,7 +96,6 @@ class SystemPreferences extends ConcretePreferences
 	protected $max_referrers;
 	protected $date_format;
 	protected $time_format;
-	protected $include_seconds;
 	protected $server_offset;
 	protected $default_site_timezone;
 	protected $mail_protocol;
@@ -142,5 +141,7 @@ class SystemPreferences extends ConcretePreferences
 	protected $max_logged_searches;
 	protected $theme_folder_path;
 	protected $is_site_on;
+	protected $rte_enabled;
+	protected $rte_default_toolset_id;
 
 }

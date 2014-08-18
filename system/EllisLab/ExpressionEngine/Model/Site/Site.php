@@ -33,6 +33,8 @@ class Site extends Model {
 	protected $site_channel_preferences;
 	protected $site_bootstrap_checksums;
 
+	protected $_preference_sets = array();
+
 	/**
 	 *
 	 */
@@ -79,13 +81,14 @@ class Site extends Model {
 	protected function getPreferences($name)
 	{
 		$preferences = static::getMetaData('preferences');
-		$field = '\EllisLab\ExpressionEngine\Model\Site\Preferences' . $preferences[$name];
+		$class_name = '\\EllisLab\\ExpressionEngine\\Model\\Site\\Preferences\\' . $name;
+		$field = $preferences[$name];
 
-		if ( ! $this->hasRelated($name))
+		if ( ! isset($this->_preference_sets[$name]))
 		{
-			$this->setRelated($name, new $name($this->$field));
+			$this->_preference_sets[$name] = new $class_name($this->$field);
 		}
-		return $this->getRelated($name);
+		return $this->_preference_sets[$name];
 	}
 
 	/**

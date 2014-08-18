@@ -7,7 +7,7 @@ class ConcretePreferences
 	{
 		foreach($preferences as $preference => $value)
 		{
-			$this->{$preferences} = $value;
+			$this->{$preference} = $value;
 		}
 	}
 
