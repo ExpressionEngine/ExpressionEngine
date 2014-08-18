@@ -364,7 +364,11 @@ class EE_Session {
 	 */
 	public function create_new_session($member_id, $admin_session = FALSE)
 	{
-		if ($this->validation == 'c' AND $this->access_cp == TRUE)
+		$member = ee()->db->get_where('members', array('member_id' => $member_id));
+		$member_group = ee()->db->where('group_id', $member->row('group_id'))
+			->get('member_groups');
+
+		if ($this->access_cp == TRUE OR $member_group->row('can_access_cp') == 'y')
 		{
 			$this->sdata['admin_sess'] = 1;
 		}
@@ -372,10 +376,8 @@ class EE_Session {
 		{
 			$this->sdata['admin_sess'] 	= ($admin_session == FALSE) ? 0 : 1;
 		}
-
-		$crypt_key = ee()->db->select('crypt_key')
-			->get_where('members', array('member_id' => $member_id))
-			->row('crypt_key');
+		
+		$crypt_key = $member->row('crypt_key');
 
 		// Create crypt key for member if one doesn't exist
 		if (empty($crypt_key))
