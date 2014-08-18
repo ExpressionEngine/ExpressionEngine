@@ -215,23 +215,34 @@ abstract class Model {
 	{
 		$property = '_' . $key;
 
+		if ( ! property_exists(get_called_class(), $property))
+		{
+			 $parent = get_parent_class(get_called_class());
+			 if ( $parent )
+			 {
+				 return $parent::getMetaData($key);
+			 }
+			 else
+			 {
+				 return NULL;
+			 }
+		}
+
 		$value = static::$$property;
 
-		$should_be_array = is_array(self::$$property);
+		$should_be_array = is_array(static::$$property);
 
 		$parent = get_parent_class(get_called_class());
 
-		// if there's inheritance on an array or unset value,
-		// then we need to dig through the parent classes. ugh.
-		if ($parent && (empty($value) || $should_be_array))
+		if ( $parent )
 		{
 			$parent_value = $parent::getMetaData($key);
 
-			if ($should_be_array)
+			if ($should_be_array && ! empty($value) && ! empty($parent_value))
 			{
 				$value = array_merge($value, $parent_value);
 			}
-			else
+			else if ( empty($value) && ! empty($parent_value))
 			{
 				$value = $parent_value;
 			}
