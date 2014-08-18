@@ -78,10 +78,10 @@ class Site extends Model {
 	 */
 	protected function getPreferences($name)
 	{
-		$preferences = self::getMetaData('preferences');
+		$preferences = static::getMetaData('preferences');
 		$field = '\EllisLab\ExpressionEngine\Model\Site\Preferences' . $preferences[$name];
 
-		if ( ! $this->hasRelated($name)
+		if ( ! $this->hasRelated($name))
 		{
 			$this->setRelated($name, new $name($this->$field));
 		}
