@@ -20,4 +20,82 @@ class SiteGateway extends RowDataGateway {
 	protected $site_channel_preferences;
 	protected $site_bootstrap_checksums;
 
+	public function compress(array $preferences)
+	{
+		return base64_encode(serialize($preferences));
+	}
+
+	public function decompress($preferences)
+	{
+		return unserialize(base64_decode($preferences));
+	}
+
+	public function getSiteSystemPreferences()
+	{
+		return $this->decompress($this->site_system_preferences);
+	}
+
+	public function setSiteSystemPreferences(array $site_system_preferences)
+	{
+		$this->site_system_preferences = $this->compress($site_system_preferences);
+		return $this;
+	}
+
+	public function getSiteMailinglistPreferences()
+	{
+		return $this->decompress($this->site_mailinglist_preferences);
+	}
+
+	public function setSiteMailinglistPreferences(array $site_mailinglist_preferences)
+	{
+		$this->site_mailinglist_preferences = $this->compress($site_mailinglist_preferences);
+		return $this;
+	}
+
+	public function getSiteMemberPreferences()
+	{
+		return $this->decompress($this->site_member_preferences);
+	}
+
+	public function setSiteMemberPreferences(array $site_member_preferences)
+	{
+		$this->site_member_preferences = $this->compress($site_member_preferences);
+		return $this;
+	}
+
+
+	public function getSiteTemplatePreferences()
+	{
+		return $this->decompress($this->site_template_preferences);
+	}
+
+	public function setSiteTemplatePreferences(array $site_template_preferences)
+	{
+		$this->site_template_preferences = $this->compress($site_template_preferences);
+		return $this;
+	}
+
+	public function getSiteChannelPreferences()
+	{
+		return $this->decompress($this->site_channel_preferences);
+	}
+
+	public function setSiteChannelPreferences(array $site_channel_preferences)
+	{
+		$this->site_channel_preferences = $this->compress($site_channel_preferences);
+		return $this;
+	}
+
+	public function getSiteBootstrapChecksums()
+	{
+		return $this->decompress($this->site_bootstrap_checksums);
+	}
+
+	public function setSiteBootstrapChecksums(array $site_bootstrap_checksums)
+	{
+		$this->site_bootstrap_checksums = $this->compress($site_bootstrap_checksums);
+		return $this;
+	}
+
+
 }

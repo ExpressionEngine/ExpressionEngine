@@ -1,6 +1,7 @@
 <?php
 namespace EllisLab\ExpressionEngine\Model\Gateway;
 
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -16,10 +17,10 @@ namespace EllisLab\ExpressionEngine\Model\Gateway;
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Accessory Gateway
+ * ExpressionEngine Extension Gateway
  *
- * A gateway to store data on Accessories installed in this instance of
- * ExpressionEngine.
+ * A gateway for use in storing data on Extensions installed in the current
+ * instance of ExpressionEngine.
  *
  * @package		ExpressionEngine
  * @subpackage	Core
@@ -27,13 +28,16 @@ namespace EllisLab\ExpressionEngine\Model\Gateway;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class AccessoryGateway extends RowDataGateway {
-	protected static $_primary_key = 'accessory_id';
-	protected static $_table_name = 'accessories';
+class ExtensionGateway extends RowDataGateway {
+	protected static $_primary_key = 'extension_id';
+	protected static $_table_name = 'extensions';
 
-	protected $accessory_id;
+	protected $extension_id;
 	protected $class;
-	protected $member_groups;
-	protected $controllers;
-	protected $accessory_version;
+	protected $method;
+	protected $hook;
+	protected $settings;
+	protected $priority;
+	protected $version;
+	protected $enabled;
 }

@@ -13,8 +13,17 @@ class TemplateGroupGateway extends RowDataGateway {
 			'key'    => 'site_id'
 		),
 		'group_id' => array(
-			'gateway' => 'TemplateGateway',
-			'key'    => 'group_id'
+			'Templates' => array(
+				'gateway' => 'TemplateGateway',
+				'key'    => 'group_id'
+			),
+			'MemberGroups' => array(
+				'gateway' => 'MemberGroupGateway',
+				'key' => 'group_id',
+				'pivot_table' => 'template_member_groups',
+				'pivot_key' => 'template_group_id',
+				'pivot_foreign_key' => 'group_id'
+			)
 		)
 	);
 
