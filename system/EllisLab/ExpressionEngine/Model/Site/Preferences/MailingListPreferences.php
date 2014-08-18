@@ -28,7 +28,7 @@ class MailingListPreferences extends ConcretePreferences {
 
 	protected $mailinglist_enabled;
 	protected $mailinglist_notify;
-	protected $mailinglist_nofity_emails;
+	protected $mailinglist_notify_emails;
 
 
 }
