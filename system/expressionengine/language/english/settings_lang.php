@@ -136,6 +136,20 @@ $lang = array(
 'preferences_updated_desc' =>
 'Your preferences have been saved successfully.',
 
+'running_current' =>
+'ExpressionEngine is up to date',
+
+'running_current_desc' =>
+'ExpressionEngine %s is the latest version.',
+
+'error_getting_version'	=> 'You are using ExpressionEngine %s. Unable to determine if a newer version is available at this time.',
+
+'version_update_available' =>
+'A newer version of ExpressionEngine is available',
+
+'version_update_inst' =>
+'ExpressionEngine %s is available. <a href="%s">Download the latest version</a> and follow the <a href="%s">update instructions</a>.',
+
 ''=>''
 );
 

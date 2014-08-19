@@ -18,7 +18,7 @@
 				<div class="setting-field col w-8 last">
 					<?php foreach ($setting['fields'] as $field_name => $field):
 						// Get the value of the field
-						$value = isset($setting['value']) ? $setting['value'] : ee()->config->item($field_name); ?>
+						$value = isset($field['value']) ? $field['value'] : ee()->config->item($field_name); ?>
 
 						<?php switch ($field['type']):
 						case 'text': ?>
