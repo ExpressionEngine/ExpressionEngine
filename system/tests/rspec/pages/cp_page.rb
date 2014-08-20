@@ -4,6 +4,7 @@ class ControlPanelPage < SitePrism::Page
 	element :submit_button, '.form-ctrls input.btn'
 	element :submit_button_disabled, '.form-ctrls input.btn.disable'
 	element :fieldset_errors, 'fieldset.invalid'
+	element :settings_btn, 'b.ico.settings'
 
 	# Tables
 	element :select_all, 'th.check-ctrl input'
