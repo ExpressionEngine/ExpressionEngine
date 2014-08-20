@@ -292,7 +292,7 @@ class Updater {
 		$installer_config = ee()->config;
 		ee()->config = new MSM_Config();
 
-		ee()->load->model('template_model');
+		ee()->load->model('installer_template_model', 'template_model');
 		$templates = ee()->template_model->fetch_last_edit(array(), TRUE);
 
 		$warnings = array();
