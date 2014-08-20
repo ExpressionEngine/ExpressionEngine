@@ -28,7 +28,7 @@ require_once(EE_APPPATH.'models/template_model'.EXT);
  * @link		http://ellislab.com
  */
 
-class Installer_template_model Extends Template_model {
+class Installer_template_model extends Template_model {
 
 	/**
 	 *   Save to database
