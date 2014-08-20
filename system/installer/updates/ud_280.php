@@ -538,7 +538,6 @@ If you do not wish to reset your password, ignore this message. It will expire i
 	 **/
 	private function _replace_old_search_pagination()
 	{
-		ee()->load->model('installer_template_model', 'template_model');
 		ee()->load->library('logger');
 
 		$pagination_docs = ee()->config->item('doc_url').'templates/pagination.html';
