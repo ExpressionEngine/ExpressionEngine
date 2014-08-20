@@ -45,6 +45,7 @@ class Settings extends CP_Controller {
 		}
 
 		ee()->lang->loadfile('settings');
+		ee()->load->library('form_validation');
 
 		// Register our menu
 		ee()->menu->register_left_nav(array(

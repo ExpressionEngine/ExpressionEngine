@@ -141,8 +141,9 @@ class General extends Settings {
 
 		$base_url = cp_url('settings/general');
 
-		// TODO: Probably abstract this out
-		if (count($_POST))
+		ee()->form_validation->set_rules('site_name', 'lang:site_name', 'required');
+
+		if (ee()->form_validation->run() !== FALSE)
 		{
 			$fields = array();
 
@@ -190,6 +191,7 @@ class General extends Settings {
 		);
 
 		ee()->view->base_url = $base_url;
+		ee()->view->ajax_validate = TRUE;
 		ee()->view->cp_page_title = lang('general_settings');
 		ee()->view->save_btn_text = 'btn_save_settings';
 		ee()->view->save_btn_text_working = 'btn_save_settings_working';

@@ -839,22 +839,30 @@ if ( ! function_exists('form_error'))
  * used as a class name for specific styling
  *
  * @access	public
- * @param	string	$field	Field name
+ * @param	array	$field	Array of field names, or string of single field name
  * @param	string	$class	Class name to return, defaults to 'invalid'
  * @return	string	Empty string if no error, class name if error
  */
 if ( ! function_exists('form_error_class'))
 {
-	function form_error_class($field = '', $class = 'invalid')
+	function form_error_class($fields = '', $class = 'invalid')
 	{
-		$error = form_error($field);
-
-		if (empty($error))
+		if ( ! is_array($fields))
 		{
-			return '';
+			$fields = array($fields);
 		}
 
-		return $class;
+		foreach ($fields as $field)
+		{
+			$error = form_error($field);
+
+			if ( ! empty($error))
+			{
+				return $class;
+			}
+		}
+		
+		return '';
 	}
 }
 
