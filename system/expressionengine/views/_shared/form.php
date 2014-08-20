@@ -28,7 +28,7 @@ if (isset($ajax_validate) && $ajax_validate == TRUE)
 						if ($value == '')
 						{
 							$value = isset($field['value']) ? $field['value'] : ee()->config->item($field_name);
-						}var_dump($field_name);var_dump(ee()->config->item($field_name)); ?>
+						} ?>
 
 						<?php switch ($field['type']):
 						case 'text': ?>
