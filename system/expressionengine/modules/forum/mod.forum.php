@@ -2150,7 +2150,7 @@ class Forum {
 		{
 			array_shift(ee()->session->tracker);
 
-			ee()->input->set_cookie('tracker', serialize(ee()->session->tracker), '0');
+			ee()->input->set_cookie('tracker', json_encode(ee()->session->tracker), '0');
 		}
 
 		if ( ! class_exists('EE_Spellcheck'))

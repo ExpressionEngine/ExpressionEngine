@@ -643,7 +643,7 @@ class Member_auth extends Member {
 
 		// keep this page out of the tracker so login/reset requests don't bounce back here
 		array_shift(ee()->session->tracker);
-		ee()->input->set_cookie('tracker', serialize(ee()->session->tracker), '0');
+		ee()->input->set_cookie('tracker', json_encode(ee()->session->tracker), '0');
 
 		$this->_set_page_title(lang('mbr_forgotten_password'));
 

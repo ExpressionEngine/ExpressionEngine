@@ -920,17 +920,7 @@ class EE_Session {
 				return array();
 			}
 
-			if (stristr($tracker, ':') !== FALSE)
-			{
-				$tracker_parts = explode(':', $tracker);
-
-				if (current($tracker_parts) != 'a' OR count($tracker_parts) < 3 OR ! is_numeric(next($tracker_parts)))
-				{
-					return array();
-				}
-			}
-
-			$tracker = unserialize(stripslashes($tracker));
+			$tracker = json_decode($tracker);
 		}
 
 		if ( ! is_array($tracker))
@@ -971,7 +961,7 @@ class EE_Session {
 
 		if (REQ == 'PAGE')
 		{
-			ee()->input->set_cookie('tracker', serialize($tracker), '0');
+			ee()->input->set_cookie('tracker', json_encode($tracker), '0');
 		}
 
 		return $tracker;

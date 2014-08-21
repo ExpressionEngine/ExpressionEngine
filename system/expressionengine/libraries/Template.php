@@ -2519,7 +2519,7 @@ class EE_Template {
 					$removed = array_shift(ee()->session->tracker);
 				}
 
-				ee()->input->set_cookie('tracker', serialize(ee()->session->tracker), '0');
+				ee()->input->set_cookie('tracker', json_encode(ee()->session->tracker), '0');
 			}
 		}
 
