@@ -1956,7 +1956,7 @@ class EE_Template {
 			// as no page cache is set globally
 			$cache_path .= ee()->config->item('site_short_name') . DIRECTORY_SEPARATOR;
 			$cache_path .= 'page_cache' . DIRECTORY_SEPARATOR;
-			
+
 			try
 			{
 				$fi = new FilesystemIterator($cache_path, FilesystemIterator::SKIP_DOTS);
@@ -1965,10 +1965,10 @@ class EE_Template {
 			{
 				return $this->log_item(" - End Page Cache Garbage Collection - " . $e->getMessage());
 			}
-			
+
 			// Count files in the directory
 			$count = iterator_count($fi);
-			
+
 			// Default max
 			$max = 1000;
 
@@ -1985,7 +1985,7 @@ class EE_Template {
 			{
 				ee()->cache->delete('/page_cache/');
 			}
-			
+
 			$this->log_item(" - End Page Cache Garbage Collection - ");
 		}
 	}

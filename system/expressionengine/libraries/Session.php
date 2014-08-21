@@ -376,7 +376,7 @@ class EE_Session {
 		{
 			$this->sdata['admin_sess'] 	= ($admin_session == FALSE) ? 0 : 1;
 		}
-		
+
 		$crypt_key = $member->row('crypt_key');
 
 		// Create crypt key for member if one doesn't exist
