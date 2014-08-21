@@ -5,7 +5,6 @@ namespace EllisLab\ExpressionEngine\Controllers\Settings;
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use CP_Controller;
-use EllisLab\ExpressionEngine\Library\CP;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -96,7 +95,7 @@ class General extends Settings {
 					'title' => 'language',
 					'desc' => 'language_desc',
 					'fields' => array(
-						'language' => array(
+						'deft_lang' => array(
 							'type' => 'dropdown',
 							'choices' => ee()->language_model->language_pack_names(),
 							'value' => ee()->config->item('deft_lang') ?: 'english'
@@ -151,27 +150,7 @@ class General extends Settings {
 		}
 		elseif (ee()->form_validation->run() !== FALSE)
 		{
-			$fields = array();
-
-			// Make sure we're getting only the fields we asked for
-			foreach ($vars['sections'] as $settings)
-			{
-				foreach ($settings as $setting)
-				{
-					foreach ($setting['fields'] as $field_name => $field)
-					{
-						$fields[$field_name] = ee()->input->post($field_name);
-					}
-				}
-			}
-
-			$config_update = ee()->config->update_site_prefs($fields);
-
-			if ( ! empty($config_update))
-			{
-				ee()->view->set_message('issue', lang('cp_message_issue'), implode('<br>', $config_update), TRUE);
-			}
-			else
+			if ($this->saveSettings($vars['sections']))
 			{
 				ee()->view->set_message('success', lang('preferences_updated'), lang('preferences_updated_desc'), TRUE);
 			}

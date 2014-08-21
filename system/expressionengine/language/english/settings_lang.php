@@ -150,6 +150,34 @@ $lang = array(
 'version_update_inst' =>
 'ExpressionEngine %s is available. <a href="%s">Download the latest version</a> and follow the <a href="%s">update instructions</a>.',
 
+/**
+ * License & Registration
+ */
+
+'license_and_reg_title' =>
+'License &amp; Registration Settings',
+
+'license_contact' =>
+'Account holder e-mail',
+
+'license_contact_desc' =>
+'Contact e-mail for the account that owns this license.',
+
+'license_number' =>
+'License number',
+
+'license_number_desc' =>
+'Found on your <a href="%s">purchase management</a> page.',
+
+'license_updated' =>
+'License &amp; Registration Updated',
+
+'license_updated_desc' =>
+'Your license and registration information has been saved successfully.',
+
+'invalid_license_number' =>
+'The license number provided is not a valid license number.',
+
 ''=>''
 );
 

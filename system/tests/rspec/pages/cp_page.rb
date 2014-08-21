@@ -24,4 +24,13 @@ class ControlPanelPage < SitePrism::Page
 		submit_button[:disabled] != true &&
 		self.has_submit_button_disabled? == false
 	end
+
+	# Waits until the error message is gone before proceeding;
+	# if we just check for invisible but it's already gone,
+	# Capybara will complain, so we check for its existance first
+	def wait_for_no_error
+		if self.has_error_message?
+			self.wait_until_error_message_invisible
+		end
+	end
 end

@@ -85,6 +85,44 @@ class Settings extends CP_Controller {
 	{
 		ee()->functions->redirect(cp_url('settings/general'));
 	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Generic method to take an array of fields structured for the form
+	 * view, check POST for their values, and then save the values in site
+	 * preferences
+	 *
+	 * @param	array	$sections	Array of sections passed to form view
+	 * @return	bool	Success or failure of saving the settings
+	 */
+	protected function saveSettings($sections)
+	{
+		$fields = array();
+
+		// Make sure we're getting only the fields we asked for
+		foreach ($sections as $settings)
+		{
+			foreach ($settings as $setting)
+			{
+				foreach ($setting['fields'] as $field_name => $field)
+				{
+					$fields[$field_name] = ee()->input->post($field_name);
+				}
+			}
+		}
+
+		$config_update = ee()->config->update_site_prefs($fields);
+
+		if ( ! empty($config_update))
+		{
+			ee()->view->set_message('issue', lang('cp_message_issue'), implode('<br>', $config_update), TRUE);
+			
+			return FALSE;
+		}
+
+		return TRUE;
+	}
 }
 // END CLASS
 
