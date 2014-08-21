@@ -971,6 +971,9 @@ class EE_Session {
 
 	/**
 	 * This will set the tracker cookie with proper encoding
+	 *
+	 * @param array	$tracker An optional tracker array to set, defaults to
+     *                       ee()->session->tracker
 	 */
 	public function set_tracker_cookie($tracker = NULL)
 	{
