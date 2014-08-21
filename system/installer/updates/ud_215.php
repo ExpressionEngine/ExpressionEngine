@@ -96,6 +96,23 @@ class Updater {
 	{
 		if ( ! ee()->db->table_exists('metaweblog_api'))
 		{
+			// Note that in ud_270 we add a csrf_exempt column to the actions table
+			// The Metaweblog installer requires that field
+
+			// Add the csrf_exempt field
+			ee()->smartforge->add_column(
+				'actions',
+				array(
+					'csrf_exempt' => array(
+						'type'			=> 'tinyint',
+						'constraint'	=> 1,
+						'unsigned'		=> TRUE,
+						'default'		=> 0,
+						'null'			=> FALSE
+						)
+					)
+				);
+
 			require EE_APPPATH.'modules/metaweblog_api/upd.metaweblog_api.php';
 			$UPD = new Metaweblog_api_upd();
 			$UPD->install();

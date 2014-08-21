@@ -187,6 +187,8 @@ class Wizard extends CI_Controller {
 		$this->load->library('localize');
 		$this->load->library('cp');
 
+		$this->load->model('installer_template_model', 'template_model');
+
 		// Update notices are used to print info at the end of
 		// the update
 		$this->load->library('update_notices');
