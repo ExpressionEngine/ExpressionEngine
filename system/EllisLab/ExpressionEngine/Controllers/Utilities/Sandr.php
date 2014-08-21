@@ -66,7 +66,12 @@ class Sandr extends Utilities {
 			)
 		));
 		
-		if (ee()->form_validation->run() !== FALSE)
+		if (AJAX_REQUEST)
+		{
+			ee()->form_validation->run_ajax();
+			exit;
+		}
+		elseif (ee()->form_validation->run() !== FALSE)
 		{
 			$replaced = $this->_do_search_and_replace(
 				ee()->input->post('search_term'),

@@ -67,7 +67,12 @@ class ImportConverter extends Utilities {
 			),
 		));
 
-		if (ee()->form_validation->run() !== FALSE)
+		if (AJAX_REQUEST)
+		{
+			ee()->form_validation->run_ajax();
+			exit;
+		}
+		elseif (ee()->form_validation->run() !== FALSE)
 		{
 			return $this->import_fieldmap();
 		}

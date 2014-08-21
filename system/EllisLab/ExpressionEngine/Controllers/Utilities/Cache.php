@@ -45,7 +45,12 @@ class Cache extends Utilities {
 		ee()->load->library('form_validation');
 		ee()->form_validation->set_rules('cache_type[]', 'lang:caches_to_clear', 'required');
 
-		if (ee()->form_validation->run() !== FALSE)
+		if (AJAX_REQUEST)
+		{
+			ee()->form_validation->run_ajax();
+			exit;
+		}
+		elseif (ee()->form_validation->run() !== FALSE)
 		{
 			// Clear each cache type checked
 			foreach (ee()->input->post('cache_type') as $type)

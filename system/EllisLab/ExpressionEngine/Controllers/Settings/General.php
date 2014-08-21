@@ -143,7 +143,13 @@ class General extends Settings {
 
 		ee()->form_validation->set_rules('site_name', 'lang:site_name', 'required');
 
-		if (ee()->form_validation->run() !== FALSE)
+		// Handle AJAX validation
+		if (AJAX_REQUEST)
+		{
+			ee()->form_validation->run_ajax();
+			exit;
+		}
+		elseif (ee()->form_validation->run() !== FALSE)
 		{
 			$fields = array();
 
