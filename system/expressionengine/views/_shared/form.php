@@ -1,6 +1,6 @@
 <?php extend_template('default-nav'); ?>
 
-<h1><?=$cp_page_title?></h1>
+<h1><?=(isset($cp_page_title_alt)) ? $cp_page_title_alt : $cp_page_title?></h1>
 <?php
 $form_class = 'settings';
 if (isset($ajax_validate) && $ajax_validate == TRUE)

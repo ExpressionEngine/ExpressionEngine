@@ -178,6 +178,85 @@ $lang = array(
 'invalid_license_number' =>
 'The license number provided is not a valid license number.',
 
+/**
+ * URLs and Path Settings
+ */
+
+'url_path_settings_title' =>
+'<abbr title="Uniform Resource Location">URL</abbr> and Path Settings',
+
+'site_index' =>
+'Website index page',
+
+'site_index_desc' =>
+'Most commonly <mark>index.php</mark>.',
+
+'site_url' =>
+'Website root directory',
+
+'site_url_desc' =>
+'<abbr title="Uniform Resource Location">URL</abbr> location of your <mark>index.php</mark>.',
+
+'cp_url' =>
+'Control panel directory',
+
+'cp_url_desc' =>
+'<abbr title="Uniform Resource Location">URL</abbr> location of your control panel.',
+
+'themes_url' =>
+'Themes directory',
+
+'themes_url_desc' =>
+'<abbr title="Uniform Resource Location">URL</abbr> location of your <mark>themes</mark> directory.',
+
+'themes_path' =>
+'Themes path',
+
+'themes_path_desc' =>
+'Full path location of your <mark>themes</mark> directory.',
+
+'docs_url' =>
+'Documentation directory',
+
+'docs_url_desc' =>
+'<abbr title="Uniform Resource Location">URL</abbr> location of your <mark>documentation</mark> directory.',
+
+'member_segment_trigger' =>
+'Profile <abbr title="Uniform Resource Location">URL</abbr> segment',
+
+'member_segment_trigger_desc' =>
+'Word that triggers member profile display. <b>Cannot</b> be the same as a template or template group.',
+
+'category_segment_trigger' =>
+'Category <abbr title="Uniform Resource Location">URL</abbr> segment',
+
+'category_segment_trigger_desc' =>
+'Word that triggers category display. <b>Cannot</b> be the same as a template or template group.',
+
+'category_url' =>
+'Category <abbr title="Uniform Resource Location">URL</abbr>',
+
+'category_url_desc' =>
+'When set to <b>titles</b>, category links will use category <abbr title="Uniform Resource Location">URL</abbr> titles instead of the category ids.',
+
+'category_url_opt_titles' =>
+'Titles',
+
+'category_url_opt_ids' =>
+'IDs',
+
+'url_title_separator' =>
+'<abbr title="Uniform Resource Location">URL</abbr> title separator',
+
+'url_title_separator_desc' =>
+'Character used to separate words in generated <abbr title="Uniform Resource Location">URL</abbr>s, <mark>hyphens (-)</mark> are recommended.',
+
+'url_title_separator_opt_hyphen' =>
+'Hyphen (different-words)',
+
+'url_title_separator_opt_under' =>
+'nderscore (different_words)',
+
 ''=>''
 );
 

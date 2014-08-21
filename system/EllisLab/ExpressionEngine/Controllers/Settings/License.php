@@ -115,5 +115,5 @@ class License extends Settings {
 }
 // END CLASS
 
-/* End of file General.php */
+/* End of file License.php */
 /* Location: ./system/expressionengine/controllers/cp/Settings/License.php */
