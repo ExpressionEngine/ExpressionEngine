@@ -46,9 +46,7 @@ class CI_Security {
 		"javascript\s*:"				=> '[removed]',
 		"expression\s*(\(|&\#40;)"		=> '[removed]', // CSS and IE
 		"vbscript\s*:"					=> '[removed]', // IE, surprise!
-		"Redirect\s+302"				=> '[removed]',
-		"([\"'])?data\s*:[^\\1]*?base64[^\\1]*?,[^\\1]*?\\1?"
-			=> '[removed]'
+		"Redirect\s+302"				=> '[removed]'
 	);
 
 	/* html5 entities we need to manually decode pre PHP 5.4 */
@@ -135,6 +133,9 @@ class CI_Security {
 
 			return $str;
 		}
+
+		// Strip data URIs
+		$str = $this->_strip_data_URIs($str);
 
 		/*
 		 * Remove Invisible Characters
@@ -740,6 +741,75 @@ class CI_Security {
 		}
 
 		return $str;
+	}
+
+	// ----------------------------------------------------------------------
+
+	/**
+	 * Strips all data URIs from a string
+	 * 
+	 * @param string $str  The string to clean. 
+	 * @access protected
+	 * @return string  The cleaned string.
+	 */
+	protected function _strip_data_URIs($str)
+	{
+		$pattern = "/data:(?<mime>[\w\/\-\.]+)?;?(?<charset>\w+;)?(?<encoding>\w+)?,?(?<data>.*)/i";
+		$callback = array($this, '_data_URI_callback');
+
+		set_error_handler(array($this, '_data_URI_handler'));
+		$result = preg_replace_callback($pattern, $callback, $str);
+		restore_error_handler();
+
+		return $result;
+	}
+
+	// ----------------------------------------------------------------------
+
+	/**
+	 * Data URI callback
+	 *
+	 * Strip data URI if it parses as valid
+	 * 
+	 * @param array $matches  Array of matches provided by preg_replace_callback
+	 * @access protected
+	 * @return string
+	 */
+	protected function _data_URI_callback($matches)
+	{
+		$result = '[removed]';
+
+		// If we get an error here that means we have a false positive
+		try
+		{
+			file_get_contents($matches[0]);
+		}
+		catch (ErrorException $e)
+		{
+			$result = $matches[0];
+		}
+
+		return $result;
+	}
+
+	// ----------------------------------------------------------------------
+
+	/**
+	 * Data URI Handler 
+	 *
+	 * Custom error handler that will force warnings to throw an ErrorException
+	 *
+	 * @param int     $errno  The level of the error raised. 
+	 * @param string  $errstr  The error message, as a string. 
+	 * @param string  $errfile  The filename that the error was raised in. 
+	 * @param int     $errline  The line number the error was raised at. 
+	 * @param array   $errcontext  An array that points to the active symbol table
+	 *                             at the point the error occurred.
+	 * @return void
+	 */
+	protected function _data_URI_handler($errno, $errstr, $errfile, $errline, array $errcontext)
+	{
+		throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
 	}
 }
 // END Security Class
