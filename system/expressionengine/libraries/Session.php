@@ -961,7 +961,7 @@ class EE_Session {
 
 		if (REQ == 'PAGE')
 		{
-			$this->set_tracker_cookie();
+			$this->set_tracker_cookie($tracker);
 		}
 
 		return $tracker;
@@ -972,9 +972,14 @@ class EE_Session {
 	/**
 	 * This will set the tracker cookie with proper encoding
 	 */
-	public function set_tracker_cookie()
+	public function set_tracker_cookie($tracker = NULL)
 	{
-		ee()->input->set_cookie('tracker', json_encode($this->tracker), '0');
+		if (is_null($tracker))
+		{
+			$tracker = $this->tracker;
+		}
+
+		ee()->input->set_cookie('tracker', json_encode($tracker), '0');
 	}
 
 	// --------------------------------------------------------------------
