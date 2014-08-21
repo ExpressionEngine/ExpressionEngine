@@ -106,6 +106,20 @@ feature 'General Settings' do
     @page.should have_check_version_btn
     @page.date_format.value.should == '%Y-%m-%d'
     @page.time_format.value.should == '24'
-  end 
+  end
+
+  it 'should check for new versions of EE manually' do
+    @page.new_version_check_n.click
+    @page.should have_check_version_btn
+    @page.check_version_btn.click
+
+    # For now, we'll just check to make sure there are no errors
+    # getting the latest version info; unsure at the moment how to
+    # best handle actual version comparison because we need to edit
+    # Core.php dynamically based on the actual latest version
+    @page.should have_no_css 'div.banner.issue'
+    @page.should have_no_text 'An error occurred'
+    @page.should have_no_text 'Unable to determine if a newer version is available at this time.'
+  end
 
 end
