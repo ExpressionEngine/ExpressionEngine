@@ -782,7 +782,7 @@ class CI_Security {
 		// If we get an error here that means we have a false positive
 		try
 		{
-			file_get_contents($matches[0]);
+			fopen($matches[0], 'r');
 		}
 		catch (ErrorException $e)
 		{
