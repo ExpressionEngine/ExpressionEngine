@@ -961,10 +961,36 @@ class EE_Session {
 
 		if (REQ == 'PAGE')
 		{
-			ee()->input->set_cookie('tracker', json_encode($tracker), '0');
+			$this->set_tracker_cookie();
 		}
 
 		return $tracker;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * This will set the tracker cookie with proper encoding
+	 */
+	public function set_tracker_cookie()
+	{
+		ee()->input->set_cookie('tracker', json_encode($this->tracker), '0');
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * This will un-set the most recent URL from the tracker
+	 */
+	public function do_not_track()
+	{
+		static $shifted;
+		if ($shifted !== TRUE)
+		{
+			array_shift($this->tracker);
+			$shifted = TRUE;
+		}
+		$this->set_tracker_cookie();
 	}
 
 	// --------------------------------------------------------------------
