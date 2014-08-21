@@ -68,7 +68,7 @@ feature 'General Settings' do
     @page.site_name.set ''
     @page.site_name.trigger 'blur'
 
-    sleep 0.5 # Race condition :(
+    @page.wait_for_error_message
     no_php_js_errors
     should_have_form_errors(@page)
     @page.should have_text error_text
@@ -76,7 +76,7 @@ feature 'General Settings' do
     @page.site_name.set 'EE2'
     @page.site_name.trigger 'blur'
 
-    sleep 0.5
+    @page.wait_until_error_message_invisible
     no_php_js_errors
     should_have_no_form_errors(@page)
     @page.should have_no_text error_text
