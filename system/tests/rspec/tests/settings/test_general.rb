@@ -76,7 +76,7 @@ feature 'General Settings' do
     @page.site_name.set 'EE2'
     @page.site_name.trigger 'blur'
 
-    @page.wait_until_error_message_invisible
+    @page.wait_for_no_error
     no_php_js_errors
     should_have_no_form_errors(@page)
     @page.should have_no_text error_text

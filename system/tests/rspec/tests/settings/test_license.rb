@@ -9,11 +9,6 @@ feature 'License Settings' do
     no_php_js_errors
   end
 
-  after(:each) do
-    # Reset is_system_on value in config
-    ee_config(item: 'is_system_on', value: 'y')
-  end
-
   it 'shows the License settings page' do
     @page.should have_text 'License & Registration Settings'
     @page.should have_license_contact
