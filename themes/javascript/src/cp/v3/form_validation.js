@@ -171,14 +171,16 @@ EE.cp.formValidation = {
 
 			fieldset.addClass('invalid');
 
+			// We'll get HTML back from the validator, create an element
+			// out of it
+			var errorElement = $('<div/>').html(message.error).contents();
+
 			// Don't double up on error messages
 			if (fieldset.has('em.ee-form-error-message').length) {
-				fieldset.find('em.ee-form-error-message').html(message.error)
-			} else {
-				fieldset.find('div.setting-field').append(
-					$('<em>', { class: 'ee-form-error-message', html: message.error })
-				);
+				fieldset.find('em.ee-form-error-message').remove();
 			}
+
+			fieldset.find('div.setting-field').append(errorElement);
 
 			// Disable submit button
 			button.addClass('disable').attr({

@@ -23,16 +23,7 @@ feature 'URL and Path Settings' do
   it 'shows the URL and Path Settings page' do
     @page.should have_text 'URL and Path Settings'
     @page.should have_text 'Website index page'
-    @page.should have_site_index
-    @page.should have_site_url
-    @page.should have_cp_url
-    @page.should have_theme_folder_url
-    @page.should have_theme_folder_path
-    @page.should have_doc_url
-    @page.should have_profile_trigger
-    @page.should have_category_segment_trigger
-    @page.should have_category_url
-    @page.should have_url_title_separator
+    @page.all_there?.should == true
   end
 
   it 'should load current path settings into form fields' do

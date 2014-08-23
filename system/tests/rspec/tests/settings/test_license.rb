@@ -11,8 +11,7 @@ feature 'License Settings' do
 
   it 'shows the License settings page' do
     @page.should have_text 'License & Registration Settings'
-    @page.should have_license_contact
-    @page.should have_license_number
+    @page.all_there?.should == true
   end
 
   it 'should validate the form' do
@@ -45,38 +44,38 @@ feature 'License Settings' do
     @page.load
     @page.license_contact.set ''
     @page.license_contact.trigger 'blur'
-    @page.wait_for_error_message
+    @page.wait_for_error_message_count(1)
     should_have_form_errors(@page)
     @page.should have_text contact_error
 
     @page.license_contact.set 'ellislab.developers@gmail.com'
     @page.license_contact.trigger 'blur'
-    @page.wait_for_no_error
+    @page.wait_for_error_message_count(0)
     should_have_no_form_errors(@page)
     @page.should have_no_text contact_error
 
     @page.license_number.set ''
     @page.license_number.trigger 'blur'
-    @page.wait_for_error_message
+    @page.wait_for_error_message_count(1)
     should_have_form_errors(@page)
     @page.should have_text license_reg_error
 
     @page.license_number.set '1234-1234-1234-123'
     @page.license_number.trigger 'blur'
-    @page.wait_for_error_message
+    @page.wait_for_error_message_count(1)
     should_have_form_errors(@page)
     @page.should have_text license_invalid_error
 
     @page.license_number.set '1234-1234-1234-1234'
     @page.license_number.trigger 'blur'
-    @page.wait_for_no_error
+    @page.wait_for_error_message_count(0)
     should_have_no_form_errors(@page)
     @page.should have_no_text license_reg_error
     @page.should have_no_text license_invalid_error
   end
 
   it 'should load and save the settings' do
-    @page.license_contact.value.should == ''
+    @page.license_contact.value.should == 'ellislab.devleopers@gmail.com'
     @page.license_number.value.should == '1234-1234-1234-1234'
 
     @page.license_contact.set 'kevin.cupp@gmail.com'

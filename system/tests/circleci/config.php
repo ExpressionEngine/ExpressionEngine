@@ -12,6 +12,7 @@
 */
 
 $config['app_version'] = '280';
+$config['license_contact'] = 'ellislab.devleopers@gmail.com';
 $config['license_number'] = '1234-1234-1234-1234';
 $config['debug'] = '1';
 $config['cp_url'] = 'http://ee2.test:8080/system/index.php';

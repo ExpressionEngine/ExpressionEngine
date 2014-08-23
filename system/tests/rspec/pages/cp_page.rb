@@ -5,7 +5,7 @@ class ControlPanelPage < SitePrism::Page
 	element :submit_button_disabled, '.form-ctrls input.btn.disable'
 	element :fieldset_errors, 'fieldset.invalid'
 	element :settings_btn, 'b.ico.settings'
-	element :error_message, 'em.ee-form-error-message'
+	elements :error_messages, 'em.ee-form-error-message'
 
 	# Tables
 	element :select_all, 'th.check-ctrl input'
@@ -27,10 +27,27 @@ class ControlPanelPage < SitePrism::Page
 
 	# Waits until the error message is gone before proceeding;
 	# if we just check for invisible but it's already gone,
-	# Capybara will complain, so we check for its existance first
-	def wait_for_no_error
-		if self.has_error_message?
-			self.wait_until_error_message_invisible
+	# Capybara will complain, so we must do this
+	def wait_for_error_message_count(count)
+		i = 0;
+		element_count = nil;
+		# This is essentially our own version of wait_until_x_invisible/visible,
+		# except we're not going to throw an exception if the element
+		# is already gone thus breaking our test; if the element is already
+		# gone, AJAX and the DOM have already done their job
+		while element_count != count && i < 1000
+			begin
+				element_count = self.error_messages.size
+			rescue
+				# If we're here and we're waiting for 0 errors,
+				# an exception was likely thrown because there are
+				# no errors, so bail out of loop
+				if count == 0
+					element_count = 0
+				end
+				sleep 0.01
+				i += 1 # Prevent infinite loop
+			end
 		end
 	end
 end
