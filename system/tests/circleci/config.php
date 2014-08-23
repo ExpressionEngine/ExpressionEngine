@@ -11,6 +11,10 @@
 |
 */
 
+// Reset opcache, otherwise this file gets cached with old values on
+// Circle's PHP 5.5 machine
+opcache_reset();
+
 $config['app_version'] = '280';
 $config['license_contact'] = 'ellislab.devleopers@gmail.com';
 $config['license_number'] = '1234-1234-1234-1234';
