@@ -45,9 +45,9 @@ class ControlPanelPage < SitePrism::Page
 				if count == 0
 					element_count = 0
 				end
-				sleep 0.01
-				i += 1 # Prevent infinite loop
 			end
+			sleep 0.01
+			i += 1 # Prevent infinite loop
 		end
 	end
 end
