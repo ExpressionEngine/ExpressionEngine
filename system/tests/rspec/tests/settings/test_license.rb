@@ -19,7 +19,7 @@ feature 'License Settings' do
     license_reg_error = 'The "License number" field is required.'
     license_invalid_error = 'The license number provided is not a valid license number.'
 
-    # License contact is already blank
+    @page.license_contact.set ''
     @page.submit
 
     no_php_js_errors
@@ -36,7 +36,7 @@ feature 'License Settings' do
     no_php_js_errors
     should_have_form_errors(@page)
     @page.should have_text 'An error occurred'
-    @page.should have_text contact_error
+    @page.should have_no_text contact_error
     @page.should have_text license_reg_error
     @page.should have_no_text license_invalid_error
 
@@ -75,8 +75,11 @@ feature 'License Settings' do
   end
 
   it 'should load and save the settings' do
-    @page.license_contact.value.should == 'ellislab.devleopers@gmail.com'
-    @page.license_number.value.should == '1234-1234-1234-1234'
+    license_contact = ee_config(item: 'license_contact')
+    license_number = ee_config(item: 'license_number')
+
+    @page.license_contact.value.should == license_contact
+    @page.license_number.value.should == license_number
 
     @page.license_contact.set 'kevin.cupp@gmail.com'
     @page.license_number.set '4321-4321-4321-4321'
@@ -86,8 +89,8 @@ feature 'License Settings' do
     @page.license_contact.value.should == 'kevin.cupp@gmail.com'
     @page.license_number.value.should == '4321-4321-4321-4321'
 
-    ee_config(item: 'license_contact', value: '')
-    ee_config(item: 'license_number', value: '1234-1234-1234-1234')
+    ee_config(item: 'license_contact', value: license_contact)
+    ee_config(item: 'license_number', value: license_number)
   end
 
 end
