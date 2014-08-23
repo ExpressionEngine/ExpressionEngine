@@ -8,6 +8,7 @@ function is_really_writable($file)
 require('bootstrap.php');
 require(APPPATH.'config/constants.php');
 require(BASEPATH.'core/Config.php');
+require(BASEPATH.'helpers/string_helper.php');
 require(APPPATH.'core/EE_Config.php');
 
 ee()->config = new EE_Config();
@@ -38,8 +39,7 @@ $item = array_shift($argv);
 
 if (empty($argv))
 {
-	print $item . ' is ' . ee()->config->item($item);
-	exit();
+	exit(ee()->config->item($item));
 }
 
 $value = array_shift($argv);

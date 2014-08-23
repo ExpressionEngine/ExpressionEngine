@@ -109,8 +109,9 @@ def ee_config(site_id: nil, item: nil, value: nil)
       command += " --site-id " + site_id.to_s
     end
 
-    command += " > /dev/null 2>&1"
-
-    system(command)
+    # Capture stdout but ignore stderr
+    Open3.popen3(command) do |stdin, stdout, stderr, thread|
+      return stdout.read.lines.last
+    end
   end
 end
