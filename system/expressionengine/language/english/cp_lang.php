@@ -553,6 +553,12 @@ $lang = array(
 'menu_members' =>
 'Members',
 
+'enable' =>
+'Enable',
+
+'disable' =>
+'Disable',
+
 ''=>''
 );
 

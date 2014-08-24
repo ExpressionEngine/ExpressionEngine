@@ -257,6 +257,88 @@ $lang = array(
 'url_title_separator_opt_under' =>
 'nderscore (different_words)',
 
+/**
+ * 
+ */
+
+'webmaster_email' =>
+'Address',
+
+'webmaster_email_desc' =>
+'e-mail address you want automated e-mail to come from. Without this, automated e-mail will likely be marked as spam.',
+
+'webmaster_name' =>
+'From name',
+
+'webmaster_name_desc' =>
+'Name you want automated e-mails to use.',
+
+'email_charset' =>
+'Character encoding',
+
+'email_charset_desc' =>
+'e-mail require character encoding to be properly formatted. UTF-8 is recommended.',
+
+'mail_protocol' =>
+'Protocol',
+
+'mail_protocol_desc' =>
+'Preferred e-mail sending protocol. SMTP is recommended.',
+
+'smtp_options' =>
+'SMTP Options',
+
+'smtp_server' =>
+'Server address',
+
+'smtp_server_desc' =>
+'URL location of your <mark>SMTP server</mark>.',
+
+'smtp_username' =>
+'Username',
+
+'smtp_username_desc' =>
+'Username of your <mark>SMTP server</mark>.',
+
+'smtp_password' =>
+'Password',
+
+'smtp_password_desc' =>
+'Password of your <mark>SMTP server</mark>.',
+
+'sending_options' =>
+'Sending Options',
+
+'mail_format' =>
+'Mail format',
+
+'mail_format_desc' =>
+'Format that e-mails are sent in. Plain Text is recommended.',
+
+'word_wrap' =>
+'Enable word-wrapping?',
+
+'word_wrap_desc' =>
+'When set to <b>enable</b>, the system will wrap long lines of text to a more readable width.',
+
+'php_mail' =>
+'PHP Mail',
+
+'sendmail' =>
+'Sendmail',
+
+'smtp' =>
+'SMTP',
+
+'plain_text' =>
+'Plain Text',
+
+'html' =>
+'HTML',
+
+'empty_stmp_fields' =>
+'The %s field is required for SMTP.',
+
 ''=>''
 );
 
