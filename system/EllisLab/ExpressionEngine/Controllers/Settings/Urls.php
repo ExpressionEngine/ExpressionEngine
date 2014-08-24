@@ -142,7 +142,7 @@ class Urls extends Settings {
 			array(
 				 'field'   => 'theme_folder_path',
 				 'label'   => 'lang:themes_path',
-				 'rules'   => 'required'
+				 'rules'   => 'required|file_exists'
 			),
 			array(
 				 'field'   => 'profile_trigger',
@@ -162,7 +162,7 @@ class Urls extends Settings {
 		{
 			if ($this->saveSettings($vars['sections']))
 			{
-				ee()->view->set_message('success', lang('preferences_updated'), lang('preferences_updated'), TRUE);
+				ee()->view->set_message('success', lang('preferences_updated'), lang('preferences_updated_desc'), TRUE);
 			}
 
 			ee()->functions->redirect($base_url);

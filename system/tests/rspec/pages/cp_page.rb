@@ -35,7 +35,7 @@ class ControlPanelPage < SitePrism::Page
 		# except we're not going to throw an exception if the element
 		# is already gone thus breaking our test; if the element is already
 		# gone, AJAX and the DOM have already done their job
-		while element_count != count && i < 1000
+		while element_count != count && i < 500
 			begin
 				element_count = self.error_messages.size
 			rescue
