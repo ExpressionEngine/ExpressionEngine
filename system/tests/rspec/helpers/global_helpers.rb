@@ -111,7 +111,11 @@ def ee_config(site_id: nil, item: nil, value: nil)
 
     # Capture stdout but ignore stderr
     Open3.popen3(command) do |stdin, stdout, stderr, thread|
-      return stdout.read.lines.last
+      value = stdout.read.lines.last
+      if value == 'empty'
+        return ''
+      end
+      return value
     end
   end
 end

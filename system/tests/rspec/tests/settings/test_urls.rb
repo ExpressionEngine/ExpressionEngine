@@ -56,13 +56,12 @@ feature 'URL and Path Settings' do
     @page.should have_text site_url_required
 
     # AJAX validation
+    # Field not required, shouldn't do anything
+    @page.load
     @page.site_index.set ''
     @page.site_index.trigger 'blur'
-    @page.wait_for_error_message_count(1)
-    should_have_form_errors(@page)
-    @page.should have_text site_url_required
+    should_have_no_form_errors(@page)
 
-    # Field not required, shouldn't do anything
     @page.site_url.set ''
     @page.site_url.trigger 'blur'
     @page.wait_for_error_message_count(1)

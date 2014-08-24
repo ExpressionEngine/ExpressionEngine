@@ -39,7 +39,12 @@ $item = array_shift($argv);
 
 if (empty($argv))
 {
-	exit(ee()->config->item($item));
+	$value = ee()->config->item($item);
+	if (empty($value))
+	{
+		exit('empty');
+	}
+	exit($value);
 }
 
 $value = array_shift($argv);
