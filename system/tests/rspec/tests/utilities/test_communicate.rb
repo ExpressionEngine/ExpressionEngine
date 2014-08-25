@@ -188,10 +188,10 @@ feature 'Communicate' do
 
 		mail = get_mail
 
-		expect(mail.subject).to eq(my_subject)
-		expect(mail.from[0]).to eq(@test_from)
-		expect(mail.to[0]).to eq(@test_recipient)
-		expect(mail.body.decoded).to eq(body_wrapped + "\n")
+		mail.subject.should == my_subject
+		mail.from[0].should == @test_from
+		mail.to[0].should == @test_recipient
+		mail.body.decoded.should == body_wrapped + "\n"
 	end
 
 	it "can send a plain text email" do
@@ -211,10 +211,10 @@ feature 'Communicate' do
 
 		mail = get_mail
 
-		expect(mail.subject).to eq(my_subject)
-		expect(mail.from[0]).to eq(@test_from)
-		expect(mail.to[0]).to eq(@test_recipient)
-		expect(mail.body.decoded).to eq(my_body + "\n")
+		mail.subject.should == my_subject
+		mail.from[0].should == @test_from
+		mail.to[0].should == @test_recipient
+		mail.body.decoded.should == my_body + "\n"
 	end
 
 	it "can send markdown email" do
@@ -236,12 +236,12 @@ feature 'Communicate' do
 
 		mail = get_mail
 
-		expect(mail.subject).to eq(my_subject)
-		expect(mail.from[0]).to eq(@test_from)
-		expect(mail.to[0]).to eq(@test_recipient)
-		expect(mail.multipart?).to eq(true)
-		expect(mail.parts[0].decoded).to eq(my_body + "\n\n")
-		expect(mail.parts[1].decoded).to eq(html_body)
+		mail.subject.should == my_subject
+		mail.from[0].should == @test_from
+		mail.to[0].should == @test_recipient
+		mail.multipart?.should == true
+		mail.parts[0].decoded.should == my_body + "\n\n"
+		mail.parts[1].decoded.should == html_body
 	end
 
 	it "can send html email" do
@@ -265,12 +265,12 @@ feature 'Communicate' do
 
 		mail = get_mail
 
-		expect(mail.subject).to eq(my_subject)
-		expect(mail.from[0]).to eq(@test_from)
-		expect(mail.to[0]).to eq(@test_recipient)
-		expect(mail.multipart?).to eq(true)
-		expect(mail.parts[0].decoded).to eq(plain_body + "\n\n")
-		expect(mail.parts[1].decoded).to eq(html_body + "\n")
+		mail.subject.should == my_subject
+		mail.from[0].should == @test_from
+		mail.to[0].should == @test_recipient
+		mail.multipart?.should == true
+		mail.parts[0].decoded.should == plain_body + "\n\n"
+		mail.parts[1].decoded.should == html_body + "\n"
 	end
 
 	it "can send an attachment" do
@@ -291,12 +291,12 @@ feature 'Communicate' do
 
 		mail = get_mail
 
-		expect(mail.subject).to eq(my_subject)
-		expect(mail.from[0]).to eq(@test_from)
-		expect(mail.to[0]).to eq(@test_recipient)
-		expect(mail.multipart?).to eq(true)
-		expect(mail.parts[0].decoded).to eq(my_body + "\n\n")
-		expect(mail.attachments[0].filename).to eq('readme.md')
+		mail.subject.should == my_subject
+		mail.from[0].should == @test_from
+		mail.to[0].should == @test_recipient
+		mail.multipart?.should == true
+		mail.parts[0].decoded.should == my_body + "\n\n"
+		mail.attachments[0].filename.should == 'readme.md'
 	end
 
 	it "can CC an address" do
@@ -317,11 +317,11 @@ feature 'Communicate' do
 
 		mail = get_mail
 
-		expect(mail.subject).to eq(my_subject)
-		expect(mail.from[0]).to eq(@test_from)
-		expect(mail.to[0]).to eq(@test_recipient)
-		expect(mail.cc[0]).to eq('ellislab.developers.cc@mailinator.com')
-		expect(mail.body.decoded).to eq(my_body + "\n")
+		mail.subject.should == my_subject
+		mail.from[0].should == @test_from
+		mail.to[0].should == @test_recipient
+		mail.cc[0].should == 'ellislab.developers.cc@mailinator.com'
+		mail.body.decoded.should == my_body + "\n"
 	end
 
 	it "can BCC an address" do
@@ -342,11 +342,11 @@ feature 'Communicate' do
 
 		mail = get_mail
 
-		expect(mail.subject).to eq(my_subject)
-		expect(mail.from[0]).to eq(@test_from)
-		expect(mail.to[0]).to eq(@test_recipient)
-		expect(mail.bcc[0]).to eq('ellislab.developers.bcc@mailinator.com')
-		expect(mail.body.decoded).to eq(my_body + "\n")
+		mail.subject.should == my_subject
+		mail.from[0].should == @test_from
+		mail.to[0].should == @test_recipient
+		mail.bcc[0].should == 'ellislab.developers.bcc@mailinator.com'
+		mail.body.decoded.should == my_body + "\n"
 	end
 
 	it "can send to groups" do
@@ -373,15 +373,15 @@ feature 'Communicate' do
 		# This isn't ideal as there could be name conflicts but for now
 		# it will have to do since email debug array is being reset with
 		# each call.
-		expect(Dir.glob(@mail_files).count).to eq(2)
+		Dir.glob(@mail_files).count.should == 2
 
 		Dir.glob(@mail_files).each do |file|
 			mail = Mail.read(file)
 
-			expect(mail.subject).to eq(my_subject)
-			expect(mail.from[0]).to eq(@test_from)
-			expect(mail.to[0]).to match(/ellislab.developers.member(one|two)/)
-			expect(mail.body.decoded).to eq(my_body + "\n")
+			mail.subject.should == my_subject
+			mail.from[0].should == @test_from
+			mail.to[0].should match /ellislab.developers.member(one|two)/
+			mail.body.decoded.should == my_body + "\n"
 		end
 	end
 
@@ -416,15 +416,15 @@ feature 'Communicate' do
 		# This isn't ideal as there could be name conflicts but for now
 		# it will have to do since email debug array is being reset with
 		# each call.
-		expect(Dir.glob(@mail_files).count).to eq(5)
+		Dir.glob(@mail_files).count.should == 5
 
 		Dir.glob(@mail_files).each do |file|
 			mail = Mail.read(file)
 
-			expect(mail.subject).to eq(my_subject)
-			expect(mail.from[0]).to eq(@test_from)
-			expect(mail.to[0]).to match(/ellislab.developers.member[12345]/)
-			expect(mail.body.decoded).to eq(my_body + "\n")
+			mail.subject.should == my_subject
+			mail.from[0].should == @test_from
+			mail.to[0].should match /ellislab.developers.member[12345]/
+			mail.body.decoded.should == my_body + "\n"
 		end
 	end
 
@@ -460,17 +460,17 @@ feature 'Communicate' do
 		# This isn't ideal as there could be name conflicts but for now
 		# it will have to do since email debug array is being reset with
 		# each call.
-		expect(Dir.glob(@mail_files).count).to eq(5)
+		Dir.glob(@mail_files).count.should == 5
 
 		Dir.glob(@mail_files).each do |file|
 			mail = Mail.read(file)
 
-			expect(mail.subject).to eq(my_subject)
-			expect(mail.from[0]).to eq(@test_from)
-			expect(mail.to[0]).to match(/ellislab.developers.member[12345]/)
-			expect(mail.multipart?).to eq(true)
-			expect(mail.parts[0].decoded).to eq(my_body + "\n\n")
-			expect(mail.attachments[0].filename).to eq('readme.md')
+			mail.subject.should == my_subject
+			mail.from[0].should == @test_from
+			mail.to[0].should match /ellislab.developers.member[12345]/
+			mail.multipart?.should == true
+			mail.parts[0].decoded.should == my_body + "\n\n"
+			mail.attachments[0].filename.should == 'readme.md'
 		end
 	end
 end

@@ -1,3 +1,4 @@
+require 'rspec/collection_matchers'
 require 'capybara/rspec'
 require 'capybara/webkit'
 require 'mysql2'
@@ -35,6 +36,11 @@ Capybara.run_server = false
 # Configure hook to run after each example
 RSpec.configure do |config|
 
+	# Keep using 'should' syntax in RSpec 3
+	config.expect_with :rspec do |c|
+		c.syntax = :should
+	end
+
 	# Before each example...
 	config.before(:each) do
 		reset_db
@@ -42,6 +48,7 @@ RSpec.configure do |config|
 
 	# After each example...
 	config.after(:each) do
+		example = RSpec.current_example
 		# If the example failed, take a screenshot to help us spot the problem
 		if example.exception != nil
 			page.save_screenshot('screenshots/'+example.description+'.png');
