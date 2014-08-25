@@ -400,6 +400,34 @@ $lang = array(
 'max_caches_desc' =>
 'If you cache your pages or database, this limits the number of cache instances. We recommend 150 for small sites and 300 for large sites. The allowed maximum is 1000.',
 
+/**
+ * Content & Design
+ */
+
+'new_posts_clear_caches' =>
+'Clear cache for new entries?',
+
+'new_posts_clear_caches_desc' =>
+'When set to <b>yes</b>, all caches will be cleared when authors publish new entries.',
+
+'enable_sql_caching' =>
+'Cache dynamic channel queries?',
+
+'enable_sql_caching_desc' =>
+'When set to <b>yes</b>, the speed of dynamic channel pages will be improved. do <b>not</b> use if you need the "future entries" or "expiring entries" features.',
+
+'categories_section' =>
+'Categories',
+
+'auto_assign_cat_parents' =>
+'Assign category parents?',
+
+'auto_assign_cat_parents_desc' =>
+'When set to <b>yes</b>, ExpressionEngine will automatically set the parent category when choosing a child category.',
+
+'channel_manager' =>
+'Channel Manager',
+
 ''=>''
 );
 
