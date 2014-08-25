@@ -8,7 +8,7 @@
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
- * @since		Version 2.9.0
+ * @since		Version 2.9.1
  * @filesource
  */
 
@@ -77,5 +77,5 @@ class Updater {
 }
 /* END CLASS */
 
-/* End of file ud_290.php */
-/* Location: ./system/expressionengine/installer/updates/ud_290.php */
+/* End of file ud_291.php */
+/* Location: ./system/expressionengine/installer/updates/ud_291.php */
