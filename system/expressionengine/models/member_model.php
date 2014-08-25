@@ -1625,6 +1625,11 @@ class Member_model extends CI_Model {
 				// Check to see if the token is ID
 				$token_name = ($token_name === 'id') ? 'member_id' : $token_name;
 
+				// Clean the token name to arrive at a potential column name
+				// and prevent any shenanigans
+				$token_name = ee()->db->protect_identifiers(
+					preg_replace('/[^\w-.]/', '', $token_name)
+				);
 				$this->db->like('members.'.$token_name, $token_value);
 			}
 		}
@@ -1636,6 +1641,9 @@ class Member_model extends CI_Model {
 			}
 			else
 			{
+				$search_in = ee()->db->protect_identifiers(
+					preg_replace('/[^\w-.]/', '', $search_in)
+				);
 				$this->db->like('members.'.$search_in, $search_value);
 			}
 		}
