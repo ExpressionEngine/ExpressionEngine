@@ -2,18 +2,12 @@
 namespace EllisLab\ExpressionEngine\Model\Template;
 
 use EllisLab\ExpressionEngine\Model\Model;
-use EllisLab\ExpressionEngine\Model\Collection;
 
 class TemplateGroup extends Model {
 
 	protected static $_primary_key = 'group_id';
 	protected static $_gateway_names = array('TemplateGroupGateway');
 	protected static $_cascade = 'Templates';
-
-	protected static $_key_map = array(
-		'group_id' => 'TemplateGroupGateway',
-		'site_id'  => 'TemplateGroupGateway'
-	);
 
 	protected static $_relationships = array(
 		'Site' => array(
@@ -26,7 +20,6 @@ class TemplateGroup extends Model {
 		'MemberGroups' => array(
 			'type' => 'many_to_many',
 			'model' => 'MemberGroup',
-			'key' => 'fixme'
 		)
 	);
 
@@ -44,7 +37,7 @@ class TemplateGroup extends Model {
 		return $this->getRelated('Templates');
 	}
 
-	public function setTemplates(Collection $templates)
+	public function setTemplates($templates)
 	{
 		return $this->setRelated('Templates', $templates);
 	}
@@ -54,7 +47,7 @@ class TemplateGroup extends Model {
 		return $this->getRelated('MemberGroups');
 	}
 
-	public function setMemberGroups(Collection $member_groups)
+	public function setMemberGroups($member_groups)
 	{
 		return $this->setRelated('MemberGroups', $member_groups);
 	}

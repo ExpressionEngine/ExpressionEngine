@@ -1,5 +1,7 @@
 <?php
-namespace EllisLab\ExpressionEngine\Model\Gateway;
+namespace EllisLab\ExpressionEngine\Module\RichTextEditor\Model\Gateway;
+
+use EllisLab\ExpressionEngine\Model\Gateway\RowDataGateway;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -16,24 +18,22 @@ namespace EllisLab\ExpressionEngine\Model\Gateway;
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Accessory Gateway
+ * ExpressionEngine Tool Gateway for the Rich Text Editor
  *
- * A gateway to store data on Accessories installed in this instance of
- * ExpressionEngine.
+ * A gateway allowing persistance of a tool in the Rich Text Editor.
  *
  * @package		ExpressionEngine
- * @subpackage	Core
+ * @subpackage	Rich Text Editor Module
  * @category	Model
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class AccessoryGateway extends RowDataGateway {
-	protected static $_primary_key = 'accessory_id';
-	protected static $_table_name = 'accessories';
+class RichTextEditorToolGateway extends RowDataGateway {
+	protected static $_primary_key = 'tool_id';
+	protected static $_table_name = 'rte_tools';
 
-	protected $accessory_id;
+	protected $tool_id;
+	protected $name;
 	protected $class;
-	protected $member_groups;
-	protected $controllers;
-	protected $accessory_version;
+	protected $enabled;
 }

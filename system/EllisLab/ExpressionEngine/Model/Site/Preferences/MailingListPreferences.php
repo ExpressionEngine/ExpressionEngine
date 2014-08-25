@@ -1,5 +1,5 @@
 <?php
-namespace EllisLab\ExpressionEngine\Model\Gateway;
+namespace Ellislab\ExpressionEngine\Model\Site\Preferences;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -16,10 +16,7 @@ namespace EllisLab\ExpressionEngine\Model\Gateway;
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Accessory Gateway
- *
- * A gateway to store data on Accessories installed in this instance of
- * ExpressionEngine.
+ * ExpressionEngine Mailing List Preferences
  *
  * @package		ExpressionEngine
  * @subpackage	Core
@@ -27,13 +24,11 @@ namespace EllisLab\ExpressionEngine\Model\Gateway;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class AccessoryGateway extends RowDataGateway {
-	protected static $_primary_key = 'accessory_id';
-	protected static $_table_name = 'accessories';
+class MailingListPreferences extends ConcretePreferences {
 
-	protected $accessory_id;
-	protected $class;
-	protected $member_groups;
-	protected $controllers;
-	protected $accessory_version;
+	protected $mailinglist_enabled;
+	protected $mailinglist_notify;
+	protected $mailinglist_notify_emails;
+
+
 }

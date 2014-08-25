@@ -4,11 +4,33 @@ namespace EllisLab\ExpressionEngine\Model\Template;
 use EllisLab\ExpressionEngine\Model\Model;
 
 /**
+ * ExpressionEngine - by EllisLab
  *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 3.0
+ * @filesource
+ */
+
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine Template Model
+ *
+ * A model representing a template.  Templates contain a mix of EECode and HTML
+ * and are parsed to become the front end pages of sites built with
+ * ExpressionEngine.
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Core
+ * @category	Model
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 class Template extends Model {
-
-	// Meta data
 	protected static $_primary_key = 'template_id';
 	protected static $_gateway_names = array('TemplateGateway');
 
@@ -23,37 +45,13 @@ class Template extends Model {
 			'type'	=> 'many_to_one',
 			'model'	=> 'Member',
 			'key'	=> 'last_author_id'
+		),
+		'NoAccess' => array(
+			'type' => 'many_to_many',
+			'model' => 'MemberGroup'
 		)
 	);
 
-/*
-//	protected $_lifecycle_events = array(
-	protected $_bind_events = array(
-		'delete', // fetch the whole object and fire onDelete
-		'update'  // fetch the whole object and fire onUpdate
-	);
-
-	protected $_bind_events = array(
-		'update',
-		'delete'
-	);
-	// Batch size: 100
-
-	// all events fire *before*
-	protected $_bind_events = array(
-		'delete.one',	// fetch objects one at a time
-		'delete.all',	// [default] fetch everything being deleted and fire onDelete on all
-		'update.batch'  // fetch the objects in batches of 100 and fire onUpdate
-	);
-
-	public function onBeforeUpdate($set)
-	{
-		$this->set($set);
-		return FALSE;
-	}
-*/
-
-	// Properties
 	protected $template_id;
 	protected $site_id;
 	protected $group_id;
@@ -72,9 +70,6 @@ class Template extends Model {
 	protected $php_parse_location;
 	protected $hits;
 
-	/**
-	 *
-	 */
 	public function getTemplateGroup()
 	{
 		return $this->getRelated('TemplateGroup');
@@ -103,6 +98,16 @@ class Template extends Model {
 	public function setSite(Site $site)
 	{
 		return $this->setRelated('Site', $site);
+	}
+
+	public function getNoAccess()
+	{
+		return $this->getRelated('NoAccess');
+	}
+
+	public function setNoAccess($no_access)
+	{
+		return $this->setRelated('NoAccess', $no_access);
 	}
 }
 

@@ -72,12 +72,22 @@ abstract class RowDataGateway {
 	 */
 	public function __get($name)
 	{
+		// If there's a getter, that takes priority.
 		$method = $this->propertyToMethod($name, 'get');
 		if (method_exists($this, $method))
 		{
 			return $this->$method();
 		}
 
+		// Next in priority is the mapper.
+		$mappers = static::getMetaData('mappers');
+		if ( isset($mappers[$name])  && property_exists($this, $name))
+		{
+			$mapper = $this->getMapper($mappers[$name]);
+			return $mapper->fromDb($this->{$name});
+		}
+
+		// Finally, just the raw property.
 		if (property_exists($this, $name) && strpos($name, '_') !== 0)
 		{
 			return $this->{$name};
@@ -104,7 +114,16 @@ abstract class RowDataGateway {
 		$method = $this->propertyToMethod($name, 'set');
 		if (method_exists($this, $method))
 		{
-			return $this->$method($value);
+			$this->$method($value);
+			return;
+		}
+
+		$mappers = static::getMetaData('mappers');
+		if ( isset($mappers[$name]) && property_exists($this, $name))
+		{
+			$mapper = $this->getMapper($mappers[$name]);
+			$this->{$name} = $mapper->toDb($value);
+			return;
 		}
 
 		if (property_exists($this, $name) && strpos($name, '_') !== 0)
@@ -114,6 +133,23 @@ abstract class RowDataGateway {
 		}
 
 		throw new \InvalidArgumentException('Attempt to access a non-existent property "' . $name . '" on ' . get_called_class());
+	}
+
+	private function getMapper($name)
+	{
+		// Native, Core mapper
+		if ( strpos(':', $name) === FALSE)
+		{
+			$mapper_class = '\\EllisLab\\ExpressionEngine\\Model\\Gateway\\Mapper\\' . $name;
+			return new $mapper_class();
+		}
+
+
+		list($vendor_module, $mapper_name) = explode(':', $name);
+		list($vendor, $module) = explode('/', $vendor_module);
+
+		$mapper_class = $vendor . '\\' . $module . '\\Model\\Gateway\\Mapper\\' . $mapper_name;
+		return new $mapper_class();
 	}
 
 	private function propertyToMethod($name, $method)

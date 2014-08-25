@@ -32,6 +32,7 @@ class Homepage extends CP_Controller {
 	 */
 	function index()
 	{
+
 /*		echo 'Query was:<br />
 			qb->get(\'ChannelEntry\')
 				->with(\'Channel\', array(\'Author\'=>array(\'MemberGroup\', \'ChannelEntries\')))
