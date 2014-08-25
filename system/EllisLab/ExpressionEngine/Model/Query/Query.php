@@ -172,7 +172,7 @@ class Query {
 				$delete_ids = $this->factory->get($name)
 					->with($with)
 					->onlyFields($name.'.'.$from_meta->getPrimaryKey())
-					->filter($parent_meta->getName().'.'.$parent_meta->getPrimaryKey(), 'IN', $parent_ids)
+					->filter($name.'.'.$parent_meta->getPrimaryKey(), 'IN', $parent_ids)
 					->offset($offset)
 					->limit($batch_size)
 					->all()
