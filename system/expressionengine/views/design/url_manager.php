@@ -1,6 +1,7 @@
 <?php extend_template('default') ?>
 		<div class="formArea">
 			<?=form_open('C=design'.AMP.'M=update_template_routes')?>
+				<input type="hidden" name="route_order" id="route_order" />
 				<div id="url_manager">
 					<p><?= lang('template_route_notice'); ?></p>
 					<?php
@@ -21,13 +22,14 @@
 							}
 
 							$required = form_dropdown('required_' . $template->template_id, $options, $template->route_required);
-							$table[] = array($template->group_name, $name, $route, $required);
+							$table[] = array('&nbsp;', $template->group_name, $name, $route, $required);
 						}
 
 						$this->table->set_template(array(
 							'table_open' => '<table class="mainTable" border="0" cellspacing="0" cellpadding="0">'
 						));
 						$this->table->set_heading(array(
+							'&nbsp;',
 							lang('route_manager_group'),
 							lang('route_manager_template'),
 							lang('route_manager_route'),

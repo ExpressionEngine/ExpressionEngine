@@ -1209,6 +1209,13 @@ class Member_settings extends Member {
 	/** ----------------------------------------*/
 	function update_preferences()
 	{
+		// This form is all checkboxes, so check a hidden form field for existence to ensure
+		// this is a valid POST request, or visiting this page will blank their prefs
+		if ( ! isset($_POST['site_id']))
+		{
+			return ee()->output->show_user_error('general', array(ee()->lang->line('invalid_action')));
+		}
+
 		/** -------------------------------------
 		/**  Assign the query data
 		/** -------------------------------------*/
@@ -1220,7 +1227,7 @@ class Member_settings extends Member {
 						'parse_smileys'			=> (isset($_POST['parse_smileys']))  ? 'y' : 'n'
 					  );
 
-		ee()->db->query(ee()->db->update_string('exp_members', $data, "member_id = '".ee()->session->userdata('member_id')."'"));
+		ee()->db->update('members', $data, array('member_id' => ee()->session->userdata('member_id')));
 
 		// -------------------------------------------
 		// 'member_update_preferences' hook.

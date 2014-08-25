@@ -344,9 +344,7 @@ class MyAccount extends CP_Controller {
 				}
 			}
 
-			$resrow = $result->result_array();
-
-			$resrow = $resrow[0]; // @confirrm: end of a long, long, long stretch of work, but not sure why its returning into index 0...
+			$resrow = $result->row_array();
 
 			$vars['custom_profile_fields'] = array();
 
@@ -1329,25 +1327,41 @@ class MyAccount extends CP_Controller {
 	{
 		$signature = $this->input->post('signature');
 
-		$maxlength = ($this->config->item('sig_maxlength') == 0) ? 10000 : $this->config->item('sig_maxlength');
+		// Do we have what we need in $_POST?
+		if ( ! ee()->input->post('signature'))
+		{
+			return ee()->functions->redirect(cp_url('myaccount/edit_signature'));
+		}
+
+		$maxlength = ($this->config->item('sig_maxlength') == 0)
+			? 10000
+			: $this->config->item('sig_maxlength');
 
 		if (strlen($signature) > $maxlength)
 		{
-			show_error(str_replace('%x', $maxlength, lang('sig_too_big')));
+			show_error(sprintf(lang('sig_too_big'), $maxlength));
 		}
 
-		$this->member_model->update_member($this->id, array('signature' => $signature));
+		$this->member_model->update_member(
+			$this->id,
+			array('signature' => $signature)
+		);
 
 		// Is there an image to upload or remove?
-		if ((isset($_FILES['userfile']) AND $_FILES['userfile']['name'] != '') OR isset($_POST['remove']))
+		if ((isset($_FILES['userfile']) && $_FILES['userfile']['name'] != '')
+			OR isset($_POST['remove']))
 		{
 			return $this->upload_signature_image();
 		}
 
-		$id = ($this->input->get_post('id')) ? AMP.'id='.$this->input->get_post('id') : '';
+		$params = array();
+		if ($id = ee()->input->get_post('id'))
+		{
+			$params['id'] = $id;
+		}
 
 		$this->session->set_flashdata('message_success', lang('signature_updated'));
-		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=edit_signature'.$id);
+		$this->functions->redirect(cp_url('myaccount/edit_signature', $params));
 	}
 
 	// --------------------------------------------------------------------

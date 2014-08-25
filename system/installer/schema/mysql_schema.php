@@ -970,6 +970,7 @@ class EE_Schema {
 			allow_php char(1) NOT NULL default 'n',
 			php_parse_location char(1) NOT NULL default 'o',
 			hits int(10) unsigned NOT NULL default 0,
+			protect_javascript char(1) NOT NULL default 'n',
 			PRIMARY KEY `template_id` (`template_id`),
 			KEY `group_id` (`group_id`),
 			KEY `template_name` (`template_name`),
@@ -981,6 +982,7 @@ class EE_Schema {
 		$Q[] = "CREATE TABLE `exp_template_routes` (
 			`route_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 			`template_id` int(10) unsigned NOT NULL,
+			`order` int(10) unsigned DEFAULT NULL,
 			`route` varchar(512) DEFAULT NULL,
 			`route_parsed` varchar(512) DEFAULT NULL,
 			`route_required` char(1) NOT NULL DEFAULT 'n',

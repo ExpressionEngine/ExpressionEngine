@@ -114,10 +114,10 @@ class EE_Logger {
 
 		$log_data = array();
 
-		// If we were passed an array, add its contents to $log_data
+		// If we were passed an array, place its contents to $log_data
 		if (is_array($data))
 		{
-			$log_data = array_merge($log_data, $data);
+			$log_data = $data;
 		}
 		// Otherwise it's probably a string, stick it in the 'description' field
 		else
@@ -267,8 +267,76 @@ class EE_Logger {
 
 		// Only bug the user about this again after a week, or 604800 seconds
 		$deprecation_log = $this->developer($deprecated, TRUE, 604800);
+		$this->show_flashdata($deprecation_log);
+	}
 
-		// Show and store flashdata only if we're in the CP, and only to Super Admins
+	// --------------------------------------------------------------------
+
+	/**
+	 * Log an extension hook as deprecated
+	 *
+	 * This method is to be called when a deprecated extension hook is
+	 * activated. The original hook name must be passed, and optionally
+	 * the version it was deprecated in, and what hook to use instead.
+	 *
+	 * From there, the use of the deprecated hook is logged in the
+	 * developer log for Super Admin review.
+	 *
+	 * @param	string	$hook - the name of the deprecated hook
+	 * @param	string	$version (optional) - the version number it was deprecated in
+	 * @param	string	$use_instead (optional) - the name of the hook to use instead
+	 * @return	void
+	 **/
+	public function deprecated_hook($hook, $version = NULL, $use_instead = NULL)
+	{
+		$hook_details = ee()->extensions->get_active_hook_info($hook);
+
+		if ($hook_details === FALSE)
+		{
+			return FALSE;
+		}
+
+		// potentially many extensions using this hook
+		$in_use = array();
+		foreach ($hook_details as $priority => $extensions)
+		{
+			foreach ($extensions as $class => $details)
+			{
+				// 0 is the method name, 1 is the settings, 2 is the version number
+				$in_use[] = $class.'::'.$details[0].'()';
+			}
+		}
+
+		ee()->lang->loadfile('tools');
+		$description = sprintf(lang('deprecated_hook'), '<br /><li>'.implode('</li><li>', $in_use).'</li>');
+
+		if ( ! empty($version))
+		{
+			$description .= '<br />'.sprintf(lang('deprecated_since'), $version);
+		}
+
+		if ( ! empty($use_instead))
+		{
+			$description .= NBS.sprintf(lang('deprecated_use_instead'), $use_instead);
+		}
+
+		// Only bug the user about this again after a week, or 604800 seconds
+		$deprecation_log = $this->developer($description, TRUE, 604800);
+		$this->show_flashdata($deprecation_log);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Show Flashdata
+	 *
+	 * Shows and stores flashdata if we are in the CP, and only to Super Admins
+	 *
+	 * @param	array	$deprecation_log - array, returned by $this->developer()
+	 * @return	void
+	 **/
+	private function show_flashdata($deprecation_log)
+	{
 		if (REQ == 'CP' && isset(ee()->session) && ee()->session instanceof EE_Session
 			&& ee()->session->userdata('group_id') == 1)
 		{

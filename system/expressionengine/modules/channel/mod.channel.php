@@ -289,13 +289,6 @@ class Channel {
 
 		$this->query = ee()->db->query($this->sql);
 
-		if ($this->enable['categories'] == TRUE)
-		{
-			$this->fetch_categories();
-		}
-
-		$this->parse_channel_entries();
-
 		// -------------------------------------
 		//  "Relaxed" View Tracking
 		//
@@ -312,6 +305,13 @@ class Channel {
 		{
 			$this->hit_tracking_id = $this->query->row('entry_id') ;
 		}
+
+		if ($this->enable['categories'] == TRUE)
+		{
+			$this->fetch_categories();
+		}
+
+		$this->parse_channel_entries();
 
 		$this->track_views();
 
@@ -1304,23 +1304,13 @@ class Channel {
 			}
 			else
 			{
-				if ($query->num_rows() == 1)
+				$channel_ids = array();
+				foreach ($query->result_array() as $row)
 				{
-					$sql .= "AND t.channel_id = '".$query->row('channel_id') ."' ";
+					$channel_ids[] = $row['channel_id'];
 				}
-				else
-				{
-					$sql .= "AND (";
 
-					foreach ($query->result_array() as $row)
-					{
-						$sql .= "t.channel_id = '".$row['channel_id']."' OR ";
-					}
-
-					$sql = substr($sql, 0, - 3);
-
-					$sql .= ") ";
-				}
+				$sql .= "AND t.channel_id IN (".implode(',', $channel_ids).") ";
 			}
 		}
 
@@ -2023,7 +2013,8 @@ class Channel {
 						break;
 
 						case 'random' :
-								$end = "ORDER BY rand()";
+								$random_seed = ($this->pagination->paginate === TRUE) ? (int) ee()->session->userdata('last_visit') : '';
+								$end = "ORDER BY rand({$random_seed})";
 								$sort_array[$key] = FALSE;
 						break;
 
@@ -2091,6 +2082,14 @@ class Channel {
 				if ($total >= $offset)
 				{
 					$total = $total - $offset;
+				}
+
+				// do a little dance to remove the seed if we have random order
+				// and only one page of results. Random order should only be
+				// sticky across pages.
+				if (isset($random_seed) && $total <= $this->pagination->per_page)
+				{
+					$end = str_replace($random_seed, '', $end);
 				}
 
 				$this->pagination->build($total, $this->pagination->per_page);
@@ -3465,15 +3464,10 @@ class Channel {
 								$chunk = str_replace($tkey, reduce_double_slashes($tval.'/'.$trow['entry_id']), $chunk);
 							}
 
+							$chunk = ee()->TMPL->parse_date_variables($chunk, array('entry_date' => $trow['entry_date']));
+
 							foreach(ee()->TMPL->var_single as $key => $val)
 							{
-								if (isset($entry_date[$key]))
-								{
-									$val = str_replace($entry_date[$key], ee()->localize->format_date($entry_date[$key], $trow['entry_date']), $val);
-
-									$chunk = ee()->TMPL->swap_var_single($key, $val, $chunk);
-								}
-
 								if ($key == 'entry_id')
 								{
 									$chunk = ee()->TMPL->swap_var_single($key, $trow['entry_id'], $chunk);

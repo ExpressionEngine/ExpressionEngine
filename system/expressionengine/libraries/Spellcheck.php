@@ -72,11 +72,11 @@ class EE_Spellcheck {
 			return '';
 		}
 
-		$spell_save_edit		= ee()->lang->line('spell_save_edit');
-		$spell_edit_word		= ee()->lang->line('spell_edit_word');
-		$unsupported_browser	= ee()->lang->line('unsupported_browser');
-		$no_spelling_errors		= ee()->lang->line('no_spelling_errors');
-		$spellcheck_in_progress	= ee()->lang->line('spellcheck_in_progress');
+		$spell_save_edit		= lang('spell_save_edit');
+		$spell_edit_word		= lang('spell_edit_word');
+		$unsupported_browser	= lang('unsupported_browser');
+		$no_spelling_errors		= lang('no_spelling_errors');
+		$spellcheck_in_progress	= lang('spellcheck_in_progress');
 		$XID_SECURE_HASH		= (defined('XID_SECURE_HASH')) ? XID_SECURE_HASH : '{XID_SECURE_HASH}';
 		$is_frontend			= 'true';
 
@@ -1138,7 +1138,7 @@ EOT;
 
 		ee()->session->tracker = array_shift(ee()->session->tracker);
 
-		ee()->input->set_cookie('tracker', serialize($this->EE->session->tracker), '0');
+		ee()->session->set_tracker_cookie();
 
   		if ( ! defined('AMP')) define('AMP', '&amp;');
 		if ( ! defined('BR'))  define('BR',  '<br />');
@@ -1151,7 +1151,7 @@ EOT;
 		"<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"\n\n".
 		"\"http://www.w3.org/TR/html4/loose.dtd\">\n\n".
 		"<head>\n".
-		"<title>".APP_NAME." | Spell Check</title>\n\n".
+		"<title>".APP_NAME." | ".lang('spell_check')."</title>\n\n".
 		"<meta http-equiv='content-type' content='text/html; charset=".ee()->config->item('output_charset')."'>\n".
 		"<meta name='MSSmartTagsPreventParsing' content='TRUE'>\n".
 		"<meta http-equiv='expires' content='-1'>\n".

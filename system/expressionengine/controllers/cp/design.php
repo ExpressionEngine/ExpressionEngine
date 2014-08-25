@@ -676,6 +676,33 @@ class Design extends CP_Controller {
 		$this->cp->set_breadcrumb(cp_url('design/manager'), lang('template_manager'));
 		$this->cp->set_breadcrumb(cp_url('design/snippets'), lang('snippets'));
 
+		$this->cp->add_to_head($this->view->head_link('css/codemirror.css'));
+		$this->cp->add_to_head($this->view->head_link('css/codemirror-additions.css'));
+
+		$this->cp->add_js_script(array(
+				'plugin'	=> 'ee_codemirror',
+				'file'		=> array(
+					'codemirror/codemirror',
+					'codemirror/closebrackets',
+					'codemirror/overlay',
+					'codemirror/xml',
+					'codemirror/css',
+					'codemirror/javascript',
+					'codemirror/htmlmixed',
+					'codemirror/ee-mode',
+					'codemirror/dialog',
+					'codemirror/searchcursor',
+					'codemirror/search',
+
+					'cp/snippet_editor',
+				)
+			)
+		);
+
+		$this->cp->set_action_nav(array(
+			'toggle_editor' => 'javascript:$(\'#snippet_contents\').toggleCodeMirror();'
+		));
+
 		$this->cp->render('design/snippets_edit', $vars);
 	}
 
@@ -1188,12 +1215,14 @@ class Design extends CP_Controller {
 			$headings[] = array('php_parse_location', lang('parse_stage'));
 		}
 
+
 		if ($this->config->item('save_tmpl_files') == 'y' AND $this->config->item('tmpl_file_basepath') != '')
 		{
 			$headings[] = array('save_template_file', lang('save_template_file'));
 		}
 
 		$headings[] = array('hits', lang('hit_counter'));
+		$headings[] = array('protect_javascript', lang('protect_javascript'));
 
 		$vars['headings'] = $headings;
 
@@ -1237,6 +1266,7 @@ class Design extends CP_Controller {
 		}
 
 		$vars['template_prefs']['hits'] = form_input(array('name'=>'hits', 'value'=>'', 'size'=>5));
+		$vars['template_prefs']['protect_javascript'] = form_dropdown('protect_javascript', $yes_no_options, 'null', 'id="protect_javascript"');
 
 		// Template Access Restrictions
 		$this->db->select('group_id, group_title');
@@ -1369,10 +1399,16 @@ class Design extends CP_Controller {
 		$template_route = $this->input->post('template_route');
 		$route_required = $this->input->post('route_required');
 		$no_auth_bounce = $this->input->post('no_auth_bounce');
+		$protect_javascript = $this->input->post('protect_javascript');
 
 		if ($template_type !== FALSE && $template_type != 'null')
 		{
 			$data['template_type'] = $template_type;
+		}
+
+		if (in_array($protect_javascript, array('y', 'n')))
+		{
+			$data['protect_javascript'] = $protect_javascript;
 		}
 
 		if (in_array($cache, array('y', 'n')))
@@ -1597,7 +1633,7 @@ class Design extends CP_Controller {
 			$qry = $this->db->select('tg.group_name, template_name,
 									template_data, template_type,
 									template_notes, cache, refresh,
-									no_auth_bounce, allow_php,
+									no_auth_bounce, allow_php, protect_javascript,
 									php_parse_location, save_template_file')
 							->from('templates t, template_groups tg')
 							->where('t.template_id',
@@ -1640,6 +1676,7 @@ class Design extends CP_Controller {
 							'refresh'				=> $qry->row('refresh') ,
 							'no_auth_bounce'		=> $qry->row('no_auth_bounce') ,
 							'php_parse_location'	=> $qry->row('php_parse_location') ,
+							'protect_javascript'	=> $qry->row('protect_javascript') ,
 							'allow_php'				=> ($this->session->userdata('group_id') === 1) ? $qry->row('allow_php')  : 'n',
 							'template_type'			=> $template_type,
 							'template_data'			=> $template_data,
@@ -1747,10 +1784,11 @@ class Design extends CP_Controller {
 		$vars['save_template_file'] = ($query->row('save_template_file') != 'y') ? FALSE : TRUE ;
 		$vars['no_auth_bounce']		= $query->row('no_auth_bounce');
 		$vars['enable_http_auth']	= $query->row('enable_http_auth');
+		$vars['protect_javascript']	= $query->row('protect_javascript');
 		$vars['template_route'] 	= $query->row('route');
 		$vars['route_required'] 	= $query->row('route_required');
 
-		foreach(array('template_type', 'cache', 'refresh', 'allow_php', 'php_parse_location', 'hits') as $pref)
+		foreach(array('template_type', 'cache', 'refresh', 'allow_php', 'php_parse_location', 'hits', 'protect_javascript') as $pref)
 		{
 			$vars['prefs'][$pref] = $query->row($pref);
 		}
@@ -1873,35 +1911,38 @@ class Design extends CP_Controller {
 
 		$vars['can_save_file'] = ($this->config->item('save_tmpl_files') == 'y' && $this->config->item('tmpl_file_basepath') != '') ? TRUE : FALSE;
 
+		$this->cp->add_to_head($this->view->head_link('css/codemirror.css'));
+		$this->cp->add_to_head($this->view->head_link('css/codemirror-additions.css'));
+
+		$this->javascript->set_global(
+			'editor.lint', $this->_get_installed_plugins_and_modules()
+		);
+
 		$this->cp->add_js_script(array(
-				'plugin'	=> 'markitup',
+				'plugin'	=> 'ee_codemirror',
 				'file'		=> array(
-								'ee_txtarea',
-								'cp/template_editor',
-								'cp/manager'
+					'codemirror/codemirror',
+					'codemirror/closebrackets',
+					'codemirror/lint',
+					'codemirror/overlay',
+					'codemirror/xml',
+					'codemirror/css',
+					'codemirror/javascript',
+					'codemirror/htmlmixed',
+					'codemirror/ee-mode',
+					'codemirror/dialog',
+					'codemirror/searchcursor',
+					'codemirror/search',
+
+					'cp/template_editor',
+					'cp/manager'
 				)
 			)
 		);
 
-		$markItUp = array(
-			'nameSpace'	=> "html",
-			'onShiftEnter'	=> array('keepDefault' => FALSE, 'replaceWith' => "<br />\n"),
-			'onCtrlEnter'	=> array('keepDefault' => FALSE, 'openWith' => "\n<p>", 'closeWith' => "</p>\n")
-		);
-
-		/* -------------------------------------------
-		/*	Hidden Configuration Variable
-		/*	- allow_textarea_tabs => Preserve tabs in all textareas or disable completely
-		/* -------------------------------------------*/
-
-		if($this->config->item('allow_textarea_tabs') != 'n')
-		{
-			$markItUp['onTab'] = array('keepDefault' => FALSE, 'replaceWith' => "\t");
-		}
-
-		$this->javascript->set_global('template.markitup', $markItUp);
-		$this->javascript->set_global('template.url',
-										str_replace(AMP, '&', BASE).'&C=design&M=template_revision_history&template='.$template_id.'&revision_id=');
+		$this->cp->set_action_nav(array(
+			'toggle_editor' => 'javascript:$(\'#template_data\').toggleCodeMirror();'
+		));
 
 		$vars['table_template'] = array(
 					'table_open'			=> '<table class="templateTable templateEditorTable" border="0" cellspacing="0" cellpadding="0">'
@@ -2088,11 +2129,7 @@ class Design extends CP_Controller {
 		/*
 		/* -------------------------------------*/
 
-		// Check submitted tags (valid modules / plugins)
-
-		$this->_validate_tags();
-
-		if (isset($_POST['update_and_return']) && ( ! count($this->warnings) OR $this->input->post('warnings')))
+		if (isset($_POST['update_and_return']))
 		{
 			$this->session->set_flashdata($cp_message);
 			$this->db->select('group_id');
@@ -2101,13 +2138,8 @@ class Design extends CP_Controller {
 
 			$this->functions->redirect(cp_url('design/manager', 'tgpref='.$query->row('group_id')));
 		}
-		elseif (count($this->warnings))
-		{
-			$this->edit_template($template_id, $message, $this->warnings);
-		}
 		else
 		{
-			//$this->edit_template($template_id, $message);
 			$this->session->set_flashdata($cp_message);
 			$this->functions->redirect(cp_url('design/edit_template', 'id='.$template_id));
 		}
@@ -2121,22 +2153,8 @@ class Design extends CP_Controller {
 	 * @access	private
 	 * @return	void
 	 */
-	function _validate_tags()
+	function _get_installed_plugins_and_modules()
 	{
-		$this->warnings = array();
-
-		$str = $_POST['template_data'];
-
-		// Don't trigger inside EE comments
-		$str = preg_replace('/{!--(.*?)--}/is', '', $str);
-
-		if (strpos($str, '{exp:') === FALSE)
-		{
-			return;
-		}
-
-		$tags = $this->functions->assign_variables($str);
-
 		$this->load->library('template');
 		$this->load->model('addons_model');
 		$this->template->fetch_addons();
@@ -2152,118 +2170,10 @@ class Design extends CP_Controller {
 		$installed = array_map('array_pop', $query->result_array());
 		$installed = array_map('strtolower', $installed);
 
-		$this->info = array_merge($modules, $plugins);
-
-		// Go through the single variables and check if they match installed plugins
-
-		foreach($tags['var_single'] as $tag)
-		{
-			if (strncmp($tag, 'exp:', 4) === 0)
-			{
-				$name = substr($tag, 4, strcspn($tag, ': ', 4));
-
-				if ( ! in_array($name, $plugins))
-				{
-					if (in_array($name, $modules))
-					{
-						$this->_add_warning($name, $tag, 'no_closing_tag');
-						$this->_add_warning($name, $tag, 'docs_link');
-					}
-					else
-					{
-						$this->_add_warning($name, $tag, 'class');
-					}
-				}
-			}
-		}
-
-		// And now the variable pairs
-
-		foreach($tags['var_pair'] as $tag => $inner)
-		{
-			if (strncmp($tag, 'exp:', 4) === 0)
-			{
-				$name = substr($tag, 4, strcspn($tag, ': ', 4));	// :<space>, leave the space in there!
-
-				if ( ! in_array($name, $installed) && ! in_array($name, $plugins))
-				{
-					if (in_array($name, $modules))
-					{
-						$this->_add_warning($name, $tag, 'install');
-					}
-					else
-					{
-						$this->_add_warning($name, $tag, 'class');
-					}
-				}
-			}
-		}
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Tag suggestion
-	 *
-	 * Takes a tag's class name and finds the closest matching tag using
-	 * a character swap count (up to 3 changes).
-	 *
-	 * @access	private
-	 * @param	string	tag class name
-	 * @return	void
-	 */
-	function _tag_suggestion($tag_name)
-	{
-		$weight = 3;
-		$suggestion = '';
-
-		if ($tag_name == 'weblog')
-		{
-			return 'channel';
-		}
-
-		foreach($this->info as $name)
-		{
-			$new_weight = levenshtein($name, $tag_name);
-			if ($new_weight != -1 && $new_weight < $weight)
-			{
-				$suggestion = $name;
-				$weight = $new_weight;
-			}
-		}
-
-		return $suggestion;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Add Warning
-	 *
-	 * Utility method used by _validate_tags to build an array of warnings
-	 *
-	 * @access	private
-	 * @return	void
-	 */
-	function _add_warning($name, $tag, $type)
-	{
-		if ( ! isset($this->warnings[$name]))
-		{
-			$this->warnings[$name] = array(
-				'suggestion'	=> ($type == 'class') ? $this->_tag_suggestion($name) : '',
-				'errors'		=> array('tag_'.$type.'_error'),
-				'full_tags'		=> array($tag)
-			);
-		}
-		else
-		{
-			$this->warnings[$name]['errors'][] = 'tag_'.$type.'_error';
-
-			if ( ! in_array($tag, $this->warnings[$name]['full_tags']))
-			{
-				$this->warnings[$name]['full_tags'][] = $tag;
-			}
-		}
+		return array(
+			'available' => array_merge($modules, $plugins),
+			'not_installed' => array_values(array_diff($modules, $installed))
+		);
 	}
 
 	// --------------------------------------------------------------------
@@ -3267,6 +3177,21 @@ class Design extends CP_Controller {
 			}
 		}
 
+		// Update Template Route order
+		$route_order = json_decode($this->input->post('route_order'));
+		$update = array();
+
+		if ( ! empty($route_order))
+		{
+			foreach ($route_order as $index => $id)
+			{
+				$update[] = array('template_id' => $id, 'order' => $index);
+			}
+
+
+			$this->db->update_batch('template_routes', $update, 'template_id');
+		}
+
 		if (empty($errors))
 		{
 			$this->session->set_flashdata('message_success', lang('template_routes_saved'));
@@ -3319,8 +3244,29 @@ class Design extends CP_Controller {
 		$this->db->join('template_routes AS tr', 'tr.template_id = t.template_id', 'left');
 		$this->db->join('template_groups AS tg', 'tg.group_id = t.group_id');
 		$this->db->where('t.site_id', $this->config->item('site_id'));
-		$this->db->order_by('LENGTH(tr.route_parsed), tg.group_name, t.template_name', 'ASC');
+		$this->db->order_by('tr.order, tg.group_name, t.template_name', 'ASC');
 		$vars['templates'] = $this->db->get();
+
+		$outputjs = <<<EOT
+			$("#url_manager tbody td").each(function(){
+        		$(this).css("width", $(this).width() +"px");
+			});
+			$("#url_manager tbody").sortable({
+				update: function(event, ui) {
+					$("#url_manager tbody > tr:odd").addClass("odd").removeClass("even");
+					$("#url_manager tbody > tr:even").addClass("even").removeClass("odd");
+
+					var order = Array();
+					$("#url_manager input[type='text']").each(function(){
+						order.push($(this).attr("name").replace("route_", ""));
+					});
+
+					$("#route_order").val(JSON.stringify(order));
+				}
+			});
+EOT;
+
+		$this->javascript->output(str_replace(array("\n", "\t"), '', $outputjs));
 
 		$this->cp->render('design/url_manager', $vars);
 	}
@@ -3484,7 +3430,7 @@ class Design extends CP_Controller {
 
 		$vars['member_groups'] = $this->_get_member_array();
 
-		$hidden_indicator = ($this->config->item('hidden_template_indicator') != '') ? $this->config->item('hidden_template_indicator') : '.';
+		$hidden_indicator = ($this->config->item('hidden_template_indicator') != '') ? $this->config->item('hidden_template_indicator') : '_';
 		$hidden_indicator_length = strlen($hidden_indicator);
 
 		$query = $this->design_model->fetch_templates();
@@ -3538,6 +3484,7 @@ class Design extends CP_Controller {
 					'cache' => $row['cache'],
 					'refresh' => $row['refresh'],
 					'allow_php' => $row['allow_php'],
+					'protect_javascript' => $row['protect_javascript'],
 					'php_parsing' => $row['php_parse_location'],
 					'hits' => $row['hits'],
 					'access' => $access,
@@ -3560,6 +3507,7 @@ class Design extends CP_Controller {
 			$vars['templates'][$row['group_id']][$row['template_id']]['template_route'] = $row['route'];
 			$vars['templates'][$row['group_id']][$row['template_id']]['route_required'] = $row['route_required'];
 			$vars['templates'][$row['group_id']][$row['template_id']]['enable_http_auth'] = $row['enable_http_auth'];  // needed for display
+			$vars['templates'][$row['group_id']][$row['template_id']]['protect_javascript'] = $row['protect_javascript'];
 
 			$vars['templates'][$row['group_id']][$row['template_id']]['hidden'] = (strncmp($row['template_name'], $hidden_indicator, $hidden_indicator_length) == 0) ? TRUE : FALSE;
 
@@ -3752,6 +3700,7 @@ class Design extends CP_Controller {
 				'refresh' => $row['refresh'],
 				'allow_php' => $row['allow_php'],
 				'php_parsing' => $row['php_parse_location'],
+				'protect_javascript' => $row['protect_javascript'],
 				'hits' => $row['hits'],
 				'access' => $access,
 				'no_auth_bounce' => $row['no_auth_bounce'],
@@ -3827,6 +3776,7 @@ class Design extends CP_Controller {
 						'cache' 				=> ($this->input->get_post('cache') == 'y') ? 'y' : 'n',
 						'refresh' 				=> ($this->input->get_post('refresh') == '') ? 0 : $this->input->get_post('refresh'),
 						'allow_php' 			=> ($this->input->get_post('allow_php') == 'y') ? 'y' : 'n',
+						'protect_javascript'	=> ($this->input->get_post('protect_javascript') == 'y') ? 'y' : 'n',
 						'php_parse_location' 	=> ($this->input->get_post('php_parse_location') == 'i') ? 'i' : 'o',
 						'hits'					=> $this->input->get_post('hits')
 		);
@@ -4189,7 +4139,7 @@ class Design extends CP_Controller {
 
 			if (is_numeric($_POST['duplicate_group']))
 			{
-				$query = $this->db->query("SELECT template_name, save_template_file, template_data, template_type, template_notes, cache, refresh, no_auth_bounce, allow_php, php_parse_location FROM exp_templates WHERE group_id = '".$this->db->escape_str($_POST['duplicate_group'])."'");
+				$query = $this->db->query("SELECT template_name, save_template_file, template_data, template_type, template_notes, cache, refresh, no_auth_bounce, allow_php, php_parse_location, protect_javascript FROM exp_templates WHERE group_id = '".$this->db->escape_str($_POST['duplicate_group'])."'");
 
 				if ($query->num_rows() > 0)
 				{
@@ -4223,6 +4173,7 @@ class Design extends CP_Controller {
 									'refresh'				=> $row['refresh'],
 									'no_auth_bounce'		=> $row['no_auth_bounce'],
 									'php_parse_location'	=> $row['php_parse_location'],
+									'protect_javascript'	=> $row['protect_javascript'],
 									'allow_php'				=> ($this->session->userdata['group_id'] == 1) ? $row['allow_php'] : 'n',
 									'template_type'			=> $row['template_type'],
 									'template_data'			=> $row['template_data'],

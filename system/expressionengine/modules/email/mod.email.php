@@ -86,9 +86,9 @@ class Email {
 
 		// Conditionals
 		$cond = array();
-		$cond['logged_in']	= (ee()->session->userdata('member_id') == 0) ? 'FALSE' : 'TRUE';
-		$cond['logged_out']	= (ee()->session->userdata('member_id') != 0) ? 'FALSE' : 'TRUE';
-		$cond['captcha']	= ($this->use_captchas == 'y') ? 'TRUE' : 'FALSE';
+		$cond['logged_in']	= (ee()->session->userdata('member_id') == 0) ? FALSE : TRUE;
+		$cond['logged_out']	= (ee()->session->userdata('member_id') != 0) ? FALSE : TRUE;
+		$cond['captcha']	= ($this->use_captchas == 'y') ? TRUE : FALSE;
 
 		$tagdata = ee()->functions->prep_conditionals($tagdata, $cond);
 
@@ -315,7 +315,7 @@ class Email {
 
 		// Parse conditionals
 		$cond = array();
-		$cond['captcha'] = ($this->use_captchas == 'y') ? 'TRUE' : 'FALSE';
+		$cond['captcha'] = ($this->use_captchas == 'y') ? TRUE : FALSE;
 
 		$tagdata = ee()->functions->prep_conditionals($tagdata, $cond);
 

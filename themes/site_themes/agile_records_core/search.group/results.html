@@ -7,39 +7,39 @@
 		{/exp:search:search_results}
 	</title>
 {global_stylesheets}
-{rss} 
+{rss}
 {favicon}
-{html_head_end}	
+{html_head_end}
 	<body>
 {nav_access}
 	{branding_begin}
-		{embed="global_embeds/.top_nav" loc="not_found"}
+		{embed="global_embeds/_top_nav" loc="not_found"}
 		{global_top_search}
 		{global_top_member}
 	{branding_end}
 	{wrapper_begin}
-	{embed="global_embeds/.page_header" header="Search Results"}	
-	
+	{embed="global_embeds/_page_header" header="Search Results"}
+
 	<div id="content_pri"> <!-- This is where all primary content, left column gets entered -->
-		
+
 		<!-- Search Results tag: http://ellislab.com/expressionengine/user-guide/modules/search/index.html#results -->
-		
+
 		{exp:search:search_results}
 			{if count == "1"}
 				<!-- exp:search:keywords: http://ellislab.com/expressionengine/user-guide/modules/search/keywords.html -->
 				<!-- exp:search:keywords lets you echo out what search term was used -->
-			
+
 				<h3>Search Results for "<strong>{exp:search:keywords}</strong>":</h3>
 				<ul id="news_listing">
 			{/if}
-			
+
 			<li>
 				<h4>
-					<a href="{comment_url_title_auto_path}">{title}</a>  //  
+					<a href="{comment_url_title_auto_path}">{title}</a>  //
 					<!-- entry_date is a variable, and date formatting variables can be found at http://ellislab.com/expressionengine/user-guide/templates/date_variable_formatting.html -->
 					{entry_date format="%F %d %Y"}
 				</h4>
-			
+
 				<!-- news_body and news_image are  custom channel fields. http://ellislab.com/expressionengine/user-guide/cp/admin/channel_administration/custom_channel_fields.html -->
 				{if news_image}
 					<img src="{news_image}" alt="{title}" />
@@ -47,7 +47,7 @@
 				{news_body}
 			</li>
 			{if count == total_results}</ul>{/if}
-			
+
 			{paginate}
 				<div class="pagination">
 					{pagination_links}

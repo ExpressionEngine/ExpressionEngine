@@ -184,6 +184,9 @@ $lang = array(
 'parse_stage' =>
 'PHP Parsing Stage',
 
+'protect_javascript' =>
+'Protect Javascript',
+
 'access' =>
 'Access',
 
@@ -687,7 +690,8 @@ and templates will only be accesible from the default group/template URL.',
 'Template Route Manager',
 
 'template_route_notice' =>
-'Routes are listed in the order that the Template Router will match your templates.',
+'Routes are listed in the order that the Template Router will match your templates.
+You can drag and drop to rearrange the order.',
 
 'route_manager_group' =>
 'Group',
@@ -706,6 +710,9 @@ and templates will only be accesible from the default group/template URL.',
 
 'index_delete_disallowed' =>
 'Template groups must have an index template',
+
+'toggle_editor' =>
+'Toggle Editor',
 
 //----------------------------
 // Profile Theme Templates

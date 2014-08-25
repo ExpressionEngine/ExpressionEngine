@@ -39,6 +39,9 @@
 	{
 		$EE =& get_instance();
 
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.9.0', 'Pings::get_version_info()');
+
 		// Attempt to grab the local cached file
 		$cached = ee()->cache->get('current_version', Cache::GLOBAL_SCOPE);
 
