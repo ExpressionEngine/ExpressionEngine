@@ -3,9 +3,9 @@ namespace EllisLab\ExpressionEngine\Model;
 
 use InvalidArgumentException;
 
-use EllisLab\ExpressionEngine\Core\AliasService;
+use EllisLab\ExpressionEngine\Core\AliasServiceInterface;
+use EllisLab\ExpressionEngine\Core\Validation\ValidationFactory;
 use EllisLab\ExpressionEngine\Model\Error\Errors;
-use EllisLab\ExpressionEngine\Model\Query\QueryBuilder;
 use EllisLab\ExpressionEngine\Model\Relationship\Cascade;
 use EllisLab\ExpressionEngine\Model\Relationship\RelationshipBag;
 use EllisLab\ExpressionEngine\Model\Relationship\RelationshipQuery;
@@ -46,6 +46,11 @@ abstract class Model {
 	protected $_alias_service = NULL;
 
 	/**
+	 *
+	 */
+	protected $_validation_factory = NULL;
+
+	/**
 	 * The database gateway object for the related database table.
 	 */
 	protected $_gateways = array();
@@ -60,12 +65,14 @@ abstract class Model {
 	 */
 	protected $_dirty = array();
 
+	protected $_deleted = FALSE;
+
 
 	/**
 	 * Initialize this model with a set of data to set on the gateway.
 	 *
 	 * @param \EllisLab\ExpressionEngine\Model\ModelFactory
-	 * @param \Ellislab\ExpressionEngine\Core\AliasService
+	 * @param \Ellislab\ExpressionEngine\Core\AliasServiceInterface
 	 * @param	mixed[]	$data	An array of initial property values to set on
 	 * 		this model.  The array indexes must be valid properties on this
 	 * 		model's gateway.
@@ -75,7 +82,7 @@ abstract class Model {
 	 * 		save call.  Otherwise, it will be treated as clean and assumed
 	 * 		to have come from the database.
 	 */
-	public function __construct(ModelFactory $factory, AliasService $alias_service, array $data = array(), $dirty = TRUE)
+	public function __construct(ModelFactory $factory, AliasServiceInterface $alias_service, array $data = array(), $dirty = TRUE)
 	{
 		$this->_factory = $factory;
 		$this->_alias_service = $alias_service;
@@ -85,6 +92,7 @@ abstract class Model {
 			if (property_exists($this, $property))
 			{
 				$this->{$property} = $value;
+
 				if ($dirty)
 				{
 					$this->setDirty($property);
@@ -271,8 +279,22 @@ abstract class Model {
 	 */
 	public function getId()
 	{
-		$primary_key = static::getMetaData('primary_key');
+		$primary_key = $this->getMetaData('primary_key');
 		return $this->{$primary_key};
+	}
+
+	public function getGateways()
+	{
+		$gateways = array();
+
+		$gateway_names = $this->getMetaData('gateway_names');
+
+		foreach ($gateway_names as $name)
+		{
+			$gateways[$name] = $this->_alias_service->getRegisteredClass($name);
+		}
+
+		return $gateways;
 	}
 
 	/**
@@ -353,7 +375,6 @@ abstract class Model {
 
 		/* for delete:
 		$c->stopIf('keysNotEqual'); // require identical keys to traverse
-		var_dump(get_called_class());
 		*/
 
 		$c->walk(function($self) use ($gateways)
@@ -421,9 +442,16 @@ abstract class Model {
 	{
 		if (empty($this->_gateways))
 		{
-			foreach (static::getMetaData('gateway_names') as $gateway_name)
+			foreach ($this->getMetaData('gateway_names') as $gateway_name)
 			{
-				$this->_gateways[$gateway_name] = $this->_factory->makeGateway($gateway_name);
+				$gateway = $this->_factory->makeGateway($gateway_name);
+
+				if ( ! is_null($this->_validation_factory))
+				{
+					$gateway->setValidationFactory($this->_validation_factory);
+				}
+
+				$this->_gateways[$gateway_name] = $gateway;
 			}
 		}
 
@@ -655,7 +683,7 @@ abstract class Model {
 
 	public function fromArray($data)
 	{
-		$data[static::getMetaData('primary_key')] = NULL;
+		$data[$this->getMetaData('primary_key')] = NULL;
 
 		if (isset($data['related_models']))
 		{
@@ -713,6 +741,15 @@ abstract class Model {
 	{
 		$dumper = new namespace\Serializers\XmlSerializer();
 		return $dumper->unserialize($this, $model_xml);
+	}
+
+	/**
+	 * Using setter injection allows third parties and tests to flip out the
+	 * validation. This is automatically passed on to the gateways.
+	 */
+	public function setValidationFactory(ValidationFactory $validation_factory = NULL)
+	{
+		$this->_validation_factory = $validation_factory;
 	}
 
 /*

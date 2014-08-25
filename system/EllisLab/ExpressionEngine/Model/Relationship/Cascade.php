@@ -201,6 +201,11 @@ class Cascade {
 		}
 	}
 
+	public function walkUp($callback)
+	{
+
+	}
+
 	/**
 	 * Get all children of the current node. Children are at the end of our
 	 * outgoing edges, but we only want those that we actually have data for.

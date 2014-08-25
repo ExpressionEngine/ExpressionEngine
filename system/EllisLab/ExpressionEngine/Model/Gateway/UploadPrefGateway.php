@@ -38,7 +38,7 @@ class UploadPrefGateway extends RowDataGateway {
 		'site_id' => array(
 			'gateway' => 'SiteGateway',
 			'key' => 'site_id'
-		)
+		),
 
 		// A many to many relationship to member group.  Member groups attached
 		// through this relationship are not allowed access to this upload

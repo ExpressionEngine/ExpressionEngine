@@ -1,27 +1,33 @@
 <?php
 namespace EllisLab\ExpressionEngine\Model;
 
-use EllisLab\ExpressionEngine\Core\AliasService;
-use EllisLab\ExpressionEngine\Core\Dependencies;
-use EllisLab\ExpressionEngine\Model\Query\Query;
-
+use InvalidArgumentException;
+use EllisLab\ExpressionEngine\Core\AliasServiceInterface;
+use EllisLab\ExpressionEngine\Core\Validation\ValidationFactory;
 use EllisLab\ExpressionEngine\Model\Relationship\RelationshipGraph;
+use EllisLab\ExpressionEngine\Model\Query\Query;
 
 /**
  * The model builder is our composition root for all models and queries.
- * Any external dependencies should be explicitly declared here by providing
- * getters similar to getValidation() to avoid breaking the law of demeter.
+ * Any external dependencies should be explicitly declared here as interfaces.
+ *
+ * Optional dependencies should be set on the constructed models using setters.
+ *
+ * Technically Validation should be an optional dependency on this class and
+ * it should bubble down from there, but that would mean that it can be flipped
+ * out globally, which we don't want. The alternative is to go full java and
+ * create a configurator class. No thanks.
  */
 class ModelFactory {
 
 	protected $alias_service;
-	protected $di;
+	protected $validation_factory;
 	protected $relationship_graph;
 
-	public function __construct(Dependencies $di, AliasService $aliases)
+	public function __construct(AliasServiceInterface $aliases, ValidationFactory $validation_factory)
 	{
-		$this->di = $di;
 		$this->alias_service = $aliases;
+		$this->validation_factory = $validation_factory;
 	}
 
 	/**
@@ -59,7 +65,7 @@ class ModelFactory {
 
 		if ( ! is_a($class, '\EllisLab\ExpressionEngine\Model\Model', TRUE))
 		{
-			throw new \InvalidArgumentException('Can only create Models.');
+			throw new InvalidArgumentException('Can only create Models.');
 		}
 
 		$polymorph = $class::getMetaData('polymorph');
@@ -69,7 +75,9 @@ class ModelFactory {
 			$class = $this->alias_service->getRegisteredClass($polymorph);
 		}
 
-		return new $class($this, $this->alias_service, $data, $dirty);
+		$obj = new $class($this, $this->alias_service, $data, $dirty);
+		$obj->setValidationFactory($this->validation_factory);
+		return $obj;
 	}
 
 	/**
@@ -83,30 +91,10 @@ class ModelFactory {
 
 		if ( ! is_a($class, '\EllisLab\ExpressionEngine\Model\Gateway\RowDataGateway', TRUE))
 		{
-			throw new \InvalidArgumentException('Can only create Gateways.');
+			throw new InvalidArgumentException('Can only create Gateways.');
 		}
 
-		return new $class($this->getValidation(), $data);
-	}
-
-	/**
-	 * Get the external validation.
-	 *
-	 * @return \Ellislab\ExpressionEngine\Core\Validation
-	 */
-	public function getValidation()
-	{
-		return $this->di->getValidation();
-	}
-
-	/**
-	 * Get the external validation.
-	 *
-	 * @return \Ellislab\ExpressionEngine\Core\Validation
-	 */
-	public function getAliasService()
-	{
-		return $this->alias_service;
+		return new $class($data);
 	}
 
 	public function getRelationshipGraph()
@@ -115,12 +103,13 @@ class ModelFactory {
 		{
 			$this->relationship_graph = $this->newRelationshipGraph();
 		}
+
 		return $this->relationship_graph;
 	}
 
 	protected function newRelationshipGraph()
 	{
-		 return new RelationshipGraph($this->getAliasService());
+		 return new RelationshipGraph($this->alias_service);
 	}
 
 	/**

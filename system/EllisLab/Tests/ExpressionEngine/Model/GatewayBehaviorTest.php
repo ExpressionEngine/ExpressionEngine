@@ -7,11 +7,6 @@ use EllisLab\Tests\PHPUnit\Extensions\NoopDatabase\NoopQueryBuilder;
 
 class GatewayBehaviorTest extends \PHPUnit_Framework_TestCase {
 
-	public function setUp()
-	{
-		$this->validation = m::mock('EllisLab\ExpressionEngine\Core\Validation\ValidationFactory');
-	}
-
 	public function testGetMetadata()
 	{
 		$data = array(
@@ -33,7 +28,7 @@ class GatewayBehaviorTest extends \PHPUnit_Framework_TestCase {
 		$database->shouldReceive('update')->never();
 		$database->shouldReceive('delete')->never();
 
-		$gateway = new TestGateway($this->validation);
+		$gateway = new TestGateway();
 		$gateway->setConnection($database);
 
 		$gateway->save();
@@ -47,7 +42,7 @@ class GatewayBehaviorTest extends \PHPUnit_Framework_TestCase {
 		$database->shouldReceive('insert')->with('dummy', array('key' => 'test'))->once();
 		$database->shouldReceive('insert_id')->andReturn(1)->once();
 
-		$gateway = new TestGateway($this->validation);
+		$gateway = new TestGateway();
 		$gateway->setConnection($database);
 
 		$gateway->key = 'test';
@@ -68,7 +63,7 @@ class GatewayBehaviorTest extends \PHPUnit_Framework_TestCase {
 			->with('dummy', array('key' => 'test'))
 			->once();
 
-		$gateway = new TestGateway($this->validation);
+		$gateway = new TestGateway();
 		$gateway->setConnection($database);
 
 		$gateway->the_id = 5;
@@ -130,7 +125,7 @@ class GatewayBehaviorTest extends \PHPUnit_Framework_TestCase {
 
 	public function testConstructorChecksPropertyExists()
 	{
-		$gateway = new TestGateway($this->validation, array(
+		$gateway = new TestGateway(array(
 			'key'	 => 'exists',
 			'random' => 'does not'
 		));

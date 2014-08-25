@@ -14,15 +14,16 @@ abstract class AbstractRelationship {
 	public $to_key;
 	public $is_parent;
 
-	protected $from;
+	public $from;
 	protected $alias_service;
 
 	/**
 	 * @param String  $from_class	fully qualified classname of originating model
 	 * @param String  $to_class		fully qualified classname of target model
+	 * @param String  $to_model		short alias name of the to model
 	 * @param String  $name			name of the relationship on $from_class
 	 */
-	public function __construct($from_class, $to_class, $name)
+	public function __construct($from_class, $to_class, $to_model, $name)
 	{
 		$this->from = $from_class;
 		$this->to_class = $to_class;
@@ -32,7 +33,7 @@ abstract class AbstractRelationship {
 
 		$keys = array(
 			'name'		=> $name,
-			'model'		=> $name,
+			'model'		=> $to_model,
 			'type'		=> NULL,
 			'key'		=> NULL,
 			'to_key'	=> NULL,

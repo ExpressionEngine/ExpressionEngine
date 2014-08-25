@@ -36,7 +36,7 @@ class Template extends Model {
 
 	protected static $_relationships = array(
 		'Site' => array(
-			'type' => 'many_to_one'
+			'type' => 'many_to_one',
 		),
 		'TemplateGroup'	=> array(
 			'type' => 'many_to_one'

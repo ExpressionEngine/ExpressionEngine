@@ -4,7 +4,7 @@ namespace EllisLab\ExpressionEngine\Model\Relationship;
 use Exception;
 use RuntimeException;
 
-use EllisLab\ExpressionEngine\Core\AliasService;
+use EllisLab\ExpressionEngine\Core\AliasServiceInterface;
 
 class RelationshipMeta {
 
@@ -21,7 +21,6 @@ class RelationshipMeta {
 	protected $type = NULL;
 	protected $method = self::METHOD_JOIN;
 	protected $relationship_name = NULL;
-	protected $relationship_alias = NULL;
 
 	protected $from_model_name = NULL;
 	protected $from_model_class = NULL;
@@ -42,7 +41,7 @@ class RelationshipMeta {
 	protected $pivot_from_key = NULL;
 	protected $pivot_to_key = NULL;
 
-	public function __construct(AliasService $alias_service, $type, $relationship_name, array $from, array $to)
+	public function __construct(AliasServiceInterface $alias_service, $type, $relationship_name, array $from, array $to)
 	{
 		$this->alias_service = $alias_service;
 

@@ -2,7 +2,7 @@
 
 namespace EllisLab\ExpressionEngine\Model\Query;
 
-use EllisLab\ExpressionEngine\Core\AliasService;
+use EllisLab\ExpressionEngine\Core\AliasServiceInterface;
 use EllisLab\ExpressionEngine\Model\Collection;
 use EllisLab\ExpressionEngine\Model\ModelFactory;
 
@@ -14,7 +14,7 @@ class QueryResult {
 	private $db_result;
 	private $model_index = array();
 
-	public function __construct(ModelFactory $factory, AliasService $alias_service, array $result_array)
+	public function __construct(ModelFactory $factory, AliasServiceInterface $alias_service, array $result_array)
 	{
 		$this->factory = $factory;
 		$this->alias_service = $alias_service;

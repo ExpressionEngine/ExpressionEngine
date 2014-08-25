@@ -44,7 +44,7 @@ class CommentGateway extends RowDataGateway {
 		'channel_id' => array(
 			'gateway' => 'Channel',
 			'key' => 'channel_id'
-		)
+		),
 		'author_id' => array(
 			'gateway' => 'MemberGateway',
 			'key' => 'member_id'

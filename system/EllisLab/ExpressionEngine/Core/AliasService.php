@@ -1,7 +1,7 @@
 <?php
 namespace EllisLab\ExpressionEngine\Core;
 
-class AliasService {
+class AliasService implements AliasServiceInterface {
 
 	/**
 	 * Used for exception texts to help locate the class.

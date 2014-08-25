@@ -42,6 +42,7 @@ class UploadDestination extends Model {
 			'type' => 'many_to_many',
 			'model' => 'MemberGroup'
 		)
+	);
 
 	protected $id;
 	protected $site_id;

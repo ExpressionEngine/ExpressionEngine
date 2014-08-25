@@ -48,7 +48,7 @@ class ValidationFactory {
 	 *
 	 * @return	Validator	A new validator object, with namespaces injected.
 	 */
-	public static function getValidator()
+	public function getValidator()
 	{
 		return new Validator(self::$namespaces);
 	}
