@@ -42,6 +42,11 @@ if (isset($ajax_validate) && $ajax_validate == TRUE)
 							<?php endforeach ?>
 						<?php break;
 
+						case 'yes_no': ?>
+							<label class="choice mr<?php if ($value == 'y'):?> chosen<?php endif ?> yes"><input type="radio" name="<?=$field_name?>" value="y"<?php if ($value == 'y'):?> checked="checked"<?php endif ?>> yes</label>
+							<label class="choice <?php if ($value == 'n'):?> chosen<?php endif ?> no"><input type="radio" name="<?=$field_name?>" value="n"<?php if ($value == 'n'):?> checked="checked"<?php endif ?>> no</label>
+						<?php break;
+
 						case 'dropdown': ?>
 							<?=form_dropdown($field_name, $field['choices'], $value)?>
 						<?php break;

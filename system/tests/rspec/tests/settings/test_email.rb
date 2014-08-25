@@ -7,16 +7,6 @@ feature 'Outgoing Email Settings' do
     @page = EmailSettings.new
     @page.load
     no_php_js_errors
-
-    @webmaster_email = ee_config(item: 'webmaster_email')
-    @webmaster_name = ee_config(item: 'webmaster_name')
-    @email_charset = ee_config(item: 'email_charset')
-    @mail_protocol = ee_config(item: 'mail_protocol')
-    @smtp_server = ee_config(item: 'smtp_server')
-    @smtp_username = ee_config(item: 'smtp_username')
-    @smtp_password = ee_config(item: 'smtp_password')
-    @mail_format = ee_config(item: 'mail_format')
-    @word_wrap = ee_config(item: 'word_wrap')
   end
 
   it 'shows the Outgoing Email Settings page' do
@@ -24,16 +14,18 @@ feature 'Outgoing Email Settings' do
   end
 
   it 'should load current email settings into form fields' do
-    @page.webmaster_email.value.should == @webmaster_email
-    @page.webmaster_name.value.should == @webmaster_name
-    @page.email_charset.value.should == @email_charset
-    @page.mail_protocol.value.should == @mail_protocol
-    @page.smtp_server.value.should == @smtp_server
-    @page.smtp_username.value.should == @smtp_username
-    @page.smtp_password.value.should == @smtp_password
-    @page.mail_format.value.should == @mail_format
-    @page.word_wrap_y.checked?.should == (@word_wrap == 'y')
-    @page.word_wrap_n.checked?.should == (@word_wrap == 'n')
+    @page.webmaster_email.value.should == ee_config(item: 'webmaster_email')
+    @page.webmaster_name.value.should == ee_config(item: 'webmaster_name')
+    @page.email_charset.value.should == ee_config(item: 'email_charset')
+    @page.mail_protocol.value.should == ee_config(item: 'mail_protocol')
+    @page.smtp_server.value.should == ee_config(item: 'smtp_server')
+    @page.smtp_username.value.should == ee_config(item: 'smtp_username')
+    @page.smtp_password.value.should == ee_config(item: 'smtp_password')
+    @page.mail_format.value.should == ee_config(item: 'mail_format')
+
+    word_wrap = ee_config(item: 'word_wrap')
+    @page.word_wrap_y.checked?.should == (word_wrap == 'y')
+    @page.word_wrap_n.checked?.should == (word_wrap == 'n')
   end
 
   it 'should validate the form' do

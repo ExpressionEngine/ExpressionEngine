@@ -339,6 +339,67 @@ $lang = array(
 'empty_stmp_fields' =>
 'The "%s" field is required for SMTP.',
 
+/**
+ * Debugging & Output
+ */
+
+'enable_debugging' =>
+'Enable debugging?',
+
+'enable_debugging_desc' =>
+'When set to <b>enable</b>, super admins and member groups with permissions will see PHP/MySQL errors when they occur.',
+
+'show_profiler' =>
+'Display profiler?',
+
+'show_profiler_desc' =>
+'When set to <b>yes</b>, super admins and member groups with permissions will see benchmark results, all SQL queries, and submitted form data displayed at the bottom of the browser window.',
+
+'template_debugging' =>
+'Display template debugging?',
+
+'template_debugging_desc' =>
+'When set to <b>yes</b>, super admins and member groups with permissions will see a list of details concerning the processing of the page.',
+
+'output_options' =>
+'Output Options',
+
+'gzip_output' =>
+'Enable <abbr title="GNU Zip Compression">GZIP</abbr> compression?',
+
+'gzip_output_desc' =>
+'When set to <b>yes</b>, your website will be compressed using GZIP compression, this will decrease page load times.',
+
+'force_query_string' =>
+'Force <abbr title="Uniform Resource Location">URL</abbr> query strings?',
+
+'force_query_string_desc' =>
+'When set to <b>yes</b>, servers that do not support <mark>PATH_INFO</mark> will use query string URLs instead.',
+
+'send_headers' =>
+'Use <abbr title="Hypertext Transfer Protocol">HTTP</abbr> page headers?',
+
+'send_headers_desc' =>
+'When set to <b>yes</b>, your website will generate <abbr title="Hypertext Transfer Protocol">HTTP</abbr> headers for all pages.',
+
+'redirect_method' =>
+'Redirection type',
+
+'redirect_method_desc' =>
+'Indicates type of page redirection the system will use for <mark>{redirect=\'\'}</mark> and other built in redirections.',
+
+'redirect_method_opt_location' =>
+'Location (fastest)',
+
+'redirect_method_opt_refresh' =>
+'Refresh (Windows only)',
+
+'max_caches' =>
+'Cachable <abbr title="Uniform Resource Identifier">URI</abbr>s',
+
+'max_caches_desc' =>
+'If you cache your pages or database, this limits the number of cache instances. We recommend 150 for small sites and 300 for large sites. The allowed maximum is 1000.',
+
 ''=>''
 );
 
