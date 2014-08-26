@@ -1,18 +1,40 @@
 <?php
-namespace EllisLab\ExpressionEngine\Model;
+namespace EllisLab\ExpressionEngine\Service\Model;
 
 use InvalidArgumentException;
 
-use EllisLab\ExpressionEngine\Core\AliasServiceInterface;
-use EllisLab\ExpressionEngine\Core\Validation\ValidationFactory;
-use EllisLab\ExpressionEngine\Model\Error\Errors;
-use EllisLab\ExpressionEngine\Model\Relationship\Cascade;
-use EllisLab\ExpressionEngine\Model\Relationship\RelationshipBag;
-use EllisLab\ExpressionEngine\Model\Relationship\RelationshipQuery;
+use EllisLab\ExpressionEngine\Service\AliasServiceInterface;
+use EllisLab\ExpressionEngine\Service\Error\Errors;
+use EllisLab\ExpressionEngine\Service\Model\Relationship\Cascade;
+use EllisLab\ExpressionEngine\Service\Model\Relationship\RelationshipBag;
+use EllisLab\ExpressionEngine\Service\Model\Relationship\RelationshipQuery;
+use EllisLab\ExpressionEngine\Service\Validation\Factory as ValidationFactory;
 
 
 /**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 3.0
+ * @filesource
+ */
+
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine Base Model
+ *
  * The base Model class
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Model
+ * @category	Service
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 abstract class Model {
 
