@@ -1,4 +1,4 @@
-<?php namespace EllisLab\ExpressionEngine\Model;
+<?php namespace EllisLab\ExpressionEngine\Service\Model;
 
 use Closure;
 use Countable;
@@ -7,11 +7,31 @@ use ArrayIterator;
 use IteratorAggregate;
 
 /**
- * Model Collection
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 3.0
+ * @filesource
+ */
+
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine Collection
  *
  * If more than one element is returned for a result, we put them together
  * in a model collection. A collection acts like an array, with the additional
  * benefit of being able to call save and delete on it.
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Template
+ * @category	Model
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 class Collection implements ArrayAccess, Countable, IteratorAggregate {
 
