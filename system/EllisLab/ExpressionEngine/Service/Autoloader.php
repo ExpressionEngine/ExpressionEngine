@@ -1,4 +1,6 @@
 <?php
+namespace EllisLab\ExpressionEngine\Service;
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -23,7 +25,7 @@
  *
  * @package		ExpressionEngine
  * @subpackage	Core
- * @category	Core
+ * @category	Service
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */

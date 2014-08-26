@@ -1,16 +1,31 @@
 <?php
-namespace EllisLab\ExpressionEngine\Core\Validation\Rule;
+namespace EllisLab\ExpressionEngine\Service\Validation\Rule;
 
-use EllisLab\ExpressionEngine\Core\Validation\ValidationRule as ValidationRule;
+use EllisLab\ExpressionEngine\Service\Validation\ValidationRule as ValidationRule;
 
 /**
- * Required
- * 
- * This value must be set and must not be an empty string.
+ * ExpressionEngine - by EllisLab
  *
- * @param	mixed	$value	The value to validate.
- * 
- * @return	boolean	TRUE on pass, FALSE otherwise.
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 3.0
+ * @filesource
+ */
+
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine Required Validation Rule
+ *
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Validation\Rule
+ * @category	Service
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 class Required extends ValidationRule {
 

@@ -1,5 +1,5 @@
 <?php
-namespace EllisLab\ExpressionEngine\Core;
+namespace EllisLab\ExpressionEngine\Service;
 
 use StdClass;
 

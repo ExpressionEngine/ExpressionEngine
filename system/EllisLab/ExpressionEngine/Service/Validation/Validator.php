@@ -1,9 +1,23 @@
 <?php
-namespace EllisLab\ExpressionEngine\Core\Validation;
+namespace EllisLab\ExpressionEngine\Service\Validation;
 
 /**
- * Validator
- * 
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 3.0
+ * @filesource
+ */
+
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine Validator
+ *
  * Performs validation on one or more passed value/rule string sets. Parses the
  * passed rule strings, loading the rules as it finds them.  It then tests the
  * value against each rule and stores any failed rules.  Must be initialized
@@ -21,6 +35,11 @@ namespace EllisLab\ExpressionEngine\Core\Validation;
  * 		}
  *	}
  *
+ * @package		ExpressionEngine
+ * @subpackage	Validation
+ * @category	Service
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 class Validator {
 	protected $failed_rules = array();
@@ -47,9 +66,9 @@ class Validator {
 	 * Get an array of Failed Validation Rules
 	 *
 	 * Returns an array of failed validation rules that can be used to generate
- 	 * error messages.  
-	 * 
- 	 * @return	mixed[]	An array rules that failed to validate. 
+ 	 * error messages.
+	 *
+ 	 * @return	mixed[]	An array rules that failed to validate.
 	 *				Example: array('max_length', 'password')
 	 */
 	public function getFailedRules()
@@ -62,16 +81,16 @@ class Validator {
 	/**
 	 * Apply a set of Validation Rules to a Value
 	 *
-	 * Apply a set of validation rules, given in piped string format, to a 
+	 * Apply a set of validation rules, given in piped string format, to a
 	 * passed value.  Will return true if the value validates based on
 	 * the given rules.  Will return false, and set the errors array
 	 * if it doesn't.
 	 *
-	 * @param	string	$rule_definitions	The rules to validate based 
+	 * @param	string	$rule_definitions	The rules to validate based
 	 *				on in piped string format.  For example:
      *					"min_length[6]|password"
 	 * @param	mixed	$value	The value to validate.
-	 * 
+	 *
 	 * @return	boolean	True on success, FALSE otherwise.  On a FALSE return
 	 * 				any rules that failed will be set in the errors array and
 	 * 				may be retrieved with getFailedRules().
@@ -81,10 +100,10 @@ class Validator {
 		$rule_definitions = explode('|', $rule_definitions);
 		foreach($rule_definitions as $rule_definition)
 		{
-			$rule = ValidationService::parseRule($rule_definition);	
+			$rule = ValidationService::parseRule($rule_definition);
 			if ( ! $rule->validate($value))
 			{
-				$this->failed_rules[] = $rule;	
+				$this->failed_rules[] = $rule;
 			}
 		}
 		if ( ! empty($this->failed_rules))
@@ -105,7 +124,7 @@ class Validator {
 	 * instantiates it and passes the parsed parameters in the constructor.
 	 *
 	 * @param	string	$rule_definition	The definition of the rule to be
-	 * 		loaded. Only a single rule allowed, not a full multiple rule 
+	 * 		loaded. Only a single rule allowed, not a full multiple rule
 	 * 		string.
 	 *
 	 * @return	ValidationRule	The instantiated ValidationRule object,

@@ -1,9 +1,9 @@
 <?php
-namespace EllisLab\ExpressionEngine\Core;
+namespace EllisLab\ExpressionEngine\Service;
 
-use \EllisLab\ExpressionEngine\Core\ServiceProvider;
-use \EllisLab\ExpressionEngine\Core\Validation\ValidationFactory;
-use \EllisLab\ExpressionEngine\Model\ModelFactory;
+use \EllisLab\ExpressionEngine\Service\ServiceProvider;
+use \EllisLab\ExpressionEngine\Service\Validation\Factory;
+use \EllisLab\ExpressionEngine\Service\Model\Factory;
 
 /**
  * Global service provider.

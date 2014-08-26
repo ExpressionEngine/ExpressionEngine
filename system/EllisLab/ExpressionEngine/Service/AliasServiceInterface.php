@@ -1,7 +1,31 @@
 <?php
+namespace EllisLab\ExpressionEngine\Service;
 
-namespace EllisLab\ExpressionEngine\Core;
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 3.0
+ * @filesource
+ */
 
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine Alias Service Interface
+ *
+ * Provides an interface for use by alias services.
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Error
+ * @category	Service
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
+ */
 interface AliasServiceInterface {
 
 	/**

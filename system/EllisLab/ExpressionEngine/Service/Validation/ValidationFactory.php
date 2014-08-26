@@ -1,14 +1,34 @@
 <?php
-namespace EllisLab\ExpressionEngine\Core\Validation;
+namespace EllisLab\ExpressionEngine\Service\Validation;
 
 /**
- * Validation
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 3.0
+ * @filesource
+ */
+
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine Validation Factory
  *
  * Acts as a singleton on the Dependency Injection object (Dependencies) and
  * allows the registration of new Validation rule namespaces by third parties.
  * Also acts as a factory for Validator objects.
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Validation
+ * @category	Service
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
-class ValidationFactory {
+class Factory {
 
 	/**
 	 * Validation rule namespaces that have been registered.  Initialized with

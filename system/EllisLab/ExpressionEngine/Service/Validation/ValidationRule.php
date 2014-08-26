@@ -1,11 +1,25 @@
 <?php
-namespace EllisLab\ExpressionEngine\Core\Validation;
+namespace EllisLab\ExpressionEngine\Service\Validation;
 
 /**
- * Base Validation Rule
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 3.0
+ * @filesource
+ */
+
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine Base Validation Rule
  *
  * Represents a Validation Rule that can be applied to a value during any
- * Validation stage.  This can be either form validation or validation of data 
+ * Validation stage.  This can be either form validation or validation of data
  * before it is committed to the database.  Will be loaded from a validation
  * string of the rule's name (first character lower case).
  *
@@ -15,6 +29,12 @@ namespace EllisLab\ExpressionEngine\Core\Validation;
  * this::
  *
  * 	class Required extends ValidationRule {}
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Validation
+ * @category	Service
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 abstract class ValidationRule {
 
