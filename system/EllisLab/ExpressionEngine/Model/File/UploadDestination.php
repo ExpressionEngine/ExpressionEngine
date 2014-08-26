@@ -1,5 +1,7 @@
 <?php
-namespace EllisLab\ExpressionEngine\Model;
+namespace EllisLab\ExpressionEngine\Model\File;
+
+use EllisLab\ExpressionEngine\Service\Model;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -16,7 +18,7 @@ namespace EllisLab\ExpressionEngine\Model;
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Upload Destinations
+ * ExpressionEngine File Upload Location Model
  *
  * A model representing one of many possible upload destintations to which
  * files may be uploaded through the file manager or from the publish page.
@@ -25,7 +27,7 @@ namespace EllisLab\ExpressionEngine\Model;
  * server paths where those files actually end up.
  *
  * @package		ExpressionEngine
- * @subpackage	Core
+ * @subpackage	File
  * @category	Model
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com

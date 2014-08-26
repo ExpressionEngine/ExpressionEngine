@@ -1,5 +1,7 @@
 <?php
-namespace EllisLab\ExpressionEngine\Model\Gateway;
+namespace EllisLab\ExpressionEngine\Model\File\Gateway;
+
+use EllisLab\ExpressionEngine\Service\Model\RowDataGateway;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -16,13 +18,10 @@ namespace EllisLab\ExpressionEngine\Model\Gateway;
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Upload Preferences Gateway
- *
- * A gateway controlling access to the ``upload_prefs`` table
- * which holds information relating to file upload destinations.
+ * ExpressionEngine Upload Prefs Table
  *
  * @package		ExpressionEngine
- * @subpackage	Core
+ * @subpackage	File\Gateway
  * @category	Model
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
