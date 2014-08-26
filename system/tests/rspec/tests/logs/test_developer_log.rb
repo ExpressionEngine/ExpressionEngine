@@ -33,6 +33,19 @@ feature 'Developer Log' do
 	@page.should have(50).items # Default is 50 per page
   end
 
+  it 'does not show filters at 10 items' do
+  	@page.generate_data(count: 10)
+  	@page.load
+
+  	@page.displayed?
+  	@page.title.text.should eq 'Developer Logs'
+  	@page.should have_phrase_search
+  	@page.should have_submit_button
+  	@page.should_not have_date_filter
+  	@page.should_not have_perpage_filter
+	@page.should_not have_pagination
+  end
+
   # Confirming phrase search
   it 'searches by phrases' do
   	our_desc = "Rspec entry for search"

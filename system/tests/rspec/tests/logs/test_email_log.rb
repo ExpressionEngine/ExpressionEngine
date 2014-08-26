@@ -3,12 +3,15 @@ require './bootstrap.rb'
 feature 'Email Log' do
 
   before(:each) do
-	cp_session
+  	cp_session
 
-	@page = EmailLog.new
+  	@page = EmailLog.new
+  	add_member(username: 'johndoe')
+  end
+
+  before(:each, :pregen => true) do
 	@page.generate_data(count: 150, timestamp_min: 26)
 	@page.generate_data(count: 35, member_id: 2, member_name: 'johndoe', timestamp_min: 25)
-	add_member(username: 'johndoe')
 	@page.load
 
 	# These should always be true at all times if not something has gone wrong
@@ -21,7 +24,7 @@ feature 'Email Log' do
 	@page.should have_perpage_filter
   end
 
-  it 'shows the e-mail Logs page' do
+  it 'shows the e-mail Logs page', :pregen => true do
 	@page.should have_remove_all
 	@page.should have_pagination
 
@@ -33,8 +36,22 @@ feature 'Email Log' do
 	@page.should have(50).items # Default is 50 per page
   end
 
+  it 'does not show filters at 10 items', :pregen => false do
+  	@page.generate_data(count: 10)
+  	@page.load
+
+	@page.displayed?
+	@page.title.text.should eq 'e-mail Logs'
+	@page.should have_phrase_search
+	@page.should have_submit_button
+  	@page.should_not have_username_filter
+  	@page.should_not have_date_filter
+  	@page.should_not have_perpage_filter
+	@page.should_not have_pagination
+  end
+
   # Confirming phrase search
-  it 'searches by phrases' do
+  it 'searches by phrases', :pregen => true do
   	our_subject = "Rspec entry for search"
 
   	@page.generate_data(count: 1, timestamp_max: 0, subject: our_subject)
@@ -53,7 +70,7 @@ feature 'Email Log' do
   end
 
   # Confirming individual filter behavior
-  it 'filters by username' do
+  it 'filters by username', :pregen => true do
 	@page.username_filter.click
 	@page.wait_until_username_filter_menu_visible
 	@page.username_filter_menu.click_link "johndoe"
@@ -64,7 +81,7 @@ feature 'Email Log' do
 	@page.should_not have_pagination
   end
 
-  it 'filters by custom username' do
+  it 'filters by custom username', :pregen => true do
 	@page.username_filter.click
 	@page.wait_until_username_manual_filter_visible
 	@page.username_manual_filter.set "johndoe"
@@ -76,7 +93,7 @@ feature 'Email Log' do
 	@page.should_not have_pagination
   end
 
-  it 'filters by date' do
+  it 'filters by date', :pregen => true do
 	@page.generate_data(count: 23, timestamp_max: 22)
 	@page.load
 
@@ -89,7 +106,7 @@ feature 'Email Log' do
 	@page.should have(23).items
   end
 
-  it 'can change page size' do
+  it 'can change page size', :pregen => true do
 	@page.perpage_filter.click
 	@page.wait_until_perpage_filter_menu_visible
 	@page.perpage_filter_menu.click_link "25"
@@ -102,7 +119,7 @@ feature 'Email Log' do
 	@page.pages.map {|name| name.text}.should == ["First", "1", "2", "3", "Next", "Last"]
   end
 
-  it 'can set a custom limit' do
+  it 'can set a custom limit', :pregen => true do
 	@page.perpage_filter.click
 	@page.wait_until_perpage_manual_filter_visible
 	@page.perpage_manual_filter.set "42"
@@ -117,7 +134,7 @@ feature 'Email Log' do
   end
 
   # Confirming combining filters work
-  it 'can combine username and page size filters' do
+  it 'can combine username and page size filters', :pregen => true do
 	@page.perpage_filter.click
 	@page.wait_until_perpage_filter_menu_visible
 	@page.perpage_filter_menu.click_link "150"
@@ -143,7 +160,7 @@ feature 'Email Log' do
 	@page.items.should_not have_text "admin"
   end
 
-  it 'can combine phrase search with filters' do
+  it 'can combine phrase search with filters', :pregen => true do
 	@page.perpage_filter.click
 	@page.wait_until_perpage_filter_menu_visible
 	@page.perpage_filter_menu.click_link "150"
@@ -169,7 +186,7 @@ feature 'Email Log' do
   end
 
   # Confirming the log deletion action
-  it 'can remove a single entry' do
+  it 'can remove a single entry', :pregen => true do
 	our_subject = "Rspec entry to be deleted"
 
 	@page.generate_data(count: 1, timestamp_max: 0, subject: our_subject)
@@ -183,7 +200,7 @@ feature 'Email Log' do
 	@page.should have_no_content our_subject
   end
 
-  it 'can remove all entries' do
+  it 'can remove all entries', :pregen => true do
 	@page.remove_all.click
 	no_php_js_errors
 
@@ -192,7 +209,7 @@ feature 'Email Log' do
 	@page.should_not have_pagination
   end
 
-  it 'can display a single email' do
+  it 'can display a single email', :pregen => true do
   	our_subject = "Rspec entry to be displayed"
 
   	@page.generate_data(count: 1, timestamp_max: 0, subject: our_subject)
@@ -207,7 +224,7 @@ feature 'Email Log' do
   end
 
   # Confirming Pagination behavior
-  it 'shows the Prev button when on page 2' do
+  it 'shows the Prev button when on page 2', :pregen => true do
 	click_link "Next"
 	no_php_js_errors
 
@@ -216,7 +233,7 @@ feature 'Email Log' do
 	@page.pages.map {|name| name.text}.should == ["First", "Previous", "1", "2", "3", "Next", "Last"]
   end
 
-  it 'does not show Next on the last page' do
+  it 'does not show Next on the last page', :pregen => true do
 	click_link "Last"
 	no_php_js_errors
 
@@ -225,7 +242,7 @@ feature 'Email Log' do
 	@page.pages.map {|name| name.text}.should == ["First", "Previous", "2", "3", "4", "Last"]
   end
 
-  it 'does not lose a filter value when paginating' do
+  it 'does not lose a filter value when paginating', :pregen => true do
 	@page.perpage_filter.click
 	@page.wait_until_perpage_filter_menu_visible
 	@page.perpage_filter_menu.click_link "25"
@@ -244,7 +261,7 @@ feature 'Email Log' do
 	@page.pages.map {|name| name.text}.should == ["First", "Previous", "1", "2", "3", "Next", "Last"]
   end
 
-  it 'will paginate phrase search results' do
+  it 'will paginate phrase search results', :pregen => true do
 	@page.perpage_filter.click
 	@page.wait_until_perpage_filter_menu_visible
 	@page.perpage_filter_menu.click_link "25"

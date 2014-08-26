@@ -6,6 +6,9 @@ feature 'Throttling Log' do
     cp_session
 
     @page = ThrottleLog.new
+  end
+
+  before(:each, :pregen => true) do
     @page.generate_data(count: 150)
     @page.generate_data(count: 100, locked_out: true)
   end
@@ -19,7 +22,7 @@ feature 'Throttling Log' do
     @page.title.text.should eq 'Access Throttling Logs'
     @page.should have_phrase_search
     @page.should have_submit_button
-    @page.should have_perpage_filter
+    @page.should_not have_perpage_filter
   end
 
   before(:each, :enabled => true) do
@@ -39,7 +42,7 @@ feature 'Throttling Log' do
     @page.should have_selector('a.action', :text => 'TURN THROTTLING ON')
   end
 
-  it '(enabled) shows the Access Throttling Logs page', :enabled => true do
+  it '(enabled) shows the Access Throttling Logs page', :enabled => true, :pregen => true do
     @page.should have_remove_all
     @page.should have_pagination
 
@@ -51,8 +54,21 @@ feature 'Throttling Log' do
     @page.should have(50).items # Default is 50 per page
   end
 
+  it '(enabled) does not show filters at 10 items', :pregen => false do
+	@page.generate_data(count: 10)
+    ee_config(item: 'enable_throttling', value: 'y')
+    @page.load
+
+    # These should always be true at all times if not something has gone wrong
+    @page.displayed?
+    @page.title.text.should eq 'Access Throttling Logs'
+    @page.should have_phrase_search
+    @page.should have_submit_button
+    @page.should_not have_perpage_filter
+  end
+
   # Confirming phrase search
-  it '(enabled) searches by phrases', :enabled => true do
+  it '(enabled) searches by phrases', :enabled => true, :pregen => true do
   	our_ip = "172.16.11.42"
 
   	@page.generate_data(count: 1, timestamp_max: 0, ip_address: our_ip)
@@ -70,7 +86,7 @@ feature 'Throttling Log' do
 	@page.should have(1).items
   end
 
-  it '(enabled) can change page size', :enabled => true do
+  it '(enabled) can change page size', :enabled => true, :pregen => true do
 	@page.perpage_filter.click
 	@page.wait_until_perpage_filter_menu_visible
 	@page.perpage_filter_menu.click_link "25"
@@ -83,7 +99,7 @@ feature 'Throttling Log' do
     @page.pages.map {|name| name.text}.should == ["First", "1", "2", "3", "Next", "Last"]
   end
 
-  it '(enabled) can set a custom limit', :enabled => true do
+  it '(enabled) can set a custom limit', :enabled => true, :pregen => true do
 	@page.perpage_filter.click
 	@page.wait_until_perpage_manual_filter_visible
 	@page.perpage_manual_filter.set "42"
@@ -97,7 +113,7 @@ feature 'Throttling Log' do
 	@page.pages.map {|name| name.text}.should == ["First", "1", "2", "3", "Next", "Last"]
   end
 
-  it '(enabled) can combine phrase search with filters', :enabled => true do
+  it '(enabled) can combine phrase search with filters', :enabled => true, :pregen => true do
 	our_ip = "172.16.11.42"
 
 	@page.generate_data(count: 27, timestamp_max: 0, ip_address: our_ip)
@@ -122,7 +138,7 @@ feature 'Throttling Log' do
   end
 
   # Confirming the log deletion action
-  # it '(enabled) can remove a single entry', :enabled => true do
+  # it '(enabled) can remove a single entry', :enabled => true, :pregen => true do
   #	  our_action = "Rspec entry to be deleted"
   #
   #	  @page.generate_data(count: 1, timestamp_max: 0, action: our_action)
@@ -135,7 +151,7 @@ feature 'Throttling Log' do
   #	  @page.should have_no_content our_action
   # end
 
-  it '(enabled) can remove all entries', :enabled => true do
+  it '(enabled) can remove all entries', :enabled => true, :pregen => true do
     @page.remove_all.click
 	no_php_js_errors
 
@@ -145,7 +161,7 @@ feature 'Throttling Log' do
   end
 
   # Confirming Pagination behavior
-  it '(enabled) shows the Prev button when on page 2', :enabled => true do
+  it '(enabled) shows the Prev button when on page 2', :enabled => true, :pregen => true do
     click_link "Next"
 	no_php_js_errors
 
@@ -154,7 +170,7 @@ feature 'Throttling Log' do
     @page.pages.map {|name| name.text}.should == ["First", "Previous", "1", "2", "3", "Next", "Last"]
   end
 
-  it '(enabled) does not show Next on the last page', :enabled => true do
+  it '(enabled) does not show Next on the last page', :enabled => true, :pregen => true do
     click_link "Last"
 	no_php_js_errors
 
@@ -163,7 +179,7 @@ feature 'Throttling Log' do
     @page.pages.map {|name| name.text}.should == ["First", "Previous", "3", "4", "5", "Last"]
   end
 
-  it '(enabled) does not lose a filter value when paginating', :enabled => true do
+  it '(enabled) does not lose a filter value when paginating', :enabled => true, :pregen => true do
 	@page.perpage_filter.click
 	@page.wait_until_perpage_filter_menu_visible
 	@page.perpage_filter_menu.click_link "25"
@@ -182,7 +198,7 @@ feature 'Throttling Log' do
 	@page.pages.map {|name| name.text}.should == ["First", "Previous", "1", "2", "3", "Next", "Last"]
   end
 
-  it '(enabled) will paginate phrase search results', :enabled => true do
+  it '(enabled) will paginate phrase search results', :enabled => true, :pregen => true do
   	@page.generate_data(count: 35, timestamp_max: 0, ip_address: "172.16.11.42")
   	@page.load
 
