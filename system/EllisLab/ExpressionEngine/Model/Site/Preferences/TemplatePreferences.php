@@ -19,7 +19,7 @@ namespace EllisLab\ExpressionEngine\Model\Site\Preferences;
  * ExpressionEngine Template Preferences
  *
  * @package		ExpressionEngine
- * @subpackage	Core
+ * @subpackage	Site\Preferences
  * @category	Model
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com

@@ -3,12 +3,32 @@ namespace EllisLab\ExpressionEngine\Model\Site;
 
 use EllisLab\ExpressionEngine\Model\Model;
 
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 3.0
+ * @filesource
+ */
 
+// ------------------------------------------------------------------------
 
 /**
+ * ExpressionEngine Site Table
+ *
  * The Site model stores preference sets for each site in this installation
  * of ExpressionEngine.  Each site can have a completely different set of
  * settings and prefereces.
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Site
+ * @category	Model
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 class Site extends Model {
 	protected static $_primary_key = 'site_id';

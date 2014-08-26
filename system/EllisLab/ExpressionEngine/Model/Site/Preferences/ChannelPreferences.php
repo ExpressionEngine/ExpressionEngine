@@ -1,7 +1,6 @@
 <?php
 namespace EllisLab\ExpressionEngine\Model\Site\Preferences;
 
-
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -20,7 +19,7 @@ namespace EllisLab\ExpressionEngine\Model\Site\Preferences;
  * ExpressionEngine Channel Preferences
  *
  * @package		ExpressionEngine
- * @subpackage	Core
+ * @subpackage	Site\Preferences
  * @category	Model
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com

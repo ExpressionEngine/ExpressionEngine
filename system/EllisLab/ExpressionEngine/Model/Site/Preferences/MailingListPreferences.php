@@ -19,7 +19,7 @@ namespace Ellislab\ExpressionEngine\Model\Site\Preferences;
  * ExpressionEngine Mailing List Preferences
  *
  * @package		ExpressionEngine
- * @subpackage	Core
+ * @subpackage	Site\Preferences
  * @category	Model
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
