@@ -1,5 +1,7 @@
 <?php
-namespace EllisLab\ExpressionEngine\Model;
+namespace EllisLab\ExpressionEngine\Model\Addon;
+
+use EllisLab\ExpressionEngine\Service\Model;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -18,11 +20,8 @@ namespace EllisLab\ExpressionEngine\Model;
 /**
  * ExpressionEngine Module Model
  *
- * Represents an addon module.  That is an addon that has template tag, database
- * and cp components.
- *
  * @package		ExpressionEngine
- * @subpackage	Core
+ * @subpackage	Addon
  * @category	Model
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com

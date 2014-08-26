@@ -1,6 +1,7 @@
 <?php
-namespace EllisLab\ExpressionEngine\Model\Gateway;
+namespace EllisLab\ExpressionEngine\Model\Addon\Gateway;
 
+use EllisLab\ExpressionEngine\Service\Model\RowDataGateway;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -17,13 +18,10 @@ namespace EllisLab\ExpressionEngine\Model\Gateway;
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Extension Gateway
- *
- * A gateway for use in storing data on Extensions installed in the current
- * instance of ExpressionEngine.
+ * ExpressionEngine Extension Table
  *
  * @package		ExpressionEngine
- * @subpackage	Core
+ * @subpackage	Addon\Gateway
  * @category	Model
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com

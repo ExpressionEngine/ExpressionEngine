@@ -1,5 +1,7 @@
 <?php
-namespace EllisLab\ExpressionEngine\Model;
+namespace EllisLab\ExpressionEngine\Model\Addon;
+
+use EllisLab\ExpressionEngine\Service\Model;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -18,11 +20,8 @@ namespace EllisLab\ExpressionEngine\Model;
 /**
  * ExpressionEngine Accessory Model
  *
- * A model representing accessories that have been installed in this instance
- * of ExpressionEngine.
- *
  * @package		ExpressionEngine
- * @subpackage	Core
+ * @subpackage	Addon
  * @category	Model
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
