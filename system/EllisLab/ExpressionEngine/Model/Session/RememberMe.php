@@ -18,7 +18,7 @@ use EllisLab\ExpressionEngine\Service\Model;
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Session Model
+ * ExpressionEngine Remember Me Model
  *
  * @package		ExpressionEngine
  * @subpackage	Session
@@ -26,6 +26,6 @@ use EllisLab\ExpressionEngine\Service\Model;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Session extends Model {
+class RememberMe extends Model {
 
 }
