@@ -25,7 +25,7 @@ use EllisLab\ExpressionEngine\Model\Model;
  * ExpressionEngine.
  *
  * @package		ExpressionEngine
- * @subpackage	Core
+ * @subpackage	Template
  * @category	Model
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com

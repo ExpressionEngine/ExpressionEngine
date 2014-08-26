@@ -1,6 +1,31 @@
 <?php
-namespace EllisLab\ExpressionEngine\Model\Gateway;
+namespace EllisLab\ExpressionEngine\Model\Template\Gateway;
 
+use EllisLab\ExpressionEngine\Service\Model\RowDataGateway;
+
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 3.0
+ * @filesource
+ */
+
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine Global Variables Table
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Template\Gateway
+ * @category	Model
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
+ */
 class GlobalVariableGateway extends RowDataGateway
 {
 	// Meta Data
