@@ -1,12 +1,33 @@
 <?php
-namespace EllisLab\ExpressionEngine\Model\Error;
+namespace EllisLab\ExpressionEngine\Service\Error;
 
 /**
- * A class representing a validation or execution error that
- * is intended for user consumption.  The class wraps a simple
- * error message that is assigned on construction and may be
- * retrieved for presentation using Error::getMessage().  It
- * does nothing with language files.
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 3.0
+ * @filesource
+ */
+
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine Error Class
+ *
+ * A class representing a validation or execution error that is intended for
+ * user consumption.  The class wraps a simple error message that is assigned
+ * on construction and may be retrieved for presentation using
+ * Error::getMessage().  It does nothing with language files.
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Error
+ * @category	Service
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 class Error {
 

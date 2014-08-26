@@ -1,13 +1,35 @@
 <?php
-namespace EllisLab\ExpressionEngine\Model\Error;
+namespace EllisLab\ExpressionEngine\Service\Error;
 
-Use EllisLab\ExpressionEngine\Model\Error\Error;
+Use EllisLab\ExpressionEngine\Service\Error\Error;
 
 /**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 3.0
+ * @filesource
+ */
+
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine Error Container Class
+ *
  * Wrapper class for multiple errors, to be returned from validation.
  * Does not track error duplications, so can plausibly contain duplicated
  * errors.  Also does not perform any translation of errors (or create
  * the errors).
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Error
+ * @category	Service
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 class Errors {
 	protected $errors = array();
