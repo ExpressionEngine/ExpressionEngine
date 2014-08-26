@@ -48,7 +48,11 @@ class Throttle extends Logs {
 
 		$this->base_url->path = 'logs/throttle';
 		ee()->view->cp_page_title = lang('view_throttle_log');
-		$this->filters(array('perpage'));
+
+		if (ee()->api->get('Throttle')->count() > 10)
+		{
+			$this->filters(array('perpage'));
+		}
 
 		$rows = array();
 		$links = array();

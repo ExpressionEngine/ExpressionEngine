@@ -48,7 +48,12 @@ class Search extends Logs {
 
 		$this->base_url->path = 'logs/search';
 		ee()->view->cp_page_title = lang('view_search_log');
-		$this->filters(array('username', 'site', 'date', 'perpage'));
+
+		if (ee()->api->get('SearchLog')->count() > 10)
+		{
+			ee()->db->_reset_select();
+			$this->filters(array('username', 'site', 'date', 'perpage'));
+		}
 
 		$page = ee()->input->get('page') ? ee()->input->get('page') : 1;
 		$page = ($page > 0) ? $page : 1;

@@ -43,7 +43,11 @@ class Cp extends Logs {
 	{
 		$this->base_url->path = 'logs/cp';
 		ee()->view->cp_page_title = lang('view_cp_log');
-		$this->filters(array('username', 'site', 'date', 'perpage'));
+
+		if (ee()->api->get('CpLog')->count() > 10)
+		{
+			$this->filters(array('username', 'site', 'date', 'perpage'));
+		}
 
 		$page = ee()->input->get('page') ? ee()->input->get('page') : 1;
 		$page = ($page > 0) ? $page : 1;

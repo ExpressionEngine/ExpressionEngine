@@ -70,6 +70,11 @@ class Logs extends CP_Controller {
 		}
 
 		ee()->menu->register_left_nav($menu);
+
+		$this->params['perpage'] = $this->perpage; // Set a default
+
+		// Add in any submitted search phrase
+		ee()->view->search_value = ee()->input->get_post('search');
 	}
 
 	// --------------------------------------------------------------------
@@ -267,9 +272,6 @@ class Logs extends CP_Controller {
 
 		// Make the filters available to the view
 		ee()->view->filters = $view_filters;
-
-		// Add in any submitted search phrase
-		ee()->view->search_value = ee()->input->get_post('search');
 
 		if ( ! empty(ee()->view->search_value))
 		{

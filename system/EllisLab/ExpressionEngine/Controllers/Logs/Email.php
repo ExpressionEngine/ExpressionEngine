@@ -48,7 +48,12 @@ class Email extends Logs {
 
 		$this->base_url->path = 'logs/email';
 		ee()->view->cp_page_title = lang('view_email_logs');
-		$this->filters(array('username', 'date', 'perpage'));
+
+		if (ee()->api->get('EmailConsoleCache')->count() > 10)
+		{
+			ee()->db->_reset_select();
+			$this->filters(array('username', 'date', 'perpage'));
+		}
 
 		$page = ee()->input->get('page') ? ee()->input->get('page') : 1;
 		$page = ($page > 0) ? $page : 1;
