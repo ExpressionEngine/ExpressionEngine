@@ -1,14 +1,30 @@
 <?php
-namespace EllisLab\ExpressionEngine\Model;
+namespace EllisLab\ExpressionEngine\Service\Model;
 
 use InvalidArgumentException;
-use EllisLab\ExpressionEngine\Core\AliasServiceInterface;
-use EllisLab\ExpressionEngine\Core\Validation\ValidationFactory;
-use EllisLab\ExpressionEngine\Model\Relationship\RelationshipGraph;
-use EllisLab\ExpressionEngine\Model\Query\Query;
+use EllisLab\ExpressionEngine\Service\AliasServiceInterface;
+use EllisLab\ExpressionEngine\Service\Validation\Factory as ValidationFactory;
+use EllisLab\ExpressionEngine\Service\Model\Relationship\RelationshipGraph;
+use EllisLab\ExpressionEngine\Service\Model\Query\Query;
 
 /**
- * The model builder is our composition root for all models and queries.
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 3.0
+ * @filesource
+ */
+
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine Model Factory
+ *
+ * The model factory is our composition root for all models and queries.
  * Any external dependencies should be explicitly declared here as interfaces.
  *
  * Optional dependencies should be set on the constructed models using setters.
@@ -17,8 +33,16 @@ use EllisLab\ExpressionEngine\Model\Query\Query;
  * it should bubble down from there, but that would mean that it can be flipped
  * out globally, which we don't want. The alternative is to go full java and
  * create a configurator class. No thanks.
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Model
+ * @category	Service
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
-class ModelFactory {
+/**
+ */
+class Factory {
 
 	protected $alias_service;
 	protected $validation_factory;
