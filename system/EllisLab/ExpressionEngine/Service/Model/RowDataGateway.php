@@ -1,11 +1,24 @@
 <?php
-namespace EllisLab\ExpressionEngine\Model\Gateway;
+namespace EllisLab\ExpressionEngine\Service\Model\Gateway;
 
-use EllisLab\ExpressionEngine\Core\Validation\ValidationFactory;
-use EllisLab\ExpressionEngine\Core\Validation\Error\ValidationError;
+use EllisLab\ExpressionEngine\Service\Validation\ValidationFactory;
+use EllisLab\ExpressionEngine\Service\Validation\Error\ValidationError;
 
-use EllisLab\ExpressionEngine\Model\Error\Errors;
+use EllisLab\ExpressionEngine\Service\Error\Errors;
 
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 3.0
+ * @filesource
+ */
+
+// ------------------------------------------------------------------------
 
 /**
  * Base Gateway Class
@@ -15,6 +28,12 @@ use EllisLab\ExpressionEngine\Model\Error\Errors;
  * instance of an Gateway represents a single row in the represented table. It
  * tracks which properties are "dirty" (have been changed since loading) and
  * only validates/saves those properties that are dirty.
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Model
+ * @category	Service
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 abstract class RowDataGateway {
 
