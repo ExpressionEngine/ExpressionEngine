@@ -1,8 +1,33 @@
 <?php
-namespace EllisLab\ExpressionEngine\Model\Relationship;
+namespace EllisLab\ExpressionEngine\Service\Model\Relationship;
 
-use EllisLab\ExpressionEngine\Model\Collection;
+use EllisLab\ExpressionEngine\Service\Model\Collection;
 
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 3.0
+ * @filesource
+ */
+
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine Relationship Bag
+ *
+ * Container class for all the relationships of a given model.
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Model\Relationship
+ * @category	Service
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
+ */
 class RelationshipBag {
 
 	private $relationships = array();

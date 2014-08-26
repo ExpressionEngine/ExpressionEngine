@@ -1,6 +1,31 @@
 <?php
-namespace EllisLab\ExpressionEngine\Model\Relationship\Types;
+namespace EllisLab\ExpressionEngine\Service\Model\Relationship\Types;
 
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 3.0
+ * @filesource
+ */
+
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine Many-To-Many Relationship
+ *
+ * The many-to-many relationship type.
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Model\Relationship\Types
+ * @category	Service
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
+ */
 class ManyToMany extends AbstractRelationship {
 
 	public $type	= 'many_to_many';

@@ -1,6 +1,31 @@
 <?php
-namespace EllisLab\ExpressionEngine\Model\Relationship;
+namespace EllisLab\ExpressionEngine\Service\Model\Relationship;
 
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 3.0
+ * @filesource
+ */
+
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine Cascade
+ *
+ * Class to help cascade over the tree with overrides.
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Model\Relationship
+ * @category	Service
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
+ */
 /**
  * Implements the primary cascade code.
  *

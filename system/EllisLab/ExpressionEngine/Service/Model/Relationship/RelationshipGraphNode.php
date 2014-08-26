@@ -1,17 +1,41 @@
 <?php
-namespace EllisLab\ExpressionEngine\Model\Relationship;
+namespace EllisLab\ExpressionEngine\Service\Model\Relationship;
 
 use EllisLab\ExpressionEngine\Model\Relationship\Types\OneToOne;
 use EllisLab\ExpressionEngine\Model\Relationship\Types\OneToMany;
 use EllisLab\ExpressionEngine\Model\Relationship\Types\ManyToOne;
 use EllisLab\ExpressionEngine\Model\Relationship\Types\ManyToMany;
 
-// Graph node that holds the relationship info for this node.
 
-// A node can return its edges. So if a template has a lastAuthor, then
-// lastAuthor is an edge. Member, the model that lastAuthor points to is
-// the node on the other end.
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 3.0
+ * @filesource
+ */
 
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine Relationship Graph Node
+ *
+ * Graph node that holds the relationship info for this node.
+ *
+ * A node can return its edges. So if a template has a lastAuthor, then
+ * lastAuthor is an edge. Member, the model that lastAuthor points to is
+ * the node on the other end.
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Model\Relationship
+ * @category	Service
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
+ */
 class RelationshipGraphNode {
 
 	protected $model_class;

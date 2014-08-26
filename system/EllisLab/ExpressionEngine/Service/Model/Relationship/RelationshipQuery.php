@@ -1,10 +1,36 @@
 <?php
-namespace EllisLab\ExpressionEngine\Model\Relationship;
+namespace EllisLab\ExpressionEngine\Service\Model\Relationship;
 
-use EllisLab\ExpressionEngine\Model\Model;
-use EllisLab\ExpressionEngine\Model\ModelFactory;
-use EllisLab\ExpressionEngine\Core\AliasServiceInterface;
+use EllisLab\ExpressionEngine\Service\Model\Model;
+use EllisLab\ExpressionEngine\Service\Model\ModelFactory;
+use EllisLab\ExpressionEngine\Service\AliasServiceInterface;
 
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 3.0
+ * @filesource
+ */
+
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine Relationship Query
+ *
+ * Manages querying on sub-relationships either via eager or lazy
+ * queries.
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Model\Relationship
+ * @category	Service
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
+ */
 class RelationshipQuery {
 
 	private $info;

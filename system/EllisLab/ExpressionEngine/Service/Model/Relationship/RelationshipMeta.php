@@ -1,11 +1,36 @@
 <?php
-namespace EllisLab\ExpressionEngine\Model\Relationship;
+namespace EllisLab\ExpressionEngine\Service\Model\Relationship;
 
 use Exception;
 use RuntimeException;
 
-use EllisLab\ExpressionEngine\Core\AliasServiceInterface;
+use EllisLab\ExpressionEngine\Service\AliasServiceInterface;
 
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 3.0
+ * @filesource
+ */
+
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine Relationship MetaData
+ *
+ * Class that holds all available meta data for a given relationships
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Model\Relationship
+ * @category	Service
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
+ */
 class RelationshipMeta {
 
 	const METHOD_JOIN = 'join';
