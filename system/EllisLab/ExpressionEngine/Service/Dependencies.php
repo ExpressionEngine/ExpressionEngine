@@ -2,8 +2,8 @@
 namespace EllisLab\ExpressionEngine\Service;
 
 use \EllisLab\ExpressionEngine\Service\ServiceProvider;
-use \EllisLab\ExpressionEngine\Service\Validation\Factory;
-use \EllisLab\ExpressionEngine\Service\Model\Factory;
+use \EllisLab\ExpressionEngine\Service\Validation\Factory as ValidationFactory;
+use \EllisLab\ExpressionEngine\Service\Model\Factory as ModelFactory;
 
 /**
  * Global service provider.
