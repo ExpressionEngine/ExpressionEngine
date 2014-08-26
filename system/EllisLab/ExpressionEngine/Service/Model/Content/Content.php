@@ -1,8 +1,30 @@
 <?PHP
-namespace EllisLab\ExpressionEngine\Model\Interfaces\Content;
+namespace EllisLab\ExpressionEngine\Service\Model\Content;
 
 /**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 3.0
+ * @filesource
+ */
+
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine Content Interface
+ *
  * Represents a piece of content in ExpressionEngine (IE a Channel Entry)
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Model\Content
+ * @category	Service
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 interface Content {
 
@@ -30,20 +52,20 @@ interface Content {
 	/**
 	 * Saves this piece of content after being populated from a form.
 	 *
-	 * @return	void	
+	 * @return	void
 	 *
-	 * @throws	ContentInvalidException	If content fails to validate a 
+	 * @throws	ContentInvalidException	If content fails to validate a
 	 *						ContentInvalidException will be thrown with errors
 	 *						on the exception object.
-	 */	
+	 */
 	public function save();
 
 	/**
 	 * Validates a piece of content for saving, called by save.
 	 *
-	 * @return	void	
+	 * @return	void
 	 *
-	 * @throws	ContentInvalidException If content fails to validate a 
+	 * @throws	ContentInvalidException If content fails to validate a
 	 * 						ContentInvalidException will be thrown with errors.
 	 */
 	public function validate();
@@ -51,8 +73,8 @@ interface Content {
 	/**
 	 * Deletes a piece of content, removing it from the db.
 	 *
-	 * @return	void 
+	 * @return	void
 	 */
 	public function delete();
-	
+
 }

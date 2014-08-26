@@ -1,19 +1,39 @@
 <?php
-namespace EllisLab\ExpressionEngine\Model\Interfaces\Field;
+namespace EllisLab\ExpressionEngine\Service\Model\Field;
 
-use EllisLab\ExpressionEngine\Model\Interfaces\Field\FieldContent;
+use EllisLab\ExpressionEngine\Service\Model\Field\FieldContent;
 
 /**
- * Field Structure Interface
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 3.0
+ * @filesource
+ */
+
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine Field Structure Interface
  *
  * Defines a structure of a field and stores its settings.
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Model\Field
+ * @category	Service
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 interface FieldStructure {
 
 	/**
      * Display the settings form for this field
 	 *
-	 * @return	string|View		Either the HTML string of the form partial, or 
+	 * @return	string|View		Either the HTML string of the form partial, or
 	 * 							a view object representing it.
 	 */
 	public function getForm();
