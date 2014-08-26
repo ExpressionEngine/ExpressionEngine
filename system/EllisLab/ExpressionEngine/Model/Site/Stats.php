@@ -1,8 +1,30 @@
 <?php
-namespace EllisLab\ExpressionEngine\Model;
+namespace EllisLab\ExpressionEngine\Model\Site;
+
+use EllisLab\ExpressionEngine\Service\Model;
 
 /**
+ * ExpressionEngine - by EllisLab
  *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 3.0
+ * @filesource
+ */
+
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine Stats Table
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Site
+ * @category	Model
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 class Stats extends Model {
 	protected static $_primary_key = 'stat_id';

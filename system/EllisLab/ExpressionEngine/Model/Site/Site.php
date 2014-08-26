@@ -1,4 +1,4 @@
-<?PHP
+<?php
 namespace EllisLab\ExpressionEngine\Model\Site;
 
 use EllisLab\ExpressionEngine\Service\Model;
