@@ -1,11 +1,36 @@
 <?php
+namespace EllisLab\ExpressionEngine\Service\Model\Query;
 
-namespace EllisLab\ExpressionEngine\Model\Query;
+use EllisLab\ExpressionEngine\Service\AliasServiceInterface;
+use EllisLab\ExpressionEngine\Service\Model\Collection;
+use EllisLab\ExpressionEngine\Service\Model\Factory;
 
-use EllisLab\ExpressionEngine\Core\AliasServiceInterface;
-use EllisLab\ExpressionEngine\Model\Collection;
-use EllisLab\ExpressionEngine\Model\ModelFactory;
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 3.0
+ * @filesource
+ */
 
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine Query Result Class
+ *
+ * A class containing the result of a database query and providing behavior
+ * allowing that data to be parsed into models.
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Model
+ * @category	Service
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
+ */
 class QueryResult {
 
 	private $factory;

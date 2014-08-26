@@ -1,9 +1,35 @@
-<?php namespace EllisLab\ExpressionEngine\Model\Query;
+<?php namespace EllisLab\ExpressionEngine\Service\Model\Query;
 
-use EllisLab\ExpressionEngine\Core\AliasServiceInterface;
-use EllisLab\ExpressionEngine\Model\ModelFactory;
-use EllisLab\ExpressionEngine\Model\Relationship\RelationshipMeta;
+use EllisLab\ExpressionEngine\Service\AliasServiceInterface;
+use EllisLab\ExpressionEngine\Service\Model\Factory;
+use EllisLab\ExpressionEngine\Service\Model\Relationship\RelationshipMeta;
 
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 3.0
+ * @filesource
+ */
+
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine Model Query Class
+ *
+ * Used to query the model for instances of models that have been persisted
+ * in some way, usually in the database.
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Model
+ * @category	Service
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
+ */
 class Query {
 
 	const DELETE_BATCH_SIZE = 100;
