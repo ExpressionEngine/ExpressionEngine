@@ -1,8 +1,33 @@
 <?php
-namespace EllisLab\ExpressionEngine\Model\Serializers;
+namespace EllisLab\ExpressionEngine\Service\Model\Serializers;
 
-use \SimpleXMLElement;
+use SimpleXMLElement;
 
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 3.0
+ * @filesource
+ */
+
+// ------------------------------------------------------------------------
+
+/**
+ * XML Serializer
+ *
+ * Turns a model class into an XML string.
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Model\Serializers
+ * @category	Service
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
+ */
 class XmlSerializer implements SerializerInterface {
 
 	public function serialize($model, array $cascade = array())
