@@ -7,10 +7,10 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
 
 	public function setUp()
 	{
-		$this->mf = m::mock('EllisLab\ExpressionEngine\Model\ModelFactory');
-		$this->as = m::mock('EllisLab\ExpressionEngine\Core\AliasService');
+		$this->mf = m::mock('EllisLab\ExpressionEngine\Service\Model\ModelFactory');
+		$this->as = m::mock('EllisLab\ExpressionEngine\Service\AliasService');
 		$this->gateway = m::mock(__NAMESPACE__.'\\GatewayStub');
-		$this->rg = new \EllisLab\ExpressionEngine\Model\Relationship\RelationshipGraph($this->as);
+		$this->rg = new \EllisLab\ExpressionEngine\Service\Model\Relationship\RelationshipGraph($this->as);
 	}
 
 	public function testConstructor()
@@ -35,8 +35,8 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
 		}
 
 		$this->as->shouldReceive('getRegisteredClass')->with('GatewayStub')->andReturn(__NAMESPACE__.'\\GatewayStub');
-		$this->mb->shouldReceive('makeGateway')->with('GatewayStub', $data)->andReturn($this->gateway);
-		$model = new TestModel($this->mb, $this->as);
+		$this->mf->shouldReceive('makeGateway')->with('GatewayStub', $data)->andReturn($this->gateway);
+		$model = new TestModel($this->mf, $this->as);
 		$model->populateFromDatabase($data);
 
 		foreach($data as $property => $value)
@@ -62,10 +62,14 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
 	}
 }
 
-class GatewayStub extends \EllisLab\ExpressionEngine\Model\Gateway\RowDataGateway {
+class GatewayStub extends \EllisLab\ExpressionEngine\Service\Model\Gateway\RowDataGateway {
 
 	protected static $_table_name = 'the_table';
 	protected static $_primary_key = 'the_id';
+
+	protected function getMapper($name) {
+		return NULL;
+	}
 
 	protected $the_id;
 	protected $another_id;
@@ -73,7 +77,7 @@ class GatewayStub extends \EllisLab\ExpressionEngine\Model\Gateway\RowDataGatewa
 	protected $description;
 }
 
-class TestModel extends \EllisLab\ExpressionEngine\Model\Model {
+class TestModel extends \EllisLab\ExpressionEngine\Service\Model\Model {
 
 	protected static $_primary_key	= 'the_id';
 	protected static $_gateway_names = array('GatewayStub');

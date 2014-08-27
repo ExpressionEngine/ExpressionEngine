@@ -129,7 +129,7 @@ class GatewayDBTest extends ActiveRecordTestCase {
 }
 
 
-class DBTestGateway extends \EllisLab\ExpressionEngine\Model\Gateway\RowDataGateway {
+class DBTestGateway extends \EllisLab\ExpressionEngine\Service\Model\Gateway\RowDataGateway {
 
 	protected static $_table_name = 'teams';
 	protected static $_primary_key = 'team_id';

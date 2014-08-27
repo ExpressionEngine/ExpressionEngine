@@ -89,7 +89,7 @@ class GatewayBehaviorTest extends \PHPUnit_Framework_TestCase {
 			->once();
 		$database->shouldReceive('insert_id')->andReturn(1)->once();
 
-		$gateway = new TestGateway($this->validation);
+		$gateway = new TestGateway();
 		$gateway->setConnection($database);
 
 		$gateway->key = 'test';
@@ -109,7 +109,6 @@ class GatewayBehaviorTest extends \PHPUnit_Framework_TestCase {
 	public function testInitializingWithMapping()
 	{
 		$gateway = new TestGateway(
-			$this->validation,
 			array(
 				'the_id' => 5,
 				'key' => 'value',
@@ -149,7 +148,7 @@ class GatewayBehaviorTest extends \PHPUnit_Framework_TestCase {
 }
 
 
-class TestGateway extends \EllisLab\ExpressionEngine\Model\Gateway\RowDataGateway {
+class TestGateway extends \EllisLab\ExpressionEngine\Service\Model\Gateway\RowDataGateway {
 
 	protected static $_table_name = 'dummy';
 	protected static $_primary_key = 'the_id';
