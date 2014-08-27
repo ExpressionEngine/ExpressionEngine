@@ -99,10 +99,9 @@ abstract class RowDataGateway {
 		}
 
 		// Next in priority is the mapper.
-		$mappers = static::getMetaData('mappers');
-		if ( isset($mappers[$name])  && property_exists($this, $name))
+		$mapper = $this->getMapper($name);
+		if ( $mapper && property_exists($this, $name))
 		{
-			$mapper = $this->getMapper($mappers[$name]);
 			return $mapper->fromDb($this->{$name});
 		}
 
@@ -137,10 +136,9 @@ abstract class RowDataGateway {
 			return;
 		}
 
-		$mappers = static::getMetaData('mappers');
-		if ( isset($mappers[$name]) && property_exists($this, $name))
+		$mapper = $this->getMapper($name);
+		if ( $mapper && property_exists($this, $name))
 		{
-			$mapper = $this->getMapper($mappers[$name]);
 			$this->{$name} = $mapper->toDb($value);
 			return;
 		}
@@ -154,8 +152,15 @@ abstract class RowDataGateway {
 		throw new \InvalidArgumentException('Attempt to access a non-existent property "' . $name . '" on ' . get_called_class());
 	}
 
-	private function getMapper($name)
+	protected function getMapper($name)
 	{
+		$mappers = $this->getMetaData('mappers');
+		if ( ! isset($mappers[$name]))
+		{
+			return NULL;
+		}
+		$name = $mappers[$name];
+
 		// Native, Core mapper
 		if ( strpos(':', $name) === FALSE)
 		{
