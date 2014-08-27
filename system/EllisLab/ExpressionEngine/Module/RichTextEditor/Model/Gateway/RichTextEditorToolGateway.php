@@ -1,7 +1,7 @@
 <?php
 namespace EllisLab\ExpressionEngine\Module\RichTextEditor\Model\Gateway;
 
-use EllisLab\ExpressionEngine\Model\Gateway\RowDataGateway;
+use EllisLab\ExpressionEngine\Service\Model\Gateway\RowDataGateway;
 
 /**
  * ExpressionEngine - by EllisLab

@@ -1,8 +1,8 @@
 <?php
 namespace EllisLab\ExpressionEngine\Module\Channel\Model;
 
-use EllisLab\ExpressionEngine\Model\Model;
-use EllisLab\ExpressionEngine\Model\Interfaces\Field\FieldStructure;
+use EllisLab\ExpressionEngine\Service\Model\Model;
+use EllisLab\ExpressionEngine\Service\Model\Field\FieldStructure;
 use EllisLab\ExpressoinEngine\Model\Interfaces\Field\FieldContent;
 
 class ChannelFieldStructure extends Model implements FieldStructure {

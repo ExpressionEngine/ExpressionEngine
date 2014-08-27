@@ -1,7 +1,7 @@
 <?php
 namespace EllisLab\ExpressionEngine\Module\MailingList\Model;
 
-use EllisLab\ExpressionEngine\Model\Model;
+use EllisLab\ExpressionEngine\Service\Model\Model;
 
 class MailingListQueue extends Model
 {

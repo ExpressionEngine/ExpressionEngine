@@ -1,7 +1,7 @@
 <?php
 namespace EllisLab\ExpressionEngine\Model\Template;
 
-use EllisLab\ExpressionEngine\Model\Model;
+use EllisLab\ExpressionEngine\Service\Model\Model;
 
 /**
  * ExpressionEngine - by EllisLab

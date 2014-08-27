@@ -1,8 +1,8 @@
 <?php
 namespace EllisLab\ExpressionEngine\Model\Category;
 
-use EllisLab\ExpressionEngine\Service\Model;
-use EllisLab\ExpressionEngine\Model\Content\ContentStructure;
+use EllisLab\ExpressionEngine\Service\Model\Model;
+use EllisLab\ExpressionEngine\Service\Model\Content\ContentStructure;
 
 /**
  * ExpressionEngine - by EllisLab

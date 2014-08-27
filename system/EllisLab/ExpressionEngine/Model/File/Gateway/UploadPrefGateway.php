@@ -1,7 +1,7 @@
 <?php
 namespace EllisLab\ExpressionEngine\Model\File\Gateway;
 
-use EllisLab\ExpressionEngine\Service\Model\RowDataGateway;
+use EllisLab\ExpressionEngine\Service\Model\Gateway\RowDataGateway;
 
 /**
  * ExpressionEngine - by EllisLab

@@ -1,7 +1,7 @@
 <?php
 namespace EllisLab\ExpressionEngine\Module\MailingList\Model\Gateway;
 
-use EllisLab\ExpressionEngine\Model\Gateway\RowDataGateway;
+use EllisLab\ExpressionEngine\Service\Model\Gateway\RowDataGateway;
 
 
 class MailingListQueueGateway extends RowDataGateway

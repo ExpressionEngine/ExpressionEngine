@@ -1,7 +1,7 @@
 <?php
 namespace EllisLab\ExpressionEngine\Module\Channel\Model;
 
-use EllisLab\ExpressionEngine\Model\Model;
+use EllisLab\ExpressionEngine\Service\Model\Model;
 
 class ChannelFieldGroup extends Model {
 	protected static $_primary_key 	= 'group_id';

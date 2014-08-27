@@ -8,7 +8,7 @@ return array(
 		'Accessory' => '\EllisLab\ExpressionEngine\Model\Addon\Accessory',
 		'AccessoryGateway' => '\EllisLab\ExpressionEngine\Model\Addon\Gateway\AccessoryGateway',
 		'Extension' => '\EllisLab\ExpressionEngine\Model\Addon\Extension',
-		'ExtensionGateway' => '\EllisLab\ExpressionEngine\Model\Addon\Gateway\Extension',
+		'ExtensionGateway' => '\EllisLab\ExpressionEngine\Model\Addon\Gateway\ExtensionGateway',
 		'Module' => '\EllisLab\ExpressionEngine\Model\Addon\Module',
 		'ModuleGateway' => '\EllisLab\ExpressionEngine\Model\Addon\Gateway\ModuleGateway',
 
@@ -81,7 +81,7 @@ return array(
 		'MailingListQueue' => '\EllisLab\ExpressionEngine\Module\MailingList\Model\MailingListQueue',
 		'MailingListQueueGateway' => '\EllisLab\ExpressionEngine\Module\MailingList\Model\Gateway\MailingListQueueGateway',
 		'MailingListUser' => '\EllisLab\ExpressionEngine\Module\MailingList\Model\MailingListUser',
-		'MailingListUserGateway' => '\EllisLab\ExpressionEngine\Module\MailingList\Module\Gateway\MailingListUserGateway',
+		'MailingListUserGateway' => '\EllisLab\ExpressionEngine\Module\MailingList\Model\Gateway\MailingListUserGateway',
 
 		// ..\Member
 		'Member' => '\EllisLab\ExpressionEngine\Module\Member\Model\Member',
@@ -91,9 +91,9 @@ return array(
 
 		// ..\RichTextEditor
 		'RichTextEditorTool' => '\EllisLab\ExpressionEngine\Module\RichTextEditor\Model\RichTextEditorTool',
-		'RichTextEditorToolGateway' => '\EllisLab\ExpressionEngine\Module\RichTextEditor\Model\Gateway\RichTextEditorGateway',
+		'RichTextEditorToolGateway' => '\EllisLab\ExpressionEngine\Module\RichTextEditor\Model\Gateway\RichTextEditorToolGateway',
 		'RichTextEditorToolset' => '\EllisLab\ExpressionEngine\Module\RichTextEditor\Model\RichTextEditorToolset',
-		'RichTextEditorToolsetGateway' => '\EllisLab\ExpressionEngine\Module\RichTextEditorToolset\Model\Gateway\RichTextEditorToolsetGateway',
+		'RichTextEditorToolsetGateway' => '\EllisLab\ExpressionEngine\Module\RichTextEditor\Model\Gateway\RichTextEditorToolsetGateway',
 
 		// ..\Search
 		'SearchLog' => '\EllisLab\ExpressionEngine\Module\Search\Model\SearchLog',

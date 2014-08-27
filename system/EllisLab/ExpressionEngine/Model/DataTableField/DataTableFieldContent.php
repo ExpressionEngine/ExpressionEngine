@@ -1,7 +1,7 @@
 <?php
 namespace EllisLab\ExpressionEngine\Model\DataTableField;
 
-use EllisLab\ExpressionEngine\Model\Interfaces\Field\FieldContent;
+use EllisLab\ExpressionEngine\Service\Model\Field\FieldContent;
 
 abstract class DataTableFieldContent implements FieldContent {
 	protected $gateway = NULL;
@@ -20,7 +20,7 @@ abstract class DataTableFieldContent implements FieldContent {
 	 * @return	FieldStructure	The FieldStructure object that describes this
 	 *						FieldContent's structure (and stores its settings.)
 	 */
-	public function getFieldStructure() 
+	public function getFieldStructure()
 	{
 		return $this->structure;
 	}
@@ -30,21 +30,21 @@ abstract class DataTableFieldContent implements FieldContent {
 	 *
 	 * @return	void
 	 *
-	 * @throws	FieldContentInvalidException	If validation fails, then a 
+	 * @throws	FieldContentInvalidException	If validation fails, then a
 	 * 						FieldContentInvalidException will be thrown with
 	 * 						errors.
 	 */
-	public function save() 
+	public function save()
 	{
 		$this->gateway->save();
 	}
 
 	/**
 	 * Delete this piece of FieldContent from the database.
-	 * 
+	 *
 	 * @return void
   	 */
-	public function delete() 
+	public function delete()
 	{
 		throw new Exception('Cannot delete Channel Field Content, must delete Entry.');
 	}
