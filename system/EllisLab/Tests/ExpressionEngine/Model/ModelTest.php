@@ -7,7 +7,7 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
 
 	public function setUp()
 	{
-		$this->mf = m::mock('EllisLab\ExpressionEngine\Service\Model\ModelFactory');
+		$this->mf = m::mock('EllisLab\ExpressionEngine\Service\Model\Factory');
 		$this->as = m::mock('EllisLab\ExpressionEngine\Service\AliasService');
 		$this->gateway = m::mock(__NAMESPACE__.'\\GatewayStub');
 		$this->rg = new \EllisLab\ExpressionEngine\Service\Model\Relationship\RelationshipGraph($this->as);
