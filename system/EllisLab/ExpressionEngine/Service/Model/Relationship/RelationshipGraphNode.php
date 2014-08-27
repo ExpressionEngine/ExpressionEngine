@@ -1,10 +1,10 @@
 <?php
 namespace EllisLab\ExpressionEngine\Service\Model\Relationship;
 
-use EllisLab\ExpressionEngine\Model\Relationship\Types\OneToOne;
-use EllisLab\ExpressionEngine\Model\Relationship\Types\OneToMany;
-use EllisLab\ExpressionEngine\Model\Relationship\Types\ManyToOne;
-use EllisLab\ExpressionEngine\Model\Relationship\Types\ManyToMany;
+use EllisLab\ExpressionEngine\Service\Model\Relationship\Types\OneToOne;
+use EllisLab\ExpressionEngine\Service\Model\Relationship\Types\OneToMany;
+use EllisLab\ExpressionEngine\Service\Model\Relationship\Types\ManyToOne;
+use EllisLab\ExpressionEngine\Service\Model\Relationship\Types\ManyToMany;
 
 
 /**

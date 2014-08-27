@@ -1,7 +1,7 @@
 <?php
-namespace EllisLab\ExpressionEngine\Model\Relationship\Types;
+namespace EllisLab\ExpressionEngine\Service\Model\Relationship\Types;
 
-use EllisLab\ExpressionEngine\AliasService;
+use EllisLab\ExpressionEngine\Service\AliasService;
 use EllisLab\ExpressionEngine\Service\Model\Model;
 
 /**

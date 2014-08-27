@@ -87,7 +87,7 @@ class Factory {
 	{
 		$class = $this->alias_service->getRegisteredClass($model);
 
-		if ( ! is_a($class, '\EllisLab\ExpressionEngine\Model\Model', TRUE))
+		if ( ! is_a($class, '\EllisLab\ExpressionEngine\Service\Model\Model', TRUE))
 		{
 			throw new InvalidArgumentException('Can only create Models.');
 		}
@@ -113,7 +113,7 @@ class Factory {
 	{
 		$class = $this->alias_service->getRegisteredClass($gateway);
 
-		if ( ! is_a($class, '\EllisLab\ExpressionEngine\Model\Gateway\RowDataGateway', TRUE))
+		if ( ! is_a($class, '\EllisLab\ExpressionEngine\Service\Model\Gateway\RowDataGateway', TRUE))
 		{
 			throw new InvalidArgumentException('Can only create Gateways.');
 		}

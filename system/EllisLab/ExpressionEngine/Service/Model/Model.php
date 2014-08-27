@@ -104,7 +104,7 @@ abstract class Model {
 	 * 		save call.  Otherwise, it will be treated as clean and assumed
 	 * 		to have come from the database.
 	 */
-	public function __construct(ModelFactory $factory, AliasServiceInterface $alias_service, array $data = array(), $dirty = TRUE)
+	public function __construct(Factory $factory, AliasServiceInterface $alias_service, array $data = array(), $dirty = TRUE)
 	{
 		$this->_factory = $factory;
 		$this->_alias_service = $alias_service;
