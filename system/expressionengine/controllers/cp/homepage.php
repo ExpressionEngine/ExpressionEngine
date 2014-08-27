@@ -156,7 +156,7 @@ class Homepage extends CP_Controller {
 //			->filter('ChannelEntry.entry_id', 12)
 //			->delete();
 
-		$templates = ee()->api
+/*		$templates = ee()->api
 			->get('MemberGroup')
 			->filter('MemberGroup.group_id', '6')
 			->delete();
@@ -171,7 +171,7 @@ class Homepage extends CP_Controller {
 			->all();
 
 		var_dump($templates[0]->getTemplateGroup());
-		var_dump(count($templates));
+		var_dump(count($templates)); */
 
 		$this->cp->get_installed_modules();
 		$this->view->cp_page_title = lang('main_menu');
