@@ -12,7 +12,7 @@
 			</a>
 			<div class="sub-menu">
 				<fieldset class="filter-search">
-					<input type="text" name="<?=$filter['name']?>" value="" placeholder="<?=$filter['placeholder']?>">
+					<input type="text" name="<?=$filter['name']?>" value="" placeholder="<?=$filter['placeholder']?>"<?php if (isset($filter['rel'])): ?> rel="<?=$filter['rel']?>"<?php endif; ?>>
 				</fieldset>
 				<ul>
 				<?php foreach ($filter['options'] as $url => $label): ?>

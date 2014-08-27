@@ -215,6 +215,7 @@ class Logs extends CP_Controller {
 				'name'			=> 'filter_by_date',
 				'value'			=> '',
 				'placeholder'	=> lang('custom_date'),
+				'rel'			=> 'date-picker',
 				'options'		=> array()
 			);
 
