@@ -96,7 +96,7 @@ class Cp extends Logs {
 				'member_id'	 => $log->member_id,
 				'username'	 => "<a href='" . cp_url('myaccount', array('id' => $log->member_id)) . "'>{$log->username}</a>",
 				'ip_address' => $log->ip_address,
-				'act_date'	 => $this->localize->human_time($log->act_date),
+				'act_date'	 => ee()->localize->human_time($log->act_date),
 				'site_label' => $log->getSite()->site_label,
 				'action'	 => $log->action
 			);

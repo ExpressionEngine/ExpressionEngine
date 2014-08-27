@@ -112,7 +112,7 @@ class Search extends Logs {
 				'username'			=> $username,
 				'ip_address'		=> $log->ip_address,
 				'site_label' 		=> $log->getSite()->site_label,
-				'search_date'		=> $this->localize->human_time($log->search_date),
+				'search_date'		=> ee()->localize->human_time($log->search_date),
 				'search_type' 		=> $log->search_type,
 				'search_terms'		=> $log->search_terms
 			);

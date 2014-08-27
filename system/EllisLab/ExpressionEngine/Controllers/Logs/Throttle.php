@@ -108,7 +108,7 @@ class Throttle extends Logs {
 				$rows[] = array(
 					'throttle_id'		=> $log->throttle_id,
 					'ip_address'		=> $log->ip_address,
-					'last_activity'		=> $this->localize->human_time($log->last_activity),
+					'last_activity'		=> ee()->localize->human_time($log->last_activity),
 					'hits'				=> $log->hits,
 					'locked_out'		=> $log->locked_out
 				);

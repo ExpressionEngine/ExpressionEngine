@@ -158,7 +158,7 @@ class Developer extends Logs {
 
 			$rows[] = array(
 				'log_id'			=> $log->log_id,
-				'timestamp'			=> $this->localize->human_time($log->timestamp),
+				'timestamp'			=> ee()->localize->human_time($log->timestamp),
 				'description' 		=> $description
 			);
 		}

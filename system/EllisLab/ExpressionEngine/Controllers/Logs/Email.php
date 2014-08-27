@@ -98,7 +98,7 @@ class Email extends Logs {
 				'cache_id'			=> $log->cache_id,
 				'username'			=> "<a href='" . cp_url('myaccount', array('id' => $log->member_id)) . "'>{$log->member_name}</a>",
 				'ip_address'		=> $log->ip_address,
-				'cache_date'		=> $this->localize->human_time($log->cache_date),
+				'cache_date'		=> ee()->localize->human_time($log->cache_date),
 				'subject' 			=> $log->subject,
 				'recipient_name'	=> $log->recipient_name
 			);
