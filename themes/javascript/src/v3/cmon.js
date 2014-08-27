@@ -223,7 +223,7 @@ $(document).ready(function(){
 			e.preventDefault();
 		});
 
-		// listen for clicks on on elements classed with .grid-back
+		// listen for clicks on elements classed with .grid-back
 		$('.grid-back').on('click',function(e){
 			// animate the scrolling of grid-clip backwards
 			// to the previous grid-item
@@ -237,10 +237,47 @@ $(document).ready(function(){
 	// publish collapse -> WIP
 	// =======================
 
+		// listen for clicks on .sub-arrows
 		$('.setting-txt .sub-arrow').on('click',function(){
+			// toggle the .setting-field and .setting-text
 			$(this).parents('.setting-txt').siblings('.setting-field').toggle();
+			// toggle the instructions
 			$(this).parents('h3').siblings('em').toggle();
+			// toggle a class of .field-closed on the h3
 			$(this).parents('h3').toggleClass('field-closed');
+		});
+
+	// ==================
+	// date picker -> WIP
+	// ONLY FOR ILLUSTRATION OF PLACEMENT AND MOVEMENT
+	// ==================
+
+		// listen for clicks on inputs with rel date-picker
+		$('input[rel="date-picker"]').on('click',function(){
+			// find the position of the input clicked
+			var pos = $(this).offset();
+			// position and toggle the .date-picker-wrap relative to the input clicked
+			$('.date-picker-wrap').css({ 'top': pos.top + 30, 'left': pos.left }).toggle();
+		});
+
+		// listen for clicks on elements classed with .date-picker-next
+		$('.date-picker-next').on('click',function(e){
+			// animate the scrolling of .date-picker-clip forwards
+			// to the next .date-picker-item
+			$('.date-picker-clip').animate({ scrollLeft: '+=260' }, 200);
+			// stop page from reloading
+			// the source window and appending # to the URI
+			e.preventDefault();
+		});
+
+		// listen for clicks on elements classed with .date-picker-back
+		$('.date-picker-prev').on('click',function(e){
+			// animate the scrolling of .date-picker-clip backwards
+			// to the previous .date-picker-item
+			$('.date-picker-clip').animate({ scrollLeft: '-=260' }, 200);
+			// stop page from reloading
+			// the source window and appending # to the URI
+			e.preventDefault();
 		});
 
 }); // close (document).ready
