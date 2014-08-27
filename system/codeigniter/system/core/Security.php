@@ -134,13 +134,15 @@ class CI_Security {
 			return $str;
 		}
 
-		// Strip data URIs
-		$str = $this->_strip_data_URIs($str);
-
 		/*
 		 * Remove Invisible Characters
 		 */
 		$str = remove_invisible_characters($str);
+
+		// Strip data URIs
+		// Not all browsers conform strictly to RFC2397 so we strip anything 
+		// that looks close to a data URI inside an attribute
+		$str = preg_replace_callback("/(?<open>[a-z]+=([\'\"]))(?<attr>.*?)(?<close>\\2)/si", array($this, '_strip_data_URIs'), $str);
 
 		// Validate Entities in URLs
 		$str = $this->_validate_entities($str);
@@ -300,7 +302,6 @@ class CI_Security {
 		 * Becomes:		eval&#40;'some code'&#41;
 		 */
 		$str = preg_replace('#(alert|cmd|passthru|eval|exec|expression|system|fopen|fsockopen|file|file_get_contents|readfile|unlink)(\s*)\((.*?)\)#si', "\\1\\2&#40;\\3&#41;", $str);
-
 
 		// Final clean up
 		// This adds a bit of extra precaution in case
@@ -748,68 +749,15 @@ class CI_Security {
 	/**
 	 * Strips all data URIs from a string
 	 * 
-	 * @param string $str  The string to clean. 
+	 * @param string $match  An array of matches from preg_replace_callback. 
 	 * @access protected
 	 * @return string  The cleaned string.
 	 */
-	protected function _strip_data_URIs($str)
+	protected function _strip_data_URIs($match)
 	{
 		$pattern = "/data:(?<mime>[\w\/\-\.]+)?;?(?<charset>\w+;)?(?<encoding>\w+)?,?(?<data>.*)/i";
-		$callback = array($this, '_data_URI_callback');
-
-		set_error_handler(array($this, '_data_URI_handler'));
-		$result = preg_replace_callback($pattern, $callback, $str);
-		restore_error_handler();
-
-		return $result;
-	}
-
-	// ----------------------------------------------------------------------
-
-	/**
-	 * Data URI callback
-	 *
-	 * Strip data URI if it parses as valid
-	 * 
-	 * @param array $matches  Array of matches provided by preg_replace_callback
-	 * @access protected
-	 * @return string
-	 */
-	protected function _data_URI_callback($matches)
-	{
-		$result = '[removed]';
-
-		// If we get an error here that means we have a false positive
-		try
-		{
-			fopen($matches[0], 'r');
-		}
-		catch (ErrorException $e)
-		{
-			$result = $matches[0];
-		}
-
-		return $result;
-	}
-
-	// ----------------------------------------------------------------------
-
-	/**
-	 * Data URI Handler 
-	 *
-	 * Custom error handler that will force warnings to throw an ErrorException
-	 *
-	 * @param int     $errno  The level of the error raised. 
-	 * @param string  $errstr  The error message, as a string. 
-	 * @param string  $errfile  The filename that the error was raised in. 
-	 * @param int     $errline  The line number the error was raised at. 
-	 * @param array   $errcontext  An array that points to the active symbol table
-	 *                             at the point the error occurred.
-	 * @return void
-	 */
-	protected function _data_URI_handler($errno, $errstr, $errfile, $errline, array $errcontext)
-	{
-		throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
+		$cleaned = preg_replace($pattern, '', $match['attr']);
+		return $match['open'] . $cleaned . $match['close'];
 	}
 }
 // END Security Class
