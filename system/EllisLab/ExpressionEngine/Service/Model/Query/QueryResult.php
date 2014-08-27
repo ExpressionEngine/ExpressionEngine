@@ -3,7 +3,7 @@ namespace EllisLab\ExpressionEngine\Service\Model\Query;
 
 use EllisLab\ExpressionEngine\Service\AliasServiceInterface;
 use EllisLab\ExpressionEngine\Service\Model\Collection;
-use EllisLab\ExpressionEngine\Service\Model\Factory;
+use EllisLab\ExpressionEngine\Service\Model\Factory as ModelFactory;
 
 /**
  * ExpressionEngine - by EllisLab

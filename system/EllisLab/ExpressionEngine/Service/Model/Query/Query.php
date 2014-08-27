@@ -1,7 +1,7 @@
 <?php namespace EllisLab\ExpressionEngine\Service\Model\Query;
 
 use EllisLab\ExpressionEngine\Service\AliasServiceInterface;
-use EllisLab\ExpressionEngine\Service\Model\Factory;
+use EllisLab\ExpressionEngine\Service\Model\Factory as ModelFactory;
 use EllisLab\ExpressionEngine\Service\Model\Relationship\RelationshipMeta;
 
 /**
