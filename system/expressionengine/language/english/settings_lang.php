@@ -124,6 +124,12 @@ $lang = array(
 "12_hour" =>
 "12-hour with AM/PM",
 
+'include_seconds' =>
+'Show seconds?',
+
+'include_seconds_desc' =>
+'When set to <b>yes</b>, date output will include seconds for display.',
+
 'btn_save_settings' =>
 'Save Settings',
 
@@ -258,7 +264,7 @@ $lang = array(
 'nderscore (different_words)',
 
 /**
- * 
+ * Outgoing Email
  */
 
 'webmaster_email' =>
@@ -427,6 +433,83 @@ $lang = array(
 
 'channel_manager' =>
 'Channel Manager',
+
+/**
+ * Comment Settings
+ */
+
+'all_comments' =>
+'All Comments',
+
+'enable_comments' =>
+'Enable comment module?',
+
+'enable_comments_desc' =>
+'When set to <b>enable</b>, channels will be able to use the comment module.',
+
+'options' =>
+'Options',
+
+'comment_word_censoring' =>
+'Enable word censoring?',
+
+'comment_word_censoring_desc' =>
+'When set to <b>enable</b>, commenting will use the <a href="%s">word censoring</a> filters.',
+
+'comment_moderation_override' =>
+'Moderate expired entires?',
+
+'comment_moderation_override_desc' =>
+'When set to <b>yes</b>, comments made on an expired entry will be submitted as closed and require review by a moderator.',
+
+'comment_edit_time_limit' =>
+'Comment edit time limit (in seconds)',
+
+'comment_edit_time_limit_desc' =>
+'Length of time that a user can edit their own comments, from submission. Use <b>0</b> for no limit.',
+
+/**
+ * Template Settings
+ */
+
+'template_manager' =>
+'Template Manager',
+
+'strict_urls' =>
+'Enable strict <abbr title="Uniform Resource Location">URL</abbr>s?',
+
+'strict_urls_desc' =>
+'When set to <b>enable</b>, ExpressioneEngine will apply stricter rules to <abbr title="Uniform Resource Location">URL</abbr> handling.',
+
+'site_404' =>
+'404 page',
+
+'site_404_desc' =>
+'Template to be used as the 404 error page.',
+
+'save_tmpl_revisions' =>
+'Save template revisions?',
+
+'save_tmpl_revisions_desc' =>
+'When set to <b>yes</b>, ExpressionEngine will save up to <b>5</b> template revisions in the database.',
+
+'max_tmpl_revisions' =>
+'Maximum revisions?',
+
+'max_tmpl_revisions_desc' =>
+'Number of revisions stored in the database for each template. We recommend this be a low number, as this can cause you to have a larger than normal database.',
+
+'save_tmpl_files' =>
+'Save templates as files?',
+
+'save_tmpl_files_desc' =>
+'When set to yes, ExpressionEngine will store your templates as files on your server.',
+
+'tmpl_file_basepath' =>
+'Template directory',
+
+'tmpl_file_basepath_desc' =>
+'Full path location of your <mark>template</mark> directory.',
 
 ''=>''
 );

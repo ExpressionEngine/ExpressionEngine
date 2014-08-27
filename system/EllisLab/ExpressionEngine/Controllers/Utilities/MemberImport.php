@@ -41,6 +41,100 @@ class MemberImport extends Utilities {
 			show_error(lang('unauthorized_access'));
 		}
 
+		$groups = ee()->api->get('MemberGroup')->order('group_id', 'asc')->all();
+
+		$member_groups = array();
+		foreach ($groups as $group)
+		{
+			$member_groups[$group->group_id] = $group->group_title;
+		}
+
+		ee()->load->model('language_model');
+		ee()->lang->loadfile('settings');
+
+		$vars['sections'] = array(
+			array(
+				array(
+					'title' => 'mbr_xml_file',
+					'desc' => 'mbr_xml_file_location',
+					'fields' => array(
+						'xml_file' => array('type' => 'text')
+					)
+				),
+			),
+			'mbr_import_default_options' => array(
+				array(
+					'title' => 'member_group',
+					'desc' => '',
+					'fields' => array(
+						'group_id' => array(
+							'type' => 'dropdown',
+							'choices' => $member_groups
+						)
+					)
+				),
+				array(
+					'title' => 'mbr_language',
+					'desc' => '',
+					'fields' => array(
+						'language' => array(
+							'type' => 'dropdown',
+							'choices' => ee()->language_model->language_pack_names(),
+							'value' => ee()->config->item('deft_lang') ?: 'english'
+						)
+					)
+				),
+				array(
+					'title' => 'mbr_timezone',
+					'desc' => 'mbr_timezone_desc',
+					'fields' => array(
+						'timezones' => array(
+							'type' => 'html',
+							'content' => ee()->localize->timezone_menu(set_value('default_site_timezone') ?: ee()->config->item('default_site_timezone'), 'timezones')
+						)
+					)
+				),
+				array(
+					'title' => 'mbr_datetime_fmt',
+					'desc' => 'mbr_datetime_fmt_desc',
+					'fields' => array(
+						'date_format' => array(
+							'type' => 'dropdown',
+							'choices' => array(
+								'%n/%j/%y' => 'mm/dd/yy',
+								'%j-%n-%y' => 'dd-mm-yy',
+								'%Y-%m-%d' => 'yyyy-mm-dd'
+							)
+						),
+						'time_format' => array(
+							'type' => 'dropdown',
+							'choices' => array(
+								'24' => lang('24_hour'),
+								'12' => lang('12_hour')
+							)
+						)
+					)
+				),
+				array(
+					'title' => 'include_seconds',
+					'desc' => 'include_seconds_desc',
+					'fields' => array(
+						'include_seconds' => array('type' => 'yes_no')
+					)
+				),
+				array(
+					'title' => 'mbr_create_custom_fields',
+					'desc' => 'mbr_create_custom_fields_desc',
+					'fields' => array(
+						'auto_custom_field' => array(
+							'type' => 'yes_no',
+							'value' => set_value('auto_custom_field') ?: 'y'
+						)
+					)
+				)
+			)
+		);
+
 		ee()->load->library('form_validation');
 		ee()->form_validation->set_rules(array(
 			array(
@@ -55,6 +149,8 @@ class MemberImport extends Utilities {
 			)
 		));
 
+		$base_url = cp_url('utilities/member-import');
+
 		if (AJAX_REQUEST)
 		{
 			ee()->form_validation->run_ajax();
@@ -65,42 +161,12 @@ class MemberImport extends Utilities {
 			return $this->memberImportConfirm();
 		}
 
-		$groups = ee()->api->get('MemberGroup')->order('group_id', 'asc')->all();
-
-		$member_groups = array();
-		foreach ($groups as $group)
-		{
-			$member_groups[$group->group_id] = $group->group_title;
-		}
-
-		ee()->lang->load('admin');
-		ee()->load->model('admin_model');
-		$config_fields = ee()->config->prep_view_vars('localization_cfg');
-		$date_format = $config_fields['fields']['date_format'];
-		$time_format = $config_fields['fields']['time_format'];
-
-		// Restore some values on validation fail
-		if (set_value('date_format'))
-		{
-			$date_format['selected'] = set_value('date_format');
-		}
-
-		if (set_value('time_format'))
-		{
-			$time_format['selected'] = set_value('time_format');
-		}
-
-		$vars = array(
-			// TODO: Show installed languages
-			'language_options' => array('None' => 'None', 'English' => 'English'),
-			'member_groups' => $member_groups,
-			'date_format' => $date_format,
-			'time_format' => $time_format,
-			'timezone_menu' => ee()->localize->timezone_menu(set_value('timezones'), 'timezones')
-		);
-
+		ee()->view->base_url = $base_url;
+		ee()->view->ajax_validate = TRUE;
 		ee()->view->cp_page_title = lang('member_import');
-		ee()->cp->render('utilities/member-import/index', $vars);
+		ee()->view->save_btn_text = 'mbr_import_btn';
+		ee()->view->save_btn_text_working = 'mbr_import_btn_working';
+		ee()->cp->render('_shared/form', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -120,6 +186,7 @@ class MemberImport extends Utilities {
 		}
 
 		ee()->load->model('member_model');
+		ee()->lang->loadfile('settings');
 
 		$member_group = ee()->api
 			->get('MemberGroup')
@@ -141,6 +208,7 @@ class MemberImport extends Utilities {
 			'timezones' 		=> ee()->input->post('timezones'),
 			'date_format' 		=> ee()->input->post('date_format'),
 			'time_format' 		=> ee()->input->post('time_format'),
+			'include_seconds' 	=> ee()->input->post('include_seconds'),
 			'auto_custom_field' => (ee()->input->post('auto_custom_field') == 'y') ? 'y' : 'n'
 		);
 
@@ -156,6 +224,7 @@ class MemberImport extends Utilities {
 			'timezones' 		=> $data['timezones'],
 			'date_format' 		=> lang($localization_cfg['date_format'][1][$data['date_format']]),
 			'time_format' 		=> lang($localization_cfg['time_format'][1][$data['time_format']]),
+			'include_seconds' 	=> ($data['include_seconds'] == 'y') ? lang('yes') : lang('no'),
 			'auto_custom_field' => ($data['auto_custom_field'] == 'y' || ($added_fields && count($added_fields) > 0)) ? lang('yes') : lang('no')
 		);
 

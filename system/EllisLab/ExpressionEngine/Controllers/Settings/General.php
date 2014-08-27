@@ -110,7 +110,7 @@ class General extends Settings {
 					'fields' => array(
 						'default_site_timezone' => array(
 							'type' => 'html',
-							'content' => ee()->localize->timezone_menu(ee()->config->item('default_site_timezone'))
+							'content' => ee()->localize->timezone_menu(set_value('default_site_timezone') ?: ee()->config->item('default_site_timezone'))
 						)
 					)
 				),
@@ -134,7 +134,14 @@ class General extends Settings {
 							)
 						)
 					)
-				)
+				),
+				array(
+					'title' => 'include_seconds',
+					'desc' => 'include_seconds_desc',
+					'fields' => array(
+						'include_seconds' => array('type' => 'yes_no')
+					)
+				),
 			)
 		);
 

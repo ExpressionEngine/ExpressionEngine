@@ -29,6 +29,8 @@ feature 'General Settings' do
     @page.should have_date_format
     @page.should have_time_format
     @page.should have_no_check_version_btn
+    @page.should have_include_seconds_y
+    @page.should have_include_seconds_n
   end
 
   it 'should validate the form' do
@@ -40,6 +42,7 @@ feature 'General Settings' do
     @page.should have_check_version_btn
     @page.date_format.select 'yyyy-mm-dd'
     @page.time_format.select '24-hour'
+    @page.include_seconds_y.click
 
     # Only field that's required, will be our test case
     @page.site_name.set ''
@@ -54,6 +57,7 @@ feature 'General Settings' do
     @page.new_version_check_n.checked?.should == true
     @page.date_format.value.should == '%Y-%m-%d'
     @page.time_format.value.should == '24'
+    @page.include_seconds_y.checked?.should == true
 
     # AJAX validation
     @page.load
@@ -64,6 +68,7 @@ feature 'General Settings' do
     @page.new_version_check_y.checked?.should == true
     @page.date_format.value.should == '%n/%j/%y'
     @page.time_format.value.should == '12'
+    @page.include_seconds_n.checked?.should == true
 
     @page.site_name.set ''
     @page.site_name.trigger 'blur'
@@ -94,6 +99,7 @@ feature 'General Settings' do
     @page.should have_check_version_btn
     @page.date_format.select 'yyyy-mm-dd'
     @page.time_format.select '24-hour'
+    @page.include_seconds_y.click
     @page.submit
 
     # Make sure they stuck, also test Check Now button visibility
@@ -106,6 +112,7 @@ feature 'General Settings' do
     @page.should have_check_version_btn
     @page.date_format.value.should == '%Y-%m-%d'
     @page.time_format.value.should == '24'
+    @page.include_seconds_y.checked?.should == true
   end
 
   it 'should check for new versions of EE manually' do
