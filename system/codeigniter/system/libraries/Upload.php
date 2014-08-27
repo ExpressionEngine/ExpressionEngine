@@ -845,6 +845,19 @@ class CI_Upload {
 
 		if (function_exists('getimagesize') && @getimagesize($file) !== FALSE)
 		{
+			$ext = strtolower(ltrim($this->file_ext, '.'));
+			$mime_by_ext = $this->mimes_types($ext);
+
+			if ( ! is_array($mime_by_ext))
+			{
+				$mime_by_ext = array($mime_by_ext);
+			}
+
+			if ( ! in_array($image['mime'], $mime_by_ext))
+			{
+				return FALSE; // tricky tricky
+			}
+
 			if (($file = @fopen($file, 'rb')) === FALSE) // "b" to force binary
 			{
 				return FALSE; // Couldn't open the file, return FALSE
