@@ -57,6 +57,23 @@ class Factory {
 	}
 
 	/**
+	 * Get Meta Data from a Class (Gateway or Model)
+	 *
+	 * Retrieves meta data from either a Gateway or Model and serves
+	 * as a mockable interface over their static methods.
+	 *
+	 * @param	string	$name	A model or gateway name.
+	 * @param	string	$item	The meta property to be retrieved.
+	 *
+	 * @return mixed	The value of the meta property.
+	 */
+	public function getMetaData($name, $item)
+	{
+		$class_name = $this->alias_service->getRegisteredClass($name);
+		return $class_name::getMetaData($item);
+	}
+
+	/**
 	 * Query Factory
 	 *
 	 * @return \Ellislab\ExpressionEngine\Model\Query
