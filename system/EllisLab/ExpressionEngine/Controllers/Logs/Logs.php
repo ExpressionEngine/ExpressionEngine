@@ -229,7 +229,17 @@ class Logs extends CP_Controller {
 
 			if (isset($this->params['filter_by_date']))
 			{
-				$filter['value'] = $dates[$this->params['filter_by_date']];
+				if (array_key_exists($this->params['filter_by_date'], $dates))
+				{
+					$filter['value'] = $dates[$this->params['filter_by_date']];
+				}
+				else
+				{
+					$date = ee()->localize->string_to_timestamp($this->params['filter_by_date']);
+
+					$filter['value'] = ee()->localize->format_date($date_format, $date);
+					$this->params['filter_by_date'] = array($date, $date+86400);
+				}
 			}
 
 			foreach ($dates as $seconds => $label)

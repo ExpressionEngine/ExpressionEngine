@@ -61,7 +61,15 @@ class Developer extends Logs {
 
 		if ( ! empty($this->params['filter_by_date']))
 		{
-			$logs = $logs->filter('timestamp', '>=', ee()->localize->now - $this->params['filter_by_date']);
+			if (is_array($this->params['filter_by_date']))
+			{
+				$logs = $logs->filter('timestamp', '>=', $this->params['filter_by_date'][0]);
+				$logs = $logs->filter('timestamp', '<', $this->params['filter_by_date'][1]);
+			}
+			else
+			{
+				$logs = $logs->filter('timestamp', '>=', ee()->localize->now - $this->params['filter_by_date']);
+			}
 		}
 
 		if ( ! empty(ee()->view->search_value))

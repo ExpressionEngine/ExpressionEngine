@@ -68,7 +68,15 @@ class Cp extends Logs {
 
 		if ( ! empty($this->params['filter_by_date']))
 		{
-			$logs = $logs->filter('act_date', '>=', ee()->localize->now - $this->params['filter_by_date']);
+			if (is_array($this->params['filter_by_date']))
+			{
+				$logs = $logs->filter('act_date', '>=', $this->params['filter_by_date'][0]);
+				$logs = $logs->filter('act_date', '<', $this->params['filter_by_date'][1]);
+			}
+			else
+			{
+				$logs = $logs->filter('act_date', '>=', ee()->localize->now - $this->params['filter_by_date']);
+			}
 		}
 
 		if ( ! empty(ee()->view->search_value))
