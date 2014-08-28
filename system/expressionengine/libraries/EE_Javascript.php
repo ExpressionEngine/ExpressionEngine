@@ -63,7 +63,10 @@ class EE_Javascript extends CI_Javascript {
 			$current =& $current[$namespace];
 		}
 
-		if (is_array($val) && isset($current[$var_name]) && is_array($current[$var_name]))
+		if (is_array($val) &&
+			isset($current[$var_name]) &&
+			is_array($current[$var_name]) &&
+			array_keys($val) !== range(0, count($val) - 1))
 		{
 			$current[$var_name] = ee_array_unique(array_merge($current[$var_name], $val), SORT_STRING);
 		}
