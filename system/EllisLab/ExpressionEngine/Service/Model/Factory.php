@@ -69,6 +69,20 @@ class Factory {
 	 */
 	public function getMetaData($name, $item)
 	{
+		// Did we get passed an object?
+		if ( is_object($name) )
+		{
+			return $name->getMetaData($item);
+		}
+
+		// How about a fully qualified class name?
+		else if ( class_exists($name))
+		{
+			return $name::getMetaData($item);
+		}
+
+		// Must be a model or gateway alias.  Retrieve the fully qualified
+		// name.
 		$class_name = $this->alias_service->getRegisteredClass($name);
 		return $class_name::getMetaData($item);
 	}
