@@ -569,7 +569,11 @@ class EE_Config Extends CI_Config {
 			'reserved_category_word',
 			'auto_convert_high_ascii',
 			'new_posts_clear_caches',
-			'auto_assign_cat_parents'
+			'auto_assign_cat_parents',
+			'enable_comments',
+			'comment_word_censoring',
+			'comment_moderation_override',
+			'comment_edit_time_limit'
 		);
 
 		$name = $which.'_default';

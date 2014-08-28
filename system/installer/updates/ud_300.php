@@ -39,6 +39,7 @@ class Updater {
 		$steps = new ProgressIterator(
 			array(
 				'_update_email_cache_table',
+				'_insert_comment_settings_into_db',
 			)
 		);
 
@@ -72,6 +73,36 @@ class Updater {
 				)
 			)
 		);
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Previously, Comment module settings were stored in config.php. Since the
+	 * Comment module is more integrated like Channel, let's take the settings
+	 * out of there and put them in the sites table because it's a better place
+	 * for them and they can be separated by site.
+	 *
+	 * @access private
+	 * @return void
+	 */
+	private function _insert_comment_settings_into_db()
+	{
+		$comment_edit_time_limit = ee()->config->item('comment_edit_time_limit');
+		
+		$settings = array(
+			// This is a new config, default it to y if not set
+			'enable_comments' => ee()->config->item('enable_comments') ?: 'y',
+			// These next two default to n
+			'comment_word_censoring' => (ee()->config->item('comment_word_censoring') == 'y') ? 'y' : 'n',
+			'comment_moderation_override' => (ee()->config->item('comment_moderation_override') == 'y') ? 'y' : 'n',
+			// Default this to 0
+			'comment_edit_time_limit' => ($comment_edit_time_limit && ctype_digit($comment_edit_time_limit))
+				? $comment_edit_time_limit : 0
+		);
+
+		ee()->config->update_site_prefs($settings, 'all');
+		ee()->config->_update_config('', $settings);
 	}
 
 }

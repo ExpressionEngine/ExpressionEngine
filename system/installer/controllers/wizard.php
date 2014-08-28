@@ -24,7 +24,7 @@
  */
 class Wizard extends CI_Controller {
 
-	var $version			= '2.9.0';	// The version being installed
+	var $version			= '3.0.0';	// The version being installed
 	var $installed_version	= ''; 		// The version the user is currently running (assuming they are running EE)
 	var $minimum_php		= '5.3.10';	// Minimum version required to run EE
 	var $schema				= NULL;		// This will contain the schema object with our queries
@@ -2522,6 +2522,10 @@ PAPAYA;
 			'auto_convert_high_ascii'		=>	'n',
 			'new_posts_clear_caches'		=>	'y',
 			'auto_assign_cat_parents'		=>	'y',
+			'enable_comments'				=> 	'y',
+			'comment_word_censoring'		=>	'n',
+			'comment_moderation_override'	=>	'n',
+			'comment_edit_time_limit'		=>	0,
 			'new_version_check'				=> 'y',
 			'enable_throttling'				=> 'n',
 			'banish_masked_ips'				=> 'y',
@@ -2745,7 +2749,11 @@ PAPAYA;
 			'reserved_category_word',
 			'auto_convert_high_ascii',
 			'new_posts_clear_caches',
-			'auto_assign_cat_parents'
+			'auto_assign_cat_parents',
+			'enable_comments',
+			'comment_word_censoring',
+			'comment_moderation_override',
+			'comment_edit_time_limit'
 		);
 
 		$site_prefs = array();
