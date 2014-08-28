@@ -247,37 +247,4 @@ $(document).ready(function(){
 			$(this).parents('h3').toggleClass('field-closed');
 		});
 
-	// ==================
-	// date picker -> WIP
-	// ONLY FOR ILLUSTRATION OF PLACEMENT AND MOVEMENT
-	// ==================
-
-		// listen for clicks on inputs with rel date-picker
-		$('input[rel="date-picker"]').on('click',function(){
-			// find the position of the input clicked
-			var pos = $(this).offset();
-			// position and toggle the .date-picker-wrap relative to the input clicked
-			$('.date-picker-wrap').css({ 'top': pos.top + 30, 'left': pos.left }).toggle();
-		});
-
-		// listen for clicks on elements classed with .date-picker-next
-		$('.date-picker-next').on('click',function(e){
-			// animate the scrolling of .date-picker-clip forwards
-			// to the next .date-picker-item
-			$('.date-picker-clip').animate({ scrollLeft: '+=260' }, 200);
-			// stop page from reloading
-			// the source window and appending # to the URI
-			e.preventDefault();
-		});
-
-		// listen for clicks on elements classed with .date-picker-back
-		$('.date-picker-prev').on('click',function(e){
-			// animate the scrolling of .date-picker-clip backwards
-			// to the previous .date-picker-item
-			$('.date-picker-clip').animate({ scrollLeft: '-=260' }, 200);
-			// stop page from reloading
-			// the source window and appending # to the URI
-			e.preventDefault();
-		});
-
 }); // close (document).ready
