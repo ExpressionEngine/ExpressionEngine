@@ -62,7 +62,7 @@
 		<?php endif ?>
 
 		<?=ee()->view->script_tag('jquery/jquery.js')?>
-		<?=ee()->view->script_tag('v3/cmon-ck.js')?>
+		<?=ee()->view->script_tag('v3/cmon.js')?>
 		<?php
 		if (isset($cp_global_js))
 		{
