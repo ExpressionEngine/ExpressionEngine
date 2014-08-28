@@ -19,7 +19,7 @@ feature 'Member Import' do
   end
 
   it 'shows the Member Import page' do
-    @page.should have_text 'Member Import Utility'
+    @page.should have_text 'Member Import'
     @page.should have_text 'XML file location'
     @page.should have_member_group
     @page.should have_language
@@ -83,15 +83,16 @@ feature 'Member Import' do
     @page.timezone.select 'New York'
     @page.date_format.select 'yyyy-mm-dd'
     @page.time_format.select '24-hour'
+    @page.include_seconds_y.click
     @page.custom_no.click
     @page.submit
 
-    @page.table.should have_text @members_xml
-    @page.table.should have_text 'Members'
-    @page.table.should have_text 'English'
-    @page.table.should have_text 'America/New_York'
-    @page.table.should have_text 'yyyy-mm-dd, 24-hour'
-    @page.table.should have_text 'no'
+    @page.options.map {|option| option.text}.should ==
+        ['XML file location', 'Member group', 'Language', 'Timezone',
+            'Date & time format', 'Show seconds?', 'Create custom fields?']
+    @page.values.map {|value| value.text}.should ==
+        ['tests/rspec/support/member-import/members.xml', 'Members', 'English',
+            'America/New_York', 'yyyy-mm-dd, 24-hour', 'yes', 'no']
   end
 
   it 'should import basic member import file' do

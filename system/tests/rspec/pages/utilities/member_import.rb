@@ -9,8 +9,12 @@ class MemberImport < ControlPanelPage
 	element :time_format, 'select[name=time_format]'
 	element :custom_yes, 'input[name=auto_custom_field][value=y]'
 	element :custom_no, 'input[name=auto_custom_field][value=n]'
+	element :include_seconds_y, 'input[name=include_seconds][value=y]'
+	element :include_seconds_n, 'input[name=include_seconds][value=n]'
 
 	element :table, 'table'
+	elements :options, 'table tr td:first-child'
+	elements :values, 'table tr td:nth-child(2)'
 
 	# Custom field creation
 	element :select_all, 'input[name=select_all]'

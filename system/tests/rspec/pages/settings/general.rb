@@ -12,6 +12,8 @@ class GeneralSettings < ControlPanelPage
 	element :timezone, 'select[name=default_site_timezone]'
 	element :date_format, 'select[name=date_format]'
 	element :time_format, 'select[name=time_format]'
+	element :include_seconds_y, 'input[name=include_seconds][value=y]'
+	element :include_seconds_n, 'input[name=include_seconds][value=n]'
 
 	def load
 		settings_btn.click

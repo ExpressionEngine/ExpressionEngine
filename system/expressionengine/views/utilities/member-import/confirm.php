@@ -38,6 +38,10 @@
 				<td><?=lang('mbr_datetime_fmt')?></td>
 				<td><?=$date_format?>, <?=$time_format?></td>
 			</tr>
+			<tr>
+				<td><?=lang('include_seconds')?></td>
+				<td><?=$include_seconds?></td>
+			</tr>
 			<tr class="alt last">
 				<td class="first"><?=lang('mbr_create_custom_fields')?></td>
 				<td class="last"><?=$auto_custom_field?></td>
