@@ -208,6 +208,50 @@ class Logs extends CP_Controller {
 		// By Date
 		if (in_array('date', $filters))
 		{
+			$date_format = ee()->session->userdata('date_format', ee()->config->item('date_format'));
+
+			ee()->javascript->set_global('date.date_format', $date_format);
+			ee()->javascript->set_global('lang.date.months.full', array(
+				lang('january'),
+				lang('february'),
+				lang('march'),
+				lang('april'),
+				lang('may'),
+				lang('june'),
+				lang('july'),
+				lang('august'),
+				lang('september'),
+				lang('october'),
+				lang('november'),
+				lang('december')
+			));
+			ee()->javascript->set_global('lang.date.months.abbreviated', array(
+				lang('jan'),
+				lang('feb'),
+				lang('mar'),
+				lang('apr'),
+				lang('may'),
+				lang('june'),
+				lang('july'),
+				lang('aug'),
+				lang('sept'),
+				lang('oct'),
+				lang('nov'),
+				lang('dec')
+			));
+			ee()->javascript->set_global('lang.date.days', array(
+				lang('su'),
+				lang('mo'),
+				lang('tu'),
+				lang('we'),
+				lang('th'),
+				lang('fr'),
+				lang('sa'),
+			));
+			ee()->cp->add_js_script(array(
+				'file' => array('cp/v3/date-picker'),
+			));
+
 			$base_url = clone $this->base_url;
 
 			$filter = array(
