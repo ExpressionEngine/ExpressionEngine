@@ -142,7 +142,7 @@ class CI_Security {
 		// Strip data URIs
 		// Not all browsers conform strictly to RFC2397 so we strip anything 
 		// that looks close to a data URI inside an attribute
-		$str = preg_replace_callback("/(?<open>[a-z]+=([\'\"]))(?<attr>.*?)(?<close>\\2)/si", array($this, '_strip_data_URIs'), $str);
+		$str = preg_replace_callback("/<\w+.*?(?=>|<|$)/si", array($this, '_strip_data_URIs'), $str);
 
 		// Validate Entities in URLs
 		$str = $this->_validate_entities($str);
@@ -755,9 +755,15 @@ class CI_Security {
 	 */
 	protected function _strip_data_URIs($match)
 	{
-		$pattern = "/data:(?<mime>[\w\/\-\.]+)?;?(?<charset>\w+;)?(?<encoding>\w+)?,?(?<data>.*)/i";
-		$cleaned = preg_replace($pattern, '', $match['attr']);
-		return $match['open'] . $cleaned . $match['close'];
+		$pattern = "/('|\")(data:[\w\/\-\.]+?;?(?:\w+;)?\w+?,?.*)(\\1)/i";
+		$cleaned = $match[0];
+
+		if (preg_match($pattern, $match[0], $matches) === 1)
+		{
+			$cleaned = $matches[1] . $matches[2];
+		}
+
+		return $cleaned;
 	}
 }
 // END Security Class
