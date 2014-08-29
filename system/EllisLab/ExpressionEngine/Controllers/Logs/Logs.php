@@ -136,6 +136,7 @@ class Logs extends CP_Controller {
 				'label'			=> 'username',
 				'name'			=> 'filter_by_username',
 				'value'			=> '',
+				'custom_value'	=> ee()->input->post('filter_by_username'),
 				'placeholder'	=> lang('filter_by_username'),
 				'options'		=> array()
 			);
@@ -185,6 +186,7 @@ class Logs extends CP_Controller {
 					'label'			=> 'site',
 					'name'			=> 'filter_by_site',
 					'value'			=> '',
+					'custom_value'	=> ee()->input->post('filter_by_site'),
 					'placeholder'	=> lang('filter_by_site'),
 					'options'		=> array()
 				);
@@ -258,6 +260,7 @@ class Logs extends CP_Controller {
 				'label'			=> 'date',
 				'name'			=> 'filter_by_date',
 				'value'			=> '',
+				'custom_value'	=> ee()->input->post('filter_by_date'),
 				'placeholder'	=> lang('custom_date'),
 				'rel'			=> 'date-picker',
 				'options'		=> array()
@@ -304,6 +307,7 @@ class Logs extends CP_Controller {
 				'label'			=> 'show',
 				'name'			=> 'perpage',
 				'value'			=> $this->params['perpage'],
+				'custom_value'	=> ee()->input->post('perpage'),
 				'placeholder'	=> lang('custom_limit'),
 				'options'		=> array()
 			);
