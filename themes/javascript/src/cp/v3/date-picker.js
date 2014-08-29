@@ -7,6 +7,8 @@ $(document).ready(function(){
 
 	// hat tip: http://stevenlevithan.com/assets/misc/date.format.js
 
+	var date_format_regex = /%d|%D|%j|%l|%N|%S|%w|%z|%W|%F|%m|%M|%n|%t|%L|%o|%Y|%y|%a|%A|%B|%g|%G|%h|%H|%i|%s|%u|%e|%I|%O|%P|%T|%Z|%c|%r|%U|"[^"]*"|'[^']*'/g;
+
 	function get_formatted_date(date) {
 		var mask = EE.date.date_format;
 		var year = date.getFullYear(),
@@ -15,8 +17,6 @@ $(document).ready(function(){
 			dow = date.getDay(),
 			hour = date.getHours(),
 			minute = date.getMinutes();
-
-		var regex = /%d|%D|%j|%l|%N|%S|%w|%z|%W|%F|%m|%M|%n|%t|%L|%o|%Y|%y|%a|%A|%B|%g|%G|%h|%H|%i|%s|%u|%e|%I|%O|%P|%T|%Z|%c|%r|%U|"[^"]*"|'[^']*'/g;
 
 		hour = ((hour + 11) % 12) + 1;
 
@@ -100,9 +100,8 @@ $(document).ready(function(){
 			// r: foo,
 			// U: foo
 		};
-		console.log(flags);
 
-		return mask.replace(regex, function (match) {
+		return mask.replace(date_format_regex, function (match) {
 			match = match.replace('%', '');
 			return match in flags ? flags[match] : match.slice(1, match.length - 1);
 		});
@@ -117,11 +116,15 @@ $(document).ready(function(){
 		month: 0,
 
 		init: function(element) {
+			var d;
+			var selected = null;
+
 			this.element = element;
 			this.calendars = [];
 
 			if ($(this.element).val()) {
-				d = new Date($(this.element).val());
+				d = new Date($(this.element).attr('data-timestamp') * 1000);
+				selected = d.getUTCDate();
 			} else {
 				d = new Date();
 			}
@@ -160,14 +163,8 @@ $(document).ready(function(){
 
 					var d = new Date(Calendar.year, Calendar.month, $(this).text());
 
-					var year  = d.getFullYear(),
-					    month = d.getMonth() + 1,
-						day   = d.getDate();
-
-					month = (month.toString().length == 2) ? month : '0' + month;
-					day = (day.toString().length == 2) ? day : '0' + day;
-
 					$(Calendar.element).val(get_formatted_date(d));
+					$(Calendar.element).attr('data-timestamp', d.toString());
 
 					$(Calendar.element).focus();
 					$('.date-picker-wrap').toggle();
@@ -179,6 +176,9 @@ $(document).ready(function(){
 			var html = this.generate(d.getFullYear(), d.getMonth());
 			if (html != null) {
 				$('.date-picker-clip-inner').html(html);
+				if (selected) {
+					$('.date-picker-item td:contains(' + selected + ')').addClass('act');
+				}
 			}
 		},
 

@@ -262,7 +262,9 @@ class Logs extends CP_Controller {
 				'value'			=> '',
 				'custom_value'	=> ee()->input->post('filter_by_date'),
 				'placeholder'	=> lang('custom_date'),
-				'rel'			=> 'date-picker',
+				'attributes'	=> array(
+					'rel' 		=> 'date-picker',
+				),
 				'options'		=> array()
 			);
 
@@ -283,6 +285,7 @@ class Logs extends CP_Controller {
 				else
 				{
 					$date = ee()->localize->string_to_timestamp($this->params['filter_by_date']);
+					$filter['attributes']['data-timestamp'] = $date;
 
 					$filter['value'] = ee()->localize->format_date($date_format, $date);
 					$this->params['filter_by_date'] = array($date, $date+86400);
