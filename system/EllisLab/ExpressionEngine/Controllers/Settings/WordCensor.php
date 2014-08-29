@@ -1,0 +1,98 @@
+<?php
+
+namespace EllisLab\ExpressionEngine\Controllers\Settings;
+
+if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+use CP_Controller;
+
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 3.0
+ * @filesource
+ */
+
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine CP Word Censoring Settings Class
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Control Panel
+ * @category	Control Panel
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
+ */
+class WordCensor extends Settings {
+
+	/**
+	 * General Settings
+	 */
+	public function index()
+	{
+		ee()->load->model('admin_model');
+
+		$vars['sections'] = array(
+			array(
+				array(
+					'title' => 'enable_censoring',
+					'desc' => 'enable_censoring_desc',
+					'fields' => array(
+						'enable_censoring' => array(
+							'type' => 'inline_radio',
+							'choices' => array(
+								'y' => 'enable',
+								'n' => 'disable'
+							)
+						)
+					)
+				),
+				array(
+					'title' => 'censor_replacement',
+					'desc' => 'censor_replacement_desc',
+					'fields' => array(
+						'censor_replacement' => array('type' => 'text')
+					)
+				),
+				array(
+					'title' => 'censored_words',
+					'desc' => 'censored_words_desc',
+					'fields' => array(
+						'censored_words' => array(
+							'type' => 'textarea',
+							'kill_pipes' => TRUE
+						)
+					)
+				)
+			)
+		);
+
+		$base_url = cp_url('settings/word-censor');
+
+		if ( ! empty($_POST))
+		{
+			if ($this->saveSettings($vars['sections']))
+			{
+				ee()->view->set_message('success', lang('preferences_updated'), lang('preferences_updated_desc'), TRUE);
+			}
+
+			ee()->functions->redirect($base_url);
+		}
+
+		ee()->view->base_url = $base_url;
+		ee()->view->cp_page_title = lang('word_censorship');
+		ee()->view->save_btn_text = 'btn_save_settings';
+		ee()->view->save_btn_text_working = 'btn_save_settings_working';
+		ee()->cp->render('_shared/form', $vars);
+	}
+}
+// END CLASS
+
+/* End of file WordCensor.php */
+/* Location: ./system/expressionengine/controllers/cp/Settings/WordCensor.php */

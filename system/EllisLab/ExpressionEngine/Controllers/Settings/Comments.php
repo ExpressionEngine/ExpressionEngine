@@ -55,7 +55,7 @@ class Comments extends Settings {
 			'options' => array(
 				array(
 					'title' => 'comment_word_censoring',
-					'desc' => 'comment_word_censoring_desc',
+					'desc' => sprintf(lang('comment_word_censoring_desc'), cp_url('settings/word-censor')),
 					'fields' => array(
 						'comment_word_censoring' => array(
 							'type' => 'inline_radio',

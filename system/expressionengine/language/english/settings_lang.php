@@ -511,6 +511,146 @@ $lang = array(
 'tmpl_file_basepath_desc' =>
 'Full path location of your <mark>template</mark> directory.',
 
+/**
+ * Word Censoring
+ */
+
+'word_censorship' =>
+'Word Censorship',
+
+'enable_censoring' =>
+'Enable censorship?',
+
+'enable_censoring_desc' =>
+'When set to <b>enable</b>, words listed will be replaced with the specified replacement characters.',
+
+'censor_replacement' =>
+'Replacement characters',
+
+'censor_replacement_desc' =>
+'Words that match any word in the words to censor list will be replaced with these characters.',
+
+'censored_words' =>
+'Words to censor',
+
+'censored_words_desc' =>
+'One word per line. All words listed will be replaced with the above specified characters.',
+
+/**
+ * Member Settings
+ */
+
+'member_settings' =>
+'Member Settings',
+
+'allow_member_registration' =>
+'Allow registrations?',
+
+'allow_member_registration_desc' =>
+'When set to <b>yes</b>, users will be able to register member accounts.',
+
+'req_mbr_activation' =>
+'Account activation type',
+
+'req_mbr_activation_desc' =>
+'Choose how you want users to activate their registrations.',
+
+'req_mbr_activation_opt_none' =>
+'No activation required',
+
+'req_mbr_activation_opt_email' =>
+'Send activation e-mail',
+
+'req_mbr_activation_opt_manual' =>
+'Manually moderated by administrator',
+
+'use_membership_captcha' =>
+'Enable registration <abbr title="Completely Automated Public Turing test to tell Computers and Humans Apart">CAPTCHA</abbr>?',
+
+'use_membership_captcha_desc' =>
+'When set to <b>enable</b>, users will be required to pass a <abbr title="Completely Automated Public Turing test to tell Computers and Humans Apart">CAPTCHA</abbr> during registration.',
+
+'require_terms_of_service' =>
+'Require terms of service?',
+
+'require_terms_of_service_desc' =>
+'When set to <b>yes</b>, users must agree to terms of service during registration.',
+
+'allow_member_localization' =>
+'Allow members to set time preferences?',
+
+'allow_member_localization_desc' =>
+'When set to <b>yes</b>, members will be able to set a specific time and date localization for their account.',
+
+'default_member_group' =>
+'Default member group',
+
+'default_member_group_desc' =>
+'When a member meets the lock out requirement.',
+
+'member_theme' =>
+'Member profile theme',
+
+'member_theme_desc' =>
+'Default theme used for member profiles.',
+
+'member_listing_settings' =>
+'Member Listing Settings',
+
+'memberlist_order_by' =>
+'Sort by',
+
+'memberlist_order_by_desc' =>
+'Sorting type for the member listing.',
+
+'memberlist_order_by_opt_posts' =>
+'Total posts',
+
+'memberlist_order_by_opt_screenname' =>
+'Screen name',
+
+'memberlist_order_by_opt_entries' =>
+'Total entries',
+
+'memberlist_order_by_reg_date' =>
+'Registration date',
+
+'memberlist_order_by_opt_comments' =>
+'Total comments',
+
+'memberlist_sort_order' =>
+'Order by',
+
+'memberlist_sort_order_desc' =>
+'Sorting order for the member listing.',
+
+'memberlist_sort_order_opt_asc' =>
+'Ascending (A-Z)',
+
+'memberlist_sort_order_opt_desc' =>
+'Descending (Z-A)',
+
+'memberlist_row_limit' =>
+'Total results',
+
+'memberlist_row_limit_desc' =>
+'Total returned results per page for the member listing.',
+
+'registration_notify_settings' =>
+'Registration Notification Settings',
+
+'new_member_notification' =>
+'Enable new member notifications?',
+
+'new_member_notification_desc' =>
+'When set to <b>yes</b>, the following e-mail addresses will be notified anytime a new registration occurs.',
+
+'mbr_notification_emails' =>
+'Notification recipients',
+
+'mbr_notification_emails_desc' =>
+'Separate multiple e-mails with a comma.',
+
 ''=>''
 );
 
