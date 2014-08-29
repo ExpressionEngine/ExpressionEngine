@@ -118,6 +118,7 @@ $(document).ready(function(){
 
 		init: function(element) {
 			this.element = element;
+			this.calendars = [];
 
 			if ($(this.element).val()) {
 				d = new Date($(this.element).val());
