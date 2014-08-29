@@ -51,6 +51,12 @@ if (isset($ajax_validate) && $ajax_validate == TRUE)
 							<?=form_dropdown($field_name, $field['choices'], $value)?>
 						<?php break;
 
+						case 'textarea': ?>
+							<textarea name="<?=$field_name?>" cols="" rows="">
+<?=(isset($field['kill_pipes']) && $field['kill_pipes'] === TRUE) ? str_replace('|', NL, $value) : $value?>
+</textarea>
+						<?php break;
+
 						case 'html': ?>
 							<?=$field['content']?>
 						<?php endswitch ?>

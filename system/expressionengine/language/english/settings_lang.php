@@ -511,6 +511,31 @@ $lang = array(
 'tmpl_file_basepath_desc' =>
 'Full path location of your <mark>template</mark> directory.',
 
+/**
+ * Word Censoring
+ */
+
+'word_censorship' =>
+'Word Censorship',
+
+'enable_censoring' =>
+'Enable censorship?',
+
+'enable_censoring_desc' =>
+'When set to <b>enable</b>, words listed will be replaced with the specified replacement characters.',
+
+'censor_replacement' =>
+'Replacement characters',
+
+'censor_replacement_desc' =>
+'Words that match any word in the words to censor list will be replaced with these characters.',
+
+'censored_words' =>
+'Words to censor',
+
+'censored_words_desc' =>
+'One word per line. All words listed will be replaced with the above specified characters.',
+
 ''=>''
 );
 
