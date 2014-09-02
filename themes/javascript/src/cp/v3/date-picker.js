@@ -116,17 +116,12 @@ $(document).ready(function(){
 
 		init: function(element) {
 			var d;
-			var selected = null;
+			var selected = null,
+			    year     = null,
+				month    = null;
 
 			this.element = element;
 			this.calendars = [];
-
-			if ($(this.element).val()) {
-				d = new Date($(this.element).attr('data-timestamp') * 1000);
-				selected = d.getUTCDate();
-			} else {
-				d = new Date();
-			}
 
 			if ($('.date-picker-wrap').length == 0) {
 				$('body').append('<div class="date-picker-wrap"><div class="date-picker-clip"><div class="date-picker-clip-inner"></div></div></div>');
@@ -160,7 +155,14 @@ $(document).ready(function(){
 					$('.date-picker-item td.act').removeClass('act');
 					$(this).closest('td').addClass('act');
 
-					var d = new Date(Calendar.year, Calendar.month, $(this).text());
+					if ($(Calendar.element).val()) {
+						var d = new Date($(Calendar.element).attr('data-timestamp') * 1000);
+						d.setYear(Calendar.year);
+						d.setMonth(Calendar.month);
+						d.setDate($(this).text());
+					} else {
+						var d = new Date(Calendar.year, Calendar.month, $(this).text());
+					}
 
 					$(Calendar.element).val(get_formatted_date(d, EE.date.date_format));
 					$(Calendar.element).attr('data-timestamp', get_formatted_date(d, '%U'));
@@ -172,11 +174,26 @@ $(document).ready(function(){
 				});
 			}
 
-			var html = this.generate(d.getFullYear(), d.getMonth());
+			if ($(this.element).val()) {
+				d = new Date($(this.element).attr('data-timestamp') * 1000);
+				selected = d.getUTCDate();
+				year  = d.getUTCFullYear();
+				month = d.getUTCMonth();
+			} else {
+				d = new Date();
+				year  = d.getFullYear();
+				month = d.getMonth();
+			}
+
+			var html = this.generate(year, month);
 			if (html != null) {
 				$('.date-picker-clip-inner').html(html);
 				if (selected) {
-					$('.date-picker-item td:contains(' + selected + ')').addClass('act');
+					$('.date-picker-item td:contains(' + selected + ')').each(function(){
+						if ($(this).text() == selected) {
+							$(this).addClass('act');
+						}
+					});
 				}
 			}
 		},
