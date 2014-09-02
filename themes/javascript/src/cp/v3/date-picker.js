@@ -9,8 +9,7 @@ $(document).ready(function(){
 
 	var date_format_regex = /%d|%D|%j|%l|%N|%S|%w|%z|%W|%F|%m|%M|%n|%t|%L|%o|%Y|%y|%a|%A|%B|%g|%G|%h|%H|%i|%s|%u|%e|%I|%O|%P|%T|%Z|%c|%r|%U|"[^"]*"|'[^']*'/g;
 
-	function get_formatted_date(date) {
-		var mask = EE.date.date_format;
+	function get_formatted_date(date, mask) {
 		var year = date.getFullYear(),
 			month = date.getMonth() + 1,
 			day = date.getDate(),
@@ -85,7 +84,7 @@ $(document).ready(function(){
 			H: zeropad(date.getHours()),
 			i: zeropad(minute),
 			s: zeropad(date.getSeconds()),
-			u: date.getMilliseconds()
+			u: date.getMilliseconds(),
 
 			// Timezone
 			// e: foo,
@@ -98,7 +97,7 @@ $(document).ready(function(){
 			// Full Date/Time
 			// c: foo,
 			// r: foo,
-			// U: foo
+			U: date.getTime() / 1000
 		};
 
 		return mask.replace(date_format_regex, function (match) {
@@ -163,8 +162,8 @@ $(document).ready(function(){
 
 					var d = new Date(Calendar.year, Calendar.month, $(this).text());
 
-					$(Calendar.element).val(get_formatted_date(d));
-					$(Calendar.element).attr('data-timestamp', d.toString());
+					$(Calendar.element).val(get_formatted_date(d, EE.date.date_format));
+					$(Calendar.element).attr('data-timestamp', get_formatted_date(d, '%U'));
 
 					$(Calendar.element).focus();
 					$('.date-picker-wrap').toggle();
