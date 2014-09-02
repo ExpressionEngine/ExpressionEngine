@@ -97,7 +97,7 @@ $(document).ready(function(){
 			// Full Date/Time
 			// c: foo,
 			// r: foo,
-			U: date.getTime() / 1000
+			U: Math.floor(date.getTime() / 1000)
 		};
 
 		return mask.replace(date_format_regex, function (match) {
