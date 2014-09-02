@@ -92,7 +92,7 @@ $(document).ready(function(){
 			// O: foo,
 			// P: foo,
 			// T: foo,
-			// Z: foo,
+			Z: date.getTimezoneOffset() * 60 * -1,
 
 			// Full Date/Time
 			// c: foo,
