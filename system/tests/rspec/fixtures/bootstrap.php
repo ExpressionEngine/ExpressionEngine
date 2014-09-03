@@ -159,10 +159,10 @@ function set_status_header($id) {}
 require_once(BASEPATH.'database/DB.php');
 ee()->db = DB('', NULL);
 
-require $project_base."EllisLab/ExpressionEngine/Core/Autoloader.php";
+require $project_base."EllisLab/ExpressionEngine/Service/Autoloader.php";
 
-$autoloader = new \Autoloader();
+$autoloader = new \EllisLab\ExpressionEngine\Service\Autoloader();
 $autoloader->register();
 
-$dependencies = new \EllisLab\ExpressionEngine\Core\Dependencies();
+$dependencies = new \EllisLab\ExpressionEngine\Service\Dependencies();
 $api = $dependencies->getModelFactory();
