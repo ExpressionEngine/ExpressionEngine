@@ -90,7 +90,7 @@ class Query extends Utilities {
 			unset($_POST['password_auth']);
 		}
 
-		$row_limit	= 100;
+		$row_limit	= 20;
 		$title		= lang('query_result');
 		$vars['write'] = FALSE;
 		ee()->db->db_debug = (ee()->input->post('debug') !== FALSE);

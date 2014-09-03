@@ -225,7 +225,7 @@ feature 'Query Form' do
   it 'should paginate query results' do
     # Generate random data that will paginate
     cp_log = CpLog.new
-    cp_log.generate_data(count: 150)
+    cp_log.generate_data(count: 30)
 
     @page.query_form.set 'select * from exp_cp_log'
     @page.password.set 'password'
@@ -233,18 +233,18 @@ feature 'Query Form' do
 
     no_php_js_errors
     results = QueryResults.new
-    results.should have(101).rows # 100 results plus header
+    results.should have(21).rows # 20 results plus header
     results.pages.map {|name| name.text}.should == ["First", "1", "2", "Next", "Last"]
     click_link "Next"
 
     no_php_js_errors
-    results.should have(52).rows # 51 results plus header
+    results.should have(12).rows # 11 results plus header
     results.pages.map {|name| name.text}.should == ["First", "Previous", "1", "2", "Last"]
   end
 
   it 'should paginate sorted query results' do
     cp_log = CpLog.new
-    cp_log.generate_data(count: 150)
+    cp_log.generate_data(count: 30)
 
     @page.query_form.set 'select * from exp_cp_log'
     @page.password.set 'password'
@@ -253,12 +253,12 @@ feature 'Query Form' do
     no_php_js_errors
     results = QueryResults.new
     results.sort_links[0].click
-    results.table.find('tr:nth-child(2) td:nth-child(1)').should have_text '151'
+    results.table.find('tr:nth-child(2) td:nth-child(1)').should have_text '31'
 
     no_php_js_errors
     click_link "Next"
 
-    results.table.find('tr:nth-child(2) td:nth-child(1)').should have_text '51'
+    results.table.find('tr:nth-child(2) td:nth-child(1)').should have_text '11'
   end
 
   it 'should show no results when there are no results' do
