@@ -9,7 +9,7 @@ feature 'Member Import' do
     @members_xml_invalid = asset_path('member-import/members-invalid.xml')
     @members_xml_custom = asset_path('member-import/members-custom.xml')
 
-    @file_required_error = 'The "XML file location" field is required.'
+    @field_required = 'This field is required.'
     @invalid_path_error = 'The path you submitted is not valid.'
 
     cp_session
@@ -35,8 +35,8 @@ feature 'Member Import' do
     @page.submit
 
     no_php_js_errors
-    @page.should have_text @file_required_error
-    @page.should have_text 'An error occurred'
+    should_have_error_text(@page.file_location, @field_required)
+    @page.should have_text 'Attention: Import not completed'
     should_have_form_errors(@page)
 
     @page.load
@@ -44,34 +44,32 @@ feature 'Member Import' do
     @page.submit
 
     no_php_js_errors
-    @page.should have_no_text @file_required_error
-    @page.should have_text @invalid_path_error
-    @page.should have_text 'An error occurred'
+    should_have_error_text(@page.file_location, @invalid_path_error)
+    @page.should have_text 'Attention: Import not completed'
     should_have_form_errors(@page)
 
     @page.file_location.set @members_xml
     @page.file_location.trigger 'blur'
-    @page.should have_no_text @file_required_error
-    @page.should have_no_text @invalid_path_error
+    @page.wait_for_error_message_count(0)
+    should_have_no_error_text(@page.file_location)
     should_have_no_form_errors(@page)
 
     # Reset for AJAX validation
     @page.load
     @page.file_location.trigger 'blur'
-    @page.should have_text @file_required_error
-    @page.should have_no_text @invalid_path_error
+    @page.wait_for_error_message_count(1)
+    should_have_error_text(@page.file_location, @field_required)
     should_have_form_errors(@page)
 
     @page.file_location.set '/some/bogus/path'
     @page.file_location.trigger 'blur'
-    @page.should have_no_text @file_required_error
-    @page.should have_text @invalid_path_error
+    should_have_error_text(@page.file_location, @invalid_path_error)
     should_have_form_errors(@page)
 
     @page.file_location.set @members_xml
     @page.file_location.trigger 'blur'
-    @page.should have_no_text @file_required_error
-    @page.should have_no_text @invalid_path_error
+    @page.wait_for_error_message_count(0)
+    should_have_no_error_text(@page.file_location)
     should_have_no_form_errors(@page)
   end
 

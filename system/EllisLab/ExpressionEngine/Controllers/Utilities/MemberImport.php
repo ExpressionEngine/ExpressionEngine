@@ -160,6 +160,10 @@ class MemberImport extends Utilities {
 		{
 			return $this->memberImportConfirm();
 		}
+		elseif (ee()->form_validation->errors_exist())
+		{
+			ee()->view->set_message('issue', lang('member_import_error'), lang('member_import_error_desc'));
+		}
 
 		ee()->view->base_url = $base_url;
 		ee()->view->ajax_validate = TRUE;

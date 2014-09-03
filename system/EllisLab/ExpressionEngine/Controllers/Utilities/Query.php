@@ -66,6 +66,10 @@ class Query extends Utilities {
 		{
 			return $this->runQuery();
 		}
+		elseif (ee()->form_validation->errors_exist())
+		{
+			ee()->view->set_message('issue', lang('query_form_error'), lang('query_form_error_desc'));
+		}
 
 		ee()->view->cp_page_title = lang('sql_query_form');
 		ee()->cp->render('utilities/query/index');

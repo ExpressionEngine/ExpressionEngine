@@ -343,7 +343,7 @@ $lang = array(
 'HTML',
 
 'empty_stmp_fields' =>
-'The "%s" field is required for SMTP.',
+'This field is required for SMTP.',
 
 /**
  * Debugging & Output

@@ -84,6 +84,10 @@ class License extends Settings {
 
 			ee()->functions->redirect($base_url);
 		}
+		elseif (ee()->form_validation->errors_exist())
+		{
+			ee()->view->set_message('issue', lang('cp_message_issue'), lang('form_validation_error'));
+		}
 
 		ee()->view->base_url = $base_url;
 		ee()->view->ajax_validate = TRUE;

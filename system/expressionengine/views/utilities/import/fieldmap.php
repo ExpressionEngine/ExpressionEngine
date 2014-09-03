@@ -5,6 +5,7 @@
 	<?php $this->view('_shared/alerts')?>
 	<?php if (form_error('unique_check')): ?>
 		<div class="alert inline issue">
+			<h3><?=lang('file_not_converted')?></h3>
 			<p><?=form_error('unique_check')?></p>
 		</div>
 	<?php endif ?>

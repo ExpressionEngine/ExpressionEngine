@@ -34,7 +34,7 @@ feature 'General Settings' do
   end
 
   it 'should validate the form' do
-    error_text = 'The "Website name" field is required.'
+    error_text = 'This field is required.'
 
     # Set other random things to make sure they're repopulated
     @page.is_system_on_n.click
@@ -52,7 +52,7 @@ feature 'General Settings' do
     no_php_js_errors
     should_have_form_errors(@page)
     @page.should have_text 'An error occurred'
-    @page.should have_text error_text
+    should_have_error_text(@page.site_name, error_text)
     @page.is_system_on_n.checked?.should == true
     @page.new_version_check_n.checked?.should == true
     @page.date_format.value.should == '%Y-%m-%d'
@@ -63,7 +63,7 @@ feature 'General Settings' do
     @page.load
     # Make sure old values didn't save after validation error
     should_have_no_form_errors(@page)
-    @page.should have_no_text error_text
+    should_have_no_error_text(@page.site_name)
     @page.is_system_on_y.checked?.should == true
     @page.new_version_check_y.checked?.should == true
     @page.date_format.value.should == '%n/%j/%y'
@@ -76,7 +76,7 @@ feature 'General Settings' do
     @page.wait_for_error_message_count(1)
     no_php_js_errors
     should_have_form_errors(@page)
-    @page.should have_text error_text
+    should_have_error_text(@page.site_name, error_text)
 
     @page.site_name.set 'EE2'
     @page.site_name.trigger 'blur'
@@ -84,7 +84,7 @@ feature 'General Settings' do
     @page.wait_for_error_message_count(0)
     no_php_js_errors
     should_have_no_form_errors(@page)
-    @page.should have_no_text error_text
+    should_have_no_error_text(@page.site_name)
 
     @page.submit
     should_have_no_form_errors(@page)

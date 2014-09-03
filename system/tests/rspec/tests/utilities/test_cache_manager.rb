@@ -26,15 +26,11 @@ feature 'Cache Manager' do
   it 'should show an error if no cache types are selected before submit' do
     page.uncheck 'All'
 
-    page.should have_text 'The "Caches to clear" field is required.'
-    page.should have_css 'fieldset.invalid'
-
-    CacheManager::button.value.should eq 'Fix Errors, Please'
-    CacheManager::button[:disabled].should eq 'true'
+    page.should have_text 'This field is required.'
 
     page.check 'All'
 
-    page.should have_no_text 'The "Caches to clear" field is required.'
+    page.should have_no_text 'This field is required.'
     page.should have_no_css 'fieldset.invalid'
 
     CacheManager::button.value.should eq 'Clear Caches'

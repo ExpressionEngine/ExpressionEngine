@@ -17,17 +17,17 @@ feature 'Query Form' do
   end
 
   it 'should validate the form' do
-    query_required = 'The "Query to run" field is required.'
-    password_required = 'The "Current password" field is required.'
+    field_required = 'This field is required.'
+    form_error = 'Attention: Query not run'
     password_incorrect = 'The password entered is incorrect.'
 
     # Submit with nothing
     @page.submit
 
     no_php_js_errors
-    @page.should have_text 'An error occurred'
-    @page.should have_text query_required
-    @page.should have_text password_required
+    @page.should have_text form_error
+    should_have_error_text(@page.query_form, field_required)
+    should_have_error_text(@page.password, field_required)
     @page.should have_no_text password_incorrect
     should_have_form_errors(@page)
 
@@ -37,9 +37,9 @@ feature 'Query Form' do
     @page.submit
 
     no_php_js_errors
-    @page.should have_text 'An error occurred'
-    @page.should have_no_text query_required
-    @page.should have_text password_required
+    @page.should have_text form_error
+    should_have_no_error_text(@page.query_form)
+    should_have_error_text(@page.password, field_required)
     @page.should have_no_text password_incorrect
     should_have_form_errors(@page)
 
@@ -51,41 +51,38 @@ feature 'Query Form' do
 
     no_php_js_errors
     @page.query_form.value.should eq 'query'
-    @page.should have_text 'An error occurred'
-    @page.should have_no_text query_required
-    @page.should have_no_text password_required
-    @page.should have_text password_incorrect
+    should_have_no_error_text(@page.query_form)
+    should_have_error_text(@page.password, password_incorrect)
     should_have_form_errors(@page)
 
     # AJAX Validation
     @page.load
     @page.query_form.trigger 'blur'
-    @page.should have_text query_required
-    @page.should have_no_text password_required
-    @page.should have_no_text password_incorrect
+    @page.wait_for_error_message_count(1)
+    should_have_error_text(@page.query_form, field_required)
+    should_have_no_error_text(@page.password)
 
     @page.password.trigger 'blur'
-    @page.should have_text query_required
-    @page.should have_text password_required
-    @page.should have_no_text password_incorrect
+    @page.wait_for_error_message_count(2)
+    should_have_error_text(@page.query_form, field_required)
+    should_have_error_text(@page.password, field_required)
 
     @page.password.set 'pass'
     @page.password.trigger 'blur'
-    @page.should have_text query_required
-    @page.should have_no_text password_required
-    @page.should have_text password_incorrect
+    should_have_error_text(@page.query_form, field_required)
+    should_have_error_text(@page.password, password_incorrect)
 
     @page.password.set 'password'
     @page.password.trigger 'blur'
-    @page.should have_text query_required
-    @page.should have_no_text password_required
-    @page.should have_no_text password_incorrect
+    @page.wait_for_error_message_count(1)
+    should_have_error_text(@page.query_form, field_required)
+    should_have_no_error_text(@page.password)
 
     @page.query_form.set 'SELECT'
     @page.query_form.trigger 'blur'
-    @page.should have_no_text query_required
-    @page.should have_no_text password_required
-    @page.should have_no_text password_incorrect
+    @page.wait_for_error_message_count(0)
+    should_have_no_error_text(@page.query_form)
+    should_have_no_error_text(@page.password)
   end
 
   it 'should not allow certain query types' do

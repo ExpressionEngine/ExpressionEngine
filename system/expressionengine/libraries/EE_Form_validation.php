@@ -53,27 +53,6 @@ class EE_Form_validation extends CI_Form_validation {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Runs the validator. This overrides the parent method to set an
-	 * inline alert on the form if validation failed.
-	 *
-	 * @param	string	$group	Optional name of rule group to run
-	 * @return	bool	Whether or not validation passed
-	 */
-	public function run($group = '')
-	{
-		$result = parent::run($group);
-
-		if (REQ == 'CP' && $result === FALSE && ! empty($_POST))
-		{
-			ee()->view->set_message('issue', lang('cp_message_issue'), lang('form_validation_error'));
-		}
-
-		return $result;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Handles validations that are performed over AJAX
 	 *
 	 * This ultimately calls our parent run() method where all validation
@@ -122,6 +101,18 @@ class EE_Form_validation extends CI_Form_validation {
 		{
 			ee()->output->send_ajax_response('success');
 		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Returns TRUE/FALSE based on existance of validation errors
+	 * 
+	 * @return	bool
+	 */
+	public function errors_exist()
+	{
+		return ! empty($this->_error_array);
 	}
 
 	// --------------------------------------------------------------------

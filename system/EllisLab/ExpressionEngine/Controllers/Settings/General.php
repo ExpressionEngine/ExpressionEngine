@@ -164,6 +164,10 @@ class General extends Settings {
 
 			ee()->functions->redirect($base_url);
 		}
+		elseif (ee()->form_validation->errors_exist())
+		{
+			ee()->view->set_message('issue', lang('cp_message_issue'), lang('form_validation_error'));
+		}
 
 		ee()->javascript->output("
 			var versionCheckRadio = $('input[name=new_version_check]');
