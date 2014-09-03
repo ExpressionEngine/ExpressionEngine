@@ -145,6 +145,11 @@ class Query {
 		// WHERE filters
 		$this->applyFilters($this->filters);
 
+		if (count($this->filter_stack))
+		{
+			throw new \Exception('Unclosed filter group.');
+		}
+
 		// ORDER BY something
 		$this->applyOrders();
 
