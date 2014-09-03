@@ -1,6 +1,6 @@
 <?php extend_template('default-nav'); ?>
 
-<h1><?=$cp_page_title?></h1>
+<h1><?=$cp_page_title?> <span class="required intitle">&#10033; <?=lang('required_fields')?></span></h1>
 <?=form_open(cp_url('utilities/sandr'), 'class="settings ajax-validate"')?>
 	<?php $this->view('_shared/alerts')?>
 	<div class="alert inline warn">
@@ -8,7 +8,7 @@
 	</div>
 	<fieldset class="col-group <?=form_error_class('search_term')?>">
 		<div class="setting-txt col w-16">
-			<h3><?=lang('sandr_search_text')?></h3>
+			<h3><?=lang('sandr_search_text')?> <span class="required" title="required field">&#10033;</span></h3>
 		</div>
 		<div class="setting-field col w-16 last">
 			<textarea name="search_term" cols="" rows=""><?=set_value('search_term')?></textarea>
@@ -17,7 +17,7 @@
 	</fieldset>
 	<fieldset class="col-group <?=form_error_class('replace_term')?>">
 		<div class="setting-txt col w-16">
-			<h3><?=lang('sandr_replace_text')?></h3>
+			<h3><?=lang('sandr_replace_text')?> <span class="required" title="required field">&#10033;</span></h3>
 		</div>
 		<div class="setting-field col w-16 last">
 			<textarea name="replace_term" cols="" rows=""><?=set_value('replace_term')?></textarea>
@@ -26,7 +26,7 @@
 	</fieldset>
 	<fieldset class="col-group last <?=form_error_class('replace_where')?>">
 		<div class="setting-txt col w-8">
-			<h3><?=lang('sandr_in')?></h3>
+			<h3><?=lang('sandr_in')?> <span class="required" title="required field">&#10033;</span></h3>
 			<em><?=lang('sandr_in_desc')?></em>
 		</div>
 		<div class="setting-field col w-8 last">

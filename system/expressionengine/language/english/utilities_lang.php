@@ -184,7 +184,7 @@ $lang = array(
 'Clearing...',
 
 'caches_cleared' =>
-'Caches cleared.',
+'Caches cleared',
 
 'caches_cleared_error' =>
 'You must select at least one cache type to clear.',

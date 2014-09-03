@@ -236,9 +236,6 @@ type of your imported data, the passwords will not work, and affected members wi
 'plaintext_passwords' =>
 'Passwords are plain text',
 
-'required_fields' =>
-'* Username, Screen Name, and Email Address are required.',
-
 'tab' =>
 'Tab',
 

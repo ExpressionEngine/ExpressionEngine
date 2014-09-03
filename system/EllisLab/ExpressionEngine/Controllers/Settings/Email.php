@@ -42,7 +42,7 @@ class Email extends Settings {
 					'title' => 'webmaster_email',
 					'desc' => 'webmaster_email_desc',
 					'fields' => array(
-						'webmaster_email' => array('type' => 'text')
+						'webmaster_email' => array('type' => 'text', 'required' => TRUE),
 					)
 				),
 				array(

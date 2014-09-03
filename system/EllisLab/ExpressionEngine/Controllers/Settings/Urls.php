@@ -49,28 +49,28 @@ class Urls extends Settings {
 					'title' => 'site_url',
 					'desc' => 'site_url_desc',
 					'fields' => array(
-						'site_url' => array('type' => 'text')
+						'site_url' => array('type' => 'text', 'required' => TRUE)
 					)
 				),
 				array(
 					'title' => 'cp_url',
 					'desc' => 'cp_url_desc',
 					'fields' => array(
-						'cp_url' => array('type' => 'text')
+						'cp_url' => array('type' => 'text', 'required' => TRUE)
 					)
 				),
 				array(
 					'title' => 'themes_url',
 					'desc' => 'themes_url_desc',
 					'fields' => array(
-						'theme_folder_url' => array('type' => 'text')
+						'theme_folder_url' => array('type' => 'text', 'required' => TRUE)
 					)
 				),
 				array(
 					'title' => 'themes_path',
 					'desc' => 'themes_path_desc',
 					'fields' => array(
-						'theme_folder_path' => array('type' => 'text')
+						'theme_folder_path' => array('type' => 'text', 'required' => TRUE)
 					)
 				),
 				array(
@@ -84,7 +84,7 @@ class Urls extends Settings {
 					'title' => 'member_segment_trigger',
 					'desc' => 'member_segment_trigger_desc',
 					'fields' => array(
-						'profile_trigger' => array('type' => 'text')
+						'profile_trigger' => array('type' => 'text', 'required' => TRUE)
 					)
 				),
 				array(

@@ -45,7 +45,7 @@ class General extends Settings {
 					'title' => 'site_name',
 					'desc' => 'site_name_desc',
 					'fields' => array(
-						'site_name' => array('type' => 'text')
+						'site_name' => array('type' => 'text', 'required' => TRUE)
 					)
 				),
 				array(

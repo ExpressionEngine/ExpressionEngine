@@ -58,7 +58,7 @@ class MemberImport extends Utilities {
 					'title' => 'mbr_xml_file',
 					'desc' => 'mbr_xml_file_location',
 					'fields' => array(
-						'xml_file' => array('type' => 'text')
+						'xml_file' => array('type' => 'text', 'required' => TRUE)
 					)
 				),
 			),

@@ -58,7 +58,7 @@ class Cache extends Utilities {
 				ee()->functions->clear_caching($type);
 			}
 
-			ee()->view->set_message('success', lang('cp_message_success'), lang('caches_cleared'), TRUE);
+			ee()->view->set_message('success', lang('caches_cleared'), '', TRUE);
 			ee()->functions->redirect(cp_url('utilities/cache'));
 		}
 
