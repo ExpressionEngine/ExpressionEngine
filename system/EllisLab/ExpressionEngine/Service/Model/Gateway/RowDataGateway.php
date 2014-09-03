@@ -1,7 +1,7 @@
 <?php
 namespace EllisLab\ExpressionEngine\Service\Model\Gateway;
 
-use EllisLab\ExpressionEngine\Service\Validation\ValidationFactory;
+use EllisLab\ExpressionEngine\Service\Validation\Factory as ValidationFactory;
 use EllisLab\ExpressionEngine\Service\Validation\Error\ValidationError;
 
 use EllisLab\ExpressionEngine\Service\Error\Errors;
