@@ -515,8 +515,8 @@ $this->db->join($relationship_meta->to_table . ' AS ' . $relationship_meta->to_t
 	public function filterGroup()
 	{
 		// open group
-		$filter_stack[] = $this->filters;
-		$filter_stack[] = 'and'; // nesting type
+		$this->filter_stack[] = $this->filters;
+		$this->filter_stack[] = 'and'; // nesting type
 
 		$this->filters = array();
 		return $this;
@@ -524,8 +524,8 @@ $this->db->join($relationship_meta->to_table . ' AS ' . $relationship_meta->to_t
 
 	public function orFilterGroup()
 	{
-		$filter_stack[] = $this->filters;
-		$filter_stack[] = 'or'; // nesting type
+		$this->filter_stack[] = $this->filters;
+		$this->filter_stack[] = 'or'; // nesting type
 
 		$this->filters = array();
 		return $this;
@@ -535,9 +535,9 @@ $this->db->join($relationship_meta->to_table . ' AS ' . $relationship_meta->to_t
 	{
 		// end group
 		$nested = $this->filters;
-		$prefix = array_pop($filter_stack);
+		$prefix = array_pop($this->filter_stack);
 
-		$this->filters = array_pop($filter_stack);
+		$this->filters = array_pop($this->filter_stack);
 		$this->filters[] = array($prefix, $nested);
 
 		return $this;
