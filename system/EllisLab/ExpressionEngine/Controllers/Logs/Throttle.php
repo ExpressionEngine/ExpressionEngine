@@ -81,11 +81,11 @@ class Throttle extends Logs {
 
 			$logs = ee()->api->get('Throttle')
 				->filterGroup()
-				->filter('hits', '>=', $max_page_loads)
-				->orFilterGroup()
-					->filter('locked_out', 'y')
-					->filter('last_activity', '>', $lockout_time)
-				->endFilterGroup()
+					->filter('hits', '>=', $max_page_loads)
+					->orFilterGroup()
+						->filter('locked_out', 'y')
+						->filter('last_activity', '>', $lockout_time)
+					->endFilterGroup()
 				->endFilterGroup();
 
 			if ( ! empty(ee()->view->search_value))
