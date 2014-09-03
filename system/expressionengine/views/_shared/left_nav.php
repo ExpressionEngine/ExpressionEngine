@@ -27,12 +27,25 @@
 				$class .= 'last ';
 			}
 
-			if ( ! is_array($value)): ?>
+			if ( ! is_array($value) OR (is_array($value) && ! is_numeric($key))): ?>
 				<h2<?php if ( ! empty($class)):?> class="<?=trim($class)?>"<?php endif ?>>
 					<?php if (is_numeric($key)): ?>
 						<?=lang($value)?>
 					<?php else: ?>
-						<a href="<?=$value?>"><?=lang($key)?></a>
+						<?php
+						if (is_array($value))
+						{
+							$attr = '';
+							foreach ($value as $name => $val)
+							{
+								$attr .= ' ' . $name . '="' . $val . '"';
+							}
+						}
+						else
+						{
+							$attr = 'href="'.$value.'"';
+						} ?>
+						<a <?=$attr?>><?=lang($key)?></a>
 					<?php endif; ?>
 				</h2>
 			<?php else: ?>
