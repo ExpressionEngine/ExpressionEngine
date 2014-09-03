@@ -155,6 +155,9 @@ class Query {
 
 		// LIMIT and OFFSET
 		$this->db->limit($this->limit, $this->offset);
+
+		// Return db for use in count
+		return $this->db;
 	}
 
 	public function delete()
@@ -696,8 +699,8 @@ $this->db->join($relationship_meta->to_table . ' AS ' . $relationship_meta->to_t
 		// so we're going to clone the db before calling it so that
 		// we can continue building on the query.  Or, you know, actually
 		// get the query's results.
-		$db = clone $this->db;
-		return $db->count_all_results();
+		$copy = clone $this;
+		return $copy->buildSelect()->count_all_results();
 	}
 
 	/**
@@ -822,8 +825,7 @@ $this->db->join($relationship_meta->to_table . ' AS ' . $relationship_meta->to_t
 
 	public function debugQuery()
 	{
-		$this->buildSelect();
-		return $this->db->_compile_select();
+		return $this->buildSelect()->_compile_select();
 	}
 
 	public function setConnection($db)
