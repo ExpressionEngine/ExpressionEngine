@@ -73,7 +73,7 @@ class EE_Typography extends CI_Typography {
 	public function __construct()
 	{
 		$this->initialize();
-		Autoloader::getInstance()->addPrefix('Michelf', APPPATH.'libraries/typography/Markdown/Michelf/');
+		\EllisLab\ExpressionEngine\Service\Autoloader::getInstance()->addPrefix('Michelf', APPPATH.'libraries/typography/Markdown/Michelf/');
 	}
 
 	// --------------------------------------------------------------------
