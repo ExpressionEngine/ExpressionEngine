@@ -1,7 +1,7 @@
 <?PHP
 namespace EllisLab\ExpressionEngine\Module\Channel\Model\Gateway;
 
-use EllisLab\ExpressionEngine\Model\Gateway\RowDataGateway;
+use EllisLab\ExpressionEngine\Service\Model\Gateway\RowDataGateway;
 
 class ChannelTitleGateway extends RowDataGateway {
 	// Structural definition stuff

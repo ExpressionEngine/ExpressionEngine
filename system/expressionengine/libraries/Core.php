@@ -104,7 +104,7 @@ class EE_Core {
 		ee()->db->db_debug = FALSE;
 
 		// Setup API model factory
-		ee()->dependencies = new \EllisLab\ExpressionEngine\Core\Dependencies();
+		ee()->dependencies = new \EllisLab\ExpressionEngine\Service\Dependencies();
 		ee()->api = ee()->dependencies->getModelFactory();
 
 		// Note enable_db_caching is a per site setting specified in EE_Config.php

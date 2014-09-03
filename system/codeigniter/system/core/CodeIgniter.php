@@ -72,9 +72,9 @@
  *  Load the autoloader and register it
  * ------------------------------------------------------
  */
-	require(APPPATH.'../EllisLab/ExpressionEngine/Core/Autoloader.php');
+	require(APPPATH.'../EllisLab/ExpressionEngine/Service/Autoloader.php');
 
-	Autoloader::getInstance()->register();
+	EllisLab\ExpressionEngine\Service\Autoloader::getInstance()->register();
 
 /*
  * ------------------------------------------------------

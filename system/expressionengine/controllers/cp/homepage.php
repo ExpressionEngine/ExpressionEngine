@@ -32,6 +32,7 @@ class Homepage extends CP_Controller {
 	 */
 	function index()
 	{
+
 /*		echo 'Query was:<br />
 			qb->get(\'ChannelEntry\')
 				->with(\'Channel\', array(\'Author\'=>array(\'MemberGroup\', \'ChannelEntries\')))
@@ -149,6 +150,28 @@ class Homepage extends CP_Controller {
 		}
 
 		exit; */
+
+//		$templates = ee()->api
+//			->get('ChannelEntry')
+//			->filter('ChannelEntry.entry_id', 12)
+//			->delete();
+
+/*		$templates = ee()->api
+			->get('MemberGroup')
+			->filter('MemberGroup.group_id', '6')
+			->delete();
+
+
+
+		$templates = ee()->api
+			->get('Template')
+			->with(array('TemplateGroup' => array()))
+			->filter('template_name', 'index')
+			->filter('site_id', 1)
+			->all();
+
+		var_dump($templates[0]->getTemplateGroup());
+		var_dump(count($templates)); */
 
 		$this->cp->get_installed_modules();
 		$this->view->cp_page_title = lang('main_menu');

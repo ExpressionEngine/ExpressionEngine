@@ -1,20 +1,42 @@
 <?php
 namespace EllisLab\ExpressionEngine\Model\Template;
 
-use EllisLab\ExpressionEngine\Model\Model;
+use EllisLab\ExpressionEngine\Service\Model\Model;
 
 /**
+ * ExpressionEngine - by EllisLab
  *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 3.0
+ * @filesource
+ */
+
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine Template Model
+ *
+ * A model representing a template.  Templates contain a mix of EECode and HTML
+ * and are parsed to become the front end pages of sites built with
+ * ExpressionEngine.
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Template
+ * @category	Model
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 class Template extends Model {
-
-	// Meta data
 	protected static $_primary_key = 'template_id';
 	protected static $_gateway_names = array('TemplateGateway');
 
 	protected static $_relationships = array(
 		'Site' => array(
-			'type' => 'many_to_one'
+			'type' => 'many_to_one',
 		),
 		'TemplateGroup'	=> array(
 			'type' => 'many_to_one'
@@ -23,10 +45,13 @@ class Template extends Model {
 			'type'	=> 'many_to_one',
 			'model'	=> 'Member',
 			'key'	=> 'last_author_id'
+		),
+		'NoAccess' => array(
+			'type' => 'many_to_many',
+			'model' => 'MemberGroup'
 		)
 	);
 
-	// Properties
 	protected $template_id;
 	protected $site_id;
 	protected $group_id;
@@ -45,9 +70,6 @@ class Template extends Model {
 	protected $php_parse_location;
 	protected $hits;
 
-	/**
-	 *
-	 */
 	public function getTemplateGroup()
 	{
 		return $this->getRelated('TemplateGroup');
@@ -76,6 +98,16 @@ class Template extends Model {
 	public function setSite(Site $site)
 	{
 		return $this->setRelated('Site', $site);
+	}
+
+	public function getNoAccess()
+	{
+		return $this->getRelated('NoAccess');
+	}
+
+	public function setNoAccess($no_access)
+	{
+		return $this->setRelated('NoAccess', $no_access);
 	}
 }
 

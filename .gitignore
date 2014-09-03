@@ -89,3 +89,4 @@ themes/site_themes/agile_records/images/uploads/_thumb/*
 
 system/EllisLab/Tests/vendor/*
 system/EllisLab/Tests/vendor/composer.lock
+system/EllisLab/Tests/composer.lock
