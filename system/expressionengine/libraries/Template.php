@@ -394,9 +394,9 @@ class EE_Template {
 		}
 
 		// Parse date format string "constants"
-		foreach (ee()->localize->format as $key => $val)
+		foreach (ee()->localize->format as $date_key => $date_val)
 		{
-			$this->template = str_replace(LD.$key.RD, $val, $this->template);
+			$this->template = str_replace(LD.$date_key.RD, $date_val, $this->template);
 		}
 
 		$this->log_item("Parse Date Format String Constants");
