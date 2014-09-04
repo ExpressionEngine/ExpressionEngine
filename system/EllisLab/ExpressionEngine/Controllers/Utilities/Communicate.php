@@ -451,6 +451,8 @@ class Communicate extends Utilities {
 	 */
 	private function deliverOneEmail($email, $to, $delete = TRUE)
 	{
+		$error = FALSE;
+
 		if ( ! $this->deliverEmail($email, $to, $email->cc, $email->bcc))
 		{
 			$error = TRUE;
