@@ -30,7 +30,7 @@ use EllisLab\ExpressionEngine\Library\CP\URL;
  * @link		http://ellislab.com
  */
 class Stats extends Utilities {
-	private $formus_exist	= FALSE;
+	private $forums_exist	= FALSE;
 	private $sources		= array('members', 'channel_titles', 'sites');
 
 	/**
@@ -52,7 +52,7 @@ class Stats extends Utilities {
 
 			if ($query->row('count')  > 0)
 			{
-				$this->formus_exist = TRUE;
+				$this->forums_exist = TRUE;
 				$this->sources = array_merge($this->sources, array('forums', 'forum_topics'));
 			}
 		}
