@@ -2,10 +2,10 @@
 
 <h1><?=lang('sql_query_form_abbr')?> <span class="required intitle">&#10033; <?=lang('required_fields')?></span></h1>
 <?=form_open(cp_url('utilities/query'), 'class="settings ajax-validate"')?>
-	<?php $this->view('_shared/alerts')?>
 	<div class="alert inline warn">
 		<?=lang('sql_warning')?>
 	</div>
+	<?php $this->view('_shared/alerts')?>
 	<fieldset class="col-group">
 		<div class="setting-txt col w-16">
 			<h3><?=lang('common_queries')?></h3>

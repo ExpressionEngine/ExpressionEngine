@@ -2,10 +2,10 @@
 
 <h1><?=$cp_page_title?> <span class="required intitle">&#10033; <?=lang('required_fields')?></span></h1>
 <?=form_open(cp_url('utilities/sandr'), 'class="settings ajax-validate"')?>
-	<?php $this->view('_shared/alerts')?>
 	<div class="alert inline warn">
 		<?=lang('sandr_warning')?>
 	</div>
+	<?php $this->view('_shared/alerts')?>
 	<fieldset class="col-group <?=form_error_class('search_term')?>">
 		<div class="setting-txt col w-16">
 			<h3><?=lang('sandr_search_text')?> <span class="required" title="required field">&#10033;</span></h3>
