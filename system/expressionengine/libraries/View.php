@@ -61,6 +61,7 @@ class View {
 
 		ee()->session->userdata['cp_theme'] = $cp_theme;
 		ee()->load->add_theme_cascade(PATH_CP_THEME.$cp_theme.'/');
+		ee()->load->add_theme_cascade(PATH_CP_THEME.$cp_theme.'/views/');
 	}
 
 	// --------------------------------------------------------------------
