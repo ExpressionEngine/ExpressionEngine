@@ -40,15 +40,10 @@ class View {
 	 */
 	public function set_cp_theme($cp_theme)
 	{
-		if ($cp_theme == 'default')
-		{
-			return;
-		}
-
 		$this->_theme = $cp_theme;
 
 		ee()->session->userdata['cp_theme'] = $cp_theme;
-		ee()->load->add_theme_cascade(PATH_CP_THEME.$cp_theme.'/');
+		ee()->load->add_theme_cascade(PATH_CP_THEME.$cp_theme.'/views/');
 	}
 
 	// --------------------------------------------------------------------
