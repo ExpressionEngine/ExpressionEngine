@@ -331,7 +331,7 @@ class Translate extends Utilities {
 
 		if (write_file($dest_loc, $str))
 		{
-			ee()->view->set_message('success', lang('file_saved') . $filename, '', TRUE);
+			ee()->view->set_message('success', lang('translations_saved'), str_replace('%s', $filename, lang('file_saved')), TRUE);
 		}
 		else
 		{

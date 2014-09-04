@@ -149,10 +149,11 @@ $lang = array(
 'cannot_create_zip'		=>	'Cannot create a .zip file',
 'no_files_selected'		=>	'No files were selected for export',
 'invalid_path' 			=> 'The path you submitted is not valid:',
-'file_saved'			=> 'The translation file has been saved to system/expressionengine/translations/',
+'file_saved'			=> 'The translation file has been saved to <b>system/expressionengine/translations/%s</b>',
 'trans_file_not_writable'=> 'Translation file is not writeable.',
 'translate_btn' 		=>	'Save Translations',
 'translate_btn_working' =>	'Saving...',
+'translations_saved'	=>	'Translations Saved',
 
 /**
  * PHP Info

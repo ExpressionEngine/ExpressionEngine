@@ -9,7 +9,7 @@
 			<h3><?=$value['original']?></h3>
 			<em></em>
 		</div>
-		<div class="setting-field col w-8">
+		<div class="setting-field col w-8 last">
 			<input type="text" name="<?=$key?>" value="<?=$value['trans']?>">
 		</div>
 	</fieldset>
