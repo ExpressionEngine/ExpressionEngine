@@ -15,7 +15,7 @@
 			<p class="right">&copy;2003&mdash;<?=ee()->localize->format_date('%Y')?> <a href="http://ellislab.com/expressionengine" rel="external">EllisLab</a>, Inc.</p>
 		</section>
 		<?=ee()->view->script_tag('jquery/jquery.js')?>
-		<?=ee()->view->script_tag('v3/cmon-ck.js')?>
+		<?=ee()->view->script_tag('v3/common.min.js')?>
 		<?=ee()->view->script_tag('cp/v3/login.js')?>
 		<script type="text/javascript">
 			$(document).ready(function()
