@@ -10,7 +10,7 @@ feature 'Import File Converter' do
     @other_file = asset_path('import-converter/members-other.txt')
 
     # Error messages we'll be checking for
-    @file_required = 'The "File location" field is required.'
+    @field_required = 'This field is required.'
     @file_location_validation = 'The path you submitted is not valid.'
     @min_field_error = 'You must have at least 3 fields: username, screen_name, and email address'
     @assign_fields_title = 'Import File Converter - Assign Fields'
@@ -41,20 +41,20 @@ feature 'Import File Converter' do
     
     # No path
     @page.file_location.trigger 'blur'
-    @page.should have_text @file_required
+    @page.wait_for_error_message_count(1)
+    should_have_error_text(@page.file_location, @field_required)
     should_have_form_errors(@page)
     
     # Bogus path
     @page.file_location.set '/some/bogus/path'
     @page.file_location.trigger 'blur'
-
-    @page.should have_no_text @file_required
-    @page.should have_text @file_location_validation
+    should_have_error_text(@page.file_location, @file_location_validation)
     should_have_form_errors(@page)
 
     @page.file_location.set @tab_file
     @page.file_location.trigger 'blur'
 
+    @page.wait_for_error_message_count(0)
     @page.should have_no_text @file_location_validation
     should_have_no_form_errors(@page)
 
@@ -66,20 +66,21 @@ feature 'Import File Converter' do
     sleep 1
     @page.delimiter_special.trigger 'blur'
 
-    @page.should have_text custom_delimit_required
+    @page.wait_for_error_message_count(1)
+    should_have_error_text(@page.delimiter_special, custom_delimit_required)
     should_have_form_errors(@page)
 
     # Invalid custom delimiter
     @page.delimiter_special.set 'd'
     @page.delimiter_special.trigger 'blur'
-    @page.should have_no_text custom_delimit_required
-    @page.should have_text custom_delimit_validation
+    should_have_error_text(@page.delimiter_special, custom_delimit_validation)
     should_have_form_errors(@page)
 
     @page.delimiter_special.set '"'
     @page.delimiter_special.trigger 'blur'
 
-    @page.should have_no_text custom_delimit_validation
+    @page.wait_for_error_message_count(0)
+    should_have_no_error_text(@page.delimiter_special)
     should_have_no_form_errors(@page)
 
     no_php_js_errors
@@ -98,6 +99,7 @@ feature 'Import File Converter' do
     @page.load
     @page.submit_button.click
     @page.should have_text @file_required
+    should_have_error_text(@page.file_location, @field_required)
     no_php_js_errors
 
     # Bogus path entered
@@ -106,14 +108,15 @@ feature 'Import File Converter' do
     @page.submit_button.click
     no_php_js_errors
 
-    @page.should have_text 'An error occurred'
-    @page.should have_text @file_location_validation
+    @page.should have_text 'Attention: File not converted'
+    should_have_error_text(@page.file_location, @file_location_validation)
     should_have_form_errors(@page)
 
     @page.file_location.set @tab_file
     @page.file_location.trigger 'blur'
 
-    @page.should have_no_text @file_location_validation
+    @page.wait_for_error_message_count(0)
+    should_have_no_error_text(@page.file_location)
     should_have_no_form_errors(@page)
 
     no_php_js_errors
@@ -134,7 +137,7 @@ feature 'Import File Converter' do
     @page.load
     @page.find('input[value=other]').click
     @page.submit_button.click
-    @page.should have_text @file_required
+    should_have_error_text(@page.file_location, @field_required)
     @page.should have_text custom_delimit_required
     no_php_js_errors
 
@@ -145,8 +148,8 @@ feature 'Import File Converter' do
     @page.submit_button.click
     no_php_js_errors
 
-    @page.should have_text 'An error occurred'
-    @page.should have_text @file_required
+    @page.should have_text 'Attention: File not converted'
+    should_have_error_text(@page.file_location, @field_required)
     @page.should have_text custom_delimit_validation
     should_have_form_errors(@page)
     no_php_js_errors
@@ -156,7 +159,7 @@ feature 'Import File Converter' do
     # Tab file should only work with Tab selected
     @page.file_location.set @tab_file
     @page.file_location.trigger 'blur'
-    @page.should have_no_text @file_required
+    @page.should have_no_text @field_required
     @page.submit_button.click
     @page.should have_text @min_field_error
     no_php_js_errors
@@ -271,6 +274,7 @@ feature 'Import File Converter' do
     screenname_error = 'You must assign a field to "screen_name"'
     email_error = 'You must assign a field to "email"'
     duplicate_error = 'Duplicate field assignment: username'
+    form_error = 'Attention: File not converted'
 
     @page.file_location.set @tab_file
     @page.find('input[value=tab]').click
@@ -282,7 +286,7 @@ feature 'Import File Converter' do
     no_php_js_errors
 
     @page.submit_button.click
-    @page.should have_text 'An error occurred'
+    @page.should have_text form_error
     @page.should have_text username_error
     @page.should have_text screenname_error
     @page.should have_text email_error
@@ -290,7 +294,7 @@ feature 'Import File Converter' do
 
     @page.field1.select 'username'
     @page.submit_button.click
-    @page.should have_text 'An error occurred'
+    @page.should have_text form_error
     @page.should have_no_text username_error
     @page.should have_text screenname_error
     @page.should have_text email_error
@@ -298,7 +302,7 @@ feature 'Import File Converter' do
 
     @page.field2.select 'username'
     @page.submit_button.click
-    @page.should have_text 'An error occurred'
+    @page.should have_text form_error
     @page.should have_no_text username_error
     @page.should have_text duplicate_error
     @page.should have_text screenname_error
@@ -308,7 +312,7 @@ feature 'Import File Converter' do
     @page.field2.select 'screen_name'
     @page.field3.select 'password'
     @page.submit_button.click
-    @page.should have_text 'An error occurred'
+    @page.should have_text form_error
     @page.should have_no_text username_error
     @page.should have_no_text duplicate_error
     @page.should have_no_text screenname_error

@@ -194,6 +194,8 @@ class Communicate extends Utilities {
 
 		if (ee()->form_validation->run() === FALSE)
 		{
+			ee()->view->set_message('issue', lang('communicate_error'), lang('communicate_error_desc'));
+			
 			return $this->index();
 		}
 

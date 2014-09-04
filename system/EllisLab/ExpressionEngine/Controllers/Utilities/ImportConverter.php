@@ -76,6 +76,10 @@ class ImportConverter extends Utilities {
 		{
 			return $this->import_fieldmap();
 		}
+		elseif (ee()->form_validation->errors_exist())
+		{
+			ee()->view->set_message('issue', lang('file_not_converted'), lang('file_not_converted_desc'));
+		}
 
 		ee()->view->cp_page_title = lang('import_converter');
 		ee()->cp->render('utilities/import/index');

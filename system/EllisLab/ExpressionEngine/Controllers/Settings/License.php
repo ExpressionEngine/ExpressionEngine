@@ -42,14 +42,14 @@ class License extends Settings {
 					'title' => 'license_contact',
 					'desc' => 'license_contact_desc',
 					'fields' => array(
-						'license_contact' => array('type' => 'text')
+						'license_contact' => array('type' => 'text', 'required' => TRUE)
 					)
 				),
 				array(
 					'title' => 'license_number',
 					'desc' => sprintf(lang('license_number_desc'), ee()->cp->masked_url('https://store.ellislab.com/manage')),
 					'fields' => array(
-						'license_number' => array('type' => 'text')
+						'license_number' => array('type' => 'text', 'required' => TRUE)
 					)
 				),
 			)
@@ -83,6 +83,10 @@ class License extends Settings {
 			}
 
 			ee()->functions->redirect($base_url);
+		}
+		elseif (ee()->form_validation->errors_exist())
+		{
+			ee()->view->set_message('issue', lang('cp_message_issue'), lang('form_validation_error'));
 		}
 
 		ee()->view->base_url = $base_url;

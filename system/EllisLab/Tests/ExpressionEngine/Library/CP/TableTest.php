@@ -127,6 +127,9 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 			'no_results'	=> $no_results_empty,
 			'sort_col'		=> 'Name',
 			'sort_dir'		=> 'asc',
+			'limit'			=> 20,
+			'page'			=> 1,
+			'total_rows'	=> 2,
 			'columns'		=> $expected_cols,
 			'data'			=> array(
 				array(
@@ -212,6 +215,9 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 			'no_results'	=> $no_results_empty,
 			'sort_col'		=> NULL,
 			'sort_dir'		=> 'asc',
+			'limit'			=> 20,
+			'page'			=> 1,
+			'total_rows'	=> 0,
 			'columns'		=> array(),
 			'data'			=> array()
 		);
@@ -226,6 +232,9 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 			'no_results'	=> $no_results_empty,
 			'sort_col'		=> 'Name',
 			'sort_dir'		=> 'asc',
+			'limit'			=> 20,
+			'page'			=> 1,
+			'total_rows'	=> 0,
 			'columns'		=> $expected_cols,
 			'data'			=> array()
 		);
@@ -250,6 +259,9 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 			'no_results'	=> $no_results,
 			'sort_col'		=> 'Some column',
 			'sort_dir'		=> 'desc',
+			'limit'			=> 20,
+			'page'			=> 1,
+			'total_rows'	=> 0,
 			'columns'		=> $expected_cols,
 			'data'			=> array()
 		);
@@ -260,7 +272,8 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 			'autosort'	=> FALSE,
 			'lang_cols'	=> FALSE,
 			'sort_col'	=> 'Name',
-			'sort_dir'	=> 'desc'
+			'sort_dir'	=> 'desc',
+			'limit'		=> 50
 		);
 
 		$expected = array(
@@ -271,6 +284,9 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 			'no_results'	=> $no_results_empty,
 			'sort_col'		=> 'Name',
 			'sort_dir'		=> 'desc',
+			'limit'			=> 50,
+			'page'			=> 1,
+			'total_rows'	=> 2,
 			'columns'		=> $expected_cols,
 			'data'			=> array(
 				array(
@@ -358,6 +374,9 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 			'no_results'	=> $no_results_empty,
 			'sort_col'		=> 'Name',
 			'sort_dir'		=> 'desc',
+			'limit'			=> 50,
+			'page'			=> 1,
+			'total_rows'	=> 2,
 			'columns'		=> $expected_cols,
 			'data'		=> array(
 				array(
@@ -445,6 +464,9 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 			'no_results'	=> $no_results_empty,
 			'sort_col'		=> 'Name',
 			'sort_dir'		=> 'desc',
+			'limit'			=> 50,
+			'page'			=> 1,
+			'total_rows'	=> 1,
 			'columns'		=> $expected_cols,
 			'data'			=> array(
 				array(
@@ -492,6 +514,97 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 
 		// Because strpos of entire string will return 0, make sure we're === FALSE there
 		$return[] = array($config, $data, $expected, $columns, 'Test autosort search with entire string');
+
+		$config['search'] = '';
+		$config['limit'] = 1;
+
+		$expected['search'] = '';
+		$expected['limit'] = 1;
+		$expected['total_rows'] = 2;
+		$expected['data'] = array(
+			array(
+				array(
+					'content' 	=> 'col 1 data 2',
+					'type'		=> Table::COL_TEXT,
+					'encode'	=> FALSE
+				),
+				array(
+					'content' 	=> 'col 2 data 2',
+					'type'		=> Table::COL_TEXT,
+					'encode'	=> FALSE
+				),
+				array(
+					'content' 	=> NULL,
+					'type'		=> Table::COL_TEXT,
+					'encode'	=> FALSE
+				),
+				array(
+					'content' 	=> '',
+					'type'		=> Table::COL_TOOLBAR,
+					'encode'	=> FALSE,
+					'toolbar_items'	=> array('view' => 'http://test/2'),
+				),
+				array(
+					'content' 	=> 'status',
+					'type'		=> Table::COL_STATUS,
+					'encode'	=> TRUE
+				),
+				array(
+					'content' 	=> '',
+					'type'		=> Table::COL_CHECKBOX,
+					'encode'	=> FALSE,
+					'name'		=> 'table[]',
+					'value'		=> 'test2'
+				)
+			)
+		);
+
+		$return[] = array($config, $data, $expected, $columns, 'Test pagination');
+
+		$config['limit'] = 1;
+		$config['page'] = 2;
+
+		$expected['page'] = 2;
+		$expected['data'] = array(
+			array(
+				array(
+					'content' 	=> 'col 1 data',
+					'type'		=> Table::COL_TEXT,
+					'encode'	=> FALSE
+				),
+				array(
+					'content' 	=> 'col 2 data',
+					'type'		=> Table::COL_TEXT,
+					'encode'	=> FALSE
+				),
+				array(
+					'content' 	=> 'col 3 data',
+					'type'		=> Table::COL_TEXT,
+					'encode'	=> FALSE
+				),
+				array(
+					'content' 	=> '',
+					'type'		=> Table::COL_TOOLBAR,
+					'encode'	=> FALSE,
+					'toolbar_items'	=> array('view' => 'http://test/'),
+				),
+				array(
+					'content' 	=> 'status',
+					'type'		=> Table::COL_STATUS,
+					'encode'	=> TRUE
+				),
+				array(
+					'content' 	=> '',
+					'type'		=> Table::COL_CHECKBOX,
+					'encode'	=> FALSE,
+					'name'		=> 'table[]',
+					'value'		=> 'test'
+				)
+			)
+		);
+
+		$return[] = array($config, $data, $expected, $columns, 'Test pagination 2');
+
 
 		return $return;
 	}

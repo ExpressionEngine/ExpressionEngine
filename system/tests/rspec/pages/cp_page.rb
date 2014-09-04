@@ -10,6 +10,7 @@ class ControlPanelPage < SitePrism::Page
 	# Tables
 	element :select_all, 'th.check-ctrl input'
 	elements :sort_links, 'table a.sort'
+	elements :pages, 'div.paginate ul li a'
 
 	def open_dev_menu
 		main_menu.dev_menu.click

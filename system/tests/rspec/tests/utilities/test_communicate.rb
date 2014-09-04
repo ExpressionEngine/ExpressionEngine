@@ -66,7 +66,7 @@ feature 'Communicate' do
 
 		@page.should have_alert
 		@page.should have_css 'div.alert.issue'
-		@page.alert.should have_text "An error occurred"
+		@page.alert.should have_text "Attention: e-mail not sent"
 
 		@page.subject.first(:xpath, ".//../..")[:class].should include 'invalid'
 		@page.subject.first(:xpath, ".//..").should have_css 'em.ee-form-error-message'
@@ -98,7 +98,7 @@ feature 'Communicate' do
 
 		@page.should have_alert
 		@page.should have_css 'div.alert.issue'
-		@page.alert.should have_text "An error occurred"
+		@page.alert.should have_text "Attention: e-mail not sent"
 
 		@page.from_email.value.should eq my_email
 		@page.from_email.first(:xpath, ".//../..")[:class].should include 'invalid'
@@ -129,7 +129,7 @@ feature 'Communicate' do
 
 		@page.should have_alert
 		@page.should have_css 'div.alert.issue'
-		@page.alert.should have_text 'An error occurred'
+		@page.alert.should have_text 'Attention: e-mail not sent'
 
 		@page.from_email.value.should eq my_email
 		@page.from_email.first(:xpath, ".//../..")[:class].should include 'invalid'
@@ -281,7 +281,7 @@ feature 'Communicate' do
 		@page.from_email.set @test_from
 		@page.recipient.set @test_recipient
 		@page.body.set my_body
-		@page.attach_file('attachment', '../../../README.md')
+		@page.attach_file('attachment', 'config.rb')
 		@page.submit_button.click
 
 		@page.should have_alert
@@ -296,7 +296,7 @@ feature 'Communicate' do
 		mail.to[0].should == @test_recipient
 		mail.multipart?.should == true
 		mail.parts[0].decoded.should == my_body + "\n\n"
-		mail.attachments[0].filename.should == 'README.md'
+		mail.attachments[0].filename.should == 'config.rb'
 	end
 
 	it "can CC an address" do
@@ -445,7 +445,7 @@ feature 'Communicate' do
 		@page.from_email.set @test_from
 		@page.find('input[name="group_5"]').set true
 		@page.body.set my_body
-		@page.attach_file('attachment', '../../../README.md')
+		@page.attach_file('attachment', 'config.rb')
 		@page.submit_button.click
 
 		@page.should have_alert
@@ -470,7 +470,7 @@ feature 'Communicate' do
 			mail.to[0].should match /ellislab.developers.member[12345]/
 			mail.multipart?.should == true
 			mail.parts[0].decoded.should == my_body + "\n\n"
-			mail.attachments[0].filename.should == 'README.md'
+			mail.attachments[0].filename.should == 'config.rb'
 		end
 	end
 end

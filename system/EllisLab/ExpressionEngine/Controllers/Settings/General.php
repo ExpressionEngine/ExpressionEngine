@@ -45,7 +45,7 @@ class General extends Settings {
 					'title' => 'site_name',
 					'desc' => 'site_name_desc',
 					'fields' => array(
-						'site_name' => array('type' => 'text')
+						'site_name' => array('type' => 'text', 'required' => TRUE)
 					)
 				),
 				array(
@@ -163,6 +163,10 @@ class General extends Settings {
 			}
 
 			ee()->functions->redirect($base_url);
+		}
+		elseif (ee()->form_validation->errors_exist())
+		{
+			ee()->view->set_message('issue', lang('cp_message_issue'), lang('form_validation_error'));
 		}
 
 		ee()->javascript->output("

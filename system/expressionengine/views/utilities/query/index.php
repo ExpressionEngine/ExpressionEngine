@@ -1,5 +1,6 @@
 <?php extend_template('default-nav'); ?>
 
+<h1><?=lang('sql_query_form_abbr')?> <span class="required intitle">&#10033; <?=lang('required_fields')?></span></h1>
 <?=form_open(cp_url('utilities/query'), 'class="settings ajax-validate"')?>
 	<?php $this->view('_shared/alerts')?>
 	<div class="alert inline warn">
@@ -16,7 +17,7 @@
 	</fieldset>
 	<fieldset class="col-group <?=form_error_class('thequery')?>">
 		<div class="setting-txt col w-16">
-			<h3><?=lang('sql_query_to_run')?></h3>
+			<h3><?=lang('sql_query_to_run')?> <span class="required" title="required field">&#10033;</span></h3>
 		</div>
 		<div class="setting-field col w-16 last">
 			<textarea class="has-format-options" name="thequery" cols="" rows=""><?=set_value('thequery')?></textarea>

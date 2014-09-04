@@ -82,6 +82,10 @@ class Sandr extends Utilities {
 			ee()->view->set_message('success', lang('cp_message_success'), sprintf(lang('rows_replaced'), (int)$replaced), TRUE);
 			ee()->functions->redirect(cp_url('utilities/sandr'));
 		}
+		elseif (ee()->form_validation->errors_exist())
+		{
+			ee()->view->set_message('issue', lang('sandr_error'), lang('sandr_error_desc'));
+		}
 
 		ee()->load->model('tools_model');
 		ee()->view->replace_options = $this->tools_model->get_search_replace_options();

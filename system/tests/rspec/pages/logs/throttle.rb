@@ -15,7 +15,6 @@ class ThrottleLog < ControlPanelPage
 	element :remove_all, 'a.btn.remove'
 	element :pagination, 'div.paginate'
 
-	elements :pages, 'div.paginate ul li a'
 	elements :items, 'section.item-wrap div.item'
 
 	def generate_data(

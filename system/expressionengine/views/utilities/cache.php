@@ -1,11 +1,11 @@
 <?php extend_template('default-nav'); ?>
 
-<h1><?=$cp_page_title?></h1>
+<h1><?=$cp_page_title?> <span class="required intitle">&#10033; <?=lang('required_fields')?></span></h1>
 <?=form_open(cp_url('utilities/cache'), 'class="settings ajax-validate"')?>
 	<?php $this->view('_shared/alerts')?>
 	<fieldset class="col-group last">
 		<div class="setting-txt col w-8">
-			<h3><?=lang('caches_to_clear')?></h3>
+			<h3><?=lang('caches_to_clear')?> <span class="required" title="required field">&#10033;</span></h3>
 			<em><?=lang('caches_to_clear_desc')?></em>
 		</div>
 		<div class="setting-field col w-8 last">

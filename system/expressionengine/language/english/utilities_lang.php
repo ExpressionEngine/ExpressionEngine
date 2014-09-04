@@ -125,6 +125,12 @@ $lang = array(
 'create_new_email' =>
 'Create new e-mail',
 
+'communicate_error' =>
+'Attention: e-mail not sent',
+
+'communicate_error_desc' =>
+'We were unable to send this e-mail, please review and fix errors below.',
+
 /**
  * CP Translation
  */
@@ -178,7 +184,7 @@ $lang = array(
 'Clearing...',
 
 'caches_cleared' =>
-'Caches cleared.',
+'Caches cleared',
 
 'caches_cleared_error' =>
 'You must select at least one cache type to clear.',
@@ -230,6 +236,12 @@ $lang = array(
 
 'no_tables_match' =>
 'No tables match the search criteria',
+
+'sandr_error' =>
+'Attention: Search and replace not run',
+
+'sandr_error_desc' =>
+'We were unable to run your search and replace, please review and fix errors below.',
 
 /**
  * Import Converter
@@ -349,6 +361,12 @@ $lang = array(
 'btn_copy_to_clipboard' =>
 'Copy to Clipboard',
 
+'file_not_converted' =>
+'Attention: File not converted',
+
+'file_not_converted_desc' =>
+'We were unable to convert this file, please review and fix errors below.',
+
 /**
  * Member Import
  */
@@ -456,6 +474,12 @@ $lang = array(
 'xml_parse_error_desc' =>
 'Check the XML file for any incorrect syntax.',
 
+'member_import_error' =>
+'Attention: Import not completed',
+
+'member_import_error_desc' =>
+'We were unable to complete the import, please review and fix errors below.',
+
 /**
  * SQL Query Form
  */
@@ -517,6 +541,12 @@ $lang = array(
 
 'no_rows_returned' =>
 'No rows returned',
+
+'query_form_error' =>
+'Attention: Query not run',
+
+'query_form_error_desc' =>
+'We were unable to run your query, please review and fix errors below.',
 
 /**
  * Statistics

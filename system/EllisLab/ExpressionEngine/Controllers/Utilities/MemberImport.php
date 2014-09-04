@@ -58,7 +58,7 @@ class MemberImport extends Utilities {
 					'title' => 'mbr_xml_file',
 					'desc' => 'mbr_xml_file_location',
 					'fields' => array(
-						'xml_file' => array('type' => 'text')
+						'xml_file' => array('type' => 'text', 'required' => TRUE)
 					)
 				),
 			),
@@ -159,6 +159,10 @@ class MemberImport extends Utilities {
 		elseif (ee()->form_validation->run() !== FALSE)
 		{
 			return $this->memberImportConfirm();
+		}
+		elseif (ee()->form_validation->errors_exist())
+		{
+			ee()->view->set_message('issue', lang('member_import_error'), lang('member_import_error_desc'));
 		}
 
 		ee()->view->base_url = $base_url;

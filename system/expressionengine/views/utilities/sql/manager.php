@@ -17,8 +17,9 @@
 				<input placeholder="<?=lang('type_phrase')?>" name="search" type="text" value="<?=$table['search']?>">
 				<input class="btn submit" type="submit" name="search_form" value="<?=lang('search_tables')?>">
 			</fieldset>
-			<h1><?=lang('database_tables')?></h1>
+			<h1><?=$table_heading?></h1>
 			<?php $this->view('_shared/table', $table); ?>
+			<?php $this->view('_shared/pagination'); ?>
 			<fieldset class="tbl-bulk-act">
 				<select name="table_action">
 					<option value="none">-- with selected --</option>

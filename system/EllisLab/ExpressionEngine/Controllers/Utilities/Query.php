@@ -66,6 +66,10 @@ class Query extends Utilities {
 		{
 			return $this->runQuery();
 		}
+		elseif (ee()->form_validation->errors_exist())
+		{
+			ee()->view->set_message('issue', lang('query_form_error'), lang('query_form_error_desc'));
+		}
 
 		ee()->view->cp_page_title = lang('sql_query_form');
 		ee()->cp->render('utilities/query/index');
@@ -86,7 +90,7 @@ class Query extends Utilities {
 			unset($_POST['password_auth']);
 		}
 
-		$row_limit	= 100;
+		$row_limit	= 20;
 		$title		= lang('query_result');
 		$vars['write'] = FALSE;
 		ee()->db->db_debug = (ee()->input->post('debug') !== FALSE);
@@ -236,6 +240,16 @@ class Query extends Utilities {
 			if ( ! isset($new_sql))
 			{
 				$query = ee()->db->query($sql);
+			}
+
+			// Set search results heading
+			if ( ! empty($search))
+			{
+				ee()->view->table_heading = sprintf(
+					lang('search_results_heading'),
+					$total_results,
+					$search
+				);
 			}
 
 			return (is_object($query)) ? $query->result_array() : array();

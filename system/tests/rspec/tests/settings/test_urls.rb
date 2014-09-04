@@ -40,11 +40,7 @@ feature 'URL and Path Settings' do
   end
 
   it 'should validate the form' do
-    site_url_required = 'The "Website root directory" field is required.'
-    cp_url_required = 'The "Control panel directory" field is required.'
-    theme_url_required = 'The "Themes directory" field is required.'
-    theme_path_required = 'The "Themes path" field is required.'
-    profile_trigger_required = 'The "Profile URL segment" field is required.'
+    field_required = "This field is required."
     theme_path_invalid = 'The path you submitted is not valid.'
 
     @page.site_url.set ''
@@ -53,7 +49,7 @@ feature 'URL and Path Settings' do
     no_php_js_errors
     should_have_form_errors(@page)
     @page.should have_text 'An error occurred'
-    @page.should have_text site_url_required
+    should_have_error_text(@page.site_url, field_required)
 
     # AJAX validation
     # Field not required, shouldn't do anything
@@ -65,15 +61,15 @@ feature 'URL and Path Settings' do
     @page.site_url.set ''
     @page.site_url.trigger 'blur'
     @page.wait_for_error_message_count(1)
+    should_have_error_text(@page.site_url, field_required)
     should_have_form_errors(@page)
-    @page.should have_text site_url_required
 
     @page.cp_url.set ''
     @page.cp_url.trigger 'blur'
     @page.wait_for_error_message_count(2)
     should_have_form_errors(@page)
-    @page.should have_text site_url_required
-    @page.should have_text cp_url_required
+    should_have_error_text(@page.site_url, field_required)
+    should_have_error_text(@page.cp_url, field_required)
 
     @page.theme_folder_url.set ''
     @page.theme_folder_url.trigger 'blur'
@@ -88,11 +84,11 @@ feature 'URL and Path Settings' do
     @page.wait_for_error_message_count(5)
 
     should_have_form_errors(@page)
-    @page.should have_text site_url_required
-    @page.should have_text cp_url_required
-    @page.should have_text theme_url_required
-    @page.should have_text theme_path_required
-    @page.should have_text profile_trigger_required
+    should_have_error_text(@page.site_url, field_required)
+    should_have_error_text(@page.cp_url, field_required)
+    should_have_error_text(@page.theme_folder_url, field_required)
+    should_have_error_text(@page.theme_folder_path, field_required)
+    should_have_error_text(@page.profile_trigger, field_required)
 
     @page.theme_folder_path.set '/'
     @page.theme_folder_path.trigger 'blur'
@@ -104,12 +100,11 @@ feature 'URL and Path Settings' do
     @page.wait_for_error_message_count(5)
 
     should_have_form_errors(@page)
-    @page.should have_text site_url_required
-    @page.should have_text cp_url_required
-    @page.should have_text theme_url_required
-    @page.should have_no_text theme_path_required
-    @page.should have_text theme_path_invalid
-    @page.should have_text profile_trigger_required
+    should_have_error_text(@page.site_url, field_required)
+    should_have_error_text(@page.cp_url, field_required)
+    should_have_error_text(@page.theme_folder_url, field_required)
+    should_have_error_text(@page.theme_folder_path, theme_path_invalid)
+    should_have_error_text(@page.profile_trigger, field_required)
   end
 
   it 'should save and load the settings' do

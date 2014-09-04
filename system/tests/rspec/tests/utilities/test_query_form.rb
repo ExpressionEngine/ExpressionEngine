@@ -17,17 +17,17 @@ feature 'Query Form' do
   end
 
   it 'should validate the form' do
-    query_required = 'The "Query to run" field is required.'
-    password_required = 'The "Current password" field is required.'
+    field_required = 'This field is required.'
+    form_error = 'Attention: Query not run'
     password_incorrect = 'The password entered is incorrect.'
 
     # Submit with nothing
     @page.submit
 
     no_php_js_errors
-    @page.should have_text 'An error occurred'
-    @page.should have_text query_required
-    @page.should have_text password_required
+    @page.should have_text form_error
+    should_have_error_text(@page.query_form, field_required)
+    should_have_error_text(@page.password, field_required)
     @page.should have_no_text password_incorrect
     should_have_form_errors(@page)
 
@@ -37,9 +37,9 @@ feature 'Query Form' do
     @page.submit
 
     no_php_js_errors
-    @page.should have_text 'An error occurred'
-    @page.should have_no_text query_required
-    @page.should have_text password_required
+    @page.should have_text form_error
+    should_have_no_error_text(@page.query_form)
+    should_have_error_text(@page.password, field_required)
     @page.should have_no_text password_incorrect
     should_have_form_errors(@page)
 
@@ -51,41 +51,38 @@ feature 'Query Form' do
 
     no_php_js_errors
     @page.query_form.value.should eq 'query'
-    @page.should have_text 'An error occurred'
-    @page.should have_no_text query_required
-    @page.should have_no_text password_required
-    @page.should have_text password_incorrect
+    should_have_no_error_text(@page.query_form)
+    should_have_error_text(@page.password, password_incorrect)
     should_have_form_errors(@page)
 
     # AJAX Validation
     @page.load
     @page.query_form.trigger 'blur'
-    @page.should have_text query_required
-    @page.should have_no_text password_required
-    @page.should have_no_text password_incorrect
+    @page.wait_for_error_message_count(1)
+    should_have_error_text(@page.query_form, field_required)
+    should_have_no_error_text(@page.password)
 
     @page.password.trigger 'blur'
-    @page.should have_text query_required
-    @page.should have_text password_required
-    @page.should have_no_text password_incorrect
+    @page.wait_for_error_message_count(2)
+    should_have_error_text(@page.query_form, field_required)
+    should_have_error_text(@page.password, field_required)
 
     @page.password.set 'pass'
     @page.password.trigger 'blur'
-    @page.should have_text query_required
-    @page.should have_no_text password_required
-    @page.should have_text password_incorrect
+    should_have_error_text(@page.query_form, field_required)
+    should_have_error_text(@page.password, password_incorrect)
 
     @page.password.set 'password'
     @page.password.trigger 'blur'
-    @page.should have_text query_required
-    @page.should have_no_text password_required
-    @page.should have_no_text password_incorrect
+    @page.wait_for_error_message_count(1)
+    should_have_error_text(@page.query_form, field_required)
+    should_have_no_error_text(@page.password)
 
     @page.query_form.set 'SELECT'
     @page.query_form.trigger 'blur'
-    @page.should have_no_text query_required
-    @page.should have_no_text password_required
-    @page.should have_no_text password_incorrect
+    @page.wait_for_error_message_count(0)
+    should_have_no_error_text(@page.query_form)
+    should_have_no_error_text(@page.password)
   end
 
   it 'should not allow certain query types' do
@@ -210,6 +207,7 @@ feature 'Query Form' do
     results.search_btn.click
 
     no_php_js_errors
+    results.should have_text 'Search Results we found 2 results for "the"'
     results.search_field.value.should eq 'the'
     results.should have(0).pages
     results.should have(3).rows # 2 results plus header
@@ -218,6 +216,7 @@ feature 'Query Form' do
     # Make sure we can still sort and maintain search results
     results.sort_links[0].click
     no_php_js_errors
+    results.should have_text 'Search Results we found 2 results for "the"'
     results.search_field.value.should eq 'the'
     results.should have(0).pages
     results.should have(3).rows # 2 results plus header
@@ -228,7 +227,7 @@ feature 'Query Form' do
   it 'should paginate query results' do
     # Generate random data that will paginate
     cp_log = CpLog.new
-    cp_log.generate_data(count: 150)
+    cp_log.generate_data(count: 30)
 
     @page.query_form.set 'select * from exp_cp_log'
     @page.password.set 'password'
@@ -236,18 +235,18 @@ feature 'Query Form' do
 
     no_php_js_errors
     results = QueryResults.new
-    results.should have(101).rows # 100 results plus header
+    results.should have(21).rows # 20 results plus header
     results.pages.map {|name| name.text}.should == ["First", "1", "2", "Next", "Last"]
     click_link "Next"
 
     no_php_js_errors
-    results.should have(52).rows # 51 results plus header
+    results.should have(12).rows # 11 results plus header
     results.pages.map {|name| name.text}.should == ["First", "Previous", "1", "2", "Last"]
   end
 
   it 'should paginate sorted query results' do
     cp_log = CpLog.new
-    cp_log.generate_data(count: 150)
+    cp_log.generate_data(count: 30)
 
     @page.query_form.set 'select * from exp_cp_log'
     @page.password.set 'password'
@@ -256,12 +255,12 @@ feature 'Query Form' do
     no_php_js_errors
     results = QueryResults.new
     results.sort_links[0].click
-    results.table.find('tr:nth-child(2) td:nth-child(1)').should have_text '151'
+    results.table.find('tr:nth-child(2) td:nth-child(1)').should have_text '31'
 
     no_php_js_errors
     click_link "Next"
 
-    results.table.find('tr:nth-child(2) td:nth-child(1)').should have_text '51'
+    results.table.find('tr:nth-child(2) td:nth-child(1)').should have_text '11'
   end
 
   it 'should show no results when there are no results' do

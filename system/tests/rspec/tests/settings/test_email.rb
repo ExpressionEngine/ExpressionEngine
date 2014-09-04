@@ -29,9 +29,9 @@ feature 'Outgoing Email Settings' do
   end
 
   it 'should validate the form' do
-    email_required = 'The "Address" field is required.'
+    field_required = "This field is required."
     email_invalid = 'The "Address" field must contain a valid email address.'
-    server_required = 'The "Server address" field is required for SMTP.'
+    server_required = 'This field is required for SMTP.'
 
     @page.mail_protocol.select 'SMTP'
     @page.submit
@@ -39,7 +39,7 @@ feature 'Outgoing Email Settings' do
     no_php_js_errors
     should_have_form_errors(@page)
     @page.should have_text 'An error occurred'
-    @page.should have_text server_required
+    should_have_error_text(@page.smtp_server, server_required)
 
     # AJAX validation
     @page.load
@@ -47,34 +47,34 @@ feature 'Outgoing Email Settings' do
     @page.webmaster_email.trigger 'blur'
     @page.wait_for_error_message_count(1)
     should_have_form_errors(@page)
-    @page.should have_text email_required
+    should_have_error_text(@page.webmaster_email, field_required)
 
     @page.mail_protocol.select 'SMTP'
     @page.smtp_server.trigger 'blur'
     @page.wait_for_error_message_count(2)
     should_have_form_errors(@page)
-    @page.should have_text server_required
+    should_have_error_text(@page.smtp_server, server_required)
 
     @page.webmaster_email.set 'test@test.com'
     @page.webmaster_email.trigger 'blur'
     @page.wait_for_error_message_count(1)
+    should_have_no_error_text(@page.webmaster_email)
 
     @page.webmaster_email.set 'dfsfdsf'
     @page.webmaster_email.trigger 'blur'
     @page.wait_for_error_message_count(2)
-    @page.should have_text email_invalid
+    should_have_error_text(@page.webmaster_email, email_invalid)
 
     @page.webmaster_email.set 'test@test.com'
     @page.webmaster_email.trigger 'blur'
     @page.wait_for_error_message_count(1)
+    should_have_no_error_text(@page.webmaster_email)
 
     @page.mail_protocol.select 'PHP Mail'
     @page.smtp_server.trigger 'blur'
     @page.wait_for_error_message_count(0)
     should_have_no_form_errors(@page)
-    @page.should have_no_text email_required
-    @page.should have_no_text email_invalid
-    @page.should have_no_text server_required
+    should_have_no_error_text(@page.smtp_server)
   end
 
   it 'should save and load the settings' do

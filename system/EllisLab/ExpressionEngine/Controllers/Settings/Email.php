@@ -42,7 +42,7 @@ class Email extends Settings {
 					'title' => 'webmaster_email',
 					'desc' => 'webmaster_email_desc',
 					'fields' => array(
-						'webmaster_email' => array('type' => 'text')
+						'webmaster_email' => array('type' => 'text', 'required' => TRUE),
 					)
 				),
 				array(
@@ -155,6 +155,10 @@ class Email extends Settings {
 			}
 
 			ee()->functions->redirect($base_url);
+		}
+		elseif (ee()->form_validation->errors_exist())
+		{
+			ee()->view->set_message('issue', lang('cp_message_issue'), lang('form_validation_error'));
 		}
 
 		ee()->view->base_url = $base_url;

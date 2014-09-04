@@ -7,6 +7,8 @@ feature 'Search and Replace' do
     @page = SearchAndReplace.new
     @page.load
     no_php_js_errors
+
+    @field_required = 'This field is required.'
   end
 
   it 'shows the Search and Replace page' do
@@ -23,54 +25,57 @@ feature 'Search and Replace' do
     @page.submit_enabled?.should eq true
 
     @page.search_term.trigger 'blur'
-    @page.should have_text 'The "Search for this text" field is required.'
-    @page.should have_no_text 'The "Replace with this text" field is required.'
-
-    @page.submit_enabled?.should eq false
-
-    page.should have_css 'fieldset.invalid'
+    @page.wait_for_error_message_count(1)
+    should_have_error_text(@page.search_term, @field_required)
+    should_have_form_errors(@page)
 
     @page.replace_term.trigger 'blur'
-    @page.should have_text 'The "Search for this text" field is required.'
-    @page.should have_text 'The "Replace with this text" field is required.'
-
-    @page.submit_enabled?.should eq false
+    @page.wait_for_error_message_count(2)
+    should_have_error_text(@page.search_term, @field_required)
+    should_have_error_text(@page.replace_term, @field_required)
+    should_have_form_errors(@page)
 
     @page.search_term.set 'Text'
     @page.search_term.trigger 'blur'
-    @page.should have_no_text 'The "Search for this text" field is required.'
-    @page.should have_text 'The "Replace with this text" field is required.'
-
-    @page.submit_enabled?.should eq false
+    @page.wait_for_error_message_count(1)
+    should_have_no_error_text(@page.search_term)
+    should_have_error_text(@page.replace_term, @field_required)
+    should_have_form_errors(@page)
 
     @page.replace_where.select 'Site Preferences (Choose from the following)'
-    @page.should have_no_text 'The "Search for this text" field is required.'
-    @page.should have_text 'The "Replace with this text" field is required.'
-    @page.should have_text 'The "Search and replace in" field is required.'
-
-    @page.submit_enabled?.should eq false
+    @page.wait_for_error_message_count(2)
+    should_have_no_error_text(@page.search_term)
+    should_have_error_text(@page.replace_where, @field_required)
+    should_have_error_text(@page.replace_term, @field_required)
+    should_have_form_errors(@page)
 
     @page.password_auth.trigger 'blur'
-    @page.should have_text 'The "Current password" field is required.'
+    @page.wait_for_error_message_count(3)
+    should_have_no_error_text(@page.search_term)
+    should_have_error_text(@page.replace_where, @field_required)
+    should_have_error_text(@page.replace_term, @field_required)
+    should_have_error_text(@page.password_auth, @field_required)
+    should_have_form_errors(@page)
 
     @page.password_auth.set 'test'
     @page.password_auth.trigger 'blur'
-    @page.should have_text 'The password entered is incorrect.'
+    should_have_no_error_text(@page.search_term)
+    should_have_error_text(@page.replace_where, @field_required)
+    should_have_error_text(@page.replace_term, @field_required)
+    should_have_error_text(@page.password_auth, 'The password entered is incorrect.')
+    should_have_form_errors(@page)
 
     @page.password_auth.set 'password'
     @page.replace_term.set 'test'
     @page.replace_term.trigger 'blur'
     @page.replace_where.select 'Channel Entry Titles'
 
-    @page.should have_no_text 'The "Search for this text" field is required.'
-    @page.should have_no_text 'The "Replace with this text" field is required.'
-    @page.should have_no_text 'The "Search and replace in" field is required.'
-    @page.should have_no_text 'The "Current password" field is required.'
-    @page.should have_no_text 'The password entered is incorrect.'
-
-    page.should have_no_css 'fieldset.invalid'
-
-    @page.submit_enabled?.should eq true
+    @page.wait_for_error_message_count(0)
+    should_have_no_error_text(@page.search_term)
+    should_have_no_error_text(@page.replace_where)
+    should_have_no_error_text(@page.replace_term)
+    should_have_no_error_text(@page.password_auth)
+    should_have_no_form_errors(@page)
 
     no_php_js_errors
 
@@ -85,16 +90,12 @@ feature 'Search and Replace' do
   it 'should fail validation without AJAX too' do
     @page.submit_button.click
 
-    page.should have_css 'fieldset.invalid'
-
-    @page.should have_text 'An error occurred'
-    @page.should have_text 'There was a problem processing your submission, please check below and fix all errors.'
-    @page.should have_text 'The "Search for this text" field is required.'
-    @page.should have_text 'The "Replace with this text" field is required.'
-    @page.should have_text 'The "Search and replace in" field is required.'
-    @page.should have_text 'The "Current password" field is required.'
-
-    @page.submit_enabled?.should eq false
+    @page.should have_text 'Attention: Search and replace not run'
+    should_have_error_text(@page.search_term, @field_required)
+    should_have_error_text(@page.replace_where, @field_required)
+    should_have_error_text(@page.replace_term, @field_required)
+    should_have_error_text(@page.password_auth, @field_required)
+    should_have_form_errors(@page)
 
     no_php_js_errors
 
@@ -106,15 +107,13 @@ feature 'Search and Replace' do
     @page.password_auth.set 'password'
     @page.password_auth.trigger 'blur'
 
-    @page.should have_no_text 'The "Search for this text" field is required.'
-    @page.should have_no_text 'The "Replace with this text" field is required.'
-    @page.should have_no_text 'The "Search and replace in" field is required.'
-    @page.should have_no_text 'The "Current password" field is required.'
-    @page.should have_no_text 'The password entered is incorrect.'
+    @page.wait_for_error_message_count(0)
 
-    @page.should have_no_css 'fieldset.invalid'
-
-    @page.submit_enabled?.should eq true
+    should_have_no_error_text(@page.search_term)
+    should_have_no_error_text(@page.replace_where)
+    should_have_no_error_text(@page.replace_term)
+    should_have_no_error_text(@page.password_auth)
+    should_have_no_form_errors(@page)
 
     no_php_js_errors
 
