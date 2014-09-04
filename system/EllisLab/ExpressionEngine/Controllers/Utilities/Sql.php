@@ -120,6 +120,18 @@ class Sql extends Utilities {
 		$vars['pagination'] = $pagination->cp_links($vars['table']['base_url']);
 
 		ee()->view->cp_page_title = lang('sql_manager');
+		ee()->view->table_heading = lang('database_tables');
+
+		// Set search results heading
+		if ( ! empty($vars['table']['search']))
+		{
+			ee()->view->table_heading = sprintf(
+				lang('search_results_heading'),
+				$vars['table']['total_rows'],
+				$vars['table']['search']
+			);
+		}
+
 		ee()->cp->render('utilities/sql/manager', $vars);
 	}
 

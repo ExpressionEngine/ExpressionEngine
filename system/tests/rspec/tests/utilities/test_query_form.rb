@@ -207,6 +207,7 @@ feature 'Query Form' do
     results.search_btn.click
 
     no_php_js_errors
+    results.should have_text 'Search Results we found 2 results for "the"'
     results.search_field.value.should eq 'the'
     results.should have(0).pages
     results.should have(3).rows # 2 results plus header
@@ -215,6 +216,7 @@ feature 'Query Form' do
     # Make sure we can still sort and maintain search results
     results.sort_links[0].click
     no_php_js_errors
+    results.should have_text 'Search Results we found 2 results for "the"'
     results.search_field.value.should eq 'the'
     results.should have(0).pages
     results.should have(3).rows # 2 results plus header

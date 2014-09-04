@@ -242,6 +242,16 @@ class Query extends Utilities {
 				$query = ee()->db->query($sql);
 			}
 
+			// Set search results heading
+			if ( ! empty($search))
+			{
+				ee()->view->table_heading = sprintf(
+					lang('search_results_heading'),
+					$total_results,
+					$search
+				);
+			}
+
 			return (is_object($query)) ? $query->result_array() : array();
 		});
 

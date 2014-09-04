@@ -68,6 +68,8 @@ feature 'SQL Manager' do
     @page.search_field.set 'access'
     @page.search_btn.click
 
+    @page.should have_text 'Search Results we found 4 results for "access"'
+
     @page.tables.map {|source| source.text}.should == ['exp_accessories', 'exp_status_no_access', 'exp_template_no_access', 'exp_upload_no_access']
 
     @page.should have_no_pages
@@ -78,6 +80,8 @@ feature 'SQL Manager' do
     @page.search_btn.click
 
     @page.sort_links[0].click
+
+    @page.should have_text 'Search Results we found 4 results for "access"'
 
     @page.tables.map {|source| source.text}.should == ['exp_accessories', 'exp_status_no_access', 'exp_template_no_access', 'exp_upload_no_access'].reverse
 

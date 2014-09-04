@@ -559,6 +559,9 @@ $lang = array(
 'disable' =>
 'Disable',
 
+'search_results_heading' =>
+'Search Results<br><i>we found %d results for "%s"</i>',
+
 ''=>''
 );
 
