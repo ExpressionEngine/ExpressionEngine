@@ -80,9 +80,7 @@ $lang = array(
 
 /* Filters */
 'filters'				=> 'Filters',
-'username'				=> 'username',
 'filter_by_username'	=> 'filter username',
-'site'					=> 'site',
 'filter_by_site'		=> 'filter sites',
 'date'					=> 'date',
 'custom_date'			=> 'custom date',

@@ -5,7 +5,7 @@
 	<?php foreach ($filters as $filter): ?>
 		<li>
 			<a class="has-sub" href="">
-				<?=lang($filter['label'])?>
+				<?=strtolower(lang($filter['label']))?>
 				<?php if ($filter['value']): ?>
 				<span class="faded">(<?=$filter['value']?>)</span>
 				<?php endif; ?>
