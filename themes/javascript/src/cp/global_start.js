@@ -142,13 +142,6 @@ $(document).ready(function () {
 		EE.insert_placeholders();
 	}
 
-
-	// External links open in new window
-	$('a[rel="external"]').click(function () {
-		window.open(this.href);
-		return false;
-	});
-
 	// Notice banners
 	if (EE.importantMessage) {
 		EE.cp.showNoticeBanner();
