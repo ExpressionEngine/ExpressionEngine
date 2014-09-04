@@ -472,13 +472,21 @@ $this->db->join($relationship_meta->to_table . ' AS ' . $relationship_meta->to_t
 	 */
 	protected function translateProperty($property)
 	{
+		$guess_model = FALSE;
+
 		// set model-less filters on the main model
 		if ( ! strpos($property, '.'))
 		{
-			$property = $this->model.'.'.$property;
+			$guess_model = TRUE;
+			$name = $this->model;
+			$column = $property;
+		}
+		else
+		{
+			list($name, $column) = explode('.', $property);
 		}
 
-		list($name, $column) = explode('.', $property);
+		// get the non aliased model name and tree depth id
 		list($model, $sql_id) = $this->getSqlId($name);
 
 		if ( ! isset($sql_id))
@@ -491,6 +499,16 @@ $this->db->join($relationship_meta->to_table . ' AS ' . $relationship_meta->to_t
 
 		if ( ! isset($table))
 		{
+			// If they didn't specify a model and the column doesn't exist
+			// on the primary model, then we must check if the model exists
+			// and select on its primary key
+			if ($guess_model && ! is_null($this->getSqlId($column)))
+			{
+				$pk = $this->getMeta($column)->getPrimaryKey();
+				return $this->translateProperty($column.'.'.$pk);
+			}
+
+
 			throw new \Exception("Property {$column} was not found on model {$model}.");
 		}
 
