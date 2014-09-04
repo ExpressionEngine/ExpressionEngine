@@ -195,7 +195,7 @@ class Communicate extends Utilities {
 		if (ee()->form_validation->run() === FALSE)
 		{
 			ee()->view->set_message('issue', lang('communicate_error'), lang('communicate_error_desc'));
-			
+
 			return $this->index();
 		}
 
@@ -725,7 +725,7 @@ class Communicate extends Utilities {
 	{
 		if ( ! $str && ee()->input->post('total_gl_recipients') < 1)
 		{
-			ee()->form_validation->set_message('_check_for_recipients', lang('empty_form_fields'));
+			ee()->form_validation->set_message('_check_for_recipients', lang('required'));
 			return FALSE;
 		}
 

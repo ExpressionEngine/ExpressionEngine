@@ -131,6 +131,12 @@ $lang = array(
 'communicate_error_desc' =>
 'We were unable to send this e-mail, please review and fix errors below.',
 
+'view_email' =>
+'View e-mail',
+
+'resend' =>
+'Send e-mail again',
+
 /**
  * CP Translation
  */
