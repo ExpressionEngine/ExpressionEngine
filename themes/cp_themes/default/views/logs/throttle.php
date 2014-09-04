@@ -14,7 +14,7 @@
 			<p class="no-results"><?=lang('throttling_disabled')?> <a class="btn action" href="<?=cp_url('settings/throttling')?>"><?=lang('enable_throttling')?></a></p>
 		<?php else: ?>
 			<?php if (empty($rows)): ?>
-				<p class="no-results"><?=lang('no_search_results')?></p>
+				<p class="no-results"><?=lang('no_throttling_logs_found')?></p>
 			<?php else: ?>
 				<?php foreach($rows as $row): ?>
 

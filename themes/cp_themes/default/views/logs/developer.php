@@ -11,7 +11,7 @@
 	<?php $this->view('_shared/alerts')?>
 	<section class="item-wrap log">
 		<?php if (empty($rows)): ?>
-			<p class="no-results"><?=lang('no_search_results')?></p>
+			<p class="no-results"><?=lang('no_developer_logs_found')?></p>
 		<?php else: ?>
 			<?php foreach($rows as $row): ?>
 			<div class="item">
