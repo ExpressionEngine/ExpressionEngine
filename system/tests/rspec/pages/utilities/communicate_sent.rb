@@ -18,7 +18,6 @@ class CommunicateSent < ControlPanelPage
 	elements :total_sents, 'div.box div.tbl-ctrls form div.tbl-wrap table tr td:nth-child(3)'
 
 	element :pagination, 'div.paginate'
-	elements :pages, 'div.paginate ul li a'
 
 	element :bulk_action, 'form fieldset.tbl-bulk-act select[name="bulk_action"]'
 	element :action_submit_button, 'form fieldset.tbl-bulk-act input.submit'

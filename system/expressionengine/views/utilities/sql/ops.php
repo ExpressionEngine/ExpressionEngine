@@ -8,5 +8,6 @@
 		</fieldset>
 		<h1><?=$cp_page_title?></h1>
 		<?php $this->view('_shared/table', $table);?>
+		<?php $this->view('_shared/pagination'); ?>
 	</form>
 </div>

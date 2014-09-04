@@ -112,6 +112,13 @@ class Sql extends Utilities {
 		$base_url = new CP\URL('utilities/sql', ee()->session->session_id());
 		$vars['table'] = $table->viewData($base_url);
 
+		$pagination = new CP\Pagination(
+			$vars['table']['limit'],
+			$vars['table']['total_rows'],
+			$vars['table']['page']
+		);
+		$vars['pagination'] = $pagination->cp_links($vars['table']['base_url']);
+
 		ee()->view->cp_page_title = lang('sql_manager');
 		ee()->cp->render('utilities/sql/manager', $vars);
 	}
@@ -185,6 +192,13 @@ class Sql extends Utilities {
 		$table->setData($data);
 		$table->setNoResultsText('no_tables_match');
 		$vars['table'] = $table->viewData($base_url);
+
+		$pagination = new CP\Pagination(
+			$vars['table']['limit'],
+			$vars['table']['total_rows'],
+			$vars['table']['page']
+		);
+		$vars['pagination'] = $pagination->cp_links($vars['table']['base_url']);
 
 		ee()->view->cp_page_title = lang(strtolower($action).'_tables_results');
 		ee()->cp->set_breadcrumb(cp_url('utilities/sql'), lang('sql_manager'));

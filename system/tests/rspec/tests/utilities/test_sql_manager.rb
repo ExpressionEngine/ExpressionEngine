@@ -2,6 +2,16 @@ require './bootstrap.rb'
 
 feature 'SQL Manager' do
 
+  def get_tables
+    tables = []
+    $db.query('SHOW TABLES').each(:as => :array) do |row|
+      tables << row[0]
+    end
+    clear_db_result
+
+    return tables
+  end
+
   before(:each) do
     cp_session
     @page = SqlManager.new
@@ -20,11 +30,8 @@ feature 'SQL Manager' do
   end
 
   it 'should list tables present in the install' do
-    tables = []
-    $db.query('SHOW TABLES').each(:as => :array) do |row|
-      tables << row[0]
-    end
-    clear_db_result
+    tables = get_tables
+    tables = tables[0..19]
 
     @page.tables.map {|source| source.text}.should == tables
     @page.should have(tables.count).tables
@@ -34,15 +41,27 @@ feature 'SQL Manager' do
     @page.table.find('th.highlight').text.should eq 'Table Name'
     @page.sort_links[0].click
 
-    tables = []
-    $db.query('SHOW TABLES').each(:as => :array) do |row|
-      tables << row[0]
-    end
-    clear_db_result
+    tables = get_tables
+    tables = tables.reverse[0..19]
 
-    @page.tables.map {|source| source.text}.should == tables.reverse
+    @page.tables.map {|source| source.text}.should == tables
     @page.should have(tables.count).tables
     @page.table.find('th.highlight').text.should eq 'Table Name'
+
+    @page.pages.map {|name| name.text}.should == ['First', '1', '2', '3', 'Next', 'Last']
+  end
+
+  it 'should paginate the table' do
+    tables = get_tables
+    tables = tables[20..39]
+
+    click_link 'Next'
+
+    @page.tables.map {|source| source.text}.should == tables
+    @page.should have(tables.count).tables
+    @page.table.find('th.highlight').text.should eq 'Table Name'
+
+    @page.pages.map {|name| name.text}.should == ['First', 'Previous', '1', '2', '3', 'Next', 'Last']
   end
 
   it 'should search the table names' do
@@ -50,6 +69,8 @@ feature 'SQL Manager' do
     @page.search_btn.click
 
     @page.tables.map {|source| source.text}.should == ['exp_accessories', 'exp_status_no_access', 'exp_template_no_access', 'exp_upload_no_access']
+
+    @page.should have_no_pages
   end
 
   it 'should sort search results' do
@@ -59,6 +80,8 @@ feature 'SQL Manager' do
     @page.sort_links[0].click
 
     @page.tables.map {|source| source.text}.should == ['exp_accessories', 'exp_status_no_access', 'exp_template_no_access', 'exp_upload_no_access'].reverse
+
+    @page.should have_no_pages
   end
 
   it 'should validate the table operations submission' do
@@ -88,11 +111,8 @@ feature 'SQL Manager' do
     no_php_js_errors
     @page.should have_text 'Repair Table Results'
 
-    tables = []
-    $db.query('SHOW TABLES').each(:as => :array) do |row|
-      tables << row[0]
-    end
-    clear_db_result
+    tables = get_tables
+    tables = tables[0..19]
 
     @page.tables.map {|source| source.text}.should == tables
 
@@ -102,10 +122,12 @@ feature 'SQL Manager' do
     @page.tables.map {|source| source.text}.should == tables.reverse
 
     # And search
-    @page.search_field.set 'access'
+    @page.search_field.set 'category'
     @page.search_btn.click
 
-    @page.tables.map {|source| source.text}.should == ['exp_accessories', 'exp_status_no_access', 'exp_template_no_access', 'exp_upload_no_access'].reverse
+    @page.tables.map {|source| source.text}.should == ['exp_category_field_data', 'exp_category_fields', 'exp_category_groups', 'exp_category_posts'].reverse
+
+    @page.should have_no_pages
   end
 
   it 'should optimize the tables and sort and search the results' do
@@ -116,11 +138,8 @@ feature 'SQL Manager' do
     no_php_js_errors
     @page.should have_text 'Optimized Table Results'
 
-    tables = []
-    $db.query('SHOW TABLES').each(:as => :array) do |row|
-      tables << row[0]
-    end
-    clear_db_result
+    tables = get_tables
+    tables = tables[0..19]
 
     @page.tables.map {|source| source.text}.should == tables
 
@@ -130,10 +149,12 @@ feature 'SQL Manager' do
     @page.tables.map {|source| source.text}.should == tables.reverse
 
     # And search
-    @page.search_field.set 'access'
+    @page.search_field.set 'category'
     @page.search_btn.click
 
-    @page.tables.map {|source| source.text}.should == ['exp_accessories', 'exp_status_no_access', 'exp_template_no_access', 'exp_upload_no_access'].reverse
+    @page.tables.map {|source| source.text}.should == ['exp_category_field_data', 'exp_category_fields', 'exp_category_groups', 'exp_category_posts'].reverse
+
+    @page.should have_no_pages
   end
 
   it 'should allow viewing of table contents' do

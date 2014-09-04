@@ -19,6 +19,7 @@
 			</fieldset>
 			<h1><?=lang('database_tables')?></h1>
 			<?php $this->view('_shared/table', $table); ?>
+			<?php $this->view('_shared/pagination'); ?>
 			<fieldset class="tbl-bulk-act">
 				<select name="table_action">
 					<option value="none">-- with selected --</option>

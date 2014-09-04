@@ -57,6 +57,9 @@ class Table {
 			'wrap'		 => TRUE,
 			'sort_col'	 => NULL,
 			'sort_dir'	 => 'asc',
+			'limit'		 => 20,
+			'page'		 => 1,
+			'total_rows' => 0,
 			'search'	 => NULL,
 			'autosort'	 => FALSE,
 			'autosearch' => TRUE,
@@ -84,7 +87,8 @@ class Table {
 			'sort_col'	=> ee()->input->get('sort_col'),
 			'sort_dir'	=> ee()->input->get('sort_dir'),
 			'search'	=> ee()->input->post('search') !== FALSE
-				? ee()->input->post('search') : ee()->input->get('search')
+				? ee()->input->post('search') : ee()->input->get('search'),
+			'page'		=> ee()->input->get('page') > 0 ? ee()->input->get('page') : 1
 		);
 
 		return new Table(array_merge($defaults, $config));
@@ -285,6 +289,8 @@ class Table {
 				$this->data[] = $data_row;
 			}
 
+			$this->config['total_rows'] = count($this->data);
+
 			// If this table is not paginated, handle sorting automatically
 			if ($this->config['autosort'])
 			{
@@ -295,6 +301,14 @@ class Table {
 			if ($this->config['autosearch'])
 			{
 				$this->searchData();
+			}
+
+			// Apply pagination after search
+			if ($this->config['autosort'])
+			{
+				$offset = ($this->config['page'] - 1) * $this->config['limit'];
+
+				$this->data = array_slice($this->data, $offset, $this->config['limit']);
 			}
 		}
 	}
@@ -381,6 +395,8 @@ class Table {
 				unset($this->data[$key]);
 			}
 		}
+
+		$this->config['total_rows'] = count($this->data);
 	}
 
 	/**
@@ -447,6 +463,9 @@ class Table {
 			'search'		=> $this->config['search'],
 			'wrap'			=> $this->config['wrap'],
 			'no_results'	=> $this->config['no_results'],
+			'limit'			=> $this->config['limit'],
+			'page'			=> $this->config['page'],
+			'total_rows'	=> $this->config['total_rows'],
 			'sort_col'		=> $this->getSortCol(),
 			'sort_dir'		=> $this->getSortDir(),
 			'columns'		=> $this->columns,
