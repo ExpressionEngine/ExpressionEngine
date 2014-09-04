@@ -82,7 +82,7 @@ feature 'Communicate' do
 
 		@page.recipient.first(:xpath, ".//../..")[:class].should include 'invalid'
 		@page.recipient.first(:xpath, ".//..").should have_css 'em.ee-form-error-message'
-		@page.recipient.first(:xpath, ".//..").should have_text 'You left some fields empty.'
+		@page.recipient.first(:xpath, ".//..").should have_text 'field is required.'
 
 		@page.submit_button[:value].should eq 'Fix Errors, Please'
 	end
