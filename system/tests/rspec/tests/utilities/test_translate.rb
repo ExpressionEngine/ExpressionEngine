@@ -61,10 +61,10 @@ feature 'Translate Tool' do
 
 	it 'shows the English Language files', :edit => false do
 		@list_page.should have_pagination
-		@list_page.should have(5).pages
-		@list_page.pages.map {|name| name.text}.should == ["First", "1", "2", "Next", "Last"]
+		@list_page.should have(6).pages
+		@list_page.pages.map {|name| name.text}.should == ["First", "1", "2", "3", "Next", "Last"]
 
-		@list_page.should have(51).rows # 50 rows per page + header row
+		@list_page.should have(21).rows # 20 rows per page + header row
 	end
 
 	it 'can search by phrases', :edit => false do
@@ -94,12 +94,12 @@ feature 'Translate Tool' do
 		click_link "Next"
 
 		@list_page.should have_pagination
-		@list_page.should have(5).pages
-		@list_page.pages.map {|name| name.text}.should == ["First", "Previous", "1", "2", "Last"]
+		@list_page.should have(7).pages
+		@list_page.pages.map {|name| name.text}.should == ["First", "Previous", "1", "2", "3", "Next", "Last"]
 
 		files = Dir.glob(language_path + 'english/*_lang.php')
-		count = files.count - 50
-		@list_page.should have(count + 1).rows # +1 for header row
+		files = files[20..39]
+		@list_page.should have(files.count + 1).rows # +1 for header row
 	end
 
 	it 'sorts by file name', :edit => false do
@@ -161,10 +161,10 @@ feature 'Translate Tool' do
 		click_link "Rspeclingo"
 		@list_page.title.text.should eq 'Rspeclingo Language Files'
 		@list_page.should have_pagination
-		@list_page.should have(5).pages
-		@list_page.pages.map {|name| name.text}.should == ["First", "1", "2", "Next", "Last"]
+		@list_page.should have(6).pages
+		@list_page.pages.map {|name| name.text}.should == ["First", "1", "2", "3", "Next", "Last"]
 
-		@list_page.should have(51).rows # 50 rows per page + header row
+		@list_page.should have(21).rows # 20 rows per page + header row
 	end
 
 	it 'returns a 404 for an invalid language', :edit => false do

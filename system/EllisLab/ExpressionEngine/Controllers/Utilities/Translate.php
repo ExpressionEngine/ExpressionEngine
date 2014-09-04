@@ -170,15 +170,13 @@ class Translate extends Utilities {
 
 		if ( ! empty($vars['table']['data']))
 		{
-			$chunks = array_chunk($vars['table']['data'], 50);
-
 			// Paginate!
-			$page = ee()->input->get('page') ? ee()->input->get('page') : 1;
-			$page = ($page > 0) ? $page : 1;
-			$pagination = new Pagination(50, count($vars['table']['data']), $page);
+			$pagination = new Pagination(
+				$vars['table']['limit'],
+				$vars['table']['total_rows'],
+				$vars['table']['page']
+			);
 			$vars['pagination'] = $pagination->cp_links($base_url);
-
-			$vars['table']['data'] = $chunks[$page - 1];
 		}
 
 		ee()->cp->render('utilities/translate/list', $vars);
