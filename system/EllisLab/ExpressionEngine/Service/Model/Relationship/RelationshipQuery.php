@@ -2,7 +2,7 @@
 namespace EllisLab\ExpressionEngine\Service\Model\Relationship;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
-use EllisLab\ExpressionEngine\Service\Model\ModelFactory;
+use EllisLab\ExpressionEngine\Service\Model\Factory;
 use EllisLab\ExpressionEngine\Service\AliasServiceInterface;
 
 /**
@@ -69,7 +69,7 @@ class RelationshipQuery {
 	 * @param ModelFactory $factory
 	 * @return Model or Collection  query results
 	 */
-	public function lazy(ModelFactory $factory)
+	public function lazy(Factory $factory)
 	{
 		$from_key = $this->info->key;
 		$to_model = $this->info->model;
