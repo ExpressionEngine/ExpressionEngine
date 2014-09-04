@@ -251,7 +251,7 @@ class Communicate extends Utilities {
 			$debug_msg = $this->deliverOneEmail($email, $recipient);
 
 			ee()->view->set_message('success', lang('email_sent_message'), $debug_msg, TRUE);
-			ee()->functions->redirect(cp_url('utilities/communicate/sent'));
+			ee()->functions->redirect(cp_url('utilities/communicate'));
 		}
 
 		// Get member group emails
@@ -336,7 +336,7 @@ class Communicate extends Utilities {
 			$this->deleteAttachments($email); // Remove attachments now
 
 			ee()->view->set_message('success', lang('total_emails_sent') . ' ' . $total_sent, $debug_msg, TRUE);
-			ee()->functions->redirect(cp_url('utilities/communicate/sent'));
+			ee()->functions->redirect(cp_url('utilities/communicate'));
 		}
 
 		/** ----------------------------------------
@@ -396,7 +396,7 @@ class Communicate extends Utilities {
 			$this->deleteAttachments($email); // Remove attachments now
 
 			ee()->view->set_message('success', lang('total_emails_sent') . ' ' . $email->total_sent, $debug_msg, TRUE);
-			ee()->functions->redirect(cp_url('utilities/communicate/sent'));
+			ee()->functions->redirect(cp_url('utilities/communicate'));
 		}
 		else
 		{

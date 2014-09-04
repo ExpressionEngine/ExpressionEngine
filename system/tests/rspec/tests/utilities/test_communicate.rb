@@ -184,7 +184,6 @@ feature 'Communicate' do
 		@page.should have_alert
 		@page.should have_css 'div.alert.success'
 		@page.alert.should have_text 'Your email has been sent'
-		@page.current_url.should include 'utilities/communicate/sent'
 
 		mail = get_mail
 
@@ -207,7 +206,6 @@ feature 'Communicate' do
 		@page.should have_alert
 		@page.should have_css 'div.alert.success'
 		@page.alert.should have_text 'Your email has been sent'
-		@page.current_url.should include 'utilities/communicate/sent'
 
 		mail = get_mail
 
@@ -232,7 +230,6 @@ feature 'Communicate' do
 		@page.should have_alert
 		@page.should have_css 'div.alert.success'
 		@page.alert.should have_text 'Your email has been sent'
-		@page.current_url.should include 'utilities/communicate/sent'
 
 		mail = get_mail
 
@@ -261,7 +258,6 @@ feature 'Communicate' do
 		@page.should have_alert
 		@page.should have_css 'div.alert.success'
 		@page.alert.should have_text 'Your email has been sent'
-		@page.current_url.should include 'utilities/communicate/sent'
 
 		mail = get_mail
 
@@ -287,7 +283,6 @@ feature 'Communicate' do
 		@page.should have_alert
 		@page.should have_css 'div.alert.success'
 		@page.alert.should have_text 'Your email has been sent'
-		@page.current_url.should include 'utilities/communicate/sent'
 
 		mail = get_mail
 
@@ -313,7 +308,6 @@ feature 'Communicate' do
 		@page.should have_alert
 		@page.should have_css 'div.alert.success'
 		@page.alert.should have_text 'Your email has been sent'
-		@page.current_url.should include 'utilities/communicate/sent'
 
 		mail = get_mail
 
@@ -338,7 +332,6 @@ feature 'Communicate' do
 		@page.should have_alert
 		@page.should have_css 'div.alert.success'
 		@page.alert.should have_text 'Your email has been sent'
-		@page.current_url.should include 'utilities/communicate/sent'
 
 		mail = get_mail
 
@@ -368,7 +361,6 @@ feature 'Communicate' do
 		@page.should have_alert
 		@page.should have_css 'div.alert.success'
 		@page.alert.should have_text 'Total number of emails sent: 2'
-		@page.current_url.should include 'utilities/communicate/sent'
 
 		# This isn't ideal as there could be name conflicts but for now
 		# it will have to do since email debug array is being reset with
