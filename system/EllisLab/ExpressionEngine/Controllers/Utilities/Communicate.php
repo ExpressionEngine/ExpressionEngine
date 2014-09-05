@@ -696,7 +696,7 @@ class Communicate extends Utilities {
 			);
 
 			$emails = $emails->order($sort_map[$sort_col], $sort_dir)
-				->limit(50)
+				->limit(20)
 				->offset($offset)
 				->all();
 

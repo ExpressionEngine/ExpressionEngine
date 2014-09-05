@@ -25,12 +25,12 @@ feature 'Developer Log' do
 	@page.should have_remove_all
 	@page.should have_pagination
 
-	@page.perpage_filter.text.should eq "show (50)"
+	@page.perpage_filter.text.should eq "show (20)"
 
 	@page.should have(6).pages
 	@page.pages.map {|name| name.text}.should == ["First", "1", "2", "3", "Next", "Last"]
 
-	@page.should have(50).items # Default is 50 per page
+	@page.should have(20).items # Default is 20 per page
   end
 
   it 'does not show filters at 10 items' do
@@ -73,7 +73,7 @@ feature 'Developer Log' do
 	@page.load
 	confirm @page
 
-	@page.should have(50).items # Default is 50 per page
+	@page.should have(20).items # Default is 20 per page
 
 	@page.date_filter.click
 	@page.wait_until_date_filter_menu_visible

@@ -32,7 +32,7 @@ use EllisLab\ExpressionEngine\Library\CP;
  */
 class Logs extends CP_Controller {
 
-	var $perpage		= 50;
+	var $perpage		= 20;
 	var $params			= array();
 	var $base_url;
 

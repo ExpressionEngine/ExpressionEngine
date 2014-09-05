@@ -297,15 +297,15 @@ feature 'Communicate > Sent' do
 		@page.should have(26).rows # +1 for the header
 	end
 
-	it 'will not pagingate at 50 or under' do
-		@page.generate_data(count: 50)
+	it 'will not pagingate at 20 or under' do
+		@page.generate_data(count: 20)
 		load_page
 
 		@page.should_not have_pagination
 	end
 
-	it 'will paginate at over 50 emails' do
-		@page.generate_data(count: 51)
+	it 'will paginate at over 21 emails' do
+		@page.generate_data(count: 21)
 		load_page
 
 		@page.should have_pagination
@@ -465,20 +465,20 @@ feature 'Communicate > Sent' do
 		phrase = "Zeppelins"
 		data = phrase + " are cool"
 
-		@page.generate_data(count: 25, subject: data)
-		@page.generate_data(count: 25)
+		@page.generate_data(count: 12, subject: data)
+		@page.generate_data(count: 12)
 		load_page
 
 		# We should be sorted ASCending by Subject so these should be all our
 		# Zeppelins emails.
-		(26..50).each do |n|
+		(13..24).each do |n|
 			@page.rows[n].find('input[type="checkbox"]').set true
 		end
 
 		@page.bulk_action.select "Remove"
 		@page.action_submit_button.click
 
-		@page.should have(26).rows # +1 for the header
+		@page.should have(13).rows # +1 for the header
 		@page.should_not have_text data
 	end
 
