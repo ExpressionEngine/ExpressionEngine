@@ -205,8 +205,9 @@ $(document).ready(function(){
 
 		// listen for clicks on inputs within a choice classed label
 		$('.choice input').on('click',function(){
-			// toggle a class of chosen on the parent of THIS input
-			$(this).parents('.choice').toggleClass('chosen');
+			$('.choice input[name="'+$(this).attr('name')+'"]').each(function(index, el) {
+				$(this).parents('.choice').toggleClass('chosen', $(this).is(':checked'));
+			});
 		});
 
 	// ======================
