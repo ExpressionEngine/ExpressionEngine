@@ -667,7 +667,9 @@ class Communicate extends Utilities {
 		$count = 0;
 		$modals = array();
 
-		$table->setFilteredData(function($sort_col, $sort_dir, $search) use (&$count, &$modals, $offset)
+		$controller = $this; // PHP 5.3 won't allow $this inside closures
+
+		$table->setFilteredData(function($sort_col, $sort_dir, $search) use (&$count, &$modals, $offset, $controller)
 		{
 			$emails = ee()->api->get('EmailCache');
 
@@ -725,8 +727,8 @@ class Communicate extends Utilities {
 
 				// Prepare the $email object for use in the modal
 				$email->text_fmt = ($email->text_fmt != 'none') ?: 'br'; // Some HTML formatting for plain text
-				$email->subject = $this->censorSubject($email);
-				$email->message = $this->formatMessage($email);
+				$email->subject = $controller->censorSubject($email);
+				$email->message = $controller->formatMessage($email);
 
 				if ($email->text_fmt == 'br')
 				{
