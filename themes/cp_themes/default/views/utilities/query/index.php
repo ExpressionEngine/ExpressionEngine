@@ -5,6 +5,18 @@
 	<div class="alert inline warn">
 		<?=lang('sql_warning')?>
 	</div>
+	<?php if (isset($invalid_query)): ?>
+		<div class="alert inline issue">
+			<h3><?=lang('query_form_error')?></h3>
+			<p><?=$invalid_query[0]?></p>
+			<p><b><?=$invalid_query[1]?></b></p>
+			<ul>
+				<li><?=$invalid_query[2]?></li>
+				<li><?=$invalid_query[3]?></li>
+				<li><?=$invalid_query[4]?></li>
+			</ul>
+		</div>
+	<?php endif ?>
 	<?php $this->view('_shared/alerts')?>
 	<fieldset class="col-group">
 		<div class="setting-txt col w-16">

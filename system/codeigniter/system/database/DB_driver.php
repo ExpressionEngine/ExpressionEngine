@@ -45,6 +45,7 @@ class CI_DB_driver {
 	var $conn_id		= FALSE;
 	var $result_id		= FALSE;
 	var $db_debug		= FALSE;
+	var $db_exception	= FALSE;
 	var $benchmark		= 0;
 	var $query_count	= 0;
 	var $bind_marker	= '?';
@@ -375,7 +376,7 @@ class CI_DB_driver {
 				log_message('error', 'Query error: '.$error_msg);
 				return $this->display_error(
 										array(
-												'Error Number: '.$error_no,
+												'<b>Error number</b>: '.$error_no,
 												$error_msg,
 												$sql
 											)
@@ -1277,11 +1278,20 @@ class CI_DB_driver {
 			if (isset($call['file']) && strpos($call['file'], BASEPATH.'database') === FALSE)
 			{
 				// Found it - use a relative path for safety
-				$message[] = 'Filename: '.str_replace(array(BASEPATH, APPPATH), '', $call['file']);
-				$message[] = 'Line Number: '.$call['line'];
+				$message[] = '<b>File location</b>: '.str_replace(array(BASEPATH, APPPATH), '', $call['file']);
+				$message[] = '<b>Line number</b>: '.$call['line'];
 
 				break;
 			}
+		}
+
+		// Optional exception handling for DB errors
+		if ($this->db_exception)
+		{
+			// Append error code to end for display preferences
+			$error_code = array_shift($message);
+			$message[] = $error_code;
+			throw new Exception(implode('<br>', $message));
 		}
 
 		$error =& load_class('Exceptions', 'core');

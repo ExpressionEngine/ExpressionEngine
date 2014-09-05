@@ -139,13 +139,14 @@ feature 'Query Form' do
   end
 
   it 'should conditionally show MySQL errors' do
-    error_text = 'A Database Error Occurred'
+    error_text = 'You have an error in your SQL syntax'
 
     # Invalid query with errors on
     @page.query_form.set "SELECT FROM exp_channels"
     @page.password.set 'password'
     @page.submit
 
+    @page.should have_text 'Attention: Query not run'
     @page.should have_text error_text
 
     cp_session

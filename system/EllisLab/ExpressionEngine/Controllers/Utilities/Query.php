@@ -35,7 +35,7 @@ class Query extends Utilities {
 	/**
 	 * Query form
 	 */
-	public function index()
+	public function index($show_validation = TRUE)
 	{
 		// Super Admins only, please
 		if (ee()->session->userdata('group_id') != '1')
@@ -66,7 +66,7 @@ class Query extends Utilities {
 		{
 			return $this->runQuery();
 		}
-		elseif (ee()->form_validation->errors_exist())
+		elseif (ee()->form_validation->errors_exist() && $show_validation)
 		{
 			ee()->view->set_message('issue', lang('query_form_error'), lang('query_form_error_desc'));
 		}
@@ -112,19 +112,6 @@ class Query extends Utilities {
 			}
 		}
 
-		// If no table, keep query form labeling
-		if (empty($table_name))
-		{
-			ee()->cp->set_breadcrumb(cp_url('utilities/query'), lang('query_form'));
-			ee()->view->cp_page_title = lang('query_results');
-		}
-		// Otherwise, we're coming from the SQL Manager
-		else
-		{
-			ee()->cp->set_breadcrumb(cp_url('utilities/query'), lang('sql_manager_abbr'));
-			ee()->view->cp_page_title = $table_name . ' ' . lang('table');
-		}
-
 		$sql = trim(str_replace(";", "", $sql));
 
 		// Determine if the query is one of the non-allowed types
@@ -145,7 +132,19 @@ class Query extends Utilities {
 			}
 		}
 
-		$query = ee()->db->query($sql);
+		ee()->db->db_exception = TRUE;
+
+		try
+		{
+			$query = ee()->db->query($sql);
+		}
+		catch (\Exception $e)
+		{
+			ee()->view->invalid_query = explode('<br>', $e->getMessage());
+		    return $this->index(FALSE);
+		}
+
+		ee()->db->db_exception = FALSE;
 
 		$qtypes = array('INSERT', 'UPDATE', 'DELETE', 'ALTER', 'CREATE', 'DROP', 'TRUNCATE');
 
@@ -275,6 +274,19 @@ class Query extends Utilities {
 		if ($vars['total_results'] == 0 && count($data) > 0)
 		{
 			$vars['total_results'] = count($data);
+		}
+
+		// If no table, keep query form labeling
+		if (empty($table_name))
+		{
+			ee()->cp->set_breadcrumb(cp_url('utilities/query'), lang('query_form'));
+			ee()->view->cp_page_title = lang('query_results');
+		}
+		// Otherwise, we're coming from the SQL Manager
+		else
+		{
+			ee()->cp->set_breadcrumb(cp_url('utilities/query'), lang('sql_manager_abbr'));
+			ee()->view->cp_page_title = $table_name . ' ' . lang('table');
 		}
 
 		ee()->cp->render('utilities/query/results', $vars);
