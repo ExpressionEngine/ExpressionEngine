@@ -538,35 +538,8 @@ class Communicate extends Utilities {
 	/**
 	 * Delivers an email
 	 */
-	private function deliverEmail($email, $to, $cc = NULL, $bcc = NULL)
+	private function deliverEmail(EmailCache $email, $to, $cc = NULL, $bcc = NULL)
 	{
-		$subject = $email->subject;
-		$message = $email->message;
-
-		//  Apply text formatting if necessary
-		if ($email->text_fmt != 'none' && $email->text_fmt != '')
-		{
-			ee()->load->library('typography');
-			ee()->typography->initialize(array(
-				'bbencode_links' => FALSE,
-				'parse_images'	=> FALSE,
-				'parse_smileys'	=> FALSE
-			));
-
-			if (ee()->config->item('enable_censoring') == 'y' &&
-				ee()->config->item('censored_words') != '')
-        	{
-				$subject = ee()->typography->filter_censored_words($email->subject);
-			}
-
-			$message = ee()->typography->parse_type($email->message, array(
-				'text_format'    => $email->text_fmt,
-				'html_format'    => 'all',
-				'auto_links'	 => 'n',
-				'allow_img_url'  => 'y'
-			));
-		}
-
 		ee()->email->clear(TRUE);
 		ee()->email->wordwrap  = ($email->wordwrap == 'y') ? TRUE : FALSE;
 		ee()->email->mailtype  = $email->mailtype;
@@ -583,8 +556,8 @@ class Communicate extends Utilities {
 			ee()->email->bcc($email->bcc);
 		}
 
-		ee()->email->subject($subject);
-		ee()->email->message($message, $email->plaintext_alt);
+		ee()->email->subject($this->censorSubject($email));
+		ee()->email->message($this->formatMessage($email), $email->plaintext_alt);
 
  		foreach ($email->attachments as $attachment)
 		{
@@ -592,6 +565,64 @@ class Communicate extends Utilities {
 		}
 
 		return ee()->email->send(FALSE);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Formats the message of an email based on the text format type
+	 *
+	 * @param	obj	$email	An EmailCache object
+	 * @return	string		The formatted message
+	 */
+	private function formatMessage(EmailCache $email)
+	{
+		$message = $email->message;
+
+		if ($email->text_fmt != 'none' && $email->text_fmt != '')
+		{
+			ee()->load->library('typography');
+			ee()->typography->initialize(array(
+				'bbencode_links' => FALSE,
+				'parse_images'	=> FALSE,
+				'parse_smileys'	=> FALSE
+			));
+
+			$message = ee()->typography->parse_type($email->message, array(
+				'text_format'    => $email->text_fmt,
+				'html_format'    => 'all',
+				'auto_links'	 => 'n',
+				'allow_img_url'  => 'y'
+			));
+		}
+
+		return $message;
+	}
+
+	/**
+	 * Censors the subject of an email if necissary
+	 *
+	 * @param	obj	$email	An EmailCache object
+	 * @return	string		The censored subject
+	 */
+	private function censorSubject(EmailCache $email)
+	{
+		$subject = $email->subject;
+
+		if (ee()->config->item('enable_censoring') == 'y' &&
+			ee()->config->item('censored_words') != '')
+    	{
+			ee()->load->library('typography');
+			ee()->typography->initialize(array(
+				'bbencode_links' => FALSE,
+				'parse_images'	=> FALSE,
+				'parse_smileys'	=> FALSE
+			));
+
+			$subject = ee()->typography->filter_censored_words($email->subject);
+		}
+
+		return $subject;
 	}
 
 	// --------------------------------------------------------------------
@@ -691,6 +722,16 @@ class Communicate extends Utilities {
 						'value' => $email->cache_id
 					)
 				);
+
+				// Prepare the $email object for use in the modal
+				$email->text_fmt = ($email->text_fmt != 'none') ?: 'br'; // Some HTML formatting for plain text
+				$email->subject = $this->censorSubject($email);
+				$email->message = $this->formatMessage($email);
+
+				if ($email->text_fmt == 'br')
+				{
+					$email->message = '<p>' . $email->message . '</p>';
+				}
 
 				$modals['modal-email-' . $email->cache_id] = ee()->view->render('utilities/communicate/email-modal', array('email' => $email), TRUE);
 			}
