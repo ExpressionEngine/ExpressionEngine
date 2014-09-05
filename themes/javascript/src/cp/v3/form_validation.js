@@ -66,6 +66,23 @@ EE.cp.formValidation = {
 
 			that._registerTextInputs(form);
 			that._registerNonTextInputs(form);
+			that._dismissSuccessAlert(form);
+		});
+	},
+
+	/**
+	 * When a form element is interacted with after the form has been
+	 * successfully submitted, hide the success message
+	 */
+	_dismissSuccessAlert: function(form) {
+
+		$('input, select, textarea', form).change(function(event) {
+			var success = $('div.alert.success');
+			
+			if (success.size() > 0)
+			{
+				success.remove();
+			}
 		});
 	},
 
