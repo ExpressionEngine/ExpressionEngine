@@ -449,7 +449,7 @@ class Communicate extends Utilities {
 	/**
 	 * Sends a single email handling errors
 	 */
-	private function deliverOneEmail($email, $to, $delete = TRUE)
+	private function deliverOneEmail(EmailCache $email, $to, $delete = TRUE)
 	{
 		$error = FALSE;
 
@@ -493,7 +493,7 @@ class Communicate extends Utilities {
 	/**
 	 * Sends multiple emails handling errors
 	 */
-	private function deliverManyEmails($email)
+	private function deliverManyEmails(EmailCache $email)
 	{
 		if (count($email->recipient_array) < 1)
 		{
