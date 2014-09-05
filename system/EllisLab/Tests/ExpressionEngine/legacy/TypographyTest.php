@@ -257,7 +257,7 @@ class TypographyTest extends \PHPUnit_Framework_TestCase {
 		$this->assertContains('~~</code>~~', $str);
 
 		// Should contain 6 codeblocks
-		var_dump($str);
+		//var_dump($str);
 		$this->assertTrue(substr_count($str, '[code]') == 6);
 		$this->assertTrue(substr_count($str, '[/code]') == 6);
 
