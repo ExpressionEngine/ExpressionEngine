@@ -156,6 +156,12 @@ $lang = array(
 'version_update_inst' =>
 'ExpressionEngine %s is available. <a href="%s">Download the latest version</a> and follow the <a href="%s">update instructions</a>.',
 
+'settings_save_error' =>
+'Attention: Settings not saved',
+
+'settings_save_error_desc' =>
+'We were unable to save your settings, please review and fix errors below.',
+
 /**
  * License & Registration
  */

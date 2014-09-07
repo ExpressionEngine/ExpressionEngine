@@ -47,7 +47,7 @@ feature 'Debugging & Output Settings' do
 
     no_php_js_errors
     should_have_form_errors(@page)
-    @page.should have_text 'An error occurred'
+    @page.should have_text 'Attention: Settings not saved'
     @page.should have_text max_caches_error
 
     # AJAX validation

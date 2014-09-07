@@ -39,7 +39,7 @@ feature 'Template Settings' do
 
     no_php_js_errors
     should_have_form_errors(@page)
-    @page.should have_text 'An error occurred'
+    @page.should have_text 'Attention: Settings not saved'
     @page.should have_text max_revs_error
     @page.should have_no_text invalid_path
 
@@ -49,7 +49,7 @@ feature 'Template Settings' do
 
     no_php_js_errors
     should_have_form_errors(@page)
-    @page.should have_text 'An error occurred'
+    @page.should have_text 'Attention: Settings not saved'
     @page.should have_text invalid_path
     @page.should have_no_text max_revs_error
 
