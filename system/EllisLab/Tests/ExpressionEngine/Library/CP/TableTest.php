@@ -446,6 +446,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 
 		$return[] = array($config, $data, $expected, $columns, 'Test autosort on');
 
+		$config['autosearch'] = TRUE;
 		$config['search'] = 'data 2';
 
 		$expected = array(
