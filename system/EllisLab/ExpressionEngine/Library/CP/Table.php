@@ -75,6 +75,27 @@ class Table {
 	}
 
 	/**
+	 * Allow read-only access to certain information we have
+	 */
+	function __get($name)
+	{
+		switch ($name) {
+			case 'sort_col':
+				return $this->getSortCol();
+				break;
+			case 'sort_dir':
+				return $this->getSortDir();
+				break;
+			case 'search':
+				return $this->config['search'];
+				break;
+			default:
+				user_error("Invalid property: " . __CLASS__ . "->$name");
+				break;
+		}
+	}
+
+	/**
 	 * Convenience method for initializing a Table object with current
 	 * sort parameters within an EE controller
 	 *
@@ -319,7 +340,7 @@ class Table {
 	 * sorting the given array by the item corresponding to the current
 	 * sort column. But if data is paginated and changing the sort also
 	 * changes the data, it's best not to use this and instead handle
-	 * it with setFilteredData().
+	 * it manually with the sort_col and sort_dir magic properties
 	 *
 	 * @return  void
 	 */
@@ -357,7 +378,7 @@ class Table {
 	 * by using a strpos() search on each row and column. But if data
 	 * is paginated and searching can add extra data to the table not
 	 * in the current table scope, it's best not to use this and
-	 * instead handle it with setFilteredData().
+	 * instead handle it manually with the magic search property
 	 *
 	 * @return  void
 	 */
@@ -397,41 +418,6 @@ class Table {
 		}
 
 		$this->config['total_rows'] = count($this->data);
-	}
-
-	/**
-	 * Sets the same data as setData(), but provides the caller with
-	 * sorting and filtering information via a callback. Best for
-	 * paginated data. This method would typically be used like this:
-	 *
-	 * 	$table->setFilteredData(function($sort_col, $sort_dir, $search))
-	 * 	{
-	 * 		return ee()->api->get('Entity')
-	 * 			->filter('column1', 'LIKE', $search)
-	 * 			->or_filter('column2', 'LIKE', $search)
-	 * 			->order($sort_col, $sort_dir)
-	 * 			->getResult();
-	 * 	});
-	 *
-	 * The above probably wouldn't work, the $sort_col is the actual
-	 * text label of the column so it may need some mapping to a
-	 * database column. Or if your data is already in an associative
-	 * array, you just need to sort on that key. The idea is this
-	 * method gives you want to need to sort and search your data so
-	 * you can return the data to the table, whether or not any
-	 * database work is involved
-	 *
-	 * @param	callback 	$method	Callable method that accepts three
-	 *                          	arguments: $sort_col, $sort_dir, $search
-	 * @return  void
-	 */
-	public function setFilteredData($method, $autosearch = FALSE)
-	{
-		if (is_callable($method))
-		{
-			$this->config['autosearch'] = $autosearch;
-			$this->setData($method($this->getSortCol(), $this->getSortDir(), $this->config['search']));
-		}
 	}
 
 	/**

@@ -667,79 +667,75 @@ class Communicate extends Utilities {
 		$count = 0;
 		$modals = array();
 
-		$controller = $this; // PHP 5.3 won't allow $this inside closures
+		$emails = ee()->api->get('EmailCache');
 
-		$table->setFilteredData(function($sort_col, $sort_dir, $search) use (&$count, &$modals, $offset, $controller)
+		$search = $table->search;
+		if ( ! empty($search))
 		{
-			$emails = ee()->api->get('EmailCache');
+			$emails = $emails->filterGroup()
+				               ->filter('subject', 'LIKE', '%' . $table->search . '%')
+				               ->orFilter('message', 'LIKE', '%' . $table->search . '%')
+				               ->orFilter('from_name', 'LIKE', '%' . $table->search . '%')
+				               ->orFilter('from_email', 'LIKE', '%' . $table->search . '%')
+				               ->orFilter('recipient', 'LIKE', '%' . $table->search . '%')
+				               ->orFilter('cc', 'LIKE', '%' . $table->search . '%')
+				               ->orFilter('bcc', 'LIKE', '%' . $table->search . '%')
+						     ->endFilterGroup();
+		}
 
-			if ( ! empty($search))
-			{
-				$emails = $emails->filterGroup()
-					               ->filter('subject', 'LIKE', '%' . $search . '%')
-					               ->orFilter('message', 'LIKE', '%' . $search . '%')
-					               ->orFilter('from_name', 'LIKE', '%' . $search . '%')
-					               ->orFilter('from_email', 'LIKE', '%' . $search . '%')
-					               ->orFilter('recipient', 'LIKE', '%' . $search . '%')
-					               ->orFilter('cc', 'LIKE', '%' . $search . '%')
-					               ->orFilter('bcc', 'LIKE', '%' . $search . '%')
-							     ->endFilterGroup();
-			}
+		$count = $emails->count();
 
-			$count = $emails->count();
+		$sort_map = array(
+			'subject' => 'subject',
+			'date' => 'cache_date',
+			'total_sent' => 'total_sent',
+			'status' => 'status',
+		);
 
-			$sort_map = array(
-				'subject' => 'subject',
-				'date' => 'cache_date',
-				'total_sent' => 'total_sent',
-				'status' => 'status',
+		$emails = $emails->order($sort_map[$table->sort_col], $table->sort_dir)
+			->limit(50)
+			->offset($offset)
+			->all();
+
+		$data = array();
+		foreach ($emails as $email)
+		{
+			$data[] = array(
+				$email->subject,
+				ee()->localize->human_time($email->cache_date),
+				$email->total_sent,
+				array('toolbar_items' => array(
+					'view' => array(
+						'title' => lang('view_email'),
+						'href' => '',
+						'rel' => 'modal-email-' . $email->cache_id,
+						'class' => 'm-link'
+					),
+					'sync' => array(
+						'title' => lang('resend'),
+						'href' => cp_url('utilities/communicate/resend/' . $email->cache_id)
+					)
+				)),
+				array(
+					'name'  => 'selection[]',
+					'value' => $email->cache_id
+				)
 			);
 
-			$emails = $emails->order($sort_map[$sort_col], $sort_dir)
-				->limit(50)
-				->offset($offset)
-				->all();
+			// Prepare the $email object for use in the modal
+			$email->text_fmt = ($email->text_fmt != 'none') ?: 'br'; // Some HTML formatting for plain text
+			$email->subject = $this->censorSubject($email);
+			$email->message = $this->formatMessage($email);
 
-			$data = array();
-			foreach ($emails as $email)
+			if ($email->text_fmt == 'br')
 			{
-				$data[] = array(
-					$email->subject,
-					ee()->localize->human_time($email->cache_date),
-					$email->total_sent,
-					array('toolbar_items' => array(
-						'view' => array(
-							'title' => lang('view_email'),
-							'href' => '',
-							'rel' => 'modal-email-' . $email->cache_id,
-							'class' => 'm-link'
-						),
-						'sync' => array(
-							'title' => lang('resend'),
-							'href' => cp_url('utilities/communicate/resend/' . $email->cache_id)
-						)
-					)),
-					array(
-						'name'  => 'selection[]',
-						'value' => $email->cache_id
-					)
-				);
-
-				// Prepare the $email object for use in the modal
-				$email->text_fmt = ($email->text_fmt != 'none') ?: 'br'; // Some HTML formatting for plain text
-				$email->subject = $controller->censorSubject($email);
-				$email->message = $controller->formatMessage($email);
-
-				if ($email->text_fmt == 'br')
-				{
-					$email->message = '<p>' . $email->message . '</p>';
-				}
-
-				$modals['modal-email-' . $email->cache_id] = ee()->view->render('utilities/communicate/email-modal', array('email' => $email), TRUE);
+				$email->message = '<p>' . $email->message . '</p>';
 			}
 
-			return $data;
-		});
+			$modals['modal-email-' . $email->cache_id] = ee()->view->render('utilities/communicate/email-modal', array('email' => $email), TRUE);
+		}
+
+		$table->setData($data);
 
 		$base_url = new URL('utilities/communicate/sent', ee()->session->session_id());
 		$vars['table'] = $table->viewData($base_url);
