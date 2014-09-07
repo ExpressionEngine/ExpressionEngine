@@ -718,6 +718,58 @@ $lang = array(
 'prv_msg_attach_total_desc' =>
 'Maximum allowed file size for all attachments for each member.',
 
+/**
+ * Avatars
+ */
+
+'avatar_settings' =>
+'Avatar Settings',
+
+'enable_avatars' =>
+'Allow avatars?',
+
+'enable_avatars_desc' =>
+'When set to <b>yes</b>, members will be able to use avatars (representative images) in comments and forums.',
+
+'allow_avatar_uploads' =>
+'Allow avatar uploads?',
+
+'allow_avatar_uploads_desc' =>
+'When set to <b>yes</b>, members will be able to upload their own avatars (representative images).',
+
+'avatar_url' =>
+'Avatar directory',
+
+'avatar_url_desc' =>
+'<abbr title="Uniform Resource Location">URL</abbr> location of your <mark>avatar</mark> directory.',
+
+'avatar_path' =>
+'Avatar path',
+
+'avatar_path_desc' =>
+'Full path location of your <mark>avatar</mark> directory.',
+
+'avatar_file_restrictions' =>
+'Avatar File Restrictions',
+
+'avatar_max_width' =>
+'Maximum width',
+
+'avatar_max_width_desc' =>
+'Maximum allowed width of images uploaded for use as an avatar by members.',
+
+'avatar_max_height' =>
+'Maximum height',
+
+'avatar_max_height_desc' =>
+'Maximum allowed height of images uploaded for use as an avatar by members.',
+
+'avatar_max_kb' =>
+'Maximum file size (<abbr title="kilobytes">kb</abbr>)',
+
+'avatar_max_kb_desc' =>
+'Maximum allowed file size of images uploaded for use as an avatar by members.',
+
 ''=>''
 );
 

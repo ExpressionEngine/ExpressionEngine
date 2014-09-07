@@ -28,7 +28,7 @@ feature 'Messaging Settings' do
 
   it 'should validate the form' do
     invalid_path = 'The path you submitted is not valid.'
-    not_writable = 'The path you submitted is not valid.'
+    not_writable = 'The path you submitted is not writable.'
     integer_error = 'This field must contain an integer.'
 
     @page.prv_msg_max_chars.set 'sdfsdfsd'
@@ -53,8 +53,13 @@ feature 'Messaging Settings' do
     should_have_error_text(@page.prv_msg_upload_path, invalid_path)
     should_have_form_errors(@page)
 
+    @page.prv_msg_upload_path.set File.expand_path('support/tmp')
+    @page.prv_msg_upload_path.trigger 'blur'
+    @page.wait_for_error_message_count(1)
+    
     @page.prv_msg_upload_path.set '/'
     @page.prv_msg_upload_path.trigger 'blur'
+    @page.wait_for_error_message_count(2)
     should_have_error_text(@page.prv_msg_upload_path, not_writable)
     should_have_form_errors(@page)
 
