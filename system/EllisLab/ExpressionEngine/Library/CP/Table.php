@@ -62,7 +62,7 @@ class Table {
 			'total_rows' => 0,
 			'search'	 => NULL,
 			'autosort'	 => FALSE,
-			'autosearch' => TRUE,
+			'autosearch' => FALSE,
 			'lang_cols'	 => TRUE,
 			'no_results' => array(
 				'text'			=> 'no_rows_returned',
