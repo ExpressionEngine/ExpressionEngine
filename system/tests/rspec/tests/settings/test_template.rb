@@ -31,7 +31,7 @@ feature 'Template Settings' do
   end
 
   it 'should validate the form' do
-    max_revs_error = 'The "Maximum revisions?" field must contain an integer.'
+    max_revs_error = 'This field must contain an integer.'
     invalid_path = 'The path you submitted is not valid.'
 
     @page.max_tmpl_revisions.set 'sdfsdfsd'

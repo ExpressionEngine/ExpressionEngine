@@ -40,7 +40,7 @@ feature 'Debugging & Output Settings' do
   end
 
   it 'should validate the form' do
-    max_caches_error = 'The "Cachable URIs" field must contain an integer.'
+    max_caches_error = 'This field must contain an integer.'
 
     @page.max_caches.set 'sdfsdfsd'
     @page.submit

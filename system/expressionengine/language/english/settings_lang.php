@@ -657,6 +657,67 @@ $lang = array(
 'mbr_notification_emails_desc' =>
 'Separate multiple e-mails with a comma.',
 
+/**
+ * Messages
+ */
+
+'messaging_settings' =>
+'Messaging Settings',
+
+'prv_msg_max_chars' =>
+'Maximum characters',
+
+'prv_msg_max_chars_desc' =>
+'Maximum allowed characters in personal messages.',
+
+'prv_msg_html_format' =>
+'Formatting',
+
+'prv_msg_html_format_desc' =>
+'Select type of formatting to use for personal messages.',
+
+"html_safe" =>
+"Safe HTML only",
+
+"html_all" =>
+"All HTML (not recommended)",
+
+"html_none" =>
+"Convert HTML",
+
+'prv_msg_auto_links' =>
+'Convert <abbr title="Uniform Resource Location">URL</abbr>s and e-mails into links?',
+
+'prv_msg_auto_links_desc' =>
+'When set to <b>yes</b>, All <abbr title="Uniform Resource Location">URL</abbr>s and e-mails will be auto converted into hyper links.',
+
+'attachment_settings' =>
+'Attachment Settings',
+
+'prv_msg_upload_path' =>
+'Upload directory',
+
+'prv_msg_upload_path_desc' =>
+'Full path location for your <mark>attachement</mark> directory.',
+
+'prv_msg_max_attachments' =>
+'Maximum attachments',
+
+'prv_msg_max_attachments_desc' =>
+'Maximum allowed attachments per personal message.',
+
+'prv_msg_attach_maxsize' =>
+'Maximum file size (<abbr title="kilobyte">kb</abbr>)',
+
+'prv_msg_attach_maxsize_desc' =>
+'Maximum allowed file size per attachment in personal messages.',
+
+'prv_msg_attach_total' =>
+'Maximum total file size (<abbr title="megabyte">mb</abbr>)',
+
+'prv_msg_attach_total_desc' =>
+'Maximum allowed file size for all attachments for each member.',
+
 ''=>''
 );
 
