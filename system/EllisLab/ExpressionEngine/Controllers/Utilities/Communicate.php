@@ -745,7 +745,7 @@ class Communicate extends Utilities {
 			$vars['modals'] = $modals;
 		}
 
-		$pagination = new Pagination(50, $count, $page);
+		$pagination = new Pagination(20, $count, $page);
 		$vars['pagination'] = $pagination->cp_links($vars['table']['base_url']);
 
 		ee()->view->cp_page_title = lang('view_email_cache');
