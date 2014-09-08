@@ -14,7 +14,7 @@ feature 'Communicate > Sent' do
 		@page.load
 
 		@page.should be_displayed
-		@page.title.text.should eq 'Sent e-mails'
+		@page.heading.text.should eq 'Sent e-mails'
 		@page.should have_phrase_search
 		@page.should have_search_submit_button
 		@page.should have_email_table
@@ -26,7 +26,7 @@ feature 'Communicate > Sent' do
 		@page.load
 
 		@page.should be_displayed
-		@page.title.text.should eq 'Sent e-mails'
+		@page.heading.text.should eq 'Sent e-mails'
 		@page.should have_phrase_search
 		@page.should have_search_submit_button
 		@page.should have_email_table
@@ -451,7 +451,7 @@ feature 'Communicate > Sent' do
 		communicate = Communicate.new
 
 		communicate.should be_displayed
-		communicate.title.text.should eq 'Communicate ✱ Required Fields'
+		communicate.heading.text.should eq 'Communicate ✱ Required Fields'
 
 		communicate.subject.value.should eq my_subject
 		communicate.from_email.value.should eq test_from

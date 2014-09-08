@@ -2,7 +2,7 @@ require './bootstrap.rb'
 
 def confirm (page)
   page.displayed?
-  page.title.text.should eq 'Developer Logs'
+  page.heading.text.should eq 'Developer Logs'
   page.should have_phrase_search
   page.should have_submit_button
   page.should have_date_filter
@@ -38,7 +38,7 @@ feature 'Developer Log' do
   	@page.load
 
   	@page.displayed?
-  	@page.title.text.should eq 'Developer Logs'
+  	@page.heading.text.should eq 'Developer Logs'
   	@page.should have_phrase_search
   	@page.should have_submit_button
   	@page.should_not have_date_filter

@@ -1,7 +1,7 @@
 class CommunicateSent < ControlPanelPage
 	set_url_matcher /utilities\/communicate\/sent/
 
-	element :title, 'div.box h1'
+	element :heading, 'div.box h1'
 	element :alert, 'div.alert'
 
 	element :phrase_search, 'input[name=search]'

@@ -16,7 +16,7 @@ feature 'Email Log' do
 
 	# These should always be true at all times if not something has gone wrong
 	@page.displayed?
-	@page.title.text.should eq 'e-mail Logs'
+	@page.heading.text.should eq 'e-mail Logs'
 	@page.should have_phrase_search
 	@page.should have_submit_button
 	@page.should have_username_filter
@@ -41,7 +41,7 @@ feature 'Email Log' do
   	@page.load
 
 	@page.displayed?
-	@page.title.text.should eq 'e-mail Logs'
+	@page.heading.text.should eq 'e-mail Logs'
 	@page.should have_phrase_search
 	@page.should have_submit_button
   	@page.should_not have_username_filter
@@ -220,7 +220,7 @@ feature 'Email Log' do
 	no_php_js_errors
 
 	@page.should have_selector('ul.breadcrumb')
-	@page.title.text.should eq 'e-mail: ' + our_subject
+	@page.heading.text.should eq 'e-mail: ' + our_subject
   end
 
   # Confirming Pagination behavior

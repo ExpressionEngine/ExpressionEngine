@@ -16,7 +16,7 @@ feature 'CP Log' do
 
 	# These should always be true at all times if not something has gone wrong
 	@page.displayed?
-	@page.title.text.should eq 'Control Panel Access Logs'
+	@page.heading.text.should eq 'Control Panel Access Logs'
 	@page.should have_phrase_search
 	@page.should have_submit_button
 	@page.should have_username_filter
@@ -41,7 +41,7 @@ feature 'CP Log' do
   	@page.load
 
   	@page.displayed?
-  	@page.title.text.should eq 'Control Panel Access Logs'
+  	@page.heading.text.should eq 'Control Panel Access Logs'
   	@page.should have_phrase_search
   	@page.should have_submit_button
   	@page.should_not have_username_filter

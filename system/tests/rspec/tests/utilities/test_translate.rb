@@ -19,7 +19,7 @@ feature 'Translate Tool' do
 		@list_page.should be_displayed
 		@edit_page.should_not be_displayed
 
-		@list_page.title.text.should eq 'English Language Files'
+		@list_page.heading.text.should eq 'English Language Files'
 		@list_page.should have_phrase_search
 		@list_page.should have_search_submit_button
 		@list_page.should have_bulk_action
@@ -35,7 +35,7 @@ feature 'Translate Tool' do
 
 		@edit_page.should be_displayed
 
-		@edit_page.title.text.should eq 'addons_lang.php Translation'
+		@edit_page.heading.text.should eq 'addons_lang.php Translation'
 		@edit_page.should have_breadcrumb
 		@edit_page.should have_items
 		@edit_page.should have_submit_button
@@ -154,12 +154,12 @@ feature 'Translate Tool' do
 
 		visit(new_url)
 
-		@list_page.title.text.should eq 'English Language Files'
+		@list_page.heading.text.should eq 'English Language Files'
 	end
 
 	it 'can use multiple languages', :edit => false do
 		click_link "Rspeclingo"
-		@list_page.title.text.should eq 'Rspeclingo Language Files'
+		@list_page.heading.text.should eq 'Rspeclingo Language Files'
 		@list_page.should have_pagination
 		@list_page.should have(6).pages
 		@list_page.pages.map {|name| name.text}.should == ["First", "1", "2", "3", "Next", "Last"]

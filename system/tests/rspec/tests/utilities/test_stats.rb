@@ -8,7 +8,7 @@ feature 'Statistics' do
 		@page.load
 
 		@page.should be_displayed
-		@page.title.text.should eq 'Manage Statistics'
+		@page.heading.text.should eq 'Manage Statistics'
 		@page.should have_content_table
 		@page.should have_bulk_action
 		@page.should have_action_submit_button

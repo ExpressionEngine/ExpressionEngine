@@ -1,7 +1,7 @@
 class Stats < ControlPanelPage
 	set_url_matcher /utilities\/stats/
 
-	element :title, 'div.box form h1'
+	element :heading, 'div.box form h1'
 
 	element :alert, 'div.alert'
 

@@ -19,7 +19,7 @@ feature 'Throttling Log' do
 
     # These should always be true at all times if not something has gone wrong
     @page.displayed?
-    @page.title.text.should eq 'Access Throttling Logs'
+    @page.heading.text.should eq 'Access Throttling Logs'
     @page.should have_phrase_search
     @page.should have_submit_button
     @page.should_not have_perpage_filter
@@ -31,7 +31,7 @@ feature 'Throttling Log' do
 
     # These should always be true at all times if not something has gone wrong
     @page.displayed?
-    @page.title.text.should eq 'Access Throttling Logs'
+    @page.heading.text.should eq 'Access Throttling Logs'
     @page.should have_phrase_search
     @page.should have_submit_button
     @page.should have_perpage_filter
@@ -61,7 +61,7 @@ feature 'Throttling Log' do
 
     # These should always be true at all times if not something has gone wrong
     @page.displayed?
-    @page.title.text.should eq 'Access Throttling Logs'
+    @page.heading.text.should eq 'Access Throttling Logs'
     @page.should have_phrase_search
     @page.should have_submit_button
     @page.should_not have_perpage_filter
