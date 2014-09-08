@@ -562,6 +562,12 @@ $lang = array(
 'search_results_heading' =>
 'Search Results<br><i>we found %d results for "%s"</i>',
 
+'submit' =>
+'Submit',
+
+'with_selected' =>
+'with selected',
+
 ''=>''
 );
 

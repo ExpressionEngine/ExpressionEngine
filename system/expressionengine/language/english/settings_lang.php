@@ -810,6 +810,43 @@ $lang = array(
 'captcha_path_desc' =>
 'Full path location of your <mark><abbr title="Completely Automated Public Turing test to tell Computers and Humans Apart">CAPTCHA</abbr></mark> directory.',
 
+/**
+ * Uploads
+ */
+
+'all_upload_dirs' =>
+'All Upload Directories',
+
+'file_manager' =>
+'File Manager',
+
+'upload_id' =>
+'ID#',
+
+'upload_name' =>
+'Directory',
+
+'upload_manage' =>
+'Manage',
+
+'upload_btn_view' =>
+'view',
+
+'upload_btn_edit' =>
+'edit',
+
+'upload_btn_sync' =>
+'sync',
+
+'upload_remove' =>
+'Remove',
+
+'upload_sync' =>
+'Sync',
+
+'upload_create' =>
+'Create New',
+
 ''=>''
 );
 
