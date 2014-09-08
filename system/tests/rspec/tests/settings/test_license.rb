@@ -23,7 +23,7 @@ feature 'License Settings' do
 
     no_php_js_errors
     should_have_form_errors(@page)
-    @page.should have_text 'An error occurred'
+    @page.should have_text 'Attention: Settings not saved'
     should_have_error_text(@page.license_contact, field_required)
     should_have_no_error_text(@page.license_number)
 
@@ -33,7 +33,7 @@ feature 'License Settings' do
 
     no_php_js_errors
     should_have_form_errors(@page)
-    @page.should have_text 'An error occurred'
+    @page.should have_text 'Attention: Settings not saved'
     should_have_error_text(@page.license_number, field_required)
     should_have_no_error_text(@page.license_contact)
 

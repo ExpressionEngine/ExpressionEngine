@@ -31,7 +31,7 @@ feature 'Template Settings' do
   end
 
   it 'should validate the form' do
-    max_revs_error = 'The "Maximum revisions?" field must contain an integer.'
+    max_revs_error = 'This field must contain an integer.'
     invalid_path = 'The path you submitted is not valid.'
 
     @page.max_tmpl_revisions.set 'sdfsdfsd'
@@ -39,7 +39,7 @@ feature 'Template Settings' do
 
     no_php_js_errors
     should_have_form_errors(@page)
-    @page.should have_text 'An error occurred'
+    @page.should have_text 'Attention: Settings not saved'
     @page.should have_text max_revs_error
     @page.should have_no_text invalid_path
 
@@ -49,7 +49,7 @@ feature 'Template Settings' do
 
     no_php_js_errors
     should_have_form_errors(@page)
-    @page.should have_text 'An error occurred'
+    @page.should have_text 'Attention: Settings not saved'
     @page.should have_text invalid_path
     @page.should have_no_text max_revs_error
 

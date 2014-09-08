@@ -116,7 +116,8 @@ class Settings extends CP_Controller {
 
 		if ( ! empty($config_update))
 		{
-			ee()->view->set_message('issue', lang('cp_message_issue'), implode('<br>', $config_update), TRUE);
+			ee()->load->helper('html_helper');
+			ee()->view->set_message('issue', lang('cp_message_issue'), ul($config_update), TRUE);
 			
 			return FALSE;
 		}

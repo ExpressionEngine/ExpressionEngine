@@ -13,7 +13,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	/**
-	 * Test setData() and setFilteredData() methods
+	 * Test setData() method
 	 *
 	 * @dataProvider tableDataProvider
 	 */
@@ -22,14 +22,6 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 		$this->table = new Table($config);
 		$this->table->setColumns($columns);
 		$this->table->setData($data);
-		$this->assertEquals($expected, $this->table->viewData(), $description);
-
-		$this->table = new Table($config);
-		$this->table->setColumns($columns);
-		$this->table->setFilteredData(function($sort_col, $sort_dir, $search) use ($data)
-		{
-			return $data;
-		}, TRUE);
 		$this->assertEquals($expected, $this->table->viewData(), $description);
 	}
 
@@ -454,6 +446,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 
 		$return[] = array($config, $data, $expected, $columns, 'Test autosort on');
 
+		$config['autosearch'] = TRUE;
 		$config['search'] = 'data 2';
 
 		$expected = array(

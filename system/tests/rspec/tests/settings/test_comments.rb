@@ -29,14 +29,14 @@ feature 'Comment Settings' do
   end
 
   it 'should validate the form' do
-    comment_edit_time_error = 'The "Comment edit time limit (in seconds)" field must contain an integer.'
+    comment_edit_time_error = 'This field must contain an integer.'
 
     @page.comment_edit_time_limit.set 'sdfsdfsd'
     @page.submit
 
     no_php_js_errors
     should_have_form_errors(@page)
-    @page.should have_text 'An error occurred'
+    @page.should have_text 'Attention: Settings not saved'
     @page.should have_text comment_edit_time_error
 
     # AJAX validation

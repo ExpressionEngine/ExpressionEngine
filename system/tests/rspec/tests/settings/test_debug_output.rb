@@ -40,14 +40,14 @@ feature 'Debugging & Output Settings' do
   end
 
   it 'should validate the form' do
-    max_caches_error = 'The "Cachable URIs" field must contain an integer.'
+    max_caches_error = 'This field must contain an integer.'
 
     @page.max_caches.set 'sdfsdfsd'
     @page.submit
 
     no_php_js_errors
     should_have_form_errors(@page)
-    @page.should have_text 'An error occurred'
+    @page.should have_text 'Attention: Settings not saved'
     @page.should have_text max_caches_error
 
     # AJAX validation

@@ -156,6 +156,12 @@ $lang = array(
 'version_update_inst' =>
 'ExpressionEngine %s is available. <a href="%s">Download the latest version</a> and follow the <a href="%s">update instructions</a>.',
 
+'settings_save_error' =>
+'Attention: Settings not saved',
+
+'settings_save_error_desc' =>
+'We were unable to save your settings, please review and fix errors below.',
+
 /**
  * License & Registration
  */
@@ -650,6 +656,119 @@ $lang = array(
 
 'mbr_notification_emails_desc' =>
 'Separate multiple e-mails with a comma.',
+
+/**
+ * Messages
+ */
+
+'messaging_settings' =>
+'Messaging Settings',
+
+'prv_msg_max_chars' =>
+'Maximum characters',
+
+'prv_msg_max_chars_desc' =>
+'Maximum allowed characters in personal messages.',
+
+'prv_msg_html_format' =>
+'Formatting',
+
+'prv_msg_html_format_desc' =>
+'Select type of formatting to use for personal messages.',
+
+"html_safe" =>
+"Safe HTML only",
+
+"html_all" =>
+"All HTML (not recommended)",
+
+"html_none" =>
+"Convert HTML",
+
+'prv_msg_auto_links' =>
+'Convert <abbr title="Uniform Resource Location">URL</abbr>s and e-mails into links?',
+
+'prv_msg_auto_links_desc' =>
+'When set to <b>yes</b>, All <abbr title="Uniform Resource Location">URL</abbr>s and e-mails will be auto converted into hyper links.',
+
+'attachment_settings' =>
+'Attachment Settings',
+
+'prv_msg_upload_path' =>
+'Upload directory',
+
+'prv_msg_upload_path_desc' =>
+'Full path location for your <mark>attachement</mark> directory.',
+
+'prv_msg_max_attachments' =>
+'Maximum attachments',
+
+'prv_msg_max_attachments_desc' =>
+'Maximum allowed attachments per personal message.',
+
+'prv_msg_attach_maxsize' =>
+'Maximum file size (<abbr title="kilobyte">kb</abbr>)',
+
+'prv_msg_attach_maxsize_desc' =>
+'Maximum allowed file size per attachment in personal messages.',
+
+'prv_msg_attach_total' =>
+'Maximum total file size (<abbr title="megabyte">mb</abbr>)',
+
+'prv_msg_attach_total_desc' =>
+'Maximum allowed file size for all attachments for each member.',
+
+/**
+ * Avatars
+ */
+
+'avatar_settings' =>
+'Avatar Settings',
+
+'enable_avatars' =>
+'Allow avatars?',
+
+'enable_avatars_desc' =>
+'When set to <b>yes</b>, members will be able to use avatars (representative images) in comments and forums.',
+
+'allow_avatar_uploads' =>
+'Allow avatar uploads?',
+
+'allow_avatar_uploads_desc' =>
+'When set to <b>yes</b>, members will be able to upload their own avatars (representative images).',
+
+'avatar_url' =>
+'Avatar directory',
+
+'avatar_url_desc' =>
+'<abbr title="Uniform Resource Location">URL</abbr> location of your <mark>avatar</mark> directory.',
+
+'avatar_path' =>
+'Avatar path',
+
+'avatar_path_desc' =>
+'Full path location of your <mark>avatar</mark> directory.',
+
+'avatar_file_restrictions' =>
+'Avatar File Restrictions',
+
+'avatar_max_width' =>
+'Maximum width',
+
+'avatar_max_width_desc' =>
+'Maximum allowed width of images uploaded for use as an avatar by members.',
+
+'avatar_max_height' =>
+'Maximum height',
+
+'avatar_max_height_desc' =>
+'Maximum allowed height of images uploaded for use as an avatar by members.',
+
+'avatar_max_kb' =>
+'Maximum file size (<abbr title="kilobytes">kb</abbr>)',
+
+'avatar_max_kb_desc' =>
+'Maximum allowed file size of images uploaded for use as an avatar by members.',
 
 ''=>''
 );

@@ -21,7 +21,7 @@ use CP_Controller;
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine CP Template Settings Class
+ * ExpressionEngine CP Avatars Settings Class
  *
  * @package		ExpressionEngine
  * @subpackage	Control Panel
@@ -29,85 +29,92 @@ use CP_Controller;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Template extends Settings {
+class Avatars extends Settings {
 
-	/**
-	 * General Settings
-	 */
 	public function index()
 	{
-		ee()->load->model('admin_model');
-
 		$vars['sections'] = array(
 			array(
 				array(
-					'title' => 'strict_urls',
-					'desc' => 'strict_urls_desc',
+					'title' => 'enable_avatars',
+					'desc' => 'enable_avatars_desc',
 					'fields' => array(
-						'strict_urls' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'enable',
-								'n' => 'disable'
-							)
-						)
+						'enable_avatars' => array('type' => 'yes_no')
 					)
 				),
 				array(
-					'title' => 'site_404',
-					'desc' => 'site_404_desc',
+					'title' => 'allow_avatar_uploads',
+					'desc' => 'allow_avatar_uploads_desc',
 					'fields' => array(
-						'site_404' => array(
-							'type' => 'dropdown',
-							'choices' => ee()->admin_model->get_template_list()
-						)
-					),
-				),
+						'allow_avatar_uploads' => array('type' => 'yes_no')
+					)
+				)
+			),
+			'url_path_settings_title' => array(
 				array(
-					'title' => 'save_tmpl_revisions',
-					'desc' => 'save_tmpl_revisions_desc',
+					'title' => 'avatar_url',
+					'desc' => 'avatar_url_desc',
 					'fields' => array(
-						'save_tmpl_revisions' => array('type' => 'yes_no')
+						'avatar_url' => array('type' => 'text')
 					)
 				),
 				array(
-					'title' => 'max_tmpl_revisions',
-					'desc' => 'max_tmpl_revisions_desc',
+					'title' => 'avatar_path',
+					'desc' => 'avatar_path_desc',
 					'fields' => array(
-						'max_tmpl_revisions' => array('type' => 'text')
+						'avatar_path' => array('type' => 'text')
+					)
+				)
+			),
+			'avatar_file_restrictions' => array(
+				array(
+					'title' => 'avatar_max_width',
+					'desc' => 'avatar_max_width_desc',
+					'fields' => array(
+						'avatar_max_width' => array('type' => 'text')
 					)
 				),
 				array(
-					'title' => 'save_tmpl_files',
-					'desc' => 'save_tmpl_files_desc',
+					'title' => 'avatar_max_height',
+					'desc' => 'avatar_max_height_desc',
 					'fields' => array(
-						'save_tmpl_files' => array('type' => 'yes_no')
+						'avatar_max_height' => array('type' => 'text')
 					)
 				),
 				array(
-					'title' => 'tmpl_file_basepath',
-					'desc' => 'tmpl_file_basepath_desc',
+					'title' => 'avatar_max_kb',
+					'desc' => 'avatar_max_kb_desc',
 					'fields' => array(
-						'tmpl_file_basepath' => array('type' => 'text')
+						'avatar_max_kb' => array('type' => 'text')
 					)
-				),
+				)
 			)
 		);
 
 		ee()->form_validation->set_rules(array(
 			array(
-				'field' => 'max_tmpl_revisions',
-				'label' => 'lang:max_tmpl_revisions',
+				'field' => 'avatar_path',
+				'label' => 'lang:avatar_path',
+				'rules' => 'file_exists|writable'
+			),
+			array(
+				'field' => 'avatar_max_width',
+				'label' => 'lang:avatar_max_width',
 				'rules' => 'integer'
 			),
 			array(
-				'field' => 'tmpl_file_basepath',
-				'label' => 'lang:tmpl_file_basepath',
-				'rules' => 'file_exists'
+				'field' => 'avatar_max_height',
+				'label' => 'lang:avatar_max_height',
+				'rules' => 'integer'
 			),
+			array(
+				'field' => 'avatar_max_kb',
+				'label' => 'lang:avatar_max_kb',
+				'rules' => 'integer'
+			)
 		));
 
-		$base_url = cp_url('settings/template');
+		$base_url = cp_url('settings/avatars');
 
 		if (AJAX_REQUEST)
 		{
@@ -128,18 +135,16 @@ class Template extends Settings {
 			ee()->view->set_message('issue', lang('settings_save_error'), lang('settings_save_error_desc'));
 		}
 
-		ee()->view->base_url = $base_url;
 		ee()->view->ajax_validate = TRUE;
-		ee()->view->cp_page_title = lang('template_settings');
+		ee()->view->base_url = $base_url;
+		ee()->view->cp_page_title = lang('avatar_settings');
 		ee()->view->save_btn_text = 'btn_save_settings';
 		ee()->view->save_btn_text_working = 'btn_save_settings_working';
-
-		ee()->cp->set_breadcrumb(cp_url('design'), lang('template_manager'));
 
 		ee()->cp->render('_shared/form', $vars);
 	}
 }
 // END CLASS
 
-/* End of file Template.php */
-/* Location: ./system/expressionengine/controllers/cp/Settings/Template.php */
+/* End of file Avatars.php */
+/* Location: ./system/expressionengine/controllers/cp/Settings/Avatars.php */

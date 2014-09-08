@@ -51,7 +51,7 @@ feature 'General Settings' do
 
     no_php_js_errors
     should_have_form_errors(@page)
-    @page.should have_text 'An error occurred'
+    @page.should have_text 'Attention: Settings not saved'
     should_have_error_text(@page.site_name, error_text)
     @page.is_system_on_n.checked?.should == true
     @page.new_version_check_n.checked?.should == true

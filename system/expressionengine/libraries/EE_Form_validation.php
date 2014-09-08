@@ -529,6 +529,21 @@ class EE_Form_validation extends CI_Form_validation {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Path/file writeable
+	 *
+	 * Validation callback that checks if a path/file is writeable
+	 *
+	 * @param	string	$path	Path or path to file file
+	 * @return	boolean
+	 */
+	public function writable($path)
+	{
+		return is_really_writable($path);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Set old value
 	 *
 	 * Required for some rules to exclude current value from the

@@ -172,87 +172,81 @@ class Query extends Utilities {
 		$table = CP\Table::create(array('lang_cols' => FALSE));
 		$table->setColumns($columns);
 
-		$total_results = 0;
-
-		$table->setFilteredData(function($sort_col, $sort_dir, $search) use ($sql, &$query, $row_limit, $page, &$total_results, $vars)
+		$search = $table->search; // PHP 5.3
+		if ( ! empty($search) && $query)
 		{
-			if ($vars['write'])
+			if ($query->num_rows() > 0)
 			{
-				return array();
-			}
+				$data = $query->result_array();
+				$keys = array_keys($data[0]);
 
-			if ( ! empty($search) && $query)
-			{
-				if ($query->num_rows() > 0)
+				$new_sql = 'SELECT * FROM ('.$sql.') AS search WHERE';
+				foreach ($keys as $index => $key)
 				{
-					$data = $query->result_array();
-					$keys = array_keys($data[0]);
-
-					$new_sql = 'SELECT * FROM ('.$sql.') AS search WHERE';
-					foreach ($keys as $index => $key)
+					if ($index > 0)
 					{
-						if ($index > 0)
-						{
-							$new_sql .= ' OR';
-						}
-						$new_sql .= ' '.$key.' LIKE \'%'.ee()->db->escape_like_str($search).'%\'';
+						$new_sql .= ' OR';
 					}
+					$new_sql .= ' '.$key.' LIKE \'%'.ee()->db->escape_like_str($table->search).'%\'';
 				}
 			}
+		}
 
-			// Get the total results on the orignal query before we paginate it
-			$query = (isset($new_sql)) ? ee()->db->query($new_sql) : ee()->db->query($sql);
-			$total_results = (is_object($query)) ? $query->num_rows() : 0;
+		// Get the total results on the orignal query before we paginate it
+		$query = (isset($new_sql)) ? ee()->db->query($new_sql) : ee()->db->query($sql);
+		$total_results = (is_object($query)) ? $query->num_rows() : 0;
 
-			// If it's a SELECT query we'll see if we need to limit
-			// the result total and add pagination links
-			if (strpos(strtoupper($sql), 'SELECT') !== FALSE)
+		// If it's a SELECT query we'll see if we need to limit
+		// the result total and add pagination links
+		if (strpos(strtoupper($sql), 'SELECT') !== FALSE)
+		{
+			$sort_col = $table->sort_col; // PHP 5.3
+			if ( ! empty($sort_col))
 			{
-				if ( ! empty($sort_col))
-				{
-					$new_sql = ( ! isset($new_sql)) ? '('.$sql.')' : '('.$new_sql.')';
+				$new_sql = ( ! isset($new_sql)) ? '('.$sql.')' : '('.$new_sql.')';
 
-					// Wrap query in parenthesis in case query already has a
-					// limit on it, we can't put an ORDER BY after a LIMIT
-					$new_sql .= ' ORDER BY '.$sort_col.' '.$sort_dir;
-				}
-
-				if ( ! preg_match("/LIMIT\s+[0-9]/i", $sql))
-				{
-					// Modify the query so we get the total sans LIMIT
-					$row = ($page - 1) * $row_limit; // Offset is 0 indexed
-
-					if ( ! isset($new_sql))
-					{
-						$new_sql = $sql;
-					}
-
-					$new_sql .= " LIMIT ".$row.", ".$row_limit;
-				}
-
-				if (isset($new_sql))
-				{
-					$query = ee()->db->query($new_sql);
-				}
+				// Wrap query in parenthesis in case query already has a
+				// limit on it, we can't put an ORDER BY after a LIMIT
+				$new_sql .= ' ORDER BY '.$table->sort_col.' '.$table->sort_dir;
 			}
 
-			if ( ! isset($new_sql))
+			if ( ! preg_match("/LIMIT\s+[0-9]/i", $sql))
 			{
-				$query = ee()->db->query($sql);
+				// Modify the query so we get the total sans LIMIT
+				$row = ($page - 1) * $row_limit; // Offset is 0 indexed
+
+				if ( ! isset($new_sql))
+				{
+					$new_sql = $sql;
+				}
+
+				$new_sql .= " LIMIT ".$row.", ".$row_limit;
 			}
 
-			// Set search results heading
-			if ( ! empty($search))
+			if (isset($new_sql))
 			{
-				ee()->view->table_heading = sprintf(
-					lang('search_results_heading'),
-					$total_results,
-					$search
-				);
+				$query = ee()->db->query($new_sql);
 			}
+		}
 
-			return (is_object($query)) ? $query->result_array() : array();
-		});
+		if ( ! isset($new_sql))
+		{
+			$query = ee()->db->query($sql);
+		}
+
+		// Set search results heading
+		if ( ! empty($search))
+		{
+			ee()->view->table_heading = sprintf(
+				lang('search_results_heading'),
+				$total_results,
+				$search
+			);
+		}
+
+		$data = (is_object($query)) ? $query->result_array() : array();
+
+		$table->setData($data);
 
 		$base_url = new CP\URL(
 			'utilities/query/run-query/'.$table_name,
