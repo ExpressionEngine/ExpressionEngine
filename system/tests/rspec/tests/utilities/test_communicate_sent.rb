@@ -49,8 +49,8 @@ feature 'Communicate > Sent' do
 
 		@page.find('th.highlight').text.should eq 'Subject'
 		@page.find('th.highlight').should have_css 'a.sort.asc'
-		@page.subjects.map {|subject| subject.text}.should == subjects
-		@page.should have(27).rows # +1 for the header
+		@page.subjects.map {|subject| subject.text}.should == subjects[0..19]
+		@page.should have(21).rows # +1 for the header
 	end
 
 	it 'sorts by subject (desc)' do
@@ -66,8 +66,8 @@ feature 'Communicate > Sent' do
 
 		@page.find('th.highlight').text.should eq 'Subject'
 		@page.find('th.highlight').should have_css 'a.sort.desc'
-		@page.subjects.map {|subject| subject.text}.should == subjects
-		@page.should have(27).rows # +1 for the header
+		@page.subjects.map {|subject| subject.text}.should == subjects[0..19]
+		@page.should have(21).rows # +1 for the header
 	end
 
 	it 'sorts by date (asc)' do
@@ -85,8 +85,8 @@ feature 'Communicate > Sent' do
 
 		@page.find('th.highlight').text.should eq 'Date'
 		@page.find('th.highlight').should have_css 'a.sort.asc'
-		@page.dates.map {|date| date.text}.should == dates
-		@page.should have(26).rows # +1 for the header
+		@page.dates.map {|date| date.text}.should == dates[0..19]
+		@page.should have(21).rows # +1 for the header
 	end
 
 	it 'sorts by date (desc)' do
@@ -104,8 +104,8 @@ feature 'Communicate > Sent' do
 
 		@page.find('th.highlight').text.should eq 'Date'
 		@page.find('th.highlight').should have_css 'a.sort.desc'
-		@page.dates.map {|date| date.text}.should == dates
-		@page.should have(26).rows # +1 for the header
+		@page.dates.map {|date| date.text}.should == dates[0..19]
+		@page.should have(21).rows # +1 for the header
 	end
 
 	it 'sorts by total sent (asc)' do
@@ -120,8 +120,8 @@ feature 'Communicate > Sent' do
 
 		@page.find('th.highlight').text.should eq 'Total Sent'
 		@page.find('th.highlight').should have_css 'a.sort.asc'
-		@page.total_sents.map {|sent| sent.text}.should == sent
-		@page.should have(26).rows # +1 for the header
+		@page.total_sents.map {|sent| sent.text}.should == sent[0..19]
+		@page.should have(21).rows # +1 for the header
 	end
 
 	it 'sorts by total sent (desc)' do
@@ -138,8 +138,8 @@ feature 'Communicate > Sent' do
 
 		@page.find('th.highlight').text.should eq 'Total Sent'
 		@page.find('th.highlight').should have_css 'a.sort.desc'
-		@page.total_sents.map {|sent| sent.text}.should == sent
-		@page.should have(26).rows # +1 for the header
+		@page.total_sents.map {|sent| sent.text}.should == sent[0..19]
+		@page.should have(21).rows # +1 for the header
 	end
 
 	it 'can search by subject' do
@@ -293,8 +293,8 @@ feature 'Communicate > Sent' do
 		@page.should_not have_no_results
 		@page.phrase_search.value.should eq phrase
 		@page.should have_text data
-		@page.total_sents.map {|sent| sent.text}.should == sent.map {|n| n.to_s}
-		@page.should have(26).rows # +1 for the header
+		@page.total_sents.map {|sent| sent.text}.should == sent[0..19].map {|n| n.to_s}
+		@page.should have(21).rows # +1 for the header
 	end
 
 	it 'will not pagingate at 20 or under' do
@@ -332,7 +332,7 @@ feature 'Communicate > Sent' do
 
 		@page.should have_pagination
 	    @page.should have(6).pages
-	    @page.pages.map {|name| name.text}.should == ["First", "Previous", "3", "4", "5", "Last"]
+	    @page.pages.map {|name| name.text}.should == ["First", "Previous", "11", "12", "13", "Last"]
 	end
 
 	it 'maintains sort while paging' do
@@ -465,13 +465,13 @@ feature 'Communicate > Sent' do
 		phrase = "Zeppelins"
 		data = phrase + " are cool"
 
-		@page.generate_data(count: 12, subject: data)
+		@page.generate_data(count: 8, subject: data)
 		@page.generate_data(count: 12)
 		load_page
 
 		# We should be sorted ASCending by Subject so these should be all our
 		# Zeppelins emails.
-		(13..24).each do |n|
+		(13..20).each do |n|
 			@page.rows[n].find('input[type="checkbox"]').set true
 		end
 

@@ -11,7 +11,7 @@ feature 'CP Log' do
 
   before(:each, :pregen => true) do
 	@page.generate_data(count: 150, timestamp_min: 26)
-	@page.generate_data(count: 35, member_id: 2, username: 'johndoe', timestamp_min: 25)
+	@page.generate_data(count: 15, member_id: 2, username: 'johndoe', timestamp_min: 25)
 	@page.load
 
 	# These should always be true at all times if not something has gone wrong
@@ -77,7 +77,7 @@ feature 'CP Log' do
 	no_php_js_errors
 
 	@page.username_filter.text.should eq "username (johndoe)"
-	@page.should have(35).items
+	@page.should have(15).items
 	@page.should_not have_pagination
   end
 
@@ -89,7 +89,7 @@ feature 'CP Log' do
 	no_php_js_errors
 
 	@page.username_filter.text.should eq "username (johndoe)"
-	@page.should have(35).items
+	@page.should have(15).items
 	@page.should_not have_pagination
   end
 
@@ -161,7 +161,7 @@ feature 'CP Log' do
 
 	@page.perpage_filter.text.should eq "show (150)"
 	@page.username_filter.text.should eq "username (johndoe)"
-	@page.should have(35).items
+	@page.should have(15).items
 	@page.should_not have_pagination
 	@page.items.should_not have_text "admin"
   end
@@ -186,7 +186,7 @@ feature 'CP Log' do
 
 	@page.perpage_filter.text.should eq "show (150)"
 	@page.phrase_search.value.should eq "johndoe"
-	@page.should have(35).items
+	@page.should have(15).items
 	@page.should_not have_pagination
 	@page.items.should_not have_text "admin"
   end
@@ -231,7 +231,7 @@ feature 'CP Log' do
 
 	@page.should have_pagination
 	@page.should have(6).pages
-	@page.pages.map {|name| name.text}.should == ["First", "Previous", "2", "3", "4", "Last"]
+	@page.pages.map {|name| name.text}.should == ["First", "Previous", "7", "8", "9", "Last"]
   end
 
   it 'does not lose a filter value when paginating', :pregen => true do
@@ -254,6 +254,8 @@ feature 'CP Log' do
   end
 
   it 'will paginate phrase search results', :pregen => true do
+  	@page.generate_data(count: 20, member_id: 2, username: 'johndoe', timestamp_min: 25)
+
 	@page.perpage_filter.click
 	@page.wait_until_perpage_filter_menu_visible
 	@page.perpage_filter_menu.click_link "25"

@@ -68,7 +68,7 @@ feature 'Developer Log' do
   end
 
   it 'filters by date' do
-	@page.generate_data(count: 23, timestamp_max: 22)
+	@page.generate_data(count: 19, timestamp_max: 22)
 	@page.generate_data(count: 42, timestamp_min: 36, timestamp_max: 60)
 	@page.load
 	confirm @page
@@ -81,7 +81,7 @@ feature 'Developer Log' do
 	no_php_js_errors
 
 	@page.date_filter.text.should eq "date (Last 24 Hours)"
-	@page.should have(23).items
+	@page.should have(19).items
 	@page.should_not have_pagination
   end
 
@@ -226,7 +226,7 @@ feature 'Developer Log' do
 
 	@page.should have_pagination
 	@page.should have(6).pages
-	@page.pages.map {|name| name.text}.should == ["First", "Previous", "3", "4", "5", "Last"]
+	@page.pages.map {|name| name.text}.should == ["First", "Previous", "11", "12", "13", "Last"]
   end
 
   it 'does not lose a filter value when paginating' do
