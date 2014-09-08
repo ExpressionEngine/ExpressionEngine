@@ -22,11 +22,11 @@
 			<?php $this->view('_shared/pagination'); ?>
 			<fieldset class="tbl-bulk-act">
 				<select name="table_action">
-					<option value="none">-- with selected --</option>
-					<option value="REPAIR">Repair</option>
-					<option value="OPTIMIZE">Optimize</option>
+					<option value="none">-- <?=lang('with_selected')?> --</option>
+					<option value="REPAIR"><?=lang('repair')?></option>
+					<option value="OPTIMIZE"><?=lang('optimize')?></option>
 				</select>
-				<input class="btn submit" type="submit" value="submit">
+				<input class="btn submit" type="submit" value="<?=lang('submit')?>">
 			</fieldset>
 		</form>
 	</div>

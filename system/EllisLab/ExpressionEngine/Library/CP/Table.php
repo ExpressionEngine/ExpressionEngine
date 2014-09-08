@@ -34,6 +34,7 @@ class Table {
 	const COL_CHECKBOX = 2;
 	const COL_STATUS = 3;
 	const COL_TOOLBAR = 4;
+	const COL_ID = 5;
 
 	private $columns = array();
 	private $config = array();
@@ -171,7 +172,8 @@ class Table {
 				$settings = array_merge($defaults, $settings);
 
 				// Only these columns are sortable
-				if ($settings['type'] !== self::COL_TEXT &&
+				if ($settings['type'] !== self::COL_ID &&
+					$settings['type'] !== self::COL_TEXT &&
 					$settings['type'] !== self::COL_STATUS)
 				{
 					$settings['sort'] = FALSE;

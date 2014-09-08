@@ -25,7 +25,17 @@ if ($wrap): ?>
 						<?php endif ?>
 					</th>
 				<?php else: ?>
-					<th<?php if ($settings['sort'] && $sort_col == $label): ?> class="highlight"<?php endif ?>>
+					<?php
+					$table_class = '';
+					if ($settings['type'] == Table::COL_ID)
+					{
+						$table_class .= ' id-col';
+					}
+					if ($settings['sort'] && $sort_col == $label)
+					{
+						$table_class .= ' highlight';
+					} ?>
+					<th<?php if ( ! empty($table_class)): ?> class="<?=trim($table_class)?>"<?php endif ?>>
 						<?=($lang_cols) ? lang($label) : $label ?>
 						<?php if ($settings['sort']): ?>
 							<?php 

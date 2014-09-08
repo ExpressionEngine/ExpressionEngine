@@ -622,6 +622,12 @@ $lang = array(
 'manage' =>
 'Manage',
 
+'repair' =>
+'Repair',
+
+'optimize' =>
+'Optimize',
+
 'no_tables_selected' =>
 'You must select the tables in which to perform this action.',
 
