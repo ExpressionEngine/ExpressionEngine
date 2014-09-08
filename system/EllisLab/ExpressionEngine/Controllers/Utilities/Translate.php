@@ -312,6 +312,7 @@ class Translate extends Utilities {
 
 		$str = '<?php'."\n".'$lang = array('."\n\n\n";
 
+		ee()->load->library('form_validation');
 		foreach ($_POST as $key => $val)
 		{
 			$val = str_replace('<script', '', $val);
@@ -319,6 +320,15 @@ class Translate extends Utilities {
 			$val = str_replace(array("\\", "'"), array("\\\\", "\'"), $val);
 
 			$str .= '\''.$key.'\' => '."\n".'\''.$val.'\''.",\n\n";
+
+			ee()->form_validation->set_rules($key, 'lang:' . $key, 'required');
+		}
+
+		if (ee()->form_validation->run() === FALSE)
+		{
+			ee()->view->set_message('issue', lang('translate_error'), lang('translate_error_desc'));
+
+			return $this->edit($language, $file);
 		}
 
 		$str .= "''=>''\n);\n\n";
