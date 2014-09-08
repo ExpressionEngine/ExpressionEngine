@@ -533,7 +533,7 @@ class CI_Security {
 			foreach ($matches as $attr)
 			{
 
-				$attribs[] = preg_quote($attr[0], '/');
+				$attribs[] = trim(preg_quote($attr[0], '/'));
 			}
 
 			// find occurrences of illegal attribute strings with quotes (042 and 047 are octal quotes)
@@ -541,7 +541,7 @@ class CI_Security {
 
 			foreach ($matches as $attr)
 			{
-				$attribs[] = preg_quote($attr[0], '/');
+				$attribs[] = trim(preg_quote($attr[0], '/'));
 			}
 
 			// replace illegal attribute strings that are inside an html tag
