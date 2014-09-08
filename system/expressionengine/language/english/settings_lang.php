@@ -770,6 +770,46 @@ $lang = array(
 'avatar_max_kb_desc' =>
 'Maximum allowed file size of images uploaded for use as an avatar by members.',
 
+/**
+ * CAPTCHA
+ */
+
+'captcha_settings' =>
+'CAPTCHA Settings',
+
+'captcha_settings_title' =>
+'<abbr title="Completely Automated Public Turing test to tell Computers and Humans Apart">CAPTCHA</abbr> Settings',
+
+'captcha_font' =>
+'Use TrueType font?',
+
+'captcha_font_desc' =>
+'When set to <b>yes</b>, <abbr title="Completely Automated Public Turing test to tell Computers and Humans Apart">CAPTCHA</abbr> fields will use a TrueType font for display.',
+
+'captcha_rand' =>
+'Add random number?',
+
+'captcha_rand_desc' =>
+'When set to <b>yes</b>, <abbr title="Completely Automated Public Turing test to tell Computers and Humans Apart">CAPTCHA</abbr> fields will randomly generate numbers as well as letters.',
+
+'captcha_require_members' =>
+'Require <abbr title="Completely Automated Public Turing test to tell Computers and Humans Apart">CAPTCHA</abbr> while logged in?',
+
+'captcha_require_members_desc' =>
+'When set to <b>no</b>, logged in members will not be required to fill in <abbr title="Completely Automated Public Turing test to tell Computers and Humans Apart">CAPTCHA</abbr> fields.',
+
+'captcha_url' =>
+'<abbr title="Completely Automated Public Turing test to tell Computers and Humans Apart">CAPTCHA</abbr> directory',
+
+'captcha_url_desc' =>
+'<abbr title="Uniform Resource Location">URL</abbr> location of your <mark><abbr title="Completely Automated Public Turing test to tell Computers and Humans Apart">CAPTCHA</abbr></mark> directory.',
+
+'captcha_path' =>
+'<abbr title="Completely Automated Public Turing test to tell Computers and Humans Apart">CAPTCHA</abbr> path',
+
+'captcha_path_desc' =>
+'Full path location of your <mark><abbr title="Completely Automated Public Turing test to tell Computers and Humans Apart">CAPTCHA</abbr></mark> directory.',
+
 ''=>''
 );
 
