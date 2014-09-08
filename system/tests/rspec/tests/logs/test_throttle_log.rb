@@ -81,6 +81,7 @@ feature 'Throttling Log' do
 	@page.submit_button.click
 	no_php_js_errors
 
+	@page.heading.text.should eq 'Search Results we found 1 results for "172.16.11"'
 	@page.phrase_search.value.should eq "172.16.11"
 	@page.should have_text our_ip
 	@page.should have(1).items
@@ -129,6 +130,7 @@ feature 'Throttling Log' do
 	no_php_js_errors
 
 	@page.perpage_filter.text.should eq "show (25)"
+	@page.heading.text.should eq 'Search Results we found 27 results for "172.16.11"'
 	@page.phrase_search.value.should eq "172.16.11"
 	@page.should have_text our_ip
 	@page.should have(25).items
@@ -212,6 +214,7 @@ feature 'Throttling Log' do
 	no_php_js_errors
 
 	# Page 1
+	@page.heading.text.should eq 'Search Results we found 35 results for "172.16.11"'
 	@page.phrase_search.value.should eq "172.16.11"
 	@page.items.should_not have_text "10.0"
 	@page.perpage_filter.text.should eq "show (25)"
@@ -224,6 +227,7 @@ feature 'Throttling Log' do
 	no_php_js_errors
 
 	# Page 2
+	@page.heading.text.should eq 'Search Results we found 35 results for "172.16.11"'
 	@page.phrase_search.value.should eq "172.16.11"
 	@page.items.should_not have_text "10.0"
 	@page.perpage_filter.text.should eq "show (25)"

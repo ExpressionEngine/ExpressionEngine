@@ -64,6 +64,7 @@ feature 'CP Log' do
 	@page.submit_button.click
 	no_php_js_errors
 
+	@page.heading.text.should eq 'Search Results we found 1 results for "Rspec"'
 	@page.phrase_search.value.should eq "Rspec"
 	@page.should have_text our_action
 	@page.should have(1).items
@@ -185,6 +186,7 @@ feature 'CP Log' do
 	no_php_js_errors
 
 	@page.perpage_filter.text.should eq "show (150)"
+	@page.heading.text.should eq 'Search Results we found 15 results for "johndoe"'
 	@page.phrase_search.value.should eq "johndoe"
 	@page.should have(15).items
 	@page.should_not have_pagination
@@ -266,6 +268,7 @@ feature 'CP Log' do
 	no_php_js_errors
 
   	# Page 1
+	@page.heading.text.should eq 'Search Results we found 35 results for "johndoe"'
   	@page.phrase_search.value.should eq "johndoe"
   	@page.items.should_not have_text "admin"
 	@page.perpage_filter.text.should eq "show (25)"
@@ -278,6 +281,7 @@ feature 'CP Log' do
 	no_php_js_errors
 
   	# Page 2
+	@page.heading.text.should eq 'Search Results we found 35 results for "johndoe"'
   	@page.phrase_search.value.should eq "johndoe"
   	@page.items.should_not have_text "admin"
 	@page.perpage_filter.text.should eq "show (25)"

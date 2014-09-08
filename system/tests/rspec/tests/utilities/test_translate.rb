@@ -74,6 +74,7 @@ feature 'Translate Tool' do
 		@list_page.search_submit_button.click
 		no_php_js_errors
 
+		@list_page.heading.text.should eq 'Search Results we found 2 results for "' + my_phrase + '"'
 		@list_page.phrase_search.value.should eq my_phrase
 		@list_page.should have_text my_phrase
 		@list_page.should have(3).rows # 2 rows + header row
@@ -87,6 +88,7 @@ feature 'Translate Tool' do
 		@list_page.search_submit_button.click
 		no_php_js_errors
 
+		@list_page.heading.text.should eq 'Search Results we found 0 results for "' + my_phrase + '"'
 		@list_page.phrase_search.value.should eq my_phrase
 		@list_page.should_not have_pagination
 		@list_page.should have_no_results

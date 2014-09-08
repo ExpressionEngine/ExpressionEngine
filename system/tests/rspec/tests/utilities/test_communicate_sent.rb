@@ -164,6 +164,7 @@ feature 'Communicate > Sent' do
 		no_php_js_errors
 
 		@page.should_not have_no_results
+		@page.heading.text.should eq 'Search Results we found 5 results for "' + phrase + '"'
 		@page.phrase_search.value.should eq phrase
 		@page.should have_text data
 		@page.should have(6).rows #+1 for the header
@@ -182,6 +183,7 @@ feature 'Communicate > Sent' do
 		no_php_js_errors
 
 		@page.should_not have_no_results
+		@page.heading.text.should eq 'Search Results we found 5 results for "' + phrase + '"'
 		@page.phrase_search.value.should eq phrase
 		@page.should have(6).rows #+1 for the header
 	end
@@ -199,6 +201,7 @@ feature 'Communicate > Sent' do
 		no_php_js_errors
 
 		@page.should_not have_no_results
+		@page.heading.text.should eq 'Search Results we found 5 results for "' + phrase + '"'
 		@page.phrase_search.value.should eq phrase
 		@page.should have(6).rows #+1 for the header
 	end
@@ -216,6 +219,7 @@ feature 'Communicate > Sent' do
 		no_php_js_errors
 
 		@page.should_not have_no_results
+		@page.heading.text.should eq 'Search Results we found 5 results for "' + phrase + '"'
 		@page.phrase_search.value.should eq phrase
 		@page.should have(6).rows #+1 for the header
 	end
@@ -233,6 +237,7 @@ feature 'Communicate > Sent' do
 		no_php_js_errors
 
 		@page.should_not have_no_results
+		@page.heading.text.should eq 'Search Results we found 5 results for "' + phrase + '"'
 		@page.phrase_search.value.should eq phrase
 		@page.should have(6).rows #+1 for the header
 	end
@@ -250,6 +255,7 @@ feature 'Communicate > Sent' do
 		no_php_js_errors
 
 		@page.should_not have_no_results
+		@page.heading.text.should eq 'Search Results we found 5 results for "' + phrase + '"'
 		@page.phrase_search.value.should eq phrase
 		@page.should have(6).rows #+1 for the header
 	end
@@ -267,6 +273,7 @@ feature 'Communicate > Sent' do
 		no_php_js_errors
 
 		@page.should_not have_no_results
+		@page.heading.text.should eq 'Search Results we found 5 results for "' + phrase + '"'
 		@page.phrase_search.value.should eq phrase
 		@page.should have(6).rows #+1 for the header
 	end
@@ -280,6 +287,9 @@ feature 'Communicate > Sent' do
 		@page.phrase_search.set phrase
 		@page.search_submit_button.click
 		no_php_js_errors
+
+		@page.heading.text.should eq 'Search Results we found 0 results for "' + phrase + '"'
+		@page.phrase_search.value.should eq phrase
 
 		@page.should have_no_results
 		@page.should_not have_bulk_action
@@ -311,6 +321,7 @@ feature 'Communicate > Sent' do
 		@page.find('th.highlight').text.should eq 'Total Sent'
 		@page.find('th.highlight').should have_css 'a.sort.asc'
 		@page.should_not have_no_results
+		@page.heading.text.should eq 'Search Results we found 20 results for "' + phrase + '"'
 		@page.phrase_search.value.should eq phrase
 		@page.should have_text data
 		@page.total_sents.map {|sent| sent.text}.should == sent[0..19].map {|n| n.to_s}
@@ -386,6 +397,7 @@ feature 'Communicate > Sent' do
 		no_php_js_errors
 
 		@page.should_not have_no_results
+		@page.heading.text.should eq 'Search Results we found 20 results for "' + phrase + '"'
 		@page.phrase_search.value.should eq phrase
 		@page.should have_text data
 		@page.should_not have_text "Albatross"
@@ -409,6 +421,7 @@ feature 'Communicate > Sent' do
 		no_php_js_errors
 
 		@page.should_not have_no_results
+		@page.heading.text.should eq 'Search Results we found 20 results for "' + phrase + '"'
 		@page.phrase_search.value.should eq phrase
 		@page.should have_text data
 		@page.should_not have_text "Albatross"

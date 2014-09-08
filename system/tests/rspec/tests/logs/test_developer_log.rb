@@ -62,6 +62,7 @@ feature 'Developer Log' do
 	@page.submit_button.click
 	no_php_js_errors
 
+	@page.heading.text.should eq 'Search Results we found 1 results for "Rspec"'
 	@page.phrase_search.value.should eq "Rspec"
 	@page.should have_text our_desc
 	@page.should have(1).items
@@ -166,6 +167,7 @@ feature 'Developer Log' do
 	no_php_js_errors
 
 	@page.date_filter.text.should eq "date (Last 24 Hours)"
+	@page.heading.text.should eq 'Search Results we found 5 results for "Rspec"'
 	@page.phrase_search.value.should eq "Rspec"
 	@page.should have_text our_desc
   	@page.should have(5).items
@@ -268,6 +270,7 @@ feature 'Developer Log' do
 	no_php_js_errors
 
 	# Page 1
+	@page.heading.text.should eq 'Search Results we found 35 results for "Visible"'
 	@page.phrase_search.value.should eq "Visible"
 	@page.items.should_not have_text "Hidden"
 	@page.perpage_filter.text.should eq "show (25)"
@@ -280,6 +283,7 @@ feature 'Developer Log' do
 	no_php_js_errors
 
 	# Page 2
+	@page.heading.text.should eq 'Search Results we found 35 results for "Visible"'
 	@page.phrase_search.value.should eq "Visible"
 	@page.items.should_not have_text "Hidden"
 	@page.perpage_filter.text.should eq "show (25)"
