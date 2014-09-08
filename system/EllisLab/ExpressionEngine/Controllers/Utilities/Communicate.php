@@ -749,6 +749,17 @@ class Communicate extends Utilities {
 		$vars['pagination'] = $pagination->cp_links($vars['table']['base_url']);
 
 		ee()->view->cp_page_title = lang('view_email_cache');
+
+		// Set search results heading
+		if ( ! empty($vars['table']['search']))
+		{
+			ee()->view->cp_heading = sprintf(
+				lang('search_results_heading'),
+				$vars['table']['total_rows'],
+				$vars['table']['search']
+			);
+		}
+
 		ee()->cp->render('utilities/communicate/sent', $vars);
 	}
 

@@ -179,6 +179,16 @@ class Translate extends Utilities {
 			$vars['pagination'] = $pagination->cp_links($base_url);
 		}
 
+		// Set search results heading
+		if ( ! empty($vars['table']['search']))
+		{
+			ee()->view->cp_heading = sprintf(
+				lang('search_results_heading'),
+				$vars['table']['total_rows'],
+				$vars['table']['search']
+			);
+		}
+
 		ee()->cp->render('utilities/translate/list', $vars);
 	}
 

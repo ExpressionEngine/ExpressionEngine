@@ -118,6 +118,12 @@ class Throttle extends Logs {
 			$links = $pagination->cp_links($this->base_url);
 		}
 
+		// Set the page heading
+		if ( ! empty(ee()->view->search_value))
+		{
+			ee()->view->cp_heading = sprintf(lang('search_results_heading'), $count, ee()->view->search_value);
+		}
+
 		$vars = array(
 			'rows' => $rows,
 			'pagination' => $links,
