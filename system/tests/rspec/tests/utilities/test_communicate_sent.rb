@@ -63,6 +63,7 @@ feature 'Communicate > Sent' do
 		subjects.reverse!
 		load_page
 		@page.subject_header.find('a.sort').click
+		no_php_js_errors
 
 		@page.find('th.highlight').text.should eq 'Subject'
 		@page.find('th.highlight').should have_css 'a.sort.desc'
@@ -82,6 +83,7 @@ feature 'Communicate > Sent' do
 		dates.reverse!
 		load_page
 		@page.date_header.find('a.sort').click
+		no_php_js_errors
 
 		@page.find('th.highlight').text.should eq 'Date'
 		@page.find('th.highlight').should have_css 'a.sort.asc'
@@ -100,7 +102,10 @@ feature 'Communicate > Sent' do
 		end
 		load_page
 		@page.date_header.find('a.sort').click # To sort by date
+		no_php_js_errors
+
 		@page.date_header.find('a.sort').click # DESC sort
+		no_php_js_errors
 
 		@page.find('th.highlight').text.should eq 'Date'
 		@page.find('th.highlight').should have_css 'a.sort.desc'
@@ -117,6 +122,7 @@ feature 'Communicate > Sent' do
 		end
 		load_page
 		@page.total_sent_header.find('a.sort').click
+		no_php_js_errors
 
 		@page.find('th.highlight').text.should eq 'Total Sent'
 		@page.find('th.highlight').should have_css 'a.sort.asc'
@@ -134,7 +140,10 @@ feature 'Communicate > Sent' do
 		sent.reverse!
 		load_page
 		@page.total_sent_header.find('a.sort').click # To sort by total sent
+		no_php_js_errors
+
 		@page.total_sent_header.find('a.sort').click # DESC sort
+		no_php_js_errors
 
 		@page.find('th.highlight').text.should eq 'Total Sent'
 		@page.find('th.highlight').should have_css 'a.sort.desc'
@@ -152,6 +161,7 @@ feature 'Communicate > Sent' do
 
 		@page.phrase_search.set phrase
 		@page.search_submit_button.click
+		no_php_js_errors
 
 		@page.should_not have_no_results
 		@page.phrase_search.value.should eq phrase
@@ -169,6 +179,7 @@ feature 'Communicate > Sent' do
 
 		@page.phrase_search.set phrase
 		@page.search_submit_button.click
+		no_php_js_errors
 
 		@page.should_not have_no_results
 		@page.phrase_search.value.should eq phrase
@@ -185,6 +196,7 @@ feature 'Communicate > Sent' do
 
 		@page.phrase_search.set phrase
 		@page.search_submit_button.click
+		no_php_js_errors
 
 		@page.should_not have_no_results
 		@page.phrase_search.value.should eq phrase
@@ -201,6 +213,7 @@ feature 'Communicate > Sent' do
 
 		@page.phrase_search.set phrase
 		@page.search_submit_button.click
+		no_php_js_errors
 
 		@page.should_not have_no_results
 		@page.phrase_search.value.should eq phrase
@@ -217,6 +230,7 @@ feature 'Communicate > Sent' do
 
 		@page.phrase_search.set phrase
 		@page.search_submit_button.click
+		no_php_js_errors
 
 		@page.should_not have_no_results
 		@page.phrase_search.value.should eq phrase
@@ -233,6 +247,7 @@ feature 'Communicate > Sent' do
 
 		@page.phrase_search.set phrase
 		@page.search_submit_button.click
+		no_php_js_errors
 
 		@page.should_not have_no_results
 		@page.phrase_search.value.should eq phrase
@@ -249,6 +264,7 @@ feature 'Communicate > Sent' do
 
 		@page.phrase_search.set phrase
 		@page.search_submit_button.click
+		no_php_js_errors
 
 		@page.should_not have_no_results
 		@page.phrase_search.value.should eq phrase
@@ -263,6 +279,8 @@ feature 'Communicate > Sent' do
 
 		@page.phrase_search.set phrase
 		@page.search_submit_button.click
+		no_php_js_errors
+
 		@page.should have_no_results
 		@page.should_not have_bulk_action
 		@page.should_not have_action_submit_button
@@ -284,9 +302,11 @@ feature 'Communicate > Sent' do
 		sent.sort!
 		load_page
 		@page.total_sent_header.find('a.sort').click
+		no_php_js_errors
 
 		@page.phrase_search.set phrase
 		@page.search_submit_button.click
+		no_php_js_errors
 
 		@page.find('th.highlight').text.should eq 'Total Sent'
 		@page.find('th.highlight').should have_css 'a.sort.asc'
@@ -318,6 +338,7 @@ feature 'Communicate > Sent' do
 		load_page
 
 	    click_link "Next"
+		no_php_js_errors
 
 		@page.should have_pagination
 	    @page.should have(7).pages
@@ -329,6 +350,7 @@ feature 'Communicate > Sent' do
 		load_page
 
 	    click_link "Last"
+		no_php_js_errors
 
 		@page.should have_pagination
 	    @page.should have(6).pages
@@ -340,7 +362,11 @@ feature 'Communicate > Sent' do
 		load_page
 
 		@page.total_sent_header.find('a.sort').click
+		no_php_js_errors
+
 	    click_link "Next"
+		no_php_js_errors
+
 		@page.find('th.highlight').text.should eq 'Total Sent'
 		@page.find('th.highlight').should have_css 'a.sort.asc'
 	end
@@ -354,7 +380,10 @@ feature 'Communicate > Sent' do
 
 		@page.phrase_search.set phrase
 		@page.search_submit_button.click
+		no_php_js_errors
+
 	    click_link "Next"
+		no_php_js_errors
 
 		@page.should_not have_no_results
 		@page.phrase_search.value.should eq phrase
@@ -371,8 +400,13 @@ feature 'Communicate > Sent' do
 
 		@page.phrase_search.set phrase
 		@page.search_submit_button.click
+		no_php_js_errors
+
 		@page.total_sent_header.find('a.sort').click
+		no_php_js_errors
+
 	    click_link "Next"
+		no_php_js_errors
 
 		@page.should_not have_no_results
 		@page.phrase_search.value.should eq phrase
@@ -392,10 +426,14 @@ feature 'Communicate > Sent' do
 		@page.pagination.find('a.act').text.should eq '1'
 
 		click_link "Next"
+		no_php_js_errors
+
 	    @page.pages.map {|name| name.text}.should == ["First", "Previous", "1", "2", "3", "Next", "Last"]
 		@page.pagination.find('a.act').text.should eq '2'
 
 		@page.total_sent_header.find('a.sort').click
+		no_php_js_errors
+
 	    @page.pages.map {|name| name.text}.should == ["First", "1", "2", "3", "Next", "Last"]
 		@page.pagination.find('a.act').text.should eq '1'
 	end
@@ -413,11 +451,15 @@ feature 'Communicate > Sent' do
 		@page.pagination.find('a.act').text.should eq '1'
 
 		click_link "Next"
+		no_php_js_errors
+
 	    @page.pages.map {|name| name.text}.should == ["First", "Previous", "1", "2", "3", "Next", "Last"]
 		@page.pagination.find('a.act').text.should eq '2'
 
 		@page.phrase_search.set phrase
 		@page.search_submit_button.click
+		no_php_js_errors
+
 	    @page.pages.map {|name| name.text}.should == ["First", "1", "2", "3", "Next", "Last"]
 		@page.pagination.find('a.act').text.should eq '1'
 	end
@@ -432,6 +474,8 @@ feature 'Communicate > Sent' do
 		load_page
 
 		@page.first('ul.toolbar li.view a').click
+		no_php_js_errors
+
 		@page.should have_modal
 		@page.modal_title.text.should eq my_subject
 		@page.modal.text.should include my_body
@@ -447,6 +491,7 @@ feature 'Communicate > Sent' do
 		load_page
 
 		@page.first('ul.toolbar li.sync a').click
+		no_php_js_errors
 
 		communicate = Communicate.new
 
@@ -477,6 +522,7 @@ feature 'Communicate > Sent' do
 
 		@page.bulk_action.select "Remove"
 		@page.action_submit_button.click
+		no_php_js_errors
 
 		@page.should have(13).rows # +1 for the header
 		@page.should_not have_text data

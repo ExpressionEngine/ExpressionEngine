@@ -72,6 +72,7 @@ feature 'Translate Tool' do
 		@list_page.should have_text my_phrase
 		@list_page.phrase_search.set my_phrase
 		@list_page.search_submit_button.click
+		no_php_js_errors
 
 		@list_page.phrase_search.value.should eq my_phrase
 		@list_page.should have_text my_phrase
@@ -84,6 +85,7 @@ feature 'Translate Tool' do
 		@list_page.should_not have_text my_phrase
 		@list_page.phrase_search.set my_phrase
 		@list_page.search_submit_button.click
+		no_php_js_errors
 
 		@list_page.phrase_search.value.should eq my_phrase
 		@list_page.should_not have_pagination
@@ -92,6 +94,7 @@ feature 'Translate Tool' do
 
 	it 'paginates', :edit => false do
 		click_link "Next"
+		no_php_js_errors
 
 		@list_page.should have_pagination
 		@list_page.should have(7).pages
@@ -104,13 +107,18 @@ feature 'Translate Tool' do
 
 	it 'sorts by file name', :edit => false do
 		@list_page.find('a.sort').click
+		no_php_js_errors
+
 		@list_page.should have_css('a.desc')
 		@list_page.should_not have_css('a.asc')
 	end
 
 	it 'keeps sort while paginating', :edit => false do
 		@list_page.find('a.sort').click
+		no_php_js_errors
+
 		click_link "Next"
+		no_php_js_errors
 
 		@list_page.should have_css('a.desc')
 		@list_page.should_not have_css('a.asc')
@@ -127,6 +135,8 @@ feature 'Translate Tool' do
 	it 'shows an error if nothing is selected when exporting', :edit => false do
 		@list_page.bulk_action.select "Export (Download)"
 		@list_page.action_submit_button.click
+		no_php_js_errors
+
 		@list_page.should have_alert
 	end
 
@@ -134,9 +144,13 @@ feature 'Translate Tool' do
 		FileUtils.chmod 0000, language_path + 'rspeclingo/admin_lang.php'
 
 		click_link "Rspeclingo"
+		no_php_js_errors
+
 		@list_page.find('input[type="checkbox"][title="select all"]').set(true)
 		@list_page.bulk_action.select "Export (Download)"
 		@list_page.action_submit_button.click
+		no_php_js_errors
+
 		@list_page.should have_alert
 
 		FileUtils.chmod 0644, language_path + 'rspeclingo/admin_lang.php'
@@ -159,6 +173,8 @@ feature 'Translate Tool' do
 
 	it 'can use multiple languages', :edit => false do
 		click_link "Rspeclingo"
+		no_php_js_errors
+
 		@list_page.heading.text.should eq 'Rspeclingo Language Files'
 		@list_page.should have_pagination
 		@list_page.should have(6).pages
@@ -179,6 +195,7 @@ feature 'Translate Tool' do
 		list_page = Translate.new
 
 		@edit_page.breadcrumb.find('a').click
+		no_php_js_errors
 
 		@list_page.should be_displayed
 		@edit_page.should_not be_displayed
@@ -190,6 +207,7 @@ feature 'Translate Tool' do
 
 		@edit_page.items[1].find('input').set('Rspeced!')
 		@edit_page.submit_button.click
+		no_php_js_errors
 
 		@edit_page.should have_alert
 		@edit_page.should have_css('div.alert.issue')
@@ -200,6 +218,7 @@ feature 'Translate Tool' do
 	it 'displays a flash message after saving a translation', :edit => true do
 		@edit_page.items[1].find('input').set('Rspeced!')
 		@edit_page.submit_button.click
+		no_php_js_errors
 
 		@edit_page.should have_alert
 		@edit_page.should have_css('div.alert.success')
@@ -212,6 +231,7 @@ feature 'Translate Tool' do
 
 		@edit_page.items[1].find('input').set('Rspeced!')
 		@edit_page.submit_button.click
+		no_php_js_errors
 
 		@edit_page.should have_alert
 		@edit_page.should have_css('div.alert.issue')
@@ -228,6 +248,7 @@ feature 'Translate Tool' do
 
 		@edit_page.items[1].find('input').set('Rspeced!')
 		@edit_page.submit_button.click
+		no_php_js_errors
 
 		@edit_page.should have_alert
 		@edit_page.should have_css('div.alert.issue')
