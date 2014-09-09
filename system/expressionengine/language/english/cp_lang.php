@@ -568,6 +568,22 @@ $lang = array(
 'with_selected' =>
 'with selected',
 
+//----------------------------
+// confirm removal modal
+//----------------------------
+
+'confirm_removal' =>
+'Confirm Removal',
+
+'confirm_removal_desc' =>
+'You are attempting to remove the following items, please confirm this action.',
+
+'btn_confirm_and_remove' =>
+'Confirm, and Remove',
+
+'btn_confirm_and_remove_working' =>
+'Removing...',
+
 ''=>''
 );
 
