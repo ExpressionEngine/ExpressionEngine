@@ -46,6 +46,10 @@ class Email extends Logs {
 			show_error(lang('unauthorized_access'));
 		}
 
+		if (ee()->input->post('delete'))
+		{
+			return $this->delete(ee()->input->post('delete'));
+		}
 		$this->base_url->path = 'logs/email';
 		ee()->view->cp_page_title = lang('view_email_logs');
 
@@ -99,7 +103,9 @@ class Email extends Logs {
 			->offset($offset)
 			->all();
 
-		$rows = array();
+		$rows   = array();
+		$modals = array();
+
 		foreach ($logs as $log)
 		{
 			$rows[] = array(
@@ -110,6 +116,21 @@ class Email extends Logs {
 				'subject' 			=> $log->subject,
 				'recipient_name'	=> $log->recipient_name
 			);
+
+			$modal_vars = array(
+				'form_url'	=> $this->base_url,
+				'hidden'	=> array(
+					'delete'	=> $log->cache_id
+				),
+				'checklist'	=> array(
+					array(
+						'kind' => lang('view_email_logs'),
+						'desc' => $log->subject
+					)
+				)
+			);
+
+			$modals['modal-confirm-' . $log->id] = ee()->view->render('_shared/modal-confirm', $modal_vars, TRUE);
 		}
 
 		$pagination = new Pagination($this->params['perpage'], $count, $page);
@@ -121,10 +142,26 @@ class Email extends Logs {
 			ee()->view->cp_heading = sprintf(lang('search_results_heading'), $count, ee()->view->search_value);
 		}
 
+		$modal_vars = array(
+			'form_url'	=> $this->base_url,
+			'hidden'	=> array(
+				'delete'	=> 'all'
+			),
+			'checklist'	=> array(
+				array(
+					'kind' => lang('view_email_logs'),
+					'desc' => lang('all')
+				)
+			)
+		);
+
+		$modals['modal-confirm-all'] = ee()->view->render('_shared/modal-confirm', $modal_vars, TRUE);
+
 		$vars = array(
 			'rows' => $rows,
 			'pagination' => $links,
-			'form_url' => $this->base_url->compile()
+			'form_url' => $this->base_url->compile(),
+			'modals' => $modals
 		);
 
 		ee()->cp->render('logs/email/list.php', $vars);
@@ -169,7 +206,7 @@ class Email extends Logs {
 	 *
 	 * @param mixed  $id	Either the id to delete or "all"
 	 */
-	public function delete($id = 'all')
+	private function delete($id = 'all')
 	{
 		if ( ! ee()->cp->allowed_group('can_access_tools', 'can_access_logs'))
 		{

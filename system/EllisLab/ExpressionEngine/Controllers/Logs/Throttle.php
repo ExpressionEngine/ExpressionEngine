@@ -46,6 +46,11 @@ class Throttle extends Logs {
 			show_error(lang('unauthorized_access'));
 		}
 
+		if (ee()->input->post('delete'))
+		{
+			return $this->delete(ee()->input->post('delete'));
+		}
+
 		$this->base_url->path = 'logs/throttle';
 		ee()->view->cp_page_title = lang('view_throttle_log');
 
@@ -54,8 +59,9 @@ class Throttle extends Logs {
 			$this->filters(array('perpage'));
 		}
 
-		$rows = array();
-		$links = array();
+		$rows   = array();
+		$modals = array();
+		$links  = array();
 		$throttling_disabled = TRUE;
 
 		if (ee()->config->item('enable_throttling') == 'y')
@@ -112,6 +118,21 @@ class Throttle extends Logs {
 					'hits'				=> $log->hits,
 					'locked_out'		=> $log->locked_out
 				);
+
+				$modal_vars = array(
+					'form_url'	=> $this->base_url,
+					'hidden'	=> array(
+						'delete'	=> $log->throttle_id
+					),
+					'checklist'	=> array(
+						array(
+							'kind' => lang('view_throttle_log'),
+							'desc' => $log->ip_address
+						)
+					)
+				);
+
+				$modals['modal-confirm-' . $log->id] = ee()->view->render('_shared/modal-confirm', $modal_vars, TRUE);
 			}
 
 			$pagination = new Pagination($this->params['perpage'], $count, $page);
@@ -124,11 +145,27 @@ class Throttle extends Logs {
 			ee()->view->cp_heading = sprintf(lang('search_results_heading'), $count, ee()->view->search_value);
 		}
 
+		$modal_vars = array(
+			'form_url'	=> $this->base_url,
+			'hidden'	=> array(
+				'delete'	=> 'all'
+			),
+			'checklist'	=> array(
+				array(
+					'kind' => lang('view_throttle_log'),
+					'desc' => lang('all')
+				)
+			)
+		);
+
+		$modals['modal-confirm-all'] = ee()->view->render('_shared/modal-confirm', $modal_vars, TRUE);
+
 		$vars = array(
 			'rows' => $rows,
 			'pagination' => $links,
 			'disabled' => $throttling_disabled,
-			'form_url' => $this->base_url->compile()
+			'form_url' => $this->base_url->compile(),
+			'modals' => $modals
 		);
 
 		ee()->cp->render('logs/throttle', $vars);
@@ -141,7 +178,7 @@ class Throttle extends Logs {
 	 *
 	 * @param mixed  $id	Either the id to delete or "all"
 	 */
-	public function delete($id = 'all')
+	private function delete($id = 'all')
 	{
 		if ( ! ee()->cp->allowed_group('can_access_tools', 'can_access_logs'))
 		{

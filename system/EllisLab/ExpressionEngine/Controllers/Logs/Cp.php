@@ -41,6 +41,11 @@ class Cp extends Logs {
 	 */
 	public function index()
 	{
+		if (ee()->input->post('delete'))
+		{
+			return $this->delete(ee()->input->post('delete'));
+		}
+
 		$this->base_url->path = 'logs/cp';
 		ee()->view->cp_page_title = lang('view_cp_log');
 
@@ -96,7 +101,9 @@ class Cp extends Logs {
 			->offset($offset)
 			->all();
 
-		$rows = array();
+		$rows   = array();
+		$modals = array();
+
 		foreach ($logs as $log)
 		{
 			$rows[] = array(
@@ -108,6 +115,21 @@ class Cp extends Logs {
 				'site_label' => $log->getSite()->site_label,
 				'action'	 => $log->action
 			);
+
+			$modal_vars = array(
+				'form_url'	=> $this->base_url,
+				'hidden'	=> array(
+					'delete'	=> $log->id
+				),
+				'checklist'	=> array(
+					array(
+						'kind' => lang('view_cp_log'),
+						'desc' => $log->action
+					)
+				)
+			);
+
+			$modals['modal-confirm-' . $log->id] = ee()->view->render('_shared/modal-confirm', $modal_vars, TRUE);
 		}
 
 		$pagination = new Pagination($this->params['perpage'], $count, $page);
@@ -119,10 +141,26 @@ class Cp extends Logs {
 			ee()->view->cp_heading = sprintf(lang('search_results_heading'), $count, ee()->view->search_value);
 		}
 
+		$modal_vars = array(
+			'form_url'	=> $this->base_url,
+			'hidden'	=> array(
+				'delete'	=> 'all'
+			),
+			'checklist'	=> array(
+				array(
+					'kind' => lang('view_cp_log'),
+					'desc' => lang('all')
+				)
+			)
+		);
+
+		$modals['modal-confirm-all'] = ee()->view->render('_shared/modal-confirm', $modal_vars, TRUE);
+
 		$vars = array(
 			'rows' => $rows,
 			'pagination' => $links,
 			'form_url' => $this->base_url->compile(),
+			'modals' => $modals
 		);
 
 		ee()->cp->render('logs/cp', $vars);
@@ -135,7 +173,7 @@ class Cp extends Logs {
 	 *
 	 * @param mixed  $id	Either the id to delete or "all"
 	 */
-	public function delete($id = 'all')
+	private function delete($id = 'all')
 	{
 		if ( ! ee()->cp->allowed_group('can_access_tools', 'can_access_logs'))
 		{

@@ -17,7 +17,7 @@
 
 			<div class="item">
 				<ul class="toolbar">
-					<li class="remove"><a href="<?=cp_url('logs/cp/delete/'.$row['id'])?>" title="remove"></a></li>
+					<li class="remove"><a href="" class="m-link" rel="modal-confirm-<?=$row['id']?>" title="remove"></a></li>
 				</ul>
 				<h3><b><?=lang('date_logged')?>:</b> <?=$row['act_date']?>, <b><?=lang('site')?>:</b> <?=$row['site_label']?><br><b><?=lang('username')?>:</b> <?=$row['username']?>, <b><abbr title="<?=lang('internet_protocol')?>"><?=lang('ip')?></abbr>:</b> <?=$row['ip_address']?></h3>
 				<div class="message">
@@ -30,7 +30,7 @@
 			<?php $this->view('_shared/pagination'); ?>
 
 			<fieldset class="tbl-bulk-act">
-				<a class="btn remove" href="<?=cp_url('logs/cp/delete')?>"><?=lang('clear_cp_logs')?></a>
+				<button class="btn remove m-link" rel="modal-confirm-all"><?=lang('clear_cp_logs')?></button>
 			</fieldset>
 		<?php endif; ?>
 	</section>
