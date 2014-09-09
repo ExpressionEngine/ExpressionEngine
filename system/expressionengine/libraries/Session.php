@@ -910,22 +910,37 @@ class EE_Session {
 	public function tracker()
 	{
 		$tracker = ee()->input->cookie('tracker');
+		$saved_key = FALSE;
 
 		if ($tracker != FALSE)
 		{
-			$regex = "#(http:\/\/|https:\/\/|www\.|[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})#i";
-
-			if (preg_match($regex, $tracker))
-			{
-				return array();
-			}
-
-			$tracker = json_decode($tracker);
+			$tracker = json_decode($tracker, TRUE);
 		}
 
 		if ( ! is_array($tracker))
 		{
 			$tracker = array();
+		}
+
+		if ( ! empty($tracker))
+		{
+			if ( ! isset($tracker['token']))
+			{
+				$tracker = array();
+			}
+			else
+			{
+				$saved_key = $tracker['token'];
+				unset($tracker['token']);
+
+				$valid_token = $this->get_hmac_token(implode('', $tracker));
+
+				// Check for funny business
+				if (empty($valid_token) OR $saved_key != $valid_token)
+				{
+					$tracker = array();
+				}
+			}
 		}
 
 		$uri = (ee()->uri->uri_string == '') ? 'index' : ee()->uri->uri_string;
@@ -959,6 +974,9 @@ class EE_Session {
 			}
 		}
 
+		// Do we want to add the token into the returned tracker array?
+		// Can't really see why
+
 		if (REQ == 'PAGE')
 		{
 			$this->set_tracker_cookie($tracker);
@@ -982,8 +1000,47 @@ class EE_Session {
 			$tracker = $this->tracker;
 		}
 
+		// We add a hash to the end so we can check for manipulation
+		if ( ! empty($tracker))
+		{
+			unset($tracker['token']);
+
+			$tracker['token'] = $this->get_hmac_token(implode('', $tracker));
+		}
+
 		ee()->input->set_cookie('tracker', json_encode($tracker), '0');
 	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * This needs to be in a helper or something
+	 *
+	 * @param string $data	 Content to hash
+	 * @param array	$params An optional associative array of settings:
+	 * 					algo - hashing algorithm, defaults to md5
+	 * 					key - secret key, defaults to DB username.password
+	 *
+	 */
+
+	function get_hmac_token($data, $params = array())
+	{
+		if (empty($data))
+		{
+			return FALSE;
+		}
+
+		// Set default values
+		$algo = (isset($params['algo'])) ? $params['algo'] : 'md5';
+
+		// do we want to start using encryption_key config if available?
+		$key = (isset($params['key'])) ? $params['key'] : ee()->db->username.ee()->db->password;
+
+    	$token = hash_hmac($algo, $data, $key);
+
+    	return $token;
+	}
+
 
 	// --------------------------------------------------------------------
 
