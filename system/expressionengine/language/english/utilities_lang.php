@@ -137,6 +137,9 @@ $lang = array(
 'resend' =>
 'Send e-mail again',
 
+'emails_removed' =>
+'e-mails removed',
+
 /**
  * CP Translation
  */
