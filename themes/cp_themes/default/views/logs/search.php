@@ -21,7 +21,7 @@
 				</ul>
 				<h3><b><?=lang('date_logged')?>:</b> <?=$row['search_date']?>, <b><?=lang('site')?>:</b> <?=$row['site_label']?><br><b><?=lang('username')?>:</b> <?=$row['username']?>, <b><abbr title="<?=lang('internet_protocol')?>"><?=lang('ip')?></abbr>:</b> <?=$row['ip_address']?></h3>
 				<div class="message">
-					<p><?=lang('searched_for')?> "<b><?=$row['search_terms']?></b>" in <b><?=$row['search_type']?></b></p>
+					<p><?=lang('searched_for')?> "<b><?=$row['search_terms']?></b>" <?=lang('in')?> <b><?=$row['search_type']?></b></p>
 				</div>
 			</div>
 
