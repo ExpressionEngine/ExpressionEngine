@@ -124,7 +124,7 @@ class Cp extends Logs {
 				'checklist'	=> array(
 					array(
 						'kind' => lang('view_cp_log'),
-						'desc' => $log->action
+						'desc' => $log->username . ' ' . $log->action
 					)
 				)
 			);

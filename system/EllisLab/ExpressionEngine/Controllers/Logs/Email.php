@@ -125,7 +125,7 @@ class Email extends Logs {
 				'checklist'	=> array(
 					array(
 						'kind' => lang('view_email_logs'),
-						'desc' => $log->subject
+						'desc' => lang('sent_to') . ' ' . $log->recipient_name . ', ' . lang('subject') . ': ' . $log->subject
 					)
 				)
 			);

@@ -127,7 +127,7 @@ class Throttle extends Logs {
 					'checklist'	=> array(
 						array(
 							'kind' => lang('view_throttle_log'),
-							'desc' => $log->ip_address
+							'desc' => $log->ip_address . ' ' . lang('hits') . ': ' . $log->hits
 						)
 					)
 				);

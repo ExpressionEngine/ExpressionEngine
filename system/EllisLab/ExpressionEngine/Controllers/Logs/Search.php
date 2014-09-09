@@ -140,7 +140,7 @@ class Search extends Logs {
 				'checklist'	=> array(
 					array(
 						'kind' => lang('view_search_log'),
-						'desc' => $log->search_terms
+						'desc' => lang('searched_for') . ' "' . $log->search_terms . '" ' . lang('in') . ' ' . $log->search_type
 					)
 				)
 			);
