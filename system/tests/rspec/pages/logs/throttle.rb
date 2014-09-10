@@ -10,10 +10,8 @@ class ThrottleLog < ControlPanelPage
 	element :perpage_filter_menu, 'div.filters ul li:first-child div.sub-menu ul', visible: false
 	element :perpage_manual_filter, 'input[name="perpage"]', visible: false
 
-	element :alert, 'div.alert'
 	element :no_results, 'p.no-results'
 	element :remove_all, 'button.btn.remove'
-	element :pagination, 'div.paginate'
 
 	elements :items, 'section.item-wrap div.item'
 
