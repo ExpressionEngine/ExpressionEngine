@@ -811,6 +811,130 @@ $lang = array(
 'Full path location of your <mark><abbr title="Completely Automated Public Turing test to tell Computers and Humans Apart">CAPTCHA</abbr></mark> directory.',
 
 /**
+ * Security & Privacy
+ */
+
+'cp_session_type' =>
+'<abbr title="Control Panel">CP</abbr> session type',
+
+'website_session_type' =>
+'Website Session type',
+
+'cs_session' =>
+'Cookies and session ID',
+
+'c_session' =>
+'Cookies only',
+
+'s_session' =>
+'Session ID only',
+
+'cookie_settings' =>
+'Cookie Settings',
+
+'cookie_domain' =>
+'Domain',
+
+'cookie_domain_desc' =>
+'Use <mark>.yourdomain.com</mark> for system-wide cookies.',
+
+'cookie_path' =>
+'Path',
+
+'cookie_path_desc' =>
+'Path to apply cookies to the above domain. (<a href="%s">more info</a>)',
+
+'cookie_prefix' =>
+'Prefix',
+
+'cookie_prefix_desc' =>
+'Only required when running multiple installations of ExpressionEngine.',
+
+'member_security_settings' =>
+'Member Security Settings',
+
+'allow_username_change' =>
+'Allow members to change username?',
+
+'allow_username_change_desc' =>
+'When set to <b>yes</b>, members will be able to change their username.',
+
+'un_min_len' =>
+'Minimum username length',
+
+'un_min_len_desc' =>
+'Minimum number of characters required for new members\' usernames.',
+
+'allow_multi_logins' =>
+'Allow multiple logins?',
+
+'allow_multi_logins_desc' =>
+'When set to <b>yes</b>, members will be able to login simultaneously using one account. If session type is set to <mark>Cookies only</mark>, this will not work.',
+
+'require_ip_for_login' =>
+'Require user agent and <abbr title="Internet Protocol">IP</abbr> for login?',
+
+'require_ip_for_login_desc' =>
+'When set to <b>yes</b>, members will be unable to login without a valid user agent and <abbr title="Internet Protocol">IP</abbr> address.',
+
+'password_lockout' =>
+'Enable password lock out?',
+
+'password_lockout_desc' =>
+'When set to <b>enable</b>, members will be locked out of the system after failed log in attempts.',
+
+'password_lockout_interval' =>
+'Password lock out interval',
+
+'password_lockout_interval_desc' =>
+'Number of minutes a member should be locked out after four invalid login attempts.',
+
+'require_secure_passwords' =>
+'Require secure passwords?',
+
+'require_secure_passwords_desc' =>
+'When set to <b>yes</b>, members will be required to choose passwords containing at least one uppercase, one lowercase, and one numeric character.',
+
+'pw_min_len' =>
+'Minimum password length',
+
+'pw_min_len_desc' =>
+'Minimum number of characters required for new members\' passwords.',
+
+'allow_dictionary_pw' =>
+'Allow dictionary words in passwords?',
+
+'allow_dictionary_pw_desc' =>
+'When set to <b>yes</b>, members will be able to use common dictionary words in their password. <mark>requires dictionary file to be installed to enforce.</mark>',
+
+'name_of_dictionary_file' =>
+'Dictionary file',
+
+'name_of_dictionary_file_desc' =>
+'URL location of your <mark>dictionary</mark> file.',
+
+'form_security_settings' =>
+'Form Security Settings',
+
+'deny_duplicate_data' =>
+'Deny duplicate data?',
+
+'deny_duplicate_data_desc' =>
+'When set to <b>yes</b>, forms will disregard any submission that is an exact duplicate of existing data.',
+
+'require_ip_for_posting' =>
+'Require user agent and <abbr title="Internet Protocol">IP</abbr> for posting?',
+
+'require_ip_for_posting_desc' =>
+'When set to <b>yes</b>, members will be unable to post without a valid user agent and <abbr title="Internet Protocol">IP</abbr> address.',
+
+'xss_clean_uploads' =>
+'Apply <abbr title="Cross Site Scripting">XSS</abbr> filtering?',
+
+'xss_clean_uploads_desc' =>
+'When set to <b>yes</b>, forms will apply <abbr title="Cross Site Scripting">XSS</abbr> filtering to submissions.',
+
+/**
  * Uploads
  */
 
