@@ -54,6 +54,23 @@ class Developer extends Logs {
 
 		$logs = ee()->api->get('DeveloperLog');
 
+		if ( ! empty(ee()->view->search_value))
+		{
+			$logs = $logs->filterGroup()
+			               ->filter('description', 'LIKE', '%' . ee()->view->search_value . '%')
+			               ->orFilter('function', 'LIKE', '%' . ee()->view->search_value . '%')
+			               ->orFilter('line', 'LIKE', '%' . ee()->view->search_value . '%')
+			               ->orFilter('file', 'LIKE', '%' . ee()->view->search_value . '%')
+			               ->orFilter('deprecated_since', 'LIKE', '%' . ee()->view->search_value . '%')
+			               ->orFilter('use_instead', 'LIKE', '%' . ee()->view->search_value . '%')
+			               ->orFilter('template_name', 'LIKE', '%' . ee()->view->search_value . '%')
+			               ->orFilter('template_group', 'LIKE', '%' . ee()->view->search_value . '%')
+			               ->orFilter('addon_module', 'LIKE', '%' . ee()->view->search_value . '%')
+			               ->orFilter('addon_method', 'LIKE', '%' . ee()->view->search_value . '%')
+			               ->orFilter('snippets', 'LIKE', '%' . ee()->view->search_value . '%')
+						 ->endFilterGroup();
+		}
+
 		if ($logs->count() > 10)
 		{
 			$this->filters(array('date', 'perpage'));
@@ -75,23 +92,6 @@ class Developer extends Logs {
 			{
 				$logs = $logs->filter('timestamp', '>=', ee()->localize->now - $this->params['filter_by_date']);
 			}
-		}
-
-		if ( ! empty(ee()->view->search_value))
-		{
-			$logs = $logs->filterGroup()
-			               ->filter('description', 'LIKE', '%' . ee()->view->search_value . '%')
-			               ->orFilter('function', 'LIKE', '%' . ee()->view->search_value . '%')
-			               ->orFilter('line', 'LIKE', '%' . ee()->view->search_value . '%')
-			               ->orFilter('file', 'LIKE', '%' . ee()->view->search_value . '%')
-			               ->orFilter('deprecated_since', 'LIKE', '%' . ee()->view->search_value . '%')
-			               ->orFilter('use_instead', 'LIKE', '%' . ee()->view->search_value . '%')
-			               ->orFilter('template_name', 'LIKE', '%' . ee()->view->search_value . '%')
-			               ->orFilter('template_group', 'LIKE', '%' . ee()->view->search_value . '%')
-			               ->orFilter('addon_module', 'LIKE', '%' . ee()->view->search_value . '%')
-			               ->orFilter('addon_method', 'LIKE', '%' . ee()->view->search_value . '%')
-			               ->orFilter('snippets', 'LIKE', '%' . ee()->view->search_value . '%')
-						 ->endFilterGroup();
 		}
 
 		$count = $logs->count();

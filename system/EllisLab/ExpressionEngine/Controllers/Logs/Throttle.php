@@ -61,11 +61,6 @@ class Throttle extends Logs {
 
 		if (ee()->config->item('enable_throttling') == 'y')
 		{
-			if (ee()->api->get('Throttle')->count() > 10)
-			{
-				$this->filters(array('perpage'));
-			}
-
 			$throttling_disabled = FALSE;
 			$page = ee()->input->get('page') ? ee()->input->get('page') : 1;
 			$page = ($page > 0) ? $page : 1;
@@ -103,6 +98,11 @@ class Throttle extends Logs {
 			}
 
 			$count = $logs->count();
+
+			if ($count > 10)
+			{
+				$this->filters(array('perpage'));
+			}
 
 			// Set the page heading
 			if ( ! empty(ee()->view->search_value))

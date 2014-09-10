@@ -53,18 +53,29 @@ class Email extends Logs {
 		$this->base_url->path = 'logs/email';
 		ee()->view->cp_page_title = lang('view_email_logs');
 
-		if (ee()->api->get('EmailConsoleCache')->count() > 10)
-		{
-			ee()->db->_reset_select();
-			$this->filters(array('username', 'date', 'perpage'));
-		}
-
 		$page = ee()->input->get('page') ? ee()->input->get('page') : 1;
 		$page = ($page > 0) ? $page : 1;
 
 		$offset = ($page - 1) * $this->params['perpage']; // Offset is 0 indexed
 
 		$logs = ee()->api->get('EmailConsoleCache');
+
+		if ( ! empty(ee()->view->search_value))
+		{
+			$logs = $logs->filterGroup()
+			               ->filter('member_name', 'LIKE', '%' . ee()->view->search_value . '%')
+			               ->orFilter('ip_address', 'LIKE', '%' . ee()->view->search_value . '%')
+			               ->orFilter('recipient', 'LIKE', '%' . ee()->view->search_value . '%')
+			               ->orFilter('recipient_name', 'LIKE', '%' . ee()->view->search_value . '%')
+			               ->orFilter('subject', 'LIKE', '%' . ee()->view->search_value . '%')
+			               ->orFilter('message', 'LIKE', '%' . ee()->view->search_value . '%')
+						 ->endFilterGroup();
+		}
+
+		if ($logs->count() > 10)
+		{
+			$this->filters(array('username', 'date', 'perpage'));
+		}
 
 		if ( ! empty($this->params['filter_by_username']))
 		{
@@ -82,18 +93,6 @@ class Email extends Logs {
 			{
 				$logs = $logs->filter('cache_date', '>=', ee()->localize->now - $this->params['filter_by_date']);
 			}
-		}
-
-		if ( ! empty(ee()->view->search_value))
-		{
-			$logs = $logs->filterGroup()
-			               ->filter('member_name', 'LIKE', '%' . ee()->view->search_value . '%')
-			               ->orFilter('ip_address', 'LIKE', '%' . ee()->view->search_value . '%')
-			               ->orFilter('recipient', 'LIKE', '%' . ee()->view->search_value . '%')
-			               ->orFilter('recipient_name', 'LIKE', '%' . ee()->view->search_value . '%')
-			               ->orFilter('subject', 'LIKE', '%' . ee()->view->search_value . '%')
-			               ->orFilter('message', 'LIKE', '%' . ee()->view->search_value . '%')
-						 ->endFilterGroup();
 		}
 
 		$count = $logs->count();

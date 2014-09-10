@@ -49,17 +49,27 @@ class Cp extends Logs {
 		$this->base_url->path = 'logs/cp';
 		ee()->view->cp_page_title = lang('view_cp_log');
 
-		if (ee()->api->get('CpLog')->count() > 10)
-		{
-			$this->filters(array('username', 'site', 'date', 'perpage'));
-		}
-
 		$page = ee()->input->get('page') ? ee()->input->get('page') : 1;
 		$page = ($page > 0) ? $page : 1;
 
 		$offset = ($page - 1) * $this->params['perpage']; // Offset is 0 indexed
 
 		$logs = ee()->api->get('CpLog')->with('Site');
+
+		if ( ! empty(ee()->view->search_value))
+		{
+			$logs = $logs->filterGroup()
+			               ->filter('action', 'LIKE', '%' . ee()->view->search_value . '%')
+			               ->orFilter('username', 'LIKE', '%' . ee()->view->search_value . '%')
+			               ->orFilter('ip_address', 'LIKE', '%' . ee()->view->search_value . '%')
+			               ->orFilter('Site.site_label', 'LIKE', '%' . ee()->view->search_value . '%')
+						 ->endFilterGroup();
+		}
+
+		if ($logs->count() > 10)
+		{
+			$this->filters(array('username', 'site', 'date', 'perpage'));
+		}
 
 		if ( ! empty($this->params['filter_by_username']))
 		{
@@ -82,16 +92,6 @@ class Cp extends Logs {
 			{
 				$logs = $logs->filter('act_date', '>=', ee()->localize->now - $this->params['filter_by_date']);
 			}
-		}
-
-		if ( ! empty(ee()->view->search_value))
-		{
-			$logs = $logs->filterGroup()
-			               ->filter('action', 'LIKE', '%' . ee()->view->search_value . '%')
-			               ->orFilter('username', 'LIKE', '%' . ee()->view->search_value . '%')
-			               ->orFilter('ip_address', 'LIKE', '%' . ee()->view->search_value . '%')
-			               ->orFilter('Site.site_label', 'LIKE', '%' . ee()->view->search_value . '%')
-						 ->endFilterGroup();
 		}
 
 		$count = $logs->count();

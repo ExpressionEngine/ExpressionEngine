@@ -54,18 +54,28 @@ class Search extends Logs {
 		$this->base_url->path = 'logs/search';
 		ee()->view->cp_page_title = lang('view_search_log');
 
-		if (ee()->api->get('SearchLog')->count() > 10)
-		{
-			ee()->db->_reset_select();
-			$this->filters(array('username', 'site', 'date', 'perpage'));
-		}
-
 		$page = ee()->input->get('page') ? ee()->input->get('page') : 1;
 		$page = ($page > 0) ? $page : 1;
 
 		$offset = ($page - 1) * $this->params['perpage']; // Offset is 0 indexed
 
 		$logs = ee()->api->get('SearchLog')->with('Site');
+
+		if ( ! empty(ee()->view->search_value))
+		{
+			$logs = $logs->filterGroup()
+			               ->filter('screen_name', 'LIKE', '%' . ee()->view->search_value . '%')
+			               ->orFilter('ip_address', 'LIKE', '%' . ee()->view->search_value . '%')
+			               ->orFilter('search_type', 'LIKE', '%' . ee()->view->search_value . '%')
+			               ->orFilter('search_terms', 'LIKE', '%' . ee()->view->search_value . '%')
+			               ->orFilter('Site.site_label', 'LIKE', '%' . ee()->view->search_value . '%')
+						 ->endFilterGroup();
+		}
+
+		if ($logs->count() > 10)
+		{
+			$this->filters(array('username', 'site', 'date', 'perpage'));
+		}
 
 		if ( ! empty($this->params['filter_by_username']))
 		{
@@ -88,17 +98,6 @@ class Search extends Logs {
 			{
 				$logs = $logs->filter('search_date', '>=', ee()->localize->now - $this->params['filter_by_date']);
 			}
-		}
-
-		if ( ! empty(ee()->view->search_value))
-		{
-			$logs = $logs->filterGroup()
-			               ->filter('screen_name', 'LIKE', '%' . ee()->view->search_value . '%')
-			               ->orFilter('ip_address', 'LIKE', '%' . ee()->view->search_value . '%')
-			               ->orFilter('search_type', 'LIKE', '%' . ee()->view->search_value . '%')
-			               ->orFilter('search_terms', 'LIKE', '%' . ee()->view->search_value . '%')
-			               ->orFilter('Site.site_label', 'LIKE', '%' . ee()->view->search_value . '%')
-						 ->endFilterGroup();
 		}
 
 		$count = $logs->count();
