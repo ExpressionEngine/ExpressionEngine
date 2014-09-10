@@ -8,13 +8,9 @@ class Translate < ControlPanelPage
 	element :phrase_search, 'form fieldset.tbl-search input[name=search]'
 	element :search_submit_button, 'form fieldset.tbl-search input.submit'
 
-	element :alert, 'div.alert'
-
 	element :table, 'div.box form table'
 	element :no_results, 'div.box form table tr.no-results'
 	elements :rows, 'div.box form table tr'
-
-	element :pagination, 'div.paginate'
 
 	element :bulk_action, 'form fieldset.tbl-bulk-act select[name="bulk_action"]'
 	element :action_submit_button, 'form fieldset.tbl-bulk-act input.submit'

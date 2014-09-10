@@ -640,6 +640,7 @@ class Communicate extends Utilities {
 		if (ee()->input->get_post('bulk_action') == 'remove')
 		{
 			ee()->api->get('EmailCache', ee()->input->get_post('selection'))->all()->delete();
+			ee()->view->set_message('success', lang('emails_removed'), '');
 		}
 
 		$table = Table::create();

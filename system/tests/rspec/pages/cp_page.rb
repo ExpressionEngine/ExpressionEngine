@@ -10,7 +10,18 @@ class ControlPanelPage < SitePrism::Page
 	# Tables
 	element :select_all, 'th.check-ctrl input'
 	elements :sort_links, 'table a.sort'
+
+	# Pagination
+	element :pagination, 'div.paginate'
 	elements :pages, 'div.paginate ul li a'
+
+	# Alert
+	element :alert, 'div.alert'
+
+	# Modals
+	element :modal, 'div.modal'
+	element :modal_title, 'div.modal div.box h1'
+	element :modal_submit_button, 'div.modal .form-ctrls input.btn'
 
 	def open_dev_menu
 		main_menu.dev_menu.click

@@ -96,6 +96,12 @@ class Developer extends Logs {
 
 		$count = $logs->count();
 
+		// Set the page heading
+		if ( ! empty(ee()->view->search_value))
+		{
+			ee()->view->cp_heading = sprintf(lang('search_results_heading'), $count, ee()->view->search_value);
+		}
+
 		$logs = $logs->order('timestamp', 'desc')
 			->limit($this->params['perpage'])
 			->offset($offset)
@@ -195,12 +201,6 @@ class Developer extends Logs {
 
 		$pagination = new Pagination($this->params['perpage'], $count, $page);
 		$links = $pagination->cp_links($this->base_url);
-
-		// Set the page heading
-		if ( ! empty(ee()->view->search_value))
-		{
-			ee()->view->cp_heading = sprintf(lang('search_results_heading'), $count, ee()->view->search_value);
-		}
 
 		$modal_vars = array(
 			'form_url'	=> $this->base_url,

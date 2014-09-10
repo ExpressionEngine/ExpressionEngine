@@ -18,10 +18,8 @@ class EmailLog < ControlPanelPage
 	element :perpage_filter_menu, 'div.filters ul li:nth-child(3) div.sub-menu ul', visible: false
 	element :perpage_manual_filter, 'input[name="perpage"]', visible: false
 
-	element :alert, 'div.alert'
 	element :no_results, 'p.no-results'
-	element :remove_all, 'a.btn.remove'
-	element :pagination, 'div.paginate'
+	element :remove_all, 'button.btn.remove'
 
 	elements :items, 'section.item-wrap div.item'
 

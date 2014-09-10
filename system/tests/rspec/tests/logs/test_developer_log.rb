@@ -20,6 +20,8 @@ feature 'Developer Log' do
   it 'shows the Developer Logs page' do
 	@page.generate_data
 	@page.load
+	no_php_js_errors
+
 	confirm @page
 
 	@page.should have_remove_all
@@ -36,6 +38,7 @@ feature 'Developer Log' do
   it 'does not show filters at 10 items' do
   	@page.generate_data(count: 10)
   	@page.load
+	no_php_js_errors
 
   	@page.displayed?
   	@page.heading.text.should eq 'Developer Logs'
@@ -53,6 +56,8 @@ feature 'Developer Log' do
   	@page.generate_data(count: 1, timestamp_max: 0, description: our_desc)
 	@page.generate_data
 	@page.load
+	no_php_js_errors
+
 	confirm @page
 
 	# Be sane and make sure it's there before we search for it
@@ -60,7 +65,6 @@ feature 'Developer Log' do
 
 	@page.phrase_search.set "Rspec"
 	@page.submit_button.click
-	no_php_js_errors
 
 	@page.heading.text.should eq 'Search Results we found 1 results for "Rspec"'
 	@page.phrase_search.value.should eq "Rspec"
@@ -72,6 +76,8 @@ feature 'Developer Log' do
 	@page.generate_data(count: 19, timestamp_max: 22)
 	@page.generate_data(count: 42, timestamp_min: 36, timestamp_max: 60)
 	@page.load
+	no_php_js_errors
+
 	confirm @page
 
 	@page.should have(20).items # Default is 20 per page
@@ -79,7 +85,6 @@ feature 'Developer Log' do
 	@page.date_filter.click
 	@page.wait_until_date_filter_menu_visible
 	@page.date_filter_menu.click_link "Last 24 Hours"
-	no_php_js_errors
 
 	@page.date_filter.text.should eq "date (Last 24 Hours)"
 	@page.should have(19).items
@@ -89,12 +94,13 @@ feature 'Developer Log' do
   it 'can change page size' do
 	@page.generate_data
 	@page.load
+	no_php_js_errors
+
 	confirm @page
 
 	@page.perpage_filter.click
 	@page.wait_until_perpage_filter_menu_visible
 	@page.perpage_filter_menu.click_link "25"
-	no_php_js_errors
 
 	@page.perpage_filter.text.should eq "show (25)"
 	@page.should have(25).items
@@ -106,13 +112,14 @@ feature 'Developer Log' do
   it 'can set a custom limit' do
   	@page.generate_data
   	@page.load
+	no_php_js_errors
+
   	confirm @page
 
 	@page.perpage_filter.click
 	@page.wait_until_perpage_manual_filter_visible
 	@page.perpage_manual_filter.set "42"
 	@page.submit_button.click
-	no_php_js_errors
 
 	@page.perpage_filter.text.should eq "show (42)"
 	@page.should have(42).items
@@ -126,6 +133,8 @@ feature 'Developer Log' do
 	@page.generate_data(count: 23, timestamp_max: 22)
 	@page.generate_data(count: 42, timestamp_min: 36, timestamp_max: 60)
 	@page.load
+	no_php_js_errors
+
 	confirm @page
 
 	@page.perpage_filter.click
@@ -140,7 +149,6 @@ feature 'Developer Log' do
 	@page.date_filter.click
 	@page.wait_until_date_filter_menu_visible
 	@page.date_filter_menu.click_link "Last 24 Hours"
-	no_php_js_errors
 
 	@page.perpage_filter.text.should eq "show (25)"
 	@page.date_filter.text.should eq "date (Last 24 Hours)"
@@ -155,6 +163,8 @@ feature 'Developer Log' do
   	@page.generate_data(count: 42, timestamp_min: 36, timestamp_max: 60)
   	@page.generate_data(count: 10, timestamp_min: 36, timestamp_max: 60, description: our_desc)
   	@page.load
+	no_php_js_errors
+
   	confirm @page
 
 	@page.date_filter.click
@@ -164,7 +174,6 @@ feature 'Developer Log' do
 
 	@page.phrase_search.set "Rspec"
   	@page.submit_button.click
-	no_php_js_errors
 
 	@page.date_filter.text.should eq "date (Last 24 Hours)"
 	@page.heading.text.should eq 'Search Results we found 5 results for "Rspec"'
@@ -181,11 +190,18 @@ feature 'Developer Log' do
 	@page.generate_data
 	@page.generate_data(count: 1, timestamp_max: 0, description: our_desc)
 	@page.load
+	no_php_js_errors
+
 	confirm @page
 
 	log = @page.find('section.item-wrap div.item', :text => our_desc)
-	log.find('li.remove a').click
-	no_php_js_errors
+	log.find('li.remove a').click # Activates a modal
+
+	@page.wait_until_modal_visible
+	@page.modal_title.text.should eq "Confirm Removal"
+	@page.modal.text.should include "You are attempting to remove the following items, please confirm this action."
+	@page.modal.text.should include our_desc
+	@page.modal_submit_button.click # Submits a form
 
 	@page.should have_alert
 	@page.should have_no_content our_desc
@@ -194,10 +210,17 @@ feature 'Developer Log' do
   it 'can remove all entries' do
 	@page.generate_data
 	@page.load
+	no_php_js_errors
+
 	confirm @page
 
-	@page.remove_all.click
-	no_php_js_errors
+	@page.remove_all.click # Activates a modal
+
+	@page.wait_until_modal_visible
+	@page.modal_title.text.should eq "Confirm Removal"
+	@page.modal.text.should include "You are attempting to remove the following items, please confirm this action."
+	@page.modal.text.should include "Developer Logs: All"
+	@page.modal_submit_button.click # Submits a form
 
 	@page.should have_alert
 	@page.should have_no_results
@@ -208,10 +231,11 @@ feature 'Developer Log' do
   it 'shows the Prev button when on page 2' do
 	@page.generate_data
 	@page.load
+	no_php_js_errors
+
 	confirm @page
 
 	click_link "Next"
-	no_php_js_errors
 
 	@page.should have_pagination
 	@page.should have(7).pages
@@ -221,10 +245,11 @@ feature 'Developer Log' do
   it 'does not show Next on the last page' do
 	@page.generate_data
 	@page.load
+	no_php_js_errors
+
 	confirm @page
 
 	click_link "Last"
-	no_php_js_errors
 
 	@page.should have_pagination
 	@page.should have(6).pages
@@ -234,6 +259,8 @@ feature 'Developer Log' do
   it 'does not lose a filter value when paginating' do
 	@page.generate_data
 	@page.load
+	no_php_js_errors
+
 	confirm @page
 
 	@page.perpage_filter.click
@@ -245,7 +272,6 @@ feature 'Developer Log' do
 	@page.should have(25).items
 
 	click_link "Next"
-	no_php_js_errors
 
 	@page.perpage_filter.text.should eq "show (25)"
 	@page.should have(25).items
@@ -258,6 +284,8 @@ feature 'Developer Log' do
 	@page.generate_data(count:35, description: "Hidden entry")
 	@page.generate_data(count:35, description: "Visible entry")
 	@page.load
+	no_php_js_errors
+
 	confirm @page
 
 	@page.perpage_filter.click
@@ -280,7 +308,6 @@ feature 'Developer Log' do
 	@page.pages.map {|name| name.text}.should == ["First", "1", "2", "Next", "Last"]
 
 	click_link "Next"
-	no_php_js_errors
 
 	# Page 2
 	@page.heading.text.should eq 'Search Results we found 35 results for "Visible"'
