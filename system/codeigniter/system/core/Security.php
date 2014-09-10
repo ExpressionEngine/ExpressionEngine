@@ -755,13 +755,9 @@ class CI_Security {
 	 */
 	protected function _strip_data_URIs($match)
 	{
-		$pattern = "/('|\")(data:[\w\/\-\.]+?;?(?:\w+;)?\w+?,?.*)(\\1)/i";
+		$pattern = "/('|\")?(?:\s*)?data:[\w\/\-\.]+?;?(?:\w+;)?\w+?,?.*(?:\\1)?(\s)/i";
 		$cleaned = $match[0];
-
-		if (preg_match($pattern, $match[0], $matches) === 1)
-		{
-			$cleaned = $matches[1] . $matches[2];
-		}
+		$cleaned = preg_replace($pattern, '$1$1$2', $cleaned);
 
 		return $cleaned;
 	}
