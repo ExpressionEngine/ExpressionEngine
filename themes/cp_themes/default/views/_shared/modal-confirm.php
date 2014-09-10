@@ -9,8 +9,9 @@
 				</div>
 				<div class="txt-wrap">
 					<ul class="checklist">
+						<?php $end = end($checklist); ?>
 						<?php foreach ($checklist as $item): ?>
-						<li><?=$item['kind']?>: <b><?=$item['desc']?></b></li>
+						<li<?php if ($item == $end) echo ' class="last"'; ?>><?=$item['kind']?>: <b><?=$item['desc']?></b></li>
 						<?php endforeach; ?>
 					</ul>
 				</div>
