@@ -935,6 +935,58 @@ $lang = array(
 'When set to <b>yes</b>, forms will apply <abbr title="Cross Site Scripting">XSS</abbr> filtering to submissions.',
 
 /**
+ * Access Throttling
+ */
+
+'enable_throttling' =>
+'Enable throttling?',
+
+'enable_throttling_desc' =>
+'When set to <b>enable</b>, members will be locked out of the system when they meet the lock out requirement.',
+
+'banish_masked_ips' =>
+'Require <abbr title="Internet Protocol">IP</abbr>?',
+
+'banish_masked_ips_desc' =>
+'When set to <b>yes</b>, members will be denied access if they do not have a valid <abbr title="Internet Protocol">IP</abbr> address.',
+
+'throttling_limit_settings' =>
+'Throttling Limit Settings',
+
+'lockout_requirement' =>
+'Lock out requirement',
+
+'lockout_requirement_format' =>
+'A member will be locked out for %s seconds, if they load more than %s pages in less than %s seconds.',
+
+'banishment_type' =>
+'Lock out action',
+
+'banishment_type_desc' =>
+'When a member meets the lock out requirement.',
+
+'banish_404' =>
+'Send to 404',
+
+'banish_redirect' =>
+'Redirect to URL',
+
+'banish_message' =>
+'Display message',
+
+'banishment_url' =>
+'Redirect',
+
+'banishment_url_desc' =>
+'<abbr title="Uniform Resource Location">URL</abbr> location for locked out members.',
+
+'banishment_message' =>
+'Message',
+
+'banishment_message_desc' =>
+'Displayed using <mark>user messages</mark> template.',
+
+/**
  * Uploads
  */
 
