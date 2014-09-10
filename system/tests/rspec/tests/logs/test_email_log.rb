@@ -13,6 +13,7 @@ feature 'Email Log' do
 	@page.generate_data(count: 150, timestamp_min: 26)
 	@page.generate_data(count: 15, member_id: 2, member_name: 'johndoe', timestamp_min: 25)
 	@page.load
+	no_php_js_errors
 
 	# These should always be true at all times if not something has gone wrong
 	@page.displayed?
@@ -56,13 +57,13 @@ feature 'Email Log' do
 
   	@page.generate_data(count: 1, timestamp_max: 0, subject: our_subject)
   	@page.load
+	no_php_js_errors
 
 	# Be sane and make sure it's there before we search for it
 	@page.should have_text our_subject
 
 	@page.phrase_search.set "Rspec"
 	@page.submit_button.click
-	no_php_js_errors
 
 	@page.heading.text.should eq 'Search Results we found 1 results for "Rspec"'
 	@page.phrase_search.value.should eq "Rspec"
@@ -75,7 +76,6 @@ feature 'Email Log' do
 	@page.username_filter.click
 	@page.wait_until_username_filter_menu_visible
 	@page.username_filter_menu.click_link "johndoe"
-	no_php_js_errors
 
 	@page.username_filter.text.should eq "username (johndoe)"
 	@page.should have(15).items
@@ -87,7 +87,6 @@ feature 'Email Log' do
 	@page.wait_until_username_manual_filter_visible
 	@page.username_manual_filter.set "johndoe"
 	@page.submit_button.click
-	no_php_js_errors
 
 	@page.username_filter.text.should eq "username (johndoe)"
 	@page.should have(15).items
@@ -97,11 +96,11 @@ feature 'Email Log' do
   it 'filters by date', :pregen => true do
 	@page.generate_data(count: 19, timestamp_max: 22)
 	@page.load
+	no_php_js_errors
 
 	@page.date_filter.click
 	@page.wait_until_date_filter_menu_visible
 	@page.date_filter_menu.click_link "Last 24 Hours"
-	no_php_js_errors
 
 	@page.date_filter.text.should eq "date (Last 24 Hours)"
 	@page.should have(19).items
@@ -111,7 +110,6 @@ feature 'Email Log' do
 	@page.perpage_filter.click
 	@page.wait_until_perpage_filter_menu_visible
 	@page.perpage_filter_menu.click_link "25"
-	no_php_js_errors
 
 	@page.perpage_filter.text.should eq "show (25)"
 	@page.should have(25).items
@@ -125,7 +123,6 @@ feature 'Email Log' do
 	@page.wait_until_perpage_manual_filter_visible
 	@page.perpage_manual_filter.set "42"
 	@page.submit_button.click
-	no_php_js_errors
 
 	@page.perpage_filter.text.should eq "show (42)"
 	@page.should have(42).items
@@ -152,7 +149,6 @@ feature 'Email Log' do
 	@page.username_filter.click
 	@page.wait_until_username_filter_menu_visible
 	@page.username_filter_menu.click_link "johndoe"
-	no_php_js_errors
 
 	@page.perpage_filter.text.should eq "show (150)"
 	@page.username_filter.text.should eq "username (johndoe)"
@@ -177,7 +173,6 @@ feature 'Email Log' do
 	# Now, combine the filters
 	@page.phrase_search.set "johndoe"
 	@page.submit_button.click
-	no_php_js_errors
 
 	@page.perpage_filter.text.should eq "show (150)"
 	@page.heading.text.should eq 'Search Results we found 15 results for "johndoe"'
@@ -195,16 +190,27 @@ feature 'Email Log' do
 	@page.load
 
 	log = @page.find('section.item-wrap div.item', :text => our_subject)
-	log.find('li.remove a').click
-	no_php_js_errors
+	log.find('li.remove a').click # Activates a modal
+
+	@page.wait_until_modal_visible
+	@page.modal_title.text.should eq "Confirm Removal"
+	@page.modal.text.should include "You are attempting to remove the following items, please confirm this action."
+	@page.modal.text.should include our_subject
+	@page.modal_submit_button.click # Submits a form
+
 
 	@page.should have_alert
 	@page.should have_no_content our_subject
   end
 
   it 'can remove all entries', :pregen => true do
-	@page.remove_all.click
-	no_php_js_errors
+  	@page.remove_all.click # Activates a modal
+
+  	@page.wait_until_modal_visible
+  	@page.modal_title.text.should eq "Confirm Removal"
+  	@page.modal.text.should include "You are attempting to remove the following items, please confirm this action."
+  	@page.modal.text.should include "e-mail Logs: All"
+  	@page.modal_submit_button.click # Submits a form
 
 	@page.should have_alert
 	@page.should have_no_results
@@ -216,10 +222,10 @@ feature 'Email Log' do
 
   	@page.generate_data(count: 1, timestamp_max: 0, subject: our_subject)
   	@page.load
+	no_php_js_errors
 
   	log = @page.find('section.item-wrap div.item', :text => our_subject)
 	log.find('div.message p a').click
-	no_php_js_errors
 
 	@page.should have_selector('ul.breadcrumb')
 	@page.heading.text.should eq 'e-mail: ' + our_subject
@@ -228,7 +234,6 @@ feature 'Email Log' do
   # Confirming Pagination behavior
   it 'shows the Prev button when on page 2', :pregen => true do
 	click_link "Next"
-	no_php_js_errors
 
 	@page.should have_pagination
 	@page.should have(7).pages
@@ -237,7 +242,6 @@ feature 'Email Log' do
 
   it 'does not show Next on the last page', :pregen => true do
 	click_link "Last"
-	no_php_js_errors
 
 	@page.should have_pagination
 	@page.should have(6).pages
@@ -254,7 +258,6 @@ feature 'Email Log' do
 	@page.should have(25).items
 
 	click_link "Next"
-	no_php_js_errors
 
 	@page.perpage_filter.text.should eq "show (25)"
 	@page.should have(25).items
@@ -286,7 +289,6 @@ feature 'Email Log' do
   	@page.pages.map {|name| name.text}.should == ["First", "1", "2", "Next", "Last"]
 
   	click_link "Next"
-	no_php_js_errors
 
   	# Page 2
 	@page.heading.text.should eq 'Search Results we found 35 results for "johndoe"'

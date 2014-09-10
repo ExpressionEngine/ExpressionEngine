@@ -21,6 +21,7 @@ class ControlPanelPage < SitePrism::Page
 	# Modals
 	element :modal, 'div.modal'
 	element :modal_title, 'div.modal div.box h1'
+	element :modal_submit_button, 'div.modal .form-ctrls input.btn'
 
 	def open_dev_menu
 		main_menu.dev_menu.click
