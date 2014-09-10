@@ -66,14 +66,16 @@ class EE_Form_validation extends CI_Form_validation {
 		$result = (count($this->_field_data));
 
 		// We should currently only be validating one field at a time,
-		// and this POST field should have the name of it
-		$field = ee()->input->post('ee_fv_field');
+		// and this POST field should have the name of it, unless it has
+		// been altered by a controller to contain names of fields that
+		// should be validated as a group
+		$fields = explode('|', ee()->input->post('ee_fv_field'));
 
 		// Unset any other rules that aren't for the field we want to
 		// validate
 		foreach ($this->_field_data as $key => $value)
 		{
-			if ($key != $field)
+			if ( ! in_array($key, $fields))
 			{
 				unset($this->_field_data[$key]);
 			}
@@ -95,7 +97,13 @@ class EE_Form_validation extends CI_Form_validation {
 		// Send appropriate AJAX response based on validation result
 		if ($result === FALSE)
 		{
-			ee()->output->send_ajax_response(array('error' => form_error($field)));
+			foreach ($fields as $field)
+			{
+				if (form_error($field) !== '')
+				{
+					ee()->output->send_ajax_response(array('error' => form_error($field)));
+				}
+			}
 		}
 		else
 		{

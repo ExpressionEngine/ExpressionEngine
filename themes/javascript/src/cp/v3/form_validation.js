@@ -167,13 +167,15 @@ EE.cp.formValidation = {
 	_toggleErrorForFields: function(form, field, message) {
 
 		var fieldset = field.parents('fieldset'),
-			button = form.find('.form-ctrls input.btn');
+			container = field.parents('div[class*=setting]'),
+			button = form.find('.form-ctrls input.btn'),
+			errorClass = 'em.ee-form-error-message';
 
 		// Validation success, return the form to its original, submittable state
 		if (message == 'success') {
 
 			fieldset.removeClass('invalid');
-			fieldset.find('div.setting-field > em').remove();
+			container.find('> ' + errorClass).remove();
 
 			// Re-enable submit button only if all errors are gone
 			if ( ! this._errorsExist())
@@ -193,11 +195,11 @@ EE.cp.formValidation = {
 			var errorElement = $('<div/>').html(message.error).contents();
 
 			// Don't double up on error messages
-			if (fieldset.has('em.ee-form-error-message').length) {
-				fieldset.find('em.ee-form-error-message').remove();
+			if (fieldset.has(errorClass).length) {
+				fieldset.find(errorClass).remove();
 			}
 
-			fieldset.find('div.setting-field').append(errorElement);
+			container.append(errorElement);
 
 			// Disable submit button
 			button.addClass('disable').attr({
