@@ -28,10 +28,10 @@ $lang = array(
 
 'date_logged'			=> 'Date logged',
 
-'no_control_panel_logs_found' => 'No Control Panel Logs found',
+'no_control_panel_logs_found' => 'No <b>Control Panel Logs</b> found',
 
 /* Developer Log */
-'no_developer_logs_found' => 'No Developer Logs found',
+'no_developer_logs_found' => 'No <b>Developer Logs</b> found',
 'clear_developer_logs'	=> 'Remove all Developer Logs',
 'log_id'				=> 'Log ID',
 'log_message'			=> 'Message',
@@ -58,18 +58,18 @@ $lang = array(
 </ul>',
 
 /* Email Log */
-'no_email_logs_found'	=> 'No e-mail Logs found',
+'no_email_logs_found'	=> 'No <b>e-mail Logs</b> found',
 'sent_to'				=> 'Sent e-mail to',
 'subject'				=> 'Subject',
 'clear_email_logs'		=> 'Remove all e-mail Logs',
 
 /* Search Log */
-'no_search_logs_found'	=> 'No Search Logs found',
+'no_search_logs_found'	=> 'No <b>Search Logs</b> found',
 'clear_search_logs'		=> 'Remove all Search Logs',
 'searched_for'			=> 'Searched for',
 
 /* Throttle Log */
-'no_throttling_logs_found'	=> 'No Throttling Logs found',
+'no_throttling_logs_found'	=> 'No <b>Throttling Logs</b> found',
 'enable_throttling'		=> 'Turn Throttling On',
 'throttling_disabled'	=> '<b>Throttling</b> Disabled',
 'hits' 					=> 'Hits',
