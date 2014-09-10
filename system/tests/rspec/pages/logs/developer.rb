@@ -16,7 +16,7 @@ class DeveloperLog < ControlPanelPage
 
 	element :alert, 'div.alert'
 	element :no_results, 'p.no-results'
-	element :remove_all, 'a.btn.remove'
+	element :remove_all, 'button.btn.remove'
 	element :pagination, 'div.paginate'
 
 	elements :items, 'section.item-wrap div.item'
