@@ -109,7 +109,6 @@ feature 'Security & Privacy Settings' do
     @page.website_session_type.select 'Session ID only'
     @page.cookie_domain.set '.yourdomain.com'
     @page.cookie_path.set 'blog'
-    @page.cookie_prefix.set 'my_site'
     @page.allow_username_change_n.click
     @page.un_min_len.set '5'
     @page.allow_multi_logins_n.click
@@ -134,7 +133,6 @@ feature 'Security & Privacy Settings' do
     @page.website_session_type.value.should == 's'
     @page.cookie_domain.value.should == '.yourdomain.com'
     @page.cookie_path.value.should == 'blog'
-    @page.cookie_prefix.value.should == 'my_site'
     @page.allow_username_change_n.checked?.should == true
     @page.un_min_len.value.should == '5'
     @page.allow_multi_logins_n.checked?.should == true
