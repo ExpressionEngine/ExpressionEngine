@@ -298,7 +298,7 @@ feature 'Search Log' do
 	  	@page.phrase_search.value.should eq "johndoe"
 	  	@page.items.should_not have_text "admin"
 		@page.perpage_filter.text.should eq "show (25)"
-	  	@page.should have(10).items
+	  	@page.should have(15).items
 	  	@page.should have_pagination
 	  	@page.should have(5).pages
 	  	@page.pages.map {|name| name.text}.should == ["First", "Previous", "1", "2", "Last"]
