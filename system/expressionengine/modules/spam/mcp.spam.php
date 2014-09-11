@@ -171,6 +171,19 @@ class Spam_mcp {
 	}
 
 	/**
+	 * Controller for running the member training
+	 * 
+	 * @access public
+	 * @return void
+	 */
+	public function train_member()
+	{
+		$data = array();
+		$this->_train_member_parameters();
+		return ee()->load->view('train_member', $data, TRUE);
+	}
+
+	/**
 	 * Returns an array of content flagged as spam
 	 * 
 	 * @param  integer $limit The number of entries to grab  
@@ -197,6 +210,29 @@ class Spam_mcp {
 				$spam->document,
 				$moderation_form
 			);
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Returns an array of member data for all our known spammers
+	 * 
+	 * @access private
+	 * @return array
+	 */
+	private function _get_spammers($limit = 1000)
+	{
+		ee()->db->select('ip_addess', 'username', 'email', 'url');
+		ee()->db->from('spam_trap');
+		ee()->db->limit($limit);
+		$query = ee()->db->get();
+
+		$result = array();
+
+		foreach ($query->result() as $spammer)
+		{
+			$result[] = $spammer;
 		}
 
 		return $result;
@@ -296,6 +332,105 @@ class Spam_mcp {
 			);
 			ee()->db->insert('spam_parameters', $data);
 		}
+	}
+
+	/**
+	 * Loops through all content marked as spam/ham and builds a member 
+	 * classifier based on the authors' member data.
+	 * 
+	 * @access private
+	 * @return void
+	 */
+	private function _train_member_parameters()
+	{
+		$spammers = $this->_get_spammers();
+		$training = array();
+		$emails = array();
+		$ips = array();
+		$usernames = array();
+		$urls = array();
+
+		foreach ($spammers as $spammer)
+		{
+			$ips[] = explode('.', $spammer->ip_address);
+			$emails[] = $spammer->email;
+			$usernames[] = $spammer->username;
+			$urls[] = $spammer->urls;
+		}
+
+		$features = array(
+			'emails' => new Collection($emails, array(), 'characters', 2, FALSE),
+			'usernames' => new Collection($usernames, array(), 'characters', 2, FALSE),
+			'urls' => new Collection($urls, array(), 'characters', 2, FALSE)
+		);
+
+		$training_classes = array();
+
+		foreach ($features as $key => $val)
+		{
+			$vocabulary = array();
+
+			foreach ($val->vocabulary as $term => $count)
+			{
+				$data = array(
+					'term' => $term,
+					'count' => $count,
+				);
+
+				$vocabulary[] = $data;
+			}
+
+			ee()->db->empty_table("spam_{$key}_vocabulary"); 
+			ee()->db->insert_batch("spam_{$key}_vocabulary", $vocabulary); 
+
+			// Loop through and calculate the parameters for each feature and class
+
+			foreach ($val->tfidf() as $key => $vector)
+			{
+				if (is_array($training_classes[$classes[$key]][$key]))
+				{
+					$training_classes[$classes[$key]][$key] = array_merge($training_classes[$classes[$key]][$key], $vector);
+				}
+				else
+				{
+					$training_classes[$classes[$key]][$key] = $vector;
+				}
+			}
+		}
+
+		foreach ($training_classes as $class => $sources)
+		{
+			$count = count($sources[0]);
+			$zipped = array();
+
+			foreach ($sources as $key => $row)
+			{
+				$row = array_merge($row, $ips[$key]);
+
+				for ($i = 0; $i < $count; $i++)
+				{
+					$zipped[$i][] = $row[$i];
+				}
+			}
+
+			foreach ($zipped as $index => $feature)
+			{
+				// Zipped is now an array of values for a particular feature and 
+				// class. Time to do some estimates.
+
+				$sample = new Expectation($feature);
+
+				$training[] = array(
+					'class' => $class,
+					'term' => $index,
+					'mean' => $sample->mean,
+					'variance' => $sample->variance
+				);
+			}
+		}
+
+		ee()->db->empty_table('spam_member_parameters'); 
+		ee()->db->insert_batch('spam_member_parameters', $training); 
 	}
 
 	/**

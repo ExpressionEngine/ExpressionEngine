@@ -46,11 +46,14 @@ class Collection {
 	 * then loop through each document and generate a frequency table.
 	 * 
 	 * @access public
-	 * @param array $source 
-	 * @param array $stop_words
+	 * @param array   $source 
+	 * @param array   $stop_words
+	 * @param string  $tokenizer  Tokenize by words or characters
+	 * @param int     $ngram  The n-gram to calculate
+	 * @param bool    $clean  Strip all non alpha-numeric characters
 	 * @return void
 	 */
-	public function __construct($source, $stop_words = array(), $limit = 1000)
+	public function __construct($source, $stop_words = array(), $limit = 1000, $tokenizer = 'words', $ngram = 1, $clean = TRUE)
 	{
 		$this->time_pre = microtime(true);
 		// register our vectorizer rules
@@ -60,6 +63,9 @@ class Collection {
 		$this->register('Punctuation');
 		$this->register('Spaces');
 
+		$this->tokenizer = $tokenizer;
+		$this->ngram = $ngram;
+		$this->clean = $clean;
 		$this->limit = $limit;
 		$this->stop_words = $stop_words;
 
@@ -73,7 +79,7 @@ class Collection {
 			if( ! empty($text))
 			{
 				$text = str_ireplace($stop_words, ' ', $text, $count);
-				$doc = new Document($text);
+				$doc = new Document($text, $this->tokenizer, $this->ngram, $this->clean);
 
 				foreach($doc->words as $word)
 				{
@@ -93,7 +99,7 @@ class Collection {
 		}
 
 		$this->document_count = count($this->documents);
-		$this->corpus = new Document($this->corpus);
+		$this->corpus = new Document($this->corpus, $this->tokenizer, $this->ngram, $this->clean);
 
 		arsort($this->vocabulary);
 		$this->vocabulary = array_slice($this->vocabulary, 0, $this->limit);
@@ -125,7 +131,7 @@ class Collection {
 	public function vectorize($source)
 	{
 		$source = str_ireplace($this->stop_words, ' ', $source);
-		$source = new Document($source);
+		$source = new Document($source, $this->tokenizer, $this->ngram, $this->clean);
 		$vector = $this->_tfidf($source);
 		$heuristics = $this->_heuristics($source);
 		return array_merge($vector, $heuristics);

@@ -39,13 +39,22 @@ class Document implements Iterator {
 	 * Clean the text, and then generate the frequency table.
 	 * 
 	 * @access public
-	 * @param mixed $text The text of the Document we are getting the frequencies for
+	 * @param mixed   $text The text of the Document we are getting the frequencies for
+	 * @param string  $tokenizer  Tokenize by words or characters
+	 * @param int     $ngram  The n-gram to calculate
+	 * @param bool    $clean  Strip all non alpha-numeric characters
 	 * @return void
 	 */
-	public function __construct($text)
+	public function __construct($text, $tokenizer = 'words', $ngram = 1, $clean = TRUE)
 	{
-		$text = preg_replace("/[^a-zA-Z0-9\s]/", "", $text);
+		if ($clean === TRUE)
+		{
+			$text = preg_replace("/[^a-zA-Z0-9\s]/", "", $text);
+		}
+
 		$text = trim($text);
+		$this->tokenizer = $tokenizer;
+		$this->ngram = $ngram;
 		$this->text = $text;
 		$this->frequency = $this->_frequency($text);
 		$this->words = array_keys($this->frequency);
@@ -93,12 +102,24 @@ class Document implements Iterator {
 	private function _frequency($text)
 	{
 		$count = array();
-		$words = preg_split('/\s+/', $text);
+
+		if ($this->tokenizer == 'words')
+		{
+			$words = preg_split('/\s+/', $text);
+		}
+		elseif ($this->tokenizer == 'charcters')
+		{
+			$words = str_split($text);
+		}
+
+		$words = $this->ngrams($words, $this->ngram);
+
 		$num = count($words);
 		$max = 0;
 
 		foreach ($words as $word)
 		{
+			$words = implode('', $word);
 			$word = strtolower($word);
 
 			if (isset($count[$word]))
@@ -116,6 +137,28 @@ class Document implements Iterator {
 		$this->max_frequency = $max;
 		arsort($count);
 		return $count; 
+	}
+
+
+	/**
+	 * Calculates the n-grams for a string
+	 * 
+	 * @param array $tokens 
+	 * @param int $n 
+	 * @access private
+	 * @return array  The array of n-grams
+	 */
+	private function _ngrams($tokens, $n=1)
+	{
+		$length = count($tokens);
+		$ngrams = array();
+		 
+		for ($i = 0; $i + $n <= $length; $i++)
+		{
+			$ngrams[$i] = array_slice($i, $n);
+		}
+
+		return $ngrams;
 	}
 
 	public function rewind()
