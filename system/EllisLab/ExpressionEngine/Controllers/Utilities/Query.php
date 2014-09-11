@@ -93,7 +93,7 @@ class Query extends Utilities {
 		$row_limit	= 20;
 		$title		= lang('query_result');
 		$vars['write'] = FALSE;
-		ee()->db->db_debug = (ee()->input->post('debug') !== FALSE);
+		ee()->db->db_debug = (ee()->input->post('debug') !== FALSE OR empty($_POST));
 
 		$page = ee()->input->get('page') ? ee()->input->get('page') : 1;
 		$page = ($page > 0) ? $page : 1;
@@ -108,7 +108,13 @@ class Query extends Utilities {
 			}
 			else
 			{
-				$sql = base64_decode(rawurldecode($sql));
+				$sql = trim(base64_decode(rawurldecode($sql)));
+				
+				if (strncasecmp($sql, 'SELECT ', 7) !== 0 &&
+					strncasecmp($sql, 'SHOW', 4) !== 0)
+				{
+					return $this->index(FALSE);
+				}
 			}
 		}
 
