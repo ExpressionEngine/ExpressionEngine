@@ -17,6 +17,7 @@ feature 'Developer Log' do
 		@page = DeveloperLog.new
 	end
 
+	# This will confirm filters
 	it 'shows the Developer Logs page' do
 		@page.generate_data
 		@page.load
@@ -70,6 +71,30 @@ feature 'Developer Log' do
 		@page.phrase_search.value.should eq "Rspec"
 		@page.should have_text our_desc
 		@page.should have(1).items
+	end
+
+	it 'shows no results on a failed search' do
+		our_desc = "NotFoundHere"
+
+		@page.generate_data
+		@page.load
+		no_php_js_errors
+
+		confirm @page
+
+		@page.phrase_search.set our_desc
+		@page.submit_button.click
+
+		@page.heading.text.should eq 'Search Results we found 0 results for "' + our_desc + '"'
+		@page.phrase_search.value.should eq our_desc
+		@page.should have_text our_desc
+
+		@page.should have_no_results
+
+		@page.should_not have_date_filter
+		@page.should_not have_perpage_filter
+		@page.should_not have_pagination
+		@page.should_not have_remove_all
 	end
 
 	it 'filters by date' do

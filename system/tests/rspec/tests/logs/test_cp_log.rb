@@ -71,6 +71,27 @@ feature 'CP Log' do
 		@page.should have(1).items
 	end
 
+	it 'shows no results on a failed search', :pregen => true  do
+		our_action = "NotFoundHere"
+
+		@page.phrase_search.set our_action
+		@page.submit_button.click
+
+		@page.heading.text.should eq 'Search Results we found 0 results for "' + our_action + '"'
+		@page.phrase_search.value.should eq our_action
+		@page.should have_text our_action
+
+		@page.should have_no_results
+
+		@page.should_not have_username_filter
+		@page.should_not have_date_filter
+		@page.should_not have_perpage_filter
+		@page.should_not have_pagination
+
+		@page.should_not have_pagination
+		@page.should_not have_remove_all
+	end
+
 	# Confirming individual filter behavior
 	it 'filters by username', :pregen => true do
 		@page.username_filter.click

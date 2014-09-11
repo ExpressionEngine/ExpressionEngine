@@ -88,6 +88,22 @@ feature 'Throttling Log' do
 		@page.should have(1).items
 	end
 
+	it '(enabled) shows no results on a failed search', :enabled => true, :pregen => true do
+		our_ip = "NotFoundHere"
+
+		@page.phrase_search.set our_ip
+		@page.submit_button.click
+
+		@page.heading.text.should eq 'Search Results we found 0 results for "' + our_ip + '"'
+		@page.phrase_search.value.should eq our_ip
+		@page.should have_text our_ip
+
+		@page.should have_no_results
+		@page.should_not have_perpage_filter
+		@page.should_not have_pagination
+		@page.should_not have_remove_all
+	end
+
 	it '(enabled) can change page size', :enabled => true, :pregen => true do
 		@page.perpage_filter.click
 		@page.wait_until_perpage_filter_menu_visible
