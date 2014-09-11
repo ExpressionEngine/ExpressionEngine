@@ -1651,9 +1651,6 @@ BSH;
 			$groups[$row->group_id][] = $row->site_id;
 		}
 
-		ee()->smartforge->drop_column('member_groups', 'can_admin_preferences');
-		ee()->smartforge->drop_column('member_groups', 'can_admin_utilities');
-
 		$query = ee()->db->select('site_id')->get('sites');
 
 		foreach ($query->result() as $row)
@@ -1667,6 +1664,16 @@ BSH;
 				}
 			}
 		}
+
+		return 'drop_member_group_columns';
+	}
+
+	// ------------------------------------------------------------------------
+
+	public function drop_member_group_columns()
+	{
+		ee()->smartforge->drop_column('member_groups', 'can_admin_preferences');
+		ee()->smartforge->drop_column('member_groups', 'can_admin_utilities');
 
 		return 'convert_fresh_variables';
 	}
