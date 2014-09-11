@@ -1020,6 +1020,9 @@ class EE_Session {
 	 * @param array	$params An optional associative array of settings:
 	 * 					algo - hashing algorithm, defaults to md5
 	 * 					key - secret key, defaults to DB username.password
+	 * @return 	mixed   NULL if there is no data
+	 * 					FALSE if the hashing algorithm is unknown
+	 * 	        		String consisting of the calculated message digest as lowercase hexits
 	 *
 	 */
 
@@ -1027,7 +1030,7 @@ class EE_Session {
 	{
 		if (empty($data))
 		{
-			return FALSE;
+			return NULL;
 		}
 
 		// Set default values
