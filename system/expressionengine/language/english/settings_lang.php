@@ -953,11 +953,23 @@ $lang = array(
 'throttling_limit_settings' =>
 'Throttling Limit Settings',
 
-'lockout_requirement' =>
-'Lock out requirement',
+"max_page_loads" =>
+"Maximum page loads",
 
-'lockout_requirement_format' =>
-'A member will be locked out for %s seconds, if they load more than %s pages in less than %s seconds.',
+"max_page_loads_desc" =>
+"The total number of times a user is allowed to load any of your web pages (within the time interval below) before being locked out.",
+
+"time_interval" =>
+"Time interval",
+
+"time_interval_desc" =>
+"The number of seconds during which the above number of page loads are allowed.",
+
+"lockout_time" =>
+"Lockout time",
+
+"lockout_time_desc" =>
+"The length of time a user should be locked out of your site if they exceed the limits.",
 
 'banishment_type' =>
 'Lock out action',
