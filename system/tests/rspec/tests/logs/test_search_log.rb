@@ -9,7 +9,7 @@ feature 'Search Log' do
 		add_member(username: 'johndoe')
 	end
 
-    before(:each, :pregen => true) do
+	before(:each, :pregen => true) do
 		@page.generate_data(count: 150, timestamp_min: 26)
 		@page.generate_data(count: 15, member_id: 2, screen_name: 'johndoe', timestamp_min: 25)
 		@page.load
@@ -41,9 +41,9 @@ feature 'Search Log' do
 		@page.should have(20).items # Default is 20 per page
 	end
 
-    it 'does not show filters at 10 items', :pregen => false do
-    	@page.generate_data(count: 10)
-    	@page.load
+	it 'does not show filters at 10 items', :pregen => false do
+		@page.generate_data(count: 10)
+		@page.load
 
 		@page.displayed?
 		@page.heading.text.should eq 'Search Logs'
@@ -57,27 +57,27 @@ feature 'Search Log' do
 		@page.should_not have_perpage_filter
 		@page.should_not have_perpage_manual_filter
 		@page.should_not have_pagination
-    end
+	end
 
-    # Confirming phrase search
-    it 'searches by phrases', :pregen => true do
-    	our_terms = "Rspec entry for search"
+	# Confirming phrase search
+	it 'searches by phrases', :pregen => true do
+		our_terms = "Rspec entry for search"
 
-    	@page.generate_data(count: 1, timestamp_max: 0, terms: our_terms)
-    	@page.load
+		@page.generate_data(count: 1, timestamp_max: 0, terms: our_terms)
+		@page.load
 		no_php_js_errors
 
-	  	# Be sane and make sure it's there before we search for it
-	  	@page.should have_text our_terms
+		# Be sane and make sure it's there before we search for it
+		@page.should have_text our_terms
 
-	  	@page.phrase_search.set "Rspec"
-	  	@page.submit_button.click
+		@page.phrase_search.set "Rspec"
+		@page.submit_button.click
 
 		@page.heading.text.should eq 'Search Results we found 1 results for "Rspec"'
-	  	@page.phrase_search.value.should eq "Rspec"
-	  	@page.should have_text our_terms
-	  	@page.should have(1).items
-    end
+		@page.phrase_search.value.should eq "Rspec"
+		@page.should have_text our_terms
+		@page.should have(1).items
+	end
 
 	# Confirming individual filter behavior
 	it 'filters by username', :pregen => true do
@@ -90,16 +90,16 @@ feature 'Search Log' do
 		@page.should_not have_pagination
 	end
 
-    it 'filters by custom username', :pregen => true do
-	  	@page.username_filter.click
-	  	@page.wait_until_username_manual_filter_visible
-	  	@page.username_manual_filter.set "johndoe"
-	  	@page.submit_button.click
+	it 'filters by custom username', :pregen => true do
+		@page.username_filter.click
+		@page.wait_until_username_manual_filter_visible
+		@page.username_manual_filter.set "johndoe"
+		@page.submit_button.click
 
-	  	@page.username_filter.text.should eq "username (johndoe)"
-	  	@page.should have(15).items
-	  	@page.should_not have_pagination
-    end
+		@page.username_filter.text.should eq "username (johndoe)"
+		@page.should have(15).items
+		@page.should_not have_pagination
+	end
 
 	# @TODO Need data for extra site in order to filter by it
 	# it 'filters by site', :pregen => true do
@@ -135,18 +135,18 @@ feature 'Search Log' do
 		@page.pages.map {|name| name.text}.should == ["First", "1", "2", "3", "Next", "Last"]
 	end
 
-    it 'can set a custom limit', :pregen => true do
-	  	@page.perpage_filter.click
-	  	@page.wait_until_perpage_manual_filter_visible
-	  	@page.perpage_manual_filter.set "42"
-	  	@page.submit_button.click
+	it 'can set a custom limit', :pregen => true do
+		@page.perpage_filter.click
+		@page.wait_until_perpage_manual_filter_visible
+		@page.perpage_manual_filter.set "42"
+		@page.submit_button.click
 
-	  	@page.perpage_filter.text.should eq "show (42)"
-	  	@page.should have(42).items
-	  	@page.should have_pagination
-	  	@page.should have(6).pages
-	  	@page.pages.map {|name| name.text}.should == ["First", "1", "2", "3", "Next", "Last"]
-    end
+		@page.perpage_filter.text.should eq "show (42)"
+		@page.should have(42).items
+		@page.should have_pagination
+		@page.should have(6).pages
+		@page.pages.map {|name| name.text}.should == ["First", "1", "2", "3", "Next", "Last"]
+	end
 
 	# Confirming combining filters work
 	it 'can combine username and page size filters', :pregen => true do
@@ -180,12 +180,12 @@ feature 'Search Log' do
 		@page.perpage_filter_menu.click_link "150"
 		no_php_js_errors
 
-	  	# First, confirm we have both 'admin' and 'johndoe' on same page
+			# First, confirm we have both 'admin' and 'johndoe' on same page
 		@page.perpage_filter.text.should eq "show (150)"
-	  	@page.should have(150).items
-	  	@page.should have_pagination
-	  	@page.should have_text "johndoe"
-	  	@page.should have_text "admin"
+		@page.should have(150).items
+		@page.should have_pagination
+		@page.should have_text "johndoe"
+		@page.should have_text "admin"
 
 		# Now, combine the filters
 		@page.phrase_search.set "johndoe"
@@ -269,7 +269,7 @@ feature 'Search Log' do
 		@page.pages.map {|name| name.text}.should == ["First", "Previous", "1", "2", "3", "Next", "Last"]
 	end
 
-    it 'will paginate phrase search results', :pregen => true do
+	it 'will paginate phrase search results', :pregen => true do
 		@page.generate_data(count: 20, member_id: 2, screen_name: 'johndoe', timestamp_min: 25)
 
 		@page.perpage_filter.click
@@ -277,30 +277,30 @@ feature 'Search Log' do
 		@page.perpage_filter_menu.click_link "25"
 		no_php_js_errors
 
-	  	@page.phrase_search.set "johndoe"
-	  	@page.submit_button.click
+		@page.phrase_search.set "johndoe"
+		@page.submit_button.click
 		no_php_js_errors
 
-	  	# Page 1
+		# Page 1
 		@page.heading.text.should eq 'Search Results we found 35 results for "johndoe"'
-	  	@page.phrase_search.value.should eq "johndoe"
-	  	@page.items.should_not have_text "admin"
+		@page.phrase_search.value.should eq "johndoe"
+		@page.items.should_not have_text "admin"
 		@page.perpage_filter.text.should eq "show (25)"
-	  	@page.should have(25).items
-	  	@page.should have_pagination
-	  	@page.should have(5).pages
-	  	@page.pages.map {|name| name.text}.should == ["First", "1", "2", "Next", "Last"]
+		@page.should have(25).items
+		@page.should have_pagination
+		@page.should have(5).pages
+		@page.pages.map {|name| name.text}.should == ["First", "1", "2", "Next", "Last"]
 
-	  	click_link "Next"
+		click_link "Next"
 
-	  	# Page 2
+		# Page 2
 		@page.heading.text.should eq 'Search Results we found 35 results for "johndoe"'
-	  	@page.phrase_search.value.should eq "johndoe"
-	  	@page.items.should_not have_text "admin"
+		@page.phrase_search.value.should eq "johndoe"
+		@page.items.should_not have_text "admin"
 		@page.perpage_filter.text.should eq "show (25)"
-	  	@page.should have(15).items
-	  	@page.should have_pagination
-	  	@page.should have(5).pages
-	  	@page.pages.map {|name| name.text}.should == ["First", "Previous", "1", "2", "Last"]
-    end
+		@page.should have(15).items
+		@page.should have_pagination
+		@page.should have(5).pages
+		@page.pages.map {|name| name.text}.should == ["First", "Previous", "1", "2", "Last"]
+	end
 end
