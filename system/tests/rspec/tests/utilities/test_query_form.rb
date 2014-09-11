@@ -264,6 +264,86 @@ feature 'Query Form' do
     results.table.find('tr:nth-child(2) td:nth-child(1)').should have_text '11'
   end
 
+  def show_status
+    status = []
+    $db.query('SHOW STATUS').each(:as => :array) do |row|
+      status << row[0]
+    end
+    clear_db_result
+
+    return status
+  end
+
+  # SHOW queries sorting, paging and searching are handled by the Table library
+  it 'should search SHOW query results' do
+    @page.click_link 'SHOW STATUS'
+
+    no_php_js_errors
+    results = QueryResults.new
+    results.should have(6).pages
+    results.should have(21).rows # 20 results plus header
+
+    results.search_field.set 'alter'
+    results.search_btn.click
+
+    status = show_status
+    searched = status.sort.grep(/alter/)
+
+    no_php_js_errors
+    results.should have_text 'Search Results we found '+searched.count.to_s+' results for "alter"'
+    results.search_field.value.should eq 'alter'
+    results.should have(0).pages
+    results.should have(searched.count+1).rows
+    results.first_column.map {|source| source.text}.should == searched
+
+    # Make sure we can still sort and maintain search results
+    results.sort_links[0].click
+    results.should have_text 'Search Results we found '+searched.count.to_s+' results for "alter"'
+    results.search_field.value.should eq 'alter'
+    results.should have(0).pages
+    results.should have(searched.count+1).rows
+    results.first_column.map {|source| source.text}.should == searched.reverse
+  end
+
+  it 'should paginate SHOW query results' do
+    # Generate random data that will paginate
+    @page.click_link 'SHOW STATUS'
+
+    status = show_status
+
+    no_php_js_errors
+    results = QueryResults.new
+    results.should have(21).rows # 20 results plus header
+    results.pages.map {|name| name.text}.should == ['First', '1', '2', '3', 'Next', 'Last']
+    results.first_column.map {|source| source.text}.should == status.sort[0..19]
+    click_link "Next"
+
+    no_php_js_errors
+    results.should have(21).rows # 20 results plus header
+    results.pages.map {|name| name.text}.should == ['First', 'Previous', '1', '2', '3', 'Next', 'Last']
+    results.first_column.map {|source| source.text}.should == status.sort[20..39]
+  end
+
+  it 'should paginate sorted SHOW query results' do
+    @page.click_link 'SHOW STATUS'
+
+    status = show_status
+
+    no_php_js_errors
+    results = QueryResults.new
+    results.sort_links[0].click
+    no_php_js_errors
+
+    results.pages.map {|name| name.text}.should == ['First', '1', '2', '3', 'Next', 'Last']
+    results.first_column.map {|source| source.text}.should == status.sort.reverse[0..19]
+
+    no_php_js_errors
+    click_link "Next"
+
+    results.pages.map {|name| name.text}.should == ['First', 'Previous', '1', '2', '3', 'Next', 'Last']
+    results.first_column.map {|source| source.text}.should == status.sort.reverse[20..39]
+  end
+
   it 'should show no results when there are no results' do
     @page.query_form.set 'select * from exp_channels where channel_id = 1000'
     @page.password.set 'password'

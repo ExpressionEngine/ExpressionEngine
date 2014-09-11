@@ -4,5 +4,6 @@ class QueryResults < ControlPanelPage
 	element :search_btn, 'input[type=submit]'
 	element :table, 'table'
 	elements :rows, 'div.box form table tr'
+	elements :first_column, 'table tr td:first-child'
 
 end
