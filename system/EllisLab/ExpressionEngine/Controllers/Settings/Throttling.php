@@ -58,13 +58,24 @@ class Throttling extends Settings {
 			),
 			'throttling_limit_settings' => array(
 				array(
-					'title' => 'lockout_requirement',
-					'desc' => 'lockout_requirement_format',
-					'type' => 'format',
+					'title' => 'max_page_loads',
+					'desc' => 'max_page_loads_desc',
 					'fields' => array(
-						'lockout_time' => array('type' => 'text'),
-						'max_page_loads' => array('type' => 'text'),
+						'max_page_loads' => array('type' => 'text')
+					)
+				),
+				array(
+					'title' => 'time_interval',
+					'desc' => 'time_interval_desc',
+					'fields' => array(
 						'time_interval' => array('type' => 'text')
+					)
+				),
+				array(
+					'title' => 'lockout_time',
+					'desc' => 'lockout_time_desc',
+					'fields' => array(
+						'lockout_time' => array('type' => 'text')
 					)
 				),
 				array(
@@ -120,9 +131,6 @@ class Throttling extends Settings {
 
 		if (AJAX_REQUEST)
 		{
-			// These fields should be validated as a group
-			$_POST['ee_fv_field'] = 'lockout_time|max_page_loads|time_interval';
-			
 			ee()->form_validation->run_ajax();
 			exit;
 		}

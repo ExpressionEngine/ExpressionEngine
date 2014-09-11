@@ -50,23 +50,27 @@ feature 'Access Throttling Settings' do
 
     @page.max_page_loads.set 'sdfsdfsd'
     @page.max_page_loads.trigger 'blur'
+    @page.wait_for_error_message_count(2)
     should_have_error_text(@page.max_page_loads, integer_error)
     should_have_form_errors(@page)
 
     @page.time_interval.set 'sdfsdfsd'
     @page.time_interval.trigger 'blur'
+    @page.wait_for_error_message_count(3)
     should_have_error_text(@page.time_interval, integer_error)
     should_have_form_errors(@page)
 
     # Fix everything
     @page.lockout_time.set '5'
     @page.lockout_time.trigger 'blur'
-    @page.should have_text integer_error
+    @page.wait_for_error_message_count(2)
+    should_have_no_error_text(@page.lockout_time)
     should_have_form_errors(@page)
 
     @page.max_page_loads.set '15'
     @page.max_page_loads.trigger 'blur'
-    @page.should have_text integer_error
+    @page.wait_for_error_message_count(1)
+    should_have_no_error_text(@page.max_page_loads)
     should_have_form_errors(@page)
 
     @page.time_interval.set '8'

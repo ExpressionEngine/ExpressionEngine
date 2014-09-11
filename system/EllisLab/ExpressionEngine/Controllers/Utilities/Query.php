@@ -93,7 +93,7 @@ class Query extends Utilities {
 		$row_limit	= 20;
 		$title		= lang('query_result');
 		$vars['write'] = FALSE;
-		ee()->db->db_debug = (ee()->input->post('debug') !== FALSE);
+		ee()->db->db_debug = (ee()->input->post('debug') !== FALSE OR empty($_POST));
 
 		$page = ee()->input->get('page') ? ee()->input->get('page') : 1;
 		$page = ($page > 0) ? $page : 1;
@@ -108,7 +108,13 @@ class Query extends Utilities {
 			}
 			else
 			{
-				$sql = base64_decode(rawurldecode($sql));
+				$sql = trim(base64_decode(rawurldecode($sql)));
+				
+				if (strncasecmp($sql, 'SELECT ', 7) !== 0 &&
+					strncasecmp($sql, 'SHOW', 4) !== 0)
+				{
+					return $this->index(FALSE);
+				}
 			}
 		}
 
@@ -169,11 +175,21 @@ class Query extends Utilities {
 		}
 
 		// Don't run column names though lang()
-		$table = CP\Table::create(array('lang_cols' => FALSE));
+		$table_config = array('lang_cols' => FALSE);
+
+		// SHOW queries don't handle limiting and sorting, let the
+		// Table library handle it
+		if ($show_query = (strncasecmp($sql, 'SHOW', 4) === 0))
+		{
+			$table_config['autosort'] = TRUE;
+			$table_config['autosearch'] = TRUE;
+		}
+		
+		$table = CP\Table::create($table_config);
 		$table->setColumns($columns);
 
 		$search = $table->search; // PHP 5.3
-		if ( ! empty($search) && $query)
+		if ( ! empty($search) && $query && ! $show_query)
 		{
 			if ($query->num_rows() > 0)
 			{
@@ -196,6 +212,9 @@ class Query extends Utilities {
 		$query = (isset($new_sql)) ? ee()->db->query($new_sql) : ee()->db->query($sql);
 		$total_results = (is_object($query)) ? $query->num_rows() : 0;
 
+		// Does this query already have a limit?
+		$limited_query = (preg_match("/LIMIT\s+[0-9]/i", $sql));
+
 		// If it's a SELECT query we'll see if we need to limit
 		// the result total and add pagination links
 		if (strpos(strtoupper($sql), 'SELECT') !== FALSE)
@@ -210,7 +229,7 @@ class Query extends Utilities {
 				$new_sql .= ' ORDER BY '.$table->sort_col.' '.$table->sort_dir;
 			}
 
-			if ( ! preg_match("/LIMIT\s+[0-9]/i", $sql))
+			if ( ! $limited_query)
 			{
 				// Modify the query so we get the total sans LIMIT
 				$row = ($page - 1) * $row_limit; // Offset is 0 indexed
@@ -234,16 +253,6 @@ class Query extends Utilities {
 			$query = ee()->db->query($sql);
 		}
 
-		// Set search results heading
-		if ( ! empty($search))
-		{
-			ee()->view->table_heading = sprintf(
-				lang('search_results_heading'),
-				$total_results,
-				$search
-			);
-		}
-
 		$data = (is_object($query)) ? $query->result_array() : array();
 
 		$table->setData($data);
@@ -259,16 +268,21 @@ class Query extends Utilities {
 
 		$vars['thequery'] = ee()->security->xss_clean($sql);
 		$vars['total_results'] = (isset($total_results)) ? $total_results : 0;
+		$vars['total_results'] = ($show_query) ? $vars['table']['total_rows'] : $vars['total_results'];
 
+		// Set search results heading
+		if ( ! empty($search))
+		{
+			ee()->view->table_heading = sprintf(
+				lang('search_results_heading'),
+				$vars['total_results'],
+				$search
+			);
+		}
+
+		$row_limit = ($limited_query) ? $vars['total_results'] : $row_limit;
 		$pagination = new Pagination($row_limit, $vars['total_results'], $page);
 		$vars['pagination'] = $pagination->cp_links($view_data['base_url']);
-
-		// For things like SHOW queries, they show as having zero rows
-		// and we can't paginate them
-		if ($vars['total_results'] == 0 && count($data) > 0)
-		{
-			$vars['total_results'] = count($data);
-		}
 
 		// If no table, keep query form labeling
 		if (empty($table_name))

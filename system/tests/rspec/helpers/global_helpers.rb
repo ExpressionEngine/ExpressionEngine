@@ -35,13 +35,13 @@ end
 
 def should_have_error_text(node, text)
   node.first(:xpath, ".//ancestor::fieldset[1]")[:class].should include 'invalid'
-  node.first(:xpath, ".//ancestor::div[contains(@class, 'setting')]").should have_css 'em.ee-form-error-message'
-  node.first(:xpath, ".//ancestor::div[contains(@class, 'setting')]").should have_text text
+  node.first(:xpath, ".//..").should have_css 'em.ee-form-error-message'
+  node.first(:xpath, ".//..").should have_text text
 end
 
 def should_have_no_error_text(node)
   node.first(:xpath, ".//ancestor::fieldset[1]")[:class].should_not include 'invalid'
-  node.first(:xpath, ".//ancestor::div[contains(@class, 'setting')]").should have_no_css 'em.ee-form-error-message'
+  node.first(:xpath, ".//..").should have_no_css 'em.ee-form-error-message'
 end
 
 # Reset the DB to a clean slate and reset sessions

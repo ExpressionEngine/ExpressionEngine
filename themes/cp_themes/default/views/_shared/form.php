@@ -15,27 +15,7 @@ foreach ($sections as $name => $settings)
 			}
 		}
 	}
-}
-
-// Convenience function for getting the value and required state for
-// a field for display purposes
-function prep_field($field_name, $field)
-{
-	$value = set_value($field_name);
-	if ($value == '')
-	{
-		$value = isset($field['value']) ? $field['value'] : ee()->config->item($field_name);
-	}
-	$required = '';
-	if (isset($field['required']) && $field['required'] == TRUE)
-	{
-		$required = ' class="required"';
-	}
-
-	return array($value, $required);
-}
-
-?>
+} ?>
 
 <h1><?=(isset($cp_page_title_alt)) ? $cp_page_title_alt : $cp_page_title?><?php if ($required): ?> <span class="required intitle">&#10033; <?=lang('required_fields')?></span><?php endif ?></h1>
 <?php
@@ -54,8 +34,7 @@ if (isset($ajax_validate) && $ajax_validate == TRUE)
 			<?php
 			$last_class = ($setting == end($settings)) ? ' last' : ''; ?>
 			<fieldset class="col-group<?=$last_class?> <?=form_error_class(array_keys($setting['fields']))?>">
-				<?php $formatted = (isset($setting['type']) && $setting['type'] == 'format'); ?>
-				<div class="setting-txt col <?=($formatted) ? 'w-16' : 'w-8' ?>">
+				<div class="setting-txt col w-8">
 					<?php foreach ($setting['fields'] as $field_name => $field)
 					{
 						if ($required = (isset($field['required']) && $field['required'] == TRUE))
@@ -64,64 +43,58 @@ if (isset($ajax_validate) && $ajax_validate == TRUE)
 						}
 					} ?>
 					<h3><?=lang($setting['title'])?><?php if ($required): ?> <span class="required" title="required field">&#10033;</span><?php endif ?></h3>
-
-					<?php // Field groups that are formatted like a sentence
-					if ($formatted):
-
-						$fields = array();
-						foreach ($setting['fields'] as $field_name => $field)
+					<em><?=lang($setting['desc'])?></em>
+				</div>
+				<div class="setting-field col w-8 last">
+					<?php foreach ($setting['fields'] as $field_name => $field):
+						// Get the value of the field
+						$value = set_value($field_name);
+						if ($value == '')
 						{
-							list($value, $required) = prep_field($field_name, $field);
-							$fields[] = '<input class="sm-number" name="'.$field_name.'" type="text" value="'.$value.'"'.$required.'>';
-						} ?>
-						<em><?=vsprintf(lang($setting['desc']), $fields)?></em>
-						<?php foreach ($setting['fields'] as $field_name => $field): ?>
-							<?=form_error($field_name)?>
-						<?php endforeach ?>
-					<?php else: ?>
-							<em><?=lang($setting['desc'])?></em>
-						</div>
-						<div class="setting-field col w-8 last">
+							$value = isset($field['value']) ? $field['value'] : ee()->config->item($field_name);
+						}
+						$required = '';
+						if (isset($field['required']) && $field['required'] == TRUE)
+						{
+							$required = ' class="required"';
+						}
+						?>
 
-							<?php foreach ($setting['fields'] as $field_name => $field):
-								list($value, $required) = prep_field($field_name, $field); ?>
+						<?php switch ($field['type']):
+						case 'text': ?>
+							<input type="text" name="<?=$field_name?>" value="<?=$value?>"<?=$required?>>
+						<?php break;
 
-							<?php switch ($field['type']):
-							case 'text': ?>
-								<input type="text" name="<?=$field_name?>" value="<?=$value?>"<?=$required?>>
-							<?php break;
+						case 'inline_radio': ?>
+							<?php foreach ($field['choices'] as $key => $label):
+								$checked = ($key == $value); ?>
+								<label class="choice mr <?=($checked) ? 'chosen' : ''?>"><input type="radio" name="<?=$field_name?>" value="<?=$key?>"<?php if ($checked):?> checked="checked"<?php endif ?><?=$required?>> <?=lang($label)?></label>
+							<?php endforeach ?>
+						<?php break;
 
-							case 'inline_radio': ?>
-								<?php foreach ($field['choices'] as $key => $label):
-									$checked = ($key == $value); ?>
-									<label class="choice mr <?=($checked) ? 'chosen' : ''?>"><input type="radio" name="<?=$field_name?>" value="<?=$key?>"<?php if ($checked):?> checked="checked"<?php endif ?><?=$required?>> <?=lang($label)?></label>
-								<?php endforeach ?>
-							<?php break;
+						case 'yes_no': ?>
+							<label class="choice mr<?php if ($value == 'y'):?> chosen<?php endif ?> yes"><input type="radio" name="<?=$field_name?>" value="y"<?php if ($value == 'y'):?> checked="checked"<?php endif ?><?=$required?>> yes</label>
+							<label class="choice <?php if ($value == 'n'):?> chosen<?php endif ?> no"><input type="radio" name="<?=$field_name?>" value="n"<?php if ($value == 'n'):?> checked="checked"<?php endif ?><?=$required?>> no</label>
+						<?php break;
 
-							case 'yes_no': ?>
-								<label class="choice mr<?php if ($value == 'y'):?> chosen<?php endif ?> yes"><input type="radio" name="<?=$field_name?>" value="y"<?php if ($value == 'y'):?> checked="checked"<?php endif ?><?=$required?>> yes</label>
-								<label class="choice <?php if ($value == 'n'):?> chosen<?php endif ?> no"><input type="radio" name="<?=$field_name?>" value="n"<?php if ($value == 'n'):?> checked="checked"<?php endif ?><?=$required?>> no</label>
-							<?php break;
+						case 'dropdown': ?>
+							<?=form_dropdown($field_name, $field['choices'], $value, $required)?>
+						<?php break;
 
-							case 'dropdown': ?>
-								<?=form_dropdown($field_name, $field['choices'], $value, $required)?>
-							<?php break;
-
-							case 'textarea': ?>
-								<textarea name="<?=$field_name?>" cols="" rows=""<?=$required?>>
+						case 'textarea': ?>
+							<textarea name="<?=$field_name?>" cols="" rows=""<?=$required?>>
 <?=(isset($field['kill_pipes']) && $field['kill_pipes'] === TRUE) ? str_replace('|', NL, $value) : $value?>
 </textarea>
-							<?php break;
+						<?php break;
 
-							case 'html': ?>
-								<?=$field['content']?>
-							<?php endswitch ?>
-						<?php endforeach ?>
-						<?php if (isset($setting['action_button'])): ?>
-							<a class="btn tn action <?=$setting['action_button']['class']?>" href="<?=$setting['action_button']['link']?>"><?=lang($setting['action_button']['text'])?></a>
-						<?php endif ?>
-						<?=form_error($field_name)?>
+						case 'html': ?>
+							<?=$field['content']?>
+						<?php endswitch ?>
+					<?php endforeach ?>
+					<?php if (isset($setting['action_button'])): ?>
+						<a class="btn tn action <?=$setting['action_button']['class']?>" href="<?=$setting['action_button']['link']?>"><?=lang($setting['action_button']['text'])?></a>
 					<?php endif ?>
+					<?=form_error($field_name)?>
 				</div>
 			</fieldset>
 		<?php endforeach ?>
