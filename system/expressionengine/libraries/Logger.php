@@ -34,7 +34,9 @@ class EE_Logger {
 	 */
 	function __construct()
 	{
-		$this->EE =& get_instance();
+		// Create it's own instace of the database to not interfere with queries
+		// being built.
+		$this->logger_db = ee()->load->database('expressionengine', TRUE);
 	}
 
 	// --------------------------------------------------------------------
@@ -57,8 +59,8 @@ class EE_Logger {
 			return;
 		}
 
-		ee()->db->query(
-			ee()->db->insert_string(
+		$this->logger_db->query(
+			$this->logger_db->insert_string(
 				'exp_cp_log',
 				array(
 					'member_id'	=> ee()->session->userdata('member_id'),
@@ -101,7 +103,7 @@ class EE_Logger {
 		{
 			// Order by timestamp to store only the latest timestamp in the
 			// cache array
-			$rows = ee()->db->select('hash, timestamp')
+			$rows = $this->logger_db->select('hash, timestamp')
 				->order_by('timestamp', 'asc')
 				->get('developer_log')
 				->result_array();
@@ -140,7 +142,7 @@ class EE_Logger {
 			{
 				// There may be multiple items with the same hash for if a log item
 				// was previously set not to update, so update based on timestamp too
-				ee()->db->where(
+				$this->logger_db->where(
 					array(
 						'hash'		=> $hash,
 						'timestamp' => $this->_dev_log_hashes[$hash]
@@ -148,7 +150,7 @@ class EE_Logger {
 				);
 
 				// Set log item as unviewed and update the timestamp
-				ee()->db->update('developer_log',
+				$this->logger_db->update('developer_log',
 					array(
 						'viewed'	=> 'n',
 						'timestamp' => ee()->localize->now
@@ -163,7 +165,7 @@ class EE_Logger {
 		$log_data['timestamp'] = ee()->localize->now;
 		$log_data['hash'] = $hash;
 
-		ee()->db->insert('developer_log', $log_data);
+		$this->logger_db->insert('developer_log', $log_data);
 
 		// Add to the hash cache so we don't have to requery
 		$this->_dev_log_hashes[$hash] = $log_data['timestamp'];
@@ -646,7 +648,7 @@ class EE_Logger {
 			$data['file']	= $backtrace['file'];
 		}
 
-		ee()->db->insert('update_log', $data);
+		$this->logger_db->insert('update_log', $data);
 	}
 
 	// --------------------------------------------------------------------
@@ -664,7 +666,7 @@ class EE_Logger {
 	{
 		$table = 'update_log';
 
-		if ( ! ee()->db->table_exists($table))
+		if ( ! $this->logger_db->table_exists($table))
 		{
 			ee()->load->dbforge();
 
