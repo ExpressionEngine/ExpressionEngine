@@ -719,7 +719,10 @@ class Communicate extends Utilities {
 				)),
 				array(
 					'name'  => 'selection[]',
-					'value' => $email->cache_id
+					'value' => $email->cache_id,
+					'data'	=> array(
+						'confirm' => lang('view_email_cache') . ': <b>' . $email->subject . '(x' . $email->total_sent . ')</b>'
+					)
 				)
 			);
 
@@ -760,6 +763,25 @@ class Communicate extends Utilities {
 				$vars['table']['search']
 			);
 		}
+
+		$modal_vars = array(
+			'form_url'	=> $base_url,
+			'hidden'	=> array(
+				'bulk_action'	=> 'remove'
+			),
+			'checklist'	=> array(
+				array(
+					'kind' => '',
+					'desc' => ''
+				)
+			)
+		);
+
+		$vars['modals']['modal-confirm-all'] = ee()->view->render('_shared/modal-confirm', $modal_vars, TRUE);
+
+		ee()->cp->add_js_script(array(
+			'file' => array('cp/utilities/communicate/sent'),
+		));
 
 		ee()->cp->render('utilities/communicate/sent', $vars);
 	}

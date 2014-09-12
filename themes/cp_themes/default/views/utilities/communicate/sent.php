@@ -18,7 +18,7 @@
 			<option value="">-- <?=lang('with_selected')?> --</option>
 			<option value="remove"><?=lang('remove')?></option>
 		</select>
-		<input class="btn submit" type="submit" value="<?=lang('submit')?>">
+		<button class="btn submit m-link" rel="modal-confirm-all"><?=lang('submit')?></button>
 	</fieldset>
 <?php endif; ?>
 <?=form_close()?>
