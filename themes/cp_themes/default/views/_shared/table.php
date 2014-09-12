@@ -38,7 +38,7 @@ if ($wrap): ?>
 					<th<?php if ( ! empty($table_class)): ?> class="<?=trim($table_class)?>"<?php endif ?>>
 						<?=($lang_cols) ? lang($label) : $label ?>
 						<?php if ($settings['sort']): ?>
-							<?php 
+							<?php
 							$arrow_dir = ($sort_col == $label) ? $sort_dir : 'desc';
 							$link_dir = ($arrow_dir == 'asc') ? 'desc' : 'asc';
 							$base_url->setQueryStringVariable('sort_col', $label);
@@ -65,7 +65,7 @@ if ($wrap): ?>
 				<?php foreach ($row as $column): ?>
 					<?php if ($column['encode'] == TRUE): ?>
 						<td><?=htmlspecialchars($column['content'])?></td>
-					<?php elseif ($column['type'] == Table::COL_TOOLBAR): ?> 
+					<?php elseif ($column['type'] == Table::COL_TOOLBAR): ?>
 						<td>
 							<ul class="toolbar">
 								<?php foreach ($column['toolbar_items'] as $type => $attributes):
@@ -78,8 +78,19 @@ if ($wrap): ?>
 								<?php endforeach ?>
 							</ul>
 						</td>
-					<?php elseif ($column['type'] == Table::COL_CHECKBOX): ?> 
-						<td><input name="<?=$column['name']?>" value="<?=$column['value']?>" type="checkbox"></td>
+					<?php elseif ($column['type'] == Table::COL_CHECKBOX): ?>
+						<td>
+							<input
+								name="<?=$column['name']?>"
+								value="<?=$column['value']?>"
+								<?php if (isset($column['data'])):?>
+									<?php foreach ($column['data'] as $key => $value): ?>
+										data-<?=$key?>="<?=$value?>"
+									<?php endforeach; ?>
+								<?php endif; ?>
+								type="checkbox"
+							>
+						</td>
 					<?php elseif ($column['type'] == Table::COL_STATUS): ?>
 						<td><span class="st-<?=$column['content']?>"><?=$column['content']?></span></td>
 					<?php else: ?>
