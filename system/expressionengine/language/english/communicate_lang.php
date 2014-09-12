@@ -57,6 +57,7 @@ $lang = array(
 'all_email_sent_message'	=> 'All emails have been sent',
 'email_success'			=> 'Email Sent',
 'view_email_cache'		=> 'Sent e-mails',
+'emails'				=> 'e-mails',
 'previous_email'		=> 'Previously Sent Email',
 'email_title'			=> 'Email Title',
 'email_date'			=> 'Date Sent',
