@@ -12,6 +12,7 @@ feature 'Communicate > Sent' do
 
 	def load_page
 		@page.load
+		no_php_js_errors
 
 		@page.should be_displayed
 		@page.heading.text.should eq 'Sent e-mails'
@@ -24,6 +25,7 @@ feature 'Communicate > Sent' do
 
 	it 'shows the sent e-mails page (with no results)' do
 		@page.load
+		no_php_js_errors
 
 		@page.should be_displayed
 		@page.heading.text.should eq 'Sent e-mails'
@@ -519,6 +521,53 @@ feature 'Communicate > Sent' do
 		communicate.body.value.should eq my_body
 	end
 
+	it 'displays an itemized confirmation modal when removing 5 or less emails' do
+		phrase = "Zeppelins"
+		data = phrase + " are cool"
+
+		@page.generate_data(count: 5, subject: data)
+		@page.generate_data(count: 12)
+		load_page
+
+		@page.rows.each do |row|
+			if row.text.include? data
+				row.find('input[type="checkbox"]').set true
+			end
+		end
+
+		@page.bulk_action.select "Remove"
+		@page.action_submit_button.click
+
+		@page.wait_until_modal_visible
+		@page.modal_title.text.should eq "Confirm Removal"
+		@page.modal.text.should include "You are attempting to remove the following items, please confirm this action."
+		@page.modal.text.should include data
+		@page.modal.all('.checklist li').length.should eq 5
+	end
+
+	it 'displays a bulk confirmation modal when removing more than 5 emails' do
+		phrase = "Zeppelins"
+		data = phrase + " are cool"
+
+		@page.generate_data(count: 6, subject: data)
+		@page.generate_data(count: 12)
+		load_page
+
+		@page.rows.each do |row|
+			if row.text.include? data
+				row.find('input[type="checkbox"]').set true
+			end
+		end
+
+		@page.bulk_action.select "Remove"
+		@page.action_submit_button.click
+
+		@page.wait_until_modal_visible
+		@page.modal_title.text.should eq "Confirm Removal"
+		@page.modal.text.should include "You are attempting to remove the following items, please confirm this action."
+		@page.modal.text.should include "Sent e-mails: 6 e-mails"
+	end
+
 	it 'can remove emails in bulk' do
 		phrase = "Zeppelins"
 		data = phrase + " are cool"
@@ -527,14 +576,16 @@ feature 'Communicate > Sent' do
 		@page.generate_data(count: 12)
 		load_page
 
-		# We should be sorted ASCending by Subject so these should be all our
-		# Zeppelins emails.
-		(13..20).each do |n|
-			@page.rows[n].find('input[type="checkbox"]').set true
+		@page.rows.each do |row|
+			if row.text.include? data
+				row.find('input[type="checkbox"]').set true
+			end
 		end
 
 		@page.bulk_action.select "Remove"
 		@page.action_submit_button.click
+		@page.wait_until_modal_visible
+		@page.modal_submit_button.click # Submits a form
 		no_php_js_errors
 
 		@page.should have(13).rows # +1 for the header
