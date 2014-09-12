@@ -15,11 +15,15 @@ $(document).ready(function () {
 		$(".modal-confirm-all .checklist").html(''); // Reset it
 		if ($('td input:checked').length < 6) {
 			$('td input:checked').each(function() {
-				$(".modal-confirm-all .checklist").append('<li>' + $(this).attr('data-confirm') + '<input type="hidden" name="' + $(this).attr('name') + '" value="' + $(this).val() + '"></li>');
+				$(".modal-confirm-all .checklist").append('<li>' + $(this).attr('data-confirm') + '</li>');
 			});
 		} else {
-			$(".modal-confirm-all .checklist").append(EE.lang.remove_confirm.replace('###', $('td input:checked').length));
+			$(".modal-confirm-all .checklist").append('<li>' + EE.lang.remove_confirm.replace('###', $('td input:checked').length) + '</li>');
 		}
+		// Add hidden <input> elements
+		$('td input:checked').each(function() {
+			$(".modal-confirm-all .checklist li:last").append('<input type="hidden" name="' + $(this).attr('name') + '" value="' + $(this).val() + '">');
+		});
 		$(".modal-confirm-all .checklist li:last").addClass('last');
 	});
 });
