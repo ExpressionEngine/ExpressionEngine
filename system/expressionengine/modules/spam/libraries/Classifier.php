@@ -24,6 +24,7 @@
  */
 
 require_once PATH_MOD . 'spam/libraries/Vectorize.php';
+require_once PATH_MOD . 'spam/libraries/Tokenizer.php';
 require_once PATH_MOD . 'spam/libraries/Expectation.php';
 require_once PATH_MOD . 'spam/libraries/Distribution.php';
 

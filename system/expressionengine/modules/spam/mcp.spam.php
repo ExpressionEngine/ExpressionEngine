@@ -390,6 +390,57 @@ class Spam_mcp {
 	}
 
 	/**
+	 * Sets the maximum likelihood estimates for a given training set and kernel
+	 * 
+	 * @param array $training Multi-dimensional array of training data:
+	 * 						  $class => array(
+	 * 						  	  array($feature0, $feauture1, ...),
+	 * 						  	  ...
+	 * 						  )
+	 * @param string $kernel 
+	 * @access private
+	 * @return void
+	 */
+	private function _set_maximum_likelihood($training, $kernel = 'default')
+	{
+		$kernel = $this->_get_kernel($kernel);
+
+		foreach ($training_classes as $class => $sources)
+		{
+			$count = count($sources[0]);
+			$zipped = array();
+
+			foreach ($sources as $key => $row)
+			{
+				for ($i = 0; $i < $count; $i++)
+				{
+					$zipped[$i][] = $row[$i];
+				}
+			}
+
+			foreach ($zipped as $index => $feature)
+			{
+				// Zipped is now an array of values for a particular feature and 
+				// class. Time to do some estimates.
+
+				$sample = new Expectation($feature);
+
+				$training[] = array(
+					'kernel_id' => $kernel,
+					'class' => $class,
+					'term' => $index,
+					'mean' => $sample->mean,
+					'variance' => $sample->variance
+				);
+			}
+		}
+
+		ee()->db->empty_table('spam_member_parameters'); 
+		ee()->db->insert_batch('spam_member_parameters', $training); 
+	}
+
+
+	/**
 	 * Loops through all content marked as spam/ham and builds a member 
 	 * classifier based on the authors' member data.
 	 * 
@@ -420,10 +471,12 @@ class Spam_mcp {
 			$urls[] = $member->urls;
 		}
 
+		$tokenizer = new Tokenizer(2);
+
 		$features = array(
-			'emails' => new Collection($emails, array(), 'characters', 2, FALSE),
-			'usernames' => new Collection($usernames, array(), 'characters', 2, FALSE),
-			'urls' => new Collection($urls, array(), 'characters', 2, FALSE)
+			'emails' => new Collection($emails, array(), $tokenizer, FALSE),
+			'usernames' => new Collection($usernames, array(), $tokenizer, FALSE),
+			'urls' => new Collection($urls, array(), $tokenizer, FALSE)
 		);
 
 		$training_classes = array();
@@ -462,42 +515,12 @@ class Spam_mcp {
 			}
 		}
 
-		$kernel = $this->_get_kernel('member');
-
-		foreach ($training_classes as $class => $sources)
+		foreach ($ips as $key => $ip)
 		{
-			$count = count($sources[0]);
-			$zipped = array();
-
-			foreach ($sources as $key => $row)
-			{
-				$row = array_merge($row, $ips[$key]);
-
-				for ($i = 0; $i < $count; $i++)
-				{
-					$zipped[$i][] = $row[$i];
-				}
-			}
-
-			foreach ($zipped as $index => $feature)
-			{
-				// Zipped is now an array of values for a particular feature and 
-				// class. Time to do some estimates.
-
-				$sample = new Expectation($feature);
-
-				$training[] = array(
-					'kernel_id' => $kernel,
-					'class' => $class,
-					'term' => $index,
-					'mean' => $sample->mean,
-					'variance' => $sample->variance
-				);
-			}
+			$training_classes[$classes[$key]][$key] = array_merge($training_classes[$classes[$key]][$key], $ip);
 		}
-
-		ee()->db->empty_table('spam_member_parameters'); 
-		ee()->db->insert_batch('spam_member_parameters', $training); 
+	
+		$this->_set_maximum_likelihood($training_classes, 'member');
 	}
 
 	/**
@@ -511,7 +534,9 @@ class Spam_mcp {
 		$stop_words = explode("\n", file_get_contents(PATH_MOD . $this->stop_words_path));
 		$training_data = $this->_get_training_data(5000);
 		$classes = $training_data[1];
-		$training_collection = new Collection($training_data[0], $stop_words);
+
+		$tokenizer = new Tokenizer(1, '\s');
+		$training_collection = new Collection($training_data[0], $stop_words, $tokenizer);
 		$training_classes = array();
 		$training = array();
 
@@ -541,45 +566,6 @@ class Spam_mcp {
 			$training_classes[$classes[$key]][] = $vector;
 		}
 
-		foreach ($training_classes as $class => $sources)
-		{
-			$count = count($sources[0]);
-			$zipped = array();
-
-			foreach ($sources as $row)
-			{
-				for ($i = 0; $i < $count; $i++)
-				{
-					$zipped[$i][] = $row[$i];
-				}
-			}
-
-			foreach ($zipped as $index => $feature)
-			{
-				// Zipped is now an array of values for a particular feature and 
-				// class. Time to do some estimates.
-
-				$sample = new Expectation($feature);
-
-				$training[] = array(
-					'kernel_id' => $kernel,
-					'class' => $class,
-					'term' => $index,
-					'mean' => $sample->mean,
-					'variance' => $sample->variance
-				);
-			}
-		}
-
-		ee()->db->empty_table('spam_parameters'); 
-		ee()->db->insert_batch('spam_parameters', $training); 
-
-		// Delete any existing shared memory segments if we're using them
-		// This will get re-cached the next time we call the classifier
-		$spam_training = new Spam_training();
-		$spam_training->delete_classifier();
-
-		return TRUE;
+		$this->_set_maximum_likelihood($training_classes);
 	}
-
 }

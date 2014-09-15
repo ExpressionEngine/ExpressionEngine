@@ -139,28 +139,6 @@ class Document implements Iterator {
 		return $count; 
 	}
 
-
-	/**
-	 * Calculates the n-grams for a string
-	 * 
-	 * @param array $tokens 
-	 * @param int $n 
-	 * @access private
-	 * @return array  The array of n-grams
-	 */
-	private function _ngrams($tokens, $n=1)
-	{
-		$length = count($tokens);
-		$ngrams = array();
-		 
-		for ($i = 0; $i + $n <= $length; $i++)
-		{
-			$ngrams[$i] = array_slice($i, $n);
-		}
-
-		return $ngrams;
-	}
-
 	public function rewind()
 	{
 		$this->position = 0;

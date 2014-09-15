@@ -78,6 +78,8 @@ class EE_Spam {
 			return;
 		}
 
+		$author = ee()->session->userdata('member_id');
+
 		return $this->spam->moderate_content($file, $class, $method, $data, $doc, $author);
 	}
 
