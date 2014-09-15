@@ -1811,16 +1811,12 @@ BSH;
 		ee()->db->where('field_related_to', 'blog');
 		ee()->db->update('weblog_fields');
 
-		ee()->smartforge->rename_table('weblog_fields', 'channel_fields');
-
 		ee()->smartforge->modify_column(
 			'weblog_data',
 			array(
 				'weblog_id'	=> array('name' => 'channel_id',	'type' => 'int',	'constraint'	=> 4,	'unsigned' => TRUE,	'null' => FALSE)
 			)
 		);
-
-		ee()->smartforge->rename_table('weblog_data', 'channel_data');
 
 		$template_replacements = array(
 			'weblog:weblog_name'			=> 'channel:channel_name',
@@ -1849,7 +1845,17 @@ BSH;
 		ee()->db->where('module_name', 'Weblog');
 		ee()->db->update('modules');
 
-		// Finished!
+		return 'rename_weblog_tables';
+	}
+
+	// ------------------------------------------------------------------------
+
+	public function rename_weblog_tables()
+	{
+		ee()->smartforge->rename_table('weblog_fields', 'channel_fields');
+		ee()->smartforge->rename_table('weblog_data', 'channel_data');
+
+		// Finished
 		return TRUE;
 	}
 
