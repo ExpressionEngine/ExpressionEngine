@@ -78,7 +78,7 @@ class EE_Spam {
 			return;
 		}
 
-		return $this->spam->moderate_content($file, $class, $method, $data, $doc);
+		return $this->spam->moderate_content($file, $class, $method, $data, $doc, $author);
 	}
 
 }

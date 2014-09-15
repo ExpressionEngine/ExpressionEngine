@@ -46,10 +46,15 @@ class Spam_training {
 	public $entropy_length = 300;
 
 	/**
-	 * Constructor
+	 * __construct
+	 * 
+	 * @param string $kernel The name of the kernel to use
+	 * @access public
+	 * @return void
 	 */
-	public function __construct()
+	public function __construct($kernel)
 	{
+		$this->kernel = $this->_get_kernel($kernel);
 	}
 
 	// --------------------------------------------------------------------
@@ -192,6 +197,7 @@ class Spam_training {
 		ee()->db->select('mean, variance');
 		ee()->db->from('spam_parameters');
 		ee()->db->where('class', $class);
+		ee()->db->where('kernel_id', $this->kernel);
 		$query = ee()->db->get();
 
 		$result = array();
@@ -216,6 +222,7 @@ class Spam_training {
 	{
 		ee()->db->select('term, count');
 		ee()->db->from('spam_vocabulary');
+		ee()->db->where('kernel_id', $this->kernel);
 		$query = ee()->db->get();
 
 		$result = array();
@@ -226,6 +233,27 @@ class Spam_training {
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Grab the appropriate kernel ID or insert a new one
+	 * 
+	 * @param string $name The name of the kernel 
+	 * @access private
+	 * @return int The kernel ID
+	 */
+	private function _get_kernel($name)
+	{
+		ee()->db->select('kernel_id');
+		ee()->db->from('spam_kernels');
+		ee()->db->where('name', $name);
+		$query = ee()->db->get();
+
+		if ($query->num_rows() > 0)
+		{
+			$row = $query->row();
+			return $row->kernel_id;
+		}
 	}
 
 }

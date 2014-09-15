@@ -54,7 +54,17 @@ class Spam_upd {
 		ee()->db->insert('modules', $data);
 
 		$fields = array(
+			'kernel_id'	=> array('type' => 'int', 'constraint' => '10', 'unsigned' => TRUE, 'auto_increment' => TRUE),
+			'name'		=> array('type' => 'varchar' , 'constraint' => '32'),
+		);
+
+		ee()->dbforge->add_field($fields);
+		ee()->dbforge->add_key('kernel_id', TRUE);
+		ee()->dbforge->create_table('spam_kernels');
+
+		$fields = array(
 			'vocabulary_id'	=> array('type' => 'int', 'constraint' => '10', 'unsigned' => TRUE, 'auto_increment' => TRUE),
+			'kernel_id'		=> array('type' => 'int', 'constraint' => '10'),
 			'term'			=> array('type' => 'varchar' , 'constraint' => '32'),
 			'count'			=> array('type' => 'int' , 'constraint' => '10')
 		);
@@ -65,6 +75,7 @@ class Spam_upd {
 
 		$fields = array(
 			'parameter_id'	=> array('type' => 'int', 'constraint' => '10', 'unsigned' => TRUE, 'auto_increment' => TRUE),
+			'kernel_id'		=> array('type' => 'int', 'constraint' => '10'),
 			'term'			=> array('type' => 'int', 'constraint' => '10', 'unsigned' => TRUE),
 			'class'			=> array('type' => 'tinyint' , 'constraint' => '1'),
 			'mean'			=> array('type' => 'decimal' , 'constraint' => '16,12'),
@@ -88,6 +99,7 @@ class Spam_upd {
 
 		$fields = array(
 			'trap_id'	=> array('type' => 'int', 'constraint' => '10', 'unsigned' => TRUE, 'auto_increment' => TRUE),
+			'author'	=> array('type' => 'int', 'constraint' => '10'),
 			'file'		=> array('type' => 'varchar', 'constraint' => '129'),
 			'class'		=> array('type' => 'varchar', 'constraint' => '64'),
 			'method'	=> array('type' => 'varchar', 'constraint' => '64'),

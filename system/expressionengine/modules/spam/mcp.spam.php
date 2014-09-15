@@ -184,6 +184,35 @@ class Spam_mcp {
 	}
 
 	/**
+	 * Grab the appropriate kernel ID or insert a new one
+	 * 
+	 * @param string $name The name of the kernel 
+	 * @access private
+	 * @return int The kernel ID
+	 */
+	private function _get_kernel($name)
+	{
+		ee()->db->select('kernel_id');
+		ee()->db->from('spam_kernels');
+		ee()->db->where('name', $name);
+		$query = ee()->db->get();
+
+		if ($query->num_rows() > 0)
+		{
+			$row = $query->row();
+			$id = $row->kernel_id;
+		}
+		else
+		{
+			$data = array('name' => $name);
+			ee()->db->insert('spam_kernels', $data);
+			$id = ee()->db->insert_id();
+		}
+
+		return $id;
+	}
+
+	/**
 	 * Returns an array of content flagged as spam
 	 * 
 	 * @param  integer $limit The number of entries to grab  
@@ -225,6 +254,7 @@ class Spam_mcp {
 	{
 		ee()->db->select('ip_addess', 'username', 'email', 'url');
 		ee()->db->from('spam_trap');
+		ee()->db->join('members', 'spam_trap.author = members.member_id');
 		ee()->db->limit($limit);
 		$query = ee()->db->get();
 
@@ -233,6 +263,31 @@ class Spam_mcp {
 		foreach ($query->result() as $spammer)
 		{
 			$result[] = $spammer;
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Returns an array of member data for known non-spammers 
+	 * 
+	 * @access private
+	 * @return array
+	 */
+	private function _get_real_people($limit = 1000)
+	{
+		ee()->db->select('ip_addess', 'username', 'email', 'url');
+		ee()->db->from('members');
+		ee()->db->join('spam_trap', 'spam_trap.author = members.member_id');
+		ee()->db->where(array('trap_id' => NULL));
+		ee()->db->limit($limit);
+		$query = ee()->db->get();
+
+		$result = array();
+
+		foreach ($query->result() as $member)
+		{
+			$result[] = $member;
 		}
 
 		return $result;
@@ -344,18 +399,25 @@ class Spam_mcp {
 	private function _train_member_parameters()
 	{
 		$spammers = $this->_get_spammers();
+		$hammers = $this->_get_real_people();
+		$members = array_merge($spammers, $hammers);
+
+		$spam_classes = array_pad(array(), count($spammers), 1);
+		$ham_classes = array_pad(array(), count($hammers), 0);
+		$classes = array_merge($spam_classes, $ham_classes);
+
 		$training = array();
 		$emails = array();
 		$ips = array();
 		$usernames = array();
 		$urls = array();
 
-		foreach ($spammers as $spammer)
+		foreach ($members as $member)
 		{
-			$ips[] = explode('.', $spammer->ip_address);
-			$emails[] = $spammer->email;
-			$usernames[] = $spammer->username;
-			$urls[] = $spammer->urls;
+			$ips[] = explode('.', $member->ip_address);
+			$emails[] = $member->email;
+			$usernames[] = $member->username;
+			$urls[] = $member->urls;
 		}
 
 		$features = array(
@@ -369,19 +431,21 @@ class Spam_mcp {
 		foreach ($features as $key => $val)
 		{
 			$vocabulary = array();
+			$kernel = $this->_get_kernel($key);
 
 			foreach ($val->vocabulary as $term => $count)
 			{
 				$data = array(
 					'term' => $term,
 					'count' => $count,
+					'kernel_id' => $kernel
 				);
 
 				$vocabulary[] = $data;
 			}
 
-			ee()->db->empty_table("spam_{$key}_vocabulary"); 
-			ee()->db->insert_batch("spam_{$key}_vocabulary", $vocabulary); 
+			ee()->db->empty_table("spam_vocabulary"); 
+			ee()->db->insert_batch("spam_vocabulary", $vocabulary); 
 
 			// Loop through and calculate the parameters for each feature and class
 
@@ -397,6 +461,8 @@ class Spam_mcp {
 				}
 			}
 		}
+
+		$kernel = $this->_get_kernel('member');
 
 		foreach ($training_classes as $class => $sources)
 		{
@@ -421,6 +487,7 @@ class Spam_mcp {
 				$sample = new Expectation($feature);
 
 				$training[] = array(
+					'kernel_id' => $kernel,
 					'class' => $class,
 					'term' => $index,
 					'mean' => $sample->mean,
@@ -448,6 +515,8 @@ class Spam_mcp {
 		$training_classes = array();
 		$training = array();
 
+		$kernel = $this->_get_kernel('default');
+
 		// Set the new vocabulary
 		$vocabulary = array();
 
@@ -456,6 +525,7 @@ class Spam_mcp {
 			$data = array(
 				'term' => $term,
 				'count' => $count,
+				'kernel_id' => $kernel
 			);
 
 			$vocabulary[] = $data;
@@ -492,6 +562,7 @@ class Spam_mcp {
 				$sample = new Expectation($feature);
 
 				$training[] = array(
+					'kernel_id' => $kernel,
 					'class' => $class,
 					'term' => $index,
 					'mean' => $sample->mean,

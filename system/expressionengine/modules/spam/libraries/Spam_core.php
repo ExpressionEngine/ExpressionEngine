@@ -33,7 +33,7 @@ class Spam_core {
 	 */
 	public function __construct()
 	{
-		$training = new Spam_training();
+		$training = new Spam_training('default');
 		$this->classifier = $training->load_classifier();
 	}
 
@@ -67,10 +67,11 @@ class Spam_core {
 	 * @access public
 	 * @return void
 	 */
-	public function moderate_content($file, $class, $method, $content, $doc)
+	public function moderate_content($file, $author, $class, $method, $content, $doc)
 	{
 		$data = array(
 			'file' => $file,
+			'author' => $author,
 			'class' => $class,
 			'method' => $method,
 			'data' => serialize($content),
