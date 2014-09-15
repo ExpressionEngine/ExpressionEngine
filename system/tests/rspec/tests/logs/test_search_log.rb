@@ -241,6 +241,8 @@ feature 'Search Log' do
 		@page.modal_submit_button.click # Submits a form
 
 		@page.should have_alert
+		@page.alert.text.should eq "Logs Deleted 1 log(s) deleted from Search logs"
+
 		@page.should have_no_content our_terms
 	end
 
@@ -254,6 +256,8 @@ feature 'Search Log' do
 		@page.modal_submit_button.click # Submits a form
 
 		@page.should have_alert
+		@page.alert.text.should eq "Logs Deleted 165 log(s) deleted from Search logs"
+
 		@page.should have_no_results
 		@page.should_not have_pagination
 	end
