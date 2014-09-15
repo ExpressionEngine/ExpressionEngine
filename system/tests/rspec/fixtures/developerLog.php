@@ -77,8 +77,8 @@ for ($x = 0; $x < $count; $x++)
 			$fixture->addon_module = "foo";
 			$fixture->addon_method = "bar";
 			$fixture->template_id = 1;
-			$fixture->template_name = "site";
-			$fixture->template_group = "index";
+			$fixture->template_name = "index";
+			$fixture->template_group = "site";
 
 			if ($type == 4)
 			{
