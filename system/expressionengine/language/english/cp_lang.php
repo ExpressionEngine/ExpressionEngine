@@ -418,9 +418,6 @@ $lang = array(
 'member_logged_out' =>
 'Logged out',
 
-'cleared_logs' =>
-'Cleared Log Files',
-
 'close' =>
 'Close',
 

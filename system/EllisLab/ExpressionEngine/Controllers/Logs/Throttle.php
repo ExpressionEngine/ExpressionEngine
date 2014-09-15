@@ -48,7 +48,11 @@ class Throttle extends Logs {
 
 		if (ee()->input->post('delete'))
 		{
-			return $this->delete(ee()->input->post('delete'));
+			$this->delete('Throttle', lang('throttle_log'));
+			if (strtolower(ee()->input->post('delete')) == 'all')
+			{
+				return ee()->functions->redirect(cp_url('logs/throttle'));
+			}
 		}
 
 		$this->base_url->path = 'logs/throttle';
@@ -169,35 +173,6 @@ class Throttle extends Logs {
 		);
 
 		ee()->cp->render('logs/throttle', $vars);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Deletes log entries, either all at once, or one at a time
-	 *
-	 * @param mixed  $id	Either the id to delete or "all"
-	 */
-	private function delete($id = 'all')
-	{
-		if ( ! ee()->cp->allowed_group('can_access_tools', 'can_access_logs'))
-		{
-			show_error(lang('unauthorized_access'));
-		}
-
-		$query = ee()->api->get('Throttle');
-
-		$success_flashdata = lang('cleared_logs');
-		if (strtolower($id) != 'all')
-		{
-			$query = $query->filter('throttle_id', $id);
-			$success_flashdata = lang('logs_deleted');
-		}
-
-		$query->all()->delete();
-
-		ee()->view->set_message('success', $success_flashdata, '', TRUE);
-		ee()->functions->redirect(cp_url('logs/throttle'));
 	}
 }
 // END CLASS

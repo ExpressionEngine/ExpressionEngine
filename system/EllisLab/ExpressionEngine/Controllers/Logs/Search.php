@@ -48,7 +48,11 @@ class Search extends Logs {
 
 		if (ee()->input->post('delete'))
 		{
-			return $this->delete(ee()->input->post('delete'));
+			$this->delete('SearchLog', lang('search_log'));
+			if (strtolower(ee()->input->post('delete')) == 'all')
+			{
+				return ee()->functions->redirect(cp_url('logs/search'));
+			}
 		}
 
 		$this->base_url->path = 'logs/search';
@@ -179,35 +183,6 @@ class Search extends Logs {
 		);
 
 		ee()->cp->render('logs/search', $vars);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Deletes log entries, either all at once, or one at a time
-	 *
-	 * @param mixed  $id	Either the id to delete or "all"
-	 */
-	private function delete($id = 'all')
-	{
-		if ( ! ee()->cp->allowed_group('can_access_tools', 'can_access_logs'))
-		{
-			show_error(lang('unauthorized_access'));
-		}
-
-		$query = ee()->api->get('SearchLog');
-
-		$success_flashdata = lang('cleared_logs');
-		if (strtolower($id) != 'all')
-		{
-			$query = $query->filter('id', $id);
-			$success_flashdata = lang('logs_deleted');
-		}
-
-		$query->all()->delete();
-
-		ee()->view->set_message('success', $success_flashdata, '', TRUE);
-		ee()->functions->redirect(cp_url('logs/search'));
 	}
 }
 // END CLASS

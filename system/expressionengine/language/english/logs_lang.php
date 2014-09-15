@@ -15,7 +15,8 @@ $lang = array(
 'view_cp_log' 			=> 'Control Panel Access Logs',
 'view_developer_log'	=> 'Developer Logs',
 
-'logs_deleted'			=> 'Logs deleted',
+'logs_deleted'			=> 'Logs Deleted',
+'logs_deleted_desc'		=> '<b>%d</b> log(s) deleted from <b>%s</b> logs',
 
 'clear_cp_logs'			=> 'Remove all CP Access Logs',
 

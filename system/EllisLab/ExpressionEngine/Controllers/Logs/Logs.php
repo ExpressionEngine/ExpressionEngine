@@ -358,6 +358,42 @@ class Logs extends CP_Controller {
 			ee()->functions->redirect(cp_url('logs/cp'));
 		}
 	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Deletes log entries, either all at once, or one at a time
+	 *
+	 * @param string	$model		The name of the model to pass to
+	 *								ee()->api->get()
+	 * @param string	$log_type	The text used in the delete message
+	 *								describing the type of log deleted
+	 */
+	protected function delete($model, $log_type)
+	{
+		if ( ! ee()->cp->allowed_group('can_access_tools', 'can_access_logs'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		$id = ee()->input->post('delete');
+
+		$flashdata = FALSE;
+		if (strtolower($id) == 'all')
+		{
+			$id = NULL;
+			$flashdata = TRUE;
+		}
+
+		$query = ee()->api->get($model, $id);
+
+		$count = $query->count();
+		$query->all()->delete();
+
+		$message = sprintf(lang('logs_deleted_desc'), $count, lang($log_type));
+
+		ee()->view->set_message('success', lang('logs_deleted'), $message, $flashdata);
+	}
 }
 // END CLASS
 
