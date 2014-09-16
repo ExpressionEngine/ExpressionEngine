@@ -843,7 +843,7 @@ class CI_Upload {
 		// it is actually a clean image, as it will be in nearly all instances
 		// _except_ an attempted XSS attack.
 
-		if (function_exists('getimagesize') && @getimagesize($file) !== FALSE)
+		if (function_exists('getimagesize') && ($image = getimagesize($file)) !== FALSE)
 		{
 			$ext = strtolower(ltrim($this->file_ext, '.'));
 			$mime_by_ext = $this->mimes_types($ext);
