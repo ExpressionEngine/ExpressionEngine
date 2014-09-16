@@ -35,7 +35,27 @@ class Spam_core {
 	{
 		$training = new Spam_training('default');
 		$this->classifier = $training->load_classifier();
+		$member_training = new Spam_training('member');
+		$this->member_classifier = $member_training->load_classifier();
 	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Returns true if the member is classified as a spammer
+	 * 
+	 * @param string $username 
+	 * @param string $email 
+	 * @param string $url 
+	 * @param string $ip 
+	 * @access public
+	 * @return void
+	 */
+	public function member_classify($username, $email, $url, $ip)
+	{
+		return $this->classifier->classify($source, 'spam');
+	}
+
 
 	// --------------------------------------------------------------------
 

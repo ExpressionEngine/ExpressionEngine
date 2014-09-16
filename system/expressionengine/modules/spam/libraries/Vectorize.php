@@ -40,6 +40,7 @@ class Collection {
 	public $idf_lookup = array();
 	public $corpus = "";
 	public $limit = 1000;
+	public $transformations = array('_tfidf', '_heuristics');
 	
 	/**
 	 * Get our corpus ready. First we strip out all common words specified in our stop word list,
@@ -49,10 +50,12 @@ class Collection {
 	 * @param array   	 $source 
 	 * @param array   	 $stop_words
 	 * @param Tokenizer  $tokenizer  Tokenizer object used to split string
+	 * @param array 	 $transformations  The transformations to use when 
+	 * 					 				   calculating the vector
 	 * @param bool    	 $clean  Strip all non alpha-numeric characters
 	 * @return void
 	 */
-	public function __construct($source, $stop_words = array(), $limit = 1000, $tokenizer, $clean = TRUE)
+	public function __construct($source, $stop_words = array(), $limit = 1000, $tokenizer, $transformations = array(), $clean = TRUE)
 	{
 		$this->time_pre = microtime(true);
 		// register our vectorizer rules
@@ -61,6 +64,11 @@ class Collection {
 		$this->register('Links');
 		$this->register('Punctuation');
 		$this->register('Spaces');
+
+		if ( ! empty($transformations))
+		{
+			$this->transformations = $transformations;
+		}
 
 		$this->tokenizer = $tokenizer;
 		$this->clean = $clean;
@@ -119,6 +127,18 @@ class Collection {
 		$this->vocabulary_index = $vocabulary_index;
 	}
 
+	public function transform($source)
+	{
+		$vector = array();
+
+		foreach ($this->transformations as $transform)
+		{
+			$vector = array_merge($vector, $this->$transform($source));
+		}
+
+		return $vector;
+	}
+
 	/**
 	 * Computes a vector of feature values suitable for using with Naive Bayes
 	 * 
@@ -130,9 +150,7 @@ class Collection {
 	{
 		$source = str_ireplace($this->stop_words, ' ', $source);
 		$source = new Document($source, $this->tokenizer, $this->clean);
-		$vector = $this->_tfidf($source);
-		$heuristics = $this->_heuristics($source);
-		return array_merge($vector, $heuristics);
+		return $this->transform($source);
 	}
 
 	/**
@@ -147,9 +165,7 @@ class Collection {
 
 		foreach ($this->documents as $source)
 		{
-			$vector = $this->_tfidf($source);
-			$heuristics = $this->_heuristics($source);
-			$tfidf[] = array_merge($vector, $heuristics);
+			$tfidf[] = $this->transform->source;
 		}
 
 		return $tfidf;
