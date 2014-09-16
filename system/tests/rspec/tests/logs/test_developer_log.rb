@@ -73,6 +73,25 @@ feature 'Developer Log' do
 		@page.should have(1).items
 	end
 
+	it 'searches localized deprecation strings' do
+		our_phrase = "called in"
+
+		@page.generate_data
+		@page.load
+		no_php_js_errors
+
+		confirm @page
+
+		# Be sane and make sure it's there before we search for it
+		@page.should have_text our_phrase
+
+		@page.phrase_search.set our_phrase
+		@page.submit_button.click
+
+		@page.should have_text our_phrase
+		@page.should_not have_no_results
+	end
+
 	it 'shows no results on a failed search' do
 		our_desc = "NotFoundHere"
 
