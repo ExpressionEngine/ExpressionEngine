@@ -9,7 +9,7 @@ end
 def no_php_js_errors
 	# Search for "on line" or "Line Number:" since they're in pretty much
   # in every PHP error
-  if page.has_no_selector?('h1', :text => 'Developer Logs')
+  if not page.current_url.include? 'logs/developer'
     page.should have_no_content('on line')
   end
   page.should have_no_content('Line Number:')
