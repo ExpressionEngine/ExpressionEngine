@@ -60,19 +60,63 @@ class Developer extends Logs {
 
 		if ( ! empty(ee()->view->search_value))
 		{
-			$logs = $logs->filterGroup()
-			               ->filter('description', 'LIKE', '%' . ee()->view->search_value . '%')
-			               ->orFilter('function', 'LIKE', '%' . ee()->view->search_value . '%')
-			               ->orFilter('line', 'LIKE', '%' . ee()->view->search_value . '%')
-			               ->orFilter('file', 'LIKE', '%' . ee()->view->search_value . '%')
-			               ->orFilter('deprecated_since', 'LIKE', '%' . ee()->view->search_value . '%')
-			               ->orFilter('use_instead', 'LIKE', '%' . ee()->view->search_value . '%')
-			               ->orFilter('template_name', 'LIKE', '%' . ee()->view->search_value . '%')
-			               ->orFilter('template_group', 'LIKE', '%' . ee()->view->search_value . '%')
-			               ->orFilter('addon_module', 'LIKE', '%' . ee()->view->search_value . '%')
-			               ->orFilter('addon_method', 'LIKE', '%' . ee()->view->search_value . '%')
-			               ->orFilter('snippets', 'LIKE', '%' . ee()->view->search_value . '%')
-						 ->endFilterGroup();
+			/* The following SQL is an example of how to build the localized
+			 * deprecation log for searching.
+			 *
+			 *	SELECT * FROM exp_developer_log
+			 *	WHERE IFNULL(description,
+			 *		CONCAT_WS(' ',
+			 *			CONCAT('Deprecated function ', function, ' called'),
+			 *			CONCAT(' in ', file, ' on line ', line, '.'),
+			 *			CONCAT('From template tag exp:', addon_module, ':', addon_method, ' in ', template_group, '/', template_name, '.'),
+			 *			CONCAT('This tag may have been parsed from one of these snippets: ', snippets),
+			 *			CONCAT('Deprecated since ', deprecated_since, '.'),
+			 *			CONCAT('Use ', use_instead, ' instead.')
+			 *		)
+			 *	) LIKE '%exp:foo:bar%';
+			 */
+
+			$deprecated_function	= str_replace('%s', "', function, '", lang('deprecated_function'));
+			$deprecated_on_line		= str_replace('%s', "', file, '", lang('deprecated_on_line'));
+			$deprecated_on_line		= str_replace('%d', "', line, '", $deprecated_on_line);
+
+			$deprecated_template	= str_replace(' %s ', " exp:', addon_module, ':', addon_method, ' ", lang('deprecated_template'));
+			$deprecated_template	= str_replace(' %s.', " ', template_group, '/', template_name, '.", $deprecated_template);
+
+			$deprecated_snippets	= str_replace('%s', "', snippets, '", lang('deprecated_snippets'));
+			$deprecated_since		= str_replace('%s', "', deprecated_since, '", lang('deprecated_since'));
+			$deprecated_use_instead	= str_replace('%s', "', use_instead, '", lang('deprecated_use_instead'));
+
+			$localized_description  = "IFNULL(description,\n";
+			$localized_description .= 	"CONCAT_WS(' ',\n";
+			$localized_description .= 		"CONCAT('" . $deprecated_function . "'),\n";
+			$localized_description .= 		"CONCAT('" . $deprecated_on_line . "'),\n";
+			$localized_description .= 		"CONCAT('" . $deprecated_template . "'),\n";
+			$localized_description .= 		"CONCAT('" . $deprecated_snippets . "'),\n";
+			$localized_description .= 		"CONCAT('" . $deprecated_since . "'),\n";
+			$localized_description .= 		"CONCAT('" . $deprecated_use_instead . "')\n";
+			$localized_description .= 	")\n";
+			$localized_description .= ")\n";
+
+			// @TODO refactor to eliminate this query
+			ee()->load->dbforge();
+			$results = ee()->db->select('log_id')
+				->where($localized_description . " LIKE '%" . ee()->view->search_value . "%'")
+				->get('developer_log')
+				->result_array();
+
+			$ids = array();
+			foreach ($results as $row)
+			{
+				$ids[] = $row['log_id'];
+			}
+
+			if (empty($ids))
+			{
+				$ids[] = -1; // log_id is usually positive, thus this triggers a no_results response
+			}
+
+			$logs = $logs->filter('log_id', 'IN', $ids);
 		}
 
 		if ($logs->count() > 10)
