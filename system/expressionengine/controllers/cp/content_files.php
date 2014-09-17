@@ -1692,7 +1692,7 @@ class Content_files extends CP_Controller {
 		$id = $this->input->post('id');
 
 		$type = ($id) ? 'edit' : 'new';
-		$data['wm_name'] = $this->input->post('name');
+		$data['wm_name'] = strip_tags($this->input->post('name'));
 
 		$defaults = array(
 						'wm_image_path'					=>	'',
