@@ -495,7 +495,7 @@ content associated with your account will also be deleted.',
 'You are now logged out.',
 
 'mbr_no_reset_id' =>
-'The ID number you submitted does not appear to be valid.  Please check the link you followed.',
+'The password reset token does not appear to be valid.  Please check the link you followed.',
 
 'mbr_id_not_found' =>
 'The code number you submitted was not found in the database.',

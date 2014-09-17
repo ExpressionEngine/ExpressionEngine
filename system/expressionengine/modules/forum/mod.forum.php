@@ -2148,9 +2148,7 @@ class Forum {
 	{
 		if (isset(ee()->session->tracker[0]) && substr(ee()->session->tracker[0], -17) == 'spellcheck_iframe')
 		{
-			array_shift(ee()->session->tracker);
-
-			ee()->input->set_cookie('tracker', serialize(ee()->session->tracker), '0');
+			ee()->session->do_not_track();
 		}
 
 		if ( ! class_exists('EE_Spellcheck'))

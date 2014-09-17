@@ -8267,7 +8267,7 @@ class Forum_Core extends Forum {
 
 		if (isset(ee()->session->tracker[2]))
 		{
-			$return = str_replace('/'.$this->trigger, '', ee()->session->tracker[2]);
+			$return = reduce_double_slashes(str_replace($this->trigger, '', ee()->session->tracker[2]));
 			ee()->functions->redirect($this->forum_path($return));
 		}
 

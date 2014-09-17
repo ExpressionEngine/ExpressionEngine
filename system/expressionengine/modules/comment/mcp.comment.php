@@ -479,6 +479,8 @@ class Comment_mcp {
 				$col = 'comment';
 			}
 
+			$col = preg_replace('/[^\w-.]/', '', $col);
+
 			ee()->db->order_by($col, $dir);
 		}
 

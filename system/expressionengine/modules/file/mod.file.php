@@ -488,7 +488,7 @@ class File {
 						$row[$data['name'].'_'.$k] = $v;
 					}
 				}
-				else
+				elseif ( ! isset($row[$data['name'].'_height']))
 				{
 					$row[$data['name'].'_height'] = '';
 					$row[$data['name'].'_width'] = '';

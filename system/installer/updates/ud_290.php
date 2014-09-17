@@ -179,7 +179,6 @@ class Updater {
 
 		// We need to figure out which template to load.
 		// Need to check the edit date.
-		ee()->load->model('template_model');
 		$templates = ee()->template_model->fetch_last_edit(array(), TRUE);
 
 		foreach ($templates as $template)
@@ -292,7 +291,6 @@ class Updater {
 		$installer_config = ee()->config;
 		ee()->config = new MSM_Config();
 
-		ee()->load->model('template_model');
 		$templates = ee()->template_model->fetch_last_edit(array(), TRUE);
 
 		$warnings = array();

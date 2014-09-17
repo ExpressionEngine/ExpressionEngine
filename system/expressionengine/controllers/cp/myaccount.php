@@ -2092,6 +2092,7 @@ class MyAccount extends CP_Controller {
 
 		$link = str_replace(array('/', '--'), array('&', '='), $this->input->get('link', TRUE));
 		$linkt = base64_decode($this->input->get('linkt', TRUE));
+		$linkt = strip_tags($this->security->xss_clean($linkt));
 
 		if ($link == '')
 		{
@@ -2158,7 +2159,7 @@ class MyAccount extends CP_Controller {
 			if (strncmp($key, 'title_', 6) == 0 && $val != '')
 			{
 				// XSS clean the title
-				$_POST[$key] = $val = $this->security->xss_clean($val);
+				$_POST[$key] = $val = strip_tags($this->security->xss_clean($val));
 
 				$i = $_POST['order_'.substr($key, 6)];
 

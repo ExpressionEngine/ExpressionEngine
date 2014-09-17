@@ -7,7 +7,7 @@
 		array('data' => lang('edit'), 'width' => '5%'),
 		array('data' => lang('delete'), 'width' => '5%')
 	);
-						
+
 	if ($watermarks->num_rows() > 0)
 	{
 		foreach ($watermarks->result() as $wm)
