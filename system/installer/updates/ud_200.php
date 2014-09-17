@@ -1651,9 +1651,6 @@ BSH;
 			$groups[$row->group_id][] = $row->site_id;
 		}
 
-		ee()->smartforge->drop_column('member_groups', 'can_admin_preferences');
-		ee()->smartforge->drop_column('member_groups', 'can_admin_utilities');
-
 		$query = ee()->db->select('site_id')->get('sites');
 
 		foreach ($query->result() as $row)
@@ -1667,6 +1664,16 @@ BSH;
 				}
 			}
 		}
+
+		return 'drop_member_group_columns';
+	}
+
+	// ------------------------------------------------------------------------
+
+	public function drop_member_group_columns()
+	{
+		ee()->smartforge->drop_column('member_groups', 'can_admin_preferences');
+		ee()->smartforge->drop_column('member_groups', 'can_admin_utilities');
 
 		return 'convert_fresh_variables';
 	}
@@ -1804,16 +1811,12 @@ BSH;
 		ee()->db->where('field_related_to', 'blog');
 		ee()->db->update('weblog_fields');
 
-		ee()->smartforge->rename_table('weblog_fields', 'channel_fields');
-
 		ee()->smartforge->modify_column(
 			'weblog_data',
 			array(
 				'weblog_id'	=> array('name' => 'channel_id',	'type' => 'int',	'constraint'	=> 4,	'unsigned' => TRUE,	'null' => FALSE)
 			)
 		);
-
-		ee()->smartforge->rename_table('weblog_data', 'channel_data');
 
 		$template_replacements = array(
 			'weblog:weblog_name'			=> 'channel:channel_name',
@@ -1842,7 +1845,17 @@ BSH;
 		ee()->db->where('module_name', 'Weblog');
 		ee()->db->update('modules');
 
-		// Finished!
+		return 'rename_weblog_tables';
+	}
+
+	// ------------------------------------------------------------------------
+
+	public function rename_weblog_tables()
+	{
+		ee()->smartforge->rename_table('weblog_fields', 'channel_fields');
+		ee()->smartforge->rename_table('weblog_data', 'channel_data');
+
+		// Finished
 		return TRUE;
 	}
 
