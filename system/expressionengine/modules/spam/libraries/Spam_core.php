@@ -53,7 +53,7 @@ class Spam_core {
 	 */
 	public function member_classify($username, $email, $url, $ip)
 	{
-		return $this->classifier->classify($source, 'spam');
+		return $this->member_classifier->classify($source, 'spam');
 	}
 
 
