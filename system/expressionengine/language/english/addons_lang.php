@@ -2,7 +2,24 @@
 
 $lang = array(
 
-'addons'						=>		'Add-ons',
+/* Sidebar Menu */
+'all_addons'					=>		'All Add-Ons',
+'manage_extensions'				=>		'Manage Extensions',
+
+'addon_manager'					=>		'Add-On Manager',
+'search_addons_button'			=>		'search add-ons',
+
+'addon'							=>		'Add-On',
+'no_addon_search_results'		=>		'No <b>Add-Ons</b> Found',
+
+/* Filters */
+'filters'						=>		'Filters',
+'show'							=>		'show',
+'custom_limit'					=>		'custom limit',
+'entries'						=>		'Entries',
+
+// 2.x
+'addons'						=>		'Add-Ons',
 
 'accessories'					=> 		'Accessories',
 'modules'						=>		'Modules',

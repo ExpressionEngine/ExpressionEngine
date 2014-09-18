@@ -148,10 +148,15 @@ class EE_Menu {
 		$menu = array(
 			'channel_manager'  => cp_url('channel'),
 			'template_manager' => cp_url('design'),
-			'addon_manager'    => cp_url('design'),
+			'addon_manager'    => cp_url('addons'),
 			'utilities'        => cp_url('utilities'),
 			'logs'             => cp_url('logs')
 		);
+
+		if ( ! ee()->cp->allowed_group('can_access_addons'))
+		{
+			unset($menu['addon_manager']);
+		}
 
 		if ( ! ee()->cp->allowed_group('can_access_logs'))
 		{
