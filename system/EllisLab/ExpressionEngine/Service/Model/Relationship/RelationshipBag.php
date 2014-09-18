@@ -83,7 +83,22 @@ class RelationshipBag {
 	 */
 	public function set($name, $model)
 	{
-		$this->relationships[$name] = $model;
+		if (is_array($model))
+		{
+			$this->relationships[$name] = new Collection($model);
+		}
+		elseif ( ! is_array($model) && ! ($model instanceof Collection))
+		{
+			$this->relationships[$name] = new Collection(array($model));
+		}
+		elseif ($model instanceof Collection)
+		{
+			$this->relationships[$name] = $model;
+		}
+		else
+		{
+			throw new \RuntimeException('Unrecognized type passed to RelationshipBag.');
+		}
 	}
 
 	/**
@@ -97,9 +112,12 @@ class RelationshipBag {
 	{
 		if ( ! $this->has($name))
 		{
-			$this->set($name, new Collection());
+			$this->set($name, $model);
 		}
-
-		$this->relationships[$name][] = $model;
+		else
+		{
+			$this->relationships[$name][] = $model;
+		}
 	}
+
 }
