@@ -698,7 +698,15 @@ $this->db->join($relationship_meta->to_table . ' AS ' . $relationship_meta->to_t
 					$withs[$parent] = array();
 				}
 
-				$withs[$parent] = $this->addToWith($withs[$parent], $children);
+				if ( is_array($children))
+				{
+					$withs[$parent] = $this->addToWith($withs[$parent], $children);
+				}
+				else
+				{
+					$withs[$parent] = $children;
+				}
+
 			}
 		}
 
