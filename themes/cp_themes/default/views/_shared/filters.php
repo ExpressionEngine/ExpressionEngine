@@ -11,6 +11,7 @@
 				<?php endif; ?>
 			</a>
 			<div class="sub-menu">
+				<?php if (isset($filter['custom_value'])): ?>
 				<fieldset class="filter-search">
 					<input
 						type="text"
@@ -24,6 +25,7 @@
 						<?php endif; ?>
 					>
 				</fieldset>
+				<?php endif; ?>
 				<ul>
 				<?php foreach ($filter['options'] as $url => $label): ?>
 					<li><a href="<?=$url?>"><?=$label?></a></li>
