@@ -3355,6 +3355,7 @@ GRID_FALLBACK;
 				foreach ($rows as $row)
 				{
 					$row_output = $var_pair_tagdata;
+					$row_output = ee()->functions->prep_conditionals($row_output, $row);
 
 					foreach ($row as $k => $v)
 					{
