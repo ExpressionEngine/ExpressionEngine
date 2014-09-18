@@ -245,7 +245,9 @@ class Table {
 	{
 		if ( ! empty($data))
 		{
-			if (count($data[0]) != count($this->columns))
+			if (count($data[0]) != count($this->columns) &&
+				count($data[0]['columns']) != count($this->columns)
+				)
 			{
 				throw new \InvalidArgumentException('Data must have the same number of columns as the set columns.');
 			}
@@ -261,6 +263,14 @@ class Table {
 			// Normalize the table data for plugging into table view
 			foreach ($data as $row)
 			{
+				$attrs = array();
+
+				if (array_keys($row) == array('attrs', 'columns'))
+				{
+					$attrs = $row['attrs'];
+					$row = $row['columns'];
+				}
+
 				$i = 0;
 				$data_row = array();
 				foreach ($row as $item)
@@ -309,7 +319,10 @@ class Table {
 					$i++;
 				}
 
-				$this->data[] = $data_row;
+				$this->data[] = array(
+					'attrs'		=> $attrs,
+					'columns'	=> $data_row
+				);
 			}
 
 			$this->config['total_rows'] = count($this->data);
@@ -356,8 +369,8 @@ class Table {
 		{
 			$search = array_keys($columns);
 			$index = array_search($sort_col, $search);
-			$a = $a[$index]['content'];
-			$b = $b[$index]['content'];
+			$a = $a['columns'][$index]['content'];
+			$b = $b['columns'][$index]['content'];
 
 			// Sort numbers as numbers
 			if (is_numeric($a) && is_numeric($b))
@@ -396,7 +409,7 @@ class Table {
 		{
 			$match = FALSE;
 
-			foreach ($row as $column)
+			foreach ($row['columns'] as $column)
 			{
 				// Only search searchable columns
 				if ($column['type'] == self::COL_TEXT OR

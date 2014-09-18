@@ -61,8 +61,8 @@ if ($wrap): ?>
 			</tr>
 		<?php endif ?>
 		<?php foreach ($data as $row): ?>
-			<tr>
-				<?php foreach ($row as $column): ?>
+			<tr<?php foreach ($row['attrs'] as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; ?>>
+				<?php foreach ($row['columns'] as $column): ?>
 					<?php if ($column['encode'] == TRUE): ?>
 						<td><?=htmlspecialchars($column['content'])?></td>
 					<?php elseif ($column['type'] == Table::COL_TOOLBAR): ?>
