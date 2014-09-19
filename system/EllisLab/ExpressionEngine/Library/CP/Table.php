@@ -245,9 +245,15 @@ class Table {
 	{
 		if ( ! empty($data))
 		{
-			if (count($data[0]) != count($this->columns) &&
-				count($data[0]['columns']) != count($this->columns)
-				)
+			if (array_key_exists('columns', $data[0]))
+			{
+				$count = count($data[0]['columns']);
+			}
+			else
+			{
+				$count = count($data[0]);
+			}
+			if ($count != count($this->columns))
 			{
 				throw new \InvalidArgumentException('Data must have the same number of columns as the set columns.');
 			}
