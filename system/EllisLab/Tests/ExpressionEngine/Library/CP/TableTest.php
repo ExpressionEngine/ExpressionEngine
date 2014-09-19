@@ -125,73 +125,79 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 			'columns'		=> $expected_cols,
 			'data'			=> array(
 				array(
-					array(
-						'content' 	=> 'col 1 data',
-						'type'		=> Table::COL_TEXT,
-						'encode'	=> FALSE
-					),
-					array(
-						'content' 	=> 'col 2 data',
-						'type'		=> Table::COL_TEXT,
-						'encode'	=> FALSE
-					),
-					array(
-						'content' 	=> 'col 3 data',
-						'type'		=> Table::COL_TEXT,
-						'encode'	=> FALSE
-					),
-					array(
-						'content' 	=> '',
-						'type'		=> Table::COL_TOOLBAR,
-						'encode'	=> FALSE,
-						'toolbar_items'	=> array('view' => 'http://test/'),
-					),
-					array(
-						'content' 	=> 'status',
-						'type'		=> Table::COL_STATUS,
-						'encode'	=> TRUE
-					),
-					array(
-						'content' 	=> '',
-						'type'		=> Table::COL_CHECKBOX,
-						'encode'	=> FALSE,
-						'name'		=> 'table[]',
-						'value'		=> 'test'
+					'attrs' => array(),
+					'columns' => array(
+						array(
+							'content' 	=> 'col 1 data',
+							'type'		=> Table::COL_TEXT,
+							'encode'	=> FALSE
+						),
+						array(
+							'content' 	=> 'col 2 data',
+							'type'		=> Table::COL_TEXT,
+							'encode'	=> FALSE
+						),
+						array(
+							'content' 	=> 'col 3 data',
+							'type'		=> Table::COL_TEXT,
+							'encode'	=> FALSE
+						),
+						array(
+							'content' 	=> '',
+							'type'		=> Table::COL_TOOLBAR,
+							'encode'	=> FALSE,
+							'toolbar_items'	=> array('view' => 'http://test/'),
+						),
+						array(
+							'content' 	=> 'status',
+							'type'		=> Table::COL_STATUS,
+							'encode'	=> TRUE
+						),
+						array(
+							'content' 	=> '',
+							'type'		=> Table::COL_CHECKBOX,
+							'encode'	=> FALSE,
+							'name'		=> 'table[]',
+							'value'		=> 'test'
+						)
 					)
 				),
 				array(
-					array(
-						'content' 	=> 'col 1 data 2',
-						'type'		=> Table::COL_TEXT,
-						'encode'	=> FALSE
-					),
-					array(
-						'content' 	=> 'col 2 data 2',
-						'type'		=> Table::COL_TEXT,
-						'encode'	=> FALSE
-					),
-					array(
-						'content' 	=> NULL,
-						'type'		=> Table::COL_TEXT,
-						'encode'	=> FALSE
-					),
-					array(
-						'content' 	=> '',
-						'type'		=> Table::COL_TOOLBAR,
-						'encode'	=> FALSE,
-						'toolbar_items'	=> array('view' => 'http://test/2'),
-					),
-					array(
-						'content' 	=> 'status',
-						'type'		=> Table::COL_STATUS,
-						'encode'	=> TRUE
-					),
-					array(
-						'content' 	=> '',
-						'type'		=> Table::COL_CHECKBOX,
-						'encode'	=> FALSE,
-						'name'		=> 'table[]',
-						'value'		=> 'test2'
+					'attrs' => array(),
+					'columns' => array(
+						array(
+							'content' 	=> 'col 1 data 2',
+							'type'		=> Table::COL_TEXT,
+							'encode'	=> FALSE
+						),
+						array(
+							'content' 	=> 'col 2 data 2',
+							'type'		=> Table::COL_TEXT,
+							'encode'	=> FALSE
+						),
+						array(
+							'content' 	=> NULL,
+							'type'		=> Table::COL_TEXT,
+							'encode'	=> FALSE
+						),
+						array(
+							'content' 	=> '',
+							'type'		=> Table::COL_TOOLBAR,
+							'encode'	=> FALSE,
+							'toolbar_items'	=> array('view' => 'http://test/2'),
+						),
+						array(
+							'content' 	=> 'status',
+							'type'		=> Table::COL_STATUS,
+							'encode'	=> TRUE
+						),
+						array(
+							'content' 	=> '',
+							'type'		=> Table::COL_CHECKBOX,
+							'encode'	=> FALSE,
+							'name'		=> 'table[]',
+							'value'		=> 'test2'
+						)
 					)
 				)
 			)
@@ -282,73 +288,79 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 			'columns'		=> $expected_cols,
 			'data'			=> array(
 				array(
-					array(
-						'content' 	=> 'col 1 data',
-						'type'		=> Table::COL_TEXT,
-						'encode'	=> FALSE
-					),
-					array(
-						'content' 	=> 'col 2 data',
-						'type'		=> Table::COL_TEXT,
-						'encode'	=> FALSE
-					),
-					array(
-						'content' 	=> 'col 3 data',
-						'type'		=> Table::COL_TEXT,
-						'encode'	=> FALSE
-					),
-					array(
-						'content' 	=> '',
-						'type'		=> Table::COL_TOOLBAR,
-						'encode'	=> FALSE,
-						'toolbar_items'	=> array('view' => 'http://test/'),
-					),
-					array(
-						'content' 	=> 'status',
-						'type'		=> Table::COL_STATUS,
-						'encode'	=> TRUE
-					),
-					array(
-						'content' 	=> '',
-						'type'		=> Table::COL_CHECKBOX,
-						'encode'	=> FALSE,
-						'name'		=> 'table[]',
-						'value'		=> 'test'
+					'attrs' => array(),
+					'columns' => array(
+						array(
+							'content' 	=> 'col 1 data',
+							'type'		=> Table::COL_TEXT,
+							'encode'	=> FALSE
+						),
+						array(
+							'content' 	=> 'col 2 data',
+							'type'		=> Table::COL_TEXT,
+							'encode'	=> FALSE
+						),
+						array(
+							'content' 	=> 'col 3 data',
+							'type'		=> Table::COL_TEXT,
+							'encode'	=> FALSE
+						),
+						array(
+							'content' 	=> '',
+							'type'		=> Table::COL_TOOLBAR,
+							'encode'	=> FALSE,
+							'toolbar_items'	=> array('view' => 'http://test/'),
+						),
+						array(
+							'content' 	=> 'status',
+							'type'		=> Table::COL_STATUS,
+							'encode'	=> TRUE
+						),
+						array(
+							'content' 	=> '',
+							'type'		=> Table::COL_CHECKBOX,
+							'encode'	=> FALSE,
+							'name'		=> 'table[]',
+							'value'		=> 'test'
+						)
 					)
 				),
 				array(
-					array(
-						'content' 	=> 'col 1 data 2',
-						'type'		=> Table::COL_TEXT,
-						'encode'	=> FALSE
-					),
-					array(
-						'content' 	=> 'col 2 data 2',
-						'type'		=> Table::COL_TEXT,
-						'encode'	=> FALSE
-					),
-					array(
-						'content' 	=> NULL,
-						'type'		=> Table::COL_TEXT,
-						'encode'	=> FALSE
-					),
-					array(
-						'content' 	=> '',
-						'type'		=> Table::COL_TOOLBAR,
-						'encode'	=> FALSE,
-						'toolbar_items'	=> array('view' => 'http://test/2'),
-					),
-					array(
-						'content' 	=> 'status',
-						'type'		=> Table::COL_STATUS,
-						'encode'	=> TRUE
-					),
-					array(
-						'content' 	=> '',
-						'type'		=> Table::COL_CHECKBOX,
-						'encode'	=> FALSE,
-						'name'		=> 'table[]',
-						'value'		=> 'test2'
+					'attrs' => array(),
+					'columns' => array(
+						array(
+							'content' 	=> 'col 1 data 2',
+							'type'		=> Table::COL_TEXT,
+							'encode'	=> FALSE
+						),
+						array(
+							'content' 	=> 'col 2 data 2',
+							'type'		=> Table::COL_TEXT,
+							'encode'	=> FALSE
+						),
+						array(
+							'content' 	=> NULL,
+							'type'		=> Table::COL_TEXT,
+							'encode'	=> FALSE
+						),
+						array(
+							'content' 	=> '',
+							'type'		=> Table::COL_TOOLBAR,
+							'encode'	=> FALSE,
+							'toolbar_items'	=> array('view' => 'http://test/2'),
+						),
+						array(
+							'content' 	=> 'status',
+							'type'		=> Table::COL_STATUS,
+							'encode'	=> TRUE
+						),
+						array(
+							'content' 	=> '',
+							'type'		=> Table::COL_CHECKBOX,
+							'encode'	=> FALSE,
+							'name'		=> 'table[]',
+							'value'		=> 'test2'
+						)
 					)
 				)
 			)
@@ -372,73 +384,79 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 			'columns'		=> $expected_cols,
 			'data'		=> array(
 				array(
-					array(
-						'content' 	=> 'col 1 data 2',
-						'type'		=> Table::COL_TEXT,
-						'encode'	=> FALSE
-					),
-					array(
-						'content' 	=> 'col 2 data 2',
-						'type'		=> Table::COL_TEXT,
-						'encode'	=> FALSE
-					),
-					array(
-						'content' 	=> NULL,
-						'type'		=> Table::COL_TEXT,
-						'encode'	=> FALSE
-					),
-					array(
-						'content' 	=> '',
-						'type'		=> Table::COL_TOOLBAR,
-						'encode'	=> FALSE,
-						'toolbar_items'	=> array('view' => 'http://test/2'),
-					),
-					array(
-						'content' 	=> 'status',
-						'type'		=> Table::COL_STATUS,
-						'encode'	=> TRUE
-					),
-					array(
-						'content' 	=> '',
-						'type'		=> Table::COL_CHECKBOX,
-						'encode'	=> FALSE,
-						'name'		=> 'table[]',
-						'value'		=> 'test2'
+					'attrs' => array(),
+					'columns' => array(
+						array(
+							'content' 	=> 'col 1 data 2',
+							'type'		=> Table::COL_TEXT,
+							'encode'	=> FALSE
+						),
+						array(
+							'content' 	=> 'col 2 data 2',
+							'type'		=> Table::COL_TEXT,
+							'encode'	=> FALSE
+						),
+						array(
+							'content' 	=> NULL,
+							'type'		=> Table::COL_TEXT,
+							'encode'	=> FALSE
+						),
+						array(
+							'content' 	=> '',
+							'type'		=> Table::COL_TOOLBAR,
+							'encode'	=> FALSE,
+							'toolbar_items'	=> array('view' => 'http://test/2'),
+						),
+						array(
+							'content' 	=> 'status',
+							'type'		=> Table::COL_STATUS,
+							'encode'	=> TRUE
+						),
+						array(
+							'content' 	=> '',
+							'type'		=> Table::COL_CHECKBOX,
+							'encode'	=> FALSE,
+							'name'		=> 'table[]',
+							'value'		=> 'test2'
+						)
 					)
 				),
 				array(
-					array(
-						'content' 	=> 'col 1 data',
-						'type'		=> Table::COL_TEXT,
-						'encode'	=> FALSE
-					),
-					array(
-						'content' 	=> 'col 2 data',
-						'type'		=> Table::COL_TEXT,
-						'encode'	=> FALSE
-					),
-					array(
-						'content' 	=> 'col 3 data',
-						'type'		=> Table::COL_TEXT,
-						'encode'	=> FALSE
-					),
-					array(
-						'content' 	=> '',
-						'type'		=> Table::COL_TOOLBAR,
-						'encode'	=> FALSE,
-						'toolbar_items'	=> array('view' => 'http://test/'),
-					),
-					array(
-						'content' 	=> 'status',
-						'type'		=> Table::COL_STATUS,
-						'encode'	=> TRUE
-					),
-					array(
-						'content' 	=> '',
-						'type'		=> Table::COL_CHECKBOX,
-						'encode'	=> FALSE,
-						'name'		=> 'table[]',
-						'value'		=> 'test'
+					'attrs' => array(),
+					'columns' => array(
+						array(
+							'content' 	=> 'col 1 data',
+							'type'		=> Table::COL_TEXT,
+							'encode'	=> FALSE
+						),
+						array(
+							'content' 	=> 'col 2 data',
+							'type'		=> Table::COL_TEXT,
+							'encode'	=> FALSE
+						),
+						array(
+							'content' 	=> 'col 3 data',
+							'type'		=> Table::COL_TEXT,
+							'encode'	=> FALSE
+						),
+						array(
+							'content' 	=> '',
+							'type'		=> Table::COL_TOOLBAR,
+							'encode'	=> FALSE,
+							'toolbar_items'	=> array('view' => 'http://test/'),
+						),
+						array(
+							'content' 	=> 'status',
+							'type'		=> Table::COL_STATUS,
+							'encode'	=> TRUE
+						),
+						array(
+							'content' 	=> '',
+							'type'		=> Table::COL_CHECKBOX,
+							'encode'	=> FALSE,
+							'name'		=> 'table[]',
+							'value'		=> 'test'
+						)
 					)
 				)
 			)
@@ -463,6 +481,64 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 			'columns'		=> $expected_cols,
 			'data'			=> array(
 				array(
+					'attrs' => array(),
+					'columns' => array(
+						array(
+							'content' 	=> 'col 1 data 2',
+							'type'		=> Table::COL_TEXT,
+							'encode'	=> FALSE
+						),
+						array(
+							'content' 	=> 'col 2 data 2',
+							'type'		=> Table::COL_TEXT,
+							'encode'	=> FALSE
+						),
+						array(
+							'content' 	=> NULL,
+							'type'		=> Table::COL_TEXT,
+							'encode'	=> FALSE
+						),
+						array(
+							'content' 	=> '',
+							'type'		=> Table::COL_TOOLBAR,
+							'encode'	=> FALSE,
+							'toolbar_items'	=> array('view' => 'http://test/2'),
+						),
+						array(
+							'content' 	=> 'status',
+							'type'		=> Table::COL_STATUS,
+							'encode'	=> TRUE
+						),
+						array(
+							'content' 	=> '',
+							'type'		=> Table::COL_CHECKBOX,
+							'encode'	=> FALSE,
+							'name'		=> 'table[]',
+							'value'		=> 'test2'
+						)
+					)
+				)
+			)
+		);
+
+		$return[] = array($config, $data, $expected, $columns, 'Test autosort search');
+
+		$config['search'] = 'col 1 data 2';
+		$expected['search'] = 'col 1 data 2';
+
+		// Because strpos of entire string will return 0, make sure we're === FALSE there
+		$return[] = array($config, $data, $expected, $columns, 'Test autosort search with entire string');
+
+		$config['search'] = '';
+		$config['limit'] = 1;
+
+		$expected['search'] = '';
+		$expected['limit'] = 1;
+		$expected['total_rows'] = 2;
+		$expected['data'] = array(
+			array(
+				'attrs' => array(),
+				'columns' => array(
 					array(
 						'content' 	=> 'col 1 data 2',
 						'type'		=> Table::COL_TEXT,
@@ -500,58 +576,6 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 			)
 		);
 
-		$return[] = array($config, $data, $expected, $columns, 'Test autosort search');
-
-		$config['search'] = 'col 1 data 2';
-		$expected['search'] = 'col 1 data 2';
-
-		// Because strpos of entire string will return 0, make sure we're === FALSE there
-		$return[] = array($config, $data, $expected, $columns, 'Test autosort search with entire string');
-
-		$config['search'] = '';
-		$config['limit'] = 1;
-
-		$expected['search'] = '';
-		$expected['limit'] = 1;
-		$expected['total_rows'] = 2;
-		$expected['data'] = array(
-			array(
-				array(
-					'content' 	=> 'col 1 data 2',
-					'type'		=> Table::COL_TEXT,
-					'encode'	=> FALSE
-				),
-				array(
-					'content' 	=> 'col 2 data 2',
-					'type'		=> Table::COL_TEXT,
-					'encode'	=> FALSE
-				),
-				array(
-					'content' 	=> NULL,
-					'type'		=> Table::COL_TEXT,
-					'encode'	=> FALSE
-				),
-				array(
-					'content' 	=> '',
-					'type'		=> Table::COL_TOOLBAR,
-					'encode'	=> FALSE,
-					'toolbar_items'	=> array('view' => 'http://test/2'),
-				),
-				array(
-					'content' 	=> 'status',
-					'type'		=> Table::COL_STATUS,
-					'encode'	=> TRUE
-				),
-				array(
-					'content' 	=> '',
-					'type'		=> Table::COL_CHECKBOX,
-					'encode'	=> FALSE,
-					'name'		=> 'table[]',
-					'value'		=> 'test2'
-				)
-			)
-		);
-
 		$return[] = array($config, $data, $expected, $columns, 'Test pagination');
 
 		$config['limit'] = 1;
@@ -560,38 +584,41 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 		$expected['page'] = 2;
 		$expected['data'] = array(
 			array(
-				array(
-					'content' 	=> 'col 1 data',
-					'type'		=> Table::COL_TEXT,
-					'encode'	=> FALSE
-				),
-				array(
-					'content' 	=> 'col 2 data',
-					'type'		=> Table::COL_TEXT,
-					'encode'	=> FALSE
-				),
-				array(
-					'content' 	=> 'col 3 data',
-					'type'		=> Table::COL_TEXT,
-					'encode'	=> FALSE
-				),
-				array(
-					'content' 	=> '',
-					'type'		=> Table::COL_TOOLBAR,
-					'encode'	=> FALSE,
-					'toolbar_items'	=> array('view' => 'http://test/'),
-				),
-				array(
-					'content' 	=> 'status',
-					'type'		=> Table::COL_STATUS,
-					'encode'	=> TRUE
-				),
-				array(
-					'content' 	=> '',
-					'type'		=> Table::COL_CHECKBOX,
-					'encode'	=> FALSE,
-					'name'		=> 'table[]',
-					'value'		=> 'test'
+				'attrs' => array(),
+				'columns' => array(
+					array(
+						'content' 	=> 'col 1 data',
+						'type'		=> Table::COL_TEXT,
+						'encode'	=> FALSE
+					),
+					array(
+						'content' 	=> 'col 2 data',
+						'type'		=> Table::COL_TEXT,
+						'encode'	=> FALSE
+					),
+					array(
+						'content' 	=> 'col 3 data',
+						'type'		=> Table::COL_TEXT,
+						'encode'	=> FALSE
+					),
+					array(
+						'content' 	=> '',
+						'type'		=> Table::COL_TOOLBAR,
+						'encode'	=> FALSE,
+						'toolbar_items'	=> array('view' => 'http://test/'),
+					),
+					array(
+						'content' 	=> 'status',
+						'type'		=> Table::COL_STATUS,
+						'encode'	=> TRUE
+					),
+					array(
+						'content' 	=> '',
+						'type'		=> Table::COL_CHECKBOX,
+						'encode'	=> FALSE,
+						'name'		=> 'table[]',
+						'value'		=> 'test'
+					)
 				)
 			)
 		);
