@@ -14,6 +14,8 @@ $lang = array(
 
 /* Filters */
 'filters'						=>		'Filters',
+'status'						=>		'status',
+'developer'						=>		'developer',
 'show'							=>		'show',
 'custom_limit'					=>		'custom limit',
 'entries'						=>		'Entries',
@@ -68,7 +70,7 @@ $lang = array(
 'specific_page'					=>		'Specific Page?',
 'description'					=>		'Description',
 'version'						=>		'Version',
-'status'						=>		'Status',
+// 'status'						=>		'Status',
 'fieldtype'						=>		'Fieldtype',
 
 'edit_accessory_preferences'	=>		'Edit Accessory Preferences',

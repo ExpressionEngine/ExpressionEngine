@@ -54,8 +54,8 @@ class Addons extends CP_Controller {
 
 		// Sidebar Menu
 		$menu = array(
-			'all_addons' 		=> cp_url('logs/developer'),
-			'manage_extensions'	=> cp_url('logs/cp')
+			'all_addons' 		=> cp_url('addons'),
+			'manage_extensions'	=> cp_url('addons/extensions')
 		);
 
 		ee()->menu->register_left_nav($menu);
@@ -89,13 +89,29 @@ class Addons extends CP_Controller {
 		// Filters
 		$view_filters = array();
 
+		// Sumitted values
+		$all_filters = array(
+			'filter_by_status'		=> 'status',
+			'filter_by_developer'	=> 'developer',
+			'perpage'				=> 'perpage'
+		);
+		foreach ($all_filters as $key => $filter)
+		{
+			$value = (ee()->input->post($key)) ?: ee()->input->get($key);
+			if ($value)
+			{
+				$this->base_url->setQueryStringVariable($key, $value);
+				$this->params[$key] = $value;
+			}
+		}
+
 		// Status
 		$base_url = clone $this->base_url;
 
 		$filter = array(
 			'label'			=> 'status',
 			'name'			=> 'filter_by_status',
-			'value'			=> '', //$this->params['status'],
+			'value'			=> '',
 			'options'		=> array()
 		);
 		$statuses = array(
@@ -105,6 +121,12 @@ class Addons extends CP_Controller {
 
 		foreach ($statuses as $show => $label)
 		{
+			if (isset($this->params['filter_by_status']) &&
+				$this->params['filter_by_status'] == $show)
+			{
+				$filter['value'] = $label;
+			}
+
 			$base_url->setQueryStringVariable('filter_by_status', $show);
 			$filter['options'][$base_url->compile()] = $label;
 		}
@@ -116,7 +138,7 @@ class Addons extends CP_Controller {
 		$filter = array(
 			'label'			=> 'developer',
 			'name'			=> 'filter_by_developer',
-			'value'			=> '', //$this->params['developer'],
+			'value'			=> '',
 			'options'		=> array()
 		);
 		$developers = array(
@@ -125,6 +147,12 @@ class Addons extends CP_Controller {
 
 		foreach ($developers as $show => $label)
 		{
+			if (isset($this->params['filter_by_developer']) &&
+				$this->params['filter_by_developer'] == $show)
+			{
+				$filter['value'] = $label;
+			}
+
 			$base_url->setQueryStringVariable('filter_by_developer', $show);
 			$filter['options'][$base_url->compile()] = $label;
 		}
@@ -172,6 +200,16 @@ class Addons extends CP_Controller {
 
 		foreach(array_merge($plugins, $accessories, $modules) as $addon => $info)
 		{
+			if (isset($this->params['filter_by_status']))
+			{
+				if ((strtolower($this->params['filter_by_status']) == 'installed' &&
+					$info['installed'] == FALSE) ||
+					(strtolower($this->params['filter_by_status']) == 'uninstalled' &&
+					$info['installed'] == TRUE)) {
+						continue;
+					}
+			}
+
 			$toolbar = array(
 				'install' => array(
 					'href' => '', // @TODO
@@ -223,8 +261,8 @@ class Addons extends CP_Controller {
 		$table->setNoResultsText('no_addon_search_results');
 		$table->setData($data);
 
-		$vars['table'] = $table->viewData($base_url);
-		$vars['form_url'] = $base_url->compile();
+		$vars['table'] = $table->viewData($this->base_url);
+		$vars['form_url'] = $vars['table']['base_url'];
 
 		if ( ! empty($vars['table']['data']))
 		{
@@ -265,7 +303,7 @@ class Addons extends CP_Controller {
 
 		foreach(ee()->addons->get_files() as $module => $info)
 		{
-			ee()->lang->loadfile(( ! isset(ee()->lang_overrides[$module])) ? $module : ee()->lang_overrides[$module]);
+			// ee()->lang->loadfile(( ! isset(ee()->lang_overrides[$module])) ? $module : ee()->lang_overrides[$module]);
 
 			$data = array(
 				'author'	=> NULL,

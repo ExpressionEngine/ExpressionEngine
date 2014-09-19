@@ -4,7 +4,7 @@
 	<div class="col w-16 last">
 		<div class="box full mb">
 			<div class="tbl-ctrls">
-				<form>
+				<?=form_open($form_url)?>
 					<fieldset class="tbl-search right">
 						<input placeholder="<?=lang('type_phrase')?>" type="text" name="search" value="<?=$table['search']?>">
 						<input class="btn submit" type="submit" value="<?=lang('search_addons_button')?>">
@@ -17,7 +17,7 @@
 						</ul>
 						*/ ?>
 					</h1>
-				</form>
+				<?=form_close()?>
 			</div>
 		</div>
 	</div>
