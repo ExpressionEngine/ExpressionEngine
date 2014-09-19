@@ -200,6 +200,7 @@ class Addons extends CP_Controller {
 
 		foreach(array_merge($plugins, $accessories, $modules) as $addon => $info)
 		{
+			// Filter based on status
 			if (isset($this->params['filter_by_status']))
 			{
 				if ((strtolower($this->params['filter_by_status']) == 'installed' &&
@@ -245,7 +246,7 @@ class Addons extends CP_Controller {
 			);
 		}
 
-		$table = Table::create(array('autosort' => TRUE, 'autosearch' => TRUE));
+		$table = Table::create(array('autosort' => TRUE, 'autosearch' => TRUE, 'limit' => $this->params['perpage']));
 		$table->setColumns(
 			array(
 				'addon',
