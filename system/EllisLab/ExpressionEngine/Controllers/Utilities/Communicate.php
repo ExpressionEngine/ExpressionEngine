@@ -52,6 +52,8 @@ class Communicate extends Utilities {
 
 	/**
 	 * Index
+	 *
+	 * @param	obj	$email	An EmailCache object for use in re-populating the form (see: resend())
 	 */
 	public function index(EmailCache $email = NULL)
 	{
@@ -421,7 +423,9 @@ class Communicate extends Utilities {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Fetches an email from the cache and presents it to the user for re-sending
 	 *
+	 * @param int $id	The cache_id to send
 	 */
 	public function resend($id)
 	{
@@ -448,6 +452,11 @@ class Communicate extends Utilities {
 
 	/**
 	 * Sends a single email handling errors
+	 *
+	 * @param	obj		$email	An EmailCache object
+	 * @param	str		$to		An email address to send to
+	 * @param	bool	$delete	Delete email attachments after send?
+	 * @return	str				A response messge as a result of sending the email
 	 */
 	private function deliverOneEmail(EmailCache $email, $to, $delete = TRUE)
 	{
@@ -492,6 +501,9 @@ class Communicate extends Utilities {
 
 	/**
 	 * Sends multiple emails handling errors
+	 *
+	 * @param	obj	$email	An EmailCache object
+	 * @return	int			The number of emails sent
 	 */
 	private function deliverManyEmails(EmailCache $email)
 	{
@@ -537,6 +549,12 @@ class Communicate extends Utilities {
 
 	/**
 	 * Delivers an email
+	 *
+	 * @param	obj	$email	An EmailCache object
+	 * @param	str	$to		An email address to send to
+	 * @param	str	$cc		An email address to cc
+	 * @param	str	$bcc	An email address to bcc
+	 * @return	bool		True on success; False on failure
 	 */
 	private function deliverEmail(EmailCache $email, $to, $cc = NULL, $bcc = NULL)
 	{
