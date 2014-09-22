@@ -264,14 +264,17 @@ class CI_Router {
 			// controller class.
 			if ( ! file_exists($directory . $segment . '.php'))
 			{
-				$segment = str_replace('-', '_', $saved_segments[$c - 1]);
-				$words = explode('_', $segment);
-				$words = array_map('ucfirst', $words);
-				$segment = implode('', $words);
-
-				if (file_exists($directory . $segment . '.php'))
+				if ($c > 0)
 				{
-					array_unshift($segments, $saved_segments[$c - 1]);
+					$segment = str_replace('-', '_', $saved_segments[$c - 1]);
+					$words = explode('_', $segment);
+					$words = array_map('ucfirst', $words);
+					$segment = implode('', $words);
+
+					if (file_exists($directory . $segment . '.php'))
+					{
+						array_unshift($segments, $saved_segments[$c - 1]);
+					}
 				}
 			}
 
