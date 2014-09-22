@@ -247,12 +247,32 @@ class CI_Router {
 			$words = array_map('ucfirst', $words);
 			$segment = implode('', $words);
 
+			// Do we have a directory instead of a controller file?
 			if ( ! file_exists($directory . $segment . '.php') && is_dir($directory . $segment))
 			{
 				$directory .= $segment . '/';
 				$namespace .= '\\' . $segment;
 				array_shift($segments);
 				continue;
+			}
+
+			// For organization purposes everything is in a subdirectory inside
+			// .../Controllers/. Top level controllers may be structured thus:
+			// .../Controllers/FooBar/FooBar.php
+			// We now check for that eventuality. This is important because
+			// the returned array assumes that the string at index 0 is the
+			// controller class.
+			if ( ! file_exists($directory . $segment . '.php'))
+			{
+				$segment = str_replace('-', '_', $saved_segments[$c - 1]);
+				$words = explode('_', $segment);
+				$words = array_map('ucfirst', $words);
+				$segment = implode('', $words);
+
+				if (file_exists($directory . $segment . '.php'))
+				{
+					array_unshift($segments, $saved_segments[$c - 1]);
+				}
 			}
 
 			break;
