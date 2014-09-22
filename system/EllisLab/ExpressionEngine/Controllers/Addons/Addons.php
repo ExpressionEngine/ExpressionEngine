@@ -142,7 +142,8 @@ class Addons extends CP_Controller {
 			'options'		=> array()
 		);
 		$developers = array(
-			'EllisLab'		=> 'EllisLab'
+			'native'		=> 'EllisLab',
+			'third_party'	=> 'Third Party',
 		);
 
 		foreach ($developers as $show => $label)
@@ -206,9 +207,19 @@ class Addons extends CP_Controller {
 				if ((strtolower($this->params['filter_by_status']) == 'installed' &&
 					$info['installed'] == FALSE) ||
 					(strtolower($this->params['filter_by_status']) == 'uninstalled' &&
-					$info['installed'] == TRUE)) {
-						continue;
-					}
+					$info['installed'] == TRUE))
+				{
+					continue;
+				}
+			}
+
+			// Filter based on developer
+			if (isset($this->params['filter_by_developer']))
+			{
+				if (strtolower($this->params['filter_by_developer']) != strtolower($info['developer']))
+				{
+					continue;
+				}
 			}
 
 			$toolbar = array(
@@ -307,11 +318,12 @@ class Addons extends CP_Controller {
 			// ee()->lang->loadfile(( ! isset(ee()->lang_overrides[$module])) ? $module : ee()->lang_overrides[$module]);
 
 			$data = array(
-				'author'	=> NULL,
+				'developer'	=> $info['type'],
 				'version'	=> '--',
 				'installed'	=> FALSE,
 				'name'		=> $info['name'],
-				'package'	=> $module
+				'package'	=> $module,
+				'type'		=> 'module'
 			);
 
 			if (isset($installed[$module]))
@@ -356,12 +368,16 @@ class Addons extends CP_Controller {
 
 			$this->load->remove_package_path($path);
 
+			$developer = (isset($info['type'])) ? $info['type'] : 'native';
+
 			$data = array(
-				'author'	=> NULL,
+				'developer'	=> $developer,
 				'version'	=> $ACC->version,
 				'installed'	=> FALSE,
 				'name'		=> $info['name'],
-				'package'	=> $accessory
+				'package'	=> $accessory,
+				'type'		=> 'accessory'
+
 			);
 
 			if (isset($installed[$accessory]))
@@ -469,12 +485,16 @@ class Addons extends CP_Controller {
 				{
 					$plugin_info['pi_version'] = '--';
 				}
+
+				$developer = (strpos($plugin_info['installed_path'], 'third_party') === FALSE) ? 'native' : 'third_party';
+
 				$plugins[$filename] = array(
-					'author'	=> $plugin_info['pi_author'],
+					'developer'	=> $developer,
 					'version'	=> $plugin_info['pi_version'],
 					'installed'	=> TRUE,
 					'name'		=> $plugin_info['pi_name'],
-					'package'	=> $filename
+					'package'	=> $filename,
+					'type'		=> 'plugin'
 				);
 			}
 			else
