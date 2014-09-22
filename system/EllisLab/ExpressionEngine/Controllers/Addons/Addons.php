@@ -224,7 +224,7 @@ class Addons extends CP_Controller {
 
 			$toolbar = array(
 				'install' => array(
-					'href' => '', // @TODO
+					'href' => cp_url('addons/install/' . $info['type'] . '/' . $info['package']),
 					'title' => lang('install'),
 					'class' => 'add'
 				)
@@ -284,7 +284,7 @@ class Addons extends CP_Controller {
 				$vars['table']['total_rows'],
 				$vars['table']['page']
 			);
-			$vars['pagination'] = $pagination->cp_links($base_url);
+			$vars['pagination'] = $pagination->cp_links($this->base_url);
 		}
 
 		// Set search results heading
@@ -298,6 +298,39 @@ class Addons extends CP_Controller {
 		}
 
 		ee()->cp->render('addons/index', $vars);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Installs a module or accessory
+	 * @access	public
+	 * @return	void
+	 */
+	public function install($type, $addon)
+	{
+		$this->load->library('addons/addons_installer');
+
+		$message = NULL;
+
+		if ($type == 'module')
+		{
+			$message = $this->installModule($addon);
+		}
+		elseif ($type == 'accessory')
+		{
+			if ( ! ee()->cp->allowed_group('can_access_accessories'))
+			{
+				show_error(lang('unauthorized_access'));
+			}
+			$message = $this->installAccessory($addon);
+		}
+
+		if ( ! is_null($message))
+		{
+			ee()->view->set_message('success', lang('addons_installed'), lang('addons_installed_desc') . $message, TRUE);
+		}
+		ee()->functions->redirect(cp_url('addons'));
 	}
 
 	// --------------------------------------------------------------------
@@ -529,6 +562,44 @@ class Addons extends CP_Controller {
 			$length = strpos($contents, 'Class Magpie') - $start;
 			return eval(substr($contents, $start, $length));
 		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 *
+	 */
+	private function installModule($module)
+	{
+	 	$name = NULL;
+		$module = $this->security->sanitize_filename(strtolower($module));
+		ee()->lang->loadfile($module);
+
+		if (ee()->addons_installer->install($module, 'module'))
+		{
+			$name = (lang($module.'_module_name') == FALSE) ? ucfirst($module) : lang($module.'_module_name');
+		}
+
+		return $name;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 *
+	 */
+	private function installAccessory($accessory)
+	{
+		$name = NULL;
+		$accessory = $this->security->sanitize_filename(strtolower($accessory));
+
+		if (ee()->addons_installer->install($accessory, 'accessory'))
+		{
+			$installed = ee()->addons->get_installed('accessories');
+			$name = $installed[$accessory]['name'];
+		}
+
+		return $name;
 	}
 }
 // END CLASS

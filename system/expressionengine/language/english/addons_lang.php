@@ -20,6 +20,11 @@ $lang = array(
 'custom_limit'					=>		'custom limit',
 'entries'						=>		'Entries',
 
+'install'						=>		'Install',
+'uninstall'						=>		'Uninstall',
+'addons_installed'				=>		'Add-Ons Installed',
+'addons_installed_desc'			=>		'The following add-on(s) have been installed: ',
+
 // 2.x
 'addons'						=>		'Add-Ons',
 
@@ -41,8 +46,6 @@ $lang = array(
 
 'accessory_name' 				=> 		'Accessory Name',
 'fieldtype_name'				=>		'Fieldtype Name',
-'install'						=>		'Install',
-'uninstall'						=>		'Uninstall',
 'installed'						=>		'Installed',
 'not_installed'					=>		'Not Installed',
 'uninstalled'					=>		'Uninstalled',
