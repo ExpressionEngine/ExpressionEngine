@@ -677,11 +677,11 @@ class Comment {
 
 			$row['count']			= $relative_count;
 			$row['absolute_count']	= $absolute_count;
-			if ($enabled['pagination'])
-			{
-				$row['total_comments']	= $pagination->total_items;
-			}
 			$row['total_results']	= $total_results;
+
+			// If we do not paginate, then the total comments ARE the comments
+			// on the page
+			$row['total_comments']	= ($enabled['pagination']) ? $pagination->total_items : $total_results;
 
 			// This lets the {if location} variable work
 
@@ -766,7 +766,7 @@ class Comment {
 			/**  parse GMT comment date
 			/** ----------------------------------------*/
 
-			$tagdata = ee()->TMPL->parse_date_variables($tagdata, array('gmt_comment_date', $row['comment_date']), FALSE);
+			$tagdata = ee()->TMPL->parse_date_variables($tagdata, array('gmt_comment_date' => $row['comment_date']), FALSE);
 
 			/** ----------------------------------------
 			/**  Parse "single" variables
@@ -2446,7 +2446,7 @@ class Comment {
 		$cmtr_email	= ee()->input->post('email');
 		$cmtr_loc	= ee()->input->post('location', TRUE);
 		$cmtr_url	= ee()->input->post('url', TRUE);
-		$cmtr_url	= prep_url($cmtr_url);
+		$cmtr_url	= (string) filter_var(prep_url($cmtr_url), FILTER_VALIDATE_URL);
 
 		$data = array(
 			'channel_id'	=> $channel_id,

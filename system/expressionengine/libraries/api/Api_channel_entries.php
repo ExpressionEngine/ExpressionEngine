@@ -1299,8 +1299,9 @@ class Api_channel_entries extends Api {
 
 		if (isset($data['category']) AND is_array($data['category']))
 		{
-			foreach ($data['category'] as $cat_id)
+			foreach ($data['category'] as &$cat_id)
 			{
+				$cat_id = (int) $cat_id;
 				ee()->api_channel_categories->cat_parents[] = $cat_id;
 			}
 

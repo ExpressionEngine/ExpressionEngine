@@ -320,8 +320,9 @@ class Api_channel_categories extends Api {
 
 		$sql = "SELECT parent_id FROM exp_categories WHERE site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."' AND (";
 
-		foreach($cat_array as $val)
+		foreach ($cat_array as $val)
 		{
+			$val = (int) $val;
 			$sql .= " cat_id = '$val' OR ";
 		}
 

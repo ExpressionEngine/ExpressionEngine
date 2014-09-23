@@ -34,7 +34,9 @@ class EE_Logger {
 	 */
 	function __construct()
 	{
-		$this->EE =& get_instance();
+		// Create it's own instace of the database to not interfere with queries
+		// being built.
+		$this->logger_db = ee()->load->database('expressionengine', TRUE);
 	}
 
 	// --------------------------------------------------------------------
@@ -57,8 +59,8 @@ class EE_Logger {
 			return;
 		}
 
-		ee()->db->query(
-			ee()->db->insert_string(
+		$this->logger_db->query(
+			$this->logger_db->insert_string(
 				'exp_cp_log',
 				array(
 					'member_id'	=> ee()->session->userdata('member_id'),
@@ -101,7 +103,7 @@ class EE_Logger {
 		{
 			// Order by timestamp to store only the latest timestamp in the
 			// cache array
-			$rows = ee()->db->select('hash, timestamp')
+			$rows = $this->logger_db->select('hash, timestamp')
 				->order_by('timestamp', 'asc')
 				->get('developer_log')
 				->result_array();
@@ -114,10 +116,10 @@ class EE_Logger {
 
 		$log_data = array();
 
-		// If we were passed an array, add its contents to $log_data
+		// If we were passed an array, place its contents to $log_data
 		if (is_array($data))
 		{
-			$log_data = array_merge($log_data, $data);
+			$log_data = $data;
 		}
 		// Otherwise it's probably a string, stick it in the 'description' field
 		else
@@ -140,7 +142,7 @@ class EE_Logger {
 			{
 				// There may be multiple items with the same hash for if a log item
 				// was previously set not to update, so update based on timestamp too
-				ee()->db->where(
+				$this->logger_db->where(
 					array(
 						'hash'		=> $hash,
 						'timestamp' => $this->_dev_log_hashes[$hash]
@@ -148,7 +150,7 @@ class EE_Logger {
 				);
 
 				// Set log item as unviewed and update the timestamp
-				ee()->db->update('developer_log',
+				$this->logger_db->update('developer_log',
 					array(
 						'viewed'	=> 'n',
 						'timestamp' => ee()->localize->now
@@ -163,7 +165,7 @@ class EE_Logger {
 		$log_data['timestamp'] = ee()->localize->now;
 		$log_data['hash'] = $hash;
 
-		ee()->db->insert('developer_log', $log_data);
+		$this->logger_db->insert('developer_log', $log_data);
 
 		// Add to the hash cache so we don't have to requery
 		$this->_dev_log_hashes[$hash] = $log_data['timestamp'];
@@ -267,8 +269,76 @@ class EE_Logger {
 
 		// Only bug the user about this again after a week, or 604800 seconds
 		$deprecation_log = $this->developer($deprecated, TRUE, 604800);
+		$this->show_flashdata($deprecation_log);
+	}
 
-		// Show and store flashdata only if we're in the CP, and only to Super Admins
+	// --------------------------------------------------------------------
+
+	/**
+	 * Log an extension hook as deprecated
+	 *
+	 * This method is to be called when a deprecated extension hook is
+	 * activated. The original hook name must be passed, and optionally
+	 * the version it was deprecated in, and what hook to use instead.
+	 *
+	 * From there, the use of the deprecated hook is logged in the
+	 * developer log for Super Admin review.
+	 *
+	 * @param	string	$hook - the name of the deprecated hook
+	 * @param	string	$version (optional) - the version number it was deprecated in
+	 * @param	string	$use_instead (optional) - the name of the hook to use instead
+	 * @return	void
+	 **/
+	public function deprecated_hook($hook, $version = NULL, $use_instead = NULL)
+	{
+		$hook_details = ee()->extensions->get_active_hook_info($hook);
+
+		if ($hook_details === FALSE)
+		{
+			return FALSE;
+		}
+
+		// potentially many extensions using this hook
+		$in_use = array();
+		foreach ($hook_details as $priority => $extensions)
+		{
+			foreach ($extensions as $class => $details)
+			{
+				// 0 is the method name, 1 is the settings, 2 is the version number
+				$in_use[] = $class.'::'.$details[0].'()';
+			}
+		}
+
+		ee()->lang->loadfile('tools');
+		$description = sprintf(lang('deprecated_hook'), '<br /><li>'.implode('</li><li>', $in_use).'</li>');
+
+		if ( ! empty($version))
+		{
+			$description .= '<br />'.sprintf(lang('deprecated_since'), $version);
+		}
+
+		if ( ! empty($use_instead))
+		{
+			$description .= NBS.sprintf(lang('deprecated_use_instead'), $use_instead);
+		}
+
+		// Only bug the user about this again after a week, or 604800 seconds
+		$deprecation_log = $this->developer($description, TRUE, 604800);
+		$this->show_flashdata($deprecation_log);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Show Flashdata
+	 *
+	 * Shows and stores flashdata if we are in the CP, and only to Super Admins
+	 *
+	 * @param	array	$deprecation_log - array, returned by $this->developer()
+	 * @return	void
+	 **/
+	private function show_flashdata($deprecation_log)
+	{
 		if (REQ == 'CP' && isset(ee()->session) && ee()->session instanceof EE_Session
 			&& ee()->session->userdata('group_id') == 1)
 		{
@@ -505,7 +575,7 @@ class EE_Logger {
 			$data['file']	= $backtrace['file'];
 		}
 
-		ee()->db->insert('update_log', $data);
+		$this->logger_db->insert('update_log', $data);
 	}
 
 	// --------------------------------------------------------------------
@@ -523,7 +593,7 @@ class EE_Logger {
 	{
 		$table = 'update_log';
 
-		if ( ! ee()->db->table_exists($table))
+		if ( ! $this->logger_db->table_exists($table))
 		{
 			ee()->load->dbforge();
 

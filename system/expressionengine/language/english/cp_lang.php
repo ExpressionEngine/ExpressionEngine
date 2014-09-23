@@ -263,6 +263,15 @@ $lang = array(
 'session_idle_not_name' =>
 'Not %s?',
 
+'password_label' =>
+'Password:',
+
+'user_label' =>
+'User:',
+
+'user_avatar_alt' =>
+'User Avatar',
+
 'login' =>
 'Log-in',
 

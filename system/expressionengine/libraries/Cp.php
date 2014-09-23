@@ -946,7 +946,7 @@ class Cp {
 		{
 			ee()->db->select('can_access_cp');
 			ee()->db->where('site_id', $site_id);
-			ee()->db->where('group_id', $this->session->userdata['group_id']);
+			ee()->db->where('group_id', ee()->session->userdata['group_id']);
 
 			$query = ee()->db->get('member_groups');
 

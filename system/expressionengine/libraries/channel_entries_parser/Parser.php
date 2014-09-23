@@ -241,7 +241,8 @@ class EE_Channel_data_parser {
 					'site_id'		=> $row['site_id'],
 					'channel_id'	=> $row['channel_id'],
 					'entry_id'		=> $row['entry_id'],
-				)
+				),
+				TRUE
 			);
 
 			if ($site_pages !== FALSE && isset($site_pages[$row['site_id']]['uris'][$row['entry_id']]))

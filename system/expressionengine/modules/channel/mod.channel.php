@@ -289,13 +289,6 @@ class Channel {
 
 		$this->query = ee()->db->query($this->sql);
 
-		if ($this->enable['categories'] == TRUE)
-		{
-			$this->fetch_categories();
-		}
-
-		$this->parse_channel_entries();
-
 		// -------------------------------------
 		//  "Relaxed" View Tracking
 		//
@@ -312,6 +305,13 @@ class Channel {
 		{
 			$this->hit_tracking_id = $this->query->row('entry_id') ;
 		}
+
+		if ($this->enable['categories'] == TRUE)
+		{
+			$this->fetch_categories();
+		}
+
+		$this->parse_channel_entries();
 
 		$this->track_views();
 
@@ -1304,23 +1304,13 @@ class Channel {
 			}
 			else
 			{
-				if ($query->num_rows() == 1)
+				$channel_ids = array();
+				foreach ($query->result_array() as $row)
 				{
-					$sql .= "AND t.channel_id = '".$query->row('channel_id') ."' ";
+					$channel_ids[] = $row['channel_id'];
 				}
-				else
-				{
-					$sql .= "AND (";
 
-					foreach ($query->result_array() as $row)
-					{
-						$sql .= "t.channel_id = '".$row['channel_id']."' OR ";
-					}
-
-					$sql = substr($sql, 0, - 3);
-
-					$sql .= ") ";
-				}
+				$sql .= "AND t.channel_id IN (".implode(',', $channel_ids).") ";
 			}
 		}
 
@@ -2023,7 +2013,8 @@ class Channel {
 						break;
 
 						case 'random' :
-								$end = "ORDER BY rand()";
+								$random_seed = ($this->pagination->paginate === TRUE) ? (int) ee()->session->userdata('last_visit') : '';
+								$end = "ORDER BY rand({$random_seed})";
 								$sort_array[$key] = FALSE;
 						break;
 
@@ -2091,6 +2082,14 @@ class Channel {
 				if ($total >= $offset)
 				{
 					$total = $total - $offset;
+				}
+
+				// do a little dance to remove the seed if we have random order
+				// and only one page of results. Random order should only be
+				// sticky across pages.
+				if (isset($random_seed) && $total <= $this->pagination->per_page)
+				{
+					$end = str_replace($random_seed, '', $end);
 				}
 
 				$this->pagination->build($total, $this->pagination->per_page);
@@ -2893,13 +2892,13 @@ class Channel {
 				$chunk = ee()->TMPL->tagdata;
 
 				ee()->load->library('file_field');
-				$cat_image = ee()->file_field->parse_field($val[5]);
+				$cat_image = ee()->file_field->parse_string($val[5]);
 
 				$cat_vars = array(
 					'category_name'			=> $val[3],
 					'category_url_title'	=> $val[6],
 					'category_description'	=> $val[4],
-					'category_image'		=> $cat_image['url'],
+					'category_image'		=> $cat_image,
 					'category_id'			=> $val[0],
 					'parent_id'				=> $val[1],
 					'active'				=> ($active_cat == $val[0] || $active_cat == $val[6])
@@ -2930,7 +2929,7 @@ class Channel {
 						ee()->functions->encode_ee_tags($val[3]),
 						$val[6],
 						ee()->functions->encode_ee_tags($val[4]),
-						$cat_image['url'],
+						$cat_image,
 						$val[0],
 						$val[1]
 					),
@@ -3362,13 +3361,13 @@ class Channel {
 						$chunk = $cat_chunk;
 
 						ee()->load->library('file_field');
-						$cat_image = ee()->file_field->parse_field($row['cat_image']);
+						$cat_image = ee()->file_field->parse_string($row['cat_image']);
 
 						$cat_vars = array(
 							'category_name'			=> $row['cat_name'],
 							'category_url_title'	=> $row['cat_url_title'],
 							'category_description'	=> $row['cat_description'],
-							'category_image'		=> $cat_image['url'],
+							'category_image'		=> $cat_image,
 							'category_id'			=> $row['cat_id'],
 							'parent_id'				=> $row['parent_id'],
 							'active'				=> ($active_cat == $row['cat_id'] || $active_cat == $row['cat_url_title'])
@@ -3394,7 +3393,7 @@ class Channel {
 								$row['cat_id'],
 								ee()->functions->encode_ee_tags($row['cat_name']),
 								$row['cat_url_title'],
-								$cat_image['url'],
+								$cat_image,
 								ee()->functions->encode_ee_tags($row['cat_description']),
 								$row['parent_id']
 							),
@@ -3826,13 +3825,13 @@ class Channel {
 				$chunk = $template;
 
 				ee()->load->library('file_field');
-				$cat_image = ee()->file_field->parse_field($val[2]);
+				$cat_image = ee()->file_field->parse_string($val[2]);
 
 				$cat_vars = array(
 					'category_name'			=> $val[1],
 					'category_url_title'	=> $val[4],
 					'category_description'	=> $val[3],
-					'category_image'		=> $cat_image['url'],
+					'category_image'		=> $cat_image,
 					'category_id'			=> $key,
 					'parent_id'				=> $val[0],
 					'active'				=> ($active_cat == $key || $active_cat == $val[4])
@@ -3862,7 +3861,7 @@ class Channel {
 						$key,
 						ee()->functions->encode_ee_tags($val[1]),
 						$val[4],
-						$cat_image['url'],
+						$cat_image,
 						ee()->functions->encode_ee_tags($val[3]),
 						$val[0]
 					),
@@ -4188,12 +4187,12 @@ class Channel {
 		$row = $query->row_array();
 
 		ee()->load->library('file_field');
-		$cat_image = ee()->file_field->parse_field($query->row('cat_image'));
+		$cat_image = ee()->file_field->parse_string($query->row('cat_image'));
 
 		$cat_vars = array(
 			'category_name'			=> $query->row('cat_name'),
 			'category_description'	=> $query->row('cat_description'),
-			'category_image'		=> $cat_image['url'],
+			'category_image'		=> $cat_image,
 			'category_id'			=> $match[2],
 			'parent_id'				=> $query->row('parent_id')
 		);
@@ -4219,7 +4218,7 @@ class Channel {
 				$match[2],
 				ee()->functions->encode_ee_tags($query->row('cat_name')),
 				$query->row('cat_url_title'),
-				$cat_image['url'],
+				$cat_image,
 				ee()->functions->encode_ee_tags($query->row('cat_description')),
 				$query->row('parent_id')
 			),

@@ -700,7 +700,7 @@ class Design extends CP_Controller {
 		);
 
 		$this->cp->set_action_nav(array(
-			'Toggle Editor' => 'javascript:$(\'#snippet_contents\').toggleCodeMirror();'
+			'toggle_editor' => 'javascript:$(\'#snippet_contents\').toggleCodeMirror();'
 		));
 
 		$this->cp->render('design/snippets_edit', $vars);
@@ -1941,7 +1941,7 @@ class Design extends CP_Controller {
 		);
 
 		$this->cp->set_action_nav(array(
-			'Toggle Editor' => 'javascript:$(\'#template_data\').toggleCodeMirror();'
+			'toggle_editor' => 'javascript:$(\'#template_data\').toggleCodeMirror();'
 		));
 
 		$vars['table_template'] = array(
@@ -2129,7 +2129,7 @@ class Design extends CP_Controller {
 		/*
 		/* -------------------------------------*/
 
-		if (isset($_POST['update_and_return']) && $this->input->post('warnings'))
+		if (isset($_POST['update_and_return']))
 		{
 			$this->session->set_flashdata($cp_message);
 			$this->db->select('group_id');
@@ -2140,7 +2140,6 @@ class Design extends CP_Controller {
 		}
 		else
 		{
-			//$this->edit_template($template_id, $message);
 			$this->session->set_flashdata($cp_message);
 			$this->functions->redirect(cp_url('design/edit_template', 'id='.$template_id));
 		}

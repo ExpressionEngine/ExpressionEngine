@@ -225,6 +225,11 @@ class Grid_parser {
 				{
 					$row_index = array_search(current($row_ids), array_keys($entry_data));
 
+					// Non-existent row ID passed, return nothing
+					if ($row_index === FALSE)
+					{
+						return '';
+					}
 					$params['offset'] += $row_index;
 					$params['limit'] = 1;
 				}
@@ -247,12 +252,8 @@ class Grid_parser {
 		);
 
 		// Collect row IDs
-		$row_ids = array();
-		foreach ($display_entry_data as $row)
-		{
-			$row_ids[] = $row['row_id'];
-		}
-
+		$row_ids = array_keys($entry_data);
+		
 		// :total_rows single variable
 		$total_rows = count($display_entry_data);
 

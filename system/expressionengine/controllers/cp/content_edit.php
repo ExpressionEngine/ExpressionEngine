@@ -415,8 +415,7 @@ class Content_edit extends CP_Controller {
 				$row['screen_name'] = $row['username'];
 			}
 
-			$row['screen_name'] = mailto($row['email'], $row['screen_name']);
-
+			$row['screen_name'] = anchor(cp_url('myaccount', array('id' => $row['author_id'])), $row['screen_name']);
 
 			// live look template
 			$llt = $row['live_look_template'];

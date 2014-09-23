@@ -27,7 +27,8 @@ function &DB($params = '', $active_record_override = NULL)
 	// Load the DB config file if a DSN string wasn't passed
 	if (is_string($params) AND strpos($params, '://') === FALSE)
 	{
-		include(APPPATH.'config/database.php');
+		$path = defined('EE_APPPATH') ? EE_APPPATH : APPPATH;
+		include($path.'config/database.php');
 
 		if ( ! isset($db) OR count($db) == 0)
 		{

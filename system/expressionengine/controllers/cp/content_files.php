@@ -1692,7 +1692,7 @@ class Content_files extends CP_Controller {
 		$id = $this->input->post('id');
 
 		$type = ($id) ? 'edit' : 'new';
-		$data['wm_name'] = $this->input->post('name');
+		$data['wm_name'] = strip_tags($this->input->post('name'));
 
 		$defaults = array(
 						'wm_image_path'					=>	'',
@@ -2158,7 +2158,7 @@ class Content_files extends CP_Controller {
 		// Is the name taken?
 		if (
 			$this->admin_model->unique_upload_name(
-				strtolower($this->input->post('name')),
+				strtolower(strip_tags($this->input->post('name'))),
 				strtolower($this->input->post('cur_name')),
 				$edit
 			)
@@ -2294,6 +2294,10 @@ class Content_files extends CP_Controller {
 
 					$names[]  = $_POST[$name];
 				}
+			}
+			elseif ($key == 'name')
+			{
+				$data[$key] = strip_tags($val);
 			}
 			else
 			{

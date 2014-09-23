@@ -74,7 +74,7 @@ class EE_Functions {
 
 		if (ee()->config->item('website_session_type') != 'c' && is_object(ee()->session) && REQ != 'CP' && $sess_id == TRUE && $this->template_type == 'webpage')
 		{
-			$url .= "/S=".ee()->session->session_id('user')."/";
+			$url .= (ee()->session->session_id('user')) ? "/S=".ee()->session->session_id('user')."/" : '';
 		}
 
 		if ($add_slash == TRUE)
@@ -2410,7 +2410,7 @@ class EE_Functions {
 		/*  - protect_javascript => Prevents advanced conditional parser from processing anything in <script> tags
 		/* ---------------------------------*/
 
-		if (ee()->TMPL->protect_javascript)
+		if (isset(ee()->TMPL) && ee()->TMPL->protect_javascript)
 		{
 			$runner->enableProtectJavascript();
 		}
