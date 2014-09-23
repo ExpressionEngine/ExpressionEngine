@@ -47,20 +47,37 @@ class Collection {
 	 * then loop through each document and generate a frequency table.
 	 * 
 	 * @access public
-	 * @param array   	 $source 
-	 * @param array   	 $stop_words
-	 * @param Tokenizer  $tokenizer  Tokenizer object used to split string
 	 * @param array 	 $transformations  The transformations to use when 
 	 * 					 				   calculating the vector
 	 * @param bool    	 $clean  Strip all non alpha-numeric characters
 	 * @return void
 	 */
-	public function __construct($source, $transformations = array())
+	public function __construct($transformations = array())
 	{
 		foreach ($transformations as $transformation)
 		{
 			$this->register($transformation);
 		}
+	}
+
+	/**
+	 * Fit the vectorizer to our collection of sources, will return an array of 
+	 * vectorized sources.
+	 * 
+	 * @param array $sources Array of source strings to fit
+	 * @access public
+	 * @return array
+	 */
+	public function fit_transform($sources)
+	{
+		$result = array();
+
+		foreach ($sources as $source)
+		{
+			$result[] = $this->transform($source);
+		}
+
+		return $result;
 	}
 
 	public function transform($source)

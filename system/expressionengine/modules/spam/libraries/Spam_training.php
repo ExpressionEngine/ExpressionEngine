@@ -82,8 +82,10 @@ class Spam_training {
 	 * @access public
 	 * @return The prepared classifier
 	 */
-	public function load_classifier()
+	public function load_classifier($vectorizers)
 	{
+		$vocabulary = new Collection($vectorizers);
+
 		if (function_exists('shmop_open'))
 		{
 			// Generate System V IPC key to identify out shared memory segment
@@ -96,7 +98,7 @@ class Spam_training {
 			if ($this->shm_id === FALSE)
 			{
 				// No memory segment, serialize and write classifier from database
-				$classifier = $this->classifier();
+				$classifier = $this->classifier($vocabulary);
 				$data = serialize($classifier);
 				$size = strlen($data);
 				$this->shm_id = shmop_open($id, 'c', 0644, $size);
@@ -113,7 +115,7 @@ class Spam_training {
 		}
 		else
 		{
-			return $this->classifier();
+			return $this->classifier($vocabulary);
 		}
 	}
 
@@ -154,23 +156,15 @@ class Spam_training {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Returns a new classifier based on our training dataa.
+	 * Returns a new classifier based on our training data.
 	 * 
-	 * @param string $source 
+	 * @param  Vectorizer $vocabulary 
 	 * @access public
 	 * @return boolean
 	 */
-	public function classifier()
+	public function classifier($vocabulary)
 	{
 		$stop_words = explode("\n", file_get_contents(PATH_MOD . $this->stop_words_path));
-		$vocabulary = new Collection(array(), $stop_words);
-		$vocabulary->vocabulary = $this->_get_vocabulary();
-
-		ee()->db->select("COUNT(training_id) AS cnt");
-		ee()->db->from("spam_training");
-		$query = ee()->db->get(); 
-		$row = $query->row();
-		$vocabulary->document_count = $row->cnt;
 
 		// Grab the trained parameters
 		$training = array(
@@ -215,14 +209,15 @@ class Spam_training {
 	/**
 	 * Returns an array of document counts for every word in the training set
 	 * 
-	 * @access private
+	 * @access public
 	 * @return array
 	 */
-	private function _get_vocabulary()
+	public function get_vocabulary($kernel = "")
 	{
+		$kernel = $this->_get_kernel($kernel) ?: $this->kernel;
 		ee()->db->select('term, count');
 		ee()->db->from('spam_vocabulary');
-		ee()->db->where('kernel_id', $this->kernel);
+		ee()->db->where('kernel_id', $kernel);
 		$query = ee()->db->get();
 
 		$result = array();

@@ -33,10 +33,8 @@ class Spam_core {
 	 */
 	public function __construct()
 	{
-		$training = new Spam_training('default');
-		$this->classifier = $training->load_classifier();
-		$member_training = new Spam_training('member');
-		$this->member_classifier = $member_training->load_classifier();
+		$this->classifier = $this->load_classifier();
+		$this->member_classifier = $this->load_member_classifier();
 	}
 
 	// --------------------------------------------------------------------
@@ -98,6 +96,19 @@ class Spam_core {
 			'document' => $doc
 		);
 		ee()->db->insert('spam_trap', $data);
+	}
+
+	public function load_classifier()
+	{
+		// Construct the vectorizers for our default classifier
+		$training = new Spam_training('default');
+		$vocabulary = $training->get_vocabulary();
+		$tfidf = new Tfidf(array());
+	}
+
+	public function load_member_classifier()
+	{
+
 	}
 
 }

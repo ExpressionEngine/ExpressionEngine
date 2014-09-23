@@ -117,7 +117,7 @@ class Tfidf implements Vectorizer {
 	{
 		$source = str_ireplace($this->stop_words, ' ', $source);
 		$source = new Document($source, $this->tokenizer, $this->clean);
-		return $this->transform($source);
+		return $this->tfidf($source);
 	}
 
 	/**
