@@ -228,7 +228,7 @@ class CI_Router {
 		$last = end($segments);
 		reset($segments);
 
-		$c = count($segments);
+		$c = 0;
 
 		// First check for a namespaced situation
 		$saved_segments = $segments;
@@ -237,10 +237,10 @@ class CI_Router {
 		if (strtolower($segments[0]) == 'cp')
 		{
 			array_shift($segments); // This will not factor into the path for namespaced stuff
-			$c--;
+			$c++;
 		}
 
-		while ($c-- > 0)
+		while ($c < count($saved_segments))
 		{
 			$segment = str_replace('-', '_', $segments[0]);
 			$words = explode('_', $segment);
@@ -253,6 +253,7 @@ class CI_Router {
 				$directory .= $segment . '/';
 				$namespace .= '\\' . $segment;
 				array_shift($segments);
+				$c++;
 				continue;
 			}
 
@@ -304,11 +305,11 @@ class CI_Router {
 		}
 
 		$segments = $saved_segments;
-		$c = count($segments);
+		$c = 0;
 
 		// Loop through our segments and return as soon as a controller
 		// is found or when such a directory doesn't exist
-		while ($c-- > 0)
+		while ($c < count($saved_segments))
 		{
 			$test = $this->directory.str_replace('-', '_', $segments[0]);
 
@@ -316,6 +317,7 @@ class CI_Router {
 			if ( ! file_exists(APPPATH.'controllers/'.$test.'.php') && is_dir(APPPATH.'controllers/'.$this->directory.$segments[0]))
 			{
 				$this->set_directory(array_shift($segments), TRUE);
+				$c++;
 				continue;
 			}
 
