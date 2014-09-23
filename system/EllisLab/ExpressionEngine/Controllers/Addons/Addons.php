@@ -97,7 +97,7 @@ class Addons extends CP_Controller {
 		);
 		foreach ($all_filters as $key => $filter)
 		{
-			$value = (ee()->input->post($key)) ?: ee()->input->get($key);
+			$value = ee()->input->get_post($key);
 			if ($value)
 			{
 				$this->base_url->setQueryStringVariable($key, $value);

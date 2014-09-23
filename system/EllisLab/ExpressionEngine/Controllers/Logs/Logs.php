@@ -118,7 +118,7 @@ class Logs extends CP_Controller {
 			if (in_array($filter, $filters))
 			{
 
-				$value = (ee()->input->post($key)) ?: ee()->input->get($key);
+				$value = ee()->input->get_post($key);
 				if ($value)
 				{
 					$this->base_url->setQueryStringVariable($key, $value);
