@@ -655,7 +655,7 @@ class Communicate extends Utilities {
 			show_error(lang('not_allowed_to_email_cache'));
 		}
 
-		if (ee()->input->get_post('bulk_action') == 'remove')
+		if (ee()->input->post('bulk_action') == 'remove')
 		{
 			ee()->api->get('EmailCache', ee()->input->get_post('selection'))->all()->delete();
 			ee()->view->set_message('success', lang('emails_removed'), '');
