@@ -21,9 +21,13 @@ $lang = array(
 'entries'						=>		'Entries',
 
 'install'						=>		'Install',
+'installed'						=>		'Installed',
 'uninstall'						=>		'Uninstall',
+'uninstalled'					=>		'Uninstalled',
 'addons_installed'				=>		'Add-Ons Installed',
 'addons_installed_desc'			=>		'The following add-on(s) have been installed: ',
+'addons_uninstalled'			=>		'Add-Ons Removed',
+'addons_uninstalled_desc'		=>		'The following add-on(s) have been removed: ',
 
 // 2.x
 'addons'						=>		'Add-Ons',
@@ -46,9 +50,7 @@ $lang = array(
 
 'accessory_name' 				=> 		'Accessory Name',
 'fieldtype_name'				=>		'Fieldtype Name',
-'installed'						=>		'Installed',
 'not_installed'					=>		'Not Installed',
-'uninstalled'					=>		'Uninstalled',
 'remove'						=>		'Remove',
 'preferences_updated'			=>		'Preferences Updated',
 'extension_enabled'				=>		'Extension Enabled',
