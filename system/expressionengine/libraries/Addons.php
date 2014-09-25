@@ -27,6 +27,7 @@ class EE_Addons {
 	var $EE;
 	var $_map;						// addons sorted by addon_type (plural)
 	var $_packages = array();		// contains references to _map by package name
+	var $_exclusions = array();
 
 	/**
 	 * Constructor
@@ -35,6 +36,11 @@ class EE_Addons {
 	 */
 	function __construct()
 	{
+		$this->_exclusions = array(
+			'channel',
+			'comment',
+		);
+
 		$this->EE =& get_instance();
 	}
 
@@ -212,6 +218,11 @@ class EE_Addons {
 					if ($valid)
 					{
 						$name = ($ident === 'ft') ? $match[1] : $pkg_name;
+
+						if (in_array($name, $this->_exclusions))
+						{
+							continue;
+						}
 
 						// Plugin classes don't have a suffix
 						$class = ($ident == 'pi') ? ucfirst($name) : ucfirst($name).'_'.$ident;

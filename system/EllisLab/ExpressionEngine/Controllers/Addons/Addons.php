@@ -37,7 +37,6 @@ class Addons extends CP_Controller {
 	var $perpage		= 20;
 	var $params			= array();
 	var $base_url;
-	var $uninstallable	= array();
 
 	/**
 	 * Constructor
@@ -45,11 +44,6 @@ class Addons extends CP_Controller {
 	public function __construct()
 	{
 		parent::__construct();
-
-		$uninstallable = array(
-			'channel',
-			'comments',
-		);
 
 		ee()->lang->loadfile('addons');
 
@@ -398,11 +392,6 @@ class Addons extends CP_Controller {
 
 		foreach ($addons as $addon)
 		{
-			if (in_array($addon, $this->uninstallable))
-			{
-				continue;
-			}
-
 			$module = $this->getModules($addon);
 			if ( ! empty($module) && $module['installed'] === TRUE)
 			{
