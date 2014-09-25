@@ -58,12 +58,12 @@ class Wizard extends CI_Controller {
 	 	'do_install', 'trackback_form', 'do_update');
 
 	// Absolutely, positively must always be installed
-	var $required_modules = array('channel', 'member', 'stats', 'rte');
+	var $required_modules = array('channel', 'comment', 'member', 'stats', 'rte');
 
 	var $theme_required_modules = array();
 
 	// Our default installed modules, if there is no "override"
-	var $default_installed_modules = array('comment', 'email', 'emoticon',
+	var $default_installed_modules = array('email', 'emoticon',
 		'jquery', 'member', 'query', 'rss', 'search', 'stats', 'channel',
 		'mailinglist', 'rte');
 
