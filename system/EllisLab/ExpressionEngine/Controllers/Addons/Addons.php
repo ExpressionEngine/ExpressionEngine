@@ -244,12 +244,19 @@ class Addons extends CP_Controller {
 
 			if ($info['installed'])
 			{
-				$toolbar = array(
-					'settings' => array(
-						'href' => '', // @TODO
-						'title' => lang('settings'),
-					)
-				);
+				if ($info['settings_url'])
+				{
+					$toolbar = array(
+						'settings' => array(
+							'href' => $info['settings_url'],
+							'title' => lang('settings'),
+						)
+					);
+				}
+				else
+				{
+					$toolbar = array();
+				}
 				$attrs = array();
 			}
 
@@ -438,12 +445,13 @@ class Addons extends CP_Controller {
 	 * @access	private
 	 * @param	str	$name	(optional) Limit the return to this add-on
 	 * @return	array		Add-on data in the following format:
-	 *   e.g. 'developer'	=> 'native',
-	 *        'version'		=> '--',
-	 *        'installed'	=> FALSE,
-	 *        'name'		=> 'FooBar',
-	 *        'package'		=> 'foobar',
-	 *        'type'		=> 'module'
+	 *   e.g. 'developer'	 => 'native',
+	 *        'version'		 => '--',
+	 *        'installed'	 => FALSE,
+	 *        'name'		 => 'FooBar',
+	 *        'package'		 => 'foobar',
+	 *        'type'		 => 'module',
+	 *        'settings_url' => ''
 	 */
 	private function getModules($name = NULL)
 	{
@@ -455,18 +463,23 @@ class Addons extends CP_Controller {
 			// ee()->lang->loadfile(( ! isset(ee()->lang_overrides[$module])) ? $module : ee()->lang_overrides[$module]);
 
 			$data = array(
-				'developer'	=> $info['type'],
-				'version'	=> '--',
-				'installed'	=> FALSE,
-				'name'		=> $info['name'],
-				'package'	=> $module,
-				'type'		=> 'module'
+				'developer'		=> $info['type'],
+				'version'		=> '--',
+				'installed'		=> FALSE,
+				'name'			=> $info['name'],
+				'package'		=> $module,
+				'type'			=> 'module',
+				'settings_url'	=> ''
 			);
 
 			if (isset($installed[$module]))
 			{
 				$data['version'] = $installed[$module]['module_version'];
 				$data['installed'] = TRUE;
+				if ($installed[$module]['has_cp_backend'] == 'y')
+				{
+					$data['settings_url'] = cp_url('addons/settings/' . $module);
+				}
 			}
 
 			if (is_null($name))
@@ -490,12 +503,13 @@ class Addons extends CP_Controller {
 	 * @access	private
 	 * @param	str	$name	(optional) Limit the return to this add-on
 	 * @return	array		Add-on data in the following format:
-	 *   e.g. 'developer'	=> 'native',
-	 *        'version'		=> '--',
-	 *        'installed'	=> FALSE,
-	 *        'name'		=> 'FooBar',
-	 *        'package'		=> 'foobar',
-	 *        'type'		=> 'accessory'
+	 *   e.g. 'developer'	 => 'native',
+	 *        'version'		 => '--',
+	 *        'installed'	 => FALSE,
+	 *        'name'		 => 'FooBar',
+	 *        'package'		 => 'foobar',
+	 *        'type'		 => 'accessory',
+	 *        'settings_url' => ''
 	 */
 	private function getAccessories($name = NULL)
 	{
@@ -522,18 +536,19 @@ class Addons extends CP_Controller {
 			$developer = (isset($info['type'])) ? $info['type'] : 'native';
 
 			$data = array(
-				'developer'	=> $developer,
-				'version'	=> $ACC->version,
-				'installed'	=> FALSE,
-				'name'		=> $info['name'],
-				'package'	=> $accessory,
-				'type'		=> 'accessory'
-
+				'developer'		=> $developer,
+				'version'		=> $ACC->version,
+				'installed'		=> FALSE,
+				'name'			=> $info['name'],
+				'package'		=> $accessory,
+				'type'			=> 'accessory',
+				'settings_url'	=> ''
 			);
 
 			if (isset($installed[$accessory]))
 			{
 				$data['installed'] = TRUE;
+				$data['settings_url'] = cp_url('addons/settings/' . $accessory);
 			}
 
 			if (is_null($name))
@@ -557,12 +572,13 @@ class Addons extends CP_Controller {
 	 * @access	private
 	 * @param	str	$name	(optional) Limit the return to this add-on
 	 * @return	array		Add-on data in the following format:
-	 *   e.g. 'developer'	=> 'native',
-	 *        'version'		=> '--',
-	 *        'installed'	=> FALSE,
-	 *        'name'		=> 'FooBar',
-	 *        'package'		=> 'foobar',
-	 *        'type'		=> 'plugin'
+	 *   e.g. 'developer'	 => 'native',
+	 *        'version'		 => '--',
+	 *        'installed'	 => FALSE,
+	 *        'name'		 => 'FooBar',
+	 *        'package'		 => 'foobar',
+	 *        'type'		 => 'plugin',
+	 *        'settings_url' => ''
 	 */
 	private function getPlugins($name = NULL)
 	{
@@ -653,12 +669,13 @@ class Addons extends CP_Controller {
 				$developer = (strpos($plugin_info['installed_path'], 'third_party') === FALSE) ? 'native' : 'third_party';
 
 				$data = array(
-					'developer'	=> $developer,
-					'version'	=> $plugin_info['pi_version'],
-					'installed'	=> TRUE,
-					'name'		=> $plugin_info['pi_name'],
-					'package'	=> $filename,
-					'type'		=> 'plugin'
+					'developer'		=> $developer,
+					'version'		=> $plugin_info['pi_version'],
+					'installed'		=> TRUE,
+					'name'			=> $plugin_info['pi_name'],
+					'package'		=> $filename,
+					'type'			=> 'plugin',
+					'settings_url'	=> cp_url('addons/settings/' . $filename)
 				);
 
 				if (is_null($name))
@@ -689,12 +706,13 @@ class Addons extends CP_Controller {
 	 * @access	private
 	 * @param	str	$name	(optional) Limit the return to this add-on
 	 * @return	array		Add-on data in the following format:
-	 *   e.g. 'developer'	=> 'native',
-	 *        'version'		=> '--',
-	 *        'installed'	=> FALSE,
-	 *        'name'		=> 'FooBar',
-	 *        'package'		=> 'foobar',
-	 *        'type'		=> 'fieldtype'
+	 *   e.g. 'developer'	 => 'native',
+	 *        'version'		 => '--',
+	 *        'installed'	 => FALSE,
+	 *        'name'		 => 'FooBar',
+	 *        'package'		 => 'foobar',
+	 *        'type'		 => 'fieldtype',
+	 *        'settings_url' => ''
 	 */
 	private function getFieldtypes($name = NULL)
 	{
@@ -706,12 +724,13 @@ class Addons extends CP_Controller {
 		foreach (ee()->api_channel_fields->fetch_all_fieldtypes() as $fieldtype => $info)
 		{
 			$data = array(
-				'developer'	=> $info['type'],
-				'version'	=> $info['version'],
-				'installed'	=> FALSE,
-				'name'		=> $info['name'],
-				'package'	=> $fieldtype,
-				'type'		=> 'fieldtype'
+				'developer'		=> $info['type'],
+				'version'		=> $info['version'],
+				'installed'		=> FALSE,
+				'name'			=> $info['name'],
+				'package'		=> $fieldtype,
+				'type'			=> 'fieldtype',
+				'settings_url'	=> ''
 			);
 
 			if (isset($installed[$fieldtype]))
