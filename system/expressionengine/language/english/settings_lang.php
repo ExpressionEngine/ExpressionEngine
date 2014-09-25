@@ -1035,6 +1035,76 @@ $lang = array(
 'upload_create' =>
 'Create New',
 
+'create_upload_directory' =>
+'Create Upload Directory',
+
+'edit_upload_directory' =>
+'Edit Upload Directory',
+
+'upload_name' =>
+'Directory name',
+
+'upload_name_desc' =>
+'Be descriptive, like <b>photos</b> or <b>documents</b>.',
+
+'upload_url' =>
+'Upload directory',
+
+'upload_url_desc' =>
+'<abbr title="Uniform Resource Location">URL</abbr> location of this <mark>upload</mark> directory.',
+
+'upload_path' =>
+'Upload path',
+
+'upload_path_desc' =>
+'Full path location of this <mark>upload</mark> directory.',
+
+'upload_allowed_types' =>
+'Allowed file types?',
+
+'upload_allowed_types_opt_images' =>
+'Images only',
+
+'upload_allowed_types_opt_all' =>
+'All file types',
+
+'file_limits' =>
+'File Limits',
+
+'upload_file_size' =>
+'File size',
+
+'upload_file_size_desc' =>
+'Maximum file size in megabytes.',
+
+'upload_image_width' =>
+'Image width',
+
+'upload_image_width_desc' =>
+'Maximum image width in pixels.',
+
+'upload_image_height' =>
+'Image height',
+
+'upload_image_height_desc' =>
+'Maximum image height in pixels.',
+
+'upload_privileges' =>
+'Upload Privileges',
+
+'upload_member_groups' =>
+'Allowed member groups',
+
+'upload_member_groups_desc' =>
+'The following user groups are allowed to upload to this directory.</em>
+<em>Super Administrators are <b>always</b> allowed.',
+
+'btn_create_directory' =>
+'Create Directory',
+
+'btn_create_directory_working' =>
+'Creating...',
+
 ''=>''
 );
 
