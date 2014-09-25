@@ -2432,7 +2432,14 @@ class Content_publish extends CP_Controller {
 		$str = str_replace("%uFFD4", "\'",		$str);
 		$str = str_replace("%uFFD5", "\'",		$str);
 
-		$str =	preg_replace("/\%u([0-9A-F]{4,4})/e","'&#'.base_convert('\\1',16,10).';'", $str);
+		$str = preg_replace_callback(
+			"/\%u([0-9A-F]{4,4})/",
+			function($matches)
+			{
+				return base_convert($matches[1], 16, 10);
+			},
+			$str
+		);
 
 		$str = $this->security->xss_clean(stripslashes(urldecode($str)));
 
