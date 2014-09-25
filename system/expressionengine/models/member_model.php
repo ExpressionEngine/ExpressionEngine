@@ -413,7 +413,7 @@ class Member_model extends CI_Model {
 		// hook.
 		if ($this->extensions->active_hook('member_create_start'))
 		{
-			list($data, $cdata) = $this->extensions->call('member_create_start', $member_id, $data, $cdata);
+			list($data, $cdata) = $this->extensions->call('member_create_start', $data, $cdata);
 		}
 		//
 		// ---------------------------------------------------------------
