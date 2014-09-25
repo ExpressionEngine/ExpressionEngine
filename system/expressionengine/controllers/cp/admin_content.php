@@ -1387,19 +1387,11 @@ class Admin_content extends CP_Controller {
 			$this->functions->redirect(BASE.AMP.'C=admin_content'.AMP.'M=category_management');
 		}
 
-		// check for bad characters in group name
-		if ( ! preg_match("#^[a-zA-Z0-9_\-/\s]+$#i", $_POST['group_name']))
-		{
-			show_error(lang('illegal_characters'));
-		}
-
-		$this->load->model('category_model');
-
-		// Is the group name taken?
-		if ($this->category_model->is_duplicate_category_group($this->input->post('group_name'), $this->input->post('group_id')))
-		{
-			show_error(lang('taken_category_group_name'));
-		}
+		// Setup Form Validation Rules
+		ee()->load->library('form_validation');
+		ee()->form_validation->set_rules('group_name', 'lang:group_name', 'required|alpha_dash_space|callback__valid_category_group_name[group_id]');
+		ee()->form_validation->set_rules('can_edit_categories[]', '', '');
+		ee()->form_validation->set_rules('can_delete_categories[]', '', '');
 
 		// make data array of variables from our POST data
 		$data = array();
@@ -1434,42 +1426,69 @@ class Admin_content extends CP_Controller {
 			$data['can_delete_categories'] = '';
 		}
 
-		// Construct the query based on whether we are updating or inserting
-		if ($edit == FALSE)
+		if (ee()->form_validation->run() !== FALSE)
 		{
-			$this->category_model->insert_category_group($data);
-
-			$cp_message = lang('category_group_created').' '.$data['group_name'];
-			$this->logger->log_action(lang('category_group_created').NBS.NBS.$data['group_name']);
-
-			$this->db->select('channel_id');
-			$this->db->where('site_id', $this->config->item('site_id'));
-			$query = $this->db->get('channels');
-
-			if ($query->num_rows() > 0)
+			// Construct the query based on whether we are updating or inserting
+			if ($edit == FALSE)
 			{
-				$cp_message .= '<br />'.lang('assign_group_to_channel');
+				$this->load->model('category_model');
+				$this->category_model->insert_category_group($data);
 
-				if ($query->num_rows() == 1)
-				{
-					$link = 'C=admin_content'.AMP.'M=channel_edit_group_assignments'.AMP.'channel_id='.$query->row('channel_id') ;
-				}
-				else
-				{
-					$link = 'C=admin_content'.AMP.'M=channel_management';
-				}
+				$cp_message = lang('category_group_created').' '.$data['group_name'];
+				$this->logger->log_action(lang('category_group_created').NBS.NBS.$data['group_name']);
 
-				$cp_message .= '<br /><a href="'.BASE.AMP.$link.'">'. lang('click_to_assign_group').'</a>';
+				$this->db->select('channel_id');
+				$this->db->where('site_id', $this->config->item('site_id'));
+				$query = $this->db->get('channels');
+
+				if ($query->num_rows() > 0)
+				{
+					$cp_message .= '<br />'.lang('assign_group_to_channel');
+
+					if ($query->num_rows() == 1)
+					{
+						$link = 'C=admin_content'.AMP.'M=channel_edit_group_assignments'.AMP.'channel_id='.$query->row('channel_id') ;
+					}
+					else
+					{
+						$link = 'C=admin_content'.AMP.'M=channel_management';
+					}
+
+					$cp_message .= '<br /><a href="'.BASE.AMP.$link.'">'. lang('click_to_assign_group').'</a>';
+				}
 			}
+			else
+			{
+				$this->category_model->update_category_group($data['group_id'], $data);
+				$cp_message = lang('category_group_updated').NBS.$data['group_name'];
+			}
+
+			$this->session->set_flashdata('message_success', $cp_message);
+			$this->functions->redirect(BASE.AMP.'C=admin_content'.AMP.'M=category_management');
 		}
 		else
 		{
-			$this->category_model->update_category_group($data['group_id'], $data);
-			$cp_message = lang('category_group_updated').NBS.$data['group_name'];
+			$this->edit_category_group();
+		}
+	}
+
+	// --------------------------------------------------------------------
+
+	public function _valid_category_group_name($group_name, $group_id)
+	{
+		ee()->load->model('category_model');
+
+		// Is the group name taken?
+		if (ee()->category_model->is_duplicate_category_group($group_name, $group_id))
+		{
+			ee()->form_validation->set_message(
+				'_valid_category_group_name',
+				lang('taken_category_group_name')
+			);
+			return FALSE;
 		}
 
-		$this->session->set_flashdata('message_success', $cp_message);
-		$this->functions->redirect(BASE.AMP.'C=admin_content'.AMP.'M=category_management');
+		return TRUE;
 	}
 
 	// --------------------------------------------------------------------
