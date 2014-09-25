@@ -85,9 +85,9 @@ class Admin_content extends CP_Controller {
 	{
 		$this->_restrict_prefs_access();
 
-        $this->cp->set_right_nav(array(
-        	'create_new_channel' => BASE.AMP.'C=admin_content'.AMP.'M=channel_add'
-        ));
+		$this->cp->set_right_nav(array(
+			'create_new_channel' => BASE.AMP.'C=admin_content'.AMP.'M=channel_add'
+		));
 
 		$this->load->library('table');
 		$this->load->model('channel_model');
@@ -817,7 +817,7 @@ class Admin_content extends CP_Controller {
 		}
 
 		$this->load->model(array(
- 			'channel_model', 'category_model', 'status_model', 'field_model'
+			'channel_model', 'category_model', 'status_model', 'field_model'
 		));
 
 		$query = $this->channel_model->get_channel_info($channel_id);
@@ -1239,9 +1239,9 @@ class Admin_content extends CP_Controller {
 			$cat_count++;
 		}
 
-        $this->cp->set_right_nav(array(
-        	'create_new_category_group' => BASE.AMP.'C=admin_content'.AMP.'M=edit_category_group'
-        ));
+		$this->cp->set_right_nav(array(
+			'create_new_category_group' => BASE.AMP.'C=admin_content'.AMP.'M=edit_category_group'
+		));
 
 		$this->cp->render('admin/category_management', $vars);
 	}
@@ -1278,10 +1278,10 @@ class Admin_content extends CP_Controller {
 		$vars['can_edit_selected'] = array();
 		$vars['can_delete_selected'] = array();
 		$vars['formatting_options'] = array(
-												'none'	=> lang('convert_to_entities'),
-												'safe'	=> lang('allow_safe_html'),
-												'all'	=> lang('allow_all_html')
-											);
+			'none' => lang('convert_to_entities'),
+			'safe' => lang('allow_safe_html'),
+			'all'  => lang('allow_all_html')
+		);
 		$can_edit_selected = array();
 		$can_delete_selected = array();
 		$vars['can_edit_categories'] = '';
@@ -1742,7 +1742,7 @@ class Admin_content extends CP_Controller {
 		$default = array('cat_name', 'cat_url_title', 'cat_description', 'cat_image', 'cat_id', 'parent_id');
 
 		if ($vars['cat_id'] != '')
- 		{
+		{
 			$this->db->select('cat_id, cat_name, cat_url_title, cat_description, cat_image, group_id, parent_id');
 			$query = $this->db->get_where('categories', array('cat_id' => $vars['cat_id']));
 
@@ -1846,7 +1846,7 @@ class Admin_content extends CP_Controller {
 			$this->load->model('addons_model');
 			$plugins = $this->addons_model->get_plugin_formatting();
 
-            $vars['custom_format_options']['none'] = 'None';
+			$vars['custom_format_options']['none'] = 'None';
 			foreach ($plugins as $k=>$v)
 			{
 				$vars['custom_format_options'][$k] = $v;
@@ -2188,19 +2188,19 @@ class Admin_content extends CP_Controller {
 			{
 				$children  = array();
 
-        		// Fetch parent info
+				// Fetch parent info
 				$this->db->select('cat_name, cat_id, parent_id');
 				$this->db->where('group_id', $group_id);
 				$this->db->from('categories');
 				$this->db->order_by('parent_id, cat_name');
 
-        		$query = $this->db->get();
+				$query = $this->db->get();
 
-        		if ($query->num_rows() == 0)
-        		{
-            		$update = FALSE;
+				if ($query->num_rows() == 0)
+				{
+					$update = FALSE;
 					return $this->category_editor($group_id, $update);
-        		}
+				}
 
 				// Assign the query result to a multi-dimensional array
 				foreach($query->result_array() as $row)
@@ -2737,8 +2737,8 @@ class Admin_content extends CP_Controller {
 		}');
 
 		$this->cp->set_right_nav(array(
-        	'create_new_cat_field' => BASE.AMP.'C=admin_content'.AMP.'M=edit_custom_category_field'.AMP.'group_id='.$vars['group_id']
-        ));
+			'create_new_cat_field' => BASE.AMP.'C=admin_content'.AMP.'M=edit_custom_category_field'.AMP.'group_id='.$vars['group_id']
+		));
 
 		$this->cp->render('admin/category_custom_field_group_manager', $vars);
 	}
@@ -3252,7 +3252,7 @@ class Admin_content extends CP_Controller {
 		$vars['message'] = $message;
 		$vars['field_groups'] = $this->field_model->get_field_groups(); // Fetch field groups
 
-        $this->cp->set_right_nav(array('create_new_field_group' => BASE.AMP.'C=admin_content'.AMP.'M=field_group_edit'));
+		$this->cp->set_right_nav(array('create_new_field_group' => BASE.AMP.'C=admin_content'.AMP.'M=field_group_edit'));
 
 		$this->cp->render('admin/field_group_management', $vars);
 	}
@@ -3935,7 +3935,7 @@ class Admin_content extends CP_Controller {
 
 	// --------------------------------------------------------------------
 
- 	/** -----------------------------------------------------------
+	/** -----------------------------------------------------------
 	/**  Edit Formatting Buttons
 	/** -----------------------------------------------------------*/
 	// This function shows the form that lets you edit the
@@ -4004,14 +4004,14 @@ class Admin_content extends CP_Controller {
 		$this->cp->render('admin/edit_formatting_options', $vars);
 	}
 
- 	// --------------------------------------------------------------------
+	// --------------------------------------------------------------------
 
- 	/**
- 	 * Update Formatting Buttons
- 	 *
- 	 * @access public
- 	 * @return void
- 	 */
+	/**
+	 * Update Formatting Buttons
+	 *
+	 * @access public
+	 * @return void
+	 */
 	function update_formatting_options()
 	{
 		$this->_restrict_prefs_access();
@@ -4342,7 +4342,7 @@ class Admin_content extends CP_Controller {
 		// Fetch status groups
 		$vars['statuses'] = $this->status_model->get_statuses($group_id);
 
-        $this->cp->set_right_nav(array('create_new_status' => BASE.AMP.'C=admin_content'.AMP.'M=status_edit'.AMP.'group_id='.$group_id));
+		$this->cp->set_right_nav(array('create_new_status' => BASE.AMP.'C=admin_content'.AMP.'M=status_edit'.AMP.'group_id='.$group_id));
 
 		$this->cp->render('admin/status_management', $vars);
 	}
@@ -4488,7 +4488,7 @@ class Admin_content extends CP_Controller {
 						'status'	 	=> $this->input->post('status'),
 						'status_order'	=> (is_numeric($this->input->post('status_order'))) ? $this->input->get_post('status_order') : 0,
 						'highlight'		=> $this->input->post('highlight')
-				  	);
+					);
 
 		if ($edit == FALSE)
 		{
