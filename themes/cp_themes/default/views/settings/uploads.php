@@ -5,7 +5,7 @@
 		<?=form_open($table['base_url'])?>
 			<?php $this->view('_shared/alerts')?>
 			<fieldset class="tbl-search right">
-				<a class="btn tn action" href="http://localhost/el-projects/ee-cp/views/settings-uploads-new.php"><?=lang('upload_create')?></a>
+				<a class="btn tn action" href="<?=cp_url('settings/uploads/new-upload')?>"><?=lang('upload_create')?></a>
 			</fieldset>
 			<h1><?=$table_heading?></h1>
 			<?php $this->view('_shared/table', $table); ?>
