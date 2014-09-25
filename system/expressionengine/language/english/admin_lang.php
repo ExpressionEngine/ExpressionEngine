@@ -1761,6 +1761,9 @@ $lang = array(
 'illegal_characters' =>
 'The name you submitted may only contain alpha-numeric characters, underscores, and dashes',
 
+'invalid_xss_check' =>
+'The data you submitted did not pass our security check. Please ensure the data you used does not contain any possible security issues.',
+
 'developer_logs' =>
 'You have %d unviewed items in the <a href="%s">Developer Log</a>.',
 

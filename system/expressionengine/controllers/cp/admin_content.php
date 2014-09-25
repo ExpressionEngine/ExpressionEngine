@@ -2073,9 +2073,9 @@ class Admin_content extends CP_Controller {
 			$_POST['cat_url_title'] = url_title($_POST['cat_url_title'], $word_separator);
 		}
 
-		$this->form_validation->set_rules('cat_name',		'lang:category_name',		'required');
-		$this->form_validation->set_rules('cat_url_title',	'lang:cat_url_title',	'callback__cat_url_title');
-		$this->form_validation->set_rules('cat_description', '', '');
+		$this->form_validation->set_rules('cat_name', 'lang:category_name', 'required|valid_xss_check');
+		$this->form_validation->set_rules('cat_url_title', 'lang:cat_url_title', 'callback__cat_url_title');
+		$this->form_validation->set_rules('cat_description', 'lang:cat_description', 'valid_xss_check');
 
 		// Get the Category Image
 		$this->load->library('file_field');
