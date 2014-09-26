@@ -1232,7 +1232,7 @@ class Admin_content extends CP_Controller {
 			$category_count = $this->db->count_all_results('categories');
 
 			$vars['categories'][$cat_count]['group_id'] = $row->group_id;
-			$vars['categories'][$cat_count]['group_name'] = $row->group_name;
+			$vars['categories'][$cat_count]['group_name'] = htmlentities($row->group_name, ENT_QUOTES);
 			$vars['categories'][$cat_count]['category_count'] = $category_count;
 			$vars['categories'][$cat_count]['custom_field_count'] = ((isset($cfcount[$row->group_id])) ? $cfcount[$row->group_id] : '0');
 
@@ -1678,6 +1678,14 @@ class Admin_content extends CP_Controller {
 		if (count($this->api_channel_categories->categories) > 0)
 		{
 			$vars['categories'] = $this->api_channel_categories->categories;
+
+			// Sanitize the category names
+			foreach ($vars['categories'] as $category_id => $category_data)
+			{
+				$vars['categories'][$category_id][1] = htmlentities(
+					$vars['categories'][$category_id][1], ENT_QUOTES
+				);
+			}
 
 			// Category order
 

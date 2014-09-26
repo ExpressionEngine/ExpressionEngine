@@ -2895,7 +2895,7 @@ class Channel {
 				$cat_image = ee()->file_field->parse_string($val[5]);
 
 				$cat_vars = array(
-					'category_name'			=> htmlentities($val[3], ENT_QUOTES),
+					'category_name'			=> $val[3],
 					'category_url_title'	=> $val[6],
 					'category_description'	=> $val[4],
 					'category_image'		=> $cat_image,
@@ -3364,7 +3364,7 @@ class Channel {
 						$cat_image = ee()->file_field->parse_string($row['cat_image']);
 
 						$cat_vars = array(
-							'category_name'			=> htmlentities($row['cat_name'], ENT_QUOTES),
+							'category_name'			=> $row['cat_name'],
 							'category_url_title'	=> $row['cat_url_title'],
 							'category_description'	=> $row['cat_description'],
 							'category_image'		=> $cat_image,
@@ -3828,7 +3828,7 @@ class Channel {
 				$cat_image = ee()->file_field->parse_string($val[2]);
 
 				$cat_vars = array(
-					'category_name'			=> htmlentities($val[1], ENT_QUOTES),
+					'category_name'			=> $val[1],
 					'category_url_title'	=> $val[4],
 					'category_description'	=> $val[3],
 					'category_image'		=> $cat_image,
@@ -4190,7 +4190,7 @@ class Channel {
 		$cat_image = ee()->file_field->parse_string($query->row('cat_image'));
 
 		$cat_vars = array(
-			'category_name'			=> htmlentities($query->row('cat_name'), ENT_QUOTES),
+			'category_name'			=> $query->row('cat_name'),
 			'category_description'	=> $query->row('cat_description'),
 			'category_image'		=> $cat_image,
 			'category_id'			=> $match[2],
