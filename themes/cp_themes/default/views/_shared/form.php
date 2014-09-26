@@ -1,5 +1,3 @@
-<?php extend_template('default-nav'); ?>
-
 <?php
 // Show "Required Fields" in header if there are any required fields
 $required = FALSE;

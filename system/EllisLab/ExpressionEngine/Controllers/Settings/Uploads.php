@@ -281,7 +281,7 @@ class Uploads extends Settings {
 		ee()->cp->set_breadcrumb(cp_url('files'), lang('file_manager'));
 		ee()->cp->set_breadcrumb(cp_url('settings/uploads'), lang('upload_directories'));
 
-		ee()->cp->render('_shared/form', $vars);
+		ee()->cp->render('settings/form', $vars);
 	}
 }
 // END CLASS

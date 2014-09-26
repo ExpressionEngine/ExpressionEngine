@@ -120,7 +120,7 @@ class Comments extends Settings {
 
 		ee()->cp->set_breadcrumb(cp_url('publish/comments'), lang('all_comments'));
 
-		ee()->cp->render('_shared/form', $vars);
+		ee()->cp->render('settings/form', $vars);
 	}
 }
 // END CLASS

@@ -141,7 +141,7 @@ class Avatars extends Settings {
 		ee()->view->save_btn_text = 'btn_save_settings';
 		ee()->view->save_btn_text_working = 'btn_save_settings_working';
 
-		ee()->cp->render('_shared/form', $vars);
+		ee()->cp->render('settings/form', $vars);
 	}
 }
 // END CLASS

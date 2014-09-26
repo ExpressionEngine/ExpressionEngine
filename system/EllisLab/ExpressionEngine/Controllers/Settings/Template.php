@@ -136,7 +136,7 @@ class Template extends Settings {
 
 		ee()->cp->set_breadcrumb(cp_url('design'), lang('template_manager'));
 
-		ee()->cp->render('_shared/form', $vars);
+		ee()->cp->render('settings/form', $vars);
 	}
 }
 // END CLASS
