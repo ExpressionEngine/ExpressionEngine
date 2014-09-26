@@ -1827,14 +1827,14 @@ class Members extends CP_Controller {
 							$selected = ($k == $this->config->item($key)) ? TRUE : FALSE;
 
 							$radios[] = array(
-											'label'		=> lang($v, "{$key}_{$k}"),
-											'radio'		=> array(
-																	'name' 		=> $key,
-																	'id'		=> "{$key}_{$k}",
-																	'value'		=> $k,
-																	'checked'	=> ($k == $this->config->item($key)) ? TRUE : FALSE
-																)
-										  );
+								'label'		=> lang($v, "{$key}_{$k}"),
+								'radio'		=> array(
+									'name' 		=> $key,
+									'id'		=> "{$key}_{$k}",
+									'value'		=> $k,
+									'checked'	=> ($k == $this->config->item($key)) ? TRUE : FALSE
+								)
+							);
 						}
 
 						$preference_controls['type'] = "radio";
@@ -1895,11 +1895,11 @@ class Members extends CP_Controller {
 
 					$preference_controls['type'] = "text";
 					$preference_controls['data'] = array(
-															'id' 	=> $key,
-															'name' 	=> $key,
-															'value' => $item,
-															'class'	=> 'field'
-														);
+						'id'    => $key,
+						'name'  => $key,
+						'value' => $item,
+						'class' => 'field'
+					);
 				}
 
 				$vars['menu_head'][$menu_head][$key]['preference_controls'] = $preference_controls;
