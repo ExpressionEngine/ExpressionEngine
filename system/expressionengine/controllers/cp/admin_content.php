@@ -1389,7 +1389,7 @@ class Admin_content extends CP_Controller {
 
 		// Setup Form Validation Rules
 		ee()->load->library('form_validation');
-		ee()->form_validation->set_rules('group_name', 'lang:group_name', 'required|alpha_dash_space|callback__valid_category_group_name[group_id]');
+		ee()->form_validation->set_rules('group_name', 'lang:group_name', 'required|alpha_dash_space|callback__valid_category_group_name['.ee()->input->post('group_id').']');
 		ee()->form_validation->set_rules('can_edit_categories[]', '', '');
 		ee()->form_validation->set_rules('can_delete_categories[]', '', '');
 
