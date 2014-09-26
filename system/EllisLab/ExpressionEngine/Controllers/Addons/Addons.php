@@ -440,6 +440,104 @@ class Addons extends CP_Controller {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Display add-on settings/info
+	 *
+	 * @access	public
+	 * @param	str	$addon	The name of add-on whose settings to display
+	 * @return	void
+	 */
+	public function settings($addon)
+	{
+		$addon = ee()->security->sanitize_filename(strtolower($addon));
+
+		$installed = $this->addons->get_installed();
+		$module = $this->getModules($addon);
+
+		if (ee()->session->userdata['group_id'] != 1)
+		{
+			// Do they have access to this module?
+			if ( ! isset($installed[$addon]) OR
+				 ! isset(ee()->session->userdata['assigned_modules'][$installed[$addon]['module_id']]) OR
+				ee()->session->userdata['assigned_modules'][$installed[$addon]['module_id']] !== TRUE)
+			{
+				show_error(lang('unauthorized_access'));
+			}
+		}
+		else
+		{
+			if ( ! isset($installed[$addon]))
+			{
+				show_error(lang('requested_module_not_installed').NBS.$addon);
+			}
+		}
+
+		$view_folder = 'views';
+
+		// set the view path
+		define('MODULE_VIEWS', $installed[$addon]['path'].$view_folder.'/');
+
+		// Add the helper/library load path and temporarily
+		// switch the view path to the module's view folder
+		ee()->load->add_package_path($installed[$addon]['path'], FALSE);
+
+		// Update Module
+		// Send version to update class and let it do any required work
+		if (file_exists($installed[$addon]['path'].'upd.'.$addon.'.php'))
+		{
+			require $installed[$addon]['path'].'upd.'.$addon.'.php';
+
+			$class = ucfirst($addon).'_upd';
+			$version = $installed[$addon]['module_version'];
+
+			$UPD = new $class;
+			$UPD->_ee_path = APPPATH;
+
+			if ($UPD->version > $version && method_exists($UPD, 'update') && $UPD->update($version) !== FALSE)
+			{
+				ee()->db->update('modules', array('module_version' => $UPD->version), array('module_name' => ucfirst($addon)));
+			}
+		}
+
+		require_once $installed[$addon]['path'].$installed[$addon]['file'];
+
+		// instantiate the module cp class
+		$mod = new $installed[$addon]['class'];
+		$mod->_ee_path = APPPATH;
+
+
+		// add validation callback support to the mcp class (see EE_form_validation for more info)
+		ee()->_mcp_reference =& $mod;
+
+		$method = (ee()->input->get('method') !== FALSE) ? ee()->input->get('method') : 'index';
+
+		// its possible that a module will try to call a method that does not exist
+		// either by accident (ie: a missed function) or by deliberate user url hacking
+		if (method_exists($mod, $method))
+		{
+			$vars['_module_cp_body'] = $mod->$method();
+		}
+		else
+		{
+			$vars['_module_cp_body'] = lang('requested_page_not_found');
+		}
+
+		// unset reference
+		unset(ee()->_mcp_reference);
+
+		// remove package paths
+		ee()->load->remove_package_path($installed[$addon]['path']);
+
+		ee()->view->cp_page_title = $module['name'] . ' ' . lang('configuration');
+		ee()->view->cp_breadcrumbs = array(
+			cp_url('addons') => lang('addon_manager')
+		);
+
+		ee()->cp->render('addons/settings', $vars);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Get a list of modules
 	 *
 	 * @access	private
