@@ -1295,8 +1295,8 @@ class EE_Config Extends CI_Config {
 				'time_interval'      => array('i', ''),
 				'lockout_time'       => array('i', ''),
 				'banishment_type'    => array('s', array('404' => '404_page', 'redirect' => 'url_redirect', 'message' => 'show_message')),
-				'banishment_url'     => array('i', ''),
-				'banishment_message' => array('i', '')
+				'banishment_url'     => array('i', '', 'strip_tags|valid_xss_check'),
+				'banishment_message' => array('i', '', 'strip_tags|valid_xss_check')
 			),
 
 			'localization_cfg'	=>	array(
@@ -1308,7 +1308,7 @@ class EE_Config Extends CI_Config {
 
 			'email_cfg'			=>	array(
 				'webmaster_email'        => array('i', '', 'required|valid_email'),
-				'webmaster_name'         => array('i', ''),
+				'webmaster_name'         => array('i', '', 'strip_tags|valid_xss_check'),
 				'email_charset'          => array('i', ''),
 				'email_debug'            => array('r', array('y' => 'yes', 'n' => 'no')),
 				'mail_protocol'          => array('s', array('mail' => 'php_mail', 'sendmail' => 'sendmail', 'smtp' => 'smtp')),
@@ -1332,8 +1332,8 @@ class EE_Config Extends CI_Config {
 			),
 
 			'captcha_cfg'		=>	array(
-				'captcha_path'            => array('i', ''),
-				'captcha_url'             => array('i', ''),
+				'captcha_path'            => array('i', '', 'strip_tags|valid_xss_check'),
+				'captcha_url'             => array('i', '', 'strip_tags|valid_xss_check'),
 				'captcha_font'            => array('r', array('y' => 'yes', 'n' => 'no')),
 				'captcha_rand'            => array('r', array('y' => 'yes', 'n' => 'no')),
 				'captcha_require_members' => array('r', array('y' => 'yes', 'n' => 'no'))
@@ -1356,7 +1356,7 @@ class EE_Config Extends CI_Config {
 
 			'censoring_cfg'		=>	array(
 				'enable_censoring'   => array('r', array('y' => 'yes', 'n' => 'no')),
-				'censor_replacement' => array('i', ''),
+				'censor_replacement' => array('i', '', 'strip_tags|valid_xss_check'),
 				'censored_words'     => array('t', array('rows' => '20', 'kill_pipes' => TRUE)),
 			),
 
@@ -1368,7 +1368,7 @@ class EE_Config Extends CI_Config {
 
 			'emoticon_cfg'		=>	array(
 				'enable_emoticons' => array('r', array('y' => 'yes', 'n' => 'no')),
-				'emoticon_url'     => array('i', '')
+				'emoticon_url'     => array('i', '', 'strip_tags|valid_xss_check')
 			),
 
 			'tracking_cfg'		=>	array(
