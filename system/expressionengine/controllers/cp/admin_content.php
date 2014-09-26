@@ -2092,7 +2092,7 @@ class Admin_content extends CP_Controller {
 			$_POST['cat_url_title'] = url_title($_POST['cat_url_title'], $word_separator);
 		}
 
-		$this->form_validation->set_rules('cat_name', 'lang:category_name', 'required|valid_xss_check');
+		$this->form_validation->set_rules('cat_name', 'lang:category_name', 'required|strip_tags|valid_xss_check');
 		$this->form_validation->set_rules('cat_url_title', 'lang:cat_url_title', 'callback__cat_url_title');
 		$this->form_validation->set_rules('cat_description', 'lang:cat_description', 'valid_xss_check');
 
@@ -2113,8 +2113,6 @@ class Admin_content extends CP_Controller {
 
 			$_POST['cat_name'] =  ascii_to_entities($_POST['cat_name']);
 		}
-
-		$_POST['cat_name'] = str_replace(array('<', '>'), array('&lt;', '&gt;'), $_POST['cat_name']);
 
 		// Pull out custom field data for later insertion
 
