@@ -1,4 +1,9 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+use EllisLab\ExpressionEngine\Library\CP\Pagination;
+use EllisLab\ExpressionEngine\Library\CP\Table;
+use EllisLab\ExpressionEngine\Library\CP\URL;
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -63,7 +68,8 @@ class Rte_mcp {
 	 */
 	public function index()
 	{
-		ee()->load->library(array('table','javascript'));
+		$base_url =  new URL('addons/settings/rte', ee()->session->session_id());
+
 		ee()->load->model('rte_toolset_model');
 
 		$toolsets = ee()->rte_toolset_model->get_toolset_list();
@@ -71,42 +77,94 @@ class Rte_mcp {
 		// prep the Default Toolset dropdown
 		$toolset_opts = array();
 
+		$data = array();
 		foreach ($toolsets as $t)
 		{
+			$toolset = array(
+				'tool_set' => $t['name'],
+				'status' => lang('disabled'),
+				array('toolbar_items' => array(
+						'edit' => array(
+							'href' => '', // @TODO
+							'title' => lang('edit'),
+						)
+					)
+				),
+				array(
+					'name' => 'selection[]',
+					'value' => $t['toolset_id']
+				)
+			);
+
 			if ($t['enabled'] == 'y')
 			{
 				$toolset_opts[$t['toolset_id']] = $t['name'];
+				$toolset['status'] = lang('enabled');
 			}
+			$data[] = $toolset;
 		}
 
 		$vars = array(
-			'cp_page_title'				=> lang('rte_module_name'),
-			'module_base'				=> $this->_base_url,
-			'action'					=> $this->_form_base.AMP.'method=prefs_update',
-			'rte_enabled'				=> ee()->config->item('rte_enabled'),
-			'rte_default_toolset_id'	=> ee()->config->item('rte_default_toolset_id'),
-			'toolsets'					=> $toolsets,
-			'toolset_opts'				=> $toolset_opts,
-			'tools'						=> ee()->rte_tool_model->get_tool_list(),
-			'new_toolset_link'			=> $this->_base_url.AMP.'method=edit_toolset'.AMP.'toolset_id=0'
-		);
-
-		// JS
-		ee()->cp->add_js_script(array(
-			'file'		=> 'cp/rte'
-		));
-
-		ee()->javascript->set_global(array(
-			'rte'	=> array(
-				'lang' => array(
-					'edit_toolset'		=> lang('edit_toolset'),
-					'create_toolset'	=> lang('create_new_toolset')
+			'cp_page_title' => lang('rte_module_name') . ' ' . lang('configuration'),
+			'save_btn_text' => 'btn_save_settings',
+			'save_btn_text_working' => 'btn_save_settings_working',
+			'sections' => array(
+				array(
+					array(
+						'title' => 'enable_rte',
+						'desc' => 'enable_rte_desc',
+						'fields' => array(
+							'rte_enabled' => array(
+								'type' => 'inline_radio',
+								'choices' => array(
+									'y' => 'enable',
+									'n' => 'disable'
+								)
+							)
+						)
+					),
+					array(
+						'title' => 'default_toolset',
+						'desc' => '',
+						'fields' => array(
+							'rte_default_toolset_id' => array(
+								'type' => 'dropdown',
+								'choices' => $toolset_opts
+							)
+						)
+					)
 				)
 			)
-		));
+		);
 
-		// CSS
-		ee()->cp->add_to_head(ee()->view->head_link('css/rte.css'));
+		$table = Table::create(array('autosort' => TRUE, 'autosearch' => FALSE, 'limit' => 20));
+		$table->setColumns(
+			array(
+				'tool_set',
+				'status',
+				'manage' => array(
+					'type'	=> Table::COL_TOOLBAR
+				),
+				array(
+					'type'	=> Table::COL_CHECKBOX
+				)
+			)
+		);
+		$table->setData($data);
+
+		$vars['table'] = $table->viewData($base_url);
+		$vars['base_url'] = $vars['table']['base_url'];
+
+		if ( ! empty($vars['table']['data']))
+		{
+			// Paginate!
+			$pagination = new Pagination(
+				$vars['table']['limit'],
+				$vars['table']['total_rows'],
+				$vars['table']['page']
+			);
+			$vars['pagination'] = $pagination->cp_links($base_url);
+		}
 
 		// return the page
 		return ee()->load->view('index', $vars, TRUE);

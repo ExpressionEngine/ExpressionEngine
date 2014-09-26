@@ -4,6 +4,13 @@ $lang = array(
 
 'rte_module_name' => 'Rich Text Editor',
 'rte_module_description' => 'Enables rich text editing in text areas',
+'btn_save_settings' => 'Save Settings',
+'btn_save_settings_working' => 'Saving...',
+'configuration' => 'Configuration',
+'available_tool_sets' => 'Available Tool Sets',
+'create_new' => 'create new',
+'tool_set' => 'Tool Set',
+'status' => 'Status',
 
 // Headings
 'nav_rte_settings' => 'Rich Text Editor Settings',
@@ -28,7 +35,8 @@ $lang = array(
 'toolset' => 'Toolset',
 'tool' => 'Tool',
 'cancel' => 'Cancel',
-'enable_rte' => 'Enable the Rich Text Editor',
+'enable_rte' => 'Enable the rich text editor?',
+'enable_rte_desc' => 'When set to <b>enable</b>, registered users will be able to use the Rich Text Editor to create new content.',
 'disable_rte' => 'Disable Rich Text Editor',
 
 // Flashes
@@ -50,7 +58,7 @@ $lang = array(
 // Labels
 'enable_rte_globally' => 'Enable Rich Text Editor',
 'enable_rte_in_forum' => 'Enable the Rich Text Editor for use in the Forums?',
-'default_toolset' => 'Default Toolset',
+'default_toolset' => 'Default <abbr title="Rich Text Editor">RTE</abbr> tool set',
 'default_toolset_details' => 'Shown for users that have not created their own or chosen another.',
 'toolset_name' => 'Toolset Name',
 'available_tools' => 'Available Tools (not being used)',
