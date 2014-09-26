@@ -1689,82 +1689,83 @@ class Members extends CP_Controller {
 		$this->load->library('table');
 
 		$f_data =  array(
-
 			'general_cfg'		=>	array(
-					'allow_member_registration'	=> array('r', array('y' => 'yes', 'n' => 'no')),
-					'req_mbr_activation'		=> array('s', array('none' => 'no_activation', 'email' => 'email_activation', 'manual' => 'manual_activation')),
-					'require_terms_of_service'	=> array('r', array('y' => 'yes', 'n' => 'no')),
-					'allow_member_localization'	=> array('r', array('y' => 'yes', 'n' => 'no')),
-					'use_membership_captcha'	=> array('r', array('y' => 'yes', 'n' => 'no')),
-					'default_member_group'		=> array('f', 'member_groups'),
-					'member_theme'				=> array('f', 'member_theme_menu'),
-					'profile_trigger'			=> ''
-					),
+				'allow_member_registration' => array('r', array('y' => 'yes', 'n' => 'no')),
+				'req_mbr_activation'        => array('s', array('none' => 'no_activation', 'email' => 'email_activation', 'manual' => 'manual_activation')),
+				'require_terms_of_service'  => array('r', array('y' => 'yes', 'n' => 'no')),
+				'allow_member_localization' => array('r', array('y' => 'yes', 'n' => 'no')),
+				'use_membership_captcha'    => array('r', array('y' => 'yes', 'n' => 'no')),
+				'default_member_group'      => array('f', 'member_groups'),
+				'member_theme'              => array('f', 'member_theme_menu'),
+				'profile_trigger'           => ''
+			),
 
 			'memberlist_cfg'		=>	array(
-					'memberlist_order_by'		=> array('s', array('total_forum_posts'		=> 'total_posts',
-						'screen_name'		=> 'screen_name',
-						'total_comments'	=> 'total_comments',
-						'total_entries'		=> 'total_entries',
-						'join_date'			=> 'join_date')),
-					'memberlist_sort_order'		=> array('s', array('desc' => 'memberlist_desc', 'asc' => 'memberlist_asc')),
-					'memberlist_row_limit'		=> array('s', array('10' => '10', '20' => '20', '30' => '30', '40' => '40', '50' => '50', '75' => '75', '100' => '100'))
-					),
+				'memberlist_order_by'   => array('s', array('total_forum_posts'		=> 'total_posts',
+				'screen_name'           => 'screen_name',
+				'total_comments'        => 'total_comments',
+				'total_entries'         => 'total_entries',
+				'join_date'             => 'join_date')),
+				'memberlist_sort_order' => array('s', array('desc' => 'memberlist_desc', 'asc' => 'memberlist_asc')),
+				'memberlist_row_limit'  => array('s', array('10' => '10', '20' => '20', '30' => '30', '40' => '40', '50' => '50', '75' => '75', '100' => '100'))
+			),
 
-'notification_cfg'		=>	array(
-					'new_member_notification'	=> array('r', array('y' => 'yes', 'n' => 'no')),
-					'mbr_notification_emails'	=> ''
-											),
+			'notification_cfg'		=>	array(
+				'new_member_notification' => array('r', array('y' => 'yes', 'n' => 'no')),
+				'mbr_notification_emails' => ''
+			),
 
 			'pm_cfg'			=>	array(
-					'prv_msg_max_chars'			=> '',
-					'prv_msg_html_format'		=> array('s', array('safe' => 'html_safe', 'none' => 'html_none', 'all' => 'html_all')),
-					'prv_msg_auto_links'		=> array('r', array('y' => 'yes', 'n' => 'no')),
-					'prv_msg_upload_path'		=> '',
-					'prv_msg_max_attachments'	=> '',
-					'prv_msg_attach_maxsize'	=> '',
-					'prv_msg_attach_total'		=> ''
-										 ),
+				'prv_msg_max_chars'       => '',
+				'prv_msg_html_format'     => array('s', array('safe' => 'html_safe', 'none' => 'html_none', 'all' => 'html_all')),
+				'prv_msg_auto_links'      => array('r', array('y' => 'yes', 'n' => 'no')),
+				'prv_msg_upload_path'     => '',
+				'prv_msg_max_attachments' => '',
+				'prv_msg_attach_maxsize'  => '',
+				'prv_msg_attach_total'    => ''
+			),
 
 			'avatar_cfg'		=>	array(
-					'enable_avatars'		=> array('r', array('y' => 'yes', 'n' => 'no')),
-					'allow_avatar_uploads'	=> array('r', array('y' => 'yes', 'n' => 'no')),
-					'avatar_url'			=> '',
-					'avatar_path'			=> '',
-					'avatar_max_width'		=> '',
-					'avatar_max_height'		=> '',
-					'avatar_max_kb'			=> ''
-											),
+				'enable_avatars'       => array('r', array('y' => 'yes', 'n' => 'no')),
+				'allow_avatar_uploads' => array('r', array('y' => 'yes', 'n' => 'no')),
+				'avatar_url'           => '',
+				'avatar_path'          => '',
+				'avatar_max_width'     => '',
+				'avatar_max_height'    => '',
+				'avatar_max_kb'        => ''
+			),
+
 			'photo_cfg'		=>	array(
-					'enable_photos'			=> array('r', array('y' => 'yes', 'n' => 'no')),
-					'photo_url'				=> '',
-					'photo_path'			=> '',
-					'photo_max_width'		=> '',
-					'photo_max_height'		=> '',
-					'photo_max_kb'			=> ''
-											),
+				'enable_photos'    => array('r', array('y' => 'yes', 'n' => 'no')),
+				'photo_url'        => '',
+				'photo_path'       => '',
+				'photo_max_width'  => '',
+				'photo_max_height' => '',
+				'photo_max_kb'     => ''
+			),
+
 			'signature_cfg'		=>	array(
-					'allow_signatures'			=> array('r', array('y' => 'yes', 'n' => 'no')),
-					'sig_maxlength'				=> '',
-					'sig_allow_img_hotlink'		=> array('r', array('y' => 'yes', 'n' => 'no')),
-					'sig_allow_img_upload'		=> array('r', array('y' => 'yes', 'n' => 'no')),
-					'sig_img_url'				=> '',
-					'sig_img_path'				=> '',
-					'sig_img_max_width'			=> '',
-					'sig_img_max_height'		=> '',
-					'sig_img_max_kb'			=> ''
-											)
-			);
+				'allow_signatures'      => array('r', array('y' => 'yes', 'n' => 'no')),
+				'sig_maxlength'         => '',
+				'sig_allow_img_hotlink' => array('r', array('y' => 'yes', 'n' => 'no')),
+				'sig_allow_img_upload'  => array('r', array('y' => 'yes', 'n' => 'no')),
+				'sig_img_url'           => '',
+				'sig_img_path'          => '',
+				'sig_img_max_width'     => '',
+				'sig_img_max_height'    => '',
+				'sig_img_max_kb'        => ''
+			)
+		);
 
 		$subtext = array(
-					'profile_trigger'			=> array('profile_trigger_notes'),
-					'mbr_notification_emails'	=> array('separate_emails'),
-					'default_member_group' 		=> array('group_assignment_defaults_to_two'),
-					'avatar_path'				=> array('must_be_path'),
-					'photo_path'				=> array('must_be_path'),
-					'sig_img_path'				=> array('must_be_path'),
-					'allow_member_localization'	=> array('allow_member_loc_notes')
-				);
+			'profile_trigger'           => array('profile_trigger_notes'),
+			'mbr_notification_emails'   => array('separate_emails'),
+			'default_member_group'      => array('group_assignment_defaults_to_two'),
+			'avatar_path'               => array('must_be_path'),
+			'photo_path'                => array('must_be_path'),
+			'sig_img_path'              => array('must_be_path'),
+			'allow_member_localization' => array('allow_member_loc_notes')
+		);
 
 		/** -----------------------------
 		/**  Blast through the array
