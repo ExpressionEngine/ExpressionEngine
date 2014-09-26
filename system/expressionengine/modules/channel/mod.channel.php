@@ -2895,7 +2895,7 @@ class Channel {
 				$cat_image = ee()->file_field->parse_string($val[5]);
 
 				$cat_vars = array(
-					'category_name'			=> $val[3],
+					'category_name'			=> htmlentities($val[3], ENT_QUOTES),
 					'category_url_title'	=> $val[6],
 					'category_description'	=> $val[4],
 					'category_image'		=> $cat_image,
@@ -2926,12 +2926,12 @@ class Channel {
 						LD.'parent_id'.RD
 					),
 					array(
-						ee()->functions->encode_ee_tags($val[3]),
-						$val[6],
-						ee()->functions->encode_ee_tags($val[4]),
+						ee()->functions->encode_ee_tags($cat_vars['category_name']),
+						$cat_vars['category_url_title'],
+						ee()->functions->encode_ee_tags($cat_vars['category_description']),
 						$cat_image,
-						$val[0],
-						$val[1]
+						$cat_vars['category_id'],
+						$cat_vars['parent_id']
 					),
 					$chunk
 				);
@@ -2940,11 +2940,11 @@ class Channel {
 				{
 					if ($this->use_category_names == TRUE)
 					{
-						$chunk = str_replace($k, reduce_double_slashes($v.'/'.$this->reserved_cat_segment.'/'.$val[6]), $chunk);
+						$chunk = str_replace($k, reduce_double_slashes($v.'/'.$this->reserved_cat_segment.'/'.$cat_vars['category_url_title']), $chunk);
 					}
 					else
 					{
-						$chunk = str_replace($k, reduce_double_slashes($v.'/C'.$val[0]), $chunk);
+						$chunk = str_replace($k, reduce_double_slashes($v.'/C'.$cat_vars['category_id']), $chunk);
 					}
 				}
 
@@ -3364,7 +3364,7 @@ class Channel {
 						$cat_image = ee()->file_field->parse_string($row['cat_image']);
 
 						$cat_vars = array(
-							'category_name'			=> $row['cat_name'],
+							'category_name'			=> htmlentities($row['cat_name'], ENT_QUOTES),
 							'category_url_title'	=> $row['cat_url_title'],
 							'category_description'	=> $row['cat_description'],
 							'category_image'		=> $cat_image,
@@ -3390,19 +3390,19 @@ class Channel {
 								LD.'parent_id'.RD
 							),
 							array(
-								$row['cat_id'],
-								ee()->functions->encode_ee_tags($row['cat_name']),
-								$row['cat_url_title'],
+								$cat_vars['category_id'],
+								ee()->functions->encode_ee_tags($cat_vars['category_name']),
+								$cat_vars['category_url_title'],
 								$cat_image,
-								ee()->functions->encode_ee_tags($row['cat_description']),
-								$row['parent_id']
+								ee()->functions->encode_ee_tags($cat_vars['category_description']),
+								$cat_vars['parent_id']
 							),
 							$chunk
 						);
 
 						foreach($c_path as $ckey => $cval)
 						{
-							$cat_seg = ($this->use_category_names == TRUE) ? $this->reserved_cat_segment.'/'.$row['cat_url_title'] : 'C'.$row['cat_id'];
+							$cat_seg = ($this->use_category_names == TRUE) ? $this->reserved_cat_segment.'/'.$cat_vars['category_url_title'] : 'C'.$cat_vars['category_id'];
 							$chunk = str_replace($ckey, reduce_double_slashes($cval.'/'.$cat_seg), $chunk);
 						}
 
@@ -3443,7 +3443,7 @@ class Channel {
 						}
 
 						$categories_parsed .= $chunk;
-						$used[$row['cat_name']] = TRUE;
+						$used[$cat_vars['category_name']] = TRUE;
 					}
 
 					foreach($result->result_array() as $trow)
@@ -3828,7 +3828,7 @@ class Channel {
 				$cat_image = ee()->file_field->parse_string($val[2]);
 
 				$cat_vars = array(
-					'category_name'			=> $val[1],
+					'category_name'			=> htmlentities($val[1], ENT_QUOTES),
 					'category_url_title'	=> $val[4],
 					'category_description'	=> $val[3],
 					'category_image'		=> $cat_image,
@@ -3858,12 +3858,12 @@ class Channel {
 						LD.'parent_id'.RD
 					),
 					array(
-						$key,
-						ee()->functions->encode_ee_tags($val[1]),
-						$val[4],
+						$cat_vars['category_id'],
+						ee()->functions->encode_ee_tags($cat_vars['category_name']),
+						$cat_vars['category_url_title'],
 						$cat_image,
-						ee()->functions->encode_ee_tags($val[3]),
-						$val[0]
+						ee()->functions->encode_ee_tags($cat_vars['category_description']),
+						$cat_vars['parent_id']
 					),
 					$chunk
 				);
@@ -4190,7 +4190,7 @@ class Channel {
 		$cat_image = ee()->file_field->parse_string($query->row('cat_image'));
 
 		$cat_vars = array(
-			'category_name'			=> $query->row('cat_name'),
+			'category_name'			=> htmlentities($query->row('cat_name'), ENT_QUOTES),
 			'category_description'	=> $query->row('cat_description'),
 			'category_image'		=> $cat_image,
 			'category_id'			=> $match[2],
@@ -4215,12 +4215,12 @@ class Channel {
 				LD.'parent_id'.RD
 			),
 			array(
-				$match[2],
-				ee()->functions->encode_ee_tags($query->row('cat_name')),
-				$query->row('cat_url_title'),
+				$cat_vars['category_id'],
+				ee()->functions->encode_ee_tags($cat_vars['category_name']),
+				$cat_vars['category_url_title'],
 				$cat_image,
-				ee()->functions->encode_ee_tags($query->row('cat_description')),
-				$query->row('parent_id')
+				ee()->functions->encode_ee_tags($cat_vars['category_description']),
+				$cat_vars['parent_id']
 			),
 			ee()->TMPL->tagdata
 		);
