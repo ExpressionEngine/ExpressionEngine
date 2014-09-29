@@ -205,11 +205,10 @@ class Addons extends CP_Controller {
 		$data = array();
 
 		$modules = $this->getModules();
-		$accessories = $this->getAccessories();
 		$plugins = $this->getPlugins();
 		$fieldtypes = $this->getFieldtypes();
 
-		foreach(array_merge($fieldtypes, $plugins, $accessories, $modules) as $addon => $info)
+		foreach(array_merge($fieldtypes, $plugins, $modules) as $addon => $info)
 		{
 			// Filter based on status
 			if (isset($this->params['filter_by_status']))
@@ -244,19 +243,24 @@ class Addons extends CP_Controller {
 
 			if ($info['installed'])
 			{
-				if ($info['settings_url'])
+				$toolbar = array();
+
+				if (isset($info['settings_url']))
 				{
-					$toolbar = array(
-						'settings' => array(
-							'href' => $info['settings_url'],
-							'title' => lang('settings'),
-						)
+					$toolbar['settings'] = array(
+						'href' => $info['settings_url'],
+						'title' => lang('settings'),
 					);
 				}
-				else
+
+				if (isset($info['manual_url']))
 				{
-					$toolbar = array();
+					$toolbar['manual'] = array(
+						'href' => $info['manual_url'],
+						'title' => lang('manual'),
+					);
 				}
+
 				$attrs = array();
 			}
 
@@ -331,7 +335,7 @@ class Addons extends CP_Controller {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Installs a module or accessory
+	 * Installs an add-on
 	 *
 	 * @access	public
 	 * @param	str|array	$addon	The name(s) of add-ons to install
@@ -360,16 +364,6 @@ class Addons extends CP_Controller {
 				}
 			}
 
-			$accessory = $this->getAccessories($addon);
-			if ( ! empty($accessory) && $accessory['installed'] === FALSE)
-			{
-				$name = $this->installAccessory($addon);
-				if ($name && ! isset($installed[$addon]))
-				{
-					$installed[$addon] = $name;
-				}
-			}
-
 			$fieldtype = $this->getFieldtypes($addon);
 			if ( ! empty($fieldtype) && $fieldtype['installed'] === FALSE)
 			{
@@ -391,7 +385,7 @@ class Addons extends CP_Controller {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Uninstalls a module or accessory
+	 * Uninstalls an add-on
 	 *
 	 * @access	public
 	 * @param	str|array	$addon	The name(s) of add-ons to uninstall
@@ -420,16 +414,6 @@ class Addons extends CP_Controller {
 				}
 			}
 
-			$accessory = $this->getAccessories($addon);
-			if ( ! empty($accessory) && $accessory['installed'] === TRUE)
-			{
-				$name = $this->uninstallAccessory($addon);
-				if ($name && ! isset($installed[$addon]))
-				{
-					$uninstalled[$addon] = $name;
-				}
-			}
-
 			$fieldtype = $this->getFieldtypes($addon);
 			if ( ! empty($fieldtype) && $fieldtype['installed'] === TRUE)
 			{
@@ -451,7 +435,7 @@ class Addons extends CP_Controller {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Display add-on settings/info
+	 * Display add-on settings
 	 *
 	 * @access	public
 	 * @param	str	$addon	The name of add-on whose settings to display
@@ -459,86 +443,22 @@ class Addons extends CP_Controller {
 	 */
 	public function settings($addon)
 	{
-		$addon = ee()->security->sanitize_filename(strtolower($addon));
+		ee()->view->cp_page_title = lang('addon_manager');
 
-		$installed = $this->addons->get_installed();
+		$vars = array();
+
 		$module = $this->getModules($addon);
-
-		if (ee()->session->userdata['group_id'] != 1)
+		if ( ! empty($module) && $module['installed'] === TRUE)
 		{
-			// Do they have access to this module?
-			if ( ! isset($installed[$addon]) OR
-				 ! isset(ee()->session->userdata['assigned_modules'][$installed[$addon]['module_id']]) OR
-				ee()->session->userdata['assigned_modules'][$installed[$addon]['module_id']] !== TRUE)
-			{
-				show_error(lang('unauthorized_access'));
-			}
-		}
-		else
-		{
-			if ( ! isset($installed[$addon]))
-			{
-				show_error(lang('requested_module_not_installed').NBS.$addon);
-			}
+			$vars['_module_cp_body'] = $this->getModuleSettings($addon);
+			ee()->view->cp_heading = $module['name'] . ' ' . lang('configuration');
 		}
 
-		$view_folder = 'views';
-
-		// set the view path
-		define('MODULE_VIEWS', $installed[$addon]['path'].$view_folder.'/');
-
-		// Add the helper/library load path and temporarily
-		// switch the view path to the module's view folder
-		ee()->load->add_package_path($installed[$addon]['path'], FALSE);
-
-		// Update Module
-		// Send version to update class and let it do any required work
-		if (file_exists($installed[$addon]['path'].'upd.'.$addon.'.php'))
+		if ( ! isset($vars['_module_cp_body']))
 		{
-			require $installed[$addon]['path'].'upd.'.$addon.'.php';
-
-			$class = ucfirst($addon).'_upd';
-			$version = $installed[$addon]['module_version'];
-
-			$UPD = new $class;
-			$UPD->_ee_path = APPPATH;
-
-			if ($UPD->version > $version && method_exists($UPD, 'update') && $UPD->update($version) !== FALSE)
-			{
-				ee()->db->update('modules', array('module_version' => $UPD->version), array('module_name' => ucfirst($addon)));
-			}
+			show_error(lang('requested_module_not_installed').NBS.$addon);
 		}
 
-		require_once $installed[$addon]['path'].$installed[$addon]['file'];
-
-		// instantiate the module cp class
-		$mod = new $installed[$addon]['class'];
-		$mod->_ee_path = APPPATH;
-
-
-		// add validation callback support to the mcp class (see EE_form_validation for more info)
-		ee()->_mcp_reference =& $mod;
-
-		$method = (ee()->input->get('method') !== FALSE) ? ee()->input->get('method') : 'index';
-
-		// its possible that a module will try to call a method that does not exist
-		// either by accident (ie: a missed function) or by deliberate user url hacking
-		if (method_exists($mod, $method))
-		{
-			$vars['_module_cp_body'] = $mod->$method();
-		}
-		else
-		{
-			$vars['_module_cp_body'] = lang('requested_page_not_found');
-		}
-
-		// unset reference
-		unset(ee()->_mcp_reference);
-
-		// remove package paths
-		ee()->load->remove_package_path($installed[$addon]['path']);
-
-		ee()->view->cp_page_title = $module['name'] . ' ' . lang('configuration');
 		ee()->view->cp_breadcrumbs = array(
 			cp_url('addons') => lang('addon_manager')
 		);
@@ -560,7 +480,7 @@ class Addons extends CP_Controller {
 	 *        'name'		 => 'FooBar',
 	 *        'package'		 => 'foobar',
 	 *        'type'		 => 'module',
-	 *        'settings_url' => ''
+	 *        'settings_url' => '' (optional)
 	 */
 	private function getModules($name = NULL)
 	{
@@ -569,16 +489,16 @@ class Addons extends CP_Controller {
 
 		foreach(ee()->addons->get_files() as $module => $info)
 		{
-			// ee()->lang->loadfile(( ! isset(ee()->lang_overrides[$module])) ? $module : ee()->lang_overrides[$module]);
+			ee()->lang->loadfile(( ! isset(ee()->lang_overrides[$module])) ? $module : ee()->lang_overrides[$module]);
+			$display_name = (lang(strtolower($module).'_module_name') != FALSE) ? lang(strtolower($module).'_module_name') : $info['name'];
 
 			$data = array(
 				'developer'		=> $info['type'],
 				'version'		=> '--',
 				'installed'		=> FALSE,
-				'name'			=> $info['name'],
+				'name'			=> $display_name,
 				'package'		=> $module,
 				'type'			=> 'module',
-				'settings_url'	=> ''
 			);
 
 			if (isset($installed[$module]))
@@ -607,75 +527,6 @@ class Addons extends CP_Controller {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Get a list of accessories
-	 *
-	 * @access	private
-	 * @param	str	$name	(optional) Limit the return to this add-on
-	 * @return	array		Add-on data in the following format:
-	 *   e.g. 'developer'	 => 'native',
-	 *        'version'		 => '--',
-	 *        'installed'	 => FALSE,
-	 *        'name'		 => 'FooBar',
-	 *        'package'		 => 'foobar',
-	 *        'type'		 => 'accessory',
-	 *        'settings_url' => ''
-	 */
-	private function getAccessories($name = NULL)
-	{
-		$accessories = array();
-		$installed = ee()->addons->get_installed('accessories');
-
-		foreach(ee()->addons->get_files('accessories') as $accessory => $info)
-		{
-			// Grab the version and description
-			if ( ! class_exists($info['class']))
-			{
-				include $info['path'].$info['file'];
-			}
-
-			// add the package and view paths
-			$path = PATH_THIRD.strtolower($accessory).'/';
-
-			$this->load->add_package_path($path, FALSE);
-
-			$ACC = new $info['class']();
-
-			$this->load->remove_package_path($path);
-
-			$developer = (isset($info['type'])) ? $info['type'] : 'native';
-
-			$data = array(
-				'developer'		=> $developer,
-				'version'		=> $ACC->version,
-				'installed'		=> FALSE,
-				'name'			=> $info['name'],
-				'package'		=> $accessory,
-				'type'			=> 'accessory',
-				'settings_url'	=> ''
-			);
-
-			if (isset($installed[$accessory]))
-			{
-				$data['installed'] = TRUE;
-				$data['settings_url'] = cp_url('addons/settings/' . $accessory);
-			}
-
-			if (is_null($name))
-			{
-				$accessories[$accessory] = $data;
-			}
-			elseif ($name == $accessory)
-			{
-				return $data;
-			}
-		}
-
-		return $accessories;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Get a list of plugins
 	 *
 	 * @access	private
@@ -687,7 +538,7 @@ class Addons extends CP_Controller {
 	 *        'name'		 => 'FooBar',
 	 *        'package'		 => 'foobar',
 	 *        'type'		 => 'plugin',
-	 *        'settings_url' => ''
+	 *        'manual_url' => ''
 	 */
 	private function getPlugins($name = NULL)
 	{
@@ -784,7 +635,7 @@ class Addons extends CP_Controller {
 					'name'			=> $plugin_info['pi_name'],
 					'package'		=> $filename,
 					'type'			=> 'plugin',
-					'settings_url'	=> cp_url('addons/settings/' . $filename)
+					'manual_url'	=> cp_url('addons/manual/' . $filename)
 				);
 
 				if (is_null($name))
@@ -821,7 +672,6 @@ class Addons extends CP_Controller {
 	 *        'name'		 => 'FooBar',
 	 *        'package'		 => 'foobar',
 	 *        'type'		 => 'fieldtype',
-	 *        'settings_url' => ''
 	 */
 	private function getFieldtypes($name = NULL)
 	{
@@ -839,7 +689,6 @@ class Addons extends CP_Controller {
 				'name'			=> $info['name'],
 				'package'		=> $fieldtype,
 				'type'			=> 'fieldtype',
-				'settings_url'	=> ''
 			);
 
 			if (isset($installed[$fieldtype]))
@@ -934,57 +783,11 @@ class Addons extends CP_Controller {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Installs an accessory
-	 *
-	 * @access private
-	 * @param  str	$module	The add-on to install
-	 * @return str			The name of the add-on just installed
-	 */
-	private function installAccessory($accessory)
-	{
-		$name = NULL;
-		$accessory = ee()->security->sanitize_filename(strtolower($accessory));
-
-		if (ee()->addons_installer->install($accessory, 'accessory', FALSE))
-		{
-			$installed = ee()->addons->get_installed('accessories');
-			$name = $installed[$accessory]['name'];
-		}
-
-		return $name;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Uninstalls a accessory
-	 *
-	 * @access private
-	 * @param  str	$module	The add-on to uninstall
-	 * @return str			The name of the add-on just uninstalled
-	 */
-	private function uninstallAccessory($accessory)
-	{
-		$name = NULL;
-		$accessory = ee()->security->sanitize_filename(strtolower($accessory));
-
-		if (ee()->addons_installer->uninstall($accessory, 'accessory', FALSE))
-		{
-			$data = $this->getAccessories($accessory);
-			$name = $data['name'];
-		}
-
-		return $name;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Installs a fieldtype
 	 *
 	 * @access private
-	 * @param  str	$module	The add-on to install
-	 * @return str			The name of the add-on just installed
+	 * @param  str	$$fieldtype	The add-on to install
+	 * @return str				The name of the add-on just installed
 	 */
 	private function installFieldtype($fieldtype)
 	{
@@ -1006,13 +809,13 @@ class Addons extends CP_Controller {
 	 * Uninstalls a fieldtype
 	 *
 	 * @access private
-	 * @param  str	$module	The add-on to uninstall
-	 * @return str			The name of the add-on just uninstalled
+	 * @param  str	$$fieldtype	The add-on to uninstall
+	 * @return str				The name of the add-on just uninstalled
 	 */
 	private function uninstallFieldtype($fieldtype)
 	{
 		$name = NULL;
-		$accessory = ee()->security->sanitize_filename(strtolower($fieldtype));
+		$fieldtype = ee()->security->sanitize_filename(strtolower($fieldtype));
 
 		if (ee()->addons_installer->uninstall($fieldtype, 'fieldtype', FALSE))
 		{
@@ -1021,6 +824,97 @@ class Addons extends CP_Controller {
 		}
 
 		return $name;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Render module-specific settings
+	 *
+	 * @access	private
+	 * @param	str	$name	The name of module whose settings to display
+	 * @return	str			The rendered settings (with HTML)
+	 */
+	public function getModuleSettings($name)
+	{
+		$addon = ee()->security->sanitize_filename(strtolower($name));
+		$installed = $this->addons->get_installed();
+
+		if (ee()->session->userdata['group_id'] != 1)
+		{
+			// Do they have access to this module?
+			if ( ! isset($installed[$addon]) OR
+				 ! isset(ee()->session->userdata['assigned_modules'][$installed[$addon]['module_id']]) OR
+				ee()->session->userdata['assigned_modules'][$installed[$addon]['module_id']] !== TRUE)
+			{
+				show_error(lang('unauthorized_access'));
+			}
+		}
+		else
+		{
+			if ( ! isset($installed[$addon]))
+			{
+				show_error(lang('requested_module_not_installed').NBS.$addon);
+			}
+		}
+
+		$view_folder = 'views';
+
+		// set the view path
+		define('MODULE_VIEWS', $installed[$addon]['path'].$view_folder.'/');
+
+		// Add the helper/library load path and temporarily
+		// switch the view path to the module's view folder
+		ee()->load->add_package_path($installed[$addon]['path'], FALSE);
+
+		// Update Module
+		// Send version to update class and let it do any required work
+		if (file_exists($installed[$addon]['path'].'upd.'.$addon.'.php'))
+		{
+			require $installed[$addon]['path'].'upd.'.$addon.'.php';
+
+			$class = ucfirst($addon).'_upd';
+			$version = $installed[$addon]['module_version'];
+
+			$UPD = new $class;
+			$UPD->_ee_path = APPPATH;
+
+			if ($UPD->version > $version && method_exists($UPD, 'update') && $UPD->update($version) !== FALSE)
+			{
+				ee()->db->update('modules', array('module_version' => $UPD->version), array('module_name' => ucfirst($addon)));
+			}
+		}
+
+		require_once $installed[$addon]['path'].$installed[$addon]['file'];
+
+		// instantiate the module cp class
+		$mod = new $installed[$addon]['class'];
+		$mod->_ee_path = APPPATH;
+
+
+		// add validation callback support to the mcp class (see EE_form_validation for more info)
+		ee()->_mcp_reference =& $mod;
+
+		$method = (ee()->input->get('method') !== FALSE) ? ee()->input->get('method') : 'index';
+
+		// its possible that a module will try to call a method that does not exist
+		// either by accident (ie: a missed function) or by deliberate user url hacking
+		if (method_exists($mod, $method))
+		{
+			$_module_cp_body = $mod->$method();
+		}
+		else
+		{
+			$_module_cp_body = lang('requested_page_not_found');
+		}
+
+		// unset reference
+		unset(ee()->_mcp_reference);
+
+		// remove package paths
+		ee()->load->remove_package_path($installed[$addon]['path']);
+
+		return $_module_cp_body;
 	}
 }
 // END CLASS
