@@ -12,6 +12,9 @@ $lang = array(
 'addon'							=>		'Add-On',
 'no_addon_search_results'		=>		'No <b>Add-Ons</b> Found',
 
+'requested_module_not_installed' =>
+'The requested module is not installed:',
+
 /* Filters */
 'filters'						=>		'Filters',
 'status'						=>		'status',
