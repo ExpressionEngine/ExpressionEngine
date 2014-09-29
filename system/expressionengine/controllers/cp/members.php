@@ -1680,82 +1680,13 @@ class Members extends CP_Controller {
 	 */
 	public function member_config()
 	{
-		if ( ! $this->cp->allowed_group('can_access_members') OR ! $this->cp->allowed_group('can_admin_members'))
+		if ( ! ee()->cp->allowed_group('can_access_members') OR ! ee()->cp->allowed_group('can_admin_members'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->lang->loadfile('admin');
-		$this->load->library('table');
-
-		$f_data = array(
-			'general_cfg'		=>	array(
-				'allow_member_registration' => array('r', array('y' => 'yes', 'n' => 'no')),
-				'req_mbr_activation'        => array('s', array('none' => 'no_activation', 'email' => 'email_activation', 'manual' => 'manual_activation')),
-				'require_terms_of_service'  => array('r', array('y' => 'yes', 'n' => 'no')),
-				'allow_member_localization' => array('r', array('y' => 'yes', 'n' => 'no')),
-				'use_membership_captcha'    => array('r', array('y' => 'yes', 'n' => 'no')),
-				'default_member_group'      => array('f', 'member_groups'),
-				'member_theme'              => array('f', 'member_theme_menu'),
-				'profile_trigger'           => ''
-			),
-
-			'memberlist_cfg'		=>	array(
-				'memberlist_order_by'   => array('s', array('total_forum_posts'		=> 'total_posts',
-				'screen_name'           => 'screen_name',
-				'total_comments'        => 'total_comments',
-				'total_entries'         => 'total_entries',
-				'join_date'             => 'join_date')),
-				'memberlist_sort_order' => array('s', array('desc' => 'memberlist_desc', 'asc' => 'memberlist_asc')),
-				'memberlist_row_limit'  => array('s', array('10' => '10', '20' => '20', '30' => '30', '40' => '40', '50' => '50', '75' => '75', '100' => '100'))
-			),
-
-			'notification_cfg'		=>	array(
-				'new_member_notification' => array('r', array('y' => 'yes', 'n' => 'no')),
-				'mbr_notification_emails' => ''
-			),
-
-			'pm_cfg'			=>	array(
-				'prv_msg_max_chars'       => '',
-				'prv_msg_html_format'     => array('s', array('safe' => 'html_safe', 'none' => 'html_none', 'all' => 'html_all')),
-				'prv_msg_auto_links'      => array('r', array('y' => 'yes', 'n' => 'no')),
-				'prv_msg_upload_path'     => '',
-				'prv_msg_max_attachments' => '',
-				'prv_msg_attach_maxsize'  => '',
-				'prv_msg_attach_total'    => ''
-			),
-
-			'avatar_cfg'		=>	array(
-				'enable_avatars'       => array('r', array('y' => 'yes', 'n' => 'no')),
-				'allow_avatar_uploads' => array('r', array('y' => 'yes', 'n' => 'no')),
-				'avatar_url'           => '',
-				'avatar_path'          => '',
-				'avatar_max_width'     => '',
-				'avatar_max_height'    => '',
-				'avatar_max_kb'        => ''
-			),
-
-			'photo_cfg'		=>	array(
-				'enable_photos'    => array('r', array('y' => 'yes', 'n' => 'no')),
-				'photo_url'        => '',
-				'photo_path'       => '',
-				'photo_max_width'  => '',
-				'photo_max_height' => '',
-				'photo_max_kb'     => ''
-			),
-
-			'signature_cfg'		=>	array(
-				'allow_signatures'      => array('r', array('y' => 'yes', 'n' => 'no')),
-				'sig_maxlength'         => '',
-				'sig_allow_img_hotlink' => array('r', array('y' => 'yes', 'n' => 'no')),
-				'sig_allow_img_upload'  => array('r', array('y' => 'yes', 'n' => 'no')),
-				'sig_img_url'           => '',
-				'sig_img_path'          => '',
-				'sig_img_max_width'     => '',
-				'sig_img_max_height'    => '',
-				'sig_img_max_kb'        => ''
-			)
-		);
+		ee()->lang->loadfile('admin');
+		ee()->load->library('table');
 
 		$subtext = array(
 			'profile_trigger'           => array('profile_trigger_notes'),
@@ -1771,7 +1702,7 @@ class Members extends CP_Controller {
 		/**  Blast through the array
 		/** -----------------------------*/
 
-		foreach ($f_data as $menu_head => $menu_array)
+		foreach ($this->get_member_config_fields() as $menu_head => $menu_array)
 		{
 			$vars['menu_head'][$menu_head] = array();
 
@@ -1791,9 +1722,23 @@ class Members extends CP_Controller {
 
 				$preference_controls = '';
 
-				if (is_array($config_data))
+				/** -----------------------------
+				/**  Text input fields
+				/** -----------------------------*/
+				if ( ! is_array($config_data) OR $config_data[0] == 'i')
 				{
+					$item = str_replace("\\'", "'", ee()->config->item($config_name));
 
+					$preference_controls['type'] = "text";
+					$preference_controls['data'] = array(
+						'id'    => $config_name,
+						'name'  => $config_name,
+						'value' => $item,
+						'class' => 'field'
+					);
+				}
+				else if (is_array($config_data))
+				{
 					/** -----------------------------
 					/** Drop-down menus
 					/** -----------------------------*/
@@ -1809,7 +1754,7 @@ class Members extends CP_Controller {
 						$preference_controls['type'] = "dropdown";
 						$preference_controls['id'] = $config_name;
 						$preference_controls['options'] = $options;
-						$preference_controls['default'] = $this->config->item($config_name);
+						$preference_controls['default'] = ee()->config->item($config_name);
 					}
 					/** -----------------------------
 					/**  Radio buttons
@@ -1820,7 +1765,7 @@ class Members extends CP_Controller {
 
 						foreach ($config_data['1'] as $k => $v)
 						{
-							$selected = ($k == $this->config->item($config_name)) ? TRUE : FALSE;
+							$selected = ($k == ee()->config->item($config_name)) ? TRUE : FALSE;
 
 							$radios[] = array(
 								'label'		=> lang($v, "{$config_name}_{$k}"),
@@ -1828,7 +1773,7 @@ class Members extends CP_Controller {
 									'name' 		=> $config_name,
 									'id'		=> "{$config_name}_{$k}",
 									'config_dataue'		=> $k,
-									'checked'	=> ($k == $this->config->item($config_name)) ? TRUE : FALSE
+									'checked'	=> ($k == ee()->config->item($config_name)) ? TRUE : FALSE
 								)
 							);
 						}
@@ -1844,7 +1789,7 @@ class Members extends CP_Controller {
 						switch ($config_data['1'])
 						{
 							case 'member_groups' :
-								$groups = $this->member_model->get_member_groups();
+								$groups = ee()->member_model->get_member_groups();
 
 								$options = array();
 
@@ -1859,11 +1804,11 @@ class Members extends CP_Controller {
 								$preference_controls['type'] = "dropdown";
 								$preference_controls['id'] = 'default_member_group';
 								$preference_controls['options'] = $options;
-								$preference_controls['default'] = ($this->config->item('default_member_group') != '') ? $this->config->item('default_member_group') : '5';
+								$preference_controls['default'] = (ee()->config->item('default_member_group') != '') ? ee()->config->item('default_member_group') : '5';
 
 								break;
 							case 'member_theme_menu' :
-								$themes = $this->member_model->get_theme_list(PATH_MBR_THEMES);
+								$themes = ee()->member_model->get_theme_list(PATH_MBR_THEMES);
 
 								$options = array();
 
@@ -1875,40 +1820,25 @@ class Members extends CP_Controller {
 								$preference_controls['type'] = "dropdown";
 								$preference_controls['id'] = 'member_theme';
 								$preference_controls['options'] = $options;
-								$preference_controls['default'] = $this->config->item($config_name);
+								$preference_controls['default'] = ee()->config->item($config_name);
 
 								break;
 						}
 					}
-				}
-				/** -----------------------------
-				/**  Text input fields
-				/** -----------------------------*/
-				else
-				{
-					$item = str_replace("\\'", "'", $this->config->item($config_name));
-
-					$preference_controls['type'] = "text";
-					$preference_controls['data'] = array(
-						'id'    => $config_name,
-						'name'  => $config_name,
-						'value' => $item,
-						'class' => 'field'
-					);
 				}
 
 				$vars['menu_head'][$menu_head][$config_name]['preference_controls'] = $preference_controls;
 			}
 		}
 
-		$this->view->cp_page_title = lang('member_prefs');
+		ee()->view->cp_page_title = lang('member_prefs');
 
-		$this->jquery->tablesorter('table', '{
+		ee()->jquery->tablesorter('table', '{
 			headers: {},
 			widgets: ["zebra"]
 		}');
 
-		$this->cp->render('members/member_config', $vars);
+		ee()->cp->render('members/member_config', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -1922,33 +1852,137 @@ class Members extends CP_Controller {
 	 */
 	public function update_config()
 	{
-		if ( ! $this->cp->allowed_group('can_access_members') OR ! $this->cp->allowed_group('can_admin_members'))
+		if ( ! ee()->cp->allowed_group('can_access_members') OR ! ee()->cp->allowed_group('can_admin_members'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
 
-		$config_update = $this->config->update_site_prefs($_POST);
+		ee()->lang->loadfile('admin');
+		ee()->load->library('form_validation');
+		ee()->form_validation->set_error_delimiters('<p class="notice">', '</p>');
+
+		$fields = $this->get_member_config_fields(TRUE);
+		foreach ($_POST as $key => $value)
+		{
+			$rules = (isset($fields[$key][2])) ? $fields[$key][2] : '';
+			ee()->form_validation->set_rules($key, '<b>'.lang($key).'</b>', $rules);
+		}
+
+		if (ee()->form_validation->run())
+		{
+var_dump('yay');
+die();
+		}
+		else
+		{
+			var_dump(validation_errors());
+			die(var_dump('boo'));
+		}
+
+		$config_update = ee()->config->update_site_prefs($_POST);
 
 		// Member Avatars and Signatures are special little bunnies.
 		// Deal with them now.
-		$this->db->update('members', array(
-			'display_signatures'	=> $this->input->post('allow_signatures'),
-			'display_avatars'		=> $this->input->post('enable_avatars')
+		ee()->db->update('members', array(
+			'display_signatures' => ee()->input->post('allow_signatures'),
+			'display_avatars'    => ee()->input->post('enable_avatars')
 		));
 
  		$loc = BASE.AMP.'C=members'.AMP.'M=member_config';
 
 		if ( ! empty($config_update))
 		{
-			$this->load->helper('html');
-			$this->session->set_flashdata('message_failure', ul($config_update, array('class' => 'bad_path_error_list')));
+			ee()->load->helper('html');
+			ee()->session->set_flashdata('message_failure', ul($config_update, array('class' => 'bad_path_error_list')));
 		}
 		else
 		{
-			$this->session->set_flashdata('message_success', lang('preferences_updated'));
+			ee()->session->set_flashdata('message_success', lang('preferences_updated'));
 		}
 
-		$this->functions->redirect($loc);
+		ee()->functions->redirect($loc);
+	}
+
+	// --------------------------------------------------------------------
+
+	private function get_member_config_fields($flat = FALSE)
+	{
+		$member_config_fields = array(
+			'general_cfg' => array(
+				'allow_member_registration' => array('r', array('y' => 'yes', 'n' => 'no')),
+				'req_mbr_activation'        => array('s', array('none' => 'no_activation', 'email' => 'email_activation', 'manual' => 'manual_activation')),
+				'require_terms_of_service'  => array('r', array('y' => 'yes', 'n' => 'no')),
+				'allow_member_localization' => array('r', array('y' => 'yes', 'n' => 'no')),
+				'use_membership_captcha'    => array('r', array('y' => 'yes', 'n' => 'no')),
+				'default_member_group'      => array('f', 'member_groups'),
+				'member_theme'              => array('f', 'member_theme_menu'),
+				'profile_trigger'           => array('i')
+			),
+			'memberlist_cfg' => array(
+				'memberlist_order_by'   => array('s', array('total_forum_posts' => 'total_posts',
+				'screen_name'           => 'screen_name',
+				'total_comments'        => 'total_comments',
+				'total_entries'         => 'total_entries',
+				'join_date'             => 'join_date')),
+				'memberlist_sort_order' => array('s', array('desc' => 'memberlist_desc', 'asc' => 'memberlist_asc')),
+				'memberlist_row_limit'  => array('s', array('10' => '10', '20' => '20', '30' => '30', '40' => '40', '50' => '50', '75' => '75', '100' => '100'))
+			),
+			'notification_cfg' => array(
+				'new_member_notification' => array('r', array('y' => 'yes', 'n' => 'no')),
+				'mbr_notification_emails' => array('i', '', 'valid_email')
+			),
+			'pm_cfg' => array(
+				'prv_msg_max_chars'       => array('i'),
+				'prv_msg_html_format'     => array('s', array('safe' => 'html_safe', 'none' => 'html_none', 'all' => 'html_all')),
+				'prv_msg_auto_links'      => array('r', array('y' => 'yes', 'n' => 'no')),
+				'prv_msg_upload_path'     => array('i'),
+				'prv_msg_max_attachments' => array('i'),
+				'prv_msg_attach_maxsize'  => array('i'),
+				'prv_msg_attach_total'    => array('i')
+			),
+			'avatar_cfg' => array(
+				'enable_avatars'       => array('r', array('y' => 'yes', 'n' => 'no')),
+				'allow_avatar_uploads' => array('r', array('y' => 'yes', 'n' => 'no')),
+				'avatar_url'           => array('i'),
+				'avatar_path'          => array('i'),
+				'avatar_max_width'     => array('i'),
+				'avatar_max_height'    => array('i'),
+				'avatar_max_kb'        => array('i')
+			),
+			'photo_cfg' => array(
+				'enable_photos'    => array('r', array('y' => 'yes', 'n' => 'no')),
+				'photo_url'        => array('i'),
+				'photo_path'       => array('i'),
+				'photo_max_width'  => array('i'),
+				'photo_max_height' => array('i'),
+				'photo_max_kb'     => array('i')
+			),
+			'signature_cfg' => array(
+				'allow_signatures'      => array('r', array('y' => 'yes', 'n' => 'no')),
+				'sig_maxlength'         => array('i'),
+				'sig_allow_img_hotlink' => array('r', array('y' => 'yes', 'n' => 'no')),
+				'sig_allow_img_upload'  => array('r', array('y' => 'yes', 'n' => 'no')),
+				'sig_img_url'           => array('i'),
+				'sig_img_path'          => array('i'),
+				'sig_img_max_width'     => array('i'),
+				'sig_img_max_height'    => array('i'),
+				'sig_img_max_kb'        => array('i')
+			)
+		);
+
+		if ($flat)
+		{
+			$return = array();
+
+			foreach ($member_config_fields as $heading => $contents)
+			{
+				$return = array_merge($return, $contents);
+			}
+
+			return $return;
+		}
+
+		return $member_config_fields;
 	}
 
 	// --------------------------------------------------------------------
