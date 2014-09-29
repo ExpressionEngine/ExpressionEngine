@@ -35,7 +35,6 @@
 			</ul>
 		<?php endif ?>
 		<?=$_module_cp_body?>
-		</div>
 	</div>
 </div>
 
