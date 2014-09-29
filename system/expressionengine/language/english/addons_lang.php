@@ -15,6 +15,10 @@ $lang = array(
 'requested_module_not_installed' =>
 'The requested module is not installed:',
 
+'author'						=> 		'Author',
+'example_usage'					=>		'Example Usage',
+'available_parameters'			=>		'Available Parameters',
+
 /* Filters */
 'filters'						=>		'Filters',
 'status'						=>		'status',

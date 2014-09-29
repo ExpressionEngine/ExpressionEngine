@@ -264,22 +264,11 @@ class Addons extends CP_Controller {
 				$attrs = array();
 			}
 
-			if (strpos($info['version'], '.') !== FALSE)
-			{
-				$parts = explode('.', $info['version']);
-				$parts[0] = '<b>' . $parts[0] . '</b>';
-				$version = implode('.', $parts);
-			}
-			else
-			{
-				$version = $info['version'];
-			}
-
 			$data[] = array(
 				'attrs' => $attrs,
 				'columns' => array(
 					'addon' => $info['name'],
-					'version' => $version,
+					'version' => $this->formatVersionNumber($info['version']),
 					array('toolbar_items' => $toolbar),
 					array(
 						'name' => 'selection[]',
@@ -464,6 +453,56 @@ class Addons extends CP_Controller {
 		);
 
 		ee()->cp->render('addons/settings', $vars);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Display add-on settings
+	 *
+	 * @access	public
+	 * @param	str	$addon	The name of add-on whose settings to display
+	 * @return	void
+	 */
+	public function manual($addon)
+	{
+		ee()->view->cp_page_title = lang('addon_manager');
+
+		$vars = array();
+
+		$plugin = $this->getPluginInfo($addon);
+		if ($plugin === FALSE)
+		{
+			show_error(lang('requested_module_not_installed').NBS.$addon);
+		}
+
+		$vars = array(
+			'name'			=> $plugin['pi_name'],
+			'version'		=> $this->formatVersionNumber($plugin['pi_version']),
+			'author'		=> $plugin['pi_author'],
+			'author_url'	=> $plugin['pi_author_url'],
+			'description'	=> $plugin['pi_description'],
+		);
+
+		$vars['usage'] = array(
+			'description' => '',
+			'example' => $plugin['pi_usage']
+		);
+
+		if (is_array($plugin['pi_usage']))
+		{
+			$vars['usage']['description'] = $plugin['pi_usage']['description'];
+			$vars['usage']['example'] = $plugin['pi_usage']['example'];
+			$vars['parameters'] = $plugin['pi_usage']['parameters'];
+		}
+
+		ee()->view->cp_heading = $vars['name'] . ' ' . lang('usage');
+
+		ee()->view->cp_breadcrumbs = array(
+			cp_url('addons') => lang('addon_manager')
+		);
+
+		ee()->cp->render('addons/manual', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -658,6 +697,66 @@ class Addons extends CP_Controller {
 		return $plugins;
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Get plugin info
+	 *
+	 * Check for a plugin and get it's information
+	 *
+	 * @access	private
+	 * @param	string	plugin filename
+	 * @return	mixed	array of plugin data
+	 */
+	private function getPluginInfo($filename = '')
+	{
+		if ( ! $filename)
+		{
+			return FALSE;
+		}
+
+		$path = PATH_PI.'pi.'.$filename.'.php';
+
+		if ( ! file_exists($path))
+		{
+			$path = PATH_THIRD.$filename.'/pi.'.$filename.'.php';
+
+			if ( ! file_exists($path))
+			{
+				return FALSE;
+			}
+		}
+
+		if ($temp = $this->magpieCheck($filename, $path))
+		{
+			$plugin_info = $temp;
+		};
+
+		include_once($path);
+
+		if ( ! isset($plugin_info) OR ! is_array($plugin_info))
+		{
+			return FALSE;
+		}
+
+		// We need to clean up for display, might as
+		// well do it here and keep the view tidy
+
+		foreach ($plugin_info as $key => $val)
+		{
+			if ($key == 'pi_author_url')
+			{
+				$qm = (ee()->config->item('force_query_string') == 'y') ? '' : '?';
+
+				$val = prep_url($val);
+				$val = ee()->functions->fetch_site_index().$qm.'URL='.$val;
+			}
+
+			$plugin_info[$key] = $val;
+		}
+
+		return $plugin_info;
+	}
 	// --------------------------------------------------------------------
 
 	/**
@@ -915,6 +1014,27 @@ class Addons extends CP_Controller {
 		ee()->load->remove_package_path($installed[$addon]['path']);
 
 		return $_module_cp_body;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Wraps the major version number in a <b> tag
+	 *
+	 * @access private
+	 * @param  str	$version	The version number
+	 * @return str				The formatted version number
+	 */
+	private function formatVersionNumber($version)
+	{
+		if (strpos($version, '.') === FALSE)
+		{
+			return $version;
+		}
+
+		$parts = explode('.', $version);
+		$parts[0] = '<b>' . $parts[0] . '</b>';
+		return implode('.', $parts);
 	}
 }
 // END CLASS
