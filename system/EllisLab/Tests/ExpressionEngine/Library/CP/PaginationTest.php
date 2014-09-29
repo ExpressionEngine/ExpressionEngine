@@ -126,6 +126,7 @@ class PaginationTest extends \PHPUnit_Framework_TestCase {
 
 		// When the current page is the first page there should be no "prev" link
 		$expected = array(
+			'total_count' => 100,
 			'current_page' => 1,
 			'first' => 'index.php?/cp/foo/bar',
 			'next' => 'index.php?/cp/foo/bar&page=2',
@@ -141,6 +142,7 @@ class PaginationTest extends \PHPUnit_Framework_TestCase {
 
 		// When the current page is the last page there should be no "next" link
 		$expected = array(
+			'total_count' => 100,
 			'current_page' => 10,
 			'first' => 'index.php?/cp/foo/bar',
 			'prev' => 'index.php?/cp/foo/bar&page=9',
@@ -156,6 +158,7 @@ class PaginationTest extends \PHPUnit_Framework_TestCase {
 		// Test the 'page' variable
 		// Also testing that current_page 2 still starts the pages array at 1
 		$expected = array(
+			'total_count' => 100,
 			'current_page' => 2,
 			'first' => 'index.php?/cp/foo/bar',
 			'prev' => 'index.php?/cp/foo/bar&p=1',
@@ -172,6 +175,7 @@ class PaginationTest extends \PHPUnit_Framework_TestCase {
 
 		// Testing a small $pages
 		$expected = array(
+			'total_count' => 100,
 			'current_page' => 2,
 			'first' => 'index.php?/cp/foo/bar',
 			'prev' => 'index.php?/cp/foo/bar&p=1',
@@ -187,6 +191,7 @@ class PaginationTest extends \PHPUnit_Framework_TestCase {
 
 		// Testing a large $pages
 		$expected = array(
+			'total_count' => 100,
 			'current_page' => 2,
 			'first' => 'index.php?/cp/foo/bar',
 			'prev' => 'index.php?/cp/foo/bar&p=1',
@@ -210,6 +215,7 @@ class PaginationTest extends \PHPUnit_Framework_TestCase {
 
 		// Testing where we want to show more pages than available
 		$expected = array(
+			'total_count' => 30,
 			'current_page' => 2,
 			'first' => 'index.php?/cp/foo/bar',
 			'prev' => 'index.php?/cp/foo/bar&p=1',
