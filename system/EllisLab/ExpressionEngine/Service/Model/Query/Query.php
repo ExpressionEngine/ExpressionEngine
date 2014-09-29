@@ -637,6 +637,10 @@ $this->db->join($relationship_meta->to_table . ' AS ' . $relationship_meta->to_t
 			{
 				$this->db->or_where_in($table_property, (array) $value);
 			}
+			elseif (strtolower($operator) == 'not in')
+			{
+				$this->db->or_where_not_in($table_property, (array) $value);
+			}
 			else
 			{
 				$this->db->or_where($table_property.' '.$operator, $value);
@@ -647,6 +651,10 @@ $this->db->join($relationship_meta->to_table . ' AS ' . $relationship_meta->to_t
 			if (strtolower($operator) == 'in')
 			{
 				$this->db->where_in($table_property, (array) $value);
+			}
+			elseif (strtolower($operator) == 'not in')
+			{
+				$this->db->where_not_in($table_property, (array) $value);
 			}
 			else
 			{
