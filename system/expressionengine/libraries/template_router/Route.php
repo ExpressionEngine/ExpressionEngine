@@ -200,6 +200,13 @@ class EE_Route {
 	public function parse_route($route)
 	{
 		$route = trim($route, '/ ');
+
+		// Check for xss
+		if ($route !== ee()->security->xss_clean($route))
+		{
+			throw new Exception(lang('invalid_route'));
+		}
+
 		$segments = $this->parse_segments($route);
 		$index = 0;
 
