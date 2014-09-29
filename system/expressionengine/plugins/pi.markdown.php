@@ -63,28 +63,42 @@ class Markdown {
 	 */
 	public static function usage()
 	{
-		ob_start();
-?>
+		$usage = array(
+			'description'	=> 'This plugin parses text using Markdown and Smartypants. To use this plugin wrap any text in this tag pair.',
+			'example'		=> '',
+			'parameters'	=> array(
+				'convert_curly'	=> array(
+					'description'	=> "Defaults to <b>yes</b>. When set to <b>no</b> will not convert all curly brackets to entities, which can be useful to display variables.",
+					'example'		=> ''
+				),
+				'smartypants'	=> array(
+					'description'	=> "Defaults to <b>yes</b>. When set to <b>no</b> stops SmartyPants from running which leaves your quotes and hyphens alone.",
+					'example'		=> ''
+				)
+			)
+		);
 
-This plugin parses text using Markdown and Smartypants. To use this plugin wrap
-any text in this tag pair:
-
+		// Usage Example
+		$usage['example'] = <<<'EXAMPLE'
 {exp:markdown}
-Text to be **parsed**.
+	Text to be **parsed**.
 {/exp:markdown}
+EXAMPLE;
 
-There are two parameters you can set:
+		// convert_curly Example
+		$usage['parameters']['convert_curly']['example'] = <<<'EXAMPLE'
+{exp:markdown convert_curly="no"}
+	Text to be **parsed**.
+{/exp:markdown}
+EXAMPLE;
 
-- convert_curly - ('yes'/'no') defaults to 'yes', when set to 'no' will not
-  convert all curly brackets to entities, which can be useful to display
-  variables
-- smartypants - ('yes'/'no') defaults to 'yes', when set to 'no' stops
-  SmartyPants from running which leaves your quotes and hyphens alone
-
-<?php
-		$buffer = ob_get_contents();
-		ob_end_clean();
-		return $buffer;
+		// smartypants Example
+		$usage['parameters']['smartypants']['example'] = <<<'EXAMPLE'
+{exp:markdown smartypants="no"}
+	Text to be **parsed**.
+{/exp:markdown}
+EXAMPLE;
+		return $usage;
 	}
 }
 
