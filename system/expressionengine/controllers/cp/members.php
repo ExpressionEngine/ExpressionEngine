@@ -1688,7 +1688,7 @@ class Members extends CP_Controller {
 		$this->lang->loadfile('admin');
 		$this->load->library('table');
 
-		$f_data =  array(
+		$f_data = array(
 			'general_cfg'		=>	array(
 				'allow_member_registration' => array('r', array('y' => 'yes', 'n' => 'no')),
 				'req_mbr_activation'        => array('s', array('none' => 'no_activation', 'email' => 'email_activation', 'manual' => 'manual_activation')),
@@ -1775,64 +1775,60 @@ class Members extends CP_Controller {
 		{
 			$vars['menu_head'][$menu_head] = array();
 
-			foreach ($menu_array as $key => $val)
+			foreach ($menu_array as $config_name => $config_data)
 			{
-
-				$vars['menu_head'][$menu_head][$key]['preference'] = lang($key, $key);
-				$vars['menu_head'][$menu_head][$key]['preference_subtext'] = '';
+				$vars['menu_head'][$menu_head][$config_name]['preference'] = lang($config_name, $config_name);
+				$vars['menu_head'][$menu_head][$config_name]['preference_subtext'] = '';
 
 				// Preference sub-heading
-				if (isset($subtext[$key]))
+				if (isset($subtext[$config_name]))
 				{
-					foreach ($subtext[$key] as $sub)
+					foreach ($subtext[$config_name] as $sub)
 					{
-						$vars['menu_head'][$menu_head][$key]['preference_subtext'] = lang($sub);
+						$vars['menu_head'][$menu_head][$config_name]['preference_subtext'] = lang($sub);
 					}
 				}
 
 				$preference_controls = '';
 
-				if (is_array($val))
+				if (is_array($config_data))
 				{
 
-					if ($val['0'] == 's')
+					/** -----------------------------
+					/** Drop-down menus
+					/** -----------------------------*/
+					if ($config_data['0'] == 's')
 					{
-
-						/** -----------------------------
-						/** Drop-down menus
-						/** -----------------------------*/
-
 						$options = array();
 
-						foreach ($val['1'] as $k => $v)
+						foreach ($config_data['1'] as $k => $v)
 						{
 							$options[$k] = lang($v);
 						}
 
 						$preference_controls['type'] = "dropdown";
-						$preference_controls['id'] = $key;
+						$preference_controls['id'] = $config_name;
 						$preference_controls['options'] = $options;
-						$preference_controls['default'] = $this->config->item($key);
+						$preference_controls['default'] = $this->config->item($config_name);
 					}
-					elseif ($val['0'] == 'r')
+					/** -----------------------------
+					/**  Radio buttons
+					/** -----------------------------*/
+					elseif ($config_data['0'] == 'r')
 					{
-						/** -----------------------------
-						/**  Radio buttons
-						/** -----------------------------*/
-
 						$radios = array();
 
-						foreach ($val['1'] as $k => $v)
+						foreach ($config_data['1'] as $k => $v)
 						{
-							$selected = ($k == $this->config->item($key)) ? TRUE : FALSE;
+							$selected = ($k == $this->config->item($config_name)) ? TRUE : FALSE;
 
 							$radios[] = array(
-								'label'		=> lang($v, "{$key}_{$k}"),
+								'label'		=> lang($v, "{$config_name}_{$k}"),
 								'radio'		=> array(
-									'name' 		=> $key,
-									'id'		=> "{$key}_{$k}",
-									'value'		=> $k,
-									'checked'	=> ($k == $this->config->item($key)) ? TRUE : FALSE
+									'name' 		=> $config_name,
+									'id'		=> "{$config_name}_{$k}",
+									'config_dataue'		=> $k,
+									'checked'	=> ($k == $this->config->item($config_name)) ? TRUE : FALSE
 								)
 							);
 						}
@@ -1840,13 +1836,12 @@ class Members extends CP_Controller {
 						$preference_controls['type'] = "radio";
 						$preference_controls['radio'] = $radios;
 					}
-					elseif ($val['0'] == 'f')
+					/** -----------------------------
+					/**  Function calls
+					/** -----------------------------*/
+					elseif ($config_data['0'] == 'f')
 					{
-						/** -----------------------------
-						/**  Function calls
-						/** -----------------------------*/
-
-						switch ($val['1'])
+						switch ($config_data['1'])
 						{
 							case 'member_groups' :
 								$groups = $this->member_model->get_member_groups();
@@ -1880,29 +1875,29 @@ class Members extends CP_Controller {
 								$preference_controls['type'] = "dropdown";
 								$preference_controls['id'] = 'member_theme';
 								$preference_controls['options'] = $options;
-								$preference_controls['default'] = $this->config->item($key);
+								$preference_controls['default'] = $this->config->item($config_name);
 
 								break;
 						}
 					}
 				}
+				/** -----------------------------
+				/**  Text input fields
+				/** -----------------------------*/
 				else
 				{
-					/** -----------------------------
-					/**  Text input fields
-					/** -----------------------------*/
-					$item = str_replace("\\'", "'", $this->config->item($key));
+					$item = str_replace("\\'", "'", $this->config->item($config_name));
 
 					$preference_controls['type'] = "text";
 					$preference_controls['data'] = array(
-						'id'    => $key,
-						'name'  => $key,
+						'id'    => $config_name,
+						'name'  => $config_name,
 						'value' => $item,
 						'class' => 'field'
 					);
 				}
 
-				$vars['menu_head'][$menu_head][$key]['preference_controls'] = $preference_controls;
+				$vars['menu_head'][$menu_head][$config_name]['preference_controls'] = $preference_controls;
 			}
 		}
 
