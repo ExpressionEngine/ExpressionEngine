@@ -1708,7 +1708,8 @@ class Members extends CP_Controller {
 
 			foreach ($menu_array as $config_name => $config_data)
 			{
-				$vars['menu_head'][$menu_head][$config_name]['preference'] = lang($config_name, $config_name);
+				$vars['menu_head'][$menu_head][$config_name]['name'] = $config_name;
+				$vars['menu_head'][$menu_head][$config_name]['label'] = lang($config_name, $config_name);
 				$vars['menu_head'][$menu_head][$config_name]['preference_subtext'] = '';
 
 				// Preference sub-heading
@@ -1733,7 +1734,7 @@ class Members extends CP_Controller {
 					$preference_controls['data'] = array(
 						'id'    => $config_name,
 						'name'  => $config_name,
-						'value' => $item,
+						'value' => set_value($config_name, $item),
 						'class' => 'field'
 					);
 				}
@@ -1754,7 +1755,7 @@ class Members extends CP_Controller {
 						$preference_controls['type'] = "dropdown";
 						$preference_controls['id'] = $config_name;
 						$preference_controls['options'] = $options;
-						$preference_controls['default'] = ee()->config->item($config_name);
+						$preference_controls['default'] = set_value($config_name, ee()->config->item($config_name));
 					}
 					/** -----------------------------
 					/**  Radio buttons
@@ -1765,15 +1766,17 @@ class Members extends CP_Controller {
 
 						foreach ($config_data['1'] as $k => $v)
 						{
-							$selected = ($k == ee()->config->item($config_name)) ? TRUE : FALSE;
-
+							$checked_config = ($k == ee()->config->item($config_name))
+								? TRUE
+								: FALSE;
+							$checked = (set_radio($config_name, $k, $checked_config));
 							$radios[] = array(
-								'label'		=> lang($v, "{$config_name}_{$k}"),
-								'radio'		=> array(
-									'name' 		=> $config_name,
-									'id'		=> "{$config_name}_{$k}",
-									'config_dataue'		=> $k,
-									'checked'	=> ($k == ee()->config->item($config_name)) ? TRUE : FALSE
+								'label' => lang($v, "{$config_name}_{$k}"),
+								'radio' => array(
+									'name'    => $config_name,
+									'id'      => "{$config_name}_{$k}",
+									'value'   => $k,
+									'checked' => $checked
 								)
 							);
 						}
@@ -1857,6 +1860,7 @@ class Members extends CP_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
+		// Check for form validation
 		ee()->lang->loadfile('admin');
 		ee()->load->library('form_validation');
 		ee()->form_validation->set_error_delimiters('<p class="notice">', '</p>');
@@ -1868,15 +1872,10 @@ class Members extends CP_Controller {
 			ee()->form_validation->set_rules($key, '<b>'.lang($key).'</b>', $rules);
 		}
 
-		if (ee()->form_validation->run())
+		// Reject if validation failed
+		if (ee()->form_validation->run() === FALSE)
 		{
-var_dump('yay');
-die();
-		}
-		else
-		{
-			var_dump(validation_errors());
-			die(var_dump('boo'));
+			return $this->member_config();
 		}
 
 		$config_update = ee()->config->update_site_prefs($_POST);
@@ -1888,8 +1887,6 @@ die();
 			'display_avatars'    => ee()->input->post('enable_avatars')
 		));
 
- 		$loc = BASE.AMP.'C=members'.AMP.'M=member_config';
-
 		if ( ! empty($config_update))
 		{
 			ee()->load->helper('html');
@@ -1900,7 +1897,7 @@ die();
 			ee()->session->set_flashdata('message_success', lang('preferences_updated'));
 		}
 
-		ee()->functions->redirect($loc);
+		ee()->functions->redirect(BASE.AMP.'C=members'.AMP.'M=member_config');
 	}
 
 	// --------------------------------------------------------------------
@@ -1916,7 +1913,7 @@ die();
 				'use_membership_captcha'    => array('r', array('y' => 'yes', 'n' => 'no')),
 				'default_member_group'      => array('f', 'member_groups'),
 				'member_theme'              => array('f', 'member_theme_menu'),
-				'profile_trigger'           => array('i')
+				'profile_trigger'           => array('i', '', 'alpha_dash')
 			),
 			'memberlist_cfg' => array(
 				'memberlist_order_by'   => array('s', array('total_forum_posts' => 'total_posts',
@@ -1932,41 +1929,41 @@ die();
 				'mbr_notification_emails' => array('i', '', 'valid_email')
 			),
 			'pm_cfg' => array(
-				'prv_msg_max_chars'       => array('i'),
+				'prv_msg_max_chars'       => array('i', '', 'integer'),
 				'prv_msg_html_format'     => array('s', array('safe' => 'html_safe', 'none' => 'html_none', 'all' => 'html_all')),
 				'prv_msg_auto_links'      => array('r', array('y' => 'yes', 'n' => 'no')),
-				'prv_msg_upload_path'     => array('i'),
-				'prv_msg_max_attachments' => array('i'),
-				'prv_msg_attach_maxsize'  => array('i'),
-				'prv_msg_attach_total'    => array('i')
+				'prv_msg_upload_path'     => array('i', '', 'strip_tags|valid_xss_check'),
+				'prv_msg_max_attachments' => array('i', '', 'integer'),
+				'prv_msg_attach_maxsize'  => array('i', '', 'integer'),
+				'prv_msg_attach_total'    => array('i', '', 'integer')
 			),
 			'avatar_cfg' => array(
 				'enable_avatars'       => array('r', array('y' => 'yes', 'n' => 'no')),
 				'allow_avatar_uploads' => array('r', array('y' => 'yes', 'n' => 'no')),
-				'avatar_url'           => array('i'),
-				'avatar_path'          => array('i'),
-				'avatar_max_width'     => array('i'),
-				'avatar_max_height'    => array('i'),
-				'avatar_max_kb'        => array('i')
+				'avatar_url'           => array('i', '', 'strip_tags|valid_xss_check'),
+				'avatar_path'          => array('i', '', 'strip_tags|valid_xss_check'),
+				'avatar_max_width'     => array('i', '', 'integer'),
+				'avatar_max_height'    => array('i', '', 'integer'),
+				'avatar_max_kb'        => array('i', '', 'integer')
 			),
 			'photo_cfg' => array(
 				'enable_photos'    => array('r', array('y' => 'yes', 'n' => 'no')),
-				'photo_url'        => array('i'),
-				'photo_path'       => array('i'),
-				'photo_max_width'  => array('i'),
-				'photo_max_height' => array('i'),
-				'photo_max_kb'     => array('i')
+				'photo_url'        => array('i', '', 'strip_tags|valid_xss_check'),
+				'photo_path'       => array('i', '', 'strip_tags|valid_xss_check'),
+				'photo_max_width'  => array('i', '', 'integer'),
+				'photo_max_height' => array('i', '', 'integer'),
+				'photo_max_kb'     => array('i', '', 'integer')
 			),
 			'signature_cfg' => array(
 				'allow_signatures'      => array('r', array('y' => 'yes', 'n' => 'no')),
-				'sig_maxlength'         => array('i'),
+				'sig_maxlength'         => array('i', '', 'integer'),
 				'sig_allow_img_hotlink' => array('r', array('y' => 'yes', 'n' => 'no')),
 				'sig_allow_img_upload'  => array('r', array('y' => 'yes', 'n' => 'no')),
-				'sig_img_url'           => array('i'),
-				'sig_img_path'          => array('i'),
-				'sig_img_max_width'     => array('i'),
-				'sig_img_max_height'    => array('i'),
-				'sig_img_max_kb'        => array('i')
+				'sig_img_url'           => array('i', '', 'strip_tags|valid_xss_check'),
+				'sig_img_path'          => array('i', '', 'strip_tags|valid_xss_check'),
+				'sig_img_max_width'     => array('i', '', 'integer'),
+				'sig_img_max_height'    => array('i', '', 'integer'),
+				'sig_img_max_kb'        => array('i', '', 'integer')
 			)
 		);
 
