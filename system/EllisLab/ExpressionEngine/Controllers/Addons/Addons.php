@@ -260,11 +260,22 @@ class Addons extends CP_Controller {
 				$attrs = array();
 			}
 
+			if (strpos($info['version'], '.') !== FALSE)
+			{
+				$parts = explode('.', $info['version']);
+				$parts[0] = '<b>' . $parts[0] . '</b>';
+				$version = implode('.', $parts);
+			}
+			else
+			{
+				$version = $info['version'];
+			}
+
 			$data[] = array(
 				'attrs' => $attrs,
 				'columns' => array(
 					'addon' => $info['name'],
-					'version' => $info['version'],
+					'version' => $version,
 					array('toolbar_items' => $toolbar),
 					array(
 						'name' => 'selection[]',
