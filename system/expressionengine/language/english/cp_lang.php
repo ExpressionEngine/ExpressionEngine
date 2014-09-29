@@ -473,6 +473,8 @@ $lang = array(
 
 'no_search_results'	 			=> 'No Results Found',
 
+'total_entries'					=> 'total entries',
+
 //----------------------------
 // Sites and Channels
 //----------------------------

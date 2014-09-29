@@ -34,6 +34,7 @@ class Pagination {
 	private $pages;
 	private $next;
 	private $last;
+	private $total_count;
 
 	/**
 	 * Calculates pages based on number per page and total. This will also
@@ -70,12 +71,12 @@ class Pagination {
 
 		// Cast any floats or numeric strings to integers
 		$per_page = (int) $per_page;
-		$total_count = (int) $total_count;
+		$this->total_count = (int) $total_count;
 		$current_page = (int) $current_page;
 
 		$this->current_page = $current_page;
 		$this->prev         = ($current_page - 1 >= 1) ? ($current_page - 1) : NULL;
-		$this->pages        = (int) ceil($total_count / $per_page);
+		$this->pages        = (int) ceil($this->total_count / $per_page);
 		$this->next         = ($current_page + 1 <= $this->pages) ? ($current_page + 1) : NULL;
 		$this->last         = $this->pages;
 	}
@@ -96,6 +97,7 @@ class Pagination {
 	 * @param  string	$page_variable	The name of the page variable in the query string
 	 * @return array	Returns an associative array of URLs
 	 *   e.g. 'current_page' => 2,
+	 *        'total_count' => 123,
 	 *        'first' => 'http://ee3/admin.php?/cp/logs/cp',
 	 *        'prev'  => 'http://ee3/admin.php?/cp/logs/cp?page=1',
 	 *        'next'  => 'http://ee3/admin.php?/cp/logs/cp?page=3',
@@ -132,6 +134,7 @@ class Pagination {
 		// Remove the current page from the count and force an integer instead of a float.
 		$pages = (int) $pages - 1;
 
+		$links['total_count'] = $this->total_count;
 		$links['current_page'] = $this->current_page;
 		$links['first'] = $base_url->compile();
 		foreach (array('prev', 'next', 'last') as $key)

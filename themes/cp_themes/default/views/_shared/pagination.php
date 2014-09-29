@@ -1,5 +1,5 @@
 <?php if ( ! empty($pagination)): ?>
-<div class="paginate">
+<div class="paginate"<?php if (isset($pagination['total_count'])): ?> title="<?=$pagination['total_count']?> <?=lang('total_entries')?>"<?php endif; ?>>
 	<ul>
 		<li><a href="<?=$pagination['first']?>"><?=lang('first')?></a></li>
 		<?php if ( isset($pagination['prev'])): ?>
