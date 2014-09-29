@@ -96,8 +96,8 @@ class Pagination {
 	 * @param  int		$pages			The number of numbered pages to calculate
 	 * @param  string	$page_variable	The name of the page variable in the query string
 	 * @return array	Returns an associative array of URLs
-	 *   e.g. 'current_page' => 2,
-	 *        'total_count' => 123,
+	 *   e.g. 'total_count' => 123,
+	 *        'current_page' => 2,
 	 *        'first' => 'http://ee3/admin.php?/cp/logs/cp',
 	 *        'prev'  => 'http://ee3/admin.php?/cp/logs/cp?page=1',
 	 *        'next'  => 'http://ee3/admin.php?/cp/logs/cp?page=3',
