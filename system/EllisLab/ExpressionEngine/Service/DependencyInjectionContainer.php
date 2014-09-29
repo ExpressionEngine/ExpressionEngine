@@ -1,5 +1,5 @@
 <?php
-namespace EllisLab\ExpressionEngine\Serivce;
+namespace EllisLab\ExpressionEngine\Service;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -58,18 +58,18 @@ class DependencyInjectionContainer {
 	 */
 	public function bootstrap()
 	{
-		$this->register('EllisLab:AliasService', function($dic, $config_file)
+		$this->register('EllisLab:AliasService', function($dic, $name, $config_file)
 		{
-			return new \EllisLab\ExpressionEngine\Service\AliasService($config_file);
+			return new \EllisLab\ExpressionEngine\Service\AliasService($name, $config_file);
 
 		});
 
 		$this->register('EllisLab:Model\Factory', function($dic)
 		{
 			$validation = $dic->get('EllisLab:Validation\Factory');
-			$alias_service = $dic->get('EllisLab:AliasService', APPPATH . 'config/model_aliases.php');
+			$alias_service = $dic->get('EllisLab:AliasService', 'Model',  APPPATH . 'config/model_aliases.php');
 
-			return new \EllisLab\ExpressionEngine\Service\Model\Factory($validation, $alias_service);
+			return new \EllisLab\ExpressionEngine\Service\Model\Factory($alias_service, $validation);
 		});
 
 		$this->register('EllisLab:Validation\Factory', function($dic)
@@ -132,14 +132,14 @@ class DependencyInjectionContainer {
 	 */
 	public function get()
 	{
+		$arguments = func_get_args();
+
+		$name = array_shift($arguments);
+
 		if ( ! isset($this->registry[$name]))
 		{
 			throw new \RuntimeException('Attempt to access unregistered service ' . $name . ' in the DIC.');
 		}
-
-		$arguments = func_get_args();
-
-		$name = array_shift($arguments);
 
 		if ( isset($this->substitutes) && isset($this->substitutes[$name]))
 		{
