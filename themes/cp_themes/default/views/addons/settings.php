@@ -31,7 +31,7 @@
 				<?php foreach ($cp_breadcrumbs as $link => $title): ?>
 					<li><a href="<?=$link?>"><?=$title?></a></li>
 				<?php endforeach ?>
-				<li class="last"><?=$cp_page_title?></li>
+				<li class="last"><?=$cp_heading?></li>
 			</ul>
 		<?php endif ?>
 		<?=$_module_cp_body?>
