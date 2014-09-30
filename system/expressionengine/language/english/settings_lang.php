@@ -1089,6 +1089,45 @@ $lang = array(
 'upload_image_height_desc' =>
 'Maximum image height in pixels.',
 
+'upload_image_manipulations' =>
+'Image Manipulations',
+
+'constrain_or_crop' =>
+'Constrain or Crop',
+
+'constrain_or_crop_desc' =>
+'Changes to images in this <mark>upload</mark> directory, made upon upload.',
+
+'image_manip_name' =>
+'Name',
+
+'image_manip_name_desc' =>
+'Name of this manipulation',
+
+'image_manip_type' =>
+'Type',
+
+'image_manip_type_desc' =>
+'Type of manipulation',
+
+'image_manip_type_opt_constrain' =>
+'Constrain (full image resized)',
+
+'image_manip_type_opt_crop' =>
+'Crop (part of image)',
+
+'image_manip_width' =>
+'Width',
+
+'image_manip_width_desc' =>
+'Final width of image',
+
+'image_manip_height' =>
+'Height',
+
+'image_manip_height_desc' =>
+'Final height of image',
+
 'upload_privileges' =>
 'Upload Privileges',
 

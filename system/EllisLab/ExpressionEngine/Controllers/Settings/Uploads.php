@@ -142,14 +142,6 @@ class Uploads extends Settings {
 	 */
 	private function form($upload_id = NULL)
 	{
-		$groups = ee()->api->get('MemberGroup')->order('group_title', 'asc')->all();
-
-		$member_groups = array();
-		foreach ($groups as $group)
-		{
-			$member_groups[$group->group_id] = $group->group_title;
-		}
-
 		// Get the upload directory
 		$upload_dir = array();
 		if ( ! empty($upload_id))
@@ -239,22 +231,94 @@ class Uploads extends Settings {
 						)
 					)
 				)
-			),
-			'upload_privileges' => array(
-				array(
-					'title' => 'upload_member_groups',
-					'desc' => 'upload_member_groups_desc',
-					'fields' => array(
-						'avatar_path' => array(
-							'type' => 'checkbox',
-							'choices' => $member_groups
-						)
+			)
+		);
+
+		$vars['sections']['upload_image_manipulations'] = array(
+			array(
+				'title' => 'constrain_or_crop',
+				'desc' => 'constrain_or_crop_desc',
+				'fields' => array(
+					'image_manipulations' => array(
+						'type' => 'grid'
 					)
 				)
 			)
 		);
+
+		ee()->load->model('member_model');
+		$groups = ee()->member_model->get_upload_groups()->result();
+
+		$member_groups = array();
+		foreach ($groups as $group)
+		{
+			$member_groups[$group->group_id] = $group->group_title;
+		}
+
+		if ( ! empty($upload_id))
+		{
+			$no_access = ee()->api->get('UploadDestination')
+				->filter('id', $upload_id)
+				->first()
+				->getNoAccess()
+				->pluck('group_id');
+		}
+
+		$allowed_groups = array_diff(array_keys($member_groups), $no_access);
+
+		$vars['sections']['upload_privileges'] = array(
+			array(
+				'title' => 'upload_member_groups',
+				'desc' => 'upload_member_groups_desc',
+				'fields' => array(
+					'avatar_path' => array(
+						'type' => 'checkbox',
+						'choices' => $member_groups,
+						'value' => $allowed_groups
+					)
+				)
+			)
+		);
+
+		ee()->form_validation->set_rules(array(
+			array(
+				'field' => 'name',
+				'label' => 'lang:upload_name',
+				'rules' => 'required'
+			),
+			array(
+				'field' => 'server_path',
+				'label' => 'lang:upload_path',
+				'rules' => 'required'
+			),
+			array(
+				'field' => 'url',
+				'label' => 'lang:upload_url',
+				'rules' => 'callback_not_http'
+			),
+			array(
+				'field' => 'allowed_types',
+				'label' => 'lang:upload_allowed_types',
+				'rules' => 'required'
+			),
+			array(
+				'field' => 'max_size',
+				'label' => 'lang:upload_file_size',
+				'rules' => 'integer'
+			),
+			array(
+				'field' => 'max_width',
+				'label' => 'lang:upload_image_width',
+				'rules' => 'integer'
+			),
+			array(
+				'field' => 'max_height',
+				'label' => 'lang:upload_image_height',
+				'rules' => 'integer'
+			)
+		));
 		
-		$base_url = cp_url('settings/uploads');
+		$base_url = cp_url('settings/uploads/'.$upload_id ?: '');
 
 		if (AJAX_REQUEST)
 		{

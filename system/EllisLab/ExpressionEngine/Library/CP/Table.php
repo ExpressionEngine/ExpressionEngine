@@ -65,6 +65,8 @@ class Table {
 			'autosort'	 => FALSE,
 			'autosearch' => FALSE,
 			'lang_cols'	 => TRUE,
+			'grid_input' => FALSE,
+			'reorder'	 => FALSE,
 			'no_results' => array(
 				'text'			=> 'no_rows_returned',
 				'action_text'	=> '',

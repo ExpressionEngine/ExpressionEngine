@@ -79,6 +79,25 @@ if (isset($ajax_validate) && $ajax_validate == TRUE)
 							<?=form_dropdown($field_name, $field['choices'], $value, $required)?>
 						<?php break;
 
+						case 'checkbox': ?>
+							<div class="scroll-wrap">
+								<?php foreach ($field['choices'] as $key => $label): 
+									if (is_array($value))
+									{
+										$selected = in_array($key, $value);
+									}
+									else
+									{
+										$selected = ($value == $key);
+									}
+								?>
+									<label class="choice block<?php if ($selected):?> chosen<?php endif ?>">
+										<input type="checkbox" name="<?=$field_name?>[]" value="<?=$key?>"<?php if ($selected):?> checked="checked"<?php endif ?><?=$required?>> <?=$label?>
+									</label>
+								<?php endforeach ?>
+							</div>
+						<?php break;
+
 						case 'textarea': ?>
 							<textarea name="<?=$field_name?>" cols="" rows=""<?=$required?>>
 <?=(isset($field['kill_pipes']) && $field['kill_pipes'] === TRUE) ? str_replace('|', NL, $value) : $value?>
