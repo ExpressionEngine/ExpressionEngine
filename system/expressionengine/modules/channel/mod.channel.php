@@ -4191,6 +4191,7 @@ class Channel {
 
 		$cat_vars = array(
 			'category_name'			=> $query->row('cat_name'),
+			'category_url_title'	=> $query->row('cat_url_title'),
 			'category_description'	=> $query->row('cat_description'),
 			'category_image'		=> $cat_image,
 			'category_id'			=> $match[2],
