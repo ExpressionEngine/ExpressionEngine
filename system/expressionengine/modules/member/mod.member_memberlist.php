@@ -397,7 +397,7 @@ class Member_memberlist extends Member {
 		/**  Assign default variables
 		/** ----------------------------------------*/
 
-		$valid_order_bys = array('screen_name','total_posts', 'join_date');
+		$valid_order_bys = array('screen_name', 'total_comments', 'total_entries', 'join_date');
 
 		$sort_orders = array('asc', 'desc');
 
