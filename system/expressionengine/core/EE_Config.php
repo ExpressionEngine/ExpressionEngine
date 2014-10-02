@@ -1219,7 +1219,7 @@ class EE_Config Extends CI_Config {
 				'multiple_sites_enabled' => array('r', array('y' => 'yes', 'n' => 'no')),
 				'is_system_on'           => array('r', array('y' => 'yes', 'n' => 'no')),
 				'is_site_on'             => array('r', array('y' => 'yes', 'n' => 'no')),
-				'site_name'              => array('i', '', 'required'),
+				'site_name'              => array('i', '', 'required|strip_tags|valid_xss_check'),
 				'site_index'             => array('i', '', 'strip_tags|valid_xss_check'),
 				'site_url'               => array('i', '', 'required|strip_tags|valid_xss_check'),
 				'cp_url'                 => array('i', '', 'required|strip_tags|valid_xss_check'),

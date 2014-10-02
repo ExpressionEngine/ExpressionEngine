@@ -2848,9 +2848,10 @@ class Members extends CP_Controller {
 	private function _validate_custom_field($edit)
 	{
 		$this->load->library('form_validation');
+		$this->lang->loadfile('admin_content');
 
 		$is_edit = ($edit == TRUE) ? 'y' : 'n';
-		$this->form_validation->set_rules("m_field_name", 'lang:fieldname', 'required|callback__valid_fieldname['.$is_edit.']');
+		$this->form_validation->set_rules("m_field_name", 'lang:fieldname', 'required|strip_tags|valid_xss_check|callback__valid_fieldname['.$is_edit.']');
 		$this->form_validation->set_rules("m_field_label", 'lang:fieldlabel', 'required|strip_tags|valid_xss_check');
 		$this->form_validation->set_rules("m_field_description", '', 'strip_tags|valid_xss_check');
 		$this->form_validation->set_rules("m_field_order", '', '');
