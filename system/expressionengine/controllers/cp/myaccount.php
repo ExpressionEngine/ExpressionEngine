@@ -2298,10 +2298,16 @@ class MyAccount extends CP_Controller {
 			$vars['step'] = 3;
 			$vars['bm_name'] = $this->input->post('bm_name');
 			$channel_id = $this->input->post('channel_id');
-			$field_id  = 'field_id_'.$this->input->post('field_id');
+			$field_id = 'field_id_'.$this->input->post('field_id');
 
-            $s = ($this->config->item('cp_session_type') != 'c') ? $this->session->userdata('session_id') : 0;
-			$path = $this->config->item('cp_url')."?S={$s}".AMP.'D=cp&C=content_publish&M=entry_form&Z=1&BK=1&channel_id='.$channel_id.'&';
+			$path = cp_url(
+				'content_publish/entry_form',
+				array(
+					'Z'          => 1,
+					'BK'         => 1,
+					'channel_id' => $channel_id
+				)
+			);
 
 			$type = (isset($_POST['safari'])) ? "window.getSelection()" : "document.selection?document.selection.createRange().text:document.getSelection()";
 
