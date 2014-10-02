@@ -46,9 +46,7 @@ class CI_Security {
 		"javascript\s*:"				=> '[removed]',
 		"expression\s*(\(|&\#40;)"		=> '[removed]', // CSS and IE
 		"vbscript\s*:"					=> '[removed]', // IE, surprise!
-		"Redirect\s+302"				=> '[removed]',
-		"([\"'])?data\s*:[^\\1]*?base64[^\\1]*?,[^\\1]*?\\1?"
-			=> '[removed]'
+		"Redirect\s+302"				=> '[removed]'
 	);
 
 	/* html5 entities we need to manually decode pre PHP 5.4 */
@@ -140,6 +138,11 @@ class CI_Security {
 		 * Remove Invisible Characters
 		 */
 		$str = remove_invisible_characters($str);
+
+		// Strip data URIs
+		// Not all browsers conform strictly to RFC2397 so we strip anything 
+		// that looks close to a data URI inside an attribute
+		$str = preg_replace_callback("/<\w+.*?(?=>|<|$)/si", array($this, '_strip_data_URIs'), $str);
 
 		// Validate Entities in URLs
 		$str = $this->_validate_entities($str);
@@ -299,7 +302,6 @@ class CI_Security {
 		 * Becomes:		eval&#40;'some code'&#41;
 		 */
 		$str = preg_replace('#(alert|cmd|passthru|eval|exec|expression|system|fopen|fsockopen|file|file_get_contents|readfile|unlink)(\s*)\((.*?)\)#si', "\\1\\2&#40;\\3&#41;", $str);
-
 
 		// Final clean up
 		// This adds a bit of extra precaution in case
@@ -740,6 +742,24 @@ class CI_Security {
 		}
 
 		return $str;
+	}
+
+	// ----------------------------------------------------------------------
+
+	/**
+	 * Strips all data URIs from a string
+	 * 
+	 * @param string $match  An array of matches from preg_replace_callback. 
+	 * @access protected
+	 * @return string  The cleaned string.
+	 */
+	protected function _strip_data_URIs($match)
+	{
+		$pattern = "/('|\")?(?:\s*)?data:[\w\/\-\.]+?;?(?:\w+;)?\w+?,?.*(?:\\1)?(\s)/i";
+		$cleaned = $match[0];
+		$cleaned = preg_replace($pattern, '$1$1$2', $cleaned);
+
+		return $cleaned;
 	}
 }
 // END Security Class
