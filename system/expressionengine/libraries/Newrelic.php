@@ -50,7 +50,7 @@ class Newrelic {
 		//	- newrelic_include_version_number => Whether or not to include the version
 		//    number with the application name
 		// -------------------------------------------*/
-		$version = (ee()->config->item('newrelic_include_version_number') == 'n') ? '' : ' v'.APP_VER;
+		$version = (ee()->config->item('newrelic_include_version_number') == 'y') ? ' v'.APP_VER : '';
 		newrelic_set_appname($appname.APP_NAME.$version);
 	}
 
