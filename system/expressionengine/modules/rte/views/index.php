@@ -29,7 +29,7 @@
 		<p><?=form_submit(array('name'=>'submit','value'=>lang('update'),'class'=>'submit'));?></p>
 		<?=form_close();?>
 		<p><?=NBS?></p>
-		
+
 		<h3><?=lang('toolsets')?></h3>
 
 <?php
@@ -52,7 +52,7 @@
 				$active = '<strong>'.lang('disabled').'</strong>';
 				$action = '<a href="'.$module_base.AMP.'method=toggle_toolset'.AMP.'toolset_id='.$toolset['toolset_id'].AMP.'enabled=y">'.lang('enable_button').'</a>';
 			}
-	
+
 			$this->table->add_row(
 				array(
 					'style' => 'width:4%',
@@ -60,7 +60,7 @@
 				),
 				array(
 					'style' => 'width:32%',
-					'data'	=> '<a class="edit_toolset" href="'.$module_base.AMP.'method=edit_toolset'.AMP.'toolset_id='.$toolset['toolset_id'].'">'.$toolset['name'].'</a>'
+					'data'	=> '<a class="edit_toolset" href="'.$module_base.AMP.'method=edit_toolset'.AMP.'toolset_id='.$toolset['toolset_id'].'">'.htmlentities($toolset['name'], ENT_QUOTES).'</a>'
 				),
 				array(
 					'style' => 'width:32%',
@@ -74,9 +74,9 @@
 		}
 
 		echo $this->table->generate(); ?>
-		
+
 		<p><a id="create_toolset" class="edit_toolset submit" style="display: inline-block"href="<?=$new_toolset_link?>"><?=lang('create_new_toolset')?></a></p>
-		
+
 		<p><?=NBS?></p>
 
 		<h3><?=lang('tools')?></h3>
@@ -98,7 +98,7 @@
 				$active = '<strong>'.lang('disabled').'</strong>';
 				$action = '<a href="'.$module_base.AMP.'method=toggle_tool'.AMP.'tool_id='.$tool['tool_id'].AMP.'enabled=y">'.lang('enable_button').'</a>';
 			}
-	
+
 			$this->table->add_row(
 				$tool['name'],
 				array( 'style' => 'width:66%', 'data' => $active.NBS."({$action})" )

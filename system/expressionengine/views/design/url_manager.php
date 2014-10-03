@@ -13,7 +13,7 @@
 							$name = '<a id="templateId_'.$template->template_id.'" href="'.$url.'">'.$template->template_name.'</a>';
 							$class = in_array($template->template_id, $error_ids) ? "class='route_error'" : NULL;
 							$value = ! empty($input['route_' . $template->template_id]) ? $input['route_' . $template->template_id] : $template->route;
-							$route = "<input $class name='route_{$template->template_id}' type='text' value='$value' />";
+							$route = "<input $class name='route_{$template->template_id}' type='text' value='". htmlspecialchars($value, ENT_QUOTES) ."' />";
 
 							if( ! empty($errors[$template->template_id]))
 							{

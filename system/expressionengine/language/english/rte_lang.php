@@ -46,6 +46,7 @@ $lang = array(
 'valid_url_required' => 'A valid URL is required.',
 'name_required' => 'The Toolset Name is required.',
 'unique_name_required' => 'The Toolset Name must be unique.',
+'valid_name_required' => 'The Toolset Name must not include special characters.',
 
 // Labels
 'enable_rte_globally' => 'Enable Rich Text Editor',

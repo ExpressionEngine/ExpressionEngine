@@ -496,7 +496,7 @@ class CI_Security {
 
 	// --------------------------------------------------------------------
 
-	/*
+	/**
 	 * Remove Evil HTML Attributes (like evenhandlers and style)
 	 *
 	 * It removes the evil attribute and either:
