@@ -1861,7 +1861,6 @@ class Members extends CP_Controller {
 		}
 
 		// Check for form validation
-		ee()->lang->loadfile('admin');
 		ee()->load->library('form_validation');
 		ee()->form_validation->set_error_delimiters('<p class="notice">', '</p>');
 
@@ -2848,7 +2847,6 @@ class Members extends CP_Controller {
 	private function _validate_custom_field($edit)
 	{
 		$this->load->library('form_validation');
-		$this->lang->loadfile('admin_content');
 
 		$is_edit = ($edit == TRUE) ? 'y' : 'n';
 		$this->form_validation->set_rules("m_field_name", 'lang:fieldname', 'required|strip_tags|valid_xss_check|callback__valid_fieldname['.$is_edit.']');
