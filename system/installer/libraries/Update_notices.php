@@ -45,6 +45,7 @@ class Update_notices {
 	 */
 	public function get()
 	{
+		$this->ensure_table_exists();
 		return ee()->db->get($this->table)->result();
 	}
 
