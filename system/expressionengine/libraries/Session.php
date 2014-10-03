@@ -364,7 +364,11 @@ class EE_Session {
 	 */
 	public function create_new_session($member_id, $admin_session = FALSE)
 	{
-		if ($this->validation == 'c' AND $this->access_cp == TRUE)
+		$member = ee()->db->get_where('members', array('member_id' => $member_id));
+		$member_group = ee()->db->where('group_id', $member->row('group_id'))
+			->get('member_groups');
+
+		if ($this->access_cp == TRUE OR $member_group->row('can_access_cp') == 'y')
 		{
 			$this->sdata['admin_sess'] = 1;
 		}
@@ -373,9 +377,7 @@ class EE_Session {
 			$this->sdata['admin_sess'] 	= ($admin_session == FALSE) ? 0 : 1;
 		}
 
-		$crypt_key = ee()->db->select('crypt_key')
-			->get_where('members', array('member_id' => $member_id))
-			->row('crypt_key');
+		$crypt_key = $member->row('crypt_key');
 
 		// Create crypt key for member if one doesn't exist
 		if (empty($crypt_key))
@@ -918,17 +920,7 @@ class EE_Session {
 				return array();
 			}
 
-			if (stristr($tracker, ':') !== FALSE)
-			{
-				$tracker_parts = explode(':', $tracker);
-
-				if (current($tracker_parts) != 'a' OR count($tracker_parts) < 3 OR ! is_numeric(next($tracker_parts)))
-				{
-					return array();
-				}
-			}
-
-			$tracker = unserialize(stripslashes($tracker));
+			$tracker = json_decode($tracker);
 		}
 
 		if ( ! is_array($tracker))
@@ -969,10 +961,44 @@ class EE_Session {
 
 		if (REQ == 'PAGE')
 		{
-			ee()->input->set_cookie('tracker', serialize($tracker), '0');
+			$this->set_tracker_cookie($tracker);
 		}
 
 		return $tracker;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * This will set the tracker cookie with proper encoding
+	 *
+	 * @param array	$tracker An optional tracker array to set, defaults to
+     *                       ee()->session->tracker
+	 */
+	public function set_tracker_cookie($tracker = NULL)
+	{
+		if (is_null($tracker))
+		{
+			$tracker = $this->tracker;
+		}
+
+		ee()->input->set_cookie('tracker', json_encode($tracker), '0');
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * This will un-set the most recent URL from the tracker
+	 */
+	public function do_not_track()
+	{
+		static $shifted;
+		if ($shifted !== TRUE)
+		{
+			array_shift($this->tracker);
+			$shifted = TRUE;
+		}
+		$this->set_tracker_cookie();
 	}
 
 	// --------------------------------------------------------------------

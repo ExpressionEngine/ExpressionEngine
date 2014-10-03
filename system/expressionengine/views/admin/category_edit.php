@@ -32,6 +32,7 @@
 			'rows'	=> '10',
 			'value'	=> set_value('cat_description', $cat_description)
 		))?>
+		<?=form_error('cat_description')?>
 	</p>
 
 	<div class="category_field">

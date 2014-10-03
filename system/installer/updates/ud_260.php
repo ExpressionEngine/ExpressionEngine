@@ -463,7 +463,6 @@ If you do not wish to reset your password, ignore this message. It will expire i
 
 		// We need to figure out which template to load.
 		// Need to check the edit date.
-		ee()->load->model('template_model');
 		$templates = ee()->template_model->fetch_last_edit(array(), TRUE);
 
 		// related_entries
@@ -582,6 +581,8 @@ If you do not wish to reset your password, ignore this message. It will expire i
 
 		ee()->smartforge->modify_column('security_hashes', $fields);
 
+
+		ee()->db->truncate('sessions');
 
 		$fields = array(
 			'user_agent'	=> array('type' => 'VARCHAR',	'constraint' => 120,	'null' => FALSE),

@@ -239,7 +239,9 @@
 			}
 		}
 
-		return $_config[0] =& $config;
+		$_config[0] =& $config;
+
+		return $_config[0];
 	}
 
 // ------------------------------------------------------------------------
@@ -290,16 +292,44 @@
 			$value = config_item($item);
 		}
 
-		if ($value === 'y')
+		$setting = get_bool_from_string($value);
+		return (is_bool($setting)) ? $setting : (bool) $value;
+	}
+
+// ------------------------------------------------------------------------
+
+/**
+ * Get's a boolean value from a string such as 'y', 'yes', 'n', or 'no', if it
+ * doesn't find anything like that, return NULL
+ * @param  string $value The string to determine the boolean value of
+ * @return boolean/NULL  TRUE or FALSE if the string indicates yes or no, NULL
+ *                       otherwise
+ */
+	function get_bool_from_string($value)
+	{
+		if (is_bool($value))
 		{
-			$value = TRUE;
-		}
-		elseif ($value === 'n')
-		{
-			$value = FALSE;
+			return $value;
 		}
 
-		return (bool) $value;
+		switch(strtolower($value))
+		{
+			case 'yes':
+			case 'y':
+			case 'on':
+				return TRUE;
+			break;
+
+			case 'no':
+			case 'n':
+			case 'off':
+				return FALSE;
+			break;
+
+			default:
+				return NULL;
+			break;
+		}
 	}
 
 // ------------------------------------------------------------------------
@@ -353,6 +383,8 @@
 * @access	public
 * @return	void
 */
+if ( ! function_exists('log_message'))
+{
 	function log_message($level = 'error', $message, $php_error = FALSE)
 	{
 		static $_log;
@@ -365,6 +397,7 @@
 		$_log =& load_class('Log');
 		$_log->write_log($level, $message, $php_error);
 	}
+}
 
 // ------------------------------------------------------------------------
 

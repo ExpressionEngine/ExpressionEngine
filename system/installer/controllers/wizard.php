@@ -24,7 +24,7 @@
  */
 class Wizard extends CI_Controller {
 
-	var $version			= '2.9.0';	// The version being installed
+	var $version			= '2.9.1';	// The version being installed
 	var $installed_version	= ''; 		// The version the user is currently running (assuming they are running EE)
 	var $minimum_php		= '5.3.10';	// Minimum version required to run EE
 	var $schema				= NULL;		// This will contain the schema object with our queries
@@ -186,6 +186,8 @@ class Wizard extends CI_Controller {
 
 		$this->load->library('localize');
 		$this->load->library('cp');
+
+		$this->load->model('installer_template_model', 'template_model');
 
 		// Update notices are used to print info at the end of
 		// the update
@@ -400,6 +402,12 @@ class Wizard extends CI_Controller {
 						}
 					}
 				}
+			}
+
+			// We'll switch the default if MySQLi is available
+			if (function_exists('mysqli_connect'))
+			{
+					$this->userdata['dbdriver'] = 'mysqli';
 			}
 
 			// At this point we are reasonably sure that this is a first time installation.
@@ -923,6 +931,17 @@ PAPAYA;
 			$this->userdata['screen_name'] = $this->userdata['username'];
 		}
 
+		// check screen name and username for valid format
+		if (strlen($this->userdata['username']) > 50 OR preg_match("/[\|'\"!<>\{\}]/", $this->userdata['username']))
+		{
+			$errors[] = "Username is invalid. Must be less than 50 characters and cannot include the following characters: ".htmlentities('|\'"!<>{}');
+		}
+
+		if (preg_match('/[\{\}<>]/', $this->userdata['screen_name']))
+		{
+			$errors[] = "Screen Name is invalid. Must not include the following characters: ".htmlentities('{}<>');
+		}
+
 		// DB Prefix has some character restrictions
 		if ( ! preg_match("/^[0-9a-zA-Z\$_]*$/", $this->userdata['db_prefix']))
 		{
@@ -1164,6 +1183,7 @@ PAPAYA;
 		}
 
 		$self = ( ! isset($_SERVER['PHP_SELF']) OR $_SERVER['PHP_SELF'] == '') ? '' : substr($_SERVER['PHP_SELF'], 1);
+		$self = htmlspecialchars($self, ENT_QUOTES);
 
 		$this->userdata['cp_url'] = ($self != '') ? $host.$self : $host.SELF;
 
@@ -1573,6 +1593,8 @@ PAPAYA;
 
 		$this->load->database($db[$this->active_group], FALSE, TRUE);
 
+		// Force caching off
+		$this->db->cache_off();
 		$this->db->save_queries	= TRUE;
 
 		if ( ! $this->db->initialize($create_db))
@@ -1868,7 +1890,7 @@ PAPAYA;
 	 */
 	function _get_supported_dbs()
 	{
-		$names = array('mysql' => 'MySQL', 'mysqli' => 'MySQLi', 'mssql' => 'MS SQL', 'postgre' => 'Postgre SQL');
+		$names = array('mysqli' => 'MySQLi', 'mysql' => 'MySQL');
 
 		$dbs = array();
 		foreach (get_filenames(APPPATH.'schema/') as $val)
@@ -1877,7 +1899,10 @@ PAPAYA;
 
 			if (isset($names[$val]))
 			{
-				$dbs[$val] = $names[$val];
+				if (function_exists($names[$val].'_connect'))
+				{
+					$dbs[$val] = $names[$val];
+				}
 			}
 		}
 

@@ -311,6 +311,13 @@ class CI_DB_mysqli_driver extends CI_DB {
 			return $str;
 		}
 
+
+		// If we need to escape a string before the connection is made
+		if ( ! $this->conn_id)
+		{
+			$this->initialize();
+		}
+
 		if (function_exists('mysqli_real_escape_string') AND is_object($this->conn_id))
 		{
 			$str = mysqli_real_escape_string($this->conn_id, $str);
@@ -550,6 +557,25 @@ class CI_DB_mysqli_driver extends CI_DB {
 	function _insert($table, $keys, $values)
 	{
 		return "INSERT INTO ".$table." (".implode(', ', $keys).") VALUES (".implode(', ', $values).")";
+	}
+
+	// --------------------------------------------------------------------
+
+
+	/**
+	 * Replace statement
+	 *
+	 * Generates a platform-specific replace string from the supplied data
+	 *
+	 * @access	public
+	 * @param	string	the table name
+	 * @param	array	the insert keys
+	 * @param	array	the insert values
+	 * @return	string
+	 */
+	function _replace($table, $keys, $values)
+	{
+		return "REPLACE INTO ".$table." (".implode(', ', $keys).") VALUES (".implode(', ', $values).")";
 	}
 
 	// --------------------------------------------------------------------

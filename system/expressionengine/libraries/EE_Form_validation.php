@@ -426,6 +426,30 @@ class EE_Form_validation extends CI_Form_validation {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Check to see if a string is unchanged after running it through
+	 * Security::xss_clean()
+	 * @param  String $string The string to validate
+	 * @return Boolean        TRUE if it's unchanged, FALSE otherwise
+	 */
+	public function valid_xss_check($string)
+	{
+		$valid = ($string == ee()->security->xss_clean($string));
+
+		if ( ! $valid)
+		{
+			ee()->lang->loadfile('admin');
+			$this->set_message(
+				'valid_xss_check',
+				sprintf(lang('invalid_xss_check'), cp_url('homepage'))
+			);
+		}
+
+		return $valid;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Set old value
 	 *
 	 * Required for some rules to exclude current value from the

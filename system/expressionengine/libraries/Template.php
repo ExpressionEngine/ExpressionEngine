@@ -394,9 +394,9 @@ class EE_Template {
 		}
 
 		// Parse date format string "constants"
-		foreach (ee()->localize->format as $key => $val)
+		foreach (ee()->localize->format as $date_key => $date_val)
 		{
-			$this->template = str_replace(LD.$key.RD, $val, $this->template);
+			$this->template = str_replace(LD.$date_key.RD, $date_val, $this->template);
 		}
 
 		$this->log_item("Parse Date Format String Constants");
@@ -1939,34 +1939,37 @@ class EE_Template {
 	{
 		if ($this->disable_caching == FALSE && ee()->cache->get_adapter() == 'file')
 		{
-			$cache_info = ee()->cache->cache_info();
+			$this->log_item(" - Beginning Page Cache Garbage Collection - ");
 
-			// Find the directory holding our page cache
-			foreach ($cache_info as $item)
+			// Build the path to the page cache and get the number of files we have in
+			// the cache; this is more memory-efficient than using Cache::cache_info
+			$cache_path = APPPATH.'cache'.DIRECTORY_SEPARATOR;
+
+			// Attempt to grab cache_path config if it's set
+			if ($path = ee()->config->item('cache_path'))
 			{
-				// Explode the path by directory separator
-				$path = explode(
-					DIRECTORY_SEPARATOR,
-					trim($item['relative_path'], DIRECTORY_SEPARATOR)
-				);
-
-				// See if the last item in the path is page_cache
-				if ('page_cache' == array_pop($path))
-				{
-					$path = $item['relative_path'];
-					break;
-				}
+				$path = ee()->config->item('cache_path');
+				$cache_path = rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
 			}
 
-			// Bail if we couldn't find the directory
-			if (empty($path))
+			// Build the path to the page cache, should be site_short_name/page_cache
+			// as no page cache is set globally
+			$cache_path .= ee()->config->item('site_short_name') . DIRECTORY_SEPARATOR;
+			$cache_path .= 'page_cache' . DIRECTORY_SEPARATOR;
+
+			try
 			{
-				return;
+				$fi = new FilesystemIterator($cache_path, FilesystemIterator::SKIP_DOTS);
+			}
+			catch (Exception $e)
+			{
+				return $this->log_item(" - End Page Cache Garbage Collection - " . $e->getMessage());
 			}
 
 			// Count files in the directory
-			$count = count(get_filenames($path));
+			$count = iterator_count($fi);
 
+			// Default max
 			$max = 1000;
 
 			// Figure out what our max number of page cache files should be
@@ -1982,6 +1985,8 @@ class EE_Template {
 			{
 				ee()->cache->delete('/page_cache/');
 			}
+
+			$this->log_item(" - End Page Cache Garbage Collection - ");
 		}
 	}
 
@@ -2236,6 +2241,7 @@ class EE_Template {
 			ee()->output->out_type = "404";
 			ee()->output->set_output($out);
 			ee()->output->_display();
+			exit;
 		}
 		else
 		{
@@ -2513,7 +2519,7 @@ class EE_Template {
 					$removed = array_shift(ee()->session->tracker);
 				}
 
-				ee()->input->set_cookie('tracker', serialize(ee()->session->tracker), '0');
+				ee()->session->set_tracker_cookie();
 			}
 		}
 
@@ -2793,11 +2799,7 @@ class EE_Template {
 
 				if (isset($template[1]))
 				{
-					$this->log_item('Processing "'.$template[0].'/'.$template[1].'" Template as 404 Page');
-					ee()->output->out_type = "404";
-					$this->template_type = "404";
-					$this->fetch_and_parse($template[0], $template[1]);
-					$this->cease_processing = TRUE;
+					$this->show_404();
 				}
 				else
 				{

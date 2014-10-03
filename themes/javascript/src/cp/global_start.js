@@ -320,7 +320,7 @@ EE.cp.cleanUrl = function(i, url) {
 };
 
 EE.cp.cleanUrls = function() {
-	$('a').attr('href', EE.cp.cleanUrl);
+	$('a:not([href^=javascript])').attr('href', EE.cp.cleanUrl);
 	$('form').attr('action', EE.cp.cleanUrl);
 };
 

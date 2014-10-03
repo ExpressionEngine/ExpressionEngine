@@ -1870,7 +1870,7 @@ class Filemanager {
 
 		foreach ($files as &$file)
 		{
-			$file['file_name'] = urlencode($file['file_name']);
+			$file['file_name'] = rawurlencode($file['file_name']);
 
 			// Get thumb information
 			$thumb_info = $this->get_thumb($file, $dir['id']);

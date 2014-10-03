@@ -27,7 +27,8 @@ function &DB($params = '', $active_record_override = NULL)
 	// Load the DB config file if a DSN string wasn't passed
 	if (is_string($params) AND strpos($params, '://') === FALSE)
 	{
-		include(APPPATH.'config/database.php');
+		$path = defined('EE_APPPATH') ? EE_APPPATH : APPPATH;
+		include($path.'config/database.php');
 
 		if ( ! isset($db) OR count($db) == 0)
 		{
@@ -62,12 +63,12 @@ function &DB($params = '', $active_record_override = NULL)
 		}
 
 		$params = array(
-							'dbdriver'	=> $dns['scheme'],
-							'hostname'	=> (isset($dns['host'])) ? rawurldecode($dns['host']) : '',
-							'username'	=> (isset($dns['user'])) ? rawurldecode($dns['user']) : '',
-							'password'	=> (isset($dns['pass'])) ? rawurldecode($dns['pass']) : '',
-							'database'	=> (isset($dns['path'])) ? rawurldecode(substr($dns['path'], 1)) : ''
-						);
+			'dbdriver' => $dns['scheme'],
+			'hostname' => (isset($dns['host'])) ? rawurldecode($dns['host']) : '',
+			'username' => (isset($dns['user'])) ? rawurldecode($dns['user']) : '',
+			'password' => (isset($dns['pass'])) ? rawurldecode($dns['pass']) : '',
+			'database' => (isset($dns['path'])) ? rawurldecode(substr($dns['path'], 1)) : ''
+		);
 
 		// were additional config items set?
 		if (isset($dns['query']))
