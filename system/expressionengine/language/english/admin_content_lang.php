@@ -867,9 +867,6 @@ $lang = array(
 'taken_field_group_name' =>
 'The name you have chosen is already taken',
 
-'invalid_xss_check' =>
-'The data you submitted did not pass our security check. Please ensure the data you used does not contain any possible security issues.',
-
 'field_group_created' =>
 'Field Group Created:',
 

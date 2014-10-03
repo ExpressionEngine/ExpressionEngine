@@ -437,7 +437,11 @@ class EE_Form_validation extends CI_Form_validation {
 
 		if ( ! $valid)
 		{
-			$this->set_message('valid_xss_check', lang('invalid_xss_check'));
+			ee()->lang->loadfile('admin');
+			$this->set_message(
+				'valid_xss_check',
+				sprintf(lang('invalid_xss_check'), cp_url('homepage'))
+			);
 		}
 
 		return $valid;
