@@ -5,7 +5,7 @@
 	<div class="tbl-ctrls">
 		<form>
 			<fieldset class="tbl-search right">
-				<a class="btn tn action" href="http://localhost/el-projects/ee-cp/views/addons-rte-new.php"><?=lang('create_new')?></a>
+				<a class="btn tn action" href="<?=cp_url('addons/settings/rte/new_toolset')?>"><?=lang('create_new')?></a>
 			</fieldset>
 			<h1><?=lang('available_tool_sets')?></h1>
 			<?php $this->ee_view('_shared/table', $table); ?>

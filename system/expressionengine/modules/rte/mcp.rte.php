@@ -50,9 +50,8 @@ class Rte_mcp {
 		ee()->load->model('rte_tool_model');
 
 		// set some properties
-		$this->_base_url	= BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=rte';
-		$this->_form_base	= 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=rte';
-		ee()->rte_lib->form_url = $this->_form_base;
+		$this->_base_url = new URL('addons/settings/rte', ee()->session->session_id());
+		ee()->rte_lib->form_url = 'addons/settings/rte';
 
 		// Delete missing tools
 		ee()->rte_tool_model->delete_missing_tools();
@@ -68,8 +67,6 @@ class Rte_mcp {
 	 */
 	public function index()
 	{
-		$base_url =  new URL('addons/settings/rte', ee()->session->session_id());
-
 		ee()->load->model('rte_toolset_model');
 
 		$toolsets = ee()->rte_toolset_model->get_toolset_list();
@@ -80,12 +77,15 @@ class Rte_mcp {
 		$data = array();
 		foreach ($toolsets as $t)
 		{
+			$url = new URL('addons/settings/rte/edit_toolset', ee()->session->session_id());
+			$url->setQueryStringVariable('toolset_id', $t['toolset_id']);
+
 			$toolset = array(
 				'tool_set' => $t['name'],
 				'status' => lang('disabled'),
 				array('toolbar_items' => array(
 						'edit' => array(
-							'href' => '', // @TODO
+							'href' => $url,
 							'title' => lang('edit'),
 						)
 					)
@@ -152,8 +152,9 @@ class Rte_mcp {
 		);
 		$table->setData($data);
 
-		$vars['table'] = $table->viewData($base_url);
+		$vars['table'] = $table->viewData($this->_base_url);
 		$vars['base_url'] = $vars['table']['base_url'];
+		$vars['base_url']->path = 'addons/settings/rte/prefs_update';
 
 		if ( ! empty($vars['table']['data']))
 		{
@@ -163,7 +164,7 @@ class Rte_mcp {
 				$vars['table']['total_rows'],
 				$vars['table']['page']
 			);
-			$vars['pagination'] = $pagination->cp_links($base_url);
+			$vars['pagination'] = $pagination->cp_links($this->_base_url);
 		}
 
 		// return the page
@@ -212,6 +213,20 @@ class Rte_mcp {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Provides New Toolset Screen HTML
+	 *
+	 * @access	public
+	 * @param	int $toolset_id The Toolset ID to be edited (optional)
+	 * @return	string The page
+	 */
+	public function new_toolset()
+	{
+		return ee()->rte_lib->edit_toolset(0);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Provides Edit Toolset Screen HTML
 	 *
 	 * @access	public
@@ -220,6 +235,7 @@ class Rte_mcp {
 	 */
 	public function edit_toolset($toolset_id = FALSE)
 	{
+		$toolset_id = ($toolset_id) ?: ee()->input->get_post('toolset_id');
 		return ee()->rte_lib->edit_toolset($toolset_id);
 	}
 

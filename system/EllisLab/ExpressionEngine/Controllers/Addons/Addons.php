@@ -430,16 +430,21 @@ class Addons extends CP_Controller {
 	 * @param	str	$addon	The name of add-on whose settings to display
 	 * @return	void
 	 */
-	public function settings($addon)
+	public function settings($addon, $method = NULL)
 	{
 		ee()->view->cp_page_title = lang('addon_manager');
 
 		$vars = array();
 
+		if (is_null($method))
+		{
+			$method = (ee()->input->get_post('method') !== FALSE) ? ee()->input->get_post('method') : 'index';
+		}
+
 		$module = $this->getModules($addon);
 		if ( ! empty($module) && $module['installed'] === TRUE)
 		{
-			$vars['_module_cp_body'] = $this->getModuleSettings($addon);
+			$vars['_module_cp_body'] = $this->getModuleSettings($addon, $method);
 			ee()->view->cp_heading = $module['name'] . ' ' . lang('configuration');
 		}
 
@@ -934,7 +939,7 @@ class Addons extends CP_Controller {
 	 * @param	str	$name	The name of module whose settings to display
 	 * @return	str			The rendered settings (with HTML)
 	 */
-	public function getModuleSettings($name)
+	public function getModuleSettings($name, $method = "index")
 	{
 		$addon = ee()->security->sanitize_filename(strtolower($name));
 		$installed = $this->addons->get_installed();
@@ -990,11 +995,8 @@ class Addons extends CP_Controller {
 		$mod = new $installed[$addon]['class'];
 		$mod->_ee_path = APPPATH;
 
-
 		// add validation callback support to the mcp class (see EE_form_validation for more info)
 		ee()->_mcp_reference =& $mod;
-
-		$method = (ee()->input->get('method') !== FALSE) ? ee()->input->get('method') : 'index';
 
 		// its possible that a module will try to call a method that does not exist
 		// either by accident (ie: a missed function) or by deliberate user url hacking
