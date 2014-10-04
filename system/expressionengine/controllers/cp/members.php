@@ -1931,7 +1931,7 @@ class Members extends CP_Controller {
 				'prv_msg_max_chars'       => array('i', '', 'integer'),
 				'prv_msg_html_format'     => array('s', array('safe' => 'html_safe', 'none' => 'html_none', 'all' => 'html_all')),
 				'prv_msg_auto_links'      => array('r', array('y' => 'yes', 'n' => 'no')),
-				'prv_msg_upload_path'     => array('i', '', 'strip_tags|valid_xss_check'),
+				'prv_msg_upload_path'     => array('i', '', 'strip_tags|trim|valid_xss_check'),
 				'prv_msg_max_attachments' => array('i', '', 'integer'),
 				'prv_msg_attach_maxsize'  => array('i', '', 'integer'),
 				'prv_msg_attach_total'    => array('i', '', 'integer')
@@ -1939,16 +1939,16 @@ class Members extends CP_Controller {
 			'avatar_cfg' => array(
 				'enable_avatars'       => array('r', array('y' => 'yes', 'n' => 'no')),
 				'allow_avatar_uploads' => array('r', array('y' => 'yes', 'n' => 'no')),
-				'avatar_url'           => array('i', '', 'strip_tags|valid_xss_check'),
-				'avatar_path'          => array('i', '', 'strip_tags|valid_xss_check'),
+				'avatar_url'           => array('i', '', 'strip_tags|trim|valid_xss_check'),
+				'avatar_path'          => array('i', '', 'strip_tags|trim|valid_xss_check'),
 				'avatar_max_width'     => array('i', '', 'integer'),
 				'avatar_max_height'    => array('i', '', 'integer'),
 				'avatar_max_kb'        => array('i', '', 'integer')
 			),
 			'photo_cfg' => array(
 				'enable_photos'    => array('r', array('y' => 'yes', 'n' => 'no')),
-				'photo_url'        => array('i', '', 'strip_tags|valid_xss_check'),
-				'photo_path'       => array('i', '', 'strip_tags|valid_xss_check'),
+				'photo_url'        => array('i', '', 'strip_tags|trim|valid_xss_check'),
+				'photo_path'       => array('i', '', 'strip_tags|trim|valid_xss_check'),
 				'photo_max_width'  => array('i', '', 'integer'),
 				'photo_max_height' => array('i', '', 'integer'),
 				'photo_max_kb'     => array('i', '', 'integer')
@@ -1958,8 +1958,8 @@ class Members extends CP_Controller {
 				'sig_maxlength'         => array('i', '', 'integer'),
 				'sig_allow_img_hotlink' => array('r', array('y' => 'yes', 'n' => 'no')),
 				'sig_allow_img_upload'  => array('r', array('y' => 'yes', 'n' => 'no')),
-				'sig_img_url'           => array('i', '', 'strip_tags|valid_xss_check'),
-				'sig_img_path'          => array('i', '', 'strip_tags|valid_xss_check'),
+				'sig_img_url'           => array('i', '', 'strip_tags|trim|valid_xss_check'),
+				'sig_img_path'          => array('i', '', 'strip_tags|trim|valid_xss_check'),
 				'sig_img_max_width'     => array('i', '', 'integer'),
 				'sig_img_max_height'    => array('i', '', 'integer'),
 				'sig_img_max_kb'        => array('i', '', 'integer')
@@ -2849,9 +2849,9 @@ class Members extends CP_Controller {
 		$this->load->library('form_validation');
 
 		$is_edit = ($edit == TRUE) ? 'y' : 'n';
-		$this->form_validation->set_rules("m_field_name", 'lang:fieldname', 'required|strip_tags|valid_xss_check|callback__valid_fieldname['.$is_edit.']');
-		$this->form_validation->set_rules("m_field_label", 'lang:fieldlabel', 'required|strip_tags|valid_xss_check');
-		$this->form_validation->set_rules("m_field_description", '', 'strip_tags|valid_xss_check');
+		$this->form_validation->set_rules("m_field_name", 'lang:fieldname', 'required|strip_tags|trim|valid_xss_check|callback__valid_fieldname['.$is_edit.']');
+		$this->form_validation->set_rules("m_field_label", 'lang:fieldlabel', 'required|strip_tags|trim|valid_xss_check');
+		$this->form_validation->set_rules("m_field_description", '', 'strip_tags|trim|valid_xss_check');
 		$this->form_validation->set_rules("m_field_order", '', '');
 		$this->form_validation->set_rules("m_field_width", '', '');
 		$this->form_validation->set_rules("m_field_list_items", '', '');

@@ -387,19 +387,19 @@ class Admin_content extends CP_Controller {
 	{
 		$this->load->library('form_validation');
 
-		$this->form_validation->set_rules('channel_title', 'lang:channel_title', 'required|strip_tags|valid_xss_check');
+		$this->form_validation->set_rules('channel_title', 'lang:channel_title', 'required|strip_tags|trim|valid_xss_check');
 		$this->form_validation->set_rules('channel_name', 'lang:channel_name', 'required|callback__valid_channel_name');
 
 		if ($editing)
 		{
-			$this->form_validation->set_rules('channel_description', 'lang:channel_description', 'required|strip_tags|valid_xss_check');
+			$this->form_validation->set_rules('channel_description', 'lang:channel_description', 'required|strip_tags|trim|valid_xss_check');
 
-			$this->form_validation->set_rules('channel_url', 'lang:channel_url', 'strip_tags|valid_xss_check');
-			$this->form_validation->set_rules('comment_url', 'lang:comment_url', 'strip_tags|valid_xss_check');
-			$this->form_validation->set_rules('search_results_url', 'lang:search_results_url', 'strip_tags|valid_xss_check');
-			$this->form_validation->set_rules('rss_url', 'lang:rss_url', 'strip_tags|valid_xss_check');
+			$this->form_validation->set_rules('channel_url', 'lang:channel_url', 'strip_tags|trim|valid_xss_check');
+			$this->form_validation->set_rules('comment_url', 'lang:comment_url', 'strip_tags|trim|valid_xss_check');
+			$this->form_validation->set_rules('search_results_url', 'lang:search_results_url', 'strip_tags|trim|valid_xss_check');
+			$this->form_validation->set_rules('rss_url', 'lang:rss_url', 'strip_tags|trim|valid_xss_check');
 
-			$this->form_validation->set_rules('url_title_prefix', 'lang:url_title_prefix', 'strtolower|strip_tags|callback__valid_prefix');
+			$this->form_validation->set_rules('url_title_prefix', 'lang:url_title_prefix', 'strtolower|strip_tags|trim|callback__valid_prefix');
 			$this->form_validation->set_rules('comment_expiration', 'lang:comment_expiration', 'numeric');
 		}
 
