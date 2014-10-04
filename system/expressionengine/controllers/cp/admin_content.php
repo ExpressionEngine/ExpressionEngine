@@ -392,7 +392,7 @@ class Admin_content extends CP_Controller {
 
 		if ($editing)
 		{
-			$this->form_validation->set_rules('channel_description', 'lang:channel_description', 'required|strip_tags|trim|valid_xss_check');
+			$this->form_validation->set_rules('channel_description', 'lang:channel_description', 'strip_tags|trim|valid_xss_check');
 
 			$this->form_validation->set_rules('channel_url', 'lang:channel_url', 'strip_tags|trim|valid_xss_check');
 			$this->form_validation->set_rules('comment_url', 'lang:comment_url', 'strip_tags|trim|valid_xss_check');
