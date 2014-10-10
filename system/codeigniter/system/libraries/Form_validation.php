@@ -1083,6 +1083,20 @@ class CI_Form_validation {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Alpha-numeric with underscores, dashes, and spaces
+	 *
+	 * @access	public
+	 * @param	string
+	 * @return	bool
+	 */
+	function alpha_dash_space($str)
+	{
+		return ( ! preg_match("/^([a-z0-9\_\-\s])+$/i", $str)) ? FALSE : TRUE;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Numeric
 	 *
 	 * @access	public

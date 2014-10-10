@@ -582,6 +582,8 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		ee()->smartforge->modify_column('security_hashes', $fields);
 
 
+		ee()->db->truncate('sessions');
+
 		$fields = array(
 			'user_agent'	=> array('type' => 'VARCHAR',	'constraint' => 120,	'null' => FALSE),
 			'fingerprint'	=> array('type' => 'VARCHAR',	'constraint' => 40,		'null' => FALSE),

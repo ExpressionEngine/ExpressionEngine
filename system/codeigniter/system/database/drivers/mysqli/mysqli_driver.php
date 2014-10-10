@@ -311,6 +311,13 @@ class CI_DB_mysqli_driver extends CI_DB {
 			return $str;
 		}
 
+
+		// If we need to escape a string before the connection is made
+		if ( ! $this->conn_id)
+		{
+			$this->initialize();
+		}
+
 		if (function_exists('mysqli_real_escape_string') AND is_object($this->conn_id))
 		{
 			$str = mysqli_real_escape_string($this->conn_id, $str);
