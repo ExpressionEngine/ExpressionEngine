@@ -24,6 +24,14 @@ feature 'Word Censorship Settings' do
     @page.censored_words.value.should == ee_config(item: 'censored_words').gsub('|', "\n")
   end
 
+  it 'should reject XSS' do
+    @page.censor_replacement.set $xss_vector
+    @page.submit
+    
+    should_have_error_text(@page.censor_replacement, $xss_error)
+    should_have_form_errors(@page)
+  end
+
   it 'should save and load the settings' do
     @page.enable_censoring_y.click
     @page.censor_replacement.set '####'

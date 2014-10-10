@@ -113,6 +113,14 @@ feature 'Messaging Settings' do
     should_have_no_form_errors(@page)
   end
 
+  it 'should reject XSS' do
+    @page.prv_msg_upload_path.set $xss_vector
+    @page.submit
+    
+    should_have_error_text(@page.prv_msg_upload_path, $xss_error)
+    should_have_form_errors(@page)
+  end
+
   it 'should save and load the settings' do
     @page.prv_msg_max_chars.set '100'
     @page.prv_msg_html_format.select 'Convert HTML'

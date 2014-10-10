@@ -105,6 +105,21 @@ feature 'Avatar Settings' do
     should_have_no_form_errors(@page)
   end
 
+  it 'should reject XSS' do
+    @page.avatar_url.set $xss_vector
+    @page.avatar_url.trigger 'blur'
+    @page.wait_for_error_message_count(1)
+    should_have_error_text(@page.avatar_url, $xss_error)
+    should_have_form_errors(@page)
+
+    @page.avatar_path.set $xss_vector
+    @page.avatar_path.trigger 'blur'
+    @page.wait_for_error_message_count(2)
+    should_have_error_text(@page.avatar_url, $xss_error)
+    should_have_error_text(@page.avatar_path, $xss_error)
+    should_have_form_errors(@page)
+  end
+
   it 'should save and load the settings' do
     @page.enable_avatars_n.click
     @page.allow_avatar_uploads_y.click

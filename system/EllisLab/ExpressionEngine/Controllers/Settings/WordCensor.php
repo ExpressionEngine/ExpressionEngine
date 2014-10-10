@@ -75,7 +75,20 @@ class WordCensor extends Settings {
 
 		$base_url = cp_url('settings/word-censor');
 
-		if ( ! empty($_POST))
+		ee()->form_validation->set_rules(array(
+			array(
+				'field' => 'censor_replacement',
+				'label' => 'lang:censor_replacement',
+				'rules' => 'strip_tags|valid_xss_check'
+			)
+		));
+
+		if (AJAX_REQUEST)
+		{
+			ee()->form_validation->run_ajax();
+			exit;
+		}
+		elseif (ee()->form_validation->run() !== FALSE)
 		{
 			if ($this->saveSettings($vars['sections']))
 			{
@@ -83,6 +96,10 @@ class WordCensor extends Settings {
 			}
 
 			ee()->functions->redirect($base_url);
+		}
+		elseif (ee()->form_validation->errors_exist())
+		{
+			ee()->view->set_message('issue', lang('settings_save_error'), lang('settings_save_error_desc'));
 		}
 
 		ee()->view->base_url = $base_url;

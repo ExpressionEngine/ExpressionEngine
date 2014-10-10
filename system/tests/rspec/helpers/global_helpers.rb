@@ -1,3 +1,6 @@
+$xss_error = 'The data you submitted did not pass our security check.'
+$xss_vector = '"><script>alert(\'stored xss\')<%2fscript>'
+
 # Use this to visit pages no ensure to PHP errors exist on page load
 def go_to(url)
   Capybara.current_session.visit url

@@ -78,7 +78,7 @@ class Rte_mcp {
 			$url->setQueryStringVariable('toolset_id', $t['toolset_id']);
 
 			$toolset = array(
-				'tool_set' => $t['name'],
+				'tool_set' => htmlentities($t['name'], ENT_QUOTES),
 				'status' => lang('disabled'),
 				array('toolbar_items' => array(
 						'edit' => array(
@@ -95,7 +95,7 @@ class Rte_mcp {
 
 			if ($t['enabled'] == 'y')
 			{
-				$toolset_opts[$t['toolset_id']] = $t['name'];
+				$toolset_opts[$t['toolset_id']] = htmlentities($t['name'], ENT_QUOTES);
 				$toolset['status'] = lang('enabled');
 			}
 			$data[] = $toolset;

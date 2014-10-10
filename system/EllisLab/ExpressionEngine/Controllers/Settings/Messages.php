@@ -108,7 +108,7 @@ class Messages extends Settings {
 			array(
 				'field' => 'prv_msg_upload_path',
 				'label' => 'lang:prv_msg_upload_path',
-				'rules' => 'file_exists|writable'
+				'rules' => 'strip_tags|valid_xss_check|file_exists|writable'
 			),
 			array(
 				'field' => 'prv_msg_max_attachments',

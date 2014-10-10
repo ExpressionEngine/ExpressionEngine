@@ -125,29 +125,39 @@ class Urls extends Settings {
 
 		ee()->form_validation->set_rules(array(
 			array(
-				 'field'   => 'site_url',
-				 'label'   => 'lang:site_url',
-				 'rules'   => 'required'
+				'field' => 'site_index',
+				'label' => 'lang:site_index',
+				'rules' => 'strip_tags|valid_xss_check'
 			),
 			array(
-				 'field'   => 'cp_url',
-				 'label'   => 'lang:cp_url',
-				 'rules'   => 'required'
+				'field' => 'site_url',
+				'label' => 'lang:site_url',
+				'rules' => 'required|strip_tags|valid_xss_check'
 			),
 			array(
-				 'field'   => 'theme_folder_url',
-				 'label'   => 'lang:themes_url',
-				 'rules'   => 'required'
+				'field' => 'cp_url',
+				'label' => 'lang:cp_url',
+				'rules' => 'required|strip_tags|valid_xss_check'
 			),
 			array(
-				 'field'   => 'theme_folder_path',
-				 'label'   => 'lang:themes_path',
-				 'rules'   => 'required|file_exists'
+				'field' => 'theme_folder_url',
+				'label' => 'lang:themes_url',
+				'rules' => 'required|strip_tags|valid_xss_check'
 			),
 			array(
-				 'field'   => 'profile_trigger',
-				 'label'   => 'lang:member_segment_trigger',
-				 'rules'   => 'required'
+				'field' => 'theme_folder_path',
+				'label' => 'lang:themes_path',
+				'rules' => 'required|strip_tags|valid_xss_check|file_exists'
+			),
+			array(
+				'field' => 'profile_trigger',
+				'label' => 'lang:member_segment_trigger',
+				'rules' => 'required|alpha_dash'
+			),
+			array(
+				'field' => 'doc_url',
+				'label' => 'lang:docs_url',
+				'rules' => 'strip_tags|valid_xss_check'
 			),
 		));
 

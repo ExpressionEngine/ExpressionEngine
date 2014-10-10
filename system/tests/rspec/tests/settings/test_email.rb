@@ -55,6 +55,17 @@ feature 'Outgoing Email Settings' do
     should_have_form_errors(@page)
     should_have_error_text(@page.smtp_server, server_required)
 
+    @page.webmaster_name.set $xss_vector
+    @page.webmaster_name.trigger 'blur'
+    @page.wait_for_error_message_count(3)
+    should_have_form_errors(@page)
+    should_have_error_text(@page.webmaster_name, $xss_error)
+
+    @page.webmaster_name.set 'Trey Anastasio'
+    @page.webmaster_name.trigger 'blur'
+    @page.wait_for_error_message_count(2)
+    should_have_no_error_text(@page.webmaster_name)
+
     @page.webmaster_email.set 'test@test.com'
     @page.webmaster_email.trigger 'blur'
     @page.wait_for_error_message_count(1)

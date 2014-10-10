@@ -107,6 +107,41 @@ feature 'URL and Path Settings' do
     should_have_error_text(@page.profile_trigger, field_required)
   end
 
+  it 'should reject XSS' do
+    @page.site_index.set $xss_vector
+    @page.site_index.trigger 'blur'
+    @page.wait_for_error_message_count(1)
+    should_have_error_text(@page.site_index, $xss_error)
+    should_have_form_errors(@page)
+
+    @page.site_url.set $xss_vector
+    @page.site_url.trigger 'blur'
+    @page.wait_for_error_message_count(2)
+    should_have_error_text(@page.site_url, $xss_error)
+    should_have_form_errors(@page)
+
+    @page.cp_url.set $xss_vector
+    @page.cp_url.trigger 'blur'
+    @page.wait_for_error_message_count(3)
+    should_have_form_errors(@page)
+    should_have_error_text(@page.site_url, $xss_error)
+    should_have_error_text(@page.cp_url, $xss_error)
+
+    @page.theme_folder_url.set $xss_vector
+    @page.theme_folder_url.trigger 'blur'
+    @page.wait_for_error_message_count(4)
+
+    @page.theme_folder_path.set $xss_vector
+    @page.theme_folder_path.trigger 'blur'
+    @page.wait_for_error_message_count(5)
+
+    should_have_form_errors(@page)
+    should_have_error_text(@page.site_url, $xss_error)
+    should_have_error_text(@page.cp_url, $xss_error)
+    should_have_error_text(@page.theme_folder_url, $xss_error)
+    should_have_error_text(@page.theme_folder_path, $xss_error)
+  end
+
   it 'should save and load the settings' do
     # We'll test one value for now to make sure the form is saving,
     # don't want to be changing values that could break the site

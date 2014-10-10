@@ -77,9 +77,14 @@ class Captcha extends Settings {
 
 		ee()->form_validation->set_rules(array(
 			array(
+				'field' => 'captcha_url',
+				'label' => 'lang:captcha_url',
+				'rules' => 'strip_tags|valid_xss_check'
+			),
+			array(
 				'field' => 'captcha_path',
 				'label' => 'lang:captcha_path',
-				'rules' => 'file_exists|writable'
+				'rules' => 'strip_tags|valid_xss_check|file_exists|writable'
 			)
 		));
 

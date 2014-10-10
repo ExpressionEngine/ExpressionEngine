@@ -82,6 +82,33 @@ feature 'General Settings' do
     @page.site_name.trigger 'blur'
 
     @page.wait_for_error_message_count(0)
+
+    # XSS
+    @page.site_name.set '"><script>alert(\'stored xss\')<%2fscript>'
+    @page.site_name.trigger 'blur'
+
+    @page.wait_for_error_message_count(1)
+    no_php_js_errors
+    should_have_form_errors(@page)
+    should_have_error_text(@page.site_name, $xss_error)
+
+    @page.site_name.set 'EE2'
+    @page.site_name.trigger 'blur'
+
+    @page.wait_for_error_message_count(0)
+
+    @page.site_name.set '<script>alert(\'stored xss\')</script>'
+    @page.site_name.trigger 'blur'
+
+    @page.wait_for_error_message_count(1)
+    no_php_js_errors
+    should_have_form_errors(@page)
+    should_have_error_text(@page.site_name, $xss_error)
+
+    @page.site_name.set 'EE2'
+    @page.site_name.trigger 'blur'
+
+    @page.wait_for_error_message_count(0)
     no_php_js_errors
     should_have_no_form_errors(@page)
     should_have_no_error_text(@page.site_name)

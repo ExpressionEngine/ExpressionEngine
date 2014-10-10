@@ -93,9 +93,14 @@ class Avatars extends Settings {
 
 		ee()->form_validation->set_rules(array(
 			array(
+				'field' => 'avatar_url',
+				'label' => 'lang:avatar_url',
+				'rules' => 'strip_tags|valid_xss_check'
+			),
+			array(
 				'field' => 'avatar_path',
 				'label' => 'lang:avatar_path',
-				'rules' => 'file_exists|writable'
+				'rules' => 'strip_tags|valid_xss_check|file_exists|writable'
 			),
 			array(
 				'field' => 'avatar_max_width',

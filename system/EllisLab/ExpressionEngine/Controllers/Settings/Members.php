@@ -193,7 +193,20 @@ class Members extends Settings {
 
 		$base_url = cp_url('settings/members');
 
-		if ( ! empty($_POST))
+		ee()->form_validation->set_rules(array(
+			array(
+				'field' => 'mbr_notification_emails',
+				'label' => 'lang:mbr_notification_emails',
+				'rules' => 'valid_emails'
+			)
+		));
+
+		if (AJAX_REQUEST)
+		{
+			ee()->form_validation->run_ajax();
+			exit;
+		}
+		elseif (ee()->form_validation->run() !== FALSE)
 		{
 			if ($this->saveSettings($vars['sections']))
 			{
@@ -202,8 +215,13 @@ class Members extends Settings {
 
 			ee()->functions->redirect($base_url);
 		}
+		elseif (ee()->form_validation->errors_exist())
+		{
+			ee()->view->set_message('issue', lang('settings_save_error'), lang('settings_save_error_desc'));
+		}
 
 		ee()->view->base_url = $base_url;
+		ee()->view->ajax_validate = TRUE;
 		ee()->view->cp_page_title = lang('member_settings');
 		ee()->view->save_btn_text = 'btn_save_settings';
 		ee()->view->save_btn_text_working = 'btn_save_settings_working';

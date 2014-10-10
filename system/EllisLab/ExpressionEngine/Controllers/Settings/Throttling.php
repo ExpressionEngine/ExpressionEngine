@@ -124,6 +124,16 @@ class Throttling extends Settings {
 				'field' => 'time_interval',
 				'label' => 'lang:time_interval',
 				'rules' => 'integer'
+			),
+			array(
+				'field' => 'banishment_url',
+				'label' => 'lang:banishment_url',
+				'rules' => 'strip_tags|valid_xss_check'
+			),
+			array(
+				'field' => 'banishment_message',
+				'label' => 'lang:banishment_message',
+				'rules' => 'strip_tags|valid_xss_check'
 			)
 		));
 

@@ -39,6 +39,32 @@ feature 'Member Settings' do
     @page.mbr_notification_emails.value.should == ee_config(item: 'mbr_notification_emails')
   end
 
+  it 'should validate the form' do
+    emails_error = 'This field must contain all valid email addresses.'
+
+    @page.mbr_notification_emails.set 'sdfsdfsd'
+    @page.submit
+
+    no_php_js_errors
+    should_have_form_errors(@page)
+    @page.should have_text 'Attention: Settings not saved'
+    should_have_error_text(@page.mbr_notification_emails, emails_error)
+
+    # AJAX validation
+    @page.load
+    @page.mbr_notification_emails.set 'sdfsdfsd'
+    @page.mbr_notification_emails.trigger 'blur'
+    @page.wait_for_error_message_count(1)
+    should_have_error_text(@page.mbr_notification_emails, emails_error)
+    should_have_form_errors(@page)
+
+    @page.mbr_notification_emails.set 'trey@trey.com, test@test.com'
+    @page.mbr_notification_emails.trigger 'blur'
+    @page.wait_for_error_message_count(0)
+    should_have_no_error_text(@page.mbr_notification_emails)
+    should_have_no_form_errors(@page)
+  end
+
   it 'should save and load the settings' do
     @page.allow_member_registration_y.click
     @page.req_mbr_activation.select 'No activation required'

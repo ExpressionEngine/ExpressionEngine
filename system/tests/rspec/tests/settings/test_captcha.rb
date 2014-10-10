@@ -61,6 +61,21 @@ feature 'CAPTCHA Settings' do
     should_have_form_errors(@page)
   end
 
+  it 'should reject XSS' do
+    @page.captcha_url.set $xss_vector
+    @page.captcha_url.trigger 'blur'
+    @page.wait_for_error_message_count(1)
+    should_have_error_text(@page.captcha_url, $xss_error)
+    should_have_form_errors(@page)
+
+    @page.captcha_path.set $xss_vector
+    @page.captcha_path.trigger 'blur'
+    @page.wait_for_error_message_count(2)
+    should_have_error_text(@page.captcha_url, $xss_error)
+    should_have_error_text(@page.captcha_path, $xss_error)
+    should_have_form_errors(@page)
+  end
+
   it 'should save and load the settings' do
     @page.captcha_font_n.click
     @page.captcha_rand_n.click

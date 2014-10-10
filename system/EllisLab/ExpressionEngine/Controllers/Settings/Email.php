@@ -134,6 +134,11 @@ class Email extends Settings {
 				'rules' => 'required|valid_email'
 			),
 			array(
+				'field' => 'webmaster_name',
+				'label' => 'lang:webmaster_name',
+				'rules' => 'strip_tags|valid_xss_check'
+			),
+			array(
 				'field' => 'smtp_server',
 				'label' => 'lang:smtp_server',
 				'rules' => 'callback__smtp_required_field'
