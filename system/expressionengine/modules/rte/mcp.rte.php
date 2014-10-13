@@ -74,8 +74,7 @@ class Rte_mcp {
 		$data = array();
 		foreach ($toolsets as $t)
 		{
-			$url = new URL('addons/settings/rte/edit_toolset', ee()->session->session_id());
-			$url->setQueryStringVariable('toolset_id', $t['toolset_id']);
+			$url = cp_url('addons/settings/rte/edit_toolset', array('toolset_id' => $t['toolset_id']))
 
 			$toolset = array(
 				'tool_set' => htmlentities($t['name'], ENT_QUOTES),
