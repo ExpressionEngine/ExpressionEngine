@@ -24,7 +24,7 @@
 					</ul>
 					<h3><b><?=lang('date_logged')?>:</b> <?=$row['last_activity']?>, <b><abbr title="<?=lang('internet_protocol')?>"><?=lang('ip')?></abbr>:</b> <?=$row['ip_address']?></h3>
 					<div class="message">
-						<p><?=lang('hits')?>: <?=$row['hits']?></p>
+						<p><?=lang('front_end_requests')?>: <?=$row['hits']?></p>
 					</div>
 				</div>
 
