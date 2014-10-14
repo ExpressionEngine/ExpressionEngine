@@ -823,40 +823,41 @@ class MyAccount extends CP_Controller {
 	/**
 	  *	 HTML buttons
 	  */
-	function html_buttons()
+	public function html_buttons()
 	{
-		// Is the user authorized to access the publish page? And does the user have
-		// at least one channel assigned? If not, show the no access message
-		if ( ! $this->cp->allowed_group('can_access_publish', 'can_edit_html_buttons'))
+		// Is the user authorized to access the publish page? And does the user
+		// have at least one channel assigned? If not, show the no access
+		// message
+		if ( ! ee()->cp->allowed_group('can_access_publish', 'can_edit_html_buttons'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->load->library('table');
-		$this->lang->loadfile('admin');
-		$this->lang->loadfile('admin_content');
-
-		$this->load->model('admin_model');
+		ee()->load->library('table');
+		ee()->lang->loadfile('admin');
+		ee()->lang->loadfile('admin_content');
+		ee()->load->model('admin_model');
 
 		$vars['cp_page_title'] = lang('html_buttons');
 		$vars['form_hidden'] = array(
-								'button_submit'	=>	TRUE,
-								'id'			=>	$this->id);
+			'button_submit' =>	TRUE,
+			'id'            =>	$this->id
+		);
 
 		$vars = array_merge($this->_account_menu_setup(), $vars);
 
-		$this->cp->add_js_script(array('file' => 'cp/account_html_buttons'));
+		ee()->cp->add_js_script(array('file' => 'cp/account_html_buttons'));
 
-		$this->cp->add_to_head('<style type="text/css">.cp_button{display:none;}</style>');
+		ee()->cp->add_to_head('<style type="text/css">.cp_button{display:none;}</style>');
 
 		// load the systems's predefined buttons
 		include_once(APPPATH.'config/html_buttons.php');
 		$vars['predefined_buttons'] = $predefined_buttons;
 
 		// any predefined buttons?
-		$button = $this->input->get_post('button');
+		$button = ee()->input->get_post('button');
 
-		$html_buttons = $this->admin_model->get_html_buttons($this->id, FALSE); // don't include defaults on this request
+		$html_buttons = ee()->admin_model->get_html_buttons($this->id, FALSE); // don't include defaults on this request
 		$button_count = $html_buttons->num_rows();
 
 		if ($button != '')
@@ -867,39 +868,39 @@ class MyAccount extends CP_Controller {
 
 			if ($button_count == 0)
 			{
-				$buttons = $this->admin_model->get_html_buttons();
+				$buttons = ee()->admin_model->get_html_buttons();
 
 				foreach ($buttons->result_array() as $data)
 				{
 					unset($data['id']); // unsetting from default id for insertion
 					$data['member_id'] = $this->id; // override member id from default to this user for insertion
-					$this->admin_model->update_html_buttons($this->id, array($data), FALSE);
+					ee()->admin_model->update_html_buttons($this->id, array($data), FALSE);
 				}
 			}
 
 			// all buttons also share these settings
 			$predefined_buttons[$button] = array(
-						'member_id'		=> $this->id,
-						'site_id'		=> $this->config->item('site_id'),
-						'tag_name'		=> stripslashes($predefined_buttons[$button]['tag_name']),
-						'tag_open'		=> stripslashes($predefined_buttons[$button]['tag_open']),
-						'tag_close'		=> stripslashes($predefined_buttons[$button]['tag_close']),
-						'accesskey'		=> stripslashes($predefined_buttons[$button]['accesskey']),
-						'tag_order'		=> $button_count++,
-						'tag_row'		=> 1,
-						'classname'		=> stripslashes($predefined_buttons[$button]['classname']),
-				);
+				'member_id' => $this->id,
+				'site_id'   => ee()->config->item('site_id'),
+				'tag_name'  => stripslashes($predefined_buttons[$button]['tag_name']),
+				'tag_open'  => stripslashes($predefined_buttons[$button]['tag_open']),
+				'tag_close' => stripslashes($predefined_buttons[$button]['tag_close']),
+				'accesskey' => stripslashes($predefined_buttons[$button]['accesskey']),
+				'tag_order' => $button_count++,
+				'tag_row'   => 1,
+				'classname' => stripslashes($predefined_buttons[$button]['classname']),
+			);
 
-			$this->admin_model->update_html_buttons($this->id, array($predefined_buttons[$button]), FALSE);
+			ee()->admin_model->update_html_buttons($this->id, array($predefined_buttons[$button]), FALSE);
 
-			$id = ($this->input->get('id')) ? AMP.'id='.$this->input->get('id') : '';
+			$id = (ee()->input->get('id')) ? AMP.'id='.ee()->input->get('id') : '';
 
 			// Redirect to remove the button name from the query string.  Reloading the page can lead to
 			// adding buttons you don't want, and that's just ugliness.
-			$this->session->set_flashdata('message_success', lang('html_buttons_updated'));
-			$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=html_buttons'.$id);
+			ee()->session->set_flashdata('message_success', lang('html_buttons_updated'));
+			ee()->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=html_buttons'.$id);
 		}
-		elseif (is_numeric($this->id) AND $this->id != 0 AND $this->input->post('button_submit') != '')
+		elseif (is_numeric($this->id) AND $this->id != 0 AND ee()->input->post('button_submit') != '')
 		{
 			$data = array();
 			foreach ($_POST as $key => $val)
@@ -909,35 +910,35 @@ class MyAccount extends CP_Controller {
 					$n = substr($key, 9);
 
 					$data[] = array(
-									'member_id' => $this->id,
-									'tag_name'	=> $this->input->post('tag_name_'.$n),
-									'tag_open'	=> $this->input->post('tag_open_'.$n),
-									'tag_close' => $this->input->post('tag_close_'.$n),
-									'accesskey' => $this->input->post('accesskey_'.$n),
-									'tag_order' => ($this->input->post('tag_order_'.$n) != '') ? $this->input->post('tag_order_'.$n) : $button_count++,
-									'tag_row'	=> 1, // $_POST['tag_row_'.$n],
-									'site_id'	 => $this->config->item('site_id'),
-									'classname'	 => "btn_".str_replace(array(' ', '<', '>', '[', ']', ':', '-', '"', "'"), '', $this->input->post('tag_name_'.$n))
-									);
+						'member_id' => $this->id,
+						'tag_name'  => ee()->input->post('tag_name_'.$n),
+						'tag_open'  => ee()->input->post('tag_open_'.$n),
+						'tag_close' => ee()->input->post('tag_close_'.$n),
+						'accesskey' => ee()->input->post('accesskey_'.$n),
+						'tag_order' => (ee()->input->post('tag_order_'.$n) != '') ? ee()->input->post('tag_order_'.$n) : $button_count++,
+						'tag_row'   => 1, // $_POST['tag_row_'.$n],
+						'site_id'   => ee()->config->item('site_id'),
+						'classname' => "btn_".str_replace(array(' ', '<', '>', '[', ']', ':', '-', '"', "'"), '', ee()->input->post('tag_name_'.$n))
+					);
 				}
 			}
 
-			$this->admin_model->update_html_buttons($this->id, $data);
+			ee()->admin_model->update_html_buttons($this->id, $data);
 		}
 
-		$vars['html_buttons'] = $this->admin_model->get_html_buttons($this->id);
+		$vars['html_buttons'] = ee()->admin_model->get_html_buttons($this->id);
 		$button_count = $vars['html_buttons']->num_rows();
 
 		if ($button_count == 0)
 		{
 			// user doesn't have any, let's grab the default buttons (user 0 in html_buttons)
-			$vars['html_buttons'] = $this->admin_model->get_html_buttons(0);
+			$vars['html_buttons'] = ee()->admin_model->get_html_buttons(0);
 		}
 
 		$vars['member_id'] = $this->id;
 		$vars['i'] = 1;
 
-		$this->cp->render('account/html_buttons', $vars);
+		ee()->cp->render('account/html_buttons', $vars);
 	}
 
 	// --------------------------------------------------------------------
