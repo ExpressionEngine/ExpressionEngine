@@ -350,7 +350,7 @@ class Content_files extends CP_Controller {
 			{
 				$r = array(
 					'file_id' => $file['file_id'],
-					'title'	=> $file['title']
+					'title'	=> htmlentities($file['title'], ENT_QUOTES)
 				);
 
 				$is_image = FALSE;
@@ -774,7 +774,10 @@ class Content_files extends CP_Controller {
 		// _save_file to update the data
 		$this->load->library('form_validation');
 		$this->form_validation->set_error_delimiters('<div class="notice">', '</div>');
-		$this->form_validation->set_rules('file_title', 'lang:file_title', 'trim|required');
+		$this->form_validation->set_rules('file_title', 'lang:file_title', 'required|strip_tags|trim|valid_xss_check');
+		$this->form_validation->set_rules('description', 'lang:description', 'strip_tags|trim|valid_xss_check');
+		$this->form_validation->set_rules('credit', 'lang:credit', 'strip_tags|trim|valid_xss_check');
+		$this->form_validation->set_rules('location', 'lang:location', 'strip_tags|trim|valid_xss_check');
 
 		if ($this->form_validation->run())
 		{
@@ -807,7 +810,7 @@ class Content_files extends CP_Controller {
 				'field' => form_input(array(
 					'name' 	=> 'file_title',
 					'id' 	=> 'file_title',
-					'value' => $data['title'],
+					'value' => set_value('file_title', $data['title']),
 					'size' 	=> 255
 				)),
 				'type' => 'text',
@@ -821,7 +824,7 @@ class Content_files extends CP_Controller {
 				'field' => form_textarea(array(
 					'name'	=> 'description',
 					'id'	=> 'description',
-					'value'	=> $data['description']
+					'value'	=> set_value('description', $data['description'])
 				)),
 				'type' => 'textarea'
 			),
@@ -829,7 +832,7 @@ class Content_files extends CP_Controller {
 				'field' => form_input(array(
 					'name'	=> 'credit',
 					'id'	=> 'credit',
-					'value'	=> $data['credit'],
+					'value'	=> set_value('credit', $data['credit']),
 					'size' 	=> 255
 				)),
 				'type' => 'text'
@@ -838,7 +841,7 @@ class Content_files extends CP_Controller {
 				'field' => form_input(array(
 					'name'	=> 'location',
 					'id'	=> 'location',
-					'value'	=> $data['location'],
+					'value'	=> set_value('location', $data['location']),
 					'size' 	=> 255
 				)),
 				'type' => 'text'
