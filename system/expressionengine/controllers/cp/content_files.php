@@ -1459,7 +1459,6 @@ class Content_files extends CP_Controller {
 		$this->view->cp_page_title = lang('watermark_prefs');
 		$this->cp->set_breadcrumb($this->_base_url, lang('file_manager'));
 
-
 		$this->jquery->tablesorter('.mainTable', '{
 			headers: {1: {sorter: false}, 2: {sorter: false}},
 			widgets: ["zebra"]
@@ -1577,7 +1576,7 @@ class Content_files extends CP_Controller {
 			array(
 				'field' => 'name',
 				'label' => 'lang:wm_name',
-				'rules' => 'trim|required|callback__name_check'
+				'rules' => 'required|trim|strip_tags|valid_xss_check|callback__name_check'
 			),
 			array(
 				'field' => 'wm_type',
