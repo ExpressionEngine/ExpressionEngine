@@ -905,13 +905,13 @@ class Members extends CP_Controller {
 		}
 
 		$config = array(
-				'base_url'		=> BASE.AMP.'C=members'.AMP.'M=member_group_manager',
-				'total_rows'	=> $g_query->num_rows(),
-				'per_page'		=> $row_limit,
-				'page_query_string'	=> TRUE,
-				'first_link'	=> lang('pag_first_link'),
-				'last_link'		=> lang('pag_last_link')
-			);
+			'base_url'          => BASE.AMP.'C=members'.AMP.'M=member_group_manager',
+			'total_rows'        => $g_query->num_rows(),
+			'per_page'          => $row_limit,
+			'page_query_string' => TRUE,
+			'first_link'        => lang('pag_first_link'),
+			'last_link'         => lang('pag_last_link')
+		);
 
 		$this->pagination->initialize($config);
 
@@ -934,7 +934,7 @@ class Members extends CP_Controller {
 	 * Edit Member Group
 	 *
 	 * Edit/Create a member group form
-
+	 *
 	 * FIXME This is currently broken if you try to use the
 	 * site drop down to switch sites while editing a group.  The group
 	 * only exists for a single site, not all sites.  And so an error is
