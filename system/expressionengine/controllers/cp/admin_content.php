@@ -3588,7 +3588,7 @@ class Admin_content extends CP_Controller {
 				$vars['custom_fields'][$row->field_id]['field_id'] = $row->field_id;
 				$vars['custom_fields'][$row->field_id]['field_name'] = $row->field_name;
 				$vars['custom_fields'][$row->field_id]['field_order'] = $row->field_order;
-				$vars['custom_fields'][$row->field_id]['field_label'] = $row->field_label;
+				$vars['custom_fields'][$row->field_id]['field_label'] = htmlentities($row->field_label, ENT_QUOTES);
 				$vars['custom_fields'][$row->field_id]['field_type'] = $fts[$row->field_type]['name'];
 			}
 		}
@@ -3822,14 +3822,12 @@ class Admin_content extends CP_Controller {
 		$edit = ( ! isset($_POST['field_id']) OR $_POST['field_id'] == '') ? FALSE : TRUE;
 
 		// We need this as a variable as we'll unset the array index
-
 		$group_id = $this->input->post('group_id');
 
 		//perform the field update
 		$this->api_channel_fields->update_field($_POST);
 
 		// Are there errors to display?
-
 		if ($this->api_channel_fields->error_count() > 0)
 		{
 			$str = '';
