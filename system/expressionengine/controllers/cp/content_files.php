@@ -65,9 +65,9 @@ class Content_files extends CP_Controller {
 		}
 
 		if (AJAX_REQUEST)
-        {
-            $this->output->enable_profiler(FALSE);
-        }
+		{
+			$this->output->enable_profiler(FALSE);
+		}
 
 
 		$nav['file_manager']	= BASE.AMP.'C=content_files'.AMP.'M=index';
@@ -965,7 +965,7 @@ class Content_files extends CP_Controller {
 		));
 
 		$this->javascript->output('
-	        $("#file_manager_toolbar").accordion({
+			$("#file_manager_toolbar").accordion({
 				autoHeight: false,
 				header: "h3",
 				active: ' . $accordion_position . '
@@ -1294,8 +1294,8 @@ class Content_files extends CP_Controller {
 				}
 
 				// Rename the file
-        		if ( ! @copy($this->_upload_dirs[$id]['server_path'].$file['name'],
-	 						$this->_upload_dirs[$id]['server_path'].$clean_filename))
+				if ( ! @copy($this->_upload_dirs[$id]['server_path'].$file['name'],
+							$this->_upload_dirs[$id]['server_path'].$clean_filename))
 				{
 					$errors[$file['name']] = lang('invalid_filename');
 					continue;
@@ -1501,11 +1501,6 @@ class Content_files extends CP_Controller {
 		$this->cp->set_breadcrumb($this->_base_url, lang('file_manager'));
 		$this->cp->set_breadcrumb($this->_base_url.AMP.'M=watermark_preferences', lang('watermark_prefs'));
 
-		// if (FALSE)
-		// {
-		// 	show_error(lang('unauthorized_access'));
-		// }
-
 		$default_fields = array(
 			'wm_name'				=> '',
 			'wm_image_path'			=>	'',
@@ -1549,9 +1544,9 @@ class Content_files extends CP_Controller {
 		{
 			$wm_query = $this->file_model->get_watermark_preferences(array($id));
 
-   			$settings = $wm_query->row_array();
+			$settings = $wm_query->row_array();
 
- 			foreach ($settings as $k => $v)
+			foreach ($settings as $k => $v)
 			{
 				$vars[$k] = ($this->input->post($k)) ? $this->input->post($k) : $settings[$k];
 			}
