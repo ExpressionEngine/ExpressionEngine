@@ -70,13 +70,13 @@ class Factory {
 	public function getMetaData($name, $item)
 	{
 		// Did we get passed an object?
-		if ( is_object($name) )
+		if (is_object($name))
 		{
 			return $name->getMetaData($item);
 		}
 
 		// How about a fully qualified class name?
-		else if ( class_exists($name))
+		elseif (class_exists($name))
 		{
 			return $name::getMetaData($item);
 		}
