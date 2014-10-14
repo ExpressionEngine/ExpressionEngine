@@ -88,7 +88,7 @@ class Uploads extends Settings {
 				)
 			)
 		);
-		$table->setNoResultsText('no_tables_match');
+		$table->setNoResultsText('no_upload_directories', 'create_upload_directory', cp_url('settings/uploads/new-upload'));
 		$table->setData($data);
 
 		$base_url = new CP\URL('settings/uploads', ee()->session->session_id());
@@ -137,8 +137,7 @@ class Uploads extends Settings {
 	/**
 	 * Edit upload destination
 	 *
-	 * @param int	$upload_id	Table name, used when coming from SQL Manager
-	 *                      	for proper page-naming and breadcrumb-setting
+	 * @param int	$upload_id	ID of upload destination to edit
 	 */
 	private function form($upload_id = NULL)
 	{
@@ -234,13 +233,70 @@ class Uploads extends Settings {
 			)
 		);
 
+		$table = CP\Table::create(array(
+			'grid_input'	=> TRUE,
+			'reorder'		=> TRUE,
+			'sortable'		=> FALSE
+		));
+		$table->setColumns(
+			array(
+				'image_manip_name' => array(
+					'desc'  => 'image_manip_name_desc'
+				),
+				'image_manip_type' => array(
+					'desc'  => 'image_manip_type_desc'
+				),
+				'image_manip_width' => array(
+					'desc'  => 'image_manip_width_desc'
+				),
+				'image_manip_height' => array(
+					'desc'  => 'image_manip_height_desc'
+				)
+			)
+		);
+		$table->setNoResultsText('no_manipulations', 'add_manipulation');
+		$table->setBaseGridRow(array(
+			form_input('name'),
+			form_dropdown(
+				'type',
+				array(
+					'constrain' => lang('image_manip_type_opt_constrain'),
+					'crop' => lang('image_manip_type_opt_crop'),
+				)
+			),
+			form_input('width'),
+			form_input('height')
+		));
+
+		/*$table->setData(array(array(
+			form_input('name'),
+			form_dropdown(
+				'type',
+				array(
+					'constrain' => lang('image_manip_type_opt_constrain'),
+					'crop' => lang('image_manip_type_opt_crop'),
+				)
+			),
+			form_input('width'),
+			form_input('height')
+		)));*/
+
+		if ( ! empty($upload_id))
+		{
+			// Populate existing image manipulations
+			//$table->setData($data);
+		}
+
 		$vars['sections']['upload_image_manipulations'] = array(
 			array(
 				'title' => 'constrain_or_crop',
 				'desc' => 'constrain_or_crop_desc',
+				'wide' => TRUE,
+				'grid' => TRUE,
 				'fields' => array(
 					'image_manipulations' => array(
-						'type' => 'grid'
+						'type' => 'html',
+						'content' => ee()->load->view('_shared/table', $table->viewData(), TRUE)
 					)
 				)
 			)
@@ -255,6 +311,7 @@ class Uploads extends Settings {
 			$member_groups[$group->group_id] = $group->group_title;
 		}
 
+		$no_access = array();
 		if ( ! empty($upload_id))
 		{
 			$no_access = ee()->api->get('UploadDestination')

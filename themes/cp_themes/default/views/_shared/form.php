@@ -31,8 +31,8 @@ if (isset($ajax_validate) && $ajax_validate == TRUE)
 		<?php foreach ($settings as $setting): ?>
 			<?php
 			$last_class = ($setting == end($settings)) ? ' last' : ''; ?>
-			<fieldset class="col-group<?=$last_class?> <?=form_error_class(array_keys($setting['fields']))?>">
-				<div class="setting-txt col w-8">
+			<fieldset class="col-group<?=$last_class?> <?=form_error_class(array_keys($setting['fields']))?> <?=(isset($setting['grid']) && $setting['grid'] == TRUE) ? 'grid-publish' : ''?>">
+				<div class="setting-txt col <?=(isset($setting['wide']) && $setting['wide'] == TRUE) ? 'w-16' : 'w-8'?>">
 					<?php foreach ($setting['fields'] as $field_name => $field)
 					{
 						if ($required = (isset($field['required']) && $field['required'] == TRUE))
@@ -43,7 +43,7 @@ if (isset($ajax_validate) && $ajax_validate == TRUE)
 					<h3><?=lang($setting['title'])?><?php if ($required): ?> <span class="required" title="required field">&#10033;</span><?php endif ?></h3>
 					<em><?=lang($setting['desc'])?></em>
 				</div>
-				<div class="setting-field col w-8 last">
+				<div class="setting-field col <?=(isset($setting['wide']) && $setting['wide'] == TRUE) ? 'w-16' : 'w-8'?> last">
 					<?php foreach ($setting['fields'] as $field_name => $field):
 						// Get the value of the field
 						$value = set_value($field_name);

@@ -1035,6 +1035,9 @@ $lang = array(
 'upload_create' =>
 'Create New',
 
+'no_upload_directories' =>
+'No Upload Directories',
+
 'create_upload_directory' =>
 'Create Upload Directory',
 
@@ -1127,6 +1130,12 @@ $lang = array(
 
 'image_manip_height_desc' =>
 'Final height of image',
+
+'no_manipulations' =>
+'No manipulations created',
+
+'add_manipulation' =>
+'Add New Manipulation',
 
 'upload_privileges' =>
 'Upload Privileges',

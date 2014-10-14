@@ -62,6 +62,7 @@ class Table {
 			'page'		 => 1,
 			'total_rows' => 0,
 			'search'	 => NULL,
+			'sortable'	 => TRUE,
 			'autosort'	 => FALSE,
 			'autosearch' => FALSE,
 			'lang_cols'	 => TRUE,
@@ -475,6 +476,9 @@ class Table {
 			'limit'			=> $this->config['limit'],
 			'page'			=> $this->config['page'],
 			'total_rows'	=> $this->config['total_rows'],
+			'grid_input'	=> $this->config['grid_input'],
+			'reorder'		=> $this->config['reorder'],
+			'sortable'		=> $this->config['sortable'],
 			'sort_col'		=> $this->getSortCol(),
 			'sort_dir'		=> $this->getSortDir(),
 			'columns'		=> $this->columns,
@@ -529,6 +533,18 @@ class Table {
 			'action_text'	=> $action_text,
 			'action_link'	=> $action_link
 		);
+	}
+
+	/**
+	 * Set the empty row elements for new/empty rows in a Grid input table
+	 *
+	 * @param	array	$row	Array of empty field elements to be duplicated
+	 *                   		for each new row the user creates
+	 * @return  void
+	 */
+	public function setBaseGridRow($row)
+	{
+		$this->config['grid_base_row'] = $row;
 	}
 }
 
