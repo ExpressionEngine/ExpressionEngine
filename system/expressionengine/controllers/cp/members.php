@@ -889,7 +889,7 @@ class Members extends CP_Controller {
 			}
 
 			$groups[$row['group_id']]['group_id'] = $row['group_id'];
-			$groups[$row['group_id']]['title'] = $group_name;
+			$groups[$row['group_id']]['title'] = htmlentities($group_name, ENT_QUOTES);
 			$groups[$row['group_id']]['can_access_cp'] = $row['can_access_cp'];
 			$groups[$row['group_id']]['security_lock'] = ($row['is_locked'] == 'y') ? lang('locked') : lang('unlocked');
 			$groups[$row['group_id']]['member_count'] = $this->member_model->count_members($row['group_id']);
@@ -901,7 +901,7 @@ class Members extends CP_Controller {
 
 		foreach($g_query->result_array() as $row)
 		{
-			$vars['clone_group_options'][$row['group_id']] = $row['group_title'];
+			$vars['clone_group_options'][$row['group_id']] = htmlentities($row['group_title'], ENT_QUOTES);
 		}
 
 		$config = array(
@@ -923,7 +923,7 @@ class Members extends CP_Controller {
 
 		$vars['groups'] = $groups;
 
-        $this->cp->set_right_nav(array('create_new_member_group' => BASE.AMP.'C=members'.AMP.'M=edit_member_group'));
+		$this->cp->set_right_nav(array('create_new_member_group' => BASE.AMP.'C=members'.AMP.'M=edit_member_group'));
 
 		$this->cp->render('members/member_group_manager', $vars);
 	}
@@ -935,12 +935,13 @@ class Members extends CP_Controller {
 	 *
 	 * Edit/Create a member group form
 	 *
-	 * FIXME This is currently broken if you try to use the
-	 * site drop down to switch sites while editing a group.  The group
-	 * only exists for a single site, not all sites.  And so an error is
-	 * thrown.
+	 * NOTE: The parameters are here for validation.
+	 *
+	 * @param Integer $group_id ID of the group to edit
+	 * @param Integer $clone_id ID of the group to clone
+	 * @param Integer $site_id  ID of the site you're editing the group in
 	 */
-	public function edit_member_group()
+	public function edit_member_group($group_id = NULL, $clone_id = NULL, $site_id = NULL)
 	{
 		$is_clone = FALSE;
 
@@ -958,10 +959,14 @@ class Members extends CP_Controller {
 
 		list($sites, $sites_dropdown) = $this->_get_sites();
 
-		$site_id = ($this->input->get_post('site_id'))
-			? (int) $this->input->get_post('site_id') : $this->config->item('site_id');
-		$group_id = (int) $this->input->get_post('group_id');
-		$clone_id = (int) $this->input->get_post('clone_id');
+		if ( ! $site_id)
+		{
+			$site_id = ($this->input->get_post('site_id'))
+				? (int) $this->input->get_post('site_id')
+				: $this->config->item('site_id');
+		}
+		$group_id = ($group_id) ?: (int) $this->input->get_post('group_id');
+		$clone_id = ($clone_id) ?: (int) $this->input->get_post('clone_id');
 
 		$base = BASE.AMP.'C=members'.AMP.'M=edit_member_group';
 
@@ -1009,7 +1014,7 @@ class Members extends CP_Controller {
 			'group_data'		=> $this->_setup_final_group_data($site_id, $group_data, $id, $is_clone),
 			'group_description'	=> $group_description,
 			'group_id'			=> $group_id,
-			'page_title'		=> sprintf(lang($page_title_lang), $group_title),
+			'page_title'		=> sprintf(lang($page_title_lang), htmlentities($group_title, ENT_QUOTES)),
 			'group_title'		=> ($is_clone) ? '' : $group_title,
 			'sites_dropdown'	=> $sites_dropdown,
 			'module_data'		=> $this->_setup_module_data($id),
@@ -2007,6 +2012,20 @@ class Members extends CP_Controller {
 		unset($_POST['group_id']);
 		unset($_POST['clone_id']);
 
+		ee()->load->library('form_validation');
+		ee()->form_validation->set_error_delimiters('<p class="notice">', '</p>');
+;
+		ee()->form_validation->set_rules(
+			'group_title',
+			'lang:group_title',
+			'required|trim|strip_tags|valid_xss_check'
+		);
+
+		if (ee()->form_validation->run() == FALSE)
+		{
+			return $this->edit_member_group($group_id, $clone_id, $site_id);
+		}
+
 		// No group name
 		if ( ! $group_title = $this->input->post('group_title'))
 		{
@@ -2015,7 +2034,7 @@ class Members extends CP_Controller {
 
 		if (empty($group_id))
 		{
-			$cp_message  = $this->Member_group_model->parse_add_form($_POST, $site_id, $clone_id, $group_title);
+			$cp_message = $this->Member_group_model->parse_add_form($_POST, $site_id, $clone_id, $group_title);
 		}
 		else
 		{
