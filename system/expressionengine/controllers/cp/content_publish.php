@@ -2472,7 +2472,7 @@ class Content_publish extends CP_Controller {
 				if (count($this->_file_manager['file_list']))
 				{
 					$button_js[] = array(
-						'name'			=> $button->tag_name,
+						'name'			=> htmlentities($button->tag_name, ENT_QUOTES),
 						'key'			=> $button->accesskey,
 						'replaceWith'	=> '',
 						'className'		=> $button->classname.' id'.$button->id
@@ -2488,7 +2488,7 @@ class Content_publish extends CP_Controller {
 			else
 			{
 				$button_js[] = array(
-					'name'		=> $button->tag_name,
+					'name'		=> htmlentities($button->tag_name, ENT_QUOTES),
 					'key'		=> strtoupper($button->accesskey),
 					'openWith'	=> $button->tag_open,
 					'closeWith'	=> $button->tag_close,

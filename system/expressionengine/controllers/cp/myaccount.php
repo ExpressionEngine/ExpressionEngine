@@ -834,9 +834,12 @@ class MyAccount extends CP_Controller {
 		}
 
 		ee()->load->library('table');
+		ee()->load->library('form_validation');
 		ee()->lang->loadfile('admin');
 		ee()->lang->loadfile('admin_content');
 		ee()->load->model('admin_model');
+
+		ee()->form_validation->set_error_delimiters('<b class="notice">', '</b>');
 
 		$vars['cp_page_title'] = lang('html_buttons');
 		$vars['form_hidden'] = array(
@@ -857,14 +860,16 @@ class MyAccount extends CP_Controller {
 		// any predefined buttons?
 		$button = ee()->input->get_post('button');
 
-		$html_buttons = ee()->admin_model->get_html_buttons($this->id, FALSE); // don't include defaults on this request
+		// don't include defaults on this request
+		$html_buttons = ee()->admin_model->get_html_buttons($this->id, FALSE);
 		$button_count = $html_buttons->num_rows();
 
 		if ($button != '')
 		{
-			// If we're here it means a link was followed. Since this means the $_POST won't be included
-			// with existing "pre defined" buttons, we need to check of the user has any buttons yet, and
-			// include the defaults if they do not
+			// If we're here it means a link was followed. Since this means the
+			// $_POST won't be included with existing "pre defined" buttons, we
+			// need to check of the user has any buttons yet, and include the
+			// defaults if they do not
 
 			if ($button_count == 0)
 			{
@@ -900,7 +905,9 @@ class MyAccount extends CP_Controller {
 			ee()->session->set_flashdata('message_success', lang('html_buttons_updated'));
 			ee()->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=html_buttons'.$id);
 		}
-		elseif (is_numeric($this->id) AND $this->id != 0 AND ee()->input->post('button_submit') != '')
+		elseif (is_numeric($this->id)
+			&& $this->id != 0
+			&& ee()->input->post('button_submit') != '')
 		{
 			$data = array();
 			foreach ($_POST as $key => $val)
@@ -908,6 +915,30 @@ class MyAccount extends CP_Controller {
 				if (strncmp($key, 'tag_name_', 9) == 0 && $val != '')
 				{
 					$n = substr($key, 9);
+
+					// Set validation for new row
+					ee()->form_validation->set_rules(
+						'tag_name_'.$n,
+						'',
+						($n != 1)
+							? 'required|trim|strip_tags|valid_xss_check|max_length[16]'
+							: 'trim|strip_tags|valid_xss_check|max_length[16]'
+					);
+					ee()->form_validation->set_rules(
+						'tag_open_'.$n,
+						'',
+						'trim|max_length[120]'
+					);
+					ee()->form_validation->set_rules(
+						'tag_close_'.$n,
+						'',
+						'trim|max_length[120]'
+					);
+					ee()->form_validation->set_rules(
+						'accesskey_'.$n,
+						'',
+						'trim|max_length[16]'
+					);
 
 					$data[] = array(
 						'member_id' => $this->id,
@@ -923,7 +954,10 @@ class MyAccount extends CP_Controller {
 				}
 			}
 
-			ee()->admin_model->update_html_buttons($this->id, $data);
+			if (ee()->form_validation->run())
+			{
+				ee()->admin_model->update_html_buttons($this->id, $data);
+			}
 		}
 
 		$vars['html_buttons'] = ee()->admin_model->get_html_buttons($this->id);
