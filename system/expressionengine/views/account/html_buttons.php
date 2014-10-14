@@ -25,19 +25,43 @@
 
 		<p>
 			<?=lang('tag_name', "tag_name_{$i}")?>
-			<?=form_input(array('id'=>"tag_name_{$i}", 'class'=>'field', 'name'=>"tag_name_{$i}"))?>
+			<?=form_input(array(
+				'id'    => "tag_name_{$i}",
+				'class' => 'field',
+				'name'  => "tag_name_{$i}",
+				'value' => set_value("tag_name_{$i}", '')
+			))?>
+			<?=form_error("tag_name_{$i}")?>
 		</p>
 		<p>
 			<?=lang('tag_open', "tag_open_{$i}")?>
-			<?=form_input(array('id'=>"tag_open_{$i}", 'class'=>'field', 'name'=>"tag_open_{$i}"))?>
+			<?=form_input(array(
+				'id'    => "tag_open_{$i}",
+				'class' => 'field',
+				'name'  => "tag_open_{$i}",
+				'value' => set_value("tag_open_{$i}", '')
+			))?>
+			<?=form_error("tag_open_{$i}")?>
 		</p>
 		<p>
 			<?=lang('tag_close', "tag_close_{$i}")?>
-			<?=form_input(array('id'=>"tag_close_{$i}", 'class'=>'field', 'name'=>"tag_close_{$i}"))?>
+			<?=form_input(array(
+				'id'    => "tag_close_{$i}",
+				'class' => 'field',
+				'name'  => "tag_close_{$i}",
+				'value' => set_value("tag_close_{$i}", '')
+			))?>
+			<?=form_error("tag_close_{$i}")?>
 		</p>
 		<p>
 			<?=lang('accesskey', "accesskey_{$i}")?>
-			<?=form_input(array('id'=>"accesskey_{$i}", 'class'=>'field', 'name'=>"accesskey_{$i}"))?>
+			<?=form_input(array(
+				'id'    => "accesskey_{$i}",
+				'class' => 'field',
+				'name'  => "accesskey_{$i}",
+				'value' => set_value("accesskey_{$i}", '')
+			))?>
+			<?=form_error("accesskey_{$i}")?>
 		</p>
 		<div class="shun">
 			<p class="submit"><?=form_submit('html_buttons', lang('submit'), 'class="submit"')?></p>
@@ -69,7 +93,7 @@
 			$tag_row = ($button->tag_row == 2) ? '2' : '1';
 			$i++;
 			$this->table->add_row(
-				'<div class="markItUpHeader"><ul class="markItUp"><li class="'.$button->classname.'"><a>'.$button->tag_name.'</a></li></ul></div>',
+				'<div class="markItUpHeader"><ul class="markItUp"><li class="'.$button->classname.'"><a>'.htmlentities($button->tag_name, ENT_QUOTES).'</a></li></ul></div>',
 				form_input(array(
 					'id'    => "tag_name_{$i}",
 					'name'  => "tag_name_{$i}",
