@@ -8,17 +8,26 @@ $lang = array(
 "view_members" =>
 "View Members",
 
+"all_members" =>
+"All Members",
+
 "view_search_members" =>
 "View / Search Members",
 
 "member_validation" =>
 "Activate Pending Members",
 
+"pending_activation" =>
+"Pending Activation",
+
 "member_search" =>
 "Member Search",
 
 "user_banning" =>
 "User Banning",
+
+"manage_bans" =>
+"Manage Bans",
 
 "custom_profile_fields" =>
 "Member Fields",
