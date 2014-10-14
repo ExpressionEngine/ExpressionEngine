@@ -3,9 +3,10 @@ namespace EllisLab\ExpressionEngine\Service\Model;
 
 use InvalidArgumentException;
 use EllisLab\ExpressionEngine\Service\AliasServiceInterface;
-use EllisLab\ExpressionEngine\Service\Validation\Factory as ValidationFactory;
 use EllisLab\ExpressionEngine\Service\Model\Relationship\RelationshipGraph;
-use EllisLab\ExpressionEngine\Service\Model\Query\Query;
+use EllisLab\ExpressionEngine\Service\Model\Query\Builder as QueryBuilder;
+use EllisLab\ExpressionEngine\Service\Model\Query\Connection;
+use EllisLab\ExpressionEngine\Service\Validation\Factory as ValidationFactory;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -47,6 +48,7 @@ class Factory {
 	protected $alias_service;
 	protected $validation_factory;
 	protected $relationship_graph;
+	protected $connection;
 
 	public function __construct(AliasServiceInterface $aliases, ValidationFactory $validation_factory)
 	{
@@ -136,6 +138,16 @@ class Factory {
 		 return new RelationshipGraph($this->alias_service);
 	}
 
+	protected function getConnection()
+	{
+		return new Connection(
+			ee()->db,
+			$this,
+			$this->getRelationshipGraph(),
+			$this->alias_service
+		);
+	}
+
 	/**
 	 * Create a new query object
 	 *
@@ -143,6 +155,6 @@ class Factory {
 	 */
 	protected function newQuery($model_name)
 	{
-		return new Query($this, $this->alias_service, $model_name);
+		return new QueryBuilder($this->getConnection(), $model_name);
 	}
 }
