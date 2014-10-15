@@ -41,6 +41,27 @@ class MemberList extends Members {
 		$base_url = new URL('members/member-list', ee()->session->session_id());
 
 		$members = ee()->api->get('Member')->order('username', 'asc')->all();
+		$groups = ee()->api->get('MemberGroup')->order('group_title', 'asc')->all();
+		$vars = array();
+		$member_groups = array();
+
+		foreach ($groups as $group)
+		{
+			$member_groups[cp_url('members/member-list/' . $group->group_id)] = $group->group_title;
+		}
+
+		$vars['groups'] = array(
+			'filters' => array(
+				array(
+					'label' => 'member group',
+					'value' => 'Members',
+					'name' => '',
+					'custom_value' => '',
+					'placeholder' => '',
+					'options' => $member_groups
+				)
+			)
+		);
 
 		foreach ($members as $member)
 		{
