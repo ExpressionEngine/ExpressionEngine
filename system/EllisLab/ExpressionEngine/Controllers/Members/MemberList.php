@@ -38,9 +38,6 @@ class MemberList extends Members {
 	 */
 	public function index()
 	{
-		ee()->load->model('language_model');
-		ee()->load->model('admin_model');
-		
 		$base_url = new URL('members/member-list', ee()->session->session_id());
 
 		$members = ee()->api->get('Member')->order('username', 'asc')->all();
@@ -50,7 +47,7 @@ class MemberList extends Members {
 			$data[] = array(
 				'id'	=> $member->member_id,
 				'username'	=> $member->username,
-				'member_group'	=> $member->group_id,
+				'member_group'	=> $member->getMemberGroup()->group_title,
 				array('toolbar_items' => array(
 					'edit' => array(
 						'href' => cp_url('members/edit/' . $member->member_id),
@@ -107,9 +104,7 @@ class MemberList extends Members {
 
 		ee()->view->base_url = $base_url;
 		ee()->view->ajax_validate = TRUE;
-		ee()->view->cp_page_title = lang('members');
-		ee()->view->save_btn_text = 'btn_save_settings';
-		ee()->view->save_btn_text_working = 'btn_save_settings_working';
+		ee()->view->cp_page_title = lang('all_members');
 		ee()->cp->render('members/view_members', $vars);
 	}
 }
