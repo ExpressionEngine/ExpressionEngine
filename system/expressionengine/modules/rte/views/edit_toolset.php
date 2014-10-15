@@ -1,6 +1,7 @@
 <div class="box">
 	<h1><?=lang($header)?> <span class="required intitle">&#10033; Required Fields</span></h1>
 	<?=form_open($form_action, 'class="settings"')?>
+		<?php $this->ee_view('_shared/alerts')?>
 		<fieldset class="col-group">
 			<div class="setting-txt col w-8">
 				<h3><?=lang('tool_set_name')?> <span class="required" title="required field">&#10033;</span></h3>

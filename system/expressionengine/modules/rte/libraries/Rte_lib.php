@@ -134,6 +134,17 @@ class Rte_lib {
 		// get the toolset
 		$toolset_id = ee()->input->get_post('toolset_id');
 
+		if ($toolset_id)
+		{
+			$error_url = cp_url('addons/settings/rte/edit_toolset', array('toolset_id' => $toolset_id));
+			$success_url = $error_url;
+		}
+		else
+		{
+			$error_url = cp_url('addons/settings/rte/new_toolset');
+			$success_url = cp_url('addons/settings/rte');
+		}
+
 		$toolset = array(
 			'name'      => ee()->input->post('toolset_name'),
 			'tools'     => implode('|', ee()->input->post('tools')),
@@ -145,7 +156,8 @@ class Rte_lib {
 		// did an empty name sneak through?
 		if (empty($toolset['name']))
 		{
-			show_error(lang('name_required'));
+			ee()->view->set_message('issue', lang('toolset_error'), lang('name_required'), TRUE);
+			ee()->functions->redirect($error_url);
 		}
 
 		// check name for XSS
@@ -153,13 +165,15 @@ class Rte_lib {
 			OR $toolset['name'] != htmlentities($toolset['name'])
 			OR $toolset['name'] != ee()->security->xss_clean($toolset['name']))
 		{
-			show_error(lang('valid_name_required'));
+			ee()->view->set_message('issue', lang('toolset_error'), lang('valid_name_required'), TRUE);
+			ee()->functions->redirect($error_url);
 		}
 
 		// is the name unique?
 		if ( ! $is_members && ! ee()->rte_toolset_model->unique_name($toolset['name'], $toolset_id))
 		{
-			show_error(lang('unique_name_required'));
+			ee()->view->set_message('issue', lang('toolset_error'), lang('unique_name_required'), TRUE);
+			ee()->functions->redirect($error_url);
 		}
 
 		// Updating? Make sure the toolset exists and they aren't trying any
@@ -170,14 +184,25 @@ class Rte_lib {
 
 			if ( ! $orig || $is_members && $orig['member_id'] != ee()->session->userdata('member_id'))
 			{
-				show_error(lang('toolset_update_failed'));
+				ee()->view->set_message('issue', lang('toolset_error'), lang('toolset_update_failed'), TRUE);
+				ee()->functions->redirect($error_url);
 			}
 		}
 
 		// save it
 		if (ee()->rte_toolset_model->save_toolset($toolset, $toolset_id) === FALSE)
 		{
-			show_error(lang('toolset_update_failed'));
+			ee()->view->set_message('issue', lang('toolset_error'), lang('toolset_update_failed'), TRUE);
+			ee()->functions->redirect($error_url);
+		}
+
+		if ($toolset_id)
+		{
+			ee()->view->set_message('success', lang('toolset_updated'), lang('toolset_updated_desc'), TRUE);
+		}
+		else
+		{
+			ee()->view->set_message('success', lang('toolset_created'), lang('toolset_created_desc'), TRUE);
 		}
 
 		// if it’s new, get the ID
@@ -202,7 +227,7 @@ class Rte_lib {
 				->update('members', array('rte_toolset_id' => $toolset_id));
 		}
 
-		ee()->functions->redirect(cp_url('addons/settings/rte/edit_toolset', array('toolset_id' => $toolset_id)));
+		ee()->functions->redirect($success_url);
 	}
 
 	// ------------------------------------------------------------------------
