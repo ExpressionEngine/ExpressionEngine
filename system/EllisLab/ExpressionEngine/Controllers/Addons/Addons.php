@@ -435,6 +435,9 @@ class Addons extends CP_Controller {
 		ee()->view->cp_page_title = lang('addon_manager');
 
 		$vars = array();
+		$breadcrumb = array(
+			cp_url('addons') => lang('addon_manager')
+		);
 
 		if (is_null($method))
 		{
@@ -444,8 +447,19 @@ class Addons extends CP_Controller {
 		$module = $this->getModules($addon);
 		if ( ! empty($module) && $module['installed'] === TRUE)
 		{
-			$vars['_module_cp_body'] = $this->getModuleSettings($addon, $method);
-			ee()->view->cp_heading = $module['name'] . ' ' . lang('configuration');
+			$data = $this->getModuleSettings($addon, $method);
+
+			if (is_array($data))
+			{
+				$vars['_module_cp_body'] = $data['body'];
+				ee()->view->cp_heading = $data['heading'];
+				$breadcrumb = $data['breadcrumb'];
+			}
+			else
+			{
+				$vars['_module_cp_body'] = $data;
+				ee()->view->cp_heading = $module['name'] . ' ' . lang('configuration');
+			}
 		}
 
 		if ( ! isset($vars['_module_cp_body']))
@@ -453,9 +467,7 @@ class Addons extends CP_Controller {
 			show_error(lang('requested_module_not_installed').NBS.$addon);
 		}
 
-		ee()->view->cp_breadcrumbs = array(
-			cp_url('addons') => lang('addon_manager')
-		);
+		ee()->view->cp_breadcrumbs = $breadcrumb;
 
 		ee()->cp->render('addons/settings', $vars);
 	}

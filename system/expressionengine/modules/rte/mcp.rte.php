@@ -217,7 +217,13 @@ class Rte_mcp {
 	 */
 	public function new_toolset()
 	{
-		return ee()->rte_lib->edit_toolset(0);
+		return array(
+			'body'			=> ee()->rte_lib->edit_toolset(0),
+			'heading'		=> lang('create_tool_set_header'),
+			'breadcrumb' 	=> array(
+				cp_url('addons/settings/rte') => lang('rte_module_name') . ' ' . lang('configuration')
+			)
+		);
 	}
 
 	// --------------------------------------------------------------------
@@ -231,8 +237,13 @@ class Rte_mcp {
 	 */
 	public function edit_toolset($toolset_id = FALSE)
 	{
-		$toolset_id = ($toolset_id) ?: ee()->input->get_post('toolset_id');
-		return ee()->rte_lib->edit_toolset($toolset_id);
+		return array(
+			'body'			=> ee()->rte_lib->edit_toolset($toolset_id),
+			'heading'		=> lang('edit_tool_set_header'),
+			'breadcrumb' 	=> array(
+				cp_url('addons/settings/rte') => lang('rte_module_name') . ' ' . lang('configuration')
+			)
+		);
 	}
 
 	// --------------------------------------------------------------------
