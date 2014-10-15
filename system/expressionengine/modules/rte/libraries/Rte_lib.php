@@ -209,6 +209,7 @@ class Rte_lib {
 		if ( ! $toolset_id)
 		{
 			$toolset_id = ee()->db->insert_id();
+			ee()->session->set_flashdata('toolset_id', $toolset_id);
 		}
 
 		// If the default toolset was deleted

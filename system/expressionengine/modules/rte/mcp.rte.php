@@ -72,6 +72,8 @@ class Rte_mcp {
 		$toolset_opts = array();
 
 		$data = array();
+		$toolset_id = ee()->session->flashdata('toolset_id');
+
 		foreach ($toolsets as $t)
 		{
 			$url = cp_url('addons/settings/rte/edit_toolset', array('toolset_id' => $t['toolset_id']));
@@ -97,7 +99,18 @@ class Rte_mcp {
 				$toolset_opts[$t['toolset_id']] = htmlentities($t['name'], ENT_QUOTES);
 				$toolset['status'] = lang('enabled');
 			}
-			$data[] = $toolset;
+
+			$attrs = array();
+
+			if ($toolset_id && $t['toolset_id'] == $toolset_id)
+			{
+				$attrs = array('class' => 'selected');
+			}
+
+			$data[] = array(
+				'attrs'		=> $attrs,
+				'columns'	=> $toolset
+			);
 		}
 
 		$vars = array(
