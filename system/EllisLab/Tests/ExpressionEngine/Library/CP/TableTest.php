@@ -122,6 +122,9 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 			'limit'			=> 20,
 			'page'			=> 1,
 			'total_rows'	=> 2,
+			'grid_input'	=> FALSE,
+			'reorder'		=> FALSE,
+			'sortable'		=> TRUE,
 			'columns'		=> $expected_cols,
 			'data'			=> array(
 				array(
@@ -216,6 +219,9 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 			'limit'			=> 20,
 			'page'			=> 1,
 			'total_rows'	=> 0,
+			'grid_input'	=> FALSE,
+			'reorder'		=> FALSE,
+			'sortable'		=> TRUE,
 			'columns'		=> array(),
 			'data'			=> array()
 		);
@@ -233,6 +239,9 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 			'limit'			=> 20,
 			'page'			=> 1,
 			'total_rows'	=> 0,
+			'grid_input'	=> FALSE,
+			'reorder'		=> FALSE,
+			'sortable'		=> TRUE,
 			'columns'		=> $expected_cols,
 			'data'			=> array()
 		);
@@ -260,6 +269,9 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 			'limit'			=> 20,
 			'page'			=> 1,
 			'total_rows'	=> 0,
+			'grid_input'	=> FALSE,
+			'reorder'		=> FALSE,
+			'sortable'		=> TRUE,
 			'columns'		=> $expected_cols,
 			'data'			=> array()
 		);
@@ -271,6 +283,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 			'lang_cols'	=> FALSE,
 			'sort_col'	=> 'Name',
 			'sort_dir'	=> 'desc',
+			'sortable'		=> TRUE,
 			'limit'		=> 50
 		);
 
@@ -285,6 +298,9 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 			'limit'			=> 50,
 			'page'			=> 1,
 			'total_rows'	=> 2,
+			'grid_input'	=> FALSE,
+			'reorder'		=> FALSE,
+			'sortable'		=> TRUE,
 			'columns'		=> $expected_cols,
 			'data'			=> array(
 				array(
@@ -381,6 +397,9 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 			'limit'			=> 50,
 			'page'			=> 1,
 			'total_rows'	=> 2,
+			'grid_input'	=> FALSE,
+			'reorder'		=> FALSE,
+			'sortable'		=> TRUE,
 			'columns'		=> $expected_cols,
 			'data'		=> array(
 				array(
@@ -478,6 +497,9 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 			'limit'			=> 50,
 			'page'			=> 1,
 			'total_rows'	=> 1,
+			'grid_input'	=> FALSE,
+			'reorder'		=> FALSE,
+			'sortable'		=> TRUE,
 			'columns'		=> $expected_cols,
 			'data'			=> array(
 				array(
