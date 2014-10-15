@@ -202,7 +202,7 @@ class Rte_lib {
 		}
 		else
 		{
-			ee()->view->set_message('success', lang('toolset_created'), lang('toolset_created_desc'), TRUE);
+			ee()->view->set_message('success', lang('toolset_created'), sprintf(lang('toolset_created_desc'), $toolset['name']), TRUE);
 		}
 
 		// if it’s new, get the ID
