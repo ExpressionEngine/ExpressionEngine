@@ -40,21 +40,32 @@ class MemberList extends Members {
 	{
 		$base_url = new URL('members/member-list', ee()->session->session_id());
 
-		$members = ee()->api->get('Member')->order('username', 'asc')->all();
+		if ( ! empty($this->group))
+		{
+			$members = ee()->api->get('Member')->filter('group_id', $this->group)->order('username', 'asc')->all();
+		}
+		else
+		{
+			$members = ee()->api->get('Member')->order('username', 'asc')->all();
+		}
+
 		$groups = ee()->api->get('MemberGroup')->order('group_title', 'asc')->all();
 		$vars = array();
-		$member_groups = array();
+		$data = array();
+		$group_ids = array();
+		$member_groups = array(cp_url('members/member-list') => 'All');
 
 		foreach ($groups as $group)
 		{
-			$member_groups[cp_url('members/member-list/' . $group->group_id)] = $group->group_title;
+			$group_ids[$group->group_id] = $group->group_title;
+			$member_groups[cp_url('members/member-list/filter/' . $group->group_id)] = $group->group_title;
 		}
 
 		$vars['groups'] = array(
 			'filters' => array(
 				array(
 					'label' => 'member group',
-					'value' => 'Members',
+					'value' => empty($this->group) ? 'All' : $group_ids[$this->group],
 					'name' => '',
 					'custom_value' => '',
 					'placeholder' => '',
@@ -96,6 +107,7 @@ class MemberList extends Members {
 				)
 			)
 		);
+
 		$table->setNoResultsText('no_search_results');
 		$table->setData($data);
 		$vars['table'] = $table->viewData($base_url);
@@ -127,6 +139,19 @@ class MemberList extends Members {
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->cp_page_title = lang('all_members');
 		ee()->cp->render('members/view_members', $vars);
+	}
+
+	/**
+	 * Filter the member list by the group
+	 * 
+	 * @param mixed $group 
+	 * @access public
+	 * @return void
+	 */
+	public function filter($group)
+	{
+		$this->group = $group;
+		$this->index();
 	}
 }
 // END CLASS
