@@ -1,13 +1,13 @@
 <div class="box">
-	<h1><?=lang($header)?></h1>
+	<h1><?=lang($header)?> <span class="required intitle">&#10033; Required Fields</span></h1>
 	<?=form_open($form_action, 'class="settings"')?>
 		<fieldset class="col-group">
 			<div class="setting-txt col w-8">
-				<h3><?=lang('tool_set_name')?></h3>
+				<h3><?=lang('tool_set_name')?> <span class="required" title="required field">&#10033;</span></h3>
 				<em><?=lang('tool_set_name_desc')?></em>
 			</div>
 			<div class="setting-field col w-8 last">
-				<input type="text" name="toolset_name" value="<?=set_value('toolset_name', $toolset_name)?>">
+				<input class="required" type="text" name="toolset_name" value="<?=set_value('toolset_name', $toolset_name)?>">
 			</div>
 		</fieldset>
 		<fieldset class="col-group last">
