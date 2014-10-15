@@ -108,7 +108,7 @@ class Rte_lib {
 
 			$vars['tools'][] = array(
 				'id'		=> $tool['tool_id'],
-				'selected'	=> (array_search($tool['tool_id'], $toolset['tools'])) ? TRUE : FALSE,
+				'selected'	=> (array_search($tool['tool_id'], $toolset['tools']) !== FALSE) ? TRUE : FALSE,
 				'name'		=> (lang($name_key) != $name_key) ? lang($name_key) : $tool['name'],
 				'desc'		=> (lang($desc_key) != $desc_key) ? lang($desc_key) : ''
 			);
