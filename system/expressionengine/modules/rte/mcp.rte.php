@@ -209,11 +209,11 @@ class Rte_mcp {
 		{
 			// update the prefs
 			$this->_do_update_prefs();
-			ee()->session->set_flashdata('message_success', lang('settings_saved'));
+			ee()->view->set_message('success', lang('settings_saved'), lang('settings_saved_desc'), TRUE);
 		}
 		else
 		{
-			ee()->session->set_flashdata('message_failure', lang('settings_not_saved'));
+			ee()->view->set_message('issue', lang('settings_error'), lang('settings_error_desc'), TRUE);
 		}
 
 		ee()->functions->redirect($this->_base_url);

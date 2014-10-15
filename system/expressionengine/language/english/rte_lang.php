@@ -49,10 +49,10 @@ $lang = array(
 'disable_rte' => 'Disable Rich Text Editor',
 
 // Flashes
-'settings_saved' => 'Your Rich Text Editor Settings have been saved.',
-'settings_not_saved' => 'Your Rich Text Editor Settings could not be saved. Please try again.',
-'settings_saved' => 'Your Rich Text Editor Preferences have been saved.',
-'settings_not_saved' => 'Your Rich Text Editor Preferences could not be saved. Please try again.',
+'settings_saved' => 'Settings saved',
+'settings_saved_desc' => 'Your Rich Text Editor Settings have been saved.',
+'settings_error' => 'Error saving settings',
+'settings_error_desc' => 'Your Rich Text Editor Settings could not be saved. Please try again.',
 'toolset_deleted' => 'Toolset deleted successfully.',
 'toolset_not_deleted' => 'Toolset could not be deleted.',
 'toolset_edit_failed' => 'Toolset could not be opened for editing.',
