@@ -2,13 +2,14 @@
 	<h1><?=lang($header)?> <span class="required intitle">&#10033; Required Fields</span></h1>
 	<?=form_open($form_action, 'class="settings"')?>
 		<?php $this->ee_view('_shared/alerts')?>
-		<fieldset class="col-group">
+		<fieldset class="col-group <?=form_error_class('toolset_name')?>">
 			<div class="setting-txt col w-8">
 				<h3><?=lang('tool_set_name')?> <span class="required" title="required field">&#10033;</span></h3>
 				<em><?=lang('tool_set_name_desc')?></em>
 			</div>
 			<div class="setting-field col w-8 last">
-				<input class="required" type="text" name="toolset_name" value="<?=set_value('toolset_name', $toolset_name)?>">
+				<input class="required" type="text" name="toolset_name" value="<?=$toolset_name?>">
+				<?=form_error('toolset_name')?>
 			</div>
 		</fieldset>
 		<fieldset class="col-group last">

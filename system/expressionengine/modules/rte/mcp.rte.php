@@ -269,7 +269,7 @@ class Rte_mcp {
 	 */
 	public function save_toolset()
 	{
-		ee()->rte_lib->save_toolset();
+		return ee()->rte_lib->save_toolset();
 	}
 
 	// --------------------------------------------------------------------

@@ -60,7 +60,7 @@ class Rte_lib {
 
 		if ( ! is_numeric($toolset_id))
 		{
-			exit();
+			exit(); // @TODO This seems like a bad idea
 		}
 
 		ee()->output->enable_profiler(FALSE);
@@ -70,7 +70,7 @@ class Rte_lib {
 		$vars = array(
 			'form_action'	=> cp_url('addons/settings/rte/save_toolset', array('toolset_id' => $toolset_id)),
 			'header'		=> '',
-			'toolset_name'	=> '',
+			'toolset_name'	=> set_value('toolset_name'),
 			'tools'			=> array(),
 			'btn_save_text'	=> '',
 		);
@@ -95,7 +95,7 @@ class Rte_lib {
 
 			// grab the toolset
 			$toolset = ee()->rte_toolset_model->get($toolset_id);
-			$vars['toolset_name'] = $toolset['name'];
+			$vars['toolset_name'] = set_value('toolset_name', $toolset['name']);
 		}
 
 		// get list of enabled tools
@@ -145,6 +145,16 @@ class Rte_lib {
 			$success_url = cp_url('addons/settings/rte');
 		}
 
+		// set up the validation
+		ee()->load->library('form_validation');
+		ee()->form_validation->set_rules('toolset_name', 'lang:tool_set_name', 'required|callback__valid_name|callback__unique_name');
+
+		if (ee()->form_validation->run() === FALSE)
+		{
+			ee()->view->set_message('issue', lang('toolset_error'), lang('toolset_error_desc'));
+			return $this->edit_toolset($toolset_id);
+		}
+
 		$toolset = array(
 			'name'      => ee()->input->post('toolset_name'),
 			'tools'     => implode('|', ee()->input->post('tools')),
@@ -152,29 +162,6 @@ class Rte_lib {
 
 		// is this an individual’s private toolset?
 		$is_members = (ee()->input->get_post('private') == 'true');
-
-		// did an empty name sneak through?
-		if (empty($toolset['name']))
-		{
-			ee()->view->set_message('issue', lang('toolset_error'), lang('name_required'), TRUE);
-			ee()->functions->redirect($error_url);
-		}
-
-		// check name for XSS
-		if ($toolset['name'] != strip_tags($toolset['name'])
-			OR $toolset['name'] != htmlentities($toolset['name'])
-			OR $toolset['name'] != ee()->security->xss_clean($toolset['name']))
-		{
-			ee()->view->set_message('issue', lang('toolset_error'), lang('valid_name_required'), TRUE);
-			ee()->functions->redirect($error_url);
-		}
-
-		// is the name unique?
-		if ( ! $is_members && ! ee()->rte_toolset_model->unique_name($toolset['name'], $toolset_id))
-		{
-			ee()->view->set_message('issue', lang('toolset_error'), lang('unique_name_required'), TRUE);
-			ee()->functions->redirect($error_url);
-		}
 
 		// Updating? Make sure the toolset exists and they aren't trying any
 		// funny business...
@@ -736,6 +723,50 @@ class Rte_lib {
 		}
 
 		return $js;
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Tool Set Valid Name handler
+	 *
+	 * @return bool
+	 */
+	public function _valid_name($str)
+	{
+		die("YUP!"); // @TODO Why is this never happening?
+		// check name for XSS
+		if ($str != strip_tags($str)
+			OR $str != htmlentities($str)
+			OR $str != ee()->security->xss_clean($str))
+		{
+			ee()->form_validation->set_message('_valid_name', lang('valid_name_required'));
+			return FALSE;
+		}
+
+		return TRUE;
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Tool Set Unique Name handler
+	 *
+	 * @return bool
+	 */
+	public function _unique_name($str)
+	{
+		$toolset_id = ee()->input->get_post('toolset_id');
+		$is_members = (ee()->input->get_post('private') == 'true');
+
+		// is the name unique?
+		if ( ! $is_members && ! ee()->rte_toolset_model->unique_name($str, $toolset_id))
+		{
+			ee()->form_validation->set_message('_unique_name', lang('unique_name_required'));
+			return FALSE;
+		}
+
+		return TRUE;
 	}
 }
 
