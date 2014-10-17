@@ -6,6 +6,7 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
+use EllisLab\ExpressionEngine\Library\CP\URL;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -37,18 +38,120 @@ class MemberList extends Members {
 	 */
 	public function index()
 	{
-		ee()->load->model('language_model');
-		ee()->load->model('admin_model');
-		
-		$vars['sections'] = array();
-		$base_url = cp_url('members/member-list');
+		$base_url = new URL('members/member-list', ee()->session->session_id());
+
+		if ( ! empty($this->group))
+		{
+			$members = ee()->api->get('Member')->filter('group_id', $this->group)->order('username', 'asc')->all();
+		}
+		else
+		{
+			$members = ee()->api->get('Member')->order('username', 'asc')->all();
+		}
+
+		$groups = ee()->api->get('MemberGroup')->order('group_title', 'asc')->all();
+		$vars = array();
+		$data = array();
+		$group_ids = array();
+		$member_groups = array(cp_url('members/member-list') => 'All');
+
+		foreach ($groups as $group)
+		{
+			$group_ids[$group->group_id] = $group->group_title;
+			$member_groups[cp_url('members/member-list/filter/' . $group->group_id)] = $group->group_title;
+		}
+
+		$vars['groups'] = array(
+			'filters' => array(
+				array(
+					'label' => 'member group',
+					'value' => empty($this->group) ? 'All' : $group_ids[$this->group],
+					'name' => '',
+					'custom_value' => '',
+					'placeholder' => '',
+					'options' => $member_groups
+				)
+			)
+		);
+
+		foreach ($members as $member)
+		{
+			$data[] = array(
+				'id'	=> $member->member_id,
+				'username'	=> $member->username,
+				'member_group'	=> $member->getMemberGroup()->group_title,
+				array('toolbar_items' => array(
+					'edit' => array(
+						'href' => cp_url('members/edit/' . $member->member_id),
+						'title' => strtolower(lang('edit'))
+					)
+				)),
+				array(
+					'name' => 'selection[]',
+					'value' => $member->member_id
+				)
+			);
+		}
+
+		$table = Table::create(array('autosort' => TRUE, 'autosearch' => TRUE));
+		$table->setColumns(
+			array(
+				'id',
+				'username',
+				'member_group',
+				'manage' => array(
+					'type'	=> Table::COL_TOOLBAR
+				),
+				array(
+					'type'	=> Table::COL_CHECKBOX
+				)
+			)
+		);
+
+		$table->setNoResultsText('no_search_results');
+		$table->setData($data);
+		$vars['table'] = $table->viewData($base_url);
+
+		$base_url = $vars['table']['base_url'];
+
+		if ( ! empty($vars['table']['data']))
+		{
+			// Paginate!
+			$pagination = new Pagination(
+				$vars['table']['limit'],
+				$vars['table']['total_rows'],
+				$vars['table']['page']
+			);
+			$vars['pagination'] = $pagination->cp_links($base_url);
+		}
+
+		// Set search results heading
+		if ( ! empty($vars['table']['search']))
+		{
+			ee()->view->cp_heading = sprintf(
+				lang('search_results_heading'),
+				$vars['table']['total_rows'],
+				$vars['table']['search']
+			);
+		}
 
 		ee()->view->base_url = $base_url;
 		ee()->view->ajax_validate = TRUE;
-		ee()->view->cp_page_title = lang('general_settings');
-		ee()->view->save_btn_text = 'btn_save_settings';
-		ee()->view->save_btn_text_working = 'btn_save_settings_working';
+		ee()->view->cp_page_title = lang('all_members');
 		ee()->cp->render('members/view_members', $vars);
+	}
+
+	/**
+	 * Filter the member list by the group
+	 * 
+	 * @param mixed $group 
+	 * @access public
+	 * @return void
+	 */
+	public function filter($group)
+	{
+		$this->group = $group;
+		$this->index();
 	}
 }
 // END CLASS
