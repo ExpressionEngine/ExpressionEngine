@@ -106,9 +106,11 @@ class Rte_lib {
 			$name_key = strtolower($tool['class']);
 			$desc_key = $name_key . '_desc';
 
+			$selected = set_value('tools', $toolset['tools']);
+
 			$vars['tools'][] = array(
 				'id'		=> $tool['tool_id'],
-				'selected'	=> (array_search($tool['tool_id'], $toolset['tools']) !== FALSE) ? TRUE : FALSE,
+				'selected'	=> in_array($tool['tool_id'], $selected),
 				'name'		=> (lang($name_key) != $name_key) ? lang($name_key) : $tool['name'],
 				'desc'		=> (lang($desc_key) != $desc_key) ? lang($desc_key) : ''
 			);
