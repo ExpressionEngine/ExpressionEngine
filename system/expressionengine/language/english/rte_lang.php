@@ -57,6 +57,7 @@ $lang = array(
 'toolset_not_deleted' => 'Tool set could not be deleted.',
 'toolset_edit_failed' => 'Tool set could not be opened for editing.',
 'toolset_error' => 'Tool set error',
+'toolset_error_desc'	=> 'We were unable to save the tool set, pelase review and fix errors below.',
 'toolset_updated' => 'Tool set updated',
 'toolset_updated_desc' => '',
 'toolset_created' => 'Tool set created',
@@ -65,9 +66,9 @@ $lang = array(
 'tool_updated' => 'Tool updated',
 'tool_update_failed' => 'Tool update failed. Please try again.',
 'valid_url_required' => 'A valid URL is required.',
-'name_required' => 'The Tool set Name is required.',
-'unique_name_required' => 'The Tool set Name must be unique.',
-'valid_name_required' => 'The Tool set Name must not include special characters.',
+'name_required' => 'The tool set name is required.',
+'unique_name_required' => 'The tool set name must be unique.',
+'valid_name_required' => 'The tool set name must not include special characters.',
 
 // Labels
 'enable_rte_globally' => 'Enable Rich Text Editor',
