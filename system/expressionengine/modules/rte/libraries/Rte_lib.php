@@ -67,8 +67,25 @@ class Rte_lib {
 
 		ee()->load->model(array('rte_toolset_model','rte_tool_model'));
 
+		if (count($_POST))
+		{
+			// set up the validation
+			ee()->load->library('form_validation');
+			ee()->form_validation->setCallbackObject($this);
+			ee()->form_validation->set_rules('toolset_name', 'lang:tool_set_name', 'required|callback__valid_name|callback__unique_name');
+
+			if (ee()->form_validation->run() === FALSE)
+			{
+				ee()->view->set_message('issue', lang('toolset_error'), lang('toolset_error_desc'), TRUE);
+			}
+			else
+			{
+				return $this->save_toolset();
+			}
+		}
+
 		$vars = array(
-			'form_action'	=> cp_url('addons/settings/rte/save_toolset', array('toolset_id' => $toolset_id)),
+			'form_action'	=> '',
 			'header'		=> '',
 			'toolset_name'	=> set_value('toolset_name'),
 			'tools'			=> array(),
@@ -78,12 +95,14 @@ class Rte_lib {
 		// new toolset?
 		if ($toolset_id == 0)
 		{
+			$vars['form_action'] = cp_url('addons/settings/rte/new_toolset');
 			$vars['header'] = 'create_tool_set_header';
 			$vars['btn_save_text'] = 'create_tool_set';
 			$toolset['tools'] = array();
 		}
 		else
 		{
+			$vars['form_action'] = cp_url('addons/settings/rte/edit_toolset', array('toolset_id' => $toolset_id));
 			$vars['header'] = 'edit_tool_set_header';
 			$vars['btn_save_text'] = 'edit_tool_set';
 
@@ -124,10 +143,10 @@ class Rte_lib {
 	/**
 	 * Saves a toolset
 	 *
-	 * @access	public
+	 * @access	private
 	 * @return	void
 	 */
-	public function save_toolset()
+	private function save_toolset()
 	{
 		ee()->output->enable_profiler(FALSE);
 
@@ -145,17 +164,6 @@ class Rte_lib {
 		{
 			$error_url = cp_url('addons/settings/rte/new_toolset');
 			$success_url = cp_url('addons/settings/rte');
-		}
-
-		// set up the validation
-		ee()->load->library('form_validation');
-		ee()->form_validation->setCallbackObject($this);
-		ee()->form_validation->set_rules('toolset_name', 'lang:tool_set_name', 'required|callback__valid_name|callback__unique_name');
-
-		if (ee()->form_validation->run() === FALSE)
-		{
-			ee()->view->set_message('issue', lang('toolset_error'), lang('toolset_error_desc'));
-			return $this->edit_toolset($toolset_id);
 		}
 
 		$toolset = array(

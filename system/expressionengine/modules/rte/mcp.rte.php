@@ -262,19 +262,6 @@ class Rte_mcp {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Saves a toolset
-	 *
-	 * @access	public
-	 * @return	void
-	 */
-	public function save_toolset()
-	{
-		return ee()->rte_lib->save_toolset();
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Enables or disables a toolset
 	 *
 	 * @access	public
