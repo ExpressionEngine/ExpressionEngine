@@ -198,11 +198,11 @@ class Login extends CP_Controller {
 			if (strpos($return_path, '{') === 0)
 			{
 				$uri_elements = json_decode($return_path, TRUE);
-				$return_uri = cp_url($uri_elements['path'], $uri_elements['arguments']);
+				$return_path = cp_url($uri_elements['path'], $uri_elements['arguments']);
 			}
 			else
 			{
-				$return_uri = ee()->uri->reformat($base.AMP.$return_path, $base);
+				$return_path = ee()->uri->reformat($base.AMP.$return_path, $base);
 			}
 		}
 
@@ -215,7 +215,7 @@ class Login extends CP_Controller {
 			));
 		}
 
-		$this->functions->redirect($return_uri);
+		$this->functions->redirect($return_path);
 	}
 
 	// --------------------------------------------------------------------
