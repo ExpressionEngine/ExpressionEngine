@@ -147,6 +147,7 @@ class Rte_lib {
 
 		// set up the validation
 		ee()->load->library('form_validation');
+		ee()->form_validation->setCallbackObject($this);
 		ee()->form_validation->set_rules('toolset_name', 'lang:tool_set_name', 'required|callback__valid_name|callback__unique_name');
 
 		if (ee()->form_validation->run() === FALSE)
@@ -734,7 +735,6 @@ class Rte_lib {
 	 */
 	public function _valid_name($str)
 	{
-		die("YUP!"); // @TODO Why is this never happening?
 		// check name for XSS
 		if ($str != strip_tags($str)
 			OR $str != htmlentities($str)
