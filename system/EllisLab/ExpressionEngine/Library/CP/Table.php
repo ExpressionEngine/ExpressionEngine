@@ -36,9 +36,9 @@ class Table {
 	const COL_TOOLBAR = 4;
 	const COL_ID = 5;
 
-	private $columns = array();
-	private $config = array();
-	private $data = array();
+	protected $columns = array();
+	protected $config = array();
+	protected $data = array();
 
 	/**
 	 * Config can have these keys:
@@ -103,7 +103,7 @@ class Table {
 	 * Convenience method for initializing a Table object with current
 	 * sort parameters within an EE controller
 	 *
-	 * @param	array 	$columns	Column names and settings
+	 * @param	array 	$config	See constructor doc block
 	 * @return  object	New Table object
 	 */
 	public static function create($config = array())
@@ -533,18 +533,6 @@ class Table {
 			'action_text'	=> $action_text,
 			'action_link'	=> $action_link
 		);
-	}
-
-	/**
-	 * Set the empty row elements for new/empty rows in a Grid input table
-	 *
-	 * @param	array	$row	Array of empty field elements to be duplicated
-	 *                   		for each new row the user creates
-	 * @return  void
-	 */
-	public function setBaseGridRow($row)
-	{
-		$this->config['grid_base_row'] = $row;
 	}
 }
 
