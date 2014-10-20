@@ -148,6 +148,7 @@ class Rte_lib {
 		// set up the validation
 		ee()->load->library('form_validation');
 		ee()->form_validation->set_rules('toolset_name', 'lang:tool_set_name', 'required|callback__valid_name|callback__unique_name');
+		ee()->form_validation->set_fieldtype($this);
 
 		if (ee()->form_validation->run() === FALSE)
 		{

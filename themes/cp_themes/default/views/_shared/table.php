@@ -55,7 +55,7 @@ if ($wrap): ?>
 					</th>
 				<?php endif ?>
 			<?php endforeach ?>
-			<?php if ($grid_input): ?>
+			<?php if ($grid_input && ! empty($data)): ?>
 				<th class="last grid-remove"></th>
 			<?php endif ?>
 		</tr>
@@ -110,7 +110,7 @@ if ($wrap): ?>
 					<?php endif ?>
 				<?php endforeach ?>
 				<?php if ($grid_input): ?>
-					<td class="last">
+					<td>
 						<ul class="toolbar">
 							<li class="remove"><a href="#" title="remove row"></a></li>
 						</ul>
