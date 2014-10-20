@@ -60,7 +60,7 @@ class Rte_lib {
 
 		if ( ! is_numeric($toolset_id))
 		{
-			exit(); // @TODO This seems like a bad idea
+			show_404();
 		}
 
 		ee()->output->enable_profiler(FALSE);
@@ -90,7 +90,7 @@ class Rte_lib {
 			// make sure user can access the existing toolset
 			if ( ! ee()->rte_toolset_model->member_can_access($toolset_id))
 			{
-				show_error(lang('toolset_edit_failed'));
+				show_404(lang('toolset_edit_failed'));
 			}
 
 			// grab the toolset
