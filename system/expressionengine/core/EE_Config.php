@@ -1219,19 +1219,19 @@ class EE_Config Extends CI_Config {
 				'multiple_sites_enabled' => array('r', array('y' => 'yes', 'n' => 'no')),
 				'is_system_on'           => array('r', array('y' => 'yes', 'n' => 'no')),
 				'is_site_on'             => array('r', array('y' => 'yes', 'n' => 'no')),
-				'site_name'              => array('i', '', 'required|strip_tags|valid_xss_check'),
-				'site_index'             => array('i', '', 'strip_tags|valid_xss_check'),
-				'site_url'               => array('i', '', 'required|strip_tags|valid_xss_check'),
-				'cp_url'                 => array('i', '', 'required|strip_tags|valid_xss_check'),
-				'theme_folder_url'       => array('i', '', 'required|strip_tags|valid_xss_check'),
-				'theme_folder_path'      => array('i', '', 'required|strip_tags|valid_xss_check'),
+				'site_name'              => array('i', '', 'required|strip_tags|trim|valid_xss_check'),
+				'site_index'             => array('i', '', 'strip_tags|trim|valid_xss_check'),
+				'site_url'               => array('i', '', 'required|strip_tags|trim|valid_xss_check'),
+				'cp_url'                 => array('i', '', 'required|strip_tags|trim|valid_xss_check'),
+				'theme_folder_url'       => array('i', '', 'required|strip_tags|trim|valid_xss_check'),
+				'theme_folder_path'      => array('i', '', 'required|strip_tags|trim|valid_xss_check'),
 				'cp_theme'               => array('f', 'theme_menu'),
 				'deft_lang'              => array('f', 'language_menu'),
 				'xml_lang'               => array('f', 'fetch_encoding'),
 				'caching_driver'         => array('f', 'caching_driver'),
 				'max_caches'             => array('i', '', 'numeric'),
 				'new_version_check'      => array('r', array('y' => 'yes', 'n' => 'no')),
-				'doc_url'                => array('i', '', 'strip_tags|valid_xss_check'),
+				'doc_url'                => array('i', '', 'strip_tags|trim|valid_xss_check'),
 			),
 
 			'db_cfg'			=>	array(
@@ -1295,8 +1295,8 @@ class EE_Config Extends CI_Config {
 				'time_interval'      => array('i', ''),
 				'lockout_time'       => array('i', ''),
 				'banishment_type'    => array('s', array('404' => '404_page', 'redirect' => 'url_redirect', 'message' => 'show_message')),
-				'banishment_url'     => array('i', '', 'strip_tags|valid_xss_check'),
-				'banishment_message' => array('i', '', 'strip_tags|valid_xss_check')
+				'banishment_url'     => array('i', '', 'strip_tags|trim|valid_xss_check'),
+				'banishment_message' => array('i', '', 'strip_tags|trim|valid_xss_check')
 			),
 
 			'localization_cfg'	=>	array(
@@ -1308,7 +1308,7 @@ class EE_Config Extends CI_Config {
 
 			'email_cfg'			=>	array(
 				'webmaster_email'        => array('i', '', 'required|valid_email'),
-				'webmaster_name'         => array('i', '', 'strip_tags|valid_xss_check'),
+				'webmaster_name'         => array('i', '', 'strip_tags|trim|valid_xss_check'),
 				'email_charset'          => array('i', ''),
 				'email_debug'            => array('r', array('y' => 'yes', 'n' => 'no')),
 				'mail_protocol'          => array('s', array('mail' => 'php_mail', 'sendmail' => 'sendmail', 'smtp' => 'smtp')),
@@ -1332,8 +1332,8 @@ class EE_Config Extends CI_Config {
 			),
 
 			'captcha_cfg'		=>	array(
-				'captcha_path'            => array('i', '', 'strip_tags|valid_xss_check'),
-				'captcha_url'             => array('i', '', 'strip_tags|valid_xss_check'),
+				'captcha_path'            => array('i', '', 'strip_tags|trim|valid_xss_check'),
+				'captcha_url'             => array('i', '', 'strip_tags|trim|valid_xss_check'),
 				'captcha_font'            => array('r', array('y' => 'yes', 'n' => 'no')),
 				'captcha_rand'            => array('r', array('y' => 'yes', 'n' => 'no')),
 				'captcha_require_members' => array('r', array('y' => 'yes', 'n' => 'no'))
@@ -1356,7 +1356,7 @@ class EE_Config Extends CI_Config {
 
 			'censoring_cfg'		=>	array(
 				'enable_censoring'   => array('r', array('y' => 'yes', 'n' => 'no')),
-				'censor_replacement' => array('i', '', 'strip_tags|valid_xss_check'),
+				'censor_replacement' => array('i', '', 'strip_tags|trim|valid_xss_check'),
 				'censored_words'     => array('t', array('rows' => '20', 'kill_pipes' => TRUE)),
 			),
 
@@ -1368,7 +1368,7 @@ class EE_Config Extends CI_Config {
 
 			'emoticon_cfg'		=>	array(
 				'enable_emoticons' => array('r', array('y' => 'yes', 'n' => 'no')),
-				'emoticon_url'     => array('i', '', 'strip_tags|valid_xss_check')
+				'emoticon_url'     => array('i', '', 'strip_tags|trim|valid_xss_check')
 			),
 
 			'tracking_cfg'		=>	array(
