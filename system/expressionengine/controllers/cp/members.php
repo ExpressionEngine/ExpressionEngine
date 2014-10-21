@@ -3012,7 +3012,8 @@ class Members extends CP_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		if ( ! ($m_field_id = $this->input->get_post('m_field_id')))
+		if ( ! ($m_field_id = $this->input->get_post('m_field_id', TRUE))
+			&& ! filter_var($m_field_id, FILTER_VALIDATE_INT))
 		{
 			return FALSE;
 		}
