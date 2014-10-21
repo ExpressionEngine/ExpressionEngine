@@ -2923,7 +2923,9 @@ class Design extends CP_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$path = PATH_MBR_THEMES.$this->security->sanitize_filename($this->input->get_post('name'));
+		$path = PATH_MBR_THEMES.$this->security->sanitize_filename(
+			$this->input->get_post('name')
+		);
 
 		if ( ! is_dir($path))
 		{
@@ -2974,15 +2976,18 @@ class Design extends CP_Controller {
 
 		if ($theme == '')
 		{
-			$theme = $this->input->get_post('theme');
+			$theme = $this->input->get_post('theme', TRUE);
 		}
 
 		if ($name == '')
 		{
-			$name = $this->input->get_post('name');
+			$name = $this->input->get_post('name', TRUE);
 		}
 
-		$path = PATH_MBR_THEMES.$this->security->sanitize_filename($theme).'/'.$name;
+		$path = PATH_MBR_THEMES
+			.$this->security->sanitize_filename($theme)
+			.'/'
+			.$this->security->sanitize_filename($name);
 
 		if ( ! file_exists($path))
 		{
