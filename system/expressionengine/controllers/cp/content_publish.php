@@ -584,10 +584,12 @@ class Content_publish extends CP_Controller {
 	 */
 	function view_entry()
 	{
-		$entry_id	= $this->input->get('entry_id');
-		$channel_id	= $this->input->get('channel_id');
+		$entry_id   = $this->input->get('entry_id', TRUE);
+		$channel_id = $this->input->get('channel_id', TRUE);
 
-		if ( ! $channel_id OR ! $entry_id OR ! $this->cp->allowed_group('can_access_content'))
+		if ( ! filter_var($channel_id, FILTER_VALIDATE_INT)
+			OR ! filter_var($entry_id, FILTER_VALIDATE_INT)
+			OR ! $this->cp->allowed_group('can_access_content'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -694,7 +696,7 @@ class Content_publish extends CP_Controller {
 		{
 			$show_edit_link .= AMP.'filter='.$filter_link;
 
-			$filters	 = unserialize(base64_decode($filter_link));
+			$filters     = unserialize(base64_decode($filter_link));
 			$filter_link = BASE.AMP.'C=content_edit';
 
 			if (isset($filters['keywords']))
