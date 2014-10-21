@@ -69,8 +69,10 @@ class Localize {
 	 * Converts a human-readable date (and possibly time) to a Unix timestamp
 	 * using the current member's locale
 	 *
-	 * @param	string	Human-readable date
-	 * @param	bool	Is the human date prelocalized?
+	 * @param	string	$human_string	Human-readable date
+	 * @param	bool	$localized		Is the human date prelocalized?
+	 * @param	string	$date_format	(optional) The date format to use when
+	 *									parsing $human_string
 	 * @return	mixed	int if successful, otherwise FALSE
 	 */
 	public function string_to_timestamp($human_string, $localized = TRUE, $date_format = NULL)
