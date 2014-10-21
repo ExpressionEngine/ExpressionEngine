@@ -361,11 +361,11 @@ class Design extends CP_Controller {
 
 		if ($group_id == '')
 		{
-			$group_id = $this->input->get_post('group_id');
+			$group_id = $this->input->get_post('group_id', TRUE);
 		}
 
 		// if its still blank, make them choose a template
-		if ($group_id == '')
+		if ($group_id == '' OR ! filter_var($group_id, FILTER_VALIDATE_INT))
 		{
 			return $this->template_group_pick();
 		}
