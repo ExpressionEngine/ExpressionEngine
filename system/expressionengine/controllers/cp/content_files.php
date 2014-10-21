@@ -1811,13 +1811,12 @@ class Content_files extends CP_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$id = $this->input->get_post('id');
+		$id = $this->input->get_post('id', TRUE);
 
-		if ( ! $id)
+		if ( ! $id OR ! filter_var($id, FILTER_VALIDATE_INT))
 		{
 			show_error(lang('unauthorized_access'));
 		}
-
 
 		$name = $this->file_model->delete_watermark_preferences($id);
 
