@@ -2593,8 +2593,8 @@ class MyAccount extends CP_Controller {
 
 		// Check for a method_save get variable, if it doesn't exist, assume
 		// it's the method name with _save at the end (e.g. method_save)
-		$method_save	= ($this->input->get_post('method_save')) ?
-			strtolower($this->input->get_post('method_save')) :
+		$method_save	= ($this->input->get_post('method_save', TRUE)) ?
+			strtolower($this->input->get_post('method_save', TRUE)) :
 			$method.'_save';
 
 		$class_name = ucfirst($extension).'_ext';
