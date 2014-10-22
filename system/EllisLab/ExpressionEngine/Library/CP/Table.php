@@ -45,10 +45,21 @@ class Table {
 	 *
 	 * 'sort_col' - Name of the column currently sorting
 	 * 'sort_dir' - Direction of the sort, 'asc' or 'desc'
-	 * 'search' - Search text
+	 * 'search' - Search text to search table with
 	 * 'wrap' - Whether or not to wrap the table in a div that allows overflow scrolling
-	 * 'autosort' - Handle sorting automatically, this is good for non-paginated data
+	 * 'autosort' - Handle sorting automatically, this expects the entire dataset to be
+	 * 		set via setData(); if only a partial dataset is set, handle sorting manually
+	 * 'autosearch' - Handle searching automatically, this expects the entire dataset to be
+	 * 		set via setData(); if only a partial dataset is set, handle sorting manually
 	 * 'lang_cols' - Run column names though lang() on the front end
+	 * 'limit' - Row limit for the table, automatic pagination is based on this
+	 * 'page' - Current page
+	 * 'total_rows' - Total rows in the dataset regardless of limit or page number
+	 * 'sortable' - Whether or not to allow the columns to sort the table, this can
+	 * 		also be controlled on a column-by-column basis
+	 *
+	 * 'grid_input' - Whether or not this table is being used as a Grid input UI
+	 * 'reorder' - Whether or not to allow this Grid to have its rows reordered
 	 *
 	 * @param	array 	$config	See above for options
 	 */
