@@ -7,12 +7,12 @@
 		<input class="btn submit" type="submit" value="<?=lang('search_members_button')?>">
 	</fieldset>
 	<h1>
-		<?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?>
 		<ul class="toolbar">
 			<li class="settings">
 				<a href="<?=cp_url('settings/members')?>" title="<?=lang('member_settings')?>"></a>
 			</li>
 		</ul>
+		<?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?>
 	</h1>
 
 	<?php $this->view('_shared/filters', $groups)?>
@@ -21,7 +21,7 @@
 
 	<?php $this->view('_shared/table', $table); ?>
 
-	<?php $this->view('_shared/pagination'); ?>
+	<?php if ( ! empty($pagination)) $this->view('_shared/pagination', $pagination); ?>
 
 	<?php if ( ! empty($table['data'])): ?>
 	<fieldset class="tbl-bulk-act">

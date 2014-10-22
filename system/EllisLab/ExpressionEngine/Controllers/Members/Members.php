@@ -79,28 +79,52 @@ class Members extends CP_Controller {
 	{
 		$base_url = new URL($this->base_url, ee()->session->session_id());
 
-		if ( ! empty($this->group))
+		// creating a member automatically fills the search box
+		if ( ! ($member_name = $this->input->get('search')) &&
+			 ! ($member_name = $this->session->flashdata('username')))
 		{
-			$members = ee()->api->get('Member')->filter('group_id', $this->group)->order('username', 'asc')->all();
-		}
-		else
-		{
-			$members = ee()->api->get('Member')->order('username', 'asc')->all();
+			$member_name = '';
 		}
 
+		// Get order by and sort preferences for our initial state
+		$order_by = ($this->config->item('memberlist_order_by')) ?
+			$this->config->item('memberlist_order_by') : 'member_id';
+		$sort = ($this->config->item('memberlist_sort_order')) ?
+			$this->config->item('memberlist_sort_order') : 'asc';
+
+		$perpage = $this->config->item('memberlist_row_limit');
+		$sort_col = ee()->input->get('sort_col') ?: $order_by;
+		$sort_dir = ee()->input->get('sort_dir') ?: $sort;
+		$page = ee()->input->get('page') > 0 ? ee()->input->get('page') : 1;
+
+		$table = Table::create(array(
+			'sort_col' => $sort_col,
+			'sort_dir' => $sort_dir,
+			'limit' => $perpage
+		));
+
+		$state = array(
+			'sort'	=> array($sort_col => $sort_dir),
+			'offset' => ! empty (ee()->input->get('page')) ? (ee()->input->get('page') - 1) * $perpage: 0
+		);
+
+		$params = array(
+			'member_name' => $member_name,
+			'perpage'	=> $perpage
+		);
+
+		$data = $this->_member_search($state, $params);
 		$groups = ee()->api->get('MemberGroup')->order('group_title', 'asc')->all();
-		$vars = array();
-		$data = array();
 		$group_ids = array();
-		$member_groups = array(cp_url('members/member-list') => 'All');
+		$member_groups = array(cp_url('members') => 'All');
 
 		foreach ($groups as $group)
 		{
 			$group_ids[$group->group_id] = $group->group_title;
-			$member_groups[cp_url('members/member-list/filter/' . $group->group_id)] = $group->group_title;
+			$member_groups[cp_url('members/filter/' . $group->group_id)] = $group->group_title;
 		}
 
-		$vars['groups'] = array(
+		$data['groups'] = array(
 			'filters' => array(
 				array(
 					'label' => 'member group',
@@ -113,29 +137,11 @@ class Members extends CP_Controller {
 			)
 		);
 
-		foreach ($members as $member)
-		{
-			$data[] = array(
-				'id'	=> $member->member_id,
-				'username'	=> $member->username,
-				'member_group'	=> $member->getMemberGroup()->group_title,
-				array('toolbar_items' => array(
-					'edit' => array(
-						'href' => cp_url('members/edit/' . $member->member_id),
-						'title' => strtolower(lang('edit'))
-					)
-				)),
-				array(
-					'name' => 'selection[]',
-					'value' => $member->member_id
-				)
-			);
-		}
-
-		$table = Table::create(array('autosort' => TRUE, 'autosearch' => TRUE));
 		$table->setColumns(
 			array(
-				'id',
+				'member_id' => array(
+					'type'	=> Table::COL_ID
+				),
 				'username',
 				'member_group',
 				'manage' => array(
@@ -148,36 +154,35 @@ class Members extends CP_Controller {
 		);
 
 		$table->setNoResultsText('no_search_results');
-		$table->setData($data);
-		$vars['table'] = $table->viewData($base_url);
+		$table->setData($data['rows']);
+		$data['table'] = $table->viewData($base_url);
 
-		$base_url = $vars['table']['base_url'];
+		$base_url = $data['table']['base_url'];
 
-		if ( ! empty($vars['table']['data']))
+		if ( ! empty($data['table']['data']))
 		{
-			// Paginate!
 			$pagination = new Pagination(
-				$vars['table']['limit'],
-				$vars['table']['total_rows'],
-				$vars['table']['page']
+				$data['per_page'],
+				$data['total_rows'],
+				$page
 			);
-			$vars['pagination'] = $pagination->cp_links($base_url);
+			$data['pagination'] = $pagination->cp_links($base_url);
 		}
 
 		// Set search results heading
-		if ( ! empty($vars['table']['search']))
+		if ( ! empty($data['table']['search']))
 		{
 			ee()->view->cp_heading = sprintf(
 				lang('search_results_heading'),
-				$vars['table']['total_rows'],
-				$vars['table']['search']
+				$data['table']['total_rows'],
+				$data['table']['search']
 			);
 		}
 
 		ee()->view->base_url = $base_url;
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->cp_page_title = lang('all_members');
-		ee()->cp->render('members/view_members', $vars);
+		ee()->cp->render('members/view_members', $data);
 	}
 
 	/**
@@ -193,6 +198,111 @@ class Members extends CP_Controller {
 		$this->base_url = 'members/filter/' . $group;
 		$this->index();
 	}
+
+	// ----------------------------------------------------------------
+
+	/**
+	 * member search
+	 *
+	 * @return void
+	 */
+	public function _member_search($state, $params)
+	{
+		$search_value = $params['member_name'];
+		$group_id = $this->group ?: '';
+		$column_filter = ($this->input->get_post('column_filter')) ? $this->input->get_post('column_filter') : 'all';
+
+		// Check for search tokens within the search_value
+		$search_value = $this->_check_search_tokens($search_value);
+
+		$perpage = $this->input->get_post('perpage');
+		$perpage = $perpage ? $perpage : $params['perpage'];
+
+		$members = $this->member_model->get_members($group_id, $perpage, $state['offset'], $search_value, $state['sort'], $column_filter);
+		$members = $members ? $members->result_array() : array();
+		$member_groups = $this->member_model->get_member_groups();
+		$groups = array();
+
+		foreach($member_groups->result() as $group)
+		{
+			$groups[$group->group_id] = $group->group_title;
+		}
+
+		$rows = array();
+
+		foreach ($members as $member)
+		{
+			$rows[] = array(
+				'id' => $member['member_id'],
+				'username' => $member['username'] . " (<a href='mailto:{$member['email']}'>e-mail</a>)",
+				'member_group' => $groups[$member['group_id']],
+				array('toolbar_items' => array(
+					'edit' => array(
+						'href' => cp_url('members/edit/' . $member['member_id']),
+						'title' => strtolower(lang('edit'))
+					)
+				)),
+				array(
+					'name' => 'selection[]',
+					'value' => $member['member_id']
+				)
+			);
+		}
+
+		return array(
+			'rows' => $rows,
+			'per_page' => $perpage,
+			'total_rows' => $this->member_model->count_members($group_id, $search_value, $column_filter),
+			'member_name' => $params['member_name'],
+			'member_groups' => $member_groups
+		);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Looks through the member search string for search tokens (e.g. id:3
+	 * or username:john)
+	 *
+	 * @param string $search_string The string to look through for tokens
+	 * @return string/array String if there are no tokens within the
+	 * 	string, otherwise it's an associative array with the tokens as
+	 * 	the keys
+	 */
+	private function _check_search_tokens($search_string = '')
+	{
+		if (strpos($search_string, ':') !== FALSE)
+		{
+			$search_array = array();
+			$tokens = array('id', 'member_id', 'username', 'screen_name', 'email');
+
+			foreach ($tokens as $token)
+			{
+				// This regular expression looks for a token immediately
+				// followed by one of three things:
+				// - a value within double quotes
+				// - a value within single quotes
+				// - a value without spaces
+
+				if (preg_match('/'.$token.'\:((?:"(.*?)")|(?:\'(.*?)\')|(?:[^\s:]+?))(?:\s|$)/i', $search_string, $matches))
+				{
+					// The last item within matches is what we want
+					$search_array[$token] = end($matches);
+				}
+			}
+
+			// If both ID and Member_ID are set, unset ID
+			if (isset($search_array['id']) AND isset($search_array['member_id']))
+			{
+				unset($search_array['id']);
+			}
+
+			return $search_array;
+		}
+
+		return $search_string;
+	}
+
 }
 // END CLASS
 

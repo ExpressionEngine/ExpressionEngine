@@ -88,7 +88,7 @@
 						</div>
 					</li>
 					<li><a href="http://localhost/el-projects/ee-cp/views/files.php"><?=lang('menu_files')?></a></li>
-					<li><a href="<?=cp_url('members/member-list')?>"><?=lang('menu_members')?></a></li>
+					<li><a href="<?=cp_url('members')?>"><?=lang('menu_members')?></a></li>
 				</ul>
 				<ul class="dev-menu">
 					<!-- <li><a href="http://localhost/el-projects/ee-cp/views/design.php">Design</a></li> -->

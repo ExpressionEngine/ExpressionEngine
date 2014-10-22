@@ -379,6 +379,9 @@ $lang = array(
 "group_id" =>
 "Group ID",
 
+"member_id" =>
+"ID",
+
 "no_members_matching_that_criteria" =>
 "There are no members matching the criteria you selected",
 
@@ -861,6 +864,9 @@ $lang = array(
 
 "member_search" =>
 "Member Search",
+
+"search_members_button" =>
+"Search Members",
 
 "member_search_results" =>
 "Member Search Results",
