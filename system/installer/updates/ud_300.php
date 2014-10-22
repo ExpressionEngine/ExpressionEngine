@@ -40,6 +40,7 @@ class Updater {
 			array(
 				'_update_email_cache_table',
 				'_insert_comment_settings_into_db',
+				'_insert_cookie_settings_into_db',
 			)
 		);
 
@@ -102,7 +103,29 @@ class Updater {
 		);
 
 		ee()->config->update_site_prefs($settings, 'all');
-		ee()->config->_update_config('', $settings);
+		ee()->config->_update_config(array(), $settings);
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * cookie_httponly and cookie_secure were only stored in config.php, let's
+	 * pluck them out into the database.
+	 *
+	 * @access private
+	 * @return void
+	 */
+	private function _insert_cookie_settings_into_db()
+	{
+		$settings = array(
+			// Default cookie_httponly to y
+			'cookie_httponly' => ee()->config->item('cookie_httponly') ?: 'y',
+			// Default cookie_secure to n
+			'cookie_secure' => ee()->config->item('cookie_secure') ?: 'n',
+		);
+
+		ee()->config->update_site_prefs($settings, 'all');
+		ee()->config->_update_config(array(), $settings);
 	}
 
 }

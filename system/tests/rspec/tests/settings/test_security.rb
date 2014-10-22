@@ -14,6 +14,8 @@ feature 'Security & Privacy Settings' do
   end
 
   it 'should load current settings into form fields' do
+    cookie_httponly = ee_config(item: 'cookie_httponly')
+    cookie_secure = ee_config(item: 'cookie_secure')
     allow_username_change = ee_config(item: 'allow_username_change')
     allow_multi_logins = ee_config(item: 'allow_multi_logins')
     require_ip_for_login = ee_config(item: 'require_ip_for_login')
@@ -29,6 +31,10 @@ feature 'Security & Privacy Settings' do
     @page.cookie_domain.value.should == ee_config(item: 'cookie_domain')
     @page.cookie_path.value.should == ee_config(item: 'cookie_path')
     @page.cookie_prefix.value.should == ee_config(item: 'cookie_prefix')
+    @page.cookie_httponly_y.checked?.should == (cookie_httponly == 'y')
+    @page.cookie_httponly_n.checked?.should == (cookie_httponly == 'n')
+    @page.cookie_secure_y.checked?.should == (cookie_secure == 'y')
+    @page.cookie_secure_n.checked?.should == (cookie_secure == 'n')
     @page.allow_username_change_y.checked?.should == (allow_username_change == 'y')
     @page.allow_username_change_n.checked?.should == (allow_username_change == 'n')
     @page.un_min_len.value.should == ee_config(item: 'un_min_len')
@@ -109,6 +115,8 @@ feature 'Security & Privacy Settings' do
     @page.website_session_type.select 'Session ID only'
     @page.cookie_domain.set '.yourdomain.com'
     @page.cookie_path.set 'blog'
+    @page.cookie_httponly_n.click
+    # Changing cookie_secure will boot us out of the CP
     @page.allow_username_change_n.click
     @page.un_min_len.set '5'
     @page.allow_multi_logins_n.click
@@ -133,6 +141,7 @@ feature 'Security & Privacy Settings' do
     @page.website_session_type.value.should == 's'
     @page.cookie_domain.value.should == '.yourdomain.com'
     @page.cookie_path.value.should == 'blog'
+    @page.cookie_httponly_n.checked?.should == true
     @page.allow_username_change_n.checked?.should == true
     @page.un_min_len.value.should == '5'
     @page.allow_multi_logins_n.checked?.should == true
