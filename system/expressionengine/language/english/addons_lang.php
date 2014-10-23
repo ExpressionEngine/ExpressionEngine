@@ -11,6 +11,7 @@ $lang = array(
 'search_addons_button'			=>		'search add-ons',
 
 'addon'							=>		'Add-On',
+'addons'						=>		'Add-Ons',
 'no_addon_search_results'		=>		'No <b>Add-Ons</b> Found',
 'no_addon_extensions_search_results'	=>		'No <b>Add-on Extensions</b> Found',
 
@@ -39,7 +40,6 @@ $lang = array(
 'addons_uninstalled_desc'		=>		'The following add-on(s) have been removed: ',
 
 // 2.x
-'addons'						=>		'Add-Ons',
 
 'accessories'					=> 		'Accessories',
 'modules'						=>		'Modules',

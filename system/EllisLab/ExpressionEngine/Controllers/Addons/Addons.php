@@ -272,7 +272,10 @@ class Addons extends CP_Controller {
 					array('toolbar_items' => $toolbar),
 					array(
 						'name' => 'selection[]',
-						'value' => $info['package']
+						'value' => $info['package'],
+						'data'	=> array(
+							'confirm' => lang('addon') . ': <b>' . $info['name'] . '</b>'
+						)
 					)
 				)
 			);
@@ -317,6 +320,26 @@ class Addons extends CP_Controller {
 				$vars['table']['search']
 			);
 		}
+
+		$modal_vars = array(
+			'form_url'	=> $vars['form_url'],
+			'hidden'	=> array(
+				'bulk_action'	=> 'remove'
+			),
+			'checklist'	=> array(
+				array(
+					'kind' => '',
+					'desc' => ''
+				)
+			)
+		);
+
+		$vars['modals']['modal-confirm-all'] = ee()->view->render('_shared/modal-confirm', $modal_vars, TRUE);
+
+		ee()->javascript->set_global('lang.remove_confirm', lang('addon') . ': <b>### ' . lang('addons') . '</b>');
+		ee()->cp->add_js_script(array(
+			'file' => array('cp/addons/index'),
+		));
 
 		ee()->cp->render('addons/index', $vars);
 	}
