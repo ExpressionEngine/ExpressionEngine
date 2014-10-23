@@ -233,7 +233,7 @@ class Addons extends CP_Controller {
 
 			$toolbar = array(
 				'install' => array(
-					'href' => cp_url('addons/install/' . $info['package']),
+					'href' => cp_url('addons/install/' . $info['package'], array('return' => base64_encode(ee()->cp->get_safe_refresh()))),
 					'title' => lang('install'),
 					'class' => 'add'
 				)
@@ -368,6 +368,15 @@ class Addons extends CP_Controller {
 		{
 			ee()->view->set_message('success', lang('addons_installed'), lang('addons_installed_desc') . implode(', ', $installed));
 		}
+
+		if (ee()->input->get('return'))
+		{
+			$return = base64_decode(ee()->input->get('return'));
+			$uri_elements = json_decode($return, TRUE);
+			$return = cp_url($uri_elements['path'], $uri_elements['arguments']);
+
+			ee()->functions->redirect($return);
+		}
 	}
 
 	// --------------------------------------------------------------------
@@ -379,7 +388,7 @@ class Addons extends CP_Controller {
 	 * @param	str|array	$addon	The name(s) of add-ons to uninstall
 	 * @return	void
 	 */
-	public function remove($addons)
+	private function remove($addons)
 	{
 		if ( ! is_array($addons))
 		{
