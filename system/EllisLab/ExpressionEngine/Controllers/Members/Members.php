@@ -80,7 +80,8 @@ class Members extends CP_Controller {
 		$base_url = new URL($this->base_url, ee()->session->session_id());
 
 		// creating a member automatically fills the search box
-		if ( ! ($member_name = $this->input->get('search')) &&
+		if ( ! ($member_name = $this->input->post('search')) &&
+			 ! ($member_name = $this->input->get('search')) &&
 			 ! ($member_name = $this->session->flashdata('username')))
 		{
 			$member_name = '';
@@ -232,20 +233,44 @@ class Members extends CP_Controller {
 
 		foreach ($members as $member)
 		{
-			$rows[] = array(
-				'id' => $member['member_id'],
-				'username' => $member['username'] . " (<a href='mailto:{$member['email']}'>e-mail</a>)",
-				'member_group' => $groups[$member['group_id']],
-				array('toolbar_items' => array(
-					'edit' => array(
-						'href' => cp_url('members/edit/' . $member['member_id']),
-						'title' => strtolower(lang('edit'))
-					)
-				)),
-				array(
-					'name' => 'selection[]',
-					'value' => $member['member_id']
+			$attributes = array();
+			$toolbar = array('toolbar_items' => array(
+				'edit' => array(
+					'href' => cp_url('members/edit/' . $member['member_id']),
+					'title' => strtolower(lang('edit'))
 				)
+			));
+
+			switch ($groups[$member['group_id']])
+			{
+				case 'Banned':
+					$group = "<span class='st-banned'>" . lang('banned') . "</span>";
+					$attributes['class'] = 'alt banned';
+					break;
+				case 'Pending':
+					$group = "<span class='st-pending'>" . lang('pending') . "</span>";
+					$attributes['class'] = 'alt pending';
+					$toolbar['toolbar_items']['approve'] = array(
+						'href' => cp_url('members/approve/' . $member['member_id']),
+						'title' => strtolower(lang('approve'))
+					);
+					break;
+				default:
+					$group = $groups[$member['group_id']];
+			}
+
+			$rows[] = array(
+				'columns' => array(
+					'id' => $member['member_id'],
+					'username' => $member['username'] . " (<a href='mailto:{$member['email']}'>e-mail</a>)",
+					'member_group' => $group,
+					$toolbar,
+					array(
+						'name' => 'selection[]',
+						'value' => $member['member_id']
+					)
+				),
+				'attrs' => $attributes
 			);
 		}
 
