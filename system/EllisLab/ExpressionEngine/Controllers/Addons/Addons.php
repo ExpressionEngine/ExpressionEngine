@@ -83,11 +83,11 @@ class Addons extends CP_Controller {
 	{
 		if (ee()->input->post('bulk_action') == 'install')
 		{
-			return $this->install(ee()->input->post('selection'));
+			$this->install(ee()->input->post('selection'));
 		}
 		elseif (ee()->input->post('bulk_action') == 'remove')
 		{
-			return $this->remove(ee()->input->post('selection'));
+			$this->remove(ee()->input->post('selection'));
 		}
 
 		ee()->view->cp_page_title = lang('addon_manager');
@@ -366,9 +366,8 @@ class Addons extends CP_Controller {
 
 		if ( ! empty($installed))
 		{
-			ee()->view->set_message('success', lang('addons_installed'), lang('addons_installed_desc') . implode(', ', $installed), TRUE);
+			ee()->view->set_message('success', lang('addons_installed'), lang('addons_installed_desc') . implode(', ', $installed));
 		}
-		ee()->functions->redirect(cp_url('addons'));
 	}
 
 	// --------------------------------------------------------------------
@@ -416,9 +415,8 @@ class Addons extends CP_Controller {
 
 		if ( ! empty($uninstalled))
 		{
-			ee()->view->set_message('success', lang('addons_uninstalled'), lang('addons_uninstalled_desc') . implode(', ', $uninstalled), TRUE);
+			ee()->view->set_message('success', lang('addons_uninstalled'), lang('addons_uninstalled_desc') . implode(', ', $uninstalled));
 		}
-		ee()->functions->redirect(cp_url('addons'));
 	}
 
 	// --------------------------------------------------------------------
