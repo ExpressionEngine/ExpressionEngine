@@ -171,7 +171,7 @@ $(document).ready(function(){
 		});
 
 		// listen for clicks to elements with a class of m-link
-		$('.m-link').on('click',function(e){
+		$('body').on('click','.m-link',function(e){
 			// set the heightIs variable
 			// this allows the overlay to be scrolled
 			var heightIs = $(document).height();
