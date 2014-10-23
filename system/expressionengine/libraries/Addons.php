@@ -268,12 +268,18 @@ class EE_Addons {
 	 * Get information on what's installed
 	 *
 	 * @access	private
-	 * @param	string
+	 * @param	string	$type	The type of add-on to filter by
+	 * @param	bool	$reset	Reset the previously saved installed values
 	 * @return	void
 	 */
-	function get_installed($type = 'modules')
+	function get_installed($type = 'modules', $reset = FALSE)
 	{
 		static $_installed = array();
+
+		if ($reset)
+		{
+			$_installed = array();
+		}
 
 		if (isset($_installed[$type]))
 		{

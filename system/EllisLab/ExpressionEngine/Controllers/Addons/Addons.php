@@ -548,7 +548,7 @@ class Addons extends CP_Controller {
 	private function getModules($name = NULL)
 	{
 		$modules = array();
-		$installed = ee()->addons->get_installed();
+		$installed = ee()->addons->get_installed('modules', TRUE);
 
 		foreach(ee()->addons->get_files() as $module => $info)
 		{
@@ -801,7 +801,7 @@ class Addons extends CP_Controller {
 		ee()->legacy_api->instantiate('channel_fields');
 
 		$fieldtypes = array();
-		$installed = ee()->addons->get_installed('fieldtypes');
+		$installed = ee()->addons->get_installed('fieldtypes', TRUE);
 
 		foreach (ee()->api_channel_fields->fetch_all_fieldtypes() as $fieldtype => $info)
 		{
@@ -919,7 +919,7 @@ class Addons extends CP_Controller {
 
 		if (ee()->addons_installer->install($fieldtype, 'fieldtype', FALSE))
 		{
-			$installed = ee()->addons->get_installed('fieldtype');
+			$installed = ee()->addons->get_installed('fieldtype', TRUE);
 			$name = $installed[$fieldtype]['name'];
 		}
 
@@ -961,7 +961,7 @@ class Addons extends CP_Controller {
 	public function getModuleSettings($name, $method = "index")
 	{
 		$addon = ee()->security->sanitize_filename(strtolower($name));
-		$installed = $this->addons->get_installed();
+		$installed = $this->addons->get_installed('modules', TRUE);
 
 		if (ee()->session->userdata['group_id'] != 1)
 		{
