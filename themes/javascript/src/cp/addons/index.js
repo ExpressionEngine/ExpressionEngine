@@ -13,11 +13,7 @@
 $(document).ready(function () {
 	// Only confirm removals
 	$('select[name="bulk_action"]').change(function () {
-		if ($(this).val() == 'remove') {
-			$('.tbl-bulk-act .submit').addClass('m-link');
-		} else {
-			$('.tbl-bulk-act .submit').removeClass('m-link');
-		}
+		$('.tbl-bulk-act .submit').toggleClass('m-link', $(this).val() == 'remove');
 	});
 
 	$('.tbl-bulk-act .submit').click(function (e) {
