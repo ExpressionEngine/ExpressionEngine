@@ -999,4 +999,4 @@ class MemberImport extends Utilities {
 // END CLASS
 
 /* End of file Member_import.php */
-/* Location: ./system/expressionengine/controllers/cp/Utilities/Member_import.php */
+/* Location: ./system/EllisLab/ExpressionEngine/Controllers/Utilities/MemberImport.php */

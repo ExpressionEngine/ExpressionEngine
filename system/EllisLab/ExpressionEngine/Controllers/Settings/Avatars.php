@@ -152,4 +152,4 @@ class Avatars extends Settings {
 // END CLASS
 
 /* End of file Avatars.php */
-/* Location: ./system/expressionengine/controllers/cp/Settings/Avatars.php */
+/* Location: ./system/EllisLab/ExpressionEngine/Controllers/Settings/Avatars.php */

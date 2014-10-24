@@ -35,7 +35,7 @@ class Urls extends Settings {
 	 * General Settings
 	 */
 	public function index()
-	{	
+	{
 		$vars['sections'] = array(
 			array(
 				array(
@@ -194,4 +194,4 @@ class Urls extends Settings {
 // END CLASS
 
 /* End of file Urls.php */
-/* Location: ./system/expressionengine/controllers/cp/Settings/Urls.php */
+/* Location: ./system/EllisLab/ExpressionEngine/Controllers/Settings/Urls.php */

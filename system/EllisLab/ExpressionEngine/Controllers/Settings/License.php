@@ -35,7 +35,7 @@ class License extends Settings {
 	 * General Settings
 	 */
 	public function index()
-	{	
+	{
 		$vars['sections'] = array(
 			array(
 				array(
@@ -120,4 +120,4 @@ class License extends Settings {
 // END CLASS
 
 /* End of file License.php */
-/* Location: ./system/expressionengine/controllers/cp/Settings/License.php */
+/* Location: ./system/EllisLab/ExpressionEngine/Controllers/Settings/License.php */

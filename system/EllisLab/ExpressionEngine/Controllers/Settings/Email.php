@@ -35,7 +35,7 @@ class Email extends Settings {
 	 * General Settings
 	 */
 	public function index()
-	{	
+	{
 		$vars['sections'] = array(
 			array(
 				array(
@@ -198,4 +198,4 @@ class Email extends Settings {
 // END CLASS
 
 /* End of file Email.php */
-/* Location: ./system/expressionengine/controllers/cp/Settings/Email.php */
+/* Location: ./system/EllisLab/ExpressionEngine/Controllers/Settings/Email.php */

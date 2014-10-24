@@ -562,4 +562,4 @@ class Extensions extends CP_Controller {
 // END CLASS
 
 /* End of file Extensions.php */
-/* Location: ./system/expressionengine/controllers/cp/Addons/Extensions.php */
+/* Location: ./system/EllisLab/ExpressionEngine/Controllers/Addons/Extensions.php */

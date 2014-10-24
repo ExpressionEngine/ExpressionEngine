@@ -1084,4 +1084,4 @@ class Addons extends CP_Controller {
 // END CLASS
 
 /* End of file Addons.php */
-/* Location: ./system/expressionengine/controllers/cp/Addons/Addons.php */
+/* Location: ./system/EllisLab/ExpressionEngine/Controllers/Addons/Addons.php */

@@ -379,7 +379,7 @@ class Uploads extends Settings {
 				'rules' => 'integer'
 			)
 		));
-		
+
 		$base_url = cp_url('settings/uploads/'.$upload_id ?: '');
 
 		if (AJAX_REQUEST)
@@ -413,4 +413,4 @@ class Uploads extends Settings {
 // END CLASS
 
 /* End of file Uploads.php */
-/* Location: ./system/expressionengine/controllers/cp/Settings/Uploads.php */
+/* Location: ./system/EllisLab/ExpressionEngine/Controllers/Settings/Uploads.php */

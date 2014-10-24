@@ -106,4 +106,4 @@ class Utilities extends CP_Controller {
 // END CLASS
 
 /* End of file Utilities.php */
-/* Location: ./system/expressionengine/controllers/cp/Utilities/Utilities.php */
+/* Location: ./system/EllisLab/ExpressionEngine/Controllers/Utilities/Utilities.php */

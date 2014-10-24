@@ -232,4 +232,4 @@ class Members extends Settings {
 // END CLASS
 
 /* End of file Members.php */
-/* Location: ./system/expressionengine/controllers/cp/Settings/Members.php */
+/* Location: ./system/EllisLab/ExpressionEngine/Controllers/Settings/Members.php */

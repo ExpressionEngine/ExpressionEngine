@@ -170,4 +170,4 @@ class Throttling extends Settings {
 // END CLASS
 
 /* End of file Throttling.php */
-/* Location: ./system/expressionengine/controllers/cp/Settings/Throttling.php */
+/* Location: ./system/EllisLab/ExpressionEngine/Controllers/Settings/Throttling.php */

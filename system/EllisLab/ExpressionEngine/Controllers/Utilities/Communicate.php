@@ -886,4 +886,4 @@ class Communicate extends Utilities {
 // END CLASS
 
 /* End of file Communicate.php */
-/* Location: ./system/expressionengine/controllers/cp/Utilities/Communicate.php */
+/* Location: ./system/EllisLab/ExpressionEngine/Controllers/Utilities/Communicate.php */

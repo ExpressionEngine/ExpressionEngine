@@ -143,8 +143,8 @@ class MemberList extends Members {
 
 	/**
 	 * Filter the member list by the group
-	 * 
-	 * @param mixed $group 
+	 *
+	 * @param mixed $group
 	 * @access public
 	 * @return void
 	 */
@@ -157,4 +157,4 @@ class MemberList extends Members {
 // END CLASS
 
 /* End of file MemberList.php */
-/* Location: ./system/expressionengine/controllers/cp/Members/MemberList.php */
+/* Location: ./system/EllisLab/ExpressionEngine/Controllers/Members/MemberList.php */

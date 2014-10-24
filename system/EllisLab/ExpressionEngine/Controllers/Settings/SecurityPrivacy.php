@@ -262,4 +262,4 @@ class SecurityPrivacy extends Settings {
 // END CLASS
 
 /* End of file SecurityPrivacy.php */
-/* Location: ./system/expressionengine/controllers/cp/Settings/SecurityPrivacy.php */
+/* Location: ./system/EllisLab/ExpressionEngine/Controllers/Settings/SecurityPrivacy.php */
