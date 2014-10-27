@@ -150,6 +150,11 @@ class Addons extends CP_Controller {
 
 		$this->filters(count($addons));
 
+		if (strtolower($this->params['perpage']) == 'all')
+		{
+			$this->params['perpage'] = count($addons);
+		}
+
 		foreach($addons as $addon => $info)
 		{
 			// Filter based on status
