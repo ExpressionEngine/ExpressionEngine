@@ -8,6 +8,9 @@ use CP_Controller;
 use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Library\CP\URL;
+use EllisLab\ExpressionEngine\Service\CP\Filter\Filter;
+use EllisLab\ExpressionEngine\Service\CP\Filter\FilterFactory;
+use EllisLab\ExpressionEngine\Service\CP\Filter\FilterRunner;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -74,6 +77,43 @@ class Addons extends CP_Controller {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Sets up the display filters
+	 *
+	 * @param int	$total	The total number of add-ons (used in the show filter)
+	 * @return	void
+	 */
+	private function filters($total)
+	{
+		// Status
+		$status = new Filter('filter_by_status', 'status', array(
+			'installed'		=> strtolower(lang('installed')),
+			'uninstalled'	=> strtolower(lang('uninstalled'))
+		));
+		$status->has_custom_value = FALSE;
+
+		// Developer
+		$developer = new Filter('filter_by_developer', 'developer', array(
+			'native'		=> 'EllisLab',
+			'third_party'	=> 'Third Party',
+		));
+		$developer->has_custom_value = FALSE;
+
+		// Show
+		$perpage = FilterFactory::showFilter($total, 'show_all_addons');
+
+		$fr = new FilterRunner($this->base_url, array(
+			$status,
+			$developer,
+			$perpage
+		));
+		ee()->view->filters = $fr->render();
+		$this->base_url = $fr->getUrl();
+		$this->params = $fr->getParameters();
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Index function
 	 *
 	 * @access	public
@@ -95,108 +135,6 @@ class Addons extends CP_Controller {
 
 		$vars = array();
 
-		// Filters
-		$view_filters = array();
-
-		// Sumitted values
-		$all_filters = array(
-			'filter_by_status'		=> 'status',
-			'filter_by_developer'	=> 'developer',
-			'perpage'				=> 'perpage'
-		);
-		foreach ($all_filters as $key => $filter)
-		{
-			$value = (ee()->input->post($key)) ?: ee()->input->get($key);
-			if ($value)
-			{
-				$this->base_url->setQueryStringVariable($key, $value);
-				$this->params[$key] = $value;
-			}
-		}
-
-		// Status
-		$base_url = clone $this->base_url;
-
-		$filter = array(
-			'label'			=> 'status',
-			'name'			=> 'filter_by_status',
-			'value'			=> '',
-			'options'		=> array()
-		);
-		$statuses = array(
-			'installed'		=> strtolower(lang('installed')),
-			'uninstalled'	=> strtolower(lang('uninstalled'))
-		);
-
-		foreach ($statuses as $show => $label)
-		{
-			if (isset($this->params['filter_by_status']) &&
-				$this->params['filter_by_status'] == $show)
-			{
-				$filter['value'] = $label;
-			}
-
-			$base_url->setQueryStringVariable('filter_by_status', $show);
-			$filter['options'][$base_url->compile()] = $label;
-		}
-		$view_filters[] = $filter;
-
-		// Developer
-		$base_url = clone $this->base_url;
-
-		$filter = array(
-			'label'			=> 'developer',
-			'name'			=> 'filter_by_developer',
-			'value'			=> '',
-			'options'		=> array()
-		);
-		$developers = array(
-			'native'		=> 'EllisLab',
-			'third_party'	=> 'Third Party',
-		);
-
-		foreach ($developers as $show => $label)
-		{
-			if (isset($this->params['filter_by_developer']) &&
-				$this->params['filter_by_developer'] == $show)
-			{
-				$filter['value'] = $label;
-			}
-
-			$base_url->setQueryStringVariable('filter_by_developer', $show);
-			$filter['options'][$base_url->compile()] = $label;
-		}
-		$view_filters[] = $filter;
-
-		// Perpage
-		$base_url = clone $this->base_url;
-
-		$filter = array(
-			'label'			=> 'show',
-			'name'			=> 'perpage',
-			'value'			=> $this->params['perpage'],
-			'custom_value'	=> ee()->input->post('perpage'),
-			'placeholder'	=> lang('custom_limit'),
-			'options'		=> array()
-		);
-
-		$perpages = array(
-			'25'  => '25 '.lang('entries'),
-			'50'  => '50 '.lang('entries'),
-			'75'  => '75 '.lang('entries'),
-			'100' => '100 '.lang('entries'),
-			'150' => '150 '.lang('entries')
-		);
-
-		foreach ($perpages as $show => $label)
-		{
-			$base_url->setQueryStringVariable('perpage', $show);
-			$filter['options'][$base_url->compile()] = $label;
-		}
-
-		$view_filters[] = $filter;
-		ee()->view->filters = $view_filters;
-
 		if ( ! empty(ee()->view->search_value))
 		{
 			$this->base_url->setQueryStringVariable('search', ee()->view->search_value);
@@ -208,7 +146,11 @@ class Addons extends CP_Controller {
 		$plugins = $this->getPlugins();
 		$fieldtypes = $this->getFieldtypes();
 
-		foreach(array_merge($fieldtypes, $plugins, $modules) as $addon => $info)
+		$addons = array_merge($fieldtypes, $plugins, $modules);
+
+		$this->filters(count($addons));
+
+		foreach($addons as $addon => $info)
 		{
 			// Filter based on status
 			if (isset($this->params['filter_by_status']))
