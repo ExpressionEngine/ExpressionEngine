@@ -9,6 +9,12 @@ $lang = array(
 'email_log' 			=> 'e-mail',
 'search_log' 			=> 'Search',
 
+'all_developer_logs' 	=> 'All %d Developer Logs',
+'all_cp_logs' 			=> 'All %d Control Panel Logs',
+'all_throttle_logs' 	=> 'All %d Throttling Logs',
+'all_email_logs' 		=> 'All %d e-mail Logs',
+'all_search_logs' 		=> 'All %d Search Logs',
+
 'view_throttle_log' 	=> 'Access Throttling Logs',
 'view_search_log' 		=> 'Search Logs',
 'view_email_logs' 		=> 'e-mail Logs',

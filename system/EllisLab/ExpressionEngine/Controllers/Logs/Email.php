@@ -84,7 +84,7 @@ class Email extends Logs {
 			$fr = new FilterRunner($this->base_url, array(
 				FilterFactory::usernameFilter(),
 				FilterFactory::dateFilter(),
-				FilterFactory::showFilter($logs->count())
+				FilterFactory::showFilter($logs->count(), 'all_email_logs')
 			));
 			ee()->view->filters = $fr->render();
 			$this->base_url = $fr->getUrl();

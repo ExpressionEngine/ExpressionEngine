@@ -84,7 +84,7 @@ class Search extends Logs {
 				FilterFactory::usernameFilter(),
 				FilterFactory::siteFilter(),
 				FilterFactory::dateFilter(),
-				FilterFactory::showFilter($logs->count())
+				FilterFactory::showFilter($logs->count(), 'all_search_logs')
 			));
 			ee()->view->filters = $fr->render();
 			$this->base_url = $fr->getUrl();

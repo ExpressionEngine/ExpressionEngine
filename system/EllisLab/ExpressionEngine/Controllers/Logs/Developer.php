@@ -125,7 +125,7 @@ class Developer extends Logs {
 		{
 			$fr = new FilterRunner($this->base_url, array(
 				FilterFactory::dateFilter(),
-				FilterFactory::showFilter($logs->count())
+				FilterFactory::showFilter($logs->count(), 'all_developer_logs')
 			));
 			ee()->view->filters = $fr->render();
 			$this->base_url = $fr->getUrl();

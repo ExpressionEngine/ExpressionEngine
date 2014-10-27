@@ -108,7 +108,7 @@ class Throttle extends Logs {
 			if ($count > 10)
 			{
 				$fr = new FilterRunner($this->base_url, array(
-					FilterFactory::showFilter($count)
+					FilterFactory::showFilter($count, 'all_throttle_logs')
 				));
 				ee()->view->filters = $fr->render();
 				$this->base_url = $fr->getUrl();
