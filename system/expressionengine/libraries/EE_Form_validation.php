@@ -43,11 +43,25 @@ class EE_Form_validation extends CI_Form_validation {
 			isset($this->CI->_mcp_reference)
 		)
 		{
-			$this->CI->_mcp_reference->lang =& $this->CI->lang;
-			$this->CI->_mcp_reference->input =& $this->CI->input;
-			$this->CI->_mcp_reference->security =& $this->CI->security;
-			$this->CI =& $this->CI->_mcp_reference;
+			$this->setCallbackObject($this->CI->_mcp_reference);
 		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Sets the callback object
+	 *
+	 * @access	public
+	 * @param	obj $obj	The object to use for callbacks
+	 * @return	void
+	 */
+	public function setCallbackObject($obj)
+	{
+		$obj->lang =& $this->CI->lang;
+		$obj->input =& $this->CI->input;
+		$obj->security =& $this->CI->security;
+		$this->CI =& $obj;
 	}
 
 	// --------------------------------------------------------------------
@@ -107,7 +121,7 @@ class EE_Form_validation extends CI_Form_validation {
 
 	/**
 	 * Returns TRUE/FALSE based on existance of validation errors
-	 * 
+	 *
 	 * @return	bool
 	 */
 	public function errors_exist()

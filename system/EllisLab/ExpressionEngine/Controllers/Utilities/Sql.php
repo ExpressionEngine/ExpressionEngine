@@ -220,4 +220,4 @@ class Sql extends Utilities {
 // END CLASS
 
 /* End of file Query.php */
-/* Location: ./system/expressionengine/controllers/cp/Utilities/Query.php */
+/* Location: ./system/EllisLab/ExpressionEngine/Controllers/Utilities/Query.php */

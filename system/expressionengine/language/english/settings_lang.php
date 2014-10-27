@@ -814,6 +814,12 @@ $lang = array(
  * Security & Privacy
  */
 
+'security_tip' =>
+'<b>Tip</b>: Site security is important.',
+
+'security_tip_desc' =>
+'Any setting marked with <span title="security enhancement"></span> will further enhance and improve site security.',
+
 'cp_session_type' =>
 '<abbr title="Control Panel">CP</abbr> session type',
 
@@ -849,6 +855,18 @@ $lang = array(
 
 'cookie_prefix_desc' =>
 'Only required when running multiple installations of ExpressionEngine.',
+
+'cookie_httponly' =>
+'Send cookies over <abbr title="Hyper Text Transfer Protocol">HTTP</abbr> only?',
+
+'cookie_httponly_desc' =>
+'When set to <b>yes</b>, cookies will <b>not</b> be accessible through JavaScript.',
+
+'cookie_secure' =>
+'Send cookies securely?',
+
+'cookie_secure_desc' =>
+'When set to <b>yes</b>, cookies will only be transmitted over a secure <abbr title="Hyper Text Transfer Protocol with Secure Sockets Layer">HTTPS</abbr> connection.</em><em>Your site <b>must</b> use <abbr title="Secure Sockets Layer">SSL</abbr> everywhere for this to work.',
 
 'member_security_settings' =>
 'Member Security Settings',

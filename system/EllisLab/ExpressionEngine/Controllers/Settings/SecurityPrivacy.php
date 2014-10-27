@@ -85,6 +85,22 @@ class SecurityPrivacy extends Settings {
 					'fields' => array(
 						'cookie_prefix' => array('type' => 'text')
 					)
+				),
+				array(
+					'title' => 'cookie_httponly',
+					'desc' => 'cookie_httponly_desc',
+					'security' => TRUE,
+					'fields' => array(
+						'cookie_httponly' => array('type' => 'yes_no')
+					)
+				),
+				array(
+					'title' => 'cookie_secure',
+					'desc' => 'cookie_secure_desc',
+					'security' => TRUE,
+					'fields' => array(
+						'cookie_secure' => array('type' => 'yes_no')
+					)
 				)
 			),
 			'member_security_settings' => array(
@@ -210,6 +226,11 @@ class SecurityPrivacy extends Settings {
 
 		$base_url = cp_url('settings/security-privacy');
 
+		ee()->view->set_message(
+			'warn',
+			'<p>'.lang('security_tip').'</p><p class="enhance">'.lang('security_tip_desc').'</p>',
+		'', FALSE, TRUE);
+
 		if (AJAX_REQUEST)
 		{
 			ee()->form_validation->run_ajax();
@@ -241,4 +262,4 @@ class SecurityPrivacy extends Settings {
 // END CLASS
 
 /* End of file SecurityPrivacy.php */
-/* Location: ./system/expressionengine/controllers/cp/Settings/SecurityPrivacy.php */
+/* Location: ./system/EllisLab/ExpressionEngine/Controllers/Settings/SecurityPrivacy.php */

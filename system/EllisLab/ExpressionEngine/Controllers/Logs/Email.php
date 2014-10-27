@@ -206,4 +206,4 @@ class Email extends Logs {
 // END CLASS
 
 /* End of file Email.php */
-/* Location: ./system/expressionengine/controllers/cp/Logs/Email.php */
+/* Location: ./system/EllisLab/ExpressionEngine/Controllers/Logs/Email.php */

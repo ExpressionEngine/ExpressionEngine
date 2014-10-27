@@ -142,4 +142,4 @@ class Template extends Settings {
 // END CLASS
 
 /* End of file Template.php */
-/* Location: ./system/expressionengine/controllers/cp/Settings/Template.php */
+/* Location: ./system/EllisLab/ExpressionEngine/Controllers/Settings/Template.php */

@@ -109,7 +109,7 @@ class Query extends Utilities {
 			else
 			{
 				$sql = trim(base64_decode(rawurldecode($sql)));
-				
+
 				if (strncasecmp($sql, 'SELECT ', 7) !== 0 &&
 					strncasecmp($sql, 'SHOW', 4) !== 0)
 				{
@@ -184,7 +184,7 @@ class Query extends Utilities {
 			$table_config['autosort'] = TRUE;
 			$table_config['autosearch'] = TRUE;
 		}
-		
+
 		$table = CP\Table::create($table_config);
 		$table->setColumns($columns);
 
@@ -303,4 +303,4 @@ class Query extends Utilities {
 // END CLASS
 
 /* End of file Query.php */
-/* Location: ./system/expressionengine/controllers/cp/Utilities/Query.php */
+/* Location: ./system/EllisLab/ExpressionEngine/Controllers/Utilities/Query.php */

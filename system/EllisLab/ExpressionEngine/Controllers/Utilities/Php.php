@@ -48,4 +48,4 @@ class Php extends Utilities {
 // END CLASS
 
 /* End of file Php.php */
-/* Location: ./system/expressionengine/controllers/cp/Utilities/Php.php */
+/* Location: ./system/EllisLab/ExpressionEngine/Controllers/Utilities/Php.php */

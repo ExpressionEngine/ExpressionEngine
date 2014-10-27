@@ -38,7 +38,7 @@ class General extends Settings {
 	{
 		ee()->load->model('language_model');
 		ee()->load->model('admin_model');
-		
+
 		$vars['sections'] = array(
 			array(
 				array(
@@ -249,4 +249,4 @@ class General extends Settings {
 // END CLASS
 
 /* End of file General.php */
-/* Location: ./system/expressionengine/controllers/cp/Settings/General.php */
+/* Location: ./system/EllisLab/ExpressionEngine/Controllers/Settings/General.php */

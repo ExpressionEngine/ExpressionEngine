@@ -118,7 +118,7 @@ class Settings extends CP_Controller {
 		{
 			ee()->load->helper('html_helper');
 			ee()->view->set_message('issue', lang('cp_message_issue'), ul($config_update), TRUE);
-			
+
 			return FALSE;
 		}
 
@@ -128,4 +128,4 @@ class Settings extends CP_Controller {
 // END CLASS
 
 /* End of file Settings.php */
-/* Location: ./system/expressionengine/controllers/cp/Settings/Settings.php */
+/* Location: ./system/EllisLab/ExpressionEngine/Controllers/Settings/Settings.php */

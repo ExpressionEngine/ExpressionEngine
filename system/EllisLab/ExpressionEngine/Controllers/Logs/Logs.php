@@ -398,4 +398,4 @@ class Logs extends CP_Controller {
 // END CLASS
 
 /* End of file Logs.php */
-/* Location: ./system/expressionengine/controllers/cp/Logs/Logs.php */
+/* Location: ./system/EllisLab/ExpressionEngine/Controllers/Logs/Logs.php */

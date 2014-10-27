@@ -48,7 +48,7 @@
 								<option value="install"><?=lang('install')?></option>
 								<option value="remove"><?=lang('remove')?></option>
 							</select>
-							<input class="btn submit" type="submit" value="<?=lang('submit')?>">
+							<button class="btn submit" rel="modal-confirm-all"><?=lang('submit')?></button>
 						</fieldset>
 					<?=form_close()?>
 				</div>

@@ -245,9 +245,12 @@ class View {
 	 * @param 	string	$description	More detailed message
 	 * @param 	bool	$flashdata		Whether or not to persist this message
 	 * 		                      		in flashdata for the next page load
+	 * @param 	bool	$custom_html	If message already contains formatting,
+	 *                           		in which case $title will be used for
+	 *                           		the entire message
 	 * @return 	void
 	 */
-	public function set_message($type, $title, $description = '', $flashdata = FALSE)
+	public function set_message($type, $title, $description = '', $flashdata = FALSE, $custom_html = FALSE)
 	{
 		if (is_array($description))
 		{
@@ -255,6 +258,12 @@ class View {
 		}
 
 		$message_array = array('type' => $type, 'title' => $title, 'description' => $description);
+
+		if ($custom_html)
+		{
+			$message_array['custom'] = $title;
+		}
+
 		$this->set_alert('inline', $message_array, $flashdata);
 	}
 

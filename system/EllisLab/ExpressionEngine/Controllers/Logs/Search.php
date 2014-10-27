@@ -188,4 +188,4 @@ class Search extends Logs {
 // END CLASS
 
 /* End of file Search.php */
-/* Location: ./system/expressionengine/controllers/cp/Logs/Search.php */
+/* Location: ./system/EllisLab/ExpressionEngine/Controllers/Logs/Search.php */

@@ -1,40 +1,66 @@
-<?php extend_template('default') ?>
+<?php extend_template('wrapper'); ?>
+
+<div class="col-group">
+	<div class="col w-16 last">
+		<div class="box full mb">
+			<div class="tbl-ctrls">
+				<?=form_open($form_url)?>
+					<fieldset class="tbl-search right">
+						<input placeholder="<?=lang('type_phrase')?>" type="text" name="search" value="<?=$table['search']?>">
+						<input class="btn submit" type="submit" value="<?=lang('search_addons_button')?>">
+					</fieldset>
+					<h1>
+						<?=$cp_page_title?>
+						<?php /*
+						<ul class="toolbar">
+							<li class="store"><a href="http://localhost/el-projects/ee-cp/views/addon-store.php" title="Add on store"></a></li>
+						</ul>
+						*/ ?>
+					</h1>
+				<?=form_close()?>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="col-group">
+	<?=$left_nav?>
+	<div class="col w-12 last">
+		<?php if (count($cp_breadcrumbs)): ?>
+			<ul class="breadcrumb">
+				<?php foreach ($cp_breadcrumbs as $link => $title): ?>
+					<li><a href="<?=$link?>"><?=$title?></a></li>
+				<?php endforeach ?>
+				<li class="last"><?=$cp_page_title?></li>
+			</ul>
+		<?php endif ?>
+			<div class="box">
+				<div class="tbl-ctrls">
+					<?=form_open($form_url)?>
+						<h1><?=$cp_heading?></h1>
+						<?php $this->view('_shared/alerts')?>
+						<?php $this->view('_shared/table', $table); ?>
+						<?php $this->view('_shared/pagination'); ?>
+						<fieldset class="tbl-bulk-act">
+							<select name="bulk_action">
+								<option value="">-- <?=lang('with_selected')?> --</option>
+								<!-- <option value="install"><?=lang('install')?></option> -->
+								<option value="remove"><?=lang('remove')?></option>
+								<option value="disable"><?=lang('disable')?></option>
+								<option value="enable"><?=lang('enable')?></option>
+							</select>
+							<input class="btn submit" type="submit" value="<?=lang('submit')?>">
+						</fieldset>
+					<?=form_close()?>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
 
 <?php
-if (isset($extensions_disabled))
+if (isset($modals))
 {
-	echo '<p>'.$extensions_disabled.'</p>';
-}
-else
-{
-	$this->table->set_heading(
-		lang('extension_name'),
-		lang('settings'),
-		lang('documentation'),
-		lang('version'),
-		lang('status'),
-		lang('action')
-	);
-
-	if (count($extension_info) >= 1)
-	{
-		foreach ($extension_info as $filename => $extension)
-		{
-			$this->table->add_row(
-				$extension['name'],
-				$extension['settings'],
-				$extension['documentation'],
-				$extension['version'],
-				$extension['status'],
-				$extension['actions']
-			);
-		}
-	}
-	else
-	{
-		$this->table->add_row(array('data' => lang('no_extensions_exist'), 'colspan' => 4));
-	}
-
-	echo $this->table->generate();
+	$this->view('_shared/modals', $modals);
 }
 ?>

@@ -233,12 +233,11 @@ class Uploads extends Settings {
 			)
 		);
 
-		$table = CP\Table::create(array(
-			'grid_input'	=> TRUE,
-			'reorder'		=> TRUE,
-			'sortable'		=> FALSE
+		$grid = CP\GridInput::create(array(
+			'field_name' => 'image_manipulations',
+			'reorder' => FALSE // Order doesn't matter here
 		));
-		$table->setColumns(
+		$grid->setColumns(
 			array(
 				'image_manip_name' => array(
 					'desc'  => 'image_manip_name_desc'
@@ -254,8 +253,8 @@ class Uploads extends Settings {
 				)
 			)
 		);
-		$table->setNoResultsText('no_manipulations', 'add_manipulation');
-		$table->setBaseGridRow(array(
+		$grid->setNoResultsText('no_manipulations', 'add_manipulation');
+		$grid->setBlankRow(array(
 			form_input('name'),
 			form_dropdown(
 				'type',
@@ -268,23 +267,29 @@ class Uploads extends Settings {
 			form_input('height')
 		));
 
-		/*$table->setData(array(array(
-			form_input('name'),
-			form_dropdown(
-				'type',
-				array(
-					'constrain' => lang('image_manip_type_opt_constrain'),
-					'crop' => lang('image_manip_type_opt_crop'),
+		// Temporary for testing
+		$grid->setData(array(
+			array(
+				'attrs' => array('row_id' => 20),
+				'columns' => array(
+					form_input('name'),
+					form_dropdown(
+						'type',
+						array(
+							'constrain' => lang('image_manip_type_opt_constrain'),
+							'crop' => lang('image_manip_type_opt_crop'),
+						)
+					),
+					form_input('width'),
+					form_input('height')
 				)
-			),
-			form_input('width'),
-			form_input('height')
-		)));*/
+			)
+		));
 
 		if ( ! empty($upload_id))
 		{
 			// Populate existing image manipulations
-			//$table->setData($data);
+			//$grid->setData($data);
 		}
 
 		$vars['sections']['upload_image_manipulations'] = array(
@@ -296,7 +301,7 @@ class Uploads extends Settings {
 				'fields' => array(
 					'image_manipulations' => array(
 						'type' => 'html',
-						'content' => ee()->load->view('_shared/table', $table->viewData(), TRUE)
+						'content' => ee()->load->view('_shared/table', $grid->viewData(), TRUE)
 					)
 				)
 			)
@@ -374,7 +379,7 @@ class Uploads extends Settings {
 				'rules' => 'integer'
 			)
 		));
-		
+
 		$base_url = cp_url('settings/uploads/'.$upload_id ?: '');
 
 		if (AJAX_REQUEST)
@@ -408,4 +413,4 @@ class Uploads extends Settings {
 // END CLASS
 
 /* End of file Uploads.php */
-/* Location: ./system/expressionengine/controllers/cp/Settings/Uploads.php */
+/* Location: ./system/EllisLab/ExpressionEngine/Controllers/Settings/Uploads.php */

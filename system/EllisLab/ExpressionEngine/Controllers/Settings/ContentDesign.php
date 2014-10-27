@@ -35,7 +35,7 @@ class ContentDesign extends Settings {
 	 * General Settings
 	 */
 	public function index()
-	{	
+	{
 		$vars['sections'] = array(
 			array(
 				array(
@@ -89,4 +89,4 @@ class ContentDesign extends Settings {
 // END CLASS
 
 /* End of file ContentDesign.php */
-/* Location: ./system/expressionengine/controllers/cp/Settings/ContentDesign.php */
+/* Location: ./system/EllisLab/ExpressionEngine/Controllers/Settings/ContentDesign.php */

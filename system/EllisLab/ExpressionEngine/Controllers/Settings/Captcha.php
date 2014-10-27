@@ -122,4 +122,4 @@ class Captcha extends Settings {
 // END CLASS
 
 /* End of file Captcha.php */
-/* Location: ./system/expressionengine/controllers/cp/Settings/Captcha.php */
+/* Location: ./system/EllisLab/ExpressionEngine/Controllers/Settings/Captcha.php */

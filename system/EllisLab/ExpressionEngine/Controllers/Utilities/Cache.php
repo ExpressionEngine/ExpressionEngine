@@ -69,4 +69,4 @@ class Cache extends Utilities {
 // END CLASS
 
 /* End of file Cache.php */
-/* Location: ./system/expressionengine/controllers/cp/Utilities/Cache.php */
+/* Location: ./system/EllisLab/ExpressionEngine/Controllers/Utilities/Cache.php */

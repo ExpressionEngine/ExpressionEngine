@@ -35,7 +35,7 @@ class DebugOutput extends Settings {
 	 * General Settings
 	 */
 	public function index()
-	{	
+	{
 		$vars['sections'] = array(
 			array(
 				array(
@@ -151,4 +151,4 @@ class DebugOutput extends Settings {
 // END CLASS
 
 /* End of file DebugOutput.php */
-/* Location: ./system/expressionengine/controllers/cp/Settings/DebugOutput.php */
+/* Location: ./system/EllisLab/ExpressionEngine/Controllers/Settings/DebugOutput.php */

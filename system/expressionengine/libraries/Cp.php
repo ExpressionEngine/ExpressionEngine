@@ -574,25 +574,53 @@ class Cp {
 
 		if ( ! $url)
 		{
-			$go_to_c = (count($_POST) > 0);
-			$page = '';
+			// We have 2 types of URLs:
+			//   1. index.php?/cp/path/to/controller/with/arugments
+			//   2. index.php?D=cp&C=cp&M=homepage
+			//
+			// In the case of #1 we likely built it with cp_url() thus
+			// we will store the needed parts to rebuild it.
+			//
+			// In the case of #2 we will build out a string to return
 
-			foreach($_GET as $key => $val)
+			$uri = ee()->uri->uri_string();
+			if ($uri)
 			{
-				if ($key == 'S' OR $key == 'D' OR ($go_to_c && $key != 'C'))
+				$args = array();
+				foreach($_GET as $key => $val)
 				{
-					continue;
+					if ($key == 'S' OR $key == 'D' OR $key == 'C' OR $key == 'M')
+					{
+						continue;
+					}
+
+					$args[$key] = $val;
 				}
 
-				$page .= $key.'='.$val.AMP;
+				$url = json_encode(array('path' => $uri, 'arguments' => $args));
 			}
-
-			if (strlen($page) > 4 && substr($page, -5) == AMP)
+			else
 			{
-				$page = substr($page, 0, -5);
-			}
+				$go_to_c = (count($_POST) > 0);
+				$page = '';
 
-			$url = $page;
+				foreach($_GET as $key => $val)
+				{
+					if ($key == 'S' OR $key == 'D' OR ($go_to_c && $key != 'C'))
+					{
+						continue;
+					}
+
+					$page .= $key.'='.$val.AMP;
+				}
+
+				if (strlen($page) > 4 && substr($page, -5) == AMP)
+				{
+					$page = substr($page, 0, -5);
+				}
+
+				$url = $page;
+			}
 		}
 
 		return $url;

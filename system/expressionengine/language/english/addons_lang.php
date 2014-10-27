@@ -5,12 +5,15 @@ $lang = array(
 /* Sidebar Menu */
 'all_addons'					=>		'All Add-Ons',
 'manage_extensions'				=>		'Manage Extensions',
+'manage_addon_extensions'		=>		'Manage Add-on Extensions',
 
 'addon_manager'					=>		'Add-On Manager',
 'search_addons_button'			=>		'search add-ons',
 
 'addon'							=>		'Add-On',
+'addons'						=>		'Add-Ons',
 'no_addon_search_results'		=>		'No <b>Add-Ons</b> Found',
+'no_addon_extensions_search_results'	=>		'No <b>Add-on Extensions</b> Found',
 
 'requested_module_not_installed' =>
 'The requested module is not installed:',
@@ -37,7 +40,6 @@ $lang = array(
 'addons_uninstalled_desc'		=>		'The following add-on(s) have been removed: ',
 
 // 2.x
-'addons'						=>		'Add-Ons',
 
 'accessories'					=> 		'Accessories',
 'modules'						=>		'Modules',

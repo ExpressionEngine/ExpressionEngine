@@ -3,7 +3,7 @@
 </div>
 <div class="box snap">
 	<div class="tbl-ctrls">
-		<form>
+		<?=form_open(cp_url('addons/settings/rte/update_toolsets'))?>
 			<fieldset class="tbl-search right">
 				<a class="btn tn action" href="<?=cp_url('addons/settings/rte/new_toolset')?>"><?=lang('create_new')?></a>
 			</fieldset>
@@ -19,6 +19,6 @@
 				</select>
 				<input class="btn submit" type="submit" value="<?=lang('submit')?>">
 			</fieldset>
-		</form>
+		<?=form_close();?>
 	</div>
 </div>

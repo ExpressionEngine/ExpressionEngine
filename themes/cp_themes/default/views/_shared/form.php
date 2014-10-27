@@ -39,8 +39,10 @@ if (isset($ajax_validate) && $ajax_validate == TRUE)
 						{
 							break;
 						}
-					} ?>
-					<h3><?=lang($setting['title'])?><?php if ($required): ?> <span class="required" title="required field">&#10033;</span><?php endif ?></h3>
+					}
+					$security = (isset($setting['security']) && $setting['security'] == TRUE);
+					?>
+					<h3<?php if ($security):?> class="enhance"<?php endif ?>><?=lang($setting['title'])?><?php if ($required): ?> <span class="required" title="required field">&#10033;</span><?php endif ?><?php if ($security): ?> <span title="enhance security"></span><?php endif ?></h3>
 					<em><?=lang($setting['desc'])?></em>
 				</div>
 				<div class="setting-field col <?=(isset($setting['wide']) && $setting['wide'] == TRUE) ? 'w-16' : 'w-8'?> last">

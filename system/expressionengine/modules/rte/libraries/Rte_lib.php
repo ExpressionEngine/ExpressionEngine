@@ -60,83 +60,82 @@ class Rte_lib {
 
 		if ( ! is_numeric($toolset_id))
 		{
-			exit();
+			show_404();
 		}
 
 		ee()->output->enable_profiler(FALSE);
 
-		ee()->load->library(array('table','javascript'));
 		ee()->load->model(array('rte_toolset_model','rte_tool_model'));
+
+		if (count($_POST))
+		{
+			// set up the validation
+			ee()->load->library('form_validation');
+			ee()->form_validation->setCallbackObject($this);
+			ee()->form_validation->set_rules('toolset_name', 'lang:tool_set_name', 'required|callback__valid_name|callback__unique_name');
+
+			if (ee()->form_validation->run() === FALSE)
+			{
+				ee()->view->set_message('issue', lang('toolset_error'), lang('toolset_error_desc'), TRUE);
+			}
+			else
+			{
+				return $this->save_toolset();
+			}
+		}
+
+		$vars = array(
+			'form_action'	=> '',
+			'header'		=> '',
+			'toolset_name'	=> set_value('toolset_name'),
+			'tools'			=> array(),
+			'btn_save_text'	=> '',
+		);
 
 		// new toolset?
 		if ($toolset_id == 0)
 		{
+			$vars['form_action'] = cp_url('addons/settings/rte/new_toolset');
+			$vars['header'] = 'create_tool_set_header';
+			$vars['btn_save_text'] = 'create_tool_set';
 			$toolset['tools'] = array();
-			$toolset['name'] = '';
-			$is_private = (ee()->input->get_post('private') == 'true');
 		}
 		else
 		{
+			$vars['form_action'] = cp_url('addons/settings/rte/edit_toolset', array('toolset_id' => $toolset_id));
+			$vars['header'] = 'edit_tool_set_header';
+			$vars['btn_save_text'] = 'edit_tool_set';
+
 			// make sure user can access the existing toolset
 			if ( ! ee()->rte_toolset_model->member_can_access($toolset_id))
 			{
-				ee()->output->send_ajax_response(array(
-					'error' => lang('toolset_edit_failed')
-				));
+				show_404(lang('toolset_edit_failed'));
 			}
 
 			// grab the toolset
-			$toolset	= ee()->rte_toolset_model->get($toolset_id);
-			$is_private	= ($toolset['member_id'] != 0);
+			$toolset = ee()->rte_toolset_model->get($toolset_id);
+			$vars['toolset_name'] = set_value('toolset_name', $toolset['name']);
 		}
-
 
 		// get list of enabled tools
 		$enabled_tools = ee()->rte_tool_model->get_tool_list(TRUE);
 
-		$unused_tools = $used_tools = array();
-
 		foreach ($enabled_tools as $tool)
 		{
-			$tool_index = array_search($tool['tool_id'], $toolset['tools']);
+			$name_key = strtolower($tool['class']);
+			$desc_key = $name_key . '_desc';
 
-			// is the tool in this toolset?
-			if ($tool_index !== FALSE)
-			{
-				$used_tools[$tool_index] = $tool;
-			}
-			else
-			{
-				$unused_tools[] = $tool;
-			}
+			$selected = set_value('tools', $toolset['tools']);
+
+			$vars['tools'][] = array(
+				'id'		=> $tool['tool_id'],
+				'selected'	=> in_array($tool['tool_id'], $selected),
+				'name'		=> (lang($name_key) != $name_key) ? lang($name_key) : $tool['name'],
+				'desc'		=> (lang($desc_key) != $desc_key) ? lang($desc_key) : ''
+			);
 		}
 
-		// sort used tools by custom order
-		ksort($used_tools, SORT_NUMERIC);
-
-		// set up the form
-		$vars = array(
-			'action'			=> $this->form_url.AMP.'method=save_toolset'.( !! $toolset_id ? AMP.'toolset_id='.$toolset_id : ''),
-			'is_private'		=> $is_private,
-			'toolset_name'		=> ( ! $toolset || $is_private ? '' : $toolset['name']),
-			'available_tools'	=> $enabled_tools,
-			'unused_tools'		=> $unused_tools,
-			'used_tools'		=> $used_tools
-		);
-
-		// JS
-		ee()->cp->add_js_script(array(
-			'ui' 	=> 'sortable',
-			'file'	=> 'cp/rte'
-		));
-
-		// CSS
-		ee()->cp->add_to_head(ee()->view->head_link('css/rte.css'));
-
-		// return the form
-		ee()->output->send_ajax_response(array(
-			'success' => ee()->load->view('edit_toolset', $vars, TRUE)
-		));
+		return ee()->load->view('edit_toolset', $vars, TRUE);
 	}
 
 	// --------------------------------------------------------------------
@@ -144,10 +143,10 @@ class Rte_lib {
 	/**
 	 * Saves a toolset
 	 *
-	 * @access	public
+	 * @access	private
 	 * @return	void
 	 */
-	public function save_toolset()
+	private function save_toolset()
 	{
 		ee()->output->enable_profiler(FALSE);
 
@@ -156,40 +155,24 @@ class Rte_lib {
 		// get the toolset
 		$toolset_id = ee()->input->get_post('toolset_id');
 
+		if ($toolset_id)
+		{
+			$error_url = cp_url('addons/settings/rte/edit_toolset', array('toolset_id' => $toolset_id));
+			$success_url = $error_url;
+		}
+		else
+		{
+			$error_url = cp_url('addons/settings/rte/new_toolset');
+			$success_url = cp_url('addons/settings/rte');
+		}
+
 		$toolset = array(
-			'name'      => ee()->input->get_post('toolset_name'),
-			'tools'     => ee()->input->get_post('selected_tools'),
-			'member_id' => (ee()->input->get_post('private') == 'true' ? ee()->session->userdata('member_id') : 0)
+			'name'      => ee()->input->post('toolset_name'),
+			'tools'     => implode('|', ee()->input->post('tools')),
 		);
 
 		// is this an individual’s private toolset?
 		$is_members = (ee()->input->get_post('private') == 'true');
-
-		// did an empty name sneak through?
-		if (empty($toolset['name']))
-		{
-			ee()->output->send_ajax_response(array(
-				'error' => lang('name_required')
-			));
-		}
-
-		// check name for XSS
-		if ($toolset['name'] != strip_tags($toolset['name'])
-			OR $toolset['name'] != htmlentities($toolset['name'])
-			OR $toolset['name'] != ee()->security->xss_clean($toolset['name']))
-		{
-			ee()->output->send_ajax_response(array(
-				'error' => lang('valid_name_required')
-			));
-		}
-
-		// is the name unique?
-		if ( ! $is_members && ! ee()->rte_toolset_model->unique_name($toolset['name'], $toolset_id))
-		{
-			ee()->output->send_ajax_response(array(
-				'error' => lang('unique_name_required')
-			));
-		}
 
 		// Updating? Make sure the toolset exists and they aren't trying any
 		// funny business...
@@ -199,24 +182,32 @@ class Rte_lib {
 
 			if ( ! $orig || $is_members && $orig['member_id'] != ee()->session->userdata('member_id'))
 			{
-				ee()->output->send_ajax_response(array(
-					'error' => lang('toolset_update_failed')
-				));
+				ee()->view->set_message('issue', lang('toolset_error'), lang('toolset_update_failed'), TRUE);
+				ee()->functions->redirect($error_url);
 			}
 		}
 
 		// save it
 		if (ee()->rte_toolset_model->save_toolset($toolset, $toolset_id) === FALSE)
 		{
-			ee()->output->send_ajax_response(array(
-				'error' => lang('toolset_update_failed')
-			));
+			ee()->view->set_message('issue', lang('toolset_error'), lang('toolset_update_failed'), TRUE);
+			ee()->functions->redirect($error_url);
+		}
+
+		if ($toolset_id)
+		{
+			ee()->view->set_message('success', lang('toolset_updated'), lang('toolset_updated_desc'), TRUE);
+		}
+		else
+		{
+			ee()->view->set_message('success', lang('toolset_created'), sprintf(lang('toolset_created_desc'), $toolset['name']), TRUE);
 		}
 
 		// if it’s new, get the ID
 		if ( ! $toolset_id)
 		{
 			$toolset_id = ee()->db->insert_id();
+			ee()->session->set_flashdata('toolset_id', $toolset_id);
 		}
 
 		// If the default toolset was deleted
@@ -235,10 +226,7 @@ class Rte_lib {
 				->update('members', array('rte_toolset_id' => $toolset_id));
 		}
 
-		ee()->output->send_ajax_response(array(
-			'success' 		=> lang('toolset_updated'),
-			'force_refresh' => TRUE
-		));
+		ee()->functions->redirect($success_url);
 	}
 
 	// ------------------------------------------------------------------------
@@ -746,6 +734,49 @@ class Rte_lib {
 		}
 
 		return $js;
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Tool Set Valid Name handler
+	 *
+	 * @return bool
+	 */
+	public function _valid_name($str)
+	{
+		// check name for XSS
+		if ($str != strip_tags($str)
+			OR $str != htmlentities($str)
+			OR $str != ee()->security->xss_clean($str))
+		{
+			ee()->form_validation->set_message('_valid_name', lang('valid_name_required'));
+			return FALSE;
+		}
+
+		return TRUE;
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Tool Set Unique Name handler
+	 *
+	 * @return bool
+	 */
+	public function _unique_name($str)
+	{
+		$toolset_id = ee()->input->get_post('toolset_id');
+		$is_members = (ee()->input->get_post('private') == 'true');
+
+		// is the name unique?
+		if ( ! $is_members && ! ee()->rte_toolset_model->unique_name($str, $toolset_id))
+		{
+			ee()->form_validation->set_message('_unique_name', lang('unique_name_required'));
+			return FALSE;
+		}
+
+		return TRUE;
 	}
 }
 

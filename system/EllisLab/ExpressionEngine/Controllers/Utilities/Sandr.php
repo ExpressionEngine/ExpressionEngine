@@ -65,7 +65,7 @@ class Sandr extends Utilities {
 				'rules' => 'required|auth_password'
 			)
 		));
-		
+
 		if (AJAX_REQUEST)
 		{
 			ee()->form_validation->run_ajax();
@@ -253,4 +253,4 @@ class Sandr extends Utilities {
 // END CLASS
 
 /* End of file Sandr.php */
-/* Location: ./system/expressionengine/controllers/cp/Utilities/Sandr.php */
+/* Location: ./system/EllisLab/ExpressionEngine/Controllers/Utilities/Sandr.php */

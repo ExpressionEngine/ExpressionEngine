@@ -193,7 +193,17 @@ class Login extends CP_Controller {
 
 		if ($this->input->post('return_path'))
 		{
-			$return_path = $base.AMP.base64_decode($this->input->post('return_path'));
+			$return_path = base64_decode($this->input->post('return_path'));
+
+			if (strpos($return_path, '{') === 0)
+			{
+				$uri_elements = json_decode($return_path, TRUE);
+				$return_path = cp_url($uri_elements['path'], $uri_elements['arguments']);
+			}
+			else
+			{
+				$return_path = ee()->uri->reformat($base.AMP.$return_path, $base);
+			}
 		}
 
 		if (AJAX_REQUEST)
@@ -205,7 +215,7 @@ class Login extends CP_Controller {
 			));
 		}
 
-		$this->functions->redirect(ee()->uri->reformat($return_path, $base));
+		$this->functions->redirect($return_path);
 	}
 
 	// --------------------------------------------------------------------

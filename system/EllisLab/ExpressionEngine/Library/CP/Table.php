@@ -36,19 +36,30 @@ class Table {
 	const COL_TOOLBAR = 4;
 	const COL_ID = 5;
 
-	private $columns = array();
-	private $config = array();
-	private $data = array();
+	protected $columns = array();
+	protected $config = array();
+	protected $data = array();
 
 	/**
 	 * Config can have these keys:
 	 *
 	 * 'sort_col' - Name of the column currently sorting
 	 * 'sort_dir' - Direction of the sort, 'asc' or 'desc'
-	 * 'search' - Search text
+	 * 'search' - Search text to search table with
 	 * 'wrap' - Whether or not to wrap the table in a div that allows overflow scrolling
-	 * 'autosort' - Handle sorting automatically, this is good for non-paginated data
+	 * 'autosort' - Handle sorting automatically, this expects the entire dataset to be
+	 * 		set via setData(); if only a partial dataset is set, handle sorting manually
+	 * 'autosearch' - Handle searching automatically, this expects the entire dataset to be
+	 * 		set via setData(); if only a partial dataset is set, handle sorting manually
 	 * 'lang_cols' - Run column names though lang() on the front end
+	 * 'limit' - Row limit for the table, automatic pagination is based on this
+	 * 'page' - Current page
+	 * 'total_rows' - Total rows in the dataset regardless of limit or page number
+	 * 'sortable' - Whether or not to allow the columns to sort the table, this can
+	 * 		also be controlled on a column-by-column basis
+	 *
+	 * 'grid_input' - Whether or not this table is being used as a Grid input UI
+	 * 'reorder' - Whether or not to allow this Grid to have its rows reordered
 	 *
 	 * @param	array 	$config	See above for options
 	 */
@@ -103,7 +114,7 @@ class Table {
 	 * Convenience method for initializing a Table object with current
 	 * sort parameters within an EE controller
 	 *
-	 * @param	array 	$columns	Column names and settings
+	 * @param	array 	$config	See constructor doc block
 	 * @return  object	New Table object
 	 */
 	public static function create($config = array())
@@ -533,18 +544,6 @@ class Table {
 			'action_text'	=> $action_text,
 			'action_link'	=> $action_link
 		);
-	}
-
-	/**
-	 * Set the empty row elements for new/empty rows in a Grid input table
-	 *
-	 * @param	array	$row	Array of empty field elements to be duplicated
-	 *                   		for each new row the user creates
-	 * @return  void
-	 */
-	public function setBaseGridRow($row)
-	{
-		$this->config['grid_base_row'] = $row;
 	}
 }
 

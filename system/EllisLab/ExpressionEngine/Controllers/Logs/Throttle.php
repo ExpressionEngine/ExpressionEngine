@@ -178,4 +178,4 @@ class Throttle extends Logs {
 // END CLASS
 
 /* End of file Throttle.php */
-/* Location: ./system/expressionengine/controllers/cp/Logs/Throttle.php */
+/* Location: ./system/EllisLab/ExpressionEngine/Controllers/Logs/Throttle.php */

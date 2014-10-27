@@ -363,4 +363,4 @@ class Translate extends Utilities {
 // END CLASS
 
 /* End of file Translate.php */
-/* Location: ./system/expressionengine/controllers/cp/Utilities/Translate.php */
+/* Location: ./system/EllisLab/ExpressionEngine/Controllers/Utilities/Translate.php */
