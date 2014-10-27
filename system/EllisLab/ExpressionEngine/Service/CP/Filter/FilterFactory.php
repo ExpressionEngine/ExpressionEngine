@@ -44,6 +44,10 @@ class FilterFactory {
 			)
 		);
 		$filter->default_value = 20;
+		if (strtolower($filter->getValue()) == 'all')
+		{
+			$filter->setValue($total);
+		}
 
 		return $filter;
 	}
