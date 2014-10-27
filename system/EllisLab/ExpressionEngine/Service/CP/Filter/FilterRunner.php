@@ -78,6 +78,11 @@ class FilterRunner {
 
 		foreach ($this->filters as $filter)
 		{
+			if (get_class($filter) != 'EllisLab\ExpressionEngine\Service\CP\Filter\Filter')
+			{
+				continue;
+			}
+
 			$filters[] = array(
 				'label'			=> $filter->label,
 				'name'			=> $filter->name,
@@ -97,6 +102,11 @@ class FilterRunner {
 		$this->parameters = array();
 		foreach ($this->filters as $filter)
 		{
+			if (get_class($filter) != 'EllisLab\ExpressionEngine\Service\CP\Filter\Filter')
+			{
+				continue;
+			}
+
 			$value = $filter->getValue();
 
 			if ($value)
