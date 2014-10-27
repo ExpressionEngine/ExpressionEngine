@@ -84,7 +84,8 @@ class FilterRunner {
 				'value'			=> $filter->getDisplayValue(),
 				'custom_value'	=> $filter->custom_value,
 				'placeholder'	=> $filter->placeholder,
-				'options'		=> $filter->getOptions($url)
+				'options'		=> $filter->getOptions($url),
+				'attributes'	=> $filter->attributes
 			);
 		}
 

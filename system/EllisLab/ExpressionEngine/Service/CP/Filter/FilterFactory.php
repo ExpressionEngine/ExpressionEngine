@@ -95,6 +95,80 @@ class FilterFactory {
 		return $filter;
 	}
 
+	public static function dateFilter()
+	{
+		$date_format = ee()->session->userdata('date_format', ee()->config->item('date_format'));
+
+		ee()->javascript->set_global('date.date_format', $date_format);
+		ee()->javascript->set_global('lang.date.months.full', array(
+			lang('january'),
+			lang('february'),
+			lang('march'),
+			lang('april'),
+			lang('may'),
+			lang('june'),
+			lang('july'),
+			lang('august'),
+			lang('september'),
+			lang('october'),
+			lang('november'),
+			lang('december')
+		));
+		ee()->javascript->set_global('lang.date.months.abbreviated', array(
+			lang('jan'),
+			lang('feb'),
+			lang('mar'),
+			lang('apr'),
+			lang('may'),
+			lang('june'),
+			lang('july'),
+			lang('aug'),
+			lang('sept'),
+			lang('oct'),
+			lang('nov'),
+			lang('dec')
+		));
+		ee()->javascript->set_global('lang.date.days', array(
+			lang('su'),
+			lang('mo'),
+			lang('tu'),
+			lang('we'),
+			lang('th'),
+			lang('fr'),
+			lang('sa'),
+		));
+		ee()->cp->add_js_script(array(
+			'file' => array('cp/v3/date-picker'),
+		));
+
+		$dates = array(
+			'86400'     => ucwords(lang('last').' 24 '.lang('hours')),
+			'604800'    => ucwords(lang('last').' 7 '.lang('days')),
+			'2592000'   => ucwords(lang('last').' 30 '.lang('days')),
+			'15552000'  => ucwords(lang('last').' 180 '.lang('days')),
+			'31536000'  => ucwords(lang('last').' 365 '.lang('days')),
+		);
+
+		$filter = new Filter('filter_by_date', 'date', $dates);
+		$filter->placeholder = lang('custom_date');
+		$filter->attributes = array('rel' => 'date-picker');
+
+		$value = $filter->getValue();
+		if (array_key_exists($value, $dates))
+		{
+			$filter->setDisplayValue($dates[$value]);
+		}
+		else
+		{
+			$date = ee()->localize->string_to_timestamp($value);
+			$filter->attributes['data-timestamp'] = $date;
+
+			$filter->setDisplayValue(ee()->localize->format_date($date_format, $date));
+			$filter->setValue(array($date, $date+86400));
+		}
+
+		return $filter;
+	}
 }
 // END CLASS
 
