@@ -154,6 +154,11 @@ class FilterFactory {
 		$filter->attributes = array('rel' => 'date-picker');
 
 		$value = $filter->getValue();
+		if (empty($value))
+		{
+			return $filter;
+		}
+
 		if (array_key_exists($value, $dates))
 		{
 			$filter->setDisplayValue($dates[$value]);
