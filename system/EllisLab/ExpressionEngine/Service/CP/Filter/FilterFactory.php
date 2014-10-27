@@ -30,6 +30,14 @@ use EllisLab\ExpressionEngine\Library\CP\URL;
  */
 class FilterFactory {
 
+	/**
+	 * This funciton produces a Filter object appropriate for offering a perpage
+	 * limit filter.
+	 *
+	 * @param int	$total	The total number of objects (used in the display)
+	 * @param str	$all_lang_key	The lang() key for the "show all" display
+	 * @return	obj	The Filter object
+	 */
 	public static function showFilter($total, $all_lang_key = 'all_items')
 	{
 		$filter = new Filter('perpage', 'show');
@@ -52,6 +60,12 @@ class FilterFactory {
 		return $filter;
 	}
 
+	/**
+	 * This funciton produces a Filter object appropriate for offering a list of
+	 * sites to filter by
+	 *
+	 * @return	obj	The Filter object
+	 */
 	public static function siteFilter()
 	{
 		if (ee()->config->item('multiple_sites_enabled') !== 'y' || IS_CORE)
@@ -65,6 +79,12 @@ class FilterFactory {
 		return $filter;
 	}
 
+	/**
+	 * This funciton produces a Filter object appropriate for offering a list of
+	 * usernames to filter by
+	 *
+	 * @return	obj	The Filter object
+	 */
 	public static function usernameFilter()
 	{
 		$filter = new Filter('filter_by_username', 'username');
@@ -99,6 +119,12 @@ class FilterFactory {
 		return $filter;
 	}
 
+	/**
+	 * This funciton produces a Filter object appropriate for offering a list of
+	 * dates to filter by
+	 *
+	 * @return	obj	The Filter object
+	 */
 	public static function dateFilter()
 	{
 		$date_format = ee()->session->userdata('date_format', ee()->config->item('date_format'));

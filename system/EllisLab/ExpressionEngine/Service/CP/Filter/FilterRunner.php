@@ -36,6 +36,10 @@ class FilterRunner {
 
 	/**
 	 * Constructor
+	 *
+	 * @param obj	$url		A CP/URL object that serves as the base URL for
+	 *                  		the filters
+	 * @param array	$filters	An array of Filter objects
 	 */
 	public function __construct(URL $url, array $filters = array())
 	{
@@ -45,6 +49,13 @@ class FilterRunner {
 		$this->parameters = NULL;
 	}
 
+	/**
+	 * Fetches and returns the GET/POST (or default) parameters related to the
+	 * filters
+	 *
+	 * @return array	An associative array of submitted values in the form
+	 *     'filter_by_field' => 'foo'
+	 */
 	public function getParameters()
 	{
 		if (is_null($this->parameters))
@@ -55,6 +66,12 @@ class FilterRunner {
 		return $this->parameters;
 	}
 
+	/**
+	 * With the base URL provided in the constructor, this will apply any
+	 * submitted parameters and return a URL object.
+	 *
+	 * @return obj	A CP/URL object
+	 */
 	public function getUrl()
 	{
 		$this->getFilterValues();
@@ -66,6 +83,11 @@ class FilterRunner {
 		return $url;
 	}
 
+	/**
+	 * Loops through all the filters and generates HTML
+	 *
+	 * @return str	The HTML for the filters
+	 */
 	public function render()
 	{
 		if (empty($this->filters))
@@ -97,6 +119,11 @@ class FilterRunner {
 		return ee()->view->render('_shared/filters', array('filters' => $filters), TRUE);
 	}
 
+	/**
+	 * Loops thorugh the filters and stores the submitted/default values
+	 *
+	 * @return void
+	 */
 	private function getFilterValues()
 	{
 		$this->parameters = array();
