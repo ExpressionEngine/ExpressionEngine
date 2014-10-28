@@ -75,6 +75,10 @@ class Logs extends CP_Controller {
 
 		// Add in any submitted search phrase
 		ee()->view->search_value = ee()->input->get_post('search');
+		if ( ! empty(ee()->view->search_value))
+		{
+			$this->base_url->setQueryStringVariable('search', ee()->view->search_value);
+		}
 	}
 
 	// --------------------------------------------------------------------
