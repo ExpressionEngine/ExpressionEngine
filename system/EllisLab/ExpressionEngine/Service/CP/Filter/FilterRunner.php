@@ -116,7 +116,7 @@ class FilterRunner {
 			);
 		}
 
-		return ee()->view->render('_shared/filters', array('filters' => $filters), TRUE);
+		return ee()->load->view('_shared/filters', array('filters' => $filters), TRUE);
 	}
 
 	/**
