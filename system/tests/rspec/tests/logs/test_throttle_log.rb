@@ -107,7 +107,7 @@ feature 'Throttling Log' do
 	it '(enabled) can change page size', :enabled => true, :pregen => true do
 		@page.perpage_filter.click
 		@page.wait_until_perpage_filter_menu_visible
-		@page.perpage_filter_menu.click_link "25"
+		@page.perpage_filter_menu.click_link "25 results"
 
 		@page.perpage_filter.text.should eq "show (25)"
 		@page.should have(25).items
@@ -204,7 +204,7 @@ feature 'Throttling Log' do
 	it '(enabled) does not lose a filter value when paginating', :enabled => true, :pregen => true do
 		@page.perpage_filter.click
 		@page.wait_until_perpage_filter_menu_visible
-		@page.perpage_filter_menu.click_link "25"
+		@page.perpage_filter_menu.click_link "25 results"
 		no_php_js_errors
 
 		@page.perpage_filter.text.should eq "show (25)"
