@@ -104,6 +104,15 @@ class FilterFactory {
 						$filter->setDisplayValue($member->username);
 					}
 				}
+				else
+				{
+					$member = ee()->api->get('Member')->filter('username', $value)->first();
+					if ($member)
+					{
+						$filter->setDisplayValue($value);
+						$filter->setValue($member->member_id);
+					}
+				}
 			}
 
 			$options = array();
