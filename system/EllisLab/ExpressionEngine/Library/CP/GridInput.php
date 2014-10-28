@@ -76,6 +76,30 @@ class GridInput extends Table {
 		}
 
 		$this->config['grid_blank_row'] = $row;
+
+		// Call this in case blank row is being set after data is set
+		$this->setData($this->data);
+	}
+
+	/**
+	 * Set and normalizes the data for the table.
+	 * 
+	 * Overrides the parent setData to add our blank row to the bottom.
+	 *
+	 * @param	array 	$data	Table data
+	 * @return  void
+	 */
+	public function setData($data)
+	{
+		if (isset($this->config['grid_blank_row']))
+		{
+			$data[] = array(
+				'attrs'   => array('class' => 'grid-blank-row'),
+				'columns' => $this->config['grid_blank_row']
+			);
+		}
+
+		parent::setData($data);
 	}
 
 	/**
@@ -103,19 +127,13 @@ class GridInput extends Table {
 		{
 			$row['columns'] = array_map(function($field) use ($grid, $row)
 			{
-				return $grid->namespace_for_grid($field, 'row_id_'.$row['attrs']['row_id']);
+				$row_id = (isset($row['attrs']['row_id'])) ? 'row_id_'.$row['attrs']['row_id'] : 'new_row_0';
+				return $grid->namespace_for_grid($field, $row_id);
 			}, $row['columns']);
 
 			// This no longer needs to be here
 			unset($row['attrs']['row_id']);
 		}
-
-		// Namespace the blank row
-		$view_data['grid_blank_row'] = $this->config['grid_blank_row'];
-		$view_data['grid_blank_row'] = array_map(function($field) use ($grid)
-		{
-			return $grid->namespace_for_grid($field);
-		}, $row['columns']);
 
 		return $view_data;
 	}
