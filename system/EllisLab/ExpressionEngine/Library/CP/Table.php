@@ -285,7 +285,7 @@ class Table {
 			{
 				$attrs = array();
 
-				if (array_keys($row) == array('attrs', 'columns'))
+				if (empty(array_diff_key(array_keys($row), array('attrs', 'columns'))))
 				{
 					$attrs = $row['attrs'];
 					$row = $row['columns'];

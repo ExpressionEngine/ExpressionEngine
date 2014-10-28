@@ -93,6 +93,16 @@ class Members extends CP_Controller {
 		$sort = ($this->config->item('memberlist_sort_order')) ?
 			$this->config->item('memberlist_sort_order') : 'asc';
 
+		// Fix for an issue where users may have 'total_posts' saved
+		// in their site settings for sorting members; but the actual
+		// column should be total_forum_posts, so we need to correct
+		// it until member preferences can be saved again with the
+		// right value
+		if ($order_by == 'total_posts')
+		{
+			$order_by = 'total_forum_posts';
+		}
+
 		$perpage = $this->config->item('memberlist_row_limit');
 		$sort_col = ee()->input->get('sort_col') ?: $order_by;
 		$sort_dir = ee()->input->get('sort_dir') ?: $sort;
@@ -106,7 +116,7 @@ class Members extends CP_Controller {
 
 		$state = array(
 			'sort'	=> array($sort_col => $sort_dir),
-			'offset' => ! empty (ee()->input->get('page')) ? (ee()->input->get('page') - 1) * $perpage: 0
+			'offset' => ! empty($page) ? ($page - 1) * $perpage : 0
 		);
 
 		$params = array(
@@ -236,8 +246,8 @@ class Members extends CP_Controller {
 			$attributes = array();
 			$toolbar = array('toolbar_items' => array(
 				'edit' => array(
-					'href' => cp_url('members/edit/' . $member['member_id']),
-					'title' => strtolower(lang('edit'))
+					'href' => cp_url('members/profile/', array('id' => $member['member_id'])),
+					'title' => strtolower(lang('profile'))
 				)
 			));
 
@@ -251,7 +261,7 @@ class Members extends CP_Controller {
 					$group = "<span class='st-pending'>" . lang('pending') . "</span>";
 					$attributes['class'] = 'alt pending';
 					$toolbar['toolbar_items']['approve'] = array(
-						'href' => cp_url('members/approve/' . $member['member_id']),
+						'href' => cp_url('members/approve/', array('id' => $member['member_id'])),
 						'title' => strtolower(lang('approve'))
 					);
 					break;
