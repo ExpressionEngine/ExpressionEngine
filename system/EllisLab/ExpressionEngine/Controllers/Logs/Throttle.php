@@ -68,11 +68,6 @@ class Throttle extends Logs {
 		if (ee()->config->item('enable_throttling') == 'y')
 		{
 			$throttling_disabled = FALSE;
-			$page = ee()->input->get('page') ? ee()->input->get('page') : 1;
-			$page = ($page > 0) ? $page : 1;
-
-			$offset = ($page - 1) * $this->params['perpage']; // Offset is 0 indexed
-
 			$max_page_loads = 10;
 			$lockout_time	= 30;
 
@@ -114,6 +109,9 @@ class Throttle extends Logs {
 				$this->base_url = $fr->getUrl();
 				$this->params = $fr->getParameters();
 			}
+
+			$page = ((int) ee()->input->get('page')) ?: 1;
+			$offset = ($page - 1) * $this->params['perpage']; // Offset is 0 indexed
 
 			// Set the page heading
 			if ( ! empty(ee()->view->search_value))

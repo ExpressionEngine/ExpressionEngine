@@ -132,9 +132,7 @@ class Developer extends Logs {
 			$this->params = $fr->getParameters();
 		}
 
-		$page = ee()->input->get('page') ? ee()->input->get('page') : 1;
-		$page = ($page > 0) ? $page : 1;
-
+		$page = ((int) ee()->input->get('page')) ?: 1;
 		$offset = ($page - 1) * $this->params['perpage']; // Offset is 0 indexed
 
 		if ( ! empty($this->params['filter_by_date']))

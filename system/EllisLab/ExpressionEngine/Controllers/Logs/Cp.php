@@ -55,11 +55,6 @@ class Cp extends Logs {
 		$this->base_url->path = 'logs/cp';
 		ee()->view->cp_page_title = lang('view_cp_log');
 
-		$page = ee()->input->get('page') ? ee()->input->get('page') : 1;
-		$page = ($page > 0) ? $page : 1;
-
-		$offset = ($page - 1) * $this->params['perpage']; // Offset is 0 indexed
-
 		$logs = ee()->api->get('CpLog')->with('Site');
 
 		if ( ! empty(ee()->view->search_value))
@@ -84,6 +79,9 @@ class Cp extends Logs {
 			$this->base_url = $fr->getUrl();
 			$this->params = $fr->getParameters();
 		}
+
+		$page = ((int) ee()->input->get('page')) ?: 1;
+		$offset = ($page - 1) * $this->params['perpage']; // Offset is 0 indexed
 
 		if ( ! empty($this->params['filter_by_username']))
 		{
