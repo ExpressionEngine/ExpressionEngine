@@ -9,6 +9,8 @@ use EllisLab\ExpressionEngine\Library\CP;
 use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Library\CP\URL;
+use EllisLab\ExpressionEngine\Service\CP\Filter\Filter;
+use EllisLab\ExpressionEngine\Service\CP\Filter\FilterRunner;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -114,6 +116,33 @@ class Members extends CP_Controller {
 			'limit' => $perpage
 		));
 
+		$groups = ee()->api->get('MemberGroup')->order('group_title', 'asc')->all();
+		$group_ids = array();
+
+		foreach ($groups as $group)
+		{
+			$group_ids[$group->group_id] = $group->group_title;
+		}
+
+		$filters = $group_ids;
+		$filters['all'] = lang('all');
+
+		$filter = new Filter('group', 'member_group');
+		$filter->placeholder = lang('all');
+		$filter->setOptions($filters);
+		$filter->default_value = 'all';
+
+		$value = $filter->getValue();
+		$filter->setValue($value);
+		$filter->setDisplayValue($filters[$value]);
+
+		$this->group = is_numeric($value) ? $value : '';
+
+		$fr = new FilterRunner($base_url, array($filter));
+		ee()->view->filters = $fr->render();
+		$this->base_url = $fr->getUrl();
+		$this->params = $fr->getParameters();
+
 		$state = array(
 			'sort'	=> array($sort_col => $sort_dir),
 			'offset' => ! empty($page) ? ($page - 1) * $perpage : 0
@@ -125,28 +154,6 @@ class Members extends CP_Controller {
 		);
 
 		$data = $this->_member_search($state, $params);
-		$groups = ee()->api->get('MemberGroup')->order('group_title', 'asc')->all();
-		$group_ids = array();
-		$member_groups = array(cp_url('members') => 'All');
-
-		foreach ($groups as $group)
-		{
-			$group_ids[$group->group_id] = $group->group_title;
-			$member_groups[cp_url('members/filter/' . $group->group_id)] = $group->group_title;
-		}
-
-		$data['groups'] = array(
-			'filters' => array(
-				array(
-					'label' => 'member group',
-					'value' => empty($this->group) ? lang('all') : $group_ids[$this->group],
-					'name' => '',
-					'custom_value' => '',
-					'placeholder' => '',
-					'options' => $member_groups
-				)
-			)
-		);
 
 		$table->setColumns(
 			array(
@@ -194,20 +201,6 @@ class Members extends CP_Controller {
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->cp_page_title = lang('all_members');
 		ee()->cp->render('members/view_members', $data);
-	}
-
-	/**
-	 * Filter the member list by the group
-	 * 
-	 * @param mixed $group 
-	 * @access public
-	 * @return void
-	 */
-	public function filter($group)
-	{
-		$this->group = $group;
-		$this->base_url = 'members/filter/' . $group;
-		$this->index();
 	}
 
 	// ----------------------------------------------------------------
