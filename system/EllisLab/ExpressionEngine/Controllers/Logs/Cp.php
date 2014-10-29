@@ -5,6 +5,8 @@ namespace EllisLab\ExpressionEngine\Controllers\Logs;
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use EllisLab\ExpressionEngine\Library\CP\Pagination;
+use EllisLab\ExpressionEngine\Service\CP\Filter\FilterFactory;
+use EllisLab\ExpressionEngine\Service\CP\Filter\FilterRunner;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -53,11 +55,6 @@ class Cp extends Logs {
 		$this->base_url->path = 'logs/cp';
 		ee()->view->cp_page_title = lang('view_cp_log');
 
-		$page = ee()->input->get('page') ? ee()->input->get('page') : 1;
-		$page = ($page > 0) ? $page : 1;
-
-		$offset = ($page - 1) * $this->params['perpage']; // Offset is 0 indexed
-
 		$logs = ee()->api->get('CpLog')->with('Site');
 
 		if ( ! empty(ee()->view->search_value))
@@ -72,8 +69,19 @@ class Cp extends Logs {
 
 		if ($logs->count() > 10)
 		{
-			$this->filters(array('username', 'site', 'date', 'perpage'));
+			$fr = new FilterRunner($this->base_url, array(
+				FilterFactory::usernameFilter(),
+				FilterFactory::siteFilter(),
+				FilterFactory::dateFilter(),
+				FilterFactory::showFilter($logs->count(), 'all_cp_logs')
+			));
+			ee()->view->filters = $fr->render();
+			$this->base_url = $fr->getUrl();
+			$this->params = $fr->getParameters();
 		}
+
+		$page = ((int) ee()->input->get('page')) ?: 1;
+		$offset = ($page - 1) * $this->params['perpage']; // Offset is 0 indexed
 
 		if ( ! empty($this->params['filter_by_username']))
 		{

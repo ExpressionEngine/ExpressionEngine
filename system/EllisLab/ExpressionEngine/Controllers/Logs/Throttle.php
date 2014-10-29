@@ -5,6 +5,8 @@ namespace EllisLab\ExpressionEngine\Controllers\Logs;
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use EllisLab\ExpressionEngine\Library\CP\Pagination;
+use EllisLab\ExpressionEngine\Service\CP\Filter\FilterFactory;
+use EllisLab\ExpressionEngine\Service\CP\Filter\FilterRunner;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -66,11 +68,6 @@ class Throttle extends Logs {
 		if (ee()->config->item('enable_throttling') == 'y')
 		{
 			$throttling_disabled = FALSE;
-			$page = ee()->input->get('page') ? ee()->input->get('page') : 1;
-			$page = ($page > 0) ? $page : 1;
-
-			$offset = ($page - 1) * $this->params['perpage']; // Offset is 0 indexed
-
 			$max_page_loads = 10;
 			$lockout_time	= 30;
 
@@ -105,8 +102,16 @@ class Throttle extends Logs {
 
 			if ($count > 10)
 			{
-				$this->filters(array('perpage'));
+				$fr = new FilterRunner($this->base_url, array(
+					FilterFactory::showFilter($count, 'all_throttle_logs')
+				));
+				ee()->view->filters = $fr->render();
+				$this->base_url = $fr->getUrl();
+				$this->params = $fr->getParameters();
 			}
+
+			$page = ((int) ee()->input->get('page')) ?: 1;
+			$offset = ($page - 1) * $this->params['perpage']; // Offset is 0 indexed
 
 			// Set the page heading
 			if ( ! empty(ee()->view->search_value))

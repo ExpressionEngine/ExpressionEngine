@@ -39,7 +39,7 @@
 					<?=form_open($form_url)?>
 						<h1><?=$cp_heading?></h1>
 						<?php $this->view('_shared/alerts')?>
-						<?php $this->view('_shared/filters'); ?>
+						<?php if (isset($filters)) echo $filters; ?>
 						<?php $this->view('_shared/table', $table); ?>
 						<?php $this->view('_shared/pagination'); ?>
 						<fieldset class="tbl-bulk-act">

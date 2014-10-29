@@ -252,7 +252,7 @@ class Table {
 	 *
 	 * COL_CHECKBOX: Needs the name and value of the checkbox
 	 *
-	 * @param	array 	$columns	Table data
+	 * @param	array 	$data	Table data
 	 * @return  void
 	 */
 	public function setData($data)

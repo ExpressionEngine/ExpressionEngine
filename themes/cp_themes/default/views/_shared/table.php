@@ -59,7 +59,9 @@ if ($wrap): ?>
 				<th class="last grid-remove"></th>
 			<?php endif ?>
 		</tr>
-		<?php if (empty($data)): ?>
+		<?php
+		// Output this if Grid input so we can dynamically show it via JS
+		if (empty($data) OR $grid_input): ?>
 			<tr class="no-results">
 				<td class="solo" colspan="<?=count($columns)?>">
 					<?=lang($no_results['text'])?>

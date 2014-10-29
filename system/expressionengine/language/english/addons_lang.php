@@ -4,6 +4,7 @@ $lang = array(
 
 /* Sidebar Menu */
 'all_addons'					=>		'All Add-Ons',
+'show_all_addons'				=>		'All %d Add-Ons',
 'manage_extensions'				=>		'Manage Extensions',
 'manage_addon_extensions'		=>		'Manage Add-on Extensions',
 

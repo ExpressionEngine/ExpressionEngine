@@ -39,14 +39,14 @@ var Grid = window.Grid = {
 /**
  * Grid Publish class
  *
- * @param	{string}	field		Field ID of table to instantiate as a Grid
+ * @param	{string}	field		Selector of table to instantiate as a Grid
  */
 Grid.Publish = function(field, settings)
 {
 	this.root = $(field);
-	this.blankRow = this.root.find('tr.blank_row');
-	this.emptyField = this.root.find('tr.empty_field');
-	this.rowContainer = this.root.find('.grid_row_container');
+	this.blankRow = $('tr.grid-blank-row', this.root);
+	this.emptyField = $('tr.no-results', this.root);
+	this.rowContainer = this.root.not($('tr', this.root).has('th'));
 	this.settings = (settings !== undefined) ? settings : EE.grid_field_settings[field.id];
 	this.init();
 
@@ -82,9 +82,9 @@ Grid.Publish.prototype = {
 		this.rowContainer.sortable({
 			axis: 'y',						// Only allow vertical dragging
 			containment: 'parent',			// Contain to parent
-			handle: 'td.grid_handle',		// Set drag handle
+			handle: 'td.reorder-col',		// Set drag handle
 			cancel: 'td.grid_sort_cancel',	// Do not allow sort on this handle
-			items: 'tr.grid_row',			// Only allow these to be sortable
+			items: 'table.gridtr',					// Only allow these to be sortable
 			sort: EE.sortable_sort_helper,	// Custom sort handler
 			helper: function(event, row)	// Fix issue where cell widths collapse on drag
 			{
@@ -147,7 +147,7 @@ Grid.Publish.prototype = {
 
 		if (this.settings.grid_max_rows !== '')
 		{
-			var addButton = this.root.find('.grid_button_add');
+			var addButton = this.root.parents('fieldset').find('.toolbar .add a');
 
 			// Show add button if row count is below the max rows setting
 			addButton.toggle(rowCount < this.settings.grid_max_rows);
@@ -155,7 +155,7 @@ Grid.Publish.prototype = {
 
 		if (this.settings.grid_min_rows !== '')
 		{
-			var deleteButtons = this.root.find('.grid_button_delete');
+			var deleteButtons = this.root.find('.toolbar .remove');
 
 			// Show delete buttons if the row count is above the min rows setting
 			deleteButtons.toggle(rowCount > this.settings.grid_min_rows);
@@ -168,15 +168,14 @@ Grid.Publish.prototype = {
 	},
 
 	/**
-	 * Returns current number of data rows in the Grid field
+	 * Returns current number of data rows in the Grid field, makes sure
+	 * to skip counting of blank row, empty row and header row
 	 *
 	 * @return	{int}	Number of rows
 	 */
 	_getRows: function()
 	{
-		return this.rowContainer
-			.find('tr.grid_row')
-			.not(this.blankRow.add(this.emptyField));
+		return $('tr', this.rowContainer).not(this.blankRow.add(this.emptyField).add($('tr', this.root).has('th')));
 	},
 
 	/**
@@ -187,7 +186,8 @@ Grid.Publish.prototype = {
 	{
 		var that = this;
 
-		this.root.find('.grid_button_add, .grid_link_add').on('click', function(event)
+		this.root.parents('fieldset').find('.toolbar .add a')
+			.add('.no-results .btn', this.root).on('click', function(event)
 		{
 			event.preventDefault();
 
@@ -203,7 +203,7 @@ Grid.Publish.prototype = {
 		// Clone our blank row
 		el = this.blankRow.clone();
 
-		el.removeClass('blank_row');
+		el.removeClass('grid-blank-row');
 
 		// Increment namespacing on inputs
 		this.original_row_count++;
@@ -237,11 +237,11 @@ Grid.Publish.prototype = {
 	{
 		var that = this;
 
-		this.root.on('click', '.grid_button_delete', function(event)
+		this.root.on('click', '.toolbar .remove a', function(event)
 		{
 			event.preventDefault();
 
-			row = $(this).parents('tr.grid_row');
+			row = $(this).parents('tr');
 
 			// Fire 'remove' event for this row
 			that._fireEvent('remove', row);

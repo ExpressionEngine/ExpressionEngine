@@ -150,6 +150,11 @@ class Uploads extends Settings {
 				ee()->session->userdata('group_id'),
 				$upload_id
 			);
+
+			if (empty($upload_dir))
+			{
+				show_error(lang('unauthorized_access'));
+			}
 		}
 
 		$vars['sections'] = array(
@@ -232,7 +237,8 @@ class Uploads extends Settings {
 				)
 			)
 		);
-
+	
+		// Image manipulations Grid
 		$grid = CP\GridInput::create(array(
 			'field_name' => 'image_manipulations',
 			'reorder' => FALSE // Order doesn't matter here
@@ -267,29 +273,40 @@ class Uploads extends Settings {
 			form_input('height')
 		));
 
-		// Temporary for testing
-		$grid->setData(array(
-			array(
-				'attrs' => array('row_id' => 20),
-				'columns' => array(
-					form_input('name'),
-					form_dropdown(
-						'type',
-						array(
-							'constrain' => lang('image_manip_type_opt_constrain'),
-							'crop' => lang('image_manip_type_opt_crop'),
-						)
-					),
-					form_input('width'),
-					form_input('height')
-				)
-			)
-		));
-
+		// Populate existing image manipulations
 		if ( ! empty($upload_id))
 		{
-			// Populate existing image manipulations
-			//$grid->setData($data);
+			$sizes_query = ee()->db->get_where(
+				'file_dimensions',
+				array('upload_location_id' => $upload_id)
+			);
+
+			if ($sizes_query->num_rows() != 0)
+			{
+				$data = array();
+
+				foreach($sizes_query->result_array() as $row)
+				{
+					$data[] = array(
+						'attrs' => array('row_id' => $row['id']),
+						'columns' => array(
+							form_input('name', $row['short_name']),
+							form_dropdown(
+								'type',
+								array(
+									'constrain' => lang('image_manip_type_opt_constrain'),
+									'crop' => lang('image_manip_type_opt_crop'),
+								),
+								$row['resize_type']
+							),
+							form_input('width', $row['width']),
+							form_input('height', $row['height'])
+						)
+					);
+				}
+
+				$grid->setData($data);
+			}
 		}
 
 		$vars['sections']['upload_image_manipulations'] = array(
@@ -326,6 +343,7 @@ class Uploads extends Settings {
 				->pluck('group_id');
 		}
 
+		// Member IDs NOT in $no_access have access...
 		$allowed_groups = array_diff(array_keys($member_groups), $no_access);
 
 		$vars['sections']['upload_privileges'] = array(
@@ -333,7 +351,7 @@ class Uploads extends Settings {
 				'title' => 'upload_member_groups',
 				'desc' => 'upload_member_groups_desc',
 				'fields' => array(
-					'avatar_path' => array(
+					'upload_member_groups' => array(
 						'type' => 'checkbox',
 						'choices' => $member_groups,
 						'value' => $allowed_groups
@@ -379,7 +397,7 @@ class Uploads extends Settings {
 				'rules' => 'integer'
 			)
 		));
-
+		
 		$base_url = cp_url('settings/uploads/'.$upload_id ?: '');
 
 		if (AJAX_REQUEST)
@@ -397,6 +415,15 @@ class Uploads extends Settings {
 		{
 			ee()->view->set_message('issue', lang('settings_save_error'), lang('settings_save_error_desc'));
 		}
+
+		// Load Grid assets (make into service?)
+		ee()->cp->add_to_head(ee()->view->head_link('css/v3/grid.css'));
+		ee()->cp->add_js_script('file', 'cp/grid');
+		$settings = array(
+			'grid_min_rows' => 0,
+			'grid_max_rows' => 0
+		);
+		ee()->javascript->output('EE.grid("table.grid-input-form", '.json_encode($settings).');');
 
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->base_url = $base_url;

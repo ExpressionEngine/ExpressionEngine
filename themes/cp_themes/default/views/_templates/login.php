@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<?=ee()->view->head_title($cp_page_title)?>
-		<?=ee()->view->head_link('css/v3/login.css'); ?>
+		<?=ee()->view->head_link('css/v3/out.min.css'); ?>
 	</head>
 	<body>
 		<section class="wrap">

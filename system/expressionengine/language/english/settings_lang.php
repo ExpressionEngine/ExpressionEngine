@@ -1120,10 +1120,10 @@ $lang = array(
 'Changes to images in this <mark>upload</mark> directory, made upon upload.',
 
 'image_manip_name' =>
-'Name',
+'Short Name',
 
 'image_manip_name_desc' =>
-'Name of this manipulation',
+'Short name of this manipulation',
 
 'image_manip_type' =>
 'Type',

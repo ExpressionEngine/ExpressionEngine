@@ -8,7 +8,7 @@
 	</fieldset>
 	<h1><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h1>
 	<?php $this->view('_shared/alerts')?>
-	<?php $this->view('_shared/filters'); ?>
+	<?php if (isset($filters)) echo $filters; ?>
 	<section class="item-wrap log">
 		<?php if (empty($rows)): ?>
 			<p class="no-results"><?=lang('no_control_panel_logs_found')?></p>
