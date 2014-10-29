@@ -177,7 +177,7 @@ class FilterFactory {
 			lang('sa'),
 		));
 		ee()->cp->add_js_script(array(
-			'file' => array('cp/v3/date-picker'),
+			'file' => array('cp/v3/date_picker'),
 		));
 
 		$dates = array(
