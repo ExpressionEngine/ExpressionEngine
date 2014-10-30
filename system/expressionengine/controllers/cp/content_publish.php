@@ -701,7 +701,9 @@ class Content_publish extends CP_Controller {
 
 			if (isset($filters['keywords']))
 			{
-				$filters['keywords'] = base64_encode($filters['keywords']);
+				$filters['keywords'] = base64_encode(
+					htmlentities($filters['keywords'], ENT_QUOTES)
+				);
 			}
 
 			$filter_link = BASE.AMP.'C=content_edit'.AMP.http_build_query($filters);
