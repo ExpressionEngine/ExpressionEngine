@@ -1927,7 +1927,7 @@ class Api_channel_fields extends Api {
 		}
 
 		$field_info['field_name'] = $field_name;
-		$field_info['params'] = ($param_string) ? ee()->functions->assign_parameters($param_string) : array();
+		$field_info['params'] = (trim($param_string)) ? ee()->functions->assign_parameters($param_string) : array();
 		$field_info['modifier'] = $modifier;
 
 		return $field_info;
