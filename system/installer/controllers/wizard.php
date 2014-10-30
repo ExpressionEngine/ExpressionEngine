@@ -2565,7 +2565,7 @@ PAPAYA;
 			'mailinglist_enabled'			=> 'y',
 			'mailinglist_notify'			=> 'n',
 			'mailinglist_notify_emails'		=> '',
-			'memberlist_order_by'			=> "total_posts",
+			'memberlist_order_by'			=> "member_id",
 			'memberlist_sort_order'			=> "desc",
 			'memberlist_row_limit'			=> "20",
 			'is_site_on'					=> 'y',

@@ -9,6 +9,8 @@ use EllisLab\ExpressionEngine\Library\CP;
 use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Library\CP\URL;
+use EllisLab\ExpressionEngine\Service\CP\Filter\Filter;
+use EllisLab\ExpressionEngine\Service\CP\Filter\FilterRunner;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -93,6 +95,16 @@ class Members extends CP_Controller {
 		$sort = ($this->config->item('memberlist_sort_order')) ?
 			$this->config->item('memberlist_sort_order') : 'asc';
 
+		// Fix for an issue where users may have 'total_posts' saved
+		// in their site settings for sorting members; but the actual
+		// column should be total_forum_posts, so we need to correct
+		// it until member preferences can be saved again with the
+		// right value
+		if ($order_by == 'total_posts')
+		{
+			$order_by = 'total_forum_posts';
+		}
+
 		$perpage = $this->config->item('memberlist_row_limit');
 		$sort_col = ee()->input->get('sort_col') ?: $order_by;
 		$sort_dir = ee()->input->get('sort_dir') ?: $sort;
@@ -104,9 +116,36 @@ class Members extends CP_Controller {
 			'limit' => $perpage
 		));
 
+		$groups = ee()->api->get('MemberGroup')->order('group_title', 'asc')->all();
+		$group_ids = array();
+
+		foreach ($groups as $group)
+		{
+			$group_ids[$group->group_id] = $group->group_title;
+		}
+
+		$filters = $group_ids;
+		$filters['all'] = lang('all');
+
+		$filter = new Filter('group', 'member_group');
+		$filter->placeholder = lang('all');
+		$filter->setOptions($filters);
+		$filter->default_value = 'all';
+
+		$value = $filter->getValue();
+		$filter->setValue($value);
+		$filter->setDisplayValue($filters[$value]);
+
+		$this->group = is_numeric($value) ? $value : '';
+
+		$fr = new FilterRunner($base_url, array($filter));
+		ee()->view->filters = $fr->render();
+		$this->base_url = $fr->getUrl();
+		$this->params = $fr->getParameters();
+
 		$state = array(
 			'sort'	=> array($sort_col => $sort_dir),
-			'offset' => ! empty (ee()->input->get('page')) ? (ee()->input->get('page') - 1) * $perpage: 0
+			'offset' => ! empty($page) ? ($page - 1) * $perpage : 0
 		);
 
 		$params = array(
@@ -115,28 +154,6 @@ class Members extends CP_Controller {
 		);
 
 		$data = $this->_member_search($state, $params);
-		$groups = ee()->api->get('MemberGroup')->order('group_title', 'asc')->all();
-		$group_ids = array();
-		$member_groups = array(cp_url('members') => 'All');
-
-		foreach ($groups as $group)
-		{
-			$group_ids[$group->group_id] = $group->group_title;
-			$member_groups[cp_url('members/filter/' . $group->group_id)] = $group->group_title;
-		}
-
-		$data['groups'] = array(
-			'filters' => array(
-				array(
-					'label' => 'member group',
-					'value' => empty($this->group) ? lang('all') : $group_ids[$this->group],
-					'name' => '',
-					'custom_value' => '',
-					'placeholder' => '',
-					'options' => $member_groups
-				)
-			)
-		);
 
 		$table->setColumns(
 			array(
@@ -186,20 +203,6 @@ class Members extends CP_Controller {
 		ee()->cp->render('members/view_members', $data);
 	}
 
-	/**
-	 * Filter the member list by the group
-	 * 
-	 * @param mixed $group 
-	 * @access public
-	 * @return void
-	 */
-	public function filter($group)
-	{
-		$this->group = $group;
-		$this->base_url = 'members/filter/' . $group;
-		$this->index();
-	}
-
 	// ----------------------------------------------------------------
 
 	/**
@@ -236,8 +239,8 @@ class Members extends CP_Controller {
 			$attributes = array();
 			$toolbar = array('toolbar_items' => array(
 				'edit' => array(
-					'href' => cp_url('members/edit/' . $member['member_id']),
-					'title' => strtolower(lang('edit'))
+					'href' => cp_url('members/profile/', array('id' => $member['member_id'])),
+					'title' => strtolower(lang('profile'))
 				)
 			));
 
@@ -251,7 +254,7 @@ class Members extends CP_Controller {
 					$group = "<span class='st-pending'>" . lang('pending') . "</span>";
 					$attributes['class'] = 'alt pending';
 					$toolbar['toolbar_items']['approve'] = array(
-						'href' => cp_url('members/approve/' . $member['member_id']),
+						'href' => cp_url('members/approve/', array('id' => $member['member_id'])),
 						'title' => strtolower(lang('approve'))
 					);
 					break;
