@@ -200,7 +200,7 @@ class Addons extends CP_Controller {
 			$components['fieldtype']['installed'] = $is_package_installed;
 		}
 
-		$vars['form_action'] = 'C=addons'.AMP.'M=package_settings'.AMP.'package='.$package.AMP.'return='.htmlentities($return, ENT_QUOTES);
+		$vars['form_action'] = 'C=addons'.AMP.'M=package_settings'.AMP.'package='.$package.AMP.'return='.htmlentities($return, ENT_QUOTES, 'UTF-8');
 		$vars['package'] = ucfirst(str_replace('_', ' ', $package));
 		$vars['components'] = $components;
 		$vars['required'] = $required;

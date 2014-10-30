@@ -93,7 +93,7 @@
 			$tag_row = ($button->tag_row == 2) ? '2' : '1';
 			$i++;
 			$this->table->add_row(
-				'<div class="markItUpHeader"><ul class="markItUp"><li class="'.$button->classname.'"><a>'.htmlentities($button->tag_name, ENT_QUOTES).'</a></li></ul></div>',
+				'<div class="markItUpHeader"><ul class="markItUp"><li class="'.$button->classname.'"><a>'.htmlentities($button->tag_name, ENT_QUOTES, 'UTF-8').'</a></li></ul></div>',
 				form_input(array(
 					'id'    => "tag_name_{$i}",
 					'name'  => "tag_name_{$i}",

@@ -889,7 +889,7 @@ class Members extends CP_Controller {
 			}
 
 			$groups[$row['group_id']]['group_id'] = $row['group_id'];
-			$groups[$row['group_id']]['title'] = htmlentities($group_name, ENT_QUOTES);
+			$groups[$row['group_id']]['title'] = htmlentities($group_name, ENT_QUOTES, 'UTF-8');
 			$groups[$row['group_id']]['can_access_cp'] = $row['can_access_cp'];
 			$groups[$row['group_id']]['security_lock'] = ($row['is_locked'] == 'y') ? lang('locked') : lang('unlocked');
 			$groups[$row['group_id']]['member_count'] = $this->member_model->count_members($row['group_id']);
@@ -901,7 +901,7 @@ class Members extends CP_Controller {
 
 		foreach($g_query->result_array() as $row)
 		{
-			$vars['clone_group_options'][$row['group_id']] = htmlentities($row['group_title'], ENT_QUOTES);
+			$vars['clone_group_options'][$row['group_id']] = htmlentities($row['group_title'], ENT_QUOTES, 'UTF-8');
 		}
 
 		$config = array(
@@ -1014,7 +1014,7 @@ class Members extends CP_Controller {
 			'group_data'		=> $this->_setup_final_group_data($site_id, $group_data, $id, $is_clone),
 			'group_description'	=> $group_description,
 			'group_id'			=> $group_id,
-			'page_title'		=> sprintf(lang($page_title_lang), htmlentities($group_title, ENT_QUOTES)),
+			'page_title'		=> sprintf(lang($page_title_lang), htmlentities($group_title, ENT_QUOTES, 'UTF-8')),
 			'group_title'		=> ($is_clone) ? '' : $group_title,
 			'sites_dropdown'	=> $sites_dropdown,
 			'module_data'		=> $this->_setup_module_data($id),

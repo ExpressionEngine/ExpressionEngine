@@ -1694,7 +1694,7 @@ class Api_channel_fields extends Api {
 
 				foreach ($rez->result_array() as $frow)
 				{
-					$vars['field_pre_populate_id_options'][$row['channel_title']][$row['channel_id'].'_'.$frow['field_id']] = htmlentities($frow['field_label'], ENT_QUOTES);
+					$vars['field_pre_populate_id_options'][$row['channel_title']][$row['channel_id'].'_'.$frow['field_id']] = htmlentities($frow['field_label'], ENT_QUOTES, 'UTF-8');
 				}
 			}
 		}

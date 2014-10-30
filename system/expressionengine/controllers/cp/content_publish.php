@@ -702,7 +702,7 @@ class Content_publish extends CP_Controller {
 			if (isset($filters['keywords']))
 			{
 				$filters['keywords'] = base64_encode(
-					htmlentities($filters['keywords'], ENT_QUOTES)
+					htmlentities($filters['keywords'], ENT_QUOTES, 'UTF-8')
 				);
 			}
 
@@ -2476,7 +2476,7 @@ class Content_publish extends CP_Controller {
 				if (count($this->_file_manager['file_list']))
 				{
 					$button_js[] = array(
-						'name'			=> htmlentities($button->tag_name, ENT_QUOTES),
+						'name'			=> htmlentities($button->tag_name, ENT_QUOTES, 'UTF-8'),
 						'key'			=> $button->accesskey,
 						'replaceWith'	=> '',
 						'className'		=> $button->classname.' id'.$button->id
@@ -2492,7 +2492,7 @@ class Content_publish extends CP_Controller {
 			else
 			{
 				$button_js[] = array(
-					'name'		=> htmlentities($button->tag_name, ENT_QUOTES),
+					'name'		=> htmlentities($button->tag_name, ENT_QUOTES, 'UTF-8'),
 					'key'		=> strtoupper($button->accesskey),
 					'openWith'	=> $button->tag_open,
 					'closeWith'	=> $button->tag_close,

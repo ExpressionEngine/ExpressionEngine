@@ -350,7 +350,7 @@ class Content_files extends CP_Controller {
 			{
 				$r = array(
 					'file_id' => $file['file_id'],
-					'title'	=> htmlentities($file['title'], ENT_QUOTES)
+					'title'	=> htmlentities($file['title'], ENT_QUOTES, 'UTF-8')
 				);
 
 				$is_image = FALSE;
