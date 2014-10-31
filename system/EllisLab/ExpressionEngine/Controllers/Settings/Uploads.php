@@ -33,13 +33,24 @@ use EllisLab\ExpressionEngine\Library\CP;
  */
 class Uploads extends Settings {
 
-	public function index()
+	/**
+	 * Constructor
+	 */
+	function __construct()
 	{
-		if ( ! $this->cp->allowed_group('can_admin_upload_prefs'))
+		parent::__construct();
+
+		if ( ! ee()->cp->allowed_group('can_admin_upload_prefs'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
+	}
 
+	/**
+	 * Main screen
+	 */
+	public function index()
+	{
 		ee()->load->model('file_upload_preferences_model');
 
 		$upload_dirs = ee()->file_upload_preferences_model->get_file_upload_preferences(
@@ -323,9 +334,12 @@ class Uploads extends Settings {
 		}
 		elseif (ee()->form_validation->run() !== FALSE)
 		{
-			// Save settings here
+			if ($this->saveUploadPreferences($upload_id))
+			{
+				ee()->view->set_message('success', lang('preferences_updated'), lang('preferences_updated_desc'), TRUE);
 
-			ee()->functions->redirect($base_url);
+				ee()->functions->redirect($base_url);
+			}
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
@@ -470,6 +484,53 @@ class Uploads extends Settings {
 
 		// Member IDs NOT in $no_access have access...
 		return array($allowed_groups, $member_groups);
+	}
+
+	/**
+	 * Returns an array of member group IDs allowed to upload to this
+	 * upload destination in the form of id => title, along with an
+	 * array of all member groups in the same format
+	 *
+	 * @param	int		$id	ID of upload destination to get image sizes for
+	 * @return	bool		Success or failure
+	 */
+	private function saveUploadPreferences($id = NULL)
+	{
+		ee()->load->model('admin_model');
+
+		// If the $id variable is present we are editing an
+		// existing field, otherwise we are creating a new one
+
+		$edit = ! empty($id);
+
+		$server_path = ee()->input->post('server_path');
+		$url = ee()->input->post('url');
+
+		if (substr($server_path, -1) != '/' AND substr($server_path, -1) != '\\')
+		{
+			$_POST['server_path'] .= '/';
+		}
+
+		if (substr($url, -1) != '/')
+		{
+			$_POST['url'] .= '/';
+		}
+
+		$error = array();
+
+		// Is the name taken?
+		if (
+			ee()->admin_model->unique_upload_name(
+				strtolower(strip_tags(ee()->input->post('name'))),
+				strtolower(ee()->input->post('cur_name')),
+				$edit
+			)
+		)
+		{
+			show_error(lang('duplicate_dir_name'));
+		}
+
+		$id = ee()->input->get_post('id');
 	}
 }
 // END CLASS
