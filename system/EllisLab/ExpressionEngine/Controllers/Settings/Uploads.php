@@ -399,31 +399,32 @@ class Uploads extends Settings {
 		// Populate existing image manipulations
 		if ( ! empty($upload_id))
 		{
-			$sizes_query = ee()->db->get_where(
-				'file_dimensions',
-				array('upload_location_id' => $upload_id)
-			);
+			$sizes = ee()->api->get('UploadDestination')
+				->with('FileDimension')
+				->filter('id', $upload_id)
+				->first()
+				->getFileDimension();
 
-			if ($sizes_query->num_rows() != 0)
+			if ($sizes->count() != 0)
 			{
 				$data = array();
 
-				foreach($sizes_query->result_array() as $row)
+				foreach($sizes as $size)
 				{
 					$data[] = array(
-						'attrs' => array('row_id' => $row['id']),
+						'attrs' => array('row_id' => $size->id),
 						'columns' => array(
-							form_input('name', $row['short_name']),
+							form_input('name', $size->short_name),
 							form_dropdown(
 								'type',
 								array(
 									'constrain' => lang('image_manip_type_opt_constrain'),
 									'crop' => lang('image_manip_type_opt_crop'),
 								),
-								$row['resize_type']
+								$size->resize_type
 							),
-							form_input('width', $row['width']),
-							form_input('height', $row['height'])
+							form_input('width', $size->width),
+							form_input('height', $size->height)
 						)
 					);
 				}
@@ -458,6 +459,7 @@ class Uploads extends Settings {
 		if ( ! empty($upload_id))
 		{
 			$no_access = ee()->api->get('UploadDestination')
+				->with('NoAccess')
 				->filter('id', $upload_id)
 				->first()
 				->getNoAccess()
