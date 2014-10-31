@@ -100,20 +100,7 @@ class FilterRunner {
 
 		foreach ($this->filters as $filter)
 		{
-			if (get_class($filter) != 'EllisLab\ExpressionEngine\Service\CP\Filter\Filter')
-			{
-				continue;
-			}
-
-			$filters[] = array(
-				'label'			=> $filter->label,
-				'name'			=> $filter->name,
-				'value'			=> $filter->getDisplayValue(),
-				'custom_value'	=> $filter->custom_value,
-				'placeholder'	=> $filter->placeholder,
-				'options'		=> $filter->getOptions($url),
-				'attributes'	=> $filter->attributes
-			);
+			$filters[] = $filter->render($url);
 		}
 
 		return ee()->load->view('_shared/filters', array('filters' => $filters), TRUE);
@@ -129,12 +116,7 @@ class FilterRunner {
 		$this->parameters = array();
 		foreach ($this->filters as $filter)
 		{
-			if (get_class($filter) != 'EllisLab\ExpressionEngine\Service\CP\Filter\Filter')
-			{
-				continue;
-			}
-
-			$value = $filter->getValue();
+			$value = $filter->value();
 
 			if ($value)
 			{

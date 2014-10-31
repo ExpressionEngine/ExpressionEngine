@@ -5,7 +5,7 @@ namespace EllisLab\ExpressionEngine\Controllers\Logs;
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use EllisLab\ExpressionEngine\Library\CP\Pagination;
-use EllisLab\ExpressionEngine\Service\CP\Filter\FilterFactory;
+use EllisLab\ExpressionEngine\Service\CP\Filter;
 use EllisLab\ExpressionEngine\Service\CP\Filter\FilterRunner;
 
 /**
@@ -70,10 +70,10 @@ class Cp extends Logs {
 		if ($logs->count() > 10)
 		{
 			$fr = new FilterRunner($this->base_url, array(
-				FilterFactory::usernameFilter(),
-				FilterFactory::siteFilter(),
-				FilterFactory::dateFilter(),
-				FilterFactory::showFilter($logs->count(), 'all_cp_logs')
+				new Filter\Username,
+				new Filter\Site,
+				new Filter\Date,
+				new Filter\Perpage($logs->count(), 'all_cp_logs')
 			));
 			ee()->view->filters = $fr->render();
 			$this->base_url = $fr->getUrl();
