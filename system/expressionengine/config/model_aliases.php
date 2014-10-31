@@ -22,6 +22,8 @@ return array(
 		// ..\File
 		'UploadDestination' => '\EllisLab\ExpressionEngine\Model\File\UploadDestination',
 		'UploadPrefGateway' => '\EllisLab\ExpressionEngine\Model\File\Gateway\UploadPrefGateway',
+		'FileDimension' => '\EllisLab\ExpressionEngine\Model\File\FileDimension',
+		'FileDimensionGateway' => '\EllisLab\ExpressionEngine\Model\File\Gateway\FileDimensionGateway',
 
 		// ..\Log
 		'CpLog' => '\EllisLab\ExpressionEngine\Model\Log\CpLog',

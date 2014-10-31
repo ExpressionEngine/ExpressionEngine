@@ -43,11 +43,17 @@ class UploadPrefGateway extends RowDataGateway {
 		// through this relationship are not allowed access to this upload
 		// location.
 		'id' => array(
-			'gateway' => 'MemberGroupGateway',
-			'key' => 'group_id',
-			'pivot_table' => 'upload_no_access',
-			'pivot_key' => 'upload_id',
-			'pivot_foreign_key' => 'member_group'
+			'NoAccess' => array(
+				'gateway' => 'MemberGroupGateway',
+				'key' => 'group_id',
+				'pivot_table' => 'upload_no_access',
+				'pivot_key' => 'upload_id',
+				'pivot_foreign_key' => 'member_group'
+			),
+			'FileDimension' => array(
+				'gateway' => 'FileDimensionGateway',
+				'key' => 'upload_location_id'
+			)
 		)
 	);
 

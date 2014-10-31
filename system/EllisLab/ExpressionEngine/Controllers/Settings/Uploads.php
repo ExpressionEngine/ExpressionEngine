@@ -33,13 +33,24 @@ use EllisLab\ExpressionEngine\Library\CP;
  */
 class Uploads extends Settings {
 
-	public function index()
+	/**
+	 * Constructor
+	 */
+	function __construct()
 	{
-		if ( ! $this->cp->allowed_group('can_admin_upload_prefs'))
+		parent::__construct();
+
+		if ( ! ee()->cp->allowed_group('can_admin_upload_prefs'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
+	}
 
+	/**
+	 * Main screen
+	 */
+	public function index()
+	{
 		ee()->load->model('file_upload_preferences_model');
 
 		$upload_dirs = ee()->file_upload_preferences_model->get_file_upload_preferences(
@@ -165,7 +176,8 @@ class Uploads extends Settings {
 					'fields' => array(
 						'name' => array(
 							'type' => 'text',
-							'value' => (isset($upload_dir['name'])) ? $upload_dir['name'] : ''
+							'value' => (isset($upload_dir['name'])) ? $upload_dir['name'] : '',
+							'required' => TRUE
 						)
 					)
 				),
@@ -173,9 +185,10 @@ class Uploads extends Settings {
 					'title' => 'upload_url',
 					'desc' => 'upload_url_desc',
 					'fields' => array(
-						'avatar_path' => array(
+						'url' => array(
 							'type' => 'text',
-							'value' => (isset($upload_dir['url'])) ? $upload_dir['url'] : 'http://'
+							'value' => (isset($upload_dir['url'])) ? $upload_dir['url'] : 'http://',
+							'required' => TRUE
 						)
 					)
 				),
@@ -183,9 +196,10 @@ class Uploads extends Settings {
 					'title' => 'upload_path',
 					'desc' => 'upload_path_desc',
 					'fields' => array(
-						'avatar_path' => array(
+						'server_path' => array(
 							'type' => 'text',
-							'value' => (isset($upload_dir['server_path'])) ? $upload_dir['server_path'] : ''
+							'value' => (isset($upload_dir['server_path'])) ? $upload_dir['server_path'] : '',
+							'required' => TRUE
 						)
 					)
 				),
@@ -193,7 +207,7 @@ class Uploads extends Settings {
 					'title' => 'upload_allowed_types',
 					'desc' => '',
 					'fields' => array(
-						'avatar_path' => array(
+						'allowed_types' => array(
 							'type' => 'dropdown',
 							'choices' => array(
 								'images' => lang('upload_allowed_types_opt_images'),
@@ -209,7 +223,7 @@ class Uploads extends Settings {
 					'title' => 'upload_file_size',
 					'desc' => 'upload_file_size_desc',
 					'fields' => array(
-						'avatar_max_width' => array(
+						'max_size' => array(
 							'type' => 'text',
 							'value' => (isset($upload_dir['max_size'])) ? $upload_dir['max_size'] : ''
 						)
@@ -219,7 +233,7 @@ class Uploads extends Settings {
 					'title' => 'upload_image_width',
 					'desc' => 'upload_image_width_desc',
 					'fields' => array(
-						'avatar_max_height' => array(
+						'max_width' => array(
 							'type' => 'text',
 							'value' => (isset($upload_dir['max_width'])) ? $upload_dir['max_width'] : ''
 						)
@@ -229,7 +243,7 @@ class Uploads extends Settings {
 					'title' => 'upload_image_height',
 					'desc' => 'upload_image_height_desc',
 					'fields' => array(
-						'avatar_max_kb' => array(
+						'max_height' => array(
 							'type' => 'text',
 							'value' => (isset($upload_dir['max_height'])) ? $upload_dir['max_height'] : ''
 						)
@@ -238,6 +252,129 @@ class Uploads extends Settings {
 			)
 		);
 	
+		// Image manipulations Grid
+		$grid = $this->getImageSizesGrid($upload_id);
+
+		$vars['sections']['upload_image_manipulations'] = array(
+			array(
+				'title' => 'constrain_or_crop',
+				'desc' => 'constrain_or_crop_desc',
+				'wide' => TRUE,
+				'grid' => TRUE,
+				'fields' => array(
+					'image_manipulations' => array(
+						'type' => 'html',
+						'content' => ee()->load->view('_shared/table', $grid->viewData(), TRUE)
+					)
+				)
+			)
+		);
+
+		// Member IDs NOT in $no_access have access...
+		list($allowed_groups, $member_groups) = $this->getAllowedGroups($upload_id);
+
+		$vars['sections']['upload_privileges'] = array(
+			array(
+				'title' => 'upload_member_groups',
+				'desc' => 'upload_member_groups_desc',
+				'fields' => array(
+					'upload_member_groups' => array(
+						'type' => 'checkbox',
+						'choices' => $member_groups,
+						'value' => $allowed_groups
+					)
+				)
+			)
+		);
+
+		ee()->form_validation->set_rules(array(
+			array(
+				'field' => 'name',
+				'label' => 'lang:upload_name',
+				'rules' => 'required|strip_tags|valid_xss_check'
+			),
+			array(
+				'field' => 'server_path',
+				'label' => 'lang:upload_path',
+				'rules' => 'required|strip_tags|valid_xss_check|valid_path'
+			),
+			array(
+				'field' => 'url',
+				'label' => 'lang:upload_url',
+				'rules' => 'required|strip_tags|valid_xss_check|callback_not_http'
+			),
+			array(
+				'field' => 'allowed_types',
+				'label' => 'lang:upload_allowed_types',
+				'rules' => 'required'
+			),
+			array(
+				'field' => 'max_size',
+				'label' => 'lang:upload_file_size',
+				'rules' => 'integer'
+			),
+			array(
+				'field' => 'max_width',
+				'label' => 'lang:upload_image_width',
+				'rules' => 'integer'
+			),
+			array(
+				'field' => 'max_height',
+				'label' => 'lang:upload_image_height',
+				'rules' => 'integer'
+			)
+		));
+		
+		$base_url = cp_url('settings/uploads/'.$upload_id ?: '');
+
+		if (AJAX_REQUEST)
+		{
+			ee()->form_validation->run_ajax();
+			exit;
+		}
+		elseif (ee()->form_validation->run() !== FALSE)
+		{
+			if ($this->saveUploadPreferences($upload_id))
+			{
+				ee()->view->set_message('success', lang('preferences_updated'), lang('preferences_updated_desc'), TRUE);
+
+				ee()->functions->redirect($base_url);
+			}
+		}
+		elseif (ee()->form_validation->errors_exist())
+		{
+			ee()->view->set_message('issue', lang('settings_save_error'), lang('settings_save_error_desc'));
+		}
+
+		// Load Grid assets (make into service?)
+		ee()->cp->add_to_head(ee()->view->head_link('css/v3/grid.css'));
+		ee()->cp->add_js_script('file', 'cp/grid');
+		$settings = array(
+			'grid_min_rows' => 0,
+			'grid_max_rows' => 0
+		);
+		ee()->javascript->output('EE.grid("table.grid-input-form", '.json_encode($settings).');');
+
+		ee()->view->ajax_validate = TRUE;
+		ee()->view->base_url = $base_url;
+		ee()->view->cp_page_title = (empty($upload_id)) ? lang('create_upload_directory') : lang('edit_upload_directory');
+		ee()->view->save_btn_text = 'btn_create_directory';
+		ee()->view->save_btn_text_working = 'btn_create_directory_working';
+
+		ee()->cp->set_breadcrumb(cp_url('files'), lang('file_manager'));
+		ee()->cp->set_breadcrumb(cp_url('settings/uploads'), lang('upload_directories'));
+
+		ee()->cp->render('settings/form', $vars);
+	}
+
+	/**
+	 * Sets up a GridInput object populated with image manipulation data
+	 *
+	 * @param	int	$upload_id		ID of upload destination to get image sizes for
+	 * @return	GridInput object
+	 */
+	private function getImageSizesGrid($upload_id = NULL)
+	{
 		// Image manipulations Grid
 		$grid = CP\GridInput::create(array(
 			'field_name' => 'image_manipulations',
@@ -276,31 +413,32 @@ class Uploads extends Settings {
 		// Populate existing image manipulations
 		if ( ! empty($upload_id))
 		{
-			$sizes_query = ee()->db->get_where(
-				'file_dimensions',
-				array('upload_location_id' => $upload_id)
-			);
+			$sizes = ee()->api->get('UploadDestination')
+				->with('FileDimension')
+				->filter('id', $upload_id)
+				->first()
+				->getFileDimension();
 
-			if ($sizes_query->num_rows() != 0)
+			if ($sizes->count() != 0)
 			{
 				$data = array();
 
-				foreach($sizes_query->result_array() as $row)
+				foreach($sizes as $size)
 				{
 					$data[] = array(
-						'attrs' => array('row_id' => $row['id']),
+						'attrs' => array('row_id' => $size->id),
 						'columns' => array(
-							form_input('name', $row['short_name']),
+							form_input('name', $size->short_name),
 							form_dropdown(
 								'type',
 								array(
 									'constrain' => lang('image_manip_type_opt_constrain'),
 									'crop' => lang('image_manip_type_opt_crop'),
 								),
-								$row['resize_type']
+								$size->resize_type
 							),
-							form_input('width', $row['width']),
-							form_input('height', $row['height'])
+							form_input('width', $size->width),
+							form_input('height', $size->height)
 						)
 					);
 				}
@@ -309,21 +447,19 @@ class Uploads extends Settings {
 			}
 		}
 
-		$vars['sections']['upload_image_manipulations'] = array(
-			array(
-				'title' => 'constrain_or_crop',
-				'desc' => 'constrain_or_crop_desc',
-				'wide' => TRUE,
-				'grid' => TRUE,
-				'fields' => array(
-					'image_manipulations' => array(
-						'type' => 'html',
-						'content' => ee()->load->view('_shared/table', $grid->viewData(), TRUE)
-					)
-				)
-			)
-		);
+		return $grid;
+	}
 
+	/**
+	 * Returns an array of member group IDs allowed to upload to this
+	 * upload destination in the form of id => title, along with an
+	 * array of all member groups in the same format
+	 *
+	 * @param	int	$upload_id		ID of upload destination to get image sizes for
+	 * @return	array				Array containing each of the arrays mentioned above
+	 */
+	private function getAllowedGroups($upload_id = NULL)
+	{
 		ee()->load->model('member_model');
 		$groups = ee()->member_model->get_upload_groups()->result();
 
@@ -337,104 +473,64 @@ class Uploads extends Settings {
 		if ( ! empty($upload_id))
 		{
 			$no_access = ee()->api->get('UploadDestination')
+				->with('NoAccess')
 				->filter('id', $upload_id)
 				->first()
 				->getNoAccess()
 				->pluck('group_id');
 		}
 
-		// Member IDs NOT in $no_access have access...
 		$allowed_groups = array_diff(array_keys($member_groups), $no_access);
 
-		$vars['sections']['upload_privileges'] = array(
-			array(
-				'title' => 'upload_member_groups',
-				'desc' => 'upload_member_groups_desc',
-				'fields' => array(
-					'upload_member_groups' => array(
-						'type' => 'checkbox',
-						'choices' => $member_groups,
-						'value' => $allowed_groups
-					)
-				)
+		// Member IDs NOT in $no_access have access...
+		return array($allowed_groups, $member_groups);
+	}
+
+	/**
+	 * Returns an array of member group IDs allowed to upload to this
+	 * upload destination in the form of id => title, along with an
+	 * array of all member groups in the same format
+	 *
+	 * @param	int		$id	ID of upload destination to get image sizes for
+	 * @return	bool		Success or failure
+	 */
+	private function saveUploadPreferences($id = NULL)
+	{
+		ee()->load->model('admin_model');
+
+		// If the $id variable is present we are editing an
+		// existing field, otherwise we are creating a new one
+
+		$edit = ! empty($id);
+
+		$server_path = ee()->input->post('server_path');
+		$url = ee()->input->post('url');
+
+		if (substr($server_path, -1) != '/' AND substr($server_path, -1) != '\\')
+		{
+			$_POST['server_path'] .= '/';
+		}
+
+		if (substr($url, -1) != '/')
+		{
+			$_POST['url'] .= '/';
+		}
+
+		$error = array();
+
+		// Is the name taken?
+		if (
+			ee()->admin_model->unique_upload_name(
+				strtolower(strip_tags(ee()->input->post('name'))),
+				strtolower(ee()->input->post('cur_name')),
+				$edit
 			)
-		);
-
-		ee()->form_validation->set_rules(array(
-			array(
-				'field' => 'name',
-				'label' => 'lang:upload_name',
-				'rules' => 'required'
-			),
-			array(
-				'field' => 'server_path',
-				'label' => 'lang:upload_path',
-				'rules' => 'required'
-			),
-			array(
-				'field' => 'url',
-				'label' => 'lang:upload_url',
-				'rules' => 'callback_not_http'
-			),
-			array(
-				'field' => 'allowed_types',
-				'label' => 'lang:upload_allowed_types',
-				'rules' => 'required'
-			),
-			array(
-				'field' => 'max_size',
-				'label' => 'lang:upload_file_size',
-				'rules' => 'integer'
-			),
-			array(
-				'field' => 'max_width',
-				'label' => 'lang:upload_image_width',
-				'rules' => 'integer'
-			),
-			array(
-				'field' => 'max_height',
-				'label' => 'lang:upload_image_height',
-				'rules' => 'integer'
-			)
-		));
-		
-		$base_url = cp_url('settings/uploads/'.$upload_id ?: '');
-
-		if (AJAX_REQUEST)
+		)
 		{
-			ee()->form_validation->run_ajax();
-			exit;
-		}
-		elseif (ee()->form_validation->run() !== FALSE)
-		{
-			// Save settings here
-
-			ee()->functions->redirect($base_url);
-		}
-		elseif (ee()->form_validation->errors_exist())
-		{
-			ee()->view->set_message('issue', lang('settings_save_error'), lang('settings_save_error_desc'));
+			show_error(lang('duplicate_dir_name'));
 		}
 
-		// Load Grid assets (make into service?)
-		ee()->cp->add_to_head(ee()->view->head_link('css/v3/grid.css'));
-		ee()->cp->add_js_script('file', 'cp/grid');
-		$settings = array(
-			'grid_min_rows' => 0,
-			'grid_max_rows' => 0
-		);
-		ee()->javascript->output('EE.grid("table.grid-input-form", '.json_encode($settings).');');
-
-		ee()->view->ajax_validate = TRUE;
-		ee()->view->base_url = $base_url;
-		ee()->view->cp_page_title = (empty($upload_id)) ? lang('create_upload_directory') : lang('edit_upload_directory');
-		ee()->view->save_btn_text = 'btn_create_directory';
-		ee()->view->save_btn_text_working = 'btn_create_directory_working';
-
-		ee()->cp->set_breadcrumb(cp_url('files'), lang('file_manager'));
-		ee()->cp->set_breadcrumb(cp_url('settings/uploads'), lang('upload_directories'));
-
-		ee()->cp->render('settings/form', $vars);
+		$id = ee()->input->get_post('id');
 	}
 }
 // END CLASS
