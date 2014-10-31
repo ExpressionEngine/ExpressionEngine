@@ -3,6 +3,8 @@ namespace EllisLab\ExpressionEngine\Service\CP\Filter;
 
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
+use EllisLab\ExpressionEngine\Library\CP\URL;
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -26,6 +28,8 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
  * @link		http://ellislab.com
  */
 class Date extends Filter {
+
+	private $timestamp;
 
 	public function __construct()
 	{
@@ -83,6 +87,15 @@ class Date extends Filter {
 		ee()->cp->add_js_script(array(
 			'file' => array('cp/v3/date_picker'),
 		));
+
+		$value = $this->value();
+		if ( ! array_key_exists($value, $this->options))
+		{
+			$date = ee()->localize->string_to_timestamp($value);
+			$this->timestamp = $date;
+			$this->display_value = ee()->localize->format_date($date_format, $date);
+			$this->selected_value = $date;
+		}
 	}
 
 	public function isValid()
@@ -93,6 +106,28 @@ class Date extends Filter {
 		}
 
 		return FALSE;
+	}
+
+	public function render(URL $url)
+	{
+		$value = $this->display_value;
+		if (is_null($value))
+		{
+			$value = (array_key_exists($this->value(), $this->options)) ?
+				$this->options[$this->value()] :
+				$this->value();
+		}
+
+		$filter = array(
+			'label'			=> $this->label,
+			'name'			=> $this->name,
+			'value'			=> $value,
+			'custom_value'	=> ee()->input->post($this->name),
+			'placeholder'	=> $this->placeholder,
+			'options'		=> $this->prepareOptions($url),
+			'timestamp'		=> $this->timestamp
+		);
+		return ee()->load->view('_shared/filters/date', $filter, TRUE);
 	}
 
 }

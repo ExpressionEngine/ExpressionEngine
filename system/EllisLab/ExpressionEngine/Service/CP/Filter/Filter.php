@@ -36,6 +36,9 @@ abstract class Filter {
 	protected $selected_value;
 	protected $options = array();
 	protected $placeholder;
+	protected $has_custom_value = TRUE;
+
+	protected $view = 'filter';
 
 	public function value()
 	{
@@ -68,14 +71,15 @@ abstract class Filter {
 		}
 
 		$filter = array(
-			'label'			=> $this->label,
-			'name'			=> $this->name,
-			'value'			=> $value,
-			'custom_value'	=> ee()->input->post($this->name),
-			'placeholder'	=> $this->placeholder,
-			'options'		=> $this->prepareOptions($url),
+			'label'            => $this->label,
+			'name'             => $this->name,
+			'value'            => $value,
+			'has_custom_value' => $this->has_custom_value,
+			'custom_value'     => ee()->input->post($this->name),
+			'placeholder'      => $this->placeholder,
+			'options'          => $this->prepareOptions($url),
 		);
-		return ee()->load->view('_shared/filter', array('filter' => $filter), TRUE);
+		return ee()->load->view('_shared/filters/filter', $filter, TRUE);
 	}
 
 	/**
@@ -86,7 +90,7 @@ abstract class Filter {
 	 *               	URL and the value is the label. i.e.
 	 * 		'http://index/admin.php?cp/foo&filter_by_bar=2' => 'Baz'
 	 */
-	private function prepareOptions(URL $base_url)
+	protected function prepareOptions(URL $base_url)
 	{
 		$options = array();
 		foreach ($this->options as $show => $label)

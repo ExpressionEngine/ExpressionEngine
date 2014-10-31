@@ -103,7 +103,7 @@ class FilterRunner {
 			$filters[] = $filter->render($url);
 		}
 
-		return ee()->load->view('_shared/filters', array('filters' => $filters), TRUE);
+		return ee()->load->view('_shared/filters/filters', array('filters' => $filters), TRUE);
 	}
 
 	/**
