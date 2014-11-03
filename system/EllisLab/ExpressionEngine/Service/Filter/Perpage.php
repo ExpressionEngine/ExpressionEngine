@@ -1,5 +1,5 @@
 <?php
-namespace EllisLab\ExpressionEngine\Service\CP\Filter;
+namespace EllisLab\ExpressionEngine\Service\Filter;
 
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
@@ -68,4 +68,4 @@ class Perpage extends Filter {
 // END CLASS
 
 /* End of file Perpage.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Service/CP/Filter/Perpage.php */
+/* Location: ./system/EllisLab/ExpressionEngine/Service/Filter/Perpage.php */

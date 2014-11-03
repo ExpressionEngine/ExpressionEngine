@@ -1,5 +1,5 @@
 <?php
-namespace EllisLab\ExpressionEngine\Service\CP\Filter;
+namespace EllisLab\ExpressionEngine\Service\Filter;
 
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
@@ -217,4 +217,4 @@ class FilterFactory {
 // END CLASS
 
 /* End of file FilterFactory.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Service/CP/Filter/FilterFactory.php */
+/* Location: ./system/EllisLab/ExpressionEngine/Service/Filter/FilterFactory.php */
