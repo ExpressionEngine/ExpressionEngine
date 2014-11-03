@@ -88,12 +88,26 @@ class URL {
 	 * Sets a value in the $qs array which will become the Query String of
 	 * the request
 	 *
-	 * @param $key		string	The name of the query string variable
-	 * @param $value	string	The value of the query string variable
+	 * @param string $key   The name of the query string variable
+	 * @param string $value	The value of the query string variable
 	 */
 	public function setQueryStringVariable($key, $value)
 	{
 		$this->qs[$key] = $value;
+	}
+
+	/**
+	 * Sets a values in bulk in the $qs array which will become the Query String
+	 * of the request
+	 *
+	 * @param array $values An associative array of keys and values
+	 */
+	public function addQueryStringVariables(array $values)
+	{
+		foreach ($values as $key => $value)
+		{
+			$this->setQueryStringVariable($key, $value);
+		}
 	}
 
 	/**
