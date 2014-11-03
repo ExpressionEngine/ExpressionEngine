@@ -4,6 +4,7 @@ namespace EllisLab\ExpressionEngine\Service\Filter;
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use EllisLab\ExpressionEngine\Library\CP\URL;
+use EllisLab\ExpressionEngine\Service\View\ViewFactory;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -60,7 +61,7 @@ abstract class Filter {
 		return TRUE;
 	}
 
-	public function render(URL $url)
+	public function render(ViewFactory $view, URL $url)
 	{
 		$value = $this->display_value;
 		if (is_null($value))
@@ -79,7 +80,7 @@ abstract class Filter {
 			'placeholder'      => $this->placeholder,
 			'options'          => $this->prepareOptions($url),
 		);
-		return ee()->load->view('_shared/filters/filter', $filter, TRUE);
+		return $view->make('filter')->render($filter);
 	}
 
 	/**

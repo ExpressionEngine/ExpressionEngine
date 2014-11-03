@@ -4,6 +4,7 @@ namespace EllisLab\ExpressionEngine\Service\Filter;
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use EllisLab\ExpressionEngine\Library\CP\URL;
+use EllisLab\ExpressionEngine\Service\View\ViewFactory;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -89,7 +90,7 @@ class Date extends Filter {
 		));
 
 		$value = $this->value();
-		if ( ! array_key_exists($value, $this->options))
+		if ($value && ! array_key_exists($value, $this->options))
 		{
 			$date = ee()->localize->string_to_timestamp($value);
 			$this->timestamp = $date;
@@ -108,7 +109,7 @@ class Date extends Filter {
 		return FALSE;
 	}
 
-	public function render(URL $url)
+	public function render(ViewFactory $view, URL $url)
 	{
 		$value = $this->display_value;
 		if (is_null($value))
@@ -127,7 +128,7 @@ class Date extends Filter {
 			'options'		=> $this->prepareOptions($url),
 			'timestamp'		=> $this->timestamp
 		);
-		return ee()->load->view('_shared/filters/date', $filter, TRUE);
+		return $view->make('date')->render($filter);
 	}
 
 }
