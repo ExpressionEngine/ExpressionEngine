@@ -4,6 +4,8 @@ namespace EllisLab\ExpressionEngine\Service\Filter;
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use EllisLab\ExpressionEngine\Library\CP\URL;
+use EllisLab\ExpressionEngine\Service\Filter;
+use EllisLab\ExpressionEngine\Service\View\ViewFactory;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -23,198 +25,80 @@ use EllisLab\ExpressionEngine\Library\CP\URL;
  * ExpressionEngine FilterFactory Class
  *
  * @package		ExpressionEngine
- * @subpackage	Error
  * @category	Service
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
 class FilterFactory {
 
-	/**
-	 * This funciton produces a Filter object appropriate for offering a perpage
-	 * limit filter.
-	 *
-	 * @param int	$total	The total number of objects (used in the display)
-	 * @param str	$all_lang_key	The lang() key for the "show all" display
-	 * @return	obj	The Filter object
-	 */
-	public static function showFilter($total, $all_lang_key = 'all_items')
-	{
-		$filter = new Filter('perpage', 'show');
-		$filter->placeholder = lang('custom_limit');
-		$filter->setOptions(array(
-				'25'  => '25 '.lang('results'),
-				'50'  => '50 '.lang('results'),
-				'75'  => '75 '.lang('results'),
-				'100' => '100 '.lang('results'),
-				'150' => '150 '.lang('results'),
-				'all' => sprintf(lang($all_lang_key), $total)
-			)
-		);
-		$filter->default_value = 20;
-		if (strtolower($filter->getValue()) == 'all')
-		{
-			$filter->setValue($total);
-		}
+	protected $filters = array();
 
-		return $filter;
+	public function __construct(ViewFactory $view)
+	{
+		$this->view = $view;
 	}
 
-	/**
-	 * This funciton produces a Filter object appropriate for offering a list of
-	 * sites to filter by
-	 *
-	 * @return	obj	The Filter object
-	 */
-	public static function siteFilter()
+	public function add($name)
 	{
-		if (ee()->config->item('multiple_sites_enabled') !== 'y' || IS_CORE)
+		// @TODO use an AliasService
+		switch($name)
 		{
-			return NULL;
-		}
+			case 'Date':
+				$this->filters[] = new Filter\Date();
+				break;
 
-		$filter = new Filter('filter_by_site', 'site', ee()->session->userdata('assigned_sites'));
-		$filter->placeholder = lang('filter_by_site');
-
-		return $filter;
-	}
-
-	/**
-	 * This funciton produces a Filter object appropriate for offering a list of
-	 * usernames to filter by
-	 *
-	 * @return	obj	The Filter object
-	 */
-	public static function usernameFilter()
-	{
-		$filter = new Filter('filter_by_username', 'username');
-		$filter->placeholder = lang('filter_by_username');
-
-		$members = ee()->api->get('Member')->all();
-		if ($members)
-		{
-			$value = $filter->getValue();
-			if ($value)
-			{
-				if (is_numeric($value))
+			case 'Perpage':
+				if (func_num_args() > 2)
 				{
-					$member = ee()->api->get('Member', $value)->first();
-					if ($member)
-					{
-						$filter->setDisplayValue($member->username);
-					}
+					$this->filters[] = new Filter\Perpage(func_get_arg(1), func_get_arg(2));
 				}
 				else
 				{
-					$member = ee()->api->get('Member')->filter('username', $value)->first();
-					if ($member)
-					{
-						$filter->setDisplayValue($value);
-						$filter->setValue($member->member_id);
-					}
+					$this->filters[] = new Filter\Perpage(func_get_arg(1));
 				}
-			}
+				break;
 
-			$options = array();
+			case 'Site':
+				$this->filters[] = new Filter\Site();
+				break;
 
-			foreach ($members as $member)
-			{
-				$options[$member->member_id] = $member->username;
-			}
+			case 'Username':
+				$this->filters[] = new Filter\Username();
+				break;
 
-			$filter->setOptions($options);
 		}
-
-		return $filter;
+		return $this;
 	}
 
-	/**
-	 * This funciton produces a Filter object appropriate for offering a list of
-	 * dates to filter by
-	 *
-	 * @return	obj	The Filter object
-	 */
-	public static function dateFilter()
+	public function render(URL $base_url)
 	{
-		$date_format = ee()->session->userdata('date_format', ee()->config->item('date_format'));
+		$url = clone $base_url;
+		$url->addQueryStringVariables($this->values());
 
-		ee()->javascript->set_global('date.date_format', $date_format);
-		ee()->javascript->set_global('lang.date.months.full', array(
-			lang('january'),
-			lang('february'),
-			lang('march'),
-			lang('april'),
-			lang('may'),
-			lang('june'),
-			lang('july'),
-			lang('august'),
-			lang('september'),
-			lang('october'),
-			lang('november'),
-			lang('december')
-		));
-		ee()->javascript->set_global('lang.date.months.abbreviated', array(
-			lang('jan'),
-			lang('feb'),
-			lang('mar'),
-			lang('apr'),
-			lang('may'),
-			lang('june'),
-			lang('july'),
-			lang('aug'),
-			lang('sept'),
-			lang('oct'),
-			lang('nov'),
-			lang('dec')
-		));
-		ee()->javascript->set_global('lang.date.days', array(
-			lang('su'),
-			lang('mo'),
-			lang('tu'),
-			lang('we'),
-			lang('th'),
-			lang('fr'),
-			lang('sa'),
-		));
-		ee()->cp->add_js_script(array(
-			'file' => array('cp/v3/date_picker'),
-		));
+		$filters = array();
 
-		$dates = array(
-			'86400'     => ucwords(lang('last').' 24 '.lang('hours')),
-			'604800'    => ucwords(lang('last').' 7 '.lang('days')),
-			'2592000'   => ucwords(lang('last').' 30 '.lang('days')),
-			'15552000'  => ucwords(lang('last').' 180 '.lang('days')),
-			'31536000'  => ucwords(lang('last').' 365 '.lang('days')),
-		);
-
-		$filter = new Filter('filter_by_date', 'date', $dates);
-		$filter->placeholder = lang('custom_date');
-		$filter->attributes = array('rel' => 'date-picker');
-
-		$value = $filter->getValue();
-		if (empty($value))
+		foreach ($this->filters as $filter)
 		{
-			return $filter;
+			$filters[] = $filter->render($this->view, $url);
 		}
 
-		if (array_key_exists($value, $dates))
-		{
-			$filter->setDisplayValue($dates[$value]);
-		}
-		else
-		{
-			$date = ee()->localize->string_to_timestamp($value);
-			$filter->attributes['data-timestamp'] = $date;
-
-			$filter->setDisplayValue(ee()->localize->format_date($date_format, $date));
-			$filter->setValue(array($date, $date+86400));
-		}
-
-		return $filter;
+		return $this->view->make('filters')->render(array('filters' => $filters));
 	}
+
+	public function values()
+	{
+		$values = array();
+
+		foreach ($this->filters as $filter)
+		{
+			$values[$filter->name] = $filter->value();
+		}
+
+		return $values;
+	}
+
 }
 // END CLASS
 
-/* End of file FilterFactory.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Service/Filter/FilterFactory.php */
+/* End of file Date.php */
+/* Location: ./system/EllisLab/ExpressionEngine/Service/Filter/Date.php */
