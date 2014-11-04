@@ -3,6 +3,8 @@ namespace EllisLab\ExpressionEngine\Service\Filter;
 
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
+use EllisLab\ExpressionEngine\Service\Model\Query\Query;
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -27,37 +29,29 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
  */
 class Username extends Filter {
 
-	public function __construct()
+	protected $builder;
+
+	public function __construct($usernames = array())
 	{
 		$this->name = 'filter_by_username';
 		$this->label = 'username';
 		$this->placeholder = lang('filter_by_username');
+		$this->options = $usernames;
+	}
 
-		$members = ee()->api->get('Member')->all();
+	public function setQuery(Query $builder)
+	{
+		$this->builder = $builder;
+
+		// We will only display members if there are 25 or less
+		if ($builder->count() > 25)
+		{
+			return;
+		}
+
+		$members = $builder->all();
 		if ($members)
 		{
-			$value = $this->value();
-			if ($value)
-			{
-				if (is_numeric($value))
-				{
-					$member = ee()->api->get('Member', $value)->first();
-					if ($member)
-					{
-						// $this->display_value = $member->username;
-					}
-				}
-				else
-				{
-					$member = ee()->api->get('Member')->filter('username', $value)->first();
-					if ($member)
-					{
-						// $this->display_value = $value;
-						$this->selected_value = $member->member_id;
-					}
-				}
-			}
-
 			$options = array();
 
 			foreach ($members as $member)
@@ -67,6 +61,27 @@ class Username extends Filter {
 
 			$this->options = $options;
 		}
+	}
+
+	public function value()
+	{
+		if (isset($this->builder))
+		{
+			$value = (isset($_POST[$this->name])) ? $_POST[$this->name] : NULL;
+			if ($value)
+			{
+				if ( ! is_numeric($value))
+				{
+					$member = $this->builder->filter('username', $value)->first();
+					if ($member)
+					{
+						$this->selected_value = $member->member_id;
+					}
+				}
+			}
+		}
+
+		return parent::value();
 	}
 
 	public function isValid()
