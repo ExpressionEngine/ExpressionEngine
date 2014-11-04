@@ -73,7 +73,7 @@
  *  Load the autoloader and register it
  * ------------------------------------------------------
  */
-	require_once(APPPATH.'../EllisLab/ExpressionEngine/Core/Autoloader.php');
+	require(APPPATH.'../EllisLab/ExpressionEngine/Core/Autoloader.php');
 
 	Autoloader::getInstance()->register();
 
@@ -340,7 +340,7 @@
 				</div>';
 			die('Fatal Error.');
 		}
-
+	
 	}
 
 
