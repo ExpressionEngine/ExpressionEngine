@@ -152,9 +152,19 @@ class EE_Route {
 	 */
 	public function equals(EE_Route $route)
 	{
+		if(count($this->segments) != count($route->segments))
+		{
+			return FALSE;
+		}
+
 		foreach($this->segments as $index => $segment)
 		{
 			$comparison = $route->segments[$index];
+
+			if (gettype($segment) !== gettype($comparison))
+			{
+				return FALSE;
+			}
 
 			if (is_string($segment))
 			{
@@ -165,11 +175,6 @@ class EE_Route {
 			}
 			else
 			{
-				if (is_string($comparison))
-				{
-					return FALSE;
-				}
-
 				$segment_rules = array_map('serialize', $segment->rules);
 				$comparison_rules = array_map('serialize', $comparison->rules);
 				$diff = array_diff($segment_rules, $comparison_rules);
@@ -181,6 +186,7 @@ class EE_Route {
 				}
 			}
 		}
+
 		return TRUE;
 	}
 
@@ -194,6 +200,13 @@ class EE_Route {
 	public function parse_route($route)
 	{
 		$route = trim($route, '/ ');
+
+		// Check for xss
+		if ($route !== ee()->security->xss_clean($route))
+		{
+			throw new Exception(lang('invalid_route'));
+		}
+
 		$segments = $this->parse_segments($route);
 		$index = 0;
 
@@ -207,7 +220,9 @@ class EE_Route {
 			{
 				if (empty($segment['rules']))
 				{
-					$segment = new EE_Route_segment($segment['variable']);
+					// Segment variable with no rules should be equivalent to alpha-dash
+					$rule = $this->rules->load('alpha_dash'); 
+					$segment = new EE_Route_segment($segment['variable'], array($rule));
 				}
 				else
 				{

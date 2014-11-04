@@ -231,7 +231,7 @@ class Member_memberlist extends Member {
 			$swap['lang:message']	= ee()->lang->line('mbr_good_email');
 			$swap['css_class'] 		= 'success';
 
-			ee()->db->query("UPDATE exp_members SET last_email_date = '{ee()->localize->now}' WHERE member_id = '".ee()->session->userdata('member_id')."'");
+			ee()->db->query("UPDATE exp_members SET last_email_date = '".ee()->localize->now."' WHERE member_id = '".ee()->session->userdata('member_id')."'");
 
 		}
 
@@ -340,7 +340,7 @@ class Member_memberlist extends Member {
 				'lang:recipient'	=>	ee()->lang->line('mbr_icq_recipient'),
 				'lang:subject'		=>	ee()->lang->line('mbr_icq_subject'),
 				'lang:message'		=>	ee()->lang->line('mbr_icq_message')
-			 )
+			)
 		);
 	}
 
@@ -373,9 +373,9 @@ class Member_memberlist extends Member {
 		$mvars = ee()->functions->assign_variables($memberlist_rows, '/');
 		$mvar_cond = ee()->functions->assign_conditional_variables($memberlist_rows, '/');
 
-		$this->var_cond		= array_merge($var_cond, $mvar_cond);
-		$this->var_single	= array_merge($vars['var_single'], $mvars['var_single']);
-		$this->var_pair		= array_merge($vars['var_pair'], $mvars['var_pair']);
+		$this->var_cond   = array_merge($var_cond, $mvar_cond);
+		$this->var_single = array_merge($vars['var_single'], $mvars['var_single']);
+		$this->var_pair   = array_merge($vars['var_pair'], $mvars['var_pair']);
 
 		/** ----------------------------------------
 		/**  Fetch the custom member field definitions
@@ -397,9 +397,7 @@ class Member_memberlist extends Member {
 		/**  Assign default variables
 		/** ----------------------------------------*/
 
-		$valid_order_bys = array(
-				'screen_name','total_posts', 'join_date'
-			);
+		$valid_order_bys = array('screen_name', 'total_comments', 'total_entries', 'total_posts', 'join_date');
 
 		$sort_orders = array('asc', 'desc');
 
@@ -408,23 +406,14 @@ class Member_memberlist extends Member {
 			$group_id = 0;
 		}
 
-		$sort_order = ( ! in_array(ee()->input->post('sort_order'), $sort_orders)) ? ee()->config->item('memberlist_sort_order') : ee()->input->post('sort_order', 'post');
+		$sort_order = ( ! in_array(ee()->input->post('sort_order'), $sort_orders)) ? ee()->config->item('memberlist_sort_order') : ee()->input->post('sort_order');
 
 		if (($row_limit = (int) ee()->input->post('row_limit')) === 0)
 		{
 			$row_limit = ee()->config->item('memberlist_row_limit');
 		}
 
-		if (ee()->input->post('order_by'))
-		{
-			$order_by = ee()->input->post('order_by', 'post');
-
-			if ( ! in_array($order_by, $valid_order_bys))
-			{
-				$order_by = ee()->config->item('memberlist_order_by');
-			}
-		}
-		else
+		if ( ! ($order_by = ee()->input->post('order_by')))
 		{
 			$order_by = ee()->config->item('memberlist_order_by');
 		}
@@ -466,24 +455,34 @@ class Member_memberlist extends Member {
 		/**  Parse the request URI
 		/** ----------------------------------------*/
 
-		$path = '';
-		$pag_uri_segment = 0;
-
-		  if (preg_match("#^[0-9]{1,}\-[0-9a-z_]{1,}\-[0-9a-z]{1,}\-[0-9]{1,}\-[0-9]{1,}$#i", $this->cur_id))
+		// Redirect for old URI styles
+		if (preg_match('/^([0-9]{1,})\-([0-9a-z_]{1,})\-([0-9a-z]{1,})\-([0-9]{1,})\-([0-9]{1,})/i', $this->cur_id, $matches))
 		{
-			$x = explode("-", $this->cur_id);
+			$group_id   = $matches[1];
+			$order_by   = $matches[2];
+			$sort_order = $matches[3];
+			$row_limit  = $matches[4];
+			$row_count  = $matches[5];
 
-			$group_id	= $x['0'];
-			$order_by 	= $x['1'];
-			$sort_order	= $x['2'];
-			$row_limit	= $x['3'];
-			$row_count	= $x['4'];
-
-			// Which segment is this?  We need the NEXT segment to pass to pagination
-			$pag_uri_segment = array_search($this->cur_id, ee()->uri->segment_array()) + 1;
+			return ee()->functions->redirect($this->_member_path('memberlist').'/G'.$group_id.'/'.$order_by.'/'.$sort_order.'/L'.$row_limit.'/P'.$row_count, FALSE, 301);
 		}
 
-		$path = '/'.$group_id.'-'.$order_by.'-'.$sort_order.'-'.$row_limit;
+		$path = '';
+		if (preg_match('#/G([0-9]+)/(.*?)/(.*?)/L([0-9]+)(?:/|\Z)#', ee()->uri->query_string, $matches))
+		{
+			$group_id   = $matches[1];
+			$order_by   = $matches[2];
+			$sort_order = $matches[3];
+			$row_limit  = $matches[4];
+		}
+
+		// Ensure $order_by is valid
+		if ( ! in_array($order_by, $valid_order_bys))
+		{
+			$order_by = ee()->config->item('memberlist_order_by');
+		}
+
+		$path = '/G'.$group_id.'/'.$order_by.'/'.$sort_order.'/L'.$row_limit;
 
 		/** ----------------------------------------
 		/**  Build the query
@@ -545,16 +544,14 @@ class Member_memberlist extends Member {
 
 		$query = ee()->db->query($p_sql.$sql);
 
-
- 		if ($order_by == 'total_posts')
- 		{
+		if ($order_by == 'total_posts')
+		{
 			$sql .= " ORDER BY ".$order_by." ".$sort_order;
- 		}
+		}
 		else
 		{
 			$sql .= " ORDER BY m.".$order_by." ".$sort_order;
 		}
-
 
 		/** -----------------------------
 		/**  Build Pagination
@@ -568,7 +565,6 @@ class Member_memberlist extends Member {
 			ee()->load->library('logger');
 			ee()->logger->developer('{if paginate} has been deprecated, use normal {paginate} tags in your Member List template.', TRUE, 604800);
 			$config['last_link'] = ee()->lang->line('last');
-			//$config['uri_segment'] = $pag_uri_segment;
 			$config['suffix'] = ($first_letter != '') ? $first_letter.'/' : '';
 			$config['first_url'] = $this->_member_path('memberlist'.$search_path.$path.'-0');
 			$config['cur_page']	= ($row_count == '') ? '0' : $row_count;
@@ -598,12 +594,13 @@ class Member_memberlist extends Member {
 		ee()->load->library('pagination');
 		$pagination = ee()->pagination->create();
 		$pagination->position = 'inline';
+		$pagination->basepath = $this->_member_path('memberlist').$path;
 		$template = $pagination->prepare($template);
 
 		if ($query->row('count') > $row_limit && $pagination->paginate === TRUE)
 		{
 			$pagination->build($query->row('count'), $row_limit);
-			$sql .= " LIMIT ".$row_count.", ".$row_limit;
+			$sql .= " LIMIT ".$pagination->offset.", ".$row_limit;
 		}
 
 		/** ----------------------------------------

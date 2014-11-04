@@ -313,14 +313,14 @@ EE.cp.cleanUrl = function(i, url) {
 	QS = QS.replace(lTrimAmp, '').replace(rTrimAmp, '');
 
 	if (QS) {
-		newUrl += '?' + QS;
+		newUrl += '&' + QS;
 	}
 
 	return newUrl.replace(rTrimAmp, '');
 };
 
 EE.cp.cleanUrls = function() {
-	$('a').attr('href', EE.cp.cleanUrl);
+	$('a:not([href^=javascript])').attr('href', EE.cp.cleanUrl);
 	$('form').attr('action', EE.cp.cleanUrl);
 };
 

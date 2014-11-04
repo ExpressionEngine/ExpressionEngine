@@ -99,6 +99,9 @@ class Member_model extends CI_Model {
 	 */
 	function get_members($group_id = '', $limit = '', $offset = '', $search_value = '', $order = array(), $column = 'all')
 	{
+		// Is a unique order by specified
+		$add_orderby = TRUE;
+
 		$this->db->select("members.username, members.member_id, members.screen_name, members.email, members.join_date, members.last_visit, members.group_id, members.in_authorlist");
 
 		$this->_prep_search_query($group_id, $search_value, $column);
@@ -117,12 +120,22 @@ class Member_model extends CI_Model {
 		{
 			foreach ($order as $key => $val)
 			{
+				if ($key == 'member_id')
+				{
+					$add_orderby = FALSE;
+				}
+
 				$this->db->order_by($key, $val);
 			}
 		}
 		else
 		{
 			$this->db->order_by('join_date');
+		}
+
+		if ($add_orderby)
+		{
+			$this->db->order_by('member_id');
 		}
 
 		$members = $this->db->get('members');
@@ -400,7 +413,7 @@ class Member_model extends CI_Model {
 		// hook.
 		if ($this->extensions->active_hook('member_create_start'))
 		{
-			list($data, $cdata) = $this->extensions->call('member_create_start', $member_id, $data, $cdata);
+			list($data, $cdata) = $this->extensions->call('member_create_start', $data, $cdata);
 		}
 		//
 		// ---------------------------------------------------------------
@@ -1625,6 +1638,11 @@ class Member_model extends CI_Model {
 				// Check to see if the token is ID
 				$token_name = ($token_name === 'id') ? 'member_id' : $token_name;
 
+				// Clean the token name to arrive at a potential column name
+				// and prevent any shenanigans
+				$token_name = ee()->db->protect_identifiers(
+					preg_replace('/[^\w-.]/', '', $token_name)
+				);
 				$this->db->like('members.'.$token_name, $token_value);
 			}
 		}
@@ -1636,6 +1654,9 @@ class Member_model extends CI_Model {
 			}
 			else
 			{
+				$search_in = ee()->db->protect_identifiers(
+					preg_replace('/[^\w-.]/', '', $search_in)
+				);
 				$this->db->like('members.'.$search_in, $search_value);
 			}
 		}

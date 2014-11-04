@@ -398,7 +398,7 @@ class Email {
 
 		// Parse conditionals
 		$cond = array();
-		$cond['captcha'] = ($this->use_captchas == 'y') ? 'TRUE' : 'FALSE';
+		$cond['captcha'] = ($this->use_captchas == 'y') ? TRUE : FALSE;
 
 		$tagdata = ee()->functions->prep_conditionals($tagdata, $cond);
 

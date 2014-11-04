@@ -8267,7 +8267,7 @@ class Forum_Core extends Forum {
 
 		if (isset(ee()->session->tracker[2]))
 		{
-			$return = str_replace('/'.$this->trigger, '', ee()->session->tracker[2]);
+			$return = reduce_double_slashes(str_replace($this->trigger, '', ee()->session->tracker[2]));
 			ee()->functions->redirect($this->forum_path($return));
 		}
 
@@ -10547,8 +10547,8 @@ class Forum_Core extends Forum {
 
 			// Conditionals
 			$cond = $row;
-			$cond['logged_in']	= (ee()->session->userdata('member_id') == 0) ? 'FALSE' : 'TRUE';
-			$cond['logged_out']	= (ee()->session->userdata('member_id') != 0) ? 'FALSE' : 'TRUE';
+			$cond['logged_in']	= (ee()->session->userdata('member_id') == 0) ? FALSE : TRUE;
+			$cond['logged_out']	= (ee()->session->userdata('member_id') != 0) ? FALSE : TRUE;
 			$cond['post_total']	= $row['thread_total'];  // this variable makes me want raisin bran
 			$cond['views'] = $row['thread_views'];
 

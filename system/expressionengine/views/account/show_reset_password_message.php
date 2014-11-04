@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-<title><?=$cp_page_title?> | ExpressionEngine</title>
+<title><?=$cp_page_title?> | <?=APP_NAME?></title>
 <style type="text/css">
 
 body {
@@ -99,7 +99,7 @@ input.submit {
 	padding:			3px 15px 3px 30px;
 	margin:				40px 0 20px 0;
 	width:				396px;
-	
+
 	-webkit-border-radius: 6px;
 	border-radius:		6px;
 }
@@ -121,7 +121,7 @@ input.submit {
 <div id="branding"><a href="http://ellislab.com/"><img src="<?=PATH_CP_GBL_IMG?>ee_logo_branding.gif" width="250" height="28" alt="<?=lang('powered_by')?> ExpressionEngine" /></a></div>
 
 <div id="content">
-	
+
 <div id="white">
 		<div class="success">
 			<p><?=$message_success?></p>

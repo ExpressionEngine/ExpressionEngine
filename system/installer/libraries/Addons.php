@@ -23,7 +23,7 @@
  * @link		http://ellislab.com
  */
 
-require_once(EE_APPPATH.'/libraries/Addons'.EXT);
+require_once(EE_APPPATH.'libraries/Addons'.EXT);
 
 class Installer_Addons extends EE_Addons {
 	// Nothing to see here.

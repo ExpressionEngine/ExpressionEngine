@@ -318,7 +318,10 @@ $lang = array(
 "Cannot connect to %s, using %s driver instead",
 
 "caching_driver_file_fail" =>
-"Cannot use %s driver, check cache path permissions, using %s driver",
+"Cannot use %s driver, check cache path permissions",
+
+"disable_caching" =>
+"Disable Caching",
 
 "max_caches" =>
 "Maximum Number of Cachable URIs",
@@ -846,8 +849,17 @@ $lang = array(
 "debug_cfg" =>
 "Debugging Preferences",
 
+"software_registration" =>
+"Software Registration",
+
+"license_contact" =>
+"License Holder Contact Email",
+
 "license_number" =>
 "License Number",
+
+'invalid_license_number' =>
+'The license number provided is not a valid license number.',
 
 "word_separator" =>
 "Word Separator for URL Titles",
@@ -1028,6 +1040,12 @@ $lang = array(
 
 "dictionary_explanation" =>
 "The name of the file containing your word list",
+
+'license_contact_explanation' =>
+'The contact email address for the owner of this software license.',
+
+'license_number_explanation' =>
+'You can find and manage your software licenses on the EllisLab.com <a href="https://store.ellislab.com/manage">Manage Purchases</a> page,',
 
 "image_path" =>
 "Path to Images Directory",
@@ -1742,6 +1760,9 @@ $lang = array(
 
 'illegal_characters' =>
 'The name you submitted may only contain alpha-numeric characters, underscores, and dashes',
+
+'invalid_xss_check' =>
+'The data you submitted did not pass our security check. If you did not intend to submit this form, please <a href="%s">click here</a> and no settings will be changed.',
 
 'developer_logs' =>
 'You have %d unviewed items in the <a href="%s">Developer Log</a>.',

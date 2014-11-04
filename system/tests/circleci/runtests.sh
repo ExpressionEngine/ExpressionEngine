@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-cd system/tests/rspec
-
 # We will increment this as we get bad statuses from RSpec and finally
 # exit with that status at the end
 STATUS=0
@@ -9,6 +7,8 @@ STATUS=0
 # Explode php_versions environment variable since we can't assign
 # arrays in the YML
 PHP_VERSIONS_ARRAY=(${php_versions// / })
+
+printf "Starting tests. Outputting results to build artifacts directory\n\n"
 
 for PHPVERSION in "${PHP_VERSIONS_ARRAY[@]}"
 do
@@ -21,19 +21,35 @@ do
 	# We'll store our build artifacts under the name of the current PHP version
 	mkdir -p $CIRCLE_ARTIFACTS/$PHPVERSION/
 
-	# Finally, run the tests, outputting resultss to build artifacts directory
-	printf "Running tests, outputting results to build artifacts directory\n\n"
-	bundle exec rspec -fh -c -o $CIRCLE_ARTIFACTS/$PHPVERSION/results.html
+	pushd system/tests/rspec
+		# Run the tests, outputting the results in the artifacts directory.
+		printf "Running Rspec tests\n\n"
+		bundle exec rspec -fh -c -o $CIRCLE_ARTIFACTS/$PHPVERSION/rspec.html
 
-	# Capture status for to exit with later
-	STATUS=$(($STATUS+$?))
+		# Append status code for this test
+		((STATUS+=$?))
 
-	# If screenshots were taken, move them to the build artifacts directory
-	if [ -d "./screenshots" ]; then
-		printf "Screenshots taken, moved to build artifacts directory\n\n"
-		mv screenshots/* $CIRCLE_ARTIFACTS/$PHPVERSION/
-		rmdir screenshots
-	fi
+		# If screenshots were taken, move them to the build artifacts directory
+		if [ -d "./screenshots" ]; then
+			printf "Screenshots taken, moved to build artifacts directory\n\n"
+			mv screenshots/* $CIRCLE_ARTIFACTS/$PHPVERSION/
+			rmdir screenshots
+		fi
+	popd
+
+	# PHPUnit tests
+	pushd system/EllisLab/Tests/
+		printf "Running PHPUnit tests\n\n"
+		phpunit ExpressionEngine/ > $CIRCLE_ARTIFACTS/$PHPVERSION/phpunit.txt
+
+		# Save our exit status code
+		((STATUS+=$?))
+
+		# Remove CLI colors
+		sed -i -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})*)?m//g" $CIRCLE_ARTIFACTS/$PHPVERSION/phpunit.txt
+
+	popd
+
 done
 
 exit $STATUS

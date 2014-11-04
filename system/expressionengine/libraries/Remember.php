@@ -11,7 +11,7 @@
  * @since		Version 2.4
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -27,17 +27,17 @@ class Remember {
 
 	private $max_per_site = 5;			// remembers per site per user
 	private $gc_probability = 10;		// percentage of logins that gc
-	
+
 	protected $table = 'remember_me';
 
 	protected $data = NULL;
 	protected $cookie = 'remember';
 	protected $cookie_value = FALSE;
 	protected $expiry = 1209600;		// default expiration of two weeks, in seconds (60*60*24*14)
-	
+
 	protected $ip_address = '';
 	protected $user_agent = '';
-	
+
 	protected $EE;
 
 	/**
@@ -48,16 +48,16 @@ class Remember {
 	function __construct($params = array())
 	{
 		$this->EE =& get_instance();
-		
+
 		$this->cookie_value = ee()->input->cookie($this->cookie);
 		$this->expiry = (isset($params['remember_me_ttl'])) ? $params['remember_me_ttl'] : $this->expiry;
-		
+
 		$this->ip_address = ee()->input->ip_address();
 		$this->user_agent = substr(ee()->input->user_agent(), 0, 120);
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Create a new remember me
 	 *
@@ -73,9 +73,9 @@ class Remember {
 				'site_id'		=> ee()->config->item('site_id')
 			))
 			->result();
-		
+
 		$this->cookie_value = $this->_generate_id();
-		
+
 		$this->data = array(
 			'remember_me_id'	=> $this->cookie_value,
 			'member_id'			=> ee()->session->userdata('member_id'),
@@ -86,9 +86,9 @@ class Remember {
 			'expiration'		=> ee()->localize->now + $this->expiry,
 			'last_refresh'		=> ee()->localize->now
 		);
-		
+
 		ee()->db->set($this->data);
-		
+
 		// If they have too many remembered sessions,
 		// we replace their oldest one.
 		if (count($active) >= $this->max_per_site)
@@ -101,10 +101,10 @@ class Remember {
 			ee()->db->insert($this->table);
 			$this->_garbage_collect();
 		}
-		
+
 		$this->_set_cookie($this->data['remember_me_id'], $this->expiry);
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -119,7 +119,7 @@ class Remember {
 			$this->data = array();
 			return $this->_validate_db();
 		}
-		
+
 		return count($this->data);
 	}
 
@@ -134,9 +134,9 @@ class Remember {
 	{
 		return (isset($this->data[$key])) ? $this->data[$key] : NULL;
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Clear the current remember me
 	 *
@@ -149,14 +149,14 @@ class Remember {
 			ee()->db->where('remember_me_id', $this->cookie_value);
 			ee()->db->delete($this->table);
 		}
-		
+
 		$this->data = array();
 		$this->_delete_cookie();
 	}
-	
-	
+
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Clear all remember me's except for the current one
 	 *
@@ -164,22 +164,25 @@ class Remember {
 	 * remember me's that may have been created with
 	 * compromised credentials
 	 *
-	 * @return void
+	 * @param	int		$member_id	the member ID to clear other remember me's for
+	 * @return	void
 	 */
-	public function delete_others()
+	public function delete_others($member_id = NULL)
 	{
-		ee()->db->where('member_id', ee()->session->userdata('member_id'));
-		
+		$member_id = ($member_id) ?: ee()->session->userdata('member_id');
+
+		ee()->db->where('member_id', $member_id);
+
 		if ($this->cookie_value)
 		{
 			ee()->db->where('remember_me_id !=', $this->cookie_value);
 		}
-		
+
 		ee()->db->delete($this->table);
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Get the remember me data in the db and validate it
 	 *
@@ -191,32 +194,32 @@ class Remember {
 		{
 			return;
 		}
-		
+
 		$yesterday = ee()->localize->now - 60*60*24;
-		
+
 		if ($this->data['last_refresh'] < $yesterday)
 		{
 			$id = $this->_generate_id();
-			
+
 			// push the expiration date ahead by as much as we've lost
 			$adjust_expire = ee()->localize->now - $this->data['last_refresh'];
-			
+
 			// refresh all the data
 			$this->data['last_refresh'] = ee()->localize->now;
 			$this->data['remember_me_id'] = $id;
 			$this->data['expiration'] += $adjust_expire;
-			
+
 			ee()->db->where('remember_me_id', $this->cookie_value)
 				->set($this->data)
 				->update($this->table);
-						
+
 			$expiration = $this->data['expiration'] - ee()->localize->now;
 			$this->_set_cookie($id, $expiration);
 		}
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Expiry getter
 	 *
@@ -226,9 +229,9 @@ class Remember {
 	{
 		return $this->expiry;
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Get the remember me data in the db and validate it
 	 *
@@ -240,18 +243,18 @@ class Remember {
 		{
 			return FALSE;
 		}
-		
+
 		// grab the db entry
 		$rem_q = ee()->db->get_where($this->table, array(
 			'remember_me_id' => $this->cookie_value
 		));
-		
+
 		if ($rem_q->num_rows() != 1)
 		{
 			$this->_delete_cookie();
 			return FALSE;
 		}
-		
+
 		$rem_data = $rem_q->row_array();
 		$rem_q->free_result();
 
@@ -261,14 +264,14 @@ class Remember {
 			$this->_delete_cookie();
 			return FALSE;
 		}
-		
+
 		// validate time
 		if ($rem_data['expiration'] < ee()->localize->now)
 		{
 			$this->_delete_cookie();
-			return FALSE;			
+			return FALSE;
 		}
-		
+
 		// remember the data we grabbed (haha!)
 		$this->data = $rem_data;
 		return TRUE;
@@ -285,9 +288,9 @@ class Remember {
 	{
 		return ee()->functions->random();
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Delete the remember me cookie
 	 *
@@ -300,7 +303,7 @@ class Remember {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Set the remember me cookie
 	 *
@@ -311,26 +314,26 @@ class Remember {
 		$this->cookie_value = $value;
 		ee()->input->set_cookie($this->cookie, $value, $expiration);
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Garbage collect
 	 *
 	 * @return void
 	 */
 	protected function _garbage_collect()
-	{		
+	{
 		srand(time());
-		
+
 		if ((rand() % 100) < $this->gc_probability)
 		{
 			$expired = ee()->localize->now - $this->expiry;
-			
+
 			ee()->db->where('expiration <', ee()->localize->now)
 				->or_where('last_refresh <', $expired)
 				->delete($this->table);
-			
+
 		}
 	}
 }

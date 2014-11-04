@@ -157,9 +157,9 @@ class Rte_lib {
 		$toolset_id = ee()->input->get_post('toolset_id');
 
 		$toolset = array(
-			'name'		=> ee()->input->get_post('toolset_name'),
-			'tools' 	=> ee()->input->get_post('selected_tools'),
-			'member_id'	=> (ee()->input->get_post('private') == 'true' ? ee()->session->userdata('member_id') : 0)
+			'name'      => ee()->input->get_post('toolset_name'),
+			'tools'     => ee()->input->get_post('selected_tools'),
+			'member_id' => (ee()->input->get_post('private') == 'true' ? ee()->session->userdata('member_id') : 0)
 		);
 
 		// is this an individual’s private toolset?
@@ -170,6 +170,16 @@ class Rte_lib {
 		{
 			ee()->output->send_ajax_response(array(
 				'error' => lang('name_required')
+			));
+		}
+
+		// check name for XSS
+		if ($toolset['name'] != strip_tags($toolset['name'])
+			OR $toolset['name'] != htmlentities($toolset['name'])
+			OR $toolset['name'] != ee()->security->xss_clean($toolset['name']))
+		{
+			ee()->output->send_ajax_response(array(
+				'error' => lang('valid_name_required')
 			));
 		}
 
@@ -391,14 +401,17 @@ class Rte_lib {
 						buttons: '.json_encode($bits['buttons']).'
 					});
 
-				Grid.bind("rte", "display", function(cell)
+				if (typeof Grid === "object")
 				{
-					$("' . $selector . '", cell)
-						.addClass("WysiHat-field")
-						.wysihat({
-							buttons: '.json_encode($bits['buttons']).'
-						});
-				});
+					Grid.bind("rte", "display", function(cell)
+					{
+						$("' . $selector . '", cell)
+							.addClass("WysiHat-field")
+							.wysihat({
+								buttons: '.json_encode($bits['buttons']).'
+							});
+					});
+				}
 			}
 		})();';
 

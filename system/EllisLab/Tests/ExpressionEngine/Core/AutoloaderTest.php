@@ -54,4 +54,15 @@ class AutoloaderTest extends \PHPUnit_Framework_TestCase {
 
 		$this->assertInstanceOf('EllisLab\AutoloaderTest\TestFileFour', $test);
 	}
+
+	public function testSingleton()
+	{
+		$one = \Autoloader::getInstance();
+		$two = \Autoloader::getInstance();
+		$three = \Autoloader::getInstance();
+
+		$this->assertSame($one, $two);
+		$this->assertSame($two, $three);
+		$this->assertSame($one, $three);
+	}
 }

@@ -27,8 +27,8 @@
 class Forum {
 
 
-	public $version				= '3.1.15';
-	public $build				= '20140228';
+	public $version				= '3.1.17';
+	public $build				= '20141003';
 	public $use_site_profile	= FALSE;
 	public $search_limit		= 250; // Maximum number of search results (x2 since it can include this number of topics + this number of posts)
 	public $return_data 		= '';
@@ -2148,9 +2148,7 @@ class Forum {
 	{
 		if (isset(ee()->session->tracker[0]) && substr(ee()->session->tracker[0], -17) == 'spellcheck_iframe')
 		{
-			array_shift(ee()->session->tracker);
-
-			ee()->input->set_cookie('tracker', serialize(ee()->session->tracker), '0');
+			ee()->session->do_not_track();
 		}
 
 		if ( ! class_exists('EE_Spellcheck'))

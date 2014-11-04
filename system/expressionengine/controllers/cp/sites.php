@@ -24,8 +24,8 @@
  */
 class Sites extends CP_Controller {
 
-	var $version 			= '2.1.6';
-	var $build_number		= '20130827';
+	var $version 			= '2.1.7';
+	var $build_number		= '20140715';
 	var $allow_new_sites 	= FALSE;
 
 	/**
@@ -54,7 +54,7 @@ class Sites extends CP_Controller {
 
 		if ($this->router->fetch_method() == 'index' && $site_id && is_numeric($site_id))
 		{
-			$this->_switch_site($site_id);
+			ee()->cp->switch_site($site_id);
 			return;
 		}
 
@@ -97,71 +97,6 @@ class Sites extends CP_Controller {
 		$this->cp->set_right_nav(array('edit_sites' => BASE.AMP.'C=sites'.AMP.'M=manage_sites'));
 
 		$this->cp->render('sites/switch', $vars);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Site Switching Logic
-	 *
-	 * @access	private
-	 * @return	mixed
-	 */
-	function _switch_site($site_id)
-	{
-		if ($this->session->userdata('group_id') != 1)
-		{
-			$this->db->select('can_access_cp');
-			$this->db->where('site_id', $site_id);
-			$this->db->where('group_id', $this->session->userdata['group_id']);
-
-			$query = $this->db->get('member_groups');
-
-			if ($query->num_rows() == 0 OR $query->row('can_access_cp') !== 'y')
-			{
-				show_error(lang('unauthorized_access'));
-			}
-		}
-
-		// Commenting this out for the time being, as I'm not pleased with how it's working
-		// Depending on the page you're on, you can be hit with PHP errors.  So rather than
-		// keeping this as is, we'll redirect to the CP homepage of the site switched to.
-		// We should examine this in the future to see if a better experience for the end users
-		// can be had.
-
-		// This var might be temporary.
-		$page = BASE.AMP.'C=homepage';
-
-		// if ($this->input->get_post('page') !== FALSE &&
-		//		preg_match('/^[a-z0-9\_]+$/iD', $this->input->get_post('page')))
-		// {
-		// 	$parts = explode('|', base64_decode(str_replace('_', '=', $this->input->get_post('page'))));
-
-		// 	$page = BASE;
-
-		// 	foreach($parts as $part)
-		// 	{
-		// 		if ($part == '' OR ! preg_match('/^[a-z0-9\_\=]+$/iD', $part))
-		// 		{
-		// 			continue;
-		// 		}
-
-		// 		$page .= AMP.$part;
-		// 	}
-		// }
-		// else
-		// {
-		// 	$page = BASE;
-		// }
-
-		// This is just way too simple.
-
-		// We set the cookie before switching prefs to ensure it uses current settings
-		$this->input->set_cookie('cp_last_site_id', $site_id, 0);
-
-		$this->config->site_prefs('', $site_id);
-
-		$this->functions->redirect($page);
 	}
 
 	// --------------------------------------------------------------------

@@ -287,6 +287,26 @@ class EE_Extensions {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Get Active Hook Info
+	 *
+	 * Getter for the $extensions property
+	 *
+	 * @param	string		name of the extension hook
+	 * @return	array|bool	Hook details array or FALSE if not active
+	 **/
+	public function get_active_hook_info($hook)
+	{
+		if ( ! $this->active_hook($hook))
+		{
+			return FALSE;
+		}
+
+		return $this->extensions[$hook];
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Active Hook
 	 *
 	 * Check If Hook Has Activated Extension
@@ -297,6 +317,9 @@ class EE_Extensions {
 	 */
 	function active_hook($which)
 	{
+		// Hop out if extensions are disabled
+		if (ee()->config->item('allow_extensions') != 'y') return FALSE;
+
 		return (isset($this->extensions[$which])) ? TRUE : FALSE;
 	}
 

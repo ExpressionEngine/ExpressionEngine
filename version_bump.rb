@@ -1,6 +1,8 @@
 #!/usr/bin/env ruby
 # Bumps the version numbers in all EE files based on build.properties
 
+require 'date'
+
 # Replaces a file_name using the regexp hash, where the index is the regular
 # expression and the value is the replacement
 def replace (file_name, regexp)
@@ -13,15 +15,17 @@ def replace (file_name, regexp)
   File.open(file_name, 'w') {|file| file.write(text)}
 end
 
+# Create build date
+build_date = Date.today.strftime('%Y%m%d')
 
 # First load in the data from build.properties
 contents    = File.read('build.properties')
-ee_version  = /ee2.version\s*?= (.*)/.match(contents)[1].chomp
-ee_build    = /ee2.build\s*?= (.*)/.match(contents)[1].chomp
-msm_version = /ee2.msm.version\s*?= (.*)/.match(contents)[1].chomp
-msm_build   = /ee2.msm.build\s*?= (.*)/.match(contents)[1].chomp
-df_version  = /ee2.forum.version\s*?= (.*)/.match(contents)[1].chomp
-df_build    = /ee2.forum.build\s*?= (.*)/.match(contents)[1].chomp
+ee_version  = /^ee2.version\s*?= (.*)/.match(contents)[1].chomp
+ee_build    = (tmp = /^ee2.build\s*?= (.*)/.match(contents)) ? tmp[1].chomp : build_date
+msm_version = /^ee2.msm.version\s*?= (.*)/.match(contents)[1].chomp
+msm_build   = (tmp = /^ee2.msm.build\s*?= (.*)/.match(contents)) ? tmp[1].chomp : build_date
+df_version  = /^ee2.forum.version\s*?= (.*)/.match(contents)[1].chomp
+df_build    = (tmp = /^ee2.forum.build\s*?= (.*)/.match(contents)) ? tmp[1].chomp : build_date
 
 # Core.php
 replace(
