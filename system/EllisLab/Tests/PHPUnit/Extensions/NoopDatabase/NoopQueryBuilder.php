@@ -43,7 +43,7 @@ class NoopQueryBuilder {
 
 		return m::mock(get_called_class(), $methods);
 		*/
-		return m::mock('NoopQuery');
+		return m::mock('\CI_DB_active_record');
 	}
 
 	public function __call($method, $args)
@@ -162,6 +162,7 @@ class NoopActiveRecord {
 	protected function dbprefix($table = '') {}
 	protected function empty_table($table = '') {}
 	protected function count_all_results($table = '') {}
+	protected function insert_id() {return 1;}
 
 	protected function from($from) { return $this; }
 	protected function offset($offset) { return $this; }

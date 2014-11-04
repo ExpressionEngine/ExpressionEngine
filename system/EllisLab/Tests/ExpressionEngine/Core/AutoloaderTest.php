@@ -2,6 +2,7 @@
 namespace EllisLab\Tests\ExpressionEngine\Core;
 
 use EllisLab\AutoloaderTest as TestAlias;
+use EllisLab\ExpressionEngine\Service\Autoloader as Autoloader;
 
 class AutoloaderTest extends \PHPUnit_Framework_TestCase {
 
@@ -9,8 +10,8 @@ class AutoloaderTest extends \PHPUnit_Framework_TestCase {
 
 	protected function setUp()
 	{
-		require_once __DIR__.'/../../../ExpressionEngine/Core/Autoloader.php';
-		$this->autoloader = new \Autoloader();
+		require_once __DIR__.'/../../../ExpressionEngine/Service/Autoloader.php';
+		$this->autoloader = new Autoloader();
 
 		// The testsuite autoloader technically handles the full EllisLab
 		// namespace, but we can take advantage of its simplicity and the fact
@@ -36,7 +37,6 @@ class AutoloaderTest extends \PHPUnit_Framework_TestCase {
 		$this->assertTrue(class_exists('\EllisLab\AutoloaderTest\TestFileTwo'), 'class file with namespacing');
 	}
 
-
 	public function testRegister()
 	{
 		$this->autoloader->register();
@@ -57,9 +57,9 @@ class AutoloaderTest extends \PHPUnit_Framework_TestCase {
 
 	public function testSingleton()
 	{
-		$one = \Autoloader::getInstance();
-		$two = \Autoloader::getInstance();
-		$three = \Autoloader::getInstance();
+		$one = Autoloader::getInstance();
+		$two = Autoloader::getInstance();
+		$three = Autoloader::getInstance();
 
 		$this->assertSame($one, $two);
 		$this->assertSame($two, $three);

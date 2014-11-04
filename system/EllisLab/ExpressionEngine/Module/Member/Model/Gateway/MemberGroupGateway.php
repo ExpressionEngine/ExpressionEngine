@@ -1,7 +1,7 @@
 <?php
 namespace EllisLab\ExpressionEngine\Module\Member\Model\Gateway;
 
-use EllisLab\ExpressionEngine\Model\Gateway\RowDataGateway;
+use EllisLab\ExpressionEngine\Service\Model\Gateway\RowDataGateway;
 
 /**
  * Member Groups table
@@ -13,6 +13,10 @@ class MemberGroupGateway extends RowDataGateway {
 		'site_id' => array(
 			'gateway' => 'SiteGateway',
 			'key' => 'site_id'
+		),
+		'group_id' => array(
+			'gateway' => 'MemberGateway',
+			'key' => 'group_id'
 		)
 	);
 

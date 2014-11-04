@@ -34,7 +34,44 @@ class Updater {
 	 */
 	public function do_update()
 	{
+		ee()->load->dbforge();
+
+		$steps = new ProgressIterator(
+			array(
+				'_update_email_cache_table',
+			)
+		);
+
+		foreach ($steps as $k => $v)
+		{
+			$this->$v();
+		}
+
 		return TRUE;
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Removes 3 columns and adds 1 column to the email_cache table
+	 *
+	 * @access private
+	 * @return void
+	 */
+	private function _update_email_cache_table()
+	{
+		ee()->smartforge->drop_column('email_cache', 'mailinglist');
+		ee()->smartforge->drop_column('email_cache', 'priority');
+
+		ee()->smartforge->add_column(
+			'email_cache',
+			array(
+				'attachments' => array(
+					'type'			=> 'mediumtext',
+					'null'			=> TRUE
+				)
+			)
+		);
 	}
 }
 /* END CLASS */

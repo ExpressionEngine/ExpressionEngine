@@ -1,18 +1,36 @@
 <?php
 namespace EllisLab\ExpressionEngine\Model\Template;
 
-use EllisLab\ExpressionEngine\Model\Model as Model;
+use EllisLab\ExpressionEngine\Service\Model\Model;
 
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 3.0
+ * @filesource
+ */
+
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine Template Group Model
+ *
+ * @package		ExpressionEngine
+ * @subpackage	TemplateGroup
+ * @category	Model
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
+ */
 class TemplateGroup extends Model {
 
 	protected static $_primary_key = 'group_id';
 	protected static $_gateway_names = array('TemplateGroupGateway');
 	protected static $_cascade = 'Templates';
-
-	protected static $_key_map = array(
-		'group_id' => 'TemplateGroupGateway',
-		'site_id'  => 'TemplateGroupGateway'
-	);
 
 	protected static $_relationships = array(
 		'Site' => array(
@@ -25,7 +43,6 @@ class TemplateGroup extends Model {
 		'MemberGroups' => array(
 			'type' => 'many_to_many',
 			'model' => 'MemberGroup',
-			'key' => 'fixme'
 		)
 	);
 
@@ -43,7 +60,7 @@ class TemplateGroup extends Model {
 		return $this->getRelated('Templates');
 	}
 
-	public function setTemplates(array $templates)
+	public function setTemplates($templates)
 	{
 		return $this->setRelated('Templates', $templates);
 	}
@@ -53,7 +70,7 @@ class TemplateGroup extends Model {
 		return $this->getRelated('MemberGroups');
 	}
 
-	public function setMemberGroups(array $member_groups)
+	public function setMemberGroups($member_groups)
 	{
 		return $this->setRelated('MemberGroups', $member_groups);
 	}

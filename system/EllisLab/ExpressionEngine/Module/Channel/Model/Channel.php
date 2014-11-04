@@ -1,8 +1,8 @@
 <?php
 namespace EllisLab\ExpressionEngine\Module\Channel\Model;
 
-use EllisLab\ExpressionEngine\Model\Model as Model;
-use EllisLab\ExpressionEngine\Model\Interfaces\Content\ContentStructure
+use EllisLab\ExpressionEngine\Service\Model\Model as Model;
+use EllisLab\ExpressionEngine\Service\Model\Content\ContentStructure
 	as ContentStructure;
 
 

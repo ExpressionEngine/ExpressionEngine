@@ -1,7 +1,7 @@
 <?php
 namespace EllisLab\ExpressionEngine\Module\Channel\Model\Gateway;
 
-use EllisLab\ExpressionEngine\Model\Gateway\RowDataGateway;
+use EllisLab\ExpressionEngine\Service\Model\Gateway\RowDataGateway;
 
 class ChannelFieldGroupGateway extends RowDataGateway {
 	protected static $_table_name = 'field_groups';
