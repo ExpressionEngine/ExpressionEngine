@@ -31,6 +31,7 @@ use EllisLab\ExpressionEngine\Service\View\ViewFactory;
  */
 class FilterFactory {
 
+	protected $container;
 	protected $filters = array();
 
 	public function __construct(ViewFactory $view)
@@ -38,35 +39,34 @@ class FilterFactory {
 		$this->view = $view;
 	}
 
+	public function setDIContainer($container) // @TODO type hint
+	{
+		$this->container = $container;
+	}
+
 	public function add($name)
 	{
-		// @TODO use an AliasService
-		switch($name)
+		$args = func_get_args();
+		$name = array_shift($args);
+
+		$default = "createDefault{$name}";
+
+		if (method_exists($this, $default))
 		{
-			case 'Date':
-				$this->filters[] = new Filter\Date();
-				break;
-
-			case 'Perpage':
-				if (func_num_args() > 2)
-				{
-					$this->filters[] = new Filter\Perpage(func_get_arg(1), func_get_arg(2));
-				}
-				else
-				{
-					$this->filters[] = new Filter\Perpage(func_get_arg(1));
-				}
-				break;
-
-			case 'Site':
-				$this->filters[] = new Filter\Site();
-				break;
-
-			case 'Username':
-				$this->filters[] = new Filter\Username();
-				break;
-
+			$this->filters[] = call_user_func_array(
+				array($this, $default),
+				$args
+			);
 		}
+		elseif (isset($this->container))
+		{
+			$this->filters[] = $this->container->make($name, $args);
+		}
+		else
+		{
+			throw new \Exception('Unknown filter: ' . $name);
+		}
+
 		return $this;
 	}
 
@@ -97,8 +97,41 @@ class FilterFactory {
 		return $values;
 	}
 
+	protected function createDefaultDate()
+	{
+		return new Filter\Date();
+	}
+
+	protected function createDefaultSite()
+	{
+		return new Filter\Site();
+	}
+
+	protected function createDefaultPerpage($total, $lang_key = NULL)
+	{
+		if ( ! isset($lang_key))
+		{
+			return new Filter\Perpage($total);
+		}
+
+		return new Filter\Perpage($total, $lang_key);
+	}
+
+	protected function createDefaultUsername($usernames = array())
+	{
+		$filter = new Filter\Username($usernames);
+
+		if (TRUE || isset($this->container))
+		{
+			// $filter->setQuery($this->container->make('Model')->get('Member'));
+			$filter->setQuery(ee()->api->get('Member'));
+		}
+
+		return $filter;
+	}
+
 }
 // END CLASS
 
-/* End of file Date.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Service/Filter/Date.php */
+/* End of file FilterFactory.php */
+/* Location: ./system/EllisLab/ExpressionEngine/Service/Filter/FilterFactory.php */
