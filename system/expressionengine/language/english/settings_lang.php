@@ -1165,6 +1165,15 @@ $lang = array(
 'The following user groups are allowed to upload to this directory.</em>
 <em>Super Administrators are <b>always</b> allowed.',
 
+'upload_category_groups' =>
+'Allowed category groups',
+
+'upload_category_groups_desc' =>
+'The following category groups are allowed to upload to this directory.',
+
+'no_upload_dir_url' =>
+'You must submit the URL to your upload directory',
+
 'btn_create_directory' =>
 'Create Directory',
 

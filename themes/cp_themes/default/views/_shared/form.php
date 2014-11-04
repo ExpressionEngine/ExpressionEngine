@@ -22,7 +22,7 @@ if (isset($ajax_validate) && $ajax_validate == TRUE)
 {
 	$form_class .= ' ajax-validate';
 }?>
-<?=form_open($base_url, 'class="'.$form_class.'"')?>
+<?=form_open($base_url, 'class="'.$form_class.'"', (isset($form_hidden)) ? $form_hidden : array())?>
 	<?php $this->view('_shared/alerts')?>
 	<?php foreach ($sections as $name => $settings): ?>
 		<?php if (is_string($name)): ?>
