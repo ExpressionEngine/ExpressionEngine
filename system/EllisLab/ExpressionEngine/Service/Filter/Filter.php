@@ -43,17 +43,23 @@ abstract class Filter {
 
 	public function value()
 	{
-		if (is_null($this->selected_value))
+		if (isset($this->selected_value))
 		{
-			$raw_value = (ee()->input->post($this->name)) ?: ee()->input->get($this->name);
-			if ($raw_value === FALSE) {
-				return $this->default_value;
-			}
-
-			return $raw_value;
+			return $this->selected_value;
 		}
 
-		return $this->selected_value;
+		$value = $this->default_value;
+
+		if (isset($_POST[$this->name]))
+		{
+			$value = $_POST[$this->name];
+		}
+		elseif (isset($_GET[$this->name]))
+		{
+			$value = $_GET[$this->name];
+		}
+
+		return $value;
 	}
 
 	public function isValid()
