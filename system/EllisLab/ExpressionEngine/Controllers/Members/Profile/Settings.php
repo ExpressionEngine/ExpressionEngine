@@ -38,7 +38,65 @@ class Settings extends Profile {
 	 */
 	public function index()
 	{
+		ee()->load->model('language_model');
+
 		$vars['sections'] = array(
+			array(
+				array(
+					'title' => 'url',
+					'desc' => 'url_desc',
+					'fields' => array(
+						'url' => array('type' => 'text')
+					)
+				),
+				array(
+					'title' => 'location',
+					'desc' => 'location_desc',
+					'fields' => array(
+						'location' => array('type' => 'text')
+					)
+				),
+				array(
+					'title' => 'biography',
+					'desc' => 'biography_desc',
+					'fields' => array(
+						'biography' => array('type' => 'text')
+					)
+				),
+				array(
+					'title' => 'language',
+					'desc' => 'language_desc',
+					'fields' => array(
+						'lang' => array(
+							'type' => 'dropdown',
+							'choices' => ee()->language_model->language_pack_names(),
+							'value' => ee()->config->item('deft_lang') ?: 'english'
+						)
+					)
+				),
+				array(
+					'title' => 'preferences',
+					'desc' => 'preferences_desc',
+					'fields' => array(
+						'preferences' => array(
+							'type' => 'checkbox',
+							'choices' => array(
+								'allow_messages' => 'allow_messages',
+								'display_avatars' => 'display_avatars',
+								'display_emoticons' => 'display_emoticons'
+							)
+						),
+					)
+				)
+			),
+			'avatar' => array(
+				array(
+					'title' => 'current_avatar',
+					'desc' => 'current_avatar_desc',
+					'fields' => array(
+					)
+				),
+			)
 		);
 
 		ee()->view->base_url = cp_url($this->base_url);
@@ -46,7 +104,7 @@ class Settings extends Profile {
 		ee()->view->cp_page_title = lang('personal_settings');
 		ee()->view->save_btn_text = 'btn_save_settings';
 		ee()->view->save_btn_text_working = 'btn_save_settings_working';
-		ee()->cp->render('settings/form', $vars);
+		ee()->cp->render('account/edit_preferences', $vars);
 	}
 }
 // END CLASS
