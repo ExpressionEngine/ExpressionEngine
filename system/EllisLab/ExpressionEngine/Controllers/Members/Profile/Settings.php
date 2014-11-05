@@ -40,6 +40,39 @@ class Settings extends Profile {
 	{
 		ee()->load->model('language_model');
 
+		// Birthday Options
+		$birthday['days'] = array();
+
+		$birthday['years'][''] = lang('year');
+
+		for ($i = date('Y', $this->localize->now); $i > 1904; $i--)
+		{
+		  $birthday['years'][$i] = $i;
+		}
+
+		$birthday['months'] = array(
+			''	 => lang('month'),
+			'01' => lang('cal_january'),
+			'02' => lang('cal_february'),
+			'03' => lang('cal_march'),
+			'04' => lang('cal_april'),
+			'05' => lang('cal_mayl'),
+			'06' => lang('cal_june'),
+			'07' => lang('cal_july'),
+			'08' => lang('cal_august'),
+			'09' => lang('cal_september'),
+			'10' => lang('cal_october'),
+			'11' => lang('cal_november'),
+			'12' => lang('cal_december')
+		);
+
+		$birthday['days'][''] = lang('day');
+
+		for ($i = 1; $i <= 31; $i++)
+		{
+		  $birthday['days'][$i] = $i;
+		}
+
 		$vars['sections'] = array(
 			array(
 				array(
@@ -54,6 +87,15 @@ class Settings extends Profile {
 					'desc' => 'location_desc',
 					'fields' => array(
 						'location' => array('type' => 'text')
+					)
+				),
+				array(
+					'title' => 'birthday',
+					'desc' => 'birthday_desc',
+					'fields' => array(
+						'month' => array('type' => 'dropdown', 'choices' => $birthday['months']),
+						'days' => array('type' => 'dropdown', 'choices' => $birthday['days']),
+						'years' => array('type' => 'dropdown', 'choices' => $birthday['years'])
 					)
 				),
 				array(
@@ -94,8 +136,36 @@ class Settings extends Profile {
 					'title' => 'current_avatar',
 					'desc' => 'current_avatar_desc',
 					'fields' => array(
+						'avatar' => array(
+							'type' => 'html',
+							'content' => ''
+						)
 					)
 				),
+				array(
+					'title' => 'change_avatar',
+					'desc' => 'current_avatar_desc',
+					'fields' => array(
+						'avatar' => array(
+							'type' => 'radio',
+							'choices' => array(
+								'upload' => 'upload'
+							)
+						),
+						'avatar' => array(
+							'type' => 'radio',
+							'choices' => array(
+								'choose' => 'choose'
+							)
+						),
+						'avatar' => array(
+							'type' => 'radio',
+							'choices' => array(
+								'link' => 'link'
+							)
+						),
+					)
+				)
 			)
 		);
 
