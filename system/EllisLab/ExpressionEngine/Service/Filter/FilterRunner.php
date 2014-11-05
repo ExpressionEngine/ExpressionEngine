@@ -1,5 +1,5 @@
 <?php
-namespace EllisLab\ExpressionEngine\Service\CP\Filter;
+namespace EllisLab\ExpressionEngine\Service\Filter;
 
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
@@ -100,23 +100,10 @@ class FilterRunner {
 
 		foreach ($this->filters as $filter)
 		{
-			if (get_class($filter) != 'EllisLab\ExpressionEngine\Service\CP\Filter\Filter')
-			{
-				continue;
-			}
-
-			$filters[] = array(
-				'label'			=> $filter->label,
-				'name'			=> $filter->name,
-				'value'			=> $filter->getDisplayValue(),
-				'custom_value'	=> $filter->custom_value,
-				'placeholder'	=> $filter->placeholder,
-				'options'		=> $filter->getOptions($url),
-				'attributes'	=> $filter->attributes
-			);
+			$filters[] = $filter->render($url);
 		}
 
-		return ee()->load->view('_shared/filters', array('filters' => $filters), TRUE);
+		return ee()->load->view('_shared/filters/filters', array('filters' => $filters), TRUE);
 	}
 
 	/**
@@ -129,12 +116,7 @@ class FilterRunner {
 		$this->parameters = array();
 		foreach ($this->filters as $filter)
 		{
-			if (get_class($filter) != 'EllisLab\ExpressionEngine\Service\CP\Filter\Filter')
-			{
-				continue;
-			}
-
-			$value = $filter->getValue();
+			$value = $filter->value();
 
 			if ($value)
 			{
@@ -146,4 +128,4 @@ class FilterRunner {
 // END CLASS
 
 /* End of file FilterRunner.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Service/CP/Filter/FilterRunner.php */
+/* Location: ./system/EllisLab/ExpressionEngine/Service/Filter/FilterRunner.php */

@@ -43,6 +43,9 @@ class UploadDestination extends Model {
 		'NoAccess' => array(
 			'type' => 'many_to_many',
 			'model' => 'MemberGroup'
+		),
+		'FileDimension' => array(
+			'type' => 'one_to_many'
 		)
 	);
 
@@ -83,5 +86,15 @@ class UploadDestination extends Model {
 	public function setNoAccess($no_access)
 	{
 		return $this->setRelated('NoAccess', $no_access);
+	}
+
+	public function getFileDimension()
+	{
+		return $this->getRelated('FileDimension');
+	}
+
+	public function setFileDimension($file_dimension)
+	{
+		return $this->setRelated('FileDimension', $file_dimension);
 	}
 }

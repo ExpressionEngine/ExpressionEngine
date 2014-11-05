@@ -5,8 +5,8 @@ namespace EllisLab\ExpressionEngine\Controllers\Logs;
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use EllisLab\ExpressionEngine\Library\CP\Pagination;
-use EllisLab\ExpressionEngine\Service\CP\Filter\FilterFactory;
-use EllisLab\ExpressionEngine\Service\CP\Filter\FilterRunner;
+use EllisLab\ExpressionEngine\Service\Filter\FilterFactory;
+use EllisLab\ExpressionEngine\Service\View\ViewFactory;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -69,15 +69,14 @@ class Cp extends Logs {
 
 		if ($logs->count() > 10)
 		{
-			$fr = new FilterRunner($this->base_url, array(
-				FilterFactory::usernameFilter(),
-				FilterFactory::siteFilter(),
-				FilterFactory::dateFilter(),
-				FilterFactory::showFilter($logs->count(), 'all_cp_logs')
-			));
-			ee()->view->filters = $fr->render();
-			$this->base_url = $fr->getUrl();
-			$this->params = $fr->getParameters();
+			$filters = new FilterFactory(new ViewFactory('_shared/filters'));
+			$filters->add('Username')
+				->add('Site')
+				->add('Date')
+				->add('Perpage', $logs->count(), 'all_cp_logs');
+			ee()->view->filters = $filters->render($this->base_url);
+			$this->params = $filters->values();
+			$this->base_url->addQueryStringVariables($this->params);
 		}
 
 		$page = ((int) ee()->input->get('page')) ?: 1;
@@ -147,7 +146,7 @@ class Cp extends Logs {
 				)
 			);
 
-			$modals['modal-confirm-' . $log->id] = ee()->view->render('_shared/modal-confirm', $modal_vars, TRUE);
+			$modals['modal-confirm-' . $log->id] = ee()->view->render('_shared/modal_confirm_remove', $modal_vars, TRUE);
 		}
 
 		$pagination = new Pagination($this->params['perpage'], $count, $page);
@@ -166,7 +165,7 @@ class Cp extends Logs {
 			)
 		);
 
-		$modals['modal-confirm-all'] = ee()->view->render('_shared/modal-confirm', $modal_vars, TRUE);
+		$modals['modal-confirm-all'] = ee()->view->render('_shared/modal_confirm_remove', $modal_vars, TRUE);
 
 		$vars = array(
 			'rows' => $rows,
