@@ -36,7 +36,7 @@ class DependencyInjectionContainer {
 
 	protected $registry = array();
 	protected $substitutes = NULL;
-	protected static $singletonRegistry;
+	protected $singletonRegistry = array();
 
 	/**
 	 * Registers a dependency with the container
@@ -89,28 +89,12 @@ class DependencyInjectionContainer {
 	{
 	    $hash = spl_object_hash($object);
 
-	    // using a method call so its easy to mock up
-	    $registry = $this->getRegistry();
-
-	    if ( ! isset($registry->$hash))
+	    if ( ! isset($this->singletonRegistry[$hash]))
 	    {
-	        $registry->$hash = $object($this);
+	        $this->singletonRegistry[$hash] = $object($this);
 	    }
 
-	    return $registry->$hash;
-	}
-
-	private function getRegistry()
-	{
-		// using self instead of static to prevent extension.
-		// using an object to enforce references.
-
-		if ( ! is_object(self::$singletonRegistry))
-		{
-			self::$singletonRegistry = new StdClass;
-		}
-
-		return static::$singletonRegistry;
+	    return $this->singletonRegistry[$hash];
 	}
 
 	/**
