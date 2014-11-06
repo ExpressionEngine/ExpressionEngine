@@ -3,6 +3,7 @@ namespace EllisLab\ExpressionEngine\Service;
 
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
+use Closure;
 use \EllisLab\ExpressionEngine\Service\ServiceProvider;
 
 /**
@@ -55,11 +56,11 @@ class DependencyInjectionContainer extends ServiceProvider {
 	 *
 	 * @param string   $name   The name of the dependency in the form
 	 *                         Vendor:Namespace
-	 * @param \Closure $object The object to use
+	 * @param Closure $object The object to use
 	 * @param bool     $temp   Is this a temporary assignment?
 	 * @return void
 	 */
-	public function register($name, \Closure $object, $temp = FALSE)
+	public function register($name, Closure $object, $temp = FALSE)
 	{
 		if (strpos($name, ':') === FALSE)
 		{
@@ -83,7 +84,7 @@ class DependencyInjectionContainer extends ServiceProvider {
 		$registry[$name] = $object;
 	}
 
-	public function registerSingleton($name, \Closure $object)
+	public function registerSingleton($name, Closure $object)
 	{
 		$this->register($name, function($dic) use ($object)
 		{
@@ -96,10 +97,10 @@ class DependencyInjectionContainer extends ServiceProvider {
 	 *
 	 * @param string   $name   The name of the dependency in the form
 	 *                         Vendor:Namespace
-	 * @param \Closure $object The object to use
+	 * @param Closure $object The object to use
 	 * @return obj Returns this DependencyInjectionContainer object
 	 */
-	public function bind($name, \Closure $object)
+	public function bind($name, Closure $object)
 	{
 		$this->register($name, $object, TRUE);
 		return $this;
