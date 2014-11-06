@@ -234,10 +234,16 @@
 	}
 
 
-	function ee()
+	function ee($dep = NULL)
 	{
 		static $EE;
 		if ( ! $EE) $EE = get_instance();
+
+		if (isset($dep) && isset($EE->dic))
+		{
+			return $EE->dic->make($dep);
+		}
+
 		return $EE;
 	}
 
