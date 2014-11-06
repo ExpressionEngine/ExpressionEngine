@@ -120,18 +120,20 @@ class DependencyInjectionContainer extends ServiceProvider {
 			$name = 'EllisLab:' . $name;
 		}
 
-		if ( ! isset($this->registry[$name]))
-		{
-			throw new \RuntimeException('Attempt to access unregistered service ' . $name . ' in the DIC.');
-		}
-
 		if ( isset($this->substitutes) && isset($this->substitutes[$name]))
 		{
 			$object = $this->substitutes[$name];
 		}
 		else
 		{
-			$object = $this->registry[$name];
+			if ( ! isset($this->registry[$name]))
+			{
+				throw new \RuntimeException('Attempt to access unregistered service ' . $name . ' in the DIC.');
+			}
+			else
+			{
+				$object = $this->registry[$name];
+			}
 		}
 
 		$this->substitutes = NULL;
