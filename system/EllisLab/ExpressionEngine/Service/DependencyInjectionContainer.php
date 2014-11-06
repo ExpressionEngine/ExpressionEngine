@@ -74,7 +74,7 @@ class DependencyInjectionContainer extends ServiceProvider {
 	{
 		$this->register($name, function($di) use ($object)
 		{
-			return $this->singleton($object);
+			return $di->singleton($object);
 		});
 	}
 
