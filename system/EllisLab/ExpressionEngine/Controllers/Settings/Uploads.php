@@ -33,6 +33,8 @@ use EllisLab\ExpressionEngine\Library\CP;
  */
 class Uploads extends Settings {
 
+	private $image_sizes_errors = array();
+
 	/**
 	 * Constructor
 	 */
@@ -166,7 +168,7 @@ class Uploads extends Settings {
 			array(
 				'field' => 'url',
 				'label' => 'lang:upload_url',
-				'rules' => 'required|strip_tags|valid_xss_check|callback_not_http'
+				'rules' => 'required|strip_tags|valid_xss_check|callback_notHttp'
 			),
 			array(
 				'field' => 'allowed_types',
@@ -187,6 +189,11 @@ class Uploads extends Settings {
 				'field' => 'max_height',
 				'label' => 'lang:upload_image_height',
 				'rules' => 'integer'
+			),
+			array(
+				'field' => 'image_manipulations',
+				'label' => 'lang:constrain_or_crop',
+				'rules' => 'callback_validateImageSizes'
 			)
 		));
 		
@@ -207,6 +214,8 @@ class Uploads extends Settings {
 
 				ee()->functions->redirect($base_url);
 			}
+
+			ee()->view->set_message('issue', lang('settings_save_error'), lang('settings_save_error_desc'));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
@@ -353,6 +362,9 @@ class Uploads extends Settings {
 			)
 		);
 
+		// Grid validation results
+		ee()->view->image_sizes_errors = $this->image_sizes_errors;
+
 		// Category group assignment
 		$this->load->model('category_model');
 		$query = $this->category_model->get_category_groups('', FALSE, 1);
@@ -382,7 +394,7 @@ class Uploads extends Settings {
 		ee()->cp->add_js_script('file', 'cp/grid');
 		$settings = array(
 			'grid_min_rows' => 0,
-			'grid_max_rows' => 0
+			'grid_max_rows' => ''
 		);
 		ee()->javascript->output('EE.grid("table.grid-input-form", '.json_encode($settings).');');
 
@@ -395,8 +407,8 @@ class Uploads extends Settings {
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->base_url = $base_url;
 		ee()->view->cp_page_title = (empty($upload_id)) ? lang('create_upload_directory') : lang('edit_upload_directory');
-		ee()->view->save_btn_text = 'btn_create_directory';
-		ee()->view->save_btn_text_working = 'btn_create_directory_working';
+		ee()->view->save_btn_text = (empty($upload_id)) ? 'btn_create_directory' : 'btn_edit_directory';
+		ee()->view->save_btn_text_working = (empty($upload_id)) ? 'btn_create_directory_working' : 'btn_edit_directory_working';
 
 		ee()->cp->set_breadcrumb(cp_url('files'), lang('file_manager'));
 		ee()->cp->set_breadcrumb(cp_url('settings/uploads'), lang('upload_directories'));
@@ -407,12 +419,11 @@ class Uploads extends Settings {
 	/**
 	 * Not Http
 	 *
-	 * Custom validation
+	 * Custom validation, not for public access
 	 *
-	 * @access	private
-	 * @return	boolean
+	 * @return	boolean	Whether or not it passed validation
 	 */
-	public function not_http($str = '')
+	public function notHttp($str = '')
 	{
 		if ($str == 'http://' OR $str == '')
 		{
@@ -421,6 +432,45 @@ class Uploads extends Settings {
 		}
 
 		return TRUE;
+	}
+
+	/**
+	 * Custom validation for the image sizes Grid
+	 *
+	 * @return	boolean	Whether or not it passed validation
+	 */
+	public function validateImageSizes($image_sizes = NULL)
+	{
+		if (empty($image_sizes))
+		{
+			return TRUE;
+		}
+
+		foreach ($image_sizes['rows'] as $row_id => $columns)
+		{
+			// Column names must contain only alpha-numeric characters and no spaces
+			if (preg_match('/[^a-z0-9\-\_]/i', $columns['name']))
+			{
+				$this->image_sizes_errors[$row_id]['name'] = lang('alpha_dash');
+			}
+
+			// Double-check for form tampering
+			if ( ! in_array($columns['type'], array('crop', 'constrain')))
+			{
+				$this->image_sizes_errors[$row_id]['name'] = lang('required');
+			}
+
+			// Make sure height and width are positive numbers
+			foreach (array('width', 'height') as $dimension)
+			{
+				if ( ! is_numeric($columns[$dimension]) OR $columns[$dimension] < 0)
+				{
+					$this->image_sizes_errors[$row_id][$dimension] = lang('is_natural');
+				}
+			}
+		}
+
+		return empty($this->image_sizes_errors);
 	}
 
 	/**
@@ -469,7 +519,9 @@ class Uploads extends Settings {
 		// Populate existing image manipulations
 		if ($upload_destination !== NULL)
 		{
-			$sizes = $upload_destination->getFileDimension();
+			// Relationships don't work, only returns if ID == 1
+			//$sizes = $upload_destination->getFileDimension();
+			$sizes = ee()->api->get('FileDimension')->filter('upload_location_id', $upload_destination->id)->all();
 
 			if ($sizes->count() != 0)
 			{
@@ -571,8 +623,8 @@ class Uploads extends Settings {
 		$upload_destination->url = ee()->input->post('url');
 		$upload_destination->max_height = ee()->input->post('max_height');
 		$upload_destination->max_width = ee()->input->post('max_width');
-		$upload_destination->max_size = ee()->input->post('max_width');
-		$upload_destination->allowed_types = ee()->input->post('max_width');
+		$upload_destination->max_size = ee()->input->post('max_size');
+		$upload_destination->allowed_types = ee()->input->post('allowed_types');
 
 		if (substr($server_path, -1) != '/' AND substr($server_path, -1) != '\\')
 		{
@@ -612,7 +664,7 @@ class Uploads extends Settings {
 			$upload_destination->cat_group = '';
 		}
 
-		$access = ee()->input->post('upload_member_groups');
+		$access = ee()->input->post('upload_member_groups') ?: array();
 
 		ee()->load->model('member_model');
 		$groups = ee()->member_model->get_upload_groups()->result();
@@ -625,36 +677,73 @@ class Uploads extends Settings {
 				$no_access[] = $group->group_id;
 			}
 		}
-
+		
 		if ( ! empty($no_access))
 		{
 			$groups = ee()->api->get('MemberGroup')->filter('group_id', 'IN', $no_access)->all();
-			$upload_destination->setNoAccess($groups);
+			//$upload_destination->setNoAccess($groups);
 		}
 		
 		$upload_destination->save();
 
-		/*$image_sizes = ee()->input->post('image_manipulations');
-		$updated_rows = array();
-		$new_rows = array();
-
-		foreach ($images_sizes['rows'] as $row_id => $columns)
+		// TODO: Delete when relationships (setNoAccess) works
+		if (count($no_access) > 0)
 		{
-			// New rows
-			if (strpos($row_id, 'new_row_') !== FALSE)
+			foreach($no_access as $member_group)
 			{
-				$columns['entry_id'] = $entry_id;
-				$new_rows[] = $columns;
+				ee()->db->insert(
+					'upload_no_access',
+					array(
+						'upload_id'		=> $upload_destination->id,
+						'upload_loc'	=> 'cp',
+						'member_group'	=> $member_group
+					)
+				);
 			}
-			// Existing rows
-			elseif (strpos($row_id, 'row_id_') !== FALSE)
-			{
-				$columns['row_id'] = str_replace('row_id_', '', $row_id);
-				$row_ids[] = $columns['row_id'];
+		}
 
-				$updated_rows[] = $columns;
+		$image_sizes = ee()->input->post('image_manipulations');
+		$row_ids = array();
+
+		if ( ! empty($image_sizes))
+		{
+			foreach ($image_sizes['rows'] as $row_id => $columns)
+			{
+				// Existing rows
+				if (strpos($row_id, 'row_id_') !== FALSE)
+				{
+					$image_size = ee()->api->get('FileDimension')
+						->filter('id', str_replace('row_id_', '', $row_id))
+						->first();
+				}
+				else
+				{
+					$image_size = ee()->api->make('FileDimension');
+					$image_size->upload_location_id = $upload_destination->id;
+				}
+
+				$image_size->title = $columns['name'];
+				$image_size->short_name = $columns['name'];
+				$image_size->resize_type = $columns['type'];
+				$image_size->width = $columns['width'];
+				$image_size->height = $columns['height'];
+				$image_size->save();
+
+				$row_ids[] = $image_size->id;
 			}
-		}*/
+		}
+
+		// Delete deleted image size rows
+		$image_sizes = ee()->api->get('FileDimension');
+
+		if ( ! empty($row_ids))
+		{
+			$image_sizes->filter('id', 'NOT IN', $row_ids);
+		}
+
+		$image_sizes->filter('upload_location_id', $upload_destination->id)->delete();
+
+		return TRUE;
 	}
 }
 // END CLASS
