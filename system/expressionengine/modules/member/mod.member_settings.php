@@ -414,7 +414,7 @@ class Member_settings extends Member {
 			$lcond	= substr($cond, 0, strpos($cond, ' '));
 			$rcond	= substr($cond, strpos($cond, ' '));
 
-			if ( isset($row[$val['3']]))
+			if (array_key_exists($val['3'], $row))
 			{
 				$lcond = str_replace($val['3'], "\$row['".$val['3'] ."']", $lcond);
 				$cond = $lcond.' '.$rcond;
