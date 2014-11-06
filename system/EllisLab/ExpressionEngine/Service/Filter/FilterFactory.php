@@ -81,7 +81,11 @@ class FilterFactory {
 
 		foreach ($this->filters as $filter)
 		{
-			$filters[] = $filter->render($this->view, $url);
+			$html = $filter->render($this->view, $url);
+			if ( ! empty($html))
+			{
+				$filters[] = $html;
+			}
 		}
 
 		return $this->view->make('filters')->render(array('filters' => $filters));
