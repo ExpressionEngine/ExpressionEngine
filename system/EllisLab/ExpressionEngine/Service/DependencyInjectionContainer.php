@@ -38,20 +38,6 @@ class DependencyInjectionContainer extends ServiceProvider {
 	protected $substitutes = NULL;
 
 	/**
-	 * Construct the DIC, optionally initialize it from another DIC's registry.
-	 *
-	 * @param	DependencyInjectionContainer	$di	(Optional) If provided, will
-	 * 		be used to initialize this DIC.
-	 */
-	public function __construct(DependencyInjectionContainer $di = NULL)
-	{
-		if ( isset ($di))
-		{
-			$this->registry = $di->registry;
-		}
-	}
-
-	/**
 	 * Registers a dependency with the container
 	 *
 	 * @param string   $name   The name of the dependency in the form
