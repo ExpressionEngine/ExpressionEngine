@@ -111,8 +111,13 @@ class EE_Core {
 
 		ee()->di->register('Model', function($di)
 		{
-			$model_alias_path = APPPATH . 'config/model_aliases.php';
-			$model_alias_service = new \EllisLab\ExpressionEngine\Service\AliasService('Model', $model_alias_path);
+			static $model_alias_service;
+
+			if (is_null($model_alias_service))
+			{
+				$model_alias_path = APPPATH . 'config/model_aliases.php';
+				$model_alias_service = new \EllisLab\ExpressionEngine\Service\AliasService('Model', $model_alias_path);
+			}
 
 			return $di->singleton(function($di) use ($model_alias_service)
 			{
