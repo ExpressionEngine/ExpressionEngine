@@ -75,15 +75,15 @@ class Search extends Logs {
 
 		if ($logs->count() > 10)
 		{
-			$fr = new FilterRunner($this->base_url, array(
-				FilterFactory::usernameFilter(),
-				FilterFactory::siteFilter(),
-				FilterFactory::dateFilter(),
-				FilterFactory::showFilter($logs->count(), 'all_search_logs')
-			));
-			ee()->view->filters = $fr->render();
-			$this->base_url = $fr->getUrl();
-			$this->params = $fr->getParameters();
+			$filters = ee('Filter')
+				->setDIContainer(ee()->dic)
+				->add('Username')
+				->add('Site')
+				->add('Date')
+				->add('Perpage', $logs->count(), 'all_search_logs');
+			ee()->view->filters = $filters->render($this->base_url);
+			$this->params = $filters->values();
+			$this->base_url->addQueryStringVariables($this->params);
 		}
 
 		$page = ((int) ee()->input->get('page')) ?: 1;

@@ -102,12 +102,12 @@ class Throttle extends Logs {
 
 			if ($count > 10)
 			{
-				$fr = new FilterRunner($this->base_url, array(
-					FilterFactory::showFilter($count, 'all_throttle_logs')
-				));
-				ee()->view->filters = $fr->render();
-				$this->base_url = $fr->getUrl();
-				$this->params = $fr->getParameters();
+				$filters = ee('Filter')
+					->setDIContainer(ee()->dic)
+					->add('Perpage', $count, 'all_throttle_logs');
+				ee()->view->filters = $filters->render($this->base_url);
+				$this->params = $filters->values();
+				$this->base_url->addQueryStringVariables($this->params);
 			}
 
 			$page = ((int) ee()->input->get('page')) ?: 1;
