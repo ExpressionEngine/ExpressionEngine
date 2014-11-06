@@ -164,5 +164,29 @@ require $project_base."EllisLab/ExpressionEngine/Service/Autoloader.php";
 $autoloader = new \EllisLab\ExpressionEngine\Service\Autoloader();
 $autoloader->register();
 
-$dependencies = new \EllisLab\ExpressionEngine\Service\Dependencies();
-$api = $dependencies->getModelFactory();
+// Setup Dependency Injection Container
+ee()->di = new \EllisLab\ExpressionEngine\Service\DependencyInjectionContainer();
+
+ee()->di->register('Model', function($di)
+{
+	$model_alias_path = APPPATH . 'config/model_aliases.php';
+	$model_alias_service = new \EllisLab\ExpressionEngine\Service\AliasService('Model', $model_alias_path);
+
+	return $di->singleton(function($di) use ($model_alias_service)
+	{
+        return new \EllisLab\ExpressionEngine\Service\Model\Factory(
+            $model_alias_service,
+            $di->make('Validation')
+        );
+	});
+});
+
+ee()->di->register('Validation', function($di)
+{
+	return $di->singleton(function($di)
+	{
+        return new \EllisLab\ExpressionEngine\Service\Validation\Factory();
+	});
+});
+
+$api = ee()->di->make('Model');
