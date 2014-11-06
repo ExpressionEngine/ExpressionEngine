@@ -132,7 +132,9 @@ class EE_Core {
 
 		ee()->di->register('Filter', function($di)
 		{
-			return new \EllisLab\ExpressionEngine\Service\Filter\FilterFactory($dic->make('View', '_shared/filters'));
+			$filters = new \EllisLab\ExpressionEngine\Service\Filter\FilterFactory($di->make('View', '_shared/filters'));
+			$filters->setDIContainer($di);
+			return $filters;
 		});
 
 		// Setup API model factory

@@ -77,7 +77,6 @@ class Email extends Logs {
 		if ($logs->count() > 10)
 		{
 			$filters = ee('Filter')
-				->setDIContainer(ee()->di)
 				->add('Username')
 				->add('Date')
 				->add('Perpage', $logs->count(), 'all_email_logs');
