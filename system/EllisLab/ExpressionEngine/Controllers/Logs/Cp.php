@@ -68,7 +68,7 @@ class Cp extends Logs {
 		if ($logs->count() > 10)
 		{
 			$filters = ee('Filter')
-				->setDIContainer(ee()->dic)
+				->setDIContainer(ee()->di)
 				->add('Username')
 				->add('Site')
 				->add('Date')

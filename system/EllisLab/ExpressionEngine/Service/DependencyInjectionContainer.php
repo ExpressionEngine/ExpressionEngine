@@ -40,14 +40,14 @@ class DependencyInjectionContainer extends ServiceProvider {
 	/**
 	 * Construct the DIC, optionally initialize it from another DIC's registry.
 	 *
-	 * @param	DependencyInjectionContainer	$dic	(Optional) If provided, will
+	 * @param	DependencyInjectionContainer	$di	(Optional) If provided, will
 	 * 		be used to initialize this DIC.
 	 */
-	public function __construct(DependencyInjectionContainer $dic = NULL)
+	public function __construct(DependencyInjectionContainer $di = NULL)
 	{
-		if ( isset ($dic))
+		if ( isset ($di))
 		{
-			$this->registry = $dic->registry;
+			$this->registry = $di->registry;
 		}
 	}
 
@@ -86,7 +86,7 @@ class DependencyInjectionContainer extends ServiceProvider {
 
 	public function registerSingleton($name, Closure $object)
 	{
-		$this->register($name, function($dic) use ($object)
+		$this->register($name, function($di) use ($object)
 		{
 			return $this->singleton($object);
 		});

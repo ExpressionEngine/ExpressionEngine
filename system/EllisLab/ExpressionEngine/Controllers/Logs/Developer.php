@@ -124,7 +124,7 @@ class Developer extends Logs {
 		if ($logs->count() > 10)
 		{
 			$filters = ee('Filter')
-				->setDIContainer(ee()->dic)
+				->setDIContainer(ee()->di)
 				->add('Date')
 				->add('Perpage', $logs->count(), 'all_developer_logs');
 			ee()->view->filters = $filters->render($this->base_url);
