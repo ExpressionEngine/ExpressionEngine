@@ -41,13 +41,13 @@ class DependencyInjectionContainer {
 	/**
 	 * Registers a dependency with the container
 	 *
-	 * @param string   $name   The name of the dependency in the form
-	 *                         Vendor:Namespace
-	 * @param Closure $object The object to use
-	 * @param bool     $temp   Is this a temporary assignment?
+	 * @param string      $name   The name of the dependency in the form
+	 *                            Vendor:Namespace
+	 * @param Closure|obj $object The object to use
+	 * @param bool        $temp   Is this a temporary assignment?
 	 * @return void
 	 */
-	public function register($name, Closure $object, $temp = FALSE)
+	public function register($name, $object, $temp = FALSE)
 	{
 		if (strpos($name, ':') === FALSE)
 		{
@@ -74,12 +74,12 @@ class DependencyInjectionContainer {
 	/**
 	 * Temporarily bind a dependency. Calls $this->register with $temp as TRUE
 	 *
-	 * @param string   $name   The name of the dependency in the form
-	 *                         Vendor:Namespace
-	 * @param Closure $object The object to use
+	 * @param string      $name   The name of the dependency in the form
+	 *                            Vendor:Namespace
+	 * @param Closure|obj $object The object to use
 	 * @return obj Returns this DependencyInjectionContainer object
 	 */
-	public function bind($name, Closure $object)
+	public function bind($name, $object)
 	{
 		$this->register($name, $object, TRUE);
 		return $this;
@@ -159,8 +159,13 @@ class DependencyInjectionContainer {
 
 		$this->substitutes = NULL;
 
-		array_unshift($arguments, $this);
-		return call_user_func_array($object, $arguments);
+		if ($object instanceof Closure)
+		{
+			array_unshift($arguments, $this);
+			return call_user_func_array($object, $arguments);
+		}
+
+		return $object;
 	}
 
 }
