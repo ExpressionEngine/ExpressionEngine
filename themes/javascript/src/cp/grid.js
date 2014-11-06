@@ -143,12 +143,14 @@ Grid.Publish.prototype = {
 	 */
 	_toggleRowManipulationButtons: function()
 	{
-		var rowCount = this._getRows().size();
+		var rowCount = this._getRows().size(),
+			addButton = this.root.parents('fieldset').find('.toolbar .add a');
+
+		// Show add button below field when there are more than zero rows
+		addButton.toggle(rowCount > 0);
 
 		if (this.settings.grid_max_rows !== '')
 		{
-			var addButton = this.root.parents('fieldset').find('.toolbar .add a');
-
 			// Show add button if row count is below the max rows setting
 			addButton.toggle(rowCount < this.settings.grid_max_rows);
 		}

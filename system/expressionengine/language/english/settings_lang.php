@@ -1180,6 +1180,12 @@ $lang = array(
 'btn_create_directory_working' =>
 'Creating...',
 
+'btn_edit_directory' =>
+'Edit Directory',
+
+'btn_edit_directory_working' =>
+'Saving...',
+
 ''=>''
 );
 
