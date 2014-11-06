@@ -152,6 +152,67 @@ class Uploads extends Settings {
 	 */
 	private function form($upload_id = NULL)
 	{
+		ee()->form_validation->set_rules(array(
+			array(
+				'field' => 'name',
+				'label' => 'lang:upload_name',
+				'rules' => 'required|strip_tags|valid_xss_check'
+			),
+			array(
+				'field' => 'server_path',
+				'label' => 'lang:upload_path',
+				'rules' => 'required|strip_tags|valid_xss_check|valid_path'
+			),
+			array(
+				'field' => 'url',
+				'label' => 'lang:upload_url',
+				'rules' => 'required|strip_tags|valid_xss_check|callback_not_http'
+			),
+			array(
+				'field' => 'allowed_types',
+				'label' => 'lang:upload_allowed_types',
+				'rules' => 'required|strip_tags|valid_xss_check'
+			),
+			array(
+				'field' => 'max_size',
+				'label' => 'lang:upload_file_size',
+				'rules' => 'integer'
+			),
+			array(
+				'field' => 'max_width',
+				'label' => 'lang:upload_image_width',
+				'rules' => 'integer'
+			),
+			array(
+				'field' => 'max_height',
+				'label' => 'lang:upload_image_height',
+				'rules' => 'integer'
+			)
+		));
+		
+		$base_url = 'settings/uploads/';
+		$base_url .= ($upload_id) ? 'edit/' . $upload_id : 'new';
+		$base_url = cp_url($base_url);
+
+		if (AJAX_REQUEST)
+		{
+			ee()->form_validation->run_ajax();
+			exit;
+		}
+		elseif (ee()->form_validation->run() !== FALSE)
+		{
+			if ($this->saveUploadPreferences($upload_id))
+			{
+				ee()->view->set_message('success', lang('preferences_updated'), lang('preferences_updated_desc'), TRUE);
+
+				ee()->functions->redirect($base_url);
+			}
+		}
+		elseif (ee()->form_validation->errors_exist())
+		{
+			ee()->view->set_message('issue', lang('settings_save_error'), lang('settings_save_error_desc'));
+		}
+
 		// Get the upload directory
 		$upload_dir = array();
 		if ( ! empty($upload_id))
@@ -251,9 +312,14 @@ class Uploads extends Settings {
 				)
 			)
 		);
+
+		$upload_destination = ee()->api->get('UploadDestination')
+			->with('FileDimension')
+			->filter('id', $upload_id)
+			->first();
 	
 		// Image manipulations Grid
-		$grid = $this->getImageSizesGrid($upload_id);
+		$grid = $this->getImageSizesGrid($upload_destination);
 
 		$vars['sections']['upload_image_manipulations'] = array(
 			array(
@@ -271,7 +337,7 @@ class Uploads extends Settings {
 		);
 
 		// Member IDs NOT in $no_access have access...
-		list($allowed_groups, $member_groups) = $this->getAllowedGroups($upload_id);
+		list($allowed_groups, $member_groups) = $this->getAllowedGroups($upload_destination);
 
 		$vars['sections']['upload_privileges'] = array(
 			array(
@@ -287,64 +353,29 @@ class Uploads extends Settings {
 			)
 		);
 
-		ee()->form_validation->set_rules(array(
-			array(
-				'field' => 'name',
-				'label' => 'lang:upload_name',
-				'rules' => 'required|strip_tags|valid_xss_check'
-			),
-			array(
-				'field' => 'server_path',
-				'label' => 'lang:upload_path',
-				'rules' => 'required|strip_tags|valid_xss_check|valid_path'
-			),
-			array(
-				'field' => 'url',
-				'label' => 'lang:upload_url',
-				'rules' => 'required|strip_tags|valid_xss_check|callback_not_http'
-			),
-			array(
-				'field' => 'allowed_types',
-				'label' => 'lang:upload_allowed_types',
-				'rules' => 'required'
-			),
-			array(
-				'field' => 'max_size',
-				'label' => 'lang:upload_file_size',
-				'rules' => 'integer'
-			),
-			array(
-				'field' => 'max_width',
-				'label' => 'lang:upload_image_width',
-				'rules' => 'integer'
-			),
-			array(
-				'field' => 'max_height',
-				'label' => 'lang:upload_image_height',
-				'rules' => 'integer'
-			)
-		));
-		
-		$base_url = cp_url('settings/uploads/'.$upload_id ?: '');
+		// Category group assignment
+		$this->load->model('category_model');
+		$query = $this->category_model->get_category_groups('', FALSE, 1);
 
-		if (AJAX_REQUEST)
+		if ($query->num_rows() > 0)
 		{
-			ee()->form_validation->run_ajax();
-			exit;
-		}
-		elseif (ee()->form_validation->run() !== FALSE)
-		{
-			if ($this->saveUploadPreferences($upload_id))
+			foreach ($query->result() as $row)
 			{
-				ee()->view->set_message('success', lang('preferences_updated'), lang('preferences_updated_desc'), TRUE);
-
-				ee()->functions->redirect($base_url);
+				$cat_group_options[$row->group_id] = $row->group_name;
 			}
 		}
-		elseif (ee()->form_validation->errors_exist())
-		{
-			ee()->view->set_message('issue', lang('settings_save_error'), lang('settings_save_error_desc'));
-		}
+
+		$vars['sections']['upload_privileges'][] = array(
+			'title' => 'upload_category_groups',
+			'desc' => 'upload_category_groups_desc',
+			'fields' => array(
+				'cat_group' => array(
+					'type' => 'checkbox',
+					'choices' => $cat_group_options,
+					'value' => ($upload_destination) ? explode('|', $upload_destination->cat_group) : array()
+				)
+			)
+		);
 
 		// Load Grid assets (make into service?)
 		ee()->cp->add_to_head(ee()->view->head_link('css/v3/grid.css'));
@@ -354,6 +385,12 @@ class Uploads extends Settings {
 			'grid_max_rows' => 0
 		);
 		ee()->javascript->output('EE.grid("table.grid-input-form", '.json_encode($settings).');');
+
+		// Set current name hidden input for duplicate-name-checking in validation later
+		if ($upload_destination !== NULL)
+		{
+			ee()->view->form_hidden = array('cur_name' => $upload_destination->name);
+		}
 
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->base_url = $base_url;
@@ -368,12 +405,31 @@ class Uploads extends Settings {
 	}
 
 	/**
+	 * Not Http
+	 *
+	 * Custom validation
+	 *
+	 * @access	private
+	 * @return	boolean
+	 */
+	public function not_http($str = '')
+	{
+		if ($str == 'http://' OR $str == '')
+		{
+			ee()->form_validation->set_message('not_http', lang('no_upload_dir_url'));
+			return FALSE;
+		}
+
+		return TRUE;
+	}
+
+	/**
 	 * Sets up a GridInput object populated with image manipulation data
 	 *
 	 * @param	int	$upload_id		ID of upload destination to get image sizes for
 	 * @return	GridInput object
 	 */
-	private function getImageSizesGrid($upload_id = NULL)
+	private function getImageSizesGrid($upload_destination = NULL)
 	{
 		// Image manipulations Grid
 		$grid = CP\GridInput::create(array(
@@ -411,13 +467,9 @@ class Uploads extends Settings {
 		));
 
 		// Populate existing image manipulations
-		if ( ! empty($upload_id))
+		if ($upload_destination !== NULL)
 		{
-			$sizes = ee()->api->get('UploadDestination')
-				->with('FileDimension')
-				->filter('id', $upload_id)
-				->first()
-				->getFileDimension();
+			$sizes = $upload_destination->getFileDimension();
 
 			if ($sizes->count() != 0)
 			{
@@ -455,10 +507,10 @@ class Uploads extends Settings {
 	 * upload destination in the form of id => title, along with an
 	 * array of all member groups in the same format
 	 *
-	 * @param	int	$upload_id		ID of upload destination to get image sizes for
-	 * @return	array				Array containing each of the arrays mentioned above
+	 * @param	model	$upload_destination		Model object for upload destination
+	 * @return	array	Array containing each of the arrays mentioned above
 	 */
-	private function getAllowedGroups($upload_id = NULL)
+	private function getAllowedGroups($upload_destination = NULL)
 	{
 		ee()->load->model('member_model');
 		$groups = ee()->member_model->get_upload_groups()->result();
@@ -470,14 +522,9 @@ class Uploads extends Settings {
 		}
 
 		$no_access = array();
-		if ( ! empty($upload_id))
+		if ($upload_destination !== NULL)
 		{
-			$no_access = ee()->api->get('UploadDestination')
-				->with('NoAccess')
-				->filter('id', $upload_id)
-				->first()
-				->getNoAccess()
-				->pluck('group_id');
+			$no_access = $upload_destination->getNoAccess()->pluck('group_id');
 		}
 
 		$allowed_groups = array_diff(array_keys($member_groups), $no_access);
@@ -487,36 +534,57 @@ class Uploads extends Settings {
 	}
 
 	/**
-	 * Returns an array of member group IDs allowed to upload to this
-	 * upload destination in the form of id => title, along with an
-	 * array of all member groups in the same format
+	 * Saves the upload destination or reports any errors from saving
 	 *
-	 * @param	int		$id	ID of upload destination to get image sizes for
-	 * @return	bool		Success or failure
+	 * @param	int		$id	ID of upload destination to save
+	 * @return	bool	Success or failure
 	 */
 	private function saveUploadPreferences($id = NULL)
 	{
-		ee()->load->model('admin_model');
-
 		// If the $id variable is present we are editing an
 		// existing field, otherwise we are creating a new one
-
 		$edit = ! empty($id);
+
+		if ($edit)
+		{
+			$upload_destination = ee()->api->get('UploadDestination')
+				->with('FileDimension')
+				->filter('id', $id)
+				->first();
+
+			// Reset upload destination access, we'll add it back later
+			// TODO: Switch to models when we are able to delete relationships
+			// based on pivot table
+			ee()->db->delete('upload_no_access', array('upload_id' => $id));
+		}
+		else
+		{
+			$upload_destination = ee()->api->make('UploadDestination');
+			$upload_destination->site_id = ee()->config->item('site_id');
+		}
 
 		$server_path = ee()->input->post('server_path');
 		$url = ee()->input->post('url');
 
+		$upload_destination->name = ee()->input->post('name');
+		$upload_destination->server_path = ee()->input->post('server_path');
+		$upload_destination->url = ee()->input->post('url');
+		$upload_destination->max_height = ee()->input->post('max_height');
+		$upload_destination->max_width = ee()->input->post('max_width');
+		$upload_destination->max_size = ee()->input->post('max_width');
+		$upload_destination->allowed_types = ee()->input->post('max_width');
+
 		if (substr($server_path, -1) != '/' AND substr($server_path, -1) != '\\')
 		{
-			$_POST['server_path'] .= '/';
+			$upload_destination->server_path .= '/';
 		}
 
 		if (substr($url, -1) != '/')
 		{
-			$_POST['url'] .= '/';
+			$upload_destination->url .= '/';
 		}
 
-		$error = array();
+		ee()->load->model('admin_model');
 
 		// Is the name taken?
 		if (
@@ -530,7 +598,63 @@ class Uploads extends Settings {
 			show_error(lang('duplicate_dir_name'));
 		}
 
-		$id = ee()->input->get_post('id');
+		if ((count($this->input->post('cat_group')) > 0) && $this->input->post('cat_group'))
+		{
+			if ($_POST['cat_group'][0] == 0)
+			{
+				unset($_POST['cat_group'][0]);
+			}
+
+			$upload_destination->cat_group = implode('|', $this->input->post('cat_group'));
+		}
+		else
+		{
+			$upload_destination->cat_group = '';
+		}
+
+		$access = ee()->input->post('upload_member_groups');
+
+		ee()->load->model('member_model');
+		$groups = ee()->member_model->get_upload_groups()->result();
+
+		$no_access = array();
+		foreach ($groups as $group)
+		{
+			if ( ! in_array($group->group_id, $access))
+			{
+				$no_access[] = $group->group_id;
+			}
+		}
+
+		if ( ! empty($no_access))
+		{
+			$groups = ee()->api->get('MemberGroup')->filter('group_id', 'IN', $no_access)->all();
+			$upload_destination->setNoAccess($groups);
+		}
+		
+		$upload_destination->save();
+
+		/*$image_sizes = ee()->input->post('image_manipulations');
+		$updated_rows = array();
+		$new_rows = array();
+
+		foreach ($images_sizes['rows'] as $row_id => $columns)
+		{
+			// New rows
+			if (strpos($row_id, 'new_row_') !== FALSE)
+			{
+				$columns['entry_id'] = $entry_id;
+				$new_rows[] = $columns;
+			}
+			// Existing rows
+			elseif (strpos($row_id, 'row_id_') !== FALSE)
+			{
+				$columns['row_id'] = str_replace('row_id_', '', $row_id);
+				$row_ids[] = $columns['row_id'];
+
+				$updated_rows[] = $columns;
+			}
+		}*/
 	}
 }
 // END CLASS
