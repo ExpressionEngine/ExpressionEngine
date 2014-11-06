@@ -722,7 +722,7 @@ class Member_settings extends Member {
 				$lcond	= substr($cond, 0, strpos($cond, ' '));
 				$rcond	= substr($cond, strpos($cond, ' '));
 
-				if (isset($fnames[$val['3']]))
+				if (array_key_exists($val['3'], $fnames))
 				{
 					$lcond = str_replace($val['3'], "\$result_row['m_field_id_".$fnames[$val['3']]."']", $lcond);
 
