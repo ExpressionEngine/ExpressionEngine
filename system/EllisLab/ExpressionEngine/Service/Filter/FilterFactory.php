@@ -6,6 +6,7 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 use EllisLab\ExpressionEngine\Library\CP\URL;
 use EllisLab\ExpressionEngine\Service\Filter;
 use EllisLab\ExpressionEngine\Service\View\ViewFactory;
+use EllisLab\ExpressionEngine\Service\DependencyInjectionContainer;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -39,9 +40,10 @@ class FilterFactory {
 		$this->view = $view;
 	}
 
-	public function setDIContainer($container) // @TODO type hint
+	public function setDIContainer(DependencyInjectionContainer $container)
 	{
 		$this->container = $container;
+		return $this;
 	}
 
 	public function add($name)
@@ -121,10 +123,9 @@ class FilterFactory {
 	{
 		$filter = new Filter\Username($usernames);
 
-		if (TRUE || isset($this->container))
+		if (isset($this->container))
 		{
-			// $filter->setQuery($this->container->make('Model')->get('Member'));
-			$filter->setQuery(ee()->api->get('Member'));
+			$filter->setQuery($this->container->make('Model')->get('Member'));
 		}
 
 		return $filter;
