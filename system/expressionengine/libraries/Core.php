@@ -109,20 +109,26 @@ class EE_Core {
 		// Setup Dependency Injection Container
 		ee()->di = new \EllisLab\ExpressionEngine\Service\DependencyInjectionContainer();
 
-		ee()->di->registerSingleton('Model', function($di)
+		ee()->di->register('Model', function($di)
 		{
 			$model_alias_path = APPPATH . 'config/model_aliases.php';
 			$model_alias_service = new \EllisLab\ExpressionEngine\Service\AliasService('Model', $model_alias_path);
 
-            return new \EllisLab\ExpressionEngine\Service\Model\Factory(
-                $model_alias_service,
-                $di->make('Validation')
-            );
+			return $di->singleton(function($di) use ($model_alias_service)
+			{
+	            return new \EllisLab\ExpressionEngine\Service\Model\Factory(
+	                $model_alias_service,
+	                $di->make('Validation')
+	            );
+			});
 		});
 
-		ee()->di->registerSingleton('Validation', function($di)
+		ee()->di->register('Validation', function($di)
 		{
-            return new \EllisLab\ExpressionEngine\Service\Validation\Factory();
+			return $di->singleton(function($di)
+			{
+	            return new \EllisLab\ExpressionEngine\Service\Validation\Factory();
+			});
 		});
 
 		ee()->di->register('View', function($di, $basepath = '')

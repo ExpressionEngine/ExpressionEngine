@@ -4,7 +4,7 @@ namespace EllisLab\ExpressionEngine\Service;
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use Closure;
-use \EllisLab\ExpressionEngine\Service\ServiceProvider;
+use StdClass;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -32,10 +32,11 @@ use \EllisLab\ExpressionEngine\Service\ServiceProvider;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class DependencyInjectionContainer extends ServiceProvider {
+class DependencyInjectionContainer {
 
 	protected $registry = array();
 	protected $substitutes = NULL;
+	protected static $singletonRegistry;
 
 	/**
 	 * Registers a dependency with the container
@@ -70,14 +71,6 @@ class DependencyInjectionContainer extends ServiceProvider {
 		$registry[$name] = $object;
 	}
 
-	public function registerSingleton($name, Closure $object)
-	{
-		$this->register($name, function($di) use ($object)
-		{
-			return $di->singleton($object);
-		});
-	}
-
 	/**
 	 * Temporarily bind a dependency. Calls $this->register with $temp as TRUE
 	 *
@@ -90,6 +83,34 @@ class DependencyInjectionContainer extends ServiceProvider {
 	{
 		$this->register($name, $object, TRUE);
 		return $this;
+	}
+
+	public function singleton(Closure $object)
+	{
+	    $hash = spl_object_hash($object);
+
+	    // using a method call so its easy to mock up
+	    $registry = $this->getRegistry();
+
+	    if ( ! isset($registry->$hash))
+	    {
+	        $registry->$hash = $object($this);
+	    }
+
+	    return $registry->$hash;
+	}
+
+	private function getRegistry()
+	{
+		// using self instead of static to prevent extension.
+		// using an object to enforce references.
+
+		if ( ! is_object(self::$singletonRegistry))
+		{
+			self::$singletonRegistry = new StdClass;
+		}
+
+		return static::$singletonRegistry;
 	}
 
 	/**
