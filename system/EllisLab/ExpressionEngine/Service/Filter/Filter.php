@@ -50,7 +50,7 @@ abstract class Filter {
 
 		$value = $this->default_value;
 
-		if (isset($_POST[$this->name]))
+		if (isset($_POST[$this->name]) && ! empty($_POST[$this->name]))
 		{
 			$value = $_POST[$this->name];
 		}
