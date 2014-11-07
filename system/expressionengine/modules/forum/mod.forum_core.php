@@ -2641,12 +2641,7 @@ class Forum_Core extends Forum {
 $limit = 20;
 		$attach_base 	= '';
 
-		if ($limit == 0)
-		{
-			$limit = 15;
-		}
-
-		if ( ! is_numeric($limit) OR $limit == 0)
+		if ($limit == 0 OR ! is_numeric($limit))
 		{
 			$limit = 15;
 		}
@@ -2719,7 +2714,8 @@ $limit = 20;
 				{
 					if (is_numeric($id))
 					{
-						$this->form_actions['forum:do_split']['post_id['.$i.']'] = ee()->db->escape_str($id); ++$i;
+						$this->form_actions['forum:do_split']['post_id['.$i.']'] = ee()->db->escape_str($id);
+						++$i;
 					}
 				}
 			}
@@ -2744,7 +2740,8 @@ $limit = 20;
 				foreach ($f_query->result_array() as $row)
 				{
 					$selected = ($row['forum_id'] != $tquery->row('forum_id') )
-						? '' : ' selected="selected"';
+						? ''
+						: ' selected="selected"';
 					$menu .= '<option value="'.$row['forum_id'].'"'.$selected.'>'.$row['forum_name'].'</option>';
 				}
 			}
@@ -2756,7 +2753,9 @@ $limit = 20;
 
 			$this->form_actions['forum:do_split']['current_page'] = $this->current_page;
 			$this->form_actions['forum:do_split']['topic_id'] = $this->current_id;
-			$this->form_actions['forum:do_split']['RET'] = (isset($_POST['RET'])) ? $_POST['RET'] : $this->forum_path('viewforum');
+			$this->form_actions['forum:do_split']['RET'] = (isset($_POST['RET']))
+				? $_POST['RET']
+				: $this->forum_path('viewforum');
 
 			if (isset($_POST['mbase']))
 			{
