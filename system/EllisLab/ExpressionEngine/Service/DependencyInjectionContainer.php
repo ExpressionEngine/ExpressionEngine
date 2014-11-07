@@ -35,7 +35,7 @@ use StdClass;
 class DependencyInjectionContainer {
 
 	protected $registry = array();
-	protected $substitutes = NULL;
+	protected $substitutes = array();
 	protected $singletonRegistry = array();
 
 	/**
@@ -44,23 +44,14 @@ class DependencyInjectionContainer {
 	 * @param string      $name   The name of the dependency in the form
 	 *                            Vendor:Namespace
 	 * @param Closure|obj $object The object to use
-	 * @param bool        $temp   Is this a temporary assignment?
+	 * @param array       $registry Which registry are we acting on?
 	 * @return void
 	 */
-	public function register($name, $object, $temp = FALSE)
+	private function assignToRegistry($name, $object, &$registry)
 	{
 		if (strpos($name, ':') === FALSE)
 		{
 			$name = 'EllisLab:' . $name;
-		}
-
-		if ($temp)
-		{
-			$registry =& $this->substitutes;
-		}
-		else
-		{
-			$registry =& $this->registry;
 		}
 
 		if ( isset($registry[$name]))
@@ -69,6 +60,20 @@ class DependencyInjectionContainer {
 		}
 
 		$registry[$name] = $object;
+	}
+
+	/**
+	 * Registers a dependency with the container
+	 *
+	 * @param string      $name   The name of the dependency in the form
+	 *                            Vendor:Namespace
+	 * @param Closure|obj $object The object to use
+	 * @return void
+	 */
+	public function register($name, $object)
+	{
+		$this->assignToRegistry($name, $object, $this->registry);
+		return $this;
 	}
 
 	/**
@@ -81,8 +86,21 @@ class DependencyInjectionContainer {
 	 */
 	public function bind($name, $object)
 	{
-		$this->register($name, $object, TRUE);
+		$this->assignToRegistry($name, $object, $this->substitutes);
 		return $this;
+	}
+
+	public function registerSingleton($name, $object)
+	{
+		if ($object instanceof Closure)
+		{
+			return $this->register($name, function($di) use ($object)
+				{
+					return $di->singleton($object);
+				});
+		}
+
+		return $this->register($name, $object);
 	}
 
 	public function singleton(Closure $object)
@@ -125,7 +143,7 @@ class DependencyInjectionContainer {
 			$name = 'EllisLab:' . $name;
 		}
 
-		if ( isset($this->substitutes) && isset($this->substitutes[$name]))
+		if (isset($this->substitutes[$name]))
 		{
 			$object = $this->substitutes[$name];
 		}
@@ -141,7 +159,7 @@ class DependencyInjectionContainer {
 			}
 		}
 
-		$this->substitutes = NULL;
+		$this->substitutes = array();
 
 		if ($object instanceof Closure)
 		{
