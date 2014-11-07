@@ -74,13 +74,13 @@ feature 'Communicate > Sent' do
 	end
 
 	it 'sorts by date (asc)' do
-		now = DateTime.now
+		now = Time.now
 		dates = []
 
 		(0...25).each do |n|
-			my_date = now - n
-			dates.push(my_date.strftime("%-m/%-d/%y %-l:%M %p"))
-			@page.generate_data(timestamp: my_date.to_time.to_i, count: 1)
+			my_date = now - (n * 86400)
+			dates.push(my_date.to_datetime.strftime("%-m/%-d/%y %-l:%M %p"))
+			@page.generate_data(timestamp: my_date.to_i, count: 1)
 		end
 		dates.reverse!
 		load_page
@@ -94,13 +94,13 @@ feature 'Communicate > Sent' do
 	end
 
 	it 'sorts by date (desc)' do
-		now = DateTime.now
+		now = Time.now
 		dates = []
 
 		(0...25).each do |n|
-			my_date = now - n
-			dates.push(my_date.strftime("%-m/%-d/%y %-l:%M %p"))
-			@page.generate_data(timestamp: my_date.to_time.to_i, count: 1)
+			my_date = now - (n * 86400)
+			dates.push(my_date.to_datetime.strftime("%-m/%-d/%y %-l:%M %p"))
+			@page.generate_data(timestamp: my_date.to_i, count: 1)
 		end
 		load_page
 		@page.date_header.find('a.sort').click # To sort by date
