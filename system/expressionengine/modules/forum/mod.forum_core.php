@@ -2638,7 +2638,6 @@ class Forum_Core extends Forum {
 		$forum_id		= $tquery->row('forum_id');
 		$limit 			= ($is_split == FALSE)
 			? $tquery->row('forum_posts_perpage') : 100;
-$limit = 20;
 		$attach_base 	= '';
 
 		if ($limit == 0 OR ! is_numeric($limit))

@@ -468,11 +468,14 @@ class Pagination_object {
 			// pagination_marker
 			if ($this->_position == 'inline')
 			{
-				return ee()->TMPL->swap_var_single(
-					$this->_pagination_marker,
-					'',
-					$return_data
-				);
+				foreach ($this->_template_data as $hash => $template_partial)
+				{
+					$return_data = ee()->TMPL->swap_var_single(
+						$this->_pagination_marker.':'.$hash,
+						'',
+						$return_data
+					);
+				}
 			}
 
 			return $return_data;
