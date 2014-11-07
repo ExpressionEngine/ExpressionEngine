@@ -49,7 +49,7 @@ class Pagination_object {
 	public $field_pagination		= FALSE;
 	public $field_pagination_query	= NULL;
 
-	private $_template_data				= '';
+	private $_template_data				= array();
 	private $_page_array				= array();
 	private $_multi_fields				= '';
 	private $_page_next					= '';
