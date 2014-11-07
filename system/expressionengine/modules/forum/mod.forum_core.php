@@ -2638,6 +2638,7 @@ class Forum_Core extends Forum {
 		$forum_id		= $tquery->row('forum_id');
 		$limit 			= ($is_split == FALSE)
 			? $tquery->row('forum_posts_perpage') : 100;
+$limit = 20;
 		$attach_base 	= '';
 
 		if ($limit == 0)
@@ -2658,18 +2659,36 @@ class Forum_Core extends Forum {
 		);
 
 		// Load the template
-		if ($is_split == FALSE)
+		if ($is_split == TRUE)
 		{
-			if ($thread_review == FALSE)
-			{
-				$str = $this->load_element('threads');
-			}
-			else
-			{
-				$str = $this->load_element('thread_review');
-			}
+			$str = $this->load_element('split_data');
+		}
+		else if ($thread_review == TRUE)
+		{
+			$str = $this->load_element('thread_review');
 		}
 		else
+		{
+			$str = $this->load_element('threads');
+		}
+
+		// Check to see if the old style pagination exists
+		// @deprecated 2.8
+		if (stripos($str, LD.'if paginate'.RD) !== FALSE)
+		{
+			$str = preg_replace("/{if paginate}(.*?){\/if}/uis", "{paginate}$1{/paginate}", $str);
+			ee()->load->library('logger');
+			ee()->logger->developer('{if paginate} has been deprecated, use normal {paginate} tags in your forum threads template.', TRUE, 604800);
+		}
+
+		// Load up pagination and start parsing
+		ee()->load->library('pagination');
+		$pagination = ee()->pagination->create();
+		$pagination->position = 'inline';
+		$str = $pagination->prepare($str);
+
+		// Split post
+		if ($is_split === TRUE)
 		{
 			// Are they allowed to split?
 			if ( ! $this->_mod_permission('can_split', $tquery->row('forum_id')))
@@ -2704,8 +2723,6 @@ class Forum_Core extends Forum {
 					}
 				}
 			}
-
-			$str = $this->load_element('split_data');
 
 			// Are there any other forums?
 			ee()->db->select('forum_name, forum_id');
@@ -2878,21 +2895,6 @@ class Forum_Core extends Forum {
 
 		$attach_query = FALSE;
 
-		// Check to see if the old style pagination exists
-		// @deprecated 2.8
-		if (stripos($str, LD.'if paginate'.RD) !== FALSE)
-		{
-			$str = preg_replace("/{if paginate}(.*?){\/if}/uis", "{paginate}$1{/paginate}", $str);
-			ee()->load->library('logger');
-			ee()->logger->developer('{if paginate} has been deprecated, use normal {paginate} tags in your forum threads template.', TRUE, 604800);
-		}
-
-		// Load up pagination and start parsing
-		ee()->load->library('pagination');
-		$pagination = ee()->pagination->create();
-		$pagination->position = 'inline';
-		$str = $pagination->prepare($str);
-
 		// Count the total number of posts
 		// We do this for purposes of pagination
 		// and to see if we even need to show anything
@@ -2901,7 +2903,7 @@ class Forum_Core extends Forum {
 		ee()->db->select('COUNT(*) as count');
 		$pquery = ee()->db->get_where('forum_posts', array('topic_id' => $this->current_id));
 
-		if ($pquery->row('count')  > 0)
+		if ($pquery->row('count') > 0)
 		{
 			// We have pagination!
 			if (($pquery->row('count') > $limit)
