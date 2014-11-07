@@ -63,52 +63,51 @@ class Forum_Core extends Forum {
 		// In certain cases we may want different URI function names
 		// to share common methods
 		$remap = array(
-						'viewpost'				=> 'view_post_redirect',
-						'viewreply'				=> 'view_post_redirect',
-						'viewcategory'			=> 'category_page',
-						'viewforum'				=> 'topic_page',
-						'viewthread'			=> 'thread_page',
-						'viewannounce'			=> 'announcement_page',
-						'newtopic'				=> 'new_topic_page',
-						'newreply'				=> 'new_reply_page',
-						'edittopic'				=> 'edit_topic_page',
-						'editreply'				=> 'edit_reply_page',
-						'deletetopic'			=> 'delete_post_page',
-						'deletereply'			=> 'delete_post_page',
-						'movetopic'				=> 'move_topic_page',
-						'movereply'				=> 'move_reply_page',
-						'quotetopic'			=> 'new_reply_page',
-						'quotereply'			=> 'new_reply_page',
-						'reporttopic'			=> 'report_page',
-						'reportreply'			=> 'report_page',
-						'merge'					=> 'merge_page',
-						'split'					=> 'split_page',
-						'smileys'				=> 'emoticon_page',
-						'search'				=> 'advanced_search_page',
-						'member_search'			=> 'member_search',
-						'new_topic_search'		=> 'new_topic_search',
-						'active_topic_search'	=> 'active_topic_search',
-						'view_pending_topics'	=> 'view_pending_topics',
-						'search_results'		=> 'search_results_page',
-						'search_thread'			=> 'search_thread_page',
-						'ban_member'			=> 'ban_member_form',
-						'do_ban_member'			=> 'do_ban_member',
-						'rss'					=> '_feed_builder',
-						'atom'					=> '_feed_builder'
-					  );
+			'viewpost'            => 'view_post_redirect',
+			'viewreply'           => 'view_post_redirect',
+			'viewcategory'        => 'category_page',
+			'viewforum'           => 'topic_page',
+			'viewthread'          => 'thread_page',
+			'viewannounce'        => 'announcement_page',
+			'newtopic'            => 'new_topic_page',
+			'newreply'            => 'new_reply_page',
+			'edittopic'           => 'edit_topic_page',
+			'editreply'           => 'edit_reply_page',
+			'deletetopic'         => 'delete_post_page',
+			'deletereply'         => 'delete_post_page',
+			'movetopic'           => 'move_topic_page',
+			'movereply'           => 'move_reply_page',
+			'quotetopic'          => 'new_reply_page',
+			'quotereply'          => 'new_reply_page',
+			'reporttopic'         => 'report_page',
+			'reportreply'         => 'report_page',
+			'merge'               => 'merge_page',
+			'split'               => 'split_page',
+			'smileys'             => 'emoticon_page',
+			'search'              => 'advanced_search_page',
+			'member_search'       => 'member_search',
+			'new_topic_search'    => 'new_topic_search',
+			'active_topic_search' => 'active_topic_search',
+			'view_pending_topics' => 'view_pending_topics',
+			'search_results'      => 'search_results_page',
+			'search_thread'       => 'search_thread_page',
+			'ban_member'          => 'ban_member_form',
+			'do_ban_member'       => 'do_ban_member',
+			'rss'                 => '_feed_builder',
+			'atom'                => '_feed_builder'
+		);
 
 		if (isset($remap[$function]))
 		{
 			$function = $remap[$function];
 		}
 
-		/*
-			The output is based on whether we are using the main template parser or not.
-			If the config.php file contains a forum "triggering" word we'll send
-			the output directly to the output class.  Otherwise, the output
-			is sent to the template class like normal.  The exception to this is
-			when action requests are processed
-		*/
+
+		// The output is based on whether we are using the main template parser
+		// or not. If the config.php file contains a forum "triggering" word
+		// we'll send the output directly to the output class.  Otherwise, the
+		// output is sent to the template class like normal.  The exception to
+		// this is when action requests are processed
 
 		if ($this->use_trigger() OR ee()->input->get_post('ACT') !== FALSE)
 		{
@@ -117,7 +116,10 @@ class Forum_Core extends Forum {
 					ee()->functions->add_form_security_hash(
 						$this->_final_prep(
 							$this->_include_recursive($function)
-									))));
+						)
+					)
+				)
+			);
 		}
 		else
 		{
@@ -2547,8 +2549,8 @@ class Forum_Core extends Forum {
 	 */
 	public function threads($is_announcement = FALSE, $thread_review = FALSE, $is_split = FALSE)
 	{
-		$posts 			= '';
-		$query_limit	= '';
+		$posts       = '';
+		$query_limit = '';
 
 		// Fetch/Set the "topic tracker" cookie
 		$read_topics = $this->_fetch_read_topics($this->current_id);
@@ -2563,20 +2565,20 @@ class Forum_Core extends Forum {
 			if ($this->read_topics_exist === FALSE)
 			{
 				$d = array(
-						'member_id'		=> ee()->session->userdata('member_id'),
-						'board_id'		=> $this->fetch_pref('board_id'),
-						'topics'		=> serialize($read_topics),
-						'last_visit'	=> ee()->localize->now
-					);
+					'member_id'  => ee()->session->userdata('member_id'),
+					'board_id'   => $this->fetch_pref('board_id'),
+					'topics'     => serialize($read_topics),
+					'last_visit' => ee()->localize->now
+				);
 
 				ee()->db->insert('forum_read_topics', $d);
 			}
 			else
 			{
 				$d = array(
-						'topics'		=> serialize($read_topics),
-						'last_visit'	=> ee()->localize->now
-					);
+					'topics'     => serialize($read_topics),
+					'last_visit' => ee()->localize->now
+				);
 
 				ee()->db->where('member_id', ee()->session->userdata('member_id'));
 				ee()->db->where('board_id', $this->fetch_pref('board_id'));
@@ -2586,17 +2588,17 @@ class Forum_Core extends Forum {
 
 		// Fetch The Topic
 		ee()->db->select('f.forum_text_formatting, f.forum_html_formatting, f.forum_enable_rss,
-								f.forum_auto_link_urls, f.forum_allow_img_urls, f.forum_hot_topic,
-								f.forum_post_order, f.forum_posts_perpage, f.forum_display_edit_date,
-								t.forum_id, t.topic_id as post_id, t.author_id, t.ip_address, t.title,
-								t.body, t.status, t.announcement, t.thread_views, t.parse_smileys,
-								t.topic_date AS date, t.topic_edit_date AS edit_date,
-								t.topic_edit_author AS edit_author_id, em.screen_name AS edit_author,
-								m.group_id, m.screen_name AS author, m.join_date, m.total_forum_topics,
-								m.total_forum_posts, m.location, m.email, m.accept_user_email, m.url, m.aol_im,
-								m.yahoo_im, m.msn_im, m.icq, m.signature, m.sig_img_filename, m.sig_img_width,
-								m.sig_img_height, m.avatar_filename, m.avatar_width, m.avatar_height,
-								m.photo_filename, m.photo_width, m.photo_height');
+			f.forum_auto_link_urls, f.forum_allow_img_urls, f.forum_hot_topic,
+			f.forum_post_order, f.forum_posts_perpage, f.forum_display_edit_date,
+			t.forum_id, t.topic_id as post_id, t.author_id, t.ip_address, t.title,
+			t.body, t.status, t.announcement, t.thread_views, t.parse_smileys,
+			t.topic_date AS date, t.topic_edit_date AS edit_date,
+			t.topic_edit_author AS edit_author_id, em.screen_name AS edit_author,
+			m.group_id, m.screen_name AS author, m.join_date, m.total_forum_topics,
+			m.total_forum_posts, m.location, m.email, m.accept_user_email, m.url, m.aol_im,
+			m.yahoo_im, m.msn_im, m.icq, m.signature, m.sig_img_filename, m.sig_img_width,
+			m.sig_img_height, m.avatar_filename, m.avatar_width, m.avatar_height,
+			m.photo_filename, m.photo_width, m.photo_height');
 		ee()->db->from(array('forums f', 'forum_topics t', 'members m'));
 		ee()->db->join('members em', 't.topic_edit_author = em.member_id', 'left');
 		ee()->db->where('f.forum_id', 't.forum_id', FALSE);
@@ -2631,9 +2633,11 @@ class Forum_Core extends Forum {
 		}
 
 		// Assign a few variables
-		$order			= ($tquery->row('forum_post_order')  == 'a') ? 'asc' : 'desc';
-		$forum_id		= $tquery->row('forum_id') ;
-		$limit 			= ($is_split == FALSE) ? $tquery->row('forum_posts_perpage')  : 100;
+		$order			= ($tquery->row('forum_post_order') == 'a')
+			? 'asc' : 'desc';
+		$forum_id		= $tquery->row('forum_id');
+		$limit 			= ($is_split == FALSE)
+			? $tquery->row('forum_posts_perpage') : 100;
 		$attach_base 	= '';
 
 		if ($limit == 0)
@@ -2647,11 +2651,11 @@ class Forum_Core extends Forum {
 		}
 
 		$formatting = array(
-							'text_format'	=> $tquery->row('forum_text_formatting') ,
-							'html_format'	=> $tquery->row('forum_html_formatting') ,
-							'auto_links'	=> $tquery->row('forum_auto_link_urls') ,
-							'allow_img_url' => $tquery->row('forum_allow_img_urls')
-							);
+			'text_format'   => $tquery->row('forum_text_formatting'),
+			'html_format'   => $tquery->row('forum_html_formatting'),
+			'auto_links'    => $tquery->row('forum_auto_link_urls'),
+			'allow_img_url' => $tquery->row('forum_allow_img_urls')
+		);
 
 		// Load the template
 		if ($is_split == FALSE)
@@ -2668,23 +2672,28 @@ class Forum_Core extends Forum {
 		else
 		{
 			// Are they allowed to split?
-			if ( ! $this->_mod_permission('can_split', $tquery->row('forum_id') ))
+			if ( ! $this->_mod_permission('can_split', $tquery->row('forum_id')))
 			{
 				return $this->trigger_error();
 			}
 
-			$this->current_page = (isset($_POST['current_page']) && is_numeric($_POST['current_page'])) ? ee()->db->escape_str($_POST['current_page']) : 0;
+			$this->current_page = (isset($_POST['current_page']) && is_numeric($_POST['current_page']))
+				? ee()->db->escape_str($_POST['current_page'])
+				: 0;
 
 			if ( isset($_POST['next_page']))
 			{
 				$this->current_page = $this->current_page + $limit;
 			}
-			elseif( isset($_POST['previous_page']) && ($this->current_page - $limit) >= 0)
+			elseif (isset($_POST['previous_page'])
+				&& ($this->current_page - $limit) >= 0)
 			{
 				$this->current_page = $this->current_page - $limit;
 			}
 
-			if ( isset($_POST['post_id']) && is_array($_POST['post_id']) && (isset($_POST['next_page']) OR isset($_POST['previous_page'])))
+			if (isset($_POST['post_id'])
+				&& is_array($_POST['post_id'])
+				&& (isset($_POST['next_page']) OR isset($_POST['previous_page'])))
 			{
 				$i = 0;
 				foreach($_POST['post_id'] as $id)
@@ -2717,17 +2726,16 @@ class Forum_Core extends Forum {
 				// Build the menu
 				foreach ($f_query->result_array() as $row)
 				{
-					$selected = ($row['forum_id'] != $tquery->row('forum_id') ) ? '' : ' selected="selected"';
+					$selected = ($row['forum_id'] != $tquery->row('forum_id') )
+						? '' : ' selected="selected"';
 					$menu .= '<option value="'.$row['forum_id'].'"'.$selected.'>'.$row['forum_name'].'</option>';
 				}
 			}
 
-			$str = $this->var_swap($str,
-									array(
-											'split_select_options'	=> $menu,
-											'title' => $this->_convert_special_chars($tquery->row('title') )
-										)
-									);
+			$str = $this->var_swap($str, array(
+				'split_select_options' => $menu,
+				'title'                => $this->_convert_special_chars($tquery->row('title') )
+			));
 
 			$this->form_actions['forum:do_split']['current_page'] = $this->current_page;
 			$this->form_actions['forum:do_split']['topic_id'] = $this->current_id;
@@ -2737,7 +2745,6 @@ class Forum_Core extends Forum {
 			{
 				$this->form_actions['forum:do_split']['mbase'] = $_POST['mbase'];
 			}
-
 		}
 
 		// Topic Jump
@@ -2763,12 +2770,10 @@ class Forum_Core extends Forum {
 			else
 			{
 				$str = $this->allow_if('next_topic', $str);
-				$str = $this->var_swap($str,
-										array(
-												'next_topic_title' 		=> trim($this->_convert_special_chars($jquery->row('title') )),
-												'path:next_topic_url'	=> $this->forum_path('/viewthread/'.$jquery->row('topic_id') .'/')
-											)
-										);
+				$str = $this->var_swap($str, array(
+					'next_topic_title'    => trim($this->_convert_special_chars($jquery->row('title') )),
+					'path:next_topic_url' => $this->forum_path('/viewthread/'.$jquery->row('topic_id') .'/')
+				));
 			}
 		}
 
@@ -2793,18 +2798,15 @@ class Forum_Core extends Forum {
 			else
 			{
 				$str = $this->allow_if('previous_topic', $str);
-				$str = $this->var_swap($str,
-										array(
-												'previous_topic_title' 		=> trim($this->_convert_special_chars($jquery->row('title') )),
-												'path:previous_topic_url'	=> $this->forum_path('/viewthread/'.$jquery->row('topic_id') .'/')
-											)
-										);
+				$str = $this->var_swap($str, array(
+					'previous_topic_title'    => trim($this->_convert_special_chars($jquery->row('title') )),
+					'path:previous_topic_url' => $this->forum_path('/viewthread/'.$jquery->row('topic_id') .'/')
+				));
 			}
 		}
 
 		// Post reply button
-
-		if ($tquery->row('status')  == 'c')
+		if ($tquery->row('status') == 'c')
 		{
 			$str = str_replace('{lang:post_reply}', lang('closed_thread'), $str);
 		}
@@ -2848,29 +2850,31 @@ class Forum_Core extends Forum {
 		}
 
 		// Update the views
-		$views = ($tquery->row('thread_views')  <= 0) ? 1 : $tquery->row('thread_views')  + 1;
+		$views = ($tquery->row('thread_views') <= 0)
+			? 1
+			: $tquery->row('thread_views')  + 1;
 
 		ee()->db->where('topic_id', $this->current_id);
 		ee()->db->update('forum_topics', array('thread_views' => $views));
 
 		// Parse the template with the topic data
 		$topic = $this->thread_rows(
-									array (
-											'query'			=> $tquery,
-											'rank_query'	=> $rank_query,
-											'mod_query'		=> $mod_query,
-											'attach_query'	=> $attach_query,
-											'attach_base'	=> $attach_base,
-											'formatting'	=> $formatting,
-											'super_admins'	=> $super_admins,
-											'is_topic'		=> TRUE,
-											'topic_id'		=> $tquery->row('post_id') ,
-											'topic_status'	=> $tquery->row('status') ,
-											'is_split'		=> $is_split
-											),
-									FALSE,
-									$thread_review
-									);
+			array(
+				'query'        => $tquery,
+				'rank_query'   => $rank_query,
+				'mod_query'    => $mod_query,
+				'attach_query' => $attach_query,
+				'attach_base'  => $attach_base,
+				'formatting'   => $formatting,
+				'super_admins' => $super_admins,
+				'is_topic'     => TRUE,
+				'topic_id'     => $tquery->row('post_id') ,
+				'topic_status' => $tquery->row('status') ,
+				'is_split'     => $is_split
+			),
+			FALSE,
+			$thread_review
+		);
 
 		$attach_query = FALSE;
 
@@ -2918,15 +2922,15 @@ class Forum_Core extends Forum {
 			}
 
 			$pquery = ee()->db->query("SELECT p.post_id, p.forum_id, p.author_id, p.ip_address, p.body, p.parse_smileys, p.post_date AS date, p.post_edit_date AS edit_date, p.post_edit_author AS edit_author_id, em.screen_name AS edit_author,
-									m.group_id, m.screen_name AS author, m.join_date, m.total_forum_topics, m.total_forum_posts, m.location, m.email, m.accept_user_email, m.url, m.aol_im, m.yahoo_im, m.msn_im, m.icq, m.signature, m.sig_img_filename, m.sig_img_width, m.sig_img_height, m.avatar_filename, m.avatar_width, m.avatar_height, m.photo_filename, m.photo_width, m.photo_height,
-									f.forum_display_edit_date
-									FROM (exp_forum_posts p, exp_members m, exp_forums f)
-									LEFT JOIN exp_members em ON p.post_edit_author = em.member_id
-									WHERE p.author_id = m.member_id
-									AND f.forum_id = p.forum_id
-									AND p.topic_id = '{$this->current_id}'
-									ORDER BY date {$order}
-									{$query_limit}");
+				m.group_id, m.screen_name AS author, m.join_date, m.total_forum_topics, m.total_forum_posts, m.location, m.email, m.accept_user_email, m.url, m.aol_im, m.yahoo_im, m.msn_im, m.icq, m.signature, m.sig_img_filename, m.sig_img_width, m.sig_img_height, m.avatar_filename, m.avatar_width, m.avatar_height, m.photo_filename, m.photo_width, m.photo_height,
+				f.forum_display_edit_date
+				FROM (exp_forum_posts p, exp_members m, exp_forums f)
+				LEFT JOIN exp_members em ON p.post_edit_author = em.member_id
+				WHERE p.author_id = m.member_id
+				AND f.forum_id = p.forum_id
+				AND p.topic_id = '{$this->current_id}'
+				ORDER BY date {$order}
+				{$query_limit}");
 
 			// Fetch attachments
 			if ($pquery->num_rows() == 0)
@@ -2959,22 +2963,22 @@ class Forum_Core extends Forum {
 
 			// arse Posts
 			$posts = $this->thread_rows(
-										array (
-												'query'			=> $pquery,
-												'rank_query'	=> $rank_query,
-												'mod_query'		=> $mod_query,
-												'attach_query'	=> $attach_query,
-												'attach_base'	=> $attach_base,
-												'formatting'	=> $formatting,
-												'super_admins'	=> $super_admins,
-												'is_topic'		=> FALSE,
-												'topic_id'		=> $this->current_id,
-												'topic_status'	=> $tquery->row('status') ,
-												'is_split'		=> $is_split
-												),
-											FALSE,
-											$thread_review
-										);
+				array(
+					'query'        => $pquery,
+					'rank_query'   => $rank_query,
+					'mod_query'    => $mod_query,
+					'attach_query' => $attach_query,
+					'attach_base'  => $attach_base,
+					'formatting'   => $formatting,
+					'super_admins' => $super_admins,
+					'is_topic'     => FALSE,
+					'topic_id'     => $this->current_id,
+					'topic_status' => $tquery->row('status') ,
+					'is_split'     => $is_split
+				),
+				FALSE,
+				$thread_review
+			);
 		}
 
 
@@ -2991,11 +2995,13 @@ class Forum_Core extends Forum {
 		{
 			// Is the user subscribed?
 			ee()->db->select('COUNT(*) as count');
-			$query = ee()->db->get_where('forum_subscriptions',
-										array(
-												'topic_id'	=> $this->current_id,
-												'member_id'	=> ee()->session->userdata('member_id')
-											));
+			$query = ee()->db->get_where(
+				'forum_subscriptions',
+				array(
+					'topic_id'  => $this->current_id,
+					'member_id' => ee()->session->userdata('member_id')
+				)
+			);
 
 			if ($query->row('count')  == 0)
 			{
@@ -3030,10 +3036,12 @@ class Forum_Core extends Forum {
 			else
 			{
 				$str = $this->allow_if('poll', $str);
-				$poll = $this->_generate_poll($query->row('poll_id') ,
-										  	  $query->row('poll_question') ,
-										  	  $answers,
-										  	  $query->row('total_votes') );
+				$poll = $this->_generate_poll(
+					$query->row('poll_id'),
+					$query->row('poll_question'),
+					$answers,
+					$query->row('total_votes')
+				);
 			}
 		}
 
@@ -3126,20 +3134,18 @@ class Forum_Core extends Forum {
 		// Finalize the result
 		$thread = ($is_split == FALSE ) ? 'thread_rows' : 'split_thread_rows';
 
-		return $this->var_swap($str,
-								array(
-										'topic_title'		=> trim($this->_convert_special_chars(ee()->typography->format_characters(ee()->typography->filter_censored_words($title)))),
-										'include:'.$thread  => $thread_rows,
-										'include:thread_review_rows' => $thread_review_rows,
-										'path:new_topic' 	=> $this->forum_path('/newtopic/'.$this->current_id.'/'),
-										'path:post_reply' 	=> $this->forum_path('/newreply/'.$this->current_id.'/'),
-										'path:thread_review' => $this->forum_path('/viewthread/'.$this->current_id.'/'),
-										'path:new_topic' 	=> $this->forum_path('/newtopic/'.$forum_id.'/'),
-										'lang:subscribe'	=> $subscription_text,
-										'path:subscribe' 	=> $subscription_path,
-										'include:poll'		=> $poll
-									)
-								);
+		return $this->var_swap($str, array(
+			'topic_title'                => trim($this->_convert_special_chars(ee()->typography->format_characters(ee()->typography->filter_censored_words($title)))),
+			'include:'.$thread           => $thread_rows,
+			'include:thread_review_rows' => $thread_review_rows,
+			'path:new_topic'             => $this->forum_path('/newtopic/'.$this->current_id.'/'),
+			'path:post_reply'            => $this->forum_path('/newreply/'.$this->current_id.'/'),
+			'path:thread_review'         => $this->forum_path('/viewthread/'.$this->current_id.'/'),
+			'path:new_topic'             => $this->forum_path('/newtopic/'.$forum_id.'/'),
+			'lang:subscribe'             => $subscription_text,
+			'path:subscribe'             => $subscription_path,
+			'include:poll'               => $poll
+		));
 	}
 
 	// --------------------------------------------------------------------
