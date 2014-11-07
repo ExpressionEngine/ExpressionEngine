@@ -2691,25 +2691,31 @@ $limit = 20;
 				return $this->trigger_error();
 			}
 
-			$this->current_page = (isset($_POST['current_page']) && is_numeric($_POST['current_page']))
-				? ee()->db->escape_str($_POST['current_page'])
-				: 0;
-
-			if ( isset($_POST['next_page']))
+			// Figure out our offset
+			$this->current_page = (int) ee()->input->post('current_page') ?: 0;
+			if (ee()->input->post('next_page'))
 			{
-				$this->current_page = $this->current_page + $limit;
+				$this->current_page += $limit;
 			}
-			elseif (isset($_POST['previous_page'])
-				&& ($this->current_page - $limit) >= 0)
+			else if (ee()->input->post('previous_page'))
 			{
-				$this->current_page = $this->current_page - $limit;
+				$this->current_page -= $limit;
 			}
+			$this->current_page = ($this->current_page < 0)
+				? 0
+				: $this->current_page;
+			$pagination->offset = $this->current_page;
 
+			// Carry over the selected post IDs
 			if (isset($_POST['post_id'])
 				&& is_array($_POST['post_id'])
 				&& (isset($_POST['next_page']) OR isset($_POST['previous_page'])))
 			{
 				$i = 0;
+
+				// Keep things unique
+				$_POST['post_id'] = array_unique($_POST['post_id']);
+
 				foreach($_POST['post_id'] as $id)
 				{
 					if (is_numeric($id))
