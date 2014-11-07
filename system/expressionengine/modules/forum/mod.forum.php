@@ -279,21 +279,20 @@ class Forum {
 		// In certain cases we may want different URI function names
 		// to share common methods
 		$remap = array(
-						ee()->config->item('profile_trigger')	=> '_load_member_class',
-								'ban_member'	=> 'ban_member_form',
-								'do_ban_member'	=> 'do_ban_member'
-					  );
-
+			ee()->config->item('profile_trigger') => '_load_member_class',
+			'ban_member'                          => 'ban_member_form',
+			'do_ban_member'                       => 'do_ban_member'
+		);
 		if (isset($remap[$function]))
 		{
 			$function = $remap[$function];
 		}
 
-		// The output is based on whether we are using the main template parser or not.
-		// If the config.php file contains a forum "triggering" word we'll send
-		// the output directly to the output class.  Otherwise, the output
-		// is sent to the template class like normal.  The exception to this is
-		// when action requests are processed
+		// The output is based on whether we are using the main template parser
+		// or not. If the config.php file contains a forum "triggering" word
+		// we'll send the output directly to the output class. Otherwise, the
+		// output is sent to the template class like normal. The exception to
+		// this is when action requests are processed
 		if ($this->use_trigger() OR ee()->input->get_post('ACT') !== FALSE)
 		{
 			ee()->output->set_output(
@@ -301,7 +300,10 @@ class Forum {
 					ee()->functions->add_form_security_hash(
 						$this->_final_prep(
 							$this->_include_recursive($function)
-									))));
+						)
+					)
+				)
+			);
 		}
 		else
 		{
@@ -333,7 +335,7 @@ class Forum {
 	public function move_topic() { return ee()->FRM_CORE->move_topic(); }
 	public function move_reply() { return ee()->FRM_CORE->move_reply(); }
 	public function do_merge() { return ee()->FRM_CORE->do_merge(); }
-	public function do_split()	{ return ee()->FRM_CORE->do_split(); }
+	public function do_split() { return ee()->FRM_CORE->do_split(); }
 	public function do_report() { return ee()->FRM_CORE->do_report(); }
 
 	public function delete_subscription()
