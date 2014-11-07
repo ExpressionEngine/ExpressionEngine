@@ -574,22 +574,17 @@ class Pagination_object {
 	 */
 	private function _parse_conditional($template_data, $type, $replacement)
 	{
-		if (preg_match_all("/".LD."if {$type}_page".RD."(.+?)".LD.'\/'."if".RD."/s", $template_data, $matches))
+		if (stripos($template_data, "if {$type}_page") !== FALSE)
 		{
-			if ($replacement == '')
-			{
-				$template_data = preg_replace("/".LD."if {$type}_page".RD.".+?".LD.'\/'."if".RD."/s", '', $template_data);
-			}
-			else
-			{
-				foreach($matches[1] as $count => $match)
-				{
-					$match = preg_replace("/".LD.'path.*?'.RD."/", $replacement, $match);
-					$match = preg_replace("/".LD.'auto_path'.RD."/", $replacement, $match);
+			$template_data = ee()->functions->prep_conditionals(
+				$template_data,
+				array(
+					"{$type}_page" => $this->{'_page_'.$type}
+				)
+			);
 
-					$template_data = str_replace($matches[0][$count], $match, $template_data);
-				}
-			}
+			$template_data = preg_replace("/".LD.'path.*?'.RD."/", $replacement, $template_data);
+			$template_data = preg_replace("/".LD.'auto_path'.RD."/", $replacement, $template_data);
 		}
 
 		return $template_data;
