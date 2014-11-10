@@ -8,9 +8,6 @@ use CP_Controller;
 use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Library\CP\URL;
-use EllisLab\ExpressionEngine\Service\CP\Filter\Filter;
-use EllisLab\ExpressionEngine\Service\CP\Filter\FilterFactory;
-use EllisLab\ExpressionEngine\Service\CP\Filter\FilterRunner;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -85,30 +82,27 @@ class Addons extends CP_Controller {
 	private function filters($total)
 	{
 		// Status
-		$status = new Filter('filter_by_status', 'status', array(
+		$status = ee('Filter')->make('filter_by_status', 'status', array(
 			'installed'		=> strtolower(lang('installed')),
 			'uninstalled'	=> strtolower(lang('uninstalled'))
 		));
-		$status->has_custom_value = FALSE;
+		$status->disableCustomValue();
 
 		// Developer
-		$developer = new Filter('filter_by_developer', 'developer', array(
+		$developer = ee('Filter')->make('filter_by_developer', 'developer', array(
 			'native'		=> 'EllisLab',
 			'third_party'	=> 'Third Party',
 		));
-		$developer->has_custom_value = FALSE;
+		$developer->disableCustomValue();
 
-		// Show
-		$perpage = FilterFactory::showFilter($total, 'show_all_addons');
+		$filters = ee('Filter')
+			->add($status)
+			->add($developer)
+			->add('Perpage', $total, 'show_all_addons');
 
-		$fr = new FilterRunner($this->base_url, array(
-			$status,
-			$developer,
-			$perpage
-		));
-		ee()->view->filters = $fr->render();
-		$this->base_url = $fr->getUrl();
-		$this->params = $fr->getParameters();
+		ee()->view->filters = $filters->render($this->base_url);
+		$this->params = $filters->values();
+		$this->base_url->addQueryStringVariables($this->params);
 	}
 
 	// --------------------------------------------------------------------
