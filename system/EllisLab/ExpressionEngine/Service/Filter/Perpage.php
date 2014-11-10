@@ -1,8 +1,6 @@
 <?php
 namespace EllisLab\ExpressionEngine\Service\Filter;
 
-if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -20,6 +18,10 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 /**
  * ExpressionEngine Perpage Filter Class
  *
+ * This will provide the HTML for a filter that will list a set of "<<number>>
+ * results" options, a custom <input> element to specify a custom perpage number,
+ * and a "All <<total>> results" option.
+ *
  * @package		ExpressionEngine
  * @category	Service
  * @author		EllisLab Dev Team
@@ -27,6 +29,14 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
  */
 class Perpage extends Filter {
 
+	/**
+	 * Initializes our Perpage filter
+	 *
+	 * @param  int $total The total number of items available
+	 * @param  string $lang_key The optional lang key to use for the "All
+	 *                          <<$total>> items" option
+	 * @return void
+	 */
 	public function __construct($total, $all_lang_key = 'all_items')
 	{
 		$total = (int) $total;
@@ -52,6 +62,11 @@ class Perpage extends Filter {
 		$this->display_value = $this->value();
 	}
 
+	/**
+	 * Validation:
+	 *   - if value is a number, then it is valid
+	 *   - otherwise it is invalid
+	 */
 	public function isValid()
 	{
 		$value = $this->value();
@@ -65,7 +80,4 @@ class Perpage extends Filter {
 	}
 
 }
-// END CLASS
-
-/* End of file Perpage.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Service/Filter/Perpage.php */
+// EOF

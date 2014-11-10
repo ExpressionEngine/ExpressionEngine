@@ -1,8 +1,6 @@
 <?php
 namespace EllisLab\ExpressionEngine\Service\Filter;
 
-if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
 use EllisLab\ExpressionEngine\Service\Model\Query\Query;
 
 /**
@@ -20,7 +18,11 @@ use EllisLab\ExpressionEngine\Service\Model\Query\Query;
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Perpage Filter Class
+ * ExpressionEngine Username Filter Class
+ *
+ * This will provide the HTML for a filter that will list a set of usernames,
+ * but only if there are 25 or less. If there are more then only a <input>
+ * element will provided allowing for searching based on username.
  *
  * @package		ExpressionEngine
  * @category	Service
@@ -29,8 +31,20 @@ use EllisLab\ExpressionEngine\Service\Model\Query\Query;
  */
 class Username extends Filter {
 
+	/**
+	 * @var Query A Query Builder object for use in fetching usernames
+	 */
 	protected $builder;
 
+	/**
+	 * Construtor
+	 *
+	 * @param array $usernames An associative array of usernames to use for the
+	 *   filter where the key is the User ID and the value is the Username. i.e.
+	 *     '1' => 'admin',
+	 *     '2' => 'johndoe'
+	 * @return void
+	 */
 	public function __construct($usernames = array())
 	{
 		$this->name = 'filter_by_username';
@@ -39,12 +53,20 @@ class Username extends Filter {
 		$this->options = $usernames;
 	}
 
+	/**
+	 * Sets the Query Builder property and builds a username list assuming
+	 * there are no more than 25 users available and assuming no usernames
+	 * were provided in the constructor.
+	 *
+	 * @param Query $builder A Query Builder object
+	 * @return void
+	 */
 	public function setQuery(Query $builder)
 	{
 		$this->builder = $builder;
 
 		// We will only display members if there are 25 or less
-		if ($builder->count() > 25)
+		if ( ! empty($this->usernames) || $builder->count() > 25)
 		{
 			return;
 		}
@@ -63,6 +85,15 @@ class Username extends Filter {
 		}
 	}
 
+	/**
+	 * @see Filter::value For the parent behavior
+	 *
+	 * Overriding the value method to account for someone searching for a
+	 * username, in which case we will use a $builder object (if provided)
+	 * to resolve that username to an ID.
+	 *
+	 * @return mixed The value of the filter
+	 */
 	public function value()
 	{
 		if (isset($this->builder))
@@ -84,12 +115,25 @@ class Username extends Filter {
 		return parent::value();
 	}
 
+	/**
+	 * Validation: we should have a number representing the user id. If not,
+	 * this is invalid. If we have a builder object then we will query for
+	 * the user, and if not found it is invalid. Otherwise, this is valid.
+	 */
 	public function isValid()
 	{
 		$value = $this->value();
 
 		if (is_numeric($value) && $value > 0)
 		{
+			if (isset($this->builder))
+			{
+				$member = $this->builder->filter('Member', $value)->first();
+				if ( ! $member)
+				{
+					return FALSE;
+				}
+			}
 			return TRUE;
 		}
 
@@ -97,7 +141,4 @@ class Username extends Filter {
 	}
 
 }
-// END CLASS
-
-/* End of file Username.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Service/Filter/Username.php */
+// EOF

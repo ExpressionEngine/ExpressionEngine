@@ -31,12 +31,12 @@ use EllisLab\ExpressionEngine\Service\DependencyInjectionContainer;
 class FilterFactory {
 
 	/**
-	 * A referrence to a DependencyInjectionContainer
+	 * @var DependencyInjectionContainer A referrence to a DependencyInjectionContainer
 	 */
 	protected $container;
 
 	/**
-	 * Our collection of filters
+	 * @var Filter\Filter[] Our collection of filters
 	 */
 	protected $filters = array();
 
@@ -68,13 +68,12 @@ class FilterFactory {
 	 * Instantiates and returns a new Custom Filter object. This is especially
 	 * useful for one-off Filters.
 	 *
+	 * @see Filter\Filter::options For the format of the $options array
+	 *
 	 * @param string $name    The name="" attribute for this filter
 	 * @param string $label   A language key to be used for the display label
 	 * @param array  $options An associative array to use to build the option
-	 *                        list. The keys will be used as the values passed
-	 *                        back, and the values will be used for display. i.e.
-	 *                          'installed'   => lang('installed'),
-	 *                          'uninstalled' => lang('uninstalled'),
+	 *                        list.
 	 * @return Filter\Custom  Returns a Custom Filter object.
 	 */
 	public function make($name, $label, array $options)

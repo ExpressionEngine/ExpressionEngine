@@ -1,8 +1,6 @@
 <?php
 namespace EllisLab\ExpressionEngine\Service\Filter;
 
-if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -18,7 +16,10 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Perpage Filter Class
+ * ExpressionEngine Site Filter Class
+ *
+ * This will provide the HTML for a filter that will list a set of sites as well
+ * as a custom <input> element for searching for a site.
  *
  * @package		ExpressionEngine
  * @category	Service
@@ -35,16 +36,20 @@ class Site extends Filter {
 		$this->options = ee()->session->userdata('assigned_sites');
 	}
 
+	/**
+	 * Validation: is the value in our list of options?
+	 */
 	public function isValid()
 	{
-		if (array_key_exists($this->value(), $this->options))
-		{
-			return TRUE;
-		}
-
-		return FALSE;
+		return (array_key_exists($this->value(), $this->options));
 	}
 
+	/**
+	 * @see Filter::render for render behavior.
+	 *
+	 * Overrides the abstract render behavior by returning an empty string
+	 * if multtiple sites are not available.
+	 */
 	public function render()
 	{
 		if (ee()->config->item('multiple_sites_enabled') !== 'y' || IS_CORE)
@@ -56,7 +61,4 @@ class Site extends Filter {
 	}
 
 }
-// END CLASS
-
-/* End of file Site.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Service/Filter/Site.php */
+// EOF

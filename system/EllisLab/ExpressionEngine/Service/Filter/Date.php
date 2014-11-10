@@ -1,8 +1,6 @@
 <?php
 namespace EllisLab\ExpressionEngine\Service\Filter;
 
-if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
 use EllisLab\ExpressionEngine\Library\CP\URL;
 use EllisLab\ExpressionEngine\Service\View\ViewFactory;
 
@@ -21,7 +19,15 @@ use EllisLab\ExpressionEngine\Service\View\ViewFactory;
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Perpage Filter Class
+ * ExpressionEngine Date Filter Class
+ *
+ * This will provide the HTML for a filter that will list a set of "in the last
+ * <<period>>" options as well as a custom <input> element for a specific date.
+ * That <input> element will trigger a JS date picker to assist which will
+ * ensure the date is correctly formatted.
+ *
+ * This will also interpret incoming date strings and will convert them to a
+ * UNIX timestamp for use in the value() method.
  *
  * @package		ExpressionEngine
  * @category	Service
@@ -30,8 +36,16 @@ use EllisLab\ExpressionEngine\Service\View\ViewFactory;
  */
 class Date extends Filter {
 
+	/**
+	 * @var int The unix timestamp value of the filter
+	 */
 	private $timestamp;
 
+	/**
+	 * @todo inject ee()->session
+	 * @todo inject ee()->javascript
+	 * @todo inject ee()->cp (for ee()->cp->add_js_script)
+	 */
 	public function __construct()
 	{
 		$this->name = 'filter_by_date';
@@ -99,9 +113,21 @@ class Date extends Filter {
 		}
 	}
 
+	/**
+	 * Validation:
+	 *   - if the value of the filter is in the options then it is valid
+	 *   - if not and the value is an integer, then it is valid
+	 *   - otherwise it is invalid
+	 */
 	public function isValid()
 	{
-		if (array_key_exists($this->value(), $this->options))
+		$value = $this->value();
+		if (array_key_exists($value, $this->options))
+		{
+			return TRUE;
+		}
+
+		if (is_int($value))
 		{
 			return TRUE;
 		}
@@ -109,6 +135,12 @@ class Date extends Filter {
 		return FALSE;
 	}
 
+	/**
+	 * @see Filter::render
+	 *
+	 * Overriding the abstract class's render method in order to pass in the
+	 * timestamp value to a custom 'date' view
+	 */
 	public function render(ViewFactory $view, URL $url)
 	{
 		$value = $this->display_value;
@@ -132,7 +164,4 @@ class Date extends Filter {
 	}
 
 }
-// END CLASS
-
-/* End of file Date.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Service/Filter/Date.php */
+// EOF
