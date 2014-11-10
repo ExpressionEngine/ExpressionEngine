@@ -209,15 +209,23 @@
 			return $_config[0];
 		}
 
-		// Fetch the config file
-		if ( ! file_exists(APPPATH.'config/config.php'))
+		// Check various paths for config files
+		$config_exists = FALSE;
+		foreach (array(SYSPATH, APPPATH) as $parent)
+		{
+			// Fetch the config file
+			if (file_exists($parent.'config/config.php'))
+			{
+				$config_exists = TRUE;
+				require($parent.'config/config.php');
+				break;
+			}
+		}
+
+		if ( ! $config_exists)
 		{
 			set_status_header(503);
 			exit('The configuration file does not exist.');
-		}
-		else
-		{
-			require(APPPATH.'config/config.php');
 		}
 
 		// Does the $config array exist in the file?
