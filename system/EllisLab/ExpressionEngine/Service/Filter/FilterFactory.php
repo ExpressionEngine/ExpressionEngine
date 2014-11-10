@@ -83,6 +83,24 @@ class FilterFactory {
 		return $this;
 	}
 
+	/**
+	 * Renames the last filter to be added
+	 *
+	 * @param string $name The new name="" attribute for the previous filter
+	 * @return obj         Returns itself ($this)
+	 */
+	public function withName($name)
+	{
+		if (empty($this->filters))
+		{
+			throw new \Exception('No filters have been addded. Cannot rename a filter.');
+		}
+
+		$filter = end($this->filters);
+		$filter->name = $name;
+		return $this;
+	}
+
 	public function render(URL $base_url)
 	{
 		$url = clone $base_url;
