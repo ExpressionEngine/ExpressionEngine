@@ -1,8 +1,6 @@
 <?php
 namespace EllisLab\ExpressionEngine\Service\Filter;
 
-if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
 use EllisLab\ExpressionEngine\Library\CP\URL;
 use EllisLab\ExpressionEngine\Service\Filter;
 use EllisLab\ExpressionEngine\Service\View\ViewFactory;
@@ -32,25 +30,71 @@ use EllisLab\ExpressionEngine\Service\DependencyInjectionContainer;
  */
 class FilterFactory {
 
+	/**
+	 * A referrence to a DependencyInjectionContainer
+	 */
 	protected $container;
+
+	/**
+	 * Our collection of filters
+	 */
 	protected $filters = array();
 
+	/**
+	 * Constructs the FilterFactory. It requires a ViewFactory instance since
+	 * Filters will need a View in order to render (see: render()).
+	 *
+	 * @param ViewFactory $view The ViewFactory to use for this FilterFactory
+	 * @return void
+	 */
 	public function __construct(ViewFactory $view)
 	{
 		$this->view = $view;
 	}
 
+	/**
+	 * Sets the DependencyInjectionContainer for the Factory
+	 *
+	 * @param DependencyInjectionContainer $container The container to use
+	 * @return self This returns a reference to itself
+	 */
 	public function setDIContainer(DependencyInjectionContainer $container)
 	{
 		$this->container = $container;
 		return $this;
 	}
 
+	/**
+	 * Instantiates and returns a new Custom Filter object. This is especially
+	 * useful for one-off Filters.
+	 *
+	 * @param string $name    The name="" attribute for this filter
+	 * @param string $label   A language key to be used for the display label
+	 * @param array  $options An associative array to use to build the option
+	 *                        list. The keys will be used as the values passed
+	 *                        back, and the values will be used for display. i.e.
+	 *                          'installed'   => lang('installed'),
+	 *                          'uninstalled' => lang('uninstalled'),
+	 * @return Filter\Custom  Returns a Custom Filter object.
+	 */
 	public function make($name, $label, array $options)
 	{
 		return new Filter\Custom($name, $label, $options);
 	}
 
+	/**
+	 * This will add a filter to the $filters array. It will also instantiate
+	 * a new named filter either via a local `createDefault{$name}()` method
+	 * or a bound method on the DependencyInjectionContainer.
+	 *
+	 * @param Filter\Filter|string $filter If a Filter object is passed in it
+	 *   will be added directly. Otherwise the first argument passed in will be
+	 *   used as the name of the filter to instantiate.
+	 * @param mixed $filter,... An unlimited optional number of arguments to
+	 *   pass to the construction of the $filter
+	 * @throws Exception if a named filter cannot be constructed
+	 * @return self This returns a reference to itself
+	 */
 	public function add($filter)
 	{
 		if ($filter instanceof Filter\Filter)
@@ -87,7 +131,8 @@ class FilterFactory {
 	 * Renames the last filter to be added
 	 *
 	 * @param string $name The new name="" attribute for the previous filter
-	 * @return obj         Returns itself ($this)
+	 * @throws Exception if no filters have been added
+	 * @return self This returns a reference to itself
 	 */
 	public function withName($name)
 	{
@@ -101,6 +146,13 @@ class FilterFactory {
 		return $this;
 	}
 
+	/**
+	 * This will render the filters down to HTML by looping through all the
+	 * Filters and calling their individual render() methods.
+	 *
+	 * @param URL $base_url A URL object reference to use when constructing URLs
+	 * @return string Returns HTML
+	 */
 	public function render(URL $base_url)
 	{
 		$url = clone $base_url;
@@ -120,6 +172,15 @@ class FilterFactory {
 		return $this->view->make('filters')->render(array('filters' => $filters));
 	}
 
+	/**
+	 * This will grab all the values from the Filters by looping through them
+	 * and calling their individual value() methods.
+	 *
+	 * @return array Returns an associative array of the values where the key
+	 *               is the filter's name and the value is the value. i.e.
+	 *                 'filter_by_site' => 3,
+	 *                 'perpage' => 50
+	 */
 	public function values()
 	{
 		$values = array();
@@ -132,16 +193,34 @@ class FilterFactory {
 		return $values;
 	}
 
+	/**
+	 * This will instantiate and return a default Date filter
+	 *
+	 * @return Filter\Date a Date Filter object
+	 */
 	protected function createDefaultDate()
 	{
 		return new Filter\Date();
 	}
 
+	/**
+	 * This will instantiate and return a default Site filter
+	 *
+	 * @return Filter\Site a Site Filter object
+	 */
 	protected function createDefaultSite()
 	{
 		return new Filter\Site();
 	}
 
+	/**
+	 * This will instantiate and return a default Perpage filter
+	 *
+	 * @param  int $total The total number of items available
+	 * @param  string $lang_key The optional lang key to use for the "All
+	 *                          <<$total>> items" option
+	 * @return Filter\Perpage a Perpage Filter object
+	 */
 	protected function createDefaultPerpage($total, $lang_key = NULL)
 	{
 		if ( ! isset($lang_key))
@@ -152,6 +231,22 @@ class FilterFactory {
 		return new Filter\Perpage($total, $lang_key);
 	}
 
+	/**
+	 * This will instantiate and return a default Username filter
+	 *
+	 * @todo Figure out what to do when container is set and $usernames are
+	 *   passed in.
+	 *
+	 * @uses DependencyInjectionContainer::make to create a Model/Query object
+	 * @uses Filter\Username::setQuery to set a Model/Query object in order to
+	 *   fetch a list of usernames
+	 *
+	 * @param array $usernames An associative array of usernames to use for the
+	 *   filter where the key is the User ID and the value is the Username. i.e.
+	 *     '1' => 'admin',
+	 *     '2' => 'johndoe'
+	 * @return Filter\Username a Username Filter object
+	 */
 	protected function createDefaultUsername($usernames = array())
 	{
 		$filter = new Filter\Username($usernames);
@@ -165,7 +260,4 @@ class FilterFactory {
 	}
 
 }
-// END CLASS
-
-/* End of file FilterFactory.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Service/Filter/FilterFactory.php */
+// EOF
