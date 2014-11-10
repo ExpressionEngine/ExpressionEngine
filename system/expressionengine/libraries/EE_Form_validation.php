@@ -83,6 +83,9 @@ class EE_Form_validation extends CI_Form_validation {
 		// and this POST field should have the name of it
 		$field = ee()->input->post('ee_fv_field');
 
+		// Remove any namespacing to run validation for the parent field
+		$field = preg_replace('/\[.+?\]/', '', $field);
+
 		// Unset any other rules that aren't for the field we want to
 		// validate
 		foreach ($this->_field_data as $key => $value)

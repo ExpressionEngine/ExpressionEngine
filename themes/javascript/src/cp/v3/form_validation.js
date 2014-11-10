@@ -168,13 +168,36 @@ EE.cp.formValidation = {
 
 		var fieldset = field.parents('fieldset'),
 			container = field.parents('div[class*=setting]'),
-			button = form.find('.form-ctrls input.btn'),
-			errorClass = 'em.ee-form-error-message';
+			button = form.find('.form-ctrls input.btn'), // Submit button of form
+			errorClass = 'em.ee-form-error-message',
+			grid = false;
+
+		// If we're in a Grid input, re-assign some things to apply classes
+		// and show error messages in the proper places
+		if (fieldset.hasClass('grid-publish'))
+		{
+			fieldset = fieldset.find('div.setting-txt');
+			container = field.parents('td');
+			grid = true;
+		}
 
 		// Validation success, return the form to its original, submittable state
 		if (message == 'success') {
 
-			fieldset.removeClass('invalid');
+			// For Grid, we also need to remove the class on the cell and do some
+			// special handling of the invalid class on the Grid field label
+			if (grid) {
+				container.removeClass('invalid');
+
+				// For Grid, only remove the invalid class from the label if no
+				// more errors exist in the Grid
+				if (fieldset.parent().find('td.invalid').size() == 0) {
+					fieldset.removeClass('invalid');
+				}
+			} else {
+				fieldset.removeClass('invalid');
+			}
+
 			container.find('> ' + errorClass).remove();
 
 			// Re-enable submit button only if all errors are gone
@@ -190,13 +213,18 @@ EE.cp.formValidation = {
 
 			fieldset.addClass('invalid');
 
+			// Specify the Grid cell the error is in
+			if (grid) {
+				container.addClass('invalid');
+			}
+
 			// We'll get HTML back from the validator, create an element
 			// out of it
 			var errorElement = $('<div/>').html(message.error).contents();
 
 			// Don't double up on error messages
-			if (fieldset.has(errorClass).length) {
-				fieldset.find(errorClass).remove();
+			if (container.has(errorClass).length) {
+				container.find(errorClass).remove();
 			}
 
 			container.append(errorElement);
