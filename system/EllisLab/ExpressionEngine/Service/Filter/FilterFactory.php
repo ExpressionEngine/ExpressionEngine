@@ -46,8 +46,19 @@ class FilterFactory {
 		return $this;
 	}
 
-	public function add($name)
+	public function make($name, $label, array $options)
 	{
+		return new Filter\Custom($name, $label, $options);
+	}
+
+	public function add($filter)
+	{
+		if ($filter instanceof Filter\Filter)
+		{
+			$this->filters[] = $filter;
+			return $this;
+		}
+
 		$args = func_get_args();
 		$name = array_shift($args);
 
