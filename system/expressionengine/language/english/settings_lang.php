@@ -1174,6 +1174,9 @@ $lang = array(
 'no_upload_dir_url' =>
 'You must submit the URL to your upload directory',
 
+'duplicate_image_size_name' =>
+'You must enter a unique name for this image manipulation.',
+
 'btn_create_directory' =>
 'Create Directory',
 

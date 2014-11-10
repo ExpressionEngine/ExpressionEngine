@@ -31,11 +31,20 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 class GridInput extends Table {
 
 	/**
+	 * GridInput currently provides these options for configuration:
 	 *
-	 * @param	array 	$config	See above for options
+	 * 'field_name' - Name of the field the child fields will live under in POST
+	 * 'reorder' - Whether or not to allow users to reorder the rows in this Grid
+	 *
+	 * The rest of the config items have good defaults for use in Grid, it's
+	 * probably best not to set any other config items.
+	 * 
+	 * @param	array 	$config	See Table constructor for options
 	 */
 	public function __construct($config = array())
 	{
+		// These should be our default to properly initialize a Table class
+		// for use as a Grid input
 		$defaults = array(
 			'limit'		 => 0,
 			'sortable'	 => FALSE,
@@ -128,12 +137,14 @@ class GridInput extends Table {
 			$row['columns'] = array_map(function($field) use ($grid, $row)
 			{
 				$row_id = (isset($row['attrs']['row_id'])) ? 'row_id_'.$row['attrs']['row_id'] : 'new_row_0';
-				return $grid->namespace_for_grid($field, $row_id);
+				return $grid->namespaceForGrid($field, $row_id);
 			}, $row['columns']);
 
 			// This no longer needs to be here
 			unset($row['attrs']['row_id']);
 		}
+
+		$view_data['validation_errors'] = (isset($this->config['validation_errors'])) ? $this->config['validation_errors'] : array();
 
 		return $view_data;
 	}
@@ -146,7 +157,7 @@ class GridInput extends Table {
 	 * @param	string	$replace	String to use for replacement
 	 * @return	string	String with namespaced inputs
 	 */
-	public function namespace_inputs($search, $replace)
+	public function namespaceInputs($search, $replace)
 	{
 		return preg_replace(
 			'/(<[input|select|textarea][^>]*)name=["\']([^"\'\[\]]+)([^"\']*)["\']/',
@@ -162,9 +173,9 @@ class GridInput extends Table {
 	 * @param	string	$row_id	Unique identifier for row
 	 * @return	string	String with namespaced inputs
 	 */
-	private function namespace_for_grid($search, $row_id = 'new_row_0')
+	private function namespaceForGrid($search, $row_id = 'new_row_0')
 	{
-		return $this->namespace_inputs(
+		return $this->namespaceInputs(
 			$search,
 			'$1name="'.$this->config['field_name'].'[rows]['.$row_id.'][$2]$3"'
 		);

@@ -33,6 +33,7 @@ use EllisLab\ExpressionEngine\Library\CP;
  */
 class Uploads extends Settings {
 
+	// We'll keep Grid validation errors in here
 	private $image_sizes_errors = array();
 
 	/**
@@ -163,7 +164,7 @@ class Uploads extends Settings {
 			array(
 				'field' => 'server_path',
 				'label' => 'lang:upload_path',
-				'rules' => 'required|strip_tags|valid_xss_check|valid_path'
+				'rules' => 'required|strip_tags|valid_xss_check|file_exists'
 			),
 			array(
 				'field' => 'url',
@@ -427,7 +428,7 @@ class Uploads extends Settings {
 	{
 		if ($str == 'http://' OR $str == '')
 		{
-			ee()->form_validation->set_message('not_http', lang('no_upload_dir_url'));
+			ee()->form_validation->set_message('notHttp', lang('no_upload_dir_url'));
 			return FALSE;
 		}
 
@@ -446,18 +447,32 @@ class Uploads extends Settings {
 			return TRUE;
 		}
 
+		// Create an array of row names for counting to see if there are
+		// duplicate column names; they should be unique
 		foreach ($image_sizes['rows'] as $row_id => $columns)
 		{
+			$row_names[] = $columns['name'];
+		}
+
+		$row_name_count = array_count_values($row_names);
+
+		foreach ($image_sizes['rows'] as $row_id => $columns)
+		{
+			// There cannot be duplicate image manipulation names
+			if ($row_name_count[$columns['name']] > 1)
+			{
+				$this->image_sizes_errors[$row_id]['name'] = lang('duplicate_image_size_name');
+			}
 			// Column names must contain only alpha-numeric characters and no spaces
-			if (preg_match('/[^a-z0-9\-\_]/i', $columns['name']))
+			elseif (preg_match('/[^a-z0-9\-\_]/i', $columns['name']))
 			{
 				$this->image_sizes_errors[$row_id]['name'] = lang('alpha_dash');
 			}
 
-			// Double-check for form tampering
+			// Double-check for form tampering (why would you tamper this?)
 			if ( ! in_array($columns['type'], array('crop', 'constrain')))
 			{
-				$this->image_sizes_errors[$row_id]['name'] = lang('required');
+				$this->image_sizes_errors[$row_id]['type'] = lang('required');
 			}
 
 			// Make sure height and width are positive numbers
@@ -470,7 +485,35 @@ class Uploads extends Settings {
 			}
 		}
 
-		return empty($this->image_sizes_errors);
+		if ( ! empty($this->image_sizes_errors))
+		{
+			// For AJAX validation, only send back the relvant error message
+			if (AJAX_REQUEST)
+			{
+				// Figure out which field we need to grab out of the array
+				$field = ee()->input->post('ee_fv_field');
+				preg_match("/\[rows\]\[(\w+)\]\[(\w+)\]/", $field, $matches);
+
+				// Error is present for the validating field, send it back
+				if (isset($this->image_sizes_errors[$matches[1]][$matches[2]]))
+				{
+					ee()->form_validation->set_message('validateImageSizes', $this->image_sizes_errors[$matches[1]][$matches[2]]);
+
+					return FALSE;
+				}
+
+				// This particular field is fine!
+				return TRUE;
+			}
+
+			// Don't show a message below the Grid, we'll just show messages by
+			// the fields in question inside the Grid
+			ee()->form_validation->set_message('validateImageSizes', '');
+
+			return FALSE;
+		}
+
+		return TRUE;
 	}
 
 	/**
