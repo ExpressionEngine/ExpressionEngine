@@ -2,7 +2,8 @@
 namespace EllisLab\ExpressionEngine\Service;
 
 use Closure;
-use StdClass;
+use EllisLab\ExpressionEngine\Service\ServiceProvider;
+use EllisLab\ExpressionEngine\Service\DependencyInjectionBindingDecorator;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -30,10 +31,16 @@ use StdClass;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class DependencyInjectionContainer {
+class DependencyInjectionContainer implements ServiceProvider {
 
+	/**
+	 * @var array An associative array of registered dependencies
+	 */
 	protected $registry = array();
-	protected $substitutes = array();
+
+	/**
+	 * @var array An associative array of singletons
+	 */
 	protected $singletonRegistry = array();
 
 	/**
@@ -84,8 +91,10 @@ class DependencyInjectionContainer {
 	 */
 	public function bind($name, $object)
 	{
-		$this->assignToRegistry($name, $object, $this->substitutes);
-		return $this;
+		$binding_isolation = new DependencyInjectionBindingDecorator($this);
+		$binding_isolation->bind($name, $object);
+
+		return $binding_isolation;
 	}
 
 	/**
@@ -156,23 +165,14 @@ class DependencyInjectionContainer {
 			$name = 'EllisLab:' . $name;
 		}
 
-		if (isset($this->substitutes[$name]))
+		if ( ! isset($this->registry[$name]))
 		{
-			$object = $this->substitutes[$name];
+			throw new \RuntimeException('Attempt to access unregistered service ' . $name . ' in the DIC.');
 		}
 		else
 		{
-			if ( ! isset($this->registry[$name]))
-			{
-				throw new \RuntimeException('Attempt to access unregistered service ' . $name . ' in the DIC.');
-			}
-			else
-			{
-				$object = $this->registry[$name];
-			}
+			$object = $this->registry[$name];
 		}
-
-		$this->substitutes = array();
 
 		if ($object instanceof Closure)
 		{
