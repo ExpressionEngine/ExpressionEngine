@@ -1,8 +1,6 @@
 <?php
 namespace EllisLab\ExpressionEngine\Service;
 
-if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
 use Closure;
 use StdClass;
 
@@ -68,7 +66,7 @@ class DependencyInjectionContainer {
 	 * @param string      $name   The name of the dependency in the form
 	 *                            Vendor:Namespace
 	 * @param Closure|obj $object The object to use
-	 * @return void
+	 * @return self Returns this DependencyInjectionContainer object
 	 */
 	public function register($name, $object)
 	{
@@ -82,7 +80,7 @@ class DependencyInjectionContainer {
 	 * @param string      $name   The name of the dependency in the form
 	 *                            Vendor:Namespace
 	 * @param Closure|obj $object The object to use
-	 * @return obj Returns this DependencyInjectionContainer object
+	 * @return self Returns this DependencyInjectionContainer object
 	 */
 	public function bind($name, $object)
 	{
@@ -90,6 +88,14 @@ class DependencyInjectionContainer {
 		return $this;
 	}
 
+	/**
+	 * Registers a singleton dependency with the container
+	 *
+	 * @param string      $name   The name of the dependency in the form
+	 *                            Vendor:Namespace
+	 * @param Closure|obj $object The object to use
+	 * @return self Returns this DependencyInjectionContainer object
+	 */
 	public function registerSingleton($name, $object)
 	{
 		if ($object instanceof Closure)
@@ -103,6 +109,13 @@ class DependencyInjectionContainer {
 		return $this->register($name, $object);
 	}
 
+	/**
+	 * This will exectute the provided Closure exactly once, storing the result
+	 * of the execution in an array and always returning that array element.
+	 *
+	 * @param Closure $object The Closure to execute
+	 * @return mixed The result of the Closure $object
+	 */
 	public function singleton(Closure $object)
 	{
 	    $hash = spl_object_hash($object);
@@ -171,7 +184,4 @@ class DependencyInjectionContainer {
 	}
 
 }
-// END CLASS
-
-/* End of file DependencyInjectionContainer.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Service/DependencyInjectionContainer.php */
+// EOF
