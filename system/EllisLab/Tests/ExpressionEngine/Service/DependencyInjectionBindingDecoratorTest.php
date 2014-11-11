@@ -18,6 +18,10 @@ class DependencyInjectionBindingDecoratorTest extends \PHPUnit_Framework_TestCas
 			return 'Flock of ' . $bird . 's.';
 		});
 		$this->di->registerSingleton('One', function($di) { return 'Ein'; });
+		$this->di->registerSingleton('Dinner', function($di) {
+			$bird = $di->make('Bird');
+			return 'Time to eat ' . $bird;
+		});
 	}
 
 	protected function tearDown()
@@ -60,7 +64,13 @@ class DependencyInjectionBindingDecoratorTest extends \PHPUnit_Framework_TestCas
 		$value = $this->di->bind('One', 'Uno')->make('One');
 		$this->assertEquals('Uno', $value, 'Bindings override registered singleton values');
 
-		// Bind a dependency of a singleton
+		// Bind a dependency of a singleton before singleton was cached
+		$value = $this->di->bind('Bird', 'Blackbird')->make('Dinner');
+		$this->assertEquals('Time to eat Crow', $value, 'Singletons ignore binds on first execution');
+
+		// Bind a dependency of a singleton after singleton was cached
+		$value = $this->di->bind('Bird', 'Blackbird')->make('Dinner');
+		$this->assertEquals('Time to eat Crow', $value, 'Singletons ignore binds on subsequent execution');
 
 		// Bind and consume a singleton
 		$value = $this->di->bind('Punny', function($di)
