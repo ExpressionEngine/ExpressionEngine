@@ -1606,10 +1606,12 @@ class Metaweblog_api {
 			}
 		}
 
-		ee()->db->select('server_path, url');
-		$query = ee()->db->get_where('upload_prefs', array('id' => $this->upload_dir));
+		ee()->load->model('file_upload_preferences_model');
 
-		if ($query->num_rows() == 0)
+		$upload_prefs = ee()->file_upload_preferences_model->get_file_upload_preferences(NULL, $this->upload_dir);
+		
+
+		if (empty($upload_prefs))
 		{
 			return ee()->xmlrpc->send_error_message('803', ee()->lang->line('invalid_access'));
 		}
@@ -1672,7 +1674,7 @@ class Metaweblog_api {
 		$response = array(
 			array(
 				'url' => array(
-					$query->row('url').$filename,
+					$upload_prefs['url'].$filename,
 					'string'
 				),
 			),
