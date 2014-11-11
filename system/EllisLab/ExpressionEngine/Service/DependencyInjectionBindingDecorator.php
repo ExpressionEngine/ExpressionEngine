@@ -57,6 +57,11 @@ class DependencyInjectionBindingDecorator implements ServiceProvider {
 		return $this;
 	}
 
+	public function singleton(Closure $object)
+	{
+		return $this->delegate->singleton($object);
+	}
+
 	public function bind($name, $object)
 	{
 		$this->bindings[$name] = $object;
