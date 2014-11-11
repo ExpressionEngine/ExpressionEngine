@@ -1,4 +1,7 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+use \EllisLab\ExpressionEngine\Service\Db\Config;
+
 /**
  * CodeIgniter
  *
@@ -27,6 +30,8 @@ function &DB($params = '', $active_record_override = NULL)
 	// Load the DB config file if a DSN string wasn't passed
 	if (is_string($params) AND strpos($params, '://') === FALSE)
 	{
+		$config = new Config();
+
 		$path = defined('EE_APPPATH') ? EE_APPPATH : APPPATH;
 		include($path.'config/database.php');
 
