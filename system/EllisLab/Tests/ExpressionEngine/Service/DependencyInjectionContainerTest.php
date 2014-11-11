@@ -56,6 +56,21 @@ class DependencyInjectionContainerTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals('1', $this->di->make('Dummy'), 'Singleton was not re-made');
 	}
 
+	public function testChaining()
+	{
+		$di = $this->di->register('Foo', 'Bar');
+		$this->assertInstanceOf('EllisLab\ExpressionEngine\Service\DependencyInjectionContainer', $di);
+		$this->assertTrue($this->di === $di);
+
+		$di = $this->di->registerSingleton('Bar', 'Baz');
+		$this->assertInstanceOf('EllisLab\ExpressionEngine\Service\DependencyInjectionContainer', $di);
+		$this->assertTrue($this->di === $di);
+
+		$di = $this->di->bind('Foo', 'Bar');
+		$this->assertInstanceOf('EllisLab\ExpressionEngine\Service\DependencyInjectionBindingDecorator', $di);
+		$this->assertFalse($this->di === $di);
+	}
+
 	/**
 	 * @expectedException Exception
 	 */
