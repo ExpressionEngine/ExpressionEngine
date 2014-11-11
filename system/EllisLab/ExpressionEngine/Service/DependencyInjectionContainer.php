@@ -2,6 +2,7 @@
 namespace EllisLab\ExpressionEngine\Service;
 
 use Closure;
+use Exception;
 use EllisLab\ExpressionEngine\Service\ServiceProvider;
 use EllisLab\ExpressionEngine\Service\DependencyInjectionBindingDecorator;
 
@@ -61,7 +62,7 @@ class DependencyInjectionContainer implements ServiceProvider {
 
 		if ( isset($registry[$name]))
 		{
-			throw \Exception('Attempt to reregister existing class' . $name);
+			throw new Exception('Attempt to reregister existing class' . $name);
 		}
 
 		$registry[$name] = $object;
