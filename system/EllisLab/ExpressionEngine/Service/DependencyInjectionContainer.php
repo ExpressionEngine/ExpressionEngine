@@ -159,7 +159,14 @@ class DependencyInjectionContainer implements ServiceProvider {
 	{
 		$arguments = func_get_args();
 
+		$di = $this;
 		$name = array_shift($arguments);
+
+		if ($name instanceof DependencyInjectionBindingDecorator)
+		{
+			$di = $name;
+			$name = array_shift($arguments);
+		}
 
 		if (strpos($name, ':') === FALSE)
 		{
@@ -177,7 +184,7 @@ class DependencyInjectionContainer implements ServiceProvider {
 
 		if ($object instanceof Closure)
 		{
-			array_unshift($arguments, $this);
+			array_unshift($arguments, $di);
 			return call_user_func_array($object, $arguments);
 		}
 

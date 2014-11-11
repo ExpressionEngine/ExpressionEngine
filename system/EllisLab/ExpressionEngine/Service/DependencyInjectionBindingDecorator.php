@@ -82,6 +82,7 @@ class DependencyInjectionBindingDecorator implements ServiceProvider {
 		}
 
 		array_unshift($arguments, $name);
+		array_unshift($arguments, $this);
 
 		return call_user_func_array(
 			array($this->delegate, 'make'),
