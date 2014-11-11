@@ -155,7 +155,7 @@ class Date extends Filter {
 			'label'			=> $this->label,
 			'name'			=> $this->name,
 			'value'			=> $value,
-			'custom_value'	=> ee()->input->post($this->name),
+			'custom_value'  => (array_key_exists($this->name, $_POST)) ? $_POST[$this->name] : FALSE,
 			'placeholder'	=> $this->placeholder,
 			'options'		=> $this->prepareOptions($url),
 			'timestamp'		=> $this->timestamp
