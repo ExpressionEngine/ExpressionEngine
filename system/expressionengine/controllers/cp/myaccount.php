@@ -1327,10 +1327,20 @@ class MyAccount extends CP_Controller {
 	{
 		$signature = $this->input->post('signature');
 
-		// Do we have what we need in $_POST?
-		if ( ! ee()->input->post('signature'))
+		// Get member_id for redirects
+		$params = array();
+		if ($id = ee()->input->get_post('id'))
 		{
-			return ee()->functions->redirect(cp_url('myaccount/edit_signature'));
+			$params['id'] = $id;
+		}
+
+		// Do we have what we need in $_POST?
+		if ( ! ee()->input->post('signature')
+			&& ! ee()->input->post('remove'))
+		{
+			return ee()->functions->redirect(
+				cp_url('myaccount/edit_signature', $params)
+			);
 		}
 
 		$maxlength = ($this->config->item('sig_maxlength') == 0)
@@ -1352,12 +1362,6 @@ class MyAccount extends CP_Controller {
 			OR isset($_POST['remove']))
 		{
 			return $this->upload_signature_image();
-		}
-
-		$params = array();
-		if ($id = ee()->input->get_post('id'))
-		{
-			$params['id'] = $id;
 		}
 
 		$this->session->set_flashdata('message_success', lang('signature_updated'));

@@ -1284,6 +1284,13 @@ class Forum {
 			return $this->parse_template_php($str);
 		}
 
+		if ( ! is_object(ee()->TMPL))
+		{
+			// cleanup unparsed conditionals and annotations
+			$str = preg_replace("/".LD."if\s+.*?".RD.".*?".LD.'\/if'.RD."/s", "", $str);
+			$str = preg_replace("/\{!--.*?--\}/s", '', $str);
+		}
+
 		return $str;
 	}
 
