@@ -17,6 +17,7 @@ class DependencyInjectionBindingDecoratorTest extends \PHPUnit_Framework_TestCas
 			$bird = $di->make('Bird');
 			return 'Flock of ' . $bird . 's.';
 		});
+		$this->di->registerSingleton('One', function($di) { return 'Ein'; });
 	}
 
 	protected function tearDown()
@@ -32,8 +33,6 @@ class DependencyInjectionBindingDecoratorTest extends \PHPUnit_Framework_TestCas
 
 	public function testSimpleBinds()
 	{
-		$tests = array();
-
 		// Bind something already registered and make it
 		$value = $this->di->bind('Bird', 'Raven')->make('Bird');
 		$this->assertEquals('Raven', $value, 'Bindings override registered values');
@@ -45,7 +44,7 @@ class DependencyInjectionBindingDecoratorTest extends \PHPUnit_Framework_TestCas
 		// Bind something that depends on something registered
 		$value = $this->di->bind('Flock', function($di)
 		{
-			$bird = $this->di->make('Bird');
+			$bird = $di->make('Bird');
 			return 'Murder of ' . $bird . 's.';
 		})->make('Flock');
 		$this->assertEquals('Murder of Crows.', $value, 'A binding can make something registered');
@@ -58,10 +57,18 @@ class DependencyInjectionBindingDecoratorTest extends \PHPUnit_Framework_TestCas
 	public function testSingletons()
 	{
 		// Bind over a singleton
+		$value = $this->di->bind('One', 'Uno')->make('One');
+		$this->assertEquals('Uno', $value, 'Bindings override registered singleton values');
 
 		// Bind a dependency of a singleton
 
 		// Bind and consume a singleton
+		$value = $this->di->bind('Punny', function($di)
+		{
+			$one = $di->make('One');
+			return 'Albert ' . $one . 'stein!';
+		})->make('Punny');
+		$this->assertEquals('Albert Einstein!', $value, 'A binding can consume registered singletons');
 	}
 
 	public function testChainedBinds()
@@ -94,6 +101,14 @@ class DependencyInjectionBindingDecoratorTest extends \PHPUnit_Framework_TestCas
 	public function testReregisteringAfterBind()
 	{
 		$this->di->bind('Bird', 'Raven')->register('Bird', 'Seagull');
+	}
+
+	/**
+	 * @expectedException Exception
+	 */
+	public function testReregisteringASingletonAfterBind()
+	{
+		$this->di->bind('One', 'Uno')->registerSingleton('One', 'Ichi');
 	}
 
 }
