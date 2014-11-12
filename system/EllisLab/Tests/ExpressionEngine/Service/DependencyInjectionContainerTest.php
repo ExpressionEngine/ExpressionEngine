@@ -60,11 +60,11 @@ class DependencyInjectionContainerTest extends \PHPUnit_Framework_TestCase {
 	{
 		$di = $this->di->register('Foo', 'Bar');
 		$this->assertInstanceOf('EllisLab\ExpressionEngine\Service\DependencyInjectionContainer', $di);
-		$this->assertTrue($this->di === $di);
+		$this->assertSame($this->di, $di);
 
 		$di = $this->di->registerSingleton('Bar', 'Baz');
 		$this->assertInstanceOf('EllisLab\ExpressionEngine\Service\DependencyInjectionContainer', $di);
-		$this->assertTrue($this->di === $di);
+		$this->assertSame($this->di, $di);
 
 		$di = $this->di->bind('Foo', 'Bar');
 		$this->assertInstanceOf('EllisLab\ExpressionEngine\Service\DependencyInjectionBindingDecorator', $di);
