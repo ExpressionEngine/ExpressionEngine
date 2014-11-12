@@ -35,6 +35,18 @@ class DependencyInjectionBindingDecoratorTest extends \PHPUnit_Framework_TestCas
 		$this->assertInstanceOf('EllisLab\ExpressionEngine\Service\DependencyInjectionBindingDecorator', $di);
 	}
 
+	public function testBindingAClosure()
+	{
+		$value = $this->di->bind('Bird', function($di) { return 'Raven'; })->make('Bird');
+		$this->assertEquals('Raven', $value, 'Can bind a Closure');
+	}
+
+	public function testBindingAScalar()
+	{
+		$value = $this->di->bind('Bird', 'Raven')->make('Bird');
+		$this->assertEquals('Raven', $value, 'Can bind a scalar');
+	}
+
 	public function testSimpleBinds()
 	{
 		// Bind something already registered and make it
