@@ -37,7 +37,7 @@ use EllisLab\ExpressionEngine\Service\CP\Filter\FilterRunner;
  */
 class Members extends CP_Controller {
 
-	private $base_url = 'members';
+	private $base_url;
 	private $group;
 
 	/**
@@ -70,6 +70,8 @@ class Members extends CP_Controller {
 				'custom_member_fields' => cp_url('members/member-fields')
 			)
 		));
+
+		$this->base_url = new URL('members', ee()->session->session_id());
 	}
 
 	// --------------------------------------------------------------------
@@ -79,8 +81,6 @@ class Members extends CP_Controller {
 	 */
 	public function index()
 	{
-		$base_url = new URL($this->base_url, ee()->session->session_id());
-
 		// creating a member automatically fills the search box
 		if ( ! ($member_name = $this->input->post('search')) &&
 			 ! ($member_name = $this->input->get('search')) &&
@@ -110,38 +110,14 @@ class Members extends CP_Controller {
 		$sort_dir = ee()->input->get('sort_dir') ?: $sort;
 		$page = ee()->input->get('page') > 0 ? ee()->input->get('page') : 1;
 
+		// Add the group filter
+		$this->filter();
+
 		$table = Table::create(array(
 			'sort_col' => $sort_col,
 			'sort_dir' => $sort_dir,
 			'limit' => $perpage
 		));
-
-		$groups = ee()->api->get('MemberGroup')->order('group_title', 'asc')->all();
-		$group_ids = array();
-
-		foreach ($groups as $group)
-		{
-			$group_ids[$group->group_id] = $group->group_title;
-		}
-
-		$filters = $group_ids;
-		$filters['all'] = lang('all');
-
-		$filter = new Filter('group', 'member_group');
-		$filter->placeholder = lang('all');
-		$filter->setOptions($filters);
-		$filter->default_value = 'all';
-
-		$value = $filter->getValue();
-		$filter->setValue($value);
-		$filter->setDisplayValue($filters[$value]);
-
-		$this->group = is_numeric($value) ? $value : '';
-
-		$fr = new FilterRunner($base_url, array($filter));
-		ee()->view->filters = $fr->render();
-		$this->base_url = $fr->getUrl();
-		$this->params = $fr->getParameters();
 
 		$state = array(
 			'sort'	=> array($sort_col => $sort_dir),
@@ -173,7 +149,7 @@ class Members extends CP_Controller {
 
 		$table->setNoResultsText('no_search_results');
 		$table->setData($data['rows']);
-		$data['table'] = $table->viewData($base_url);
+		$data['table'] = $table->viewData($this->base_url);
 
 		$base_url = $data['table']['base_url'];
 
@@ -197,7 +173,7 @@ class Members extends CP_Controller {
 			);
 		}
 
-		ee()->view->base_url = $base_url;
+		ee()->view->base_url = $this->base_url;
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->cp_page_title = lang('all_members');
 		ee()->cp->render('members/view_members', $data);
@@ -284,6 +260,39 @@ class Members extends CP_Controller {
 			'member_name' => $params['member_name'],
 			'member_groups' => $member_groups
 		);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Sets up the display filters
+	 *
+	 * @param int	
+	 * @return void
+	 */
+	private function filter()
+	{
+		$groups = ee()->api->get('MemberGroup')->order('group_title', 'asc')->all();
+		$group_ids = array();
+
+		foreach ($groups as $group)
+		{
+			$group_ids[$group->group_id] = $group->group_title;
+		}
+
+		$options = $group_ids;
+		$options['all'] = lang('all');
+
+		$group = ee('Filter')->make('group', 'member_group', $options);
+		$group->setPlaceholder(lang('all'));
+		$group->disableCustomValue();
+
+		$filters = ee('Filter')->add($group);
+
+		ee()->view->filters = $filters->render($this->base_url);
+		$this->params = $filters->values();
+		$this->group = $this->params['group'];
+		$this->base_url->addQueryStringVariables($this->params);
 	}
 
 	// --------------------------------------------------------------------
