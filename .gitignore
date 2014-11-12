@@ -2,7 +2,7 @@
 Thumbs.db
 env_local.rb
 system/config/*
-system/expressionengine/config/config.php
+system/expressionengine/config/config*.php
 system/expressionengine/config/database.php
 system/expressionengine/config/config1x.php
 system/expressionengine/config/config_1x.php
