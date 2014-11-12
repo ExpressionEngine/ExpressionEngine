@@ -110,7 +110,7 @@ class PerpageTest extends \PHPUnit_Framework_TestCase {
 		    array(1337, TRUE),
 		    array(0x539, TRUE), // Converted to 1337
 		    array(02471, TRUE), // Converted to 1337
-		    array(0b10100111001, TRUE), // Converted to 1337
+		    // array(0b10100111001, TRUE), // Converted to 1337 PHP 5.4.0 or greater
 		    array(1337e0, TRUE), // Converted to 1337
 			array(9.1, TRUE),   // Coerced to 9
 			array("foo", TRUE), // Uses the default
