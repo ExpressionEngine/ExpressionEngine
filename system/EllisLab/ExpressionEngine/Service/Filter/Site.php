@@ -2,6 +2,8 @@
 namespace EllisLab\ExpressionEngine\Service\Filter;
 
 use \InvalidArgumentException;
+use EllisLab\ExpressionEngine\Library\CP\URL;
+use EllisLab\ExpressionEngine\Service\View\ViewFactory;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -37,16 +39,10 @@ class Site extends Filter {
 	 *
 	 * @see Filter::$options for the format of the options array
 	 *
-	 * @param bool  $msm_enabled Whether or not MSM is enabled
 	 * @param array $options An associative array of options
 	 */
-	public function __construct($msm_enabled = NULL, array $options = array())
+	public function __construct(array $options = array())
 	{
-		if ( ! is_null($msm_enabled))
-		{
-			$this->setMSMEnabled($msm_enabled);
-		}
-
 		$this->name = 'filter_by_site';
 		$this->label = 'site';
 		$this->placeholder = lang('filter_by_site');
@@ -54,19 +50,23 @@ class Site extends Filter {
 	}
 
 	/**
-	 * Sets the $msm_enabled boolean variable
+	 * Sets the $msm_enabled boolean variable to TRUE
 	 *
-	 * @param bool $enabled Whether or not MSM is enabled
 	 * @return void
 	 */
-	public function setMSMEnabled($enabled)
+	public function enableMSM()
 	{
-		if ( ! is_bool($enabled))
-		{
-			throw new InvalidArgumentException('setmsm_enabled takes a boolean, a ' . gettype($enabled) . 'was passed.');
-		}
+		$this->msm_enabled = TRUE;
+	}
 
-		$this->msm_enabled = $enabled;
+	/**
+	 * Sets the $msm_enabled boolean variable to FALSE
+	 *
+	 * @return void
+	 */
+	public function disableMSM()
+	{
+		$this->msm_enabled = FALSE;
 	}
 
 	/**
@@ -80,23 +80,28 @@ class Site extends Filter {
 			return TRUE;
 		}
 
-		return (array_key_exists($this->value(), $this->options));
+		if ( ! (int) $this->value())
+		{
+			return FALSE;
+		}
+
+		return (array_key_exists((int) $this->value(), $this->options));
 	}
 
 	/**
-	 * @see Filter::render for render behavior.
+	 * @see Filter::render for render behavior and arguments
 	 *
 	 * Overrides the abstract render behavior by returning an empty string
 	 * if multtiple sites are not available.
 	 */
-	public function render()
+	public function render(ViewFactory $view, URL $url)
 	{
 		if ( ! $this->msm_enabled)
 		{
 			return '';
 		}
 
-		parent::render();
+		parent::render($view, $url);
 	}
 
 }

@@ -218,7 +218,15 @@ class FilterFactory {
 		{
 			$sites = ee()->session->userdata('assigned_sites');
 		}
-		return new Filter\Site($msmEnabled, $sites);
+
+		$filter = new Filter\Site($sites);
+
+		if ($msmEnabled)
+		{
+			$filter->enableMSM();
+		}
+
+		return $filter;
 	}
 
 	/**
