@@ -33,8 +33,11 @@ class GridInput extends Table {
 	/**
 	 * GridInput currently provides these options for configuration:
 	 *
-	 * 'field_name' - Name of the field the child fields will live under in POST
+	 * 'field_name' - Name of the field the child fields will live under in POST,
+	 *     also is set as the table's HTML ID
 	 * 'reorder' - Whether or not to allow users to reorder the rows in this Grid
+	 * 'grid_min_rows' - Minimum number of rows this Grid should accept
+	 * 'grid_max_rows' - Maximum number of rows this Grid should accept
 	 *
 	 * The rest of the config items have good defaults for use in Grid, it's
 	 * probably best not to set any other config items.
@@ -46,11 +49,13 @@ class GridInput extends Table {
 		// These should be our default to properly initialize a Table class
 		// for use as a Grid input
 		$defaults = array(
-			'limit'		 => 0,
-			'sortable'	 => FALSE,
-			'grid_input' => TRUE,
-			'reorder'	 => TRUE,
-			'field_name' => 'grid'
+			'limit'		    => 0,
+			'sortable'	    => FALSE,
+			'grid_input'    => TRUE,
+			'reorder'	    => TRUE,
+			'field_name'    => 'grid',
+			'grid_min_rows' => 0,
+			'grid_max_rows' => '',
 		);
 
 		parent::__construct(array_merge($defaults, $config));
@@ -143,6 +148,9 @@ class GridInput extends Table {
 			// This no longer needs to be here
 			unset($row['attrs']['row_id']);
 		}
+
+		// Make the field name available so we can set as table's ID
+		$view_data['grid_field_name'] = $this->config['field_name'];
 
 		$view_data['validation_errors'] = (isset($this->config['validation_errors'])) ? $this->config['validation_errors'] : array();
 

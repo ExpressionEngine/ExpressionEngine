@@ -390,15 +390,6 @@ class Uploads extends Settings {
 			)
 		);
 
-		// Load Grid assets (make into service?)
-		ee()->cp->add_to_head(ee()->view->head_link('css/v3/grid.css'));
-		ee()->cp->add_js_script('file', 'cp/grid');
-		$settings = array(
-			'grid_min_rows' => 0,
-			'grid_max_rows' => ''
-		);
-		ee()->javascript->output('EE.grid("table.grid-input-form", '.json_encode($settings).');');
-
 		// Set current name hidden input for duplicate-name-checking in validation later
 		if ($upload_destination !== NULL)
 		{
@@ -525,9 +516,9 @@ class Uploads extends Settings {
 	private function getImageSizesGrid($upload_destination = NULL)
 	{
 		// Image manipulations Grid
-		$grid = CP\GridInput::create(array(
+		$grid = ee('Grid')->make(array(
 			'field_name' => 'image_manipulations',
-			'reorder' => FALSE // Order doesn't matter here
+			'reorder'    => FALSE, // Order doesn't matter here
 		));
 		$grid->setColumns(
 			array(

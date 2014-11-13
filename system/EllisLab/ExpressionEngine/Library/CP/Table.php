@@ -36,8 +36,8 @@ class Table {
 	const COL_TOOLBAR = 4;
 	const COL_ID = 5;
 
+	public $config = array();
 	protected $columns = array();
-	protected $config = array();
 	protected $data = array();
 
 	/**
