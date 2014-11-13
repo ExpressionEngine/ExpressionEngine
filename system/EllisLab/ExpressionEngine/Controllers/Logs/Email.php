@@ -90,7 +90,7 @@ class Email extends Logs {
 
 		if ( ! empty($this->params['filter_by_username']))
 		{
-			$logs = $logs->filter('member_id', $this->params['filter_by_username']);
+			$logs = $logs->filter('member_id', 'IN', $this->params['filter_by_username']);
 		}
 
 		if ( ! empty($this->params['filter_by_date']))
