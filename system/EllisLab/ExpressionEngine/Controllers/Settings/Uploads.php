@@ -476,6 +476,7 @@ class Uploads extends Settings {
 			}
 		}
 
+		// TODO: Abstract into service
 		if ( ! empty($this->image_sizes_errors))
 		{
 			// For AJAX validation, only send back the relvant error message
@@ -550,39 +551,68 @@ class Uploads extends Settings {
 			form_input('height')
 		));
 
-		// Populate existing image manipulations
-		if ($upload_destination !== NULL)
+		$validation_data = ee()->input->post('image_manipulations');
+		$image_sizes = array();
+
+		// If we're coming back on a validation error, load the Grid from
+		// the POST data
+		if ( ! empty($validation_data))
 		{
-			// Relationships don't work, only returns if ID == 1
-			//$sizes = $upload_destination->getFileDimension();
+			foreach ($validation_data['rows'] as $row_id => $columns)
+			{
+				$image_sizes[$row_id] = array(
+					// Fix this, multiple new rows won't namespace right
+					'id'          => str_replace('row_id_', '', $row_id),
+					'short_name'  => $columns['short_name'],
+					'resize_type' => $columns['resize_type'],
+					'width'       => $columns['width'],
+					'height'      => $columns['height']
+				);
+			}
+
+			foreach ($this->image_sizes_errors as $row_id => $columns)
+			{
+				$image_sizes[$row_id]['errors'] = $columns;
+			}
+		}
+		// Otherwise, pull from the database if we're editing
+		elseif ($upload_destination !== NULL)
+		{
 			$sizes = ee()->api->get('FileDimension')->filter('upload_location_id', $upload_destination->id)->all();
 
 			if ($sizes->count() != 0)
 			{
-				$data = array();
-
-				foreach($sizes as $size)
-				{
-					$data[] = array(
-						'attrs' => array('row_id' => $size->id),
-						'columns' => array(
-							form_input('name', $size->short_name),
-							form_dropdown(
-								'type',
-								array(
-									'constrain' => lang('image_manip_type_opt_constrain'),
-									'crop' => lang('image_manip_type_opt_crop'),
-								),
-								$size->resize_type
-							),
-							form_input('width', $size->width),
-							form_input('height', $size->height)
-						)
-					);
-				}
-
-				$grid->setData($data);
+				$image_sizes = $sizes->toArray();
 			}
+		}
+
+		// Populate image manipulations Grid
+		if ( ! empty($image_sizes))
+		{
+			$data = array();
+
+			foreach($image_sizes as $size)
+			{
+				$data[] = array(
+					'attrs' => array('row_id' => $size['id']),
+					'columns' => array(
+						form_input('short_name', $size['short_name']),
+						form_dropdown(
+							'resize_type',
+							array(
+								'constrain' => lang('image_manip_type_opt_constrain'),
+								'crop' => lang('image_manip_type_opt_crop'),
+							),
+							$size['resize_type']
+						),
+						form_input('width', $size['width']),
+						form_input('height', $size['height'])
+					),
+					//'errors' => (isset($size['errors'])) ? $size['errors'] : NULL
+				);
+			}
+
+			$grid->setData($data);
 		}
 
 		return $grid;

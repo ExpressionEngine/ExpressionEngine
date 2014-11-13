@@ -339,10 +339,18 @@ class Table {
 					$i++;
 				}
 
-				$this->data[] = array(
+				$data_row = array(
 					'attrs'		=> $attrs,
 					'columns'	=> $data_row
 				);
+
+				// Grid validation errors
+				if (isset($row['errors']))
+				{
+					//$data_row['errors'] = $row['errors'];
+				}
+
+				$this->data[] = $data_row;
 			}
 
 			$this->config['total_rows'] = count($this->data);

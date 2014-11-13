@@ -2,8 +2,6 @@
 
 namespace EllisLab\ExpressionEngine\Library\CP;
 
-if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -190,7 +188,4 @@ class GridInput extends Table {
 	}
 }
 
-// END CLASS
-
-/* End of file URL.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Library/CP/GridInput.php */
+// EOF
