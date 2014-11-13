@@ -1,6 +1,8 @@
 <?php
 namespace EllisLab\ExpressionEngine\Service\Filter;
 
+use \InvalidArgumentException;
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -28,12 +30,43 @@ namespace EllisLab\ExpressionEngine\Service\Filter;
  */
 class Site extends Filter {
 
-	public function __construct()
+	protected $msm_enabled = FALSE;
+
+	/**
+	 * Constructor
+	 *
+	 * @see Filter::$options for the format of the options array
+	 *
+	 * @param bool  $msm_enabled Whether or not MSM is enabled
+	 * @param array $options An associative array of options
+	 */
+	public function __construct($msm_enabled = NULL, array $options = array())
 	{
+		if ( ! is_null($msm_enabled))
+		{
+			$this->setMSMEnabled($msm_enabled);
+		}
+
 		$this->name = 'filter_by_site';
 		$this->label = 'site';
 		$this->placeholder = lang('filter_by_site');
-		$this->options = ee()->session->userdata('assigned_sites');
+		$this->options = $options;
+	}
+
+	/**
+	 * Sets the $msm_enabled boolean variable
+	 *
+	 * @param bool $enabled Whether or not MSM is enabled
+	 * @return void
+	 */
+	public function setMSMEnabled($enabled)
+	{
+		if ( ! is_bool($enabled))
+		{
+			throw new InvalidArgumentException('setmsm_enabled takes a boolean, a ' . gettype($enabled) . 'was passed.');
+		}
+
+		$this->msm_enabled = $enabled;
 	}
 
 	/**
@@ -41,6 +74,12 @@ class Site extends Filter {
 	 */
 	public function isValid()
 	{
+		// This is "valid" if MSM is Disabled
+		if ( ! $this->msm_enabled)
+		{
+			return TRUE;
+		}
+
 		return (array_key_exists($this->value(), $this->options));
 	}
 
@@ -52,7 +91,7 @@ class Site extends Filter {
 	 */
 	public function render()
 	{
-		if (ee()->config->item('multiple_sites_enabled') !== 'y' || IS_CORE)
+		if ( ! $this->msm_enabled)
 		{
 			return '';
 		}
