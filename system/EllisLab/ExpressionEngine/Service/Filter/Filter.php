@@ -176,6 +176,16 @@ abstract class Filter {
 		return $options;
 	}
 
+	/**
+	 * Returns the options array
+	 *
+	 * @return array An associtive array
+	 */
+	public function getOptions()
+	{
+		return $this->options;
+	}
+
 }
 // END CLASS
 
