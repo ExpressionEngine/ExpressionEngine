@@ -117,7 +117,14 @@ abstract class Filter {
 	 */
 	public function isValid()
 	{
-		return TRUE;
+		$value = $this->value();
+
+		if (is_null($value))
+		{
+			return TRUE;
+		}
+
+		return (array_key_exists($this->value(), $this->options));
 	}
 
 	/**
