@@ -286,6 +286,32 @@ class Addons extends CP_Controller {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Updates an add-on
+	 *
+	 * @param str $addon The name of the add-on to update
+	 * @return void
+	 */
+	public function update($addon)
+	{
+		$module = $this->getModules($addon);
+		if ( ! empty($module) && $module['installed'] === TRUE)
+		{
+		}
+
+		$fieldtype = $this->getFieldtypes($addon);
+		if ( ! empty($fieldtype) && $fieldtype['installed'] === TRUE)
+		{
+		}
+
+		$extension = $this->getExtensions($addon);
+		if ( ! empty($extension) && $extension['installed'] === TRUE)
+		{
+		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Installs an add-on
 	 *
 	 * @access	public
