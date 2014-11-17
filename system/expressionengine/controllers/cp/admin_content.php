@@ -1243,7 +1243,7 @@ class Admin_content extends CP_Controller {
 			$category_count = $this->db->count_all_results('categories');
 
 			$vars['categories'][$cat_count]['group_id'] = $row->group_id;
-			$vars['categories'][$cat_count]['group_name'] = htmlentities($row->group_name, ENT_QUOTES);
+			$vars['categories'][$cat_count]['group_name'] = htmlentities($row->group_name, ENT_QUOTES, 'UTF-8');
 			$vars['categories'][$cat_count]['category_count'] = $category_count;
 			$vars['categories'][$cat_count]['custom_field_count'] = ((isset($cfcount[$row->group_id])) ? $cfcount[$row->group_id] : '0');
 
@@ -1694,7 +1694,7 @@ class Admin_content extends CP_Controller {
 			foreach ($vars['categories'] as $category_id => $category_data)
 			{
 				$vars['categories'][$category_id][1] = htmlentities(
-					$vars['categories'][$category_id][1], ENT_QUOTES
+					$vars['categories'][$category_id][1], ENT_QUOTES, 'UTF-8'
 				);
 			}
 
@@ -2734,7 +2734,7 @@ class Admin_content extends CP_Controller {
 
 		// Fetch the name of the category group
 		$query = $this->category_model->get_category_group_name($vars['group_id']);
-		$vars['group_name'] = $query->row('group_name');
+		$vars['group_name'] = htmlentities($query->row('group_name'), ENT_QUOTES, 'UTF-8');
 
 		$this->db->select('field_id, field_name, field_label, field_type, field_order');
 		$this->db->from('category_fields');
@@ -2751,15 +2751,18 @@ class Admin_content extends CP_Controller {
 				$vars['custom_fields'][$row->field_id]['field_id'] = $row->field_id;
 				$vars['custom_fields'][$row->field_id]['field_name'] = $row->field_name;
 				$vars['custom_fields'][$row->field_id]['field_order'] = $row->field_order;
-				$vars['custom_fields'][$row->field_id]['field_label'] = $row->field_label;
+				$vars['custom_fields'][$row->field_id]['field_label'] = htmlentities($row->field_label, ENT_QUOTES, 'UTF-8');
 
 				switch ($row->field_type)
 				{
-					case 'text' :  $field_type = lang('text_input');
+					case 'text':
+						$field_type = lang('text_input');
 						break;
-					case 'textarea' :  $field_type = lang('textarea');
+					case 'textarea':
+						$field_type = lang('textarea');
 						break;
-					case 'select' :  $field_type = lang('select_list');
+					case 'select':
+						$field_type = lang('select_list');
 						break;
 				}
 
@@ -2825,8 +2828,8 @@ class Admin_content extends CP_Controller {
 
 			// Pipe in necessary globals
 			$this->javascript->set_global(array(
-				'publish.word_separator'	=> $this->config->item('word_separator') != "dash" ? '_' : '-',
-				'publish.foreignChars'		=> $foreign_characters,
+				'publish.word_separator' => $this->config->item('word_separator') != "dash" ? '_' : '-',
+				'publish.foreignChars'   => $foreign_characters,
 			));
 
 			// Load in necessary js files
@@ -2907,12 +2910,12 @@ class Admin_content extends CP_Controller {
 		}
 
 		$query = $this->db->query("SELECT f.field_id, f.field_name, f.site_id, f.field_label, f.field_type, f.field_default_fmt, f.field_show_fmt,
-							f.field_list_items, f.field_maxl, f.field_ta_rows, f.field_text_direction, f.field_required, f.field_order,
-							g.group_name
-							FROM exp_category_fields AS f, exp_category_groups AS g
-							WHERE f.group_id = g.group_id
-							AND g.group_id = '{$group_id}'
-							AND f.field_id = '{$field_id}'");
+				f.field_list_items, f.field_maxl, f.field_ta_rows, f.field_text_direction, f.field_required, f.field_order,
+				g.group_name
+			FROM exp_category_fields AS f, exp_category_groups AS g
+			WHERE f.group_id = g.group_id
+			AND g.group_id = '{$group_id}'
+			AND f.field_id = '{$field_id}'");
 
 		$data = array();
 
@@ -2953,9 +2956,9 @@ class Admin_content extends CP_Controller {
 		$vars['field_ta_rows'] = ($vars['field_ta_rows'] == '') ? 6 : $vars['field_ta_rows'];
 
 		$vars['field_type_options'] = array(
-											'text' 		=> lang('text_input'),
-											'textarea' 	=> lang('textarea'),
-											'select' 	=> lang('select_list')
+			'text'     => lang('text_input'),
+			'textarea' => lang('textarea'),
+			'select'   => lang('select_list')
 		);
 
 		// Show field formatting?
@@ -3067,10 +3070,15 @@ class Admin_content extends CP_Controller {
 		}
 
 		// Does field name contain invalid characters?
-
 		if (preg_match('/[^a-z0-9\_\-]/i', $_POST['field_name']))
 		{
 			$error[] = lang('invalid_characters');
+		}
+
+		if ($_POST['field_label'] != ee()->security->xss_clean($_POST['field_label']))
+		{
+			ee()->lang->loadfile('admin');
+			$error[] = sprintf(lang('invalid_xss_check'), cp_url('homepage'));
 		}
 
 		// Field name must be unique for across category groups
@@ -3209,7 +3217,7 @@ class Admin_content extends CP_Controller {
 
 		foreach($items->result() as $item)
 		{
-			$vars['items'][] = $item->field_label;
+			$vars['items'][] = htmlentities($item->field_label, ENT_QUOTES, 'UTF-8');
 		}
 
 		$this->cp->render('admin/preference_delete_confirm', $vars);
@@ -3251,7 +3259,7 @@ class Admin_content extends CP_Controller {
 
 		$this->category_model->delete_category_field($group_id, $field_id);
 
-		$cp_message = lang('cat_field_deleted').NBS.$query->row('field_label');
+		$cp_message = lang('cat_field_deleted').NBS.htmlentities($query->row('field_label'), ENT_QUOTES, 'UTF-8');
 		$this->logger->log_action($cp_message);
 
 		$this->functions->clear_caching('all', '');
@@ -3588,7 +3596,7 @@ class Admin_content extends CP_Controller {
 				$vars['custom_fields'][$row->field_id]['field_id'] = $row->field_id;
 				$vars['custom_fields'][$row->field_id]['field_name'] = $row->field_name;
 				$vars['custom_fields'][$row->field_id]['field_order'] = $row->field_order;
-				$vars['custom_fields'][$row->field_id]['field_label'] = $row->field_label;
+				$vars['custom_fields'][$row->field_id]['field_label'] = htmlentities($row->field_label, ENT_QUOTES, 'UTF-8');
 				$vars['custom_fields'][$row->field_id]['field_type'] = $fts[$row->field_type]['name'];
 			}
 		}
@@ -3822,14 +3830,12 @@ class Admin_content extends CP_Controller {
 		$edit = ( ! isset($_POST['field_id']) OR $_POST['field_id'] == '') ? FALSE : TRUE;
 
 		// We need this as a variable as we'll unset the array index
-
 		$group_id = $this->input->post('group_id');
 
 		//perform the field update
 		$this->api_channel_fields->update_field($_POST);
 
 		// Are there errors to display?
-
 		if ($this->api_channel_fields->error_count() > 0)
 		{
 			$str = '';
