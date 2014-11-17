@@ -35,7 +35,6 @@ function &DB($params = '', $active_record_override = NULL)
 
 		$directory = new Directory(array(SYSPATH.'config/', $path));
 		$config = $directory->file('config');
-		var_dump($config->get('database'));
 
 		include($path.'config/database.php');
 
