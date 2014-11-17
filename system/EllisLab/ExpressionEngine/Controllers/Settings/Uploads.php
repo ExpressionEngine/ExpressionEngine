@@ -640,7 +640,15 @@ class Uploads extends Settings {
 		$no_access = array();
 		if ($upload_destination !== NULL)
 		{
-			$no_access = $upload_destination->getNoAccess()->pluck('group_id');
+			// Relationships aren't working
+			//$no_access = $upload_destination->getNoAccess()->pluck('group_id');
+			
+			$no_access_query = ee()->db->get_where('upload_no_access', array('upload_id' => $upload_destination->id));
+
+			foreach ($no_access_query->result() as $row)
+			{
+				$no_access[] = $row->member_group;
+			}
 		}
 
 		$allowed_groups = array_diff(array_keys($member_groups), $no_access);
