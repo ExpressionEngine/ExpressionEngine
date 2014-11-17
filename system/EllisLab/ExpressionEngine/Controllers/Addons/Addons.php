@@ -132,7 +132,7 @@ class Addons extends CP_Controller {
 		$plugins = $this->getPlugins();
 		$fieldtypes = $this->getFieldtypes();
 
-		$addons = array_merge($fieldtypes, $plugins, $modules);
+		$addons = array_merge($fieldtypes, $plugins, $modules); // @TODO array_merge is the wrong idea
 
 		$this->filters(count($addons));
 
@@ -795,6 +795,15 @@ class Addons extends CP_Controller {
 			if (isset($installed[$fieldtype]))
 			{
 				$data['installed'] = TRUE;
+				$data['version'] = $installed[$fieldtype]['version'];
+
+				$FT = ee()->api_channel_fields->setup_handler($fieldtype, TRUE);
+
+				if (version_compare($FT->info['version'], $installed[$fieldtype]['version'], '>')
+					)
+				{
+					$data['upgrade'] = $FT->info['version'];
+				}
 			}
 
 			if (is_null($name))
