@@ -189,6 +189,16 @@ class Addons extends CP_Controller {
 					);
 				}
 
+				if (isset($info['upgrade']))
+				{
+					$toolbar['txt-only'] = array(
+						'href' => cp_url('addons/update/' . $info['package'], array('return' => base64_encode(ee()->cp->get_safe_refresh()))),
+						'title' => lang('update'),
+						'class' => 'add',
+						'content' => sprintf(lang('update_to_version'), $this->formatVersionNumber($info['upgrade']))
+					);
+				}
+
 				$attrs = array();
 			}
 
@@ -490,6 +500,7 @@ class Addons extends CP_Controller {
 	 * @return	array		Add-on data in the following format:
 	 *   e.g. 'developer'	 => 'native',
 	 *        'version'		 => '--',
+	 *        'upgrade'      => '2.0.4' (optional)
 	 *        'installed'	 => FALSE,
 	 *        'name'		 => 'FooBar',
 	 *        'package'		 => 'foobar',
@@ -517,6 +528,22 @@ class Addons extends CP_Controller {
 
 			if (isset($installed[$module]))
 			{
+				if (file_exists($installed[$module]['path'].'upd.'.$module.'.php'))
+				{
+					require $installed[$module]['path'].'upd.'.$module.'.php';
+					$class = ucfirst($module).'_upd';
+
+					ee()->load->add_package_path($installed[$module]['path']);
+
+					$UPD = new $class;
+					$UPD->_ee_path = APPPATH;
+					if (version_compare($UPD->version, $installed[$module]['module_version'], '>')
+						&& method_exists($UPD, 'update'))
+					{
+						$data['upgrade'] = $UPD->version;
+					}
+				}
+
 				$data['version'] = $installed[$module]['module_version'];
 				$data['installed'] = TRUE;
 				if ($installed[$module]['has_cp_backend'] == 'y')

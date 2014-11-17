@@ -23,6 +23,9 @@ $lang = array(
 'example_usage'					=>		'Example Usage',
 'available_parameters'			=>		'Available Parameters',
 
+'update'						=>		'update',
+'update_to_version'				=>		'Update to %s',
+
 /* Filters */
 'filters'						=>		'Filters',
 'status'						=>		'status',
