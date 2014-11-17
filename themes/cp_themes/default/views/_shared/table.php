@@ -107,6 +107,13 @@ if ($wrap): ?>
 						</td>
 					<?php elseif ($column['type'] == Table::COL_STATUS): ?>
 						<td><span class="st-<?=$column['content']?>"><?=$column['content']?></span></td>
+					<?php elseif (isset($column['html'])): ?>
+						<td<?php if (isset($column['error']) && ! empty($column['error'])): ?> class="invalid"<?php endif ?>>
+							<?=$column['html']?>
+							<?php if (isset($column['error']) && ! empty($column['error'])): ?>
+								<em class="ee-form-error-message"><?=$column['error']?></em>
+							<?php endif ?>
+						</td>
 					<?php else: ?>
 						<td><?=$column['content']?></td>
 					<?php endif ?>
