@@ -131,8 +131,9 @@ class Addons extends CP_Controller {
 		$modules = $this->getModules();
 		$plugins = $this->getPlugins();
 		$fieldtypes = $this->getFieldtypes();
+		$extensions = $this->getExtensions();
 
-		$addons = array_merge($fieldtypes, $plugins, $modules); // @TODO array_merge is the wrong idea
+		$addons = array_merge($extensions, $fieldtypes, $plugins, $modules); // @TODO array_merge is the wrong idea
 
 		$this->filters(count($addons));
 
@@ -817,6 +818,157 @@ class Addons extends CP_Controller {
 		}
 
 		return $fieldtypes;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Get a list of extensions
+	 *
+	 * @access	private
+	 * @param	str	$name	(optional) Limit the return to this add-on
+	 * @return	array		Add-on data in the following format:
+	 *   e.g. 'version'		 => '--',
+	 *        'installed'	 => TRUE|FALSE,
+	 *        'name'		 => 'FooBar',
+	 *        'package'		 => 'foobar',
+	 *        'enabled'		 => NULL|TRUE|FALSE
+	 *        'manual_url'	 => '' (optional),
+	 *        'settings_url' => '' (optional)
+	 */
+	private function getExtensions($name = NULL)
+	{
+		if (ee()->config->item('allow_extensions') != 'y')
+		{
+			return array();
+		}
+
+		ee()->load->model('addons_model');
+
+		$extensions = array();
+
+		$installed_ext_q = ee()->addons_model->get_installed_extensions(FALSE);
+		foreach ($installed_ext_q->result_array() as $row)
+		{
+			// Check the meta data
+			$installed[$row['class']] = $row;
+		}
+		$installed_ext_q->free_result();
+
+		foreach(ee()->addons->get_files('extensions') as $ext_name => $ext)
+		{
+			// Add the package path so things don't hork in the constructor
+			ee()->load->add_package_path($ext['path']);
+
+			// Include the file so we can grab its meta data
+			$class_name = $ext['class'];
+
+			if ( ! class_exists($class_name))
+			{
+				if (ee()->config->item('debug') == 2
+					OR (ee()->config->item('debug') == 1
+						AND ee()->session->userdata('group_id') == 1))
+				{
+					include($ext['path'].$ext['file']);
+				}
+				else
+				{
+					@include($ext['path'].$ext['file']);
+				}
+
+				if ( ! class_exists($class_name))
+				{
+					trigger_error(str_replace(array('%c', '%f'), array(htmlentities($class_name), htmlentities($ext['path'].$ext['file'])), lang('extension_class_does_not_exist')));
+					unset($extension_files[$ext_name]);
+					continue;
+				}
+			}
+
+			// Get some details on the extension
+			$Extension = new $class_name();
+
+			$data = array(
+				'version'		=> $Extension->version,
+				'installed'		=> FALSE,
+				'enabled'		=> NULL,
+				'name'			=> (isset($Extension->name)) ? $Extension->name : $ext['name'],
+				'package'		=> $ext_name,
+			);
+
+			if (isset($installed[$ext_name]))
+			{
+				$data['version'] = $installed[$ext_name]['version'];
+				$data['installed'] = TRUE;
+				$data['enabled'] = ($installed[$ext_name]['enabled'] == 'y');
+
+				if ($Extension->settings_exist == 'y')
+				{
+					$data['settings_url'] = cp_url('addons/extensions/settings/' . $ext_name);
+				}
+
+				if ($Extension->docs_url)
+				{
+					$data['manual_url'] = anchor(ee()->config->item('base_url').ee()->config->item('index_page').'?URL='.urlencode($Extension->docs_url), lang('documentation'));
+				}
+			}
+
+			if (is_null($name))
+			{
+				$extensions[$ext_name] = $data;
+			}
+			elseif ($name == $ext_name)
+			{
+				return $data;
+			}
+		}
+
+		return $extensions;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Installs a module
+	 *
+	 * @access private
+	 * @param  str	$module	The add-on to install
+	 * @return str			The name of the add-on just installed
+	 */
+	private function installExtension($module)
+	{
+	 	$name = NULL;
+		$module = ee()->security->sanitize_filename(strtolower($module));
+		ee()->lang->loadfile($module);
+
+		if (ee()->addons_installer->install($module, 'module', FALSE))
+		{
+			$name = (lang($module.'_module_name') == FALSE) ? ucfirst($module) : lang($module.'_module_name');
+		}
+
+		return $name;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Uninstalls a module
+	 *
+	 * @access private
+	 * @param  str	$module	The add-on to uninstall
+	 * @return str			The name of the add-on just uninstalled
+	 */
+	private function uninstallExtension($module)
+	{
+		$name = NULL;
+		$module = ee()->security->sanitize_filename(strtolower($module));
+		ee()->lang->loadfile($module);
+
+		if (ee()->addons_installer->uninstall($module, 'module', FALSE))
+		{
+			$name = (lang($module.'_module_name') == FALSE) ? ucfirst($module) : lang($module.'_module_name');
+		}
+
+		return $name;
 	}
 
 	// -------------------------------------------------------------------------
