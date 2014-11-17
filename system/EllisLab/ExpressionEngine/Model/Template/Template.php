@@ -69,7 +69,7 @@ class Template extends Model {
 	protected $allow_php;
 	protected $php_parse_location;
 	protected $hits;
-
+/*
 	public function getTemplateGroup()
 	{
 		return $this->getRelated('TemplateGroup');
@@ -109,5 +109,6 @@ class Template extends Model {
 	{
 		return $this->setRelated('NoAccess', $no_access);
 	}
+	*/
 }
 

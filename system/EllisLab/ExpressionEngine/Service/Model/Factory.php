@@ -5,9 +5,12 @@ use InvalidArgumentException;
 use EllisLab\ExpressionEngine\Service\AliasServiceInterface;
 use EllisLab\ExpressionEngine\Service\Model\Relationship\RelationshipGraph;
 use EllisLab\ExpressionEngine\Service\Model\Query\Builder as QueryBuilder;
-use EllisLab\ExpressionEngine\Service\Model\Query\Connection;
+use EllisLab\ExpressionEngine\Service\Model\Query\Query;
+use EllisLab\ExpressionEngine\Service\Model\Query\ReferenceChain;
 use EllisLab\ExpressionEngine\Service\Validation\Factory as ValidationFactory;
 
+use EllisLab\ExpressionEngine\Service\Model\Graph\RelationshipDirectedGraph;
+use EllisLab\ExpressionEngine\Service\Model\Graph\RelationshipGraphDecorator;
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -47,8 +50,10 @@ class Factory {
 
 	protected $alias_service;
 	protected $validation_factory;
+
+	// lazily instantiate as singletons
 	protected $relationship_graph;
-	protected $connection;
+	protected $relationship_manager;
 
 	public function __construct(AliasServiceInterface $aliases, ValidationFactory $validation_factory)
 	{
@@ -76,7 +81,7 @@ class Factory {
 		}
 
 		// How about a fully qualified class name?
-		elseif (class_exists($name))
+		if (class_exists($name))
 		{
 			return $name::getMetaData($item);
 		}
@@ -94,18 +99,31 @@ class Factory {
 	 */
 	public function get($model_name, $ids = NULL)
 	{
-		$query = $this->newQuery($model_name);
+		if (isset($model_name) && is_object($model_name))
+		{
+			$model_object = $model_name;
+			$model_name = $this->alias_service->getAlias(get_class($model_object));
+		}
+
+		$query = $this->newQueryBuilder($model_name);
 
 		if (isset($ids))
 		{
 			if (is_array($ids))
 			{
-				$query->filter($model_name, 'IN', $ids);
+				// we use getName() to allow for root aliasing
+				// ee()->api->get('Member as M', array(1, 2, 3))
+				$query->filter($query->getName(), 'IN', $ids);
 			}
 			else
 			{
-				$query->filter($model_name, $ids);
+				$query->filter($query->getName(), $ids);
 			}
+		}
+
+		if (isset($model_object))
+		{
+			$query->setModelObject($model_object);
 		}
 
 		return $query;
@@ -116,24 +134,24 @@ class Factory {
 	 *
 	 * @return \Ellislab\ExpressionEngine\Model\Model
 	 */
-	public function make($model, array $data = array(), $dirty = TRUE)
+	public function make($model_name, array $data = array())
 	{
-		$class = $this->alias_service->getRegisteredClass($model);
+		$class = $this->alias_service->getRegisteredClass($model_name);
 
 		if ( ! is_a($class, '\EllisLab\ExpressionEngine\Service\Model\Model', TRUE))
 		{
 			throw new InvalidArgumentException('Can only create Models.');
 		}
 
-		$polymorph = $class::getMetaData('polymorph');
+		$manager = $this->getRelationshipManager();
+		$relationships = $manager->getRelationships($model_name);
 
-		if ($polymorph !== NULL)
-		{
-			$class = $this->alias_service->getRegisteredClass($polymorph);
-		}
+		$obj = new $class($this, $data);
 
-		$obj = new $class($this, $this->alias_service, $data, $dirty);
+		$obj->setName($model_name);
+		$obj->setRelationshipEdges($relationships);
 		$obj->setValidationFactory($this->validation_factory);
+
 		return $obj;
 	}
 
@@ -154,6 +172,22 @@ class Factory {
 		return new $class($data);
 	}
 
+	/**
+	 *
+	 */
+	public function getRelationshipManager()
+	{
+		if ( ! isset($this->relationship_manager))
+		{
+			$this->relationship_manager = $this->newRelationshipManager();
+		}
+
+		return $this->relationship_manager;
+	}
+
+	/**
+	 *
+	 */
 	public function getRelationshipGraph()
 	{
 		if ( ! isset($this->relationship_graph))
@@ -164,28 +198,52 @@ class Factory {
 		return $this->relationship_graph;
 	}
 
-	protected function newRelationshipGraph()
+	/**
+	 * Create a new query object
+	 *
+	 * @return \Ellislab\ExpressionEngine\Model\Query\Builder
+	 */
+	protected function newQueryBuilder($model_name)
 	{
-		 return new RelationshipGraph($this->alias_service);
-	}
-
-	protected function getConnection()
-	{
-		return new Connection(
-			ee()->db,
-			$this,
-			$this->getRelationshipGraph(),
-			$this->alias_service
+		return new QueryBuilder(
+			$this->newQuery(),
+			new ReferenceChain($this->getRelationshipManager()),
+			$model_name
 		);
 	}
 
 	/**
 	 * Create a new query object
 	 *
-	 * @return \Ellislab\ExpressionEngine\Model\Query
+	 * @return \Ellislab\ExpressionEngine\Model\Query\Query
 	 */
-	protected function newQuery($model_name)
+	protected function newQuery()
 	{
-		return new QueryBuilder($this->getConnection(), $model_name);
+		return new Query(
+			$this,
+			$this->getRelationshipGraph(),
+			ee()->db
+		);
+	}
+
+	/**
+	 *
+	 */
+	protected function newRelationshipManager()
+	{
+		return new Relationship\Manager($this);
+	}
+
+	/**
+	 * Create a new relationship graph object
+	 *
+	 * @return \EllisLab\ExpressionEngine\Model\Relationship\RelationshipGraph
+	 */
+	protected function newRelationshipGraph()
+	{
+		return new RelationshipGraphDecorator(
+			new RelationshipDirectedGraph(),
+			$this->getRelationshipManager()
+		);
 	}
 }

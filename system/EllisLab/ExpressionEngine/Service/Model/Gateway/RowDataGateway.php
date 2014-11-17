@@ -93,6 +93,7 @@ abstract class RowDataGateway {
 	{
 		// If there's a getter, that takes priority.
 		$method = $this->propertyToMethod($name, 'get');
+
 		if (method_exists($this, $method))
 		{
 			return $this->$method();
@@ -100,7 +101,8 @@ abstract class RowDataGateway {
 
 		// Next in priority is the mapper.
 		$mapper = $this->getMapper($name);
-		if ( $mapper && property_exists($this, $name))
+
+		if ($mapper && property_exists($this, $name))
 		{
 			return $mapper->fromDb($this->{$name});
 		}
@@ -130,6 +132,7 @@ abstract class RowDataGateway {
 	public function __set($name, $value)
 	{
 		$method = $this->propertyToMethod($name, 'set');
+
 		if (method_exists($this, $method))
 		{
 			$this->$method($value);
@@ -137,7 +140,8 @@ abstract class RowDataGateway {
 		}
 
 		$mapper = $this->getMapper($name);
-		if ( $mapper && property_exists($this, $name))
+
+		if ($mapper && property_exists($this, $name))
 		{
 			$this->{$name} = $mapper->toDb($value);
 			return;
@@ -155,14 +159,16 @@ abstract class RowDataGateway {
 	protected function getMapper($name)
 	{
 		$mappers = $this->getMetaData('mappers');
+
 		if ( ! isset($mappers[$name]))
 		{
 			return NULL;
 		}
+
 		$name = $mappers[$name];
 
 		// Native, Core mapper
-		if ( strpos(':', $name) === FALSE)
+		if (strpos(':', $name) === FALSE)
 		{
 			$mapper_class = '\\EllisLab\\ExpressionEngine\\Model\\Gateway\\Mapper\\' . $name;
 			return new $mapper_class();
@@ -172,18 +178,21 @@ abstract class RowDataGateway {
 		list($vendor_module, $mapper_name) = explode(':', $name);
 		list($vendor, $module) = explode('/', $vendor_module);
 
-		$mapper_class = $vendor . '\\' . $module . '\\Model\\Gateway\\Mapper\\' . $mapper_name;
+		$mapper_class = "{$vendor}\\{$module}\\Model\\Gateway\\Mapper\\{$mapper_name}";
 		return new $mapper_class();
 	}
 
 	private function propertyToMethod($name, $method)
 	{
 		$split_name = explode('_', $name);
+
 		foreach($split_name as $key => $name_part)
 		{
 			$split_name[$key] = ucfirst($name_part);
 		}
+
 		$name = implode($split_name);
+
 		return $method . $name;
 	}
 
@@ -224,19 +233,23 @@ abstract class RowDataGateway {
 		{
 			$raw_fields = get_class_vars(get_called_class());
 			$fields = array();
-			foreach($raw_fields as $field => $default)
+
+			foreach ($raw_fields as $field => $default)
 			{
 				if (strpos($field, '_') === 0)
 				{
 					continue;
 				}
+
 				$fields[] = $field;
 			}
+
 			return $fields;
 		}
 
 		$property = '_' . $key;
-		if ( ! isset (static::$$property))
+
+		if ( ! isset(static::$$property))
 		{
 			return NULL;
 		}
@@ -260,6 +273,7 @@ abstract class RowDataGateway {
 	public function setDirty($property)
 	{
 		$this->_dirty[$property] = TRUE;
+
 		return $this;
 	}
 
@@ -328,81 +342,18 @@ abstract class RowDataGateway {
 	}
 
 	/**
-	 * Save this Gateway
-	 *
-	 * Saves this Gateway to the database.  The Gateway represents a single row
-	 * in its database table, and saving will result in it either being
-	 * updated or inserted depending on whether its primary_key has been set.
-	 *
-	 * @throws Exception	If validation fails, then an Exception will be
-	 * 		thrown.
-	 *
-	 * @return void
-	 */
-	public function save()
-	{
-		// Nothing to save!
-		if (empty($this->_dirty))
-		{
-			return;
-		}
-
-		$save_array = array();
-		foreach ($this->_dirty as $property => $dirty)
-		{
-			$save_array[$property] = $this->{$property};
-		}
-
-		$id_name = static::getMetaData('primary_key');
-		if (isset($this->{$id_name}))
-		{
-			$this->_db->where($id_name, $this->{$id_name});
-			$this->_db->update(static::getMetaData('table_name'), $save_array);
-		}
-		else
-		{
-			$this->_db->insert(static::getMetaData('table_name'), $save_array);
-			$this->{$id_name} = $this->_db->insert_id();
-		}
-	}
-
-	/**
-	 * Like save, but always insert so that we can restore from
-	 * a database backup.
-	 */
-	public function restore()
-	{
-		// Nothing to save!
-		if (empty($this->_dirty))
-		{
-			return;
-		}
-
-		$save_array = array();
-		foreach ($this->_dirty as $property => $dirty)
-		{
-			$save_array[$property] = $this->{$property};
-		}
-
-		$id_name = static::getMetaData('primary_key');
-		$this->_db->insert(static::getMetaData('table_name'), $save_array);
-	}
-
-	/**
 	 *
 	 */
-	public function delete()
+	public function getDirtyData()
 	{
-		$primary_key = static::getMetaData('primary_key');
-		if ( ! isset($this->{$primary_key}))
+		$dirty = array();
+
+		foreach (array_keys($this->_dirty) as $property)
 		{
-			throw new ModelException('Attempt to delete an Gateway with out an attached ID!');
+			$dirty[$property] = $this->$property;
 		}
 
-		$this->_db->delete(
-			static::getMetaData('table_name'),
-			array($primary_key => $this->{$primary_key})
-		);
+		return $dirty;
 	}
 
 	/**

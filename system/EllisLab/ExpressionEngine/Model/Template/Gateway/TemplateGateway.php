@@ -48,7 +48,7 @@ class TemplateGateway extends RowDataGateway {
 			'key' => 'group_id',
 			'pivot_table' => 'template_no_access',
 			'pivot_key' => 'template_id',
-			'pivot_foreign_key' => 'group_id'
+			'pivot_foreign_key' => 'member_group'
 		)
 	);
 	protected static $_validation_rules = array(

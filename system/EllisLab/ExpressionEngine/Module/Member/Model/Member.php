@@ -19,14 +19,14 @@ class Member extends Model {
 		'MemberGroup' => array(
 			'type' => 'many_to_one'
 		),
-		'ResetPassword'	=> array(
-			'type' => 'one_to_one'
-		),
-		'ChannelEntries' => array(
-			'type' => 'one_to_many',
-			'model' => 'ChannelEntry',
-			'to_key' => 'author_id'
-		)
+	//	'ResetPassword'	=> array(
+	//		'type' => 'one_to_one'
+	//	),
+	//	'ChannelEntries' => array(
+	//		'type' => 'one_to_many',
+	//		'model' => 'ChannelEntry',
+	//		'to_key' => 'author_id'
+	//	)
 	);
 
 	// Properties

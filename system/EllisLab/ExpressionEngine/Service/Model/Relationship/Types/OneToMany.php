@@ -26,7 +26,7 @@ namespace EllisLab\ExpressionEngine\Service\Model\Relationship\Types;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class OneToMany extends AbstractRelationship {
+class OneToMany extends Relationship {
 
 	public $type	= 'one_to_many';
 	public $inverse	= 'many_to_one';
@@ -50,6 +50,39 @@ class OneToMany extends AbstractRelationship {
 		}
 	}
 
+	public function disconnect($from_instance, $to_collection)
+	{
+		foreach ($to_collection as $model)
+		{
+			$model->{$this->to_key} = NULL;
+		}
+	}
+
+	/**
+	 * Determine whether the edge accepts a given action.
+	 *
+	 * For this edge that means never accepting add, and then accepting
+	 * the others based on which way the edge is pointing. Weak edges
+	 * are always set/remove.
+	 */
+	public function assertAcceptsAction($action)
+	{
+		$is_weak = $this->is_weak;
+
+		// weak relationships are always set/remove
+		if ($is_weak && ($action == 'create' || $action == 'delete'))
+		{
+			$alt = ($action == 'create') ? '(set|add)' : 'remove';
+			throw new \Exception("Cannot {$action} on a weak relationship ({$this->name}), did you mean {$alt}{$this->name}?");
+		}
+		// this is a parent edge it, requires create/delete
+		elseif ($action == 'add' || $action == 'set' || $action = 'remove')
+		{
+			$alt = ($action == 'remove') ? 'delete' : 'create';
+			throw new \Exception("Cannot {$action}{$this->name}, did you mean {$alt}{$this->name}?");
+		}
+	}
+
 	/**
 	 * Figure out optional key settings as well as the parent.
 	 *
@@ -65,8 +98,7 @@ class OneToMany extends AbstractRelationship {
 		$from = $this->from;
 
 		$this->is_parent = TRUE;
-		$this->key = $this->key ?: $from::getMetaData('primary_key');
+		$this->key = $this->key ?: $this->factory->getMetaData($from, 'primary_key');
 		$this->to_key = $this->to_key ?: $this->key;
 	}
-
 }

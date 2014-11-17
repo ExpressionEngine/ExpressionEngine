@@ -26,7 +26,7 @@ namespace EllisLab\ExpressionEngine\Service\Model\Relationship\Types;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class OneToOne extends AbstractRelationship {
+class OneToOne extends Relationship {
 
 	public $type	= 'one_to_one';
 	public $inverse	= 'one_to_one';
@@ -43,16 +43,64 @@ class OneToOne extends AbstractRelationship {
 	 */
 	public function connect($from_instance, $to_model)
 	{
-		if ($this->key != $from_instance::getMetaData('primary_key'))
+		if ($this->key != $from_instance->getMetaData('primary_key'))
 		{
 			$from_instance->{$this->key} = $to_model->{$this->to_key};
 		}
 
-		$to_class = $this->to_class;
+		$to = $this->to;
 
-		if ($this->to_key != $to_class::getMetaData('primary_key'))
+		if ($this->to_key != $this->factory->getMetaData($to, 'primary_key'))
 		{
 			$to_model->{$this->to_key} = $from_instance->{$this->key};
+		}
+	}
+
+	public function disconnect($from_instance, $to_model)
+	{
+		if ($this->key != $from_instance->getMetaData('primary_key'))
+		{
+			$from_instance->{$this->key} = NULL;
+		}
+
+		$to = $this->to;
+
+		if ($this->to_key != $this->factory->getMetaData($to, 'primary_key'))
+		{
+			$to_model->{$this->to_key} = NULL;
+		}
+	}
+
+	/**
+	 * Determine whether the edge accepts a given action.
+	 *
+	 * For this edge that means never accepting add, and then accepting
+	 * the others based on which way the edge is pointing. Weak edges
+	 * are always set/remove.
+	 */
+	public function assertAcceptsAction($action)
+	{
+		$is_weak = $this->is_weak;
+		$is_parent = $this->is_parent;
+
+		// weak relationships are always set/remove
+		if ($is_weak && ($action == 'create' || $action == 'delete'))
+		{
+			$alt = ($action == 'create') ? 'set' : 'remove';
+			throw new \Exception("Cannot {$action} on a weak relationship ({$this->name}), did you mean {$alt}{$this->name}?");
+		}
+
+		// if this is the parent edge it requires create/delete
+		if ($is_parent && ($action == 'add' || $action == 'set' || $action = 'remove'))
+		{
+			$alt = ($action == 'remove') ? 'delete' : 'create';
+			throw new \Exception("Cannot {$action}{$this->name}, did you mean {$alt}{$this->name}?");
+		}
+
+		// add is not ok for a *-to-one, must be a set
+		if ($action == 'add')
+		{
+			throw new \Exception("Cannot add{$this->name}, did you mean set{$this->name}?");
 		}
 	}
 
@@ -70,28 +118,28 @@ class OneToOne extends AbstractRelationship {
 	protected function normalizeKeys()
 	{
 		$from = $this->from;
-		$to_class = $this->to_class;
+		$to = $this->to;
 
 		if ( ! $this->key && ! $this->to_key)
 		{
-			if (property_exists($to_class, $from::getMetaData('primary_key')))
+			if (property_exists($to, $this->factory->getMetaData($from, 'primary_key')))
 			{
-				$this->key	  = $from::getMetaData('primary_key');
+				$this->key	  = $this->factory->getMetaData($from, 'primary_key');
 				$this->to_key = $this->key;
 				$this->is_parent = TRUE;
 			}
-			else if (property_exists($from, $to_class::getMetaData('primary_key')))
+			else if (property_exists($from, $this->factory->getMetaData($to, 'primary_key')))
 			{
-				$this->key	  = $to_class::getMetaData('primary_key');
+				$this->key	  = $this->factory->getMetaData($to, 'primary_key');
 				$this->to_key = $this->key;
 				$this->is_parent = FALSE;
 			}
 		}
 		else
 		{
-			$this->key	  = $this->key ?: $to_class::getMetaData('primary_key');
-			$this->to_key = $this->to_key ?: $from::getMetaData('primary_key');
-			$this->is_parent = ($this->to_key == $from::getMetaData('primary_key'));
+			$this->key	  = $this->key ?: $this->factory->getMetaData($to, 'primary_key');
+			$this->to_key = $this->to_key ?: $this->factory->getMetaData($from, 'primary_key');
+			$this->is_parent = ($this->to_key == $this->factory->getMetaData($from, 'primary_key'));
 		}
 	}
 

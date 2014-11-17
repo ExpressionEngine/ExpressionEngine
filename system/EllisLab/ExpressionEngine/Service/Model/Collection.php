@@ -43,6 +43,17 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate {
 	}
 
 	/**
+	 * Allow for setting in batches. Be careful, folks!
+	 */
+	public function __set($key, $value)
+	{
+		foreach ($this->elements as $element)
+		{
+			$element->$key = $value;
+		}
+	}
+
+	/**
 	 * Allow the calling of model methods by the collection.
 	 * First argument is assumed to be a callback to handle
 	 * the return of the methods.
@@ -121,6 +132,18 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate {
 	public function map(Closure $callback)
 	{
 		return array_map($callback, $this->elements);
+	}
+
+	/**
+	 * Applies the given callback to the collection and returns an array
+	 * of the results.
+	 *
+	 * @param Closure $callback Function to apply
+	 * @return array  results
+	 */
+	public function filter(Closure $callback)
+	{
+		return array_values(array_filter($this->elements, $callback));
 	}
 
 	/**

@@ -26,13 +26,13 @@ namespace EllisLab\ExpressionEngine\Service\Model\Relationship\Types;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class ManyToOne extends AbstractRelationship {
+class ManyToOne extends Relationship {
 
 	public $type	= 'many_to_one';
 	public $inverse	= 'one_to_many';
 
 	/**
-	 * Set the related ids to correclty connect the models.
+	 * Set the related ids to correctly connect the models.
 	 *
 	 * For manyToOne, this means setting a field on from_instance, since the
 	 * other side can't logically have a column for each of its related models.
@@ -44,6 +44,31 @@ class ManyToOne extends AbstractRelationship {
 	public function connect($from_instance, $to_model)
 	{
 		$from_instance->{$this->key} = $to_model->{$this->to_key};
+	}
+
+	public function disconnect($from_instance, $to_model)
+	{
+		$from_instance->{$this->key} = NULL;
+	}
+
+	/**
+	 * Determine whether the edge accepts a given action.
+	 *
+	 * For this edge that means only accepting set and remove.
+	 */
+	public function assertAcceptsAction($action)
+	{
+		// weak relationships are always set/remove
+		if ($action == 'create' || $action == 'delete')
+		{
+			$alt = ($action == 'create') ? 'set' : 'remove';
+			throw new \Exception("Cannot {$action}{$this->name}, did you mean {$alt}{$this->name}?");
+		}
+		// add is not ok for a *-to-one, must be set
+		elseif ($action == 'add')
+		{
+			throw new \Exception("Cannot add{$this->name}, did you mean set{$this->name}?");
+		}
 	}
 
 	/**
@@ -58,11 +83,10 @@ class ManyToOne extends AbstractRelationship {
 	 */
 	protected function normalizeKeys()
 	{
-		$to_class = $this->to_class;
+		$to = $this->to;
 
 		$this->is_parent = FALSE;
-		$this->to_key = $this->to_key ?: $to_class::getMetaData('primary_key');
+		$this->to_key = $this->to_key ?: $this->factory->getMetaData($to, 'primary_key');
 		$this->key = $this->key ?: $this->to_key;
 	}
-
 }
