@@ -52,14 +52,6 @@ class Addons extends CP_Controller {
 
 		ee()->lang->loadfile('addons');
 
-		// Sidebar Menu
-		$menu = array(
-			'all_addons' 		=> cp_url('addons'),
-			'manage_extensions'	=> cp_url('addons/extensions')
-		);
-
-		ee()->menu->register_left_nav($menu);
-
 		$this->params['perpage'] = $this->perpage; // Set a default
 
 		// Add in any submitted search phrase
