@@ -11,7 +11,7 @@
 |
 */
 
-$config['app_version'] = '280';
+$config['app_version'] = '292';
 $config['license_number'] = '';
 $config['debug'] = '1';
 $config['cp_url'] = 'http://ee2.test:8080/system/index.php';

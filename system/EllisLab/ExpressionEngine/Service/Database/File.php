@@ -57,7 +57,10 @@ class File extends ConfigFile
 
 		if (isset($db))
 		{
-			$this->config = array('database' => $db);
+			$this->config = array('database' => array_merge(
+				compact('active_record', 'active_group'),
+				$db
+			));
 		}
 		else
 		{
