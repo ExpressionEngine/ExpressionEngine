@@ -949,7 +949,7 @@ class EE_Session {
 
 		// If someone is messing with the URI we won't set the cookie
 
-		if ( ! isset($_GET['ACT'])
+		if ( ! isset($_GET['ACT']))
 		{
 			if (preg_match('/[^a-z0-9\%\_\/\-\.]/i', $uri))
 			{
