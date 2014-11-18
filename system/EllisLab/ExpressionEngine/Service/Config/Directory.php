@@ -44,20 +44,24 @@ class Directory {
 	{
 		foreach ($this->basepath as $basepath)
 		{
-			if (file_exists($basepath.$name.'.php'))
+			// Get the proper filename
+			$basepath = realpath($basepath);
+			$filename = $basepath.'/'.$name.'.php';
+
+			if (file_exists($filename))
 			{
 				// Cache the config File
-				if ( ! isset($cache[$basepath.$name]))
+				if ( ! isset($cache[$filename]))
 				{
-					$cache[$basepath.$name] = $this->createFile($basepath.$name.'.php');
+					$cache[$filename] = static::createFile($filename);
 				}
 
-				return $cache[$basepath.$name];
+				return $cache[$filename];
 			}
 		}
 	}
 
-	protected function createFile($filename)
+	protected static function createFile($filename)
 	{
 		return new File($filename);
 	}
