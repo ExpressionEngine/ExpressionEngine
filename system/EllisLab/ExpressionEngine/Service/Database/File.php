@@ -51,6 +51,20 @@ class File extends ConfigFile
 		)
 	);
 
+	public function __construct($path)
+	{
+		require($path);
+
+		if (isset($db))
+		{
+			$this->config = array('database' => $db);
+		}
+		else
+		{
+			$this->config = $config;
+		}
+	}
+
 	public function get($name, $group = '', $default = NULL)
 	{
 		$this->config = $this->config['database'][$this->getActiveGroup()];
