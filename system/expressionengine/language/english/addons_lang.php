@@ -25,6 +25,7 @@ $lang = array(
 
 'update'						=>		'update',
 'update_to_version'				=>		'Update to %s',
+'addon_updated'					=>		'Add-On Updated',
 
 /* Filters */
 'filters'						=>		'Filters',

@@ -335,19 +335,72 @@ class Addons extends CP_Controller {
 	 */
 	public function update($addon)
 	{
+		$updated = '';
+
 		$module = $this->getModules($addon);
-		if ( ! empty($module) && $module['installed'] === TRUE)
+		if ( ! empty($module)
+			&& $module['installed'] === TRUE
+			&& array_key_exists('update', $module))
 		{
+			$installed = ee()->addons->get_installed('modules', TRUE);
+
+			require_once $installed[$addon]['path'].'upd.'.$addon.'.php';
+
+			$class = ucfirst($addon).'_upd';
+			$version = $installed[$addon]['module_version'];
+
+			$this->load->add_package_path($installed[$addon]['path']);
+
+			$UPD = new $class;
+			$UPD->_ee_path = APPPATH;
+
+			if ($UPD->update($version) !== FALSE)
+			{
+				ee()->db->update('modules', array('module_version' => $UPD->version), array('module_name' => ucfirst($addon)));
+				$updated = '<b>' . $module['name'] . '</b> ' . lang('updated_to_version') . ' ' . $UPD->version;
+			}
 		}
 
 		$fieldtype = $this->getFieldtypes($addon);
-		if ( ! empty($fieldtype) && $fieldtype['installed'] === TRUE)
+		if ( ! empty($fieldtype)
+			&& $fieldtype['installed'] === TRUE
+			&& array_key_exists('update', $fieldtype))
 		{
+			$FT = ee()->api_channel_fields->setup_handler($addon, TRUE);
+			if ($FT->update($fieldtype['version']) !== FALSE)
+			{
+				if (ee()->api_channel_fields->apply('update', array($fieldtype['version'])) !== FALSE)
+				{
+					ee()->db->update('fieldtypes', array('version' => $FT->info['version']), array('name' => $addon));
+					$updated = '<b>' . $fieldtype['name'] . '</b> ' . lang('updated_to_version') . ' ' . $FT->info['version'];
+				}
+			}
 		}
 
 		$extension = $this->getExtensions($addon);
-		if ( ! empty($extension) && $extension['installed'] === TRUE)
+		if ( ! empty($extension)
+			&& $extension['installed'] === TRUE
+			&& array_key_exists('update', $extension))
 		{
+			$class_name = $extension['class'];
+			$Extension = new $class_name();
+			$Extension->update_extension($extension['version']);
+			ee()->extensions->version_numbers[$class_name] = $Extension->version;
+			$updated = '<b>' . $extension['name'] . '</b> ' . lang('updated_to_version') . ' ' . $Extension->version;
+		}
+
+		if ($updated)
+		{
+			ee()->view->set_message('success', lang('addon_updated'), $updated);
+		}
+
+		if (ee()->input->get('return'))
+		{
+			$return = base64_decode(ee()->input->get('return'));
+			$uri_elements = json_decode($return, TRUE);
+			$return = cp_url($uri_elements['path'], $uri_elements['arguments']);
+
+			ee()->functions->redirect($return);
 		}
 	}
 
@@ -614,7 +667,7 @@ class Addons extends CP_Controller {
 			{
 				if (file_exists($installed[$module]['path'].'upd.'.$module.'.php'))
 				{
-					require $installed[$module]['path'].'upd.'.$module.'.php';
+					require_once $installed[$module]['path'].'upd.'.$module.'.php';
 					$class = ucfirst($module).'_upd';
 
 					ee()->load->add_package_path($installed[$module]['path']);
@@ -911,6 +964,7 @@ class Addons extends CP_Controller {
 	 *        'installed'	 => TRUE|FALSE,
 	 *        'name'		 => 'FooBar',
 	 *        'package'		 => 'foobar',
+	 *        'class'        => 'Foobar_ext',
 	 *        'enabled'		 => NULL|TRUE|FALSE
 	 *        'manual_url'	 => '' (optional),
 	 *        'settings_url' => '' (optional)
@@ -972,6 +1026,7 @@ class Addons extends CP_Controller {
 				'enabled'		=> NULL,
 				'name'			=> (isset($Extension->name)) ? $Extension->name : $ext['name'],
 				'package'		=> $ext_name,
+				'class'			=> $class_name,
 			);
 
 			if (isset($installed[$ext_name]))
@@ -1209,7 +1264,7 @@ class Addons extends CP_Controller {
 		// Send version to update class and let it do any required work
 		if (file_exists($installed[$addon]['path'].'upd.'.$addon.'.php'))
 		{
-			require $installed[$addon]['path'].'upd.'.$addon.'.php';
+			require_once $installed[$addon]['path'].'upd.'.$addon.'.php';
 
 			$class = ucfirst($addon).'_upd';
 			$version = $installed[$addon]['module_version'];
