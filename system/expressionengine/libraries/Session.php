@@ -930,13 +930,13 @@ class EE_Session {
 			}
 			else
 			{
-				$saved_key = $tracker['token'];
+				$tracker_token = $tracker['token'];
 				unset($tracker['token']);
 
-				$valid_token = $this->get_hmac_token(implode('', $tracker));
+				ee()->load->library('encrypt');
 
 				// Check for funny business
-				if (empty($valid_token) OR $saved_key != $valid_token)
+				if ( ! ee()->encrypt->verify_signature(implode('', $tracker), $tracker_token))
 				{
 					$tracker = array();
 				}
@@ -949,13 +949,14 @@ class EE_Session {
 
 		// If someone is messing with the URI we won't set the cookie
 
-		if ( ! isset($_GET['ACT']) && preg_match('/[^a-z0-9\%\_\/\-\.]/i', $uri))
+		if ( ! isset($_GET['ACT'])
 		{
-			return array();
-		}
+			if (preg_match('/[^a-z0-9\%\_\/\-\.]/i', $uri))
+			{
+				return array();
+			}
 
-		if ( ! isset($_GET['ACT']))
-		{
+
 			if ( ! isset($tracker['0']))
 			{
 				$tracker[] = $uri;
@@ -1005,44 +1006,13 @@ class EE_Session {
 		{
 			unset($tracker['token']);
 
-			$tracker['token'] = $this->get_hmac_token(implode('', $tracker));
+			ee()->load->library('encrypt');
+			$tracker['token'] = ee()->encrypt->sign(implode('', $tracker));
 		}
 
 		ee()->input->set_cookie('tracker', json_encode($tracker), '0');
 	}
 
-	// --------------------------------------------------------------------
-
-	/**
-	 * This needs to be in a helper or something
-	 *
-	 * @param string $data	 Content to hash
-	 * @param array	$params An optional associative array of settings:
-	 * 					algo - hashing algorithm, defaults to md5
-	 * 					key - secret key, defaults to DB username.password
-	 * @return 	mixed   NULL if there is no data
-	 * 					FALSE if the hashing algorithm is unknown
-	 * 	        		String consisting of the calculated message digest as lowercase hexits
-	 *
-	 */
-
-	function get_hmac_token($data, $params = array())
-	{
-		if (empty($data))
-		{
-			return NULL;
-		}
-
-		// Set default values
-		$algo = (isset($params['algo'])) ? $params['algo'] : 'md5';
-
-		// do we want to start using encryption_key config if available?
-		$key = (isset($params['key'])) ? $params['key'] : ee()->db->username.ee()->db->password;
-
-    	$token = hash_hmac($algo, $data, $key);
-
-    	return $token;
-	}
 
 
 	// --------------------------------------------------------------------
