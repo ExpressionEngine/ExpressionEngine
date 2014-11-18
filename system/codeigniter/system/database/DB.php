@@ -32,28 +32,9 @@ function &DB($params = '', $active_record_override = NULL)
 	if (is_string($params) AND strpos($params, '://') === FALSE)
 	{
 		$path = defined('EE_APPPATH') ? EE_APPPATH : APPPATH;
-
 		$directory = new Directory(array(SYSPATH.'config/', $path));
 		$config = $directory->file('config');
-
-		include($path.'config/database.php');
-
-		if ( ! isset($db) OR count($db) == 0)
-		{
-			show_error('No database connection settings were found in the database config file.');
-		}
-
-		if ($params != '')
-		{
-			$active_group = $params;
-		}
-
-		if ( ! isset($active_group) OR ! isset($db[$active_group]))
-		{
-			show_error('You have specified an invalid database connection group.');
-		}
-
-		$params = $db[$active_group];
+		$params = $config->getGroup($params);
 	}
 	elseif (is_string($params))
 	{
