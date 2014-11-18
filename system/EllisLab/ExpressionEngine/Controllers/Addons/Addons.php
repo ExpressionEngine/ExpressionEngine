@@ -393,6 +393,16 @@ class Addons extends CP_Controller {
 					$installed[$addon] = $name;
 				}
 			}
+
+			$extension = $this->getExtensions($addon);
+			if ( ! empty($extension) && $extension['installed'] === FALSE)
+			{
+				$name = $this->installExtension($addon);
+				if ($name && ! isset($installed[$addon]))
+				{
+					$installed[$addon] = $name;
+				}
+			}
 		}
 
 		if ( ! empty($installed))
@@ -446,6 +456,16 @@ class Addons extends CP_Controller {
 			if ( ! empty($fieldtype) && $fieldtype['installed'] === TRUE)
 			{
 				$name = $this->uninstallFieldtype($addon);
+				if ($name && ! isset($installed[$addon]))
+				{
+					$uninstalled[$addon] = $name;
+				}
+			}
+
+			$extension = $this->getExtensions($addon);
+			if ( ! empty($extension) && $extension['installed'] === TRUE)
+			{
+				$name = $this->uninstallExtension($addon);
 				if ($name && ! isset($installed[$addon]))
 				{
 					$uninstalled[$addon] = $name;
