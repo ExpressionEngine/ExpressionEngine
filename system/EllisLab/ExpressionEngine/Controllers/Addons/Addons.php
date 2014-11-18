@@ -1191,8 +1191,8 @@ class Addons extends CP_Controller {
 
 		if (ee()->addons_installer->install($fieldtype, 'fieldtype', FALSE))
 		{
-			$installed = ee()->addons->get_installed('fieldtype', TRUE);
-			$name = $installed[$fieldtype]['name'];
+			$data = $this->getFieldtypes($fieldtype);
+			$name = $data['name'];
 		}
 
 		return $name;
