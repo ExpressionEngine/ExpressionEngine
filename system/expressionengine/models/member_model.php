@@ -729,8 +729,9 @@ class Member_model extends CI_Model {
 					$channel_ids[]  = $entry['channel_id'];
 				}
 
-				$this->db->where_in('author_id', $member_ids)->delete('channel_titles');
-				$this->db->where_in('entry_id', $entry_ids)->delete('channel_data');
+				ee()->load->library('api');
+				ee()->api->instantiate('channel_entries');
+				ee()->api_channel_entries->delete_entry($entry_ids, FALSE);
 
 				if ($this->db->table_exists('comments'))
 				{

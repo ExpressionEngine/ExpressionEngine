@@ -305,7 +305,7 @@ class Api_channel_entries extends Api {
 	 * @param	int
 	 * @return	bool
 	 */
-	function delete_entry($entry_ids)
+	function delete_entry($entry_ids, $do_stats = TRUE)
 	{
 		ee()->load->library('api');
 		ee()->load->library('addons');
@@ -335,6 +335,7 @@ class Api_channel_entries extends Api {
 		// Check permissions
 		$allowed_channels = ee()->functions->fetch_assigned_channels();
 		$authors = array();
+		$channel_ids = array();
 
 		foreach ($query->result_array() as $row)
 		{
@@ -410,6 +411,7 @@ class Api_channel_entries extends Api {
 		{
 			$val = $row['entry_id'];
 			$channel_id = $row['channel_id'];
+			$channel_ids[] = $row['channel_id'];
 
 			// No field group- skip this bit
 			if ( ! isset($channel_groups[$channel_id]) OR ! isset($group_fields[$channel_groups[$channel_id]]))
@@ -439,39 +441,44 @@ class Api_channel_entries extends Api {
 				$ft_to_ids[$field['field_id']][] = $val;
 			}
 
-			// Correct member post count
-			ee()->db->select('total_entries');
-			$mquery = ee()->db->get_where('members', array('member_id' => $authors[$val]));
-
-			$tot = $mquery->row('total_entries');
-
-			if ($tot > 0)
+			// If deleting the member?  No need for these stats
+			if ($do_stats)
 			{
-				$tot -= 1;
-			}
+				// Correct member post count
+				ee()->db->select('total_entries');
+				$mquery = ee()->db->get_where('members', array('member_id' => $authors[$val]));
 
-			ee()->db->where('member_id', $authors[$val]);
-			ee()->db->update('members', array('total_entries' => $tot));
+				$tot = $mquery->row('total_entries');
 
-			if ($comments_installed)
-			{
-				ee()->db->where('status', 'o');
-				ee()->db->where('entry_id', $val);
-				ee()->db->where('author_id', $authors[$val]);
-				$count = ee()->db->count_all_results('comments');
-
-				if ($count > 0)
+				if ($tot > 0)
 				{
-					ee()->db->select('total_comments');
-					$mc_query = ee()->db->get_where('members', array('member_id' => $authors[$val]));
-
-					ee()->db->where('member_id', $authors[$val]);
-					ee()->db->update('members', array('total_comments' => ($mc_query->row('total_comments') - $count)));
+					$tot -= 1;
 				}
 
-				ee()->db->delete('comments', array('entry_id' => $val));
-				ee()->db->delete('comment_subscriptions', array('entry_id' => $val));
-			}
+				ee()->db->where('member_id', $authors[$val]);
+				ee()->db->update('members', array('total_entries' => $tot));
+
+				if ($comments_installed)
+				{
+					ee()->db->where('status', 'o');
+					ee()->db->where('entry_id', $val);
+					ee()->db->where('author_id', $authors[$val]);
+					$count = ee()->db->count_all_results('comments');
+
+					if ($count > 0)
+					{
+						ee()->db->select('total_comments');
+						$mc_query = ee()->db->get_where('members', array('member_id' => $authors[$val]));
+
+						ee()->db->where('member_id', $authors[$val]);
+						ee()->db->update('members', array('total_comments' => ($mc_query->row('total_comments') - $count)));
+					}
+
+					ee()->db->delete('comments', array('entry_id' => $val));
+					ee()->db->delete('comment_subscriptions', array('entry_id' => $val));
+					}
+
+				} // end stats which we do not need if deleting member
 
 			// Delete entries in the channel_entries_autosave table
 			ee()->db->where('original_entry_id', $val)
@@ -492,6 +499,11 @@ class Api_channel_entries extends Api {
 			//
 			// -------------------------------------------
 
+			$entries[] = $val;
+		}
+
+		foreach ($channel_ids as $channel_id)
+		{
 			// Update statistics
 			ee()->stats->update_channel_stats($channel_id);
 
@@ -499,8 +511,6 @@ class Api_channel_entries extends Api {
 			{
 				ee()->stats->update_comment_stats($channel_id);
 			}
-
-			$entries[] = $val;
 		}
 
 		$fts = ee()->api_channel_fields->fetch_custom_channel_fields();
@@ -927,7 +937,7 @@ class Api_channel_entries extends Api {
 		if ( ! isset($data['title']) OR ! $data['title'] = strip_tags(trim($data['title'])))
 		{
 			$data['title'] = '';
-			$this->_set_error('missing_title', 'title');				
+			$this->_set_error('missing_title', 'title');
 		}
 
 		// Set entry_date and edit_date to "now" if empty
