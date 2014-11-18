@@ -74,7 +74,7 @@ class Addons extends CP_Controller {
 	private function filters($total)
 	{
 		// Status
-		$status = ee('Filter')->make('filter_by_status', 'status', array(
+		$status = ee('Filter')->make('filter_by_status', 'filter_by_status', array(
 			'installed'		=> strtolower(lang('installed')),
 			'uninstalled'	=> strtolower(lang('uninstalled'))
 		));
@@ -1029,23 +1029,23 @@ class Addons extends CP_Controller {
 				'class'			=> $class_name,
 			);
 
-			if (isset($installed[$ext_name]))
+			if (isset($installed[$class_name]))
 			{
-				$data['version'] = $installed[$ext_name]['version'];
+				$data['version'] = $installed[$class_name]['version'];
 				$data['installed'] = TRUE;
-				$data['enabled'] = ($installed[$ext_name]['enabled'] == 'y');
+				$data['enabled'] = ($installed[$class_name]['enabled'] == 'y');
 
 				if ($Extension->settings_exist == 'y')
 				{
-					$data['settings_url'] = cp_url('addons/extensions/settings/' . $ext_name);
+					$data['settings_url'] = cp_url('addons/settings/' . $ext_name);
 				}
 
 				if ($Extension->docs_url)
 				{
-					$data['manual_url'] = anchor(ee()->config->item('base_url').ee()->config->item('index_page').'?URL='.urlencode($Extension->docs_url), lang('documentation'));
+					$data['manual_url'] = ee()->config->item('base_url') . ee()->config->item('index_page') . '?URL=' . urlencode($Extension->docs_url);
 				}
 
-				if (version_compare($Extension->version, $installed_ext[$class_name]['version'], '>') && method_exists($Extension, 'update_extension') === TRUE)
+				if (version_compare($Extension->version, $installed[$class_name]['version'], '>') && method_exists($Extension, 'update_extension') === TRUE)
 				{
 					$data['update'] = $Extension->version;
 				}

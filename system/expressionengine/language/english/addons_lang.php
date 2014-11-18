@@ -29,7 +29,7 @@ $lang = array(
 
 /* Filters */
 'filters'						=>		'Filters',
-'status'						=>		'status',
+'filter_by_status'				=>		'status',
 'developer'						=>		'developer',
 'show'							=>		'show',
 'custom_limit'					=>		'custom limit',
