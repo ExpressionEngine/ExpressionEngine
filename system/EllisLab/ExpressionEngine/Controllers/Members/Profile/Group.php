@@ -1,0 +1,140 @@
+<?php
+
+namespace EllisLab\ExpressionEngine\Controllers\Members\Profile;
+
+if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+use CP_Controller;
+
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 3.0
+ * @filesource
+ */
+
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine CP Member Group Settings Class
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Control Panel
+ * @category	Control Panel
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
+ */
+class Group extends Profile {
+
+	private $base_url = 'members/profile/group';
+
+	/**
+	 * Member Group assignment
+	 */
+	public function index()
+	{
+		$this->base_url = cp_url($this->base_url, $this->query_string);
+		$groups = ee()->api->get('MemberGroup')->order('group_title', 'asc')->all();
+		$choices = array();
+
+		foreach ($groups as $group)
+		{
+			$choices[$group->group_id] = $group->group_title;
+		}
+
+		$vars['sections'] = array(
+			array(
+				array(
+					'title' => 'member_group',
+					'desc' => 'member_group_desc',
+					'fields' => array(
+						'member_group' => array(
+							'type' => 'dropdown',
+							'choices' => $choices,
+							'value' => $this->member->group_id
+						)
+					)
+				),
+				array(
+					'title' => 'current_password',
+					'desc' => 'current_password_desc',
+					'fields' => array(
+						'password' => array('type' => 'password')
+					)
+				)
+			)
+		);
+
+		$message = array(
+			'warning' => lang('warning'),
+			'warning_desc' => lang('access_privilege_warning'),
+			'caution' => lang('access_privilege_caution'),
+		);
+
+		$html = ee()->load->view('account/access_warning', $message, TRUE);
+		$alert = array('type' => 'warn', 'custom' => $html);
+
+		ee()->form_validation->set_rules(array(
+			array(
+				 'field'   => 'member_group',
+				 'label'   => 'lang:member_group',
+				 'rules'   => 'required'
+			),
+			array(
+				 'field'   => 'password',
+				 'label'   => 'lang:password',
+				 'rules'   => 'required|auth_password'
+			)
+		));
+
+		if (AJAX_REQUEST)
+		{
+			ee()->form_validation->run_ajax();
+			exit;
+		}
+		elseif (ee()->form_validation->run() !== FALSE)
+		{
+			if ($this->setMemberGroup($this->member, ee()->input->post('member_group')))
+			{
+				ee()->view->set_message('success', lang('member_updated'), lang('member_updated_desc'), TRUE);
+			}
+
+			ee()->functions->redirect($base_url);
+		}
+		elseif (ee()->form_validation->errors_exist())
+		{
+			ee()->view->set_message('issue', lang('settings_save_error'), lang('settings_save_error_desc'));
+		}
+
+		ee()->view->set_alert('inline', $alert, FALSE);
+		ee()->view->base_url = $this->base_url;
+		ee()->view->ajax_validate = TRUE;
+		ee()->view->cp_page_title = lang('member_group_assignment');
+		ee()->view->save_btn_text = 'btn_save_settings';
+		ee()->view->save_btn_text_working = 'btn_save_settings_working';
+		ee()->cp->render('settings/form', $vars);
+	}
+
+	private function setMemberGroup($member, $group)
+	{
+		$groups = ee()->api->get('MemberGroup')->filter('group_id', $id)->all();
+		if (empty($groups))
+		{
+			return FALSE;
+		}
+
+		$member->group_id = $group;
+		$member->save();
+		
+		return TRUE;
+	}
+}
+// END CLASS
+
+/* End of file MemberGroup.php */
+/* Location: ./system/expressionengine/controllers/cp/Members/Profile/MemberGroup.php */
