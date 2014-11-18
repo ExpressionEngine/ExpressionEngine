@@ -29,9 +29,9 @@ use \EllisLab\ExpressionEngine\Service\Config\Directory as ConfigDirectory;
  */
 class Directory extends ConfigDirectory {
 
-	protected static function createFile($filename)
+	protected static function createFile($fullpath)
 	{
-		return new File($filename);
+		return new File($fullpath);
 	}
 
 }

@@ -27,42 +27,43 @@ namespace EllisLab\ExpressionEngine\Service\Config;
  */
 class Directory {
 
-	protected $basepath;
+	protected $dirname;
 	protected $cache;
 
-	function __construct($basepath)
+	function __construct($dirname)
 	{
-		if ( ! is_array($basepath))
-		{
-			$basepath = array($basepath);
-		}
-
-		$this->basepath = $basepath;
+		$this->dirname = (array) $dirname;
 	}
 
-	public function file($name)
+	public function file($basenames)
 	{
-		foreach ($this->basepath as $basepath)
+		$basenames = (array) $basenames;
+
+		foreach ($this->dirname as $dirname)
 		{
 			// Get the proper filename
-			$basepath = realpath($basepath);
-			$filename = $basepath.'/'.$name.'.php';
+			$dirname = realpath($dirname);
 
-			if (file_exists($filename))
+			foreach ($basenames as $basename)
 			{
-				// Cache the config File
-				if ( ! isset($cache[$filename]))
-				{
-					$cache[$filename] = static::createFile($filename);
-				}
+				$fullpath = $dirname.'/'.$basename.'.php';
 
-				return $cache[$filename];
+				if (file_exists($fullpath))
+				{
+					// Cache the config File
+					if ( ! isset($cache[$fullpath]))
+					{
+						$cache[$fullpath] = static::createFile($fullpath);
+					}
+
+					return $cache[$fullpath];
+				}
 			}
 		}
 	}
 
-	protected static function createFile($filename)
+	protected static function createFile($fullpath)
 	{
-		return new File($filename);
+		return new File($fullpath);
 	}
 }

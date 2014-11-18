@@ -33,7 +33,7 @@ function &DB($params = '', $active_record_override = NULL)
 	{
 		$path = defined('EE_APPPATH') ? EE_APPPATH : APPPATH;
 		$directory = new Directory(array(SYSPATH.'config/', $path));
-		$config = $directory->file('config');
+		$config = $directory->file(array('config', 'database'));
 		$params = $config->getGroup($params);
 	}
 	elseif (is_string($params))
