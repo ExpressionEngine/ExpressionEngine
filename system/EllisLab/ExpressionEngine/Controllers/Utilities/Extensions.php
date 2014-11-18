@@ -118,8 +118,8 @@ class Extensions extends Utilities {
 
 			switch ($info['enabled'])
 			{
-				case TRUE: $status = lang('enabled'); break;
-				case FALSE: $status = lang('disabled'); break;
+				case TRUE: $status = array('class' => 'enable', 'content' => lang('enabled')); break;
+				case FALSE: $status = array('class' => 'enable', 'content' => lang('disabled')); break;
 			}
 
 			$data[] = array(
