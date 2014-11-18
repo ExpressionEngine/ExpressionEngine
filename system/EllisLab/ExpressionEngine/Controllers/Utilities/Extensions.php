@@ -79,7 +79,7 @@ class Extensions extends Utilities {
 			return $this->disable(ee()->input->post('selection'));
 		}
 
-		ee()->view->cp_page_title = lang('addon_manager');
+		ee()->view->cp_page_title = lang('debug_extensions');
 		ee()->view->cp_heading = lang('manage_addon_extensions');
 
 		$vars = array();
