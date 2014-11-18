@@ -409,7 +409,7 @@ class Addons extends CP_Controller {
 	/**
 	 * Installs an add-on
 	 *
-	 * @param	str|array	$addon	The name(s) of add-ons to install
+	 * @param	str|array	$addons	The name(s) of add-ons to install
 	 * @return	void
 	 */
 	public function install($addons)
@@ -476,7 +476,7 @@ class Addons extends CP_Controller {
 	/**
 	 * Uninstalls an add-on
 	 *
-	 * @param	str|array	$addon	The name(s) of add-ons to uninstall
+	 * @param	str|array	$addons	The name(s) of add-ons to uninstall
 	 * @return	void
 	 */
 	private function remove($addons)
