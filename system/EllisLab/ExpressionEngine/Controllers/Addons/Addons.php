@@ -989,6 +989,11 @@ class Addons extends CP_Controller {
 				{
 					$data['manual_url'] = anchor(ee()->config->item('base_url').ee()->config->item('index_page').'?URL='.urlencode($Extension->docs_url), lang('documentation'));
 				}
+
+				if (version_compare($Extension->version, $installed_ext[$class_name]['version'], '>') && method_exists($Extension, 'update_extension') === TRUE)
+				{
+					$data['update'] = $Extension->version;
+				}
 			}
 
 			if (is_null($name))
