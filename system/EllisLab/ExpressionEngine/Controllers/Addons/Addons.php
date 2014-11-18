@@ -1067,20 +1067,20 @@ class Addons extends CP_Controller {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Installs a module
+	 * Installs an extension
 	 *
-	 * @param  str	$module	The add-on to install
+	 * @param  str	$addon	The add-on to install
 	 * @return str			The name of the add-on just installed
 	 */
-	private function installExtension($module)
+	private function installExtension($addon)
 	{
 	 	$name = NULL;
-		$module = ee()->security->sanitize_filename(strtolower($module));
-		ee()->lang->loadfile($module);
+		$module = ee()->security->sanitize_filename(strtolower($addon));
+		$extension = $this->getExtensions($addon);
 
-		if (ee()->addons_installer->install($module, 'module', FALSE))
+		if (ee()->addons_installer->install($addon, 'extension', FALSE))
 		{
-			$name = (lang($module.'_module_name') == FALSE) ? ucfirst($module) : lang($module.'_module_name');
+			$name = $extension['name'];
 		}
 
 		return $name;
@@ -1089,20 +1089,20 @@ class Addons extends CP_Controller {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Uninstalls a module
+	 * Uninstalls a an extension
 	 *
-	 * @param  str	$module	The add-on to uninstall
+	 * @param  str	$addon	The add-on to uninstall
 	 * @return str			The name of the add-on just uninstalled
 	 */
-	private function uninstallExtension($module)
+	private function uninstallExtension($addon)
 	{
 		$name = NULL;
-		$module = ee()->security->sanitize_filename(strtolower($module));
-		ee()->lang->loadfile($module);
+		$module = ee()->security->sanitize_filename(strtolower($addon));
+		$extension = $this->getExtensions($addon);
 
-		if (ee()->addons_installer->uninstall($module, 'module', FALSE))
+		if (ee()->addons_installer->uninstall($addon, 'extension', FALSE))
 		{
-			$name = (lang($module.'_module_name') == FALSE) ? ucfirst($module) : lang($module.'_module_name');
+			$name = $extension['name'];
 		}
 
 		return $name;
