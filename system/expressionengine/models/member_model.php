@@ -731,7 +731,7 @@ class Member_model extends CI_Model {
 
 				ee()->load->library('api');
 				ee()->api->instantiate('channel_entries');
-				ee()->api_channel_entries->delete_entry($entry_ids, FALSE);
+				ee()->api_channel_entries->delete_entry($entry_ids, 'member_delete');
 
 				if ($this->db->table_exists('comments'))
 				{

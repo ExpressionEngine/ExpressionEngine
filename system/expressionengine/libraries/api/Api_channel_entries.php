@@ -302,10 +302,11 @@ class Api_channel_entries extends Api {
 	 * Handles deleting of existing entries from arbitrary, authenticated source
 	 *
 	 * @access	public
-	 * @param	int
+	 * @param	mixed	An entry ID or array of entry IDs to delete
+	 * @param	string	The type of deletion being performed
 	 * @return	bool
 	 */
-	function delete_entry($entry_ids, $do_stats = TRUE)
+	function delete_entry($entry_ids, $type = 'entry_delete')
 	{
 		ee()->load->library('api');
 		ee()->load->library('addons');
@@ -442,7 +443,7 @@ class Api_channel_entries extends Api {
 			}
 
 			// If deleting the member?  No need for these stats
-			if ($do_stats)
+			if ($type != 'member_delete')
 			{
 				// Correct member post count
 				ee()->db->select('total_entries');
