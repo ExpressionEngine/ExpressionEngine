@@ -166,8 +166,8 @@ EE.cp.formValidation = {
 	 */
 	_toggleErrorForFields: function(form, field, message) {
 
-		var fieldset = field.parents('fieldset'),
-			container = field.parents('div[class*=setting]'),
+		var container = field.parents('div[class*=setting]'),
+			fieldset = container.parent(),
 			button = form.find('.form-ctrls input.btn'), // Submit button of form
 			errorClass = 'em.ee-form-error-message',
 			grid = false;
