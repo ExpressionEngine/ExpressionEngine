@@ -71,6 +71,7 @@ class Utilities extends CP_Controller {
 			'cp_translation',
 			$languages,
 			'php_info' => array('href' => cp_url('utilities/php'), 'rel' => 'external'),
+			'debug_extensions' => array('href' => cp_url('utilities/extensions')),
 			'import_tools',
 			array(
 				'file_converter' => cp_url('utilities/import-converter'),
