@@ -112,7 +112,8 @@ if ($wrap): ?>
 							>
 						</td>
 					<?php elseif ($column['type'] == Table::COL_STATUS): ?>
-						<td><span class="st-<?=$column['content']?>"><?=$column['content']?></span></td>
+						<?php $class = isset($column['class']) ? $column['class'] : $column['content']; ?>
+						<td><span class="st-<?=$class?>"><?=$column['content']?></span></td>
 					<?php else: ?>
 						<td><?=$column['content']?></td>
 					<?php endif ?>
