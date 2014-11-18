@@ -184,13 +184,13 @@ class Addons extends CP_Controller {
 					);
 				}
 
-				if (isset($info['upgrade']))
+				if (isset($info['update']))
 				{
 					$toolbar['txt-only'] = array(
 						'href' => cp_url('addons/update/' . $info['package'], array('return' => base64_encode(ee()->cp->get_safe_refresh()))),
 						'title' => lang('update'),
 						'class' => 'add',
-						'content' => sprintf(lang('update_to_version'), $this->formatVersionNumber($info['upgrade']))
+						'content' => sprintf(lang('update_to_version'), $this->formatVersionNumber($info['update']))
 					);
 				}
 
@@ -584,7 +584,7 @@ class Addons extends CP_Controller {
 	 * @return	array		Add-on data in the following format:
 	 *   e.g. 'developer'	 => 'native',
 	 *        'version'		 => '--',
-	 *        'upgrade'      => '2.0.4' (optional)
+	 *        'update'       => '2.0.4' (optional)
 	 *        'installed'	 => FALSE,
 	 *        'name'		 => 'FooBar',
 	 *        'package'		 => 'foobar',
@@ -624,7 +624,7 @@ class Addons extends CP_Controller {
 					if (version_compare($UPD->version, $installed[$module]['module_version'], '>')
 						&& method_exists($UPD, 'update'))
 					{
-						$data['upgrade'] = $UPD->version;
+						$data['update'] = $UPD->version;
 					}
 				}
 
@@ -880,10 +880,9 @@ class Addons extends CP_Controller {
 
 				$FT = ee()->api_channel_fields->setup_handler($fieldtype, TRUE);
 
-				if (version_compare($FT->info['version'], $installed[$fieldtype]['version'], '>')
-					)
+				if (version_compare($FT->info['version'], $installed[$fieldtype]['version'], '>'))
 				{
-					$data['upgrade'] = $FT->info['version'];
+					$data['update'] = $FT->info['version'];
 				}
 			}
 
@@ -908,6 +907,7 @@ class Addons extends CP_Controller {
 	 * @param	str	$name	(optional) Limit the return to this add-on
 	 * @return	array		Add-on data in the following format:
 	 *   e.g. 'version'		 => '--',
+	 *        'update'       => '2.0.4' (optional)
 	 *        'installed'	 => TRUE|FALSE,
 	 *        'name'		 => 'FooBar',
 	 *        'package'		 => 'foobar',
