@@ -128,12 +128,7 @@ class Addons extends CP_Controller {
 
 		$data = array();
 
-		$modules = $this->getModules();
-		$plugins = $this->getPlugins();
-		$fieldtypes = $this->getFieldtypes();
-		$extensions = $this->getExtensions();
-
-		$addons = array_merge($extensions, $fieldtypes, $plugins, $modules); // @TODO array_merge is the wrong idea
+		$addons = $this->getAllAddons();
 
 		$this->filters(count($addons));
 
@@ -281,6 +276,54 @@ class Addons extends CP_Controller {
 		));
 
 		ee()->cp->render('addons/index', $vars);
+	}
+
+	/**
+	 * Compiles a list of all available add-ons
+	 *
+	 * @return array An associative array of add-on data
+	 */
+	private function getAllAddons()
+	{
+		$addons = array();
+
+		$addons = $this->mergeAddonData($addons, $this->getExtensions());
+		$addons = $this->mergeAddonData($addons, $this->getFieldtypes());
+		$addons = $this->mergeAddonData($addons, $this->getPlugins());
+		$addons = $this->mergeAddonData($addons, $this->getModules());
+
+		return $addons;
+	}
+
+	/**
+	 * Merges the data from one add-on array into another
+	 *
+	 * @param array $to   The addon array to merge into
+	 * @param array $from The addon array to merge from
+	 * @return array An associative array of add-on data
+	 */
+	private function mergeAddonData(array $to, array $from)
+	{
+		foreach ($from as $addon => $data)
+		{
+			if ( ! isset($to[$addon]))
+			{
+				$to[$addon] = $data;
+			}
+			else
+			{
+				foreach ($data as $key => $value)
+				{
+					if ( ! isset($to[$addon][$key])
+						 OR $to[$addon][$key] != $value)
+					{
+						$to[$addon][$key] = $value;
+					}
+				}
+			}
+		}
+
+		return $to;
 	}
 
 	// --------------------------------------------------------------------
