@@ -102,7 +102,6 @@ class Addons extends CP_Controller {
 	/**
 	 * Index function
 	 *
-	 * @access	public
 	 * @return	void
 	 */
 	public function index()
@@ -357,7 +356,6 @@ class Addons extends CP_Controller {
 	/**
 	 * Installs an add-on
 	 *
-	 * @access	public
 	 * @param	str|array	$addon	The name(s) of add-ons to install
 	 * @return	void
 	 */
@@ -425,7 +423,6 @@ class Addons extends CP_Controller {
 	/**
 	 * Uninstalls an add-on
 	 *
-	 * @access	public
 	 * @param	str|array	$addon	The name(s) of add-ons to uninstall
 	 * @return	void
 	 */
@@ -484,7 +481,6 @@ class Addons extends CP_Controller {
 	/**
 	 * Display add-on settings
 	 *
-	 * @access	public
 	 * @param	str	$addon	The name of add-on whose settings to display
 	 * @return	void
 	 */
@@ -535,7 +531,6 @@ class Addons extends CP_Controller {
 	/**
 	 * Display add-on settings
 	 *
-	 * @access	public
 	 * @param	str	$addon	The name of add-on whose settings to display
 	 * @return	void
 	 */
@@ -585,7 +580,6 @@ class Addons extends CP_Controller {
 	/**
 	 * Get a list of modules
 	 *
-	 * @access	private
 	 * @param	str	$name	(optional) Limit the return to this add-on
 	 * @return	array		Add-on data in the following format:
 	 *   e.g. 'developer'	 => 'native',
@@ -660,7 +654,6 @@ class Addons extends CP_Controller {
 	/**
 	 * Get a list of plugins
 	 *
-	 * @access	private
 	 * @param	str	$name	(optional) Limit the return to this add-on
 	 * @return	array		Add-on data in the following format:
 	 *   e.g. 'developer'	 => 'native',
@@ -796,7 +789,6 @@ class Addons extends CP_Controller {
 	 *
 	 * Check for a plugin and get it's information
 	 *
-	 * @access	private
 	 * @param	string	plugin filename
 	 * @return	mixed	array of plugin data
 	 */
@@ -854,7 +846,6 @@ class Addons extends CP_Controller {
 	/**
 	 * Get a list of fieldtypes
 	 *
-	 * @access	private
 	 * @param	str	$name	(optional) Limit the return to this add-on
 	 * @return	array		Add-on data in the following format:
 	 *   e.g. 'developer'	 => 'native',
@@ -914,7 +905,6 @@ class Addons extends CP_Controller {
 	/**
 	 * Get a list of extensions
 	 *
-	 * @access	private
 	 * @param	str	$name	(optional) Limit the return to this add-on
 	 * @return	array		Add-on data in the following format:
 	 *   e.g. 'version'		 => '--',
@@ -1019,7 +1009,6 @@ class Addons extends CP_Controller {
 	/**
 	 * Installs a module
 	 *
-	 * @access private
 	 * @param  str	$module	The add-on to install
 	 * @return str			The name of the add-on just installed
 	 */
@@ -1042,7 +1031,6 @@ class Addons extends CP_Controller {
 	/**
 	 * Uninstalls a module
 	 *
-	 * @access private
 	 * @param  str	$module	The add-on to uninstall
 	 * @return str			The name of the add-on just uninstalled
 	 */
@@ -1065,7 +1053,6 @@ class Addons extends CP_Controller {
 	/**
 	 * Check for usage of the magpie plugin and get the plugin_info manually
 	 *
-	 * @access private
 	 * @param  string $filename The filename to check
 	 * @param  String $path     Path where the file exists
 	 * @return Mixed            Returns $plugin_info if it's MagPie, otherwise
@@ -1090,7 +1077,6 @@ class Addons extends CP_Controller {
 	/**
 	 * Installs a module
 	 *
-	 * @access private
 	 * @param  str	$module	The add-on to install
 	 * @return str			The name of the add-on just installed
 	 */
@@ -1113,7 +1099,6 @@ class Addons extends CP_Controller {
 	/**
 	 * Uninstalls a module
 	 *
-	 * @access private
 	 * @param  str	$module	The add-on to uninstall
 	 * @return str			The name of the add-on just uninstalled
 	 */
@@ -1136,7 +1121,6 @@ class Addons extends CP_Controller {
 	/**
 	 * Installs a fieldtype
 	 *
-	 * @access private
 	 * @param  str	$$fieldtype	The add-on to install
 	 * @return str				The name of the add-on just installed
 	 */
@@ -1159,7 +1143,6 @@ class Addons extends CP_Controller {
 	/**
 	 * Uninstalls a fieldtype
 	 *
-	 * @access private
 	 * @param  str	$$fieldtype	The add-on to uninstall
 	 * @return str				The name of the add-on just uninstalled
 	 */
@@ -1182,7 +1165,6 @@ class Addons extends CP_Controller {
 	/**
 	 * Render module-specific settings
 	 *
-	 * @access	private
 	 * @param	str	$name	The name of module whose settings to display
 	 * @return	str			The rendered settings (with HTML)
 	 */
@@ -1270,7 +1252,6 @@ class Addons extends CP_Controller {
 	/**
 	 * Wraps the major version number in a <b> tag
 	 *
-	 * @access private
 	 * @param  str	$version	The version number
 	 * @return str				The formatted version number
 	 */
