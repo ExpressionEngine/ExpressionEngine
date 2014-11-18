@@ -34,7 +34,7 @@
 		<p><label for="logout-confirm-password"><?=lang('password_label')?></label></p>
 	</div>
 	<div class="idle-three-fourths shun">
-		<p><input type="password" name="password" class="field" id="logout-confirm-password"/></p>
+		<p><input type="password" name="password" class="field" id="logout-confirm-password" autocomplete="off" /></p>
 	</div>
 
 	<p id="idle-button-group">

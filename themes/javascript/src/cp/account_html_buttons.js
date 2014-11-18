@@ -64,7 +64,11 @@ $(document).ready(function () {
 		return false;
 	});
 
-	$("#add_new_html_button").hide();
+	// Show the new HTML button dialog if there's an error on the page
+	if ($('b.notice').size() == 0) {
+		$("#add_new_html_button").hide();
+	};
+
 	$(".del_instructions").hide();
 
 	$(".cp_button").show().toggle(function () {
