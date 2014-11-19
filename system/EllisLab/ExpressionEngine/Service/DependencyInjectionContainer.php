@@ -1,6 +1,11 @@
 <?php
 namespace EllisLab\ExpressionEngine\Service;
 
+use Closure;
+use Exception;
+use EllisLab\ExpressionEngine\Service\ServiceProvider;
+use EllisLab\ExpressionEngine\Service\DependencyInjectionBindingDecorator;
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -27,94 +32,114 @@ namespace EllisLab\ExpressionEngine\Service;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class DependencyInjectionContainer {
+class DependencyInjectionContainer implements ServiceProvider {
 
+	/**
+	 * @var array An associative array of registered dependencies
+	 */
 	protected $registry = array();
-	protected $substitutes = NULL;
-
 
 	/**
-	 * Construct the DIC, optionally initialize it from another DIC's registry.
-	 *
-	 * @param	DependencyInjectionContainer	$dic	(Optional) If provided, will
-	 * 		be used to initialize this DIC.
+	 * @var array An associative array of singletons
 	 */
-	public function __construct(DependencyInjectionContainer $dic = NULL)
-	{
-		if ( isset ($dic))
-		{
-			$this->registry = $dic->registry;
-		}
-	}
+	protected $singletonRegistry = array();
 
 	/**
-	 * Bootstrap the Dependency Injection Container
+	 * Registers a dependency with the container
 	 *
-	 * The bootstrap method is used to set up the DIC.  It is here that
-	 * available services and their dependencies are defined as well as any
-	 * actions that need to be taken at service creation.
-	 *
-	 * @return NULL
+	 * @param string      $name   The name of the dependency in the form
+	 *                            Vendor:Namespace
+	 * @param Closure|obj $object The object to use
+	 * @param array       $registry Which registry are we acting on?
+	 * @return void
 	 */
-	public function bootstrap()
-	{
-		$this->register('EllisLab:AliasService', function($dic, $name, $config_file)
-		{
-			return new \EllisLab\ExpressionEngine\Service\AliasService($name, $config_file);
-
-		});
-
-		$this->register('EllisLab:Model\Factory', function($dic)
-		{
-			$validation = $dic->get('EllisLab:Validation\Factory');
-			$alias_service = $dic->get('EllisLab:AliasService', 'Model',  APPPATH . 'config/model_aliases.php');
-
-			return new \EllisLab\ExpressionEngine\Service\Model\Factory($alias_service, $validation);
-		});
-
-		$this->register('EllisLab:Validation\Factory', function($dic)
-		{
-			return new \EllisLab\ExpressionEngine\Service\Validation\Factory();
-
-		});
-	}
-
-	/**
-	 * Register a Service
-	 *
-	 * Register a service with a callback method to be used when the service is
-	 * needed.  The callback method should handle the creation of the service
-	 * and take any actions that need to be taken on service creation.
-	 *
-	 * @param	string	$name	The name by which the service will be
-	 * 		referenced.  Should use the convention of
-	 * 		'Vendor/Module:Namespace\Partial\Class'. The namespace partial needs to
-	 *		 be beneath that modules service directory. For instance, a class in
-	 * 		EllisLab\ExpressionEngine\Modules\Member\Service\MyService\Class would
-	 * 		be registered as 'EllisLab/Member:MyService\Class'.
-	 *
-	 * @param	function	$callback	A callback function to be used to instantiate
-	 * 		or retrieve an instance of this service.
-	 *
-	 * @return NULL
-	 */
-	public function register($name, $callback)
+	private function assignToRegistry($name, $object, &$registry)
 	{
 		if (strpos($name, ':') === FALSE)
 		{
-			throw \Exception('You must include a Vendor or Vendor/Module in your class name.');
+			$name = 'EllisLab:' . $name;
 		}
 
-		if ( isset($this->registry[$name]))
+		if ( isset($registry[$name]))
 		{
-			throw \Exception('Attempt to reregister existing class' . $name);
+			throw new Exception('Attempt to reregister existing class' . $name);
 		}
 
-		$this->registry[$name] = $callback;
+		$registry[$name] = $object;
 	}
 
 	/**
-	 * Get an instance of a Service
+	 * Registers a dependency with the container
+	 *
+	 * @param string      $name   The name of the dependency in the form
+	 *                            Vendor:Namespace
+	 * @param Closure|obj $object The object to use
+	 * @return self Returns this DependencyInjectionContainer object
+	 */
+	public function register($name, $object)
+	{
+		$this->assignToRegistry($name, $object, $this->registry);
+		return $this;
+	}
+
+	/**
+	 * Temporarily bind a dependency. Calls $this->register with $temp as TRUE
+	 *
+	 * @param string      $name   The name of the dependency in the form
+	 *                            Vendor:Namespace
+	 * @param Closure|obj $object The object to use
+	 * @return self Returns this DependencyInjectionContainer object
+	 */
+	public function bind($name, $object)
+	{
+		$binding_isolation = new DependencyInjectionBindingDecorator($this);
+		$binding_isolation->bind($name, $object);
+
+		return $binding_isolation;
+	}
+
+	/**
+	 * Registers a singleton dependency with the container
+	 *
+	 * @param string      $name   The name of the dependency in the form
+	 *                            Vendor:Namespace
+	 * @param Closure|obj $object The object to use
+	 * @return self Returns this DependencyInjectionContainer object
+	 */
+	public function registerSingleton($name, $object)
+	{
+		if ($object instanceof Closure)
+		{
+			return $this->register($name, function($di) use ($object)
+				{
+					return $di->singleton($object);
+				});
+		}
+
+		return $this->register($name, $object);
+	}
+
+	/**
+	 * This will exectute the provided Closure exactly once, storing the result
+	 * of the execution in an array and always returning that array element.
+	 *
+	 * @param Closure $object The Closure to execute
+	 * @return mixed The result of the Closure $object
+	 */
+	public function singleton(Closure $object)
+	{
+	    $hash = spl_object_hash($object);
+
+	    if ( ! isset($this->singletonRegistry[$hash]))
+	    {
+	        $this->singletonRegistry[$hash] = $object($this);
+	    }
+
+	    return $this->singletonRegistry[$hash];
+	}
+
+	/**
+	 * Make an instance of a Service
 	 *
 	 * Retrieves an instance of a service from the DIC using the registered
 	 * callback methods.
@@ -130,72 +155,41 @@ class DependencyInjectionContainer {
 	 *
 	 * @return	Object	An instance of the service being requested.
 	 */
-	public function get()
+	public function make()
 	{
 		$arguments = func_get_args();
 
+		$di = $this;
 		$name = array_shift($arguments);
+
+		if ($name instanceof DependencyInjectionBindingDecorator)
+		{
+			$di = $name;
+			$name = array_shift($arguments);
+		}
+
+		if (strpos($name, ':') === FALSE)
+		{
+			$name = 'EllisLab:' . $name;
+		}
 
 		if ( ! isset($this->registry[$name]))
 		{
 			throw new \RuntimeException('Attempt to access unregistered service ' . $name . ' in the DIC.');
 		}
-
-		if ( isset($this->substitutes) && isset($this->substitutes[$name]))
-		{
-			$callback = $this->substitutes[$name];
-		}
 		else
 		{
-			$callback = $this->registry[$name];
+			$object = $this->registry[$name];
 		}
 
-		// If the callback isn't callable, then the registered service is a
-		// singleton.  Return it.
-		if ( ! is_callable($callback))
+		if ($object instanceof Closure)
 		{
-			return $callback;
+			array_unshift($arguments, $di);
+			return call_user_func_array($object, $arguments);
 		}
 
-		array_unshift($arguments, $this);
-		return call_user_func_array($callback, $arguments);
-	}
-
-
-	/**
-	 * Get an Instance of Service, Substitute its Dependencies
-	 *
-	 * Get's an instance of a Service and substitutes out provided classes for
-	 * the service's dependencies.  Useful for populating a service with mocks
-	 * for testing.  Also can be used when a module needs to inject its own
-	 * version of a high level service into its other services.
-	 *
-	 * @param	string	$name	The name of the registered service to be retrieved
-	 * 		in the format 'Vendor/Module:Namespace\Class'.
-	 *
-	 * @param	mixed[]	$substitutes	An array of substitutes to switch out for
-	 * 		the requested Services depedendencies.  The array must be of the format
-	 * 			'Vendor/Module:Namespace\Class' => Substitute
-	 * 		The substitute may either be a callback initializing and returning the
-	 * 		service or an instance of the service to be used in all cases as a
-	 * 		singleton.
-	 *
-	 * @param	...	(Optional) Any additional arguments the service needs on initialization.
-	 *
-	 * @return Object	An instance of the requested service.
-	 */
-	public function getWithSubtitutes()
-	{
-		$arguments = func_get_args();
-
-		$name = array_shift($arguments);
-		$this->subtitutes = array_shift($arguments);
-
-		$callback = $this->registry[$name];
-		array_unshift($arguments, $this);
-		$result = call_user_func_array($callback, $arguments);
-		$this->substitutes = NULL;
-		return $result;
+		return $object;
 	}
 
 }
+// EOF
