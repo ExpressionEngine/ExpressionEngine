@@ -52,7 +52,7 @@ class Profile extends CP_Controller {
 		$id = ee()->input->get('id');
 		$qs = array('id' => $id);
 		$this->query_string = $qs;
-		$this->base_url = new URL('members/profile/settings');
+		$this->base_url = new URL('members/profile/settings', ee()->session->session_id());
 		$this->base_url->setQueryStringVariable('id', $id);
 		$this->member = ee()->api->get('Member')->filter('member_id', $id)->first();
 

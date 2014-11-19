@@ -67,6 +67,9 @@ if (isset($ajax_validate) && $ajax_validate == TRUE)
 						case 'password': ?>
 							<input type="password" name="<?=$field_name?>"<?=$required?>>
 						<?php break;
+						case 'hidden': ?>
+							<input type="hidden" name="<?=$field_name?>" value="<?=$value?>">
+						<?php break;
 
 						case 'inline_radio': ?>
 							<?php foreach ($field['choices'] as $key => $label):
