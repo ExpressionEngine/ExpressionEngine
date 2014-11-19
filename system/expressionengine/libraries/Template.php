@@ -3302,7 +3302,8 @@ class EE_Template {
 
 				if ($class == 'comment')
 				{
-					$str = str_replace($match[0][$i], Comment::form(TRUE, ee()->functions->cached_captcha), $str);
+					$comment = new Comment;
+					$str = str_replace($match[0][$i], $comment->form(TRUE, ee()->functions->cached_captcha), $str);
 				}
 
 				$str = str_replace('{PREVIEW_TEMPLATE}', $match[2][$i], $str);
