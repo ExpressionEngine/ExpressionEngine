@@ -181,6 +181,21 @@ class CI_URI {
 		$parts = preg_split('#\?#i', $uri, 2);
 		$uri = $parts[0];
 
+		// If we're using QUERY_STRING, we may be steamrolling ACTION URIs
+		if ($uri_protocol == "QUERY_STRING" && ! isset($parts[1]))
+		{
+			$test = array();
+			parse_str($parts[0], $test);
+
+			// If parse_str correctly parses the string, we need to rearrange
+			// the query string and URI
+			if (reset($test) != '')
+			{
+				$parts[1] = $uri;
+				$uri = '';
+			}
+		}
+
 		if (isset($parts[1]))
 		{
 			$_SERVER['QUERY_STRING'] = $parts[1];

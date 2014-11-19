@@ -57,7 +57,7 @@ if ($force_redirect == TRUE OR ( ! isset($_SERVER['HTTP_REFERER']) OR ! stristr(
 {
 	// Possibly not from our site, so we give the user the option
 	// Of clicking the link or not
-	$str = "<html>\n<head>\n<meta http-equiv='Content-Type' content='text/html; charset=utf-8'/>\n<title>Redirect</title>\n</head>\n<body>".
+	$str = "<html>\n<head>\n<meta http-equiv='Content-Type' content='text/html; charset=utf-8'/>\n<meta name='robots' content='none'>\n<title>Redirect</title>\n</head>\n<body>".
 			"<p>To proceed to the URL you have requested, click the link below:</p>".
 			"<p>$link</p>\n</body>\n</html>";
 }

@@ -33,19 +33,19 @@
 		$this->table->set_heading(lang('preference'), lang('setting'));
 
 		$preference = lang('group_name', 'group_title');
-		$controls = form_input(array('id'=>'group_title','name'=>'group_title','class'=>'field', 'value'=>$group_title));
+		$controls = form_input(array('id'=>'group_title','name'=>'group_title','class'=>'field', 'value'=>set_value('group_title', $group_title))).form_error('group_title');
 		$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 
 		$preference = lang('group_description', 'group_description');
 		$controls = form_textarea(array('id'=>'group_description','name'=>'group_description','cols'=>70,'rows'=>10,'class'=>'field', 'value'=>$group_description));
 		$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
-				
+
 		echo $this->table->generate();
 		// Clear out of the next one
 		$this->table->clear();
 	?>
 
-	
+
 	<?php
 	// each site
 	foreach($group_data as $key => $site):
@@ -59,7 +59,7 @@
 				foreach ($prefs as $pref)
 				{
 					$this->table->add_row(
-						$pref['label'], 
+						$pref['label'],
 						array(
 							'style' => 'width:50%',
 							'data' => $pref['controls']
@@ -73,13 +73,13 @@
 			?>
 		<?php endforeach; ?>
 	</div>
-	
-	<?php 
+
+	<?php
 		endforeach;
-		
+
 		// super admins don't need to see modules... they are super admins after all
 		if ($group_id != 1):
-	?>				
+	?>
 		<div id="modules">
 			<?php
 				$this->table->set_caption(lang('cp_module_access_privs'));
@@ -109,7 +109,7 @@
 				$this->table->clear();
 			?>
 		</div>
-	<?php 
+	<?php
 		endif;
 	?>
 	<p>

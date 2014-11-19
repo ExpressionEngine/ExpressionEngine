@@ -71,7 +71,8 @@ class EE_Channel_date_parser implements EE_Channel_parser_component {
 			$prefix.'entry_date'          => $data['entry_date'],
 			$prefix.'edit_date'           => mysql_to_unix($data['edit_date']),
 			$prefix.'recent_comment_date' => ($data['recent_comment_date'] != 0) ? $data['recent_comment_date'] : '',
-			$prefix.'expiration_date'     => ($data['expiration_date'] != 0) ? $data['expiration_date'] : ''
+			$prefix.'expiration_date' => ($data['expiration_date'] != 0) ? $data['expiration_date'] : '',
+			$prefix.'comment_expiration_date' => ($data['comment_expiration_date'] != 0) ? $data['comment_expiration_date'] : ''
 		);
 
 		// "week_date"
@@ -100,10 +101,11 @@ class EE_Channel_date_parser implements EE_Channel_parser_component {
 		$tagdata = ee()->TMPL->parse_date_variables($tagdata, $dates);
 
 		$dates = array(
-			$prefix.'gmt_date'       => $data['entry_date'],
+			$prefix.'gmt_date' => $data['entry_date'],
 			$prefix.'gmt_entry_date' => $data['entry_date'],
-			$prefix.'gmt_edit_date'  => mysql_to_unix($data['edit_date']),
+			$prefix.'gmt_edit_date' => mysql_to_unix($data['edit_date']),
 		);
+
 		$tagdata = ee()->TMPL->parse_date_variables($tagdata, $dates, FALSE);
 
 		return $tagdata;

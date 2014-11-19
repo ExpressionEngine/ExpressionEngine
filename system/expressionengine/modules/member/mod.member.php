@@ -2385,7 +2385,12 @@ class Member {
 			$str = ee()->functions->insert_action_ids(ee()->functions->add_form_security_hash($str));
 		}
 
-		$str = preg_replace("/".LD."if\s+.*?".RD.".*?".LD.'\/if'.RD."/s", "", $str);
+		if ( ! is_object(ee()->TMPL))
+		{
+			// cleanup unparsed conditionals and annotations
+			$str = preg_replace("/".LD."if\s+.*?".RD.".*?".LD.'\/if'.RD."/s", "", $str);
+			$str = preg_replace("/\{!--.*?--\}/s", '', $str);
+		}
 
 		return $str;
 	}

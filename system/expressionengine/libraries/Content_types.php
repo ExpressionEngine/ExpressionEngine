@@ -51,7 +51,7 @@ class EE_content_types {
 
 		ee()->db->insert($this->_table, $param);
 
-		$this->_notify_fieldtypes('unregister_content_type', $param);
+		$this->_notify_fieldtypes('register_content_type', $param);
 	}
 
 	// --------------------------------------------------------------------
@@ -80,7 +80,7 @@ class EE_content_types {
 
 		if (ee()->db->affected_rows())
 		{
-			$this->_notify_fieldtypes('register_content_type', $param);
+			$this->_notify_fieldtypes('unregister_content_type', $param);
 		}
 
 	}
