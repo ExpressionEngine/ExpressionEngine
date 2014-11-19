@@ -375,6 +375,7 @@ class Addons extends CP_Controller {
 			{
 				if (ee()->api_channel_fields->apply('update', array($fieldtype['version'])) !== FALSE)
 				{
+					// @TODO replace this with an ee('Model') implementation
 					ee()->db->update('fieldtypes', array('version' => $FT->info['version']), array('name' => $addon));
 					$updated = '<b>' . $fieldtype['name'] . '</b> ' . lang('updated_to_version') . ' ' . $FT->info['version'];
 				}
