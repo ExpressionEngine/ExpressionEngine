@@ -1260,24 +1260,6 @@ class Addons extends CP_Controller {
 		// switch the view path to the module's view folder
 		ee()->load->add_package_path($installed[$addon]['path'], FALSE);
 
-		// Update Module
-		// Send version to update class and let it do any required work
-		if (file_exists($installed[$addon]['path'].'upd.'.$addon.'.php'))
-		{
-			require_once $installed[$addon]['path'].'upd.'.$addon.'.php';
-
-			$class = ucfirst($addon).'_upd';
-			$version = $installed[$addon]['module_version'];
-
-			$UPD = new $class;
-			$UPD->_ee_path = APPPATH;
-
-			if ($UPD->version > $version && method_exists($UPD, 'update') && $UPD->update($version) !== FALSE)
-			{
-				ee()->db->update('modules', array('module_version' => $UPD->version), array('module_name' => ucfirst($addon)));
-			}
-		}
-
 		require_once $installed[$addon]['path'].$installed[$addon]['file'];
 
 		// instantiate the module cp class
