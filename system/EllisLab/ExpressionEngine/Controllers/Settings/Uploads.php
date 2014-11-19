@@ -159,12 +159,12 @@ class Uploads extends Settings {
 			array(
 				'field' => 'name',
 				'label' => 'lang:upload_name',
-				'rules' => 'required|strip_tags|valid_xss_check'
+				'rules' => 'required|strip_tags|valid_xss_check|callback_validateName'
 			),
 			array(
 				'field' => 'server_path',
 				'label' => 'lang:upload_path',
-				'rules' => 'required|strip_tags|valid_xss_check|file_exists'
+				'rules' => 'required|strip_tags|valid_xss_check|file_exists|writable'
 			),
 			array(
 				'field' => 'url',
@@ -199,7 +199,7 @@ class Uploads extends Settings {
 		));
 		
 		$base_url = 'settings/uploads/';
-		$base_url .= ($upload_id) ? 'edit/' . $upload_id : 'new';
+		$base_url .= ($upload_id) ? 'edit/' . $upload_id : 'new-upload';
 		$base_url = cp_url($base_url);
 
 		if (AJAX_REQUEST)
@@ -209,11 +209,11 @@ class Uploads extends Settings {
 		}
 		elseif (ee()->form_validation->run() !== FALSE)
 		{
-			if ($this->saveUploadPreferences($upload_id))
+			if ($new_upload_id = $this->saveUploadPreferences($upload_id))
 			{
 				ee()->view->set_message('success', lang('preferences_updated'), lang('preferences_updated_desc'), TRUE);
 
-				ee()->functions->redirect($base_url);
+				ee()->functions->redirect(cp_url('settings/uploads/edit/' . $new_upload_id));
 			}
 
 			ee()->view->set_message('issue', lang('settings_save_error'), lang('settings_save_error_desc'));
@@ -281,7 +281,7 @@ class Uploads extends Settings {
 						'allowed_types' => array(
 							'type' => 'dropdown',
 							'choices' => array(
-								'images' => lang('upload_allowed_types_opt_images'),
+								'img' => lang('upload_allowed_types_opt_images'),
 								'all' => lang('upload_allowed_types_opt_all')
 							),
 							'value' => (isset($upload_dir['allowed_types'])) ? $upload_dir['allowed_types'] : 'images'
@@ -508,6 +508,30 @@ class Uploads extends Settings {
 	}
 
 	/**
+	 * Custom validation for the directory names to ensure there
+	 * are no duplicate names
+	 *
+	 * @return	boolean	Whether or not it passed validation
+	 */
+	public function validateName($name)
+	{
+		ee()->load->model('admin_model');
+
+		if (ee()->admin_model->unique_upload_name(
+				strtolower(strip_tags(ee()->input->post('name'))),
+				strtolower(ee()->input->post('cur_name')),
+				(ee()->input->post('cur_name') !== FALSE)
+			))
+		{
+			ee()->form_validation->set_message('validateName', lang('duplicate_dir_name'));
+
+			return FALSE;
+		}
+
+		return TRUE;
+	}
+
+	/**
 	 * Sets up a GridInput object populated with image manipulation data
 	 *
 	 * @param	int	$upload_id		ID of upload destination to get image sizes for
@@ -670,6 +694,16 @@ class Uploads extends Settings {
 			$member_groups[$group->group_id] = $group->group_title;
 		}
 
+		if ( ! empty($_POST))
+		{
+			if (isset($_POST['cat_group']))
+			{
+				return array($_POST['cat_group'], $member_groups);
+			}
+
+			return array(array(), $member_groups);
+		}
+
 		$no_access = array();
 		if ($upload_destination !== NULL)
 		{
@@ -739,20 +773,6 @@ class Uploads extends Settings {
 		if (substr($url, -1) != '/')
 		{
 			$upload_destination->url .= '/';
-		}
-
-		ee()->load->model('admin_model');
-
-		// Is the name taken?
-		if (
-			ee()->admin_model->unique_upload_name(
-				strtolower(strip_tags(ee()->input->post('name'))),
-				strtolower(ee()->input->post('cur_name')),
-				$edit
-			)
-		)
-		{
-			show_error(lang('duplicate_dir_name'));
 		}
 
 		if ((count($this->input->post('cat_group')) > 0) && $this->input->post('cat_group'))
@@ -848,7 +868,7 @@ class Uploads extends Settings {
 
 		$image_sizes->filter('upload_location_id', $upload_destination->id)->delete();
 
-		return TRUE;
+		return $upload_destination->id;
 	}
 }
 // END CLASS

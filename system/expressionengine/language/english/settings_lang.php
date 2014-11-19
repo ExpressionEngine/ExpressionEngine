@@ -1171,6 +1171,9 @@ $lang = array(
 'upload_category_groups_desc' =>
 'The following category groups are allowed to upload to this directory.',
 
+'duplicate_dir_name' =>
+'The name of your directory is already taken',
+
 'no_upload_dir_url' =>
 'You must submit the URL to your upload directory',
 

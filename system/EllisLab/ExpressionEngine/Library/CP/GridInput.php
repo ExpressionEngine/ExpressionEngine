@@ -139,8 +139,21 @@ class GridInput extends Table {
 		{
 			$row['columns'] = array_map(function($field) use ($grid, $row)
 			{
-				$row_id = (isset($row['attrs']['row_id'])) ? 'row_id_'.$row['attrs']['row_id'] : 'new_row_0';
+				if (isset($row['attrs']['row_id']) && is_numeric(isset($row['attrs']['row_id'])))
+				{
+					$row_id = 'row_id_'.$row['attrs']['row_id'];
+				}
+				elseif ( ! isset($row['attrs']['row_id']))
+				{
+					$row_id = 'new_row_0';
+				}
+				else
+				{
+					$row_id = $row['attrs']['row_id'];
+				}
+				
 				return $grid->namespaceForGrid($field, $row_id);
+
 			}, $row['columns']);
 
 			// This no longer needs to be here
