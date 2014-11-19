@@ -1,42 +1,38 @@
 <?php
 namespace EllisLab\ExpressionEngine\Service;
 
-use StdClass;
+use Closure;
 
-// Dependencies is the global service provider
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 3.0
+ * @filesource
+ */
 
-// Everyone else can decide to create their own. The static registry ensures
-// that the singleton will play nicely across all instances of them.
+// ------------------------------------------------------------------------
 
-class ServiceProvider {
+/**
+ * ExpressionEngine Service Provider Interface
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Core
+ * @category	Service
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
+ */
+interface ServiceProvider {
 
-	protected static $singletonRegistry;
+	public function register($name, $object);
+	public function bind($name, $object);
+	public function registerSingleton($name, $object);
+	public function singleton(Closure $object);
+	public function make();
 
-	protected function singleton(\Closure $object)
-	{
-	    $hash = spl_object_hash($object);
-
-	    // using a method call so its easy to mock up
-	    $registry = $this->getRegistry();
-
-	    if ( ! isset($registry->$hash))
-	    {
-	        $registry->$hash = $object($this);
-	    }
-
-	    return $registry->$hash;
-	}
-
-	private function getRegistry()
-	{
-		// using self instead of static to prevent extension.
-		// using an object to enforce references.
-
-		if ( ! is_object(self::$singletonRegistry))
-		{
-			self::$singletonRegistry = new StdClass;
-		}
-
-		return static::$singletonRegistry;
-	}
 }
+// EOF
