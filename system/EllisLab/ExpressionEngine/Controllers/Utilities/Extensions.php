@@ -57,7 +57,7 @@ class Extensions extends Utilities {
 		// Add in any submitted search phrase
 		ee()->view->search_value = ee()->input->get_post('search');
 
-		$this->base_url = new URL('addons/extensions', ee()->session->session_id());
+		$this->base_url = new URL('utilities/extensions', ee()->session->session_id());
 
 		ee()->load->library('addons');
 		ee()->load->helper(array('file', 'directory'));
@@ -72,11 +72,11 @@ class Extensions extends Utilities {
 	{
 		if (ee()->input->post('bulk_action') == 'enable')
 		{
-			return $this->enable(ee()->input->post('selection'));
+			$this->enable(ee()->input->post('selection'));
 		}
 		elseif (ee()->input->post('bulk_action') == 'disable')
 		{
-			return $this->disable(ee()->input->post('selection'));
+			$this->disable(ee()->input->post('selection'));
 		}
 
 		ee()->view->cp_page_title = lang('debug_extensions');
@@ -119,7 +119,7 @@ class Extensions extends Utilities {
 			switch ($info['enabled'])
 			{
 				case TRUE: $status = array('class' => 'enable', 'content' => lang('enabled')); break;
-				case FALSE: $status = array('class' => 'enable', 'content' => lang('disabled')); break;
+				case FALSE: $status = array('class' => 'disable', 'content' => lang('disabled')); break;
 			}
 
 			$data[] = array(
