@@ -26,6 +26,27 @@ EE.cp.formValidation = {
 	},
 
 	/**
+	 * Bind inputs to the validation routine. Text inputs will trigger a
+	 * validation request on blur, while others will trigger on change.
+	 *
+	 * @param	{jQuery object}	container	jQuery object of container of elements
+	 */
+	bindInputs: function(container) {
+
+		var that = this;
+
+		$('input[type=text], input[type=password], textarea', container).blur(function() {
+
+			that._sendAjaxRequest($(this));
+		});
+
+		$('input[type=checkbox], input[type=radio], select', container).change(function() {
+
+			that._sendAjaxRequest($(this));
+		});
+	},
+
+	/**
 	 * Detects a form submission and changes the form's submit button
 	 * to its working state
 	 */
@@ -64,8 +85,7 @@ EE.cp.formValidation = {
 			var form = $(this),
 				button = form.find('.form-ctrls input.btn');
 
-			that._registerTextInputs(form);
-			that._registerNonTextInputs(form);
+			that.bindInputs(form);
 			that._dismissSuccessAlert(form);
 		});
 	},
@@ -97,53 +117,24 @@ EE.cp.formValidation = {
 	},
 
 	/**
-	 * Text inputs will trigger a validation request on blur
-	 *
-	 * @param	{jQuery object}	form	jQuery object of form
-	 */
-	_registerTextInputs: function(form) {
-
-		var that = this;
-
-		$('input[type=text], input[type=password], textarea', form).blur(function() {
-
-			that._sendAjaxRequest(form, $(this));
-		});
-	},
-
-	/**
-	 * Non-text inputs will trigger a validation request on change
-	 *
-	 * @param	{jQuery object}	form	jQuery object of form
-	 */
-	_registerNonTextInputs: function(form) {
-
-		var that = this;
-
-		$('input[type=checkbox], input[type=radio], select', form).change(function() {
-
-			that._sendAjaxRequest(form, $(this));
-		});
-	},
-
-	/**
 	 * Sends an AJAX request to the form's action, it's up to the form
 	 * handler to detect that it's an AJAX request and handle the
 	 * request differently
 	 *
-	 * @param	{jQuery object}	form	jQuery object of form
 	 * @param	{jQuery object}	field	jQuery object of field validating
 	 */
-	_sendAjaxRequest: function(form, field) {
+	_sendAjaxRequest: function(field) {
+
+		var form = field.parents('form.ajax-validate');
 
 		// Just reset the button for forms that don't validate over AJAX
-		if ( ! form.hasClass('ajax-validate')) {
+		if (form.size() == 0) {
 			this._toggleErrorForFields(form, field, 'success');
 			return;
 		}
 
 		var that = this,
-			action = form.attr('action');
+			action = form.attr('action'),
 			data = form.serialize();
 
 		$.ajax({
