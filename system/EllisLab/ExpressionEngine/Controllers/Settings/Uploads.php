@@ -323,7 +323,7 @@ class Uploads extends Settings {
 			)
 		);
 
-		$upload_destination = ee()->api->get('UploadDestination')
+		$upload_destination = ee('Model')->get('UploadDestination')
 			->with('FileDimension')
 			->filter('id', $upload_id)
 			->first();
@@ -590,7 +590,7 @@ class Uploads extends Settings {
 		// Otherwise, pull from the database if we're editing
 		elseif ($upload_destination !== NULL)
 		{
-			$sizes = ee()->api->get('FileDimension')
+			$sizes = ee('Model')->get('FileDimension')
 				->filter('upload_location_id', $upload_destination->id)->all();
 
 			if ($sizes->count() != 0)
@@ -738,7 +738,7 @@ class Uploads extends Settings {
 
 		if ($edit)
 		{
-			$upload_destination = ee()->api->get('UploadDestination')
+			$upload_destination = ee('Model')->get('UploadDestination')
 				->with('FileDimension')
 				->filter('id', $id)
 				->first();
@@ -750,7 +750,7 @@ class Uploads extends Settings {
 		}
 		else
 		{
-			$upload_destination = ee()->api->make('UploadDestination');
+			$upload_destination = ee('Model')->make('UploadDestination');
 			$upload_destination->site_id = ee()->config->item('site_id');
 		}
 
@@ -805,7 +805,7 @@ class Uploads extends Settings {
 		
 		if ( ! empty($no_access))
 		{
-			$groups = ee()->api->get('MemberGroup')->filter('group_id', 'IN', $no_access)->all();
+			$groups = ee('Model')->get('MemberGroup')->filter('group_id', 'IN', $no_access)->all();
 			//$upload_destination->setNoAccess($groups);
 		}
 		
@@ -837,13 +837,13 @@ class Uploads extends Settings {
 				// Existing rows
 				if (strpos($row_id, 'row_id_') !== FALSE)
 				{
-					$image_size = ee()->api->get('FileDimension')
+					$image_size = ee('Model')->get('FileDimension')
 						->filter('id', str_replace('row_id_', '', $row_id))
 						->first();
 				}
 				else
 				{
-					$image_size = ee()->api->make('FileDimension');
+					$image_size = ee('Model')->make('FileDimension');
 					$image_size->upload_location_id = $upload_destination->id;
 				}
 
@@ -859,7 +859,7 @@ class Uploads extends Settings {
 		}
 
 		// Delete deleted image size rows
-		$image_sizes = ee()->api->get('FileDimension');
+		$image_sizes = ee('Model')->get('FileDimension');
 
 		if ( ! empty($row_ids))
 		{

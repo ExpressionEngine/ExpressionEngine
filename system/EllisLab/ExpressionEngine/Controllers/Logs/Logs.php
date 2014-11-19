@@ -107,7 +107,7 @@ class Logs extends CP_Controller {
 	 * Deletes log entries, either all at once, or one at a time
 	 *
 	 * @param string	$model		The name of the model to pass to
-	 *								ee()->api->get()
+	 *								ee('Model')->get()
 	 * @param string	$log_type	The text used in the delete message
 	 *								describing the type of log deleted
 	 */
@@ -127,7 +127,7 @@ class Logs extends CP_Controller {
 			$flashdata = TRUE;
 		}
 
-		$query = ee()->api->get($model, $id);
+		$query = ee('Model')->get($model, $id);
 
 		$count = $query->count();
 		$query->all()->delete();

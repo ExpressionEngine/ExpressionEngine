@@ -53,7 +53,7 @@ class Cp extends Logs {
 		$this->base_url->path = 'logs/cp';
 		ee()->view->cp_page_title = lang('view_cp_log');
 
-		$logs = ee()->api->get('CpLog')->with('Site');
+		$logs = ee('Model')->get('CpLog')->with('Site');
 
 		if ( ! empty(ee()->view->search_value))
 		{

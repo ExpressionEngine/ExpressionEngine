@@ -194,7 +194,7 @@ class ImportConverter extends Utilities {
 		unset($vars['select_options']['member_id']);
 
 		// When MemberField model is ready
-		//$m_fields = ee()->api->get('MemberField')->order('m_field_name', 'asc')->all();
+		//$m_fields = ee('Model')->get('MemberField')->order('m_field_name', 'asc')->all();
 		$m_fields = ee()->db->order_by('m_field_name', 'asc')->get('member_fields');
 
 		if ($m_fields->num_rows() > 0)

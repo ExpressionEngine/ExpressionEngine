@@ -60,7 +60,7 @@ class Search extends Logs {
 		$this->base_url->path = 'logs/search';
 		ee()->view->cp_page_title = lang('view_search_log');
 
-		$logs = ee()->api->get('SearchLog')->with('Site');
+		$logs = ee('Model')->get('SearchLog')->with('Site');
 
 		if ( ! empty(ee()->view->search_value))
 		{

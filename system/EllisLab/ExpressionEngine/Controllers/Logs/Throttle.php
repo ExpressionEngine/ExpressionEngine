@@ -81,7 +81,7 @@ class Throttle extends Logs {
 				$lockout_time = $this->config->item('lockout_time');
 			}
 
-			$logs = ee()->api->get('Throttle')
+			$logs = ee('Model')->get('Throttle')
 				->filterGroup()
 					->filter('hits', '>=', $max_page_loads)
 					->orFilterGroup()

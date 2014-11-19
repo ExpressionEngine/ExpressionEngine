@@ -36,7 +36,7 @@ class Members extends Settings {
 	 */
 	public function index()
 	{
-		$groups = ee()->api->get('MemberGroup')->order('group_title', 'asc')->all();
+		$groups = ee('Model')->get('MemberGroup')->order('group_title', 'asc')->all();
 
 		$member_groups = array();
 		foreach ($groups as $group)

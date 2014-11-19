@@ -98,7 +98,7 @@ class Communicate extends Utilities {
 		}
 		else
 		{
-			$groups = ee()->api->get('MemberGroup')
+			$groups = ee('Model')->get('MemberGroup')
 				->with('Members')
 				->filter('include_in_mailinglists', 'y')
 				->all();
@@ -244,7 +244,7 @@ class Communicate extends Utilities {
 			'attachments'		=> $this->attachments,
 		);
 
-		$email = ee()->api->make('EmailCache', $cache_data);
+		$email = ee('Model')->make('EmailCache', $cache_data);
 		$email->save();
 
 		//  Send a single email
@@ -257,7 +257,7 @@ class Communicate extends Utilities {
 		}
 
 		// Get member group emails
-		$member_groups = ee()->api->get('MemberGroup', $groups)
+		$member_groups = ee('Model')->get('MemberGroup', $groups)
 			->with('Members')
 			->filter('include_in_mailinglists', 'y') // for safety
 			->all();
@@ -311,7 +311,7 @@ class Communicate extends Utilities {
 
 		//  Store email cache
 		$email->recipient_array = $email_addresses;
-		$email->setMemberGroups(ee()->api->get('MemberGroup', $groups)->all());
+		$email->setMemberGroups(ee('Model')->get('MemberGroup', $groups)->all());
 		$email->save();
 		$id = $email->cache_id;
 
@@ -380,7 +380,7 @@ class Communicate extends Utilities {
 			show_error(lang('problem_with_id'));
 		}
 
-		$email = ee()->api->get('EmailCache', $id)->first();
+		$email = ee('Model')->get('EmailCache', $id)->first();
 
 		if (is_null($email))
 		{
@@ -434,7 +434,7 @@ class Communicate extends Utilities {
 			show_error(lang('problem_with_id'));
 		}
 
-		$caches = ee()->api->get('EmailCache', $id)
+		$caches = ee('Model')->get('EmailCache', $id)
 			->with('MemberGroups')
 			->all();
 
@@ -657,7 +657,7 @@ class Communicate extends Utilities {
 
 		if (ee()->input->post('bulk_action') == 'remove')
 		{
-			ee()->api->get('EmailCache', ee()->input->get_post('selection'))->all()->delete();
+			ee('Model')->get('EmailCache', ee()->input->get_post('selection'))->all()->delete();
 			ee()->view->set_message('success', lang('emails_removed'), '');
 		}
 
@@ -686,7 +686,7 @@ class Communicate extends Utilities {
 		$count = 0;
 		$modals = array();
 
-		$emails = ee()->api->get('EmailCache');
+		$emails = ee('Model')->get('EmailCache');
 
 		$search = $table->search;
 		if ( ! empty($search))

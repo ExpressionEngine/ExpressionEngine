@@ -60,7 +60,7 @@ class Email extends Logs {
 		$this->base_url->path = 'logs/email';
 		ee()->view->cp_page_title = lang('view_email_logs');
 
-		$logs = ee()->api->get('EmailConsoleCache');
+		$logs = ee('Model')->get('EmailConsoleCache');
 
 		if ( ! empty(ee()->view->search_value))
 		{
@@ -192,7 +192,7 @@ class Email extends Logs {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$email = ee()->api->get('EmailConsoleCache', $id)->first();
+		$email = ee('Model')->get('EmailConsoleCache', $id)->first();
 
 		if (is_null($email))
 		{
