@@ -60,7 +60,7 @@ namespace EllisLab\ExpressionEngine\Service\Model\Relationship;
 /*
 
 
-$t = ee()->api->get('Template')
+$t = ee('Model')->get('Template')
 	->with('TemplateGroup')
 	->limit('template_id', 5)
 	->all();
