@@ -51,7 +51,7 @@ class EE_Stylesheet {
 		}
 		else
 		{
-			$stylesheet = $_GET['css'];
+			$stylesheet = (isset($_GET['css'])) ? $_GET['css'] : '';
 		}
 
 		if (rtrim($stylesheet, '/') == '_ee_channel_form_css')
@@ -63,6 +63,8 @@ class EE_Stylesheet {
 
 		if ($stylesheet == '' OR strpos($stylesheet, '/') === FALSE)
 		{
+			ee()->output->set_status_header(404);
+			ee()->output->set_header("Date: ".gmdate("D, d M Y H:i:s")." GMT");
 			exit;
 		}
 
@@ -72,6 +74,8 @@ class EE_Stylesheet {
 
 			if (count($ex) != 2)
 			{
+				ee()->output->set_status_header(404);
+				ee()->output->set_header("Date: ".gmdate("D, d M Y H:i:s")." GMT");
 				exit;
 			}
 
@@ -89,6 +93,8 @@ class EE_Stylesheet {
 
 			if ($query->num_rows() == 0)
 			{
+				ee()->output->set_status_header(404);
+				ee()->output->set_header("Date: ".gmdate("D, d M Y H:i:s")." GMT");
 				exit;
 			}
 
