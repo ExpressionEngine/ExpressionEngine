@@ -200,6 +200,11 @@ class Extensions extends Utilities {
 		{
 			$extension = $this->getExtensions($addon);
 
+			// @TODO use this code once the models are ready
+			// ee('Model')->get('Extension')
+			// 	->filter('class', $extension['class'])
+			// 	->set('enabled', TRUE)
+			// 	->update();
 			// Get the list of hooks and the existing state
 			$hooks = ee()->db->select('extension_id, enabled')
 				->where('class', $extension['class'])
@@ -240,6 +245,11 @@ class Extensions extends Utilities {
 		{
 			$extension = $this->getExtensions($addon);
 
+			// @TODO use this code once the models are ready
+			// ee('Model')->get('Extension')
+			// 	->filter('class', $extension['class'])
+			// 	->set('enabled', FALSE)
+			// 	->update();
 			// Get the list of hooks and the existing state
 			$hooks = ee()->db->select('extension_id, enabled')
 				->where('class', $extension['class'])
