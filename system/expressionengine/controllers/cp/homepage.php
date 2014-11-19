@@ -38,7 +38,7 @@ class Homepage extends CP_Controller {
 				->with(\'Channel\', array(\'Author\'=>array(\'MemberGroup\', \'ChannelEntries\')))
 				->all()<br />';
 		try {
-		$sql = ee()->api->get('ChannelEntry')
+		$sql = ee('Model')->get('ChannelEntry')
 			->with('Channel',
 				array('Author'=> array('MemberGroup', 'ChannelEntries AS AuthorEntries'))
 			)
