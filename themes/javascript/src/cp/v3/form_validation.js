@@ -125,10 +125,10 @@ EE.cp.formValidation = {
 	 */
 	_sendAjaxRequest: function(field) {
 
-		var form = field.parents('form.ajax-validate');
-
+		var form = field.parents('form');
+		
 		// Just reset the button for forms that don't validate over AJAX
-		if (form.size() == 0) {
+		if ( ! form.hasClass('ajax-validate')) {
 			this._toggleErrorForFields(form, field, 'success');
 			return;
 		}
