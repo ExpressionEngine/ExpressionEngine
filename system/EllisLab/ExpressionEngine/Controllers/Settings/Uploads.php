@@ -442,7 +442,7 @@ class Uploads extends Settings {
 		// duplicate column names; they should be unique
 		foreach ($image_sizes['rows'] as $row_id => $columns)
 		{
-			$row_names[] = $columns['name'];
+			$row_names[] = $columns['short_name'];
 		}
 
 		$row_name_count = array_count_values($row_names);
@@ -450,20 +450,20 @@ class Uploads extends Settings {
 		foreach ($image_sizes['rows'] as $row_id => $columns)
 		{
 			// There cannot be duplicate image manipulation names
-			if ($row_name_count[$columns['name']] > 1)
+			if ($row_name_count[$columns['short_name']] > 1)
 			{
-				$this->image_sizes_errors[$row_id]['name'] = lang('duplicate_image_size_name');
+				$this->image_sizes_errors[$row_id]['short_name'] = lang('duplicate_image_size_name');
 			}
 			// Column names must contain only alpha-numeric characters and no spaces
-			elseif (preg_match('/[^a-z0-9\-\_]/i', $columns['name']))
+			elseif (preg_match('/[^a-z0-9\-\_]/i', $columns['short_name']))
 			{
-				$this->image_sizes_errors[$row_id]['name'] = lang('alpha_dash');
+				$this->image_sizes_errors[$row_id]['short_name'] = lang('alpha_dash');
 			}
 
 			// Double-check for form tampering (why would you tamper this?)
-			if ( ! in_array($columns['type'], array('crop', 'constrain')))
+			if ( ! in_array($columns['resize_type'], array('crop', 'constrain')))
 			{
-				$this->image_sizes_errors[$row_id]['type'] = lang('required');
+				$this->image_sizes_errors[$row_id]['resize_type'] = lang('required');
 			}
 
 			// Make sure height and width are positive numbers
@@ -476,7 +476,7 @@ class Uploads extends Settings {
 			}
 		}
 
-		// TODO: Abstract into service
+		// TODO: Abstract into service?
 		if ( ! empty($this->image_sizes_errors))
 		{
 			// For AJAX validation, only send back the relvant error message
@@ -498,9 +498,8 @@ class Uploads extends Settings {
 				return TRUE;
 			}
 
-			// Don't show a message below the Grid, we'll just show messages by
-			// the fields in question inside the Grid
-			ee()->form_validation->set_message('validateImageSizes', '');
+			// Dummy error message
+			ee()->form_validation->set_message('validateImageSizes', 'asdf');
 
 			return FALSE;
 		}
@@ -538,18 +537,7 @@ class Uploads extends Settings {
 			)
 		);
 		$grid->setNoResultsText('no_manipulations', 'add_manipulation');
-		$grid->setBlankRow(array(
-			form_input('name'),
-			form_dropdown(
-				'type',
-				array(
-					'constrain' => lang('image_manip_type_opt_constrain'),
-					'crop' => lang('image_manip_type_opt_crop'),
-				)
-			),
-			form_input('width'),
-			form_input('height')
-		));
+		$grid->setBlankRow($this->getGridRow());
 
 		$validation_data = ee()->input->post('image_manipulations');
 		$image_sizes = array();
@@ -578,7 +566,8 @@ class Uploads extends Settings {
 		// Otherwise, pull from the database if we're editing
 		elseif ($upload_destination !== NULL)
 		{
-			$sizes = ee()->api->get('FileDimension')->filter('upload_location_id', $upload_destination->id)->all();
+			$sizes = ee()->api->get('FileDimension')
+				->filter('upload_location_id', $upload_destination->id)->all();
 
 			if ($sizes->count() != 0)
 			{
@@ -595,20 +584,7 @@ class Uploads extends Settings {
 			{
 				$data[] = array(
 					'attrs' => array('row_id' => $size['id']),
-					'columns' => array(
-						form_input('short_name', $size['short_name']),
-						form_dropdown(
-							'resize_type',
-							array(
-								'constrain' => lang('image_manip_type_opt_constrain'),
-								'crop' => lang('image_manip_type_opt_crop'),
-							),
-							$size['resize_type']
-						),
-						form_input('width', $size['width']),
-						form_input('height', $size['height'])
-					),
-					//'errors' => (isset($size['errors'])) ? $size['errors'] : NULL
+					'columns' => $this->getGridRow($size),
 				);
 			}
 
@@ -616,6 +592,63 @@ class Uploads extends Settings {
 		}
 
 		return $grid;
+	}
+
+	/**
+	 * Returns an array of HTML representing a single Grid row, populated by data
+	 * passed in the $size array: ('short_name', 'resize_type', 'width', 'height')
+	 *
+	 * @param	array	$size	Array of image size information to populate Grid row
+	 * @return	array	Array of HTML representing a single Grid row
+	 */
+	private function getGridRow($size = array())
+	{
+		$defaults = array('short_name' => '', 'resize_type' => '', 'width' => '', 'height' => '');
+
+		$size = array_merge($defaults, $size);
+
+		return array(
+			array(
+				'html' => form_input('short_name', $size['short_name']),
+				'error' => $this->getGridFieldError($size, 'short_name')
+			),
+			array(
+				'html' => form_dropdown(
+					'resize_type',
+					array(
+						'constrain' => lang('image_manip_type_opt_constrain'),
+						'crop' => lang('image_manip_type_opt_crop'),
+					),
+					$size['resize_type']
+				),
+				'error' => $this->getGridFieldError($size, 'resize_type')
+			),
+			array(
+				'html' => form_input('width', $size['width']),
+				'error' => $this->getGridFieldError($size, 'width')
+			),
+			array(
+				'html' => form_input('height', $size['height']),
+				'error' => $this->getGridFieldError($size, 'height')
+			)
+		);
+	}
+
+	/**
+	 * Returns the validation error for a specific Grid cell
+	 *
+	 * @param	array	$size	Array of image size information to populate Grid row
+	 * @param	string	$column	Name of column to get an error for
+	 * @return	array	Array of HTML representing a single Grid row
+	 */
+	private function getGridFieldError($size, $column)
+	{
+		if (isset($size['errors'][$column]))
+		{
+			return $size['errors'][$column];
+		}
+
+		return NULL;
 	}
 
 	/**
@@ -640,7 +673,15 @@ class Uploads extends Settings {
 		$no_access = array();
 		if ($upload_destination !== NULL)
 		{
-			$no_access = $upload_destination->getNoAccess()->pluck('group_id');
+			// Relationships aren't working
+			//$no_access = $upload_destination->getNoAccess()->pluck('group_id');
+			
+			$no_access_query = ee()->db->get_where('upload_no_access', array('upload_id' => $upload_destination->id));
+
+			foreach ($no_access_query->result() as $row)
+			{
+				$no_access[] = $row->member_group;
+			}
 		}
 
 		$allowed_groups = array_diff(array_keys($member_groups), $no_access);
@@ -786,9 +827,9 @@ class Uploads extends Settings {
 					$image_size->upload_location_id = $upload_destination->id;
 				}
 
-				$image_size->title = $columns['name'];
-				$image_size->short_name = $columns['name'];
-				$image_size->resize_type = $columns['type'];
+				$image_size->title = $columns['short_name'];
+				$image_size->short_name = $columns['short_name'];
+				$image_size->resize_type = $columns['resize_type'];
 				$image_size->width = $columns['width'];
 				$image_size->height = $columns['height'];
 				$image_size->save();

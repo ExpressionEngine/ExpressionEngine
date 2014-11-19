@@ -93,7 +93,7 @@ EE.cp.formValidation = {
 	 */
 	_errorsExist: function(form) {
 
-		return ($('fieldset.invalid', form).size() != 0);
+		return ($('fieldset.invalid, td.invalid', form).size() != 0);
 	},
 
 	/**
@@ -166,8 +166,8 @@ EE.cp.formValidation = {
 	 */
 	_toggleErrorForFields: function(form, field, message) {
 
-		var fieldset = field.parents('fieldset'),
-			container = field.parents('div[class*=setting]'),
+		var container = field.parents('div[class*=setting]'),
+			fieldset = (container.parents('fieldset').size() > 0) ? container.parents('fieldset') : container.parent(),
 			button = form.find('.form-ctrls input.btn'), // Submit button of form
 			errorClass = 'em.ee-form-error-message',
 			grid = false;
