@@ -182,6 +182,86 @@ class Extensions extends Utilities {
 	}
 
 	/**
+	 * Enable an add-on
+	 *
+	 * @param	str|array	$addons	The name(s) of add-ons to install
+	 * @return	void
+	 */
+	private function enable($addons)
+	{
+		if ( ! is_array($addons))
+		{
+			$addons = array($addons);
+		}
+
+		$enabled = array();
+
+		foreach ($addons as $addon)
+		{
+			$extension = $this->getExtensions($addon);
+
+			// Get the list of hooks and the existing state
+			$hooks = ee()->db->select('extension_id, enabled')
+				->where('class', $extension['class'])
+				->get('extensions')
+				->result_array();
+
+			foreach ($hooks as $index => $data)
+			{
+				$hooks[$index]['enabled'] = 'y';
+			}
+			ee()->db->update_batch('extensions', $hooks, 'extension_id');
+
+			$enabled[$addon] = $extension['name'];
+		}
+
+		if ( ! empty($installed))
+		{
+			ee()->view->set_message('success', lang('extensions_enabled'), lang('extensions_enabled_desc') . implode(', ', $enabled));
+		}
+	}
+
+	/**
+	 * Disable an add-on
+	 *
+	 * @param	str|array	$addons	The name(s) of add-ons to install
+	 * @return	void
+	 */
+	private function disable($addons)
+	{
+		if ( ! is_array($addons))
+		{
+			$addons = array($addons);
+		}
+
+		$disabled = array();
+
+		foreach ($addons as $addon)
+		{
+			$extension = $this->getExtensions($addon);
+
+			// Get the list of hooks and the existing state
+			$hooks = ee()->db->select('extension_id, enabled')
+				->where('class', $extension['class'])
+				->get('extensions')
+				->result_array();
+
+			foreach ($hooks as $index => $data)
+			{
+				$hooks[$index]['enabled'] = 'n';
+			}
+			ee()->db->update_batch('extensions', $hooks, 'extension_id');
+
+			$disabled[$addon] = $extension['name'];
+		}
+
+		if ( ! empty($installed))
+		{
+			ee()->view->set_message('success', lang('extensions_disabled'), lang('extensions_disabled_desc') . implode(', ', $disabled));
+		}
+	}
+
+	/**
 	 * Get a list of extensions
 	 *
 	 * @param	str	$name	(optional) Limit the return to this add-on
@@ -190,6 +270,7 @@ class Extensions extends Utilities {
 	 *        'installed'	 => TRUE|FALSE,
 	 *        'name'		 => 'FooBar',
 	 *        'package'		 => 'foobar',
+	 *        'class'        => 'Foobar_ext',
 	 *        'enabled'		 => NULL|TRUE|FALSE
 	 *        'manual_url'	 => '' (optional),
 	 *        'settings_url' => '' (optional)
@@ -258,6 +339,7 @@ class Extensions extends Utilities {
 				'enabled'		=> ($installed[$class_name]['enabled'] == 'y'),
 				'name'			=> (isset($Extension->name)) ? $Extension->name : $ext['name'],
 				'package'		=> $ext_name,
+				'class'			=> $class_name,
 			);
 
 			if ($Extension->settings_exist == 'y')
