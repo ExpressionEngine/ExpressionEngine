@@ -60,6 +60,8 @@ class Directory {
 				}
 			}
 		}
+
+		throw new \Exception('No config file was found.');
 	}
 
 	protected static function createFile($fullpath)

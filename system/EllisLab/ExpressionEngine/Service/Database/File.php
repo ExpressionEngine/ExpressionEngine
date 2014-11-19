@@ -81,7 +81,23 @@ class File extends ConfigFile
 
 		if ( ! isset($this->config[$active_group]))
 		{
-			show_error('You have specified an invalid database connection group.');
+			throw new \Exception('You have specified an invalid database connection group.');
+		}
+
+		// Check for required items
+		$required = array('username', 'hostname', 'database');
+		$missing = array();
+		foreach ($required as $required_field)
+		{
+			if (empty($this->config[$active_group][$required_field]))
+			{
+				$missing[] = $required_field;
+			}
+		}
+
+		if ( ! empty($missing))
+		{
+			throw new \Exception('You must define the following database parameters: '.implode(', ', $missing));
 		}
 
 		return array_merge(
