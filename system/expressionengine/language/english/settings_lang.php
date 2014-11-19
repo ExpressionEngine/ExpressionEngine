@@ -1171,11 +1171,17 @@ $lang = array(
 'upload_category_groups_desc' =>
 'The following category groups are allowed to upload to this directory.',
 
+'directory_not_saved' =>
+'Attention: Upload directory not saved',
+
+'directory_not_saved_desc' =>
+'We were unable to save your upload directory, please review and fix errors below.',
+
 'duplicate_dir_name' =>
-'The name of your directory is already taken',
+'The name of your directory is already taken.',
 
 'no_upload_dir_url' =>
-'You must submit the URL to your upload directory',
+'You must submit the URL to your upload directory.',
 
 'duplicate_image_size_name' =>
 'You must enter a unique name for this image manipulation.',

@@ -216,11 +216,11 @@ class Uploads extends Settings {
 				ee()->functions->redirect(cp_url('settings/uploads/edit/' . $new_upload_id));
 			}
 
-			ee()->view->set_message('issue', lang('settings_save_error'), lang('settings_save_error_desc'));
+			ee()->view->set_message('issue', lang('directory_not_saved'), lang('directory_not_saved_desc'));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			ee()->view->set_message('issue', lang('settings_save_error'), lang('settings_save_error_desc'));
+			ee()->view->set_message('issue', lang('directory_not_saved'), lang('directory_not_saved_desc'));
 		}
 
 		// Get the upload directory
