@@ -106,10 +106,27 @@ class EE_Core {
 		ee()->db->swap_pre = 'exp_';
 		ee()->db->db_debug = FALSE;
 
+		// Setup Dependency Injection Container
+		ee()->di = new \EllisLab\ExpressionEngine\Service\DependencyInjectionContainer();
+
+		ee()->di->registerSingleton('Model', function($di)
+		{
+			$model_alias_path = APPPATH . 'config/model_aliases.php';
+			$model_alias_service = new \EllisLab\ExpressionEngine\Service\AliasService('Model', $model_alias_path);
+
+            return new \EllisLab\ExpressionEngine\Service\Model\Factory(
+                $model_alias_service,
+                $di->make('Validation')
+            );
+		});
+
+		ee()->di->registerSingleton('Validation', function($di)
+		{
+            return new \EllisLab\ExpressionEngine\Service\Validation\Factory();
+		});
+
 		// Setup API model factory
-		ee()->dic = new \EllisLab\ExpressionEngine\Service\DependencyInjectionContainer();
-		ee()->dic->bootstrap();
-		ee()->api = ee()->dic->get('EllisLab:Model\Factory');
+		ee()->api = ee()->di->make('Model');
 
 		// Note enable_db_caching is a per site setting specified in EE_Config.php
 		// If debug is on we enable the profiler and DB debug
