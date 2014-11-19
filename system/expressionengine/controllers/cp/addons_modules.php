@@ -439,8 +439,8 @@ class Addons_modules extends CP_Controller {
 	 */
 	function module_uninstaller()
 	{
-		$module = $this->input->get_post('module');
-		$confirm = $this->input->get_post('confirm');
+		$module = $this->input->get_post('module', TRUE);
+		$confirm = $this->input->get_post('confirm', TRUE);
 
 		if ($module === FALSE OR $confirm === FALSE)
 		{

@@ -1,6 +1,7 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use \Michelf\MarkdownExtra;
+use \EllisLab\ExpressionEngine\Service\Autoloader;
 
 /**
  * ExpressionEngine - by EllisLab

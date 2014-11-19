@@ -484,7 +484,10 @@ class Comment_mcp {
 			ee()->db->order_by($col, $dir);
 		}
 
-		ee()->db->where("(`exp_comments`.`name` LIKE '%".ee()->db->escape_like_str($this->_keywords)."%' OR `exp_comments`.`email` LIKE '%".ee()->db->escape_like_str($this->_keywords)."%' OR `exp_comments`.`comment` LIKE '%".ee()->db->escape_like_str($this->_keywords)."%')", NULL, TRUE);
+		if ($this->_keywords)
+		{
+			ee()->db->where("(`exp_comments`.`name` LIKE '%".ee()->db->escape_like_str($this->_keywords)."%' OR `exp_comments`.`email` LIKE '%".ee()->db->escape_like_str($this->_keywords)."%' OR `exp_comments`.`comment` LIKE '%".ee()->db->escape_like_str($this->_keywords)."%')", NULL, TRUE);
+		}
 
 		$comment_q = ee()->db->get_where(
 			'comments',

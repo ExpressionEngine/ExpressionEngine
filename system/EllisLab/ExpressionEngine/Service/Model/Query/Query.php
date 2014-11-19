@@ -327,6 +327,15 @@ class Query {
 	{
 		$parent_id = trim(strrchr($path, '_'), '_') ?: $path;
 
+		// FIXME: @pascal, whenever you merge in your new subquery stuff and
+		// the proper handling of the leaves, remove this!  I'll also try to
+		// make sure to remember to come back and do remove it. -Bingham
+		if ( ! is_array($related))
+		{
+			$related = array($related=>FALSE);
+		}
+
+
 		foreach ($related as $name => $children)
 		{
 			// todo: skip subqueries
@@ -706,7 +715,15 @@ $this->db->join($relationship_meta->to_table . ' AS ' . $relationship_meta->to_t
 					$withs[$parent] = array();
 				}
 
-				$withs[$parent] = $this->addToWith($withs[$parent], $children);
+				if ( is_array($children))
+				{
+					$withs[$parent] = $this->addToWith($withs[$parent], $children);
+				}
+				else
+				{
+					$withs[$parent] = $children;
+				}
+
 			}
 		}
 
