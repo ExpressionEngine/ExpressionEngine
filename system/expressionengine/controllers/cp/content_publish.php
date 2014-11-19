@@ -584,10 +584,12 @@ class Content_publish extends CP_Controller {
 	 */
 	function view_entry()
 	{
-		$entry_id	= $this->input->get('entry_id');
-		$channel_id	= $this->input->get('channel_id');
+		$entry_id   = $this->input->get('entry_id', TRUE);
+		$channel_id = $this->input->get('channel_id', TRUE);
 
-		if ( ! $channel_id OR ! $entry_id OR ! $this->cp->allowed_group('can_access_content'))
+		if ( ! filter_var($channel_id, FILTER_VALIDATE_INT)
+			OR ! filter_var($entry_id, FILTER_VALIDATE_INT)
+			OR ! $this->cp->allowed_group('can_access_content'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -694,12 +696,14 @@ class Content_publish extends CP_Controller {
 		{
 			$show_edit_link .= AMP.'filter='.$filter_link;
 
-			$filters	 = unserialize(base64_decode($filter_link));
+			$filters     = unserialize(base64_decode($filter_link));
 			$filter_link = BASE.AMP.'C=content_edit';
 
 			if (isset($filters['keywords']))
 			{
-				$filters['keywords'] = base64_encode($filters['keywords']);
+				$filters['keywords'] = base64_encode(
+					htmlentities($filters['keywords'], ENT_QUOTES, 'UTF-8')
+				);
 			}
 
 			$filter_link = BASE.AMP.'C=content_edit'.AMP.http_build_query($filters);
@@ -2472,7 +2476,7 @@ class Content_publish extends CP_Controller {
 				if (count($this->_file_manager['file_list']))
 				{
 					$button_js[] = array(
-						'name'			=> $button->tag_name,
+						'name'			=> htmlentities($button->tag_name, ENT_QUOTES, 'UTF-8'),
 						'key'			=> $button->accesskey,
 						'replaceWith'	=> '',
 						'className'		=> $button->classname.' id'.$button->id
@@ -2488,7 +2492,7 @@ class Content_publish extends CP_Controller {
 			else
 			{
 				$button_js[] = array(
-					'name'		=> $button->tag_name,
+					'name'		=> htmlentities($button->tag_name, ENT_QUOTES, 'UTF-8'),
 					'key'		=> strtoupper($button->accesskey),
 					'openWith'	=> $button->tag_open,
 					'closeWith'	=> $button->tag_close,

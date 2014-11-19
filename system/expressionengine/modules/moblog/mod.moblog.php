@@ -1803,14 +1803,14 @@ class Moblog {
 
 		if ($upload_dir_id == 0)
 		{
-			continue;
+			return TRUE;
 		}
 
 		if ($subtype == 'appledouble')
 		{
 			if ( ! $data = $this->appledouble($value))
 			{
-				continue;
+				return TRUE;
 			}
 			else
 			{
@@ -1846,7 +1846,7 @@ class Moblog {
 
 		if (stristr($filename, 'dottedline') OR stristr($filename, 'spacer.gif') OR stristr($filename, 'masthead.jpg'))
 		{
-			continue;
+			return TRUE;
 		}
 
 		/** --------------------------------
@@ -1891,7 +1891,7 @@ class Moblog {
 				$this->body = ( ! isset($this->post_data[$type]['plain'])) ? $this->post_data[$type]['alt'] : $this->post_data[$type]['plain'];
 			}
 
-			continue;
+			return TRUE;
 		}
 
 		// Eudora and Mail.app use this by default
@@ -1964,7 +1964,7 @@ class Moblog {
 		}
 		else
 		{
-			continue;
+			return TRUE;
 		}
 
 		// Clean the file
@@ -1998,7 +1998,7 @@ class Moblog {
 			{
 				$this->attach_text = $file_code;
 				$this->attach_name = $filename;
-				continue; // No upload of file.
+				return TRUE; // No upload of file.
 			}
 		}
 
