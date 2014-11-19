@@ -240,9 +240,9 @@
 		static $EE;
 		if ( ! $EE) $EE = get_instance();
 
-		if (isset($dep) && isset($EE->dic))
+		if (isset($dep) && isset($EE->di))
 		{
-			return $EE->dic->make($dep);
+			return $EE->di->make($dep);
 		}
 
 		return $EE;
