@@ -629,30 +629,30 @@ class Addons extends CP_Controller {
 
 		$vars = array();
 
-		$plugin = $this->getPluginInfo($addon);
-		if ($plugin === FALSE)
+		$plugin = $this->getPlugins($addon);
+		if (empty($plugin))
 		{
 			show_error(lang('requested_module_not_installed').NBS.$addon);
 		}
 
 		$vars = array(
-			'name'			=> $plugin['pi_name'],
-			'version'		=> $this->formatVersionNumber($plugin['pi_version']),
-			'author'		=> $plugin['pi_author'],
-			'author_url'	=> $plugin['pi_author_url'],
-			'description'	=> $plugin['pi_description'],
+			'name'			=> $plugin['info']['pi_name'],
+			'version'		=> $this->formatVersionNumber($plugin['info']['pi_version']),
+			'author'		=> $plugin['info']['pi_author'],
+			'author_url'	=> $plugin['info']['pi_author_url'],
+			'description'	=> $plugin['info']['pi_description'],
 		);
 
 		$vars['usage'] = array(
 			'description' => '',
-			'example' => $plugin['pi_usage']
+			'example' => $plugin['info']['pi_usage']
 		);
 
-		if (is_array($plugin['pi_usage']))
+		if (is_array($plugin['info']['pi_usage']))
 		{
-			$vars['usage']['description'] = $plugin['pi_usage']['description'];
-			$vars['usage']['example'] = $plugin['pi_usage']['example'];
-			$vars['parameters'] = $plugin['pi_usage']['parameters'];
+			$vars['usage']['description'] = $plugin['info']['pi_usage']['description'];
+			$vars['usage']['example'] = $plugin['info']['pi_usage']['example'];
+			$vars['parameters'] = $plugin['info']['pi_usage']['parameters'];
 		}
 
 		ee()->view->cp_heading = $vars['name'] . ' ' . lang('usage');
@@ -791,65 +791,6 @@ class Addons extends CP_Controller {
 		return $plugins;
 	}
 
-	// --------------------------------------------------------------------
-
-	/**
-	 * Get plugin info
-	 *
-	 * Check for a plugin and get it's information
-	 *
-	 * @param	string	plugin filename
-	 * @return	mixed	array of plugin data
-	 */
-	private function getPluginInfo($filename = '')
-	{
-		if ( ! $filename)
-		{
-			return FALSE;
-		}
-
-		$path = PATH_PI.'pi.'.$filename.'.php';
-
-		if ( ! file_exists($path))
-		{
-			$path = PATH_THIRD.$filename.'/pi.'.$filename.'.php';
-
-			if ( ! file_exists($path))
-			{
-				return FALSE;
-			}
-		}
-
-		if ($temp = $this->magpieCheck($filename, $path))
-		{
-			$plugin_info = $temp;
-		};
-
-		include_once($path);
-
-		if ( ! isset($plugin_info) OR ! is_array($plugin_info))
-		{
-			return FALSE;
-		}
-
-		// We need to clean up for display, might as
-		// well do it here and keep the view tidy
-
-		foreach ($plugin_info as $key => $val)
-		{
-			if ($key == 'pi_author_url')
-			{
-				$qm = (ee()->config->item('force_query_string') == 'y') ? '' : '?';
-
-				$val = prep_url($val);
-				$val = ee()->functions->fetch_site_index().$qm.'URL='.$val;
-			}
-
-			$plugin_info[$key] = $val;
-		}
-
-		return $plugin_info;
-	}
 	// --------------------------------------------------------------------
 
 	/**
