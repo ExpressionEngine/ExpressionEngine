@@ -168,7 +168,7 @@ class Addons_model extends CI_Model {
 				continue;
 			}
 
-			$info[$plugin['name']] = array_unique($plugin_info);
+			$info[$plugin['name']] = $plugin_info;
 		}
 
 		return $info;
