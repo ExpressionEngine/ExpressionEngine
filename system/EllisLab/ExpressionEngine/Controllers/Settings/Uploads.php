@@ -449,8 +449,13 @@ class Uploads extends Settings {
 
 		foreach ($image_sizes['rows'] as $row_id => $columns)
 		{
+			// Short name is required
+			if (trim($columns['short_name']) == '')
+			{
+				$this->image_sizes_errors[$row_id]['short_name'] = lang('required');
+			}
 			// There cannot be duplicate image manipulation names
-			if ($row_name_count[$columns['short_name']] > 1)
+			elseif ($row_name_count[$columns['short_name']] > 1)
 			{
 				$this->image_sizes_errors[$row_id]['short_name'] = lang('duplicate_image_size_name');
 			}
@@ -465,11 +470,18 @@ class Uploads extends Settings {
 			{
 				$this->image_sizes_errors[$row_id]['resize_type'] = lang('required');
 			}
-
-			// Make sure height and width are positive numbers
+			
 			foreach (array('width', 'height') as $dimension)
 			{
-				if ( ! is_numeric($columns[$dimension]) OR $columns[$dimension] < 0)
+				// Height and width are required
+				if (trim($columns[$dimension]) == '')
+				{
+					$this->image_sizes_errors[$row_id][$dimension] = lang('required');
+				}
+
+				// Make sure height and width are positive numbers
+				if (( ! is_numeric($columns[$dimension]) OR $columns[$dimension] < 0)
+					AND ! isset($this->image_sizes_errors[$row_id][$dimension]))
 				{
 					$this->image_sizes_errors[$row_id][$dimension] = lang('is_natural');
 				}
