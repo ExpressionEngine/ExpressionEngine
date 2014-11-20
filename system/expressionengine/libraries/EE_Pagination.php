@@ -579,15 +579,18 @@ class Pagination_object {
 	{
 		if (stripos($template_data, "if {$type}_page") !== FALSE)
 		{
+			$template_data = preg_replace(
+				"/{if {$type}_page}(.*?){(?:auto_)?path.*?}(.*?){\/if}/is",
+				"{if {$type}_page}$1{$replacement}$2{/if}",
+				$template_data
+			);
+
 			$template_data = ee()->functions->prep_conditionals(
 				$template_data,
 				array(
 					"{$type}_page" => $this->{'_page_'.$type}
 				)
 			);
-
-			$template_data = preg_replace("/".LD.'path.*?'.RD."/", $replacement, $template_data);
-			$template_data = preg_replace("/".LD.'auto_path'.RD."/", $replacement, $template_data);
 		}
 
 		return $template_data;
