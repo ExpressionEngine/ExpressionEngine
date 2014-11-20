@@ -11,6 +11,8 @@ return array(
 		'ExtensionGateway' => '\EllisLab\ExpressionEngine\Model\Addon\Gateway\ExtensionGateway',
 		'Module' => '\EllisLab\ExpressionEngine\Model\Addon\Module',
 		'ModuleGateway' => '\EllisLab\ExpressionEngine\Model\Addon\Gateway\ModuleGateway',
+		'Plugin' => '\EllisLab\ExpressionEngine\Model\Addon\Plugin',
+		'PluginGateway' => '\EllisLab\ExpressionEngine\Model\Addon\Gateway\PluginGateway',
 
 		// ..\Category
 		'Category' => '\EllisLab\ExpressionEngine\Model\Category\Category',
