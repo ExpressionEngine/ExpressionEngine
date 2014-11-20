@@ -142,7 +142,7 @@ class Addons_model extends CI_Model {
 
 					$plugins[] = $name;
 
-					$info[$name] = array_unique($plugin_info);
+					$info[$name] = $plugin_info;
 				}
 			}
 		}
@@ -180,7 +180,7 @@ class Addons_model extends CI_Model {
 
 						$plugins[] = $pkg_name;
 
-						$info[$pkg_name] = array_unique($plugin_info);
+						$info[$pkg_name] = $plugin_info;
 					}
 				}
 			}
