@@ -171,6 +171,7 @@ class EE_Schema {
 		$Q[] = "CREATE TABLE exp_plugins (
 			plugin_id int(10) unsigned NOT NULL auto_increment,
 			plugin_name varchar(50) NOT NULL,
+			plugin_package varchar(50) NOT NULL,
 			plugin_version varchar(12) NOT NULL,
 			is_typography_related char(1) NOT NULL default 'n',
 			PRIMARY KEY `plugin_id` (`plugin_id`)

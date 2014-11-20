@@ -150,6 +150,11 @@ class Updater {
 					'constraint'    => 50,
 					'null'			=> FALSE
 				),
+				'plugin_package' => array(
+					'type'			=> 'varchar',
+					'constraint'    => 50,
+					'null'			=> FALSE
+				),
 				'plugin_version' => array(
 					'type'			=> 'varchar',
 					'constraint'    => 12,
@@ -181,6 +186,7 @@ class Updater {
 
 			ee()->db->insert('plugins', array(
 				'plugin_name' => $info['pi_name'],
+				'plugin_package' => $plugin,
 				'plugin_version' => $info['pi_version'],
 				'is_typography_related' => $typography
 			));

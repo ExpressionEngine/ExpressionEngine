@@ -32,6 +32,7 @@ class PluginGateway extends RowDataGateway {
 
 	protected $plugin_id;
 	protected $plugin_name;
+	protected $plugin_package;
 	protected $plugin_version;
 	protected $is_typography_related;
 }
