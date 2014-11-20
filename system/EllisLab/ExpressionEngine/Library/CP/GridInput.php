@@ -192,7 +192,7 @@ class GridInput extends Table {
 	 * @param	string	$row_id	Unique identifier for row
 	 * @return	string	String with namespaced inputs
 	 */
-	private function namespaceForGrid($search, $row_id = 'new_row_0')
+	public function namespaceForGrid($search, $row_id = 'new_row_0')
 	{
 		return $this->namespaceInputs(
 			$search,
