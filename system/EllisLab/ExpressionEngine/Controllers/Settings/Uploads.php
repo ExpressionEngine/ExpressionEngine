@@ -211,7 +211,7 @@ class Uploads extends Settings {
 		{
 			if ($new_upload_id = $this->saveUploadPreferences($upload_id))
 			{
-				ee()->view->set_message('success', lang('preferences_updated'), lang('preferences_updated_desc'), TRUE);
+				ee()->view->set_message('success', lang('directory_saved'), lang('directory_saved_desc'), TRUE);
 
 				ee()->functions->redirect(cp_url('settings/uploads/edit/' . $new_upload_id));
 			}

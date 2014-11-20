@@ -1171,6 +1171,12 @@ $lang = array(
 'upload_category_groups_desc' =>
 'The following category groups are allowed to upload to this directory.',
 
+'directory_saved' =>
+'Upload directory saved',
+
+'directory_saved_desc' =>
+'Your upload directory has been saved successfully.',
+
 'directory_not_saved' =>
 'Attention: Upload directory not saved',
 
