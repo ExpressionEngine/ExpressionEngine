@@ -166,6 +166,25 @@ class Updater {
 		ee()->dbforge->add_key('plugin_id', TRUE);
 		ee()->smartforge->create_table('plugins');
 
+		define('PATH_PI', EE_APPPATH.'plugins/');
+
+		ee()->load->model('addons_model');
+		$plugins = ee()->addons_model->get_plugins();
+
+		foreach ($plugins as $plugin => $info)
+		{
+			$typography = 'n';
+			if (array_key_exists('pi_typography', $info) && $info['pi_typography'] == TRUE)
+			{
+				$typography = 'y';
+			}
+
+			ee()->db->insert('plugins', array(
+				'plugin_name' => $info['pi_name'],
+				'plugin_version' => $info['pi_version'],
+				'is_typography_related' => $typography
+			));
+		}
 	}
 
 }
