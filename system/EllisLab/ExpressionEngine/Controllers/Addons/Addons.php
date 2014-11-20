@@ -459,6 +459,27 @@ class Addons extends CP_Controller {
 					$installed[$addon] = $name;
 				}
 			}
+
+			$plugin = $this->getPlugins($addon);
+			if ( ! empty($plugin) && $plugin['installed'] === FALSE)
+			{
+				$info = $plugin['info'];
+
+				$typography = 'n';
+				if (array_key_exists('pi_typography', $info) && $info['pi_typography'] == TRUE)
+				{
+					$typography = 'y';
+				}
+
+				$model = ee('Model')->make('Plugin');
+				$model->plugin_name = $plugin['name'];
+				$model->plugin_package = $plugin['package'];
+				$model->plugin_version = $plugin['version'];
+				$model->is_typography_related = $typography;
+				$model->save();
+
+				$installed[$addon] = $plugin['name'];
+			}
 		}
 
 		if ( ! empty($installed))
@@ -525,6 +546,16 @@ class Addons extends CP_Controller {
 				{
 					$uninstalled[$addon] = $name;
 				}
+			}
+
+			$plugin = $this->getPlugins($addon);
+			if ( ! empty($plugin) && $plugin['installed'] === TRUE)
+			{
+				ee('Model')->get('Plugin')
+					->filter('plugin_package', $addon)
+					->delete();
+
+				$uninstalled[$addon] = $plugin['name'];
 			}
 		}
 
