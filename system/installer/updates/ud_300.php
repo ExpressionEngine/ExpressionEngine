@@ -41,6 +41,7 @@ class Updater {
 				'_update_email_cache_table',
 				'_insert_comment_settings_into_db',
 				'_insert_cookie_settings_into_db',
+				'_create_plugins_table',
 			)
 		);
 
@@ -90,7 +91,7 @@ class Updater {
 	private function _insert_comment_settings_into_db()
 	{
 		$comment_edit_time_limit = ee()->config->item('comment_edit_time_limit');
-		
+
 		$settings = array(
 			// This is a new config, default it to y if not set
 			'enable_comments' => ee()->config->item('enable_comments') ?: 'y',
@@ -126,6 +127,45 @@ class Updater {
 
 		ee()->config->update_site_prefs($settings, 'all');
 		ee()->config->_update_config(array(), $settings);
+	}
+
+	/**
+	 * Creates the new plugins table and adds all the current plugins to the table
+	 *
+	 * @return void
+	 */
+	private function _create_plugins_table()
+	{
+		ee()->dbforge->add_field(
+			array(
+				'plugin_id' => array(
+					'type'			 => 'int',
+					'constraint'     => 10,
+					'null'			 => FALSE,
+					'unsigned'		 => TRUE,
+					'auto_increment' => TRUE
+				),
+				'plugin_name' => array(
+					'type'			=> 'varchar',
+					'constraint'    => 50,
+					'null'			=> FALSE
+				),
+				'plugin_version' => array(
+					'type'			=> 'varchar',
+					'constraint'    => 12,
+					'null'			=> FALSE
+				),
+				'is_typography_related' => array(
+					'type'			=> 'char',
+					'constraint'    => 1,
+					'default'		=> 'n',
+					'null'		    => FALSE
+				)
+			)
+		);
+		ee()->dbforge->add_key('plugin_id', TRUE);
+		ee()->smartforge->create_table('plugins');
+
 	}
 
 }
