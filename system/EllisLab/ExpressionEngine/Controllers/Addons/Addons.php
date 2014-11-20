@@ -724,117 +724,37 @@ class Addons extends CP_Controller {
 	 */
 	private function getPlugins($name = NULL)
 	{
-		$ext_len = strlen('.php');
+		ee()->load->model('addons_model');
+		$plugins = ee()->addons_model->get_plugins();
 
-		$plugin_files = array();
-		$plugins = array();
-
-		// Get a list of all plugins
-		// first party first!
-		if (($list = get_filenames(PATH_PI)) !== FALSE)
+		foreach ($plugins as $plugin => $info)
 		{
-			foreach ($list as $file)
+			$developer = (strpos($info['installed_path'], 'third_party') === FALSE) ? 'native' : 'third_party';
+
+			$data = array(
+				'developer'		=> $developer,
+				'version'		=> $info['pi_version'],
+				'installed'		=> FALSE,
+				'name'			=> $info['pi_name'],
+				'package'		=> $plugin,
+				'type'			=> 'plugin',
+				'manual_url'	=> cp_url('addons/manual/' . $plugin),
+				'info'			=> $info // Cache this
+			);
+
+			if (ee('Model')->get('Plugin')->filter('plugin_package', $plugin)->count())
 			{
-				if (strncasecmp($file, 'pi.', 3) == 0 &&
-					substr($file, -$ext_len) == '.php' &&
-					strlen($file) > 7 &&
-					in_array(substr($file, 3, -$ext_len), ee()->core->native_plugins))
-				{
-					$plugin_files[$file] = PATH_PI.$file;
-				}
-			}
-		}
-
-		// third party, in packages
-		if (($map = directory_map(PATH_THIRD, 2)) !== FALSE)
-		{
-			foreach ($map as $pkg_name => $files)
-			{
-				if ( ! is_array($files))
-				{
-					$files = array($files);
-				}
-
-				foreach ($files as $file)
-				{
-					if (is_array($file))
-					{
-						// we're only interested in the top level files for the addon
-						continue;
-					}
-
-					// we gots a plugin?
-					if (strncasecmp($file, 'pi.', 3) == 0 &&
-						substr($file, -$ext_len) == '.php' &&
-						strlen($file) > strlen('pi.'.'.php'))
-					{
-						if (substr($file, 3, -$ext_len) == $pkg_name)
-						{
-							$plugin_files[$file] = PATH_THIRD.$pkg_name.'/'.$file;
-						}
-					}
-				}
-			}
-		}
-
-		ksort($plugin_files);
-
-		// Grab the plugin data
-		foreach ($plugin_files as $file => $path)
-		{
-			// Used as a fallback name and url identifier
-			$filename = substr($file, 3, -$ext_len);
-
-			if ($temp = $this->magpieCheck($filename, $path))
-			{
-				$plugin_info = $temp;
-			};
-
-			@include_once($path);
-
-			if (isset($plugin_info) && is_array($plugin_info))
-			{
-				// Third party?
-				$plugin_info['installed_path'] = $path;
-
-				// fallback on the filename if no name is given
-				if ( ! isset($plugin_info['pi_name']) OR $plugin_info['pi_name'] == '')
-				{
-					$plugin_info['pi_name'] = $filename;
-				}
-
-				if ( ! isset($plugin_info['pi_version']))
-				{
-					$plugin_info['pi_version'] = '--';
-				}
-
-				$developer = (strpos($plugin_info['installed_path'], 'third_party') === FALSE) ? 'native' : 'third_party';
-
-				$data = array(
-					'developer'		=> $developer,
-					'version'		=> $plugin_info['pi_version'],
-					'installed'		=> TRUE,
-					'name'			=> $plugin_info['pi_name'],
-					'package'		=> $filename,
-					'type'			=> 'plugin',
-					'manual_url'	=> cp_url('addons/manual/' . $filename)
-				);
-
-				if (is_null($name))
-				{
-					$plugins[$filename] = $data;
-				}
-				elseif ($name == $filename)
-				{
-					return $data;
-				}
-			}
-			else
-			{
-				log_message('error', "Invalid Plugin Data: {$filename}");
+				$data['installed'] = TRUE;
 			}
 
-			unset($plugin_info);
+			if (is_null($name))
+			{
+				$plugins[$plugin] = $data;
+			}
+			elseif ($name == $plugin)
+			{
+				return $data;
+			}
 		}
 
 		return $plugins;
