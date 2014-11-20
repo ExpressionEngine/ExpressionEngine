@@ -2902,67 +2902,12 @@ class EE_Template {
 			}
 		}
 
-		// now first party plugins
-		if (($map = directory_map(PATH_PI, TRUE)) !== FALSE)
+		// Fetch a list of installed plugins
+		$plugins = ee('Model')->get('Plugin')->all();
+
+		if ($plugins->count() > 0)
 		{
-			foreach ($map as $file)
-			{
-				if (strncasecmp($file, 'pi.', 3) == 0 &&
-					substr($file, -$ext_len) == '.php' &&
-					strlen($file) > strlen('pi..php') &&
-					in_array(substr($file, 3, -$ext_len), ee()->core->native_plugins))
-				{
-					$this->plugins[] = substr($file, 3, -$ext_len);
-				}
-			}
-		}
-
-
-		// now third party add-ons, which are arranged in "packages"
-		// only catch files that match the package name, as other files are merely assets
-		if (($map = directory_map(PATH_THIRD, 2)) !== FALSE)
-		{
-			foreach ($map as $pkg_name => $files)
-			{
-				if ( ! is_array($files))
-				{
-					$files = array($files);
-				}
-
-				foreach ($files as $file)
-				{
-					if (is_array($file))
-					{
-						// we're only interested in the top level files for the addon
-						continue;
-					}
-
-					// we gots a module?
-					if (strncasecmp($file, 'mod.', 4) == 0 &&
-						substr($file, -$ext_len) == '.php' &&
-						strlen($file) > strlen('mod..php'))
-					{
-						$file = substr($file, 4, -$ext_len);
-
-						if ($file == $pkg_name)
-						{
-							$this->modules[] = $file;
-						}
-					}
-					// how abouts a plugin?
-					elseif (strncasecmp($file, 'pi.', 3) == 0 &&
-							substr($file, -$ext_len) == '.php' &&
-							strlen($file) > strlen('pi..php'))
-					{
-						$file = substr($file, 3, -$ext_len);
-
-						if ($file == $pkg_name)
-						{
-							$this->plugins[] = $file;
-						}
-					}
-				}
-			}
+			$this->plugins = $plugins->pluck('plugin_package');
 		}
 	}
 
