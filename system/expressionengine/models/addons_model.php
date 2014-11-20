@@ -70,9 +70,10 @@ class Addons_model extends CI_Model {
 	 * Get Plugins
 	 *
 	 * @access	public
+	 * @param	str	$plugin_name	(optional) Limit the return to this add-on
 	 * @return	array
 	 */
-	function get_plugins()
+	function get_plugins($plugin_name = NULL)
 	{
 		$this->load->helper('directory');
 
@@ -94,6 +95,12 @@ class Addons_model extends CI_Model {
 				if (strncasecmp($file, 'pi.', 3) == 0 && substr($file, -$ext_len) == '.php' && strlen($file) > strlen('pi..php'))
 				{
 					$name = substr($file, 3, -$ext_len);
+
+					if ($plugin_name && $name != $plugin_name)
+					{
+						continue;
+					}
+
 					$plugins[] = array(
 						'name' => $name,
 						'path' => PATH_PI.$file
@@ -127,6 +134,11 @@ class Addons_model extends CI_Model {
 					{
 						if ( ! class_exists(ucfirst($pkg_name)))
 						{
+							if ($plugin_name && $pkg_name != $plugin_name)
+							{
+								continue;
+							}
+
 							$plugins[] = array(
 								'name' => $pkg_name,
 								'path' => PATH_THIRD.$pkg_name.'/'.$file
