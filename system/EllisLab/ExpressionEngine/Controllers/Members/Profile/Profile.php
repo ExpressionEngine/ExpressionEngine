@@ -91,6 +91,60 @@ class Profile extends CP_Controller {
 	{
 		ee()->functions->redirect($this->base_url);
 	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Generic method for saving member settings given an expected array 
+	 * of fields.
+	 *
+	 * @param	array	$sections	Array of sections passed to form view
+	 * @return	bool	Success or failure of saving the settings
+	 */
+	protected function saveSettings($sections)
+	{
+		// Make sure we're getting only the fields we asked for
+		foreach ($sections as $settings)
+		{
+			foreach ($settings as $setting)
+			{
+				foreach ($setting['fields'] as $field_name => $field)
+				{
+					$post = ee()->input->post($field_name);
+
+					// Handle arrays of checkboxes as a special case;
+					if ($field['type'] == 'checkbox' && is_array($post))
+					{
+						foreach ($field['choices']  as $property)
+						{
+							$this->member->$property = in_array($property, $post) ? 'y' : 'n';
+						}
+					}
+					else
+					{
+						if ($post !== FALSE)
+						{
+							$this->member->$field_name = $post;
+						}
+					}
+				}
+			}
+		}
+
+		$errors = $this->member->validate();
+
+		if ($errors->exist())
+		{
+			ee()->load->helper('html_helper');
+			ee()->view->set_message('issue', lang('cp_message_issue'), ul($errors->getErrors()), TRUE);
+
+			return FALSE;
+		}
+
+		$this->member->save();
+
+		return TRUE;
+	}
 }
 // END CLASS
 
