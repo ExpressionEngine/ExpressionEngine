@@ -1,3 +1,9 @@
+# Common error language
+$required_error = 'This field is required.'
+$integer_error = 'This field must contain an integer.'
+$invalid_path = 'The path you submitted is not valid.'
+$not_writable = 'The path you submitted is not writable.'
+
 $xss_error = 'The data you submitted did not pass our security check.'
 $xss_vector = '"><script>alert(\'stored xss\')<%2fscript>'
 
