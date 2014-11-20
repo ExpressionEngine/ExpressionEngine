@@ -756,7 +756,7 @@ class Addons extends CP_Controller {
 	private function getPlugins($name = NULL)
 	{
 		ee()->load->model('addons_model');
-		$plugins = ee()->addons_model->get_plugins();
+		$plugins = ee()->addons_model->get_plugins($name);
 
 		foreach ($plugins as $plugin => $info)
 		{
