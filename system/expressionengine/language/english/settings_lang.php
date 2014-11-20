@@ -137,7 +137,7 @@ $lang = array(
 'Saving...',
 
 'preferences_updated' =>
-'Preferences Updated',
+'Preferences updated',
 
 'preferences_updated_desc' =>
 'Your preferences have been saved successfully.',

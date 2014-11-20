@@ -131,7 +131,7 @@ feature 'Messaging Settings' do
     @page.prv_msg_attach_total.set '103'
     @page.submit
 
-    @page.should have_text 'Preferences Updated'
+    @page.should have_text 'Preferences updated'
     @page.prv_msg_max_chars.value.should == '100'
     @page.prv_msg_html_format.value.should == 'none'
     @page.prv_msg_auto_links_n.checked?.should == true

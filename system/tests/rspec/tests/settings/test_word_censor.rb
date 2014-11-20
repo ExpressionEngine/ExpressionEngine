@@ -38,7 +38,7 @@ feature 'Word Censorship Settings' do
     @page.censored_words.set "Poop\nPerl"
     @page.submit
 
-    @page.should have_text 'Preferences Updated'
+    @page.should have_text 'Preferences updated'
     @page.enable_censoring_y.checked?.should == true
     @page.censor_replacement.value.should == '####'
     @page.censored_words.value.should == "Poop\nPerl"

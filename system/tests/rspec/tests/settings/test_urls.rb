@@ -149,7 +149,7 @@ feature 'URL and Path Settings' do
     @page.site_index.set 'hello.php'
     @page.submit
 
-    @page.should have_text 'Preferences Updated'
+    @page.should have_text 'Preferences updated'
     @page.site_index.value.should eq 'hello.php'
 
     # Since this is in config.php, reset the value

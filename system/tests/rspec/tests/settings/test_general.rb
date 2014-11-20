@@ -115,7 +115,7 @@ feature 'General Settings' do
 
     @page.submit
     should_have_no_form_errors(@page)
-    @page.should have_text 'Preferences Updated'
+    @page.should have_text 'Preferences updated'
   end
 
   it 'should load and save the settings' do
@@ -132,7 +132,7 @@ feature 'General Settings' do
     # Make sure they stuck, also test Check Now button visibility
     no_php_js_errors
     should_have_no_form_errors(@page)
-    @page.should have_text 'Preferences Updated'
+    @page.should have_text 'Preferences updated'
     @page.site_name.value.should == 'My sweet site'
     @page.is_system_on_n.checked?.should == true
     @page.new_version_check_n.checked?.should == true
