@@ -168,6 +168,8 @@ class Addons_model extends CI_Model {
 				continue;
 			}
 
+			$plugin_info['installed_path'] = $plugin['path'];
+
 			$info[$plugin['name']] = $plugin_info;
 		}
 
