@@ -41,7 +41,9 @@ class Addons_model extends CI_Model {
 
 		if (empty($plugins))
 		{
-			$plugins = $this->get_plugins();
+			$plugins = ee('Model')->get('Plugin')
+				->fiter('is_typography_related', 'y')
+				->all();
 		}
 
 		$default = array('br' => lang('auto_br'), 'xhtml' => lang('xhtml'));
@@ -51,12 +53,9 @@ class Addons_model extends CI_Model {
 			$default['none'] = lang('none');
 		}
 
-		foreach ($plugins as $plugin => $info)
+		foreach ($plugins as $plugin)
 		{
-			if (isset($info['pi_typography']) AND $info['pi_typography'] == TRUE)
-			{
-				$filelist[$plugin] = $info['pi_name'];
-			}
+			$filelist[$plugin->plugin_package] = $plugin->plugin_name;
 		}
 
 		$return = $default + $filelist;
