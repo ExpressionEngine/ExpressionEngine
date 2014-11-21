@@ -1,7 +1,7 @@
 <?php
 namespace EllisLab\ExpressionEngine\Model\Template\Gateway;
 
-use EllisLab\ExpressionEngine\Service\Model\Gateway\RowDataGateway;
+use EllisLab\ExpressionEngine\Service\Model\Gateway;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -26,7 +26,7 @@ use EllisLab\ExpressionEngine\Service\Model\Gateway\RowDataGateway;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class TemplateGroupGateway extends RowDataGateway {
+class TemplateGroupGateway extends Gateway {
 
 	protected static $_table_name 		= 'template_groups';
 	protected static $_primary_key 		= 'group_id';

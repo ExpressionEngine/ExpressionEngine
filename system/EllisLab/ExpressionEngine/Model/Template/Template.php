@@ -31,9 +31,16 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  * @link		http://ellislab.com
  */
 class Template extends Model {
+
 	protected static $_primary_key = 'template_id';
 	protected static $_gateway_names = array('TemplateGateway');
 
+	protected static $_relationships = array(
+		'TemplateGroup' => array(
+			'type' => 'BelongsTo'
+		)
+	);
+/*
 	protected static $_relationships = array(
 		'Site' => array(
 			'type' => 'many_to_one',
@@ -51,7 +58,7 @@ class Template extends Model {
 			'model' => 'MemberGroup'
 		)
 	);
-
+*/
 	protected $template_id;
 	protected $site_id;
 	protected $group_id;

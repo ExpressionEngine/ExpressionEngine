@@ -33,6 +33,13 @@ class TemplateGroup extends Model {
 	protected static $_cascade = 'Templates';
 
 	protected static $_relationships = array(
+		'Templates' => array(
+			'type' => 'HasMany',
+			'model' => 'Template'
+		)
+	);
+/*
+	protected static $_relationships = array(
 		'Site' => array(
 			'type' => 'many_to_one'
 		),
@@ -45,16 +52,14 @@ class TemplateGroup extends Model {
 			'model' => 'MemberGroup',
 		)
 	);
-
+*/
 	protected $group_id;
 	protected $site_id;
 	protected $group_name;
 	protected $group_order;
 	protected $is_site_default;
 
-	/**
-	 *
-	 */
+/*
 	public function getTemplates()
 	{
 		return $this->getRelated('Templates');
@@ -84,5 +89,5 @@ class TemplateGroup extends Model {
 	{
 		return $this->setRelated('Site', $site);
 	}
-
+*/
 }
