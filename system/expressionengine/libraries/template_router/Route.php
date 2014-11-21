@@ -30,7 +30,7 @@ class EE_Route {
 
 	public $segment_regex = "
 		(?P<static>[^{]*)                         # static rule data
-		({
+		({	
 		(?P<variable>[^}:]*)                      # variable name
 		(?:
 			\:                                    # variable delimiter
@@ -221,7 +221,7 @@ class EE_Route {
 				if (empty($segment['rules']))
 				{
 					// Segment variable with no rules should be equivalent to alpha-dash
-					$rule = $this->rules->load('alpha_dash');
+					$rule = $this->rules->load('alpha_dash'); 
 					$segment = new EE_Route_segment($segment['variable'], array($rule));
 				}
 				else
@@ -298,7 +298,7 @@ class EE_Route {
 
 					if (in_array($segment['variable'], $used_names))
 					{
-						throw new Exception(lang('variable_in_use') . $variable);
+						throw new Exception(lang('variable_in_use') . $segment['variable']);
 					}
 
 					$used_names[] = $segment['variable'];
