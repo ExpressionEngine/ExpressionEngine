@@ -42,7 +42,7 @@ class Addons_model extends CI_Model {
 		if (empty($plugins))
 		{
 			$plugins = ee('Model')->get('Plugin')
-				->fiter('is_typography_related', 'y')
+				->filter('is_typography_related', 'y')
 				->all();
 		}
 
