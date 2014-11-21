@@ -52,12 +52,15 @@ class Plugin extends Model {
 			$this->is_typography_related = 'y';
 		}
 
-		if ($new_value == FALSE || $new_value == 'n')
+		elseif ($new_value == FALSE || $new_value == 'n')
 		{
 			$this->is_typography_related = 'n';
 		}
 
-		throw new InvalidArgumentException('is_typography_related must be TRUE or "y", or FALSE or "n"');
+		else
+		{
+			throw new InvalidArgumentException('is_typography_related must be TRUE or "y", or FALSE or "n"');
+		}
 	}
 
 	/**
