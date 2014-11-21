@@ -2,261 +2,173 @@
 namespace EllisLab\ExpressionEngine\Service\Model\Query;
 
 use EllisLab\ExpressionEngine\Service\Model\Collection;
-use EllisLab\ExpressionEngine\Service\Model\Factory as ModelFactory;
 
-/**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Query Result Class
- *
- * A class containing the result of a database query and providing behavior
- * allowing that data to be parsed into models.
- *
- * @package		ExpressionEngine
- * @subpackage	Model
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		http://ellislab.com
- */
 class Result {
 
-	private $factory;
+	protected $builder;
+	protected $frontend;
 
-	private $db_result;
-	private $model_index = array();
+	protected $db_result;
 
-	public function __construct(ModelFactory $factory, Builder $builder, array $result_array)
+	protected $columns = array();
+	protected $aliases = array();
+	protected $objects = array();
+	protected $relations = array();
+
+	public function __construct(Builder $builder, $db_result, $aliases, $relations)
 	{
-		$this->factory = $factory;
 		$this->builder = $builder;
-		$this->db_result = $result_array;
+		$this->db_result = $db_result;
+		$this->aliases = $aliases;
+		$this->relations = array_reverse($relations);
 	}
 
-	/**
-	 * Get the first result
-	 */
 	public function first()
+	{
+		$this->collectColumnsByAliasPrefix($this->db_result[0]);
+		$this->initializeResultArray();
+		$this->parseRow($row);
+
+		$root = $this->builder->getFrom();
+		return $this->objects[$root][0];
+	}
+
+	public function all()
 	{
 		if ( ! count($this->db_result))
 		{
 			return NULL;
 		}
 
-		$models = $this->parseResult();
-
-		return $models[0];
-	}
-
-	/**
-	 * Get all results as a collection
-	 */
-	public function collection()
-	{
-		return new Collection($this->parseResult());
-	}
-
-
-	protected function parseResult()
-	{
-		$results = array();
-		$result_index = array();
-
-		// Create a list of children that were asked for. We need to set
-		// these even if they came back with no results so that we don't
-		// end up lazily requerying everything.
-		$ensure_set = array();
-
-		foreach ($this->builder->getReferences() as $key => $ref)
-		{
-			if (isset($ref->parent))
-			{
-				$parent_alias = $ref->parent->alias;
-
-				if ( ! isset($ensure_set[$parent_alias]))
-				{
-					$ensure_set[$parent_alias] = array();
-				}
-
-				$ensure_set[$parent_alias][] = $ref;
-			}
-		}
-
-		// Prefil if this was on an existing object
-		$object = $this->builder->getModelObject();
-		$existing = array();
-
-		if (isset($object))
-		{
-			$alias = $this->builder->getRootAlias();
-			$existing[$alias] = array();
-
-			$primary_key_name = $this->factory->getMetaData($this->builder->getRootModel(), 'primary_key');
-
-			$result_index[$object->getId()] = TRUE;
-
-			$existing[$alias][$primary_key_name] = $object->getId();
-			$this->model_index[$alias][$object->getId()] = $object;
-		}
-
+		$this->collectColumnsByAliasPrefix($this->db_result[0]);
+		$this->initializeResultArray();
 
 		foreach ($this->db_result as $row)
 		{
-			$row_data = $existing;
-
-			foreach ($row as $name => $value)
-			{
-				list($alias, $field) = explode('__', $name);
-
-				if ( ! isset($row_data[$alias]))
-				{
-					$row_data[$alias] = array();
-				}
-
-				$row_data[$alias][$field] = $value;
-			}
-
-			foreach ($row_data as $alias_string => $values)
-			{
-				// If this is an empty model that happened to have been grabbed due to the join,
-				// move on and don't do anything.
-				// todo can just consume the referencechain if we don't need the builder elsewhere
-				$model_ref = $this->builder->getAliasReference($alias_string);
-
-				$primary_key_name = $this->factory->getMetaData($model_ref->model, 'primary_key');
-
-				if ( ! isset($values[$primary_key_name]))
-				{
-					unset($row_data[$alias_string]);
-					continue;
-				}
-
-				$primary_key = $values[$primary_key_name];
-
-				// already created?
-				if (isset($this->model_index[$model_ref->alias][$primary_key]))
-				{
-					continue;
-				}
-
-				$model = $this->createResultModel($model_ref, $values);
-
-				// Prefill relationships with blanks. If they end up actually
-				// being set they will be re-filled below.
-				if (isset($ensure_set[$model_ref->alias]))
-				{
-					foreach ($ensure_set[$model_ref->alias] as $child_ref)
-					{
-						$edge = $child_ref->connecting_edge;
-						$model->fillRelated($edge->name);
-					}
-				}
-
-				// Collect root models
-				if ($this->isRootModel($model_ref))
-				{
-					if ( ! isset($result_index[$primary_key]))
-					{
-						$results[] = $model;
-						$result_index[$primary_key] = TRUE;
-					}
-
-					continue;
-				}
-
-				$parent_ref = $model_ref->parent;
-				$parent_model = $parent_ref->model;
-
-				$primary_key = $this->factory->getMetaData($parent_model, 'primary_key');
-				$parent_id = $row_data[$parent_ref->alias][$primary_key];
-
-				$parent_model = $this->model_index[$parent_ref->alias][$parent_id];
-
-				if ($parent_model === NULL)
-				{
-					throw new \Exception('Missing model parent!');
-				}
-
-				// Fill the relationship
-				$edge = $this->findParentRelationship($model_ref);
-
-				if ( ! $parent_model->hasRelated($edge->name, $primary_key))
-				{
-					$parent_model->fillRelated($edge->name, $model);
-				}
-
-				// Check if we can safely set the reverse case.
-				// If the query was TemplateGroup with Templates, then all the
-				// templates can have their template group set safely.
-				// If the query was Template with TemplateGroup, then we cannot
-				// set the templates for the template group, because we cannot
-				// be sure we queried all of them.
-				if ($edge->is_parent)
-				{
-					$reverse = $edge->getInverse();
-
-					if ($reverse && ! $reverse->is_collection)
-					{
-						$model->fillRelated($reverse->name, $parent_model);
-					}
-				}
-			}
+			$this->parseRow($row);
 		}
 
-		return $results;
-	}
+		$this->constructRelationshipTree();
 
+		reset($this->aliases);
+		$root = key($this->aliases);
+		return new Collection($this->objects[$root]);
+	}
 
 	/**
 	 *
 	 */
-	protected function createResultModel($alias, $data)
+	protected function parseRow($row)
 	{
-		$model_name = $alias->model;
-
-		$model = $this->factory->make($model_name);
-		$model->fill($data);
-
-		$primary_key_name = $this->factory->getMetaData($model_name, 'primary_key');
-		$primary_key = $data[$primary_key_name];
-
-		$alias_name = $alias->alias;
-
-		if ( ! isset($this->model_index[$alias_name]))
+		foreach ($this->columns as $alias => $columns)
 		{
-			$this->model_index[$alias_name] = array();
+			$model_data = array();
+
+			foreach ($columns as $property)
+			{
+				$value = $row["{$alias}__{$property}"];
+
+				if (isset($value))
+				{
+					$model_data[$property] = $value;
+				}
+			}
+
+			if (empty($model_data))
+			{
+				continue;
+			}
+
+			$name = $this->aliases[$alias];
+
+			$object = $this->frontend->make($name);
+			$object->fill($model_data);
+
+			$this->objects[$alias][$object->getId()] = $object;
+		}
+	}
+
+	/**
+	 *
+	 */
+	protected function constructRelationshipTree()
+	{
+		foreach ($this->relations as $to_alias => $lookup)
+		{
+			$kids = $this->objects[$to_alias];
+
+			foreach ($lookup as $from_alias => $relation)
+			{
+				$parents = $this->objects[$from_alias];
+				$this->matchRelation($parents, $kids, $relation);
+			}
+		}
+	}
+
+	/**
+	 *
+	 */
+	protected function matchRelation($parents, $kids, $relation)
+	{
+		list($from_key, $to_key) = $relation->getKeys();
+
+		foreach ($parents as $p_id => $parent)
+		{
+			$from_value = $parent->$from_key;
+			$related_kids = array();
+
+			foreach ($kids as $id => $kid)
+			{
+				$to_value = $kid->$to_key;
+
+				if ($from_value == $to_value)
+				{
+					$related_kids[] = $kid;
+					unset($kids[$id]);
+				}
+			}
+
+			$name = $relation->getName();
+			$parent->{'fill'.$name}($related_kids);
+		}
+	}
+
+	/**
+	 * Group all columns by their alias prefix.
+	 */
+	protected function collectColumnsByAliasPrefix($row)
+	{
+		$columns = array();
+
+		foreach (array_keys($row) as $column)
+		{
+			list($alias, $property) = explode('__', $column);
+
+			if ( ! array_key_exists($alias, $columns))
+			{
+				$columns[$alias] = array();
+			}
+
+			$columns[$alias][] = $property;
 		}
 
-		$this->model_index[$alias_name][$primary_key] = $model;
-
-		return $this->model_index[$alias_name][$primary_key];
+		$this->columns = $columns;
 	}
 
 	/**
-	 *
+	 * Set up an array to hold all of our temporary data.
 	 */
-	protected function findParentRelationship($ref)
+	protected function initializeResultArray()
 	{
-		return $ref->connecting_edge;
+		foreach ($this->aliases as $alias => $model)
+		{
+			$this->objects[$alias] = array();
+		}
 	}
 
-	/**
-	 *
-	 */
-	protected function isRootModel($alias)
+	public function setFrontend($frontend)
 	{
-		return ( ! isset($alias->parent));
+		$this->frontend = $frontend;
+		return $this;
 	}
-
 }
