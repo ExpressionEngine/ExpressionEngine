@@ -20,7 +20,9 @@ namespace EllisLab\Tests\ExpressionEngine\Service\Model {
 		public function tearDown()
 		{
 			$this->reader = NULL;
+			m::close();
 		}
+
 
 		public function testGetName()
 		{

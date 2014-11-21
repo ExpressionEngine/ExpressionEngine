@@ -8,6 +8,11 @@ use EllisLab\ExpressionEngine\Service\Model\Association\HasMany;
 
 class HasManyTest extends \PHPUnit_Framework_TestCase {
 
+	public function tearDown()
+	{
+		m::close();
+	}
+
 	public function testStartsUnloaded()
 	{
 		$parent = $this->newModelMock();

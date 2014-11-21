@@ -33,6 +33,8 @@ class HasManyTest extends \PHPUnit_Framework_TestCase {
 		$this->from = NULL;
 		$this->to = NULL;
 		$this->relation = NULL;
+
+		m::close();
 	}
 
 	public function testGetSourceModel()
