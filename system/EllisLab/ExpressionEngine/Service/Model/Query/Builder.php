@@ -76,6 +76,31 @@ class Builder {
 	}
 
 	/**
+	 * Run a fetch in batches
+	 *
+	 * @param Int     $batch_size Batch size
+	 * @param Closure $callback   Closure to run for each result
+	 *
+	 * NOTE: The callback can be passed in the first parameter, in
+	 * which case the default $batch_size (@see Batch) is used.
+	 */
+	public function batch($batch_size, $callback = NULL)
+	{
+		$batch = new Batch($this);
+
+		if ( ! isset($callback))
+		{
+			$callback = $batch_size;
+		}
+		else
+		{
+			$batch->setBatchSize($batch_size);
+		}
+
+		return $batch->process($callback);
+	}
+
+	/**
 	 *
 	 */
 	protected function fetch()
