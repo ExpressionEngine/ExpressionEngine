@@ -32,33 +32,23 @@ class Directory {
 
 	function __construct($dirname)
 	{
-		$this->dirname = (array) $dirname;
+		$this->dirname = $dirname;
 	}
 
-	public function file($basenames)
+	public function file($basename)
 	{
-		$basenames = (array) $basenames;
+		// Get the proper filename
+		$fullpath = realpath($this->dirname.'/'.$basename.'.php');
 
-		foreach ($this->dirname as $dirname)
+		if (file_exists($fullpath))
 		{
-			// Get the proper filename
-			$dirname = realpath($dirname);
-
-			foreach ($basenames as $basename)
+			// Cache the config File
+			if ( ! isset($cache[$fullpath]))
 			{
-				$fullpath = $dirname.'/'.$basename.'.php';
-
-				if (file_exists($fullpath))
-				{
-					// Cache the config File
-					if ( ! isset($cache[$fullpath]))
-					{
-						$cache[$fullpath] = static::createFile($fullpath);
-					}
-
-					return $cache[$fullpath];
-				}
+				$cache[$fullpath] = static::createFile($fullpath);
 			}
+
+			return $cache[$fullpath];
 		}
 
 		throw new \Exception('No config file was found.');
