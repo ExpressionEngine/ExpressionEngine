@@ -1,115 +1,46 @@
-<?php namespace EllisLab\ExpressionEngine\Service\Model\Query;
+<?php
+namespace EllisLab\ExpressionEngine\Service\Model\Query;
 
-/**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
+use EllisLab\ExpressionEngine\Service\Model\DataStore;
 
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Model Query Class
- *
- * Used to query the model for instances of models that have been persisted
- * in some way, usually in the database.
- *
- * @package		ExpressionEngine
- * @subpackage	Model
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		http://ellislab.com
- */
 class Builder {
 
-	protected $root = NULL;
-	protected $model_object = NULL;
+	protected $from;
+	protected $datastore;
 
-	protected $fields = array();
-	protected $filters = array();
-	protected $orders = array();
 	protected $set = array();
+	protected $withs = array();
+	protected $fields = array();
+	protected $orders = array();
+	protected $filters = array();
+
+	protected $filter_stack = array();
+	protected $lazy_constraints = array();
 
 	protected $limit = '18446744073709551615'; // 2^64
 	protected $offset = 0;
 
-	private $query;
-	private $references;
-	private $filter_stack = array();
-
-	/**
-	 * Constructor
-	 */
-	public function __construct(Query $query, ReferenceChain $references, $model_name)
+	public function __construct($from)
 	{
-		$this->query = $query;
-		$this->references = $references;
-
-		list($model, $alias) = $this->splitAlias($model_name);
-
-		$this->root = new Reference($alias);
-		$this->root->model = $model;
-
-		$this->references->add($this->root);
+		$this->from = $from;
 	}
 
 	/**
 	 *
-	 */
-	public function setModelObject($modelOrCollection)
-	{
-		$this->model_object = $modelOrCollection;
-		$this->root->setObject($modelOrCollection);
-	}
-
-	/**
-	 * Run the query and return a collection.
-	 *
-	 * @return Collection
-	 */
-	public function all()
-	{
-		if ( ! $this->filterStackIsEmpty())
-		{
-			throw new \Exception('Unclosed filter group.');
-		}
-
-		$result = $this->query->executeFetch($this);
-
-		return $result->collection();
-	}
-
-	/**
-	 * Run the query and get the results, but only return the first.
-	 *
-	 * @return Model Instance
 	 */
 	public function first()
 	{
-		if ( ! $this->filterStackIsEmpty())
-		{
-			throw new \Exception('Unclosed filter group.');
-		}
-
 		$this->limit(1);
 
-		$result = $this->query->executeFetch($this);
-
-		return $result->first();
+		return $this->fetch()->first();
 	}
 
 	/**
 	 *
 	 */
-	public function delete()
+	public function all()
 	{
-		return $this->query->executeDelete($this);
+		return $this->fetch()->all();
 	}
 
 	/**
@@ -117,31 +48,153 @@ class Builder {
 	 */
 	public function update()
 	{
-		return $this->query->executeUpdate($this);
+		return $this->datastore->updateQuery($this);
 	}
 
 	/**
 	 *
 	 */
-	public function create()
+	public function insert()
 	{
-		return $this->query->executeCreate($this);
+		return $this->datastore->insertQuery($this);
 	}
 
 	/**
-	 * Count the number of objects that would be returned by this query if it
-	 * was run right now.
 	 *
-	 * @return int Row count
+	 */
+	public function delete()
+	{
+		return $this->datastore->deleteQuery($this);
+	}
+
+	/**
+	 *
 	 */
 	public function count()
 	{
-		return $this->query->executeCount($this);
+		return $this->datastore->countQuery($this);
+	}
+
+	/**
+	 *
+	 */
+	protected function fetch()
+	{
+		if ( ! $this->filterStackIsEmpty())
+		{
+			throw new \Exception('Unclosed filter group.');
+		}
+
+		return $this->datastore
+			->fetchQuery($this)
+			->setFrontend($this->frontend);
+	}
+
+	/**
+	 * Apply a filter
+	 *
+	 * @param String  $property  Relationship.columnname
+	 * @param String  $operator  Comparison operator [default: ==]
+	 * @param Mixed   $value     Value to compare to
+	 * @return Query  $this
+	 */
+	public function filter($property, $operator, $value = NULL)
+	{
+		$this->addFilter($property, $operator, $value, 'and');
+		return $this;
+	}
+
+	/**
+	 * Same as `filter()`, but creates an OR statement.
+	 *
+	 * @param String  $property  Relationship.columnname
+	 * @param String  $operator  Comparison operator [default: ==]
+	 * @param Mixed   $value     Value to compare to
+	 * @return Query  $this
+	 */
+	public function orFilter($property, $operator, $value = NULL)
+	{
+		$this->addFilter($property, $operator, $value, 'or');
+		return $this;
+	}
+
+	/**
+	 *
+	 */
+	protected function addFilter($property, $operator, $value, $predicate)
+	{
+		if ( ! isset($value))
+		{
+			$value = $operator;
+			$operator = '==';
+		}
+
+		$this->filters[] = array($property, $operator, $value, $predicate);
+	}
+
+	/**
+	 * Open a filter group
+	 */
+	public function filterGroup()
+	{
+		// open group
+		$this->filter_stack[] = $this->filters;
+		$this->filter_stack[] = 'and';
+
+		$this->filters = array();
+		return $this;
+	}
+
+	/**
+	 * Open a filter group that will be OR'd on the query
+	 */
+	public function orFilterGroup()
+	{
+		$this->filter_stack[] = $this->filters;
+		$this->filter_stack[] = 'or';
+
+		$this->filters = array();
+		return $this;
+	}
+
+	/**
+	 * Close a (or)filterGroup
+	 */
+	public function endFilterGroup()
+	{
+		$filters = $this->filters;
+		$predicate = array_pop($this->filter_stack);
+		$this->filters = array_pop($this->filter_stack);
+
+		$this->filters[] = array(
+			$predicate,
+			$filters
+		);
+
+		return $this;
 	}
 
 
 	/**
-	 *
+	 * Check if the filter groups have been open and closed correctly
+	 */
+	protected function filterStackIsEmpty()
+	{
+		return count($this->filter_stack) == 0;
+	}
+
+	/**
+	 * Only select and return a subset of fields.
+	 */
+	public function fields()
+	{
+		$this->fields = array_merge($this->fields, func_get_args());
+
+		return $this;
+	}
+
+	/**
+	 * Set data for update or insert
 	 */
 	public function set($key, $value = NULL)
 	{
@@ -156,98 +209,49 @@ class Builder {
 	}
 
 	/**
-	 * Apply a filter
 	 *
-	 * @param String $key		Relationship.columnname to filter on
-	 * @param String $operator	Comparison to perform [==, !=, <, >, <=, >=, IN]
-	 * @param Mixed  $value		Value to compare to
-	 * @return Query $this
-	 *
-	 * The third parameter is optional. If it is not given, the == operator is
-	 * assumed and the second parameter becomes the value.
 	 */
-	public function filter($property, $operator = NULL, $value = NULL)
+	public function with()
 	{
-		if ( ! isset($value))
+		$relateds = func_get_args();
+		$this->withs = $this->addToWith($this->withs, $relateds);
+
+		return $this;
+	}
+
+	/**
+	 *
+	 */
+	protected function addToWith($withs, $relateds)
+	{
+		foreach ($relateds as $parent => $children)
 		{
-			$value = $operator;
-			$operator = '==';
+			if ( ! is_array($children))
+			{
+				$children = array($children => array());
+			}
+
+			if (is_numeric($parent))
+			{
+				$withs = $this->addToWith($withs, $children);
+			}
+			else
+			{
+				if ( ! isset($withs[$parent]))
+				{
+					$withs[$parent] = array();
+				}
+
+				$withs[$parent] = $this->addToWith($withs[$parent], $children);
+			}
 		}
 
-		$this->filters[] = array($property, $operator, $value, FALSE);
-		return $this;
+		return $withs;
 	}
 
-	/**
-	 * Same as `filter()`, but creates an OR statement.
-	 *
-	 * @param String $key		Relationship.columnname to filter on
-	 * @param String $operator	Comparison to perform [==, !=, <, >, <=, >=, IN]
-	 * @param Mixed  $value		Value to compare to [optional]
-	 * @return Query $this
-	 *
-	 * The third parameter is optional. If it is not given, the == operator is
-	 * assumed and the second parameter becomes the value.
-	 */
-	public function orFilter($property, $operator = NULL, $value = NULL)
+	public function getWiths()
 	{
-		if ( ! isset($value))
-		{
-			$value = $operator;
-			$operator = '==';
-		}
-
-		$this->filters[] = array($property, $operator, $value, TRUE);
-
-		return $this;
-	}
-
-	/**
-	 * Open a filter group
-	 */
-	public function filterGroup()
-	{
-		// open group
-		$this->filter_stack[] = $this->filters;
-		$this->filter_stack[] = 'and'; // nesting type
-
-		$this->filters = array();
-		return $this;
-	}
-
-	/**
-	 * Open a filter group that will be OR'd on the query
-	 */
-	public function orFilterGroup()
-	{
-		$this->filter_stack[] = $this->filters;
-		$this->filter_stack[] = 'or'; // nesting type
-
-		$this->filters = array();
-		return $this;
-	}
-
-	/**
-	 * Close a (or)filterGroup
-	 */
-	public function endFilterGroup()
-	{
-		// end group
-		$nested = $this->filters;
-		$prefix = array_pop($this->filter_stack);
-
-		$this->filters = array_pop($this->filter_stack);
-		$this->filters[] = array($prefix, $nested);
-
-		return $this;
-	}
-
-	/**
-	 * Check if the filter groups have been open and closed correctly
-	 */
-	protected function filterStackIsEmpty()
-	{
-		return count($this->filter_stack) == 0;
+		return $this->withs;
 	}
 
 	/**
@@ -258,7 +262,6 @@ class Builder {
 		$this->orders[] = array($property, $direction);
 		return $this;
 	}
-
 
 	/**
 	 * Limit the result set.
@@ -285,101 +288,51 @@ class Builder {
 	}
 
 	/**
-	 * Only select and return a subset of fields.
+	 *
 	 */
-	public function fields()
+	public function setLazyConstraint($relation, $model)
 	{
-		$this->fields = array_merge($this->fields, func_get_args());
-
-		return $this;
-	}
-
-	/**
-	 * Add relationships to the query
-	 */
-	public function with()
-	{
-		$this->addToWith($this->root, func_get_args());
-
-		return $this;
-	}
-
-	/**
-	 * Add the new `with()` relationships in a normalized format.
-	 */
-	private function addToWith($parent, $relateds)
-	{
-		foreach ($relateds as $child => $grandchildren)
-		{
-			if (is_numeric($child))
-			{
-				if (is_array($grandchildren))
-				{
-					// array(parent => array(...))
-					$this->addToWith($parent, $grandchildren);
-				}
-				else
-				{
-					// array(parent => grandchild)
-					$this->relate($parent, $grandchildren);
-				}
-			}
-			else
-			{
-				$child = $this->relate($parent, $child);
-
-				if (is_array($grandchildren))
-				{
-					// child => array(parent => array(...))
-					$this->addToWith($child, $grandchildren);
-				}
-				else
-				{
-					// child => array(parent => grandchild)
-					$this->relate($child, $grandchildren);
-				}
-			}
-		}
+		$this->lazy_constraints[] = array($relation, $model);
 	}
 
 	/**
 	 *
 	 */
-	private function relate($parent, $to_string)
+	public function setExisting($model)
 	{
-		list($name, $alias) = $this->splitAlias($to_string);
-
-		$child = new Reference($alias);
-		$child->connecting_name = $name;
-
-		$this->references->add($child);
-		$this->references->connect($parent, $child, $name);
-
-		return $child;
+		$this->model = $model;
 	}
 
 	/**
-	 * Get the root model name
+	 *
 	 */
-	public function getRootModel()
+	public function getFrom()
 	{
-		return $this->root->model;
+		return $this->from;
 	}
 
 	/**
-	 * Get the root model name
+	 *
 	 */
-	public function getRootAlias()
+	public function getFilters()
 	{
-		return $this->root->alias;
+		return $this->filters;
 	}
 
 	/**
-	 * Get the root model if one was set. Used for lazy- and sub-queries.
+	 *
 	 */
-	public function getModelObject()
+	public function getFields()
 	{
-		return $this->model_object;
+		return $this->fields;
+	}
+
+	/** Get the values that need to be SET
+	 *
+	 */
+	public function getSet()
+	{
+		return $this->set;
 	}
 
 	/**
@@ -407,58 +360,35 @@ class Builder {
 	}
 
 	/**
-	 * Get the query WHERE's
+	 *
 	 */
-	public function getFilters()
+	public function getLazyConstraints()
 	{
-		return $this->filters;
+		return $this->lazy_constraints;
 	}
 
 	/**
 	 *
 	 */
-	public function getSet()
+	public function getExisting()
 	{
-		return $this->set;
+		return $this->model;
 	}
 
 	/**
 	 *
 	 */
-	public function getAliasReference($name)
+	public function setDataStore(DataStore $datastore)
 	{
-		return $this->references->get($name);
+		$this->datastore = $datastore;
 	}
 
 	/**
-	 * Get all references
+	 *
 	 */
-	public function getReferences()
+	public function setFrontend($frontend)
 	{
-		return $this->references->all();
+		$this->frontend = $frontend;
 	}
 
-	/**
-	 * Split up an alias.
-	 */
-	public function splitAlias($string)
-	{
-		$string = trim($string);
-		$parts = preg_split('/\s+AS\s+/i', $string);
-
-		if ( ! isset($parts[1]))
-		{
-			return array($string, $string);
-		}
-
-		return $parts;
-	}
-
-	/**
-	 * TODO
-	 */
-	public function debugQuery()
-	{
-		return $this->buildSelect()->_compile_select();
-	}
 }
