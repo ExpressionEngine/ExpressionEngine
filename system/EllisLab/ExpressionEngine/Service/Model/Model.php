@@ -94,6 +94,18 @@ class Model {
 	}
 
 	/**
+	 * Clean up var_dump output for developers on PHP 5.6+
+	 */
+	public function __debugInfo()
+	{
+		$name = $this->_name;
+		$values = $this->getValues();
+		$related_to = array_keys($this->_associations);
+
+		return compact('name', 'values', 'related_to');
+	}
+
+	/**
 	 * Metadata is static. If you need to access it, it's recommended
 	 * to use the datastore's lazy caches, which will make for much
 	 * more testable code and avoid iterating over gateways and creating
