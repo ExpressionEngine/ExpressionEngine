@@ -5,12 +5,12 @@ namespace EllisLab\ExpressionEngine\Service\Config;
 /**
  * ExpressionEngine - by EllisLab
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
- * @since		Version 3.0.0
+ * @package   ExpressionEngine
+ * @author    EllisLab Dev Team
+ * @copyright Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @license   http://ellislab.com/expressionengine/user-guide/license.html
+ * @link      http://ellislab.com
+ * @since     Version 3.0.0
  * @filesource
  */
 
@@ -19,43 +19,51 @@ namespace EllisLab\ExpressionEngine\Service\Config;
 /**
  * ExpressionEngine Config Directory Class
  *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @package    ExpressionEngine
+ * @subpackage Core
+ * @category   Core
+ * @author     EllisLab Dev Team
+ * @link       http://ellislab.com
  */
 class Directory {
 
 	protected $dirname;
 	protected $cache;
 
+	/**
+	 * Create a new Config\Directory object
+	 * @param string $dirname Path to the directory, can be relative
+	 */
 	function __construct($dirname)
 	{
-		$this->dirname = $dirname;
+		$this->dirname = realpath($dirname);
 	}
 
-	public function file($basename)
+	/**
+	 * Returns a Config\File class representing the config file
+	 *
+	 * @param  string $filename name of the file
+	 *
+	 * @throws Exception If no config file is found
+	 *
+	 * @return File             Config\File object
+	 */
+	public function file($filename)
 	{
 		// Get the proper filename
-		$fullpath = realpath($this->dirname.'/'.$basename.'.php');
+		$fullpath = realpath($this->dirname.'/'.$filename.'.php');
 
 		if (file_exists($fullpath))
 		{
 			// Cache the config File
 			if ( ! isset($cache[$fullpath]))
 			{
-				$cache[$fullpath] = static::createFile($fullpath);
+				$cache[$fullpath] = new File($fullpath);
 			}
 
 			return $cache[$fullpath];
 		}
 
 		throw new \Exception('No config file was found.');
-	}
-
-	protected static function createFile($fullpath)
-	{
-		return new File($fullpath);
 	}
 }
