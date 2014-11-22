@@ -7,12 +7,12 @@ use \EllisLab\ExpressionEngine\Service\Config\File as ConfigFile;
 /**
  * ExpressionEngine - by EllisLab
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
- * @since		Version 3.0.0
+ * @package   ExpressionEngine
+ * @author    EllisLab Dev Team
+ * @copyright Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @license   http://ellislab.com/expressionengine/user-guide/license.html
+ * @link      http://ellislab.com
+ * @since     Version 3.0.0
  * @filesource
  */
 
@@ -21,11 +21,11 @@ use \EllisLab\ExpressionEngine\Service\Config\File as ConfigFile;
 /**
  * ExpressionEngine Database Config Class
  *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * @package    ExpressionEngine
+ * @subpackage Core
+ * @category   Core
+ * @author     EllisLab Dev Team
+ * @link       http://ellislab.com
  */
 class DBConfig
 {
