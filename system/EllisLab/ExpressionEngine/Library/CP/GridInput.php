@@ -105,10 +105,12 @@ class GridInput extends Table {
 	{
 		if (isset($this->config['grid_blank_row']))
 		{
-			$data[] = array(
+			// Prepend blank row to array instead of prepend so that the DOM
+			// is consistent when loading new data vs loading new data
+			array_unshift($data, array(
 				'attrs'   => array('class' => 'grid-blank-row'),
 				'columns' => $this->config['grid_blank_row']
-			);
+			));
 		}
 
 		parent::setData($data);
