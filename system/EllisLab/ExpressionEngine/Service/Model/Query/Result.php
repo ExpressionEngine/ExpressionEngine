@@ -120,10 +120,14 @@ class Result {
 		foreach ($this->relations as $to_alias => $lookup)
 		{
 			$kids = $this->objects[$to_alias];
+
 			foreach ($lookup as $from_alias => $relation)
 			{
 				$parents = $this->objects[$from_alias];
-				$this->matchRelation($parents, $kids, $relation, $from_alias, $to_alias);
+
+				$related_ids = $this->matchIds($parents, $from_alias, $to_alias);
+
+				$this->matchRelation($parents, $kids, $related_ids, $relation);
 			}
 		}
 	}
@@ -131,29 +135,41 @@ class Result {
 	/**
 	 *
 	 */
-	protected function matchRelation($parents, $kid_options, $relation, $from_alias, $to_alias)
+	protected function matchIds($parents, $from_alias, $to_alias)
 	{
-		list($from_key, $to_key) = $relation->getKeys();
+		$related_ids = array();
 
 		foreach ($parents as $p_id => $parent)
 		{
-			$kids = $this->related_ids[$from_alias][$p_id];
-			$yes = array();
+			$related_ids[$p_id] = array();
 
-			foreach ($kids as $potential)
+			$all_related = $this->related_ids[$from_alias][$p_id];
+
+			foreach ($all_related as $potential)
 			{
 				if (isset($potential[$to_alias]))
 				{
-					$yes[] = $potential[$to_alias];
+					$related_ids[$p_id][] = $potential[$to_alias];
 				}
 			}
+		}
 
-			$set = array_unique($yes);
+		return $related_ids;
+	}
+
+	/**
+	 *
+	 */
+	protected function matchRelation($parents, $kids, $related_ids, $relation)
+	{
+		foreach ($parents as $p_id => $parent)
+		{
+			$set = array_unique($related_ids[$p_id]);
 			$collection = array();
 
 			foreach ($set as $id)
 			{
-				$collection[] = $kid_options[$id];
+				$collection[] = $kids[$id];
 			}
 
 			$name = $relation->getName();
