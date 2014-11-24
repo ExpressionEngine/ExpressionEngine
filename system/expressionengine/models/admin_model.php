@@ -66,29 +66,9 @@ class Admin_model extends CI_Model {
 	 */
 	function get_installed_language_packs()
 	{
-		static $languages;
-
-		if ( ! isset($languages))
-		{
-			$this->load->helper('directory');
-
-			$source_dir = APPPATH.'language/';
-
-			if (($list = directory_map($source_dir, TRUE)) !== FALSE)
-			{
-				foreach ($list as $file)
-				{
-					if (is_dir($source_dir.$file) && $file[0] != '.')
-					{
-						$languages[$file] = ucfirst($file);
-					}
-				}
-
-				ksort($languages);
-			}
-		}
-
-		return $languages;
+		ee()->logger->deprecated('3.0', 'EE_lang::language_pack_names()');
+		ee()->load->model('language_model');
+		return ee()->lang->language_pack_names();
 	}
 
 	// --------------------------------------------------------------------

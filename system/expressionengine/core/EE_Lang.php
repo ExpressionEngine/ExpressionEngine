@@ -222,6 +222,34 @@ class EE_Lang extends CI_Lang {
 		}
 	}
 
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Get a list of available language packs
+	 *
+	 * @return array Associative array of language packs, with the keys being
+	 * the directory names and the value being the name (ucfirst())
+	 */
+	public function language_pack_names()
+	{
+		$source_dir = SYSPATH.'language/';
+
+		$dirs = array('english' => 'English');
+
+		if ($fp = @opendir($source_dir))
+		{
+			while (FALSE !== ($file = readdir($fp)))
+			{
+				if (is_dir($source_dir.$file) && substr($file, 0, 1) != ".")
+				{
+					$dirs[$file] = ucfirst($file);
+				}
+			}
+			closedir($fp);
+		}
+
+		 return $dirs;
+	}
 }
 // END CLASS
 

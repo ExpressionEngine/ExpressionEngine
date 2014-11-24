@@ -1086,6 +1086,32 @@ class EE_Session {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Get the currently used language pack. Will return the user's language
+	 * pack if a session exists, otherwise will fall back to the default
+	 * language. If that's not set for some reason, we'll just use English.
+	 * @return string Language pack name to use
+	 */
+	public function get_language()
+	{
+		if ($this->userdata['language'] != '')
+		{
+			return $this->userdata['language'];
+		}
+		if (ee()->input->cookie('language'))
+		{
+			return ee()->input->cookie('language');
+		}
+		else if (ee()->config->item('deft_lang') != '')
+		{
+			return ee()->config->item('deft_lang');
+		}
+
+		return 'english';
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Age flashdata
 	 *
 	 * Removes old, marks current as old, etc

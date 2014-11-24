@@ -2916,6 +2916,19 @@ class Member {
 
 		return ee()->TMPL->tagdata = $out;
 	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Create a language dropdown list
+	 * @param  string $default Default language
+	 * @return string          Code for a language dropdown
+	 */
+	protected function get_language_listing($default = 'english')
+	{
+		$dirs = ee()->lang->language_pack_names();
+		return form_dropdown('language', $dirs, $default);
+	}
 }
 // END CLASS
 

@@ -1560,9 +1560,9 @@ class EE_Config Extends CI_Config {
 					ee()->load->model('admin_model');
 					switch ($options['1'])
 					{
-						case 'language_menu'	:
+						case 'language_menu':
 							$options[0] = 's';
-							$details = ee()->admin_model->get_installed_language_packs();
+							$details = ee()->lang->language_pack_names();
 							$selected = $value;
 							break;
 						case 'fetch_encoding'	:

@@ -27,28 +27,13 @@ class Language_model extends CI_Model {
 	/**
 	 * Language Pack Names
 	 *
-	 * @access	public
 	 * @return	array
 	 */
-	function language_pack_names()
+	public function language_pack_names()
 	{
-		$source_dir = APPPATH.'language/';
-
-		$dirs = array();
-
-		if ($fp = @opendir($source_dir))
-		{
-			while (FALSE !== ($file = readdir($fp)))
-			{
-				if (is_dir($source_dir.$file) && substr($file, 0, 1) != ".")
-				{
-					$dirs[$file] = ucfirst($file);
-				}
-			}
-			closedir($fp);
-		}
-
-		 return $dirs;
+		ee()->logger->deprecated('3.0', 'EE_lang::language_pack_names()');
+		ee()->load->model('language_model');
+		return ee()->lang->language_pack_names();
 	}
 
 }

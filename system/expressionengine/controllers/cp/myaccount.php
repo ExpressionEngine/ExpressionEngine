@@ -1267,7 +1267,7 @@ class MyAccount extends CP_Controller {
 		{
 			$vars['language'] = ($this->config->item('deft_lang') && $this->config->item('deft_lang') != '') ? $this->config->item('deft_lang') : 'english';
 		}
-		$vars['language_options'] = $this->language_model->language_pack_names();
+		$vars['language_options'] = $this->lang->language_pack_names();
 
 		$this->cp->render('account/localization', $vars);
 	}

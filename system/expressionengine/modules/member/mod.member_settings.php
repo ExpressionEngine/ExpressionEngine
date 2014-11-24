@@ -1614,22 +1614,18 @@ class Member_settings extends Member {
 		return $this->_var_swap(
 			$this->_load_element('localization_form'),
 			array(
-				'form_declaration' 				=> ee()->functions->form_declaration(
+				'form_declaration'         => ee()->functions->form_declaration(
 					array('action' => $this->_member_path('update_localization'))
 				),
-				'path:update_localization'		=>	$this->_member_path('update_localization'),
-				'form:localization'				=>	ee()->localize->timezone_menu((ee()->session->userdata('timezone') == '') ? 'UTC' : ee()->session->userdata('timezone'), 'timezone'),
-				'form:date_format'				=>	form_preference('date_format', $config_fields['fields']['date_format']),
-				'form:time_format'				=>	form_preference('time_format', $config_fields['fields']['time_format']),
-				'form:include_seconds'			=>	form_preference('include_seconds', $config_fields['fields']['include_seconds']),
-				'form:language'					=>	ee()->functions->language_pack_names((ee()->session->userdata('language')  == '') ? 'english' : ee()->session->userdata('language') )
+				'path:update_localization' => $this->_member_path('update_localization'),
+				'form:localization'        => ee()->localize->timezone_menu((ee()->session->userdata('timezone') == '') ? 'UTC' : ee()->session->userdata('timezone'), 'timezone'),
+				'form:date_format'         => form_preference('date_format', $config_fields['fields']['date_format']),
+				'form:time_format'         => form_preference('time_format', $config_fields['fields']['time_format']),
+				'form:include_seconds'     => form_preference('include_seconds', $config_fields['fields']['include_seconds']),
+				'form:language'            => $this->get_language_listing(ee()->session->get_language())
 			 )
 		);
 	}
-
-
-
-
 
 	/** ----------------------------------------
 	/**  Update Localization Prefs
@@ -1649,15 +1645,16 @@ class Member_settings extends Member {
 			return ee()->output->show_user_error('general', array(ee()->lang->line('invalid_action')));
 		}
 
-		$data['language']	= ee()->security->sanitize_filename($_POST['deft_lang']);
-		$data['timezone']	= $_POST['timezone'];
-		$data['date_format'] = $_POST['date_format'];
-		$data['time_format'] = $_POST['time_format'];
+		$data['language']        = ee()->security->sanitize_filename($_POST['language']);
+		$data['timezone']        = $_POST['timezone'];
+		$data['date_format']     = $_POST['date_format'];
+		$data['time_format']     = $_POST['time_format'];
 		$data['include_seconds'] = $_POST['include_seconds'];
 
-		if ( ! is_dir(APPPATH.'language/'.$data['language']))
+		$language_pack_names = array_keys(ee()->lang->language_pack_names());
+		if ( ! in_array($data['language'], $language_pack_names))
 		{
-			return ee()->output->show_user_error('general', array(ee()->lang->line('invalid_action')));
+			return ee()->output->show_user_error('general', array(lang('invalid_action')));
 		}
 
 		ee()->db->query(ee()->db->update_string('exp_members', $data, "member_id = '".ee()->session->userdata('member_id')."'"));
@@ -1666,12 +1663,13 @@ class Member_settings extends Member {
 		/**  Success message
 		/** -------------------------------------*/
 
-		return $this->_var_swap($this->_load_element('success'),
-								array(
-										'lang:heading'	=>	ee()->lang->line('localization_settings'),
-										'lang:message'	=>	ee()->lang->line('mbr_localization_settings_updated')
-									 )
-								);
+		return $this->_var_swap(
+			$this->_load_element('success'),
+			array(
+				'lang:heading' => lang('localization_settings'),
+				'lang:message' => lang('mbr_localization_settings_updated')
+			)
+		);
 	}
 
 
