@@ -38,7 +38,7 @@ class Delete extends Profile {
 	 */
 	public function index()
 	{
-		if( ! empty($_POST))
+		if( ! empty($_POST['member']))
 		{
 			$this->deleteMember();
 		}

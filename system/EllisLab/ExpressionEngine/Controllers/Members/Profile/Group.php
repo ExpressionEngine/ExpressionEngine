@@ -53,7 +53,7 @@ class Group extends Profile {
 					'title' => 'member_group',
 					'desc' => 'member_group_desc',
 					'fields' => array(
-						'member_group' => array(
+						'group_id' => array(
 							'type' => 'dropdown',
 							'choices' => $choices,
 							'value' => $this->member->group_id
@@ -81,9 +81,9 @@ class Group extends Profile {
 
 		ee()->form_validation->set_rules(array(
 			array(
-				 'field'   => 'member_group',
+				 'field'   => 'group_id',
 				 'label'   => 'lang:member_group',
-				 'rules'   => 'required'
+				 'rules'   => 'callback__valid_member_group'
 			),
 			array(
 				 'field'   => 'password',
@@ -99,12 +99,12 @@ class Group extends Profile {
 		}
 		elseif (ee()->form_validation->run() !== FALSE)
 		{
-			if ($this->setMemberGroup($this->member, ee()->input->post('member_group')))
+			if ($this->saveSettings($vars['sections']))
 			{
 				ee()->view->set_message('success', lang('member_updated'), lang('member_updated_desc'), TRUE);
+				ee()->functions->redirect($base_url);
 			}
 
-			ee()->functions->redirect($base_url);
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
@@ -120,17 +120,15 @@ class Group extends Profile {
 		ee()->cp->render('settings/form', $vars);
 	}
 
-	private function setMemberGroup($member, $group)
+	public function _valid_member_group($group)
 	{
-		$groups = ee()->api->get('MemberGroup')->filter('group_id', $id)->all();
+		$groups = ee()->api->get('MemberGroup')->filter('group_id', $group)->all();
+
 		if (empty($groups))
 		{
 			return FALSE;
 		}
 
-		$member->group_id = $group;
-		$member->save();
-		
 		return TRUE;
 	}
 }
