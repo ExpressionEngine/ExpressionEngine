@@ -15,6 +15,8 @@ class Result {
 	protected $objects = array();
 	protected $relations = array();
 
+	protected $related_ids = array();
+
 	public function __construct(Builder $builder, $db_result, $aliases, $relations)
 	{
 		$this->builder = $builder;
@@ -60,6 +62,8 @@ class Result {
 	 */
 	protected function parseRow($row)
 	{
+		$by_row = array();
+
 		foreach ($this->columns as $alias => $columns)
 		{
 			$model_data = array();
@@ -85,6 +89,26 @@ class Result {
 			$object->fill($model_data);
 
 			$this->objects[$alias][$object->getId()] = $object;
+
+			$by_row[$alias] = $object->getId();
+		}
+
+		foreach ($by_row as $alias => $id)
+		{
+			$related = $by_row;
+			unset($related[$alias]);
+
+			if ( ! isset($this->related_ids[$alias]))
+			{
+				$this->related_ids[$alias] = array();
+			}
+
+			if ( ! isset($this->related_ids[$alias][$id]))
+			{
+				$this->related_ids[$alias][$id] = array();
+			}
+
+			$this->related_ids[$alias][$id][] = $related;
 		}
 	}
 
@@ -96,11 +120,10 @@ class Result {
 		foreach ($this->relations as $to_alias => $lookup)
 		{
 			$kids = $this->objects[$to_alias];
-
 			foreach ($lookup as $from_alias => $relation)
 			{
 				$parents = $this->objects[$from_alias];
-				$this->matchRelation($parents, $kids, $relation);
+				$this->matchRelation($parents, $kids, $relation, $from_alias, $to_alias);
 			}
 		}
 	}
@@ -108,28 +131,33 @@ class Result {
 	/**
 	 *
 	 */
-	protected function matchRelation($parents, $kids, $relation)
+	protected function matchRelation($parents, $kid_options, $relation, $from_alias, $to_alias)
 	{
 		list($from_key, $to_key) = $relation->getKeys();
 
 		foreach ($parents as $p_id => $parent)
 		{
-			$from_value = $parent->$from_key;
-			$related_kids = array();
+			$kids = $this->related_ids[$from_alias][$p_id];
+			$yes = array();
 
-			foreach ($kids as $id => $kid)
+			foreach ($kids as $potential)
 			{
-				$to_value = $kid->$to_key;
-
-				if ($from_value == $to_value)
+				if (isset($potential[$to_alias]))
 				{
-					$related_kids[] = $kid;
-					unset($kids[$id]);
+					$yes[] = $potential[$to_alias];
 				}
 			}
 
+			$set = array_unique($yes);
+			$collection = array();
+
+			foreach ($set as $id)
+			{
+				$collection[] = $kid_options[$id];
+			}
+
 			$name = $relation->getName();
-			$parent->{'fill'.$name}($related_kids);
+			$parent->{'fill'.$name}($collection);
 		}
 	}
 
