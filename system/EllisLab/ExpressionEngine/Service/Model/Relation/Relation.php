@@ -51,9 +51,24 @@ abstract class Relation {
 
 
 	/**
-	 * TODO figure this out
+	 * TODO this is a pretty slow way to do this
 	 */
-	//	abstract public function getInverse();
+	public function getInverse()
+	{
+		$relations = $this->datastore->getAllRelations($this->getTargetModel());
+
+		foreach ($relations as $name => $relation)
+		{
+			if ($relation->getTargetModel() == $this->getSourceModel())
+			{
+				// todo also check if reverse type
+				if ($relation->getKeys() == $this->getKeys())
+				{
+					return $relation;
+				}
+			}
+		}
+	}
 
 	/**
 	 *
