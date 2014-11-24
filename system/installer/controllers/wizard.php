@@ -2522,7 +2522,7 @@ PAPAYA;
 			'save_tmpl_revisions'			=>	'n',
 			'max_tmpl_revisions'			=>	'5',
 			'save_tmpl_files'				=>	'n',
-			'tmpl_file_basepath'			=>	realpath('./expressionengine/templates/').DIRECTORY_SEPARATOR,
+			'tmpl_file_basepath'			=>	realpath('./templates/').DIRECTORY_SEPARATOR,
 			'deny_duplicate_data'			=>	'y',
 			'redirect_submitted_links'		=>	'n',
 			'enable_censoring'				=>	'n',

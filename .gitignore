@@ -27,9 +27,9 @@ system/cache/*
 !system/cache/index.html
 !system/cache/.htaccess
 
-system/expressionengine/templates/*
-!system/expressionengine/templates/index.html
-!system/expressionengine/templates/.htaccess
+system/templates/*
+!system/templates/index.html
+!system/templates/.htaccess
 
 system/addons/*
 !system/addons/index.html
