@@ -74,7 +74,11 @@ class Delete extends Query {
 	}
 
 	/**
+	 * Fetch all ids of the parent.
 	 *
+	 * This way we can restrict all of our filters to just the
+	 * ids instead of running a potentially expensive query a
+	 * bunch of times.
 	 */
 	protected function getParentIds($from, $from_pk)
 	{
@@ -84,18 +88,17 @@ class Delete extends Query {
 			->all()
 			->pluck($from_pk);
 	}
+
 	/**
-	 * I need a list for each child model name to delete that contains all
-	 * withs that lead back to the parent being deleted. Ideally those
-	 * will be in the order I need to process them in:
+	 * Generate a list for each child model name to delete, that contains all
+	 * withs() that lead back to the parent being deleted. These are returned
+	 * in the reverse order of how they need to be processed. Think a reverse
+	 * topsort.
 	 *
+	 * Example:
 	 * get('Site')->delete()
 	 *
-	 * Template->with(array('TemplateGroup' => array('Site')));
-	 * TemplateGroup->with(array('Site'));
-	 * Site->with();
-	 *
-	 * So this:
+	 * Returns:
 	 *
 	 * array(
 	 *    'Template'      => array('TemplateGroup' => array('Site' => array()))
@@ -103,6 +106,8 @@ class Delete extends Query {
 	 *    'Site'          => array()
 	 * );
 	 *
+	 * @param String  $from  Model to delete from
+	 * @return Array  [name => withs, ...] as described above
 	 */
 	protected function getDeleteList($from)
 	{
@@ -112,7 +117,11 @@ class Delete extends Query {
 	}
 
 	/**
+	 * Helper to builde a delete list. See the calling method
+	 * for details.
 	 *
+	 * @param String  $parent  Model we're processing
+	 * @return Array  [name => withs, ...] as described above
 	 */
 	protected function deleteListRecursive($parent)
 	{
