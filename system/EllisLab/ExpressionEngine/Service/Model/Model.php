@@ -306,7 +306,6 @@ class Model {
 		return ($this->getId() === NULL);
 	}
 
-
 	/**
 	 *
 	 */

@@ -1,5 +1,4 @@
 <?php
-
 namespace EllisLab\ExpressionEngine\Service\Model\Query;
 
 /**
