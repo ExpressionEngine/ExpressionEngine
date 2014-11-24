@@ -1,9 +1,5 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-use \EllisLab\ExpressionEngine\Service\Config\Directory;
-use \EllisLab\ExpressionEngine\Service\Database\DBConfig;
-use \EllisLab\ExpressionEngine\Service\Database\Database;
-
 /**
  * CodeIgniter
  *
@@ -32,11 +28,7 @@ function &DB($params = '', $active_record_override = NULL)
 	// Load the DB config file if a DSN string wasn't passed
 	if (is_string($params) AND strpos($params, '://') === FALSE)
 	{
-		$directory = new Directory(SYSPATH.'config/');
-		$config = $directory->file('config');
-		$database_config = new DBConfig($config);
-		$database = new Database($database_config);
-		$params = $database->getConfig();
+		$params = ee('Database')->getConfig();
 	}
 	elseif (is_string($params))
 	{

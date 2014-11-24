@@ -97,16 +97,23 @@ class EE_Core {
 		define('PATH_DICT', 	APPPATH.'config/');
 		define('AJAX_REQUEST',	ee()->input->is_ajax_request());
 
+		// Setup Dependency Injection Container
+		// This must come very early in the process, nothing but constants above
+		ee()->di = new \EllisLab\ExpressionEngine\Service\DependencyInjectionContainer();
+
 		// Load the default caching driver
 		ee()->load->driver('cache');
 
 		// Load DB and set DB preferences
+		ee()->di->register('Database', function($di) {
+			$directory = new \EllisLab\ExpressionEngine\Service\Config\Directory(SYSPATH.'config/');
+			$database_config = new \EllisLab\ExpressionEngine\Service\Database\DBConfig($directory->file('config'));
+			return new \EllisLab\ExpressionEngine\Service\Database\Database($database_config);
+		});
 		ee()->load->database();
 		ee()->db->swap_pre = 'exp_';
 		ee()->db->db_debug = FALSE;
 
-		// Setup Dependency Injection Container
-		ee()->di = new \EllisLab\ExpressionEngine\Service\DependencyInjectionContainer();
 
 		ee()->di->registerSingleton('Model', function($di)
 		{
@@ -123,6 +130,7 @@ class EE_Core {
 		{
             return new \EllisLab\ExpressionEngine\Service\Validation\Factory();
 		});
+
 
 		// Setup API model factory
 		ee()->api = ee()->di->make('Model');
