@@ -8,14 +8,15 @@ class DataStore {
 	protected $db;
 	protected $aliases;
 
+	/**
+	 *
+	 */
 	public function __construct($db, $alias_config_path)
 	{
 		$this->db = $db;
 		// todo move to config service
 		$this->aliases = include $alias_config_path;
 	}
-
-	// factories
 
 	/**
 	 * @param Object|String $name      The name of a model or an existing
@@ -174,7 +175,7 @@ class DataStore {
 				$gateway_tables = $from_reader->getTableNamesByGateway();
 				$table = $gateway_tables[$pivot];
 
-				$pivot = array(
+				$options['pivot'] = array(
 					'table' => $table,
 					'left'  => $options['from_primary_key'],
 					'right' => $options['to_primary_key']

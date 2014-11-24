@@ -36,7 +36,7 @@ class HasAndBelongsToMany extends Relation {
 		);
 
 		// pivot -> to
-		$query->from("{$this->to_table} as {$to_alias}_{$this->to_table}");
+		//$query->from("{$this->to_table} as {$to_alias}_{$this->to_table}");
 
 		$query->where(
 			"{$to_alias}_{$this->to_table}.{$to}",
@@ -101,10 +101,6 @@ class HasAndBelongsToMany extends Relation {
 	{
 		parent::processOptions($options);
 
-		$this->pivot = array(
-			'table' => $options['pivot_table'],
-			'left'  => $options['pivot_from_key'],
-			'right' => $options['pivot_to_key']
-		);
+		$this->pivot = $options['pivot'];
 	}
 }
