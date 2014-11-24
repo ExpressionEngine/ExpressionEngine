@@ -28,7 +28,8 @@ use EllisLab\ExpressionEngine\Service\Validation\ValidationRule as ValidationRul
  * @link		http://ellislab.com
  */
 class MinLength extends ValidationRule {
-	protected $length=0;
+
+	protected $length = 0;
 
 	public function __construct(array $parameters)
 	{

@@ -35,9 +35,7 @@ class Required extends ValidationRule {
 		{
 			return (trim($value) == '') ? FALSE : TRUE;
 		}
-		else
-		{
-			return ( ! empty($value));
-		}
+
+		return ( ! empty($value));
 	}
 }

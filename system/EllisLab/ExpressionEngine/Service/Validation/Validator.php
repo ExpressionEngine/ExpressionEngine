@@ -42,6 +42,7 @@ namespace EllisLab\ExpressionEngine\Service\Validation;
  * @link		http://ellislab.com
  */
 class Validator {
+
 	protected $failed_rules = array();
 	protected $namespaces = array();
 
@@ -98,14 +99,17 @@ class Validator {
 	public function validate($rule_definitions, $value)
 	{
 		$rule_definitions = explode('|', $rule_definitions);
-		foreach($rule_definitions as $rule_definition)
+
+		foreach ($rule_definitions as $rule_definition)
 		{
 			$rule = ValidationService::parseRule($rule_definition);
+
 			if ( ! $rule->validate($value))
 			{
 				$this->failed_rules[] = $rule;
 			}
 		}
+
 		if ( ! empty($this->failed_rules))
 		{
 			return FALSE;
@@ -155,13 +159,13 @@ class Validator {
 			$parameters = array();
 		}
 
-		foreach($this->namespaces as $namespace)
+		foreach ($this->namespaces as $namespace)
 		{
 			$fully_qualified_class = $namespace . ucfirst($rule_name);
+
 			if (class_exists($fully_qualified_class))
 			{
-				$rule = new $fully_qualified_class($parameters);
-				return $rule;
+				return new $fully_qualified_class($parameters);
 			}
 		}
 

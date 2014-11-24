@@ -47,7 +47,7 @@ abstract class ValidationRule {
 	 * wild about defining a stub method that takes a parameter, and having it
 	 * optionally take a parameter actually means this is meaningless.
 	 */
-	public function __construct(array $parameters=array())
+	public function __construct(array $parameters = array())
 	{
 
 	}
