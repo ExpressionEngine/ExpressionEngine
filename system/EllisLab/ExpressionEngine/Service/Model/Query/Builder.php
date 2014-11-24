@@ -416,4 +416,14 @@ class Builder {
 		$this->frontend = $frontend;
 	}
 
+
+	/**
+	 *
+	 */
+	public function getFrontend()
+	{
+		return $this->frontend;
+	}
+
+
 }
