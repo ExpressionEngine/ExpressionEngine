@@ -26,7 +26,7 @@ checkout:
     - mkdir system/config
     - cp system/tests/circleci/config.php system/config/
     - chmod 666 system/config/config.php
-    - chmod -R 777 system/expressionengine/cache
+    - chmod -R 777 system/cache
     - chmod -R 777 system/expressionengine/templates
     - chmod -R 777 images
     - chmod +x system/tests/circleci/runtests.sh
