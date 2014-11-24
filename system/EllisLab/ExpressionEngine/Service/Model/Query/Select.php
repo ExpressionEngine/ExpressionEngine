@@ -63,7 +63,7 @@ class Select extends Query {
 	/**
 	 *
 	 */
-	protected function selectModel($query, $model, $alias = NULL)
+	protected function selectModel($query, $model, $alias, $will_join = FALSE)
 	{
 		$alias = $alias ?: $model;
 		$this->storeAlias($alias, $model);
@@ -77,11 +77,14 @@ class Select extends Query {
 			$this->model_fields[$alias] = array();
 		}
 
-
 		foreach ($tables as $table => $table_fields)
 		{
 			$table_alias = "{$alias}_{$table}";
-			$query->from("{$table} as {$table_alias}");
+
+			if ( ! $will_join)
+			{
+				$query->from("{$table} as {$table_alias}");
+			}
 
 			foreach ($table_fields as $column)
 			{
@@ -241,7 +244,7 @@ class Select extends Query {
 
 			$child_model = $relation->getTargetModel();
 
-			$this->selectModel($query, $child_model, $child_alias);
+			$this->selectModel($query, $child_model, $child_alias, TRUE);
 
 			$relation->modifyEagerQuery($query, $parent_alias, $child_alias);
 

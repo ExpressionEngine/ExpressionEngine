@@ -27,21 +27,16 @@ class HasAndBelongsToMany extends Relation {
 		$pivot_as = "{$from_alias}_{$to_alias}_{$pivot_table}";
 
 		// from -> pivot
-		$query->from("{$pivot_table} as {$pivot_as}");
-
-		$query->where(
-			"{$pivot_as}.{$this->pivot['left']}",
-			"{$from_alias}_{$this->from_table}.{$from}",
-			FALSE
+		$query->join(
+			"{$pivot_table} as {$pivot_as}",
+			"{$pivot_as}.{$this->pivot['left']} = {$from_alias}_{$this->from_table}.{$from}",
+			'LEFT OUTER'
 		);
 
 		// pivot -> to
-		//$query->from("{$this->to_table} as {$to_alias}_{$this->to_table}");
-
-		$query->where(
-			"{$to_alias}_{$this->to_table}.{$to}",
-			"{$pivot_as}.{$this->pivot['right']}",
-			FALSE
+		$query->join(
+			"{$this->to_table} as {$to_alias}_{$this->to_table}",
+			"{$to_alias}_{$this->to_table}.{$to} = {$pivot_as}.{$this->pivot['right']}"
 		);
 	}
 
