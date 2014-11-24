@@ -23,9 +23,9 @@ system/tests/rspec/screenshots/*
 images/test1/
 images/design/
 
-system/expressionengine/cache/*
-!system/expressionengine/cache/index.html
-!system/expressionengine/cache/.htaccess
+system/cache/*
+!system/cache/index.html
+!system/cache/.htaccess
 
 system/expressionengine/templates/*
 !system/expressionengine/templates/index.html
