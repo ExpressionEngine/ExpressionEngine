@@ -9,8 +9,6 @@ class UploadEdit < ControlPanelPage
 	element :max_height, 'input[name=max_height]'
 	element :image_manipulations, '#image_manipulations'
 	elements :grid_rows, '#image_manipulations tr'
-	element :grid_add_no_results, 'tr.no-results a.btn'
-	element :grid_add, 'ul.toolbar li.add a'
 	elements :upload_member_groups, 'input[name="upload_member_groups[]"]'
 	elements :cat_group, 'input[name="cat_group[]"]'
 

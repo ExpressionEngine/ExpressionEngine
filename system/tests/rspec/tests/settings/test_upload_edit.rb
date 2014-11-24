@@ -7,6 +7,8 @@ feature 'Upload Destination Create/Edit' do
     @page = UploadEdit.new
     @page.load
     no_php_js_errors
+
+    @upload_path = File.expand_path('../../../images')
   end
 
   it 'shows the Upload Destination Create/Edit page' do
@@ -24,7 +26,6 @@ feature 'Upload Destination Create/Edit' do
 
   it 'should validate regular fields' do
     url_error = 'You must submit the URL to your upload directory.'
-    upload_path = File.expand_path('../../../images')
     
     @page.submit
 
@@ -85,7 +86,7 @@ feature 'Upload Destination Create/Edit' do
     should_have_form_errors(@page)
 
     # Resolve so can break again:
-    @page.server_path.set upload_path
+    @page.server_path.set @upload_path
     @page.server_path.trigger 'blur'
     @page.wait_for_error_message_count(2)
     should_have_no_error_text(@page.server_path)
@@ -99,7 +100,7 @@ feature 'Upload Destination Create/Edit' do
     should_have_form_errors(@page)
 
     # Resolve so can break again:
-    @page.server_path.set upload_path
+    @page.server_path.set @upload_path
     @page.server_path.trigger 'blur'
     @page.wait_for_error_message_count(2)
     should_have_no_error_text(@page.server_path)
@@ -160,7 +161,7 @@ feature 'Upload Destination Create/Edit' do
     should_have_no_error_text(@page.url)
     should_have_form_errors(@page)
 
-    @page.server_path.set upload_path
+    @page.server_path.set @upload_path
     @page.server_path.trigger 'blur'
     @page.wait_for_error_message_count(0)
     should_have_no_error_text(@page.server_path)
@@ -173,10 +174,10 @@ feature 'Upload Destination Create/Edit' do
     no_php_js_errors
     @page.name.value.should == 'Dir'
     @page.url.value.should == 'http://ee3/'
-    @page.server_path.value.should == upload_path + '/'
+    @page.server_path.value.should == @upload_path + '/'
   end
 
-  it 'should validate and save image manipulation data' do
+  it 'should validate image manipulation data' do
     @page.should have_text 'No manipulations created'
     @page.should have_grid_add_no_results
     @page.should have_no_grid_add
@@ -193,6 +194,273 @@ feature 'Upload Destination Create/Edit' do
     @page.should have_grid_add_no_results
     @page.should have_no_grid_add
     @page.grid_rows.size.should == 2 # Header and no results row
+
+    @page.grid_add_no_results.click
+
+    @page.name.set 'Dir'
+    @page.url.set 'http://ee3/'
+    @page.server_path.set @upload_path
+    @page.submit
+
+    should_have_form_errors(@page)
+    @page.error_messages.size.should == 3
+    grid_should_have_error(@page.image_manipulations)
+    grid_cell_should_have_error_text(@page.name_for_row(1), $required_error)
+    grid_cell_should_have_error_text(@page.width_for_row(1), $required_error)
+    grid_cell_should_have_error_text(@page.height_for_row(1), $required_error)
+    no_php_js_errors
+
+    # Reset for AJAX validation
+    @page.load
+    @page.grid_add_no_results.click
+    
+    # Name cell
+    name_cell = @page.name_for_row(1)
+    name_cell.trigger 'blur'
+    @page.wait_for_error_message_count(1)
+    grid_cell_should_have_error_text(name_cell, $required_error)
+
+    name_cell.set 'some_name'
+    name_cell.trigger 'blur'
+    @page.wait_for_error_message_count(0)
+    grid_cell_should_have_no_error_text(name_cell)
+
+    name_cell.set 'some name'
+    name_cell.trigger 'blur'
+    @page.wait_for_error_message_count(1)
+    grid_cell_should_have_error_text(name_cell, $alpha_dash)
+
+    # Width cell
+    width_cell = @page.width_for_row(1)
+    width_cell.trigger 'blur'
+    @page.wait_for_error_message_count(2)
+    grid_cell_should_have_error_text(width_cell, $required_error)
+
+    width_cell.set '4'
+    width_cell.trigger 'blur'
+    @page.wait_for_error_message_count(1)
+    grid_cell_should_have_no_error_text(width_cell)
+
+    width_cell.set 'ssdfsdsd'
+    width_cell.trigger 'blur'
+    @page.wait_for_error_message_count(2)
+    grid_cell_should_have_error_text(width_cell, $natural_number)
+
+    # Height cell
+    height_cell = @page.height_for_row(1)
+    height_cell.trigger 'blur'
+    @page.wait_for_error_message_count(3)
+    grid_cell_should_have_error_text(height_cell, $required_error)
+
+    height_cell.set '4'
+    height_cell.trigger 'blur'
+    @page.wait_for_error_message_count(2)
+    grid_cell_should_have_no_error_text(height_cell)
+
+    height_cell.set 'ssdfsdsd'
+    height_cell.trigger 'blur'
+    @page.wait_for_error_message_count(3)
+    grid_cell_should_have_error_text(height_cell, $natural_number)
+
+    @page.grid_add.click
+    @page.grid_rows.size.should == 3
+
+    name_cell = @page.name_for_row(2)
+    name_cell.trigger 'blur'
+    @page.wait_for_error_message_count(4)
+    grid_cell_should_have_error_text(name_cell, $required_error)
+
+    name_cell.set 'some_name'
+    name_cell.trigger 'blur'
+    @page.wait_for_error_message_count(3)
+    grid_cell_should_have_no_error_text(name_cell)
+
+    name_cell.set 'some name'
+    name_cell.trigger 'blur'
+    @page.wait_for_error_message_count(4)
+    grid_cell_should_have_error_text(name_cell, 'You must enter a unique name for this image manipulation.')
+
+    grid_should_have_error(name_cell)
+
+    name_cell.set 'some_name2'
+    name_cell.trigger 'blur'
+    @page.wait_for_error_message_count(3)
+    grid_cell_should_have_no_error_text(name_cell)
+
+    name_cell = @page.name_for_row(1)
+    name_cell.set 'some_name'
+    name_cell.trigger 'blur'
+    @page.wait_for_error_message_count(2)
+    grid_cell_should_have_no_error_text(name_cell)
+
+    width_cell.set '4'
+    width_cell.trigger 'blur'
+    @page.wait_for_error_message_count(1)
+    grid_cell_should_have_no_error_text(width_cell)
+
+    height_cell.set '4'
+    height_cell.trigger 'blur'
+    @page.wait_for_error_message_count(0)
+    grid_cell_should_have_no_error_text(height_cell)
+
+    grid_should_have_no_error(@page.image_manipulations)
+    should_have_no_form_errors(@page)
   end
 
+  it 'should repopulate the form on validation error, and save' do
+    @page.url.set 'http://ee3/'
+    @page.server_path.set @upload_path
+    @page.allowed_types.select 'All file types'
+    @page.max_size.set '4'
+    @page.max_width.set '300'
+    @page.max_height.set '200'
+
+    @page.grid_add_no_results.click
+    @page.name_for_row(1).set 'some_name'
+    @page.width_for_row(1).set '20'
+    @page.height_for_row(1).set '30'
+
+    @page.grid_add.click
+    @page.name_for_row(2).set 'some_other_name'
+    @page.width_for_row(2).set '50'
+    @page.height_for_row(2).set '40'
+
+    # Uncheck Members
+    @page.upload_member_groups[0].click
+
+    # Check both category groups
+    @page.cat_group[0].click
+    @page.cat_group[1].click
+
+    # We've set everything but a name, submit the form to see error
+    @page.submit
+    no_php_js_errors
+
+    @page.should have_text 'Attention: Upload directory not saved'
+    should_have_error_text(@page.name, $required_error)
+    should_have_form_errors(@page)
+
+    @page.server_path.value.should == @upload_path
+    @page.allowed_types.value.should == 'all'
+    @page.max_size.value.should == '4'
+    @page.max_width.value.should == '300'
+    @page.max_height.value.should == '200'
+
+    @page.name_for_row(1).value.should == 'some_name'
+    @page.width_for_row(1).value.should == '20'
+    @page.height_for_row(1).value.should == '30'
+
+    @page.name_for_row(2).value.should == 'some_other_name'
+    @page.width_for_row(2).value.should == '50'
+    @page.height_for_row(2).value.should == '40'
+
+    @page.upload_member_groups[0].checked?.should == false
+    @page.cat_group[0].checked?.should == true
+    @page.cat_group[1].checked?.should == true
+
+    # Fix error and make sure everything submitted ok
+    @page.name.set 'Dir'
+    @page.name.trigger 'blur'
+    @page.wait_for_error_message_count(0)
+    @page.submit
+
+    @page.should have_text 'Upload directory saved'
+    @page.name.value.should == 'Dir'
+    @page.server_path.value.should == @upload_path + '/'
+    @page.allowed_types.value.should == 'all'
+    @page.max_size.value.should == '4'
+    @page.max_width.value.should == '300'
+    @page.max_height.value.should == '200'
+
+    @page.name_for_row(1).value.should == 'some_name'
+    @page.width_for_row(1).value.should == '20'
+    @page.height_for_row(1).value.should == '30'
+
+    @page.name_for_row(2).value.should == 'some_other_name'
+    @page.width_for_row(2).value.should == '50'
+    @page.height_for_row(2).value.should == '40'
+
+    @page.upload_member_groups[0].checked?.should == false
+    @page.cat_group[0].checked?.should == true
+    @page.cat_group[1].checked?.should == true
+  end
+
+  it 'should save a new upload directory' do
+    @page.name.set 'Dir'
+    @page.url.set 'http://ee3/'
+    @page.server_path.set @upload_path
+    @page.max_size.set '4'
+    @page.max_width.set '300'
+    @page.max_height.set '200'
+
+    @page.grid_add_no_results.click
+    @page.name_for_row(1).set 'some_name'
+    @page.width_for_row(1).set '20'
+    @page.height_for_row(1).set '30'
+
+    @page.grid_add.click
+    @page.name_for_row(2).set 'some_other_name'
+    @page.width_for_row(2).set '50'
+    @page.height_for_row(2).set '40'
+
+    # Uncheck Members
+    @page.upload_member_groups[0].click
+
+    # Check both category groups
+    @page.cat_group[0].click
+    @page.cat_group[1].click
+
+    # We've set everything but a name, submit the form to see error
+    @page.submit
+
+    @page.should have_text 'Upload directory saved'
+    @page.name.value.should == 'Dir'
+    @page.server_path.value.should == @upload_path + '/'
+    @page.allowed_types.value.should == 'img'
+    @page.max_size.value.should == '4'
+    @page.max_width.value.should == '300'
+    @page.max_height.value.should == '200'
+
+    @page.name_for_row(1).value.should == 'some_name'
+    @page.width_for_row(1).value.should == '20'
+    @page.height_for_row(1).value.should == '30'
+
+    @page.name_for_row(2).value.should == 'some_other_name'
+    @page.width_for_row(2).value.should == '50'
+    @page.height_for_row(2).value.should == '40'
+
+    @page.upload_member_groups[0].checked?.should == false
+    @page.cat_group[0].checked?.should == true
+    @page.cat_group[1].checked?.should == true
+  end
+
+  it 'should edit an existing upload directory' do
+    # TODO: use Upload Dirs class when tests are build for that
+    within 'div.sidebar' do
+      click_link 'Upload Directories'
+    end
+    @page.find('table tr:nth-child(2) li.edit a').click
+
+    @page.name.set 'New name upload dir'
+    @page.submit
+
+    @page.should have_text 'Upload directory saved'
+    @page.name.value.should == 'New name upload dir'
+  end
+
+  it 'should reject XSS' do
+    # These are really the only fields we allow free form entry into
+    @page.name.set $xss_vector
+    @page.name.trigger 'blur'
+    @page.wait_for_error_message_count(1)
+    should_have_error_text(@page.name, $xss_error)
+    should_have_form_errors(@page)
+  
+    @page.url.set $xss_vector
+    @page.url.trigger 'blur'
+    @page.wait_for_error_message_count(2)
+    should_have_error_text(@page.name, $xss_error)
+    should_have_error_text(@page.url, $xss_error)
+    should_have_form_errors(@page)
+  end
 end
