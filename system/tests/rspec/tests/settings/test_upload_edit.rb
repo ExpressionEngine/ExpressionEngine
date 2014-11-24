@@ -213,7 +213,7 @@ feature 'Upload Destination Create/Edit' do
     # Reset for AJAX validation
     @page.load
     @page.grid_add_no_results.click
-    
+
     # Name cell
     name_cell = @page.name_for_row(1)
     name_cell.trigger 'blur'
@@ -442,6 +442,7 @@ feature 'Upload Destination Create/Edit' do
     @page.find('table tr:nth-child(2) li.edit a').click
 
     @page.name.set 'New name upload dir'
+    @page.server_path.set @upload_path # Set a path that works for the environment
     @page.submit
 
     @page.should have_text 'Upload directory saved'
