@@ -633,7 +633,7 @@ class Rte_lib {
 			'ui'		=> PATH_JQUERY.'ui/jquery.ui.',
 			'plugin'	=> PATH_JQUERY.'plugins/',
 			'file'		=> PATH_THEMES.'javascript/'.$folder.'/',
-			'package'	=> PATH_THIRD,
+			'package'	=> PATH_ADDONS,
 			'fp_module'	=> PATH_MOD
 		);
 

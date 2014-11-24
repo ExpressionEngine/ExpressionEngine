@@ -157,11 +157,11 @@ class Wizard extends CI_Controller {
 		// Third party constants
 		if ($this->config->item('third_party_path'))
 		{
-			define('PATH_THIRD',    rtrim($this->config->item('third_party_path'), '/').'/');
+			define('PATH_ADDONS',    rtrim($this->config->item('third_party_path'), '/').'/');
 		}
 		else
 		{
-			define('PATH_THIRD',	EE_APPPATH.'third_party/');
+			define('PATH_ADDONS',	EE_APPPATH.'third_party/');
 		}
 
 		$req_source = $this->input->server('HTTP_X_REQUESTED_WITH');
@@ -1804,7 +1804,7 @@ PAPAYA;
 		$this->load->helper('directory');
 		$ext_len = strlen(EXT);
 
-		if (($map = directory_map(PATH_THIRD)) !== FALSE)
+		if (($map = directory_map(PATH_ADDONS)) !== FALSE)
 		{
 			foreach ($map as $pkg_name => $files)
 			{
@@ -1828,7 +1828,7 @@ PAPAYA;
 
 						if ($file == $pkg_name)
 						{
-							$this->lang->load($file.'_lang', '', FALSE, FALSE, PATH_THIRD.$pkg_name.'/');
+							$this->lang->load($file.'_lang', '', FALSE, FALSE, PATH_ADDONS.$pkg_name.'/');
 							$name = ($this->lang->line(strtolower($file).'_module_name') != FALSE) ? $this->lang->line(strtolower($file).'_module_name') : $file;
 							$modules[$file] = array('name' => ucfirst($name), 'checked' => FALSE);
 						}
@@ -2276,7 +2276,7 @@ PAPAYA;
 
 		foreach($modules as $module)
 		{
-			$path = PATH_THIRD.$module.'/';
+			$path = PATH_ADDONS.$module.'/';
 
 			if (file_exists($path.'upd.'.$module.EXT))
 			{
@@ -3045,7 +3045,7 @@ PAPAYA;
 			}
 			else
 			{
-				$path = PATH_THIRD.$module.'/';
+				$path = PATH_ADDONS.$module.'/';
 			}
 
 			if (file_exists($path.'upd.'.$module.EXT))

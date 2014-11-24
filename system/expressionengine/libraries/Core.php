@@ -71,16 +71,15 @@ class EE_Core {
 		define('PATH_ACC',		APPPATH.'accessories/');
 		define('PATH_FT',		APPPATH.'fieldtypes/');
 		define('PATH_RTE',		APPPATH.'rte_tools/');
-		if (ee()->config->item('third_party_path'))
+
+		if (ee()->config->item('addons_path'))
 		{
-			define(
-				'PATH_THIRD',
-				rtrim(realpath(ee()->config->item('third_party_path')), '/').'/'
-			);
+			$addon_path = rtrim(realpath(ee()->config->item('addons_path')), '/').'/';
+			define('PATH_ADDONS', $addon_path);
 		}
 		else
 		{
-			define('PATH_THIRD',	APPPATH.'third_party/');
+			define('PATH_ADDONS', SYSPATH.'addons/');
 		}
 
 		// application constants
@@ -240,16 +239,16 @@ class EE_Core {
 		unset($theme_path);
 
 		// Define Third Party Theme Path and URL
-		if (ee()->config->item('path_third_themes'))
+		if (ee()->config->item('PATH_ADDONS_themes'))
 		{
 			define(
-				'PATH_THIRD_THEMES',
-				rtrim(realpath(ee()->config->item('path_third_themes')), '/').'/'
+				'PATH_ADDONS_THEMES',
+				rtrim(realpath(ee()->config->item('PATH_ADDONS_themes')), '/').'/'
 			);
 		}
 		else
 		{
-			define('PATH_THIRD_THEMES',	PATH_THEMES.'third_party/');
+			define('PATH_ADDONS_THEMES',	PATH_THEMES.'third_party/');
 		}
 
 		if (ee()->config->item('url_third_themes'))

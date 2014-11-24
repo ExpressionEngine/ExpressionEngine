@@ -89,7 +89,7 @@ class Addons_accessories extends CP_Controller {
 			}
 
 			// add the package and view paths
-			$path = PATH_THIRD.strtolower($name).'/';
+			$path = PATH_ADDONS.strtolower($name).'/';
 
 			$this->load->add_package_path($path, FALSE);
 
@@ -209,7 +209,7 @@ class Addons_accessories extends CP_Controller {
 		$class = $this->accessories->_get_accessory_class($name);
 
 		// add the package and view paths
-		$path = PATH_THIRD.strtolower($name).'/';
+		$path = PATH_ADDONS.strtolower($name).'/';
 
 		$this->load->add_package_path($path, FALSE);
 		$this->load->library('accessories');

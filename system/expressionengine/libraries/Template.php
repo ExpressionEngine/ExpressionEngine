@@ -1344,7 +1344,7 @@ class EE_Template {
 				}
 				else
 				{
-					require_once PATH_THIRD."{$plugin}/pi.{$plugin}.php";
+					require_once PATH_ADDONS."{$plugin}/pi.{$plugin}.php";
 				}
 			}
 		}
@@ -1360,7 +1360,7 @@ class EE_Template {
 				}
 				else
 				{
-					require_once PATH_THIRD."{$module}/mod.{$module}.php";
+					require_once PATH_ADDONS."{$module}/mod.{$module}.php";
 				}
 			}
 		}
@@ -1532,7 +1532,7 @@ class EE_Template {
 
 				if ( ! in_array($this->tag_data[$i]['class'], ee()->core->native_plugins))
 				{
-					$package_path = in_array($this->tag_data[$i]['class'], ee()->core->native_modules) ? PATH_MOD : PATH_THIRD;
+					$package_path = in_array($this->tag_data[$i]['class'], ee()->core->native_modules) ? PATH_MOD : PATH_ADDONS;
 					$package_path .= strtolower($this->tag_data[$i]['class'].'/');
 
 					ee()->load->add_package_path($package_path, FALSE);
@@ -2920,7 +2920,7 @@ class EE_Template {
 
 		// now third party add-ons, which are arranged in "packages"
 		// only catch files that match the package name, as other files are merely assets
-		if (($map = directory_map(PATH_THIRD, 2)) !== FALSE)
+		if (($map = directory_map(PATH_ADDONS, 2)) !== FALSE)
 		{
 			foreach ($map as $pkg_name => $files)
 			{

@@ -50,7 +50,7 @@ class EE_Loader extends CI_Loader {
 
 		foreach (array_reverse($orig_paths, TRUE) as $path => $cascade)
 		{
-			if (strpos($path, PATH_THIRD) !== FALSE OR $cascade === FALSE)
+			if (strpos($path, PATH_ADDONS) !== FALSE OR $cascade === FALSE)
 			{
 				break;
 			}

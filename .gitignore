@@ -31,19 +31,19 @@ system/expressionengine/templates/*
 !system/expressionengine/templates/index.html
 !system/expressionengine/templates/.htaccess
 
-system/expressionengine/third_party/*
-!system/expressionengine/third_party/index.html
-!system/expressionengine/third_party/download
-!system/expressionengine/third_party/google_maps
-!system/expressionengine/third_party/js_tool
-!system/expressionengine/third_party/testage
-!system/expressionengine/third_party/debug
-!system/expressionengine/third_party/safecracker_file
-!system/expressionengine/third_party/cookie_check
-!system/expressionengine/third_party/cookie_consent
-!system/expressionengine/third_party/nannerbanner
-!system/expressionengine/third_party/unregisteredbanner
-!system/expressionengine/third_party/ellislab_high_ascii_decode
+system/addons/*
+!system/addons/index.html
+!system/addons/download
+!system/addons/google_maps
+!system/addons/js_tool
+!system/addons/testage
+!system/addons/debug
+!system/addons/safecracker_file
+!system/addons/cookie_check
+!system/addons/cookie_consent
+!system/addons/nannerbanner
+!system/addons/unregisteredbanner
+!system/addons/ellislab_high_ascii_decode
 
 system/codeigniter/system/language/*
 !system/codeigniter/system/language/english/*

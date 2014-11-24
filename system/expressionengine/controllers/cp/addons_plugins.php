@@ -86,7 +86,7 @@ class Addons_plugins extends CP_Controller {
 
 		// Check folder permissions for all paths
 		$is_writable = TRUE;
-		foreach(array(PATH_PI, PATH_THIRD) as $path)
+		foreach(array(PATH_PI, PATH_ADDONS) as $path)
 		{
 			if ( ! is_really_writable($path))
 			{
@@ -222,8 +222,8 @@ class Addons_plugins extends CP_Controller {
 			else
 			{
 				// first thing's first, let's make sure this isn't part of a package
-				$files = glob(PATH_THIRD.$name.'/*.php');
-				$pi_key = array_search(PATH_THIRD.$name.'/pi.'.$name.'.php', $files);
+				$files = glob(PATH_ADDONS.$name.'/*.php');
+				$pi_key = array_search(PATH_ADDONS.$name.'/pi.'.$name.'.php', $files);
 
 				// remove this file from the list
 				unset($files[$pi_key]);
@@ -231,7 +231,7 @@ class Addons_plugins extends CP_Controller {
 				// any other PHP files in this directory?  If not, balleet!
 				if (empty($files))
 				{
-					$this->functions->delete_directory(PATH_THIRD.$name, TRUE);
+					$this->functions->delete_directory(PATH_ADDONS.$name, TRUE);
 					$success = TRUE;
 				}
 			}
@@ -281,7 +281,7 @@ class Addons_plugins extends CP_Controller {
 
 		@include_once(APPPATH.'libraries/Pclzip.php');
 
-		if ( ! is_really_writable(PATH_THIRD))
+		if ( ! is_really_writable(PATH_ADDONS))
 		{
 			$this->session->set_flashdata('message_failure', lang('plugin_folder_not_writable'));
 			$this->functions->redirect(BASE.AMP.'C=addons_plugins');
@@ -296,7 +296,7 @@ class Addons_plugins extends CP_Controller {
 		$file = $this->input->get_post('file');
 
 		$local_name = basename($file);
-		$local_file = PATH_THIRD.$local_name;
+		$local_file = PATH_ADDONS.$local_name;
 
 		// Get the remote file
 		$c = curl_init($file);
@@ -336,7 +336,7 @@ class Addons_plugins extends CP_Controller {
 		if ($file_info['extension'] == 'txt' ) // We've got a TXT file!
 		{
 			$new_file = basename($local_file, '.txt');
-			if ( ! rename($local_file, PATH_THIRD.$new_file))
+			if ( ! rename($local_file, PATH_ADDONS.$new_file))
 			{
 				$cp_type = 'message_failure';
 				$cp_message = lang('plugin_install_other');
@@ -359,7 +359,7 @@ class Addons_plugins extends CP_Controller {
 
 				$zip = new PclZip($local_file);
 
-				$temp_dir = PATH_THIRD.'47346fc7580de7596d7df8d115a3545d';
+				$temp_dir = PATH_ADDONS.'47346fc7580de7596d7df8d115a3545d';
 				mkdir($temp_dir);
 				chdir($temp_dir);
 
@@ -397,15 +397,15 @@ class Addons_plugins extends CP_Controller {
 						$package = substr($filename, 3, -4);
 
 						// does this add-on already exist?
-						if (is_dir(PATH_THIRD.$package))
+						if (is_dir(PATH_ADDONS.$package))
 						{
 							$cp_type = 'message_failure';
 							$cp_message = lang('plugin_error_package_already_exists');
 						}
 						else
 						{
-							mkdir(PATH_THIRD.$package);
-							rename(rtrim(substr($pi_files[0], 0, - strlen($filename)), '/'), PATH_THIRD.$package);
+							mkdir(PATH_ADDONS.$package);
+							rename(rtrim(substr($pi_files[0], 0, - strlen($filename)), '/'), PATH_ADDONS.$package);
 							$cp_type = 'message_success';
 							$cp_message = lang('plugin_install_success');
 						}
@@ -489,7 +489,7 @@ class Addons_plugins extends CP_Controller {
 
 
 		// third party, in packages
-		if (($map = directory_map(PATH_THIRD, 2)) !== FALSE)
+		if (($map = directory_map(PATH_ADDONS, 2)) !== FALSE)
 		{
 			foreach ($map as $pkg_name => $files)
 			{
@@ -513,7 +513,7 @@ class Addons_plugins extends CP_Controller {
 					{
 						if (substr($file, 3, -$ext_len) == $pkg_name)
 						{
-							$plugin_files[$file] = PATH_THIRD.$pkg_name.'/'.$file;
+							$plugin_files[$file] = PATH_ADDONS.$pkg_name.'/'.$file;
 						}
 					}
 				}
@@ -585,7 +585,7 @@ class Addons_plugins extends CP_Controller {
 
 		if ( ! file_exists($path))
 		{
-			$path = PATH_THIRD.$filename.'/pi.'.$filename.'.php';
+			$path = PATH_ADDONS.$filename.'/pi.'.$filename.'.php';
 
 			if ( ! file_exists($path))
 			{
