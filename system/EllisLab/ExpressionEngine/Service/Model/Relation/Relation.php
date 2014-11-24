@@ -89,7 +89,6 @@ abstract class Relation {
 	 */
 	public function modifyLazyQuery($query, $source, $to_alias)
 	{
-		die('lazy?');
 		list($from, $to) = $this->getKeys();
 
 		$query->where("{$to_alias}_{$this->to_table}.{$to}", $source->$from);

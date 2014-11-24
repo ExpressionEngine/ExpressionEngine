@@ -99,6 +99,15 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate {
 	}
 
 	/**
+	 * Compare to toArray() which also converts models.
+	 *
+	 */
+	public function asArray()
+	{
+		return $this->elements;
+	}
+
+	/**
 	 * Retrieve the first model
 	 *
 	 * @return Mixed First model object
