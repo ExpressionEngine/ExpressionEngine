@@ -24,10 +24,6 @@
  */
 class EE_Lang extends CI_Lang {
 
-	var $user_lang = '';
-
-	// --------------------------------------------------------------------
-
 	/**
 	 * Add a language file to the main language array
 	 *
@@ -42,34 +38,10 @@ class EE_Lang extends CI_Lang {
 			return;
 		}
 
-		$EE =& get_instance();
-
-		if (isset($EE->session->userdata['language']) && $EE->session->userdata['language'] != '')
-		{
-			$this->user_lang = $EE->session->userdata['language'];
-		}
-		else
-		{
-			if ($EE->input->cookie('language'))
-			{
-				$this->user_lang = $EE->input->cookie('language');
-			}
-			elseif ($EE->config->item('deft_lang') != '')
-			{
-				$this->user_lang = $EE->config->item('deft_lang');
-			}
-			else
-			{
-				$this->user_lang = 'english';
-			}
-		}
-
-		$deft_lang = ( ! $EE->config->item('deft_lang')) ? 'english' : $EE->config->item('deft_lang');
-
 		// Sec.ur.ity code.  ::sigh::
-		$package = ($package == '') ? $EE->security->sanitize_filename(str_replace(array('lang.', '.php'), '', $which)) : $EE->security->sanitize_filename($package);
+		$package = ($package == '') ? ee()->security->sanitize_filename(str_replace(array('lang.', '.php'), '', $which)) : ee()->security->sanitize_filename($package);
 		$which = str_replace('lang.', '', $which);
-		$this->user_lang = $EE->security->sanitize_filename($this->user_lang);
+		$idiom = ee()->security->sanitize_filename(ee()->session->get_language());
 
 		if ($which == 'sites_cp')
 		{
@@ -90,7 +62,7 @@ class EE_Lang extends CI_Lang {
 			oIk11bHRpcGxlIFNpdGUgTWFuYWdlciBFcnJvciAtIFNpdGUgTGltaXQgUmVhY2hlZCIpOyB9IH0="))); return;
 		}
 
-		$this->load($which, $this->user_lang, FALSE, TRUE, PATH_ADDONS.$package.'/', $show_errors);
+		$this->load($which, $idiom, FALSE, TRUE, PATH_ADDONS.$package.'/', $show_errors);
 	}
 
 	// --------------------------------------------------------------------
@@ -98,51 +70,38 @@ class EE_Lang extends CI_Lang {
 	/**
 	 * Load a language file
 	 *
-	 * Differs from CI's Lang::load() in that it checks each file for a default language version
-	 * as a backup.  Not sure this is appropriate for CI at large.
+	 * Differs from CI's Lang::load() in that it checks each file for a default
+	 * language version as a backup. Not sure this is appropriate for CI at
+	 * large.
 	 *
-	 * @access	public
 	 * @param	mixed	the name of the language file to be loaded. Can be an array
 	 * @param	string	the language (english, etc.)
 	 * @return	mixed
 	 */
 	function load($langfile = '', $idiom = '', $return = FALSE, $add_suffix = TRUE, $alt_path = '', $show_errors = TRUE)
 	{
-		static $deft_lang;
-
+		// Clean up langfile
 		$langfile = str_replace('.php', '', $langfile);
-
 		if ($add_suffix == TRUE)
 		{
 			$langfile = str_replace('_lang.', '', $langfile).'_lang';
 		}
-
 		$langfile .= '.php';
 
+		// Check to see if it's already loaded
 		if (in_array($langfile, $this->is_loaded, TRUE))
 		{
 			return;
 		}
 
-		if ( ! isset($deft_lang))
-		{
-			$config =& get_config();
-			$deft_lang = ( ! isset($config['language'])) ? 'english' : $config['language'];
-		}
-
-		if ($idiom == '')
-		{
-			$idiom = ($this->user_lang == '') ? 'english' : $this->user_lang;
-		}
-
-		// figure out where the lang file is, checking for the requested
-		// idiom first, then falling back on the default language
-		$paths = array(
-						APPPATH.'language/'.$idiom.'/'.$langfile,
-						APPPATH.'language/'.$deft_lang.'/'.$langfile,
-						BASEPATH.'language/'.$idiom.'/'.$langfile,
-						BASEPATH.'language/'.$deft_lang.'/'.$langfile
-					);
+		$deft_lang = ee()->config->item('deft_lang') ?: 'english';
+		$idiom     = $idiom ?: ee()->session->get_language();
+		$paths     = array(
+			// Check custom languages first
+			SYSPATH.'language/'.$idiom.'/'.$langfile,
+			// Check english afterwards
+			APPPATH.'language/'.$deft_lang.'/'.$langfile
+		);
 
 		// if it's in an alternate location, such as a package, check there first
 		if ($alt_path != '')
@@ -152,7 +111,6 @@ class EE_Lang extends CI_Lang {
 
 			array_unshift($paths, $alt_path.'language/'.$deft_lang.'/'.$third_party_old);
 			array_unshift($paths, $alt_path.'language/'.$idiom.'/'.$third_party_old);
-
 			array_unshift($paths, $alt_path.'language/'.$deft_lang.'/'.$langfile);
 			array_unshift($paths, $alt_path.'language/'.$idiom.'/'.$langfile);
 		}

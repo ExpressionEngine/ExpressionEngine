@@ -78,9 +78,9 @@ class CI_Lang {
 		{
 			include($alt_path.'language/'.$idiom.'/'.$langfile);
 		}
-		elseif (file_exists(APPPATH.'language/'.$idiom.'/'.$langfile))
+		elseif (file_exists(SYSPATH.'language/'.$idiom.'/'.$langfile))
 		{
-			include(APPPATH.'language/'.$idiom.'/'.$langfile);
+			include(SYSPATH.'language/'.$idiom.'/'.$langfile);
 		}
 		else
 		{

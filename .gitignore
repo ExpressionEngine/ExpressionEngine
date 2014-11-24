@@ -45,11 +45,8 @@ system/addons/*
 !system/addons/unregisteredbanner
 !system/addons/ellislab_high_ascii_decode
 
-system/codeigniter/system/language/*
-!system/codeigniter/system/language/english/*
-
-system/expressionengine/language/*
-!system/expressionengine/language/english/*
+system/language/*
+!system/language/index.html
 
 ^images/(captchas|avatars/uploads|forum_attachments|member_photos|signature_attachments|pm_attachments|uploads)/(?!index\.html)
 
