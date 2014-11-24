@@ -9,6 +9,7 @@ class Select extends Query {
 	protected $root_alias = '';
 	protected $aliases = array();
 	protected $relations = array();
+	protected $model_fields = array();
 
 	/**
 	 *
@@ -68,8 +69,14 @@ class Select extends Query {
 		$this->storeAlias($alias, $model);
 
 		$meta = $this->store->getMetaDataReader($model);
-		$fields = $this->builder->getFields();
+		$fields = $this->getFields();
 		$tables = $meta->getTables();
+
+		if ( ! isset($this->model_fields[$alias]))
+		{
+			$this->model_fields[$alias] = array();
+		}
+
 
 		foreach ($tables as $table => $table_fields)
 		{
@@ -78,12 +85,37 @@ class Select extends Query {
 
 			foreach ($table_fields as $column)
 			{
-				if (empty($fields) OR isset($fields[$column]))
+				// remember the name so we can translate filters and order_bys
+				$this->model_fields[$alias]["{$alias}__{$column}"] = "{$table_alias}.{$column}";
+
+				// but only select it if they did not specify fields to select
+				// or they specifically chose this one to be selected
+				if (empty($fields) OR in_array("{$alias}.{$column}", $fields))
 				{
 					$query->select("{$table_alias}.{$column} as {$alias}__{$column}");
 				}
 			}
 		}
+	}
+
+	/**
+	 * TODO only run this once!
+	 */
+	protected function getFields()
+	{
+		$fields = array();
+
+		foreach ($this->builder->getFields() as $field)
+		{
+			if (strpos($field, '.') === FALSE)
+			{
+				$field = "{$this->root_alias}.{$field}";
+			}
+
+			$fields[] = $field;
+		}
+
+		return $fields;
 	}
 
 	/**
@@ -153,10 +185,8 @@ class Select extends Query {
 				$fn .= '_not';
 			case 'IN':
 				$fn .= '_in';
-				break;
 			case '==':
 				$operator = '';
-				break;
 		}
 
 		if ($predicate == 'or')
@@ -174,10 +204,19 @@ class Select extends Query {
 	{
 		if (strpos($property, '.') === FALSE)
 		{
-			$property = $this->root_alias.'.'.$property;
+			$alias = $this->root_alias;
+		}
+		else
+		{
+			list($alias, $property) = explode('.', $property);
 		}
 
-		return str_replace('.', '__', $property);
+		if ( ! isset($this->model_fields[$alias]["{$alias}__{$property}"]))
+		{
+			throw new \Exception("Unknown field {$alias}.{$property}");
+		}
+
+		return $this->model_fields[$alias]["{$alias}__{$property}"];
 	}
 
 	/**
