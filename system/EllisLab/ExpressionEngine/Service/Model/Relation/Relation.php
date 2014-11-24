@@ -79,7 +79,8 @@ abstract class Relation {
 
 		$query->join(
 			"{$this->to_table} as {$to_alias}_{$this->to_table}",
-			"{$to_alias}_{$this->to_table}.{$to} = {$from_alias}_{$this->from_table}.{$from}"
+			"{$to_alias}_{$this->to_table}.{$to} = {$from_alias}_{$this->from_table}.{$from}",
+			'LEFT'
 		);
 	}
 
