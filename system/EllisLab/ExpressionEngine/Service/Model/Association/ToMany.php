@@ -6,6 +6,7 @@ use LogicException;
 use InvalidArgumentException;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
+use EllisLab\ExpressionEngine\Service\Model\Collection;
 
 /**
  * Association that points to a collection
@@ -13,6 +14,7 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
 abstract class ToMany extends Association {
 
 	protected $related = array();
+	protected $collection = NULL;
 
 	/**
 	 *
@@ -21,7 +23,7 @@ abstract class ToMany extends Association {
 	{
 		$items = parent::get();
 
-		return array_values($items);
+		return $this->getCollection();
 	}
 
 	/**
@@ -30,6 +32,8 @@ abstract class ToMany extends Association {
 	public function fill($related)
 	{
 		$this->related = array();
+		$this->collection = NULL;
+
 		$this->markAsLoaded();
 
 		if ( ! isset($related))
@@ -37,9 +41,9 @@ abstract class ToMany extends Association {
 			return;
 		}
 
-		if ( ! is_array($related))
+		if ( ! (is_array($related) || $related instanceOf Collection))
 		{
-			throw new InvalidArgumentException('Invalid fill(), must be array.');
+			throw new InvalidArgumentException('Invalid fill(), must be collection or array.');
 		}
 
 		foreach ($related as $model)
@@ -65,7 +69,13 @@ abstract class ToMany extends Association {
 	{
 		parent::addToRelated($model);
 
-		$this->related[spl_object_hash($model)] = $model;
+		if ( ! $this->hasRelated($model))
+		{
+			$collection = $this->getCollection();
+			$collection[] = $model;
+
+			$this->related[spl_object_hash($model)] = $model;
+		}
 	}
 
 	/**
@@ -75,6 +85,7 @@ abstract class ToMany extends Association {
 	{
 		parent::removeFromRelated($model);
 
+		$this->related = NULL;
 		unset($this->related[spl_object_hash($model)]);
 	}
 
@@ -83,9 +94,19 @@ abstract class ToMany extends Association {
 	 */
 	protected function saveAllRelated()
 	{
-		foreach ($this->related as $related)
+		$this->getCollection()->save();
+	}
+
+	/**
+	 *
+	 */
+	protected function getCollection()
+	{
+		if ( ! isset($this->collection))
 		{
-			$related->save();
+			$this->collection = new Collection(array_values($this->related));
 		}
+
+		return $this->collection;
 	}
 }

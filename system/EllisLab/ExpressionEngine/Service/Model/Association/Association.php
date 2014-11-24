@@ -173,12 +173,7 @@ abstract class Association {
 		$query = $this->frontend->get($this->relation->getTargetModel());
 		$query->setLazyConstraint($this->relation, $this->source);
 
-		$result = $query->all();
-
-		if ($result)
-		{
-			$this->fill($result->asArray());
-		}
+		$this->fill($query->all());
 
 		$this->markAsLoaded();
 	}
