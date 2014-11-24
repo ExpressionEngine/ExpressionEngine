@@ -43,8 +43,10 @@ class EE_Config Extends CI_Config {
 		parent::__construct();
 
 		// Change this path before release.
-		$this->config_path		= APPPATH.'config/config.php';
-		$this->database_path	= APPPATH.'config/database.php';
+		$this->config_path   = SYSPATH.'config/config.php';
+
+		// TODO-WB: Remove me
+		$this->database_path = APPPATH.'config/database.php';
 
 		$this->_initialize();
 	}
@@ -1081,6 +1083,8 @@ class EE_Config Extends CI_Config {
 	 */
 	function _update_dbconfig($dbconfig = array(), $remove_values = array())
 	{
+		// TODO-WB: Remove or replace this...
+
 		// Is the database file writable?
 		if ( ! is_really_writable($this->database_path))
 		{
@@ -1438,6 +1442,8 @@ class EE_Config Extends CI_Config {
 	 */
 	public function prep_view_vars($type, $values = array())
 	{
+		// TODO-WB: Remove or replace the need for database_path loading
+
 		ee()->load->library('form_validation');
 		$f_data = $this->get_config_fields($type);
 		$subtext = $this->get_config_field_subtext();
