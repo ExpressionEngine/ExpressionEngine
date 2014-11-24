@@ -6,10 +6,13 @@ use EllisLab\ExpressionEngine\Service\Model\Query\Builder;
 class DataStore {
 
 	protected $db;
+	protected $aliases;
 
-	public function __construct($db)
+	public function __construct($db, $alias_config_path)
 	{
 		$this->db = $db;
+		// todo move to config service
+		$this->aliases = include $alias_config_path;
 	}
 
 	// factories
@@ -91,20 +94,34 @@ class DataStore {
 	 */
 	protected function initializeAssociationsOn(Model $model)
 	{
-		$from_reader = $this->getMetaDataReader($model->getName());
-		$relationships = $from_reader->getRelationships();
-
 		$result = array();
+		$relations = $this->getAllRelations($model->getName());
 
-		foreach ($relationships as $name => $info)
+		foreach ($relations as $name => $relation)
 		{
-			$relation = $this->getRelation($model->getName(), $name);
-
 			$assoc = $relation->createAssociation($model);
 			$assoc->setRelation($relation); // todo move into relation
 
 			$model->setAssociation($name, $assoc);
 		}
+	}
+
+	/**
+	 *
+	 */
+	public function getAllRelations($model_name)
+	{
+		$from_reader = $this->getMetaDataReader($model_name);
+		$relationships = $from_reader->getRelationships();
+
+		$relations = array();
+
+		foreach ($relationships as $name => $info)
+		{
+			$relations[$name] = $this->getRelation($model_name, $name);
+		}
+
+		return $relations;
 	}
 
 	/**
@@ -118,7 +135,6 @@ class DataStore {
 
 		$from_reader = $this->getMetaDataReader($model_name);
 		$relationships = $from_reader->getRelationships();
-
 		if ( ! isset($relationships[$name]))
 		{
 			// TODO use name as the model name and attempt to
@@ -227,7 +243,8 @@ class DataStore {
 	 */
 	protected function getModelAlias($class)
 	{
-		return $name;
+		$classes = array_flip($this->aliases[$name]);
+		return $classes[$name];
 	}
 
 	/**
@@ -235,12 +252,6 @@ class DataStore {
 	 */
 	protected function expandModelAlias($name)
 	{
-		// TODO replace!!
-		$aliases = array(
-			'Template' => 'EllisLab\ExpressionEngine\Model\Template\Template',
-			'TemplateGroup'  => 'EllisLab\ExpressionEngine\Model\Template\TemplateGroup',
-		);
-
-		return $aliases[$name];
+		return $this->aliases[$name];
 	}
 }
