@@ -41,6 +41,8 @@ class EE_Lang extends CI_Lang {
 		// Sec.ur.ity code.  ::sigh::
 		$package = ($package == '') ? ee()->security->sanitize_filename(str_replace(array('lang.', '.php'), '', $which)) : ee()->security->sanitize_filename($package);
 		$which = str_replace('lang.', '', $which);
+
+		ee()->load->library('session');
 		$idiom = ee()->security->sanitize_filename(ee()->session->get_language());
 
 		if ($which == 'sites_cp')
