@@ -20,6 +20,9 @@ class Builder {
 	protected $limit = '18446744073709551615'; // 2^64
 	protected $offset = 0;
 
+	/**
+	 *
+	 */
 	public function __construct($from)
 	{
 		$this->from = $from;
@@ -274,6 +277,9 @@ class Builder {
 		return $withs;
 	}
 
+	/**
+	 *
+	 */
 	public function getWiths()
 	{
 		return $this->withs;
