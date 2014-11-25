@@ -36,29 +36,40 @@ class Template extends Model {
 	protected static $_gateway_names = array('TemplateGateway');
 
 	protected static $_relationships = array(
+		'Site' => array(
+			'type' => 'BelongsTo'
+		),
 		'TemplateGroup' => array(
 			'type' => 'BelongsTo'
-		)
-	);
-/*
-	protected static $_relationships = array(
-		'Site' => array(
-			'type' => 'many_to_one',
-		),
-		'TemplateGroup'	=> array(
-			'type' => 'many_to_one'
 		),
 		'LastAuthor' => array(
-			'type'	=> 'many_to_one',
-			'model'	=> 'Member',
-			'key'	=> 'last_author_id'
+			'type'     => 'BelongsTo',
+			'model'    => 'Member',
+			'from_key' => 'last_author_id'
 		),
 		'NoAccess' => array(
-			'type' => 'many_to_many',
-			'model' => 'MemberGroup'
+			'type'  => 'HasAndBelongsToMany',
+			'model' => 'MemberGroup',
+			'pivot' => array(
+				'table' => 'template_no_access',
+				'left'  => 'template_id',
+				'right' => 'member_group'
+			)
 		)
 	);
-*/
+
+	protected static $_validation_rules = array(
+		'template_id'        => 'required|isNatural',
+		'site_id'            => 'required|isNatural',
+		'group_id'           => 'required|isNatural',
+		'template_name'      => 'required|alphaDash',
+		'save_template_file' => 'enum[y|n]',
+		'cache'              => 'enum[y|n]',
+		'enable_http_auth'   => 'enum[y|n]',
+		'allow_php'          => 'enum[y|n]',
+		'protect_javascript' => 'enum[y|n]',
+	);
+
 	protected $template_id;
 	protected $site_id;
 	protected $group_id;
@@ -76,46 +87,69 @@ class Template extends Model {
 	protected $allow_php;
 	protected $php_parse_location;
 	protected $hits;
-/*
-	public function getTemplateGroup()
+	protected $protect_javascript;
+
+	public function set__save_template_file($new_value)
 	{
-		return $this->getRelated('TemplateGroup');
+		$this->set_y_n('save_template_file', $new_value);
 	}
 
-	public function setTemplateGroup(TemplateGroup $template_group)
+	public function get__save_template_file()
 	{
-		return $this->setRelated('TemplateGroup', $template_group);
+		return $this->save_template_file == 'y';
 	}
 
-	public function getLastAuthor()
+	public function set__cache($new_value)
 	{
-		return $this->getRelated('LastAuthor');
+		$this->set_y_n('cache', $new_value);
 	}
 
-	public function setLastAuthor(Member $member)
+	public function get__cache()
 	{
-		return $this->setRelated('LastAuthor', $member);
+		return $this->cache == 'y';
 	}
 
-	public function getSite()
+	public function set__enable_http_auth($new_value)
 	{
-		return $this->getRelated('Site');
+		$this->set_y_n('enable_http_auth', $new_value);
 	}
 
-	public function setSite(Site $site)
+	public function get__enable_http_auth()
 	{
-		return $this->setRelated('Site', $site);
+		return $this->enable_http_auth == 'y';
 	}
 
-	public function getNoAccess()
+	public function set__allow_php($new_value)
 	{
-		return $this->getRelated('NoAccess');
+		$this->set_y_n('allow_php', $new_value);
 	}
 
-	public function setNoAccess($no_access)
+	public function get__allow_php()
 	{
-		return $this->setRelated('NoAccess', $no_access);
+		return $this->allow_php == 'y';
 	}
-	*/
+
+	public function set__protect_javascript($new_value)
+	{
+		$this->set_y_n('protect_javascript', $new_value);
+	}
+
+	public function get__protect_javascript()
+	{
+		return $this->protect_javascript == 'y';
+	}
+
+	private function set_y_n($property, $new_value)
+	{
+		if ($new_value == TRUE || $new_value == 'y')
+		{
+			$this->$property = 'y';
+		}
+
+		if ($new_value == FALSE || $new_value == 'n')
+		{
+			$this->$property = 'n';
+		}
+	}
+
 }
-

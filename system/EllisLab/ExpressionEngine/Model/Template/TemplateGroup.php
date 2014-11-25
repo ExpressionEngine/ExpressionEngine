@@ -36,6 +36,9 @@ class TemplateGroup extends Model {
 		'Templates' => array(
 			'type' => 'HasMany',
 			'model' => 'Template'
+		),
+		'Site' => array(
+			'type' => 'BelongsTo'
 		)
 	);
 /*
@@ -59,35 +62,4 @@ class TemplateGroup extends Model {
 	protected $group_order;
 	protected $is_site_default;
 
-/*
-	public function getTemplates()
-	{
-		return $this->getRelated('Templates');
-	}
-
-	public function setTemplates($templates)
-	{
-		return $this->setRelated('Templates', $templates);
-	}
-
-	public function getMemberGroups()
-	{
-		return $this->getRelated('MemberGroups');
-	}
-
-	public function setMemberGroups($member_groups)
-	{
-		return $this->setRelated('MemberGroups', $member_groups);
-	}
-
-	public function getSite()
-	{
-		return $this->getRelated('Site');
-	}
-
-	public function setSite(Site $site)
-	{
-		return $this->setRelated('Site', $site);
-	}
-*/
 }

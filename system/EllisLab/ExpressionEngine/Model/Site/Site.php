@@ -31,6 +31,7 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  * @link		http://ellislab.com
  */
 class Site extends Model {
+
 	protected static $_primary_key = 'site_id';
 	protected static $_gateway_names = array('SiteGateway');
 	protected static $_preferences = array(
@@ -39,6 +40,17 @@ class Site extends Model {
 		'MemberPreferences' => 'site_member_preferences',
 		'TemplatePreferences' => 'site_template_preferences',
 		'ChannelPreferences' => 'site_channel_preferences'
+	);
+
+	protected static $_relationships = array(
+		'TemplateGroups' => array(
+			'model' => 'TemplateGroup',
+			'type' => 'hasMany'
+		),
+		'GlobalVariables' => array(
+			'model' => 'GlobalVariable',
+			'type' => 'hasMany'
+		)
 	);
 
 	// Properties

@@ -39,7 +39,7 @@ class GlobalVariable extends Model {
 
 	protected static $_relationships = array(
 		'Site' => array(
-			'type' => 'many_to_one'
+			'type' => 'belongsTo'
 		)
 	);
 
