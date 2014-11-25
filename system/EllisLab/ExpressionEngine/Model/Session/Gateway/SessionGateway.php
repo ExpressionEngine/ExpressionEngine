@@ -31,13 +31,6 @@ class SessionGateway extends Gateway {
 	protected static $_table_name = 'sessions';
 	protected static $_primary_key = 'session_id';
 
-	protected static $_related_gateways = array(
-		'member_id' => array(
-			'gateway' => 'member_id',
-			'key' => 'member_id',
-		)
-	);
-
 	protected $session_id;
 	protected $member_id;
 	protected $admin_sess;
