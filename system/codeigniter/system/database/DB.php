@@ -116,14 +116,14 @@ function &DB($params = '', $active_record_override = NULL)
 
 		if ( ! class_exists('CI_DB'))
 		{
-			eval('class CI_DB extends CI_DB_active_record { }');
+			class_alias('CI_DB_active_record', 'CI_DB');
 		}
 	}
 	else
 	{
 		if ( ! class_exists('CI_DB'))
 		{
-			eval('class CI_DB extends CI_DB_driver { }');
+			class_alias('CI_DB_driver', 'CI_DB');
 		}
 	}
 
