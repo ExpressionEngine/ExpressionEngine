@@ -41,5 +41,4 @@ class Module extends Model {
 	protected $module_version;
 	protected $has_cp_backend;
 	protected $has_publish_fields;
-
 }

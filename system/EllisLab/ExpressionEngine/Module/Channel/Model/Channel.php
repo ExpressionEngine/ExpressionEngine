@@ -11,12 +11,6 @@ class Channel extends Model implements ContentStructure {
 	protected static $_primary_key = 'channel_id';
 	protected static $_gateway_names = array('ChannelGateway');
 
-	protected static $_key_map = array(
-		'channel_id'  => 'ChannelGateway',
-		'site_id'	  => 'ChannelGateway',
-		'field_group' => 'ChannelGateway'
-	);
-
 	protected static $_relationships = array(
 		'ChannelFieldGroup' => array(
 			'type' => 'many_to_one',

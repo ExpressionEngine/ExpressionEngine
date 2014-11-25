@@ -43,13 +43,4 @@ class GlobalVariable extends Model {
 	protected $variable_name;
 	protected $variable_data;
 
-	public function getSite()
-	{
-		return $this->getRelated('Site');
-	}
-
-	public function setSite(Site $site)
-	{
-		return $this->setRelated('Site', $site);
-	}
 }

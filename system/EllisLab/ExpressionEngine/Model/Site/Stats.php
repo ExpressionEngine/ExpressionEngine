@@ -60,24 +60,4 @@ class Stats extends Model {
 	protected $most_visitor_date;
 	protected $last_cache_clear;
 
-	public function getSite()
-	{
-		return $this->getRelated('Site');
-	}
-
-	public function setSite(Site $site)
-	{
-		return $this->setRelated('Site', $site);
-	}
-
-	public function getRecentMember()
-	{
-		return $this->getRelated('RecentMember');
-	}
-
-	public function setRecentMember(Member $member)
-	{
-		return $this->setRelated('RecentMember', $member);
-	}
-
 }

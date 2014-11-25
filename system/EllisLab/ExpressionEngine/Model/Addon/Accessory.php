@@ -39,5 +39,4 @@ class Accessory extends Model {
 	protected $member_groups;
 	protected $controllers;
 	protected $accessory_version;
-
 }

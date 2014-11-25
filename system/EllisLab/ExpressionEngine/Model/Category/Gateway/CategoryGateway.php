@@ -30,6 +30,7 @@ class CategoryGateway extends Gateway {
 
 	protected static $_table_name = 'categories';
 	protected static $_primary_key = 'cat_id';
+
 	protected static $_related_gateways = array(
 		'cat_id' => array(
 			'gateway' => 'ChannelTitleGateway',

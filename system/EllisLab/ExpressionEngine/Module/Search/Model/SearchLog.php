@@ -10,7 +10,7 @@ class SearchLog extends Model {
 
 	protected static $_relationships = array(
 		'Site' => array(
-			'type' => 'many_to_one'
+			'type' => 'BelongsTo'
 		),
 		'Member'	=> array(
 			'type' => 'many_to_many'
@@ -26,8 +26,4 @@ class SearchLog extends Model {
 	protected $search_type;
 	protected $search_terms;
 
-	public function getSite()
-	{
-		return $this->getRelated('Site');
-	}
 }

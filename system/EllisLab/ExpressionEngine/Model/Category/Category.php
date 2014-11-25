@@ -34,13 +34,6 @@ class Category extends FieldDataContentModel {
 	protected static $_field_content_class = 'CategoryFieldContent';
 	protected static $_field_content_gateway = 'CategoryFieldDataGateway';
 
-	protected static $_key_map = array(
-		'cat_id'	=> 'CategoryGateway',
-		'site_id'	=> 'CategoryGateway',
-		'group_id'	=> 'CategoryGateway',
-		'parent_id'	=> 'CategoryGateway'
-	);
-
 	protected static $_relationships = array(
 		'CategoryGroup' => array(
 			'type' => 'many_to_one'

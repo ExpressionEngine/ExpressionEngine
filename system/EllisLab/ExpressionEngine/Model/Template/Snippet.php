@@ -44,13 +44,4 @@ class Snippet extends Model {
 	public $snippet_name;
 	public $snippet_contents;
 
-	public function getSite()
-	{
-		return $this->getRelated('Site');
-	}
-
-	public function setSite(Site $site)
-	{
-		return $this->setRelated('Site', $site);
-	}
 }

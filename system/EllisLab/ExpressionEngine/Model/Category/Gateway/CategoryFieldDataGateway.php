@@ -32,6 +32,7 @@ class CategoryFieldDataGateway extends FieldDataGateway {
 	protected static $_primary_key = 'cat_id';
 	protected static $_field_table = 'category_fields';
 	protected static $_field_id_name = 'field_id';
+
 	protected static $_related_gateways = array(
 		'cat_id' => array(
 			'gateway' => 'CategoryGateway',

@@ -30,6 +30,7 @@ class StatusGateway extends Gateway {
 
 	protected static $_table_name = 'statuses';
 	protected static $_primary_key = 'status_id';
+
 	protected static $_related_gateways = array(
 		'group_id' => array(
 			'gateway' => 'StatusGroupGateway',
