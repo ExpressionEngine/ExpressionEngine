@@ -36,6 +36,7 @@ class ResetPassword extends Model {
 			'type' => 'one_to_one'
 		)
 	);
+
 	protected $reset_id;
 	protected $member_id;
 	protected $resetcode;

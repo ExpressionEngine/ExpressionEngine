@@ -31,7 +31,6 @@ class ThrottleGateway extends Gateway {
 	protected static $_table_name = 'throttle';
 	protected static $_primary_key = 'throttle_id';
 
-	// Properties
 	protected $throttle_id;
 	protected $ip_address;
 	protected $last_activity;

@@ -28,4 +28,12 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  */
 class Captcha extends Model {
 
+	protected static $_primary_key = 'captcha_id';
+	protected static $_gateway_names = array('CaptchaGateway');
+
+	protected $captcha_id;
+	protected $date;
+	protected $ip_address;
+	protected $word;
+
 }

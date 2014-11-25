@@ -31,7 +31,6 @@ class PasswordLockoutGateway extends Gateway {
 	protected static $_table_name = 'password_lockout';
 	protected static $_primary_id = 'lockout_id';
 
-	// Properties
 	protected $lockout_id;
 	protected $login_date;
 	protected $ip_address;
