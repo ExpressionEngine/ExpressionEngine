@@ -964,7 +964,8 @@ class Addons extends CP_Controller {
 	 *
 	 * @param	str	$name	(optional) Limit the return to this add-on
 	 * @return	array		Add-on data in the following format:
-	 *   e.g. 'version'		 => '--',
+	 *   e.g. 'developer'	 => 'native',
+	 *        'version'		 => '--',
 	 *        'update'       => '2.0.4' (optional)
 	 *        'installed'	 => TRUE|FALSE,
 	 *        'name'		 => 'FooBar',
@@ -1025,7 +1026,10 @@ class Addons extends CP_Controller {
 			// Get some details on the extension
 			$Extension = new $class_name();
 
+			$developer = (strpos($ext['path'], 'third_party') === FALSE) ? 'native' : 'third_party';
+
 			$data = array(
+				'developer'		=> $developer,
 				'version'		=> $Extension->version,
 				'installed'		=> FALSE,
 				'enabled'		=> NULL,
