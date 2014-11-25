@@ -120,6 +120,12 @@ class Model {
 	public static function getMetaData($key)
 	{
 		$key = '_'.$key;
+
+		if ( ! property_exists(get_called_class(), $key))
+		{
+			return NULL;
+		}
+
 		return static::$$key;
 	}
 
@@ -284,6 +290,25 @@ class Model {
 		}
 
 		return $dirty;
+	}
+
+	/**
+	 *
+	 */
+	public static function getFields()
+	{
+		$vars = get_class_vars(get_called_class());
+		$fields = array();
+
+		foreach ($vars as $key => $value)
+		{
+			if ($key[0] != '_')
+			{
+				$fields[] = $key;
+			}
+		}
+
+		return $fields;
 	}
 
 	/**

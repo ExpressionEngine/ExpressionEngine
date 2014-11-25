@@ -43,7 +43,9 @@ class MetaDataReader {
 	public function getValidationRules()
 	{
 		$class = $this->class;
-		return $class::getMetaData('validation_rules');
+		$validation = $class::getMetaData('validation_rules');
+
+		return $validation ?: array();
 	}
 
 	/**
@@ -52,7 +54,9 @@ class MetaDataReader {
 	public function getRelationships()
 	{
 		$class = $this->class;
-		return $class::getMetaData('relationships');
+		$relationships = $class::getMetaData('relationships');
+
+		return $relationships ?: array();
 	}
 
 	/**
@@ -63,9 +67,11 @@ class MetaDataReader {
 		$class = $this->class;
 		$gateway_names = $class::getMetaData('gateway_names');
 
-		if ( ! count($gateway_names))
+		if ( ! isset($gateway_names))
 		{
-			// todo synthesize from model
+			$table_name = $class::getMetaData('table_name');
+
+			return array($table_name => $this->synthesize($class, $table_name));
 		}
 
 		$gateways = array();
@@ -74,10 +80,19 @@ class MetaDataReader {
 
 		foreach ($gateway_names as $name)
 		{
-			$gateways[$name] = $prefix.'\\Gateway\\'.$name;
+			$gateway_class = $prefix.'\\Gateway\\'.$name;
+			$gateways[$name] = new $gateway_class;
 		}
 
 		return $gateways;
+	}
+
+	/**
+	 *
+	 */
+	protected function synthesize($model, $table_name)
+	{
+		return new SyntheticGateway($table_name, $model);
 	}
 
 	/**
@@ -89,10 +104,10 @@ class MetaDataReader {
 
 		$gateways = $this->getGateways();
 
-		foreach ($gateways as $name => $class)
+		foreach ($gateways as $name => $object)
 		{
-			$table = $class::getMetaData('table_name');
-			$fields = $class::getMetaData('field_list');
+			$table = $object->getTableName();
+			$fields = $object->getFieldList();
 
 			$tables[$table] = $fields;
 		}
@@ -109,9 +124,9 @@ class MetaDataReader {
 
 		$table_names = array();
 
-		foreach ($gateways as $name => $class)
+		foreach ($gateways as $name => $object)
 		{
-			$table_names[$name] = $class::getMetaData('table_name');
+			$table_names[$name] = $object->getTableName();
 		}
 
 		return $table_names;

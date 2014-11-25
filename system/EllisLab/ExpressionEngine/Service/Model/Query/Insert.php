@@ -11,6 +11,6 @@ class Insert extends Update {
 		$query = $this->store
 			->rawQuery()
 			->set($gateway->getValues())
-			->insert($gateway->getTable());
+			->insert($gateway->getTableName());
 	}
 }

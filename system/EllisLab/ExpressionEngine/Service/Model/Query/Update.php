@@ -28,11 +28,9 @@ class Update extends Query {
 
 		$dirty = $object->getDirty();
 
-		foreach ($gateways as $class)
+		foreach ($gateways as $gateway)
 		{
-			$gateway = new $class;
 			$gateway->fill($dirty);
-
 			$this->actOnGateway($gateway);
 		}
 	}
@@ -43,6 +41,6 @@ class Update extends Query {
 			->rawQuery()
 			->set($gateway->getValues())
 			->where($gateway->getPrimaryKey(), $gateway->getId())
-			->update($gateway->getTable());
+			->update($gateway->getTableName());
 	}
 }

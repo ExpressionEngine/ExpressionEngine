@@ -29,7 +29,7 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
 class TemplateGroup extends Model {
 
 	protected static $_primary_key = 'group_id';
-	protected static $_gateway_names = array('TemplateGroupGateway');
+	protected static $_table_name = 'template_groups';
 
 	protected static $_relationships = array(
 		'MemberGroups' => array(
