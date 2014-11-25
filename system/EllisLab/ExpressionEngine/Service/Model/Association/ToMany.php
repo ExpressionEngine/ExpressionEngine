@@ -85,7 +85,7 @@ abstract class ToMany extends Association {
 	{
 		parent::removeFromRelated($model);
 
-		$this->related = NULL;
+		$this->collection = NULL;
 		unset($this->related[spl_object_hash($model)]);
 	}
 
