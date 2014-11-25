@@ -1,7 +1,7 @@
 <?php
-namespace EllisLab\ExpressionEngine\Service\Model\Field;
+namespace EllisLab\ExpressionEngine\Service\Model\Interfaces\Field;
 
-use EllisLab\ExpressionEngine\Service\Model\Field\FieldContent;
+use EllisLab\ExpressionEngine\Service\Model\Interfaces\Field\FieldContent;
 
 /**
  * ExpressionEngine - by EllisLab

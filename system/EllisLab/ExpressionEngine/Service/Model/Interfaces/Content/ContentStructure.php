@@ -1,5 +1,5 @@
 <?php
-namespace EllisLab\ExpressionEngine\Service\Model\Content;
+namespace EllisLab\ExpressionEngine\Service\Model\Interfaces\Content;
 
 /**
  * ExpressionEngine - by EllisLab

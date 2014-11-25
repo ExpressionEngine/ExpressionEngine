@@ -2,7 +2,7 @@
 namespace EllisLab\ExpressionEngine\Model;
 
 use EllisLab\ExpressionEngine\Service\Model\Model as Model;
-use EllisLab\ExpressionEngine\Service\Model\Content\Content as Content;
+use EllisLab\ExpressionEngine\Service\Model\Interfaces\Content\Content as Content;
 
 // TODO This desperately needs a better name, but I got nothing!
 abstract class FieldDataContentModel extends Model implements Content {

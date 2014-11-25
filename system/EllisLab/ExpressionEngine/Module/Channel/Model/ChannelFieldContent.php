@@ -1,7 +1,7 @@
 <?php
 namespace EllisLab\ExpressionEngine\Module\Channel\Model;
 
-use EllisLab\ExpressionEngine\Service\Model\Field\FieldContent;
+use EllisLab\ExpressionEngine\Service\Model\Interfaces\Field\FieldContent;
 use EllisLab\ExpressionEngine\Model\DataTableField\DataTableFieldContent;
 
 class ChannelFieldContent extends DataTableFieldContent implements FieldContent {
