@@ -62,11 +62,11 @@ class Template extends Model {
 		'site_id'            => 'required|isNatural',
 		'group_id'           => 'required|isNatural',
 		'template_name'      => 'required|alphaDash',
-		'save_template_file' => 'enum[y|n]',
-		'cache'              => 'enum[y|n]',
-		'enable_http_auth'   => 'enum[y|n]',
-		'allow_php'          => 'enum[y|n]',
-		'protect_javascript' => 'enum[y|n]',
+		'save_template_file' => 'enum[y,n]',
+		'cache'              => 'enum[y,n]',
+		'enable_http_auth'   => 'enum[y,n]',
+		'allow_php'          => 'enum[y,n]',
+		'protect_javascript' => 'enum[y,n]',
 	);
 
 	protected $template_id;

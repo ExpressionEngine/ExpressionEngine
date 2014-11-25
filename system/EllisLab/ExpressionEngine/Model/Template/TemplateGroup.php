@@ -52,7 +52,7 @@ class TemplateGroup extends Model {
 	);
 
 	protected static $_validation_rules = array(
-		'is_site_default' => 'enum[y|n]',
+		'is_site_default' => 'enum[y,n]',
 	);
 
 	protected $group_id;
