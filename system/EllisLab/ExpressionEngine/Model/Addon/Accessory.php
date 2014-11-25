@@ -30,9 +30,6 @@ class Accessory extends Model {
 
 	protected static $_primary_key = 'accessory_id';
 	protected static $_gateway_names = array('AccessoryGateway');
-	protected static $_validation_rules = array(
-		'accessory_id' => 'required'
-	);
 
 	protected $accessory_id;
 	protected $class;

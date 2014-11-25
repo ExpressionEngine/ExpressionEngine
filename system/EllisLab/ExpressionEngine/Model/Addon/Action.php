@@ -30,8 +30,8 @@ class Action extends Model {
 
 	protected static $_primary_key = 'action_id';
 	protected static $_gateway_names = array('ActionGateway');
+
 	protected static $_validation_rules = array(
-		'action_id'   => 'required',
 		'csrf_exempt' => 'enum[0,1]'
 	);
 

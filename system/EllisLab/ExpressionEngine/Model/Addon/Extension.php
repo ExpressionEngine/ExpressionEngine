@@ -30,8 +30,8 @@ class Extension extends Model {
 
 	protected static $_primary_key = 'extension_id';
 	protected static $_gateway_names = array('ExtensionGateway');
+
 	protected static $_validation_rules = array(
-		'extension_id' => 'required',
 		'csrf_exempt'  => 'enum[y,n]'
 	);
 
